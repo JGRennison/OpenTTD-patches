@@ -600,7 +600,7 @@ static char *MakeCzechTownName(char *buf, const char *last, uint32 seed)
 		return strecpy(buf, _name_czech_real[SeedModChance(4, lengthof(_name_czech_real), seed)], last);
 	}
 
-	const char *orig = buf;
+	[[maybe_unused]] const char *orig = buf;
 
 	/* Probability of prefixes/suffixes
 	 * 0..11 prefix, 12..13 prefix+suffix, 14..17 suffix, 18..31 nothing */
@@ -1062,8 +1062,10 @@ char *GenerateTownNameString(char *buf, const char *last, size_t lang, uint32 se
 	const TownNameGeneratorParams *par = &_town_name_generators[lang];
 	if (last >= buf + par->min) return par->proc(buf, last, seed);
 
+	IGNORE_UNINITIALIZED_WARNING_START
 	char *buffer = AllocaM(char, par->min + 1);
 	par->proc(buffer, buffer + par->min, seed);
+	IGNORE_UNINITIALIZED_WARNING_STOP
 
 	return strecpy(buf, buffer, last);
 }

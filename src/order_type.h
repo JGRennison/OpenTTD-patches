@@ -118,6 +118,15 @@ enum OrderDepotActionFlags {
 DECLARE_ENUM_AS_BIT_SET(OrderDepotActionFlags)
 
 /**
+ * Extra depot flags.
+ */
+enum OrderDepotExtraFlags {
+	ODEF_NONE           = 0,      ///< No flags.
+	ODEFB_SPECIFIC      = 1 << 0, ///< This order is for a specific depot.
+};
+DECLARE_ENUM_AS_BIT_SET(OrderDepotExtraFlags)
+
+/**
  * Flags for go to waypoint orders
  */
 enum OrderWaypointFlags {
@@ -142,8 +151,8 @@ enum OrderConditionVariable {
 	OCV_CARGO_ACCEPTANCE,   ///< Skip if specified cargo is accepted at next station
 	OCV_FREE_PLATFORMS,     ///< Skip based on free platforms at next station
 	OCV_PERCENT,            ///< Skip xx percent of times
-	OCV_SLOT_OCCUPANCY,     ///< Test if train slot is fully occupied
-	OCV_TRAIN_IN_SLOT,      ///< Test if train is in slot
+	OCV_SLOT_OCCUPANCY,     ///< Test if vehicle slot is fully occupied
+	OCV_VEH_IN_SLOT,        ///< Test if vehicle is in slot
 	OCV_CARGO_LOAD_PERCENTAGE, ///< Skip based on the amount of load of a specific cargo
 	OCV_CARGO_WAITING_AMOUNT,  ///< Skip based on the amount of a specific cargo waiting at next station
 	OCV_COUNTER_VALUE,      ///< Skip based on counter value
@@ -187,6 +196,7 @@ enum ModifyOrderFlags {
 	MOF_CARGO_TYPE_UNLOAD, ///< Passes an OrderUnloadType and a CargoID.
 	MOF_CARGO_TYPE_LOAD,   ///< Passes an OrderLoadType and a CargoID.
 	MOF_SLOT,            ///< Change the slot value
+	MOF_RV_TRAVEL_DIR,   ///< Change the road vehicle travel direction.
 	MOF_END
 };
 template <> struct EnumPropsT<ModifyOrderFlags> : MakeEnumPropsT<ModifyOrderFlags, byte, MOF_NON_STOP, MOF_END, MOF_END, 4> {};
@@ -229,6 +239,7 @@ enum ModifyTimetableFlags {
 	MTF_SET_WAIT_FIXED,///< Set wait time fixed flag state.
 	MTF_SET_TRAVEL_FIXED,///< Set travel time fixed flag state.
 	MTF_SET_LEAVE_TYPE,///< Passes an OrderLeaveType.
+	MTF_ASSIGN_SCHEDULE, ///< Assign a dispatch schedule.
 	MTF_END
 };
 template <> struct EnumPropsT<ModifyTimetableFlags> : MakeEnumPropsT<ModifyTimetableFlags, byte, MTF_WAIT_TIME, MTF_END, MTF_END, 3> {};

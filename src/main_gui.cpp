@@ -64,9 +64,9 @@ void CcGiveMoney(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2
 	uint64 auxdata = (p2 & 0xFFFF) | (((uint64) _local_company) << 16);
 
 	if (!_network_server) {
-		NetworkClientSendChat(NETWORK_ACTION_GIVE_MONEY, DESTTYPE_BROADCAST_SS, p2, msg, NetworkTextMessageData(p1, auxdata));
+		NetworkClientSendChat(NETWORK_ACTION_GIVE_MONEY, DESTTYPE_BROADCAST_SS, p2, msg, NetworkTextMessageData(result.GetCost(), auxdata));
 	} else {
-		NetworkServerSendChat(NETWORK_ACTION_GIVE_MONEY, DESTTYPE_BROADCAST_SS, p2, msg, CLIENT_ID_SERVER, NetworkTextMessageData(p1, auxdata));
+		NetworkServerSendChat(NETWORK_ACTION_GIVE_MONEY, DESTTYPE_BROADCAST_SS, p2, msg, CLIENT_ID_SERVER, NetworkTextMessageData(result.GetCost(), auxdata));
 	}
 }
 
@@ -178,12 +178,24 @@ void ZoomInOrOutToCursorWindow(bool in, Window *w)
 	}
 }
 
-void FixTitleGameZoom()
+void FixTitleGameZoom(int zoom_adjust)
 {
 	if (_game_mode != GM_MENU) return;
 
 	Viewport *vp = FindWindowByClass(WC_MAIN_WINDOW)->viewport;
+
+	/* Adjust the zoom in/out.
+	 * Can't simply add, since operator+ is not defined on the ZoomLevel type. */
 	vp->zoom = _gui_zoom;
+	while (zoom_adjust < 0 && vp->zoom != _settings_client.gui.zoom_min) {
+		vp->zoom--;
+		zoom_adjust++;
+	}
+	while (zoom_adjust > 0 && vp->zoom != _settings_client.gui.zoom_max) {
+		vp->zoom++;
+		zoom_adjust--;
+	}
+
 	vp->virtual_width = ScaleByZoom(vp->width, vp->zoom);
 	vp->virtual_height = ScaleByZoom(vp->height, vp->zoom);
 	UpdateViewportSizeZoom(vp);
@@ -339,7 +351,7 @@ struct MainWindow : Window
 			case GHK_REFRESH_SCREEN: MarkWholeScreenDirty(); break;
 
 			case GHK_CRASH: // Crash the game
-				*(volatile byte *)0 = 0;
+				*(volatile byte *)nullptr = 0;
 				break;
 
 			case GHK_MONEY: // Gimme money
@@ -493,7 +505,7 @@ struct MainWindow : Window
 
 	virtual void OnMouseOver(Point pt, int widget) override
 	{
-		if (pt.x != -1 && _game_mode != GM_MENU && (_mouse_hovering || _settings_client.gui.hover_delay_ms == 0)) {
+		if (pt.x != -1 && _game_mode != GM_MENU && (_settings_client.gui.hover_delay_ms == 0 ? _right_button_down : _mouse_hovering)) {
 			/* Show tooltip with last month production or town name */
 			const Point p = GetTileBelowCursor();
 			const TileIndex tile = TileVirtXY(p.x, p.y);

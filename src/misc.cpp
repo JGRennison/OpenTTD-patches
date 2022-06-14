@@ -38,11 +38,13 @@
 #include "zoning.h"
 #include "cargopacket.h"
 #include "tbtr_template_vehicle_func.h"
+#include "event_logs.h"
 
 #include "safeguards.h"
 
 
 extern TileIndex _cur_tileloop_tile;
+extern void ClearAllSignalSpeedRestrictions();
 extern void MakeNewgameSettingsLive();
 
 void InitializeSound();
@@ -69,10 +71,15 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	 * related to the new game we're about to start/load. */
 	UnInitWindowSystem();
 
+	/* Clear link graph schedule and stop any link graph threads before
+	 * changing the map size. This avoids data races on the map size variables. */
+	LinkGraphSchedule::Clear();
+
 	AllocateMap(size_x, size_y);
 
 	ViewportMapClearTunnelCache();
 	ClearCommandLog();
+	ClearSpecialEventsLog();
 	ClearDesyncMsgLog();
 
 	_pause_mode = PM_UNPAUSED;
@@ -89,6 +96,9 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	_game_load_date_fract = 0;
 	_game_load_tick_skip_counter = 0;
 	_game_load_time = 0;
+	_extra_station_names_used = 0;
+	_extra_station_names_probability = 0;
+	_extra_aspects = 0;
 	_loadgame_DBGL_data.clear();
 	if (reset_settings) MakeNewgameSettingsLive();
 
@@ -101,8 +111,8 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 		SetScaledTickVariables();
 	}
 	UpdateCachedSnowLine();
+	UpdateCachedSnowLineBounds();
 
-	LinkGraphSchedule::Clear();
 	ClearTraceRestrictMapping();
 	ClearBridgeSimulatedSignalMapping();
 	ClearCargoPacketDeferredPayments();
@@ -114,6 +124,8 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 
 	FreeSignalPrograms();
 	FreeSignalDependencies();
+
+	ClearAllSignalSpeedRestrictions();
 
 	ClearZoningCaches();
 	IntialiseOrderDestinationRefcountMap();

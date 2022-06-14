@@ -22,6 +22,8 @@
 OrderBackupPool _order_backup_pool("BackupOrder");
 INSTANTIATE_POOL_METHODS(OrderBackup)
 
+uint OrderBackup::update_counter;
+
 /** Free everything that is allocated. */
 OrderBackup::~OrderBackup()
 {
@@ -33,6 +35,8 @@ OrderBackup::~OrderBackup()
 		delete o;
 		o = next;
 	}
+
+	OrderBackup::update_counter++;
 }
 
 /**
@@ -63,15 +67,13 @@ OrderBackup::OrderBackup(const Vehicle *v, uint32 user)
 			tail = &copy->next;
 		}
 
-		if (v->orders.list != nullptr && HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
+		if (v->orders != nullptr && HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
 			SetBit(this->vehicle_flags, VF_SCHEDULED_DISPATCH);
-			this->scheduled_dispatch = v->orders.list->GetScheduledDispatch();
-			this->scheduled_dispatch_duration = v->orders.list->GetScheduledDispatchDuration();
-			this->scheduled_dispatch_start_date = v->orders.list->GetScheduledDispatchStartDatePart();
-			this->scheduled_dispatch_start_full_date_fract = v->orders.list->GetScheduledDispatchStartDateFractPart();
-			this->scheduled_dispatch_max_delay = v->orders.list->GetScheduledDispatchDelay();
+			this->dispatch_schedules = v->orders->GetScheduledDispatchScheduleSet();
 		}
 	}
+
+	OrderBackup::update_counter++;
 }
 
 /**
@@ -84,17 +86,12 @@ void OrderBackup::DoRestore(Vehicle *v)
 	if (this->clone != nullptr) {
 		DoCommand(0, v->index | CO_SHARE << 30, this->clone->index, DC_EXEC, CMD_CLONE_ORDER);
 	} else if (this->orders != nullptr && OrderList::CanAllocateItem()) {
-		v->orders.list = new OrderList(this->orders, v);
+		v->orders = new OrderList(this->orders, v);
 		this->orders = nullptr;
 
 		if (HasBit(this->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
 			SetBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH);
-			v->orders.list->SetScheduledDispatchDuration(this->scheduled_dispatch_duration);
-			v->orders.list->SetScheduledDispatchDelay(this->scheduled_dispatch_max_delay);
-			v->orders.list->SetScheduledDispatchStartDate(this->scheduled_dispatch_start_date,
-					this->scheduled_dispatch_start_full_date_fract);
-			v->orders.list->SetScheduledDispatchLastDispatch(0);
-			v->orders.list->SetScheduledDispatch(std::move(this->scheduled_dispatch));
+			v->orders->GetScheduledDispatchScheduleSet() = std::move(this->dispatch_schedules);
 		}
 
 		/* Make sure buoys/oil rigs are updated in the station list. */
@@ -210,8 +207,8 @@ CommandCost CmdClearOrderBackup(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 	uint32 user = _networking && !_network_server ? _network_own_client_id : CLIENT_ID_SERVER;
 
 	for (OrderBackup *ob : OrderBackup::Iterate()) {
-		/* If it's not a backup of us, ignore it. */
-		if (ob->user != user) continue;
+		/* If this is a GUI action, and it's not a backup of us, ignore it. */
+		if (from_gui && ob->user != user) continue;
 		/* If it's not for our chosen tile either, ignore it. */
 		if (t != INVALID_TILE && t != ob->tile) continue;
 

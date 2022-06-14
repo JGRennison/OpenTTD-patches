@@ -30,14 +30,16 @@
 #include "scope_info.h"
 #include "command_func.h"
 #include "thread.h"
+#include "debug_desync.h"
+#include "event_logs.h"
+#include "scope.h"
 
 #include "ai/ai_info.hpp"
 #include "game/game.hpp"
 #include "game/game_info.hpp"
 #include "company_base.h"
 #include "company_func.h"
-
-#include <time.h>
+#include "walltime_func.h"
 
 #ifdef WITH_ALLEGRO
 #	include <allegro.h>
@@ -78,7 +80,6 @@
 /* static */ const char *CrashLog::message = nullptr;
 /* static */ char *CrashLog::gamelog_buffer = nullptr;
 /* static */ const char *CrashLog::gamelog_last = nullptr;
-/* static */ const CrashLog *CrashLog::main_thread_pending_crashlog = nullptr;
 
 char *CrashLog::LogCompiler(char *buffer, const char *last) const
 {
@@ -141,17 +142,19 @@ char *CrashLog::LogOpenTTDVersion(char *buffer, const char *last) const
 {
 	return buffer + seprintf(buffer, last,
 			"OpenTTD version:\n"
-			" Version:    %s (%d)\n"
-			" NewGRF ver: %08x\n"
-			" Bits:       %d\n"
-			" Endian:     %s\n"
-			" Dedicated:  %s\n"
-			" Build date: %s\n"
-			" Defines:    %s\n\n",
+			" Version:     %s (%d)\n"
+			" Release ver: %s\n"
+			" NewGRF ver:  %08x\n"
+			" Bits:        %d\n"
+			" Endian:      %s\n"
+			" Dedicated:   %s\n"
+			" Build date:  %s\n"
+			" Defines:     %s\n\n",
 			_openttd_revision,
 			_openttd_revision_modified,
+			_openttd_release_version,
 			_openttd_newgrf_version,
-#ifdef _SQ64
+#ifdef POINTER_IS_64BIT
 			64,
 #else
 			32,
@@ -210,7 +213,7 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 			SoundDriver::GetInstance() == nullptr ? "none" : SoundDriver::GetInstance()->GetName(),
 			BaseSounds::GetUsedSet() == nullptr ? "none" : BaseSounds::GetUsedSet()->name.c_str(),
 			BaseSounds::GetUsedSet() == nullptr ? UINT32_MAX : BaseSounds::GetUsedSet()->version,
-			VideoDriver::GetInstance() == nullptr ? "none" : VideoDriver::GetInstance()->GetName(),
+			VideoDriver::GetInstance() == nullptr ? "none" : VideoDriver::GetInstance()->GetInfoString(),
 			pathfinder_name(_settings_game.pf.pathfinder_for_trains), pathfinder_name(_settings_game.pf.pathfinder_for_roadvehs), pathfinder_name(_settings_game.pf.pathfinder_for_ships)
 	);
 
@@ -231,6 +234,9 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 	if (_settings_game.debug.chicken_bits != 0) {
 		buffer += seprintf(buffer, last, "Chicken bits: 0x%08X\n\n", _settings_game.debug.chicken_bits);
 	}
+	if (_settings_game.debug.newgrf_optimiser_flags != 0) {
+		buffer += seprintf(buffer, last, "NewGRF optimiser flags: 0x%08X\n\n", _settings_game.debug.newgrf_optimiser_flags);
+	}
 
 	buffer += seprintf(buffer, last, "AI Configuration (local: %i) (current: %i):\n", (int)_local_company, (int)_current_company);
 	for (const Company *c : Company::Iterate()) {
@@ -245,6 +251,16 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 		buffer += seprintf(buffer, last, " GS: %s (v%d)\n", Game::GetInfo()->GetName(), Game::GetInfo()->GetVersion());
 	}
 	buffer += seprintf(buffer, last, "\n");
+
+	if (_grfconfig_static != nullptr) {
+		buffer += seprintf(buffer, last, "Static NewGRFs present:\n");
+		for (GRFConfig *c = _grfconfig_static; c != nullptr; c = c->next) {
+			char md5sum[33];
+			md5sumToString(md5sum, lastof(md5sum), c->ident.md5sum);
+			buffer += seprintf(buffer, last, " GRF ID: %08X, checksum %s, %s, '%s'\n", BSWAP32(c->ident.grfid), md5sum, c->GetDisplayPath(), GetDefaultLangGRFStringFromGRFText(c->name));
+		}
+		buffer += seprintf(buffer, last, "\n");
+	}
 
 	return buffer;
 }
@@ -408,6 +424,8 @@ char *CrashLog::LogCommandLog(char *buffer, const char *last) const
 {
 	buffer = DumpCommandLog(buffer, last);
 	buffer += seprintf(buffer, last, "\n");
+	buffer = DumpSpecialEventsLog(buffer, last);
+	buffer += seprintf(buffer, last, "\n");
 	return buffer;
 }
 
@@ -417,9 +435,8 @@ char *CrashLog::LogCommandLog(char *buffer, const char *last) const
  * @param last   The last position in the buffer to write to.
  * @return the position of the \c '\0' character after the buffer.
  */
-char *CrashLog::FillCrashLog(char *buffer, const char *last) const
+char *CrashLog::FillCrashLog(char *buffer, const char *last)
 {
-	time_t cur_time = time(nullptr);
 	buffer += seprintf(buffer, last, "*** OpenTTD Crash Report ***\n\n");
 
 	if (GamelogTestEmergency()) {
@@ -429,7 +446,7 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last) const
 		buffer += seprintf(buffer, last, "-=-=- As you loaded a savegame for which you do not have the required NewGRFs no crash information would ordinarily be generated. -=-=-\n\n");
 	}
 
-	buffer += seprintf(buffer, last, "Crash at: %s", asctime(gmtime(&cur_time)));
+	buffer += UTCTime::Format(buffer, last, "Crash at: %Y-%m-%d %H:%M:%S (UTC)\n");
 
 	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u)\n", _cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, _settings_game.economy.day_length_factor);
 	if (_game_load_time != 0) {
@@ -438,10 +455,13 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last) const
 	}
 	buffer += seprintf(buffer, last, "\n");
 
+	this->FlushCrashLogBuffer();
+
 	buffer = this->LogError(buffer, last, CrashLog::message);
 
 #ifdef USE_SCOPE_INFO
-	if (IsMainThread()) {
+	if (IsMainThread() || IsGameThread()) {
+		this->FlushCrashLogBuffer();
 		buffer += WriteScopeLog(buffer, last);
 	}
 #endif
@@ -453,9 +473,13 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last) const
 	}
 
 	buffer = this->LogOpenTTDVersion(buffer, last);
+	this->FlushCrashLogBuffer();
 	buffer = this->LogStacktrace(buffer, last);
+	this->FlushCrashLogBuffer();
 	buffer = this->LogRegisters(buffer, last);
+	this->FlushCrashLogBuffer();
 	buffer = this->LogOSVersion(buffer, last);
+	this->FlushCrashLogBuffer();
 	buffer = this->LogCompiler(buffer, last);
 	buffer = this->LogOSVersionDetail(buffer, last);
 	buffer = this->LogConfiguration(buffer, last);
@@ -507,6 +531,9 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 		buffer += seprintf(buffer, last, "Last sync at: %i-%02i-%02i (%i, %i)",
 				ymd.year, ymd.month + 1, ymd.day, _last_sync_date_fract, _last_sync_tick_skip_counter);
 	}
+	if (info.client_id >= 0) {
+		buffer += seprintf(buffer, last, "Client #%d, \"%s\"\n", info.client_id, info.client_name != nullptr ? info.client_name : "");
+	}
 	buffer += seprintf(buffer, last, "\n");
 
 	buffer = this->LogOpenTTDVersion(buffer, last);
@@ -521,7 +548,6 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 	buffer = DumpDesyncMsgLog(buffer, last);
 
 	bool have_cache_log = false;
-	extern void CheckCaches(bool force_check, std::function<void(const char *)> log);
 	CheckCaches(true, [&](const char *str) {
 		if (!have_cache_log) buffer += seprintf(buffer, last, "CheckCaches:\n");
 		buffer += seprintf(buffer, last, "  %s\n", str);
@@ -531,6 +557,62 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 	if (have_cache_log) buffer += seprintf(buffer, last, "\n");
 
 	buffer += seprintf(buffer, last, "*** End of OpenTTD Multiplayer %s Desync Report ***\n", _network_server ? "Server" : "Client");
+	return buffer;
+}
+
+/**
+ * Fill the crash log buffer with all data of an inconsistency event.
+ * @param buffer The begin where to write at.
+ * @param last   The last position in the buffer to write to.
+ * @return the position of the \c '\0' character after the buffer.
+ */
+char *CrashLog::FillInconsistencyLog(char *buffer, const char *last, const InconsistencyExtraInfo &info) const
+{
+	time_t cur_time = time(nullptr);
+	buffer += seprintf(buffer, last, "*** OpenTTD Inconsistency Report ***\n\n");
+
+	buffer += seprintf(buffer, last, "Inconsistency at: %s", asctime(gmtime(&cur_time)));
+
+#ifdef USE_SCOPE_INFO
+	buffer += WriteScopeLog(buffer, last);
+#endif
+
+	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u)\n", _cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, _settings_game.economy.day_length_factor);
+	if (_game_load_time != 0) {
+		buffer += seprintf(buffer, last, "Game loaded at: %i-%02i-%02i (%i, %i), %s",
+				_game_load_cur_date_ymd.year, _game_load_cur_date_ymd.month + 1, _game_load_cur_date_ymd.day, _game_load_date_fract, _game_load_tick_skip_counter, asctime(gmtime(&_game_load_time)));
+	}
+	if (_networking && !_network_server) {
+		extern Date   _last_sync_date;
+		extern DateFract _last_sync_date_fract;
+		extern uint8  _last_sync_tick_skip_counter;
+
+		YearMonthDay ymd;
+		ConvertDateToYMD(_last_sync_date, &ymd);
+		buffer += seprintf(buffer, last, "Last sync at: %i-%02i-%02i (%i, %i)",
+				ymd.year, ymd.month + 1, ymd.day, _last_sync_date_fract, _last_sync_tick_skip_counter);
+	}
+	buffer += seprintf(buffer, last, "\n");
+
+	buffer = this->LogOpenTTDVersion(buffer, last);
+	buffer = this->LogOSVersion(buffer, last);
+	buffer = this->LogCompiler(buffer, last);
+	buffer = this->LogOSVersionDetail(buffer, last);
+	buffer = this->LogConfiguration(buffer, last);
+	buffer = this->LogLibraries(buffer, last);
+	buffer = this->LogGamelog(buffer, last);
+	buffer = this->LogRecentNews(buffer, last);
+	buffer = this->LogCommandLog(buffer, last);
+	buffer = DumpDesyncMsgLog(buffer, last);
+
+	if (!info.check_caches_result.empty()) {
+		buffer += seprintf(buffer, last, "CheckCaches:\n");
+		for (const std::string &str : info.check_caches_result) {
+			buffer += seprintf(buffer, last, "  %s\n", str.c_str());
+		}
+	}
+
+	buffer += seprintf(buffer, last, "*** End of OpenTTD Inconsistency Report ***\n");
 	return buffer;
 }
 
@@ -571,7 +653,7 @@ bool CrashLog::WriteCrashLog(const char *buffer, char *filename, const char *fil
 	if (file == nullptr) return false;
 
 	size_t len = strlen(buffer);
-	size_t written = fwrite(buffer, 1, len, file);
+	size_t written = (len != 0) ? fwrite(buffer, 1, len, file) : 0;
 
 	if (crashlog_file) {
 		*crashlog_file = file;
@@ -579,6 +661,23 @@ bool CrashLog::WriteCrashLog(const char *buffer, char *filename, const char *fil
 		FioFCloseFile(file);
 	}
 	return len == written;
+}
+
+void CrashLog::FlushCrashLogBuffer()
+{
+	if (this->crash_buffer_write == nullptr) return;
+
+	size_t len = strlen(this->crash_buffer_write);
+	if (len == 0) return;
+
+	if (this->crash_file != nullptr) {
+		fwrite(this->crash_buffer_write, 1, len, this->crash_file);
+		fflush(this->crash_file);
+	}
+	fwrite(this->crash_buffer_write, 1, len, stdout);
+	fflush(stdout);
+
+	this->crash_buffer_write += len;
 }
 
 /* virtual */ int CrashLog::WriteCrashDump(char *filename, const char *filename_last) const
@@ -631,40 +730,93 @@ bool CrashLog::WriteScreenshot(char *filename, const char *filename_last, const 
 	return res;
 }
 
+#ifdef DEDICATED
+static bool CopyAutosave(const std::string &old_name, const std::string &new_name)
+{
+	FILE *old_fh = FioFOpenFile(old_name, "rb", AUTOSAVE_DIR);
+	if (old_fh == nullptr) return false;
+	auto guard1 = scope_guard([=]() {
+		FioFCloseFile(old_fh);
+	});
+	FILE *new_fh = FioFOpenFile(new_name, "wb", AUTOSAVE_DIR);
+	if (new_fh == nullptr) return false;
+	auto guard2 = scope_guard([=]() {
+		FioFCloseFile(new_fh);
+	});
+
+	char buffer[4096 * 4];
+	size_t length;
+	do {
+		length = fread(buffer, 1, lengthof(buffer), old_fh);
+		if (fwrite(buffer, 1, length, new_fh) != length) {
+			return false;
+		}
+	} while (length == lengthof(buffer));
+	return true;
+}
+#endif
+
 /**
  * Makes the crash log, writes it to a file and then subsequently tries
  * to make a crash dump and crash savegame. It uses DEBUG to write
  * information like paths to the console.
  * @return true when everything is made successfully.
  */
-bool CrashLog::MakeCrashLog()
+bool CrashLog::MakeCrashLog(char *buffer, const char *last)
 {
 	/* Don't keep looping logging crashes. */
 	static bool crashlogged = false;
 	if (crashlogged) return false;
 	crashlogged = true;
 
-	char filename[MAX_PATH];
-	char buffer[65536 * 4];
-	bool ret = true;
-
 	char *name_buffer_date = this->name_buffer + seprintf(this->name_buffer, lastof(this->name_buffer), "crash-");
 	time_t cur_time = time(nullptr);
 	strftime(name_buffer_date, lastof(this->name_buffer) - name_buffer_date, "%Y%m%dT%H%M%SZ", gmtime(&cur_time));
 
+#ifdef DEDICATED
+	if (!_settings_client.gui.keep_all_autosave) {
+		extern FiosNumberedSaveName &GetAutoSaveFiosNumberedSaveName();
+		FiosNumberedSaveName &autosave = GetAutoSaveFiosNumberedSaveName();
+		int num = autosave.GetLastNumber();
+		if (num >= 0) {
+			std::string old_file = autosave.FilenameUsingNumber(num, "");
+			char save_suffix[MAX_PATH];
+			seprintf(save_suffix, lastof(save_suffix), "-(%s)", this->name_buffer);
+			std::string new_file = autosave.FilenameUsingNumber(num, save_suffix);
+			if (CopyAutosave(old_file, new_file)) {
+				printf("Saving copy of last autosave: %s -> %s\n\n", old_file.c_str(), new_file.c_str());
+			}
+		}
+	}
+#endif
+
+	if (!VideoDriver::EmergencyAcquireGameLock(20, 2)) {
+		printf("Failed to acquire gamelock before filling crash log\n\n");
+	}
+
+	char filename[MAX_PATH];
+	bool ret = true;
+
 	printf("Crash encountered, generating crash log...\n");
-	this->FillCrashLog(buffer, lastof(buffer));
-	printf("%s\n", buffer);
-	printf("Crash log generated.\n\n");
 
 	printf("Writing crash log to disk...\n");
-	bool bret = this->WriteCrashLog(buffer, filename, lastof(filename), this->name_buffer);
+	bool bret = this->WriteCrashLog("", filename, lastof(filename), this->name_buffer, &(this->crash_file));
 	if (bret) {
 		printf("Crash log written to %s. Please add this file to any bug reports.\n\n", filename);
 	} else {
 		printf("Writing crash log failed. Please attach the output above to any bug reports.\n\n");
 		ret = false;
 	}
+	this->crash_buffer_write = buffer;
+
+	this->FillCrashLog(buffer, last);
+	this->FlushCrashLogBuffer();
+	if (this->crash_file != nullptr) {
+		FioFCloseFile(this->crash_file);
+		this->crash_file = nullptr;
+	}
+	printf("Crash log generated.\n\n");
+
 
 	/* Don't mention writing crash dumps because not all platforms support it. */
 	int dret = this->WriteCrashDump(filename, lastof(filename));
@@ -679,19 +831,20 @@ bool CrashLog::MakeCrashLog()
 	_savegame_DBGL_data = buffer;
 	_save_DBGC_data = true;
 
-	if (IsNonMainThread()) {
-		printf("Asking main thread to write crash savegame and screenshot...\n\n");
-		CrashLog::main_thread_pending_crashlog = this;
-		_exit_game = true;
-		CSleep(60000);
-		if (!CrashLog::main_thread_pending_crashlog) return ret;
-		printf("Main thread did not write crash savegame and screenshot within 60s, trying it from this thread...\n\n");
+	if (!VideoDriver::EmergencyAcquireGameLock(1000, 5)) {
+		printf("Failed to acquire gamelock before writing crash savegame and screenshot, proceeding without lock as current owner is probably stuck\n\n");
 	}
-	CrashLog::main_thread_pending_crashlog = nullptr;
+
 	bret = CrashLog::MakeCrashSavegameAndScreenshot();
 	if (!bret) ret = false;
 
 	return ret;
+}
+
+bool CrashLog::MakeCrashLogWithStackBuffer()
+{
+	char buffer[65536 * 4];
+	return this->MakeCrashLog(buffer, lastof(buffer));
 }
 
 /**
@@ -703,7 +856,14 @@ bool CrashLog::MakeCrashLog()
 bool CrashLog::MakeDesyncCrashLog(const std::string *log_in, std::string *log_out, const DesyncExtraInfo &info) const
 {
 	char filename[MAX_PATH];
-	char buffer[65536 * 2];
+
+	const size_t length = 65536 * 16;
+	char * const buffer = MallocT<char>(length);
+	auto guard = scope_guard([=]() {
+		free(buffer);
+	});
+	const char * const last = buffer + length - 1;
+
 	bool ret = true;
 
 	const char *mode = _network_server ? "server" : "client";
@@ -714,13 +874,13 @@ bool CrashLog::MakeDesyncCrashLog(const std::string *log_in, std::string *log_ou
 	strftime(name_buffer_date, lastof(name_buffer) - name_buffer_date, "%Y%m%dT%H%M%SZ", gmtime(&cur_time));
 
 	printf("Desync encountered (%s), generating desync log...\n", mode);
-	char *b = this->FillDesyncCrashLog(buffer, lastof(buffer), info);
+	char *b = this->FillDesyncCrashLog(buffer, last, info);
 
 	if (log_out) log_out->assign(buffer);
 
 	if (log_in && !log_in->empty()) {
-		b = strecpy(b, "\n", lastof(buffer), true);
-		b = strecpy(b, log_in->c_str(), lastof(buffer), true);
+		b = strecpy(b, "\n", last, true);
+		b = strecpy(b, log_in->c_str(), last, true);
 	}
 
 	bool bret = this->WriteCrashLog(buffer, filename, lastof(filename), name_buffer, info.log_file);
@@ -743,17 +903,55 @@ bool CrashLog::MakeDesyncCrashLog(const std::string *log_in, std::string *log_ou
 	_savegame_DBGL_data = nullptr;
 	_save_DBGC_data = false;
 
-	if (!(_screen.width < 1 || _screen.height < 1 || _screen.dst_ptr == nullptr)) {
-		SetScreenshotAuxiliaryText("Desync Log", buffer);
-		bret = this->WriteScreenshot(filename, lastof(filename), name_buffer);
-		if (bret) {
-			printf("Desync screenshot written to %s. Please add this file to any bug reports.\n\n", filename);
-		} else {
-			ret = false;
-			printf("Writing desync screenshot failed.\n\n");
-		}
-		ClearScreenshotAuxiliaryText();
+	return ret;
+}
+
+/**
+ * Makes an inconsistency log, writes it to a file and then subsequently tries
+ * to make a crash savegame. It uses DEBUG to write
+ * information like paths to the console.
+ * @return true when everything is made successfully.
+ */
+bool CrashLog::MakeInconsistencyLog(const InconsistencyExtraInfo &info) const
+{
+	char filename[MAX_PATH];
+
+	const size_t length = 65536 * 16;
+	char * const buffer = MallocT<char>(length);
+	auto guard = scope_guard([=]() {
+		free(buffer);
+	});
+	const char * const last = buffer + length - 1;
+
+	bool ret = true;
+
+	char name_buffer[64];
+	char *name_buffer_date = name_buffer + seprintf(name_buffer, lastof(name_buffer), "inconsistency-");
+	time_t cur_time = time(nullptr);
+	strftime(name_buffer_date, lastof(name_buffer) - name_buffer_date, "%Y%m%dT%H%M%SZ", gmtime(&cur_time));
+
+	printf("Inconsistency encountered, generating diagnostics log...\n");
+	this->FillInconsistencyLog(buffer, last, info);
+
+	bool bret = this->WriteCrashLog(buffer, filename, lastof(filename), name_buffer);
+	if (bret) {
+		printf("Inconsistency log written to %s. Please add this file to any bug reports.\n\n", filename);
+	} else {
+		printf("Writing inconsistency log failed.\n\n");
+		ret = false;
 	}
+
+	_savegame_DBGL_data = buffer;
+	_save_DBGC_data = true;
+	bret = this->WriteSavegame(filename, lastof(filename), name_buffer);
+	if (bret) {
+		printf("info savegame written to %s. Please add this file and the last (auto)save to any bug reports.\n\n", filename);
+	} else {
+		ret = false;
+		printf("Writing inconsistency savegame failed. Please attach the last (auto)save to any bug reports.\n\n");
+	}
+	_savegame_DBGL_data = nullptr;
+	_save_DBGC_data = false;
 
 	return ret;
 }
@@ -800,18 +998,6 @@ bool CrashLog::MakeCrashSavegameAndScreenshot() const
 	}
 
 	return ret;
-}
-
-/* static */ void CrashLog::MainThreadExitCheckPendingCrashlog()
-{
-	const CrashLog *cl = CrashLog::main_thread_pending_crashlog;
-	if (cl) {
-		CrashLog::main_thread_pending_crashlog = nullptr;
-		cl->MakeCrashSavegameAndScreenshot();
-
-		CrashLog::AfterCrashLogCleanup();
-		abort();
-	}
 }
 
 /**

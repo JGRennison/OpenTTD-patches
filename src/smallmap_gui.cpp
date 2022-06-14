@@ -23,6 +23,9 @@
 #include "company_base.h"
 #include "screenshot.h"
 #include "guitimer_func.h"
+#include "zoom_func.h"
+#include "object_map.h"
+#include "newgrf_object.h"
 
 #include "smallmap_colours.h"
 #include "smallmap_gui.h"
@@ -162,6 +165,33 @@ static bool _smallmap_industry_highlight_state;
 /** For connecting company ID to position in owner list (small map legend) */
 uint _company_to_list_pos[MAX_COMPANIES];
 
+static void NotifyAllViewports(ViewportMapType map_type)
+{
+	for (Window *w : Window::IterateFromBack()) {
+		if (w->viewport != nullptr) {
+			if (w->viewport->zoom >= ZOOM_LVL_DRAW_MAP && w->viewport->map_type == map_type) {
+				ClearViewportLandPixelCache(w->viewport);
+				w->InvalidateData();
+			}
+		}
+	}
+}
+
+void UpdateSmallMapSelectedIndustries()
+{
+	extern const std::bitset<NUM_INDUSTRYTYPES> &GetIndustryLinkDisplayIndustries();
+	const std::bitset<NUM_INDUSTRYTYPES> &displayed_industries = GetIndustryLinkDisplayIndustries();
+	for (int i = 0; i != _smallmap_industry_count; i++) {
+		_legend_from_industries[i].show_on_map = displayed_industries.test(_legend_from_industries[i].type);
+	}
+
+	NotifyAllViewports(VPMT_INDUSTRY);
+
+	/* Only notify the smallmap window if it exists. In particular, do not
+	 * bring it to the front to prevent messing up any nice layout of the user. */
+	InvalidateWindowClassesData(WC_SMALLMAP, 0);
+}
+
 /**
  * Fills an array for the industries legends.
  */
@@ -272,12 +302,12 @@ void BuildLandLegend()
 	/* Table for delta; if max_height is less than the first column, use the second column as value. */
 	uint deltas[][2] = { { 24, 2 }, { 48, 4 }, { 72, 6 }, { 120, 10 }, { 180, 15 }, { 240, 20 }, { MAX_TILE_HEIGHT + 1, 25 }};
 	uint i = 0;
-	for (; _settings_game.construction.max_heightlevel >= deltas[i][0]; i++) {
+	for (; _settings_game.construction.map_height_limit >= deltas[i][0]; i++) {
 		/* Nothing to do here. */
 	}
 	uint delta = deltas[i][1];
 
-	int total_entries = (_settings_game.construction.max_heightlevel / delta) + 1;
+	int total_entries = (_settings_game.construction.map_height_limit / delta) + 1;
 	int rows = CeilDiv(total_entries, 2);
 	int j = 0;
 
@@ -318,6 +348,41 @@ void BuildOwnerLegend()
 	_smallmap_company_count = i;
 }
 
+static TileType GetSmallMapTileType(TileIndex tile, TileType t)
+{
+	if (t == MP_OBJECT && GetObjectHasViewportMapViewOverride(tile)) {
+		ObjectViewportMapType vmtype = OVMT_DEFAULT;
+		const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
+		if (spec->ctrl_flags & OBJECT_CTRL_FLAG_VPORT_MAP_TYPE) vmtype = spec->vport_map_type;
+		if (vmtype == OVMT_CLEAR && spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) {
+			if (IsTileOnWater(tile) && GetObjectGroundType(tile) != OBJECT_GROUND_SHORE) {
+				vmtype = OVMT_WATER;
+			}
+		}
+		switch (vmtype) {
+			case OVMT_DEFAULT:
+				break;
+
+			case OVMT_TREES:
+				t = MP_TREES;
+				break;
+
+			case OVMT_HOUSE:
+				t = MP_HOUSE;
+				break;
+
+			case OVMT_WATER:
+				t = MP_WATER;
+				break;
+
+			default:
+				t = MP_CLEAR;
+				break;
+		}
+	}
+	return t;
+}
+
 /**
  * Return the colour a tile would be displayed with in the small map in mode "Contour".
  * @param tile The tile of which we would like to get the colour.
@@ -327,7 +392,7 @@ void BuildOwnerLegend()
 static inline uint32 GetSmallMapContoursPixels(TileIndex tile, TileType t)
 {
 	const SmallMapColourScheme *cs = &_heightmap_schemes[_settings_client.gui.smallmap_land_colour];
-	return ApplyMask(cs->height_colours[TileHeight(tile)], &_smallmap_contours_andor[t]);
+	return ApplyMask(cs->height_colours[TileHeight(tile)], &_smallmap_contours_andor[GetSmallMapTileType(tile, t)]);
 }
 
 /**
@@ -340,7 +405,7 @@ static inline uint32 GetSmallMapContoursPixels(TileIndex tile, TileType t)
 static inline uint32 GetSmallMapVehiclesPixels(TileIndex tile, TileType t)
 {
 	const SmallMapColourScheme *cs = &_heightmap_schemes[_settings_client.gui.smallmap_land_colour];
-	return ApplyMask(cs->default_colour, &_smallmap_vehicles_andor[t]);
+	return ApplyMask(cs->default_colour, &_smallmap_vehicles_andor[GetSmallMapTileType(tile, t)]);
 }
 
 /**
@@ -353,7 +418,7 @@ static inline uint32 GetSmallMapVehiclesPixels(TileIndex tile, TileType t)
 static inline uint32 GetSmallMapIndustriesPixels(TileIndex tile, TileType t)
 {
 	const SmallMapColourScheme *cs = &_heightmap_schemes[_settings_client.gui.smallmap_land_colour];
-	return ApplyMask(_smallmap_show_heightmap ? cs->height_colours[TileHeight(tile)] : cs->default_colour, &_smallmap_vehicles_andor[t]);
+	return ApplyMask(_smallmap_show_heightmap ? cs->height_colours[TileHeight(tile)] : cs->default_colour, &_smallmap_vehicles_andor[GetSmallMapTileType(tile, t)]);
 }
 
 /**
@@ -408,7 +473,7 @@ static inline uint32 GetSmallMapRoutesPixels(TileIndex tile, TileType t)
 		default:
 			/* Ground colour */
 			const SmallMapColourScheme *cs = &_heightmap_schemes[_settings_client.gui.smallmap_land_colour];
-			return ApplyMask(cs->default_colour, &_smallmap_contours_andor[t]);
+			return ApplyMask(cs->default_colour, &_smallmap_contours_andor[GetSmallMapTileType(tile, t)]);
 	}
 }
 
@@ -450,6 +515,73 @@ static inline uint32 GetSmallMapVegetationPixels(TileIndex tile, TileType t)
 			}
 			return (GetTropicZone(tile) == TROPICZONE_RAINFOREST) ? MKCOLOUR_XYYX(PC_RAINFOREST, PC_TREES) : MKCOLOUR_XYYX(PC_GRASS_LAND, PC_TREES);
 
+		case MP_OBJECT: {
+			if (!GetObjectHasViewportMapViewOverride(tile)) return ApplyMask(MKCOLOUR_XXXX(PC_GRASS_LAND), &_smallmap_vehicles_andor[t]);
+			ObjectViewportMapType vmtype = OVMT_DEFAULT;
+			const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
+			if (spec->ctrl_flags & OBJECT_CTRL_FLAG_VPORT_MAP_TYPE) vmtype = spec->vport_map_type;
+
+			switch (vmtype) {
+				case OVMT_CLEAR:
+					if (spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) {
+						if (IsTileOnWater(tile) && GetObjectGroundType(tile) != OBJECT_GROUND_SHORE) {
+							t = MP_WATER;
+						} else {
+							switch (GetObjectGroundType(tile)) {
+								case OBJECT_GROUND_GRASS:
+									if (GetObjectGroundDensity(tile) < 3) return MKCOLOUR_XXXX(PC_BARE_LAND);
+									if (GetTropicZone(tile) == TROPICZONE_RAINFOREST) return MKCOLOUR_XXXX(PC_RAINFOREST);
+									return _vegetation_clear_bits[CLEAR_GRASS];
+
+								case OBJECT_GROUND_SNOW_DESERT:
+									return _vegetation_clear_bits[_settings_game.game_creation.landscape == LT_TROPIC ? CLEAR_DESERT : CLEAR_SNOW];
+
+								case OBJECT_GROUND_SHORE:
+									t = MP_WATER;
+									break;
+
+								default:
+									/* This should never be reached, just draw as normal as a fallback */
+									break;
+							}
+						}
+					} else {
+						return MKCOLOUR_XXXX(PC_BARE_LAND);
+					}
+					break;
+				case OVMT_GRASS:
+					if (GetTropicZone(tile) == TROPICZONE_RAINFOREST) return MKCOLOUR_XXXX(PC_RAINFOREST);
+					return _vegetation_clear_bits[CLEAR_GRASS];
+				case OVMT_ROUGH:
+					return _vegetation_clear_bits[CLEAR_ROUGH];
+				case OVMT_ROCKS:
+					return _vegetation_clear_bits[CLEAR_ROCKS];
+				case OVMT_FIELDS:
+					return _vegetation_clear_bits[CLEAR_FIELDS];
+				case OVMT_SNOW:
+					return _vegetation_clear_bits[CLEAR_SNOW];
+				case OVMT_DESERT:
+					return _vegetation_clear_bits[CLEAR_DESERT];
+				case OVMT_TREES: {
+					const TreeGround tg = (TreeGround)GB(spec->vport_map_subtype, 0, 4);
+					if (tg == TREE_GROUND_SNOW_DESERT || tg == TREE_GROUND_ROUGH_SNOW) {
+						return (_settings_game.game_creation.landscape == LT_ARCTIC) ? MKCOLOUR_XYYX(PC_LIGHT_BLUE, PC_TREES) : MKCOLOUR_XYYX(PC_ORANGE, PC_TREES);
+					}
+					return (GetTropicZone(tile) == TROPICZONE_RAINFOREST) ? MKCOLOUR_XYYX(PC_RAINFOREST, PC_TREES) : MKCOLOUR_XYYX(PC_GRASS_LAND, PC_TREES);
+				}
+				case OVMT_HOUSE:
+					t = MP_HOUSE;
+					break;
+				case OVMT_WATER:
+					t = MP_WATER;
+					break;
+
+				default:
+					break;
+			}
+			return ApplyMask(MKCOLOUR_XXXX(PC_GRASS_LAND), &_smallmap_vehicles_andor[t]);
+		}
+
 		default:
 			return ApplyMask(MKCOLOUR_XXXX(PC_GRASS_LAND), &_smallmap_vehicles_andor[t]);
 	}
@@ -485,18 +617,6 @@ static inline uint32 GetSmallMapOwnerPixels(TileIndex tile, TileType t)
 	}
 
 	return MKCOLOUR_XXXX(_legend_land_owners[_company_to_list_pos[o]].colour);
-}
-
-static void NotifyAllViewports(ViewportMapType map_type)
-{
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
-		if (w->viewport != nullptr)
-			if (w->viewport->zoom >= ZOOM_LVL_DRAW_MAP && w->viewport->map_type == map_type) {
-				ClearViewportLandPixelCache(w->viewport);
-				w->InvalidateData();
-			}
-	}
 }
 
 /** Vehicle colours in #SMT_VEHICLES mode. Indexed by #VehicleType. */
@@ -662,7 +782,7 @@ inline uint32 SmallMapWindow::GetTileColours(const TileArea &ta) const
 	TileIndex tile = INVALID_TILE; // Position of the most important tile.
 	TileType et = MP_VOID;         // Effective tile type at that position.
 
-	TILE_AREA_LOOP(ti, ta) {
+	for (TileIndex ti : ta) {
 		TileType ttype = GetTileType(ti);
 
 		switch (ttype) {
@@ -1017,11 +1137,11 @@ SmallMapWindow::~SmallMapWindow()
 void SmallMapWindow::RebuildColourIndexIfNecessary()
 {
 	/* Rebuild colour indices if necessary. */
-	if (SmallMapWindow::max_heightlevel == _settings_game.construction.max_heightlevel) return;
+	if (SmallMapWindow::map_height_limit == _settings_game.construction.map_height_limit) return;
 
 	for (uint n = 0; n < lengthof(_heightmap_schemes); n++) {
 		/* The heights go from 0 up to and including maximum. */
-		int heights = _settings_game.construction.max_heightlevel + 1;
+		int heights = _settings_game.construction.map_height_limit + 1;
 		_heightmap_schemes[n].height_colours = ReallocT<uint32>(_heightmap_schemes[n].height_colours, heights);
 
 		for (int z = 0; z < heights; z++) {
@@ -1032,7 +1152,7 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 		}
 	}
 
-	SmallMapWindow::max_heightlevel = _settings_game.construction.max_heightlevel;
+	SmallMapWindow::map_height_limit = _settings_game.construction.map_height_limit;
 	BuildLandLegend();
 }
 
@@ -1091,8 +1211,11 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 		this->min_number_of_columns = std::max(this->min_number_of_columns, num_columns);
 	}
 
+	/* Width of the legend blob. */
+	this->legend_width = (FONT_HEIGHT_SMALL - ScaleFontTrad(1)) * 8 / 5;
+
 	/* The width of a column is the minimum width of all texts + the size of the blob + some spacing */
-	this->column_width = min_width + LEGEND_BLOB_WIDTH + WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
+	this->column_width = min_width + this->legend_width + WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
 }
 
 /* virtual */ void SmallMapWindow::OnPaint()
@@ -1130,11 +1253,12 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 			uint y = y_org;
 			uint i = 0; // Row counter for industry legend.
 			uint row_height = FONT_HEIGHT_SMALL;
+			int padding = ScaleFontTrad(1);
 
-			uint text_left  = rtl ? 0 : LEGEND_BLOB_WIDTH + WD_FRAMERECT_LEFT;
-			uint text_right = this->column_width - 1 - (rtl ? LEGEND_BLOB_WIDTH + WD_FRAMERECT_RIGHT : 0);
-			uint blob_left  = rtl ? this->column_width - 1 - LEGEND_BLOB_WIDTH : 0;
-			uint blob_right = rtl ? this->column_width - 1 : LEGEND_BLOB_WIDTH;
+			uint text_left  = rtl ? 0 : this->legend_width + WD_FRAMERECT_LEFT;
+			uint text_right = this->column_width - padding - (rtl ? this->legend_width + WD_FRAMERECT_RIGHT : 0);
+			uint blob_left  = rtl ? this->column_width - padding - this->legend_width : 0;
+			uint blob_right = rtl ? this->column_width - padding : this->legend_width;
 
 			StringID string = STR_NULL;
 			switch (this->map_type) {
@@ -1186,7 +1310,7 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 								DrawString(x + text_left, x + text_right, y, string, TC_GREY);
 							} else {
 								DrawString(x + text_left, x + text_right, y, string, TC_BLACK);
-								GfxFillRect(x + blob_left, y + 1, x + blob_right, y + row_height - 1, PC_BLACK); // Outer border of the legend colour
+								GfxFillRect(x + blob_left, y + padding, x + blob_right, y + row_height - 1, PC_BLACK); // Outer border of the legend colour
 							}
 							break;
 						}
@@ -1195,11 +1319,11 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 					default:
 						if (this->map_type == SMT_CONTOUR) SetDParam(0, tbl->height * TILE_HEIGHT_STEP);
 						/* Anything that is not an industry or a company is using normal process */
-						GfxFillRect(x + blob_left, y + 1, x + blob_right, y + row_height - 1, PC_BLACK);
+						GfxFillRect(x + blob_left, y + padding, x + blob_right, y + row_height - 1, PC_BLACK);
 						DrawString(x + text_left, x + text_right, y, tbl->legend);
 						break;
 				}
-				GfxFillRect(x + blob_left + 1, y + 2, x + blob_right - 1, y + row_height - 2, legend_colour); // Legend colour
+				GfxFillRect(x + blob_left + 1, y + padding + 1, x + blob_right - 1, y + row_height - 2, legend_colour); // Legend colour
 
 				y += row_height;
 			}
@@ -1346,8 +1470,8 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 		case WID_SM_ZOOM_IN:
 		case WID_SM_ZOOM_OUT: {
 			const NWidgetBase *wid = this->GetWidget<NWidgetBase>(WID_SM_MAP);
-			Point pt = { (int)wid->current_x / 2, (int)wid->current_y / 2};
-			this->SetZoomLevel((widget == WID_SM_ZOOM_IN) ? ZLC_ZOOM_IN : ZLC_ZOOM_OUT, &pt);
+			Point zoom_pt = { (int)wid->current_x / 2, (int)wid->current_y / 2};
+			this->SetZoomLevel((widget == WID_SM_ZOOM_IN) ? ZLC_ZOOM_IN : ZLC_ZOOM_OUT, &zoom_pt);
 			if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 			break;
 		}
@@ -1463,12 +1587,7 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 			break;
 
 		case 0: {
-			extern std::bitset<NUM_INDUSTRYTYPES> _displayed_industries;
 			if (this->map_type != SMT_INDUSTRY) this->SwitchMapType(SMT_INDUSTRY);
-
-			for (int i = 0; i != _smallmap_industry_count; i++) {
-				_legend_from_industries[i].show_on_map = _displayed_industries.test(_legend_from_industries[i].type);
-			}
 			break;
 		}
 
@@ -1706,7 +1825,7 @@ void SmallMapWindow::ScreenshotCallbackHandler(void *buf, uint y, uint pitch, ui
 
 SmallMapWindow::SmallMapType SmallMapWindow::map_type = SMT_CONTOUR;
 bool SmallMapWindow::show_towns = true;
-int SmallMapWindow::max_heightlevel = -1;
+int SmallMapWindow::map_height_limit = -1;
 
 /**
  * Custom container class for displaying smallmap with a vertically resizing legend panel.

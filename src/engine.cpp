@@ -67,12 +67,6 @@ static_assert(lengthof(_orig_rail_vehicle_info) + lengthof(_orig_road_vehicle_in
 
 const uint EngineOverrideManager::NUM_DEFAULT_ENGINES = _engine_counts[VEH_TRAIN] + _engine_counts[VEH_ROAD] + _engine_counts[VEH_SHIP] + _engine_counts[VEH_AIRCRAFT];
 
-Engine::Engine() :
-	overrides_count(0),
-	overrides(nullptr)
-{
-}
-
 Engine::Engine(VehicleType type, EngineID base)
 {
 	this->type = type;
@@ -135,11 +129,6 @@ Engine::Engine(VehicleType type, EngineID base)
 			this->info.string_id = STR_VEHICLE_NAME_AIRCRAFT_SAMPSON_U52 + base;
 			break;
 	}
-}
-
-Engine::~Engine()
-{
-	UnloadWagonOverrides(this);
 }
 
 /**
@@ -218,7 +207,19 @@ uint Engine::DetermineCapacity(const Vehicle *v, uint16 *mail_capacity) const
 	/* Check the refit capacity callback if we are not in the default configuration, or if we are using the new multiplier algorithm. */
 	if (HasBit(this->info.callback_mask, CBM_VEHICLE_REFIT_CAPACITY) &&
 			(new_multipliers || default_cargo != cargo_type || (v != nullptr && v->cargo_subtype != 0))) {
-		uint16 callback = GetVehicleCallback(CBID_VEHICLE_REFIT_CAPACITY, 0, 0, this->index, v);
+		uint16 callback;
+		if (this->refit_capacity_values != nullptr) {
+			const EngineRefitCapacityValue *caps = this->refit_capacity_values.get();
+			while (true) {
+				if (HasBit(caps->cargoes, cargo_type)) {
+					callback = caps->capacity;
+					break;
+				}
+				caps++;
+			}
+		} else {
+			callback = GetVehicleCallback(CBID_VEHICLE_REFIT_CAPACITY, 0, 0, this->index, v);
+		}
 		if (callback != CALLBACK_FAILED) return callback;
 	}
 
@@ -558,7 +559,7 @@ void SetupEngines()
 		/* Assert is safe; there won't be more than 256 original vehicles
 		 * in any case, and we just cleaned the pool. */
 		assert(Engine::CanAllocateItem());
-		const Engine *e = new Engine(eid.type, eid.internal_id);
+		[[maybe_unused]] const Engine *e = new Engine(eid.type, eid.internal_id);
 		assert(e->index == index);
 		index++;
 	}
@@ -750,11 +751,9 @@ static void EnableEngineForCompany(EngineID eid, CompanyID company)
 
 	SetBit(e->company_avail, company);
 	if (e->type == VEH_TRAIN) {
-		assert(e->u.rail.railtype < RAILTYPE_END);
-		c->avail_railtypes = AddDateIntroducedRailTypes(c->avail_railtypes | GetRailTypeInfo(e->u.rail.railtype)->introduces_railtypes, _date);
+		c->avail_railtypes = GetCompanyRailtypes(c->index);
 	} else if (e->type == VEH_ROAD) {
-		assert(e->u.road.roadtype < ROADTYPE_END);
-		c->avail_roadtypes = AddDateIntroducedRoadTypes(c->avail_roadtypes | GetRoadTypeInfo(e->u.road.roadtype)->introduces_roadtypes, _date);
+		c->avail_roadtypes = GetCompanyRoadTypes(c->index);
 	}
 
 	if (company == _local_company) {
@@ -1032,8 +1031,7 @@ static void NewVehicleAvailable(Engine *e)
 
 	if (e->type == VEH_TRAIN) {
 		/* maybe make another rail type available */
-		RailType railtype = e->u.rail.railtype;
-		assert(railtype < RAILTYPE_END);
+		assert(e->u.rail.railtype < RAILTYPE_END);
 		for (Company *c : Company::Iterate()) c->avail_railtypes = AddDateIntroducedRailTypes(c->avail_railtypes | GetRailTypeInfo(e->u.rail.railtype)->introduces_railtypes, _date);
 	} else if (e->type == VEH_ROAD) {
 		/* maybe make another road type available */

@@ -272,26 +272,26 @@ void AfterLoadVehicles(bool part_of_load)
 
 		for (Vehicle *v : Vehicle::Iterate()) {
 			si_v = v;
-			if (v->orders.old != nullptr) {
+			if (v->old_orders != nullptr) {
 				if (IsSavegameVersionBefore(SLV_105)) { // Pre-105 didn't save an OrderList
-					if (mapping[v->orders.old] == nullptr) {
+					if (mapping[v->old_orders] == nullptr) {
 						/* This adds the whole shared vehicle chain for case b */
 
 						/* Creating an OrderList here is safe because the number of vehicles
 						 * allowed in these savegames matches the number of OrderLists. As
 						 * such each vehicle can get an OrderList and it will (still) fit. */
 						assert(OrderList::CanAllocateItem());
-						v->orders.list = mapping[v->orders.old] = new OrderList(v->orders.old, v);
+						v->orders = mapping[v->old_orders] = new OrderList(v->old_orders, v);
 					} else {
-						v->orders.list = mapping[v->orders.old];
+						v->orders = mapping[v->old_orders];
 						/* For old games (case a) we must create the shared vehicle chain */
 						if (IsSavegameVersionBefore(SLV_5, 2)) {
-							v->AddToShared(v->orders.list->GetFirstSharedVehicle());
+							v->AddToShared(v->orders->GetFirstSharedVehicle());
 						}
 					}
 				} else { // OrderList was saved as such, only recalculate not saved values
 					if (v->PreviousShared() == nullptr) {
-						v->orders.list->Initialize(v->orders.list->first, v);
+						v->orders->Initialize(v->orders->first, v);
 					}
 				}
 			}
@@ -313,13 +313,13 @@ void AfterLoadVehicles(bool part_of_load)
 			/* Before 105 there was no order for shared orders, thus it messed up horribly */
 			for (Vehicle *v : Vehicle::Iterate()) {
 				si_v = v;
-				if (v->First() != v || v->orders.list != nullptr || v->previous_shared != nullptr || v->next_shared == nullptr) continue;
+				if (v->First() != v || v->orders != nullptr || v->previous_shared != nullptr || v->next_shared == nullptr) continue;
 
 				/* As above, allocating OrderList here is safe. */
 				assert(OrderList::CanAllocateItem());
-				v->orders.list = new OrderList(nullptr, v);
+				v->orders = new OrderList(nullptr, v);
 				for (Vehicle *u = v; u != nullptr; u = u->next_shared) {
-					u->orders.list = v->orders.list;
+					u->orders = v->orders;
 				}
 			}
 		}
@@ -616,7 +616,7 @@ static uint32 _old_ahead_separation;
  * @param vt the vehicle type. Can be VEH_END for the common vehicle description data
  * @return the saveload description
  */
-const SaveLoad *GetVehicleDescription(VehicleType vt)
+SaveLoadTable GetVehicleDescription(VehicleType vt)
 {
 	/** Save and load of vehicles */
 	static const SaveLoad _common_veh_desc[] = {
@@ -674,11 +674,11 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 
 		     SLE_VAR(Vehicle, day_counter,           SLE_UINT8),
 		     SLE_VAR(Vehicle, tick_counter,          SLE_UINT8),
-		SLE_CONDVAR_X(Vehicle, running_ticks,        SLE_FILE_U8  | SLE_VAR_U16,  SLV_88, SL_MAX_VERSION, SlXvFeatureTest([](uint16 version, bool version_in_range) -> bool {
-			return version_in_range && !(SlXvIsFeaturePresent(XSLFI_SPRINGPP, 3) || SlXvIsFeaturePresent(XSLFI_JOKERPP) || SlXvIsFeaturePresent(XSLFI_CHILLPP) || SlXvIsFeaturePresent(XSLFI_VARIABLE_DAY_LENGTH, 2));
+		SLE_CONDVAR_X(Vehicle, running_ticks,        SLE_FILE_U8  | SLE_VAR_U16,  SLV_88, SL_MAX_VERSION, SlXvFeatureTest([](uint16 version, bool version_in_range, uint16 feature_versions[XSLFI_SIZE]) -> bool {
+			return version_in_range && !(SlXvIsFeaturePresent(feature_versions, XSLFI_SPRINGPP, 3) || SlXvIsFeaturePresent(feature_versions, XSLFI_JOKERPP) || SlXvIsFeaturePresent(feature_versions, XSLFI_CHILLPP) || SlXvIsFeaturePresent(feature_versions, XSLFI_VARIABLE_DAY_LENGTH, 2));
 		})),
-		SLE_CONDVAR_X(Vehicle, running_ticks,        SLE_UINT16,                  SLV_88, SL_MAX_VERSION, SlXvFeatureTest([](uint16 version, bool version_in_range) -> bool {
-			return version_in_range && (SlXvIsFeaturePresent(XSLFI_SPRINGPP, 2) || SlXvIsFeaturePresent(XSLFI_JOKERPP) || SlXvIsFeaturePresent(XSLFI_CHILLPP) || SlXvIsFeaturePresent(XSLFI_VARIABLE_DAY_LENGTH, 2));
+		SLE_CONDVAR_X(Vehicle, running_ticks,        SLE_UINT16,                  SLV_88, SL_MAX_VERSION, SlXvFeatureTest([](uint16 version, bool version_in_range, uint16 feature_versions[XSLFI_SIZE]) -> bool {
+			return version_in_range && (SlXvIsFeaturePresent(feature_versions, XSLFI_SPRINGPP, 2) || SlXvIsFeaturePresent(feature_versions, XSLFI_JOKERPP) || SlXvIsFeaturePresent(feature_versions, XSLFI_CHILLPP) || SlXvIsFeaturePresent(feature_versions, XSLFI_VARIABLE_DAY_LENGTH, 2));
 		})),
 
 		     SLE_VAR(Vehicle, cur_implicit_order_index,   SLE_VEHORDERID),
@@ -738,8 +738,9 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 
 		     SLE_VAR(Vehicle, load_unload_ticks,     SLE_UINT16),
 		SLEG_CONDVAR(         _cargo_paid_for,       SLE_UINT16,                  SLV_45, SL_MAX_VERSION),
-		 SLE_CONDVAR(Vehicle, vehicle_flags,         SLE_FILE_U8 | SLE_VAR_U16,   SLV_40, SLV_180),
-		 SLE_CONDVAR(Vehicle, vehicle_flags,         SLE_UINT16,                 SLV_180, SL_MAX_VERSION),
+		 SLE_CONDVAR(Vehicle, vehicle_flags,         SLE_FILE_U8  | SLE_VAR_U32,  SLV_40, SLV_180),
+		SLE_CONDVAR_X(Vehicle, vehicle_flags,        SLE_FILE_U16 | SLE_VAR_U32,          SLV_180, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VEHICLE_FLAGS_EXTRA, 0, 0)),
+		SLE_CONDVAR_X(Vehicle, vehicle_flags,        SLE_UINT32,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VEHICLE_FLAGS_EXTRA, 1)),
 
 		 SLE_CONDVAR(Vehicle, profit_this_year,      SLE_FILE_I32 | SLE_VAR_I64,   SL_MIN_VERSION,  SLV_65),
 		 SLE_CONDVAR(Vehicle, profit_this_year,      SLE_INT64,                   SLV_65, SL_MAX_VERSION),
@@ -780,10 +781,7 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		SLE_CONDNULL_X(2, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP)),
 
 		SLE_CONDNULL_X(160, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP)),
-
-		     SLE_END()
 	};
-
 
 	static const SaveLoad _train_desc[] = {
 		SLE_WRITEBYTE(Vehicle, type),
@@ -807,9 +805,8 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		SLE_CONDNULL(11, SLV_2, SLV_144), // old reserved space
 		SLE_CONDVAR_X(Train, reverse_distance,    SLE_UINT16,         SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REVERSE_AT_WAYPOINT)),
 		SLE_CONDVAR_X(Train, speed_restriction,   SLE_UINT16,         SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPEED_RESTRICTION)),
+		SLE_CONDVAR_X(Train, signal_speed_restriction, SLE_UINT16,    SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TRAIN_SPEED_ADAPTATION)),
 		SLE_CONDVAR_X(Train, critical_breakdown_count, SLE_UINT8,     SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_IMPROVED_BREAKDOWNS, 2)),
-
-		     SLE_END()
 	};
 
 	static const SaveLoad _roadveh_desc[] = {
@@ -832,8 +829,6 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		 SLE_CONDNULL(2,                                                               SLV_6, SLV_131),
 		 SLE_CONDNULL(16,                                                              SLV_2, SLV_144), // old reserved space
 		SLE_CONDVAR_X(RoadVehicle, critical_breakdown_count, SLE_UINT8,       SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_IMPROVED_BREAKDOWNS, 6)),
-
-		      SLE_END()
 	};
 
 	static const SaveLoad _ship_desc[] = {
@@ -843,10 +838,9 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		SLE_CONDDEQUE(Ship, path,                      SLE_UINT8,                  SLV_SHIP_PATH_CACHE, SL_MAX_VERSION),
 		  SLE_CONDVAR(Ship, rotation,                  SLE_UINT8,                  SLV_SHIP_ROTATION, SL_MAX_VERSION),
 		SLE_CONDVAR_X(Ship, lost_count,                SLE_UINT8,                     SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SHIP_LOST_COUNTER)),
+		SLE_CONDVAR_X(Ship, critical_breakdown_count,  SLE_UINT8,                     SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_IMPROVED_BREAKDOWNS, 8)),
 
 		SLE_CONDNULL(16, SLV_2, SLV_144), // old reserved space
-
-		     SLE_END()
 	};
 
 	static const SaveLoad _aircraft_desc[] = {
@@ -870,8 +864,6 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		 SLE_CONDVAR(Aircraft, flags,                 SLE_UINT8,                  SLV_167, SL_MAX_VERSION),
 
 		SLE_CONDNULL(13,                                                           SLV_2, SLV_144), // old reserved space
-
-		     SLE_END()
 	};
 
 	static const SaveLoad _special_desc[] = {
@@ -902,8 +894,6 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		 SLE_CONDVAR(Vehicle, spritenum,             SLE_UINT8,                    SLV_2, SL_MAX_VERSION),
 
 		SLE_CONDNULL(15,                                                           SLV_2, SLV_144), // old reserved space
-
-		     SLE_END()
 	};
 
 	static const SaveLoad _disaster_desc[] = {
@@ -945,12 +935,10 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		 SLE_CONDVAR(DisasterVehicle, flags,                     SLE_UINT8,                  SLV_194, SL_MAX_VERSION),
 
 		SLE_CONDNULL(16,                                                           SLV_2, SLV_144), // old reserved space
-
-		     SLE_END()
 	};
 
 
-	static const SaveLoad * const _veh_descs[] = {
+	static const SaveLoadTable _veh_descs[] = {
 		_train_desc,
 		_roadveh_desc,
 		_ship_desc,
@@ -979,9 +967,9 @@ static std::vector<SaveLoad> * const _filtered_veh_descs[] = {
 	&_filtered_disaster_desc,
 };
 
-const SaveLoad *GetVehicleDescriptionFiltered(VehicleType vt)
+const SaveLoadTable GetVehicleDescriptionFiltered(VehicleType vt)
 {
-	return _filtered_veh_descs[vt]->data();
+	return *(_filtered_veh_descs[vt]);
 }
 
 static void SetupDescs_VEHS()
@@ -1076,7 +1064,7 @@ static void Ptrs_VEHS()
 	}
 }
 
-const SaveLoad *GetOrderExtraInfoDescription();
+const SaveLoadTable GetOrderExtraInfoDescription();
 
 void Save_VEOX()
 {
@@ -1101,14 +1089,13 @@ void Load_VEOX()
 	}
 }
 
-const SaveLoad *GetVehicleSpeedRestrictionDescription()
+const SaveLoadTable GetVehicleSpeedRestrictionDescription()
 {
 	static const SaveLoad _vehicle_speed_restriction_desc[] = {
 		     SLE_VAR(PendingSpeedRestrictionChange, distance,                 SLE_UINT16),
 		     SLE_VAR(PendingSpeedRestrictionChange, new_speed,                SLE_UINT16),
 		     SLE_VAR(PendingSpeedRestrictionChange, prev_speed,               SLE_UINT16),
 		     SLE_VAR(PendingSpeedRestrictionChange, flags,                    SLE_UINT16),
-		SLE_END()
 	};
 
 	return _vehicle_speed_restriction_desc;
@@ -1146,7 +1133,8 @@ struct vehicle_venc {
 struct train_venc {
 	VehicleID id;
 	GroundVehicleCache gvcache;
-	bool cached_tilt;
+	int cached_curve_speed_mod;
+	uint8 cached_tflags;
 	uint8 cached_num_engines;
 	uint16 cached_centre_mass;
 	uint16 cached_veh_weight;
@@ -1214,9 +1202,10 @@ void Save_VENC()
 		for (Train *t : Train::Iterate()) {
 			SlWriteUint32(t->index);
 			write_gv_cache(t->gcache);
-			SlWriteByte(t->tcache.cached_tilt);
+			SlWriteUint32(t->tcache.cached_curve_speed_mod);
+			SlWriteByte(t->tcache.cached_tflags);
 			SlWriteByte(t->tcache.cached_num_engines);
-			SlWriteByte(t->tcache.cached_centre_mass);
+			SlWriteUint16(t->tcache.cached_centre_mass);
 			SlWriteUint16(t->tcache.cached_veh_weight);
 			SlWriteUint16(t->tcache.cached_uncapped_decel);
 			SlWriteByte(t->tcache.cached_deceleration);
@@ -1275,7 +1264,8 @@ void Load_VENC()
 	for (train_venc &venc : _train_vencs) {
 		venc.id = SlReadUint32();
 		read_gv_cache(venc.gvcache);
-		venc.cached_tilt = SlReadByte();
+		venc.cached_curve_speed_mod = SlReadUint32();
+		venc.cached_tflags = SlReadByte();
 		venc.cached_num_engines = SlReadByte();
 		venc.cached_centre_mass = SlReadUint16();
 		venc.cached_veh_weight = SlReadUint16();
@@ -1362,7 +1352,8 @@ void SlProcessVENC()
 		Train *t = Train::GetIfValid(venc.id);
 		if (t == nullptr) continue;
 		check_gv_cache(t->gcache, venc.gvcache, t);
-		CheckVehicleVENCProp(t->tcache.cached_tilt, venc.cached_tilt, t, "cached_tilt");
+		CheckVehicleVENCProp(t->tcache.cached_curve_speed_mod, venc.cached_curve_speed_mod, t, "cached_curve_speed_mod");
+		CheckVehicleVENCProp(t->tcache.cached_tflags, (TrainCacheFlags)venc.cached_tflags, t, "cached_tflags");
 		CheckVehicleVENCProp(t->tcache.cached_num_engines, venc.cached_num_engines, t, "cached_num_engines");
 		CheckVehicleVENCProp(t->tcache.cached_centre_mass, venc.cached_centre_mass, t, "cached_centre_mass");
 		CheckVehicleVENCProp(t->tcache.cached_veh_weight, venc.cached_veh_weight, t, "cached_veh_weight");
@@ -1389,7 +1380,7 @@ void SlProcessVENC()
 	}
 }
 
-const SaveLoad *GetVehicleLookAheadDescription()
+const SaveLoadTable GetVehicleLookAheadDescription()
 {
 	static const SaveLoad _vehicle_look_ahead_desc[] = {
 		     SLE_VAR(TrainReservationLookAhead, reservation_end_tile,         SLE_UINT32),
@@ -1400,13 +1391,15 @@ const SaveLoad *GetVehicleLookAheadDescription()
 		     SLE_VAR(TrainReservationLookAhead, tunnel_bridge_reserved_tiles, SLE_INT16),
 		     SLE_VAR(TrainReservationLookAhead, flags,                        SLE_UINT16),
 		     SLE_VAR(TrainReservationLookAhead, speed_restriction,            SLE_UINT16),
-		SLE_END()
+		SLE_CONDVAR_X(TrainReservationLookAhead, next_extend_position,        SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 5)),
+		SLE_CONDVAR_X(TrainReservationLookAhead, cached_zpos,                 SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 6)),
+		SLE_CONDVAR_X(TrainReservationLookAhead, zpos_refresh_remaining,      SLE_UINT8,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 6)),
 	};
 
 	return _vehicle_look_ahead_desc;
 }
 
-const SaveLoad *GetVehicleLookAheadItemDescription()
+const SaveLoadTable GetVehicleLookAheadItemDescription()
 {
 	static const SaveLoad _vehicle_look_ahead_item_desc[] = {
 		     SLE_VAR(TrainReservationLookAheadItem, start,                    SLE_INT32),
@@ -1414,18 +1407,16 @@ const SaveLoad *GetVehicleLookAheadItemDescription()
 		     SLE_VAR(TrainReservationLookAheadItem, z_pos,                    SLE_INT16),
 		     SLE_VAR(TrainReservationLookAheadItem, data_id,                  SLE_UINT16),
 		     SLE_VAR(TrainReservationLookAheadItem, type,                     SLE_UINT8),
-		SLE_END()
 	};
 
 	return _vehicle_look_ahead_item_desc;
 }
 
-const SaveLoad *GetVehicleLookAheadCurveDescription()
+const SaveLoadTable GetVehicleLookAheadCurveDescription()
 {
 	static const SaveLoad _vehicle_look_ahead_curve_desc[] = {
 		     SLE_VAR(TrainReservationLookAheadCurve, position,                SLE_INT32),
 		     SLE_VAR(TrainReservationLookAheadCurve, dir_diff,                SLE_UINT8),
-		SLE_END()
 	};
 
 	return _vehicle_look_ahead_curve_desc;
@@ -1434,11 +1425,11 @@ const SaveLoad *GetVehicleLookAheadCurveDescription()
 static void RealSave_VLKA(TrainReservationLookAhead *lookahead)
 {
 	SlObject(lookahead, GetVehicleLookAheadDescription());
-	SlWriteUint32(lookahead->items.size());
+	SlWriteUint32((uint32)lookahead->items.size());
 	for (TrainReservationLookAheadItem &item : lookahead->items) {
 		SlObject(&item, GetVehicleLookAheadItemDescription());
 	}
-	SlWriteUint32(lookahead->curves.size());
+	SlWriteUint32((uint32)lookahead->curves.size());
 	for (TrainReservationLookAheadCurve &curve : lookahead->curves) {
 		SlObject(&curve, GetVehicleLookAheadCurveDescription());
 	}
@@ -1475,10 +1466,12 @@ void Load_VLKA()
 	}
 }
 
-extern const ChunkHandler _veh_chunk_handlers[] = {
-	{ 'VEHS', Save_VEHS, Load_VEHS, Ptrs_VEHS, nullptr, CH_SPARSE_ARRAY},
-	{ 'VEOX', Save_VEOX, Load_VEOX, nullptr,   nullptr, CH_SPARSE_ARRAY},
-	{ 'VESR', Save_VESR, Load_VESR, nullptr,   nullptr, CH_SPARSE_ARRAY},
-	{ 'VENC', Save_VENC, Load_VENC, nullptr,   nullptr, CH_RIFF},
-	{ 'VLKA', Save_VLKA, Load_VLKA, nullptr,   nullptr, CH_SPARSE_ARRAY | CH_LAST},
+static const ChunkHandler veh_chunk_handlers[] = {
+	{ 'VEHS', Save_VEHS, Load_VEHS, Ptrs_VEHS, nullptr, CH_SPARSE_ARRAY },
+	{ 'VEOX', Save_VEOX, Load_VEOX, nullptr,   nullptr, CH_SPARSE_ARRAY },
+	{ 'VESR', Save_VESR, Load_VESR, nullptr,   nullptr, CH_SPARSE_ARRAY },
+	{ 'VENC', Save_VENC, Load_VENC, nullptr,   nullptr, CH_RIFF         },
+	{ 'VLKA', Save_VLKA, Load_VLKA, nullptr,   nullptr, CH_SPARSE_ARRAY },
 };
+
+extern const ChunkHandlerTable _veh_chunk_handlers(veh_chunk_handlers);

@@ -33,6 +33,7 @@
 #include "core/random_func.hpp"
 #include "tbtr_template_vehicle.h"
 #include "tbtr_template_vehicle_func.h"
+#include "scope.h"
 #include <sstream>
 #include <iomanip>
 #include <cctype>
@@ -133,7 +134,7 @@ CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 	/* Check whether we can allocate a unit number. Autoreplace does not allocate
 	 * an unit number as it will (always) reuse the one of the replaced vehicle
 	 * and (train) wagons don't have an unit number in any scenario. */
-	UnitID unit_num = (flags & DC_AUTOREPLACE || (type == VEH_TRAIN && e->u.rail.railveh_type == RAILVEH_WAGON)) ? 0 : GetFreeUnitNumber(type);
+	UnitID unit_num = (flags & DC_QUERY_COST || flags & DC_AUTOREPLACE || (type == VEH_TRAIN && e->u.rail.railveh_type == RAILVEH_WAGON)) ? 0 : GetFreeUnitNumber(type);
 	if (unit_num == UINT16_MAX) return_cmd_error(STR_ERROR_TOO_MANY_VEHICLES_IN_GAME);
 
 	/* If we are refitting we need to temporarily purchase the vehicle to be able to
@@ -235,9 +236,9 @@ CommandCost CmdSellVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 	/* Can we actually make the order backup, i.e. are there enough orders? */
 	if (p1 & MAKE_ORDER_BACKUP_FLAG &&
-			front->orders.list != nullptr &&
-			!front->orders.list->IsShared() &&
-			!Order::CanAllocateItem(front->orders.list->GetNumOrders())) {
+			front->orders != nullptr &&
+			!front->orders->IsShared() &&
+			!Order::CanAllocateItem(front->orders->GetNumOrders())) {
 		/* Only happens in exceptional cases when there aren't enough orders anyhow.
 		 * Thus it should be safe to just drop the orders in that case. */
 		p1 &= ~MAKE_ORDER_BACKUP_FLAG;
@@ -272,7 +273,7 @@ static int GetRefitCostFactor(const Vehicle *v, EngineID engine_type, CargoID ne
 	const Engine *e = Engine::Get(engine_type);
 
 	/* Is this vehicle a NewGRF vehicle? */
-	if (e->GetGRF() != nullptr) {
+	if (e->GetGRF() != nullptr && (e->callbacks_used & SGCU_VEHICLE_REFIT_COST) != 0) {
 		const CargoSpec *cs = CargoSpec::Get(new_cid);
 		uint32 param1 = (cs->classes << 16) | (new_subtype << 8) | e->GetGRF()->cargo_map[new_cid];
 
@@ -1535,6 +1536,47 @@ CommandCost CmdCloneVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 	}
 
 	return total_cost;
+}
+
+/**
+ * Clone a vehicle from a template.
+ * @param tile tile of the depot where the cloned vehicle is build
+ * @param flags type of operation
+ * @param p1 the original template vehicle's index
+ * @param p2 unused
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdCloneVehicleFromTemplate(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	TemplateVehicle* tv = TemplateVehicle::GetIfValid(p1);
+
+	if (tv == nullptr) {
+		return CMD_ERROR;
+	}
+
+	CommandCost ret = CheckOwnership(tv->owner);
+	if (ret.Failed()) return ret;
+
+	/* Vehicle construction needs random bits, so we have to save the random
+	 * seeds to prevent desyncs. */
+	SavedRandomSeeds saved_seeds;
+	SaveRandomSeeds(&saved_seeds);
+
+	auto guard = scope_guard([&]() {
+		if (!(flags & DC_EXEC)) RestoreRandomSeeds(saved_seeds);
+	});
+
+	ret = DoCommand(0, tv->index, 0, DC_EXEC, CMD_VIRTUAL_TRAIN_FROM_TEMPLATE_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_BUY_TRAIN));
+	if (ret.Failed()) return ret;
+
+	Train* virt = Train::From(Vehicle::Get(_new_vehicle_id));
+
+	ret = DoCommand(tile, _new_vehicle_id, 0, flags, CMD_CLONE_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_BUY_TRAIN));
+
+	delete virt;
+
+	return ret;
 }
 
 /**

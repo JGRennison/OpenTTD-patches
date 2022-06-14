@@ -26,13 +26,21 @@ enum GenerateLandscapeWidgets {
 
 	WID_GL_GENERATE_BUTTON,             ///< 'Generate' button.
 
-	WID_GL_MAX_HEIGHTLEVEL_DOWN,        ///< Decrease max. heightlevel
-	WID_GL_MAX_HEIGHTLEVEL_TEXT,        ///< Max. heightlevel
-	WID_GL_MAX_HEIGHTLEVEL_UP,          ///< Increase max. heightlevel
+	WID_GL_HEIGHTMAP_HEIGHT_DOWN,       ///< Decrease heightmap highest mountain
+	WID_GL_HEIGHTMAP_HEIGHT_TEXT,       ///< Max. heightmap highest mountain
+	WID_GL_HEIGHTMAP_HEIGHT_UP,         ///< Increase max. heightmap highest mountain
 
 	WID_GL_START_DATE_DOWN,             ///< Decrease start year.
 	WID_GL_START_DATE_TEXT,             ///< Start year.
 	WID_GL_START_DATE_UP,               ///< Increase start year.
+
+	WID_GL_SNOW_COVERAGE_DOWN,          ///< Decrease snow coverage.
+	WID_GL_SNOW_COVERAGE_TEXT,          ///< Snow coverage.
+	WID_GL_SNOW_COVERAGE_UP,            ///< Increase snow coverage.
+
+	WID_GL_DESERT_COVERAGE_DOWN,        ///< Decrease desert coverage.
+	WID_GL_DESERT_COVERAGE_TEXT,        ///< Desert coverage.
+	WID_GL_DESERT_COVERAGE_UP,          ///< Increase desert coverage.
 
 	WID_GL_SNOW_LEVEL_DOWN,             ///< Decrease snow level.
 	WID_GL_SNOW_LEVEL_TEXT,             ///< Snow level.
@@ -60,8 +68,8 @@ enum GenerateLandscapeWidgets {
 	WID_GL_WATER_SE,                    ///< SE 'Water'/'Freeform'.
 	WID_GL_WATER_SW,                    ///< SW 'Water'/'Freeform'.
 
-	WID_GL_LEVEL_SEL_1,                 ///< NWID_SELECTION for snow or rainforest level label
-	WID_GL_LEVEL_SEL_2,                 ///< NWID_SELECTION for snow or rainforest level selector
+	WID_GL_CLIMATE_SEL_LABEL,           ///< NWID_SELECTION for snow or desert coverage label
+	WID_GL_CLIMATE_SEL_SELECTOR,        ///< NWID_SELECTION for snow or desert coverage selector
 };
 
 /** Widgets of the #CreateScenarioWindow class. */

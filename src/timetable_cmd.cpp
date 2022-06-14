@@ -48,7 +48,7 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint32 val,
 			}
 			order->SetWaitTime(val);
 			order->SetWaitTimetabled(timetabled);
-			if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && timetabled && order->IsWaitTimetabled() && v->GetFirstWaitingLocation(true) == order_number) {
+			if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && timetabled && order->IsScheduledDispatchOrder(true)) {
 				for (Vehicle *u = v->FirstShared(); u != nullptr; u = u->NextShared()) {
 					if (u->cur_implicit_order_index == order_number && (u->last_station_visited == order->GetDestination())) {
 						u->lateness_counter += timetable_delta;
@@ -84,11 +84,25 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint32 val,
 			order->SetLeaveType((OrderLeaveType)val);
 			break;
 
+		case MTF_ASSIGN_SCHEDULE:
+			if ((int)val >= 0) {
+				for (int n = 0; n < v->GetNumOrders(); n++) {
+					Order *o = v->GetOrder(n);
+					if (o->GetDispatchScheduleIndex() == (int)val) {
+						o->SetDispatchScheduleIndex(-1);
+					}
+				}
+			}
+			order->SetDispatchScheduleIndex((int)val);
+			break;
+
 		default:
 			NOT_REACHED();
 	}
-	v->orders.list->UpdateTotalDuration(total_delta);
-	v->orders.list->UpdateTimetableDuration(timetable_delta);
+	v->orders->UpdateTotalDuration(total_delta);
+	v->orders->UpdateTimetableDuration(timetable_delta);
+
+	SetTimetableWindowsDirty(v, mtf == MTF_ASSIGN_SCHEDULE);
 
 	for (v = v->FirstShared(); v != nullptr; v = v->NextShared()) {
 		if (v->cur_real_order_index == order_number && v->current_order.Equals(*order)) {
@@ -119,11 +133,14 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint32 val,
 					v->current_order.SetLeaveType((OrderLeaveType)val);
 					break;
 
+				case MTF_ASSIGN_SCHEDULE:
+					v->current_order.SetDispatchScheduleIndex((int)val);
+					break;
+
 				default:
 					NOT_REACHED();
 			}
 		}
-		SetWindowDirty(WC_VEHICLE_TIMETABLE, v->index);
 	}
 }
 
@@ -170,15 +187,16 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	bool wait_fixed = order->IsWaitFixed();
 	bool travel_fixed = order->IsTravelFixed();
 	OrderLeaveType leave_type = order->GetLeaveType();
+	int dispatch_index = order->GetDispatchScheduleIndex();
 	switch (mtf) {
 		case MTF_WAIT_TIME:
 			wait_time = p2;
-			if (clear_field) assert(wait_time == 0);
+			if (clear_field && wait_time != 0) return CMD_ERROR;
 			break;
 
 		case MTF_TRAVEL_TIME:
 			travel_time = p2;
-			if (clear_field) assert(travel_time == 0);
+			if (clear_field && travel_time != 0) return CMD_ERROR;
 			break;
 
 		case MTF_TRAVEL_SPEED:
@@ -199,6 +217,11 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 			if (leave_type >= OLT_END) return CMD_ERROR;
 			break;
 
+		case MTF_ASSIGN_SCHEDULE:
+			dispatch_index = (int)p2;
+			if (dispatch_index < -1 || dispatch_index >= (int)v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
+			break;
+
 		default:
 			NOT_REACHED();
 	}
@@ -206,7 +229,10 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	if (wait_time != order->GetWaitTime() || leave_type != order->GetLeaveType()) {
 		switch (order->GetType()) {
 			case OT_GOTO_STATION:
-				if (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) return_cmd_error(STR_ERROR_TIMETABLE_NOT_STOPPING_HERE);
+				if (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) {
+					if (mtf == MTF_WAIT_TIME && clear_field) break;
+					return_cmd_error(STR_ERROR_TIMETABLE_NOT_STOPPING_HERE);
+				}
 				break;
 
 			case OT_GOTO_DEPOT:
@@ -220,9 +246,26 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 		}
 	}
 
+	if (dispatch_index != order->GetDispatchScheduleIndex()) {
+		switch (order->GetType()) {
+			case OT_GOTO_STATION:
+				if (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) {
+					if (mtf == MTF_ASSIGN_SCHEDULE && dispatch_index == -1) break;
+					return_cmd_error(STR_ERROR_TIMETABLE_NOT_STOPPING_HERE);
+				}
+				break;
+
+			case OT_GOTO_DEPOT:
+			case OT_GOTO_WAYPOINT:
+				break;
+
+			default: return_cmd_error(STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS);
+		}
+	}
+
 	if (travel_time != order->GetTravelTime() && order->IsType(OT_CONDITIONAL)) return CMD_ERROR;
+	if (travel_fixed != order->IsTravelFixed() && order->IsType(OT_CONDITIONAL)) return CMD_ERROR;
 	if (max_speed != order->GetMaxSpeed() && (order->IsType(OT_CONDITIONAL) || v->type == VEH_AIRCRAFT)) return CMD_ERROR;
-	if (wait_fixed != order->IsWaitFixed() && order->IsType(OT_CONDITIONAL)) return CMD_ERROR;
 	if (leave_type != order->GetLeaveType() && order->IsType(OT_CONDITIONAL)) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
@@ -262,6 +305,12 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 			case MTF_SET_LEAVE_TYPE:
 				if (leave_type != order->GetLeaveType()) {
 					ChangeTimetable(v, order_number, leave_type, MTF_SET_LEAVE_TYPE, true);
+				}
+				break;
+
+			case MTF_ASSIGN_SCHEDULE:
+				if (dispatch_index != order->GetDispatchScheduleIndex()) {
+					ChangeTimetable(v, order_number, dispatch_index, MTF_ASSIGN_SCHEDULE, true);
 				}
 				break;
 
@@ -333,7 +382,7 @@ CommandCost CmdSetVehicleOnTime(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 	VehicleID veh = GB(p1, 0, 20);
 
 	Vehicle *v = Vehicle::GetIfValid(veh);
-	if (v == nullptr || !v->IsPrimaryVehicle() || v->orders.list == nullptr) return CMD_ERROR;
+	if (v == nullptr || !v->IsPrimaryVehicle() || v->orders == nullptr) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
@@ -404,12 +453,12 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 	bool timetable_all = HasBit(p1, 20);
 	Vehicle *v = Vehicle::GetIfValid(GB(p1, 0, 20));
 	uint16 sub_ticks = GB(p1, 21, 11);
-	if (v == nullptr || !v->IsPrimaryVehicle() || v->orders.list == nullptr) return CMD_ERROR;
+	if (v == nullptr || !v->IsPrimaryVehicle() || v->orders == nullptr) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (timetable_all && !v->orders.list->IsCompleteTimetable()) return CMD_ERROR;
+	if (timetable_all && !v->orders->IsCompleteTimetable()) return CMD_ERROR;
 
 	const DateTicksScaled now = _scaled_date_ticks;
 	DateTicksScaled start_date_scaled = (_settings_game.economy.day_length_factor * (((DateTicksScaled)_date * DAY_TICKS) + _date_fract + (DateTicksScaled)(int32)p2)) + sub_ticks;
@@ -418,14 +467,16 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 		std::vector<Vehicle *> vehs;
 
 		if (timetable_all) {
-			for (Vehicle *w = v->orders.list->GetFirstSharedVehicle(); w != nullptr; w = w->NextShared()) {
+			for (Vehicle *w = v->orders->GetFirstSharedVehicle(); w != nullptr; w = w->NextShared()) {
 				vehs.push_back(w);
 			}
+			SetTimetableWindowsDirty(v);
 		} else {
 			vehs.push_back(v);
+			SetWindowDirty(WC_VEHICLE_TIMETABLE, v->index);
 		}
 
-		int total_duration = v->orders.list->GetTimetableTotalDuration();
+		int total_duration = v->orders->GetTimetableTotalDuration();
 		int num_vehs = (uint)vehs.size();
 
 		if (num_vehs >= 2) {
@@ -435,7 +486,6 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 		int idx = vehs.begin() - std::find(vehs.begin(), vehs.end(), v);
 
 		for (Vehicle *w : vehs) {
-
 			w->lateness_counter = 0;
 			ClrBit(w->vehicle_flags, VF_TIMETABLE_STARTED);
 			/* Do multiplication, then division to reduce rounding errors. */
@@ -445,7 +495,6 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			}
 			w->timetable_start = tt_start / _settings_game.economy.day_length_factor;
 			w->timetable_start_subticks = tt_start % _settings_game.economy.day_length_factor;
-			SetWindowDirty(WC_VEHICLE_TIMETABLE, w->index);
 			++idx;
 		}
 
@@ -473,7 +522,7 @@ CommandCost CmdAutofillTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1,
 	VehicleID veh = GB(p1, 0, 20);
 
 	Vehicle *v = Vehicle::GetIfValid(veh);
-	if (v == nullptr || !v->IsPrimaryVehicle() || v->orders.list == nullptr) return CMD_ERROR;
+	if (v == nullptr || !v->IsPrimaryVehicle() || v->orders == nullptr) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
@@ -503,8 +552,8 @@ CommandCost CmdAutofillTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1,
 				ClrBit(v2->vehicle_flags, VF_AUTOFILL_TIMETABLE);
 				ClrBit(v2->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
 			}
-			SetWindowDirty(WC_VEHICLE_TIMETABLE, v2->index);
 		}
+		SetTimetableWindowsDirty(v);
 	}
 
 	return CommandCost();
@@ -517,7 +566,6 @@ CommandCost CmdAutofillTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1,
  * @param p1 Vehicle index.
  * @param p2 Various bitstuffed elements
  * - p2 = (bit 0) - Set to 1 to enable, 0 to disable automation.
- * - p2 = (bit 1) - Ctrl was pressed. Used when disabling to keep times.
  * @param text unused
  * @return the cost of this operation or an error
  */
@@ -551,26 +599,9 @@ CommandCost CmdAutomateTimetable(TileIndex index, DoCommandFlag flags, uint32 p1
 				ClrBit(v2->vehicle_flags, VF_AUTOFILL_TIMETABLE);
 				ClrBit(v2->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
 				v2->ClearSeparation();
-				if (!HasBit(p2, 1)) {
-					/* Ctrl wasn't pressed, so clear all timetabled times. */
-					ClrBit(v2->vehicle_flags, VF_TIMETABLE_STARTED);
-					v2->timetable_start = 0;
-					v2->timetable_start_subticks = 0;
-					v2->lateness_counter = 0;
-					v2->current_loading_time = 0;
-				}
-			}
-			SetWindowDirty(WC_VEHICLE_TIMETABLE, v2->index);
-		}
-		if (!HasBit(p2, 0) && !HasBit(p2, 1)) {
-			OrderList *orders = v->orders.list;
-			if (orders != nullptr) {
-				for (int i = 0; i < orders->GetNumOrders(); i++) {
-					ChangeTimetable(v, i, 0, MTF_WAIT_TIME, false);
-					ChangeTimetable(v, i, 0, MTF_TRAVEL_TIME, false);
-				}
 			}
 		}
+		SetTimetableWindowsDirty(v);
 	}
 
 	return CommandCost();
@@ -604,8 +635,8 @@ CommandCost CmdTimetableSeparation(TileIndex tile, DoCommandFlag flags, uint32 p
 				ClrBit(v2->vehicle_flags, VF_TIMETABLE_SEPARATION);
 			}
 			v2->ClearSeparation();
-			SetWindowDirty(WC_VEHICLE_TIMETABLE, v2->index);
 		}
+		SetTimetableWindowsDirty(v, true);
 	}
 
 	return CommandCost();
@@ -685,10 +716,10 @@ void UpdateSeparationOrder(Vehicle *v_start)
 	std::vector<TimetableProgress> progress_array = PopulateSeparationState(v_start);
 	if (progress_array.size() < 2) return;
 
-	const uint duration = v_start->orders.list->GetTotalDuration();
+	const uint duration = v_start->orders->GetTotalDuration();
 	Vehicle *v = Vehicle::Get(progress_array.back().id);
 	Vehicle *v_ahead = Vehicle::Get(progress_array.front().id);
-	uint behind_index = progress_array.size() - 1;
+	uint behind_index = (uint)progress_array.size() - 1;
 	for (uint i = 0; i < progress_array.size(); i++) {
 		const TimetableProgress &info_behind = progress_array[behind_index];
 		behind_index = i;
@@ -729,28 +760,23 @@ void UpdateSeparationOrder(Vehicle *v_start)
 	}
 }
 
-static bool IsVehicleAtFirstWaitingLocation(const Vehicle *v)
-{
-	return (v->cur_implicit_order_index == v->GetFirstWaitingLocation(true));
-}
-
-static DateTicksScaled GetScheduledDispatchTime(Vehicle *v, int wait_offset)
+DateTicksScaled GetScheduledDispatchTime(const DispatchSchedule &ds, DateTicksScaled leave_time)
 {
 	DateTicksScaled first_slot          = -1;
-	const DateTicksScaled begin_time    = v->orders.list->GetScheduledDispatchStartTick();
-	const int32 last_dispatched_offset  = v->orders.list->GetScheduledDispatchLastDispatch();
-	const uint32 dispatch_duration      = v->orders.list->GetScheduledDispatchDuration();
-	const int32 max_delay               = v->orders.list->GetScheduledDispatchDelay();
+	const DateTicksScaled begin_time    = ds.GetScheduledDispatchStartTick();
+	const int32 last_dispatched_offset  = ds.GetScheduledDispatchLastDispatch();
+	const uint32 dispatch_duration      = ds.GetScheduledDispatchDuration();
+	const int32 max_delay               = ds.GetScheduledDispatchDelay();
 
 	/* Find next available slots */
-	for (auto current_offset : v->orders.list->GetScheduledDispatch()) {
+	for (auto current_offset : ds.GetScheduledDispatch()) {
 		if (current_offset >= dispatch_duration) continue;
 		if (int32(current_offset) <= last_dispatched_offset) {
 			current_offset += dispatch_duration * ((last_dispatched_offset + dispatch_duration - current_offset) / dispatch_duration);
 		}
 
 		DateTicksScaled current_departure = begin_time + current_offset;
-		DateTicksScaled minimum = _scaled_date_ticks + wait_offset - max_delay;
+		DateTicksScaled minimum = leave_time - max_delay;
 		if (current_departure < minimum) {
 			current_departure += dispatch_duration * ((minimum + dispatch_duration - current_departure - 1) / dispatch_duration);
 		}
@@ -797,17 +823,21 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 	bool set_scheduled_dispatch = false;
 
 	/* Start scheduled dispatch at first opportunity */
-	if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
-		if (IsVehicleAtFirstWaitingLocation(v) && travelling) {
+	if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && v->cur_implicit_order_index != INVALID_VEH_ORDER_ID) {
+		Order *real_implicit_order = v->GetOrder(v->cur_implicit_order_index);
+		if (real_implicit_order->IsScheduledDispatchOrder(true) && travelling) {
+			DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(real_implicit_order->GetDispatchScheduleIndex());
+
 			/* Update scheduled information */
-			v->orders.list->UpdateScheduledDispatch();
+			ds.UpdateScheduledDispatch(v);
 
 			const int wait_offset = real_current_order->GetTimetabledWait();
-			DateTicksScaled slot = GetScheduledDispatchTime(v, wait_offset);
+			DateTicksScaled slot = GetScheduledDispatchTime(ds, _scaled_date_ticks + wait_offset);
 			if (slot > -1) {
+				just_started = !HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 				SetBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 				v->lateness_counter = _scaled_date_ticks - slot + wait_offset;
-				v->orders.list->SetScheduledDispatchLastDispatch(slot - v->orders.list->GetScheduledDispatchStartTick());
+				ds.SetScheduledDispatchLastDispatch(slot - ds.GetScheduledDispatchStartTick());
 				set_scheduled_dispatch = true;
 			}
 		}
@@ -820,9 +850,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		/* If the lateness is set by scheduled dispatch above, do not reset */
 		if (!HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) v->lateness_counter = 0;
 		if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION)) UpdateSeparationOrder(v);
-		for (v = v->FirstShared(); v != nullptr; v = v->NextShared()) {
-			SetWindowDirty(WC_VEHICLE_TIMETABLE, v->index);
-		}
+		SetTimetableWindowsDirty(v);
 		return;
 	}
 
@@ -832,7 +860,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		 * the vehicle last arrived at the first destination, update it to the
 		 * current time. Otherwise set the late counter appropriately to when
 		 * the vehicle should have arrived. */
-		just_started = !HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
+		if (!set_scheduled_dispatch) just_started = !HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 
 		if (v->timetable_start != 0) {
 			v->lateness_counter = _scaled_date_ticks - ((_settings_game.economy.day_length_factor * ((DateTicksScaled) v->timetable_start)) + v->timetable_start_subticks);
@@ -885,7 +913,8 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		 * Thus always make sure at least one tick is used between the
 		 * processing of different orders when filling the timetable. */
 		Company *owner = Company::GetIfValid(v->owner);
-		uint rounding_factor = owner ? owner->settings.timetable_autofill_rounding : DAY_TICKS;
+		uint rounding_factor = owner ? owner->settings.timetable_autofill_rounding : 0;
+		if (rounding_factor == 0) rounding_factor = _settings_game.game_time.time_in_minutes ? _settings_game.game_time.ticks_per_minute : DAY_TICKS;
 		uint time_to_set = CeilDiv(std::max(time_taken, 1U), rounding_factor) * rounding_factor;
 
 		if (travel_field && (autofilling || !real_timetable_order->IsTravelTimetabled())) {
@@ -921,8 +950,8 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 					/* Clear VF_TIMETABLE_STARTED but do not call ClearSeparation */
 					ClrBit(v2->vehicle_flags, VF_TIMETABLE_STARTED);
 					v2->lateness_counter = 0;
-					SetWindowDirty(WC_VEHICLE_TIMETABLE, v2->index);
 				}
+				SetTimetableWindowsDirty(v);
 				return;
 			} else if (new_time >= (int32)timetabled / 2) {
 				/* Compute running average, with sign conversion to avoid negative overflow.
@@ -983,15 +1012,13 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 	 * length of a full cycle till lateness is less than the length of a timetable
 	 * cycle. When the timetable isn't fully filled the cycle will be INVALID_TICKS. */
 	if (v->lateness_counter > (int)timetabled) {
-		Ticks cycle = v->orders.list->GetTimetableTotalDuration();
+		Ticks cycle = v->orders->GetTimetableTotalDuration();
 		if (cycle != INVALID_TICKS && v->lateness_counter > cycle) {
 			v->lateness_counter %= cycle;
 		}
 	}
 
-	for (v = v->FirstShared(); v != nullptr; v = v->NextShared()) {
-		SetWindowDirty(WC_VEHICLE_TIMETABLE, v->index);
-	}
+	SetTimetableWindowsDirty(v);
 }
 
 void SetOrderFixedWaitTime(Vehicle *v, VehicleOrderID order_number, uint32 wait_time, bool wait_timetabled) {

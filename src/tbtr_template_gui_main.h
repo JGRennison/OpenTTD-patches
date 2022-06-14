@@ -23,4 +23,6 @@ typedef GUIList<const Group*> GUIGroupList;
 
 void ShowTemplateReplaceWindow();
 
+bool TemplateVehicleClicked(const TemplateVehicle *v);
+
 #endif

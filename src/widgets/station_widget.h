@@ -30,6 +30,7 @@ enum StationViewWidgets {
 	WID_SV_PLANES,             ///< List of scheduled planes button.
 	WID_SV_CATCHMENT,          ///< Toggle catchment area highlight.
 	WID_SV_DEPARTURES,         ///< Departures button.
+	WID_SV_HISTORY,            ///< Cargo history button.
 };
 
 /** Widgets of the #CompanyStationsWindow class. */

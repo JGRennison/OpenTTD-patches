@@ -192,7 +192,7 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 	/* This value allows to know if the vehicle is accelerating or braking. */
 	AccelStatus mode = v->GetAccelerationStatus();
 
-	const int braking_power = power;
+	int braking_power = power;
 
 	/* handle breakdown power reduction */
 	uint32 max_te = this->gcache.cached_max_te; // [N]
@@ -223,6 +223,10 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 		force = (mode == AS_ACCEL && !maglev) ? std::min<uint64>(max_te, power) : power;
 		force = std::max(force, (mass * 8) + resistance);
 		braking_force = force;
+	}
+
+	if (Type == VEH_TRAIN && Train::From(this)->UsingRealisticBraking()) {
+		braking_power += (Train::From(this)->gcache.cached_total_length * (int64)RBC_BRAKE_POWER_PER_LENGTH);
 	}
 
 	/* If power is 0 because of a breakdown, we make the force 0 if accelerating */
@@ -257,15 +261,15 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 			breakdown_factor /= (Train::From(this)->tcache.cached_num_engines + 2);
 		}
 		/* breakdown_chance is at least 5 (5 / 128 = ~4% of the normal chance) */
-		this->breakdown_chance_factor = std::max(breakdown_factor >> 16, (uint64)5);
+		this->breakdown_chance_factor = Clamp<uint64>(breakdown_factor >> 16, 5, 255);
 	}
 
 	int braking_accel;
-	if (Type == VEH_TRAIN && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+	if (Type == VEH_TRAIN && Train::From(this)->UsingRealisticBraking()) {
 		/* Assume that every part of a train is braked, not just the engine.
 		 * Exceptionally heavy freight trains should still have a sensible braking distance.
 		 * The total braking force is generally larger than the total tractive force. */
-		braking_accel = ClampToI32((-braking_force - resistance - (this->gcache.cached_total_length * 300)) / mass);
+		braking_accel = ClampToI32((-braking_force - resistance - (Train::From(this)->gcache.cached_total_length * (int64)RBC_BRAKE_FORCE_PER_LENGTH)) / (mass * 4));
 
 		/* Defensive driving: prevent ridiculously fast deceleration.
 		 * -130 corresponds to a braking distance of about 6.2 tiles from 160 km/h. */

@@ -19,10 +19,19 @@
 
 #include "../safeguards.h"
 
+HouseID SLGetCleanHouseType(TileIndex t, bool old_map_position)
+{
+	if (old_map_position && SlXvIsFeatureMissing(XSLFI_MORE_HOUSES)) {
+		return _m[t].m4 | (GB(_m[t].m3, 6, 1) << 8);
+	} else {
+		return GetCleanHouseType(t);
+	}
+}
+
 /**
  * Rebuild all the cached variables of towns.
  */
-void RebuildTownCaches(bool cargo_update_required)
+void RebuildTownCaches(bool cargo_update_required, bool old_map_position)
 {
 	InitializeBuildingCounts();
 	RebuildTownKdtree();
@@ -36,7 +45,7 @@ void RebuildTownCaches(bool cargo_update_required)
 	for (TileIndex t = 0; t < MapSize(); t++) {
 		if (!IsTileType(t, MP_HOUSE)) continue;
 
-		HouseID house_id = GetHouseType(t);
+		HouseID house_id = GetTranslatedHouseID(SLGetCleanHouseType(t, old_map_position));
 		Town *town = Town::GetByTile(t);
 		IncreaseBuildingCount(town, house_id);
 		if (IsHouseCompleted(t)) town->cache.population += HouseSpec::Get(house_id)->population;
@@ -51,51 +60,36 @@ void RebuildTownCaches(bool cargo_update_required)
 	}
 }
 
-/**
- * Check and update town and house values.
- *
- * Checked are the HouseIDs. Updated are the
- * town population the number of houses per
- * town, the town radius and the max passengers
- * of the town.
- */
-void UpdateHousesAndTowns(bool cargo_update_required)
+static void CheckMultiTileHouseTypes(bool &cargo_update_required, bool old_map_position, bool translate_house_types)
 {
-	for (TileIndex t = 0; t < MapSize(); t++) {
-		if (!IsTileType(t, MP_HOUSE)) continue;
-
-		HouseID house_id = GetCleanHouseType(t);
-		if (!HouseSpec::Get(house_id)->enabled && house_id >= NEW_HOUSE_OFFSET) {
-			/* The specs for this type of house are not available any more, so
-			 * replace it with the substitute original house type. */
-			house_id = _house_mngr.GetSubstituteID(house_id);
-			SetHouseType(t, house_id);
-			cargo_update_required = true;
-		}
-	}
+	auto get_clean_house_type = [&](TileIndex t) -> HouseID {
+		HouseID type = SLGetCleanHouseType(t, old_map_position);
+		if (translate_house_types) type = GetTranslatedHouseID(type);
+		return type;
+	};
 
 	/* Check for cases when a NewGRF has set a wrong house substitute type. */
 	for (TileIndex t = 0; t < MapSize(); t++) {
 		if (!IsTileType(t, MP_HOUSE)) continue;
 
-		HouseID house_type = GetCleanHouseType(t);
+		HouseID house_type = get_clean_house_type(t);
 		TileIndex north_tile = t + GetHouseNorthPart(house_type); // modifies 'house_type'!
 		if (t == north_tile) {
 			const HouseSpec *hs = HouseSpec::Get(house_type);
 			bool valid_house = true;
 			if (hs->building_flags & TILE_SIZE_2x1) {
 				TileIndex tile = t + TileDiffXY(1, 0);
-				if (!IsTileType(tile, MP_HOUSE) || GetCleanHouseType(tile) != house_type + 1) valid_house = false;
+				if (!IsTileType(tile, MP_HOUSE) || get_clean_house_type(tile) != house_type + 1) valid_house = false;
 			} else if (hs->building_flags & TILE_SIZE_1x2) {
 				TileIndex tile = t + TileDiffXY(0, 1);
-				if (!IsTileType(tile, MP_HOUSE) || GetCleanHouseType(tile) != house_type + 1) valid_house = false;
+				if (!IsTileType(tile, MP_HOUSE) || get_clean_house_type(tile) != house_type + 1) valid_house = false;
 			} else if (hs->building_flags & TILE_SIZE_2x2) {
 				TileIndex tile = t + TileDiffXY(0, 1);
-				if (!IsTileType(tile, MP_HOUSE) || GetCleanHouseType(tile) != house_type + 1) valid_house = false;
+				if (!IsTileType(tile, MP_HOUSE) || get_clean_house_type(tile) != house_type + 1) valid_house = false;
 				tile = t + TileDiffXY(1, 0);
-				if (!IsTileType(tile, MP_HOUSE) || GetCleanHouseType(tile) != house_type + 2) valid_house = false;
+				if (!IsTileType(tile, MP_HOUSE) || get_clean_house_type(tile) != house_type + 2) valid_house = false;
 				tile = t + TileDiffXY(1, 1);
-				if (!IsTileType(tile, MP_HOUSE) || GetCleanHouseType(tile) != house_type + 3) valid_house = false;
+				if (!IsTileType(tile, MP_HOUSE) || get_clean_house_type(tile) != house_type + 3) valid_house = false;
 			}
 			/* If not all tiles of this house are present remove the house.
 			 * The other tiles will get removed later in this loop because
@@ -104,15 +98,50 @@ void UpdateHousesAndTowns(bool cargo_update_required)
 				DoClearSquare(t);
 				cargo_update_required = true;
 			}
-		} else if (!IsTileType(north_tile, MP_HOUSE) || GetCleanHouseType(north_tile) != house_type) {
+		} else if (!IsTileType(north_tile, MP_HOUSE) || get_clean_house_type(north_tile) != house_type) {
 			/* This tile should be part of a multi-tile building but the
 			 * north tile of this house isn't on the map. */
 			DoClearSquare(t);
 			cargo_update_required = true;
 		}
 	}
+}
 
-	RebuildTownCaches(cargo_update_required);
+/**
+ * Check and update town and house values.
+ *
+ * Checked are the HouseIDs. Updated are the
+ * town population the number of houses per
+ * town, the town radius and the max passengers
+ * of the town.
+ */
+void UpdateHousesAndTowns(bool cargo_update_required, bool old_map_position)
+{
+	auto get_clean_house_type = [&](TileIndex t) -> HouseID {
+		return SLGetCleanHouseType(t, old_map_position);
+	};
+	for (TileIndex t = 0; t < MapSize(); t++) {
+		if (!IsTileType(t, MP_HOUSE)) continue;
+
+		HouseID house_id = get_clean_house_type(t);
+		if (!HouseSpec::Get(house_id)->enabled && house_id >= NEW_HOUSE_OFFSET) {
+			/* The specs for this type of house are not available any more, so
+			 * replace it with the substitute original house type. */
+			house_id = _house_mngr.GetSubstituteID(house_id);
+			if (old_map_position && SlXvIsFeatureMissing(XSLFI_MORE_HOUSES)) {
+				_m[t].m4 = GB(house_id, 0, 8);
+				SB(_m[t].m3, 6, 1, GB(house_id, 8, 1));
+			} else {
+				SetHouseType(t, house_id);
+			}
+			cargo_update_required = true;
+		}
+	}
+
+	CheckMultiTileHouseTypes(cargo_update_required, old_map_position, false);
+	if (cargo_update_required || SlXvIsFeatureMissing(XSLFI_MORE_HOUSES, 2)) CheckMultiTileHouseTypes(cargo_update_required, old_map_position, true);
+
+	RebuildTownCaches(cargo_update_required, old_map_position);
 }
 
 /** Save and load of towns. */
@@ -209,13 +238,11 @@ static const SaveLoad _town_desc[] = {
 	SLE_CONDVAR(Town, larger_town,           SLE_BOOL,                  SLV_56, SL_MAX_VERSION),
 	SLE_CONDVAR(Town, layout,                SLE_UINT8,                SLV_113, SL_MAX_VERSION),
 
-	SLE_CONDLST(Town, psa_list,            REF_STORAGE,                SLV_161, SL_MAX_VERSION),
+	SLE_CONDREFLIST(Town, psa_list,          REF_STORAGE,              SLV_161, SL_MAX_VERSION),
 
 	SLE_CONDNULL(4, SLV_166, SLV_EXTEND_CARGOTYPES),  ///< cargo_produced, no longer in use
 	SLE_CONDNULL(8, SLV_EXTEND_CARGOTYPES, SLV_REMOVE_TOWN_CARGO_CACHE),  ///< cargo_produced, no longer in use
 	SLE_CONDNULL(30, SLV_2, SLV_REMOVE_TOWN_CARGO_CACHE), ///< old reserved space
-
-	SLE_END()
 };
 
 static const SaveLoad _town_supplied_desc[] = {
@@ -223,8 +250,6 @@ static const SaveLoad _town_supplied_desc[] = {
 	SLE_CONDVAR(TransportedCargoStat<uint32>, new_max, SLE_UINT32, SLV_165, SL_MAX_VERSION),
 	SLE_CONDVAR(TransportedCargoStat<uint32>, old_act, SLE_UINT32, SLV_165, SL_MAX_VERSION),
 	SLE_CONDVAR(TransportedCargoStat<uint32>, new_act, SLE_UINT32, SLV_165, SL_MAX_VERSION),
-
-	SLE_END()
 };
 
 static const SaveLoad _town_received_desc[] = {
@@ -232,8 +257,6 @@ static const SaveLoad _town_received_desc[] = {
 	SLE_CONDVAR(TransportedCargoStat<uint16>, new_max, SLE_UINT16, SLV_165, SL_MAX_VERSION),
 	SLE_CONDVAR(TransportedCargoStat<uint16>, old_act, SLE_UINT16, SLV_165, SL_MAX_VERSION),
 	SLE_CONDVAR(TransportedCargoStat<uint16>, new_act, SLE_UINT16, SLV_165, SL_MAX_VERSION),
-
-	SLE_END()
 };
 
 static const SaveLoad _town_received_desc_spp[] = {
@@ -241,8 +264,6 @@ static const SaveLoad _town_received_desc_spp[] = {
 	SLE_CONDVAR(TransportedCargoStat<uint16>, new_max, SLE_FILE_U32 | SLE_VAR_U16, SLV_165, SL_MAX_VERSION),
 	SLE_CONDVAR(TransportedCargoStat<uint16>, old_act, SLE_FILE_U32 | SLE_VAR_U16, SLV_165, SL_MAX_VERSION),
 	SLE_CONDVAR(TransportedCargoStat<uint16>, new_act, SLE_FILE_U32 | SLE_VAR_U16, SLV_165, SL_MAX_VERSION),
-
-	SLE_END()
 };
 
 std::vector<SaveLoad> _filtered_town_desc;
@@ -268,13 +289,13 @@ static void Load_HIDS()
 
 static void RealSave_Town(Town *t)
 {
-	SlObjectSaveFiltered(t, _filtered_town_desc.data());
+	SlObjectSaveFiltered(t, _filtered_town_desc);
 
 	for (CargoID i = 0; i < NUM_CARGO; i++) {
-		SlObjectSaveFiltered(&t->supplied[i], _filtered_town_supplied_desc.data());
+		SlObjectSaveFiltered(&t->supplied[i], _filtered_town_supplied_desc);
 	}
 	for (int i = TE_BEGIN; i < NUM_TE; i++) {
-		SlObjectSaveFiltered(&t->received[i], _filtered_town_received_desc.data());
+		SlObjectSaveFiltered(&t->received[i], _filtered_town_received_desc);
 	}
 }
 
@@ -295,10 +316,10 @@ static void Load_TOWN()
 
 	while ((index = SlIterateArray()) != -1) {
 		Town *t = new (index) Town();
-		SlObjectLoadFiltered(t, _filtered_town_desc.data());
+		SlObjectLoadFiltered(t, _filtered_town_desc);
 
 		for (CargoID i = 0; i < num_cargo; i++) {
-			SlObjectLoadFiltered(&t->supplied[i], _filtered_town_supplied_desc.data());
+			SlObjectLoadFiltered(&t->supplied[i], _filtered_town_supplied_desc);
 		}
 		if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
 			for (int i = TE_BEGIN; i < NUM_TE; i++) {
@@ -306,7 +327,7 @@ static void Load_TOWN()
 			}
 		} else {
 			for (int i = TE_BEGIN; i < NUM_TE; i++) {
-				SlObjectLoadFiltered(&t->received[i], _filtered_town_received_desc.data());
+				SlObjectLoadFiltered(&t->received[i], _filtered_town_received_desc);
 			}
 		}
 
@@ -333,12 +354,14 @@ static void Ptrs_TOWN()
 
 	SetupDescs_TOWN();
 	for (Town *t : Town::Iterate()) {
-		SlObjectPtrOrNullFiltered(t, _filtered_town_desc.data());
+		SlObjectPtrOrNullFiltered(t, _filtered_town_desc);
 	}
 }
 
 /** Chunk handler for towns. */
-extern const ChunkHandler _town_chunk_handlers[] = {
+static const ChunkHandler town_chunk_handlers[] = {
 	{ 'HIDS', Save_HIDS, Load_HIDS, nullptr,   nullptr, CH_ARRAY },
-	{ 'CITY', Save_TOWN, Load_TOWN, Ptrs_TOWN, nullptr, CH_ARRAY | CH_LAST},
+	{ 'CITY', Save_TOWN, Load_TOWN, Ptrs_TOWN, nullptr, CH_ARRAY },
 };
+
+extern const ChunkHandlerTable _town_chunk_handlers(town_chunk_handlers);

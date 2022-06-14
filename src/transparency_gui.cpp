@@ -22,9 +22,32 @@
 
 TransparencyOptionBits _transparency_opt;  ///< The bits that should be transparent.
 TransparencyOptionBits _transparency_lock; ///< Prevent these bits from flipping with X.
+TransparencyOptionBits _transparency_opt_base;   ///< Separate base and extra fields for config save/load.
+TransparencyOptionBits _transparency_lock_base;  ///< "
+TransparencyOptionBits _transparency_opt_extra;  ///< "
+TransparencyOptionBits _transparency_lock_extra; ///< "
 TransparencyOptionBits _invisibility_opt;  ///< The bits that should be invisible.
 byte _display_opt; ///< What do we want to draw/do?
 byte _extra_display_opt;
+
+void PreTransparencyOptionSave()
+{
+	auto handler = [](TransparencyOptionBits value, TransparencyOptionBits &base, TransparencyOptionBits &extra) {
+		base = value & 0x1FF;
+		extra = (value >> 9) & 0x1;
+	};
+	handler(_transparency_opt, _transparency_opt_base, _transparency_opt_extra);
+	handler(_transparency_lock, _transparency_lock_base, _transparency_lock_extra);
+}
+
+void PostTransparencyOptionLoad()
+{
+	auto handler = [](TransparencyOptionBits base, TransparencyOptionBits extra) -> TransparencyOptionBits {
+		return (base & 0x3FF) | ((extra & 0x1) << 9);
+	};
+	_transparency_opt = handler(_transparency_opt_base, _transparency_opt_extra);
+	_transparency_lock = handler(_transparency_lock_base, _transparency_lock_extra);
+}
 
 class TransparenciesWindow : public Window
 {

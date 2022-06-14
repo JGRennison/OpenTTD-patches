@@ -12,6 +12,7 @@
 
 #include "core/enum_type.hpp"
 #include <string>
+#include <vector>
 
 struct DesyncExtraInfo {
 	enum Flags {
@@ -23,9 +24,15 @@ struct DesyncExtraInfo {
 	};
 
 	Flags flags = DEIF_NONE;
+	const char *client_name = nullptr;
+	int client_id = -1;
 	FILE **log_file = nullptr; ///< save unclosed log file handle here
 };
 DECLARE_ENUM_AS_BIT_SET(DesyncExtraInfo::Flags)
+
+struct InconsistencyExtraInfo {
+	std::vector<std::string> check_caches_result;
+};
 
 /**
  * Helper class for creating crash logs.
@@ -124,12 +131,16 @@ protected:
 public:
 	/** Buffer for the filename name prefix */
 	char name_buffer[64];
+	FILE *crash_file = nullptr;
+	const char *crash_buffer_write = nullptr;
 
 	/** Stub destructor to silence some compilers. */
 	virtual ~CrashLog() {}
 
-	char *FillCrashLog(char *buffer, const char *last) const;
+	char *FillCrashLog(char *buffer, const char *last);
+	void FlushCrashLogBuffer();
 	char *FillDesyncCrashLog(char *buffer, const char *last, const DesyncExtraInfo &info) const;
+	char *FillInconsistencyLog(char *buffer, const char *last, const InconsistencyExtraInfo &info) const;
 	char *FillVersionInfoLog(char *buffer, const char *last) const;
 	bool WriteCrashLog(const char *buffer, char *filename, const char *filename_last, const char *name = "crash", FILE **crashlog_file = nullptr) const;
 
@@ -146,8 +157,10 @@ public:
 	bool WriteSavegame(char *filename, const char *filename_last, const char *name = "crash") const;
 	bool WriteScreenshot(char *filename, const char *filename_last, const char *name = "crash") const;
 
-	bool MakeCrashLog();
+	bool MakeCrashLog(char *buffer, const char *last);
+	bool MakeCrashLogWithStackBuffer();
 	bool MakeDesyncCrashLog(const std::string *log_in, std::string *log_out, const DesyncExtraInfo &info) const;
+	bool MakeInconsistencyLog(const InconsistencyExtraInfo &info) const;
 	bool MakeVersionInfoLog() const;
 	bool MakeCrashSavegameAndScreenshot() const;
 
@@ -165,6 +178,7 @@ public:
 	static void InitThread();
 
 	static void DesyncCrashLog(const std::string *log_in, std::string *log_out, const DesyncExtraInfo &info);
+	static void InconsistencyLog(const InconsistencyExtraInfo &info);
 	static void VersionInfoLog();
 
 	static void SetErrorMessage(const char *message);
@@ -173,10 +187,6 @@ public:
 	inline const char *GetMessage() const { return this->message; }
 
 	static const char *GetAbortCrashlogReason();
-
-	static const CrashLog *main_thread_pending_crashlog;
-
-	static void MainThreadExitCheckPendingCrashlog();
 };
 
 #endif /* CRASHLOG_H */

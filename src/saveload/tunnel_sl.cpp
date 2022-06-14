@@ -20,7 +20,6 @@ static const SaveLoad _tunnel_desc[] = {
 	 SLE_CONDVAR(Tunnel, tile_s,           SLE_UINT32,             SL_MIN_VERSION, SL_MAX_VERSION),
 	 SLE_CONDVAR(Tunnel, height,            SLE_UINT8,             SL_MIN_VERSION, SL_MAX_VERSION),
 	 SLE_CONDVAR(Tunnel, is_chunnel,         SLE_BOOL,             SL_MIN_VERSION, SL_MAX_VERSION),
-	 SLE_END()
 };
 
 static void Save_TUNN()
@@ -43,6 +42,8 @@ static void Load_TUNN()
 }
 
 
-extern const ChunkHandler _tunnel_chunk_handlers[] = {
-	{ 'TUNN', Save_TUNN, Load_TUNN, nullptr, nullptr, CH_ARRAY | CH_LAST},
+extern const ChunkHandler tunnel_chunk_handlers[] = {
+	{ 'TUNN', Save_TUNN, Load_TUNN, nullptr, nullptr, CH_ARRAY },
 };
+
+extern const ChunkHandlerTable _tunnel_chunk_handlers(tunnel_chunk_handlers);

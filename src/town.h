@@ -38,7 +38,13 @@ static const uint TOWN_GROWTH_DESERT = 0xFFFFFFFF; ///< The town needs the cargo
 static const uint16 TOWN_GROWTH_RATE_NONE = 0xFFFF; ///< Special value for Town::growth_rate to disable town growth.
 static const uint16 MAX_TOWN_GROWTH_TICKS = 930; ///< Max amount of original town ticks that still fit into uint16, about equal to UINT16_MAX / TOWN_GROWTH_TICKS but slightly less to simplify calculations
 
-static const byte TOWN_COUNCIL_INDIFFERENT = 0xFF;
+/** Settings for town council attitudes. */
+enum TownCouncilAttitudes {
+	TOWN_COUNCIL_LENIENT    = 0,
+	TOWN_COUNCIL_TOLERANT   = 1,
+	TOWN_COUNCIL_HOSTILE    = 2,
+	TOWN_COUNCIL_PERMISSIVE = 3,
+};
 
 typedef Pool<Town, TownID, 64, 64000> TownPool;
 extern TownPool _town_pool;
@@ -150,7 +156,9 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	 */
 	inline uint16 MaxTownNoise() const
 	{
-		if (this->cache.population == 0 || _settings_game.difficulty.town_council_tolerance == TOWN_COUNCIL_INDIFFERENT) return 0; // no population? no noise
+		if (_settings_game.difficulty.town_council_tolerance == TOWN_COUNCIL_PERMISSIVE) return UINT16_MAX;
+
+		if (this->cache.population == 0) return 0; // no population? no noise
 
 		/* 3 is added (the noise of the lowest airport), so the  user can at least build a small airfield. */
 		return (this->cache.population / _settings_game.economy.town_noise_population[_settings_game.difficulty.town_council_tolerance]) + 3;
@@ -185,7 +193,6 @@ void ShowTownViewWindow(TownID town);
 void ExpandTown(Town *t);
 
 void RebuildTownKdtree();
-
 
 /**
  * Action types that a company must ask permission for to a town authority.

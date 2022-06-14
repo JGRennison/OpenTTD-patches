@@ -38,7 +38,7 @@ struct AirportScopeResolver : public ScopeResolver {
 	}
 
 	uint32 GetRandomBits() const override;
-	uint32 GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const override;
+	uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const override;
 	void StorePSA(uint pos, int32 value) override;
 };
 
@@ -56,8 +56,6 @@ struct AirportResolverObject : public ResolverObject {
 			default: return ResolverObject::GetScope(scope, relative);
 		}
 	}
-
-	const SpriteGroup *ResolveReal(const RealSpriteGroup *group) const override;
 
 	GrfSpecFeature GetFeature() const override;
 	uint32 GetDebugID() const override;
@@ -197,7 +195,7 @@ void AirportOverrideManager::SetEntitySpec(AirportSpec *as)
 	}
 }
 
-/* virtual */ uint32 AirportScopeResolver::GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const
+/* virtual */ uint32 AirportScopeResolver::GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	switch (variable) {
 		case 0x40: return this->layout;
@@ -217,16 +215,6 @@ void AirportOverrideManager::SetEntitySpec(AirportSpec *as)
 	}
 
 	return this->st->GetNewGRFVariable(this->ro, variable, parameter, &(extra->available));
-}
-
-/* virtual */ const SpriteGroup *AirportResolverObject::ResolveReal(const RealSpriteGroup *group) const
-{
-	/* Airport action 2s should always have only 1 "loaded" state, but some
-	 * times things don't follow the spec... */
-	if (group->num_loaded > 0) return group->loaded[0];
-	if (group->num_loading > 0) return group->loading[0];
-
-	return nullptr;
 }
 
 GrfSpecFeature AirportResolverObject::GetFeature() const

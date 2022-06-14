@@ -25,7 +25,7 @@
  */
 enum PacketGameType {
 	/*
-	 * These first three pair of packets (thus six in
+	 * These first four pair of packets (thus eight in
 	 * total) must remain in this order for backward
 	 * and forward compatibility between clients that
 	 * are trying to join directly.
@@ -39,9 +39,13 @@ enum PacketGameType {
 	PACKET_CLIENT_JOIN,                  ///< The client telling the server it wants to join.
 	PACKET_SERVER_ERROR,                 ///< Server sending an error message to the client.
 
-	/* Packets used for the pre-game lobby. */
-	PACKET_CLIENT_COMPANY_INFO,          ///< Request information about all companies.
-	PACKET_SERVER_COMPANY_INFO,          ///< Information about a single company.
+	/* Unused packet types, formerly used for the pre-game lobby. */
+	PACKET_CLIENT_UNUSED,                ///< Unused.
+	PACKET_SERVER_UNUSED,                ///< Unused.
+
+	/* Packets used to get the game info. */
+	PACKET_SERVER_GAME_INFO,             ///< Information about the server.
+	PACKET_CLIENT_GAME_INFO,             ///< Request information about the server.
 
 	/*
 	 * Packets after here assume that the client
@@ -52,6 +56,8 @@ enum PacketGameType {
 	 * sent as part of authenticating and getting
 	 * the map and other important data.
 	 */
+
+	PACKET_SERVER_GAME_INFO_EXTENDED,    ///< Information about the server (extended). Note that the server should not use this ID directly.
 
 	/* After the join step, the first is checking NewGRFs. */
 	PACKET_SERVER_CHECK_NEWGRFS,         ///< Server sends NewGRF IDs and MD5 checksums for the client to check.
@@ -98,6 +104,7 @@ enum PacketGameType {
 	/* Human communication! */
 	PACKET_CLIENT_CHAT,                  ///< Client said something that should be distributed.
 	PACKET_SERVER_CHAT,                  ///< Server distributing the message of a client (or itself).
+	PACKET_SERVER_EXTERNAL_CHAT,         ///< Server distributing the message from external source.
 
 	/* Remote console. */
 	PACKET_CLIENT_RCON,                  ///< Client asks the server to execute some command.
@@ -124,9 +131,12 @@ enum PacketGameType {
 	PACKET_SERVER_ERROR_QUIT,            ///< A server tells that a client has hit an error and did quit.
 	PACKET_CLIENT_DESYNC_LOG,            ///< A client reports a desync log
 	PACKET_SERVER_DESYNC_LOG,            ///< A server reports a desync log
+	PACKET_CLIENT_DESYNC_MSG,            ///< A client reports a desync message
 
 	PACKET_END,                          ///< Must ALWAYS be on the end of this list!! (period)
 };
+
+const char *GetPacketTypeName(PacketGameType type);
 
 /** Packet that wraps a command */
 struct CommandPacket;
@@ -193,38 +203,24 @@ protected:
 	virtual NetworkRecvStatus Receive_SERVER_ERROR(Packet *p);
 
 	/**
-	 * Request company information (in detail).
+	 * Request game information.
 	 * @param p The packet that was just received.
 	 */
-	virtual NetworkRecvStatus Receive_CLIENT_COMPANY_INFO(Packet *p);
+	virtual NetworkRecvStatus Receive_CLIENT_GAME_INFO(Packet *p);
 
 	/**
-	 * Sends information about the companies (one packet per company):
-	 * uint8   Version of the structure of this packet (NETWORK_COMPANY_INFO_VERSION).
-	 * bool    Contains data (false marks the end of updates).
-	 * uint8   ID of the company.
-	 * string  Name of the company.
-	 * uint32  Year the company was inaugurated.
-	 * uint64  Value.
-	 * uint64  Money.
-	 * uint64  Income.
-	 * uint16  Performance (last quarter).
-	 * bool    Company is password protected.
-	 * uint16  Number of trains.
-	 * uint16  Number of lorries.
-	 * uint16  Number of busses.
-	 * uint16  Number of planes.
-	 * uint16  Number of ships.
-	 * uint16  Number of train stations.
-	 * uint16  Number of lorry stations.
-	 * uint16  Number of bus stops.
-	 * uint16  Number of airports and heliports.
-	 * uint16  Number of harbours.
-	 * bool    Company is an AI.
-	 * string  Client names (comma separated list)
+	 * Sends information about the game.
+	 * Serialized NetworkGameInfo. See game_info.h for details.
 	 * @param p The packet that was just received.
 	 */
-	virtual NetworkRecvStatus Receive_SERVER_COMPANY_INFO(Packet *p);
+	virtual NetworkRecvStatus Receive_SERVER_GAME_INFO(Packet *p);
+
+	/**
+	 * Sends information about the game (extended).
+	 * Serialized NetworkGameInfo. See game_info.h for details.
+	 * @param p The packet that was just received.
+	 */
+	virtual NetworkRecvStatus Receive_SERVER_GAME_INFO_EXTENDED(Packet *p);
 
 	/**
 	 * Send information about a client:
@@ -281,7 +277,7 @@ protected:
 	virtual NetworkRecvStatus Receive_SERVER_SETTINGS_ACCESS(Packet *p);
 
 	/**
-	 * The client is joined and ready to receive his map:
+	 * The client is joined and ready to receive their map:
 	 * uint32  Own client ID.
 	 * uint32  Generation seed.
 	 * string  Network ID of the server.
@@ -420,6 +416,16 @@ protected:
 	virtual NetworkRecvStatus Receive_SERVER_CHAT(Packet *p);
 
 	/**
+	 * Sends a chat-packet for external source to the client:
+	 * string  Name of the source this message came from.
+	 * uint16  TextColour to use for the message.
+	 * string  Name of the user who sent the messsage.
+	 * string  Message (max NETWORK_CHAT_LENGTH).
+	 * @param p The packet that was just received.
+	 */
+	virtual NetworkRecvStatus Receive_SERVER_EXTERNAL_CHAT(Packet *p);
+
+	/**
 	 * Set the password for the clients current company:
 	 * string  The password.
 	 * @param p The packet that was just received.
@@ -447,6 +453,7 @@ protected:
 	virtual NetworkRecvStatus Receive_CLIENT_ERROR(Packet *p);
 	virtual NetworkRecvStatus Receive_CLIENT_DESYNC_LOG(Packet *p);
 	virtual NetworkRecvStatus Receive_SERVER_DESYNC_LOG(Packet *p);
+	virtual NetworkRecvStatus Receive_CLIENT_DESYNC_MSG(Packet *p);
 
 	/**
 	 * Notification that a client left the game:
@@ -546,6 +553,7 @@ public:
 	uint32 last_frame_server;    ///< Last frame the server has executed
 	CommandQueue incoming_queue; ///< The command-queue awaiting handling
 	std::chrono::steady_clock::time_point last_packet; ///< Time we received the last frame.
+	PacketGameType last_pkt_type;///< Last received packet type
 
 	NetworkRecvStatus CloseConnection(bool error = true) override;
 
@@ -579,6 +587,9 @@ public:
 
 	const char *ReceiveCommand(Packet *p, CommandPacket *cp);
 	void SendCommand(Packet *p, const CommandPacket *cp);
+
+	virtual std::string GetDebugInfo() const;
+	virtual void LogSentPacket(const Packet &pkt) override;
 };
 
 #endif /* NETWORK_CORE_TCP_GAME_H */

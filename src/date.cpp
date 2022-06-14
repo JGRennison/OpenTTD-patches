@@ -39,6 +39,8 @@ YearMonthDay _game_load_cur_date_ymd;
 DateFract _game_load_date_fract;
 uint8 _game_load_tick_skip_counter;
 
+extern void ClearOutOfDateSignalSpeedRestrictions();
+
 /**
  * Set the date.
  * @param date  New date
@@ -184,6 +186,7 @@ extern void CompaniesMonthlyLoop();
 extern void EnginesMonthlyLoop();
 extern void TownsMonthlyLoop();
 extern void IndustryMonthlyLoop();
+extern void StationDailyLoop();
 extern void StationMonthlyLoop();
 extern void SubsidyMonthlyLoop();
 
@@ -212,6 +215,8 @@ static void OnNewYear()
 	VehiclesYearlyLoop();
 	TownsYearlyLoop();
 	InvalidateWindowClassesData(WC_BUILD_STATION);
+	InvalidateWindowClassesData(WC_BUS_STATION);
+	InvalidateWindowClassesData(WC_TRUCK_STATION);
 	if (_network_server) NetworkServerYearlyLoop();
 
 	if (_cur_date_ymd.year == _settings_client.gui.semaphore_build_before) ResetSignalVariant();
@@ -228,9 +233,9 @@ static void OnNewYear()
 		_cur_date_ymd.year--;
 		days_this_year = IsLeapYear(_cur_date_ymd.year) ? DAYS_IN_LEAP_YEAR : DAYS_IN_YEAR;
 		_date -= days_this_year;
-		for (Vehicle *v : Vehicle::Iterate()) v->date_of_last_service -= days_this_year;
 		for (LinkGraph *lg : LinkGraph::Iterate()) lg->ShiftDates(-days_this_year);
 		ShiftOrderDates(-days_this_year);
+		ShiftVehicleDates(-days_this_year);
 
 		/* Because the _date wraps here, and text-messages expire by game-days, we have to clean out
 		 *  all of them if the date is set back, else those messages will hang for ever */
@@ -246,7 +251,7 @@ static void OnNewYear()
  */
 static void OnNewMonth()
 {
-	if (_settings_client.gui.autosave != 0 && (_cur_date_ymd.month % _autosave_months[_settings_client.gui.autosave]) == 0) {
+	if (_settings_client.gui.autosave != 0 && _settings_client.gui.autosave < 5 && (_cur_date_ymd.month % _autosave_months[_settings_client.gui.autosave]) == 0) {
 		_do_autosave = true;
 		_check_special_modes = true;
 		SetWindowDirty(WC_STATUS_BAR, 0);
@@ -268,6 +273,12 @@ static void OnNewMonth()
  */
 static void OnNewDay()
 {
+	if (_settings_client.gui.autosave == 5 && (_date % _settings_client.gui.autosave_custom_days) == 0) {
+		_do_autosave = true;
+		_check_special_modes = true;
+		SetWindowDirty(WC_STATUS_BAR, 0);
+	}
+
 	if (!_newgrf_profilers.empty() && _newgrf_profile_end_date <= _date) {
 		NewGRFProfiler::FinishAll();
 	}
@@ -276,11 +287,13 @@ static void OnNewDay()
 
 	DisasterDailyLoop();
 	IndustryDailyLoop();
+	StationDailyLoop();
 
 	if (!_settings_time.time_in_minutes || _settings_client.gui.date_with_time > 0) {
 		SetWindowWidgetDirty(WC_STATUS_BAR, 0, WID_S_LEFT);
 	}
 	EnginesDailyLoop();
+	ClearOutOfDateSignalSpeedRestrictions();
 
 	/* Refresh after possible snowline change */
 	SetWindowClassesDirty(WC_TOWN_VIEW);

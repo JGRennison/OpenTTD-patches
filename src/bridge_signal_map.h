@@ -79,4 +79,6 @@ static inline void ClearBridgeEntranceSimulatedSignals(TileIndex t)
 
 void ClearBridgeSimulatedSignalMapping();
 
+void MarkSingleBridgeSignalDirty(TileIndex tile, TileIndex bridge_start_tile);
+
 #endif /* BRIDGE_SIGNAL_MAP_H */

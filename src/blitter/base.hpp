@@ -33,10 +33,10 @@ enum BlitterMode {
  *  - heavy branching (remap lookups and animation buffer handling).
  */
 enum BlitterSpriteFlags {
-	SF_NONE        = 0,
-	SF_TRANSLUCENT = 1 << 1, ///< The sprite has at least 1 translucent pixel.
-	SF_NO_REMAP    = 1 << 2, ///< The sprite has no remappable colour pixel.
-	SF_NO_ANIM     = 1 << 3, ///< The sprite has no palette animated pixel.
+	BSF_NONE        = 0,
+	BSF_TRANSLUCENT = 1 << 1, ///< The sprite has at least 1 translucent pixel.
+	BSF_NO_REMAP    = 1 << 2, ///< The sprite has no remappable colour pixel.
+	BSF_NO_ANIM     = 1 << 3, ///< The sprite has no palette animated pixel.
 };
 DECLARE_ENUM_AS_BIT_SET(BlitterSpriteFlags);
 
@@ -116,6 +116,17 @@ public:
 	 * @param colour A 8bpp mapping colour.
 	 */
 	virtual void SetPixel(void *video, int x, int y, uint8 colour) = 0;
+
+	/**
+	 * Draw a pixel with a given 32bpp colour on the video-buffer.
+	 * Fall back to an 8bpp colour if 32bpp colour is not available.
+	 * @param video The destination pointer (video-buffer).
+	 * @param x The x position within video-buffer.
+	 * @param y The y position within video-buffer.
+	 * @param colour A 8bpp mapping colour.
+	 * @param colour32 A 32bpp colour.
+	 */
+	virtual void SetPixel32(void *video, int x, int y, uint8 colour, uint32 colour32) = 0;
 
 	/**
 	 * Draw a rectangle of pixels on the video-buffer.

@@ -350,8 +350,17 @@ void UpdateAllBlockSignals(Owner owner)
 			} while (bits != TRACK_BIT_NONE);
 		} else if (IsLevelCrossingTile(tile) && (owner == INVALID_OWNER || GetTileOwner(tile) == owner)) {
 			UpdateLevelCrossing(tile);
+		} else if (IsTunnelBridgeWithSignalSimulation(tile)) {
+			if (IsTunnelBridgeSignalSimulationExit(tile)) {
+				AddSideToSignalBuffer(tile, INVALID_DIAGDIR, GetTileOwner(tile));
+			}
+			if (_extra_aspects > 0 && IsTunnelBridgeSignalSimulationEntrance(tile) && GetTunnelBridgeEntranceSignalState(tile) == SIGNAL_STATE_GREEN) {
+				SetTunnelBridgeEntranceSignalAspect(tile, 0);
+				UpdateAspectDeferred(tile, GetTunnelBridgeEntranceTrackdir(tile));
+			}
 		}
 	} while (++tile != MapSize());
 
 	UpdateSignalsInBuffer();
+	FlushDeferredAspectUpdates();
 }

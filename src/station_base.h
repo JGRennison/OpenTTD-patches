@@ -21,16 +21,36 @@
 #include "3rdparty/cpp-btree/btree_set.h"
 #include "bitmap_type.h"
 #include "core/endian_type.hpp"
+#include "strings_type.h"
 #include <map>
 #include <vector>
+#include <array>
 #include <iterator>
 #include <functional>
 #include <algorithm>
 
-typedef Pool<BaseStation, StationID, 32, 64000> StationPool;
-extern StationPool _station_pool;
-
 static const byte INITIAL_STATION_RATING = 175;
+
+static const uint MAX_EXTRA_STATION_NAMES = 1024;
+
+/** Extra station name string flags. */
+enum ExtraStationNameInfoFlags {
+	/* Bits 0 - 5 used for StationNaming enum */
+	ESNIF_CENTRAL               =  8,
+	ESNIF_NOT_CENTRAL           =  9,
+	ESNIF_NEAR_WATER            = 10,
+	ESNIF_NOT_NEAR_WATER        = 11,
+};
+
+/** Extra station name string */
+struct ExtraStationNameInfo {
+	StringID str;
+	uint16 flags;
+};
+
+extern std::array<ExtraStationNameInfo, MAX_EXTRA_STATION_NAMES> _extra_station_names;
+extern uint _extra_station_names_used;
+extern uint8 _extra_station_names_probability;
 
 class FlowStatMap;
 
@@ -452,7 +472,7 @@ public:
 	std::pair<iterator, bool> insert(FlowStat flow_stat)
 	{
 		StationID st = flow_stat.GetOrigin();
-		auto res = this->flows_index.insert(std::pair<StationID, uint16>(st, this->flows_storage.size()));
+		auto res = this->flows_index.insert(std::pair<StationID, uint16>(st, (uint16)this->flows_storage.size()));
 		if (res.second) {
 			this->flows_storage.push_back(std::move(flow_stat));
 		}
@@ -461,7 +481,7 @@ public:
 
 	iterator insert(iterator hint, FlowStat flow_stat)
 	{
-		auto res = this->flows_index.insert(hint.current, std::pair<StationID, uint16>(flow_stat.GetOrigin(), this->flows_storage.size()));
+		auto res = this->flows_index.insert(hint.current, std::pair<StationID, uint16>(flow_stat.GetOrigin(), (uint16)this->flows_storage.size()));
 		if (res->second == this->flows_storage.size()) {
 			this->flows_storage.push_back(std::move(flow_stat));
 		}
@@ -765,11 +785,19 @@ private:
 	}
 };
 
-struct IndustryCompare {
-	bool operator() (const Industry *lhs, const Industry *rhs) const;
+struct IndustryListEntry {
+	uint distance;
+	Industry *industry;
+
+	bool operator==(const IndustryListEntry &other) const { return this->distance == other.distance && this->industry == other.industry; }
+	bool operator!=(const IndustryListEntry &other) const { return !(*this == other); }
 };
 
-typedef btree::btree_set<Industry *, IndustryCompare> IndustryList;
+struct IndustryCompare {
+	bool operator() (const IndustryListEntry &lhs, const IndustryListEntry &rhs) const;
+};
+
+typedef btree::btree_set<IndustryListEntry, IndustryCompare> IndustryList;
 
 /** Station data structure */
 struct Station FINAL : SpecializedStation<Station, false> {
@@ -791,7 +819,8 @@ public:
 	TileArea docking_station; ///< Tile area the docking tiles cover
 	std::vector<TileIndex> docking_tiles; ///< Tile vector the docking tiles cover
 
-	IndustryType indtype;   ///< Industry type to get the name from
+	IndustryType indtype;    ///< Industry type to get the name from
+	uint16 extra_name_index; ///< Extra name index in use (or UINT16_MAX)
 
 	BitmapTileArea catchment_tiles; ///< NOSAVE: Set of individual tiles covered by catchment area
 	uint station_tiles;             ///< NOSAVE: Count of station tiles owned by this station
@@ -808,6 +837,10 @@ public:
 	IndustryList industries_near; ///< Cached list of industries near the station that can accept cargo, @see DeliverGoodsToIndustry()
 	Industry *industry;           ///< NOSAVE: Associated industry for neutral stations. (Rebuilt on load from Industry->st)
 
+	CargoTypes station_cargo_history_cargoes;                                              ///< Bitmask of cargoes in station_cargo_history
+	uint8 station_cargo_history_offset;                                                    ///< Start offset in station_cargo_history cargo ring buffer
+	std::vector<std::array<uint16, MAX_STATION_CARGO_HISTORY_DAYS>> station_cargo_history; ///< Station history of waiting cargo.
+
 	Station(TileIndex tile = INVALID_TILE);
 	~Station();
 
@@ -816,6 +849,8 @@ public:
 	void MarkTilesDirty(bool cargo_change) const;
 
 	void UpdateVirtCoord() override;
+
+	void UpdateCargoHistory();
 
 	void MoveSign(TileIndex new_xy) override;
 
@@ -834,7 +869,8 @@ public:
 	}
 
 	bool CatchmentCoversTown(TownID t) const;
-	void AddIndustryToDeliver(Industry *ind);
+	void AddIndustryToDeliver(Industry *ind, TileIndex tile);
+	void RemoveIndustryToDeliver(Industry *ind);
 	void RemoveFromAllNearbyLists();
 
 	inline bool TileIsInCatchment(TileIndex tile) const
@@ -847,6 +883,11 @@ public:
 		return IsRailStationTile(tile) && GetStationIndex(tile) == this->index;
 	}
 
+	inline bool TileBelongsToRoadStop(TileIndex tile) const
+	{
+		return IsAnyRoadStopTile(tile) && GetStationIndex(tile) == this->index;
+	}
+
 	inline bool TileBelongsToAirport(TileIndex tile) const
 	{
 		return IsAirportTile(tile) && GetStationIndex(tile) == this->index;
@@ -854,7 +895,7 @@ public:
 
 	bool IsWithinRangeOfDockingTile(TileIndex tile, uint max_distance) const;
 
-	uint32 GetNewGRFVariable(const ResolverObject &object, byte variable, byte parameter, bool *available) const override;
+	uint32 GetNewGRFVariable(const ResolverObject &object, uint16 variable, byte parameter, bool *available) const override;
 
 	void GetTileArea(TileArea *ta, StationType type) const override;
 };
@@ -901,6 +942,9 @@ void RebuildStationKdtree();
 template<typename Func>
 void ForAllStationsAroundTiles(const TileArea &ta, Func func)
 {
+	/* There are no stations, so we will never find anything. */
+	if (Station::GetNumItems() == 0) return;
+
 	/* Not using, or don't have a nearby stations list, so we need to scan. */
 	btree::btree_set<StationID> seen_stations;
 
@@ -909,7 +953,7 @@ void ForAllStationsAroundTiles(const TileArea &ta, Func func)
 	uint max_c = _settings_game.station.modified_catchment ? MAX_CATCHMENT : CA_UNMODIFIED;
 	max_c += _settings_game.station.catchment_increase;
 	TileArea ta_ext = TileArea(ta).Expand(max_c);
-	TILE_AREA_LOOP(tile, ta_ext) {
+	for (TileIndex tile : ta_ext) {
 		if (IsTileType(tile, MP_STATION)) seen_stations.insert(GetStationIndex(tile));
 	}
 
@@ -921,7 +965,7 @@ void ForAllStationsAroundTiles(const TileArea &ta, Func func)
 		if (!_settings_game.station.serve_neutral_industries && st->industry != nullptr) continue;
 
 		/* Test if the tile is within the station's catchment */
-		TILE_AREA_LOOP(tile, ta) {
+		for (TileIndex tile : ta) {
 			if (st->TileIsInCatchment(tile)) {
 				if (func(st, tile)) break;
 			}

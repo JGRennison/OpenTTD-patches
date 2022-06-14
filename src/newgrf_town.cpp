@@ -14,7 +14,7 @@
 
 #include "safeguards.h"
 
-/* virtual */ uint32 TownScopeResolver::GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const
+/* virtual */ uint32 TownScopeResolver::GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	switch (variable) {
 		/* Larger towns */
@@ -148,7 +148,7 @@
 	t->psa_list.push_back(psa);
 }
 
-/* virtual */ uint32 FakeTownScopeResolver::GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const
+/* virtual */ uint32 FakeTownScopeResolver::GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	switch (variable) {
 		/* Town index */

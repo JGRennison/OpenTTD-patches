@@ -39,7 +39,7 @@ uint DropDownListStringItem::Width() const
 
 void DropDownListStringItem::Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const
 {
-	DrawString(left + WD_FRAMERECT_LEFT, right - WD_FRAMERECT_RIGHT, top, this->String(), sel ? TC_WHITE : TC_BLACK);
+	DrawString(left + WD_FRAMERECT_LEFT, right - WD_FRAMERECT_RIGHT, top, this->String(), (sel ? TC_WHITE : TC_BLACK) | this->colour_flags);
 }
 
 /**
@@ -65,20 +65,14 @@ StringID DropDownListParamStringItem::String() const
 
 StringID DropDownListCharStringItem::String() const
 {
-	SetDParamStr(0, this->raw_string.c_str());
+	SetDParamStr(0, this->raw_string);
 	return this->string;
 }
 
 DropDownListIconItem::DropDownListIconItem(SpriteID sprite, PaletteID pal, StringID string, int result, bool masked) : DropDownListParamStringItem(string, result, masked), sprite(sprite), pal(pal)
 {
 	this->dim = GetSpriteSize(sprite);
-	if (this->dim.height < (uint)FONT_HEIGHT_NORMAL) {
-		this->sprite_y = (FONT_HEIGHT_NORMAL - dim.height) / 2;
-		this->text_y = 0;
-	} else {
-		this->sprite_y = 0;
-		this->text_y = (dim.height - FONT_HEIGHT_NORMAL) / 2;
-	}
+	this->sprite_y = dim.height;
 }
 
 uint DropDownListIconItem::Height(uint width) const
@@ -94,8 +88,8 @@ uint DropDownListIconItem::Width() const
 void DropDownListIconItem::Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const
 {
 	bool rtl = _current_text_dir == TD_RTL;
-	DrawSprite(this->sprite, this->pal, rtl ? right - this->dim.width - WD_FRAMERECT_RIGHT : left + WD_FRAMERECT_LEFT, top + this->sprite_y);
-	DrawString(left + WD_FRAMERECT_LEFT + (rtl ? 0 : (this->dim.width + WD_FRAMERECT_LEFT)), right - WD_FRAMERECT_RIGHT - (rtl ? (this->dim.width + WD_FRAMERECT_RIGHT) : 0), top + this->text_y, this->String(), sel ? TC_WHITE : TC_BLACK);
+	DrawSprite(this->sprite, this->pal, rtl ? right - this->dim.width - WD_FRAMERECT_RIGHT : left + WD_FRAMERECT_LEFT, CenterBounds(top, bottom, this->sprite_y));
+	DrawString(left + WD_FRAMERECT_LEFT + (rtl ? 0 : (this->dim.width + WD_FRAMERECT_LEFT)), right - WD_FRAMERECT_RIGHT - (rtl ? (this->dim.width + WD_FRAMERECT_RIGHT) : 0), CenterBounds(top, bottom, FONT_HEIGHT_NORMAL), this->String(), (sel ? TC_WHITE : TC_BLACK) | this->colour_flags);
 }
 
 void DropDownListIconItem::SetDimension(Dimension d)
@@ -163,7 +157,7 @@ struct DropdownWindow : Window {
 
 		uint items_width = size.width - (scroll ? NWidgetScrollbar::GetVerticalDimension().width : 0);
 		NWidgetCore *nwi = this->GetWidget<NWidgetCore>(WID_DM_ITEMS);
-		nwi->SetMinimalSize(items_width, size.height + 4);
+		nwi->SetMinimalSizeAbsolute(items_width, size.height + 4);
 		nwi->colour = wi_colour;
 
 		nwi = this->GetWidget<NWidgetCore>(WID_DM_SCROLL);
@@ -475,12 +469,8 @@ void ShowDropDownList(Window *w, DropDownList &&list, int selected, int button, 
 {
 	/* Our parent's button widget is used to determine where to place the drop
 	 * down list window. */
-	Rect wi_rect;
 	NWidgetCore *nwi = w->GetWidget<NWidgetCore>(button);
-	wi_rect.left   = nwi->pos_x;
-	wi_rect.right  = nwi->pos_x + nwi->current_x - 1;
-	wi_rect.top    = nwi->pos_y;
-	wi_rect.bottom = nwi->pos_y + nwi->current_y - 1;
+	Rect wi_rect      = nwi->GetCurrentRect();
 	Colours wi_colour = nwi->colour;
 
 	if ((nwi->type & WWT_MASK) == NWID_BUTTON_DROPDOWN) {
@@ -538,8 +528,7 @@ void ShowDropDownMenu(Window *w, const StringID *strings, int selected, int butt
  */
 int HideDropDownMenu(Window *pw)
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		if (w->window_class != WC_DROPDOWN_MENU) continue;
 
 		DropdownWindow *dw = dynamic_cast<DropdownWindow*>(w);

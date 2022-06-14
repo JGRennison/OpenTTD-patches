@@ -56,7 +56,8 @@ private:
 	typedef std::vector<NodeAnnotation> NodeAnnotationVector;
 	typedef SmallMatrix<EdgeAnnotation> EdgeAnnotationMatrix;
 
-	friend const SaveLoad *GetLinkGraphJobDesc();
+	friend SaveLoadTable GetLinkGraphJobDesc();
+	friend upstream_sl::SaveLoadTable upstream_sl::GetLinkGraphJobDesc();
 	friend void GetLinkGraphJobDayLengthScaleAfterLoad(LinkGraphJob *lgj);
 	friend class LinkGraphSchedule;
 	friend class LinkGraphJobGroup;
@@ -364,7 +365,7 @@ public:
 	 * Get the size of the underlying link graph.
 	 * @return Size.
 	 */
-	inline uint Size() const { return this->link_graph.Size(); }
+	inline NodeID Size() const { return this->link_graph.Size(); }
 
 	/**
 	 * Get the cargo of the underlying link graph.
@@ -399,6 +400,7 @@ public:
 	static Path *invalid_path;
 
 	Path(NodeID n, bool source = false);
+	virtual ~Path() = default;
 
 	/** Get the node this leg passes. */
 	inline NodeID GetNode() const { return this->node; }

@@ -8,6 +8,7 @@
 /** @file npf.cpp Implementation of the NPF pathfinder. */
 
 #include "../../stdafx.h"
+#include "../../debug.h"
 #include "../../network/network.h"
 #include "../../viewport_func.h"
 #include "../../ship.h"
@@ -24,8 +25,6 @@
 static const uint NPF_HASH_BITS = 12; ///< The size of the hash used in pathfinding. Just changing this value should be sufficient to change the hash size. Should be an even value.
 /* Do no change below values */
 static const uint NPF_HASH_SIZE = 1 << NPF_HASH_BITS;
-static const uint NPF_HASH_HALFBITS = NPF_HASH_BITS / 2;
-static const uint NPF_HASH_HALFMASK = (1 << NPF_HASH_HALFBITS) - 1;
 
 /** Meant to be stored in AyStar.targetdata */
 struct NPFFindStationOrTileData {
@@ -128,24 +127,6 @@ static uint NPFDistanceTrack(TileIndex t0, TileIndex t1)
 	/* Don't factor out NPF_TILE_LENGTH below, this will round values and lose
 	 * precision */
 	return diagTracks * NPF_TILE_LENGTH + straightTracks * NPF_TILE_LENGTH * STRAIGHT_TRACK_LENGTH;
-}
-
-/**
- * Calculates a hash value for use in the NPF.
- * @param key1 The TileIndex of the tile to hash
- * @param key2 The Trackdir of the track on the tile.
- *
- * @todo Think of a better hash.
- */
-static uint NPFHash(uint key1, uint key2)
-{
-	/* TODO: think of a better hash? */
-	uint part1 = TileX(key1) & NPF_HASH_HALFMASK;
-	uint part2 = TileY(key1) & NPF_HASH_HALFMASK;
-
-	assert(IsValidTrackdir((Trackdir)key2));
-	assert(IsValidTile(key1));
-	return ((part1 << NPF_HASH_HALFBITS | part2) + (NPF_HASH_SIZE * key2 / TRACKDIR_END)) % NPF_HASH_SIZE;
 }
 
 static int32 NPFCalcZero(AyStar *as, AyStarNode *current, OpenListNode *parent)
@@ -330,7 +311,7 @@ static int32 NPFWaterPathCost(AyStar *as, AyStarNode *current, OpenListNode *par
 
 	if (IsDockingTile(current->tile)) {
 		/* Check docking tile for occupancy */
-		uint count = 1;
+		uint count = 0;
 		HasVehicleOnPos(current->tile, VEH_SHIP, &count, &CountShipProc);
 		cost += count * 3 * _trackdir_length[trackdir];
 	}
@@ -360,6 +341,7 @@ static int32 NPFRoadPathCost(AyStar *as, AyStarNode *current, OpenListNode *pare
 
 		case MP_STATION: {
 			cost = NPF_TILE_LENGTH;
+			if (IsRoadWaypoint(tile)) break;
 			const RoadStop *rs = RoadStop::GetByTile(tile, GetRoadStopType(tile));
 			if (IsDriveThroughStopTile(tile)) {
 				/* Increase the cost for drive-through road stops */
@@ -514,7 +496,7 @@ static int32 NPFRailPathCost(AyStar *as, AyStarNode *current, OpenListNode *pare
 			NPFSetFlag(current, NPF_FLAG_LAST_SIGNAL_BLOCK, !IsPbsSignal(sigtype));
 		}
 
-		if (HasPbsSignalOnTrackdir(tile, ReverseTrackdir(trackdir)) && !NPFGetFlag(current, NPF_FLAG_3RD_SIGNAL)) {
+		if (HasPbsSignalOnTrackdir(tile, ReverseTrackdir(trackdir)) && !NPFGetFlag(current, NPF_FLAG_3RD_SIGNAL) && !IsNoEntrySignal(tile, TrackdirToTrack(trackdir))) {
 			cost += _settings_game.pf.npf.npf_rail_pbs_signal_back_penalty;
 		}
 	}
@@ -836,9 +818,7 @@ static bool CanEnterTile(TileIndex tile, DiagDirection dir, AyStarUserData *user
 
 	/* Depots, standard roadstops and single tram bits can only be entered from one direction */
 	DiagDirection single_entry = GetTileSingleEntry(tile, user->type, user->subtype);
-	if (single_entry != INVALID_DIAGDIR && single_entry != ReverseDiagDir(dir)) return false;
-
-	return true;
+	return single_entry == INVALID_DIAGDIR || single_entry == ReverseDiagDir(dir);
 }
 
 /**
@@ -966,8 +946,7 @@ static void NPFFollowTrack(AyStar *aystar, OpenListNode *current)
 		TrackBits reserved = GetReservedTrackbits(dst_tile);
 		trackdirbits &= ~TrackBitsToTrackdirBits(reserved);
 
-		Track t;
-		FOR_EACH_SET_TRACK(t, TrackdirBitsToTrackBits(trackdirbits)) {
+		for (Track t : SetTrackBitIterator(TrackdirBitsToTrackBits(trackdirbits))) {
 			if (TracksOverlap(reserved | TrackToTrackBits(t))) trackdirbits &= ~TrackToTrackdirBits(t);
 		}
 	}
@@ -982,6 +961,9 @@ static void NPFFollowTrack(AyStar *aystar, OpenListNode *current)
 		if (IsTileType(dst_tile, MP_RAILWAY) && GetRailTileType(dst_tile) == RAIL_TILE_SIGNALS) {
 			if (HasSignalOnTrackdir(dst_tile, ReverseTrackdir(dst_trackdir)) && !HasSignalOnTrackdir(dst_tile, dst_trackdir) && IsOnewaySignal(dst_tile, TrackdirToTrack(dst_trackdir))) {
 				/* If there's a one-way signal not pointing towards us, stop going in this direction. */
+				break;
+			}
+			if (HasSignalOnTrackdir(dst_tile, dst_trackdir) && IsNoEntrySignal(dst_tile, TrackdirToTrack(dst_trackdir))) {
 				break;
 			}
 		}
@@ -1015,9 +997,6 @@ static void NPFFollowTrack(AyStar *aystar, OpenListNode *current)
  */
 static NPFFoundTargetData NPFRouteInternal(AyStarNode *start1, bool ignore_start_tile1, AyStarNode *start2, bool ignore_start_tile2, NPFFindStationOrTileData *target, AyStar_EndNodeCheck target_proc, AyStar_CalculateH heuristic_proc, AyStarUserData *user, uint reverse_penalty, bool ignore_reserved = false, int max_penalty = 0)
 {
-	int r;
-	NPFFoundTargetData result;
-
 	/* Initialize procs */
 	_npf_aystar.max_path_cost = max_penalty;
 	_npf_aystar.CalculateH = heuristic_proc;
@@ -1047,6 +1026,7 @@ static NPFFoundTargetData NPFRouteInternal(AyStarNode *start1, bool ignore_start
 	}
 
 	/* Initialize result */
+	NPFFoundTargetData result;
 	result.best_bird_dist = UINT_MAX;
 	result.best_path_dist = UINT_MAX;
 	result.best_trackdir  = INVALID_TRACKDIR;
@@ -1061,7 +1041,7 @@ static NPFFoundTargetData NPFRouteInternal(AyStarNode *start1, bool ignore_start
 	_npf_aystar.user_data = user;
 
 	/* GO! */
-	r = _npf_aystar.Main();
+	[[maybe_unused]] int r = _npf_aystar.Main();
 	assert(r != AYSTAR_STILL_BUSY);
 
 	if (result.best_bird_dist != 0) {
@@ -1127,7 +1107,7 @@ void InitializeNPF()
 	static bool first_init = true;
 	if (first_init) {
 		first_init = false;
-		_npf_aystar.Init(NPFHash, NPF_HASH_SIZE);
+		_npf_aystar.Init(NPF_HASH_SIZE);
 	} else {
 		_npf_aystar.Clear();
 	}
@@ -1152,7 +1132,7 @@ static void NPFFillWithOrderData(NPFFindStationOrTileData *fstd, const Vehicle *
 		if (v->type == VEH_TRAIN) {
 			fstd->station_type = v->current_order.IsType(OT_GOTO_STATION) ? STATION_RAIL : STATION_WAYPOINT;
 		} else if (v->type == VEH_ROAD) {
-			fstd->station_type = RoadVehicle::From(v)->IsBus() ? STATION_BUS : STATION_TRUCK;
+			fstd->station_type = v->current_order.IsType(OT_GOTO_STATION) ? (RoadVehicle::From(v)->IsBus() ? STATION_BUS : STATION_TRUCK) : STATION_ROADWAYPOINT;
 		} else if (v->type == VEH_SHIP) {
 			fstd->station_type = v->current_order.IsType(OT_GOTO_STATION) ? STATION_DOCK : STATION_BUOY;
 		}
@@ -1229,10 +1209,10 @@ Track NPFShipChooseTrack(const Ship *v, bool &path_found)
 	return TrackdirToTrack(ftd.best_trackdir);
 }
 
-bool NPFShipCheckReverse(const Ship *v)
+bool NPFShipCheckReverse(const Ship *v, Trackdir *best_td)
 {
 	NPFFindStationOrTileData fstd;
-	NPFFoundTargetData ftd;
+	NPFFoundTargetData ftd = {};
 
 	NPFFillWithOrderData(&fstd, v);
 
@@ -1242,7 +1222,24 @@ bool NPFShipCheckReverse(const Ship *v)
 	assert(trackdir_rev != INVALID_TRACKDIR);
 
 	AyStarUserData user = { v->owner, TRANSPORT_WATER, RAILTYPES_NONE, ROADTYPES_NONE, 0 };
-	ftd = NPFRouteToStationOrTileTwoWay(v->tile, trackdir, false, v->tile, trackdir_rev, false, &fstd, &user);
+	if (best_td != nullptr) {
+		DiagDirection entry = ReverseDiagDir(VehicleExitDir(v->direction, v->state));
+		TrackdirBits rtds = DiagdirReachesTrackdirs(entry) & TrackStatusToTrackdirBits(GetTileTrackStatus(v->tile, TRANSPORT_WATER, 0, entry));
+		Trackdir best = (Trackdir)FindFirstBit2x64(rtds);
+		rtds = KillFirstBit(rtds);
+		if (rtds == TRACKDIR_BIT_NONE) return false; /* At most one choice. */
+		for (; rtds != TRACKDIR_BIT_NONE; rtds = KillFirstBit(rtds)) {
+			Trackdir td = (Trackdir)FindFirstBit2x64(rtds);
+			ftd = NPFRouteToStationOrTileTwoWay(v->tile, best, false, v->tile, td, false, &fstd, &user);
+			if (ftd.best_bird_dist == 0 && NPFGetFlag(&ftd.node, NPF_FLAG_REVERSE)) best = td;
+		}
+		if (ftd.best_bird_dist == 0) {
+			*best_td = best;
+			return true;
+		}
+	} else {
+		ftd = NPFRouteToStationOrTileTwoWay(v->tile, trackdir, false, v->tile, trackdir_rev, false, &fstd, &user);
+	}
 	/* If we didn't find anything, just keep on going straight ahead, otherwise take the reverse flag */
 	return ftd.best_bird_dist == 0 && NPFGetFlag(&ftd.node, NPF_FLAG_REVERSE);
 }

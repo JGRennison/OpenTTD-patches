@@ -20,6 +20,10 @@
 #include "newgrf_storage.h"
 #include "newgrf_commons.h"
 
+#include "3rdparty/cpp-btree/btree_set.h"
+
+#include <map>
+
 /**
  * Gets the value of a so-called newgrf "register".
  * @param i index of the register
@@ -33,7 +37,7 @@ static inline uint32 GetRegister(uint i)
 }
 
 /* List of different sprite group types */
-enum SpriteGroupType {
+enum SpriteGroupType : uint8 {
 	SGT_REAL,
 	SGT_DETERMINISTIC,
 	SGT_RANDOMIZED,
@@ -47,11 +51,54 @@ struct SpriteGroup;
 typedef uint32 SpriteGroupID;
 struct ResolverObject;
 
+enum AnalyseCallbackOperationMode : uint8 {
+	ACOM_CB_VAR,
+	ACOM_CB36_PROP,
+	ACOM_FIND_CB_RESULT,
+	ACOM_CB36_SPEED,
+	ACOM_INDUSTRY_TILE,
+	ACOM_CB_REFIT_CAPACITY,
+};
+
+struct AnalyseCallbackOperationIndustryTileData;
+
+enum AnalyseCallbackOperationResultFlags : uint8 {
+	ACORF_NONE                              = 0,
+	ACORF_CB_RESULT_FOUND                   = 1 << 0,
+	ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND  = 1 << 1,
+	ACORF_CB_REFIT_CAP_SEEN_VAR_47          = 1 << 2,
+};
+DECLARE_ENUM_AS_BIT_SET(AnalyseCallbackOperationResultFlags)
+
+struct AnalyseCallbackOperation {
+	struct FindCBResultData {
+		uint16 callback;
+		bool check_var_10;
+		uint8 var_10_value;
+	};
+
+	btree::btree_set<const SpriteGroup *> seen;
+	AnalyseCallbackOperationMode mode = ACOM_CB_VAR;
+	SpriteGroupCallbacksUsed callbacks_used = SGCU_NONE;
+	AnalyseCallbackOperationResultFlags result_flags = ACORF_NONE;
+	uint64 properties_used = 0;
+	union {
+		FindCBResultData cb_result;
+		AnalyseCallbackOperationIndustryTileData *indtile;
+	} data;
+};
+
 /* SPRITE_WIDTH is 24. ECS has roughly 30 sprite groups per real sprite.
  * Adding an 'extra' margin would be assuming 64 sprite groups per real
  * sprite. 64 = 2^6, so 2^30 should be enough (for now) */
 typedef Pool<SpriteGroup, SpriteGroupID, 1024, 1 << 30, PT_DATA> SpriteGroupPool;
 extern SpriteGroupPool _spritegroup_pool;
+
+enum SpriteGroupFlags : uint8 {
+	SGF_NONE                     = 0,
+	SGF_ACTION6                  = 1 << 0,
+};
+DECLARE_ENUM_AS_BIT_SET(SpriteGroupFlags)
 
 /* Common wrapper for all the different sprite group types */
 struct SpriteGroup : SpriteGroupPool::PoolItem<&_spritegroup_pool> {
@@ -65,10 +112,13 @@ public:
 
 	uint32 nfo_line;
 	SpriteGroupType type;
+	GrfSpecFeature feature;
+	SpriteGroupFlags sg_flags = SGF_NONE;
 
 	virtual SpriteID GetResult() const { return 0; }
 	virtual byte GetNumResults() const { return 0; }
 	virtual uint16 GetCallbackResult() const { return CALLBACK_FAILED; }
+	virtual void AnalyseCallbacks(AnalyseCallbackOperation &op) const {};
 
 	static const SpriteGroup *Resolve(const SpriteGroup *group, ResolverObject &object, bool top_level = true);
 };
@@ -78,7 +128,6 @@ public:
  * groups. */
 struct RealSpriteGroup : SpriteGroup {
 	RealSpriteGroup() : SpriteGroup(SGT_REAL) {}
-	~RealSpriteGroup();
 
 	/* Loaded = in motion, loading = not moving
 	 * Each group contains several spritesets, for various loading stages */
@@ -87,17 +136,15 @@ struct RealSpriteGroup : SpriteGroup {
 	 * with small amount of cargo whilst loading is for stations with a lot
 	 * of da stuff. */
 
-	byte num_loaded;       ///< Number of loaded groups
-	byte num_loading;      ///< Number of loading groups
-	const SpriteGroup **loaded;  ///< List of loaded groups (can be SpriteIDs or Callback results)
-	const SpriteGroup **loading; ///< List of loading groups (can be SpriteIDs or Callback results)
+	std::vector<const SpriteGroup *> loaded;  ///< List of loaded groups (can be SpriteIDs or Callback results)
+	std::vector<const SpriteGroup *> loading; ///< List of loading groups (can be SpriteIDs or Callback results)
 
 protected:
-	const SpriteGroup *Resolve(ResolverObject &object) const;
+	const SpriteGroup *Resolve(ResolverObject &object) const override;
 };
 
 /* Shared by deterministic and random groups. */
-enum VarSpriteGroupScope {
+enum VarSpriteGroupScope : uint8 {
 	VSG_BEGIN,
 
 	VSG_SCOPE_SELF = VSG_BEGIN, ///< Resolved object itself
@@ -108,19 +155,22 @@ enum VarSpriteGroupScope {
 };
 DECLARE_POSTFIX_INCREMENT(VarSpriteGroupScope)
 
-enum DeterministicSpriteGroupSize {
+enum DeterministicSpriteGroupSize : uint8 {
 	DSG_SIZE_BYTE,
 	DSG_SIZE_WORD,
 	DSG_SIZE_DWORD,
 };
 
-enum DeterministicSpriteGroupAdjustType {
+enum DeterministicSpriteGroupAdjustType : uint8 {
 	DSGA_TYPE_NONE,
 	DSGA_TYPE_DIV,
 	DSGA_TYPE_MOD,
+
+	DSGA_TYPE_EQ,
+	DSGA_TYPE_NEQ,
 };
 
-enum DeterministicSpriteGroupAdjustOperation {
+enum DeterministicSpriteGroupAdjustOperation : uint8 {
 	DSGA_OP_ADD,  ///< a + b
 	DSGA_OP_SUB,  ///< a - b
 	DSGA_OP_SMIN, ///< (signed) min(a, b)
@@ -144,21 +194,240 @@ enum DeterministicSpriteGroupAdjustOperation {
 	DSGA_OP_SHL,  ///< a << b
 	DSGA_OP_SHR,  ///< (unsigned) a >> b
 	DSGA_OP_SAR,  ///< (signed) a >> b
+
+	DSGA_OP_END,
+
+	DSGA_OP_TERNARY = 0x80, ///< a == 0 ? b : c,
+	DSGA_OP_EQ,             ///< a == b ? 1 : 0,
+	DSGA_OP_SLT,            ///< (signed) a < b ? 1 : 0,
+	DSGA_OP_SGE,            ///< (signed) a >= b ? 1 : 0,
+	DSGA_OP_SLE,            ///< (signed) a <= b ? 1 : 0,
+	DSGA_OP_SGT,            ///< (signed) a > b ? 1 : 0,
+	DSGA_OP_RSUB,           ///< b - a
+	DSGA_OP_STO_NC,         ///< store b into temporary storage, indexed by c. return a
+	DSGA_OP_ABS,            ///< abs(a)
+
+	DSGA_OP_SPECIAL_END,
 };
 
+static_assert((DSGA_OP_SLT ^ 1) == DSGA_OP_SGE);
+static_assert((DSGA_OP_SLE ^ 1) == DSGA_OP_SGT);
+
+enum DeterministicSpriteGroupAdjustFlags : uint8 {
+	DSGAF_NONE               = 0,
+	DSGAF_SKIP_ON_ZERO       = 1 << 0,
+	DSGAF_SKIP_ON_LSB_SET    = 1 << 1,
+};
+DECLARE_ENUM_AS_BIT_SET(DeterministicSpriteGroupAdjustFlags);
+
+inline bool IsEvalAdjustWithZeroRemovable(DeterministicSpriteGroupAdjustOperation op)
+{
+	switch (op) {
+		case DSGA_OP_ADD:
+		case DSGA_OP_SUB:
+		case DSGA_OP_OR:
+		case DSGA_OP_XOR:
+		case DSGA_OP_ROR:
+		case DSGA_OP_SHL:
+		case DSGA_OP_SHR:
+		case DSGA_OP_SAR:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+inline bool IsEvalAdjustWithZeroAlwaysZero(DeterministicSpriteGroupAdjustOperation op)
+{
+	switch (op) {
+		case DSGA_OP_UMIN:
+		case DSGA_OP_MUL:
+		case DSGA_OP_AND:
+		case DSGA_OP_RST:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+inline bool IsEvalAdjustWithSideEffects(DeterministicSpriteGroupAdjustOperation op)
+{
+	switch (op) {
+		case DSGA_OP_STO:
+		case DSGA_OP_STOP:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+inline bool IsEvalAdjustUsableForConstantPropagation(DeterministicSpriteGroupAdjustOperation op)
+{
+	switch (op) {
+		case DSGA_OP_ADD:
+		case DSGA_OP_SUB:
+		case DSGA_OP_SMIN:
+		case DSGA_OP_SMAX:
+		case DSGA_OP_UMIN:
+		case DSGA_OP_UMAX:
+		case DSGA_OP_SDIV:
+		case DSGA_OP_SMOD:
+		case DSGA_OP_UDIV:
+		case DSGA_OP_UMOD:
+		case DSGA_OP_MUL:
+		case DSGA_OP_AND:
+		case DSGA_OP_OR:
+		case DSGA_OP_XOR:
+		case DSGA_OP_ROR:
+		case DSGA_OP_SCMP:
+		case DSGA_OP_UCMP:
+		case DSGA_OP_SHL:
+		case DSGA_OP_SHR:
+		case DSGA_OP_SAR:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+inline bool IsEvalAdjustOperationCommutative(DeterministicSpriteGroupAdjustOperation op)
+{
+	switch (op) {
+		case DSGA_OP_ADD:
+		case DSGA_OP_MUL:
+		case DSGA_OP_AND:
+		case DSGA_OP_OR:
+		case DSGA_OP_XOR:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+inline bool IsEvalAdjustOperationAntiCommutative(DeterministicSpriteGroupAdjustOperation op)
+{
+	switch (op) {
+		case DSGA_OP_SUB:
+		case DSGA_OP_RSUB:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+inline bool IsEvalAdjustOperationReversable(DeterministicSpriteGroupAdjustOperation op)
+{
+	return IsEvalAdjustOperationCommutative(op) || IsEvalAdjustOperationAntiCommutative(op);
+}
+
+inline DeterministicSpriteGroupAdjustOperation ReverseEvalAdjustOperation(DeterministicSpriteGroupAdjustOperation op)
+{
+	if (IsEvalAdjustOperationCommutative(op)) return op;
+
+	switch (op) {
+		case DSGA_OP_SUB:
+			return DSGA_OP_RSUB;
+		case DSGA_OP_RSUB:
+			return DSGA_OP_SUB;
+
+		default:
+			NOT_REACHED();
+	}
+}
+
+inline bool IsEvalAdjustOperationRelationalComparison(DeterministicSpriteGroupAdjustOperation op)
+{
+	switch (op) {
+		case DSGA_OP_SLT:
+		case DSGA_OP_SGE:
+		case DSGA_OP_SLE:
+		case DSGA_OP_SGT:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+inline DeterministicSpriteGroupAdjustOperation InvertEvalAdjustRelationalComparisonOperation(DeterministicSpriteGroupAdjustOperation op)
+{
+	assert(IsEvalAdjustOperationRelationalComparison(op));
+	return (DeterministicSpriteGroupAdjustOperation)(op ^ 1);
+}
+
+inline bool IsEvalAdjustOperationOnConstantEffectiveLoad(DeterministicSpriteGroupAdjustOperation op, uint32 constant)
+{
+	switch (op) {
+		case DSGA_OP_ADD:
+		case DSGA_OP_OR:
+		case DSGA_OP_XOR:
+			return constant == 0;
+
+		case DSGA_OP_MUL:
+			return constant == 1;
+
+		default:
+			return false;
+	}
+}
+
+inline bool IsEvalAdjustWithZeroLastValueAlwaysZero(DeterministicSpriteGroupAdjustOperation op)
+{
+	switch (op) {
+		case DSGA_OP_SDIV:
+		case DSGA_OP_SMOD:
+		case DSGA_OP_UDIV:
+		case DSGA_OP_UMOD:
+		case DSGA_OP_UMIN:
+		case DSGA_OP_MUL:
+		case DSGA_OP_AND:
+		case DSGA_OP_ROR:
+		case DSGA_OP_SHL:
+		case DSGA_OP_SHR:
+		case DSGA_OP_SAR:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+inline bool IsConstantComparisonAdjustType(DeterministicSpriteGroupAdjustType adjust_type)
+{
+	switch (adjust_type) {
+		case DSGA_TYPE_EQ:
+		case DSGA_TYPE_NEQ:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+inline DeterministicSpriteGroupAdjustType InvertConstantComparisonAdjustType(DeterministicSpriteGroupAdjustType adjust_type)
+{
+	assert(IsConstantComparisonAdjustType(adjust_type));
+	return (adjust_type == DSGA_TYPE_EQ) ? DSGA_TYPE_NEQ : DSGA_TYPE_EQ;
+}
 
 struct DeterministicSpriteGroupAdjust {
 	DeterministicSpriteGroupAdjustOperation operation;
 	DeterministicSpriteGroupAdjustType type;
-	byte variable;
-	byte parameter; ///< Used for variables between 0x60 and 0x7F inclusive.
+	uint16 variable;
 	byte shift_num;
+	DeterministicSpriteGroupAdjustFlags adjust_flags = DSGAF_NONE;
+	uint32 parameter; ///< Used for variables between 0x60 and 0x7F inclusive.
 	uint32 and_mask;
-	uint32 add_val;
-	uint32 divmod_val;
+	uint32 add_val;    ///< Also used for DSGA_TYPE_EQ/DSGA_TYPE_NEQ constants and DSGA_OP_TERNARY false value
+	uint32 divmod_val; ///< Also used for DSGA_OP_STO_NC
 	const SpriteGroup *subroutine;
 };
-
 
 struct DeterministicSpriteGroupRange {
 	const SpriteGroup *group;
@@ -166,36 +435,54 @@ struct DeterministicSpriteGroupRange {
 	uint32 high;
 };
 
+enum DeterministicSpriteGroupFlags : uint8 {
+	DSGF_NONE                    = 0,
+	DSGF_NO_DSE                  = 1 << 0,
+	DSGF_DSE_RECURSIVE_DISABLE   = 1 << 1,
+	DSGF_VAR_TRACKING_PENDING    = 1 << 2,
+	DSGF_REQUIRES_VAR1C          = 1 << 3,
+};
+DECLARE_ENUM_AS_BIT_SET(DeterministicSpriteGroupFlags)
+
+struct DeterministicSpriteGroupShadowCopy {
+	std::vector<DeterministicSpriteGroupAdjust> adjusts;
+	std::vector<DeterministicSpriteGroupRange> ranges;
+	const SpriteGroup *default_group;
+};
 
 struct DeterministicSpriteGroup : SpriteGroup {
 	DeterministicSpriteGroup() : SpriteGroup(SGT_DETERMINISTIC) {}
-	~DeterministicSpriteGroup();
 
 	VarSpriteGroupScope var_scope;
 	DeterministicSpriteGroupSize size;
-	uint num_adjusts;
-	uint num_ranges;
 	bool calculated_result;
-	DeterministicSpriteGroupAdjust *adjusts;
-	DeterministicSpriteGroupRange *ranges; // Dynamically allocated
+	DeterministicSpriteGroupFlags dsg_flags = DSGF_NONE;
+	std::vector<DeterministicSpriteGroupAdjust> adjusts;
+	std::vector<DeterministicSpriteGroupRange> ranges; // Dynamically allocated
 
 	/* Dynamically allocated, this is the sole owner */
 	const SpriteGroup *default_group;
 
 	const SpriteGroup *error_group; // was first range, before sorting ranges
 
+	void AnalyseCallbacks(AnalyseCallbackOperation &op) const override;
+	bool GroupMayBeBypassed() const;
+
 protected:
-	const SpriteGroup *Resolve(ResolverObject &object) const;
+	const SpriteGroup *Resolve(ResolverObject &object) const override;
 };
 
-enum RandomizedSpriteGroupCompareMode {
+enum RandomizedSpriteGroupCompareMode : uint8 {
 	RSG_CMP_ANY,
 	RSG_CMP_ALL,
 };
 
+struct RandomizedSpriteGroupShadowCopy {
+	std::vector<const SpriteGroup *> groups;
+};
+
 struct RandomizedSpriteGroup : SpriteGroup {
 	RandomizedSpriteGroup() : SpriteGroup(SGT_RANDOMIZED) {}
-	~RandomizedSpriteGroup();
 
 	VarSpriteGroupScope var_scope;  ///< Take this object:
 
@@ -204,38 +491,49 @@ struct RandomizedSpriteGroup : SpriteGroup {
 	byte count;
 
 	byte lowest_randbit; ///< Look for this in the per-object randomized bitmask:
-	byte num_groups; ///< must be power of 2
 
-	const SpriteGroup **groups; ///< Take the group with appropriate index:
+	std::vector<const SpriteGroup *> groups; ///< Take the group with appropriate index:
+
+	void AnalyseCallbacks(AnalyseCallbackOperation &op) const override;
 
 protected:
-	const SpriteGroup *Resolve(ResolverObject &object) const;
+	const SpriteGroup *Resolve(ResolverObject &object) const override;
 };
 
+extern std::map<const DeterministicSpriteGroup *, DeterministicSpriteGroupShadowCopy> _deterministic_sg_shadows;
+extern std::map<const RandomizedSpriteGroup *, RandomizedSpriteGroupShadowCopy> _randomized_sg_shadows;
+extern bool _grfs_loaded_with_sg_shadow_enable;
 
 /* This contains a callback result. A failed callback has a value of
  * CALLBACK_FAILED */
 struct CallbackResultSpriteGroup : SpriteGroup {
 	/**
 	 * Creates a spritegroup representing a callback result
+	 * @param result The result as returned from TransformResultValue
+	 */
+	CallbackResultSpriteGroup(uint16 result) :
+		SpriteGroup(SGT_CALLBACK),
+		result(result) {}
+
+	/**
+	 * Transforms a callback result value
 	 * @param value The value that was used to represent this callback result
 	 * @param grf_version8 True, if we are dealing with a new NewGRF which uses GRF version >= 8.
 	 */
-	CallbackResultSpriteGroup(uint16 value, bool grf_version8) :
-		SpriteGroup(SGT_CALLBACK),
-		result(value)
+	static uint16 TransformResultValue(uint16 value, bool grf_version8)
 	{
 		/* Old style callback results (only valid for version < 8) have the highest byte 0xFF so signify it is a callback result.
 		 * New style ones only have the highest bit set (allows 15-bit results, instead of just 8) */
-		if (!grf_version8 && (this->result >> 8) == 0xFF) {
-			this->result &= ~0xFF00;
+		if (!grf_version8 && (value >> 8) == 0xFF) {
+			return value & ~0xFF00;
 		} else {
-			this->result &= ~0x8000;
+			return value & ~0x8000;
 		}
 	}
 
 	uint16 result;
-	uint16 GetCallbackResult() const { return this->result; }
+	uint16 GetCallbackResult() const override { return this->result; }
+	void AnalyseCallbacks(AnalyseCallbackOperation &op) const override;
 };
 
 
@@ -310,7 +608,7 @@ struct ScopeResolver {
 	virtual uint32 GetRandomBits() const;
 	virtual uint32 GetTriggers() const;
 
-	virtual uint32 GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const;
+	virtual uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const;
 	virtual void StorePSA(uint reg, int32 value);
 };
 
@@ -420,5 +718,37 @@ struct ResolverObject {
 	 */
 	virtual uint32 GetDebugID() const { return 0; }
 };
+
+enum DumpSpriteGroupPrintOp {
+	DSGPO_PRINT,
+	DSGPO_START,
+	DSGPO_END,
+	DSGPO_NFO_LINE,
+};
+
+using DumpSpriteGroupPrinter = std::function<void(const SpriteGroup *, DumpSpriteGroupPrintOp, uint32, const char *)>;
+
+struct SpriteGroupDumper {
+	static bool use_shadows;
+
+private:
+	char buffer[1024];
+	DumpSpriteGroupPrinter print_fn;
+
+	const SpriteGroup *top_default_group = nullptr;
+	btree::btree_set<const DeterministicSpriteGroup *> seen_dsgs;
+
+	enum SpriteGroupDumperFlags {
+		SGDF_DEFAULT          = 1 << 0,
+	};
+
+public:
+	SpriteGroupDumper(DumpSpriteGroupPrinter print) : print_fn(print) {}
+
+	void DumpSpriteGroup(const SpriteGroup *sg, int padding, uint flags);
+};
+
+void DumpSpriteGroup(const SpriteGroup *sg, DumpSpriteGroupPrinter print);
+uint32 EvaluateDeterministicSpriteGroupAdjust(DeterministicSpriteGroupSize size, const DeterministicSpriteGroupAdjust &adjust, ScopeResolver *scope, uint32 last_value, uint32 value);
 
 #endif /* NEWGRF_SPRITEGROUP_H */

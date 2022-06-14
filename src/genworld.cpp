@@ -33,6 +33,9 @@
 #include "game/game_instance.hpp"
 #include "string_func.h"
 #include "thread.h"
+#include "tgp.h"
+#include "signal_func.h"
+#include "newgrf_industrytiles.h"
 
 #include "safeguards.h"
 
@@ -41,6 +44,7 @@ void GenerateClearTile();
 void GenerateIndustries();
 void GenerateObjects();
 void GenerateTrees();
+void GeneratePublicRoads();
 
 void StartupEconomy();
 void StartupCompanies();
@@ -90,9 +94,8 @@ static void _GenerateWorld()
 
 	try {
 		_generating_world = true;
-		if (_network_dedicated) DEBUG(net, 1, "Generating map, please wait...");
+		if (_network_dedicated) DEBUG(net, 3, "Generating map, please wait...");
 		/* Set the Random() seed to generation_seed so we produce the same map with the same seed */
-		if (_settings_game.game_creation.generation_seed == GENERATE_NEW_SEED) _settings_game.game_creation.generation_seed = _settings_newgame.game_creation.generation_seed = InteractiveRandom();
 		_random.SetSeed(_settings_game.game_creation.generation_seed);
 
 		/* Generates a unique id for the savegame, to avoid accidentally overwriting a save */
@@ -123,6 +126,10 @@ static void _GenerateWorld()
 
 			ConvertGroundTilesIntoWaterTiles();
 			IncreaseGeneratingWorldProgress(GWP_OBJECT);
+
+			_settings_game.game_creation.snow_line_height = DEF_SNOWLINE_HEIGHT;
+			UpdateCachedSnowLine();
+			UpdateCachedSnowLineBounds();
 		} else {
 			GenerateLandscape(_gw.mode);
 			GenerateClearTile();
@@ -136,6 +143,7 @@ static void _GenerateWorld()
 				GenerateIndustries();
 				GenerateObjects();
 				GenerateTrees();
+				GeneratePublicRoads();
 			}
 		}
 
@@ -190,7 +198,7 @@ static void _GenerateWorld()
 
 		ShowNewGRFError();
 
-		if (_network_dedicated) DEBUG(net, 1, "Map generated, starting game");
+		if (_network_dedicated) DEBUG(net, 3, "Map generated, starting game");
 		DEBUG(desync, 1, "new_map: %08x", _settings_game.game_creation.generation_seed);
 
 		if (_debug_desync_level > 0) {
@@ -206,7 +214,7 @@ static void _GenerateWorld()
 
 		if (_network_dedicated) {
 			/* Exit the game to prevent a return to main menu.  */
-			DEBUG(net, 0, "Generating map failed, aborting");
+			DEBUG(net, 0, "Generating map failed; closing server");
 			_exit_game = true;
 		} else {
 			SwitchToMode(_switch_mode);
@@ -288,9 +296,30 @@ void GenerateWorld(GenWorldMode mode, uint size_x, uint size_y, bool reset_setti
 	InitializeGame(_gw.size_x, _gw.size_y, true, reset_settings);
 	PrepareGenerateWorldProgress();
 
+	if (_settings_game.construction.map_height_limit == 0) {
+		uint estimated_height = 0;
+
+		if (_gw.mode == GWM_EMPTY && _game_mode != GM_MENU) {
+			estimated_height = _settings_game.game_creation.se_flat_world_height;
+		} else if (_gw.mode == GWM_HEIGHTMAP) {
+			estimated_height = _settings_game.game_creation.heightmap_height;
+		} else if (_settings_game.game_creation.land_generator == LG_TERRAGENESIS) {
+			estimated_height = GetEstimationTGPMapHeight();
+		} else {
+			estimated_height = 0;
+		}
+
+		_settings_game.construction.map_height_limit = std::max(MAP_HEIGHT_LIMIT_AUTO_MINIMUM, std::min(MAX_MAP_HEIGHT_LIMIT, estimated_height + MAP_HEIGHT_LIMIT_AUTO_CEILING_ROOM));
+	}
+
+	if (_settings_game.game_creation.generation_seed == GENERATE_NEW_SEED) _settings_game.game_creation.generation_seed = _settings_newgame.game_creation.generation_seed = InteractiveRandom();
+
 	/* Load the right landscape stuff, and the NewGRFs! */
 	GfxLoadSprites();
+	InitialiseExtraAspectsVariable();
 	LoadStringWidthTable();
+	AnalyseEngineCallbacks();
+	AnalyseIndustryTileSpriteGroups();
 
 	/* Re-init the windowing system */
 	ResetWindowSystem();

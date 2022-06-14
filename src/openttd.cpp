@@ -75,16 +75,21 @@
 #include "tbtr_template_vehicle.h"
 #include "string_func_extra.h"
 #include "industry.h"
+#include "network/network_gui.h"
 #include "cargopacket.h"
 #include "core/checksum_func.hpp"
 #include "tbtr_template_vehicle_func.h"
+#include "debug_settings.h"
+#include "debug_desync.h"
+#include "event_logs.h"
+#include "tunnelbridge.h"
 
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
 
 #include <mutex>
 #if defined(__MINGW32__)
-#include "../3rdparty/mingw-std-threads/mingw.mutex.h"
+#include "3rdparty/mingw-std-threads/mingw.mutex.h"
 #endif
 
 #include <stdarg.h>
@@ -111,11 +116,6 @@ extern std::string _config_file;
 bool _save_config = false;
 bool _request_newgrf_scan = false;
 NewGRFScanCallback *_request_newgrf_scan_callback = nullptr;
-
-GameEventFlags _game_events_since_load;
-GameEventFlags _game_events_overall;
-
-time_t _game_load_time;
 
 SimpleChecksum64 _state_checksum;
 
@@ -251,7 +251,10 @@ static void ShowHelp()
 		"  -M music_set        = Force the music set (see below)\n"
 		"  -c config_file      = Use 'config_file' instead of 'openttd.cfg'\n"
 		"  -x                  = Never save configuration changes to disk\n"
+		"  -X                  = Don't use global folders to search for files\n"
 		"  -q savegame         = Write some information about the savegame and exit\n"
+		"  -Q                  = Don't scan for/load NewGRF files on startup\n"
+		"  -QQ                 = Disable NewGRF scanning/loading entirely\n"
 		"  -Z                  = Write detailed version information and exit\n"
 		"\n",
 		lastof(buf)
@@ -297,6 +300,7 @@ static void ShowHelp()
 static void WriteSavegameInfo(const char *name)
 {
 	extern SaveLoadVersion _sl_version;
+	extern std::string _sl_xv_version_label;
 	uint32 last_ottd_rev = 0;
 	byte ever_modified = 0;
 	bool removed_newgrfs = false;
@@ -315,6 +319,9 @@ static void WriteSavegameInfo(const char *name)
 		type = " (extended)";
 	}
 	p += seprintf(p, lastof(buf), "Savegame ver: %d%s\n", _sl_version, type);
+	if (!_sl_xv_version_label.empty()) {
+		p += seprintf(p, lastof(buf), "    Version label: %s\n", _sl_xv_version_label.c_str());
+	}
 	for (size_t i = 0; i < XSLFI_SIZE; i++) {
 		if (_sl_xv_feature_versions[i] > 0) {
 			p += seprintf(p, lastof(buf), "    Feature: %s = %d\n", SlXvGetFeatureName((SlXvFeatureIndex) i), _sl_xv_feature_versions[i]);
@@ -439,14 +446,14 @@ static void ShutdownGame()
 	FreeSignalPrograms();
 	FreeSignalDependencies();
 
+	extern void ClearAllSignalSpeedRestrictions();
+	ClearAllSignalSpeedRestrictions();
+
 	ClearZoningCaches();
 	ClearOrderDestinationRefcountMap();
 
 	/* No NewGRFs were loaded when it was still bootstrapping. */
 	if (_game_mode != GM_BOOTSTRAP) ResetNewGRFData();
-
-	/* Close all and any open filehandles */
-	FioCloseAll();
 
 	UninitFreeType();
 
@@ -455,6 +462,7 @@ static void ShutdownGame()
 	ClearVehicleTickCaches();
 	InvalidateTemplateReplacementImages();
 	ClearCommandLog();
+	ClearSpecialEventsLog();
 	ClearDesyncMsgLog();
 
 	_loaded_local_company = COMPANY_SPECTATOR;
@@ -464,6 +472,9 @@ static void ShutdownGame()
 	_game_load_date_fract = 0;
 	_game_load_tick_skip_counter = 0;
 	_game_load_time = 0;
+	_extra_station_names_used = 0;
+	_extra_station_names_probability = 0;
+	_extra_aspects = 0;
 	_loadgame_DBGL_data.clear();
 	_loadgame_DBGC_data.clear();
 }
@@ -475,8 +486,9 @@ static void ShutdownGame()
 static void LoadIntroGame(bool load_newgrfs = true)
 {
 	UnshowCriticalError();
-	Window *v;
-	FOR_ALL_WINDOWS_FROM_FRONT(v) delete v;
+	for (Window *w : Window::IterateFromFront()) {
+		delete w;
+	}
 
 	_game_mode = GM_MENU;
 
@@ -546,23 +558,19 @@ void OpenBrowser(const char *url)
 
 /** Callback structure of statements to be executed after the NewGRF scan. */
 struct AfterNewGRFScan : NewGRFScanCallback {
-	Year startyear;                    ///< The start year.
-	uint32 generation_seed;            ///< Seed for the new game.
-	char *dedicated_host;              ///< Hostname for the dedicated server.
-	uint16 dedicated_port;             ///< Port for the dedicated server.
-	char *network_conn;                ///< Information about the server to connect to, or nullptr.
-	const char *join_server_password;  ///< The password to join the server with.
-	const char *join_company_password; ///< The password to join the company with.
-	bool save_config;                  ///< The save config setting.
+	Year startyear = INVALID_YEAR;              ///< The start year.
+	uint32 generation_seed = GENERATE_NEW_SEED; ///< Seed for the new game.
+	std::string dedicated_host;                 ///< Hostname for the dedicated server.
+	uint16 dedicated_port = 0;                  ///< Port for the dedicated server.
+	std::string connection_string;              ///< Information about the server to connect to
+	std::string join_server_password;           ///< The password to join the server with.
+	std::string join_company_password;          ///< The password to join the company with.
+	bool save_config = true;                    ///< The save config setting.
 
 	/**
 	 * Create a new callback.
 	 */
-	AfterNewGRFScan() :
-			startyear(INVALID_YEAR), generation_seed(GENERATE_NEW_SEED),
-			dedicated_host(nullptr), dedicated_port(0), network_conn(nullptr),
-			join_server_password(nullptr), join_company_password(nullptr),
-			save_config(true)
+	AfterNewGRFScan()
 	{
 		/* Visual C++ 2015 fails compiling this line (AfterNewGRFScan::generation_seed undefined symbol)
 		 * if it's placed outside a member function, directly in the struct body. */
@@ -598,10 +606,10 @@ struct AfterNewGRFScan : NewGRFScanCallback {
 		/* restore saved music volume */
 		MusicDriver::GetInstance()->SetVolume(_settings_client.music.music_vol);
 
-		if (startyear != INVALID_YEAR) _settings_newgame.game_creation.starting_year = startyear;
+		if (startyear != INVALID_YEAR) IConsoleSetSetting("game_creation.starting_year", startyear);
 		if (generation_seed != GENERATE_NEW_SEED) _settings_newgame.game_creation.generation_seed = generation_seed;
 
-		if (dedicated_host != nullptr) {
+		if (!dedicated_host.empty()) {
 			_network_bind_list.clear();
 			_network_bind_list.emplace_back(dedicated_host);
 		}
@@ -615,30 +623,11 @@ struct AfterNewGRFScan : NewGRFScanCallback {
 		/* Make sure _settings is filled with _settings_newgame if we switch to a game directly */
 		if (_switch_mode != SM_NONE) MakeNewgameSettingsLive();
 
-		if (_network_available && network_conn != nullptr) {
-			const char *port = nullptr;
-			const char *company = nullptr;
-			uint16 rport = NETWORK_DEFAULT_PORT;
-			CompanyID join_as = COMPANY_NEW_COMPANY;
-
-			ParseConnectionString(&company, &port, network_conn);
-
-			if (company != nullptr) {
-				join_as = (CompanyID)atoi(company);
-
-				if (join_as != COMPANY_SPECTATOR) {
-					join_as--;
-					if (join_as >= MAX_COMPANIES) {
-						delete this;
-						return;
-					}
-				}
-			}
-			if (port != nullptr) rport = atoi(port);
-
+		if (_network_available && !connection_string.empty()) {
 			LoadIntroGame();
 			_switch_mode = SM_NONE;
-			NetworkClientConnectGame(NetworkAddress(network_conn, rport), join_as, join_server_password, join_company_password);
+
+			NetworkClientConnectGame(connection_string, COMPANY_NEW_COMPANY, join_server_password, join_company_password);
 		}
 
 		/* After the scan we're not used anymore. */
@@ -675,9 +664,11 @@ static const OptionData _options[] = {
 	 GETOPT_SHORT_VALUE('G'),
 	 GETOPT_SHORT_VALUE('c'),
 	 GETOPT_SHORT_NOVAL('x'),
+	 GETOPT_SHORT_NOVAL('X'),
 	 GETOPT_SHORT_VALUE('q'),
 	 GETOPT_SHORT_VALUE('K'),
 	 GETOPT_SHORT_NOVAL('h'),
+	 GETOPT_SHORT_NOVAL('Q'),
 	 GETOPT_SHORT_VALUE('J'),
 	 GETOPT_SHORT_NOVAL('Z'),
 	GETOPT_END()
@@ -693,6 +684,7 @@ int openttd_main(int argc, char *argv[])
 {
 	SetSelfAsMainThread();
 	PerThreadSetup();
+	SlXvSetStaticCurrentVersions();
 	std::string musicdriver;
 	std::string sounddriver;
 	std::string videodriver;
@@ -704,6 +696,7 @@ int openttd_main(int argc, char *argv[])
 	std::unique_ptr<AfterNewGRFScan> scanner(new AfterNewGRFScan());
 	bool dedicated = false;
 	char *debuglog_conn = nullptr;
+	bool only_local_path = false;
 
 	extern bool _dedicated_forks;
 	_dedicated_forks = false;
@@ -730,20 +723,14 @@ int openttd_main(int argc, char *argv[])
 			videodriver = "dedicated";
 			blitter = "null";
 			dedicated = true;
-			SetDebugString("net=6");
+			SetDebugString("net=3");
 			if (mgo.opt != nullptr) {
-				/* Use the existing method for parsing (openttd -n).
-				 * However, we do ignore the #company part. */
-				const char *temp = nullptr;
-				const char *port = nullptr;
-				ParseConnectionString(&temp, &port, mgo.opt);
-				if (!StrEmpty(mgo.opt)) scanner->dedicated_host = mgo.opt;
-				if (port != nullptr) scanner->dedicated_port = atoi(port);
+				scanner->dedicated_host = ParseFullConnectionString(mgo.opt, scanner->dedicated_port);
 			}
 			break;
 		case 'f': _dedicated_forks = true; break;
 		case 'n':
-			scanner->network_conn = mgo.opt; // optional IP parameter, nullptr if unset
+			scanner->connection_string = mgo.opt; // optional IP:port#company parameter
 			break;
 		case 'l':
 			debuglog_conn = mgo.opt;
@@ -789,7 +776,7 @@ int openttd_main(int argc, char *argv[])
 			break;
 		case 'q':
 		case 'K': {
-			DeterminePaths(argv[0]);
+			DeterminePaths(argv[0], only_local_path);
 			if (StrEmpty(mgo.opt)) {
 				ret = 1;
 				return ret;
@@ -806,7 +793,7 @@ int openttd_main(int argc, char *argv[])
 			if (res != SL_OK || _load_check_data.HasErrors()) {
 				fprintf(stderr, "Failed to open savegame\n");
 				if (_load_check_data.HasErrors()) {
-					InitializeLanguagePacks();
+					InitializeLanguagePacks(); // A language pack is needed for GetString()
 					char buf[256];
 					SetDParamStr(0, _load_check_data.error_data);
 					GetString(buf, _load_check_data.error, lastof(buf));
@@ -822,6 +809,11 @@ int openttd_main(int argc, char *argv[])
 			}
 			return ret;
 		}
+		case 'Q': {
+			extern int _skip_all_newgrf_scanning;
+			_skip_all_newgrf_scanning += 1;
+			break;
+		}
 		case 'G': scanner->generation_seed = strtoul(mgo.opt, nullptr, 10); break;
 		case 'c': _config_file = mgo.opt; break;
 		case 'x': scanner->save_config = false; break;
@@ -830,6 +822,7 @@ int openttd_main(int argc, char *argv[])
 			CrashLog::VersionInfoLog();
 			return ret;
 		}
+		case 'X': only_local_path = true; break;
 		case 'h':
 			i = -2; // Force printing of help.
 			break;
@@ -838,12 +831,12 @@ int openttd_main(int argc, char *argv[])
 	}
 
 	if (i == -2 || mgo.numleft > 0) {
-		/* Either the user typed '-h', he made an error, or he added unrecognized command line arguments.
+		/* Either the user typed '-h', they made an error, or they added unrecognized command line arguments.
 		 * In all cases, print the help, and exit.
 		 *
 		 * The next two functions are needed to list the graphics sets. We can't do them earlier
 		 * because then we cannot show it on the debug console as that hasn't been configured yet. */
-		DeterminePaths(argv[0]);
+		DeterminePaths(argv[0], only_local_path);
 		TarScanner::DoScan(TarScanner::BASESET);
 		BaseGraphics::FindSets();
 		BaseSounds::FindSets();
@@ -852,10 +845,10 @@ int openttd_main(int argc, char *argv[])
 		return ret;
 	}
 
-	DeterminePaths(argv[0]);
+	DeterminePaths(argv[0], only_local_path);
 	TarScanner::DoScan(TarScanner::BASESET);
 
-	if (dedicated) DEBUG(net, 0, "Starting dedicated version %s", _openttd_revision);
+	if (dedicated) DEBUG(net, 3, "Starting dedicated server, version %s", _openttd_revision);
 	if (_dedicated_forks && !dedicated) _dedicated_forks = false;
 
 #if defined(UNIX)
@@ -896,7 +889,7 @@ int openttd_main(int argc, char *argv[])
 			BaseGraphics::SetSet({});
 
 			ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND);
-			msg.SetDParamStr(0, graphics_set.c_str());
+			msg.SetDParamStr(0, graphics_set);
 			ScheduleErrorMessage(msg);
 		}
 	}
@@ -935,16 +928,7 @@ int openttd_main(int argc, char *argv[])
 	NetworkStartUp(); // initialize network-core
 
 	if (debuglog_conn != nullptr && _network_available) {
-		const char *not_used = nullptr;
-		const char *port = nullptr;
-		uint16 rport;
-
-		rport = NETWORK_DEFAULT_DEBUGLOG_PORT;
-
-		ParseConnectionString(&not_used, &port, debuglog_conn);
-		if (port != nullptr) rport = atoi(port);
-
-		NetworkStartDebugLog(NetworkAddress(debuglog_conn, rport));
+		NetworkStartDebugLog(debuglog_conn);
 	}
 
 	if (!HandleBootstrap()) {
@@ -964,7 +948,7 @@ int openttd_main(int argc, char *argv[])
 			usererror("Failed to find a sounds set. Please acquire a sounds set for OpenTTD. See section 1.4 of README.md.");
 		} else {
 			ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND);
-			msg.SetDParamStr(0, sounds_set.c_str());
+			msg.SetDParamStr(0, sounds_set);
 			ScheduleErrorMessage(msg);
 		}
 	}
@@ -976,7 +960,7 @@ int openttd_main(int argc, char *argv[])
 			usererror("Failed to find a music set. Please acquire a music set for OpenTTD. See section 1.4 of README.md.");
 		} else {
 			ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND);
-			msg.SetDParamStr(0, music_set.c_str());
+			msg.SetDParamStr(0, music_set);
 			ScheduleErrorMessage(msg);
 		}
 	}
@@ -996,8 +980,6 @@ int openttd_main(int argc, char *argv[])
 	RequestNewGRFScan(scanner.release());
 
 	VideoDriver::GetInstance()->MainLoop();
-
-	CrashLog::MainThreadExitCheckPendingCrashlog();
 
 	WaitTillSaved();
 
@@ -1026,6 +1008,28 @@ void HandleExitGameRequest()
 	}
 }
 
+/**
+ * Triggers everything that should be triggered when starting a game.
+ * @param dedicated_server Whether this is a dedicated server or not.
+ */
+static void OnStartGame(bool dedicated_server)
+{
+	/* Update the local company for a loaded game. It is either always
+	 * a company or in the case of a dedicated server a spectator */
+	if (_network_server && !dedicated_server) {
+		NetworkServerDoMove(CLIENT_ID_SERVER, GetDefaultLocalCompany());
+	} else {
+		SetLocalCompany(dedicated_server ? COMPANY_SPECTATOR : GetDefaultLocalCompany());
+	}
+	if (_ctrl_pressed && !dedicated_server) {
+		DoCommandP(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
+	}
+	/* Update the static game info to set the values from the new game. */
+	NetworkServerUpdateGameInfo();
+	/* Execute the game-start script */
+	IConsoleCmdExec("exec scripts/game_start.scr 0");
+}
+
 static void MakeNewGameDone()
 {
 	SettingsDisableElrail(_settings_game.vehicle.disable_elrails);
@@ -1035,9 +1039,8 @@ static void MakeNewGameDone()
 
 	/* In a dedicated server, the server does not play */
 	if (!VideoDriver::GetInstance()->HasGUI()) {
-		SetLocalCompany(COMPANY_SPECTATOR);
+		OnStartGame(true);
 		if (_settings_client.gui.pause_on_newgame) DoCommandP(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
-		IConsoleCmdExec("exec scripts/game_start.scr 0");
 		return;
 	}
 
@@ -1053,18 +1056,17 @@ static void MakeNewGameDone()
 		c->colour = _settings_client.gui.starting_colour;
 		ResetCompanyLivery(c);
 		_company_colours[c->index] = (Colours)c->colour;
+		BuildOwnerLegend();
 	}
 
-	IConsoleCmdExec("exec scripts/game_start.scr 0");
-
-	SetLocalCompany(COMPANY_FIRST);
+	OnStartGame(false);
 
 	InitializeRailGUI();
 	InitializeRoadGUI();
 
 	/* We are the server, we start a new company (not dedicated),
 	 * so set the default password *if* needed. */
-	if (_network_server && !StrEmpty(_settings_client.network.default_company_pass)) {
+	if (_network_server && !_settings_client.network.default_company_pass.empty()) {
 		NetworkChangeCompanyPassword(_local_company, _settings_client.network.default_company_pass);
 	}
 
@@ -1073,6 +1075,8 @@ static void MakeNewGameDone()
 	CheckEngines();
 	CheckIndustries();
 	MarkWholeScreenDirty();
+
+	if (_network_server && !_network_dedicated) ShowClientList();
 }
 
 /*
@@ -1158,7 +1162,7 @@ bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileTy
 				 * special cases which make clients desync immediately. So we fall
 				 * back to just generating a new game with the current settings.
 				 */
-				DEBUG(net, 0, "Loading game failed, so a new (random) game will be started!");
+				DEBUG(net, 0, "Loading game failed, so a new (random) game will be started");
 				MakeNewGame(false, true);
 				return false;
 			}
@@ -1182,7 +1186,7 @@ bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileTy
 
 void SwitchToMode(SwitchMode new_mode)
 {
-	/* If we are saving something, the network stays in his current state */
+	/* If we are saving something, the network stays in its current state */
 	if (new_mode != SM_SAVE_GAME) {
 		/* If the network is active, make it not-active */
 		if (_networking) {
@@ -1237,9 +1241,6 @@ void SwitchToMode(SwitchMode new_mode)
 
 		case SM_RESTARTGAME: // Restart --> 'Random game' with current settings
 		case SM_NEWGAME: // New Game --> 'Random game'
-			if (_network_server) {
-				seprintf(_network_game_info.map_name, lastof(_network_game_info.map_name), "Random Map");
-			}
 			MakeNewGame(false, new_mode == SM_NEWGAME);
 			break;
 
@@ -1255,28 +1256,15 @@ void SwitchToMode(SwitchMode new_mode)
 					/* Reset engine pool to simplify changing engine NewGRFs in scenario editor. */
 					EngineOverrideManager::ResetToCurrentNewGRFConfig();
 				}
-				/* Update the local company for a loaded game. It is either always
-				 * a company or in the case of a dedicated server a spectator */
-				SetLocalCompany(_network_dedicated ? COMPANY_SPECTATOR : GetDefaultLocalCompany());
-				if (_ctrl_pressed && !_network_dedicated) {
-					DoCommandP(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
-				}
-				/* Execute the game-start script */
-				IConsoleCmdExec("exec scripts/game_start.scr 0");
+				OnStartGame(_network_dedicated);
 				/* Decrease pause counter (was increased from opening load dialog) */
 				DoCommandP(0, PM_PAUSED_SAVELOAD, 0, CMD_PAUSE);
-				if (_network_server) {
-					seprintf(_network_game_info.map_name, lastof(_network_game_info.map_name), "%s (Loaded game)", _file_to_saveload.title);
-				}
 			}
 			break;
 		}
 
 		case SM_RESTART_HEIGHTMAP: // Load a heightmap and start a new game from it with current settings
 		case SM_START_HEIGHTMAP: // Load a heightmap and start a new game from it
-			if (_network_server) {
-				seprintf(_network_game_info.map_name, lastof(_network_game_info.map_name), "%s (Heightmap)", _file_to_saveload.title);
-			}
 			MakeNewGame(true, new_mode == SM_START_HEIGHTMAP);
 			break;
 
@@ -1300,6 +1288,11 @@ void SwitchToMode(SwitchMode new_mode)
 			}
 			break;
 		}
+
+		case SM_JOIN_GAME: // Join a multiplayer game
+			LoadIntroGame();
+			NetworkClientJoinGame();
+			break;
 
 		case SM_MENU: // Switch to game intro menu
 			LoadIntroGame();
@@ -1354,20 +1347,74 @@ void WriteVehicleInfo(char *&p, const char *last, const Vehicle *u, const Vehicl
 	}
 }
 
+static bool SignalInfraTotalMatches()
+{
+	std::array<int, MAX_COMPANIES> old_signal_totals = {};
+	for (const Company *c : Company::Iterate()) {
+		old_signal_totals[c->index] = c->infrastructure.signal;
+	}
+
+	std::array<int, MAX_COMPANIES> new_signal_totals = {};
+	for (TileIndex tile = 0; tile < MapSize(); tile++) {
+		switch (GetTileType(tile)) {
+			case MP_RAILWAY:
+				if (HasSignals(tile)) {
+					const Company *c = Company::GetIfValid(GetTileOwner(tile));
+					if (c != nullptr) new_signal_totals[c->index] += CountBits(GetPresentSignals(tile));
+				}
+				break;
+
+			case MP_TUNNELBRIDGE: {
+				/* Only count the tunnel/bridge if we're on the northern end tile. */
+				DiagDirection dir = GetTunnelBridgeDirection(tile);
+				if (dir == DIAGDIR_NE || dir == DIAGDIR_NW) break;
+
+				if (IsTunnelBridgeWithSignalSimulation(tile)) {
+					const Company *c = Company::GetIfValid(GetTileOwner(tile));
+					if (c != nullptr) new_signal_totals[c->index] += GetTunnelBridgeSignalSimulationSignalCount(tile, GetOtherTunnelBridgeEnd(tile));
+				}
+				break;
+			}
+
+			default:
+				break;
+		}
+	}
+
+	return old_signal_totals == new_signal_totals;
+}
+
 /**
  * Check the validity of some of the caches.
  * Especially in the sense of desyncs between
  * the cached value and what the value would
  * be when calculated from the 'base' data.
  */
-void CheckCaches(bool force_check, std::function<void(const char *)> log)
+void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckCachesFlags flags)
 {
 	if (!force_check) {
+		int desync_level = _debug_desync_level;
+
+		if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_PERIODIC)) && desync_level < 1) {
+			desync_level = 1;
+			if (HasChickenBit(DCBF_DESYNC_CHECK_NO_GENERAL)) flags &= ~CHECK_CACHE_GENERAL;
+		}
+		if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_PERIODIC_SIGNALS)) && desync_level < 2 && _scaled_date_ticks % 256 == 0) {
+			if (!SignalInfraTotalMatches()) desync_level = 2;
+		}
+
 		/* Return here so it is easy to add checks that are run
 		 * always to aid testing of caches. */
-		if (_debug_desync_level < 1) return;
+		if (desync_level < 1) return;
 
-		if (_debug_desync_level == 1 && _scaled_date_ticks % 500 != 0) return;
+		if (desync_level == 1 && _scaled_date_ticks % 500 != 0) return;
+	}
+
+	std::vector<std::string> saved_messages;
+	if (flags & CHECK_CACHE_EMIT_LOG) {
+		log = [&saved_messages](const char *str) {
+			saved_messages.emplace_back(str);
+		};
 	}
 
 	char cclog_buffer[1024];
@@ -1396,361 +1443,381 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 	} \
 }
 
-	/* Check the town caches. */
-	std::vector<TownCache> old_town_caches;
-	std::vector<StationList> old_town_stations_nears;
-	for (const Town *t : Town::Iterate()) {
-		old_town_caches.push_back(t->cache);
-		old_town_stations_nears.push_back(t->stations_near);
-	}
-
-	std::vector<IndustryList> old_station_industries_nears;
-	std::vector<BitmapTileArea> old_station_catchment_tiles;
-	std::vector<uint> old_station_tiles;
-	for (Station *st : Station::Iterate()) {
-		old_station_industries_nears.push_back(st->industries_near);
-		old_station_catchment_tiles.push_back(st->catchment_tiles);
-		old_station_tiles.push_back(st->station_tiles);
-	}
-
-	std::vector<StationList> old_industry_stations_nears;
-	for (Industry *ind : Industry::Iterate()) {
-		old_industry_stations_nears.push_back(ind->stations_near);
-	}
-
-	extern void RebuildTownCaches(bool cargo_update_required);
-	RebuildTownCaches(false);
-	RebuildSubsidisedSourceAndDestinationCache();
-
-	Station::RecomputeCatchmentForAll();
-
-	uint i = 0;
-	for (Town *t : Town::Iterate()) {
-		if (MemCmpT(old_town_caches.data() + i, &t->cache) != 0) {
-			CCLOG("town cache mismatch: town %i", (int)t->index);
-		}
-		if (old_town_stations_nears[i] != t->stations_near) {
-			CCLOG("town stations_near mismatch: town %i, (old size: %u, new size: %u)", (int)t->index, (uint)old_town_stations_nears[i].size(), (uint)t->stations_near.size());
-		}
-		i++;
-	}
-	i = 0;
-	for (Station *st : Station::Iterate()) {
-		if (old_station_industries_nears[i] != st->industries_near) {
-			CCLOG("station industries_near mismatch: st %i, (old size: %u, new size: %u)", (int)st->index, (uint)old_station_industries_nears[i].size(), (uint)st->industries_near.size());
-		}
-		if (!(old_station_catchment_tiles[i] == st->catchment_tiles)) {
-			CCLOG("station catchment_tiles mismatch: st %i", (int)st->index);
-		}
-		if (!(old_station_tiles[i] == st->station_tiles)) {
-			CCLOG("station station_tiles mismatch: st %i, (old: %u, new: %u)", (int)st->index, old_station_tiles[i], st->station_tiles);
-		}
-		i++;
-	}
-	i = 0;
-	for (Industry *ind : Industry::Iterate()) {
-		if (old_industry_stations_nears[i] != ind->stations_near) {
-			CCLOG("industry stations_near mismatch: ind %i, (old size: %u, new size: %u)", (int)ind->index, (uint)old_industry_stations_nears[i].size(), (uint)ind->stations_near.size());
-		}
-		StationList stlist;
-		if (ind->neutral_station != nullptr && !_settings_game.station.serve_neutral_industries) {
-			stlist.insert(ind->neutral_station);
-			if (ind->stations_near != stlist) {
-				CCLOG("industry neutral station stations_near mismatch: ind %i, (recalc size: %u, neutral size: %u)", (int)ind->index, (uint)ind->stations_near.size(), (uint)stlist.size());
-			}
-		} else {
-			ForAllStationsAroundTiles(ind->location, [ind, &stlist](Station *st, TileIndex tile) {
-				if (!IsTileType(tile, MP_INDUSTRY) || GetIndustryIndex(tile) != ind->index) return false;
-				stlist.insert(st);
-				return true;
-			});
-			if (ind->stations_near != stlist) {
-				CCLOG("industry FindStationsAroundTiles mismatch: ind %i, (recalc size: %u, find size: %u)", (int)ind->index, (uint)ind->stations_near.size(), (uint)stlist.size());
-			}
-		}
-		i++;
-	}
-
-	/* Check company infrastructure cache. */
-	std::vector<CompanyInfrastructure> old_infrastructure;
-	for (const Company *c : Company::Iterate()) old_infrastructure.push_back(c->infrastructure);
-
-	extern void AfterLoadCompanyStats();
-	AfterLoadCompanyStats();
-
-	i = 0;
-	for (const Company *c : Company::Iterate()) {
-		if (MemCmpT(old_infrastructure.data() + i, &c->infrastructure) != 0) {
-			CCLOG("infrastructure cache mismatch: company %i", (int)c->index);
-			char buffer[4096];
-			old_infrastructure[i].Dump(buffer, lastof(buffer));
-			CCLOG("Previous:");
-			ProcessLineByLine(buffer, [&](const char *line) {
-				CCLOG("  %s", line);
-			});
-			c->infrastructure.Dump(buffer, lastof(buffer));
-			CCLOG("Recalculated:");
-			ProcessLineByLine(buffer, [&](const char *line) {
-				CCLOG("  %s", line);
-			});
-		}
-		i++;
-	}
-
-	/* Strict checking of the road stop cache entries */
-	for (const RoadStop *rs : RoadStop::Iterate()) {
-		if (IsStandardRoadStopTile(rs->xy)) continue;
-
-		assert(rs->GetEntry(DIAGDIR_NE) != rs->GetEntry(DIAGDIR_NW));
-		rs->GetEntry(DIAGDIR_NE)->CheckIntegrity(rs);
-		rs->GetEntry(DIAGDIR_NW)->CheckIntegrity(rs);
-	}
-
-	for (Vehicle *v : Vehicle::Iterate()) {
-		extern bool ValidateVehicleTileHash(const Vehicle *v);
-		if (!ValidateVehicleTileHash(v)) {
-			CCLOG("vehicle tile hash mismatch: type %i, vehicle %i, company %i, unit number %i", (int)v->type, v->index, (int)v->owner, v->unitnumber);
+	if (flags & CHECK_CACHE_GENERAL) {
+		/* Check the town caches. */
+		std::vector<TownCache> old_town_caches;
+		std::vector<StationList> old_town_stations_nears;
+		for (const Town *t : Town::Iterate()) {
+			old_town_caches.push_back(t->cache);
+			old_town_stations_nears.push_back(t->stations_near);
 		}
 
-		extern void FillNewGRFVehicleCache(const Vehicle *v);
-		if (v != v->First() || v->vehstatus & VS_CRASHED || !v->IsPrimaryVehicle()) continue;
-
-		uint length = 0;
-		for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
-			if (u->IsGroundVehicle() && (HasBit(u->GetGroundVehicleFlags(), GVF_GOINGUP_BIT) || HasBit(u->GetGroundVehicleFlags(), GVF_GOINGDOWN_BIT)) && u->GetGroundVehicleCache()->cached_slope_resistance && HasBit(v->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST)) {
-				CCLOGV("VCF_GV_ZERO_SLOPE_RESIST set incorrectly (1)");
-			}
-			if (u->type == VEH_TRAIN && u->breakdown_ctr != 0 && !HasBit(Train::From(v)->flags, VRF_CONSIST_BREAKDOWN)) {
-				CCLOGV("VRF_CONSIST_BREAKDOWN incorrectly not set");
-			}
-			if (u->type == VEH_TRAIN && ((Train::From(u)->track & TRACK_BIT_WORMHOLE && !(Train::From(u)->vehstatus & VS_HIDDEN)) || Train::From(u)->track == TRACK_BIT_DEPOT) && !HasBit(Train::From(v)->flags, VRF_CONSIST_SPEED_REDUCTION)) {
-				CCLOGV("VRF_CONSIST_SPEED_REDUCTION incorrectly not set");
-			}
-			length++;
+		std::vector<IndustryList> old_station_industries_nears;
+		std::vector<BitmapTileArea> old_station_catchment_tiles;
+		std::vector<uint> old_station_tiles;
+		for (Station *st : Station::Iterate()) {
+			old_station_industries_nears.push_back(st->industries_near);
+			old_station_catchment_tiles.push_back(st->catchment_tiles);
+			old_station_tiles.push_back(st->station_tiles);
 		}
 
-		NewGRFCache        *grf_cache = CallocT<NewGRFCache>(length);
-		VehicleCache       *veh_cache = CallocT<VehicleCache>(length);
-		GroundVehicleCache *gro_cache = CallocT<GroundVehicleCache>(length);
-		AircraftCache      *air_cache = CallocT<AircraftCache>(length);
-		TrainCache         *tra_cache = CallocT<TrainCache>(length);
-		Vehicle           **veh_old   = CallocT<Vehicle *>(length);
-
-		length = 0;
-		for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
-			FillNewGRFVehicleCache(u);
-			grf_cache[length] = u->grf_cache;
-			veh_cache[length] = u->vcache;
-			switch (u->type) {
-				case VEH_TRAIN:
-					gro_cache[length] = Train::From(u)->gcache;
-					tra_cache[length] = Train::From(u)->tcache;
-					veh_old[length] = CallocT<Train>(1);
-					memcpy((void *) veh_old[length], (const void *) Train::From(u), sizeof(Train));
-					break;
-				case VEH_ROAD:
-					gro_cache[length] = RoadVehicle::From(u)->gcache;
-					veh_old[length] = CallocT<RoadVehicle>(1);
-					memcpy((void *) veh_old[length], (const void *) RoadVehicle::From(u), sizeof(RoadVehicle));
-					break;
-				case VEH_AIRCRAFT:
-					air_cache[length] = Aircraft::From(u)->acache;
-					veh_old[length] = CallocT<Aircraft>(1);
-					memcpy((void *) veh_old[length], (const void *) Aircraft::From(u), sizeof(Aircraft));
-					break;
-				default:
-					veh_old[length] = CallocT<Vehicle>(1);
-					memcpy((void *) veh_old[length], (const void *) u, sizeof(Vehicle));
-					break;
-			}
-			length++;
+		std::vector<StationList> old_industry_stations_nears;
+		for (Industry *ind : Industry::Iterate()) {
+			old_industry_stations_nears.push_back(ind->stations_near);
 		}
 
-		switch (v->type) {
-			case VEH_TRAIN:    Train::From(v)->ConsistChanged(CCF_TRACK); break;
-			case VEH_ROAD:     RoadVehUpdateCache(RoadVehicle::From(v)); break;
-			case VEH_AIRCRAFT: UpdateAircraftCache(Aircraft::From(v));   break;
-			case VEH_SHIP:     Ship::From(v)->UpdateCache();             break;
-			default: break;
+		extern void RebuildTownCaches(bool cargo_update_required, bool old_map_position);
+		RebuildTownCaches(false, false);
+		RebuildSubsidisedSourceAndDestinationCache();
+
+		Station::RecomputeCatchmentForAll();
+
+		uint i = 0;
+		for (Town *t : Town::Iterate()) {
+			if (MemCmpT(old_town_caches.data() + i, &t->cache) != 0) {
+				CCLOG("town cache mismatch: town %i", (int)t->index);
+			}
+			if (old_town_stations_nears[i] != t->stations_near) {
+				CCLOG("town stations_near mismatch: town %i, (old size: %u, new size: %u)", (int)t->index, (uint)old_town_stations_nears[i].size(), (uint)t->stations_near.size());
+			}
+			i++;
 		}
-
-		length = 0;
-		for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
-			FillNewGRFVehicleCache(u);
-			if (memcmp(&grf_cache[length], &u->grf_cache, sizeof(NewGRFCache)) != 0) {
-				CCLOGV("newgrf cache mismatch");
+		i = 0;
+		for (Station *st : Station::Iterate()) {
+			if (old_station_industries_nears[i] != st->industries_near) {
+				CCLOG("station industries_near mismatch: st %i, (old size: %u, new size: %u)", (int)st->index, (uint)old_station_industries_nears[i].size(), (uint)st->industries_near.size());
 			}
-			if (veh_cache[length].cached_max_speed != u->vcache.cached_max_speed || veh_cache[length].cached_cargo_age_period != u->vcache.cached_cargo_age_period ||
-					veh_cache[length].cached_vis_effect != u->vcache.cached_vis_effect || HasBit(veh_cache[length].cached_veh_flags ^ u->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT)) {
-				CCLOGV("vehicle cache mismatch: %c%c%c%c",
-						veh_cache[length].cached_max_speed != u->vcache.cached_max_speed ? 'm' : '-',
-						veh_cache[length].cached_cargo_age_period != u->vcache.cached_cargo_age_period ? 'c' : '-',
-						veh_cache[length].cached_vis_effect != u->vcache.cached_vis_effect ? 'v' : '-',
-						HasBit(veh_cache[length].cached_veh_flags ^ u->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT) ? 'l' : '-');
+			if (!(old_station_catchment_tiles[i] == st->catchment_tiles)) {
+				CCLOG("station catchment_tiles mismatch: st %i", (int)st->index);
 			}
-			if (u->IsGroundVehicle() && (HasBit(u->GetGroundVehicleFlags(), GVF_GOINGUP_BIT) || HasBit(u->GetGroundVehicleFlags(), GVF_GOINGDOWN_BIT)) && u->GetGroundVehicleCache()->cached_slope_resistance && HasBit(v->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST)) {
-				CCLOGV("VCF_GV_ZERO_SLOPE_RESIST set incorrectly (2)");
+			if (!(old_station_tiles[i] == st->station_tiles)) {
+				CCLOG("station station_tiles mismatch: st %i, (old: %u, new: %u)", (int)st->index, old_station_tiles[i], st->station_tiles);
 			}
-			if (veh_old[length]->acceleration != u->acceleration) {
-				CCLOGV("acceleration mismatch");
-			}
-			if (veh_old[length]->breakdown_chance != u->breakdown_chance) {
-				CCLOGV("breakdown_chance mismatch");
-			}
-			if (veh_old[length]->breakdown_ctr != u->breakdown_ctr) {
-				CCLOGV("breakdown_ctr mismatch");
-			}
-			if (veh_old[length]->breakdown_delay != u->breakdown_delay) {
-				CCLOGV("breakdown_delay mismatch");
-			}
-			if (veh_old[length]->breakdowns_since_last_service != u->breakdowns_since_last_service) {
-				CCLOGV("breakdowns_since_last_service mismatch");
-			}
-			if (veh_old[length]->breakdown_severity != u->breakdown_severity) {
-				CCLOGV("breakdown_severity mismatch");
-			}
-			if (veh_old[length]->breakdown_type != u->breakdown_type) {
-				CCLOGV("breakdown_type mismatch");
-			}
-			if (veh_old[length]->vehicle_flags != u->vehicle_flags) {
-				CCLOGV("vehicle_flags mismatch");
-			}
-			auto print_gv_cache_diff = [&](const char *vtype, const GroundVehicleCache &a, const GroundVehicleCache &b) {
-				CCLOGV("%s ground vehicle cache mismatch: %c%c%c%c%c%c%c%c%c%c",
-						vtype,
-						a.cached_weight != b.cached_weight ? 'w' : '-',
-						a.cached_slope_resistance != b.cached_slope_resistance ? 'r' : '-',
-						a.cached_max_te != b.cached_max_te ? 't' : '-',
-						a.cached_axle_resistance != b.cached_axle_resistance ? 'a' : '-',
-						a.cached_max_track_speed != b.cached_max_track_speed ? 's' : '-',
-						a.cached_power != b.cached_power ? 'p' : '-',
-						a.cached_air_drag != b.cached_air_drag ? 'd' : '-',
-						a.cached_total_length != b.cached_total_length ? 'l' : '-',
-						a.first_engine != b.first_engine ? 'e' : '-',
-						a.cached_veh_length != b.cached_veh_length ? 'L' : '-');
-			};
-			switch (u->type) {
-				case VEH_TRAIN:
-					if (memcmp(&gro_cache[length], &Train::From(u)->gcache, sizeof(GroundVehicleCache)) != 0) {
-						print_gv_cache_diff("train", gro_cache[length], Train::From(u)->gcache);
-					}
-					if (memcmp(&tra_cache[length], &Train::From(u)->tcache, sizeof(TrainCache)) != 0) {
-						CCLOGV("train cache mismatch: %c%c%c%c%c%c%c%c%c",
-								tra_cache[length].cached_override != Train::From(u)->tcache.cached_override ? 'o' : '-',
-								tra_cache[length].cached_tilt != Train::From(u)->tcache.cached_tilt ? 't' : '-',
-								tra_cache[length].cached_num_engines != Train::From(u)->tcache.cached_num_engines ? 'e' : '-',
-								tra_cache[length].cached_centre_mass != Train::From(u)->tcache.cached_centre_mass ? 'm' : '-',
-								tra_cache[length].cached_veh_weight != Train::From(u)->tcache.cached_veh_weight ? 'w' : '-',
-								tra_cache[length].cached_uncapped_decel != Train::From(u)->tcache.cached_uncapped_decel ? 'D' : '-',
-								tra_cache[length].cached_deceleration != Train::From(u)->tcache.cached_deceleration ? 'd' : '-',
-								tra_cache[length].user_def_data != Train::From(u)->tcache.user_def_data ? 'u' : '-',
-								tra_cache[length].cached_max_curve_speed != Train::From(u)->tcache.cached_max_curve_speed ? 'c' : '-');
-					}
-					if (Train::From(veh_old[length])->railtype != Train::From(u)->railtype) {
-						CCLOGV("railtype mismatch");
-					}
-					if (Train::From(veh_old[length])->compatible_railtypes != Train::From(u)->compatible_railtypes) {
-						CCLOGV("compatible_railtypes mismatch");
-					}
-					if (Train::From(veh_old[length])->flags != Train::From(u)->flags) {
-						CCLOGV("train flags mismatch");
-					}
-					break;
-				case VEH_ROAD:
-					if (memcmp(&gro_cache[length], &RoadVehicle::From(u)->gcache, sizeof(GroundVehicleCache)) != 0) {
-						print_gv_cache_diff("road vehicle", gro_cache[length], Train::From(u)->gcache);
-					}
-					break;
-				case VEH_AIRCRAFT:
-					if (memcmp(&air_cache[length], &Aircraft::From(u)->acache, sizeof(AircraftCache)) != 0) {
-						CCLOGV("Aircraft vehicle cache mismatch: %c%c",
-								air_cache[length].cached_max_range != Aircraft::From(u)->acache.cached_max_range ? 'r' : '-',
-								air_cache[length].cached_max_range_sqr != Aircraft::From(u)->acache.cached_max_range_sqr ? 's' : '-');
-					}
-					break;
-				default:
-					break;
-			}
-			free(veh_old[length]);
-			length++;
+			i++;
 		}
-
-		free(grf_cache);
-		free(veh_cache);
-		free(gro_cache);
-		free(air_cache);
-		free(tra_cache);
-		free(veh_old);
-	}
-
-	/* Check whether the caches are still valid */
-	for (Vehicle *v : Vehicle::Iterate()) {
-		byte buff[sizeof(VehicleCargoList)];
-		memcpy(buff, &v->cargo, sizeof(VehicleCargoList));
-		v->cargo.InvalidateCache();
-		assert(memcmp(&v->cargo, buff, sizeof(VehicleCargoList)) == 0);
-	}
-
-	for (Station *st : Station::Iterate()) {
-		for (CargoID c = 0; c < NUM_CARGO; c++) {
-			byte buff[sizeof(StationCargoList)];
-			memcpy(buff, &st->goods[c].cargo, sizeof(StationCargoList));
-			st->goods[c].cargo.InvalidateCache();
-			assert(memcmp(&st->goods[c].cargo, buff, sizeof(StationCargoList)) == 0);
-		}
-
-		/* Check docking tiles */
-		TileArea ta;
-		std::map<TileIndex, bool> docking_tiles;
-		TILE_AREA_LOOP(tile, st->docking_station) {
-			ta.Add(tile);
-			docking_tiles[tile] = IsDockingTile(tile);
-		}
-		UpdateStationDockingTiles(st);
-		if (ta.tile != st->docking_station.tile || ta.w != st->docking_station.w || ta.h != st->docking_station.h) {
-			CCLOG("station docking mismatch: station %i, company %i", st->index, (int)st->owner);
-		}
-		TILE_AREA_LOOP(tile, ta) {
-			if (docking_tiles[tile] != IsDockingTile(tile)) {
-				CCLOG("docking tile mismatch: tile %i", (int)tile);
+		i = 0;
+		for (Industry *ind : Industry::Iterate()) {
+			if (old_industry_stations_nears[i] != ind->stations_near) {
+				CCLOG("industry stations_near mismatch: ind %i, (old size: %u, new size: %u)", (int)ind->index, (uint)old_industry_stations_nears[i].size(), (uint)ind->stations_near.size());
 			}
-		}
-	}
-
-	for (OrderList *order_list : OrderList::Iterate()) {
-		order_list->DebugCheckSanity();
-	}
-
-	extern void ValidateVehicleTickCaches();
-	ValidateVehicleTickCaches();
-
-	for (Vehicle *v : Vehicle::Iterate()) {
-		if (v->Previous()) assert_msg(v->Previous()->Next() == v, "%u", v->index);
-		if (v->Next()) assert_msg(v->Next()->Previous() == v, "%u", v->index);
-	}
-	for (const TemplateVehicle *tv : TemplateVehicle::Iterate()) {
-		if (tv->Prev()) assert_msg(tv->Prev()->Next() == tv, "%u", tv->index);
-		if (tv->Next()) assert_msg(tv->Next()->Prev() == tv, "%u", tv->index);
-	}
-
-	if (!TraceRestrictSlot::ValidateVehicleIndex()) CCLOG("Trace restrict slot vehicle index validation failed");
-	TraceRestrictSlot::ValidateSlotOccupants(log);
-
-	if (!CargoPacket::ValidateDeferredCargoPayments()) CCLOG("Cargo packets deferred payments validation failed");
-
-	if (_order_destination_refcount_map_valid) {
-		btree::btree_map<uint32, uint32> saved_order_destination_refcount_map = std::move(_order_destination_refcount_map);
-		for (auto iter = saved_order_destination_refcount_map.begin(); iter != saved_order_destination_refcount_map.end();) {
-			if (iter->second == 0) {
-				iter = saved_order_destination_refcount_map.erase(iter);
+			StationList stlist;
+			if (ind->neutral_station != nullptr && !_settings_game.station.serve_neutral_industries) {
+				stlist.insert(ind->neutral_station);
+				if (ind->stations_near != stlist) {
+					CCLOG("industry neutral station stations_near mismatch: ind %i, (recalc size: %u, neutral size: %u)", (int)ind->index, (uint)ind->stations_near.size(), (uint)stlist.size());
+				}
 			} else {
-				++iter;
+				ForAllStationsAroundTiles(ind->location, [ind, &stlist](Station *st, TileIndex tile) {
+					if (!IsTileType(tile, MP_INDUSTRY) || GetIndustryIndex(tile) != ind->index) return false;
+					stlist.insert(st);
+					return true;
+				});
+				if (ind->stations_near != stlist) {
+					CCLOG("industry FindStationsAroundTiles mismatch: ind %i, (recalc size: %u, find size: %u)", (int)ind->index, (uint)ind->stations_near.size(), (uint)stlist.size());
+				}
+			}
+			i++;
+		}
+	}
+
+	if (flags & CHECK_CACHE_INFRA_TOTALS) {
+		/* Check company infrastructure cache. */
+		std::vector<CompanyInfrastructure> old_infrastructure;
+		for (const Company *c : Company::Iterate()) old_infrastructure.push_back(c->infrastructure);
+
+		extern void AfterLoadCompanyStats();
+		AfterLoadCompanyStats();
+
+		uint i = 0;
+		for (const Company *c : Company::Iterate()) {
+			if (MemCmpT(old_infrastructure.data() + i, &c->infrastructure) != 0) {
+				CCLOG("infrastructure cache mismatch: company %i", (int)c->index);
+				char buffer[4096];
+				old_infrastructure[i].Dump(buffer, lastof(buffer));
+				CCLOG("Previous:");
+				ProcessLineByLine(buffer, [&](const char *line) {
+					CCLOG("  %s", line);
+				});
+				c->infrastructure.Dump(buffer, lastof(buffer));
+				CCLOG("Recalculated:");
+				ProcessLineByLine(buffer, [&](const char *line) {
+					CCLOG("  %s", line);
+				});
+				if (old_infrastructure[i].signal != c->infrastructure.signal && _network_server && !HasChickenBit(DCBF_DESYNC_CHECK_PERIODIC_SIGNALS)) {
+					DoCommandP(0, 0, _settings_game.debug.chicken_bits | (1 << DCBF_DESYNC_CHECK_PERIODIC_SIGNALS), CMD_CHANGE_SETTING, nullptr, "debug.chicken_bits");
+				}
+			}
+			i++;
+		}
+	}
+
+	if (flags & CHECK_CACHE_GENERAL) {
+		/* Strict checking of the road stop cache entries */
+		for (const RoadStop *rs : RoadStop::Iterate()) {
+			if (IsStandardRoadStopTile(rs->xy)) continue;
+
+			assert(rs->GetEntry(DIAGDIR_NE) != rs->GetEntry(DIAGDIR_NW));
+			rs->GetEntry(DIAGDIR_NE)->CheckIntegrity(rs);
+			rs->GetEntry(DIAGDIR_NW)->CheckIntegrity(rs);
+		}
+
+		for (Vehicle *v : Vehicle::Iterate()) {
+			extern bool ValidateVehicleTileHash(const Vehicle *v);
+			if (!ValidateVehicleTileHash(v)) {
+				CCLOG("vehicle tile hash mismatch: type %i, vehicle %i, company %i, unit number %i", (int)v->type, v->index, (int)v->owner, v->unitnumber);
+			}
+
+			extern void FillNewGRFVehicleCache(const Vehicle *v);
+			if (v != v->First() || v->vehstatus & VS_CRASHED || !v->IsPrimaryVehicle()) continue;
+
+			uint length = 0;
+			for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
+				if (u->IsGroundVehicle() && (HasBit(u->GetGroundVehicleFlags(), GVF_GOINGUP_BIT) || HasBit(u->GetGroundVehicleFlags(), GVF_GOINGDOWN_BIT)) && u->GetGroundVehicleCache()->cached_slope_resistance && HasBit(v->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST)) {
+					CCLOGV("VCF_GV_ZERO_SLOPE_RESIST set incorrectly (1)");
+				}
+				if (u->type == VEH_TRAIN && u->breakdown_ctr != 0 && !HasBit(Train::From(v)->flags, VRF_CONSIST_BREAKDOWN)) {
+					CCLOGV("VRF_CONSIST_BREAKDOWN incorrectly not set");
+				}
+				if (u->type == VEH_TRAIN && ((Train::From(u)->track & TRACK_BIT_WORMHOLE && !(Train::From(u)->vehstatus & VS_HIDDEN)) || Train::From(u)->track == TRACK_BIT_DEPOT) && !HasBit(Train::From(v)->flags, VRF_CONSIST_SPEED_REDUCTION)) {
+					CCLOGV("VRF_CONSIST_SPEED_REDUCTION incorrectly not set");
+				}
+				length++;
+			}
+
+			NewGRFCache        *grf_cache = CallocT<NewGRFCache>(length);
+			VehicleCache       *veh_cache = CallocT<VehicleCache>(length);
+			GroundVehicleCache *gro_cache = CallocT<GroundVehicleCache>(length);
+			AircraftCache      *air_cache = CallocT<AircraftCache>(length);
+			TrainCache         *tra_cache = CallocT<TrainCache>(length);
+			Vehicle           **veh_old   = CallocT<Vehicle *>(length);
+
+			length = 0;
+			for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
+				FillNewGRFVehicleCache(u);
+				grf_cache[length] = u->grf_cache;
+				veh_cache[length] = u->vcache;
+				switch (u->type) {
+					case VEH_TRAIN:
+						gro_cache[length] = Train::From(u)->gcache;
+						tra_cache[length] = Train::From(u)->tcache;
+						veh_old[length] = CallocT<Train>(1);
+						memcpy((void *) veh_old[length], (const void *) Train::From(u), sizeof(Train));
+						break;
+					case VEH_ROAD:
+						gro_cache[length] = RoadVehicle::From(u)->gcache;
+						veh_old[length] = CallocT<RoadVehicle>(1);
+						memcpy((void *) veh_old[length], (const void *) RoadVehicle::From(u), sizeof(RoadVehicle));
+						break;
+					case VEH_AIRCRAFT:
+						air_cache[length] = Aircraft::From(u)->acache;
+						veh_old[length] = CallocT<Aircraft>(1);
+						memcpy((void *) veh_old[length], (const void *) Aircraft::From(u), sizeof(Aircraft));
+						break;
+					default:
+						veh_old[length] = CallocT<Vehicle>(1);
+						memcpy((void *) veh_old[length], (const void *) u, sizeof(Vehicle));
+						break;
+				}
+				length++;
+			}
+
+			switch (v->type) {
+				case VEH_TRAIN:    Train::From(v)->ConsistChanged(CCF_TRACK); break;
+				case VEH_ROAD:     RoadVehUpdateCache(RoadVehicle::From(v)); break;
+				case VEH_AIRCRAFT: UpdateAircraftCache(Aircraft::From(v));   break;
+				case VEH_SHIP:     Ship::From(v)->UpdateCache();             break;
+				default: break;
+			}
+
+			length = 0;
+			for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
+				FillNewGRFVehicleCache(u);
+				if (memcmp(&grf_cache[length], &u->grf_cache, sizeof(NewGRFCache)) != 0) {
+					CCLOGV("newgrf cache mismatch");
+				}
+				if (veh_cache[length].cached_max_speed != u->vcache.cached_max_speed || veh_cache[length].cached_cargo_age_period != u->vcache.cached_cargo_age_period ||
+						veh_cache[length].cached_vis_effect != u->vcache.cached_vis_effect || HasBit(veh_cache[length].cached_veh_flags ^ u->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT)) {
+					CCLOGV("vehicle cache mismatch: %c%c%c%c",
+							veh_cache[length].cached_max_speed != u->vcache.cached_max_speed ? 'm' : '-',
+							veh_cache[length].cached_cargo_age_period != u->vcache.cached_cargo_age_period ? 'c' : '-',
+							veh_cache[length].cached_vis_effect != u->vcache.cached_vis_effect ? 'v' : '-',
+							HasBit(veh_cache[length].cached_veh_flags ^ u->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT) ? 'l' : '-');
+				}
+				if (u->IsGroundVehicle() && (HasBit(u->GetGroundVehicleFlags(), GVF_GOINGUP_BIT) || HasBit(u->GetGroundVehicleFlags(), GVF_GOINGDOWN_BIT)) && u->GetGroundVehicleCache()->cached_slope_resistance && HasBit(v->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST)) {
+					CCLOGV("VCF_GV_ZERO_SLOPE_RESIST set incorrectly (2)");
+				}
+				if (veh_old[length]->acceleration != u->acceleration) {
+					CCLOGV("acceleration mismatch");
+				}
+				if (veh_old[length]->breakdown_chance != u->breakdown_chance) {
+					CCLOGV("breakdown_chance mismatch");
+				}
+				if (veh_old[length]->breakdown_ctr != u->breakdown_ctr) {
+					CCLOGV("breakdown_ctr mismatch");
+				}
+				if (veh_old[length]->breakdown_delay != u->breakdown_delay) {
+					CCLOGV("breakdown_delay mismatch");
+				}
+				if (veh_old[length]->breakdowns_since_last_service != u->breakdowns_since_last_service) {
+					CCLOGV("breakdowns_since_last_service mismatch");
+				}
+				if (veh_old[length]->breakdown_severity != u->breakdown_severity) {
+					CCLOGV("breakdown_severity mismatch");
+				}
+				if (veh_old[length]->breakdown_type != u->breakdown_type) {
+					CCLOGV("breakdown_type mismatch");
+				}
+				if (veh_old[length]->vehicle_flags != u->vehicle_flags) {
+					CCLOGV("vehicle_flags mismatch");
+				}
+				auto print_gv_cache_diff = [&](const char *vtype, const GroundVehicleCache &a, const GroundVehicleCache &b) {
+					CCLOGV("%s ground vehicle cache mismatch: %c%c%c%c%c%c%c%c%c%c",
+							vtype,
+							a.cached_weight != b.cached_weight ? 'w' : '-',
+							a.cached_slope_resistance != b.cached_slope_resistance ? 'r' : '-',
+							a.cached_max_te != b.cached_max_te ? 't' : '-',
+							a.cached_axle_resistance != b.cached_axle_resistance ? 'a' : '-',
+							a.cached_max_track_speed != b.cached_max_track_speed ? 's' : '-',
+							a.cached_power != b.cached_power ? 'p' : '-',
+							a.cached_air_drag != b.cached_air_drag ? 'd' : '-',
+							a.cached_total_length != b.cached_total_length ? 'l' : '-',
+							a.first_engine != b.first_engine ? 'e' : '-',
+							a.cached_veh_length != b.cached_veh_length ? 'L' : '-');
+				};
+				switch (u->type) {
+					case VEH_TRAIN:
+						if (memcmp(&gro_cache[length], &Train::From(u)->gcache, sizeof(GroundVehicleCache)) != 0) {
+							print_gv_cache_diff("train", gro_cache[length], Train::From(u)->gcache);
+						}
+						if (memcmp(&tra_cache[length], &Train::From(u)->tcache, sizeof(TrainCache)) != 0) {
+							CCLOGV("train cache mismatch: %c%c%c%c%c%c%c%c%c%c",
+									tra_cache[length].cached_override != Train::From(u)->tcache.cached_override ? 'o' : '-',
+									tra_cache[length].cached_curve_speed_mod != Train::From(u)->tcache.cached_curve_speed_mod ? 'C' : '-',
+									tra_cache[length].cached_tflags != Train::From(u)->tcache.cached_tflags ? 'f' : '-',
+									tra_cache[length].cached_num_engines != Train::From(u)->tcache.cached_num_engines ? 'e' : '-',
+									tra_cache[length].cached_centre_mass != Train::From(u)->tcache.cached_centre_mass ? 'm' : '-',
+									tra_cache[length].cached_veh_weight != Train::From(u)->tcache.cached_veh_weight ? 'w' : '-',
+									tra_cache[length].cached_uncapped_decel != Train::From(u)->tcache.cached_uncapped_decel ? 'D' : '-',
+									tra_cache[length].cached_deceleration != Train::From(u)->tcache.cached_deceleration ? 'd' : '-',
+									tra_cache[length].user_def_data != Train::From(u)->tcache.user_def_data ? 'u' : '-',
+									tra_cache[length].cached_max_curve_speed != Train::From(u)->tcache.cached_max_curve_speed ? 'c' : '-');
+						}
+						if (Train::From(veh_old[length])->railtype != Train::From(u)->railtype) {
+							CCLOGV("railtype mismatch");
+						}
+						if (Train::From(veh_old[length])->compatible_railtypes != Train::From(u)->compatible_railtypes) {
+							CCLOGV("compatible_railtypes mismatch");
+						}
+						if (Train::From(veh_old[length])->flags != Train::From(u)->flags) {
+							CCLOGV("train flags mismatch");
+						}
+						break;
+					case VEH_ROAD:
+						if (memcmp(&gro_cache[length], &RoadVehicle::From(u)->gcache, sizeof(GroundVehicleCache)) != 0) {
+							print_gv_cache_diff("road vehicle", gro_cache[length], Train::From(u)->gcache);
+						}
+						break;
+					case VEH_AIRCRAFT:
+						if (memcmp(&air_cache[length], &Aircraft::From(u)->acache, sizeof(AircraftCache)) != 0) {
+							CCLOGV("Aircraft vehicle cache mismatch: %c%c",
+									air_cache[length].cached_max_range != Aircraft::From(u)->acache.cached_max_range ? 'r' : '-',
+									air_cache[length].cached_max_range_sqr != Aircraft::From(u)->acache.cached_max_range_sqr ? 's' : '-');
+						}
+						break;
+					default:
+						break;
+				}
+				free(veh_old[length]);
+				length++;
+			}
+
+			free(grf_cache);
+			free(veh_cache);
+			free(gro_cache);
+			free(air_cache);
+			free(tra_cache);
+			free(veh_old);
+		}
+
+		/* Check whether the caches are still valid */
+		for (Vehicle *v : Vehicle::Iterate()) {
+			byte buff[sizeof(VehicleCargoList)];
+			memcpy(buff, &v->cargo, sizeof(VehicleCargoList));
+			v->cargo.InvalidateCache();
+			assert(memcmp(&v->cargo, buff, sizeof(VehicleCargoList)) == 0);
+		}
+
+		for (Station *st : Station::Iterate()) {
+			for (CargoID c = 0; c < NUM_CARGO; c++) {
+				byte buff[sizeof(StationCargoList)];
+				memcpy(buff, &st->goods[c].cargo, sizeof(StationCargoList));
+				st->goods[c].cargo.InvalidateCache();
+				assert(memcmp(&st->goods[c].cargo, buff, sizeof(StationCargoList)) == 0);
+			}
+
+			/* Check docking tiles */
+			TileArea ta;
+			std::map<TileIndex, bool> docking_tiles;
+			for (TileIndex tile : st->docking_station) {
+				ta.Add(tile);
+				docking_tiles[tile] = IsDockingTile(tile);
+			}
+			UpdateStationDockingTiles(st);
+			if (ta.tile != st->docking_station.tile || ta.w != st->docking_station.w || ta.h != st->docking_station.h) {
+				CCLOG("station docking mismatch: station %i, company %i, prev: (%X, %u, %u), recalc: (%X, %u, %u)",
+						st->index, (int)st->owner, ta.tile, ta.w, ta.h, st->docking_station.tile, st->docking_station.w, st->docking_station.h);
+			}
+			for (TileIndex tile : ta) {
+				if (docking_tiles[tile] != IsDockingTile(tile)) {
+					CCLOG("docking tile mismatch: tile %i", (int)tile);
+				}
 			}
 		}
-		IntialiseOrderDestinationRefcountMap();
-		if (saved_order_destination_refcount_map != _order_destination_refcount_map) CCLOG("Order destination refcount map mismatch");
-	} else {
-		CCLOG("Order destination refcount map not valid");
+
+		for (OrderList *order_list : OrderList::Iterate()) {
+			order_list->DebugCheckSanity();
+		}
+
+		extern void ValidateVehicleTickCaches();
+		ValidateVehicleTickCaches();
+
+		for (Vehicle *v : Vehicle::Iterate()) {
+			if (v->Previous()) assert_msg(v->Previous()->Next() == v, "%u", v->index);
+			if (v->Next()) assert_msg(v->Next()->Previous() == v, "%u", v->index);
+		}
+		for (const TemplateVehicle *tv : TemplateVehicle::Iterate()) {
+			if (tv->Prev()) assert_msg(tv->Prev()->Next() == tv, "%u", tv->index);
+			if (tv->Next()) assert_msg(tv->Next()->Prev() == tv, "%u", tv->index);
+		}
+
+		if (!TraceRestrictSlot::ValidateVehicleIndex()) CCLOG("Trace restrict slot vehicle index validation failed");
+		TraceRestrictSlot::ValidateSlotOccupants(log);
+
+		if (!CargoPacket::ValidateDeferredCargoPayments()) CCLOG("Cargo packets deferred payments validation failed");
+
+		if (_order_destination_refcount_map_valid) {
+			btree::btree_map<uint32, uint32> saved_order_destination_refcount_map = std::move(_order_destination_refcount_map);
+			for (auto iter = saved_order_destination_refcount_map.begin(); iter != saved_order_destination_refcount_map.end();) {
+				if (iter->second == 0) {
+					iter = saved_order_destination_refcount_map.erase(iter);
+				} else {
+					++iter;
+				}
+			}
+			IntialiseOrderDestinationRefcountMap();
+			if (saved_order_destination_refcount_map != _order_destination_refcount_map) CCLOG("Order destination refcount map mismatch");
+		} else {
+			CCLOG("Order destination refcount map not valid");
+		}
+	}
+
+	if ((flags & CHECK_CACHE_EMIT_LOG) && !saved_messages.empty()) {
+		InconsistencyExtraInfo info;
+		info.check_caches_result = std::move(saved_messages);
+		CrashLog::InconsistencyLog(info);
+		for (std::string &str : info.check_caches_result) {
+			LogDesyncMsg(std::move(str));
+		}
 	}
 
 #undef CCLOGV
@@ -1769,7 +1836,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 CommandCost CmdDesyncCheck(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	if (flags & DC_EXEC) {
-		CheckCaches(true, nullptr);
+		CheckCaches(true, nullptr, CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG);
 	}
 
 	return CommandCost();
@@ -1826,7 +1893,7 @@ void StateGameLoop()
 			SaveOrLoad(name, SLO_SAVE, DFT_GAME_FILE, AUTOSAVE_DIR, false);
 		}
 
-		CheckCaches(false, nullptr);
+		CheckCaches(false, nullptr, CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG);
 
 		/* All these actions has to be done from OWNER_NONE
 		 *  for multiplayer compatibility */
@@ -1836,6 +1903,14 @@ void StateGameLoop()
 		_tick_skip_counter++;
 		_scaled_tick_counter++; // This must update in lock-step with _tick_skip_counter, such that it always matches what SetScaledTickVariables would return.
 		_scaled_date_ticks++;   // "
+
+		if (_settings_client.gui.autosave == 6 && !(_game_mode == GM_MENU || _game_mode == GM_BOOTSTRAP) &&
+				(_scaled_date_ticks % (_settings_client.gui.autosave_custom_minutes * (60000 / MILLISECONDS_PER_TICK))) == 0) {
+			_do_autosave = true;
+			_check_special_modes = true;
+			SetWindowDirty(WC_STATUS_BAR, 0);
+		}
+
 		if (_tick_skip_counter < _settings_game.economy.day_length_factor) {
 			AnimateAnimatedTiles();
 			CallVehicleTicks();
@@ -1860,15 +1935,22 @@ void StateGameLoop()
 
 		CallWindowGameTickEvent();
 		NewsLoop();
-		cur_company.Restore();
 
 		for (Company *c : Company::Iterate()) {
 			DEBUG_UPDATESTATECHECKSUM("Company: %u, Money: " OTTD_PRINTF64, c->index, (int64)c->money);
 			UpdateStateChecksum(c->money);
 		}
+		cur_company.Restore();
 	}
+	if (_extra_aspects > 0) FlushDeferredAspectUpdates();
 
 	assert(IsLocalCompany());
+}
+
+FiosNumberedSaveName &GetAutoSaveFiosNumberedSaveName()
+{
+	static FiosNumberedSaveName _autosave_ctr("autosave");
+	return _autosave_ctr;
 }
 
 /**
@@ -1877,24 +1959,7 @@ void StateGameLoop()
  */
 static void DoAutosave()
 {
-	char buf[MAX_PATH];
-
-	if (_settings_client.gui.keep_all_autosave) {
-		GenerateDefaultSaveName(buf, lastof(buf));
-		strecat(buf, ".sav", lastof(buf));
-	} else {
-		static int _autosave_ctr = 0;
-
-		/* generate a savegame name and number according to _settings_client.gui.max_num_autosaves */
-		seprintf(buf, lastof(buf), "autosave%d.sav", _autosave_ctr);
-
-		if (++_autosave_ctr >= _settings_client.gui.max_num_autosaves) _autosave_ctr = 0;
-	}
-
-	DEBUG(sl, 2, "Autosaving to '%s'", buf);
-	if (SaveOrLoad(buf, SLO_SAVE, DFT_GAME_FILE, AUTOSAVE_DIR, true, SMF_ZSTD_OK) != SL_OK) {
-		ShowErrorMessage(STR_ERROR_AUTOSAVE_FAILED, INVALID_STRING_ID, WL_ERROR);
-	}
+	DoAutoOrNetsave(GetAutoSaveFiosNumberedSaveName(), true);
 }
 
 /**
@@ -1903,11 +1968,15 @@ static void DoAutosave()
  * done in the game-thread, and not in the draw-thread (which most often
  * triggers this request).
  * @param callback Optional callback to call when NewGRF scan is completed.
+ * @return True when the NewGRF scan was actually requested, false when the scan was already running.
  */
-void RequestNewGRFScan(NewGRFScanCallback *callback)
+bool RequestNewGRFScan(NewGRFScanCallback *callback)
 {
+	if (_request_newgrf_scan) return false;
+
 	_request_newgrf_scan = true;
 	_request_newgrf_scan_callback = callback;
+	return true;
 }
 
 void GameLoopSpecial()
@@ -1963,6 +2032,8 @@ void GameLoop()
 	/* Check for UDP stuff */
 	if (_network_available) NetworkBackgroundLoop();
 
+	DebugSendRemoteMessages();
+
 	if (_networking && !HasModalProgress()) {
 		/* Multiplayer */
 		NetworkGameLoop();
@@ -1970,7 +2041,7 @@ void GameLoop()
 		if (_network_reconnect > 0 && --_network_reconnect == 0) {
 			/* This means that we want to reconnect to the last host
 			 * We do this here, because it means that the network is really closed */
-			NetworkClientConnectGame(NetworkAddress(_settings_client.network.last_host, _settings_client.network.last_port), COMPANY_SPECTATOR);
+			NetworkClientConnectGame(_settings_client.network.last_joined, COMPANY_SPECTATOR);
 		}
 		/* Singleplayer */
 		StateGameLoop();
@@ -1984,22 +2055,4 @@ void GameLoop()
 
 	SoundDriver::GetInstance()->MainLoop();
 	MusicLoop();
-}
-
-char *DumpGameEventFlags(GameEventFlags events, char *b, const char *last)
-{
-	if (b <= last) *b = 0;
-	auto dump = [&](char c, GameEventFlags ev) {
-		if (events & ev) b += seprintf(b, last, "%c", c);
-	};
-	dump('d', GEF_COMPANY_DELETE);
-	dump('m', GEF_COMPANY_MERGE);
-	dump('n', GEF_RELOAD_NEWGRF);
-	dump('t', GEF_TBTR_REPLACEMENT);
-	dump('D', GEF_DISASTER_VEH);
-	dump('c', GEF_TRAIN_CRASH);
-	dump('i', GEF_INDUSTRY_CREATE);
-	dump('j', GEF_INDUSTRY_DELETE);
-	dump('v', GEF_VIRT_TRAIN);
-	return b;
 }

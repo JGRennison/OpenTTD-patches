@@ -16,8 +16,14 @@
 #include "../station_base.h"
 #include "../settings_func.h"
 #include "../strings_func.h"
+#include "../network/network.h"
+#include "../network/network_func.h"
+#include "../network/network_server.h"
+#include "../3rdparty/randombytes/randombytes.h"
+#include "../3rdparty/monocypher/monocypher.h"
 
 #include "saveload.h"
+#include "saveload_buffer.h"
 
 #include "table/strings.h"
 
@@ -133,7 +139,7 @@ void AfterLoadCompanyStats()
 				}
 
 				/* Iterate all present road types as each can have a different owner. */
-				FOR_ALL_ROADTRAMTYPES(rtt) {
+				for (RoadTramType rtt : _roadtramtypes) {
 					RoadType rt = GetRoadType(tile, rtt);
 					if (rt == INVALID_ROADTYPE) continue;
 					c = Company::GetIfValid(IsRoadDepot(tile) ? GetTileOwner(tile) : GetRoadOwner(tile, rtt));
@@ -154,9 +160,10 @@ void AfterLoadCompanyStats()
 						break;
 
 					case STATION_BUS:
-					case STATION_TRUCK: {
+					case STATION_TRUCK:
+					case STATION_ROADWAYPOINT: {
 						/* Iterate all present road types as each can have a different owner. */
-						FOR_ALL_ROADTRAMTYPES(rtt) {
+						for (RoadTramType rtt : _roadtramtypes) {
 							RoadType rt = GetRoadType(tile, rtt);
 							if (rt == INVALID_ROADTYPE) continue;
 							c = Company::GetIfValid(GetRoadOwner(tile, rtt));
@@ -274,6 +281,7 @@ static const SaveLoad _company_desc[] = {
 	    SLE_VAR(CompanyProperties, num_valid_stat_ent,    SLE_UINT8),
 
 	    SLE_VAR(CompanyProperties, months_of_bankruptcy,  SLE_UINT8),
+	SLE_CONDVAR_X(CompanyProperties, bankrupt_last_asked, SLE_UINT8,         SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_BANKRUPTCY_EXTRA)),
 	SLE_CONDVAR(CompanyProperties, bankrupt_asked,        SLE_FILE_U8  | SLE_VAR_U16,  SL_MIN_VERSION, SLV_104),
 	SLE_CONDVAR(CompanyProperties, bankrupt_asked,        SLE_UINT16,                SLV_104, SL_MAX_VERSION),
 	    SLE_VAR(CompanyProperties, bankrupt_timeout,      SLE_INT16),
@@ -294,8 +302,6 @@ static const SaveLoad _company_desc[] = {
 	SLE_CONDVAR(CompanyProperties, tree_limit,            SLE_UINT32,                SLV_175, SL_MAX_VERSION),
 	SLE_CONDVAR_X(CompanyProperties, purchase_land_limit, SLE_UINT32,         SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_BUY_LAND_RATE_LIMIT)),
 	SLE_CONDVAR_X(CompanyProperties, build_object_limit,  SLE_UINT32,         SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_BUILD_OBJECT_RATE_LIMIT)),
-
-	SLE_END()
 };
 
 static const SaveLoad _company_settings_desc[] = {
@@ -316,8 +322,6 @@ static const SaveLoad _company_settings_desc[] = {
 	SLE_CONDVAR_X(Company, settings.vehicle.auto_timetable_by_default, SLE_BOOL, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AUTO_TIMETABLE, 2, 2)),
 
 	SLE_CONDNULL(63, SLV_2, SLV_144), // old reserved space
-
-	SLE_END()
 };
 
 static const SaveLoad _company_settings_skip_desc[] = {
@@ -339,8 +343,6 @@ static const SaveLoad _company_settings_skip_desc[] = {
 	SLE_CONDNULL_X(1, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AUTO_TIMETABLE, 2, 2)), // settings.vehicle.auto_timetable_by_default
 
 	SLE_CONDNULL(63, SLV_2, SLV_144), // old reserved space
-
-	SLE_END()
 };
 
 static const SaveLoad _company_economy_desc[] = {
@@ -356,8 +358,6 @@ static const SaveLoad _company_economy_desc[] = {
 	SLE_CONDARR(CompanyEconomyEntry, delivered_cargo,     SLE_UINT32, 32,           SLV_170, SLV_EXTEND_CARGOTYPES),
 	SLE_CONDARR(CompanyEconomyEntry, delivered_cargo,     SLE_UINT32, NUM_CARGO,    SLV_EXTEND_CARGOTYPES, SL_MAX_VERSION),
 	    SLE_VAR(CompanyEconomyEntry, performance_history, SLE_INT32),
-
-	SLE_END()
 };
 
 /* We do need to read this single value, as the bigger it gets, the more data is stored */
@@ -393,7 +393,6 @@ static const SaveLoad _company_ai_desc[] = {
 	SLE_CONDNULL(32, SL_MIN_VERSION, SLV_107),
 
 	SLE_CONDNULL(64, SLV_2, SLV_107),
-	SLE_END()
 };
 
 static const SaveLoad _company_ai_build_rec_desc[] = {
@@ -402,14 +401,12 @@ static const SaveLoad _company_ai_build_rec_desc[] = {
 	SLE_CONDNULL(2, SL_MIN_VERSION, SLV_6),
 	SLE_CONDNULL(4, SLV_6, SLV_107),
 	SLE_CONDNULL(8, SL_MIN_VERSION, SLV_107),
-	SLE_END()
 };
 
 static const SaveLoad _company_livery_desc[] = {
 	SLE_CONDVAR(Livery, in_use,  SLE_UINT8, SLV_34, SL_MAX_VERSION),
 	SLE_CONDVAR(Livery, colour1, SLE_UINT8, SLV_34, SL_MAX_VERSION),
 	SLE_CONDVAR(Livery, colour2, SLE_UINT8, SLV_34, SL_MAX_VERSION),
-	SLE_END()
 };
 
 static void SaveLoad_PLYR_common(Company *c, CompanyProperties *cprops)
@@ -567,7 +564,107 @@ static void Save_PLYX()
 	SaveSettingsPlyx();
 }
 
-extern const ChunkHandler _company_chunk_handlers[] = {
+static void Load_PLYP()
+{
+	size_t size = SlGetFieldLength();
+	if (size <= 16 + 24 + 16 || !_network_server) {
+		SlSkipBytes(size);
+		return;
+	}
+
+	uint8 token[16];
+	ReadBuffer::GetCurrent()->CopyBytes(token, 16);
+	if (memcmp(token, _network_company_password_storage_token, 16) != 0) {
+		DEBUG(sl, 2, "Skipping encrypted company passwords");
+		SlSkipBytes(size - 16);
+		return;
+	}
+
+	uint8 nonce[24];
+	uint8 mac[16];
+	ReadBuffer::GetCurrent()->CopyBytes(nonce, 24);
+	ReadBuffer::GetCurrent()->CopyBytes(mac, 16);
+
+	std::vector<uint8> buffer(size - 16 - 24 - 16);
+	ReadBuffer::GetCurrent()->CopyBytes(buffer.data(), buffer.size());
+
+	if (crypto_unlock(buffer.data(), _network_company_password_storage_key, nonce, mac, buffer.data(), buffer.size()) == 0) {
+		SlLoadFromBuffer(buffer.data(), buffer.size(), [](void *) {
+			_network_company_server_id.resize(SlReadUint32());
+			ReadBuffer::GetCurrent()->CopyBytes((uint8 *)_network_company_server_id.data(), _network_company_server_id.size());
+
+			while (true) {
+				uint16 cid = SlReadUint16();
+				if (cid >= MAX_COMPANIES) break;
+				std::string password;
+				password.resize(SlReadUint32());
+				ReadBuffer::GetCurrent()->CopyBytes((uint8 *)password.data(), password.size());
+				NetworkServerSetCompanyPassword((CompanyID)cid, password, true);
+			}
+
+			ReadBuffer::GetCurrent()->SkipBytes(SlReadByte()); // Skip padding
+		}, nullptr);
+		DEBUG(sl, 2, "Decrypted company passwords");
+	} else {
+		DEBUG(sl, 2, "Failed to decrypt company passwords");
+	}
+}
+
+static void Save_PLYP()
+{
+	if (!_network_server || IsNetworkServerSave()) {
+		SlSetLength(0);
+		return;
+	}
+
+	uint8 nonce[24];    /* Use only once per key: random */
+	if (randombytes(nonce, 24) < 0) {
+		/* Can't get a random nonce, just give up */
+		SlSetLength(0);
+		return;
+	}
+
+	std::vector<byte> buffer = SlSaveToVector([](void *) {
+		SlWriteUint32((uint32)_network_company_server_id.size());
+		MemoryDumper::GetCurrent()->CopyBytes((const uint8 *)_network_company_server_id.data(), _network_company_server_id.size());
+
+		for (const Company *c : Company::Iterate()) {
+			SlWriteUint16(c->index);
+
+			const std::string &password = _network_company_states[c->index].password;
+			SlWriteUint32((uint32)password.size());
+			MemoryDumper::GetCurrent()->CopyBytes((const uint8 *)password.data(), password.size());
+		}
+
+		SlWriteUint16(0xFFFF);
+
+		/* Add some random length padding to not make it too obvious from the length whether passwords are set or not */
+		uint8 padding[256];
+		if (randombytes(padding, 256) >= 0) {
+			SlWriteByte(padding[0]);
+			MemoryDumper::GetCurrent()->CopyBytes(padding + 1, padding[0]);
+		} else {
+			SlWriteByte(0);
+		}
+	}, nullptr);
+
+
+	uint8 mac[16];    /* Message authentication code */
+
+	/* Encrypt in place */
+	crypto_lock(mac, buffer.data(), _network_company_password_storage_key, nonce, buffer.data(), buffer.size());
+
+	SlSetLength(16 + 24 + 16 + buffer.size());
+	MemoryDumper::GetCurrent()->CopyBytes(_network_company_password_storage_token, 16);
+	MemoryDumper::GetCurrent()->CopyBytes(nonce, 24);
+	MemoryDumper::GetCurrent()->CopyBytes(mac, 16);
+	MemoryDumper::GetCurrent()->CopyBytes(buffer.data(), buffer.size());
+}
+
+static const ChunkHandler company_chunk_handlers[] = {
 	{ 'PLYR', Save_PLYR, Load_PLYR, Ptrs_PLYR, Check_PLYR, CH_ARRAY },
-	{ 'PLYX', Save_PLYX, Load_PLYX, nullptr,      Check_PLYX, CH_RIFF | CH_LAST},
+	{ 'PLYX', Save_PLYX, Load_PLYX, nullptr,   Check_PLYX, CH_RIFF  },
+	{ 'PLYP', Save_PLYP, Load_PLYP, nullptr,      nullptr, CH_RIFF  },
 };
+
+extern const ChunkHandlerTable _company_chunk_handlers(company_chunk_handlers);

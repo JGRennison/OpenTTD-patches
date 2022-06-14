@@ -115,8 +115,8 @@ struct StatusBarWindow : Window {
 		Dimension d;
 		switch (widget) {
 			case WID_S_LEFT:
-				SetDParamMaxValue(0, MAX_YEAR * DAYS_IN_YEAR);
-				d = GetStringBoundingBox(STR_WHITE_DATE_LONG);
+				SetDParam(0, (uint64)MAX_YEAR * (uint64)DAYS_IN_YEAR * (uint64)DAY_TICKS * (uint64)_settings_game.economy.day_length_factor);
+				d = GetStringBoundingBox(STR_WHITE_DATE_WALLCLOCK_LONG);
 				break;
 
 			case WID_S_RIGHT: {
@@ -148,11 +148,15 @@ struct StatusBarWindow : Window {
 				break;
 
 			case WID_S_RIGHT: {
-				/* Draw company money, if any */
-				const Company *c = Company::GetIfValid(_local_company);
-				if (c != nullptr) {
-					SetDParam(0, c->money);
-					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, text_top, STR_COMPANY_MONEY, TC_FROMSTRING, SA_HOR_CENTER);
+				if (_local_company == COMPANY_SPECTATOR) {
+					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, text_top, STR_STATUSBAR_SPECTATOR, TC_FROMSTRING, SA_HOR_CENTER);
+				} else {
+					/* Draw company money, if any */
+					const Company *c = Company::GetIfValid(_local_company);
+					if (c != nullptr) {
+						SetDParam(0, c->money);
+						DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, text_top, STR_COMPANY_MONEY, TC_FROMSTRING, SA_HOR_CENTER);
+					}
 				}
 				break;
 			}
@@ -209,6 +213,9 @@ struct StatusBarWindow : Window {
 			case SBI_NEWS_DELETED:
 				this->ticker_scroll    =   TICKER_STOP; // reset ticker ...
 				this->reminder_timeout.SetInterval(REMINDER_STOP); // ... and reminder
+				break;
+			case SBI_REINIT:
+				this->ReInit();
 				break;
 		}
 	}

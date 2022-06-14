@@ -143,11 +143,11 @@ static inline uint ScaleByMapSize1D(uint n)
 }
 
 /**
- * An offset value between to tiles.
+ * An offset value between two tiles.
  *
  * This value is used for the difference between
- * two tiles. It can be added to a tileindex to get
- * the resulting tileindex of the start tile applied
+ * two tiles. It can be added to a TileIndex to get
+ * the resulting TileIndex of the start tile applied
  * with this saved difference.
  *
  * @see TileDiffXY(int, int)
@@ -169,7 +169,7 @@ static inline TileIndex TileXY(uint x, uint y)
 /**
  * Calculates an offset for the given coordinate(-offset).
  *
- * This function calculate an offset value which can be added to an
+ * This function calculate an offset value which can be added to a
  * #TileIndex. The coordinates can be negative.
  *
  * @param x The offset in x direction
@@ -232,7 +232,7 @@ static inline uint TileY(TileIndex tile)
 }
 
 /**
- * Return the offset between to tiles from a TileIndexDiffC struct.
+ * Return the offset between two tiles from a TileIndexDiffC struct.
  *
  * This function works like #TileDiffXY(int, int) and returns the
  * difference between two tiles.
@@ -249,7 +249,7 @@ static inline TileIndexDiff ToTileIndexDiff(TileIndexDiffC tidc)
 
 #ifndef _DEBUG
 	/**
-	 * Adds to tiles together.
+	 * Adds two tiles together.
 	 *
 	 * @param x One tile
 	 * @param y Another tile to add
@@ -399,6 +399,13 @@ static inline TileIndex TileAddByDiagDir(TileIndex tile, DiagDirection dir)
 	return TILE_ADD(tile, TileOffsByDiagDir(dir));
 }
 
+/** Checks if two tiles are adjacent */
+static inline bool AreTilesAdjacent(TileIndex a, TileIndex b)
+{
+	return (std::abs((int)TileX(a) - (int)TileX(b)) <= 1) &&
+		   (std::abs((int)TileY(a) - (int)TileY(b)) <= 1);
+}
+
 /**
  * Determines the DiagDirection to get from one tile to another.
  * The tiles do not necessarily have to be adjacent.
@@ -430,6 +437,8 @@ typedef bool TestTileOnSearchProc(TileIndex tile, void *user_data);
 
 bool CircularTileSearch(TileIndex *tile, uint size, TestTileOnSearchProc proc, void *user_data);
 bool CircularTileSearch(TileIndex *tile, uint radius, uint w, uint h, TestTileOnSearchProc proc, void *user_data);
+
+bool EnoughContiguousTilesMatchingCondition(TileIndex tile, uint threshold, TestTileOnSearchProc proc, void *user_data);
 
 /**
  * Get a random tile out of a given seed.

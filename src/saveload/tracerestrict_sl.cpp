@@ -16,7 +16,6 @@
 
 static const SaveLoad _trace_restrict_mapping_desc[] = {
   SLE_VAR(TraceRestrictMappingItem, program_id, SLE_UINT32),
-  SLE_END()
 };
 
 /**
@@ -50,7 +49,6 @@ struct TraceRestrictProgramStub {
 
 static const SaveLoad _trace_restrict_program_stub_desc[] = {
 	SLE_VAR(TraceRestrictProgramStub, length, SLE_UINT32),
-	SLE_END()
 };
 
 /**
@@ -64,7 +62,7 @@ static void Load_TRRP()
 		TraceRestrictProgram *prog = new (index) TraceRestrictProgram();
 		SlObject(&stub, _trace_restrict_program_stub_desc);
 		prog->items.resize(stub.length);
-		SlArray(&(prog->items[0]), stub.length, SLE_UINT32);
+		if (stub.length > 0) SlArray(prog->items.data(), stub.length, SLE_UINT32);
 		if (SlXvIsFeaturePresent(XSLFI_JOKERPP)) {
 			for (size_t i = 0; i < prog->items.size(); i++) {
 				TraceRestrictItem &item = prog->items[i]; // note this is a reference,
@@ -97,9 +95,9 @@ static void Load_TRRP()
 static void RealSave_TRRP(TraceRestrictProgram *prog)
 {
 	TraceRestrictProgramStub stub;
-	stub.length = prog->items.size();
+	stub.length = (uint32)prog->items.size();
 	SlObject(&stub, _trace_restrict_program_stub_desc);
-	SlArray(&(prog->items[0]), stub.length, SLE_UINT32);
+	SlArray(prog->items.data(), stub.length, SLE_UINT32);
 }
 
 /**
@@ -120,14 +118,13 @@ struct TraceRestrictSlotStub {
 
 static const SaveLoad _trace_restrict_slot_stub_desc[] = {
 	SLE_VAR(TraceRestrictSlotStub, length, SLE_UINT32),
-	SLE_END()
 };
 
 static const SaveLoad _trace_restrict_slot_desc[] = {
 	SLE_VAR(TraceRestrictSlot, max_occupancy, SLE_UINT32),
 	SLE_SSTR(TraceRestrictSlot, name, SLF_ALLOW_CONTROL),
 	SLE_VAR(TraceRestrictSlot, owner, SLE_UINT8),
-	SLE_END()
+	SLE_CONDVAR_X(TraceRestrictSlot, vehicle_type, SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TRACE_RESTRICT, 13)),
 };
 
 /**
@@ -142,7 +139,7 @@ static void Load_TRRS()
 		SlObject(slot, _trace_restrict_slot_desc);
 		SlObject(&stub, _trace_restrict_slot_stub_desc);
 		slot->occupants.resize(stub.length);
-		if (stub.length) SlArray(&(slot->occupants[0]), stub.length, SLE_UINT32);
+		if (stub.length) SlArray(slot->occupants.data(), stub.length, SLE_UINT32);
 	}
 	TraceRestrictSlot::RebuildVehicleIndex();
 }
@@ -154,9 +151,9 @@ static void RealSave_TRRS(TraceRestrictSlot *slot)
 {
 	SlObject(slot, _trace_restrict_slot_desc);
 	TraceRestrictSlotStub stub;
-	stub.length = slot->occupants.size();
+	stub.length = (uint32)slot->occupants.size();
 	SlObject(&stub, _trace_restrict_slot_stub_desc);
-	if (stub.length) SlArray(&(slot->occupants[0]), stub.length, SLE_UINT32);
+	if (stub.length) SlArray(slot->occupants.data(), stub.length, SLE_UINT32);
 }
 
 /**
@@ -174,7 +171,6 @@ static const SaveLoad _trace_restrict_counter_desc[] = {
 	SLE_VAR(TraceRestrictCounter, value, SLE_INT32),
 	SLE_SSTR(TraceRestrictCounter, name, SLF_ALLOW_CONTROL),
 	SLE_VAR(TraceRestrictCounter, owner, SLE_UINT8),
-	SLE_END()
 };
 
 /**
@@ -215,13 +211,15 @@ void AfterLoadTraceRestrict()
 {
 	for (TraceRestrictMapping::iterator iter = _tracerestrictprogram_mapping.begin();
 			iter != _tracerestrictprogram_mapping.end(); ++iter) {
-		_tracerestrictprogram_pool.Get(iter->second.program_id)->IncrementRefCount();
+		_tracerestrictprogram_pool.Get(iter->second.program_id)->IncrementRefCount(iter->first);
 	}
 }
 
-extern const ChunkHandler _trace_restrict_chunk_handlers[] = {
-	{ 'TRRM', Save_TRRM, Load_TRRM, nullptr, nullptr, CH_SPARSE_ARRAY},    // Trace Restrict Mapping chunk
-	{ 'TRRP', Save_TRRP, Load_TRRP, nullptr, nullptr, CH_ARRAY},           // Trace Restrict Mapping Program Pool chunk
-	{ 'TRRS', Save_TRRS, Load_TRRS, nullptr, nullptr, CH_ARRAY},           // Trace Restrict Slot Pool chunk
-	{ 'TRRC', Save_TRRC, Load_TRRC, nullptr, nullptr, CH_ARRAY | CH_LAST}, // Trace Restrict Counter Pool chunk
+extern const ChunkHandler trace_restrict_chunk_handlers[] = {
+	{ 'TRRM', Save_TRRM, Load_TRRM, nullptr, nullptr, CH_SPARSE_ARRAY },    // Trace Restrict Mapping chunk
+	{ 'TRRP', Save_TRRP, Load_TRRP, nullptr, nullptr, CH_ARRAY },           // Trace Restrict Mapping Program Pool chunk
+	{ 'TRRS', Save_TRRS, Load_TRRS, nullptr, nullptr, CH_ARRAY },           // Trace Restrict Slot Pool chunk
+	{ 'TRRC', Save_TRRC, Load_TRRC, nullptr, nullptr, CH_ARRAY },           // Trace Restrict Counter Pool chunk
 };
+
+extern const ChunkHandlerTable _trace_restrict_chunk_handlers(trace_restrict_chunk_handlers);

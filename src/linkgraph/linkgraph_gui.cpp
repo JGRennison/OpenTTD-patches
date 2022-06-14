@@ -62,7 +62,7 @@ const uint8 LinkGraphOverlay::LINK_COLOURS[][12] = {
 void LinkGraphOverlay::GetWidgetDpi(DrawPixelInfo *dpi, uint margin) const
 {
 	const NWidgetBase *wi = this->window->GetWidget<NWidgetBase>(this->widget_id);
-	dpi->left = dpi->top = -margin;
+	dpi->left = dpi->top = -(int)margin;
 	dpi->width = wi->current_x + 2 * margin;
 	dpi->height = wi->current_y + 2 * margin;
 }
@@ -153,8 +153,7 @@ void LinkGraphOverlay::RebuildCache(bool incremental)
 
 	auto AddLinks = [&](const Station *from, const Station *to, Point from_pt, Point to_pt, btree::btree_map<std::pair<StationID, StationID>, LinkCacheItem>::iterator insert_iter) {
 		LinkCacheItem *item = nullptr;
-		CargoID c;
-		FOR_EACH_SET_CARGO_ID(c, this->cargo_mask) {
+		for (CargoID c : SetCargoBitIterator(this->cargo_mask)) {
 			if (!CargoSpec::Get(c)->IsValid()) continue;
 			const GoodsEntry &ge = from->goods[c];
 			if (!LinkGraph::IsValidID(ge.link_graph) ||
@@ -188,8 +187,7 @@ void LinkGraphOverlay::RebuildCache(bool incremental)
 		StationID from = sta->index;
 
 		uint supply = 0;
-		CargoID c;
-		FOR_EACH_SET_CARGO_ID(c, this->cargo_mask) {
+		for (CargoID c : SetCargoBitIterator(this->cargo_mask)) {
 			if (!CargoSpec::Get(c)->IsValid()) continue;
 			if (!LinkGraph::IsValidID(sta->goods[c].link_graph)) continue;
 			const LinkGraph &lg = *LinkGraph::Get(sta->goods[c].link_graph);
@@ -529,7 +527,8 @@ NWidgetBase *MakeSaturationLegendLinkGraphGUI(int *biggest_index)
 	NWidgetVertical *panel = new NWidgetVertical(NC_EQUALSIZE);
 	for (uint i = 0; i < lengthof(LinkGraphOverlay::LINK_COLOURS[0]); ++i) {
 		NWidgetBackground * wid = new NWidgetBackground(WWT_PANEL, COLOUR_DARK_GREEN, i + WID_LGL_SATURATION_FIRST);
-		wid->SetMinimalSize(50, FONT_HEIGHT_SMALL);
+		wid->SetMinimalSize(50, 0);
+		wid->SetMinimalTextLines(1, 0, FS_SMALL);
 		wid->SetFill(1, 1);
 		wid->SetResize(0, 0);
 		panel->Add(wid);
@@ -549,14 +548,16 @@ NWidgetBase *MakeCargoesLegendLinkGraphGUI(int *biggest_index)
 			row = new NWidgetHorizontal(NC_EQUALSIZE);
 		}
 		NWidgetBackground * wid = new NWidgetBackground(WWT_PANEL, COLOUR_GREY, i + WID_LGL_CARGO_FIRST);
-		wid->SetMinimalSize(25, FONT_HEIGHT_SMALL);
+		wid->SetMinimalSize(25, 0);
+		wid->SetMinimalTextLines(1, 0, FS_SMALL);
 		wid->SetFill(1, 1);
 		wid->SetResize(0, 0);
 		row->Add(wid);
 	}
 	/* Fill up last row */
 	for (uint i = 0; i < 4 - (NUM_CARGO - 1) % 5; ++i) {
-		NWidgetSpacer *spc = new NWidgetSpacer(25, FONT_HEIGHT_SMALL);
+		NWidgetSpacer *spc = new NWidgetSpacer(25, 0);
+		spc->SetMinimalTextLines(1, 0, FS_SMALL);
 		spc->SetFill(1, 1);
 		spc->SetResize(0, 0);
 		row->Add(spc);

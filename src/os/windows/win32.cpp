@@ -44,24 +44,6 @@ static bool _has_console;
 static bool _cursor_disable = true;
 static bool _cursor_visible = true;
 
-static DWORD _tlsdata_key;
-
-struct TLSData {
-	char utf8_buf[512];
-	wchar_t system_buf[512];
-	char locale_retbuf[6];
-};
-
-TLSData *GetTLSData()
-{
-	TLSData *data = (TLSData *) TlsGetValue(_tlsdata_key);
-	if (data == nullptr) {
-		data = CallocT<TLSData>(1);
-		TlsSetValue(_tlsdata_key, data);
-	}
-	return data;
-}
-
 bool MyShowCursor(bool show, bool toggle)
 {
 	if (toggle) _cursor_disable = !_cursor_disable;
@@ -81,17 +63,17 @@ bool LoadLibraryList(Function proc[], const char *dll)
 {
 	while (*dll != '\0') {
 		HMODULE lib;
-		lib = LoadLibrary(OTTD2FS(dll));
+		lib = LoadLibrary(OTTD2FS(dll).c_str());
 
 		if (lib == nullptr) return false;
 		for (;;) {
-			FARPROC p;
+			Function p;
 
 			while (*dll++ != '\0') { /* Nothing */ }
 			if (*dll == '\0') break;
-			p = GetProcAddress(lib, dll);
+			p = GetProcAddressT<Function>(lib, dll);
 			if (p == nullptr) return false;
-			*proc++ = (Function)p;
+			*proc++ = p;
 		}
 		dll++;
 	}
@@ -101,12 +83,12 @@ bool LoadLibraryList(Function proc[], const char *dll)
 void ShowOSErrorBox(const char *buf, bool system)
 {
 	MyShowCursor(true);
-	MessageBox(GetActiveWindow(), OTTD2FS(buf), L"Error!", MB_ICONSTOP | MB_TASKMODAL);
+	MessageBox(GetActiveWindow(), OTTD2FS(buf).c_str(), L"Error!", MB_ICONSTOP | MB_TASKMODAL);
 }
 
 void OSOpenBrowser(const char *url)
 {
-	ShellExecute(GetActiveWindow(), L"open", OTTD2FS(url), nullptr, nullptr, SW_SHOWNORMAL);
+	ShellExecute(GetActiveWindow(), L"open", OTTD2FS(url).c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 }
 
 /* Code below for windows version of opendir/readdir/closedir copied and
@@ -165,14 +147,14 @@ DIR *opendir(const wchar_t *path)
 	if ((fa != INVALID_FILE_ATTRIBUTES) && (fa & FILE_ATTRIBUTE_DIRECTORY)) {
 		d = dir_calloc();
 		if (d != nullptr) {
-			wchar_t search_path[MAX_PATH];
+			std::wstring search_path = path;
 			bool slash = path[wcslen(path) - 1] == '\\';
 
 			/* build search path for FindFirstFile, try not to append additional slashes
 			 * as it throws Win9x off its groove for root directories */
-			_snwprintf(search_path, lengthof(search_path), L"%s%s*", path, slash ? L"" : L"\\");
-			*lastof(search_path) = '\0';
-			d->hFind = FindFirstFile(search_path, &d->fd);
+			if (!slash) search_path += L"\\";
+			search_path += L"*";
+			d->hFind = FindFirstFile(search_path.c_str(), &d->fd);
 
 			if (d->hFind != INVALID_HANDLE_VALUE ||
 					GetLastError() == ERROR_NO_MORE_FILES) { // the directory is empty
@@ -233,7 +215,7 @@ void FiosGetDrives(FileList &file_list)
 
 	GetLogicalDriveStrings(lengthof(drives), drives);
 	for (s = drives; *s != '\0';) {
-		FiosItem *fios = file_list.Append();
+		FiosItem *fios = &file_list.emplace_back();
 		fios->type = FIOS_TYPE_DRIVE;
 		fios->mtime = 0;
 		seprintf(fios->name, lastof(fios->name),  "%c:", s[0] & 0xFF);
@@ -270,8 +252,8 @@ bool FiosGetDiskFreeSpace(const char *path, uint64 *tot)
 	UINT sem = SetErrorMode(SEM_FAILCRITICALERRORS);  // disable 'no-disk' message box
 
 	ULARGE_INTEGER bytes_free;
-	bool retval = GetDiskFreeSpaceEx(OTTD2FS(path), &bytes_free, nullptr, nullptr);
-	if (retval) *tot = bytes_free.QuadPart;
+	bool retval = GetDiskFreeSpaceEx(OTTD2FS(path).c_str(), &bytes_free, nullptr, nullptr);
+	if (retval && tot != nullptr) *tot = bytes_free.QuadPart;
 
 	SetErrorMode(sem); // reset previous setting
 	return retval;
@@ -428,8 +410,6 @@ void ShowInfo(const char *str)
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	_tlsdata_key = TlsAlloc();
-
 	int argc;
 	char *argv[64]; // max 64 command line arguments
 
@@ -442,7 +422,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	/* Convert the command line to UTF-8. We need a dedicated buffer
 	 * for this because argv[] points into this buffer and this needs to
 	 * be available between subsequent calls to FS2OTTD(). */
-	char *cmdline = stredup(FS2OTTD(GetCommandLine()));
+	char *cmdline = stredup(FS2OTTD(GetCommandLine()).c_str());
+
+	/* Set the console codepage to UTF-8. */
+	SetConsoleOutputCP(CP_UTF8);
 
 #if defined(_DEBUG)
 	CreateConsole();
@@ -456,7 +439,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	argc = ParseCommandLine(cmdline, argv, lengthof(argv));
 
 	/* Make sure our arguments contain only valid UTF-8 characters. */
-	for (int i = 0; i < argc; i++) ValidateString(argv[i]);
+	for (int i = 0; i < argc; i++) StrMakeValidInPlace(argv[i]);
 
 	openttd_main(argc, argv);
 
@@ -580,34 +563,40 @@ bool GetClipboardContents(char *buffer, const char *last)
 
 
 /**
- * Convert to OpenTTD's encoding from wide characters.
+ * Convert to OpenTTD's encoding from a wide string.
  * OpenTTD internal encoding is UTF8.
- * The returned value's contents can only be guaranteed until the next call to
- * this function. So if the value is needed for anything else, use convert_from_fs
- * @param name pointer to a valid string that will be converted (local, or wide)
- * @return pointer to the converted string; if failed string is of zero-length
+ * @param name valid string that will be converted (local, or wide)
+ * @return converted string; if failed string is of zero-length
  * @see the current code-page comes from video\win32_v.cpp, event-notification
  * WM_INPUTLANGCHANGE
  */
-const char *FS2OTTD(const wchar_t *name)
+std::string FS2OTTD(const std::wstring &name)
 {
-	TLSData *data = GetTLSData();
-	return convert_from_fs(name, data->utf8_buf, lengthof(data->utf8_buf));
+	int name_len = (name.length() >= INT_MAX) ? INT_MAX : (int)name.length();
+	int len = WideCharToMultiByte(CP_UTF8, 0, name.c_str(), name_len, nullptr, 0, nullptr, nullptr);
+	if (len <= 0) return std::string();
+	char *utf8_buf = AllocaM(char, len + 1);
+	utf8_buf[len] = '\0';
+	WideCharToMultiByte(CP_UTF8, 0, name.c_str(), name_len, utf8_buf, len, nullptr, nullptr);
+	return std::string(utf8_buf, static_cast<size_t>(len));
 }
 
 /**
- * Convert from OpenTTD's encoding to wide characters.
+ * Convert from OpenTTD's encoding to a wide string.
  * OpenTTD internal encoding is UTF8.
- * The returned value's contents can only be guaranteed until the next call to
- * this function. So if the value is needed for anything else, use convert_from_fs
- * @param name pointer to a valid string that will be converted (UTF8)
+ * @param name valid string that will be converted (UTF8)
  * @param console_cp convert to the console encoding instead of the normal system encoding.
- * @return pointer to the converted string; if failed string is of zero-length
+ * @return converted string; if failed string is of zero-length
  */
-const wchar_t *OTTD2FS(const char *name, bool console_cp)
+std::wstring OTTD2FS(const std::string &name)
 {
-	TLSData *data = GetTLSData();
-	return convert_to_fs(name, data->system_buf, lengthof(data->system_buf), console_cp);
+	int name_len = (name.length() >= INT_MAX) ? INT_MAX : (int)name.length();
+	int len = MultiByteToWideChar(CP_UTF8, 0, name.c_str(), name_len, nullptr, 0);
+	if (len <= 0) return std::wstring();
+	wchar_t *system_buf = AllocaM(wchar_t, len + 1);
+	system_buf[len] = L'\0';
+	MultiByteToWideChar(CP_UTF8, 0, name.c_str(), name_len, system_buf, len);
+	return std::wstring(system_buf, static_cast<size_t>(len));
 }
 
 
@@ -621,10 +610,8 @@ const wchar_t *OTTD2FS(const char *name, bool console_cp)
  */
 char *convert_from_fs(const wchar_t *name, char *utf8_buf, size_t buflen)
 {
-	const wchar_t *wide_buf = name;
-
 	/* Convert UTF-16 string to UTF-8. */
-	int len = WideCharToMultiByte(CP_UTF8, 0, wide_buf, -1, utf8_buf, (int)buflen, nullptr, nullptr);
+	int len = WideCharToMultiByte(CP_UTF8, 0, name, -1, utf8_buf, (int)buflen, nullptr, nullptr);
 	if (len == 0) utf8_buf[0] = '\0';
 
 	return utf8_buf;
@@ -641,7 +628,7 @@ char *convert_from_fs(const wchar_t *name, char *utf8_buf, size_t buflen)
  * @param console_cp convert to the console encoding instead of the normal system encoding.
  * @return pointer to system_buf. If conversion fails the string is of zero-length
  */
-wchar_t *convert_to_fs(const char *name, wchar_t *system_buf, size_t buflen, bool console_cp)
+wchar_t *convert_to_fs(const char *name, wchar_t *system_buf, size_t buflen)
 {
 	int len = MultiByteToWideChar(CP_UTF8, 0, name, -1, system_buf, (int)buflen);
 	if (len == 0) system_buf[0] = '\0';
@@ -652,21 +639,18 @@ wchar_t *convert_to_fs(const char *name, wchar_t *system_buf, size_t buflen, boo
 /** Determine the current user's locale. */
 const char *GetCurrentLocale(const char *)
 {
+	const LANGID userUiLang = GetUserDefaultUILanguage();
+	const LCID userUiLocale = MAKELCID(userUiLang, SORT_DEFAULT);
+
 	char lang[9], country[9];
-	if (GetLocaleInfoA(LOCALE_USER_DEFAULT, LOCALE_SISO639LANGNAME, lang, lengthof(lang)) == 0 ||
-	    GetLocaleInfoA(LOCALE_USER_DEFAULT, LOCALE_SISO3166CTRYNAME, country, lengthof(country)) == 0) {
+	if (GetLocaleInfoA(userUiLocale, LOCALE_SISO639LANGNAME, lang, lengthof(lang)) == 0 ||
+	    GetLocaleInfoA(userUiLocale, LOCALE_SISO3166CTRYNAME, country, lengthof(country)) == 0) {
 		/* Unable to retrieve the locale. */
 		return nullptr;
 	}
 	/* Format it as 'en_us'. */
-	TLSData *data = GetTLSData();
-	data->locale_retbuf[0] = lang[0];
-	data->locale_retbuf[1] = lang[1];
-	data->locale_retbuf[2] = '_';
-	data->locale_retbuf[3] = country[0];
-	data->locale_retbuf[4] = country[1];
-	data->locale_retbuf[5] = 0;
-	return data->locale_retbuf;
+	static char retbuf[6] = {lang[0], lang[1], '_', country[0], country[1], 0};
+	return retbuf;
 }
 
 
@@ -705,7 +689,7 @@ int OTTDStringCompare(const char *s1, const char *s2)
 #endif
 
 	if (first_time) {
-		_CompareStringEx = (PFNCOMPARESTRINGEX)GetProcAddress(GetModuleHandle(L"Kernel32"), "CompareStringEx");
+		_CompareStringEx = GetProcAddressT<PFNCOMPARESTRINGEX>(GetModuleHandle(L"Kernel32"), "CompareStringEx");
 		first_time = false;
 	}
 
@@ -734,10 +718,16 @@ int OTTDStringCompare(const char *s1, const char *s2)
 }
 
 static DWORD main_thread_id;
+static DWORD game_thread_id;
 
 void SetSelfAsMainThread()
 {
 	main_thread_id = GetCurrentThreadId();
+}
+
+void SetSelfAsGameThread()
+{
+	game_thread_id = GetCurrentThreadId();
 }
 
 static BOOL (WINAPI *_SetThreadStackGuarantee)(PULONG) = nullptr;
@@ -765,6 +755,16 @@ bool IsNonMainThread()
 	return main_thread_id != GetCurrentThreadId();
 }
 
+bool IsGameThread()
+{
+	return game_thread_id == GetCurrentThreadId();
+}
+
+bool IsNonGameThread()
+{
+	return game_thread_id != GetCurrentThreadId();
+}
+
 static std::map<DWORD, std::string> _thread_name_map;
 static std::mutex _thread_name_map_mutex;
 
@@ -782,38 +782,6 @@ int GetCurrentThreadName(char *str, const char *last)
 		return seprintf(str, last, "%s", iter->second.c_str());
 	}
 	return 0;
-}
-
-/**
- * Is the current Windows version Vista or later?
- * @return True if the current Windows is Vista or later.
- */
-bool IsWindowsVistaOrGreater()
-{
-	typedef BOOL (WINAPI * LPVERIFYVERSIONINFO)(LPOSVERSIONINFOEX, DWORD, DWORDLONG);
-	typedef ULONGLONG (NTAPI * LPVERSETCONDITIONMASK)(ULONGLONG, DWORD, BYTE);
-#ifdef UNICODE
-	static LPVERIFYVERSIONINFO _VerifyVersionInfo = (LPVERIFYVERSIONINFO)GetProcAddress(GetModuleHandle(_T("Kernel32")), "VerifyVersionInfoW");
-#else
-	static LPVERIFYVERSIONINFO _VerifyVersionInfo = (LPVERIFYVERSIONINFO)GetProcAddress(GetModuleHandle(_T("Kernel32")), "VerifyVersionInfoA");
-#endif
-	static LPVERSETCONDITIONMASK _VerSetConditionMask = (LPVERSETCONDITIONMASK)GetProcAddress(GetModuleHandle(_T("Kernel32")), "VerSetConditionMask");
-
-	if (_VerifyVersionInfo != nullptr && _VerSetConditionMask != nullptr) {
-		OSVERSIONINFOEX osvi = { sizeof(osvi), 0, 0, 0, 0, {0}, 0, 0 };
-		DWORDLONG dwlConditionMask = 0;
-		dwlConditionMask = _VerSetConditionMask(dwlConditionMask, VER_MAJORVERSION, VER_GREATER_EQUAL);
-		dwlConditionMask = _VerSetConditionMask(dwlConditionMask, VER_MINORVERSION, VER_GREATER_EQUAL);
-		dwlConditionMask = _VerSetConditionMask(dwlConditionMask, VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
-
-		osvi.dwMajorVersion = 6;
-		osvi.dwMinorVersion = 0;
-		osvi.wServicePackMajor = 0;
-
-		return _VerifyVersionInfo(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, dwlConditionMask) != FALSE;
-	} else {
-		return LOBYTE(GetVersion()) >= 6;
-	}
 }
 
 #ifdef _MSC_VER

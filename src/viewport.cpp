@@ -109,6 +109,10 @@
 #include "scope_info.h"
 #include "scope.h"
 #include "blitter/32bpp_base.hpp"
+#include "object_map.h"
+#include "newgrf_object.h"
+#include "infrastructure_func.h"
+#include "tracerestrict.h"
 
 #include <map>
 #include <vector>
@@ -271,6 +275,9 @@ static DrawPixelInfo _dpi_for_text;
 static ViewportDrawer _vd;
 
 static std::vector<Viewport *> _viewport_window_cache;
+static std::vector<Rect> _viewport_coverage_rects;
+std::vector<Rect> _viewport_vehicle_normal_redraw_rects;
+std::vector<Rect> _viewport_vehicle_map_redraw_rects;
 
 RouteStepsMap _vp_route_steps;
 RouteStepsMap _vp_route_steps_last_mark_dirty;
@@ -343,6 +350,33 @@ static Point MapXYZToViewport(const Viewport *vp, int x, int y, int z)
 	return p;
 }
 
+static void FillViewportCoverageRect()
+{
+	_viewport_coverage_rects.resize(_viewport_window_cache.size());
+	_viewport_vehicle_normal_redraw_rects.clear();
+	_viewport_vehicle_map_redraw_rects.clear();
+
+	for (uint i = 0; i < _viewport_window_cache.size(); i++) {
+		const Viewport *vp = _viewport_window_cache[i];
+		Rect &r = _viewport_coverage_rects[i];
+		r.left = vp->virtual_left;
+		r.top = vp->virtual_top;
+		r.right = vp->virtual_left + vp->virtual_width + (1 << vp->zoom) - 1;
+		r.bottom = vp->virtual_top + vp->virtual_height + (1 << vp->zoom) - 1;
+
+		if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
+			_viewport_vehicle_map_redraw_rects.push_back(r);
+		} else {
+			_viewport_vehicle_normal_redraw_rects.push_back({
+				r.left - (MAX_VEHICLE_PIXEL_X * ZOOM_LVL_BASE),
+				r.top - (MAX_VEHICLE_PIXEL_Y * ZOOM_LVL_BASE),
+				r.right + (MAX_VEHICLE_PIXEL_X * ZOOM_LVL_BASE),
+				r.bottom + (MAX_VEHICLE_PIXEL_Y * ZOOM_LVL_BASE),
+			});
+		}
+	}
+}
+
 void ClearViewportLandPixelCache(Viewport *vp)
 {
 	vp->land_pixel_cache.assign(vp->land_pixel_cache.size(), 0xD7);
@@ -376,6 +410,7 @@ void DeleteWindowViewport(Window *w)
 	delete w->viewport->overlay;
 	delete w->viewport;
 	w->viewport = nullptr;
+	FillViewportCoverageRect();
 }
 
 /**
@@ -425,8 +460,8 @@ void InitializeWindowViewport(Window *w, int x, int y,
 		MarkAllRoutePathsDirty(veh);
 		MarkAllRouteStepsDirty(veh);
 	} else {
-		uint x = TileX(follow_flags) * TILE_SIZE;
-		uint y = TileY(follow_flags) * TILE_SIZE;
+		x = TileX(follow_flags) * TILE_SIZE;
+		y = TileY(follow_flags) * TILE_SIZE;
 
 		vp->follow_vehicle = INVALID_VEHICLE;
 		pt = MapXYZToViewport(vp, x, y, GetSlopePixelZ(x, y));
@@ -439,6 +474,7 @@ void InitializeWindowViewport(Window *w, int x, int y,
 
 	w->viewport = vp;
 	_viewport_window_cache.push_back(vp);
+	FillViewportCoverageRect();
 }
 
 static Point _vp_move_offs;
@@ -453,7 +489,7 @@ static void DoViewportRedrawRegions(const Window *w, int left, int top, int widt
 {
 	if (width <= 0 || height <= 0) return;
 
-	FOR_ALL_WINDOWS_FROM_BACK_FROM(w, w) {
+	for (const Window *w : Window::IterateFromBack<const Window>(w)) {
 		if (left + width > w->left &&
 				w->left + w->width > left &&
 				top + height > w->top &&
@@ -697,8 +733,10 @@ static void SetViewportPosition(Window *w, int x, int y, bool force_update_overl
 		if (height > 0 && (_vp_move_offs.x != 0 || _vp_move_offs.y != 0)) {
 			ClearViewportLandPixelCache(vp);
 			SCOPE_INFO_FMT([&], "DoSetViewportPosition: %d, %d, %d, %d, %d, %d, %s", left, top, width, height, _vp_move_offs.x, _vp_move_offs.y, scope_dumper().WindowInfo(w));
+			w->viewport->update_vehicles = true;
 			DoSetViewportPosition((Window *) w->z_front, left, top, width, height);
 			ClearViewportCache(w->viewport);
+			FillViewportCoverageRect();
 		}
 	}
 }
@@ -1070,7 +1108,7 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 
 	if (_vd.combine_sprites == SPRITE_COMBINE_PENDING) {
 		_vd.combine_sprites = SPRITE_COMBINE_ACTIVE;
-		_vd.combine_psd_index = _vd.parent_sprites_to_draw.size() - 1;
+		_vd.combine_psd_index = (uint)_vd.parent_sprites_to_draw.size() - 1;
 		_vd.combine_left = tmp_left;
 		_vd.combine_right = right;
 		_vd.combine_top = tmp_top;
@@ -1354,6 +1392,7 @@ enum TileHighlightType {
 
 const Station *_viewport_highlight_station; ///< Currently selected station for coverage area highlight
 const Town *_viewport_highlight_town;       ///< Currently selected town for coverage area highlight
+const TraceRestrictProgram *_viewport_highlight_tracerestrict_program; ///< Currently selected tracerestrict program for highlight
 
 /**
  * Get tile highlight type of coverage area for a given tile.
@@ -1382,6 +1421,13 @@ static TileHighlightType GetTileHighlightType(TileIndex t)
 				if (st->owner != _current_company) continue;
 				if (GetStationIndex(t) == st->index) return THT_WHITE;
 			}
+		}
+	}
+
+	if (_viewport_highlight_tracerestrict_program != nullptr) {
+		const TraceRestrictRefId *refs = _viewport_highlight_tracerestrict_program->GetRefIdsPtr();
+		for (uint i = 0; i < _viewport_highlight_tracerestrict_program->refcount; i++) {
+			if (GetTraceRestrictRefIdTileIndex(refs[i]) == t) return THT_LIGHT_BLUE;
 		}
 	}
 
@@ -1714,6 +1760,7 @@ static void ViewportAddKdtreeSigns(DrawPixelInfo *dpi, bool towns_only)
 	bool show_towns = HasBit(_display_opt, DO_SHOW_TOWN_NAMES) && _game_mode != GM_MENU;
 	bool show_signs = HasBit(_display_opt, DO_SHOW_SIGNS) && !IsInvisibilitySet(TO_SIGNS) && !towns_only;
 	bool show_competitors = HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS) && !towns_only;
+	bool hide_hidden_waypoints = _settings_client.gui.allow_hiding_waypoint_labels && !HasBit(_extra_display_opt, XDO_SHOW_HIDDEN_SIGNS);
 
 	const BaseStation *st;
 	const Sign *si;
@@ -1741,6 +1788,7 @@ static void ViewportAddKdtreeSigns(DrawPixelInfo *dpi, bool towns_only)
 
 				/* Don't draw if station is owned by another company and competitor station names are hidden. Stations owned by none are never ignored. */
 				if (!show_competitors && _local_company != st->owner && st->owner != OWNER_NONE) break;
+				if (hide_hidden_waypoints && HasBit(Waypoint::From(st)->waypoint_flags, WPF_HIDE_LABEL)) break;
 
 				stations.push_back(st);
 				break;
@@ -1786,12 +1834,12 @@ static void ViewportAddKdtreeSigns(DrawPixelInfo *dpi, bool towns_only)
 		if (Station::IsExpected(st)) {
 			/* Station */
 			ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &st->sign,
-				STR_VIEWPORT_STATION, STR_VIEWPORT_STATION + 1, STR_NULL,
+				STR_VIEWPORT_STATION, STR_VIEWPORT_STATION_TINY, STR_NULL,
 				st->index, st->facilities, (st->owner == OWNER_NONE || !st->IsInUse()) ? COLOUR_GREY : _company_colours[st->owner]);
 		} else {
 			/* Waypoint */
 			ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &st->sign,
-				STR_VIEWPORT_WAYPOINT, STR_VIEWPORT_WAYPOINT + 1, STR_NULL,
+				STR_VIEWPORT_WAYPOINT, STR_VIEWPORT_WAYPOINT_TINY, STR_NULL,
 				st->index, st->facilities, (st->owner == OWNER_NONE || !st->IsInUse()) ? COLOUR_GREY : _company_colours[st->owner]);
 		}
 	}
@@ -2303,7 +2351,7 @@ static void ViewportMapDrawVehicleRoute(const Viewport *vp)
 static inline void DrawRouteStep(const Viewport * const vp, const TileIndex tile, const RankOrderTypeList list)
 {
 	if (tile == INVALID_TILE) return;
-	const uint step_count = list.size() > max_rank_order_type_count ? 1 : list.size();
+	const uint step_count = list.size() > max_rank_order_type_count ? 1 : (uint)list.size();
 	const int x_pos = TileX(tile) * TILE_SIZE + TILE_SIZE / 2;
 	const int y_pos = TileY(tile) * TILE_SIZE + TILE_SIZE / 2;
 	Point pt = RemapCoords(x_pos, y_pos, 0);
@@ -2446,7 +2494,7 @@ void ViewportDrawPlans(const Viewport *vp)
 		ScaleByZoom(_dpi_for_text.left - 2, vp->zoom),
 		ScaleByZoom(_dpi_for_text.top - 2, vp->zoom),
 		ScaleByZoom(_dpi_for_text.left + _dpi_for_text.width + 2, vp->zoom),
-		ScaleByZoom(_dpi_for_text.top + _dpi_for_text.height + 2, vp->zoom) + (int)(ZOOM_LVL_BASE * TILE_HEIGHT * _settings_game.construction.max_heightlevel)
+		ScaleByZoom(_dpi_for_text.top + _dpi_for_text.height + 2, vp->zoom) + (int)(ZOOM_LVL_BASE * TILE_HEIGHT * _settings_game.construction.map_height_limit)
 	};
 
 	const int min_coord_delta = bounds.left / (int)(2 * ZOOM_LVL_BASE * TILE_SIZE);
@@ -2582,10 +2630,143 @@ static const ClearGround _treeground_to_clearground[5] = {
 	CLEAR_SNOW,  // TREE_GROUND_ROUGH_SNOW, make it +1 if _settings_game.game_creation.landscape == LT_TROPIC
 };
 
+template <bool is_32bpp>
+static inline uint32 ViewportMapGetColourVegetationTree(const TileIndex tile, const TreeGround tg, const uint td, const uint tc, const uint colour_index, Slope slope)
+{
+	if (IsTransparencySet(TO_TREES)) {
+		ClearGround cg = _treeground_to_clearground[tg];
+		if (cg == CLEAR_SNOW && _settings_game.game_creation.landscape == LT_TROPIC) cg = CLEAR_DESERT;
+		uint32 ground_colour = _vp_map_vegetation_clear_colours[slope][cg][td];
+
+		if (IsInvisibilitySet(TO_TREES)) {
+			/* Like ground. */
+			return ground_colour;
+		}
+
+		/* Take ground and make it darker. */
+		if (is_32bpp) {
+			return Blitter_32bppBase::MakeTransparent(ground_colour, 192, 256).data;
+		} else {
+			/* 8bpp transparent snow trees give blue. Definitely don't want that. Prefer grey. */
+			if (cg == CLEAR_SNOW && td > 1) return GREY_SCALE(13 - tc);
+			return _pal2trsp_remap_ptr[ground_colour];
+		}
+	} else {
+		if (tg == TREE_GROUND_SNOW_DESERT || tg == TREE_GROUND_ROUGH_SNOW) {
+			return _vp_map_vegetation_clear_colours[colour_index ^ slope][_settings_game.game_creation.landscape == LT_TROPIC ? CLEAR_DESERT : CLEAR_SNOW][td];
+		} else {
+			const uint rnd = std::min<uint>(tc ^ (((tile & 3) ^ (TileY(tile) & 3)) * td), MAX_TREE_COUNT_BY_LANDSCAPE - 1);
+			return _vp_map_vegetation_tree_colours[slope][tg][rnd];
+		}
+	}
+}
+
+static bool ViewportMapGetColourVegetationCustomObject(uint32 &colour, const TileIndex tile, const uint colour_index, bool is_32bpp, bool show_slope)
+{
+	ObjectViewportMapType vmtype = OVMT_DEFAULT;
+	const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
+	if (spec->ctrl_flags & OBJECT_CTRL_FLAG_VPORT_MAP_TYPE) vmtype = spec->vport_map_type;
+
+	auto do_clear_ground = [&](ClearGround cg, uint multi) -> bool {
+		Slope slope = SLOPE_FLAT;
+		if (show_slope) {
+			slope = GetTileSlope(tile);
+			extern Foundation GetFoundation_Object(TileIndex tile, Slope tileh);
+			ApplyFoundationToSlope(GetFoundation_Object(tile, slope), &slope);
+			slope &= SLOPE_ELEVATED;
+		}
+		colour = _vp_map_vegetation_clear_colours[slope][cg][multi];
+		return true;
+	};
+
+	auto do_water = [&](bool coast) -> bool {
+		if (is_32bpp) {
+			uint slope_index = 0;
+			if (!coast) GET_SLOPE_INDEX(slope_index);
+			colour = _vp_map_water_colour[slope_index];
+			return true;
+		}
+		colour = ApplyMask(MKCOLOUR_XXXX(GREY_SCALE(3)), &_smallmap_vehicles_andor[MP_WATER]);
+		colour = COLOUR_FROM_INDEX(colour);
+		return false;
+	};
+
+	switch (vmtype) {
+		case OVMT_CLEAR:
+			if (spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) {
+				if (IsTileOnWater(tile) && GetObjectGroundType(tile) != OBJECT_GROUND_SHORE) {
+					return do_water(false);
+				} else {
+					switch (GetObjectGroundType(tile)) {
+						case OBJECT_GROUND_GRASS:
+							return do_clear_ground(CLEAR_GRASS, GetObjectGroundDensity(tile));
+
+						case OBJECT_GROUND_SNOW_DESERT:
+							return do_clear_ground(_settings_game.game_creation.landscape == LT_TROPIC ? CLEAR_DESERT : CLEAR_SNOW, GetObjectGroundDensity(tile));
+
+						case OBJECT_GROUND_SHORE:
+							return do_water(true);
+
+						default:
+							/* This should never be reached, just draw as clear as a fallback */
+							return do_clear_ground(CLEAR_GRASS, 0);
+					}
+				}
+			}
+			return do_clear_ground(CLEAR_GRASS, 0);
+		case OVMT_GRASS:
+			return do_clear_ground(CLEAR_GRASS, 3);
+		case OVMT_ROUGH:
+			return do_clear_ground(CLEAR_ROUGH, GB(TileX(tile) ^ TileY(tile), 4, 3));
+		case OVMT_ROCKS:
+			return do_clear_ground(CLEAR_ROCKS, TileHash(TileX(tile), TileY(tile)) & 1);
+		case OVMT_FIELDS:
+			return (colour_index & 1) ? do_clear_ground(CLEAR_GRASS, 1) : do_clear_ground(CLEAR_FIELDS, spec->vport_map_subtype & 7);
+		case OVMT_SNOW:
+			return do_clear_ground(CLEAR_SNOW, 3);
+		case OVMT_DESERT:
+			return do_clear_ground(CLEAR_DESERT, 3);
+		case OVMT_TREES: {
+			Slope slope = SLOPE_FLAT;
+			if (show_slope) {
+				slope = GetTileSlope(tile);
+				extern Foundation GetFoundation_Object(TileIndex tile, Slope tileh);
+				ApplyFoundationToSlope(GetFoundation_Object(tile, slope), &slope);
+				slope &= SLOPE_ELEVATED;
+			}
+			TreeGround tg = (TreeGround)GB(spec->vport_map_subtype, 0, 4);
+			if (tg > TREE_GROUND_ROUGH_SNOW) tg = TREE_GROUND_GRASS;
+			const uint td = std::min<uint>(GB(spec->vport_map_subtype, 4, 4), 3);
+			const uint tc = Clamp<uint>(GB(spec->vport_map_subtype, 8, 4), 1, 4);
+			if (is_32bpp) {
+				colour = ViewportMapGetColourVegetationTree<true>(tile, tg, td, tc, colour_index, slope);
+			} else {
+				colour = ViewportMapGetColourVegetationTree<false>(tile, tg, td, tc, colour_index, slope);
+			}
+			return true;
+		}
+		case OVMT_HOUSE:
+			colour = ApplyMask(MKCOLOUR_XXXX(GREY_SCALE(3)), &_smallmap_vehicles_andor[MP_HOUSE]);
+			colour = COLOUR_FROM_INDEX(colour);
+			return false;
+		case OVMT_WATER:
+			return do_water(false);
+
+		default:
+			return false;
+	}
+}
+
 template <bool is_32bpp, bool show_slope>
 static inline uint32 ViewportMapGetColourVegetation(const TileIndex tile, TileType t, const uint colour_index)
 {
 	uint32 colour;
+
+	auto set_default_colour = [&](TileType ttype) {
+		colour = ApplyMask(MKCOLOUR_XXXX(GREY_SCALE(3)), &_smallmap_vehicles_andor[ttype]);
+		colour = COLOUR_FROM_INDEX(colour);
+	};
+
 	switch (t) {
 		case MP_CLEAR: {
 			Slope slope = show_slope ? (Slope) (GetTileSlope(tile, nullptr) & 15) : SLOPE_FLAT;
@@ -2605,33 +2786,17 @@ static inline uint32 ViewportMapGetColourVegetation(const TileIndex tile, TileTy
 		case MP_TREES: {
 			const TreeGround tg = GetTreeGround(tile);
 			const uint td = GetTreeDensity(tile);
+			const uint tc = GetTreeCount(tile);
 			Slope slope = show_slope ? (Slope) (GetTileSlope(tile, nullptr) & 15) : SLOPE_FLAT;
-			if (IsTransparencySet(TO_TREES)) {
-				ClearGround cg = _treeground_to_clearground[tg];
-				if (cg == CLEAR_SNOW && _settings_game.game_creation.landscape == LT_TROPIC) cg = CLEAR_DESERT;
-				uint32 ground_colour = _vp_map_vegetation_clear_colours[slope][cg][td];
+			return ViewportMapGetColourVegetationTree<is_32bpp>(tile, tg, td, tc, colour_index, slope);
+		}
 
-				if (IsInvisibilitySet(TO_TREES)) {
-					/* Like ground. */
-					return ground_colour;
-				}
-
-				/* Take ground and make it darker. */
-				if (is_32bpp) {
-					return Blitter_32bppBase::MakeTransparent(ground_colour, 192, 256).data;
-				} else {
-					/* 8bpp transparent snow trees give blue. Definitely don't want that. Prefer grey. */
-					if (cg == CLEAR_SNOW && td > 1) return GREY_SCALE(13 - GetTreeCount(tile));
-					return _pal2trsp_remap_ptr[ground_colour];
-				}
-			} else {
-				if (tg == TREE_GROUND_SNOW_DESERT || tg == TREE_GROUND_ROUGH_SNOW) {
-					return _vp_map_vegetation_clear_colours[colour_index ^ slope][_settings_game.game_creation.landscape == LT_TROPIC ? CLEAR_DESERT : CLEAR_SNOW][td];
-				} else {
-					const uint rnd = std::min<uint>(GetTreeCount(tile) ^ (((tile & 3) ^ (TileY(tile) & 3)) * td), MAX_TREE_COUNT_BY_LANDSCAPE - 1);
-					return _vp_map_vegetation_tree_colours[slope][tg][rnd];
-				}
+		case MP_OBJECT: {
+			set_default_colour(MP_OBJECT);
+			if (GetObjectHasViewportMapViewOverride(tile)) {
+				if (ViewportMapGetColourVegetationCustomObject(colour, tile, colour_index, is_32bpp, show_slope)) return colour;
 			}
+			break;
 		}
 
 		case MP_WATER:
@@ -2640,11 +2805,13 @@ static inline uint32 ViewportMapGetColourVegetation(const TileIndex tile, TileTy
 				if (IsTileType(tile, MP_WATER) && GetWaterTileType(tile) != WATER_TILE_COAST) GET_SLOPE_INDEX(slope_index);
 				return _vp_map_water_colour[slope_index];
 			}
-			/* FALL THROUGH */
+			set_default_colour(t);
+			break;
 
 		default:
 			colour = ApplyMask(MKCOLOUR_XXXX(GREY_SCALE(3)), &_smallmap_vehicles_andor[t]);
 			colour = COLOUR_FROM_INDEX(colour);
+			set_default_colour(t);
 			break;
 	}
 
@@ -2671,6 +2838,37 @@ static inline uint32 ViewportMapGetColourIndustries(const TileIndex tile, const 
 			return IS32(GetIndustrySpec(it)->map_colour);
 		/* Otherwise, return the colour which will make it disappear. */
 		t2 = IsTileOnWater(tile) ? MP_WATER : MP_CLEAR;
+	}
+
+	if (t == MP_OBJECT && GetObjectHasViewportMapViewOverride(tile)) {
+		ObjectViewportMapType vmtype = OVMT_DEFAULT;
+		const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
+		if (spec->ctrl_flags & OBJECT_CTRL_FLAG_VPORT_MAP_TYPE) vmtype = spec->vport_map_type;
+		if (vmtype == OVMT_CLEAR && spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) {
+			if (IsTileOnWater(tile) && GetObjectGroundType(tile) != OBJECT_GROUND_SHORE) {
+				vmtype = OVMT_WATER;
+			}
+		}
+		switch (vmtype) {
+			case OVMT_DEFAULT:
+				break;
+
+			case OVMT_TREES:
+				t2 = MP_TREES;
+				break;
+
+			case OVMT_HOUSE:
+				t2 = MP_HOUSE;
+				break;
+
+			case OVMT_WATER:
+				t2 = MP_WATER;
+				break;
+
+			default:
+				t2 = MP_CLEAR;
+				break;
+		}
 	}
 
 	if (is_32bpp && t2 == MP_WATER) {
@@ -2702,7 +2900,9 @@ static inline uint32 ViewportMapGetColourOwner(const TileIndex tile, TileType t,
 	}
 
 	const Owner o = GetTileOwner(tile);
-	if ((o < MAX_COMPANIES && !_legend_land_owners[_company_to_list_pos[o]].show_on_map) || o == OWNER_NONE || o == OWNER_WATER) {
+	if (o == OWNER_NONE && t == MP_ROAD) {
+		return IS32(colour_index & 1 ? PC_BLACK : GREY_SCALE(3));
+	} else if ((o < MAX_COMPANIES && !_legend_land_owners[_company_to_list_pos[o]].show_on_map) || o == OWNER_NONE || o == OWNER_WATER) {
 		if (t == MP_WATER) {
 			if (is_32bpp) {
 				uint slope_index = 0;
@@ -2753,8 +2953,37 @@ static inline uint32 ViewportMapGetColourRoutes(const TileIndex tile, TileType t
 			return IS32(PC_DARK_GREY);
 
 		case MP_HOUSE:
-		case MP_OBJECT:
 			return IS32(colour_index & 1 ? PC_DARK_RED : GREY_SCALE(3));
+
+		case MP_OBJECT: {
+			ObjectViewportMapType vmtype = OVMT_DEFAULT;
+			if (GetObjectHasViewportMapViewOverride(tile)) {
+				const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
+				if (spec->ctrl_flags & OBJECT_CTRL_FLAG_VPORT_MAP_TYPE) vmtype = spec->vport_map_type;
+				if (vmtype == OVMT_CLEAR && spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) {
+					if (IsTileOnWater(tile) && GetObjectGroundType(tile) != OBJECT_GROUND_SHORE) {
+						vmtype = OVMT_WATER;
+					}
+				}
+			}
+			switch (vmtype) {
+				case OVMT_DEFAULT:
+				case OVMT_HOUSE:
+					return IS32(colour_index & 1 ? PC_DARK_RED : GREY_SCALE(3));
+
+				case OVMT_WATER:
+					if (is_32bpp) {
+						return _vp_map_water_colour[0];
+					} else {
+						return PC_WATER;
+					}
+
+				default:
+					colour = COLOUR_FROM_INDEX(_heightmap_schemes[_settings_client.gui.smallmap_land_colour].height_colours[TileHeight(tile)]);
+					break;
+			}
+			break;
+		}
 
 		case MP_STATION:
 			switch (GetStationType(tile)) {
@@ -2839,7 +3068,7 @@ static inline TileIndex ViewportMapGetMostSignificantTileType(const Viewport * c
 	/* Find the most important tile of the area. */
 	TileIndex result = from_tile;
 	uint importance = 0;
-	TILE_AREA_LOOP_WITH_PREFETCH(tile, tile_area) {
+	for (OrthogonalPrefetchTileIterator tile(tile_area); tile != INVALID_TILE; ++tile) {
 		const TileType ttype = GetTileType(tile);
 		const uint tile_importance = _tiletype_importance[ttype];
 		if (tile_importance > importance) {
@@ -2869,25 +3098,28 @@ static inline TileIndex ViewportMapGetMostSignificantTileType(const Viewport * c
 
 /** Get the colour of a tile, can be 32bpp RGB or 8bpp palette index. */
 template <bool is_32bpp, bool show_slope>
-uint32 ViewportMapGetColour(const Viewport * const vp, uint x, uint y, const uint colour_index)
+uint32 ViewportMapGetColour(const Viewport * const vp, int x, int y, const uint colour_index)
 {
-	if (!(IsInsideMM(x, TILE_SIZE, MapMaxX() * TILE_SIZE - 1) &&
-		  IsInsideMM(y, TILE_SIZE, MapMaxY() * TILE_SIZE - 1)))
-		return 0;
+	if (x >= static_cast<int>(MapMaxX() * TILE_SIZE) || y >= static_cast<int>(MapMaxY() * TILE_SIZE)) return 0;
 
 	/* Very approximative but fast way to get the tile when taking Z into account. */
-	const TileIndex tile_tmp = TileVirtXY(x, y);
-	const uint z = TileHeight(tile_tmp) * 4;
+	const TileIndex tile_tmp = TileVirtXY(std::max(0, x), std::max(0, y));
+	const int z = TileHeight(tile_tmp) * 4;
+	if (x + z < 0 || y + z < 0 || static_cast<uint>(x + z) >= MapSizeX() << 4) {
+		/* Wrapping of tile X coordinate causes a graphic glitch below south west border. */
+		return 0;
+	}
 	TileIndex tile = TileVirtXY(x + z, y + z);
 	if (tile >= MapSize()) return 0;
-	if (_settings_game.construction.freeform_edges) {
-		/* tile_tmp and tile must be from the same side,
-		 * otherwise it's an approximation erroneous case
-		 * that leads to a graphic glitch below south west border.
-		 */
-		if (TileX(tile_tmp) > (MapSizeX() - (MapSizeX() / 8)))
-			if ((TileX(tile_tmp) < (MapSizeX() / 2)) != (TileX(tile) < (MapSizeX() / 2)))
-				return 0;
+	const int z2 = TileHeight(tile) * 4;
+	if (unlikely(z2 != z)) {
+		const int approx_z = (z + z2) / 2;
+		if (x + approx_z < 0 || y + approx_z < 0 || static_cast<uint>(x + approx_z) >= MapSizeX() << 4) {
+			/* Wrapping of tile X coordinate causes a graphic glitch below south west border. */
+			return 0;
+		}
+		tile = TileVirtXY(x + approx_z, y + approx_z);
+		if (tile >= MapSize()) return 0;
 	}
 	TileType tile_type = MP_VOID;
 	tile = ViewportMapGetMostSignificantTileType(vp, tile, &tile_type);
@@ -2905,6 +3137,10 @@ uint32 ViewportMapGetColour(const Viewport * const vp, uint x, uint y, const uin
 /* Taken from http://stereopsis.com/doubleblend.html, PixelBlend() is faster than ComposeColourRGBANoCheck() */
 static inline void PixelBlend(uint32 * const d, const uint32 s)
 {
+#if defined(__EMSCRIPTEN__)
+	*d = Blitter_32bppBase::ComposeColourRGBANoCheck(s & 0xFF, (s >> 8) & 0xFF, (s >> 16) & 0xFF, (s >> 24) & 0xFF, Colour(*d)).data;
+	return;
+#endif
 	const uint32 a     = (s >> 24) + 1;
 	const uint32 dstrb = *d & 0xFF00FF;
 	const uint32 dstg  = *d & 0xFF00;
@@ -2947,10 +3183,14 @@ static void ViewportMapDrawScrollingViewportBox(const Viewport * const vp)
 					const int y = UnScaleByZoom(t_inter - _vd.dpi.top, vp->zoom);
 
 					/* If asked, with 32bpp we can do some blending */
-					if (_settings_client.gui.show_scrolling_viewport_on_map >= 2 && blitter->GetScreenDepth() == 32)
-						for (int j = y; j < y + h_inter; j++)
-							for (int i = x; i < x + w_inter; i++)
-								PixelBlend((uint32*) blitter->MoveTo(_vd.dpi.dst_ptr, i, j), 0x40FCFCFC);
+					if (_settings_client.gui.show_scrolling_viewport_on_map >= 2 && blitter->GetScreenDepth() == 32) {
+						for (int j = y; j < y + h_inter; j++) {
+							uint32 *buf = (uint32*) blitter->MoveTo(_vd.dpi.dst_ptr, x, j);
+							for (int i = 0; i < w_inter; i++) {
+								PixelBlend(buf + i, 0x40FCFCFC);
+							}
+						}
+					}
 
 					/* Draw area contour */
 					if (_settings_client.gui.show_scrolling_viewport_on_map != 2) {
@@ -2973,6 +3213,54 @@ static void ViewportMapDrawScrollingViewportBox(const Viewport * const vp)
 	}
 }
 
+static void ViewportMapDrawSelection(const Viewport * const vp)
+{
+	DrawPixelInfo *old_dpi = _cur_dpi;
+	_cur_dpi = &_dpi_for_text;
+
+	auto draw_line = [&](Point from_pt, Point to_pt) {
+		GfxDrawLine(from_pt.x, from_pt.y, to_pt.x, to_pt.y, PC_WHITE, 2, 0);
+	};
+
+	Point start_coord = RemapCoords2(_thd.selstart.x, _thd.selstart.y);
+	Point end_coord = RemapCoords2(_thd.selend.x, _thd.selend.y);
+
+	Point start_effective = InverseRemapCoords(start_coord.x, start_coord.y);
+	Point end_effective = InverseRemapCoords(end_coord.x, end_coord.y);
+
+	auto get_corner = [&](int pos_x, int pos_y) -> Point {
+		Point pt = RemapCoords(pos_x, pos_y, 0);
+		return { UnScaleByZoom(pt.x, vp->zoom), UnScaleByZoom(pt.y, vp->zoom) };
+	};
+	Point start_pt = get_corner(start_effective.x, start_effective.y);
+	Point end_pt = get_corner(end_effective.x, end_effective.y);
+	Point mid1_pt = get_corner(start_effective.x, end_effective.y);
+	Point mid2_pt = get_corner(end_effective.x, start_effective.y);
+
+	draw_line(start_pt, mid1_pt);
+	draw_line(mid1_pt, end_pt);
+	draw_line(end_pt, mid2_pt);
+	draw_line(mid2_pt, start_pt);
+
+	if (BlitterFactory::GetCurrentBlitter()->GetScreenDepth() == 32) {
+		static std::vector<Point> points(4);
+		points[0] = start_pt;
+		points[1] = mid1_pt;
+		points[2] = end_pt;
+		points[3] = mid2_pt;
+		GfxFillPolygon(points, 0, FILLRECT_FUNCTOR, [](void *dst, int count) {
+			uint32 *buf = reinterpret_cast<uint32 *>(dst);
+			for (int i = 0; i < count; i++) {
+				PixelBlend(buf + i, 0x40FCFCFC);
+			}
+		});
+	} else {
+		draw_line(start_pt, end_pt);
+	}
+
+	_cur_dpi = old_dpi;
+}
+
 template <bool is_32bpp>
 static void ViewportMapDrawBridgeTunnel(Viewport * const vp, const TunnelBridgeToMap * const tbtm, const int z,
 		const bool is_tunnel, const int w, const int h, Blitter * const blitter)
@@ -2993,7 +3281,7 @@ static void ViewportMapDrawBridgeTunnel(Viewport * const vp, const TunnelBridgeT
 	}
 
 	TileIndexDiff delta = TileOffsByDiagDir(GetTunnelBridgeDirection(tile));
-	for (; tile != tbtm->to_tile; tile += delta) { // For each tile
+	for (tile += delta; tile != tbtm->to_tile; tile += delta) { // For each tile
 		const Point pt = RemapCoords(TileX(tile) * TILE_SIZE, TileY(tile) * TILE_SIZE, z);
 		const int x = UnScaleByZoomLower(pt.x - _vd.dpi.left, _vd.dpi.zoom);
 		if (IsInsideMM(x, 0, w)) {
@@ -3260,11 +3548,12 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom)
 		}
 		ViewportMapDrawVehicles(&_vd.dpi, vp);
 		if (_scrolling_viewport && _settings_client.gui.show_scrolling_viewport_on_map) ViewportMapDrawScrollingViewportBox(vp);
+		if (unlikely(_thd.place_mode == (HT_SPECIAL | HT_MAP) && (_thd.drawstyle & HT_DRAG_MASK) == HT_RECT && _thd.select_proc == DDSP_MEASURE)) ViewportMapDrawSelection(vp);
 		if (vp->zoom < ZOOM_LVL_OUT_256X) ViewportAddKdtreeSigns(&_vd.dpi, true);
 	} else {
 		/* Classic rendering. */
 		ViewportAddLandscape();
-		ViewportAddVehicles(&_vd.dpi);
+		ViewportAddVehicles(&_vd.dpi, vp->update_vehicles);
 
 		ViewportAddKdtreeSigns(&_vd.dpi, false);
 
@@ -3479,6 +3768,8 @@ void UpdateViewportSizeZoom(Viewport *vp)
 		vp->land_pixel_cache.clear();
 		vp->land_pixel_cache.shrink_to_fit();
 	}
+	vp->update_vehicles = true;
+	FillViewportCoverageRect();
 }
 
 void UpdateActiveScrollingViewport(Window *w)
@@ -3597,15 +3888,23 @@ void MarkViewportDirty(Viewport * const vp, int left, int top, int right, int bo
  */
 void MarkAllViewportsDirty(int left, int top, int right, int bottom, ViewportMarkDirtyFlags flags)
 {
-	for (Viewport * const vp : _viewport_window_cache) {
-		if (flags & VMDF_NOT_MAP_MODE && vp->zoom >= ZOOM_LVL_DRAW_MAP) continue;
-		MarkViewportDirty(vp, left, top, right, bottom, flags);
+	for (uint i = 0; i < _viewport_window_cache.size(); i++) {
+		if (flags & VMDF_NOT_MAP_MODE && _viewport_window_cache[i]->zoom >= ZOOM_LVL_DRAW_MAP) continue;
+		if (flags & VMDF_NOT_MAP_MODE_NON_VEG && _viewport_window_cache[i]->zoom >= ZOOM_LVL_DRAW_MAP && _viewport_window_cache[i]->map_type != VPMT_VEGETATION) continue;
+		const Rect &r = _viewport_coverage_rects[i];
+		if (left >= r.right ||
+				right <= r.left ||
+				top >= r.bottom ||
+				bottom <= r.top) {
+			continue;
+		}
+		MarkViewportDirty(_viewport_window_cache[i], left, top, right, bottom, flags);
 	}
 }
 
 static void MarkRouteStepDirty(RouteStepsMap::const_iterator cit)
 {
-	const uint size = cit->second.size() > max_rank_order_type_count ? 1 : cit->second.size();
+	const uint size = cit->second.size() > max_rank_order_type_count ? 1 : (uint)cit->second.size();
 	MarkRouteStepDirty(cit->first, size);
 }
 
@@ -3641,8 +3940,7 @@ void MarkAllRouteStepsDirty(const Vehicle *veh)
  */
 void MarkAllViewportMapsDirty(int left, int top, int right, int bottom)
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		Viewport *vp = w->viewport;
 		if (vp != nullptr && vp->zoom >= ZOOM_LVL_DRAW_MAP) {
 			MarkViewportDirty(vp, left, top, right, bottom, VMDF_NOT_LANDSCAPE);
@@ -3652,8 +3950,7 @@ void MarkAllViewportMapsDirty(int left, int top, int right, int bottom)
 
 void MarkAllViewportMapLandscapesDirty()
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		Viewport *vp = w->viewport;
 		if (vp != nullptr && vp->zoom >= ZOOM_LVL_DRAW_MAP) {
 			ClearViewportLandPixelCache(vp);
@@ -3664,8 +3961,7 @@ void MarkAllViewportMapLandscapesDirty()
 
 void MarkWholeNonMapViewportsDirty()
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		Viewport *vp = w->viewport;
 		if (vp != nullptr && vp->zoom < ZOOM_LVL_DRAW_MAP) {
 			w->SetDirty();
@@ -3680,8 +3976,7 @@ void MarkWholeNonMapViewportsDirty()
  */
 void MarkAllViewportOverlayStationLinksDirty(const Station *st)
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		Viewport *vp = w->viewport;
 		if (vp != nullptr && vp->overlay != nullptr) {
 			vp->overlay->MarkStationViewportLinksDirty(st);
@@ -3691,8 +3986,7 @@ void MarkAllViewportOverlayStationLinksDirty(const Station *st)
 
 void ConstrainAllViewportsZoom()
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_FRONT(w) {
+	for (Window *w : Window::IterateFromFront()) {
 		if (w->viewport == nullptr) continue;
 
 		ZoomLevel zoom = static_cast<ZoomLevel>(Clamp(w->viewport->zoom, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max));
@@ -3908,14 +4202,16 @@ static void SetSelectionTilesDirty()
 		int bot_x = top_x; // coordinates of bottom dirty tile
 		int bot_y = top_y;
 
+		const bool conservative_mode = (_thd.place_mode & HT_MAP) && !_viewport_vehicle_map_redraw_rects.empty();
+
 		do {
 			/* topmost dirty point */
 			TileIndex top_tile = TileVirtXY(top_x, top_y);
-			Point top = RemapCoords(top_x, top_y, GetTileMaxPixelZ(top_tile));
+			Point top = RemapCoords(top_x, top_y, conservative_mode ? _settings_game.construction.map_height_limit * TILE_HEIGHT : GetTileMaxPixelZ(top_tile));
 
 			/* bottommost point */
 			TileIndex bottom_tile = TileVirtXY(bot_x, bot_y);
-			Point bot = RemapCoords(bot_x + TILE_SIZE, bot_y + TILE_SIZE, GetTilePixelZ(bottom_tile)); // bottommost point
+			Point bot = RemapCoords(bot_x + TILE_SIZE, bot_y + TILE_SIZE, conservative_mode ? 0 : GetTilePixelZ(bottom_tile)); // bottommost point
 
 			/* the 'x' coordinate of 'top' and 'bot' is the same (and always in the same distance from tile middle),
 			 * tile height/slope affects only the 'y' on-screen coordinate! */
@@ -3925,10 +4221,11 @@ static void SetSelectionTilesDirty()
 			int r = top.x + TILE_PIXELS * ZOOM_LVL_BASE; // 'x' coordinate of right  side of the dirty rectangle
 			int b = bot.y;                               // 'y' coordinate of bottom side of the dirty rectangle
 
-			static const int OVERLAY_WIDTH = 4 * ZOOM_LVL_BASE; // part of selection sprites is drawn outside the selected area (in particular: terraforming)
+			static const int OVERLAY_WIDTH = conservative_mode ? 2 << ZOOM_LVL_END : 4 * ZOOM_LVL_BASE; // part of selection sprites is drawn outside the selected area (in particular: terraforming)
 
 			/* For halftile foundations on SLOPE_STEEP_S the sprite extents some more towards the top */
-			MarkAllViewportsDirty(l - OVERLAY_WIDTH, t - OVERLAY_WIDTH - TILE_HEIGHT * ZOOM_LVL_BASE, r + OVERLAY_WIDTH, b + OVERLAY_WIDTH, VMDF_NOT_MAP_MODE);
+			ViewportMarkDirtyFlags mode = (_thd.place_mode & HT_MAP) ? VMDF_NOT_LANDSCAPE : VMDF_NOT_MAP_MODE;
+			MarkAllViewportsDirty(l - OVERLAY_WIDTH, t - OVERLAY_WIDTH - TILE_HEIGHT * ZOOM_LVL_BASE, r + OVERLAY_WIDTH, b + OVERLAY_WIDTH, mode);
 
 			/* haven't we reached the topmost tile yet? */
 			if (top_x != x_start) {
@@ -4012,6 +4309,7 @@ static bool CheckClickOnViewportSign(const Viewport *vp, int x, int y)
 	bool show_towns = HasBit(_display_opt, DO_SHOW_TOWN_NAMES);
 	bool show_signs = HasBit(_display_opt, DO_SHOW_SIGNS) && !IsInvisibilitySet(TO_SIGNS);
 	bool show_competitors = HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS);
+	bool hide_hidden_waypoints = _settings_client.gui.allow_hiding_waypoint_labels && !HasBit(_extra_display_opt, XDO_SHOW_HIDDEN_SIGNS);
 
 	/* Topmost of each type that was hit */
 	BaseStation *st = nullptr, *last_st = nullptr;
@@ -4032,6 +4330,7 @@ static bool CheckClickOnViewportSign(const Viewport *vp, int x, int y)
 				if (!show_waypoints) break;
 				st = BaseStation::Get(item.id.station);
 				if (!show_competitors && _local_company != st->owner && st->owner != OWNER_NONE) break;
+				if (hide_hidden_waypoints && HasBit(Waypoint::From(st)->waypoint_flags, WPF_HIDE_LABEL)) break;
 				if (CheckClickOnViewportSign(vp, x, y, &st->sign)) last_st = st;
 				break;
 
@@ -4268,7 +4567,7 @@ HandleViewportClickedResult HandleViewportClicked(const Viewport *vp, int x, int
 		if (IsCompanyBuildableVehicleType(v)) {
 			v = v->First();
 			WindowClass wc = _thd.GetCallbackWnd()->window_class;
-			if (_ctrl_pressed && v->owner == _local_company) {
+			if (_ctrl_pressed && IsVehicleControlAllowed(v, _local_company)) {
 				StartStopVehicle(v, true);
 			} else if (wc != WC_CREATE_TEMPLATE && wc != WC_TEMPLATEGUI_MAIN) {
 				ShowVehicleViewWindow(v);
@@ -4619,7 +4918,7 @@ void UpdateTileSelection()
  * @param params (optional) up to 5 pieces of additional information that may be added to a tooltip
  * @param close_cond Condition for closing this tooltip.
  */
-static inline void ShowMeasurementTooltips(StringID str, uint paramcount, const uint64 params[], TooltipCloseCondition close_cond = TCC_NONE)
+static inline void ShowMeasurementTooltips(StringID str, uint paramcount, const uint64 params[], TooltipCloseCondition close_cond = TCC_EXIT_VIEWPORT)
 {
 	if (!_settings_client.gui.measure_tooltip) return;
 	GuiShowTooltips(_thd.GetCallbackWnd(), str, paramcount, params, close_cond);
@@ -5304,10 +5603,10 @@ static HighLightStyle CalcPolyrailDrawstyle(Point pt, bool dragging)
 	if (_current_snap_lock.x != -1) {
 		snap_point = FindBestPolyline(pt, &_current_snap_lock, 1, &line);
 	} else if (snap_mode == RSM_SNAP_TO_TILE) {
-		snap_point = FindBestPolyline(pt, _tile_snap_points.data(), _tile_snap_points.size(), &line);
+		snap_point = FindBestPolyline(pt, _tile_snap_points.data(), (uint)_tile_snap_points.size(), &line);
 	} else {
 		assert(snap_mode == RSM_SNAP_TO_RAIL);
-		snap_point = FindBestPolyline(pt, _rail_snap_points.data(), _rail_snap_points.size(), &line);
+		snap_point = FindBestPolyline(pt, _rail_snap_points.data(), (uint)_rail_snap_points.size(), &line);
 	}
 
 	if (snap_point == nullptr) {
@@ -5918,6 +6217,8 @@ void SetViewportCatchmentStation(const Station *st, bool sel)
 		MarkCatchmentTilesDirty();
 		_viewport_highlight_station = st;
 		_viewport_highlight_town = nullptr;
+		if (_viewport_highlight_tracerestrict_program != nullptr) InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+		_viewport_highlight_tracerestrict_program = nullptr;
 		MarkCatchmentTilesDirty();
 	} else if (!sel && _viewport_highlight_station == st) {
 		MarkCatchmentTilesDirty();
@@ -5939,12 +6240,31 @@ void SetViewportCatchmentTown(const Town *t, bool sel)
 	if (sel && _viewport_highlight_town != t) {
 		_viewport_highlight_station = nullptr;
 		_viewport_highlight_town = t;
+		if (_viewport_highlight_tracerestrict_program != nullptr) InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+		_viewport_highlight_tracerestrict_program = nullptr;
 		MarkWholeNonMapViewportsDirty();
 	} else if (!sel && _viewport_highlight_town == t) {
 		_viewport_highlight_town = nullptr;
 		MarkWholeNonMapViewportsDirty();
 	}
 	if (_viewport_highlight_town != nullptr) SetWindowDirty(WC_TOWN_VIEW, _viewport_highlight_town->index);
+}
+
+void SetViewportCatchmentTraceRestrictProgram(const TraceRestrictProgram *prog, bool sel)
+{
+	if (_viewport_highlight_town != nullptr) SetWindowDirty(WC_TOWN_VIEW, _viewport_highlight_town->index);
+	if (_viewport_highlight_station != nullptr) SetWindowDirty(WC_STATION_VIEW, _viewport_highlight_station->index);
+	if (sel && _viewport_highlight_tracerestrict_program != prog) {
+		_viewport_highlight_station = nullptr;
+		_viewport_highlight_town = nullptr;
+		_viewport_highlight_tracerestrict_program = prog;
+		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+		MarkWholeNonMapViewportsDirty();
+	} else if (!sel && _viewport_highlight_tracerestrict_program == prog) {
+		_viewport_highlight_tracerestrict_program = nullptr;
+		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+		MarkWholeNonMapViewportsDirty();
+	}
 }
 
 int GetSlopeTreeBrightnessAdjust(Slope slope)

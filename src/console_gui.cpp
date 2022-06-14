@@ -524,11 +524,9 @@ static void IConsoleTabCompletion()
 			return;
 		}
 	}
-	size_t length = cmdptr - input;
-	char *prefix = (char*)alloca(length + 1);
-	strecpy(prefix, input, prefix + length);
-	RemoveUnderscores(prefix);
-	size_t prefix_length = strlen(prefix);
+	extern std::string RemoveUnderscores(std::string name);
+	std::string prefix = RemoveUnderscores(std::string(input, cmdptr - input));
+	size_t prefix_length = prefix.size();
 
 	if (prefix_length == 0) return;
 
@@ -536,27 +534,39 @@ static void IConsoleTabCompletion()
 	char *b = buffer;
 	uint matches = 0;
 	std::string common_prefix;
-	for (const IConsoleCmd *cmd = _iconsole_cmds; cmd != nullptr; cmd = cmd->next) {
-		if (strncmp(cmd->name, prefix, prefix_length) == 0) {
-			if ((_settings_client.gui.console_show_unlisted || !cmd->unlisted) && (cmd->hook == nullptr || cmd->hook(false) != CHR_HIDE)) {
-				if (matches == 0) {
-					common_prefix = cmd->name;
-				} else {
-					const char *cp = common_prefix.c_str();
-					const char *cmdp = cmd->name;
-					while (true) {
-						const char *end = cmdp;
-						WChar a = Utf8Consume(cp);
-						WChar b = Utf8Consume(cmdp);
-						if (a == 0 || b == 0 || a != b) {
-							common_prefix.resize(end - cmd->name);
-							break;
-						}
-					}
+	auto check_candidate = [&](const std::string &cmd_name_str) {
+		const char *cmd_name = cmd_name_str.c_str();
+		if (matches == 0) {
+			common_prefix = cmd_name_str;
+		} else {
+			const char *cp = common_prefix.c_str();
+			const char *cmdp = cmd_name;
+			while (true) {
+				const char *end = cmdp;
+				WChar a = Utf8Consume(cp);
+				WChar b = Utf8Consume(cmdp);
+				if (a == 0 || b == 0 || a != b) {
+					common_prefix.resize(end - cmd_name);
+					break;
 				}
-				matches++;
-				b += seprintf(b, lastof(buffer), "%s ", cmd->name);
 			}
+		}
+		matches++;
+		b += seprintf(b, lastof(buffer), "%s ", cmd_name);
+	};
+	for (auto &it : IConsole::Commands()) {
+		const char *cmd_name = it.first.c_str();
+		const IConsoleCmd *cmd = &it.second;
+		if (strncmp(cmd_name, prefix.c_str(), prefix_length) == 0) {
+			if ((_settings_client.gui.console_show_unlisted || !cmd->unlisted) && (cmd->hook == nullptr || cmd->hook(false) != CHR_HIDE)) {
+				check_candidate(it.first);
+			}
+		}
+	}
+	for (auto &it : IConsole::Aliases()) {
+		const char *cmd_name = it.first.c_str();
+		if (strncmp(cmd_name, prefix.c_str(), prefix_length) == 0) {
+			check_candidate(it.first);
 		}
 	}
 	if (matches > 0) {

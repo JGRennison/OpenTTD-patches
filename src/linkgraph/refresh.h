@@ -34,6 +34,7 @@ protected:
 		WAS_REFIT,    ///< Consist was refit since the last stop where it could interact with cargo.
 		RESET_REFIT,  ///< Consist had a chance to load since the last refit and the refit capacities can be reset.
 		IN_AUTOREFIT, ///< Currently doing an autorefit loop. Ignore the first autorefit order.
+		AIRCRAFT,     ///< Vehicle is an aircraft.
 	};
 
 	/**
@@ -60,6 +61,7 @@ protected:
 		OrderID from;  ///< Last order where vehicle could interact with cargo or absolute first order.
 		OrderID to;    ///< Next order to be processed.
 		CargoID cargo; ///< Cargo the consist is probably carrying or CT_INVALID if unknown.
+		uint8 flags;   ///< Flags, for branches
 
 		/**
 		 * Default constructor should not be called but has to be visible for
@@ -73,8 +75,10 @@ protected:
 		 * @param to Second order of the hop.
 		 * @param cargo Cargo the consist is probably carrying when passing the hop.
 		 */
-		Hop(OrderID from, OrderID to, CargoID cargo) : from(from), to(to), cargo(cargo) {}
-		bool operator<(const Hop &other) const;
+		Hop(OrderID from, OrderID to, CargoID cargo, uint8 flags = 0) : from(from), to(to), cargo(cargo), flags(flags) {}
+		bool operator<(const Hop &other) const { return std::tie(this->from, this->to, this->cargo, this->flags) < std::tie(other.from, other.to, other.cargo, other.flags); }
+		bool operator==(const Hop &other) const { return std::tie(this->from, this->to, this->cargo, this->flags) == std::tie(other.from, other.to, other.cargo, other.flags); }
+		bool operator!=(const Hop &other) const { return !(*this == other); }
 	};
 
 	typedef std::vector<RefitDesc> RefitList;
@@ -93,7 +97,7 @@ protected:
 
 	bool HandleRefit(CargoID refit_cargo);
 	void ResetRefit();
-	void RefreshStats(const Order *cur, const Order *next);
+	void RefreshStats(const Order *cur, const Order *next, uint8 flags);
 	const Order *PredictNextOrder(const Order *cur, const Order *next, uint8 flags, uint num_hops = 0);
 
 	void RefreshLinks(const Order *cur, const Order *next, uint8 flags, uint num_hops = 0);

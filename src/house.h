@@ -26,7 +26,7 @@ static const HouseID NUM_HOUSES_PER_GRF = 255;    ///< Number of supported house
 
 static const uint HOUSE_NO_CLASS      = 0;
 static const HouseID NEW_HOUSE_OFFSET = 110;    ///< Offset for new houses.
-static const HouseID NUM_HOUSES       = 512;    ///< Total number of houses.
+static const HouseID NUM_HOUSES       = 1024;    ///< Total number of houses.
 static const HouseID INVALID_HOUSE_ID = 0xFFFF;
 
 static const uint HOUSE_NUM_ACCEPTS = 16; ///< Max number of cargoes accepted by a tile

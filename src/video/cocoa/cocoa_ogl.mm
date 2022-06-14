@@ -12,6 +12,8 @@
 #include "../../stdafx.h"
 #include "../../os/macosx/macos.h"
 
+#define GL_SILENCE_DEPRECATION
+
 #define Rect  OTTDRect
 #define Point OTTDPoint
 #import <Cocoa/Cocoa.h>
@@ -150,7 +152,6 @@ static bool _allowSoftware;
 {
 	if (self = [ super initWithFrame:frameRect ]) {
 		/* We manage our content updates ourselves. */
-		self.wantsBestResolutionOpenGLSurface = _allow_hidpi_window ? YES : NO;
 		self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawOnSetNeedsDisplay;
 
 		/* Create backing layer. */
@@ -200,6 +201,11 @@ const char *VideoDriver_CocoaOpenGL::Start(const StringList &param)
 		return err;
 	}
 
+	this->driver_info = GetName();
+	this->driver_info += " (";
+	this->driver_info += OpenGLBackend::Get()->GetDriverName();
+	this->driver_info += ")";
+
 	bool fullscreen = _fullscreen;
 	if (!this->MakeWindow(_cur_resolution.width, _cur_resolution.height)) {
 		this->Stop();
@@ -231,11 +237,15 @@ void VideoDriver_CocoaOpenGL::Stop()
 
 void VideoDriver_CocoaOpenGL::PopulateSystemSprites()
 {
+	VideoDriver_Cocoa::PopulateSystemSprites();
+
 	OpenGLBackend::Get()->PopulateCursorCache();
 }
 
 void VideoDriver_CocoaOpenGL::ClearSystemSprites()
 {
+	VideoDriver_Cocoa::ClearSystemSprites();
+
 	CGLSetCurrentContext(this->gl_context);
 	OpenGLBackend::Get()->ClearCursorCache();
 }
@@ -254,7 +264,7 @@ const char *VideoDriver_CocoaOpenGL::AllocateContext(bool allow_software)
 
 	CGLSetCurrentContext(this->gl_context);
 
-	return OpenGLBackend::Create(&GetOGLProcAddressCallback);
+	return OpenGLBackend::Create(&GetOGLProcAddressCallback, this->GetScreenSize());
 }
 
 NSView *VideoDriver_CocoaOpenGL::AllocateDrawView()

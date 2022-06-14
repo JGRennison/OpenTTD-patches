@@ -85,6 +85,10 @@ bool TryReserveRailTrackdir(TileIndex tile, Trackdir td, bool trigger_stations)
 	if (success && HasPbsSignalOnTrackdir(tile, td)) {
 		SetSignalStateByTrackdir(tile, td, SIGNAL_STATE_GREEN);
 		MarkSingleSignalDirty(tile, td);
+		if (_extra_aspects > 0) {
+			SetSignalAspect(tile, TrackdirToTrack(td), 0);
+			UpdateAspectDeferred(tile, td);
+		}
 	}
 	return success;
 }
@@ -129,10 +133,10 @@ bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations)
 					if (IsCrossingOccupiedByRoadVehicle(tile)) return false;
 					if (_settings_game.vehicle.adjacent_crossings) {
 						const Axis axis = GetCrossingRoadAxis(tile);
-						for (TileIndex t = tile; IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, AxisToDiagDir(GetCrossingRoadAxis(t)))) {
+						for (TileIndex t = tile; t < MapSize() && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, AxisToDiagDir(GetCrossingRoadAxis(t)))) {
 							if (IsCrossingOccupiedByRoadVehicle(t)) return false;
 						}
-						for (TileIndex t = tile; IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, ReverseDiagDir(AxisToDiagDir(GetCrossingRoadAxis(t))))) {
+						for (TileIndex t = tile; t < MapSize() && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, ReverseDiagDir(AxisToDiagDir(GetCrossingRoadAxis(t))))) {
 							if (IsCrossingOccupiedByRoadVehicle(t)) return false;
 						}
 					}
@@ -240,6 +244,7 @@ void UnreserveRailTrack(TileIndex tile, Track t)
 				if (IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgeEffectivelyPBS(tile) && IsTrackAcrossTunnelBridge(tile, t)) {
 					if (IsTunnelBridgePBS(tile)) {
 						SetTunnelBridgeExitSignalState(tile, SIGNAL_STATE_RED);
+						if (_extra_aspects > 0) PropagateAspectChange(tile, GetTunnelBridgeExitTrackdir(tile), 0);
 					} else {
 						UpdateSignalsOnSegment(tile, INVALID_DIAGDIR, GetTileOwner(tile));
 					}
@@ -330,7 +335,7 @@ static void CheckCurveLookAhead(const Train *v, TrainReservationLookAhead *looka
 		const RailtypeInfo *rti = GetRailTypeInfo(rt);
 		max_speed += (max_speed / 2) * rti->curve_speed;
 
-		if (v->tcache.cached_tilt) {
+		if (v->tcache.cached_tflags & TCF_TILT) {
 			/* Apply max_speed bonus of 20% for a tilting train */
 			max_speed += max_speed / 5;
 		}
@@ -342,10 +347,63 @@ static void CheckCurveLookAhead(const Train *v, TrainReservationLookAhead *looka
 static int LookaheadTileHeightForChunnel(int length, int offset)
 {
 	if (offset == 0) return 0;
-	if (offset < 3) return -1 * TILE_HEIGHT;
-	if (offset < length - 3) return -2 * TILE_HEIGHT;
-	if (offset < length) return -1 * TILE_HEIGHT;
+	if (offset < 3) return -1 * (int)TILE_HEIGHT;
+	if (offset < length - 3) return -2 * (int)TILE_HEIGHT;
+	if (offset < length) return -1 * (int)TILE_HEIGHT;
 	return 0;
+}
+
+static uint16 ApplyTunnelBridgeLookaheadSignalSpeedRestriction(TileIndex tile, Trackdir trackdir, const Train *v,
+		uint16 initial_speed_restriction, TrainReservationLookAhead *lookahead, int offset, int16 z)
+{
+	uint16 speed_restriction = initial_speed_restriction;
+
+	if (v != nullptr && IsTunnelBridgeRestrictedSignal(tile)) {
+		if (trackdir == INVALID_TRACKDIR) {
+			trackdir = GetTunnelBridgeExitTrackdir(tile);
+		}
+		const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(trackdir));
+		if (prog && prog->actions_used_flags & TRPAUF_SPEED_RESTRICTION) {
+			TraceRestrictProgramResult out;
+			TraceRestrictProgramInput input(tile, trackdir, nullptr, nullptr);
+			prog->Execute(v, input, out);
+			if (out.flags & TRPRF_SPEED_RESTRICTION_SET) {
+				int duration;
+				if (TrackdirEntersTunnelBridge(tile, trackdir)) {
+					duration = 4 + (IsDiagonalTrackdir(trackdir) ? 16 : 8);
+				} else {
+					duration = 4;
+				}
+				lookahead->AddSpeedRestriction(out.speed_restriction, offset, duration, z);
+				if (out.speed_restriction != 0 && (speed_restriction == 0 || out.speed_restriction < speed_restriction)) {
+					/* lower of the speed restrictions before or after the signal */
+					speed_restriction = out.speed_restriction;
+				}
+			}
+		}
+	}
+
+	return speed_restriction;
+}
+
+static uint16 GetTrainSpeedLimitForRailtype(const Train *v, RailType rt, TileIndex tile, Track track)
+{
+	uint16 speed = GetRailTypeInfo(rt)->max_speed;
+	if (v->tcache.cached_tflags & TCF_SPD_RAILTYPE) {
+		for (const Train *u = v; u != nullptr; u = u->Next()) {
+			if (u->GetEngine()->callbacks_used & SGCU_CB36_SPEED_RAILTYPE) {
+				const TileIndex prev_tile = u->tile;
+				const TrackBits prev_track = u->track;
+				const_cast<Train *>(u)->tile = tile;
+				const_cast<Train *>(u)->track = TrackToTrackBits(track);
+				uint16 cb_speed = GetVehicleProperty(u, PROP_TRAIN_SPEED, speed);
+				if (cb_speed != 0 && (cb_speed < speed || speed == 0)) speed = cb_speed;
+				const_cast<Train *>(u)->tile = prev_tile;
+				const_cast<Train *>(u)->track = prev_track;
+			}
+		}
+	}
+	return speed;
 }
 
 /** Follow a reservation starting from a specific tile to the end. */
@@ -393,7 +451,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 	auto check_rail_type = [&](TileIndex t, Trackdir td, int offset) {
 		RailType new_rt = GetRailTypeByTrack(t, TrackdirToTrack(td));
 		if (new_rt != rt) {
-			uint16 rail_speed = GetRailTypeInfo(new_rt)->max_speed;
+			uint16 rail_speed = GetTrainSpeedLimitForRailtype(v, new_rt, t, TrackdirToTrack(td));
 			if (rail_speed > 0) lookahead->AddTrackSpeedLimit(rail_speed, offset, 4, z);
 			if (GetRailTypeInfo(rt)->curve_speed != GetRailTypeInfo(new_rt)->curve_speed) {
 				CheckCurveLookAhead(v, lookahead, lookahead->RealEndPosition() + 4 + offset, z, new_rt);
@@ -414,7 +472,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 	/* Do not disallow 90 deg turns as the setting might have changed between reserving and now. */
 	CFollowTrackRail ft(o, rts);
 	auto check_tunnel_bridge = [&]() -> bool {
-		if (IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && IsTunnelBridgeWithSignalSimulation(tile) && TrackdirEntersTunnelBridge(tile, trackdir)) {
+		if (IsTunnelBridgeWithSignalSimulation(tile) && TrackdirEntersTunnelBridge(tile, trackdir)) {
 			if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && IsTunnelBridgeSignalSimulationEntrance(tile)) {
 				TileIndex end = GetOtherTunnelBridgeEnd(tile);
 				if (HasAcrossTunnelBridgeReservation(end) && GetTunnelBridgeExitSignalState(end) == SIGNAL_STATE_GREEN &&
@@ -423,7 +481,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 					if (lookahead != nullptr) {
 						lookahead->reservation_end_position += (DistanceManhattan(tile, end) - 1) * TILE_SIZE;
 					}
-					Trackdir end_trackdir = TrackEnterdirToTrackdir(FindFirstTrack(GetAcrossTunnelBridgeTrackBits(end)), ReverseDiagDir(GetTunnelBridgeDirection(end)));
+					Trackdir end_trackdir = GetTunnelBridgeExitTrackdir(end);
 					if (lookahead != nullptr) {
 						if ((flags & FRF_TB_EXIT_FREE) && GetTunnelBridgeLength(tile, end) > 1) {
 							/* middle part of bridge is in wormhole direction */
@@ -444,7 +502,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 				if (HasAcrossTunnelBridgeReservation(end) && TunnelBridgeIsFree(tile, end, nullptr, true).Succeeded()) {
 					/* skip far end */
 					tile = end;
-					trackdir = TrackEnterdirToTrackdir(FindFirstTrack(GetAcrossTunnelBridgeTrackBits(tile)), ReverseDiagDir(GetTunnelBridgeDirection(tile)));
+					trackdir = GetTunnelBridgeExitTrackdir(tile);
 					return true;
 				}
 			}
@@ -520,8 +578,10 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 					const int spacing = GetTunnelBridgeSignalSimulationSpacing(tile);
 					const int signals = length / spacing;
 
+					uint16 speed_restriction = ApplyTunnelBridgeLookaheadSignalSpeedRestriction(tile, trackdir, v, lookahead->speed_restriction, lookahead, 0, z);
+
 					uint16 signal_speed = GetRailTypeInfo(rt)->max_speed;
-					if (signal_speed == 0 || (lookahead->speed_restriction != 0 && lookahead->speed_restriction < signal_speed)) signal_speed = lookahead->speed_restriction;
+					if (signal_speed == 0 || (speed_restriction != 0 && speed_restriction < signal_speed)) signal_speed = speed_restriction;
 					if (signal_speed == 0 || (bridge_speed != 0 && bridge_speed < signal_speed)) signal_speed = bridge_speed;
 
 					/* Entrance signal */
@@ -543,8 +603,19 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 					}
 
 					/* Exit signal */
-					const int end_offset = start_offset + (TILE_SIZE * length) /* + ((DiagDirToDiagTrackBits(GetTunnelBridgeDirection(end)) & GetTunnelBridgeTrackBits(end)) ? 16 : 8)*/;
+					const int end_offset = start_offset + (TILE_SIZE * length);
+
+					uint16 exit_speed_restriction = ApplyTunnelBridgeLookaheadSignalSpeedRestriction(end, INVALID_TRACKDIR, v, lookahead->speed_restriction, lookahead, end_offset, z);
+					if (exit_speed_restriction != speed_restriction) {
+						speed_restriction = exit_speed_restriction;
+						signal_speed = GetRailTypeInfo(rt)->max_speed;
+						if (signal_speed == 0 || (speed_restriction != 0 && speed_restriction < signal_speed)) signal_speed = speed_restriction;
+						if (signal_speed == 0 || (bridge_speed != 0 && bridge_speed < signal_speed)) signal_speed = bridge_speed;
+					}
+
 					lookahead->AddSignal(signal_speed, end_offset, z);
+
+					lookahead->SetNextExtendPositionIfUnset();
 				} else {
 					update_z(tile, trackdir, false);
 					if (length > 1) {
@@ -572,8 +643,8 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 						if (out.flags & TRPRF_REVERSE && au_flags & TRPAUF_REVERSE) {
 							lookahead->AddReverse(z);
 						}
-						if (out.flags & TRPRF_SPEED_RETRICTION_SET) {
-							lookahead->AddSpeedRestriction(out.speed_restriction, z);
+						if (out.flags & TRPRF_SPEED_RESTRICTION_SET) {
+							lookahead->AddSpeedRestriction(out.speed_restriction, 0, 0, z);
 							if (out.speed_restriction != 0 && (speed_restriction == 0 || out.speed_restriction < speed_restriction)) {
 								/* lower of the speed restrictions before or after the signal */
 								speed_restriction = out.speed_restriction;
@@ -586,6 +657,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 					uint16 signal_speed = GetRailTypeInfo(rt)->max_speed;
 					if (signal_speed == 0 || (speed_restriction != 0 && speed_restriction < signal_speed)) signal_speed = speed_restriction;
 					lookahead->AddSignal(signal_speed, 0, z);
+					lookahead->SetNextExtendPositionIfUnset();
 				}
 			}
 
@@ -657,13 +729,25 @@ static Vehicle *FindTrainOnTrackEnum(Vehicle *v, void *data)
 	return nullptr;
 }
 
+void TrainReservationLookAhead::SetNextExtendPosition()
+{
+	int32 threshold = this->current_position + 24;
+	for (const TrainReservationLookAheadItem &item : this->items) {
+		if (item.type == TRLIT_SIGNAL && item.start > threshold) {
+			this->next_extend_position = item.start - 24;
+			return;
+		}
+	}
+	this->next_extend_position = this->current_position;
+}
+
 bool ValidateLookAhead(const Train *v)
 {
 	TileIndex tile = v->lookahead->reservation_end_tile;
 	Trackdir trackdir = v->lookahead->reservation_end_trackdir;
 
 	if (HasBit(v->lookahead->flags, TRLF_TB_EXIT_FREE)) {
-		if (!likely(IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && TrackdirEntersTunnelBridge(tile, trackdir))) {
+		if (!likely(IsRailTunnelBridgeTile(tile) && TrackdirEntersTunnelBridge(tile, trackdir))) {
 			return false;
 		}
 	}
@@ -697,8 +781,7 @@ PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res, Follo
 			TileIndex exit_tile = GetOtherTunnelBridgeEnd(tile);
 			if (IsTunnelBridgeSignalSimulationExit(exit_tile) && GetTunnelBridgeExitSignalState(exit_tile) == SIGNAL_STATE_GREEN && HasAcrossTunnelBridgeReservation(exit_tile)) {
 				tile = exit_tile;
-				DiagDirection exit_dir = ReverseDiagDir(GetTunnelBridgeDirection(exit_tile));
-				trackdir = TrackEnterdirToTrackdir(FindFirstTrack(GetAcrossTunnelBridgeTrackBits(exit_tile)), exit_dir);
+				trackdir = GetTunnelBridgeExitTrackdir(exit_tile);
 			}
 		}
 	} else {
@@ -807,9 +890,10 @@ static int ScanTrainPositionForLookAheadStation(Train *t, TileIndex start_tile)
 				if (u == t) {
 					for (uint i = 1; i < forward_length; i++) {
 						/* Check for mid platform rail type change */
-						RailType new_rt = GetRailTypeByTrack(tile + (i * diff), TrackdirToTrack(trackdir));
+						TileIndex new_tile = tile + (i * diff);
+						RailType new_rt = GetRailTypeByTrack(new_tile, TrackdirToTrack(trackdir));
 						if (new_rt != rt) {
-							uint16 rail_speed = GetRailTypeInfo(new_rt)->max_speed;
+							uint16 rail_speed = GetTrainSpeedLimitForRailtype(t, new_rt, new_tile, TrackdirToTrack(trackdir));
 							if (rail_speed > 0) t->lookahead->AddTrackSpeedLimit(rail_speed, (i - 1) * TILE_SIZE, 4, z);
 							rt = new_rt;
 						}
@@ -839,29 +923,34 @@ void TryCreateLookAheadForTrainInTunnelBridge(Train *t)
 		/* going in the right direction, allocate a new lookahead */
 		t->lookahead.reset(new TrainReservationLookAhead());
 		t->lookahead->reservation_end_tile = t->tile;
-		t->lookahead->reservation_end_trackdir = TrackExitdirToTrackdir(FindFirstTrack(GetAcrossTunnelBridgeTrackBits(t->tile)), GetTunnelBridgeDirection(t->tile));
+		t->lookahead->reservation_end_trackdir = GetTunnelBridgeEntranceTrackdir(t->tile);
 		t->lookahead->reservation_end_z = t->z_pos;
 		t->lookahead->current_position = 0;
+		t->lookahead->next_extend_position = 0;
 		t->lookahead->tunnel_bridge_reserved_tiles = DistanceManhattan(t->tile, TileVirtXY(t->x_pos, t->y_pos));
 		t->lookahead->reservation_end_position = GetTileMarginInFrontOfTrain(t);
 		t->lookahead->flags = 0;
 		t->lookahead->speed_restriction = t->speed_restriction;
+		t->lookahead->cached_zpos = t->CalculateOverallZPos();
+		t->lookahead->zpos_refresh_remaining = t->GetZPosCacheUpdateInterval();
 		if (IsTunnel(t->tile) && Tunnel::GetByTile(t->tile)->is_chunnel) SetBit(t->lookahead->flags, TRLF_CHUNNEL);
 
 		if (IsTunnelBridgeSignalSimulationEntrance(t->tile)) {
-			uint16 bridge_speed = IsBridge(t->tile) ? GetBridgeSpec(GetBridgeType(t->tile))->speed : 0;
-			const int length = GetTunnelBridgeLength(t->tile, GetOtherTunnelBridgeEnd(t->tile));
+			const uint16 bridge_speed = IsBridge(t->tile) ? GetBridgeSpec(GetBridgeType(t->tile))->speed : 0;
+			const TileIndex end = GetOtherTunnelBridgeEnd(t->tile);
+			const int length = GetTunnelBridgeLength(t->tile, end);
 			const int spacing = GetTunnelBridgeSignalSimulationSpacing(t->tile);
 			const int signals = length / spacing;
 
-			uint16 signal_speed = GetRailTypeInfo(GetRailTypeByTrack(t->tile, TrackdirToTrack(t->lookahead->reservation_end_trackdir)))->max_speed;
+			const RailType rt = GetRailTypeByTrack(t->tile, TrackdirToTrack(t->lookahead->reservation_end_trackdir));
+			uint16 signal_speed = GetRailTypeInfo(rt)->max_speed;
 			if (signal_speed == 0 || (t->speed_restriction != 0 && t->speed_restriction < signal_speed)) signal_speed = t->speed_restriction;
 			if (signal_speed == 0 || (bridge_speed != 0 && bridge_speed < signal_speed)) signal_speed = bridge_speed;
 
 			int z = IsBridge(t->tile) ? GetBridgeHeight(t->tile) : GetTilePixelZ(t->tile);
 
 			/* Middle signals */
-			int offset = -TILE_SIZE;
+			int offset = -(int)TILE_SIZE;
 			for (int i = 0; i < signals; i++) {
 				offset += TILE_SIZE * spacing;
 				t->lookahead->AddSignal(signal_speed, offset, HasBit(t->lookahead->flags, TRLF_CHUNNEL) ? LookaheadTileHeightForChunnel(length, i * spacing) : z);
@@ -869,7 +958,17 @@ void TryCreateLookAheadForTrainInTunnelBridge(Train *t)
 
 			/* Exit signal */
 			const int end_offset = TILE_SIZE * length;
+
+			uint16 exit_speed_restriction = ApplyTunnelBridgeLookaheadSignalSpeedRestriction(end, INVALID_TRACKDIR, t, t->speed_restriction, t->lookahead.get(), end_offset, z);
+			if (exit_speed_restriction != t->speed_restriction) {
+				signal_speed = GetRailTypeInfo(rt)->max_speed;
+				if (signal_speed == 0 || (exit_speed_restriction != 0 && exit_speed_restriction < signal_speed)) signal_speed = exit_speed_restriction;
+				if (signal_speed == 0 || (bridge_speed != 0 && bridge_speed < signal_speed)) signal_speed = bridge_speed;
+			}
+
 			t->lookahead->AddSignal(signal_speed, end_offset, z);
+
+			t->lookahead->SetNextExtendPositionIfUnset();
 		}
 
 		FillLookAheadCurveDataFromTrainPosition(t);
@@ -893,6 +992,7 @@ void FillTrainReservationLookAhead(Train *v)
 	if (v->lookahead == nullptr) {
 		v->lookahead.reset(new TrainReservationLookAhead());
 		v->lookahead->current_position = 0;
+		v->lookahead->next_extend_position = 0;
 
 		/* Special case, if called from TrainController,
 		 * v->tile, v->track and v->direction can be updated to the new tile,
@@ -904,6 +1004,8 @@ void FillTrainReservationLookAhead(Train *v)
 		v->lookahead->tunnel_bridge_reserved_tiles = 0;
 		v->lookahead->flags = 0;
 		v->lookahead->speed_restriction = v->speed_restriction;
+		v->lookahead->cached_zpos = v->CalculateOverallZPos();
+		v->lookahead->zpos_refresh_remaining = v->GetZPosCacheUpdateInterval();
 		FillLookAheadCurveDataFromTrainPosition(v);
 		tile = v->tile;
 		trackdir = v->GetVehicleTrackdir();
@@ -920,7 +1022,7 @@ void FillTrainReservationLookAhead(Train *v)
 	} else {
 		tile = v->lookahead->reservation_end_tile;
 		trackdir = v->lookahead->reservation_end_trackdir;
-		if (IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && IsTunnelBridgeSignalSimulationEntrance(tile) && TrackdirEntersTunnelBridge(tile, trackdir)) {
+		if (IsTunnelBridgeSignalSimulationEntranceTile(tile) && TrackdirEntersTunnelBridge(tile, trackdir)) {
 			TileIndex end = GetOtherTunnelBridgeEnd(tile);
 			int raw_free_tiles;
 			if (HasBit(v->lookahead->flags, TRLF_TB_EXIT_FREE)) {
@@ -1033,7 +1135,7 @@ CommandCost CheckTrainReservationPreventsTrackModification(TileIndex tile, Track
 
 CommandCost CheckTrainReservationPreventsTrackModification(const Train *v)
 {
-	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && v != nullptr && (v->cur_speed > 0 || !(v->vehstatus & (VS_STOPPED | VS_CRASHED)))) {
+	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && v != nullptr && v->UsingRealisticBraking() && (v->cur_speed > 0 || !(v->vehstatus & (VS_STOPPED | VS_CRASHED)))) {
 		return_cmd_error(STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING);
 	}
 	return CommandCost();
@@ -1134,10 +1236,8 @@ bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bo
 		if (HasSignalOnTrackdir(tile, trackdir) && !IsPbsSignal(GetSignalType(tile, TrackdirToTrack(trackdir)))) return true;
 	}
 
-	if (IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && IsTrackAcrossTunnelBridge(tile, TrackdirToTrack(trackdir))) {
-		if (IsTunnelBridgeSignalSimulationEntrance(tile)) {
-			return true;
-		}
+	if (IsTunnelBridgeSignalSimulationEntranceTile(tile) && IsTrackAcrossTunnelBridge(tile, TrackdirToTrack(trackdir))) {
+		return true;
 	}
 
 	/* Check next tile. For performance reasons, we check for 90 degree turns ourself. */
@@ -1158,9 +1258,11 @@ bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bo
 		Trackdir td = FindFirstTrackdir(ft.m_new_td_bits);
 		/* PBS signal on next trackdir? Conditionally safe position. */
 		if (HasPbsSignalOnTrackdir(ft.m_new_tile, td)) {
+			if (GetSignalType(ft.m_new_tile, TrackdirToTrack(td)) == SIGTYPE_NO_ENTRY) return include_line_end;
 			if (IsRestrictedSignal(ft.m_new_tile)) {
 				const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(ft.m_new_tile, TrackdirToTrack(td));
 				if (prog && prog->actions_used_flags & TRPAUF_RESERVE_THROUGH) {
+					if (prog->actions_used_flags & TRPAUF_RESERVE_THROUGH_ALWAYS) return false;
 					TraceRestrictProgramResult out;
 					prog->Execute(v, TraceRestrictProgramInput(ft.m_new_tile, td, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr), out);
 					if (out.flags & TRPRF_RESERVE_THROUGH) {
@@ -1175,7 +1277,7 @@ bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bo
 				GetSignalType(ft.m_new_tile, TrackdirToTrack(td)) == SIGTYPE_PBS_ONEWAY) {
 			return include_line_end;
 		}
-		if (IsTileType(ft.m_new_tile, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(ft.m_new_tile) == TRANSPORT_RAIL &&
+		if (IsRailTunnelBridgeTile(ft.m_new_tile) &&
 				IsTrackAcrossTunnelBridge(ft.m_new_tile, TrackdirToTrack(td)) &&
 				IsTunnelBridgeSignalSimulationExitOnly(ft.m_new_tile) && IsTunnelBridgeEffectivelyPBS(ft.m_new_tile)) {
 			return include_line_end;
@@ -1205,8 +1307,8 @@ bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bo
 	/* Not reserved and depot or not a pbs signal -> free. */
 	if (IsRailDepotTile(tile)) return true;
 
-	auto pbs_res_end_wait_test = [v, restricted_signal_info](TileIndex t, Trackdir td) -> bool {
-		if (IsRestrictedSignal(t)) {
+	auto pbs_res_end_wait_test = [v, restricted_signal_info](TileIndex t, Trackdir td, bool tunnel_bridge) -> bool {
+		if (tunnel_bridge ? IsTunnelBridgeRestrictedSignal(t) : IsRestrictedSignal(t)) {
 			const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(t, TrackdirToTrack(td));
 			if (restricted_signal_info && prog) {
 				restricted_signal_info->tile = t;
@@ -1226,12 +1328,12 @@ bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bo
 	};
 
 	if (IsTileType(tile, MP_RAILWAY) && HasSignalOnTrackdir(tile, trackdir) && !IsPbsSignal(GetSignalType(tile, track))) {
-		return pbs_res_end_wait_test(tile, trackdir);
+		return pbs_res_end_wait_test(tile, trackdir, false);
 	}
 
-	if (IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && IsTunnelBridgeSignalSimulationEntrance(tile)
-			&& IsTrackAcrossTunnelBridge(tile, TrackdirToTrack(trackdir))) {
-		if (IsTunnelBridgeSignalSimulationBidirectional(tile)) {
+	if (IsTunnelBridgeSignalSimulationEntranceTile(tile) && IsTrackAcrossTunnelBridge(tile, TrackdirToTrack(trackdir))) {
+		bool free = pbs_res_end_wait_test(tile, trackdir, true);
+		if (free && IsTunnelBridgeSignalSimulationBidirectional(tile)) {
 			TileIndex other_end = GetOtherTunnelBridgeEnd(tile);
 			if (HasAcrossTunnelBridgeReservation(other_end) && GetTunnelBridgeExitSignalState(other_end) == SIGNAL_STATE_RED) return false;
 			Direction dir = DiagDirToDir(GetTunnelBridgeDirection(other_end));
@@ -1244,7 +1346,7 @@ bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bo
 				return nullptr;
 			})) return false;
 		}
-		return true;
+		return free;
 	}
 
 	/* Check the next tile, if it's a PBS signal, it has to be free as well. */
@@ -1262,7 +1364,7 @@ bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bo
 		Trackdir td = FindFirstTrackdir(ft.m_new_td_bits);
 		/* PBS signal on next trackdir? */
 		if (HasPbsSignalOnTrackdir(ft.m_new_tile, td)) {
-			return pbs_res_end_wait_test(ft.m_new_tile, td);
+			return pbs_res_end_wait_test(ft.m_new_tile, td, false);
 		}
 	}
 

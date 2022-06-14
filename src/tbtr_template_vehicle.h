@@ -27,6 +27,8 @@
 
 #include "sortlist_type.h"
 
+#include "saveload/saveload_common.h"
+
 #include "zoom_func.h"
 
 struct TemplateVehicle;
@@ -82,7 +84,7 @@ private:
 	TemplateVehicle *first;                     ///< NOSAVE: pointer to the first vehicle in the chain
 
 public:
-	friend const SaveLoad* GTD();
+	friend const SaveLoadTable GTD();
 	friend void AfterLoadTemplateVehicles();
 
 	// Template usage configuration
@@ -111,6 +113,7 @@ public:
 	uint32 empty_weight;
 	uint32 full_weight;
 	uint32 max_te;
+	uint32 air_drag;
 
 	uint32 ctrl_flags;                  ///< See: TemplateVehicleControlFlags
 
@@ -217,5 +220,7 @@ bool IssueTemplateReplacement(GroupID, TemplateID);
 short DeleteTemplateReplacementsByGroupID(GroupID);
 
 void ReindexTemplateReplacements();
+
+int GetTemplateVehicleEstimatedMaxAchievableSpeed(const TemplateVehicle *tv, const int mass, const int speed_cap);
 
 #endif /* TEMPLATE_VEH_H */

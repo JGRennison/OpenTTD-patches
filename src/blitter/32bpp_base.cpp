@@ -23,6 +23,11 @@ void Blitter_32bppBase::SetPixel(void *video, int x, int y, uint8 colour)
 	*((Colour *)video + x + y * _screen.pitch) = LookupColourInPalette(colour);
 }
 
+void Blitter_32bppBase::SetPixel32(void *video, int x, int y, uint8 colour, uint32 colour32)
+{
+	*((Colour *)video + x + y * _screen.pitch) = colour32;
+}
+
 void Blitter_32bppBase::DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8 colour, int width, int dash)
 {
 	const Colour c = LookupColourInPalette(colour);

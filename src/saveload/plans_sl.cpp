@@ -22,17 +22,16 @@ static const SaveLoad _plan_desc[] = {
 	SLE_CONDSSTR_X(Plan, name, 0, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ENH_VIEWPORT_PLANS, 3)),
 	SLE_CONDSSTR_X(Plan, name, 0, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP, SL_JOKER_1_20)),
 	SLE_CONDVAR_X(Plan, colour, SLE_UINT8,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ENH_VIEWPORT_PLANS, 4)),
-	SLE_END()
 };
 
 static void RealSave_PLAN(Plan *p)
 {
 	SlObject(p, _plan_desc);
-	SlWriteUint32(p->lines.size());
+	SlWriteUint32((uint32)p->lines.size());
 	for (size_t i = 0; i < p->lines.size(); i++) {
 		PlanLine *pl = p->lines[i];
-		SlWriteUint32(pl->tiles.size());
-		SlArray(&pl->tiles[0], pl->tiles.size(), SLE_UINT32);
+		SlWriteUint32((uint32)pl->tiles.size());
+		SlArray(pl->tiles.data(), pl->tiles.size(), SLE_UINT32);
 	}
 }
 
@@ -60,7 +59,7 @@ static void Load_PLAN()
 				p->lines[i] = pl;
 				const size_t tile_count = SlReadUint32();
 				pl->tiles.resize(tile_count);
-				SlArray(&pl->tiles[0], tile_count, SLE_UINT32);
+				SlArray(pl->tiles.data(), tile_count, SLE_UINT32);
 				pl->UpdateVisualExtents();
 			}
 			p->SetVisibility(false);
@@ -80,7 +79,7 @@ static void Load_PLANLINE()
 		p->lines[line_index] = pl;
 		size_t plsz = SlGetFieldLength() / sizeof(TileIndex);
 		pl->tiles.resize(plsz);
-		SlArray(&pl->tiles[0], plsz, SLE_UINT32);
+		SlArray(pl->tiles.data(), plsz, SLE_UINT32);
 		pl->UpdateVisualExtents();
 	}
 
@@ -90,7 +89,9 @@ static void Load_PLANLINE()
 }
 
 /** Chunk handlers related to plans. */
-extern const ChunkHandler _plan_chunk_handlers[] = {
-	{ 'PLAN', Save_PLAN, Load_PLAN, nullptr, nullptr, CH_ARRAY},
-	{ 'PLLN', nullptr, Load_PLANLINE, nullptr, nullptr, CH_ARRAY | CH_LAST},
+static const ChunkHandler plan_chunk_handlers[] = {
+	{ 'PLAN', Save_PLAN, Load_PLAN,     nullptr, nullptr, CH_ARRAY },
+	{ 'PLLN', nullptr,   Load_PLANLINE, nullptr, nullptr, CH_ARRAY },
 };
+
+extern const ChunkHandlerTable _plan_chunk_handlers(plan_chunk_handlers);

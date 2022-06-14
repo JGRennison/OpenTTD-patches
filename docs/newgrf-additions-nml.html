@@ -9,6 +9,7 @@
 		td, th     { border: 1px solid #CCCCCC; padding: 0px 5px; }
 		table      { border-collapse: collapse; empty-cells: show; }
 		span.code  { font-family: "Courier New", Courier, mono; color: darkgreen; }
+		pre.code   { font-family: "Courier New", Courier, mono; color: blue; background-color: #f8f9fa; border: 1px solid #eaecf0; padding: 1em; }
 		dt         { font-weight: bold; }
 	</style>
 </head>
@@ -23,6 +24,23 @@
 	<p>All of the non-standard features listed below will automatically emit suitable feature tests, conditionals, etc. such that NewGRFs which use these features will work correctly
 	on OpenTTD versions which do not support these features, including standard trunk OpenTTD and older/other patchpack versions.</p>
 
+	<p>All of the non-standard variables listed below will return 0 on OpenTTD versions which do not support these features/variables, including standard trunk OpenTTD and older/other patchpack versions.</p>
+
+	<h3>Features with separate pages</h3>
+	<ul>
+	<li><a href="newgrf-roadstops-nml.html">Road stops (FEAT_ROADSTOPS)</a></li>
+	<li><a href="newgrf-newlandscape-nml.html">New landscape (FEAT_NEWLANDSCAPE)</a></li>
+	</ul>
+
+	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Builtin_functions">Builtin functions</a></h3>
+
+	<p>
+		<h4>extended_feature_test(feature_name[, min_version[, max_version]])</h4>
+		This returns true if the given extended feature is present and has a version within the specified minimum and maximum (inclusive).<br />
+		This function should only be used after the grf{} block.<br />
+		In most cases it is not necessary to use this function, as extended properties (listed below) which are not supported are simply skipped/ignored.
+	</p>
+
 	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#Railtype_properties">Railtypes properties</a></h3>
 	<table>
 	<tr><th>Property</th><th>Value range</th><th>Comment</th></tr>
@@ -32,12 +50,73 @@
 			Programmable pre-signals have a signal type (<span class="code">getbits(extra_callback_info2, 16, 8)</span>) of 6.
 		</td>
 	</tr>
+	<tr><td>enable_no_entry_signals</td><td>0 or 1</td>
+		<td>
+			Enable no-entry signal graphics in <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#signals">railtype signals</a>.<br />
+			No-entry signals have a signal type (<span class="code">getbits(extra_callback_info2, 16, 8)</span>) of 7.<br />
+			No-entry signals always have a signal state of red.
+		</td>
+	</tr>
 	<tr><td>enable_restricted_signals</td><td>0 or 1</td>
 		<td>
 			Enable restricted signal flag in <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#signals">railtype signals</a>.<br />
 			When enabled, bit 24 of variable <span class="code">extra_callback_info2</span> is set if the signal is restricted (has a routing restriction program attached).<br />
 			When enabled, the "Show restricted electric signals using default graphics" client setting and signal post recolouring is not applied.<br />
 			This flag must only be set if a different sprite is returned when bit 24 of <span class="code">extra_callback_info2</span> is set.
+		</td>
+	</tr>
+	<tr><td>enable_signal_recolour</td><td>0 or 1</td>
+		<td>
+			Enable recolouring of graphics in <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#signals">railtype signals</a>.<br />
+			When enabled, in addition to returning a sprite, register 0x100 may be set to the following using STORE_TEMP:
+			<table>
+			<tr><th>Bits</th><th>Meaning</th></tr>
+			<tr><td>0 - 23</td><td>Recolour sprite to use. Set to 0 for no recolouring.</td></tr>
+			<tr><td>24 - 31</td><td>Reserved, set to zero.</td></tr>
+			</table>
+			<br />
+			If recolouring is not optional, the feature name: <span class="code">action0_railtype_recolour</span> should be checked using the
+			<span class="code">extended_feature_test</span> function
+			and if necessary a suitable fallback used or error message shown.<br />
+			If the OpenTTD version does not support this property/feature, then the property would ordinarily be ignored/skipped and no recolouring would be done.
+		</td>
+	</tr>
+	<tr><td>extra_aspects</td><td>0 - 6</td>
+		<td>
+			The value is the number of additional signal aspects to use (e.g. 4-aspect signalling should use a value of 2).<br />
+			When set, the lowest byte of <span class="code">extra_callback_info2</span> (signal state) may have the given number of additional values starting from 02:
+			<table>
+			<tr><th>Value</th><th>Meaning</th></tr>
+			<tr><td>00</td><td>Red signal</td></tr>
+			<tr><td>01</td><td>Green signal</td></tr>
+			<tr><td>02</td><td>1st extra aspect (e.g. yellow)</td></tr>
+			<tr><td>03</td><td>2nd extra aspect (e.g. double yellow)</td></tr>
+			<tr><td>...</td><td>Further extra aspects...</td></tr>
+			</table>
+			<br />
+			The provided value is currently clamped to be within the range 0 - 6 (inclusive).<br />
+			N.B. Realistic braking must be enabled for additional signal aspects to be used
+		</td>
+	</tr>
+	<tr><td>disable_realistic_braking</td><td>0 or 1</td>
+		<td>
+			When this property is set realistic braking is disabled for trains of this railtype even when realistic braking is otherwise in effect.
+		</td>
+	</tr>
+	</table>
+	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#Railtype_variables">Railtypes variables</a></h3>
+	<p>Variables in the table below which are not supported by the version of OpenTTD being used return a value of 0.</p>
+	<table>
+	<tr><th>Variable</th><th>Value range</th><th>Comment</th></tr>
+	<tr><td>signal_restriction_info</td><td>bitmask(SIGNAL_RESTRICTION_INFO_XXX, ...)</td>
+		<td>
+			Information about the restricted signal status of the signal being drawn:
+			<dl>
+				<dt>RESTRICTED</dt>
+				<dd>The signal is restricted (has a routing restriction program attached)</dd>
+				<dt>RESERVE_THROUGH_ALWAYS</dt>
+				<dd>The attached routing restriction program unconditionally sets reserve through</dd>
+			</dl>
 		</td>
 	</tr>
 	</table>
@@ -69,6 +148,165 @@
 		</td>
 	</tr>
 	</table>
+	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Objects#Object_properties">Object properties</a></h3>
+	<table>
+	<tr><th>Property</th><th>Value range</th><th>Comment</th></tr>
+	<tr><td>use_land_ground</td><td>0 or 1</td><td>
+		Sets whether to use the underlying ground as the object ground sprite, ignoring the ground sprite provided in the sprite layout.<br />
+		When enabled, the ground sprite will be bare ground, grass, snow, desert, etc. as if it were a clear ground tile.<br />
+		In edge foundation mode, the ground may be coast/shore when flooded.
+	</td></tr>
+	<tr><td>edge_foundation_mode</td><td>[mode0, mode1, mode2, mode3]</td><td>
+		Enables edge foundation mode for the object.<br />
+		This property is intended for objects which are positioned at the edge of a tile, and only require a level edge, not a completely level tile.<br />
+		Foundations will only be added as required to get a suitable level edge.<br />
+		The format is one mode value per view. If the object has fewer than 4 views then some of the values provided in the property will not be used, and may be 0.
+		All four values must be constants.<br />
+		Each mode value should be one of:
+		<table>
+			<tr><th>Value</th><th>Meaning</th></tr>
+			<tr><td>DIAGDIR_NE</td><td>North-east edge</td></tr>
+			<tr><td>DIAGDIR_SE</td><td>South-east edge</td></tr>
+			<tr><td>DIAGDIR_SW</td><td>South-west edge</td></tr>
+			<tr><td>DIAGDIR_NW</td><td>North-west edge</td></tr>
+		</table>
+		combined with 0 or more flags using the | operator:
+		<table>
+			<tr><th>Value</th><th>Meaning</th></tr>
+			<tr><td>OBJECT_EF_FLAG_ADJUST_Z</td><td>Change z-position for the building sprite to the height of the edge</td></tr>
+			<tr><td>OBJECT_EF_FLAG_FOUNDATION_LOWER</td><td>If the height of the edge is lower than the maximum height of the tile, build a foundation</td></tr>
+			<tr><td>OBJECT_EF_FLAG_INCLINE_FOUNDATION</td><td>Use inclined instead of a flat foundations where possible. (Slopes with one corner raised where the height of the edge is at the maximum height of the tile).</td></tr>
+		</table>
+	</td></tr>
+	<tr><td>flood_resistant</td><td>0 or 1</td><td>
+		Sets whether the object is flood resistant.<br />
+		Flood resistance is always enabled for objects which can be built on water.<br />
+		This property can be used to enable flood resistance without enabling the object to be built on water.
+	</td></tr>
+	<tr><td>map_tile_type</td><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_XXX</td><td>
+		Set tile type used for display in viewport map mode and the small-map window.<br />
+		The value should be one of:
+		<table>
+			<tr><th>Value</th><th>Meaning</th><th>Notes</th></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_DEFAULT</td><td>Default object</td><td></td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_CLEAR</td><td>Clear/bare dirt</td><td>If use_land_ground is enabled, the underlying ground type will be used instead</td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_GRASS</td><td>Grass</td><td></td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_ROUGH</td><td>Rough ground</td><td></td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_ROCKS</td><td>Rocky ground</td><td></td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_FIELDS</td><td>Farm fields</td><td>The specific type of field can be set using map_tile_subtype</td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_SNOW</td><td>Snow</td><td></td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_DESERT</td><td>Desert</td><td></td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_TREES</td><td>Trees</td><td>The specific tree count and ground type/density can be set using map_tile_subtype</td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_HOUSE</td><td>House</td><td></td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_WATER</td><td>Water</td><td></td></tr>
+		</table>
+	</td></tr>
+	<tr><td>map_tile_subtype</td><td>0 .. 65535</td><td>
+		<p>This can be used to further refine the type set in map_tile_type.</p>
+		<p>Farm fields:
+		<table>
+		<tr><th>Bit</th><th>Meaning</th></tr>
+		<tr><td>0 - 2</td><td>
+			Which field type to use
+		</td></tr>
+		</table></p>
+		<p>Trees:
+		<table>
+			<tr><th>Bit</th><th>Meaning</th></tr>
+			<tr><td>0 - 3</td><td>
+				Tree ground type
+				<table>
+				<tr><th>Value</th><th>Meaning</th></tr>
+				<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_TREE_GROUND_GRASS</td><td>Grass</td></tr>
+				<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_TREE_GROUND_ROUGH</td><td>Rough ground</td></tr>
+				<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_TREE_GROUND_SNOW_DESERT</td><td>Snow/desert</td></tr>
+				<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_TREE_GROUND_SHORE</td><td>Shore</td></tr>
+				<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_TREE_GROUND_ROUGH_SNOW</td><td>Rough snow</td></tr>
+				</table>
+			</td></tr>
+			<tr><td>4 - 7</td><td>
+				Tree ground density (clamped to: 0 - 3)
+			</td></tr>
+			<tr><td>8 - 11</td><td>
+				Number of trees on the tile (clamped to: 1 - 4)
+			</td></tr>
+		</table></p>
+	</td></tr>
+	</table>
+	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Objects#Object_variables">Object variables</a></h3>
+	<p>Variables in the table below which are not supported by the version of OpenTTD being used return a value of 0.</p>
+	<table>
+	<tr><th>Variable</th><th>Value range</th><th>Comment</th></tr>
+	<tr><td>foundation_tile_slope</td><td><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:List_of_tile_slopes">SLOPE_XXX</a></td><td>
+		Slope of the tile after any foundation has been applied.
+	</td></tr>
+	<tr><td>foundation_change_tile_slope</td><td><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:List_of_tile_slopes">SLOPE_XXX</a></td><td>
+		Slope of the tile after any foundation has been applied xor the slope of the underlying tile.<br />
+		If this variable is non-zero a foundation is present.<br />
+		This is useful for xoring with the tile_slope variable, because if this variable is unavailable then the result is still the underlying tile slope.
+	</td></tr>
+	</table>
+	<h3>Global variables properties</h3>
+	<p>The variables listed below should set inside an item and property block of the form:<pre class="code">
+item (FEAT_GLOBALVARS) {
+	property {
+		...
+	}
+}</pre>
+	</p>
+	<table>
+	<tr><th>Property</th><th>Value range</th><th>Comment</th></tr>
+	<tr><td>lighthouse_generate_amount</td><td>0 .. 255</td><td>Sets the frequency at which lighthouse objects are generated during map generation</td></tr>
+	<tr><td>transmitter_generate_amount</td><td>0 .. 255</td><td>Sets the frequency at which transmitter objects are generated during map generation</td></tr>
+	<tr><td>extra_station_name</td><td>[string, bitmask(EXTRA_STATION_NAME_FLAG_XXX, ...)]</td>
+		<td>
+			<p>This adds an extra station name for use when all the available station names for a given town have been used.<br />
+			This property may be used as many times as required.<br />
+			Generally the referenced string should include a <span class="code">{STRING}</span> string code, this is used for the town name.
+			</p>
+			<dl>
+				<dt>EXTRA_STATION_NAME_FLAG_RAIL</dt>
+				<dd>May be used for rail stations</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_ROAD</dt>
+				<dd>May be used for road stations</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_AIRPORT</dt>
+				<dd>May be used for airport stations</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_OIL_RIG</dt>
+				<dd>May be used for oil rig stations</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_DOCK</dt>
+				<dd>May be used for dock stations</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_HELIPORT</dt>
+				<dd>May be used for heliport stations</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_TOWN_CENTRE_ONLY</dt>
+				<dd>May only be used for stations near the town centre</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_NOT_TOWN_CENTRE</dt>
+				<dd>May not be used for stations near the town centre</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_NEAR_WATER_ONLY</dt>
+				<dd>May only be used for stations near water</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_NOT_NEAR_WATER</dt>
+				<dd>May not be used for stations near water</dd>
+			</dl>
+		</td>
+	</tr>
+	<tr><td>extra_station_names_probability</td><td>0 .. 255</td>
+		<td>
+			Sets the probability that an extra station name is used even when the available default names have not been exhausted.<br />
+			Some station names are always used first even when this is non-zero.
+		</td>
+	</tr>
+	</table>
+	<p>Syntax example:
+		<pre class="code">
+item (FEAT_GLOBALVARS) {
+	property {
+		lighthouse_generate_amount: 255;
+		transmitter_generate_amount: 0;
+		extra_station_name: [string(STR_STATION_NAME1), bitmask(EXTRA_STATION_NAME_FLAG_RAIL)];
+		extra_station_name: [string(STR_STATION_NAME2), bitmask(EXTRA_STATION_NAME_FLAG_ROAD, EXTRA_STATION_NAME_FLAG_TOWN_CENTRE_ONLY)];
+	}
+}
+		</pre>
+	</p>
 	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Replace_new_sprites">Replace new sprites</a></h3>
 	<table>
 	<tr><th>Type</th><th>Number of sprites </th><th>Comment</th></tr>
@@ -84,6 +322,142 @@
 			</table>
 		</td>
 	</tr>
+	<tr><td>NO_ENTRY_SIGNAL</td><td>16</td>
+		<td>
+			<b>No-entry signals</b>
+			<p>No-entry signal graphics come in groups of 8. These groups contain sprites in the same order as the red sprites of 1275-1290 in trg1[r].grf and <a href="https://newgrf-specs.tt-wiki.net/wiki/Action5#04_Signal_graphics.">Action 5 type 4 (signals)</a>;
+				red only, for each of: SW-facing, NE-facing, NW-facing, SE-facing, E-facing, W-facing, S-facing, N-facing.
+			<table>
+				<tr><th>Group</th><th>Contents</th></tr>
+				<tr><td>0</td><td>Semaphore no-entry signals</td></tr>
+				<tr><td>1</td><td>Lighted no-entry signals</td></tr>
+			</table>
+		</td>
+	</tr>
+	<tr><td>MISC_GUI</td><td>1</td>
+		<td>
+			<b>Miscellaneous GUI graphics</b>
+			<p>There is currently one misc GUI sprite.</p>
+		</td>
+	</tr>
+	<tr><td>ROAD_WAYPOINTS</td><td>4</td>
+		<td>
+			<b>Road waypoint graphics</b>
+			<p>This is the same order and format as the drive-through bus/truck road stop sprites.</p>
+		</td>
+	</tr>
 	</table>
+	<h3>Signal graphics using switches</h3>
+	<p>
+		This feature allows signal sprites to be specified using switches in a very similar manner to <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#signals">railtype signals</a> in
+		<span class="code">item (FEAT_RAILTYPES) { graphics { signals: ... } }</span> blocks.<br />
+		However this applies to all signals, not only those of a particular rail type.<br />
+		Railtype signal graphics have a higher priority than general signal graphics as set here.<br />
+		<br />
+		Variables: <span class="code">extra_callback_info1</span>, <span class="code">extra_callback_info2</span>, and <span class="code">terrain_type</span>
+		are the same as for <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#signals">railtype signals</a>.<br />
+		<br />
+		This feature is not supported by standard OpenTTD or by standard NML.<br/>
+		If the use of this feature is not optional, the feature name: <span class="code">action3_signals_custom_signal_sprites</span> should be checked using the
+		<span class="code">extended_feature_test</span> function
+		and if necessary a suitable fallback used or error message shown.<br />
+		<br />
+		An <span class="code">item (FEAT_SIGNALS, custom_signals, 0) { }</span> block should be used to define properties and graphics.<br />
+		The graphics block should contain a single default switch.
+	</p>
+	<table>
+	<tr><th>Property</th><th>Value range</th><th>Comment</th></tr>
+	<tr><td>enable_programmable_pre_signals</td><td>0 or 1</td>
+		<td>
+			Enable programmable pre-signal graphics.<br />
+			Programmable pre-signals have a signal type (<span class="code">getbits(extra_callback_info2, 16, 8)</span>) of 6.
+		</td>
+	</tr>
+	<tr><td>enable_no_entry_signals</td><td>0 or 1</td>
+		<td>
+			Enable no-entry signal graphics.<br />
+			No-entry signals have a signal type (<span class="code">getbits(extra_callback_info2, 16, 8)</span>) of 7.<br />
+			No-entry signals always have a signal state of red.
+		</td>
+	</tr>
+	<tr><td>enable_restricted_signals</td><td>0 or 1</td>
+		<td>
+			Enable restricted signal flag.<br />
+			When enabled, bit 24 of variable <span class="code">extra_callback_info2</span> is set if the signal is restricted (has a routing restriction program attached).<br />
+			When enabled, the "Show restricted electric signals using default graphics" client setting and signal post recolouring is not applied.<br />
+			This flag must only be set if a different sprite is returned when bit 24 of <span class="code">extra_callback_info2</span> is set.
+		</td>
+	</tr>
+	<tr><td>enable_signal_recolour</td><td>0 or 1</td>
+		<td>
+			Enable recolouring of graphics<br />
+			When enabled, in addition to returning a sprite, register 0x100 may be set to the following using STORE_TEMP:
+			<table>
+			<tr><th>Bits</th><th>Meaning</th></tr>
+			<tr><td>0 - 23</td><td>Recolour sprite to use. Set to 0 for no recolouring.</td></tr>
+			<tr><td>24 - 31</td><td>Reserved, set to zero.</td></tr>
+			</table>
+		</td>
+	</tr>
+	<tr><td>extra_aspects</td><td>0 - 6</td>
+		<td>
+			The value is the number of additional signal aspects to use (e.g. 4-aspect signalling should use a value of 2).<br />
+			When set, the lowest byte of <span class="code">extra_callback_info2</span> (signal state) may have the given number of additional values starting from 02:
+			<table>
+			<tr><th>Value</th><th>Meaning</th></tr>
+			<tr><td>00</td><td>Red signal</td></tr>
+			<tr><td>01</td><td>Green signal</td></tr>
+			<tr><td>02</td><td>1st extra aspect (e.g. yellow)</td></tr>
+			<tr><td>03</td><td>2nd extra aspect (e.g. double yellow)</td></tr>
+			<tr><td>...</td><td>Further extra aspects...</td></tr>
+			</table>
+			<br />
+			The provided value is currently clamped to be within the range 0 - 6 (inclusive).<br />
+			N.B. Realistic braking must be enabled for additional signal aspects to be used
+		</td>
+	</tr>
+	</table>
+	<br />
+	<table>
+	<tr><th>Variable</th><th>Value range</th><th>Comment</th></tr>
+	<tr><td>signal_restriction_info</td><td>bitmask(SIGNAL_RESTRICTION_INFO_XXX, ...)</td>
+		<td>
+			Information about the restricted signal status of the signal being drawn:
+			<dl>
+				<dt>RESTRICTED</dt>
+				<dd>The signal is restricted (has a routing restriction program attached)</dd>
+				<dt>RESERVE_THROUGH_ALWAYS</dt>
+				<dd>The attached routing restriction program unconditionally sets reserve through</dd>
+			</dl>
+		</td>
+	</tr>
+	</table>
+	<p>
+	Custom signal sprites example:
+		<pre class="code">
+grf {
+	...
+}
+
+if (!extended_feature_test("action3_signals_custom_signal_sprites")) {
+	error(FATAL, string(STR_UNSUPPORTED_VERSION));
+}
+
+switch (FEAT_SIGNALS, SELF, switch_signals, ...) {
+	...
+}
+
+
+item (FEAT_SIGNALS, custom_signals, 0) {
+	property {
+		enable_signal_recolour: 1;
+	}
+
+	graphics {
+		switch_signals;
+	}
+}
+		</pre>
+	</p>
 </body>
 </html>

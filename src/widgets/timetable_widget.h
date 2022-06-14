@@ -37,6 +37,8 @@ enum VehicleTimetableWidgets {
 	WID_VT_SCHEDULED_DISPATCH,          ///< Scheduled Dispatch button.
 	WID_VT_LOCK_ORDER_TIME,             ///< Lock order time button.
 	WID_VT_EXTRA,                       ///< Extra drop down menu.
+	WID_VT_ASSIGN_SCHEDULE,             ///< Assign scheduled dispatch schedule.
+	WID_VT_START_DATE_SELECTION,        ///< #NWID_SELECTION widget for WID_VT_START_DATE and WID_VT_ASSIGN_SCHEDULE.
 };
 
 #endif /* WIDGETS_TIMETABLE_WIDGET_H */

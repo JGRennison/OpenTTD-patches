@@ -349,10 +349,15 @@ static inline bool IsPresignalProgrammable(TileIndex t, Track track)
 	return IsProgrammableSignal(GetSignalType(t, track));
 }
 
+static inline bool IsNoEntrySignal(TileIndex t, Track track)
+{
+	return IsNoEntrySignal(GetSignalType(t, track));
+}
+
 /** One-way signals can't be passed the 'wrong' way. */
 static inline bool IsOnewaySignal(TileIndex t, Track track)
 {
-	return GetSignalType(t, track) != SIGTYPE_PBS;
+	return IsOnewaySignal(GetSignalType(t, track));
 }
 
 static inline void CycleSignalSide(TileIndex t, Track track)
@@ -376,6 +381,20 @@ static inline void SetSignalVariant(TileIndex t, Track track, SignalVariant v)
 	byte pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 7 : 3;
 	SB(_m[t].m2, pos, 1, v);
 	if (track == INVALID_TRACK) SB(_m[t].m2, 7, 1, v);
+}
+
+static inline uint8 GetSignalAspect(TileIndex t, Track track)
+{
+	assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
+	byte pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 3 : 0;
+	return GB(_me[t].m7, pos, 3);
+}
+
+static inline void SetSignalAspect(TileIndex t, Track track, uint8 aspect)
+{
+	assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
+	byte pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 3 : 0;
+	SB(_me[t].m7, pos, 3, aspect);
 }
 
 /**
@@ -510,6 +529,10 @@ static inline bool HasOnewaySignalBlockingTrackdir(TileIndex tile, Trackdir td)
 {
 	if (IsTileType(tile, MP_RAILWAY) && HasSignalOnTrackdir(tile, ReverseTrackdir(td)) &&
 			!HasSignalOnTrackdir(tile, td) && IsOnewaySignal(tile, TrackdirToTrack(td))) {
+		return true;
+	}
+	if (IsTileType(tile, MP_RAILWAY) && HasSignalOnTrackdir(tile, td) &&
+			IsNoEntrySignal(tile, TrackdirToTrack(td))) {
 		return true;
 	}
 	if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExitOnly(tile) &&

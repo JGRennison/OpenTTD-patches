@@ -41,6 +41,7 @@ inline void LinkGraph::BaseEdge::Init()
 	this->usage = 0;
 	this->last_unrestricted_update = INVALID_DATE;
 	this->last_restricted_update = INVALID_DATE;
+	this->last_aircraft_update = INVALID_DATE;
 	this->next_edge = INVALID_NODE;
 }
 
@@ -59,6 +60,7 @@ void LinkGraph::ShiftDates(int interval)
 			BaseEdge &edge = this->edges[node1][node2];
 			if (edge.last_unrestricted_update != INVALID_DATE) edge.last_unrestricted_update += interval;
 			if (edge.last_restricted_update != INVALID_DATE) edge.last_restricted_update += interval;
+			if (edge.last_aircraft_update != INVALID_DATE) edge.last_aircraft_update += interval;
 		}
 	}
 }
@@ -199,6 +201,7 @@ void LinkGraph::Node::AddEdge(NodeID to, uint capacity, uint usage, EdgeUpdateMo
 	first.next_edge = to;
 	if (mode & EUM_UNRESTRICTED)  edge.last_unrestricted_update = _date;
 	if (mode & EUM_RESTRICTED) edge.last_restricted_update = _date;
+	if (mode & EUM_AIRCRAFT) edge.last_aircraft_update = _date;
 }
 
 /**
@@ -230,6 +233,7 @@ void LinkGraph::Node::RemoveEdge(NodeID to)
 	edge.capacity = 0;
 	edge.last_unrestricted_update = INVALID_DATE;
 	edge.last_restricted_update = INVALID_DATE;
+	edge.last_aircraft_update = INVALID_DATE;
 	edge.usage = 0;
 
 	NodeID prev = this->index;
@@ -270,6 +274,7 @@ void LinkGraph::Edge::Update(uint capacity, uint usage, EdgeUpdateMode mode)
 	}
 	if (mode & EUM_UNRESTRICTED) this->edge.last_unrestricted_update = _date;
 	if (mode & EUM_RESTRICTED) this->edge.last_restricted_update = _date;
+	if (mode & EUM_AIRCRAFT) this->edge.last_aircraft_update = _date;
 }
 
 /**

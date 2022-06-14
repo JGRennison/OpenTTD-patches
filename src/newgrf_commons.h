@@ -295,7 +295,7 @@ extern ObjectOverrideManager _object_mngr;
 
 uint32 GetTerrainType(TileIndex tile, TileContext context = TCX_NORMAL);
 TileIndex GetNearbyTile(byte parameter, TileIndex tile, bool signed_offsets = true, Axis axis = INVALID_AXIS);
-uint32 GetNearbyTileInformation(TileIndex tile, bool grf_version8);
+uint32 GetNearbyTileInformation(TileIndex tile, bool grf_version8, uint32 mask);
 uint32 GetCompanyInfo(CompanyID owner, const struct Livery *l = nullptr);
 CommandCost GetErrorMessageFromLocationCallbackResult(uint16 cb_res, const GRFFile *grffile, StringID default_error);
 
@@ -309,7 +309,7 @@ bool Convert8bitBooleanCallback(const struct GRFFile *grffile, uint16 cbid, uint
  */
 template <size_t Tcnt>
 struct GRFFilePropsBase {
-	GRFFilePropsBase() : local_id(0), grffile(0)
+	GRFFilePropsBase() : local_id(0), grffile(nullptr)
 	{
 		/* The lack of some compilers to provide default constructors complying to the specs
 		 * requires us to zero the stuff ourself. */
@@ -332,5 +332,16 @@ struct GRFFileProps : GRFFilePropsBase<1> {
 	uint16 subst_id;
 	uint16 override;                      ///< id of the entity been replaced by
 };
+
+enum SpriteGroupCallbacksUsed : uint8 {
+	SGCU_NONE                           = 0,
+	SGCU_ALL                            = 0xF,
+	SGCU_VEHICLE_32DAY_CALLBACK         = 1 << 0,
+	SGCU_VEHICLE_REFIT_COST             = 1 << 1,
+	SGCU_RANDOM_TRIGGER                 = 1 << 2,
+	SGCU_CB36_SPEED_RAILTYPE            = 1 << 3,
+	SGCU_REFIT_CB_ALL_CARGOES           = 1 << 4,
+};
+DECLARE_ENUM_AS_BIT_SET(SpriteGroupCallbacksUsed)
 
 #endif /* NEWGRF_COMMONS_H */

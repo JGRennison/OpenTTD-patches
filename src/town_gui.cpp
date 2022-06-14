@@ -27,6 +27,7 @@
 #include "querystring_gui.h"
 #include "window_func.h"
 #include "townname_func.h"
+#include "core/backup_type.hpp"
 #include "core/geometry_func.hpp"
 #include "genworld.h"
 #include "stringfilter_type.h"
@@ -91,8 +92,7 @@ private:
 	static int GetNthSetBit(uint32 bits, int n)
 	{
 		if (n >= 0) {
-			uint i;
-			FOR_EACH_SET_BIT(i, bits) {
+			for (uint i : SetBitIterator(bits)) {
 				n--;
 				if (n < 0) return i;
 			}
@@ -275,6 +275,7 @@ public:
 
 				this->town->show_zone = new_show_state;
 				this->SetWidgetLoweredState(widget, new_show_state);
+				this->SetWidgetDirty(widget);
 				MarkWholeNonMapViewportsDirty();
 				break;
 			}
@@ -435,13 +436,14 @@ public:
 
 		/* only show the town noise, if the noise option is activated. */
 		if (_settings_game.economy.station_noise_level) {
+			uint16 max_noise = this->town->MaxTownNoise();
 			SetDParam(0, this->town->noise_reached);
-			SetDParam(1, this->town->MaxTownNoise());
-			DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_LEFT, y += FONT_HEIGHT_NORMAL, STR_TOWN_VIEW_NOISE_IN_TOWN);
+			SetDParam(1, max_noise);
+			DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_LEFT, y += FONT_HEIGHT_NORMAL, max_noise == UINT16_MAX ? STR_TOWN_VIEW_NOISE_IN_TOWN_NO_LIMIT : STR_TOWN_VIEW_NOISE_IN_TOWN);
 		}
 
 		if (!this->town->text.empty()) {
-			SetDParamStr(0, this->town->text.c_str());
+			SetDParamStr(0, this->town->text);
 			DrawStringMultiLine(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y += FONT_HEIGHT_NORMAL, UINT16_MAX, STR_JUST_RAW_STRING, TC_BLACK);
 		}
 	}
@@ -523,7 +525,7 @@ public:
 		if (_settings_game.economy.station_noise_level) aimed_height += FONT_HEIGHT_NORMAL;
 
 		if (!this->town->text.empty()) {
-			SetDParamStr(0, this->town->text.c_str());
+			SetDParamStr(0, this->town->text);
 			aimed_height += GetStringHeight(STR_JUST_RAW_STRING, width - WD_FRAMERECT_LEFT - WD_FRAMERECT_RIGHT);
 		}
 
@@ -593,7 +595,7 @@ static const NWidgetPart _nested_town_game_view_widgets[] = {
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_BROWN),
 		NWidget(WWT_INSET, COLOUR_BROWN), SetPadding(2, 2, 2, 2),
-			NWidget(NWID_VIEWPORT, INVALID_COLOUR, WID_TV_VIEWPORT), SetMinimalSize(254, 86), SetFill(1, 0), SetResize(1, 1), SetPadding(1, 1, 1, 1),
+			NWidget(NWID_VIEWPORT, INVALID_COLOUR, WID_TV_VIEWPORT), SetMinimalSize(254, 86), SetFill(1, 0), SetResize(1, 1),
 		EndContainer(),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_BROWN, WID_TV_INFO), SetMinimalSize(260, 32), SetResize(1, 0), SetFill(1, 0), EndContainer(),
@@ -617,13 +619,14 @@ static const NWidgetPart _nested_town_editor_view_widgets[] = {
 		NWidget(WWT_PUSHIMGBTN, COLOUR_BROWN, WID_TV_CHANGE_NAME), SetMinimalSize(12, 14), SetDataTip(SPR_RENAME, STR_TOWN_VIEW_RENAME_TOOLTIP),
 		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_TV_CAPTION), SetDataTip(STR_TOWN_VIEW_TOWN_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_PUSHIMGBTN, COLOUR_BROWN, WID_TV_CENTER_VIEW), SetMinimalSize(12, 14), SetDataTip(SPR_GOTO_LOCATION, STR_TOWN_VIEW_CENTER_TOOLTIP),
+		NWidget(WWT_DEBUGBOX, COLOUR_BROWN),
 		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
 		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_BROWN),
 		NWidget(WWT_INSET, COLOUR_BROWN), SetPadding(2, 2, 2, 2),
-			NWidget(NWID_VIEWPORT, INVALID_COLOUR, WID_TV_VIEWPORT), SetMinimalSize(254, 86), SetFill(1, 1), SetResize(1, 1), SetPadding(1, 1, 1, 1),
+			NWidget(NWID_VIEWPORT, INVALID_COLOUR, WID_TV_VIEWPORT), SetMinimalSize(254, 86), SetFill(1, 1), SetResize(1, 1),
 		EndContainer(),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_BROWN, WID_TV_INFO), SetMinimalSize(260, 32), SetResize(1, 0), SetFill(1, 0), EndContainer(),
@@ -664,12 +667,12 @@ static const NWidgetPart _nested_town_directory_widgets[] = {
 			NWidget(NWID_HORIZONTAL),
 				NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_TD_SORT_ORDER), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
 				NWidget(WWT_DROPDOWN, COLOUR_BROWN, WID_TD_SORT_CRITERIA), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_SORT_CRITERIA),
-				NWidget(WWT_EDITBOX, COLOUR_BROWN, WID_TD_FILTER), SetFill(35, 12), SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
+				NWidget(WWT_EDITBOX, COLOUR_BROWN, WID_TD_FILTER), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
 			EndContainer(),
-			NWidget(WWT_PANEL, COLOUR_BROWN, WID_TD_LIST), SetMinimalSize(196, 0), SetDataTip(0x0, STR_TOWN_DIRECTORY_LIST_TOOLTIP),
-							SetFill(1, 0), SetResize(0, 10), SetScrollbar(WID_TD_SCROLLBAR), EndContainer(),
+			NWidget(WWT_PANEL, COLOUR_BROWN, WID_TD_LIST), SetDataTip(0x0, STR_TOWN_DIRECTORY_LIST_TOOLTIP),
+							SetFill(1, 0), SetResize(1, 1), SetScrollbar(WID_TD_SCROLLBAR), EndContainer(),
 			NWidget(WWT_PANEL, COLOUR_BROWN),
-				NWidget(WWT_TEXT, COLOUR_BROWN, WID_TD_WORLD_POPULATION), SetPadding(2, 0, 0, 2), SetMinimalSize(196, 12), SetFill(1, 0), SetDataTip(STR_TOWN_POPULATION, STR_NULL),
+				NWidget(WWT_TEXT, COLOUR_BROWN, WID_TD_WORLD_POPULATION), SetPadding(2, 0, 2, 2), SetMinimalTextLines(1, 0), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_TOWN_POPULATION, STR_NULL),
 			EndContainer(),
 		EndContainer(),
 		NWidget(NWID_VERTICAL),
@@ -1201,15 +1204,16 @@ public:
 				this->SetFocusedWidget(WID_TF_TOWN_NAME_EDITBOX);
 				break;
 
-			case WID_TF_MANY_RANDOM_TOWNS:
-				_generating_world = true;
+			case WID_TF_MANY_RANDOM_TOWNS: {
+				Backup<bool> old_generating_world(_generating_world, true, FILE_LINE);
 				UpdateNearestTownForRoadTiles(true);
 				if (!GenerateTowns(this->town_layout)) {
 					ShowErrorMessage(STR_ERROR_CAN_T_GENERATE_TOWN, STR_ERROR_NO_SPACE_FOR_TOWN, WL_INFO);
 				}
 				UpdateNearestTownForRoadTiles(false);
-				_generating_world = false;
+				old_generating_world.Restore();
 				break;
+			}
 
 			case WID_TF_SIZE_SMALL: case WID_TF_SIZE_MEDIUM: case WID_TF_SIZE_LARGE: case WID_TF_SIZE_RANDOM:
 				this->town_size = (TownSize)(widget - WID_TF_SIZE_SMALL);
@@ -1303,7 +1307,7 @@ public:
 
 	uint NumHouseSets() const
 	{
-		return this->house_sets.size() - 1; // last item is a terminator
+		return (uint)this->house_sets.size() - 1; // last item is a terminator
 	}
 
 	uint NumHousesInHouseSet(uint house_set) const
@@ -1388,7 +1392,7 @@ public:
 			}
 		}
 		/* put a terminator on the list to make counting easier */
-		this->house_sets.push_back(this->size());
+		this->house_sets.push_back((uint16)this->size());
 	}
 };
 
@@ -1525,7 +1529,7 @@ public:
 				case WID_HP_HOUSE_ZONES:
 					for (int i = 0; i < HZB_END; i++) {
 						SetDParam(2 * i, STR_HOUSE_BUILD_HOUSE_ZONE_DISABLED);
-						SetDParam(2 * i + 1, i + 1);
+						SetDParam(2 * i + 1, 4 - i);
 					}
 					break;
 
@@ -1567,8 +1571,8 @@ public:
 					for (int i = 0; i < HZB_END; i++) {
 						/* colour: gold(enabled)/grey(disabled)  */
 						SetDParam(2 * i, HasBit(zones, HZB_END - i - 1) ? STR_HOUSE_BUILD_HOUSE_ZONE_ENABLED : STR_HOUSE_BUILD_HOUSE_ZONE_DISABLED);
-						/* digit: 1(center)/2/3/4/5(edge) */
-						SetDParam(2 * i + 1, i + 1);
+						/* digit: 4(center)/3/1/1/0(edge) */
+						SetDParam(2 * i + 1, 4 - i);
 					}
 					break;
 				}
@@ -1854,7 +1858,7 @@ struct SelectTownWindow : Window {
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_ST_SCROLLBAR);
-		this->vscroll->SetCount(this->towns.size());
+		this->vscroll->SetCount((uint)this->towns.size());
 		this->FinishInitNested();
 	}
 
@@ -1964,7 +1968,7 @@ static void PlaceProc_House(TileIndex tile)
 				uint dist = DistanceSquare(tile, t->xy);
 				if (dist >= best_dist) continue;
 				best_dist = dist;
-				best_zone = town_zone;
+				if (town_zone != HZB_END) best_zone = town_zone;
 				towns.clear();
 			}
 			towns.push_back(t->index);

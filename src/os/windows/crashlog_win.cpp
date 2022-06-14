@@ -30,6 +30,7 @@
 #include <windows.h>
 #include <mmsystem.h>
 #include <signal.h>
+#include <psapi.h>
 
 #include "../../safeguards.h"
 
@@ -231,7 +232,7 @@ static char *PrintModuleInfo(char *output, const char *last, HMODULE mod)
 	GetModuleFileName(mod, buffer, MAX_PATH);
 	GetFileInfo(&dfi, buffer);
 	output += seprintf(output, last, " %-20s handle: %p size: %d crc: %.8X date: %d-%.2d-%.2d %.2d:%.2d:%.2d\n",
-		FS2OTTD(buffer),
+		FS2OTTD(buffer).c_str(),
 		mod,
 		dfi.size,
 		dfi.crc32,
@@ -248,25 +249,19 @@ static char *PrintModuleInfo(char *output, const char *last, HMODULE mod)
 /* virtual */ char *CrashLogWindows::LogModules(char *output, const char *last) const
 {
 	MakeCRCTable(AllocaM(uint32, 256));
-	BOOL (WINAPI *EnumProcessModules)(HANDLE, HMODULE*, DWORD, LPDWORD);
-
 	output += seprintf(output, last, "Module information:\n");
 
-	if (LoadLibraryList((Function*)&EnumProcessModules, "psapi.dll\0EnumProcessModules\0\0")) {
+	HANDLE proc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, GetCurrentProcessId());
+	if (proc != nullptr) {
 		HMODULE modules[100];
 		DWORD needed;
-		BOOL res;
+		BOOL res = EnumProcessModules(proc, modules, sizeof(modules), &needed);
+		CloseHandle(proc);
+		if (res) {
+			size_t count = std::min<DWORD>(needed / sizeof(HMODULE), lengthof(modules));
 
-		HANDLE proc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, GetCurrentProcessId());
-		if (proc != nullptr) {
-			res = EnumProcessModules(proc, modules, sizeof(modules), &needed);
-			CloseHandle(proc);
-			if (res) {
-				size_t count = std::min<DWORD>(needed / sizeof(HMODULE), lengthof(modules));
-
-				for (size_t i = 0; i != count; i++) output = PrintModuleInfo(output, last, modules[i]);
-				return output + seprintf(output, last, "\n");
-			}
+			for (size_t i = 0; i != count; i++) output = PrintModuleInfo(output, last, modules[i]);
+			return output + seprintf(output, last, "\n");
 		}
 	}
 	output = PrintModuleInfo(output, last, nullptr);
@@ -576,10 +571,10 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 				CONST PMINIDUMP_EXCEPTION_INFORMATION,
 				CONST PMINIDUMP_USER_STREAM_INFORMATION,
 				CONST PMINIDUMP_CALLBACK_INFORMATION);
-		MiniDumpWriteDump_t funcMiniDumpWriteDump = (MiniDumpWriteDump_t)GetProcAddress(dbghelp, "MiniDumpWriteDump");
+		MiniDumpWriteDump_t funcMiniDumpWriteDump = GetProcAddressT<MiniDumpWriteDump_t>(dbghelp, "MiniDumpWriteDump");
 		if (funcMiniDumpWriteDump != nullptr) {
 			seprintf(filename, filename_last, "%scrash.dmp", _personal_dir.c_str());
-			HANDLE file  = CreateFile(OTTD2FS(filename), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, 0, 0);
+			HANDLE file  = CreateFile(OTTD2FS(filename).c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, 0, 0);
 			HANDLE proc  = GetCurrentProcess();
 			DWORD procid = GetCurrentProcessId();
 			MINIDUMP_EXCEPTION_INFORMATION mdei;
@@ -634,10 +629,12 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 	if (abort_reason != nullptr) {
 		wchar_t _emergency_crash[512];
 		_snwprintf(_emergency_crash, lengthof(_emergency_crash),
-				L"A serious fault condition occurred in the game. The game will shut down. (%s)\n", OTTD2FS(abort_reason));
+				L"A serious fault condition occurred in the game. The game will shut down. (%s)\n", OTTD2FS(abort_reason).c_str());
 		MessageBox(nullptr, _emergency_crash, L"Fatal Application Failure", MB_ICONERROR);
 		ExitProcess(3);
 	}
+
+	VideoDriver::EmergencyAcquireGameLock(1000, 5);
 
 	CrashLogWindows *log = new CrashLogWindows(ep);
 	CrashLogWindows::current = log;
@@ -738,13 +735,13 @@ static void CDECL CustomAbort(int signal)
 	_safe_esp = (void *)(ctx.Rsp - 8);
 #	endif
 #else
-	void *safe_esp;
+	void *safe_esp = nullptr;
 #	if defined(_MSC_VER)
 	_asm {
 		mov safe_esp, esp
 	}
 #	else
-	asm("movl %esp, _safe_esp");
+	asm("movl %%esp, %0" : "=rm" (safe_esp));
 #	endif
 	_safe_esp = safe_esp;
 #endif
@@ -754,6 +751,12 @@ static void CDECL CustomAbort(int signal)
 {
 	CrashLogWindows log(nullptr);
 	log.MakeDesyncCrashLog(log_in, log_out, info);
+}
+
+/* static */ void CrashLog::InconsistencyLog(const InconsistencyExtraInfo &info)
+{
+	CrashLogWindows log(nullptr);
+	log.MakeInconsistencyLog(info);
 }
 
 /* static */ void CrashLog::VersionInfoLog()
@@ -808,7 +811,8 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 	switch (msg) {
 		case WM_INITDIALOG: {
 			/* We need to put the crash-log in a separate buffer because the default
-			 * buffer in OTTD2FS is not large enough (512 chars) */
+			 * buffer in MB_TO_WIDE is not large enough (512 chars) */
+			wchar_t filenamebuf[MAX_PATH * 2];
 			wchar_t crash_msgW[lengthof(CrashLogWindows::current->crashlog)];
 			/* Convert unix -> dos newlines because the edit box only supports that properly :( */
 			const char *unix_nl = CrashLogWindows::current->crashlog;
@@ -823,19 +827,23 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 
 			/* Add path to crash.log and crash.dmp (if any) to the crash window text */
 			size_t len = wcslen(_crash_desc) + 2;
-			len += wcslen(OTTD2FS(CrashLogWindows::current->crashlog_filename)) + 2;
-			len += wcslen(OTTD2FS(CrashLogWindows::current->crashdump_filename)) + 2;
-			len += wcslen(OTTD2FS(CrashLogWindows::current->screenshot_filename)) + 1;
+			len += wcslen(convert_to_fs(CrashLogWindows::current->crashlog_filename, filenamebuf, lengthof(filenamebuf))) + 2;
+			len += wcslen(convert_to_fs(CrashLogWindows::current->crashdump_filename, filenamebuf, lengthof(filenamebuf))) + 2;
+			len += wcslen(convert_to_fs(CrashLogWindows::current->screenshot_filename, filenamebuf, lengthof(filenamebuf))) + 1;
 
 			wchar_t *text = AllocaM(wchar_t, len);
-			_snwprintf(text, len, _crash_desc, OTTD2FS(CrashLogWindows::current->crashlog_filename));
-			if (_settings_client.gui.developer > 0 && OTTD2FS(CrashLogWindows::current->crashdump_filename)[0] != L'\0') {
-				wcscat(text, L"\n");
-				wcscat(text, OTTD2FS(CrashLogWindows::current->crashdump_filename));
+			int printed = _snwprintf(text, len, _crash_desc, convert_to_fs(CrashLogWindows::current->crashlog_filename, filenamebuf, lengthof(filenamebuf)));
+			if (printed < 0 || (size_t)printed > len) {
+				MessageBox(wnd, L"Catastrophic failure trying to display crash message. Could not perform text formatting.", L"OpenTTD", MB_ICONERROR);
+				return FALSE;
 			}
-			if (OTTD2FS(CrashLogWindows::current->screenshot_filename)[0] != L'\0') {
+			if (_settings_client.gui.developer > 0 && convert_to_fs(CrashLogWindows::current->crashdump_filename, filenamebuf, lengthof(filenamebuf))[0] != L'\0') {
 				wcscat(text, L"\n");
-				wcscat(text, OTTD2FS(CrashLogWindows::current->screenshot_filename));
+				wcscat(text, filenamebuf);
+			}
+			if (convert_to_fs(CrashLogWindows::current->screenshot_filename, filenamebuf, lengthof(filenamebuf))[0] != L'\0') {
+				wcscat(text, L"\n");
+				wcscat(text, filenamebuf);
 			}
 
 			SetDlgItemText(wnd, 10, text);
@@ -851,11 +859,13 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 				case 13: // Emergency save
 					_savegame_DBGL_data = CrashLogWindows::current->crashlog;
 					_save_DBGC_data = true;
+					wchar_t filenamebuf[MAX_PATH * 2];
 					char filename[MAX_PATH];
 					if (CrashLogWindows::current->WriteSavegame(filename, lastof(filename), CrashLogWindows::current->name_buffer)) {
-						size_t len = wcslen(_save_succeeded) + wcslen(OTTD2FS(filename)) + 1;
+						convert_to_fs(filename, filenamebuf, lengthof(filenamebuf));
+						size_t len = lengthof(_save_succeeded) + wcslen(filenamebuf) + 1;
 						wchar_t *text = AllocaM(wchar_t, len);
-						_snwprintf(text, len, _save_succeeded, OTTD2FS(filename));
+						_snwprintf(text, len, _save_succeeded, filenamebuf);
 						MessageBox(wnd, text, L"Save successful", MB_ICONINFORMATION);
 					} else {
 						MessageBox(wnd, L"Save failed", L"Save failed", MB_ICONINFORMATION);
@@ -864,7 +874,7 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 					_save_DBGC_data = false;
 					break;
 				case 15: // Expand window to show crash-message
-					_expanded ^= 1;
+					_expanded = !_expanded;
 					SetWndSize(wnd, _expanded);
 					break;
 			}

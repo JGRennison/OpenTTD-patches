@@ -10,6 +10,10 @@
 #ifndef GRAPH_GUI_H
 #define GRAPH_GUI_H
 
+extern uint8 _cargo_payment_x_mode;
+
+typedef uint16 StationID;
+
 void ShowOperatingProfitGraph();
 void ShowIncomeGraph();
 void ShowDeliveredCargoGraph();
@@ -18,5 +22,6 @@ void ShowCompanyValueGraph();
 void ShowCargoPaymentRates();
 void ShowCompanyLeagueTable();
 void ShowPerformanceRatingDetail();
+void ShowStationCargo(StationID);
 
 #endif /* GRAPH_GUI_H */

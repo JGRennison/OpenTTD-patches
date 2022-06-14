@@ -45,9 +45,9 @@ static const IndustryType IT_AI_UNKNOWN = 0xFE; ///< The AI has no specific indu
 static const IndustryType IT_AI_TOWN    = 0xFF; ///< The AI actually wants to transport to/from a town, not an industry.
 
 void ResetGenericCallbacks();
-void AddGenericCallback(uint8 feature, const GRFFile *file, const SpriteGroup *group);
+void AddGenericCallback(GrfSpecFeature feature, const GRFFile *file, const SpriteGroup *group);
 
-uint16 GetAiPurchaseCallbackResult(uint8 feature, CargoID cargo_type, uint8 default_selection, IndustryType src_industry, IndustryType dst_industry, uint8 distance, AIConstructionEvent event, uint8 count, uint8 station_size, const GRFFile **file);
+uint16 GetAiPurchaseCallbackResult(GrfSpecFeature feature, CargoID cargo_type, uint8 default_selection, IndustryType src_industry, IndustryType dst_industry, uint8 distance, AIConstructionEvent event, uint8 count, uint8 station_size, const GRFFile **file);
 
 /** Play an ambient sound effect for an empty tile. */
 static inline void AmbientSoundEffect(TileIndex tile)

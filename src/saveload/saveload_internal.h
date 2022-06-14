@@ -23,9 +23,10 @@ void ResetOldNames();
 void ResetOldWaypoints();
 void MoveBuoysToWaypoints();
 void MoveWaypointsToBaseStations();
-const SaveLoad *GetBaseStationDescription();
+SaveLoadTable GetBaseStationDescription();
 
 void AfterLoadVehicles(bool part_of_load);
+void AfterLoadEngines();
 void FixupTrainLengths();
 void AfterLoadTemplateVehicles();
 void AfterLoadStations();
@@ -36,7 +37,7 @@ void AfterLoadStoryBook();
 void AfterLoadLinkGraphs();
 void AfterLoadCompanyStats();
 void AfterLoadTraceRestrict();
-void UpdateHousesAndTowns(bool cargo_update_required);
+void UpdateHousesAndTowns(bool cargo_update_required, bool old_map_position);
 
 void UpdateOldAircraft();
 

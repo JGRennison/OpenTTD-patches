@@ -43,8 +43,11 @@ DECLARE_ENUM_AS_BIT_SET(RailTypeFlags)
 
 /** Railtype control flags. */
 enum RailTypeCtrlFlags {
-	RTCF_PROGSIG           = 0,                          ///< Custom signal sprites enabled for programmable pre-signals.
-	RTCF_RESTRICTEDSIG     = 1,                          ///< Custom signal sprite flag enabled for restricted signals.
+	RTCF_PROGSIG                = 0,                          ///< Custom signal sprites enabled for programmable pre-signals.
+	RTCF_RESTRICTEDSIG          = 1,                          ///< Custom signal sprite flag enabled for restricted signals.
+	RTCF_NOREALISTICBRAKING     = 2,                          ///< Realistic braking disabled for this track type
+	RTCF_RECOLOUR_ENABLED       = 3,                          ///< Recolour sprites enabled
+	RTCF_NOENTRYSIG             = 4,                          ///< Custom signal sprites enabled for no-entry signals.
 };
 
 struct SpriteGroup;
@@ -162,7 +165,7 @@ public:
 		SpriteID build_depot;        ///< button for building depots
 		SpriteID build_tunnel;       ///< button for building a tunnel
 		SpriteID convert_rail;       ///< button for converting rail
-		SpriteID signals[SIGTYPE_END][2][2]; ///< signal GUI sprites (type, variant, state)
+		PalSpriteID signals[SIGTYPE_END][2][2]; ///< signal GUI sprites (type, variant, state)
 	} gui_sprites;
 
 	struct {
@@ -221,6 +224,11 @@ public:
 	 * Bit mask of rail type control flags
 	 */
 	byte ctrl_flags;
+
+	/**
+	 * Signal extra aspects
+	 */
+	uint8 signal_extra_aspects;
 
 	/**
 	 * Cost multiplier for building this rail type
@@ -471,6 +479,7 @@ static inline Money SignalMaintenanceCost(uint32 num)
 }
 
 void MarkSingleSignalDirty(TileIndex tile, Trackdir td);
+void MarkSingleSignalDirtyAtZ(TileIndex tile, Trackdir td, uint z);
 
 void DrawTrainDepotSprite(int x, int y, int image, RailType railtype);
 int TicksToLeaveDepot(const Train *v);
@@ -490,17 +499,12 @@ RailTypes GetRailTypes(bool introduces);
 RailType GetRailTypeByLabel(RailTypeLabel label, bool allow_alternate_labels = true);
 
 void ResetRailTypes();
+void UpdateRailGuiSprites();
 void InitRailTypes();
 RailType AllocateRailType(RailTypeLabel label);
 
 extern std::vector<RailType> _sorted_railtypes;
 extern RailTypes _railtypes_hidden_mask;
-
-/**
- * Loop header for iterating over railtypes, sorted by sortorder.
- * @param var Railtype.
- */
-#define FOR_ALL_SORTED_RAILTYPES(var) for (uint8 index = 0; index < _sorted_railtypes.size() && (var = _sorted_railtypes[index], true) ; index++)
 
 /** Enum holding the signal offset in the sprite sheet according to the side it is representing. */
 enum SignalOffsets {

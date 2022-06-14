@@ -402,7 +402,6 @@ std::string TranslateTTDPatchCodes(uint32 grfid, uint8 language_id, bool allow_n
 							int index = (code == 0x10 ? *src++ : 0);
 							if (mapping->strings.find(index) != mapping->strings.end()) {
 								grfmsg(1, "duplicate choice list string, ignoring");
-								d++;
 							} else {
 								d = std::ostreambuf_iterator<char>(mapping->strings[index]);
 							}
@@ -544,10 +543,10 @@ void AddGRFTextToList(GRFTextWrapper &list, byte langid, uint32 grfid, bool allo
  * @param list The list where the text should be added to.
  * @param text_to_add The text to add to the list.
  */
-void AddGRFTextToList(GRFTextWrapper &list, const char *text_to_add)
+void AddGRFTextToList(GRFTextWrapper &list, const std::string &text_to_add)
 {
 	if (!list) list.reset(new GRFTextList());
-	AddGRFTextToList(*list, GRFLX_UNSPECIFIED, std::string(text_to_add));
+	AddGRFTextToList(*list, GRFLX_UNSPECIFIED, text_to_add);
 }
 
 /**
@@ -574,22 +573,29 @@ StringID AddGRFString(uint32 grfid, uint16 stringid, byte langid_to_add, bool ne
 	}
 
 	uint id;
-	for (id = 0; id < _num_grf_texts; id++) {
-		if (_grf_text[id].grfid == grfid && _grf_text[id].stringid == stringid) {
-			break;
-		}
-	}
+	extern GRFFile *GetFileByGRFIDExpectCurrent(uint32 grfid);
+	GRFFile *grf = GetFileByGRFIDExpectCurrent(grfid);
+	if (grf == nullptr) return STR_EMPTY;
 
-	/* Too many strings allocated, return empty */
-	if (id == lengthof(_grf_text)) {
-		_grf_bug_too_many_strings = true;
-		return STR_EMPTY;
+	auto iter = grf->string_map.lower_bound(stringid);
+	if (iter != grf->string_map.end() && iter->first == stringid) {
+		/* Found */
+		id = iter->second;
+	} else {
+		/* Allocate new ID */
+		id = _num_grf_texts;
+
+		/* Too many strings allocated, return empty */
+		if (id == lengthof(_grf_text)) {
+			_grf_bug_too_many_strings = true;
+			return STR_EMPTY;
+		}
+
+		grf->string_map.insert(iter, std::make_pair(stringid, id));
+		_num_grf_texts++;
 	}
 
 	std::string newtext = TranslateTTDPatchCodes(grfid, langid_to_add, allow_newlines, text_to_add);
-
-	/* If we didn't find our stringid and grfid in the list, allocate a new id */
-	if (id == _num_grf_texts) _num_grf_texts++;
 
 	if (_grf_text[id].textholder.empty()) {
 		_grf_text[id].grfid      = grfid;
@@ -608,10 +614,17 @@ StringID AddGRFString(uint32 grfid, uint16 stringid, byte langid_to_add, bool ne
  */
 StringID GetGRFStringID(uint32 grfid, StringID stringid)
 {
-	for (uint id = 0; id < _num_grf_texts; id++) {
-		if (_grf_text[id].grfid == grfid && _grf_text[id].stringid == stringid) {
-			return MakeStringID(TEXT_TAB_NEWGRF_START, id);
+	extern GRFFile *GetFileByGRFIDExpectCurrent(uint32 grfid);
+	GRFFile *grf = GetFileByGRFIDExpectCurrent(grfid);
+	if (unlikely(grf == nullptr)) {
+		for (uint id = 0; id < _num_grf_texts; id++) {
+			if (_grf_text[id].grfid == grfid && _grf_text[id].stringid == stringid) {
+				return MakeStringID(TEXT_TAB_NEWGRF_START, id);
+			}
 		}
+	} else {
+		auto iter = grf->string_map.find(stringid);
+		if (iter != grf->string_map.end()) return MakeStringID(TEXT_TAB_NEWGRF_START, iter->second);
 	}
 
 	return STR_UNDEFINED;
@@ -1024,7 +1037,7 @@ uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const 
 
 			case SCC_NEWGRF_PRINT_WORD_CARGO_NAME: {
 				CargoID cargo = GetCargoTranslation(_newgrf_textrefstack.PopUnsignedWord(), _newgrf_textrefstack.grffile);
-				*argv = cargo < NUM_CARGO ? 1 << cargo : 0;
+				*argv = cargo < NUM_CARGO ? 1ULL << cargo : 0;
 				break;
 			}
 		}

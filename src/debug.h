@@ -135,4 +135,7 @@ void ClearDesyncMsgLog();
 void LogDesyncMsg(std::string msg);
 char *DumpDesyncMsgLog(char *buffer, const char *last);
 
+void DebugSendRemoteMessages();
+void DebugReconsiderSendRemoteMessages();
+
 #endif /* DEBUG_H */

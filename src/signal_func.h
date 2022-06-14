@@ -19,6 +19,9 @@
 #include "settings_type.h"
 #include "vehicle_type.h"
 
+extern uint8 _extra_aspects;
+extern bool _signal_sprite_oversized;
+
 /**
  * Maps a trackdir to the bit that stores its status in the map arrays, in the
  * direction along with the trackdir.
@@ -70,7 +73,7 @@ static inline bool IsComboSignal(SignalType type)
 /// Is a given signal type a PBS signal?
 static inline bool IsPbsSignal(SignalType type)
 {
-	return _settings_game.vehicle.train_braking_model == TBM_REALISTIC || type == SIGTYPE_PBS || type == SIGTYPE_PBS_ONEWAY;
+	return _settings_game.vehicle.train_braking_model == TBM_REALISTIC || type == SIGTYPE_PBS || type == SIGTYPE_PBS_ONEWAY || type == SIGTYPE_NO_ENTRY;
 }
 
 /// Is a given signal type a PBS signal?
@@ -83,6 +86,18 @@ static inline bool IsPbsSignalNonExtended(SignalType type)
 static inline bool IsProgrammableSignal(SignalType type)
 {
 	return type == SIGTYPE_PROG;
+}
+
+/// Is this a programmable pre-signal?
+static inline bool IsNoEntrySignal(SignalType type)
+{
+	return type == SIGTYPE_NO_ENTRY;
+}
+
+/** One-way signals can't be passed the 'wrong' way. */
+static inline bool IsOnewaySignal(SignalType type)
+{
+	return type != SIGTYPE_PBS && type != SIGTYPE_NO_ENTRY;
 }
 
 /// Is this signal type unsuitable for realistic braking?
@@ -99,8 +114,8 @@ static inline bool IsSignalSpritePBS(SignalType type)
 
 static inline SignalType NextSignalType(SignalType cur, uint which_signals)
 {
-	bool pbs   = (which_signals != 0);
-	bool block = (which_signals != 1);
+	bool pbs   = true;
+	bool block = (which_signals == SIGNAL_CYCLE_ALL);
 
 	switch(cur) {
 		case SIGTYPE_NORMAL:     return block ? SIGTYPE_ENTRY      : SIGTYPE_PBS;
@@ -110,6 +125,7 @@ static inline SignalType NextSignalType(SignalType cur, uint which_signals)
 		case SIGTYPE_PROG:       return pbs   ? SIGTYPE_PBS        : SIGTYPE_NORMAL;
 		case SIGTYPE_PBS:        return pbs   ? SIGTYPE_PBS_ONEWAY : SIGTYPE_NORMAL;
 		case SIGTYPE_PBS_ONEWAY: return block ? SIGTYPE_NORMAL     : SIGTYPE_PBS;
+		case SIGTYPE_NO_ENTRY:   return pbs   ? SIGTYPE_PBS        : SIGTYPE_NORMAL;
 		default:
 			DEBUG(map, 0, "Attempt to cycle from signal type %d", cur);
 			return SIGTYPE_NORMAL; // Fortunately mostly harmless
@@ -153,5 +169,18 @@ void AddTrackToSignalBuffer(TileIndex tile, Track track, Owner owner);
 void AddSideToSignalBuffer(TileIndex tile, DiagDirection side, Owner owner);
 void UpdateSignalsInBuffer();
 void UpdateSignalsInBufferIfOwnerNotAddable(Owner owner);
+uint8 GetForwardAspectFollowingTrack(TileIndex tile, Trackdir trackdir);
+uint8 GetSignalAspectGeneric(TileIndex tile, Trackdir trackdir);
+void PropagateAspectChange(TileIndex tile, Trackdir trackdir, uint8 aspect);
+void UpdateAspectDeferred(TileIndex tile, Trackdir trackdir);
+void FlushDeferredAspectUpdates();
+void UpdateAllSignalAspects();
+void UpdateExtraAspectsVariable();
+void InitialiseExtraAspectsVariable();
+
+inline uint8 GetForwardAspectFollowingTrackAndIncrement(TileIndex tile, Trackdir trackdir)
+{
+	return std::min<uint8>(GetForwardAspectFollowingTrack(tile, trackdir) + 1, _extra_aspects + 1);
+}
 
 #endif /* SIGNAL_FUNC_H */

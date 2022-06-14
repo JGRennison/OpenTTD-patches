@@ -22,6 +22,7 @@
 #include "newgrf_debug.h"
 #include "newgrf_sound.h"
 #include "newgrf_station.h"
+#include "newgrf_roadstop.h"
 #include "group_gui.h"
 #include "strings_func.h"
 #include "zoom_func.h"
@@ -194,6 +195,8 @@ void VehicleServiceInDepot(Vehicle *v)
 		}
 	} else if (v->type == VEH_ROAD) {
 		RoadVehicle::From(v)->critical_breakdown_count = 0;
+	} else if (v->type == VEH_SHIP) {
+		Ship::From(v)->critical_breakdown_count = 0;
 	}
 	v->vehstatus &= ~VS_AIRCRAFT_BROKEN;
 	SetWindowDirty(WC_VEHICLE_DETAILS, v->index); // ensure that last service date and reliability are updated
@@ -230,8 +233,9 @@ bool Vehicle::NeedsServicing() const
 	if ((this->ServiceIntervalIsPercent() ?
 			(this->reliability >= this->GetEngine()->reliability * (100 - this->service_interval) / 100) :
 			(this->date_of_last_service + this->service_interval >= _date))
-			&& !(this->type == VEH_TRAIN && HasBit(Train::From(this)->flags, VRF_NEED_REPAIR))
-			&& !(this->type == VEH_ROAD && RoadVehicle::From(this)->critical_breakdown_count > 0)) {
+			&& !(this->type == VEH_TRAIN && HasBit(Train::From(this)->flags, VRF_CONSIST_BREAKDOWN) && Train::From(this)->ConsistNeedsRepair())
+			&& !(this->type == VEH_ROAD && RoadVehicle::From(this)->critical_breakdown_count > 0)
+			&& !(this->type == VEH_SHIP && Ship::From(this)->critical_breakdown_count > 0)) {
 		return false;
 	}
 
@@ -768,10 +772,10 @@ int GetAvailableFreeTilesInSignalledTunnelBridge(TileIndex entrance, TileIndex e
 	checker.lowest_seen = INT_MAX;
 	switch (checker.direction) {
 		default: NOT_REACHED();
-		case DIAGDIR_NE: checker.pos = -(TileX(tile) * TILE_SIZE); break;
-		case DIAGDIR_SE: checker.pos =  (TileY(tile) * TILE_SIZE); break;
-		case DIAGDIR_SW: checker.pos =  (TileX(tile) * TILE_SIZE); break;
-		case DIAGDIR_NW: checker.pos = -(TileY(tile) * TILE_SIZE); break;
+		case DIAGDIR_NE: checker.pos = -(int)(TileX(tile) * TILE_SIZE); break;
+		case DIAGDIR_SE: checker.pos =       (TileY(tile) * TILE_SIZE); break;
+		case DIAGDIR_SW: checker.pos =       (TileX(tile) * TILE_SIZE); break;
+		case DIAGDIR_NW: checker.pos = -(int)(TileY(tile) * TILE_SIZE); break;
 	}
 
 	FindVehicleOnPos(entrance, VEH_TRAIN, &checker, &GetAvailableFreeTilesInSignalledTunnelBridgeEnum);
@@ -888,6 +892,49 @@ static void UpdateVehicleViewportHash(Vehicle *v, int x, int y)
 		v->hash_viewport_prev = new_hash;
 		*new_hash = v;
 	}
+}
+
+struct ViewportHashDeferredItem {
+	Vehicle *v;
+	int new_hash;
+	int old_hash;
+};
+static std::vector<ViewportHashDeferredItem> _viewport_hash_deferred;
+
+static void UpdateVehicleViewportHashDeferred(Vehicle *v, int x, int y)
+{
+	int old_x = v->coord.left;
+	int old_y = v->coord.top;
+
+	int new_hash = (x == INVALID_COORD) ? INVALID_COORD : GEN_HASH(x, y);
+	int old_hash = (old_x == INVALID_COORD) ? INVALID_COORD : GEN_HASH(old_x, old_y);
+
+	if (new_hash != old_hash) {
+		_viewport_hash_deferred.push_back({ v, new_hash, old_hash });
+	}
+}
+
+static void ProcessDeferredUpdateVehicleViewportHashes()
+{
+	for (const ViewportHashDeferredItem &item : _viewport_hash_deferred) {
+		Vehicle *v = item.v;
+
+		/* remove from hash table? */
+		if (item.old_hash != INVALID_COORD) {
+			if (v->hash_viewport_next != nullptr) v->hash_viewport_next->hash_viewport_prev = v->hash_viewport_prev;
+			*v->hash_viewport_prev = v->hash_viewport_next;
+		}
+
+		/* insert into hash table? */
+		if (item.new_hash != INVALID_COORD) {
+			Vehicle **new_hash = &_vehicle_viewport_hash[item.new_hash];
+			v->hash_viewport_next = *new_hash;
+			if (v->hash_viewport_next != nullptr) v->hash_viewport_next->hash_viewport_prev = &v->hash_viewport_next;
+			v->hash_viewport_prev = new_hash;
+			*new_hash = v;
+		}
+	}
+	_viewport_hash_deferred.clear();
 }
 
 void ResetVehicleHash()
@@ -1007,9 +1054,18 @@ void Vehicle::HandlePathfindingResult(bool path_found)
 		if (this->type == VEH_SHIP) {
 			Ship::From(this)->lost_count = 0;
 		}
+
+		SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
+		DirtyVehicleListWindowForVehicle(this);
+
 		/* Delete the news item. */
 		DeleteVehicleNews(this->index, STR_NEWS_VEHICLE_IS_LOST);
 		return;
+	}
+
+	if (!HasBit(this->vehicle_flags, VF_PATHFINDER_LOST)) {
+		SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
+		DirtyVehicleListWindowForVehicle(this);
 	}
 
 	if (this->type == VEH_SHIP) {
@@ -1082,9 +1138,9 @@ void Vehicle::PreDestructor()
 		}
 	}
 
-	if (this->type == VEH_TRAIN && HasBit(Train::From(this)->flags, VRF_HAVE_SLOT)) {
+	if (HasBit(this->vehicle_flags, VF_HAVE_SLOT)) {
 		TraceRestrictRemoveVehicleFromAllSlots(this->index);
-		ClrBit(Train::From(this)->flags, VRF_HAVE_SLOT);
+		ClrBit(this->vehicle_flags, VF_HAVE_SLOT);
 	}
 	if (this->type == VEH_TRAIN && HasBit(Train::From(this)->flags, VRF_PENDING_SPEED_RESTRICTION)) {
 		pending_speed_restriction_change_map.erase(this->index);
@@ -1186,6 +1242,15 @@ void VehicleEnteredDepotThisTick(Vehicle *v)
 	v->vehstatus |= VS_STOPPED;
 }
 
+template <typename T>
+void CallVehicleOnNewDay(Vehicle *v)
+{
+	T::From(v)->T::OnNewDay();
+
+	/* Vehicle::OnPeriodic is decoupled from Vehicle::OnNewDay at day lengths >= 8 */
+	if (_settings_game.economy.day_length_factor < 8) T::From(v)->T::OnPeriodic();
+}
+
 /**
  * Increases the day counter for all vehicles and calls 1-day and 32-day handlers.
  * Each tick, it processes vehicles with "index % DAY_TICKS == _date_fract",
@@ -1203,7 +1268,7 @@ static void RunVehicleDayProc()
 		if (v == nullptr) continue;
 
 		/* Call the 32-day callback if needed */
-		if ((v->day_counter & 0x1F) == 0 && v->HasEngineType()) {
+		if ((v->day_counter & 0x1F) == 0 && v->HasEngineType() && (Engine::Get(v->engine_type)->callbacks_used & SGCU_VEHICLE_32DAY_CALLBACK) != 0) {
 			uint16 callback = GetVehicleCallback(CBID_VEHICLE_32DAY_CALLBACK, 0, 0, v->engine_type, v);
 			if (callback != CALLBACK_FAILED) {
 				if (HasBit(callback, 0)) {
@@ -1219,7 +1284,22 @@ static void RunVehicleDayProc()
 		}
 
 		/* This is called once per day for each vehicle, but not in the first tick of the day */
-		v->OnNewDay();
+		switch (v->type) {
+			case VEH_TRAIN:
+				CallVehicleOnNewDay<Train>(v);
+				break;
+			case VEH_ROAD:
+				CallVehicleOnNewDay<RoadVehicle>(v);
+				break;
+			case VEH_SHIP:
+				CallVehicleOnNewDay<Ship>(v);
+				break;
+			case VEH_AIRCRAFT:
+				CallVehicleOnNewDay<Aircraft>(v);
+				break;
+			default:
+				break;
+		}
 	}
 }
 
@@ -1383,6 +1463,38 @@ void CallVehicleTicks()
 	_vehicles_to_sell.clear();
 
 	if (_tick_skip_counter == 0) RunVehicleDayProc();
+
+	if (_settings_game.economy.day_length_factor >= 8 && _game_mode == GM_NORMAL) {
+		/*
+		 * Vehicle::OnPeriodic is decoupled from Vehicle::OnNewDay at day lengths >= 8
+		 * Use a fixed interval of 512 ticks (unscaled) instead
+		 */
+
+		Vehicle *v = nullptr;
+		SCOPE_INFO_FMT([&v], "CallVehicleTicks -> OnPeriodic: %s", scope_dumper().VehicleInfo(v));
+		for (size_t i = _scaled_tick_counter & 0x1FF; i < Vehicle::GetPoolSize(); i += 0x200) {
+			v = Vehicle::Get(i);
+			if (v == nullptr) continue;
+
+			/* This is called once per day for each vehicle, but not in the first tick of the day */
+			switch (v->type) {
+				case VEH_TRAIN:
+					Train::From(v)->Train::OnPeriodic();
+					break;
+				case VEH_ROAD:
+					RoadVehicle::From(v)->RoadVehicle::OnPeriodic();
+					break;
+				case VEH_SHIP:
+					Ship::From(v)->Ship::OnPeriodic();
+					break;
+				case VEH_AIRCRAFT:
+					Aircraft::From(v)->Aircraft::OnPeriodic();
+					break;
+				default:
+					break;
+			}
+		}
+	}
 
 	{
 		PerformanceMeasurer framerate(PFE_GL_ECONOMY);
@@ -1574,7 +1686,7 @@ void CallVehicleTicks()
 
 		if (!IsLocalCompany()) continue;
 
-		if (res.Succeeded() && res.GetCost() != 0) {
+		if (res.Succeeded()) {
 			ShowCostOrIncomeAnimation(x, y, z, res.GetCost());
 			continue;
 		}
@@ -1686,9 +1798,11 @@ struct ViewportHashBound {
 	int xl, xu, yl, yu;
 };
 
-static ViewportHashBound GetViewportHashBound(int l, int r, int t, int b) {
-	int xl = (l - (70 * ZOOM_LVL_BASE)) >> (7 + ZOOM_LVL_SHIFT);
-	int xu = (r                       ) >> (7 + ZOOM_LVL_SHIFT);
+static const int VHB_BASE_MARGIN = 70;
+
+static ViewportHashBound GetViewportHashBound(int l, int r, int t, int b, int x_margin, int y_margin) {
+	int xl = (l - ((VHB_BASE_MARGIN + x_margin) * ZOOM_LVL_BASE)) >> (7 + ZOOM_LVL_SHIFT);
+	int xu = (r + (x_margin * ZOOM_LVL_BASE))                 >> (7 + ZOOM_LVL_SHIFT);
 	/* compare after shifting instead of before, so that lower bits don't affect comparison result */
 	if (xu - xl < (1 << 6)) {
 		xl &= 0x3F;
@@ -1699,8 +1813,8 @@ static ViewportHashBound GetViewportHashBound(int l, int r, int t, int b) {
 		xu = 0x3F;
 	}
 
-	int yl = (t - (70 * ZOOM_LVL_BASE)) >> (6 + ZOOM_LVL_SHIFT);
-	int yu = (b                       ) >> (6 + ZOOM_LVL_SHIFT);
+	int yl = (t - ((VHB_BASE_MARGIN + y_margin) * ZOOM_LVL_BASE)) >> (6 + ZOOM_LVL_SHIFT);
+	int yu = (b + (y_margin * ZOOM_LVL_BASE))                 >> (6 + ZOOM_LVL_SHIFT);
 	/* compare after shifting instead of before, so that lower bits don't affect comparison result */
 	if (yu - yl < (1 << 6)) {
 		yl = (yl & 0x3F) << 6;
@@ -1713,11 +1827,8 @@ static ViewportHashBound GetViewportHashBound(int l, int r, int t, int b) {
 	return { xl, xu, yl, yu };
 };
 
-/**
- * Add the vehicle sprites that should be drawn at a part of the screen.
- * @param dpi Rectangle being drawn.
- */
-void ViewportAddVehicles(DrawPixelInfo *dpi)
+template <bool update_vehicles>
+void ViewportAddVehiclesIntl(DrawPixelInfo *dpi)
 {
 	/* The bounding rectangle */
 	const int l = dpi->left;
@@ -1726,19 +1837,44 @@ void ViewportAddVehicles(DrawPixelInfo *dpi)
 	const int b = dpi->top + dpi->height;
 
 	/* The hash area to scan */
-	const ViewportHashBound vhb = GetViewportHashBound(l, r, t, b);
+	const ViewportHashBound vhb = GetViewportHashBound(l, r, t, b,
+			update_vehicles ? MAX_VEHICLE_PIXEL_X - VHB_BASE_MARGIN : 0, update_vehicles ? MAX_VEHICLE_PIXEL_Y - VHB_BASE_MARGIN : 0);
+
+	const int ul = l - (MAX_VEHICLE_PIXEL_X * ZOOM_LVL_BASE);
+	const int ur = r + (MAX_VEHICLE_PIXEL_X * ZOOM_LVL_BASE);
+	const int ut = t - (MAX_VEHICLE_PIXEL_Y * ZOOM_LVL_BASE);
+	const int ub = b + (MAX_VEHICLE_PIXEL_Y * ZOOM_LVL_BASE);
 
 	for (int y = vhb.yl;; y = (y + (1 << 6)) & (0x3F << 6)) {
 		for (int x = vhb.xl;; x = (x + 1) & 0x3F) {
 			const Vehicle *v = _vehicle_viewport_hash[x + y]; // already masked & 0xFFF
 
 			while (v != nullptr) {
-				if (v->IsDrawn() &&
-						l <= v->coord.right &&
-						t <= v->coord.bottom &&
-						r >= v->coord.left &&
-						b >= v->coord.top) {
-					DoDrawVehicle(v);
+				if (v->IsDrawn()) {
+					if (update_vehicles &&
+							HasBit(v->vcache.cached_veh_flags, VCF_IMAGE_REFRESH) &&
+							ul <= v->coord.right &&
+							ut <= v->coord.bottom &&
+							ur >= v->coord.left &&
+							ub >= v->coord.top) {
+						Vehicle *v_mutable = const_cast<Vehicle *>(v);
+						switch (v->type) {
+							case VEH_TRAIN:       Train::From(v_mutable)->UpdateImageStateUsingMapDirection(v_mutable->sprite_seq); break;
+							case VEH_ROAD:  RoadVehicle::From(v_mutable)->UpdateImageStateUsingMapDirection(v_mutable->sprite_seq); break;
+							case VEH_SHIP:         Ship::From(v_mutable)->UpdateImageStateUsingMapDirection(v_mutable->sprite_seq); break;
+							case VEH_AIRCRAFT: Aircraft::From(v_mutable)->UpdateImageStateUsingMapDirection(v_mutable->sprite_seq); break;
+							default: break;
+						}
+						v_mutable->UpdateSpriteSeqBound();
+						v_mutable->UpdateViewportDeferred();
+					}
+
+					if (l <= v->coord.right &&
+							t <= v->coord.bottom &&
+							r >= v->coord.left &&
+							b >= v->coord.top) {
+						DoDrawVehicle(v);
+					}
 				}
 				v = v->hash_viewport_next;
 			}
@@ -1747,6 +1883,22 @@ void ViewportAddVehicles(DrawPixelInfo *dpi)
 		}
 
 		if (y == vhb.yu) break;
+	}
+
+	if (update_vehicles) ProcessDeferredUpdateVehicleViewportHashes();
+}
+
+/**
+ * Add the vehicle sprites that should be drawn at a part of the screen.
+ * @param dpi Rectangle being drawn.
+ * @param update_vehicles Whether to update vehicles around drawing rectangle.
+ */
+void ViewportAddVehicles(DrawPixelInfo *dpi, bool update_vehicles)
+{
+	if (update_vehicles) {
+		ViewportAddVehiclesIntl<true>(dpi);
+	} else {
+		ViewportAddVehiclesIntl<false>(dpi);
 	}
 }
 
@@ -1759,7 +1911,7 @@ void ViewportMapDrawVehicles(DrawPixelInfo *dpi, Viewport *vp)
 	const int b = vp->virtual_top + vp->virtual_height;
 
 	/* The hash area to scan */
-	const ViewportHashBound vhb = GetViewportHashBound(l, r, t, b);
+	const ViewportHashBound vhb = GetViewportHashBound(l, r, t, b, 0, 0);
 
 	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 	for (int y = vhb.yl;; y = (y + (1 << 6)) & (0x3F << 6)) {
@@ -1799,7 +1951,7 @@ void ViewportMapDrawVehicles(DrawPixelInfo *dpi, Viewport *vp)
 	for (int y = dt; y < db; y++, y_ptr += vp->width) {
 		for (int x = dl; x < dr; x++) {
 			if (vp->map_draw_vehicles_cache.vehicle_pixels[y_ptr + x]) {
-				blitter->SetPixel(dpi->dst_ptr, x - dl, y - dt, PC_WHITE);
+				blitter->SetPixel32(dpi->dst_ptr, x - dl, y - dt, PC_WHITE, Colour(0xFC, 0xFC, 0xFC).data);
 			}
 		}
 	}
@@ -2122,6 +2274,10 @@ bool Vehicle::HandleBreakdown()
 								if (RoadVehicle::From(this)->critical_breakdown_count != 255) {
 									RoadVehicle::From(this)->critical_breakdown_count++;
 								}
+							} else if (this->type == VEH_SHIP) {
+								if (Ship::From(this)->critical_breakdown_count != 255) {
+									Ship::From(this)->critical_breakdown_count++;
+								}
 							}
 						}
 					/* FALL THROUGH */
@@ -2198,8 +2354,8 @@ void AgeVehicle(Vehicle *v)
 
 	SetWindowDirty(WC_VEHICLE_DETAILS, v->index);
 
-	/* Don't warn about non-primary or not ours vehicles or vehicles that are crashed */
-	if (v->Previous() != nullptr || v->owner != _local_company || (v->vehstatus & VS_CRASHED) != 0) return;
+	/* Don't warn about vehicles which are non-primary (e.g., part of an articulated vehicle), don't belong to us, are crashed, or are stopped */
+	if (v->Previous() != nullptr || v->owner != _local_company || (v->vehstatus & VS_CRASHED) != 0 || (v->vehstatus & VS_STOPPED) != 0) return;
 
 	const Company *c = Company::Get(v->owner);
 	/* Don't warn if a renew is active */
@@ -2333,7 +2489,11 @@ void VehicleEnterDepot(Vehicle *v)
 			ClrBit(t->flags, VRF_TOGGLE_REVERSE);
 			t->ConsistChanged(CCF_ARRANGE);
 			t->reverse_distance = 0;
+			t->signal_speed_restriction = 0;
 			t->lookahead.reset();
+			if (!(t->vehstatus & VS_CRASHED)) {
+				t->crash_anim_pos = 0;
+			}
 			break;
 		}
 
@@ -2385,6 +2545,13 @@ void VehicleEnterDepot(Vehicle *v)
 		 * Note: The target depot for nearest-/manual-depot-orders is only updated on junctions, but we want to accept every depot. */
 		if ((v->current_order.GetDepotOrderType() & ODTFB_PART_OF_ORDERS) &&
 				real_order != nullptr && !(real_order->GetDepotActionType() & ODATFB_NEAREST_DEPOT) &&
+				(v->type == VEH_AIRCRAFT ? v->current_order.GetDestination() != GetStationIndex(v->tile) : v->dest_tile != v->tile)) {
+			/* We are heading for another depot, keep driving. */
+			return;
+		}
+
+		/* Test whether we are heading for this depot. If not, do nothing. */
+		if ((v->current_order.GetDepotExtraFlags() & ODEFB_SPECIFIC) &&
 				(v->type == VEH_AIRCRAFT ? v->current_order.GetDestination() != GetStationIndex(v->tile) : v->dest_tile != v->tile)) {
 			/* We are heading for another depot, keep driving. */
 			return;
@@ -2484,6 +2651,21 @@ void Vehicle::UpdateViewport(bool dirty)
 			);
 		}
 	}
+}
+
+void Vehicle::UpdateViewportDeferred()
+{
+	Rect new_coord = ConvertRect<Rect16, Rect>(this->sprite_seq_bounds);
+
+	Point pt = RemapCoords(this->x_pos + this->x_offs, this->y_pos + this->y_offs, this->z_pos);
+	new_coord.left   += pt.x;
+	new_coord.top    += pt.y;
+	new_coord.right  += pt.x + 2 * ZOOM_LVL_BASE;
+	new_coord.bottom += pt.y + 2 * ZOOM_LVL_BASE;
+
+	UpdateVehicleViewportHashDeferred(this, new_coord.left, new_coord.top);
+
+	this->coord = new_coord;
 }
 
 /**
@@ -2967,8 +3149,10 @@ static void VehicleIncreaseStats(const Vehicle *front)
 			 * among the wagons in that case.
 			 * As usage is not such an important figure anyway we just
 			 * ignore the additional cargo then.*/
+			EdgeUpdateMode restricted_mode = EUM_INCREASE;
+			if (v->type == VEH_AIRCRAFT) restricted_mode |= EUM_AIRCRAFT;
 			IncreaseStats(Station::Get(last_loading_station), v->cargo_type, front->last_station_visited, v->refit_cap,
-				std::min<uint>(v->refit_cap, v->cargo.StoredCount()), EUM_INCREASE);
+				std::min<uint>(v->refit_cap, v->cargo.StoredCount()), restricted_mode);
 		}
 	}
 }
@@ -3035,7 +3219,7 @@ void Vehicle::BeginLoading()
 						break;
 					}
 					target_index++;
-					if (target_index >= this->orders.list->GetNumOrders()) {
+					if (target_index >= this->orders->GetNumOrders()) {
 						if (this->GetNumManualOrders() == 0 &&
 								this->GetNumOrders() < IMPLICIT_ORDER_ONLY_CAP) {
 							break;
@@ -3073,7 +3257,7 @@ void Vehicle::BeginLoading()
 						}
 					}
 				} else if (!suppress_implicit_orders &&
-						((this->orders.list == nullptr ? OrderList::CanAllocateItem() : this->orders.list->GetNumOrders() < MAX_VEH_ORDER_ID)) &&
+						((this->orders == nullptr ? OrderList::CanAllocateItem() : this->orders->GetNumOrders() < MAX_VEH_ORDER_ID)) &&
 						Order::CanAllocateItem()) {
 					/* Insert new implicit order */
 					Order *implicit_order = new Order();
@@ -3150,6 +3334,8 @@ void Vehicle::LeaveStation()
 
 	delete this->cargo_payment;
 	assert(this->cargo_payment == nullptr); // cleared by ~CargoPayment
+
+	ClrBit(this->vehicle_flags, VF_COND_ORDER_WAIT);
 
 	TileIndex station_tile = INVALID_TILE;
 
@@ -3232,6 +3418,14 @@ void Vehicle::LeaveStation()
 		}
 
 		SetBit(Train::From(this)->flags, VRF_LEAVING_STATION);
+		if (Train::From(this)->lookahead != nullptr) Train::From(this)->lookahead->zpos_refresh_remaining = 0;
+	}
+	if (this->type == VEH_ROAD && !(this->vehstatus & VS_CRASHED)) {
+		/* Trigger road stop animation */
+		if (IsAnyRoadStopTile(this->tile)) {
+			TriggerRoadStopRandomisation(st, this->tile, RSRT_VEH_DEPARTS);
+			TriggerRoadStopAnimation(st, this->tile, SAT_TRAIN_DEPARTS);
+		}
 	}
 
 	if (this->cur_real_order_index < this->GetNumOrders()) {
@@ -3284,6 +3478,7 @@ void Vehicle::AdvanceLoadingInStation()
 	HideFillingPercent(&this->fill_percent_te_id);
 	this->current_order.MakeLoadingAdvance(this->last_station_visited);
 	this->current_order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION);
+	if (Train::From(this)->lookahead != nullptr) Train::From(this)->lookahead->zpos_refresh_remaining = 0;
 	this->MarkDirty();
 }
 
@@ -3314,6 +3509,20 @@ void Vehicle::ResetRefitCaps()
 	for (Vehicle *v = this; v != nullptr; v = v->Next()) v->refit_cap = v->cargo_cap;
 }
 
+static bool ShouldVehicleContinueWaiting(Vehicle *v)
+{
+	if (v->GetNumOrders() < 1) return false;
+
+	/* Rate-limit re-checking of conditional order loop */
+	if (HasBit(v->vehicle_flags, VF_COND_ORDER_WAIT) && v->tick_counter % 32 != 0) return true;
+
+	/* If conditional orders lead back to this order, just keep waiting without leaving the order */
+	bool loop = AdvanceOrderIndexDeferred(v, v->cur_implicit_order_index) == v->cur_implicit_order_index;
+	FlushAdvanceOrderIndexDeferred(v, loop);
+	if (loop) SetBit(v->vehicle_flags, VF_COND_ORDER_WAIT);
+	return loop;
+}
+
 /**
  * Handle the loading of the vehicle; when not it skips through dummy
  * orders and does nothing in all other cases.
@@ -3334,12 +3543,10 @@ void Vehicle::HandleLoading(bool mode)
 			if (!mode && this->type != VEH_TRAIN) PayStationSharingFee(this, Station::Get(this->last_station_visited));
 
 			/* Not the first call for this tick, or still loading */
-			if (mode || !HasBit(this->vehicle_flags, VF_LOADING_FINISHED) || (this->current_order_time < wait_time && this->current_order.GetLeaveType() != OLT_LEAVE_EARLY)) {
+			if (mode || !HasBit(this->vehicle_flags, VF_LOADING_FINISHED) || (this->current_order_time < wait_time && this->current_order.GetLeaveType() != OLT_LEAVE_EARLY) || ShouldVehicleContinueWaiting(this)) {
 				if (!mode && this->type == VEH_TRAIN && HasBit(Train::From(this)->flags, VRF_ADVANCE_IN_PLATFORM)) this->AdvanceLoadingInStation();
 				return;
 			}
-
-			this->PlayLeaveStationSound();
 
 			this->LeaveStation();
 
@@ -3365,8 +3572,9 @@ void Vehicle::HandleLoading(bool mode)
  * Handle the waiting time everywhere else as in stations (basically in depot but, eventually, also elsewhere ?)
  * Function is called when order's wait_time is defined.
  * @param stop_waiting should we stop waiting (or definitely avoid) even if there is still time left to wait ?
+ * @param process_orders whether to call ProcessOrders when exiting a waiting order
  */
-void Vehicle::HandleWaiting(bool stop_waiting)
+void Vehicle::HandleWaiting(bool stop_waiting, bool process_orders)
 {
 	switch (this->current_order.GetType()) {
 		case OT_WAITING: {
@@ -3375,13 +3583,17 @@ void Vehicle::HandleWaiting(bool stop_waiting)
 			if (!stop_waiting && this->current_order_time < wait_time && this->current_order.GetLeaveType() != OLT_LEAVE_EARLY) {
 				return;
 			}
+			if (!stop_waiting && process_orders && ShouldVehicleContinueWaiting(this)) {
+				return;
+			}
 
 			/* When wait_time is expired, we move on. */
+			ClrBit(this->vehicle_flags, VF_COND_ORDER_WAIT);
 			UpdateVehicleTimetable(this, false);
 			this->IncrementImplicitOrderIndex();
 			this->current_order.MakeDummy();
 			if (this->type == VEH_TRAIN) Train::From(this)->force_proceed = TFP_NONE;
-
+			if (process_orders) ProcessOrders(this);
 			break;
 		}
 
@@ -3471,6 +3683,10 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 				IsInfraTileUsageAllowed(this->type, this->owner, specific_depot))) {
 			return_cmd_error(no_depot[this->type]);
 		}
+		if ((this->type == VEH_ROAD && (GetPresentRoadTypes(tile) & RoadVehicle::From(this)->compatible_roadtypes) == 0) ||
+				(this->type == VEH_TRAIN && !HasBit(Train::From(this)->compatible_railtypes, GetRailType(tile)))) {
+			return_cmd_error(no_depot[this->type]);
+		}
 		location = specific_depot;
 		destination = (this->type == VEH_AIRCRAFT) ? GetStationIndex(specific_depot) : GetDepotIndex(specific_depot);
 		reverse = false;
@@ -3480,6 +3696,13 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 
 	if (flags & DC_EXEC) {
 		if (this->current_order.IsAnyLoadingType()) this->LeaveStation();
+		if (this->current_order.IsType(OT_WAITING)) this->HandleWaiting(true);
+
+		if (this->type == VEH_TRAIN) {
+			for (Train *v = Train::From(this); v != nullptr; v = v->Next()) {
+				ClrBit(v->flags, VRF_BEYOND_PLATFORM_END);
+			}
+		}
 
 		if (this->IsGroundVehicle() && this->GetNumManualOrders() > 0) {
 			uint16 &gv_flags = this->GetGroundVehicleFlags();
@@ -3492,6 +3715,9 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 			this->current_order.SetDepotActionType(ODATFB_HALT | ODATFB_SELL);
 		} else if (!(command & DEPOT_SERVICE)) {
 			this->current_order.SetDepotActionType(ODATFB_HALT);
+		}
+		if (command & DEPOT_SPECIFIC) {
+			this->current_order.SetDepotExtraFlags(ODEFB_SPECIFIC);
 		}
 		SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
 
@@ -3641,9 +3867,10 @@ int ReversingDistanceTargetSpeed(const Train *v);
 
 /**
  * Draw visual effects (smoke and/or sparks) for a vehicle chain.
+ * @param max_speed The speed as limited by underground and orders, UINT_MAX if not already known
  * @pre this->IsPrimaryVehicle()
  */
-void Vehicle::ShowVisualEffect() const
+void Vehicle::ShowVisualEffect(uint max_speed) const
 {
 	assert(this->IsPrimaryVehicle());
 	bool sound = false;
@@ -3659,8 +3886,7 @@ void Vehicle::ShowVisualEffect() const
 		return;
 	}
 
-	/* Use the speed as limited by underground and orders. */
-	uint max_speed = this->GetCurrentMaxSpeed();
+	if (max_speed == UINT_MAX) max_speed = this->GetCurrentMaxSpeed();
 
 	if (this->type == VEH_TRAIN) {
 		const Train *t = Train::From(this);
@@ -3833,10 +4059,10 @@ void Vehicle::AddToShared(Vehicle *shared_chain)
 {
 	assert(this->previous_shared == nullptr && this->next_shared == nullptr);
 
-	if (shared_chain->orders.list == nullptr) {
+	if (shared_chain->orders == nullptr) {
 		assert(shared_chain->previous_shared == nullptr);
 		assert(shared_chain->next_shared == nullptr);
-		this->orders.list = shared_chain->orders.list = new OrderList(nullptr, shared_chain);
+		this->orders = shared_chain->orders = new OrderList(nullptr, shared_chain);
 	}
 
 	this->next_shared     = shared_chain->next_shared;
@@ -3846,7 +4072,7 @@ void Vehicle::AddToShared(Vehicle *shared_chain)
 
 	if (this->next_shared != nullptr) this->next_shared->previous_shared = this;
 
-	shared_chain->orders.list->AddVehicle(this);
+	shared_chain->orders->AddVehicle(this);
 }
 
 /**
@@ -3859,7 +4085,7 @@ void Vehicle::RemoveFromShared()
 	bool were_first = (this->FirstShared() == this);
 	VehicleListIdentifier vli(VL_SHARED_ORDERS, this->type, this->owner, this->FirstShared()->index);
 
-	this->orders.list->RemoveVehicle(this);
+	this->orders->RemoveVehicle(this);
 
 	if (!were_first) {
 		/* We are not the first shared one, so only relink our previous one. */
@@ -3869,9 +4095,9 @@ void Vehicle::RemoveFromShared()
 	if (this->next_shared != nullptr) this->next_shared->previous_shared = this->previous_shared;
 
 
-	if (this->orders.list->GetNumVehicles() == 1) InvalidateVehicleOrder(this->FirstShared(), VIWD_MODIFY_ORDERS);
+	if (this->orders->GetNumVehicles() == 1) InvalidateVehicleOrder(this->FirstShared(), VIWD_MODIFY_ORDERS);
 
-	if (this->orders.list->GetNumVehicles() == 1 && !_settings_client.gui.enable_single_veh_shared_order_gui) {
+	if (this->orders->GetNumVehicles() == 1 && !_settings_client.gui.enable_single_veh_shared_order_gui) {
 		/* When there is only one vehicle, remove the shared order list window. */
 		DeleteWindowById(GetWindowClassForVehicleType(this->type), vli.Pack());
 	} else if (were_first) {
@@ -3887,87 +4113,112 @@ void Vehicle::RemoveFromShared()
 	if (HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION)) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 }
 
+template <typename T, typename U>
+void DumpVehicleFlagsGeneric(const Vehicle *v, T dump, U dump_header)
+{
+	if (v->IsGroundVehicle()) {
+		dump_header("st:", "subtype:");
+		dump('F', "GVSF_FRONT",            HasBit(v->subtype, GVSF_FRONT));
+		dump('A', "GVSF_ARTICULATED_PART", HasBit(v->subtype, GVSF_ARTICULATED_PART));
+		dump('W', "GVSF_WAGON",            HasBit(v->subtype, GVSF_WAGON));
+		dump('E', "GVSF_ENGINE",           HasBit(v->subtype, GVSF_ENGINE));
+		dump('f', "GVSF_FREE_WAGON",       HasBit(v->subtype, GVSF_FREE_WAGON));
+		dump('M', "GVSF_MULTIHEADED",      HasBit(v->subtype, GVSF_MULTIHEADED));
+		dump('V', "GVSF_VIRTUAL",          HasBit(v->subtype, GVSF_VIRTUAL));
+	}
+	dump_header("vs:", "vehstatus:");
+	dump('H', "VS_HIDDEN",          v->vehstatus & VS_HIDDEN);
+	dump('S', "VS_STOPPED",         v->vehstatus & VS_STOPPED);
+	dump('U', "VS_UNCLICKABLE",     v->vehstatus & VS_UNCLICKABLE);
+	dump('D', "VS_DEFPAL",          v->vehstatus & VS_DEFPAL);
+	dump('s', "VS_TRAIN_SLOWING",   v->vehstatus & VS_TRAIN_SLOWING);
+	dump('X', "VS_SHADOW",          v->vehstatus & VS_SHADOW);
+	dump('B', "VS_AIRCRAFT_BROKEN", v->vehstatus & VS_AIRCRAFT_BROKEN);
+	dump('C', "VS_CRASHED",         v->vehstatus & VS_CRASHED);
+	dump_header("vf:", "vehicle_flags:");
+	dump('F', "VF_LOADING_FINISHED",        HasBit(v->vehicle_flags, VF_LOADING_FINISHED));
+	dump('U', "VF_CARGO_UNLOADING",         HasBit(v->vehicle_flags, VF_CARGO_UNLOADING));
+	dump('P', "VF_BUILT_AS_PROTOTYPE",      HasBit(v->vehicle_flags, VF_BUILT_AS_PROTOTYPE));
+	dump('T', "VF_TIMETABLE_STARTED",       HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED));
+	dump('A', "VF_AUTOFILL_TIMETABLE",      HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE));
+	dump('w', "VF_AUTOFILL_PRES_WAIT_TIME", HasBit(v->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME));
+	dump('S', "VF_STOP_LOADING",            HasBit(v->vehicle_flags, VF_STOP_LOADING));
+	dump('L', "VF_PATHFINDER_LOST",         HasBit(v->vehicle_flags, VF_PATHFINDER_LOST));
+	dump('c', "VF_SERVINT_IS_CUSTOM",       HasBit(v->vehicle_flags, VF_SERVINT_IS_CUSTOM));
+	dump('p', "VF_SERVINT_IS_PERCENT",      HasBit(v->vehicle_flags, VF_SERVINT_IS_PERCENT));
+	dump('z', "VF_SEPARATION_ACTIVE",       HasBit(v->vehicle_flags, VF_SEPARATION_ACTIVE));
+	dump('D', "VF_SCHEDULED_DISPATCH",      HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH));
+	dump('x', "VF_LAST_LOAD_ST_SEP",        HasBit(v->vehicle_flags, VF_LAST_LOAD_ST_SEP));
+	dump('s', "VF_TIMETABLE_SEPARATION",    HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION));
+	dump('a', "VF_AUTOMATE_TIMETABLE",      HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
+	dump('Q', "VF_HAVE_SLOT",               HasBit(v->vehicle_flags, VF_HAVE_SLOT));
+	dump('W', "VF_COND_ORDER_WAIT",         HasBit(v->vehicle_flags, VF_COND_ORDER_WAIT));
+	dump_header("vcf:", "cached_veh_flags:");
+	dump('l', "VCF_LAST_VISUAL_EFFECT",     HasBit(v->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT));
+	dump('z', "VCF_GV_ZERO_SLOPE_RESIST",   HasBit(v->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST));
+	dump('d', "VCF_IS_DRAWN",               HasBit(v->vcache.cached_veh_flags, VCF_IS_DRAWN));
+	dump('t', "VCF_REDRAW_ON_TRIGGER",      HasBit(v->vcache.cached_veh_flags, VCF_REDRAW_ON_TRIGGER));
+	dump('s', "VCF_REDRAW_ON_SPEED_CHANGE", HasBit(v->vcache.cached_veh_flags, VCF_REDRAW_ON_SPEED_CHANGE));
+	dump('R', "VCF_IMAGE_REFRESH",          HasBit(v->vcache.cached_veh_flags, VCF_IMAGE_REFRESH));
+	dump('N', "VCF_IMAGE_REFRESH_NEXT",     HasBit(v->vcache.cached_veh_flags, VCF_IMAGE_REFRESH_NEXT));
+	dump('c', "VCF_IMAGE_CURVATURE",        HasBit(v->vcache.cached_veh_flags, VCF_IMAGE_CURVATURE));
+	if (v->IsGroundVehicle()) {
+		uint16 gv_flags = v->GetGroundVehicleFlags();
+		dump_header("gvf:", "GroundVehicleFlags:");
+		dump('u', "GVF_GOINGUP_BIT",              HasBit(gv_flags, GVF_GOINGUP_BIT));
+		dump('d', "GVF_GOINGDOWN_BIT",            HasBit(gv_flags, GVF_GOINGDOWN_BIT));
+		dump('s', "GVF_SUPPRESS_IMPLICIT_ORDERS", HasBit(gv_flags, GVF_SUPPRESS_IMPLICIT_ORDERS));
+		dump('c', "GVF_CHUNNEL_BIT",              HasBit(gv_flags, GVF_CHUNNEL_BIT));
+	}
+	if (v->type == VEH_TRAIN) {
+		const Train *t = Train::From(v);
+		dump_header("tf:", "train flags:");
+		dump('R', "VRF_REVERSING",                     HasBit(t->flags, VRF_REVERSING));
+		dump('W', "VRF_WAITING_RESTRICTION",           HasBit(t->flags, VRF_WAITING_RESTRICTION));
+		dump('P', "VRF_POWEREDWAGON",                  HasBit(t->flags, VRF_POWEREDWAGON));
+		dump('r', "VRF_REVERSE_DIRECTION",             HasBit(t->flags, VRF_REVERSE_DIRECTION));
+		dump('h', "VRF_HAS_HIT_RV",                    HasBit(t->flags, VRF_HAS_HIT_RV));
+		dump('e', "VRF_EL_ENGINE_ALLOWED_NORMAL_RAIL", HasBit(t->flags, VRF_EL_ENGINE_ALLOWED_NORMAL_RAIL));
+		dump('q', "VRF_TOGGLE_REVERSE",                HasBit(t->flags, VRF_TOGGLE_REVERSE));
+		dump('s', "VRF_TRAIN_STUCK",                   HasBit(t->flags, VRF_TRAIN_STUCK));
+		dump('L', "VRF_LEAVING_STATION",               HasBit(t->flags, VRF_LEAVING_STATION));
+		dump('b', "VRF_BREAKDOWN_BRAKING",             HasBit(t->flags, VRF_BREAKDOWN_BRAKING));
+		dump('p', "VRF_BREAKDOWN_POWER",               HasBit(t->flags, VRF_BREAKDOWN_POWER));
+		dump('v', "VRF_BREAKDOWN_SPEED",               HasBit(t->flags, VRF_BREAKDOWN_SPEED));
+		dump('z', "VRF_BREAKDOWN_STOPPED",             HasBit(t->flags, VRF_BREAKDOWN_STOPPED));
+		dump('F', "VRF_NEED_REPAIR",                   HasBit(t->flags, VRF_NEED_REPAIR));
+		dump('H', "VRF_TOO_HEAVY",                     HasBit(t->flags, VRF_TOO_HEAVY));
+		dump('B', "VRF_BEYOND_PLATFORM_END",           HasBit(t->flags, VRF_BEYOND_PLATFORM_END));
+		dump('Y', "VRF_NOT_YET_IN_PLATFORM",           HasBit(t->flags, VRF_NOT_YET_IN_PLATFORM));
+		dump('A', "VRF_ADVANCE_IN_PLATFORM",           HasBit(t->flags, VRF_ADVANCE_IN_PLATFORM));
+		dump('K', "VRF_CONSIST_BREAKDOWN",             HasBit(t->flags, VRF_CONSIST_BREAKDOWN));
+		dump('J', "VRF_CONSIST_SPEED_REDUCTION",       HasBit(t->flags, VRF_CONSIST_SPEED_REDUCTION));
+		dump('X', "VRF_PENDING_SPEED_RESTRICTION",     HasBit(t->flags, VRF_PENDING_SPEED_RESTRICTION));
+		dump('c', "VRF_SPEED_ADAPTATION_EXEMPT",       HasBit(t->flags, VRF_SPEED_ADAPTATION_EXEMPT));
+	}
+}
+
 char *Vehicle::DumpVehicleFlags(char *b, const char *last, bool include_tile) const
 {
-	auto dump = [&](char c, bool flag) {
+	bool first_header = true;
+	auto dump = [&](char c, const char *name, bool flag) {
 		if (flag) b += seprintf(b, last, "%c", c);
 	};
-	if (this->IsGroundVehicle()) {
-		b += seprintf(b, last, "st:");
-		dump('F', HasBit(this->subtype, GVSF_FRONT));
-		dump('A', HasBit(this->subtype, GVSF_ARTICULATED_PART));
-		dump('W', HasBit(this->subtype, GVSF_WAGON));
-		dump('E', HasBit(this->subtype, GVSF_ENGINE));
-		dump('f', HasBit(this->subtype, GVSF_FREE_WAGON));
-		dump('M', HasBit(this->subtype, GVSF_MULTIHEADED));
-		dump('V', HasBit(this->subtype, GVSF_VIRTUAL));
-	} else {
+	auto dump_header = [&](const char* header, const char *header_long) {
+		if (first_header) {
+			first_header = false;
+		} else {
+			b = strecpy(b, ", ", last, true);
+		}
+		b = strecpy(b, header, last, true);
+	};
+	if (!this->IsGroundVehicle()) {
 		b += seprintf(b, last, "st:%X", this->subtype);
+		first_header = false;
 	}
-	b += seprintf(b, last, ", vs:");
-	dump('H', this->vehstatus & VS_HIDDEN);
-	dump('S', this->vehstatus & VS_STOPPED);
-	dump('U', this->vehstatus & VS_UNCLICKABLE);
-	dump('D', this->vehstatus & VS_DEFPAL);
-	dump('s', this->vehstatus & VS_TRAIN_SLOWING);
-	dump('X', this->vehstatus & VS_SHADOW);
-	dump('B', this->vehstatus & VS_AIRCRAFT_BROKEN);
-	dump('C', this->vehstatus & VS_CRASHED);
-	b += seprintf(b, last, ", vf:");
-	dump('F', HasBit(this->vehicle_flags, VF_LOADING_FINISHED));
-	dump('U', HasBit(this->vehicle_flags, VF_CARGO_UNLOADING));
-	dump('P', HasBit(this->vehicle_flags, VF_BUILT_AS_PROTOTYPE));
-	dump('T', HasBit(this->vehicle_flags, VF_TIMETABLE_STARTED));
-	dump('A', HasBit(this->vehicle_flags, VF_AUTOFILL_TIMETABLE));
-	dump('w', HasBit(this->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME));
-	dump('S', HasBit(this->vehicle_flags, VF_STOP_LOADING));
-	dump('L', HasBit(this->vehicle_flags, VF_PATHFINDER_LOST));
-	dump('c', HasBit(this->vehicle_flags, VF_SERVINT_IS_CUSTOM));
-	dump('p', HasBit(this->vehicle_flags, VF_SERVINT_IS_PERCENT));
-	dump('z', HasBit(this->vehicle_flags, VF_SEPARATION_ACTIVE));
-	dump('D', HasBit(this->vehicle_flags, VF_SCHEDULED_DISPATCH));
-	dump('x', HasBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP));
-	dump('s', HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION));
-	dump('a', HasBit(this->vehicle_flags, VF_AUTOMATE_TIMETABLE));
-	b += seprintf(b, last, ", vcf:");
-	dump('l', HasBit(this->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT));
-	dump('z', HasBit(this->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST));
-	dump('d', HasBit(this->vcache.cached_veh_flags, VCF_IS_DRAWN));
-	dump('t', HasBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_TRIGGER));
-	dump('s', HasBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_SPEED_CHANGE));
-	dump('R', HasBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH));
-	dump('N', HasBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH_NEXT));
-	dump('c', HasBit(this->vcache.cached_veh_flags, VCF_IMAGE_CURVATURE));
-	if (this->IsGroundVehicle()) {
-		uint16 gv_flags = this->GetGroundVehicleFlags();
-		b += seprintf(b, last, ", gvf:");
-		dump('u', HasBit(gv_flags, GVF_GOINGUP_BIT));
-		dump('d', HasBit(gv_flags, GVF_GOINGDOWN_BIT));
-		dump('s', HasBit(gv_flags, GVF_SUPPRESS_IMPLICIT_ORDERS));
-		dump('c', HasBit(gv_flags, GVF_CHUNNEL_BIT));
-	}
+	DumpVehicleFlagsGeneric(this, dump, dump_header);
 	if (this->type == VEH_TRAIN) {
 		const Train *t = Train::From(this);
-		b += seprintf(b, last, ", tf:");
-		dump('R', HasBit(t->flags, VRF_REVERSING));
-		dump('W', HasBit(t->flags, VRF_WAITING_RESTRICTION));
-		dump('S', HasBit(t->flags, VRF_HAVE_SLOT));
-		dump('P', HasBit(t->flags, VRF_POWEREDWAGON));
-		dump('r', HasBit(t->flags, VRF_REVERSE_DIRECTION));
-		dump('h', HasBit(t->flags, VRF_HAS_HIT_RV));
-		dump('e', HasBit(t->flags, VRF_EL_ENGINE_ALLOWED_NORMAL_RAIL));
-		dump('q', HasBit(t->flags, VRF_TOGGLE_REVERSE));
-		dump('s', HasBit(t->flags, VRF_TRAIN_STUCK));
-		dump('L', HasBit(t->flags, VRF_LEAVING_STATION));
-		dump('b', HasBit(t->flags, VRF_BREAKDOWN_BRAKING));
-		dump('p', HasBit(t->flags, VRF_BREAKDOWN_POWER));
-		dump('v', HasBit(t->flags, VRF_BREAKDOWN_SPEED));
-		dump('z', HasBit(t->flags, VRF_BREAKDOWN_STOPPED));
-		dump('F', HasBit(t->flags, VRF_NEED_REPAIR));
-		dump('H', HasBit(t->flags, VRF_TOO_HEAVY));
-		dump('B', HasBit(t->flags, VRF_BEYOND_PLATFORM_END));
-		dump('Y', HasBit(t->flags, VRF_NOT_YET_IN_PLATFORM));
-		dump('A', HasBit(t->flags, VRF_ADVANCE_IN_PLATFORM));
 		b += seprintf(b, last, ", trk: 0x%02X", (uint) t->track);
 		if (t->reverse_distance > 0) b += seprintf(b, last, ", rev: %u", t->reverse_distance);
 	} else if (this->type == VEH_ROAD) {
@@ -3985,6 +4236,30 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last, bool include_tile) co
 	return b;
 }
 
+
+char *Vehicle::DumpVehicleFlagsMultiline(char *b, const char *last, const char *base_indent, const char *extra_indent) const
+{
+	auto dump = [&](char c, const char *name, bool flag) {
+		if (flag) b += seprintf(b, last, "%s%s%s\n", base_indent, extra_indent, name);
+	};
+	auto dump_header = [&](const char* header, const char *header_long) {
+		b += seprintf(b, last, "%s%s\n", base_indent, header_long);
+	};
+	if (!this->IsGroundVehicle()) {
+		b += seprintf(b, last, "%ssubtype: %X\n", base_indent, this->subtype);
+	}
+	DumpVehicleFlagsGeneric(this, dump, dump_header);
+	if (this->type == VEH_TRAIN) {
+		const Train *t = Train::From(this);
+		b += seprintf(b, last, "%strack: 0x%02X", base_indent, (uint) t->track);
+		if (t->reverse_distance > 0) b += seprintf(b, last, "%sreverse_distance: %u", base_indent, t->reverse_distance);
+	} else if (this->type == VEH_ROAD) {
+		const RoadVehicle *r = RoadVehicle::From(this);
+		b += seprintf(b, last, "%sRV state:%X\n%sRV frame:%X\n", base_indent, r->state, base_indent, r->frame);
+	}
+	if (this->cargo_payment) b += seprintf(b, last, "%scargo_payment present\n", base_indent);
+	return b;
+}
 
 void VehiclesYearlyLoop()
 {
@@ -4063,6 +4338,55 @@ bool CanVehicleUseStation(const Vehicle *v, const Station *st)
 	if (v->type == VEH_ROAD) return st->GetPrimaryRoadStop(RoadVehicle::From(v)) != nullptr;
 
 	return CanVehicleUseStation(v->engine_type, st);
+}
+
+/**
+ * Get reason string why this station can't be used by the given vehicle
+ * @param v the vehicle to test
+ * @param st the station to test for
+ * @return true if and only if the vehicle can use this station.
+ */
+StringID GetVehicleCannotUseStationReason(const Vehicle *v, const Station *st)
+{
+	switch (v->type) {
+		case VEH_TRAIN:
+			return STR_ERROR_NO_RAIL_STATION;
+
+		case VEH_ROAD: {
+			const RoadVehicle *rv = RoadVehicle::From(v);
+			RoadStop *rs = st->GetPrimaryRoadStop(rv->IsBus() ? ROADSTOP_BUS : ROADSTOP_TRUCK);
+
+			StringID err = rv->IsBus() ? STR_ERROR_NO_BUS_STATION : STR_ERROR_NO_TRUCK_STATION;
+
+			for (; rs != nullptr; rs = rs->next) {
+				/* The vehicle is articulated and can therefore not go to a standard road stop. */
+				if (IsStandardRoadStopTile(rs->xy) && rv->HasArticulatedPart()) {
+					err = STR_ERROR_NO_STOP_ARTIC_VEH;
+					continue;
+				}
+				/* The vehicle cannot go to this roadstop (different roadtype) */
+				if (!HasTileAnyRoadType(rs->xy, rv->compatible_roadtypes)) return STR_ERROR_NO_STOP_COMPATIBLE_ROAD_TYPE;
+
+				return INVALID_STRING_ID;
+			}
+
+			return err;
+		}
+
+		case VEH_SHIP:
+			return STR_ERROR_NO_DOCK;
+
+		case VEH_AIRCRAFT:
+			if ((st->facilities & FACIL_AIRPORT) == 0) return STR_ERROR_NO_AIRPORT;
+			if (v->GetEngine()->u.air.subtype & AIR_CTOL) {
+				return STR_ERROR_AIRPORT_NO_PLANES;
+			} else {
+				return STR_ERROR_AIRPORT_NO_HELIS;
+			}
+
+		default:
+			return INVALID_STRING_ID;
+	}
 }
 
 /**
@@ -4200,4 +4524,14 @@ void DumpVehicleStats(char *buffer, const char *last)
 		line(it.second.template_train, "tmpl train");
 		buffer += seprintf(buffer, last, "\n");
 	}
+}
+
+void ShiftVehicleDates(int interval)
+{
+	for (Vehicle *v : Vehicle::Iterate()) {
+		v->date_of_last_service += interval;
+	}
+
+	extern void AdjustAllSignalSpeedRestrictionTickValues(DateTicksScaled delta);
+	AdjustAllSignalSpeedRestrictionTickValues(interval * DAY_TICKS * _settings_game.economy.day_length_factor);
 }

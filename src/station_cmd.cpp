@@ -57,10 +57,14 @@
 #include "widgets/station_widget.h"
 #include "zoning.h"
 #include "tunnelbridge_map.h"
+#include "cheat_type.h"
+#include "newgrf_roadstop.h"
 
 #include "table/strings.h"
 
 #include "3rdparty/cpp-btree/btree_set.h"
+
+#include <bitset>
 
 #include "safeguards.h"
 
@@ -95,16 +99,16 @@ bool IsHangar(TileIndex t)
  * @param st to 'return' the found station
  * @return Succeeded command (if zero or one station found) or failed command (for two or more stations found).
  */
-template <class T>
-CommandCost GetStationAround(TileArea ta, StationID closest_station, CompanyID company, T **st)
+template <class T, class F>
+CommandCost GetStationAround(TileArea ta, StationID closest_station, CompanyID company, T **st, F filter)
 {
 	ta.Expand(1);
 
 	/* check around to see if there are any stations there owned by the company */
-	TILE_AREA_LOOP(tile_cur, ta) {
+	for (TileIndex tile_cur : ta) {
 		if (IsTileType(tile_cur, MP_STATION)) {
 			StationID t = GetStationIndex(tile_cur);
-			if (!T::IsValidID(t) || Station::Get(t)->owner != company) continue;
+			if (!T::IsValidID(t) || T::Get(t)->owner != company || !filter(T::Get(t))) continue;
 			if (closest_station == INVALID_STATION) {
 				closest_station = t;
 			} else if (closest_station != t) {
@@ -248,6 +252,8 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 	bool indtypes[NUM_INDUSTRYTYPES];
 	memset(indtypes, 0, sizeof(indtypes));
 
+	std::bitset<MAX_EXTRA_STATION_NAMES> extra_names;
+
 	for (const Station *s : Station::Iterate()) {
 		if (s != st && s->town == t) {
 			if (s->indtype != IT_INVALID) {
@@ -261,6 +267,9 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 					}
 				}
 				continue;
+			}
+			if (s->extra_name_index < MAX_EXTRA_STATION_NAMES) {
+				extra_names.set(s->extra_name_index);
 			}
 			uint str = M(s->string_id);
 			if (str <= 0x20) {
@@ -300,10 +309,50 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 	}
 
 	/* check close enough to town to get central as name? */
-	if (DistanceMax(tile, t->xy) < 8) {
-		if (HasBit(free_names, M(STR_SV_STNAME))) return STR_SV_STNAME;
+	const bool is_central = DistanceMax(tile, t->xy) < 8;
+	if (HasBit(free_names, M(STR_SV_STNAME)) && (is_central || DistanceSquare(tile, t->xy) <= t->cache.squared_town_zone_radius[HZB_TOWN_INNER_SUBURB])) {
+		return STR_SV_STNAME;
+	}
 
-		if (HasBit(free_names, M(STR_SV_STNAME_CENTRAL))) return STR_SV_STNAME_CENTRAL;
+	bool use_extra_names = _extra_station_names_used > 0;
+	auto check_extra_names = [&]() -> bool {
+		if (use_extra_names) {
+			use_extra_names = false;
+			const bool near_water = CountMapSquareAround(tile, CMSAWater) >= 5;
+			std::vector<uint16> candidates;
+			for (uint i = 0; i < _extra_station_names_used; i++) {
+				const ExtraStationNameInfo &info = _extra_station_names[i];
+				if (extra_names[i]) continue;
+				if (!HasBit(info.flags, name_class)) continue;
+				if (HasBit(info.flags, ESNIF_CENTRAL) && !is_central) continue;
+				if (HasBit(info.flags, ESNIF_NOT_CENTRAL) && is_central) continue;
+				if (HasBit(info.flags, ESNIF_NEAR_WATER) && !near_water) continue;
+				if (HasBit(info.flags, ESNIF_NOT_NEAR_WATER) && near_water) continue;
+				candidates.push_back(i);
+			}
+
+			if (!candidates.empty()) {
+				SavedRandomSeeds saved_seeds;
+				SaveRandomSeeds(&saved_seeds);
+				st->extra_name_index = candidates[RandomRange((uint)candidates.size())];
+				RestoreRandomSeeds(saved_seeds);
+				return true;
+			}
+		}
+		return false;
+	};
+
+	if (_extra_station_names_probability > 0) {
+		SavedRandomSeeds saved_seeds;
+		SaveRandomSeeds(&saved_seeds);
+		bool extra_name = (RandomRange(0xFF) < _extra_station_names_probability) && check_extra_names();
+		RestoreRandomSeeds(saved_seeds);
+		if (extra_name) return STR_SV_STNAME_FALLBACK;
+	}
+
+	/* check close enough to town to get central as name? */
+	if (is_central && HasBit(free_names, M(STR_SV_STNAME_CENTRAL))) {
+		return STR_SV_STNAME_CENTRAL;
 	}
 
 	/* Check lakeside */
@@ -343,7 +392,11 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 		(TileY(tile) < TileY(t->xy)) * 2];
 
 	tmp = free_names & ((1 << 1) | (1 << 2) | (1 << 3) | (1 << 4) | (1 << 6) | (1 << 7) | (1 << 12) | (1 << 26) | (1 << 27) | (1 << 28) | (1 << 29) | (1 << 30));
-	return (tmp == 0) ? STR_SV_STNAME_FALLBACK : (STR_SV_STNAME + FindFirstBit(tmp));
+	if (tmp != 0) return STR_SV_STNAME + FindFirstBit(tmp);
+
+	if (check_extra_names()) return STR_SV_STNAME_FALLBACK;
+
+	return STR_SV_STNAME_FALLBACK;
 }
 #undef M
 
@@ -404,6 +457,33 @@ void Station::GetTileArea(TileArea *ta, StationType type) const
 }
 
 /**
+ * Update the cargo history.
+ */
+void Station::UpdateCargoHistory()
+{
+	uint storage_offset = 0;
+	bool update_window = false;
+	for (const CargoSpec *cs : CargoSpec::Iterate()) {
+		uint amount = this->goods[cs->Index()].cargo.TotalCount();
+		if (!HasBit(this->station_cargo_history_cargoes, cs->Index())) {
+			if (amount == 0) {
+				/* No cargo present, and no history stored for this cargo, no work to do */
+				continue;
+			} else {
+				if (this->station_cargo_history_cargoes == 0) update_window = true;
+				SetBit(this->station_cargo_history_cargoes, cs->Index());
+				this->station_cargo_history.emplace(this->station_cargo_history.begin() + storage_offset);
+			}
+		}
+		this->station_cargo_history[storage_offset][this->station_cargo_history_offset] = static_cast<uint16>(std::clamp<uint>(amount, (uint)0, (uint)UINT16_MAX));
+		storage_offset++;
+	}
+	this->station_cargo_history_offset++;
+	if (this->station_cargo_history_offset == MAX_STATION_CARGO_HISTORY_DAYS) this->station_cargo_history_offset = 0;
+	if (update_window) InvalidateWindowData(WC_STATION_VIEW, this->index, -1);
+}
+
+/**
  * Update the virtual coords needed to draw the station sign.
  */
 void Station::UpdateVirtCoord()
@@ -417,8 +497,7 @@ void Station::UpdateVirtCoord()
 
 	SetDParam(0, this->index);
 	SetDParam(1, this->facilities);
-	bool shown = HasBit(_display_opt, DO_SHOW_STATION_NAMES) && !(_local_company != this->owner && this->owner != OWNER_NONE && !HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS));
-	this->sign.UpdatePosition(shown ? ZOOM_LVL_DRAW_SPR : ZOOM_LVL_END, pt.x, pt.y, STR_VIEWPORT_STATION);
+	this->sign.UpdatePosition(ShouldShowBaseStationViewportLabel(this) ? ZOOM_LVL_DRAW_SPR : ZOOM_LVL_END, pt.x, pt.y, STR_VIEWPORT_STATION);
 
 	if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeStation(this->index));
 
@@ -499,21 +578,21 @@ static void ShowRejectOrAcceptNews(const Station *st, uint num_items, CargoID *c
 
 /**
  * Get the cargo types being produced around the tile (in a rectangle).
- * @param tile Northtile of area
+ * @param north_tile Northern most tile of area
  * @param w X extent of the area
  * @param h Y extent of the area
  * @param rad Search radius in addition to the given area
  */
-CargoArray GetProductionAroundTiles(TileIndex tile, int w, int h, int rad)
+CargoArray GetProductionAroundTiles(TileIndex north_tile, int w, int h, int rad)
 {
 	CargoArray produced;
 
 	btree::btree_set<IndustryID> industries;
-	TileArea ta = TileArea(tile, w, h).Expand(rad);
+	TileArea ta = TileArea(north_tile, w, h).Expand(rad);
 
 	/* Loop over all tiles to get the produced cargo of
 	 * everything except industries */
-	TILE_AREA_LOOP(tile, ta) {
+	for (TileIndex tile : ta) {
 		if (IsTileType(tile, MP_INDUSTRY)) industries.insert(GetIndustryIndex(tile));
 		AddProducedCargo(tile, produced);
 	}
@@ -537,21 +616,21 @@ CargoArray GetProductionAroundTiles(TileIndex tile, int w, int h, int rad)
 
 /**
  * Get the acceptance of cargoes around the tile in 1/8.
- * @param tile Center of the search area
+ * @param center_tile Center of the search area
  * @param w X extent of area
  * @param h Y extent of area
  * @param rad Search radius in addition to given area
  * @param always_accepted bitmask of cargo accepted by houses and headquarters; can be nullptr
  * @param ind Industry associated with neutral station (e.g. oil rig) or nullptr
  */
-CargoArray GetAcceptanceAroundTiles(TileIndex tile, int w, int h, int rad, CargoTypes *always_accepted)
+CargoArray GetAcceptanceAroundTiles(TileIndex center_tile, int w, int h, int rad, CargoTypes *always_accepted)
 {
 	CargoArray acceptance;
 	if (always_accepted != nullptr) *always_accepted = 0;
 
-	TileArea ta = TileArea(tile, w, h).Expand(rad);
+	TileArea ta = TileArea(center_tile, w, h).Expand(rad);
 
-	TILE_AREA_LOOP(tile, ta) {
+	for (TileIndex tile : ta) {
 		/* Ignore industry if it has a neutral station. */
 		if (!_settings_game.station.serve_neutral_industries && IsTileType(tile, MP_INDUSTRY) && Industry::GetByTile(tile)->neutral_station != nullptr) continue;
 
@@ -716,6 +795,9 @@ static CommandCost BuildStationPart(Station **st, DoCommandFlag flags, bool reus
 					ZoningTownAuthorityRatingChange();
 				}
 				SetBit((*st)->town->have_ratings, _current_company);
+				if (_extra_cheats.town_rating.value) {
+					(*st)->town->ratings[_current_company] = RATING_MAXIMUM;
+				}
 			}
 		}
 	}
@@ -882,18 +964,28 @@ CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statsp
 			GetBridgeType(southern_bridge_end), GetTunnelBridgeTransportType(southern_bridge_end));
 }
 
-CommandCost IsRoadStopBridgeAboveOK(TileIndex tile, bool drive_through, DiagDirection entrance,
+CommandCost IsRoadStopBridgeAboveOK(TileIndex tile, const RoadStopSpec *spec, bool drive_through, DiagDirection entrance,
 		TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
 		BridgeType bridge_type, TransportType bridge_transport_type)
 {
-	if (!_settings_game.construction.allow_road_stops_under_bridges) return CommandCost(INVALID_STRING_ID);
+	if (spec && HasBit(spec->internal_flags, RSIF_BRIDGE_HEIGHTS_SET)) {
+		int height = spec->bridge_height[drive_through ? (GFX_TRUCK_BUS_DRIVETHROUGH_OFFSET + DiagDirToAxis(entrance)) : entrance];
+		if (height == 0) return CommandCost(INVALID_STRING_ID);
+		if (GetTileMaxZ(tile) + height > bridge_height) {
+			return CommandCost(STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION);
+		}
+	} else {
+		if (!_settings_game.construction.allow_road_stops_under_bridges) return CommandCost(INVALID_STRING_ID);
 
-	if (GetTileMaxZ(tile) + (drive_through ? 1 : 2) > bridge_height) {
-		return CommandCost(STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION);
+		if (GetTileMaxZ(tile) + (drive_through ? 1 : 2) > bridge_height) {
+			return CommandCost(STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION);
+		}
 	}
 
 	BridgePiecePillarFlags disallowed_pillar_flags = (BridgePiecePillarFlags) 0;
-	if (drive_through) {
+	if (spec && HasBit(spec->internal_flags, RSIF_BRIDGE_DISALLOWED_PILLARS_SET)) {
+		disallowed_pillar_flags = (BridgePiecePillarFlags) spec->bridge_disallowed_pillars[drive_through ? (GFX_TRUCK_BUS_DRIVETHROUGH_OFFSET + DiagDirToAxis(entrance)) : entrance];
+	} else if (drive_through) {
 		disallowed_pillar_flags = (BridgePiecePillarFlags) (DiagDirToAxis(entrance) == AXIS_X ? 0x50 : 0xA0);
 	} else {
 		SetBit(disallowed_pillar_flags, 4 + entrance);
@@ -928,7 +1020,7 @@ static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlag fl
 	const StationSpec *statspec = StationClass::Get(spec_class)->GetSpec(spec_index);
 	bool slope_cb = statspec != nullptr && HasBit(statspec->callback_mask, CBM_STATION_SLOPE_CHECK);
 
-	TILE_AREA_LOOP(tile_cur, tile_area) {
+	for (TileIndex tile_cur : tile_area) {
 		CommandCost ret = CheckBuildableTile(tile_cur, invalid_dirs, allowed_z, false, false);
 		if (ret.Failed()) return ret;
 		cost.AddCost(ret);
@@ -1002,29 +1094,32 @@ static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlag fl
 /**
  * Checks if a road stop can be built at the given tile.
  * @param tile_area Area to check.
+ * @param spec Road stop spec.
  * @param flags Operation to perform.
  * @param invalid_dirs Prohibited directions (set of DiagDirections).
  * @param is_drive_through True if trying to build a drive-through station.
- * @param is_truck_stop True when building a truck stop, false otherwise.
+ * @param station_type Station type (bus, truck or road waypoint).
  * @param axis Axis of a drive-through road stop.
  * @param station StationID to be queried and returned if available.
  * @param rt Road type to build.
+ * @param require_road Is existing road required.
  * @return The cost in case of success, or an error code if it failed.
  */
-static CommandCost CheckFlatLandRoadStop(TileArea tile_area, DoCommandFlag flags, uint invalid_dirs, bool is_drive_through, bool is_truck_stop, Axis axis, StationID *station, RoadType rt)
+CommandCost CheckFlatLandRoadStop(TileArea tile_area, const RoadStopSpec *spec, DoCommandFlag flags, uint invalid_dirs, bool is_drive_through, StationType station_type, Axis axis, StationID *station, RoadType rt, bool require_road)
 {
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 	int allowed_z = -1;
 
-	TILE_AREA_LOOP(cur_tile, tile_area) {
-		CommandCost ret = CheckBuildableTile(cur_tile, invalid_dirs, allowed_z, !is_drive_through, !_settings_game.construction.allow_road_stops_under_bridges);
+	for (TileIndex cur_tile : tile_area) {
+		bool allow_under_bridge = _settings_game.construction.allow_road_stops_under_bridges || (spec != nullptr && HasBit(spec->internal_flags, RSIF_BRIDGE_HEIGHTS_SET));
+		CommandCost ret = CheckBuildableTile(cur_tile, invalid_dirs, allowed_z, !is_drive_through, !allow_under_bridge);
 		if (ret.Failed()) return ret;
 		cost.AddCost(ret);
 
-		if (_settings_game.construction.allow_road_stops_under_bridges && IsBridgeAbove(cur_tile)) {
+		if (allow_under_bridge && IsBridgeAbove(cur_tile)) {
 			TileIndex southern_bridge_end = GetSouthernBridgeEnd(cur_tile);
 			TileIndex northern_bridge_end = GetNorthernBridgeEnd(cur_tile);
-			CommandCost bridge_ret = IsRoadStopBridgeAboveOK(cur_tile, is_drive_through, (DiagDirection) FindFirstBit(invalid_dirs),
+			CommandCost bridge_ret = IsRoadStopBridgeAboveOK(cur_tile, spec, is_drive_through, (DiagDirection) FindFirstBit(invalid_dirs),
 					northern_bridge_end, southern_bridge_end, GetBridgeHeight(southern_bridge_end),
 					GetBridgeType(southern_bridge_end), GetTunnelBridgeTransportType(southern_bridge_end));
 			if (bridge_ret.Failed()) return bridge_ret;
@@ -1034,10 +1129,10 @@ static CommandCost CheckFlatLandRoadStop(TileArea tile_area, DoCommandFlag flags
 		 * Station points to INVALID_STATION if we can build on any station.
 		 * Or it points to a station if we're only allowed to build on exactly that station. */
 		if (station != nullptr && IsTileType(cur_tile, MP_STATION)) {
-			if (!IsRoadStop(cur_tile)) {
+			if (!IsAnyRoadStop(cur_tile)) {
 				return ClearTile_Station(cur_tile, DC_AUTO); // Get error message.
 			} else {
-				if (is_truck_stop != IsTruckStop(cur_tile) ||
+				if (station_type != GetStationType(cur_tile) ||
 						is_drive_through != IsDriveThroughStopTile(cur_tile)) {
 					return ClearTile_Station(cur_tile, DC_AUTO); // Get error message.
 				}
@@ -1084,10 +1179,10 @@ static CommandCost CheckFlatLandRoadStop(TileArea tile_area, DoCommandFlag flags
 					}
 					uint num_pieces = CountBits(GetRoadBits(cur_tile, RTT_ROAD));
 
-					if (RoadTypeIsRoad(rt) && !HasPowerOnRoad(rt, road_rt)) return_cmd_error(STR_ERROR_NO_SUITABLE_ROAD);
+					if (rt != INVALID_ROADTYPE && RoadTypeIsRoad(rt) && !HasPowerOnRoad(rt, road_rt)) return_cmd_error(STR_ERROR_NO_SUITABLE_ROAD);
 
 					cost.AddCost(RoadBuildCost(road_rt) * (2 - num_pieces));
-				} else if (RoadTypeIsRoad(rt)) {
+				} else if (rt != INVALID_ROADTYPE && RoadTypeIsRoad(rt)) {
 					cost.AddCost(RoadBuildCost(rt) * 2);
 				}
 
@@ -1105,12 +1200,14 @@ static CommandCost CheckFlatLandRoadStop(TileArea tile_area, DoCommandFlag flags
 					}
 					uint num_pieces = CountBits(GetRoadBits(cur_tile, RTT_TRAM));
 
-					if (RoadTypeIsTram(rt) && !HasPowerOnRoad(rt, tram_rt)) return_cmd_error(STR_ERROR_NO_SUITABLE_ROAD);
+					if (rt != INVALID_ROADTYPE && RoadTypeIsTram(rt) && !HasPowerOnRoad(rt, tram_rt)) return_cmd_error(STR_ERROR_NO_SUITABLE_ROAD);
 
 					cost.AddCost(RoadBuildCost(tram_rt) * (2 - num_pieces));
-				} else if (RoadTypeIsTram(rt)) {
+				} else if (rt != INVALID_ROADTYPE && RoadTypeIsTram(rt)) {
 					cost.AddCost(RoadBuildCost(rt) * 2);
 				}
+			} else if (require_road) {
+				return_cmd_error(STR_ERROR_THERE_IS_NO_ROAD);
 			} else {
 				ret = DoCommand(cur_tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
 				if (ret.Failed()) return ret;
@@ -1218,13 +1315,13 @@ static inline byte *CreateMulti(byte *layout, int n, byte b)
  * @param plat_len  The length of the platforms.
  * @param statspec  The specification of the station to (possibly) get the layout from.
  */
-void GetStationLayout(byte *layout, int numtracks, int plat_len, const StationSpec *statspec)
+void GetStationLayout(byte *layout, uint numtracks, uint plat_len, const StationSpec *statspec)
 {
-	if (statspec != nullptr && statspec->lengths >= plat_len &&
-			statspec->platforms[plat_len - 1] >= numtracks &&
-			statspec->layouts[plat_len - 1][numtracks - 1]) {
+	if (statspec != nullptr && statspec->layouts.size() >= plat_len &&
+			statspec->layouts[plat_len - 1].size() >= numtracks &&
+			!statspec->layouts[plat_len - 1][numtracks - 1].empty()) {
 		/* Custom layout defined, follow it. */
-		memcpy(layout, statspec->layouts[plat_len - 1][numtracks - 1],
+		memcpy(layout, statspec->layouts[plat_len - 1][numtracks - 1].data(),
 			plat_len * numtracks);
 		return;
 	}
@@ -1233,9 +1330,9 @@ void GetStationLayout(byte *layout, int numtracks, int plat_len, const StationSp
 		CreateSingle(layout, numtracks);
 	} else {
 		if (numtracks & 1) layout = CreateSingle(layout, plat_len);
-		numtracks >>= 1;
+		int n = numtracks >> 1;
 
-		while (--numtracks >= 0) {
+		while (--n >= 0) {
 			layout = CreateMulti(layout, plat_len, 4);
 			layout = CreateMulti(layout, plat_len, 6);
 		}
@@ -1253,8 +1350,8 @@ void GetStationLayout(byte *layout, int numtracks, int plat_len, const StationSp
  * @param error_message the error message when building a station on top of others
  * @return command cost with the error or 'okay'
  */
-template <class T>
-CommandCost FindJoiningBaseStation(StationID existing_station, StationID station_to_join, bool adjacent, TileArea ta, T **st, StringID error_message)
+template <class T, class F>
+CommandCost FindJoiningBaseStation(StationID existing_station, StationID station_to_join, bool adjacent, TileArea ta, T **st, StringID error_message, F filter)
 {
 	assert(*st == nullptr);
 	bool check_surrounding = true;
@@ -1268,7 +1365,8 @@ CommandCost FindJoiningBaseStation(StationID existing_station, StationID station
 			} else {
 				/* Extend the current station, and don't check whether it will
 				 * be near any other stations. */
-				*st = T::GetIfValid(existing_station);
+				T *candidate = T::GetIfValid(existing_station);
+				if (candidate != nullptr && filter(candidate)) *st = candidate;
 				check_surrounding = (*st == nullptr);
 			}
 		} else {
@@ -1280,7 +1378,7 @@ CommandCost FindJoiningBaseStation(StationID existing_station, StationID station
 
 	if (check_surrounding) {
 		/* Make sure there is no more than one other station around us that is owned by us. */
-		CommandCost ret = GetStationAround(ta, existing_station, _current_company, st);
+		CommandCost ret = GetStationAround(ta, existing_station, _current_company, st, filter);
 		if (ret.Failed()) return ret;
 	}
 
@@ -1302,7 +1400,7 @@ CommandCost FindJoiningBaseStation(StationID existing_station, StationID station
  */
 static CommandCost FindJoiningStation(StationID existing_station, StationID station_to_join, bool adjacent, TileArea ta, Station **st, StringID error_message = STR_ERROR_MUST_REMOVE_RAILWAY_STATION_FIRST)
 {
-	return FindJoiningBaseStation<Station>(existing_station, station_to_join, adjacent, ta, st, error_message);
+	return FindJoiningBaseStation<Station>(existing_station, station_to_join, adjacent, ta, st, error_message, [](Station *st) -> bool { return true; });
 }
 
 /**
@@ -1314,9 +1412,11 @@ static CommandCost FindJoiningStation(StationID existing_station, StationID stat
  * @param wp 'return' pointer for the found waypoint
  * @return command cost with the error or 'okay'
  */
-CommandCost FindJoiningWaypoint(StationID existing_waypoint, StationID waypoint_to_join, bool adjacent, TileArea ta, Waypoint **wp)
+CommandCost FindJoiningWaypoint(StationID existing_waypoint, StationID waypoint_to_join, bool adjacent, TileArea ta, Waypoint **wp, bool is_road)
 {
-	return FindJoiningBaseStation<Waypoint>(existing_waypoint, waypoint_to_join, adjacent, ta, wp, STR_ERROR_MUST_REMOVE_RAILWAYPOINT_FIRST);
+	return FindJoiningBaseStation<Waypoint>(existing_waypoint, waypoint_to_join, adjacent, ta, wp,
+			is_road ? STR_ERROR_MUST_REMOVE_ROADWAYPOINT_FIRST : STR_ERROR_MUST_REMOVE_RAILWAYPOINT_FIRST,
+			[is_road](Waypoint *wp) -> bool { return HasBit(wp->waypoint_flags, WPF_ROAD) == is_road; });
 }
 
 /**
@@ -1519,7 +1619,7 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 
 				byte old_specindex = HasStationTileRail(tile) ? GetCustomStationSpecIndex(tile) : 0;
 				MakeRailStation(tile, st->owner, st->index, axis, layout & ~1, rt);
 				/* Free the spec if we overbuild something */
-				DeallocateSpecFromStation(st, old_specindex);
+				if (old_specindex != specindex) DeallocateSpecFromStation(st, old_specindex);
 
 				SetCustomStationSpecIndex(tile, specindex);
 				SetStationTileRandomBits(tile, GB(Random(), 0, 4));
@@ -1566,7 +1666,7 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 
 			update_reservation_area = TileArea(tile_org, numtracks_orig, 1);
 		}
 
-		TILE_AREA_LOOP(tile, update_reservation_area) {
+		for (TileIndex tile : update_reservation_area) {
 			/* Don't even try to make eye candy parts reserved. */
 			if (IsStationTileBlocked(tile)) continue;
 
@@ -1673,6 +1773,16 @@ static void MakeShipStationAreaSmaller(Station *st)
 	UpdateStationDockingTiles(st);
 }
 
+static bool TileBelongsToRoadWaypointStation(BaseStation *st, TileIndex tile)
+{
+	return IsRoadWaypointTile(tile) && GetStationIndex(tile) == st->index;
+}
+
+void MakeRoadWaypointStationAreaSmaller(BaseStation *st, TileArea &road_waypoint_area)
+{
+	road_waypoint_area = MakeStationAreaSmaller(st, road_waypoint_area, TileBelongsToRoadWaypointStation);
+}
+
 /**
  * Remove a number of tiles from any rail station within the area.
  * @param ta the area to clear station tile from.
@@ -1695,7 +1805,7 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, std::vector<T *> &affected_st
 	CommandCost error;
 
 	/* Do the action for every tile into the area */
-	TILE_AREA_LOOP(tile, ta) {
+	for (TileIndex tile : ta) {
 		/* Make sure the specified tile is a rail station */
 		if (!HasStationTileRail(tile)) continue;
 
@@ -1867,7 +1977,7 @@ CommandCost RemoveRailStation(T *st, DoCommandFlag flags, Money removal_cost)
 
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 	/* clear all areas of the station */
-	TILE_AREA_LOOP(tile, ta) {
+	for (TileIndex tile : ta) {
 		/* only remove tiles that are actually train station tiles */
 		if (st->TileBelongsToRailStation(tile)) {
 			std::vector<T*> affected_stations; // dummy
@@ -1941,7 +2051,7 @@ static RoadStop **FindRoadStopSpot(bool truck_station, Station *st)
 	}
 }
 
-static CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags);
+CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags, int replacement_spec_index = -1);
 
 /**
  * Find a nearby station that joins this road stop.
@@ -1954,7 +2064,7 @@ static CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags);
  */
 static CommandCost FindJoiningRoadStop(StationID existing_stop, StationID station_to_join, bool adjacent, TileArea ta, Station **st)
 {
-	return FindJoiningBaseStation<Station>(existing_stop, station_to_join, adjacent, ta, st, STR_ERROR_MUST_REMOVE_ROAD_STOP_FIRST);
+	return FindJoiningBaseStation<Station>(existing_stop, station_to_join, adjacent, ta, st, STR_ERROR_MUST_REMOVE_ROAD_STOP_FIRST, [](Station *st) -> bool { return true; });
 }
 
 /**
@@ -1970,10 +2080,12 @@ static CommandCost FindJoiningRoadStop(StationID existing_stop, StationID statio
  *           bit 3: #Axis of the road for drive-through stops.
  *           bit 5..10: The roadtype.
  *           bit 16..31: Station ID to join (NEW_STATION if build new one).
+ * @param p3 bit 0..7: Roadstop class.
+ *           bit 8..15: Roadstopspec index.
  * @param text Unused.
  * @return The cost of this operation or an error.
  */
-CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length)
 {
 	bool type = HasBit(p2, 0);
 	bool is_drive_through = HasBit(p2, 1);
@@ -1986,6 +2098,20 @@ CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 
 	uint8 width = (uint8)GB(p1, 0, 8);
 	uint8 length = (uint8)GB(p1, 8, 8);
+
+	RoadStopClassID spec_class = Extract<RoadStopClassID, 0, 8>(p3);
+	byte spec_index            = GB(p3, 8, 8);
+
+	/* Check if the given station class is valid */
+	if ((uint)spec_class >= RoadStopClass::GetClassCount() || spec_class == ROADSTOP_CLASS_WAYP) return CMD_ERROR;
+	if (spec_index >= RoadStopClass::Get(spec_class)->GetSpecCount()) return CMD_ERROR;
+
+	const RoadStopSpec *roadstopspec = RoadStopClass::Get(spec_class)->GetSpec(spec_index);
+	if (roadstopspec != nullptr) {
+		if (type && roadstopspec->stop_type != ROADSTOPTYPE_FREIGHT && roadstopspec->stop_type != ROADSTOPTYPE_ALL) return CMD_ERROR;
+		if (!type && roadstopspec->stop_type != ROADSTOPTYPE_PASSENGER && roadstopspec->stop_type != ROADSTOPTYPE_ALL) return CMD_ERROR;
+		if (!is_drive_through && HasBit(roadstopspec->flags, RSF_DRIVE_THROUGH_ONLY)) return CMD_ERROR;
+	}
 
 	/* Check if the requested road stop is too big */
 	if (width > _settings_game.station.station_spread || length > _settings_game.station.station_spread) return_cmd_error(STR_ERROR_STATION_TOO_SPREAD_OUT);
@@ -2017,9 +2143,15 @@ CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 	if (ret.Failed()) return ret;
 
 	/* Total road stop cost. */
-	CommandCost cost(EXPENSES_CONSTRUCTION, roadstop_area.w * roadstop_area.h * _price[type ? PR_BUILD_STATION_TRUCK : PR_BUILD_STATION_BUS]);
+	Money unit_cost;
+	if (roadstopspec != nullptr) {
+		unit_cost = roadstopspec->GetBuildCost(type ? PR_BUILD_STATION_TRUCK : PR_BUILD_STATION_BUS);
+	} else {
+		unit_cost = _price[type ? PR_BUILD_STATION_TRUCK : PR_BUILD_STATION_BUS];
+	}
+	CommandCost cost(EXPENSES_CONSTRUCTION, roadstop_area.w * roadstop_area.h * unit_cost);
 	StationID est = INVALID_STATION;
-	ret = CheckFlatLandRoadStop(roadstop_area, flags, is_drive_through ? 5 << axis : 1 << ddir, is_drive_through, type, axis, &est, rt);
+	ret = CheckFlatLandRoadStop(roadstop_area, roadstopspec, flags, is_drive_through ? 5 << axis : 1 << ddir, is_drive_through, type ? STATION_TRUCK : STATION_BUS, axis, &est, rt, false);
 	if (ret.Failed()) return ret;
 	cost.AddCost(ret);
 
@@ -2033,9 +2165,23 @@ CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 	ret = BuildStationPart(&st, flags, reuse, roadstop_area, STATIONNAMING_ROAD);
 	if (ret.Failed()) return ret;
 
+	/* Check if we can allocate a custom stationspec to this station */
+	int specindex = AllocateRoadStopSpecToStation(roadstopspec, st, (flags & DC_EXEC) != 0);
+	if (specindex == -1) return_cmd_error(STR_ERROR_TOO_MANY_STATION_SPECS);
+
+	if (roadstopspec != nullptr) {
+		/* Perform NewGRF checks */
+
+		/* Check if the road stop is buildable */
+		if (HasBit(roadstopspec->callback_mask, CBM_ROAD_STOP_AVAIL)) {
+			uint16 cb_res = GetRoadStopCallback(CBID_STATION_AVAILABILITY, 0, 0, roadstopspec, nullptr, INVALID_TILE, rt, type ? STATION_TRUCK : STATION_BUS, 0);
+			if (cb_res != CALLBACK_FAILED && !Convert8bitBooleanCallback(roadstopspec->grf_prop.grffile, CBID_STATION_AVAILABILITY, cb_res)) return CMD_ERROR;
+		}
+	}
+
 	if (flags & DC_EXEC) {
 		/* Check every tile in the area. */
-		TILE_AREA_LOOP(cur_tile, roadstop_area) {
+		for (TileIndex cur_tile : roadstop_area) {
 			/* Get existing road types and owners before any tile clearing */
 			RoadType road_rt = MayHaveRoad(cur_tile) ? GetRoadType(cur_tile, RTT_ROAD) : INVALID_ROADTYPE;
 			RoadType tram_rt = MayHaveRoad(cur_tile) ? GetRoadType(cur_tile, RTT_TRAM) : INVALID_ROADTYPE;
@@ -2043,8 +2189,14 @@ CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 			Owner tram_owner = tram_rt != INVALID_ROADTYPE ? GetRoadOwner(cur_tile, RTT_TRAM) : _current_company;
 			DisallowedRoadDirections drd = IsNormalRoadTile(cur_tile) ? GetDisallowedRoadDirections(cur_tile) : DRD_NONE;
 
-			if (IsTileType(cur_tile, MP_STATION) && IsRoadStop(cur_tile)) {
-				RemoveRoadStop(cur_tile, flags);
+			if (IsTileType(cur_tile, MP_STATION) && IsAnyRoadStop(cur_tile)) {
+				RemoveRoadStop(cur_tile, flags, specindex);
+			}
+
+			if (roadstopspec != nullptr) {
+				/* Include this road stop spec's animation trigger bitmask
+				 * in the station's cached copy. */
+				st->cached_roadstop_anim_triggers |= roadstopspec->animation.triggers;
 			}
 
 			RoadStop *road_stop = new RoadStop(cur_tile);
@@ -2078,7 +2230,7 @@ CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 				UpdateCompanyRoadInfrastructure(road_rt, road_owner, ROAD_STOP_TRACKBIT_FACTOR);
 				UpdateCompanyRoadInfrastructure(tram_rt, tram_owner, ROAD_STOP_TRACKBIT_FACTOR);
 
-				MakeDriveThroughRoadStop(cur_tile, st->owner, road_owner, tram_owner, st->index, rs_type, road_rt, tram_rt, axis);
+				MakeDriveThroughRoadStop(cur_tile, st->owner, road_owner, tram_owner, st->index, (rs_type == ROADSTOP_BUS ? STATION_BUS : STATION_TRUCK), road_rt, tram_rt, axis);
 				SetDriveThroughStopDisallowedRoadDirections(cur_tile, drd);
 				road_stop->MakeDriveThrough();
 			} else {
@@ -2090,15 +2242,21 @@ CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 			}
 			Company::Get(st->owner)->infrastructure.station++;
 
+			SetCustomRoadStopSpecIndex(cur_tile, specindex);
+			if (roadstopspec != nullptr) {
+				st->SetRoadStopRandomBits(cur_tile, GB(Random(), 0, 8));
+				TriggerRoadStopAnimation(st, cur_tile, SAT_BUILT);
+			}
+
 			MarkTileDirtyByTile(cur_tile);
+			UpdateRoadCachedOneWayStatesAroundTile(cur_tile);
 		}
 		ZoningMarkDirtyStationCoverageArea(st);
 		NotifyRoadLayoutChanged(true);
-		UpdateRoadCachedOneWayStatesAroundTile(tile);
-	}
 
-	if (st != nullptr) {
-		st->AfterStationTileSetChange(true, type ? STATION_TRUCK: STATION_BUS);
+		if (st != nullptr) {
+			st->AfterStationTileSetChange(true, type ? STATION_TRUCK: STATION_BUS);
+		}
 	}
 	return cost;
 }
@@ -2118,15 +2276,79 @@ static Vehicle *ClearRoadStopStatusEnum(Vehicle *v, void *)
 	return nullptr;
 }
 
+CommandCost RemoveRoadWaypointStop(TileIndex tile, DoCommandFlag flags, int replacement_spec_index)
+{
+	Waypoint *wp = Waypoint::GetByTile(tile);
+
+	if (_current_company != OWNER_WATER) {
+		CommandCost ret = CheckOwnership(wp->owner);
+		if (ret.Failed()) return ret;
+	}
+
+	/* don't do the check for drive-through road stops when company bankrupts */
+	if (!(flags & DC_BANKRUPT)) {
+		CommandCost ret = EnsureNoVehicleOnGround(tile);
+		if (ret.Failed()) return ret;
+	}
+
+	const RoadStopSpec *spec = GetRoadStopSpec(tile);
+
+	if (flags & DC_EXEC) {
+		/* Update company infrastructure counts. */
+		for (RoadTramType rtt : _roadtramtypes) {
+			RoadType rt = GetRoadType(tile, rtt);
+			UpdateCompanyRoadInfrastructure(rt, GetRoadOwner(tile, rtt), -static_cast<int>(ROAD_STOP_TRACKBIT_FACTOR));
+		}
+
+		Company::Get(wp->owner)->infrastructure.station--;
+		DirtyCompanyInfrastructureWindows(wp->owner);
+
+		DeleteAnimatedTile(tile);
+
+		uint specindex = GetCustomRoadStopSpecIndex(tile);
+
+		DeleteNewGRFInspectWindow(GSF_ROADSTOPS, tile);
+
+		DoClearSquare(tile);
+
+		wp->rect.AfterRemoveTile(wp, tile);
+
+		wp->RemoveRoadStopTileData(tile);
+		if ((int)specindex != replacement_spec_index) DeallocateRoadStopSpecFromStation(wp, specindex);
+
+		if (replacement_spec_index < 0) {
+			MakeRoadWaypointStationAreaSmaller(wp, wp->road_waypoint_area);
+
+			UpdateStationSignCoord(wp);
+
+			/* if we deleted the whole waypoint, delete the road facility. */
+			if (wp->road_waypoint_area.tile == INVALID_TILE) {
+				wp->facilities &= ~(FACIL_BUS_STOP | FACIL_TRUCK_STOP);
+				SetWindowWidgetDirty(WC_STATION_VIEW, wp->index, WID_SV_ROADVEHS);
+				wp->UpdateVirtCoord();
+				DeleteStationIfEmpty(wp);
+			}
+		}
+
+		NotifyRoadLayoutChanged(false);
+	}
+
+	return CommandCost(EXPENSES_CONSTRUCTION, spec != nullptr ? spec->GetClearCost(PR_CLEAR_STATION_TRUCK) : _price[PR_CLEAR_STATION_TRUCK]);
+}
 
 /**
  * Remove a bus station/truck stop
  * @param tile TileIndex been queried
  * @param flags operation to perform
+ * @param replacement_spec_index replacement spec index to avoid deallocating, if < 0, tile is not being replaced
  * @return cost or failure of operation
  */
-static CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags)
+CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags, int replacement_spec_index)
 {
+	if (IsRoadWaypoint(tile)) {
+		return RemoveRoadWaypointStop(tile, flags, replacement_spec_index);
+	}
+
 	Station *st = Station::GetByTile(tile);
 
 	if (_current_company != OWNER_WATER) {
@@ -2157,6 +2379,8 @@ static CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags)
 		if (ret.Failed()) return ret;
 	}
 
+	const RoadStopSpec *spec = GetRoadStopSpec(tile);
+
 	if (flags & DC_EXEC) {
 		ZoningMarkDirtyStationCoverageArea(st);
 		if (*primary_stop == cur_stop) {
@@ -2174,13 +2398,19 @@ static CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags)
 		}
 
 		/* Update company infrastructure counts. */
-		FOR_ALL_ROADTRAMTYPES(rtt) {
+		for (RoadTramType rtt : _roadtramtypes) {
 			RoadType rt = GetRoadType(tile, rtt);
 			UpdateCompanyRoadInfrastructure(rt, GetRoadOwner(tile, rtt), -static_cast<int>(ROAD_STOP_TRACKBIT_FACTOR));
 		}
 
 		Company::Get(st->owner)->infrastructure.station--;
 		DirtyCompanyInfrastructureWindows(st->owner);
+
+		DeleteAnimatedTile(tile);
+
+		uint specindex = GetCustomRoadStopSpecIndex(tile);
+
+		DeleteNewGRFInspectWindow(GSF_ROADSTOPS, tile);
 
 		if (IsDriveThroughStopTile(tile)) {
 			/* Clears the tile for us */
@@ -2201,7 +2431,10 @@ static CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags)
 
 		st->rect.AfterRemoveTile(st, tile);
 
-		st->AfterStationTileSetChange(false, is_truck ? STATION_TRUCK: STATION_BUS);
+		if (replacement_spec_index < 0) st->AfterStationTileSetChange(false, is_truck ? STATION_TRUCK: STATION_BUS);
+
+		st->RemoveRoadStopTileData(tile);
+		if ((int)specindex != replacement_spec_index) DeallocateRoadStopSpecFromStation(st, specindex);
 
 		/* Update the tile area of the truck/bus stop */
 		if (is_truck) {
@@ -2215,7 +2448,8 @@ static CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags)
 		NotifyRoadLayoutChanged(false);
 	}
 
-	return CommandCost(EXPENSES_CONSTRUCTION, _price[is_truck ? PR_CLEAR_STATION_TRUCK : PR_CLEAR_STATION_BUS]);
+	Price category = is_truck ? PR_CLEAR_STATION_TRUCK : PR_CLEAR_STATION_BUS;
+	return CommandCost(EXPENSES_CONSTRUCTION, spec != nullptr ? spec->GetClearCost(category) : _price[category]);
 }
 
 /**
@@ -2226,6 +2460,7 @@ static CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags)
  *           bit 8..15: Height of the removal area.
  * @param p2 bit 0: 0 For bus stops, 1 for truck stops.
  * @param p2 bit 1: 0 to keep roads of all drive-through stops, 1 to remove them.
+ * @param p2 bit 2: 0 for bus/truck stops, 1 for road waypoints.
  * @param text Unused.
  * @return The cost of this operation or an error.
  */
@@ -2233,7 +2468,7 @@ CommandCost CmdRemoveRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 {
 	uint8 width = (uint8)GB(p1, 0, 8);
 	uint8 height = (uint8)GB(p1, 8, 8);
-	bool keep_drive_through_roads = !HasBit(p2, 1);
+	bool keep_drive_through_roads = !HasBit(p2, 1) || HasBit(p2, 2);
 
 	/* Check for incorrect width / height. */
 	if (width == 0 || height == 0) return CMD_ERROR;
@@ -2248,9 +2483,14 @@ CommandCost CmdRemoveRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 	CommandCost last_error(STR_ERROR_THERE_IS_NO_STATION);
 	bool had_success = false;
 
-	TILE_AREA_LOOP(cur_tile, roadstop_area) {
-		/* Make sure the specified tile is a road stop of the correct type */
-		if (!IsTileType(cur_tile, MP_STATION) || !IsRoadStop(cur_tile) || (uint32)GetRoadStopType(cur_tile) != GB(p2, 0, 1)) continue;
+	for (TileIndex cur_tile : roadstop_area) {
+		if (HasBit(p2, 2)) {
+			/* Make sure the specified tile is a road waypoint */
+			if (!IsTileType(cur_tile, MP_STATION) || !IsRoadWaypoint(cur_tile)) continue;
+		} else {
+			/* Make sure the specified tile is a road stop of the correct type */
+			if (!IsTileType(cur_tile, MP_STATION) || !IsStationRoadStop(cur_tile) || (uint32)GetRoadStopType(cur_tile) != GB(p2, 0, 1)) continue;
+		}
 
 		/* Save information on to-be-restored roads before the stop is removed. */
 		RoadBits road_bits = ROAD_NONE;
@@ -2258,7 +2498,7 @@ CommandCost CmdRemoveRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 		Owner road_owner[] = { OWNER_NONE, OWNER_NONE };
 		DisallowedRoadDirections drd = DRD_NONE;
 		if (IsDriveThroughStopTile(cur_tile)) {
-			FOR_ALL_ROADTRAMTYPES(rtt) {
+			for (RoadTramType rtt : _roadtramtypes) {
 				road_type[rtt] = GetRoadType(cur_tile, rtt);
 				if (road_type[rtt] == INVALID_ROADTYPE) continue;
 				road_owner[rtt] = GetRoadOwner(cur_tile, rtt);
@@ -2308,7 +2548,7 @@ uint8 GetAirportNoiseLevelForDistance(const AirportSpec *as, uint distance)
 	 * So no need to go any further*/
 	if (as->noise_level < 2) return as->noise_level;
 
-	if (_settings_game.difficulty.town_council_tolerance == TOWN_COUNCIL_INDIFFERENT) return 1;
+	if (_settings_game.difficulty.town_council_tolerance == TOWN_COUNCIL_PERMISSIVE) return 1;
 
 	/* The steps for measuring noise reduction are based on the "magical" (and arbitrary) 8 base distance
 	 * adding the town_council_tolerance 4 times, as a way to graduate, depending of the tolerance.
@@ -2398,7 +2638,7 @@ static CommandCost CanRemoveAirport(Station *st, DoCommandFlag flags)
 
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 
-	TILE_AREA_LOOP(tile_cur, st->airport) {
+	for (TileIndex tile_cur : st->airport) {
 		if (!st->TileBelongsToAirport(tile_cur)) continue;
 
 		CommandCost ret = EnsureNoVehicleOnGround(tile_cur);
@@ -2562,7 +2802,7 @@ CommandCost CmdBuildAirport(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 				}
 			}
 
-			TILE_AREA_LOOP(tile_cur, st->airport) {
+			for (TileIndex tile_cur : st->airport) {
 				if (IsHangarTile(tile_cur)) OrderBackup::Reset(tile_cur, false);
 				DeleteAnimatedTile(tile_cur);
 				DoClearSquare(tile_cur);
@@ -2610,7 +2850,7 @@ CommandCost CmdBuildAirport(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 		InvalidateWindowData(WC_STATION_VIEW, st->index, -1);
 
 		if (_settings_game.economy.station_noise_level) {
-			SetWindowDirty(WC_TOWN_VIEW, st->town->index);
+			SetWindowDirty(WC_TOWN_VIEW, nearest->index);
 		}
 	}
 
@@ -2637,9 +2877,9 @@ static CommandCost RemoveAirport(TileIndex tile, DoCommandFlag flags)
 
 	if (flags & DC_EXEC) {
 		for (uint i = 0; i < st->airport.GetNumHangars(); ++i) {
-			DeleteWindowById(
-				WC_VEHICLE_DEPOT, st->airport.GetHangarTile(i)
-			);
+			TileIndex tile_cur = st->airport.GetHangarTile(i);
+			OrderBackup::Reset(tile_cur, false);
+			DeleteWindowById(WC_VEHICLE_DEPOT, tile_cur);
 		}
 
 		ZoningMarkDirtyStationCoverageArea(st);
@@ -2652,8 +2892,11 @@ static CommandCost RemoveAirport(TileIndex tile, DoCommandFlag flags)
 		Town *nearest = AirportGetNearestTown(as, it, dist);
 		nearest->noise_reached -= GetAirportNoiseLevelForDistance(as, dist);
 
-		TILE_AREA_LOOP(tile_cur, st->airport) {
-			if (IsHangarTile(tile_cur)) OrderBackup::Reset(tile_cur, false);
+		if (_settings_game.economy.station_noise_level) {
+			SetWindowDirty(WC_TOWN_VIEW, nearest->index);
+		}
+
+		for (TileIndex tile_cur : st->airport) {
 			DeleteAnimatedTile(tile_cur);
 			DoClearSquare(tile_cur);
 			DeleteNewGRFInspectWindow(GSF_AIRPORTTILES, tile_cur);
@@ -2668,10 +2911,6 @@ static CommandCost RemoveAirport(TileIndex tile, DoCommandFlag flags)
 		st->facilities &= ~FACIL_AIRPORT;
 
 		InvalidateWindowData(WC_STATION_VIEW, st->index, -1);
-
-		if (_settings_game.economy.station_noise_level) {
-			SetWindowDirty(WC_TOWN_VIEW, st->town->index);
-		}
 
 		Company::Get(st->owner)->infrastructure.airport--;
 
@@ -2873,23 +3112,15 @@ void ClearDockingTilesCheckingNeighbours(TileIndex tile)
 /**
  * Check if a dock tile can be docked from the given direction.
  * @param t Tile index of dock.
- * @param d DiagDirection adjacent to dock being tested.
+ * @param d DiagDirection adjacent to dock being tested. (unused)
  * @return True iff the dock can be docked from the given direction.
  */
 bool IsValidDockingDirectionForDock(TileIndex t, DiagDirection d)
 {
 	assert(IsDockTile(t));
 
-	/** Bitmap of valid directions for each dock tile part. */
-	static const uint8 _valid_docking_tile[] = {
-		0, 0, 0, 0,                        // No docking against the slope part.
-		1 << DIAGDIR_NE | 1 << DIAGDIR_SW, // Docking permitted at the end
-		1 << DIAGDIR_NW | 1 << DIAGDIR_SE, // of the flat piers.
-	};
-
 	StationGfx gfx = GetStationGfx(t);
-	assert(gfx < lengthof(_valid_docking_tile));
-	return HasBit(_valid_docking_tile[gfx], d);
+	return gfx >= GFX_DOCK_BASE_WATER_PART;
 }
 
 /**
@@ -2961,19 +3192,24 @@ static CommandCost RemoveDock(TileIndex tile, DoCommandFlag flags)
 		ClearDockingTilesCheckingNeighbours(tile1);
 		ClearDockingTilesCheckingNeighbours(tile2);
 
-		/* All ships that were going to our station, can't go to it anymore.
-		 * Just clear the order, then automatically the next appropriate order
-		 * will be selected and in case of no appropriate order it will just
-		 * wander around the world. */
-		if (!(st->facilities & FACIL_DOCK)) {
-			for (Ship *s : Ship::Iterate()) {
-				if (s->current_order.IsType(OT_LOADING) && s->current_order.GetDestination() == st->index) {
-					s->LeaveStation();
-				}
+		for (Ship *s : Ship::Iterate()) {
+			/* Find all ships going to our dock. */
+			if (s->current_order.GetDestination() != st->index) {
+				continue;
+			}
 
-				if (s->current_order.IsType(OT_GOTO_STATION) && s->current_order.GetDestination() == st->index) {
-					s->SetDestTile(s->GetOrderStationLocation(st->index));
-				}
+			/* Find ships that are marked as "loading" but are no longer on a
+			 * docking tile. Force them to leave the station (as they were loading
+			 * on the removed dock). */
+			if (s->current_order.IsType(OT_LOADING) && !(IsDockingTile(s->tile) && IsShipDestinationTile(s->tile, st->index))) {
+				s->LeaveStation();
+			}
+
+			/* If we no longer have a dock, mark the order as invalid and send
+			 * the ship to the next order (or, if there is none, make it
+			 * wander the world). */
+			if (s->current_order.IsType(OT_GOTO_STATION) && !(st->facilities & FACIL_DOCK)) {
+				s->SetDestTile(s->GetOrderStationLocation(st->index));
 			}
 		}
 	}
@@ -3084,8 +3320,8 @@ static void DrawTile_Station(TileInfo *ti, DrawTileProcParams params)
 				}
 
 				/* Ensure the chosen tile layout is valid for this custom station */
-				if (statspec->renderdata != nullptr) {
-					layout = &statspec->renderdata[tile_layout < statspec->tiles ? tile_layout : (uint)GetRailStationAxis(ti->tile)];
+				if (!statspec->renderdata.empty()) {
+					layout = &statspec->renderdata[tile_layout < statspec->renderdata.size() ? tile_layout : (uint)GetRailStationAxis(ti->tile)];
 					if (!layout->NeedsPreprocessing()) {
 						t = layout;
 						layout = nullptr;
@@ -3212,6 +3448,8 @@ draw_default_foundation:
 		}
 	}
 
+	bool draw_ground = false;
+
 	if (IsBuoy(ti->tile)) {
 		DrawWaterClassGround(ti);
 		SpriteID sprite = GetCanalSprite(CF_BUOY, ti->tile);
@@ -3229,13 +3467,18 @@ draw_default_foundation:
 				DrawClearLandTile(ti, 3);
 			}
 		}
+	} else if (IsRoadWaypointTile(ti->tile)) {
+		RoadBits bits = GetRoadStopDir(ti->tile) == DIAGDIR_NE ? ROAD_X : ROAD_Y;
+		extern void DrawRoadBits(TileInfo *ti, RoadBits road, RoadBits tram, Roadside roadside, bool snow_or_desert, bool draw_catenary);
+		DrawRoadBits(ti, GetRoadTypeRoad(ti->tile) != INVALID_ROADTYPE ? bits : ROAD_NONE,
+				GetRoadTypeTram(ti->tile) != INVALID_ROADTYPE ? bits : ROAD_NONE,
+				GetRoadWaypointRoadside(ti->tile), IsRoadWaypointOnSnowOrDesert(ti->tile), false);
 	} else {
 		if (layout != nullptr) {
 			/* Sprite layout which needs preprocessing */
 			bool separate_ground = HasBit(statspec->flags, SSF_SEPARATE_GROUND);
 			uint32 var10_values = layout->PrepareLayout(total_offset, rti->fallback_railtype, 0, 0, separate_ground);
-			uint8 var10;
-			FOR_EACH_SET_BIT(var10, var10_values) {
+			for (uint8 var10 : SetBitIterator(var10_values)) {
 				uint32 var10_relocation = GetCustomStationRelocation(statspec, st, ti->tile, INVALID_RAILTYPE, var10);
 				layout->ProcessRegisters(var10, var10_relocation, separate_ground);
 			}
@@ -3251,6 +3494,10 @@ draw_default_foundation:
 			ground_relocation += rti->fallback_railtype;
 		}
 
+		draw_ground = true;
+	}
+
+	if (draw_ground && !IsAnyRoadStop(ti->tile)) {
 		SpriteID image = t->ground.sprite;
 		PaletteID pal  = t->ground.pal;
 		RailTrackOffset overlay_offset;
@@ -3278,35 +3525,63 @@ draw_default_foundation:
 
 	if (HasStationRail(ti->tile) && HasRailCatenaryDrawn(GetRailType(ti->tile))) DrawRailCatenary(ti);
 
-	if (IsRoadStop(ti->tile)) {
+	if (IsAnyRoadStop(ti->tile)) {
 		RoadType road_rt = GetRoadTypeRoad(ti->tile);
 		RoadType tram_rt = GetRoadTypeTram(ti->tile);
-		const RoadTypeInfo* road_rti = road_rt == INVALID_ROADTYPE ? nullptr : GetRoadTypeInfo(road_rt);
-		const RoadTypeInfo* tram_rti = tram_rt == INVALID_ROADTYPE ? nullptr : GetRoadTypeInfo(tram_rt);
+		const RoadTypeInfo *road_rti = road_rt == INVALID_ROADTYPE ? nullptr : GetRoadTypeInfo(road_rt);
+		const RoadTypeInfo *tram_rti = tram_rt == INVALID_ROADTYPE ? nullptr : GetRoadTypeInfo(tram_rt);
+
+		Axis axis = GetRoadStopDir(ti->tile) == DIAGDIR_NE ? AXIS_X : AXIS_Y;
+		DiagDirection dir = GetRoadStopDir(ti->tile);
+		StationType type = GetStationType(ti->tile);
+
+		const RoadStopSpec *stopspec = GetRoadStopSpec(ti->tile);
+		if (stopspec != nullptr) {
+			int view = dir;
+			if (IsDriveThroughStopTile(ti->tile)) view += 4;
+			st = BaseStation::GetByTile(ti->tile);
+			RoadStopResolverObject object(stopspec, st, ti->tile, INVALID_ROADTYPE, type, view);
+			const SpriteGroup *group = object.Resolve();
+			const DrawTileSprites *dts = ((const TileLayoutSpriteGroup *)group)->ProcessRegisters(nullptr);
+			t = dts;
+			if (type == STATION_ROADWAYPOINT && (stopspec->draw_mode & ROADSTOP_DRAW_MODE_WAYP_GROUND)) {
+				draw_ground = true;
+			}
+		}
+
+		/* Draw ground sprite */
+		if (draw_ground) {
+			SpriteID image = t->ground.sprite;
+			PaletteID pal  = t->ground.pal;
+			image += HasBit(image, SPRITE_MODIFIER_CUSTOM_SPRITE) ? ground_relocation : total_offset;
+			if (HasBit(pal, SPRITE_MODIFIER_CUSTOM_SPRITE)) pal += ground_relocation;
+			DrawGroundSprite(image, GroundSpritePaletteTransform(image, pal, palette));
+		}
 
 		if (IsDriveThroughStopTile(ti->tile)) {
-			Axis axis = GetRoadStopDir(ti->tile) == DIAGDIR_NE ? AXIS_X : AXIS_Y;
-			uint sprite_offset = axis == AXIS_X ? 1 : 0;
-
-			DrawRoadOverlays(ti, PAL_NONE, road_rti, tram_rti, sprite_offset, sprite_offset);
+			if (type != STATION_ROADWAYPOINT && (stopspec == nullptr || (stopspec->draw_mode & ROADSTOP_DRAW_MODE_OVERLAY) != 0)) {
+				uint sprite_offset = axis == AXIS_X ? 1 : 0;
+				DrawRoadOverlays(ti, PAL_NONE, road_rti, tram_rti, sprite_offset, sprite_offset);
+			}
 
 			DisallowedRoadDirections drd = GetDriveThroughStopDisallowedRoadDirections(ti->tile);
-			if (drd != DRD_NONE) {
+			if (drd != DRD_NONE && (stopspec == nullptr || !HasBit(stopspec->flags, RSF_NO_ONE_WAY_OVERLAY))) {
 				DrawGroundSpriteAt(SPR_ONEWAY_BASE + drd - 1 + ((axis == AXIS_X) ? 0 : 3), PAL_NONE, 8, 8, 0);
 			}
 		} else {
 			/* Non-drivethrough road stops are only valid for roads. */
 			assert_tile(road_rt != INVALID_ROADTYPE && tram_rt == INVALID_ROADTYPE, ti->tile);
 
-			if (road_rti->UsesOverlay()) {
-				DiagDirection dir = GetRoadStopDir(ti->tile);
+			if ((stopspec == nullptr || (stopspec->draw_mode & ROADSTOP_DRAW_MODE_ROAD) != 0) && road_rti->UsesOverlay()) {
 				SpriteID ground = GetCustomRoadSprite(road_rti, ti->tile, ROTSG_ROADSTOP);
 				DrawGroundSprite(ground + dir, PAL_NONE);
 			}
 		}
 
-		/* Draw road, tram catenary */
-		DrawRoadCatenary(ti);
+		if (stopspec == nullptr || !HasBit(stopspec->flags, RSF_NO_CATENARY)) {
+			/* Draw road, tram catenary */
+			DrawRoadCatenary(ti);
+		}
 	}
 
 	if (IsRailWaypoint(ti->tile)) {
@@ -3366,7 +3641,7 @@ void StationPickerDrawSprite(int x, int y, StationType st, RailType railtype, Ro
 	}
 
 	/* Default waypoint has no railtype specific sprites */
-	DrawRailTileSeqInGUI(x, y, t, st == STATION_WAYPOINT ? 0 : total_offset, 0, pal);
+	DrawRailTileSeqInGUI(x, y, t, (st == STATION_WAYPOINT || st == STATION_ROADWAYPOINT) ? 0 : total_offset, 0, pal);
 }
 
 static int GetSlopePixelZ_Station(TileIndex tile, uint x, uint y)
@@ -3383,7 +3658,7 @@ static void GetTileDesc_Station(TileIndex tile, TileDesc *td)
 {
 	td->owner[0] = GetTileOwner(tile);
 
-	if (IsRoadStopTile(tile)) {
+	if (IsAnyRoadStopTile(tile)) {
 		RoadType road_rt = GetRoadTypeRoad(tile);
 		RoadType tram_rt = GetRoadTypeTram(tile);
 		Owner road_owner = INVALID_OWNER;
@@ -3477,6 +3752,7 @@ static void GetTileDesc_Station(TileIndex tile, TileDesc *td)
 		case STATION_DOCK:     str = STR_LAI_STATION_DESCRIPTION_SHIP_DOCK; break;
 		case STATION_BUOY:     str = STR_LAI_STATION_DESCRIPTION_BUOY; break;
 		case STATION_WAYPOINT: str = STR_LAI_STATION_DESCRIPTION_WAYPOINT; break;
+		case STATION_ROADWAYPOINT: str = STR_LAI_STATION_DESCRIPTION_WAYPOINT; break;
 	}
 	td->str = str;
 }
@@ -3506,7 +3782,7 @@ static TrackStatus GetTileTrackStatus_Station(TileIndex tile, TransportType mode
 			break;
 
 		case TRANSPORT_ROAD:
-			if (IsRoadStop(tile)) {
+			if (IsAnyRoadStop(tile)) {
 				RoadTramType rtt = (RoadTramType)sub_mode;
 				if (!HasTileRoadType(tile, rtt)) break;
 
@@ -3553,6 +3829,40 @@ static void TileLoop_Station(TileIndex tile)
 			TileLoop_Water(tile);
 			break;
 
+		case STATION_ROADWAYPOINT: {
+			switch (_settings_game.game_creation.landscape) {
+				case LT_ARCTIC:
+					if (IsRoadWaypointOnSnowOrDesert(tile) != (GetTileZ(tile) > GetSnowLine())) {
+						ToggleRoadWaypointOnSnowOrDesert(tile);
+						MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+					}
+					break;
+
+				case LT_TROPIC:
+					if (GetTropicZone(tile) == TROPICZONE_DESERT && !IsRoadWaypointOnSnowOrDesert(tile)) {
+						ToggleRoadWaypointOnSnowOrDesert(tile);
+						MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+					}
+					break;
+			}
+
+			HouseZonesBits grp = HZB_TOWN_EDGE;
+			const Town *t = ClosestTownFromTile(tile, UINT_MAX);
+			if (t != nullptr) {
+				grp = GetTownRadiusGroup(t, tile);
+			}
+
+			/* Adjust road ground type depending on 'grp' (grp is the distance to the center) */
+			Roadside new_rs = grp > HZB_TOWN_EDGE ? ROADSIDE_PAVED : ROADSIDE_GRASS;
+			Roadside cur_rs = GetRoadWaypointRoadside(tile);
+
+			if (new_rs != cur_rs) {
+				SetRoadWaypointRoadside(tile, cur_rs == ROADSIDE_BARREN ? new_rs : ROADSIDE_BARREN);
+				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+			}
+			break;
+		}
+
 		default: break;
 	}
 }
@@ -3567,6 +3877,12 @@ void AnimateTile_Station(TileIndex tile)
 
 	if (IsAirport(tile)) {
 		AnimateAirportTile(tile);
+		return;
+	}
+
+	if (IsAnyRoadStopTile(tile)) {
+		AnimateRoadStopTile(tile);
+		return;
 	}
 }
 
@@ -3577,7 +3893,11 @@ uint8 GetAnimatedTileSpeed_Station(TileIndex tile)
 	}
 
 	if (IsAirport(tile)) {
-		AnimateAirportTile(tile);
+		return GetAirportTileAnimationSpeed(tile);
+	}
+
+	if (IsAnyRoadStopTile(tile)) {
+		return GetRoadStopTileAnimationSpeed(tile);
 	}
 	return 0;
 }
@@ -3627,7 +3947,7 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 
 		int station_ahead;
 		int station_length;
-		int stop = GetTrainStopLocation(station_id, tile, Train::From(v), true, &station_ahead, &station_length, x, y);
+		int stop = GetTrainStopLocation(station_id, tile, Train::From(v), true, &station_ahead, &station_length);
 
 		/* Stop whenever that amount of station ahead + the distance from the
 		 * begin of the platform to the stop location is longer than the length
@@ -3646,7 +3966,7 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 			stop &= TILE_SIZE - 1;
 
 			if (x == stop) {
-				if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && front->cur_speed > 15 && !(front->lookahead != nullptr && HasBit(front->lookahead->flags, TRLF_APPLY_ADVISORY))) {
+				if (front->UsingRealisticBraking() && front->cur_speed > 15 && !(front->lookahead != nullptr && HasBit(front->lookahead->flags, TRLF_APPLY_ADVISORY))) {
 					/* Travelling too fast, do not stop and report overshoot to player */
 					if (front->owner == _local_company) {
 						SetDParam(0, front->index);
@@ -3663,7 +3983,7 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 				}
 				return VETSB_ENTERED_STATION | (VehicleEnterTileStatus)(station_id << VETS_STATION_ID_OFFSET); // enter station
 			} else if (x < stop) {
-				if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && front->cur_speed > 30) {
+				if (front->UsingRealisticBraking() && front->cur_speed > 30) {
 					/* Travelling too fast, take no action */
 					return VETSB_CONTINUE;
 				}
@@ -3675,7 +3995,7 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 	} else if (v->type == VEH_ROAD) {
 		RoadVehicle *rv = RoadVehicle::From(v);
 		if (rv->state < RVSB_IN_ROAD_STOP && !IsReversingRoadTrackdir((Trackdir)rv->state) && rv->frame == 0) {
-			if (IsRoadStop(tile) && rv->IsFrontEngine()) {
+			if (IsStationRoadStop(tile) && rv->IsFrontEngine()) {
 				/* Attempt to allocate a parking bay in a road stop */
 				return RoadStop::GetByTile(tile, GetRoadStopType(tile))->Enter(rv) ? VETSB_CONTINUE : VETSB_CANNOT_ENTER;
 			}
@@ -3764,6 +4084,136 @@ static void TruncateCargo(const CargoSpec *cs, GoodsEntry *ge, uint amount = UIN
 	}
 }
 
+bool GetNewGrfRating(const Station *st, const CargoSpec *cs, const GoodsEntry *ge, int *new_grf_rating)
+{
+	*new_grf_rating = 0;
+	bool is_using_newgrf_rating = false;
+
+	/* Perform custom station rating. If it succeeds the speed, days in transit and
+	 * waiting cargo ratings must not be executed. */
+
+	/* NewGRFs expect last speed to be 0xFF when no vehicle has arrived yet. */
+	uint last_speed = ge->HasVehicleEverTriedLoading() && ge->IsSupplyAllowed() ? ge->last_speed : 0xFF;
+
+	uint32 var18 = std::min<uint>(ge->time_since_pickup, 0xFFu)
+		| (std::min<uint>(ge->max_waiting_cargo, 0xFFFFu) << 8)
+		| (std::min<uint>(last_speed, 0xFFu) << 24);
+	/* Convert to the 'old' vehicle types */
+	uint32 var10 = (ge->last_vehicle_type == VEH_INVALID) ? 0x0 : (ge->last_vehicle_type + 0x10);
+	uint16 callback = GetCargoCallback(CBID_CARGO_STATION_RATING_CALC, var10, var18, cs);
+	if (callback != CALLBACK_FAILED) {
+		is_using_newgrf_rating = true;
+		*new_grf_rating = GB(callback, 0, 14);
+
+		/* Simulate a 15 bit signed value */
+		if (HasBit(callback, 14)) *new_grf_rating -= 0x4000;
+	}
+
+	return is_using_newgrf_rating;
+}
+
+int GetSpeedRating(const GoodsEntry *ge)
+{
+	const int b = ge->last_speed - 85;
+
+	return (b >= 0) ? (b >> 2) : 0;
+}
+
+int GetWaitTimeRating(const CargoSpec *cs, const GoodsEntry *ge)
+{
+	int rating = 0;
+
+	uint wait_time = ge->time_since_pickup;
+
+	if (_settings_game.station.cargo_class_rating_wait_time) {
+		if (cs->classes & CC_PASSENGERS) {
+			wait_time *= 3;
+		} else if (cs->classes & CC_REFRIGERATED) {
+			wait_time *= 2;
+		} else if (cs->classes & (CC_MAIL | CC_ARMOURED | CC_EXPRESS)) {
+			wait_time += (wait_time >> 1);
+		} else if (cs->classes & (CC_BULK | CC_LIQUID)) {
+			wait_time >>= 2;
+		}
+	}
+
+	if (ge->last_vehicle_type == VEH_SHIP) wait_time >>= 2;
+	if (wait_time <= 21) rating += 25;
+	if (wait_time <= 12) rating += 25;
+	if (wait_time <= 6) rating += 45;
+	if (wait_time <= 3) rating += 35;
+
+	return rating;
+}
+
+int GetWaitingCargoRating(const Station *st, const GoodsEntry *ge)
+{
+	int rating = -90;
+
+	uint normalised_max_waiting_cargo = ge->max_waiting_cargo;
+
+	if (_settings_game.station.station_size_rating_cargo_amount) {
+		normalised_max_waiting_cargo *= 8;
+		if (st->station_tiles > 1) normalised_max_waiting_cargo /= st->station_tiles;
+	}
+
+	if (normalised_max_waiting_cargo <= 1500) rating += 55;
+	if (normalised_max_waiting_cargo <= 1000) rating += 35;
+	if (normalised_max_waiting_cargo <= 600) rating += 10;
+	if (normalised_max_waiting_cargo <= 300) rating += 20;
+	if (normalised_max_waiting_cargo <= 100) rating += 10;
+
+	return rating;
+}
+
+int GetStatueRating(const Station *st)
+{
+	return Company::IsValidID(st->owner) && HasBit(st->town->statues, st->owner) ? 26 : 0;
+}
+
+int GetVehicleAgeRating(const GoodsEntry *ge)
+{
+	int rating = 0;
+
+	const byte age = ge->last_age;
+
+	if (age < 30) rating += 10;
+	if (age < 20) rating += 10;
+	if (age < 10) rating += 13;
+
+	return rating;
+}
+
+int GetTargetRating(const Station *st, const CargoSpec *cs, const GoodsEntry *ge)
+{
+	bool skip = false;
+	int rating = 0;
+
+	if (_extra_cheats.station_rating.value) {
+		rating = 255;
+		skip = true;
+	} else if (HasBit(cs->callback_mask, CBM_CARGO_STATION_RATING_CALC)) {
+
+		int new_grf_rating;
+
+		if (GetNewGrfRating(st, cs, ge, &new_grf_rating)) {
+			skip = true;
+			rating += new_grf_rating;
+		}
+	}
+
+	if (!skip) {
+		rating += GetSpeedRating(ge);
+		rating += GetWaitTimeRating(cs, ge);
+		rating += GetWaitingCargoRating(st, ge);
+	}
+
+	rating += GetStatueRating(st);
+	rating += GetVehicleAgeRating(ge);
+
+	return Clamp(rating, 0, 255);
+}
+
 static void UpdateStationRating(Station *st)
 {
 	bool waiting_changed = false;
@@ -3771,10 +4221,10 @@ static void UpdateStationRating(Station *st)
 	byte_inc_sat(&st->time_since_load);
 	byte_inc_sat(&st->time_since_unload);
 
-	const CargoSpec *cs;
-	FOR_ALL_CARGOSPECS(cs) {
+	for (const CargoSpec *cs : CargoSpec::Iterate()) {
 		GoodsEntry *ge = &st->goods[cs->Index()];
-		/* Slowly increase the rating back to his original level in the case we
+
+		/* Slowly increase the rating back to its original level in the case we
 		 *  didn't deliver cargo yet to this station. This happens when a bribe
 		 *  failed while you didn't moved that cargo yet to a station. */
 		if (!ge->HasRating() && ge->rating < INITIAL_STATION_RATING) {
@@ -3784,6 +4234,7 @@ static void UpdateStationRating(Station *st)
 		/* Only change the rating if we are moving this cargo */
 		if (ge->HasRating()) {
 			byte_inc_sat(&ge->time_since_pickup);
+
 			if (ge->time_since_pickup == 255 && _settings_game.order.selectgoods) {
 				ClrBit(ge->status, GoodsEntry::GES_RATING);
 				ge->last_speed = 0;
@@ -3792,92 +4243,28 @@ static void UpdateStationRating(Station *st)
 				continue;
 			}
 
-			bool skip = false;
-			int rating = 0;
-			uint waiting = ge->cargo.AvailableCount();
-
-			/* num_dests is at least 1 if there is any cargo as
-			 * INVALID_STATION is also a destination.
-			 */
-			uint num_dests = (uint)ge->cargo.Packets()->MapSize();
-
-			/* Average amount of cargo per next hop, but prefer solitary stations
-			 * with only one or two next hops. They are allowed to have more
-			 * cargo waiting per next hop.
-			 * With manual cargo distribution waiting_avg = waiting / 2 as then
-			 * INVALID_STATION is the only destination.
-			 */
-			uint waiting_avg = waiting / (num_dests + 1);
-
-			if (HasBit(cs->callback_mask, CBM_CARGO_STATION_RATING_CALC)) {
-				/* Perform custom station rating. If it succeeds the speed, days in transit and
-				 * waiting cargo ratings must not be executed. */
-
-				/* NewGRFs expect last speed to be 0xFF when no vehicle has arrived yet. */
-				uint last_speed = ge->HasVehicleEverTriedLoading() && ge->IsSupplyAllowed() ? ge->last_speed : 0xFF;
-
-				uint32 var18 = std::min<uint>(ge->time_since_pickup, 0xFFu)
-					| (std::min<uint>(ge->max_waiting_cargo, 0xFFFFu) << 8)
-					| (std::min<uint>(last_speed, 0xFFu) << 24);
-				/* Convert to the 'old' vehicle types */
-				uint32 var10 = (ge->last_vehicle_type == VEH_INVALID) ? 0x0 : (ge->last_vehicle_type + 0x10);
-				uint16 callback = GetCargoCallback(CBID_CARGO_STATION_RATING_CALC, var10, var18, cs);
-				if (callback != CALLBACK_FAILED) {
-					skip = true;
-					rating = GB(callback, 0, 14);
-
-					/* Simulate a 15 bit signed value */
-					if (HasBit(callback, 14)) rating -= 0x4000;
-				}
-			}
-
-			if (!skip) {
-				int b = ge->last_speed - 85;
-				if (b >= 0) rating += b >> 2;
-
-				uint waittime = ge->time_since_pickup;
-				if (_settings_game.station.cargo_class_rating_wait_time) {
-					if (cs->classes & CC_PASSENGERS) {
-						waittime *= 3;
-					} else if (cs->classes & CC_REFRIGERATED) {
-						waittime *= 2;
-					} else if (cs->classes & (CC_MAIL | CC_ARMOURED | CC_EXPRESS)) {
-						waittime += (waittime >> 1);
-					} else if (cs->classes & (CC_BULK | CC_LIQUID)) {
-						waittime >>= 2;
-					}
-				}
-				if (ge->last_vehicle_type == VEH_SHIP) waittime >>= 2;
-				if (waittime <= 21) rating += 25;
-				if (waittime <= 12) rating += 25;
-				if (waittime <= 6) rating += 45;
-				if (waittime <= 3) rating += 35;
-
-				rating -= 90;
-				uint normalised_max_waiting_cargo = ge->max_waiting_cargo;
-				if (_settings_game.station.station_size_rating_cargo_amount) {
-					normalised_max_waiting_cargo *= 8;
-					if (st->station_tiles > 1) normalised_max_waiting_cargo /= st->station_tiles;
-				}
-				if (normalised_max_waiting_cargo <= 1500) rating += 55;
-				if (normalised_max_waiting_cargo <= 1000) rating += 35;
-				if (normalised_max_waiting_cargo <= 600) rating += 10;
-				if (normalised_max_waiting_cargo <= 300) rating += 20;
-				if (normalised_max_waiting_cargo <= 100) rating += 10;
-			}
-
-			if (Company::IsValidID(st->owner) && HasBit(st->town->statues, st->owner)) rating += 26;
-
-			byte age = ge->last_age;
-			if (age < 3) rating += 10;
-			if (age < 2) rating += 10;
-			if (age < 1) rating += 13;
-
 			{
-				int or_ = ge->rating; // old rating
+				int rating = GetTargetRating(st, cs, ge);
+
+				uint waiting = ge->cargo.AvailableCount();
+
+				/* num_dests is at least 1 if there is any cargo as
+				 * INVALID_STATION is also a destination.
+				 */
+				const uint num_dests = (uint)ge->cargo.Packets()->MapSize();
+
+				/* Average amount of cargo per next hop, but prefer solitary stations
+				 * with only one or two next hops. They are allowed to have more
+				 * cargo waiting per next hop.
+				 * With manual cargo distribution waiting_avg = waiting / 2 as then
+				 * INVALID_STATION is the only destination.
+				 */
+				const uint waiting_avg = waiting / (num_dests + 1);
+
+				const int old_rating = ge->rating; // old rating
 
 				/* only modify rating in steps of -2, -1, 0, 1 or 2 */
-				ge->rating = rating = or_ + Clamp(Clamp(rating, 0, 255) - or_, -2, 2);
+				ge->rating = rating = old_rating + Clamp(rating - old_rating, -2, 2);
 
 				/* if rating is <= 64 and more than 100 items waiting on average per destination,
 				 * remove some random amount of goods from the station */
@@ -3936,6 +4323,7 @@ static void UpdateStationRating(Station *st)
 	}
 
 	StationID index = st->index;
+
 	if (waiting_changed) {
 		SetWindowDirty(WC_STATION_VIEW, index); // update whole window
 	} else {
@@ -3963,6 +4351,31 @@ void RerouteCargo(Station *st, CargoID c, StationID avoid, StationID avoid2)
 		for (; v != nullptr; v = v->Next()) {
 			if (v->cargo_type != c) continue;
 			v->cargo.Reroute(UINT_MAX, &v->cargo, avoid, avoid2, &ge);
+		}
+	}
+}
+
+/**
+ * Reroute cargo of type c from source at station st or in any vehicles unloading there.
+ * Make sure the cargo's new next hop is neither "avoid" nor "avoid2".
+ * @param st Station to be rerouted at.
+ * @param c Type of cargo.
+ * @param source Source station.
+ * @param avoid Original next hop of cargo, avoid this.
+ * @param avoid2 Another station to be avoided when rerouting.
+ */
+void RerouteCargoFromSource(Station *st, CargoID c, StationID source, StationID avoid, StationID avoid2)
+{
+	GoodsEntry &ge = st->goods[c];
+
+	/* Reroute cargo in station. */
+	ge.cargo.RerouteFromSource(UINT_MAX, &ge.cargo, source, avoid, avoid2, &ge);
+
+	/* Reroute cargo staged to be transferred. */
+	for (Vehicle *v : st->loading_vehicles) {
+		for (; v != nullptr; v = v->Next()) {
+			if (v->cargo_type != c) continue;
+			v->cargo.RerouteFromSource(UINT_MAX, &v->cargo, source, avoid, avoid2, &ge);
 		}
 	}
 }
@@ -3997,6 +4410,9 @@ void DeleteStaleLinks(Station *from)
 			++it; // Do that before removing the edge. Anything else may crash.
 			assert(_date >= edge.LastUpdate());
 			uint timeout = std::max<uint>((LinkGraph::MIN_TIMEOUT_DISTANCE + (DistanceManhattan(from->xy, to->xy) >> 3)) / _settings_game.economy.day_length_factor, 1);
+			if (edge.LastAircraftUpdate() != INVALID_DATE && (uint)(_date - edge.LastAircraftUpdate()) > timeout) {
+				edge.ClearAircraft();
+			}
 			if ((uint)(_date - edge.LastUpdate()) > timeout) {
 				bool updated = false;
 
@@ -4028,7 +4444,11 @@ void DeleteStaleLinks(Station *from)
 						auto res = _delete_stale_links_vehicle_cache.insert(v->index);
 						// Only run LinkRefresher if vehicle was not already in the cache
 						if (res.second) {
-							LinkRefresher::Run(v, false); // Don't allow merging. Otherwise lg might get deleted.
+							/* Do not refresh links of vehicles that have been stopped in depot for a long time. */
+							if (!v->IsStoppedInDepot() || static_cast<uint>(_date - v->date_of_last_service) <=
+									LinkGraph::STALE_LINK_DEPOT_TIMEOUT) {
+								LinkRefresher::Run(v, false); // Don't allow merging. Otherwise lg might get deleted.
+							}
 						}
 						if (edge.LastUpdate() == _date) {
 							updated = true;
@@ -4135,6 +4555,14 @@ static void StationHandleSmallTick(BaseStation *st)
 	if (b == 0) UpdateStationRating(Station::From(st));
 }
 
+void UpdateAllStationRatings()
+{
+	for (Station *st : Station::Iterate()) {
+		if (!st->IsInUse()) continue;
+		UpdateStationRating(st);
+	}
+}
+
 void OnTick_Station()
 {
 	if (_game_mode == GM_EDITOR) return;
@@ -4156,8 +4584,21 @@ void OnTick_Station()
 			/* Stop processing this station if it was deleted */
 			if (!StationHandleBigTick(st)) continue;
 			TriggerStationAnimation(st, st->xy, SAT_250_TICKS);
+			TriggerRoadStopAnimation(st, st->xy, SAT_250_TICKS);
 			if (Station::IsExpected(st)) AirportAnimationTrigger(Station::From(st), AAT_STATION_250_TICKS);
 		}
+	}
+}
+
+/** Daily loop for stations. */
+void StationDailyLoop()
+{
+	// Only record cargo history every second day.
+	if (_date % 2 != 0) {
+		for (Station *st : Station::Iterate()) {
+			st->UpdateCargoHistory();
+		}
+		InvalidateWindowClassesData(WC_STATION_CARGO);
 	}
 }
 
@@ -4228,6 +4669,8 @@ static uint UpdateStationWaiting(Station *st, CargoID type, uint amount, SourceT
 	TriggerStationRandomisation(st, st->xy, SRT_NEW_CARGO, type);
 	TriggerStationAnimation(st, st->xy, SAT_NEW_CARGO, type);
 	AirportAnimationTrigger(st, AAT_STATION_NEW_CARGO, type);
+	TriggerRoadStopAnimation(st, st->xy, SAT_NEW_CARGO, type);
+	TriggerRoadStopRandomisation(st, st->xy, RSRT_NEW_CARGO, type);
 
 	SetWindowDirty(WC_STATION_VIEW, st->index);
 	st->MarkTilesDirty(true);
@@ -4433,12 +4876,12 @@ uint MoveGoodsToStation(CargoID type, uint amount, SourceType source_type, Sourc
 
 	/* If there is some cargo left due to rounding issues distribute it among the best rated stations. */
 	if (amount > moving) {
-		std::sort(used_stations.begin(), used_stations.end(), [type](const StationInfo &a, const StationInfo &b) {
+		std::stable_sort(used_stations.begin(), used_stations.end(), [type](const StationInfo &a, const StationInfo &b) {
 			return b.first->goods[type].rating < a.first->goods[type].rating;
 		});
 
 		uint to_deliver = amount - moving;
-		uint step_size = CeilDivT<uint>(to_deliver, used_stations.size());
+		uint step_size = CeilDivT<uint>(to_deliver, (uint)used_stations.size());
 		for (uint i = 0; i < used_stations.size() && to_deliver > 0; i++) {
 			uint delivery = std::min<uint>(to_deliver, step_size);
 			used_stations[i].second += delivery;
@@ -4476,7 +4919,7 @@ void UpdateStationDockingTiles(Station *st)
 	int y1 = std::max<int>(y - 1, 0);
 
 	TileArea ta(TileXY(x1, y1), TileXY(x2 - 1, y2 - 1));
-	TILE_AREA_LOOP(tile, ta) {
+	for (TileIndex tile : ta) {
 		if (IsValidTile(tile) && IsPossibleDockingTile(tile)) CheckForDockingTile(tile);
 	}
 }
@@ -4534,8 +4977,8 @@ void DeleteOilRig(TileIndex tile)
 
 static void ChangeTileOwner_Station(TileIndex tile, Owner old_owner, Owner new_owner)
 {
-	if (IsRoadStopTile(tile)) {
-		FOR_ALL_ROADTRAMTYPES(rtt) {
+	if (IsAnyRoadStopTile(tile)) {
+		for (RoadTramType rtt : _roadtramtypes) {
 			/* Update all roadtypes, no matter if they are present */
 			if (GetRoadOwner(tile, rtt) == old_owner) {
 				RoadType rt = GetRoadType(tile, rtt);
@@ -4571,6 +5014,7 @@ static void ChangeTileOwner_Station(TileIndex tile, Owner old_owner, Owner new_o
 
 			case STATION_BUS:
 			case STATION_TRUCK:
+			case STATION_ROADWAYPOINT:
 				/* Road stops were already handled above. */
 				break;
 
@@ -4598,7 +5042,21 @@ static void ChangeTileOwner_Station(TileIndex tile, Owner old_owner, Owner new_o
 	} else {
 		if (IsDriveThroughStopTile(tile)) {
 			/* Remove the drive-through road stop */
-			DoCommand(tile, 1 | 1 << 8, (GetStationType(tile) == STATION_TRUCK) ? ROADSTOP_TRUCK : ROADSTOP_BUS, DC_EXEC | DC_BANKRUPT, CMD_REMOVE_ROAD_STOP);
+			uint p2;
+			switch (GetStationType(tile)) {
+				case STATION_BUS:
+					p2 = ROADSTOP_BUS;
+					break;
+				case STATION_TRUCK:
+					p2 = ROADSTOP_TRUCK;
+					break;
+				case STATION_ROADWAYPOINT:
+					p2 = (1 << 2);
+					break;
+				default:
+					NOT_REACHED();
+			}
+			DoCommand(tile, 1 | 1 << 8, p2, DC_EXEC | DC_BANKRUPT, CMD_REMOVE_ROAD_STOP);
 			assert_tile(IsTileType(tile, MP_ROAD), tile);
 			/* Change owner of tile and all roadtypes */
 			ChangeTileOwner(tile, old_owner, new_owner);
@@ -4661,6 +5119,7 @@ CommandCost ClearTile_Station(TileIndex tile, DoCommandFlag flags)
 			default: break;
 			case STATION_RAIL:     return_cmd_error(STR_ERROR_MUST_DEMOLISH_RAILROAD);
 			case STATION_WAYPOINT: return_cmd_error(STR_ERROR_BUILDING_MUST_BE_DEMOLISHED);
+			case STATION_ROADWAYPOINT: return_cmd_error(STR_ERROR_BUILDING_MUST_BE_DEMOLISHED);
 			case STATION_AIRPORT:  return_cmd_error(STR_ERROR_MUST_DEMOLISH_AIRPORT_FIRST);
 			case STATION_TRUCK:    return_cmd_error(HasTileRoadType(tile, RTT_TRAM) ? STR_ERROR_MUST_DEMOLISH_CARGO_TRAM_STATION_FIRST : STR_ERROR_MUST_DEMOLISH_TRUCK_STATION_FIRST);
 			case STATION_BUS:      return_cmd_error(HasTileRoadType(tile, RTT_TRAM) ? STR_ERROR_MUST_DEMOLISH_PASSENGER_TRAM_STATION_FIRST : STR_ERROR_MUST_DEMOLISH_BUS_STATION_FIRST);
@@ -4688,6 +5147,11 @@ CommandCost ClearTile_Station(TileIndex tile, DoCommandFlag flags)
 			return RemoveRoadStopAndUpdateRoadCachedOneWayState(tile, flags);
 		case STATION_BUOY:     return RemoveBuoy(tile, flags);
 		case STATION_DOCK:     return RemoveDock(tile, flags);
+		case STATION_ROADWAYPOINT:
+			if (IsDriveThroughStopTile(tile) && !CanRemoveRoadWithStop(tile, flags)) {
+				return_cmd_error(STR_ERROR_BUILDING_MUST_BE_DEMOLISHED);
+			}
+			return RemoveRoadStopAndUpdateRoadCachedOneWayState(tile, flags);
 		default: break;
 	}
 
@@ -4714,7 +5178,8 @@ static CommandCost TerraformTile_Station(TileIndex tile, DoCommandFlag flags, in
 					return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_FOUNDATION]);
 
 				case STATION_TRUCK:
-				case STATION_BUS: {
+				case STATION_BUS:
+				case STATION_ROADWAYPOINT: {
 					DiagDirection direction = GetRoadStopDir(tile);
 					if (!AutoslopeCheckForEntranceEdge(tile, z_new, tileh_new, direction)) break;
 					if (IsDriveThroughStopTile(tile)) {

@@ -118,6 +118,7 @@ add_files(
     date_type.h
     debug.cpp
     debug.h
+    debug_desync.h
     debug_settings.h
     dedicated.cpp
     departures.cpp
@@ -156,6 +157,8 @@ add_files(
     engine_type.h
     error.h
     error_gui.cpp
+    event_logs.cpp
+    event_logs.h
     fileio.cpp
     fileio_func.h
     fileio_type.h
@@ -257,6 +260,8 @@ add_files(
     newgrf_debug_gui.cpp
     newgrf_engine.cpp
     newgrf_engine.h
+    newgrf_extension.cpp
+    newgrf_extension.h
     newgrf_generic.cpp
     newgrf_generic.h
     newgrf_gui.cpp
@@ -266,6 +271,11 @@ add_files(
     newgrf_industries.h
     newgrf_industrytiles.cpp
     newgrf_industrytiles.h
+    newgrf_industrytiles_analysis.h
+    newgrf_newlandscape.cpp
+    newgrf_newlandscape.h
+    newgrf_newsignals.cpp
+    newgrf_newsignals.h
     newgrf_object.cpp
     newgrf_object.h
     newgrf_profiling.cpp
@@ -273,6 +283,8 @@ add_files(
     newgrf_properties.h
     newgrf_railtype.cpp
     newgrf_railtype.h
+    newgrf_roadstop.cpp
+    newgrf_roadstop.h
     newgrf_roadtype.cpp
     newgrf_roadtype.h
     newgrf_sound.cpp
@@ -329,8 +341,11 @@ add_files(
     rail_cmd.cpp
     rail_gui.cpp
     rail_gui.h
+    rail_gui_type.h
     rail_map.h
     rail_type.h
+    random_access_file.cpp
+    random_access_file_type.h
     rev.h
     road.cpp
     road.h
@@ -477,6 +492,7 @@ add_files(
     train.h
     train_cmd.cpp
     train_gui.cpp
+    train_speed_adaptation.h
     transparency.h
     transparency_gui.cpp
     transparency_gui.h
@@ -509,6 +525,7 @@ add_files(
     viewport_type.h
     void_cmd.cpp
     void_map.h
+    walltime_func.h
     water.h
     water_cmd.cpp
     water_map.h

@@ -10,6 +10,7 @@
 #include "../stdafx.h"
 #include "../gamelog_internal.h"
 #include "../fios.h"
+#include "../string_func.h"
 
 #include "saveload.h"
 
@@ -17,13 +18,11 @@
 
 static const SaveLoad _glog_action_desc[] = {
 	SLE_VAR(LoggedAction, tick,              SLE_UINT16),
-	SLE_END()
 };
 
 static const SaveLoad _glog_mode_desc[] = {
 	SLE_VAR(LoggedChange, mode.mode,         SLE_UINT8),
 	SLE_VAR(LoggedChange, mode.landscape,    SLE_UINT8),
-	SLE_END()
 };
 
 static char old_revision_text[GAMELOG_REVISION_LENGTH];
@@ -34,62 +33,53 @@ static const SaveLoad _glog_revision_desc[] = {
 	SLE_VAR(LoggedChange, revision.newgrf,   SLE_UINT32),
 	SLE_VAR(LoggedChange, revision.slver,    SLE_UINT16),
 	SLE_VAR(LoggedChange, revision.modified, SLE_UINT8),
-	SLE_END()
 };
 
 static const SaveLoad _glog_oldver_desc[] = {
 	SLE_VAR(LoggedChange, oldver.type,       SLE_UINT32),
 	SLE_VAR(LoggedChange, oldver.version,    SLE_UINT32),
-	SLE_END()
 };
 
 static const SaveLoad _glog_setting_desc[] = {
 	SLE_STR(LoggedChange, setting.name,      SLE_STR,    128),
 	SLE_VAR(LoggedChange, setting.oldval,    SLE_INT32),
 	SLE_VAR(LoggedChange, setting.newval,    SLE_INT32),
-	SLE_END()
 };
 
 static const SaveLoad _glog_grfadd_desc[] = {
 	SLE_VAR(LoggedChange, grfadd.grfid,      SLE_UINT32    ),
 	SLE_ARR(LoggedChange, grfadd.md5sum,     SLE_UINT8,  16),
-	SLE_END()
 };
 
 static const SaveLoad _glog_grfrem_desc[] = {
 	SLE_VAR(LoggedChange, grfrem.grfid,      SLE_UINT32),
-	SLE_END()
 };
 
 static const SaveLoad _glog_grfcompat_desc[] = {
 	SLE_VAR(LoggedChange, grfcompat.grfid,   SLE_UINT32    ),
 	SLE_ARR(LoggedChange, grfcompat.md5sum,  SLE_UINT8,  16),
-	SLE_END()
 };
 
 static const SaveLoad _glog_grfparam_desc[] = {
 	SLE_VAR(LoggedChange, grfparam.grfid,    SLE_UINT32),
-	SLE_END()
 };
 
 static const SaveLoad _glog_grfmove_desc[] = {
 	SLE_VAR(LoggedChange, grfmove.grfid,     SLE_UINT32),
 	SLE_VAR(LoggedChange, grfmove.offset,    SLE_INT32),
-	SLE_END()
 };
 
 static const SaveLoad _glog_grfbug_desc[] = {
 	SLE_VAR(LoggedChange, grfbug.data,       SLE_UINT64),
 	SLE_VAR(LoggedChange, grfbug.grfid,      SLE_UINT32),
 	SLE_VAR(LoggedChange, grfbug.bug,        SLE_UINT8),
-	SLE_END()
 };
 
 static const SaveLoad _glog_emergency_desc[] = {
-	SLE_END()
+	SLE_CONDNULL(0, SL_MIN_VERSION, SL_MIN_VERSION), // Just an empty list, to keep the rest of the code easier.
 };
 
-static const SaveLoad * const _glog_desc[] = {
+static const SaveLoadTable _glog_desc[] = {
 	_glog_mode_desc,
 	_glog_revision_desc,
 	_glog_oldver_desc,
@@ -110,8 +100,11 @@ static void Load_GLOG_common(LoggedAction *&gamelog_action, uint &gamelog_action
 	assert(gamelog_action == nullptr);
 	assert(gamelog_actions == 0);
 
-	GamelogActionType at;
-	while ((at = (GamelogActionType)SlReadByte()) != GLAT_NONE) {
+	byte type;
+	while ((type = SlReadByte()) != GLAT_NONE) {
+		if (type >= GLAT_END) SlErrorCorrupt("Invalid gamelog action type");
+		GamelogActionType at = (GamelogActionType)type;
+
 		gamelog_action = ReallocT(gamelog_action, gamelog_actions + 1);
 		LoggedAction *la = &gamelog_action[gamelog_actions++];
 
@@ -121,16 +114,16 @@ static void Load_GLOG_common(LoggedAction *&gamelog_action, uint &gamelog_action
 		la->change = nullptr;
 		la->changes = 0;
 
-		GamelogChangeType ct;
-		while ((ct = (GamelogChangeType)SlReadByte()) != GLCT_NONE) {
+		while ((type = SlReadByte()) != GLCT_NONE) {
+			if (type >= GLCT_END) SlErrorCorrupt("Invalid gamelog change type");
+			GamelogChangeType ct = (GamelogChangeType)type;
+
 			la->change = ReallocT(la->change, la->changes + 1);
 
 			LoggedChange *lc = &la->change[la->changes++];
 			/* for SLE_STR, pointer has to be valid! so make it nullptr */
 			memset(lc, 0, sizeof(*lc));
 			lc->ct = ct;
-
-			assert((uint)ct < GLCT_END);
 
 			SlObject(lc, _glog_desc[ct]);
 			if (ct == GLCT_REVISION && SlXvIsFeatureMissing(XSLFI_EXTENDED_GAMELOG)) {
@@ -182,6 +175,8 @@ static void Check_GLOG()
 	Load_GLOG_common(_load_check_data.gamelog_action, _load_check_data.gamelog_actions);
 }
 
-extern const ChunkHandler _gamelog_chunk_handlers[] = {
-	{ 'GLOG', Save_GLOG, Load_GLOG, nullptr, Check_GLOG, CH_RIFF | CH_LAST }
+static const ChunkHandler gamelog_chunk_handlers[] = {
+	{ 'GLOG', Save_GLOG, Load_GLOG, nullptr, Check_GLOG, CH_RIFF }
 };
+
+extern const ChunkHandlerTable _gamelog_chunk_handlers(gamelog_chunk_handlers);

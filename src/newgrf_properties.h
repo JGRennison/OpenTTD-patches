@@ -15,7 +15,7 @@
  * Names are formatted as PROP_<CLASS>_<NAME>
  * @todo Currently the list only contains properties which are used more than once in the code. I.e. they are available for callback 0x36.
  */
-enum PropertyID {
+enum PropertyID : byte {
 	PROP_VEHICLE_LOAD_AMOUNT                    = 0x07, ///< Loading speed
 
 	PROP_TRAIN_SPEED                            = 0x09, ///< Max. speed: 1 unit = 1/1.6 mph = 1 km-ish/h
@@ -28,6 +28,7 @@ enum PropertyID {
 	PROP_TRAIN_SHORTEN_FACTOR                   = 0x21, ///< Shorter vehicles
 	PROP_TRAIN_USER_DATA                        = 0x25, ///< User defined data for vehicle variable 0x42
 	PROP_TRAIN_CARGO_AGE_PERIOD                 = 0x2B, ///< Number of ticks before carried cargo is aged
+	PROP_TRAIN_CURVE_SPEED_MOD                  = 0x2E, ///< Modifier to maximum speed in curves
 
 	PROP_ROADVEH_RUNNING_COST_FACTOR            = 0x09, ///< Yearly runningcost
 	PROP_ROADVEH_CARGO_CAPACITY                 = 0x0F, ///< Capacity

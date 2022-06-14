@@ -8,6 +8,7 @@
 /** @file terraform_gui.cpp GUI related to terraforming the map. */
 
 #include "stdafx.h"
+#include "core/backup_type.hpp"
 #include "clear_map.h"
 #include "company_func.h"
 #include "company_base.h"
@@ -30,6 +31,7 @@
 #include "hotkeys.h"
 #include "engine_base.h"
 #include "terraform_gui.h"
+#include "cheat_func.h"
 #include "town_gui.h"
 #include "zoom_func.h"
 
@@ -38,6 +40,12 @@
 #include "table/strings.h"
 
 #include "safeguards.h"
+
+enum DemolishConfirmMode {
+	DCM_OFF,
+	DCM_INDUSTRY,
+	DCM_INDUSTRY_RAIL_STATION,
+};
 
 void CcTerraform(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
@@ -55,15 +63,15 @@ static void GenerateDesertArea(TileIndex end, TileIndex start)
 {
 	if (_game_mode != GM_EDITOR) return;
 
-	_generating_world = true;
+	Backup<bool> old_generating_world(_generating_world, true, FILE_LINE);
 
 	TileArea ta(start, end);
-	TILE_AREA_LOOP(tile, ta) {
+	for (TileIndex tile : ta) {
 		SetTropicZone(tile, (_ctrl_pressed) ? TROPICZONE_NORMAL : TROPICZONE_DESERT);
 		DoCommandP(tile, 0, 0, CMD_LANDSCAPE_CLEAR);
 		MarkTileDirtyByTile(tile);
 	}
-	_generating_world = false;
+	old_generating_world.Restore();
 	InvalidateWindowClassesData(WC_TOWN_VIEW, 0);
 }
 
@@ -75,7 +83,7 @@ static void GenerateRockyArea(TileIndex end, TileIndex start)
 	bool success = false;
 	TileArea ta(start, end);
 
-	TILE_AREA_LOOP(tile, ta) {
+	for (TileIndex tile : ta) {
 		switch (GetTileType(tile)) {
 			case MP_TREES:
 				if (GetTreeGround(tile) == TREE_GROUND_SHORE) continue;
@@ -93,6 +101,40 @@ static void GenerateRockyArea(TileIndex end, TileIndex start)
 	}
 
 	if (success && _settings_client.sound.confirm) SndPlayTileFx(SND_1F_CONSTRUCTION_OTHER, end);
+}
+
+/** Checks if the area contains any structures that are important enough to query about first */
+static bool IsQueryConfirmIndustryOrRailStationInArea(TileIndex start_tile, TileIndex end_tile, bool diagonal)
+{
+	if (_settings_client.gui.demolish_confirm_mode == DCM_OFF) return false;
+
+	std::unique_ptr<TileIterator> tile_iterator;
+
+	if (diagonal) {
+		tile_iterator = std::make_unique<DiagonalTileIterator>(end_tile, start_tile);
+	} else {
+		tile_iterator = std::make_unique<OrthogonalTileIterator>(end_tile, start_tile);
+	}
+
+	bool destroying_industry_or_station = false;
+
+	for (; *tile_iterator != INVALID_TILE; ++(*tile_iterator)) {
+		if ((_cheats.magic_bulldozer.value && IsTileType(*tile_iterator, MP_INDUSTRY)) ||
+				(_settings_client.gui.demolish_confirm_mode == DCM_INDUSTRY_RAIL_STATION && IsRailStationTile(*tile_iterator))) {
+			destroying_industry_or_station = true;
+			break;
+		}
+	}
+
+	return destroying_industry_or_station;
+}
+
+static CommandContainer _demolish_area_command;
+
+static void DemolishAreaConfirmationCallback(Window*, bool confirmed) {
+	if (confirmed) {
+		DoCommandP(&_demolish_area_command);
+	}
 }
 
 /**
@@ -114,9 +156,16 @@ bool GUIPlaceProcDragXY(ViewportDragDropSelectionProcess proc, TileIndex start_t
 	}
 
 	switch (proc) {
-		case DDSP_DEMOLISH_AREA:
-			DoCommandP(end_tile, start_tile, _ctrl_pressed ? 1 : 0, CMD_CLEAR_AREA | CMD_MSG(STR_ERROR_CAN_T_CLEAR_THIS_AREA), CcPlaySound_EXPLOSION);
+		case DDSP_DEMOLISH_AREA: {
+			_demolish_area_command = NewCommandContainerBasic(end_tile, start_tile, _ctrl_pressed ? 1 : 0, CMD_CLEAR_AREA | CMD_MSG(STR_ERROR_CAN_T_CLEAR_THIS_AREA), CcPlaySound_EXPLOSION);
+
+			if (!_shift_pressed && IsQueryConfirmIndustryOrRailStationInArea(start_tile, end_tile, _ctrl_pressed)) {
+				ShowQuery(STR_QUERY_CLEAR_AREA_CAPTION, STR_CLEAR_AREA_CONFIRMATION_TEXT, nullptr, DemolishAreaConfirmationCallback);
+			} else {
+				DemolishAreaConfirmationCallback(nullptr, true);
+			}
 			break;
+		}
 		case DDSP_RAISE_AND_LEVEL_AREA:
 			DoCommandP(end_tile, start_tile, LM_RAISE << 1 | (_ctrl_pressed ? 1 : 0), CMD_LEVEL_LAND | CMD_MSG(STR_ERROR_CAN_T_RAISE_LAND_HERE), CcTerraform);
 			break;
@@ -215,7 +264,7 @@ struct TerraformToolbarWindow : Window {
 				break;
 
 			case WID_TT_MEASUREMENT_TOOL:
-				HandlePlacePushButton(this, WID_TT_MEASUREMENT_TOOL, SPR_CURSOR_QUERY, HT_RECT);
+				HandlePlacePushButton(this, WID_TT_MEASUREMENT_TOOL, SPR_CURSOR_QUERY, HT_RECT | HT_MAP);
 				this->last_user_action = widget;
 				break;
 
@@ -446,18 +495,18 @@ static void CommonRaiseLowerBigLand(TileIndex tile, int mode)
 		if (mode != 0) {
 			/* Raise land */
 			h = MAX_TILE_HEIGHT;
-			TILE_AREA_LOOP(tile2, ta) {
+			for (TileIndex tile2 : ta) {
 				h = std::min(h, TileHeight(tile2));
 			}
 		} else {
 			/* Lower land */
 			h = 0;
-			TILE_AREA_LOOP(tile2, ta) {
+			for (TileIndex tile2 : ta) {
 				h = std::max(h, TileHeight(tile2));
 			}
 		}
 
-		TILE_AREA_LOOP(tile2, ta) {
+		for (TileIndex tile2 : ta) {
 			if (TileHeight(tile2) == h) {
 				DoCommandP(tile2, SLOPE_N, (uint32)mode, CMD_TERRAFORM_LAND);
 			}
@@ -524,7 +573,12 @@ static const NWidgetPart _nested_scen_edit_land_gen_widgets[] = {
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_ETT_NEW_SCENARIO), SetMinimalSize(160, 12),
 								SetFill(1, 0), SetDataTip(STR_TERRAFORM_SE_NEW_WORLD, STR_TERRAFORM_TOOLTIP_GENERATE_RANDOM_LAND), SetPadding(0, 2, 0, 2),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_ETT_RESET_LANDSCAPE), SetMinimalSize(160, 12),
-								SetFill(1, 0), SetDataTip(STR_TERRAFORM_RESET_LANDSCAPE, STR_TERRAFORM_RESET_LANDSCAPE_TOOLTIP), SetPadding(1, 2, 2, 2),
+								SetFill(1, 0), SetDataTip(STR_TERRAFORM_RESET_LANDSCAPE, STR_TERRAFORM_RESET_LANDSCAPE_TOOLTIP), SetPadding(1, 2, 0, 2),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_ETT_SHOW_PUBLIC_ROADS),
+			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_ETT_PUBLIC_ROADS), SetMinimalSize(160, 12),
+									SetFill(1, 0), SetDataTip(STR_TERRAFORM_PUBLIC_ROADS, STR_TERRAFORM_PUBLIC_ROADS_TOOLTIP), SetPadding(1, 2, 0, 2),
+		EndContainer(),
+		NWidget(NWID_SPACER), SetMinimalSize(0, 2),
 	EndContainer(),
 };
 
@@ -538,7 +592,7 @@ static void ResetLandscapeConfirmationCallback(Window *w, bool confirmed)
 	if (confirmed) {
 		/* Set generating_world to true to get instant-green grass after removing
 		 * company property. */
-		_generating_world = true;
+		Backup<bool> old_generating_world(_generating_world, true, FILE_LINE);
 
 		/* Delete all companies */
 		for (Company *c : Company::Iterate()) {
@@ -546,7 +600,7 @@ static void ResetLandscapeConfirmationCallback(Window *w, bool confirmed)
 			delete c;
 		}
 
-		_generating_world = false;
+		old_generating_world.Restore();
 
 		/* Delete all station signs */
 		for (BaseStation *st : BaseStation::Iterate()) {
@@ -569,8 +623,7 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 	ScenarioEditorLandscapeGenerationWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
 	{
 		this->CreateNestedTree();
-		NWidgetStacked *show_desert = this->GetWidget<NWidgetStacked>(WID_ETT_SHOW_PLACE_DESERT);
-		show_desert->SetDisplayedPlane(_settings_game.game_creation.landscape == LT_TROPIC ? 0 : SZSP_NONE);
+		this->SetButtonStates();
 		this->FinishInitNested(window_number);
 		this->last_user_action = WIDGET_LIST_END;
 	}
@@ -675,6 +728,12 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 				ShowQuery(STR_QUERY_RESET_LANDSCAPE_CAPTION, STR_RESET_LANDSCAPE_CONFIRMATION_TEXT, nullptr, ResetLandscapeConfirmationCallback);
 				break;
 
+			case WID_ETT_PUBLIC_ROADS: { // Build public roads
+				extern void GeneratePublicRoads();
+				GeneratePublicRoads();
+				break;
+			}
+
 			default: NOT_REACHED();
 		}
 	}
@@ -748,6 +807,27 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 	{
 		this->RaiseButtons();
 		this->SetDirty();
+	}
+
+	/**
+	 * Some data on this window has become invalid.
+	 * @param data Information about the changed data.
+	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
+	 */
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	{
+		if (!gui_scope) return;
+
+		this->SetButtonStates();
+		this->ReInit();
+	}
+
+	void SetButtonStates()
+	{
+		NWidgetStacked *show_desert = this->GetWidget<NWidgetStacked>(WID_ETT_SHOW_PLACE_DESERT);
+		show_desert->SetDisplayedPlane(_settings_game.game_creation.landscape == LT_TROPIC ? 0 : SZSP_NONE);
+		NWidgetStacked *show_public_roads = this->GetWidget<NWidgetStacked>(WID_ETT_SHOW_PUBLIC_ROADS);
+		show_public_roads->SetDisplayedPlane(_settings_game.game_creation.build_public_roads != 0 ? 0 : SZSP_NONE);
 	}
 
 	static HotkeyList hotkeys;

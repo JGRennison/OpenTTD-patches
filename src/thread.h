@@ -14,8 +14,10 @@
 #include "crashlog.h"
 #include <system_error>
 #include <thread>
+#include <mutex>
 #if defined(__MINGW32__)
 #include "3rdparty/mingw-std-threads/mingw.thread.h"
+#include "3rdparty/mingw-std-threads/mingw.mutex.h"
 #endif
 
 /**
@@ -47,6 +49,11 @@ int GetCurrentThreadName(char *str, const char *last);
 void SetSelfAsMainThread();
 
 /**
+ * Set the current thread as the "game" thread
+ */
+void SetSelfAsGameThread();
+
+/**
  * Perform per-thread setup
  */
 void PerThreadSetup();
@@ -57,14 +64,24 @@ void PerThreadSetup();
 void PerThreadSetupInit();
 
 /**
- * @return true if the current thread definitely the "main" thread. If in doubt returns false.
+ * @return true if the current thread is definitely the "main" thread. If in doubt returns false.
  */
 bool IsMainThread();
 
 /**
- * @return true if the current thread definitely a "non-main" thread. If in doubt returns false.
+ * @return true if the current thread is definitely a "non-main" thread. If in doubt returns false.
  */
 bool IsNonMainThread();
+
+/**
+ * @return true if the current thread is definitely the "game" thread. If in doubt returns false.
+ */
+bool IsGameThread();
+
+/**
+ * @return true if the current thread is definitely a "non-game" thread. If in doubt returns false.
+ */
+bool IsNonGameThread();
 
 
 /**
@@ -82,7 +99,17 @@ inline bool StartNewThread(std::thread *thr, const char *name, TFn&& _Fx, TArgs&
 {
 #ifndef NO_THREADS
 	try {
+		static std::mutex thread_startup_mutex;
+		std::lock_guard<std::mutex> lock(thread_startup_mutex);
+
 		std::thread t([] (const char *name, TFn&& F, TArgs&&... A) {
+				/* Delay starting the thread till the main thread is finished
+				 * with the administration. This prevent race-conditions on
+				 * startup. */
+				{
+					std::lock_guard<std::mutex> lock(thread_startup_mutex);
+				}
+
 				SetCurrentThreadName(name);
 				PerThreadSetup();
 				CrashLog::InitThread();

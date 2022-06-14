@@ -547,6 +547,8 @@ function Regression::Prices()
 	print("  BT_DOCK:  " + AIMarine.GetBuildCost(AIMarine.BT_DOCK));
 	print("  BT_DEPOT: " + AIMarine.GetBuildCost(AIMarine.BT_DEPOT));
 	print("  BT_BUOY:  " + AIMarine.GetBuildCost(AIMarine.BT_BUOY));
+	print("  BT_LOCK:  " + AIMarine.GetBuildCost(AIMarine.BT_LOCK));
+	print("  BT_CANAL: " + AIMarine.GetBuildCost(AIMarine.BT_CANAL));
 	print(" -Tile-");
 	print("  BT_FOUNDATION:   " + AITile.GetBuildCost(AITile.BT_FOUNDATION));
 	print("  BT_TERRAFORM:    " + AITile.GetBuildCost(AITile.BT_TERRAFORM));
@@ -556,6 +558,7 @@ function Regression::Prices()
 	print("  BT_CLEAR_ROCKY:  " + AITile.GetBuildCost(AITile.BT_CLEAR_ROCKY));
 	print("  BT_CLEAR_FIELDS: " + AITile.GetBuildCost(AITile.BT_CLEAR_FIELDS));
 	print("  BT_CLEAR_HOUSE:  " + AITile.GetBuildCost(AITile.BT_CLEAR_HOUSE));
+	print("  BT_CLEAR_WATER:  " + AITile.GetBuildCost(AITile.BT_CLEAR_WATER));
 }
 
 function cost_callback(old_path, new_tile, new_direction, self) { if (old_path == null) return 0; return old_path.GetCost() + 1; }
@@ -919,6 +922,9 @@ function Regression::Marine()
 
 	print("  BuildWaterDepot():    " + AIMarine.BuildWaterDepot(28479, 28480));
 	print("  BuildDock():          " + AIMarine.BuildDock(29253, AIStation.STATION_JOIN_ADJACENT));
+	print("  BuildBuoy():          " + AIMarine.BuildBuoy(28481));
+	print("  BuildLock():          " + AIMarine.BuildLock(28487));
+	print("  BuildCanal():         " + AIMarine.BuildCanal(28744));
 }
 
 function Regression::Order()
@@ -1017,6 +1023,30 @@ function Regression::Rail()
 	print("    IsRailTile():                  " + AIRail.IsRailTile(10002));
 	print("    BuildRailTrack():              " + AIRail.BuildRailTrack(10002, AIRail.RAILTRACK_NW_SE));
 	print("    BuildSignal():                 " + AIRail.BuildSignal(10002, 10258, AIRail.SIGNALTYPE_PBS));
+	print("    GetSignalType():               " + AIRail.GetSignalType(10002, 10258));
+	print("    GetSignalType():               " + AIRail.GetSignalType(10002, 9746));
+	print("    RemoveSignal():                " + AIRail.RemoveSignal(10002, 10258));
+	print("    BuildSignal():                 " + AIRail.BuildSignal(10002, 9746, AIRail.SIGNALTYPE_ENTRY));
+	print("    GetSignalType():               " + AIRail.GetSignalType(10002, 10258));
+	print("    GetSignalType():               " + AIRail.GetSignalType(10002, 9746));
+	print("    RemoveSignal():                " + AIRail.RemoveSignal(10002, 9746));
+	print("    BuildSignal():                 " + AIRail.BuildSignal(10002, 9746, AIRail.SIGNALTYPE_EXIT_TWOWAY));
+	print("    GetSignalType():               " + AIRail.GetSignalType(10002, 10258));
+	print("    GetSignalType():               " + AIRail.GetSignalType(10002, 9746));
+	print("    RemoveRailTrack():             " + AIRail.RemoveRailTrack(10002, AIRail.RAILTRACK_NW_NE));
+	print("    RemoveRailTrack():             " + AIRail.RemoveRailTrack(10002, AIRail.RAILTRACK_NW_SE));
+	print("    BuildRailTrack():              " + AIRail.BuildRailTrack(10002, AIRail.RAILTRACK_NW_NE));
+	print("    BuildSignal():                 " + AIRail.BuildSignal(10002, 10003, AIRail.SIGNALTYPE_PBS));
+	print("    GetSignalType():               " + AIRail.GetSignalType(10002, 10003));
+	print("    GetSignalType():               " + AIRail.GetSignalType(10002, 10001));
+	print("    RemoveSignal():                " + AIRail.RemoveSignal(10002, 10003));
+	print("    BuildSignal():                 " + AIRail.BuildSignal(10002, 10001, AIRail.SIGNALTYPE_ENTRY));
+	print("    GetSignalType():               " + AIRail.GetSignalType(10002, 10003));
+	print("    GetSignalType():               " + AIRail.GetSignalType(10002, 10001));
+	print("    RemoveSignal():                " + AIRail.RemoveSignal(10002, 10001));
+	print("    BuildSignal():                 " + AIRail.BuildSignal(10002, 10001, AIRail.SIGNALTYPE_EXIT_TWOWAY));
+	print("    GetSignalType():               " + AIRail.GetSignalType(10002, 10003));
+	print("    GetSignalType():               " + AIRail.GetSignalType(10002, 10001));
 	print("    RemoveRailTrack():             " + AIRail.RemoveRailTrack(10002, AIRail.RAILTRACK_NW_NE));
 	print("    RemoveRailTrack():             " + AIRail.RemoveRailTrack(10002, AIRail.RAILTRACK_NW_SE));
 	print("    BuildRail():                   " + AIRail.BuildRail(10002, 10003, 10006));
@@ -1470,9 +1500,41 @@ function Regression::TileList()
 		print("    " + i + " => " + list.GetValue(i));
 	}
 
-	list.AddRectangle(54421 - 256 * 2, 256 * 2 + 54421 + 8);
+	list.AddRectangle(0x6F3F, 0x7248);
 	list.Valuate(AITile.IsWaterTile);
-	print("  Water():             done");
+	print("  IsWaterTile():       done");
+	print("  Count():             " + list.Count());
+	print("  ListDump:");
+	for (local i = list.Begin(); !list.IsEnd(); i = list.Next()) {
+		print("    " + i + " => " + list.GetValue(i));
+	}
+
+	list.Valuate(AITile.IsSeaTile);
+	print("  IsSeaTile():         done");
+	print("  Count():             " + list.Count());
+	print("  ListDump:");
+	for (local i = list.Begin(); !list.IsEnd(); i = list.Next()) {
+		print("    " + i + " => " + list.GetValue(i));
+	}
+
+	list.Valuate(AITile.IsRiverTile);
+	print("  IsRiverTile()        done");
+	print("  Count():             " + list.Count());
+	print("  ListDump:");
+	for (local i = list.Begin(); !list.IsEnd(); i = list.Next()) {
+		print("    " + i + " => " + list.GetValue(i));
+	}
+
+	list.Valuate(AIMarine.IsCanalTile);
+	print("  IsCanalTile()        done");
+	print("  Count():             " + list.Count());
+	print("  ListDump:");
+	for (local i = list.Begin(); !list.IsEnd(); i = list.Next()) {
+		print("    " + i + " => " + list.GetValue(i));
+	}
+
+	list.Valuate(AITile.IsCoastTile);
+	print("  IsCoastTile()        done");
 	print("  Count():             " + list.Count());
 	print("  ListDump:");
 	for (local i = list.Begin(); !list.IsEnd(); i = list.Next()) {

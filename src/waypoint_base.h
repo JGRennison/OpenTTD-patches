@@ -12,15 +12,26 @@
 
 #include "base_station_base.h"
 
+/**
+ * Enum to handle waypoint flags.
+ */
+enum WaypointFlags {
+	WPF_HIDE_LABEL              = 0, ///< Hide waypoint label
+	WPF_ROAD                    = 1, ///< This is a road waypoint
+};
+
 /** Representation of a waypoint. */
 struct Waypoint FINAL : SpecializedStation<Waypoint, true> {
-	uint16 town_cn;    ///< The N-1th waypoint for this town (consecutive number)
+	uint16 town_cn;        ///< The N-1th waypoint for this town (consecutive number)
+	uint16 waypoint_flags; ///< Waypoint flags, see WaypointFlags
+
+	TileArea road_waypoint_area; ///< Tile area the road waypoint part covers
 
 	/**
 	 * Create a waypoint at the given tile.
 	 * @param tile The location of the waypoint.
 	 */
-	Waypoint(TileIndex tile = INVALID_TILE) : SpecializedStation<Waypoint, true>(tile) { }
+	Waypoint(TileIndex tile = INVALID_TILE) : SpecializedStation<Waypoint, true>(tile), waypoint_flags(0) { }
 	~Waypoint();
 
 	void UpdateVirtCoord() override;
@@ -32,7 +43,7 @@ struct Waypoint FINAL : SpecializedStation<Waypoint, true> {
 		return IsRailWaypointTile(tile) && GetStationIndex(tile) == this->index;
 	}
 
-	uint32 GetNewGRFVariable(const struct ResolverObject &object, byte variable, byte parameter, bool *available) const override;
+	uint32 GetNewGRFVariable(const struct ResolverObject &object, uint16 variable, byte parameter, bool *available) const override;
 
 	void GetTileArea(TileArea *ta, StationType type) const override;
 

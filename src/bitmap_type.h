@@ -10,6 +10,7 @@
 #ifndef BITMAP_TYPE_HPP
 #define BITMAP_TYPE_HPP
 
+#include "tilearea_type.h"
 #include <vector>
 
 /** Represents a tile area containing containing individually set tiles.

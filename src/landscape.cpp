@@ -35,6 +35,7 @@
 #include "town.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 #include "scope_info.h"
+#include <array>
 #include <list>
 #include <set>
 #include <deque>
@@ -92,7 +93,19 @@ extern const byte _slope_to_sprite_offset[32] = {
  */
 static SnowLine *_snow_line = nullptr;
 
+/** The current spring during river generation */
+static TileIndex _current_spring = INVALID_TILE;
+
+/** The current estuary during river generation when one river flows into another */
+static TileIndex _current_estuary = INVALID_TILE;
+
+/** Whether the current river is a big river that others flow into */
+static bool _is_main_river = false;
+
 byte _cached_snowline = 0;
+byte _cached_highest_snowline = 0;
+byte _cached_lowest_snowline = 0;
+byte _cached_tree_placement_highest_snowline = 0;
 
 /**
  * Map 2D viewport or smallmap coordinate to 3D world or tile coordinate.
@@ -123,7 +136,7 @@ Point InverseRemapCoords2(int x, int y, bool clamp_to_map, bool *clamped)
 		/* Bring the coordinates near to a valid range. At the top we allow a number
 		 * of extra tiles. This is mostly due to the tiles on the north side of
 		 * the map possibly being drawn higher due to the extra height levels. */
-		int extra_tiles = CeilDiv(_settings_game.construction.max_heightlevel * TILE_HEIGHT, TILE_PIXELS);
+		int extra_tiles = CeilDiv(_settings_game.construction.map_height_limit * TILE_HEIGHT, TILE_PIXELS);
 		Point old_pt = pt;
 		pt.x = Clamp(pt.x, -extra_tiles * TILE_SIZE, max_x);
 		pt.y = Clamp(pt.y, -extra_tiles * TILE_SIZE, max_y);
@@ -647,6 +660,7 @@ void SetSnowLine(byte table[SNOW_LINE_MONTHS][SNOW_LINE_DAYS])
 	}
 
 	UpdateCachedSnowLine();
+	UpdateCachedSnowLineBounds();
 }
 
 /**
@@ -667,23 +681,16 @@ void UpdateCachedSnowLine()
 }
 
 /**
- * Get the highest possible snow line height, either variable or static.
- * @return the highest snow line height.
+ * Cache the lowest and highest possible snow line heights, either variable or static.
  * @ingroup SnowLineGroup
  */
-byte HighestSnowLine()
+void UpdateCachedSnowLineBounds()
 {
-	return _snow_line == nullptr ? _settings_game.game_creation.snow_line_height : _snow_line->highest_value;
-}
+	_cached_highest_snowline = _snow_line == nullptr ? _settings_game.game_creation.snow_line_height : _snow_line->highest_value;
+	_cached_lowest_snowline = _snow_line == nullptr ? _settings_game.game_creation.snow_line_height : _snow_line->lowest_value;
 
-/**
- * Get the lowest possible snow line height, either variable or static.
- * @return the lowest snow line height.
- * @ingroup SnowLineGroup
- */
-byte LowestSnowLine()
-{
-	return _snow_line == nullptr ? _settings_game.game_creation.snow_line_height : _snow_line->lowest_value;
+	uint snowline_range = ((_settings_game.construction.trees_around_snow_line_dynamic_range * (HighestSnowLine() - LowestSnowLine())) + 50) / 100;
+	_cached_tree_placement_highest_snowline = LowestSnowLine() + snowline_range;
 }
 
 /**
@@ -695,6 +702,7 @@ void ClearSnowLine()
 	free(_snow_line);
 	_snow_line = nullptr;
 	UpdateCachedSnowLine();
+	UpdateCachedSnowLineBounds();
 }
 
 /**
@@ -745,7 +753,7 @@ CommandCost CmdLandscapeClear(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 
 	if (flags & DC_EXEC) {
 		if (c != nullptr) c->clear_limit -= 1 << 16;
-		if (do_clear) DoClearSquare(tile);
+		if (do_clear) ForceClearWaterTile(tile);
 	}
 	return cost;
 }
@@ -991,23 +999,52 @@ static void GenerateTerrain(int type, uint flag)
 
 #include "table/genland.h"
 
-static void CreateDesertOrRainForest()
+static std::pair<const Rect16 *, const Rect16 *> GetDesertOrRainforestData()
+{
+	switch (_settings_game.game_creation.coast_tropics_width) {
+		case 0:
+			return { _make_desert_or_rainforest_data, endof(_make_desert_or_rainforest_data) };
+		case 1:
+			return { _make_desert_or_rainforest_data_medium, endof(_make_desert_or_rainforest_data_medium) };
+		case 2:
+			return { _make_desert_or_rainforest_data_large, endof(_make_desert_or_rainforest_data_large) };
+		case 3:
+			return { _make_desert_or_rainforest_data_extralarge, endof(_make_desert_or_rainforest_data_extralarge) };
+		default:
+			NOT_REACHED();
+	}
+}
+
+template <typename F>
+void DesertOrRainforestProcessTiles(const std::pair<const Rect16 *, const Rect16 *> desert_rainforest_data, const Rect16 *&data, TileIndex tile, F handle_tile)
+{
+	for (data = desert_rainforest_data.first; data != desert_rainforest_data.second; ++data) {
+		const Rect16 r = *data;
+		for (int16 x = r.left; x <= r.right; x++) {
+			for (int16 y = r.top; y <= r.bottom; y++) {
+				TileIndex t = AddTileIndexDiffCWrap(tile, { x, y });
+				if (handle_tile(t)) return;
+			}
+		}
+	}
+}
+
+static void CreateDesertOrRainForest(uint desert_tropic_line)
 {
 	TileIndex update_freq = MapSize() / 4;
-	const TileIndexDiffC *data;
-	uint max_desert_height = _settings_game.game_creation.rainforest_line_height;
+	const Rect16 *data;
+
+	const std::pair<const Rect16 *, const Rect16 *> desert_rainforest_data = GetDesertOrRainforestData();
 
 	for (TileIndex tile = 0; tile != MapSize(); ++tile) {
 		if ((tile % update_freq) == 0) IncreaseGeneratingWorldProgress(GWP_LANDSCAPE);
 
 		if (!IsValidTile(tile)) continue;
 
-		for (data = _make_desert_or_rainforest_data;
-				data != endof(_make_desert_or_rainforest_data); ++data) {
-			TileIndex t = AddTileIndexDiffCWrap(tile, *data);
-			if (t != INVALID_TILE && (TileHeight(t) >= max_desert_height || IsTileType(t, MP_WATER))) break;
-		}
-		if (data == endof(_make_desert_or_rainforest_data)) {
+		DesertOrRainforestProcessTiles(desert_rainforest_data, data, tile, [&](TileIndex t) -> bool {
+			return (t != INVALID_TILE && (TileHeight(t) >= desert_tropic_line || IsTileType(t, MP_WATER)));
+		});
+		if (data == desert_rainforest_data.second) {
 			SetTropicZone(tile, TROPICZONE_DESERT);
 		}
 	}
@@ -1023,12 +1060,10 @@ static void CreateDesertOrRainForest()
 
 		if (!IsValidTile(tile)) continue;
 
-		for (data = _make_desert_or_rainforest_data;
-				data != endof(_make_desert_or_rainforest_data); ++data) {
-			TileIndex t = AddTileIndexDiffCWrap(tile, *data);
-			if (t != INVALID_TILE && IsTileType(t, MP_CLEAR) && IsClearGround(t, CLEAR_DESERT)) break;
-		}
-		if (data == endof(_make_desert_or_rainforest_data)) {
+		DesertOrRainforestProcessTiles(desert_rainforest_data, data, tile, [&](TileIndex t) -> bool {
+			return (t != INVALID_TILE && IsTileType(t, MP_CLEAR) && IsClearGround(t, CLEAR_DESERT));
+		});
+		if (data == desert_rainforest_data.second) {
 			SetTropicZone(tile, TROPICZONE_RAINFOREST);
 		}
 	}
@@ -1046,7 +1081,7 @@ static bool FindSpring(TileIndex tile, void *user_data)
 	if (!IsTileFlat(tile, &referenceHeight) || IsWaterTile(tile)) return false;
 
 	/* In the tropics rivers start in the rainforest. */
-	if (_settings_game.game_creation.landscape == LT_TROPIC && GetTropicZone(tile) != TROPICZONE_RAINFOREST) return false;
+	if (_settings_game.game_creation.landscape == LT_TROPIC && GetTropicZone(tile) != TROPICZONE_RAINFOREST && !_settings_game.game_creation.lakes_allowed_in_deserts) return false;
 
 	/* Are there enough higher tiles to warrant a 'spring'? */
 	uint num = 0;
@@ -1072,6 +1107,15 @@ static bool FindSpring(TileIndex tile, void *user_data)
 	return true;
 }
 
+struct MakeLakeData {
+	TileIndex centre;            ///< Lake centre tile
+	uint height;                 ///< Lake height
+	int max_distance;            ///< Max radius
+	int secondary_axis_scale;    ///< Multiplier for ellipse narrow axis, 16 bit fixed point
+	int sin_fp;                  ///< sin of ellipse rotation angle, 16 bit fixed point
+	int cos_fp;                  ///< cos of ellipse rotation angle, 16 bit fixed point
+};
+
 /**
  * Make a connected lake; fill all tiles in the circular tile search that are connected.
  * @param tile The tile to consider for lake making.
@@ -1080,9 +1124,28 @@ static bool FindSpring(TileIndex tile, void *user_data)
  */
 static bool MakeLake(TileIndex tile, void *user_data)
 {
-	uint height = *(uint*)user_data;
-	if (!IsValidTile(tile) || TileHeight(tile) != height || !IsTileFlat(tile)) return false;
-	if (_settings_game.game_creation.landscape == LT_TROPIC && GetTropicZone(tile) == TROPICZONE_DESERT) return false;
+	const MakeLakeData *data = (const MakeLakeData *)user_data;
+	if (!IsValidTile(tile) || TileHeight(tile) != data->height || !IsTileFlat(tile)) return false;
+	if (_settings_game.game_creation.landscape == LT_TROPIC && GetTropicZone(tile) == TROPICZONE_DESERT && !_settings_game.game_creation.lakes_allowed_in_deserts) return false;
+
+	/* Offset from centre tile */
+	const int64 x_delta = (int)TileX(tile) - (int)TileX(data->centre);
+	const int64 y_delta = (int)TileY(tile) - (int)TileY(data->centre);
+
+	/* Rotate to new coordinate system */
+	const int64 a_delta = (x_delta * data->cos_fp + y_delta * data->sin_fp) >> 8;
+	const int64 b_delta = (-x_delta * data->sin_fp + y_delta * data->cos_fp) >> 8;
+
+	int max_distance = data->max_distance;
+	if (max_distance >= 6) {
+		/* Vary radius a bit for larger lakes */
+		uint coord = (std::abs(x_delta) > std::abs(y_delta)) ? TileY(tile) : TileX(tile);
+		static const int8 offset_fuzz[4] = { 0, 1, 0, -1 };
+		max_distance += offset_fuzz[(coord / 3) & 3];
+	}
+
+	/* Check if inside ellipse */
+	if ((a_delta * a_delta) + ((data->secondary_axis_scale * b_delta * b_delta) >> 16) > ((int64)(max_distance * max_distance) << 16)) return false;
 
 	for (DiagDirection d = DIAGDIR_BEGIN; d < DIAGDIR_END; d++) {
 		TileIndex t2 = tile + TileOffsByDiagDir(d);
@@ -1091,7 +1154,7 @@ static bool MakeLake(TileIndex tile, void *user_data)
 			MarkTileDirtyByTile(tile);
 			/* Remove desert directly around the river tile. */
 			TileIndex t = tile;
-			CircularTileSearch(&t, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
+			CircularTileSearch(&t, _settings_game.game_creation.lake_tropics_width, RiverModifyDesertZone, nullptr);
 			return false;
 		}
 	}
@@ -1155,6 +1218,20 @@ static void River_GetNeighbours(AyStar *aystar, OpenListNode *current)
 	}
 }
 
+/** Callback to widen a river tile. */
+static bool RiverMakeWider(TileIndex tile, void *data)
+{
+	if (IsValidTile(tile) && !IsWaterTile(tile) && GetTileSlope(tile) == GetTileSlope(*(TileIndex *)data)) {
+		MakeRiver(tile, Random());
+		/* Remove desert directly around the river tile. */
+		TileIndex cur_tile = tile;
+
+		MarkTileDirtyByTile(cur_tile);
+		CircularTileSearch(&cur_tile, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
+	}
+	return false;
+}
+
 /* AyStar callback when an route has been found. */
 static void River_FoundEndNode(AyStar *aystar, OpenListNode *current)
 {
@@ -1162,25 +1239,25 @@ static void River_FoundEndNode(AyStar *aystar, OpenListNode *current)
 		TileIndex tile = path->node.tile;
 		if (!IsWaterTile(tile)) {
 			MakeRiver(tile, Random());
+
+			// Widen river depending on how far we are away from the source.
+			const uint current_river_length = DistanceManhattan(_current_spring, path->node.tile);
+			const uint long_river_length = _settings_game.game_creation.min_river_length * 4;
+			const uint radius = std::min(3u, (current_river_length / (long_river_length / 3u)) + 1u);
+
 			MarkTileDirtyByTile(tile);
-			/* Remove desert directly around the river tile. */
-			CircularTileSearch(&tile, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
+
+			if (_is_main_river && (radius > 1)) {
+				CircularTileSearch(&tile, radius + RandomRange(1), RiverMakeWider, (void *)&path->node.tile);
+			} else {
+				/* Remove desert directly around the river tile. */
+				CircularTileSearch(&tile, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
+			}
 		}
 	}
 }
 
 static const uint RIVER_HASH_SIZE = 8; ///< The number of bits the hash for river finding should have.
-
-/**
- * Simple hash function for river tiles to be used by AyStar.
- * @param tile The tile to hash.
- * @param dir The unused direction.
- * @return The hash for the tile.
- */
-static uint River_Hash(uint tile, uint dir)
-{
-	return GB(TileHash(TileX(tile), TileY(tile)), 0, RIVER_HASH_SIZE);
-}
 
 /**
  * Actually build the river between the begin and end tiles using AyStar.
@@ -1197,7 +1274,7 @@ static void BuildRiver(TileIndex begin, TileIndex end)
 	finder.FoundEndNode = River_FoundEndNode;
 	finder.user_target = &end;
 
-	finder.Init(River_Hash, 1 << RIVER_HASH_SIZE);
+	finder.Init(1 << RIVER_HASH_SIZE);
 
 	AyStarNode start;
 	start.tile = begin;
@@ -1211,15 +1288,24 @@ static void BuildRiver(TileIndex begin, TileIndex end)
  * Try to flow the river down from a given begin.
  * @param spring The springing point of the river.
  * @param begin  The begin point we are looking from; somewhere down hill from the spring.
+ * @param min_river_length The minimum length for the river.
  * @return True iff a river could/has been built, otherwise false.
  */
-static bool FlowRiver(TileIndex spring, TileIndex begin)
+static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 {
 #	define SET_MARK(x) marks.insert(x)
 #	define IS_MARKED(x) (marks.find(x) != marks.end())
 
 	uint height = TileHeight(begin);
-	if (IsWaterTile(begin)) return DistanceManhattan(spring, begin) > _settings_game.game_creation.min_river_length;
+	if (IsWaterTile(begin))
+	{
+		if (GetTileZ(begin) == 0) {
+			_current_estuary = begin;
+			_is_main_river = true;
+		}
+
+		return DistanceManhattan(spring, begin) > min_river_length;
+	}
 
 	btree::btree_set<TileIndex> marks;
 	SET_MARK(begin);
@@ -1253,8 +1339,8 @@ static bool FlowRiver(TileIndex spring, TileIndex begin)
 
 	if (found) {
 		/* Flow further down hill. */
-		found = FlowRiver(spring, end);
-	} else if (count > 32) {
+		found = FlowRiver(spring, end, min_river_length);
+	} else if (count > 32 && _settings_game.game_creation.lake_size != 0) {
 		/* Maybe we can make a lake. Find the Nth of the considered tiles. */
 		TileIndex lakeCenter = 0;
 		int i = RandomRange(count - 1) + 1;
@@ -1272,18 +1358,36 @@ static bool FlowRiver(TileIndex spring, TileIndex begin)
 				/* We don't want lakes in the desert. */
 				(_settings_game.game_creation.landscape != LT_TROPIC || _settings_game.game_creation.lakes_allowed_in_deserts || GetTropicZone(lakeCenter) != TROPICZONE_DESERT) &&
 				/* We only want a lake if the river is long enough. */
-				DistanceManhattan(spring, lakeCenter) > _settings_game.game_creation.min_river_length) {
+				DistanceManhattan(spring, lakeCenter) > min_river_length) {
 			end = lakeCenter;
 			MakeRiver(lakeCenter, Random());
 			MarkTileDirtyByTile(lakeCenter);
 			/* Remove desert directly around the river tile. */
 			CircularTileSearch(&lakeCenter, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
 			lakeCenter = end;
-			uint range = RandomRange(_settings_game.game_creation.lake_size) + 3;
-			CircularTileSearch(&lakeCenter, range, MakeLake, &height);
+
+			// Setting lake size +- 25%
+			const auto random_percentage = 75 + RandomRange(50);
+			const uint range = ((_settings_game.game_creation.lake_size * random_percentage) / 100) + 3;
+
+			MakeLakeData data;
+			data.centre = lakeCenter;
+			data.height = height;
+			data.max_distance = range / 2;
+
+			/* Square of ratio of ellipse dimensions: 1 to 5 (16 bit fixed point) */
+			data.secondary_axis_scale = (1 << 16) + RandomRange(1 << 18);
+
+			/* Range from -1 to 1 (16 bit fixed point) */
+			data.sin_fp = RandomRange(1 << 17) - (1 << 16);
+
+			/* sin^2 + cos^2 = 1 */
+			data.cos_fp = IntSqrt64(((int64)1 << 32) - ((int64)data.sin_fp * (int64)data.sin_fp));
+
+			CircularTileSearch(&lakeCenter, range, MakeLake, &data);
 			/* Call the search a second time so artefacts from going circular in one direction get (mostly) hidden. */
 			lakeCenter = end;
-			CircularTileSearch(&lakeCenter, range, MakeLake, &height);
+			CircularTileSearch(&lakeCenter, range, MakeLake, &data);
 			found = true;
 		}
 	}
@@ -1302,14 +1406,28 @@ static void CreateRivers()
 	if (amount == 0) return;
 
 	uint wells = ScaleByMapSize(4 << _settings_game.game_creation.amount_of_rivers);
+	const uint num_short_rivers = wells - std::max(1u, wells / 10);
 	SetGeneratingWorldProgress(GWP_RIVER, wells + 256 / 64); // Include the tile loop calls below.
+
+	for (; wells > num_short_rivers; wells--) {
+		IncreaseGeneratingWorldProgress(GWP_RIVER);
+		for (int tries = 0; tries < 128; tries++) {
+			TileIndex t = RandomTile();
+			if (!CircularTileSearch(&t, 8, FindSpring, nullptr)) continue;
+			_current_spring = t;
+			_is_main_river = false;
+			if (FlowRiver(t, t, _settings_game.game_creation.min_river_length * 4)) break;
+		}
+	}
 
 	for (; wells != 0; wells--) {
 		IncreaseGeneratingWorldProgress(GWP_RIVER);
 		for (int tries = 0; tries < 128; tries++) {
 			TileIndex t = RandomTile();
 			if (!CircularTileSearch(&t, 8, FindSpring, nullptr)) continue;
-			if (FlowRiver(t, t)) break;
+			_current_spring = t;
+			_is_main_river = false;
+			if (FlowRiver(t, t, _settings_game.game_creation.min_river_length)) break;
 		}
 	}
 
@@ -1318,6 +1436,121 @@ static void CreateRivers()
 		if (i % 64 == 0) IncreaseGeneratingWorldProgress(GWP_RIVER);
 		RunTileLoop();
 	}
+}
+
+/**
+ * Calculate what height would be needed to cover N% of the landmass.
+ *
+ * The function allows both snow and desert/tropic line to be calculated. It
+ * tries to find the closests height which covers N% of the landmass; it can
+ * be below or above it.
+ *
+ * Tropic has a mechanism where water and tropic tiles in mountains grow
+ * inside the desert. To better approximate the requested coverage, this is
+ * taken into account via an edge histogram, which tells how many neighbouring
+ * tiles are lower than the tiles of that height. The multiplier indicates how
+ * severe this has to be taken into account.
+ *
+ * @param coverage A value between 0 and 100 indicating a percentage of landmass that should be covered.
+ * @param edge_multiplier How much effect neighbouring tiles that are of a lower height level have on the score.
+ * @return The estimated best height to use to cover N% of the landmass.
+ */
+static uint CalculateCoverageLine(uint coverage, uint edge_multiplier)
+{
+	const DiagDirection neighbour_dir[] = {
+		DIAGDIR_NE,
+		DIAGDIR_SE,
+		DIAGDIR_SW,
+		DIAGDIR_NW,
+	};
+
+	/* Histogram of how many tiles per height level exist. */
+	std::array<int, MAX_TILE_HEIGHT + 1> histogram = {};
+	/* Histogram of how many neighbour tiles are lower than the tiles of the height level. */
+	std::array<int, MAX_TILE_HEIGHT + 1> edge_histogram = {};
+
+	/* Build a histogram of the map height. */
+	for (TileIndex tile = 0; tile < MapSize(); tile++) {
+		uint h = TileHeight(tile);
+		histogram[h]++;
+
+		if (edge_multiplier != 0) {
+			/* Check if any of our neighbours is below us. */
+			for (auto dir : neighbour_dir) {
+				TileIndex neighbour_tile = AddTileIndexDiffCWrap(tile, TileIndexDiffCByDiagDir(dir));
+				if (IsValidTile(neighbour_tile) && TileHeight(neighbour_tile) < h) {
+					edge_histogram[h]++;
+				}
+			}
+		}
+	}
+
+	/* The amount of land we have is the map size minus the first (sea) layer. */
+	uint land_tiles = MapSizeX() * MapSizeY() - histogram[0];
+	int best_score = land_tiles;
+
+	/* Our goal is the coverage amount of the land-mass. */
+	int goal_tiles = land_tiles * coverage / 100;
+
+	/* We scan from top to bottom. */
+	uint h = MAX_TILE_HEIGHT;
+	uint best_h = h;
+
+	int current_tiles = 0;
+	for (; h > 0; h--) {
+		current_tiles += histogram[h];
+		int current_score = goal_tiles - current_tiles;
+
+		/* Tropic grows from water and mountains into the desert. This is a
+		 * great visual, but it also means we* need to take into account how
+		 * much less desert tiles are being created if we are on this
+		 * height-level. We estimate this based on how many neighbouring
+		 * tiles are below us for a given length, assuming that is where
+		 * tropic is growing from.
+		 */
+		if (edge_multiplier != 0 && h > 1) {
+			/* From water tropic tiles grow for a few tiles land inward. */
+			current_score -= edge_histogram[1] * edge_multiplier;
+			/* Tropic tiles grow into the desert for a few tiles. */
+			current_score -= edge_histogram[h] * edge_multiplier;
+		}
+
+		if (std::abs(current_score) < std::abs(best_score)) {
+			best_score = current_score;
+			best_h = h;
+		}
+
+		/* Always scan all height-levels, as h == 1 might give a better
+		 * score than any before. This is true for example with 0% desert
+		 * coverage. */
+	}
+
+	return best_h;
+}
+
+/**
+ * Calculate the line from which snow begins.
+ */
+static void CalculateSnowLine()
+{
+	if (_settings_game.game_creation.climate_threshold_mode == 0) {
+		/* We do not have snow sprites on coastal tiles, so never allow "1" as height. */
+		_settings_game.game_creation.snow_line_height = std::max(CalculateCoverageLine(_settings_game.game_creation.snow_coverage, 0), 2u);
+	}
+	UpdateCachedSnowLine();
+	UpdateCachedSnowLineBounds();
+}
+
+/**
+ * Calculate the line (in height) between desert and tropic.
+ * @return The height of the line between desert and tropic.
+ */
+static uint8 CalculateDesertLine()
+{
+	if (_settings_game.game_creation.climate_threshold_mode != 0) return _settings_game.game_creation.rainforest_line_height;
+
+	/* CalculateCoverageLine() runs from top to bottom, so we need to invert the coverage. */
+	return CalculateCoverageLine(100 - _settings_game.game_creation.desert_coverage, 4);
 }
 
 void GenerateLandscape(byte mode)
@@ -1404,7 +1637,20 @@ void GenerateLandscape(byte mode)
 	MarkWholeScreenDirty();
 	IncreaseGeneratingWorldProgress(GWP_LANDSCAPE);
 
-	if (_settings_game.game_creation.landscape == LT_TROPIC) CreateDesertOrRainForest();
+	switch (_settings_game.game_creation.landscape) {
+		case LT_ARCTIC:
+			CalculateSnowLine();
+			break;
+
+		case LT_TROPIC: {
+			uint desert_tropic_line = CalculateDesertLine();
+			CreateDesertOrRainForest(desert_tropic_line);
+			break;
+		}
+
+		default:
+			break;
+	}
 
 	CreateRivers();
 }

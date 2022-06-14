@@ -27,6 +27,7 @@
 #include "company_base.h"
 #include "error.h"
 #include "strings_func.h"
+#include "newgrf_roadstop.h"
 
 #include "table/strings.h"
 
@@ -264,7 +265,7 @@ void IndustryOverrideManager::SetEntitySpec(IndustrySpec *inds)
 
 	if (ind_id == invalid_ID) {
 		/* Not found.
-		 * Or it has already been overridden, so you've lost your place old boy.
+		 * Or it has already been overridden, so you've lost your place.
 		 * Or it is a simple substitute.
 		 * We need to find a free available slot */
 		ind_id = this->AddEntityID(inds->grf_prop.local_id, inds->grf_prop.grffile->grfid, inds->grf_prop.subst_id);
@@ -319,7 +320,7 @@ void ObjectOverrideManager::SetEntitySpec(ObjectSpec *spec)
 
 	if (type == invalid_ID) {
 		/* Not found.
-		 * Or it has already been overridden, so you've lost your place old boy.
+		 * Or it has already been overridden, so you've lost your place.
 		 * Or it is a simple substitute.
 		 * We need to find a free available slot */
 		type = this->AddEntityID(spec->grf_prop.local_id, spec->grf_prop.grffile->grfid, OBJECT_TRANSMITTER);
@@ -443,19 +444,33 @@ TileIndex GetNearbyTile(byte parameter, TileIndex tile, bool signed_offsets, Axi
  * @param grf_version8 True, if we are dealing with a new NewGRF which uses GRF version >= 8.
  * @return 0czzbbss: c = TileType; zz = TileZ; bb: 7-3 zero, 4-2 TerrainType, 1 water/shore, 0 zero; ss = TileSlope
  */
-uint32 GetNearbyTileInformation(TileIndex tile, bool grf_version8)
+uint32 GetNearbyTileInformation(TileIndex tile, bool grf_version8, uint32 mask)
 {
-	TileType tile_type = GetTileType(tile);
+	uint32 result = 0;
+	TileType tile_type = MP_CLEAR;
+	if (mask & 0xFF000200) {
+		tile_type = GetTileType(tile);
 
-	/* Fake tile type for trees on shore */
-	if (IsTileType(tile, MP_TREES) && GetTreeGround(tile) == TREE_GROUND_SHORE) tile_type = MP_WATER;
+		/* Fake tile type for trees on shore */
+		if (IsTileType(tile, MP_TREES) && GetTreeGround(tile) == TREE_GROUND_SHORE) tile_type = MP_WATER;
 
-	int z;
-	Slope tileh = GetTilePixelSlope(tile, &z);
-	/* Return 0 if the tile is a land tile */
-	byte terrain_type = (HasTileWaterClass(tile) ? (GetWaterClass(tile) + 1) & 3 : 0) << 5 | GetTerrainType(tile) << 2 | (tile_type == MP_WATER ? 1 : 0) << 1;
-	if (grf_version8) z /= TILE_HEIGHT;
-	return tile_type << 24 | Clamp(z, 0, 0xFF) << 16 | terrain_type << 8 | tileh;
+		/* Fake tile type for road waypoints */
+		if (IsRoadWaypointTile(tile)) tile_type = MP_ROAD;
+
+		result |= tile_type << 24;
+	}
+	if (mask & 0xFE00) {
+		/* Return 0 if the tile is a land tile */
+		byte terrain_type = (HasTileWaterClass(tile) ? (GetWaterClass(tile) + 1) & 3 : 0) << 5 | GetTerrainType(tile) << 2 | (tile_type == MP_WATER ? 1 : 0) << 1;
+		result |= terrain_type << 8;
+	}
+	if (mask & 0xFF00FF) {
+		int z;
+		Slope tileh = GetTilePixelSlope(tile, &z);
+		if (grf_version8) z /= TILE_HEIGHT;
+		result |= Clamp(z, 0, 0xFF) << 16 | tileh;
+	}
+	return result;
 }
 
 /**

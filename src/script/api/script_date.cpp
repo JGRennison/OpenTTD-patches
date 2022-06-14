@@ -7,11 +7,14 @@
 
 /** @file script_date.cpp Implementation of ScriptDate. */
 
-#include <time.h>
 #include "../../stdafx.h"
 #include "script_date.hpp"
 #include "../../date_func.h"
 #include "../../settings_type.h"
+
+#include <time.h>
+
+#include <time.h>
 
 #include "../../safeguards.h"
 

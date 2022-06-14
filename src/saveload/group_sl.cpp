@@ -21,12 +21,11 @@ static const SaveLoad _group_desc[] = {
 	SLE_CONDNULL(2,                                                         SL_MIN_VERSION,  SLV_164), // num_vehicle
 	     SLE_VAR(Group, owner,              SLE_UINT8),
 	     SLE_VAR(Group, vehicle_type,       SLE_UINT8),
-	     SLE_VAR(Group, replace_protection, SLE_BOOL),
+	     SLE_VAR(Group, flags,              SLE_UINT8),
 	 SLE_CONDVAR(Group, livery.in_use,      SLE_UINT8,                     SLV_GROUP_LIVERIES, SL_MAX_VERSION),
 	 SLE_CONDVAR(Group, livery.colour1,     SLE_UINT8,                     SLV_GROUP_LIVERIES, SL_MAX_VERSION),
 	 SLE_CONDVAR(Group, livery.colour2,     SLE_UINT8,                     SLV_GROUP_LIVERIES, SL_MAX_VERSION),
 	 SLE_CONDVAR(Group, parent,             SLE_UINT16,                    SLV_189, SL_MAX_VERSION),
-	     SLE_END()
 };
 
 static void Save_GRPS()
@@ -56,6 +55,8 @@ static void Load_GRPS()
 	}
 }
 
-extern const ChunkHandler _group_chunk_handlers[] = {
-	{ 'GRPS', Save_GRPS, Load_GRPS, nullptr, nullptr, CH_ARRAY | CH_LAST},
+static const ChunkHandler group_chunk_handlers[] = {
+	{ 'GRPS', Save_GRPS, Load_GRPS, nullptr, nullptr, CH_ARRAY },
 };
+
+extern const ChunkHandlerTable _group_chunk_handlers(group_chunk_handlers);

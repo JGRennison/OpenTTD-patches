@@ -34,7 +34,6 @@ static const SaveLoad _story_page_elements_desc[] = {
 	SLE_CONDVAR(StoryPageElement, type,          SLE_UINT8,                  SLV_185, SL_MAX_VERSION),
 	    SLE_VAR(StoryPageElement, referenced_id, SLE_UINT32),
 	    SLE_STR(StoryPageElement, text,          SLE_STR | SLF_ALLOW_CONTROL, 0),
-	    SLE_END()
 };
 
 static void Save_STORY_PAGE_ELEMENT()
@@ -69,7 +68,6 @@ static const SaveLoad _story_pages_desc[] = {
 	SLE_CONDVAR(StoryPage, company,    SLE_FILE_U16 | SLE_VAR_U8,  SL_MIN_VERSION,   SLV_185),
 	SLE_CONDVAR(StoryPage, company,    SLE_UINT8,                  SLV_185, SL_MAX_VERSION),
 	    SLE_STR(StoryPage, title,      SLE_STR | SLF_ALLOW_CONTROL, 0),
-	    SLE_END()
 };
 
 static void Save_STORY_PAGE()
@@ -97,7 +95,9 @@ static void Load_STORY_PAGE()
 	_story_page_next_sort_value = max_sort_value + 1;
 }
 
-extern const ChunkHandler _story_page_chunk_handlers[] = {
-	{ 'STPE', Save_STORY_PAGE_ELEMENT, Load_STORY_PAGE_ELEMENT, nullptr, nullptr, CH_ARRAY},
-	{ 'STPA', Save_STORY_PAGE,         Load_STORY_PAGE,         nullptr, nullptr, CH_ARRAY | CH_LAST},
+static const ChunkHandler story_page_chunk_handlers[] = {
+	{ 'STPE', Save_STORY_PAGE_ELEMENT, Load_STORY_PAGE_ELEMENT, nullptr, nullptr, CH_ARRAY },
+	{ 'STPA', Save_STORY_PAGE,         Load_STORY_PAGE,         nullptr, nullptr, CH_ARRAY },
 };
+
+extern const ChunkHandlerTable _story_page_chunk_handlers(story_page_chunk_handlers);

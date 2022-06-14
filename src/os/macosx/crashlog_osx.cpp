@@ -23,6 +23,7 @@
 #include <mach-o/arch.h>
 #include <dlfcn.h>
 #include <cxxabi.h>
+#include <sys/mman.h>
 #ifdef WITH_UCONTEXT
 #include <sys/ucontext.h>
 #endif
@@ -47,25 +48,38 @@
 #define MAX_STACK_FRAMES 64
 
 #if !defined(WITHOUT_DBG_LLDB)
-static bool ExecReadStdout(const char *file, char *const *args, char *&buffer, const char *last)
+static bool ExecReadStdoutThroughFile(const char *file, char *const *args, char *&buffer, const char *last)
 {
-	int pipefd[2];
-	if (pipe(pipefd) == -1) return false;
+	int null_fd = open("/dev/null", O_RDWR);
+	if (null_fd == -1) return false;
+
+	char name[MAX_PATH];
+	extern std::string _personal_dir;
+	seprintf(name, lastof(name), "%sopenttd-tmp-XXXXXX", _personal_dir.c_str());
+	int fd = mkstemp(name);
+	if (fd == -1) {
+		close(null_fd);
+		return false;
+	}
+
+	/* Unlink file but leave fd open until finished with */
+	unlink(name);
 
 	int pid = fork();
-	if (pid < 0) return false;
+	if (pid < 0) {
+		close(null_fd);
+		close(fd);
+		return false;
+	}
 
 	if (pid == 0) {
 		/* child */
 
-		close(pipefd[0]); /* Close unused read end */
-		dup2(pipefd[1], STDOUT_FILENO);
-		close(pipefd[1]);
-		int null_fd = open("/dev/null", O_RDWR);
-		if (null_fd != -1) {
-			dup2(null_fd, STDERR_FILENO);
-			dup2(null_fd, STDIN_FILENO);
-		}
+		dup2(fd, STDOUT_FILENO);
+		close(fd);
+		dup2(null_fd, STDERR_FILENO);
+		dup2(null_fd, STDIN_FILENO);
+		close(null_fd);
 
 		execvp(file, args);
 		exit(42);
@@ -73,30 +87,30 @@ static bool ExecReadStdout(const char *file, char *const *args, char *&buffer, c
 
 	/* parent */
 
-	close(pipefd[1]); /* Close unused write end */
-
-	while (buffer < last) {
-		ssize_t res = read(pipefd[0], buffer, last - buffer);
-		if (res < 0) {
-			if (errno == EINTR) continue;
-			break;
-		} else if (res == 0) {
-			break;
-		} else {
-			buffer += res;
-		}
-	}
-	buffer += seprintf(buffer, last, "\n");
-
-	close(pipefd[0]); /* close read end */
+	close(null_fd);
 
 	int status;
 	int wait_ret = waitpid(pid, &status, 0);
 	if (wait_ret == -1 || !WIFEXITED(status) || WEXITSTATUS(status) != 0) {
 		/* command did not appear to run successfully */
+		close(fd);
 		return false;
 	} else {
 		/* command executed successfully */
+		lseek(fd, 0, SEEK_SET);
+		while (buffer < last) {
+			ssize_t res = read(fd, buffer, last - buffer);
+			if (res < 0) {
+				if (errno == EINTR) continue;
+				break;
+			} else if (res == 0) {
+				break;
+			} else {
+				buffer += res;
+			}
+		}
+		buffer += seprintf(buffer, last, "\n");
+		close(fd);
 		return true;
 	}
 }
@@ -109,7 +123,7 @@ class CrashLogOSX : public CrashLog {
 	/** Signal that has been thrown. */
 	int signum;
 	siginfo_t *si;
-	void *context;
+	[[maybe_unused]] void *context;
 	bool signal_instruction_ptr_valid;
 	void *signal_instruction_ptr;
 
@@ -281,7 +295,7 @@ class CrashLogOSX : public CrashLog {
 		}
 
 		args.push_back(nullptr);
-		if (!ExecReadStdout("lldb", const_cast<char* const*>(&(args[0])), buffer, last)) {
+		if (!ExecReadStdoutThroughFile("lldb", const_cast<char* const*>(&(args[0])), buffer, last)) {
 			buffer = buffer_orig;
 		}
 #endif /* !WITHOUT_DBG_LLDB */
@@ -385,13 +399,12 @@ public:
 	}
 
 	/** Generate the crash log. */
-	bool MakeCrashLog()
+	bool MakeOSXCrashLog(char *buffer, const char *last)
 	{
-		char buffer[65536 * 4];
 		bool ret = true;
 
 		printf("Crash encountered, generating crash log...\n");
-		this->FillCrashLog(buffer, lastof(buffer));
+		this->FillCrashLog(buffer, last);
 		printf("%s\n", buffer);
 		printf("Crash log generated.\n\n");
 
@@ -417,6 +430,12 @@ public:
 		}
 
 		return ret;
+	}
+
+	bool MakeOSXCrashLogWithStackBuffer()
+	{
+		char buffer[65536];
+		return this->MakeOSXCrashLog(buffer, lastof(buffer));
 	}
 
 	/** Show a dialog with the crash information. */
@@ -461,7 +480,15 @@ void CDECL HandleCrash(int signum, siginfo_t *si, void *context)
 	}
 
 	CrashLogOSX log(signum, si, context);
-	log.MakeCrashLog();
+
+	const size_t length = 65536 * 16;
+	char *buffer = (char *)mmap(nullptr, length, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON, -1, 0);
+	if (buffer != MAP_FAILED) {
+		log.MakeOSXCrashLog(buffer, buffer + length - 1);
+	} else {
+		log.MakeOSXCrashLogWithStackBuffer();
+	}
+
 	if (VideoDriver::GetInstance() == nullptr || VideoDriver::GetInstance()->HasGUI()) {
 		log.DisplayCrashDialog();
 	}
@@ -491,6 +518,13 @@ void CDECL HandleCrash(int signum, siginfo_t *si, void *context)
 	CrashLogOSX log(CrashLogOSX::DesyncTag{});
 	log.MakeDesyncCrashLog(log_in, log_out, info);
 }
+
+/* static */ void CrashLog::InconsistencyLog(const InconsistencyExtraInfo &info)
+{
+	CrashLogOSX log(CrashLogOSX::DesyncTag{});
+	log.MakeInconsistencyLog(info);
+}
+
 
 /* static */ void CrashLog::VersionInfoLog()
 {

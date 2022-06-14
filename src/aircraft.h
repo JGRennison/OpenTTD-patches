@@ -93,9 +93,10 @@ struct Aircraft FINAL : public SpecializedVehicle<Aircraft, VEH_AIRCRAFT> {
 
 	void MarkDirty();
 	void UpdateDeltaXY();
-	ExpensesType GetExpenseType(bool income) const { return income ? EXPENSES_AIRCRAFT_INC : EXPENSES_AIRCRAFT_RUN; }
+	ExpensesType GetExpenseType(bool income) const { return income ? EXPENSES_AIRCRAFT_REVENUE : EXPENSES_AIRCRAFT_RUN; }
 	bool IsPrimaryVehicle() const                  { return this->IsNormalAircraft(); }
 	void GetImage(Direction direction, EngineImageType image_type, VehicleSpriteSeq *result) const;
+	Direction GetMapImageDirection() const { return this->First()->direction; }
 	int GetDisplaySpeed() const    { return this->cur_speed; }
 	int GetDisplayMaxSpeed() const { return this->vcache.cached_max_speed; }
 	int GetSpeedOldUnits() const   { return this->vcache.cached_max_speed * 10 / 128; }
@@ -110,6 +111,7 @@ struct Aircraft FINAL : public SpecializedVehicle<Aircraft, VEH_AIRCRAFT> {
 
 	bool Tick();
 	void OnNewDay();
+	void OnPeriodic();
 	uint Crash(bool flooded = false);
 	TileIndex GetOrderStationLocation(StationID station);
 	bool FindClosestDepot(TileIndex *location, DestinationID *destination, bool *reverse);

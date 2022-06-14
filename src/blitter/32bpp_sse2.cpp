@@ -74,7 +74,20 @@ Sprite *Blitter_32bppSSE_Base::Encode(const SpriteLoader::Sprite *sprite, Alloca
 					dst_rgba->a = src->a;
 					if (src->a != 0 && src->a != 255) has_translucency = true;
 					dst_mv->m = src->m;
-					if (src->m != 0) {
+					if (z >= _settings_client.gui.disable_water_animation && src->m >= 245 && src->m <= 254) {
+						/* Get brightest value */
+						uint8 rgb_max = std::max({ src->r, src->g, src->b });
+
+						/* Black pixel (8bpp or old 32bpp image), so use default value */
+						if (rgb_max == 0) rgb_max = Blitter_32bppBase::DEFAULT_BRIGHTNESS;
+
+						extern Colour _water_palette[10];
+						Colour c = AdjustBrightneSSE(_water_palette[src->m - 245], rgb_max);
+						dst_rgba->r = c.r;
+						dst_rgba->g = c.g;
+						dst_rgba->b = c.b;
+						dst_mv->v = Blitter_32bppBase::DEFAULT_BRIGHTNESS;
+					} else if (src->m != 0) {
 						/* Do some accounting for flags. */
 						has_remap = true;
 						if (src->m >= PALETTE_ANIM_START) has_anim = true;
@@ -129,10 +142,10 @@ Sprite *Blitter_32bppSSE_Base::Encode(const SpriteLoader::Sprite *sprite, Alloca
 	}
 
 	/* Store sprite flags. */
-	sd.flags = SF_NONE;
-	if (has_translucency) sd.flags |= SF_TRANSLUCENT;
-	if (!has_remap) sd.flags |= SF_NO_REMAP;
-	if (!has_anim) sd.flags |= SF_NO_ANIM;
+	sd.flags = BSF_NONE;
+	if (has_translucency) sd.flags |= BSF_TRANSLUCENT;
+	if (!has_remap) sd.flags |= BSF_NO_REMAP;
+	if (!has_anim) sd.flags |= BSF_NO_ANIM;
 	memcpy(dst_sprite->data, &sd, sizeof(SpriteData));
 
 	return dst_sprite;

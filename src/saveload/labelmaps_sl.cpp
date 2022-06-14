@@ -16,7 +16,7 @@
 
 #include "../safeguards.h"
 
-static std::vector<RailTypeLabel> _railtype_list;
+std::vector<RailTypeLabel> _railtype_list;
 
 /**
  * Test if any saved rail type labels are different to the currently loaded
@@ -49,7 +49,7 @@ void AfterLoadLabelMaps()
 
 			railtype_conversion_map[i] = r;
 		}
-		for (uint i = _railtype_list.size(); i < RAILTYPE_END; i++) {
+		for (uint i = (uint)_railtype_list.size(); i < RAILTYPE_END; i++) {
 			railtype_conversion_map[i] = RAILTYPE_RAIL;
 		}
 
@@ -104,7 +104,6 @@ struct LabelObject {
 
 static const SaveLoad _label_object_desc[] = {
 	SLE_VAR(LabelObject, label, SLE_UINT32),
-	SLE_END(),
 };
 
 static void Save_RAIL()
@@ -131,7 +130,9 @@ static void Load_RAIL()
 	}
 }
 
-extern const ChunkHandler _labelmaps_chunk_handlers[] = {
-	{ 'RAIL', Save_RAIL, Load_RAIL, nullptr, nullptr, CH_ARRAY | CH_LAST},
+static const ChunkHandler labelmaps_chunk_handlers[] = {
+	{ 'RAIL', Save_RAIL, Load_RAIL, nullptr, nullptr, CH_ARRAY },
 };
+
+extern const ChunkHandlerTable _labelmaps_chunk_handlers(labelmaps_chunk_handlers);
 

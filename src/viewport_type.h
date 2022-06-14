@@ -60,6 +60,7 @@ struct Viewport {
 	uint8 dirty_block_left_margin;
 	bool is_dirty = false;
 	bool is_drawn = false;
+	bool update_vehicles = false;
 	ViewPortMapDrawVehiclesCache map_draw_vehicles_cache;
 	std::vector<byte> land_pixel_cache;
 
@@ -75,6 +76,7 @@ struct Viewport {
 			this->is_dirty = false;
 		}
 		this->is_drawn = false;
+		this->update_vehicles = false;
 	}
 
 private:
@@ -192,8 +194,10 @@ enum ViewportDragDropSelectionProcess {
 	DDSP_PLACE_ROAD_X_DIR,     ///< Road placement (X axis)
 	DDSP_PLACE_ROAD_Y_DIR,     ///< Road placement (Y axis)
 	DDSP_PLACE_AUTOROAD,       ///< Road placement (auto)
+	DDSP_BUILD_ROAD_WAYPOINT,  ///< Road stop placement (waypoint)
 	DDSP_BUILD_BUSSTOP,        ///< Road stop placement (buses)
 	DDSP_BUILD_TRUCKSTOP,      ///< Road stop placement (trucks)
+	DDSP_REMOVE_ROAD_WAYPOINT, ///< Road stop removal (waypoint)
 	DDSP_REMOVE_BUSSTOP,       ///< Road stop removal (buses)
 	DDSP_REMOVE_TRUCKSTOP,     ///< Road stop removal (trucks)
 	DDSP_CONVERT_ROAD,         ///< Road conversion
@@ -218,9 +222,10 @@ enum FoundationPart {
 };
 
 enum ViewportMarkDirtyFlags : byte {
-	VMDF_NONE                = 0,
-	VMDF_NOT_MAP_MODE        = 0x1,
-	VMDF_NOT_LANDSCAPE       = 0x2,
+	VMDF_NONE                  = 0,
+	VMDF_NOT_MAP_MODE          = 0x1,
+	VMDF_NOT_MAP_MODE_NON_VEG  = 0x2,
+	VMDF_NOT_LANDSCAPE         = 0x4,
 };
 DECLARE_ENUM_AS_BIT_SET(ViewportMarkDirtyFlags)
 

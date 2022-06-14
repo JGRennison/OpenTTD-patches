@@ -86,7 +86,9 @@ static void Check_DBGC()
 	}
 }
 
-extern const ChunkHandler _debug_chunk_handlers[] = {
-	{ 'DBGL', Save_DBGL, Load_DBGL, nullptr, Check_DBGL, CH_RIFF},
-	{ 'DBGC', Save_DBGC, Load_DBGC, nullptr, Check_DBGC, CH_RIFF | CH_LAST},
+extern const ChunkHandler debug_chunk_handlers[] = {
+	{ 'DBGL', Save_DBGL, Load_DBGL, nullptr, Check_DBGL, CH_RIFF },
+	{ 'DBGC', Save_DBGC, Load_DBGC, nullptr, Check_DBGC, CH_RIFF },
 };
+
+extern const ChunkHandlerTable _debug_chunk_handlers(debug_chunk_handlers);

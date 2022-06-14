@@ -27,18 +27,22 @@
 #include "newgrf_sound.h"
 #include "newgrf_station.h"
 #include "industrytype.h"
+#include "industry_map.h"
 #include "newgrf_canal.h"
 #include "newgrf_townname.h"
 #include "newgrf_industries.h"
 #include "newgrf_airporttiles.h"
 #include "newgrf_airport.h"
 #include "newgrf_object.h"
+#include "newgrf_newsignals.h"
+#include "newgrf_newlandscape.h"
+#include "newgrf_extension.h"
 #include "rev.h"
 #include "fios.h"
 #include "strings_func.h"
 #include "date_func.h"
 #include "string_func.h"
-#include "network/network.h"
+#include "network/core/config.h"
 #include "smallmap_gui.h"
 #include "genworld.h"
 #include "error.h"
@@ -46,11 +50,18 @@
 #include "language.h"
 #include "vehicle_base.h"
 #include "road.h"
+#include "newgrf_roadstop.h"
+#include "debug_settings.h"
+#include "core/arena_alloc.hpp"
+#include "core/y_combinator.hpp"
+#include "core/container_func.hpp"
+#include "scope.h"
 
 #include "table/strings.h"
 #include "table/build_industry.h"
 
 #include "3rdparty/cpp-btree/btree_map.h"
+#include <map>
 
 #include "safeguards.h"
 
@@ -71,6 +82,8 @@ const std::vector<GRFFile *> &GetAllGRFFiles()
 	return _grf_files;
 }
 
+static btree::btree_map<uint16, const CallbackResultSpriteGroup *> _callback_result_cache;
+
 /** Miscellaneous GRF features, set by Action 0x0D, parameter 0x9E */
 byte _misc_grf_features = 0;
 
@@ -84,6 +97,11 @@ static const uint MAX_SPRITEGROUP = UINT8_MAX; ///< Maximum GRF-local ID for a s
 
 /** Base GRF ID for OpenTTD's base graphics GRFs. */
 static const uint32 OPENTTD_GRAPHICS_BASE_GRF_ID = BSWAP32(0xFF4F5400);
+
+struct VarAction2GroupVariableTracking {
+	std::bitset<256> in;
+	std::bitset<256> out;
+};
 
 /** Temporary data during loading of GRFs */
 struct GrfProcessingState {
@@ -103,17 +121,35 @@ public:
 	SpriteID spriteid;        ///< First available SpriteID for loading realsprites.
 
 	/* Local state in the file */
-	uint file_index;          ///< File index of currently processed GRF file.
+	SpriteFile *file;         ///< File of currently processed GRF file.
 	GRFFile *grffile;         ///< Currently processed GRF file.
 	GRFConfig *grfconfig;     ///< Config of the currently processed GRF file.
 	uint32 nfo_line;          ///< Currently processed pseudo sprite number in the GRF.
-	byte grf_container_ver;   ///< Container format of the current GRF file.
 
 	/* Kind of return values when processing certain actions */
 	int skip_sprites;         ///< Number of pseudo sprites to skip before processing the next one. (-1 to skip to end of file)
 
 	/* Currently referenceable spritegroups */
-	SpriteGroup *spritegroups[MAX_SPRITEGROUP + 1];
+	const SpriteGroup *spritegroups[MAX_SPRITEGROUP + 1];
+
+	/* VarAction2 temporary storage variable tracking */
+	btree::btree_map<const SpriteGroup *, VarAction2GroupVariableTracking *> group_temp_store_variable_tracking;
+	UniformArenaAllocator<sizeof(VarAction2GroupVariableTracking), 1024> group_temp_store_variable_tracking_storage;
+	std::vector<DeterministicSpriteGroup *> dead_store_elimination_candidates;
+	std::vector<DeterministicSpriteGroup *> pending_expensive_var_checks;
+
+	VarAction2GroupVariableTracking *GetVarAction2GroupVariableTracking(const SpriteGroup *group, bool make_new)
+	{
+		if (make_new) {
+			VarAction2GroupVariableTracking *&ptr = this->group_temp_store_variable_tracking[group];
+			if (!ptr) ptr = new (this->group_temp_store_variable_tracking_storage.Allocate()) VarAction2GroupVariableTracking();
+			return ptr;
+		} else {
+			auto iter = this->group_temp_store_variable_tracking.find(group);
+			if (iter != this->group_temp_store_variable_tracking.end()) return iter->second;
+			return nullptr;
+		}
+	}
 
 	/** Clear temporary data before processing the next file in the current loading stage */
 	void ClearDataForNextFile()
@@ -126,6 +162,11 @@ public:
 		}
 
 		memset(this->spritegroups, 0, sizeof(this->spritegroups));
+
+		this->group_temp_store_variable_tracking.clear();
+		this->group_temp_store_variable_tracking_storage.EmptyArena();
+		this->dead_store_elimination_candidates.clear();
+		this->pending_expensive_var_checks.clear();
 	}
 
 	/**
@@ -221,6 +262,19 @@ protected:
 
 public:
 	ByteReader(byte *data, byte *end) : data(data), end(end) { }
+
+	inline byte *ReadBytes(size_t size)
+	{
+		if (data + size >= end) {
+			/* Put data at the end, as would happen if every byte had been individually read. */
+			data = end;
+			throw OTTDByteReaderSignal();
+		}
+
+		byte *ret = data;
+		data += size;
+		return ret;
+	}
 
 	inline byte ReadByte()
 	{
@@ -370,6 +424,7 @@ struct GRFLocation {
 static btree::btree_map<GRFLocation, SpriteID> _grm_sprites;
 typedef btree::btree_map<GRFLocation, byte*> GRFLineToSpriteOverride;
 static GRFLineToSpriteOverride _grf_line_to_action6_sprite_override;
+static bool _action6_override_active = false;
 
 /**
  * DEBUG() function dedicated to newGRF debugging messages
@@ -404,6 +459,17 @@ GRFFile *GetFileByGRFID(uint32 grfid)
 		if (file->grfid == grfid) return file;
 	}
 	return nullptr;
+}
+
+/**
+ * Obtain a NewGRF file by its grfID,  expect it to usually be the current GRF's grfID
+ * @param grfid The grfID to obtain the file for
+ * @return The file.
+ */
+GRFFile *GetFileByGRFIDExpectCurrent(uint32 grfid)
+{
+	if (_cur.grffile->grfid == grfid) return _cur.grffile;
+	return GetFileByGRFID(grfid);
 }
 
 /**
@@ -953,8 +1019,7 @@ static bool ReadSpriteLayout(ByteReader *buf, uint num_building_sprites, bool us
 static CargoTypes TranslateRefitMask(uint32 refit_mask)
 {
 	CargoTypes result = 0;
-	uint8 bit;
-	FOR_EACH_SET_BIT(bit, refit_mask) {
+	for (uint8 bit : SetBitIterator(refit_mask)) {
 		CargoID cargo = GetCargoTranslation(bit, _cur.grffile, true);
 		if (cargo != CT_INVALID) SetBit(result, cargo);
 	}
@@ -1018,8 +1083,8 @@ static bool MappedPropertyLengthMismatch(ByteReader *buf, uint expected_size, co
 	uint length = buf->ReadExtendedByte();
 	if (length != expected_size) {
 		if (mapping_entry != nullptr) {
-			grfmsg(2, "Ignoring use of mapped property: %s, feature: %X, mapped to: %X, with incorrect data size: %u instead of %u",
-					mapping_entry->name, mapping_entry->feature, mapping_entry->property_id, length, expected_size);
+			grfmsg(2, "Ignoring use of mapped property: %s, feature: %s, mapped to: %X, with incorrect data size: %u instead of %u",
+					mapping_entry->name, GetFeatureString(mapping_entry->feature), mapping_entry->property_id, length, expected_size);
 		}
 		buf->Skip(length);
 		return true;
@@ -1354,6 +1419,10 @@ static ChangeInfoResult RailVehicleChangeInfo(uint engine, int numinfo, int prop
 				}
 				break;
 			}
+
+			case PROP_TRAIN_CURVE_SPEED_MOD: // 0x2E Curve speed modifier
+				rvi->curve_speed_mod = buf->ReadWord();
+				break;
 
 			default:
 				ret = CommonVehicleChangeInfo(ei, prop, mapping_entry, buf);
@@ -1918,7 +1987,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 				StationSpec **spec = &_cur.grffile->stations[stid + i];
 
 				/* Property 0x08 is special; it is where the station is allocated */
-				if (*spec == nullptr) *spec = CallocT<StationSpec>(1);
+				if (*spec == nullptr) *spec = new StationSpec();
 
 				/* Swap classid because we read it in BE meaning WAYP or DFLT */
 				uint32 classid = buf->ReadDWord();
@@ -1926,13 +1995,13 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 				break;
 			}
 
-			case 0x09: // Define sprite layout
-				statspec->tiles = buf->ReadExtendedByte();
-				delete[] statspec->renderdata; // delete earlier loaded stuff
-				statspec->renderdata = new NewGRFSpriteLayout[statspec->tiles];
+			case 0x09: { // Define sprite layout
+				uint16 tiles = buf->ReadExtendedByte();
+				statspec->renderdata.clear(); // delete earlier loaded stuff
+				statspec->renderdata.reserve(tiles);
 
-				for (uint t = 0; t < statspec->tiles; t++) {
-					NewGRFSpriteLayout *dts = &statspec->renderdata[t];
+				for (uint t = 0; t < tiles; t++) {
+					NewGRFSpriteLayout *dts = &statspec->renderdata.emplace_back();
 					dts->consistent_max_offset = UINT16_MAX; // Spritesets are unknown, so no limit.
 
 					if (buf->HasData(4) && *(unaligned_uint32*)buf->Data() == 0) {
@@ -1968,6 +2037,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 					dts->Clone(tmp_layout.data());
 				}
 				break;
+			}
 
 			case 0x0A: { // Copy sprite layout
 				byte srcid = buf->ReadByte();
@@ -1978,12 +2048,12 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 					continue;
 				}
 
-				delete[] statspec->renderdata; // delete earlier loaded stuff
+				statspec->renderdata.clear(); // delete earlier loaded stuff
+				statspec->renderdata.reserve(srcstatspec->renderdata.size());
 
-				statspec->tiles = srcstatspec->tiles;
-				statspec->renderdata = new NewGRFSpriteLayout[statspec->tiles];
-				for (uint t = 0; t < statspec->tiles; t++) {
-					statspec->renderdata[t].Clone(&srcstatspec->renderdata[t]);
+				for (const auto &it : srcstatspec->renderdata) {
+					NewGRFSpriteLayout *dts = &statspec->renderdata.emplace_back();
+					dts->Clone(&it);
 				}
 				break;
 			}
@@ -2001,54 +2071,25 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 				break;
 
 			case 0x0E: // Define custom layout
-				ClrBit(statspec->internal_flags, SSIF_COPIED_LAYOUTS);
-
 				while (buf->HasData()) {
 					byte length = buf->ReadByte();
 					byte number = buf->ReadByte();
-					StationLayout layout;
-					uint l, p;
 
 					if (length == 0 || number == 0) break;
 
-					if (length > statspec->lengths) {
-						byte diff_length = length - statspec->lengths;
-						statspec->platforms = ReallocT(statspec->platforms, length);
-						memset(statspec->platforms + statspec->lengths, 0, diff_length);
+					if (statspec->layouts.size() < length) statspec->layouts.resize(length);
+					if (statspec->layouts[length - 1].size() < number) statspec->layouts[length - 1].resize(number);
 
-						statspec->layouts = ReallocT(statspec->layouts, length);
-						memset(statspec->layouts + statspec->lengths, 0, diff_length * sizeof(*statspec->layouts));
+					const byte *layout = buf->ReadBytes(length * number);
+					statspec->layouts[length - 1][number - 1].assign(layout, layout + length * number);
 
-						statspec->lengths = length;
-					}
-					l = length - 1; // index is zero-based
-
-					if (number > statspec->platforms[l]) {
-						statspec->layouts[l] = ReallocT(statspec->layouts[l], number);
-						/* We expect nullptr being 0 here, but C99 guarantees that. */
-						memset(statspec->layouts[l] + statspec->platforms[l], 0,
-						       (number - statspec->platforms[l]) * sizeof(**statspec->layouts));
-
-						statspec->platforms[l] = number;
-					}
-
-					p = 0;
-					layout = MallocT<byte>(length * number);
-					try {
-						for (l = 0; l < length; l++) {
-							for (p = 0; p < number; p++) {
-								layout[l * number + p] = buf->ReadByte();
-							}
+					/* Validate tile values are only the permitted 00, 02, 04 and 06. */
+					for (auto &tile : statspec->layouts[length - 1][number - 1]) {
+						if ((tile & 6) != tile) {
+							grfmsg(1, "StationChangeInfo: Invalid tile %u in layout %ux%u", tile, length, number);
+							tile &= 6;
 						}
-					} catch (...) {
-						free(layout);
-						throw;
 					}
-
-					l--;
-					p--;
-					free(statspec->layouts[l][p]);
-					statspec->layouts[l][p] = layout;
 				}
 				break;
 
@@ -2061,10 +2102,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 					continue;
 				}
 
-				statspec->lengths   = srcstatspec->lengths;
-				statspec->platforms = srcstatspec->platforms;
-				statspec->layouts   = srcstatspec->layouts;
-				SetBit(statspec->internal_flags, SSIF_COPIED_LAYOUTS);
+				statspec->layouts = srcstatspec->layouts;
 				break;
 			}
 
@@ -2109,18 +2147,19 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 				statspec->animation.triggers = buf->ReadWord();
 				break;
 
-			case 0x1A: // Advanced sprite layout
-				statspec->tiles = buf->ReadExtendedByte();
-				delete[] statspec->renderdata; // delete earlier loaded stuff
-				statspec->renderdata = new NewGRFSpriteLayout[statspec->tiles];
+			case 0x1A: { // Advanced sprite layout
+				uint16 tiles = buf->ReadExtendedByte();
+				statspec->renderdata.clear(); // delete earlier loaded stuff
+				statspec->renderdata.reserve(tiles);
 
-				for (uint t = 0; t < statspec->tiles; t++) {
-					NewGRFSpriteLayout *dts = &statspec->renderdata[t];
+				for (uint t = 0; t < tiles; t++) {
+					NewGRFSpriteLayout *dts = &statspec->renderdata.emplace_back();
 					uint num_building_sprites = buf->ReadByte();
 					/* On error, bail out immediately. Temporary GRF data was already freed */
 					if (ReadSpriteLayout(buf, num_building_sprites, false, GSF_STATIONS, true, false, dts)) return CIR_DISABLED;
 				}
 				break;
+			}
 
 			case A0RPI_STATION_MIN_BRIDGE_HEIGHT:
 				if (MappedPropertyLengthMismatch(buf, 8, mapping_entry)) break;
@@ -2684,6 +2723,22 @@ static ChangeInfoResult LoadTranslationTable(uint gvid, int numinfo, ByteReader 
 }
 
 /**
+ * Helper to read a DWord worth of bytes from the reader
+ * and to return it as a valid string.
+ * @param reader The source of the DWord.
+ * @return The read DWord as string.
+ */
+static std::string ReadDWordAsString(ByteReader *reader)
+{
+	char output[5];
+	for (int i = 0; i < 4; i++) output[i] = reader->ReadByte();
+	output[4] = '\0';
+	StrMakeValidInPlace(output, lastof(output));
+
+	return std::string(output);
+}
+
+/**
  * Define properties for global variables
  * @param gvid ID of the global variable.
  * @param numinfo Number of subsequent IDs to change the property for.
@@ -2757,8 +2812,8 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, co
 				uint16 options = buf->ReadWord();
 
 				if (curidx < CURRENCY_END) {
-					_currency_specs[curidx].separator[0] = GB(options, 0, 8);
-					_currency_specs[curidx].separator[1] = '\0';
+					_currency_specs[curidx].separator.clear();
+					_currency_specs[curidx].separator.push_back(GB(options, 0, 8));
 					/* By specifying only one bit, we prevent errors,
 					 * since newgrf specs said that only 0 and 1 can be set for symbol_pos */
 					_currency_specs[curidx].symbol_pos = GB(options, 8, 1);
@@ -2770,11 +2825,10 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, co
 
 			case 0x0D: { // Currency prefix symbol
 				uint curidx = GetNewgrfCurrencyIdConverted(gvid + i);
-				uint32 tempfix = buf->ReadDWord();
+				std::string prefix = ReadDWordAsString(buf);
 
 				if (curidx < CURRENCY_END) {
-					memcpy(_currency_specs[curidx].prefix, &tempfix, 4);
-					_currency_specs[curidx].prefix[4] = 0;
+					_currency_specs[curidx].prefix = prefix;
 				} else {
 					grfmsg(1, "GlobalVarChangeInfo: Currency symbol %d out of range, ignoring", curidx);
 				}
@@ -2783,11 +2837,10 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, co
 
 			case 0x0E: { // Currency suffix symbol
 				uint curidx = GetNewgrfCurrencyIdConverted(gvid + i);
-				uint32 tempfix = buf->ReadDWord();
+				std::string suffix = ReadDWordAsString(buf);
 
 				if (curidx < CURRENCY_END) {
-					memcpy(&_currency_specs[curidx].suffix, &tempfix, 4);
-					_currency_specs[curidx].suffix[4] = 0;
+					_currency_specs[curidx].suffix = suffix;
 				} else {
 					grfmsg(1, "GlobalVarChangeInfo: Currency symbol %d out of range, ignoring", curidx);
 				}
@@ -2818,13 +2871,13 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, co
 						for (uint j = 0; j < SNOW_LINE_DAYS; j++) {
 							table[i][j] = buf->ReadByte();
 							if (_cur.grffile->grf_version >= 8) {
-								if (table[i][j] != 0xFF) table[i][j] = table[i][j] * (1 + _settings_game.construction.max_heightlevel) / 256;
+								if (table[i][j] != 0xFF) table[i][j] = table[i][j] * (1 + _settings_game.construction.map_height_limit) / 256;
 							} else {
 								if (table[i][j] >= 128) {
 									/* no snow */
 									table[i][j] = 0xFF;
 								} else {
-									table[i][j] = table[i][j] * (1 + _settings_game.construction.max_heightlevel) / 128;
+									table[i][j] = table[i][j] * (1 + _settings_game.construction.map_height_limit) / 128;
 								}
 							}
 						}
@@ -2903,6 +2956,34 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, co
 				break;
 			}
 
+			case A0RPI_GLOBALVAR_EXTRA_STATION_NAMES: {
+				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
+				uint16 str = buf->ReadWord();
+				uint16 flags = buf->ReadWord();
+				if (_extra_station_names_used < MAX_EXTRA_STATION_NAMES) {
+					ExtraStationNameInfo &info = _extra_station_names[_extra_station_names_used];
+					AddStringForMapping(str, &info.str);
+					info.flags = flags;
+					_extra_station_names_used++;
+				}
+				break;
+			}
+
+			case A0RPI_GLOBALVAR_EXTRA_STATION_NAMES_PROBABILITY: {
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				_extra_station_names_probability = buf->ReadByte();
+				break;
+			}
+
+			case A0RPI_GLOBALVAR_LIGHTHOUSE_GENERATE_AMOUNT:
+			case A0RPI_GLOBALVAR_TRANSMITTER_GENERATE_AMOUNT: {
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				extern ObjectSpec _object_specs[NUM_OBJECTS];
+				ObjectType type = (prop == A0RPI_GLOBALVAR_LIGHTHOUSE_GENERATE_AMOUNT) ? OBJECT_LIGHTHOUSE : OBJECT_TRANSMITTER;
+				_object_specs[type].generate_amount = buf->ReadByte();
+				break;
+			}
+
 			default:
 				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
@@ -2969,6 +3050,13 @@ static ChangeInfoResult GlobalVarReserveInfo(uint gvid, int numinfo, int prop, c
 				while (buf->ReadByte() != 0) {
 					buf->ReadString();
 				}
+				break;
+
+			case A0RPI_GLOBALVAR_EXTRA_STATION_NAMES:
+			case A0RPI_GLOBALVAR_EXTRA_STATION_NAMES_PROBABILITY:
+			case A0RPI_GLOBALVAR_LIGHTHOUSE_GENERATE_AMOUNT:
+			case A0RPI_GLOBALVAR_TRANSMITTER_GENERATE_AMOUNT:
+				buf->Skip(buf->ReadExtendedByte());
 				break;
 
 			default:
@@ -3099,7 +3187,7 @@ static ChangeInfoResult CargoChangeInfo(uint cid, int numinfo, int prop, const G
 			}
 
 			case 0x19: // Town growth coefficient
-				cs->multipliertowngrowth = buf->ReadWord();
+				buf->ReadWord();
 				break;
 
 			case 0x1A: // Bitmask of callbacks to use
@@ -3267,7 +3355,7 @@ static ChangeInfoResult IndustrytilesChangeInfo(uint indtid, int numinfo, int pr
 
 					/* A copied tile should not have the animation infos copied too.
 					 * The anim_state should be left untouched, though
-					 * It is up to the author to animate them himself */
+					 * It is up to the author to animate them */
 					tsp->anim_production = INDUSTRYTILE_NOANIM;
 					tsp->anim_next = INDUSTRYTILE_NOANIM;
 
@@ -3454,15 +3542,22 @@ static ChangeInfoResult IgnoreIndustryProperty(int prop, ByteReader *buf)
 static bool ValidateIndustryLayout(const IndustryTileLayout &layout)
 {
 	const size_t size = layout.size();
+	if (size == 0) return false;
+
+	size_t valid_regular_tiles = 0;
+
 	for (size_t i = 0; i < size - 1; i++) {
 		for (size_t j = i + 1; j < size; j++) {
 			if (layout[i].ti.x == layout[j].ti.x &&
 					layout[i].ti.y == layout[j].ti.y) {
 				return false;
 			}
+			if (layout[i].gfx != GFX_WATERTILE_SPECIALCHECK) {
+				++valid_regular_tiles;
+			}
 		}
 	}
-	return true;
+	return valid_regular_tiles > 0;
 }
 
 /**
@@ -3613,7 +3708,7 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 								/* Declared as been valid, can be used */
 								it.gfx = tempid;
 							}
-						} else if (it.gfx == 0xFF) {
+						} else if (it.gfx == GFX_WATERTILE_SPECIALCHECK) {
 							it.ti.x = (int8)GB(it.ti.x, 0, 8);
 							it.ti.y = (int8)GB(it.ti.y, 0, 8);
 
@@ -4059,6 +4154,54 @@ static ChangeInfoResult AirportChangeInfo(uint airport, int numinfo, int prop, c
 }
 
 /**
+ * Define properties for signals
+ * @param id Local ID (unused).
+ * @param numinfo Number of subsequent IDs to change the property for.
+ * @param prop The property to change.
+ * @param buf The property value.
+ * @return ChangeInfoResult.
+ */
+static ChangeInfoResult SignalsChangeInfo(uint id, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf)
+{
+	/* Properties which are handled per item */
+	ChangeInfoResult ret = CIR_SUCCESS;
+	for (int i = 0; i < numinfo; i++) {
+		switch (prop) {
+			case A0RPI_SIGNALS_ENABLE_PROGRAMMABLE_SIGNALS:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				SB(_cur.grffile->new_signal_ctrl_flags, NSCF_PROGSIG, 1, (buf->ReadByte() != 0 ? 1 : 0));
+				break;
+
+			case A0RPI_SIGNALS_ENABLE_NO_ENTRY_SIGNALS:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				SB(_cur.grffile->new_signal_ctrl_flags, NSCF_NOENTRYSIG, 1, (buf->ReadByte() != 0 ? 1 : 0));
+				break;
+
+			case A0RPI_SIGNALS_ENABLE_RESTRICTED_SIGNALS:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				SB(_cur.grffile->new_signal_ctrl_flags, NSCF_RESTRICTEDSIG, 1, (buf->ReadByte() != 0 ? 1 : 0));
+				break;
+
+			case A0RPI_SIGNALS_ENABLE_SIGNAL_RECOLOUR:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				SB(_cur.grffile->new_signal_ctrl_flags, NSCF_RECOLOUR_ENABLED, 1, (buf->ReadByte() != 0 ? 1 : 0));
+				break;
+
+			case A0RPI_SIGNALS_EXTRA_ASPECTS:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				_cur.grffile->new_signal_extra_aspects = std::min<byte>(buf->ReadByte(), NEW_SIGNALS_MAX_EXTRA_ASPECT);
+				break;
+
+			default:
+				ret = HandleAction0PropertyDefault(buf, prop);
+				break;
+		}
+	}
+
+	return ret;
+}
+
+/**
  * Ignore properties for objects
  * @param prop The property to ignore.
  * @param buf The property value.
@@ -4168,8 +4311,8 @@ static ChangeInfoResult ObjectChangeInfo(uint id, int numinfo, int prop, const G
 
 			case 0x0C: // Size
 				spec->size = buf->ReadByte();
-				if ((spec->size & 0xF0) == 0 || (spec->size & 0x0F) == 0) {
-					grfmsg(1, "ObjectChangeInfo: Invalid object size requested (%u) for object id %u. Ignoring.", spec->size, id + i);
+				if (GB(spec->size, 0, 4) == 0 || GB(spec->size, 4, 4) == 0) {
+					grfmsg(0, "ObjectChangeInfo: Invalid object size requested (0x%x) for object id %u. Ignoring.", spec->size, id + i);
 					spec->size = 0x11; // 1x1
 				}
 				break;
@@ -4227,6 +4370,37 @@ static ChangeInfoResult ObjectChangeInfo(uint id, int numinfo, int prop, const G
 
 			case 0x18: // Amount placed on 256^2 map on map creation
 				spec->generate_amount = buf->ReadByte();
+				break;
+
+			case A0RPI_OBJECT_USE_LAND_GROUND:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				spec->ctrl_flags &= ~OBJECT_CTRL_FLAG_USE_LAND_GROUND;
+				if (buf->ReadByte() != 0) spec->ctrl_flags |= OBJECT_CTRL_FLAG_USE_LAND_GROUND;
+				break;
+
+			case A0RPI_OBJECT_EDGE_FOUNDATION_MODE:
+				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
+				spec->ctrl_flags |= OBJECT_CTRL_FLAG_EDGE_FOUNDATION;
+				for (int i = 0; i < 4; i++) {
+					spec->edge_foundation[i] = buf->ReadByte();
+				}
+				break;
+
+			case A0RPI_OBJECT_FLOOD_RESISTANT:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				spec->ctrl_flags &= ~OBJECT_CTRL_FLAG_FLOOD_RESISTANT;
+				if (buf->ReadByte() != 0) spec->ctrl_flags |= OBJECT_CTRL_FLAG_FLOOD_RESISTANT;
+				break;
+
+			case A0RPI_OBJECT_VIEWPORT_MAP_TYPE:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				spec->vport_map_type = (ObjectViewportMapType)buf->ReadByte();
+				spec->ctrl_flags |= OBJECT_CTRL_FLAG_VPORT_MAP_TYPE;
+				break;
+
+			case A0RPI_OBJECT_VIEWPORT_MAP_SUBTYPE:
+				if (MappedPropertyLengthMismatch(buf, 2, mapping_entry)) break;
+				spec->vport_map_subtype = buf->ReadWord();
 				break;
 
 			default:
@@ -4372,9 +4546,29 @@ static ChangeInfoResult RailTypeChangeInfo(uint id, int numinfo, int prop, const
 				SB(rti->ctrl_flags, RTCF_PROGSIG, 1, (buf->ReadByte() != 0 ? 1 : 0));
 				break;
 
+			case A0RPI_RAILTYPE_ENABLE_NO_ENTRY_SIGNALS:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				SB(rti->ctrl_flags, RTCF_NOENTRYSIG, 1, (buf->ReadByte() != 0 ? 1 : 0));
+				break;
+
 			case A0RPI_RAILTYPE_ENABLE_RESTRICTED_SIGNALS:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				SB(rti->ctrl_flags, RTCF_RESTRICTEDSIG, 1, (buf->ReadByte() != 0 ? 1 : 0));
+				break;
+
+			case A0RPI_RAILTYPE_DISABLE_REALISTIC_BRAKING:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				SB(rti->ctrl_flags, RTCF_NOREALISTICBRAKING, 1, (buf->ReadByte() != 0 ? 1 : 0));
+				break;
+
+			case A0RPI_RAILTYPE_ENABLE_SIGNAL_RECOLOUR:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				SB(rti->ctrl_flags, RTCF_RECOLOUR_ENABLED, 1, (buf->ReadByte() != 0 ? 1 : 0));
+				break;
+
+			case A0RPI_RAILTYPE_EXTRA_ASPECTS:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				rti->signal_extra_aspects = std::min<byte>(buf->ReadByte(), NEW_SIGNALS_MAX_EXTRA_ASPECT);
 				break;
 
 			default:
@@ -4458,7 +4652,11 @@ static ChangeInfoResult RailTypeReserveInfo(uint id, int numinfo, int prop, cons
 				break;
 
 			case A0RPI_RAILTYPE_ENABLE_PROGRAMMABLE_SIGNALS:
+			case A0RPI_RAILTYPE_ENABLE_NO_ENTRY_SIGNALS:
 			case A0RPI_RAILTYPE_ENABLE_RESTRICTED_SIGNALS:
+			case A0RPI_RAILTYPE_DISABLE_REALISTIC_BRAKING:
+			case A0RPI_RAILTYPE_ENABLE_SIGNAL_RECOLOUR:
+			case A0RPI_RAILTYPE_EXTRA_ASPECTS:
 				buf->Skip(buf->ReadExtendedByte());
 				break;
 
@@ -4790,7 +4988,220 @@ static ChangeInfoResult AirportTilesChangeInfo(uint airtid, int numinfo, int pro
 	return ret;
 }
 
-static bool HandleChangeInfoResult(const char *caller, ChangeInfoResult cir, uint8 feature, int property)
+/**
+ * Ignore properties for roadstops
+ * @param prop The property to ignore.
+ * @param buf The property value.
+ * @return ChangeInfoResult.
+ */
+static ChangeInfoResult IgnoreRoadStopProperty(uint prop, ByteReader *buf)
+{
+	ChangeInfoResult ret = CIR_SUCCESS;
+
+	switch (prop) {
+		case 0x09:
+		case 0x0C:
+			buf->ReadByte();
+			break;
+
+		case 0x0A:
+		case 0x0B:
+			buf->ReadWord();
+			break;
+
+		case 0x08:
+		case 0x0D:
+			buf->ReadDWord();
+			break;
+
+		default:
+			ret = HandleAction0PropertyDefault(buf, prop);
+			break;
+	}
+
+	return ret;
+}
+
+static ChangeInfoResult RoadStopChangeInfo(uint id, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf)
+{
+	ChangeInfoResult ret = CIR_SUCCESS;
+
+	if (id + numinfo > 255) {
+		grfmsg(1, "RoadStopChangeInfo: RoadStop %u is invalid, max %u, ignoring", id + numinfo, 255);
+		return CIR_INVALID_ID;
+	}
+
+	if (_cur.grffile->roadstops == nullptr) _cur.grffile->roadstops = CallocT<RoadStopSpec*>(255);
+
+	for (int i = 0; i < numinfo; i++) {
+		RoadStopSpec *rs = _cur.grffile->roadstops[id + i];
+
+		if (rs == nullptr && prop != 0x08 && prop != A0RPI_ROADSTOP_CLASS_ID) {
+			grfmsg(1, "RoadStopChangeInfo: Attempt to modify undefined road stop %u, ignoring", id + i);
+			ChangeInfoResult cir = IgnoreRoadStopProperty(prop, buf);
+			if (cir > ret) ret = cir;
+			continue;
+		}
+
+		switch (prop) {
+			case A0RPI_ROADSTOP_CLASS_ID:
+				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x08: { // Road Stop Class ID
+				RoadStopSpec **spec = &_cur.grffile->roadstops[id + i];
+
+				if (*spec == nullptr) {
+					*spec = CallocT<RoadStopSpec>(1);
+					new (*spec) RoadStopSpec();
+				}
+
+				uint32 classid = buf->ReadDWord();
+				(*spec)->cls_id = RoadStopClass::Allocate(BSWAP32(classid));
+				(*spec)->spec_id = id + i;
+				break;
+			}
+
+			case A0RPI_ROADSTOP_STOP_TYPE:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x09: // Road stop type
+				rs->stop_type = (RoadStopAvailabilityType)buf->ReadByte();
+				break;
+
+			case A0RPI_ROADSTOP_STOP_NAME:
+				if (MappedPropertyLengthMismatch(buf, 2, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x0A: // Road Stop Name
+				AddStringForMapping(buf->ReadWord(), &rs->name);
+				break;
+
+			case A0RPI_ROADSTOP_CLASS_NAME:
+				if (MappedPropertyLengthMismatch(buf, 2, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x0B: // Road Stop Class name
+				AddStringForMapping(buf->ReadWord(), &RoadStopClass::Get(rs->cls_id)->name);
+				break;
+
+			case A0RPI_ROADSTOP_DRAW_MODE:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x0C: // The draw mode
+				rs->draw_mode = (RoadStopDrawMode)buf->ReadByte();
+				break;
+
+			case A0RPI_ROADSTOP_TRIGGER_CARGOES:
+				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x0D: // Cargo types for random triggers
+				rs->cargo_triggers = TranslateRefitMask(buf->ReadDWord());
+				break;
+
+			case A0RPI_ROADSTOP_ANIMATION_INFO:
+				if (MappedPropertyLengthMismatch(buf, 2, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x0E: // Animation info
+				rs->animation.frames = buf->ReadByte();
+				rs->animation.status = buf->ReadByte();
+				break;
+
+			case A0RPI_ROADSTOP_ANIMATION_SPEED:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x0F: // Animation speed
+				rs->animation.speed = buf->ReadByte();
+				break;
+
+			case A0RPI_ROADSTOP_ANIMATION_TRIGGERS:
+				if (MappedPropertyLengthMismatch(buf, 2, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x10: // Animation triggers
+				rs->animation.triggers = buf->ReadWord();
+				break;
+
+			case A0RPI_ROADSTOP_CALLBACK_MASK:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x11: // Callback mask
+				rs->callback_mask = buf->ReadByte();
+				break;
+
+			case A0RPI_ROADSTOP_GENERAL_FLAGS:
+				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x12: // General flags
+				rs->flags = (uint8)buf->ReadDWord(); // Future-proofing, size this as 4 bytes, but we only need one byte's worth of flags at present
+				break;
+
+			case A0RPI_ROADSTOP_MIN_BRIDGE_HEIGHT:
+				if (MappedPropertyLengthMismatch(buf, 6, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x13: // Minimum height for a bridge above
+				SetBit(rs->internal_flags, RSIF_BRIDGE_HEIGHTS_SET);
+				for (uint i = 0; i < 6; i++) {
+					rs->bridge_height[i] = buf->ReadByte();
+				}
+				break;
+
+			case A0RPI_ROADSTOP_DISALLOWED_BRIDGE_PILLARS:
+				if (MappedPropertyLengthMismatch(buf, 6, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x14: // Disallowed bridge pillars
+				SetBit(rs->internal_flags, RSIF_BRIDGE_DISALLOWED_PILLARS_SET);
+				for (uint i = 0; i < 6; i++) {
+					rs->bridge_disallowed_pillars[i] = buf->ReadByte();
+				}
+				break;
+
+			case A0RPI_ROADSTOP_COST_MULTIPLIERS:
+				if (MappedPropertyLengthMismatch(buf, 2, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x15: // Cost multipliers
+				rs->build_cost_multiplier = buf->ReadByte();
+				rs->clear_cost_multiplier = buf->ReadByte();
+				break;
+
+			default:
+				ret = CIR_UNKNOWN;
+				break;
+		}
+	}
+
+	return ret;
+}
+
+/**
+ * Define properties for new landscape
+ * @param id Landscape type.
+ * @param numinfo Number of subsequent IDs to change the property for.
+ * @param prop The property to change.
+ * @param buf The property value.
+ * @return ChangeInfoResult.
+ */
+static ChangeInfoResult NewLandscapeChangeInfo(uint id, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf)
+{
+	/* Properties which are handled per item */
+	ChangeInfoResult ret = CIR_SUCCESS;
+	for (int i = 0; i < numinfo; i++) {
+		switch (prop) {
+			case A0RPI_NEWLANDSCAPE_ENABLE_RECOLOUR: {
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				bool enabled = (buf->ReadByte() != 0 ? 1 : 0);
+				if (id == NLA3ID_CUSTOM_ROCKS) {
+					SB(_cur.grffile->new_landscape_ctrl_flags, NLCF_ROCKS_RECOLOUR_ENABLED, 1, enabled);
+				}
+				break;
+			}
+
+			default:
+				ret = HandleAction0PropertyDefault(buf, prop);
+				break;
+		}
+	}
+
+	return ret;
+}
+
+static bool HandleChangeInfoResult(const char *caller, ChangeInfoResult cir, GrfSpecFeature feature, int property)
 {
 	switch (cir) {
 		default: NOT_REACHED();
@@ -4803,11 +5214,11 @@ static bool HandleChangeInfoResult(const char *caller, ChangeInfoResult cir, uin
 			return false;
 
 		case CIR_UNHANDLED:
-			grfmsg(1, "%s: Ignoring property 0x%02X of feature 0x%02X (not implemented)", caller, property, feature);
+			grfmsg(1, "%s: Ignoring property 0x%02X of feature %s (not implemented)", caller, property, GetFeatureString(feature));
 			return false;
 
 		case CIR_UNKNOWN:
-			grfmsg(0, "%s: Unknown property 0x%02X of feature 0x%02X, disabling", caller, property, feature);
+			grfmsg(0, "%s: Unknown property 0x%02X of feature %s, disabling", caller, property, GetFeatureString(feature));
 			FALLTHROUGH;
 
 		case CIR_INVALID_ID: {
@@ -4817,6 +5228,95 @@ static bool HandleChangeInfoResult(const char *caller, ChangeInfoResult cir, uin
 			return true;
 		}
 	}
+}
+
+static GrfSpecFeatureRef ReadFeature(uint8 raw_byte, bool allow_48 = false)
+{
+	if (unlikely(HasBit(_cur.grffile->ctrl_flags, GFCF_HAVE_FEATURE_ID_REMAP))) {
+		const GRFFeatureMapRemapSet &remap = _cur.grffile->feature_id_remaps;
+		if (remap.remapped_ids[raw_byte]) {
+			auto iter = remap.mapping.find(raw_byte);
+			const GRFFeatureMapRemapEntry &def = iter->second;
+			if (def.feature == GSF_ERROR_ON_USE) {
+				grfmsg(0, "Error: Unimplemented mapped feature: %s, mapped to: %02X", def.name, raw_byte);
+				GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID);
+				error->data = stredup(def.name);
+				error->param_value[1] = GSF_INVALID;
+				error->param_value[2] = raw_byte;
+			} else if (def.feature == GSF_INVALID) {
+				grfmsg(2, "Ignoring unimplemented mapped feature: %s, mapped to: %02X", def.name, raw_byte);
+			}
+			return { def.feature, raw_byte };
+		}
+	}
+
+	GrfSpecFeature feature;
+	if (raw_byte >= GSF_REAL_FEATURE_END && !(allow_48 && raw_byte == 0x48)) {
+		feature = GSF_INVALID;
+	} else {
+		feature = static_cast<GrfSpecFeature>(raw_byte);
+	}
+	return { feature, raw_byte };
+}
+
+static const char *_feature_names[] = {
+	"TRAINS",
+	"ROADVEHICLES",
+	"SHIPS",
+	"AIRCRAFT",
+	"STATIONS",
+	"CANALS",
+	"BRIDGES",
+	"HOUSES",
+	"GLOBALVAR",
+	"INDUSTRYTILES",
+	"INDUSTRIES",
+	"CARGOES",
+	"SOUNDFX",
+	"AIRPORTS",
+	"SIGNALS",
+	"OBJECTS",
+	"RAILTYPES",
+	"AIRPORTTILES",
+	"ROADTYPES",
+	"TRAMTYPES",
+	"ROADSTOPS",
+	"NEWLANDSCAPE",
+};
+static_assert(lengthof(_feature_names) == GSF_END);
+
+const char *GetFeatureString(GrfSpecFeatureRef feature)
+{
+	static char buffer[32];
+	if (feature.id < GSF_END) {
+		seprintf(buffer, lastof(buffer), "0x%02X (%s)", feature.raw_byte, _feature_names[feature.id]);
+	} else {
+		if (unlikely(HasBit(_cur.grffile->ctrl_flags, GFCF_HAVE_FEATURE_ID_REMAP))) {
+			const GRFFeatureMapRemapSet &remap = _cur.grffile->feature_id_remaps;
+			if (remap.remapped_ids[feature.raw_byte]) {
+				auto iter = remap.mapping.find(feature.raw_byte);
+				const GRFFeatureMapRemapEntry &def = iter->second;
+				seprintf(buffer, lastof(buffer), "0x%02X (%s)", feature.raw_byte, def.name);
+				return buffer;
+			}
+		}
+		seprintf(buffer, lastof(buffer), "0x%02X", feature.raw_byte);
+	}
+	return buffer;
+}
+
+const char *GetFeatureString(GrfSpecFeature feature)
+{
+	uint8 raw_byte = feature;
+	if (feature >= GSF_REAL_FEATURE_END) {
+		for (const auto &entry : _cur.grffile->feature_id_remaps.mapping) {
+			if (entry.second.feature == feature) {
+				raw_byte = entry.second.raw_id;
+				break;
+			}
+		}
+	}
+	return GetFeatureString(GrfSpecFeatureRef{ feature, raw_byte });
 }
 
 struct GRFFilePropertyDescriptor {
@@ -4837,13 +5337,13 @@ static GRFFilePropertyDescriptor ReadAction0PropertyID(ByteReader *buf, uint8 fe
 		const GRFFilePropertyRemapEntry &def = iter->second;
 		int prop = def.id;
 		if (prop == A0RPI_UNKNOWN_ERROR) {
-			grfmsg(0, "Error: Unimplemented mapped property: %s, feature: %X, mapped to: %X", def.name, def.feature, raw_prop);
+			grfmsg(0, "Error: Unimplemented mapped property: %s, feature: %s, mapped to: %X", def.name, GetFeatureString(def.feature), raw_prop);
 			GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY);
 			error->data = stredup(def.name);
 			error->param_value[1] = def.feature;
 			error->param_value[2] = raw_prop;
 		} else if (prop == A0RPI_UNKNOWN_IGNORE) {
-			grfmsg(2, "Ignoring unimplemented mapped property: %s, feature: %X, mapped to: %X", def.name, def.feature, raw_prop);
+			grfmsg(2, "Ignoring unimplemented mapped property: %s, feature: %s, mapped to: %X", def.name, GetFeatureString(def.feature), raw_prop);
 		}
 		return GRFFilePropertyDescriptor(prop, &def);
 	} else {
@@ -4880,30 +5380,34 @@ static void FeatureChangeInfo(ByteReader *buf)
 		/* GSF_CARGOES */       nullptr, // Cargo is handled during reservation
 		/* GSF_SOUNDFX */       SoundEffectChangeInfo,
 		/* GSF_AIRPORTS */      AirportChangeInfo,
-		/* GSF_SIGNALS */       nullptr,
+		/* GSF_SIGNALS */       SignalsChangeInfo,
 		/* GSF_OBJECTS */       ObjectChangeInfo,
 		/* GSF_RAILTYPES */     RailTypeChangeInfo,
 		/* GSF_AIRPORTTILES */  AirportTilesChangeInfo,
 		/* GSF_ROADTYPES */     RoadTypeChangeInfo,
 		/* GSF_TRAMTYPES */     TramTypeChangeInfo,
+		/* GSF_ROADSTOPS */     RoadStopChangeInfo,
+		/* GSF_NEWLANDSCAPE */  NewLandscapeChangeInfo,
 	};
+	static_assert(GSF_END == lengthof(handler));
 	static_assert(lengthof(handler) == lengthof(_cur.grffile->action0_property_remaps), "Action 0 feature list length mismatch");
 
-	uint8 feature  = buf->ReadByte();
+	GrfSpecFeatureRef feature_ref = ReadFeature(buf->ReadByte());
+	GrfSpecFeature feature = feature_ref.id;
 	uint8 numprops = buf->ReadByte();
 	uint numinfo  = buf->ReadByte();
 	uint engine   = buf->ReadExtendedByte();
 
 	if (feature >= GSF_END) {
-		grfmsg(1, "FeatureChangeInfo: Unsupported feature 0x%02X, skipping", feature);
+		grfmsg(1, "FeatureChangeInfo: Unsupported feature %s skipping", GetFeatureString(feature_ref));
 		return;
 	}
 
-	grfmsg(6, "FeatureChangeInfo: Feature 0x%02X, %d properties, to apply to %d+%d",
-	               feature, numprops, engine, numinfo);
+	grfmsg(6, "FeatureChangeInfo: Feature %s, %d properties, to apply to %d+%d",
+	               GetFeatureString(feature_ref), numprops, engine, numinfo);
 
-	if (feature >= lengthof(handler) || handler[feature] == nullptr) {
-		if (feature != GSF_CARGOES) grfmsg(1, "FeatureChangeInfo: Unsupported feature 0x%02X, skipping", feature);
+	if (handler[feature] == nullptr) {
+		if (feature != GSF_CARGOES) grfmsg(1, "FeatureChangeInfo: Unsupported feature %s, skipping", GetFeatureString(feature_ref));
 		return;
 	}
 
@@ -4921,18 +5425,18 @@ static void FeatureChangeInfo(ByteReader *buf)
 /* Action 0x00 (GLS_SAFETYSCAN) */
 static void SafeChangeInfo(ByteReader *buf)
 {
-	uint8 feature  = buf->ReadByte();
+	GrfSpecFeatureRef feature = ReadFeature(buf->ReadByte());
 	uint8 numprops = buf->ReadByte();
 	uint numinfo = buf->ReadByte();
 	buf->ReadExtendedByte(); // id
 
-	if (feature == GSF_BRIDGES && numprops == 1) {
-		GRFFilePropertyDescriptor desc = ReadAction0PropertyID(buf, feature);
+	if (feature.id == GSF_BRIDGES && numprops == 1) {
+		GRFFilePropertyDescriptor desc = ReadAction0PropertyID(buf, feature.id);
 		/* Bridge property 0x0D is redefinition of sprite layout tables, which
 		 * is considered safe. */
 		if (desc.prop == 0x0D) return;
-	} else if (feature == GSF_GLOBALVAR && numprops == 1) {
-		GRFFilePropertyDescriptor desc = ReadAction0PropertyID(buf, feature);
+	} else if (feature.id == GSF_GLOBALVAR && numprops == 1) {
+		GRFFilePropertyDescriptor desc = ReadAction0PropertyID(buf, feature.id);
 		/* Engine ID Mappings are safe, if the source is static */
 		if (desc.prop == 0x11) {
 			bool is_safe = true;
@@ -4958,7 +5462,8 @@ static void SafeChangeInfo(ByteReader *buf)
 /* Action 0x00 (GLS_RESERVE) */
 static void ReserveChangeInfo(ByteReader *buf)
 {
-	uint8 feature  = buf->ReadByte();
+	GrfSpecFeatureRef feature_ref = ReadFeature(buf->ReadByte());
+	GrfSpecFeature feature = feature_ref.id;
 
 	if (feature != GSF_CARGOES && feature != GSF_GLOBALVAR && feature != GSF_RAILTYPES && feature != GSF_ROADTYPES && feature != GSF_TRAMTYPES) return;
 
@@ -5014,7 +5519,8 @@ static void NewSpriteSet(ByteReader *buf)
 	 *                         In that case, use num-dirs=4.
 	 */
 
-	uint8  feature   = buf->ReadByte();
+	GrfSpecFeatureRef feature_ref = ReadFeature(buf->ReadByte());
+	GrfSpecFeature feature = feature_ref.id;
 	uint16 num_sets  = buf->ReadByte();
 	uint16 first_set = 0;
 
@@ -5028,19 +5534,19 @@ static void NewSpriteSet(ByteReader *buf)
 
 	if (feature >= GSF_END) {
 		_cur.skip_sprites = num_sets * num_ents;
-		grfmsg(1, "NewSpriteSet: Unsupported feature 0x%02X, skipping %d sprites", feature, _cur.skip_sprites);
+		grfmsg(1, "NewSpriteSet: Unsupported feature %s, skipping %d sprites", GetFeatureString(feature_ref), _cur.skip_sprites);
 		return;
 	}
 
 	_cur.AddSpriteSets(feature, _cur.spriteid, first_set, num_sets, num_ents);
 
-	grfmsg(7, "New sprite set at %d of feature 0x%02X, consisting of %d sets with %d views each (total %d)",
-		_cur.spriteid, feature, num_sets, num_ents, num_sets * num_ents
+	grfmsg(7, "New sprite set at %d of feature %s, consisting of %d sets with %d views each (total %d)",
+		_cur.spriteid, GetFeatureString(feature), num_sets, num_ents, num_sets * num_ents
 	);
 
 	for (int i = 0; i < num_sets * num_ents; i++) {
 		_cur.nfo_line++;
-		LoadNextSprite(_cur.spriteid++, _cur.file_index, _cur.nfo_line, _cur.grf_container_ver);
+		LoadNextSprite(_cur.spriteid++, *_cur.file, _cur.nfo_line);
 	}
 }
 
@@ -5063,13 +5569,48 @@ static void SkipAct1(ByteReader *buf)
 	grfmsg(3, "SkipAct1: Skipping %d sprites", _cur.skip_sprites);
 }
 
+static const CallbackResultSpriteGroup *NewCallbackResultSpriteGroup(uint16 groupid)
+{
+	uint16 result = CallbackResultSpriteGroup::TransformResultValue(groupid, _cur.grffile->grf_version >= 8);
+
+	const CallbackResultSpriteGroup *&ptr = _callback_result_cache[result];
+	if (ptr == nullptr) {
+		assert(CallbackResultSpriteGroup::CanAllocateItem());
+		ptr = new CallbackResultSpriteGroup(result);
+	}
+	return ptr;
+}
+
+static const SpriteGroup *PruneTargetSpriteGroup(const SpriteGroup *result)
+{
+	if (HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2) || HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_GROUP_PRUNE)) return result;
+	while (result != nullptr) {
+		if (result->type == SGT_DETERMINISTIC) {
+			const DeterministicSpriteGroup *sg = static_cast<const DeterministicSpriteGroup *>(result);
+			if (sg->GroupMayBeBypassed()) {
+				/* Deterministic sprite group can be trivially resolved, skip it */
+				uint32 value = (sg->adjusts.size() == 1) ? EvaluateDeterministicSpriteGroupAdjust(sg->size, sg->adjusts[0], nullptr, 0, UINT_MAX) : 0;
+				result = sg->default_group;
+				for (const auto &range : sg->ranges) {
+					if (range.low <= value && value <= range.high) {
+						result = range.group;
+						break;
+					}
+				}
+				continue;
+			}
+		}
+		break;
+	}
+	return result;
+}
+
 /* Helper function to either create a callback or link to a previously
  * defined spritegroup. */
 static const SpriteGroup *GetGroupFromGroupID(byte setid, byte type, uint16 groupid)
 {
 	if (HasBit(groupid, 15)) {
-		assert(CallbackResultSpriteGroup::CanAllocateItem());
-		return new CallbackResultSpriteGroup(groupid, _cur.grffile->grf_version >= 8);
+		return NewCallbackResultSpriteGroup(groupid);
 	}
 
 	if (groupid > MAX_SPRITEGROUP || _cur.spritegroups[groupid] == nullptr) {
@@ -5077,7 +5618,15 @@ static const SpriteGroup *GetGroupFromGroupID(byte setid, byte type, uint16 grou
 		return nullptr;
 	}
 
-	return _cur.spritegroups[groupid];
+	const SpriteGroup *result = _cur.spritegroups[groupid];
+	if (likely(!HasBit(_misc_debug_flags, MDF_NEWGRF_SG_SAVE_RAW))) result = PruneTargetSpriteGroup(result);
+	return result;
+}
+
+static const SpriteGroup *GetGroupByID(uint16 groupid)
+{
+	const SpriteGroup *result = _cur.spritegroups[groupid];
+	return result;
 }
 
 /**
@@ -5091,8 +5640,7 @@ static const SpriteGroup *GetGroupFromGroupID(byte setid, byte type, uint16 grou
 static const SpriteGroup *CreateGroupFromGroupID(byte feature, byte setid, byte type, uint16 spriteid)
 {
 	if (HasBit(spriteid, 15)) {
-		assert(CallbackResultSpriteGroup::CanAllocateItem());
-		return new CallbackResultSpriteGroup(spriteid, _cur.grffile->grf_version >= 8);
+		return NewCallbackResultSpriteGroup(spriteid);
 	}
 
 	if (!_cur.IsValidSpriteSet(feature, spriteid)) {
@@ -5110,6 +5658,2223 @@ static const SpriteGroup *CreateGroupFromGroupID(byte feature, byte setid, byte 
 	return new ResultSpriteGroup(spriteset_start, num_sprites);
 }
 
+enum VarAction2AdjustInferenceFlags {
+	VA2AIF_NONE                  = 0x00,
+
+	VA2AIF_SIGNED_NON_NEGATIVE   = 0x01,
+	VA2AIF_ONE_OR_ZERO           = 0x02,
+	VA2AIF_PREV_TERNARY          = 0x04,
+	VA2AIF_PREV_MASK_ADJUST      = 0x08,
+	VA2AIF_PREV_STORE_TMP        = 0x10,
+	VA2AIF_HAVE_CONSTANT         = 0x20,
+	VA2AIF_SINGLE_LOAD           = 0x40,
+	VA2AIF_MUL_BOOL              = 0x80,
+	VA2AIF_PREV_SCMP_DEC         = 0x100,
+
+	VA2AIF_PREV_MASK             = VA2AIF_PREV_TERNARY | VA2AIF_PREV_MASK_ADJUST | VA2AIF_PREV_STORE_TMP | VA2AIF_PREV_SCMP_DEC,
+};
+DECLARE_ENUM_AS_BIT_SET(VarAction2AdjustInferenceFlags)
+
+struct VarAction2TempStoreInferenceVarSource {
+	DeterministicSpriteGroupAdjustType type;
+	uint16 variable;
+	byte shift_num;
+	uint32 parameter;
+	uint32 and_mask;
+	uint32 add_val;
+	uint32 divmod_val;
+};
+
+struct VarAction2TempStoreInference {
+	VarAction2AdjustInferenceFlags inference = VA2AIF_NONE;
+	uint32 store_constant = 0;
+	VarAction2TempStoreInferenceVarSource var_source;
+	uint version = 0;
+};
+
+struct VarAction2InferenceBackup {
+	VarAction2AdjustInferenceFlags inference = VA2AIF_NONE;
+	uint32 current_constant = 0;
+	uint adjust_size = 0;
+};
+
+struct VarAction2OptimiseState {
+	VarAction2AdjustInferenceFlags inference = VA2AIF_NONE;
+	uint32 current_constant = 0;
+	btree::btree_map<uint8, VarAction2TempStoreInference> temp_stores;
+	VarAction2InferenceBackup inference_backup;
+	VarAction2GroupVariableTracking *var_tracking = nullptr;
+	bool seen_procedure_call = false;
+	bool check_expensive_vars = false;
+	bool enable_dse = false;
+	uint default_variable_version = 0;
+
+	inline VarAction2GroupVariableTracking *GetVarTracking(DeterministicSpriteGroup *group)
+	{
+		if (this->var_tracking == nullptr) {
+			this->var_tracking = _cur.GetVarAction2GroupVariableTracking(group, true);
+		}
+		return this->var_tracking;
+	}
+};
+
+static bool IsExpensiveVehicleVariable(uint16 variable)
+{
+	switch (variable) {
+		case 0x45:
+		case 0x4A:
+		case 0x60:
+		case 0x61:
+		case 0x62:
+		case 0x63:
+		case 0xFE:
+		case 0xFF:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+static bool IsExpensiveIndustryTileVariable(uint16 variable)
+{
+	switch (variable) {
+		case 0x60:
+		case 0x61:
+		case 0x62:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+static bool IsExpensiveVariable(uint16 variable, GrfSpecFeature feature, VarSpriteGroupScope var_scope)
+{
+	if ((feature >= GSF_TRAINS && feature <= GSF_AIRCRAFT) && IsExpensiveVehicleVariable(variable)) return true;
+	if (feature == GSF_INDUSTRYTILES && var_scope == VSG_SCOPE_SELF && IsExpensiveIndustryTileVariable(variable)) return true;
+	return false;
+}
+
+static bool IsVariableVeryCheap(uint16 variable, GrfSpecFeature feature)
+{
+	switch (variable) {
+		case 0x0C:
+		case 0x10:
+		case 0x18:
+		case 0x1C:
+			return true;
+	}
+	return false;
+}
+
+static bool IsFeatureUsableForDSE(GrfSpecFeature feature)
+{
+	return (feature != GSF_STATIONS);
+}
+
+static bool IsIdenticalValueLoad(const DeterministicSpriteGroupAdjust *a, const DeterministicSpriteGroupAdjust *b)
+{
+	if (a == nullptr && b == nullptr) return true;
+	if (a == nullptr || b == nullptr) return false;
+
+	if (a->variable == 0x7B || a->variable == 0x7E) return false;
+
+	return std::tie(a->type, a->variable, a->shift_num, a->parameter, a->and_mask, a->add_val, a->divmod_val) ==
+			std::tie(b->type, b->variable, b->shift_num, b->parameter, b->and_mask, b->add_val, b->divmod_val);
+}
+
+static const DeterministicSpriteGroupAdjust *GetVarAction2PreviousSingleLoadAdjust(const std::vector<DeterministicSpriteGroupAdjust> &adjusts, int start_index, bool *is_inverted)
+{
+	bool passed_store_perm = false;
+	if (is_inverted != nullptr) *is_inverted = false;
+	std::bitset<256> seen_stores;
+	for (int i = start_index; i >= 0; i--) {
+		const DeterministicSpriteGroupAdjust &prev = adjusts[i];
+		if (prev.variable == 0x7E) {
+			/* Procedure call, don't use or go past this */
+			break;
+		}
+		if (prev.operation == DSGA_OP_RST) {
+			if (prev.variable == 0x7B) {
+				/* Can't use this previous load as it depends on the last value */
+				return nullptr;
+			}
+			if (prev.variable == 0x7C && passed_store_perm) {
+				/* If we passed a store perm then a load from permanent storage is not a valid previous load as we may have clobbered it */
+				return nullptr;
+			}
+			if (prev.variable == 0x7D && seen_stores[prev.parameter & 0xFF]) {
+				/* If we passed a store then a load from that same store is not valid */
+				return nullptr;
+			}
+			return &prev;
+		} else if (prev.operation == DSGA_OP_STO) {
+			if (prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask < 0x100) {
+				/* Temp store */
+				seen_stores.set(prev.and_mask, true);
+				continue;
+			} else {
+				/* Special register store or unpredictable store, don't try to optimise following load */
+				break;
+			}
+		} else if (prev.operation == DSGA_OP_STOP) {
+			/* Permanent storage store */
+			passed_store_perm = true;
+			continue;
+		} else if (prev.operation == DSGA_OP_XOR && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == 1 && is_inverted != nullptr) {
+			/* XOR invert */
+			*is_inverted = !(*is_inverted);
+			continue;
+		} else {
+			break;
+		}
+	}
+	return nullptr;
+}
+
+static const DeterministicSpriteGroupAdjust *GetVarAction2PreviousSingleStoreAdjust(const std::vector<DeterministicSpriteGroupAdjust> &adjusts, int start_index, bool *is_inverted)
+{
+	if (is_inverted != nullptr) *is_inverted = false;
+	for (int i = start_index; i >= 0; i--) {
+		const DeterministicSpriteGroupAdjust &prev = adjusts[i];
+		if (prev.variable == 0x7E) {
+			/* Procedure call, don't use or go past this */
+			break;
+		}
+		if (prev.operation == DSGA_OP_STO) {
+			if (prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask < 0x100) {
+				/* Temp store */
+				return &prev;
+			} else {
+				/* Special register store or unpredictable store, don't try to optimise following load */
+				break;
+			}
+		} else if (prev.operation == DSGA_OP_XOR && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == 1 && is_inverted != nullptr) {
+			/* XOR invert */
+			*is_inverted = !(*is_inverted);
+			continue;
+		} else {
+			break;
+		}
+	}
+	return nullptr;
+}
+
+static int GetVarAction2AdjustOfPreviousTempStoreSource(const DeterministicSpriteGroupAdjust *adjusts, int start_index, uint8 store_var)
+{
+	for (int i = start_index - 1; i >= 0; i--) {
+		const DeterministicSpriteGroupAdjust &prev = adjusts[i];
+		if (prev.variable == 0x7E) {
+			/* Procedure call, don't use or go past this */
+			return -1;
+		}
+		if (prev.operation == DSGA_OP_STO) {
+			if (prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask < 0x100) {
+				/* Temp store */
+				if (prev.and_mask == (store_var & 0xFF)) {
+					return i;
+				}
+			} else {
+				/* Special register store or unpredictable store, don't use or go past this */
+				return -1;
+			}
+		}
+	}
+	return -1;
+}
+
+struct VarAction2AdjustDescriptor {
+	DeterministicSpriteGroupAdjust *adjust_array = nullptr;
+	DeterministicSpriteGroupAdjust *override_first = nullptr;
+	int index = 0;
+
+	inline bool IsValid() const { return this->adjust_array != nullptr; }
+	inline const DeterministicSpriteGroupAdjust &GetCurrent() const { return this->override_first != nullptr ? *(this->override_first) : this->adjust_array[this->index]; };
+};
+
+static bool AdvanceVarAction2AdjustDescriptor(VarAction2AdjustDescriptor &desc)
+{
+	const DeterministicSpriteGroupAdjust &adj = desc.GetCurrent();
+	if (adj.variable == 0x7E || adj.variable == 0x7B || adj.operation == DSGA_OP_STOP) {
+		/* Procedure call or load depends on the last value, or a permanent store, don't use or go past this */
+		desc.index = -1;
+		desc.override_first = nullptr;
+		return true;
+	}
+	if (adj.operation == DSGA_OP_STO) {
+		if (adj.type == DSGA_TYPE_NONE && adj.variable == 0x1A && adj.shift_num == 0 && adj.and_mask < 0x100) {
+			/* Temp store, skip */
+			desc.index--;
+		} else {
+			/* Special register store or unpredictable store, don't use or go past this */
+			desc.index = -1;
+		}
+		desc.override_first = nullptr;
+		return true;
+	}
+	return false;
+}
+
+static bool AreVarAction2AdjustsEquivalent(VarAction2AdjustDescriptor a, VarAction2AdjustDescriptor b)
+{
+	if (!a.IsValid() || !b.IsValid()) return false;
+
+	while (a.index >= 0 && b.index >= 0) {
+		if (a.adjust_array == b.adjust_array && a.index == b.index) return true;
+
+		if (AdvanceVarAction2AdjustDescriptor(a)) continue;
+		if (AdvanceVarAction2AdjustDescriptor(b)) continue;
+
+		const DeterministicSpriteGroupAdjust &adj_a = a.GetCurrent();
+		const DeterministicSpriteGroupAdjust &adj_b = b.GetCurrent();
+
+		if (std::tie(adj_a.operation, adj_a.type, adj_a.variable, adj_a.shift_num, adj_a.and_mask, adj_a.add_val, adj_a.divmod_val) !=
+			std::tie(adj_b.operation, adj_b.type, adj_b.variable, adj_b.shift_num, adj_b.and_mask, adj_b.add_val, adj_b.divmod_val)) return false;
+
+		if (adj_a.parameter != adj_b.parameter) {
+			if (adj_a.variable == 0x7D) {
+				int store_index_a = GetVarAction2AdjustOfPreviousTempStoreSource(a.adjust_array, a.index - 1, (adj_a.parameter & 0xFF));
+				if (store_index_a < 1) {
+					return false;
+				}
+				int store_index_b = GetVarAction2AdjustOfPreviousTempStoreSource(b.adjust_array, b.index - 1, (adj_b.parameter & 0xFF));
+				if (store_index_b < 1) {
+					return false;
+				}
+				if (!AreVarAction2AdjustsEquivalent({ a.adjust_array, nullptr, store_index_a - 1 }, { b.adjust_array, nullptr, store_index_b - 1 })) return false;
+			} else {
+				return false;
+			}
+		}
+
+		if (adj_b.operation == DSGA_OP_RST) return true;
+
+		a.index--;
+		b.index--;
+		a.override_first = nullptr;
+		b.override_first = nullptr;
+	}
+
+	return false;
+}
+
+enum VarAction2AdjustsBooleanInverseResult {
+	VA2ABIR_NO,                               ///< Adjusts are not inverse
+	VA2ABIR_CCAT,                             ///< Adjusts are inverse (constant comparison adjust type)
+	VA2ABIR_XOR_A,                            ///< Adjusts are inverse (a has an additional XOR 1 or EQ 0 compared to b)
+	VA2ABIR_XOR_B,                            ///< Adjusts are inverse (b has an additional XOR 1 or EQ 0 compared to a)
+};
+
+static VarAction2AdjustsBooleanInverseResult AreVarAction2AdjustsBooleanInverse(VarAction2AdjustDescriptor a, VarAction2AdjustDescriptor b)
+{
+	if (!a.IsValid() || !b.IsValid()) return VA2ABIR_NO;
+
+	if (a.index < 0 || b.index < 0) return VA2ABIR_NO;
+
+	AdvanceVarAction2AdjustDescriptor(a);
+	AdvanceVarAction2AdjustDescriptor(b);
+
+	if (a.index < 0 || b.index < 0) return VA2ABIR_NO;
+
+	const DeterministicSpriteGroupAdjust &adj_a = a.GetCurrent();
+	const DeterministicSpriteGroupAdjust &adj_b = b.GetCurrent();
+
+	if (adj_a.operation == DSGA_OP_RST && adj_b.operation == DSGA_OP_RST &&
+			IsConstantComparisonAdjustType(adj_a.type) && InvertConstantComparisonAdjustType(adj_a.type) == adj_b.type &&
+			(std::tie(adj_a.variable, adj_a.shift_num, adj_a.parameter, adj_a.and_mask, adj_a.add_val, adj_a.divmod_val) ==
+			std::tie(adj_b.variable, adj_b.shift_num, adj_b.parameter, adj_b.and_mask, adj_b.add_val, adj_b.divmod_val))) {
+		return VA2ABIR_CCAT;
+	}
+
+	auto check_inverse = [&]() -> bool {
+		auto check_inner = [](VarAction2AdjustDescriptor &a, VarAction2AdjustDescriptor &b) -> bool {
+			if (a.index >= 0) AdvanceVarAction2AdjustDescriptor(a);
+			if (a.index >= 0) {
+				const DeterministicSpriteGroupAdjust &a_adj = a.GetCurrent();
+				/* Check that the value was bool prior to the XOR */
+				if (IsEvalAdjustOperationRelationalComparison(a_adj.operation) || IsConstantComparisonAdjustType(a_adj.type)) {
+					if (AreVarAction2AdjustsEquivalent(a, b)) return true;
+				}
+			}
+			return false;
+		};
+		const DeterministicSpriteGroupAdjust &adj = a.GetCurrent();
+		if (adj.operation == DSGA_OP_XOR && adj.type == DSGA_TYPE_NONE && adj.variable == 0x1A && adj.shift_num == 0 && adj.and_mask == 1) {
+			VarAction2AdjustDescriptor tmp = { a.adjust_array, nullptr, a.index - 1 };
+			if (check_inner(tmp, b)) return true;
+		}
+		if (adj.operation == DSGA_OP_RST && adj.type == DSGA_TYPE_EQ && adj.variable == 0x7D && adj.shift_num == 0 && adj.and_mask == 0xFFFFFFFF && adj.add_val == 0) {
+			int store_index = GetVarAction2AdjustOfPreviousTempStoreSource(a.adjust_array, a.index - 1, (adj.parameter & 0xFF));
+			if (store_index >= 1) {
+				/* Found the referenced temp store, use that */
+				VarAction2AdjustDescriptor tmp = { a.adjust_array, nullptr, store_index - 1 };
+				if (check_inner(tmp, b)) return true;
+			}
+		}
+		return false;
+	};
+
+	if (check_inverse()) return VA2ABIR_XOR_A;
+
+	std::swap(a, b);
+
+	if (check_inverse()) return VA2ABIR_XOR_B;
+
+	return VA2ABIR_NO;
+}
+
+/*
+ * Find and replace the result of:
+ *   (var * flag) + (var * !flag) with var
+ *   (-var * (var < 0)) + (var * !(var < 0)) with abs(var)
+ * "+" may be ADD, OR or XOR.
+ */
+static bool TryMergeBoolMulCombineVarAction2Adjust(VarAction2OptimiseState &state, std::vector<DeterministicSpriteGroupAdjust> &adjusts, const int adjust_index)
+{
+	uint store_var = adjusts[adjust_index].parameter;
+
+	DeterministicSpriteGroupAdjust synth_adjusts[2];
+	VarAction2AdjustDescriptor found_adjusts[4] = {};
+	uint mul_indices[2] = {};
+
+	auto find_adjusts = [&](int start_index, uint save_index) {
+		bool have_mul = false;
+		for (int i = start_index; i >= 0; i--) {
+			const DeterministicSpriteGroupAdjust &prev = adjusts[i];
+			if (prev.variable == 0x7E || prev.variable == 0x7B) {
+				/* Procedure call or load depends on the last value, don't use or go past this */
+				return;
+			}
+			if (prev.operation == DSGA_OP_STO) {
+				if (prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask < 0x100) {
+					/* Temp store */
+					if (prev.and_mask == (store_var & 0xFF)) return;
+				} else {
+					/* Special register store or unpredictable store, don't use or go past this */
+					return;
+				}
+			} else if (prev.operation == DSGA_OP_MUL && !have_mul) {
+				/* First source is the variable of mul, if it's a temporary storage load, try to follow it */
+				mul_indices[save_index] = i;
+				if (prev.variable == 0x7D && prev.type == DSGA_TYPE_NONE && prev.shift_num == 0 && prev.and_mask == 0xFFFFFFFF) {
+					int store_index = GetVarAction2AdjustOfPreviousTempStoreSource(adjusts.data(), i - 1, (prev.parameter & 0xFF));
+					if (store_index >= 1) {
+						/* Found the referenced temp store, use that */
+						found_adjusts[save_index * 2] = { adjusts.data(), nullptr, store_index - 1 };
+						have_mul = true;
+					}
+				}
+				if (!have_mul) {
+					/* It's not a temporary storage load which can be followed, synthesise an RST */
+					synth_adjusts[save_index] = prev;
+					synth_adjusts[save_index].operation = DSGA_OP_RST;
+					synth_adjusts[save_index].adjust_flags = DSGAF_NONE;
+					found_adjusts[save_index * 2] = { adjusts.data(), synth_adjusts + save_index, i };
+					have_mul = true;
+				}
+			} else if (prev.operation == DSGA_OP_STOP) {
+				/* Don't try to handle writes to permanent storage */
+				return;
+			} else if (have_mul) {
+				/* Found second source */
+				found_adjusts[(save_index * 2) + 1] = { adjusts.data(), nullptr, i };
+				return;
+			} else {
+				return;
+			}
+		}
+	};
+
+	find_adjusts(adjust_index - 1, 0); // A (first, closest)
+	if (!found_adjusts[0].IsValid() || !found_adjusts[1].IsValid()) return false;
+
+	/* Find offset of referenced store */
+	int store_index = GetVarAction2AdjustOfPreviousTempStoreSource(adjusts.data(), adjust_index - 1, (store_var & 0xFF));
+	if (store_index < 0) return false;
+
+	find_adjusts(store_index - 1, 1); // B (second, further)
+	if (!found_adjusts[2].IsValid() || !found_adjusts[3].IsValid()) return false;
+
+	bool is_cond_first[2];
+	VarAction2AdjustsBooleanInverseResult found = VA2ABIR_NO;
+	auto try_find = [&](bool a_first, bool b_first) {
+		if (found == VA2ABIR_NO) {
+			found = AreVarAction2AdjustsBooleanInverse(found_adjusts[a_first ? 0 : 1], found_adjusts[b_first ? 2 : 3]);
+			if (found != VA2ABIR_NO) {
+				is_cond_first[0] = a_first;
+				is_cond_first[1] = b_first;
+			}
+		}
+	};
+	try_find(true, true);
+	try_find(true, false);
+	try_find(false, true);
+	try_find(false, false);
+
+	if (found == VA2ABIR_NO) return false;
+
+	auto try_erase_from = [&](uint start) -> bool {
+		for (uint i = start; i < (uint)adjusts.size(); i++) {
+			const DeterministicSpriteGroupAdjust &adjust = adjusts[i];
+			if (adjust.variable == 0x7E || IsEvalAdjustWithSideEffects(adjust.operation)) return false;
+		}
+		adjusts.erase(adjusts.begin() + start, adjusts.end());
+		return true;
+	};
+	auto try_to_make_rst_from = [&](uint idx) -> bool {
+		const DeterministicSpriteGroupAdjust &src = adjusts[idx];
+		if (src.variable == 0x7D) {
+			/* Check that variable is still valid */
+			for (uint i = idx; i < (uint)adjusts.size(); i++) {
+				const DeterministicSpriteGroupAdjust &adjust = adjusts[i];
+				if (adjust.variable == 0x7E) return false;
+				if (adjust.operation == DSGA_OP_STO) {
+					if (adjust.type == DSGA_TYPE_NONE && adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask < 0x100) {
+						/* Temp store */
+						if (adjust.and_mask == (src.parameter & 0xFF)) return false;
+					} else {
+						/* Special register store or unpredictable store, don't use or go past this */
+						return false;
+					}
+				}
+			}
+		}
+		adjusts.push_back(src);
+		adjusts.back().operation = DSGA_OP_RST;
+		adjusts.back().adjust_flags = DSGAF_NONE;
+		return true;
+	};
+
+	if (AreVarAction2AdjustsEquivalent(found_adjusts[is_cond_first[0] ? 1 : 0], found_adjusts[is_cond_first[1] ? 3 : 2])) {
+		/* replace (var * flag) + (var * !flag) with var */
+
+		if (is_cond_first[0]) {
+			/* The cond is the mul variable of the first (closest) mul, the actual value is the prior adjust */
+			if (try_erase_from(mul_indices[0] + 1)) return true;
+		} else {
+			/* The value is the mul variable of the first (closest) mul, the cond is the prior adjust */
+			if (try_to_make_rst_from(mul_indices[0])) return true;
+		}
+
+		if (!is_cond_first[1]) {
+			/* The value is the mul variable of the second (further) mul, the cond is the prior adjust */
+			if (try_to_make_rst_from(mul_indices[1])) return true;
+		}
+
+		return false;
+	}
+
+	auto check_rsub = [&](VarAction2AdjustDescriptor &desc) -> bool {
+		int rsub_offset = desc.index;
+		if (rsub_offset < 1) return false;
+		const DeterministicSpriteGroupAdjust &adj = adjusts[rsub_offset];
+		if (adj.operation == DSGA_OP_RSUB && adj.type == DSGA_TYPE_NONE && adj.variable == 0x1A && adj.shift_num == 0 && adj.and_mask == 0) {
+			desc.index--;
+			return true;
+		}
+		return false;
+	};
+
+	auto check_abs_cond = [&](VarAction2AdjustDescriptor cond, VarAction2AdjustDescriptor &value) -> bool {
+		int lt_offset = cond.index;
+		if (lt_offset < 1) return false;
+		const DeterministicSpriteGroupAdjust &adj = adjusts[lt_offset];
+		if (adj.operation == DSGA_OP_SLT && adj.type == DSGA_TYPE_NONE && adj.variable == 0x1A && adj.shift_num == 0 && adj.and_mask == 0) {
+			cond.index--;
+			return AreVarAction2AdjustsEquivalent(cond, value);
+		}
+		return false;
+	};
+
+	auto append_abs = [&]() {
+		adjusts.emplace_back();
+		adjusts.back().operation = DSGA_OP_ABS;
+		state.inference |= VA2AIF_SIGNED_NON_NEGATIVE;
+	};
+
+	if (found == VA2ABIR_XOR_A) {
+		/* Try to find an ABS:
+		 * A has the extra invert, check cond of B
+		 * B is the negative path with the RSUB
+		 */
+		VarAction2AdjustDescriptor value_b = found_adjusts[is_cond_first[1] ? 3 : 2];
+		const VarAction2AdjustDescriptor &cond_b = found_adjusts[is_cond_first[1] ? 2 : 3];
+
+		if (check_rsub(value_b) && check_abs_cond(cond_b, value_b) && AreVarAction2AdjustsEquivalent(found_adjusts[is_cond_first[0] ? 1 : 0], value_b)) {
+			/* Found an ABS, use one of the two value parts */
+
+			if (is_cond_first[0]) {
+				/* The cond is the mul variable of the A (first, closest) mul, the actual value is the prior adjust */
+				if (try_erase_from(mul_indices[0])) {
+					append_abs();
+					return true;
+				}
+			} else {
+				/* The value is the mul variable of the A (first, closest) mul, the cond is the prior adjust */
+				if (try_to_make_rst_from(mul_indices[0])) {
+					append_abs();
+					return true;
+				}
+			}
+		}
+	}
+	if (found == VA2ABIR_XOR_B) {
+		/* Try to find an ABS:
+		 * B has the extra invert, check cond of A
+		 * A is the negative path with the RSUB
+		 */
+		VarAction2AdjustDescriptor value_a = found_adjusts[is_cond_first[0] ? 1 : 0];
+		const VarAction2AdjustDescriptor &cond_a = found_adjusts[is_cond_first[0] ? 0 : 1];
+
+		if (check_rsub(value_a) && check_abs_cond(cond_a, value_a) && AreVarAction2AdjustsEquivalent(found_adjusts[is_cond_first[1] ? 3 : 2], value_a)) {
+			/* Found an ABS, use one of the two value parts */
+
+			if (is_cond_first[0]) {
+				/* The cond is the mul variable of the A (first, closest) mul, the actual value is the prior adjust, -1 to also remove the RSUB */
+				if (try_erase_from(mul_indices[0] - 1)) {
+					append_abs();
+					return true;
+				}
+			}
+
+			if (!is_cond_first[1]) {
+				/* The value is the mul variable of the B (second, further) mul, the cond is the prior adjust */
+				if (try_to_make_rst_from(mul_indices[1])) {
+					append_abs();
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
+/* Returns the number of adjusts to remove: 0: neither, 1: current, 2: prev and current */
+static uint TryMergeVarAction2AdjustConstantOperations(DeterministicSpriteGroupAdjust &prev, DeterministicSpriteGroupAdjust &current)
+{
+	if (prev.type != DSGA_TYPE_NONE || prev.variable != 0x1A || prev.shift_num != 0) return 0;
+	if (current.type != DSGA_TYPE_NONE || current.variable != 0x1A || current.shift_num != 0) return 0;
+
+	switch (current.operation) {
+		case DSGA_OP_ADD:
+		case DSGA_OP_SUB:
+			if (prev.operation == current.operation) {
+				prev.and_mask += current.and_mask;
+				break;
+			}
+			if (prev.operation == ((current.operation == DSGA_OP_SUB) ? DSGA_OP_ADD : DSGA_OP_SUB)) {
+				prev.and_mask -= current.and_mask;
+				break;
+			}
+			return 0;
+
+		case DSGA_OP_OR:
+			if (prev.operation == DSGA_OP_OR) {
+				prev.and_mask |= current.and_mask;
+				break;
+			}
+			return 0;
+
+		case DSGA_OP_AND:
+			if (prev.operation == DSGA_OP_AND) {
+				prev.and_mask &= current.and_mask;
+				break;
+			}
+			return 0;
+
+		case DSGA_OP_XOR:
+			if (prev.operation == DSGA_OP_XOR) {
+				prev.and_mask ^= current.and_mask;
+				break;
+			}
+			return 0;
+
+		default:
+			return 0;
+	}
+
+	if (prev.and_mask == 0 && IsEvalAdjustWithZeroRemovable(prev.operation)) {
+		/* prev now does nothing, remove it as well */
+		return 2;
+	}
+	return 1;
+}
+
+static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeature feature, const byte varsize, DeterministicSpriteGroup *group, DeterministicSpriteGroupAdjust &adjust)
+{
+	if (unlikely(HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2))) return;
+
+	auto guard = scope_guard([&]() {
+		if (!group->adjusts.empty()) {
+			const DeterministicSpriteGroupAdjust &adjust = group->adjusts.back();
+			if (adjust.variable == 0x7E || IsEvalAdjustWithSideEffects(adjust.operation)) {
+				/* save inference state */
+				state.inference_backup.adjust_size = (uint)group->adjusts.size();
+				state.inference_backup.inference = state.inference;
+				state.inference_backup.current_constant = state.current_constant;
+			}
+		}
+	});
+
+	auto try_restore_inference_backup = [&]() {
+		if (state.inference_backup.adjust_size != 0 && state.inference_backup.adjust_size == (uint)group->adjusts.size()) {
+			state.inference = state.inference_backup.inference;
+			state.current_constant = state.inference_backup.current_constant;
+		}
+	};
+
+	VarAction2AdjustInferenceFlags prev_inference = state.inference;
+	state.inference = VA2AIF_NONE;
+
+	auto get_sign_bit = [&]() -> uint32 {
+		return (1 << ((varsize * 8) - 1));
+	};
+
+	auto get_full_mask = [&]() -> uint32 {
+		return UINT_MAX >> ((4 - varsize) * 8);
+	};
+
+	auto add_inferences_from_mask = [&](uint32 mask) {
+		if (mask == 1) {
+			state.inference |= VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+		} else if ((mask & get_sign_bit()) == 0) {
+			state.inference |= VA2AIF_SIGNED_NON_NEGATIVE;
+		}
+	};
+
+	auto replace_with_constant_load = [&](uint32 constant) {
+		group->adjusts.pop_back();
+		if ((prev_inference & VA2AIF_HAVE_CONSTANT) && constant == state.current_constant) {
+			/* Don't create a new constant load for the same constant as was there previously */
+			state.inference = prev_inference;
+			return;
+		}
+		while (!group->adjusts.empty()) {
+			const DeterministicSpriteGroupAdjust &prev = group->adjusts.back();
+			if (prev.variable != 0x7E && !IsEvalAdjustWithSideEffects(prev.operation)) {
+				/* Delete useless operation */
+				group->adjusts.pop_back();
+			} else {
+				break;
+			}
+		}
+		state.inference = VA2AIF_HAVE_CONSTANT;
+		add_inferences_from_mask(constant);
+		state.current_constant = constant;
+		if (constant != 0 || !group->adjusts.empty()) {
+			DeterministicSpriteGroupAdjust &replacement = group->adjusts.emplace_back();
+			replacement.operation = DSGA_OP_RST;
+			replacement.variable = 0x1A;
+			replacement.shift_num = 0;
+			replacement.type = DSGA_TYPE_NONE;
+			replacement.and_mask = constant;
+			replacement.add_val = 0;
+			replacement.divmod_val = 0;
+			state.inference |= VA2AIF_PREV_MASK_ADJUST;
+		}
+	};
+
+	auto handle_unpredictable_temp_load = [&]() {
+		std::bitset<256> bits;
+		bits.set();
+		for (auto &it : state.temp_stores) {
+			bits.set(it.first, false);
+		}
+		state.GetVarTracking(group)->in |= bits;
+	};
+	auto reset_store_values = [&]() {
+		for (auto &it : state.temp_stores) {
+			it.second.inference = VA2AIF_NONE;
+			it.second.version++;
+		}
+		state.default_variable_version++;
+	};
+	auto handle_unpredictable_temp_store = [&]() {
+		reset_store_values();
+	};
+
+	auto try_merge_with_previous = [&]() {
+		if (adjust.variable == 0x1A && group->adjusts.size() >= 2) {
+			/* Merged this adjust into the previous one */
+			uint to_remove = TryMergeVarAction2AdjustConstantOperations(group->adjusts[group->adjusts.size() - 2], adjust);
+			if (to_remove > 0) group->adjusts.erase(group->adjusts.end() - to_remove, group->adjusts.end());
+
+			if (to_remove == 1 && group->adjusts.back().and_mask == 0 && IsEvalAdjustWithZeroAlwaysZero(group->adjusts.back().operation)) {
+				/* Operation always returns 0, replace it and any useless prior operations */
+				replace_with_constant_load(0);
+			}
+		}
+	};
+
+	/* Special handling of variable 7B, this uses the parameter as the variable number, and the last value as the variable's parameter.
+	 * If the last value is a known constant, it can be substituted immediately. */
+	if (adjust.variable == 0x7B) {
+		if (prev_inference & VA2AIF_HAVE_CONSTANT) {
+			adjust.variable = adjust.parameter;
+			adjust.parameter = state.current_constant;
+		} else if (adjust.parameter == 0x7D) {
+			handle_unpredictable_temp_load();
+		} else if (adjust.parameter == 0x1C) {
+			/* This is to simplify tracking of variable 1C, the parameter is never used for anything */
+			adjust.variable = adjust.parameter;
+			adjust.parameter = 0;
+		}
+	}
+	if (adjust.variable == 0x1C && !state.seen_procedure_call) {
+		group->dsg_flags |= DSGF_REQUIRES_VAR1C;
+	}
+
+	VarAction2AdjustInferenceFlags non_const_var_inference = VA2AIF_NONE;
+	while (adjust.variable == 0x7D) {
+		non_const_var_inference = VA2AIF_NONE;
+		auto iter = state.temp_stores.find(adjust.parameter & 0xFF);
+		if (iter == state.temp_stores.end()) {
+			/* Read without any previous store */
+			state.GetVarTracking(group)->in.set(adjust.parameter & 0xFF, true);
+			adjust.parameter |= (state.default_variable_version << 8);
+		} else {
+			const VarAction2TempStoreInference &store = iter->second;
+			if (store.inference & VA2AIF_HAVE_CONSTANT) {
+				adjust.variable = 0x1A;
+				adjust.and_mask &= (store.store_constant >> adjust.shift_num);
+			} else if ((store.inference & VA2AIF_SINGLE_LOAD) && (store.var_source.variable == 0x7D || IsVariableVeryCheap(store.var_source.variable, feature))) {
+				if (adjust.type == DSGA_TYPE_NONE && adjust.shift_num == 0 && (adjust.and_mask == 0xFFFFFFFF || ((store.inference & VA2AIF_ONE_OR_ZERO) && (adjust.and_mask & 1)))) {
+					adjust.type = store.var_source.type;
+					adjust.variable = store.var_source.variable;
+					adjust.shift_num = store.var_source.shift_num;
+					adjust.parameter = store.var_source.parameter;
+					adjust.and_mask = store.var_source.and_mask;
+					adjust.add_val = store.var_source.add_val;
+					adjust.divmod_val = store.var_source.divmod_val;
+					continue;
+				} else if (store.var_source.type == DSGA_TYPE_NONE && (adjust.shift_num + store.var_source.shift_num) < 32) {
+					adjust.variable = store.var_source.variable;
+					adjust.parameter = store.var_source.parameter;
+					adjust.and_mask &= store.var_source.and_mask >> adjust.shift_num;
+					adjust.shift_num += store.var_source.shift_num;
+					continue;
+				}
+				adjust.parameter |= (store.version << 8);
+			} else {
+				if (adjust.type == DSGA_TYPE_NONE) {
+					non_const_var_inference = store.inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO | VA2AIF_MUL_BOOL);
+				}
+				if (store.inference & VA2AIF_SINGLE_LOAD) {
+					/* Not possible to substitute this here, but it may be possible in the DSE pass */
+					state.enable_dse = true;
+				}
+				adjust.parameter |= (store.version << 8);
+			}
+		}
+		break;
+	}
+
+	if (adjust.operation == DSGA_OP_STOP) {
+		for (auto &it : state.temp_stores) {
+			/* Check if some other variable is marked as a copy of permanent storage */
+			if ((it.second.inference & VA2AIF_SINGLE_LOAD) && it.second.var_source.variable == 0x7C) {
+				it.second.inference &= ~VA2AIF_SINGLE_LOAD;
+			}
+		}
+	}
+
+	if (IsExpensiveVariable(adjust.variable, feature, group->var_scope)) state.check_expensive_vars = true;
+
+	auto get_prev_single_load = [&](bool *invert) -> const DeterministicSpriteGroupAdjust* {
+		return GetVarAction2PreviousSingleLoadAdjust(group->adjusts, (int)group->adjusts.size() - 2, invert);
+	};
+
+	auto get_prev_single_store = [&](bool *invert) -> const DeterministicSpriteGroupAdjust* {
+		return GetVarAction2PreviousSingleStoreAdjust(group->adjusts, (int)group->adjusts.size() - 2, invert);
+	};
+
+	if ((prev_inference & VA2AIF_SINGLE_LOAD) && adjust.operation == DSGA_OP_RST && adjust.variable != 0x1A && adjust.variable != 0x7D && adjust.variable != 0x7E) {
+		/* See if this is a repeated load of a variable (not constant, temp store load or procedure call) */
+		const DeterministicSpriteGroupAdjust *prev_load = get_prev_single_load(nullptr);
+		if (prev_load != nullptr && MemCmpT<DeterministicSpriteGroupAdjust>(prev_load, &adjust) == 0) {
+			group->adjusts.pop_back();
+			state.inference = prev_inference;
+			return;
+		}
+	}
+
+	if ((prev_inference & VA2AIF_MUL_BOOL) && (non_const_var_inference & VA2AIF_MUL_BOOL) &&
+			(adjust.operation == DSGA_OP_ADD || adjust.operation == DSGA_OP_OR || adjust.operation == DSGA_OP_XOR) &&
+			adjust.variable == 0x7D && adjust.type == DSGA_TYPE_NONE && adjust.shift_num == 0 && adjust.and_mask == 0xFFFFFFFF) {
+		if (TryMergeBoolMulCombineVarAction2Adjust(state, group->adjusts, (int)(group->adjusts.size() - 1))) {
+			OptimiseVarAction2Adjust(state, feature, varsize, group, group->adjusts.back());
+			return;
+		}
+	}
+
+	if (group->adjusts.size() >= 2 && adjust.operation == DSGA_OP_RST && adjust.variable != 0x7B) {
+		/* See if any previous adjusts can be removed */
+		bool removed = false;
+		while (group->adjusts.size() >= 2) {
+			const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+			if (prev.variable != 0x7E && !IsEvalAdjustWithSideEffects(prev.operation)) {
+				/* Delete useless operation */
+				group->adjusts.erase(group->adjusts.end() - 2);
+				removed = true;
+			} else {
+				break;
+			}
+		}
+		if (removed) {
+			state.inference = prev_inference;
+			OptimiseVarAction2Adjust(state, feature, varsize, group, group->adjusts.back());
+			return;
+		}
+	}
+
+	if (adjust.variable != 0x7E && IsEvalAdjustWithZeroLastValueAlwaysZero(adjust.operation)) {
+		adjust.adjust_flags |= DSGAF_SKIP_ON_ZERO;
+	}
+
+	if ((prev_inference & VA2AIF_PREV_TERNARY) && adjust.variable == 0x1A && IsEvalAdjustUsableForConstantPropagation(adjust.operation)) {
+		/* Propagate constant operation back into previous ternary */
+		DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+		prev.and_mask = EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, prev.and_mask, UINT_MAX);
+		prev.add_val = EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, prev.add_val, UINT_MAX);
+		group->adjusts.pop_back();
+		state.inference = prev_inference;
+	} else if ((prev_inference & VA2AIF_HAVE_CONSTANT) && adjust.variable == 0x1A && IsEvalAdjustUsableForConstantPropagation(adjust.operation)) {
+		/* Reduce constant operation on previous constant */
+		replace_with_constant_load(EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, state.current_constant, UINT_MAX));
+	} else if ((prev_inference & VA2AIF_HAVE_CONSTANT) && state.current_constant == 0 && (adjust.adjust_flags & DSGAF_SKIP_ON_ZERO)) {
+		/* Remove operation which does nothing when applied to 0 */
+		group->adjusts.pop_back();
+		state.inference = prev_inference;
+	} else if ((prev_inference & VA2AIF_HAVE_CONSTANT) && IsEvalAdjustOperationOnConstantEffectiveLoad(adjust.operation, state.current_constant)) {
+		/* Convert operation to a load */
+		DeterministicSpriteGroupAdjust current = group->adjusts.back();
+		group->adjusts.pop_back();
+		while (!group->adjusts.empty()) {
+			const DeterministicSpriteGroupAdjust &prev = group->adjusts.back();
+			if (prev.variable != 0x7E && !IsEvalAdjustWithSideEffects(prev.operation)) {
+				/* Delete useless operation */
+				group->adjusts.pop_back();
+			} else {
+				break;
+			}
+		}
+		try_restore_inference_backup();
+		current.operation = DSGA_OP_RST;
+		current.adjust_flags = DSGAF_NONE;
+		group->adjusts.push_back(current);
+		OptimiseVarAction2Adjust(state, feature, varsize, group, group->adjusts.back());
+		return;
+	} else if (adjust.variable == 0x7E || adjust.type != DSGA_TYPE_NONE) {
+		/* Procedure call or complex adjustment */
+		if (adjust.operation == DSGA_OP_STO) handle_unpredictable_temp_store();
+		if (adjust.variable == 0x7E) {
+			state.seen_procedure_call = true;
+			reset_store_values();
+			auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
+				if (sg == nullptr) return;
+				if (sg->type == SGT_RANDOMIZED) {
+					const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)sg;
+					for (const auto &group : rsg->groups) {
+						handle_group(group);
+					}
+				} else if (sg->type == SGT_DETERMINISTIC) {
+					VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sg, false);
+					if (var_tracking != nullptr) {
+						std::bitset<256> bits = var_tracking->in;
+						for (auto &it : state.temp_stores) {
+							bits.set(it.first, false);
+						}
+						state.GetVarTracking(group)->in |= bits;
+					}
+				}
+			});
+			handle_group(adjust.subroutine);
+		} else if (adjust.operation == DSGA_OP_RST) {
+			state.inference = VA2AIF_SINGLE_LOAD;
+		}
+		if (IsConstantComparisonAdjustType(adjust.type)) {
+			if (adjust.operation == DSGA_OP_RST) {
+				state.inference |= VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+			} else if (adjust.operation == DSGA_OP_OR || adjust.operation == DSGA_OP_XOR || adjust.operation == DSGA_OP_AND) {
+				state.inference |= (prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO));
+			}
+			if (adjust.operation == DSGA_OP_OR && (prev_inference & VA2AIF_ONE_OR_ZERO) && adjust.variable != 0x7E) {
+				adjust.adjust_flags |= DSGAF_SKIP_ON_LSB_SET;
+			}
+			if (adjust.operation == DSGA_OP_MUL && adjust.variable != 0x7E) {
+				state.inference |= VA2AIF_MUL_BOOL;
+			}
+		}
+	} else {
+		if (adjust.and_mask == 0 && IsEvalAdjustWithZeroRemovable(adjust.operation)) {
+			/* Delete useless zero operations */
+			group->adjusts.pop_back();
+			state.inference = prev_inference;
+		} else if (adjust.and_mask == 0 && IsEvalAdjustWithZeroAlwaysZero(adjust.operation)) {
+			/* Operation always returns 0, replace it and any useless prior operations */
+			replace_with_constant_load(0);
+		} else {
+			if (adjust.variable == 0x7D && adjust.shift_num == 0 && adjust.and_mask == get_full_mask() && IsEvalAdjustOperationCommutative(adjust.operation) && group->adjusts.size() >= 2) {
+				DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+				if (group->adjusts.size() >= 3 && prev.operation == DSGA_OP_RST) {
+					const DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
+					if (prev2.operation == DSGA_OP_STO && prev2.type == DSGA_TYPE_NONE && prev2.variable == 0x1A &&
+							prev2.shift_num == 0 && prev2.and_mask == (adjust.parameter & 0xFF)) {
+						/* Convert: store, load var, commutative op on stored --> (dead) store, commutative op var */
+						prev.operation = adjust.operation;
+						group->adjusts.pop_back();
+						state.inference = non_const_var_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO | VA2AIF_MUL_BOOL);
+						OptimiseVarAction2Adjust(state, feature, varsize, group, group->adjusts.back());
+						return;
+					}
+				}
+			}
+			switch (adjust.operation) {
+				case DSGA_OP_ADD:
+					try_merge_with_previous();
+					break;
+				case DSGA_OP_SUB:
+					if (adjust.variable == 0x7D && adjust.shift_num == 0 && adjust.and_mask == 0xFFFFFFFF && group->adjusts.size() >= 2) {
+						DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+						if (group->adjusts.size() >= 3 && prev.operation == DSGA_OP_RST) {
+							const DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
+							if (prev2.operation == DSGA_OP_STO && prev2.type == DSGA_TYPE_NONE && prev2.variable == 0x1A &&
+									prev2.shift_num == 0 && prev2.and_mask == (adjust.parameter & 0xFF)) {
+								/* Convert: store, load var, subtract stored --> (dead) store, reverse subtract var */
+								prev.operation = DSGA_OP_RSUB;
+								group->adjusts.pop_back();
+								state.inference = non_const_var_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
+								OptimiseVarAction2Adjust(state, feature, varsize, group, group->adjusts.back());
+								return;
+							}
+						}
+					}
+					if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 1 && group->adjusts.size() >= 2) {
+						DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+						if (prev.operation == DSGA_OP_SCMP) {
+							state.inference |= VA2AIF_PREV_SCMP_DEC;
+						}
+					}
+					try_merge_with_previous();
+					break;
+				case DSGA_OP_SMIN:
+					if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 1 && group->adjusts.size() >= 2) {
+						DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+						if (prev.operation == DSGA_OP_SCMP) {
+							prev.operation = DSGA_OP_SGE;
+							group->adjusts.pop_back();
+							state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+							break;
+						}
+						if (group->adjusts.size() >= 3 && prev.operation == DSGA_OP_XOR && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A &&
+								prev.shift_num == 0 && prev.and_mask == 2) {
+							DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
+							if (prev2.operation == DSGA_OP_SCMP) {
+								prev2.operation = DSGA_OP_SLE;
+								group->adjusts.pop_back();
+								group->adjusts.pop_back();
+								state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+								break;
+							}
+						}
+					}
+					if (adjust.and_mask <= 1 && (prev_inference & VA2AIF_SIGNED_NON_NEGATIVE)) state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+					break;
+				case DSGA_OP_SMAX:
+					if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 0 && group->adjusts.size() >= 2) {
+						DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+						if (group->adjusts.size() >= 3 && prev.operation == DSGA_OP_SUB && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A &&
+								prev.shift_num == 0 && prev.and_mask == 1) {
+							DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
+							if (prev2.operation == DSGA_OP_SCMP) {
+								prev2.operation = DSGA_OP_SGT;
+								group->adjusts.pop_back();
+								group->adjusts.pop_back();
+								state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+								break;
+							}
+						}
+					}
+					break;
+				case DSGA_OP_UMIN:
+					if (adjust.and_mask == 1) {
+						if (prev_inference & VA2AIF_ONE_OR_ZERO) {
+							/* Delete useless bool -> bool conversion */
+							group->adjusts.pop_back();
+							state.inference = prev_inference;
+							break;
+						} else {
+							state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+							if (group->adjusts.size() >= 2) {
+								DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+								if (prev.operation == DSGA_OP_RST && prev.type == DSGA_TYPE_NONE) {
+									prev.type = DSGA_TYPE_NEQ;
+									prev.add_val = 0;
+									group->adjusts.pop_back();
+									state.inference |= VA2AIF_SINGLE_LOAD;
+								}
+							}
+						}
+					}
+					break;
+				case DSGA_OP_AND:
+					if ((prev_inference & VA2AIF_PREV_MASK_ADJUST) && adjust.variable == 0x1A && adjust.shift_num == 0 && group->adjusts.size() >= 2) {
+						/* Propagate and into immediately prior variable read */
+						DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+						prev.and_mask &= adjust.and_mask;
+						add_inferences_from_mask(prev.and_mask);
+						state.inference |= VA2AIF_PREV_MASK_ADJUST;
+						group->adjusts.pop_back();
+						break;
+					}
+					if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 1 && group->adjusts.size() >= 2) {
+						DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+						if (prev.operation == DSGA_OP_SCMP || prev.operation == DSGA_OP_UCMP) {
+							prev.operation = DSGA_OP_EQ;
+							group->adjusts.pop_back();
+							state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+							if (group->adjusts.size() >= 2) {
+								DeterministicSpriteGroupAdjust &eq_adjust = group->adjusts[group->adjusts.size() - 1];
+								DeterministicSpriteGroupAdjust &prev_op = group->adjusts[group->adjusts.size() - 2];
+								if (eq_adjust.type == DSGA_TYPE_NONE && eq_adjust.variable == 0x1A &&
+										prev_op.type == DSGA_TYPE_NONE && prev_op.operation == DSGA_OP_RST) {
+									prev_op.type = DSGA_TYPE_EQ;
+									prev_op.add_val = (0xFFFFFFFF >> eq_adjust.shift_num) & eq_adjust.and_mask;
+									group->adjusts.pop_back();
+									state.inference |= VA2AIF_SINGLE_LOAD;
+								}
+							}
+							break;
+						}
+						if (prev_inference & VA2AIF_ONE_OR_ZERO) {
+							/* Current value is already one or zero, remove this */
+							group->adjusts.pop_back();
+							state.inference = prev_inference;
+							break;
+						}
+					}
+					if (adjust.and_mask <= 1) {
+						state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+					} else if ((adjust.and_mask & get_sign_bit()) == 0) {
+						state.inference = VA2AIF_SIGNED_NON_NEGATIVE;
+					}
+					state.inference |= non_const_var_inference;
+					try_merge_with_previous();
+					break;
+				case DSGA_OP_OR:
+					if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 1 && (prev_inference & VA2AIF_ONE_OR_ZERO)) {
+						replace_with_constant_load(1);
+						break;
+					}
+					if (adjust.and_mask <= 1) state.inference = prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
+					state.inference |= prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO) & non_const_var_inference;
+					if ((non_const_var_inference & VA2AIF_ONE_OR_ZERO) || (adjust.and_mask <= 1)) adjust.adjust_flags |= DSGAF_SKIP_ON_LSB_SET;
+					try_merge_with_previous();
+					break;
+				case DSGA_OP_XOR:
+					if (adjust.variable == 0x1A && adjust.shift_num == 0 && group->adjusts.size() >= 2) {
+						DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+						if (adjust.and_mask == 1) {
+							if (IsEvalAdjustOperationRelationalComparison(prev.operation)) {
+								prev.operation = InvertEvalAdjustRelationalComparisonOperation(prev.operation);
+								group->adjusts.pop_back();
+								state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+								break;
+							}
+							if (prev.operation == DSGA_OP_UMIN && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == 1) {
+								prev.operation = DSGA_OP_TERNARY;
+								prev.adjust_flags = DSGAF_NONE;
+								prev.and_mask = 0;
+								prev.add_val = 1;
+								group->adjusts.pop_back();
+								state.inference = VA2AIF_PREV_TERNARY;
+								break;
+							}
+							if (prev.operation == DSGA_OP_RST && IsConstantComparisonAdjustType(prev.type)) {
+								prev.type = InvertConstantComparisonAdjustType(prev.type);
+								group->adjusts.pop_back();
+								state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO | VA2AIF_SINGLE_LOAD;
+								break;
+							}
+							if (prev.operation == DSGA_OP_OR && (IsConstantComparisonAdjustType(prev.type) || (prev.type == DSGA_TYPE_NONE && (prev.adjust_flags & DSGAF_SKIP_ON_LSB_SET))) && group->adjusts.size() >= 3) {
+								DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
+								bool found = false;
+								if (IsEvalAdjustOperationRelationalComparison(prev2.operation)) {
+									prev2.operation = InvertEvalAdjustRelationalComparisonOperation(prev2.operation);
+									found = true;
+								} else if (prev2.operation == DSGA_OP_RST && IsConstantComparisonAdjustType(prev2.type)) {
+									prev2.type = InvertConstantComparisonAdjustType(prev2.type);
+									found = true;
+								}
+								if (found) {
+									if (prev.type == DSGA_TYPE_NONE) {
+										prev.type = DSGA_TYPE_EQ;
+										prev.add_val = 0;
+									} else {
+										prev.type = InvertConstantComparisonAdjustType(prev.type);
+									}
+									prev.operation = DSGA_OP_AND;
+									prev.adjust_flags = DSGAF_SKIP_ON_ZERO;
+									group->adjusts.pop_back();
+									state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+									break;
+								}
+							}
+						}
+						if (prev.operation == DSGA_OP_OR && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == adjust.and_mask) {
+							prev.operation = DSGA_OP_AND;
+							prev.and_mask = ~prev.and_mask;
+							prev.adjust_flags = DSGAF_NONE;
+							group->adjusts.pop_back();
+							break;
+						}
+					}
+					if (adjust.and_mask <= 1) state.inference = prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
+					state.inference |= prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO) & non_const_var_inference;
+					if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 1) {
+						/* Single load tracking can handle bool inverts */
+						state.inference |= (prev_inference & VA2AIF_SINGLE_LOAD);
+					}
+					try_merge_with_previous();
+					break;
+				case DSGA_OP_MUL: {
+					if ((prev_inference & VA2AIF_ONE_OR_ZERO) && adjust.variable == 0x1A && adjust.shift_num == 0 && group->adjusts.size() >= 2) {
+						/* Found a ternary operator */
+						adjust.operation = DSGA_OP_TERNARY;
+						adjust.adjust_flags = DSGAF_NONE;
+						while (group->adjusts.size() > 1) {
+							/* Merge with previous if applicable */
+							const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+							if (prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == 1) {
+								if (prev.operation == DSGA_OP_XOR) {
+									DeterministicSpriteGroupAdjust current = group->adjusts.back();
+									group->adjusts.pop_back();
+									group->adjusts.pop_back();
+									std::swap(current.and_mask, current.add_val);
+									group->adjusts.push_back(current);
+									continue;
+								} else if (prev.operation == DSGA_OP_SMIN || prev.operation == DSGA_OP_UMIN) {
+									DeterministicSpriteGroupAdjust current = group->adjusts.back();
+									group->adjusts.pop_back();
+									group->adjusts.pop_back();
+									group->adjusts.push_back(current);
+								}
+							}
+							break;
+						}
+						if (group->adjusts.size() > 1) {
+							/* Remove redundant comparison with 0 if applicable */
+							const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+							if (prev.type == DSGA_TYPE_NONE && prev.operation == DSGA_OP_EQ && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == 0) {
+								DeterministicSpriteGroupAdjust current = group->adjusts.back();
+								group->adjusts.pop_back();
+								group->adjusts.pop_back();
+								std::swap(current.and_mask, current.add_val);
+								group->adjusts.push_back(current);
+							}
+						}
+						state.inference = VA2AIF_PREV_TERNARY;
+						break;
+					}
+					if ((prev_inference & VA2AIF_PREV_SCMP_DEC) && group->adjusts.size() >= 4 && adjust.variable == 0x7D && adjust.shift_num == 0 && adjust.and_mask == 0xFFFFFFFF) {
+						const DeterministicSpriteGroupAdjust &adj1 = group->adjusts[group->adjusts.size() - 4];
+						const DeterministicSpriteGroupAdjust &adj2 = group->adjusts[group->adjusts.size() - 3];
+						const DeterministicSpriteGroupAdjust &adj3 = group->adjusts[group->adjusts.size() - 2];
+						auto is_expected_op = [](const DeterministicSpriteGroupAdjust &adj, DeterministicSpriteGroupAdjustOperation op, uint32 value) -> bool {
+							return adj.operation == op && adj.type == DSGA_TYPE_NONE && adj.variable == 0x1A && adj.shift_num == 0 && adj.and_mask == value;
+						};
+						if (is_expected_op(adj1, DSGA_OP_STO, (adjust.parameter & 0xFF)) &&
+								is_expected_op(adj2, DSGA_OP_SCMP, 0) &&
+								is_expected_op(adj3, DSGA_OP_SUB, 1)) {
+							group->adjusts.pop_back();
+							group->adjusts.pop_back();
+							group->adjusts.back().operation = DSGA_OP_ABS;
+							state.inference |= VA2AIF_SIGNED_NON_NEGATIVE;
+							break;
+						}
+					}
+					uint32 sign_bit = (1 << ((varsize * 8) - 1));
+					if ((prev_inference & VA2AIF_PREV_MASK_ADJUST) && (prev_inference & VA2AIF_SIGNED_NON_NEGATIVE) && adjust.variable == 0x1A && adjust.shift_num == 0 && (adjust.and_mask & sign_bit) == 0) {
+						/* Determine whether the result will be always non-negative */
+						if (((uint64)group->adjusts[group->adjusts.size() - 2].and_mask) * ((uint64)adjust.and_mask) < ((uint64)sign_bit)) {
+							state.inference |= VA2AIF_SIGNED_NON_NEGATIVE;
+						}
+					}
+					if ((prev_inference & VA2AIF_ONE_OR_ZERO) || (non_const_var_inference & VA2AIF_ONE_OR_ZERO)) {
+						state.inference |= VA2AIF_MUL_BOOL;
+					}
+					break;
+				}
+				case DSGA_OP_SCMP:
+				case DSGA_OP_UCMP:
+					state.inference = VA2AIF_SIGNED_NON_NEGATIVE;
+					break;
+				case DSGA_OP_STOP:
+					state.inference = prev_inference & (~VA2AIF_PREV_MASK);
+					break;
+				case DSGA_OP_STO:
+					state.inference = prev_inference & (~VA2AIF_PREV_MASK);
+					if (adjust.variable == 0x1A && adjust.shift_num == 0) {
+						state.inference |= VA2AIF_PREV_STORE_TMP;
+						if (adjust.and_mask < 0x100) {
+							for (auto &it : state.temp_stores) {
+								/* Check if some other variable is marked as a copy of the one we are overwriting */
+								if ((it.second.inference & VA2AIF_SINGLE_LOAD) && it.second.var_source.variable == 0x7D && (it.second.var_source.parameter & 0xFF) == adjust.and_mask) {
+									it.second.inference &= ~VA2AIF_SINGLE_LOAD;
+								}
+							}
+							VarAction2TempStoreInference &store = state.temp_stores[adjust.and_mask];
+							if (store.version == 0) {
+								/* New store */
+								store.version = state.default_variable_version + 1;
+							} else {
+								/* Updating previous store */
+								store.version++;
+							}
+							store.inference = prev_inference & (~VA2AIF_PREV_MASK);
+							store.store_constant = state.current_constant;
+							if (prev_inference & VA2AIF_SINGLE_LOAD) {
+								bool invert = false;
+								const DeterministicSpriteGroupAdjust *prev_load = get_prev_single_load(&invert);
+								if (prev_load != nullptr && (!invert || IsConstantComparisonAdjustType(prev_load->type))) {
+									store.inference |= VA2AIF_SINGLE_LOAD;
+									store.var_source.type = prev_load->type;
+									if (invert) store.var_source.type = InvertConstantComparisonAdjustType(store.var_source.type);
+									store.var_source.variable = prev_load->variable;
+									store.var_source.shift_num = prev_load->shift_num;
+									store.var_source.parameter = prev_load->parameter;
+									store.var_source.and_mask = prev_load->and_mask;
+									store.var_source.add_val = prev_load->add_val;
+									store.var_source.divmod_val = prev_load->divmod_val;
+									break;
+								}
+							}
+							bool invert_store = false;
+							const DeterministicSpriteGroupAdjust *prev_store = get_prev_single_store((prev_inference & VA2AIF_ONE_OR_ZERO) ? &invert_store : nullptr);
+							if (prev_store != nullptr) {
+								/* This store is a clone of the previous store, or inverted clone of the previous store (bool) */
+								store.inference |= VA2AIF_SINGLE_LOAD;
+								store.var_source.type = (invert_store ? DSGA_TYPE_EQ : DSGA_TYPE_NONE);
+								store.var_source.variable = 0x7D;
+								store.var_source.shift_num = 0;
+								store.var_source.parameter = prev_store->and_mask | (state.temp_stores[prev_store->and_mask].version << 8);
+								store.var_source.and_mask = 0xFFFFFFFF;
+								store.var_source.add_val = 0;
+								store.var_source.divmod_val = 0;
+								break;
+							}
+						} else {
+							/* Store to special register, this can change the result of future variable loads for some variables.
+							 * Assume all variables except temp storage for now.
+							 */
+							for (auto &it : state.temp_stores) {
+								if (it.second.inference & VA2AIF_SINGLE_LOAD && it.second.var_source.variable != 0x7D) {
+									it.second.inference &= ~VA2AIF_SINGLE_LOAD;
+								}
+							}
+						}
+					} else {
+						handle_unpredictable_temp_store();
+					}
+					break;
+				case DSGA_OP_RST:
+					if ((prev_inference & VA2AIF_PREV_STORE_TMP) && adjust.variable == 0x7D && adjust.shift_num == 0 && adjust.and_mask == get_full_mask() && group->adjusts.size() >= 2) {
+						const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+						if (prev.type == DSGA_TYPE_NONE && prev.operation == DSGA_OP_STO && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == (adjust.parameter & 0xFF)) {
+							/* Redundant load from temp store after store to temp store */
+							group->adjusts.pop_back();
+							state.inference = prev_inference;
+							break;
+						}
+					}
+					add_inferences_from_mask(adjust.and_mask);
+					state.inference |= VA2AIF_PREV_MASK_ADJUST | VA2AIF_SINGLE_LOAD;
+					if (adjust.variable == 0x1A || adjust.and_mask == 0) {
+						replace_with_constant_load(EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, 0, UINT_MAX));
+					}
+					break;
+				case DSGA_OP_SHR:
+				case DSGA_OP_SAR:
+					if ((adjust.operation == DSGA_OP_SAR || (prev_inference & VA2AIF_SIGNED_NON_NEGATIVE)) &&
+							((prev_inference & VA2AIF_PREV_MASK_ADJUST) && adjust.variable == 0x1A && adjust.shift_num == 0 && group->adjusts.size() >= 2)) {
+						/* Propagate shift right into immediately prior variable read */
+						DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+						if (prev.shift_num + adjust.and_mask < 32) {
+							prev.shift_num += adjust.and_mask;
+							prev.and_mask >>= adjust.and_mask;
+							add_inferences_from_mask(prev.and_mask);
+							state.inference |= VA2AIF_PREV_MASK_ADJUST;
+							group->adjusts.pop_back();
+							break;
+						}
+					}
+					break;
+				case DSGA_OP_SDIV:
+					if ((prev_inference & VA2AIF_SIGNED_NON_NEGATIVE) && adjust.variable == 0x1A && adjust.shift_num == 0 && HasExactlyOneBit(adjust.and_mask)) {
+						uint shift_count = FindFirstBit(adjust.and_mask);
+						if (group->adjusts.size() >= 3 && shift_count == 16 && varsize == 4 && (feature == GSF_TRAINS || feature == GSF_ROADVEHICLES || feature == GSF_SHIPS)) {
+							const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+							DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
+							if (prev.operation == DSGA_OP_MUL && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask <= 0xFFFF &&
+									(prev2.operation == DSGA_OP_RST || group->adjusts.size() == 3) && prev2.type == DSGA_TYPE_NONE && prev2.variable == 0xB4 && prev2.shift_num == 0 && prev2.and_mask == 0xFFFF) {
+								/* Replace with scaled current speed */
+								prev2.variable = A2VRI_VEHICLE_CURRENT_SPEED_SCALED;
+								prev2.parameter = prev.and_mask;
+								group->adjusts.pop_back();
+								group->adjusts.pop_back();
+								state.inference = VA2AIF_SIGNED_NON_NEGATIVE;
+								break;
+							}
+						}
+						/* Convert to a shift */
+						adjust.operation = DSGA_OP_SHR;
+						adjust.and_mask = shift_count;
+						state.inference = VA2AIF_SIGNED_NON_NEGATIVE;
+					}
+					break;
+				default:
+					break;
+			}
+		}
+	}
+}
+
+static bool CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSpriteGroup *group, std::bitset<256> bits, bool quick_exit);
+
+static void RecursiveDisallowDSEForProcedure(const SpriteGroup *group)
+{
+	if (group == nullptr) return;
+
+	if (group->type == SGT_RANDOMIZED) {
+		const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)group;
+		for (const auto &g : rsg->groups) {
+			RecursiveDisallowDSEForProcedure(g);
+		}
+		return;
+	}
+
+	if (group->type != SGT_DETERMINISTIC) return;
+
+	const DeterministicSpriteGroup *sub = static_cast<const DeterministicSpriteGroup *>(group);
+	if (sub->dsg_flags & DSGF_DSE_RECURSIVE_DISABLE) return;
+	const_cast<DeterministicSpriteGroup *>(sub)->dsg_flags |= (DSGF_NO_DSE | DSGF_DSE_RECURSIVE_DISABLE);
+	for (const DeterministicSpriteGroupAdjust &adjust : sub->adjusts) {
+		if (adjust.variable == 0x7E) RecursiveDisallowDSEForProcedure(adjust.subroutine);
+	}
+	if (!sub->calculated_result) {
+		RecursiveDisallowDSEForProcedure(sub->default_group);
+		for (const auto &range : sub->ranges) {
+			RecursiveDisallowDSEForProcedure(range.group);
+		}
+	}
+}
+
+static bool CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSpriteGroup *group, std::bitset<256> bits, bool quick_exit)
+{
+	bool dse = false;
+	for (int i = (int)group->adjusts.size() - 1; i >= 0; i--) {
+		const DeterministicSpriteGroupAdjust &adjust = group->adjusts[i];
+		if (adjust.operation == DSGA_OP_STO) {
+			if (adjust.type == DSGA_TYPE_NONE && adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask < 0x100) {
+				/* Predictable store */
+				if (!bits[adjust.and_mask]) {
+					/* Possibly redundant store */
+					dse = true;
+					if (quick_exit) break;
+				}
+				bits.set(adjust.and_mask, false);
+			}
+		}
+		if (adjust.operation == DSGA_OP_STO_NC && adjust.divmod_val < 0x100) {
+			if (!bits[adjust.divmod_val]) {
+				/* Possibly redundant store */
+				dse = true;
+				if (quick_exit) break;
+			}
+			bits.set(adjust.divmod_val, false);
+		}
+		if (adjust.variable == 0x7B && adjust.parameter == 0x7D) {
+			/* Unpredictable load */
+			bits.set();
+		}
+		if (adjust.variable == 0x7D && adjust.parameter) {
+			bits.set(adjust.parameter & 0xFF, true);
+		}
+		if (adjust.variable == 0x7E) {
+			/* procedure call */
+			auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
+				if (sg == nullptr) return;
+				if (sg->type == SGT_RANDOMIZED) {
+					const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)sg;
+					for (const auto &group : rsg->groups) {
+						handle_group(group);
+					}
+				} else if (sg->type == SGT_DETERMINISTIC) {
+					const DeterministicSpriteGroup *sub = static_cast<const DeterministicSpriteGroup *>(sg);
+					VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sub, true);
+					auto procedure_dse_ok = [&]() -> bool {
+						if (sub->calculated_result) return true;
+
+						if (sub->default_group != nullptr && sub->default_group->type != SGT_CALLBACK) return false;
+						for (const auto &range : sub->ranges) {
+							if (range.group != nullptr && range.group->type != SGT_CALLBACK) return false;
+						}
+						return true;
+					};
+					if (procedure_dse_ok()) {
+						std::bitset<256> new_out = bits | var_tracking->out;
+						if (new_out != var_tracking->out) {
+							var_tracking->out = new_out;
+							CheckDeterministicSpriteGroupOutputVarBits(sub, new_out, false);
+						}
+					} else {
+						RecursiveDisallowDSEForProcedure(sub);
+					}
+					bits |= var_tracking->in;
+				}
+			});
+			handle_group(adjust.subroutine);
+		}
+	}
+	return dse;
+}
+
+static bool OptimiseVarAction2DeterministicSpriteGroupExpensiveVarsInner(DeterministicSpriteGroup *group, VarAction2GroupVariableTracking *var_tracking)
+{
+	btree::btree_map<uint64, uint32> seen_expensive_variables;
+	std::bitset<256> usable_vars;
+	if (var_tracking != nullptr) {
+		usable_vars = ~var_tracking->out;
+	} else {
+		usable_vars.set();
+	}
+	uint16 target_var = 0;
+	uint32 target_param = 0;
+	auto found_target = [&]() -> bool {
+		for (auto &iter : seen_expensive_variables) {
+			if (iter.second >= 2) {
+				target_var = iter.first >> 32;
+				target_param = iter.first & 0xFFFFFFFF;
+				return true;
+			}
+		}
+		return false;
+	};
+	auto do_replacements = [&](int start, int end) {
+		std::bitset<256> mask(UINT64_MAX);
+		std::bitset<256> cur = usable_vars;
+		uint8 bit = 0;
+		while (true) {
+			uint64 t = (cur & mask).to_ullong();
+			if (t != 0) {
+				bit += FindFirstBit(t);
+				break;
+			}
+			cur >>= 64;
+			bit += 64;
+		}
+		int insert_pos = start;
+		uint32 and_mask = 0;
+		for (int j = end; j >= start; j--) {
+			DeterministicSpriteGroupAdjust &adjust = group->adjusts[j];
+			if (adjust.variable == target_var && adjust.parameter == target_param) {
+				and_mask |= adjust.and_mask << adjust.shift_num;
+				adjust.variable = 0x7D;
+				adjust.parameter = bit;
+				insert_pos = j;
+			}
+		}
+		DeterministicSpriteGroupAdjust load = {};
+		load.operation = DSGA_OP_STO_NC;
+		load.type = DSGA_TYPE_NONE;
+		load.variable = target_var;
+		load.shift_num = 0;
+		load.parameter = target_param;
+		load.and_mask = and_mask;
+		load.divmod_val = bit;
+		group->adjusts.insert(group->adjusts.begin() + insert_pos, load);
+	};
+
+	int i = (int)group->adjusts.size() - 1;
+	int end = i;
+	while (i >= 0) {
+		const DeterministicSpriteGroupAdjust &adjust = group->adjusts[i];
+		if (adjust.operation == DSGA_OP_STO && (adjust.type != DSGA_TYPE_NONE || adjust.variable != 0x1A || adjust.shift_num != 0)) return false;
+		if (adjust.variable == 0x7B && adjust.parameter == 0x7D) return false;
+		if (adjust.operation == DSGA_OP_STO_NC && adjust.divmod_val < 0x100) {
+			usable_vars.set(adjust.divmod_val, false);
+		}
+		if (adjust.operation == DSGA_OP_STO && adjust.and_mask < 0x100) {
+			usable_vars.set(adjust.and_mask, false);
+		} else if (adjust.variable == 0x7D) {
+			if (adjust.parameter < 0x100) usable_vars.set(adjust.parameter, false);
+		} else if (IsExpensiveVariable(adjust.variable, group->feature, group->var_scope)) {
+			seen_expensive_variables[(((uint64)adjust.variable) << 32) | adjust.parameter]++;
+		}
+		if (adjust.variable == 0x7E || (adjust.operation == DSGA_OP_STO && adjust.and_mask >= 0x100) || (adjust.operation == DSGA_OP_STO_NC && adjust.divmod_val >= 0x100)) {
+			/* Can't cross this barrier, stop here */
+			if (usable_vars.none()) return false;
+			if (found_target()) {
+				do_replacements(i + 1, end);
+				return true;
+			}
+			seen_expensive_variables.clear();
+			end = i - 1;
+			if (adjust.variable == 0x7E) {
+				auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
+					if (sg != nullptr && sg->type == SGT_DETERMINISTIC) {
+						VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sg, false);
+						if (var_tracking != nullptr) usable_vars &= ~var_tracking->in;
+					}
+					if (sg != nullptr && sg->type == SGT_RANDOMIZED) {
+						const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)sg;
+						for (const auto &group : rsg->groups) {
+							handle_group(group);
+						}
+					}
+				});
+				handle_group(adjust.subroutine);
+			}
+		}
+		i--;
+	}
+	if (usable_vars.none()) return false;
+	if (found_target()) {
+		do_replacements(0, end);
+		return true;
+	}
+
+	return false;
+}
+
+static void OptimiseVarAction2DeterministicSpriteGroupExpensiveVars(DeterministicSpriteGroup *group)
+{
+	VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(group, false);
+	while (OptimiseVarAction2DeterministicSpriteGroupExpensiveVarsInner(group, var_tracking)) {}
+}
+
+static void OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(DeterministicSpriteGroup *group)
+{
+	if (HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_SIMPLIFY_STORES)) return;
+
+	int src_adjust = -1;
+	bool is_constant = false;
+	for (size_t i = 0; i < group->adjusts.size(); i++) {
+		auto acceptable_store = [](const DeterministicSpriteGroupAdjust &adjust) -> bool {
+			return adjust.type == DSGA_TYPE_NONE && adjust.operation == DSGA_OP_STO && adjust.variable == 0x1A && adjust.shift_num == 0;
+		};
+
+		DeterministicSpriteGroupAdjust &adjust = group->adjusts[i];
+
+		if ((adjust.type == DSGA_TYPE_NONE || IsConstantComparisonAdjustType(adjust.type)) && adjust.operation == DSGA_OP_RST && adjust.variable != 0x7E) {
+			src_adjust = (int)i;
+			is_constant = (adjust.variable == 0x1A);
+			continue;
+		}
+
+		if (src_adjust >= 0 && acceptable_store(adjust)) {
+			bool ok = false;
+			bool more_stores = false;
+			size_t j = i;
+			while (true) {
+				j++;
+				if (j == group->adjusts.size()) {
+					ok = !group->calculated_result && group->ranges.empty();
+					break;
+				}
+				const DeterministicSpriteGroupAdjust &next = group->adjusts[j];
+				if (next.operation == DSGA_OP_RST) {
+					ok = (next.variable != 0x7B);
+					break;
+				}
+				if (is_constant && next.operation == DSGA_OP_STO_NC) {
+					continue;
+				}
+				if (is_constant && acceptable_store(next)) {
+					more_stores = true;
+					continue;
+				}
+				break;
+			}
+			if (ok) {
+				const DeterministicSpriteGroupAdjust &src = group->adjusts[src_adjust];
+				adjust.operation = DSGA_OP_STO_NC;
+				adjust.type = src.type;
+				adjust.adjust_flags = DSGAF_NONE;
+				adjust.divmod_val = adjust.and_mask;
+				adjust.add_val = src.add_val;
+				adjust.variable = src.variable;
+				adjust.parameter = src.parameter;
+				adjust.shift_num = src.shift_num;
+				adjust.and_mask = src.and_mask;
+				if (more_stores) {
+					continue;
+				}
+				group->adjusts.erase(group->adjusts.begin() + src_adjust);
+				i--;
+			}
+		}
+
+		src_adjust = -1;
+	}
+}
+
+static void OptimiseVarAction2DeterministicSpriteGroupAdjustOrdering(DeterministicSpriteGroup *group)
+{
+	if (HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_ADJUST_ORDERING)) return;
+
+	auto acceptable_variable = [](uint16 variable) -> bool {
+		return variable != 0x7E && variable != 0x7B;
+	};
+
+	auto get_variable_expense = [&](uint16 variable) -> int {
+		if (variable == 0x1A) return -15;
+		if (IsVariableVeryCheap(variable, group->feature)) return -10;
+		if (variable == 0x7D || variable == 0x7C) return -5;
+		if (IsExpensiveVariable(variable, group->feature, group->var_scope)) return 10;
+		return 0;
+	};
+
+	for (size_t i = 0; i + 1 < group->adjusts.size(); i++) {
+		DeterministicSpriteGroupAdjust &adjust = group->adjusts[i];
+
+		if (adjust.operation == DSGA_OP_RST && acceptable_variable(adjust.variable)) {
+			DeterministicSpriteGroupAdjustOperation operation = group->adjusts[i + 1].operation;
+			const size_t start = i;
+			size_t end = i;
+			if (IsEvalAdjustWithZeroLastValueAlwaysZero(operation) && IsEvalAdjustOperationCommutative(operation)) {
+				for (size_t j = start + 1; j < group->adjusts.size(); j++) {
+					DeterministicSpriteGroupAdjust &next = group->adjusts[j];
+					if (next.operation == operation && acceptable_variable(next.variable) && (next.adjust_flags & DSGAF_SKIP_ON_ZERO)) {
+						end = j;
+					} else {
+						break;
+					}
+				}
+			}
+			if (end != start) {
+				adjust.operation = operation;
+				adjust.adjust_flags |= DSGAF_SKIP_ON_ZERO;
+
+				/* Sort so that the least expensive comes first */
+				std::stable_sort(group->adjusts.begin() + start, group->adjusts.begin() + end + 1, [&](const DeterministicSpriteGroupAdjust &a, const DeterministicSpriteGroupAdjust &b) -> bool {
+					return get_variable_expense(a.variable) < get_variable_expense(b.variable);
+				});
+
+				adjust.operation = DSGA_OP_RST;
+				adjust.adjust_flags &= ~DSGAF_SKIP_ON_ZERO;
+			}
+		}
+	}
+}
+
+static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, const GrfSpecFeature feature, const byte varsize, DeterministicSpriteGroup *group)
+{
+	if (unlikely(HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2))) return;
+
+	for (DeterministicSpriteGroupAdjust &adjust : group->adjusts) {
+		if (adjust.variable == 0x7D) adjust.parameter &= 0xFF; // Clear temporary version tags
+	}
+
+	if (!HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_GROUP_PRUNE) && (state.inference & VA2AIF_HAVE_CONSTANT) && !group->calculated_result) {
+		/* Result of this sprite group is always the same, discard the unused branches */
+		const SpriteGroup *target = group->default_group;
+		for (const auto &range : group->ranges) {
+			if (range.low <= state.current_constant && state.current_constant <= range.high) {
+				target = range.group;
+			}
+		}
+		group->default_group = target;
+		group->error_group = target;
+		group->ranges.clear();
+	}
+
+	if (!HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_GROUP_PRUNE) && group->ranges.empty() && !group->calculated_result) {
+		/* There is only one option, remove any redundant adjustments when the result will be ignored anyway */
+		while (!group->adjusts.empty()) {
+			const DeterministicSpriteGroupAdjust &prev = group->adjusts.back();
+			if (prev.variable != 0x7E && !IsEvalAdjustWithSideEffects(prev.operation)) {
+				/* Delete useless operation */
+				group->adjusts.pop_back();
+			} else {
+				break;
+			}
+		}
+	}
+
+	std::bitset<256> bits;
+	std::bitset<256> pending_bits;
+	bool seen_pending = false;
+	if (!group->calculated_result) {
+		bool require_var1C = false;
+		auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
+			if (sg != nullptr && sg->type == SGT_DETERMINISTIC) {
+				VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sg, false);
+				const DeterministicSpriteGroup *dsg = (const DeterministicSpriteGroup*)sg;
+				if (dsg->dsg_flags & DSGF_VAR_TRACKING_PENDING) {
+					seen_pending = true;
+					if (var_tracking != nullptr) pending_bits |= var_tracking->in;
+				} else {
+					if (var_tracking != nullptr) bits |= var_tracking->in;
+				}
+				if (dsg->dsg_flags & DSGF_REQUIRES_VAR1C) require_var1C = true;
+			}
+			if (sg != nullptr && sg->type == SGT_RANDOMIZED) {
+				const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)sg;
+				for (const auto &group : rsg->groups) {
+					handle_group(group);
+				}
+			}
+			if (sg != nullptr && sg->type == SGT_TILELAYOUT) {
+				const TileLayoutSpriteGroup *tlsg = (const TileLayoutSpriteGroup*)sg;
+				if (tlsg->dts.registers != nullptr) {
+					const TileLayoutRegisters *registers = tlsg->dts.registers;
+					size_t count = 1; // 1 for the ground sprite
+					const DrawTileSeqStruct *element;
+					foreach_draw_tile_seq(element, tlsg->dts.seq) count++;
+					for (size_t i = 0; i < count; i ++) {
+						const TileLayoutRegisters *reg = registers + i;
+						if (reg->flags & TLF_DODRAW) bits.set(reg->dodraw, true);
+						if (reg->flags & TLF_SPRITE) bits.set(reg->sprite, true);
+						if (reg->flags & TLF_PALETTE) bits.set(reg->palette, true);
+						if (reg->flags & TLF_BB_XY_OFFSET) {
+							bits.set(reg->delta.parent[0], true);
+							bits.set(reg->delta.parent[1], true);
+						}
+						if (reg->flags & TLF_BB_Z_OFFSET) bits.set(reg->delta.parent[2], true);
+						if (reg->flags & TLF_CHILD_X_OFFSET) bits.set(reg->delta.child[0], true);
+						if (reg->flags & TLF_CHILD_Y_OFFSET) bits.set(reg->delta.child[1], true);
+					}
+				}
+			}
+			if (sg != nullptr && sg->type == SGT_INDUSTRY_PRODUCTION) {
+				const IndustryProductionSpriteGroup *ipsg = (const IndustryProductionSpriteGroup*)sg;
+				if (ipsg->version >= 1) {
+					for (int i = 0; i < ipsg->num_input; i++) {
+						if (ipsg->subtract_input[i] < 0x100) bits.set(ipsg->subtract_input[i], true);
+					}
+					for (int i = 0; i < ipsg->num_output; i++) {
+						if (ipsg->add_output[i] < 0x100) bits.set(ipsg->add_output[i], true);
+					}
+					bits.set(ipsg->again, true);
+				}
+			}
+		});
+		handle_group(group->default_group);
+		for (const auto &range : group->ranges) {
+			handle_group(range.group);
+		}
+		if (bits.any()) {
+			state.GetVarTracking(group)->out = bits;
+			std::bitset<256> in_bits = bits | pending_bits;
+			for (auto &it : state.temp_stores) {
+				in_bits.set(it.first, false);
+			}
+			state.GetVarTracking(group)->in |= in_bits;
+		}
+		if (require_var1C && !state.seen_procedure_call) group->dsg_flags |= DSGF_REQUIRES_VAR1C;
+	}
+	bool dse_allowed = IsFeatureUsableForDSE(feature) && !HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_DSE);
+	bool dse_eligible = state.enable_dse;
+	if (dse_allowed && !dse_eligible) {
+		dse_eligible |= CheckDeterministicSpriteGroupOutputVarBits(group, bits, true);
+	}
+	if (state.seen_procedure_call) {
+		/* Be more pessimistic with procedures as the ordering is different.
+		 * Later groups can require variables set in earlier procedures instead of the usual
+		 * where earlier groups can require variables set in later groups.
+		 * DSE on the procedure runs before the groups which use it, so set the procedure
+		 * output bits not using values from call site groups before DSE. */
+		CheckDeterministicSpriteGroupOutputVarBits(group, bits | pending_bits, false);
+	}
+	bool dse_candidate = (dse_allowed && dse_eligible);
+	if (seen_pending && !dse_candidate) {
+		group->dsg_flags |= DSGF_NO_DSE;
+		dse_candidate = true;
+	}
+	if (dse_candidate) {
+		_cur.dead_store_elimination_candidates.push_back(group);
+		group->dsg_flags |= DSGF_VAR_TRACKING_PENDING;
+	} else {
+		OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(group);
+		OptimiseVarAction2DeterministicSpriteGroupAdjustOrdering(group);
+	}
+
+	if (state.check_expensive_vars && !HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_EXPENSIVE_VARS)) {
+		if (dse_candidate) {
+			_cur.pending_expensive_var_checks.push_back(group);
+		} else {
+			OptimiseVarAction2DeterministicSpriteGroupExpensiveVars(group);
+		}
+	}
+}
+
+static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSpriteGroup *group, VarAction2GroupVariableTracking *var_tracking, bool no_changes)
+{
+	std::bitset<256> bits;
+	std::vector<uint> substitution_candidates;
+	if (var_tracking != nullptr) bits = var_tracking->out;
+
+	auto abandon_substitution_candidates = [&]() {
+		for (uint value : substitution_candidates) {
+			bits.set(value & 0xFF, true);
+		}
+		substitution_candidates.clear();
+	};
+	auto erase_adjust = [&](int index) {
+		group->adjusts.erase(group->adjusts.begin() + index);
+		for (size_t i = 0; i < substitution_candidates.size();) {
+			uint &value = substitution_candidates[i];
+			if (value >> 8 == (uint)index) {
+				/* Removed the substitution candidate target */
+				value = substitution_candidates.back();
+				substitution_candidates.pop_back();
+				continue;
+			}
+
+			if (value >> 8 > (uint)index) {
+				/* Adjust the substitution candidate target offset */
+				value -= 0x100;
+			}
+
+			i++;
+		}
+	};
+	auto try_variable_substitution = [&](DeterministicSpriteGroupAdjust &target, int prev_load_index, uint8 idx) -> bool {
+		assert(target.variable == 0x7D && target.parameter == idx);
+
+		bool inverted = false;
+		const DeterministicSpriteGroupAdjust *var_src = GetVarAction2PreviousSingleLoadAdjust(group->adjusts, prev_load_index, &inverted);
+		if (var_src != nullptr && var_src->variable != 0x7C) {
+			/* Don't use variable 7C as we're not checking for store perms which may clobber the value here */
+
+			DeterministicSpriteGroupAdjustType var_src_type = var_src->type;
+			if (inverted) {
+				switch (var_src_type) {
+					case DSGA_TYPE_EQ:
+						var_src_type = DSGA_TYPE_NEQ;
+						break;
+					case DSGA_TYPE_NEQ:
+						var_src_type = DSGA_TYPE_EQ;
+						break;
+					default:
+						/* Don't try to handle this case */
+						return false;
+				}
+			}
+			if (target.type == DSGA_TYPE_NONE && target.shift_num == 0 && (target.and_mask == 0xFFFFFFFF || (IsConstantComparisonAdjustType(var_src_type) && (target.and_mask & 1)))) {
+				target.type = var_src_type;
+				target.variable = var_src->variable;
+				target.shift_num = var_src->shift_num;
+				target.parameter = var_src->parameter;
+				target.and_mask = var_src->and_mask;
+				target.add_val = var_src->add_val;
+				target.divmod_val = var_src->divmod_val;
+				return true;
+			} else if (IsConstantComparisonAdjustType(target.type) && target.shift_num == 0 && (target.and_mask & 1) && target.add_val == 0 &&
+					IsConstantComparisonAdjustType(var_src_type)) {
+				/* DSGA_TYPE_EQ/NEQ on target are OK if add_val is 0 because this is a boolean invert/convert of the incoming DSGA_TYPE_EQ/NEQ */
+				if (target.type == DSGA_TYPE_EQ) {
+					target.type = InvertConstantComparisonAdjustType(var_src_type);
+				} else {
+					target.type = var_src_type;
+				}
+				target.variable = var_src->variable;
+				target.shift_num = var_src->shift_num;
+				target.parameter = var_src->parameter;
+				target.and_mask = var_src->and_mask;
+				target.add_val = var_src->add_val;
+				target.divmod_val = var_src->divmod_val;
+				return true;
+			} else if (var_src_type == DSGA_TYPE_NONE && (target.shift_num + var_src->shift_num) < 32) {
+				target.variable = var_src->variable;
+				target.parameter = var_src->parameter;
+				target.and_mask &= var_src->and_mask >> target.shift_num;
+				target.shift_num += var_src->shift_num;
+				return true;
+			}
+		}
+		return false;
+	};
+
+	for (int i = (int)group->adjusts.size() - 1; i >= 0;) {
+		bool pending_restart = false;
+		auto restart = [&]() {
+			pending_restart = false;
+			i = (int)group->adjusts.size() - 1;
+			if (var_tracking != nullptr) {
+				bits = var_tracking->out;
+			} else {
+				bits.reset();
+			}
+			substitution_candidates.clear();
+		};
+		const DeterministicSpriteGroupAdjust &adjust = group->adjusts[i];
+		if (adjust.operation == DSGA_OP_STO) {
+			if (adjust.type == DSGA_TYPE_NONE && adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask < 0x100) {
+				uint8 idx = adjust.and_mask;
+				/* Predictable store */
+
+				for (size_t j = 0; j < substitution_candidates.size(); j++) {
+					if ((substitution_candidates[j] & 0xFF) == idx) {
+						/* Found candidate */
+
+						DeterministicSpriteGroupAdjust &target = group->adjusts[substitution_candidates[j] >> 8];
+						bool substituted = try_variable_substitution(target, i - 1, idx);
+						if (!substituted) {
+							/* Not usable, mark as required so it's not eliminated */
+							bits.set(idx, true);
+						}
+						substitution_candidates[j] = substitution_candidates.back();
+						substitution_candidates.pop_back();
+						break;
+					}
+				}
+
+				if (!bits[idx] && !no_changes) {
+					/* Redundant store */
+					erase_adjust(i);
+					i--;
+					if ((i + 1 < (int)group->adjusts.size() && group->adjusts[i + 1].operation == DSGA_OP_RST && group->adjusts[i + 1].variable != 0x7B) ||
+							(i + 1 == (int)group->adjusts.size() && group->ranges.empty() && !group->calculated_result)) {
+						/* Now the store is eliminated, the current value has no users */
+						while (i >= 0) {
+							const DeterministicSpriteGroupAdjust &prev = group->adjusts[i];
+							if (prev.variable != 0x7E && !IsEvalAdjustWithSideEffects(prev.operation)) {
+								/* Delete useless operation */
+								erase_adjust(i);
+								i--;
+							} else {
+								if (i + 1 < (int)group->adjusts.size()) {
+									DeterministicSpriteGroupAdjust &next = group->adjusts[i + 1];
+									if (prev.operation == DSGA_OP_STO && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A &&
+											prev.shift_num == 0 && prev.and_mask < 0x100 &&
+											next.operation == DSGA_OP_RST && next.type == DSGA_TYPE_NONE && next.variable == 0x7D &&
+											next.parameter == prev.and_mask && next.shift_num == 0 && next.and_mask == 0xFFFFFFFF) {
+										/* Removing the dead store results in a store/load sequence, remove the load and re-check */
+										erase_adjust(i + 1);
+										restart();
+										break;
+									}
+									if (next.operation == DSGA_OP_RST) {
+										/* See if this is a repeated load of a variable (not procedure call) */
+										const DeterministicSpriteGroupAdjust *prev_load = GetVarAction2PreviousSingleLoadAdjust(group->adjusts, i, nullptr);
+										if (prev_load != nullptr && MemCmpT<DeterministicSpriteGroupAdjust>(prev_load, &next) == 0) {
+											if (next.variable == 0x7D) pending_restart = true;
+											erase_adjust(i + 1);
+											break;
+										}
+									}
+									if (i + 2 < (int)group->adjusts.size() && next.operation == DSGA_OP_RST && next.variable != 0x7E &&
+											prev.operation == DSGA_OP_STO && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A &&
+											prev.shift_num == 0 && prev.and_mask < 0x100) {
+										const DeterministicSpriteGroupAdjust &next2 = group->adjusts[i + 2];
+										if (next2.type == DSGA_TYPE_NONE && next2.variable == 0x7D && next2.shift_num == 0 &&
+												next2.and_mask == 0xFFFFFFFF && next2.parameter == prev.and_mask) {
+											if (IsEvalAdjustOperationReversable(next2.operation)) {
+												/* Convert: store, load var, (anti-)commutative op on stored --> (dead) store, (reversed) (anti-)commutative op var */
+												next.operation = ReverseEvalAdjustOperation(next2.operation);
+												if (IsEvalAdjustWithZeroLastValueAlwaysZero(next.operation)) {
+													next.adjust_flags |= DSGAF_SKIP_ON_ZERO;
+												}
+												erase_adjust(i + 2);
+												restart();
+												break;
+											}
+										}
+									}
+								}
+								break;
+							}
+						}
+					} else {
+						while (i >= 0 && i + 1 < (int)group->adjusts.size()) {
+							/* See if having removed the store, there is now a useful pair of operations which can be combined */
+							DeterministicSpriteGroupAdjust &prev = group->adjusts[i];
+							DeterministicSpriteGroupAdjust &next = group->adjusts[i + 1];
+							if (next.type == DSGA_TYPE_NONE && next.operation == DSGA_OP_XOR && next.variable == 0x1A && next.shift_num == 0 && next.and_mask == 1) {
+								/* XOR: boolean invert */
+								if (IsEvalAdjustOperationRelationalComparison(prev.operation)) {
+									prev.operation = InvertEvalAdjustRelationalComparisonOperation(prev.operation);
+									erase_adjust(i + 1);
+									continue;
+								} else if (prev.operation == DSGA_OP_RST && IsConstantComparisonAdjustType(prev.type)) {
+									prev.type = InvertConstantComparisonAdjustType(prev.type);
+									erase_adjust(i + 1);
+									continue;
+								}
+							}
+							if (i >= 1 && prev.type == DSGA_TYPE_NONE && IsEvalAdjustOperationRelationalComparison(prev.operation) &&
+									prev.variable == 0x1A && prev.shift_num == 0 && next.operation == DSGA_OP_MUL) {
+								if (((prev.operation == DSGA_OP_SGT && (prev.and_mask == 0 || prev.and_mask == (uint)-1)) || (prev.operation == DSGA_OP_SGE && (prev.and_mask == 0 || prev.and_mask == 1))) &&
+										IsIdenticalValueLoad(GetVarAction2PreviousSingleLoadAdjust(group->adjusts, i - 1, nullptr), &next)) {
+									prev.operation = DSGA_OP_SMAX;
+									prev.and_mask = 0;
+									erase_adjust(i + 1);
+									continue;
+								}
+								if (((prev.operation == DSGA_OP_SLE && (prev.and_mask == 0 || prev.and_mask == (uint)-1)) || (prev.operation == DSGA_OP_SLT && (prev.and_mask == 0 || prev.and_mask == 1))) &&
+										IsIdenticalValueLoad(GetVarAction2PreviousSingleLoadAdjust(group->adjusts, i - 1, nullptr), &next)) {
+									prev.operation = DSGA_OP_SMIN;
+									prev.and_mask = 0;
+									erase_adjust(i + 1);
+									continue;
+								}
+							}
+							break;
+						}
+					}
+					if (pending_restart) restart();
+					continue;
+				} else {
+					/* Non-redundant store */
+					bits.set(idx, false);
+				}
+			} else {
+				/* Unpredictable store */
+				abandon_substitution_candidates();
+			}
+		}
+		if (adjust.variable == 0x7B && adjust.parameter == 0x7D) {
+			/* Unpredictable load */
+			bits.set();
+			abandon_substitution_candidates();
+		}
+		if (adjust.variable == 0x7D && adjust.parameter < 0x100) {
+			if (i > 0 && !bits[adjust.parameter] && !no_changes) {
+				/* See if this can be made a substitution candidate */
+				bool add = true;
+				for (size_t j = 0; j < substitution_candidates.size(); j++) {
+					if ((substitution_candidates[j] & 0xFF) == adjust.parameter) {
+						/* There already is a candidate */
+						substitution_candidates[j] = substitution_candidates.back();
+						substitution_candidates.pop_back();
+						bits.set(adjust.parameter, true);
+						add = false;
+						break;
+					}
+				}
+				if (add) substitution_candidates.push_back(adjust.parameter | (i << 8));
+			} else {
+				bits.set(adjust.parameter, true);
+			}
+		}
+		if (adjust.variable == 0x7E) {
+			/* procedure call */
+			auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
+				if (sg == nullptr) return;
+				if (sg->type == SGT_RANDOMIZED) {
+					const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)sg;
+					for (const auto &group : rsg->groups) {
+						handle_group(group);
+					}
+				} else if (sg->type == SGT_DETERMINISTIC) {
+					const DeterministicSpriteGroup *sub = static_cast<const DeterministicSpriteGroup *>(sg);
+					VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sub, false);
+					if (var_tracking != nullptr) bits |= var_tracking->in;
+				}
+			});
+			handle_group(adjust.subroutine);
+			abandon_substitution_candidates();
+		}
+		i--;
+	}
+	abandon_substitution_candidates();
+	return bits;
+}
+
+static void HandleVarAction2OptimisationPasses()
+{
+	if (unlikely(HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2))) return;
+
+	for (DeterministicSpriteGroup *group : _cur.dead_store_elimination_candidates) {
+		VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(group, false);
+		if (!group->calculated_result) {
+			/* Add bits from any groups previously marked with DSGF_VAR_TRACKING_PENDING which should now be correctly updated after DSE */
+			auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
+				if (sg != nullptr && sg->type == SGT_DETERMINISTIC) {
+					VarAction2GroupVariableTracking *targ_var_tracking = _cur.GetVarAction2GroupVariableTracking(sg, false);
+					if (targ_var_tracking != nullptr) {
+						if (var_tracking == nullptr) var_tracking = _cur.GetVarAction2GroupVariableTracking(group, true);
+						var_tracking->out |= targ_var_tracking->in;
+					}
+				}
+				if (sg != nullptr && sg->type == SGT_RANDOMIZED) {
+					const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)sg;
+					for (const auto &group : rsg->groups) {
+						handle_group(group);
+					}
+				}
+			});
+			handle_group(group->default_group);
+			group->default_group = PruneTargetSpriteGroup(group->default_group);
+			for (auto &range : group->ranges) {
+				handle_group(range.group);
+				range.group = PruneTargetSpriteGroup(range.group);
+			}
+		}
+
+		/* Always run this even DSGF_NO_DSE is set because the load/store tracking is needed to re-calculate the input bits,
+		 * even if no stores are actually eliminated */
+		std::bitset<256> in_bits = HandleVarAction2DeadStoreElimination(group, var_tracking, group->dsg_flags & DSGF_NO_DSE);
+		if (var_tracking == nullptr && in_bits.any()) {
+			var_tracking = _cur.GetVarAction2GroupVariableTracking(group, true);
+			var_tracking->in = in_bits;
+		} else if (var_tracking != nullptr) {
+			var_tracking->in = in_bits;
+		}
+
+		OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(group);
+		OptimiseVarAction2DeterministicSpriteGroupAdjustOrdering(group);
+	}
+
+	for (DeterministicSpriteGroup *group : _cur.pending_expensive_var_checks) {
+		OptimiseVarAction2DeterministicSpriteGroupExpensiveVars(group);
+	}
+}
+
+static void ProcessDeterministicSpriteGroupRanges(const std::vector<DeterministicSpriteGroupRange> &ranges, std::vector<DeterministicSpriteGroupRange> &ranges_out, const SpriteGroup *default_group)
+{
+	/* Sort ranges ascending. When ranges overlap, this may required clamping or splitting them */
+	std::vector<uint32> bounds;
+	for (uint i = 0; i < ranges.size(); i++) {
+		bounds.push_back(ranges[i].low);
+		if (ranges[i].high != UINT32_MAX) bounds.push_back(ranges[i].high + 1);
+	}
+	std::sort(bounds.begin(), bounds.end());
+	bounds.erase(std::unique(bounds.begin(), bounds.end()), bounds.end());
+
+	std::vector<const SpriteGroup *> target;
+	for (uint j = 0; j < bounds.size(); ++j) {
+		uint32 v = bounds[j];
+		const SpriteGroup *t = default_group;
+		for (uint i = 0; i < ranges.size(); i++) {
+			if (ranges[i].low <= v && v <= ranges[i].high) {
+				t = ranges[i].group;
+				break;
+			}
+		}
+		target.push_back(t);
+	}
+	assert(target.size() == bounds.size());
+
+	for (uint j = 0; j < bounds.size(); ) {
+		if (target[j] != default_group) {
+			DeterministicSpriteGroupRange &r = ranges_out.emplace_back();
+			r.group = target[j];
+			r.low = bounds[j];
+			while (j < bounds.size() && target[j] == r.group) {
+				j++;
+			}
+			r.high = j < bounds.size() ? bounds[j] - 1 : UINT32_MAX;
+		} else {
+			j++;
+		}
+	}
+}
+
 /* Action 0x02 */
 static void NewSpriteGroup(ByteReader *buf)
 {
@@ -5123,11 +7888,12 @@ static void NewSpriteGroup(ByteReader *buf)
 	 *                 otherwise it specifies a number of entries, the exact
 	 *                 meaning depends on the feature
 	 * V feature-specific-data (huge mess, don't even look it up --pasky) */
-	SpriteGroup *act_group = nullptr;
+	const SpriteGroup *act_group = nullptr;
 
-	uint8 feature = buf->ReadByte();
+	GrfSpecFeatureRef feature_ref = ReadFeature(buf->ReadByte());
+	GrfSpecFeature feature = feature_ref.id;
 	if (feature >= GSF_END) {
-		grfmsg(1, "NewSpriteGroup: Unsupported feature 0x%02X, skipping", feature);
+		grfmsg(1, "NewSpriteGroup: Unsupported feature %s, skipping", GetFeatureString(feature_ref));
 		return;
 	}
 
@@ -5150,9 +7916,13 @@ static void NewSpriteGroup(ByteReader *buf)
 			byte varadjust;
 			byte varsize;
 
+			bool first_adjust = true;
+
 			assert(DeterministicSpriteGroup::CanAllocateItem());
 			DeterministicSpriteGroup *group = new DeterministicSpriteGroup();
 			group->nfo_line = _cur.nfo_line;
+			group->feature = feature;
+			if (_action6_override_active) group->sg_flags |= SGF_ACTION6;
 			act_group = group;
 			group->var_scope = HasBit(type, 1) ? VSG_SCOPE_PARENT : VSG_SCOPE_SELF;
 
@@ -5163,16 +7933,25 @@ static void NewSpriteGroup(ByteReader *buf)
 				case 2: group->size = DSG_SIZE_DWORD; varsize = 4; break;
 			}
 
-			static std::vector<DeterministicSpriteGroupAdjust> adjusts;
-			adjusts.clear();
+			DeterministicSpriteGroupShadowCopy *shadow = nullptr;
+			if (unlikely(HasBit(_misc_debug_flags, MDF_NEWGRF_SG_SAVE_RAW))) {
+				shadow = &(_deterministic_sg_shadows[group]);
+			}
+
+			VarAction2OptimiseState va2_opt_state;
+			/* The initial value is always the constant 0 */
+			va2_opt_state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO | VA2AIF_HAVE_CONSTANT;
+			va2_opt_state.current_constant = 0;
 
 			/* Loop through the var adjusts. Unfortunately we don't know how many we have
 			 * from the outset, so we shall have to keep reallocing. */
 			do {
-				DeterministicSpriteGroupAdjust &adjust = adjusts.emplace_back();
+				DeterministicSpriteGroupAdjust &adjust = group->adjusts.emplace_back();
 
 				/* The first var adjust doesn't have an operation specified, so we set it to add. */
-				adjust.operation = adjusts.size() == 1 ? DSGA_OP_ADD : (DeterministicSpriteGroupAdjustOperation)buf->ReadByte();
+				adjust.operation = first_adjust ? DSGA_OP_ADD : (DeterministicSpriteGroupAdjustOperation)buf->ReadByte();
+				first_adjust = false;
+				if (adjust.operation > DSGA_OP_END) adjust.operation = DSGA_OP_END;
 				adjust.variable  = buf->ReadByte();
 				if (adjust.variable == 0x7E) {
 					/* Link subroutine group */
@@ -5186,6 +7965,27 @@ static void NewSpriteGroup(ByteReader *buf)
 				adjust.type      = (DeterministicSpriteGroupAdjustType)GB(varadjust, 6, 2);
 				adjust.and_mask  = buf->ReadVarSize(varsize);
 
+				if (adjust.variable == 0x11) {
+					for (const GRFVariableMapEntry &remap : _cur.grffile->grf_variable_remaps) {
+						if (remap.feature == feature && remap.input_shift == adjust.shift_num && remap.input_mask == adjust.and_mask) {
+							adjust.variable = remap.id;
+							adjust.shift_num = remap.output_shift;
+							adjust.and_mask = remap.output_mask;
+							adjust.parameter = remap.output_param;
+							break;
+						}
+					}
+				} else if (adjust.variable == 0x7B && adjust.parameter == 0x11) {
+					for (const GRFVariableMapEntry &remap : _cur.grffile->grf_variable_remaps) {
+						if (remap.feature == feature && remap.input_shift == adjust.shift_num && remap.input_mask == adjust.and_mask) {
+							adjust.parameter = remap.id;
+							adjust.shift_num = remap.output_shift;
+							adjust.and_mask = remap.output_mask;
+							break;
+						}
+					}
+				}
+
 				if (adjust.type != DSGA_TYPE_NONE) {
 					adjust.add_val    = buf->ReadVarSize(varsize);
 					adjust.divmod_val = buf->ReadVarSize(varsize);
@@ -5193,13 +7993,16 @@ static void NewSpriteGroup(ByteReader *buf)
 					adjust.add_val    = 0;
 					adjust.divmod_val = 0;
 				}
+				if (unlikely(shadow != nullptr)) {
+					shadow->adjusts.push_back(adjust);
+					/* Pruning was turned off so that the unpruned target could be saved in the shadow, prune now */
+					if (adjust.subroutine != nullptr) adjust.subroutine = PruneTargetSpriteGroup(adjust.subroutine);
+				}
+
+				OptimiseVarAction2Adjust(va2_opt_state, feature, varsize, group, adjust);
 
 				/* Continue reading var adjusts while bit 5 is set. */
 			} while (HasBit(varadjust, 5));
-
-			group->num_adjusts = (uint)adjusts.size();
-			group->adjusts = MallocT<DeterministicSpriteGroupAdjust>(group->num_adjusts);
-			MemCpyT(group->adjusts, adjusts.data(), group->num_adjusts);
 
 			std::vector<DeterministicSpriteGroupRange> ranges;
 			ranges.resize(buf->ReadByte());
@@ -5210,54 +8013,25 @@ static void NewSpriteGroup(ByteReader *buf)
 			}
 
 			group->default_group = GetGroupFromGroupID(setid, type, buf->ReadWord());
+
+			if (unlikely(shadow != nullptr)) {
+				ProcessDeterministicSpriteGroupRanges(ranges, shadow->ranges, group->default_group);
+				shadow->default_group = group->default_group;
+
+				/* Pruning was turned off so that the unpruned targets could be saved in the shadow ranges, prune now */
+				for (DeterministicSpriteGroupRange &range : ranges) {
+					range.group = PruneTargetSpriteGroup(range.group);
+				}
+				group->default_group = PruneTargetSpriteGroup(group->default_group);
+			}
+
 			group->error_group = ranges.size() > 0 ? ranges[0].group : group->default_group;
 			/* nvar == 0 is a special case -- we turn our value into a callback result */
 			group->calculated_result = ranges.size() == 0;
 
-			/* Sort ranges ascending. When ranges overlap, this may required clamping or splitting them */
-			std::vector<uint32> bounds;
-			for (uint i = 0; i < ranges.size(); i++) {
-				bounds.push_back(ranges[i].low);
-				if (ranges[i].high != UINT32_MAX) bounds.push_back(ranges[i].high + 1);
-			}
-			std::sort(bounds.begin(), bounds.end());
-			bounds.erase(std::unique(bounds.begin(), bounds.end()), bounds.end());
+			ProcessDeterministicSpriteGroupRanges(ranges, group->ranges, group->default_group);
 
-			std::vector<const SpriteGroup *> target;
-			for (uint j = 0; j < bounds.size(); ++j) {
-				uint32 v = bounds[j];
-				const SpriteGroup *t = group->default_group;
-				for (uint i = 0; i < ranges.size(); i++) {
-					if (ranges[i].low <= v && v <= ranges[i].high) {
-						t = ranges[i].group;
-						break;
-					}
-				}
-				target.push_back(t);
-			}
-			assert(target.size() == bounds.size());
-
-			std::vector<DeterministicSpriteGroupRange> optimised;
-			for (uint j = 0; j < bounds.size(); ) {
-				if (target[j] != group->default_group) {
-					DeterministicSpriteGroupRange r;
-					r.group = target[j];
-					r.low = bounds[j];
-					while (j < bounds.size() && target[j] == r.group) {
-						j++;
-					}
-					r.high = j < bounds.size() ? bounds[j] - 1 : UINT32_MAX;
-					optimised.push_back(r);
-				} else {
-					j++;
-				}
-			}
-
-			group->num_ranges = (uint)optimised.size(); // cast is safe, there should never be 2**31 elements here
-			if (group->num_ranges > 0) {
-				group->ranges = MallocT<DeterministicSpriteGroupRange>(group->num_ranges);
-				MemCpyT(group->ranges, &optimised.front(), group->num_ranges);
-			}
+			OptimiseVarAction2DeterministicSpriteGroup(va2_opt_state, feature, varsize, group);
 			break;
 		}
 
@@ -5269,6 +8043,7 @@ static void NewSpriteGroup(ByteReader *buf)
 			assert(RandomizedSpriteGroup::CanAllocateItem());
 			RandomizedSpriteGroup *group = new RandomizedSpriteGroup();
 			group->nfo_line = _cur.nfo_line;
+			if (_action6_override_active) group->sg_flags |= SGF_ACTION6;
 			act_group = group;
 			group->var_scope = HasBit(type, 1) ? VSG_SCOPE_PARENT : VSG_SCOPE_SELF;
 
@@ -5281,11 +8056,24 @@ static void NewSpriteGroup(ByteReader *buf)
 			group->triggers       = GB(triggers, 0, 7);
 			group->cmp_mode       = HasBit(triggers, 7) ? RSG_CMP_ALL : RSG_CMP_ANY;
 			group->lowest_randbit = buf->ReadByte();
-			group->num_groups     = buf->ReadByte();
-			group->groups = CallocT<const SpriteGroup*>(group->num_groups);
 
-			for (uint i = 0; i < group->num_groups; i++) {
-				group->groups[i] = GetGroupFromGroupID(setid, type, buf->ReadWord());
+			byte num_groups = buf->ReadByte();
+			if (!HasExactlyOneBit(num_groups)) {
+				grfmsg(1, "NewSpriteGroup: Random Action 2 nrand should be power of 2");
+			}
+
+			for (uint i = 0; i < num_groups; i++) {
+				group->groups.push_back(GetGroupFromGroupID(setid, type, buf->ReadWord()));
+			}
+
+			if (unlikely(HasBit(_misc_debug_flags, MDF_NEWGRF_SG_SAVE_RAW))) {
+				RandomizedSpriteGroupShadowCopy *shadow = &(_randomized_sg_shadows[group]);
+				shadow->groups = group->groups;
+
+				/* Pruning was turned off so that the unpruned targets could be saved in the shadow groups, prune now */
+				for (const SpriteGroup *&group : group->groups) {
+					group = PruneTargetSpriteGroup(group);
+				}
 			}
 
 			break;
@@ -5306,6 +8094,8 @@ static void NewSpriteGroup(ByteReader *buf)
 				case GSF_RAILTYPES:
 				case GSF_ROADTYPES:
 				case GSF_TRAMTYPES:
+				case GSF_SIGNALS:
+				case GSF_NEWLANDSCAPE:
 				{
 					byte num_loaded  = type;
 					byte num_loading = buf->ReadByte();
@@ -5315,29 +8105,64 @@ static void NewSpriteGroup(ByteReader *buf)
 						return;
 					}
 
-					assert(RealSpriteGroup::CanAllocateItem());
-					RealSpriteGroup *group = new RealSpriteGroup();
-					group->nfo_line = _cur.nfo_line;
-					act_group = group;
-
-					group->num_loaded  = num_loaded;
-					group->num_loading = num_loading;
-					if (num_loaded  > 0) group->loaded = CallocT<const SpriteGroup*>(num_loaded);
-					if (num_loading > 0) group->loading = CallocT<const SpriteGroup*>(num_loading);
+					if (num_loaded + num_loading == 0) {
+						grfmsg(1, "NewSpriteGroup: no result, skipping invalid RealSpriteGroup");
+						break;
+					}
 
 					grfmsg(6, "NewSpriteGroup: New SpriteGroup 0x%02X, %u loaded, %u loading",
 							setid, num_loaded, num_loading);
 
-					for (uint i = 0; i < num_loaded; i++) {
+					if (num_loaded + num_loading == 0) {
+						grfmsg(1, "NewSpriteGroup: no result, skipping invalid RealSpriteGroup");
+						break;
+					}
+
+					if (num_loaded + num_loading == 1) {
+						/* Avoid creating 'Real' sprite group if only one option. */
 						uint16 spriteid = buf->ReadWord();
-						group->loaded[i] = CreateGroupFromGroupID(feature, setid, type, spriteid);
-						grfmsg(8, "NewSpriteGroup: + rg->loaded[%i]  = subset %u", i, spriteid);
+						act_group = CreateGroupFromGroupID(feature, setid, type, spriteid);
+						grfmsg(8, "NewSpriteGroup: one result, skipping RealSpriteGroup = subset %u", spriteid);
+						break;
+					}
+
+					std::vector<uint16> loaded;
+					std::vector<uint16> loading;
+
+					for (uint i = 0; i < num_loaded; i++) {
+						loaded.push_back(buf->ReadWord());
+						grfmsg(8, "NewSpriteGroup: + rg->loaded[%i]  = subset %u", i, loaded[i]);
 					}
 
 					for (uint i = 0; i < num_loading; i++) {
-						uint16 spriteid = buf->ReadWord();
-						group->loading[i] = CreateGroupFromGroupID(feature, setid, type, spriteid);
-						grfmsg(8, "NewSpriteGroup: + rg->loading[%i] = subset %u", i, spriteid);
+						loading.push_back(buf->ReadWord());
+						grfmsg(8, "NewSpriteGroup: + rg->loading[%i] = subset %u", i, loading[i]);
+					}
+
+					if (std::adjacent_find(loaded.begin(),  loaded.end(),  std::not_equal_to<>()) == loaded.end() &&
+						std::adjacent_find(loading.begin(), loading.end(), std::not_equal_to<>()) == loading.end() &&
+						loaded[0] == loading[0])
+					{
+						/* Both lists only contain the same value, so don't create 'Real' sprite group */
+						act_group = CreateGroupFromGroupID(feature, setid, type, loaded[0]);
+						grfmsg(8, "NewSpriteGroup: same result, skipping RealSpriteGroup = subset %u", loaded[0]);
+						break;
+					}
+
+					assert(RealSpriteGroup::CanAllocateItem());
+					RealSpriteGroup *group = new RealSpriteGroup();
+					group->nfo_line = _cur.nfo_line;
+					if (_action6_override_active) group->sg_flags |= SGF_ACTION6;
+					act_group = group;
+
+					for (uint16 spriteid : loaded) {
+						const SpriteGroup *t = CreateGroupFromGroupID(feature, setid, type, spriteid);
+						group->loaded.push_back(t);
+					}
+
+					for (uint16 spriteid : loading) {
+						const SpriteGroup *t = CreateGroupFromGroupID(feature, setid, type, spriteid);
+						group->loading.push_back(t);
 					}
 
 					break;
@@ -5346,12 +8171,14 @@ static void NewSpriteGroup(ByteReader *buf)
 				case GSF_HOUSES:
 				case GSF_AIRPORTTILES:
 				case GSF_OBJECTS:
-				case GSF_INDUSTRYTILES: {
+				case GSF_INDUSTRYTILES:
+				case GSF_ROADSTOPS: {
 					byte num_building_sprites = std::max((uint8)1, type);
 
 					assert(TileLayoutSpriteGroup::CanAllocateItem());
 					TileLayoutSpriteGroup *group = new TileLayoutSpriteGroup();
 					group->nfo_line = _cur.nfo_line;
+					if (_action6_override_active) group->sg_flags |= SGF_ACTION6;
 					act_group = group;
 
 					/* On error, bail out immediately. Temporary GRF data was already freed */
@@ -5368,6 +8195,7 @@ static void NewSpriteGroup(ByteReader *buf)
 					assert(IndustryProductionSpriteGroup::CanAllocateItem());
 					IndustryProductionSpriteGroup *group = new IndustryProductionSpriteGroup();
 					group->nfo_line = _cur.nfo_line;
+					if (_action6_override_active) group->sg_flags |= SGF_ACTION6;
 					act_group = group;
 					group->version = type;
 					if (type == 0) {
@@ -5441,7 +8269,7 @@ static void NewSpriteGroup(ByteReader *buf)
 				}
 
 				/* Loading of Tile Layout and Production Callback groups would happen here */
-				default: grfmsg(1, "NewSpriteGroup: Unsupported feature 0x%02X, skipping", feature);
+				default: grfmsg(1, "NewSpriteGroup: Unsupported feature %s, skipping", GetFeatureString(feature));
 			}
 		}
 	}
@@ -5461,7 +8289,7 @@ static CargoID TranslateCargo(uint8 feature, uint8 ctype)
 		}
 	}
 	/* Special cargo types for purchase list and stations */
-	if (feature == GSF_STATIONS && ctype == 0xFE) return CT_DEFAULT_NA;
+	if ((feature == GSF_STATIONS || feature == GSF_ROADSTOPS) && ctype == 0xFE) return CT_DEFAULT_NA;
 	if (ctype == 0xFF) return CT_PURCHASE;
 
 	if (_cur.grffile->cargo_list.size() == 0) {
@@ -5471,8 +8299,7 @@ static CargoID TranslateCargo(uint8 feature, uint8 ctype)
 			return CT_INVALID;
 		}
 
-		const CargoSpec *cs;
-		FOR_ALL_CARGOSPECS(cs) {
+		for (const CargoSpec *cs : CargoSpec::Iterate()) {
 			if (cs->bitnum == ctype) {
 				grfmsg(6, "TranslateCargo: Cargo bitnum %d mapped to cargo type %d.", ctype, cs->Index());
 				return cs->Index();
@@ -5550,7 +8377,7 @@ static void VehicleMapSpriteGroup(ByteReader *buf, byte feature, uint8 idcount)
 			/* No engine could be allocated?!? Deal with it. Okay,
 			 * this might look bad. Also make sure this NewGRF
 			 * gets disabled, as a half loaded one is bad. */
-			HandleChangeInfoResult("VehicleMapSpriteGroup", CIR_INVALID_ID, 0, 0);
+			HandleChangeInfoResult("VehicleMapSpriteGroup", CIR_INVALID_ID, (GrfSpecFeature)0, 0);
 			return;
 		}
 
@@ -5575,9 +8402,9 @@ static void VehicleMapSpriteGroup(ByteReader *buf, byte feature, uint8 idcount)
 			grfmsg(7, "VehicleMapSpriteGroup: [%d] Engine %d...", i, engine);
 
 			if (wagover) {
-				SetWagonOverrideSprites(engine, ctype, _cur.spritegroups[groupid], last_engines, last_engines_count);
+				SetWagonOverrideSprites(engine, ctype, GetGroupByID(groupid), last_engines, last_engines_count);
 			} else {
-				SetCustomEngineSprites(engine, ctype, _cur.spritegroups[groupid]);
+				SetCustomEngineSprites(engine, ctype, GetGroupByID(groupid));
 			}
 		}
 	}
@@ -5591,9 +8418,9 @@ static void VehicleMapSpriteGroup(ByteReader *buf, byte feature, uint8 idcount)
 		EngineID engine = engines[i];
 
 		if (wagover) {
-			SetWagonOverrideSprites(engine, CT_DEFAULT, _cur.spritegroups[groupid], last_engines, last_engines_count);
+			SetWagonOverrideSprites(engine, CT_DEFAULT, GetGroupByID(groupid), last_engines, last_engines_count);
 		} else {
-			SetCustomEngineSprites(engine, CT_DEFAULT, _cur.spritegroups[groupid]);
+			SetCustomEngineSprites(engine, CT_DEFAULT, GetGroupByID(groupid));
 			SetEngineGRF(engine, _cur.grffile);
 		}
 	}
@@ -5622,7 +8449,7 @@ static void CanalMapSpriteGroup(ByteReader *buf, uint8 idcount)
 		}
 
 		_water_feature[cf].grffile = _cur.grffile;
-		_water_feature[cf].group = _cur.spritegroups[groupid];
+		_water_feature[cf].group = GetGroupByID(groupid);
 	}
 }
 
@@ -5651,7 +8478,7 @@ static void StationMapSpriteGroup(ByteReader *buf, uint8 idcount)
 				continue;
 			}
 
-			statspec->grf_prop.spritegroup[ctype] = _cur.spritegroups[groupid];
+			statspec->grf_prop.spritegroup[ctype] = GetGroupByID(groupid);
 		}
 	}
 
@@ -5671,7 +8498,7 @@ static void StationMapSpriteGroup(ByteReader *buf, uint8 idcount)
 			continue;
 		}
 
-		statspec->grf_prop.spritegroup[CT_DEFAULT] = _cur.spritegroups[groupid];
+		statspec->grf_prop.spritegroup[CT_DEFAULT] = GetGroupByID(groupid);
 		statspec->grf_prop.grffile = _cur.grffile;
 		statspec->grf_prop.local_id = stations[i];
 		StationClass::Assign(statspec);
@@ -5706,7 +8533,7 @@ static void TownHouseMapSpriteGroup(ByteReader *buf, uint8 idcount)
 			continue;
 		}
 
-		hs->grf_prop.spritegroup[0] = _cur.spritegroups[groupid];
+		hs->grf_prop.spritegroup[0] = GetGroupByID(groupid);
 	}
 }
 
@@ -5737,7 +8564,7 @@ static void IndustryMapSpriteGroup(ByteReader *buf, uint8 idcount)
 			continue;
 		}
 
-		indsp->grf_prop.spritegroup[0] = _cur.spritegroups[groupid];
+		indsp->grf_prop.spritegroup[0] = GetGroupByID(groupid);
 	}
 }
 
@@ -5768,7 +8595,7 @@ static void IndustrytileMapSpriteGroup(ByteReader *buf, uint8 idcount)
 			continue;
 		}
 
-		indtsp->grf_prop.spritegroup[0] = _cur.spritegroups[groupid];
+		indtsp->grf_prop.spritegroup[0] = GetGroupByID(groupid);
 	}
 }
 
@@ -5796,7 +8623,40 @@ static void CargoMapSpriteGroup(ByteReader *buf, uint8 idcount)
 
 		CargoSpec *cs = CargoSpec::Get(cid);
 		cs->grffile = _cur.grffile;
-		cs->group = _cur.spritegroups[groupid];
+		cs->group = GetGroupByID(groupid);
+	}
+}
+
+static void SignalsMapSpriteGroup(ByteReader *buf, uint8 idcount)
+{
+	uint8 *ids = AllocaM(uint8, idcount);
+	for (uint i = 0; i < idcount; i++) {
+		ids[i] = buf->ReadByte();
+	}
+
+	/* Skip the cargo type section, we only care about the default group */
+	uint8 cidcount = buf->ReadByte();
+	buf->Skip(cidcount * 3);
+
+	uint16 groupid = buf->ReadWord();
+	if (!IsValidGroupID(groupid, "SignalsMapSpriteGroup")) return;
+
+	for (uint i = 0; i < idcount; i++) {
+		uint8 id = ids[i];
+
+		switch (id) {
+			case NSA3ID_CUSTOM_SIGNALS:
+				_cur.grffile->new_signals_group = GetGroupByID(groupid);
+				if (!HasBit(_cur.grffile->new_signal_ctrl_flags, NSCF_GROUPSET)) {
+					SetBit(_cur.grffile->new_signal_ctrl_flags, NSCF_GROUPSET);
+					_new_signals_grfs.push_back(_cur.grffile);
+				}
+				break;
+
+			default:
+				grfmsg(1, "SignalsMapSpriteGroup: ID not implemented: %d", id);
+			break;
+		}
 	}
 }
 
@@ -5829,7 +8689,7 @@ static void ObjectMapSpriteGroup(ByteReader *buf, uint8 idcount)
 				continue;
 			}
 
-			spec->grf_prop.spritegroup[ctype] = _cur.spritegroups[groupid];
+			spec->grf_prop.spritegroup[ctype] = GetGroupByID(groupid);
 		}
 	}
 
@@ -5849,7 +8709,7 @@ static void ObjectMapSpriteGroup(ByteReader *buf, uint8 idcount)
 			continue;
 		}
 
-		spec->grf_prop.spritegroup[0] = _cur.spritegroups[groupid];
+		spec->grf_prop.spritegroup[0] = GetGroupByID(groupid);
 		spec->grf_prop.grffile        = _cur.grffile;
 		spec->grf_prop.local_id       = objects[i];
 	}
@@ -5877,7 +8737,7 @@ static void RailTypeMapSpriteGroup(ByteReader *buf, uint8 idcount)
 				RailtypeInfo *rti = &_railtypes[railtypes[i]];
 
 				rti->grffile[ctype] = _cur.grffile;
-				rti->group[ctype] = _cur.spritegroups[groupid];
+				rti->group[ctype] = GetGroupByID(groupid);
 			}
 		}
 	}
@@ -5910,7 +8770,7 @@ static void RoadTypeMapSpriteGroup(ByteReader *buf, uint8 idcount, RoadTramType 
 				RoadTypeInfo *rti = &_roadtypes[roadtypes[i]];
 
 				rti->grffile[ctype] = _cur.grffile;
-				rti->group[ctype] = _cur.spritegroups[groupid];
+				rti->group[ctype] = GetGroupByID(groupid);
 			}
 		}
 	}
@@ -5946,7 +8806,7 @@ static void AirportMapSpriteGroup(ByteReader *buf, uint8 idcount)
 			continue;
 		}
 
-		as->grf_prop.spritegroup[0] = _cur.spritegroups[groupid];
+		as->grf_prop.spritegroup[0] = GetGroupByID(groupid);
 	}
 }
 
@@ -5977,10 +8837,98 @@ static void AirportTileMapSpriteGroup(ByteReader *buf, uint8 idcount)
 			continue;
 		}
 
-		airtsp->grf_prop.spritegroup[0] = _cur.spritegroups[groupid];
+		airtsp->grf_prop.spritegroup[0] = GetGroupByID(groupid);
 	}
 }
 
+static void RoadStopMapSpriteGroup(ByteReader *buf, uint8 idcount)
+{
+	uint8 *roadstops = AllocaM(uint8, idcount);
+	for (uint i = 0; i < idcount; i++) {
+		roadstops[i] = buf->ReadByte();
+	}
+
+	uint8 cidcount = buf->ReadByte();
+	for (uint c = 0; c < cidcount; c++) {
+		uint8 ctype = buf->ReadByte();
+		uint16 groupid = buf->ReadWord();
+		if (!IsValidGroupID(groupid, "RoadStopMapSpriteGroup")) continue;
+
+		ctype = TranslateCargo(GSF_ROADSTOPS, ctype);
+		if (ctype == CT_INVALID) continue;
+
+		for (uint i = 0; i < idcount; i++) {
+			RoadStopSpec *roadstopspec = _cur.grffile->roadstops == nullptr ? nullptr : _cur.grffile->roadstops[roadstops[i]];
+
+			if (roadstopspec == nullptr) {
+				grfmsg(1, "RoadStopMapSpriteGroup: Road stop with ID 0x%02X does not exist, skipping", roadstops[i]);
+				continue;
+			}
+
+			roadstopspec->grf_prop.spritegroup[ctype] = GetGroupByID(groupid);
+		}
+	}
+
+	uint16 groupid = buf->ReadWord();
+	if (!IsValidGroupID(groupid, "RoadStopMapSpriteGroup")) return;
+
+	if (_cur.grffile->roadstops == nullptr) {
+		grfmsg(0, "RoadStopMapSpriteGroup: No roadstops defined, skipping.");
+		return;
+	}
+
+	for (uint i = 0; i < idcount; i++) {
+		RoadStopSpec *roadstopspec = _cur.grffile->roadstops == nullptr ? nullptr : _cur.grffile->roadstops[roadstops[i]];
+
+		if (roadstopspec == nullptr) {
+			grfmsg(1, "RoadStopMapSpriteGroup: Road stop with ID 0x%02X does not exist, skipping.", roadstops[i]);
+			continue;
+		}
+
+		if (roadstopspec->grf_prop.grffile != nullptr) {
+			grfmsg(1, "RoadStopMapSpriteGroup: Road stop with ID 0x%02X mapped multiple times, skipping", roadstops[i]);
+			continue;
+		}
+
+		roadstopspec->grf_prop.spritegroup[CT_DEFAULT] = GetGroupByID(groupid);
+		roadstopspec->grf_prop.grffile = _cur.grffile;
+		roadstopspec->grf_prop.local_id = roadstops[i];
+		RoadStopClass::Assign(roadstopspec);
+	}
+}
+
+static void NewLandscapeMapSpriteGroup(ByteReader *buf, uint8 idcount)
+{
+	uint8 *ids = AllocaM(uint8, idcount);
+	for (uint i = 0; i < idcount; i++) {
+		ids[i] = buf->ReadByte();
+	}
+
+	/* Skip the cargo type section, we only care about the default group */
+	uint8 cidcount = buf->ReadByte();
+	buf->Skip(cidcount * 3);
+
+	uint16 groupid = buf->ReadWord();
+	if (!IsValidGroupID(groupid, "NewLandscapeMapSpriteGroup")) return;
+
+	for (uint i = 0; i < idcount; i++) {
+		uint8 id = ids[i];
+
+		switch (id) {
+			case NLA3ID_CUSTOM_ROCKS:
+				_cur.grffile->new_rocks_group = GetGroupByID(groupid);
+				if (!HasBit(_cur.grffile->new_landscape_ctrl_flags, NLCF_ROCKS_SET)) {
+					SetBit(_cur.grffile->new_landscape_ctrl_flags, NLCF_ROCKS_SET);
+					_new_landscape_rocks_grfs.push_back(_cur.grffile);
+				}
+				break;
+
+			default:
+				grfmsg(1, "NewLandscapeMapSpriteGroup: ID not implemented: %d", id);
+			break;
+		}
+	}
+}
 
 /* Action 0x03 */
 static void FeatureMapSpriteGroup(ByteReader *buf)
@@ -5999,11 +8947,12 @@ static void FeatureMapSpriteGroup(ByteReader *buf)
 	 * W cid           cargo ID (sprite group ID) for this type of cargo
 	 * W def-cid       default cargo ID (sprite group ID) */
 
-	uint8 feature = buf->ReadByte();
+	GrfSpecFeatureRef feature_ref = ReadFeature(buf->ReadByte());
+	GrfSpecFeature feature = feature_ref.id;
 	uint8 idcount = buf->ReadByte();
 
 	if (feature >= GSF_END) {
-		grfmsg(1, "FeatureMapSpriteGroup: Unsupported feature 0x%02X, skipping", feature);
+		grfmsg(1, "FeatureMapSpriteGroup: Unsupported feature %s, skipping", GetFeatureString(feature_ref));
 		return;
 	}
 
@@ -6014,16 +8963,16 @@ static void FeatureMapSpriteGroup(ByteReader *buf)
 		uint16 groupid = buf->ReadWord();
 		if (!IsValidGroupID(groupid, "FeatureMapSpriteGroup")) return;
 
-		grfmsg(6, "FeatureMapSpriteGroup: Adding generic feature callback for feature 0x%02X", feature);
+		grfmsg(6, "FeatureMapSpriteGroup: Adding generic feature callback for feature %s", GetFeatureString(feature_ref));
 
-		AddGenericCallback(feature, _cur.grffile, _cur.spritegroups[groupid]);
+		AddGenericCallback(feature, _cur.grffile, GetGroupByID(groupid));
 		return;
 	}
 
 	/* Mark the feature as used by the grf (generic callbacks do not count) */
 	SetBit(_cur.grffile->grf_features, feature);
 
-	grfmsg(6, "FeatureMapSpriteGroup: Feature 0x%02X, %d ids", feature, idcount);
+	grfmsg(6, "FeatureMapSpriteGroup: Feature %s, %d ids", GetFeatureString(feature_ref), idcount);
 
 	switch (feature) {
 		case GSF_TRAINS:
@@ -6061,6 +9010,10 @@ static void FeatureMapSpriteGroup(ByteReader *buf)
 			AirportMapSpriteGroup(buf, idcount);
 			return;
 
+		case GSF_SIGNALS:
+			SignalsMapSpriteGroup(buf, idcount);
+			break;
+
 		case GSF_OBJECTS:
 			ObjectMapSpriteGroup(buf, idcount);
 			break;
@@ -6081,8 +9034,16 @@ static void FeatureMapSpriteGroup(ByteReader *buf)
 			AirportTileMapSpriteGroup(buf, idcount);
 			return;
 
+		case GSF_ROADSTOPS:
+			RoadStopMapSpriteGroup(buf, idcount);
+			return;
+
+		case GSF_NEWLANDSCAPE:
+			NewLandscapeMapSpriteGroup(buf, idcount);
+			return;
+
 		default:
-			grfmsg(1, "FeatureMapSpriteGroup: Unsupported feature 0x%02X, skipping", feature);
+			grfmsg(1, "FeatureMapSpriteGroup: Unsupported feature %s, skipping", GetFeatureString(feature_ref));
 			return;
 	}
 }
@@ -6108,9 +9069,10 @@ static void FeatureNewName(ByteReader *buf)
 
 	bool new_scheme = _cur.grffile->grf_version >= 7;
 
-	uint8 feature  = buf->ReadByte();
+	GrfSpecFeatureRef feature_ref = ReadFeature(buf->ReadByte(), true);
+	GrfSpecFeature feature = feature_ref.id;
 	if (feature >= GSF_END && feature != 0x48) {
-		grfmsg(1, "FeatureNewName: Unsupported feature 0x%02X, skipping", feature);
+		grfmsg(1, "FeatureNewName: Unsupported feature %s, skipping", GetFeatureString(feature_ref));
 		return;
 	}
 
@@ -6130,8 +9092,8 @@ static void FeatureNewName(ByteReader *buf)
 
 	uint16 endid = id + num;
 
-	grfmsg(6, "FeatureNewName: About to rename engines %d..%d (feature 0x%02X) in language 0x%02X",
-	               id, endid, feature, lang);
+	grfmsg(6, "FeatureNewName: About to rename engines %d..%d (feature %s) in language 0x%02X",
+	               id, endid, GetFeatureString(feature), lang);
 
 	for (; id < endid && buf->HasData(); id++) {
 		const char *name = buf->ReadString();
@@ -6298,16 +9260,16 @@ static void GraphicsNew(ByteReader *buf)
 			/* Special not-TTDP-compatible case used in openttd.grf
 			 * Missing shore sprites and initialisation of SPR_SHORE_BASE */
 			grfmsg(2, "GraphicsNew: Loading 10 missing shore sprites from extra grf.");
-			LoadNextSprite(SPR_SHORE_BASE +  0, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_STEEP_S
-			LoadNextSprite(SPR_SHORE_BASE +  5, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_STEEP_W
-			LoadNextSprite(SPR_SHORE_BASE +  7, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_WSE
-			LoadNextSprite(SPR_SHORE_BASE + 10, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_STEEP_N
-			LoadNextSprite(SPR_SHORE_BASE + 11, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_NWS
-			LoadNextSprite(SPR_SHORE_BASE + 13, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_ENW
-			LoadNextSprite(SPR_SHORE_BASE + 14, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_SEN
-			LoadNextSprite(SPR_SHORE_BASE + 15, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_STEEP_E
-			LoadNextSprite(SPR_SHORE_BASE + 16, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_EW
-			LoadNextSprite(SPR_SHORE_BASE + 17, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_NS
+			LoadNextSprite(SPR_SHORE_BASE +  0, *_cur.file, _cur.nfo_line++); // SLOPE_STEEP_S
+			LoadNextSprite(SPR_SHORE_BASE +  5, *_cur.file, _cur.nfo_line++); // SLOPE_STEEP_W
+			LoadNextSprite(SPR_SHORE_BASE +  7, *_cur.file, _cur.nfo_line++); // SLOPE_WSE
+			LoadNextSprite(SPR_SHORE_BASE + 10, *_cur.file, _cur.nfo_line++); // SLOPE_STEEP_N
+			LoadNextSprite(SPR_SHORE_BASE + 11, *_cur.file, _cur.nfo_line++); // SLOPE_NWS
+			LoadNextSprite(SPR_SHORE_BASE + 13, *_cur.file, _cur.nfo_line++); // SLOPE_ENW
+			LoadNextSprite(SPR_SHORE_BASE + 14, *_cur.file, _cur.nfo_line++); // SLOPE_SEN
+			LoadNextSprite(SPR_SHORE_BASE + 15, *_cur.file, _cur.nfo_line++); // SLOPE_STEEP_E
+			LoadNextSprite(SPR_SHORE_BASE + 16, *_cur.file, _cur.nfo_line++); // SLOPE_EW
+			LoadNextSprite(SPR_SHORE_BASE + 17, *_cur.file, _cur.nfo_line++); // SLOPE_NS
 			if (_loaded_newgrf_features.shore == SHORE_REPLACE_NONE) _loaded_newgrf_features.shore = SHORE_REPLACE_ONLY_NEW;
 			return;
 		}
@@ -6356,7 +9318,7 @@ static void GraphicsNew(ByteReader *buf)
 
 	for (uint16 n = num; n > 0; n--) {
 		_cur.nfo_line++;
-		LoadNextSprite(replace == 0 ? _cur.spriteid++ : replace++, _cur.file_index, _cur.nfo_line, _cur.grf_container_ver);
+		LoadNextSprite(replace == 0 ? _cur.spriteid++ : replace++, *_cur.file, _cur.nfo_line);
 	}
 
 	if (type == 0x04 && ((_cur.grfconfig->ident.grfid & 0x00FFFFFF) == OPENTTD_GRAPHICS_BASE_GRF_ID || _cur.grfconfig->ident.grfid == BSWAP32(0xFF4F4701))) {
@@ -6507,7 +9469,7 @@ bool GetGlobalVariable(byte param, uint32 *value, const GRFFile *grffile)
 
 		case 0x20: { // snow line height
 			byte snowline = GetSnowLine();
-			if (_settings_game.game_creation.landscape == LT_ARCTIC && snowline <= _settings_game.construction.max_heightlevel) {
+			if (_settings_game.game_creation.landscape == LT_ARCTIC && snowline <= _settings_game.construction.map_height_limit) {
 				*value = Clamp(snowline * (grffile->grf_version >= 8 ? 1 : TILE_HEIGHT), 0, 0xFE);
 			} else {
 				/* No snow */
@@ -6594,19 +9556,20 @@ static void CfgApply(ByteReader *buf)
 	 *                 to place where parameter is to be stored. */
 
 	/* Preload the next sprite */
-	size_t pos = FioGetPos();
-	uint32 num = _cur.grf_container_ver >= 2 ? FioReadDword() : FioReadWord();
-	uint8 type = FioReadByte();
+	SpriteFile &file = *_cur.file;
+	size_t pos = file.GetPos();
+	uint32 num = file.GetContainerVersion() >= 2 ? file.ReadDword() : file.ReadWord();
+	uint8 type = file.ReadByte();
 	byte *preload_sprite = nullptr;
 
 	/* Check if the sprite is a pseudo sprite. We can't operate on real sprites. */
 	if (type == 0xFF) {
 		preload_sprite = MallocT<byte>(num);
-		FioReadBlock(preload_sprite, num);
+		file.ReadBlock(preload_sprite, num);
 	}
 
 	/* Reset the file position to the start of the next sprite */
-	FioSeekTo(pos, SEEK_SET);
+	file.SeekTo(pos, SEEK_SET);
 
 	if (type != 0xFF) {
 		grfmsg(2, "CfgApply: Ignoring (next sprite is real, unsupported)");
@@ -6852,7 +9815,7 @@ static void SkipIf(ByteReader *buf)
 
 	if (choice != nullptr) {
 		grfmsg(2, "SkipIf: Jumping to label 0x%0X at line %d, test was true", choice->label, choice->nfo_line);
-		FioSeekTo(choice->pos, SEEK_SET);
+		_cur.file->SeekTo(choice->pos, SEEK_SET);
 		_cur.nfo_line = choice->nfo_line;
 		return;
 	}
@@ -6956,7 +9919,13 @@ static void SpriteReplace(ByteReader *buf)
 		for (uint j = 0; j < num_sprites; j++) {
 			int load_index = first_sprite + j;
 			_cur.nfo_line++;
-			LoadNextSprite(load_index, _cur.file_index, _cur.nfo_line, _cur.grf_container_ver); // XXX
+			if (load_index < (int)SPR_PROGSIGNAL_BASE || load_index >= (int)SPR_NEWGRFS_BASE) {
+				LoadNextSprite(load_index, *_cur.file, _cur.nfo_line); // XXX
+			} else {
+				/* Skip sprite */
+				grfmsg(0, "SpriteReplace: Ignoring attempt to replace protected sprite ID: %d", load_index);
+				LoadNextSprite(-1, *_cur.file, _cur.nfo_line);
+			}
 
 			/* Shore sprites now located at different addresses.
 			 * So detect when the old ones get replaced. */
@@ -7182,7 +10151,7 @@ static uint32 GetPatchVariable(uint8 param)
 
 		/* The maximum height of the map. */
 		case 0x14:
-			return _settings_game.construction.max_heightlevel;
+			return _settings_game.construction.map_height_limit;
 
 		/* Extra foundations base sprite */
 		case 0x15:
@@ -7191,6 +10160,10 @@ static uint32 GetPatchVariable(uint8 param)
 		/* Shore base sprite */
 		case 0x16:
 			return SPR_SHORE_BASE;
+
+		/* Game map seed */
+		case 0x17:
+			return _settings_game.game_creation.generation_seed;
 
 		default:
 			grfmsg(2, "ParamSet: Unknown Patch variable 0x%02X.", param);
@@ -7302,7 +10275,8 @@ static void ParamSet(ByteReader *buf)
 			} else {
 				/* GRF Resource Management */
 				uint8  op      = src1;
-				uint8  feature = GB(data, 8, 8);
+				GrfSpecFeatureRef feature_ref = ReadFeature(GB(data, 8, 8));
+				GrfSpecFeature feature = feature_ref.id;
 				uint16 count   = GB(data, 16, 16);
 
 				if (_cur.stage == GLS_RESERVE) {
@@ -7372,7 +10346,7 @@ static void ParamSet(ByteReader *buf)
 							if (_cur.skip_sprites == -1) return;
 							break;
 
-						default: grfmsg(1, "ParamSet: GRM: Unsupported feature 0x%X", feature); return;
+						default: grfmsg(1, "ParamSet: GRM: Unsupported feature %s", GetFeatureString(feature_ref)); return;
 					}
 				} else {
 					/* Ignore GRM during initialization */
@@ -7591,7 +10565,7 @@ static void GRFInhibit(ByteReader *buf)
 		if (file != nullptr && file != _cur.grfconfig) {
 			grfmsg(2, "GRFInhibit: Deactivating file '%s'", file->GetDisplayPath());
 			GRFError *error = DisableGrf(STR_NEWGRF_ERROR_FORCEFULLY_DISABLED, file);
-			error->data = stredup(_cur.grfconfig->GetName());
+			error->data = _cur.grfconfig->GetName();
 		}
 	}
 }
@@ -7692,7 +10666,7 @@ static void DefineGotoLabel(ByteReader *buf)
 	GRFLabel *label = MallocT<GRFLabel>(1);
 	label->label    = nfo_label;
 	label->nfo_line = _cur.nfo_line;
-	label->pos      = FioGetPos();
+	label->pos      = _cur.file->GetPos();
 	label->next     = nullptr;
 
 	/* Set up a linked list of goto targets which we will search in an Action 0x7/0x9 */
@@ -7715,8 +10689,8 @@ static void DefineGotoLabel(ByteReader *buf)
 static void ImportGRFSound(SoundEntry *sound)
 {
 	const GRFFile *file;
-	uint32 grfid = FioReadDword();
-	SoundID sound_id = FioReadWord();
+	uint32 grfid = _cur.file->ReadDword();
+	SoundID sound_id = _cur.file->ReadWord();
 
 	file = GetFileByGRFID(grfid);
 	if (file == nullptr || file->sound_offset == 0) {
@@ -7751,9 +10725,9 @@ static void LoadGRFSound(size_t offs, SoundEntry *sound)
 
 	if (offs != SIZE_MAX) {
 		/* Sound is present in the NewGRF. */
-		sound->file_slot = _cur.file_index;
+		sound->file = _cur.file;
 		sound->file_offset = offs;
-		sound->grf_container_ver = _cur.grf_container_ver;
+		sound->grf_container_ver = _cur.file->GetContainerVersion();
 	}
 }
 
@@ -7776,6 +10750,8 @@ static void GRFSound(ByteReader *buf)
 		sound = GetSound(_cur.grffile->sound_offset);
 	}
 
+	SpriteFile &file = *_cur.file;
+	byte grf_container_version = file.GetContainerVersion();
 	for (int i = 0; i < num; i++) {
 		_cur.nfo_line++;
 
@@ -7783,21 +10759,21 @@ static void GRFSound(ByteReader *buf)
 		 * While this is invalid, we do not check for this. But we should prevent it from causing bigger trouble */
 		bool invalid = i >= _cur.grffile->num_sounds;
 
-		size_t offs = FioGetPos();
+		size_t offs = file.GetPos();
 
-		uint32 len = _cur.grf_container_ver >= 2 ? FioReadDword() : FioReadWord();
-		byte type = FioReadByte();
+		uint32 len = grf_container_version >= 2 ? file.ReadDword() : file.ReadWord();
+		byte type = file.ReadByte();
 
-		if (_cur.grf_container_ver >= 2 && type == 0xFD) {
+		if (grf_container_version >= 2 && type == 0xFD) {
 			/* Reference to sprite section. */
 			if (invalid) {
 				grfmsg(1, "GRFSound: Sound index out of range (multiple Action 11?)");
-				FioSkipBytes(len);
+				file.SkipBytes(len);
 			} else if (len != 4) {
 				grfmsg(1, "GRFSound: Invalid sprite section import");
-				FioSkipBytes(len);
+				file.SkipBytes(len);
 			} else {
-				uint32 id = FioReadDword();
+				uint32 id = file.ReadDword();
 				if (_cur.stage == GLS_INIT) LoadGRFSound(GetGRFSpriteOffset(id), sound + i);
 			}
 			continue;
@@ -7805,44 +10781,44 @@ static void GRFSound(ByteReader *buf)
 
 		if (type != 0xFF) {
 			grfmsg(1, "GRFSound: Unexpected RealSprite found, skipping");
-			FioSkipBytes(7);
-			SkipSpriteData(type, len - 8);
+			file.SkipBytes(7);
+			SkipSpriteData(*_cur.file, type, len - 8);
 			continue;
 		}
 
 		if (invalid) {
 			grfmsg(1, "GRFSound: Sound index out of range (multiple Action 11?)");
-			FioSkipBytes(len);
+			file.SkipBytes(len);
 		}
 
-		byte action = FioReadByte();
+		byte action = file.ReadByte();
 		switch (action) {
 			case 0xFF:
 				/* Allocate sound only in init stage. */
 				if (_cur.stage == GLS_INIT) {
-					if (_cur.grf_container_ver >= 2) {
+					if (grf_container_version >= 2) {
 						grfmsg(1, "GRFSound: Inline sounds are not supported for container version >= 2");
 					} else {
 						LoadGRFSound(offs, sound + i);
 					}
 				}
-				FioSkipBytes(len - 1); // already read <action>
+				file.SkipBytes(len - 1); // already read <action>
 				break;
 
 			case 0xFE:
 				if (_cur.stage == GLS_ACTIVATION) {
 					/* XXX 'Action 0xFE' isn't really specified. It is only mentioned for
 					 * importing sounds, so this is probably all wrong... */
-					if (FioReadByte() != 0) grfmsg(1, "GRFSound: Import type mismatch");
+					if (file.ReadByte() != 0) grfmsg(1, "GRFSound: Import type mismatch");
 					ImportGRFSound(sound + i);
 				} else {
-					FioSkipBytes(len - 1); // already read <action>
+					file.SkipBytes(len - 1); // already read <action>
 				}
 				break;
 
 			default:
 				grfmsg(1, "GRFSound: Unexpected Action %x found, skipping", action);
-				FioSkipBytes(len - 1); // already read <action>
+				file.SkipBytes(len - 1); // already read <action>
 				break;
 		}
 	}
@@ -7886,7 +10862,7 @@ static void LoadFontGlyph(ByteReader *buf)
 		for (uint c = 0; c < num_char; c++) {
 			if (size < FS_END) SetUnicodeGlyph(size, base_char + c, _cur.spriteid);
 			_cur.nfo_line++;
-			LoadNextSprite(_cur.spriteid++, _cur.file_index, _cur.nfo_line, _cur.grf_container_ver);
+			LoadNextSprite(_cur.spriteid++, *_cur.file, _cur.nfo_line);
 		}
 	}
 }
@@ -7939,9 +10915,7 @@ static void TranslateGRFStrings(ByteReader *buf)
 		 * and disable this file. */
 		GRFError *error = DisableGrf(STR_NEWGRF_ERROR_LOAD_AFTER);
 
-		char tmp[256];
-		GetString(tmp, STR_NEWGRF_ERROR_AFTER_TRANSLATED_FILE, lastof(tmp));
-		error->data = tmp;
+		error->data = GetString(STR_NEWGRF_ERROR_AFTER_TRANSLATED_FILE);
 
 		return;
 	}
@@ -8371,41 +11345,6 @@ AllowedSubtags _tags_info[] = {
 	AllowedSubtags()
 };
 
-/** Action14 feature definition */
-struct GRFFeatureInfo {
-	const char *name; // nullptr indicates the end of the list
-	uint16 version;
-
-	/** Create empty object used to identify the end of a list. */
-	GRFFeatureInfo() :
-		name(nullptr),
-		version(0)
-	{}
-
-	GRFFeatureInfo(const char *name, uint16 version) :
-		name(name),
-		version(version)
-	{}
-};
-
-/** Action14 feature list */
-static const GRFFeatureInfo _grf_feature_list[] = {
-	GRFFeatureInfo("feature_test", 1),
-	GRFFeatureInfo("property_mapping", 1),
-	GRFFeatureInfo("action5_type_id_mapping", 1),
-	GRFFeatureInfo("action0_station_prop1B", 1),
-	GRFFeatureInfo("action0_station_disallowed_bridge_pillars", 1),
-	GRFFeatureInfo("varaction2_station_var42", 1),
-	GRFFeatureInfo("more_bridge_types", 1),
-	GRFFeatureInfo("action0_bridge_prop14", 1),
-	GRFFeatureInfo("action0_bridge_pillar_flags", 1),
-	GRFFeatureInfo("action0_bridge_availability_flags", 1),
-	GRFFeatureInfo("action5_programmable_signals", 1),
-	GRFFeatureInfo("action0_railtype_programmable_signals", 1),
-	GRFFeatureInfo("action0_railtype_restricted_signals", 1),
-	GRFFeatureInfo("action0_roadtype_extra_flags", 1),
-	GRFFeatureInfo(),
-};
 
 /** Action14 feature test instance */
 struct GRFFeatureTest {
@@ -8440,6 +11379,7 @@ static GRFFeatureTest _current_grf_feature_test;
 /** Callback function for 'FTST'->'NAME' to set the name of the feature being tested. */
 static bool ChangeGRFFeatureTestName(byte langid, const char *str)
 {
+	extern const GRFFeatureInfo _grf_feature_list[];
 	for (const GRFFeatureInfo *info = _grf_feature_list; info->name != nullptr; info++) {
 		if (strcmp(info->name, str) == 0) {
 			_current_grf_feature_test.feature = info;
@@ -8513,52 +11453,89 @@ static bool HandleFeatureTestInfo(ByteReader *buf)
 	return true;
 }
 
-/** Action14 Action0 remappable property list */
-static const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
-	GRFPropertyMapDefinition(GSF_STATIONS, A0RPI_STATION_MIN_BRIDGE_HEIGHT, "station_min_bridge_height"),
-	GRFPropertyMapDefinition(GSF_STATIONS, A0RPI_STATION_DISALLOWED_BRIDGE_PILLARS, "station_disallowed_bridge_pillars"),
-	GRFPropertyMapDefinition(GSF_BRIDGES, A0RPI_BRIDGE_MENU_ICON, "bridge_menu_icon"),
-	GRFPropertyMapDefinition(GSF_BRIDGES, A0RPI_BRIDGE_PILLAR_FLAGS, "bridge_pillar_flags"),
-	GRFPropertyMapDefinition(GSF_BRIDGES, A0RPI_BRIDGE_AVAILABILITY_FLAGS, "bridge_availability_flags"),
-	GRFPropertyMapDefinition(GSF_RAILTYPES, A0RPI_RAILTYPE_ENABLE_PROGRAMMABLE_SIGNALS, "railtype_enable_programmable_signals"),
-	GRFPropertyMapDefinition(GSF_RAILTYPES, A0RPI_RAILTYPE_ENABLE_RESTRICTED_SIGNALS, "railtype_enable_restricted_signals"),
-	GRFPropertyMapDefinition(GSF_ROADTYPES, A0RPI_ROADTYPE_EXTRA_FLAGS, "roadtype_extra_flags"),
-	GRFPropertyMapDefinition(GSF_TRAMTYPES, A0RPI_ROADTYPE_EXTRA_FLAGS, "roadtype_extra_flags"),
-	GRFPropertyMapDefinition(),
-};
-
-/** Action14 Action5 remappable type list */
-static const Action5TypeRemapDefinition _grf_action5_remappable_types[] = {
-	Action5TypeRemapDefinition("programmable_signals", A5BLOCK_ALLOW_OFFSET, SPR_PROGSIGNAL_BASE, 1, 32, "Programmable pre-signal graphics"),
-	Action5TypeRemapDefinition(),
-};
-
 /** Action14 Action0 property map action instance */
 struct GRFPropertyMapAction {
 	const char *tag_name = nullptr;
 	const char *descriptor = nullptr;
 
-	int feature;
+	GrfSpecFeature feature;
 	int prop_id;
 	std::string name;
 	GRFPropertyMapFallbackMode fallback_mode;
 	uint8 ttd_ver_var_bit;
+	uint8 input_shift;
+	uint8 output_shift;
+	uint input_mask;
+	uint output_mask;
+	uint output_param;
 
 	void Reset(const char *tag, const char *desc)
 	{
 		this->tag_name = tag;
 		this->descriptor = desc;
 
-		this->feature = -1;
+		this->feature = GSF_INVALID;
 		this->prop_id = -1;
 		this->name.clear();
 		this->fallback_mode = GPMFM_IGNORE;
 		this->ttd_ver_var_bit = 0;
+		this->input_shift = 0;
+		this->output_shift = 0;
+		this->input_mask = 0;
+		this->output_mask = 0;
+		this->output_param = 0;
+	}
+
+	void ExecuteFeatureIDRemapping()
+	{
+		if (this->prop_id < 0) {
+			grfmsg(2, "Action 14 %s remapping: no feature ID defined, doing nothing", this->descriptor);
+			return;
+		}
+		if (this->name.empty()) {
+			grfmsg(2, "Action 14 %s remapping: no name defined, doing nothing", this->descriptor);
+			return;
+		}
+		SetBit(_cur.grffile->ctrl_flags, GFCF_HAVE_FEATURE_ID_REMAP);
+		bool success = false;
+		const char *str = this->name.c_str();
+		extern const GRFFeatureMapDefinition _grf_remappable_features[];
+		for (const GRFFeatureMapDefinition *info = _grf_remappable_features; info->name != nullptr; info++) {
+			if (strcmp(info->name, str) == 0) {
+				GRFFeatureMapRemapEntry &entry = _cur.grffile->feature_id_remaps.Entry(this->prop_id);
+				entry.name = info->name;
+				entry.feature = info->feature;
+				entry.raw_id = this->prop_id;
+				success = true;
+				break;
+			}
+		}
+		if (this->ttd_ver_var_bit > 0) {
+			SB(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, 1, success ? 1 : 0);
+		}
+		if (!success) {
+			if (this->fallback_mode == GPMFM_ERROR_ON_DEFINITION) {
+				grfmsg(0, "Error: Unimplemented mapped %s: %s, mapped to: 0x%02X", this->descriptor, str, this->prop_id);
+				GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID);
+				error->data = stredup(str);
+				error->param_value[1] = GSF_INVALID;
+				error->param_value[2] = this->prop_id;
+			} else {
+				const char *str_store = stredup(str);
+				grfmsg(2, "Unimplemented mapped %s: %s, mapped to: %X, %s on use",
+						this->descriptor, str, this->prop_id, (this->fallback_mode == GPMFM_IGNORE) ? "ignoring" : "error");
+				_cur.grffile->remap_unknown_property_names.emplace_back(str_store);
+				GRFFeatureMapRemapEntry &entry = _cur.grffile->feature_id_remaps.Entry(this->prop_id);
+				entry.name = str_store;
+				entry.feature = (this->fallback_mode == GPMFM_IGNORE) ? GSF_INVALID : GSF_ERROR_ON_USE;
+				entry.raw_id = this->prop_id;
+			}
+		}
 	}
 
 	void ExecutePropertyRemapping()
 	{
-		if (this->feature < 0) {
+		if (this->feature == GSF_INVALID) {
 			grfmsg(2, "Action 14 %s remapping: no feature defined, doing nothing", this->descriptor);
 			return;
 		}
@@ -8572,6 +11549,7 @@ struct GRFPropertyMapAction {
 		}
 		bool success = false;
 		const char *str = this->name.c_str();
+		extern const GRFPropertyMapDefinition _grf_action0_remappable_properties[];
 		for (const GRFPropertyMapDefinition *info = _grf_action0_remappable_properties; info->name != nullptr; info++) {
 			if (info->feature == this->feature && strcmp(info->name, str) == 0) {
 				GRFFilePropertyRemapEntry &entry = _cur.grffile->action0_property_remaps[this->feature].Entry(this->prop_id);
@@ -8588,15 +11566,15 @@ struct GRFPropertyMapAction {
 		}
 		if (!success) {
 			if (this->fallback_mode == GPMFM_ERROR_ON_DEFINITION) {
-				grfmsg(0, "Error: Unimplemented mapped %s: %s, feature: %X, mapped to: %X", this->descriptor, str, this->feature, this->prop_id);
+				grfmsg(0, "Error: Unimplemented mapped %s: %s, feature: %s, mapped to: %X", this->descriptor, str, GetFeatureString(this->feature), this->prop_id);
 				GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY);
 				error->data = stredup(str);
 				error->param_value[1] = this->feature;
 				error->param_value[2] = this->prop_id;
 			} else {
 				const char *str_store = stredup(str);
-				grfmsg(2, "Unimplemented mapped %s: %s, feature: %X, mapped to: %X, %s on use",
-						this->descriptor, str, this->feature, this->prop_id, (this->fallback_mode == GPMFM_IGNORE) ? "ignoring" : "error");
+				grfmsg(2, "Unimplemented mapped %s: %s, feature: %s, mapped to: %X, %s on use",
+						this->descriptor, str, GetFeatureString(this->feature), this->prop_id, (this->fallback_mode == GPMFM_IGNORE) ? "ignoring" : "error");
 				_cur.grffile->remap_unknown_property_names.emplace_back(str_store);
 				GRFFilePropertyRemapEntry &entry = _cur.grffile->action0_property_remaps[this->feature].Entry(this->prop_id);
 				entry.name = str_store;
@@ -8604,6 +11582,34 @@ struct GRFPropertyMapAction {
 				entry.feature = this->feature;
 				entry.property_id = this->prop_id;
 			}
+		}
+	}
+
+	void ExecuteVariableRemapping()
+	{
+		if (this->feature == GSF_INVALID) {
+			grfmsg(2, "Action 14 %s remapping: no feature defined, doing nothing", this->descriptor);
+			return;
+		}
+		if (this->name.empty()) {
+			grfmsg(2, "Action 14 %s remapping: no name defined, doing nothing", this->descriptor);
+			return;
+		}
+		bool success = false;
+		const char *str = this->name.c_str();
+		extern const GRFVariableMapDefinition _grf_action2_remappable_variables[];
+		for (const GRFVariableMapDefinition *info = _grf_action2_remappable_variables; info->name != nullptr; info++) {
+			if (info->feature == this->feature && strcmp(info->name, str) == 0) {
+				_cur.grffile->grf_variable_remaps.push_back({ (uint16)info->id, (uint8)this->feature, this->input_shift, this->output_shift, this->input_mask, this->output_mask, this->output_param });
+				success = true;
+				break;
+			}
+		}
+		if (this->ttd_ver_var_bit > 0) {
+			SB(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, 1, success ? 1 : 0);
+		}
+		if (!success) {
+			grfmsg(2, "Unimplemented mapped %s: %s, feature: %s, mapped to 0", this->descriptor, str, GetFeatureString(this->feature));
 		}
 	}
 
@@ -8619,6 +11625,7 @@ struct GRFPropertyMapAction {
 		}
 		bool success = false;
 		const char *str = this->name.c_str();
+		extern const Action5TypeRemapDefinition _grf_action5_remappable_types[];
 		for (const Action5TypeRemapDefinition *info = _grf_action5_remappable_types; info->name != nullptr; info++) {
 			if (strcmp(info->name, str) == 0) {
 				Action5TypeRemapEntry &entry = _cur.grffile->action5_type_remaps.Entry(this->prop_id);
@@ -8670,11 +11677,11 @@ static bool ChangePropertyRemapFeature(size_t len, ByteReader *buf)
 		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'FEAT' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
 		buf->Skip(len);
 	} else {
-		uint8 feature = buf->ReadByte();
-		if (feature >= GSF_END) {
-			grfmsg(2, "Action 14 %s mapping: invalid feature ID: %u, in '%s'->'FEAT', ignoring this field", action.descriptor, feature, action.tag_name);
+		GrfSpecFeatureRef feature = ReadFeature(buf->ReadByte());
+		if (feature.id >= GSF_END) {
+			grfmsg(2, "Action 14 %s mapping: invalid feature ID: %s, in '%s'->'FEAT', ignoring this field", action.descriptor, GetFeatureString(feature), action.tag_name);
 		} else {
-			action.feature = feature;
+			action.feature = feature.id;
 		}
 	}
 	return true;
@@ -8686,6 +11693,19 @@ static bool ChangePropertyRemapPropertyId(size_t len, ByteReader *buf)
 	GRFPropertyMapAction &action = _current_grf_property_map_action;
 	if (len != 1) {
 		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'PROP' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		buf->Skip(len);
+	} else {
+		action.prop_id = buf->ReadByte();
+	}
+	return true;
+}
+
+/** Callback function for ->'FTID' to set the feature ID to which this feature is being mapped. */
+static bool ChangePropertyRemapFeatureId(size_t len, ByteReader *buf)
+{
+	GRFPropertyMapAction &action = _current_grf_property_map_action;
+	if (len != 1) {
+		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'FTID' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
 		buf->Skip(len);
 	} else {
 		action.prop_id = buf->ReadByte();
@@ -8742,6 +11762,101 @@ static bool ChangePropertyRemapSetTTDVerVarBit(size_t len, ByteReader *buf)
 	return true;
 }
 
+/** Callback function for ->'RSFT' to set the input shift value for variable remapping. */
+static bool ChangePropertyRemapSetInputShift(size_t len, ByteReader *buf)
+{
+	GRFPropertyMapAction &action = _current_grf_property_map_action;
+	if (len != 1) {
+		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'RSFT' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		buf->Skip(len);
+	} else {
+		uint8 input_shift = buf->ReadByte();
+		if (input_shift < 0x20) {
+			action.input_shift = input_shift;
+		} else {
+			grfmsg(2, "Action 14 %s mapping: expected a shift value < 0x20 for '%s'->'RSFT' but got %u, ignoring this field", action.descriptor, action.tag_name, input_shift);
+		}
+	}
+	return true;
+}
+
+/** Callback function for ->'VSFT' to set the output shift value for variable remapping. */
+static bool ChangePropertyRemapSetOutputShift(size_t len, ByteReader *buf)
+{
+	GRFPropertyMapAction &action = _current_grf_property_map_action;
+	if (len != 1) {
+		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'VSFT' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		buf->Skip(len);
+	} else {
+		uint8 output_shift = buf->ReadByte();
+		if (output_shift < 0x20) {
+			action.output_shift = output_shift;
+		} else {
+			grfmsg(2, "Action 14 %s mapping: expected a shift value < 0x20 for '%s'->'VSFT' but got %u, ignoring this field", action.descriptor, action.tag_name, output_shift);
+		}
+	}
+	return true;
+}
+
+/** Callback function for ->'RMSK' to set the input mask value for variable remapping. */
+static bool ChangePropertyRemapSetInputMask(size_t len, ByteReader *buf)
+{
+	GRFPropertyMapAction &action = _current_grf_property_map_action;
+	if (len != 4) {
+		grfmsg(2, "Action 14 %s mapping: expected 4 bytes for '%s'->'RMSK' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		buf->Skip(len);
+	} else {
+		action.input_mask = buf->ReadDWord();
+	}
+	return true;
+}
+
+/** Callback function for ->'VMSK' to set the output mask value for variable remapping. */
+static bool ChangePropertyRemapSetOutputMask(size_t len, ByteReader *buf)
+{
+	GRFPropertyMapAction &action = _current_grf_property_map_action;
+	if (len != 4) {
+		grfmsg(2, "Action 14 %s mapping: expected 4 bytes for '%s'->'VMSK' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		buf->Skip(len);
+	} else {
+		action.output_mask = buf->ReadDWord();
+	}
+	return true;
+}
+
+/** Callback function for ->'VPRM' to set the output parameter value for variable remapping. */
+static bool ChangePropertyRemapSetOutputParam(size_t len, ByteReader *buf)
+{
+	GRFPropertyMapAction &action = _current_grf_property_map_action;
+	if (len != 4) {
+		grfmsg(2, "Action 14 %s mapping: expected 4 bytes for '%s'->'VPRM' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		buf->Skip(len);
+	} else {
+		action.output_param = buf->ReadDWord();
+	}
+	return true;
+}
+
+/** Action14 tags for the FIDM node */
+AllowedSubtags _tags_fidm[] = {
+	AllowedSubtags('NAME', ChangePropertyRemapName),
+	AllowedSubtags('FTID', ChangePropertyRemapFeatureId),
+	AllowedSubtags('FLBK', ChangePropertyRemapSetFallbackMode),
+	AllowedSubtags('SETT', ChangePropertyRemapSetTTDVerVarBit),
+	AllowedSubtags()
+};
+
+/**
+ * Callback function for 'FIDM' (feature ID mapping)
+ */
+static bool HandleFeatureIDMap(ByteReader *buf)
+{
+	_current_grf_property_map_action.Reset("FIDM", "feature");
+	HandleNodes(buf, _tags_fidm);
+	_current_grf_property_map_action.ExecuteFeatureIDRemapping();
+	return true;
+}
+
 /** Action14 tags for the A0PM node */
 AllowedSubtags _tags_a0pm[] = {
 	AllowedSubtags('NAME', ChangePropertyRemapName),
@@ -8760,6 +11875,30 @@ static bool HandleAction0PropertyMap(ByteReader *buf)
 	_current_grf_property_map_action.Reset("A0PM", "property");
 	HandleNodes(buf, _tags_a0pm);
 	_current_grf_property_map_action.ExecutePropertyRemapping();
+	return true;
+}
+
+/** Action14 tags for the A2VM node */
+AllowedSubtags _tags_a2vm[] = {
+	AllowedSubtags('NAME', ChangePropertyRemapName),
+	AllowedSubtags('FEAT', ChangePropertyRemapFeature),
+	AllowedSubtags('RSFT', ChangePropertyRemapSetInputShift),
+	AllowedSubtags('RMSK', ChangePropertyRemapSetInputMask),
+	AllowedSubtags('VSFT', ChangePropertyRemapSetOutputShift),
+	AllowedSubtags('VMSK', ChangePropertyRemapSetOutputMask),
+	AllowedSubtags('VPRM', ChangePropertyRemapSetOutputParam),
+	AllowedSubtags('SETT', ChangePropertyRemapSetTTDVerVarBit),
+	AllowedSubtags()
+};
+
+/**
+ * Callback function for 'A2VM' (action 2 variable mapping)
+ */
+static bool HandleAction2VariableMap(ByteReader *buf)
+{
+	_current_grf_property_map_action.Reset("A2VM", "variable");
+	HandleNodes(buf, _tags_a2vm);
+	_current_grf_property_map_action.ExecuteVariableRemapping();
 	return true;
 }
 
@@ -8787,7 +11926,9 @@ static bool HandleAction5TypeMap(ByteReader *buf)
 AllowedSubtags _tags_root_static[] = {
 	AllowedSubtags('INFO', _tags_info),
 	AllowedSubtags('FTST', SkipInfoChunk),
+	AllowedSubtags('FIDM', SkipInfoChunk),
 	AllowedSubtags('A0PM', SkipInfoChunk),
+	AllowedSubtags('A2VM', SkipInfoChunk),
 	AllowedSubtags('A5TM', SkipInfoChunk),
 	AllowedSubtags()
 };
@@ -8796,7 +11937,9 @@ AllowedSubtags _tags_root_static[] = {
 AllowedSubtags _tags_root_feature_tests[] = {
 	AllowedSubtags('INFO', SkipInfoChunk),
 	AllowedSubtags('FTST', HandleFeatureTestInfo),
+	AllowedSubtags('FIDM', HandleFeatureIDMap),
 	AllowedSubtags('A0PM', HandleAction0PropertyMap),
+	AllowedSubtags('A2VM', HandleAction2VariableMap),
 	AllowedSubtags('A5TM', HandleAction5TypeMap),
 	AllowedSubtags()
 };
@@ -9029,22 +12172,8 @@ static void ResetCustomStations()
 			if (stations[i] == nullptr) continue;
 			StationSpec *statspec = stations[i];
 
-			delete[] statspec->renderdata;
-
-			/* Release platforms and layouts */
-			if (!HasBit(statspec->internal_flags, SSIF_COPIED_LAYOUTS)) {
-				for (uint l = 0; l < statspec->lengths; l++) {
-					for (uint p = 0; p < statspec->platforms[l]; p++) {
-						free(statspec->layouts[l][p]);
-					}
-					free(statspec->layouts[l]);
-				}
-				free(statspec->layouts);
-				free(statspec->platforms);
-			}
-
 			/* Release this station */
-			free(statspec);
+			delete statspec;
 		}
 
 		/* Free and reset the station data */
@@ -9149,6 +12278,20 @@ static void ResetCustomObjects()
 	}
 }
 
+static void ResetCustomRoadStops()
+{
+	for (auto file : _grf_files) {
+		RoadStopSpec **&roadstopspec = file->roadstops;
+		if (roadstopspec == nullptr) continue;
+		for (uint i = 0; i < NUM_ROADSTOPS_PER_GRF; i++) {
+			free(roadstopspec[i]);
+		}
+
+		free(roadstopspec);
+		roadstopspec = nullptr;
+	}
+}
+
 /** Reset and clear all NewGRFs */
 static void ResetNewGRF()
 {
@@ -9158,6 +12301,8 @@ static void ResetNewGRF()
 
 	_grf_files.clear();
 	_cur.grffile   = nullptr;
+	_new_signals_grfs.clear();
+	_new_landscape_rocks_grfs.clear();
 }
 
 /** Clear all NewGRF errors */
@@ -9235,6 +12380,10 @@ void ResetNewGRFData()
 	AirportSpec::ResetAirports();
 	AirportTileSpec::ResetAirportTiles();
 
+	/* Reset road stop classes */
+	RoadStopClass::Reset();
+	ResetCustomRoadStops();
+
 	/* Reset canal sprite groups and flags */
 	memset(_water_feature, 0, sizeof(_water_feature));
 
@@ -9263,6 +12412,10 @@ void ResetNewGRFData()
 
 	InitializeSoundPool();
 	_spritegroup_pool.CleanPool();
+	_callback_result_cache.clear();
+	_deterministic_sg_shadows.clear();
+	_randomized_sg_shadows.clear();
+	_grfs_loaded_with_sg_shadow_enable = HasBit(_misc_debug_flags, MDF_NEWGRF_SG_SAVE_RAW);
 }
 
 /**
@@ -9332,6 +12485,13 @@ GRFFile::GRFFile(const GRFConfig *config)
 	this->traininfo_vehicle_pitch = 0;
 	this->traininfo_vehicle_width = TRAININFO_DEFAULT_VEHICLE_WIDTH;
 
+	this->new_signals_group = nullptr;
+	this->new_signal_ctrl_flags = 0;
+	this->new_signal_extra_aspects = 0;
+
+	this->new_rocks_group = nullptr;
+	this->new_landscape_ctrl_flags = 0;
+
 	/* Mark price_base_multipliers as 'not set' */
 	for (Price i = PR_BEGIN; i < PR_END; i++) {
 		this->price_base_multipliers[i] = INVALID_PRICE_MODIFIER;
@@ -9371,63 +12531,119 @@ GRFFile::~GRFFile()
 
 
 /**
- * List of what cargo labels are refittable for the given the vehicle-type.
- * Only currently active labels are applied.
- */
-static const CargoLabel _default_refitmasks_rail[] = {
-	'PASS', 'COAL', 'MAIL', 'LVST', 'GOOD', 'GRAI', 'WHEA', 'MAIZ', 'WOOD',
-	'IORE', 'STEL', 'VALU', 'GOLD', 'DIAM', 'PAPR', 'FOOD', 'FRUT', 'CORE',
-	'WATR', 'SUGR', 'TOYS', 'BATT', 'SWET', 'TOFF', 'COLA', 'CTCD', 'BUBL',
-	'PLST', 'FZDR',
-	0 };
-
-static const CargoLabel _default_refitmasks_road[] = {
-	0 };
-
-static const CargoLabel _default_refitmasks_ships[] = {
-	'COAL', 'MAIL', 'LVST', 'GOOD', 'GRAI', 'WHEA', 'MAIZ', 'WOOD', 'IORE',
-	'STEL', 'VALU', 'GOLD', 'DIAM', 'PAPR', 'FOOD', 'FRUT', 'CORE', 'WATR',
-	'RUBR', 'SUGR', 'TOYS', 'BATT', 'SWET', 'TOFF', 'COLA', 'CTCD', 'BUBL',
-	'PLST', 'FZDR',
-	0 };
-
-static const CargoLabel _default_refitmasks_aircraft[] = {
-	'PASS', 'MAIL', 'GOOD', 'VALU', 'GOLD', 'DIAM', 'FOOD', 'FRUT', 'SUGR',
-	'TOYS', 'BATT', 'SWET', 'TOFF', 'COLA', 'CTCD', 'BUBL', 'PLST', 'FZDR',
-	0 };
-
-static const CargoLabel * const _default_refitmasks[] = {
-	_default_refitmasks_rail,
-	_default_refitmasks_road,
-	_default_refitmasks_ships,
-	_default_refitmasks_aircraft,
-};
-
-
-/**
  * Precalculate refit masks from cargo classes for all vehicles.
  */
 static void CalculateRefitMasks()
 {
+	CargoTypes original_known_cargoes = 0;
+	for (int ct = 0; ct != NUM_ORIGINAL_CARGO; ++ct) {
+		CargoID cid = GetDefaultCargoID(_settings_game.game_creation.landscape, static_cast<CargoType>(ct));
+		if (cid != CT_INVALID) SetBit(original_known_cargoes, cid);
+	}
+
 	for (Engine *e : Engine::Iterate()) {
 		EngineID engine = e->index;
 		EngineInfo *ei = &e->info;
 		bool only_defaultcargo; ///< Set if the vehicle shall carry only the default cargo
 
-		/* Did the newgrf specify any refitting? If not, use defaults. */
-		if (_gted[engine].refittability != GRFTempEngineData::UNSET) {
+		/* If the NewGRF did not set any cargo properties, we apply default values. */
+		if (_gted[engine].defaultcargo_grf == nullptr) {
+			/* If the vehicle has any capacity, apply the default refit masks */
+			if (e->type != VEH_TRAIN || e->u.rail.capacity != 0) {
+				static constexpr byte T = 1 << LT_TEMPERATE;
+				static constexpr byte A = 1 << LT_ARCTIC;
+				static constexpr byte S = 1 << LT_TROPIC;
+				static constexpr byte Y = 1 << LT_TOYLAND;
+				static const struct DefaultRefitMasks {
+					byte climate;
+					CargoType cargo_type;
+					CargoTypes cargo_allowed;
+					CargoTypes cargo_disallowed;
+				} _default_refit_masks[] = {
+					{T | A | S | Y, CT_PASSENGERS, CC_PASSENGERS,               0},
+					{T | A | S    , CT_MAIL,       CC_MAIL,                     0},
+					{T | A | S    , CT_VALUABLES,  CC_ARMOURED,                 CC_LIQUID},
+					{            Y, CT_MAIL,       CC_MAIL | CC_ARMOURED,       CC_LIQUID},
+					{T | A        , CT_COAL,       CC_BULK,                     0},
+					{        S    , CT_COPPER_ORE, CC_BULK,                     0},
+					{            Y, CT_SUGAR,      CC_BULK,                     0},
+					{T | A | S    , CT_OIL,        CC_LIQUID,                   0},
+					{            Y, CT_COLA,       CC_LIQUID,                   0},
+					{T            , CT_GOODS,      CC_PIECE_GOODS | CC_EXPRESS, CC_LIQUID | CC_PASSENGERS},
+					{    A | S    , CT_GOODS,      CC_PIECE_GOODS | CC_EXPRESS, CC_LIQUID | CC_PASSENGERS | CC_REFRIGERATED},
+					{    A | S    , CT_FOOD,       CC_REFRIGERATED,             0},
+					{            Y, CT_CANDY,      CC_PIECE_GOODS | CC_EXPRESS, CC_LIQUID | CC_PASSENGERS},
+				};
+
+				if (e->type == VEH_AIRCRAFT) {
+					/* Aircraft default to "light" cargoes */
+					_gted[engine].cargo_allowed = CC_PASSENGERS | CC_MAIL | CC_ARMOURED | CC_EXPRESS;
+					_gted[engine].cargo_disallowed = CC_LIQUID;
+				} else if (e->type == VEH_SHIP) {
+					switch (ei->cargo_type) {
+						case CT_PASSENGERS:
+							/* Ferries */
+							_gted[engine].cargo_allowed = CC_PASSENGERS;
+							_gted[engine].cargo_disallowed = 0;
+							break;
+						case CT_OIL:
+							/* Tankers */
+							_gted[engine].cargo_allowed = CC_LIQUID;
+							_gted[engine].cargo_disallowed = 0;
+							break;
+						default:
+							/* Cargo ships */
+							if (_settings_game.game_creation.landscape == LT_TOYLAND) {
+								/* No tanker in toyland :( */
+								_gted[engine].cargo_allowed = CC_MAIL | CC_ARMOURED | CC_EXPRESS | CC_BULK | CC_PIECE_GOODS | CC_LIQUID;
+								_gted[engine].cargo_disallowed = CC_PASSENGERS;
+							} else {
+								_gted[engine].cargo_allowed = CC_MAIL | CC_ARMOURED | CC_EXPRESS | CC_BULK | CC_PIECE_GOODS;
+								_gted[engine].cargo_disallowed = CC_LIQUID | CC_PASSENGERS;
+							}
+							break;
+					}
+					e->u.ship.old_refittable = true;
+				} else if (e->type == VEH_TRAIN && e->u.rail.railveh_type != RAILVEH_WAGON) {
+					/* Train engines default to all cargoes, so you can build single-cargo consists with fast engines.
+					 * Trains loading multiple cargoes may start stations accepting unwanted cargoes. */
+					_gted[engine].cargo_allowed = CC_PASSENGERS | CC_MAIL | CC_ARMOURED | CC_EXPRESS | CC_BULK | CC_PIECE_GOODS | CC_LIQUID;
+					_gted[engine].cargo_disallowed = 0;
+				} else {
+					/* Train wagons and road vehicles are classified by their default cargo type */
+					for (const auto &drm : _default_refit_masks) {
+						if (!HasBit(drm.climate, _settings_game.game_creation.landscape)) continue;
+						if (drm.cargo_type != ei->cargo_type) continue;
+
+						_gted[engine].cargo_allowed = drm.cargo_allowed;
+						_gted[engine].cargo_disallowed = drm.cargo_disallowed;
+						break;
+					}
+
+					/* All original cargoes have specialised vehicles, so exclude them */
+					_gted[engine].ctt_exclude_mask = original_known_cargoes;
+				}
+			}
+			_gted[engine].UpdateRefittability(_gted[engine].cargo_allowed != 0);
+
+			/* Translate cargo_type using the original climate-specific cargo table. */
+			ei->cargo_type = GetDefaultCargoID(_settings_game.game_creation.landscape, static_cast<CargoType>(ei->cargo_type));
+			if (ei->cargo_type != CT_INVALID) ClrBit(_gted[engine].ctt_exclude_mask, ei->cargo_type);
+		}
+
+		/* Compute refittability */
+		{
 			CargoTypes mask = 0;
 			CargoTypes not_mask = 0;
 			CargoTypes xor_mask = ei->refit_mask;
 
 			/* If the original masks set by the grf are zero, the vehicle shall only carry the default cargo.
 			 * Note: After applying the translations, the vehicle may end up carrying no defined cargo. It becomes unavailable in that case. */
-			only_defaultcargo = _gted[engine].refittability == GRFTempEngineData::EMPTY;
+			only_defaultcargo = _gted[engine].refittability != GRFTempEngineData::NONEMPTY;
 
 			if (_gted[engine].cargo_allowed != 0) {
 				/* Build up the list of cargo types from the set cargo classes. */
-				const CargoSpec *cs;
-				FOR_ALL_CARGOSPECS(cs) {
+				for (const CargoSpec *cs : CargoSpec::Iterate()) {
 					if (_gted[engine].cargo_allowed    & cs->classes) SetBit(mask,     cs->Index());
 					if (_gted[engine].cargo_disallowed & cs->classes) SetBit(not_mask, cs->Index());
 				}
@@ -9438,26 +12654,6 @@ static void CalculateRefitMasks()
 			/* Apply explicit refit includes/excludes. */
 			ei->refit_mask |= _gted[engine].ctt_include_mask;
 			ei->refit_mask &= ~_gted[engine].ctt_exclude_mask;
-		} else {
-			CargoTypes xor_mask = 0;
-
-			/* Don't apply default refit mask to wagons nor engines with no capacity */
-			if (e->type != VEH_TRAIN || (e->u.rail.capacity != 0 && e->u.rail.railveh_type != RAILVEH_WAGON)) {
-				const CargoLabel *cl = _default_refitmasks[e->type];
-				for (uint i = 0;; i++) {
-					if (cl[i] == 0) break;
-
-					CargoID cargo = GetCargoIDByLabel(cl[i]);
-					if (cargo == CT_INVALID) continue;
-
-					SetBit(xor_mask, cargo);
-				}
-			}
-
-			ei->refit_mask = xor_mask & _cargo_mask;
-
-			/* If the mask is zero, the vehicle shall only carry the default cargo */
-			only_defaultcargo = (ei->refit_mask == 0);
 		}
 
 		/* Clear invalid cargoslots (from default vehicles or pre-NewCargo GRFs) */
@@ -9485,8 +12681,7 @@ static void CalculateRefitMasks()
 			if (cargo_map_for_first_refittable != nullptr) {
 				/* Use first refittable cargo from cargo translation table */
 				byte best_local_slot = 0xFF;
-				CargoID cargo_type;
-				FOR_EACH_SET_CARGO_ID(cargo_type, ei->refit_mask) {
+				for (CargoID cargo_type : SetCargoBitIterator(ei->refit_mask)) {
 					byte local_slot = cargo_map_for_first_refittable[cargo_type];
 					if (local_slot < best_local_slot) {
 						best_local_slot = local_slot;
@@ -9895,17 +13090,18 @@ static void DecodeSpecialSprite(byte *buf, uint num, GrfLoadingStage stage)
 	GRFLocation location(_cur.grfconfig->ident.grfid, _cur.nfo_line);
 
 	GRFLineToSpriteOverride::iterator it = _grf_line_to_action6_sprite_override.find(location);
+	_action6_override_active = (it != _grf_line_to_action6_sprite_override.end());
 	if (it == _grf_line_to_action6_sprite_override.end()) {
 		/* No preloaded sprite to work with; read the
 		 * pseudo sprite content. */
-		FioReadBlock(buf, num);
+		_cur.file->ReadBlock(buf, num);
 	} else {
 		/* Use the preloaded sprite data. */
 		buf = it->second;
 		grfmsg(7, "DecodeSpecialSprite: Using preloaded pseudo sprite data");
 
 		/* Skip the real (original) content of this action. */
-		FioSeekTo(num, SEEK_CUR);
+		_cur.file->SeekTo(num, SEEK_CUR);
 	}
 
 	ByteReader br(buf, buf + num);
@@ -9932,41 +13128,102 @@ static void DecodeSpecialSprite(byte *buf, uint num, GrfLoadingStage stage)
 	}
 }
 
-
-/** Signature of a container version 2 GRF. */
-extern const byte _grf_cont_v2_sig[8] = {'G', 'R', 'F', 0x82, 0x0D, 0x0A, 0x1A, 0x0A};
-
 /**
- * Get the container version of the currently opened GRF file.
- * @return Container version of the GRF file or 0 if the file is corrupt/no GRF file.
+ * Load a particular NewGRF from a SpriteFile.
+ * @param config The configuration of the to be loaded NewGRF.
+ * @param stage  The loading stage of the NewGRF.
+ * @param file   The file to load the GRF data from.
  */
-byte GetGRFContainerVersion()
+static void LoadNewGRFFileFromFile(GRFConfig *config, GrfLoadingStage stage, SpriteFile &file)
 {
-	size_t pos = FioGetPos();
+	_cur.file = &file;
+	_cur.grfconfig = config;
 
-	if (FioReadWord() == 0) {
-		/* Check for GRF container version 2, which is identified by the bytes
-		 * '47 52 46 82 0D 0A 1A 0A' at the start of the file. */
-		for (uint i = 0; i < lengthof(_grf_cont_v2_sig); i++) {
-			if (FioReadByte() != _grf_cont_v2_sig[i]) return 0; // Invalid format
-		}
+	DEBUG(grf, 2, "LoadNewGRFFile: Reading NewGRF-file '%s'", config->GetDisplayPath());
 
-		return 2;
+	byte grf_container_version = file.GetContainerVersion();
+	if (grf_container_version == 0) {
+		DEBUG(grf, 7, "LoadNewGRFFile: Custom .grf has invalid format");
+		return;
 	}
 
-	/* Container version 1 has no header, rewind to start. */
-	FioSeekTo(pos, SEEK_SET);
-	return 1;
+	if (stage == GLS_INIT || stage == GLS_ACTIVATION) {
+		/* We need the sprite offsets in the init stage for NewGRF sounds
+		 * and in the activation stage for real sprites. */
+		ReadGRFSpriteOffsets(file);
+	} else {
+		/* Skip sprite section offset if present. */
+		if (grf_container_version >= 2) file.ReadDword();
+	}
+
+	if (grf_container_version >= 2) {
+		/* Read compression value. */
+		byte compression = file.ReadByte();
+		if (compression != 0) {
+			DEBUG(grf, 7, "LoadNewGRFFile: Unsupported compression format");
+			return;
+		}
+	}
+
+	/* Skip the first sprite; we don't care about how many sprites this
+	 * does contain; newest TTDPatches and George's longvehicles don't
+	 * neither, apparently. */
+	uint32 num = grf_container_version >= 2 ? file.ReadDword() : file.ReadWord();
+	if (num == 4 && file.ReadByte() == 0xFF) {
+		file.ReadDword();
+	} else {
+		DEBUG(grf, 7, "LoadNewGRFFile: Custom .grf has invalid format");
+		return;
+	}
+
+	_cur.ClearDataForNextFile();
+
+	ReusableBuffer<byte> buf;
+
+	while ((num = (grf_container_version >= 2 ? file.ReadDword() : file.ReadWord())) != 0) {
+		byte type = file.ReadByte();
+		_cur.nfo_line++;
+
+		if (type == 0xFF) {
+			if (_cur.skip_sprites == 0) {
+				DecodeSpecialSprite(buf.Allocate(num), num, stage);
+
+				/* Stop all processing if we are to skip the remaining sprites */
+				if (_cur.skip_sprites == -1) break;
+
+				continue;
+			} else {
+				file.SkipBytes(num);
+			}
+		} else {
+			if (_cur.skip_sprites == 0) {
+				grfmsg(0, "LoadNewGRFFile: Unexpected sprite, disabling");
+				DisableGrf(STR_NEWGRF_ERROR_UNEXPECTED_SPRITE);
+				break;
+			}
+
+			if (grf_container_version >= 2 && type == 0xFD) {
+				/* Reference to data section. Container version >= 2 only. */
+				file.SkipBytes(num);
+			} else {
+				file.SkipBytes(7);
+				SkipSpriteData(file, type, num - 8);
+			}
+		}
+
+		if (_cur.skip_sprites > 0) _cur.skip_sprites--;
+	}
 }
 
 /**
  * Load a particular NewGRF.
  * @param config     The configuration of the to be loaded NewGRF.
- * @param file_index The Fio index of the first NewGRF to load.
  * @param stage      The loading stage of the NewGRF.
  * @param subdir     The sub directory to find the NewGRF in.
+ * @param temporary  The NewGRF/sprite file is to be loaded temporarily and should be closed immediately,
+ *                   contrary to loading the SpriteFile and having it cached by the SpriteCache.
  */
-void LoadNewGRFFile(GRFConfig *config, uint file_index, GrfLoadingStage stage, Subdirectory subdir)
+void LoadNewGRFFile(GRFConfig *config, GrfLoadingStage stage, Subdirectory subdir, bool temporary)
 {
 	const char *filename = config->filename;
 
@@ -9986,93 +13243,15 @@ void LoadNewGRFFile(GRFConfig *config, uint file_index, GrfLoadingStage stage, S
 		if (stage == GLS_ACTIVATION && !HasBit(config->flags, GCF_RESERVED)) return;
 	}
 
-	if (file_index >= MAX_FILE_SLOTS) {
-		DEBUG(grf, 0, "'%s' is not loaded as the maximum number of file slots has been reached", filename);
-		config->status = GCS_DISABLED;
-		config->error  = new GRFError(STR_NEWGRF_ERROR_MSG_FATAL, STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED);
-		return;
-	}
-
-	config->full_filename.clear();
-	FioOpenFile(file_index, filename, subdir, &(config->full_filename));
-	_cur.file_index = file_index; // XXX
-	_palette_remap_grf[_cur.file_index] = (config->palette & GRFP_USE_MASK);
-
-	_cur.grfconfig = config;
-
-	DEBUG(grf, 2, "LoadNewGRFFile: Reading NewGRF-file '%s'", config->GetDisplayPath());
-
-	_cur.grf_container_ver = GetGRFContainerVersion();
-	if (_cur.grf_container_ver == 0) {
-		DEBUG(grf, 7, "LoadNewGRFFile: Custom .grf has invalid format");
-		return;
-	}
-
-	if (stage == GLS_INIT || stage == GLS_ACTIVATION) {
-		/* We need the sprite offsets in the init stage for NewGRF sounds
-		 * and in the activation stage for real sprites. */
-		ReadGRFSpriteOffsets(_cur.grf_container_ver);
+	bool needs_palette_remap = config->palette & GRFP_USE_MASK;
+	if (temporary) {
+		SpriteFile temporarySpriteFile(filename, subdir, needs_palette_remap);
+		LoadNewGRFFileFromFile(config, stage, temporarySpriteFile);
 	} else {
-		/* Skip sprite section offset if present. */
-		if (_cur.grf_container_ver >= 2) FioReadDword();
-	}
-
-	if (_cur.grf_container_ver >= 2) {
-		/* Read compression value. */
-		byte compression = FioReadByte();
-		if (compression != 0) {
-			DEBUG(grf, 7, "LoadNewGRFFile: Unsupported compression format");
-			return;
-		}
-	}
-
-	/* Skip the first sprite; we don't care about how many sprites this
-	 * does contain; newest TTDPatches and George's longvehicles don't
-	 * neither, apparently. */
-	uint32 num = _cur.grf_container_ver >= 2 ? FioReadDword() : FioReadWord();
-	if (num == 4 && FioReadByte() == 0xFF) {
-		FioReadDword();
-	} else {
-		DEBUG(grf, 7, "LoadNewGRFFile: Custom .grf has invalid format");
-		return;
-	}
-
-	_cur.ClearDataForNextFile();
-
-	ReusableBuffer<byte> buf;
-
-	while ((num = (_cur.grf_container_ver >= 2 ? FioReadDword() : FioReadWord())) != 0) {
-		byte type = FioReadByte();
-		_cur.nfo_line++;
-
-		if (type == 0xFF) {
-			if (_cur.skip_sprites == 0) {
-				DecodeSpecialSprite(buf.Allocate(num), num, stage);
-
-				/* Stop all processing if we are to skip the remaining sprites */
-				if (_cur.skip_sprites == -1) break;
-
-				continue;
-			} else {
-				FioSkipBytes(num);
-			}
-		} else {
-			if (_cur.skip_sprites == 0) {
-				grfmsg(0, "LoadNewGRFFile: Unexpected sprite, disabling");
-				DisableGrf(STR_NEWGRF_ERROR_UNEXPECTED_SPRITE);
-				break;
-			}
-
-			if (_cur.grf_container_ver >= 2 && type == 0xFD) {
-				/* Reference to data section. Container version >= 2 only. */
-				FioSkipBytes(num);
-			} else {
-				FioSkipBytes(7);
-				SkipSpriteData(type, num - 8);
-			}
-		}
-
-		if (_cur.skip_sprites > 0) _cur.skip_sprites--;
+		SpriteFile &file = OpenCachedSpriteFile(filename, subdir, needs_palette_remap);
+		LoadNewGRFFileFromFile(config, stage, file);
+		file.flags |= SFF_USERGRF;
+		if (config->ident.grfid == BSWAP32(0xFF4F4701)) file.flags |= SFF_OGFX;
 	}
 }
 
@@ -10371,10 +13550,9 @@ static void AfterLoadGRFs()
 /**
  * Load all the NewGRFs.
  * @param load_index The offset for the first sprite to add.
- * @param file_index The Fio index of the first NewGRF to load.
  * @param num_baseset Number of NewGRFs at the front of the list to look up in the baseset dir instead of the newgrf dir.
  */
-void LoadNewGRF(uint load_index, uint file_index, uint num_baseset)
+void LoadNewGRF(uint load_index, uint num_baseset)
 {
 	/* In case of networking we need to "sync" the start values
 	 * so all NewGRFs are loaded equally. For this we use the
@@ -10411,6 +13589,9 @@ void LoadNewGRF(uint load_index, uint file_index, uint num_baseset)
 	 */
 	for (GRFConfig *c = _grfconfig; c != nullptr; c = c->next) {
 		if (c->status != GCS_NOT_FOUND) c->status = GCS_UNKNOWN;
+		if (_settings_client.gui.newgrf_disable_big_gui && c->ident.grfid == BSWAP32(0x52577801)) {
+			c->status = GCS_DISABLED;
+		}
 	}
 
 	_cur.spriteid = load_index;
@@ -10436,7 +13617,7 @@ void LoadNewGRF(uint load_index, uint file_index, uint num_baseset)
 			}
 		}
 
-		uint slot = file_index;
+		uint num_grfs = 0;
 		uint num_non_static = 0;
 
 		_cur.stage = stage;
@@ -10444,7 +13625,7 @@ void LoadNewGRF(uint load_index, uint file_index, uint num_baseset)
 			if (c->status == GCS_DISABLED || c->status == GCS_NOT_FOUND) continue;
 			if (stage > GLS_INIT && HasBit(c->flags, GCF_INIT_ONLY)) continue;
 
-			Subdirectory subdir = slot < file_index + num_baseset ? BASESET_DIR : NEWGRF_DIR;
+			Subdirectory subdir = num_grfs < num_baseset ? BASESET_DIR : NEWGRF_DIR;
 			if (!FioCheckFileExists(c->filename, subdir)) {
 				DEBUG(grf, 0, "NewGRF file is missing '%s'; disabling", c->filename);
 				c->status = GCS_NOT_FOUND;
@@ -10454,7 +13635,7 @@ void LoadNewGRF(uint load_index, uint file_index, uint num_baseset)
 			if (stage == GLS_LABELSCAN) InitNewGRFFile(c);
 
 			if (!HasBit(c->flags, GCF_STATIC) && !HasBit(c->flags, GCF_SYSTEM)) {
-				if (slot == MAX_FILE_SLOTS) {
+				if (num_non_static == MAX_NON_STATIC_GRF_COUNT) {
 					DEBUG(grf, 0, "'%s' is not loaded as the maximum number of non-static GRFs has been reached", c->filename);
 					c->status = GCS_DISABLED;
 					c->error  = new GRFError(STR_NEWGRF_ERROR_MSG_FATAL, STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED);
@@ -10462,7 +13643,10 @@ void LoadNewGRF(uint load_index, uint file_index, uint num_baseset)
 				}
 				num_non_static++;
 			}
-			LoadNewGRFFile(c, slot++, stage, subdir);
+
+			num_grfs++;
+
+			LoadNewGRFFile(c, stage, subdir, false);
 			if (stage == GLS_RESERVE) {
 				SetBit(c->flags, GCF_RESERVED);
 			} else if (stage == GLS_ACTIVATION) {
@@ -10470,6 +13654,7 @@ void LoadNewGRF(uint load_index, uint file_index, uint num_baseset)
 				assert(GetFileByGRFID(c->ident.grfid) == _cur.grffile);
 				ClearTemporaryNewGRFData(_cur.grffile);
 				BuildCargoTranslationMap();
+				HandleVarAction2OptimisationPasses();
 				DEBUG(sprite, 2, "LoadNewGRF: Currently %i sprites are loaded", _cur.spriteid);
 			} else if (stage == GLS_INIT && HasBit(c->flags, GCF_INIT_ONLY)) {
 				/* We're not going to activate this, so free whatever data we allocated */
@@ -10480,6 +13665,7 @@ void LoadNewGRF(uint load_index, uint file_index, uint num_baseset)
 
 	/* Pseudo sprite processing is finished; free temporary stuff */
 	_cur.ClearDataForNextFile();
+	_callback_result_cache.clear();
 
 	/* Call any functions that should be run after GRFs have been loaded. */
 	AfterLoadGRFs();

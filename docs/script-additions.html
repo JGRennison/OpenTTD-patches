@@ -61,9 +61,38 @@
 	<div class="indent">
 		<h4>Additional Static Public Member Functions:</h4>
 		<div class="indent">
-			<div class="code">static  bool BuildRiver (TileIndex tile)</div>
+			<div class="code">static bool BuildRiver (TileIndex tile)</div>
 			<div class="methodtext">Builds a river on tile (subject to permissions/settings).</div>
 			<div class="methodtext">All other details are the same as BuildCanal.</div>
+		</div>
+	</div>
+
+	<h3>Road: <a href="https://docs.openttd.org/gs-api/classGSRoad.html">GSRoad Class</a> and <a href="https://docs.openttd.org/ai-api/classAIRoad.html">AIRoad Class</a></h3>
+	<div class="indent">
+		<h4>Additional Static Public Member Functions:</h4>
+		<div class="indent">
+			<div class="code">static bool HasRoadTramType(TileIndex tile, RoadTramTypes road_tram_type)</div>
+			<div class="methodtext">Check if a tile has the given road tram type.</div>
+		</div>
+		<div class="indent">
+			<div class="code">static RoadType GetRoadType(TileIndex tile, RoadTramTypes road_tram_type)</div>
+			<div class="methodtext">Get the RoadType that is used on a tile.</div>
+		</div>
+		<div class="indent">
+			<div class="code">static bool IsCatenaryRoadType(RoadType roadtype)</div>
+			<div class="methodtext">Checks whether the given road type uses a catenary.</div>
+		</div>
+		<div class="indent">
+			<div class="code">static bool IsNonLevelCrossingRoadType(RoadType roadtype)</div>
+			<div class="methodtext">Checks whether the given road type disallows level crossings.</div>
+		</div>
+		<div class="indent">
+			<div class="code">static bool IsNoTownHousesRoadType(RoadType roadtype)</div>
+			<div class="methodtext">Checks whether the given road type cannot be used by towns to build houses.</div>
+		</div>
+		<div class="indent">
+			<div class="code">static bool IsTownBuildableRoadType(RoadType roadtype)</div>
+			<div class="methodtext">Checks whether the given road type is buildable by towns.</div>
 		</div>
 	</div>
 </body>

@@ -54,7 +54,7 @@ CommandCost CmdPlaceSign(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 		si->y = y;
 		si->z = GetSlopePixelZ(x, y);
 		if (!StrEmpty(text)) {
-			si->name = stredup(text);
+			si->name = text;
 		}
 		si->UpdateVirtCoord();
 		InvalidateWindowData(WC_SIGN_LIST, 0, 0);
@@ -79,7 +79,7 @@ CommandCost CmdRenameSign(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 {
 	Sign *si = Sign::GetIfValid(p1);
 	if (si == nullptr) return CMD_ERROR;
-	if (si->owner == OWNER_DEITY && _current_company != OWNER_DEITY && _game_mode != GM_EDITOR) return CMD_ERROR;
+	if (!CompanyCanRenameSign(si)) return CMD_ERROR;
 
 	/* Rename the signs when empty, otherwise remove it */
 	if (!StrEmpty(text)) {

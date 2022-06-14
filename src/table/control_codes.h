@@ -89,6 +89,7 @@ enum StringControlCode {
 	SCC_STRING5,
 	SCC_STRING6,
 	SCC_STRING7,
+	SCC_STRING8,
 
 
 	SCC_STRING,
@@ -96,6 +97,7 @@ enum StringControlCode {
 	SCC_DECIMAL,
 	SCC_DECIMAL1,
 	SCC_NUM,
+	SCC_PLUS_NUM,
 	SCC_ZEROFILL_NUM,
 	SCC_HEX,
 	SCC_BYTES,

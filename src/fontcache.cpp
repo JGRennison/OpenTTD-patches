@@ -70,18 +70,17 @@ private:
 public:
 	SpriteFontCache(FontSize fs);
 	~SpriteFontCache();
-	virtual SpriteID GetUnicodeGlyph(WChar key);
-	virtual void SetUnicodeGlyph(WChar key, SpriteID sprite);
-	virtual void InitializeUnicodeGlyphMap() override;
-	virtual void ClearFontCache();
-	virtual const Sprite *GetGlyph(GlyphID key);
-	virtual uint GetGlyphWidth(GlyphID key);
-	virtual int GetHeight() const;
-	virtual bool GetDrawGlyphShadow();
-	virtual GlyphID MapCharToGlyph(WChar key) { assert(IsPrintable(key)); return SPRITE_GLYPH | key; }
-	virtual const void *GetFontTable(uint32 tag, size_t &length) { length = 0; return nullptr; }
-	virtual const char *GetFontName() { return "sprite"; }
-	virtual bool IsBuiltInFont() { return true; }
+	SpriteID GetUnicodeGlyph(WChar key) override;
+	void SetUnicodeGlyph(WChar key, SpriteID sprite) override;
+	void InitializeUnicodeGlyphMap() override;
+	void ClearFontCache() override;
+	const Sprite *GetGlyph(GlyphID key) override;
+	uint GetGlyphWidth(GlyphID key) override;
+	bool GetDrawGlyphShadow() override;
+	GlyphID MapCharToGlyph(WChar key) override { assert(IsPrintable(key)); return SPRITE_GLYPH | key; }
+	const void *GetFontTable(uint32 tag, size_t &length) override { length = 0; return nullptr; }
+	const char *GetFontName() override { return "sprite"; }
+	bool IsBuiltInFont() override { return true; }
 };
 
 /**
@@ -91,6 +90,7 @@ public:
 SpriteFontCache::SpriteFontCache(FontSize fs) : FontCache(fs), glyph_to_spriteid_map(nullptr)
 {
 	this->InitializeUnicodeGlyphMap();
+	this->height = ScaleFontTrad(this->GetDefaultFontHeight(this->fs));
 }
 
 /**
@@ -167,6 +167,7 @@ void SpriteFontCache::ClearGlyphToSpriteMap()
 void SpriteFontCache::ClearFontCache()
 {
 	Layouter::ResetFontCache(this->fs);
+	this->height = ScaleFontTrad(this->GetDefaultFontHeight(this->fs));
 }
 
 const Sprite *SpriteFontCache::GetGlyph(GlyphID key)
@@ -181,11 +182,6 @@ uint SpriteFontCache::GetGlyphWidth(GlyphID key)
 	SpriteID sprite = this->GetUnicodeGlyph(key);
 	if (sprite == 0) sprite = this->GetUnicodeGlyph('?');
 	return SpriteExists(sprite) ? GetSprite(sprite, ST_FONT)->width + ScaleFontTrad(this->fs != FS_NORMAL ? 1 : 0) : 0;
-}
-
-int SpriteFontCache::GetHeight() const
-{
-	return ScaleFontTrad(this->height);
 }
 
 bool SpriteFontCache::GetDrawGlyphShadow()
@@ -217,7 +213,8 @@ TrueTypeFontCache::TrueTypeFontCache(FontSize fs, int pixels) : FontCache(fs), r
  */
 TrueTypeFontCache::~TrueTypeFontCache()
 {
-	this->ClearFontCache();
+	/* Virtual functions get called statically in destructors, so make it explicit to remove any confusion. */
+	this->TrueTypeFontCache::ClearFontCache();
 
 	for (auto &iter : this->font_tables) {
 		free(iter.second.second);
@@ -425,14 +422,14 @@ void FreeTypeFontCache::SetFontSize(FontSize fs, FT_Face face, int pixels)
 {
 	if (pixels == 0) {
 		/* Try to determine a good height based on the minimal height recommended by the font. */
-		int scaled_height = ScaleFontTrad(_default_font_height[this->fs]);
+		int scaled_height = ScaleFontTrad(this->GetDefaultFontHeight(this->fs));
 		pixels = scaled_height;
 
 		TT_Header *head = (TT_Header *)FT_Get_Sfnt_Table(this->face, ft_sfnt_head);
 		if (head != nullptr) {
 			/* Font height is minimum height plus the difference between the default
 			 * height for this font size and the small size. */
-			int diff = scaled_height - ScaleFontTrad(_default_font_height[FS_SMALL]);
+			int diff = scaled_height - ScaleFontTrad(this->GetDefaultFontHeight(FS_SMALL));
 			pixels = Clamp(std::min<uint>(head->Lowest_Rec_PPEM, MAX_FONT_MIN_REC_SIZE) + diff, scaled_height, MAX_FONT_SIZE);
 		}
 	} else {
@@ -492,7 +489,7 @@ static void LoadFreeTypeFont(FontSize fs)
 		case FS_MONO:   settings = &_freetype.mono;   break;
 	}
 
-	if (StrEmpty(settings->font)) return;
+	if (settings->font.empty()) return;
 
 	if (_library == nullptr) {
 		if (FT_Init_FreeType(&_library) != FT_Err_Ok) {
@@ -503,19 +500,20 @@ static void LoadFreeTypeFont(FontSize fs)
 		DEBUG(freetype, 2, "Initialized");
 	}
 
+	const char *font_name = settings->font.c_str();
 	FT_Face face = nullptr;
 
 	/* If font is an absolute path to a ttf, try loading that first. */
-	FT_Error error = FT_New_Face(_library, settings->font, 0, &face);
+	FT_Error error = FT_New_Face(_library, font_name, 0, &face);
 
 #if defined(WITH_COCOA)
 	extern void MacOSRegisterExternalFont(const char *file_path);
-	if (error == FT_Err_Ok) MacOSRegisterExternalFont(settings->font);
+	if (error == FT_Err_Ok) MacOSRegisterExternalFont(font_name);
 #endif
 
 	if (error != FT_Err_Ok) {
 		/* Check if font is a relative filename in one of our search-paths. */
-		std::string full_font = FioFindFullPath(BASE_DIR, settings->font);
+		std::string full_font = FioFindFullPath(BASE_DIR, font_name);
 		if (!full_font.empty()) {
 			error = FT_New_Face(_library, full_font.c_str(), 0, &face);
 #if defined(WITH_COCOA)
@@ -525,10 +523,10 @@ static void LoadFreeTypeFont(FontSize fs)
 	}
 
 	/* Try loading based on font face name (OS-wide fonts). */
-	if (error != FT_Err_Ok) error = GetFontByFaceName(settings->font, &face);
+	if (error != FT_Err_Ok) error = GetFontByFaceName(font_name, &face);
 
 	if (error == FT_Err_Ok) {
-		DEBUG(freetype, 2, "Requested '%s', using '%s %s'", settings->font, face->family_name, face->style_name);
+		DEBUG(freetype, 2, "Requested '%s', using '%s %s'", font_name, face->family_name, face->style_name);
 
 		/* Attempt to select the unicode character map */
 		error = FT_Select_Charmap(face, ft_encoding_unicode);
@@ -558,7 +556,7 @@ static void LoadFreeTypeFont(FontSize fs)
 	FT_Done_Face(face);
 
 	static const char *SIZE_TO_NAME[] = { "medium", "small", "large", "mono" };
-	ShowInfoF("Unable to use '%s' for %s font, FreeType reported error 0x%X, using sprite font instead", settings->font, SIZE_TO_NAME[fs], error);
+	ShowInfoF("Unable to use '%s' for %s font, FreeType reported error 0x%X, using sprite font instead", font_name, SIZE_TO_NAME[fs], error);
 	return;
 
 found_face:
@@ -619,9 +617,9 @@ const Sprite *FreeTypeFontCache::InternalGetGlyph(GlyphID key, bool aa)
 	if (this->fs == FS_NORMAL && !aa) {
 		for (uint y = 0; y < (uint)slot->bitmap.rows; y++) {
 			for (uint x = 0; x < (uint)slot->bitmap.width; x++) {
-				if (aa ? (slot->bitmap.buffer[x + y * slot->bitmap.pitch] > 0) : HasBit(slot->bitmap.buffer[(x / 8) + y * slot->bitmap.pitch], 7 - (x % 8))) {
+				if (HasBit(slot->bitmap.buffer[(x / 8) + y * slot->bitmap.pitch], 7 - (x % 8))) {
 					sprite.data[1 + x + (1 + y) * sprite.width].m = SHADOW_COLOUR;
-					sprite.data[1 + x + (1 + y) * sprite.width].a = aa ? slot->bitmap.buffer[x + y * slot->bitmap.pitch] : 0xFF;
+					sprite.data[1 + x + (1 + y) * sprite.width].a = 0xFF;
 				}
 			}
 		}

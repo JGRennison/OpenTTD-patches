@@ -32,6 +32,7 @@ struct Ship FINAL : public SpecializedVehicle<Ship, VEH_SHIP> {
 	int16 rotation_x_pos; ///< NOSAVE: X Position before rotation.
 	int16 rotation_y_pos; ///< NOSAVE: Y Position before rotation.
 	uint8 lost_count;     ///< Count of number of failed pathfinder attempts
+	byte critical_breakdown_count; ///< Counter for the number of critical breakdowns since last service
 
 	/** We don't want GCC to zero our struct! It already is zeroed and has an index! */
 	Ship() : SpecializedVehicleBase() {}
@@ -40,18 +41,21 @@ struct Ship FINAL : public SpecializedVehicle<Ship, VEH_SHIP> {
 
 	void MarkDirty();
 	void UpdateDeltaXY();
-	ExpensesType GetExpenseType(bool income) const { return income ? EXPENSES_SHIP_INC : EXPENSES_SHIP_RUN; }
+	ExpensesType GetExpenseType(bool income) const { return income ? EXPENSES_SHIP_REVENUE : EXPENSES_SHIP_RUN; }
 	void PlayLeaveStationSound() const;
 	bool IsPrimaryVehicle() const { return true; }
 	void GetImage(Direction direction, EngineImageType image_type, VehicleSpriteSeq *result) const;
 	Direction GetMapImageDirection() const { return this->rotation; }
 	int GetDisplaySpeed() const { return this->cur_speed / 2; }
 	int GetDisplayMaxSpeed() const { return this->vcache.cached_max_speed / 2; }
-	int GetCurrentMaxSpeed() const { return std::min<int>(this->vcache.cached_max_speed, this->current_order.GetMaxSpeed() * 2); }
+	int GetEffectiveMaxSpeed() const;
+	int GetDisplayEffectiveMaxSpeed() const { return this->GetEffectiveMaxSpeed() / 2; }
+	int GetCurrentMaxSpeed() const { return std::min<int>(this->GetEffectiveMaxSpeed(), this->current_order.GetMaxSpeed() * 2); }
 	Money GetRunningCost() const;
 	bool IsInDepot() const { return this->state == TRACK_BIT_DEPOT; }
 	bool Tick();
 	void OnNewDay();
+	void OnPeriodic();
 	Trackdir GetVehicleTrackdir() const;
 	TileIndex GetOrderStationLocation(StationID station);
 	bool FindClosestDepot(TileIndex *location, DestinationID *destination, bool *reverse);

@@ -247,7 +247,7 @@ inline void Blitter_32bppAnim::Draw(const Blitter::BlitterParams *bp, ZoomLevel 
 					break;
 
 				default:
-					if (fast_path || (src_px->a == 255 && (sprite_flags & SF_NO_ANIM))) {
+					if (fast_path || (src_px->a == 255 && (sprite_flags & BSF_NO_ANIM))) {
 						do {
 							*anim++ = 0;
 							Colour c = *src_px;
@@ -317,7 +317,7 @@ void Blitter_32bppAnim::Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomL
 		default: NOT_REACHED();
 
 		case BM_COLOUR_REMAP_WITH_BRIGHTNESS:
-			if (!(sprite_flags & SF_NO_REMAP)) {
+			if (!(sprite_flags & BSF_NO_REMAP)) {
 				Draw<BM_COLOUR_REMAP_WITH_BRIGHTNESS, false>(bp, zoom);
 				return;
 			}
@@ -328,14 +328,14 @@ void Blitter_32bppAnim::Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomL
 			return;
 
 		case BM_COLOUR_REMAP:
-			if (!(sprite_flags & SF_NO_REMAP)) {
+			if (!(sprite_flags & BSF_NO_REMAP)) {
 				Draw<BM_COLOUR_REMAP, false>(bp, zoom);
 				return;
 			}
 			/* FALL THROUGH */
 
 		case BM_NORMAL:
-			if ((sprite_flags & (SF_NO_ANIM | SF_TRANSLUCENT)) == SF_NO_ANIM &&
+			if ((sprite_flags & (BSF_NO_ANIM | BSF_TRANSLUCENT)) == BSF_NO_ANIM &&
 					bp->skip_left == 0 && bp->width == UnScaleByZoom(bp->sprite_width, zoom)) {
 				Draw<BM_NORMAL, true>(bp, zoom);
 			} else {
@@ -397,6 +397,15 @@ void Blitter_32bppAnim::SetPixel(void *video, int x, int y, uint8 colour)
 	/* Set the colour in the anim-buffer too, if we are rendering to the screen */
 	if (_screen_disable_anim) return;
 	this->anim_buf[this->ScreenToAnimOffset((uint32 *)video) + x + y * this->anim_buf_pitch] = colour | (DEFAULT_BRIGHTNESS << 8);
+}
+
+void Blitter_32bppAnim::SetPixel32(void *video, int x, int y, uint8 colour, uint32 colour32)
+{
+	*((Colour *)video + x + y * _screen.pitch) = colour32;
+
+	/* Set the colour in the anim-buffer too, if we are rendering to the screen */
+	if (_screen_disable_anim) return;
+	this->anim_buf[this->ScreenToAnimOffset((uint32 *)video) + x + y * this->anim_buf_pitch] = 0;
 }
 
 void Blitter_32bppAnim::DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8 colour, int width, int dash)

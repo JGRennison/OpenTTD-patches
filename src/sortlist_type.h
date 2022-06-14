@@ -55,6 +55,7 @@ protected:
 	uint8 sort_type;                          ///< what criteria to sort on
 	uint8 filter_type;                        ///< what criteria to filter on
 	uint16 resort_timer;                      ///< resort list after a given amount of ticks if set
+	uint16 resort_interval;                   ///< value to re-initialise resort_timer with after sorting
 
 	/**
 	 * Check if the list is sortable
@@ -71,8 +72,7 @@ protected:
 	 */
 	void ResetResortTimer()
 	{
-		/* Resort every 10 days */
-		this->resort_timer = DAY_TICKS * 10;
+		this->resort_timer = this->resort_interval;
 	}
 
 public:
@@ -82,7 +82,8 @@ public:
 		flags(VL_NONE),
 		sort_type(0),
 		filter_type(0),
-		resort_timer(1)
+		resort_timer(1),
+		resort_interval(DAY_TICKS * 10) /* Resort every 10 days by default */
 	{};
 
 	/**
@@ -215,6 +216,12 @@ public:
 		SETBITS(this->flags, VL_RESORT);
 	}
 
+	void SetResortInterval(uint16 resort_interval)
+	{
+		this->resort_interval = std::max<uint16>(1, resort_interval);
+		this->resort_timer = std::min<uint16>(this->resort_timer, this->resort_interval);
+	}
+
 	/**
 	 * Check if the sort order is descending
 	 *
@@ -235,6 +242,16 @@ public:
 		this->flags ^= VL_DESC;
 
 		if (this->IsSortable()) MemReverseT(std::vector<T>::data(), std::vector<T>::size());
+	}
+
+	/**
+	 * Returns whether Sort() would perform a resort
+	 * @return true if a resort would be performed
+	 *
+	 */
+	bool WouldSort() const
+	{
+		return (this->flags & VL_RESORT) && this->IsSortable();
 	}
 
 	/**

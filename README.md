@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.40.5
+## JGR's Patchpack version 0.47.3
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -22,301 +22,320 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 See the [wiki](https://github.com/JGRennison/OpenTTD-patches/wiki) for guides on how to use some of the included features.
 
+See [installation.md](/installation.md) for instructions on how to install.
 
-#### This patchpack contains the following
+(Nearly all of the patches which are listed below have been modified, fixed or extended in some way, and so are not the same as the originals which are linked).
 
-* Routing restrictions: [thread](http://www.tt-forums.net/viewtopic.php?f=33&t=73397)  
-  As of v0.11.0 this includes the Long Reserve feature from [here](http://www.tt-forums.net/viewtopic.php?f=33&t=74365).  
-  A version of this feature rebased onto [Cirdan's new map features branch](http://repo.or.cz/w/openttd/fttd.git) is in the *tracerestrict-cirdan* branch, see [this thread](http://www.tt-forums.net/viewtopic.php?f=33&t=58420)
+#### Railways and Trains
 
-* Programmable pre-signals: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=47690)  
-  This includes additions to the patch from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892)  
-  These are not shown in the build signal window by default.
-
-* Upgrade airports: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=35867)
-
-* Vehicle group info: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=72855)
-
-* Close adjacent level crossings: [imported](http://www.tt-forums.net/viewtopic.php?p=836749)
-
-* Zoning: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=33701)  
-  * This is modified to remove unimplemented modes, implement station ownership checks and implement station facility checks for industries.  
-  * Add a mode to show restricted signals.
-  * Add a mode to show station catchment only where station window open.
-
-* Departure boards: [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=49956)  
-  * Fixed departure boards with orders with timetabled 0 travel times, e.g. those with depot service orders.  
-  * Made modifications to work with day length greater than 1.
-
-* Town cargo generation factor: [imported](http://www.tt-forums.net/viewtopic.php?t=46399)  
-  * Allow factor to be more finely adjusted in 0.1 increments. (added in v0.16.0)
-
-* Industry cargo generation factor (added in v0.39.2)  
-
-* Vehicles visible in tunnels (transparency setting): [imported](http://dev.openttdcoop.org/projects/clientpatches/repository/changes/VehicelsInTunnels.diff)
-
-* Signals in tunnels and on bridges: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=41260)  
-  Modifications include support for PBS and setting the semaphore/electric type of signals.
-
-* Measurement tools: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=49212)
-
-* Increase maximum number of NewGRFs to 255  
-  * In single player mode: [imported](http://www.tt-forums.net/viewtopic.php?p=894743#p894743)  
-  * In multiplayer mode: (added in v0.25.0)
-
-* Improved breakdowns: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=39518)  
-  Add a lower limit for low speed breakdowns.
-
-* Timetabling waiting time in depots: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=70969)
-
-* Picking and placing single houses in scenario editor: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=68894)
-
-* Smallmap screenshots: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=44596)  
-  This is modified to use an extra button in the smallmap window, instead of a console command, and use the current zoom level and display mode of the smallmap window.
-
-* Automated timetables and separation: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=46391)  
-  * Auto timetabling: Bias timetable adjustment to favour negative adjustments; this is to avoid positive feedback between congestion delays and increased timetable length. Change jam detection threshold.  
-  * Auto separation: A large number of improvements have been made to the separation algorithm.  
-  * Timetable GUI: Allow clearing of timetable time fields which are at 0. Allow explicitly setting timetable time fields to 0 without clearing them.  
-  * Add company settings to enable automatic timetabling or separation for new vehicles.  
-  * Allow changing/clearing the timetabled waiting time and max speed of all of a vehicle's orders at once.  
-  * Add client setting to show the remainder ticks in timetable, after dividing to days or minutes.  
-  * Add a company setting to control the number of ticks used in auto-fill timetable rounding.
-
-* Vehicle repair cost: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=45642)
-
-* Enhanced viewport: [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=53394)
-
-* Infrastructure sharing: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=42254)  
-  * Add company settings to enable competitors to buy/renew vehicles in this company's depots.  
-  * Add setting to control whether trains can crash with trains owned by other companies.
-
-* Rating in town label: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=42598)
-
-* Day length: [imported](http://www.tt-forums.net/viewtopic.php?p=1148227#p1148227)  
-  * Add a setting to use non day length scaled days for cargo dest link graph calculation times (added in v0.11.0)
-
-* Order occupancy  
-  Add column to orders GUI to show occupancy running average, show the average order occupancy, and add a vehicle sort mode.
-
-* Servicing  
-  Send vehicles which need auto-renewing due to age for servicing, even if breakdowns are off and no servicing if no breakdowns is on.
-
-* Everest tree-line: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=72502) (added in v0.2.0)  
-  * Remove "no trees on this level" setting.  
-  * Add on/off setting (default off).  
-  * Add to settings GUI, add strings, help texts, etc.  
-  * Change algorithm to make tree line and border of mixed forest zone less abrupt.
-
-* Enable building rivers in game (added in v0.3.0)  
-  This is controlled by a setting (off by default).
-
-* More conditional orders: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=38317) (added in v0.3.0)
-
-* Include the train length and group name in the vehicle details window (added in v0.3.0)  
-  These are each controlled by a setting (on by default).
-
-* Pause the game when cargo dest link graph jobs lag (added in v0.4.0)  
-  Previously if a cargo dest link graph update job took longer than permitted, the game would block until it completed, preventing all user interaction.  
-  This patch instead pauses the game until the job is completed. (This does not apply to network clients, which cannot pause/unpause the game).
-
-* Daily/monthly/yearly scripts patch: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=49595) (added in v0.5.0)
- 
-* Flat minimap owner screenshot patch: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=42845) (added in v0.5.0)
- 
-* Extra large maps: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=33137) (added in v0.5.0)  
-  Maximum map size is now 256M tiles, ranging from 16k x 16k to 256 x 1M.
-  (The NewGRF debug inspection window is disabled for all map coordinates longer than 27 bits).
-
-* Build and refit: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=35805) (added in v0.5.0)  
-  This has been modified to change the UI, and make it multiplayer safe.
-
-* Pause on savegame load if ctrl key is pressed. (added in v0.6.0)
-
-* Reverse at waypoint orders (added in v0.7.0)
-
-* Show a company-coloured mark next to vehicles in vehicle list windows, if their owner does not match list owner (imported: by McZapkie) (added in v0.8.0)  
-  This has been modified to change the mark and be controlled by a setting (on by default).
-
-* Vehicle lifetime profit: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=72844) (added in v0.10.0)  
-  This has been modified to show current lifetime profit, instead of the yearly-updated value.
-
-* Hierarchical group collapse: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=74365) (added in v0.11.0)  
-  This has been modified to show an icon for collapsed groups, and only the enable the collapse/(un)collapse all buttons where useful.
-
-* Ship collision avoidance: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=74365) (added in v0.11.0)
-
-* Reduced tree growth: [imported](http://www.tt-forums.net/viewtopic.php?p=890778#p890778) (added in v0.11.0)
-
-* Remove all trees in scenario editor: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=49326) (added in v0.11.0)
-
-* Add a menu item to the vehicle list to change order target (added in v0.11.0)
-
-* Template-based train replacement [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=58904) (added in v0.12.0)
-
-* Add a menu item to the vehicle list to assign all listed vehicles to a new group (added in v0.12.1)
-
-* Polyline rail track building tool [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=57080) (added in v0.13.0)
-
-* Cargo type orders, this allows order load/unload types to be set per cargo type [imported](https://www.tt-forums.net/viewtopic.php?p=1047749) (added in v0.15.0)  
-  This has been modified so that cargo dest can follow orders with different load/unload types.
-
-* Random town road reconstruction [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=36438) (added in v0.15.0)  
-  This has been modified to change the setting scale. This defaults to off.
-
-* When building tunnels, open new viewports at the far end of the tunnel [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=72639) (added in v0.15.0)
-
-* Add a setting to increase the station catchment radius (added in v0.16.0)
-
-* Custom bridge heads for road bridges (added in v0.17.0) and rail bridges (added in v0.26.0)
-
-* Chunnels (tunnels under bodies of water) [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=41775) (added in v0.18.0)  
-  This is enabled by a setting (off by default).
-
-* Give money to company, instead of player [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=63899) (added in v0.18.0)  
-  This has been modified to broadcast money transfer notifications to all players.
-
-* Minimum town distance [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=33625) (added in v0.18.0)
-
-* Level crossing improvements (added in v0.19.0)  
-  * Prevent road vehicles from being stopped on level crossings.  
-  * Add setting to enable improved level crossing safety.
-
-* Scheduled dispatch [imported](https://github.com/innocenat/OpenTTD-patches/tree/scheduled-dispatch-sx) (added in v0.20.0)
-
-* Add a setting to disable removing sea/rivers (added in v0.21.0)
-
-* Town growth  
-  * Add very and extremely slow options to town growth rate setting. (added in v0.21.0)  
-  * Add a setting to scale town growth rate by proportion of town cargo transported. (added in v0.21.0)
-
-* Performance improvements  
-  * Improve dedicated server performance. Up to approximately 2.5x faster. (added in v0.8.1)  
-  * Improve cargodest link graph calculation performance. Up to approximately 2x faster. (~1.3x faster in v0.8.1, further improvements in v0.17.2)  
-  * Various minor changes (see changelog).
-
-* Multiple docks per station [imported](https://github.com/KeldorKatarn/OpenTTD_PatchPack/tree/feature/multiple_docks) (added in v0.22.0)
-
-* Cargo type filter in vehicle list windows [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=77147) (added in v0.22.0)  
-  This has been modified to support more windows and more cargo options.  
-  This is enabled by a setting (on by default).
-
-* Freight train through load (added in v0.24.0)  
+* Drive-through train depots.
+* [Template-based train replacement](http://www.tt-forums.net/viewtopic.php?f=33&t=58904).
+* [Routing restrictions](http://www.tt-forums.net/viewtopic.php?f=33&t=73397).  
+  See the [guide on the wiki](https://github.com/JGRennison/OpenTTD-patches/wiki/Signalling) for more information.
+* [Programmable pre-signals](http://www.tt-forums.net/viewtopic.php?f=33&t=47690).  
+  These are not shown in the build signal window by default.  
+  See the [guide on the wiki](https://github.com/JGRennison/OpenTTD-patches/wiki/Signalling) for more information.
+* Freight train through load.  
   This is an alternative loading mode for freight trains for the case where the train is longer then the platform.
-
-* Multiple rail types per tile (added in v0.29.0)
-
-* More cheats and cheats in multiplayer (added in v0.34.2)  
-  * Add support for server admin use of money, magic bulldozer, tunnels and jet crashes cheats in multiplayer.  
-  * Add setting to allow non server admins to use the money cheat in multiplayer.  
-  * Add cheats to set inflation income and cost factors.
-  
-* Drive-through train depot emulation (added in v0.38.0)
-
-* One-way road and road vehicle overtaking enhancements (added in v0.39.0)  
-  * Road between one-way road tiles is also one-way.  
-  * One way roads may have T-junctions on the drive side.  
-  * Drive-through road stops may be made one way.  
-  * Road vehicles have fewer constraints on overtaking on one-way road, and may be remain in the overtaking lane indefinitely.  
-  * Road vehicles may now start and finish overtaking on bridges and in tunnels.  
-  See the [wiki](https://github.com/JGRennison/OpenTTD-patches/wiki/One-way-roads) for full details.
-
-* Realistic train braking (added in v0.40.0)  
+* Multiple rail types per tile.
+* [Polyline rail track building tool](http://www.tt-forums.net/viewtopic.php?f=33&t=57080).
+* Add news setting for trains waiting due to routing restrictions.
+* Add setting to enable flipping direction of all train types in depot.
+* Realistic train braking.  
   In this mode, trains have a stopping distance and will reserve ahead accordingly, trains cannot stop instantly.  
-  This mode has many implications for signalling and track layout design, and is therefore an advanced feature which may not be suitable for beginners.  
-  In particular pre-signals and two-way signals are not permitted, and PBS is used for all signalling.
+  See the [guide on the wiki](https://github.com/JGRennison/OpenTTD-patches/wiki/Realistic-braking) for more information.
+* Allow converting track type under trains when compatible with the new rail type.
+* Add feature where trains adjust their speed to match the train in front to avoid stop-start behaviour.
+* Add a new train purchase window, where locomotive and wagons are in separate lists.
+* Add information about train full and empty loads and achievable speeds to the train info window.
+* Add setting to sort track types by category and speed.
+* Add a setting for whether to pathfind up to back of a one-way path signal.
+* Multi-aspect signal graphics.  
+  This requires a NewGRF which supports this and realistic train braking.
+* No-entry signals.  
+  These are not shown in the build signal window by default.
+* Add client setting to show all signals using the default baseset sprites.
+* Remember the last-used signal type between games.
 
-* Save/load and savegame format changes  
-  * Various changes to improve handling of savegames which use features not in trunk.  
-  * Savegames from this patchpack are not loadable in trunk.  
-  * Savegames from trunk up to the last savegame version which has been merged into this branch (*jgrpp*) should be loadable in this patchpack.  
-  * Savegames from other branches which use the save/load code in the *save_ext* branch (usually suffixed: *-sx*) which are also merged into this branch (*jgrpp*), or where the added feature is marked as discardable/ignorable, should be loadable in this patchpack.  
-  * Savegames from other patched versions are not loadable in this patchpack except for savegames from:  
-    * The *tracerestrict* branch ([routing restrictions patch](http://www.tt-forums.net/viewtopic.php?f=33&t=73397))  
-    * The [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892) v2.0 - v2.4 (subject to caveats, see below)  
-    * [Joker's Patch Pack](https://www.tt-forums.net/viewtopic.php?f=33&t=74365) v1.19 - v1.27 (subject to caveats, see below)  
-    * [Chill's Patch Pack](https://www.tt-forums.net/viewtopic.php?f=33&t=47622) v8 and v14.7 (subject to caveats, see below)
+#### Roads and Road Vehicles
 
-* Miscellaneous  
-  * Various improvements to the crash logger.  
-  * Adjust cargo dest link graph job scheduling algorithm to improve responsiveness. (added in v0.16.0)  
-  * Add hover tool-tips, and improve visual contrast of cargo labels, in cargo dest graph legend window. (added in v0.16.0)  
-  * Add shift-clicking on vehicle depot button to select specific depot. (added in v0.16.1)  
-  * Increase maximum setting limits for per-company vehicle-type limits. (added in v0.17.0)  
-  * Increase maximum permitted vehicle name length (added in v0.17.0), vehicle group name length (added in v0.17.2), and depot/station name lengths (added in v0.20.0).  
-  * Trains break down after colliding with a road vehicle. (added in v0.20.0).  
-  * Add warning/info messages to timetable window. (added in v0.21.0).  
-  * Add ctrl+click on shared list button in order/timetable window to add single vehicle to a new group. (added in v0.21.0).  
-  * Improve scrolling rendering of link graph overlay on viewport and small map. (added in v0.25.0).  
-  * Add setting to automatically save when losing connection to a network game. (added in v0.25.0).  
-  * Station rating: track "last visited vehicle type" separately per cargo. (added in v0.25.0).  
-  * Go to depot and sell vehicle orders. (added in v0.26.0).  
-  * Order mode to lock timetable wait and travel times against autofill/automate changes. (added in v0.26.0 and v0.27.0 respectively).  
-  * Settings to allow placing stations and all NewGRF objects under bridges. (added in v0.26.0).  
-  * Leave early and leave early if any/all cargoes fully loaded order timetable flags. (added in v0.27.0 and v0.36.0 respectively).  
-  * Timetabled wait times at waypoints. (added in v0.27.0).  
-  * Add setting to enable flipping direction of all train types in depot. (added in v0.27.1).  
-  * Allow purchasing a region of tiles at once, by dragging, and add a company rate limit for land purchasing (added in v0.29.0).  
-  * Add setting to control if and how land purchasing is permitted. (added in v0.29.0).  
-  * Add GUI setting for when to ask for confirmation before overwriting an existing savegame file, add unique ID to savegames. (added in v0.29.1).  
-  * Add game setting to allow only non-stop orders for trains and road vehicles. (added in v0.29.3).  
-  * Disallow ordering ordinary road vehicles to tram depots and vice versa. (added in v0.30.0).  
-  * Add UI setting for whether to open the new vehicle GUI when share-cloning. (added in v0.30.0).  
-  * Add company setting for whether to advance order when cloning/copying/sharing (if current depot is in order list). (added in v0.30.0).  
-  * Allow diagonal construction of rivers in the scenario editor. (added in v0.30.2).  
-  * Add setting to allow articulated road vehicles to overtake other vehicles. (added in v0.31.0).  
-  * Add new link graph distribution modes: asymmetric (equal) and asymmetric (nearest). (added in v0.31.0).  
-  * Add news/advice setting to warn if no depot order in vehicle schedule. (added in v0.31.1).  
-  * Enable vehicle list buttons in station window when the list would be non-empty. (added in v0.31.1).  
-  * Enable vehicle group management actions on other companies' stations. (added in v0.31.1).  
-  * Add a password mechanism to change network game settings from a network client. (added in v0.31.4).  
-  * Change network protocol to send server/join and rcon passwords in hashed form instead of in clear text. (added in v0.31.4).  
-  * Add modifier key window for toggling shift/ctrl key states using mouse. (added in v0.32-rc4).  
-  * Add IME support on Linux/SDL2 (SDL2-supported IMEs and Fcitx). (added in v0.32.0).  
-  * Add support for allowing/disallowing supply to a station, per cargo, by ctrl-clicking the station cargo rating. (added in v0.34.0).  
-  * Open train vehicle details window on total cargo tab if shift pressed. (added in v0.34.0).  
-  * Ctrl-click up/down in NewGRF window to move to top or bottom. (added in v0.34.2).  
-  * Additional conditional order types/modes. (added in v0.24.0, v0.33.1, v0.34.3, v0.37.0, v0.40.2, v0.40.5).  
-  * Improve road vehicle pathfinding when multiple vehicles are simultaneously heading to a station with multiple bay/stop entrances. (added in v0.35.0).  
-  * Add setting to scale station cargo capacity and rating tolerance by size. (added in v0.35.0).  
-  * Add settings to disable vehicle expiry and introduction after the given years. (added in v0.35.0, v0.40.5).  
-  * Add setting to control road vehicle re-routing on road layout changes. (added in v0.35.0).  
-  * Add news setting for trains waiting due to routing restrictions. (added in v0.36.0).  
-  * Add setting for alternative linkgraph overlay colour schemes. (added in v0.36.0).  
-  * Add basic tab-completion to the console window. (added in v0.36.0).  
-  * Add settings to enable multiple churches/stadiums and to ignore date/zone/GRF when placing houses in the scenario editor. (added in v0.36.0).  
-  * Add setting for default road/tram types. (added in v0.37.0).  
-  * Allow building objects by area (1x1 objects only). (added in v0.37.0).  
-  * Increase per-vehicle order limit from 254 to 64k. (added in v0.38.0).  
-  * Add features to reverse the order of an order list, and to append the reverse of an order list. (added in v0.39.0).  
-  * Add console commands for conditional execution from game date. (added in v0.39.2).  
-  * Add client setting for vehicle naming scheme. (added in v0.40.0).  
-  * Add setting to control dates over which inflation is applied. (added in v0.40.0).  
-  * Add "indifferent" mode to the town council attitude to area restructuring setting. (added in v0.40.2).  
-  * Add support for zstd savegame compression for autosaves and network joins. (added in v0.40.3).  
-  * Add setting for shading trees on slopes in viewports (default on). (added in v0.40.3).  
-  * Allow clicking the money text in the cheats window to enter a quantity. (added in v0.40.5).  
-  * Allow shift-clicking on borrow/repay money buttons to enter a quantity. (added in v0.40.5).  
-  * Add map generation settings to control river/lake and rocky patch generation. (added in v0.40.5).  
-  * Add settings to customise the size of town zones. (added in v0.40.5).  
-  * Add setting to enable non-admin multiplayer clients to rename towns. (added in v0.40.5).  
-  * Various minor fixes, see changelog.  
-  * [NewGRF specification additions](docs/newgrf-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions.html)).
-  * [NML specification additions](docs/newgrf-additions-nml.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions-nml.html)).
-  * [AI/GS script additions](docs/script-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/script-additions.html)).
-  * [Low-level code/performance changes](docs/jgrpp-low-level-changes.md).
+* One-way road and road vehicle overtaking enhancements.  
+  See the [wiki](https://github.com/JGRennison/OpenTTD-patches/wiki/One-way-roads) for full details.
+* Add setting to allow articulated road vehicles to overtake other vehicles.
+* Add setting to control road vehicle re-routing on road layout changes.
+* Disallow ordering ordinary road vehicles to tram depots and vice versa.
+* Improve road vehicle pathfinding when multiple vehicles are simultaneously heading to a station with multiple bay/stop entrances.
+* Add setting for default road/tram types.
+* Add a setting to turn off road vehicles slowing in curves.
+* Add a setting to disable road vehicles from passing through each other when blocked for an extended period of time.
+* Allow road vehicle go to station/waypoint orders to have an associated required stop/bay/waypoint direction.
 
-* Translations  
-  * German (by Auge and Kruemelchen)  
-  * Korean (by kiwitreekor and TELK)  
-  * Japanese (by Qwerty Asd)
+#### Level Crossings
 
-* Superseded features
-  * Label threads with a descriptive name on supported Unixy platforms (added in v0.8.1), in trunk as of r27670.  
-  * Add a 32bpp SSE2 palette animator. This is ~4x faster than the non-accelerated palette animator (added in v0.9.0), in trunk as of commit 17257b96.  
-  * Increase number of available rail track types from 16 to 32 [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=74365) (added in v0.13.0), this is increased to 64 rail track types in trunk as of commit bf8d7df7, (added in v0.26.0).  
-  * Towns build bridges over rails [imported](https://www.tt-forums.net/viewtopic.php?f=33t=76052) (added in v0.21.0), in trunk as of commit 50a0cf19.  
-  * Add setting for alternative transfer payment mode (added in v0.19.0), in trunk and unconditionally enabled as of commit 2fee030a.
+* [Close adjacent level crossings](http://www.tt-forums.net/viewtopic.php?p=836749).
+* Prevent road vehicles from being stopped on level crossings.
+* Add setting to enable improved level crossing safety.
+* Trains break down after colliding with a road vehicle.
+* Only show level crossing overlay sprites on the outsides of multi-track crossings when using both adjacent and safer crossings settings.
+
+#### Bridges and Tunnels
+
+* Signals in tunnels and on bridges.
+* Custom bridge heads.
+* [Chunnels (tunnels under bodies of water)](https://www.tt-forums.net/viewtopic.php?f=33&t=41775). Off by default.
+* Allow building rail stations under bridges, subject to height/clearance and bridge pillar limitations.
+* Add setting to allow placing NewGRF rail stations under bridges, when the GRF doesn't specify whether or not it can be placed under bridges.
+* Add setting to allow placing all NewGRF objects under bridges, even when it would not otherwise be allowed by the GRF.
+* Add setting to allow placing road/tram stops under bridges.
+* Add setting to allow placing docks under bridges.
+* Vehicles visible in tunnels (transparency setting).
+
+#### Airports
+
+* [Upgrade airports](http://www.tt-forums.net/viewtopic.php?f=33&t=35867).
+
+#### Ships
+
+* [Ship collision avoidance](http://www.tt-forums.net/viewtopic.php?f=33&t=74365).
+
+#### Vehicles in General
+
+* [Improved breakdowns](http://www.tt-forums.net/viewtopic.php?f=33&t=39518).
+* [Vehicle repair cost setting](http://www.tt-forums.net/viewtopic.php?f=33&t=45642).
+* Send vehicles which need auto-renewing due to age, for servicing, even if breakdowns are off and no servicing if no breakdowns is on.
+* Add shift-clicking on vehicle depot button to select specific depot.
+* Cargo type filter in vehicle list windows.
+* Add client setting for vehicle naming scheme.
+* [Vehicle lifetime profit](http://www.tt-forums.net/viewtopic.php?f=33&t=72844).
+* Add settings to disable vehicle expiry and introduction after the given years.
+* Open train vehicle details window on total cargo tab if shift pressed.
+* Add news/advice setting to warn if no depot order in vehicle schedule.
+* [Add buttons to collapse/expand all groups](http://www.tt-forums.net/viewtopic.php?f=33&t=74365).
+* Add a menu item to the vehicle list to assign all listed vehicles to a new group.
+* Add a setting to include the train length and group name in the vehicle details window.
+* Add a setting for whether to open the new vehicle GUI when share-cloning.
+* Add setting to disable mass action buttons for top-level vehicle lists.
+* Add feature to create a new auto-named group when dragging and dropping a vehicle onto the new group button (ctrl includes shared order vehicles).
+* Add settings to reduce vehicle running costs when a vehicle is stationary or in a depot.
+* If a vehicle's next order is for the current station when leaving, start loading again without moving, instead of leaving.
+* Slots and counters.  
+  See the [guide on the wiki](https://github.com/JGRennison/OpenTTD-patches/wiki/Signalling) for more information.
+* Add cargo capacity / running cost sort mode to the build vehicle window.
+
+#### Orders and Timetabling
+
+* [Automated timetables and separation](http://www.tt-forums.net/viewtopic.php?f=33&t=46391).
+* Allow clearing of timetable time fields which are at 0. Allow explicitly setting timetable time fields to 0 without clearing them.  
+* Allow changing/clearing the timetabled waiting time and max speed of all of a vehicle's orders at once.  
+* Add client setting to show the remainder ticks in timetable, after dividing to days or minutes.  
+* Add a company setting to control the number of ticks used in auto-fill timetable rounding.
+* [Cargo type orders](https://www.tt-forums.net/viewtopic.php?p=1047749).  
+  This allows order load/unload types to be set per cargo type. (This does work with cargodist).
+* Order occupancy.  
+  Add column to the orders GUI to show occupancy running average, show the average order occupancy, and add a vehicle sort mode.
+* [Timetabling waiting time in depots](http://www.tt-forums.net/viewtopic.php?f=33&t=70969).
+* Scheduled dispatch.  
+  This allows dispatching vehicles from timing points using one or more repeating schedules. This is useful for clock-face timetabling.
+* [More conditional orders](http://www.tt-forums.net/viewtopic.php?f=33&t=38317).  
+  Next station: is cargo waiting, is cargo accepted, number of free platforms, amount of cargo waiting.  
+  Percent of times, per-cargo load percentage, current time/date, timetable lateness.  
+  Slots/counters: train in slot, slot occupancy, counter value.
+* Reverse at waypoint orders.
+* Add a menu item to the vehicle list to change order target, e.g. for moving depot orders to a different depot.
+* Add game setting to allow only non-stop orders for trains and road vehicles.
+* Go to depot and sell vehicle orders.
+* Order mode to lock timetable wait and travel times against autofill/automate changes.
+* Leave early and leave early if any/all cargoes fully loaded order timetable flags.
+* Timetabled wait times at waypoints.
+* Add warning/info messages to the timetable window.
+* Add features to reverse the order of an order list, and to append the reverse of an order list.  
+  (Use the ctrl key when the end of orders marker is selected).
+* Add company setting for whether to advance the current order when cloning/copying/sharing (if current depot is in order list).
+* Add vehicle list menu item to mass cancel go to or service at depot orders.
+
+#### Stations
+
+* [Departure boards](https://www.tt-forums.net/viewtopic.php?f=33&t=49956).
+* Add road waypoints.
+* Add NewGRF road stops.
+* Add a setting to increase the station catchment radius.
+* Station rating: track "last visited vehicle type" separately per cargo.
+* Add setting to scale station cargo capacity and rating tolerance by size.
+* Add setting: station rating tolerance to waiting time depends on cargo class.
+* Enable vehicle list buttons in station window when the list would be non-empty.
+* Enable vehicle group management actions on other companies' stations.
+* Add support for allowing/disallowing supply to a station, per cargo, by ctrl-clicking the station cargo rating.
+* Add setting to show a company-coloured mark next to vehicles in vehicle list windows, if their owner does not match the list owner.
+* Add a waiting cargo history graph for stations.
+* Add a tooltip to show station rating details (controlled by a setting).
+* Add sort by number of vehicles calling to the station list window.
+* Add setting to distribute cargo received at a station to all accepting industries equally, instead of just one of them.
+* Add setting to allow hiding viewport labels of individual waypoints.
+* Increase the distance a station can be from the town centre and still be assigned have the same name as the town (no suffix/prefix), for large towns.
+* [Allow NewGRFs to supply additional station name strings](https://github.com/JGRennison/OpenTTD-patches/wiki/GRF-features#extra-station-names).
+
+#### Towns
+
+* [Town cargo generation factor](http://www.tt-forums.net/viewtopic.php?t=46399).
+* [Rating in town label](http://www.tt-forums.net/viewtopic.php?f=33&t=42598).
+* [Random town road reconstruction](https://www.tt-forums.net/viewtopic.php?f=33&t=36438). This defaults to off.
+* Add very and extremely slow options to town growth rate setting.
+* Add a setting to scale town growth rate by proportion of town cargo transported.
+* Add "indifferent" mode to the town council attitude to area restructuring setting.
+* Disallow converting town-owned roads to types with the no houses flag.
+* Add public roads (road network automatically built between towns) at map generation and in the scenario editor.
+
+#### Industries
+
+* Industry cargo generation factor.
+* Allow linking only inputs or outputs to the smallmap and map mode viewports in the industry chain window.
+
+#### Map and Landscaping
+
+* Add a setting to [reduce](http://www.tt-forums.net/viewtopic.php?p=890778#p890778) or stop the tree growth rate.
+* [Adjusted arctic tree placement](http://www.tt-forums.net/viewtopic.php?f=33&t=72502).
+* Add a new tree placement mode (perfect).
+* [Minimum town distance](https://www.tt-forums.net/viewtopic.php?f=33&t=33625).
+* Add map generation settings to control river/lake, rocky patch, and tropic zone generation.
+* Add generation of wide rivers.
+* Add settings to customise the size of town zones, and city zones.
+
+#### Construction
+
+* Enable building rivers in game. Off by default.
+* Add a setting to disable removing sea/rivers.
+* Allow building objects by area (1x1 objects only).
+* Allow purchasing a region of tiles at once, by dragging.
+* Add setting to control if and how land purchasing is permitted.
+* Add a company rate limit for land purchasing.
+* Add a company rate limit for object construction.
+* Add setting to disable object expiry after a given year.
+* Add setting to ignore object introduction dates.
+* Add setting for whether to confirm before demolishing industries and/or rail stations.
+
+#### Scenario Editor
+
+* [Picking and placing single houses in the scenario editor](http://www.tt-forums.net/viewtopic.php?f=33&t=68894).
+* Add settings to enable multiple churches/stadiums and to ignore date/zone/GRF when placing houses in the scenario editor.
+* [Remove all trees in scenario editor](http://www.tt-forums.net/viewtopic.php?f=33&t=49326).
+
+#### Interface and Visuals
+
+* [Zoning](http://www.tt-forums.net/viewtopic.php?f=33&t=33701).
+* [Measurement tools](http://www.tt-forums.net/viewtopic.php?f=33&t=49212).
+* [Enhanced viewport](https://www.tt-forums.net/viewtopic.php?f=33&t=53394).  
+  Extra zoomed-out zoom levels with different map display modes (page up/down or ctrl-mousewheel).  
+  Selected vehicle order overlays.  
+  Industry tooltips.   
+  Plans (useful in multiplayer).
+* Add setting for shading trees on slopes in viewports (default on).
+* Add setting for alternative linkgraph overlay colour schemes.
+* [When building tunnels, open new viewports at the far end of the tunnel](https://www.tt-forums.net/viewtopic.php?f=33&t=72639).
+* [Smallmap screenshots](http://www.tt-forums.net/viewtopic.php?f=33&t=44596).
+* Whole map screenshots at current zoom level.
+* Topography and industry screenshots.
+* Make smallmap refresh period variable with map mode/zoom and pause state.
+* Add display setting for income/cost text effects.
+* Make the company infrastructure window scrollable.
+* Add setting to disable water animation depending on zoom level.
+
+#### Limits
+
+* [Extra large maps](http://www.tt-forums.net/viewtopic.php?f=33&t=33137).
+  Maximum map size is now 256M tiles, ranging from 16k x 16k to 256 x 1M.
+* Increase the limit of NewGRF house IDs in a single game from 512 to 1024.
+* Increase per-vehicle order limit from 254 to 64k.
+* Increase maximum setting limits for per-company vehicle-type limits.
+* Increase maximum permitted vehicle, group, depot and station/waypoint name lengths.
+* Increase maximum permitted rail waypoint types from 256 to 64k.
+
+#### Time and Date
+
+* [Variable day length](http://www.tt-forums.net/viewtopic.php?p=1148227#p1148227).
+* Add settings to show time in hours and minutes as well as or instead of days.
+
+#### Multiplayer
+
+* [Infrastructure sharing](http://www.tt-forums.net/viewtopic.php?f=33&t=42254)  
+* Add company settings to enable competitors to buy/renew vehicles in this company's depots.  
+* Add setting to control whether trains can crash with trains owned by other companies.
+* [Give money to company, instead of player](https://www.tt-forums.net/viewtopic.php?f=33&t=63899), broadcast money transfer notifications to all players.
+* Add setting to enable non-admin multiplayer clients to rename towns.
+* Add a password mechanism to change network game settings from a network client.
+* Change network protocol to send server/join and rcon passwords in hashed form instead of in clear text.
+* Various changes to reduce the probability of desyncs and improve desync reporting/diagnostics.
+* Add support for zstd savegame compression for autosaves and network joins.
+* Increase the number of settings which can be changed in multiplayer.
+* Store company passwords in network server saves in an encrypted form such that they are automatically restored when loaded into the same network server.
+* Add client setting for whether to sync localisation settings (such as measurement units) with the server.
+
+#### Money
+
+* Add setting to control dates over which inflation is applied.
+* Allow shift-clicking on borrow/repay money buttons to enter a quantity.
+* Add mode to the cargo payment graph to show payment based on average transit speed.
+
+#### Cheats
+
+* Add support for server admin use of money, magic bulldozer, tunnels and jet crashes cheats in multiplayer.
+* Add setting to allow non server admins to use the money cheat in multiplayer.
+* Allow clicking the money text in the cheats window to enter a quantity.
+* Add cheats to set inflation income and cost factors.
+* Add cheat to set all station ratings to 100%.
+* Add cheat to set all town local authority ratings to Outstanding.
+
+#### Cargo Distribution and Link Graph
+
+* Adjust link graph job scheduling algorithm to significantly improve responsiveness and prevent pausing.
+* Improve scrolling rendering of link graph overlay on viewport and small map.
+* Add new link graph distribution modes: asymmetric (equal) and asymmetric (nearest).
+* Allow overriding distribution mode on a per-cargo basis, in game.
+* Fix inaccurate cargo distribution and link graph overlays, and various other problems with large link graphs.
+* Add setting to increase the cargodist link graph distance/cost metric of aircraft links.
+
+#### Input
+
+* Add modifier key window for toggling shift/ctrl key states using mouse.
+* Add IME support on Linux/SDL2 (SDL2-supported IMEs and Fcitx).
+
+#### Console and Scripts
+
+* Add basic tab-completion to the console window.
+* Add console commands for conditional execution from game date.
+* [Daily/monthly/yearly scripts](http://www.tt-forums.net/viewtopic.php?f=33&t=49595)
+
+#### Miscellaneous
+
+* Pause on savegame load if ctrl key is pressed.
+* Ctrl-click up/down in NewGRF window to move to top or bottom.
+* Add setting for when to ask for confirmation before overwriting an existing savegame file, add unique ID to savegames.
+* Allow setting the autosave interval to a custom number of in-game days or real-time minutes.
+* Add more hotkeys.
+* Allow AI/GS developers to reload GSs.
+* Various extensions to the NewGRF developer debug tools.
+* Various performance improvements.
+* Various minor fixes, see changelog.
+* [NewGRF specification additions](docs/newgrf-additions.html) ([online copy](https://jgrennison.github.io/OpenTTD-patches/newgrf-additions.html)).
+* [NML specification additions](docs/newgrf-additions-nml.html) ([online copy](https://jgrennison.github.io/OpenTTD-patches/newgrf-additions-nml.html)).
+* [AI/GS script additions](docs/script-additions.html) ([online copy](https://jgrennison.github.io/OpenTTD-patches/script-additions.html)).
+* [Low-level code/performance changes](docs/jgrpp-low-level-changes.md).
+
+#### Translations
+
+* German (by Auge and Kruemelchen)  
+* Korean (by kiwitreekor and TELK)  
+* Japanese (by Qwerty Asd)
+
+#### Save/load and savegame format changes  
+* Various changes to improve handling of savegames which use features not in trunk.  
+* Savegames from this patchpack are not loadable in trunk.  
+* Savegames from trunk up to the last savegame version which has been merged into this branch (*jgrpp*) should be loadable in this patchpack.  
+* Savegames from other branches which use the save/load code in the *save_ext* branch (usually suffixed: *-sx*) which are also merged into this branch (*jgrpp*), or where the added feature is marked as discardable/ignorable, should be loadable in this patchpack.  
+* Savegames from other patched versions are not loadable in this patchpack except for savegames from:  
+  * The *tracerestrict* branch ([routing restrictions patch](http://www.tt-forums.net/viewtopic.php?f=33&t=73397))  
+  * The [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892) v2.0 - v2.4 (subject to caveats, see below)  
+  * [Joker's Patch Pack](https://www.tt-forums.net/viewtopic.php?f=33&t=74365) v1.19 - v1.27 (subject to caveats, see below)  
+  * [Chill's Patch Pack](https://www.tt-forums.net/viewtopic.php?f=33&t=47622) v8 and v14.7 (subject to caveats, see below)
 
 #### Caveats for loading savegames from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892):  
 * This is not guaranteed to be bug free  
@@ -347,17 +366,6 @@ Many features have two branches, the *feature* branches are just the raw feature
 There are not generally savegame compatible with anything else, except for loading of trunk savegame versions at or before the point where the branch diverged from trunk.  
 All other load attempts may result in undefined behaviour.  
 The *feature-sx* branches use the savegame framework in the *save_ext* branch.
-
-
-#### Compiler requirements
-
-As of v0.15.0, C++11 support is required.
-
-The minimum supported compiler versions are:
-* GCC: 4.7
-* clang: 3.3
-
-Sufficiently up-to-date versions of other compiler toolchains including MSVC and ICC should also work.
 
 * * *
 
@@ -399,7 +407,7 @@ Both 'stable' and 'nightly' versions are available for download:
 - most people should choose the 'stable' version, as this has been more extensively tested
 - the 'nightly' version includes the latest changes and features, but may sometimes be less reliable
 
-On some platforms OpenTTD will also be available via your OS package manager or a similar service.
+OpenTTD is also available for free on [Steam](https://store.steampowered.com/app/1536610/OpenTTD/), [GOG.com](https://www.gog.com/game/openttd), and the [Microsoft Store](https://www.microsoft.com/p/openttd-official/9ncjg5rvrr1c). On some platforms OpenTTD will be available via your OS package manager or a similar service.
 
 
 ## 1.2) OpenTTD gameplay manual
@@ -411,15 +419,13 @@ OpenTTD has a [community-maintained wiki](https://wiki.openttd.org/), including 
 
 OpenTTD has been ported to several platforms and operating systems.
 
-The currently working platforms are:
+The currently supported platforms are:
 
-- FreeBSD (SDL)
-- Haiku (SDL)
-- Linux (SDL)
-- macOS (universal) (Cocoa video and sound drivers)
-- OpenBSD (SDL)
-- OS/2 (SDL)
-- Windows (Win32 GDI (faster) or SDL)
+- Linux (SDL (OpenGL and non-OpenGL))
+- macOS (universal) (Cocoa)
+- Windows (Win32 GDI / OpenGL)
+
+Other platforms may also work (in particular various BSD systems), but we don't actively test or maintain these.
 
 ### 1.3.1) Legacy support
 Platforms, languages and compilers change.
@@ -444,9 +450,9 @@ For some platforms, you will need to refer to [the installation guide](https://w
 The free data files, split into OpenGFX for graphics, OpenSFX for sounds and
 OpenMSX for music can be found at:
 
-- https://www.openttd.org/download-opengfx for OpenGFX
-- https://www.openttd.org/download-opensfx for OpenSFX
-- https://www.openttd.org/download-openmsx for OpenMSX
+- https://www.openttd.org/downloads/opengfx-releases/latest for OpenGFX
+- https://www.openttd.org/downloads/opensfx-releases/latest for OpenSFX
+- https://www.openttd.org/downloads/openmsx-releases/latest for OpenMSX
 
 Please follow the readme of these packages about the installation procedure.
 The Windows installer can optionally download and install these packages.
@@ -530,7 +536,7 @@ If you want to compile OpenTTD from source, instructions can be found in [COMPIL
 
 - [OpenTTD website](https://www.openttd.org)
 - IRC chat using #openttd on irc.oftc.net [more info about our irc channel](https://wiki.openttd.org/en/Development/IRC%20channel)
-- [OpenTTD on Github](https://github.com/openTTD/) for code repositories and for reporting issues
+- [OpenTTD on Github](https://github.com/OpenTTD/) for code repositories and for reporting issues
 - [forum.openttd.org](https://forum.openttd.org/) - the primary community forum site for discussing OpenTTD and related games
 - [OpenTTD wiki](https://wiki.openttd.org/) community-maintained wiki, including topics like gameplay guide, detailed explanation of some game mechanics, how to use add-on content (mods) and much more
 

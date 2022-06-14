@@ -26,7 +26,6 @@ static const SaveLoad _sign_desc[] = {
 	SLE_CONDVAR(Sign, owner, SLE_UINT8,                  SLV_6, SL_MAX_VERSION),
 	SLE_CONDVAR_X(Sign, z,   SLE_FILE_U8  | SLE_VAR_I32, SL_MIN_VERSION, SLV_164, SlXvFeatureTest(XSLFTO_AND, XSLFI_ZPOS_32_BIT, 0, 0)),
 	SLE_CONDVAR_X(Sign, z,   SLE_INT32,                  SLV_164, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_OR, XSLFI_ZPOS_32_BIT)),
-	SLE_END()
 };
 
 /** Save all signs */
@@ -63,6 +62,8 @@ static void Load_SIGN()
 }
 
 /** Chunk handlers related to signs. */
-extern const ChunkHandler _sign_chunk_handlers[] = {
-	{ 'SIGN', Save_SIGN, Load_SIGN, nullptr, nullptr, CH_ARRAY | CH_LAST},
+static const ChunkHandler sign_chunk_handlers[] = {
+	{ 'SIGN', Save_SIGN, Load_SIGN, nullptr, nullptr, CH_ARRAY },
 };
+
+extern const ChunkHandlerTable _sign_chunk_handlers(sign_chunk_handlers);

@@ -32,6 +32,7 @@
 #include "company_type.h"
 #include "departures_func.h"
 #include "cargotype.h"
+#include "zoom_func.h"
 
 #include "table/sprites.h"
 #include "table/strings.h"
@@ -56,10 +57,10 @@ static const NWidgetPart _nested_departures_list[] = {
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_ARRS), SetMinimalSize(6, 12), SetFill(0, 1), SetDataTip(STR_DEPARTURES_ARRIVALS, STR_DEPARTURES_ARRIVALS_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_DEPS), SetMinimalSize(6, 12), SetFill(0, 1), SetDataTip(STR_DEPARTURES_DEPARTURES, STR_DEPARTURES_DEPARTURES_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_VIA), SetMinimalSize(11, 12), SetFill(0, 1), SetDataTip(STR_DEPARTURES_VIA_BUTTON, STR_DEPARTURES_VIA_TOOLTIP),
-		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_TRAINS), SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_TRAIN, STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP),
-		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_ROADVEHS), SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_LORRY, STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP),
-		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_SHIPS), SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_SHIP, STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP),
-		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_PLANES),  SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_PLANE, STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_TRAINS), SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_TRAIN, STR_NULL),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_ROADVEHS), SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_LORRY, STR_NULL),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_SHIPS), SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_SHIP, STR_NULL),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_PLANES),  SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_PLANE, STR_NULL),
 		NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 	EndContainer(),
 };
@@ -153,11 +154,11 @@ protected:
 							&& order->GetDestination() == this->station) {
 						this->vehicles.push_back(v);
 
-						if (v->name.empty()) {
+						if (v->name.empty() && !(v->group_id != DEFAULT_GROUP && _settings_client.gui.vehicle_names != 0)) {
 							if (v->unitnumber > unitnumber_max[v->type]) unitnumber_max[v->type] = v->unitnumber;
 						} else {
 							SetDParam(0, (uint64)(v->index));
-							int width = (GetStringBoundingBox(STR_DEPARTURES_VEH)).width;
+							int width = (GetStringBoundingBox(STR_DEPARTURES_VEH)).width + 4;
 							if (width > this->veh_width) this->veh_width = width;
 						}
 
@@ -194,8 +195,7 @@ protected:
 			if (width > this->group_width) this->group_width = width;
 		}
 
-		uint owner;
-		FOR_EACH_SET_BIT(owner, companies) {
+		for (uint owner : SetBitIterator(companies)) {
 			SetDParam(0, owner);
 			int width = (GetStringBoundingBox(STR_DEPARTURES_TOC)).width + 4;
 			if (width > this->toc_width) this->toc_width = width;
@@ -281,6 +281,7 @@ public:
 			case WID_DB_LIST:
 				resize->height = DeparturesWindow::entry_height;
 				size->height = 2 * resize->height;
+				size->width = this->min_width;
 				break;
 		}
 	}
@@ -290,6 +291,23 @@ public:
 		if (widget == WID_DB_CAPTION) {
 			const Station *st = Station::Get(this->station);
 			SetDParam(0, st->index);
+		}
+	}
+
+	virtual bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
+	{
+		switch (widget) {
+			case WID_DB_SHOW_TRAINS:
+			case WID_DB_SHOW_ROADVEHS:
+			case WID_DB_SHOW_SHIPS:
+			case WID_DB_SHOW_PLANES: {
+				uint64 params[1];
+				params[0] = STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP + (widget - WID_DB_SHOW_TRAINS);
+				GuiShowTooltips(this, STR_STATION_VIEW_SCHEDULED_TOOLTIP_CTRL_SUFFIX, 1, params, close_cond);
+				return true;
+			}
+			default:
+				return false;
 		}
 	}
 
@@ -459,10 +477,8 @@ public:
 		uint new_width = this->GetMinWidth();
 
 		if (new_width != this->min_width) {
-			NWidgetCore *n = this->GetWidget<NWidgetCore>(WID_DB_LIST);
-			n->SetMinimalSize(new_width, 0);
-			this->ReInit();
 			this->min_width = new_width;
+			this->ReInit();
 		}
 
 		uint new_height = 1 + FONT_HEIGHT_NORMAL + 1 + (_settings_client.gui.departure_larger_font ? FONT_HEIGHT_NORMAL : FONT_HEIGHT_SMALL) + 1 + 1;
@@ -491,7 +507,7 @@ public:
 			this->EnableWidget(WID_DB_SHOW_DEPS);
 		}
 
-		this->vscroll->SetCount(std::min<uint>(_settings_client.gui.max_departures, this->departures->size() + this->arrivals->size()));
+		this->vscroll->SetCount(std::min<uint>(_settings_client.gui.max_departures, (uint)this->departures->size() + (uint)this->arrivals->size()));
 		this->DrawWidgets();
 	}
 
@@ -623,7 +639,7 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 	int text_right = right - (rtl ? text_offset :           0);
 
 	int y = r.top + 1;
-	uint max_departures = std::min<uint>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->departures->size() + this->arrivals->size());
+	uint max_departures = std::min<uint>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), (uint)this->departures->size() + (uint)this->arrivals->size());
 
 	if (max_departures > _settings_client.gui.max_departures) {
 		max_departures = _settings_client.gui.max_departures;

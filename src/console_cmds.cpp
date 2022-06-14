@@ -13,6 +13,7 @@
 #include "engine_func.h"
 #include "landscape.h"
 #include "saveload/saveload.h"
+#include "network/core/game_info.h"
 #include "network/network.h"
 #include "network/network_func.h"
 #include "network/network_base.h"
@@ -52,7 +53,14 @@
 #include "string_func_extra.h"
 #include "linkgraph/linkgraphjob.h"
 #include "base_media_base.h"
+#include "debug_settings.h"
+#include "walltime_func.h"
+#include "debug_desync.h"
+#include "scope_info.h"
+#include "event_logs.h"
 #include <time.h>
+
+#include <set>
 
 #include "safeguards.h"
 
@@ -70,7 +78,7 @@ public:
 	/** Declare the file storage cache as being invalid, also clears all stored files. */
 	void InvalidateFileList()
 	{
-		this->Clear();
+		this->clear();
 		this->file_list_valid = false;
 	}
 
@@ -170,11 +178,24 @@ DEF_CONSOLE_HOOK(ConHookNoNetwork)
 	return CHR_ALLOW;
 }
 
+/**
+ * Check if are either in singleplayer or a server.
+ * @return True iff we are either in singleplayer or a server.
+ */
+DEF_CONSOLE_HOOK(ConHookServerOrNoNetwork)
+{
+	if (_networking && !_network_server) {
+		if (echo) IConsoleError("This command is only available to a network server, or in single-player.");
+		return CHR_DISALLOW;
+	}
+	return CHR_ALLOW;
+}
+
 DEF_CONSOLE_HOOK(ConHookNewGRFDeveloperTool)
 {
 	if (_settings_client.gui.newgrf_developer_tools) {
 		if (_game_mode == GM_MENU) {
-			if (echo) IConsoleError("This command is only available in game and editor.");
+			if (echo) IConsoleError("This command is only available in-game and in the editor.");
 			return CHR_DISALLOW;
 		}
 		return ConHookNoNetwork(echo);
@@ -219,7 +240,7 @@ DEF_CONSOLE_CMD(ConResetEnginePool)
 	}
 
 	if (_game_mode == GM_MENU) {
-		IConsoleError("This command is only available in game and editor.");
+		IConsoleError("This command is only available in-game and in the editor.");
 		return true;
 	}
 
@@ -258,6 +279,59 @@ DEF_CONSOLE_CMD(ConResetTile)
 #endif /* _DEBUG */
 
 /**
+ * Zoom map to given level.
+ * param level As defined by ZoomLevel and as limited by zoom_min/zoom_max from GUISettings.
+ * @return True when either console help was shown or a proper amount of parameters given.
+ */
+DEF_CONSOLE_CMD(ConZoomToLevel)
+{
+	switch (argc) {
+		case 0:
+			IConsoleHelp("Set the current zoom level of the main viewport.");
+			IConsoleHelp("Usage: 'zoomto <level>'.");
+			IConsolePrintF(
+				CC_WARNING,
+				ZOOM_LVL_MIN < _settings_client.gui.zoom_min ?
+					"- The lowest zoom-in level allowed by current client settings is %u." :
+					"- The lowest supported zoom-in level is %u.",
+				std::max(ZOOM_LVL_MIN, _settings_client.gui.zoom_min)
+			);
+			IConsolePrintF(
+				CC_WARNING,
+				_settings_client.gui.zoom_max < ZOOM_LVL_MAX ?
+					"- The highest zoom-out level allowed by current client settings is %u." :
+					"- The highest supported zoom-out level is %u.",
+				std::min(_settings_client.gui.zoom_max, ZOOM_LVL_MAX)
+			);
+			return true;
+
+		case 2: {
+			uint32 level;
+			if (GetArgumentInteger(&level, argv[1])) {
+				if (level < ZOOM_LVL_MIN) {
+					IConsolePrintF(CC_ERROR, "Zoom-in levels below %u are not supported.", ZOOM_LVL_MIN);
+				} else if (level < _settings_client.gui.zoom_min) {
+					IConsolePrintF(CC_ERROR, "Current client settings do not allow zooming in below level %u.", _settings_client.gui.zoom_min);
+				} else if (level > ZOOM_LVL_MAX) {
+					IConsolePrintF(CC_ERROR, "Zoom-in levels above %u are not supported.", ZOOM_LVL_MAX);
+				} else if (level > _settings_client.gui.zoom_max) {
+					IConsolePrintF(CC_ERROR, "Current client settings do not allow zooming out beyond level %u.", _settings_client.gui.zoom_max);
+				} else {
+					Window *w = FindWindowById(WC_MAIN_WINDOW, 0);
+					Viewport *vp = w->viewport;
+					while (vp->zoom > level) DoZoomInOutWindow(ZOOM_IN, w);
+					while (vp->zoom < level) DoZoomInOutWindow(ZOOM_OUT, w);
+				}
+				return true;
+			}
+			break;
+		}
+	}
+
+	return false;
+}
+
+/**
  * Scroll to a tile on the map.
  * param x tile number or tile x coordinate.
  * param y optional y coordinate.
@@ -268,34 +342,44 @@ DEF_CONSOLE_CMD(ConResetTile)
  */
 DEF_CONSOLE_CMD(ConScrollToTile)
 {
-	switch (argc) {
-		case 0:
-			IConsoleHelp("Center the screen on a given tile.");
-			IConsoleHelp("Usage: 'scrollto <tile>' or 'scrollto <x> <y>'");
-			IConsoleHelp("Numbers can be either decimal (34161) or hexadecimal (0x4a5B).");
-			return true;
+	if (argc == 0) {
+		IConsoleHelp("Center the screen on a given tile.");
+		IConsoleHelp("Usage: 'scrollto [instant] <tile>' or 'scrollto [instant] <x> <y>'.");
+		IConsoleHelp("Numbers can be either decimal (34161) or hexadecimal (0x4a5B).");
+		IConsoleHelp("'instant' will immediately move and redraw viewport without smooth scrolling.");
+		return true;
+	}
+	if (argc < 2) return false;
 
-		case 2: {
+	uint32 arg_index = 1;
+	bool instant = false;
+	if (strcmp(argv[arg_index], "instant") == 0) {
+		++arg_index;
+		instant = true;
+	}
+
+	switch (argc - arg_index) {
+		case 1: {
 			uint32 result;
-			if (GetArgumentInteger(&result, argv[1])) {
+			if (GetArgumentInteger(&result, argv[arg_index])) {
 				if (result >= MapSize()) {
 					IConsolePrint(CC_ERROR, "Tile does not exist");
 					return true;
 				}
-				ScrollMainWindowToTile((TileIndex)result);
+				ScrollMainWindowToTile((TileIndex)result, instant);
 				return true;
 			}
 			break;
 		}
 
-		case 3: {
+		case 2: {
 			uint32 x, y;
-			if (GetArgumentInteger(&x, argv[1]) && GetArgumentInteger(&y, argv[2])) {
+			if (GetArgumentInteger(&x, argv[arg_index]) && GetArgumentInteger(&y, argv[arg_index + 1])) {
 				if (x >= MapSizeX() || y >= MapSizeY()) {
 					IConsolePrint(CC_ERROR, "Tile does not exist");
 					return true;
 				}
-				ScrollMainWindowToTile(TileXY(x, y));
+				ScrollMainWindowToTile(TileXY(x, y), instant);
 				return true;
 			}
 			break;
@@ -461,7 +545,7 @@ DEF_CONSOLE_CMD(ConListFiles)
 	}
 
 	_console_file_list.ValidateFileList(true);
-	for (uint i = 0; i < _console_file_list.Length(); i++) {
+	for (uint i = 0; i < _console_file_list.size(); i++) {
 		IConsolePrintF(CC_DEFAULT, "%d) %s", i, _console_file_list[i].title);
 	}
 
@@ -531,7 +615,7 @@ DEF_CONSOLE_CMD(ConClearBuffer)
  * Network Core Console Commands
  **********************************/
 
-static bool ConKickOrBan(const char *argv, bool ban, const char *reason)
+static bool ConKickOrBan(const char *argv, bool ban, const std::string &reason)
 {
 	uint n;
 
@@ -543,7 +627,7 @@ static bool ConKickOrBan(const char *argv, bool ban, const char *reason)
 		 * would be reading from and writing to after returning. So we would read or write data
 		 * from freed memory up till the segfault triggers. */
 		if (client_id == CLIENT_ID_SERVER || client_id == _redirect_console_to_client) {
-			IConsolePrintF(CC_ERROR, "ERROR: Silly boy, you can not %s yourself!", ban ? "ban" : "kick");
+			IConsolePrintF(CC_ERROR, "ERROR: You can not %s yourself!", ban ? "ban" : "kick");
 			return true;
 		}
 
@@ -585,7 +669,7 @@ DEF_CONSOLE_CMD(ConKick)
 	if (argc != 2 && argc != 3) return false;
 
 	/* No reason supplied for kicking */
-	if (argc == 2) return ConKickOrBan(argv[1], false, nullptr);
+	if (argc == 2) return ConKickOrBan(argv[1], false, {});
 
 	/* Reason for kicking supplied */
 	size_t kick_message_length = strlen(argv[2]);
@@ -602,14 +686,14 @@ DEF_CONSOLE_CMD(ConBan)
 	if (argc == 0) {
 		IConsoleHelp("Ban a client from a network game. Usage: 'ban <ip | client-id> [<ban-reason>]'");
 		IConsoleHelp("For client-id's, see the command 'clients'");
-		IConsoleHelp("If the client is no longer online, you can still ban his/her IP");
+		IConsoleHelp("If the client is no longer online, you can still ban their IP");
 		return true;
 	}
 
 	if (argc != 2 && argc != 3) return false;
 
 	/* No reason supplied for kicking */
-	if (argc == 2) return ConKickOrBan(argv[1], true, nullptr);
+	if (argc == 2) return ConKickOrBan(argv[1], true, {});
 
 	/* Reason for kicking supplied */
 	size_t kick_message_length = strlen(argv[2]);
@@ -680,6 +764,11 @@ DEF_CONSOLE_CMD(ConPauseGame)
 		return true;
 	}
 
+	if (_game_mode == GM_MENU) {
+		IConsoleError("This command is only available in-game and in the editor.");
+		return true;
+	}
+
 	if ((_pause_mode & PM_PAUSED_NORMAL) == PM_UNPAUSED) {
 		DoCommandP(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
 		if (!_networking) IConsolePrint(CC_DEFAULT, "Game paused.");
@@ -694,6 +783,11 @@ DEF_CONSOLE_CMD(ConUnpauseGame)
 {
 	if (argc == 0) {
 		IConsoleHelp("Unpause a network game. Usage: 'unpause'");
+		return true;
+	}
+
+	if (_game_mode == GM_MENU) {
+		IConsoleError("This command is only available in-game and in the editor.");
 		return true;
 	}
 
@@ -760,13 +854,14 @@ DEF_CONSOLE_CMD(ConServerInfo)
 {
 	if (argc == 0) {
 		IConsoleHelp("List current and maximum client/company limits. Usage 'server_info'");
-		IConsoleHelp("You can change these values by modifying settings 'network.max_clients', 'network.max_companies' and 'network.max_spectators'");
+		IConsoleHelp("You can change these values by modifying settings 'network.max_clients' and 'network.max_companies'");
 		return true;
 	}
 
-	IConsolePrintF(CC_DEFAULT, "Current/maximum clients:    %2d/%2d", _network_game_info.clients_on, _settings_client.network.max_clients);
-	IConsolePrintF(CC_DEFAULT, "Current/maximum companies:  %2d/%2d", (int)Company::GetNumItems(), _settings_client.network.max_companies);
-	IConsolePrintF(CC_DEFAULT, "Current/maximum spectators: %2d/%2d", NetworkSpectatorCount(), _settings_client.network.max_spectators);
+	IConsolePrintF(CC_DEFAULT, "Invite code:                %s", _network_server_invite_code.c_str());
+	IConsolePrintF(CC_DEFAULT, "Current/maximum clients:    %3d/%3d", _network_game_info.clients_on, _settings_client.network.max_clients);
+	IConsolePrintF(CC_DEFAULT, "Current/maximum companies:  %3d/%3d", (int)Company::GetNumItems(), _settings_client.network.max_companies);
+	IConsolePrintF(CC_DEFAULT, "Current spectators:         %3d", NetworkSpectatorCount());
 
 	return true;
 }
@@ -791,7 +886,14 @@ DEF_CONSOLE_CMD(ConClientNickChange)
 		return true;
 	}
 
-	if (!NetworkServerChangeClientName(client_id, argv[2])) {
+	std::string client_name(argv[2]);
+	StrTrimInPlace(client_name);
+	if (!NetworkIsValidClientName(client_name)) {
+		IConsoleError("Cannot give a client an empty name");
+		return true;
+	}
+
+	if (!NetworkServerChangeClientName(client_id, client_name)) {
 		IConsoleError("Cannot give a client a duplicate name");
 	}
 
@@ -816,11 +918,6 @@ DEF_CONSOLE_CMD(ConJoinCompany)
 
 	if (NetworkClientInfo::GetByClientID(_network_own_client_id)->client_playas == company_id) {
 		IConsoleError("You are already there!");
-		return true;
-	}
-
-	if (company_id == COMPANY_SPECTATOR && NetworkMaxSpectatorsReached()) {
-		IConsoleError("Cannot join spectators, maximum number of spectators reached.");
 		return true;
 	}
 
@@ -873,12 +970,12 @@ DEF_CONSOLE_CMD(ConMoveClient)
 	}
 
 	if (ci->client_id == CLIENT_ID_SERVER && _network_dedicated) {
-		IConsoleError("Silly boy, you cannot move the server!");
+		IConsoleError("You cannot move the server!");
 		return true;
 	}
 
 	if (ci->client_playas == company_id) {
-		IConsoleError("You cannot move someone to where he/she already is!");
+		IConsoleError("You cannot move someone to where they already are!");
 		return true;
 	}
 
@@ -928,6 +1025,30 @@ DEF_CONSOLE_CMD(ConResetCompany)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConOfferCompanySale)
+{
+	if (argc == 0) {
+		IConsoleHelp("Offer a company for sale. Usage: 'offer_company_sale <company-id>'");
+		IConsoleHelp("For company-id's, see the list of companies from the dropdown menu. Company 1 is 1, etc.");
+		return true;
+	}
+
+	if (argc != 2) return false;
+
+	CompanyID index = (CompanyID)(atoi(argv[1]) - 1);
+
+	/* Check valid range */
+	if (!Company::IsValidID(index)) {
+		IConsolePrintF(CC_ERROR, "Company does not exist. Company-id must be between 1 and %d.", MAX_COMPANIES);
+		return true;
+	}
+
+	DoCommandP(0, CCA_SALE | index << 16, 0, CMD_COMPANY_CTRL);
+	IConsolePrint(CC_DEFAULT, "Company offered for sale.");
+
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConNetworkClients)
 {
 	if (argc == 0) {
@@ -960,16 +1081,15 @@ DEF_CONSOLE_CMD(ConNetworkReconnect)
 			break;
 	}
 
-	if (StrEmpty(_settings_client.network.last_host)) {
+	if (_settings_client.network.last_joined.empty()) {
 		IConsolePrint(CC_DEFAULT, "No server for reconnecting.");
 		return true;
 	}
 
 	/* Don't resolve the address first, just print it directly as it comes from the config file. */
-	IConsolePrintF(CC_DEFAULT, "Reconnecting to %s:%d...", _settings_client.network.last_host, _settings_client.network.last_port);
+	IConsolePrintF(CC_DEFAULT, "Reconnecting to %s ...", _settings_client.network.last_joined.c_str());
 
-	NetworkClientConnectGame(NetworkAddress(_settings_client.network.last_host, _settings_client.network.last_port), playas);
-	return true;
+	return NetworkClientConnectGame(_settings_client.network.last_joined, playas);
 }
 
 DEF_CONSOLE_CMD(ConNetworkConnect)
@@ -982,37 +1102,8 @@ DEF_CONSOLE_CMD(ConNetworkConnect)
 	}
 
 	if (argc < 2) return false;
-	if (_networking) NetworkDisconnect(); // we are in network-mode, first close it!
 
-	const char *port = nullptr;
-	const char *company = nullptr;
-	char *ip = argv[1];
-	/* Default settings: default port and new company */
-	uint16 rport = NETWORK_DEFAULT_PORT;
-	CompanyID join_as = COMPANY_NEW_COMPANY;
-
-	ParseConnectionString(&company, &port, ip);
-
-	IConsolePrintF(CC_DEFAULT, "Connecting to %s...", ip);
-	if (company != nullptr) {
-		join_as = (CompanyID)atoi(company);
-		IConsolePrintF(CC_DEFAULT, "    company-no: %d", join_as);
-
-		/* From a user pov 0 is a new company, internally it's different and all
-		 * companies are offset by one to ease up on users (eg companies 1-8 not 0-7) */
-		if (join_as != COMPANY_SPECTATOR) {
-			if (join_as > MAX_COMPANIES) return false;
-			join_as--;
-		}
-	}
-	if (port != nullptr) {
-		rport = atoi(port);
-		IConsolePrintF(CC_DEFAULT, "    port: %s", port);
-	}
-
-	NetworkClientConnectGame(NetworkAddress(ip, rport), join_as);
-
-	return true;
+	return NetworkClientConnectGame(argv[1], COMPANY_NEW_COMPANY);
 }
 
 /*********************************
@@ -1036,6 +1127,7 @@ DEF_CONSOLE_CMD(ConExec)
 	}
 
 	if (_script_current_depth == 11) {
+		FioFCloseFile(script_file);
 		IConsoleError("Maximum 'exec' depth reached; script A is calling script B is calling script C ... more than 10 times.");
 		return true;
 	}
@@ -1420,7 +1512,9 @@ DEF_CONSOLE_CMD(ConRescanNewGRF)
 		return true;
 	}
 
-	RequestNewGRFScan();
+	if (!RequestNewGRFScan()) {
+		IConsoleWarning("NewGRF scanning is already running. Please wait until completed to run again.");
+	}
 
 	return true;
 }
@@ -1455,10 +1549,9 @@ DEF_CONSOLE_CMD(ConGetSysDate)
 		return true;
 	}
 
-	time_t t;
-	time(&t);
-	auto timeinfo = localtime(&t);
-	IConsolePrintF(CC_DEFAULT, "System Date: %04d-%02d-%02d %02d:%02d:%02d", timeinfo->tm_year + 1900, timeinfo->tm_mon + 1, timeinfo->tm_mday, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+	char buffer[lengthof("2000-01-02 03:04:05")];
+	LocalTime::Format(buffer, lastof(buffer), "%Y-%m-%d %H:%M:%S");
+	IConsolePrintF(CC_DEFAULT, "System Date: %s", buffer);
 	return true;
 }
 
@@ -1474,12 +1567,11 @@ DEF_CONSOLE_CMD(ConAlias)
 
 	if (argc < 3) return false;
 
-	alias = IConsoleAliasGet(argv[1]);
+	alias = IConsole::AliasGet(argv[1]);
 	if (alias == nullptr) {
-		IConsoleAliasRegister(argv[1], argv[2]);
+		IConsole::AliasRegister(argv[1], argv[2]);
 	} else {
-		free(alias->cmdline);
-		alias->cmdline = stredup(argv[2]);
+		alias->cmdline = argv[2];
 	}
 	return true;
 }
@@ -1495,6 +1587,8 @@ DEF_CONSOLE_CMD(ConScreenShot)
 				"'world' makes a screenshot of the whole map using the current zoom level, "
 				"'heightmap' makes a heightmap screenshot of the map that can be loaded in as heightmap, "
 				"'minimap' makes a top-viewed minimap screenshot of the whole world which represents one tile by one pixel. "
+				"'topography' makes a top-viewed topography screenshot of the whole world which represents one tile by one pixel. "
+				"'industry' makes a top-viewed industries screenshot of the whole world which represents one tile by one pixel. "
 				"'no_con' hides the console to create the screenshot (only useful in combination with 'viewport'). "
 				"'size' sets the width and height of the viewport to make a screenshot of (only useful in combination with 'normal' or 'big').");
 		return true;
@@ -1505,7 +1599,7 @@ DEF_CONSOLE_CMD(ConScreenShot)
 	ScreenshotType type = SC_VIEWPORT;
 	uint32 width = 0;
 	uint32 height = 0;
-	const char *name = nullptr;
+	std::string name{};
 	uint32 arg_index = 1;
 
 	if (argc > arg_index) {
@@ -1529,6 +1623,12 @@ DEF_CONSOLE_CMD(ConScreenShot)
 			arg_index += 1;
 		} else if (strcmp(argv[arg_index], "minimap") == 0) {
 			type = SC_MINIMAP;
+			arg_index += 1;
+		} else if (strcmp(argv[arg_index], "topography") == 0) {
+			type = SC_TOPOGRAPHY;
+			arg_index += 1;
+		} else if (strcmp(argv[arg_index], "industry") == 0) {
+			type = SC_INDUSTRY;
 			arg_index += 1;
 		}
 	}
@@ -1600,13 +1700,13 @@ DEF_CONSOLE_CMD(ConInfoCmd)
 
 	if (argc < 2) return false;
 
-	const IConsoleCmd *cmd = IConsoleCmdGet(argv[1]);
+	const IConsoleCmd *cmd = IConsole::CmdGet(argv[1]);
 	if (cmd == nullptr) {
 		IConsoleError("the given command was not found");
 		return true;
 	}
 
-	IConsolePrintF(CC_DEFAULT, "command name: %s", cmd->name);
+	IConsolePrintF(CC_DEFAULT, "command name: %s", cmd->name.c_str());
 	IConsolePrintF(CC_DEFAULT, "command proc: %p", cmd->proc);
 
 	if (cmd->hook != nullptr) IConsoleWarning("command is hooked");
@@ -1665,21 +1765,20 @@ DEF_CONSOLE_CMD(ConHelp)
 		const IConsoleCmd *cmd;
 		const IConsoleAlias *alias;
 
-		RemoveUnderscores(argv[1]);
-		cmd = IConsoleCmdGet(argv[1]);
+		cmd = IConsole::CmdGet(argv[1]);
 		if (cmd != nullptr) {
 			cmd->proc(0, nullptr);
 			return true;
 		}
 
-		alias = IConsoleAliasGet(argv[1]);
+		alias = IConsole::AliasGet(argv[1]);
 		if (alias != nullptr) {
-			cmd = IConsoleCmdGet(alias->cmdline);
+			cmd = IConsole::CmdGet(alias->cmdline);
 			if (cmd != nullptr) {
 				cmd->proc(0, nullptr);
 				return true;
 			}
-			IConsolePrintF(CC_ERROR, "ERROR: alias is of special type, please see its execution-line: '%s'", alias->cmdline);
+			IConsolePrintF(CC_ERROR, "ERROR: alias is of special type, please see its execution-line: '%s'", alias->cmdline.c_str());
 			return true;
 		}
 
@@ -1706,9 +1805,10 @@ DEF_CONSOLE_CMD(ConListCommands)
 		return true;
 	}
 
-	for (const IConsoleCmd *cmd = _iconsole_cmds; cmd != nullptr; cmd = cmd->next) {
-		if (argv[1] == nullptr || strstr(cmd->name, argv[1]) != nullptr) {
-			if ((_settings_client.gui.console_show_unlisted || !cmd->unlisted) && (cmd->hook == nullptr || cmd->hook(false) != CHR_HIDE)) IConsolePrintF(CC_DEFAULT, "%s", cmd->name);
+	for (auto &it : IConsole::Commands()) {
+		const IConsoleCmd *cmd = &it.second;
+		if (argv[1] == nullptr || cmd->name.find(argv[1]) != std::string::npos) {
+			if ((_settings_client.gui.console_show_unlisted || !cmd->unlisted) && (cmd->hook == nullptr || cmd->hook(false) != CHR_HIDE)) IConsolePrintF(CC_DEFAULT, "%s", cmd->name.c_str());
 		}
 	}
 
@@ -1722,9 +1822,10 @@ DEF_CONSOLE_CMD(ConListAliases)
 		return true;
 	}
 
-	for (const IConsoleAlias *alias = _iconsole_aliases; alias != nullptr; alias = alias->next) {
-		if (argv[1] == nullptr || strstr(alias->name, argv[1]) != nullptr) {
-			IConsolePrintF(CC_DEFAULT, "%s => %s", alias->name, alias->cmdline);
+	for (auto &it : IConsole::Aliases()) {
+		const IConsoleAlias *alias = &it.second;
+		if (argv[1] == nullptr || alias->name.find(argv[1]) != std::string::npos) {
+			IConsolePrintF(CC_DEFAULT, "%s => %s", alias->name.c_str(), alias->cmdline.c_str());
 		}
 	}
 
@@ -1748,7 +1849,7 @@ DEF_CONSOLE_CMD(ConCompanies)
 		if (c->is_ai) {
 			password_state = "AI";
 		} else if (_network_server) {
-				password_state = StrEmpty(_network_company_states[c->index].password) ? "unprotected" : "protected";
+			password_state = _network_company_states[c->index].password.empty() ? "unprotected" : "protected";
 		}
 
 		char colour[512];
@@ -1850,7 +1951,7 @@ DEF_CONSOLE_CMD(ConCompanyPassword)
 	}
 
 	CompanyID company_id;
-	const char *password;
+	std::string password;
 	const char *errormsg;
 
 	if (argc == 2) {
@@ -1872,10 +1973,10 @@ DEF_CONSOLE_CMD(ConCompanyPassword)
 
 	password = NetworkChangeCompanyPassword(company_id, password);
 
-	if (StrEmpty(password)) {
+	if (password.empty()) {
 		IConsolePrintF(CC_WARNING, "Company password cleared");
 	} else {
-		IConsolePrintF(CC_WARNING, "Company password changed to: %s", password);
+		IConsolePrintF(CC_WARNING, "Company password changed to: %s", password.c_str());
 	}
 
 	return true;
@@ -1928,7 +2029,7 @@ DEF_CONSOLE_CMD(ConCompanyPasswordHashes)
 		char colour[512];
 		GetString(colour, STR_COLOUR_DARK_BLUE + _company_colours[c->index], lastof(colour));
 		IConsolePrintF(CC_INFO, "#:%d(%s) Company Name: '%s'  Hash: '%s'",
-			c->index + 1, colour, company_name, _network_company_states[c->index].password);
+			c->index + 1, colour, company_name, _network_company_states[c->index].password.c_str());
 	}
 
 	return true;
@@ -1979,7 +2080,7 @@ static void OutputContentState(const ContentInfo *const ci)
 
 	char buf[sizeof(ci->md5sum) * 2 + 1];
 	md5sumToString(buf, lastof(buf), ci->md5sum);
-	IConsolePrintF(state_to_colour[ci->state], "%d, %s, %s, %s, %08X, %s", ci->id, types[ci->type - 1], states[ci->state], ci->name, ci->unique_id, buf);
+	IConsolePrintF(state_to_colour[ci->state], "%d, %s, %s, %s, %08X, %s", ci->id, types[ci->type - 1], states[ci->state], ci->name.c_str(), ci->unique_id, buf);
 }
 
 DEF_CONSOLE_CMD(ConContent)
@@ -2049,7 +2150,7 @@ DEF_CONSOLE_CMD(ConContent)
 	if (strcasecmp(argv[1], "state") == 0) {
 		IConsolePrintF(CC_WHITE, "id, type, state, name");
 		for (ConstContentIterator iter = _network_content_client.Begin(); iter != _network_content_client.End(); iter++) {
-			if (argc > 2 && strcasestr((*iter)->name, argv[2]) == nullptr) continue;
+			if (argc > 2 && strcasestr((*iter)->name.c_str(), argv[2]) == nullptr) continue;
 			OutputContentState(*iter);
 		}
 		return true;
@@ -2136,6 +2237,71 @@ DEF_CONSOLE_CMD(ConNewGRFReload)
 	extern void PostCheckNewGRFLoadWarnings();
 	PostCheckNewGRFLoadWarnings();
 	return true;
+}
+
+DEF_CONSOLE_CMD(ConListDirs)
+{
+	struct SubdirNameMap {
+		Subdirectory subdir; ///< Index of subdirectory type
+		const char *name;    ///< UI name for the directory
+		bool default_only;   ///< Whether only the default (first existing) directory for this is interesting
+	};
+	static const SubdirNameMap subdir_name_map[] = {
+		/* Game data directories */
+		{ BASESET_DIR,      "baseset",    false },
+		{ NEWGRF_DIR,       "newgrf",     false },
+		{ AI_DIR,           "ai",         false },
+		{ AI_LIBRARY_DIR,   "ailib",      false },
+		{ GAME_DIR,         "gs",         false },
+		{ GAME_LIBRARY_DIR, "gslib",      false },
+		{ SCENARIO_DIR,     "scenario",   false },
+		{ HEIGHTMAP_DIR,    "heightmap",  false },
+		/* Default save locations for user data */
+		{ SAVE_DIR,         "save",       true  },
+		{ AUTOSAVE_DIR,     "autosave",   true  },
+		{ SCREENSHOT_DIR,   "screenshot", true  },
+	};
+
+	if (argc != 2) {
+		IConsoleHelp("List all search paths or default directories for various categories.");
+		IConsoleHelp("Usage: list_dirs <category>");
+		std::string cats = subdir_name_map[0].name;
+		bool first = true;
+		for (const SubdirNameMap &sdn : subdir_name_map) {
+			if (!first) cats = cats + ", " + sdn.name;
+			first = false;
+		}
+		IConsolePrintF(CC_WARNING, "Valid categories: %s", cats.c_str());
+		return true;
+	}
+
+	std::set<std::string> seen_dirs;
+	for (const SubdirNameMap &sdn : subdir_name_map) {
+		if (strcasecmp(argv[1], sdn.name) != 0)  continue;
+		bool found = false;
+		for (Searchpath sp : _valid_searchpaths) {
+			/* Get the directory */
+			std::string path = FioGetDirectory(sp, sdn.subdir);
+			/* Check it hasn't already been listed */
+			if (seen_dirs.find(path) != seen_dirs.end()) continue;
+			seen_dirs.insert(path);
+			/* Check if exists and mark found */
+			bool exists = FileExists(path);
+			found |= exists;
+			/* Print */
+			if (!sdn.default_only || exists) {
+				IConsolePrintF(exists ? CC_DEFAULT : CC_INFO, "%s %s", path.c_str(), exists ? "[ok]" : "[not found]");
+				if (sdn.default_only) break;
+			}
+		}
+		if (!found) {
+			IConsolePrintF(CC_ERROR, "No directories exist for category %s", argv[1]);
+		}
+		return true;
+	}
+
+	IConsolePrintF(CC_ERROR, "Invalid category name: %s", argv[1]);
+	return false;
 }
 
 DEF_CONSOLE_CMD(ConResetBlockedHeliports)
@@ -2228,6 +2394,19 @@ DEF_CONSOLE_CMD(ConDumpCommandLog)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConDumpSpecialEventsLog)
+{
+	if (argc == 0) {
+		IConsoleHelp("Dump log of special events.");
+		return true;
+	}
+
+	char buffer[32768];
+	DumpSpecialEventsLog(buffer, lastof(buffer));
+	PrintLineByLine(buffer);
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConDumpDesyncMsgLog)
 {
 	if (argc == 0) {
@@ -2296,6 +2475,10 @@ DEF_CONSOLE_CMD(ConMapStats)
 	char buffer[32768];
 	DumpMapStats(buffer, lastof(buffer));
 	PrintLineByLine(buffer);
+
+	IConsolePrint(CC_DEFAULT, "");
+	IConsolePrintF(CC_DEFAULT, "towns: %u", (uint) Town::GetNumItems());
+	IConsolePrintF(CC_DEFAULT, "industries: %u", (uint) Industry::GetNumItems());
 	return true;
 }
 
@@ -2465,7 +2648,7 @@ DEF_CONSOLE_CMD(ConDumpRailTypes)
 			grfid = grf->grfid;
 			grfs.insert(std::pair<uint32, const GRFFile *>(grfid, grf));
 		}
-		IConsolePrintF(CC_DEFAULT, "  %02u %c%c%c%c, Flags: %c%c%c%c%c%c, Ctrl Flags: %c%c, GRF: %08X, %s",
+		IConsolePrintF(CC_DEFAULT, "  %02u %c%c%c%c, Flags: %c%c%c%c%c%c, Ctrl Flags: %c%c%c%c, GRF: %08X, %s",
 				(uint) rt,
 				rti->label >> 24, rti->label >> 16, rti->label >> 8, rti->label,
 				HasBit(rti->flags, RTF_CATENARY)            ? 'c' : '-',
@@ -2476,6 +2659,8 @@ DEF_CONSOLE_CMD(ConDumpRailTypes)
 				HasBit(rti->flags, RTF_DISALLOW_90DEG)      ? 'd' : '-',
 				HasBit(rti->ctrl_flags, RTCF_PROGSIG)       ? 'p' : '-',
 				HasBit(rti->ctrl_flags, RTCF_RESTRICTEDSIG) ? 'r' : '-',
+				HasBit(rti->ctrl_flags, RTCF_NOREALISTICBRAKING) ? 'b' : '-',
+				HasBit(rti->ctrl_flags, RTCF_NOENTRYSIG)    ? 'n' : '-',
 				BSWAP32(grfid),
 				GetStringPtr(rti->strings.name)
 		);
@@ -2601,6 +2786,23 @@ DEF_CONSOLE_CMD(ConDumpCargoTypes)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConDumpVehicle)
+{
+	if (argc != 2) {
+		IConsoleHelp("Debug: Show vehicle information.  Usage: 'dump_vehicle <vehicle-id>'");
+		return true;
+	}
+
+	const Vehicle *v = Vehicle::GetIfValid(atoi(argv[1]));
+	if (v != nullptr) {
+		IConsolePrint(CC_DEFAULT, scope_dumper().VehicleInfo(v));
+	} else {
+		IConsolePrint(CC_DEFAULT, "No such vehicle");
+	}
+
+	return true;
+}
+
 /**
  * Dump the state of a tile on the map.
  * param x tile number or tile x coordinate.
@@ -2656,7 +2858,7 @@ DEF_CONSOLE_CMD(ConDumpTile)
 DEF_CONSOLE_CMD(ConCheckCaches)
 {
 	if (argc == 0) {
-		IConsoleHelp("Debug: Check caches");
+		IConsoleHelp("Debug: Check caches. Usage: 'check_caches [<broadcast>]'");
 		return true;
 	}
 
@@ -2666,8 +2868,7 @@ DEF_CONSOLE_CMD(ConCheckCaches)
 	if (broadcast) {
 		DoCommandP(0, 0, 0, CMD_DESYNC_CHECK);
 	} else {
-		extern void CheckCaches(bool force_check, std::function<void(const char *)> log);
-		CheckCaches(true, nullptr);
+		CheckCaches(true, nullptr, CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG);
 	}
 
 	return true;
@@ -2847,6 +3048,60 @@ DEF_CONSOLE_CMD(ConRecalculateRoadCachedOneWayStates)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConMiscDebug)
+{
+	if (argc < 1 || argc > 2) {
+		IConsoleHelp("Debug: misc flags.  Usage: 'misc_debug [<flags>]'");
+		IConsoleHelp("  1: MDF_OVERHEAT_BREAKDOWN_OPEN_WIN");
+		IConsoleHelp("  2: MDF_ZONING_RS_WATER_FLOOD_STATE");
+		IConsoleHelp("  4: MDF_ZONING_RS_TROPIC_ZONE");
+		IConsoleHelp("  8: MDF_ZONING_RS_ANIMATED_TILE");
+		IConsoleHelp(" 10: MDF_NEWGRF_SG_SAVE_RAW");
+		return true;
+	}
+
+	if (argc == 1) {
+		IConsolePrintF(CC_DEFAULT, "Misc debug flags: %X", _misc_debug_flags);
+	} else {
+		_misc_debug_flags = strtoul(argv[1], nullptr, 16);
+	}
+
+	return true;
+}
+
+DEF_CONSOLE_CMD(ConSetNewGRFOptimiserFlags)
+{
+	if (argc < 1 || argc > 2) {
+		IConsoleHelp("Debug: misc set_newgrf_optimiser_flags.  Usage: 'set_newgrf_optimiser_flags [<flags>]'");
+		return true;
+	}
+
+	if (argc == 1) {
+		IConsolePrintF(CC_DEFAULT, "NewGRF optimiser flags: %X", _settings_game.debug.newgrf_optimiser_flags);
+	} else {
+		if (_game_mode == GM_MENU || (_networking && !_network_server)) {
+			IConsoleError("This command is only available in-game and in the editor, and not as a network client.");
+			return true;
+		}
+		extern uint NetworkClientCount();
+		if (_networking && NetworkClientCount() > 1) {
+			IConsoleError("This command is not available when network clients are connected.");
+			return true;
+		}
+
+		uint value = strtoul(argv[1], nullptr, 16);
+		if (_settings_game.debug.newgrf_optimiser_flags == value) return true;
+		_settings_game.debug.newgrf_optimiser_flags = value;
+
+		ReloadNewGRFData();
+
+		extern void PostCheckNewGRFLoadWarnings();
+		PostCheckNewGRFLoadWarnings();
+	}
+
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConDoDisaster)
 {
 	if (argc == 0) {
@@ -2882,7 +3137,7 @@ DEF_CONSOLE_CMD(ConBankruptCompany)
 	c->bankrupt_value = 42;
 	c->bankrupt_asked = 1 << c->index; // Don't ask the owner
 	c->bankrupt_timeout = 0;
-	c->money = -(UINT64_MAX >> 2);
+	c->money = INT64_MIN / 2;
 	IConsolePrint(CC_DEFAULT, "Company marked as bankrupt.");
 
 	return true;
@@ -3163,9 +3418,9 @@ DEF_CONSOLE_CMD(ConIfHourMinute)
 
 static void IConsoleDebugLibRegister()
 {
-	IConsoleCmdRegister("resettile",        ConResetTile);
-	IConsoleAliasRegister("dbg_echo",       "echo %A; echo %B");
-	IConsoleAliasRegister("dbg_echo2",      "echo %!");
+	IConsole::CmdRegister("resettile",        ConResetTile);
+	IConsole::AliasRegister("dbg_echo",       "echo %A; echo %B");
+	IConsole::AliasRegister("dbg_echo2",      "echo %!");
 }
 #endif
 
@@ -3203,7 +3458,7 @@ DEF_CONSOLE_CMD(ConFramerateWindow)
 DEF_CONSOLE_CMD(ConFindNonRealisticBrakingSignal)
 {
 	if (argc == 0) {
-		IConsoleHelp("Find next signal tile which prevents enabling of realitic braking");
+		IConsoleHelp("Find the next signal tile which prevents enabling of realistic braking");
 		return true;
 	}
 
@@ -3262,198 +3517,203 @@ DEF_CONSOLE_CMD(ConDumpInfo)
 
 void IConsoleStdLibRegister()
 {
-	IConsoleCmdRegister("debug_level",  ConDebugLevel);
-	IConsoleCmdRegister("echo",         ConEcho);
-	IConsoleCmdRegister("echoc",        ConEchoC);
-	IConsoleCmdRegister("exec",         ConExec);
-	IConsoleCmdRegister("exit",         ConExit);
-	IConsoleCmdRegister("part",         ConPart);
-	IConsoleCmdRegister("help",         ConHelp);
-	IConsoleCmdRegister("info_cmd",     ConInfoCmd);
-	IConsoleCmdRegister("list_cmds",    ConListCommands);
-	IConsoleCmdRegister("list_aliases", ConListAliases);
-	IConsoleCmdRegister("newgame",      ConNewGame);
-	IConsoleCmdRegister("restart",      ConRestart);
-	IConsoleCmdRegister("reload",       ConReload);
-	IConsoleCmdRegister("getseed",      ConGetSeed);
-	IConsoleCmdRegister("getdate",      ConGetDate);
-	IConsoleCmdRegister("getsysdate",   ConGetSysDate);
-	IConsoleCmdRegister("quit",         ConExit);
-	IConsoleCmdRegister("resetengines", ConResetEngines, ConHookNoNetwork);
-	IConsoleCmdRegister("reset_enginepool", ConResetEnginePool, ConHookNoNetwork);
-	IConsoleCmdRegister("return",       ConReturn);
-	IConsoleCmdRegister("screenshot",   ConScreenShot);
-	IConsoleCmdRegister("minimap",      ConMinimap);
-	IConsoleCmdRegister("script",       ConScript);
-	IConsoleCmdRegister("scrollto",     ConScrollToTile);
-	IConsoleCmdRegister("highlight_tile", ConHighlightTile);
-	IConsoleAliasRegister("scrollto_highlight", "scrollto %+; highlight_tile %+");
-	IConsoleCmdRegister("alias",        ConAlias);
-	IConsoleCmdRegister("load",         ConLoad);
-	IConsoleCmdRegister("rm",           ConRemove);
-	IConsoleCmdRegister("save",         ConSave);
-	IConsoleCmdRegister("saveconfig",   ConSaveConfig);
-	IConsoleCmdRegister("ls",           ConListFiles);
-	IConsoleCmdRegister("cd",           ConChangeDirectory);
-	IConsoleCmdRegister("pwd",          ConPrintWorkingDirectory);
-	IConsoleCmdRegister("clear",        ConClearBuffer);
-	IConsoleCmdRegister("setting",      ConSetting);
-	IConsoleCmdRegister("setting_newgame", ConSettingNewgame);
-	IConsoleCmdRegister("list_settings",ConListSettings);
-	IConsoleCmdRegister("gamelog",      ConGamelogPrint);
-	IConsoleCmdRegister("rescan_newgrf", ConRescanNewGRF);
+	IConsole::CmdRegister("debug_level",             ConDebugLevel);
+	IConsole::CmdRegister("echo",                    ConEcho);
+	IConsole::CmdRegister("echoc",                   ConEchoC);
+	IConsole::CmdRegister("exec",                    ConExec);
+	IConsole::CmdRegister("exit",                    ConExit);
+	IConsole::CmdRegister("part",                    ConPart);
+	IConsole::CmdRegister("help",                    ConHelp);
+	IConsole::CmdRegister("info_cmd",                ConInfoCmd);
+	IConsole::CmdRegister("list_cmds",               ConListCommands);
+	IConsole::CmdRegister("list_aliases",            ConListAliases);
+	IConsole::CmdRegister("newgame",                 ConNewGame);
+	IConsole::CmdRegister("restart",                 ConRestart);
+	IConsole::CmdRegister("reload",                  ConReload);
+	IConsole::CmdRegister("getseed",                 ConGetSeed);
+	IConsole::CmdRegister("getdate",                 ConGetDate);
+	IConsole::CmdRegister("getsysdate",              ConGetSysDate);
+	IConsole::CmdRegister("quit",                    ConExit);
+	IConsole::CmdRegister("resetengines",            ConResetEngines,     ConHookNoNetwork);
+	IConsole::CmdRegister("reset_enginepool",        ConResetEnginePool,  ConHookNoNetwork);
+	IConsole::CmdRegister("return",                  ConReturn);
+	IConsole::CmdRegister("screenshot",              ConScreenShot);
+	IConsole::CmdRegister("minimap",                 ConMinimap);
+	IConsole::CmdRegister("script",                  ConScript);
+	IConsole::CmdRegister("zoomto",                  ConZoomToLevel);
+	IConsole::CmdRegister("scrollto",                ConScrollToTile);
+	IConsole::CmdRegister("highlight_tile",          ConHighlightTile);
+	IConsole::AliasRegister("scrollto_highlight",    "scrollto %+; highlight_tile %+");
+	IConsole::CmdRegister("alias",                   ConAlias);
+	IConsole::CmdRegister("load",                    ConLoad);
+	IConsole::CmdRegister("rm",                      ConRemove);
+	IConsole::CmdRegister("save",                    ConSave);
+	IConsole::CmdRegister("saveconfig",              ConSaveConfig);
+	IConsole::CmdRegister("ls",                      ConListFiles);
+	IConsole::CmdRegister("cd",                      ConChangeDirectory);
+	IConsole::CmdRegister("pwd",                     ConPrintWorkingDirectory);
+	IConsole::CmdRegister("clear",                   ConClearBuffer);
+	IConsole::CmdRegister("setting",                 ConSetting);
+	IConsole::CmdRegister("setting_newgame",         ConSettingNewgame);
+	IConsole::CmdRegister("list_settings",           ConListSettings);
+	IConsole::CmdRegister("gamelog",                 ConGamelogPrint);
+	IConsole::CmdRegister("rescan_newgrf",           ConRescanNewGRF);
+	IConsole::CmdRegister("list_dirs",               ConListDirs);
 
-	IConsoleAliasRegister("dir",          "ls");
-	IConsoleAliasRegister("del",          "rm %+");
-	IConsoleAliasRegister("newmap",       "newgame");
-	IConsoleAliasRegister("patch",        "setting %+");
-	IConsoleAliasRegister("set",          "setting %+");
-	IConsoleAliasRegister("set_newgame",  "setting_newgame %+");
-	IConsoleAliasRegister("list_patches", "list_settings %+");
-	IConsoleAliasRegister("developer",    "setting developer %+");
+	IConsole::AliasRegister("dir",                   "ls");
+	IConsole::AliasRegister("del",                   "rm %+");
+	IConsole::AliasRegister("newmap",                "newgame");
+	IConsole::AliasRegister("patch",                 "setting %+");
+	IConsole::AliasRegister("set",                   "setting %+");
+	IConsole::AliasRegister("set_newgame",           "setting_newgame %+");
+	IConsole::AliasRegister("list_patches",          "list_settings %+");
+	IConsole::AliasRegister("developer",             "setting developer %+");
 
-	IConsoleCmdRegister("list_ai_libs", ConListAILibs);
-	IConsoleCmdRegister("list_ai",      ConListAI);
-	IConsoleCmdRegister("reload_ai",    ConReloadAI);
-	IConsoleCmdRegister("rescan_ai",    ConRescanAI);
-	IConsoleCmdRegister("start_ai",     ConStartAI);
-	IConsoleCmdRegister("stop_ai",      ConStopAI);
+	IConsole::CmdRegister("list_ai_libs",            ConListAILibs);
+	IConsole::CmdRegister("list_ai",                 ConListAI);
+	IConsole::CmdRegister("reload_ai",               ConReloadAI);
+	IConsole::CmdRegister("rescan_ai",               ConRescanAI);
+	IConsole::CmdRegister("start_ai",                ConStartAI);
+	IConsole::CmdRegister("stop_ai",                 ConStopAI);
 
-	IConsoleCmdRegister("list_game",    ConListGame);
-	IConsoleCmdRegister("list_game_libs", ConListGameLibs);
-	IConsoleCmdRegister("rescan_game",    ConRescanGame);
+	IConsole::CmdRegister("list_game",               ConListGame);
+	IConsole::CmdRegister("list_game_libs",          ConListGameLibs);
+	IConsole::CmdRegister("rescan_game",             ConRescanGame);
 
-	IConsoleCmdRegister("companies",       ConCompanies);
-	IConsoleAliasRegister("players",       "companies");
+	IConsole::CmdRegister("companies",               ConCompanies);
+	IConsole::AliasRegister("players",               "companies");
 
 	/* networking functions */
 
 /* Content downloading is only available with ZLIB */
 #if defined(WITH_ZLIB)
-	IConsoleCmdRegister("content",         ConContent);
+	IConsole::CmdRegister("content",                 ConContent);
 #endif /* defined(WITH_ZLIB) */
 
 	/*** Networking commands ***/
-	IConsoleCmdRegister("say",             ConSay, ConHookNeedNetwork);
-	IConsoleCmdRegister("say_company",     ConSayCompany, ConHookNeedNetwork);
-	IConsoleAliasRegister("say_player",    "say_company %+");
-	IConsoleCmdRegister("say_client",      ConSayClient, ConHookNeedNetwork);
+	IConsole::CmdRegister("say",                     ConSay,              ConHookNeedNetwork);
+	IConsole::CmdRegister("say_company",             ConSayCompany,       ConHookNeedNetwork);
+	IConsole::AliasRegister("say_player",            "say_company %+");
+	IConsole::CmdRegister("say_client",              ConSayClient,        ConHookNeedNetwork);
 
-	IConsoleCmdRegister("connect",         ConNetworkConnect, ConHookClientOnly);
-	IConsoleCmdRegister("clients",         ConNetworkClients, ConHookNeedNetwork);
-	IConsoleCmdRegister("status",          ConStatus, ConHookServerOnly);
-	IConsoleCmdRegister("server_info",     ConServerInfo, ConHookServerOnly);
-	IConsoleAliasRegister("info",          "server_info");
-	IConsoleCmdRegister("reconnect",       ConNetworkReconnect, ConHookClientOnly);
-	IConsoleCmdRegister("rcon",            ConRcon, ConHookNeedNetwork);
-	IConsoleCmdRegister("settings_access", ConSettingsAccess, ConHookNeedNetwork);
+	IConsole::CmdRegister("connect",                 ConNetworkConnect,   ConHookClientOnly);
+	IConsole::CmdRegister("clients",                 ConNetworkClients,   ConHookNeedNetwork);
+	IConsole::CmdRegister("status",                  ConStatus,           ConHookServerOnly);
+	IConsole::CmdRegister("server_info",             ConServerInfo,       ConHookServerOnly);
+	IConsole::AliasRegister("info",                  "server_info");
+	IConsole::CmdRegister("reconnect",               ConNetworkReconnect, ConHookClientOnly);
+	IConsole::CmdRegister("rcon",                    ConRcon,             ConHookNeedNetwork);
+	IConsole::CmdRegister("settings_access",         ConSettingsAccess,   ConHookNeedNetwork);
 
-	IConsoleCmdRegister("join",            ConJoinCompany, ConHookNeedNetwork);
-	IConsoleAliasRegister("spectate",      "join 255");
-	IConsoleCmdRegister("move",            ConMoveClient, ConHookServerOnly);
-	IConsoleCmdRegister("reset_company",   ConResetCompany, ConHookServerOnly);
-	IConsoleAliasRegister("clean_company", "reset_company %A");
-	IConsoleCmdRegister("client_name",     ConClientNickChange, ConHookServerOnly);
-	IConsoleCmdRegister("kick",            ConKick, ConHookServerOnly);
-	IConsoleCmdRegister("ban",             ConBan, ConHookServerOnly);
-	IConsoleCmdRegister("unban",           ConUnBan, ConHookServerOnly);
-	IConsoleCmdRegister("banlist",         ConBanList, ConHookServerOnly);
+	IConsole::CmdRegister("join",                    ConJoinCompany,      ConHookNeedNetwork);
+	IConsole::AliasRegister("spectate",              "join 255");
+	IConsole::CmdRegister("move",                    ConMoveClient,       ConHookServerOnly);
+	IConsole::CmdRegister("reset_company",           ConResetCompany,     ConHookServerOnly);
+	IConsole::AliasRegister("clean_company",         "reset_company %A");
+	IConsole::CmdRegister("offer_company_sale",      ConOfferCompanySale, ConHookServerOrNoNetwork);
+	IConsole::CmdRegister("client_name",             ConClientNickChange, ConHookServerOnly);
+	IConsole::CmdRegister("kick",                    ConKick,             ConHookServerOnly);
+	IConsole::CmdRegister("ban",                     ConBan,              ConHookServerOnly);
+	IConsole::CmdRegister("unban",                   ConUnBan,            ConHookServerOnly);
+	IConsole::CmdRegister("banlist",                 ConBanList,          ConHookServerOnly);
 
-	IConsoleCmdRegister("pause",           ConPauseGame, ConHookServerOnly);
-	IConsoleCmdRegister("unpause",         ConUnpauseGame, ConHookServerOnly);
+	IConsole::CmdRegister("pause",                   ConPauseGame,        ConHookServerOrNoNetwork);
+	IConsole::CmdRegister("unpause",                 ConUnpauseGame,      ConHookServerOrNoNetwork);
 
-	IConsoleCmdRegister("company_pw",      ConCompanyPassword, ConHookNeedNetwork);
-	IConsoleAliasRegister("company_password",      "company_pw %+");
-	IConsoleCmdRegister("company_pw_hash", ConCompanyPasswordHash, ConHookServerOnly);
-	IConsoleAliasRegister("company_password_hash", "company_pw %+");
-	IConsoleCmdRegister("company_pw_hashes",         ConCompanyPasswordHashes, ConHookServerOnly);
-	IConsoleAliasRegister("company_password_hashes", "company_pw_hashes");
+	IConsole::CmdRegister("company_pw",              ConCompanyPassword,  ConHookNeedNetwork);
+	IConsole::AliasRegister("company_password",      "company_pw %+");
+	IConsole::CmdRegister("company_pw_hash",         ConCompanyPasswordHash, ConHookServerOnly);
+	IConsole::AliasRegister("company_password_hash", "company_pw %+");
+	IConsole::CmdRegister("company_pw_hashes",       ConCompanyPasswordHashes, ConHookServerOnly);
+	IConsole::AliasRegister("company_password_hashes", "company_pw_hashes");
 
-	IConsoleAliasRegister("net_frame_freq",        "setting frame_freq %+");
-	IConsoleAliasRegister("net_sync_freq",         "setting sync_freq %+");
-	IConsoleAliasRegister("server_pw",             "setting server_password %+");
-	IConsoleAliasRegister("server_password",       "setting server_password %+");
-	IConsoleAliasRegister("rcon_pw",               "setting rcon_password %+");
-	IConsoleAliasRegister("rcon_password",         "setting rcon_password %+");
-	IConsoleAliasRegister("settings_pw",           "setting settings_password %+");
-	IConsoleAliasRegister("settings_password",     "setting settings_password %+");
-	IConsoleAliasRegister("name",                  "setting client_name %+");
-	IConsoleAliasRegister("server_name",           "setting server_name %+");
-	IConsoleAliasRegister("server_port",           "setting server_port %+");
-	IConsoleAliasRegister("server_advertise",      "setting server_advertise %+");
-	IConsoleAliasRegister("max_clients",           "setting max_clients %+");
-	IConsoleAliasRegister("max_companies",         "setting max_companies %+");
-	IConsoleAliasRegister("max_spectators",        "setting max_spectators %+");
-	IConsoleAliasRegister("max_join_time",         "setting max_join_time %+");
-	IConsoleAliasRegister("pause_on_join",         "setting pause_on_join %+");
-	IConsoleAliasRegister("autoclean_companies",   "setting autoclean_companies %+");
-	IConsoleAliasRegister("autoclean_protected",   "setting autoclean_protected %+");
-	IConsoleAliasRegister("autoclean_unprotected", "setting autoclean_unprotected %+");
-	IConsoleAliasRegister("restart_game_year",     "setting restart_game_year %+");
-	IConsoleAliasRegister("min_players",           "setting min_active_clients %+");
-	IConsoleAliasRegister("reload_cfg",            "setting reload_cfg %+");
+	IConsole::AliasRegister("net_frame_freq",        "setting frame_freq %+");
+	IConsole::AliasRegister("net_sync_freq",         "setting sync_freq %+");
+	IConsole::AliasRegister("server_pw",             "setting server_password %+");
+	IConsole::AliasRegister("server_password",       "setting server_password %+");
+	IConsole::AliasRegister("rcon_pw",               "setting rcon_password %+");
+	IConsole::AliasRegister("rcon_password",         "setting rcon_password %+");
+	IConsole::AliasRegister("settings_pw",           "setting settings_password %+");
+	IConsole::AliasRegister("settings_password",     "setting settings_password %+");
+	IConsole::AliasRegister("name",                  "setting client_name %+");
+	IConsole::AliasRegister("server_name",           "setting server_name %+");
+	IConsole::AliasRegister("server_port",           "setting server_port %+");
+	IConsole::AliasRegister("max_clients",           "setting max_clients %+");
+	IConsole::AliasRegister("max_companies",         "setting max_companies %+");
+	IConsole::AliasRegister("max_join_time",         "setting max_join_time %+");
+	IConsole::AliasRegister("pause_on_join",         "setting pause_on_join %+");
+	IConsole::AliasRegister("autoclean_companies",   "setting autoclean_companies %+");
+	IConsole::AliasRegister("autoclean_protected",   "setting autoclean_protected %+");
+	IConsole::AliasRegister("autoclean_unprotected", "setting autoclean_unprotected %+");
+	IConsole::AliasRegister("restart_game_year",     "setting restart_game_year %+");
+	IConsole::AliasRegister("min_players",           "setting min_active_clients %+");
+	IConsole::AliasRegister("reload_cfg",            "setting reload_cfg %+");
 
 	/* conditionals */
-	IConsoleCmdRegister("if_year", ConIfYear);
-	IConsoleCmdRegister("if_month", ConIfMonth);
-	IConsoleCmdRegister("if_day", ConIfDay);
-	IConsoleCmdRegister("if_hour", ConIfHour);
-	IConsoleCmdRegister("if_minute", ConIfMinute);
-	IConsoleCmdRegister("if_hour_minute", ConIfHourMinute);
+	IConsole::CmdRegister("if_year",                 ConIfYear);
+	IConsole::CmdRegister("if_month",                ConIfMonth);
+	IConsole::CmdRegister("if_day",                  ConIfDay);
+	IConsole::CmdRegister("if_hour",                 ConIfHour);
+	IConsole::CmdRegister("if_minute",               ConIfMinute);
+	IConsole::CmdRegister("if_hour_minute",          ConIfHourMinute);
 
 	/* debugging stuff */
 #ifdef _DEBUG
 	IConsoleDebugLibRegister();
 #endif
-	IConsoleCmdRegister("fps",     ConFramerate);
-	IConsoleCmdRegister("fps_wnd", ConFramerateWindow);
+	IConsole::CmdRegister("fps",                     ConFramerate);
+	IConsole::CmdRegister("fps_wnd",                 ConFramerateWindow);
 
-	IConsoleCmdRegister("find_non_realistic_braking_signal", ConFindNonRealisticBrakingSignal);
+	IConsole::CmdRegister("find_non_realistic_braking_signal", ConFindNonRealisticBrakingSignal);
 
-	IConsoleCmdRegister("getfulldate",  ConGetFullDate, nullptr, true);
-	IConsoleCmdRegister("dump_command_log", ConDumpCommandLog, nullptr, true);
-	IConsoleCmdRegister("dump_desync_msgs", ConDumpDesyncMsgLog, nullptr, true);
-	IConsoleCmdRegister("dump_inflation", ConDumpInflation, nullptr, true);
-	IConsoleCmdRegister("dump_cpdp_stats", ConDumpCpdpStats, nullptr, true);
-	IConsoleCmdRegister("dump_veh_stats", ConVehicleStats, nullptr, true);
-	IConsoleCmdRegister("dump_map_stats", ConMapStats, nullptr, true);
-	IConsoleCmdRegister("dump_st_flow_stats", ConStFlowStats, nullptr, true);
-	IConsoleCmdRegister("dump_game_events", ConDumpGameEvents, nullptr, true);
-	IConsoleCmdRegister("dump_load_debug_log", ConDumpLoadDebugLog, nullptr, true);
-	IConsoleCmdRegister("dump_load_debug_config", ConDumpLoadDebugConfig, nullptr, true);
-	IConsoleCmdRegister("dump_linkgraph_jobs", ConDumpLinkgraphJobs, nullptr, true);
-	IConsoleCmdRegister("dump_road_types", ConDumpRoadTypes, nullptr, true);
-	IConsoleCmdRegister("dump_rail_types", ConDumpRailTypes, nullptr, true);
-	IConsoleCmdRegister("dump_bridge_types", ConDumpBridgeTypes, nullptr, true);
-	IConsoleCmdRegister("dump_cargo_types", ConDumpCargoTypes, nullptr, true);
-	IConsoleCmdRegister("dump_tile", ConDumpTile, nullptr, true);
-	IConsoleCmdRegister("check_caches", ConCheckCaches, nullptr, true);
-	IConsoleCmdRegister("show_town_window", ConShowTownWindow, nullptr, true);
-	IConsoleCmdRegister("show_station_window", ConShowStationWindow, nullptr, true);
-	IConsoleCmdRegister("show_industry_window", ConShowIndustryWindow, nullptr, true);
-	IConsoleCmdRegister("viewport_debug", ConViewportDebug, nullptr, true);
-	IConsoleCmdRegister("viewport_mark_dirty", ConViewportMarkDirty, nullptr, true);
-	IConsoleCmdRegister("viewport_mark_dirty_st_overlay", ConViewportMarkStationOverlayDirty, nullptr, true);
-	IConsoleCmdRegister("gfx_debug", ConGfxDebug, nullptr, true);
-	IConsoleCmdRegister("csleep", ConCSleep, nullptr, true);
-	IConsoleCmdRegister("recalculate_road_cached_one_way_states", ConRecalculateRoadCachedOneWayStates, ConHookNoNetwork, true);
+	IConsole::CmdRegister("getfulldate",             ConGetFullDate,      nullptr, true);
+	IConsole::CmdRegister("dump_command_log",        ConDumpCommandLog,   nullptr, true);
+	IConsole::CmdRegister("dump_special_events_log", ConDumpSpecialEventsLog, nullptr, true);
+	IConsole::CmdRegister("dump_desync_msgs",        ConDumpDesyncMsgLog, nullptr, true);
+	IConsole::CmdRegister("dump_inflation",          ConDumpInflation,    nullptr, true);
+	IConsole::CmdRegister("dump_cpdp_stats",         ConDumpCpdpStats,    nullptr, true);
+	IConsole::CmdRegister("dump_veh_stats",          ConVehicleStats,     nullptr, true);
+	IConsole::CmdRegister("dump_map_stats",          ConMapStats,         nullptr, true);
+	IConsole::CmdRegister("dump_st_flow_stats",      ConStFlowStats,      nullptr, true);
+	IConsole::CmdRegister("dump_game_events",        ConDumpGameEvents,   nullptr, true);
+	IConsole::CmdRegister("dump_load_debug_log",     ConDumpLoadDebugLog, nullptr, true);
+	IConsole::CmdRegister("dump_load_debug_config",  ConDumpLoadDebugConfig, nullptr, true);
+	IConsole::CmdRegister("dump_linkgraph_jobs",     ConDumpLinkgraphJobs, nullptr, true);
+	IConsole::CmdRegister("dump_road_types",         ConDumpRoadTypes,    nullptr, true);
+	IConsole::CmdRegister("dump_rail_types",         ConDumpRailTypes,    nullptr, true);
+	IConsole::CmdRegister("dump_bridge_types",       ConDumpBridgeTypes,  nullptr, true);
+	IConsole::CmdRegister("dump_cargo_types",        ConDumpCargoTypes,   nullptr, true);
+	IConsole::CmdRegister("dump_vehicle",            ConDumpVehicle,      nullptr, true);
+	IConsole::CmdRegister("dump_tile",               ConDumpTile,         nullptr, true);
+	IConsole::CmdRegister("check_caches",            ConCheckCaches,      nullptr, true);
+	IConsole::CmdRegister("show_town_window",        ConShowTownWindow,   nullptr, true);
+	IConsole::CmdRegister("show_station_window",     ConShowStationWindow, nullptr, true);
+	IConsole::CmdRegister("show_industry_window",    ConShowIndustryWindow, nullptr, true);
+	IConsole::CmdRegister("viewport_debug",          ConViewportDebug,    nullptr, true);
+	IConsole::CmdRegister("viewport_mark_dirty",     ConViewportMarkDirty, nullptr, true);
+	IConsole::CmdRegister("viewport_mark_dirty_st_overlay", ConViewportMarkStationOverlayDirty, nullptr, true);
+	IConsole::CmdRegister("gfx_debug",               ConGfxDebug,         nullptr, true);
+	IConsole::CmdRegister("csleep",                  ConCSleep,           nullptr, true);
+	IConsole::CmdRegister("recalculate_road_cached_one_way_states", ConRecalculateRoadCachedOneWayStates, ConHookNoNetwork, true);
+	IConsole::CmdRegister("misc_debug",              ConMiscDebug,        nullptr, true);
+	IConsole::CmdRegister("set_newgrf_optimiser_flags", ConSetNewGRFOptimiserFlags, nullptr, true);
 
 	/* NewGRF development stuff */
-	IConsoleCmdRegister("reload_newgrfs",  ConNewGRFReload, ConHookNewGRFDeveloperTool);
-	IConsoleCmdRegister("newgrf_profile",  ConNewGRFProfile, ConHookNewGRFDeveloperTool);
-	IConsoleCmdRegister("dump_info", ConDumpInfo);
-	IConsoleCmdRegister("do_disaster", ConDoDisaster, ConHookNewGRFDeveloperTool, true);
-	IConsoleCmdRegister("bankrupt_company", ConBankruptCompany, ConHookNewGRFDeveloperTool, true);
-	IConsoleCmdRegister("delete_company", ConDeleteCompany, ConHookNewGRFDeveloperTool, true);
-	IConsoleCmdRegister("road_type_flag_ctl", ConRoadTypeFlagCtl, ConHookNewGRFDeveloperTool, true);
-	IConsoleCmdRegister("rail_type_map_colour_ctl", ConRailTypeMapColourCtl, ConHookNewGRFDeveloperTool, true);
-	IConsoleCmdRegister("switch_baseset", ConSwitchBaseset, ConHookNewGRFDeveloperTool, true);
+	IConsole::CmdRegister("reload_newgrfs",          ConNewGRFReload,     ConHookNewGRFDeveloperTool);
+	IConsole::CmdRegister("newgrf_profile",          ConNewGRFProfile,    ConHookNewGRFDeveloperTool);
+	IConsole::CmdRegister("dump_info",               ConDumpInfo);
+	IConsole::CmdRegister("do_disaster",             ConDoDisaster,       ConHookNewGRFDeveloperTool, true);
+	IConsole::CmdRegister("bankrupt_company",        ConBankruptCompany,  ConHookNewGRFDeveloperTool, true);
+	IConsole::CmdRegister("delete_company",          ConDeleteCompany,    ConHookNewGRFDeveloperTool, true);
+	IConsole::CmdRegister("road_type_flag_ctl",      ConRoadTypeFlagCtl,  ConHookNewGRFDeveloperTool, true);
+	IConsole::CmdRegister("rail_type_map_colour_ctl", ConRailTypeMapColourCtl, ConHookNewGRFDeveloperTool, true);
+	IConsole::CmdRegister("switch_baseset",          ConSwitchBaseset,    ConHookNewGRFDeveloperTool, true);
 
 	/* Bug workarounds */
-	IConsoleCmdRegister("jgrpp_bug_workaround_unblock_heliports", ConResetBlockedHeliports, ConHookNoNetwork, true);
-	IConsoleCmdRegister("merge_linkgraph_jobs_asap", ConMergeLinkgraphJobsAsap, ConHookNoNetwork, true);
+	IConsole::CmdRegister("jgrpp_bug_workaround_unblock_heliports", ConResetBlockedHeliports, ConHookNoNetwork, true);
+	IConsole::CmdRegister("merge_linkgraph_jobs_asap", ConMergeLinkgraphJobsAsap, ConHookNoNetwork, true);
 
 #ifdef _DEBUG
-	IConsoleCmdRegister("delete_vehicle_id", ConDeleteVehicleID, ConHookNoNetwork, true);
+	IConsole::CmdRegister("delete_vehicle_id",       ConDeleteVehicleID,  ConHookNoNetwork, true);
 #endif
 }

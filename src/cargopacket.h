@@ -18,6 +18,7 @@
 #include "vehicle_type.h"
 #include "company_type.h"
 #include "core/multimap.hpp"
+#include "saveload/saveload_common.h"
 #include <deque>
 
 /** Unique identifier for a single cargo packet. */
@@ -33,7 +34,13 @@ struct GoodsEntry; // forward-declare for Stage() and RerouteStalePackets()
 
 template <class Tinst, class Tcont> class CargoList;
 class StationCargoList; // forward-declare, so we can use it in VehicleCargoList.
-extern const struct SaveLoad *GetCargoPacketDesc();
+extern SaveLoadTable GetCargoPacketDesc();
+
+namespace upstream_sl {
+	extern upstream_sl::SaveLoadTable GetCargoPacketDesc();
+	class SlVehicleCommon;
+	class SlStationGoods;
+}
 
 typedef uint32 TileOrStationID;
 
@@ -68,7 +75,8 @@ private:
 	friend class VehicleCargoList;
 	friend class StationCargoList;
 	/** We want this to be saved, right? */
-	friend const struct SaveLoad *GetCargoPacketDesc();
+	friend SaveLoadTable GetCargoPacketDesc();
+	friend upstream_sl::SaveLoadTable upstream_sl::GetCargoPacketDesc();
 	friend void Load_CPDP();
 public:
 	/** Maximum number of items in a single cargo packet. */
@@ -290,8 +298,8 @@ protected:
 	template<class Taction>
 	void ShiftCargo(Taction action);
 
-	template<class Taction>
-	void ShiftCargoWithFrontInsert(Taction action);
+	template<class Taction, class Tfilter>
+	void ShiftCargoWithFrontInsert(Taction action, Tfilter filter);
 
 	template<class Taction>
 	void PopCargo(Taction action);
@@ -339,10 +347,11 @@ protected:
 public:
 	/** The station cargo list needs to control the unloading. */
 	friend class StationCargoList;
+	friend upstream_sl::SlVehicleCommon;
 	/** The super class ought to know what it's doing. */
 	friend class CargoList<VehicleCargoList, CargoPacketList>;
 	/** The vehicles have a cargo list (and we want that saved). */
-	friend const struct SaveLoad *GetVehicleDescription(VehicleType vt);
+	friend SaveLoadTable GetVehicleDescription(VehicleType vt);
 
 	friend class CargoShift;
 	friend class CargoTransfer;
@@ -458,6 +467,7 @@ public:
 	uint Shift(uint max_move, VehicleCargoList *dest);
 	uint Truncate(uint max_move = UINT_MAX);
 	uint Reroute(uint max_move, VehicleCargoList *dest, StationID avoid, StationID avoid2, const GoodsEntry *ge);
+	uint RerouteFromSource(uint max_move, VehicleCargoList *dest, StationID source, StationID avoid, StationID avoid2, const GoodsEntry *ge);
 
 	/**
 	 * Are the two CargoPackets mergeable in the context of
@@ -493,7 +503,8 @@ public:
 	/** The super class ought to know what it's doing. */
 	friend class CargoList<StationCargoList, StationCargoPacketMap>;
 	/** The stations, via GoodsEntry, have a CargoList. */
-	friend const struct SaveLoad *GetGoodsDesc();
+	friend SaveLoadTable GetGoodsDesc();
+	friend upstream_sl::SlStationGoods;
 
 	friend class CargoLoad;
 	friend class CargoTransfer;
@@ -510,6 +521,12 @@ public:
 
 	template<class Taction>
 	uint ShiftCargo(Taction action, StationIDStack next, bool include_invalid);
+
+	template <class Taction>
+	bool ShiftCargoFromSource(Taction &action, StationID source, StationID next);
+
+	template<class Taction>
+	uint ShiftCargoFromSource(Taction action, StationID source, StationIDStack next, bool include_invalid);
 
 	void Append(CargoPacket *cp, StationID next);
 
@@ -575,6 +592,7 @@ public:
 	uint Load(uint max_move, VehicleCargoList *dest, TileIndex load_place, StationIDStack next);
 	uint Truncate(uint max_move = UINT_MAX, StationCargoAmountMap *cargo_per_source = nullptr);
 	uint Reroute(uint max_move, StationCargoList *dest, StationID avoid, StationID avoid2, const GoodsEntry *ge);
+	uint RerouteFromSource(uint max_move, StationCargoList *dest, StationID source, StationID avoid, StationID avoid2, const GoodsEntry *ge);
 
 	void AfterLoadIncreaseReservationCount(uint count)
 	{

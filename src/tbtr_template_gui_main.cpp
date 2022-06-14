@@ -321,11 +321,13 @@ public:
 			this->vscroll[2]->SetCount(24);
 		} else {
 			const TemplateVehicle *tmp = this->templates[this->selected_template_index];
-			uint min_height = 30;
-			uint height = 30;
+			uint height = ScaleGUITrad(8) + (3 * FONT_HEIGHT_NORMAL);
 			CargoArray cargo_caps;
 			short count_columns = 0;
 			short max_columns = 2;
+
+			if (tmp->full_weight > tmp->empty_weight || _settings_client.gui.show_train_weight_ratios_in_details) height += FONT_HEIGHT_NORMAL;
+			if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) height += FONT_HEIGHT_NORMAL;
 
 			for (; tmp != nullptr; tmp = tmp->Next()) {
 				cargo_caps[tmp->cargo_type] += tmp->cargo_cap;
@@ -341,8 +343,7 @@ public:
 				}
 			}
 
-			min_height = std::max(min_height, height);
-			this->vscroll[2]->SetCount(min_height);
+			this->vscroll[2]->SetCount(height);
 		}
 
 		this->DrawWidgets();
@@ -446,6 +447,8 @@ public:
 				if (newindex == this->selected_template_index || newindex >= templates.size()) {
 					this->selected_template_index = -1;
 				} else if (newindex < templates.size()) {
+					const TemplateVehicle *tmp = this->templates[newindex];
+					if (tmp != nullptr && TemplateVehicleClicked(tmp)) return;
 					this->selected_template_index = newindex;
 				}
 				this->UpdateButtonState();
@@ -578,7 +581,7 @@ public:
 
 		this->groups.shrink_to_fit();
 		this->groups.RebuildDone();
-		this->vscroll[0]->SetCount(groups.size());
+		this->vscroll[0]->SetCount((uint)groups.size());
 	}
 
 	void BuildTemplateGuiList()
@@ -593,7 +596,7 @@ public:
 		int left = r.left + WD_MATRIX_LEFT;
 		int right = r.right - WD_MATRIX_RIGHT;
 		int y = r.top;
-		int max = std::min<int>(this->vscroll[0]->GetPosition() + this->vscroll[0]->GetCapacity(), this->groups.size());
+		int max = std::min<int>(this->vscroll[0]->GetPosition() + this->vscroll[0]->GetCapacity(), (int)this->groups.size());
 
 		/* Then treat all groups defined by/for the current company */
 		for (int i = this->vscroll[0]->GetPosition(); i < max; ++i) {
@@ -651,7 +654,7 @@ public:
 		int y = r.top;
 
 		Scrollbar *draw_vscroll = vscroll[1];
-		uint max = std::min<uint>(draw_vscroll->GetPosition() + draw_vscroll->GetCapacity(), this->templates.size());
+		uint max = std::min<uint>(draw_vscroll->GetPosition() + draw_vscroll->GetCapacity(), (uint)this->templates.size());
 
 		const TemplateVehicle *v;
 		for (uint i = draw_vscroll->GetPosition(); i < max; ++i) {
@@ -691,7 +694,7 @@ public:
 
 			/* Buying cost */
 			SetDParam(0, CalculateOverallTemplateCost(v));
-			DrawString(left + ScaleGUITrad(35), right, bottom_edge, STR_TMPL_TEMPLATE_OVR_VALUE_notinyfont, TC_BLUE, SA_LEFT);
+			DrawString(left + ScaleGUITrad(35), right, bottom_edge, STR_TMPL_TEMPLATE_OVR_VALUE, TC_BLUE, SA_LEFT);
 
 			/* Index of current template vehicle in the list of all templates for its company */
 			SetDParam(0, i);
@@ -742,6 +745,10 @@ public:
 		short top = ScaleGUITrad(4) - this->vscroll[2]->GetPosition();
 		short left = ScaleGUITrad(8);
 
+		SetDParam(0, CalculateOverallTemplateDisplayRunningCost(tmp));
+		DrawString(left, r.right, top, STR_TMPL_TEMPLATE_OVR_RUNNING_COST);
+		top += FONT_HEIGHT_NORMAL;
+
 		/* Draw vehicle performance info */
 		const bool original_acceleration = (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL ||
 				GetRailTypeInfo(tmp->railtype)->acceleration_type == 2);
@@ -763,9 +770,14 @@ public:
 			}
 			DrawString(8, r.right, top, STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS);
 		}
+		if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
+			top += FONT_HEIGHT_NORMAL;
+			SetDParam(0, GetTemplateVehicleEstimatedMaxAchievableSpeed(tmp, tmp->full_weight, tmp->max_speed));
+			DrawString(8, r.right, top, STR_VEHICLE_INFO_MAX_SPEED_LOADED);
+		}
 
 		/* Draw cargo summary */
-		top += ScaleGUITrad(26);
+		top += FONT_HEIGHT_NORMAL * 2;
 		short count_columns = 0;
 		short max_columns = 2;
 
@@ -829,4 +841,20 @@ void ShowTemplateReplaceWindow()
 	if (BringWindowToFrontById(WC_TEMPLATEGUI_MAIN, 0) == nullptr) {
 		new TemplateReplaceWindow(&_replace_rail_vehicle_desc);
 	}
+}
+
+/**
+ * Dispatch a "template vehicle selected" event if any window waits for it.
+ * @param v selected vehicle;
+ * @return did any window accept vehicle selection?
+ */
+bool TemplateVehicleClicked(const TemplateVehicle *v)
+{
+	assert(v != nullptr);
+	if (!(_thd.place_mode & HT_VEHICLE)) return false;
+
+	v = v->First();
+	if (!v->IsPrimaryVehicle()) return false;
+
+	return _thd.GetCallbackWnd()->OnTemplateVehicleSelect(v);
 }

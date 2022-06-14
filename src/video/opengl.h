@@ -74,8 +74,10 @@ private:
 	OpenGLBackend();
 	~OpenGLBackend();
 
-	const char *Init();
+	const char *Init(const Dimension &screen_res);
 	bool InitShaders();
+
+	void InternalClearCursorCache();
 
 	void RenderOglSprite(OpenGLSprite *gl_sprite, PaletteID pal, int x, int y, ZoomLevel zoom);
 
@@ -85,10 +87,12 @@ public:
 	{
 		return OpenGLBackend::instance;
 	}
-	static const char *Create(GetOGLProcAddressProc get_proc);
+	static const char *Create(GetOGLProcAddressProc get_proc, const Dimension &screen_res);
 	static void Destroy();
 
 	void PrepareContext();
+
+	std::string GetDriverName();
 
 	void UpdatePalette(const Colour *pal, uint first, uint length);
 	bool Resize(int w, int h, bool force = false);

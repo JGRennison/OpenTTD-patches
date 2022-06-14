@@ -211,9 +211,8 @@ static void PopupMainToolbMenu(Window *w, int widget, StringID string, int count
 
 /** Enum for the Company Toolbar's network related buttons */
 static const int CTMN_CLIENT_LIST = -1; ///< Show the client list
-static const int CTMN_NEW_COMPANY = -2; ///< Create a new company
-static const int CTMN_SPECTATE    = -3; ///< Become spectator
-static const int CTMN_SPECTATOR   = -4; ///< Show a company window as spectator
+static const int CTMN_SPECTATE    = -2; ///< Become spectator
+static const int CTMN_SPECTATOR   = -3; ///< Show a company window as spectator
 
 /**
  * Pop up a generic company list menu.
@@ -232,13 +231,10 @@ static void PopupMainCompanyToolbMenu(Window *w, int widget, int grey = 0)
 			/* Add the client list button for the companies menu */
 			list.emplace_back(new DropDownListStringItem(STR_NETWORK_COMPANY_LIST_CLIENT_LIST, CTMN_CLIENT_LIST, false));
 
-			if (_local_company == COMPANY_SPECTATOR) {
-				list.emplace_back(new DropDownListStringItem(STR_NETWORK_COMPANY_LIST_NEW_COMPANY, CTMN_NEW_COMPANY, NetworkMaxCompaniesReached()));
-			} else {
-				list.emplace_back(new DropDownListStringItem(STR_NETWORK_COMPANY_LIST_SPECTATE, CTMN_SPECTATE, NetworkMaxSpectatorsReached()));
+			if (_local_company != COMPANY_SPECTATOR) {
+				list.emplace_back(new DropDownListStringItem(STR_NETWORK_COMPANY_LIST_SPECTATE, CTMN_SPECTATE, false));
 			}
 			break;
-
 		case WID_TN_STORY:
 			list.emplace_back(new DropDownListStringItem(STR_STORY_BOOK_SPECTATOR, CTMN_SPECTATOR, false));
 			break;
@@ -316,6 +312,7 @@ enum OptionMenuEntries {
 	OME_TRANSPARENTBUILDINGS,
 	OME_SHOW_STATIONSIGNS,
 	OME_SHOW_MONEYTEXT,
+	OME_SHOW_HIDDEN_SIGNS,
 };
 
 /**
@@ -342,6 +339,9 @@ static CallBackFunction ToolbarOptionsClick(Window *w)
 	list.emplace_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED,     OME_SHOW_WAYPOINTNAMES, false, HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES)));
 	list.emplace_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_SIGNS_DISPLAYED,         OME_SHOW_SIGNS, false, HasBit(_display_opt, DO_SHOW_SIGNS)));
 	list.emplace_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS,   OME_SHOW_COMPETITOR_SIGNS, false, HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS)));
+	if (_settings_client.gui.allow_hiding_waypoint_labels) {
+		list.emplace_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_SHOW_HIDDEN_SIGNS,       OME_SHOW_HIDDEN_SIGNS, false, HasBit(_extra_display_opt, XDO_SHOW_HIDDEN_SIGNS)));
+	}
 	list.emplace_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_FULL_ANIMATION,          OME_FULL_ANIMATION, false, HasBit(_display_opt, DO_FULL_ANIMATION)));
 	list.emplace_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_FULL_DETAIL,             OME_FULL_DETAILS, false, HasBit(_display_opt, DO_FULL_DETAIL)));
 	list.emplace_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_TRANSPARENT_BUILDINGS,   OME_TRANSPARENTBUILDINGS, false, IsTransparencySet(TO_HOUSES)));
@@ -382,6 +382,7 @@ static CallBackFunction MenuClickSettings(int index)
 		case OME_TRANSPARENTBUILDINGS: ToggleTransparency(TO_HOUSES);                   break;
 		case OME_SHOW_STATIONSIGNS:    ToggleTransparency(TO_SIGNS);                    break;
 		case OME_SHOW_MONEYTEXT:       ToggleBit(_extra_display_opt, XDO_SHOW_MONEY_TEXT_EFFECTS); break;
+		case OME_SHOW_HIDDEN_SIGNS:    ToggleBit(_extra_display_opt, XDO_SHOW_HIDDEN_SIGNS); break;
 	}
 	MarkWholeScreenDirty();
 	return CBF_NONE;
@@ -626,14 +627,6 @@ static CallBackFunction MenuClickCompany(int index)
 		switch (index) {
 			case CTMN_CLIENT_LIST:
 				ShowClientList();
-				return CBF_NONE;
-
-			case CTMN_NEW_COMPANY:
-				if (_network_server) {
-					DoCommandP(0, CCA_NEW, _network_own_client_id, CMD_COMPANY_CTRL);
-				} else {
-					NetworkSendCommand(0, CCA_NEW, 0, 0, CMD_COMPANY_CTRL, nullptr, nullptr, _local_company, 0);
-				}
 				return CBF_NONE;
 
 			case CTMN_SPECTATE:
@@ -1131,6 +1124,7 @@ void SetStartingYear(Year year)
 	/* If you open a savegame as scenario there may already be link graphs.*/
 	LinkGraphSchedule::instance.ShiftDates(new_date - _date);
 	ShiftOrderDates(new_date - _date);
+	ShiftVehicleDates(new_date - _date);
 	SetDate(new_date, 0);
 }
 
@@ -1989,56 +1983,6 @@ static ToolbarButtonProc * const _toolbar_button_procs[] = {
 	ToolbarSwitchClick,
 };
 
-enum MainToolbarHotkeys {
-	MTHK_PAUSE,
-	MTHK_FASTFORWARD,
-	MTHK_SETTINGS,
-	MTHK_SAVEGAME,
-	MTHK_LOADGAME,
-	MTHK_SMALLMAP,
-	MTHK_TOWNDIRECTORY,
-	MTHK_SUBSIDIES,
-	MTHK_STATIONS,
-	MTHK_FINANCES,
-	MTHK_COMPANIES,
-	MTHK_STORY,
-	MTHK_GOAL,
-	MTHK_GRAPHS,
-	MTHK_LEAGUE,
-	MTHK_INDUSTRIES,
-	MTHK_INDUSTRY_CHAINS,
-	MTHK_TRAIN_LIST,
-	MTHK_ROADVEH_LIST,
-	MTHK_SHIP_LIST,
-	MTHK_AIRCRAFT_LIST,
-	MTHK_ZOOM_IN,
-	MTHK_ZOOM_OUT,
-	MTHK_BUILD_RAIL,
-	MTHK_BUILD_ROAD,
-	MTHK_BUILD_TRAM,
-	MTHK_BUILD_DOCKS,
-	MTHK_BUILD_AIRPORT,
-	MTHK_BUILD_TREES,
-	MTHK_MUSIC,
-	MTHK_LANDINFO,
-	MTHK_AI_DEBUG,
-	MTHK_SMALL_SCREENSHOT,
-	MTHK_ZOOMEDIN_SCREENSHOT,
-	MTHK_DEFAULTZOOM_SCREENSHOT,
-	MTHK_GIANT_SCREENSHOT,
-	MTHK_CHEATS,
-	MTHK_TERRAFORM,
-	MTHK_EXTRA_VIEWPORT,
-	MTHK_CLIENT_LIST,
-	MTHK_SIGN_LIST,
-	MTHK_PLAN_LIST,
-	MTHK_LINK_GRAPH_LEGEND,
-	MTHK_MESSAGE_HISTORY,
-	MTHK_TEMPLATE_REPLACEMENT,
-	MTHK_TRAIN_SLOTS,
-	MTHK_TRAIN_COUNTERS,
-};
-
 /** Main toolbar. */
 struct MainToolbarWindow : Window {
 	GUITimer timer;
@@ -2092,7 +2036,7 @@ struct MainToolbarWindow : Window {
 	EventState OnHotkey(int hotkey) override
 	{
 		extern void ShowTemplateReplaceWindow();
-		extern void ShowTraceRestrictSlotWindow(CompanyID company);
+		extern void ShowTraceRestrictSlotWindow(CompanyID company, VehicleType vehtype);
 		extern void ShowTraceRestrictCounterWindow(CompanyID company);
 
 		CallBackFunction cbf = CBF_NONE;
@@ -2142,7 +2086,7 @@ struct MainToolbarWindow : Window {
 			case MTHK_LINK_GRAPH_LEGEND: ShowLinkGraphLegend(); break;
 			case MTHK_MESSAGE_HISTORY: ShowMessageHistory(); break;
 			case MTHK_TEMPLATE_REPLACEMENT: ShowTemplateReplaceWindow(); break;
-			case MTHK_TRAIN_SLOTS: ShowTraceRestrictSlotWindow(_local_company); break;
+			case MTHK_TRAIN_SLOTS: ShowTraceRestrictSlotWindow(_local_company, VEH_TRAIN); break;
 			case MTHK_TRAIN_COUNTERS: ShowTraceRestrictCounterWindow(_local_company); break;
 			default: return ES_NOT_HANDLED;
 		}
@@ -2318,7 +2262,9 @@ static NWidgetBase *MakeMainToolbar(int *biggest_index)
 				hor->Add(new NWidgetSpacer(0, 0));
 				break;
 		}
-		hor->Add(new NWidgetLeaf(i == WID_TN_SAVE ? WWT_IMGBTN_2 : WWT_IMGBTN, COLOUR_GREY, i, toolbar_button_sprites[i], STR_TOOLBAR_TOOLTIP_PAUSE_GAME + i));
+		NWidgetLeaf *leaf = new NWidgetLeaf(i == WID_TN_SAVE ? WWT_IMGBTN_2 : WWT_IMGBTN, COLOUR_GREY, i, toolbar_button_sprites[i], STR_TOOLBAR_TOOLTIP_PAUSE_GAME + i);
+		leaf->SetMinimalSize(20, 20);
+		hor->Add(leaf);
 	}
 
 	*biggest_index = std::max<int>(*biggest_index, WID_TN_SWITCH_BAR);

@@ -194,13 +194,32 @@ public:
 
 	/**
 	 * Check if a given tile has RoadType.
+	 * Note that this function actually checks if the tile has the RoadTramTypes of the given RoadType.
+	 * @param tile The tile to check.
+	 * @param road_type The RoadType to check for.
+	 * @pre ScriptMap::IsValidTile(tile).
+	 * @pre IsRoadTypeAvailable(road_type).
+	 * @return True if the tile contains the RoadTramTypes of the given RoadType.
+	 */
+	static bool HasRoadType(TileIndex tile, RoadType road_type);
+
+	/**
+	 * Check if a tile has the given RoadTramType.
 	 * @param tile The tile to check.
 	 * @param road_type The RoadType to check for.
 	 * @pre ScriptMap::IsValidTile(tile).
 	 * @pre IsRoadTypeAvailable(road_type).
 	 * @return True if the tile contains a RoadType object.
 	 */
-	static bool HasRoadType(TileIndex tile, RoadType road_type);
+	static bool HasRoadTramType(TileIndex tile, RoadTramTypes road_tram_type);
+
+	/**
+	 * Get the RoadType that is used on a tile.
+	 * @param tile The tile to check.
+	 * @param RoadType The road/tram type to use.
+	 * @return The RoadType that is used on the tile, or ROADTYPE_INVALID if not present.
+	 */
+	static RoadType GetRoadType(TileIndex tile, RoadTramTypes road_tram_type);
 
 	/**
 	 * Checks whether the given tiles are directly connected, i.e. whether
@@ -570,6 +589,38 @@ public:
 	 * @return Maintenance cost factor of the roadtype.
 	 */
 	static uint16 GetMaintenanceCostFactor(RoadType roadtype);
+
+	/**
+	 * Checks whether the given road type uses a catenary.
+	 * @param roadtype The road type to check.
+	 * @pre IsRoadTypeAvailable(roadtype)
+	 * @return Whether the given road type uses a catenary.
+	 */
+	static bool IsCatenaryRoadType(RoadType roadtype);
+
+	/**
+	 * Checks whether the given road type disallows level crossings.
+	 * @param roadtype The road type to check.
+	 * @pre IsRoadTypeAvailable(roadtype)
+	 * @return Whether the given road type disallows level crossings.
+	 */
+	static bool IsNonLevelCrossingRoadType(RoadType roadtype);
+
+	/**
+	 * Checks whether the given road type cannot be used by towns to build houses.
+	 * @param roadtype The road type to check.
+	 * @pre IsRoadTypeAvailable(roadtype)
+	 * @return Whether the given road type cannot be used by towns to build houses.
+	 */
+	static bool IsNoTownHousesRoadType(RoadType roadtype);
+
+	/**
+	 * Checks whether the given road type is buildable by towns.
+	 * @param roadtype The road type to check.
+	 * @pre IsRoadTypeAvailable(roadtype)
+	 * @return Whether the given road type is buildable by towns.
+	 */
+	static bool IsTownBuildableRoadType(RoadType roadtype);
 
 private:
 

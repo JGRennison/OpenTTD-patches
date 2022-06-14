@@ -17,10 +17,10 @@
 #include "../station_base.h"
 #include "../cargotype.h"
 #include "../date_func.h"
+#include "../saveload/saveload_common.h"
 #include "linkgraph_type.h"
 #include <utility>
 
-struct SaveLoad;
 class LinkGraph;
 
 /**
@@ -30,6 +30,13 @@ class LinkGraph;
 typedef Pool<LinkGraph, LinkGraphID, 32, 0xFFFF> LinkGraphPool;
 /** The actual pool with link graphs. */
 extern LinkGraphPool _link_graph_pool;
+
+namespace upstream_sl {
+	SaveLoadTable GetLinkGraphDesc();
+	SaveLoadTable GetLinkGraphJobDesc();
+	class SlLinkgraphNode;
+	class SlLinkgraphEdge;
+}
 
 /**
  * A connected component of a link graph. Contains a complete set of stations
@@ -65,6 +72,7 @@ public:
 		uint usage;                    ///< Usage of the link.
 		Date last_unrestricted_update; ///< When the unrestricted part of the link was last updated.
 		Date last_restricted_update;   ///< When the restricted part of the link was last updated.
+		Date last_aircraft_update;     ///< When aircraft capacity of the link was last updated.
 		NodeID next_edge;              ///< Destination of next valid edge starting at the same source node.
 		void Init();
 	};
@@ -109,6 +117,12 @@ public:
 		 * @return Last update.
 		 */
 		Date LastRestrictedUpdate() const { return this->edge.last_restricted_update; }
+
+		/**
+		 * Get the date of the last update to the edge's aircraft capacity.
+		 * @return Last update.
+		 */
+		Date LastAircraftUpdate() const { return this->edge.last_aircraft_update; }
 
 		/**
 		 * Get the date of the last update to any part of the edge's capacity.
@@ -300,6 +314,7 @@ public:
 		void Update(uint capacity, uint usage, EdgeUpdateMode mode);
 		void Restrict() { this->edge.last_unrestricted_update = INVALID_DATE; }
 		void Release() { this->edge.last_restricted_update = INVALID_DATE; }
+		void ClearAircraft() { this->edge.last_aircraft_update = INVALID_DATE; }
 	};
 
 	/**
@@ -441,6 +456,9 @@ public:
 	/** Minimum effective distance for timeout calculation. */
 	static const uint MIN_TIMEOUT_DISTANCE = 32;
 
+	/** Number of days before deleting links served only by vehicles stopped in depot. */
+	static const uint STALE_LINK_DEPOT_TIMEOUT = 1024;
+
 	/** Minimum number of days between subsequent compressions of a LG. */
 	static const uint COMPRESSION_INTERVAL = 256;
 
@@ -496,7 +514,7 @@ public:
 	 * Get the current size of the component.
 	 * @return Size.
 	 */
-	inline uint Size() const { return (uint)this->nodes.size(); }
+	inline NodeID Size() const { return (NodeID)this->nodes.size(); }
 
 	/**
 	 * Get date of last compression.
@@ -531,10 +549,15 @@ public:
 protected:
 	friend class LinkGraph::ConstNode;
 	friend class LinkGraph::Node;
-	friend const SaveLoad *GetLinkGraphDesc();
-	friend const SaveLoad *GetLinkGraphJobDesc();
+	friend SaveLoadTable GetLinkGraphDesc();
+	friend SaveLoadTable GetLinkGraphJobDesc();
 	friend void Save_LinkGraph(LinkGraph &lg);
 	friend void Load_LinkGraph(LinkGraph &lg);
+
+	friend upstream_sl::SaveLoadTable upstream_sl::GetLinkGraphDesc();
+	friend upstream_sl::SaveLoadTable upstream_sl::GetLinkGraphJobDesc();
+	friend upstream_sl::SlLinkgraphNode;
+	friend upstream_sl::SlLinkgraphEdge;
 
 	CargoID cargo;         ///< Cargo of this component's link graph.
 	Date last_compression; ///< Last time the capacities and supplies were compressed.

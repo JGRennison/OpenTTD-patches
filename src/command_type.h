@@ -251,7 +251,9 @@ enum Commands {
 	CMD_CONVERT_RAIL,                 ///< convert a rail type
 
 	CMD_BUILD_RAIL_WAYPOINT,          ///< build a waypoint
+	CMD_BUILD_ROAD_WAYPOINT,          ///< build a road waypoint
 	CMD_RENAME_WAYPOINT,              ///< rename a waypoint
+	CMD_SET_WAYPOINT_LABEL_HIDDEN,    ///< set whether waypoint label is hidden
 	CMD_REMOVE_FROM_RAIL_WAYPOINT,    ///< remove a (rectangle of) tiles from a rail waypoint
 
 	CMD_BUILD_ROAD_STOP,              ///< build a road stop
@@ -322,6 +324,7 @@ enum Commands {
 	CMD_BUY_SHARE_IN_COMPANY,         ///< buy a share from a company
 	CMD_SELL_SHARE_IN_COMPANY,        ///< sell a share from a company
 	CMD_BUY_COMPANY,                  ///< buy a company which is bankrupt
+	CMD_DECLINE_BUY_COMPANY,          ///< decline to buy a company which is bankrupt
 
 	CMD_FOUND_TOWN,                   ///< found a town
 	CMD_RENAME_TOWN,                  ///< rename a town
@@ -396,6 +399,7 @@ enum Commands {
 	CMD_DELETE_TEMPLATE_REPLACEMENT,  ///< delete a template replacement from a vehicle group
 
 	CMD_CLONE_VEHICLE,                ///< clone a vehicle
+	CMD_CLONE_VEHICLE_FROM_TEMPLATE,  ///< clone a vehicle from a template
 	CMD_START_STOP_VEHICLE,           ///< start or stop a vehicle
 	CMD_MASS_START_STOP,              ///< start/stop all vehicles (in a depot)
 	CMD_AUTOREPLACE_VEHICLE,          ///< replace/renew a vehicle while it is in a depot
@@ -410,7 +414,7 @@ enum Commands {
 	CMD_ADD_VEHICLE_GROUP,            ///< add a vehicle to a group
 	CMD_ADD_SHARED_VEHICLE_GROUP,     ///< add all other shared vehicles to a group which are missing
 	CMD_REMOVE_ALL_VEHICLES_GROUP,    ///< remove all vehicles from a group
-	CMD_SET_GROUP_REPLACE_PROTECTION, ///< set the autoreplace-protection for a group
+	CMD_SET_GROUP_FLAG,               ///< set/clear a flag for a group
 	CMD_SET_GROUP_LIVERY,             ///< set the livery for a group
 
 	CMD_MOVE_ORDER,                   ///< move an order
@@ -447,6 +451,9 @@ enum Commands {
 	CMD_SCHEDULED_DISPATCH_SET_START_DATE,      ///< scheduled dispatch set start date
 	CMD_SCHEDULED_DISPATCH_SET_DELAY,           ///< scheduled dispatch set maximum allow delay
 	CMD_SCHEDULED_DISPATCH_RESET_LAST_DISPATCH, ///< scheduled dispatch reset last dispatch date
+	CMD_SCHEDULED_DISPATCH_CLEAR,               ///< scheduled dispatch clear schedule
+	CMD_SCHEDULED_DISPATCH_ADD_NEW_SCHEDULE,    ///< scheduled dispatch add new schedule
+	CMD_SCHEDULED_DISPATCH_REMOVE_SCHEDULE,     ///< scheduled dispatch remove schedule
 
 	CMD_ADD_PLAN,
 	CMD_ADD_PLAN_LINE,
@@ -506,6 +513,8 @@ enum FlaggedCommands {
 	CMD_FLAGS_MASK            = 0xFF00, ///< mask for all command flags
 	CMD_ID_MASK               = 0x00FF, ///< mask for the command ID
 };
+
+static_assert(CMD_END <= CMD_ID_MASK + 1);
 
 /**
  * Command flags for the command table _command_proc_table.

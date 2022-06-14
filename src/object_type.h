@@ -33,4 +33,11 @@ struct ObjectSpec;
 
 static const ObjectID INVALID_OBJECT = 0xFFFFFFFF; ///< An invalid object
 
+enum ObjectEffectiveFoundationType {
+	OEFT_NONE,
+	OEFT_FLAT,
+	OEFT_INCLINE_X,
+	OEFT_INCLINE_Y,
+};
+
 #endif /* OBJECT_TYPE_H */

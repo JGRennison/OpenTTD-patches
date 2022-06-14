@@ -14,13 +14,40 @@
 #include "core/bitmath_func.hpp"
 
 enum ChickenBitFlags {
-	DCBF_VEH_TICK_CACHE            = 0,
-	DCBF_MP_NO_STATE_CSUM_CHECK    = 1,
+	DCBF_VEH_TICK_CACHE                = 0,
+	DCBF_MP_NO_STATE_CSUM_CHECK        = 1,
+	DCBF_DESYNC_CHECK_PERIODIC         = 2,
+	DCBF_DESYNC_CHECK_POST_COMMAND     = 3,
+	DCBF_DESYNC_CHECK_NO_GENERAL       = 4,
+	DCBF_DESYNC_CHECK_PERIODIC_SIGNALS = 5,
 };
 
 inline bool HasChickenBit(ChickenBitFlags flag)
 {
 	return HasBit(_settings_game.debug.chicken_bits, flag);
 }
+
+enum NewGRFOptimiserFlags {
+	NGOF_NO_OPT_VARACT2                 = 0,
+	NGOF_NO_OPT_VARACT2_DSE             = 1,
+	NGOF_NO_OPT_VARACT2_GROUP_PRUNE     = 2,
+	NGOF_NO_OPT_VARACT2_EXPENSIVE_VARS  = 3,
+	NGOF_NO_OPT_VARACT2_SIMPLIFY_STORES = 4,
+	NGOF_NO_OPT_VARACT2_ADJUST_ORDERING = 5,
+};
+
+inline bool HasGrfOptimiserFlag(NewGRFOptimiserFlags flag)
+{
+	return HasBit(_settings_game.debug.newgrf_optimiser_flags, flag);
+}
+
+enum MiscDebugFlags {
+	MDF_OVERHEAT_BREAKDOWN_OPEN_WIN,
+	MDF_ZONING_RS_WATER_FLOOD_STATE,
+	MDF_ZONING_RS_TROPIC_ZONE,
+	MDF_ZONING_RS_ANIMATED_TILE,
+	MDF_NEWGRF_SG_SAVE_RAW,
+};
+extern uint32 _misc_debug_flags;
 
 #endif /* DEBUG_SETTINGS_H */

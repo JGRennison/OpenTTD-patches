@@ -40,16 +40,47 @@ enum ObjectFlags {
 };
 DECLARE_ENUM_AS_BIT_SET(ObjectFlags)
 
+enum ObjectCtrlFlags {
+	OBJECT_CTRL_FLAG_NONE               =       0, ///< Just nothing.
+	OBJECT_CTRL_FLAG_USE_LAND_GROUND    = 1 <<  0, ///< Use land for ground sprite.
+	OBJECT_CTRL_FLAG_EDGE_FOUNDATION    = 1 <<  1, ///< Use edge foundation mode.
+	OBJECT_CTRL_FLAG_FLOOD_RESISTANT    = 1 <<  2, ///< Object is flood-resistant.
+	OBJECT_CTRL_FLAG_VPORT_MAP_TYPE     = 1 <<  3, ///< Viewport map type is set.
+};
+DECLARE_ENUM_AS_BIT_SET(ObjectCtrlFlags)
+
+enum ObjectEdgeFoundationFlags {
+	/* Bits 0 and 1 use for edge DiagDirection */
+	OBJECT_EF_FLAG_ADJUST_Z             = 1 <<  2, ///< Adjust sprite z position to z at edge.
+	OBJECT_EF_FLAG_FOUNDATION_LOWER     = 1 <<  3, ///< If edge is lower than tile max z, add foundation.
+	OBJECT_EF_FLAG_INCLINE_FOUNDATION   = 1 <<  4, ///< Use inclined foundations where possible when edge at tile max z.
+};
+DECLARE_ENUM_AS_BIT_SET(ObjectEdgeFoundationFlags)
+
 void ResetObjects();
 
 /** Class IDs for objects. */
 enum ObjectClassID {
-	OBJECT_CLASS_BEGIN   =    0, ///< The lowest valid value
-	OBJECT_CLASS_MAX     = 0xFF, ///< Maximum number of classes.
-	INVALID_OBJECT_CLASS = 0xFF, ///< Class for the less fortunate.
+	OBJECT_CLASS_BEGIN   =      0, ///< The lowest valid value
+	OBJECT_CLASS_MAX     = 0xFFFF, ///< Maximum number of classes.
+	INVALID_OBJECT_CLASS = 0xFFFF, ///< Class for the less fortunate.
 };
 /** Allow incrementing of ObjectClassID variables */
 DECLARE_POSTFIX_INCREMENT(ObjectClassID)
+
+enum ObjectViewportMapType {
+	OVMT_DEFAULT = 0,
+	OVMT_CLEAR,
+	OVMT_GRASS,
+	OVMT_ROUGH,
+	OVMT_ROCKS,
+	OVMT_FIELDS,
+	OVMT_SNOW,
+	OVMT_DESERT,
+	OVMT_TREES,
+	OVMT_HOUSE,
+	OVMT_WATER,
+};
 
 /** An object that isn't use for transport, industries or houses.
  * @note If you change this struct, adopt the initialization of
@@ -68,12 +99,16 @@ struct ObjectSpec {
 	Date introduction_date;       ///< From when can this object be built.
 	Date end_of_life_date;        ///< When can't this object be built anymore.
 	ObjectFlags flags;            ///< Flags/settings related to the object.
+	ObjectCtrlFlags ctrl_flags;   ///< Extra control flags.
+	uint8 edge_foundation[4];     ///< Edge foundation flags
 	AnimationInfo animation;      ///< Information about the animation.
 	uint16 callback_mask;         ///< Bitmask of requested/allowed callbacks.
 	uint8 height;                 ///< The height of this structure, in heightlevels; max MAX_TILE_HEIGHT.
 	uint8 views;                  ///< The number of views.
 	uint8 generate_amount;        ///< Number of objects which are attempted to be generated per 256^2 map during world generation.
 	bool enabled;                 ///< Is this spec enabled?
+	ObjectViewportMapType vport_map_type; ///< Viewport map type
+	uint16 vport_map_subtype;     ///< Viewport map subtype
 
 	/**
 	 * Get the cost for building a structure of this type.
@@ -116,7 +151,7 @@ struct ObjectScopeResolver : public ScopeResolver {
 	}
 
 	uint32 GetRandomBits() const override;
-	uint32 GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const override;
+	uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const override;
 };
 
 /** A resolver object to be used with feature 0F spritegroups. */
@@ -160,7 +195,7 @@ static const CargoID CT_PURCHASE_OBJECT = 1;
 
 uint16 GetObjectCallback(CallbackID callback, uint32 param1, uint32 param2, const ObjectSpec *spec, Object *o, TileIndex tile, uint8 view = 0);
 
-void DrawNewObjectTile(TileInfo *ti, const ObjectSpec *spec);
+void DrawNewObjectTile(TileInfo *ti, const ObjectSpec *spec, int building_z_offset);
 void DrawNewObjectTileInGUI(int x, int y, const ObjectSpec *spec, uint8 view);
 void AnimateNewObjectTile(TileIndex tile);
 uint8 GetNewObjectTileAnimationSpeed(TileIndex tile);

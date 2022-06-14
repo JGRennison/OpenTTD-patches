@@ -20,6 +20,7 @@ Train* VirtualTrainFromTemplateVehicle(const TemplateVehicle* tv, StringID &err,
 void BuildTemplateGuiList(GUITemplateList*, Scrollbar*, Owner, RailType);
 
 Money CalculateOverallTemplateCost(const TemplateVehicle*);
+Money CalculateOverallTemplateDisplayRunningCost(const TemplateVehicle*);
 
 void DrawTemplate(const TemplateVehicle*, int, int, int);
 

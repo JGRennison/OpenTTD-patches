@@ -50,7 +50,7 @@
 	if (!::IsValidTile(tile)) return false;
 	if (!IsRoadTypeAvailable(GetCurrentRoadType())) return false;
 
-	return ::IsRoadStopTile(tile) && HasBit(::GetPresentRoadTypes(tile), (::RoadType)GetCurrentRoadType());
+	return ::IsStationRoadStopTile(tile) && HasBit(::GetPresentRoadTypes(tile), (::RoadType)GetCurrentRoadType());
 }
 
 /* static */ bool ScriptRoad::IsDriveThroughRoadStationTile(TileIndex tile)
@@ -96,6 +96,22 @@
 	if (!ScriptMap::IsValidTile(tile)) return false;
 	if (!IsRoadTypeAvailable(road_type)) return false;
 	return ::GetAnyRoadBits(tile, ::GetRoadTramType((::RoadType)road_type), false) != ROAD_NONE;
+}
+
+/* static */ bool ScriptRoad::HasRoadTramType(TileIndex tile, RoadTramTypes road_tram_type)
+{
+	if (!ScriptMap::IsValidTile(tile)) return false;
+	if (road_tram_type != ROADTRAMTYPES_ROAD && road_tram_type != ROADTRAMTYPES_TRAM) return false;
+	return ::GetAnyRoadBits(tile, (::RoadTramType)road_tram_type, false) != ROAD_NONE;
+}
+
+/* static */ ScriptRoad::RoadType ScriptRoad::GetRoadType(TileIndex tile, RoadTramTypes road_tram_type)
+{
+	if (!ScriptMap::IsValidTile(tile)) return ROADTYPE_INVALID;
+	if (road_tram_type != ROADTRAMTYPES_ROAD && road_tram_type != ROADTRAMTYPES_TRAM) return ROADTYPE_INVALID;
+	if (::GetAnyRoadBits(tile, (::RoadTramType)road_tram_type, false) == ROAD_NONE) return ROADTYPE_INVALID;
+
+	return (RoadType)::GetRoadType(tile, (::RoadTramType)road_tram_type);
 }
 
 /* static */ bool ScriptRoad::AreRoadTilesConnected(TileIndex t1, TileIndex t2)
@@ -608,7 +624,7 @@ static bool NeighbourHasReachableRoad(::RoadType rt, TileIndex start_tile, DiagD
 	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 	EnforcePrecondition(false, IsTileType(tile, MP_STATION));
-	EnforcePrecondition(false, IsRoadStop(tile));
+	EnforcePrecondition(false, IsStationRoadStop(tile));
 
 	return ScriptObject::DoCommand(tile, 1 | 1 << 8, GetRoadStopType(tile), CMD_REMOVE_ROAD_STOP);
 }
@@ -643,4 +659,32 @@ static bool NeighbourHasReachableRoad(::RoadType rt, TileIndex start_tile, DiagD
 	if (!ScriptRoad::IsRoadTypeAvailable(roadtype)) return 0;
 
 	return GetRoadTypeInfo((::RoadType)roadtype)->maintenance_multiplier;
+}
+
+/* static */ bool ScriptRoad::IsCatenaryRoadType(RoadType roadtype)
+{
+	if (!ScriptRoad::IsRoadTypeAvailable(roadtype)) return false;
+
+	return HasBit(GetRoadTypeInfo((::RoadType)roadtype)->flags, ROTF_CATENARY);
+}
+
+/* static */ bool ScriptRoad::IsNonLevelCrossingRoadType(RoadType roadtype)
+{
+	if (!ScriptRoad::IsRoadTypeAvailable(roadtype)) return false;
+
+	return HasBit(GetRoadTypeInfo((::RoadType)roadtype)->flags, ROTF_NO_LEVEL_CROSSING);
+}
+
+/* static */ bool ScriptRoad::IsNoTownHousesRoadType(RoadType roadtype)
+{
+	if (!ScriptRoad::IsRoadTypeAvailable(roadtype)) return false;
+
+	return HasBit(GetRoadTypeInfo((::RoadType)roadtype)->flags, ROTF_NO_HOUSES);
+}
+
+/* static */ bool ScriptRoad::IsTownBuildableRoadType(RoadType roadtype)
+{
+	if (!ScriptRoad::IsRoadTypeAvailable(roadtype)) return false;
+
+	return HasBit(GetRoadTypeInfo((::RoadType)roadtype)->flags, ROTF_TOWN_BUILD) && !HasBit(GetRoadTypeInfo((::RoadType)roadtype)->extra_flags, RXTF_NO_TOWN_MODIFICATION);
 }

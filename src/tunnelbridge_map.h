@@ -74,9 +74,7 @@ static inline bool HasTunnelBridgeSnowOrDesert(TileIndex t)
 */
 static inline bool IsRailTunnelBridgeTile(TileIndex t)
 {
-	TransportType tt = Extract<TransportType, 2, 2>(_m[t].m5);
-
-	return IsTileType(t, MP_TUNNELBRIDGE) && (tt == TRANSPORT_RAIL);
+	return IsTileType(t, MP_TUNNELBRIDGE) && (Extract<TransportType, 2, 2>(_m[t].m5) == TRANSPORT_RAIL);
 }
 
 static inline void SetTunnelBridgeGroundBits(TileIndex t, uint8 bits)
@@ -382,6 +380,17 @@ static inline bool IsTunnelBridgeSignalSimulationEntrance(TileIndex t)
 }
 
 /**
+ * Is this a tunnel/bridge entrance tile with signal?
+ * Tunnel bridge signal simulation has allways bit 5 on at entrance.
+ * @param t the tile that might be a tunnel/bridge.
+ * @return true if and only if this tile is a tunnel/bridge entrance.
+ */
+static inline bool IsTunnelBridgeSignalSimulationEntranceTile(TileIndex t)
+{
+	return IsTileType(t, MP_TUNNELBRIDGE) && HasBit(_m[t].m5, 5);
+}
+
+/**
  * Is this a tunnel/bridge entrance tile with signal only?
  * @param t the tile that might be a tunnel/bridge.
  * @pre IsTileType(t, MP_TUNNELBRIDGE)
@@ -403,6 +412,16 @@ static inline bool IsTunnelBridgeSignalSimulationExit(TileIndex t)
 {
 	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
 	return HasBit(_m[t].m5, 6);
+}
+
+/**
+ * Is this a tunnel/bridge exit?
+ * @param t the tile that might be a tunnel/bridge.
+ * @return true if and only if this tile is a tunnel/bridge exit.
+ */
+static inline bool IsTunnelBridgeSignalSimulationExitTile(TileIndex t)
+{
+	return IsTileType(t, MP_TUNNELBRIDGE) && HasBit(_m[t].m5, 6);
 }
 
 /**
@@ -504,6 +523,82 @@ static inline void SetTunnelBridgePBS(TileIndex t, bool is_pbs)
 {
 	assert_tile(IsTunnelBridgeWithSignalSimulation(t), t);
 	SB(_me[t].m6, 6, 1, is_pbs ? 1 : 0);
+}
+
+static inline uint8 GetTunnelBridgeEntranceSignalAspect(TileIndex t)
+{
+	assert_tile(IsTunnelBridgeWithSignalSimulation(t), t);
+	return GB(_m[t].m3, 0, 3);
+}
+
+static inline void SetTunnelBridgeEntranceSignalAspect(TileIndex t, uint8 aspect)
+{
+	assert_tile(IsTunnelBridgeWithSignalSimulation(t), t);
+	SB(_m[t].m3, 0, 3, aspect);
+}
+
+static inline uint8 GetTunnelBridgeExitSignalAspect(TileIndex t)
+{
+	assert_tile(IsTunnelBridgeWithSignalSimulation(t), t);
+	return GB(_m[t].m3, 3, 3);
+}
+
+static inline void SetTunnelBridgeExitSignalAspect(TileIndex t, uint8 aspect)
+{
+	assert_tile(IsTunnelBridgeWithSignalSimulation(t), t);
+	SB(_m[t].m3, 3, 3, aspect);
+}
+
+static inline uint GetTunnelBridgeSignalSimulationSpacing(TileIndex t)
+{
+	assert_tile(IsRailTunnelBridgeTile(t), t);
+	return 1 + GB(_me[t].m8, 12, 4);
+}
+
+static inline void SetTunnelBridgeSignalSimulationSpacing(TileIndex t, uint spacing)
+{
+	assert_tile(IsRailTunnelBridgeTile(t), t);
+	SB(_me[t].m8, 12, 4, spacing - 1);
+}
+
+/**
+ * Does tunnel/bridge signal tile have "one or more trace restrict mappings present" bit set
+ * @param tile the tile to check
+ */
+static inline bool IsTunnelBridgeRestrictedSignal(TileIndex tile)
+{
+	assert_tile(IsTunnelBridgeWithSignalSimulation(tile), tile);
+	return (bool) GB(_m[tile].m3, 6, 1);
+}
+
+/**
+ * Set tunnel/bridge signal tile "one or more trace restrict mappings present" bit
+ * @param tile the tile to set
+ */
+static inline void SetTunnelBridgeRestrictedSignal(TileIndex tile, bool is_restricted)
+{
+	assert_tile(IsTunnelBridgeWithSignalSimulation(tile), tile);
+	SB(_m[tile].m3, 6, 1, is_restricted);
+}
+
+static inline Trackdir GetTunnelBridgeExitTrackdir(TileIndex t, DiagDirection tunnel_bridge_dir)
+{
+	return TrackEnterdirToTrackdir((Track)FIND_FIRST_BIT(GetAcrossTunnelBridgeTrackBits(t)), ReverseDiagDir(tunnel_bridge_dir));
+}
+
+static inline Trackdir GetTunnelBridgeExitTrackdir(TileIndex t)
+{
+	return GetTunnelBridgeExitTrackdir(t, GetTunnelBridgeDirection(t));
+}
+
+static inline Trackdir GetTunnelBridgeEntranceTrackdir(TileIndex t, DiagDirection tunnel_bridge_dir)
+{
+	return TrackExitdirToTrackdir((Track)FIND_FIRST_BIT(GetAcrossTunnelBridgeTrackBits(t)), tunnel_bridge_dir);
+}
+
+static inline Trackdir GetTunnelBridgeEntranceTrackdir(TileIndex t)
+{
+	return GetTunnelBridgeEntranceTrackdir(t, GetTunnelBridgeDirection(t));
 }
 
 void AddRailTunnelBridgeInfrastructure(Company *c, TileIndex begin, TileIndex end);

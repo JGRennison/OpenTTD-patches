@@ -21,9 +21,11 @@ static const int MAX_VEHICLE_PIXEL_Y  = 96;                    ///< Maximum heig
 
 static const uint MAX_TILE_HEIGHT     = 255;                   ///< Maximum allowed tile height
 
-static const uint MIN_MAX_HEIGHTLEVEL = 15;                    ///< Lower bound of maximum allowed heightlevel (in the construction settings)
-static const uint DEF_MAX_HEIGHTLEVEL = 30;                    ///< Default maximum allowed heightlevel (in the construction settings)
-static const uint MAX_MAX_HEIGHTLEVEL = MAX_TILE_HEIGHT;       ///< Upper bound of maximum allowed heightlevel (in the construction settings)
+static const uint MIN_HEIGHTMAP_HEIGHT = 1;                    ///< Lowest possible peak value for heightmap creation
+static const uint MIN_CUSTOM_TERRAIN_TYPE = 1;                 ///< Lowest possible peak value for world generation
+
+static const uint MIN_MAP_HEIGHT_LIMIT = 15;                   ///< Lower bound of maximum allowed heightlevel (in the construction settings)
+static const uint MAX_MAP_HEIGHT_LIMIT = MAX_TILE_HEIGHT;      ///< Upper bound of maximum allowed heightlevel (in the construction settings)
 
 static const uint MIN_SNOWLINE_HEIGHT = 2;                     ///< Minimum snowline height
 static const uint DEF_SNOWLINE_HEIGHT = 10;                    ///< Default snowline height
@@ -32,6 +34,9 @@ static const uint MAX_SNOWLINE_HEIGHT = (MAX_TILE_HEIGHT - 2); ///< Maximum allo
 static const uint MIN_RAINFOREST_HEIGHT = 1;                   ///< Minimum rainforest height
 static const uint DEF_RAINFOREST_HEIGHT = 8;                   ///< Default rainforest height
 static const uint MAX_RAINFOREST_HEIGHT = 255;                 ///< Maximum rainforest height
+
+static const uint DEF_SNOW_COVERAGE = 40;                      ///< Default snow coverage.
+static const uint DEF_DESERT_COVERAGE = 50;                    ///< Default desert coverage.
 
 
 /**

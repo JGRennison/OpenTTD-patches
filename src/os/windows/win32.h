@@ -17,7 +17,7 @@ typedef void (*Function)(int);
 bool LoadLibraryList(Function proc[], const char *dll);
 
 char *convert_from_fs(const wchar_t *name, char *utf8_buf, size_t buflen);
-wchar_t *convert_to_fs(const char *name, wchar_t *utf16_buf, size_t buflen, bool console_cp = false);
+wchar_t *convert_to_fs(const char *name, wchar_t *utf16_buf, size_t buflen);
 
 #if defined(__MINGW32__) && !defined(__MINGW64__) && !(_WIN32_IE >= 0x0500)
 #define SHGFP_TYPE_CURRENT 0
@@ -25,6 +25,21 @@ wchar_t *convert_to_fs(const char *name, wchar_t *utf16_buf, size_t buflen, bool
 
 void Win32SetCurrentLocaleName(const char *iso_code);
 int OTTDStringCompare(const char *s1, const char *s2);
-bool IsWindowsVistaOrGreater();
+
+#ifdef __MINGW32__
+			/* GCC doesn't understand the expected usage of GetProcAddress(). */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-function-type"
+#endif /* __MINGW32__ */
+
+template <typename T>
+T GetProcAddressT(HMODULE hModule, LPCSTR lpProcName)
+{
+	return reinterpret_cast<T>(GetProcAddress(hModule, lpProcName));
+}
+
+#ifdef __MINGW32__
+#pragma GCC diagnostic pop
+#endif
 
 #endif /* WIN32_H */

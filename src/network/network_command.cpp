@@ -53,6 +53,7 @@ static CommandCallback * const _callback_table[] = {
 	/* 0x1F */ CcDeleteVirtualTrain,
 	/* 0x20 */ CcAddVirtualEngine,
 	/* 0x21 */ CcMoveNewVirtualEngine,
+	/* 0x22 */ CcAddNewSchDispatchSchedule,
 };
 
 /**
@@ -201,7 +202,7 @@ void NetworkSyncCommandQueue(NetworkClientSocket *cs)
 {
 	for (CommandPacket *p = _local_execution_queue.Peek(); p != nullptr; p = p->next) {
 		CommandPacket c = *p;
-		c.callback = 0;
+		c.callback = nullptr;
 		cs->outgoing_queue.Append(std::move(c));
 	}
 }
@@ -328,7 +329,7 @@ const char *NetworkGameSocketHandler::ReceiveCommand(Packet *p, CommandPacket *c
 	if (cp->binary_length == 0) {
 		p->Recv_string(cp->text, (!_network_server && GetCommandFlags(cp->cmd) & CMD_STR_CTRL) != 0 ? SVS_ALLOW_CONTROL_CODE | SVS_REPLACE_WITH_QUESTION_MARK : SVS_REPLACE_WITH_QUESTION_MARK);
 	} else {
-		if ((p->pos + (PacketSize) cp->binary_length + /* callback index */ 1) > p->size) return "invalid binary data length";
+		if (!p->CanReadFromPacket(cp->binary_length + /* callback index */ 1)) return "invalid binary data length";
 		if (cp->binary_length > MAX_CMD_TEXT_LENGTH) return "over-size binary data length";
 		p->Recv_binary(cp->text, cp->binary_length);
 	}
@@ -367,7 +368,7 @@ void NetworkGameSocketHandler::SendCommand(Packet *p, const CommandPacket *cp)
 	}
 
 	if (callback == lengthof(_callback_table)) {
-		DEBUG(net, 0, "Unknown callback. (Pointer: %p) No callback sent", cp->callback);
+		DEBUG(net, 0, "Unknown callback for command; no callback sent (command: %d)", cp->cmd);
 		callback = 0; // _callback_table[0] == nullptr
 	}
 	p->Send_uint8 (callback);

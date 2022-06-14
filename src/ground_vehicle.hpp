@@ -405,7 +405,7 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 		if (this->cur_speed != this->gcache.last_speed) {
 			SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
 			this->gcache.last_speed = this->cur_speed;
-			if (HasBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_SPEED_CHANGE) && !_settings_client.gui.disable_vehicle_image_update) {
+			if (HasBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_SPEED_CHANGE)) {
 				this->RefreshImageCacheOfChain();
 			}
 		}
@@ -438,13 +438,13 @@ protected:
 	 * @param advisory_max_speed The advisory maximum speed here, in vehicle specific units.
 	 * @return Distance to drive.
 	 */
-	inline uint DoUpdateSpeed(GroundVehicleAcceleration accel, int min_speed, int max_speed, int advisory_max_speed)
+	inline uint DoUpdateSpeed(GroundVehicleAcceleration accel, int min_speed, int max_speed, int advisory_max_speed, bool use_realistic_braking)
 	{
 		const byte initial_subspeed = this->subspeed;
 		uint spd = this->subspeed + accel.acceleration;
 		this->subspeed = (byte)spd;
 
-		if (!(Type == VEH_TRAIN && _settings_game.vehicle.train_braking_model == TBM_REALISTIC)) {
+		if (!use_realistic_braking) {
 			max_speed = std::min(max_speed, advisory_max_speed);
 		}
 
@@ -469,26 +469,21 @@ protected:
 		}
 
 		if (this->cur_speed > max_speed) {
-			if (Type == VEH_TRAIN && _settings_game.vehicle.train_braking_model == TBM_REALISTIC && accel.braking >= 0) {
+			if (use_realistic_braking && accel.braking >= 0) {
 				extern void TrainBrakesOverheatedBreakdown(Vehicle *v);
 				TrainBrakesOverheatedBreakdown(this);
 			}
 			tempmax = std::max(this->cur_speed - (this->cur_speed / 10) - 1, max_speed);
 		}
 
-		/* Enforce a maximum and minimum speed. Normally we would use something like
-		 * Clamp for this, but in this case min_speed might be below the maximum speed
-		 * threshold for some reason. That makes acceleration fail and assertions
-		 * happen in Clamp. So make it explicit that min_speed overrules the maximum
-		 * speed by explicit ordering of min and max. */
-		int tempspeed = std::min(this->cur_speed + ((int)spd >> 8), tempmax);
+		int tempspeed = this->cur_speed + ((int)spd >> 8);
 
-		if (Type == VEH_TRAIN && _settings_game.vehicle.train_braking_model == TBM_REALISTIC && tempspeed > advisory_max_speed && accel.braking != accel.acceleration) {
+		if (use_realistic_braking && tempspeed > advisory_max_speed && accel.braking != accel.acceleration) {
 			spd = initial_subspeed + accel.braking;
 			int braking_speed = this->cur_speed + ((int)spd >> 8);
 			if (braking_speed >= advisory_max_speed) {
 				if (braking_speed > tempmax) {
-					if (Type == VEH_TRAIN && _settings_game.vehicle.train_braking_model == TBM_REALISTIC && accel.braking >= 0) {
+					if (use_realistic_braking && accel.braking >= 0) {
 						extern void TrainBrakesOverheatedBreakdown(Vehicle *v);
 						TrainBrakesOverheatedBreakdown(this);
 					}
@@ -503,6 +498,13 @@ protected:
 				this->subspeed = 0;
 			}
 		}
+
+		/* Enforce a maximum and minimum speed. Normally we would use something like
+		 * Clamp for this, but in this case min_speed might be below the maximum speed
+		 * threshold for some reason. That makes acceleration fail and assertions
+		 * happen in Clamp. So make it explicit that min_speed overrules the maximum
+		 * speed by explicit ordering of min and max. */
+		tempspeed = std::min(tempspeed, tempmax);
 
 		this->cur_speed = std::max(tempspeed, min_speed);
 

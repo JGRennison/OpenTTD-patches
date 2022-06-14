@@ -305,15 +305,25 @@ public:
 					old_dpi = _cur_dpi;
 					_cur_dpi = &tmp_dpi;
 
-					int y = 4 - this->vscroll->GetPosition();
+					int y = ScaleGUITrad(4) - this->vscroll->GetPosition();
 					bool buildable = true;
+					Money buy_cost = 0;
 					for (Train *train = this->virtual_train; train != nullptr; train = train->GetNextUnit()) {
 						if (!IsEngineBuildable(train->engine_type, VEH_TRAIN, train->owner)) buildable = false;
+						buy_cost += Engine::Get(train->engine_type)->GetCost();
 					}
 					if (!buildable) {
 						DrawString(8, r.right, y, STR_TMPL_WARNING_VEH_UNAVAILABLE);
 						y += FONT_HEIGHT_NORMAL;
 					}
+
+					SetDParam(0, STR_TMPL_TEMPLATE_OVR_VALUE_LTBLUE);
+					SetDParam(1, buy_cost);
+					SetDParam(2, STR_TMPL_TEMPLATE_OVR_RUNNING_COST);
+					SetDParam(3, this->virtual_train->GetDisplayRunningCost());
+					DrawString(8, r.right, y, STR_TMPL_TEMPLATE_OVR_MULTIPLE);
+					y += FONT_HEIGHT_NORMAL;
+
 					/* Draw vehicle performance info */
 					const bool original_acceleration = (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL ||
 							GetRailTypeInfo(this->virtual_train->railtype)->acceleration_type == 2);
@@ -340,12 +350,17 @@ public:
 						}
 						DrawString(8, r.right, y, STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS);
 					}
+					if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
+						y += FONT_HEIGHT_NORMAL;
+						SetDParam(0, GetTrainEstimatedMaxAchievableSpeed(this->virtual_train, gcache->cached_weight + full_cargo_weight, this->virtual_train->GetDisplayMaxSpeed()));
+						DrawString(8, r.right, y, STR_VEHICLE_INFO_MAX_SPEED_LOADED);
+					}
 					/* Draw cargo summary */
 					CargoArray cargo_caps;
 					for (const Train *tmp = this->virtual_train; tmp != nullptr; tmp = tmp->Next()) {
 						cargo_caps[tmp->cargo_type] += tmp->cargo_cap;
 					}
-					y += 26;
+					y += FONT_HEIGHT_NORMAL * 2;
 					for (CargoID i = 0; i < NUM_CARGO; ++i) {
 						if (cargo_caps[i] > 0) {
 							SetDParam(0, i);
@@ -473,19 +488,22 @@ public:
 	virtual void OnPaint() override
 	{
 		uint min_width = 32;
-		uint min_height = 30;
 		uint width = 0;
-		uint height = 30;
+		uint height = ScaleGUITrad(8) + (3 * FONT_HEIGHT_NORMAL);
 		CargoArray cargo_caps;
 
 		if (virtual_train != nullptr) {
 			bool buildable = true;
-			for (Train *train = virtual_train; train != nullptr; train = train->Next()) {
+			uint32 full_cargo_weight = 0;
+			for (Train *train = virtual_train; train != nullptr; train = train->GetNextUnit()) {
 				width += train->GetDisplayImageWidth();
 				cargo_caps[train->cargo_type] += train->cargo_cap;
 				if (!IsEngineBuildable(train->engine_type, VEH_TRAIN, train->owner)) buildable = false;
+				full_cargo_weight += train->GetCargoWeight(train->cargo_cap);
 			}
 			if (!buildable) height += FONT_HEIGHT_NORMAL;
+			if (full_cargo_weight > 0 || _settings_client.gui.show_train_weight_ratios_in_details) height += FONT_HEIGHT_NORMAL;
+			if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) height += FONT_HEIGHT_NORMAL;
 
 			for (CargoID i = 0; i < NUM_CARGO; ++i) {
 				if (cargo_caps[i] > 0) {
@@ -497,8 +515,7 @@ public:
 		min_width = std::max(min_width, width);
 		this->hscroll->SetCount(min_width + 50);
 
-		min_height = std::max(min_height, height);
-		this->vscroll->SetCount(min_height);
+		this->vscroll->SetCount(height);
 
 		this->DrawWidgets();
 	}

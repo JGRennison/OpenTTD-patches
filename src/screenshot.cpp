@@ -20,6 +20,8 @@
 #include "company_func.h"
 #include "strings_func.h"
 #include "error.h"
+#include "industry.h"
+#include "industrytype.h"
 #include "textbuf_gui.h"
 #include "window_gui.h"
 #include "window_func.h"
@@ -37,11 +39,12 @@
 static const char * const SCREENSHOT_NAME = "screenshot"; ///< Default filename of a saved screenshot.
 static const char * const HEIGHTMAP_NAME  = "heightmap";  ///< Default filename of a saved heightmap.
 
-char _screenshot_format_name[8];      ///< Extension of the current screenshot format (corresponds with #_cur_screenshot_format).
+std::string _screenshot_format_name;  ///< Extension of the current screenshot format (corresponds with #_cur_screenshot_format).
 uint _num_screenshot_formats;         ///< Number of available screenshot formats.
 uint _cur_screenshot_format;          ///< Index of the currently selected screenshot format in #_screenshot_formats.
 static char _screenshot_name[128];    ///< Filename of the screenshot file.
 char _full_screenshot_name[MAX_PATH]; ///< Pathname of the screenshot file.
+uint _heightmap_highest_peak;         ///< When saving a heightmap, this contains the highest peak on the map.
 
 static const char *_screenshot_aux_text_key = nullptr;
 static const char *_screenshot_aux_text_value = nullptr;
@@ -601,7 +604,7 @@ void InitializeScreenshotFormats()
 {
 	uint j = 0;
 	for (uint i = 0; i < lengthof(_screenshot_formats); i++) {
-		if (!strcmp(_screenshot_format_name, _screenshot_formats[i].extension)) {
+		if (_screenshot_format_name.compare(_screenshot_formats[i].extension) == 0) {
 			j = i;
 			break;
 		}
@@ -698,8 +701,18 @@ static const char *MakeScreenshotName(const char *default_fn, const char *ext, b
 		}
 	}
 
-	/* Add extension to screenshot file */
 	size_t len = strlen(_screenshot_name);
+
+	/* Handle user-specified filenames ending in %d with automatic numbering */
+	if (len >= 2) {
+		if (_screenshot_name[len - 2] == '%' && _screenshot_name[len - 1] == 'd') {
+			generate = true;
+			len -= 2;
+			_screenshot_name[len] = '\0';
+		}
+	}
+
+	/* Add extension to screenshot file */
 	seprintf(&_screenshot_name[len], lastof(_screenshot_name), ".%s", ext);
 
 	const char *screenshot_dir = crashlog ? _personal_dir.c_str() : FiosGetScreenshotDir();
@@ -848,7 +861,7 @@ static void HeightmapCallback(void *userdata, void *buffer, uint y, uint pitch, 
 	while (n > 0) {
 		TileIndex ti = TileXY(MapMaxX(), y);
 		for (uint x = MapMaxX(); true; x--) {
-			*buf = 256 * TileHeight(ti) / (1 + _settings_game.construction.max_heightlevel);
+			*buf = 256 * TileHeight(ti) / (1 + _heightmap_highest_peak);
 			buf++;
 			if (x == 0) break;
 			ti = TILE_ADDXY(ti, -1, 0);
@@ -871,6 +884,13 @@ bool MakeHeightmapScreenshot(const char *filename)
 		palette[i].g = i;
 		palette[i].b = i;
 	}
+
+	_heightmap_highest_peak = 0;
+	for (TileIndex tile = 0; tile < MapSize(); tile++) {
+		uint h = TileHeight(tile);
+		_heightmap_highest_peak = std::max(h, _heightmap_highest_peak);
+	}
+
 	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
 	return sf->proc(filename, HeightmapCallback, nullptr, MapSizeX(), MapSizeY(), 8, palette);
 }
@@ -884,7 +904,7 @@ static ScreenshotType _confirmed_screenshot_type; ///< Screenshot type the curre
  */
 static void ScreenshotConfirmationCallback(Window *w, bool confirmed)
 {
-	if (confirmed) MakeScreenshot(_confirmed_screenshot_type, nullptr);
+	if (confirmed) MakeScreenshot(_confirmed_screenshot_type, {});
 }
 
 /**
@@ -898,7 +918,7 @@ void MakeScreenshotWithConfirm(ScreenshotType t)
 	Viewport vp;
 	SetupScreenshotViewport(t, &vp);
 
-	bool heightmap_or_minimap = t == SC_HEIGHTMAP || t == SC_MINIMAP;
+	bool heightmap_or_minimap = t == SC_HEIGHTMAP || t == SC_MINIMAP || t == SC_TOPOGRAPHY || t == SC_INDUSTRY;
 	uint64_t width = (heightmap_or_minimap ? MapSizeX() : vp.width);
 	uint64_t height = (heightmap_or_minimap ? MapSizeY() : vp.height);
 
@@ -910,7 +930,7 @@ void MakeScreenshotWithConfirm(ScreenshotType t)
 		ShowQuery(STR_WARNING_SCREENSHOT_SIZE_CAPTION, STR_WARNING_SCREENSHOT_SIZE_MESSAGE, nullptr, ScreenshotConfirmationCallback);
 	} else {
 		/* Less than 64M pixels, just do it */
-		MakeScreenshot(t, nullptr);
+		MakeScreenshot(t, {});
 	}
 }
 
@@ -918,11 +938,17 @@ void MakeScreenshotWithConfirm(ScreenshotType t)
  * Show a a success or failure message indicating the result of a screenshot action
  * @param ret  whether the screenshot action was successful
  */
-static void ShowScreenshotResultMessage(bool ret)
+static void ShowScreenshotResultMessage(ScreenshotType t, bool ret)
 {
 	if (ret) {
-		SetDParamStr(0, _screenshot_name);
-		ShowErrorMessage(STR_MESSAGE_SCREENSHOT_SUCCESSFULLY, INVALID_STRING_ID, WL_WARNING);
+		if (t == SC_HEIGHTMAP) {
+			SetDParamStr(0, _screenshot_name);
+			SetDParam(1, _heightmap_highest_peak);
+			ShowErrorMessage(STR_MESSAGE_HEIGHTMAP_SUCCESSFULLY, INVALID_STRING_ID, WL_WARNING);
+		} else {
+			SetDParamStr(0, _screenshot_name);
+			ShowErrorMessage(STR_MESSAGE_SCREENSHOT_SUCCESSFULLY, INVALID_STRING_ID, WL_WARNING);
+		}
 	} else {
 		ShowErrorMessage(STR_ERROR_SCREENSHOT_FAILED, INVALID_STRING_ID, WL_ERROR);
 	}
@@ -930,18 +956,14 @@ static void ShowScreenshotResultMessage(bool ret)
 
 /**
  * Make a screenshot.
- * Unconditionally take a screenshot of the requested type.
  * @param t    the type of screenshot to make.
  * @param name the name to give to the screenshot.
  * @param width the width of the screenshot of, or 0 for current viewport width (only works for SC_ZOOMEDIN and SC_DEFAULTZOOM).
  * @param height the height of the screenshot of, or 0 for current viewport height (only works for SC_ZOOMEDIN and SC_DEFAULTZOOM).
  * @return true iff the screenshot was made successfully
- * @see MakeScreenshotWithConfirm
  */
-bool MakeScreenshot(ScreenshotType t, const char *name, uint32 width, uint32 height)
+static bool RealMakeScreenshot(ScreenshotType t, std::string name, uint32 width, uint32 height)
 {
-	VideoDriver::VideoBufferLocker lock;
-
 	if (t == SC_VIEWPORT) {
 		/* First draw the dirty parts of the screen and only then change the name
 		 * of the screenshot. This way the screenshot will always show the name
@@ -954,7 +976,7 @@ bool MakeScreenshot(ScreenshotType t, const char *name, uint32 width, uint32 hei
 	}
 
 	_screenshot_name[0] = '\0';
-	if (name != nullptr) strecpy(_screenshot_name, name, lastof(_screenshot_name));
+	if (!name.empty()) strecpy(_screenshot_name, name.c_str(), lastof(_screenshot_name));
 
 	bool ret;
 	switch (t) {
@@ -983,16 +1005,50 @@ bool MakeScreenshot(ScreenshotType t, const char *name, uint32 width, uint32 hei
 		}
 
 		case SC_MINIMAP:
-			ret = MakeMinimapWorldScreenshot(name);
+			ret = MakeMinimapWorldScreenshot(name.empty() ? nullptr : name.c_str());
+			break;
+
+		case SC_TOPOGRAPHY:
+			ret = MakeTopographyScreenshot(name.empty() ? nullptr : name.c_str());
+			break;
+
+		case SC_INDUSTRY:
+			ret = MakeIndustryScreenshot(name.empty() ? nullptr : name.c_str());
 			break;
 
 		default:
 			NOT_REACHED();
 	}
 
-	ShowScreenshotResultMessage(ret);
+	ShowScreenshotResultMessage(t, ret);
 
 	return ret;
+}
+
+/**
+ * Schedule making a screenshot.
+ * Unconditionally take a screenshot of the requested type.
+ * @param t    the type of screenshot to make.
+ * @param name the name to give to the screenshot.
+ * @param width the width of the screenshot of, or 0 for current viewport width (only works for SC_ZOOMEDIN and SC_DEFAULTZOOM).
+ * @param height the height of the screenshot of, or 0 for current viewport height (only works for SC_ZOOMEDIN and SC_DEFAULTZOOM).
+ * @return true iff the screenshot was successfully made.
+ * @see MakeScreenshotWithConfirm
+ */
+bool MakeScreenshot(ScreenshotType t, std::string name, uint32 width, uint32 height)
+{
+	if (t == SC_CRASHLOG) {
+		/* Video buffer might or might not be locked. */
+		VideoDriver::VideoBufferLocker lock;
+
+		return RealMakeScreenshot(t, name, width, height);
+	}
+
+	VideoDriver::GetInstance()->QueueOnMainThread([=] { // Capture by value to not break scope.
+		RealMakeScreenshot(t, name, width, height);
+	});
+
+	return true;
 }
 
 /**
@@ -1021,7 +1077,7 @@ bool MakeSmallMapScreenshot(unsigned int width, unsigned int height, SmallMapWin
 	_screenshot_name[0] = '\0';
 	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
 	bool ret = sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), SmallMapCallback, window, width, height, BlitterFactory::GetCurrentBlitter()->GetScreenDepth(), _cur_palette.palette);
-	ShowScreenshotResultMessage(ret);
+	ShowScreenshotResultMessage(SC_SMALLMAP, ret);
 	return ret;
 }
 
@@ -1052,6 +1108,187 @@ static Owner GetMinimapOwner(TileIndex tile)
 	}
 }
 
+/**
+ * Return the color value of a tile to display it with in the topography screenshot.
+ *
+ * @param tile The tile of which we would like to get the colour.
+ * @return The color palette value
+ */
+static byte GetTopographyValue(TileIndex tile)
+{
+	const auto tile_type = GetTileType(tile);
+
+	if (tile_type == MP_STATION) {
+		switch (GetStationType(tile)) {
+			case STATION_RAIL:
+				return MKCOLOUR(PC_GREY);
+			case STATION_AIRPORT:
+				return MKCOLOUR(PC_GREY);
+			case STATION_TRUCK:
+				return MKCOLOUR(PC_BLACK);
+			case STATION_BUS:
+				return MKCOLOUR(PC_BLACK);
+			case STATION_OILRIG: // FALLTHROUGH
+			case STATION_DOCK:
+				return MKCOLOUR(PC_GREY);
+			case STATION_BUOY:
+				return MKCOLOUR(PC_WATER);
+			case STATION_WAYPOINT:
+				return MKCOLOUR(PC_GREY);
+			case STATION_ROADWAYPOINT:
+				return MKCOLOUR(PC_GREY);
+			default: NOT_REACHED();
+		}
+	}
+
+	if (IsBridgeAbove(tile)) {
+		return MKCOLOUR(PC_DARK_GREY);
+	}
+
+	switch (tile_type) {
+		case MP_TUNNELBRIDGE:
+			return MKCOLOUR(PC_DARK_GREY);
+		case MP_RAILWAY:
+			return MKCOLOUR(PC_GREY);
+		case MP_ROAD:
+			return MKCOLOUR(PC_BLACK);
+		case MP_HOUSE:
+			return MKCOLOUR(0xB5);
+		case MP_WATER:
+			return MKCOLOUR(PC_WATER);
+		case MP_INDUSTRY:
+			return MKCOLOUR(0xA2);
+		default: {
+			const auto tile_z = GetTileZ(tile);
+			const auto max_z = _settings_game.construction.map_height_limit;
+			const auto color_index = (tile_z * 16) / max_z;
+
+			switch (color_index) {
+				case 0:
+					return MKCOLOUR(0x50);
+				case 1:
+					return MKCOLOUR(0x51);
+				case 2:
+					return MKCOLOUR(0x52);
+				case 3:
+					return MKCOLOUR(0x53);
+				case 4:
+					return MKCOLOUR(0x54);
+				case 5:
+					return MKCOLOUR(0x55);
+				case 6:
+					return MKCOLOUR(0x56);
+				case 7:
+					return MKCOLOUR(0x57);
+				case 8:
+					return MKCOLOUR(0x3B);
+				case 9:
+					return MKCOLOUR(0x3A);
+				case 10:
+					return MKCOLOUR(0x39);
+				case 11:
+					return MKCOLOUR(0x38);
+				case 12:
+					return MKCOLOUR(0x37);
+				case 13:
+					return MKCOLOUR(0x36);
+				case 14:
+					return MKCOLOUR(0x35);
+				case 15:
+					return MKCOLOUR(0x69);
+				default:
+					return MKCOLOUR(0x46);
+			}
+		}
+	}
+}
+
+/**
+ * Return the color value of a tile to display it with in the industries screenshot.
+ *
+ * @param tile The tile of which we would like to get the colour.
+ * @return The color palette value
+ */
+static byte GetIndustryValue(TileIndex tile)
+{
+	const auto tile_type = GetTileType(tile);
+
+	if (tile_type == MP_STATION) {
+		switch (GetStationType(tile)) {
+			case STATION_RAIL:
+				return MKCOLOUR(PC_DARK_GREY);
+			case STATION_AIRPORT:
+				return MKCOLOUR(GREY_SCALE(12));
+			case STATION_TRUCK:
+				return MKCOLOUR(PC_GREY);
+			case STATION_BUS:
+				return MKCOLOUR(PC_GREY);
+			case STATION_OILRIG: // FALLTHROUGH
+			case STATION_DOCK:
+				return MKCOLOUR(PC_GREY);
+			case STATION_BUOY:
+				return MKCOLOUR(PC_BLACK);
+			case STATION_WAYPOINT:
+				return MKCOLOUR(PC_GREY);
+			case STATION_ROADWAYPOINT:
+				return MKCOLOUR(PC_GREY);
+			default: NOT_REACHED();
+		}
+	}
+
+	if (IsBridgeAbove(tile)) {
+		return MKCOLOUR(GREY_SCALE(12));
+	}
+
+	switch (tile_type) {
+		case MP_TUNNELBRIDGE:
+			return MKCOLOUR(GREY_SCALE(12));
+		case MP_RAILWAY:
+			return MKCOLOUR(PC_DARK_GREY);
+		case MP_ROAD:
+			return MKCOLOUR(PC_GREY);
+		case MP_HOUSE:
+			return MKCOLOUR(GREY_SCALE(4));
+		case MP_WATER:
+			return MKCOLOUR(0x12);
+		case MP_INDUSTRY: {
+			const IndustryType industry_type = Industry::GetByTile(tile)->type;
+
+			return GetIndustrySpec(industry_type)->map_colour;
+		}
+		default:
+			return MKCOLOUR(GREY_SCALE(2));
+	}
+}
+
+template <typename T>
+void MinimapScreenCallback(void *userdata, void *buf, uint y, uint pitch, uint n, T colorCallback)
+{
+	uint32 *ubuf = (uint32 *)buf;
+	uint num = (pitch * n);
+	for (uint i = 0; i < num; i++) {
+		uint row = y + (int)(i / pitch);
+		uint col = (MapSizeX() - 1) - (i % pitch);
+
+		TileIndex tile = TileXY(col, row);
+		byte val = colorCallback(tile);
+
+		uint32 colour_buf = 0;
+		colour_buf  = (_cur_palette.palette[val].b << 0);
+		colour_buf |= (_cur_palette.palette[val].g << 8);
+		colour_buf |= (_cur_palette.palette[val].r << 16);
+
+		*ubuf = colour_buf;
+		ubuf++;   // Skip alpha
+	}
+}
+
+/**
+ * Return the color value of a tile to display it with in the minimap screenshot.
+ *
+ * @param tile The tile of which we would like to get the colour.
+ * @return The color palette value
+ */
 static void MinimapScreenCallback(void *userdata, void *buf, uint y, uint pitch, uint n)
 {
 	/* Fill with the company colours */
@@ -1067,24 +1304,19 @@ static void MinimapScreenCallback(void *userdata, void *buf, uint y, uint pitch,
 	owner_colours[OWNER_DEITY]   = PC_DARK_GREY; // industry
 	owner_colours[OWNER_END]     = PC_BLACK;
 
-	uint32 *ubuf = (uint32 *)buf;
-	uint num = (pitch * n);
-	for (uint i = 0; i < num; i++) {
-		uint row = y + (int)(i / pitch);
-		uint col = (MapSizeX() - 1) - (i % pitch);
+	MinimapScreenCallback(userdata, buf, y, pitch, n, [&](TileIndex tile) -> byte {
+		return owner_colours[GetMinimapOwner(tile)];
+	});
+}
 
-		TileIndex tile = TileXY(col, row);
-		Owner o = GetMinimapOwner(tile);
-		byte val = owner_colours[o];
+static void TopographyScreenCallback(void *userdata, void *buf, uint y, uint pitch, uint n)
+{
+	MinimapScreenCallback(userdata, buf, y, pitch, n, GetTopographyValue);
+}
 
-		uint32 colour_buf = 0;
-		colour_buf  = (_cur_palette.palette[val].b << 0);
-		colour_buf |= (_cur_palette.palette[val].g << 8);
-		colour_buf |= (_cur_palette.palette[val].r << 16);
-
-		*ubuf = colour_buf;
-		ubuf++;   // Skip alpha
-	}
+static void IndustryScreenCallback(void *userdata, void *buf, uint y, uint pitch, uint n)
+{
+	MinimapScreenCallback(userdata, buf, y, pitch, n, GetIndustryValue);
 }
 
 /**
@@ -1097,4 +1329,28 @@ bool MakeMinimapWorldScreenshot(const char *name)
 
 	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
 	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), MinimapScreenCallback, nullptr, MapSizeX(), MapSizeY(), 32, _cur_palette.palette);
+}
+
+/**
+ * Make a topography screenshot.
+ */
+bool MakeTopographyScreenshot(const char *name)
+{
+	_screenshot_name[0] = '\0';
+	if (name != nullptr) strecpy(_screenshot_name, name, lastof(_screenshot_name));
+
+	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
+	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), TopographyScreenCallback, nullptr, MapSizeX(), MapSizeY(), 32, _cur_palette.palette);
+}
+
+/**
+ * Make an industry screenshot.
+ */
+bool MakeIndustryScreenshot(const char *name)
+{
+	_screenshot_name[0] = '\0';
+	if (name != nullptr) strecpy(_screenshot_name, name, lastof(_screenshot_name));
+
+	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
+	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), IndustryScreenCallback, nullptr, MapSizeX(), MapSizeY(), 32, _cur_palette.palette);
 }

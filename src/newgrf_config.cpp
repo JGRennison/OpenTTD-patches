@@ -17,6 +17,7 @@
 #include "window_func.h"
 #include "progress.h"
 #include "video/video_driver.hpp"
+#include "string_func.h"
 #include "strings_func.h"
 #include "textfile_gui.h"
 #include "thread.h"
@@ -291,15 +292,13 @@ void GRFParameterInfo::Finalize()
 /**
  * Update the palettes of the graphics from the config file.
  * Called when changing the default palette in advanced settings.
- * @param p1 Unused.
- * @return Always true.
+ * @param new_value Unused.
  */
-bool UpdateNewGRFConfigPalette(int32 p1)
+void UpdateNewGRFConfigPalette(int32 new_value)
 {
 	for (GRFConfig *c = _grfconfig_newgame; c != nullptr; c = c->next) c->SetSuitablePalette();
 	for (GRFConfig *c = _grfconfig_static;  c != nullptr; c = c->next) c->SetSuitablePalette();
 	for (GRFConfig *c = _all_grfs;          c != nullptr; c = c->next) c->SetSuitablePalette();
-	return true;
 }
 
 /**
@@ -464,7 +463,7 @@ bool FillGRFDetails(GRFConfig *config, bool is_static, Subdirectory subdir)
 	}
 
 	/* Find and load the Action 8 information */
-	LoadNewGRFFile(config, CONFIG_SLOT, GLS_FILESCAN, subdir);
+	LoadNewGRFFile(config, GLS_FILESCAN, subdir, true);
 	config->SetSuitablePalette();
 	config->FinalizeParameterInfo();
 
@@ -473,7 +472,7 @@ bool FillGRFDetails(GRFConfig *config, bool is_static, Subdirectory subdir)
 
 	if (is_static) {
 		/* Perform a 'safety scan' for static GRFs */
-		LoadNewGRFFile(config, CONFIG_SLOT, GLS_SAFETYSCAN, subdir);
+		LoadNewGRFFile(config, GLS_SAFETYSCAN, subdir, true);
 
 		/* GCF_UNSAFE is set if GLS_SAFETYSCAN finds unsafe actions */
 		if (HasBit(config->flags, GCF_UNSAFE)) return false;
@@ -666,6 +665,10 @@ compatible_grf:
 	return res;
 }
 
+
+/** Set this flag to prevent any NewGRF scanning from being done. */
+int _skip_all_newgrf_scanning = 0;
+
 /** Helper for scanning for files with GRF as extension */
 class GRFFileScanner : FileScanner {
 	std::chrono::steady_clock::time_point next_update; ///< The next moment we do update the screen.
@@ -683,6 +686,11 @@ public:
 	/** Do the scan for GRFs. */
 	static uint DoScan()
 	{
+		if (_skip_all_newgrf_scanning > 0) {
+			if (_skip_all_newgrf_scanning == 1) _skip_all_newgrf_scanning = 0;
+			return 0;
+		}
+
 		CalcGRFMD5ThreadingStart();
 		GRFFileScanner fs;
 		fs.grfs.clear();
@@ -853,53 +861,6 @@ const GRFConfig *FindGRFConfig(uint32 grfid, FindGRFConfigMode mode, const uint8
 	}
 
 	return best;
-}
-
-/** Structure for UnknownGRFs; this is a lightweight variant of GRFConfig */
-struct UnknownGRF : public GRFIdentifier {
-	GRFTextWrapper name; ///< Name of the GRF.
-
-	UnknownGRF() = default;
-	UnknownGRF(const UnknownGRF &other) = default;
-	UnknownGRF(UnknownGRF &&other) = default;
-	UnknownGRF(uint32 grfid, const uint8 *_md5sum) : GRFIdentifier(grfid, _md5sum), name(new GRFTextList) {}
-};
-
-/**
- * Finds the name of a NewGRF in the list of names for unknown GRFs. An
- * unknown GRF is a GRF where the .grf is not found during scanning.
- *
- * The names are resolved via UDP calls to servers that should know the name,
- * though the replies may not come. This leaves "<Unknown>" as name, though
- * that shouldn't matter _very_ much as they need GRF crawler or so to look
- * up the GRF anyway and that works better with the GRF ID.
- *
- * @param grfid  the GRF ID part of the 'unique' GRF identifier
- * @param md5sum the MD5 checksum part of the 'unique' GRF identifier
- * @param create whether to create a new GRFConfig if the GRFConfig did not
- *               exist in the fake list of GRFConfigs.
- * @return The GRFTextWrapper of the name of the GRFConfig with the given GRF ID
- *         and MD5 checksum or nullptr when it does not exist and create is false.
- *         This value must NEVER be freed by the caller.
- */
-GRFTextWrapper FindUnknownGRFName(uint32 grfid, uint8 *md5sum, bool create)
-{
-	static std::vector<UnknownGRF> unknown_grfs;
-
-	for (const auto &grf : unknown_grfs) {
-		if (grf.grfid == grfid) {
-			if (memcmp(md5sum, grf.md5sum, sizeof(grf.md5sum)) == 0) return grf.name;
-		}
-	}
-
-	if (!create) return nullptr;
-
-	unknown_grfs.emplace_back(grfid, md5sum);
-	UnknownGRF &grf = unknown_grfs.back();
-
-	AddGRFTextToList(grf.name, UNKNOWN_GRF_NAME_PLACEHOLDER);
-
-	return grf.name;
 }
 
 /**

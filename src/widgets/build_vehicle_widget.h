@@ -24,6 +24,32 @@ enum BuildVehicleWidgets {
 	WID_BV_SHOW_HIDE,                 ///< Button to hide or show the selected engine.
 	WID_BV_BUILD_SEL,                 ///< Build button.
 	WID_BV_RENAME,                    ///< Rename button.
+
+	WID_BV_CAPTION_LOCO,                   ///< Caption of locomotive half of the window.
+	WID_BV_SORT_ASSENDING_DESCENDING_LOCO, ///< Sort direction.
+	WID_BV_SORT_DROPDOWN_LOCO,             ///< Criteria of sorting dropdown.
+	WID_BV_CARGO_FILTER_DROPDOWN_LOCO,     ///< Cargo filter dropdown.
+	WID_BV_SHOW_HIDDEN_LOCOS,              ///< Toggle whether to display the hidden locomotives.
+	WID_BV_LIST_LOCO,                      ///< List of vehicles.
+	WID_BV_SCROLLBAR_LOCO,                 ///< Scrollbar of list.
+	WID_BV_PANEL_LOCO,                     ///< Button panel.
+	WID_BV_SHOW_HIDE_LOCO,                 ///< Button to hide or show the selected locomotives.
+	WID_BV_BUILD_LOCO,                     ///< Build panel.
+	WID_BV_BUILD_SEL_LOCO,                 ///< Build button.
+	WID_BV_RENAME_LOCO,                    ///< Rename button.
+
+	WID_BV_CAPTION_WAGON,                   ///< Caption of wagon half of the window.
+	WID_BV_SORT_ASSENDING_DESCENDING_WAGON, ///< Sort direction.
+	WID_BV_SORT_DROPDOWN_WAGON,             ///< Criteria of sorting dropdown.
+	WID_BV_CARGO_FILTER_DROPDOWN_WAGON,     ///< Cargo filter dropdown.
+	WID_BV_SHOW_HIDDEN_WAGONS,              ///< Toggle whether to display the hidden wagons.
+	WID_BV_LIST_WAGON,                      ///< List of vehicles.
+	WID_BV_SCROLLBAR_WAGON,                 ///< Scrollbar of list.
+	WID_BV_PANEL_WAGON,                     ///< Button panel.
+	WID_BV_SHOW_HIDE_WAGON,                 ///< Button to hide or show the selected wagons.
+	WID_BV_BUILD_WAGON,                     ///< Build panel.
+	WID_BV_BUILD_SEL_WAGON,                 ///< Build button.
+	WID_BV_RENAME_WAGON,                    ///< Rename button.
 };
 
 #endif /* WIDGETS_BUILD_VEHICLE_WIDGET_H */

@@ -6,7 +6,7 @@ This document does not describe the player-visible changes/additions described i
 
 ### Crash logger and diagnostics
 
-* Additional logged items: current company ID, map size, configure invocation, thread name, recently executed commands.
+* Additional logged items: current company ID, map size, configure invocation, thread name, recently executed commands, static NewGRFs.
 * Additional logged platform-specific items: detailed OS version (Unix), signal details (Unix, Mac), exception record data (Windows).
 * Better handling of crashes which occur in a non-main thread (ask the main thread to do the crash screenshot and savegame).
 * Support logging register values on Unix and Mac.
@@ -33,6 +33,7 @@ This document does not describe the player-visible changes/additions described i
 #### NewGRF debug window
 
 * Add various supplementary non-GRF information, e.g. vehicle variables and flags.
+* Add NewGRF sprite group dumping and related functionality.
 
 #### Logging
 
@@ -134,6 +135,7 @@ This document does not describe the player-visible changes/additions described i
 * [AI/GS script additions](docs/script-additions.html).
 * Add AI/GS method to get current day length.
 * Add GS method to create river tiles.
+* Add AI/GS methods related to road and tram types.
 * Add workaround for performance issues when attempting to create a town when no town names are left.
 * Fixup a GS otherwise inconsistent with day length.
 
@@ -141,6 +143,8 @@ This document does not describe the player-visible changes/additions described i
 
 * [NewGRF specification additions](docs/newgrf-additions.html).
 * Add workaround for a known buggy NewGRF to avoid desync issues.
+* Apply various optimisations to VarAction2 deterministic sprite groups.
+* Avoid animating industry tiles which are not actually animated in the current layout.
 
 ### SDL2
 * Update whole window surface if >= 80% needs updating.

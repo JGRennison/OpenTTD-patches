@@ -70,11 +70,12 @@ static const CmdStruct _cmd_structs[] = {
 	{"STRING5",           EmitSingleChar, SCC_STRING5,            6, -1, C_CASE | C_GENDER}, // included string that consumes the string id and FIVE arguments
 	{"STRING6",           EmitSingleChar, SCC_STRING6,            7, -1, C_CASE | C_GENDER}, // included string that consumes the string id and SIX arguments
 	{"STRING7",           EmitSingleChar, SCC_STRING7,            8, -1, C_CASE | C_GENDER}, // included string that consumes the string id and SEVEN arguments
+	{"STRING8",           EmitSingleChar, SCC_STRING8,            9, -1, C_CASE | C_GENDER}, // included string that consumes the string id and EIGHT arguments
 
 	{"STATION_FEATURES",  EmitSingleChar, SCC_STATION_FEATURES,   1, -1, C_NONE}, // station features string, icons of the features
 	{"INDUSTRY",          EmitSingleChar, SCC_INDUSTRY_NAME,      1, -1, C_CASE | C_GENDER}, // industry, takes an industry #, can have cases
 	{"CARGO_LONG",        EmitSingleChar, SCC_CARGO_LONG,         2,  1, C_NONE | C_GENDER},
-	{"CARGO_SHORT",       EmitSingleChar, SCC_CARGO_SHORT,        2,  1, C_NONE}, // short cargo description, only ### tons, or ### litres
+	{"CARGO_SHORT",       EmitSingleChar, SCC_CARGO_SHORT,        2,  1, C_NONE | C_GENDER}, // short cargo description, only ### tons, or ### litres
 	{"CARGO_TINY",        EmitSingleChar, SCC_CARGO_TINY,         2,  1, C_NONE}, // tiny cargo description with only the amount, not a specifier for the amount or the actual cargo name
 	{"CARGO_LIST",        EmitSingleChar, SCC_CARGO_LIST,         1, -1, C_CASE},
 	{"POWER",             EmitSingleChar, SCC_POWER,              1,  0, C_NONE},
@@ -111,6 +112,7 @@ static const CmdStruct _cmd_structs[] = {
 	{"DECIMAL",           EmitSingleChar, SCC_DECIMAL,            2,  0, C_NONE}, // Number with comma and fractional part. Second parameter is number of fractional digits, first parameter is number times 10**(second parameter).
 	{"DECIMAL1",          EmitSingleChar, SCC_DECIMAL1,           1,  0, C_NONE}, // Decimal with fixed second parameter of 1
 	{"NUM",               EmitSingleChar, SCC_NUM,                1,  0, C_NONE}, // Signed number
+	{"PLUS_NUM",          EmitSingleChar, SCC_PLUS_NUM,           1,  0, C_NONE}, // Signed number, with sign (+ or -) shown for both positive and negative numbers
 	{"ZEROFILL_NUM",      EmitSingleChar, SCC_ZEROFILL_NUM,       2,  0, C_NONE}, // Unsigned number with zero fill, e.g. "02". First parameter is number, second minimum length
 	{"BYTES",             EmitSingleChar, SCC_BYTES,              1,  0, C_NONE}, // Unsigned number with "bytes", i.e. "1.02 MiB or 123 KiB"
 	{"HEX",               EmitSingleChar, SCC_HEX,                1,  0, C_NONE}, // Hexadecimally printed number
@@ -190,6 +192,7 @@ static const PluralForm _plural_forms[] = {
 	{ 2, "Two forms: cases for numbers ending with a consonant, and with a vowel.", "\"yeong,il,sam,yuk,chil,pal\" \"i,sa,o,gu\"" },
 	{ 4, "Four forms: special cases for 1, 0 and numbers ending in 02 to 10, and numbers ending in 11 to 19.", "\"1\" \"0,2..10,102..110,202..210,...\" \"11..19,111..119,211..219,...\" \"other\"" },
 	{ 4, "Four forms: special cases for 1 and 11, 2 and 12, 3..10 and 13..19.", "\"1,11\" \"2,12\" \"3..10,13..19\" \"other\"" },
+	{ 3, "Three forms: special cases for 1, 0 and numbers ending in 01 to 19.", "\"1\" \"0,2..19,101..119,201..219,...\" \"other\"" },
 };
 
 /* Flags:

@@ -284,6 +284,8 @@ void MultiCommodityFlow::Dijkstra(NodeID source_node, PathVector &paths)
 
 	this->job.path_allocator.SetParameters(sizeof(Tannotation), (8192 - 32) / sizeof(Tannotation));
 
+	const uint16 aircraft_link_scale = this->job.Settings().aircraft_link_scale;
+
 	for (NodeID node = 0; node < size; ++node) {
 		Tannotation *anno = new (this->job.path_allocator.Allocate()) Tannotation(node, node == source_node);
 		anno->UpdateAnnotation();
@@ -310,6 +312,10 @@ void MultiCommodityFlow::Dijkstra(NodeID source_node, PathVector &paths)
 			}
 			/* punish in-between stops a little */
 			uint distance = DistanceMaxPlusManhattan(this->job[from].XY(), this->job[to].XY()) + 1;
+			if (edge.LastAircraftUpdate() != INVALID_DATE && aircraft_link_scale > 100) {
+				distance *= aircraft_link_scale;
+				distance /= 100;
+			}
 			Tannotation *dest = static_cast<Tannotation *>(paths[to]);
 			if (dest->IsBetter(source, capacity, capacity - edge.Flow(), distance)) {
 				if (dest->GetAnnosSetFlag()) annos.erase(AnnoSetItem<Tannotation>(dest));
@@ -502,7 +508,7 @@ bool MCF1stPass::EliminateCycles(PathVector &path, NodeID origin_id, NodeID next
 bool MCF1stPass::EliminateCycles()
 {
 	bool cycles_found = false;
-	uint size = this->job.Size();
+	uint16 size = this->job.Size();
 	PathVector path(size, nullptr);
 	for (NodeID node = 0; node < size; ++node) {
 		/* Starting at each node in the graph find all cycles involving this
@@ -520,7 +526,7 @@ bool MCF1stPass::EliminateCycles()
 MCF1stPass::MCF1stPass(LinkGraphJob &job) : MultiCommodityFlow(job)
 {
 	PathVector paths;
-	uint size = job.Size();
+	uint16 size = job.Size();
 	uint accuracy = job.Settings().accuracy;
 	bool more_loops;
 	std::vector<bool> finished_sources(size);
@@ -569,7 +575,7 @@ MCF2ndPass::MCF2ndPass(LinkGraphJob &job) : MultiCommodityFlow(job)
 {
 	this->max_saturation = UINT_MAX; // disable artificial cap on saturation
 	PathVector paths;
-	uint size = job.Size();
+	uint16 size = job.Size();
 	uint accuracy = job.Settings().accuracy;
 	bool demand_left = true;
 	std::vector<bool> finished_sources(size);

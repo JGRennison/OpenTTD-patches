@@ -13,6 +13,7 @@
 #include "../core/bitmath_func.hpp"
 #include <vector>
 #include "saveload.h"
+#include "saveload_buffer.h"
 
 typedef std::vector<byte> Buffer;
 
@@ -146,14 +147,14 @@ static void Save_SPRG()
 
 	// OK, we can now write out our programs
 	Buffer b;
-	WriteVLI(b, _signal_programs.size());
+	WriteVLI(b, (uint)_signal_programs.size());
 	for(ProgramList::iterator i = _signal_programs.begin(), e = _signal_programs.end();
 			i != e; ++i) {
 		SignalProgram *prog = i->second;
 
 		WriteVLI(b, prog->tile);
 		WriteVLI(b, prog->track);
-		WriteVLI(b, prog->instructions.size());
+		WriteVLI(b, (uint)prog->instructions.size());
 		for (SignalInstruction *insn : prog->instructions) {
 			WriteVLI(b, insn->Opcode());
 			if(insn->Opcode() != PSO_FIRST)
@@ -195,11 +196,9 @@ static void Save_SPRG()
 		}
 	}
 
-	uint size = b.size();
+	uint size = (uint)b.size();
 	SlSetLength(size);
-	for(uint i = 0; i < size; i++) {
-		SlWriteByte(b[i]); // TODO Gotta be a better way
-	}
+	MemoryDumper::GetCurrent()->CopyBytes(b.data(), size);
 }
 
 // We don't know the pointer values that need to be stored in various
@@ -223,14 +222,14 @@ typedef std::vector<Fixup> FixupList;
 template<typename T>
 static void MakeFixup(FixupList &l, T *&ir, uint id, SignalOpcode op = PSO_INVALID)
 {
-	ir = reinterpret_cast<T*>(id);
+	ir = reinterpret_cast<T*>((size_t)id);
 	l.emplace_back(reinterpret_cast<SignalInstruction**>(&ir), op);
 }
 
 static void DoFixups(FixupList &l, InstructionList &il)
 {
 	for (Fixup &i : l) {
-		uint id = reinterpret_cast<size_t>(*(i.ptr));
+		uint id = (uint)reinterpret_cast<size_t>(*(i.ptr));
 		if (id >= il.size())
 			NOT_REACHED();
 
@@ -308,6 +307,8 @@ static void Load_SPRG()
 	}
 }
 
-extern const ChunkHandler _signal_chunk_handlers[] = {
-	{ 'SPRG', Save_SPRG, Load_SPRG, nullptr, nullptr, CH_RIFF | CH_LAST},
+extern const ChunkHandler signal_chunk_handlers[] = {
+	{ 'SPRG', Save_SPRG, Load_SPRG, nullptr, nullptr, CH_RIFF },
 };
+
+extern const ChunkHandlerTable _signal_chunk_handlers(signal_chunk_handlers);

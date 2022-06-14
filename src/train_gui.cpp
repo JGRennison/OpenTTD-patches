@@ -184,8 +184,9 @@ struct CargoSummaryItem {
 	}
 };
 
-static const uint TRAIN_DETAILS_MIN_INDENT = 32; ///< Minimum indent level in the train details window
-static const uint TRAIN_DETAILS_MAX_INDENT = 72; ///< Maximum indent level in the train details window; wider than this and we start on a new line
+static const uint TRAIN_DETAILS_MIN_INDENT  = 32; ///< Minimum indent level in the train details window
+static const uint TRAIN_DETAILS_MAX_INDENT  = 72; ///< Maximum indent level in the train details window; wider than this and we start on a new line
+static const int  TRAIN_DETAILS_LIST_INDENT = 10; ///< Indent for list items in the Total Cargo window
 
 /** Container for the cargo summary information. */
 typedef std::vector<CargoSummaryItem> CargoSummary;
@@ -390,7 +391,12 @@ int GetTrainDetailsWndVScroll(VehicleID veh_id, TrainDetailsWindowTabs det_tab)
 		for (CargoID i = 0; i < NUM_CARGO; i++) {
 			if (max_cargo[i] > 0) num++; // only count carriages that the train has
 		}
-		num++; // needs one more because first line is description string
+
+		if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
+			num += 5; // needs five more because first line is description string and we have the weight and speed info and the feeder share
+		} else {
+			num += 2; // needs one more because first line is description string and we have the feeder share
+		}
 	} else {
 		for (const Train *v = Train::Get(veh_id); v != nullptr; v = v->GetNextVehicle()) {
 			GetCargoSummaryOfArticulatedVehicle(v, &_cargo_summary);
@@ -420,6 +426,10 @@ void DrawTrainDetails(const Train *v, int left, int right, int y, int vscroll_po
 {
 	/* get rid of awkward offset */
 	y -= WD_MATRIX_TOP;
+
+	/* Indent the total cargo capacity details */
+	int offs_left = _current_text_dir == TD_LTR ? TRAIN_DETAILS_LIST_INDENT : 0;
+	int offs_right = _current_text_dir == TD_LTR ? 0 : TRAIN_DETAILS_LIST_INDENT;
 
 	int sprite_height = ScaleGUITrad(GetVehicleHeight(VEH_TRAIN));
 	int line_height = std::max(sprite_height, WD_MATRIX_TOP + FONT_HEIGHT_NORMAL + WD_MATRIX_BOTTOM);
@@ -512,6 +522,58 @@ void DrawTrainDetails(const Train *v, int left, int right, int y, int vscroll_po
 		CargoArray act_cargo;
 		CargoArray max_cargo;
 		Money feeder_share = 0;
+		int empty_weight = 0;
+		int loaded_weight = 0;
+
+		for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
+			const Train *train = Train::From(u);
+			const auto weight_without_cargo = train->GetWeightWithoutCargo();
+			act_cargo[u->cargo_type] += u->cargo.StoredCount();
+			max_cargo[u->cargo_type] += u->cargo_cap;
+			feeder_share             += u->cargo.FeederShare();
+			empty_weight             += weight_without_cargo;
+			loaded_weight            += weight_without_cargo + train->GetCargoWeight(train->cargo_cap);
+		}
+
+		if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
+			const int empty_max_speed = GetTrainEstimatedMaxAchievableSpeed(v, empty_weight, v->GetDisplayMaxSpeed());
+			const int loaded_max_speed = GetTrainEstimatedMaxAchievableSpeed(v, loaded_weight, v->GetDisplayMaxSpeed());
+
+			if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
+				SetDParam(0, empty_weight);
+				SetDParam(1, loaded_weight);
+				DrawString(left, right, y + text_y_offset, STR_VEHICLE_DETAILS_TRAIN_TOTAL_WEIGHT);
+				y += line_height;
+			}
+
+			if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
+				SetDParam(0, empty_max_speed);
+				SetDParam(1, loaded_max_speed);
+				DrawString(left, right, y + text_y_offset, STR_VEHICLE_DETAILS_TRAIN_MAX_SPEED);
+				y += line_height;
+			}
+
+			if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
+				y += line_height;
+			}
+		}
+
+		if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
+			DrawString(left, right, y + text_y_offset, STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_TEXT);
+			y += line_height;
+		}
+
+		for (CargoID i = 0; i < NUM_CARGO; i++) {
+			if (max_cargo[i] > 0 && --vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
+				SetDParam(0, i);            // {CARGO} #1
+				SetDParam(1, act_cargo[i]); // {CARGO} #2
+				SetDParam(2, i);            // {SHORTCARGO} #1
+				SetDParam(3, max_cargo[i]); // {SHORTCARGO} #2
+				SetDParam(4, _settings_game.vehicle.freight_trains);
+				DrawString(left + offs_left, right - offs_right, y + text_y_offset, FreightWagonMult(i) > 1 ? STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_MULT : STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY);
+				y += line_height;
+			}
+		}
 
 		for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
 			act_cargo[u->cargo_type] += u->cargo.StoredCount();
@@ -519,22 +581,9 @@ void DrawTrainDetails(const Train *v, int left, int right, int y, int vscroll_po
 			feeder_share             += u->cargo.FeederShare();
 		}
 
-		/* draw total cargo tab */
-		DrawString(left, right, y + text_y_offset, STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_TEXT);
-		y += line_height;
-
-		for (CargoID i = 0; i < NUM_CARGO; i++) {
-			if (max_cargo[i] > 0 && --vscroll_pos < 0 && vscroll_pos > -vscroll_cap) {
-				SetDParam(0, i);            // {CARGO} #1
-				SetDParam(1, act_cargo[i]); // {CARGO} #2
-				SetDParam(2, i);            // {SHORTCARGO} #1
-				SetDParam(3, max_cargo[i]); // {SHORTCARGO} #2
-				SetDParam(4, _settings_game.vehicle.freight_trains);
-				DrawString(left, right, y + text_y_offset, FreightWagonMult(i) > 1 ? STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_MULT : STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY);
-				y += line_height;
-			}
+		if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
+			SetDParam(0, feeder_share);
+			DrawString(left, right, y + text_y_offset, STR_VEHICLE_INFO_FEEDER_CARGO_VALUE);
 		}
-		SetDParam(0, feeder_share);
-		DrawString(left, right, y + text_y_offset, STR_VEHICLE_INFO_FEEDER_CARGO_VALUE);
 	}
 }

@@ -207,7 +207,8 @@ static int GetIncompatibleRefitOrderIdForAutoreplace(const Vehicle *v, EngineID 
 	const Order *o;
 	const Vehicle *u = (v->type == VEH_TRAIN) ? v->First() : v;
 
-	const OrderList *orders = u->orders.list;
+	const OrderList *orders = u->orders;
+	if (orders == nullptr) return -1;
 	for (VehicleOrderID i = 0; i < orders->GetNumOrders(); i++) {
 		o = orders->GetOrderAt(i);
 		if (!o->IsRefit()) continue;
@@ -428,12 +429,14 @@ CommandCost CopyHeadSpecificThings(Vehicle *old_head, Vehicle *new_head, DoComma
 
 		if (old_head->type == VEH_TRAIN) {
 			Train::From(new_head)->speed_restriction = Train::From(old_head)->speed_restriction;
-			/* Transfer any acquired trace restrict slots to the new vehicle */
-			if (HasBit(Train::From(old_head)->flags, VRF_HAVE_SLOT)) {
-				TraceRestrictTransferVehicleOccupantInAllSlots(old_head->index, new_head->index);
-				ClrBit(Train::From(old_head)->flags, VRF_HAVE_SLOT);
-				SetBit(Train::From(new_head)->flags, VRF_HAVE_SLOT);
-			}
+			SB(Train::From(new_head)->flags, VRF_SPEED_ADAPTATION_EXEMPT, 1, GB(Train::From(old_head)->flags, VRF_SPEED_ADAPTATION_EXEMPT, 1));
+		}
+
+		/* Transfer any acquired trace restrict slots to the new vehicle */
+		if (HasBit(old_head->vehicle_flags, VF_HAVE_SLOT)) {
+			TraceRestrictTransferVehicleOccupantInAllSlots(old_head->index, new_head->index);
+			ClrBit(old_head->vehicle_flags, VF_HAVE_SLOT);
+			SetBit(new_head->vehicle_flags, VF_HAVE_SLOT);
 		}
 	}
 
@@ -613,7 +616,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlag flags, bool wagon
 					assert(RailVehInfo(wagon->engine_type)->railveh_type == RAILVEH_WAGON);
 
 					/* Sell wagon */
-					CommandCost ret = DoCommand(0, wagon->index, 0, DC_EXEC, GetCmdSellVeh(wagon));
+					[[maybe_unused]] CommandCost ret = DoCommand(0, wagon->index, 0, DC_EXEC, GetCmdSellVeh(wagon));
 					assert(ret.Succeeded());
 					new_vehs[i] = nullptr;
 
@@ -630,6 +633,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlag flags, bool wagon
 				/* Success ! */
 				if ((flags & DC_EXEC) != 0 && new_head != old_head) {
 					*chain = new_head;
+					AI::NewEvent(old_head->owner, new ScriptEventVehicleAutoReplaced(old_head->index, new_head->index));
 				}
 
 				/* Transfer cargo of old vehicles and sell them */
@@ -643,10 +647,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlag flags, bool wagon
 
 					if ((flags & DC_EXEC) != 0) {
 						old_vehs[i] = nullptr;
-						if (i == 0) {
-							AI::NewEvent(old_head->owner, new ScriptEventVehicleAutoReplaced(old_head->index, new_head->index));
-							old_head = nullptr;
-						}
+						if (i == 0) old_head = nullptr;
 					}
 					/* Sell the vehicle.
 					 * Note: This might temporarily construct new trains, so use DC_AUTOREPLACE to prevent
@@ -668,7 +669,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlag flags, bool wagon
 				assert(Train::From(old_head)->GetNextUnit() == nullptr);
 
 				for (int i = num_units - 1; i > 0; i--) {
-					CommandCost ret = CmdMoveVehicle(old_vehs[i], old_head, DC_EXEC | DC_AUTOREPLACE, false);
+					[[maybe_unused]] CommandCost ret = CmdMoveVehicle(old_vehs[i], old_head, DC_EXEC | DC_AUTOREPLACE, false);
 					assert(ret.Succeeded());
 				}
 			}
@@ -757,6 +758,9 @@ CommandCost CmdAutoreplaceVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1
 	const Company *c = Company::Get(_current_company);
 	bool wagon_removal = c->settings.renew_keep_length;
 	bool same_type_only = HasBit(p2, 0);
+
+	const Group *g = Group::GetIfValid(v->group_id);
+	if (g != nullptr) wagon_removal = HasBit(g->flags, GroupFlags::GF_REPLACE_WAGON_REMOVAL);
 
 	/* Test whether any replacement is set, before issuing a whole lot of commands that would end in nothing changed */
 	Vehicle *w = v;

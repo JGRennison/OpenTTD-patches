@@ -22,6 +22,7 @@
 #include <mutex>
 #include <thread>
 #include <vector>
+#include <functional>
 #if defined(__MINGW32__)
 #include "../3rdparty/mingw-std-threads/mingw.mutex.h"
 #include "../3rdparty/mingw-std-threads/mingw.condition_variable.h"
@@ -33,6 +34,7 @@ extern std::vector<Dimension> _resolutions;
 extern Dimension _cur_resolution;
 extern bool _rightclick_emulate;
 extern bool _video_hw_accel;
+extern bool _video_vsync;
 
 /** The base of all video drivers. */
 class VideoDriver : public Driver {
@@ -40,7 +42,7 @@ class VideoDriver : public Driver {
 	const uint DEFAULT_WINDOW_HEIGHT = 480u; ///< Default window height.
 
 public:
-	VideoDriver() : is_game_threaded(true), change_blitter(nullptr) {}
+	VideoDriver() : fast_forward_key_pressed(false), fast_forward_via_key(false), is_game_threaded(true) {}
 
 	/**
 	 * Mark a particular area dirty.
@@ -70,6 +72,12 @@ public:
 	 * @return True if the change succeeded.
 	 */
 	virtual bool ToggleFullscreen(bool fullscreen) = 0;
+
+	/**
+	 * Change the vsync setting.
+	 * @param vsync The new setting.
+	 */
+	virtual void ToggleVsync(bool vsync) {}
 
 	/**
 	 * Callback invoked after the blitter was changed.
@@ -175,13 +183,22 @@ public:
 		return ZOOM_LVL_OUT_4X;
 	}
 
-	/**
-	 * Queue a request to change the blitter. This is not executed immediately,
-	 * but instead on the next draw-tick.
-	 */
-	void ChangeBlitter(const char *new_blitter)
+	virtual const char *GetInfoString() const
 	{
-		this->change_blitter = new_blitter;
+		return this->GetName();
+	}
+
+	/**
+	 * Queue a function to be called on the main thread with game state
+	 * lock held and video buffer locked. Queued functions will be
+	 * executed on the next draw tick.
+	 * @param func Function to call.
+	 */
+	void QueueOnMainThread(std::function<void()> &&func)
+	{
+		std::lock_guard<std::mutex> lock(this->cmd_queue_mutex);
+
+		this->cmd_queue.emplace_back(std::forward<std::function<void()>>(func));
 	}
 
 	void GameLoopPause();
@@ -211,6 +228,8 @@ public:
 	private:
 		bool unlock; ///< Stores if the lock did anything that has to be undone.
 	};
+
+	static bool EmergencyAcquireGameLock(uint tries, uint delay_ms);
 
 protected:
 	const uint ALLOWED_DRIFT = 5; ///< How many times videodriver can miss deadlines without it being overly compensated.
@@ -311,7 +330,27 @@ protected:
 
 	std::chrono::steady_clock::duration GetDrawInterval()
 	{
+		/* If vsync, draw interval is decided by the display driver */
+		if (_video_vsync && _video_hw_accel) return std::chrono::microseconds(0);
 		return std::chrono::microseconds(1000000 / _settings_client.gui.refresh_rate);
+	}
+
+	/** Execute all queued commands. */
+	void DrainCommandQueue()
+	{
+		std::vector<std::function<void()>> cmds{};
+
+		{
+			/* Exchange queue with an empty one to limit the time we
+			 * hold the mutex. This also ensures that queued functions can
+			 * add new functions to the queue without everything blocking. */
+			std::lock_guard<std::mutex> lock(this->cmd_queue_mutex);
+			cmds.swap(this->cmd_queue);
+		}
+
+		for (auto &f : cmds) {
+			f();
+		}
 	}
 
 	std::chrono::steady_clock::time_point next_game_tick;
@@ -322,17 +361,17 @@ protected:
 
 	bool is_game_threaded;
 	std::thread game_thread;
-	std::mutex game_state_mutex;
+	std::recursive_mutex game_state_mutex;
 	std::mutex game_thread_wait_mutex;
 
 	static void GameThreadThunk(VideoDriver *drv);
 
 private:
+	std::mutex cmd_queue_mutex;
+	std::vector<std::function<void()>> cmd_queue;
+
 	void GameLoop();
 	void GameThread();
-	void RealChangeBlitter(const char *repl_blitter);
-
-	const char *change_blitter; ///< Request to change the blitter. nullptr if no pending request.
 };
 
 #endif /* VIDEO_VIDEO_DRIVER_HPP */

@@ -47,7 +47,7 @@ static inline void SetTownIndex(TileIndex t, TownID index)
 static inline HouseID GetCleanHouseType(TileIndex t)
 {
 	assert_tile(IsTileType(t, MP_HOUSE), t);
-	return _m[t].m4 | (GB(_m[t].m3, 6, 1) << 8);
+	return _m[t].m4 | (GB(_m[t].m3, 5, 2) << 8);
 }
 
 /**
@@ -71,7 +71,7 @@ static inline void SetHouseType(TileIndex t, HouseID house_id)
 {
 	assert_tile(IsTileType(t, MP_HOUSE), t);
 	_m[t].m4 = GB(house_id, 0, 8);
-	SB(_m[t].m3, 6, 1, GB(house_id, 8, 1));
+	SB(_m[t].m3, 5, 2, GB(house_id, 8, 2));
 }
 
 /**

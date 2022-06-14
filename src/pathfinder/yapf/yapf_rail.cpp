@@ -60,13 +60,11 @@ template <typename Tpf> void DumpState(Tpf &pf1, Tpf &pf2)
 #endif
 	assert(f1 != nullptr);
 	assert(f2 != nullptr);
-	fwrite(dmp1.m_out.Data(), 1, dmp1.m_out.Size(), f1);
-	fwrite(dmp2.m_out.Data(), 1, dmp2.m_out.Size(), f2);
+	fwrite(dmp1.m_out.c_str(), 1, dmp1.m_out.size(), f1);
+	fwrite(dmp2.m_out.c_str(), 1, dmp2.m_out.size(), f2);
 	fclose(f1);
 	fclose(f2);
 }
-
-int _total_pf_time_us = 0;
 
 template <class Types>
 class CYapfReserveTrack
@@ -291,19 +289,24 @@ public:
 	 */
 	inline void PfFollowNode(Node &old_node)
 	{
-		TrackFollower F(Yapf().GetVehicle());
+		const Train *v = Yapf().GetVehicle();
+		TrackFollower F(v);
 		if (old_node.flags_u.flags_s.m_reverse_pending && old_node.m_segment->m_end_segment_reason & (ESRB_SAFE_TILE | ESRB_DEPOT | ESRB_DEAD_END)) {
 			Node *rev_node = &old_node;
+			uint length = 0;
 			while (rev_node && !(rev_node->m_segment->m_end_segment_reason & ESRB_REVERSE)) {
+				length += rev_node->GetNodeLength(v, Yapf(), *this);
 				rev_node = rev_node->m_parent;
 			}
-			if (rev_node) {
+			if (rev_node && length >= v->gcache.cached_total_length) {
 				if (F.Follow(rev_node->GetLastTile(), ReverseTrackdir(rev_node->GetLastTrackdir()))) {
 					Yapf().AddMultipleNodes(&old_node, F, [&](Node &n) {
 						n.flags_u.flags_s.m_reverse_pending = false;
 						n.flags_u.flags_s.m_teleport = true;
 					});
 				}
+				return;
+			} else if (old_node.m_segment->m_end_segment_reason & (ESRB_DEPOT | ESRB_DEAD_END)) {
 				return;
 			}
 		}
@@ -484,19 +487,24 @@ public:
 	 */
 	inline void PfFollowNode(Node &old_node)
 	{
-		TrackFollower F(Yapf().GetVehicle());
+		const Train *v = Yapf().GetVehicle();
+		TrackFollower F(v);
 		if (old_node.flags_u.flags_s.m_reverse_pending && old_node.m_segment->m_end_segment_reason & (ESRB_SAFE_TILE | ESRB_DEPOT | ESRB_DEAD_END)) {
 			Node *rev_node = &old_node;
+			uint length = 0;
 			while (rev_node && !(rev_node->m_segment->m_end_segment_reason & ESRB_REVERSE)) {
+				length += rev_node->GetNodeLength(v, Yapf(), *this);
 				rev_node = rev_node->m_parent;
 			}
-			if (rev_node) {
+			if (rev_node && length >= v->gcache.cached_total_length) {
 				if (F.Follow(rev_node->GetLastTile(), ReverseTrackdir(rev_node->GetLastTrackdir()))) {
 					Yapf().AddMultipleNodes(&old_node, F, [&](Node &n) {
 						n.flags_u.flags_s.m_reverse_pending = false;
 						n.flags_u.flags_s.m_teleport = true;
 					});
 				}
+				return;
+			} else if (old_node.m_segment->m_end_segment_reason & (ESRB_DEPOT | ESRB_DEAD_END)) {
 				return;
 			}
 		}

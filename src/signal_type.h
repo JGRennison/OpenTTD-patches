@@ -13,6 +13,7 @@
 #include "core/enum_type.hpp"
 #include "track_type.h"
 #include "tile_type.h"
+#include "zoom_type.h"
 
 /** Variant of the signal, i.e. how does the signal look? */
 enum SignalVariant {
@@ -28,11 +29,12 @@ enum SignalType {
 	SIGTYPE_EXIT       = 2, ///< presignal block exit
 	SIGTYPE_COMBO      = 3, ///< presignal inter-block
 	SIGTYPE_PBS        = 4, ///< normal pbs signal
-	SIGTYPE_PBS_ONEWAY = 5, ///< no-entry signal
+	SIGTYPE_PBS_ONEWAY = 5, ///< one-way PBS signal
 	SIGTYPE_PROG       = 6, ///< programmable presignal
+	SIGTYPE_NO_ENTRY   = 7, ///< no-entry signal
 
 	SIGTYPE_END,
-	SIGTYPE_LAST       = SIGTYPE_PROG,
+	SIGTYPE_LAST       = SIGTYPE_NO_ENTRY,
 	SIGTYPE_FIRST_PBS_SPRITE = SIGTYPE_PBS,
 };
 /** Helper information for extract tool. */
@@ -62,5 +64,10 @@ enum SignalState {
 	SIGNAL_STATE_GREEN = 1, ///< The signal is green
 	SIGNAL_STATE_MAX = SIGNAL_STATE_GREEN,
 };
+
+static const int SIGNAL_DIRTY_LEFT   = 14 * ZOOM_LVL_BASE;
+static const int SIGNAL_DIRTY_RIGHT  = 14 * ZOOM_LVL_BASE;
+static const int SIGNAL_DIRTY_TOP    = 30 * ZOOM_LVL_BASE;
+static const int SIGNAL_DIRTY_BOTTOM =  5 * ZOOM_LVL_BASE;
 
 #endif /* SIGNAL_TYPE_H */

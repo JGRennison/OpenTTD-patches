@@ -46,6 +46,7 @@ struct TunnelBridgeToMap {
 };
 typedef std::vector<TunnelBridgeToMap> TunnelBridgeToMapVector;
 
+void UpdateSmallMapSelectedIndustries();
 void BuildIndustriesLegend();
 void ShowSmallMap();
 void BuildLandLegend();
@@ -86,9 +87,8 @@ protected:
 
 	static SmallMapType map_type; ///< Currently displayed legends.
 	static bool show_towns;       ///< Display town names in the smallmap.
-	static int max_heightlevel;   ///< Currently used/cached maximum heightlevel.
+	static int map_height_limit;  ///< Currently used/cached map height limit.
 
-	static const uint LEGEND_BLOB_WIDTH = 8;              ///< Width of the coloured blob in front of a line text in the #WID_SM_LEGEND widget.
 	static const uint INDUSTRY_MIN_NUMBER_OF_COLUMNS = 2; ///< Minimal number of columns in the #WID_SM_LEGEND widget for the #SMT_INDUSTRY legend.
 	static const uint FORCE_REFRESH_PERIOD = 930;             ///< map is redrawn after that many milliseconds (default).
 	static const uint FORCE_REFRESH_PERIOD_VEH = 240;         ///< map is redrawn after that many milliseconds (modes with vehicles).
@@ -98,6 +98,7 @@ protected:
 	uint min_number_of_columns;    ///< Minimal number of columns in legends.
 	uint min_number_of_fixed_rows; ///< Minimal number of rows in the legends for the fixed layouts only (all except #SMT_INDUSTRY).
 	uint column_width;             ///< Width of a column in the #WID_SM_LEGEND widget.
+	uint legend_width;             ///< Width of legend 'blob'.
 
 	int32 scroll_x;  ///< Horizontal world coordinate of the base tile left of the top-left corner of the smallmap display.
 	int32 scroll_y;  ///< Vertical world coordinate of the base tile left of the top-left corner of the smallmap display.
