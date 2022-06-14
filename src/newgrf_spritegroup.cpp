@@ -18,6 +18,7 @@
 #include "newgrf_extension.h"
 #include "newgrf_industrytiles_analysis.h"
 #include "scope.h"
+#include "debug_settings.h"
 
 #include "safeguards.h"
 
@@ -152,10 +153,16 @@ static inline uint32 GetVariable(const ResolverObject &object, ScopeResolver *sc
 	return &this->default_scope;
 }
 
+struct ConditionalNestingState {
+	uint depth = 0;
+	uint skip_until_depth = 0;
+	bool skipping = false;
+};
+
 /* Evaluate an adjustment for a variable of the given size.
  * U is the unsigned type and S is the signed type to use. */
 template <typename U, typename S>
-static U EvalAdjustT(const DeterministicSpriteGroupAdjust &adjust, ScopeResolver *scope, U last_value, uint32 value)
+static U EvalAdjustT(const DeterministicSpriteGroupAdjust &adjust, ScopeResolver *scope, U last_value, uint32 value, ConditionalNestingState *cond_nesting_state = nullptr)
 {
 	value >>= adjust.shift_num;
 	value  &= adjust.and_mask;
@@ -201,6 +208,17 @@ static U EvalAdjustT(const DeterministicSpriteGroupAdjust &adjust, ScopeResolver
 		case DSGA_OP_RSUB: return value - last_value;
 		case DSGA_OP_STO_NC: _temp_store.StoreValue(adjust.divmod_val, (S)value); return last_value;
 		case DSGA_OP_ABS:  return ((S)last_value < 0) ? -((S)last_value) : (S)last_value;
+		case DSGA_OP_JZ: {
+			if (value == 0 && cond_nesting_state != nullptr) {
+				/* Jump */
+				cond_nesting_state->skip_until_depth = cond_nesting_state->depth - 1;
+				cond_nesting_state->skipping = true;
+				return 0;
+			} else {
+				/* Don't jump */
+				return last_value;
+			}
+		}
 		default:           return value;
 	}
 }
@@ -227,7 +245,19 @@ const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) con
 
 	ScopeResolver *scope = object.GetScope(this->var_scope);
 
+	ConditionalNestingState conditional_nesting = {};
+
 	for (const auto &adjust : this->adjusts) {
+		if (adjust.adjust_flags & DSGAF_END_BLOCK) {
+			conditional_nesting.depth--;
+			if (conditional_nesting.skipping && conditional_nesting.skip_until_depth == conditional_nesting.depth) {
+				/* End of block that was skipped */
+				conditional_nesting.skipping = false;
+				continue;
+			}
+		}
+		if (adjust.operation == DSGA_OP_JZ) conditional_nesting.depth++;
+		if (conditional_nesting.skipping) continue;
 		if ((adjust.adjust_flags & DSGAF_SKIP_ON_ZERO) && (last_value == 0)) continue;
 		if ((adjust.adjust_flags & DSGAF_SKIP_ON_LSB_SET) && (last_value & 1) != 0) continue;
 
@@ -256,9 +286,9 @@ const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) con
 		}
 
 		switch (this->size) {
-			case DSG_SIZE_BYTE:  value = EvalAdjustT<uint8,  int8> (adjust, scope, last_value, value); break;
-			case DSG_SIZE_WORD:  value = EvalAdjustT<uint16, int16>(adjust, scope, last_value, value); break;
-			case DSG_SIZE_DWORD: value = EvalAdjustT<uint32, int32>(adjust, scope, last_value, value); break;
+			case DSG_SIZE_BYTE:  value = EvalAdjustT<uint8,  int8> (adjust, scope, last_value, value, &conditional_nesting); break;
+			case DSG_SIZE_WORD:  value = EvalAdjustT<uint16, int16>(adjust, scope, last_value, value, &conditional_nesting); break;
+			case DSG_SIZE_DWORD: value = EvalAdjustT<uint32, int32>(adjust, scope, last_value, value, &conditional_nesting); break;
 			default: NOT_REACHED();
 		}
 		last_value = value;
@@ -685,6 +715,7 @@ static const char *_dsg_op_special_names[] {
 	"RSUB",
 	"STO_NC",
 	"ABS",
+	"JZ",
 };
 static_assert(lengthof(_dsg_op_special_names) == DSGA_OP_SPECIAL_END - DSGA_OP_TERNARY);
 
@@ -708,11 +739,16 @@ static char *GetAdjustOperationName(char *str, const char *last, DeterministicSp
 	return str + seprintf(str, last, "\?\?\?(0x%X)", operation);
 }
 
-static char *DumpSpriteGroupAdjust(char *p, const char *last, const DeterministicSpriteGroupAdjust &adjust, int padding, uint32 &highlight_tag)
+static char *DumpSpriteGroupAdjust(char *p, const char *last, const DeterministicSpriteGroupAdjust &adjust, int padding, uint32 &highlight_tag, uint &conditional_indent)
 {
 	if (adjust.variable == 0x7D) {
 		/* Temp storage load */
 		highlight_tag = (1 << 16) | (adjust.parameter & 0xFFFF);
+	}
+
+	p += seprintf(p, last, "%*s", padding, "");
+	for (uint i = 0; i < conditional_indent; i++) {
+		p += seprintf(p, last, "> ");
 	}
 
 	auto append_flags = [&]() {
@@ -722,15 +758,31 @@ static char *DumpSpriteGroupAdjust(char *p, const char *last, const Deterministi
 		if (adjust.adjust_flags & DSGAF_SKIP_ON_LSB_SET) {
 			p += seprintf(p, last, ", skip on LSB set");
 		}
+		if (adjust.adjust_flags & DSGAF_LAST_VAR_READ && HasBit(_misc_debug_flags, MDF_NEWGRF_SG_DUMP_MORE_DETAIL)) {
+			p += seprintf(p, last, ", last var read");
+		}
+		if (adjust.adjust_flags & DSGAF_BOOL_MUL_HINT && HasBit(_misc_debug_flags, MDF_NEWGRF_SG_DUMP_MORE_DETAIL)) {
+			p += seprintf(p, last, ", bool mul hint");
+		}
+		if (adjust.adjust_flags & DSGAF_END_BLOCK) {
+			p += seprintf(p, last, ", end block");
+		}
 	};
 
+	if (adjust.operation == DSGA_OP_JZ) {
+		conditional_indent++;
+	}
+	if (adjust.adjust_flags & DSGAF_END_BLOCK) {
+		conditional_indent--;
+	}
+
 	if (adjust.operation == DSGA_OP_TERNARY) {
-		p += seprintf(p, last, "%*sTERNARY: true: %X, false: %X", padding, "", adjust.and_mask, adjust.add_val);
+		p += seprintf(p, last, "TERNARY: true: %X, false: %X", adjust.and_mask, adjust.add_val);
 		append_flags();
 		return p;
 	}
 	if (adjust.operation == DSGA_OP_ABS) {
-		p += seprintf(p, last, "%*sABS", padding, "");
+		p += seprintf(p, last, "ABS");
 		append_flags();
 		return p;
 	}
@@ -738,7 +790,7 @@ static char *DumpSpriteGroupAdjust(char *p, const char *last, const Deterministi
 		/* Temp storage store */
 		highlight_tag = (1 << 16) | (adjust.and_mask & 0xFFFF);
 	}
-	p += seprintf(p, last, "%*svar: %X", padding, "", adjust.variable);
+	p += seprintf(p, last, "var: %X", adjust.variable);
 	if (adjust.variable == A2VRI_VEHICLE_CURRENT_SPEED_SCALED) {
 		p += seprintf(p, last, " (current_speed_scaled)");
 	} else if (adjust.variable >= 0x100) {
@@ -860,12 +912,14 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 				if (dsg->dsg_flags & DSGF_DSE_RECURSIVE_DISABLE) p += seprintf(p, lastof(this->buffer), ", DSE_RD");
 				if (dsg->dsg_flags & DSGF_VAR_TRACKING_PENDING) p += seprintf(p, lastof(this->buffer), ", VAR_PENDING");
 				if (dsg->dsg_flags & DSGF_REQUIRES_VAR1C) p += seprintf(p, lastof(this->buffer), ", REQ_1C");
+				if (dsg->dsg_flags & DSGF_CHECK_EXPENSIVE_VARS) p += seprintf(p, lastof(this->buffer), ", CHECK_EXP_VAR");
 			}
 			print();
 			emit_start();
 			padding += 2;
+			uint conditional_indent = 0;
 			for (const auto &adjust : (*adjusts)) {
-				DumpSpriteGroupAdjust(this->buffer, lastof(this->buffer), adjust, padding, highlight_tag);
+				DumpSpriteGroupAdjust(this->buffer, lastof(this->buffer), adjust, padding, highlight_tag, conditional_indent);
 				print();
 				if (adjust.variable == 0x7E && adjust.subroutine != nullptr) {
 					this->DumpSpriteGroup(adjust.subroutine, padding + 5, 0);

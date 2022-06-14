@@ -206,6 +206,7 @@ enum DeterministicSpriteGroupAdjustOperation : uint8 {
 	DSGA_OP_RSUB,           ///< b - a
 	DSGA_OP_STO_NC,         ///< store b into temporary storage, indexed by c. return a
 	DSGA_OP_ABS,            ///< abs(a)
+	DSGA_OP_JZ,             ///< jump to adjust after DSGAF_END_BLOCK marker (taking into account nesting) if b is zero. return 0 if jumped, return a if not jumped
 
 	DSGA_OP_SPECIAL_END,
 };
@@ -217,6 +218,9 @@ enum DeterministicSpriteGroupAdjustFlags : uint8 {
 	DSGAF_NONE               = 0,
 	DSGAF_SKIP_ON_ZERO       = 1 << 0,
 	DSGAF_SKIP_ON_LSB_SET    = 1 << 1,
+	DSGAF_LAST_VAR_READ      = 1 << 2,
+	DSGAF_BOOL_MUL_HINT      = 1 << 3,
+	DSGAF_END_BLOCK          = 1 << 4,
 };
 DECLARE_ENUM_AS_BIT_SET(DeterministicSpriteGroupAdjustFlags);
 
@@ -441,6 +445,7 @@ enum DeterministicSpriteGroupFlags : uint8 {
 	DSGF_DSE_RECURSIVE_DISABLE   = 1 << 1,
 	DSGF_VAR_TRACKING_PENDING    = 1 << 2,
 	DSGF_REQUIRES_VAR1C          = 1 << 3,
+	DSGF_CHECK_EXPENSIVE_VARS    = 1 << 4,
 };
 DECLARE_ENUM_AS_BIT_SET(DeterministicSpriteGroupFlags)
 
