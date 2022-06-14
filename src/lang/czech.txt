@@ -388,6 +388,7 @@ STR_SORT_BY_INTRO_DATE                                          :data uvedení n
 STR_SORT_BY_RUNNING_COST                                        :provozních nákladů
 STR_SORT_BY_POWER_VS_RUNNING_COST                               :výkonu/provozních nákladů
 STR_SORT_BY_CARGO_CAPACITY                                      :přepravní kapacity
+STR_SORT_BY_VEHICLE_COUNT                                       :počtu vozidel
 STR_SORT_BY_RANGE                                               :dosah
 STR_SORT_BY_POPULATION                                          :Podle populace
 STR_SORT_BY_RATING                                              :Hodnocení
@@ -478,6 +479,8 @@ STR_SETTINGS_MENU_FULL_ANIMATION                                :Plné animace
 STR_SETTINGS_MENU_FULL_DETAIL                                   :Plné detaily
 STR_SETTINGS_MENU_TRANSPARENT_BUILDINGS                         :Průhledné budovy
 STR_SETTINGS_MENU_TRANSPARENT_SIGNS                             :Průhledné popisky
+STR_SETTINGS_MENU_MONEY_TEXT_EFFECTS                            :Zobrazení příjmů/výdajů
+
 ############ range ends here
 
 ############ range for file menu starts
@@ -873,7 +876,7 @@ STR_SMALLMAP_TOOLTIP_ENABLE_ALL_CARGOS                          :{BLACK}Zobraz v
 # Status bar messages
 STR_STATUSBAR_TOOLTIP_SHOW_LAST_NEWS                            :{BLACK}Ukázat poslední zprávu nebo článek
 STR_STATUSBAR_COMPANY_NAME                                      :{SILVER}- -  {COMPANY}  - -
-STR_STATUSBAR_PAUSED                                            :{YELLOW}* *  PAUZA  *  *
+STR_STATUSBAR_PAUSED                                            :{YELLOW}*  *  PAUZA  *  *
 STR_STATUSBAR_PAUSED_LINK_GRAPH                                 :{ORANGE}*  *  POZASTAVENO (čekám na aktualizaci grafu spojení) *  *
 STR_STATUSBAR_AUTOSAVE                                          :{RED}Automatické ukládání
 STR_STATUSBAR_SAVING_GAME                                       :{RED}*  *  HRA SE UKLÁDÁ  *  *
@@ -962,6 +965,7 @@ STR_NEWS_TRAIN_IS_STUCK                                         :{WHITE}{VEHICLE
 STR_NEWS_VEHICLE_IS_LOST                                        :{WHITE}{VEHICLE} se ztratil{G 0 "" a o i y y a}
 STR_NEWS_VEHICLE_IS_UNPROFITABLE                                :{WHITE}{VEHICLE} - loňský zisk {CURRENCY_LONG}
 STR_NEWS_AIRCRAFT_DEST_TOO_FAR                                  :{WHITE}{VEHICLE} se nemůže dostat do dalšího cíle, protože je mimo dosah
+STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE} nedokázal zastavit ve stanici {STRING} kvůli příliš vysoké rychlosti
 
 STR_NEWS_ORDER_REFIT_FAILED                                     :{WHITE}{VEHICLE} stojí kvůli selhání příkazu na změnu nákladu
 STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Obnovení selhalo pro {VEHICLE}{}{STRING}
@@ -1205,6 +1209,8 @@ STR_RIVERS_NONE                                                 :Žádné
 STR_RIVERS_FEW                                                  :Pár
 STR_RIVERS_MODERATE                                             :Více
 STR_RIVERS_LOT                                                  :Mnoho
+STR_RIVERS_VERY_MANY                                            :{RED}Velmi mnoho
+STR_RIVERS_EXTREMELY_MANY                                       :{RED}Extrémně mnoho
 
 STR_DISASTER_NONE                                               :žádné
 STR_DISASTER_REDUCED                                            :snížené
@@ -1221,6 +1227,7 @@ STR_TERRAIN_TYPE_HILLY                                          :kopcovitá
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :hornatá
 STR_TERRAIN_TYPE_ALPINIST                                       :Alpské
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :lhostejný
 STR_CITY_APPROVAL_PERMISSIVE                                    :nezaujatý
 STR_CITY_APPROVAL_TOLERANT                                      :tolerantní
 STR_CITY_APPROVAL_HOSTILE                                       :zaujatý
@@ -1274,6 +1281,10 @@ STR_CONFIG_SETTING_NONE                                         :Žádný
 STR_CONFIG_SETTING_ORIGINAL                                     :Originální
 STR_CONFIG_SETTING_REALISTIC                                    :Realistický
 
+STR_CONFIG_SETTING_TRAIN_BRAKING_REALISTIC                      :Realistický {PUSH_COLOUR}{RED}(pro experty){POP_COLOUR}
+
+STR_CONFIG_SETTING_REALISTIC_BRAKING_SIGNALS_NOT_ALLOWED        :{WHITE}Realistické brždění nemůže být zapnuto. Je umístěn nejméně jeden pre-signál nebo obousměrný semafor.
+
 STR_CONFIG_SETTING_HORIZONTAL_POS_LEFT                          :vlevo
 STR_CONFIG_SETTING_HORIZONTAL_POS_CENTER                        :uprostřed
 STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :vpravo
@@ -1302,6 +1313,8 @@ STR_CONFIG_SETTING_CITY_APPROVAL                                :Postoj městsk�
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Vyber jak moc hluku a změn prostředí poškozuje hodnocení společnosti u města a tak dále komplikuje budoucí stavbu na jeho území
 STR_CONFIG_SETTING_MONEY_CHEAT_MULTIPLAYER                      :Povolit v síťové hře cheat na peníze: {STRING}
 STR_CONFIG_SETTING_MONEY_CHEAT_MULTIPLAYER_HELPTEXT             :Pokud je zapnuto, cheat na peníze mohou použít všichni hráči síťové hry. Cheat na peníze je vždy povolen při hře jednoho hráče a správcům síťové hry.
+STR_CONFIG_SETTING_RENAME_TOWNS_MULTIPLAYER                     :Povolit v síťové hře přejmenovat města: {STRING}
+STR_CONFIG_SETTING_RENAME_TOWNS_MULTIPLAYER_HELPTEXT            :Pokud je zapnuto, přejmenovat města mohou všichni hráči síťové hry. Přejmenovat města je vždy povolen při hře jednoho hráče a správcům síťové hry.
 
 STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :Maximální výška mapy: {STRING}
 STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :Nastavit maximální povolenou výšku hor na mapě
@@ -1327,6 +1340,8 @@ STR_CONFIG_SETTING_SMOKE_AMOUNT                                 :Množství kou�
 STR_CONFIG_SETTING_SMOKE_AMOUNT_HELPTEXT                        :Množštví kouře či jisker emitovaných vozidly
 STR_CONFIG_SETTING_TRAIN_ACCELERATION_MODEL                     :Model akcelerace vlaků: {STRING}
 STR_CONFIG_SETTING_TRAIN_ACCELERATION_MODEL_HELPTEXT            :Zvolit fyzikální model pro zrychlení vlaků. "Originální" model zpomaluje všechny vozidla na svahu stejně. Realistický model zpomaluje na svazích a v zatáčkách podle různých parametrů, například délky a tažné síly.
+STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL                          :Model brždění vlaků: {STRING}
+STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL_HELPTEXT                 :Zvolit fyzikální model pro brždění vlaků. "Originální" model umožňuje vlakům zastavit okamžitě. V "realistickém" modelu vlaky mají brzdnou dráhu a rezervují si adekvátní vzdálenost před sebou, nemohou zastavit okamžitě.{}{}"Realistický" model má mnohé dopady na signalizaci a design tratě. Je to proto pokročilá funkce, která nemusí být vhodná pro začátečníky. Pre-signály a obousměrné semafory tak nejsou povoleny, dokonalejší semafory (PBS) jsou použity pro veškerou signalizaci.
 STR_CONFIG_SETTING_ROAD_VEHICLE_ACCELERATION_MODEL              :Model zrychlování silničních vozidel: {STRING}
 STR_CONFIG_SETTING_ROAD_VEHICLE_ACCELERATION_MODEL_HELPTEXT     :Zvolit fyzikální model pro zrychlení silničních vozidel. "Originální" model zpomaluje všechny vozidla na svahu stejně. Realistický model zpomaluje na svazích a v zatáčkách podle různých parametrů.
 STR_CONFIG_SETTING_TRAIN_SLOPE_STEEPNESS                        :Strmost svahu pro vlaky: {STRING}
@@ -1340,6 +1355,8 @@ STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS                        :Umožnit spojen
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS_HELPTEXT               :Povolit přidávání částí stanice, které se nedotýkají již existujících částí. Je potřeba stisknout Ctrl při přidávání nových částí.
 STR_CONFIG_SETTING_INFLATION                                    :Inflace: {STRING}
 STR_CONFIG_SETTING_INFLATION_HELPTEXT                           :Povolit inflaci. Ceny se časem zvyšují mírně rychleji než platby.
+STR_CONFIG_SETTING_INFLATION_FIXED_DATES                        :Apply inflation from 1920 to 2090: {STRING}
+STR_CONFIG_SETTING_INFLATION_FIXED_DATES_HELPTEXT               :If enabled, inflation is always applied from 1920 to 2090, regardless of the game start date. This is the inflation model used since OpenTTD 1.11.{}If disabled, inflation is applied from the game start date for 170 years. This is the inflation model used until OpenTTD 1.10.
 STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH                            :Maximální délka mostu: {STRING}
 STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH_HELPTEXT                   :Určuje maximální délku mostů
 STR_CONFIG_SETTING_MAX_BRIDGE_HEIGHT                            :Maximální výška mostu: {STRING}
@@ -1418,6 +1435,9 @@ STR_CONFIG_SETTING_FLIP_DIRECTION_ALL_TRAINS_HELPTEXT           :Zapne otáčen�
 STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING               :Dlouhá silniční vozidla mohou předjíždět: {STRING}
 STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING_HELPTEXT      :Zapne předjíždění dlouhých silničních vozidel jiná silniční vozidla.
 
+STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT                    :Průjezdná vlaková depa: {STRING}
+STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT_HELPTEXT           :Zapne emulaci průjezdných vlakových dep. Vlaky mohou projet mezi depy umístěné k sobě zády, volitelně s dalšími depy mezi nimi. Vyžaduje hledač cesty YAPF.
+
 STR_CONFIG_SETTING_COMPANY_STARTING_COLOUR                      :Počáteční barva společnosti: {STRING}
 STR_CONFIG_SETTING_COMPANY_STARTING_COLOUR_HELPTEXT             :Vyberte počáteční barvu společnosti
 
@@ -1426,6 +1446,8 @@ STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :Povolení této
 
 STR_CONFIG_SETTING_WARN_LOST_VEHICLE                            :Varovat pokud se ztratí vozidlo: {STRING}
 STR_CONFIG_SETTING_WARN_LOST_VEHICLE_HELPTEXT                   :Zapne zobrazování zpráv o vozidlech, která nemohou najít cestu do cíle.
+STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE                :Varovat pokud vlak nemůže najít cestu kvůli omezení směrování: {STRING}
+STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE_HELPTEXT       :Zobrazovat zprávy o vlacích, které dlouho čekají na PBS semafor kvůli omezení směrování
 STR_CONFIG_SETTING_ORDER_REVIEW                                 :Kontrolovat příkazy vozidel: {STRING}
 STR_CONFIG_SETTING_ORDER_REVIEW_HELPTEXT                        :Pokud je zapnuto, příkazy vozidel jsou pravidelně kontrolovány a určité problémy jsou hlášeny pomocí informačních zpráv.
 STR_CONFIG_SETTING_ORDER_REVIEW_OFF                             :Ne
@@ -1441,6 +1463,10 @@ STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER                     :Žádná vozidl
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_HELPTEXT            :Vozidla, která by jinak po tomto roce zastarala, zůstanou dostupná navždy.
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_VALUE               :{NUM}
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_ZERO                :Vypnuto
+STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER                  :Žádná nová vozidla nejsou uvedena po roce: {STRING}
+STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_HELPTEXT         :Vozidla která by byla uvedena tento nebo po tomto roce nejsou uvedena nikdy
+STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_VALUE            :{NUM}
+STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_ZERO             :Vypnuto
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE                            :Automaticky nahradit dopravní prostředek, když zestárne: {STRING}
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE_HELPTEXT                   :Pokud je zapnuto, vozidla na konci své plánované životnosti budou automaticky nahrazena, když jsou splněny podmínky pro automatické obnovení.
 STR_CONFIG_SETTING_AUTORENEW_MONTHS                             :Automaticky nahradit vozidlo při dosažení {STRING} životnosti
@@ -1485,6 +1511,25 @@ STR_CONFIG_SETTING_SHOW_DEPOT_SELL_GUI_HELPTEXT                 :Zobrazovat 'Pos
 STR_CONFIG_SETTING_OPEN_VEHICLE_GUI_CLONE_SHARE                 :Otevřít nové okno při klonování vozidla se sdílenými příkazy: {STRING}
 STR_CONFIG_SETTING_OPEN_VEHICLE_GUI_CLONE_SHARE_HELPTEXT        :Pokud je zapnuto, otevře okno nově naklonovaného vozidla se sdílenými příkazy.
 
+STR_CONFIG_SETTING_LINKGRAPH_COLOURS                            :Barevné schéma vrstvy průtoku nákladu: {STRING}
+STR_CONFIG_SETTING_LINKGRAPH_COLOURS_HELPTEXT                   :Nastaví barevné schéma pro zobrazení vrstvy průtoku nákladu.
+STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREEN_TO_RED               :Zelená-červená (původní)
+STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREEN_TO_BLUE              :Zelená-modrá
+STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREY_TO_RED                :Šedá-červená
+STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREYSCALE                  :Stupně šedi
+
+STR_CONFIG_SETTING_DISABLE_VEHICLE_IMAGE_UPDATE                 :Vypnout aktualizace zobrazení vozidel: {STRING}
+STR_CONFIG_SETTING_DISABLE_VEHICLE_IMAGE_UPDATE_HELPTEXT        :Pokud je zapnuto, zabrání kontinuální aktualizaci obrázku vozidel v pohybu. Toto může být použito pro řešení problémů s výkonem, je-li na mapě příliš mnoho vozidel z výpočetně náročných grafik.
+
+STR_CONFIG_SETTING_VEHICLE_NAMES                                :Názvy vozidel: {STRING}
+STR_CONFIG_SETTING_VEHICLE_NAMES_HELPTEXT                       :Nastavit schéma pro názvy vozidel. Nevztahuje se na vozdila s vlastním názvem.
+STR_CONFIG_SETTING_VEHICLE_NAMES_TRADITIONAL                    :Tradiční
+STR_CONFIG_SETTING_VEHICLE_NAMES_MODERN                         :Moderní
+STR_CONFIG_SETTING_VEHICLE_NAMES_LONG                           :Dlouhá
+
+STR_CONFIG_SETTING_SHADED_TREES_ON_SLOPES                       :Stínovat stromy na svazích: {STRING}
+STR_CONFIG_SETTING_SHADED_TREES_ON_SLOPES_HELPTEXT              :Upraví jas stromů umístěných na svazích. Vylepšuje vzhled stromů v horských oblastech.
+
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :Zapnout pokročilé možnosti signálů na mostech a v tunelech: {STRING}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :Zapne pokročilé možnosti signálů na mostech a v tunelech. Pokud je vypnuto, pokročilé možnosti u mostů a tunelů které je už nevyužívají nemohou být nastaveny, ale ostatní hráči mohou mít tuto volbu zapnutou a pokročilé možnosti využívat.
 
@@ -1503,7 +1548,9 @@ STR_CONFIG_SETTING_INDUSTRY_DENSITY_HELPTEXT                    :Nastavuje množ
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE                        :Maximální vzdálenost ropného průmyslu od okraje mapy: {STRING}
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE_HELPTEXT               :Omezení, jak daleko od okrajů mapy mohou být postaveny rafinerie a ropné vrty. Je-li při okraji mapy voda, toto omezení zajišťuje, že se rafinerie a ropné vrty vyskytují poblíž pobřeží. Na mapách větších než 256 polí je toto omezení úměrně přizpůsobeno.
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT                              :Výška sněhové čáry: {STRING}
-STR_CONFIG_SETTING_SNOWLINE_HEIGHT_HELPTEXT                     :Určuje o jaké výšky se vyskytuje sníh u subarktického klimatu. Sníh rovněž ovlivňuje vytváření průmyslu a požadavky na růst měst
+STR_CONFIG_SETTING_SNOWLINE_HEIGHT_HELPTEXT                     :Určuje do jaké výšky se vyskytuje sníh u subarktického klimatu. Sníh rovněž ovlivňuje vytváření průmyslu a požadavky na růst měst
+STR_CONFIG_SETTING_RAINFORESTLINE_HEIGHT                        :Výška čáry deštného pralesa: {STRING}
+STR_CONFIG_SETTING_RAINFORESTLINE_HEIGHT_HELPTEXT               :Určuje do jaké výšky se vyskytuje deštný prales u subtropického klimatu. Deštný prales rovněž ovlivňuje vytváření průmyslu a požadavky na růst měst
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :Členitost krajiny: {STRING}
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_HELPTEXT                :(Pouze TerraGenesis) Zvol množství hor: Rovinatý terén má méně hor, které jsou však rozlehlejší. Členitý terén má mnoho hor, u kterých se může zdát, že se opakují
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :velmi rovná
@@ -1512,8 +1559,24 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :členitá
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :velmi členitá
 STR_CONFIG_SETTING_VARIETY                                      :Rozmanitost umisťování: {STRING}
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :(Pouze TerraGenesis) Určuje, zda krajina bude obsahovat zároveň hory i roviny. Vzhledem k tomu, že toto dělá mapu rovinatější, ostatní nastavení by měla být nastavena na hornatá
+STR_CONFIG_SETTING_RIVER_MIN_LENGTH                             :Minimální délka řeky: {STRING}
+STR_CONFIG_SETTING_RIVER_MIN_LENGTH_HELPTEXT                    :Minimální délka řek. Toto nastavení také ovlivňuje tvorbu jezer.
+STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM                           :Náhodná koryta řek: {STRING}
+STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM_HELPTEXT                  :Zvolit jak moc náhodné mohou být trasy koryt řek.
+STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL                           :Prameny řek se musí generovat na vrcholku kopců: {STRING}
+STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL_HELPTEXT                  :Zvolit zda řeky vyžadují, aby se jejich prameny generovaly u vrcholků kopců.
+STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH                          :Šířka tropů okolo řek: {STRING}
+STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH_HELPTEXT                 :Ovlivňuje šířku tropické zóny, která obklopuje řeky v subtropickém podnebí.
+STR_CONFIG_SETTING_LAKE_SIZE                                    :Velikost jezer: {STRING}
+STR_CONFIG_SETTING_LAKE_SIZE_HELPTEXT                           :Ovlivňuje velikost jezer, která jsou generována spolu s řekami.
+STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS                     :Jezera mohou být generována v pouštích subtropického podnebí: {STRING}
+STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS_HELPTEXT            :Zvolit zda se jezera mohou objevit i v poušti.
 STR_CONFIG_SETTING_RIVER_AMOUNT                                 :Množství řek: {STRING}
 STR_CONFIG_SETTING_RIVER_AMOUNT_HELPTEXT                        :Zvol množství řek k vytvoření
+STR_CONFIG_SETTING_ROCKS_AMOUNT                                 :Velikost skalnatých oblastí: {STRING}
+STR_CONFIG_SETTING_ROCKS_AMOUNT_HELPTEXT                        :Určuje velikost skalnatých oblastí. Vysoké hodnoty mohou způsobit pokrytí značných částí mapy.
+STR_CONFIG_SETTING_HEIGHT_ROCKS                                 :Velikost skalnatých oblastí roste s nadmořskou výškou: {STRING}
+STR_CONFIG_SETTING_HEIGHT_ROCKS_HELPTEXT                        :Určuje jak moc roste velikost skalnatých oblastí s nadmořskou výškou. Tato hodnota je kumulativní s nastavením velikosti skalnatých oblastí a funguje nejlépe, pokud je velikost nastavena na nižší hodnoty.
 STR_CONFIG_SETTING_TREE_PLACER                                  :Algoritmus sázení stromového porostu: {STRING}
 STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT                         :Zvol způsob rozmisťování stromů ve světe: "Originální" sází stromy rovnoměrně, "Vylepšené" sází stromy ve skupinách
 STR_CONFIG_SETTING_TREE_PLACER_NONE                             :žádný
