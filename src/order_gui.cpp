@@ -1191,6 +1191,7 @@ enum {
 	OHK_DELETE,
 	OHK_GOTO,
 	OHK_NONSTOP,
+	OHK_VIA,
 	OHK_FULLLOAD,
 	OHK_UNLOAD,
 	OHK_NEAREST_DEPOT,
@@ -1501,7 +1502,7 @@ private:
 
 	/**
 	 * Handle the click on the nonstop button.
-	 * @param non_stop what non-stop type to use; -1 to use the 'next' one.
+	 * @param non_stop what non-stop type to use; -1 to use the 'next' one, -2 to toggle the via state.
 	 */
 	void OrderClick_Nonstop(int non_stop)
 	{
@@ -1513,8 +1514,11 @@ private:
 		if (order == nullptr || order->GetNonStopType() == non_stop) return;
 
 		/* Keypress if negative, so 'toggle' to the next */
-		if (non_stop < 0) {
+		if (non_stop == -1) {
 			non_stop = order->GetNonStopType() ^ ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS;
+		} else if (non_stop == -2) {
+			if (!order->IsType(OT_GOTO_STATION)) return;
+			non_stop = order->GetNonStopType() ^ ONSF_NO_STOP_AT_DESTINATION_STATION;
 		}
 
 		this->SetWidgetDirty(WID_O_NON_STOP);
@@ -2778,6 +2782,7 @@ public:
 			case OHK_DELETE:         this->OrderClick_Delete(); break;
 			case OHK_GOTO:           this->OrderClick_Goto(OPOS_GOTO); break;
 			case OHK_NONSTOP:        this->OrderClick_Nonstop(-1); break;
+			case OHK_VIA:            this->OrderClick_Nonstop(-2); break;
 			case OHK_FULLLOAD:       this->OrderClick_FullLoad(OLF_FULL_LOAD_ANY, true); break;
 			case OHK_UNLOAD:         this->OrderClick_Unload(OUFB_UNLOAD, true); break;
 			case OHK_NEAREST_DEPOT:  this->OrderClick_NearestDepot(); break;
@@ -2913,6 +2918,7 @@ static Hotkey order_hotkeys[] = {
 	Hotkey('F', "delete", OHK_DELETE),
 	Hotkey('G', "goto", OHK_GOTO),
 	Hotkey('H', "nonstop", OHK_NONSTOP),
+	Hotkey((uint16)0, "via", OHK_VIA),
 	Hotkey('J', "fullload", OHK_FULLLOAD),
 	Hotkey('K', "unload", OHK_UNLOAD),
 	Hotkey((uint16)0, "nearest_depot", OHK_NEAREST_DEPOT),
