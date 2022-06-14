@@ -852,8 +852,15 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 				print();
 				return;
 			}
-			seprintf(this->buffer, lastof(this->buffer), "%*sDeterministic (%s, %s)%s [%u]",
+			char *p = this->buffer;
+			p += seprintf(p, lastof(this->buffer), "%*sDeterministic (%s, %s)%s [%u]",
 					padding, "", _sg_scope_names[dsg->var_scope], _sg_size_names[dsg->size], extra_info, dsg->nfo_line);
+			if (HasBit(_misc_debug_flags, MDF_NEWGRF_SG_DUMP_MORE_DETAIL)) {
+				if (dsg->dsg_flags & DSGF_NO_DSE) p += seprintf(p, lastof(this->buffer), ", NO_DSE");
+				if (dsg->dsg_flags & DSGF_DSE_RECURSIVE_DISABLE) p += seprintf(p, lastof(this->buffer), ", DSE_RD");
+				if (dsg->dsg_flags & DSGF_VAR_TRACKING_PENDING) p += seprintf(p, lastof(this->buffer), ", VAR_PENDING");
+				if (dsg->dsg_flags & DSGF_REQUIRES_VAR1C) p += seprintf(p, lastof(this->buffer), ", REQ_1C");
+			}
 			print();
 			emit_start();
 			padding += 2;
