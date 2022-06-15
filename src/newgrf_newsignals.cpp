@@ -30,6 +30,7 @@ std::vector<const GRFFile *> _new_signals_grfs;
 		switch (variable) {
 			case 0x40: return 0;
 			case A2VRI_SIGNALS_SIGNAL_RESTRICTION_INFO: return 0;
+			case A2VRI_SIGNALS_SIGNAL_CONTEXT: return this->signal_context;
 		}
 	}
 
@@ -37,6 +38,8 @@ std::vector<const GRFFile *> _new_signals_grfs;
 		case 0x40: return GetTerrainType(this->tile, this->context);
 		case A2VRI_SIGNALS_SIGNAL_RESTRICTION_INFO:
 			return GetNewSignalsRestrictedSignalsInfo(this->prog, this->tile);
+		case A2VRI_SIGNALS_SIGNAL_CONTEXT:
+			return GetNewSignalsSignalContext(this->signal_context, this->tile);
 	}
 
 	DEBUG(grf, 1, "Unhandled new signals tile variable 0x%X", variable);
@@ -64,10 +67,11 @@ GrfSpecFeature NewSignalsResolverObject::GetFeature() const
  * @param context Are we resolving sprites for the upper halftile, or on a bridge?
  * @param param1 Extra parameter (first parameter of the callback, except railtypes do not have callbacks).
  * @param param2 Extra parameter (second parameter of the callback, except railtypes do not have callbacks).
+ * @param signal_context Signal context.
  * @param prog Routing restriction program.
  */
-NewSignalsResolverObject::NewSignalsResolverObject(const GRFFile *grffile, TileIndex tile, TileContext context, uint32 param1, uint32 param2, const TraceRestrictProgram *prog)
-	: ResolverObject(grffile, CBID_NO_CALLBACK, param1, param2), newsignals_scope(*this, tile, context, prog)
+NewSignalsResolverObject::NewSignalsResolverObject(const GRFFile *grffile, TileIndex tile, TileContext context, uint32 param1, uint32 param2, CustomSignalSpriteContext signal_context, const TraceRestrictProgram *prog)
+	: ResolverObject(grffile, CBID_NO_CALLBACK, param1, param2), newsignals_scope(*this, tile, context, signal_context, prog)
 {
 	this->root_spritegroup = grffile != nullptr ? grffile->new_signals_group : nullptr;
 }

@@ -34,6 +34,7 @@
 			case 0x43: return _date;
 			case 0x44: return HZB_TOWN_EDGE;
 			case A2VRI_RAILTYPE_SIGNAL_RESTRICTION_INFO: return 0;
+			case A2VRI_RAILTYPE_SIGNAL_CONTEXT: return this->signal_context;
 		}
 	}
 
@@ -55,6 +56,8 @@
 		}
 		case A2VRI_RAILTYPE_SIGNAL_RESTRICTION_INFO:
 			return GetNewSignalsRestrictedSignalsInfo(this->prog, this->tile);
+		case A2VRI_RAILTYPE_SIGNAL_CONTEXT:
+			return GetNewSignalsSignalContext(this->signal_context, this->tile);
 	}
 
 	DEBUG(grf, 1, "Unhandled rail type tile variable 0x%X", variable);
@@ -81,10 +84,11 @@ uint32 RailTypeResolverObject::GetDebugID() const
  * @param rtsg Railpart of interest
  * @param param1 Extra parameter (first parameter of the callback, except railtypes do not have callbacks).
  * @param param2 Extra parameter (second parameter of the callback, except railtypes do not have callbacks).
+ * @param signal_context Signal context.
  * @param prog Routing restriction program.
  */
-RailTypeResolverObject::RailTypeResolverObject(const RailtypeInfo *rti, TileIndex tile, TileContext context, RailTypeSpriteGroup rtsg, uint32 param1, uint32 param2, const TraceRestrictProgram *prog)
-	: ResolverObject(rti != nullptr ? rti->grffile[rtsg] : nullptr, CBID_NO_CALLBACK, param1, param2), railtype_scope(*this, rti, tile, context, prog)
+RailTypeResolverObject::RailTypeResolverObject(const RailtypeInfo *rti, TileIndex tile, TileContext context, RailTypeSpriteGroup rtsg, uint32 param1, uint32 param2, CustomSignalSpriteContext signal_context, const TraceRestrictProgram *prog)
+	: ResolverObject(rti != nullptr ? rti->grffile[rtsg] : nullptr, CBID_NO_CALLBACK, param1, param2), railtype_scope(*this, rti, tile, context, signal_context, prog)
 {
 	this->root_spritegroup = rti != nullptr ? rti->group[rtsg] : nullptr;
 }
@@ -121,16 +125,16 @@ inline uint8 RemapAspect(uint8 aspect, uint8 extra_aspects)
 	return aspect + 1;
 }
 
-static PalSpriteID GetRailTypeCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, uint8 aspect, bool gui, const TraceRestrictProgram *prog)
+static PalSpriteID GetRailTypeCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, uint8 aspect, CustomSignalSpriteContext context, const TraceRestrictProgram *prog)
 {
 	if (rti->group[RTSG_SIGNALS] == nullptr) return { 0, PAL_NONE };
 	if (type == SIGTYPE_PROG && !HasBit(rti->ctrl_flags, RTCF_PROGSIG)) return { 0, PAL_NONE };
 	if (type == SIGTYPE_NO_ENTRY && !HasBit(rti->ctrl_flags, RTCF_NOENTRYSIG)) return { 0, PAL_NONE };
 
-	uint32 param1 = gui ? 0x10 : 0x00;
+	uint32 param1 = (context == CSSC_GUI) ? 0x10 : 0x00;
 	uint32 param2 = (type << 16) | (var << 8) | RemapAspect(aspect, rti->signal_extra_aspects);
 	if ((prog != nullptr) && HasBit(rti->ctrl_flags, RTCF_RESTRICTEDSIG)) SetBit(param2, 24);
-	RailTypeResolverObject object(rti, tile, TCX_NORMAL, RTSG_SIGNALS, param1, param2, prog);
+	RailTypeResolverObject object(rti, tile, TCX_NORMAL, RTSG_SIGNALS, param1, param2, context, prog);
 
 	const SpriteGroup *group = object.Resolve();
 	if (group == nullptr || group->GetNumResults() == 0) return { 0, PAL_NONE };
@@ -149,21 +153,21 @@ static PalSpriteID GetRailTypeCustomSignalSprite(const RailtypeInfo *rti, TileIn
  * @param gui Is the sprite being used on the map or in the GUI?
  * @return The sprite to draw.
  */
-CustomSignalSpriteResult GetCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, uint8 aspect, bool gui, const TraceRestrictProgram *prog)
+CustomSignalSpriteResult GetCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, uint8 aspect, CustomSignalSpriteContext context, const TraceRestrictProgram *prog)
 {
 	if (_settings_client.gui.show_all_signal_default) return { { 0, PAL_NONE }, false };
 
-	PalSpriteID spr = GetRailTypeCustomSignalSprite(rti, tile, type, var, aspect, gui, prog);
+	PalSpriteID spr = GetRailTypeCustomSignalSprite(rti, tile, type, var, aspect, context, prog);
 	if (spr.sprite != 0) return { spr, HasBit(rti->ctrl_flags, RTCF_RESTRICTEDSIG) };
 
 	for (const GRFFile *grf : _new_signals_grfs) {
 		if (type == SIGTYPE_PROG && !HasBit(grf->new_signal_ctrl_flags, NSCF_PROGSIG)) continue;
 		if (type == SIGTYPE_NO_ENTRY && !HasBit(grf->new_signal_ctrl_flags, NSCF_NOENTRYSIG)) continue;
 
-		uint32 param1 = gui ? 0x10 : 0x00;
+		uint32 param1 = (context == CSSC_GUI) ? 0x10 : 0x00;
 		uint32 param2 = (type << 16) | (var << 8) | RemapAspect(aspect, grf->new_signal_extra_aspects);
 		if ((prog != nullptr) && HasBit(grf->new_signal_ctrl_flags, NSCF_RESTRICTEDSIG)) SetBit(param2, 24);
-		NewSignalsResolverObject object(grf, tile, TCX_NORMAL, param1, param2, prog);
+		NewSignalsResolverObject object(grf, tile, TCX_NORMAL, param1, param2, context, prog);
 
 		const SpriteGroup *group = object.Resolve();
 		if (group != nullptr && group->GetNumResults() != 0) {

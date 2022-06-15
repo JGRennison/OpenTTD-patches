@@ -1759,7 +1759,7 @@ static void DrawTunnelBridgeRampSingleSignal(const TileInfo *ti, bool is_green, 
 	}
 	bool show_restricted = IsTunnelBridgeRestrictedSignal(ti->tile);
 	const TraceRestrictProgram *prog = show_restricted ? GetExistingTraceRestrictProgram(ti->tile, FindFirstTrack(GetAcrossTunnelBridgeTrackBits(ti->tile))) : nullptr;
-	const CustomSignalSpriteResult result = GetCustomSignalSprite(rti, ti->tile, type, variant, aspect, false, prog);
+	const CustomSignalSpriteResult result = GetCustomSignalSprite(rti, ti->tile, type, variant, aspect, show_exit ? CSSC_TUNNEL_BRIDGE_EXIT : CSSC_TUNNEL_BRIDGE_ENTRANCE, prog);
 	PalSpriteID sprite = result.sprite;
 	bool is_custom_sprite = (sprite.sprite != 0);
 
@@ -1887,7 +1887,7 @@ static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_st
 			}
 
 			const RailtypeInfo *rti = GetRailTypeInfo(GetRailType(bridge_start_tile));
-			PalSpriteID sprite = GetCustomSignalSprite(rti, bridge_start_tile, SIGTYPE_NORMAL, variant, aspect).sprite;
+			PalSpriteID sprite = GetCustomSignalSprite(rti, bridge_start_tile, SIGTYPE_NORMAL, variant, aspect, CSSC_BRIDGE_MIDDLE).sprite;
 
 			if (sprite.sprite != 0) {
 				sprite.sprite += position;
@@ -2143,7 +2143,7 @@ static void DrawTile_TunnelBridge(TileInfo *ti, DrawTileProcParams params)
 
 			if (IsTunnelBridgeWithSignalSimulation(ti->tile)) {
 				extern void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, SignalState condition,
-						SignalOffsets image, uint pos, SignalType type, SignalVariant variant, const TraceRestrictProgram *prog, bool exit_signal = false);
+						SignalOffsets image, uint pos, SignalType type, SignalVariant variant, const TraceRestrictProgram *prog, CustomSignalSpriteContext context);
 
 				DiagDirection dir = GetTunnelBridgeDirection(ti->tile);
 				SignalVariant variant = IsTunnelBridgeSemaphore(ti->tile) ? SIG_SEMAPHORE : SIG_ELECTRIC;
@@ -2157,14 +2157,14 @@ static void DrawTile_TunnelBridge(TileInfo *ti, DrawTileProcParams params)
 					}
 					const TraceRestrictProgram *prog = IsTunnelBridgeRestrictedSignal(ti->tile) ? GetExistingTraceRestrictProgram(ti->tile, t) : nullptr;
 					if (IsTunnelBridgeSignalSimulationEntrance(ti->tile)) {
-						DrawSingleSignal(ti->tile, rti, t, GetTunnelBridgeEntranceSignalState(ti->tile), image, position, SIGTYPE_NORMAL, variant, prog, false);
+						DrawSingleSignal(ti->tile, rti, t, GetTunnelBridgeEntranceSignalState(ti->tile), image, position, SIGTYPE_NORMAL, variant, prog, CSSC_TUNNEL_BRIDGE_ENTRANCE);
 					}
 					if (IsTunnelBridgeSignalSimulationExit(ti->tile)) {
 						SignalType type = SIGTYPE_NORMAL;
 						if (IsTunnelBridgePBS(ti->tile)) {
 							type = IsTunnelBridgeSignalSimulationEntrance(ti->tile) ? SIGTYPE_PBS : SIGTYPE_PBS_ONEWAY;
 						}
-						DrawSingleSignal(ti->tile, rti, t, GetTunnelBridgeExitSignalState(ti->tile), (SignalOffsets)(image ^ 1), position ^ 1, type, variant, prog, true);
+						DrawSingleSignal(ti->tile, rti, t, GetTunnelBridgeExitSignalState(ti->tile), (SignalOffsets)(image ^ 1), position ^ 1, type, variant, prog, CSSC_TUNNEL_BRIDGE_EXIT);
 					}
 				};
 				switch (t) {

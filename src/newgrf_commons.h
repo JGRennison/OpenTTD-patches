@@ -21,7 +21,7 @@
 #include "company_type.h"
 
 /** Context for tile accesses */
-enum TileContext {
+enum TileContext : uint8 {
 	TCX_NORMAL,         ///< Nothing special.
 	TCX_UPPER_HALFTILE, ///< Querying information about the upper part of a tile with halftile foundation.
 	TCX_ON_BRIDGE,      ///< Querying information about stuff on the bridge (via some bridgehead).
@@ -343,5 +343,13 @@ enum SpriteGroupCallbacksUsed : uint8 {
 	SGCU_REFIT_CB_ALL_CARGOES           = 1 << 4,
 };
 DECLARE_ENUM_AS_BIT_SET(SpriteGroupCallbacksUsed)
+
+enum CustomSignalSpriteContext : uint8 {
+	CSSC_GUI = 0,
+	CSSC_TRACK,
+	CSSC_TUNNEL_BRIDGE_ENTRANCE,
+	CSSC_TUNNEL_BRIDGE_EXIT,
+	CSSC_BRIDGE_MIDDLE,
+};
 
 #endif /* NEWGRF_COMMONS_H */

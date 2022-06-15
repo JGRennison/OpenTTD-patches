@@ -121,6 +121,33 @@
 			</dl>
 		</td>
 	</tr>
+	<tr><td>signal_context</td><td>SIGNAL_CONTEXT_XXX</td>
+		<td>
+			Information about the context of the signal being drawn:
+			<dl>
+				<dt>GUI</dt>
+				<dd>The signal is being drawn in the GUI (signal window)</dd>
+				<dt>TRACK</dt>
+				<dd>The signal is being drawn on ordinary rail track</dd>
+				<dt>TUNNEL_BRIDGE_ENTRANCE</dt>
+				<dd>The signal is being drawn as a tunnel/bridge entrance signal</dd>
+				<dt>TUNNEL_BRIDGE_EXIT</dt>
+				<dd>The signal is being drawn as a tunnel/bridge exit signal</dd>
+				<dt>BRIDGE_MIDDLE</dt>
+				<dd>The signal is being drawn on the middle of a bridge</dd>
+			</dl>
+		</td>
+	</tr>
+	<tr><td>signal_context_is_tunnel</td><td>0 or 1</td>
+		<td>
+			The signal is being drawn on a tunnel entrance/exit (not a bridge)
+		</td>
+	</tr>
+	<tr><td>signal_context_info</td><td></td>
+		<td>
+			Above signal context variables in one variable (all of the railtype_signal_context variable)
+		</td>
+	</tr>
 	</table>
 	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Roadtypes#Roadtype_properties">Roadtype properties</a></h3>
 	<table>
@@ -433,6 +460,33 @@ item (FEAT_GLOBALVARS) {
 				<dt>MAY_REVERSE</dt>
 				<dd>The attached routing restriction program may allow trains to reverse behind this signal</dd>
 			</dl>
+		</td>
+	</tr>
+	<tr><td>signal_context</td><td>SIGNAL_CONTEXT_XXX</td>
+		<td>
+			Information about the context of the signal being drawn:
+			<dl>
+				<dt>GUI</dt>
+				<dd>The signal is being drawn in the GUI (signal window)</dd>
+				<dt>TRACK</dt>
+				<dd>The signal is being drawn on ordinary rail track</dd>
+				<dt>TUNNEL_BRIDGE_ENTRANCE</dt>
+				<dd>The signal is being drawn as a tunnel/bridge entrance signal</dd>
+				<dt>TUNNEL_BRIDGE_EXIT</dt>
+				<dd>The signal is being drawn as a tunnel/bridge exit signal</dd>
+				<dt>BRIDGE_MIDDLE</dt>
+				<dd>The signal is being drawn on the middle of a bridge</dd>
+			</dl>
+		</td>
+	</tr>
+	<tr><td>signal_context_is_tunnel</td><td>0 or 1</td>
+		<td>
+			The signal is being drawn on a tunnel entrance/exit (not a bridge)
+		</td>
+	</tr>
+	<tr><td>signal_context_info</td><td></td>
+		<td>
+			Above signal context variables in one variable (all of the signals_signal_context variable)
 		</td>
 	</tr>
 	</table>

@@ -12,6 +12,7 @@
 
 #include "newgrf_commons.h"
 #include "newgrf_spritegroup.h"
+#include "tunnel_map.h"
 
 extern std::vector<const GRFFile *> _new_signals_grfs;
 
@@ -21,6 +22,7 @@ struct TraceRestrictProgram;
 struct NewSignalsScopeResolver : public ScopeResolver {
 	TileIndex tile;      ///< Tracktile. For track on a bridge this is the southern bridgehead.
 	TileContext context; ///< Are we resolving sprites for the upper halftile, or on a bridge?
+	CustomSignalSpriteContext signal_context;
 	const TraceRestrictProgram *prog;
 
 	/**
@@ -28,9 +30,10 @@ struct NewSignalsScopeResolver : public ScopeResolver {
 	 * @param ro Surrounding resolver.
 	 * @param tile %Tile containing the track. For track on a bridge this is the southern bridgehead.
 	 * @param context Are we resolving sprites for the upper halftile, or on a bridge?
+	 * @param signal_context Signal context.
 	 */
-	NewSignalsScopeResolver(ResolverObject &ro, TileIndex tile, TileContext context, const TraceRestrictProgram *prog)
-		: ScopeResolver(ro), tile(tile), context(context), prog(prog)
+	NewSignalsScopeResolver(ResolverObject &ro, TileIndex tile, TileContext context, CustomSignalSpriteContext signal_context, const TraceRestrictProgram *prog)
+		: ScopeResolver(ro), tile(tile), context(context), signal_context(signal_context), prog(prog)
 	{
 	}
 
@@ -42,7 +45,7 @@ struct NewSignalsScopeResolver : public ScopeResolver {
 struct NewSignalsResolverObject : public ResolverObject {
 	NewSignalsScopeResolver newsignals_scope; ///< Resolver for the new signals scope.
 
-	NewSignalsResolverObject(const GRFFile *grffile, TileIndex tile, TileContext context, uint32 param1 = 0, uint32 param2 = 0, const TraceRestrictProgram *prog = nullptr);
+	NewSignalsResolverObject(const GRFFile *grffile, TileIndex tile, TileContext context, uint32 param1, uint32 param2, CustomSignalSpriteContext signal_context, const TraceRestrictProgram *prog = nullptr);
 
 	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, byte relative = 0) override
 	{
@@ -58,5 +61,12 @@ struct NewSignalsResolverObject : public ResolverObject {
 };
 
 uint GetNewSignalsRestrictedSignalsInfo(const TraceRestrictProgram *prog, TileIndex tile);
+
+inline uint GetNewSignalsSignalContext(CustomSignalSpriteContext signal_context, TileIndex tile)
+{
+	uint result = signal_context;
+	if ((signal_context == CSSC_TUNNEL_BRIDGE_ENTRANCE || signal_context == CSSC_TUNNEL_BRIDGE_EXIT) && IsTunnel(tile)) result |= 0x100;
+	return result;
+}
 
 #endif /* NEWGRF_NEWSIGNALS_H */

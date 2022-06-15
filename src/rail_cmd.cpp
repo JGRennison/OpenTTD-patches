@@ -129,7 +129,7 @@ void ResolveRailTypeGUISprites(RailtypeInfo *rti)
 
 	for (SignalType type = SIGTYPE_NORMAL; type < SIGTYPE_END; type = (SignalType)(type + 1)) {
 		for (SignalVariant var = SIG_ELECTRIC; var <= SIG_SEMAPHORE; var = (SignalVariant)(var + 1)) {
-			PalSpriteID red   = GetCustomSignalSprite(rti, INVALID_TILE, type, var, 0, true).sprite;
+			PalSpriteID red   = GetCustomSignalSprite(rti, INVALID_TILE, type, var, 0, CSSC_GUI).sprite;
 			if (red.sprite != 0) {
 				rti->gui_sprites.signals[type][var][0] = { red.sprite + SIGNAL_TO_SOUTH, red.pal };
 			} else {
@@ -139,7 +139,7 @@ void ResolveRailTypeGUISprites(RailtypeInfo *rti)
 				rti->gui_sprites.signals[type][var][1] = rti->gui_sprites.signals[type][var][0];
 				continue;
 			}
-			PalSpriteID green = GetCustomSignalSprite(rti, INVALID_TILE, type, var, 255, true).sprite;
+			PalSpriteID green = GetCustomSignalSprite(rti, INVALID_TILE, type, var, 255, CSSC_GUI).sprite;
 			if (green.sprite != 0) {
 				rti->gui_sprites.signals[type][var][1] = { green.sprite + SIGNAL_TO_SOUTH, green.pal };
 			} else {
@@ -2721,7 +2721,7 @@ static void GetSignalXY(TileIndex tile, uint pos, uint &x, uint &y)
 }
 
 void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, SignalState condition, SignalOffsets image, uint pos, SignalType type,
-		SignalVariant variant, const TraceRestrictProgram *prog, bool exit_signal = false)
+		SignalVariant variant, const TraceRestrictProgram *prog, CustomSignalSpriteContext context)
 {
 	bool show_restricted = (prog != nullptr);
 
@@ -2734,17 +2734,28 @@ void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, Sign
 	if (condition == SIGNAL_STATE_GREEN) {
 		aspect = 1;
 		if (_extra_aspects > 0) {
-			if (IsPlainRailTile(tile)) {
-				aspect = GetSignalAspect(tile, track);
-			} else if (IsTunnelBridgeWithSignalSimulation(tile)) {
-				aspect = exit_signal? GetTunnelBridgeExitSignalAspect(tile) : GetTunnelBridgeEntranceSignalAspect(tile);
+			switch (context) {
+				case CSSC_TRACK:
+					aspect = GetSignalAspect(tile, track);
+					break;
+
+				case CSSC_TUNNEL_BRIDGE_ENTRANCE:
+					aspect = GetTunnelBridgeEntranceSignalAspect(tile);
+					break;
+
+				case CSSC_TUNNEL_BRIDGE_EXIT:
+					aspect = GetTunnelBridgeExitSignalAspect(tile);
+					break;
+
+				default:
+					break;
 			}
 		}
 	} else {
 		aspect = 0;
 	}
 
-	const CustomSignalSpriteResult result = GetCustomSignalSprite(rti, tile, type, variant, aspect, false, prog);
+	const CustomSignalSpriteResult result = GetCustomSignalSprite(rti, tile, type, variant, aspect, context, prog);
 	SpriteID sprite = result.sprite.sprite;
 	PaletteID pal = PAL_NONE;
 	bool is_custom_sprite = (sprite != 0);
@@ -2825,7 +2836,7 @@ static void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track trac
 	SignalVariant variant = GetSignalVariant(tile, track);
 
 	const TraceRestrictProgram *prog = IsRestrictedSignal(tile) ? GetExistingTraceRestrictProgram(tile, track) : nullptr;
-	DrawSingleSignal(tile, rti, track, condition, image, pos, type, variant, prog);
+	DrawSingleSignal(tile, rti, track, condition, image, pos, type, variant, prog, CSSC_TRACK);
 }
 
 template <typename F>
