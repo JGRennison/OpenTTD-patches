@@ -1057,7 +1057,19 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 					break;
 
 				case TRIT_REVERSE:
-					actions_used_flags |= TRPAUF_REVERSE;
+					switch (static_cast<TraceRestrictReverseValueField>(GetTraceRestrictValue(item))) {
+						case TRRVF_REVERSE:
+							actions_used_flags |= TRPAUF_REVERSE;
+							break;
+
+						case TRRVF_CANCEL_REVERSE:
+							if (condstack.empty()) actions_used_flags &= ~TRPAUF_REVERSE;
+							break;
+
+						default:
+							NOT_REACHED();
+							break;
+					}
 					break;
 
 				case TRIT_SPEED_RESTRICTION:
@@ -1327,7 +1339,7 @@ void TraceRestrictCheckRefreshSignals(const TraceRestrictProgram *prog, TileInde
 {
 	if (_network_dedicated) return;
 
-	if (!((old_actions_used_flags ^ prog->actions_used_flags) & TRPAUF_RESERVE_THROUGH_ALWAYS)) return;
+	if (!((old_actions_used_flags ^ prog->actions_used_flags) & (TRPAUF_RESERVE_THROUGH_ALWAYS | TRPAUF_REVERSE))) return;
 
 	if (old_size == 0 && prog->refcount == 1) return; // Program is new, no need to refresh again
 
