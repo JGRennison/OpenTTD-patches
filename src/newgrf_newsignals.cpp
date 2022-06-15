@@ -13,6 +13,7 @@
 #include "newgrf_extension.h"
 #include "map_func.h"
 #include "tracerestrict.h"
+#include "string_func.h"
 
 #include "safeguards.h"
 
@@ -84,4 +85,18 @@ uint GetNewSignalsRestrictedSignalsInfo(const TraceRestrictProgram *prog, TileIn
 	if ((prog->actions_used_flags & TRPAUF_RESERVE_THROUGH_ALWAYS) && !IsTileType(tile, MP_TUNNELBRIDGE)) result |= 2;
 	if ((prog->actions_used_flags & TRPAUF_REVERSE) && !IsTileType(tile, MP_TUNNELBRIDGE)) result |= 4;
 	return result;
+}
+
+void DumpNewSignalsSpriteGroups(DumpSpriteGroupPrinter print)
+{
+	SpriteGroupDumper dumper(print);
+	bool first = true;
+	for (const GRFFile *grf : _new_signals_grfs) {
+		if (!first) print(nullptr, DSGPO_PRINT, 0, "");
+		char buffer[64];
+		seprintf(buffer, lastof(buffer), "GRF: %08X", BSWAP32(grf->grfid));
+		print(nullptr, DSGPO_PRINT, 0, buffer);
+		first = false;
+		dumper.DumpSpriteGroup(grf->new_signals_group, 0, 0);
+	}
 }

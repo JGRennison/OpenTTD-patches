@@ -12,6 +12,7 @@
 #include "../newgrf_roadtype.h"
 #include "../newgrf_roadstop.h"
 #include "../newgrf_cargo.h"
+#include "../newgrf_newsignals.h"
 #include "../date_func.h"
 #include "../timetable.h"
 #include "../ship.h"
@@ -865,6 +866,72 @@ static const NIFeature _nif_industry = {
 };
 
 
+/*** NewGRF signals ***/
+void DumpTileSignalsInfo(char *buffer, const char *last, uint index, NIExtraInfoOutput &output)
+{
+	for (Trackdir td = TRACKDIR_BEGIN; td < TRACKDIR_END; td = (Trackdir)(td + 1)) {
+		if (!IsValidTrackdir(td)) continue;
+		if (HasTrack(index, TrackdirToTrack(td)) && HasSignalOnTrackdir(index, td)) {
+			char *b = buffer;
+			const SignalState state = GetSignalStateByTrackdir(index, td);
+			b += seprintf(b, last, "  trackdir: %d, state: %d", td, state);
+			if (_extra_aspects > 0 && state == SIGNAL_STATE_GREEN) seprintf(b, last, ", aspect: %d", GetSignalAspect(index, TrackdirToTrack(td)));
+			output.print(buffer);
+		}
+	}
+}
+
+static const NIVariable _niv_signals[] = {
+	NIV(0x40, "terrain type"),
+	NIV(A2VRI_SIGNALS_SIGNAL_RESTRICTION_INFO, "restriction info"),
+	NIV(A2VRI_SIGNALS_SIGNAL_CONTEXT, "context"),
+	NIV_END()
+};
+
+class NIHSignals : public NIHelper {
+	bool IsInspectable(uint index) const override        { return !_new_signals_grfs.empty(); }
+	bool ShowSpriteDumpButton(uint index) const override { return true; }
+	uint GetParent(uint index) const override            { return UINT32_MAX; }
+	const void *GetInstance(uint index)const override    { return nullptr; }
+	const void *GetSpec(uint index) const override       { return nullptr; }
+	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS, INVALID_STRING_ID, index); }
+	uint32 GetGRFID(uint index) const override           { return 0; }
+
+	uint Resolve(uint index, uint var, uint param, GetVariableExtra *extra) const override
+	{
+		extern TraceRestrictProgram *GetFirstTraceRestrictProgramOnTile(TileIndex t);
+		CustomSignalSpriteContext ctx = CSSC_TRACK;
+		if (IsTunnelBridgeWithSignalSimulation(index)) {
+			ctx = IsTunnelBridgeSignalSimulationEntrance(index) ? CSSC_TUNNEL_BRIDGE_ENTRANCE : CSSC_TUNNEL_BRIDGE_EXIT;
+		}
+		NewSignalsResolverObject ro(nullptr, index, TCX_NORMAL, 0, 0, ctx, GetFirstTraceRestrictProgramOnTile(index));
+		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
+	}
+
+	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
+	{
+		char buffer[1024];
+		output.print("Debug Info:");
+		if (IsTileType(index, MP_RAILWAY) && HasSignals(index)) {
+			output.print("Signals:");
+			DumpTileSignalsInfo(buffer, lastof(buffer), index, output);
+		}
+	}
+
+	/* virtual */ void SpriteDump(uint index, DumpSpriteGroupPrinter print) const override
+	{
+		extern void DumpNewSignalsSpriteGroups(DumpSpriteGroupPrinter print);
+		DumpNewSignalsSpriteGroups(std::move(print));
+	}
+};
+
+static const NIFeature _nif_signals = {
+	nullptr,
+	nullptr,
+	_niv_signals,
+	new NIHSignals(),
+};
+
 /*** NewGRF objects ***/
 
 #define NICO(cb_id, bit) NIC(cb_id, ObjectSpec, callback_mask, bit)
@@ -1100,16 +1167,7 @@ class NIHRailType : public NIHelper {
 
 		if (IsTileType(index, MP_RAILWAY) && HasSignals(index)) {
 			output.print("Signals:");
-			for (Trackdir td = TRACKDIR_BEGIN; td < TRACKDIR_END; td = (Trackdir)(td + 1)) {
-				if (!IsValidTrackdir(td)) continue;
-				if (HasTrack(index, TrackdirToTrack(td)) && HasSignalOnTrackdir(index, td)) {
-					char *b = buffer;
-					const SignalState state = GetSignalStateByTrackdir(index, td);
-					b += seprintf(b, lastof(buffer), "  trackdir: %d, state: %d", td, state);
-					if (_extra_aspects > 0 && state == SIGNAL_STATE_GREEN) seprintf(b, lastof(buffer), ", aspect: %d", GetSignalAspect(index, TrackdirToTrack(td)));
-					output.print(buffer);
-				}
-			}
+			DumpTileSignalsInfo(buffer, lastof(buffer), index, output);
 		}
 		if (IsTileType(index, MP_RAILWAY) && IsRailDepot(index)) {
 			seprintf(buffer, lastof(buffer), "Depot: reserved: %u", HasDepotReservation(index));
@@ -1527,7 +1585,7 @@ static const NIFeature * const _nifeatures[] = {
 	nullptr,               // GSF_CARGOES (has no "physical" objects)
 	nullptr,               // GSF_SOUNDFX (has no "physical" objects)
 	nullptr,               // GSF_AIRPORTS (feature not implemented)
-	nullptr,               // GSF_SIGNALS (feature not implemented)
+	&_nif_signals,      // GSF_SIGNALS
 	&_nif_object,       // GSF_OBJECTS
 	&_nif_railtype,     // GSF_RAILTYPES
 	&_nif_airporttile,  // GSF_AIRPORTTILES

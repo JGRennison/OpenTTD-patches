@@ -1379,6 +1379,21 @@ TraceRestrictProgram *GetTraceRestrictProgram(TraceRestrictRefId ref, bool creat
 }
 
 /**
+ * Gets the first signal program for the given tile
+ * This is for debug/display purposes only
+ */
+TraceRestrictProgram *GetFirstTraceRestrictProgramOnTile(TileIndex t)
+{
+	// First mapping for this tile, or later
+	TraceRestrictMapping::iterator lower_bound = _tracerestrictprogram_mapping.lower_bound(MakeTraceRestrictRefId(t, static_cast<Track>(0)));
+
+	if ((lower_bound != _tracerestrictprogram_mapping.end()) && (GetTraceRestrictRefIdTileIndex(lower_bound->first) == t)) {
+		return _tracerestrictprogram_pool.Get(lower_bound->second.program_id);
+	}
+	return nullptr;
+}
+
+/**
  * Notify that a signal is being removed
  * Remove any trace restrict mappings associated with it
  */

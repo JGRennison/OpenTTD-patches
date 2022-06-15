@@ -1144,7 +1144,13 @@ GrfSpecFeature GetGrfSpecFeature(TileIndex tile)
 {
 	switch (GetTileType(tile)) {
 		default:              return GSF_INVALID;
-		case MP_RAILWAY:      return GSF_RAILTYPES;
+		case MP_RAILWAY: {
+			extern std::vector<const GRFFile *> _new_signals_grfs;
+			if (HasSignals(tile) && !_new_signals_grfs.empty()) {
+				return GSF_SIGNALS;
+			}
+			return GSF_RAILTYPES;
+		}
 		case MP_ROAD:         return IsLevelCrossing(tile) ? GSF_RAILTYPES : GSF_ROADTYPES;
 		case MP_HOUSE:        return GSF_HOUSES;
 		case MP_INDUSTRY:     return GSF_INDUSTRYTILES;
@@ -1163,6 +1169,13 @@ GrfSpecFeature GetGrfSpecFeature(TileIndex tile)
 				default:
 					return GSF_INVALID;
 			}
+
+		case MP_TUNNELBRIDGE: {
+			extern std::vector<const GRFFile *> _new_signals_grfs;
+			if (IsTunnelBridgeWithSignalSimulation(tile) && !_new_signals_grfs.empty()) return GSF_SIGNALS;
+			return GSF_INVALID;
+		}
+
 	}
 }
 
