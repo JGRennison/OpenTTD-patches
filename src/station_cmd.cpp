@@ -2897,6 +2897,8 @@ static CommandCost RemoveAirport(TileIndex tile, DoCommandFlag flags)
 		}
 
 		for (TileIndex tile_cur : st->airport) {
+			if (!st->TileBelongsToAirport(tile_cur)) continue;
+
 			DeleteAnimatedTile(tile_cur);
 			DoClearSquare(tile_cur);
 			DeleteNewGRFInspectWindow(GSF_AIRPORTTILES, tile_cur);
