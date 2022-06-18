@@ -197,6 +197,8 @@ public:
 		/* Tiletype */
 		SetDParam(0, td.dparam[0]);
 		SetDParam(1, td.dparam[1]);
+		SetDParam(2, td.dparam[2]);
+		SetDParam(3, td.dparam[3]);
 		this->landinfo_data.push_back(GetString(td.str));
 
 		/* Up to four owners */

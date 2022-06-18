@@ -3205,6 +3205,8 @@ STR_BUILD_SIGNAL_CONVERT_TOOLTIP                                :{BLACK}Signal C
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP                   :{BLACK}Dragging signal distance
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_DECREASE_TOOLTIP          :{BLACK}Decrease dragging signal distance
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_INCREASE_TOOLTIP          :{BLACK}Increase dragging signal distance
+STR_BUILD_SIGNAL_DEFAULT_STYLE                                  :Default
+STR_BUILD_SIGNAL_STYLE_TOOLTIP                                  :{BLACK}Select signal style
 
 # Tracerestrict GUI
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_EQUALS                :is
@@ -3881,8 +3883,10 @@ STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Railway track w
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_PROGSIGNALS             :Railway track with path and programmable pre-signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRY_PROGSIGNALS         :Railway track with one-way path and programmable pre-signals
 STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Railway train depot
+STR_LAI_RAIL_DESCRIPTION_TRACK_SIGNAL_STYLE                     :{STRING}: ({STRING})
+STR_LAI_RAIL_DESCRIPTION_TRACK_SIGNAL_STYLE2                    :{STRING}: ({STRING} and {STRING})
 
-STR_LAI_RAIL_DESCRIPTION_RESTRICTED_SIGNAL                      :{STRING} (restricted)
+STR_LAI_RAIL_DESCRIPTION_RESTRICTED_SIGNAL                      :{STRING3} (restricted)
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Road
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Road with street lights

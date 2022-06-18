@@ -440,6 +440,7 @@ static void ShutdownGame()
 	LinkGraphSchedule::Clear();
 	ClearTraceRestrictMapping();
 	ClearBridgeSimulatedSignalMapping();
+	ClearBridgeSignalStyleMapping();
 	ClearCargoPacketDeferredPayments();
 	PoolBase::Clean(PT_ALL);
 

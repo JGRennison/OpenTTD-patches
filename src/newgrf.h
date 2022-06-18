@@ -300,6 +300,8 @@ enum GRFFileCtrlFlags {
 	GFCF_HAVE_FEATURE_ID_REMAP  = 0,                          ///< This GRF has one or more feature ID mappings
 };
 
+struct NewSignalStyle;
+
 /** Dynamic data of a loaded NewGRF */
 struct GRFFile : ZeroedMemoryAllocator {
 	char *filename;
@@ -357,6 +359,8 @@ struct GRFFile : ZeroedMemoryAllocator {
 	const SpriteGroup *new_signals_group;    ///< New signals sprite group
 	byte new_signal_ctrl_flags;              ///< Ctrl flags for new signals
 	byte new_signal_extra_aspects;           ///< Number of extra aspects for new signals
+	uint16 new_signal_style_mask;            ///< New signal styles usable with this GRF
+	NewSignalStyle *current_new_signal_style; ///< Current new signal style being defined by this GRF
 
 	const SpriteGroup *new_rocks_group;      ///< New landscape rocks group
 	byte new_landscape_ctrl_flags;           ///< Ctrl flags for new landscape

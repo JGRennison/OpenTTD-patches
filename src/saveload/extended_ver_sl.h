@@ -126,6 +126,7 @@ enum SlXvFeatureIndex {
 	XSLFI_RV_ORDER_EXTRA_FLAGS,                   ///< Road vehicle order extra flags
 	XSLFI_GRF_ROADSTOPS,                          ///< NewGRF road stops
 	XSLFI_INDUSTRY_ANIM_MASK,                     ///< Industry tile animation masking
+	XSLFI_NEW_SIGNAL_STYLES,                      ///< New signal styles
 
 	XSLFI_SCRIPT_INT64,                           ///< See: SLV_SCRIPT_INT64
 

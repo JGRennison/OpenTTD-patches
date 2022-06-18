@@ -133,3 +133,23 @@ bool IsTunnelInWay(TileIndex tile, int z, IsTunnelInWayFlags flags)
 {
 	return IsTunnelInWaySingleAxis(tile, z, flags, false, 1) || IsTunnelInWaySingleAxis(tile, z, flags, true, TileOffsByDiagDir(DIAGDIR_SE));
 }
+
+void SetTunnelSignalStyle(TileIndex t, TileIndex end, uint8 style)
+{
+	if (style == 0) {
+		/* Style already 0 */
+		if (!HasBit(_m[t].m3, 7)) return;
+
+		ClrBit(_m[t].m3, 7);
+		ClrBit(_m[end].m3, 7);
+	} else {
+		SetBit(_m[t].m3, 7);
+		SetBit(_m[end].m3, 7);
+	}
+	Tunnel::GetByTile(t)->style = style;
+}
+
+uint8 GetTunnelSignalStyleExtended(TileIndex t)
+{
+	return Tunnel::GetByTile(t)->style;
+}

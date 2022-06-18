@@ -153,21 +153,24 @@ static PalSpriteID GetRailTypeCustomSignalSprite(const RailtypeInfo *rti, TileIn
  * @param gui Is the sprite being used on the map or in the GUI?
  * @return The sprite to draw.
  */
-CustomSignalSpriteResult GetCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, uint8 aspect, CustomSignalSpriteContext context, const TraceRestrictProgram *prog)
+CustomSignalSpriteResult GetCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, uint8 aspect, CustomSignalSpriteContext context, uint8 style, const TraceRestrictProgram *prog)
 {
-	if (_settings_client.gui.show_all_signal_default) return { { 0, PAL_NONE }, false };
+	if (_settings_client.gui.show_all_signal_default && style == 0) return { { 0, PAL_NONE }, false };
 
-	PalSpriteID spr = GetRailTypeCustomSignalSprite(rti, tile, type, var, aspect, context, prog);
-	if (spr.sprite != 0) return { spr, HasBit(rti->ctrl_flags, RTCF_RESTRICTEDSIG) };
+	if (style == 0) {
+		PalSpriteID spr = GetRailTypeCustomSignalSprite(rti, tile, type, var, aspect, context, prog);
+		if (spr.sprite != 0) return { spr, HasBit(rti->ctrl_flags, RTCF_RESTRICTEDSIG) };
+	}
 
 	for (const GRFFile *grf : _new_signals_grfs) {
 		if (type == SIGTYPE_PROG && !HasBit(grf->new_signal_ctrl_flags, NSCF_PROGSIG)) continue;
 		if (type == SIGTYPE_NO_ENTRY && !HasBit(grf->new_signal_ctrl_flags, NSCF_NOENTRYSIG)) continue;
+		if (!HasBit(grf->new_signal_style_mask, style)) continue;
 
 		uint32 param1 = (context == CSSC_GUI) ? 0x10 : 0x00;
 		uint32 param2 = (type << 16) | (var << 8) | RemapAspect(aspect, grf->new_signal_extra_aspects);
 		if ((prog != nullptr) && HasBit(grf->new_signal_ctrl_flags, NSCF_RESTRICTEDSIG)) SetBit(param2, 24);
-		NewSignalsResolverObject object(grf, tile, TCX_NORMAL, param1, param2, context, prog);
+		NewSignalsResolverObject object(grf, tile, TCX_NORMAL, param1, param2, context, style, prog);
 
 		const SpriteGroup *group = object.Resolve();
 		if (group != nullptr && group->GetNumResults() != 0) {

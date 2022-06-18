@@ -416,6 +416,28 @@
 	The provided value is currently clamped to be within the range 0 - 6 (inclusive).</p>
 	<p>N.B. Realistic braking must be enabled for additional signal aspects to be used.</p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_signals_extra_aspects</font>, version 1</p>
+	<h4 id="signals_define_style">Define a custom signal style (mappable property: signals_define_style)</h4>
+	<p>This applies to <a href="#a3signals_custom_signal_sprites">Action 2/3 Signals (Feature 0E) custom signal sprites</a> for this GRF.<br />
+	This defines a new signal style. Signals using this style will only use this GRF, or the default graphics if no graphics are returned.</p>
+	<p>The total number of custom signal styles in a game is currently limited to 15.</p>
+	<p>The property length is 1 byte. This is the local ID of the style which is returned in the <a href="#signals_signal_style">signals_signal_style</a> variable.<br />
+	The Action 0 Id field is not used, the value is ignored.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
+	<h4 id="signals_style_name">Set custom signal style name (mappable property: signals_style_name)</h4>
+	<p>This applies to the most recent custom signal style defined using the <a href="#signals_define_style">signals_define_style</a> property.<br />
+	This property should be set, as otherwise the style will not have a name.</p>
+	<p>The property length is 2 byte. This is a string ID.<br />
+	The Action 0 Id field is not used, the value is ignored.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
+	<h4 id="signals_no_default_style">Set whether custom signal sprites should not be used for the default signal style (mappable property: signals_no_default_style)</h4>
+	<p>This applies to <a href="#a3signals_custom_signal_sprites">Action 2/3 Signals (Feature 0E) custom signal sprites</a> for this GRF.<br />
+	When enabled, this GRF is not used for the default signal style, it is only used for custom signal styles defined with <a href="#signals_define_style">signals_define_style</a>.</p>
+	<p>The property length is 1 byte. 0 is disabled (default). 1 is enabled.<br />
+	The Action 0 Id field is not used, the value is ignored.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
 	<br />
 	<h3 id="a0objects"><a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Objects">Action 0 - Objects</a></h3>
 	<h4 id="object_use_land_ground">Object uses land ground sprite (mappable property: object_use_land_ground)</h4>
@@ -649,6 +671,12 @@
 	</table>
 	</p>
 	<p>This is indicated by the feature name: <font face="monospace">varaction2_signals_signal_context</font>, version 1</p>
+	<h4 id="signals_signal_style">Signal style (mappable variable: signals_signal_style)</h4>
+	<p>This applies to <a href="#a3signals_custom_signal_sprites">Action 2/3 Signals (Feature 0E) custom signal sprites</a>.<br />
+	If the signal being drawn uses a custom signal style, the value is the signal style ID as set in the <a href="#signals_define_style">signals_define_style</a> property.<br />
+	Otherwise for signals using the default style, the value is 0.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
 	<br />
 	<br />
 	<h3 id="a3signals"><a href="https://newgrf-specs.tt-wiki.net/wiki/Action3">Action 3 - Signals (Feature 0E)</a></h3>

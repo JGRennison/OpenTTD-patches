@@ -397,6 +397,20 @@ static inline void SetSignalAspect(TileIndex t, Track track, uint8 aspect)
 	SB(_me[t].m7, pos, 3, aspect);
 }
 
+static inline uint8 GetSignalStyle(TileIndex t, Track track)
+{
+	assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
+	byte pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 4 : 0;
+	return GB(_me[t].m6, pos, 4);
+}
+
+static inline void SetSignalStyle(TileIndex t, Track track, uint8 style)
+{
+	assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
+	byte pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 4 : 0;
+	SB(_me[t].m6, pos, 4, style);
+}
+
 /**
  * Set the states of the signals (Along/AgainstTrackDir)
  * @param tile  the tile to set the states for

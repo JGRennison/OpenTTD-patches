@@ -4064,6 +4064,19 @@ bool AfterLoadGame()
 		ApplyIndustryTileAnimMasking();
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_NEW_SIGNAL_STYLES)) {
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsTileType(t, MP_RAILWAY) && HasSignals(t)) {
+				/* clear signal style field */
+				_me[t].m6 = 0;
+			}
+			if (IsRailTunnelBridgeTile(t)) {
+				/* Clear signal style is non-zero flag */
+				ClrBit(_m[t].m3, 7);
+			}
+		}
+	}
+
 	InitializeRoadGUI();
 
 	/* This needs to be done after conversion. */
@@ -4198,4 +4211,6 @@ void ReloadNewGRFData()
 	AfterLoadTemplateVehiclesUpdateImages();
 	AfterLoadTemplateVehiclesUpdateProperties();
 	UpdateAllAnimatedTileSpeeds();
+
+	InvalidateWindowData(WC_BUILD_SIGNAL, 0);
 }

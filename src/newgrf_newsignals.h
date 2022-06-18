@@ -13,16 +13,33 @@
 #include "newgrf_commons.h"
 #include "newgrf_spritegroup.h"
 #include "tunnel_map.h"
+#include "gfx_type.h"
 
 extern std::vector<const GRFFile *> _new_signals_grfs;
 
 struct TraceRestrictProgram;
+struct GRFFile;
+
+enum {
+	MAX_NEW_SIGNAL_STYLES = 15,
+};
+
+struct NewSignalStyle {
+	const GRFFile *grffile;
+	StringID name = 0;
+	uint8 grf_local_id;
+
+	PalSpriteID signals[SIGTYPE_END][2][2];
+};
+extern std::array<NewSignalStyle, MAX_NEW_SIGNAL_STYLES> _new_signal_styles;
+extern uint _num_new_signal_styles;
 
 /** Resolver for the new signals scope. */
 struct NewSignalsScopeResolver : public ScopeResolver {
 	TileIndex tile;      ///< Tracktile. For track on a bridge this is the southern bridgehead.
 	TileContext context; ///< Are we resolving sprites for the upper halftile, or on a bridge?
 	CustomSignalSpriteContext signal_context;
+	uint8 signal_style;
 	const TraceRestrictProgram *prog;
 
 	/**
@@ -32,8 +49,8 @@ struct NewSignalsScopeResolver : public ScopeResolver {
 	 * @param context Are we resolving sprites for the upper halftile, or on a bridge?
 	 * @param signal_context Signal context.
 	 */
-	NewSignalsScopeResolver(ResolverObject &ro, TileIndex tile, TileContext context, CustomSignalSpriteContext signal_context, const TraceRestrictProgram *prog)
-		: ScopeResolver(ro), tile(tile), context(context), signal_context(signal_context), prog(prog)
+	NewSignalsScopeResolver(ResolverObject &ro, TileIndex tile, TileContext context, CustomSignalSpriteContext signal_context, uint8 signal_style, const TraceRestrictProgram *prog)
+		: ScopeResolver(ro), tile(tile), context(context), signal_context(signal_context), signal_style(signal_style), prog(prog)
 	{
 	}
 
@@ -45,7 +62,7 @@ struct NewSignalsScopeResolver : public ScopeResolver {
 struct NewSignalsResolverObject : public ResolverObject {
 	NewSignalsScopeResolver newsignals_scope; ///< Resolver for the new signals scope.
 
-	NewSignalsResolverObject(const GRFFile *grffile, TileIndex tile, TileContext context, uint32 param1, uint32 param2, CustomSignalSpriteContext signal_context, const TraceRestrictProgram *prog = nullptr);
+	NewSignalsResolverObject(const GRFFile *grffile, TileIndex tile, TileContext context, uint32 param1, uint32 param2, CustomSignalSpriteContext signal_context, uint8 signal_style, const TraceRestrictProgram *prog = nullptr);
 
 	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, byte relative = 0) override
 	{

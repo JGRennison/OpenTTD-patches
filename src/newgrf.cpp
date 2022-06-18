@@ -4194,6 +4194,37 @@ static ChangeInfoResult SignalsChangeInfo(uint id, int numinfo, int prop, const 
 				_cur.grffile->new_signal_extra_aspects = std::min<byte>(buf->ReadByte(), NEW_SIGNALS_MAX_EXTRA_ASPECT);
 				break;
 
+			case A0RPI_SIGNALS_NO_DEFAULT_STYLE:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				SB(_cur.grffile->new_signal_style_mask, 0, 1, (buf->ReadByte() != 0 ? 0 : 1));
+				break;
+
+			case A0RPI_SIGNALS_DEFINE_STYLE: {
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				uint8 local_id = buf->ReadByte();
+				if (_num_new_signal_styles < MAX_NEW_SIGNAL_STYLES) {
+					NewSignalStyle &style = _new_signal_styles[_num_new_signal_styles];
+					style = {};
+					_num_new_signal_styles++;
+					SetBit(_cur.grffile->new_signal_style_mask, _num_new_signal_styles);
+					style.grf_local_id = local_id;
+					style.grffile = _cur.grffile;
+					_cur.grffile->current_new_signal_style = &style;
+				} else {
+					_cur.grffile->current_new_signal_style = nullptr;
+				}
+				break;
+			}
+
+			case A0RPI_SIGNALS_STYLE_NAME: {
+				if (MappedPropertyLengthMismatch(buf, 2, mapping_entry)) break;
+				uint16 str = buf->ReadWord();
+				if (_cur.grffile->current_new_signal_style != nullptr) {
+					AddStringForMapping(str, &(_cur.grffile->current_new_signal_style->name));
+				}
+				break;
+			}
+
 			default:
 				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
@@ -12402,6 +12433,8 @@ static void ResetNewGRF()
 	_grf_files.clear();
 	_cur.grffile   = nullptr;
 	_new_signals_grfs.clear();
+	MemSetT<NewSignalStyle>(_new_signal_styles.data(), 0, MAX_NEW_SIGNAL_STYLES);
+	_num_new_signal_styles = 0;
 	_new_landscape_rocks_grfs.clear();
 }
 
@@ -12588,6 +12621,8 @@ GRFFile::GRFFile(const GRFConfig *config)
 	this->new_signals_group = nullptr;
 	this->new_signal_ctrl_flags = 0;
 	this->new_signal_extra_aspects = 0;
+	this->new_signal_style_mask = 1;
+	this->current_new_signal_style = nullptr;
 
 	this->new_rocks_group = nullptr;
 	this->new_landscape_ctrl_flags = 0;

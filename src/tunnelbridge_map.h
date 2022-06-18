@@ -601,6 +601,27 @@ static inline Trackdir GetTunnelBridgeEntranceTrackdir(TileIndex t)
 	return GetTunnelBridgeEntranceTrackdir(t, GetTunnelBridgeDirection(t));
 }
 
+static inline void SetTunnelBridgeSignalStyle(TileIndex t, TileIndex end, uint8 style)
+{
+	if (style == 0 && !HasBit(_m[t].m3, 7)) return;
+
+	extern void SetTunnelBridgeSignalStyleExtended(TileIndex t, TileIndex end, uint8 style);
+	SetTunnelBridgeSignalStyleExtended(t, end, style);
+}
+
+static inline uint8 GetTunnelBridgeSignalStyle(TileIndex t)
+{
+	if (likely(!HasBit(_m[t].m3, 7))) return 0;
+
+	if (IsTunnel(t)) {
+		extern uint8 GetTunnelSignalStyleExtended(TileIndex t);
+		return GetTunnelSignalStyleExtended(t);
+	} else {
+		extern uint8 GetBridgeSignalStyleExtended(TileIndex t);
+		return GetBridgeSignalStyleExtended(t);
+	}
+}
+
 void AddRailTunnelBridgeInfrastructure(Company *c, TileIndex begin, TileIndex end);
 void SubtractRailTunnelBridgeInfrastructure(Company *c, TileIndex begin, TileIndex end);
 void AddRailTunnelBridgeInfrastructure(TileIndex begin, TileIndex end);

@@ -18,11 +18,18 @@
 #include "safeguards.h"
 
 std::vector<const GRFFile *> _new_signals_grfs;
+std::array<NewSignalStyle, MAX_NEW_SIGNAL_STYLES> _new_signal_styles;
+uint _num_new_signal_styles = 0;
 
 /* virtual */ uint32 NewSignalsScopeResolver::GetRandomBits() const
 {
 	uint tmp = CountBits(this->tile + (TileX(this->tile) + TileY(this->tile)) * TILE_SIZE);
 	return GB(tmp, 0, 2);
+}
+
+static uint8 MapSignalStyle(uint8 style)
+{
+	return style != 0 ? _new_signal_styles[style - 1].grf_local_id : 0;
 }
 
 /* virtual */ uint32 NewSignalsScopeResolver::GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const
@@ -32,6 +39,7 @@ std::vector<const GRFFile *> _new_signals_grfs;
 			case 0x40: return 0;
 			case A2VRI_SIGNALS_SIGNAL_RESTRICTION_INFO: return 0;
 			case A2VRI_SIGNALS_SIGNAL_CONTEXT: return this->signal_context;
+			case A2VRI_SIGNALS_SIGNAL_STYLE: return MapSignalStyle(this->signal_style);
 		}
 	}
 
@@ -41,6 +49,7 @@ std::vector<const GRFFile *> _new_signals_grfs;
 			return GetNewSignalsRestrictedSignalsInfo(this->prog, this->tile);
 		case A2VRI_SIGNALS_SIGNAL_CONTEXT:
 			return GetNewSignalsSignalContext(this->signal_context, this->tile);
+		case A2VRI_SIGNALS_SIGNAL_STYLE: return MapSignalStyle(this->signal_style);
 	}
 
 	DEBUG(grf, 1, "Unhandled new signals tile variable 0x%X", variable);
@@ -71,8 +80,8 @@ GrfSpecFeature NewSignalsResolverObject::GetFeature() const
  * @param signal_context Signal context.
  * @param prog Routing restriction program.
  */
-NewSignalsResolverObject::NewSignalsResolverObject(const GRFFile *grffile, TileIndex tile, TileContext context, uint32 param1, uint32 param2, CustomSignalSpriteContext signal_context, const TraceRestrictProgram *prog)
-	: ResolverObject(grffile, CBID_NO_CALLBACK, param1, param2), newsignals_scope(*this, tile, context, signal_context, prog)
+NewSignalsResolverObject::NewSignalsResolverObject(const GRFFile *grffile, TileIndex tile, TileContext context, uint32 param1, uint32 param2, CustomSignalSpriteContext signal_context, uint8 signal_style, const TraceRestrictProgram *prog)
+	: ResolverObject(grffile, CBID_NO_CALLBACK, param1, param2), newsignals_scope(*this, tile, context, signal_context, signal_style, prog)
 {
 	this->root_spritegroup = grffile != nullptr ? grffile->new_signals_group : nullptr;
 }

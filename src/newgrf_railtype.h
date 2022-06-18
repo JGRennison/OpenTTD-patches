@@ -64,7 +64,7 @@ struct CustomSignalSpriteResult {
 };
 
 SpriteID GetCustomRailSprite(const RailtypeInfo *rti, TileIndex tile, RailTypeSpriteGroup rtsg, TileContext context = TCX_NORMAL, uint *num_results = nullptr);
-CustomSignalSpriteResult GetCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, uint8 aspect, CustomSignalSpriteContext context, const TraceRestrictProgram *prog = nullptr);
+CustomSignalSpriteResult GetCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, uint8 aspect, CustomSignalSpriteContext context, uint8 style, const TraceRestrictProgram *prog = nullptr);
 
 RailType GetRailTypeTranslation(uint8 railtype, const GRFFile *grffile);
 uint8 GetReverseRailTypeTranslation(RailType railtype, const GRFFile *grffile);

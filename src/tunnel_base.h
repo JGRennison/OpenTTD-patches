@@ -24,6 +24,7 @@ struct Tunnel : TunnelPool::PoolItem<&_tunnel_pool> {
 	TileIndex tile_s; // South tile of tunnel.
 	uint8 height;     // Tunnel height
 	bool is_chunnel;  // Whether this tunnel is a chunnel
+	uint8 style;      // Style (new signals) of tunnel.
 
 	Tunnel() {}
 	~Tunnel();

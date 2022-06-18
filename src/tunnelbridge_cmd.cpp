@@ -50,6 +50,7 @@
 #include "station_func.h"
 #include "tracerestrict.h"
 #include "newgrf_roadstop.h"
+#include "newgrf_newsignals.h"
 
 #include "table/strings.h"
 #include "table/bridge_land.h"
@@ -1438,8 +1439,14 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 		}
 		DirtyAllCompanyInfrastructureWindows();
 
-		if (IsTunnelBridgeSignalSimulationEntrance(tile)) ClearBridgeEntranceSimulatedSignals(tile);
-		if (IsTunnelBridgeSignalSimulationEntrance(endtile)) ClearBridgeEntranceSimulatedSignals(endtile);
+		if (IsTunnelBridgeSignalSimulationEntrance(tile)) {
+			ClearBridgeEntranceSimulatedSignals(tile);
+			SetBridgeSignalStyle(tile, 0);
+		}
+		if (IsTunnelBridgeSignalSimulationEntrance(endtile)) {
+			ClearBridgeEntranceSimulatedSignals(endtile);
+			SetBridgeSignalStyle(endtile, 0);
+		}
 
 		DoClearSquare(tile);
 		DoClearSquare(endtile);
@@ -1759,7 +1766,7 @@ static void DrawTunnelBridgeRampSingleSignal(const TileInfo *ti, bool is_green, 
 	}
 	bool show_restricted = IsTunnelBridgeRestrictedSignal(ti->tile);
 	const TraceRestrictProgram *prog = show_restricted ? GetExistingTraceRestrictProgram(ti->tile, FindFirstTrack(GetAcrossTunnelBridgeTrackBits(ti->tile))) : nullptr;
-	const CustomSignalSpriteResult result = GetCustomSignalSprite(rti, ti->tile, type, variant, aspect, show_exit ? CSSC_TUNNEL_BRIDGE_EXIT : CSSC_TUNNEL_BRIDGE_ENTRANCE, prog);
+	const CustomSignalSpriteResult result = GetCustomSignalSprite(rti, ti->tile, type, variant, aspect, show_exit ? CSSC_TUNNEL_BRIDGE_EXIT : CSSC_TUNNEL_BRIDGE_ENTRANCE, GetTunnelBridgeSignalStyle(ti->tile), prog);
 	PalSpriteID sprite = result.sprite;
 	bool is_custom_sprite = (sprite.sprite != 0);
 
@@ -1887,7 +1894,7 @@ static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_st
 			}
 
 			const RailtypeInfo *rti = GetRailTypeInfo(GetRailType(bridge_start_tile));
-			PalSpriteID sprite = GetCustomSignalSprite(rti, bridge_start_tile, SIGTYPE_NORMAL, variant, aspect, CSSC_BRIDGE_MIDDLE).sprite;
+			PalSpriteID sprite = GetCustomSignalSprite(rti, bridge_start_tile, SIGTYPE_NORMAL, variant, aspect, CSSC_BRIDGE_MIDDLE, GetBridgeSignalStyle(bridge_start_tile)).sprite;
 
 			if (sprite.sprite != 0) {
 				sprite.sprite += position;
@@ -2561,9 +2568,23 @@ static void GetTileDesc_TunnelBridge(TileIndex tile, TileDesc *td)
 	} else { // IsBridge(tile)
 		td->str = (tt == TRANSPORT_WATER) ? STR_LAI_BRIDGE_DESCRIPTION_AQUEDUCT : IsTunnelBridgeWithSignalSimulation(tile) ? STR_LAI_BRIDGE_DESCRIPTION_RAILROAD_SIGNAL : GetBridgeSpec(GetBridgeType(tile))->transport_name[tt];
 	}
-	if (IsTunnelBridgeWithSignalSimulation(tile) && IsTunnelBridgeRestrictedSignal(tile)) {
-		SetDParamX(td->dparam, 0, td->str);
-		td->str = STR_LAI_RAIL_DESCRIPTION_RESTRICTED_SIGNAL;
+
+	if (tt == TRANSPORT_RAIL) {
+		uint8 style = GetTunnelBridgeSignalStyle(tile);
+		if (style > 0) {
+			/* Add suffix about signal style */
+			SetDParamX(td->dparam, 0, td->str);
+			td->dparam[1] = style == 0 ? STR_BUILD_SIGNAL_DEFAULT_STYLE : _new_signal_styles[style - 1].name;
+			td->str = STR_LAI_RAIL_DESCRIPTION_TRACK_SIGNAL_STYLE;
+		}
+		if (IsTunnelBridgeWithSignalSimulation(tile) && IsTunnelBridgeRestrictedSignal(tile)) {
+			td->dparam[3] = td->dparam[2];
+			td->dparam[2] = td->dparam[1];
+			td->dparam[1] = td->dparam[0];
+			SetDParamX(td->dparam, 0, td->str);
+			SetDParamX(td->dparam, 0, td->str);
+			td->str = STR_LAI_RAIL_DESCRIPTION_RESTRICTED_SIGNAL;
+		}
 	}
 	td->owner[0] = GetTileOwner(tile);
 
@@ -2913,6 +2934,16 @@ void AddRailTunnelBridgeInfrastructure(TileIndex begin, TileIndex end) {
 
 void SubtractRailTunnelBridgeInfrastructure(TileIndex begin, TileIndex end) {
 	UpdateRailTunnelBridgeInfrastructure(Company::GetIfValid(GetTileOwner(begin)), begin, end, false);
+}
+
+void SetTunnelBridgeSignalStyleExtended(TileIndex t, TileIndex end, uint8 style)
+{
+	if (IsTunnel(t)) {
+		SetTunnelSignalStyle(t, end, style);
+	} else {
+		SetBridgeSignalStyle(t, style);
+		SetBridgeSignalStyle(end, style);
+	}
 }
 
 static void ChangeTileOwner_TunnelBridge(TileIndex tile, Owner old_owner, Owner new_owner)

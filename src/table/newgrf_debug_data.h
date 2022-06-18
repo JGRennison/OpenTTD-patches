@@ -885,6 +885,7 @@ static const NIVariable _niv_signals[] = {
 	NIV(0x40, "terrain type"),
 	NIV(A2VRI_SIGNALS_SIGNAL_RESTRICTION_INFO, "restriction info"),
 	NIV(A2VRI_SIGNALS_SIGNAL_CONTEXT, "context"),
+	NIV(A2VRI_SIGNALS_SIGNAL_STYLE, "style"),
 	NIV_END()
 };
 
@@ -901,10 +902,21 @@ class NIHSignals : public NIHelper {
 	{
 		extern TraceRestrictProgram *GetFirstTraceRestrictProgramOnTile(TileIndex t);
 		CustomSignalSpriteContext ctx = CSSC_TRACK;
+		uint8 style = 0;
 		if (IsTunnelBridgeWithSignalSimulation(index)) {
 			ctx = IsTunnelBridgeSignalSimulationEntrance(index) ? CSSC_TUNNEL_BRIDGE_ENTRANCE : CSSC_TUNNEL_BRIDGE_EXIT;
+			style = GetTunnelBridgeSignalStyle(index);
+		} else if (IsTileType(index, MP_RAILWAY) && HasSignals(index)) {
+			TrackBits bits = GetTrackBits(index);
+			do {
+				Track track = RemoveFirstTrack(&bits);
+				if (HasSignalOnTrack(index, track)) {
+					style = GetSignalStyle(index, track);
+					break;
+				}
+			} while (bits != TRACK_BIT_NONE);
 		}
-		NewSignalsResolverObject ro(nullptr, index, TCX_NORMAL, 0, 0, ctx, GetFirstTraceRestrictProgramOnTile(index));
+		NewSignalsResolverObject ro(nullptr, index, TCX_NORMAL, 0, 0, ctx, style, GetFirstTraceRestrictProgramOnTile(index));
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
 	}
 

@@ -115,6 +115,7 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 
 	ClearTraceRestrictMapping();
 	ClearBridgeSimulatedSignalMapping();
+	ClearBridgeSignalStyleMapping();
 	ClearCargoPacketDeferredPayments();
 	PoolBase::Clean(PT_NORMAL);
 
