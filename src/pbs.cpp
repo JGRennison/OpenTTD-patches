@@ -13,6 +13,7 @@
 #include "newgrf_station.h"
 #include "pathfinder/follow_track.hpp"
 #include "tracerestrict.h"
+#include "newgrf_newsignals.h"
 
 #include "safeguards.h"
 
@@ -584,8 +585,10 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 					if (signal_speed == 0 || (speed_restriction != 0 && speed_restriction < signal_speed)) signal_speed = speed_restriction;
 					if (signal_speed == 0 || (bridge_speed != 0 && bridge_speed < signal_speed)) signal_speed = bridge_speed;
 
+					const uint16 signal_flags = GetTunnelBridgeSignalStyle(tile) << 8;
+
 					/* Entrance signal */
-					lookahead->AddSignal(signal_speed, 0, z, 0);
+					lookahead->AddSignal(signal_speed, 0, z, signal_flags);
 
 					update_z(tile, trackdir, false);
 
@@ -599,7 +602,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 					int offset = start_offset - TILE_SIZE;
 					for (int i = 0; i < signals; i++) {
 						offset += TILE_SIZE * spacing;
-						lookahead->AddSignal(signal_speed, offset, chunnel ? LookaheadTileHeightForChunnel(length, i * spacing) : z, 0);
+						lookahead->AddSignal(signal_speed, offset, chunnel ? LookaheadTileHeightForChunnel(length, i * spacing) : z, signal_flags);
 					}
 
 					/* Exit signal */
@@ -613,7 +616,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 						if (signal_speed == 0 || (bridge_speed != 0 && bridge_speed < signal_speed)) signal_speed = bridge_speed;
 					}
 
-					lookahead->AddSignal(signal_speed, end_offset, z, 0);
+					lookahead->AddSignal(signal_speed, end_offset, z, signal_flags);
 
 					lookahead->SetNextExtendPositionIfUnset();
 				} else {
@@ -656,8 +659,9 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 					/* Passing through a signal from the front side */
 					uint16 signal_speed = GetRailTypeInfo(rt)->max_speed;
 					if (signal_speed == 0 || (speed_restriction != 0 && speed_restriction < signal_speed)) signal_speed = speed_restriction;
-					uint16 signal_flags = 0;
-					if (_non_aspect_inc_style_mask != 0 && HasBit(_non_aspect_inc_style_mask, GetSignalStyle(tile, TrackdirToTrack(trackdir)))) {
+					uint8 signal_style = GetSignalStyle(tile, TrackdirToTrack(trackdir));
+					uint16 signal_flags = signal_style << 8;
+					if (HasBit(_non_aspect_inc_style_mask, signal_style)) {
 						SetBit(signal_flags, TRSLAI_NO_ASPECT_INC);
 					}
 					lookahead->AddSignal(signal_speed, 0, z, signal_flags);
@@ -953,11 +957,13 @@ void TryCreateLookAheadForTrainInTunnelBridge(Train *t)
 
 			int z = IsBridge(t->tile) ? GetBridgeHeight(t->tile) : GetTilePixelZ(t->tile);
 
+			const uint16 signal_flags = GetTunnelBridgeSignalStyle(t->tile) << 8;
+
 			/* Middle signals */
 			int offset = -(int)TILE_SIZE;
 			for (int i = 0; i < signals; i++) {
 				offset += TILE_SIZE * spacing;
-				t->lookahead->AddSignal(signal_speed, offset, HasBit(t->lookahead->flags, TRLF_CHUNNEL) ? LookaheadTileHeightForChunnel(length, i * spacing) : z, 0);
+				t->lookahead->AddSignal(signal_speed, offset, HasBit(t->lookahead->flags, TRLF_CHUNNEL) ? LookaheadTileHeightForChunnel(length, i * spacing) : z, signal_flags);
 			}
 
 			/* Exit signal */
@@ -970,7 +976,7 @@ void TryCreateLookAheadForTrainInTunnelBridge(Train *t)
 				if (signal_speed == 0 || (bridge_speed != 0 && bridge_speed < signal_speed)) signal_speed = bridge_speed;
 			}
 
-			t->lookahead->AddSignal(signal_speed, end_offset, z, 0);
+			t->lookahead->AddSignal(signal_speed, end_offset, z, signal_flags);
 
 			t->lookahead->SetNextExtendPositionIfUnset();
 		}
@@ -996,7 +1002,9 @@ void SetTrainReservationLookaheadEnd(Train *v)
 		if (item.type == TRLIT_SIGNAL) {
 			if (item.start <= threshold) {
 				/* Signal is within visual range */
-				uint8 max_aspect = _extra_aspects + (HasBit(item.data_aux, TRSLAI_NO_ASPECT_INC) ? 1 : 2);
+				uint8 style = item.data_aux >> 8;
+				uint8 max_aspect = (style == 0) ? _extra_aspects : _new_signal_styles[style - 1].lookahead_extra_aspects;
+				max_aspect += (HasBit(item.data_aux, TRSLAI_NO_ASPECT_INC) ? 1 : 2);
 				if (max_aspect > known_signals_ahead) known_signals_ahead = max_aspect;
 			}
 			if (!HasBit(item.data_aux, TRSLAI_NO_ASPECT_INC)) {

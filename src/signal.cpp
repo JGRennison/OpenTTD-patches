@@ -1531,6 +1531,14 @@ static bool DetermineExtraAspectsVariable()
 				SetBit(_always_reserve_through_style_mask, i + 1);
 				SetBit(_no_tunnel_bridge_style_mask, i + 1);
 			}
+			if (HasBit(_new_signal_styles[i].style_flags, NSSF_LOOKAHEAD_ASPECTS_SET)) {
+				_new_signal_styles[i].lookahead_extra_aspects = std::min<uint8>(_new_signal_styles[i].lookahead_extra_aspects, _new_signal_styles[i].grffile->new_signal_extra_aspects);
+			} else {
+				_new_signal_styles[i].lookahead_extra_aspects = _new_signal_styles[i].grffile->new_signal_extra_aspects;
+			}
+		}
+		for (uint i = _num_new_signal_styles; i < MAX_NEW_SIGNAL_STYLES; i++) {
+			_new_signal_styles[i].lookahead_extra_aspects = new_extra_aspects;
 		}
 	}
 

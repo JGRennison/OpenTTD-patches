@@ -471,6 +471,15 @@ item (FEAT_GLOBALVARS) {
 			Set whether reserve through is unconditionally enabled for the most recently defined style (defined using the define_style property).
 		</td>
 	</tr>
+	<tr><td>style_lookahead_extra_aspects</td><td>0 - 6</td>
+		<td>
+			Set the look-ahead extra aspects for the most recently defined style (defined using the define_style property).<br />
+			This property only makes a difference when the "limit train lookahead to signal aspect" game setting is enabled.<br />
+			This limits the signal aspect which the hypothetical train driver can "read" from the signal without affecting signal aspect propagation to other signals, or variable <span class="code">extra_callback_info2</span>.<br />
+			Example values could include: 1 for traditional banner repeater signals, or 0 for shunt signals.<br />
+			The value is clamped to be less than or equal to the value set in the <span class="code">extra_aspects</span> property.
+		</td>
+	</tr>
 	<tr><td>no_default_style</td><td>0 or 1</td>
 		<td>
 			When enabled, custom signal graphics from this GRF are only used for custom signal styles, not the default style

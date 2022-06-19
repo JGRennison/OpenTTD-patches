@@ -27,6 +27,7 @@ enum {
 enum NewSignalStyleFlags {
 	NSSF_NO_ASPECT_INC                  = 0,
 	NSSF_ALWAYS_RESERVE_THROUGH         = 1,
+	NSSF_LOOKAHEAD_ASPECTS_SET          = 2,
 };
 
 struct NewSignalStyle {
@@ -34,6 +35,7 @@ struct NewSignalStyle {
 	StringID name;
 	uint8 grf_local_id;
 	uint8 style_flags;
+	uint8 lookahead_extra_aspects;
 
 	PalSpriteID signals[SIGTYPE_END][2][2];
 };
