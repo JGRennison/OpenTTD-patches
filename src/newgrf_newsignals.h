@@ -36,6 +36,8 @@ struct NewSignalStyle {
 	uint8 grf_local_id;
 	uint8 style_flags;
 	uint8 lookahead_extra_aspects;
+	uint8 semaphore_mask;
+	uint8 electric_mask;
 
 	PalSpriteID signals[SIGTYPE_END][2][2];
 };

@@ -431,9 +431,35 @@
 	The Action 0 Id field is not used, the value is ignored.
 	</p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
+	<h4 id="signals_style_electric_enabled">Set custom signal style train electric signal types enabled (mappable property: signals_style_electric_enabled)</h4>
+	<p>This applies to the most recent custom signal style defined using the <a href="#signals_define_style">signals_define_style</a> property.<br />
+	This sets which electric signal types may be built using this signal style.</p>
+	<p>At least one of this property and <a href="#signals_style_semaphore_enabled">signals_style_semaphore_enabled</a> should be set to a non-zero value, as otherwise
+	no signal types will be enabled for this custom signal style.</p>
+	<p>The property length is 4 bytes:
+	<table>
+	<tr><th>Bit</th><th>Value</th><th>Meaning</th></tr>
+	<tr><td>0</td><td>1</td><td>Normal/block</td></tr>
+	<tr><td>1</td><td>2</td><td>Pre-signal entry</td></tr>
+	<tr><td>2</td><td>4</td><td>Pre-signal exit</td></tr>
+	<tr><td>3</td><td>8</td><td>Pre-signal combo</td></tr>
+	<tr><td>4</td><td>10</td><td>Two-way PBS</td></tr>
+	<tr><td>5</td><td>20</td><td>One-way PBS</td></tr>
+	<tr><td>6</td><td>40</td><td>Programmable pre-signal</td></tr>
+	<tr><td>7</td><td>80</td><td>No-entry</td></tr>
+	</table>
+	If the programmable pre-signal and/or no-entry bits are set, it is not necessary to also set <a href="#signals_enable_programmable_signals">signals_enable_programmable_signals</a>
+	or <a href="#signals_enable_no_entry_signals">signals_enable_no_entry_signals</a>.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
+	<h4 id="signals_style_semaphore_enabled">Set custom signal style train semaphore signal types enabled (mappable property: signals_style_semaphore_enabled)</h4>
+	<p>This applies to the most recent custom signal style defined using the <a href="#signals_define_style">signals_define_style</a> property.<br />
+	This sets which semaphore signal types may be built using this signal style.</p>
+	<p>The property length is 4 bytes and has an identical format to <a href="#signals_style_electric_enabled">signals_style_electric_enabled</a>, above.</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
 	<h4 id="signals_style_no_aspect_increase">Set custom signal style no aspect increase mode (mappable property: signals_style_no_aspect_increase)</h4>
 	<p>This applies to the most recent custom signal style defined using the <a href="#signals_define_style">signals_define_style</a> property.<br />
-	When enabled, signals using this style do not increase the signal aspect with respect to the signals either side (i.e. function like a banner repeater).</p>
+	When enabled, signals using this style do not increase the signal aspect with respect to the signals either side (i.e. the behaviour is like a banner repeater).</p>
 	<p>The property length is 1 byte. 0 is disabled (default). 1 is enabled.<br />
 	The Action 0 Id field is not used, the value is ignored.
 	</p>

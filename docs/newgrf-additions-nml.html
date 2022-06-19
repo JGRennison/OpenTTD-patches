@@ -456,24 +456,56 @@ item (FEAT_GLOBALVARS) {
 	</tr>
 	<tr><td>style_name</td><td>string</td>
 		<td>
-			Set the name of the most recently defined style (defined using the define_style property).<br />
+			Set the name of the most recently defined style (defined using the <span class="code">define_style</span> property).<br />
 			This property should be used if using the define_style property, as otherwise the style will have no name.
+		</td>
+	</tr>
+	<tr><td>style_electric_enabled</td><td>bitmask(SIGNAL_TYPE_XXX, ...)</td>
+		<td>
+			Set which electric signal types may be built using this signal style for the most recently defined style (defined using the <span class="code">define_style</span> property).<br />
+			At least one of this property and <span class="code">style_semaphore_enabled</span> should be set to a non-zero value, as otherwise
+			no signal types will be enabled for this custom signal style.<br />
+			If PROG or NO_ENTRY are set, it is not necessary to also set <span class="code">enable_programmable_pre_signals</span> or <span class="code">enable_no_entry_signals</span>.
+			<dl>
+				<dt>NORMAL</dt>
+				<dd>Normal/block signal</dd>
+				<dt>ENTRY</dt>
+				<dd>Pre-signal entry</dd>
+				<dt>EXIT</dt>
+				<dd>Pre-signal exit</dd>
+				<dt>COMBO</dt>
+				<dd>Pre-signal combo</dd>
+				<dt>PBS</dt>
+				<dd>Two-way PBS</dd>
+				<dt>PBS_ONEWAY</dt>
+				<dd>One-way PBS</dd>
+				<dt>PROG</dt>
+				<dd>Programmable pre-signal</dd>
+				<dt>NO_ENTRY</dt>
+				<dd>No-entry</dd>
+			</dl>
+		</td>
+	</tr>
+	<tr><td>style_semaphore_enabled</td><td>bitmask(SIGNAL_TYPE_XXX, ...)</td>
+		<td>
+			Set which semaphore signal types may be built using this signal style for the most recently defined style (defined using the <span class="code">define_style</span> property).<br />
+			See <span class="code">style_electric_enabled</span>, above.
 		</td>
 	</tr>
 	<tr><td>style_no_aspect_increase</td><td>0 or 1</td>
 		<td>
-			Set whether the most recently defined style (defined using the define_style property) does not increase
+			Set whether the most recently defined style (defined using the <span class="code">define_style</span> property) does not increase
 			the signal aspect with respect to the signals either side (i.e. function like a banner repeater).
 		</td>
 	</tr>
 	<tr><td>style_always_reserve_through</td><td>0 or 1</td>
 		<td>
-			Set whether reserve through is unconditionally enabled for the most recently defined style (defined using the define_style property).
+			Set whether reserve through is unconditionally enabled for the most recently defined style (defined using the <span class="code">define_style</span> property).
 		</td>
 	</tr>
 	<tr><td>style_lookahead_extra_aspects</td><td>0 - 6</td>
 		<td>
-			Set the look-ahead extra aspects for the most recently defined style (defined using the define_style property).<br />
+			Set the look-ahead extra aspects for the most recently defined style (defined using the <span class="code">define_style</span> property).<br />
 			This property only makes a difference when the "limit train lookahead to signal aspect" game setting is enabled.<br />
 			This limits the signal aspect which the hypothetical train driver can "read" from the signal without affecting signal aspect propagation to other signals, or variable <span class="code">extra_callback_info2</span>.<br />
 			Example values could include: 1 for traditional banner repeater signals, or 0 for shunt signals.<br />

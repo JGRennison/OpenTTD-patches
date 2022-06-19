@@ -163,8 +163,10 @@ CustomSignalSpriteResult GetCustomSignalSprite(const RailtypeInfo *rti, TileInde
 	}
 
 	for (const GRFFile *grf : _new_signals_grfs) {
-		if (type == SIGTYPE_PROG && !HasBit(grf->new_signal_ctrl_flags, NSCF_PROGSIG)) continue;
-		if (type == SIGTYPE_NO_ENTRY && !HasBit(grf->new_signal_ctrl_flags, NSCF_NOENTRYSIG)) continue;
+		if (style == 0) {
+			if (type == SIGTYPE_PROG && !HasBit(grf->new_signal_ctrl_flags, NSCF_PROGSIG)) continue;
+			if (type == SIGTYPE_NO_ENTRY && !HasBit(grf->new_signal_ctrl_flags, NSCF_NOENTRYSIG)) continue;
+		}
 		if (!HasBit(grf->new_signal_style_mask, style)) continue;
 
 		uint32 param1 = (context == CSSC_GUI) ? 0x10 : 0x00;

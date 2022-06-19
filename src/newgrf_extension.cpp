@@ -97,6 +97,8 @@ extern const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_STYLE_NO_ASPECT_INCREASE, "signals_style_no_aspect_increase"),
 	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_STYLE_ALWAYS_RESERVE_THROUGH, "signals_style_always_reserve_through"),
 	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_STYLE_LOOKAHEAD_EXTRA_ASPECTS, "signals_style_lookahead_extra_aspects"),
+	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_STYLE_SEMAPHORE_ENABLED, "signals_style_semaphore_enabled"),
+	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_STYLE_ELECTRIC_ENABLED, "signals_style_electric_enabled"),
 	GRFPropertyMapDefinition(GSF_OBJECTS, A0RPI_OBJECT_USE_LAND_GROUND, "object_use_land_ground"),
 	GRFPropertyMapDefinition(GSF_OBJECTS, A0RPI_OBJECT_EDGE_FOUNDATION_MODE, "object_edge_foundation_mode"),
 	GRFPropertyMapDefinition(GSF_OBJECTS, A0RPI_OBJECT_FLOOD_RESISTANT, "object_flood_resistant"),

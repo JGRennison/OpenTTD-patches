@@ -1835,7 +1835,42 @@ private:
 				y + this->IsWidgetLowered(widget_index));
 	}
 
-	void SetSignalUIMode() {
+	void SetDisableStates()
+	{
+		for (int widget = WID_BS_SEMAPHORE_NORM; widget <= WID_BS_SEMAPHORE_NO_ENTRY; widget++) {
+			this->SetWidgetDisabledState(widget, _cur_signal_style > 0 && !HasBit(_new_signal_styles[_cur_signal_style - 1].semaphore_mask, TypeForClick(widget - WID_BS_SEMAPHORE_NORM)));
+		}
+		for (int widget = WID_BS_ELECTRIC_NORM; widget <= WID_BS_ELECTRIC_NO_ENTRY; widget++) {
+			this->SetWidgetDisabledState(widget, _cur_signal_style > 0 && !HasBit(_new_signal_styles[_cur_signal_style - 1].electric_mask, TypeForClick(widget - WID_BS_ELECTRIC_NORM)));
+		}
+		if (_cur_signal_style > 0) {
+			const NewSignalStyle &style = _new_signal_styles[_cur_signal_style - 1];
+			if (!HasBit(_cur_signal_variant == SIG_SEMAPHORE ? style.semaphore_mask : style.electric_mask, _cur_signal_type)) {
+				/* Currently selected signal type isn't allowed, pick another */
+				this->RaiseWidget((_cur_signal_variant == SIG_ELECTRIC ? WID_BS_ELECTRIC_NORM : WID_BS_SEMAPHORE_NORM) + _cur_signal_button);
+
+				_cur_signal_variant = SIG_ELECTRIC;
+				_cur_signal_button = 0;
+
+				const uint type_count = (WID_BS_SEMAPHORE_NO_ENTRY + 1 - WID_BS_SEMAPHORE_NORM);
+				for (uint i = 0; i < type_count * 2; i++) {
+					SignalVariant var = (i < type_count) ? SIG_ELECTRIC : SIG_SEMAPHORE;
+					uint button = i % type_count;
+					if (HasBit(var == SIG_SEMAPHORE ? style.semaphore_mask : style.electric_mask, TypeForClick(button))) {
+						_cur_signal_variant = var;
+						_cur_signal_button = button;
+						break;
+					}
+				}
+
+				_cur_signal_type = TypeForClick(_cur_signal_button);
+				this->LowerWidget((_cur_signal_variant == SIG_ELECTRIC ? WID_BS_ELECTRIC_NORM : WID_BS_SEMAPHORE_NORM) + _cur_signal_button);
+			}
+		}
+	}
+
+	void SetSignalUIMode()
+	{
 		this->all_signal_mode = (_settings_client.gui.signal_gui_mode == SIGNAL_GUI_ALL);
 		this->realistic_braking_mode = (_settings_game.vehicle.train_braking_model == TBM_REALISTIC);
 		this->progsig_ui_shown = _settings_client.gui.show_progsig_ui;
@@ -1870,6 +1905,8 @@ private:
 		this->SetWidgetDisabledState(WID_BS_TOGGLE_SIZE, this->realistic_braking_mode);
 
 		this->GetWidget<NWidgetStacked>(WID_BS_STYLE_SEL)->SetDisplayedPlane(this->style_selector_shown ? 0 : SZSP_NONE);
+
+		this->SetDisableStates();
 	}
 
 	void ClearRemoveState()
@@ -1958,7 +1995,9 @@ public:
 			int var = SIG_SEMAPHORE - (widget - WID_BS_SEMAPHORE_NORM) / SIGTYPE_END; // SignalVariant order is reversed compared to the widgets.
 			PalSpriteID sprite = { 0, 0 };
 			if (_cur_signal_style > 0) {
-				sprite = _new_signal_styles[_cur_signal_style - 1].signals[type][var][this->IsWidgetLowered(widget)];
+				const NewSignalStyle &style = _new_signal_styles[_cur_signal_style - 1];
+				if (!HasBit(var == SIG_SEMAPHORE ? style.semaphore_mask : style.electric_mask, type)) return;
+				sprite = style.signals[type][var][this->IsWidgetLowered(widget)];
 			}
 			if (sprite.sprite == 0) {
 				sprite = GetRailTypeInfo(_cur_railtype)->gui_sprites.signals[type][var][this->IsWidgetLowered(widget)];
@@ -2083,6 +2122,7 @@ public:
 		switch (widget) {
 			case WID_BS_STYLE:
 				_cur_signal_style = std::min<uint>(index, _num_new_signal_styles);
+				this->SetDisableStates();
 				this->SetDirty();
 				break;
 

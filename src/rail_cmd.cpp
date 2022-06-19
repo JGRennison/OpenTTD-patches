@@ -1501,6 +1501,13 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 	CommandCost ret = CheckTileOwnership(tile);
 	if (ret.Failed()) return ret;
 
+	auto is_style_usable = [](SignalVariant sigvar, uint8 style_id, uint8 mask) {
+		if (style_id == 0) return true;
+
+		const NewSignalStyle &style = _new_signal_styles[style_id - 1];
+		return ((sigvar == SIG_SEMAPHORE ? style.semaphore_mask : style.electric_mask) & mask) == mask;
+	};
+
 	CommandCost cost;
 	/* handle signals simulation on tunnel/bridge. */
 	if (IsTileType(tile, MP_TUNNELBRIDGE)) {
@@ -1520,25 +1527,36 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			if (!(p2_signal_in && p2_signal_out)) {
 				cost = CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_SIGNALS] * ((GetTunnelBridgeLength(tile, tile_exit) + 4) >> 2) * (bidirectional ? 2 : 1)); // minimal 1
 				if (HasBit(_no_tunnel_bridge_style_mask, signal_style)) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
+				if (!is_style_usable(sigvar, signal_style, bidirectional ? 0x11 : (is_pbs ? 0x21 : 0x1))) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
 			}
 		} else {
 			if (HasBit(p1, 17)) return CommandCost();
-			bool is_bidi = IsTunnelBridgeSignalSimulationBidirectional(tile);
+			const bool is_bidi = IsTunnelBridgeSignalSimulationBidirectional(tile);
 			bool will_be_bidi = is_bidi;
+			const bool is_semaphore = IsTunnelBridgeSemaphore(tile);
+			bool will_be_semaphore = is_semaphore;
+			bool will_be_pbs = IsTunnelBridgePBS(tile);
+			const uint8 is_style = GetTunnelBridgeSignalStyle(tile);
+			uint8 will_be_style = is_style;
 			if (!p2_active) {
 				if (convert_signal) {
 					will_be_bidi = bidirectional && !ctrl_pressed;
-					change_style = (signal_style != GetTunnelBridgeSignalStyle(tile));
+					change_style = (signal_style != is_style);
+					will_be_style = signal_style;
+					will_be_pbs = is_pbs;
+					will_be_semaphore = (sigvar == SIG_SEMAPHORE);
 					if (HasBit(_no_tunnel_bridge_style_mask, signal_style)) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
 				} else if (ctrl_pressed) {
 					will_be_bidi = false;
+					will_be_pbs = !will_be_pbs;
 				}
 			} else if (!is_pbs) {
 				will_be_bidi = false;
 			}
-			if ((p2_active && (sigvar == SIG_SEMAPHORE) != IsTunnelBridgeSemaphore(tile)) ||
-					(convert_signal && (ctrl_pressed || (sigvar == SIG_SEMAPHORE) != IsTunnelBridgeSemaphore(tile)))) {
+			if ((p2_active && (sigvar == SIG_SEMAPHORE) != is_semaphore) ||
+					(convert_signal && (ctrl_pressed || (sigvar == SIG_SEMAPHORE) != is_semaphore))) {
 				flip_variant = true;
+				will_be_semaphore = !is_semaphore;
 			}
 			if (flip_variant || change_style) {
 				cost = CommandCost(EXPENSES_CONSTRUCTION, ((_price[PR_BUILD_SIGNALS] * (will_be_bidi ? 2 : 1)) + (_price[PR_CLEAR_SIGNALS] * (is_bidi ? 2 : 1))) *
@@ -1546,6 +1564,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			} else if (is_bidi != will_be_bidi) {
 				cost = CommandCost(EXPENSES_CONSTRUCTION, _price[will_be_bidi ? PR_BUILD_SIGNALS : PR_CLEAR_SIGNALS] * ((GetTunnelBridgeLength(tile, tile_exit) + 4) >> 2)); // minimal 1
 			}
+			if (!is_style_usable(will_be_semaphore ? SIG_SEMAPHORE : SIG_ELECTRIC, will_be_style, will_be_bidi ? 0x11 : (will_be_pbs ? 0x21 : 0x1))) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
 		}
 		auto remove_pbs_bidi = [&]() {
 			if (IsTunnelBridgeSignalSimulationBidirectional(tile)) {
@@ -1677,10 +1696,12 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 	if (!HasSignalOnTrack(tile, track)) {
 		/* build new signals */
 		cost = CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_SIGNALS]);
+		if (!is_style_usable(sigvar, signal_style, 1 << sigtype)) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
 	} else {
 		if (p2 != 0 && (sigvar != GetSignalVariant(tile, track) || signal_style != GetSignalStyle(tile, track))) {
 			/* convert signals <-> semaphores and/or change style */
 			cost = CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_SIGNALS] + _price[PR_CLEAR_SIGNALS]);
+			if (!is_style_usable(sigvar, signal_style, 1 << sigtype)) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
 
 		} else if (convert_signal) {
 			/* convert button pressed */
@@ -1690,6 +1711,12 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			} else {
 				/* it is free to change signal type: normal-pre-exit-combo */
 				cost = CommandCost();
+			}
+
+			if (ctrl_pressed) {
+				if (!is_style_usable((GetSignalVariant(tile, track) == SIG_ELECTRIC) ? SIG_SEMAPHORE : SIG_ELECTRIC, GetSignalStyle(tile, track), 1 << GetSignalType(tile, track))) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
+			} else {
+				if (!is_style_usable(sigvar, signal_style, 1 << sigtype)) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
 			}
 
 		} else {

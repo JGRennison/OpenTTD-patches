@@ -4253,6 +4253,24 @@ static ChangeInfoResult SignalsChangeInfo(uint id, int numinfo, int prop, const 
 				break;
 			}
 
+			case A0RPI_SIGNALS_STYLE_SEMAPHORE_ENABLED: {
+				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
+				uint32 mask = buf->ReadDWord();
+				if (_cur.grffile->current_new_signal_style != nullptr) {
+					_cur.grffile->current_new_signal_style->semaphore_mask = (uint8)mask;
+				}
+				break;
+			}
+
+			case A0RPI_SIGNALS_STYLE_ELECTRIC_ENABLED: {
+				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
+				uint32 mask = buf->ReadDWord();
+				if (_cur.grffile->current_new_signal_style != nullptr) {
+					_cur.grffile->current_new_signal_style->electric_mask = (uint8)mask;
+				}
+				break;
+			}
+
 			default:
 				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
