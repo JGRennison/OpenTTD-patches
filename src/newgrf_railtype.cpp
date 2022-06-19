@@ -55,7 +55,7 @@
 			return t != nullptr ? GetTownRadiusGroup(t, this->tile) : HZB_TOWN_EDGE;
 		}
 		case A2VRI_RAILTYPE_SIGNAL_RESTRICTION_INFO:
-			return GetNewSignalsRestrictedSignalsInfo(this->prog, this->tile);
+			return GetNewSignalsRestrictedSignalsInfo(this->prog, this->tile, 0);
 		case A2VRI_RAILTYPE_SIGNAL_CONTEXT:
 			return GetNewSignalsSignalContext(this->signal_context, this->tile);
 	}

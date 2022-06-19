@@ -46,7 +46,7 @@ static uint8 MapSignalStyle(uint8 style)
 	switch (variable) {
 		case 0x40: return GetTerrainType(this->tile, this->context);
 		case A2VRI_SIGNALS_SIGNAL_RESTRICTION_INFO:
-			return GetNewSignalsRestrictedSignalsInfo(this->prog, this->tile);
+			return GetNewSignalsRestrictedSignalsInfo(this->prog, this->tile, this->signal_style);
 		case A2VRI_SIGNALS_SIGNAL_CONTEXT:
 			return GetNewSignalsSignalContext(this->signal_context, this->tile);
 		case A2VRI_SIGNALS_SIGNAL_STYLE: return MapSignalStyle(this->signal_style);
@@ -86,13 +86,15 @@ NewSignalsResolverObject::NewSignalsResolverObject(const GRFFile *grffile, TileI
 	this->root_spritegroup = grffile != nullptr ? grffile->new_signals_group : nullptr;
 }
 
-uint GetNewSignalsRestrictedSignalsInfo(const TraceRestrictProgram *prog, TileIndex tile)
+uint GetNewSignalsRestrictedSignalsInfo(const TraceRestrictProgram *prog, TileIndex tile, uint8 signal_style)
 {
-	if (prog == nullptr) return 0;
-
-	uint result = 1;
-	if ((prog->actions_used_flags & TRPAUF_RESERVE_THROUGH_ALWAYS) && !IsTileType(tile, MP_TUNNELBRIDGE)) result |= 2;
-	if ((prog->actions_used_flags & TRPAUF_REVERSE) && !IsTileType(tile, MP_TUNNELBRIDGE)) result |= 4;
+	uint result = 0;
+	if (signal_style != 0 && HasBit(_always_reserve_through_style_mask, signal_style)) result |= 2;
+	if (prog != nullptr) {
+		result |= 1;
+		if ((prog->actions_used_flags & TRPAUF_RESERVE_THROUGH_ALWAYS) && !IsTileType(tile, MP_TUNNELBRIDGE)) result |= 2;
+		if ((prog->actions_used_flags & TRPAUF_REVERSE) && !IsTileType(tile, MP_TUNNELBRIDGE)) result |= 4;
+	}
 	return result;
 }
 

@@ -4078,6 +4078,10 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_REALISTIC_TRAIN_BRAKING, 8)) {
+		_aspect_cfg_hash = 0;
+	}
+
 	InitializeRoadGUI();
 
 	/* This needs to be done after conversion. */

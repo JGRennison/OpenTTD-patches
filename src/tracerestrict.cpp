@@ -1313,6 +1313,8 @@ bool TraceRestrictRemoveProgramMapping(TraceRestrictRefId ref)
 		// Found
 		TraceRestrictProgram *prog = _tracerestrictprogram_pool.Get(iter->second.program_id);
 
+		bool update_reserve_through = (prog->actions_used_flags & TRPAUF_RESERVE_THROUGH_ALWAYS);
+
 		// check to see if another mapping needs to be removed as well
 		// do this before decrementing the refcount
 		bool remove_other_mapping = prog->refcount == 2 && prog->items.empty();
@@ -1329,14 +1331,25 @@ bool TraceRestrictRemoveProgramMapping(TraceRestrictRefId ref)
 		if (remove_other_mapping) {
 			TraceRestrictRemoveProgramMapping(const_cast<const TraceRestrictProgram *>(prog)->GetRefIdsPtr()[0]);
 		}
+
+		if (update_reserve_through) UpdateSignalReserveThroughBit(tile, track, true);
 		return true;
 	} else {
 		return false;
 	}
 }
 
-void TraceRestrictCheckRefreshSignals(const TraceRestrictProgram *prog, TileIndex tile, size_t old_size, TraceRestrictProgramActionsUsedFlags old_actions_used_flags)
+void TraceRestrictCheckRefreshSignals(const TraceRestrictProgram *prog, size_t old_size, TraceRestrictProgramActionsUsedFlags old_actions_used_flags)
 {
+	if (((old_actions_used_flags ^ prog->actions_used_flags) & TRPAUF_RESERVE_THROUGH_ALWAYS)) {
+		const TraceRestrictRefId *data = prog->GetRefIdsPtr();
+		for (uint i = 0; i < prog->refcount; i++) {
+			TileIndex tile = GetTraceRestrictRefIdTileIndex(data[i]);
+			Track track = GetTraceRestrictRefIdTrack(data[i]);
+			if (IsTileType(tile, MP_RAILWAY)) UpdateSignalReserveThroughBit(tile, track, true);
+		}
+	}
+
 	if (_network_dedicated) return;
 
 	if (!((old_actions_used_flags ^ prog->actions_used_flags) & (TRPAUF_RESERVE_THROUGH_ALWAYS | TRPAUF_REVERSE))) return;
@@ -1740,7 +1753,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 			// so delete it, as it's redundant
 			TraceRestrictRemoveProgramMapping(MakeTraceRestrictRefId(tile, track));
 		} else {
-			TraceRestrictCheckRefreshSignals(prog, tile, old_size, old_actions_used_flags);
+			TraceRestrictCheckRefreshSignals(prog, old_size, old_actions_used_flags);
 		}
 
 		// update windows
@@ -1821,6 +1834,8 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 				}
 				prog->items = source_prog->items; // copy
 				prog->Validate();
+
+				TraceRestrictCheckRefreshSignals(prog, 0, static_cast<TraceRestrictProgramActionsUsedFlags>(0));
 			}
 			break;
 		}
@@ -1841,7 +1856,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 				prog->items.insert(prog->items.end(), source_prog->items.begin(), source_prog->items.end()); // append
 				prog->Validate();
 
-				TraceRestrictCheckRefreshSignals(prog, tile, old_size, old_actions_used_flags);
+				TraceRestrictCheckRefreshSignals(prog, old_size, old_actions_used_flags);
 			}
 			break;
 		}

@@ -31,6 +31,7 @@
 uint8 _extra_aspects = 0;
 uint64 _aspect_cfg_hash = 0;
 uint16 _non_aspect_inc_style_mask = 0;
+uint16 _always_reserve_through_style_mask = 0;
 uint16 _no_tunnel_bridge_style_mask = 0;
 bool _signal_sprite_oversized = false;
 
@@ -382,6 +383,10 @@ static SigInfo ExploreSegment(Owner owner)
 							if (_extra_aspects > 0) {
 								info.out_signal_tile = tile;
 								info.out_signal_trackdir = trackdir;
+								if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && GetSignalAlwaysReserveThrough(tile, track) &&
+										GetSignalStateByTrackdir(tile, trackdir) == SIGNAL_STATE_RED) {
+									info.flags |= SF_PBS;
+								}
 							}
 
 							/* if it is a presignal EXIT in OUR direction, count it */
@@ -856,6 +861,10 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 
 				// Progsig dependencies
 				MarkDependencidesForUpdate(SignalReference(tile, track));
+			} else if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && GetSignalAlwaysReserveThrough(tile, track)) {
+				/* for reserve through signals, add block to the global set */
+				DiagDirection exitdir = TrackdirToExitdir(ReverseTrackdir(trackdir));
+				_globset.Add(tile, exitdir); // do not check for full global set, first update all signals
 			}
 			SetSignalStateByTrackdir(tile, trackdir, newstate);
 			refresh = true;
@@ -1503,6 +1512,7 @@ static bool DetermineExtraAspectsVariable()
 
 	_non_aspect_inc_style_mask = 0;
 	_no_tunnel_bridge_style_mask = 0;
+	_always_reserve_through_style_mask = 0;
 
 	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
 		for (RailType r = RAILTYPE_BEGIN; r != RAILTYPE_END; r++) {
@@ -1517,6 +1527,10 @@ static bool DetermineExtraAspectsVariable()
 				SetBit(_non_aspect_inc_style_mask, i + 1);
 				SetBit(_no_tunnel_bridge_style_mask, i + 1);
 			}
+			if (HasBit(_new_signal_styles[i].style_flags, NSSF_ALWAYS_RESERVE_THROUGH)) {
+				SetBit(_always_reserve_through_style_mask, i + 1);
+				SetBit(_no_tunnel_bridge_style_mask, i + 1);
+			}
 		}
 	}
 
@@ -1525,6 +1539,7 @@ static bool DetermineExtraAspectsVariable()
 	SimpleChecksum64 checksum;
 	checksum.Update(SimpleHash32(_extra_aspects));
 	checksum.Update(SimpleHash32(_non_aspect_inc_style_mask));
+	checksum.Update(SimpleHash32(_always_reserve_through_style_mask));
 
 	if (checksum.state != _aspect_cfg_hash) {
 		_aspect_cfg_hash = checksum.state;
@@ -1539,7 +1554,9 @@ void UpdateExtraAspectsVariable()
 	bool changed = DetermineExtraAspectsVariable();
 
 	if (changed) {
+		UpdateAllSignalReserveThroughBits();
 		if (_extra_aspects > 0) UpdateAllSignalAspects();
+		UpdateAllBlockSignals();
 		MarkWholeScreenDirty();
 	}
 }
@@ -1547,4 +1564,42 @@ void UpdateExtraAspectsVariable()
 void InitialiseExtraAspectsVariable()
 {
 	DetermineExtraAspectsVariable();
+}
+
+void UpdateSignalReserveThroughBit(TileIndex tile, Track track, bool update_signal)
+{
+	bool reserve_through = false;
+	if (NonZeroSignalStylePossiblyOnTile(tile) && _always_reserve_through_style_mask != 0 &&
+			HasBit(_always_reserve_through_style_mask, GetSignalStyle(tile, track))) {
+		reserve_through = true;
+	} else {
+		if (IsRestrictedSignal(tile)) {
+			const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, track);
+			if (prog && prog->actions_used_flags & TRPAUF_RESERVE_THROUGH_ALWAYS) reserve_through = true;
+		}
+	}
+
+	if (reserve_through != GetSignalAlwaysReserveThrough(tile, track)) {
+		SetSignalAlwaysReserveThrough(tile, track, reserve_through);
+		if (update_signal && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+			AddTrackToSignalBuffer(tile, track, GetTileOwner(tile));
+			UpdateSignalsInBuffer();
+		}
+	}
+}
+
+void UpdateAllSignalReserveThroughBits()
+{
+	TileIndex tile = 0;
+	do {
+		if (IsTileType(tile, MP_RAILWAY) && HasSignals(tile)) {
+			TrackBits bits = GetTrackBits(tile);
+			do {
+				Track track = RemoveFirstTrack(&bits);
+				if (HasSignalOnTrack(tile, track)) {
+					UpdateSignalReserveThroughBit(tile, track, false);
+				}
+			} while (bits != TRACK_BIT_NONE);
+		}
+	} while (++tile != MapSize());
 }

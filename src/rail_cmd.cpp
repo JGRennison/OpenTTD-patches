@@ -1720,6 +1720,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			SetSignalType(tile, track, sigtype);
 			SetSignalVariant(tile, track, sigvar);
 			SetSignalStyle(tile, track, signal_style);
+			UpdateSignalReserveThroughBit(tile, track, false);
 		}
 
 		/* Subtract old signal infrastructure count. */
@@ -1755,6 +1756,8 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 						}
 
 						if (sigtype == SIGTYPE_NO_ENTRY) CycleSignalSide(tile, track);
+
+						UpdateSignalReserveThroughBit(tile, track, false);
 					}
 
 				} else if (ctrl_pressed) {
@@ -1794,6 +1797,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 				FreeSignalProgram(SignalReference(tile, track));
 			SetSignalType(tile, track, sigtype);
 			SetSignalStyle(tile, track, signal_style);
+			UpdateSignalReserveThroughBit(tile, track, false);
 		}
 
 		/* Add new signal infrastructure count. */

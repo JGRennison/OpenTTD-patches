@@ -26,6 +26,7 @@ enum {
 
 enum NewSignalStyleFlags {
 	NSSF_NO_ASPECT_INC                  = 0,
+	NSSF_ALWAYS_RESERVE_THROUGH         = 1,
 };
 
 struct NewSignalStyle {
@@ -82,7 +83,7 @@ struct NewSignalsResolverObject : public ResolverObject {
 	GrfSpecFeature GetFeature() const override;
 };
 
-uint GetNewSignalsRestrictedSignalsInfo(const TraceRestrictProgram *prog, TileIndex tile);
+uint GetNewSignalsRestrictedSignalsInfo(const TraceRestrictProgram *prog, TileIndex tile, uint8 signal_style);
 
 inline uint GetNewSignalsSignalContext(CustomSignalSpriteContext signal_context, TileIndex tile)
 {

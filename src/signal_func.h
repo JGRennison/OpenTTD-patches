@@ -22,6 +22,7 @@
 extern uint8 _extra_aspects;
 extern uint64 _aspect_cfg_hash;
 extern uint16 _non_aspect_inc_style_mask;
+extern uint16 _always_reserve_through_style_mask;
 extern uint16 _no_tunnel_bridge_style_mask;
 extern bool _signal_sprite_oversized;
 
@@ -191,5 +192,8 @@ inline uint8 GetForwardAspectFollowingTrackAndIncrement(TileIndex tile, Trackdir
 {
 	return std::min<uint8>(GetForwardAspectFollowingTrack(tile, trackdir) + 1, _extra_aspects + 1);
 }
+
+void UpdateSignalReserveThroughBit(TileIndex tile, Track track, bool update_signal);
+void UpdateAllSignalReserveThroughBits();
 
 #endif /* SIGNAL_FUNC_H */
