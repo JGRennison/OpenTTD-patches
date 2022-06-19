@@ -1172,7 +1172,19 @@ void Train::UpdateAcceleration()
 				int acceleration_type = this->GetAccelerationType();
 				bool maglev = (acceleration_type == 2);
 				int64 power_w = power * 746ll;
-				int64 min_braking_force = this->gcache.cached_total_length * (int64)RBC_BRAKE_FORCE_PER_LENGTH;
+
+				/* Increase the effective length used for brake force/power value when using the freight weight multiplier */
+				uint length = this->gcache.cached_total_length;
+				if (_settings_game.vehicle.freight_trains > 1) {
+					uint adjust = (_settings_game.vehicle.freight_trains - 1);
+					for (const Train *u = this; u != nullptr; u = u->Next()) {
+						if (u->cargo_cap > 0 && CargoSpec::Get(u->cargo_type)->is_freight) {
+							length += ((u->gcache.cached_veh_length * adjust) + 1) / 2;
+						}
+					}
+				}
+
+				int64 min_braking_force = (int64)length * (int64)RBC_BRAKE_FORCE_PER_LENGTH;
 				if (!maglev) {
 					/* From GroundVehicle::GetAcceleration()
 					 * force = power * 18 / (speed * 5);
@@ -1191,7 +1203,7 @@ void Train::UpdateAcceleration()
 					 */
 					int evaluation_speed = this->vcache.cached_max_speed;
 					int area = 14;
-					int64 power_b = power_w + ((int64)this->gcache.cached_total_length * RBC_BRAKE_POWER_PER_LENGTH);
+					int64 power_b = power_w + ((int64)length * RBC_BRAKE_POWER_PER_LENGTH);
 					if (this->gcache.cached_air_drag > 0) {
 						uint64 v_3 = 1800 * (uint64)power_b / (area * this->gcache.cached_air_drag);
 						evaluation_speed = std::min<int>(evaluation_speed, IntCbrt(v_3));
