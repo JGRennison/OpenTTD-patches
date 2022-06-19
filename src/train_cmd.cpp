@@ -958,6 +958,9 @@ static void ApplyLookAheadItem(const Train *v, const TrainReservationLookAheadIt
 			break;
 
 		case TRLIT_SIGNAL:
+			if (_settings_game.vehicle.realistic_braking_aspect_limited == TRBALM_ON && v->lookahead->lookahead_end_position == item.start) {
+				limit_advisory_speed(item.start, 0, item.z_pos);
+			}
 			break;
 
 		case TRLIT_CURVE_SPEED:
@@ -982,6 +985,7 @@ static void AdvanceLookAheadPosition(Train *v)
 		const int32 old_position = v->lookahead->current_position;
 		v->lookahead->current_position = 0;
 		v->lookahead->reservation_end_position -= old_position;
+		v->lookahead->lookahead_end_position -= old_position;
 		v->lookahead->next_extend_position -= old_position;
 		for (TrainReservationLookAheadItem &item : v->lookahead->items) {
 			item.start -= old_position;
@@ -1008,6 +1012,7 @@ static void AdvanceLookAheadPosition(Train *v)
 	}
 
 	if (v->lookahead->current_position == v->lookahead->next_extend_position) {
+		SetTrainReservationLookaheadEnd(v);
 		TryLongReserveChooseTrainTrackFromReservationEnd(v, true);
 		v->lookahead->SetNextExtendPositionIfUnset();
 	}
@@ -3990,6 +3995,8 @@ static bool IsReservationLookAheadLongEnough(const Train *v, const ChooseTrainTr
 		if (v->lookahead->reservation_end_position >= v->lookahead->current_position + v->reverse_distance - 1) return true;
 	}
 
+	if (v->lookahead->lookahead_end_position <= v->lookahead->reservation_end_position && _settings_game.vehicle.realistic_braking_aspect_limited == TRBALM_ON) return true;
+
 	TrainDecelerationStats stats(v, v->lookahead->cached_zpos);
 
 	bool found_signal = false;
@@ -4985,6 +4992,7 @@ static bool IsTooCloseBehindTrain(Train *t, TileIndex tile, uint16 distance, boo
 				TileIndex end = GetOtherTunnelBridgeEnd(t->tile);
 				const int raw_free_tiles = GetAvailableFreeTilesInSignalledTunnelBridge(t->tile, end, tile);
 				ApplyAvailableFreeTunnelBridgeTiles(t->lookahead.get(), raw_free_tiles + ((raw_free_tiles != INT_MAX) ? DistanceManhattan(t->tile, tile) : 0), t->tile, end);
+				SetTrainReservationLookaheadEnd(t);
 
 				if (!LookaheadWithinCurrentTunnelBridge(t)) {
 					/* Try to extend the reservation beyond the tunnel/bridge exit */

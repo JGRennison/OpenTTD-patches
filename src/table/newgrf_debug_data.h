@@ -225,6 +225,9 @@ class NIHVehicle : public NIHelper {
 				};
 
 				b = buffer + seprintf(buffer, lastof(buffer), "    Position: current: %d, z: %d, end: %d, remaining: %d", l.current_position, stats.z_pos, l.reservation_end_position, l.reservation_end_position - l.current_position);
+				if (l.lookahead_end_position <= l.reservation_end_position) {
+					b += seprintf(b, lastof(buffer), ", (lookahead: end: %d, remaining: %d)", l.lookahead_end_position, l.lookahead_end_position - l.current_position);
+				}
 				if (l.next_extend_position > l.current_position) {
 					b += seprintf(b, lastof(buffer), ", next extend position: %d (dist: %d)", l.next_extend_position, l.next_extend_position - l.current_position);
 				}
@@ -273,7 +276,12 @@ class NIHVehicle : public NIHelper {
 							if (item.data_id > 0) print_braking_speed(item.start, item.data_id, item.z_pos);
 							break;
 						case TRLIT_SIGNAL:
-							b += seprintf(b, lastof(buffer), "signal: target speed: %u", item.data_id);
+							b += seprintf(b, lastof(buffer), "signal: target speed: %u, flags:", item.data_id);
+							if (HasBit(item.data_aux, TRSLAI_NO_ASPECT_INC)) b += seprintf(b, lastof(buffer), "n");
+							if (_settings_game.vehicle.realistic_braking_aspect_limited == TRBALM_ON && l.lookahead_end_position == item.start) {
+								b += seprintf(b, lastof(buffer), ", lookahead end");
+								print_braking_speed(item.start, 0, item.z_pos);
+							}
 							break;
 						case TRLIT_CURVE_SPEED:
 							b += seprintf(b, lastof(buffer), "curve speed: %u", item.data_id);

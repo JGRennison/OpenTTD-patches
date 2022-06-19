@@ -4082,6 +4082,14 @@ bool AfterLoadGame()
 		_aspect_cfg_hash = 0;
 	}
 
+	if (!SlXvIsFeaturePresent(XSLFI_REALISTIC_TRAIN_BRAKING, 9) && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+		for (Train *t : Train::Iterate()) {
+			if (t->lookahead != nullptr) {
+				t->lookahead->lookahead_end_position = t->lookahead->reservation_end_position + 1;
+			}
+		}
+	}
+
 	InitializeRoadGUI();
 
 	/* This needs to be done after conversion. */

@@ -1138,6 +1138,7 @@ static void TrainBrakingModelChanged(int32 new_value)
 	UpdateAllBlockSignals();
 
 	InvalidateWindowData(WC_BUILD_SIGNAL, 0);
+	InvalidateWindowClassesData(WC_GAME_OPTIONS);
 }
 
 /**
