@@ -1517,7 +1517,10 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 		bool p2_active = p2_signal_in || p2_signal_out;
 		if (!IsTunnelBridgeWithSignalSimulation(tile)) { // toggle signal zero costs.
 			if (convert_signal) return_cmd_error(STR_ERROR_THERE_ARE_NO_SIGNALS);
-			if (!(p2_signal_in && p2_signal_out)) cost = CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_SIGNALS] * ((GetTunnelBridgeLength(tile, tile_exit) + 4) >> 2) * (bidirectional ? 2 : 1)); // minimal 1
+			if (!(p2_signal_in && p2_signal_out)) {
+				cost = CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_SIGNALS] * ((GetTunnelBridgeLength(tile, tile_exit) + 4) >> 2) * (bidirectional ? 2 : 1)); // minimal 1
+				if (HasBit(_no_tunnel_bridge_style_mask, signal_style)) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
+			}
 		} else {
 			if (HasBit(p1, 17)) return CommandCost();
 			bool is_bidi = IsTunnelBridgeSignalSimulationBidirectional(tile);
@@ -1526,6 +1529,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 				if (convert_signal) {
 					will_be_bidi = bidirectional && !ctrl_pressed;
 					change_style = (signal_style != GetTunnelBridgeSignalStyle(tile));
+					if (HasBit(_no_tunnel_bridge_style_mask, signal_style)) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
 				} else if (ctrl_pressed) {
 					will_be_bidi = false;
 				}

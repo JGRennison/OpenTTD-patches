@@ -476,6 +476,7 @@ static void ShutdownGame()
 	_extra_station_names_used = 0;
 	_extra_station_names_probability = 0;
 	_extra_aspects = 0;
+	_aspect_cfg_hash = 0;
 	_loadgame_DBGL_data.clear();
 	_loadgame_DBGC_data.clear();
 }

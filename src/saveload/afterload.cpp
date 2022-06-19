@@ -3670,6 +3670,7 @@ bool AfterLoadGame()
 		}
 		/* force aspect re-calculation */
 		_extra_aspects = 0;
+		_aspect_cfg_hash = 0;
 	}
 
 	if (SlXvIsFeatureMissing(XSLFI_CUSTOM_BRIDGE_HEADS)) {

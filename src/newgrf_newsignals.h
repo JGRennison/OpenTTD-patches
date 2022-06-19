@@ -24,10 +24,15 @@ enum {
 	MAX_NEW_SIGNAL_STYLES = 15,
 };
 
+enum NewSignalStyleFlags {
+	NSSF_NO_ASPECT_INC                  = 0,
+};
+
 struct NewSignalStyle {
 	const GRFFile *grffile;
-	StringID name = 0;
+	StringID name;
 	uint8 grf_local_id;
+	uint8 style_flags;
 
 	PalSpriteID signals[SIGTYPE_END][2][2];
 };

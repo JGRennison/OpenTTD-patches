@@ -23,10 +23,15 @@
 #include "tunnelbridge.h"
 #include "bridge_signal_map.h"
 #include "newgrf_newsignals.h"
+#include "core/checksum_func.hpp"
+#include "core/hash_func.hpp"
 
 #include "safeguards.h"
 
 uint8 _extra_aspects = 0;
+uint64 _aspect_cfg_hash = 0;
+uint16 _non_aspect_inc_style_mask = 0;
+uint16 _no_tunnel_bridge_style_mask = 0;
 bool _signal_sprite_oversized = false;
 
 /// List of signals dependent upon this one
@@ -614,7 +619,9 @@ uint8 GetForwardAspectFollowingTrack(TileIndex tile, Trackdir trackdir)
 					if (HasSignalOnTrack(tile, track)) { // now check whole track, not trackdir
 						if (HasSignalOnTrackdir(tile, trackdir)) {
 							if (GetSignalStateByTrackdir(tile, trackdir) == SIGNAL_STATE_RED) return 0;
-							return GetSignalAspect(tile, track);
+							uint8 aspect = GetSignalAspect(tile, track);
+							AdjustSignalAspectIfNonIncStyle(tile, track, aspect);
+							return aspect;
 						} else if (IsOnewaySignal(tile, track)) {
 							return 0; // one-way signal facing the wrong way
 						}
@@ -666,7 +673,7 @@ uint8 GetForwardAspectFollowingTrack(TileIndex tile, Trackdir trackdir)
 				trackdir = TrackEnterdirToTrackdir(track, ReverseDiagDir(enterdir));
 
 				if (IsTunnelBridgeWithSignalSimulation(tile) && HasTrack(GetAcrossTunnelBridgeTrackBits(tile), track)) {
-					return GetSignalAspectGeneric(tile, trackdir);
+					return GetSignalAspectGeneric(tile, trackdir, false);
 				}
 
 				if (TrackdirEntersTunnelBridge(tile, trackdir)) {
@@ -694,7 +701,7 @@ static uint8 GetForwardAspect(const SigInfo &info, TileIndex tile, Trackdir trac
 	if (info.flags & SF_JUNCTION) {
 		return GetForwardAspectFollowingTrack(tile, trackdir);
 	} else {
-		return (info.out_signal_tile != INVALID_TILE) ? GetSignalAspectGeneric(info.out_signal_tile, info.out_signal_trackdir) : 0;
+		return (info.out_signal_tile != INVALID_TILE) ? GetSignalAspectGeneric(info.out_signal_tile, info.out_signal_trackdir, true) : 0;
 	}
 }
 
@@ -828,7 +835,7 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 			if (newstate == SIGNAL_STATE_GREEN) {
 				aspect = 1;
 				if (info.out_signal_tile != INVALID_TILE) {
-					aspect = std::min<uint8>(GetSignalAspectGeneric(info.out_signal_tile, info.out_signal_trackdir) + 1, _extra_aspects + 1);
+					aspect = std::min<uint8>(GetSignalAspectGeneric(info.out_signal_tile, info.out_signal_trackdir, true) + 1, _extra_aspects + 1);
 				}
 			} else {
 				aspect = 0;
@@ -1220,12 +1227,14 @@ void CheckRemoveSignal(TileIndex tile, Track track)
 	}
 }
 
-uint8 GetSignalAspectGeneric(TileIndex tile, Trackdir trackdir)
+uint8 GetSignalAspectGeneric(TileIndex tile, Trackdir trackdir, bool check_non_inc_style)
 {
 	switch (GetTileType(tile)) {
 		case MP_RAILWAY:
 			if (HasSignalOnTrackdir(tile, trackdir) && GetSignalStateByTrackdir(tile, trackdir) == SIGNAL_STATE_GREEN) {
-				return GetSignalAspect(tile, TrackdirToTrack(trackdir));
+				uint8 aspect = GetSignalAspect(tile, TrackdirToTrack(trackdir));
+				if (check_non_inc_style) AdjustSignalAspectIfNonIncStyle(tile, TrackdirToTrack(trackdir), aspect);
+				return aspect;
 			}
 			break;
 
@@ -1243,6 +1252,11 @@ uint8 GetSignalAspectGeneric(TileIndex tile, Trackdir trackdir)
 	}
 
 	return 0;
+}
+
+void AdjustSignalAspectIfNonIncStyleIntl(TileIndex tile, Track track, uint8 &aspect)
+{
+	if (IsTileType(tile, MP_RAILWAY) && HasBit(_non_aspect_inc_style_mask, GetSignalStyle(tile, track))) aspect--;
 }
 
 static void RefreshBridgeOnExitAspectChange(TileIndex entrance, TileIndex exit)
@@ -1263,6 +1277,8 @@ static void RefreshBridgeOnExitAspectChange(TileIndex entrance, TileIndex exit)
 
 void PropagateAspectChange(TileIndex tile, Trackdir trackdir, uint8 aspect)
 {
+	AdjustSignalAspectIfNonIncStyle(tile, TrackdirToTrack(trackdir), aspect);
+
 	aspect = std::min<uint8>(aspect + 1, _extra_aspects + 1);
 	Owner owner = GetTileOwner(tile);
 	DiagDirection exitdir = TrackdirToExitdir(ReverseTrackdir(trackdir));
@@ -1310,6 +1326,7 @@ void PropagateAspectChange(TileIndex tile, Trackdir trackdir, uint8 aspect)
 							if (GetSignalAspect(tile, track) == aspect) return; // aspect already correct
 							SetSignalAspect(tile, track, aspect);
 							MarkSingleSignalDirty(tile, reversedir);
+							AdjustSignalAspectIfNonIncStyle(tile, TrackdirToTrack(trackdir), aspect);
 							aspect = std::min<uint8>(aspect + 1, _extra_aspects + 1);
 						} else if (IsOnewaySignal(tile, track)) {
 							return; // one-way signal facing the wrong way
@@ -1479,9 +1496,13 @@ void UpdateAllSignalAspects()
 	}
 }
 
-static uint8 DetermineExtraAspectsVariable()
+static bool DetermineExtraAspectsVariable()
 {
+	bool changed = false;
 	uint8 new_extra_aspects = 0;
+
+	_non_aspect_inc_style_mask = 0;
+	_no_tunnel_bridge_style_mask = 0;
 
 	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
 		for (RailType r = RAILTYPE_BEGIN; r != RAILTYPE_END; r++) {
@@ -1491,17 +1512,33 @@ static uint8 DetermineExtraAspectsVariable()
 		for (const GRFFile *grf : _new_signals_grfs) {
 			new_extra_aspects = std::max<uint8>(new_extra_aspects, grf->new_signal_extra_aspects);
 		}
+		for (uint i = 0; i < _num_new_signal_styles; i++) {
+			if (HasBit(_new_signal_styles[i].style_flags, NSSF_NO_ASPECT_INC)) {
+				SetBit(_non_aspect_inc_style_mask, i + 1);
+				SetBit(_no_tunnel_bridge_style_mask, i + 1);
+			}
+		}
 	}
 
-	return new_extra_aspects;
+	_extra_aspects = new_extra_aspects;
+
+	SimpleChecksum64 checksum;
+	checksum.Update(SimpleHash32(_extra_aspects));
+	checksum.Update(SimpleHash32(_non_aspect_inc_style_mask));
+
+	if (checksum.state != _aspect_cfg_hash) {
+		_aspect_cfg_hash = checksum.state;
+		changed = true;
+	}
+
+	return changed;
 }
 
 void UpdateExtraAspectsVariable()
 {
-	uint8 new_extra_aspects = DetermineExtraAspectsVariable();
+	bool changed = DetermineExtraAspectsVariable();
 
-	if (new_extra_aspects != _extra_aspects) {
-		_extra_aspects = new_extra_aspects;
+	if (changed) {
 		if (_extra_aspects > 0) UpdateAllSignalAspects();
 		MarkWholeScreenDirty();
 	}
@@ -1509,5 +1546,5 @@ void UpdateExtraAspectsVariable()
 
 void InitialiseExtraAspectsVariable()
 {
-	_extra_aspects = DetermineExtraAspectsVariable();
+	DetermineExtraAspectsVariable();
 }
