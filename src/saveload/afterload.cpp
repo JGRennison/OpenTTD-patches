@@ -3652,7 +3652,7 @@ bool AfterLoadGame()
 	if (SlXvIsFeaturePresent(XSLFI_SIG_TUNNEL_BRIDGE, 1, 7)) {
 		/* spacing setting moved to company settings */
 		for (Company *c : Company::Iterate()) {
-			c->settings.simulated_wormhole_signals = _settings_game.construction.old_simulated_wormhole_signals;
+			c->settings.old_simulated_wormhole_signals = _settings_game.construction.old_simulated_wormhole_signals;
 		}
 	}
 	if (SlXvIsFeaturePresent(XSLFI_SIG_TUNNEL_BRIDGE, 1, 8)) {
@@ -3662,7 +3662,14 @@ bool AfterLoadGame()
 				DiagDirection dir = GetTunnelBridgeDirection(t);
 				if (dir == DIAGDIR_NE || dir == DIAGDIR_SE) {
 					TileIndex other = GetOtherTunnelBridgeEnd(t);
-					uint spacing = GetBestTunnelBridgeSignalSimulationSpacing(GetTileOwner(t), t, other);
+					Owner owner = GetTileOwner(t);
+					int target;
+					if (Company::IsValidID(owner)) {
+						target = Company::Get(owner)->settings.old_simulated_wormhole_signals;
+					} else {
+						target = 4;
+					}
+					uint spacing = GetBestTunnelBridgeSignalSimulationSpacing(t, other, target);
 					SetTunnelBridgeSignalSimulationSpacing(t, spacing);
 					SetTunnelBridgeSignalSimulationSpacing(other, spacing);
 				}

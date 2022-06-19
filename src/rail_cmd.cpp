@@ -1464,6 +1464,7 @@ static void ReReserveTrainPath(Train *v)
  * - p1 = (bit 17)  - 1 = don't modify an existing signal but don't fail either, 0 = always set new signal type
  * - p1 = (bit 18)  - permit creation of/conversion to bidirectionally signalled bridges/tunnels
  * - p1 = (bit 19-22)-signal style
+ * - p1 = (bit 23-27)-signal spacing
  * @param p2 used for CmdBuildManySignals() to copy direction of first signal
  * @param text unused
  * @return the cost of this operation or an error
@@ -1511,6 +1512,10 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 	CommandCost cost;
 	/* handle signals simulation on tunnel/bridge. */
 	if (IsTileType(tile, MP_TUNNELBRIDGE)) {
+		int signal_spacing = GB(p1, 23, 5);
+		if (signal_spacing == 0) return_cmd_error(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
+		signal_spacing = Clamp<int>(signal_spacing, 1, 16);
+
 		TileIndex tile_exit = GetOtherTunnelBridgeEnd(tile);
 		if (TracksOverlap(GetTunnelBridgeTrackBits(tile)) || TracksOverlap(GetTunnelBridgeTrackBits(tile_exit))) return_cmd_error(STR_ERROR_NO_SUITABLE_RAILROAD_TRACK);
 		bool bidirectional = HasBit(p1, 18) && (sigtype == SIGTYPE_PBS);
@@ -1597,7 +1602,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			if (IsTunnelBridgeWithSignalSimulation(tile)) {
 				c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(tile, tile_exit);
 			} else {
-				uint spacing = GetBestTunnelBridgeSignalSimulationSpacing(GetTileOwner(tile), tile, tile_exit);
+				uint spacing = GetBestTunnelBridgeSignalSimulationSpacing(tile, tile_exit, signal_spacing);
 				SetTunnelBridgeSignalSimulationSpacing(tile, spacing);
 				SetTunnelBridgeSignalSimulationSpacing(tile_exit, spacing);
 				for (TileIndex t : { tile, tile_exit }) {
@@ -2035,6 +2040,7 @@ static CommandCost CmdSignalTrackHelper(TileIndex tile, DoCommandFlag flags, uin
 			SB(param1, 5, 3, sigtype);
 			SB(param1, 19, 4, signal_style);
 			if (!remove && signal_ctr == 0) SetBit(param1, 17);
+			if (!remove) SB(param1, 23, 5, Clamp<int>(GB(p2, 24, 8), 1, 16));
 
 			/* Pick the correct orientation for the track direction */
 			signals = 0;

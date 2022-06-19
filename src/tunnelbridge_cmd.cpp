@@ -134,18 +134,8 @@ void MarkBridgeOrTunnelDirtyOnReservationChange(TileIndex tile, ViewportMarkDirt
 	}
 }
 
-uint GetTunnelBridgeSignalSimulationSpacingTarget(Owner owner)
+uint GetBestTunnelBridgeSignalSimulationSpacing(TileIndex begin, TileIndex end, int target)
 {
-	if (Company::IsValidID(owner)) {
-		return Company::Get(owner)->settings.simulated_wormhole_signals;
-	} else {
-		return 4;
-	}
-}
-
-uint GetBestTunnelBridgeSignalSimulationSpacing(Owner owner, TileIndex begin, TileIndex end)
-{
-	int target = GetTunnelBridgeSignalSimulationSpacingTarget(owner);
 	if (target <= 2) return target;
 	int length = GetTunnelBridgeLength(begin, end);
 	if (target > length || ((length + 1) % target) == 0) return target;
