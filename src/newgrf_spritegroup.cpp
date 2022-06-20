@@ -761,8 +761,8 @@ static char *DumpSpriteGroupAdjust(char *p, const char *last, const Deterministi
 		if (adjust.adjust_flags & DSGAF_LAST_VAR_READ && HasBit(_misc_debug_flags, MDF_NEWGRF_SG_DUMP_MORE_DETAIL)) {
 			p += seprintf(p, last, ", last var read");
 		}
-		if (adjust.adjust_flags & DSGAF_BOOL_MUL_HINT && HasBit(_misc_debug_flags, MDF_NEWGRF_SG_DUMP_MORE_DETAIL)) {
-			p += seprintf(p, last, ", bool mul hint");
+		if (adjust.adjust_flags & DSGAF_JUMP_INS_HINT && HasBit(_misc_debug_flags, MDF_NEWGRF_SG_DUMP_MORE_DETAIL)) {
+			p += seprintf(p, last, ", jump ins hint");
 		}
 		if (adjust.adjust_flags & DSGAF_END_BLOCK) {
 			p += seprintf(p, last, ", end block");

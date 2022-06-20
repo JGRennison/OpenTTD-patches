@@ -6704,7 +6704,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 			}
 			if (adjust.operation == DSGA_OP_MUL && adjust.variable != 0x7E) {
 				state.inference |= VA2AIF_MUL_BOOL;
-				adjust.adjust_flags |= DSGAF_BOOL_MUL_HINT;
+				adjust.adjust_flags |= DSGAF_JUMP_INS_HINT;
 			}
 		}
 	} else {
@@ -7004,7 +7004,9 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 					}
 					if ((prev_inference & VA2AIF_ONE_OR_ZERO) || (non_const_var_inference & VA2AIF_ONE_OR_ZERO)) {
 						state.inference |= VA2AIF_MUL_BOOL;
-						adjust.adjust_flags |= DSGAF_BOOL_MUL_HINT;
+					}
+					if (non_const_var_inference & VA2AIF_ONE_OR_ZERO) {
+						adjust.adjust_flags |= DSGAF_JUMP_INS_HINT;
 					}
 					break;
 				}
@@ -7476,7 +7478,7 @@ static void OptimiseVarAction2DeterministicSpriteGroupAdjustOrdering(Determinist
 				});
 
 				adjust.operation = DSGA_OP_RST;
-				adjust.adjust_flags &= ~(DSGAF_SKIP_ON_ZERO | DSGAF_BOOL_MUL_HINT);
+				adjust.adjust_flags &= ~(DSGAF_SKIP_ON_ZERO | DSGAF_JUMP_INS_HINT);
 			}
 		}
 	}
@@ -7585,7 +7587,7 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 	for (int i = (int)group->adjusts.size() - 1; i >= 1; i--) {
 		DeterministicSpriteGroupAdjust &adjust = group->adjusts[i];
 
-		if (adjust.adjust_flags & DSGAF_BOOL_MUL_HINT) {
+		if (adjust.adjust_flags & DSGAF_JUMP_INS_HINT) {
 			std::bitset<256> ok_stores;
 			int j = i - 1;
 			while (j >= 0) {
@@ -7612,7 +7614,7 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 			if (j < i - 1) {
 				DeterministicSpriteGroupAdjust current = adjust;
 				current.operation = DSGA_OP_JZ;
-				current.adjust_flags &= ~(DSGAF_BOOL_MUL_HINT | DSGAF_SKIP_ON_ZERO);
+				current.adjust_flags &= ~(DSGAF_JUMP_INS_HINT | DSGAF_SKIP_ON_ZERO);
 				group->adjusts[i - 1].adjust_flags |= DSGAF_END_BLOCK;
 				group->adjusts.erase(group->adjusts.begin() + i);
 				if (j >= 0 && current.variable == 0x7D && (current.adjust_flags & DSGAF_LAST_VAR_READ)) {

@@ -219,7 +219,7 @@ enum DeterministicSpriteGroupAdjustFlags : uint8 {
 	DSGAF_SKIP_ON_ZERO       = 1 << 0,
 	DSGAF_SKIP_ON_LSB_SET    = 1 << 1,
 	DSGAF_LAST_VAR_READ      = 1 << 2,
-	DSGAF_BOOL_MUL_HINT      = 1 << 3,
+	DSGAF_JUMP_INS_HINT      = 1 << 3,
 	DSGAF_END_BLOCK          = 1 << 4,
 };
 DECLARE_ENUM_AS_BIT_SET(DeterministicSpriteGroupAdjustFlags);
