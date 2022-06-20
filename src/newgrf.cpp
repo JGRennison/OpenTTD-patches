@@ -7532,9 +7532,55 @@ static bool TryCombineTempStoreLoadWithStoreSourceAdjust(DeterministicSpriteGrou
 	return false;
 }
 
-static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicSpriteGroup *group)
+static void OptimiseVarAction2DeterministicSpriteGroupPopulateLastVarReadAnnotations(DeterministicSpriteGroup *group, VarAction2GroupVariableTracking *var_tracking)
+{
+	std::bitset<256> bits;
+	if (var_tracking != nullptr) bits = var_tracking->out;
+
+	for (int i = (int)group->adjusts.size() - 1; i >= 0; i--) {
+		DeterministicSpriteGroupAdjust &adjust = group->adjusts[i];
+
+		if (adjust.operation == DSGA_OP_STO) {
+			if (adjust.type == DSGA_TYPE_NONE && adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask < 0x100) {
+				/* Predictable store */
+				bits.set(adjust.and_mask, false);
+			}
+		}
+		if (adjust.variable == 0x7B && adjust.parameter == 0x7D) {
+			/* Unpredictable load */
+			bits.set();
+		}
+		if (adjust.variable == 0x7D && adjust.parameter < 0x100) {
+			if (!bits[adjust.parameter]) {
+				bits.set(adjust.parameter, true);
+				adjust.adjust_flags |= DSGAF_LAST_VAR_READ;
+			}
+		}
+		if (adjust.variable == 0x7E) {
+			/* procedure call */
+			auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
+				if (sg == nullptr) return;
+				if (sg->type == SGT_RANDOMIZED) {
+					const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)sg;
+					for (const auto &group : rsg->groups) {
+						handle_group(group);
+					}
+				} else if (sg->type == SGT_DETERMINISTIC) {
+					const DeterministicSpriteGroup *sub = static_cast<const DeterministicSpriteGroup *>(sg);
+					VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sub, false);
+					if (var_tracking != nullptr) bits |= var_tracking->in;
+				}
+			});
+			handle_group(adjust.subroutine);
+		}
+	}
+}
+
+static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicSpriteGroup *group, VarAction2GroupVariableTracking *var_tracking)
 {
 	if (HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_INSERT_JUMPS)) return;
+
+	OptimiseVarAction2DeterministicSpriteGroupPopulateLastVarReadAnnotations(group, var_tracking);
 
 	for (int i = (int)group->adjusts.size() - 1; i >= 1; i--) {
 		DeterministicSpriteGroupAdjust &adjust = group->adjusts[i];
@@ -7930,7 +7976,6 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 				}
 				if (add) {
 					substitution_candidates.push_back(adjust.parameter | (i << 8));
-					const_cast<DeterministicSpriteGroupAdjust &>(adjust).adjust_flags |= DSGAF_LAST_VAR_READ;
 				}
 			} else {
 				bits.set(adjust.parameter, true);
@@ -8004,7 +8049,7 @@ static void HandleVarAction2OptimisationPasses()
 		OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(group);
 		OptimiseVarAction2DeterministicSpriteGroupAdjustOrdering(group);
 		if (!(group->dsg_flags & DSGF_NO_DSE)) {
-			OptimiseVarAction2DeterministicSpriteGroupInsertJumps(group);
+			OptimiseVarAction2DeterministicSpriteGroupInsertJumps(group, var_tracking);
 		}
 		if (group->dsg_flags & DSGF_CHECK_EXPENSIVE_VARS) {
 			OptimiseVarAction2DeterministicSpriteGroupExpensiveVars(group);
