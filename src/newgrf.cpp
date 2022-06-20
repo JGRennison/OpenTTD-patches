@@ -6705,6 +6705,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 			if (adjust.operation == DSGA_OP_MUL && adjust.variable != 0x7E) {
 				state.inference |= VA2AIF_MUL_BOOL;
 				adjust.adjust_flags |= DSGAF_JUMP_INS_HINT;
+				group->dsg_flags |= DSGF_CHECK_INSERT_JUMP;
 			}
 		}
 	} else {
@@ -7007,6 +7008,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 					}
 					if (non_const_var_inference & VA2AIF_ONE_OR_ZERO) {
 						adjust.adjust_flags |= DSGAF_JUMP_INS_HINT;
+						group->dsg_flags |= DSGF_CHECK_INSERT_JUMP;
 					}
 					break;
 				}
@@ -8050,7 +8052,7 @@ static void HandleVarAction2OptimisationPasses()
 
 		OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(group);
 		OptimiseVarAction2DeterministicSpriteGroupAdjustOrdering(group);
-		if (!(group->dsg_flags & DSGF_NO_DSE)) {
+		if ((group->dsg_flags & DSGF_CHECK_INSERT_JUMP) && !(group->dsg_flags & DSGF_NO_DSE)) {
 			OptimiseVarAction2DeterministicSpriteGroupInsertJumps(group, var_tracking);
 		}
 		if (group->dsg_flags & DSGF_CHECK_EXPENSIVE_VARS) {
