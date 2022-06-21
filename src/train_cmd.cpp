@@ -4083,6 +4083,7 @@ static TileIndex CheckLongReservePbsTunnelBridgeOnTrackdir(Train* v, TileIndex t
 			} else {
 				raw_free_tiles = GetAvailableFreeTilesInSignalledTunnelBridgeWithStartOffset(tile, end, v->lookahead->tunnel_bridge_reserved_tiles + 1);
 				ApplyAvailableFreeTunnelBridgeTiles(v->lookahead.get(), raw_free_tiles, tile, end);
+				SetTrainReservationLookaheadEnd(v);
 			}
 		} else {
 			raw_free_tiles = GetAvailableFreeTilesInSignalledTunnelBridge(tile, end, tile);

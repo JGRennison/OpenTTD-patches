@@ -999,6 +999,7 @@ void SetTrainReservationLookaheadEnd(Train *v)
 	int32 threshold = v->lookahead->current_position + 24;
 	uint8 known_signals_ahead = 1;
 	for (const TrainReservationLookAheadItem &item : v->lookahead->items) {
+		if (item.end >= v->lookahead->reservation_end_position) break;
 		if (item.type == TRLIT_SIGNAL) {
 			if (item.start <= threshold) {
 				/* Signal is within visual range */
