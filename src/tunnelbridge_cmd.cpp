@@ -143,6 +143,11 @@ uint GetBestTunnelBridgeSignalSimulationSpacing(TileIndex begin, TileIndex end, 
 	int lower = target - (target / 4);
 	int upper = std::min<int>(16, target + (target / 3));
 
+	if ((target * 2) >= length) {
+		/* See whether signal would be better in the middle */
+		lower = (length + 1) / 2;
+	}
+
 	int best_gap = -1;
 	int best_spacing = 0;
 	for (int i = lower; i <= upper; i++) {
