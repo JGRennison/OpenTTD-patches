@@ -1019,8 +1019,10 @@ void SetTrainReservationLookaheadEnd(Train *v)
 	}
 
 	/* Didn't need to stop at a signal along the reservation */
-	v->lookahead->lookahead_end_position = v->lookahead->reservation_end_position;
-	if (known_signals_ahead > 1) v->lookahead->lookahead_end_position++;
+	if (v->lookahead->reservation_end_position >= v->lookahead->lookahead_end_position) {
+		v->lookahead->lookahead_end_position = v->lookahead->reservation_end_position;
+		if (known_signals_ahead > 1) v->lookahead->lookahead_end_position++;
+	}
 }
 
 void FillTrainReservationLookAhead(Train *v)
