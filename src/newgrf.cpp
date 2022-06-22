@@ -4271,6 +4271,15 @@ static ChangeInfoResult SignalsChangeInfo(uint id, int numinfo, int prop, const 
 				break;
 			}
 
+			case A0RPI_SIGNALS_STYLE_OPPOSITE_SIDE: {
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				uint8 value = buf->ReadByte();
+				if (_cur.grffile->current_new_signal_style != nullptr) {
+					SB(_cur.grffile->current_new_signal_style->style_flags, NSSF_OPPOSITE_SIDE, 1, (value != 0 ? 1 : 0));
+				}
+				break;
+			}
+
 			default:
 				ret = HandleAction0PropertyDefault(buf, prop);
 				break;

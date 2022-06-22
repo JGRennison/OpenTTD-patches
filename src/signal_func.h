@@ -24,6 +24,7 @@ extern uint64 _aspect_cfg_hash;
 extern uint16 _non_aspect_inc_style_mask;
 extern uint16 _always_reserve_through_style_mask;
 extern uint16 _no_tunnel_bridge_style_mask;
+extern uint16 _signal_opposite_side_style_mask;
 extern bool _signal_sprite_oversized;
 
 /**

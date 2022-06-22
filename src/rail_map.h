@@ -409,6 +409,18 @@ static inline uint8 GetSignalStyle(TileIndex t, Track track)
 	return GB(_me[t].m6, pos, 4);
 }
 
+static inline uint8 GetSignalStyleGeneric(TileIndex t, Track track)
+{
+	switch (GetTileType(t)) {
+		case MP_RAILWAY:
+			return GetSignalStyle(t, track);
+		case MP_TUNNELBRIDGE:
+			return GetTunnelBridgeSignalStyle(t);
+		default:
+			return 0;
+	}
+}
+
 static inline void SetSignalStyle(TileIndex t, Track track, uint8 style)
 {
 	assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);

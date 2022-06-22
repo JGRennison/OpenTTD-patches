@@ -33,6 +33,7 @@ uint64 _aspect_cfg_hash = 0;
 uint16 _non_aspect_inc_style_mask = 0;
 uint16 _always_reserve_through_style_mask = 0;
 uint16 _no_tunnel_bridge_style_mask = 0;
+uint16 _signal_opposite_side_style_mask = 0;
 bool _signal_sprite_oversized = false;
 
 /// List of signals dependent upon this one
@@ -1513,6 +1514,7 @@ static bool DetermineExtraAspectsVariable()
 	_non_aspect_inc_style_mask = 0;
 	_no_tunnel_bridge_style_mask = 0;
 	_always_reserve_through_style_mask = 0;
+	_signal_opposite_side_style_mask = 0;
 
 	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
 		for (RailType r = RAILTYPE_BEGIN; r != RAILTYPE_END; r++) {
@@ -1535,6 +1537,9 @@ static bool DetermineExtraAspectsVariable()
 				_new_signal_styles[i].lookahead_extra_aspects = std::min<uint8>(_new_signal_styles[i].lookahead_extra_aspects, _new_signal_styles[i].grffile->new_signal_extra_aspects);
 			} else {
 				_new_signal_styles[i].lookahead_extra_aspects = _new_signal_styles[i].grffile->new_signal_extra_aspects;
+			}
+			if (HasBit(_new_signal_styles[i].style_flags, NSSF_OPPOSITE_SIDE)) {
+				SetBit(_signal_opposite_side_style_mask, i + 1);
 			}
 		}
 		for (uint i = _num_new_signal_styles; i < MAX_NEW_SIGNAL_STYLES; i++) {

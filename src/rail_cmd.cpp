@@ -2763,7 +2763,7 @@ static uint GetSaveSlopeZ(uint x, uint y, Track track)
 	return GetSlopePixelZ(x, y);
 }
 
-static void GetSignalXY(TileIndex tile, uint pos, uint &x, uint &y)
+static void GetSignalXY(TileIndex tile, uint pos, bool opposite, uint &x, uint &y)
 {
 	bool side;
 	switch (_settings_game.construction.train_signal_side) {
@@ -2771,6 +2771,7 @@ static void GetSignalXY(TileIndex tile, uint pos, uint &x, uint &y)
 		case 2:  side = true;                                  break; // right
 		default: side = _settings_game.vehicle.road_side != 0; break; // driving side
 	}
+	side ^= opposite;
 	static const Point SignalPositions[2][12] = {
 		{ // Signals on the left side
 		/*  LEFT      LEFT      RIGHT     RIGHT     UPPER     UPPER */
@@ -2796,8 +2797,25 @@ void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, Sign
 
 	if (type == SIGTYPE_NO_ENTRY) pos ^= 1;
 
+	uint8 style = 0;
+	if (_num_new_signal_styles > 0) {
+		switch (context) {
+			case CSSC_TRACK:
+				style = GetSignalStyle(tile, track);
+				break;
+
+			case CSSC_TUNNEL_BRIDGE_ENTRANCE:
+			case CSSC_TUNNEL_BRIDGE_EXIT:
+				style = GetTunnelBridgeSignalStyle(tile);
+				break;
+
+			default:
+				break;
+		}
+	}
+
 	uint x, y;
-	GetSignalXY(tile, pos, x, y);
+	GetSignalXY(tile, pos, HasBit(_signal_opposite_side_style_mask, style), x, y);
 
 	uint8 aspect;
 	if (condition == SIGNAL_STATE_GREEN) {
@@ -2822,23 +2840,6 @@ void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, Sign
 		}
 	} else {
 		aspect = 0;
-	}
-
-	uint8 style = 0;
-	if (_num_new_signal_styles > 0) {
-		switch (context) {
-			case CSSC_TRACK:
-				style = GetSignalStyle(tile, track);
-				break;
-
-			case CSSC_TUNNEL_BRIDGE_ENTRANCE:
-			case CSSC_TUNNEL_BRIDGE_EXIT:
-				style = GetTunnelBridgeSignalStyle(tile);
-				break;
-
-			default:
-				break;
-		}
 	}
 
 	const CustomSignalSpriteResult result = GetCustomSignalSprite(rti, tile, type, variant, aspect, context, style, prog);
@@ -2926,7 +2927,7 @@ static void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track trac
 }
 
 template <typename F>
-void MarkSingleSignalDirtyIntl(TileIndex tile, Trackdir td, F get_z)
+void MarkSingleSignalDirtyIntl(TileIndex tile, Trackdir td, bool opposite, F get_z)
 {
 	static const uint8 trackdir_to_pos[TRACKDIR_END] = {
 		8,  // TRACKDIR_X_NE
@@ -2948,7 +2949,7 @@ void MarkSingleSignalDirtyIntl(TileIndex tile, Trackdir td, F get_z)
 	};
 
 	uint x, y;
-	GetSignalXY(tile, trackdir_to_pos[td], x, y);
+	GetSignalXY(tile, trackdir_to_pos[td], opposite, x, y);
 	Point pt = RemapCoords(x, y, get_z(x, y));
 	MarkAllViewportsDirty(
 			pt.x - SIGNAL_DIRTY_LEFT,
@@ -2965,15 +2966,18 @@ void MarkSingleSignalDirty(TileIndex tile, Trackdir td)
 		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		return;
 	}
-
-	MarkSingleSignalDirtyIntl(tile, td, [td](uint x, uint y) -> uint {
+	bool opposite = false;
+	if (_signal_opposite_side_style_mask != 0) {
+		opposite = HasBit(_signal_opposite_side_style_mask, GetSignalStyleGeneric(tile, TrackdirToTrack(td)));
+	}
+	MarkSingleSignalDirtyIntl(tile, td, opposite, [td](uint x, uint y) -> uint {
 		return GetSaveSlopeZ(x, y, TrackdirToTrack(td));
 	});
 }
 
-void MarkSingleSignalDirtyAtZ(TileIndex tile, Trackdir td, uint z)
+void MarkSingleSignalDirtyAtZ(TileIndex tile, Trackdir td, bool opposite_side, uint z)
 {
-	MarkSingleSignalDirtyIntl(tile, td, [z](uint x, uint y) -> uint {
+	MarkSingleSignalDirtyIntl(tile, td, opposite_side, [z](uint x, uint y) -> uint {
 		return z;
 	});
 }
