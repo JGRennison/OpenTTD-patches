@@ -7584,6 +7584,8 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 {
 	if (HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_INSERT_JUMPS)) return;
 
+	group->dsg_flags &= ~DSGF_CHECK_INSERT_JUMP;
+
 	OptimiseVarAction2DeterministicSpriteGroupPopulateLastVarReadAnnotations(group, var_tracking);
 
 	for (int i = (int)group->adjusts.size() - 1; i >= 1; i--) {
@@ -7630,8 +7632,34 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 					}
 				}
 				group->adjusts.insert(group->adjusts.begin() + j + 1, current);
+				group->dsg_flags |= DSGF_CHECK_INSERT_JUMP;
 				i++;
 			}
+		}
+	}
+}
+
+static uint OptimiseVarAction2DeterministicSpriteResolveJumpsInner(DeterministicSpriteGroup *group, const uint start)
+{
+	for (uint i = start + 1; i < (uint)group->adjusts.size(); i++) {
+		if (group->adjusts[i].operation == DSGA_OP_JZ) {
+			i = OptimiseVarAction2DeterministicSpriteResolveJumpsInner(group, i);
+		} else if (group->adjusts[i].adjust_flags & DSGAF_END_BLOCK) {
+			group->adjusts[start].jump = i - start;
+			return i;
+		}
+	}
+
+	NOT_REACHED();
+}
+
+static void OptimiseVarAction2DeterministicSpriteResolveJumps(DeterministicSpriteGroup *group)
+{
+	if (HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_INSERT_JUMPS)) return;
+
+	for (uint i = 0; i < (uint)group->adjusts.size(); i++) {
+		if (group->adjusts[i].operation == DSGA_OP_JZ) {
+			i = OptimiseVarAction2DeterministicSpriteResolveJumpsInner(group, i);
 		}
 	}
 }
@@ -8057,6 +8085,9 @@ static void HandleVarAction2OptimisationPasses()
 		}
 		if (group->dsg_flags & DSGF_CHECK_EXPENSIVE_VARS) {
 			OptimiseVarAction2DeterministicSpriteGroupExpensiveVars(group);
+		}
+		if (group->dsg_flags & DSGF_CHECK_INSERT_JUMP) {
+			OptimiseVarAction2DeterministicSpriteResolveJumps(group);
 		}
 	}
 }

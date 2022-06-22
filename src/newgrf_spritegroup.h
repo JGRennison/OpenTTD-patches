@@ -206,7 +206,7 @@ enum DeterministicSpriteGroupAdjustOperation : uint8 {
 	DSGA_OP_RSUB,           ///< b - a
 	DSGA_OP_STO_NC,         ///< store b into temporary storage, indexed by c. return a
 	DSGA_OP_ABS,            ///< abs(a)
-	DSGA_OP_JZ,             ///< jump to adjust after DSGAF_END_BLOCK marker (taking into account nesting) if b is zero. return 0 if jumped, return a if not jumped
+	DSGA_OP_JZ,             ///< jump forward fixed number of adjusts (to adjust after DSGAF_END_BLOCK marker (taking into account nesting)) if b is zero. return 0 if jumped, return a if not jumped
 
 	DSGA_OP_SPECIAL_END,
 };
@@ -430,7 +430,10 @@ struct DeterministicSpriteGroupAdjust {
 	uint32 and_mask;
 	uint32 add_val;    ///< Also used for DSGA_TYPE_EQ/DSGA_TYPE_NEQ constants and DSGA_OP_TERNARY false value
 	uint32 divmod_val; ///< Also used for DSGA_OP_STO_NC
-	const SpriteGroup *subroutine;
+	union {
+		const SpriteGroup *subroutine;
+		uint32 jump;
+	};
 };
 
 struct DeterministicSpriteGroupRange {

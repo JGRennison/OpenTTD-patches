@@ -153,16 +153,10 @@ static inline uint32 GetVariable(const ResolverObject &object, ScopeResolver *sc
 	return &this->default_scope;
 }
 
-struct ConditionalNestingState {
-	uint depth = 0;
-	uint skip_until_depth = 0;
-	bool skipping = false;
-};
-
 /* Evaluate an adjustment for a variable of the given size.
  * U is the unsigned type and S is the signed type to use. */
 template <typename U, typename S>
-static U EvalAdjustT(const DeterministicSpriteGroupAdjust &adjust, ScopeResolver *scope, U last_value, uint32 value, ConditionalNestingState *cond_nesting_state = nullptr)
+static U EvalAdjustT(const DeterministicSpriteGroupAdjust &adjust, ScopeResolver *scope, U last_value, uint32 value, const DeterministicSpriteGroupAdjust **adjust_iter = nullptr)
 {
 	value >>= adjust.shift_num;
 	value  &= adjust.and_mask;
@@ -209,10 +203,9 @@ static U EvalAdjustT(const DeterministicSpriteGroupAdjust &adjust, ScopeResolver
 		case DSGA_OP_STO_NC: _temp_store.StoreValue(adjust.divmod_val, (S)value); return last_value;
 		case DSGA_OP_ABS:  return ((S)last_value < 0) ? -((S)last_value) : (S)last_value;
 		case DSGA_OP_JZ: {
-			if (value == 0 && cond_nesting_state != nullptr) {
+			if (value == 0 && adjust_iter != nullptr) {
 				/* Jump */
-				cond_nesting_state->skip_until_depth = cond_nesting_state->depth - 1;
-				cond_nesting_state->skipping = true;
+				(*adjust_iter) += adjust.jump;
 				return 0;
 			} else {
 				/* Don't jump */
@@ -245,19 +238,10 @@ const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) con
 
 	ScopeResolver *scope = object.GetScope(this->var_scope);
 
-	ConditionalNestingState conditional_nesting = {};
+	const DeterministicSpriteGroupAdjust *end = this->adjusts.data() + this->adjusts.size();
+	for (const DeterministicSpriteGroupAdjust *iter = this->adjusts.data(); iter != end; ++iter) {
+		const DeterministicSpriteGroupAdjust &adjust = *iter;
 
-	for (const auto &adjust : this->adjusts) {
-		if (adjust.adjust_flags & DSGAF_END_BLOCK) {
-			conditional_nesting.depth--;
-			if (conditional_nesting.skipping && conditional_nesting.skip_until_depth == conditional_nesting.depth) {
-				/* End of block that was skipped */
-				conditional_nesting.skipping = false;
-				continue;
-			}
-		}
-		if (adjust.operation == DSGA_OP_JZ) conditional_nesting.depth++;
-		if (conditional_nesting.skipping) continue;
 		if ((adjust.adjust_flags & DSGAF_SKIP_ON_ZERO) && (last_value == 0)) continue;
 		if ((adjust.adjust_flags & DSGAF_SKIP_ON_LSB_SET) && (last_value & 1) != 0) continue;
 
@@ -286,9 +270,9 @@ const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) con
 		}
 
 		switch (this->size) {
-			case DSG_SIZE_BYTE:  value = EvalAdjustT<uint8,  int8> (adjust, scope, last_value, value, &conditional_nesting); break;
-			case DSG_SIZE_WORD:  value = EvalAdjustT<uint16, int16>(adjust, scope, last_value, value, &conditional_nesting); break;
-			case DSG_SIZE_DWORD: value = EvalAdjustT<uint32, int32>(adjust, scope, last_value, value, &conditional_nesting); break;
+			case DSG_SIZE_BYTE:  value = EvalAdjustT<uint8,  int8> (adjust, scope, last_value, value, &iter); break;
+			case DSG_SIZE_WORD:  value = EvalAdjustT<uint16, int16>(adjust, scope, last_value, value, &iter); break;
+			case DSG_SIZE_DWORD: value = EvalAdjustT<uint32, int32>(adjust, scope, last_value, value, &iter); break;
 			default: NOT_REACHED();
 		}
 		last_value = value;
@@ -817,6 +801,9 @@ static char *DumpSpriteGroupAdjust(char *p, const char *last, const Deterministi
 	}
 	p += seprintf(p, last, ", op: ");
 	p = GetAdjustOperationName(p, last, adjust.operation);
+	if (adjust.operation == DSGA_OP_JZ) {
+		p += seprintf(p, last, " +%u", adjust.jump);
+	}
 	append_flags();
 	return p;
 }
