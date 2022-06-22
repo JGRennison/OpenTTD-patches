@@ -889,6 +889,28 @@ void DumpTileSignalsInfo(char *buffer, const char *last, uint index, NIExtraInfo
 	}
 }
 
+void DumpTunnelBridgeSignalsInfo(char *buffer, const char *last, uint index, NIExtraInfoOutput &output)
+{
+	if (IsTunnelBridgeSignalSimulationEntrance(index)) {
+		char *b = buffer;
+		const SignalState state = GetTunnelBridgeEntranceSignalState(index);
+		b += seprintf(b, last, "  Entrance: state: %d", state);
+		if (_extra_aspects > 0 && state == SIGNAL_STATE_GREEN) b += seprintf(b, last, ", aspect: %d", GetTunnelBridgeEntranceSignalAspect(index));
+		output.print(buffer);
+	}
+	if (IsTunnelBridgeSignalSimulationExit(index)) {
+		char *b = buffer;
+		const SignalState state = GetTunnelBridgeExitSignalState(index);
+		b += seprintf(b, last, "  Exit: state: %d", state);
+		if (_extra_aspects > 0 && state == SIGNAL_STATE_GREEN) b += seprintf(b, last, ", aspect: %d", GetTunnelBridgeExitSignalAspect(index));
+		output.print(buffer);
+	}
+	TileIndex end = GetOtherTunnelBridgeEnd(index);
+	extern uint GetTunnelBridgeSignalSimulationSignalCount(TileIndex begin, TileIndex end);
+	seprintf(buffer, last, "  Spacing: %d, total signals: %d", GetTunnelBridgeSignalSimulationSpacing(index), GetTunnelBridgeSignalSimulationSignalCount(index, end));
+	output.print(buffer);
+}
+
 static const NIVariable _niv_signals[] = {
 	NIV(0x40, "terrain type"),
 	NIV(A2VRI_SIGNALS_SIGNAL_RESTRICTION_INFO, "restriction info"),
@@ -898,7 +920,8 @@ static const NIVariable _niv_signals[] = {
 };
 
 class NIHSignals : public NIHelper {
-	bool IsInspectable(uint index) const override        { return !_new_signals_grfs.empty(); }
+	bool IsInspectable(uint index) const override        { return true; }
+	bool ShowExtraInfoOnly(uint index) const override    { return _new_signals_grfs.empty(); }
 	bool ShowSpriteDumpButton(uint index) const override { return true; }
 	uint GetParent(uint index) const override            { return UINT32_MAX; }
 	const void *GetInstance(uint index)const override    { return nullptr; }
@@ -935,6 +958,10 @@ class NIHSignals : public NIHelper {
 		if (IsTileType(index, MP_RAILWAY) && HasSignals(index)) {
 			output.print("Signals:");
 			DumpTileSignalsInfo(buffer, lastof(buffer), index, output);
+		}
+		if (IsTunnelBridgeWithSignalSimulation(index)) {
+			output.print("Signals:");
+			DumpTunnelBridgeSignalsInfo(buffer, lastof(buffer), index, output);
 		}
 	}
 

@@ -1171,8 +1171,7 @@ GrfSpecFeature GetGrfSpecFeature(TileIndex tile)
 			}
 
 		case MP_TUNNELBRIDGE: {
-			extern std::vector<const GRFFile *> _new_signals_grfs;
-			if (IsTunnelBridgeWithSignalSimulation(tile) && !_new_signals_grfs.empty()) return GSF_SIGNALS;
+			if (IsTunnelBridgeWithSignalSimulation(tile)) return GSF_SIGNALS;
 			return GSF_INVALID;
 		}
 
