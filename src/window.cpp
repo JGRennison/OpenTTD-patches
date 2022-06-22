@@ -3510,6 +3510,19 @@ void DeleteConstructionWindows()
 	}
 }
 
+/**
+ * Delete all windows that use network client functionality.
+ */
+void DeleteNetworkClientWindows()
+{
+	/* Note: the container remains stable, even when deleting windows. */
+	for (const Window *w : Window::IterateUnordered()) {
+		if (w->window_desc->flags & WDF_NETWORK) {
+			delete w;
+		}
+	}
+}
+
 /** Delete all always on-top windows to get an empty screen */
 void HideVitalWindows()
 {

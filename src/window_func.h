@@ -40,6 +40,7 @@ void DeleteNonVitalWindows();
 void DeleteAllNonVitalWindows();
 void DeleteAllMessages();
 void DeleteConstructionWindows();
+void DeleteNetworkClientWindows();
 void HideVitalWindows();
 void ShowVitalWindows();
 

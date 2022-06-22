@@ -522,7 +522,7 @@ static const NWidgetPart _nested_chat_window_widgets[] = {
 static WindowDesc _chat_window_desc(
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_SEND_NETWORK_MSG, WC_NONE,
-	0,
+	WDF_NETWORK,
 	_nested_chat_window_widgets, lengthof(_nested_chat_window_widgets)
 );
 
