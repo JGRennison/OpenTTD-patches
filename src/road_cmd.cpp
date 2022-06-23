@@ -2665,14 +2665,15 @@ static TrackStatus GetTileTrackStatus_Road(TileIndex tile, TransportType mode, u
 					if (side != INVALID_DIAGDIR && axis != DiagDirToAxis(side)) break;
 
 					trackdirbits = TrackBitsToTrackdirBits(AxisToTrackBits(axis));
-					if (IsCrossingBarred(tile)) red_signals = trackdirbits;
-					if (IsLevelCrossingTile(TileAddByDiagDir(tile, AxisToDiagDir(axis))) &&
-							IsCrossingBarred(TileAddByDiagDir(tile, AxisToDiagDir(axis)))) {
-						red_signals &= (TrackdirBits)0x0102; // magic value. I think TRACKBIT_X_SW and TRACKBIT_X_NE should be swapped
-					}
-					if (IsLevelCrossingTile(TileAddByDiagDir(tile, ReverseDiagDir(AxisToDiagDir(axis)))) &&
-							IsCrossingBarred(TileAddByDiagDir(tile, ReverseDiagDir(AxisToDiagDir(axis))))) {
-						red_signals &= (TrackdirBits)0x0201; // inverse of above magic value
+					if (IsCrossingBarred(tile)) {
+						red_signals = trackdirbits;
+						auto mask_red_signal_bits_if_crossing_barred = [&](TileIndex t, TrackdirBits mask) {
+							if (IsLevelCrossingTile(t) && IsCrossingBarred(t)) red_signals &= mask;
+						};
+						/* Check for blocked adjacent crossing to south, keep only southbound red signal trackdirs, allow northbound traffic */
+						mask_red_signal_bits_if_crossing_barred(TileAddByDiagDir(tile, AxisToDiagDir(axis)), TRACKDIR_BIT_X_SW | TRACKDIR_BIT_Y_SE);
+						/* Check for blocked adjacent crossing to north, keep only northbound red signal trackdirs, allow southbound traffic */
+						mask_red_signal_bits_if_crossing_barred(TileAddByDiagDir(tile, ReverseDiagDir(AxisToDiagDir(axis))), TRACKDIR_BIT_X_NE | TRACKDIR_BIT_Y_NW);
 					}
 					break;
 				}
