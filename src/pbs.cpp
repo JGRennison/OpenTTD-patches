@@ -996,8 +996,13 @@ void SetTrainReservationLookaheadEnd(Train *v)
 		return;
 	}
 
+	if (v->lookahead->lookahead_end_position > v->lookahead->reservation_end_position) return;
+
 	int32 threshold = v->lookahead->current_position + 24;
 	uint8 known_signals_ahead = 1;
+	if (v->IsInDepot()) {
+		known_signals_ahead = _extra_aspects + 1;
+	}
 	for (const TrainReservationLookAheadItem &item : v->lookahead->items) {
 		if (item.end >= v->lookahead->reservation_end_position) break;
 		if (item.type == TRLIT_SIGNAL) {

@@ -4007,7 +4007,10 @@ static bool IsReservationLookAheadLongEnough(const Train *v, const ChooseTrainTr
 		if (v->lookahead->reservation_end_position >= v->lookahead->current_position + v->reverse_distance - 1) return true;
 	}
 
-	if (v->lookahead->lookahead_end_position <= v->lookahead->reservation_end_position && _settings_game.vehicle.realistic_braking_aspect_limited == TRBALM_ON) return true;
+	if (v->lookahead->lookahead_end_position <= v->lookahead->reservation_end_position && _settings_game.vehicle.realistic_braking_aspect_limited == TRBALM_ON &&
+			v->lookahead->reservation_end_position > v->lookahead->current_position + 24) {
+		return true;
+	}
 
 	TrainDecelerationStats stats(v, v->lookahead->cached_zpos);
 
