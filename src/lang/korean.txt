@@ -1270,6 +1270,7 @@ STR_CONFIG_SETTING_ORIGINAL                                     :오리지널
 STR_CONFIG_SETTING_REALISTIC                                    :현실적
 
 STR_CONFIG_SETTING_TRAIN_BRAKING_REALISTIC                      :현실적 {PUSH_COLOUR}{RED}(고급){POP_COLOUR}
+STR_CONFIG_SETTING_TRAIN_BRAKING_ASPECT_LIMITED_ON              :켜기 {PUSH_COLOUR}{RED}(전문가용, 어려움){POP_COLOUR}
 
 STR_CONFIG_SETTING_REALISTIC_BRAKING_SIGNALS_NOT_ALLOWED        :{WHITE}현실적인 감속을 사용할 수 없습니다. 사전 신호기나 양방향 신호기가 모두 존재하지 않아야 합니다.
 
@@ -1370,6 +1371,8 @@ STR_CONFIG_SETTING_TRAIN_ACCELERATION_MODEL                     :열차 가속 �
 STR_CONFIG_SETTING_TRAIN_ACCELERATION_MODEL_HELPTEXT            :열차 가속에 사용할 물리 모델을 선택합니다. "오리지널" 모델은 언덕을 오를 때 무조건 속력이 감소합니다. "현실적" 모델은 열차의 길이나 기관차의 견인력 등의 구성 속성에 따라 언덕과 커브에서 속력이 감소합니다.
 STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL                          :열차 감속 모델: {STRING}
 STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL_HELPTEXT                 :열차 감속에 사용할 물리 모델을 선택합니다. "오리지널" 모델을 사용하면 열차가 즉시 멈춥니다. "현실적" 모델을 사용하면, 열차가 정지하려면 일정 거리가 필요해지고 그에 따라 앞쪽 선로를 미리 예약하게 되며, 열차가 즉시 멈출 수 없게 됩니다.{}{}"현실적" 모델은 신호 및 선로 구조 디자인에 많은 영향을 미치므로, 이 기능은 초심자에게 적합하지 않은 고급 기능입니다. 특히 사전 신호기와 양방향 신호기는 사용할 수 없으며, 모든 신호기는 경로 신호기를 사용해야 합니다.
+STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED             :현실적 열차 감속을 신호기 신호 기준으로 제한: {STRING}
+STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED_HELPTEXT    :현실적 감속 모델에서, 속력을 신호기를 기준으로 제한합니다. (즉, 신호기를 무제한으로 예약하고 선로를 예약하는 것을 허용하지 않습니다.){}이 설정을 사용하려면 다현시 신호기 NewGRF가 필요합니다.{}이 설정은 게임 플레이의 어려움을 증가시킬 수도 있는 전문가용 설정으로, 신호기 유형 및 배치에 대한 추가적인 고려가 필요할 수 있습니다.
 STR_CONFIG_SETTING_ROAD_VEHICLE_ACCELERATION_MODEL              :자동차/전차 가속 모델: {STRING}
 STR_CONFIG_SETTING_ROAD_VEHICLE_ACCELERATION_MODEL_HELPTEXT     :자동차/전차의 가속 물리 모델을 선택하세요. "오리지널" 모델은 언덕을 오를 때 무조건 속력이 감소합니다. "현실적" 모델은 차량의 견인력 등 차량의 다양한 속성에 따라 언덕을 오를 때 속력이 감소합니다.
 
@@ -3207,6 +3210,8 @@ STR_BUILD_SIGNAL_CONVERT_TOOLTIP                                :{BLACK}신호�
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP                   :{BLACK}드래그로 설치할 때 신호기 사이의 간격입니다
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_DECREASE_TOOLTIP          :{BLACK}드래그로 설치할 신호기 간격을 줄입니다
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_INCREASE_TOOLTIP          :{BLACK}드래그로 설치할 신호기 간격을 늘입니다
+STR_BUILD_SIGNAL_DEFAULT_STYLE                                  :기본
+STR_BUILD_SIGNAL_STYLE_TOOLTIP                                  :{BLACK}신호기 종류 선택
 
 # Tracerestrict GUI
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_EQUALS                :=
@@ -3456,6 +3461,7 @@ STR_TRACE_RESTRICT_SHARE_TOOLTIP                                :{BLACK}다른 �
 STR_TRACE_RESTRICT_UNSHARE_TOOLTIP                              :{BLACK}다른 신호기와의 구문 공유를 해제합니다.
 STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP                           :{BLACK}경로 탐색 제한
 STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}선택하려면 구문을 클릭하십시오.{}구문에서 지정된 장소가 있다면, 지정된 장소로 가려면 구문을 Ctrl+클릭하십시오.
+STR_TRACE_RESTRICT_HIGHLIGHT_TOOLTIP                            :{BLACK}이 프로그램을 공유하는 모든 신호기를 선택하여 표시합니다.
 STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM                      :{WHITE}구문을 삽입할 수 없습니다.
 STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM                      :{WHITE}구문을 수정할 수 없습니다.
 STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM                      :{WHITE}구문을 제거할 수 없습니다.
@@ -3884,6 +3890,8 @@ STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :경로 신호�
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_PROGSIGNALS             :경로 신호기와 프로그램 경로 신호기가 설치된 철도 선로
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRY_PROGSIGNALS         :단방향 신호기와 프로그램 경로 신호기가 설치된 철도 선로
 STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :철도 차량기지
+STR_LAI_RAIL_DESCRIPTION_TRACK_SIGNAL_STYLE                     :{STRING}: ({STRING})
+STR_LAI_RAIL_DESCRIPTION_TRACK_SIGNAL_STYLE2                    :{0:STRING}: ({1:STRING}{G 1 "과" "와"} {2:STRING})
 
 STR_LAI_RAIL_DESCRIPTION_RESTRICTED_SIGNAL                      :경로 제한된 {STRING}
 
@@ -4230,6 +4238,7 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT                            :{STRING}, {HEX}
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_OBJECT                     :오브젝트
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE                  :철도 종류
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :도로/전차 종류
+STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS                    :신호기
 
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}NewGRF 변수 60+x 매개 변수 (16진법)
 
@@ -6264,6 +6273,7 @@ STR_ERROR_CAN_T_REMOVE_SIGNALS_FROM                             :{WHITE}이곳�
 STR_ERROR_SIGNAL_CAN_T_CONVERT_SIGNALS_HERE                     :{WHITE}이곳의 신호기를 바꿀 수 없습니다...
 STR_ERROR_THERE_IS_NO_RAILROAD_TRACK                            :{WHITE}... 선로가 없습니다
 STR_ERROR_THERE_ARE_NO_SIGNALS                                  :{WHITE}... 신호기가 없습니다
+STR_ERROR_UNSUITABLE_SIGNAL_TYPE                                :{WHITE}... 적절하지 않은 신호기 종류입니다
 
 STR_ERROR_CAN_T_CONVERT_RAIL                                    :{WHITE}이곳의 선로를 바꿀 수 없습니다...
 
