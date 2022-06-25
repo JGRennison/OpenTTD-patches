@@ -1764,6 +1764,8 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 				SetPresentSignals(tile, GetPresentSignals(tile) | ((IsPbsSignal(sigtype) || _settings_game.vehicle.train_braking_model == TBM_REALISTIC) ? KillFirstBit(SignalOnTrack(track)) : SignalOnTrack(track)));
 				SetSignalType(tile, track, sigtype);
 				SetSignalVariant(tile, track, sigvar);
+				SetSignalStyle(tile, track, signal_style);
+				UpdateSignalReserveThroughBit(tile, track, false);
 				while (num_dir_cycle-- > 0) CycleSignalSide(tile, track);
 			} else {
 				if (convert_signal) {
