@@ -120,6 +120,9 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	ClearCargoPacketDeferredPayments();
 	PoolBase::Clean(PT_NORMAL);
 
+	extern void ClearNewSignalStyleMapping();
+	ClearNewSignalStyleMapping();
+
 	RebuildStationKdtree();
 	RebuildTownKdtree();
 	RebuildViewportKdtree();

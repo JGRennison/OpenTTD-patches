@@ -173,7 +173,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_RV_ORDER_EXTRA_FLAGS,   XSCF_IGNORABLE_UNKNOWN,   1,   1, "rv_order_extra_flags",      nullptr, nullptr, nullptr        },
 	{ XSLFI_GRF_ROADSTOPS,          XSCF_NULL,                1,   1, "grf_road_stops",            nullptr, nullptr, nullptr        },
 	{ XSLFI_INDUSTRY_ANIM_MASK,     XSCF_IGNORABLE_ALL,       1,   1, "industry_anim_mask",        nullptr, nullptr, nullptr        },
-	{ XSLFI_NEW_SIGNAL_STYLES,      XSCF_NULL,                1,   1, "new_signal_styles",         nullptr, nullptr, "XBST"         },
+	{ XSLFI_NEW_SIGNAL_STYLES,      XSCF_NULL,                2,   2, "new_signal_styles",         nullptr, nullptr, "XBST,NSID"    },
 	{ XSLFI_SCRIPT_INT64,           XSCF_NULL,                1,   1, "script_int64",              nullptr, nullptr, nullptr        },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, nullptr, nullptr, nullptr, nullptr },// This is the end marker
 };

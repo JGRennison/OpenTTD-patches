@@ -47,6 +47,13 @@ struct NewSignalStyle {
 	PalSpriteID signals[SIGTYPE_END][2][2];
 };
 extern std::array<NewSignalStyle, MAX_NEW_SIGNAL_STYLES> _new_signal_styles;
+struct NewSignalStyleMapping {
+	uint32 grfid = 0;
+	uint8 grf_local_id = 0;
+
+	inline bool operator==(const NewSignalStyleMapping& o) const { return grfid == o.grfid && grf_local_id == o.grf_local_id; }
+};
+extern std::array<NewSignalStyleMapping, MAX_NEW_SIGNAL_STYLES> _new_signal_style_mapping;
 extern uint _num_new_signal_styles;
 
 /** Resolver for the new signals scope. */

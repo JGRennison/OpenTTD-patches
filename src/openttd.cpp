@@ -447,6 +447,9 @@ static void ShutdownGame()
 	FreeSignalPrograms();
 	FreeSignalDependencies();
 
+	extern void ClearNewSignalStyleMapping();
+	ClearNewSignalStyleMapping();
+
 	extern void ClearAllSignalSpeedRestrictions();
 	ClearAllSignalSpeedRestrictions();
 
