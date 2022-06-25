@@ -3614,7 +3614,29 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 	if (ret.Failed()) return ret;
 
 	if (this->vehstatus & VS_CRASHED) return CMD_ERROR;
-	if (this->IsStoppedInDepot()) return CMD_ERROR;
+	if (this->IsStoppedInDepot()) {
+		if ((command & DEPOT_SELL) && !(command & DEPOT_CANCEL) && (!(command & DEPOT_SPECIFIC) || specific_depot == this->tile)) {
+			/* Sell vehicle immediately */
+
+			if (flags & DC_EXEC) {
+				int x = this->x_pos;
+				int y = this->y_pos;
+				int z = this->z_pos;
+
+				CommandCost cost = DoCommand(this->tile, this->index | (1 << 20), 0, flags, CMD_SELL_VEHICLE);
+				if (cost.Succeeded()) {
+					if (IsLocalCompany()) {
+						if (cost.GetCost() != 0) {
+							ShowCostOrIncomeAnimation(x, y, z, cost.GetCost());
+						}
+					}
+					SubtractMoneyFromCompany(cost);
+				}
+			}
+			return CommandCost();
+		}
+		return CMD_ERROR;
+	}
 
 	auto cancel_order = [&]() {
 		if (flags & DC_EXEC) {
