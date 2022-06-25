@@ -3864,27 +3864,35 @@ STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Railway track w
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PROGSIGNALS                 :Railway track with programmable pre-signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Railway track with path signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Railway track with one-way path signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRY2SIGNALS             :Railway track with no-entry signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Railway track with block and pre-signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Railway track with block and exit-signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Railway track with block and combo-signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PROGSIGNALS          :Railway track with block and programmable pre-signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Railway track with block and path signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Railway track with block and one-way path signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRY2SIGNALS      :Railway track with block and no-entry signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Railway track with pre- and exit-signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Railway track with pre- and combo-signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PROGSIGNALS             :Railway track with pre- and programmable pre-signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Railway track with pre- and path signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Railway track with pre- and one-way path signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRY2SIGNALS         :Railway track with pre- and no-entry signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Railway track with exit- and combo-signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PROGSIGNALS            :Railway track with exit- and programmable pre-signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Railway track with exit- and path signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Railway track with exit- and one-way path signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRY2SIGNALS        :Railway track with exit- and no-entry signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PROGSIGNALS           :Railway track with combo- and programmable pre-signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Railway track with combo- and path signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Railway track with combo- and one-way path signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRY2SIGNALS       :Railway track with combo- and no-entry signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Railway track with path and one-way path signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRY2SIGNALS         :Railway track with path and no-entry signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_PROGSIGNALS             :Railway track with path and programmable pre-signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRY_PROGSIGNALS         :Railway track with one-way path and programmable pre-signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRY_NOENTRY2SIGNALS     :Railway track with one-way path and no-entry signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PROG_NOENTRY2SIGNALS        :Railway track with programmable pre- and no-entry signals
 STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Railway train depot
 STR_LAI_RAIL_DESCRIPTION_TRACK_SIGNAL_STYLE                     :{STRING}: ({STRING})
 STR_LAI_RAIL_DESCRIPTION_TRACK_SIGNAL_STYLE2                    :{STRING}: ({STRING} and {STRING})
