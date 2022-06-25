@@ -180,7 +180,9 @@ endif()
 
 if (MINGW)
     find_package(Demangle)
-    find_package(BFD)
+    if (OPTION_ENABLE_MINGW_BFD)
+        find_package(BFD)
+    endif (OPTION_ENABLE_MINGW_BFD)
     find_package(DbgHelp)
 endif (MINGW)
 
