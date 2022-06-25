@@ -22,6 +22,11 @@
 extern uint8 _extra_aspects;
 extern uint64 _aspect_cfg_hash;
 
+static inline uint8 GetMaximumSignalAspect()
+{
+	return _extra_aspects + 1;
+}
+
 struct SignalStyleMasks {
 	uint16 non_aspect_inc = 0;
 	uint16 next_only = 0;
@@ -197,7 +202,7 @@ inline void AdjustSignalAspectIfNonIncStyle(TileIndex tile, Track track, uint8 &
 
 inline uint8 GetForwardAspectFollowingTrackAndIncrement(TileIndex tile, Trackdir trackdir)
 {
-	return std::min<uint8>(GetForwardAspectFollowingTrack(tile, trackdir) + 1, _extra_aspects + 1);
+	return std::min<uint8>(GetForwardAspectFollowingTrack(tile, trackdir) + 1, GetMaximumSignalAspect());
 }
 
 void UpdateSignalReserveThroughBit(TileIndex tile, Track track, bool update_signal);

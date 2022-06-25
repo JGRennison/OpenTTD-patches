@@ -1888,7 +1888,7 @@ static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_st
 						m2_position++;
 						if (GetBridgeEntranceSimulatedSignalState(bridge_start_tile, m2_position) != SIGNAL_STATE_GREEN) break;
 						aspect++;
-						if (aspect >= _extra_aspects + 1) break;
+						if (aspect >= GetMaximumSignalAspect()) break;
 					}
 				}
 			}
