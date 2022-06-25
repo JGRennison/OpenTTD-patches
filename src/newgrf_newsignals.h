@@ -29,6 +29,7 @@ enum NewSignalStyleFlags {
 	NSSF_ALWAYS_RESERVE_THROUGH         = 1,
 	NSSF_LOOKAHEAD_ASPECTS_SET          = 2,
 	NSSF_OPPOSITE_SIDE                  = 3,
+	NSSF_LOOKAHEAD_SINGLE_SIGNAL        = 4,
 };
 
 struct NewSignalStyle {

@@ -97,6 +97,7 @@ extern const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_STYLE_NO_ASPECT_INCREASE, "signals_style_no_aspect_increase"),
 	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_STYLE_ALWAYS_RESERVE_THROUGH, "signals_style_always_reserve_through"),
 	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_STYLE_LOOKAHEAD_EXTRA_ASPECTS, "signals_style_lookahead_extra_aspects"),
+	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_STYLE_LOOKAHEAD_SINGLE_SIGNAL_ONLY, "signals_style_lookahead_single_signal_only"),
 	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_STYLE_SEMAPHORE_ENABLED, "signals_style_semaphore_enabled"),
 	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_STYLE_ELECTRIC_ENABLED, "signals_style_electric_enabled"),
 	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_STYLE_OPPOSITE_SIDE, "signals_style_opposite_side"),

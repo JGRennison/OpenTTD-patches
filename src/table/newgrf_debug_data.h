@@ -278,6 +278,7 @@ class NIHVehicle : public NIHelper {
 						case TRLIT_SIGNAL:
 							b += seprintf(b, lastof(buffer), "signal: target speed: %u, style: %u, flags:", item.data_id, item.data_aux >> 8);
 							if (HasBit(item.data_aux, TRSLAI_NO_ASPECT_INC)) b += seprintf(b, lastof(buffer), "n");
+							if (HasBit(item.data_aux, TRSLAI_NEXT_ONLY)) b += seprintf(b, lastof(buffer), "s");
 							if (_settings_game.vehicle.realistic_braking_aspect_limited == TRBALM_ON && l.lookahead_end_position == item.start) {
 								b += seprintf(b, lastof(buffer), ", lookahead end");
 								print_braking_speed(item.start, 0, item.z_pos);

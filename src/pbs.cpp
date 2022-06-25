@@ -664,6 +664,9 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 					if (HasBit(_non_aspect_inc_style_mask, signal_style)) {
 						SetBit(signal_flags, TRSLAI_NO_ASPECT_INC);
 					}
+					if (HasBit(_next_only_style_mask, signal_style)) {
+						SetBit(signal_flags, TRSLAI_NEXT_ONLY);
+					}
 					lookahead->AddSignal(signal_speed, 0, z, signal_flags);
 					lookahead->SetNextExtendPositionIfUnset();
 				}
@@ -1000,8 +1003,10 @@ void SetTrainReservationLookaheadEnd(Train *v)
 
 	int32 threshold = v->lookahead->current_position + 24;
 	uint8 known_signals_ahead = 1;
+	bool allow_skip_no_aspect_inc = false;
 	if (v->IsInDepot()) {
 		known_signals_ahead = _extra_aspects + 1;
+		allow_skip_no_aspect_inc = true;
 	}
 	for (const TrainReservationLookAheadItem &item : v->lookahead->items) {
 		if (item.end >= v->lookahead->reservation_end_position) break;
@@ -1010,10 +1015,11 @@ void SetTrainReservationLookaheadEnd(Train *v)
 				/* Signal is within visual range */
 				uint8 style = item.data_aux >> 8;
 				uint8 max_aspect = (style == 0) ? _extra_aspects : _new_signal_styles[style - 1].lookahead_extra_aspects;
-				max_aspect += (HasBit(item.data_aux, TRSLAI_NO_ASPECT_INC) ? 1 : 2);
+				if (!HasBit(item.data_aux, TRSLAI_NEXT_ONLY)) allow_skip_no_aspect_inc = true;
+				max_aspect += ((HasBit(item.data_aux, TRSLAI_NO_ASPECT_INC) && allow_skip_no_aspect_inc) ? 1 : 2);
 				if (max_aspect > known_signals_ahead) known_signals_ahead = max_aspect;
 			}
-			if (!HasBit(item.data_aux, TRSLAI_NO_ASPECT_INC)) {
+			if (!HasBit(item.data_aux, TRSLAI_NO_ASPECT_INC) || !allow_skip_no_aspect_inc) {
 				known_signals_ahead--;
 				if (known_signals_ahead == 0) {
 					if (item.start > v->lookahead->lookahead_end_position) v->lookahead->lookahead_end_position = item.start;

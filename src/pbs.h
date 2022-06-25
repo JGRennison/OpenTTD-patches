@@ -60,6 +60,7 @@ enum TrainReservationLookAheadItemType : byte {
 
 enum TrainReservationSignalLookAheadItemFlags {
 	TRSLAI_NO_ASPECT_INC   = 0,           ///< This signal does not increase the signal aspect (e.g. banner repeater)
+	TRSLAI_NEXT_ONLY       = 1,           ///< This signal only permits lookahead up to the next physical signal, even if that has TRSLAI_NO_ASPECT_INC (e.g. shunt)
 };
 
 struct TrainReservationLookAheadItem {

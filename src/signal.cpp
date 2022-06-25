@@ -31,6 +31,7 @@
 uint8 _extra_aspects = 0;
 uint64 _aspect_cfg_hash = 0;
 uint16 _non_aspect_inc_style_mask = 0;
+uint16 _next_only_style_mask = 0;
 uint16 _always_reserve_through_style_mask = 0;
 uint16 _no_tunnel_bridge_style_mask = 0;
 uint16 _signal_opposite_side_style_mask = 0;
@@ -1512,6 +1513,7 @@ static bool DetermineExtraAspectsVariable()
 	uint8 new_extra_aspects = 0;
 
 	_non_aspect_inc_style_mask = 0;
+	_next_only_style_mask = 0;
 	_no_tunnel_bridge_style_mask = 0;
 	_always_reserve_through_style_mask = 0;
 	_signal_opposite_side_style_mask = 0;
@@ -1533,7 +1535,10 @@ static bool DetermineExtraAspectsVariable()
 				SetBit(_always_reserve_through_style_mask, i + 1);
 				SetBit(_no_tunnel_bridge_style_mask, i + 1);
 			}
-			if (HasBit(_new_signal_styles[i].style_flags, NSSF_LOOKAHEAD_ASPECTS_SET)) {
+			if (HasBit(_new_signal_styles[i].style_flags, NSSF_LOOKAHEAD_SINGLE_SIGNAL)) {
+				_new_signal_styles[i].lookahead_extra_aspects = 0;
+				SetBit(_next_only_style_mask, i + 1);
+			} else if (HasBit(_new_signal_styles[i].style_flags, NSSF_LOOKAHEAD_ASPECTS_SET)) {
 				_new_signal_styles[i].lookahead_extra_aspects = std::min<uint8>(_new_signal_styles[i].lookahead_extra_aspects, _new_signal_styles[i].grffile->new_signal_extra_aspects);
 			} else {
 				_new_signal_styles[i].lookahead_extra_aspects = _new_signal_styles[i].grffile->new_signal_extra_aspects;

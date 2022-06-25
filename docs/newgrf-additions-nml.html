@@ -508,8 +508,19 @@ item (FEAT_GLOBALVARS) {
 			Set the look-ahead extra aspects for the most recently defined style (defined using the <span class="code">define_style</span> property).<br />
 			This property only makes a difference when the "limit train lookahead to signal aspect" game setting is enabled.<br />
 			This limits the signal aspect which the hypothetical train driver can "read" from the signal without affecting signal aspect propagation to other signals, or variable <span class="code">extra_callback_info2</span>.<br />
-			Example values could include: 1 for traditional banner repeater signals, or 0 for shunt signals.<br />
+			Example values could include: 1 for traditional banner repeater signals.<br />
+			Shunt signals should use <span class="code">style_lookahead_single_signal_only</span> instead.<br />
 			The value is clamped to be less than or equal to the value set in the <span class="code">extra_aspects</span> property.
+		</td>
+	</tr>
+	<tr><td>style_lookahead_single_signal_only</td><td>0 or 1</td>
+		<td>
+			Set the look-ahead to single signal only mode for the most recently defined style (defined using the <span class="code">define_style</span> property).<br />
+			This property only makes a difference when the "limit train lookahead to signal aspect" game setting is enabled.<br />
+			This is similar to <span class="code">style_lookahead_extra_aspects</span> with a value of 0, except the lookahead always ends at the
+			next signal, even if that signal type sets <span class="code">style_no_aspect_increase</span>.<br />
+			If enabled, this property overrides <span class="code">style_lookahead_extra_aspects</span>.<br />
+			This can be used for shunt signals.
 		</td>
 	</tr>
 	<tr><td>style_opposite_side</td><td>0 or 1</td>
