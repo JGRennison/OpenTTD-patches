@@ -206,6 +206,21 @@ static inline bool HasRoadTypeTram(TileIndex t)
 }
 
 /**
+ * Get the present road types of a tile.
+ * @param t The tile to query.
+ * @return Present road types.
+ */
+static inline RoadTramTypes GetPresentRoadTramTypes(TileIndex t)
+{
+	RoadTramTypes result = (RoadTramTypes)0;
+	if (MayHaveRoad(t)) {
+		if (GetRoadTypeRoad(t) != INVALID_ROADTYPE) result |= RTTB_ROAD;
+		if (GetRoadTypeTram(t) != INVALID_ROADTYPE) result |= RTTB_TRAM;
+	}
+	return result;
+}
+
+/**
  * Check if a tile has a road or a tram road type.
  * @param t  The tile to check.
  * @param tram True to check tram, false to check road.
