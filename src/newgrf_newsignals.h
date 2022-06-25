@@ -15,6 +15,9 @@
 #include "tunnel_map.h"
 #include "gfx_type.h"
 
+#include <vector>
+#include <array>
+
 extern std::vector<const GRFFile *> _new_signals_grfs;
 
 struct TraceRestrictProgram;
