@@ -7122,7 +7122,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 					break;
 				case DSGA_OP_SHR:
 				case DSGA_OP_SAR:
-					if ((adjust.operation == DSGA_OP_SAR || (prev_inference & VA2AIF_SIGNED_NON_NEGATIVE)) &&
+					if ((adjust.operation == DSGA_OP_SHR || (prev_inference & VA2AIF_SIGNED_NON_NEGATIVE)) &&
 							((prev_inference & VA2AIF_PREV_MASK_ADJUST) && adjust.variable == 0x1A && adjust.shift_num == 0 && group->adjusts.size() >= 2)) {
 						/* Propagate shift right into immediately prior variable read */
 						DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
