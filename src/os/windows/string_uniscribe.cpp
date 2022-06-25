@@ -50,7 +50,7 @@ struct UniscribeRun {
 	std::vector<GOFFSET> offsets;
 	int total_advance;
 
-	UniscribeRun(int pos, int len, Font *font, SCRIPT_ANALYSIS &sa) : pos(pos), len(len), font(font), sa(sa) {}
+	UniscribeRun(int pos, int len, Font *font, SCRIPT_ANALYSIS &sa) : pos(pos), len(len), font(font), sa(sa), total_advance(0) {}
 };
 
 /** Break a string into language formatting ranges. */
