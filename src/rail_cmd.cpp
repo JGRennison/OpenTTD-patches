@@ -1531,7 +1531,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			if (convert_signal) return_cmd_error(STR_ERROR_THERE_ARE_NO_SIGNALS);
 			if (!(p2_signal_in && p2_signal_out)) {
 				cost = CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_SIGNALS] * ((GetTunnelBridgeLength(tile, tile_exit) + 4) >> 2) * (bidirectional ? 2 : 1)); // minimal 1
-				if (HasBit(_no_tunnel_bridge_style_mask, signal_style)) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
+				if (HasBit(_signal_style_masks.no_tunnel_bridge, signal_style)) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
 				if (!is_style_usable(sigvar, signal_style, bidirectional ? 0x11 : (is_pbs ? 0x21 : 0x1))) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
 			}
 		} else {
@@ -1550,7 +1550,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 					will_be_style = signal_style;
 					will_be_pbs = is_pbs;
 					will_be_semaphore = (sigvar == SIG_SEMAPHORE);
-					if (HasBit(_no_tunnel_bridge_style_mask, signal_style)) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
+					if (HasBit(_signal_style_masks.no_tunnel_bridge, signal_style)) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
 				} else if (ctrl_pressed) {
 					will_be_bidi = false;
 					will_be_pbs = !will_be_pbs;
@@ -2815,7 +2815,7 @@ void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, Sign
 	}
 
 	uint x, y;
-	GetSignalXY(tile, pos, HasBit(_signal_opposite_side_style_mask, style), x, y);
+	GetSignalXY(tile, pos, HasBit(_signal_style_masks.signal_opposite_side, style), x, y);
 
 	uint8 aspect;
 	if (condition == SIGNAL_STATE_GREEN) {
@@ -2967,8 +2967,8 @@ void MarkSingleSignalDirty(TileIndex tile, Trackdir td)
 		return;
 	}
 	bool opposite = false;
-	if (_signal_opposite_side_style_mask != 0) {
-		opposite = HasBit(_signal_opposite_side_style_mask, GetSignalStyleGeneric(tile, TrackdirToTrack(td)));
+	if (_signal_style_masks.signal_opposite_side != 0) {
+		opposite = HasBit(_signal_style_masks.signal_opposite_side, GetSignalStyleGeneric(tile, TrackdirToTrack(td)));
 	}
 	MarkSingleSignalDirtyIntl(tile, td, opposite, [td](uint x, uint y) -> uint {
 		return GetSaveSlopeZ(x, y, TrackdirToTrack(td));

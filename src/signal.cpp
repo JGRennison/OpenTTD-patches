@@ -30,11 +30,7 @@
 
 uint8 _extra_aspects = 0;
 uint64 _aspect_cfg_hash = 0;
-uint16 _non_aspect_inc_style_mask = 0;
-uint16 _next_only_style_mask = 0;
-uint16 _always_reserve_through_style_mask = 0;
-uint16 _no_tunnel_bridge_style_mask = 0;
-uint16 _signal_opposite_side_style_mask = 0;
+SignalStyleMasks _signal_style_masks = {};
 bool _signal_sprite_oversized = false;
 
 /// List of signals dependent upon this one
@@ -1267,7 +1263,7 @@ uint8 GetSignalAspectGeneric(TileIndex tile, Trackdir trackdir, bool check_non_i
 
 void AdjustSignalAspectIfNonIncStyleIntl(TileIndex tile, Track track, uint8 &aspect)
 {
-	if (IsTileType(tile, MP_RAILWAY) && HasBit(_non_aspect_inc_style_mask, GetSignalStyle(tile, track))) aspect--;
+	if (IsTileType(tile, MP_RAILWAY) && HasBit(_signal_style_masks.non_aspect_inc, GetSignalStyle(tile, track))) aspect--;
 }
 
 static void RefreshBridgeOnExitAspectChange(TileIndex entrance, TileIndex exit)
@@ -1512,11 +1508,7 @@ static bool DetermineExtraAspectsVariable()
 	bool changed = false;
 	uint8 new_extra_aspects = 0;
 
-	_non_aspect_inc_style_mask = 0;
-	_next_only_style_mask = 0;
-	_no_tunnel_bridge_style_mask = 0;
-	_always_reserve_through_style_mask = 0;
-	_signal_opposite_side_style_mask = 0;
+	_signal_style_masks = {};
 
 	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
 		for (RailType r = RAILTYPE_BEGIN; r != RAILTYPE_END; r++) {
@@ -1528,23 +1520,23 @@ static bool DetermineExtraAspectsVariable()
 		}
 		for (uint i = 0; i < _num_new_signal_styles; i++) {
 			if (HasBit(_new_signal_styles[i].style_flags, NSSF_NO_ASPECT_INC)) {
-				SetBit(_non_aspect_inc_style_mask, i + 1);
-				SetBit(_no_tunnel_bridge_style_mask, i + 1);
+				SetBit(_signal_style_masks.non_aspect_inc, i + 1);
+				SetBit(_signal_style_masks.no_tunnel_bridge, i + 1);
 			}
 			if (HasBit(_new_signal_styles[i].style_flags, NSSF_ALWAYS_RESERVE_THROUGH)) {
-				SetBit(_always_reserve_through_style_mask, i + 1);
-				SetBit(_no_tunnel_bridge_style_mask, i + 1);
+				SetBit(_signal_style_masks.always_reserve_through, i + 1);
+				SetBit(_signal_style_masks.no_tunnel_bridge, i + 1);
 			}
 			if (HasBit(_new_signal_styles[i].style_flags, NSSF_LOOKAHEAD_SINGLE_SIGNAL)) {
 				_new_signal_styles[i].lookahead_extra_aspects = 0;
-				SetBit(_next_only_style_mask, i + 1);
+				SetBit(_signal_style_masks.next_only, i + 1);
 			} else if (HasBit(_new_signal_styles[i].style_flags, NSSF_LOOKAHEAD_ASPECTS_SET)) {
 				_new_signal_styles[i].lookahead_extra_aspects = std::min<uint8>(_new_signal_styles[i].lookahead_extra_aspects, _new_signal_styles[i].grffile->new_signal_extra_aspects);
 			} else {
 				_new_signal_styles[i].lookahead_extra_aspects = _new_signal_styles[i].grffile->new_signal_extra_aspects;
 			}
 			if (HasBit(_new_signal_styles[i].style_flags, NSSF_OPPOSITE_SIDE)) {
-				SetBit(_signal_opposite_side_style_mask, i + 1);
+				SetBit(_signal_style_masks.signal_opposite_side, i + 1);
 			}
 		}
 		for (uint i = _num_new_signal_styles; i < MAX_NEW_SIGNAL_STYLES; i++) {
@@ -1556,8 +1548,8 @@ static bool DetermineExtraAspectsVariable()
 
 	SimpleChecksum64 checksum;
 	checksum.Update(SimpleHash32(_extra_aspects));
-	checksum.Update(SimpleHash32(_non_aspect_inc_style_mask));
-	checksum.Update(SimpleHash32(_always_reserve_through_style_mask));
+	checksum.Update(SimpleHash32(_signal_style_masks.non_aspect_inc));
+	checksum.Update(SimpleHash32(_signal_style_masks.always_reserve_through));
 
 	if (checksum.state != _aspect_cfg_hash) {
 		_aspect_cfg_hash = checksum.state;
@@ -1587,8 +1579,8 @@ void InitialiseExtraAspectsVariable()
 void UpdateSignalReserveThroughBit(TileIndex tile, Track track, bool update_signal)
 {
 	bool reserve_through = false;
-	if (NonZeroSignalStylePossiblyOnTile(tile) && _always_reserve_through_style_mask != 0 &&
-			HasBit(_always_reserve_through_style_mask, GetSignalStyle(tile, track))) {
+	if (NonZeroSignalStylePossiblyOnTile(tile) && _signal_style_masks.always_reserve_through != 0 &&
+			HasBit(_signal_style_masks.always_reserve_through, GetSignalStyle(tile, track))) {
 		reserve_through = true;
 	} else {
 		if (IsRestrictedSignal(tile)) {

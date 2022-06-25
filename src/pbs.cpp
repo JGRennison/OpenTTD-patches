@@ -661,10 +661,10 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 					if (signal_speed == 0 || (speed_restriction != 0 && speed_restriction < signal_speed)) signal_speed = speed_restriction;
 					uint8 signal_style = GetSignalStyle(tile, TrackdirToTrack(trackdir));
 					uint16 signal_flags = signal_style << 8;
-					if (HasBit(_non_aspect_inc_style_mask, signal_style)) {
+					if (HasBit(_signal_style_masks.non_aspect_inc, signal_style)) {
 						SetBit(signal_flags, TRSLAI_NO_ASPECT_INC);
 					}
-					if (HasBit(_next_only_style_mask, signal_style)) {
+					if (HasBit(_signal_style_masks.next_only, signal_style)) {
 						SetBit(signal_flags, TRSLAI_NEXT_ONLY);
 					}
 					lookahead->AddSignal(signal_speed, 0, z, signal_flags);

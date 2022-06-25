@@ -1733,7 +1733,7 @@ static void DrawTunnelBridgeRampSingleSignal(const TileInfo *ti, bool is_green, 
 	DiagDirection dir = GetTunnelBridgeDirection(ti->tile);
 
 	uint8 style = GetTunnelBridgeSignalStyle(ti->tile);
-	side ^= HasBit(_signal_opposite_side_style_mask, style);
+	side ^= HasBit(_signal_style_masks.signal_opposite_side, style);
 
 	static const Point SignalPositions[2][4] = {
 		{   /*  X         X         Y         Y     Signals on the left side */
@@ -1870,7 +1870,7 @@ static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_st
 			uint8 style = GetBridgeSignalStyle(bridge_start_tile);
 
 			uint position, x, y;
-			GetBridgeSignalXY(ti->tile, GetTunnelBridgeDirection(bridge_start_tile), HasBit(_signal_opposite_side_style_mask, style), position, x, y);
+			GetBridgeSignalXY(ti->tile, GetTunnelBridgeDirection(bridge_start_tile), HasBit(_signal_style_masks.signal_opposite_side, style), position, x, y);
 
 			SignalVariant variant = IsTunnelBridgeSemaphore(bridge_start_tile) ? SIG_SEMAPHORE : SIG_ELECTRIC;
 			SignalState state = GetBridgeEntranceSimulatedSignalState(bridge_start_tile, m2_position);
@@ -1926,8 +1926,8 @@ void MarkSingleBridgeSignalDirty(TileIndex tile, TileIndex bridge_start_tile)
 	}
 
 	bool opposite_side = false;
-	if (_signal_opposite_side_style_mask != 0) {
-		opposite_side = HasBit(_signal_opposite_side_style_mask, GetTunnelBridgeSignalStyle(bridge_start_tile));
+	if (_signal_style_masks.signal_opposite_side != 0) {
+		opposite_side = HasBit(_signal_style_masks.signal_opposite_side, GetTunnelBridgeSignalStyle(bridge_start_tile));
 	}
 
 	uint position, x, y;
@@ -1950,8 +1950,8 @@ void MarkTunnelBridgeSignalDirty(TileIndex tile, bool exit)
 	}
 
 	bool opposite_side = false;
-	if (_signal_opposite_side_style_mask != 0) {
-		opposite_side = HasBit(_signal_opposite_side_style_mask, GetTunnelBridgeSignalStyle(tile));
+	if (_signal_style_masks.signal_opposite_side != 0) {
+		opposite_side = HasBit(_signal_style_masks.signal_opposite_side, GetTunnelBridgeSignalStyle(tile));
 	}
 
 	if (IsRailCustomBridgeHeadTile(tile)) {

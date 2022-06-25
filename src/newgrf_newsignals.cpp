@@ -89,7 +89,7 @@ NewSignalsResolverObject::NewSignalsResolverObject(const GRFFile *grffile, TileI
 uint GetNewSignalsRestrictedSignalsInfo(const TraceRestrictProgram *prog, TileIndex tile, uint8 signal_style)
 {
 	uint result = 0;
-	if (signal_style != 0 && HasBit(_always_reserve_through_style_mask, signal_style)) result |= 2;
+	if (signal_style != 0 && HasBit(_signal_style_masks.always_reserve_through, signal_style)) result |= 2;
 	if (prog != nullptr) {
 		result |= 1;
 		if ((prog->actions_used_flags & TRPAUF_RESERVE_THROUGH_ALWAYS) && !IsTileType(tile, MP_TUNNELBRIDGE)) result |= 2;
