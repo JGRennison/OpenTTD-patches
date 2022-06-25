@@ -158,6 +158,10 @@ macro(compile_flags)
                 endif()
             endif()
         endif()
+
+        if (OPTION_NO_WARN_UNINIT)
+            add_compile_options(-Wno-maybe-uninitialized -Wno-uninitialized)
+        endif (OPTION_NO_WARN_UNINIT)
     elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
         add_compile_options(
             -Wall

@@ -377,7 +377,7 @@ jobs:
         cd build
 
         echo "::group::CMake"
-        cmake .. -G"MSYS Makefiles"
+        cmake .. -DOPTION_NO_WARN_UNINIT=1 -G"MSYS Makefiles"
         echo "::endgroup::"
 
         echo "::group::Build"
