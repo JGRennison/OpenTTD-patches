@@ -7311,7 +7311,7 @@ static bool OptimiseVarAction2DeterministicSpriteGroupExpensiveVarsInner(Determi
 				condition_depth--;
 				insert_pos = j;
 			}
-			if (seen_first && adjust.adjust_flags & DSGAF_END_BLOCK) condition_depth++;
+			if (seen_first && adjust.adjust_flags & DSGAF_END_BLOCK) condition_depth += adjust.jump;
 			if (adjust.variable == target_var && adjust.parameter == target_param) {
 				and_mask |= adjust.and_mask << adjust.shift_num;
 				adjust.variable = 0x7D;
@@ -7634,14 +7634,25 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 				j--;
 			}
 			if (j < i - 1) {
+				auto mark_end_block = [](DeterministicSpriteGroupAdjust &adj, uint inc) {
+					if (adj.adjust_flags & DSGAF_END_BLOCK) {
+						adj.jump += inc;
+					} else {
+						adj.adjust_flags |= DSGAF_END_BLOCK;
+						adj.jump = inc;
+					}
+				};
+
 				DeterministicSpriteGroupAdjust current = adjust;
 				if (current.adjust_flags & DSGAF_END_BLOCK) {
-					/* Don't move the end block marker for another jump */
-					break;
+					/* Move the existing end block 1 place back, to avoid it being moved with the jump adjust */
+					mark_end_block(group->adjusts[i - 1], current.jump);
+					current.adjust_flags &= ~DSGAF_END_BLOCK;
+					current.jump = 0;
 				}
 				current.operation = DSGA_OP_JZ;
 				current.adjust_flags &= ~(DSGAF_JUMP_INS_HINT | DSGAF_SKIP_ON_ZERO);
-				group->adjusts[i - 1].adjust_flags |= DSGAF_END_BLOCK;
+				mark_end_block(group->adjusts[i - 1], 1);
 				group->adjusts.erase(group->adjusts.begin() + i);
 				if (j >= 0 && current.variable == 0x7D && (current.adjust_flags & DSGAF_LAST_VAR_READ)) {
 					DeterministicSpriteGroupAdjust &prev = group->adjusts[j];
@@ -7661,14 +7672,24 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 	}
 }
 
-static uint OptimiseVarAction2DeterministicSpriteResolveJumpsInner(DeterministicSpriteGroup *group, const uint start)
+struct ResolveJumpInnerResult {
+	uint end_index;
+	uint end_block_remaining;
+};
+
+static ResolveJumpInnerResult OptimiseVarAction2DeterministicSpriteResolveJumpsInner(DeterministicSpriteGroup *group, const uint start)
 {
 	for (uint i = start + 1; i < (uint)group->adjusts.size(); i++) {
 		if (group->adjusts[i].operation == DSGA_OP_JZ) {
-			i = OptimiseVarAction2DeterministicSpriteResolveJumpsInner(group, i);
+			ResolveJumpInnerResult result = OptimiseVarAction2DeterministicSpriteResolveJumpsInner(group, i);
+			i = result.end_index;
+			if (result.end_block_remaining > 0) {
+				group->adjusts[start].jump = i - start;
+				return { i, result.end_block_remaining - 1 };
+			}
 		} else if (group->adjusts[i].adjust_flags & DSGAF_END_BLOCK) {
 			group->adjusts[start].jump = i - start;
-			return i;
+			return { i, group->adjusts[i].jump - 1 };
 		}
 	}
 
@@ -7681,7 +7702,9 @@ static void OptimiseVarAction2DeterministicSpriteResolveJumps(DeterministicSprit
 
 	for (uint i = 0; i < (uint)group->adjusts.size(); i++) {
 		if (group->adjusts[i].operation == DSGA_OP_JZ) {
-			i = OptimiseVarAction2DeterministicSpriteResolveJumpsInner(group, i);
+			ResolveJumpInnerResult result = OptimiseVarAction2DeterministicSpriteResolveJumpsInner(group, i);
+			i = result.end_index;
+			assert(result.end_block_remaining == 0);
 		}
 	}
 }

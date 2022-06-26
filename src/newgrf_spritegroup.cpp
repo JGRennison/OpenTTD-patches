@@ -749,7 +749,7 @@ static char *DumpSpriteGroupAdjust(char *p, const char *last, const Deterministi
 			p += seprintf(p, last, ", jump ins hint");
 		}
 		if (adjust.adjust_flags & DSGAF_END_BLOCK) {
-			p += seprintf(p, last, ", end block");
+			p += seprintf(p, last, ", end block (%u)", adjust.jump);
 		}
 	};
 
@@ -757,7 +757,7 @@ static char *DumpSpriteGroupAdjust(char *p, const char *last, const Deterministi
 		conditional_indent++;
 	}
 	if (adjust.adjust_flags & DSGAF_END_BLOCK) {
-		conditional_indent--;
+		conditional_indent -= adjust.jump;
 	}
 
 	if (adjust.operation == DSGA_OP_TERNARY) {
