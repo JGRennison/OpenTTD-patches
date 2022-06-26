@@ -7635,6 +7635,10 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 			}
 			if (j < i - 1) {
 				DeterministicSpriteGroupAdjust current = adjust;
+				if (current.adjust_flags & DSGAF_END_BLOCK) {
+					/* Don't move the end block marker for another jump */
+					break;
+				}
 				current.operation = DSGA_OP_JZ;
 				current.adjust_flags &= ~(DSGAF_JUMP_INS_HINT | DSGAF_SKIP_ON_ZERO);
 				group->adjusts[i - 1].adjust_flags |= DSGAF_END_BLOCK;
