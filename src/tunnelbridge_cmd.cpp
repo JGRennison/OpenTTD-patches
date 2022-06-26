@@ -50,6 +50,7 @@
 #include "station_func.h"
 #include "tracerestrict.h"
 #include "newgrf_roadstop.h"
+#include "newgrf_newsignals.h"
 
 #include "table/strings.h"
 #include "table/bridge_land.h"
@@ -133,24 +134,19 @@ void MarkBridgeOrTunnelDirtyOnReservationChange(TileIndex tile, ViewportMarkDirt
 	}
 }
 
-uint GetTunnelBridgeSignalSimulationSpacingTarget(Owner owner)
+uint GetBestTunnelBridgeSignalSimulationSpacing(TileIndex begin, TileIndex end, int target)
 {
-	if (Company::IsValidID(owner)) {
-		return Company::Get(owner)->settings.simulated_wormhole_signals;
-	} else {
-		return 4;
-	}
-}
-
-uint GetBestTunnelBridgeSignalSimulationSpacing(Owner owner, TileIndex begin, TileIndex end)
-{
-	int target = GetTunnelBridgeSignalSimulationSpacingTarget(owner);
 	if (target <= 2) return target;
 	int length = GetTunnelBridgeLength(begin, end);
 	if (target > length || ((length + 1) % target) == 0) return target;
 
 	int lower = target - (target / 4);
 	int upper = std::min<int>(16, target + (target / 3));
+
+	if ((target * 2) >= length) {
+		/* See whether signal would be better in the middle */
+		lower = (length + 1) / 2;
+	}
 
 	int best_gap = -1;
 	int best_spacing = 0;
@@ -1438,8 +1434,14 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 		}
 		DirtyAllCompanyInfrastructureWindows();
 
-		if (IsTunnelBridgeSignalSimulationEntrance(tile)) ClearBridgeEntranceSimulatedSignals(tile);
-		if (IsTunnelBridgeSignalSimulationEntrance(endtile)) ClearBridgeEntranceSimulatedSignals(endtile);
+		if (IsTunnelBridgeSignalSimulationEntrance(tile)) {
+			ClearBridgeEntranceSimulatedSignals(tile);
+			SetBridgeSignalStyle(tile, 0);
+		}
+		if (IsTunnelBridgeSignalSimulationEntrance(endtile)) {
+			ClearBridgeEntranceSimulatedSignals(endtile);
+			SetBridgeSignalStyle(endtile, 0);
+		}
 
 		DoClearSquare(tile);
 		DoClearSquare(endtile);
@@ -1727,8 +1729,11 @@ static void DrawBridgeRoadBits(TileIndex head_tile, int x, int y, int z, int off
 
 static void DrawTunnelBridgeRampSingleSignal(const TileInfo *ti, bool is_green, uint position, SignalType type, bool show_exit)
 {
-	bool side = (_settings_game.vehicle.road_side != 0) &&_settings_game.construction.train_signal_side;
+	bool side = (_settings_game.vehicle.road_side != 0) && _settings_game.construction.train_signal_side;
 	DiagDirection dir = GetTunnelBridgeDirection(ti->tile);
+
+	uint8 style = GetTunnelBridgeSignalStyle(ti->tile);
+	side ^= HasBit(_signal_style_masks.signal_opposite_side, style);
 
 	static const Point SignalPositions[2][4] = {
 		{   /*  X         X         Y         Y     Signals on the left side */
@@ -1758,7 +1763,8 @@ static void DrawTunnelBridgeRampSingleSignal(const TileInfo *ti, bool is_green, 
 		}
 	}
 	bool show_restricted = IsTunnelBridgeRestrictedSignal(ti->tile);
-	const CustomSignalSpriteResult result = GetCustomSignalSprite(rti, ti->tile, type, variant, aspect, false, show_restricted);
+	const TraceRestrictProgram *prog = show_restricted ? GetExistingTraceRestrictProgram(ti->tile, FindFirstTrack(GetAcrossTunnelBridgeTrackBits(ti->tile))) : nullptr;
+	const CustomSignalSpriteResult result = GetCustomSignalSprite(rti, ti->tile, type, variant, aspect, show_exit ? CSSC_TUNNEL_BRIDGE_EXIT : CSSC_TUNNEL_BRIDGE_ENTRANCE, style, prog);
 	PalSpriteID sprite = result.sprite;
 	bool is_custom_sprite = (sprite.sprite != 0);
 
@@ -1824,9 +1830,10 @@ static void DrawTunnelBridgeRampSignal(const TileInfo *ti)
 	}
 }
 
-static void GetBridgeSignalXY(TileIndex tile, DiagDirection bridge_direction, uint &position, uint &x, uint &y)
+static void GetBridgeSignalXY(TileIndex tile, DiagDirection bridge_direction, bool opposite_side, uint &position, uint &x, uint &y)
 {
 	bool side = (_settings_game.vehicle.road_side != 0) && _settings_game.construction.train_signal_side;
+	side ^= opposite_side;
 
 	static const Point SignalPositions[2][4] = {
 		{   /*  X         X         Y         Y     Signals on the left side */
@@ -1860,9 +1867,10 @@ static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_st
 	while (bridge_signal_position <= bridge_section) {
 		bridge_signal_position += simulated_wormhole_signals;
 		if (bridge_signal_position == bridge_section) {
+			uint8 style = GetBridgeSignalStyle(bridge_start_tile);
 
 			uint position, x, y;
-			GetBridgeSignalXY(ti->tile, GetTunnelBridgeDirection(bridge_start_tile), position, x, y);
+			GetBridgeSignalXY(ti->tile, GetTunnelBridgeDirection(bridge_start_tile), HasBit(_signal_style_masks.signal_opposite_side, style), position, x, y);
 
 			SignalVariant variant = IsTunnelBridgeSemaphore(bridge_start_tile) ? SIG_SEMAPHORE : SIG_ELECTRIC;
 			SignalState state = GetBridgeEntranceSimulatedSignalState(bridge_start_tile, m2_position);
@@ -1886,7 +1894,7 @@ static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_st
 			}
 
 			const RailtypeInfo *rti = GetRailTypeInfo(GetRailType(bridge_start_tile));
-			PalSpriteID sprite = GetCustomSignalSprite(rti, bridge_start_tile, SIGTYPE_NORMAL, variant, aspect).sprite;
+			PalSpriteID sprite = GetCustomSignalSprite(rti, bridge_start_tile, SIGTYPE_NORMAL, variant, aspect, CSSC_BRIDGE_MIDDLE, style).sprite;
 
 			if (sprite.sprite != 0) {
 				sprite.sprite += position;
@@ -1917,8 +1925,13 @@ void MarkSingleBridgeSignalDirty(TileIndex tile, TileIndex bridge_start_tile)
 		return;
 	}
 
+	bool opposite_side = false;
+	if (_signal_style_masks.signal_opposite_side != 0) {
+		opposite_side = HasBit(_signal_style_masks.signal_opposite_side, GetTunnelBridgeSignalStyle(bridge_start_tile));
+	}
+
 	uint position, x, y;
-	GetBridgeSignalXY(tile, GetTunnelBridgeDirection(bridge_start_tile), position, x, y);
+	GetBridgeSignalXY(tile, GetTunnelBridgeDirection(bridge_start_tile), opposite_side, position, x, y);
 	Point pt = RemapCoords(x, y, GetBridgePixelHeight(bridge_start_tile) + 5 - BRIDGE_Z_START);
 	MarkAllViewportsDirty(
 			pt.x - SIGNAL_DIRTY_LEFT,
@@ -1936,14 +1949,21 @@ void MarkTunnelBridgeSignalDirty(TileIndex tile, bool exit)
 		return;
 	}
 
+	bool opposite_side = false;
+	if (_signal_style_masks.signal_opposite_side != 0) {
+		opposite_side = HasBit(_signal_style_masks.signal_opposite_side, GetTunnelBridgeSignalStyle(tile));
+	}
+
 	if (IsRailCustomBridgeHeadTile(tile)) {
 		Trackdir td = exit ? GetTunnelBridgeExitTrackdir(tile) : GetTunnelBridgeEntranceTrackdir(tile);
-		MarkSingleSignalDirtyAtZ(tile, td, GetTileMaxPixelZ(tile));
+		MarkSingleSignalDirtyAtZ(tile, td, opposite_side, GetTileMaxPixelZ(tile));
 		return;
 	}
 
 	bool side = (_settings_game.vehicle.road_side != 0) && _settings_game.construction.train_signal_side;
 	DiagDirection dir = GetTunnelBridgeDirection(tile);
+
+	side ^= opposite_side;
 
 	uint position;
 	switch (dir) {
@@ -2142,7 +2162,7 @@ static void DrawTile_TunnelBridge(TileInfo *ti, DrawTileProcParams params)
 
 			if (IsTunnelBridgeWithSignalSimulation(ti->tile)) {
 				extern void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, SignalState condition,
-						SignalOffsets image, uint pos, SignalType type, SignalVariant variant, bool show_restricted, bool exit_signal = false);
+						SignalOffsets image, uint pos, SignalType type, SignalVariant variant, const TraceRestrictProgram *prog, CustomSignalSpriteContext context);
 
 				DiagDirection dir = GetTunnelBridgeDirection(ti->tile);
 				SignalVariant variant = IsTunnelBridgeSemaphore(ti->tile) ? SIG_SEMAPHORE : SIG_ELECTRIC;
@@ -2154,15 +2174,16 @@ static void DrawTile_TunnelBridge(TileInfo *ti, DrawTileProcParams params)
 						position ^= 1;
 						image = (SignalOffsets)(image ^ 1);
 					}
+					const TraceRestrictProgram *prog = IsTunnelBridgeRestrictedSignal(ti->tile) ? GetExistingTraceRestrictProgram(ti->tile, t) : nullptr;
 					if (IsTunnelBridgeSignalSimulationEntrance(ti->tile)) {
-						DrawSingleSignal(ti->tile, rti, t, GetTunnelBridgeEntranceSignalState(ti->tile), image, position, SIGTYPE_NORMAL, variant, IsTunnelBridgeRestrictedSignal(ti->tile), false);
+						DrawSingleSignal(ti->tile, rti, t, GetTunnelBridgeEntranceSignalState(ti->tile), image, position, SIGTYPE_NORMAL, variant, prog, CSSC_TUNNEL_BRIDGE_ENTRANCE);
 					}
 					if (IsTunnelBridgeSignalSimulationExit(ti->tile)) {
 						SignalType type = SIGTYPE_NORMAL;
 						if (IsTunnelBridgePBS(ti->tile)) {
 							type = IsTunnelBridgeSignalSimulationEntrance(ti->tile) ? SIGTYPE_PBS : SIGTYPE_PBS_ONEWAY;
 						}
-						DrawSingleSignal(ti->tile, rti, t, GetTunnelBridgeExitSignalState(ti->tile), (SignalOffsets)(image ^ 1), position ^ 1, type, variant, IsTunnelBridgeRestrictedSignal(ti->tile), true);
+						DrawSingleSignal(ti->tile, rti, t, GetTunnelBridgeExitSignalState(ti->tile), (SignalOffsets)(image ^ 1), position ^ 1, type, variant, prog, CSSC_TUNNEL_BRIDGE_EXIT);
 					}
 				};
 				switch (t) {
@@ -2559,9 +2580,23 @@ static void GetTileDesc_TunnelBridge(TileIndex tile, TileDesc *td)
 	} else { // IsBridge(tile)
 		td->str = (tt == TRANSPORT_WATER) ? STR_LAI_BRIDGE_DESCRIPTION_AQUEDUCT : IsTunnelBridgeWithSignalSimulation(tile) ? STR_LAI_BRIDGE_DESCRIPTION_RAILROAD_SIGNAL : GetBridgeSpec(GetBridgeType(tile))->transport_name[tt];
 	}
-	if (IsTunnelBridgeWithSignalSimulation(tile) && IsTunnelBridgeRestrictedSignal(tile)) {
-		SetDParamX(td->dparam, 0, td->str);
-		td->str = STR_LAI_RAIL_DESCRIPTION_RESTRICTED_SIGNAL;
+
+	if (tt == TRANSPORT_RAIL) {
+		uint8 style = GetTunnelBridgeSignalStyle(tile);
+		if (style > 0) {
+			/* Add suffix about signal style */
+			SetDParamX(td->dparam, 0, td->str);
+			td->dparam[1] = style == 0 ? STR_BUILD_SIGNAL_DEFAULT_STYLE : _new_signal_styles[style - 1].name;
+			td->str = STR_LAI_RAIL_DESCRIPTION_TRACK_SIGNAL_STYLE;
+		}
+		if (IsTunnelBridgeWithSignalSimulation(tile) && IsTunnelBridgeRestrictedSignal(tile)) {
+			td->dparam[3] = td->dparam[2];
+			td->dparam[2] = td->dparam[1];
+			td->dparam[1] = td->dparam[0];
+			SetDParamX(td->dparam, 0, td->str);
+			SetDParamX(td->dparam, 0, td->str);
+			td->str = STR_LAI_RAIL_DESCRIPTION_RESTRICTED_SIGNAL;
+		}
 	}
 	td->owner[0] = GetTileOwner(tile);
 
@@ -2911,6 +2946,16 @@ void AddRailTunnelBridgeInfrastructure(TileIndex begin, TileIndex end) {
 
 void SubtractRailTunnelBridgeInfrastructure(TileIndex begin, TileIndex end) {
 	UpdateRailTunnelBridgeInfrastructure(Company::GetIfValid(GetTileOwner(begin)), begin, end, false);
+}
+
+void SetTunnelBridgeSignalStyleExtended(TileIndex t, TileIndex end, uint8 style)
+{
+	if (IsTunnel(t)) {
+		SetTunnelSignalStyle(t, end, style);
+	} else {
+		SetBridgeSignalStyle(t, style);
+		SetBridgeSignalStyle(end, style);
+	}
 }
 
 static void ChangeTileOwner_TunnelBridge(TileIndex tile, Owner old_owner, Owner new_owner)

@@ -206,9 +206,10 @@ void AfterLoadCompanyStats()
 				break;
 
 			case MP_TUNNELBRIDGE: {
-				/* Only count the tunnel/bridge if we're on the northern end tile. */
-				TileIndex other_end = GetOtherTunnelBridgeEnd(tile);
-				if (tile < other_end) {
+				/* Only count the tunnel/bridge if we're on the western end tile. */
+				if (GetTunnelBridgeDirection(tile) < DIAGDIR_SW) {
+					TileIndex other_end = GetOtherTunnelBridgeEnd(tile);
+
 					/* Count each tunnel/bridge TUNNELBRIDGE_TRACKBIT_FACTOR times to simulate
 					 * the higher structural maintenance needs, and don't forget the end tiles. */
 					const uint middle_len = GetTunnelBridgeLength(tile, other_end) * TUNNELBRIDGE_TRACKBIT_FACTOR;

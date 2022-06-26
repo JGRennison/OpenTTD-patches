@@ -24,10 +24,37 @@
 	<p>A subset of the features listed below are also supported in a fork of NML, see the associated <a href="newgrf-additions-nml.html">NML document</a> for more details.</p>
 	<p>NewGRFs which use any of these features SHOULD use the <a href="#feature-test">feature testing</a> mechanism described below to check whether individual added features are supported.</p>
 
+	<br />
+
 	<h3 id="separate_features">Features with separate pages</h3>
 	<ul>
 	<li><a href="newgrf-roadstops.html">Road stops</a></li>
+	<li><a href="newgrf-newlandscape.html">New landscape (custom graphics)</a></li>
 	</ul>
+
+	<br />
+
+	<h3 id="sections">Sections</h3>
+	<ul>
+	<li><a href="#feature-test">Action 14 - Feature Tests</a></li>
+	<li><a href="#property-mapping">Action 14 - Property Mapping for Action 0</a></li>
+	<li><a href="#a0stations">Action 0 - Stations</a></li>
+	<li><a href="#a0bridges">Action 0 - Bridges</a></li>
+	<li><a href="#a0railtypes">Action 0 - Railtypes</a></li>
+	<li><a href="#a0roadtypes">Action 0 - Roadtypes</a></li>
+	<li><a href="#a0globalsettings">Action 0 - Global Settings</a></li>
+	<li><a href="#a0signals">Action 0 - Signals (Feature 0E)</a></li>
+	<li><a href="#a0objects">Action 0 - Objects</a></li>
+	<li><a href="#variable-mapping">Action 14 - Variable Mapping for Variational Action 2</a></li>
+	<li><a href="#varaction2_station">Variational Action 2 - Stations</a></li>
+	<li><a href="#varaction2_railtypes">Variational Action 2 - Railtypes</a></li>
+	<li><a href="#varaction2_object">Variational Action 2 - Objects</a></li>
+	<li><a href="#varaction2_signals">Variational Action 2 - Signals (Feature 0E)</a></li>
+	<li><a href="#a3signals">Action 3 - Signals (Feature 0E)</a></li>
+	<li><a href="#action5">Action 14 - Type ID Mapping for Action 5</a></li>
+	<li><a href="#feature-id-mapping">Action 14 - Feature ID Mapping</a></li>
+	</ul>
+	<br />
 
 	<h3 id="feature-test">Action 14 - Feature Tests</h3>
 	<p>See <a href="https://newgrf-specs.tt-wiki.net/wiki/Action14">Action 14 Specification</a> for background information.</p>
@@ -241,6 +268,7 @@
 	This flag should only be set if the Action 2/3 actually returns a different sprite when bit 24 of variable 18 is set.<br />
 	The property length is 1 byte. 0 is disabled (default). 1 is enabled.
 	</p>
+	<p>See also: <a href="#railtype_signal_restriction_info">railtype_signal_restriction_info variable</a></p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_railtype_restricted_signals</font>, version 1</p>
 	<h4 id="railtype_enable_signal_recolour">Enable recolouring for custom signal sprites (mappable property: railtype_enable_signal_recolour)</h4>
 	<p>This applies to <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3/Railtypes#Signal_sprites_.280B.29">Action 2/3 - Railtype custom signal sprites</a>.<br />
@@ -315,6 +343,14 @@
 	</table>
 	</p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_global_extra_station_names</font>, version 1</p>
+	<h4 id="global_extra_station_names_probability">Extra station names probability (mappable property: global_extra_station_names_probability)</h4>
+	<p>This sets the probability of using an extra station name even when the available default names have not been exhausted.<br />
+	The range is 0 - 255, where 0 is never (the default) and 255 is always.<br />
+	Some station names are always used first even when this is non-zero.<br />
+	The Action 0 ID field is ignored.<br />
+	The property length is 1 bytes.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_global_extra_station_names</font>, version 2</p>
 	<h4 id="global_lighthouse_generate_amount">Lighthouse object map generation amount (mappable property: global_lighthouse_generate_amount)</h4>
 	<p>This sets the map generation amount value for the lighthouse default object (0 is no generation, 255 is maximum).<br />
 	The Action 0 ID field is ignored. The property length is 1 byte.
@@ -350,6 +386,7 @@
 	The property length is 1 byte. 0 is disabled (default). 1 is enabled.<br />
 	The Action 0 Id field is not used, the value is ignored.
 	</p>
+	<p>See also: <a href="#signals_signal_restriction_info">signals_signal_restriction_info variable</a></p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_signals_restricted_signals</font>, version 1</p>
 	<h4 id="signals_enable_signal_recolour">Enable recolouring for custom signal sprites (mappable property: signals_enable_signal_recolour)</h4>
 	<p>This applies to <a href="#a3signals_custom_signal_sprites">Action 2/3 Signals (Feature 0E) custom signal sprites</a> for this GRF.<br />
@@ -379,6 +416,96 @@
 	The provided value is currently clamped to be within the range 0 - 6 (inclusive).</p>
 	<p>N.B. Realistic braking must be enabled for additional signal aspects to be used.</p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_signals_extra_aspects</font>, version 1</p>
+	<h4 id="signals_define_style">Define a custom signal style (mappable property: signals_define_style)</h4>
+	<p>This applies to <a href="#a3signals_custom_signal_sprites">Action 2/3 Signals (Feature 0E) custom signal sprites</a> for this GRF.<br />
+	This defines a new signal style. Signals using this style will only use this GRF, or the default graphics if no graphics are returned.</p>
+	<p>The total number of custom signal styles in a game is currently limited to 15.</p>
+	<p>The property length is 1 byte. This is the local ID of the style which is returned in the <a href="#signals_signal_style">signals_signal_style</a> variable.<br />
+	The Action 0 Id field is not used, the value is ignored.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
+	<h4 id="signals_style_name">Set custom signal style name (mappable property: signals_style_name)</h4>
+	<p>This applies to the most recent custom signal style defined using the <a href="#signals_define_style">signals_define_style</a> property.<br />
+	This property should be set, as otherwise the style will not have a name.</p>
+	<p>The property length is 2 byte. This is a string ID.<br />
+	The Action 0 Id field is not used, the value is ignored.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
+	<h4 id="signals_style_electric_enabled">Set custom signal style train electric signal types enabled (mappable property: signals_style_electric_enabled)</h4>
+	<p>This applies to the most recent custom signal style defined using the <a href="#signals_define_style">signals_define_style</a> property.<br />
+	This sets which electric signal types may be built using this signal style.</p>
+	<p>At least one of this property and <a href="#signals_style_semaphore_enabled">signals_style_semaphore_enabled</a> should be set to a non-zero value, as otherwise
+	no signal types will be enabled for this custom signal style.</p>
+	<p>The property length is 4 bytes:
+	<table>
+	<tr><th>Bit</th><th>Value</th><th>Meaning</th></tr>
+	<tr><td>0</td><td>1</td><td>Normal/block</td></tr>
+	<tr><td>1</td><td>2</td><td>Pre-signal entry</td></tr>
+	<tr><td>2</td><td>4</td><td>Pre-signal exit</td></tr>
+	<tr><td>3</td><td>8</td><td>Pre-signal combo</td></tr>
+	<tr><td>4</td><td>10</td><td>Two-way PBS</td></tr>
+	<tr><td>5</td><td>20</td><td>One-way PBS</td></tr>
+	<tr><td>6</td><td>40</td><td>Programmable pre-signal</td></tr>
+	<tr><td>7</td><td>80</td><td>No-entry</td></tr>
+	</table>
+	If the programmable pre-signal and/or no-entry bits are set, it is not necessary to also set <a href="#signals_enable_programmable_signals">signals_enable_programmable_signals</a>
+	or <a href="#signals_enable_no_entry_signals">signals_enable_no_entry_signals</a>.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
+	<h4 id="signals_style_semaphore_enabled">Set custom signal style train semaphore signal types enabled (mappable property: signals_style_semaphore_enabled)</h4>
+	<p>This applies to the most recent custom signal style defined using the <a href="#signals_define_style">signals_define_style</a> property.<br />
+	This sets which semaphore signal types may be built using this signal style.</p>
+	<p>The property length is 4 bytes and has an identical format to <a href="#signals_style_electric_enabled">signals_style_electric_enabled</a>, above.</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
+	<h4 id="signals_style_no_aspect_increase">Set custom signal style no aspect increase mode (mappable property: signals_style_no_aspect_increase)</h4>
+	<p>This applies to the most recent custom signal style defined using the <a href="#signals_define_style">signals_define_style</a> property.<br />
+	When enabled, signals using this style do not increase the signal aspect with respect to the signals either side (i.e. the behaviour is like a banner repeater).</p>
+	<p>The property length is 1 byte. 0 is disabled (default). 1 is enabled.<br />
+	The Action 0 Id field is not used, the value is ignored.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
+	<h4 id="signals_style_always_reserve_through">Set custom signal style always reserve through mode (mappable property: signals_style_always_reserve_through)</h4>
+	<p>This applies to the most recent custom signal style defined using the <a href="#signals_define_style">signals_define_style</a> property.<br />
+	When enabled, signals using this style have reserve through unconditionally enabled.</p>
+	<p>The property length is 1 byte. 0 is disabled (default). 1 is enabled.<br />
+	The Action 0 Id field is not used, the value is ignored.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
+	<h4 id="signals_style_lookahead_extra_aspects">Set custom signal style train look-ahead extra aspects (mappable property: signals_style_lookahead_extra_aspects)</h4>
+	<p>This applies to the most recent custom signal style defined using the <a href="#signals_define_style">signals_define_style</a> property.<br />
+	This property only makes a difference when the "limit train lookahead to signal aspect" game setting is enabled.<br />
+	This limits the signal aspect which the hypothetical train driver can "read" from the signal without affecting signal aspect propagation to other signals, or variable 0x18.<br />
+	Example values could include: 1 for traditional banner repeater signals.<br />
+	Shunt signals should use <a href="#signals_style_lookahead_single_signal_only#">signals_style_lookahead_single_signal_only</a> instead.</p>
+	<p>The property length is 1 byte. The value is clamped to be less than or equal to the value set in the <a href="#signals_extra_aspects">signals_extra_aspects</a> property.<br />
+	The Action 0 Id field is not used, the value is ignored.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
+	<h4 id="signals_style_lookahead_single_signal_only">Set custom signal style train look-ahead to single signal only mode (mappable property: signals_style_lookahead_single_signal_only)</h4>
+	<p>This applies to the most recent custom signal style defined using the <a href="#signals_define_style">signals_define_style</a> property.<br />
+	This property only makes a difference when the "limit train lookahead to signal aspect" game setting is enabled.<br />
+	This is similar to <a href="#signals_style_lookahead_extra_aspects">signals_style_lookahead_extra_aspects</a> with a value of 0, except the lookahead always ends at the
+	next signal, even if that signal type sets <a href="#signals_style_no_aspect_increase">signals_style_no_aspect_increase</a>.<br />
+	If enabled, this property overrides <a href="#signals_style_lookahead_extra_aspects">signals_style_lookahead_extra_aspects</a>.<br />
+	This can be used for shunt signals.</p>
+	<p>The property length is 1 byte. 0 is disabled (default). 1 is enabled.<br />
+	The Action 0 Id field is not used, the value is ignored.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
+	<h4 id="signals_style_opposite_side">Set custom signal style signal drawn on opposite side (mappable property: signals_style_opposite_side)</h4>
+	<p>This applies to the most recent custom signal style defined using the <a href="#signals_define_style">signals_define_style</a> property.<br />
+	When enabled, signals using this style are drawn on the opposite side of the track.</p>
+	<p>The property length is 1 byte. 0 is disabled (default). 1 is enabled.<br />
+	The Action 0 Id field is not used, the value is ignored.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
+	<h4 id="signals_no_default_style">Set whether custom signal sprites should not be used for the default signal style (mappable property: signals_no_default_style)</h4>
+	<p>This applies to <a href="#a3signals_custom_signal_sprites">Action 2/3 Signals (Feature 0E) custom signal sprites</a> for this GRF.<br />
+	When enabled, this GRF is not used for the default signal style, it is only used for custom signal styles defined with <a href="#signals_define_style">signals_define_style</a>.</p>
+	<p>The property length is 1 byte. 0 is disabled (default). 1 is enabled.<br />
+	The Action 0 Id field is not used, the value is ignored.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
 	<br />
 	<h3 id="a0objects"><a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Objects">Action 0 - Objects</a></h3>
 	<h4 id="object_use_land_ground">Object uses land ground sprite (mappable property: object_use_land_ground)</h4>
@@ -539,6 +666,38 @@
 	<h4 id="varaction2_station_var42">Track type in purchase list (42)</h4>
 	<p>This is indicated by the feature name: <font face="monospace">varaction2_station_var42</font>, version 1</p>
 	<br />
+	<h3 id="varaction2_railtypes"><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Railtypes">Variational Action 2 - Railtypes</a></h3>
+	<h4 id="railtype_signal_restriction_info">Signal routing restriction information (mappable variable: railtype_signal_restriction_info)</h4>
+	<p>This applies to <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3/Railtypes#Signal_sprites_.280B.29">Action 2/3 - Railtype custom signal sprites</a>.<br />
+	<table>
+	<tr><th>Bit</th><th>Value</th><th>Meaning</th></tr>
+	<tr><td>0</td><td>1</td><td>This signal has a routing restriction program attached</td></tr>
+	<tr><td>1</td><td>2</td><td>Reserve through is unconditionally set in the routing restriction program</td></tr>
+	<tr><td>2</td><td>4</td><td>The routing restriction program may allow trains to reverse behind this signal</td></tr>
+	</table>
+	</p>
+	<p>See also: <a href="#railtype_enable_restricted_signals">railtype_enable_restricted_signals property</a></p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_railtype_restricted_signals</font>, version 2</p>
+	<h4 id="railtype_signal_context">Signal context (mappable variable: railtype_signal_context)</h4>
+	<p>This applies to <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3/Railtypes#Signal_sprites_.280B.29">Action 2/3 - Railtype custom signal sprites</a>.<br />
+	<table>
+	<tr><th>Bit</th><th>Meaning</th></tr>
+	<tr><td>0 - 7</td><td>
+		Context:
+		<table>
+		<tr><th>Value</th><th>Meaning</th></tr>
+		<tr><td>0</td><td>GUI</td></tr>
+		<tr><td>1</td><td>Plain rail track</td></tr>
+		<tr><td>2</td><td>Tunnel/bridge entrance</td></tr>
+		<tr><td>3</td><td>Tunnel/bridge exit</td></tr>
+		<tr><td>4</td><td>Bridge middle</td></tr>
+		</table>
+	</td></tr>
+	<tr><td>8</td><td>Tunnel tile</td></tr>
+	</table>
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">varaction2_railtype_signal_context</font>, version 1</p>
+	<br />
 	<h3 id="varaction2_object"><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Objects">Variational Action 2 - Objects</a></h3>
 	<h4 id="object_foundation_tile_slope">Tile slope after foundation applied (mappable variable: object_foundation_tile_slope)</h4>
 	<p>This has the same format as bits 8-12 of object variable 41.</p>
@@ -549,6 +708,44 @@
 	This is useful for xoring with bits 8-12 of variable 41, because if this variable is unavailable then the result is still the underlying tile slope.</p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_object_edge_foundation_mode</font>, version 2</p>
 	<br />
+	<h3 id="varaction2_signals"><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2">Variational Action 2 - Signals (Feature 0E)</a></h3>
+	<h4 id="signals_signal_restriction_info">Signal routing restriction information (mappable variable: signals_signal_restriction_info)</h4>
+	<p>This applies to <a href="#a3signals_custom_signal_sprites">Action 2/3 Signals (Feature 0E) custom signal sprites</a>.<br />
+	<table>
+	<tr><th>Bit</th><th>Value</th><th>Meaning</th></tr>
+	<tr><td>0</td><td>1</td><td>This signal has a routing restriction program attached</td></tr>
+	<tr><td>1</td><td>2</td><td>Reserve through is unconditionally set in the routing restriction program</td></tr>
+	<tr><td>2</td><td>4</td><td>The routing restriction program may allow trains to reverse behind this signal</td></tr>
+	</table>
+	</p>
+	<p>See also: <a href="#signals_enable_restricted_signals">signals_enable_restricted_signals property</a></p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_restricted_signals</font>, version 2</p>
+	<h4 id="signals_signal_context">Signal context (mappable variable: signals_signal_context)</h4>
+	<p>This applies to <a href="#a3signals_custom_signal_sprites">Action 2/3 Signals (Feature 0E) custom signal sprites</a>.<br />
+	<table>
+	<tr><th>Bit</th><th>Meaning</th></tr>
+	<tr><td>0 - 7</td><td>
+		Context:
+		<table>
+		<tr><th>Value</th><th>Meaning</th></tr>
+		<tr><td>0</td><td>GUI</td></tr>
+		<tr><td>1</td><td>Plain rail track</td></tr>
+		<tr><td>2</td><td>Tunnel/bridge entrance</td></tr>
+		<tr><td>3</td><td>Tunnel/bridge exit</td></tr>
+		<tr><td>4</td><td>Bridge middle</td></tr>
+		</table>
+	</td></tr>
+	<tr><td>8</td><td>Tunnel tile</td></tr>
+	</table>
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">varaction2_signals_signal_context</font>, version 1</p>
+	<h4 id="signals_signal_style">Signal style (mappable variable: signals_signal_style)</h4>
+	<p>This applies to <a href="#a3signals_custom_signal_sprites">Action 2/3 Signals (Feature 0E) custom signal sprites</a>.<br />
+	If the signal being drawn uses a custom signal style, the value is the signal style ID as set in the <a href="#signals_define_style">signals_define_style</a> property.<br />
+	Otherwise for signals using the default style, the value is 0.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
+	<br />
 	<br />
 	<h3 id="a3signals"><a href="https://newgrf-specs.tt-wiki.net/wiki/Action3">Action 3 - Signals (Feature 0E)</a></h3>
 	<p>Note that Action 3 feature 0E is not supported (does nothing) in standard OpenTTD.</p>
@@ -558,7 +755,8 @@
 	however, this applies to all signals, not only those of a particular rail type.</p>
 	<p>Variational Action 2 variables 10, 18 and 40 are available and have the same format as in <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Railtypes">VariationalAction2/Railtypes</a>.</p>
 	<p>Rail type custom signal sprites have a higher priority than custom signal sprites for all signals as set here.</p>
-	<p>Note that this is not a generic callback, the sprite group must be assigned to ID 0 (further IDs may be allocated for other purposes in future).</p>
+	<p>Note that this is not a generic callback, the sprite group must be assigned to ID 0 (further IDs may be allocated for other purposes in future).
+	<br />Cargo type definitions are not used. Only the default set ID is used.</p>
 	<p>This is indicated by the feature name: <font face="monospace">action3_signals_custom_signal_sprites</font>, version 1</p>
 	<br />
 	<h3 id="action5">Action 14 - Type ID Mapping for Action 5</h3>
@@ -679,6 +877,7 @@
 	<table>
 	<tr><th>Feature name</th><th>Description</th></tr>
 	<tr><td><font face="monospace">road_stops</font></td><td><a href="newgrf-roadstops.html">Custom road stops (bus stops, lorry stops and road waypoints)</a></d></tr>
+	<tr><td><font face="monospace">new_landscape</font></td><td><a href="newgrf-newlandscape.html">Custom landscape graphics (currently rocky tiles only)</a></d></tr>
 	</table>
 </body>
 </html>

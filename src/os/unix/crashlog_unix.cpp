@@ -72,13 +72,66 @@ static void LogStacktraceSigSegvHandler(int  sig)
 }
 #endif
 
+static int GetTemporaryFD()
+{
+	char name[MAX_PATH];
+	extern std::string _personal_dir;
+	seprintf(name, lastof(name), "%sopenttd-tmp-XXXXXX", _personal_dir.c_str());
+	int fd = mkstemp(name);
+	if (fd != -1) {
+		/* Unlink file but leave fd open until finished with */
+		unlink(name);
+	}
+	return fd;
+}
+
+struct ExecReadNullHandler {
+	int fd[2] = { -1, -1 };
+
+	bool Init() {
+		this->fd[0] = open("/dev/null", O_RDWR);
+		if (this->fd[0] == -1) {
+			this->fd[0] = GetTemporaryFD();
+			if (this->fd[0] == -1) {
+				return false;
+			}
+			this->fd[1] = GetTemporaryFD();
+			if (this->fd[1] == -1) {
+				this->Close();
+				return false;
+			}
+		} else {
+			this->fd[1] = this->fd[0];
+		}
+		return true;
+	}
+
+	void Close() {
+		if (this->fd[0] != -1) close(this->fd[0]);
+		if (this->fd[1] != -1 && this->fd[0] != this->fd[1]) close(this->fd[1]);
+		this->fd[0] = -1;
+		this->fd[1] = -1;
+	}
+};
+
 static bool ExecReadStdout(const char *file, char *const *args, char *&buffer, const char *last)
 {
+	ExecReadNullHandler nulls;
+	if (!nulls.Init()) return false;
+
 	int pipefd[2];
-	if (pipe(pipefd) == -1) return false;
+	if (pipe(pipefd) == -1) {
+		nulls.Close();
+		return false;
+	}
 
 	int pid = fork();
-	if (pid < 0) return false;
+	if (pid < 0) {
+		nulls.Close();
+		close(pipefd[0]);
+		close(pipefd[1]);
+		return false;
+	}
 
 	if (pid == 0) {
 		/* child */
@@ -86,11 +139,9 @@ static bool ExecReadStdout(const char *file, char *const *args, char *&buffer, c
 		close(pipefd[0]); /* Close unused read end */
 		dup2(pipefd[1], STDOUT_FILENO);
 		close(pipefd[1]);
-		int null_fd = open("/dev/null", O_RDWR);
-		if (null_fd != -1) {
-			dup2(null_fd, STDERR_FILENO);
-			dup2(null_fd, STDIN_FILENO);
-		}
+		dup2(nulls.fd[0], STDERR_FILENO);
+		dup2(nulls.fd[1], STDIN_FILENO);
+		nulls.Close();
 
 		execvp(file, args);
 		exit(42);
@@ -98,6 +149,7 @@ static bool ExecReadStdout(const char *file, char *const *args, char *&buffer, c
 
 	/* parent */
 
+	nulls.Close();
 	close(pipefd[1]); /* Close unused write end */
 
 	while (buffer < last) {
@@ -125,6 +177,69 @@ static bool ExecReadStdout(const char *file, char *const *args, char *&buffer, c
 		return true;
 	}
 }
+
+#if defined(WITH_DBG_GDB)
+static bool ExecReadStdoutThroughFile(const char *file, char *const *args, char *&buffer, const char *last)
+{
+	ExecReadNullHandler nulls;
+	if (!nulls.Init()) return false;
+
+	int fd = GetTemporaryFD();
+	if (fd == -1) {
+		nulls.Close();
+		return false;
+	}
+
+	int pid = fork();
+	if (pid < 0) {
+		nulls.Close();
+		close(fd);
+		return false;
+	}
+
+	if (pid == 0) {
+		/* child */
+
+		dup2(fd, STDOUT_FILENO);
+		close(fd);
+		dup2(nulls.fd[0], STDERR_FILENO);
+		dup2(nulls.fd[1], STDIN_FILENO);
+		nulls.Close();
+
+		execvp(file, args);
+		exit(42);
+	}
+
+	/* parent */
+
+	nulls.Close();
+
+	int status;
+	int wait_ret = waitpid(pid, &status, 0);
+	if (wait_ret == -1 || !WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+		/* command did not appear to run successfully */
+		close(fd);
+		return false;
+	} else {
+		/* command executed successfully */
+		lseek(fd, 0, SEEK_SET);
+		while (buffer < last) {
+			ssize_t res = read(fd, buffer, last - buffer);
+			if (res < 0) {
+				if (errno == EINTR) continue;
+				break;
+			} else if (res == 0) {
+				break;
+			} else {
+				buffer += res;
+			}
+		}
+		buffer += seprintf(buffer, last, "\n");
+		close(fd);
+		return true;
+	}
+}
+#endif /* WITH_DBG_GDB */
 
 /**
  * Unix implementation for the crash logger.
@@ -355,7 +470,7 @@ class CrashLogUnix : public CrashLog {
 #endif
 
 		args.push_back(nullptr);
-		if (!ExecReadStdout("gdb", const_cast<char* const*>(&(args[0])), buffer, last)) {
+		if (!ExecReadStdoutThroughFile("gdb", const_cast<char* const*>(&(args[0])), buffer, last)) {
 			buffer = buffer_orig;
 		}
 #endif /* WITH_DBG_GDB */

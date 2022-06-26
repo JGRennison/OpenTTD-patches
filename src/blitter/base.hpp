@@ -118,6 +118,17 @@ public:
 	virtual void SetPixel(void *video, int x, int y, uint8 colour) = 0;
 
 	/**
+	 * Draw a pixel with a given 32bpp colour on the video-buffer.
+	 * Fall back to an 8bpp colour if 32bpp colour is not available.
+	 * @param video The destination pointer (video-buffer).
+	 * @param x The x position within video-buffer.
+	 * @param y The y position within video-buffer.
+	 * @param colour A 8bpp mapping colour.
+	 * @param colour32 A 32bpp colour.
+	 */
+	virtual void SetPixel32(void *video, int x, int y, uint8 colour, uint32 colour32) = 0;
+
+	/**
 	 * Draw a rectangle of pixels on the video-buffer.
 	 * @param video The destination pointer (video-buffer).
 	 * @param x The x position within video-buffer.

@@ -69,6 +69,7 @@
 #include "../infrastructure_func.h"
 #include "../event_logs.h"
 #include "../newgrf_object.h"
+#include "../newgrf_industrytiles.h"
 
 
 #include "saveload_internal.h"
@@ -635,6 +636,7 @@ bool AfterLoadGame()
 	RebuildTownKdtree();
 	RebuildStationKdtree();
 	UpdateCachedSnowLine();
+	UpdateCachedSnowLineBounds();
 
 	_viewport_sign_kdtree_valid = false;
 
@@ -949,6 +951,7 @@ bool AfterLoadGame()
 	}
 
 	AfterLoadEngines();
+	AnalyseIndustryTileSpriteGroups();
 
 	/* Update all vehicles */
 	AfterLoadVehicles(true);
@@ -3129,6 +3132,7 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_164) && _settings_game.game_creation.snow_line_height >= MIN_SNOWLINE_HEIGHT * TILE_HEIGHT && SlXvIsFeatureMissing(XSLFI_CHILLPP)) {
 		_settings_game.game_creation.snow_line_height /= TILE_HEIGHT;
 		UpdateCachedSnowLine();
+		UpdateCachedSnowLineBounds();
 	}
 
 	if (IsSavegameVersionBefore(SLV_164) && !IsSavegameVersionBefore(SLV_32)) {
@@ -3648,7 +3652,7 @@ bool AfterLoadGame()
 	if (SlXvIsFeaturePresent(XSLFI_SIG_TUNNEL_BRIDGE, 1, 7)) {
 		/* spacing setting moved to company settings */
 		for (Company *c : Company::Iterate()) {
-			c->settings.simulated_wormhole_signals = _settings_game.construction.old_simulated_wormhole_signals;
+			c->settings.old_simulated_wormhole_signals = _settings_game.construction.old_simulated_wormhole_signals;
 		}
 	}
 	if (SlXvIsFeaturePresent(XSLFI_SIG_TUNNEL_BRIDGE, 1, 8)) {
@@ -3658,7 +3662,14 @@ bool AfterLoadGame()
 				DiagDirection dir = GetTunnelBridgeDirection(t);
 				if (dir == DIAGDIR_NE || dir == DIAGDIR_SE) {
 					TileIndex other = GetOtherTunnelBridgeEnd(t);
-					uint spacing = GetBestTunnelBridgeSignalSimulationSpacing(GetTileOwner(t), t, other);
+					Owner owner = GetTileOwner(t);
+					int target;
+					if (Company::IsValidID(owner)) {
+						target = Company::Get(owner)->settings.old_simulated_wormhole_signals;
+					} else {
+						target = 4;
+					}
+					uint spacing = GetBestTunnelBridgeSignalSimulationSpacing(t, other, target);
 					SetTunnelBridgeSignalSimulationSpacing(t, spacing);
 					SetTunnelBridgeSignalSimulationSpacing(other, spacing);
 				}
@@ -3666,6 +3677,7 @@ bool AfterLoadGame()
 		}
 		/* force aspect re-calculation */
 		_extra_aspects = 0;
+		_aspect_cfg_hash = 0;
 	}
 
 	if (SlXvIsFeatureMissing(XSLFI_CUSTOM_BRIDGE_HEADS)) {
@@ -3952,6 +3964,15 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (!SlXvIsFeaturePresent(XSLFI_REALISTIC_TRAIN_BRAKING, 6) && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+		for (Train *t : Train::Iterate()) {
+			if (t->lookahead != nullptr) {
+				t->lookahead->cached_zpos = t->CalculateOverallZPos();
+				t->lookahead->zpos_refresh_remaining = t->GetZPosCacheUpdateInterval();
+			}
+		}
+	}
+
 	if (SlXvIsFeatureMissing(XSLFI_INFLATION_FIXED_DATES)) {
 		_settings_game.economy.inflation_fixed_dates = !IsSavegameVersionBefore(SLV_GS_INDUSTRY_CONTROL);
 	}
@@ -4047,6 +4068,35 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_INDUSTRY_ANIM_MASK)) {
+		ApplyIndustryTileAnimMasking();
+	}
+
+	if (SlXvIsFeatureMissing(XSLFI_NEW_SIGNAL_STYLES)) {
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsTileType(t, MP_RAILWAY) && HasSignals(t)) {
+				/* clear signal style field */
+				_me[t].m6 = 0;
+			}
+			if (IsRailTunnelBridgeTile(t)) {
+				/* Clear signal style is non-zero flag */
+				ClrBit(_m[t].m3, 7);
+			}
+		}
+	}
+
+	if (SlXvIsFeatureMissing(XSLFI_REALISTIC_TRAIN_BRAKING, 8)) {
+		_aspect_cfg_hash = 0;
+	}
+
+	if (!SlXvIsFeaturePresent(XSLFI_REALISTIC_TRAIN_BRAKING, 9) && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+		for (Train *t : Train::Iterate()) {
+			if (t->lookahead != nullptr) {
+				t->lookahead->lookahead_end_position = t->lookahead->reservation_end_position + 1;
+			}
+		}
+	}
+
 	InitializeRoadGUI();
 
 	/* This needs to be done after conversion. */
@@ -4136,6 +4186,7 @@ void ReloadNewGRFData()
 	/* reload vehicles */
 	ResetVehicleHash();
 	AfterLoadEngines();
+	AnalyseIndustryTileSpriteGroups();
 	AfterLoadVehicles(false);
 	StartupEngines();
 	GroupStatistics::UpdateAfterLoad();
@@ -4180,4 +4231,6 @@ void ReloadNewGRFData()
 	AfterLoadTemplateVehiclesUpdateImages();
 	AfterLoadTemplateVehiclesUpdateProperties();
 	UpdateAllAnimatedTileSpeeds();
+
+	InvalidateWindowData(WC_BUILD_SIGNAL, 0);
 }

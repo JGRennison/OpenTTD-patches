@@ -310,10 +310,49 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 
 	/* check close enough to town to get central as name? */
 	const bool is_central = DistanceMax(tile, t->xy) < 8;
-	if (is_central) {
-		if (HasBit(free_names, M(STR_SV_STNAME))) return STR_SV_STNAME;
+	if (HasBit(free_names, M(STR_SV_STNAME)) && (is_central || DistanceSquare(tile, t->xy) <= t->cache.squared_town_zone_radius[HZB_TOWN_INNER_SUBURB])) {
+		return STR_SV_STNAME;
+	}
 
-		if (HasBit(free_names, M(STR_SV_STNAME_CENTRAL))) return STR_SV_STNAME_CENTRAL;
+	bool use_extra_names = _extra_station_names_used > 0;
+	auto check_extra_names = [&]() -> bool {
+		if (use_extra_names) {
+			use_extra_names = false;
+			const bool near_water = CountMapSquareAround(tile, CMSAWater) >= 5;
+			std::vector<uint16> candidates;
+			for (uint i = 0; i < _extra_station_names_used; i++) {
+				const ExtraStationNameInfo &info = _extra_station_names[i];
+				if (extra_names[i]) continue;
+				if (!HasBit(info.flags, name_class)) continue;
+				if (HasBit(info.flags, ESNIF_CENTRAL) && !is_central) continue;
+				if (HasBit(info.flags, ESNIF_NOT_CENTRAL) && is_central) continue;
+				if (HasBit(info.flags, ESNIF_NEAR_WATER) && !near_water) continue;
+				if (HasBit(info.flags, ESNIF_NOT_NEAR_WATER) && near_water) continue;
+				candidates.push_back(i);
+			}
+
+			if (!candidates.empty()) {
+				SavedRandomSeeds saved_seeds;
+				SaveRandomSeeds(&saved_seeds);
+				st->extra_name_index = candidates[RandomRange((uint)candidates.size())];
+				RestoreRandomSeeds(saved_seeds);
+				return true;
+			}
+		}
+		return false;
+	};
+
+	if (_extra_station_names_probability > 0) {
+		SavedRandomSeeds saved_seeds;
+		SaveRandomSeeds(&saved_seeds);
+		bool extra_name = (RandomRange(0xFF) < _extra_station_names_probability) && check_extra_names();
+		RestoreRandomSeeds(saved_seeds);
+		if (extra_name) return STR_SV_STNAME_FALLBACK;
+	}
+
+	/* check close enough to town to get central as name? */
+	if (is_central && HasBit(free_names, M(STR_SV_STNAME_CENTRAL))) {
+		return STR_SV_STNAME_CENTRAL;
 	}
 
 	/* Check lakeside */
@@ -355,28 +394,7 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 	tmp = free_names & ((1 << 1) | (1 << 2) | (1 << 3) | (1 << 4) | (1 << 6) | (1 << 7) | (1 << 12) | (1 << 26) | (1 << 27) | (1 << 28) | (1 << 29) | (1 << 30));
 	if (tmp != 0) return STR_SV_STNAME + FindFirstBit(tmp);
 
-	if (_extra_station_names_used > 0) {
-		const bool near_water = CountMapSquareAround(tile, CMSAWater) >= 5;
-		std::vector<uint16> candidates;
-		for (uint i = 0; i < _extra_station_names_used; i++) {
-			const ExtraStationNameInfo &info = _extra_station_names[i];
-			if (extra_names[i]) continue;
-			if (!HasBit(info.flags, name_class)) continue;
-			if (HasBit(info.flags, ESNIF_CENTRAL) && !is_central) continue;
-			if (HasBit(info.flags, ESNIF_NOT_CENTRAL) && is_central) continue;
-			if (HasBit(info.flags, ESNIF_NEAR_WATER) && !near_water) continue;
-			if (HasBit(info.flags, ESNIF_NOT_NEAR_WATER) && near_water) continue;
-			candidates.push_back(i);
-		}
-
-		if (!candidates.empty()) {
-			SavedRandomSeeds saved_seeds;
-			SaveRandomSeeds(&saved_seeds);
-			st->extra_name_index = candidates[RandomRange((uint)candidates.size())];
-			RestoreRandomSeeds(saved_seeds);
-			return STR_SV_STNAME_FALLBACK;
-		}
-	}
+	if (check_extra_names()) return STR_SV_STNAME_FALLBACK;
 
 	return STR_SV_STNAME_FALLBACK;
 }
@@ -2092,6 +2110,7 @@ CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 	if (roadstopspec != nullptr) {
 		if (type && roadstopspec->stop_type != ROADSTOPTYPE_FREIGHT && roadstopspec->stop_type != ROADSTOPTYPE_ALL) return CMD_ERROR;
 		if (!type && roadstopspec->stop_type != ROADSTOPTYPE_PASSENGER && roadstopspec->stop_type != ROADSTOPTYPE_ALL) return CMD_ERROR;
+		if (!is_drive_through && HasBit(roadstopspec->flags, RSF_DRIVE_THROUGH_ONLY)) return CMD_ERROR;
 	}
 
 	/* Check if the requested road stop is too big */
@@ -2529,7 +2548,7 @@ uint8 GetAirportNoiseLevelForDistance(const AirportSpec *as, uint distance)
 	 * So no need to go any further*/
 	if (as->noise_level < 2) return as->noise_level;
 
-	if (_settings_game.difficulty.town_council_tolerance == TOWN_COUNCIL_INDIFFERENT) return 1;
+	if (_settings_game.difficulty.town_council_tolerance == TOWN_COUNCIL_PERMISSIVE) return 1;
 
 	/* The steps for measuring noise reduction are based on the "magical" (and arbitrary) 8 base distance
 	 * adding the town_council_tolerance 4 times, as a way to graduate, depending of the tolerance.
@@ -2878,6 +2897,8 @@ static CommandCost RemoveAirport(TileIndex tile, DoCommandFlag flags)
 		}
 
 		for (TileIndex tile_cur : st->airport) {
+			if (!st->TileBelongsToAirport(tile_cur)) continue;
+
 			DeleteAnimatedTile(tile_cur);
 			DoClearSquare(tile_cur);
 			DeleteNewGRFInspectWindow(GSF_AIRPORTTILES, tile_cur);
@@ -3450,10 +3471,10 @@ draw_default_foundation:
 		}
 	} else if (IsRoadWaypointTile(ti->tile)) {
 		RoadBits bits = GetRoadStopDir(ti->tile) == DIAGDIR_NE ? ROAD_X : ROAD_Y;
-		extern void DrawRoadBits(TileInfo *ti, RoadBits road, RoadBits tram, Roadside roadside, bool snow_or_desert);
+		extern void DrawRoadBits(TileInfo *ti, RoadBits road, RoadBits tram, Roadside roadside, bool snow_or_desert, bool draw_catenary);
 		DrawRoadBits(ti, GetRoadTypeRoad(ti->tile) != INVALID_ROADTYPE ? bits : ROAD_NONE,
 				GetRoadTypeTram(ti->tile) != INVALID_ROADTYPE ? bits : ROAD_NONE,
-				GetRoadWaypointRoadside(ti->tile), IsRoadWaypointOnSnowOrDesert(ti->tile));
+				GetRoadWaypointRoadside(ti->tile), IsRoadWaypointOnSnowOrDesert(ti->tile), false);
 	} else {
 		if (layout != nullptr) {
 			/* Sprite layout which needs preprocessing */
@@ -3559,8 +3580,10 @@ draw_default_foundation:
 			}
 		}
 
-		/* Draw road, tram catenary */
-		DrawRoadCatenary(ti);
+		if (stopspec == nullptr || !HasBit(stopspec->flags, RSF_NO_CATENARY)) {
+			/* Draw road, tram catenary */
+			DrawRoadCatenary(ti);
+		}
 	}
 
 	if (IsRailWaypoint(ti->tile)) {

@@ -397,6 +397,51 @@ static inline void SetSignalAspect(TileIndex t, Track track, uint8 aspect)
 	SB(_me[t].m7, pos, 3, aspect);
 }
 
+static inline bool NonZeroSignalStylePossiblyOnTile(TileIndex t)
+{
+	return _me[t].m6 != 0;
+}
+
+static inline uint8 GetSignalStyle(TileIndex t, Track track)
+{
+	assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
+	byte pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 4 : 0;
+	return GB(_me[t].m6, pos, 4);
+}
+
+static inline uint8 GetSignalStyleGeneric(TileIndex t, Track track)
+{
+	switch (GetTileType(t)) {
+		case MP_RAILWAY:
+			return GetSignalStyle(t, track);
+		case MP_TUNNELBRIDGE:
+			return GetTunnelBridgeSignalStyle(t);
+		default:
+			return 0;
+	}
+}
+
+static inline void SetSignalStyle(TileIndex t, Track track, uint8 style)
+{
+	assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
+	byte pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 4 : 0;
+	SB(_me[t].m6, pos, 4, style);
+}
+
+static inline bool GetSignalAlwaysReserveThrough(TileIndex t, Track track)
+{
+	assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
+	byte pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 7 : 6;
+	return HasBit(_me[t].m7, pos);
+}
+
+static inline void SetSignalAlwaysReserveThrough(TileIndex t, Track track, bool reserve_through)
+{
+	assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
+	byte pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 7 : 6;
+	SB(_me[t].m7, pos, 1, reserve_through ? 1 : 0);
+}
+
 /**
  * Set the states of the signals (Along/AgainstTrackDir)
  * @param tile  the tile to set the states for

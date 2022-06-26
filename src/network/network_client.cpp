@@ -257,6 +257,7 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 		ClientNetworkEmergencySave();
 	}
 
+	DeleteNetworkClientWindows();
 	_switch_mode = SM_MENU;
 	_networking = false;
 }

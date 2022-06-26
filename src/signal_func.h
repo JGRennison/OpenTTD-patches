@@ -20,6 +20,17 @@
 #include "vehicle_type.h"
 
 extern uint8 _extra_aspects;
+extern uint64 _aspect_cfg_hash;
+
+struct SignalStyleMasks {
+	uint16 non_aspect_inc = 0;
+	uint16 next_only = 0;
+	uint16 always_reserve_through = 0;
+	uint16 no_tunnel_bridge = 0;
+	uint16 signal_opposite_side = 0;
+};
+extern SignalStyleMasks _signal_style_masks;
+
 extern bool _signal_sprite_oversized;
 
 /**
@@ -170,7 +181,7 @@ void AddSideToSignalBuffer(TileIndex tile, DiagDirection side, Owner owner);
 void UpdateSignalsInBuffer();
 void UpdateSignalsInBufferIfOwnerNotAddable(Owner owner);
 uint8 GetForwardAspectFollowingTrack(TileIndex tile, Trackdir trackdir);
-uint8 GetSignalAspectGeneric(TileIndex tile, Trackdir trackdir);
+uint8 GetSignalAspectGeneric(TileIndex tile, Trackdir trackdir, bool check_non_inc_style);
 void PropagateAspectChange(TileIndex tile, Trackdir trackdir, uint8 aspect);
 void UpdateAspectDeferred(TileIndex tile, Trackdir trackdir);
 void FlushDeferredAspectUpdates();
@@ -178,9 +189,18 @@ void UpdateAllSignalAspects();
 void UpdateExtraAspectsVariable();
 void InitialiseExtraAspectsVariable();
 
+inline void AdjustSignalAspectIfNonIncStyle(TileIndex tile, Track track, uint8 &aspect)
+{
+	extern void AdjustSignalAspectIfNonIncStyleIntl(TileIndex tile, Track track, uint8 &aspect);
+	if (aspect > 0 && _signal_style_masks.non_aspect_inc != 0) AdjustSignalAspectIfNonIncStyleIntl(tile, track, aspect);
+}
+
 inline uint8 GetForwardAspectFollowingTrackAndIncrement(TileIndex tile, Trackdir trackdir)
 {
 	return std::min<uint8>(GetForwardAspectFollowingTrack(tile, trackdir) + 1, _extra_aspects + 1);
 }
+
+void UpdateSignalReserveThroughBit(TileIndex tile, Track track, bool update_signal);
+void UpdateAllSignalReserveThroughBits();
 
 #endif /* SIGNAL_FUNC_H */

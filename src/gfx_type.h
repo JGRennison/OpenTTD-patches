@@ -288,7 +288,10 @@ enum FillRectMode {
 	FILLRECT_OPAQUE,  ///< Fill rectangle with a single colour
 	FILLRECT_CHECKER, ///< Draw only every second pixel, used for greying-out
 	FILLRECT_RECOLOUR, ///< Apply a recolour sprite to the screen content
+	FILLRECT_FUNCTOR, ///<  Apply a functor to a line of pixels
 };
+
+typedef void GfxFillRectModeFunctor(void *pixel, int count);
 
 /** Palettes OpenTTD supports. */
 enum PaletteType {

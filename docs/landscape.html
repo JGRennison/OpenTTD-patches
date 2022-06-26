@@ -508,6 +508,10 @@
 
          <li>m3 bits 7..4: bit set = signal 3..0 present</li>
          <li>m4 bits 7..4: bit clear = signal 3..0 shows red</li>
+         <li style="color: blue">m6 bits 7..4: signal style for signal 0 and 1</li>
+         <li style="color: blue">m6 bits 3..0: signal style for signal 2 and 3</li>
+         <li style="color: blue">m7 bits 7: reserve through always set for signal 0 or 1</li>
+         <li style="color: blue">m7 bits 6: reserve through always set for signal 2 or 3</li>
          <li style="color: blue">m7 bits 5..3: signal aspect for signal 0 or 1 (only valid if signal is present and not red, and multi-aspect signalling is in effect)</li>
          <li style="color: blue">m7 bits 2..0: signal aspect for signal 2 or 3 (only valid if signal is present and not red, and multi-aspect signalling is in effect)</li>
         </ul>
@@ -1753,6 +1757,7 @@
       <ul>
        <li>m2 bit 15: for bridge entrances only: storage for visual red/green state of signals starting from 15 is allocated outside the map array</li>
        <li>m2 bits 14..4: for bridge entrances only: for signals 0..10 on bridge, signal is visually red if corresponding bit in 4..14 is set</li>
+       <li>m3 bit 7: the signal style is non-zero (style stored outside the map array)</li>
        <li>m3 bit 6: the entrance and/or exit signals on this tile are restricted (tracerestrict patch)</li>
        <li>m3 bits 5..3: entrance signal aspect (only valid if signal is present and not red, and multi-aspect signalling is in effect)</li>
        <li>m3 bits 2..0: exit signal aspect (only valid if signal is present and not red, and multi-aspect signalling is in effect)</li>

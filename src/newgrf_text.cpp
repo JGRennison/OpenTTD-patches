@@ -573,22 +573,29 @@ StringID AddGRFString(uint32 grfid, uint16 stringid, byte langid_to_add, bool ne
 	}
 
 	uint id;
-	for (id = 0; id < _num_grf_texts; id++) {
-		if (_grf_text[id].grfid == grfid && _grf_text[id].stringid == stringid) {
-			break;
-		}
-	}
+	extern GRFFile *GetFileByGRFIDExpectCurrent(uint32 grfid);
+	GRFFile *grf = GetFileByGRFIDExpectCurrent(grfid);
+	if (grf == nullptr) return STR_EMPTY;
 
-	/* Too many strings allocated, return empty */
-	if (id == lengthof(_grf_text)) {
-		_grf_bug_too_many_strings = true;
-		return STR_EMPTY;
+	auto iter = grf->string_map.lower_bound(stringid);
+	if (iter != grf->string_map.end() && iter->first == stringid) {
+		/* Found */
+		id = iter->second;
+	} else {
+		/* Allocate new ID */
+		id = _num_grf_texts;
+
+		/* Too many strings allocated, return empty */
+		if (id == lengthof(_grf_text)) {
+			_grf_bug_too_many_strings = true;
+			return STR_EMPTY;
+		}
+
+		grf->string_map.insert(iter, std::make_pair(stringid, id));
+		_num_grf_texts++;
 	}
 
 	std::string newtext = TranslateTTDPatchCodes(grfid, langid_to_add, allow_newlines, text_to_add);
-
-	/* If we didn't find our stringid and grfid in the list, allocate a new id */
-	if (id == _num_grf_texts) _num_grf_texts++;
 
 	if (_grf_text[id].textholder.empty()) {
 		_grf_text[id].grfid      = grfid;
@@ -607,10 +614,17 @@ StringID AddGRFString(uint32 grfid, uint16 stringid, byte langid_to_add, bool ne
  */
 StringID GetGRFStringID(uint32 grfid, StringID stringid)
 {
-	for (uint id = 0; id < _num_grf_texts; id++) {
-		if (_grf_text[id].grfid == grfid && _grf_text[id].stringid == stringid) {
-			return MakeStringID(TEXT_TAB_NEWGRF_START, id);
+	extern GRFFile *GetFileByGRFIDExpectCurrent(uint32 grfid);
+	GRFFile *grf = GetFileByGRFIDExpectCurrent(grfid);
+	if (unlikely(grf == nullptr)) {
+		for (uint id = 0; id < _num_grf_texts; id++) {
+			if (_grf_text[id].grfid == grfid && _grf_text[id].stringid == stringid) {
+				return MakeStringID(TEXT_TAB_NEWGRF_START, id);
+			}
 		}
+	} else {
+		auto iter = grf->string_map.find(stringid);
+		if (iter != grf->string_map.end()) return MakeStringID(TEXT_TAB_NEWGRF_START, iter->second);
 	}
 
 	return STR_UNDEFINED;

@@ -47,7 +47,28 @@
 #include "safeguards.h"
 
 bool _ignore_restrictions;
-std::bitset<NUM_INDUSTRYTYPES> _displayed_industries; ///< Communication from the industry chain window to the smallmap window about what industries to display.
+static std::bitset<NUM_INDUSTRYTYPES> _displayed_industries; ///< Communication from the industry chain window to the smallmap window about what industries to display.
+static std::bitset<NUM_INDUSTRYTYPES> _displayed_industries_in;
+static std::bitset<NUM_INDUSTRYTYPES> _displayed_industries_out;
+
+enum IndustryLinkMode {
+	ILM_ALL,
+	ILM_IN,
+	ILM_OUT,
+};
+static IndustryLinkMode _link_mode = ILM_ALL;
+
+const std::bitset<NUM_INDUSTRYTYPES> &GetIndustryLinkDisplayIndustries()
+{
+	switch (_link_mode) {
+		case ILM_IN:
+			return _displayed_industries_in;
+		case ILM_OUT:
+			return _displayed_industries_out;
+		default:
+			return _displayed_industries;
+	}
+}
 
 /** Cargo suffix type (for which window is it requested) */
 enum CargoSuffixType {
@@ -499,8 +520,12 @@ public:
 					/* We've chosen many random industries but no industries have been specified */
 					SetDParam(0, STR_FUND_INDUSTRY_BUILD_NEW_INDUSTRY);
 				} else {
-					const IndustrySpec *indsp = GetIndustrySpec(this->index[this->selected_index]);
-					SetDParam(0, (_settings_game.construction.raw_industry_construction == 2 && indsp->IsRawIndustry()) ? STR_FUND_INDUSTRY_PROSPECT_NEW_INDUSTRY : STR_FUND_INDUSTRY_FUND_NEW_INDUSTRY);
+					if (count > 0) {
+						const IndustrySpec *indsp = GetIndustrySpec(this->index[this->selected_index]);
+						SetDParam(0, (_settings_game.construction.raw_industry_construction == 2 && indsp->IsRawIndustry()) ? STR_FUND_INDUSTRY_PROSPECT_NEW_INDUSTRY : STR_FUND_INDUSTRY_FUND_NEW_INDUSTRY);
+					} else {
+						SetDParam(0, STR_FUND_INDUSTRY_FUND_NEW_INDUSTRY);
+					}
 				}
 				break;
 		}
@@ -732,6 +757,7 @@ public:
 	void OnHundredthTick() override
 	{
 		if (_game_mode == GM_EDITOR) return;
+		if (this->count == 0) return;
 		const IndustrySpec *indsp = GetIndustrySpec(this->selected_type);
 
 		if (indsp->enabled) {
@@ -1867,7 +1893,7 @@ static const NWidgetPart _nested_industry_cargoes_widgets[] = {
 		NWidget(NWID_VERTICAL),
 			NWidget(WWT_PANEL, COLOUR_BROWN, WID_IC_PANEL), SetResize(1, 10), SetMinimalSize(200, 90), SetScrollbar(WID_IC_SCROLLBAR), EndContainer(),
 			NWidget(NWID_HORIZONTAL),
-				NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_IC_NOTIFY),
+				NWidget(NWID_BUTTON_DROPDOWN, COLOUR_BROWN, WID_IC_NOTIFY),
 					SetDataTip(STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP, STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP_TOOLTIP),
 				NWidget(WWT_PANEL, COLOUR_BROWN), SetFill(1, 0), SetResize(0, 0), EndContainer(),
 				NWidget(WWT_DROPDOWN, COLOUR_BROWN, WID_IC_IND_DROPDOWN), SetFill(0, 0), SetResize(0, 0),
@@ -2743,16 +2769,7 @@ struct IndustryCargoesWindow : public Window {
 	{
 		if (!this->IsWidgetLowered(WID_IC_NOTIFY)) return;
 
-		/* Only notify the smallmap window if it exists. In particular, do not
-		 * bring it to the front to prevent messing up any nice layout of the user. */
-		InvalidateWindowClassesData(WC_SMALLMAP, 0);
-
-		/* Notify viewports too. */
-		for (Window *w : Window::IterateFromBack()) {
-			if (w->viewport != nullptr)
-				if (w->viewport->zoom >= ZOOM_LVL_DRAW_MAP && w->viewport->map_type == VPMT_INDUSTRY)
-					w->InvalidateData();
-		}
+		UpdateSmallMapSelectedIndustries();
 	}
 
 	/**
@@ -2764,7 +2781,11 @@ struct IndustryCargoesWindow : public Window {
 		this->GetWidget<NWidgetCore>(WID_IC_CAPTION)->widget_data = STR_INDUSTRY_CARGOES_INDUSTRY_CAPTION;
 		this->ind_cargo = displayed_it;
 		_displayed_industries.reset();
+		_displayed_industries_in.reset();
+		_displayed_industries_out.reset();
 		_displayed_industries.set(displayed_it);
+		_displayed_industries_in.set(displayed_it);
+		_displayed_industries_out.set(displayed_it);
 
 		this->fields.clear();
 		CargoesRow &row = this->fields.emplace_back();
@@ -2809,11 +2830,13 @@ struct IndustryCargoesWindow : public Window {
 			if (HasCommonValidCargo(central_sp->accepts_cargo, lengthof(central_sp->accepts_cargo), indsp->produced_cargo, lengthof(indsp->produced_cargo))) {
 				this->PlaceIndustry(1 + supp_count * num_indrows / num_supp, 0, it);
 				_displayed_industries.set(it);
+				_displayed_industries_in.set(it);
 				supp_count++;
 			}
 			if (HasCommonValidCargo(central_sp->produced_cargo, lengthof(central_sp->produced_cargo), indsp->accepts_cargo, lengthof(indsp->accepts_cargo))) {
 				this->PlaceIndustry(1 + cust_count * num_indrows / num_cust, 4, it);
 				_displayed_industries.set(it);
+				_displayed_industries_out.set(it);
 				cust_count++;
 			}
 		}
@@ -2842,6 +2865,8 @@ struct IndustryCargoesWindow : public Window {
 		this->GetWidget<NWidgetCore>(WID_IC_CAPTION)->widget_data = STR_INDUSTRY_CARGOES_CARGO_CAPTION;
 		this->ind_cargo = cid + NUM_INDUSTRYTYPES;
 		_displayed_industries.reset();
+		_displayed_industries_in.reset();
+		_displayed_industries_out.reset();
 
 		this->fields.clear();
 		CargoesRow &row = this->fields.emplace_back();
@@ -2877,11 +2902,13 @@ struct IndustryCargoesWindow : public Window {
 			if (HasCommonValidCargo(&cid, 1, indsp->produced_cargo, lengthof(indsp->produced_cargo))) {
 				this->PlaceIndustry(1 + supp_count * num_indrows / num_supp, 0, it);
 				_displayed_industries.set(it);
+				_displayed_industries_in.set(it);
 				supp_count++;
 			}
 			if (HasCommonValidCargo(&cid, 1, indsp->accepts_cargo, lengthof(indsp->accepts_cargo))) {
 				this->PlaceIndustry(1 + cust_count * num_indrows / num_cust, 2, it);
 				_displayed_industries.set(it);
+				_displayed_industries_out.set(it);
 				cust_count++;
 			}
 		}
@@ -3044,13 +3071,28 @@ struct IndustryCargoesWindow : public Window {
 			}
 
 			case WID_IC_NOTIFY:
-				this->ToggleWidgetLoweredState(WID_IC_NOTIFY);
-				this->SetWidgetDirty(WID_IC_NOTIFY);
-				if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
+				if (this->GetWidget<NWidgetLeaf>(widget)->ButtonHit(pt)) {
+					this->ToggleWidgetLoweredState(WID_IC_NOTIFY);
+					this->SetWidgetDirty(WID_IC_NOTIFY);
+					if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 
-				if (this->IsWidgetLowered(WID_IC_NOTIFY)) {
-					if (FindWindowByClass(WC_SMALLMAP) == nullptr) ShowSmallMap();
-					this->NotifySmallmap();
+					if (this->IsWidgetLowered(WID_IC_NOTIFY)) {
+						_link_mode = ILM_ALL;
+						if (FindWindowByClass(WC_SMALLMAP) == nullptr) ShowSmallMap();
+						this->NotifySmallmap();
+					}
+				} else {
+					DropDownList list;
+					auto add_item = [&](StringID string, int result) {
+						std::unique_ptr<DropDownListStringItem> item(new DropDownListStringItem(string, result, false));
+						item->SetColourFlags(TC_FORCED);
+						list.emplace_back(std::move(item));
+					};
+					add_item(STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP_ALL, ILM_ALL);
+					add_item(STR_INDUSTRY_CARGOES_PRODUCERS, ILM_IN);
+					add_item(STR_INDUSTRY_CARGOES_CUSTOMERS, ILM_OUT);
+					int selected = (this->IsWidgetLowered(WID_IC_NOTIFY)) ? (int)_link_mode : -1;
+					ShowDropDownList(this, std::move(list), selected, WID_IC_NOTIFY, 0, true);
 				}
 				break;
 
@@ -3093,6 +3135,14 @@ struct IndustryCargoesWindow : public Window {
 
 			case WID_IC_IND_DROPDOWN:
 				this->ComputeIndustryDisplay(index);
+				break;
+
+			case WID_IC_NOTIFY:
+				_link_mode = (IndustryLinkMode)index;
+				this->LowerWidget(WID_IC_NOTIFY);
+				this->SetWidgetDirty(WID_IC_NOTIFY);
+				if (FindWindowByClass(WC_SMALLMAP) == nullptr) ShowSmallMap();
+				this->NotifySmallmap();
 				break;
 		}
 	}

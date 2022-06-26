@@ -38,6 +38,7 @@
 #include "string_func.h"
 #include "tracerestrict.h"
 #include "programmable_signals.h"
+#include "newgrf_newsignals.h"
 
 #include "station_map.h"
 #include "tunnelbridge_map.h"
@@ -57,6 +58,7 @@ static bool _trace_restrict_button;          ///< trace restrict button in the s
 static bool _program_signal_button;          ///< program signal button in the signal GUI pressed
 static SignalVariant _cur_signal_variant;    ///< set the signal variant (for signal GUI)
 static SignalType _cur_signal_type;          ///< set the signal type (for signal GUI)
+static uint8 _cur_signal_style;              ///< set the signal style (for signal GUI)
 static uint _cur_signal_button;              ///< set the signal button (for signal GUI)
 
 extern TileIndex _rail_track_endtile; // rail_cmd.cpp
@@ -294,6 +296,7 @@ static void GenericPlaceSignals(TileIndex tile)
 		SB(p1, 5, 3, _cur_signal_type);
 		SB(p1, 8, 1, _convert_signal_button);
 		SB(p1, 9, 6, cycle_types);
+		SB(p1, 19, 4, _cur_signal_style);
 		if (_cur_signal_type == SIGTYPE_NO_ENTRY) SB(p1, 15, 2, 1); // reverse default signal direction
 	} else {
 		SB(p1, 3, 1, _ctrl_pressed);
@@ -303,6 +306,7 @@ static void GenericPlaceSignals(TileIndex tile)
 		SB(p1, 9, 6, cycle_types);
 	}
 	SB(p1, 18, 1, _settings_client.gui.adv_sig_bridge_tun_modes);
+	SB(p1, 23, 5, Clamp<int>(_settings_client.gui.drag_signals_density, 1, 16));
 
 	DoCommandP(tile, p1, 0, CMD_BUILD_SIGNALS |
 			CMD_MSG((w != nullptr && _convert_signal_button) ? STR_ERROR_SIGNAL_CAN_T_CONVERT_SIGNALS_HERE : STR_ERROR_CAN_T_BUILD_SIGNALS_HERE),
@@ -474,6 +478,7 @@ static void HandleAutoSignalPlacement()
 		SB(p2,  7, 3, _cur_signal_type);
 		SB(p2, 24, 8, _settings_client.gui.drag_signals_density);
 		SB(p2, 10, 1, !_settings_client.gui.drag_signals_fixed_distance);
+		SB(p2, 11, 4, _cur_signal_style);
 	} else {
 		SB(p2,  3, 1, 0);
 		SB(p2,  4, 1, (_cur_year < _settings_client.gui.semaphore_build_before ? SIG_SEMAPHORE : SIG_ELECTRIC));
@@ -1807,6 +1812,7 @@ private:
 	bool progsig_ui_shown;         ///< Whether programmable pre-signal UI is shown
 	bool realistic_braking_mode;   ///< Whether realistic braking mode UI is shown
 	bool noentry_ui_shown;         ///< Whether no-entry signal UI is shown
+	bool style_selector_shown;     ///< Whether the style selector is shown
 
 	/**
 	 * Draw dynamic a signal-sprite in a button in the signal GUI
@@ -1830,11 +1836,47 @@ private:
 				y + this->IsWidgetLowered(widget_index));
 	}
 
-	void SetSignalUIMode() {
+	void SetDisableStates()
+	{
+		for (int widget = WID_BS_SEMAPHORE_NORM; widget <= WID_BS_SEMAPHORE_NO_ENTRY; widget++) {
+			this->SetWidgetDisabledState(widget, _cur_signal_style > 0 && !HasBit(_new_signal_styles[_cur_signal_style - 1].semaphore_mask, TypeForClick(widget - WID_BS_SEMAPHORE_NORM)));
+		}
+		for (int widget = WID_BS_ELECTRIC_NORM; widget <= WID_BS_ELECTRIC_NO_ENTRY; widget++) {
+			this->SetWidgetDisabledState(widget, _cur_signal_style > 0 && !HasBit(_new_signal_styles[_cur_signal_style - 1].electric_mask, TypeForClick(widget - WID_BS_ELECTRIC_NORM)));
+		}
+		if (_cur_signal_style > 0) {
+			const NewSignalStyle &style = _new_signal_styles[_cur_signal_style - 1];
+			if (!HasBit(_cur_signal_variant == SIG_SEMAPHORE ? style.semaphore_mask : style.electric_mask, _cur_signal_type)) {
+				/* Currently selected signal type isn't allowed, pick another */
+				this->RaiseWidget((_cur_signal_variant == SIG_ELECTRIC ? WID_BS_ELECTRIC_NORM : WID_BS_SEMAPHORE_NORM) + _cur_signal_button);
+
+				_cur_signal_variant = SIG_ELECTRIC;
+				_cur_signal_button = 0;
+
+				const uint type_count = (WID_BS_SEMAPHORE_NO_ENTRY + 1 - WID_BS_SEMAPHORE_NORM);
+				for (uint i = 0; i < type_count * 2; i++) {
+					SignalVariant var = (i < type_count) ? SIG_ELECTRIC : SIG_SEMAPHORE;
+					uint button = i % type_count;
+					if (HasBit(var == SIG_SEMAPHORE ? style.semaphore_mask : style.electric_mask, TypeForClick(button))) {
+						_cur_signal_variant = var;
+						_cur_signal_button = button;
+						break;
+					}
+				}
+
+				_cur_signal_type = TypeForClick(_cur_signal_button);
+				this->LowerWidget((_cur_signal_variant == SIG_ELECTRIC ? WID_BS_ELECTRIC_NORM : WID_BS_SEMAPHORE_NORM) + _cur_signal_button);
+			}
+		}
+	}
+
+	void SetSignalUIMode()
+	{
 		this->all_signal_mode = (_settings_client.gui.signal_gui_mode == SIGNAL_GUI_ALL);
 		this->realistic_braking_mode = (_settings_game.vehicle.train_braking_model == TBM_REALISTIC);
 		this->progsig_ui_shown = _settings_client.gui.show_progsig_ui;
 		this->noentry_ui_shown = _settings_client.gui.show_noentrysig_ui;
+		this->style_selector_shown = _num_new_signal_styles > 0;
 
 		bool show_norm = this->realistic_braking_mode || this->all_signal_mode;
 		bool show_presig = !this->realistic_braking_mode && this->all_signal_mode;
@@ -1862,6 +1904,10 @@ private:
 
 		this->GetWidget<NWidgetStacked>(WID_BS_TOGGLE_SIZE_SEL)->SetDisplayedPlane(!this->realistic_braking_mode ? 0 : SZSP_NONE);
 		this->SetWidgetDisabledState(WID_BS_TOGGLE_SIZE, this->realistic_braking_mode);
+
+		this->GetWidget<NWidgetStacked>(WID_BS_STYLE_SEL)->SetDisplayedPlane(this->style_selector_shown ? 0 : SZSP_NONE);
+
+		this->SetDisableStates();
 	}
 
 	void ClearRemoveState()
@@ -1894,17 +1940,25 @@ public:
 		this->sig_sprite_size.width = 0;
 		this->sig_sprite_size.height = 0;
 		this->sig_sprite_bottom_offset = 0;
-		const RailtypeInfo *rti = GetRailTypeInfo(_cur_railtype);
-		for (uint type = SIGTYPE_NORMAL; type < SIGTYPE_END; type++) {
-			for (uint variant = SIG_ELECTRIC; variant <= SIG_SEMAPHORE; variant++) {
-				for (uint lowered = 0; lowered < 2; lowered++) {
-					Point offset;
-					Dimension sprite_size = GetSpriteSize(rti->gui_sprites.signals[type][variant][lowered].sprite, &offset);
-					this->sig_sprite_bottom_offset = std::max<int>(this->sig_sprite_bottom_offset, sprite_size.height);
-					this->sig_sprite_size.width = std::max<int>(this->sig_sprite_size.width, sprite_size.width - offset.x);
-					this->sig_sprite_size.height = std::max<int>(this->sig_sprite_size.height, sprite_size.height - offset.y);
+
+		auto process_signals = [&](const PalSpriteID signals[SIGTYPE_END][2][2]) {
+			for (uint type = SIGTYPE_NORMAL; type < SIGTYPE_END; type++) {
+				for (uint variant = SIG_ELECTRIC; variant <= SIG_SEMAPHORE; variant++) {
+					for (uint lowered = 0; lowered < 2; lowered++) {
+						Point offset;
+						SpriteID spr = signals[type][variant][lowered].sprite;
+						if (spr == 0) continue;
+						Dimension sprite_size = GetSpriteSize(spr, &offset);
+						this->sig_sprite_bottom_offset = std::max<int>(this->sig_sprite_bottom_offset, sprite_size.height);
+						this->sig_sprite_size.width = std::max<int>(this->sig_sprite_size.width, sprite_size.width - offset.x);
+						this->sig_sprite_size.height = std::max<int>(this->sig_sprite_size.height, sprite_size.height - offset.y);
+					}
 				}
 			}
+		};
+		process_signals(GetRailTypeInfo(_cur_railtype)->gui_sprites.signals);
+		for (uint i = 0; i < _num_new_signal_styles; i++) {
+			process_signals(_new_signal_styles[i].signals);
 		}
 	}
 
@@ -1927,6 +1981,10 @@ public:
 			case WID_BS_DRAG_SIGNALS_DENSITY_LABEL:
 				SetDParam(0, _settings_client.gui.drag_signals_density);
 				break;
+
+			case WID_BS_STYLE:
+				SetDParam(0, _cur_signal_style == 0 ? STR_BUILD_SIGNAL_DEFAULT_STYLE : _new_signal_styles[_cur_signal_style - 1].name);
+				break;
 		}
 	}
 
@@ -1936,7 +1994,15 @@ public:
 			/* Extract signal from widget number. */
 			SignalType type = TypeForClick((widget - WID_BS_SEMAPHORE_NORM) % SIGTYPE_END);
 			int var = SIG_SEMAPHORE - (widget - WID_BS_SEMAPHORE_NORM) / SIGTYPE_END; // SignalVariant order is reversed compared to the widgets.
-			PalSpriteID sprite = GetRailTypeInfo(_cur_railtype)->gui_sprites.signals[type][var][this->IsWidgetLowered(widget)];
+			PalSpriteID sprite = { 0, 0 };
+			if (_cur_signal_style > 0) {
+				const NewSignalStyle &style = _new_signal_styles[_cur_signal_style - 1];
+				if (!HasBit(var == SIG_SEMAPHORE ? style.semaphore_mask : style.electric_mask, type)) return;
+				sprite = style.signals[type][var][this->IsWidgetLowered(widget)];
+			}
+			if (sprite.sprite == 0) {
+				sprite = GetRailTypeInfo(_cur_railtype)->gui_sprites.signals[type][var][this->IsWidgetLowered(widget)];
+			}
 
 			this->DrawSignalSprite(widget, sprite);
 		}
@@ -2036,10 +2102,33 @@ public:
 				this->ReInit();
 				break;
 
+			case WID_BS_STYLE: {
+				DropDownList list;
+				list.emplace_back(new DropDownListStringItem(STR_BUILD_SIGNAL_DEFAULT_STYLE, 0, false));
+				for (uint i = 0; i < _num_new_signal_styles; i++) {
+					list.emplace_back(new DropDownListStringItem(_new_signal_styles[i].name, i + 1, false));
+				}
+				ShowDropDownList(this, std::move(list), _cur_signal_style, widget);
+				break;
+			}
+
 			default: break;
 		}
 
 		this->InvalidateData();
+	}
+
+	virtual void OnDropdownSelect(int widget, int index) override
+	{
+		switch (widget) {
+			case WID_BS_STYLE:
+				_cur_signal_style = std::min<uint>(index, _num_new_signal_styles);
+				this->SetDisableStates();
+				this->SetDirty();
+				break;
+
+			default: break;
+		}
 	}
 
 	/**
@@ -2059,9 +2148,12 @@ public:
 		this->SetWidgetDisabledState(WID_BS_DRAG_SIGNALS_DENSITY_DECREASE, _settings_client.gui.drag_signals_density == 1);
 		this->SetWidgetDisabledState(WID_BS_DRAG_SIGNALS_DENSITY_INCREASE, _settings_client.gui.drag_signals_density == 20);
 
+		if (_cur_signal_style > _num_new_signal_styles) _cur_signal_style = 0;
+
 		if (this->all_signal_mode != (_settings_client.gui.signal_gui_mode == SIGNAL_GUI_ALL) || this->progsig_ui_shown != _settings_client.gui.show_progsig_ui ||
 				this->realistic_braking_mode != (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) ||
-				this->noentry_ui_shown != _settings_client.gui.show_noentrysig_ui) {
+				this->noentry_ui_shown != _settings_client.gui.show_noentrysig_ui ||
+				this->style_selector_shown != (_num_new_signal_styles > 0)) {
 			this->SetSignalUIMode();
 			this->ReInit();
 		}
@@ -2163,6 +2255,9 @@ static const NWidgetPart _nested_signal_builder_widgets[] = {
 				NWidget(WWT_IMGBTN, COLOUR_DARK_GREEN, WID_BS_PROGRAM), SetDataTip(SPR_IMG_SETTINGS, STR_PROGRAM_SIGNAL_TOOLTIP), SetFill(1, 1),
 				NWidget(WWT_PANEL, COLOUR_DARK_GREEN), EndContainer(), SetFill(1, 1),
 			EndContainer(),
+		EndContainer(),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BS_STYLE_SEL),
+			NWidget(WWT_DROPDOWN, COLOUR_DARK_GREEN, WID_BS_STYLE), SetFill(1, 0), SetDataTip(STR_BLACK_STRING, STR_BUILD_SIGNAL_STYLE_TOOLTIP),
 		EndContainer(),
 	EndContainer(),
 };

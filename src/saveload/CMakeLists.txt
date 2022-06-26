@@ -28,6 +28,7 @@ add_files(
     misc_sl.cpp
     newgrf_sl.cpp
     newgrf_sl.h
+    newsignals_sl.cpp
     object_sl.cpp
     oldloader.cpp
     oldloader.h

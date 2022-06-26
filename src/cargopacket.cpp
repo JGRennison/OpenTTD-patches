@@ -251,10 +251,10 @@ void CargoPacket::PayDeferredPayments()
 
 			ExpensesType exp;
 			switch (type) {
-				case VEH_TRAIN: exp = EXPENSES_TRAIN_INC; break;
-				case VEH_ROAD: exp = EXPENSES_ROADVEH_INC; break;
-				case VEH_SHIP: exp = EXPENSES_SHIP_INC; break;
-				case VEH_AIRCRAFT: exp = EXPENSES_AIRCRAFT_INC; break;
+				case VEH_TRAIN: exp = EXPENSES_TRAIN_REVENUE; break;
+				case VEH_ROAD: exp = EXPENSES_ROADVEH_REVENUE; break;
+				case VEH_SHIP: exp = EXPENSES_SHIP_REVENUE; break;
+				case VEH_AIRCRAFT: exp = EXPENSES_AIRCRAFT_REVENUE; break;
 				default: NOT_REACHED();
 			}
 			SubtractMoneyFromCompany(CommandCost(exp, -payment));

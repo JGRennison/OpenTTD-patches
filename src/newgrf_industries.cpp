@@ -264,7 +264,7 @@ static uint32 GetCountAndDistanceOfClosestInstance(byte param_setID, byte layout
 		/* Land info of nearby tiles */
 		case 0x62:
 			if (this->tile == INVALID_TILE) break;
-			return GetNearbyIndustryTileInformation(parameter, this->tile, INVALID_INDUSTRY, false, this->ro.grffile->grf_version >= 8);
+			return GetNearbyIndustryTileInformation(parameter, this->tile, INVALID_INDUSTRY, false, this->ro.grffile->grf_version >= 8, extra->mask);
 
 		/* Animation stage of nearby tiles */
 		case 0x63: {
@@ -689,4 +689,14 @@ bool IndustryTemporarilyRefusesCargo(Industry *ind, CargoID cargo_type)
 		if (res != CALLBACK_FAILED) return !ConvertBooleanCallback(indspec->grf_prop.grffile, CBID_INDUSTRY_REFUSE_CARGO, res);
 	}
 	return false;
+}
+
+void DumpIndustrySpriteGroup(const IndustrySpec *spec, DumpSpriteGroupPrinter print)
+{
+	DumpSpriteGroup(spec->grf_prop.spritegroup[0], std::move(print));
+}
+
+void DumpIndustryTileSpriteGroup(const IndustryTileSpec *spec, DumpSpriteGroupPrinter print)
+{
+	DumpSpriteGroup(spec->grf_prop.spritegroup[0], std::move(print));
 }

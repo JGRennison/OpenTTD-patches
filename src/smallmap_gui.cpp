@@ -165,6 +165,33 @@ static bool _smallmap_industry_highlight_state;
 /** For connecting company ID to position in owner list (small map legend) */
 uint _company_to_list_pos[MAX_COMPANIES];
 
+static void NotifyAllViewports(ViewportMapType map_type)
+{
+	for (Window *w : Window::IterateFromBack()) {
+		if (w->viewport != nullptr) {
+			if (w->viewport->zoom >= ZOOM_LVL_DRAW_MAP && w->viewport->map_type == map_type) {
+				ClearViewportLandPixelCache(w->viewport);
+				w->InvalidateData();
+			}
+		}
+	}
+}
+
+void UpdateSmallMapSelectedIndustries()
+{
+	extern const std::bitset<NUM_INDUSTRYTYPES> &GetIndustryLinkDisplayIndustries();
+	const std::bitset<NUM_INDUSTRYTYPES> &displayed_industries = GetIndustryLinkDisplayIndustries();
+	for (int i = 0; i != _smallmap_industry_count; i++) {
+		_legend_from_industries[i].show_on_map = displayed_industries.test(_legend_from_industries[i].type);
+	}
+
+	NotifyAllViewports(VPMT_INDUSTRY);
+
+	/* Only notify the smallmap window if it exists. In particular, do not
+	 * bring it to the front to prevent messing up any nice layout of the user. */
+	InvalidateWindowClassesData(WC_SMALLMAP, 0);
+}
+
 /**
  * Fills an array for the industries legends.
  */
@@ -590,17 +617,6 @@ static inline uint32 GetSmallMapOwnerPixels(TileIndex tile, TileType t)
 	}
 
 	return MKCOLOUR_XXXX(_legend_land_owners[_company_to_list_pos[o]].colour);
-}
-
-static void NotifyAllViewports(ViewportMapType map_type)
-{
-	for (Window *w : Window::IterateFromBack()) {
-		if (w->viewport != nullptr)
-			if (w->viewport->zoom >= ZOOM_LVL_DRAW_MAP && w->viewport->map_type == map_type) {
-				ClearViewportLandPixelCache(w->viewport);
-				w->InvalidateData();
-			}
-	}
 }
 
 /** Vehicle colours in #SMT_VEHICLES mode. Indexed by #VehicleType. */
@@ -1571,12 +1587,7 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 			break;
 
 		case 0: {
-			extern std::bitset<NUM_INDUSTRYTYPES> _displayed_industries;
 			if (this->map_type != SMT_INDUSTRY) this->SwitchMapType(SMT_INDUSTRY);
-
-			for (int i = 0; i != _smallmap_industry_count; i++) {
-				_legend_from_industries[i].show_on_map = _displayed_industries.test(_legend_from_industries[i].type);
-			}
 			break;
 		}
 

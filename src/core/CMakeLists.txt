@@ -11,6 +11,7 @@ add_files(
     endian_func.hpp
     endian_type.hpp
     enum_type.hpp
+    hash_func.hpp
     geometry_func.cpp
     geometry_func.hpp
     geometry_type.hpp
@@ -31,4 +32,5 @@ add_files(
     smallvec_type.hpp
     string_compare_type.hpp
     tinystring_type.hpp
+    y_combinator.hpp
 )

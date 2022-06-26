@@ -51,6 +51,7 @@
 /** Widget IDs */
 enum TraceRestrictWindowWidgets {
 	TR_WIDGET_CAPTION,
+	TR_WIDGET_HIGHLIGHT,
 	TR_WIDGET_INSTRUCTION_LIST,
 	TR_WIDGET_SCROLLBAR,
 
@@ -1632,6 +1633,17 @@ public:
 		this->ReloadProgramme();
 	}
 
+	~TraceRestrictWindow()
+	{
+		extern const TraceRestrictProgram *_viewport_highlight_tracerestrict_program;
+		if (_viewport_highlight_tracerestrict_program != nullptr) {
+			const TraceRestrictProgram *prog = this->GetProgram();
+			if (prog != nullptr && prog == _viewport_highlight_tracerestrict_program) {
+				SetViewportCatchmentTraceRestrictProgram(prog, false);
+			}
+		}
+	}
+
 	virtual void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
@@ -1981,6 +1993,15 @@ public:
 
 			case TR_WIDGET_UNSHARE: {
 				TraceRestrictProgMgmtDoCommandP(tile, track, TRDCT_PROG_UNSHARE, STR_TRACE_RESTRICT_ERROR_CAN_T_UNSHARE_PROGRAM);
+				break;
+			}
+
+			case TR_WIDGET_HIGHLIGHT: {
+				const TraceRestrictProgram *prog = this->GetProgram();
+				if (prog != nullptr) {
+					extern const TraceRestrictProgram *_viewport_highlight_tracerestrict_program;
+					SetViewportCatchmentTraceRestrictProgram(prog, _viewport_highlight_tracerestrict_program != prog);
+				}
 				break;
 			}
 		}
@@ -2670,6 +2691,10 @@ private:
 		this->GetWidget<NWidgetCore>(TR_WIDGET_CAPTION)->widget_data =
 				(prog && prog->refcount > 1) ? STR_TRACE_RESTRICT_CAPTION_SHARED : STR_TRACE_RESTRICT_CAPTION;
 
+		this->SetWidgetDisabledState(TR_WIDGET_HIGHLIGHT, prog == nullptr);
+		extern const TraceRestrictProgram *_viewport_highlight_tracerestrict_program;
+		this->SetWidgetLoweredState(TR_WIDGET_HIGHLIGHT, prog != nullptr && _viewport_highlight_tracerestrict_program == prog);
+
 		auto left_aux_guard = scope_guard([&]() {
 			if (this->current_left_aux_plane != left_aux_sel->shown_plane) {
 				this->current_left_aux_plane = left_aux_sel->shown_plane;
@@ -3137,6 +3162,7 @@ static const NWidgetPart _nested_program_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, TR_WIDGET_CAPTION), SetDataTip(STR_TRACE_RESTRICT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_IMGBTN, COLOUR_GREY, TR_WIDGET_HIGHLIGHT), SetMinimalSize(12, 12), SetDataTip(SPR_SHARED_ORDERS_ICON, STR_TRACE_RESTRICT_HIGHLIGHT_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
 	EndContainer(),

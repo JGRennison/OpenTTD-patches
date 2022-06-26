@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.47.0
+## JGR's Patchpack version 0.47.3
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -168,10 +168,11 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add setting to show a company-coloured mark next to vehicles in vehicle list windows, if their owner does not match the list owner.
 * Add a waiting cargo history graph for stations.
 * Add a tooltip to show station rating details (controlled by a setting).
-* [Allow NewGRFs to supply additional station name strings](https://github.com/JGRennison/OpenTTD-patches/wiki/GRF-features#extra-station-names).
 * Add sort by number of vehicles calling to the station list window.
 * Add setting to distribute cargo received at a station to all accepting industries equally, instead of just one of them.
 * Add setting to allow hiding viewport labels of individual waypoints.
+* Increase the distance a station can be from the town centre and still be assigned have the same name as the town (no suffix/prefix), for large towns.
+* [Allow NewGRFs to supply additional station name strings](https://github.com/JGRennison/OpenTTD-patches/wiki/GRF-features#extra-station-names).
 
 #### Towns
 
@@ -187,6 +188,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 #### Industries
 
 * Industry cargo generation factor.
+* Allow linking only inputs or outputs to the smallmap and map mode viewports in the industry chain window.
 
 #### Map and Landscaping
 
@@ -207,6 +209,8 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add setting to control if and how land purchasing is permitted.
 * Add a company rate limit for land purchasing.
 * Add a company rate limit for object construction.
+* Add setting to disable object expiry after a given year.
+* Add setting to ignore object introduction dates.
 * Add setting for whether to confirm before demolishing industries and/or rail stations.
 
 #### Scenario Editor
@@ -232,6 +236,8 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Topography and industry screenshots.
 * Make smallmap refresh period variable with map mode/zoom and pause state.
 * Add display setting for income/cost text effects.
+* Make the company infrastructure window scrollable.
+* Add setting to disable water animation depending on zoom level.
 
 #### Limits
 

@@ -96,9 +96,10 @@ inline int GetTrainRealisticBrakingTargetDecelerationLimit(int acceleration_type
 
 /** Flags for TrainCache::cached_tflags */
 enum TrainCacheFlags : byte {
-	TCF_NONE       = 0,        ///< No flags
-	TCF_TILT       = 0x01,     ///< Train can tilt; feature provides a bonus in curves.
-	TCF_RL_BRAKING = 0x02,     ///< Train realistic braking (movement physics) in effect for this vehicle
+	TCF_NONE         = 0,        ///< No flags
+	TCF_TILT         = 0x01,     ///< Train can tilt; feature provides a bonus in curves.
+	TCF_RL_BRAKING   = 0x02,     ///< Train realistic braking (movement physics) in effect for this vehicle
+	TCF_SPD_RAILTYPE = 0x04,     ///< Train speed varies depending on railtype
 };
 DECLARE_ENUM_AS_BIT_SET(TrainCacheFlags)
 
@@ -160,7 +161,7 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 
 	void MarkDirty();
 	void UpdateDeltaXY();
-	ExpensesType GetExpenseType(bool income) const { return income ? EXPENSES_TRAIN_INC : EXPENSES_TRAIN_RUN; }
+	ExpensesType GetExpenseType(bool income) const { return income ? EXPENSES_TRAIN_REVENUE : EXPENSES_TRAIN_RUN; }
 	void PlayLeaveStationSound() const;
 	bool IsPrimaryVehicle() const { return this->IsFrontEngine(); }
 	void GetImage(Direction direction, EngineImageType image_type, VehicleSpriteSeq *result) const;
@@ -184,14 +185,14 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 
 	void ConsistChanged(ConsistChangeFlags allowed_changes);
 
-	int UpdateSpeed();
-
-	void UpdateAcceleration();
-
 	struct MaxSpeedInfo {
 		int strict_max_speed;
 		int advisory_max_speed;
 	};
+
+	int UpdateSpeed(MaxSpeedInfo max_speed_info);
+
+	void UpdateAcceleration();
 
 	bool ConsistNeedsRepair() const;
 
@@ -210,6 +211,13 @@ public:
 	}
 
 	int GetCurrentMaxSpeed() const;
+
+	uint8 GetZPosCacheUpdateInterval() const
+	{
+		return Clamp<uint16>(std::min<uint16>(this->gcache.cached_total_length / 4, this->tcache.cached_centre_mass / 2), 2, 32);
+	}
+
+	uint32 CalculateOverallZPos() const;
 
 	bool UsingRealisticBraking() const { return this->tcache.cached_tflags & TCF_RL_BRAKING; }
 
@@ -493,7 +501,7 @@ struct TrainDecelerationStats {
 	int z_pos;
 	const Train *t;
 
-	TrainDecelerationStats(const Train *t);
+	TrainDecelerationStats(const Train *t, int z_pos);
 };
 
 CommandCost CmdMoveRailVehicle(TileIndex, DoCommandFlag , uint32, uint32, const char *);

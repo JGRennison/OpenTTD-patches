@@ -21,7 +21,7 @@
 #include "company_type.h"
 
 /** Context for tile accesses */
-enum TileContext {
+enum TileContext : uint8 {
 	TCX_NORMAL,         ///< Nothing special.
 	TCX_UPPER_HALFTILE, ///< Querying information about the upper part of a tile with halftile foundation.
 	TCX_ON_BRIDGE,      ///< Querying information about stuff on the bridge (via some bridgehead).
@@ -295,7 +295,7 @@ extern ObjectOverrideManager _object_mngr;
 
 uint32 GetTerrainType(TileIndex tile, TileContext context = TCX_NORMAL);
 TileIndex GetNearbyTile(byte parameter, TileIndex tile, bool signed_offsets = true, Axis axis = INVALID_AXIS);
-uint32 GetNearbyTileInformation(TileIndex tile, bool grf_version8);
+uint32 GetNearbyTileInformation(TileIndex tile, bool grf_version8, uint32 mask);
 uint32 GetCompanyInfo(CompanyID owner, const struct Livery *l = nullptr);
 CommandCost GetErrorMessageFromLocationCallbackResult(uint16 cb_res, const GRFFile *grffile, StringID default_error);
 
@@ -335,11 +335,21 @@ struct GRFFileProps : GRFFilePropsBase<1> {
 
 enum SpriteGroupCallbacksUsed : uint8 {
 	SGCU_NONE                           = 0,
-	SGCU_ALL                            = 0xFF,
+	SGCU_ALL                            = 0xF,
 	SGCU_VEHICLE_32DAY_CALLBACK         = 1 << 0,
 	SGCU_VEHICLE_REFIT_COST             = 1 << 1,
 	SGCU_RANDOM_TRIGGER                 = 1 << 2,
+	SGCU_CB36_SPEED_RAILTYPE            = 1 << 3,
+	SGCU_REFIT_CB_ALL_CARGOES           = 1 << 4,
 };
 DECLARE_ENUM_AS_BIT_SET(SpriteGroupCallbacksUsed)
+
+enum CustomSignalSpriteContext : uint8 {
+	CSSC_GUI = 0,
+	CSSC_TRACK,
+	CSSC_TUNNEL_BRIDGE_ENTRANCE,
+	CSSC_TUNNEL_BRIDGE_EXIT,
+	CSSC_BRIDGE_MIDDLE,
+};
 
 #endif /* NEWGRF_COMMONS_H */

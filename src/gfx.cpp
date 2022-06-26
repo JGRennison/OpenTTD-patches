@@ -226,8 +226,9 @@ static std::vector<LineSegment> MakePolygonSegments(const std::vector<Point> &sh
  *         FILLRECT_OPAQUE:   Fill the polygon with the specified colour.
  *         FILLRECT_CHECKER:  Fill every other pixel with the specified colour, in a checkerboard pattern.
  *         FILLRECT_RECOLOUR: Apply a recolour sprite to every pixel in the polygon.
+ *         FILLRECT_FUNCTOR:  Apply a functor to a line of pixels.
  */
-void GfxFillPolygon(const std::vector<Point> &shape, int colour, FillRectMode mode)
+void GfxFillPolygon(const std::vector<Point> &shape, int colour, FillRectMode mode, GfxFillRectModeFunctor *fill_functor)
 {
 	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 	const DrawPixelInfo *dpi = _cur_dpi;
@@ -307,6 +308,10 @@ void GfxFillPolygon(const std::vector<Point> &shape, int colour, FillRectMode mo
 					for (int x = (x1 + y) & 1; x < x2 - x1; x += 2) {
 						blitter->SetPixel(dst, x, 0, (uint8)colour);
 					}
+					break;
+				case FILLRECT_FUNCTOR:
+					/* Call the provided fill functor. */
+					fill_functor(dst, x2 - x1);
 					break;
 			}
 		}
@@ -1284,8 +1289,16 @@ static void GfxMainBlitter(const Sprite *sprite, int x, int y, BlitterMode mode,
 
 void DoPaletteAnimations();
 
+Colour _water_palette[10];
+
 void GfxInitPalettes()
 {
+	MemCpyT<Colour>(_water_palette, (_settings_game.game_creation.landscape == LT_TOYLAND) ? _extra_palette_values.dark_water_toyland : _extra_palette_values.dark_water, 5);
+	const Colour *s = (_settings_game.game_creation.landscape == LT_TOYLAND) ? _extra_palette_values.glitter_water_toyland : _extra_palette_values.glitter_water;
+	for (int i = 0; i < 5; i++) {
+		_water_palette[i + 5] = s[i * 3];
+	}
+
 	std::lock_guard<std::mutex> lock_state(_cur_palette_mutex);
 	memcpy(&_cur_palette, &_palette, sizeof(_cur_palette));
 	DoPaletteAnimations();

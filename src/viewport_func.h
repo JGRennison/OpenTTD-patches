@@ -136,8 +136,10 @@ void DrawTileSelectionRect(const TileInfo *ti, PaletteID pal);
 void DrawSelectionSprite(SpriteID image, PaletteID pal, const TileInfo *ti, int z_offset, FoundationPart foundation_part, const SubSprite *sub = nullptr);
 
 struct Town;
+struct TraceRestrictProgram;
 void SetViewportCatchmentStation(const Station *st, bool sel);
 void SetViewportCatchmentTown(const Town *t, bool sel);
+void SetViewportCatchmentTraceRestrictProgram(const TraceRestrictProgram *prog, bool sel);
 
 void MarkBridgeDirty(TileIndex begin, TileIndex end, DiagDirection direction, uint bridge_height, ViewportMarkDirtyFlags flags = VMDF_NONE);
 void MarkBridgeDirty(TileIndex tile, ViewportMarkDirtyFlags flags = VMDF_NONE);

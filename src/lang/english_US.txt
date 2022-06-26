@@ -910,12 +910,12 @@ STR_NEWS_STATION_NOW_ACCEPTS_CARGO_AND_CARGO                    :{WHITE}{STATION
 
 STR_NEWS_OFFER_OF_SUBSIDY_EXPIRED                               :{BIG_FONT}{BLACK}Offer of subsidy expired:{}{}{STRING} from {STRING} to {STRING} will now not attract a subsidy
 STR_NEWS_SUBSIDY_WITHDRAWN_SERVICE                              :{BIG_FONT}{BLACK}Subsidy withdrawn:{}{}{STRING} service from {STRING} to {STRING} is no longer subsidized
-STR_NEWS_SERVICE_SUBSIDY_OFFERED                                :{BIG_FONT}{BLACK}Service subsidy offered:{}{}First {STRING} service from {STRING} to {STRING} will attract a {NUM} year subsidy from the local authority!
+STR_NEWS_SERVICE_SUBSIDY_OFFERED                                :{BIG_FONT}{BLACK}Service subsidy offered:{}{}First {STRING} from {STRING} to {STRING} will attract a {NUM} year subsidy from the local authority!
 ###length 4
-STR_NEWS_SERVICE_SUBSIDY_AWARDED_HALF                           :{BIG_FONT}{BLACK}Service subsidy awarded to {STRING}!{}{}{STRING} service from {STRING} to {STRING} will pay 50% extra for the next {NUM} year{P "" s}!
+STR_NEWS_SERVICE_SUBSIDY_AWARDED_HALF                           :{BIG_FONT}{BLACK}Service subsidy awarded to {STRING}!{}{}{STRING} from {STRING} to {STRING} will pay 50% extra for the next {NUM} year{P "" s}!
 STR_NEWS_SERVICE_SUBSIDY_AWARDED_DOUBLE                         :{BIG_FONT}{BLACK}Service subsidy awarded to {STRING}!{}{}{STRING} service from {STRING} to {STRING} will pay double rates for the next {NUM} year{P "" s}!
-STR_NEWS_SERVICE_SUBSIDY_AWARDED_TRIPLE                         :{BIG_FONT}{BLACK}Service subsidy awarded to {STRING}!{}{}{STRING} service from {STRING} to {STRING} will pay triple rates for the next {NUM} year{P "" s}!
-STR_NEWS_SERVICE_SUBSIDY_AWARDED_QUADRUPLE                      :{BIG_FONT}{BLACK}Service subsidy awarded to {STRING}!{}{}{STRING} service from {STRING} to {STRING} will pay quadruple rates for the next {NUM} year{P "" s}!
+STR_NEWS_SERVICE_SUBSIDY_AWARDED_TRIPLE                         :{BIG_FONT}{BLACK}Service subsidy awarded to {STRING}!{}{}{STRING} from {STRING} to {STRING} will pay triple rates for the next {NUM} year{P "" s}!
+STR_NEWS_SERVICE_SUBSIDY_AWARDED_QUADRUPLE                      :{BIG_FONT}{BLACK}Service subsidy awarded to {STRING}!{}{}{STRING} from {STRING} to {STRING} will pay quadruple rates for the next {NUM} year{P "" s}!
 
 STR_NEWS_ROAD_REBUILDING                                        :{BIG_FONT}{BLACK}Traffic chaos in {TOWN}!{}{}Road rebuilding program funded by {STRING} brings 6 months of misery to motorists!
 STR_NEWS_EXCLUSIVE_RIGHTS_TITLE                                 :{BIG_FONT}{BLACK}Transport monopoly!
@@ -1036,6 +1036,8 @@ STR_GAME_OPTIONS_VIDEO_ACCELERATION_RESTART                     :{WHITE}The sett
 
 STR_GAME_OPTIONS_VIDEO_VSYNC                                    :{BLACK}VSync
 STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Check this box to v-sync the screen. A changed setting will only be applied upon game restart. Only works with hardware acceleration enabled
+
+STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}Current driver: {STRING}
 
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Interface size
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Select the interface element size to use
@@ -1163,10 +1165,11 @@ STR_TERRAIN_TYPE_ALPINIST                                       :Alpinist
 STR_TERRAIN_TYPE_CUSTOM                                         :Custom height
 STR_TERRAIN_TYPE_CUSTOM_VALUE                                   :Custom height ({NUM})
 
-###length 3
-STR_CITY_APPROVAL_PERMISSIVE                                    :Permissive
+###length 4
+STR_CITY_APPROVAL_LENIENT                                       :Lenient
 STR_CITY_APPROVAL_TOLERANT                                      :Tolerant
 STR_CITY_APPROVAL_HOSTILE                                       :Hostile
+STR_CITY_APPROVAL_PERMISSIVE                                    :Permissive (no effect on company actions)
 
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}No suitable AIs available...{}You can download several AIs via the 'Online Content' system
 
@@ -1267,8 +1270,8 @@ STR_CONFIG_SETTING_TRAIN_REVERSING_HELPTEXT                     :If enabled, tra
 STR_CONFIG_SETTING_DISASTERS                                    :Disasters: {STRING}
 STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Toggle disasters which may occasionally block or destroy vehicles or infrastructure
 
-STR_CONFIG_SETTING_CITY_APPROVAL                                :Town council's attitude towards area restructuring: {STRING}
-STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Choose how much noise and environmental damage by companies affect their town rating and further construction actions in their area
+STR_CONFIG_SETTING_CITY_APPROVAL                                :Local authority attitude: {STRING}
+STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Choose how much noise and environmental damage by companies affect their town rating and further construction actions in the town
 
 STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT                             :Map height limit: {STRING}
 STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT_HELPTEXT                    :Set the maximum height of the map terrain. With "(auto)" a good value will be picked after terrain generation
@@ -1541,6 +1544,14 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Green
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :Dark green
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Purple
 
+STR_CONFIG_SETTING_LINKGRAPH_COLOURS                            :Cargo flow overlay colors: {STRING}
+STR_CONFIG_SETTING_LINKGRAPH_COLOURS_HELPTEXT                   :Set the color scheme used for the cargo flow overlay.
+###length 4
+STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREEN_TO_RED               :Green to red (original)
+STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREEN_TO_BLUE              :Green to blue
+STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREY_TO_RED                :Gray to red
+STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREYSCALE                  :Grayscale
+
 STR_CONFIG_SETTING_SCROLLMODE                                   :Viewport scroll behaviour: {STRING}
 STR_CONFIG_SETTING_SCROLLMODE_HELPTEXT                          :Behavior when scrolling the map
 ###length 4
@@ -1648,9 +1659,6 @@ STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION_HELPTEXT              :Give reserved t
 
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS                     :Keep building tools active after usage: {STRING}
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS_HELPTEXT            :Keep the building tools for bridges, tunnels, etc. open after use
-
-STR_CONFIG_SETTING_EXPENSES_LAYOUT                              :Group expenses in company finance window: {STRING}
-STR_CONFIG_SETTING_EXPENSES_LAYOUT_HELPTEXT                     :Define the layout for the company expenses window
 
 STR_CONFIG_SETTING_AUTO_REMOVE_SIGNALS                          :Automatically remove signals during track construction: {STRING}
 STR_CONFIG_SETTING_AUTO_REMOVE_SIGNALS_HELPTEXT                 :Automatically remove signals during track construction if the signals are in the way. Note that this can potentially lead to train crashes.
@@ -3651,29 +3659,36 @@ STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Edit way
 
 # Finances window
 STR_FINANCES_CAPTION                                            :{WHITE}{COMPANY} Finances {BLACK}{COMPANY_NUM}
-STR_FINANCES_EXPENDITURE_INCOME_TITLE                           :{WHITE}Expenditure/Income
 STR_FINANCES_YEAR                                               :{WHITE}{NUM}
+
+###length 3
+STR_FINANCES_REVENUE_TITLE                                      :{WHITE}Revenue
+STR_FINANCES_OPERATING_EXPENSES_TITLE                           :{WHITE}Operating Expenses
+STR_FINANCES_CAPITAL_EXPENSES_TITLE                             :{WHITE}Capital Expenses
+
 
 ###length 13
 STR_FINANCES_SECTION_CONSTRUCTION                               :{GOLD}Construction
 STR_FINANCES_SECTION_NEW_VEHICLES                               :{GOLD}New Vehicles
-STR_FINANCES_SECTION_TRAIN_RUNNING_COSTS                        :{GOLD}Train Running Costs
-STR_FINANCES_SECTION_ROAD_VEHICLE_RUNNING_COSTS                 :{GOLD}Road Vehicle Running Costs
-STR_FINANCES_SECTION_AIRCRAFT_RUNNING_COSTS                     :{GOLD}Aircraft Running Costs
-STR_FINANCES_SECTION_SHIP_RUNNING_COSTS                         :{GOLD}Ship Running Costs
-STR_FINANCES_SECTION_PROPERTY_MAINTENANCE                       :{GOLD}Property Maintenance
-STR_FINANCES_SECTION_TRAIN_INCOME                               :{GOLD}Train Income
-STR_FINANCES_SECTION_ROAD_VEHICLE_INCOME                        :{GOLD}Road Vehicle Income
-STR_FINANCES_SECTION_AIRCRAFT_INCOME                            :{GOLD}Aircraft Income
-STR_FINANCES_SECTION_SHIP_INCOME                                :{GOLD}Ship Income
+STR_FINANCES_SECTION_TRAIN_RUNNING_COSTS                        :{GOLD}Trains
+STR_FINANCES_SECTION_ROAD_VEHICLE_RUNNING_COSTS                 :{GOLD}Road Vehicles
+STR_FINANCES_SECTION_AIRCRAFT_RUNNING_COSTS                     :{GOLD}Aircraft
+STR_FINANCES_SECTION_SHIP_RUNNING_COSTS                         :{GOLD}Ships
+STR_FINANCES_SECTION_INFRASTRUCTURE                             :{GOLD}Infrastructure
+STR_FINANCES_SECTION_TRAIN_REVENUE                              :{GOLD}Trains
+STR_FINANCES_SECTION_ROAD_VEHICLE_REVENUE                       :{GOLD}Road Vehicles
+STR_FINANCES_SECTION_AIRCRAFT_REVENUE                           :{GOLD}Aircraft
+STR_FINANCES_SECTION_SHIP_REVENUE                               :{GOLD}Ships
 STR_FINANCES_SECTION_LOAN_INTEREST                              :{GOLD}Loan Interest
 STR_FINANCES_SECTION_OTHER                                      :{GOLD}Other
 
-STR_FINANCES_NEGATIVE_INCOME                                    :{BLACK}-{CURRENCY_LONG}
-STR_FINANCES_POSITIVE_INCOME                                    :{BLACK}+{CURRENCY_LONG}
-STR_FINANCES_TOTAL_CAPTION                                      :{WHITE}Total:
+STR_FINANCES_NEGATIVE_INCOME                                    :-{CURRENCY_LONG}
+STR_FINANCES_POSITIVE_INCOME                                    :+{CURRENCY_LONG}
+STR_FINANCES_NET_PROFIT                                         :{WHITE}Net Profit
 STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}Bank Balance
+STR_FINANCES_OWN_FUNDS_TITLE                                    :{WHITE}Own Funds
 STR_FINANCES_LOAN_TITLE                                         :{WHITE}Loan
+STR_FINANCES_INTEREST_RATE                                      :{WHITE}Loan Interest: {BLACK}{NUM}%
 STR_FINANCES_MAX_LOAN                                           :{WHITE}Maximum Loan: {BLACK}{CURRENCY_LONG}
 STR_FINANCES_TOTAL_CURRENCY                                     :{BLACK}{CURRENCY_LONG}
 STR_FINANCES_BORROW_BUTTON                                      :{BLACK}Borrow {CURRENCY_LONG}
@@ -4255,8 +4270,8 @@ STR_VEHICLE_DETAILS_TRAIN_ENGINE_BUILT_AND_VALUE                :{LTBLUE}{ENGINE
 STR_VEHICLE_DETAILS_TRAIN_WAGON_VALUE                           :{LTBLUE}{ENGINE}{BLACK}   Value: {LTBLUE}{CURRENCY_LONG}
 
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_TEXT                   :{BLACK}Total cargo capacity of this train:
-STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY                        :{LTBLUE}- {CARGO_LONG} ({CARGO_SHORT})
-STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_MULT                   :{LTBLUE}- {CARGO_LONG} ({CARGO_SHORT}) (x{NUM})
+STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY                        :{LTBLUE}{CARGO_LONG} ({CARGO_SHORT})
+STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_MULT                   :{LTBLUE}{CARGO_LONG} ({CARGO_SHORT}) (x{NUM})
 
 STR_VEHICLE_DETAILS_CARGO_EMPTY                                 :{LTBLUE}Empty
 STR_VEHICLE_DETAILS_CARGO_FROM                                  :{LTBLUE}{CARGO_LONG} from {STATION}

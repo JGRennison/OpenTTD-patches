@@ -159,7 +159,7 @@ struct VehicleCache {
 
 /** Sprite sequence for a vehicle part. */
 struct VehicleSpriteSeq {
-	PalSpriteID seq[4];
+	PalSpriteID seq[8];
 	uint count;
 
 	bool operator==(const VehicleSpriteSeq &other) const
@@ -884,7 +884,7 @@ public:
 	CommandCost SendToDepot(DoCommandFlag flags, DepotCommand command, TileIndex specific_depot = 0);
 
 	void UpdateVisualEffect(bool allow_power_change = true);
-	void ShowVisualEffect() const;
+	void ShowVisualEffect(uint max_speed) const;
 
 	/**
 	 * Update the position of the vehicle. This will update the hash that tells
@@ -1450,10 +1450,19 @@ public:
 			return;
 		}
 
+		bool always_update_viewport = false;
+
+		if (EXPECTED_TYPE == VEH_SHIP && update_delta) {
+			extern bool RecentreShipSpriteBounds(Vehicle *v);
+			always_update_viewport = RecentreShipSpriteBounds(this);
+		}
+
 		SetBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH);
 
 		if (force_update) {
 			this->Vehicle::UpdateViewport(IsPointInViewportVehicleRedrawArea(_viewport_vehicle_map_redraw_rects, pt));
+		} else if (always_update_viewport) {
+			this->Vehicle::UpdateViewport(false);
 		}
 	}
 

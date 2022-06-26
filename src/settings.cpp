@@ -461,8 +461,9 @@ size_t BoolSettingDesc::ParseValue(const char *str) const
 	return this->def;
 }
 
-static bool ValidateEnumSetting(const IntSettingDesc *sdb, int32 val)
+static bool ValidateEnumSetting(const IntSettingDesc *sdb, int32 &val)
 {
+	if (sdb->flags & SF_ENUM_PRE_CB_VALIDATE && sdb->pre_check != nullptr && !sdb->pre_check(val)) return false;
 	for (const SettingDescEnumEntry *enumlist = sdb->enumlist; enumlist != nullptr && enumlist->str != STR_NULL; enumlist++) {
 		if (enumlist->val == val) {
 			return true;
@@ -526,7 +527,11 @@ void IntSettingDesc::MakeValueValid(int32 &val) const
 			uint32 uval = (uint32)val;
 			if (!(this->flags & SF_GUI_0_IS_SPECIAL) || uval != 0) {
 				if (this->flags & SF_ENUM) {
-					if (!ValidateEnumSetting(this, val)) uval = (uint32)(size_t)this->def;
+					if (!ValidateEnumSetting(this, val)) {
+						uval = (uint32)(size_t)this->def;
+					} else {
+						uval = (uint32)val;
+					}
 				} else if (!(this->flags & SF_GUI_DROPDOWN)) {
 					/* Clamp value-type setting to its valid range */
 					uval = ClampU(uval, this->min, this->max);
@@ -1133,6 +1138,7 @@ static void TrainBrakingModelChanged(int32 new_value)
 	UpdateAllBlockSignals();
 
 	InvalidateWindowData(WC_BUILD_SIGNAL, 0);
+	InvalidateWindowClassesData(WC_GAME_OPTIONS);
 }
 
 /**
@@ -1430,6 +1436,12 @@ static void ValidateSettings()
 			_settings_newgame.difficulty.quantity_sea_lakes == CUSTOM_SEA_LEVEL_NUMBER_DIFFICULTY) {
 		_settings_newgame.difficulty.quantity_sea_lakes = CUSTOM_SEA_LEVEL_MIN_PERCENTAGE;
 	}
+}
+
+static bool TownCouncilToleranceAdjust(int32 &new_value)
+{
+	if (new_value == 255) new_value = TOWN_COUNCIL_PERMISSIVE;
+	return true;
 }
 
 static void DifficultyNoiseChange(int32 new_value)

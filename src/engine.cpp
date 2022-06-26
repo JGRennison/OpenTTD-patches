@@ -207,7 +207,19 @@ uint Engine::DetermineCapacity(const Vehicle *v, uint16 *mail_capacity) const
 	/* Check the refit capacity callback if we are not in the default configuration, or if we are using the new multiplier algorithm. */
 	if (HasBit(this->info.callback_mask, CBM_VEHICLE_REFIT_CAPACITY) &&
 			(new_multipliers || default_cargo != cargo_type || (v != nullptr && v->cargo_subtype != 0))) {
-		uint16 callback = GetVehicleCallback(CBID_VEHICLE_REFIT_CAPACITY, 0, 0, this->index, v);
+		uint16 callback;
+		if (this->refit_capacity_values != nullptr) {
+			const EngineRefitCapacityValue *caps = this->refit_capacity_values.get();
+			while (true) {
+				if (HasBit(caps->cargoes, cargo_type)) {
+					callback = caps->capacity;
+					break;
+				}
+				caps++;
+			}
+		} else {
+			callback = GetVehicleCallback(CBID_VEHICLE_REFIT_CAPACITY, 0, 0, this->index, v);
+		}
 		if (callback != CALLBACK_FAILED) return callback;
 	}
 

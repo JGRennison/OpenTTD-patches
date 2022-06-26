@@ -213,7 +213,7 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 			SoundDriver::GetInstance() == nullptr ? "none" : SoundDriver::GetInstance()->GetName(),
 			BaseSounds::GetUsedSet() == nullptr ? "none" : BaseSounds::GetUsedSet()->name.c_str(),
 			BaseSounds::GetUsedSet() == nullptr ? UINT32_MAX : BaseSounds::GetUsedSet()->version,
-			VideoDriver::GetInstance() == nullptr ? "none" : VideoDriver::GetInstance()->GetName(),
+			VideoDriver::GetInstance() == nullptr ? "none" : VideoDriver::GetInstance()->GetInfoString(),
 			pathfinder_name(_settings_game.pf.pathfinder_for_trains), pathfinder_name(_settings_game.pf.pathfinder_for_roadvehs), pathfinder_name(_settings_game.pf.pathfinder_for_ships)
 	);
 
@@ -233,6 +233,9 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 
 	if (_settings_game.debug.chicken_bits != 0) {
 		buffer += seprintf(buffer, last, "Chicken bits: 0x%08X\n\n", _settings_game.debug.chicken_bits);
+	}
+	if (_settings_game.debug.newgrf_optimiser_flags != 0) {
+		buffer += seprintf(buffer, last, "NewGRF optimiser flags: 0x%08X\n\n", _settings_game.debug.newgrf_optimiser_flags);
 	}
 
 	buffer += seprintf(buffer, last, "AI Configuration (local: %i) (current: %i):\n", (int)_local_company, (int)_current_company);
@@ -432,7 +435,7 @@ char *CrashLog::LogCommandLog(char *buffer, const char *last) const
  * @param last   The last position in the buffer to write to.
  * @return the position of the \c '\0' character after the buffer.
  */
-char *CrashLog::FillCrashLog(char *buffer, const char *last) const
+char *CrashLog::FillCrashLog(char *buffer, const char *last)
 {
 	buffer += seprintf(buffer, last, "*** OpenTTD Crash Report ***\n\n");
 
@@ -452,10 +455,13 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last) const
 	}
 	buffer += seprintf(buffer, last, "\n");
 
+	this->FlushCrashLogBuffer();
+
 	buffer = this->LogError(buffer, last, CrashLog::message);
 
 #ifdef USE_SCOPE_INFO
 	if (IsMainThread() || IsGameThread()) {
+		this->FlushCrashLogBuffer();
 		buffer += WriteScopeLog(buffer, last);
 	}
 #endif
@@ -467,9 +473,13 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last) const
 	}
 
 	buffer = this->LogOpenTTDVersion(buffer, last);
+	this->FlushCrashLogBuffer();
 	buffer = this->LogStacktrace(buffer, last);
+	this->FlushCrashLogBuffer();
 	buffer = this->LogRegisters(buffer, last);
+	this->FlushCrashLogBuffer();
 	buffer = this->LogOSVersion(buffer, last);
+	this->FlushCrashLogBuffer();
 	buffer = this->LogCompiler(buffer, last);
 	buffer = this->LogOSVersionDetail(buffer, last);
 	buffer = this->LogConfiguration(buffer, last);
@@ -643,7 +653,7 @@ bool CrashLog::WriteCrashLog(const char *buffer, char *filename, const char *fil
 	if (file == nullptr) return false;
 
 	size_t len = strlen(buffer);
-	size_t written = fwrite(buffer, 1, len, file);
+	size_t written = (len != 0) ? fwrite(buffer, 1, len, file) : 0;
 
 	if (crashlog_file) {
 		*crashlog_file = file;
@@ -651,6 +661,23 @@ bool CrashLog::WriteCrashLog(const char *buffer, char *filename, const char *fil
 		FioFCloseFile(file);
 	}
 	return len == written;
+}
+
+void CrashLog::FlushCrashLogBuffer()
+{
+	if (this->crash_buffer_write == nullptr) return;
+
+	size_t len = strlen(this->crash_buffer_write);
+	if (len == 0) return;
+
+	if (this->crash_file != nullptr) {
+		fwrite(this->crash_buffer_write, 1, len, this->crash_file);
+		fflush(this->crash_file);
+	}
+	fwrite(this->crash_buffer_write, 1, len, stdout);
+	fflush(stdout);
+
+	this->crash_buffer_write += len;
 }
 
 /* virtual */ int CrashLog::WriteCrashDump(char *filename, const char *filename_last) const
@@ -771,18 +798,25 @@ bool CrashLog::MakeCrashLog(char *buffer, const char *last)
 	bool ret = true;
 
 	printf("Crash encountered, generating crash log...\n");
-	this->FillCrashLog(buffer, last);
-	printf("%s\n", buffer);
-	printf("Crash log generated.\n\n");
 
 	printf("Writing crash log to disk...\n");
-	bool bret = this->WriteCrashLog(buffer, filename, lastof(filename), this->name_buffer);
+	bool bret = this->WriteCrashLog("", filename, lastof(filename), this->name_buffer, &(this->crash_file));
 	if (bret) {
 		printf("Crash log written to %s. Please add this file to any bug reports.\n\n", filename);
 	} else {
 		printf("Writing crash log failed. Please attach the output above to any bug reports.\n\n");
 		ret = false;
 	}
+	this->crash_buffer_write = buffer;
+
+	this->FillCrashLog(buffer, last);
+	this->FlushCrashLogBuffer();
+	if (this->crash_file != nullptr) {
+		FioFCloseFile(this->crash_file);
+		this->crash_file = nullptr;
+	}
+	printf("Crash log generated.\n\n");
+
 
 	/* Don't mention writing crash dumps because not all platforms support it. */
 	int dret = this->WriteCrashDump(filename, lastof(filename));
@@ -869,18 +903,6 @@ bool CrashLog::MakeDesyncCrashLog(const std::string *log_in, std::string *log_ou
 	_savegame_DBGL_data = nullptr;
 	_save_DBGC_data = false;
 
-	if (!(_screen.width < 1 || _screen.height < 1 || _screen.dst_ptr == nullptr)) {
-		SetScreenshotAuxiliaryText("Desync Log", buffer);
-		bret = this->WriteScreenshot(filename, lastof(filename), name_buffer);
-		if (bret) {
-			printf("Desync screenshot written to %s. Please add this file to any bug reports.\n\n", filename);
-		} else {
-			ret = false;
-			printf("Writing desync screenshot failed.\n\n");
-		}
-		ClearScreenshotAuxiliaryText();
-	}
-
 	return ret;
 }
 
@@ -930,18 +952,6 @@ bool CrashLog::MakeInconsistencyLog(const InconsistencyExtraInfo &info) const
 	}
 	_savegame_DBGL_data = nullptr;
 	_save_DBGC_data = false;
-
-	if (!(_screen.width < 1 || _screen.height < 1 || _screen.dst_ptr == nullptr)) {
-		SetScreenshotAuxiliaryText("Inconsistency Log", buffer);
-		bret = this->WriteScreenshot(filename, lastof(filename), name_buffer);
-		if (bret) {
-			printf("Inconsistency screenshot written to %s. Please add this file to any bug reports.\n\n", filename);
-		} else {
-			ret = false;
-			printf("Writing inconsistency screenshot failed.\n\n");
-		}
-		ClearScreenshotAuxiliaryText();
-	}
 
 	return ret;
 }

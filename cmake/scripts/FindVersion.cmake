@@ -181,7 +181,7 @@ message(STATUS "Version string: ${REV_VERSION}, Release: ${REV_RELEASE}")
 if(GENERATE_OTTDREV)
     message(STATUS "Generating ${GENERATE_OTTDREV}")
     file(WRITE ${CMAKE_SOURCE_DIR}/${GENERATE_OTTDREV} "${REV_VERSION}\t${REV_ISODATE}\t${REV_MODIFIED}\t${REV_HASH}\t${REV_ISTAG}\t${REV_ISSTABLETAG}\t${REV_YEAR}\n")
-else()
+elseif(NOT "${FIND_VERSION_BINARY_DIR}" STREQUAL "")
     message(STATUS "Generating rev.cpp")
     configure_file("${CMAKE_SOURCE_DIR}/src/rev.cpp.in"
             "${FIND_VERSION_BINARY_DIR}/rev.cpp")

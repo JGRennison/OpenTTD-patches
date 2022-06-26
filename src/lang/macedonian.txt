@@ -828,6 +828,7 @@ STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH                :Секој ме
 
 
 
+
 # Custom currency window
 
 
@@ -853,7 +854,7 @@ STR_SEA_LEVEL_CUSTOM_PERCENTAGE                                 :Прилаго�
 
 ###length 7
 
-###length 3
+###length 4
 
 
 # Settings tree window
@@ -976,6 +977,8 @@ STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS                         :Дебелин�
 
 ###length 4
 
+###length 4
+
 
 
 ###length 3
@@ -1003,7 +1006,6 @@ STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS                         :Дебелин�
 
 
 ###length 3
-
 
 
 
@@ -1605,6 +1607,9 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 
 # Finances window
 STR_FINANCES_YEAR                                               :{WHITE}{NUM}
+
+###length 3
+
 
 ###length 13
 

@@ -16,6 +16,7 @@
 #include "water.h"
 #include "core/random_func.hpp"
 #include "newgrf_generic.h"
+#include "newgrf_newlandscape.h"
 
 #include "table/strings.h"
 #include "table/sprites.h"
@@ -71,6 +72,29 @@ void DrawHillyLandTile(const TileInfo *ti)
 SpriteID GetSpriteIDForRocks(const Slope slope, const uint tile_hash)
 {
 	return ((HasGrfMiscBit(GMB_SECOND_ROCKY_TILE_SET) && (tile_hash & 1)) ? SPR_FLAT_ROCKY_LAND_2 : SPR_FLAT_ROCKY_LAND_1) + SlopeToSpriteOffset(slope);
+}
+
+inline SpriteID GetSpriteIDForRocksUsingOffset(const uint slope_to_sprite_offset, const uint x, const uint y)
+{
+	return ((HasGrfMiscBit(GMB_SECOND_ROCKY_TILE_SET) && (TileHash(x, y) & 1)) ? SPR_FLAT_ROCKY_LAND_2 : SPR_FLAT_ROCKY_LAND_1) + slope_to_sprite_offset;
+}
+
+void DrawCustomSpriteIDForRocks(const TileInfo *ti)
+{
+	uint8 slope_to_sprite_offset = SlopeToSpriteOffset(ti->tileh);
+
+	for (const GRFFile *grf : _new_landscape_rocks_grfs) {
+		NewLandscapeResolverObject object(grf, ti, NEW_LANDSCAPE_ROCKS);
+
+		const SpriteGroup *group = object.Resolve();
+		if (group != nullptr && group->GetNumResults() > slope_to_sprite_offset) {
+			PaletteID pal = HasBit(grf->new_landscape_ctrl_flags, NLCF_ROCKS_RECOLOUR_ENABLED) ? GB(GetRegister(0x100), 0, 24) : PAL_NONE;
+			DrawGroundSprite(group->GetResult() + slope_to_sprite_offset, pal);
+			return;
+		}
+	}
+
+	DrawGroundSprite(GetSpriteIDForRocksUsingOffset(slope_to_sprite_offset, ti->x, ti->y), PAL_NONE);
 }
 
 SpriteID GetSpriteIDForFields(const Slope slope, const uint field_type)
@@ -135,7 +159,9 @@ static void DrawTile_Clear(TileInfo *ti, DrawTileProcParams params)
 			break;
 
 		case CLEAR_ROCKS:
-			if (!params.no_ground_tiles) DrawGroundSprite(GetSpriteIDForRocks(ti->tileh, TileHash(ti->x, ti->y)), PAL_NONE);
+			if (!params.no_ground_tiles) {
+				DrawCustomSpriteIDForRocks(ti);
+			}
 			break;
 
 		case CLEAR_FIELDS:
@@ -204,9 +230,13 @@ static void UpdateFences(TileIndex tile)
 static void TileLoopClearAlps(TileIndex tile)
 {
 	int k;
-	if ((int)TileHeight(tile) < GetSnowLine() - 1) {
+	int h = (int)TileHeight(tile);
+	if (h < GetSnowLine() - 1) {
 		/* Fast path to avoid needing to check all 4 corners */
 		k = -1;
+	} else if (h >= GetSnowLine() + 4) {
+		/* Fast path to avoid needing to check all 4 corners */
+		k = 3;
 	} else {
 		k = GetTileZ(tile) - GetSnowLine() + 1;
 	}

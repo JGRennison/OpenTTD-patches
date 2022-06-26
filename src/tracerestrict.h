@@ -422,6 +422,7 @@ enum TraceRestrictProgramActionsUsedFlags {
 	TRPAUF_SLOT_ACQUIRE_ON_RES    = 1 << 14, ///< Slot acquire (on reserve) action is present
 	TRPAUF_SPEED_ADAPTATION       = 1 << 15, ///< Speed adaptation control
 	TRPAUF_PBS_RES_END_SIMULATE   = 1 << 16, ///< PBS reservations ending at this signal slot changes must be fully simulated in dry run mode
+	TRPAUF_RESERVE_THROUGH_ALWAYS = 1 << 17, ///< Reserve through action is unconditionally set
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramActionsUsedFlags)
 
@@ -478,17 +479,43 @@ struct TraceRestrictProgram : TraceRestrictProgramPool::PoolItem<&_tracerestrict
 	uint32 refcount;
 	TraceRestrictProgramActionsUsedFlags actions_used_flags;
 
+private:
+
+	struct ptr_buffer {
+		TraceRestrictRefId *buffer;
+		uint32 elem_capacity;
+	};
+	union refid_list_union {
+		TraceRestrictRefId inline_ref_ids[4];
+		ptr_buffer ptr_ref_ids;
+
+		// Actual construction/destruction done by struct TraceRestrictProgram
+		refid_list_union() {}
+		~refid_list_union() {}
+	};
+	refid_list_union ref_ids;
+
+	void ClearRefIds();
+
+	inline TraceRestrictRefId *GetRefIdsPtr() { return this->refcount <= 4 ? this->ref_ids.inline_ref_ids : this->ref_ids.ptr_ref_ids.buffer; };
+
+public:
+
 	TraceRestrictProgram()
 			: refcount(0), actions_used_flags(static_cast<TraceRestrictProgramActionsUsedFlags>(0)) { }
 
+	~TraceRestrictProgram()
+	{
+		this->ClearRefIds();
+	}
+
 	void Execute(const Train *v, const TraceRestrictProgramInput &input, TraceRestrictProgramResult &out) const;
 
-	/**
-	 * Increment ref count, only use when creating a mapping
-	 */
-	void IncrementRefCount() { refcount++; }
+	inline const TraceRestrictRefId *GetRefIdsPtr() const { return const_cast<TraceRestrictProgram *>(this)->GetRefIdsPtr(); }
 
-	void DecrementRefCount();
+	void IncrementRefCount(TraceRestrictRefId ref_id);
+
+	void DecrementRefCount(TraceRestrictRefId ref_id);
 
 	static CommandCost Validate(const std::vector<TraceRestrictItem> &items, TraceRestrictProgramActionsUsedFlags &actions_used_flags);
 

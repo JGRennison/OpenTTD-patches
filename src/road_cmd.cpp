@@ -1649,8 +1649,14 @@ CommandCost CmdRemoveLongRoad(TileIndex start_tile, DoCommandFlag flags, uint32 
 				cost.AddCost(ret);
 				had_success = true;
 			} else {
-				/* Ownership errors are more important. */
-				if (last_error.GetErrorMessage() != STR_ERROR_OWNED_BY) last_error = ret;
+				/* Some errors are more equal than others. */
+				switch (last_error.GetErrorMessage()) {
+					case STR_ERROR_OWNED_BY:
+					case STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS:
+						break;
+					default:
+						last_error = ret;
+				}
 			}
 		}
 
@@ -2109,7 +2115,7 @@ static SpriteID GetRoadGroundSprite(const TileInfo *ti, Roadside roadside, const
  * Draw ground sprite and road pieces
  * @param ti TileInfo
  */
-void DrawRoadBits(TileInfo *ti, RoadBits road, RoadBits tram, Roadside roadside, bool snow_or_desert)
+void DrawRoadBits(TileInfo *ti, RoadBits road, RoadBits tram, Roadside roadside, bool snow_or_desert, bool draw_catenary)
 {
 	const bool is_road_tile = IsTileType(ti->tile, MP_ROAD);
 
@@ -2148,8 +2154,10 @@ void DrawRoadBits(TileInfo *ti, RoadBits road, RoadBits tram, Roadside roadside,
 		return;
 	}
 
-	/* Draw road, tram catenary */
-	DrawRoadCatenary(ti);
+	if (draw_catenary) {
+		/* Draw road, tram catenary */
+		DrawRoadCatenary(ti);
+	}
 
 	/* Return if full detail is disabled, or we are zoomed fully out. */
 	if (!HasBit(_display_opt, DO_FULL_DETAIL) || _cur_dpi->zoom > ZOOM_LVL_DETAIL) return;
@@ -2178,12 +2186,12 @@ void DrawRoadBits(TileInfo *ti, RoadBits road, RoadBits tram, Roadside roadside,
 
 void DrawRoadBitsRoad(TileInfo *ti)
 {
-	DrawRoadBits(ti, GetRoadBits(ti->tile, RTT_ROAD), GetRoadBits(ti->tile, RTT_TRAM), GetRoadside(ti->tile), IsOnSnow(ti->tile));
+	DrawRoadBits(ti, GetRoadBits(ti->tile, RTT_ROAD), GetRoadBits(ti->tile, RTT_TRAM), GetRoadside(ti->tile), IsOnSnow(ti->tile), true);
 }
 
 void DrawRoadBitsTunnelBridge(TileInfo *ti)
 {
-	DrawRoadBits(ti, GetCustomBridgeHeadRoadBits(ti->tile, RTT_ROAD), GetCustomBridgeHeadRoadBits(ti->tile, RTT_TRAM), ROADSIDE_PAVED, false);
+	DrawRoadBits(ti, GetCustomBridgeHeadRoadBits(ti->tile, RTT_ROAD), GetCustomBridgeHeadRoadBits(ti->tile, RTT_TRAM), ROADSIDE_PAVED, false, true);
 }
 
 /** Tile callback function for rendering a road tile to the screen */
@@ -2469,12 +2477,19 @@ static const Roadside _town_road_types_2[][2] = {
 static void TileLoop_Road(TileIndex tile)
 {
 	switch (_settings_game.game_creation.landscape) {
-		case LT_ARCTIC:
-			if (IsOnSnow(tile) != (GetTileZ(tile) > GetSnowLine())) {
+		case LT_ARCTIC: {
+			/* Flat foundation tiles should look the same as the tiles they visually connect to. */
+			int tile_z = GetTileZ(tile);
+			if (tile_z == GetSnowLine()) {
+				GetFoundationSlope(tile, &tile_z);
+			}
+
+			if (IsOnSnow(tile) != (tile_z > GetSnowLine())) {
 				ToggleSnow(tile);
 				MarkTileDirtyByTile(tile);
 			}
 			break;
+		}
 
 		case LT_TROPIC:
 			if (GetTropicZone(tile) == TROPICZONE_DESERT && !IsOnDesert(tile)) {
@@ -2650,14 +2665,15 @@ static TrackStatus GetTileTrackStatus_Road(TileIndex tile, TransportType mode, u
 					if (side != INVALID_DIAGDIR && axis != DiagDirToAxis(side)) break;
 
 					trackdirbits = TrackBitsToTrackdirBits(AxisToTrackBits(axis));
-					if (IsCrossingBarred(tile)) red_signals = trackdirbits;
-					if (IsLevelCrossingTile(TileAddByDiagDir(tile, AxisToDiagDir(axis))) &&
-							IsCrossingBarred(TileAddByDiagDir(tile, AxisToDiagDir(axis)))) {
-						red_signals &= (TrackdirBits)0x0102; // magic value. I think TRACKBIT_X_SW and TRACKBIT_X_NE should be swapped
-					}
-					if (IsLevelCrossingTile(TileAddByDiagDir(tile, ReverseDiagDir(AxisToDiagDir(axis)))) &&
-							IsCrossingBarred(TileAddByDiagDir(tile, ReverseDiagDir(AxisToDiagDir(axis))))) {
-						red_signals &= (TrackdirBits)0x0201; // inverse of above magic value
+					if (IsCrossingBarred(tile)) {
+						red_signals = trackdirbits;
+						auto mask_red_signal_bits_if_crossing_barred = [&](TileIndex t, TrackdirBits mask) {
+							if (IsLevelCrossingTile(t) && IsCrossingBarred(t)) red_signals &= mask;
+						};
+						/* Check for blocked adjacent crossing to south, keep only southbound red signal trackdirs, allow northbound traffic */
+						mask_red_signal_bits_if_crossing_barred(TileAddByDiagDir(tile, AxisToDiagDir(axis)), TRACKDIR_BIT_X_SW | TRACKDIR_BIT_Y_SE);
+						/* Check for blocked adjacent crossing to north, keep only northbound red signal trackdirs, allow southbound traffic */
+						mask_red_signal_bits_if_crossing_barred(TileAddByDiagDir(tile, ReverseDiagDir(AxisToDiagDir(axis))), TRACKDIR_BIT_X_NE | TRACKDIR_BIT_Y_NW);
 					}
 					break;
 				}

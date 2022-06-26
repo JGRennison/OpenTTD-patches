@@ -818,13 +818,64 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 	assert(condstack.empty());
 }
 
+void TraceRestrictProgram::ClearRefIds()
+{
+	if (this->refcount > 4) free(this->ref_ids.ptr_ref_ids.buffer);
+}
+
+/**
+ * Increment ref count, only use when creating a mapping
+ */
+void TraceRestrictProgram::IncrementRefCount(TraceRestrictRefId ref_id)
+{
+	if (this->refcount >= 4) {
+		if (this->refcount == 4) {
+			/* Transition from inline to allocated mode */
+
+			TraceRestrictRefId *ptr = MallocT<TraceRestrictRefId>(8);
+			MemCpyT<TraceRestrictRefId>(ptr, this->ref_ids.inline_ref_ids, 4);
+			this->ref_ids.ptr_ref_ids.buffer = ptr;
+			this->ref_ids.ptr_ref_ids.elem_capacity = 8;
+		} else if (this->refcount == this->ref_ids.ptr_ref_ids.elem_capacity) {
+			// grow buffer
+			this->ref_ids.ptr_ref_ids.elem_capacity *= 2;
+			this->ref_ids.ptr_ref_ids.buffer = ReallocT<TraceRestrictRefId>(this->ref_ids.ptr_ref_ids.buffer, this->ref_ids.ptr_ref_ids.elem_capacity);
+		}
+		this->ref_ids.ptr_ref_ids.buffer[this->refcount] = ref_id;
+	} else {
+		this->ref_ids.inline_ref_ids[this->refcount] = ref_id;
+	}
+	this->refcount++;
+}
+
 /**
  * Decrement ref count, only use when removing a mapping
  */
-void TraceRestrictProgram::DecrementRefCount() {
+void TraceRestrictProgram::DecrementRefCount(TraceRestrictRefId ref_id) {
 	assert(this->refcount > 0);
+	if (this->refcount >= 2) {
+		TraceRestrictRefId *data = this->GetRefIdsPtr();
+		for (uint i = 0; i < this->refcount - 1; i++) {
+			if (data[i] == ref_id) {
+				data[i] = data[this->refcount - 1];
+				break;
+			}
+		}
+	}
 	this->refcount--;
+	if (this->refcount == 4) {
+		/* Transition from allocated to inline mode */
+
+		TraceRestrictRefId *ptr = this->ref_ids.ptr_ref_ids.buffer;
+		MemCpyT<TraceRestrictRefId>(this->ref_ids.inline_ref_ids, ptr, 4);
+		free(ptr);
+	}
 	if (this->refcount == 0) {
+		extern const TraceRestrictProgram *_viewport_highlight_tracerestrict_program;
+		if (_viewport_highlight_tracerestrict_program == this) {
+			_viewport_highlight_tracerestrict_program = nullptr;
+			InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+		}
 		delete this;
 	}
 }
@@ -931,6 +982,11 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 
 				case TRIT_RESERVE_THROUGH:
 					actions_used_flags |= TRPAUF_RESERVE_THROUGH;
+					if (GetTraceRestrictValue(item)) {
+						actions_used_flags &= ~TRPAUF_RESERVE_THROUGH_ALWAYS;
+					} else if (condstack.empty()) {
+						actions_used_flags |= TRPAUF_RESERVE_THROUGH_ALWAYS;
+					}
 					break;
 
 				case TRIT_LONG_RESERVE:
@@ -1001,7 +1057,19 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 					break;
 
 				case TRIT_REVERSE:
-					actions_used_flags |= TRPAUF_REVERSE;
+					switch (static_cast<TraceRestrictReverseValueField>(GetTraceRestrictValue(item))) {
+						case TRRVF_REVERSE:
+							actions_used_flags |= TRPAUF_REVERSE;
+							break;
+
+						case TRRVF_CANCEL_REVERSE:
+							if (condstack.empty()) actions_used_flags &= ~TRPAUF_REVERSE;
+							break;
+
+						default:
+							NOT_REACHED();
+							break;
+					}
 					break;
 
 				case TRIT_SPEED_RESTRICTION:
@@ -1193,17 +1261,16 @@ void TraceRestrictSetIsSignalRestrictedBit(TileIndex t)
 	// First mapping for this tile, or later
 	TraceRestrictMapping::iterator lower_bound = _tracerestrictprogram_mapping.lower_bound(MakeTraceRestrictRefId(t, static_cast<Track>(0)));
 
-	// First mapping for next tile, or later
-	TraceRestrictMapping::iterator upper_bound = _tracerestrictprogram_mapping.lower_bound(MakeTraceRestrictRefId(t + 1, static_cast<Track>(0)));
+	bool found = (lower_bound != _tracerestrictprogram_mapping.end()) && (GetTraceRestrictRefIdTileIndex(lower_bound->first) == t);
 
 	// If iterators are the same, there are no mappings for this tile
 	switch (GetTileType(t)) {
 		case MP_RAILWAY:
-			SetRestrictedSignal(t, lower_bound != upper_bound);
+			SetRestrictedSignal(t, found);
 			break;
 
 		case MP_TUNNELBRIDGE:
-			SetTunnelBridgeRestrictedSignal(t, lower_bound != upper_bound);
+			SetTunnelBridgeRestrictedSignal(t, found);
 			break;
 
 		default:
@@ -1223,10 +1290,10 @@ void TraceRestrictCreateProgramMapping(TraceRestrictRefId ref, TraceRestrictProg
 	if (!insert_result.second) {
 		// value was not inserted, there is an existing mapping
 		// unref the existing mapping before updating it
-		_tracerestrictprogram_pool.Get(insert_result.first->second.program_id)->DecrementRefCount();
+		_tracerestrictprogram_pool.Get(insert_result.first->second.program_id)->DecrementRefCount(ref);
 		insert_result.first->second = prog->index;
 	}
-	prog->IncrementRefCount();
+	prog->IncrementRefCount(ref);
 
 	TileIndex tile = GetTraceRestrictRefIdTileIndex(ref);
 	Track track = GetTraceRestrictRefIdTrack(ref);
@@ -1246,11 +1313,13 @@ bool TraceRestrictRemoveProgramMapping(TraceRestrictRefId ref)
 		// Found
 		TraceRestrictProgram *prog = _tracerestrictprogram_pool.Get(iter->second.program_id);
 
+		bool update_reserve_through = (prog->actions_used_flags & TRPAUF_RESERVE_THROUGH_ALWAYS);
+
 		// check to see if another mapping needs to be removed as well
 		// do this before decrementing the refcount
 		bool remove_other_mapping = prog->refcount == 2 && prog->items.empty();
 
-		prog->DecrementRefCount();
+		prog->DecrementRefCount(ref);
 		_tracerestrictprogram_mapping.erase(iter);
 
 		TileIndex tile = GetTraceRestrictRefIdTileIndex(ref);
@@ -1260,18 +1329,36 @@ bool TraceRestrictRemoveProgramMapping(TraceRestrictRefId ref)
 		YapfNotifyTrackLayoutChange(tile, track);
 
 		if (remove_other_mapping) {
-			TraceRestrictProgramID id = prog->index;
-			for (TraceRestrictMapping::iterator rm_iter = _tracerestrictprogram_mapping.begin();
-					rm_iter != _tracerestrictprogram_mapping.end(); ++rm_iter) {
-				if (rm_iter->second.program_id == id) {
-					TraceRestrictRemoveProgramMapping(rm_iter->first);
-					break;
-				}
-			}
+			TraceRestrictRemoveProgramMapping(const_cast<const TraceRestrictProgram *>(prog)->GetRefIdsPtr()[0]);
 		}
+
+		if (update_reserve_through) UpdateSignalReserveThroughBit(tile, track, true);
 		return true;
 	} else {
 		return false;
+	}
+}
+
+void TraceRestrictCheckRefreshSignals(const TraceRestrictProgram *prog, size_t old_size, TraceRestrictProgramActionsUsedFlags old_actions_used_flags)
+{
+	if (((old_actions_used_flags ^ prog->actions_used_flags) & TRPAUF_RESERVE_THROUGH_ALWAYS)) {
+		const TraceRestrictRefId *data = prog->GetRefIdsPtr();
+		for (uint i = 0; i < prog->refcount; i++) {
+			TileIndex tile = GetTraceRestrictRefIdTileIndex(data[i]);
+			Track track = GetTraceRestrictRefIdTrack(data[i]);
+			if (IsTileType(tile, MP_RAILWAY)) UpdateSignalReserveThroughBit(tile, track, true);
+		}
+	}
+
+	if (_network_dedicated) return;
+
+	if (!((old_actions_used_flags ^ prog->actions_used_flags) & (TRPAUF_RESERVE_THROUGH_ALWAYS | TRPAUF_REVERSE))) return;
+
+	if (old_size == 0 && prog->refcount == 1) return; // Program is new, no need to refresh again
+
+	const TraceRestrictRefId *data = prog->GetRefIdsPtr();
+	for (uint i = 0; i < prog->refcount; i++) {
+		MarkTileDirtyByTile(GetTraceRestrictRefIdTileIndex(data[i]), VMDF_NOT_MAP_MODE);
 	}
 }
 
@@ -1302,6 +1389,21 @@ TraceRestrictProgram *GetTraceRestrictProgram(TraceRestrictRefId ref, bool creat
 	} else {
 		return nullptr;
 	}
+}
+
+/**
+ * Gets the first signal program for the given tile
+ * This is for debug/display purposes only
+ */
+TraceRestrictProgram *GetFirstTraceRestrictProgramOnTile(TileIndex t)
+{
+	// First mapping for this tile, or later
+	TraceRestrictMapping::iterator lower_bound = _tracerestrictprogram_mapping.lower_bound(MakeTraceRestrictRefId(t, static_cast<Track>(0)));
+
+	if ((lower_bound != _tracerestrictprogram_mapping.end()) && (GetTraceRestrictRefIdTileIndex(lower_bound->first) == t)) {
+		return _tracerestrictprogram_pool.Get(lower_bound->second.program_id);
+	}
+	return nullptr;
 }
 
 /**
@@ -1627,8 +1729,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 		}
 
 		default:
-			NOT_REACHED();
-			break;
+			return CMD_ERROR;
 	}
 
 	TraceRestrictProgramActionsUsedFlags actions_used_flags;
@@ -1640,6 +1741,9 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 	if (flags & DC_EXEC) {
 		assert(prog);
 
+		size_t old_size = prog->items.size();
+		TraceRestrictProgramActionsUsedFlags old_actions_used_flags = prog->actions_used_flags;
+
 		// move in modified program
 		prog->items.swap(items);
 		prog->actions_used_flags = actions_used_flags;
@@ -1648,6 +1752,8 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 			// program is empty, and this tile is the only reference to it
 			// so delete it, as it's redundant
 			TraceRestrictRemoveProgramMapping(MakeTraceRestrictRefId(tile, track));
+		} else {
+			TraceRestrictCheckRefreshSignals(prog, old_size, old_actions_used_flags);
 		}
 
 		// update windows
@@ -1728,6 +1834,8 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 				}
 				prog->items = source_prog->items; // copy
 				prog->Validate();
+
+				TraceRestrictCheckRefreshSignals(prog, 0, static_cast<TraceRestrictProgramActionsUsedFlags>(0));
 			}
 			break;
 		}
@@ -1740,9 +1848,15 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 					// allocation failed
 					return CMD_ERROR;
 				}
+
+				size_t old_size = prog->items.size();
+				TraceRestrictProgramActionsUsedFlags old_actions_used_flags = prog->actions_used_flags;
+
 				prog->items.reserve(prog->items.size() + source_prog->items.size()); // this is in case prog == source_prog
 				prog->items.insert(prog->items.end(), source_prog->items.begin(), source_prog->items.end()); // append
 				prog->Validate();
+
+				TraceRestrictCheckRefreshSignals(prog, old_size, old_actions_used_flags);
 			}
 			break;
 		}
@@ -1789,8 +1903,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 		}
 
 		default:
-			NOT_REACHED();
-			break;
+			return CMD_ERROR;
 	}
 
 	// update windows

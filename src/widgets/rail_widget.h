@@ -117,6 +117,8 @@ enum BuildSignalWidgets {
 	WID_BS_SEMAPHORE_NOEN_SEL, ///< NWID_SELECTION for WID_BS_SEMAPHORE_NO_ENTRY
 	WID_BS_ELECTRIC_NOEN_SEL,  ///< NWID_SELECTION for WID_BS_ELECTRIC_NO_ENTRY
 	WID_BS_PROGRAM_SEL,        ///< NWID_SELECTION for WID_BS_PROGRAM
+	WID_BS_STYLE,              ///< Style selection dropdown
+	WID_BS_STYLE_SEL,          ///< NWID_SELECTION for WID_BS_STYLE
 };
 
 /** Widgets of the #BuildRailDepotWindow class. */

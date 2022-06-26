@@ -146,7 +146,7 @@ uint32 RoadStopScopeResolver::GetVariable(uint16 variable, uint32 parameter, Get
 			if (this->tile == INVALID_TILE) return 0;
 			TileIndex tile = this->tile;
 			if (parameter != 0) tile = GetNearbyTile(parameter, tile); // only perform if it is required
-			return GetNearbyTileInformation(tile, this->ro.grffile->grf_version >= 8);
+			return GetNearbyTileInformation(tile, this->ro.grffile->grf_version >= 8, extra->mask);
 		}
 
 		/* Road stop info of nearby tiles */
@@ -634,7 +634,7 @@ void StationUpdateRoadStopCachedTriggers(BaseStation *st)
 	}
 }
 
-void DumpRoadStopSpriteGroup(const BaseStation *st, const RoadStopSpec *spec, std::function<void(const char *)> print)
+void DumpRoadStopSpriteGroup(const BaseStation *st, const RoadStopSpec *spec, DumpSpriteGroupPrinter print)
 {
 	CargoID ctype = CT_DEFAULT_NA;
 

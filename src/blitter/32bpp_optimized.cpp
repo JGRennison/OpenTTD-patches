@@ -356,7 +356,21 @@ template <bool Tpal_to_rgb> Sprite *Blitter_32bppOptimized::EncodeInternal(const
 					dst_px->a = a;
 					if (a != 0 && a != 255) flags |= BSF_TRANSLUCENT;
 					*dst_n = src->m;
-					if (src->m != 0) {
+					if (z >= _settings_client.gui.disable_water_animation && src->m >= 245 && src->m <= 254) {
+						*dst_n = 0;
+
+						/* Get brightest value */
+						uint8 rgb_max = std::max({ src->r, src->g, src->b });
+
+						/* Black pixel (8bpp or old 32bpp image), so use default value */
+						if (rgb_max == 0) rgb_max = DEFAULT_BRIGHTNESS;
+
+						extern Colour _water_palette[10];
+						Colour c = this->AdjustBrightness(_water_palette[src->m - 245], rgb_max);
+						dst_px->r = c.r;
+						dst_px->g = c.g;
+						dst_px->b = c.b;
+					} else if (src->m != 0) {
 						flags &= ~BSF_NO_REMAP;
 						if (src->m >= PALETTE_ANIM_START) flags &= ~BSF_NO_ANIM;
 

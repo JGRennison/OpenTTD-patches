@@ -111,6 +111,16 @@ static inline void SetTunnelIndex(TileIndex t, TunnelID id)
 	_m[t].m2 = (id >= TUNNEL_ID_MAP_LOOKUP) ? TUNNEL_ID_MAP_LOOKUP : id;
 }
 
+void SetTunnelSignalStyle(TileIndex t, TileIndex end, uint8 style);
+
+static inline uint8 GetTunnelSignalStyle(TileIndex t)
+{
+	if (likely(!HasBit(_m[t].m3, 7))) return 0;
+
+	extern uint8 GetTunnelSignalStyleExtended(TileIndex t);
+	return GetTunnelSignalStyleExtended(t);
+}
+
 /**
  * Makes a road tunnel entrance
  * @param t the entrance of the tunnel

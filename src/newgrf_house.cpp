@@ -202,10 +202,10 @@ static uint32 GetNumHouses(HouseID house_id, const Town *town)
  * @param grf_version8 True, if we are dealing with a new NewGRF which uses GRF version >= 8.
  * @return a construction of bits obeying the newgrf format
  */
-static uint32 GetNearbyTileInformation(byte parameter, TileIndex tile, bool grf_version8)
+static uint32 GetNearbyTileInformation(byte parameter, TileIndex tile, bool grf_version8, uint32 mask)
 {
 	tile = GetNearbyTile(parameter, tile);
-	return GetNearbyTileInformation(tile, grf_version8);
+	return GetNearbyTileInformation(tile, grf_version8, mask);
 }
 
 /** Structure with user-data for SearchNearbyHouseXXX - functions */
@@ -362,7 +362,7 @@ static uint32 GetDistanceFromNearbyHouse(uint8 parameter, TileIndex tile, HouseI
 		}
 
 		/* Land info for nearby tiles. */
-		case 0x62: return GetNearbyTileInformation(parameter, this->tile, this->ro.grffile->grf_version >= 8);
+		case 0x62: return GetNearbyTileInformation(parameter, this->tile, this->ro.grffile->grf_version >= 8, extra->mask);
 
 		/* Current animation frame of nearby house tiles */
 		case 0x63: {

@@ -3054,6 +3054,10 @@ DEF_CONSOLE_CMD(ConMiscDebug)
 		IConsoleHelp("Debug: misc flags.  Usage: 'misc_debug [<flags>]'");
 		IConsoleHelp("  1: MDF_OVERHEAT_BREAKDOWN_OPEN_WIN");
 		IConsoleHelp("  2: MDF_ZONING_RS_WATER_FLOOD_STATE");
+		IConsoleHelp("  4: MDF_ZONING_RS_TROPIC_ZONE");
+		IConsoleHelp("  8: MDF_ZONING_RS_ANIMATED_TILE");
+		IConsoleHelp(" 10: MDF_NEWGRF_SG_SAVE_RAW");
+		IConsoleHelp(" 20: MDF_NEWGRF_SG_DUMP_MORE_DETAIL");
 		return true;
 	}
 
@@ -3061,6 +3065,39 @@ DEF_CONSOLE_CMD(ConMiscDebug)
 		IConsolePrintF(CC_DEFAULT, "Misc debug flags: %X", _misc_debug_flags);
 	} else {
 		_misc_debug_flags = strtoul(argv[1], nullptr, 16);
+	}
+
+	return true;
+}
+
+DEF_CONSOLE_CMD(ConSetNewGRFOptimiserFlags)
+{
+	if (argc < 1 || argc > 2) {
+		IConsoleHelp("Debug: misc set_newgrf_optimiser_flags.  Usage: 'set_newgrf_optimiser_flags [<flags>]'");
+		return true;
+	}
+
+	if (argc == 1) {
+		IConsolePrintF(CC_DEFAULT, "NewGRF optimiser flags: %X", _settings_game.debug.newgrf_optimiser_flags);
+	} else {
+		if (_game_mode == GM_MENU || (_networking && !_network_server)) {
+			IConsoleError("This command is only available in-game and in the editor, and not as a network client.");
+			return true;
+		}
+		extern uint NetworkClientCount();
+		if (_networking && NetworkClientCount() > 1) {
+			IConsoleError("This command is not available when network clients are connected.");
+			return true;
+		}
+
+		uint value = strtoul(argv[1], nullptr, 16);
+		if (_settings_game.debug.newgrf_optimiser_flags == value) return true;
+		_settings_game.debug.newgrf_optimiser_flags = value;
+
+		ReloadNewGRFData();
+
+		extern void PostCheckNewGRFLoadWarnings();
+		PostCheckNewGRFLoadWarnings();
 	}
 
 	return true;
@@ -3660,6 +3697,7 @@ void IConsoleStdLibRegister()
 	IConsole::CmdRegister("csleep",                  ConCSleep,           nullptr, true);
 	IConsole::CmdRegister("recalculate_road_cached_one_way_states", ConRecalculateRoadCachedOneWayStates, ConHookNoNetwork, true);
 	IConsole::CmdRegister("misc_debug",              ConMiscDebug,        nullptr, true);
+	IConsole::CmdRegister("set_newgrf_optimiser_flags", ConSetNewGRFOptimiserFlags, nullptr, true);
 
 	/* NewGRF development stuff */
 	IConsole::CmdRegister("reload_newgrfs",          ConNewGRFReload,     ConHookNewGRFDeveloperTool);

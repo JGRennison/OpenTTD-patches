@@ -264,7 +264,7 @@ struct TerraformToolbarWindow : Window {
 				break;
 
 			case WID_TT_MEASUREMENT_TOOL:
-				HandlePlacePushButton(this, WID_TT_MEASUREMENT_TOOL, SPR_CURSOR_QUERY, HT_RECT);
+				HandlePlacePushButton(this, WID_TT_MEASUREMENT_TOOL, SPR_CURSOR_QUERY, HT_RECT | HT_MAP);
 				this->last_user_action = widget;
 				break;
 

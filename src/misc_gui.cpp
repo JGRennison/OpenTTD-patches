@@ -197,6 +197,8 @@ public:
 		/* Tiletype */
 		SetDParam(0, td.dparam[0]);
 		SetDParam(1, td.dparam[1]);
+		SetDParam(2, td.dparam[2]);
+		SetDParam(3, td.dparam[3]);
 		this->landinfo_data.push_back(GetString(td.str));
 
 		/* Up to four owners */
@@ -606,7 +608,7 @@ void ShowEstimatedCostOrIncome(Money cost, int x, int y)
 }
 
 /**
- * Display animated income or costs on the map.
+ * Display animated income or costs on the map. Does nothing if cost is zero.
  * @param x    World X position of the animation location.
  * @param y    World Y position of the animation location.
  * @param z    World Z position of the animation location.
@@ -614,7 +616,7 @@ void ShowEstimatedCostOrIncome(Money cost, int x, int y)
  */
 void ShowCostOrIncomeAnimation(int x, int y, int z, Money cost)
 {
-	if (!HasBit(_extra_display_opt, XDO_SHOW_MONEY_TEXT_EFFECTS)) return;
+	if (!HasBit(_extra_display_opt, XDO_SHOW_MONEY_TEXT_EFFECTS) || cost == 0) return;
 
 	Point pt = RemapCoords(x, y, z);
 	StringID msg = STR_INCOME_FLOAT_COST;
@@ -810,7 +812,7 @@ struct TooltipsWindow : public Window
 
 			case TCC_HOVER_VIEWPORT:
 				if (_settings_client.gui.hover_delay_ms == 0) {
-					this->delete_next_mouse_loop = true;
+					if (!_right_button_down) this->delete_next_mouse_loop = true;
 				} else if (!_mouse_hovering) {
 					delete this;
 					break;

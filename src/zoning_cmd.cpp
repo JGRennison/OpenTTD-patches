@@ -27,6 +27,7 @@
 #include "viewport_func.h"
 #include "road_map.h"
 #include "debug_settings.h"
+#include "animated_tile.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 
 Zoning _zoning;
@@ -267,10 +268,23 @@ SpriteID TileZoneCheckTraceRestrictEvaluation(TileIndex tile, Owner owner)
 	if (IsTileType(tile, MP_RAILWAY) && HasSignals(tile) && IsRestrictedSignal(tile)) {
 		return SPR_ZONING_INNER_HIGHLIGHT_RED;
 	}
-	if (IsTunnelBridgeWithSignalSimulation(tile)) {
+	if (IsTunnelBridgeWithSignalSimulation(tile) && IsTunnelBridgeRestrictedSignal(tile)) {
 		return SPR_ZONING_INNER_HIGHLIGHT_RED;
 	}
 	if (unlikely(HasBit(_misc_debug_flags, MDF_ZONING_RS_WATER_FLOOD_STATE)) && IsNonFloodingWaterTile(tile)) {
+		return SPR_ZONING_INNER_HIGHLIGHT_YELLOW;
+	}
+	if (unlikely(HasBit(_misc_debug_flags, MDF_ZONING_RS_TROPIC_ZONE))) {
+		switch (GetTropicZone(tile)) {
+			case TROPICZONE_DESERT:
+				return SPR_ZONING_INNER_HIGHLIGHT_YELLOW;
+			case TROPICZONE_RAINFOREST:
+				return SPR_ZONING_INNER_HIGHLIGHT_LIGHT_BLUE;
+			default:
+				break;
+		}
+	}
+	if (unlikely(HasBit(_misc_debug_flags, MDF_ZONING_RS_ANIMATED_TILE)) && _animated_tiles.find(tile) != _animated_tiles.end()) {
 		return SPR_ZONING_INNER_HIGHLIGHT_YELLOW;
 	}
 

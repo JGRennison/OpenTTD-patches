@@ -13,8 +13,7 @@
 #include "map_func.h"
 #include "tile_map.h"
 
-uint GetTunnelBridgeSignalSimulationSpacingTarget(Owner owner);
-uint GetBestTunnelBridgeSignalSimulationSpacing(Owner owner, TileIndex begin, TileIndex end);
+uint GetBestTunnelBridgeSignalSimulationSpacing(TileIndex begin, TileIndex end, int target);
 uint GetTunnelBridgeSignalSimulationSignalCount(TileIndex begin, TileIndex end);
 
 void MarkTunnelBridgeSignalDirty(TileIndex tile, bool exit);
