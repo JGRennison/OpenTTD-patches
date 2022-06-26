@@ -3768,7 +3768,7 @@ static PBSTileInfo ExtendTrainReservation(const Train *v, const PBSTileInfo &ori
 		if (IsSafeWaitingPosition(v, tile, cur_td, true, _settings_game.pf.forbid_90_deg)) {
 			PBSWaitingPositionRestrictedSignalInfo restricted_signal_info;
 			bool wp_free = IsWaitingPositionFree(v, tile, cur_td, _settings_game.pf.forbid_90_deg, &restricted_signal_info);
-			if (!(wp_free && TryReserveRailTrack(tile, TrackdirToTrack(cur_td)))) break;
+			if (!(wp_free && TryReserveRailTrackdir(tile, cur_td))) break;
 			/* Safe position is all good, path valid and okay. */
 			if (restricted_signal_info.tile != INVALID_TILE) {
 				const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(restricted_signal_info.tile, TrackdirToTrack(restricted_signal_info.trackdir));
