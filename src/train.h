@@ -507,7 +507,7 @@ struct TrainDecelerationStats {
 CommandCost CmdMoveRailVehicle(TileIndex, DoCommandFlag , uint32, uint32, const char *);
 CommandCost CmdMoveVirtualRailVehicle(TileIndex, DoCommandFlag, uint32, uint32, const char*);
 
-Train* CmdBuildVirtualRailVehicle(EngineID, StringID &error, uint32 user);
+Train* BuildVirtualRailVehicle(EngineID, StringID &error, uint32 user, bool no_consist_change);
 
 int GetTileMarginInFrontOfTrain(const Train *v, int x_pos, int y_pos);
 

@@ -6808,7 +6808,7 @@ int GetDisplayImageWidth(Train *t, Point *offset)
 	return t->gcache.cached_veh_length * reference_width / VEHICLE_LENGTH;
 }
 
-Train* CmdBuildVirtualRailWagon(const Engine *e, uint32 user)
+Train* CmdBuildVirtualRailWagon(const Engine *e, uint32 user, bool no_consist_change)
 {
 	const RailVehicleInfo *rvi = &e->u.rail;
 
@@ -6855,7 +6855,7 @@ Train* CmdBuildVirtualRailWagon(const Engine *e, uint32 user)
 
 	_new_vehicle_id = v->index;
 
-	v->UpdateViewport(true, false);
+	if (no_consist_change) return v;
 
 	v->First()->ConsistChanged(CCF_ARRANGE);
 
@@ -6866,7 +6866,7 @@ Train* CmdBuildVirtualRailWagon(const Engine *e, uint32 user)
 	return v;
 }
 
-Train* CmdBuildVirtualRailVehicle(EngineID eid, StringID &error, uint32 user)
+Train* BuildVirtualRailVehicle(EngineID eid, StringID &error, uint32 user, bool no_consist_change)
 {
 	const Engine *e = Engine::GetIfValid(eid);
 	if (e == nullptr || e->type != VEH_TRAIN) {
@@ -6885,7 +6885,7 @@ Train* CmdBuildVirtualRailVehicle(EngineID eid, StringID &error, uint32 user)
 	RegisterGameEvents(GEF_VIRT_TRAIN);
 
 	if (rvi->railveh_type == RAILVEH_WAGON) {
-		return CmdBuildVirtualRailWagon(e, user);
+		return CmdBuildVirtualRailWagon(e, user, no_consist_change);
 	}
 
 	Train *v = new Train();
@@ -6936,6 +6936,8 @@ Train* CmdBuildVirtualRailVehicle(EngineID eid, StringID &error, uint32 user)
 		train_part->SetVirtual();
 	}
 
+	if (no_consist_change) return v;
+
 	v->ConsistChanged(CCF_ARRANGE);
 
 	CheckConsistencyOfArticulatedVehicle(v);
@@ -6972,7 +6974,7 @@ CommandCost CmdBuildVirtualRailVehicle(TileIndex tile, DoCommandFlag flags, uint
 
 	if (should_execute) {
 		StringID err = INVALID_STRING_ID;
-		Train* train = CmdBuildVirtualRailVehicle(eid, err, p2);
+		Train* train = BuildVirtualRailVehicle(eid, err, p2, false);
 
 		if (train == nullptr) {
 			return_cmd_error(err);

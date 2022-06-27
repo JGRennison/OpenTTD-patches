@@ -993,6 +993,47 @@ CommandCost CmdVirtualTrainFromTemplateVehicle(TileIndex tile, DoCommandFlag fla
 
 CommandCost CmdDeleteVirtualTrain(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text);
 
+template <typename T>
+void UpdateNewVirtualTrainFromSource(Train *v, const T *src)
+{
+	struct helper {
+		static bool IsTrainPartReversed(const Train *src) { return HasBit(src->flags, VRF_REVERSE_DIRECTION); }
+		static bool IsTrainPartReversed(const TemplateVehicle *src) { return HasBit(src->ctrl_flags, TVCF_REVERSED); }
+		static const Train *GetTrainMultiheadOtherPart(const Train *src) { return src->other_multiheaded_part; }
+		static const TemplateVehicle *GetTrainMultiheadOtherPart(const TemplateVehicle *src) { return src; }
+	};
+
+	SB(v->flags, VRF_REVERSE_DIRECTION, 1, helper::IsTrainPartReversed(src) ? 1 : 0);
+
+	if (v->IsMultiheaded()) {
+		const T *other = helper::GetTrainMultiheadOtherPart(src);
+		/* For template vehicles, just use the front part, fix any discrepancy later */
+		v->other_multiheaded_part->cargo_type = other->cargo_type;
+		v->other_multiheaded_part->cargo_subtype = other->cargo_subtype;
+	}
+
+	while (true) {
+		v->cargo_type = src->cargo_type;
+		v->cargo_subtype = src->cargo_subtype;
+
+		if (v->HasArticulatedPart()) {
+			v = v->Next();
+		} else {
+			break;
+		}
+
+		if (src->HasArticulatedPart()) {
+			src = src->Next();
+		} else {
+			break;
+		}
+	}
+
+	v->First()->ConsistChanged(CCF_ARRANGE);
+	CheckConsistencyOfArticulatedVehicle(v);
+	InvalidateVehicleTickCaches();
+}
+
 Train* VirtualTrainFromTemplateVehicle(const TemplateVehicle* tv, StringID &err, uint32 user)
 {
 	CommandCost c;
@@ -1001,17 +1042,21 @@ Train* VirtualTrainFromTemplateVehicle(const TemplateVehicle* tv, StringID &err,
 
 	assert(tv->owner == _current_company);
 
-	head = CmdBuildVirtualRailVehicle(tv->engine_type, err, user);
+	head = BuildVirtualRailVehicle(tv->engine_type, err, user, true);
 	if (!head) return nullptr;
+
+	UpdateNewVirtualTrainFromSource(head, tv);
 
 	tail = head;
 	tv = tv->GetNextUnit();
 	while (tv) {
-		tmp = CmdBuildVirtualRailVehicle(tv->engine_type, err, user);
+		tmp = BuildVirtualRailVehicle(tv->engine_type, err, user, true);
 		if (!tmp) {
 			CmdDeleteVirtualTrain(INVALID_TILE, DC_EXEC, head->index, 0, nullptr);
 			return nullptr;
 		}
+
+		UpdateNewVirtualTrainFromSource(tmp, tv);
 
 		CmdMoveRailVehicle(INVALID_TILE, DC_EXEC, (1 << 21) | tmp->index, tail->index, 0);
 		tail = tmp;
@@ -1022,7 +1067,6 @@ Train* VirtualTrainFromTemplateVehicle(const TemplateVehicle* tv, StringID &err,
 	for (tv = tv_head, tmp = head; tv != nullptr && tmp != nullptr; tv = tv->Next(), tmp = tmp->Next()) {
 		tmp->cargo_type = tv->cargo_type;
 		tmp->cargo_subtype = tv->cargo_subtype;
-		SB(tmp->flags, VRF_REVERSE_DIRECTION, 1, HasBit(tv->ctrl_flags, TVCF_REVERSED) ? 1 : 0);
 	}
 
 	_new_vehicle_id = head->index;
@@ -1057,21 +1101,22 @@ CommandCost CmdVirtualTrainFromTrain(TileIndex tile, DoCommandFlag flags, uint32
 		Train *tmp, *head, *tail;
 		StringID err = INVALID_STRING_ID;
 
-		head = CmdBuildVirtualRailVehicle(train->engine_type, err, p2);
+		head = BuildVirtualRailVehicle(train->engine_type, err, p2, true);
 		if (!head) return_cmd_error(err);
+
+		UpdateNewVirtualTrainFromSource(head, train);
 
 		tail = head;
 		train = train->GetNextUnit();
 		while (train) {
-			tmp = CmdBuildVirtualRailVehicle(train->engine_type, err, p2);
+			tmp = BuildVirtualRailVehicle(train->engine_type, err, p2, true);
 			if (!tmp) {
 				CmdDeleteVirtualTrain(tile, flags, head->index, 0, nullptr);
 				return_cmd_error(err);
 			}
 
-			tmp->cargo_type = train->cargo_type;
-			tmp->cargo_subtype = train->cargo_subtype;
-			SB(tmp->flags, VRF_REVERSE_DIRECTION, 1, HasBit(train->flags, VRF_REVERSE_DIRECTION) ? 1 : 0);
+			UpdateNewVirtualTrainFromSource(tmp, train);
+
 			CmdMoveRailVehicle(0, DC_EXEC, (1 << 21) | tmp->index, tail->index, 0);
 			tail = tmp;
 
