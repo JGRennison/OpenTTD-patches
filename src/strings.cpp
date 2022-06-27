@@ -57,6 +57,8 @@ static uint64 _global_string_params_data[20];     ///< Global array of string pa
 static WChar _global_string_params_type[20];      ///< Type of parameters stored in #_global_string_params
 StringParameters _global_string_params(_global_string_params_data, 20, _global_string_params_type);
 
+std::string _temp_special_strings[16];
+
 /** Reset the type array. */
 void StringParameters::ClearTypeInformation()
 {
@@ -239,6 +241,9 @@ char *GetStringWithArgs(char *buffr, StringID string, StringParameters *args, co
 		case TEXT_TAB_SPECIAL:
 			if (index >= 0xE4 && !game_script) {
 				return GetSpecialNameString(buffr, index - 0xE4, args, last);
+			}
+			if (index < lengthof(_temp_special_strings) && !game_script) {
+				return FormatString(buffr, _temp_special_strings[index].c_str(), args, last, case_index);
 			}
 			break;
 
