@@ -88,7 +88,7 @@ bool TryReserveRailTrackdir(TileIndex tile, Trackdir td, bool trigger_stations)
 		MarkSingleSignalDirty(tile, td);
 		if (_extra_aspects > 0) {
 			SetSignalAspect(tile, TrackdirToTrack(td), 0);
-			UpdateAspectDeferred(tile, td);
+			UpdateAspectDeferred(tile, td, true);
 		}
 	}
 	return success;
@@ -667,6 +667,10 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 					if (HasBit(_signal_style_masks.next_only, signal_style)) {
 						SetBit(signal_flags, TRSLAI_NEXT_ONLY);
 					}
+					if (HasBit(_signal_style_masks.combined_normal_shunt, signal_style)) {
+						SetBit(signal_flags, TRSLAI_COMBINED);
+						UpdateLookaheadCombinedNormalShuntSignalDeferred(tile, trackdir, lookahead->RealEndPosition());
+					}
 					lookahead->AddSignal(signal_speed, 0, z, signal_flags);
 					lookahead->SetNextExtendPositionIfUnset();
 				}
@@ -1011,6 +1015,18 @@ void SetTrainReservationLookaheadEnd(Train *v)
 	for (const TrainReservationLookAheadItem &item : v->lookahead->items) {
 		if (item.end >= v->lookahead->reservation_end_position) break;
 		if (item.type == TRLIT_SIGNAL) {
+			if (HasBit(item.data_aux, TRSLAI_COMBINED_SHUNT)) {
+				/* Combined normal/shunt in shunt mode */
+				allow_skip_no_aspect_inc = false;
+				if (item.start <= threshold) {
+					known_signals_ahead = 1;
+					continue;
+				} else {
+					if (item.start > v->lookahead->lookahead_end_position) v->lookahead->lookahead_end_position = item.start;
+					return;
+				}
+			}
+
 			if (item.start <= threshold) {
 				/* Signal is within visual range */
 				uint8 style = item.data_aux >> 8;
@@ -1090,6 +1106,7 @@ void FillTrainReservationLookAhead(Train *v)
 			}
 			if (!(HasAcrossTunnelBridgeReservation(end) && GetTunnelBridgeExitSignalState(end) == SIGNAL_STATE_GREEN && raw_free_tiles == INT_MAX)) {
 				/* do not attempt to follow through a signalled tunnel/bridge if it is not empty or the far end is not reserved */
+				FlushDeferredDetermineCombineNormalShuntMode(v);
 				SetTrainReservationLookaheadEnd(v);
 				return;
 			}
@@ -1097,6 +1114,7 @@ void FillTrainReservationLookAhead(Train *v)
 	}
 
 	if (IsRailDepotTile(tile) && !GetDepotReservationTrackBits(tile)) {
+		FlushDeferredDetermineCombineNormalShuntMode(v);
 		SetTrainReservationLookaheadEnd(v);
 		return;
 	}
@@ -1131,6 +1149,7 @@ void FillTrainReservationLookAhead(Train *v)
 	v->lookahead->reservation_end_tile = res.tile;
 	v->lookahead->reservation_end_trackdir = res.trackdir;
 
+	FlushDeferredDetermineCombineNormalShuntMode(v);
 	SetTrainReservationLookaheadEnd(v);
 }
 

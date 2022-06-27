@@ -1434,7 +1434,7 @@ static void SetupBridgeTunnelSignalSimulation(TileIndex entrance, TileIndex exit
 	SetTunnelBridgeSignalSimulationExit(exit);
 	if (_extra_aspects > 0) {
 		SetTunnelBridgeEntranceSignalAspect(entrance, 0);
-		UpdateAspectDeferred(entrance, GetTunnelBridgeEntranceTrackdir(entrance));
+		UpdateAspectDeferred(entrance, GetTunnelBridgeEntranceTrackdir(entrance), false);
 	}
 }
 
@@ -1583,7 +1583,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			SetTunnelBridgeSignalSimulationExit(t);
 			if (_extra_aspects > 0) {
 				SetTunnelBridgeEntranceSignalAspect(t, 0);
-				UpdateAspectDeferred(t, GetTunnelBridgeEntranceTrackdir(t));
+				UpdateAspectDeferred(t, GetTunnelBridgeEntranceTrackdir(t), false);
 			}
 		};
 

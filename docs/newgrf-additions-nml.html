@@ -516,11 +516,18 @@ item (FEAT_GLOBALVARS) {
 	<tr><td>style_lookahead_single_signal_only</td><td>0 or 1</td>
 		<td>
 			Set the look-ahead to single signal only mode for the most recently defined style (defined using the <span class="code">define_style</span> property).<br />
-			This property only makes a difference when the "limit train lookahead to signal aspect" game setting is enabled.<br />
+			This property only makes a difference when the "limit train lookahead to signal aspect" game setting is enabled, or when using a different signal
+			type which uses <span class="code">tyle_combined_normal_shunt</span>.<br />
 			This is similar to <span class="code">style_lookahead_extra_aspects</span> with a value of 0, except the lookahead always ends at the
 			next signal, even if that signal type sets <span class="code">style_no_aspect_increase</span>.<br />
 			If enabled, this property overrides <span class="code">style_lookahead_extra_aspects</span>.<br />
 			This can be used for shunt signals.
+		</td>
+	</tr>
+	<tr><td>style_combined_normal_shunt</td><td>0 or 1</td>
+		<td>
+			Enable functioning as a combined normal aspect and shunt signal for the most recently defined style (defined using the <span class="code">define_style</span> property).<br />
+			When enabled and displaying a shunt aspect, the signal state in the lowest byte of <span class="code">extra_callback_info2</span> will have the value: 0xFF.
 		</td>
 	</tr>
 	<tr><td>style_opposite_side</td><td>0 or 1</td>

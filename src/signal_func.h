@@ -33,6 +33,7 @@ struct SignalStyleMasks {
 	uint16 always_reserve_through = 0;
 	uint16 no_tunnel_bridge = 0;
 	uint16 signal_opposite_side = 0;
+	uint16 combined_normal_shunt = 0;
 };
 extern SignalStyleMasks _signal_style_masks;
 
@@ -188,21 +189,24 @@ void UpdateSignalsInBufferIfOwnerNotAddable(Owner owner);
 uint8 GetForwardAspectFollowingTrack(TileIndex tile, Trackdir trackdir);
 uint8 GetSignalAspectGeneric(TileIndex tile, Trackdir trackdir, bool check_non_inc_style);
 void PropagateAspectChange(TileIndex tile, Trackdir trackdir, uint8 aspect);
-void UpdateAspectDeferred(TileIndex tile, Trackdir trackdir);
+void UpdateAspectDeferred(TileIndex tile, Trackdir trackdir, bool check_combined_normal_aspect);
+void UpdateLookaheadCombinedNormalShuntSignalDeferred(TileIndex tile, Trackdir trackdir, int lookahead_position);
 void FlushDeferredAspectUpdates();
+void FlushDeferredDetermineCombineNormalShuntMode(Train *v);
 void UpdateAllSignalAspects();
 void UpdateExtraAspectsVariable();
 void InitialiseExtraAspectsVariable();
+bool IsRailSpecialSignalAspect(TileIndex tile, Track track);
 
 inline void AdjustSignalAspectIfNonIncStyle(TileIndex tile, Track track, uint8 &aspect)
 {
 	extern void AdjustSignalAspectIfNonIncStyleIntl(TileIndex tile, Track track, uint8 &aspect);
-	if (aspect > 0 && _signal_style_masks.non_aspect_inc != 0) AdjustSignalAspectIfNonIncStyleIntl(tile, track, aspect);
+	if (aspect > 0 && (_signal_style_masks.non_aspect_inc != 0 || _signal_style_masks.combined_normal_shunt != 0)) AdjustSignalAspectIfNonIncStyleIntl(tile, track, aspect);
 }
 
-inline uint8 GetForwardAspectFollowingTrackAndIncrement(TileIndex tile, Trackdir trackdir)
+inline uint8 GetForwardAspectFollowingTrackAndIncrement(TileIndex tile, Trackdir trackdir, bool combined_normal_mode = false)
 {
-	return std::min<uint8>(GetForwardAspectFollowingTrack(tile, trackdir) + 1, GetMaximumSignalAspect());
+	return std::min<uint8>(GetForwardAspectFollowingTrack(tile, trackdir) + (combined_normal_mode ? 2 : 1), GetMaximumSignalAspect());
 }
 
 void UpdateSignalReserveThroughBit(TileIndex tile, Track track, bool update_signal);

@@ -15,6 +15,7 @@
 #include "date_func.h"
 #include "depot_base.h"
 #include "town.h"
+#include "signal_func.h"
 
 #include "safeguards.h"
 
@@ -117,10 +118,16 @@ SpriteID GetCustomRailSprite(const RailtypeInfo *rti, TileIndex tile, RailTypeSp
 	return group->GetResult();
 }
 
-inline uint8 RemapAspect(uint8 aspect, uint8 extra_aspects)
+inline uint8 RemapAspect(uint8 aspect, uint8 extra_aspects, uint8 style)
 {
 	if (likely(extra_aspects == 0 || _extra_aspects == 0)) return std::min<uint8>(aspect, 1);
 	if (aspect == 0) return 0;
+	if (style != 0 && HasBit(_signal_style_masks.combined_normal_shunt, style)) {
+		if (aspect == 1) {
+			return 0xFF;
+		}
+		aspect--;
+	}
 	if (aspect >= extra_aspects + 1) return 1;
 	return aspect + 1;
 }
@@ -132,7 +139,7 @@ static PalSpriteID GetRailTypeCustomSignalSprite(const RailtypeInfo *rti, TileIn
 	if (type == SIGTYPE_NO_ENTRY && !HasBit(rti->ctrl_flags, RTCF_NOENTRYSIG)) return { 0, PAL_NONE };
 
 	uint32 param1 = (context == CSSC_GUI) ? 0x10 : 0x00;
-	uint32 param2 = (type << 16) | (var << 8) | RemapAspect(aspect, rti->signal_extra_aspects);
+	uint32 param2 = (type << 16) | (var << 8) | RemapAspect(aspect, rti->signal_extra_aspects, 0);
 	if ((prog != nullptr) && HasBit(rti->ctrl_flags, RTCF_RESTRICTEDSIG)) SetBit(param2, 24);
 	RailTypeResolverObject object(rti, tile, TCX_NORMAL, RTSG_SIGNALS, param1, param2, context, prog);
 
@@ -170,7 +177,7 @@ CustomSignalSpriteResult GetCustomSignalSprite(const RailtypeInfo *rti, TileInde
 		if (!HasBit(grf->new_signal_style_mask, style)) continue;
 
 		uint32 param1 = (context == CSSC_GUI) ? 0x10 : 0x00;
-		uint32 param2 = (type << 16) | (var << 8) | RemapAspect(aspect, grf->new_signal_extra_aspects);
+		uint32 param2 = (type << 16) | (var << 8) | RemapAspect(aspect, grf->new_signal_extra_aspects, style);
 		if ((prog != nullptr) && HasBit(grf->new_signal_ctrl_flags, NSCF_RESTRICTEDSIG)) SetBit(param2, 24);
 		NewSignalsResolverObject object(grf, tile, TCX_NORMAL, param1, param2, context, style, prog);
 

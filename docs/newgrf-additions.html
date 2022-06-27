@@ -483,11 +483,19 @@
 	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
 	<h4 id="signals_style_lookahead_single_signal_only">Set custom signal style train look-ahead to single signal only mode (mappable property: signals_style_lookahead_single_signal_only)</h4>
 	<p>This applies to the most recent custom signal style defined using the <a href="#signals_define_style">signals_define_style</a> property.<br />
-	This property only makes a difference when the "limit train lookahead to signal aspect" game setting is enabled.<br />
+	This property only makes a difference when the "limit train lookahead to signal aspect" game setting is enabled, or when using a different signal
+	type which uses <a href="#signals_style_combined_normal_shunt">signals_style_combined_normal_shunt</a>.<br />
 	This is similar to <a href="#signals_style_lookahead_extra_aspects">signals_style_lookahead_extra_aspects</a> with a value of 0, except the lookahead always ends at the
 	next signal, even if that signal type sets <a href="#signals_style_no_aspect_increase">signals_style_no_aspect_increase</a>.<br />
 	If enabled, this property overrides <a href="#signals_style_lookahead_extra_aspects">signals_style_lookahead_extra_aspects</a>.<br />
 	This can be used for shunt signals.</p>
+	<p>The property length is 1 byte. 0 is disabled (default). 1 is enabled.<br />
+	The Action 0 Id field is not used, the value is ignored.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
+	<h4 id="signals_style_combined_normal_shunt">Set custom signal style combined normal aspect and shunt signal mode (mappable property: signals_style_combined_normal_shunt)</h4>
+	<p>This applies to the most recent custom signal style defined using the <a href="#signals_define_style">signals_define_style</a> property.<br />
+	When enabled and displaying a shunt aspect, the signal state in the lowest byte of variable 0x18 (SS: signal state) will have the value: 0xFF.</p>
 	<p>The property length is 1 byte. 0 is disabled (default). 1 is enabled.<br />
 	The Action 0 Id field is not used, the value is ignored.
 	</p>
