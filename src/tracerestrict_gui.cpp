@@ -1207,18 +1207,28 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 						SetDParam(3, TileX(tile));
 						SetDParam(4, TileY(tile));
 					}
+					auto insert_warning = [&](StringID warning) {
+						char buf[256];
+						int64 args_array[] = { (int64)GetDParam(1) };
+						StringParameters tmp_params(args_array);
+						char *end = GetStringWithArgs(buf, warning, &tmp_params, lastof(buf));
+						_temp_special_strings[0].assign(buf, end);
+						SetDParam(1, SPECSTR_TEMP_START);
+					};
 					switch (static_cast<TraceRestrictPBSEntrySignalAuxField>(GetTraceRestrictAuxField(item))) {
 						case TRPESAF_VEH_POS:
 							SetDParam(1, STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG);
 							break;
 
 						case TRPESAF_RES_END:
-							SetDParam(1, _settings_game.vehicle.train_braking_model == TBM_REALISTIC ? STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG : STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG_WARN);
+							SetDParam(1, STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG);
+							if (_settings_game.vehicle.train_braking_model != TBM_REALISTIC) insert_warning(STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING);
 							break;
 
 						default:
 							NOT_REACHED();
 					}
+
 					break;
 				}
 
