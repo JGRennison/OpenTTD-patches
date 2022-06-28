@@ -78,7 +78,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_TRACE_RESTRICT_NEWSCTRL,XSCF_NULL,                1,   1, "tracerestrict_newsctrl",    nullptr, nullptr, nullptr        },
 	{ XSLFI_TRACE_RESTRICT_COUNTER, XSCF_NULL,                1,   1, "tracerestrict_counter",     nullptr, nullptr, "TRRC"         },
 	{ XSLFI_TRACE_RESTRICT_TIMEDATE,XSCF_NULL,                2,   2, "tracerestrict_timedate",    nullptr, nullptr, nullptr        },
-	{ XSLFI_TRACE_RESTRICT_BRKCND,  XSCF_NULL,                2,   2, "tracerestrict_braking_cond",nullptr, nullptr, nullptr        },
+	{ XSLFI_TRACE_RESTRICT_BRKCND,  XSCF_NULL,                3,   3, "tracerestrict_braking_cond",nullptr, nullptr, nullptr        },
 	{ XSLFI_TRACE_RESTRICT_CTGRYCND,XSCF_NULL,                1,   1, "tracerestrict_ctgry_cond",  nullptr, nullptr, nullptr        },
 	{ XSLFI_TRACE_RESTRICT_PENCTRL, XSCF_NULL,                1,   1, "tracerestrict_pfpenctrl",   nullptr, nullptr, nullptr        },
 	{ XSLFI_TRACE_RESTRICT_TUNBRIDGE,XSCF_NULL,               1,   1, "tracerestrict_sigtunbridge",nullptr, nullptr, nullptr        },

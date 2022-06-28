@@ -1247,6 +1247,8 @@ CommandCost CheckTrainInTunnelBridgePreventsTrackModification(TileIndex start, T
  */
 TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const void *, TraceRestrictPBSEntrySignalAuxField mode)
 {
+	if (mode == TRPESAF_RES_END_TILE) return INVALID_TILE;
+
 	TileIndex tile;
 	Trackdir  trackdir;
 

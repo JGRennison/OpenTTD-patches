@@ -1514,6 +1514,29 @@ void DetermineCombineNormalShuntModeWithLookahead(Train *v, TileIndex tile, Trac
 		if (item.start == lookahead_position && item.type == TRLIT_SIGNAL && HasBit(item.data_aux, TRSLAI_COMBINED)) {
 			container_unordered_remove(_deferred_determine_combined_normal_shunt_mode, std::pair<TileIndex, Trackdir>({ tile, trackdir }));
 
+			if (IsRestrictedSignal(tile)) {
+				const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(trackdir));
+				if (prog && prog->actions_used_flags & TRPAUF_CMB_SIGNAL_MODE_CTRL) {
+					TraceRestrictProgramResult out;
+					TraceRestrictProgramInput input(tile, trackdir, [](const Train *v, const void *, TraceRestrictPBSEntrySignalAuxField mode) {
+						if (mode == TRPESAF_RES_END_TILE) {
+							return v->lookahead->reservation_end_tile;
+						} else {
+							return INVALID_TILE;
+						}
+					}, nullptr);
+					prog->Execute(v, input, out);
+					if (out.flags & TRPRF_SIGNAL_MODE_NORMAL) {
+						return;
+					}
+					if (out.flags & TRPRF_SIGNAL_MODE_SHUNT) {
+						SetSignalAspect(tile, TrackdirToTrack(trackdir), 1);
+						SetBit(item.data_aux, TRSLAI_COMBINED_SHUNT);
+						return;
+					}
+				}
+			}
+
 			for (size_t j = i + 1; j < count; j++) {
 				const TrainReservationLookAheadItem &ahead = v->lookahead->items[j];
 				if (ahead.type == TRLIT_SIGNAL) {

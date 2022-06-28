@@ -6025,7 +6025,6 @@ STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL                    :Sinal de entrad
 STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG               :entrou nun sinal de entrada a cantón
 STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL                  :Sinal de saída de ruta
 STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG             :sinal no final da reserva actual de ruta
-STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG_WARN        :sinal no final da reserva actual de ruta {PUSH_COLOUR}{RED}(require freo realista){POP_COLOUR}
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_GROUP                         :o grupo de tren
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT                          :tren no slot
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY                      :ocupación de slots
@@ -6237,6 +6236,7 @@ STR_TRACE_RESTRICT_SELECT_TARGET                                :{BLACK}Seleccio
 STR_TRACE_RESTRICT_SELECT_SIGNAL                                :{BLACK}Seleccionar sinal
 STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP                           :{BLACK}Restrición de busca de ruta
 STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}Fai click nunha instrución para seleccionala{}Ctrl+Click para desplazarte ata o obxectivo da instrución(se o hai)
+STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING           :{STRING} {PUSH_COLOUR}{RED}(require freo realista){POP_COLOUR}
 STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM                      :{WHITE}Non se pode insertar a instrución
 STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM                      :{WHITE}Non se pode modificar a instrución
 STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM                      :{WHITE}Non se pode eliminar a instrución
