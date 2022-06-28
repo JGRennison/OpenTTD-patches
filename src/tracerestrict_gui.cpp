@@ -656,7 +656,7 @@ static DropDownList GetGroupDropDownList(Owner owner, GroupID group_id, int &sel
 		const Group *g = list[i];
 		if (group_id == g->index) selected = group_id;
 		DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_GROUP_NAME, g->index, false);
-		item->SetParam(0, g->index);
+		item->SetParam(0, g->index | GROUP_NAME_HIERARCHY);
 		dlist.emplace_back(item);
 	}
 
@@ -1311,7 +1311,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 						SetDParam(3, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
 					} else {
 						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_GROUP;
-						SetDParam(2, GetTraceRestrictValue(item));
+						SetDParam(2, GetTraceRestrictValue(item) | GROUP_NAME_HIERARCHY);
 					}
 					break;
 				}
@@ -1985,7 +1985,7 @@ public:
 					case TRVT_GROUP_INDEX: {
 						int selected;
 						DropDownList dlist = GetGroupDropDownList(this->GetOwner(), GetTraceRestrictValue(item), selected);
-						ShowDropDownList(this, std::move(dlist), selected, TR_WIDGET_VALUE_DROPDOWN);
+						ShowDropDownList(this, std::move(dlist), selected, TR_WIDGET_VALUE_DROPDOWN, 0, true);
 						break;
 					}
 

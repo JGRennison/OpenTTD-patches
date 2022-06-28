@@ -1994,7 +1994,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 					DrawString(text_left, text_right, y, STR_TINY_BLACK_VEHICLE);
 				} else if (v->group_id != DEFAULT_GROUP) {
 					/* The vehicle has no name, but is member of a group, so print group name */
-					SetDParam(0, v->group_id);
+					SetDParam(0, v->group_id | GROUP_NAME_HIERARCHY);
 					DrawString(text_left, text_right, y, STR_TINY_GROUP, TC_BLACK);
 				}
 
@@ -2031,7 +2031,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 						}
 					}
 					if (show_group) {
-						SetDParam(0, gid);
+						SetDParam(0, gid | GROUP_NAME_HIERARCHY);
 						DrawString(text_left, text_right, y, STR_TINY_GROUP, TC_BLACK);
 					}
 				}
@@ -2895,7 +2895,7 @@ struct VehicleDetailsWindow : Window {
 					dim = maxdim(dim, GetStringBoundingBox(STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME));
 				}
 				if (this->vehicle_group_line_shown) {
-					SetDParam(0, v->group_id);
+					SetDParam(0, v->group_id | GROUP_NAME_HIERARCHY);
 					dim = maxdim(dim, GetStringBoundingBox(STR_VEHICLE_INFO_GROUP));
 				}
 				if (this->vehicle_weight_ratio_line_shown) {
@@ -3098,7 +3098,7 @@ struct VehicleDetailsWindow : Window {
 
 				bool should_show_group = this->ShouldShowGroupLine(v);
 				if (should_show_group) {
-					SetDParam(0, v->group_id);
+					SetDParam(0, v->group_id | GROUP_NAME_HIERARCHY);
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_VEHICLE_INFO_GROUP);
 					y += FONT_HEIGHT_NORMAL;
 				}

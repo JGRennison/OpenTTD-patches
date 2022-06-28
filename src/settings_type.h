@@ -248,6 +248,7 @@ struct GUISettings : public TimeSettings {
 	bool   allow_hiding_waypoint_labels;     ///< Allow hiding waypoint viewport labels
 	uint8  disable_water_animation;          ///< Disable water animation depending on zoom level
 	bool   show_order_occupancy_by_default;  ///< Show order occupancy by default in vehicle order window
+	bool   show_group_hierarchy_name;        ///< Show the full hierarchy in group names
 
 	uint16 console_backlog_timeout;          ///< the minimum amount of time items should be in the console backlog before they will be removed in ~3 seconds granularity.
 	uint16 console_backlog_length;           ///< the minimum amount of items in the console backlog before items will be removed.
