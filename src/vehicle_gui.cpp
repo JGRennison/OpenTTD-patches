@@ -2020,6 +2020,22 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 					DrawVehicleImage(vehgroup.vehicles_begin[i], image_left + 8 * i, image_right, y + FONT_HEIGHT_SMALL - 1, selected_vehicle, EIT_IN_LIST, 0);
 				}
 
+				if (vehgroup.vehicles_begin[0]->group_id != DEFAULT_GROUP) {
+					/* If all vehicles are in the same group, print group name */
+					GroupID gid = vehgroup.vehicles_begin[0]->group_id;
+					bool show_group = true;
+					for (int i = 1; i < static_cast<int>(vehgroup.NumVehicles()); ++i) {
+						if (vehgroup.vehicles_begin[i]->group_id != gid) {
+							show_group = false;
+							break;
+						}
+					}
+					if (show_group) {
+						SetDParam(0, gid);
+						DrawString(text_left, text_right, y, STR_TINY_GROUP, TC_BLACK);
+					}
+				}
+
 				if (show_orderlist) DrawSmallOrderList((vehgroup.vehicles_begin[0])->GetFirstOrder(), orderlist_left, orderlist_right, y, this->order_arrow_width);
 
 				SetDParam(0, vehgroup.NumVehicles());
