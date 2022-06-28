@@ -1753,6 +1753,7 @@ static bool DetermineExtraAspectsVariable()
 	checksum.Update(SimpleHash32(_extra_aspects));
 	checksum.Update(SimpleHash32(_signal_style_masks.non_aspect_inc));
 	checksum.Update(SimpleHash32(_signal_style_masks.always_reserve_through));
+	checksum.Update(SimpleHash32(_signal_style_masks.combined_normal_shunt));
 
 	if (checksum.state != _aspect_cfg_hash) {
 		_aspect_cfg_hash = checksum.state;
