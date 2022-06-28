@@ -709,9 +709,14 @@ static uint8 GetForwardAspect(const SigInfo &info, TileIndex tile, Trackdir trac
 	}
 }
 
-static uint8 GetForwardAspectAndIncrement(const SigInfo &info, TileIndex tile, Trackdir trackdir)
+static uint8 GetForwardAspectAndIncrement(const SigInfo &info, TileIndex tile, Trackdir trackdir, bool combined_normal_mode = false)
 {
-	return std::min<uint8>(GetForwardAspect(info, tile, trackdir) + 1, GetMaximumSignalAspect());
+	return std::min<uint8>(GetForwardAspect(info, tile, trackdir) + (combined_normal_mode ? 2 : 1), GetMaximumSignalAspect());
+}
+
+static inline bool IsRailCombinedNormalShuntSignalStyle(TileIndex tile, Track track)
+{
+	return _signal_style_masks.combined_normal_shunt != 0 && HasBit(_signal_style_masks.combined_normal_shunt, GetSignalStyle(tile, track));
 }
 
 /**
@@ -780,7 +785,7 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 		/* don't change signal state if tile is reserved in realistic braking mode */
 		if ((_settings_game.vehicle.train_braking_model == TBM_REALISTIC && HasBit(GetRailReservationTrackBits(tile), track))) {
 			if (_extra_aspects > 0 && GetSignalStateByTrackdir(tile, trackdir) == SIGNAL_STATE_GREEN && !IsRailSpecialSignalAspect(tile, track)) {
-				uint8 aspect = GetForwardAspectAndIncrement(info, tile, trackdir);
+				uint8 aspect = GetForwardAspectAndIncrement(info, tile, trackdir, IsRailCombinedNormalShuntSignalStyle(tile, TrackdirToTrack(trackdir)));
 				uint8 old_aspect = GetSignalAspect(tile, track);
 				if (aspect != old_aspect) {
 					SetSignalAspect(tile, track, aspect);
@@ -874,8 +879,8 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 	}
 
 	while (_tbpset.Get(&tile, &trackdir)) {
-		uint8 aspect = GetForwardAspectAndIncrement(info, tile, trackdir);
 		if (IsTileType(tile, MP_TUNNELBRIDGE)) {
+			uint8 aspect = GetForwardAspectAndIncrement(info, tile, trackdir);
 			uint8 old_aspect = GetTunnelBridgeExitSignalAspect(tile);
 			if (aspect != old_aspect) {
 				SetTunnelBridgeExitSignalAspect(tile, aspect);
@@ -883,6 +888,7 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 				PropagateAspectChange(tile, trackdir, aspect);
 			}
 		} else {
+			uint8 aspect = GetForwardAspectAndIncrement(info, tile, trackdir, IsRailCombinedNormalShuntSignalStyle(tile, TrackdirToTrack(trackdir)));
 			uint8 old_aspect = GetSignalAspect(tile, track);
 			Track track = TrackdirToTrack(trackdir);
 			if (aspect != old_aspect) {
@@ -1288,11 +1294,6 @@ static void RefreshBridgeOnExitAspectChange(TileIndex entrance, TileIndex exit)
 		MarkSingleBridgeSignalDirty(tile, entrance);
 		tile -= diff;
 	}
-}
-
-static inline bool IsRailCombinedNormalShuntSignalStyle(TileIndex tile, Track track)
-{
-	return _signal_style_masks.combined_normal_shunt != 0 && HasBit(_signal_style_masks.combined_normal_shunt, GetSignalStyle(tile, track));
 }
 
 void PropagateAspectChange(TileIndex tile, Trackdir trackdir, uint8 aspect)
