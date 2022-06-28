@@ -702,7 +702,7 @@ uint8 GetForwardAspectFollowingTrack(TileIndex tile, Trackdir trackdir)
 
 static uint8 GetForwardAspect(const SigInfo &info, TileIndex tile, Trackdir trackdir)
 {
-	if (info.flags & SF_JUNCTION) {
+	if (info.flags & (SF_JUNCTION | SF_PBS)) {
 		return GetForwardAspectFollowingTrack(tile, trackdir);
 	} else {
 		return (info.out_signal_tile != INVALID_TILE) ? GetSignalAspectGeneric(info.out_signal_tile, info.out_signal_trackdir, true) : 0;
