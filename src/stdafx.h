@@ -437,11 +437,13 @@ static_assert(SIZE_MAX >= UINT32_MAX);
 #endif /* __APPLE__ */
 
 #if defined(__GNUC__) || defined(__clang__)
-#	define likely(x)   __builtin_expect(!!(x), 1)
-#	define unlikely(x) __builtin_expect(!!(x), 0)
+#	define likely(x)     __builtin_expect(!!(x), 1)
+#	define unlikely(x)   __builtin_expect(!!(x), 0)
+#	define GNU_TARGET(x) [[gnu::target(x)]]
 #else
-#	define likely(x)   (x)
-#	define unlikely(x) (x)
+#	define likely(x)     (x)
+#	define unlikely(x)   (x)
+#	define GNU_TARGET(x)
 #endif /* __GNUC__ || __clang__ */
 
 #if defined(__GNUC__) || defined(__clang__)
