@@ -711,7 +711,7 @@ static uint8 GetForwardAspect(const SigInfo &info, TileIndex tile, Trackdir trac
 
 static uint8 GetForwardAspectAndIncrement(const SigInfo &info, TileIndex tile, Trackdir trackdir, bool combined_normal_mode = false)
 {
-	return std::min<uint8>(GetForwardAspect(info, tile, trackdir) + (combined_normal_mode ? 2 : 1), GetMaximumSignalAspect());
+	return IncrementAspectForSignal(GetForwardAspect(info, tile, trackdir), combined_normal_mode);
 }
 
 static inline bool IsRailCombinedNormalShuntSignalStyle(TileIndex tile, Track track)
@@ -844,7 +844,8 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 			if (newstate == SIGNAL_STATE_GREEN) {
 				aspect = 1;
 				if (info.out_signal_tile != INVALID_TILE) {
-					aspect = std::min<uint8>(GetSignalAspectGeneric(info.out_signal_tile, info.out_signal_trackdir, true) + 1, GetMaximumSignalAspect());
+					/* Combined normal/shunt signals should never be encountered here as they are PBS-only and so will never be green if not reserved */
+					aspect = IncrementAspectForSignal(GetSignalAspectGeneric(info.out_signal_tile, info.out_signal_trackdir, true), false);
 				}
 			} else {
 				aspect = 0;

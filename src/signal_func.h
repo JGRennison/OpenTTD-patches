@@ -204,9 +204,16 @@ inline void AdjustSignalAspectIfNonIncStyle(TileIndex tile, Track track, uint8 &
 	if (aspect > 0 && (_signal_style_masks.non_aspect_inc != 0 || _signal_style_masks.combined_normal_shunt != 0)) AdjustSignalAspectIfNonIncStyleIntl(tile, track, aspect);
 }
 
+inline uint8 IncrementAspectForSignal(uint8 aspect, bool combined_normal_mode)
+{
+	aspect = std::min<uint8>(aspect + 1, GetMaximumSignalAspect());
+	if (combined_normal_mode) aspect = std::min<uint8>(aspect + 1, 7);
+	return aspect;
+}
+
 inline uint8 GetForwardAspectFollowingTrackAndIncrement(TileIndex tile, Trackdir trackdir, bool combined_normal_mode = false)
 {
-	return std::min<uint8>(GetForwardAspectFollowingTrack(tile, trackdir) + (combined_normal_mode ? 2 : 1), GetMaximumSignalAspect());
+	return IncrementAspectForSignal(GetForwardAspectFollowingTrack(tile, trackdir), combined_normal_mode);
 }
 
 void UpdateSignalReserveThroughBit(TileIndex tile, Track track, bool update_signal);
