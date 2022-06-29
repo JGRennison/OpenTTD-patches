@@ -1030,7 +1030,6 @@ void UpdateNewVirtualTrainFromSource(Train *v, const T *src)
 	}
 
 	v->First()->ConsistChanged(CCF_ARRANGE);
-	CheckConsistencyOfArticulatedVehicle(v);
 	InvalidateVehicleTickCaches();
 }
 
