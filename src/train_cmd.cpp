@@ -3454,7 +3454,7 @@ static void SetTunnelBridgeEntranceSignalGreen(TileIndex tile)
 		MarkTunnelBridgeSignalDirty(tile, false);
 		if (_extra_aspects > 0) {
 			SetTunnelBridgeEntranceSignalAspect(tile, 0);
-			UpdateAspectDeferred(tile, GetTunnelBridgeEntranceTrackdir(tile), false);
+			UpdateAspectDeferred(tile, GetTunnelBridgeEntranceTrackdir(tile));
 		}
 	} else if (_extra_aspects > 0) {
 		UpdateTunnelBridgeEntranceSignalAspect(tile);
@@ -3768,7 +3768,7 @@ static PBSTileInfo ExtendTrainReservation(const Train *v, const PBSTileInfo &ori
 		if (IsSafeWaitingPosition(v, tile, cur_td, true, _settings_game.pf.forbid_90_deg)) {
 			PBSWaitingPositionRestrictedSignalInfo restricted_signal_info;
 			bool wp_free = IsWaitingPositionFree(v, tile, cur_td, _settings_game.pf.forbid_90_deg, &restricted_signal_info);
-			if (!(wp_free && TryReserveRailTrackdir(tile, cur_td))) break;
+			if (!(wp_free && TryReserveRailTrackdir(v, tile, cur_td))) break;
 			/* Safe position is all good, path valid and okay. */
 			if (restricted_signal_info.tile != INVALID_TILE) {
 				const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(restricted_signal_info.tile, TrackdirToTrack(restricted_signal_info.trackdir));
@@ -3782,7 +3782,7 @@ static PBSTileInfo ExtendTrainReservation(const Train *v, const PBSTileInfo &ori
 			return PBSTileInfo(tile, cur_td, true);
 		}
 
-		if (!TryReserveRailTrackdir(tile, cur_td)) break;
+		if (!TryReserveRailTrackdir(v, tile, cur_td)) break;
 	}
 
 	if (ft.m_err == CFollowTrackRail::EC_OWNER || ft.m_err == CFollowTrackRail::EC_NO_WAY) {
@@ -4157,7 +4157,7 @@ static void TryLongReserveChooseTrainTrack(Train *v, TileIndex tile, Trackdir td
 				} else {
 					if (_extra_aspects > 0) {
 						SetTunnelBridgeExitSignalAspect(exit_tile, 0);
-						UpdateAspectDeferred(exit_tile, GetTunnelBridgeExitTrackdir(exit_tile), false);
+						UpdateAspectDeferred(exit_tile, GetTunnelBridgeExitTrackdir(exit_tile));
 					}
 					MarkTileDirtyByTile(exit_tile, VMDF_NOT_MAP_MODE);
 				}
@@ -4251,7 +4251,7 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 			SetSignalStateByTrackdir(tile, changed_signal, SIGNAL_STATE_GREEN);
 			if (_extra_aspects > 0) {
 				SetSignalAspect(tile, track, 0);
-				UpdateAspectDeferred(tile, changed_signal, true);
+				UpdateAspectDeferredWithVehicle(v, tile, changed_signal, true);
 			}
 		} else if (!do_track_reservation) {
 			return track;
@@ -5142,7 +5142,7 @@ static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile)
 			if (ok) {
 				if (_extra_aspects > 0) {
 					SetTunnelBridgeExitSignalAspect(tile, 0);
-					UpdateAspectDeferred(tile, GetTunnelBridgeExitTrackdir(tile), false);
+					UpdateAspectDeferred(tile, GetTunnelBridgeExitTrackdir(tile));
 				}
 				mark_dirty = true;
 				if (t->lookahead->reservation_end_tile == veh_orig_tile && t->lookahead->reservation_end_position - t->lookahead->current_position <= (int)TILE_SIZE) {
@@ -5187,7 +5187,7 @@ static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile)
 		SetTunnelBridgeExitSignalState(tile, SIGNAL_STATE_GREEN);
 		if (_extra_aspects > 0) {
 			SetTunnelBridgeExitSignalAspect(tile, 0);
-			UpdateAspectDeferred(tile, GetTunnelBridgeExitTrackdir(tile), false);
+			UpdateAspectDeferred(tile, GetTunnelBridgeExitTrackdir(tile));
 		}
 		mark_dirty = true;
 	}

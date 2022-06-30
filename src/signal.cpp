@@ -1448,7 +1448,15 @@ void PropagateAspectChange(TileIndex tile, Trackdir trackdir, uint8 aspect)
 }
 
 static std::vector<std::pair<TileIndex, Trackdir>> _deferred_aspect_updates;
-static std::vector<std::pair<TileIndex, Trackdir>> _deferred_determine_combined_normal_shunt_mode;
+
+struct DeferredCombinedNormalShuntModeItem {
+	TileIndex tile;
+	Trackdir trackdir;
+	Order current_order;
+	VehicleOrderID cur_real_order_index;
+	StationID last_station_visited;
+};
+static std::vector<DeferredCombinedNormalShuntModeItem> _deferred_determine_combined_normal_shunt_mode;
 
 struct DeferredLookaheadCombinedNormalShuntModeItem {
 	TileIndex tile;
@@ -1457,11 +1465,23 @@ struct DeferredLookaheadCombinedNormalShuntModeItem {
 };
 static std::vector<DeferredLookaheadCombinedNormalShuntModeItem> _deferred_lookahead_combined_normal_shunt_mode;
 
-void UpdateAspectDeferred(TileIndex tile, Trackdir trackdir, bool check_combined_normal_aspect)
+void UpdateAspectDeferred(TileIndex tile, Trackdir trackdir)
+{
+	_deferred_aspect_updates.push_back({ tile, trackdir });
+}
+
+void UpdateAspectDeferredWithVehicle(const Train *v, TileIndex tile, Trackdir trackdir, bool check_combined_normal_aspect)
 {
 	if (check_combined_normal_aspect && IsRailCombinedNormalShuntSignalStyle(tile, TrackdirToTrack(trackdir)) &&
 			_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
-		_deferred_determine_combined_normal_shunt_mode.push_back({ tile, trackdir });
+		DeferredCombinedNormalShuntModeItem &item = _deferred_determine_combined_normal_shunt_mode.emplace_back();
+		item.tile = tile;
+		item.trackdir = trackdir;
+		if (IsRestrictedSignal(tile)) {
+			item.current_order = v->current_order;
+			item.cur_real_order_index = v->cur_real_order_index;
+			item.last_station_visited = v->last_station_visited;
+		}
 	}
 	_deferred_aspect_updates.push_back({ tile, trackdir });
 }
@@ -1514,7 +1534,16 @@ void DetermineCombineNormalShuntModeWithLookahead(Train *v, TileIndex tile, Trac
 	for (size_t i = 0; i < count; i++) {
 		TrainReservationLookAheadItem &item = v->lookahead->items[i];
 		if (item.start == lookahead_position && item.type == TRLIT_SIGNAL && HasBit(item.data_aux, TRSLAI_COMBINED)) {
-			container_unordered_remove(_deferred_determine_combined_normal_shunt_mode, std::pair<TileIndex, Trackdir>({ tile, trackdir }));
+			DeferredCombinedNormalShuntModeItem res_item;
+			bool have_orders = false;
+			container_unordered_remove_if(_deferred_determine_combined_normal_shunt_mode, [&](DeferredCombinedNormalShuntModeItem &iter) -> bool {
+				bool found = (iter.tile == tile && iter.trackdir == trackdir);
+				if (found) {
+					res_item = std::move(iter);
+					have_orders = true;
+				}
+				return found;
+			});
 
 			if (IsRestrictedSignal(tile)) {
 				const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(trackdir));
@@ -1527,7 +1556,17 @@ void DetermineCombineNormalShuntModeWithLookahead(Train *v, TileIndex tile, Trac
 							return INVALID_TILE;
 						}
 					}, nullptr);
-					prog->Execute(v, input, out);
+					if (have_orders && (prog->actions_used_flags & TRPAUF_ORDER_CONDITIONALS)) {
+						std::swap(res_item.current_order, v->current_order);
+						std::swap(res_item.cur_real_order_index, v->cur_real_order_index);
+						std::swap(res_item.last_station_visited, v->last_station_visited);
+						prog->Execute(v, input, out);
+						v->current_order = std::move(res_item.current_order);
+						v->cur_real_order_index = res_item.cur_real_order_index;
+						v->last_station_visited = res_item.last_station_visited;
+					} else {
+						prog->Execute(v, input, out);
+					}
 					if (out.flags & TRPRF_SIGNAL_MODE_NORMAL) {
 						return;
 					}
@@ -1613,10 +1652,8 @@ void FlushDeferredDetermineCombineNormalShuntMode(Train *v)
 	_deferred_lookahead_combined_normal_shunt_mode.clear();
 
 	for (const auto &iter : _deferred_determine_combined_normal_shunt_mode) {
-		TileIndex tile = iter.first;
-		Trackdir trackdir = iter.second;
 		/* Reservation with no associated lookahead, default to a shunt route */
-		SetSignalAspect(tile, TrackdirToTrack(trackdir), 1);
+		SetSignalAspect(iter.tile, TrackdirToTrack(iter.trackdir), 1);
 	}
 	_deferred_determine_combined_normal_shunt_mode.clear();
 }

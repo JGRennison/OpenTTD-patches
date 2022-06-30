@@ -74,13 +74,14 @@ void SetRailStationPlatformReservation(TileIndex start, DiagDirection dir, bool 
 /**
  * Try to reserve a specific track on a tile
  * This also sets PBS signals to green if reserving through the facing track direction
+ * @param v the train performing the reservation
  * @param tile the tile
  * @param t the track
  * @param trigger_stations whether to call station randomisation trigger
  * @return \c true if reservation was successful, i.e. the track was
  *     free and didn't cross any other reserved tracks.
  */
-bool TryReserveRailTrackdir(TileIndex tile, Trackdir td, bool trigger_stations)
+bool TryReserveRailTrackdir(const Train *v, TileIndex tile, Trackdir td, bool trigger_stations)
 {
 	bool success = TryReserveRailTrack(tile, TrackdirToTrack(td), trigger_stations);
 	if (success && HasPbsSignalOnTrackdir(tile, td)) {
@@ -88,7 +89,7 @@ bool TryReserveRailTrackdir(TileIndex tile, Trackdir td, bool trigger_stations)
 		MarkSingleSignalDirty(tile, td);
 		if (_extra_aspects > 0) {
 			SetSignalAspect(tile, TrackdirToTrack(td), 0);
-			UpdateAspectDeferred(tile, td, true);
+			UpdateAspectDeferredWithVehicle(v, tile, td, true);
 		}
 	}
 	return success;

@@ -356,7 +356,7 @@ void UpdateAllBlockSignals(Owner owner)
 			}
 			if (_extra_aspects > 0 && IsTunnelBridgeSignalSimulationEntrance(tile) && GetTunnelBridgeEntranceSignalState(tile) == SIGNAL_STATE_GREEN) {
 				SetTunnelBridgeEntranceSignalAspect(tile, 0);
-				UpdateAspectDeferred(tile, GetTunnelBridgeEntranceTrackdir(tile), false);
+				UpdateAspectDeferred(tile, GetTunnelBridgeEntranceTrackdir(tile));
 			}
 		}
 	} while (++tile != MapSize());
