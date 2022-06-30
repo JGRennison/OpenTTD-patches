@@ -1481,7 +1481,8 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 
 	uint which_signals = GB(p1, 9, 6);
 
-	uint signal_style = std::min<uint>(GB(p1, 19, 4), _num_new_signal_styles);
+	uint signal_style = GB(p1, 19, 4);
+	if (signal_style > _num_new_signal_styles || !HasBit(_enabled_new_signal_styles_mask, signal_style)) return CMD_ERROR;
 
 	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && IsSignalTypeUnsuitableForRealisticBraking(sigtype)) return CMD_ERROR;
 

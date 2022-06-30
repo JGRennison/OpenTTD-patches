@@ -1707,6 +1707,8 @@ static bool DetermineExtraAspectsVariable()
 
 	_signal_style_masks = {};
 
+	_enabled_new_signal_styles_mask = 1;
+
 	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
 		for (RailType r = RAILTYPE_BEGIN; r != RAILTYPE_END; r++) {
 			const RailtypeInfo *rti = GetRailTypeInfo(r);
@@ -1743,6 +1745,13 @@ static bool DetermineExtraAspectsVariable()
 			_new_signal_styles[i].electric_mask &= (1 << SIGTYPE_PBS) | (1 << SIGTYPE_PBS_ONEWAY) | (1 << SIGTYPE_NO_ENTRY);
 			_new_signal_styles[i].semaphore_mask &= (1 << SIGTYPE_PBS) | (1 << SIGTYPE_PBS_ONEWAY) | (1 << SIGTYPE_NO_ENTRY);
 		}
+		uint8 mask = 0xFF;
+		if (HasBit(_new_signal_styles[i].style_flags, NSSF_REALISTIC_BRAKING_ONLY) && _settings_game.vehicle.train_braking_model != TBM_REALISTIC) {
+			mask = 0;
+		} else if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+			mask &= (1 << SIGTYPE_NORMAL) | (1 << SIGTYPE_PBS) | (1 << SIGTYPE_PBS_ONEWAY) | (1 << SIGTYPE_NO_ENTRY);
+		}
+		if ((_new_signal_styles[i].electric_mask | _new_signal_styles[i].semaphore_mask) & mask) SetBit(_enabled_new_signal_styles_mask, i + 1);
 	}
 	for (uint i = _num_new_signal_styles; i < MAX_NEW_SIGNAL_STYLES; i++) {
 		_new_signal_styles[i].lookahead_extra_aspects = new_extra_aspects;

@@ -34,6 +34,7 @@ enum NewSignalStyleFlags {
 	NSSF_OPPOSITE_SIDE                  = 3,
 	NSSF_LOOKAHEAD_SINGLE_SIGNAL        = 4,
 	NSSF_COMBINED_NORMAL_SHUNT          = 5,
+	NSSF_REALISTIC_BRAKING_ONLY         = 6,
 };
 
 struct NewSignalStyle {
@@ -56,6 +57,7 @@ struct NewSignalStyleMapping {
 };
 extern std::array<NewSignalStyleMapping, MAX_NEW_SIGNAL_STYLES> _new_signal_style_mapping;
 extern uint _num_new_signal_styles;
+extern uint16 _enabled_new_signal_styles_mask;
 
 /** Resolver for the new signals scope. */
 struct NewSignalsScopeResolver : public ScopeResolver {
