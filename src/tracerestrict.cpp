@@ -963,9 +963,6 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 				case TRIT_COND_UNDEFINED:
 				case TRIT_COND_TRAIN_LENGTH:
 				case TRIT_COND_MAX_SPEED:
-				case TRIT_COND_CURRENT_ORDER:
-				case TRIT_COND_NEXT_ORDER:
-				case TRIT_COND_LAST_STATION:
 				case TRIT_COND_CARGO:
 				case TRIT_COND_ENTRY_DIRECTION:
 				case TRIT_COND_PBS_ENTRY_SIGNAL:
@@ -973,12 +970,31 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 				case TRIT_COND_PHYS_PROP:
 				case TRIT_COND_PHYS_RATIO:
 				case TRIT_COND_TRAIN_OWNER:
-				case TRIT_COND_TRAIN_STATUS:
 				case TRIT_COND_LOAD_PERCENT:
 				case TRIT_COND_COUNTER_VALUE:
 				case TRIT_COND_TIME_DATE_VALUE:
 				case TRIT_COND_RESERVED_TILES:
 				case TRIT_COND_CATEGORY:
+					break;
+
+				case TRIT_COND_CURRENT_ORDER:
+				case TRIT_COND_NEXT_ORDER:
+				case TRIT_COND_LAST_STATION:
+					actions_used_flags |= TRPAUF_ORDER_CONDITIONALS;
+					break;
+
+				case TRIT_COND_TRAIN_STATUS:
+					switch (static_cast<TraceRestrictTrainStatusValueField>(GetTraceRestrictValue(item))) {
+						case TRTSVF_HEADING_TO_STATION_WAYPOINT:
+						case TRTSVF_HEADING_TO_DEPOT:
+						case TRTSVF_LOADING:
+						case TRTSVF_WAITING:
+							actions_used_flags |= TRPAUF_ORDER_CONDITIONALS;
+							break;
+
+						default:
+							break;
+					}
 					break;
 
 				case TRIT_COND_TRAIN_IN_SLOT:
