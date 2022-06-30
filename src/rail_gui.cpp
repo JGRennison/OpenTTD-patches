@@ -684,8 +684,12 @@ struct BuildRailToolbarWindow : Window {
 			case WID_RAT_BUILD_WAYPOINT:
 				this->last_user_action = widget;
 				_waypoint_count = StationClass::Get(STAT_CLASS_WAYP)->GetSpecCount();
-				if (HandlePlacePushButton(this, WID_RAT_BUILD_WAYPOINT, SPR_CURSOR_WAYPOINT, HT_RECT) && _waypoint_count > 1) {
-					ShowBuildWaypointPicker(this);
+				if (HandlePlacePushButton(this, WID_RAT_BUILD_WAYPOINT, SPR_CURSOR_WAYPOINT, HT_RECT)) {
+					if (_waypoint_count > 1) {
+						ShowBuildWaypointPicker(this);
+					} else {
+						_cur_waypoint_type = 0;
+					}
 				}
 				break;
 
