@@ -1565,8 +1565,36 @@ void DetermineCombineNormalShuntModeWithLookahead(Train *v, TileIndex tile, Trac
 					return;
 				}
 			} else {
-				/* end of line */
-				return;
+				/* end of line, see if this is a bay with a shunt signal on the exit */
+				TileIndex t = v->lookahead->reservation_end_tile;
+				Trackdir td = ReverseTrackdir(v->lookahead->reservation_end_trackdir);
+				while (true) {
+					if (t == tile) {
+						/* Reached this signal, don't follow any further */
+						return;
+					}
+					if (IsTunnelBridgeWithSignalSimulation(t)) return;
+
+					if (IsTileType(t, MP_RAILWAY) && HasSignalOnTrackdir(t, td)) {
+						/* Found first signal on exit from bay where reservation ends */
+						if (HasBit(_signal_style_masks.next_only, GetSignalStyle(t, TrackdirToTrack(td)))) {
+							/* Shunt signal, use shunt route */
+							break;
+						} else {
+							/* Use normal route */
+							return;
+						}
+					}
+					if (ft.Follow(t, td)) {
+						TrackdirBits bits = ft.m_new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(ft.m_new_tile));
+						if (!HasExactlyOneBit(bits)) return;
+
+						t = ft.m_new_tile;
+						td = FindFirstTrackdir(bits);
+					} else {
+						return;
+					}
+				}
 			}
 
 			/* shunt mode */
