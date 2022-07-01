@@ -418,6 +418,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 			u->gcache.cached_total_length = 0;
 			u->tcache.cached_num_engines = 0;
 			u->tcache.cached_centre_mass = 0;
+			u->tcache.cached_braking_length = 0;
 			u->tcache.cached_deceleration = 0;
 			u->tcache.cached_uncapped_decel = 0;
 			u->tcache.cached_tflags = TCF_NONE;
@@ -853,8 +854,8 @@ static int GetRealisticBrakingSpeedForDistance(const TrainDecelerationStats &sta
 			/* calculate speed at which braking would be sufficient */
 
 			uint weight = stats.t->gcache.cached_weight;
-			int64 power_w = (stats.t->gcache.cached_power * 746ll) + (stats.t->gcache.cached_total_length * (int64)RBC_BRAKE_POWER_PER_LENGTH);
-			int64 min_braking_force = (stats.t->gcache.cached_total_length * (int64)RBC_BRAKE_FORCE_PER_LENGTH) + stats.t->gcache.cached_axle_resistance + (weight * 16);
+			int64 power_w = (stats.t->gcache.cached_power * 746ll) + (stats.t->tcache.cached_braking_length * (int64)RBC_BRAKE_POWER_PER_LENGTH);
+			int64 min_braking_force = (stats.t->tcache.cached_braking_length * (int64)RBC_BRAKE_FORCE_PER_LENGTH) + stats.t->gcache.cached_axle_resistance + (weight * 16);
 
 			/* F = (7/8) * (F_min + ((power_w * 18) / (5 * v)))
 			 * v^2 = sloped_ke + F * s / (4 * m)
@@ -1166,6 +1167,7 @@ void Train::UpdateAcceleration()
 			default: NOT_REACHED();
 			case AM_ORIGINAL:
 				this->tcache.cached_uncapped_decel = this->tcache.cached_deceleration = Clamp((this->acceleration * 7) / 2, 1, 200);
+				this->tcache.cached_braking_length = this->gcache.cached_total_length;
 				break;
 
 			case AM_REALISTIC: {
@@ -1182,7 +1184,9 @@ void Train::UpdateAcceleration()
 							length += ((u->gcache.cached_veh_length * adjust) + 1) / 2;
 						}
 					}
+					length = Clamp<uint>(length, 0, UINT16_MAX);
 				}
+				this->tcache.cached_braking_length = length;
 
 				int64 min_braking_force = (int64)length * (int64)RBC_BRAKE_FORCE_PER_LENGTH;
 				if (!maglev) {
@@ -1233,6 +1237,7 @@ void Train::UpdateAcceleration()
 		this->tcache.cached_tflags &= ~TCF_RL_BRAKING;
 		this->tcache.cached_deceleration = 0;
 		this->tcache.cached_uncapped_decel = 0;
+		this->tcache.cached_braking_length = this->gcache.cached_total_length;
 	}
 
 	if (_settings_game.vehicle.improved_breakdowns) {
