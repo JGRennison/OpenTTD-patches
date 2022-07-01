@@ -262,6 +262,14 @@ class NIHVehicle : public NIHelper {
 					switch (item.type) {
 						case TRLIT_STATION:
 							b += seprintf(b, lastof(buffer), "station: %u, %s", item.data_id, BaseStation::IsValidID(item.data_id) ? BaseStation::Get(item.data_id)->GetCachedName() : "[invalid]");
+							if (t->current_order.ShouldStopAtStation(t->last_station_visited, item.data_id, Waypoint::GetIfValid(item.data_id) != nullptr)) {
+								extern int PredictStationStoppingLocation(const Train *v, const Order *order, int station_length, DestinationID dest);
+								int stop_position = PredictStationStoppingLocation(t, &(t->current_order), item.end - item.start, item.data_id);
+								b += seprintf(b, lastof(buffer), ", stop_position: %d", item.start + stop_position);
+								print_braking_speed(item.start + stop_position, 0, item.z_pos);
+							} else if (t->current_order.IsType(OT_GOTO_WAYPOINT) && t->current_order.GetDestination() == item.data_id && (t->current_order.GetWaypointFlags() & OWF_REVERSE)) {
+								print_braking_speed(item.start + t->gcache.cached_total_length, 0, item.z_pos);
+							}
 							break;
 						case TRLIT_REVERSE:
 							b += seprintf(b, lastof(buffer), "reverse");
