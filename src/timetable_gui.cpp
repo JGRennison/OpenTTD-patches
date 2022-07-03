@@ -163,6 +163,14 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 					break;
 				}
 
+				case OCV_DISPATCH_SLOT: {
+					DateTicksScaled time = _scaled_date_ticks + sum;
+					if (!no_offset) time -= v->lateness_counter;
+					extern bool EvaluateDispatchSlotConditionalOrder(const Order *order, const Vehicle *v, DateTicksScaled date_time, bool *predicted);
+					jump = EvaluateDispatchSlotConditionalOrder(order, v, time, &predicted);
+					break;
+				}
+
 				default:
 					return;
 			}

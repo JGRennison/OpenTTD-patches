@@ -659,6 +659,7 @@ static const OrderConditionVariable _order_conditional_variable[] = {
 	OCV_COUNTER_VALUE,
 	OCV_TIME_DATE,
 	OCV_TIMETABLE,
+	OCV_DISPATCH_SLOT,
 	OCV_PERCENT,
 	OCV_UNCONDITIONALLY,
 };
@@ -735,6 +736,30 @@ static const StringID _order_conditional_condition_is_in_slot_non_train[] = {
 	INVALID_STRING_ID,
 };
 
+static const StringID _order_conditional_condition_dispatch_slot_first[] = {
+	STR_NULL,
+	STR_NULL,
+	STR_NULL,
+	STR_NULL,
+	STR_NULL,
+	STR_NULL,
+	STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_FIRST,
+	STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_FIRST,
+	INVALID_STRING_ID,
+};
+
+static const StringID _order_conditional_condition_dispatch_slot_last[] = {
+	STR_NULL,
+	STR_NULL,
+	STR_NULL,
+	STR_NULL,
+	STR_NULL,
+	STR_NULL,
+	STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_LAST,
+	STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_LAST,
+	INVALID_STRING_ID,
+};
+
 extern uint ConvertSpeedToDisplaySpeed(uint speed);
 extern uint ConvertDisplaySpeedToSpeed(uint speed);
 
@@ -777,6 +802,12 @@ static const StringID _order_time_date_dropdown[] = {
 static const StringID _order_timetable_dropdown[] = {
 	STR_TRACE_RESTRICT_TIMETABLE_LATENESS,
 	STR_TRACE_RESTRICT_TIMETABLE_EARLINESS,
+	INVALID_STRING_ID
+};
+
+static const StringID _order_dispatch_slot_dropdown[] = {
+	STR_TRACE_RESTRICT_DISPATCH_SLOT_NEXT,
+	STR_TRACE_RESTRICT_DISPATCH_SLOT_LAST,
 	INVALID_STRING_ID
 };
 
@@ -1019,6 +1050,21 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				SetDParam(2, STR_TRACE_RESTRICT_TIMETABLE_LATENESS + order->GetConditionValue());
 				SetDParam(3, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator());
 				SetDParam(4, order->GetXData());
+			} else if (ocv == OCV_DISPATCH_SLOT) {
+				SetDParam(0, STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DISPLAY);
+				if (GB(order->GetXData(), 0, 16) != UINT16_MAX) {
+					char buf[256];
+					int64 args_array[] = { GB(order->GetXData(), 0, 16) + 1 };
+					StringParameters tmp_params(args_array);
+					char *end = GetStringWithArgs(buf, STR_TIMETABLE_ASSIGN_SCHEDULE_ID, &tmp_params, lastof(buf));
+					_temp_special_strings[0].assign(buf, end);
+					SetDParam(2, SPECSTR_TEMP_START);
+				} else {
+					SetDParam(2, STR_TIMETABLE_ASSIGN_SCHEDULE_NONE);
+				}
+				SetDParam(3, STR_TRACE_RESTRICT_DISPATCH_SLOT_NEXT + (order->GetConditionValue() / 2));
+				SetDParam(4, STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_FIRST + ((order->GetConditionComparator() == OCC_IS_FALSE) ? 1 : 0) +
+						((order->GetConditionValue() % 2) ? 2 : 0));
 			} else {
 				OrderConditionComparator occ = order->GetConditionComparator();
 				SetDParam(0, (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE) ? STR_ORDER_CONDITIONAL_TRUE_FALSE : STR_ORDER_CONDITIONAL_NUM);
@@ -1287,9 +1333,11 @@ private:
 		DP_COND_TIME_DATE = 1, ///< Display dropdown for current time/date field
 		DP_COND_TIMETABLE = 2, ///< Display dropdown for timetable field
 		DP_COND_COUNTER = 3,   ///< Display dropdown widget counters
+		DP_COND_SCHED_SELECT = 4, ///< Display dropdown for scheduled dispatch schedule selection
 
 		/* WID_O_SEL_COND_AUX2 */
 		DP_COND_AUX2_VIA = 0, ///< Display via button
+		DP_COND_AUX2_SCHED_TEST = 1, ///< Display dropdown for scheduled dispatch test selection
 
 		DP_ROW_CONDITIONAL = 2, ///< Display the conditional order buttons in the top row of the ship/airplane order window.
 
@@ -1370,6 +1418,9 @@ private:
 
 			case OCV_VEH_IN_SLOT:
 				return v->type == VEH_TRAIN ? _order_conditional_condition_is_in_slot : _order_conditional_condition_is_in_slot_non_train;
+
+			case OCV_DISPATCH_SLOT:
+				return (order->GetConditionValue() % 2) == 0 ? _order_conditional_condition_dispatch_slot_first : _order_conditional_condition_dispatch_slot_last;
 
 			default:
 				return _order_conditional_condition;
@@ -1965,6 +2016,7 @@ public:
 					bool is_counter = (ocv == OCV_COUNTER_VALUE);
 					bool is_time_date = (ocv == OCV_TIME_DATE);
 					bool is_timetable = (ocv == OCV_TIMETABLE);
+					bool is_sched_dispatch = (ocv == OCV_DISPATCH_SLOT);
 
 					if (is_cargo) {
 						if (order == nullptr || !CargoSpec::Get(order->GetConditionValue())->IsValid()) {
@@ -1978,6 +2030,8 @@ public:
 
 						this->GetWidget<NWidgetCore>(WID_O_COND_SLOT)->widget_data = (slot_id != INVALID_TRACE_RESTRICT_SLOT_ID) ? STR_TRACE_RESTRICT_SLOT_NAME : STR_TRACE_RESTRICT_VARIABLE_UNDEFINED;
 						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_SLOT);
+					} else if (is_sched_dispatch) {
+						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(SZSP_NONE);
 					} else {
 						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_NUMBER);
 					}
@@ -2000,12 +2054,18 @@ public:
 					} else if (is_timetable) {
 						this->GetWidget<NWidgetCore>(WID_O_COND_TIMETABLE)->widget_data = STR_TRACE_RESTRICT_TIMETABLE_LATENESS + order->GetConditionValue();
 						aux_sel->SetDisplayedPlane(DP_COND_TIMETABLE);
+					} else if (is_sched_dispatch) {
+						this->GetWidget<NWidgetCore>(WID_O_COND_SCHED_SELECT)->widget_data = STR_BLACK_STRING1;
+						aux_sel->SetDisplayedPlane(DP_COND_SCHED_SELECT);
 					} else {
 						aux_sel->SetDisplayedPlane(SZSP_NONE);
 					}
 
 					if (ocv == OCV_CARGO_WAITING_AMOUNT) {
 						aux2_sel->SetDisplayedPlane(DP_COND_AUX2_VIA);
+					} else if (is_sched_dispatch) {
+						this->GetWidget<NWidgetCore>(WID_O_COND_SCHED_TEST)->widget_data = STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_NEXT + (order->GetConditionValue() / 2);
+						aux2_sel->SetDisplayedPlane(DP_COND_AUX2_SCHED_TEST);
 					} else {
 						aux2_sel->SetDisplayedPlane(SZSP_NONE);
 					}
@@ -2255,6 +2315,19 @@ public:
 				break;
 			}
 
+			case WID_O_COND_SCHED_SELECT: {
+				VehicleOrderID sel = this->OrderGetSel();
+				const Order *order = this->vehicle->GetOrder(sel);
+
+				if (order != nullptr && order->IsType(OT_CONDITIONAL) && GB(order->GetXData(), 0, 16) != UINT16_MAX) {
+					SetDParam(0, STR_TIMETABLE_ASSIGN_SCHEDULE_ID);
+					SetDParam(1, GB(order->GetXData(), 0, 16) + 1);
+				} else {
+					SetDParam(0, STR_TIMETABLE_ASSIGN_SCHEDULE_NONE);
+				}
+				break;
+			}
+
 			case WID_O_CAPTION:
 				SetDParam(0, this->vehicle->index);
 				break;
@@ -2478,6 +2551,27 @@ public:
 				break;
 			}
 
+			case WID_O_COND_SCHED_SELECT: {
+				int selected = GB(this->vehicle->GetOrder(this->OrderGetSel())->GetXData(), 0, 16);
+				if (selected == UINT16_MAX) selected = -1;
+
+				uint count = this->vehicle->orders->GetScheduledDispatchScheduleCount();
+				DropDownList list;
+				for (uint i = 0; i < count; ++i) {
+					DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_TIMETABLE_ASSIGN_SCHEDULE_ID, i, false);
+					item->SetParam(0, i + 1);
+					list.emplace_back(item);
+				}
+				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_COND_SCHED_SELECT, 0, true);
+				break;
+			}
+
+			case WID_O_COND_SCHED_TEST: {
+				ShowDropDownMenu(this, _order_dispatch_slot_dropdown, this->vehicle->GetOrder(this->OrderGetSel())->GetConditionValue() / 2,
+						WID_O_COND_SCHED_TEST, 0, 0, UINT_MAX);
+				break;
+			}
+
 			case WID_O_REVERSE: {
 				VehicleOrderID sel_ord = this->OrderGetSel();
 				const Order *order = this->vehicle->GetOrder(sel_ord);
@@ -2527,6 +2621,9 @@ public:
 								_order_conditional_variable[i] == OCV_COUNTER_VALUE) && !_settings_client.gui.show_adv_tracerestrict_features) {
 							continue;
 						}
+						if ((_order_conditional_variable[i] == OCV_DISPATCH_SLOT) && this->vehicle->orders->GetScheduledDispatchScheduleCount() == 0) {
+							continue;
+						}
 					}
 					list.emplace_back(new DropDownListStringItem(OrderStringForVariable(this->vehicle, _order_conditional_variable[i]), _order_conditional_variable[i], false));
 				}
@@ -2536,6 +2633,16 @@ public:
 
 			case WID_O_COND_COMPARATOR: {
 				const Order *o = this->vehicle->GetOrder(this->OrderGetSel());
+				if (o->GetConditionVariable() == OCV_DISPATCH_SLOT) {
+					DropDownList list;
+					list.emplace_back(new DropDownListStringItem(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_FIRST, 0x100, false));
+					list.emplace_back(new DropDownListStringItem(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_FIRST, 0x101, false));
+					list.emplace_back(new DropDownListStringItem(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_LAST, 0x102, false));
+					list.emplace_back(new DropDownListStringItem(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_LAST, 0x103, false));
+					int selected = ((o->GetConditionValue() % 2) * 2) + ((o->GetConditionComparator() == OCC_IS_FALSE) ? 1 : 0);
+					ShowDropDownList(this, std::move(list), selected, WID_O_COND_COMPARATOR, 0, true);
+					break;
+				}
 				uint mask;
 				switch (o->GetConditionVariable()) {
 					case OCV_REQUIRES_SERVICE:
@@ -2701,7 +2808,14 @@ public:
 				break;
 
 			case WID_O_COND_COMPARATOR:
-				this->ModifyOrder(this->OrderGetSel(), MOF_COND_COMPARATOR | index << 4);
+				if (index >= 0x100) {
+					const Order *o = this->vehicle->GetOrder(this->OrderGetSel());
+					if (o == nullptr || o->GetConditionVariable() != OCV_DISPATCH_SLOT) return;
+					this->ModifyOrder(this->OrderGetSel(), MOF_COND_COMPARATOR | ((index & 1) ? OCC_IS_FALSE : OCC_IS_TRUE) << 4);
+					this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2 | ((o->GetConditionValue() & 2) | ((index & 2) >> 1)) << 4);
+				} else {
+					this->ModifyOrder(this->OrderGetSel(), MOF_COND_COMPARATOR | index << 4);
+				}
 				break;
 
 			case WID_O_COND_CARGO:
@@ -2727,6 +2841,18 @@ public:
 			case WID_O_COND_TIMETABLE:
 				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2 | index << 4);
 				break;
+
+			case WID_O_COND_SCHED_SELECT:
+				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE | index << 4);
+				break;
+
+			case WID_O_COND_SCHED_TEST: {
+				const Order *o = this->vehicle->GetOrder(this->OrderGetSel());
+				if (o == nullptr) return;
+				index = (index * 2) | (o->GetConditionValue() & 1);
+				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2 | index << 4);
+				break;
+			}
 
 			case WID_O_RELEASE_SLOT:
 				this->ModifyOrder(this->OrderGetSel(), MOF_SLOT | index << 4);
@@ -2990,10 +3116,14 @@ static const NWidgetPart _nested_orders_train_widgets[] = {
 															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_TIMETABLE_TOOLTIP), SetResize(1, 0),
 					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_COUNTER), SetMinimalSize(124, 12), SetFill(1, 0),
 															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_COUNTER_TOOLTIP), SetResize(1, 0),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_SCHED_SELECT), SetMinimalSize(124, 12), SetFill(1, 0),
+															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_SCHED_SELECT_TOOLTIP), SetResize(1, 0),
 				EndContainer(),
 				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_COND_AUX2),
 					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_O_COND_AUX_VIA), SetMinimalSize(36, 12),
 													SetDataTip(STR_ORDER_CONDITIONAL_VIA, STR_ORDER_CONDITIONAL_VIA_TOOLTIP),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_SCHED_TEST), SetMinimalSize(124, 12), SetFill(1, 0),
+															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_SCHED_TEST_TOOLTIP), SetResize(1, 0),
 				EndContainer(),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_COMPARATOR), SetMinimalSize(124, 12), SetFill(1, 0),
 															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP), SetResize(1, 0),
@@ -3100,10 +3230,14 @@ static const NWidgetPart _nested_orders_widgets[] = {
 															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_TIME_DATE_TOOLTIP), SetResize(1, 0),
 					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_TIMETABLE), SetMinimalSize(124, 12), SetFill(1, 0),
 															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_TIMETABLE_TOOLTIP), SetResize(1, 0),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_SCHED_SELECT), SetMinimalSize(124, 12), SetFill(1, 0),
+															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_SCHED_SELECT_TOOLTIP), SetResize(1, 0),
 				EndContainer(),
 				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_COND_AUX2),
 					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_O_COND_AUX_VIA), SetMinimalSize(36, 12),
 													SetDataTip(STR_ORDER_CONDITIONAL_VIA, STR_ORDER_CONDITIONAL_VIA_TOOLTIP),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_SCHED_TEST), SetMinimalSize(124, 12), SetFill(1, 0),
+															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_SCHED_TEST_TOOLTIP), SetResize(1, 0),
 				EndContainer(),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_COMPARATOR), SetMinimalSize(124, 12), SetFill(1, 0),
 													SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP), SetResize(1, 0),

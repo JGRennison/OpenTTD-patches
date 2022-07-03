@@ -38,6 +38,7 @@
 #include "vehiclelist.h"
 #include "tracerestrict.h"
 #include "train.h"
+#include "date_func.h"
 
 #include "table/strings.h"
 
@@ -1793,6 +1794,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				case OCV_CARGO_ACCEPTANCE:
 				case OCV_CARGO_WAITING:
 				case OCV_SLOT_OCCUPANCY:
+				case OCV_DISPATCH_SLOT:
 					if (data != OCC_IS_TRUE && data != OCC_IS_FALSE) return CMD_ERROR;
 					break;
 
@@ -1844,6 +1846,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				case OCV_COUNTER_VALUE:
 				case OCV_TIME_DATE:
 				case OCV_TIMETABLE:
+				case OCV_DISPATCH_SLOT:
 					break;
 
 				default:
@@ -1869,6 +1872,10 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 				case OCV_TIMETABLE:
 					if (data >= OTCM_END) return CMD_ERROR;
+					break;
+
+				case OCV_DISPATCH_SLOT:
+					if (data >= OSDSCM_END) return CMD_ERROR;
 					break;
 
 				default:
@@ -2048,6 +2055,11 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 						if (occ != OCC_IS_TRUE && occ != OCC_IS_FALSE) order->SetConditionComparator(OCC_IS_TRUE);
 						order->SetConditionValue(0);
 						break;
+					case OCV_DISPATCH_SLOT:
+						if (occ != OCC_IS_TRUE && occ != OCC_IS_FALSE) order->SetConditionComparator(OCC_IS_TRUE);
+						order->SetConditionValue(0);
+						order->GetXDataRef() = UINT16_MAX;
+						break;
 
 					case OCV_PERCENT:
 						order->SetConditionComparator(OCC_EQUALS);
@@ -2088,6 +2100,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 					case OCV_CARGO_WAITING_AMOUNT:
 					case OCV_COUNTER_VALUE:
+					case OCV_DISPATCH_SLOT:
 						SB(order->GetXDataRef(), 0, 16, data);
 						break;
 
@@ -2789,6 +2802,38 @@ static uint16 GetFreeStationPlatforms(StationID st_id)
 	return counter;
 }
 
+bool EvaluateDispatchSlotConditionalOrder(const Order *order, const Vehicle *v, DateTicksScaled date_time, bool *predicted)
+{
+	uint schedule_index = GB(order->GetXData(), 0, 16);
+	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return false;
+	const DispatchSchedule &sched = v->orders->GetDispatchScheduleByIndex(schedule_index);
+	if (sched.GetScheduledDispatch().size() == 0) return false;
+
+	if (predicted != nullptr) *predicted = true;
+
+	int32 offset;
+	if (order->GetConditionValue() & 2) {
+		int32 last = sched.GetScheduledDispatchLastDispatch();
+		if (last < 0) {
+			last += sched.GetScheduledDispatchDuration() * (1 + (-last / sched.GetScheduledDispatchDuration()));
+		}
+		offset = last % sched.GetScheduledDispatchDuration();
+	} else {
+		extern DateTicksScaled GetScheduledDispatchTime(const DispatchSchedule &ds, DateTicksScaled leave_time);
+		DateTicksScaled slot = GetScheduledDispatchTime(sched, _scaled_date_ticks);
+		offset = (slot - sched.GetScheduledDispatchStartTick()) % sched.GetScheduledDispatchDuration();
+	}
+
+	bool value;
+	if (order->GetConditionValue() & 1) {
+		value = (offset == (int)sched.GetScheduledDispatch().back());
+	} else {
+		value = (offset == (int)sched.GetScheduledDispatch().front());
+	}
+
+	return OrderConditionCompare(order->GetConditionComparator(), value, 0);
+}
+
 /** Gets the next 'real' station in the order list
  * @param v the vehicle in question
  * @param order the current (conditional) order
@@ -2939,6 +2984,10 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 					break;
 			}
 			skip_order = OrderConditionCompare(occ, tt_value, order->GetXData());
+			break;
+		}
+		case OCV_DISPATCH_SLOT: {
+			skip_order = EvaluateDispatchSlotConditionalOrder(order, v, _scaled_date_ticks, nullptr);
 			break;
 		}
 		default: NOT_REACHED();

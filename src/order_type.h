@@ -158,6 +158,7 @@ enum OrderConditionVariable {
 	OCV_COUNTER_VALUE,      ///< Skip based on counter value
 	OCV_TIME_DATE,          ///< Skip based on current time/date
 	OCV_TIMETABLE,          ///< Skip based on timetable state
+	OCV_DISPATCH_SLOT,      ///< Skip based on scheduled dispatch slot state
 	OCV_END
 };
 
@@ -227,6 +228,14 @@ enum OrderTimetableConditionMode {
 	OTCM_LATENESS            = 0, ///< Test timetable lateness
 	OTCM_EARLINESS           = 1, ///< Test timetable earliness
 	OTCM_END
+};
+
+enum OrderScheduledDispatchSlotConditionMode {
+	OSDSCM_NEXT_FIRST        = 0, ///< Test if next departure is first slot
+	OSDSCM_NEXT_LAST         = 1, ///< Test if next departure is last slot
+	OSDSCM_LAST_FIRST        = 2, ///< Test if last departure was first slot
+	OSDSCM_LAST_LAST         = 3, ///< Test if last departure was last slot
+	OSDSCM_END
 };
 
 /**

@@ -393,6 +393,16 @@ CommandCost CmdScheduledDispatchRemoveSchedule(TileIndex tile, DoCommandFlag fla
 			} else if (idx > (int)schedule_index) {
 				o->SetDispatchScheduleIndex(idx - 1);
 			}
+			if (o->IsType(OT_CONDITIONAL) && o->GetConditionVariable() == OCV_DISPATCH_SLOT) {
+				uint16 dispatch_slot = GB(o->GetXData(), 0, 16);
+				if (dispatch_slot == UINT16_MAX) {
+					/* do nothing */
+				} else if (dispatch_slot == schedule_index) {
+					SB(o->GetXDataRef(), 0, 16, UINT16_MAX);
+				} else if (dispatch_slot > schedule_index) {
+					SB(o->GetXDataRef(), 0, 16, (uint16)(dispatch_slot - 1));
+				}
+			}
 		}
 		SchdispatchInvalidateWindows(v);
 	}
