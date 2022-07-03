@@ -116,6 +116,7 @@ struct TrainCache {
 	TrainCacheFlags cached_tflags;///< train cached flags
 	uint8 cached_num_engines;     ///< total number of engines, including rear ends of multiheaded engines
 	uint16 cached_centre_mass;    ///< Cached position of the centre of mass, from the front
+	uint16 cached_braking_length; ///< Cached effective length used for deceleration force and power purposes
 	uint16 cached_veh_weight;     ///< Cached individual vehicle weight
 	uint16 cached_uncapped_decel; ///< Uncapped cached deceleration for realistic braking lookahead purposes
 	uint8 cached_deceleration;    ///< Cached deceleration for realistic braking lookahead purposes
@@ -507,7 +508,7 @@ struct TrainDecelerationStats {
 CommandCost CmdMoveRailVehicle(TileIndex, DoCommandFlag , uint32, uint32, const char *);
 CommandCost CmdMoveVirtualRailVehicle(TileIndex, DoCommandFlag, uint32, uint32, const char*);
 
-Train* CmdBuildVirtualRailVehicle(EngineID, StringID &error, uint32 user);
+Train* BuildVirtualRailVehicle(EngineID, StringID &error, uint32 user, bool no_consist_change);
 
 int GetTileMarginInFrontOfTrain(const Train *v, int x_pos, int y_pos);
 

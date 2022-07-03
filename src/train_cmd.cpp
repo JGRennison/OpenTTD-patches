@@ -418,6 +418,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 			u->gcache.cached_total_length = 0;
 			u->tcache.cached_num_engines = 0;
 			u->tcache.cached_centre_mass = 0;
+			u->tcache.cached_braking_length = 0;
 			u->tcache.cached_deceleration = 0;
 			u->tcache.cached_uncapped_decel = 0;
 			u->tcache.cached_tflags = TCF_NONE;
@@ -853,8 +854,8 @@ static int GetRealisticBrakingSpeedForDistance(const TrainDecelerationStats &sta
 			/* calculate speed at which braking would be sufficient */
 
 			uint weight = stats.t->gcache.cached_weight;
-			int64 power_w = (stats.t->gcache.cached_power * 746ll) + (stats.t->gcache.cached_total_length * (int64)RBC_BRAKE_POWER_PER_LENGTH);
-			int64 min_braking_force = (stats.t->gcache.cached_total_length * (int64)RBC_BRAKE_FORCE_PER_LENGTH) + stats.t->gcache.cached_axle_resistance + (weight * 16);
+			int64 power_w = (stats.t->gcache.cached_power * 746ll) + (stats.t->tcache.cached_braking_length * (int64)RBC_BRAKE_POWER_PER_LENGTH);
+			int64 min_braking_force = (stats.t->tcache.cached_braking_length * (int64)RBC_BRAKE_FORCE_PER_LENGTH) + stats.t->gcache.cached_axle_resistance + (weight * 16);
 
 			/* F = (7/8) * (F_min + ((power_w * 18) / (5 * v)))
 			 * v^2 = sloped_ke + F * s / (4 * m)
@@ -1166,6 +1167,7 @@ void Train::UpdateAcceleration()
 			default: NOT_REACHED();
 			case AM_ORIGINAL:
 				this->tcache.cached_uncapped_decel = this->tcache.cached_deceleration = Clamp((this->acceleration * 7) / 2, 1, 200);
+				this->tcache.cached_braking_length = this->gcache.cached_total_length;
 				break;
 
 			case AM_REALISTIC: {
@@ -1182,7 +1184,9 @@ void Train::UpdateAcceleration()
 							length += ((u->gcache.cached_veh_length * adjust) + 1) / 2;
 						}
 					}
+					length = Clamp<uint>(length, 0, UINT16_MAX);
 				}
+				this->tcache.cached_braking_length = length;
 
 				int64 min_braking_force = (int64)length * (int64)RBC_BRAKE_FORCE_PER_LENGTH;
 				if (!maglev) {
@@ -1233,6 +1237,7 @@ void Train::UpdateAcceleration()
 		this->tcache.cached_tflags &= ~TCF_RL_BRAKING;
 		this->tcache.cached_deceleration = 0;
 		this->tcache.cached_uncapped_decel = 0;
+		this->tcache.cached_braking_length = this->gcache.cached_total_length;
 	}
 
 	if (_settings_game.vehicle.improved_breakdowns) {
@@ -3768,7 +3773,7 @@ static PBSTileInfo ExtendTrainReservation(const Train *v, const PBSTileInfo &ori
 		if (IsSafeWaitingPosition(v, tile, cur_td, true, _settings_game.pf.forbid_90_deg)) {
 			PBSWaitingPositionRestrictedSignalInfo restricted_signal_info;
 			bool wp_free = IsWaitingPositionFree(v, tile, cur_td, _settings_game.pf.forbid_90_deg, &restricted_signal_info);
-			if (!(wp_free && TryReserveRailTrack(tile, TrackdirToTrack(cur_td)))) break;
+			if (!(wp_free && TryReserveRailTrackdir(v, tile, cur_td))) break;
 			/* Safe position is all good, path valid and okay. */
 			if (restricted_signal_info.tile != INVALID_TILE) {
 				const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(restricted_signal_info.tile, TrackdirToTrack(restricted_signal_info.trackdir));
@@ -3782,7 +3787,7 @@ static PBSTileInfo ExtendTrainReservation(const Train *v, const PBSTileInfo &ori
 			return PBSTileInfo(tile, cur_td, true);
 		}
 
-		if (!TryReserveRailTrackdir(tile, cur_td)) break;
+		if (!TryReserveRailTrackdir(v, tile, cur_td)) break;
 	}
 
 	if (ft.m_err == CFollowTrackRail::EC_OWNER || ft.m_err == CFollowTrackRail::EC_NO_WAY) {
@@ -4086,6 +4091,7 @@ static TileIndex CheckLongReservePbsTunnelBridgeOnTrackdir(Train* v, TileIndex t
 			} else {
 				raw_free_tiles = GetAvailableFreeTilesInSignalledTunnelBridgeWithStartOffset(tile, end, v->lookahead->tunnel_bridge_reserved_tiles + 1);
 				ApplyAvailableFreeTunnelBridgeTiles(v->lookahead.get(), raw_free_tiles, tile, end);
+				FlushDeferredDetermineCombineNormalShuntMode(v);
 				SetTrainReservationLookaheadEnd(v);
 			}
 		} else {
@@ -4250,7 +4256,7 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 			SetSignalStateByTrackdir(tile, changed_signal, SIGNAL_STATE_GREEN);
 			if (_extra_aspects > 0) {
 				SetSignalAspect(tile, track, 0);
-				UpdateAspectDeferred(tile, changed_signal);
+				UpdateAspectDeferredWithVehicle(v, tile, changed_signal, true);
 			}
 		} else if (!do_track_reservation) {
 			return track;
@@ -6808,7 +6814,7 @@ int GetDisplayImageWidth(Train *t, Point *offset)
 	return t->gcache.cached_veh_length * reference_width / VEHICLE_LENGTH;
 }
 
-Train* CmdBuildVirtualRailWagon(const Engine *e, uint32 user)
+Train* CmdBuildVirtualRailWagon(const Engine *e, uint32 user, bool no_consist_change)
 {
 	const RailVehicleInfo *rvi = &e->u.rail;
 
@@ -6855,7 +6861,7 @@ Train* CmdBuildVirtualRailWagon(const Engine *e, uint32 user)
 
 	_new_vehicle_id = v->index;
 
-	v->UpdateViewport(true, false);
+	if (no_consist_change) return v;
 
 	v->First()->ConsistChanged(CCF_ARRANGE);
 
@@ -6866,7 +6872,7 @@ Train* CmdBuildVirtualRailWagon(const Engine *e, uint32 user)
 	return v;
 }
 
-Train* CmdBuildVirtualRailVehicle(EngineID eid, StringID &error, uint32 user)
+Train* BuildVirtualRailVehicle(EngineID eid, StringID &error, uint32 user, bool no_consist_change)
 {
 	const Engine *e = Engine::GetIfValid(eid);
 	if (e == nullptr || e->type != VEH_TRAIN) {
@@ -6885,7 +6891,7 @@ Train* CmdBuildVirtualRailVehicle(EngineID eid, StringID &error, uint32 user)
 	RegisterGameEvents(GEF_VIRT_TRAIN);
 
 	if (rvi->railveh_type == RAILVEH_WAGON) {
-		return CmdBuildVirtualRailWagon(e, user);
+		return CmdBuildVirtualRailWagon(e, user, no_consist_change);
 	}
 
 	Train *v = new Train();
@@ -6936,6 +6942,8 @@ Train* CmdBuildVirtualRailVehicle(EngineID eid, StringID &error, uint32 user)
 		train_part->SetVirtual();
 	}
 
+	if (no_consist_change) return v;
+
 	v->ConsistChanged(CCF_ARRANGE);
 
 	CheckConsistencyOfArticulatedVehicle(v);
@@ -6972,7 +6980,7 @@ CommandCost CmdBuildVirtualRailVehicle(TileIndex tile, DoCommandFlag flags, uint
 
 	if (should_execute) {
 		StringID err = INVALID_STRING_ID;
-		Train* train = CmdBuildVirtualRailVehicle(eid, err, p2);
+		Train* train = BuildVirtualRailVehicle(eid, err, p2, false);
 
 		if (train == nullptr) {
 			return_cmd_error(err);

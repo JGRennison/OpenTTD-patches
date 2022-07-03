@@ -190,7 +190,7 @@ protected:
 		}
 
 		for (GroupID gid : groups) {
-			SetDParam(0, (uint64)gid);
+			SetDParam(0, (uint64)(gid | GROUP_NAME_HIERARCHY));
 			int width = (GetStringBoundingBox(STR_DEPARTURES_GROUP)).width + 4;
 			if (width > this->group_width) this->group_width = width;
 		}
@@ -895,7 +895,7 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 		/* Group name */
 
 		if (_settings_client.gui.departure_show_group && d->vehicle->group_id != INVALID_GROUP && d->vehicle->group_id != DEFAULT_GROUP) {
-			SetDParam(0, (uint64)(d->vehicle->group_id));
+			SetDParam(0, (uint64)(d->vehicle->group_id | GROUP_NAME_HIERARCHY));
 			ltr ? DrawString(text_right - (toc_width + group_width + 2),              text_right - toc_width - 2, y + 1, STR_DEPARTURES_GROUP)
 				: DrawString(               text_left + toc_width + 2, text_left + (toc_width + group_width + 2), y + 1, STR_DEPARTURES_GROUP);
 		}

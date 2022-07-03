@@ -248,7 +248,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 	condstack.clear();
 
 	byte have_previous_signal = 0;
-	TileIndex previous_signal_tile[2];
+	TileIndex previous_signal_tile[3];
 
 	size_t size = this->items.size();
 	for (size_t i = 0; i < size; i++) {
@@ -358,7 +358,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						// TRIT_COND_PBS_ENTRY_SIGNAL value type uses the next slot
 						i++;
 						TraceRestrictPBSEntrySignalAuxField mode = static_cast<TraceRestrictPBSEntrySignalAuxField>(GetTraceRestrictAuxField(item));
-						assert(mode == TRPESAF_VEH_POS || mode == TRPESAF_RES_END);
+						assert(mode == TRPESAF_VEH_POS || mode == TRPESAF_RES_END || mode == TRPESAF_RES_END_TILE);
 						uint32_t signal_tile = this->items[i];
 						if (!HasBit(have_previous_signal, mode)) {
 							if (input.previous_signal_callback) {
@@ -804,6 +804,24 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						}
 						break;
 
+					case TRIT_SIGNAL_MODE_CONTROL:
+						switch (static_cast<TraceRestrictSignalModeControlField>(GetTraceRestrictValue(item))) {
+							case TRSMCF_NORMAL_ASPECT:
+								out.flags |= TRPRF_SIGNAL_MODE_NORMAL;
+								out.flags &= ~TRPRF_SIGNAL_MODE_SHUNT;
+								break;
+
+							case TRSMCF_SHUNT_ASPECT:
+								out.flags &= ~TRPRF_SIGNAL_MODE_NORMAL;
+								out.flags |= TRPRF_SIGNAL_MODE_SHUNT;
+								break;
+
+							default:
+								NOT_REACHED();
+								break;
+						}
+						break;
+
 					default:
 						NOT_REACHED();
 				}
@@ -945,9 +963,6 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 				case TRIT_COND_UNDEFINED:
 				case TRIT_COND_TRAIN_LENGTH:
 				case TRIT_COND_MAX_SPEED:
-				case TRIT_COND_CURRENT_ORDER:
-				case TRIT_COND_NEXT_ORDER:
-				case TRIT_COND_LAST_STATION:
 				case TRIT_COND_CARGO:
 				case TRIT_COND_ENTRY_DIRECTION:
 				case TRIT_COND_PBS_ENTRY_SIGNAL:
@@ -955,12 +970,31 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 				case TRIT_COND_PHYS_PROP:
 				case TRIT_COND_PHYS_RATIO:
 				case TRIT_COND_TRAIN_OWNER:
-				case TRIT_COND_TRAIN_STATUS:
 				case TRIT_COND_LOAD_PERCENT:
 				case TRIT_COND_COUNTER_VALUE:
 				case TRIT_COND_TIME_DATE_VALUE:
 				case TRIT_COND_RESERVED_TILES:
 				case TRIT_COND_CATEGORY:
+					break;
+
+				case TRIT_COND_CURRENT_ORDER:
+				case TRIT_COND_NEXT_ORDER:
+				case TRIT_COND_LAST_STATION:
+					actions_used_flags |= TRPAUF_ORDER_CONDITIONALS;
+					break;
+
+				case TRIT_COND_TRAIN_STATUS:
+					switch (static_cast<TraceRestrictTrainStatusValueField>(GetTraceRestrictValue(item))) {
+						case TRTSVF_HEADING_TO_STATION_WAYPOINT:
+						case TRTSVF_HEADING_TO_DEPOT:
+						case TRTSVF_LOADING:
+						case TRTSVF_WAITING:
+							actions_used_flags |= TRPAUF_ORDER_CONDITIONALS;
+							break;
+
+						default:
+							break;
+					}
 					break;
 
 				case TRIT_COND_TRAIN_IN_SLOT:
@@ -1092,6 +1126,10 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 					actions_used_flags |= TRPAUF_SPEED_ADAPTATION;
 					break;
 
+				case TRIT_SIGNAL_MODE_CONTROL:
+					actions_used_flags |= TRPAUF_CMB_SIGNAL_MODE_CTRL;
+					break;
+
 				default:
 					return_cmd_error(STR_TRACE_RESTRICT_ERROR_VALIDATE_UNKNOWN_INSTRUCTION);
 			}
@@ -1159,6 +1197,7 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_ENGINE_CLASS:
 		case TRVT_PF_PENALTY_CONTROL:
 		case TRVT_SPEED_ADAPTATION_CONTROL:
+		case TRVT_SIGNAL_MODE_CONTROL:
 			SetTraceRestrictValue(item, 0);
 			if (!IsTraceRestrictTypeAuxSubtype(GetTraceRestrictType(item))) {
 				SetTraceRestrictAuxField(item, 0);

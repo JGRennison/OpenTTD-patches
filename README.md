@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.47.3
+## JGR's Patchpack version 0.48.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -139,7 +139,8 @@ See [installation.md](/installation.md) for instructions on how to install.
 * [More conditional orders](http://www.tt-forums.net/viewtopic.php?f=33&t=38317).  
   Next station: is cargo waiting, is cargo accepted, number of free platforms, amount of cargo waiting.  
   Percent of times, per-cargo load percentage, current time/date, timetable lateness.  
-  Slots/counters: train in slot, slot occupancy, counter value.
+  Slots/counters: train in slot, slot occupancy, counter value.  
+  Scheduled dispatch departure slots.
 * Reverse at waypoint orders.
 * Add a menu item to the vehicle list to change order target, e.g. for moving depot orders to a different depot.
 * Add game setting to allow only non-stop orders for trains and road vehicles.

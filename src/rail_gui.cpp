@@ -684,8 +684,12 @@ struct BuildRailToolbarWindow : Window {
 			case WID_RAT_BUILD_WAYPOINT:
 				this->last_user_action = widget;
 				_waypoint_count = StationClass::Get(STAT_CLASS_WAYP)->GetSpecCount();
-				if (HandlePlacePushButton(this, WID_RAT_BUILD_WAYPOINT, SPR_CURSOR_WAYPOINT, HT_RECT) && _waypoint_count > 1) {
-					ShowBuildWaypointPicker(this);
+				if (HandlePlacePushButton(this, WID_RAT_BUILD_WAYPOINT, SPR_CURSOR_WAYPOINT, HT_RECT)) {
+					if (_waypoint_count > 1) {
+						ShowBuildWaypointPicker(this);
+					} else {
+						_cur_waypoint_type = 0;
+					}
 				}
 				break;
 
@@ -1876,7 +1880,7 @@ private:
 		this->realistic_braking_mode = (_settings_game.vehicle.train_braking_model == TBM_REALISTIC);
 		this->progsig_ui_shown = _settings_client.gui.show_progsig_ui;
 		this->noentry_ui_shown = _settings_client.gui.show_noentrysig_ui;
-		this->style_selector_shown = _num_new_signal_styles > 0;
+		this->style_selector_shown = _enabled_new_signal_styles_mask > 1;
 
 		bool show_norm = this->realistic_braking_mode || this->all_signal_mode;
 		bool show_presig = !this->realistic_braking_mode && this->all_signal_mode;
@@ -2106,7 +2110,9 @@ public:
 				DropDownList list;
 				list.emplace_back(new DropDownListStringItem(STR_BUILD_SIGNAL_DEFAULT_STYLE, 0, false));
 				for (uint i = 0; i < _num_new_signal_styles; i++) {
-					list.emplace_back(new DropDownListStringItem(_new_signal_styles[i].name, i + 1, false));
+					if (HasBit(_enabled_new_signal_styles_mask, i + 1)) {
+						list.emplace_back(new DropDownListStringItem(_new_signal_styles[i].name, i + 1, false));
+					}
 				}
 				ShowDropDownList(this, std::move(list), _cur_signal_style, widget);
 				break;
@@ -2148,12 +2154,12 @@ public:
 		this->SetWidgetDisabledState(WID_BS_DRAG_SIGNALS_DENSITY_DECREASE, _settings_client.gui.drag_signals_density == 1);
 		this->SetWidgetDisabledState(WID_BS_DRAG_SIGNALS_DENSITY_INCREASE, _settings_client.gui.drag_signals_density == 20);
 
-		if (_cur_signal_style > _num_new_signal_styles) _cur_signal_style = 0;
+		if (_cur_signal_style > _num_new_signal_styles || !HasBit(_enabled_new_signal_styles_mask, _cur_signal_style)) _cur_signal_style = 0;
 
 		if (this->all_signal_mode != (_settings_client.gui.signal_gui_mode == SIGNAL_GUI_ALL) || this->progsig_ui_shown != _settings_client.gui.show_progsig_ui ||
 				this->realistic_braking_mode != (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) ||
 				this->noentry_ui_shown != _settings_client.gui.show_noentrysig_ui ||
-				this->style_selector_shown != (_num_new_signal_styles > 0)) {
+				this->style_selector_shown != (_enabled_new_signal_styles_mask > 1)) {
 			this->SetSignalUIMode();
 			this->ReInit();
 		}

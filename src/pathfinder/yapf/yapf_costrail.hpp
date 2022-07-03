@@ -189,6 +189,8 @@ private:
 	 */
 	static TileIndex TraceRestrictPreviousSignalCallback(const Train *v, const void *node_ptr, TraceRestrictPBSEntrySignalAuxField mode)
 	{
+		if (mode == TRPESAF_RES_END_TILE) return INVALID_TILE;
+
 		const Node *node = static_cast<const Node *>(node_ptr);
 		for (;;) {
 			TileIndex last_signal_tile = node->m_last_non_reserve_through_signal_tile;

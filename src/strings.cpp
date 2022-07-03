@@ -36,6 +36,7 @@
 #include "tracerestrict.h"
 #include "game/game_text.hpp"
 #include "network/network_content_gui.h"
+#include "core/y_combinator.hpp"
 #include <stack>
 
 #include "table/strings.h"
@@ -56,6 +57,8 @@ std::unique_ptr<icu::Collator> _current_collator;    ///< Collator for the langu
 static uint64 _global_string_params_data[20];     ///< Global array of string parameters. To access, use #SetDParam.
 static WChar _global_string_params_type[20];      ///< Type of parameters stored in #_global_string_params
 StringParameters _global_string_params(_global_string_params_data, 20, _global_string_params_type);
+
+std::string _temp_special_strings[16];
 
 /** Reset the type array. */
 void StringParameters::ClearTypeInformation()
@@ -239,6 +242,9 @@ char *GetStringWithArgs(char *buffr, StringID string, StringParameters *args, co
 		case TEXT_TAB_SPECIAL:
 			if (index >= 0xE4 && !game_script) {
 				return GetSpecialNameString(buffr, index - 0xE4, args, last);
+			}
+			if (index < lengthof(_temp_special_strings) && !game_script) {
+				return FormatString(buffr, _temp_special_strings[index].c_str(), args, last, case_index);
 			}
 			break;
 
@@ -1700,19 +1706,30 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 			}
 
 			case SCC_GROUP_NAME: { // {GROUP}
-				const Group *g = Group::GetIfValid(args->GetInt32());
-				if (g == nullptr) break;
+				uint32 id = (uint32)args->GetInt64();
+				bool recurse = _settings_client.gui.show_group_hierarchy_name && (id & GROUP_NAME_HIERARCHY);
+				id &= ~GROUP_NAME_HIERARCHY;
+				const Group *group = Group::GetIfValid(id);
+				if (group == nullptr) break;
 
-				if (!g->name.empty()) {
-					int64 args_array[] = {(int64)(size_t)g->name.c_str()};
-					StringParameters tmp_params(args_array);
-					buff = GetStringWithArgs(buff, STR_JUST_RAW_STRING, &tmp_params, last);
-				} else {
-					int64 args_array[] = {g->index};
-					StringParameters tmp_params(args_array);
+				auto handle_group = y_combinator([&](auto handle_group, const Group *g) -> void {
+					if (recurse && g->parent != INVALID_GROUP) {
+						handle_group(Group::Get(g->parent));
+						StringParameters tmp_params(nullptr, 0, nullptr);
+						buff = GetStringWithArgs(buff, STR_HIERARCHY_SEPARATOR, &tmp_params, last);
+					}
+					if (!g->name.empty()) {
+						int64 args_array[] = {(int64)(size_t)g->name.c_str()};
+						StringParameters tmp_params(args_array);
+						buff = GetStringWithArgs(buff, STR_JUST_RAW_STRING, &tmp_params, last);
+					} else {
+						int64 args_array[] = {g->index};
+						StringParameters tmp_params(args_array);
 
-					buff = GetStringWithArgs(buff, STR_FORMAT_GROUP_NAME, &tmp_params, last);
-				}
+						buff = GetStringWithArgs(buff, STR_FORMAT_GROUP_NAME, &tmp_params, last);
+					}
+				});
+				handle_group(group);
 				break;
 			}
 

@@ -2,6 +2,33 @@
 
 * * *
 
+### v0.48.0 (2022-07-03)
+* Fix crash which could occur after removing non-rectangular airports.
+* Fix crash which could occur with non-buildable template trains with some NewGRFs.
+* Fix not being able to construct industries of only one tile.
+* Fix the land info window showing incorrect text for no-entry signals.
+* Fix wrong powered state or visual effect type, or desync warning messages, which could occur with trains from some NewGRFs and tiles of two different rail types.
+* Fix reservation error when a reserve through signal was the last tile, when there were no junctions earlier in the reservation.
+* Fix desync which could occur after removing part of a station moved the station sign within the catchment of industries.
+* Fix not being able to build waypoints when custom types are no longer present and a custom type was previously selected.
+* Fix timetable automation not updating conditional jump travel times.
+* Fix road/tram type check when moving depot orders to another depot.
+* Add setting to show order occupancy values by default.
+* Add conditional order to test if last or next scheduled dispatch is the first or last dispatch slot.
+* Show group name when grouping vehicles by shared orders, if all vehicles in shared order set are in the same group.
+* Add setting to show full group hierarchy in group names.
+* Enable shared orders and occupancy buttons for competitor order windows.
+* Add button to highlight all signals using a particular routing restriction program.
+* Sending a vehicle to a depot for sale can now sell immediately, if the vehicle is already stopped in a suitable depot.
+* NewGRF:
+  * Allow signal graphics NewGRF to define additional signal styles and test for additional signal properties.
+  * Allow NewGRFs to provide custom graphics for landscape rocky tiles.
+* Add a hotkey to toggle the via state of an order.
+* Remove the tunnel/bridge signal spacing setting, the usual signal spacing setting in the signal window is used instead.
+* Slightly boost the realistic braking stats of trains affected by the freight weight multiplier.
+* Add a setting to limit train lookahead to the signal aspect when using realistic braking and multi-aspect signalling.
+* Bump trunk base from commit 0d3756818fc2178242b0a72d979131a9cb376d76 to commit 19af139631b5bc98dba6de4c4f0b7aeb6b3ac6aa.
+
 ### v0.47.3 (2022-06-09)
 * Fix being able to add/remove/modify tunnel/bridge signals when occupied by trains, which could result in train or game crashes.
 * Fix crash when building public roads encountered level crossings and other non-normal road.

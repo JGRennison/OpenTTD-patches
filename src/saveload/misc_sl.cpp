@@ -27,7 +27,6 @@
 extern TileIndex _cur_tileloop_tile;
 extern uint16 _disaster_delay;
 extern byte _trees_tick_ctr;
-extern uint8 _extra_aspects;
 extern uint64 _aspect_cfg_hash;
 
 /* Keep track of current game position */

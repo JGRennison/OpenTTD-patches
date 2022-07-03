@@ -58,6 +58,7 @@
 #include "debug_desync.h"
 #include "scope_info.h"
 #include "event_logs.h"
+#include "tile_cmd.h"
 #include <time.h>
 
 #include <set>
@@ -2368,6 +2369,34 @@ DEF_CONSOLE_CMD(ConDeleteVehicleID)
 
 	return false;
 }
+
+DEF_CONSOLE_CMD(ConRunTileLoopTile)
+{
+	if (argc == 0 || argc > 3) {
+		IConsoleHelp("Run tile loop proc on tile.");
+		return true;
+	}
+
+	if (argc >= 2) {
+		uint32 tile;
+		if (!GetArgumentInteger(&tile, argv[1])) return false;
+
+		if (tile >= MapSize()) {
+			IConsolePrint(CC_ERROR, "Tile does not exist");
+			return true;
+		}
+		uint32 count = 1;
+		if (argc >= 3) {
+			if (!GetArgumentInteger(&count, argv[2])) return false;
+		}
+		for (uint32 i = 0; i < count; i++) {
+			_tile_type_procs[GetTileType(tile)]->tile_loop_proc(tile);
+		}
+		return true;
+	}
+
+	return false;
+}
 #endif
 
 DEF_CONSOLE_CMD(ConGetFullDate)
@@ -3716,5 +3745,6 @@ void IConsoleStdLibRegister()
 
 #ifdef _DEBUG
 	IConsole::CmdRegister("delete_vehicle_id",       ConDeleteVehicleID,  ConHookNoNetwork, true);
+	IConsole::CmdRegister("run_tile_loop_tile",      ConRunTileLoopTile,  ConHookNoNetwork, true);
 #endif
 }

@@ -226,7 +226,7 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 	}
 
 	if (Type == VEH_TRAIN && Train::From(this)->UsingRealisticBraking()) {
-		braking_power += (Train::From(this)->gcache.cached_total_length * (int64)RBC_BRAKE_POWER_PER_LENGTH);
+		braking_power += (Train::From(this)->tcache.cached_braking_length * (int64)RBC_BRAKE_POWER_PER_LENGTH);
 	}
 
 	/* If power is 0 because of a breakdown, we make the force 0 if accelerating */
@@ -269,7 +269,7 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 		/* Assume that every part of a train is braked, not just the engine.
 		 * Exceptionally heavy freight trains should still have a sensible braking distance.
 		 * The total braking force is generally larger than the total tractive force. */
-		braking_accel = ClampToI32((-braking_force - resistance - (Train::From(this)->gcache.cached_total_length * (int64)RBC_BRAKE_FORCE_PER_LENGTH)) / (mass * 4));
+		braking_accel = ClampToI32((-braking_force - resistance - (Train::From(this)->tcache.cached_braking_length * (int64)RBC_BRAKE_FORCE_PER_LENGTH)) / (mass * 4));
 
 		/* Defensive driving: prevent ridiculously fast deceleration.
 		 * -130 corresponds to a braking distance of about 6.2 tiles from 160 km/h. */

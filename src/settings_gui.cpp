@@ -1935,6 +1935,8 @@ static SettingsContainer &GetSettingsTree()
 			interface->Add(new SettingEntry("gui.dual_pane_train_purchase_window"));
 			interface->Add(new SettingEntry("gui.allow_hiding_waypoint_labels"));
 			interface->Add(new SettingEntry("gui.disable_water_animation"));
+			interface->Add(new SettingEntry("gui.show_order_occupancy_by_default"));
+			interface->Add(new SettingEntry("gui.show_group_hierarchy_name"));
 		}
 
 		SettingsPage *advisors = main->Add(new SettingsPage(STR_CONFIG_SETTING_ADVISORS));

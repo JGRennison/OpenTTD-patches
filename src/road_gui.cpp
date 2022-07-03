@@ -534,7 +534,11 @@ struct BuildRoadToolbarWindow : Window {
 				if (HandlePlacePushButton(this, WID_ROT_BUILD_WAYPOINT, SPR_CURSOR_WAYPOINT, HT_RECT)) {
 					this->last_started_action = widget;
 					_waypoint_count = RoadStopClass::Get(ROADSTOP_CLASS_WAYP)->GetSpecCount();
-					if (_waypoint_count > 1) ShowBuildWaypointPicker(this);
+					if (_waypoint_count > 1) {
+						ShowBuildWaypointPicker(this);
+					} else {
+						_cur_waypoint_type = 0;
+					}
 				}
 				break;
 

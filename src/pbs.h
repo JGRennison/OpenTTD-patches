@@ -20,7 +20,7 @@ TrackBits GetReservedTrackbits(TileIndex t);
 void SetRailStationPlatformReservation(TileIndex start, DiagDirection dir, bool b);
 
 bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations = true);
-bool TryReserveRailTrackdir(TileIndex tile, Trackdir td, bool trigger_stations = true);
+bool TryReserveRailTrackdir(const Train *v, TileIndex tile, Trackdir td, bool trigger_stations = true);
 void UnreserveRailTrack(TileIndex tile, Track t);
 void UnreserveRailTrackdir(TileIndex tile, Trackdir td);
 
@@ -61,6 +61,8 @@ enum TrainReservationLookAheadItemType : byte {
 enum TrainReservationSignalLookAheadItemFlags {
 	TRSLAI_NO_ASPECT_INC   = 0,           ///< This signal does not increase the signal aspect (e.g. banner repeater)
 	TRSLAI_NEXT_ONLY       = 1,           ///< This signal only permits lookahead up to the next physical signal, even if that has TRSLAI_NO_ASPECT_INC (e.g. shunt)
+	TRSLAI_COMBINED        = 2,           ///< This signal is a combined normal/shunt signal, special handling
+	TRSLAI_COMBINED_SHUNT  = 3,           ///< This signal is a combined normal/shunt signal, in shunt mode
 };
 
 struct TrainReservationLookAheadItem {

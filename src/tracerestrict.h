@@ -161,6 +161,7 @@ enum TraceRestrictItemType {
 	TRIT_COUNTER                  = 51,   ///< Change counter value
 	TRIT_PF_PENALTY_CONTROL       = 52,   ///< Control base signal penalties
 	TRIT_SPEED_ADAPTATION_CONTROL = 53,   ///< Control speed adaptation
+	TRIT_SIGNAL_MODE_CONTROL      = 54,   ///< Control signal modes
 
 	/* space up to 63 */
 };
@@ -301,6 +302,14 @@ enum TraceRestrictSpeedAdaptationControlField {
 };
 
 /**
+ * TraceRestrictItem value field, for TRIT_SIGNAL_MODE_CONTROL
+ */
+enum TraceRestrictSignalModeControlField {
+	TRSMCF_NORMAL_ASPECT               = 0,       ///< Combined normal/shunt aspect signals: use normal mode
+	TRSMCF_SHUNT_ASPECT                = 1,       ///< Combined normal/shunt aspect signals: use shunt mode
+};
+
+/**
  * TraceRestrictItem value field, for TRIT_COND_TRAIN_STATUS
  */
 enum TraceRestrictTrainStatusValueField {
@@ -369,6 +378,7 @@ enum TraceRestrictCounterCondOpField {
 enum TraceRestrictPBSEntrySignalAuxField {
 	TRPESAF_VEH_POS               = 0,       ///< vehicle position signal
 	TRPESAF_RES_END               = 1,       ///< reservation end signal
+	TRPESAF_RES_END_TILE          = 2,       ///< reservation end tile
 	/* space up to 3 */
 };
 
@@ -398,6 +408,8 @@ enum TraceRestrictProgramResultFlags {
 	TRPRF_NO_PBS_BACK_PENALTY     = 1 << 8,  ///< Do not apply PBS back penalty
 	TRPRF_SPEED_ADAPT_EXEMPT      = 1 << 9,  ///< Make speed adaptation exempt
 	TRPRF_RM_SPEED_ADAPT_EXEMPT   = 1 << 10, ///< Remove speed adaptation exemption
+	TRPRF_SIGNAL_MODE_NORMAL      = 1 << 11, ///< Combined normal/shunt signal mode control: normal
+	TRPRF_SIGNAL_MODE_SHUNT       = 1 << 12, ///< Combined normal/shunt signal mode control: shunt
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramResultFlags)
 
@@ -423,13 +435,15 @@ enum TraceRestrictProgramActionsUsedFlags {
 	TRPAUF_SPEED_ADAPTATION       = 1 << 15, ///< Speed adaptation control
 	TRPAUF_PBS_RES_END_SIMULATE   = 1 << 16, ///< PBS reservations ending at this signal slot changes must be fully simulated in dry run mode
 	TRPAUF_RESERVE_THROUGH_ALWAYS = 1 << 17, ///< Reserve through action is unconditionally set
+	TRPAUF_CMB_SIGNAL_MODE_CTRL   = 1 << 18, ///< Combined normal/shunt signal mode control
+	TRPAUF_ORDER_CONDITIONALS     = 1 << 19, ///< Order conditionals are present
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramActionsUsedFlags)
 
 /**
  * Enumeration for TraceRestrictProgramInput::permitted_slot_operations
  */
-enum TraceRestrictProgramInputSlotPermissions {
+enum TraceRestrictProgramInputSlotPermissions : uint8 {
 	TRPISP_ACQUIRE                = 1 << 0,  ///< Slot acquire is permitted
 	TRPISP_RELEASE_BACK           = 1 << 1,  ///< Slot release (back) is permitted
 	TRPISP_RELEASE_FRONT          = 1 << 2,  ///< Slot release (front) is permitted
@@ -691,6 +705,7 @@ enum TraceRestrictValueType {
 	TRVT_ENGINE_CLASS             = 46,///< takes a EngineClass
 	TRVT_PF_PENALTY_CONTROL       = 47,///< takes a TraceRestrictPfPenaltyControlField
 	TRVT_SPEED_ADAPTATION_CONTROL = 48,///< takes a TraceRestrictSpeedAdaptationControlField
+	TRVT_SIGNAL_MODE_CONTROL      = 49,///< takes a TraceRestrictSignalModeControlField
 };
 
 /**
@@ -870,6 +885,8 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 			out.value_type = TRVT_PF_PENALTY_CONTROL;
 		} else if (GetTraceRestrictType(item) == TRIT_SPEED_ADAPTATION_CONTROL) {
 			out.value_type = TRVT_SPEED_ADAPTATION_CONTROL;
+		} else if (GetTraceRestrictType(item) == TRIT_SIGNAL_MODE_CONTROL) {
+			out.value_type = TRVT_SIGNAL_MODE_CONTROL;
 		} else {
 			out.value_type = TRVT_NONE;
 		}

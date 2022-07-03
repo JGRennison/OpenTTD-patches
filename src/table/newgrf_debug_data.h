@@ -187,8 +187,8 @@ class NIHVehicle : public NIHelper {
 			seprintf(buffer, lastof(buffer), "  T cache: tilt: %d, speed varies by railtype: %d, curve speed mod: %d, engines: %u",
 					(t->tcache.cached_tflags & TCF_TILT) ? 1 : 0, (t->tcache.cached_tflags & TCF_SPD_RAILTYPE) ? 1 : 0, t->tcache.cached_curve_speed_mod, t->tcache.cached_num_engines);
 			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  T cache: RL braking: %d, decel: %u, uncapped decel: %u, centre mass: %u",
-					(t->UsingRealisticBraking()) ? 1 : 0, t->tcache.cached_deceleration, t->tcache.cached_uncapped_decel, t->tcache.cached_centre_mass);
+			seprintf(buffer, lastof(buffer), "  T cache: RL braking: %d, decel: %u, uncapped decel: %u, centre mass: %u, braking length: %u",
+					(t->UsingRealisticBraking()) ? 1 : 0, t->tcache.cached_deceleration, t->tcache.cached_uncapped_decel, t->tcache.cached_centre_mass, t->tcache.cached_braking_length);
 			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "  T cache: veh weight: %u, user data: %u, curve speed: %u",
 					t->tcache.cached_veh_weight, t->tcache.user_def_data, t->tcache.cached_max_curve_speed);
@@ -262,6 +262,14 @@ class NIHVehicle : public NIHelper {
 					switch (item.type) {
 						case TRLIT_STATION:
 							b += seprintf(b, lastof(buffer), "station: %u, %s", item.data_id, BaseStation::IsValidID(item.data_id) ? BaseStation::Get(item.data_id)->GetCachedName() : "[invalid]");
+							if (t->current_order.ShouldStopAtStation(t->last_station_visited, item.data_id, Waypoint::GetIfValid(item.data_id) != nullptr)) {
+								extern int PredictStationStoppingLocation(const Train *v, const Order *order, int station_length, DestinationID dest);
+								int stop_position = PredictStationStoppingLocation(t, &(t->current_order), item.end - item.start, item.data_id);
+								b += seprintf(b, lastof(buffer), ", stop_position: %d", item.start + stop_position);
+								print_braking_speed(item.start + stop_position, 0, item.z_pos);
+							} else if (t->current_order.IsType(OT_GOTO_WAYPOINT) && t->current_order.GetDestination() == item.data_id && (t->current_order.GetWaypointFlags() & OWF_REVERSE)) {
+								print_braking_speed(item.start + t->gcache.cached_total_length, 0, item.z_pos);
+							}
 							break;
 						case TRLIT_REVERSE:
 							b += seprintf(b, lastof(buffer), "reverse");
@@ -279,6 +287,8 @@ class NIHVehicle : public NIHelper {
 							b += seprintf(b, lastof(buffer), "signal: target speed: %u, style: %u, flags:", item.data_id, item.data_aux >> 8);
 							if (HasBit(item.data_aux, TRSLAI_NO_ASPECT_INC)) b += seprintf(b, lastof(buffer), "n");
 							if (HasBit(item.data_aux, TRSLAI_NEXT_ONLY)) b += seprintf(b, lastof(buffer), "s");
+							if (HasBit(item.data_aux, TRSLAI_COMBINED)) b += seprintf(b, lastof(buffer), "c");
+							if (HasBit(item.data_aux, TRSLAI_COMBINED_SHUNT)) b += seprintf(b, lastof(buffer), "X");
 							if (_settings_game.vehicle.realistic_braking_aspect_limited == TRBALM_ON && l.lookahead_end_position == item.start) {
 								b += seprintf(b, lastof(buffer), ", lookahead end");
 								print_braking_speed(item.start, 0, item.z_pos);

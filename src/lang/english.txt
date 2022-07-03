@@ -1630,6 +1630,12 @@ STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_8X                   :8x zoom and abo
 STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_16X                  :16x zoom and above
 STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_32X                  :32x zoom and above
 
+STR_CONFIG_SETTING_SHOW_ORDER_OCCUPANCY_BY_DEFAULT              :Show order occupancy by default: {STRING2}
+STR_CONFIG_SETTING_SHOW_ORDER_OCCUPANCY_BY_DEFAULT_HELPTEXT     :Show detailed per-order occupancy by default when opening a vehicle's orders window
+
+STR_CONFIG_SETTING_SHOW_GROUP_HIERARCHY_NAME                    :Show group hierarchy in name: {STRING2}
+STR_CONFIG_SETTING_SHOW_GROUP_HIERARCHY_NAME_HELPTEXT           :When enabled, group names include the full hierarchy of their parent group names
+
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :Enable signals on bridges/tunnels advanced modes: {STRING2}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :Enables use of advanced modes of signal simulation on bridges and tunnels. When disabled, bridges/tunnels which are not already in an advanced mode cannot be changed to an advanced mode, however other players may choose to enable this setting and use an advanced mode.
 
@@ -3239,7 +3245,8 @@ STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL                    :PBS entry signa
 STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG               :entered signal of PBS block
 STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL                  :PBS end signal
 STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG             :signal at current end of PBS reservation
-STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG_WARN        :signal at current end of PBS reservation {PUSH_COLOUR}{RED}(requires realistic braking){POP_COLOUR}
+STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE                    :PBS reservation end tile
+STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE_LONG               :tile at end of PBS reservation from this signal
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_GROUP                         :train group
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT                          :train in slot
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY                      :slot occupancy
@@ -3328,6 +3335,7 @@ STR_TRACE_RESTRICT_NEWS_CONTROL                                 :News control
 STR_TRACE_RESTRICT_COUNTER_OP                                   :Counter operation
 STR_TRACE_RESTRICT_PF_PENALTY_CONTROL                           :Penalty config
 STR_TRACE_RESTRICT_SPEED_ADAPTATION_CONTROL                     :Speed adap. control
+STR_TRACE_RESTRICT_SIGNAL_MODE_CONTROL                          :Signal mode control
 STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :Acquire or wait
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :Try to acquire
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ON_RES                      :Try to acquire (on reserve)
@@ -3382,6 +3390,10 @@ STR_TRACE_RESTRICT_MAKE_TRAIN_SPEED_ADAPTATION_EXEMPT           :Make train exem
 STR_TRACE_RESTRICT_REMOVE_TRAIN_SPEED_ADAPTATION_EXEMPT         :Remove train exemption from automatic speed adaptation
 STR_TRACE_RESTRICT_MAKE_TRAIN_SPEED_ADAPTATION_EXEMPT_SHORT     :Make exempt
 STR_TRACE_RESTRICT_REMOVE_TRAIN_SPEED_ADAPTATION_EXEMPT_SHORT   :Remove exemption
+STR_TRACE_RESTRICT_USE_NORMAL_ASPECT_MODE                       :Use normal signal aspect (combined normal/shunt aspect signal)
+STR_TRACE_RESTRICT_USE_SHUNT_ASPECT_MODE                        :Use shunt signal aspect (combined normal/shunt aspect signal)
+STR_TRACE_RESTRICT_USE_NORMAL_ASPECT_MODE_SHORT                 :Use normal signal aspect
+STR_TRACE_RESTRICT_USE_SHUNT_ASPECT_MODE_SHORT                  :Use shunt signal aspect
 STR_TRACE_RESTRICT_TIME_MINUTE                                  :current minute (0 - 59)
 STR_TRACE_RESTRICT_TIME_HOUR                                    :current hour (0 - 23)
 STR_TRACE_RESTRICT_TIME_HOUR_MINUTE                             :current hour and minute (0 - 2359)
@@ -3399,6 +3411,10 @@ STR_TRACE_RESTRICT_TIME_DAY_ITEM_SHORT                          :day
 STR_TRACE_RESTRICT_TIME_MONTH_ITEM_SHORT                        :month
 STR_TRACE_RESTRICT_TIMETABLE_LATENESS                           :lateness
 STR_TRACE_RESTRICT_TIMETABLE_EARLINESS                          :earliness
+STR_TRACE_RESTRICT_DISPATCH_SLOT_NEXT                           :next departure slot
+STR_TRACE_RESTRICT_DISPATCH_SLOT_LAST                           :last departure slot
+STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_NEXT                     :next
+STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_LAST                     :last
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}Value
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}Routefinding restriction
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}Routefinding restriction - shared by {COMMA} signals
@@ -3449,6 +3465,7 @@ STR_TRACE_RESTRICT_SHARE                                        :{BLACK}Share
 STR_TRACE_RESTRICT_UNSHARE                                      :{BLACK}Unshare
 STR_TRACE_RESTRICT_SELECT_TARGET                                :{BLACK}Select Target
 STR_TRACE_RESTRICT_SELECT_SIGNAL                                :{BLACK}Select Signal
+STR_TRACE_RESTRICT_SELECT_TILE                                  :{BLACK}Select Tile
 STR_TRACE_RESTRICT_INSERT_TOOLTIP                               :{BLACK}Insert an instruction
 STR_TRACE_RESTRICT_REMOVE_TOOLTIP                               :{BLACK}Remove the selected instruction{}Ctrl+Click to remove the selected conditional instruction but retain its contents
 STR_TRACE_RESTRICT_RESET_TOOLTIP                                :{BLACK}Reset the current signal (without affecting shared programs)
@@ -3458,6 +3475,9 @@ STR_TRACE_RESTRICT_UNSHARE_TOOLTIP                              :{BLACK}Stop sha
 STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP                           :{BLACK}Routefinding restriction
 STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}Click an instruction to select it{}Ctrl+Click to scroll to the instruction's target (if any)
 STR_TRACE_RESTRICT_HIGHLIGHT_TOOLTIP                            :{BLACK}Toggle highlighting all signals sharing this program
+STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING           :{STRING} {PUSH_COLOUR}{RED}(requires realistic braking){POP_COLOUR}
+STR_TRACE_RESTRICT_WARNING_SIGNAL_MODE_CONTROL_ONLY             :{STRING} {PUSH_COLOUR}{RED}(only for signal mode control actions){POP_COLOUR}
+STR_TRACE_RESTRICT_WARNING_NO_SIGNAL_MODE_CONTROL               :{STRING} {PUSH_COLOUR}{RED}(not for signal mode control actions){POP_COLOUR}
 STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM                      :{WHITE}Can't insert instruction
 STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM                      :{WHITE}Can't modify instruction
 STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM                      :{WHITE}Can't remove instruction
@@ -5533,6 +5553,7 @@ STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :Waiting cargo a
 STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :Counter value
 STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :Current time/date
 STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :Timetable state
+STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :Dispatch slot
 
 STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :Vehicle in slot
 
@@ -5560,6 +5581,8 @@ STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}The trai
 STR_ORDER_CONDITIONAL_COUNTER_TOOLTIP                           :{BLACK}The counter to check the value of
 STR_ORDER_CONDITIONAL_TIME_DATE_TOOLTIP                         :{BLACK}The current time/date field to check the value of
 STR_ORDER_CONDITIONAL_TIMETABLE_TOOLTIP                         :{BLACK}The timetable field to check the value of
+STR_ORDER_CONDITIONAL_SCHED_SELECT_TOOLTIP                      :{BLACK}The dispatch schedule to use
+STR_ORDER_CONDITIONAL_SCHED_TEST_TOOLTIP                        :{BLACK}The dispatch schedule condition to test
 STR_ORDER_CONDITIONAL_VALUE_CAPT                                :{WHITE}Enter value to compare against
 
 STR_ORDER_CONDITIONAL_VIA                                       :{BLACK}Via
@@ -5583,6 +5606,10 @@ STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_IN_SLOT                :vehicle is in
 STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_NOT_IN_SLOT            :vehicle is not in
 STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_IN_ACQUIRE_SLOT        :vehicle is in/acquire
 STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_NOT_IN_ACQUIRE_SLOT    :vehicle is not in/can't acquire
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_FIRST         :is first slot
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_FIRST     :is not first slot
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_LAST          :is last slot
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_LAST      :is not last slot
 
 STR_ORDERS_SKIP_BUTTON                                          :{BLACK}Skip
 STR_ORDERS_SKIP_TOOLTIP                                         :{BLACK}Skip the current order, and start the next. Ctrl+Click skips to the selected order
@@ -5724,6 +5751,7 @@ STR_ORDER_CONDITIONAL_COUNTER                                   :Jump to order {
 STR_ORDER_CONDITIONAL_INVALID_COUNTER                           :Jump to order {COMMA} when value of {PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_TIME_HHMM                                 :Jump to order {COMMA} when {STRING} {STRING} {TIME_HHMM}
 STR_ORDER_CONDITIONAL_TIMETABLE                                 :Jump to order {COMMA} when {STRING} {STRING} {TT_TICKS}
+STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DISPLAY                     :Jump to order {COMMA} when {STRING} {STRING} {STRING}
 
 STR_ORDER_RELEASE_SLOT                                          :Release slot: {STRING1}
 
@@ -7044,6 +7072,7 @@ STR_RED_INT                                                     :{RED}{NUM}
 STR_WHITE_SIGN                                                  :{WHITE}{SIGN}
 STR_TINY_BLACK_STATION                                          :{TINY_FONT}{BLACK}{STATION}
 STR_BLACK_STRING                                                :{BLACK}{STRING}
+STR_BLACK_STRING1                                               :{BLACK}{STRING1}
 STR_BLACK_RAW_STRING                                            :{BLACK}{RAW_STRING}
 STR_ORANGE_STRING                                               :{ORANGE}{STRING}
 STR_LTBLUE_STRING                                               :{LTBLUE}{STRING}
@@ -7074,6 +7103,8 @@ STR_SHIP                                                        :{BLACK}{SHIP}
 STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
 
 STR_DECIMAL1_WITH_SCALE                                         :{DECIMAL1} ({DECIMAL}x)
+
+STR_HIERARCHY_SEPARATOR                                         :{SP}/{SP}
 
 ######## Zoning toolbar
 

@@ -828,7 +828,6 @@ static void DeleteStationIfEmpty(BaseStation *st)
 void Station::AfterStationTileSetChange(bool adding, StationType type)
 {
 	this->UpdateVirtCoord();
-	this->RecomputeCatchment();
 	DirtyCompanyInfrastructureWindows(this->owner);
 	if (adding) InvalidateWindowData(WC_STATION_LIST, this->owner, 0);
 
@@ -849,10 +848,12 @@ void Station::AfterStationTileSetChange(bool adding, StationType type)
 	}
 
 	if (adding) {
+		this->RecomputeCatchment();
 		UpdateStationAcceptance(this, false);
 		InvalidateWindowData(WC_SELECT_STATION, 0, 0);
 	} else {
 		DeleteStationIfEmpty(this);
+		this->RecomputeCatchment();
 	}
 
 }
