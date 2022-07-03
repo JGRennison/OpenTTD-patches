@@ -140,7 +140,7 @@ See [installation.md](/installation.md) for instructions on how to install.
   Next station: is cargo waiting, is cargo accepted, number of free platforms, amount of cargo waiting.  
   Percent of times, per-cargo load percentage, current time/date, timetable lateness.  
   Slots/counters: train in slot, slot occupancy, counter value.  
-  Scheduled dispatc departure slots.
+  Scheduled dispatch departure slots.
 * Reverse at waypoint orders.
 * Add a menu item to the vehicle list to change order target, e.g. for moving depot orders to a different depot.
 * Add game setting to allow only non-stop orders for trains and road vehicles.
