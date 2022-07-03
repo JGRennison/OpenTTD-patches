@@ -115,7 +115,7 @@ STR_QUANTITY_PAPER                                              :{WEIGHT_LONG} d
 STR_QUANTITY_GOLD                                               :{COMMA}{NBSP}sacc{P o hi} di oro
 STR_QUANTITY_WATER                                              :{VOLUME_LONG} di acqua
 STR_QUANTITY_WHEAT                                              :{WEIGHT_LONG} di frumento
-STR_QUANTITY_RUBBER                                             :{VOLUME_LONG} di gomma
+STR_QUANTITY_RUBBER                                             :{VOLUME_LONG} di caucciù
 STR_QUANTITY_SUGAR                                              :{WEIGHT_LONG} di zucchero
 STR_QUANTITY_TOYS                                               :{COMMA}{NBSP}giocattol{P o i}
 STR_QUANTITY_SWEETS                                             :{COMMA}{NBSP}sacc{P o hi} di caramelle
@@ -360,11 +360,11 @@ STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_SHIPS               :{BLACK}Mostra l
 STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_AIRCRAFT            :{BLACK}Mostra l'elenco degli aeromobili di una compagnia. CTRL+clic non apre la lista gruppi.
 STR_TOOLBAR_TOOLTIP_ZOOM_THE_VIEW_IN                            :{BLACK}Zooma la visuale in avanti
 STR_TOOLBAR_TOOLTIP_ZOOM_THE_VIEW_OUT                           :{BLACK}Zooma la visuale indietro
-STR_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TRACK                        :{BLACK}Costruisci ferrovie
-STR_TOOLBAR_TOOLTIP_BUILD_ROADS                                 :{BLACK}Costruisci strade
-STR_TOOLBAR_TOOLTIP_BUILD_TRAMWAYS                              :{BLACK}Costruisci tranvie
-STR_TOOLBAR_TOOLTIP_BUILD_SHIP_DOCKS                            :{BLACK}Costruisci trasporti su acqua
-STR_TOOLBAR_TOOLTIP_BUILD_AIRPORTS                              :{BLACK}Costruisci aeroporti
+STR_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TRACK                        :{BLACK}Costruzione ferrovie
+STR_TOOLBAR_TOOLTIP_BUILD_ROADS                                 :{BLACK}Costruzione strade
+STR_TOOLBAR_TOOLTIP_BUILD_TRAMWAYS                              :{BLACK}Costruzione tranvie
+STR_TOOLBAR_TOOLTIP_BUILD_SHIP_DOCKS                            :{BLACK}Costruzione trasporti su acqua
+STR_TOOLBAR_TOOLTIP_BUILD_AIRPORTS                              :{BLACK}Costruzione aeroporti
 STR_TOOLBAR_TOOLTIP_LANDSCAPING                                 :{BLACK}Apre la barra di modellazione del terreno per alzare/abbassare il terreno, piantare alberi, etc.
 STR_TOOLBAR_TOOLTIP_SHOW_SOUND_MUSIC_WINDOW                     :{BLACK}Mostra la finestra suoni/musica
 STR_TOOLBAR_TOOLTIP_SHOW_LAST_MESSAGE_NEWS                      :{BLACK}Mostra l'ultimo messaggio/notizia, mostra le opzioni dei messaggi
@@ -474,7 +474,7 @@ STR_ROAD_MENU_TRAM_CONSTRUCTION                                 :Costruzione tra
 
 # Waterways construction menu
 ###length 1
-STR_WATERWAYS_MENU_WATERWAYS_CONSTRUCTION                       :Costruisci trasporti su acqua
+STR_WATERWAYS_MENU_WATERWAYS_CONSTRUCTION                       :Costruzione trasporti su acqua
 
 # Aairport construction menu
 ###length 1
@@ -1687,7 +1687,7 @@ STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_LAST                       :L'ultimo dispon
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_MOST_USED                  :Il più usato
 
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :Mostra i percorsi riservati sui binari: {STRING}
-STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION_HELPTEXT              :Dà ai binari riservati un colore differente, aiutando a correggere problemi di treni che si rifiutano di entrare in blocchi protetti con segnali a percorso
+STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION_HELPTEXT              :Dà ai binari riservati un colore differente, aiutando a correggere problemi di treni che si rifiutano di entrare in blocchi protetti con segnali di percorso
 
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS                     :Mantieni aperte le finestre di costruzione dopo l'uso: {STRING}
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS_HELPTEXT            :Mantiene aperti dopo l'uso gli strumenti di costruzione di ponti, tunnel, etc.
@@ -2740,17 +2740,17 @@ STR_STATION_CLASS_WAYP                                          :Waypoint
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}Selezione segnale
 STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Attiva/disattiva la visualizzazione dei tipi di segnale avanzati
 STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}Segnale di blocco (semaforico){}I segnali sono necessari per impedire ai convogli di scontrarsi su reti ferroviarie dove viaggia più di un treno
-STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}Pre-segnale (semaforico){}Via libera se è presente almeno un segnale di uscita su via libera al termine della sezione di blocco successiva. Altrimenti presenta via impedita
-STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Segnale di uscita (semaforico){}Si comporta come un segnale di blocco, ma è necessario per far funzionare correttamente i pre-segnali e i segnali combinati all'ingresso della sezione
-STR_BUILD_SIGNAL_SEMAPHORE_COMBO_TOOLTIP                        :{BLACK}Segnale combinato (semaforico){}Un segnale combinato funziona contemporaneamente da segnale d'uscita e da pre-segnale. In questo modo è possibile costruire "alberi" di pre-segnali
-STR_BUILD_SIGNAL_SEMAPHORE_PBS_TOOLTIP                          :{BLACK}Segnale a percorso (semaforico){}Un segnale a percorso consente a più di un treno alla volta di entrare in una sezione di blocco, ammesso che ognuno possa riservarsi un percorso attraverso la sezione. Può essere superato al contrario
-STR_BUILD_SIGNAL_SEMAPHORE_PBS_OWAY_TOOLTIP                     :{BLACK}Segnale a percorso s. u. (semaforico){}Un segnale a percorso consente a più di un treno alla volta di entrare in una sezione di blocco, ammesso che ognuno possa riservarsi un percorso attraverso la sezione. Non può essere superato al contrario
+STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}Segnale di entrata (semaforico){}Questo pre-segnale permette l'accesso a un blocco solo se è presente almeno un segnale di uscita verde al termine della sezione del blocco, altrimenti è rosso.
+STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Segnale di uscita (semaforico){}Questo pre-segnale interagisce con i segnali di entrata, comunicandogli se vi sono uscite disponibili dal blocco, a cui entrambi appartengono. Se non è in combinazione con un segnale di entrata, si comporta come un comune segnale di blocco.
+STR_BUILD_SIGNAL_SEMAPHORE_COMBO_TOOLTIP                        :{BLACK}Segnale combinato (semaforico){}Questo pre-segnale funziona contemporaneamente da segnale di uscita e di entrata. Questa sua caratteristica permette di costruire "alberi" di pre-segnali.
+STR_BUILD_SIGNAL_SEMAPHORE_PBS_TOOLTIP                          :{BLACK}Segnale di percorso (semaforico){}Un segnale di percorso consente a più di un treno alla volta di entrare in una sezione di blocco, ammesso che ognuno possa riservarsi un percorso attraverso la sezione. Può essere superato al contrario
+STR_BUILD_SIGNAL_SEMAPHORE_PBS_OWAY_TOOLTIP                     :{BLACK}Segnale di percorso s. u. (semaforico){}Un segnale di percorso consente a più di un treno alla volta di entrare in una sezione di blocco, ammesso che ognuno possa riservarsi un percorso attraverso la sezione. Non può essere superato al contrario
 STR_BUILD_SIGNAL_ELECTRIC_NORM_TOOLTIP                          :{BLACK}Segnale di blocco (luminoso){}I segnali sono necessari per impedire ai convogli di scontrarsi su reti ferroviarie dove viaggia più di un treno
-STR_BUILD_SIGNAL_ELECTRIC_ENTRY_TOOLTIP                         :{BLACK}Pre-segnale (luminoso){}Via libera se è presente almeno un segnale di uscita su via libera al termine della sezione di blocco successiva. Altrimenti presenta via impedita
-STR_BUILD_SIGNAL_ELECTRIC_EXIT_TOOLTIP                          :{BLACK}Segnale di uscita (luminoso){}Si comporta come un segnale di blocco, ma è necessario per far funzionare correttamente i pre-segnali e i segnali combinati all'ingresso della sezione
-STR_BUILD_SIGNAL_ELECTRIC_COMBO_TOOLTIP                         :{BLACK}Segnale combinato (luminoso){}Un segnale combinato funziona contemporaneamente da segnale d'uscita e da pre-segnale. In questo modo è possibile costruire "alberi" di pre-segnali
-STR_BUILD_SIGNAL_ELECTRIC_PBS_TOOLTIP                           :{BLACK}Segnale a percorso (luminoso){}Un segnale a percorso consente a più di un treno alla volta di entrare in una sezione di blocco, ammesso che ognuno possa riservarsi un percorso attraverso la sezione. Può essere superato al contrario
-STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP                      :{BLACK}Segnale a percorso s. u. (luminoso){}Un segnale a percorso consente a più di un treno alla volta di entrare in una sezione di blocco, ammesso che ognuno possa riservarsi un percorso attraverso la sezione. Non può essere superato al contrario
+STR_BUILD_SIGNAL_ELECTRIC_ENTRY_TOOLTIP                         :{BLACK}Segnale di entrata (luminoso){}Questo pre-segnale permette l'accesso a un blocco solo se è presente almeno un segnale di uscita verde al termine della sezione del blocco, altrimenti  è rosso.
+STR_BUILD_SIGNAL_ELECTRIC_EXIT_TOOLTIP                          :{BLACK}Segnale di uscita (luminoso){}Questo pre-segnale interagisce con i segnali di entrata, comunicandogli se vi sono uscite disponibili dal blocco, a cui entrambi appartengono. Se non è in combinazione con un segnale di entrata, si comporta come un comune segnale di blocco.
+STR_BUILD_SIGNAL_ELECTRIC_COMBO_TOOLTIP                         :{BLACK}Segnale combinato (luminoso){}Questo pre-segnale funziona contemporaneamente da segnale di uscita e di entrata. Questa sua caratteristica permette la costruzione di "alberi" di pre-segnali.
+STR_BUILD_SIGNAL_ELECTRIC_PBS_TOOLTIP                           :{BLACK}Segnale di percorso (luminoso){}Un segnale di percorso consente a più di un treno alla volta di entrare in una sezione di blocco, ammesso che ognuno possa riservarsi un percorso attraverso la sezione. Può essere superato al contrario
+STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP                      :{BLACK}Segnale di percorso s. u. (luminoso){}Un segnale di percorso consente a più di un treno alla volta di entrare in una sezione di blocco, ammesso che ognuno possa riservarsi un percorso attraverso la sezione. Non può essere superato al contrario
 STR_BUILD_SIGNAL_CONVERT_TOOLTIP                                :{BLACK}Conversione segnali - Se attivato, facendo clic su un segnale esistente lo si converte nel tipo selezionato, mentre con CTRL+clic se ne modifica la variante. MAIUSC+clic mostra il costo stimato della conversione
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP                   :{BLACK}Distanza fra i segnali costruiti automaticamente trascinando il cursore
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_DECREASE_TOOLTIP          :{BLACK}Riduce la distanza fra i segnali costruiti
@@ -2840,7 +2840,7 @@ STR_TOOLBAR_AIRCRAFT_BUILD_AIRPORT_TOOLTIP                      :{BLACK}Costruis
 # Airport construction window
 STR_STATION_BUILD_AIRPORT_CAPTION                               :{WHITE}Selezione aeroporto
 STR_STATION_BUILD_AIRPORT_TOOLTIP                               :{BLACK}Seleziona dimensione/tipo di aeroporto
-STR_STATION_BUILD_AIRPORT_CLASS_LABEL                           :{BLACK}Tipo aeroporto
+STR_STATION_BUILD_AIRPORT_CLASS_LABEL                           :{BLACK}Categoria aeroporto
 STR_STATION_BUILD_AIRPORT_LAYOUT_NAME                           :{BLACK}Disposizione {NUM}
 
 STR_AIRPORT_SMALL                                               :Piccolo
@@ -2987,7 +2987,7 @@ STR_LAND_AREA_INFORMATION_LANDINFO_COORDS                       :{BLACK}Coordina
 STR_LAND_AREA_INFORMATION_BUILD_DATE                            :{BLACK}Costruito il: {LTBLUE}{DATE_LONG}
 STR_LAND_AREA_INFORMATION_STATION_CLASS                         :{BLACK}Tipo stazione: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_STATION_TYPE                          :{BLACK}Tipo stazione: {LTBLUE}{STRING}
-STR_LAND_AREA_INFORMATION_AIRPORT_CLASS                         :{BLACK}Tipo aeroporto: {LTBLUE}{STRING}
+STR_LAND_AREA_INFORMATION_AIRPORT_CLASS                         :{BLACK}Categoria aeroporto: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_AIRPORT_NAME                          :{BLACK}Nome aeroporto: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Nome blocco aeroporto: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
@@ -3014,23 +3014,23 @@ STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Ferrovia con se
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Ferrovia con pre-segnali
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Ferrovia con segnali di uscita
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Ferrovia con segnali combinati
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Ferrovia con segnali a percorso
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Ferrovia con segnali a percorso s.u.
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Ferrovia con segnali di percorso
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Ferrovia con segnali di percorso s.u.
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Ferrovia con segnali di blocco e pre-segnali
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Ferrovia con segnali di blocco e di uscita
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Ferrovia con segnali di blocco e combinati
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Ferrovia con segnali di blocco e a percorso
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Ferrovia con segnali di blocco e a percorso s.u.
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Ferrovia con segnali di blocco e di percorso
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Ferrovia con segnali di blocco e di percorso s.u.
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Ferrovia con pre-segnali e segnali di uscita
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Ferrovia con pre-segnali e segnali combinati
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Ferrovia con pre-segnali e segnali a percorso
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Ferrovia con pre-segnali e segnali a percorso s.u.
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Ferrovia con pre-segnali e segnali di percorso
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Ferrovia con pre-segnali e segnali di percorso s.u.
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Ferrovia con segnali di uscita e combinati
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Ferrovia con segnali di uscita e a percorso
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Ferrovia con segnali di uscita e a percorso s.u.
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Ferrovia con segnali combinati e a percorso
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Ferrovia con segnali combinati e a percorso s.u.
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Ferrovia con segnali a percorso e a percorso s.u.
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Ferrovia con segnali di uscita e di percorso
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Ferrovia con segnali di uscita e di percorso s.u.
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Ferrovia con segnali combinati e di percorso
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Ferrovia con segnali combinati e di percorso s.u.
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Ferrovia con segnali di percorso e di percorso s.u.
 STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Deposito ferroviario
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Strada
@@ -5176,7 +5176,7 @@ STR_INDUSTRY_NAME_BANK_TROPIC_ARCTIC                            :{G=f}Banca
 STR_INDUSTRY_NAME_DIAMOND_MINE                                  :{G=f}Miniera di diamanti
 STR_INDUSTRY_NAME_IRON_ORE_MINE                                 :{G=f}Miniera di ferro
 STR_INDUSTRY_NAME_FRUIT_PLANTATION                              :{G=m}Frutteto
-STR_INDUSTRY_NAME_RUBBER_PLANTATION                             :{G=f}Piantagione di gomma
+STR_INDUSTRY_NAME_RUBBER_PLANTATION                             :{G=f}Piantagione di caucciù
 STR_INDUSTRY_NAME_WATER_SUPPLY                                  :{G=f}Falda acquifera
 STR_INDUSTRY_NAME_WATER_TOWER                                   :{G=f}Torre idrica
 STR_INDUSTRY_NAME_FACTORY_2                                     :{G=f}Fabbrica
@@ -5283,7 +5283,7 @@ STR_VEHICLE_NAME_TRAIN_WAGON_RAIL_PAPER_TRUCK                   :Carro per carta
 STR_VEHICLE_NAME_TRAIN_WAGON_RAIL_COPPER_ORE_HOPPER             :Tramoggia per rame
 STR_VEHICLE_NAME_TRAIN_WAGON_RAIL_WATER_TANKER                  :Carro cisterna (acqua)
 STR_VEHICLE_NAME_TRAIN_WAGON_RAIL_FRUIT_TRUCK                   :Carro per frutta
-STR_VEHICLE_NAME_TRAIN_WAGON_RAIL_RUBBER_TRUCK                  :Carro per gomma
+STR_VEHICLE_NAME_TRAIN_WAGON_RAIL_RUBBER_TRUCK                  :Carro per caucciù
 STR_VEHICLE_NAME_TRAIN_WAGON_RAIL_SUGAR_TRUCK                   :Carro per zucchero
 STR_VEHICLE_NAME_TRAIN_WAGON_RAIL_COTTON_CANDY_HOPPER           :Tramoggia per zucchero filato
 STR_VEHICLE_NAME_TRAIN_WAGON_RAIL_TOFFEE_HOPPER                 :Tramoggia per toffee
@@ -5313,7 +5313,7 @@ STR_VEHICLE_NAME_TRAIN_WAGON_MONORAIL_PAPER_TRUCK               :Carro per carta
 STR_VEHICLE_NAME_TRAIN_WAGON_MONORAIL_COPPER_ORE_HOPPER         :Tramoggia per rame
 STR_VEHICLE_NAME_TRAIN_WAGON_MONORAIL_WATER_TANKER              :Carro cisterna (acqua)
 STR_VEHICLE_NAME_TRAIN_WAGON_MONORAIL_FRUIT_TRUCK               :Carro per frutta
-STR_VEHICLE_NAME_TRAIN_WAGON_MONORAIL_RUBBER_TRUCK              :Carro per gomma
+STR_VEHICLE_NAME_TRAIN_WAGON_MONORAIL_RUBBER_TRUCK              :Carro per caucciù
 STR_VEHICLE_NAME_TRAIN_WAGON_MONORAIL_SUGAR_TRUCK               :Carro per zucchero
 STR_VEHICLE_NAME_TRAIN_WAGON_MONORAIL_COTTON_CANDY_HOPPER       :Tramoggia per zucchero filato
 STR_VEHICLE_NAME_TRAIN_WAGON_MONORAIL_TOFFEE_HOPPER             :Tramoggia per toffee
@@ -5345,7 +5345,7 @@ STR_VEHICLE_NAME_TRAIN_WAGON_MAGLEV_PAPER_TRUCK                 :Carro per carta
 STR_VEHICLE_NAME_TRAIN_WAGON_MAGLEV_COPPER_ORE_HOPPER           :Tramoggia per rame
 STR_VEHICLE_NAME_TRAIN_WAGON_MAGLEV_WATER_TANKER                :Carro cisterna (acqua)
 STR_VEHICLE_NAME_TRAIN_WAGON_MAGLEV_FRUIT_TRUCK                 :Carro per frutta
-STR_VEHICLE_NAME_TRAIN_WAGON_MAGLEV_RUBBER_TRUCK                :Carro per gomma
+STR_VEHICLE_NAME_TRAIN_WAGON_MAGLEV_RUBBER_TRUCK                :Carro per caucciù
 STR_VEHICLE_NAME_TRAIN_WAGON_MAGLEV_SUGAR_TRUCK                 :Carro per zucchero
 STR_VEHICLE_NAME_TRAIN_WAGON_MAGLEV_COTTON_CANDY_HOPPER         :Tramoggia per zucchero filato
 STR_VEHICLE_NAME_TRAIN_WAGON_MAGLEV_TOFFEE_HOPPER               :Tramoggia per toffee
@@ -5413,9 +5413,9 @@ STR_VEHICLE_NAME_ROAD_VEHICLE_MPS_WATER_TANKER                  :Autobotte MPS
 STR_VEHICLE_NAME_ROAD_VEHICLE_BALOGH_FRUIT_TRUCK                :Autocarro frutta Balogh
 STR_VEHICLE_NAME_ROAD_VEHICLE_UHL_FRUIT_TRUCK                   :Autocarro frutta Uhl
 STR_VEHICLE_NAME_ROAD_VEHICLE_KELLING_FRUIT_TRUCK               :Autocarro frutta Kelling
-STR_VEHICLE_NAME_ROAD_VEHICLE_BALOGH_RUBBER_TRUCK               :Autocarro gomma Balogh
-STR_VEHICLE_NAME_ROAD_VEHICLE_UHL_RUBBER_TRUCK                  :Autocarro gomma Uhl
-STR_VEHICLE_NAME_ROAD_VEHICLE_RMT_RUBBER_TRUCK                  :Autocarro gomma RMT
+STR_VEHICLE_NAME_ROAD_VEHICLE_BALOGH_RUBBER_TRUCK               :Autocarro caucciù Balogh
+STR_VEHICLE_NAME_ROAD_VEHICLE_UHL_RUBBER_TRUCK                  :Autocarro caucciù Uhl
+STR_VEHICLE_NAME_ROAD_VEHICLE_RMT_RUBBER_TRUCK                  :Autocarro caucciù RMT
 STR_VEHICLE_NAME_ROAD_VEHICLE_MIGHTYMOVER_SUGAR_TRUCK           :Autocarro zucchero MightyMover
 STR_VEHICLE_NAME_ROAD_VEHICLE_POWERNAUGHT_SUGAR_TRUCK           :Autocarro zucchero Powernaught
 STR_VEHICLE_NAME_ROAD_VEHICLE_WIZZOWOW_SUGAR_TRUCK              :Autocarro zucchero Wizzowow
