@@ -2879,7 +2879,7 @@ void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, Sign
 		is_custom_sprite = file != nullptr && (file->flags & SFF_USERGRF) && !(file->flags & SFF_OGFX);
 	}
 
-	if (_settings_client.gui.show_all_signal_default || (is_custom_sprite && show_restricted && _settings_client.gui.show_restricted_signal_default && !result.restricted_valid && variant == SIG_ELECTRIC)) {
+	if ((_settings_client.gui.show_all_signal_default || (is_custom_sprite && show_restricted && _settings_client.gui.show_restricted_signal_default && !result.restricted_valid && variant == SIG_ELECTRIC)) && style == 0) {
 		/* Use duplicate sprite block, instead of GRF-specified signals */
 		if (type == SIGTYPE_PROG) {
 			if (variant == SIG_SEMAPHORE) {
