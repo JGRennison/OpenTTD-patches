@@ -5705,13 +5705,18 @@ static const SpriteGroup *PruneTargetSpriteGroup(const SpriteGroup *result)
 			if (sg->GroupMayBeBypassed()) {
 				/* Deterministic sprite group can be trivially resolved, skip it */
 				uint32 value = (sg->adjusts.size() == 1) ? EvaluateDeterministicSpriteGroupAdjust(sg->size, sg->adjusts[0], nullptr, 0, UINT_MAX) : 0;
-				result = sg->default_group;
+				const SpriteGroup *candidate = sg->default_group;
 				for (const auto &range : sg->ranges) {
 					if (range.low <= value && value <= range.high) {
-						result = range.group;
+						candidate = range.group;
 						break;
 					}
 				}
+				if (candidate != nullptr && candidate->type == SGT_DETERMINISTIC && static_cast<const DeterministicSpriteGroup *>(candidate)->dsg_flags & DSGF_REQUIRES_VAR1C) {
+					/* Can't skip this group as the child group requires the result of this group for variable 1C */
+					return result;
+				}
+				result = candidate;
 				continue;
 			}
 		}
