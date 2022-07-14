@@ -7756,22 +7756,10 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 		group->ranges.clear();
 	}
 
-	if (!HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_GROUP_PRUNE) && group->ranges.empty() && !group->calculated_result) {
-		/* There is only one option, remove any redundant adjustments when the result will be ignored anyway */
-		while (!group->adjusts.empty()) {
-			const DeterministicSpriteGroupAdjust &prev = group->adjusts.back();
-			if (prev.variable != 0x7E && !IsEvalAdjustWithSideEffects(prev.operation)) {
-				/* Delete useless operation */
-				group->adjusts.pop_back();
-			} else {
-				break;
-			}
-		}
-	}
-
 	std::bitset<256> bits;
 	std::bitset<256> pending_bits;
 	bool seen_pending = false;
+	bool seen_req_var1C = false;
 	if (!group->calculated_result) {
 		auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
 			if (sg != nullptr && sg->type == SGT_DETERMINISTIC) {
@@ -7783,6 +7771,7 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 				} else {
 					if (var_tracking != nullptr) bits |= var_tracking->in;
 				}
+				if (dsg->dsg_flags & DSGF_REQUIRES_VAR1C) seen_req_var1C = true;
 			}
 			if (sg != nullptr && sg->type == SGT_RANDOMIZED) {
 				const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)sg;
@@ -7838,6 +7827,20 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 			state.GetVarTracking(group)->in |= in_bits;
 		}
 	}
+
+	if (!HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_GROUP_PRUNE) && group->ranges.empty() && !group->calculated_result && !seen_req_var1C) {
+		/* There is only one option, remove any redundant adjustments when the result will be ignored anyway */
+		while (!group->adjusts.empty()) {
+			const DeterministicSpriteGroupAdjust &prev = group->adjusts.back();
+			if (prev.variable != 0x7E && !IsEvalAdjustWithSideEffects(prev.operation)) {
+				/* Delete useless operation */
+				group->adjusts.pop_back();
+			} else {
+				break;
+			}
+		}
+	}
+
 	bool dse_allowed = IsFeatureUsableForDSE(feature) && !HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_DSE);
 	bool dse_eligible = state.enable_dse;
 	if (dse_allowed && !dse_eligible) {
