@@ -6705,7 +6705,6 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 		/* Procedure call or complex adjustment */
 		if (adjust.operation == DSGA_OP_STO) handle_unpredictable_temp_store();
 		if (adjust.variable == 0x7E) {
-			state.seen_procedure_call = true;
 			reset_store_values();
 			auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
 				if (sg == nullptr) return;
@@ -6723,9 +6722,13 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 						}
 						state.GetVarTracking(group)->in |= bits;
 					}
+					if (!state.seen_procedure_call && ((const DeterministicSpriteGroup*)sg)->dsg_flags & DSGF_REQUIRES_VAR1C) {
+						group->dsg_flags |= DSGF_REQUIRES_VAR1C;
+					}
 				}
 			});
 			handle_group(adjust.subroutine);
+			state.seen_procedure_call = true;
 		} else if (adjust.operation == DSGA_OP_RST) {
 			state.inference = VA2AIF_SINGLE_LOAD;
 		}
@@ -7765,7 +7768,6 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 	std::bitset<256> pending_bits;
 	bool seen_pending = false;
 	if (!group->calculated_result) {
-		bool require_var1C = false;
 		auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
 			if (sg != nullptr && sg->type == SGT_DETERMINISTIC) {
 				VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sg, false);
@@ -7776,7 +7778,6 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 				} else {
 					if (var_tracking != nullptr) bits |= var_tracking->in;
 				}
-				if (dsg->dsg_flags & DSGF_REQUIRES_VAR1C) require_var1C = true;
 			}
 			if (sg != nullptr && sg->type == SGT_RANDOMIZED) {
 				const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)sg;
@@ -7831,7 +7832,6 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 			}
 			state.GetVarTracking(group)->in |= in_bits;
 		}
-		if (require_var1C && !state.seen_procedure_call) group->dsg_flags |= DSGF_REQUIRES_VAR1C;
 	}
 	bool dse_allowed = IsFeatureUsableForDSE(feature) && !HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_DSE);
 	bool dse_eligible = state.enable_dse;
