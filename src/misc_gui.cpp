@@ -768,10 +768,15 @@ struct TooltipsWindow : public Window
 	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		/* There is only one widget. */
-		for (uint i = 0; i != this->paramcount; i++) SetDParam(i, this->params[i]);
+		if (this->paramcount == 0) {
+			size->width  = std::min<uint>(GetStringBoundingBox(this->buffer).width, ScaleGUITrad(194));
+			size->height = GetStringHeight(this->buffer, size->width);
+		} else {
+			for (uint i = 0; i != this->paramcount; i++) SetDParam(i, this->params[i]);
 
-		size->width  = std::min<uint>(GetStringBoundingBox(this->string_id).width, ScaleGUITrad(194));
-		size->height = GetStringHeight(this->string_id, size->width);
+			size->width  = std::min<uint>(GetStringBoundingBox(this->string_id).width, ScaleGUITrad(194));
+			size->height = GetStringHeight(this->string_id, size->width);
+		}
 
 		/* Increase slightly to have some space around the box. */
 		size->width  += 2 + WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
