@@ -1617,7 +1617,7 @@ static void StationCatchmentChanged(int32 new_value)
 
 static bool CheckSharingRail(int32 &new_value)
 {
-	return CheckSharingChangePossible(VEH_TRAIN);
+	return CheckSharingChangePossible(VEH_TRAIN, new_value);
 }
 
 static void SharingRailChanged(int32 new_value)
@@ -1627,17 +1627,17 @@ static void SharingRailChanged(int32 new_value)
 
 static bool CheckSharingRoad(int32 &new_value)
 {
-	return CheckSharingChangePossible(VEH_ROAD);
+	return CheckSharingChangePossible(VEH_ROAD, new_value);
 }
 
 static bool CheckSharingWater(int32 &new_value)
 {
-	return CheckSharingChangePossible(VEH_SHIP);
+	return CheckSharingChangePossible(VEH_SHIP, new_value);
 }
 
 static bool CheckSharingAir(int32 &new_value)
 {
-	return CheckSharingChangePossible(VEH_AIRCRAFT);
+	return CheckSharingChangePossible(VEH_AIRCRAFT, new_value);
 }
 
 static void MaxVehiclesChanged(int32 new_value)

@@ -19,7 +19,7 @@
 void PayStationSharingFee(Vehicle *v, const Station *st);
 void PayDailyTrackSharingFee(Train *v);
 
-bool CheckSharingChangePossible(VehicleType type);
+bool CheckSharingChangePossible(VehicleType type, bool new_value);
 void HandleSharingCompanyDeletion(Owner owner);
 void UpdateAllBlockSignals(Owner owner = INVALID_OWNER);
 

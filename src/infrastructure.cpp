@@ -25,6 +25,7 @@
 #include "scope_info.h"
 #include "order_cmd.h"
 #include "strings_func.h"
+#include "scope.h"
 
 #include "table/strings.h"
 
@@ -238,13 +239,19 @@ static void FixAllReservations()
  * If vehicles are still on others' infrastructure or using others' stations,
  * The change is not possible and false is returned.
  * @param type The type of vehicle whose setting will be changed.
+ * @param new_value True if sharing will become enabled.
  * @return True if the change can take place, false otherwise.
  */
-bool CheckSharingChangePossible(VehicleType type)
+bool CheckSharingChangePossible(VehicleType type, bool new_value)
 {
 	if (type != VEH_AIRCRAFT) YapfNotifyTrackLayoutChange(INVALID_TILE, INVALID_TRACK);
 	/* Only do something when sharing is being disabled */
-	if (_settings_game.economy.infrastructure_sharing[type]) return true;
+	if (!_settings_game.economy.infrastructure_sharing[type] || new_value) return true;
+
+	_settings_game.economy.infrastructure_sharing[type] = false;
+	auto guard = scope_guard([type]() {
+		_settings_game.economy.infrastructure_sharing[type] = true;
+	});
 
 	StringID error_message = STR_NULL;
 	for (Vehicle *v : Vehicle::Iterate()) {
