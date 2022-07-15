@@ -279,6 +279,34 @@ bool CheckSharingChangePossible(VehicleType type, bool new_value)
 		}
 	}
 
+	if (type == VEH_TRAIN && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+		for (Train *v : Train::Iterate()) {
+			if (!v->IsPrimaryVehicle() || (v->vehstatus & VS_CRASHED) != 0 || HasBit(v->subtype, GVSF_VIRTUAL)) continue;
+			/* It might happen that the train reserved additional tracks,
+			 * but FollowTrainReservation can't detect those because they are no longer reachable.
+			 * detect this by first finding the end of the reservation,
+			 * then switch sharing on and try again. If these two ends differ,
+			 * disallow changing the sharing state */
+			PBSTileInfo end_tile_info = FollowTrainReservation(v, nullptr, FTRF_IGNORE_LOOKAHEAD | FTRF_OKAY_UNUSED);
+
+			/* first do a quick test to determine whether the next tile has any reservation at all */
+			TileIndex next_tile = end_tile_info.tile + TileOffsByDiagDir(TrackdirToExitdir(end_tile_info.trackdir));
+			/* If the next tile doesn't have a reservation at all, the reservation surely ends here. Thus all is well */
+			if (GetReservedTrackbits(next_tile) == TRACK_BIT_NONE) continue;
+
+			/* change sharing setting temporarily */
+			_settings_game.economy.infrastructure_sharing[VEH_TRAIN] = true;
+			PBSTileInfo end_tile_info2 = FollowTrainReservation(v, nullptr, FTRF_IGNORE_LOOKAHEAD | FTRF_OKAY_UNUSED);
+			_settings_game.economy.infrastructure_sharing[VEH_TRAIN] = false;
+
+			/* if these two reservation ends differ, disallow changing the sharing state */
+			if (end_tile_info.tile != end_tile_info2.tile || end_tile_info.trackdir != end_tile_info2.trackdir) {
+				error_message = STR_CONFIG_SETTING_SHARING_USED_BY_VEHICLES;
+				break;
+			}
+		}
+	}
+
 	if (error_message != STR_NULL) {
 		SetDParam(0, error_message);
 		ShowErrorMessage(STR_WHITE_STRING, INVALID_STRING_ID, WL_ERROR);
