@@ -319,6 +319,34 @@ void HandleSharingCompanyDeletion(Owner owner)
 			return !OrderDestinationIsAllowed(o, v, owner);
 		});
 	}
+
+	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && _settings_game.economy.infrastructure_sharing[VEH_TRAIN]) {
+		for (TileIndex t = 0; t < MapSize(); t++) {
+			switch (GetTileType(t)) {
+				case MP_RAILWAY:
+				case MP_ROAD:
+				case MP_STATION:
+				case MP_TUNNELBRIDGE:
+					if (GetTileOwner(t) == owner) {
+						TrackBits bits = GetReservedTrackbits(t);
+						if (bits != TRACK_BIT_NONE) {
+							/* Vehicles of this company and vehicles physically on tiles of this company have all been removed, but this tile is still reserved.
+							 * The reservation may belong to a train of another company which is still on another company's infrastructure, remove it.
+							 */
+							for (Track track : SetTrackBitIterator(bits)) {
+								Train *v = GetTrainForReservation(t, track);
+								if (v != nullptr) RemoveAndSellVehicle(v, v->owner != owner);
+							}
+						}
+					}
+					break;
+
+				default:
+					break;
+			}
+		}
+
+	}
 }
 
 /**
