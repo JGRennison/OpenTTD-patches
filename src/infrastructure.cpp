@@ -24,6 +24,7 @@
 #include "string_func.h"
 #include "scope_info.h"
 #include "order_cmd.h"
+#include "strings_func.h"
 
 #include "table/strings.h"
 
@@ -272,7 +273,8 @@ bool CheckSharingChangePossible(VehicleType type)
 	}
 
 	if (error_message != STR_NULL) {
-		ShowErrorMessage(error_message, INVALID_STRING_ID, WL_ERROR);
+		SetDParam(0, error_message);
+		ShowErrorMessage(STR_WHITE_STRING, INVALID_STRING_ID, WL_ERROR);
 		return false;
 	}
 
