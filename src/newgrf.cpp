@@ -7912,9 +7912,7 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 
 		bool inverted = false;
 		const DeterministicSpriteGroupAdjust *var_src = GetVarAction2PreviousSingleLoadAdjust(group->adjusts, prev_load_index, &inverted);
-		if (var_src != nullptr && var_src->variable != 0x7C) {
-			/* Don't use variable 7C as we're not checking for store perms which may clobber the value here */
-
+		if (var_src != nullptr) {
 			if (TryCombineTempStoreLoadWithStoreSourceAdjust(target, var_src, inverted)) return true;
 		}
 		return false;
