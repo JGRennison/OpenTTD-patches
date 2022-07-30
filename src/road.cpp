@@ -172,7 +172,7 @@ bool HasAnyRoadTypesAvail(CompanyID company, RoadTramType rtt)
  */
 bool ValParamRoadType(RoadType roadtype)
 {
-	return roadtype != INVALID_ROADTYPE && HasRoadTypeAvail(_current_company, roadtype);
+	return roadtype < ROADTYPE_END && HasRoadTypeAvail(_current_company, roadtype);
 }
 
 /**
