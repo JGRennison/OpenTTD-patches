@@ -7336,12 +7336,17 @@ static bool OptimiseVarAction2DeterministicSpriteGroupExpensiveVarsInner(Determi
 		uint32 and_mask = 0;
 		uint condition_depth = 0;
 		bool seen_first = false;
+		int last_unused_jump = -1;
 		for (int j = end; j >= start; j--) {
 			DeterministicSpriteGroupAdjust &adjust = group->adjusts[j];
-			if (seen_first && IsEvalAdjustJumpOperation(adjust.operation) && condition_depth > 0) {
-				/* Do not insert the STO_NC inside a conditional block when it is also needed outside the block */
-				condition_depth--;
-				insert_pos = j;
+			if (seen_first && IsEvalAdjustJumpOperation(adjust.operation)) {
+				if (condition_depth > 0) {
+					/* Do not insert the STO_NC inside a conditional block when it is also needed outside the block */
+					condition_depth--;
+					insert_pos = j;
+				} else {
+					last_unused_jump = j;
+				}
 			}
 			if (seen_first && adjust.adjust_flags & DSGAF_END_BLOCK) condition_depth += adjust.jump;
 			if (adjust.variable == target_var && adjust.parameter == target_param) {
@@ -7360,6 +7365,16 @@ static bool OptimiseVarAction2DeterministicSpriteGroupExpensiveVarsInner(Determi
 		load.parameter = target_param;
 		load.and_mask = and_mask;
 		load.divmod_val = bit;
+		if (group->adjusts[insert_pos].adjust_flags & DSGAF_SKIP_ON_ZERO) {
+			for (int j = insert_pos + 1; j <= end; j++) {
+				if (group->adjusts[j].adjust_flags & DSGAF_SKIP_ON_ZERO) continue;
+				if (group->adjusts[j].operation == DSGA_OP_JZ_LV && last_unused_jump == j) {
+					/* The variable is never actually read if last_value is 0 at this point */
+					load.adjust_flags |= DSGAF_SKIP_ON_ZERO;
+				}
+				break;
+			}
+		}
 		group->adjusts.insert(group->adjusts.begin() + insert_pos, load);
 	};
 
