@@ -169,6 +169,17 @@ static U EvalAdjustT(const DeterministicSpriteGroupAdjust &adjust, ScopeResolver
 		case DSGA_TYPE_NONE: break;
 	}
 
+	auto handle_jump = [&](bool jump, U jump_return_value) -> U {
+		if (jump && adjust_iter != nullptr) {
+			/* Jump */
+			(*adjust_iter) += adjust.jump;
+			return jump_return_value;
+		} else {
+			/* Don't jump */
+			return last_value;
+		}
+	};
+
 	switch (adjust.operation) {
 		case DSGA_OP_ADD:  return last_value + value;
 		case DSGA_OP_SUB:  return last_value - value;
@@ -202,26 +213,10 @@ static U EvalAdjustT(const DeterministicSpriteGroupAdjust &adjust, ScopeResolver
 		case DSGA_OP_RSUB: return value - last_value;
 		case DSGA_OP_STO_NC: _temp_store.StoreValue(adjust.divmod_val, (S)value); return last_value;
 		case DSGA_OP_ABS:  return ((S)last_value < 0) ? -((S)last_value) : (S)last_value;
-		case DSGA_OP_JZ: {
-			if (value == 0 && adjust_iter != nullptr) {
-				/* Jump */
-				(*adjust_iter) += adjust.jump;
-				return 0;
-			} else {
-				/* Don't jump */
-				return last_value;
-			}
-		}
-		case DSGA_OP_JNZ: {
-			if (value != 0 && adjust_iter != nullptr) {
-				/* Jump */
-				(*adjust_iter) += adjust.jump;
-				return value;
-			} else {
-				/* Don't jump */
-				return last_value;
-			}
-		}
+		case DSGA_OP_JZ:     return handle_jump(value == 0, value);
+		case DSGA_OP_JNZ:    return handle_jump(value != 0, value);
+		case DSGA_OP_JZ_LV:  return handle_jump(last_value == 0, last_value);
+		case DSGA_OP_JNZ_LV: return handle_jump(last_value != 0, last_value);
 		default:           return value;
 	}
 }
@@ -711,6 +706,8 @@ static const char *_dsg_op_special_names[] {
 	"ABS",
 	"JZ",
 	"JNZ",
+	"JZ_LV",
+	"JNZ_LV",
 };
 static_assert(lengthof(_dsg_op_special_names) == DSGA_OP_SPECIAL_END - DSGA_OP_TERNARY);
 
@@ -778,6 +775,12 @@ static char *DumpSpriteGroupAdjust(char *p, const char *last, const Deterministi
 	}
 	if (adjust.operation == DSGA_OP_ABS) {
 		p += seprintf(p, last, "ABS");
+		append_flags();
+		return p;
+	}
+	if (adjust.operation == DSGA_OP_JZ_LV || adjust.operation == DSGA_OP_JNZ_LV) {
+		p = GetAdjustOperationName(p, last, adjust.operation);
+		p += seprintf(p, last, " +%u", adjust.jump);
 		append_flags();
 		return p;
 	}

@@ -7694,6 +7694,16 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 						group->adjusts.erase(group->adjusts.begin() + j);
 						j--;
 						i--;
+					} else if (current.type == DSGA_TYPE_NONE && current.shift_num == 0 && current.and_mask == 0xFFFFFFFF &&
+							prev.operation == DSGA_OP_STO && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == (current.parameter & 0xFF)) {
+						/* Reading from immediately prior store, which can now be removed */
+						current.operation = (current.operation == DSGA_OP_JNZ) ? DSGA_OP_JNZ_LV : DSGA_OP_JZ_LV;
+						current.adjust_flags &= ~DSGAF_LAST_VAR_READ;
+						current.and_mask = 0;
+						current.variable = 0x1A;
+						group->adjusts.erase(group->adjusts.begin() + j);
+						j--;
+						i--;
 					}
 				}
 				group->adjusts.insert(group->adjusts.begin() + j + 1, current);
