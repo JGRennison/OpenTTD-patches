@@ -6915,7 +6915,13 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 					}
 					if (adjust.and_mask <= 1) state.inference = prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
 					state.inference |= prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO) & non_const_var_inference;
-					if ((non_const_var_inference & VA2AIF_ONE_OR_ZERO) || (adjust.and_mask <= 1)) adjust.adjust_flags |= DSGAF_SKIP_ON_LSB_SET;
+					if ((non_const_var_inference & VA2AIF_ONE_OR_ZERO) || (adjust.and_mask <= 1)) {
+						adjust.adjust_flags |= DSGAF_SKIP_ON_LSB_SET;
+						if (prev_inference & VA2AIF_ONE_OR_ZERO) {
+							adjust.adjust_flags |= DSGAF_JUMP_INS_HINT;
+							group->dsg_flags |= DSGF_CHECK_INSERT_JUMP;
+						}
+					}
 					try_merge_with_previous();
 					break;
 				case DSGA_OP_XOR:
@@ -7332,7 +7338,7 @@ static bool OptimiseVarAction2DeterministicSpriteGroupExpensiveVarsInner(Determi
 		bool seen_first = false;
 		for (int j = end; j >= start; j--) {
 			DeterministicSpriteGroupAdjust &adjust = group->adjusts[j];
-			if (seen_first && adjust.operation == DSGA_OP_JZ && condition_depth > 0) {
+			if (seen_first && IsEvalAdjustJumpOperation(adjust.operation) && condition_depth > 0) {
 				/* Do not insert the STO_NC inside a conditional block when it is also needed outside the block */
 				condition_depth--;
 				insert_pos = j;
@@ -7645,7 +7651,7 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 				if (prev.operation == DSGA_OP_STO && (prev.type != DSGA_TYPE_NONE || prev.variable != 0x1A || prev.shift_num != 0 || prev.and_mask >= 0x100)) break;
 				if (prev.operation == DSGA_OP_STO_NC && prev.divmod_val >= 0x100) break;
 				if (prev.operation == DSGA_OP_STOP) break;
-				if (prev.operation == DSGA_OP_JZ) break;
+				if (IsEvalAdjustJumpOperation(prev.operation)) break;
 				if (prev.variable == 0x7E) break;
 
 				/* Reached a store which can't be skipped over because the value is needed later */
@@ -7676,8 +7682,8 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 					current.adjust_flags &= ~DSGAF_END_BLOCK;
 					current.jump = 0;
 				}
-				current.operation = DSGA_OP_JZ;
-				current.adjust_flags &= ~(DSGAF_JUMP_INS_HINT | DSGAF_SKIP_ON_ZERO);
+				current.operation = (current.adjust_flags & DSGAF_SKIP_ON_LSB_SET) ? DSGA_OP_JNZ : DSGA_OP_JZ;
+				current.adjust_flags &= ~(DSGAF_JUMP_INS_HINT | DSGAF_SKIP_ON_ZERO | DSGAF_SKIP_ON_LSB_SET);
 				mark_end_block(group->adjusts[i - 1], 1);
 				group->adjusts.erase(group->adjusts.begin() + i);
 				if (j >= 0 && current.variable == 0x7D && (current.adjust_flags & DSGAF_LAST_VAR_READ)) {
@@ -7706,7 +7712,7 @@ struct ResolveJumpInnerResult {
 static ResolveJumpInnerResult OptimiseVarAction2DeterministicSpriteResolveJumpsInner(DeterministicSpriteGroup *group, const uint start)
 {
 	for (uint i = start + 1; i < (uint)group->adjusts.size(); i++) {
-		if (group->adjusts[i].operation == DSGA_OP_JZ) {
+		if (IsEvalAdjustJumpOperation(group->adjusts[i].operation)) {
 			ResolveJumpInnerResult result = OptimiseVarAction2DeterministicSpriteResolveJumpsInner(group, i);
 			i = result.end_index;
 			if (result.end_block_remaining > 0) {
@@ -7727,7 +7733,7 @@ static void OptimiseVarAction2DeterministicSpriteResolveJumps(DeterministicSprit
 	if (HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_INSERT_JUMPS)) return;
 
 	for (uint i = 0; i < (uint)group->adjusts.size(); i++) {
-		if (group->adjusts[i].operation == DSGA_OP_JZ) {
+		if (IsEvalAdjustJumpOperation(group->adjusts[i].operation)) {
 			ResolveJumpInnerResult result = OptimiseVarAction2DeterministicSpriteResolveJumpsInner(group, i);
 			i = result.end_index;
 			assert(result.end_block_remaining == 0);

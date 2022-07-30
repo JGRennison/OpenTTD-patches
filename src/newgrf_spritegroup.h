@@ -207,6 +207,7 @@ enum DeterministicSpriteGroupAdjustOperation : uint8 {
 	DSGA_OP_STO_NC,         ///< store b into temporary storage, indexed by c. return a
 	DSGA_OP_ABS,            ///< abs(a)
 	DSGA_OP_JZ,             ///< jump forward fixed number of adjusts (to adjust after DSGAF_END_BLOCK marker (taking into account nesting)) if b is zero. return 0 if jumped, return a if not jumped
+	DSGA_OP_JNZ,            ///< jump forward fixed number of adjusts (to adjust after DSGAF_END_BLOCK marker (taking into account nesting)) if b is non-zero. return b if jumped, return a if not jumped
 
 	DSGA_OP_SPECIAL_END,
 };
@@ -395,6 +396,18 @@ inline bool IsEvalAdjustWithZeroLastValueAlwaysZero(DeterministicSpriteGroupAdju
 		case DSGA_OP_SHL:
 		case DSGA_OP_SHR:
 		case DSGA_OP_SAR:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+inline bool IsEvalAdjustJumpOperation(DeterministicSpriteGroupAdjustOperation op)
+{
+	switch (op) {
+		case DSGA_OP_JZ:
+		case DSGA_OP_JNZ:
 			return true;
 
 		default:

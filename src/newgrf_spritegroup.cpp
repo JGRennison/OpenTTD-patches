@@ -212,6 +212,16 @@ static U EvalAdjustT(const DeterministicSpriteGroupAdjust &adjust, ScopeResolver
 				return last_value;
 			}
 		}
+		case DSGA_OP_JNZ: {
+			if (value != 0 && adjust_iter != nullptr) {
+				/* Jump */
+				(*adjust_iter) += adjust.jump;
+				return value;
+			} else {
+				/* Don't jump */
+				return last_value;
+			}
+		}
 		default:           return value;
 	}
 }
@@ -700,6 +710,7 @@ static const char *_dsg_op_special_names[] {
 	"STO_NC",
 	"ABS",
 	"JZ",
+	"JNZ",
 };
 static_assert(lengthof(_dsg_op_special_names) == DSGA_OP_SPECIAL_END - DSGA_OP_TERNARY);
 
@@ -753,7 +764,7 @@ static char *DumpSpriteGroupAdjust(char *p, const char *last, const Deterministi
 		}
 	};
 
-	if (adjust.operation == DSGA_OP_JZ) {
+	if (IsEvalAdjustJumpOperation(adjust.operation)) {
 		conditional_indent++;
 	}
 	if (adjust.adjust_flags & DSGAF_END_BLOCK) {
@@ -801,7 +812,7 @@ static char *DumpSpriteGroupAdjust(char *p, const char *last, const Deterministi
 	}
 	p += seprintf(p, last, ", op: ");
 	p = GetAdjustOperationName(p, last, adjust.operation);
-	if (adjust.operation == DSGA_OP_JZ) {
+	if (IsEvalAdjustJumpOperation(adjust.operation)) {
 		p += seprintf(p, last, " +%u", adjust.jump);
 	}
 	append_flags();
