@@ -959,7 +959,8 @@ static void ApplyLookAheadItem(const Train *v, const TrainReservationLookAheadIt
 			break;
 
 		case TRLIT_SIGNAL:
-			if (_settings_game.vehicle.realistic_braking_aspect_limited == TRBALM_ON && v->lookahead->lookahead_end_position == item.start) {
+			if (_settings_game.vehicle.realistic_braking_aspect_limited == TRBALM_ON &&
+					(v->lookahead->lookahead_end_position == item.start || v->lookahead->lookahead_end_position == item.start + 1)) {
 				limit_advisory_speed(item.start, 0, item.z_pos);
 			}
 			break;

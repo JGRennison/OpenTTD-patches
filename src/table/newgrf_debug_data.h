@@ -289,7 +289,8 @@ class NIHVehicle : public NIHelper {
 							if (HasBit(item.data_aux, TRSLAI_NEXT_ONLY)) b += seprintf(b, lastof(buffer), "s");
 							if (HasBit(item.data_aux, TRSLAI_COMBINED)) b += seprintf(b, lastof(buffer), "c");
 							if (HasBit(item.data_aux, TRSLAI_COMBINED_SHUNT)) b += seprintf(b, lastof(buffer), "X");
-							if (_settings_game.vehicle.realistic_braking_aspect_limited == TRBALM_ON && l.lookahead_end_position == item.start) {
+							if (_settings_game.vehicle.realistic_braking_aspect_limited == TRBALM_ON &&
+									(l.lookahead_end_position == item.start || l.lookahead_end_position == item.start + 1)) {
 								b += seprintf(b, lastof(buffer), ", lookahead end");
 								print_braking_speed(item.start, 0, item.z_pos);
 							}
