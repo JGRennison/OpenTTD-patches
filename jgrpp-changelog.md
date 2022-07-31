@@ -2,6 +2,17 @@
 
 * * *
 
+### v0.48.1 (2022-08-01)
+* Fix various issues that could occur when attempting to disable infrastructure sharing when shared infrastructure is still in use.
+* Fix crashes and other issues when removing a company would remove infrastructure which is in use by the train reservation of another company when realistic braking is enabled.
+* Fix some NewGRFs having incorrect behaviour (when using variational action 2 variable 1C in some cases).
+* Fix crash which could occur with tooltip windows in some special cases.
+* Fix viewport map mode bridges/tunnels not appearing dotted at high zoom.
+* Fix insufficient train braking when in realistic braking mode when train lookahead is aspect limited is enabled and the lookahead distance is shorter than the reservation.
+* Do not enable the behaviour where vehicles continue loading if the next order is for the same station for implicit orders.
+* Do not apply the show signals using default graphics settings for custom signal styles
+* Bump trunk base from commit 19af139631b5bc98dba6de4c4f0b7aeb6b3ac6aa to commit ccb9d9988011725c1ff0d415af37efb99e2b0849.
+
 ### v0.48.0 (2022-07-03)
 * Fix crash which could occur after removing non-rectangular airports.
 * Fix crash which could occur with non-buildable template trains with some NewGRFs.
