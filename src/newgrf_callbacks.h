@@ -413,4 +413,6 @@ enum AirportTileCallbackMask {
 static const uint CALLBACK_FAILED              = 0xFFFF; ///< Result of a failed callback.
 static const uint CALLBACK_HOUSEPRODCARGO_END  = 0x20FF; ///< Sentinel indicating that the loop for CBID_HOUSE_PRODUCE_CARGO has ended
 
+const char *GetNewGRFCallbackName(CallbackID cbid);
+
 #endif /* NEWGRF_CALLBACKS_H */

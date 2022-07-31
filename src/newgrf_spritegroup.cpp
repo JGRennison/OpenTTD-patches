@@ -889,6 +889,15 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 				}
 			}
 
+			bool is_callback_group = false;
+			if (adjusts->size() == 1 && !dsg->calculated_result) {
+				const DeterministicSpriteGroupAdjust &adjust = (*adjusts)[0];
+				if (adjust.variable == 0xC && (adjust.operation == DSGA_OP_ADD || adjust.operation == DSGA_OP_RST)
+						&& adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
+					is_callback_group = true;
+				}
+			}
+
 			if (padding == 0 && !dsg->calculated_result && default_group != nullptr) {
 				this->top_default_group = default_group;
 			}
@@ -932,7 +941,14 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 				print();
 			} else {
 				for (const auto &range : (*ranges)) {
-					seprintf(this->buffer, lastof(this->buffer), "%*srange: %X -> %X", padding, "", range.low, range.high);
+					char *p = this->buffer;
+					p += seprintf(p, lastof(this->buffer), "%*srange: %X -> %X", padding, "", range.low, range.high);
+					if (range.low == range.high && is_callback_group) {
+						const char *cb_name = GetNewGRFCallbackName((CallbackID)range.low);
+						if (cb_name != nullptr) {
+							p += seprintf(p, lastof(this->buffer), " (%s)", cb_name);
+						}
+					}
 					print();
 					this->DumpSpriteGroup(range.group, padding + 2, 0);
 				}
