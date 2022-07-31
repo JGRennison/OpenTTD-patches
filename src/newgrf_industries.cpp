@@ -88,8 +88,31 @@ uint32 GetIndustryIDAtOffset(TileIndex tile, const Industry *i, uint32 cur_grfid
 	return 0xFF << 8 | indtsp->grf_prop.subst_id; // so just give it the substitute
 }
 
+struct IndustryLocationDistanceCache {
+	uint16 distances[NUM_INDUSTRYTYPES];
+	bool initialised = false;
+
+	static IndustryLocationDistanceCache *instance;
+};
+IndustryLocationDistanceCache *IndustryLocationDistanceCache::instance = nullptr;
+
 static uint32 GetClosestIndustry(TileIndex tile, IndustryType type, const Industry *current)
 {
+	if (IndustryLocationDistanceCache::instance != nullptr) {
+		IndustryLocationDistanceCache *cache = IndustryLocationDistanceCache::instance;
+		if (!cache->initialised) {
+			MemSetT(cache->distances, 0xFF, NUM_INDUSTRYTYPES);
+			for (const Industry *i : Industry::Iterate()) {
+				if (i == current || i->type >= NUM_INDUSTRYTYPES) continue;
+
+				uint dist = DistanceManhattan(tile, i->location.tile);
+				if (dist < (uint)cache->distances[i->type]) cache->distances[i->type] = (uint16)dist;
+			}
+			cache->initialised = true;
+		}
+		return cache->distances[type];
+	}
+
 	uint32 best_dist = UINT32_MAX;
 	for (const Industry *i : Industry::Iterate()) {
 		if (i->type != type || i == current) continue;
@@ -551,8 +574,13 @@ CommandCost CheckIfCallBackAllowsCreation(TileIndex tile, IndustryType type, siz
 	ind.founder = founder;
 	ind.psa = nullptr;
 
+	IndustryLocationDistanceCache distance_cache;
+	IndustryLocationDistanceCache::instance = &distance_cache;
+
 	IndustriesResolverObject object(tile, &ind, type, seed, CBID_INDUSTRY_LOCATION, 0, creation_type);
 	uint16 result = object.ResolveCallback();
+
+	IndustryLocationDistanceCache::instance = nullptr;
 
 	/* Unlike the "normal" cases, not having a valid result means we allow
 	 * the building of the industry, as that's how it's done in TTDP. */
