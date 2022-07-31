@@ -110,12 +110,12 @@ static uint32 GetClosestIndustry(TileIndex tile, IndustryType type, const Indust
  * @param current Industry for which the inquiry is made
  * @return the formatted answer to the callback : rr(reserved) cc(count) dddd(manhattan distance of closest sister)
  */
-static uint32 GetCountAndDistanceOfClosestInstance(byte param_setID, byte layout_filter, bool town_filter, const Industry *current)
+static uint32 GetCountAndDistanceOfClosestInstance(byte param_setID, byte layout_filter, bool town_filter, const Industry *current, uint32 mask)
 {
 	uint32 GrfID = GetRegister(0x100);  ///< Get the GRFID of the definition to look for in register 100h
 	IndustryType ind_index;
 	uint32 closest_dist = UINT32_MAX;
-	byte count = 0;
+	uint count = 0;
 
 	/* Determine what will be the industry type to look for */
 	switch (GrfID) {
@@ -139,8 +139,8 @@ static uint32 GetCountAndDistanceOfClosestInstance(byte param_setID, byte layout
 	if (layout_filter == 0 && !town_filter) {
 		/* If the filter is 0, it could be because none was specified as well as being really a 0.
 		 * In either case, just do the regular var67 */
-		closest_dist = GetClosestIndustry(current->location.tile, ind_index, current);
-		count = std::min<uint>(Industry::GetIndustryTypeCount(ind_index), UINT8_MAX); // clamp to 8 bit
+		if (mask & 0xFFFF) closest_dist = GetClosestIndustry(current->location.tile, ind_index, current);
+		if (mask & 0xFF0000) count = std::min<uint>(Industry::GetIndustryTypeCount(ind_index), UINT8_MAX); // clamp to 8 bit
 	} else {
 		/* Count only those who match the same industry type and layout filter
 		 * Unfortunately, we have to do it manually */
@@ -150,9 +150,10 @@ static uint32 GetCountAndDistanceOfClosestInstance(byte param_setID, byte layout
 				count++;
 			}
 		}
+		count = std::min<uint>(count, UINT8_MAX);
 	}
 
-	return count << 16 | GB(closest_dist, 0, 16);
+	return count << 16 | std::min<uint>(closest_dist, 0xFFFF);
 }
 
 /* virtual */ uint32 IndustriesScopeResolver::GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const
@@ -304,7 +305,7 @@ static uint32 GetCountAndDistanceOfClosestInstance(byte param_setID, byte layout
 				layout_filter = GB(reg, 0, 8);
 				town_filter = HasBit(reg, 8);
 			}
-			return GetCountAndDistanceOfClosestInstance(parameter, layout_filter, town_filter, this->industry);
+			return GetCountAndDistanceOfClosestInstance(parameter, layout_filter, town_filter, this->industry, extra->mask);
 		}
 
 		case 0x69:
