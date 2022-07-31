@@ -87,7 +87,7 @@ class NIHVehicle : public NIHelper {
 	uint GetParent(uint index) const override            { const Vehicle *first = Vehicle::Get(index)->First(); return GetInspectWindowNumber(GetGrfSpecFeature(first->type), first->index); }
 	const void *GetInstance(uint index)const override    { return Vehicle::Get(index); }
 	const void *GetSpec(uint index) const override       { return Vehicle::Get(index)->GetEngine(); }
-	void SetStringParameters(uint index) const override  { this->SetSimpleStringParameters(STR_VEHICLE_NAME, index); }
+	void SetStringParameters(uint index) const override  { this->SetSimpleStringParameters(STR_VEHICLE_NAME, Vehicle::Get(index)->First()->index); }
 	uint32 GetGRFID(uint index) const override                   { return Vehicle::Get(index)->GetGRFID(); }
 
 	uint Resolve(uint index, uint var, uint param, GetVariableExtra *extra) const override
