@@ -6330,6 +6330,7 @@ static bool TryMergeBoolMulCombineVarAction2Adjust(VarAction2OptimiseState &stat
 	auto append_abs = [&]() {
 		adjusts.emplace_back();
 		adjusts.back().operation = DSGA_OP_ABS;
+		adjusts.back().variable = 0x1A;
 		state.inference |= VA2AIF_SIGNED_NON_NEGATIVE;
 	};
 
