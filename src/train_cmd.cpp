@@ -828,7 +828,8 @@ static int64 GetRealisticBrakingDistanceForSpeed(const TrainDecelerationStats &s
 
 	if (z_delta < 0 && _settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
 		/* descending */
-		int64 slope_dist = (ke_delta - (z_delta * 400 * _settings_game.vehicle.train_slope_steepness)) / stats.uncapped_deceleration_x2;
+		/* (5/18) is due to KE being in km/h derived units instead of m/s */
+		int64 slope_dist = (ke_delta - (z_delta * ((400 * 5) / 18) * _settings_game.vehicle.train_slope_steepness)) / stats.uncapped_deceleration_x2;
 		dist = std::max<int64>(dist, slope_dist);
 	}
 	return dist;
@@ -847,7 +848,8 @@ static int GetRealisticBrakingSpeedForDistance(const TrainDecelerationStats &sta
 
 	if (z_delta < 0 && _settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
 		/* descending */
-		int64 sloped_ke = target_ke + (z_delta * 400 * _settings_game.vehicle.train_slope_steepness);
+		/* (5/18) is due to KE being in km/h derived units instead of m/s */
+		int64 sloped_ke = target_ke + (z_delta * ((400 * 5) / 18) * _settings_game.vehicle.train_slope_steepness);
 		int64 slope_speed_sqr = sloped_ke + ((int64)stats.uncapped_deceleration_x2 * (int64)distance);
 		if (slope_speed_sqr < speed_sqr &&
 				_settings_game.vehicle.train_acceleration_model == AM_REALISTIC && GetRailTypeInfo(stats.t->railtype)->acceleration_type != 2) {
