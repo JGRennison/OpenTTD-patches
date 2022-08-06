@@ -98,6 +98,7 @@ IndustryLocationDistanceCache *IndustryLocationDistanceCache::instance = nullptr
 
 static uint32 GetClosestIndustry(TileIndex tile, IndustryType type, const Industry *current)
 {
+	if (type >= NUM_INDUSTRYTYPES) return UINT32_MAX;
 	if (IndustryLocationDistanceCache::instance != nullptr) {
 		IndustryLocationDistanceCache *cache = IndustryLocationDistanceCache::instance;
 		if (!cache->initialised) {
