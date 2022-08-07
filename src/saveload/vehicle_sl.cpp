@@ -20,6 +20,8 @@
 #include "../disaster_vehicle.h"
 #include "../scope_info.h"
 #include "../string_func.h"
+#include "../error.h"
+#include "../strings_func.h"
 
 #include "saveload.h"
 
@@ -238,9 +240,13 @@ static void CheckValidVehicles()
 
 extern byte _age_cargo_skip_counter; // From misc_sl.cpp
 
+static std::vector<Vehicle *> _load_invalid_vehicles_to_delete;
+
 /** Called after load to update coordinates */
 void AfterLoadVehicles(bool part_of_load)
 {
+	_load_invalid_vehicles_to_delete.clear();
+
 	const Vehicle *si_v = nullptr;
 	SCOPE_INFO_FMT([&si_v], "AfterLoadVehicles: %s", scope_dumper().VehicleInfo(si_v));
 	for (Vehicle *v : Vehicle::Iterate()) {
@@ -427,9 +433,16 @@ void AfterLoadVehicles(bool part_of_load)
 
 					rv->roadtype = Engine::Get(rv->engine_type)->u.road.roadtype;
 					rv->compatible_roadtypes = GetRoadTypeInfo(rv->roadtype)->powered_roadtypes;
+					bool is_invalid = false;
 					for (RoadVehicle *u = rv; u != nullptr; u = u->Next()) {
 						u->roadtype = rv->roadtype;
 						u->compatible_roadtypes = rv->compatible_roadtypes;
+						if (GetRoadType(u->tile, GetRoadTramType(u->roadtype)) == INVALID_ROADTYPE) is_invalid = true;
+					}
+
+					if (is_invalid && part_of_load) {
+						_load_invalid_vehicles_to_delete.push_back(rv);
+						break;
 					}
 
 					RoadVehUpdateCache(rv);
@@ -508,6 +521,21 @@ void AfterLoadVehicles(bool part_of_load)
 		v->UpdateViewport(false);
 		v->cargo.AssertCountConsistency();
 	}
+}
+
+void AfterLoadVehiclesRemoveAnyFoundInvalid()
+{
+	if (!_load_invalid_vehicles_to_delete.empty()) {
+		DEBUG(sl, 0, "Removing %u vehicles found to be uncorrectably invalid during load", (uint)_load_invalid_vehicles_to_delete.size());
+		SetDParam(0, (uint)_load_invalid_vehicles_to_delete.size());
+		ShowErrorMessage(STR_WARNING_LOADGAME_REMOVED_UNCORRECTABLE_VEHICLES, INVALID_STRING_ID, WL_CRITICAL);
+		GroupStatistics::UpdateAfterLoad();
+	}
+
+	for (Vehicle *v : _load_invalid_vehicles_to_delete) {
+		delete v;
+	}
+	_load_invalid_vehicles_to_delete.clear();
 }
 
 bool TrainController(Train *v, Vehicle *nomove, bool reverse = true); // From train_cmd.cpp
