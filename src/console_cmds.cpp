@@ -59,6 +59,7 @@
 #include "scope_info.h"
 #include "event_logs.h"
 #include "tile_cmd.h"
+#include "object_base.h"
 #include <time.h>
 
 #include <set>
@@ -2508,6 +2509,7 @@ DEF_CONSOLE_CMD(ConMapStats)
 	IConsolePrint(CC_DEFAULT, "");
 	IConsolePrintF(CC_DEFAULT, "towns: %u", (uint) Town::GetNumItems());
 	IConsolePrintF(CC_DEFAULT, "industries: %u", (uint) Industry::GetNumItems());
+	IConsolePrintF(CC_DEFAULT, "objects: %u", (uint) Object::GetNumItems());
 	return true;
 }
 

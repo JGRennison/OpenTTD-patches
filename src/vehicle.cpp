@@ -4552,6 +4552,7 @@ void DumpVehicleStats(char *buffer, const char *last)
 		line(it.second.template_train, "tmpl train");
 		buffer += seprintf(buffer, last, "\n");
 	}
+	buffer += seprintf(buffer, last, "  %10s: %5u\n", "total", (uint)Vehicle::GetNumItems());
 }
 
 void ShiftVehicleDates(int interval)
