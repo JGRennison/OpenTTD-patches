@@ -6907,6 +6907,10 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 						state.inference = VA2AIF_SIGNED_NON_NEGATIVE;
 					}
 					state.inference |= non_const_var_inference;
+					if ((state.inference & VA2AIF_ONE_OR_ZERO) && (prev_inference & VA2AIF_ONE_OR_ZERO)) {
+						adjust.adjust_flags |= DSGAF_JUMP_INS_HINT;
+						group->dsg_flags |= DSGF_CHECK_INSERT_JUMP;
+					}
 					try_merge_with_previous();
 					break;
 				case DSGA_OP_OR:
