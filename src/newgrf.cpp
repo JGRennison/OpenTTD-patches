@@ -103,6 +103,11 @@ struct VarAction2GroupVariableTracking {
 	std::bitset<256> out;
 };
 
+struct VarAction2ProcedureAnnotation {
+	std::bitset<256> stores;
+	bool unskippable = false;
+};
+
 /** Temporary data during loading of GRFs */
 struct GrfProcessingState {
 private:
@@ -135,6 +140,8 @@ public:
 	/* VarAction2 temporary storage variable tracking */
 	btree::btree_map<const SpriteGroup *, VarAction2GroupVariableTracking *> group_temp_store_variable_tracking;
 	UniformArenaAllocator<sizeof(VarAction2GroupVariableTracking), 1024> group_temp_store_variable_tracking_storage;
+	btree::btree_map<const SpriteGroup *, VarAction2ProcedureAnnotation *> procedure_annotations;
+	UniformArenaAllocator<sizeof(VarAction2ProcedureAnnotation), 1024> procedure_annotations_storage;
 	std::vector<DeterministicSpriteGroup *> dead_store_elimination_candidates;
 
 	VarAction2GroupVariableTracking *GetVarAction2GroupVariableTracking(const SpriteGroup *group, bool make_new)
@@ -147,6 +154,17 @@ public:
 			auto iter = this->group_temp_store_variable_tracking.find(group);
 			if (iter != this->group_temp_store_variable_tracking.end()) return iter->second;
 			return nullptr;
+		}
+	}
+
+	std::pair<VarAction2ProcedureAnnotation *, bool> GetVarAction2ProcedureAnnotation(const SpriteGroup *group)
+	{
+		VarAction2ProcedureAnnotation *&ptr = this->procedure_annotations[group];
+		if (!ptr) {
+			ptr = new (this->procedure_annotations_storage.Allocate()) VarAction2ProcedureAnnotation();
+			return std::make_pair(ptr, true);
+		} else {
+			return std::make_pair(ptr, false);
 		}
 	}
 
@@ -164,6 +182,8 @@ public:
 
 		this->group_temp_store_variable_tracking.clear();
 		this->group_temp_store_variable_tracking_storage.EmptyArena();
+		this->procedure_annotations.clear();
+		this->procedure_annotations_storage.EmptyArena();
 		this->dead_store_elimination_candidates.clear();
 	}
 
@@ -7675,10 +7695,71 @@ static bool TryCombineTempStoreLoadWithStoreSourceAdjust(DeterministicSpriteGrou
 	return false;
 }
 
+static VarAction2ProcedureAnnotation *OptimiseVarAction2GetFilledProcedureAnnotation(const SpriteGroup *group)
+{
+	VarAction2ProcedureAnnotation *anno;
+	bool is_new;
+	std::tie(anno, is_new) = _cur.GetVarAction2ProcedureAnnotation(group);
+	if (is_new) {
+		auto handle_group_contents = y_combinator([&](auto handle_group_contents, const SpriteGroup *sg) -> void {
+			if (sg == nullptr || anno->unskippable) return;
+			if (sg->type == SGT_RANDOMIZED) {
+				const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)sg;
+				for (const auto &group : rsg->groups) {
+					handle_group_contents(group);
+				}
+
+				/* Don't try to skip over procedure calls to randomised groups */
+				anno->unskippable = true;
+			} else if (sg->type == SGT_DETERMINISTIC) {
+				const DeterministicSpriteGroup *dsg = static_cast<const DeterministicSpriteGroup *>(sg);
+				if (dsg->dsg_flags & DSGF_DSE_RECURSIVE_DISABLE) {
+					anno->unskippable = true;
+					return;
+				}
+
+				for (const DeterministicSpriteGroupAdjust &adjust : dsg->adjusts) {
+					/* Don't try to skip over: unpredictable or special stores, procedure calls, permanent stores, or another jump */
+					if (adjust.operation == DSGA_OP_STO && (adjust.type != DSGA_TYPE_NONE || adjust.variable != 0x1A || adjust.shift_num != 0 || adjust.and_mask >= 0x100)) {
+						anno->unskippable = true;
+						return;
+					}
+					if (adjust.operation == DSGA_OP_STO_NC && adjust.divmod_val >= 0x100) {
+						anno->unskippable = true;
+						return;
+					}
+					if (adjust.operation == DSGA_OP_STOP) {
+						anno->unskippable = true;
+						return;
+					}
+					if (adjust.variable == 0x7E) {
+						handle_group_contents(adjust.subroutine);
+					}
+
+					if (adjust.operation == DSGA_OP_STO) anno->stores.set(adjust.and_mask, true);
+					if (adjust.operation == DSGA_OP_STO_NC) anno->stores.set(adjust.divmod_val, true);
+				}
+			}
+		});
+		handle_group_contents(group);
+	}
+	return anno;
+}
+
+struct VarAction2ProcedureCallVarReadAnnotation {
+	const SpriteGroup *subroutine;
+	VarAction2ProcedureAnnotation *anno;
+	std::bitset<256> relevant_stores;
+	std::bitset<256> last_reads;
+	bool unskippable;
+};
+static std::vector<VarAction2ProcedureCallVarReadAnnotation> _varaction2_proc_call_var_read_annotations;
+
 static void OptimiseVarAction2DeterministicSpriteGroupPopulateLastVarReadAnnotations(DeterministicSpriteGroup *group, VarAction2GroupVariableTracking *var_tracking)
 {
 	std::bitset<256> bits;
 	if (var_tracking != nullptr) bits = var_tracking->out;
+	bool need_var1C = false;
 
 	for (int i = (int)group->adjusts.size() - 1; i >= 0; i--) {
 		DeterministicSpriteGroupAdjust &adjust = group->adjusts[i];
@@ -7699,8 +7780,27 @@ static void OptimiseVarAction2DeterministicSpriteGroupPopulateLastVarReadAnnotat
 				adjust.adjust_flags |= DSGAF_LAST_VAR_READ;
 			}
 		}
+		if (adjust.variable == 0x1C) {
+			need_var1C = true;
+		}
+
 		if (adjust.variable == 0x7E) {
 			/* procedure call */
+
+			VarAction2ProcedureCallVarReadAnnotation &anno = _varaction2_proc_call_var_read_annotations.emplace_back();
+			anno.subroutine = adjust.subroutine;
+			anno.anno = OptimiseVarAction2GetFilledProcedureAnnotation(adjust.subroutine);
+			anno.relevant_stores = anno.anno->stores & bits;
+			anno.unskippable = anno.anno->unskippable;
+			adjust.jump = (uint)_varaction2_proc_call_var_read_annotations.size() - 1; // index into _varaction2_proc_call_var_read_annotations
+
+			if (need_var1C) {
+				anno.unskippable = true;
+				need_var1C = false;
+			}
+
+			std::bitset<256> orig_bits = bits;
+
 			auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
 				if (sg == nullptr) return;
 				if (sg->type == SGT_RANDOMIZED) {
@@ -7708,13 +7808,24 @@ static void OptimiseVarAction2DeterministicSpriteGroupPopulateLastVarReadAnnotat
 					for (const auto &group : rsg->groups) {
 						handle_group(group);
 					}
+
+					/* Don't try to skip over procedure calls to randomised groups */
+					anno.unskippable = true;
 				} else if (sg->type == SGT_DETERMINISTIC) {
 					const DeterministicSpriteGroup *sub = static_cast<const DeterministicSpriteGroup *>(sg);
 					VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sub, false);
-					if (var_tracking != nullptr) bits |= var_tracking->in;
+					if (var_tracking != nullptr) {
+						bits |= var_tracking->in;
+						anno.last_reads |= (var_tracking->in & ~orig_bits);
+					}
+
+					if (sub->dsg_flags & DSGF_REQUIRES_VAR1C) need_var1C = true;
+
+					if (sub->dsg_flags & DSGF_DSE_RECURSIVE_DISABLE) anno.unskippable = true;
+					/* No need to check default_group and ranges here as if those contain deterministic groups then DSGF_DSE_RECURSIVE_DISABLE would be set */
 				}
 			});
-			handle_group(adjust.subroutine);
+			handle_group(anno.subroutine);
 		}
 	}
 }
@@ -7741,7 +7852,12 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 				if (prev.operation == DSGA_OP_STO_NC && prev.divmod_val >= 0x100) break;
 				if (prev.operation == DSGA_OP_STOP) break;
 				if (IsEvalAdjustJumpOperation(prev.operation)) break;
-				if (prev.variable == 0x7E) break;
+				if (prev.variable == 0x7E) {
+					const VarAction2ProcedureCallVarReadAnnotation &anno = _varaction2_proc_call_var_read_annotations[prev.jump];
+					if (anno.unskippable) break;
+					if ((anno.relevant_stores & ~ok_stores).any()) break;
+					ok_stores |= anno.last_reads;
+				}
 
 				/* Reached a store which can't be skipped over because the value is needed later */
 				if (prev.operation == DSGA_OP_STO && !ok_stores[prev.and_mask]) break;
@@ -7755,7 +7871,21 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 				j--;
 			}
 			if (j < i - 1) {
-				auto mark_end_block = [](DeterministicSpriteGroupAdjust &adj, uint inc) {
+				auto mark_end_block = [&](uint index, uint inc) {
+					if (group->adjusts[index].variable == 0x7E) {
+						/* Procedure call, can't mark this as an end block directly, so insert a NOOP and use that */
+						DeterministicSpriteGroupAdjust noop = {};
+						noop.operation = DSGA_OP_NOOP;
+						noop.variable = 0x1A;
+						group->adjusts.insert(group->adjusts.begin() + index + 1, noop);
+
+						/* Fixup offsets */
+						if (i > (int)index) i++;
+						if (j > (int)index) j++;
+						index++;
+					}
+
+					DeterministicSpriteGroupAdjust &adj = group->adjusts[index];
 					if (adj.adjust_flags & DSGAF_END_BLOCK) {
 						adj.jump += inc;
 					} else {
@@ -7765,15 +7895,17 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 				};
 
 				DeterministicSpriteGroupAdjust current = adjust;
+				/* Do not use adjust reference after this point */
+
 				if (current.adjust_flags & DSGAF_END_BLOCK) {
 					/* Move the existing end block 1 place back, to avoid it being moved with the jump adjust */
-					mark_end_block(group->adjusts[i - 1], current.jump);
+					mark_end_block(i - 1, current.jump);
 					current.adjust_flags &= ~DSGAF_END_BLOCK;
 					current.jump = 0;
 				}
 				current.operation = (current.adjust_flags & DSGAF_SKIP_ON_LSB_SET) ? DSGA_OP_JNZ : DSGA_OP_JZ;
 				current.adjust_flags &= ~(DSGAF_JUMP_INS_HINT | DSGAF_SKIP_ON_ZERO | DSGAF_SKIP_ON_LSB_SET);
-				mark_end_block(group->adjusts[i - 1], 1);
+				mark_end_block(i - 1, 1);
 				group->adjusts.erase(group->adjusts.begin() + i);
 				if (j >= 0 && current.variable == 0x7D && (current.adjust_flags & DSGAF_LAST_VAR_READ)) {
 					DeterministicSpriteGroupAdjust &prev = group->adjusts[j];
@@ -7800,6 +7932,13 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 				i++;
 			}
 		}
+	}
+
+	if (!_varaction2_proc_call_var_read_annotations.empty()) {
+		for (DeterministicSpriteGroupAdjust &adjust : group->adjusts) {
+			if (adjust.variable == 0x7E) adjust.subroutine = _varaction2_proc_call_var_read_annotations[adjust.jump].subroutine;
+		}
+		_varaction2_proc_call_var_read_annotations.clear();
 	}
 }
 
