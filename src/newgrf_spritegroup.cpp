@@ -733,14 +733,14 @@ static char *GetAdjustOperationName(char *str, const char *last, DeterministicSp
 	return str + seprintf(str, last, "\?\?\?(0x%X)", operation);
 }
 
-static char *DumpSpriteGroupAdjust(char *p, const char *last, const DeterministicSpriteGroupAdjust &adjust, int padding, uint32 &highlight_tag, uint &conditional_indent)
+static char *DumpSpriteGroupAdjust(char *p, const char *last, const DeterministicSpriteGroupAdjust &adjust, const char *padding, uint32 &highlight_tag, uint &conditional_indent)
 {
 	if (adjust.variable == 0x7D) {
 		/* Temp storage load */
 		highlight_tag = (1 << 16) | (adjust.parameter & 0xFFFF);
 	}
 
-	p += seprintf(p, last, "%*s", padding, "");
+	p += seprintf(p, last, "%s", padding);
 	for (uint i = 0; i < conditional_indent; i++) {
 		p += seprintf(p, last, "> ");
 	}
@@ -831,7 +831,7 @@ static char *DumpSpriteGroupAdjust(char *p, const char *last, const Deterministi
 
 bool SpriteGroupDumper::use_shadows = false;
 
-void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint flags)
+void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *padding, uint flags)
 {
 	uint32 highlight_tag = 0;
 	auto print = [&]() {
@@ -840,7 +840,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 	};
 
 	if (sg == nullptr) {
-		seprintf(this->buffer, lastof(this->buffer), "%*sNULL GROUP", padding, "");
+		seprintf(this->buffer, lastof(this->buffer), "%sNULL GROUP", padding);
 		print();
 		return;
 	}
@@ -854,7 +854,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 	};
 	auto guard = scope_guard([&]() {
 		if (start_emitted) {
-			this->print_fn(sg, DSGPO_END, padding, nullptr);
+			this->print_fn(sg, DSGPO_END, 0, padding);
 		}
 	});
 
@@ -864,19 +864,21 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 	switch (sg->type) {
 		case SGT_REAL: {
 			const RealSpriteGroup *rsg = (const RealSpriteGroup*)sg;
-			seprintf(this->buffer, lastof(this->buffer), "%*sReal (loaded: %u, loading: %u)%s [%u]",
-					padding, "", (uint)rsg->loaded.size(), (uint)rsg->loading.size(), extra_info, sg->nfo_line);
+			seprintf(this->buffer, lastof(this->buffer), "%sReal (loaded: %u, loading: %u)%s [%u]",
+					padding, (uint)rsg->loaded.size(), (uint)rsg->loading.size(), extra_info, sg->nfo_line);
 			print();
 			emit_start();
+			std::string sub_padding(padding);
+			sub_padding += "    ";
 			for (size_t i = 0; i < rsg->loaded.size(); i++) {
-				seprintf(this->buffer, lastof(this->buffer), "%*sLoaded %u", padding + 2, "", (uint)i);
+				seprintf(this->buffer, lastof(this->buffer), "%s  Loaded %u", padding, (uint)i);
 				print();
-				this->DumpSpriteGroup(rsg->loaded[i], padding + 4, 0);
+				this->DumpSpriteGroup(rsg->loaded[i], sub_padding.c_str(), 0);
 			}
 			for (size_t i = 0; i < rsg->loading.size(); i++) {
-				seprintf(this->buffer, lastof(this->buffer), "%*sLoading %u", padding + 2, "", (uint)i);
+				seprintf(this->buffer, lastof(this->buffer), "%s  Loading %u", padding, (uint)i);
 				print();
-				this->DumpSpriteGroup(rsg->loading[i], padding + 4, 0);
+				this->DumpSpriteGroup(rsg->loading[i], sub_padding.c_str(), 0);
 			}
 			break;
 		}
@@ -905,25 +907,25 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 				}
 			}
 
-			if (padding == 0 && !dsg->calculated_result && default_group != nullptr) {
+			if (*padding == 0 && !dsg->calculated_result && default_group != nullptr) {
 				this->top_default_group = default_group;
 			}
-			if (dsg == this->top_default_group && !(padding == 4 && (flags & SGDF_DEFAULT))) {
-				seprintf(this->buffer, lastof(this->buffer), "%*sTOP LEVEL DEFAULT GROUP: Deterministic (%s, %s), [%u]",
-						padding, "", _sg_scope_names[dsg->var_scope], _sg_size_names[dsg->size], dsg->nfo_line);
+			if (dsg == this->top_default_group && !((flags & SGDF_DEFAULT)) && strlen(padding) == 4) {
+				seprintf(this->buffer, lastof(this->buffer), "%sTOP LEVEL DEFAULT GROUP: Deterministic (%s, %s), [%u]",
+						padding, _sg_scope_names[dsg->var_scope], _sg_size_names[dsg->size], dsg->nfo_line);
 				print();
 				return;
 			}
 			auto res = this->seen_dsgs.insert(dsg);
 			if (!res.second) {
-				seprintf(this->buffer, lastof(this->buffer), "%*sGROUP SEEN ABOVE: Deterministic (%s, %s), [%u]",
-						padding, "", _sg_scope_names[dsg->var_scope], _sg_size_names[dsg->size], dsg->nfo_line);
+				seprintf(this->buffer, lastof(this->buffer), "%sGROUP SEEN ABOVE: Deterministic (%s, %s), [%u]",
+						padding, _sg_scope_names[dsg->var_scope], _sg_size_names[dsg->size], dsg->nfo_line);
 				print();
 				return;
 			}
 			char *p = this->buffer;
-			p += seprintf(p, lastof(this->buffer), "%*sDeterministic (%s, %s)%s [%u]",
-					padding, "", _sg_scope_names[dsg->var_scope], _sg_size_names[dsg->size], extra_info, dsg->nfo_line);
+			p += seprintf(p, lastof(this->buffer), "%sDeterministic (%s, %s)%s [%u]",
+					padding, _sg_scope_names[dsg->var_scope], _sg_size_names[dsg->size], extra_info, dsg->nfo_line);
 			if (HasBit(_misc_debug_flags, MDF_NEWGRF_SG_DUMP_MORE_DETAIL)) {
 				if (dsg->dsg_flags & DSGF_NO_DSE) p += seprintf(p, lastof(this->buffer), ", NO_DSE");
 				if (dsg->dsg_flags & DSGF_DSE_RECURSIVE_DISABLE) p += seprintf(p, lastof(this->buffer), ", DSE_RD");
@@ -934,22 +936,30 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 			}
 			print();
 			emit_start();
-			padding += 2;
+			std::string sub_padding(padding);
+			sub_padding += "  ";
 			uint conditional_indent = 0;
 			for (const auto &adjust : (*adjusts)) {
-				DumpSpriteGroupAdjust(this->buffer, lastof(this->buffer), adjust, padding, highlight_tag, conditional_indent);
+				DumpSpriteGroupAdjust(this->buffer, lastof(this->buffer), adjust, sub_padding.c_str(), highlight_tag, conditional_indent);
 				print();
 				if (adjust.variable == 0x7E && adjust.subroutine != nullptr) {
-					this->DumpSpriteGroup(adjust.subroutine, padding + 5, 0);
+					std::string subroutine_padding(sub_padding);
+					for (uint i = 0; i < conditional_indent; i++) {
+						subroutine_padding += "> ";
+					}
+					subroutine_padding += "     ";
+					this->DumpSpriteGroup(adjust.subroutine, subroutine_padding.c_str(), 0);
 				}
 			}
 			if (dsg->calculated_result) {
-				seprintf(this->buffer, lastof(this->buffer), "%*scalculated_result", padding, "");
+				seprintf(this->buffer, lastof(this->buffer), "%scalculated_result", padding);
 				print();
 			} else {
+				std::string subgroup_padding(padding);
+				subgroup_padding += "  ";
 				for (const auto &range : (*ranges)) {
 					char *p = this->buffer;
-					p += seprintf(p, lastof(this->buffer), "%*srange: %X -> %X", padding, "", range.low, range.high);
+					p += seprintf(p, lastof(this->buffer), "%srange: %X -> %X", padding, range.low, range.high);
 					if (range.low == range.high && is_callback_group) {
 						const char *cb_name = GetNewGRFCallbackName((CallbackID)range.low);
 						if (cb_name != nullptr) {
@@ -957,12 +967,12 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 						}
 					}
 					print();
-					this->DumpSpriteGroup(range.group, padding + 2, 0);
+					this->DumpSpriteGroup(range.group, subgroup_padding.c_str(), 0);
 				}
 				if (default_group != nullptr) {
-					seprintf(this->buffer, lastof(this->buffer), "%*sdefault", padding, "");
+					seprintf(this->buffer, lastof(this->buffer), "%sdefault", padding);
 					print();
-					this->DumpSpriteGroup(default_group, padding + 2, SGDF_DEFAULT);
+					this->DumpSpriteGroup(default_group, subgroup_padding.c_str(), SGDF_DEFAULT);
 				}
 			}
 			break;
@@ -979,31 +989,32 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 				}
 			}
 
-			seprintf(this->buffer, lastof(this->buffer), "%*sRandom (%s, %s, triggers: %X, count: %X, lowest_randbit: %X, groups: %u)%s [%u]",
-					padding, "", _sg_scope_names[rsg->var_scope], rsg->cmp_mode == RSG_CMP_ANY ? "ANY" : "ALL",
+			seprintf(this->buffer, lastof(this->buffer), "%sRandom (%s, %s, triggers: %X, count: %X, lowest_randbit: %X, groups: %u)%s [%u]",
+					padding, _sg_scope_names[rsg->var_scope], rsg->cmp_mode == RSG_CMP_ANY ? "ANY" : "ALL",
 					rsg->triggers, rsg->count, rsg->lowest_randbit, (uint)rsg->groups.size(), extra_info, rsg->nfo_line);
 			print();
 			emit_start();
+			std::string sub_padding(padding);
+			sub_padding += "  ";
 			for (const auto &group : (*groups)) {
-				this->DumpSpriteGroup(group, padding + 2, 0);
+				this->DumpSpriteGroup(group, sub_padding.c_str(), 0);
 			}
 			break;
 		}
 		case SGT_CALLBACK:
-			seprintf(this->buffer, lastof(this->buffer), "%*sCallback Result: %X", padding, "", ((const CallbackResultSpriteGroup *) sg)->result);
+			seprintf(this->buffer, lastof(this->buffer), "%sCallback Result: %X", padding, ((const CallbackResultSpriteGroup *) sg)->result);
 			print();
 			break;
 		case SGT_RESULT:
-			seprintf(this->buffer, lastof(this->buffer), "%*sSprite Result: SpriteID: %u, num: %u",
-					padding, "", ((const ResultSpriteGroup *) sg)->sprite, ((const ResultSpriteGroup *) sg)->num_sprites);
+			seprintf(this->buffer, lastof(this->buffer), "%sSprite Result: SpriteID: %u, num: %u",
+					padding, ((const ResultSpriteGroup *) sg)->sprite, ((const ResultSpriteGroup *) sg)->num_sprites);
 			print();
 			break;
 		case SGT_TILELAYOUT: {
 			const TileLayoutSpriteGroup *tlsg = (const TileLayoutSpriteGroup*)sg;
-			seprintf(this->buffer, lastof(this->buffer), "%*sTile Layout%s [%u]", padding, "", extra_info, sg->nfo_line);
+			seprintf(this->buffer, lastof(this->buffer), "%sTile Layout%s [%u]", padding, extra_info, sg->nfo_line);
 			print();
 			emit_start();
-			padding += 2;
 			if (tlsg->dts.registers != nullptr) {
 				const TileLayoutRegisters *registers = tlsg->dts.registers;
 				size_t count = 1; // 1 for the ground sprite
@@ -1011,12 +1022,12 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 				foreach_draw_tile_seq(element, tlsg->dts.seq) count++;
 				for (size_t i = 0; i < count; i ++) {
 					const TileLayoutRegisters *reg = registers + i;
-					seprintf(this->buffer, lastof(this->buffer), "%*ssection: %X, register flags: %X", padding, "", (uint)i, reg->flags);
+					seprintf(this->buffer, lastof(this->buffer), "%s  section: %X, register flags: %X", padding, (uint)i, reg->flags);
 					print();
 					auto log_reg = [&](TileLayoutFlags flag, const char *name, uint8 flag_reg) {
 						if (reg->flags & flag) {
 							highlight_tag = (1 << 16) | flag_reg;
-							seprintf(this->buffer, lastof(this->buffer), "%*s%s reg: %X", padding + 2, "", name, flag_reg);
+							seprintf(this->buffer, lastof(this->buffer), "%s    %s reg: %X", padding, name, flag_reg);
 							print();
 						}
 					};
@@ -1029,11 +1040,11 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 					log_reg(TLF_CHILD_X_OFFSET, "TLF_CHILD_X_OFFSET", reg->delta.child[0]);
 					log_reg(TLF_CHILD_Y_OFFSET, "TLF_CHILD_Y_OFFSET", reg->delta.child[1]);
 					if (reg->flags & TLF_SPRITE_VAR10) {
-						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_SPRITE_VAR10 value: %X", padding + 2, "", reg->sprite_var10);
+						seprintf(this->buffer, lastof(this->buffer), "%s    TLF_SPRITE_VAR10 value: %X", padding, reg->sprite_var10);
 						print();
 					}
 					if (reg->flags & TLF_PALETTE_VAR10) {
-						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_PALETTE_VAR10 value: %X", padding + 2, "", reg->palette_var10);
+						seprintf(this->buffer, lastof(this->buffer), "%s    TLF_PALETTE_VAR10 value: %X", padding, reg->palette_var10);
 						print();
 					}
 				}
@@ -1042,17 +1053,17 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 		}
 		case SGT_INDUSTRY_PRODUCTION: {
 			const IndustryProductionSpriteGroup *ipsg = (const IndustryProductionSpriteGroup*)sg;
-			seprintf(this->buffer, lastof(this->buffer), "%*sIndustry Production (version %X) [%u]", padding, "", ipsg->version, ipsg->nfo_line);
+			seprintf(this->buffer, lastof(this->buffer), "%sIndustry Production (version %X) [%u]", padding, ipsg->version, ipsg->nfo_line);
 			print();
 			emit_start();
 			auto log_io = [&](const char *prefix, int i, int quantity, CargoID cargo) {
 				if (ipsg->version >= 1) highlight_tag = (1 << 16) | quantity;
 				if (ipsg->version >= 2) {
-					seprintf(this->buffer, lastof(this->buffer), "%*s%s %X: reg %X, cargo ID: %X", padding + 2, "", prefix, i, quantity, cargo);
+					seprintf(this->buffer, lastof(this->buffer), "%s  %s %X: reg %X, cargo ID: %X", padding, prefix, i, quantity, cargo);
 					print();
 				} else {
 					const char *type = (ipsg->version >= 1) ? "reg" : "value";
-					seprintf(this->buffer, lastof(this->buffer), "%*s%s %X: %s %X", padding + 2, "", prefix, i, type, quantity);
+					seprintf(this->buffer, lastof(this->buffer), "%s  %s %X: %s %X", padding, prefix, i, type, quantity);
 					print();
 				}
 			};
@@ -1063,7 +1074,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 				log_io("Add input", i, ipsg->add_output[i], ipsg->cargo_output[i]);
 			}
 			if (ipsg->version >= 1) highlight_tag = (1 << 16) | ipsg->again;
-			seprintf(this->buffer, lastof(this->buffer), "%*sAgain: %s %X", padding + 2, "", (ipsg->version >= 1) ? "reg" : "value", ipsg->again);
+			seprintf(this->buffer, lastof(this->buffer), "%s  Again: %s %X", padding, (ipsg->version >= 1) ? "reg" : "value", ipsg->again);
 			print();
 			break;
 		}
@@ -1073,5 +1084,5 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 void DumpSpriteGroup(const SpriteGroup *sg, DumpSpriteGroupPrinter print)
 {
 	SpriteGroupDumper dumper(std::move(print));
-	dumper.DumpSpriteGroup(sg, 0, 0);
+	dumper.DumpSpriteGroup(sg, 0);
 }

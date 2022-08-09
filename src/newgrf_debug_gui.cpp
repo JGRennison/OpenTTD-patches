@@ -569,7 +569,7 @@ struct NewGRFInspectWindow : Window {
 					collapse_lines = 0;
 				}
 				if (operation == DSGPO_END && collapsed && collapse_group == group) {
-					seprintf(tmp_buf, lastof(tmp_buf), "%*sCOLLAPSED: %u lines omitted", highlight_tag + 2, "", collapse_lines);
+					seprintf(tmp_buf, lastof(tmp_buf), "%sCOLLAPSED: %u lines omitted", buf, collapse_lines);
 					buf = tmp_buf;
 					collapsed = false;
 					highlight_tag = 0;

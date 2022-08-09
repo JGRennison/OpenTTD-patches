@@ -769,10 +769,15 @@ private:
 		SGDF_DEFAULT          = 1 << 0,
 	};
 
+	void DumpSpriteGroup(const SpriteGroup *sg, const char *prefix, uint flags);
+
 public:
 	SpriteGroupDumper(DumpSpriteGroupPrinter print) : print_fn(print) {}
 
-	void DumpSpriteGroup(const SpriteGroup *sg, int padding, uint flags);
+	void DumpSpriteGroup(const SpriteGroup *sg, uint flags)
+	{
+		this->DumpSpriteGroup(sg, "", flags);
+	}
 };
 
 void DumpSpriteGroup(const SpriteGroup *sg, DumpSpriteGroupPrinter print);

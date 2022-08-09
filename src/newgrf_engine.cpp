@@ -1682,7 +1682,7 @@ void DumpVehicleSpriteGroup(const Vehicle *v, DumpSpriteGroupPrinter print)
 	}
 
 	SpriteGroupDumper dumper(print);
-	dumper.DumpSpriteGroup(root_spritegroup, 0, 0);
+	dumper.DumpSpriteGroup(root_spritegroup, 0);
 
 	for (uint i = 0; i < NUM_CARGO + 2; i++) {
 		if (e->grf_prop.spritegroup[i] != root_spritegroup && e->grf_prop.spritegroup[i] != nullptr) {
@@ -1699,14 +1699,14 @@ void DumpVehicleSpriteGroup(const Vehicle *v, DumpSpriteGroupPrinter print)
 					break;
 			}
 			print(nullptr, DSGPO_PRINT, 0, buffer);
-			dumper.DumpSpriteGroup(e->grf_prop.spritegroup[i], 0, 0);
+			dumper.DumpSpriteGroup(e->grf_prop.spritegroup[i], 0);
 		}
 	}
 	for (const WagonOverride &wo : e->overrides) {
 		if (wo.group != root_spritegroup && wo.group != nullptr) {
 			print(nullptr, DSGPO_PRINT, 0, "");
 			print(nullptr, DSGPO_PRINT, 0, "OTHER SPRITE GROUP: Wagon override");
-			dumper.DumpSpriteGroup(wo.group, 0, 0);
+			dumper.DumpSpriteGroup(wo.group, 0);
 		}
 	}
 }
