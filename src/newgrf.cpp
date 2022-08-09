@@ -105,6 +105,8 @@ struct VarAction2GroupVariableTracking {
 
 struct VarAction2ProcedureAnnotation {
 	std::bitset<256> stores;
+	uint32 special_register_values[16];
+	uint16 special_register_mask = 0;
 	bool unskippable = false;
 };
 
@@ -7725,7 +7727,13 @@ static VarAction2ProcedureAnnotation *OptimiseVarAction2GetFilledProcedureAnnota
 						return;
 					}
 					if (adjust.operation == DSGA_OP_STO_NC && adjust.divmod_val >= 0x100) {
-						anno->unskippable = true;
+						if (adjust.divmod_val < 0x110 && adjust.type == DSGA_TYPE_NONE && adjust.variable == 0x1A && adjust.shift_num == 0) {
+							/* Storing a constant */
+							anno->special_register_values[adjust.divmod_val - 0x100] = adjust.and_mask;
+							SetBit(anno->special_register_mask, adjust.divmod_val - 0x100);
+						} else {
+							anno->unskippable = true;
+						}
 						return;
 					}
 					if (adjust.operation == DSGA_OP_STOP) {
@@ -7843,13 +7851,25 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 
 		if (adjust.adjust_flags & DSGAF_JUMP_INS_HINT) {
 			std::bitset<256> ok_stores;
+			uint32 special_stores[16];
+			uint16 special_stores_mask = 0;
 			int j = i - 1;
 			while (j >= 0) {
 				DeterministicSpriteGroupAdjust &prev = group->adjusts[j];
 
-				/* Don't try to skip over: unpredictable or special stores, procedure calls, permanent stores, or another jump */
+				/* Don't try to skip over: unpredictable or unusable special stores, unskippable procedure calls, permanent stores, or another jump */
 				if (prev.operation == DSGA_OP_STO && (prev.type != DSGA_TYPE_NONE || prev.variable != 0x1A || prev.shift_num != 0 || prev.and_mask >= 0x100)) break;
-				if (prev.operation == DSGA_OP_STO_NC && prev.divmod_val >= 0x100) break;
+				if (prev.operation == DSGA_OP_STO_NC && prev.divmod_val >= 0x100) {
+					if (prev.divmod_val < 0x110 && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0) {
+						/* Storing a constant in a special register */
+						if (!HasBit(special_stores_mask, prev.divmod_val - 0x100)) {
+							special_stores[prev.divmod_val - 0x100] = prev.and_mask;
+							SetBit(special_stores_mask, prev.divmod_val - 0x100);
+						}
+					} else {
+						break;
+					}
+				}
 				if (prev.operation == DSGA_OP_STOP) break;
 				if (IsEvalAdjustJumpOperation(prev.operation)) break;
 				if (prev.variable == 0x7E) {
@@ -7857,11 +7877,17 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 					if (anno.unskippable) break;
 					if ((anno.relevant_stores & ~ok_stores).any()) break;
 					ok_stores |= anno.last_reads;
+
+					uint16 new_stores = anno.anno->special_register_mask & ~special_stores_mask;
+					for (uint8 bit : SetBitIterator(new_stores)) {
+						special_stores[bit] = anno.anno->special_register_values[bit];
+					}
+					special_stores_mask |= new_stores;
 				}
 
 				/* Reached a store which can't be skipped over because the value is needed later */
 				if (prev.operation == DSGA_OP_STO && !ok_stores[prev.and_mask]) break;
-				if (prev.operation == DSGA_OP_STO_NC && !ok_stores[prev.divmod_val]) break;
+				if (prev.operation == DSGA_OP_STO_NC && prev.divmod_val < 0x100 && !ok_stores[prev.divmod_val]) break;
 
 				if (prev.variable == 0x7D && (prev.adjust_flags & DSGAF_LAST_VAR_READ)) {
 					/* The stored value is no longer needed after this, we can skip the corresponding store */
@@ -7891,6 +7917,24 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 					} else {
 						adj.adjust_flags |= DSGAF_END_BLOCK;
 						adj.jump = inc;
+						if (special_stores_mask) {
+							uint added = 0;
+							for (uint8 bit : SetBitIterator(special_stores_mask)) {
+								DeterministicSpriteGroupAdjust store = {};
+								store.operation = DSGA_OP_STO_NC;
+								store.variable = 0x1A;
+								store.type = DSGA_TYPE_NONE;
+								store.shift_num = 0;
+								store.and_mask = special_stores[bit];
+								store.divmod_val = 0x100 + bit;
+								group->adjusts.insert(group->adjusts.begin() + index + 1, store);
+								added++;
+							}
+
+							/* Fixup offsets */
+							if (i > (int)index) i += added;
+							if (j > (int)index) j += added;
+						}
 					}
 				};
 
@@ -8099,7 +8143,7 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 		CheckDeterministicSpriteGroupOutputVarBits(group, bits | pending_bits, false);
 	}
 	bool dse_candidate = (dse_allowed && dse_eligible);
-	if (seen_pending && !dse_candidate) {
+	if (!dse_candidate && (seen_pending || (group->dsg_flags & DSGF_CHECK_INSERT_JUMP))) {
 		group->dsg_flags |= DSGF_NO_DSE;
 		dse_candidate = true;
 	}
@@ -8393,7 +8437,7 @@ static void HandleVarAction2OptimisationPasses()
 
 		OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(group);
 		OptimiseVarAction2DeterministicSpriteGroupAdjustOrdering(group);
-		if ((group->dsg_flags & DSGF_CHECK_INSERT_JUMP) && !(group->dsg_flags & DSGF_NO_DSE)) {
+		if (group->dsg_flags & DSGF_CHECK_INSERT_JUMP) {
 			OptimiseVarAction2DeterministicSpriteGroupInsertJumps(group, var_tracking);
 		}
 		if (group->dsg_flags & DSGF_CHECK_EXPENSIVE_VARS) {
