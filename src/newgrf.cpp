@@ -6711,7 +6711,50 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 		/* Procedure call or complex adjustment */
 		if (adjust.operation == DSGA_OP_STO) handle_unpredictable_temp_store();
 		if (adjust.variable == 0x7E) {
-			reset_store_values();
+			std::bitset<256> seen_stores;
+			bool seen_unpredictable_store = false;
+			bool seen_special_store = false;
+			bool seen_perm_store = false;
+			auto handle_proc_stores = y_combinator([&](auto handle_proc_stores, const SpriteGroup *sg) -> void {
+				if (sg == nullptr) return;
+				if (sg->type == SGT_RANDOMIZED) {
+					const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)sg;
+					for (const auto &group : rsg->groups) {
+						handle_proc_stores(group);
+					}
+				} else if (sg->type == SGT_DETERMINISTIC) {
+					const DeterministicSpriteGroup *dsg = (const DeterministicSpriteGroup*)sg;
+					for (const DeterministicSpriteGroupAdjust &adjust : dsg->adjusts) {
+						if (adjust.variable == 0x7E) {
+							handle_proc_stores(adjust.subroutine);
+						}
+						if (adjust.operation == DSGA_OP_STO) {
+							if (adjust.type == DSGA_TYPE_NONE && adjust.variable == 0x1A && adjust.shift_num == 0) {
+								/* Temp store */
+								if (adjust.and_mask < 0x100) {
+									seen_stores.set(adjust.and_mask, true);
+								} else {
+									seen_special_store = true;
+								}
+							} else {
+								/* Unpredictable store */
+								seen_unpredictable_store = true;
+							}
+						}
+						if (adjust.operation == DSGA_OP_STO_NC) {
+							if (adjust.divmod_val < 0x100) {
+								seen_stores.set(adjust.divmod_val, true);
+							} else {
+								seen_special_store = true;
+							}
+						}
+						if (adjust.operation == DSGA_OP_STOP) {
+							seen_perm_store = true;
+						}
+					}
+				}
+			});
+
 			auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
 				if (sg == nullptr) return;
 				if (sg->type == SGT_RANDOMIZED) {
@@ -6731,9 +6774,35 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 					if (!state.seen_procedure_call && ((const DeterministicSpriteGroup*)sg)->dsg_flags & DSGF_REQUIRES_VAR1C) {
 						group->dsg_flags |= DSGF_REQUIRES_VAR1C;
 					}
+					handle_proc_stores(sg);
 				}
 			});
 			handle_group(adjust.subroutine);
+
+			if (seen_unpredictable_store) {
+				reset_store_values();
+			} else {
+				for (auto &it : state.temp_stores) {
+					if (seen_stores[it.first]) {
+						it.second.inference = VA2AIF_NONE;
+						it.second.version++;
+					} else {
+						/* See DSGA_OP_STO handler */
+						if ((it.second.inference & VA2AIF_SINGLE_LOAD) && it.second.var_source.variable == 0x7D && seen_stores[it.second.var_source.parameter & 0xFF]) {
+							it.second.inference &= ~VA2AIF_SINGLE_LOAD;
+						}
+						if (seen_special_store && (it.second.inference & VA2AIF_SINGLE_LOAD) && it.second.var_source.variable != 0x7D) {
+							it.second.inference &= ~VA2AIF_SINGLE_LOAD;
+						}
+
+						/* See DSGA_OP_STOP handler */
+						if (seen_perm_store && (it.second.inference & VA2AIF_SINGLE_LOAD) && it.second.var_source.variable == 0x7C) {
+							it.second.inference &= ~VA2AIF_SINGLE_LOAD;
+						}
+					}
+				}
+			}
+
 			state.seen_procedure_call = true;
 		} else if (adjust.operation == DSGA_OP_RST) {
 			state.inference = VA2AIF_SINGLE_LOAD;
