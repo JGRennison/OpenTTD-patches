@@ -7754,6 +7754,38 @@ static VarAction2ProcedureAnnotation *OptimiseVarAction2GetFilledProcedureAnnota
 	return anno;
 }
 
+static uint OptimiseVarAction2InsertSpecialStoreOps(DeterministicSpriteGroup *group, uint offset, uint32 values[16], uint16 mask)
+{
+	uint added = 0;
+	for (uint8 bit : SetBitIterator(mask)) {
+		bool skip = false;
+		for (size_t i = offset; i < group->adjusts.size(); i++) {
+			const DeterministicSpriteGroupAdjust &next = group->adjusts[i];
+			if (next.operation == DSGA_OP_STO_NC && next.divmod_val == 0x100u + bit) {
+				skip = true;
+				break;
+			}
+			if (next.operation == DSGA_OP_STO && next.variable == 0x1A && next.type == DSGA_TYPE_NONE && next.shift_num == 0 && next.and_mask == 0x100u + bit) {
+				skip = true;
+				break;
+			}
+			if (next.variable == 0x7D && next.parameter == 0x100u + bit) break;
+			if (next.variable >= 0x40 && next.variable != 0x7D && next.variable != 0x7C) break; // crude whitelist of variables which will never read special registers
+		}
+		if (skip) continue;
+		DeterministicSpriteGroupAdjust store = {};
+		store.operation = DSGA_OP_STO_NC;
+		store.variable = 0x1A;
+		store.type = DSGA_TYPE_NONE;
+		store.shift_num = 0;
+		store.and_mask = values[bit];
+		store.divmod_val = 0x100 + bit;
+		group->adjusts.insert(group->adjusts.begin() + offset + added, store);
+		added++;
+	}
+	return added;
+}
+
 struct VarAction2ProcedureCallVarReadAnnotation {
 	const SpriteGroup *subroutine;
 	VarAction2ProcedureAnnotation *anno;
@@ -7918,18 +7950,7 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 						adj.adjust_flags |= DSGAF_END_BLOCK;
 						adj.jump = inc;
 						if (special_stores_mask) {
-							uint added = 0;
-							for (uint8 bit : SetBitIterator(special_stores_mask)) {
-								DeterministicSpriteGroupAdjust store = {};
-								store.operation = DSGA_OP_STO_NC;
-								store.variable = 0x1A;
-								store.type = DSGA_TYPE_NONE;
-								store.shift_num = 0;
-								store.and_mask = special_stores[bit];
-								store.divmod_val = 0x100 + bit;
-								group->adjusts.insert(group->adjusts.begin() + index + 1, store);
-								added++;
-							}
+							uint added = OptimiseVarAction2InsertSpecialStoreOps(group, index + 1, special_stores, special_stores_mask);
 
 							/* Fixup offsets */
 							if (i > (int)index) i += added;
@@ -8169,6 +8190,7 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 	std::bitset<256> bits;
 	std::vector<uint> substitution_candidates;
 	if (var_tracking != nullptr) bits = var_tracking->out;
+	bool need_var1C = false;
 
 	auto abandon_substitution_candidates = [&]() {
 		for (uint value : substitution_candidates) {
@@ -8217,6 +8239,7 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 				bits.reset();
 			}
 			substitution_candidates.clear();
+			need_var1C = false;
 		};
 		const DeterministicSpriteGroupAdjust &adjust = group->adjusts[i];
 		if (adjust.operation == DSGA_OP_STO) {
@@ -8370,8 +8393,35 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 				bits.set(adjust.parameter, true);
 			}
 		}
+		if (adjust.variable == 0x1C) {
+			need_var1C = true;
+		}
 		if (adjust.variable == 0x7E) {
 			/* procedure call */
+
+			VarAction2ProcedureAnnotation *anno = OptimiseVarAction2GetFilledProcedureAnnotation(adjust.subroutine);
+
+			bool may_remove = !need_var1C;
+			if (may_remove && anno->unskippable) may_remove = false;
+			if (may_remove && (anno->stores & bits).any()) may_remove = false;
+
+			if (may_remove) {
+				if ((i + 1 < (int)group->adjusts.size() && group->adjusts[i + 1].operation == DSGA_OP_RST && group->adjusts[i + 1].variable != 0x7B) ||
+						(i + 1 == (int)group->adjusts.size() && group->ranges.empty() && !group->calculated_result)) {
+					/* Procedure is skippable, makes no stores we need, and the return value is also not needed */
+					erase_adjust(i);
+					if (anno->special_register_mask) {
+						OptimiseVarAction2InsertSpecialStoreOps(group, i, anno->special_register_values, anno->special_register_mask);
+						restart();
+					} else {
+						i--;
+					}
+					continue;
+				}
+			}
+
+			need_var1C = false;
+
 			auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
 				if (sg == nullptr) return;
 				if (sg->type == SGT_RANDOMIZED) {
@@ -8383,10 +8433,25 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 					const DeterministicSpriteGroup *sub = static_cast<const DeterministicSpriteGroup *>(sg);
 					VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sub, false);
 					if (var_tracking != nullptr) bits |= var_tracking->in;
+					if (sub->dsg_flags & DSGF_REQUIRES_VAR1C) need_var1C = true;
 				}
 			});
 			handle_group(adjust.subroutine);
-			abandon_substitution_candidates();
+			if (anno->unskippable || anno->special_register_mask) {
+				abandon_substitution_candidates();
+			} else {
+				/* Flush any substitution candidates which reference stores made in the procedure */
+				for (size_t j = 0; j < substitution_candidates.size();) {
+					uint8 idx = substitution_candidates[j] & 0xFF;
+					if (anno->stores[idx]) {
+						bits.set(idx, true);
+						substitution_candidates[j] = substitution_candidates.back();
+						substitution_candidates.pop_back();
+					} else {
+						j++;
+					}
+				}
+			}
 		}
 		i--;
 	}
