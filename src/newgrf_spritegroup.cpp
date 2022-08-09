@@ -217,6 +217,7 @@ static U EvalAdjustT(const DeterministicSpriteGroupAdjust &adjust, ScopeResolver
 		case DSGA_OP_JNZ:    return handle_jump(value != 0, value);
 		case DSGA_OP_JZ_LV:  return handle_jump(last_value == 0, last_value);
 		case DSGA_OP_JNZ_LV: return handle_jump(last_value != 0, last_value);
+		case DSGA_OP_NOOP: return last_value;
 		default:           return value;
 	}
 }
@@ -708,6 +709,7 @@ static const char *_dsg_op_special_names[] {
 	"JNZ",
 	"JZ_LV",
 	"JNZ_LV",
+	"NOOP",
 };
 static_assert(lengthof(_dsg_op_special_names) == DSGA_OP_SPECIAL_END - DSGA_OP_TERNARY);
 
@@ -775,6 +777,11 @@ static char *DumpSpriteGroupAdjust(char *p, const char *last, const Deterministi
 	}
 	if (adjust.operation == DSGA_OP_ABS) {
 		p += seprintf(p, last, "ABS");
+		append_flags();
+		return p;
+	}
+	if (adjust.operation == DSGA_OP_NOOP) {
+		p += seprintf(p, last, "NOOP");
 		append_flags();
 		return p;
 	}
