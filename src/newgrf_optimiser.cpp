@@ -2593,6 +2593,11 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 					}
 					continue;
 				}
+				if (!anno->unskippable && anno->special_register_mask == 0 && IsEvalAdjustWithZeroLastValueAlwaysZero(adjust.operation)) {
+					/* No stores made in the procedure are required and there are no special stores or other features which make it unskippable.
+					 * Set DSGAF_SKIP_ON_ZERO if appropriate */
+					group->adjusts[i].adjust_flags |= DSGAF_SKIP_ON_ZERO;
+				}
 			}
 
 			need_var1C = false;
