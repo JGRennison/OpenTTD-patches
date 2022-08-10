@@ -216,6 +216,7 @@ public:
 	virtual void ExtraInfo(uint index, NIExtraInfoOutput &output) const {}
 	virtual void SpriteDump(uint index, DumpSpriteGroupPrinter print) const {}
 	virtual bool ShowExtraInfoOnly(uint index) const { return false; };
+	virtual bool ShowExtraInfoIncludingGRFIDOnly(uint index) const { return false; };
 	virtual bool ShowSpriteDumpButton(uint index) const { return false; };
 
 protected:
@@ -617,6 +618,8 @@ struct NewGRFInspectWindow : Window {
 				this->DrawString(r, i++, "  File: %s", grfconfig->filename);
 			}
 		}
+
+		if (nih->ShowExtraInfoIncludingGRFIDOnly(index)) return;
 
 		const_cast<NewGRFInspectWindow*>(this)->first_variable_line_index = i;
 

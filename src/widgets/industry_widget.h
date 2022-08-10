@@ -49,6 +49,7 @@ enum IndustryCargoesWidgets {
 	WID_IC_SCROLLBAR,      ///< Scrollbar of the panel.
 	WID_IC_CARGO_DROPDOWN, ///< Select cargo dropdown.
 	WID_IC_IND_DROPDOWN,   ///< Select industry dropdown.
+	WID_IC_DEBUG,          ///< Debug button
 };
 
 #endif /* WIDGETS_INDUSTRY_WIDGET_H */

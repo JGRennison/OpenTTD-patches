@@ -781,13 +781,40 @@ static const NIVariable _niv_industries[] = {
 
 class NIHIndustry : public NIHelper {
 	bool IsInspectable(uint index) const override        { return true; }
-	bool ShowExtraInfoOnly(uint index) const override    { return GetIndustrySpec(Industry::Get(index)->type)->grf_prop.grffile == nullptr; }
 	bool ShowSpriteDumpButton(uint index) const override { return true; }
-	uint GetParent(uint index) const override            { return GetInspectWindowNumber(GSF_FAKE_TOWNS, Industry::Get(index)->town->index); }
-	const void *GetInstance(uint index)const override    { return Industry::Get(index); }
-	const void *GetSpec(uint index) const override       { return GetIndustrySpec(Industry::Get(index)->type); }
-	void SetStringParameters(uint index) const override  { this->SetSimpleStringParameters(STR_INDUSTRY_NAME, index); }
-	uint32 GetGRFID(uint index) const override           { return (!this->ShowExtraInfoOnly(index)) ? GetIndustrySpec(Industry::Get(index)->type)->grf_prop.grffile->grfid : 0; }
+	uint GetParent(uint index) const override            { return HasBit(index, 26) ? UINT32_MAX : GetInspectWindowNumber(GSF_FAKE_TOWNS, Industry::Get(index)->town->index); }
+	const void *GetInstance(uint index)const override    { return HasBit(index, 26) ? nullptr : Industry::Get(index); }
+	uint32 GetGRFID(uint index) const override           { return (!this->ShowExtraInfoOnly(index)) ? ((const IndustrySpec *)this->GetSpec(index))->grf_prop.grffile->grfid : 0; }
+
+	bool ShowExtraInfoOnly(uint index) const override
+	{
+		const IndustrySpec *spec = (const IndustrySpec *)this->GetSpec(index);
+		return spec == nullptr || spec->grf_prop.grffile == nullptr;
+	}
+
+	bool ShowExtraInfoIncludingGRFIDOnly(uint index) const override
+	{
+		return HasBit(index, 26);
+	}
+
+	const void *GetSpec(uint index) const override
+	{
+		if (HasBit(index, 26)) {
+			return GetIndustrySpec(GB(index, 0, 16));
+		} else {
+			Industry *i = Industry::Get(index);
+			return i != nullptr ? GetIndustrySpec(i->type) : nullptr;
+		}
+	}
+
+	void SetStringParameters(uint index) const override
+	{
+		if (HasBit(index, 26)) {
+			SetDParam(0, GetIndustrySpec(GB(index, 0, 16))->name);
+		} else {
+			this->SetSimpleStringParameters(STR_INDUSTRY_NAME, index);
+		}
+	}
 
 	uint Resolve(uint index, uint var, uint param, GetVariableExtra *extra) const override
 	{
@@ -814,46 +841,51 @@ class NIHIndustry : public NIHelper {
 	{
 		char buffer[1024];
 		output.print("Debug Info:");
-		seprintf(buffer, lastof(buffer), "  Index: %u", index);
-		output.print(buffer);
-		const Industry *ind = Industry::GetIfValid(index);
-		if (ind) {
-			seprintf(buffer, lastof(buffer), "  Location: %ux%u (%X), w: %u, h: %u", TileX(ind->location.tile), TileY(ind->location.tile), ind->location.tile, ind->location.w, ind->location.h);
-			output.print(buffer);
-			if (ind->neutral_station) {
-				seprintf(buffer, lastof(buffer), "  Neutral station: %u: %s", ind->neutral_station->index, ind->neutral_station->GetCachedName());
-				output.print(buffer);
-			}
-			seprintf(buffer, lastof(buffer), "  Nearby stations: %u", (uint) ind->stations_near.size());
-			output.print(buffer);
-			for (const Station *st : ind->stations_near) {
-				seprintf(buffer, lastof(buffer), "    %u: %s", st->index, st->GetCachedName());
-				output.print(buffer);
-			}
-			output.print("  Produces:");
-			for (uint i = 0; i < lengthof(ind->produced_cargo); i++) {
-				if (ind->produced_cargo[i] != CT_INVALID) {
-					seprintf(buffer, lastof(buffer), "    %s: waiting: %u, rate: %u, this month: production: %u, transported: %u, last month: production: %u, transported: %u, (%u/255)",
-							GetStringPtr(CargoSpec::Get(ind->produced_cargo[i])->name), ind->produced_cargo_waiting[i], ind->production_rate[i], ind->this_month_production[i],
-							ind->this_month_transported[i], ind->last_month_production[i], ind->last_month_transported[i], ind->last_month_pct_transported[i]);
-					output.print(buffer);
-				}
-			}
-			output.print("  Accepts:");
-			for (uint i = 0; i < lengthof(ind->accepts_cargo); i++) {
-				if (ind->accepts_cargo[i] != CT_INVALID) {
-					seprintf(buffer, lastof(buffer), "    %s: waiting: %u",
-							GetStringPtr(CargoSpec::Get(ind->accepts_cargo[i])->name), ind->incoming_cargo_waiting[i]);
-					output.print(buffer);
-				}
-			}
 
-			const IndustrySpec *indsp = GetIndustrySpec(ind->type);
+		if (!HasBit(index, 26)) {
+			seprintf(buffer, lastof(buffer), "  Index: %u", index);
+			output.print(buffer);
+			const Industry *ind = Industry::GetIfValid(index);
+			if (ind) {
+				seprintf(buffer, lastof(buffer), "  Location: %ux%u (%X), w: %u, h: %u", TileX(ind->location.tile), TileY(ind->location.tile), ind->location.tile, ind->location.w, ind->location.h);
+				output.print(buffer);
+				if (ind->neutral_station) {
+					seprintf(buffer, lastof(buffer), "  Neutral station: %u: %s", ind->neutral_station->index, ind->neutral_station->GetCachedName());
+					output.print(buffer);
+				}
+				seprintf(buffer, lastof(buffer), "  Nearby stations: %u", (uint) ind->stations_near.size());
+				output.print(buffer);
+				for (const Station *st : ind->stations_near) {
+					seprintf(buffer, lastof(buffer), "    %u: %s", st->index, st->GetCachedName());
+					output.print(buffer);
+				}
+				output.print("  Produces:");
+				for (uint i = 0; i < lengthof(ind->produced_cargo); i++) {
+					if (ind->produced_cargo[i] != CT_INVALID) {
+						seprintf(buffer, lastof(buffer), "    %s: waiting: %u, rate: %u, this month: production: %u, transported: %u, last month: production: %u, transported: %u, (%u/255)",
+								GetStringPtr(CargoSpec::Get(ind->produced_cargo[i])->name), ind->produced_cargo_waiting[i], ind->production_rate[i], ind->this_month_production[i],
+								ind->this_month_transported[i], ind->last_month_production[i], ind->last_month_transported[i], ind->last_month_pct_transported[i]);
+						output.print(buffer);
+					}
+				}
+				output.print("  Accepts:");
+				for (uint i = 0; i < lengthof(ind->accepts_cargo); i++) {
+					if (ind->accepts_cargo[i] != CT_INVALID) {
+						seprintf(buffer, lastof(buffer), "    %s: waiting: %u",
+								GetStringPtr(CargoSpec::Get(ind->accepts_cargo[i])->name), ind->incoming_cargo_waiting[i]);
+						output.print(buffer);
+					}
+				}
+				seprintf(buffer, lastof(buffer), "  Counter: %u", ind->counter);
+				output.print(buffer);
+			}
+		}
+
+		const IndustrySpec *indsp = (const IndustrySpec *)this->GetSpec(index);
+		if (indsp) {
 			seprintf(buffer, lastof(buffer), "  CBM_IND_PRODUCTION_CARGO_ARRIVAL: %s", HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_CARGO_ARRIVAL) ? "yes" : "no");
 			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "  CBM_IND_PRODUCTION_256_TICKS: %s", HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS) ? "yes" : "no");
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  Counter: %u", ind->counter);
 			output.print(buffer);
 			if ((_settings_game.economy.industry_cargo_scale_factor != 0) && HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS)) {
 				seprintf(buffer, lastof(buffer), "  Counter production interval: %u", ScaleQuantity(INDUSTRY_PRODUCE_TICKS, -_settings_game.economy.industry_cargo_scale_factor));
@@ -870,10 +902,10 @@ class NIHIndustry : public NIHelper {
 
 	/* virtual */ void SpriteDump(uint index, DumpSpriteGroupPrinter print) const override
 	{
-		const Industry *ind = Industry::GetIfValid(index);
-		if (ind) {
+		const IndustrySpec *spec = (const IndustrySpec *)this->GetSpec(index);
+		if (spec) {
 			extern void DumpIndustrySpriteGroup(const IndustrySpec *spec, DumpSpriteGroupPrinter print);
-			DumpIndustrySpriteGroup(GetIndustrySpec(ind->type), std::move(print));
+			DumpIndustrySpriteGroup(spec, std::move(print));
 		}
 	}
 };
