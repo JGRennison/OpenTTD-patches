@@ -101,6 +101,7 @@ static const uint32 OPENTTD_GRAPHICS_BASE_GRF_ID = BSWAP32(0xFF4F5400);
 struct VarAction2GroupVariableTracking {
 	std::bitset<256> in;
 	std::bitset<256> out;
+	std::bitset<256> proc_call_out;
 };
 
 struct VarAction2ProcedureAnnotation {
@@ -7377,10 +7378,14 @@ static bool CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSprite
 						return true;
 					};
 					if (procedure_dse_ok()) {
-						std::bitset<256> new_out = bits | var_tracking->out;
-						if (new_out != var_tracking->out) {
-							var_tracking->out = new_out;
-							CheckDeterministicSpriteGroupOutputVarBits(sub, new_out, false);
+						std::bitset<256> new_proc_call_out = bits | var_tracking->proc_call_out;
+						if (new_proc_call_out != var_tracking->proc_call_out) {
+							var_tracking->proc_call_out = new_proc_call_out;
+							std::bitset<256> old_total = var_tracking->out | var_tracking->proc_call_out;
+							std::bitset<256> new_total = var_tracking->out | new_proc_call_out;
+							if (old_total != new_total) {
+								CheckDeterministicSpriteGroupOutputVarBits(sub, new_total, false);
+							}
 						}
 					} else {
 						RecursiveDisallowDSEForProcedure(sub);
@@ -7399,7 +7404,7 @@ static bool OptimiseVarAction2DeterministicSpriteGroupExpensiveVarsInner(Determi
 	btree::btree_map<uint64, uint32> seen_expensive_variables;
 	std::bitset<256> usable_vars;
 	if (var_tracking != nullptr) {
-		usable_vars = ~var_tracking->out;
+		usable_vars = ~(var_tracking->out | var_tracking->proc_call_out);
 	} else {
 		usable_vars.set();
 	}
@@ -7798,7 +7803,7 @@ static std::vector<VarAction2ProcedureCallVarReadAnnotation> _varaction2_proc_ca
 static void OptimiseVarAction2DeterministicSpriteGroupPopulateLastVarReadAnnotations(DeterministicSpriteGroup *group, VarAction2GroupVariableTracking *var_tracking)
 {
 	std::bitset<256> bits;
-	if (var_tracking != nullptr) bits = var_tracking->out;
+	if (var_tracking != nullptr) bits = (var_tracking->out | var_tracking->proc_call_out);
 	bool need_var1C = false;
 
 	for (int i = (int)group->adjusts.size() - 1; i >= 0; i--) {
@@ -8187,14 +8192,19 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 
 static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSpriteGroup *group, VarAction2GroupVariableTracking *var_tracking, bool no_changes)
 {
-	std::bitset<256> bits;
+	std::bitset<256> all_bits;
+	std::bitset<256> propagate_bits;
 	std::vector<uint> substitution_candidates;
-	if (var_tracking != nullptr) bits = var_tracking->out;
+	if (var_tracking != nullptr) {
+		propagate_bits = var_tracking->out;
+		all_bits = propagate_bits | var_tracking->proc_call_out;
+	}
 	bool need_var1C = false;
 
 	auto abandon_substitution_candidates = [&]() {
 		for (uint value : substitution_candidates) {
-			bits.set(value & 0xFF, true);
+			all_bits.set(value & 0xFF, true);
+			propagate_bits.set(value & 0xFF, true);
 		}
 		substitution_candidates.clear();
 	};
@@ -8234,9 +8244,11 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 			pending_restart = false;
 			i = (int)group->adjusts.size() - 1;
 			if (var_tracking != nullptr) {
-				bits = var_tracking->out;
+				propagate_bits = var_tracking->out;
+				all_bits = propagate_bits | var_tracking->proc_call_out;
 			} else {
-				bits.reset();
+				all_bits.reset();
+				propagate_bits.reset();
 			}
 			substitution_candidates.clear();
 			need_var1C = false;
@@ -8255,7 +8267,8 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 						bool substituted = try_variable_substitution(target, i - 1, idx);
 						if (!substituted) {
 							/* Not usable, mark as required so it's not eliminated */
-							bits.set(idx, true);
+							all_bits.set(idx, true);
+							propagate_bits.set(idx, true);
 						}
 						substitution_candidates[j] = substitution_candidates.back();
 						substitution_candidates.pop_back();
@@ -8263,7 +8276,7 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 					}
 				}
 
-				if (!bits[idx] && !no_changes) {
+				if (!all_bits[idx] && !no_changes) {
 					/* Redundant store */
 					erase_adjust(i);
 					i--;
@@ -8360,7 +8373,8 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 					continue;
 				} else {
 					/* Non-redundant store */
-					bits.set(idx, false);
+					all_bits.set(idx, false);
+					propagate_bits.set(idx, false);
 				}
 			} else {
 				/* Unpredictable store */
@@ -8369,11 +8383,12 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 		}
 		if (adjust.variable == 0x7B && adjust.parameter == 0x7D) {
 			/* Unpredictable load */
-			bits.set();
+			all_bits.set();
+			propagate_bits.set();
 			abandon_substitution_candidates();
 		}
 		if (adjust.variable == 0x7D && adjust.parameter < 0x100) {
-			if (i > 0 && !bits[adjust.parameter] && !no_changes) {
+			if (i > 0 && !all_bits[adjust.parameter] && !no_changes) {
 				/* See if this can be made a substitution candidate */
 				bool add = true;
 				for (size_t j = 0; j < substitution_candidates.size(); j++) {
@@ -8381,7 +8396,8 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 						/* There already is a candidate */
 						substitution_candidates[j] = substitution_candidates.back();
 						substitution_candidates.pop_back();
-						bits.set(adjust.parameter, true);
+						all_bits.set(adjust.parameter, true);
+						propagate_bits.set(adjust.parameter, true);
 						add = false;
 						break;
 					}
@@ -8390,7 +8406,8 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 					substitution_candidates.push_back(adjust.parameter | (i << 8));
 				}
 			} else {
-				bits.set(adjust.parameter, true);
+				all_bits.set(adjust.parameter, true);
+				propagate_bits.set(adjust.parameter, true);
 			}
 		}
 		if (adjust.variable == 0x1C) {
@@ -8403,7 +8420,7 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 
 			bool may_remove = !need_var1C;
 			if (may_remove && anno->unskippable) may_remove = false;
-			if (may_remove && (anno->stores & bits).any()) may_remove = false;
+			if (may_remove && (anno->stores & all_bits).any()) may_remove = false;
 
 			if (may_remove) {
 				if ((i + 1 < (int)group->adjusts.size() && group->adjusts[i + 1].operation == DSGA_OP_RST && group->adjusts[i + 1].variable != 0x7B) ||
@@ -8432,7 +8449,10 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 				} else if (sg->type == SGT_DETERMINISTIC) {
 					const DeterministicSpriteGroup *sub = static_cast<const DeterministicSpriteGroup *>(sg);
 					VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sub, false);
-					if (var_tracking != nullptr) bits |= var_tracking->in;
+					if (var_tracking != nullptr) {
+						all_bits |= var_tracking->in;
+						propagate_bits |= var_tracking->in;
+					}
 					if (sub->dsg_flags & DSGF_REQUIRES_VAR1C) need_var1C = true;
 				}
 			});
@@ -8444,7 +8464,8 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 				for (size_t j = 0; j < substitution_candidates.size();) {
 					uint8 idx = substitution_candidates[j] & 0xFF;
 					if (anno->stores[idx]) {
-						bits.set(idx, true);
+						all_bits.set(idx, true);
+						propagate_bits.set(idx, true);
 						substitution_candidates[j] = substitution_candidates.back();
 						substitution_candidates.pop_back();
 					} else {
@@ -8456,7 +8477,7 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 		i--;
 	}
 	abandon_substitution_candidates();
-	return bits;
+	return propagate_bits;
 }
 
 static void HandleVarAction2OptimisationPasses()
