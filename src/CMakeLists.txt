@@ -267,12 +267,14 @@ add_files(
     newgrf_industrytiles.cpp
     newgrf_industrytiles.h
     newgrf_industrytiles_analysis.h
+    newgrf_internal.h
     newgrf_newlandscape.cpp
     newgrf_newlandscape.h
     newgrf_newsignals.cpp
     newgrf_newsignals.h
     newgrf_object.cpp
     newgrf_object.h
+    newgrf_optimiser.cpp
     newgrf_profiling.cpp
     newgrf_profiling.h
     newgrf_properties.h
