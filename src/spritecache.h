@@ -22,6 +22,11 @@ struct Sprite {
 	byte data[];   ///< Sprite data.
 };
 
+enum SpriteCacheCtrlFlags {
+	SCCF_WARNED            = 0, ///< True iff the user has been warned about incorrect use of this sprite.
+	SCCF_HAS_NON_PALETTE   = 1, ///< True iff there is at least one non-paletter sprite present (such that 32bpp mode can be used).
+};
+
 extern uint _sprite_cache_size;
 
 typedef void *AllocatorProc(size_t size);

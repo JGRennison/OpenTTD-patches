@@ -98,20 +98,16 @@ PACK_N(struct SpriteCache {
 
 	SpriteType type;     ///< In some cases a single sprite is misused by two NewGRFs. Once as real sprite and once as recolour sprite. If the recolour sprite gets into the cache it might be drawn as real sprite which causes enormous trouble.
 
-	/**
-	 * Bit      0:  warned           True iff the user has been warned about incorrect use of this sprite.
-	 * Bit      1:  has_non_palette  True iff there is at least one non-paletter sprite present (such that 32bpp mode can be used).
-	 */
-	byte flags;
+	byte flags;          ///< Control flags, see SpriteCacheCtrlFlags
 
 	void *GetPtr() { return this->buffer.GetPtr(); }
 
 	SpriteType GetType() const { return this->type; }
 	void SetType(SpriteType type) { this->type = type; }
-	bool GetWarned() const { return HasBit(this->flags, 0); }
-	void SetWarned(bool warned) { SB(this->flags, 0, 1, warned ? 1 : 0); }
-	bool GetHasNonPalette() const { return HasBit(this->flags, 1); }
-	void SetHasNonPalette(bool non_palette) { SB(this->flags, 1, 1, non_palette ? 1 : 0); }
+	bool GetWarned() const { return HasBit(this->flags, SCCF_WARNED); }
+	void SetWarned(bool warned) { SB(this->flags, SCCF_WARNED, 1, warned ? 1 : 0); }
+	bool GetHasNonPalette() const { return HasBit(this->flags, SCCF_HAS_NON_PALETTE); }
+	void SetHasNonPalette(bool non_palette) { SB(this->flags, SCCF_HAS_NON_PALETTE, 1, non_palette ? 1 : 0); }
 }, 4);
 
 static std::vector<SpriteCache> _spritecache;
