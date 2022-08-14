@@ -2268,7 +2268,6 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_128X                            :128x
 
 STR_CONFIG_SETTING_SPRITE_ZOOM_MIN                              :Highest resolution sprites to use: {STRING2}
 STR_CONFIG_SETTING_SPRITE_ZOOM_MIN_HELPTEXT                     :Limit the maximum resolution to use for sprites. Limiting sprite resolution will avoid using high resolution graphics even when available. This can help keep the game appearance unified when using a mix of GRF files with and without high resolution graphics.
-STR_CONFIG_SETTING_SPRITE_ZOOM_MIN_HELPTEXT_EXTRA               :{STRING}{}{}Changing this setting from its default value will cause many extra-zoom/high-definition NewGRFs to display placeholder/incorrect graphics or no graphics at all (transparent sprites). If any graphical problems occur when the setting is not at its default value, change the setting back to its default value.
 ###length 3
 STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_MIN                          :4x
 STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_IN_2X                        :2x

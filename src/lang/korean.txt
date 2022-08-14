@@ -2269,7 +2269,6 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_128X                            :128x
 
 STR_CONFIG_SETTING_SPRITE_ZOOM_MIN                              :최고 해상도 그래픽 스프라이트: {STRING}
 STR_CONFIG_SETTING_SPRITE_ZOOM_MIN_HELPTEXT                     :그래픽 스프라이트에 사용할 최고 해상도를 제한할 수 있습니다. 그래픽 스프라이트 해상도를 제한하면 고해상도 그래픽을 사용할 수 있어도 이를 사용하지 않을 수 있습니다. 이 설정을 사용하면 고해상도 그래픽을 지원하지 않는 GRF 파일을 섞어서 사용할 때 게임의 모습을 일관성있게 만들 수 있습니다.
-STR_CONFIG_SETTING_SPRITE_ZOOM_MIN_HELPTEXT_EXTRA               :{STRING}{}{}이 설정을 기본값에서 변경하면 많은 추가 확대/고화질 NewGRF의 그래픽 위치가 잘못 표시되거나 아예 (투명한 그래픽으로) 나타나지 않을 수도 있습니다. 이 설정이 기본값이 아닐 때 그래픽 문제가 발생할 경우, 이 설정을 다시 기본값으로 변경하세요.
 ###length 3
 STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_MIN                          :4x
 STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_IN_2X                        :2x

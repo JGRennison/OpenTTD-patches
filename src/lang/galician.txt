@@ -7028,7 +7028,6 @@ STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_DAYS                         :Intervalo de au
 STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_DAYS_HELPTEXT                :Fixa o intervalo personalizado en días entre gardados de partidas
 STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_MINUTES                      :Intervalo de autogardado en minutos reais: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_MINUTES_HELPTEXT             :Fixa o intervalo personalizado en minutos reais entre gardados de partidas
-STR_CONFIG_SETTING_SPRITE_ZOOM_MIN_HELPTEXT_EXTRA               :{STRING}{}{}Cambiar esta opción do seu valor por defecto provocará  que os NewGRF de máis zoom ou alta definición amosen gráficos incorrectos ou non amosen gráficos (transparentes). Se ocurre algún problema grafico cando esta opción non está no valor por defecto, volve poñela no seu valor por defecto.
 STR_CONFIG_SETTING_AIRCRAFT_PATH_COST                           :Escalar a distancia das rutas que usan os avións: {STRING}
 STR_CONFIG_SETTING_AIRCRAFT_PATH_COST_HELPTEXT                  :Isto escala o coste (distancia métrica) das rutas que usan os avións de tal xeito que parezan máis longas/menos directas do que son en realidade. Isto reduce a tendencia de sobresaturación das liñas directas.
 STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER          :Sincronizar as opcións de localización coas do servidor en multixogador: {STRING}
