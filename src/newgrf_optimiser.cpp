@@ -2698,46 +2698,6 @@ void HandleVarAction2OptimisationPasses()
 	}
 }
 
-void ProcessDeterministicSpriteGroupRanges(const std::vector<DeterministicSpriteGroupRange> &ranges, std::vector<DeterministicSpriteGroupRange> &ranges_out, const SpriteGroup *default_group)
-{
-	/* Sort ranges ascending. When ranges overlap, this may required clamping or splitting them */
-	std::vector<uint32> bounds;
-	for (uint i = 0; i < ranges.size(); i++) {
-		bounds.push_back(ranges[i].low);
-		if (ranges[i].high != UINT32_MAX) bounds.push_back(ranges[i].high + 1);
-	}
-	std::sort(bounds.begin(), bounds.end());
-	bounds.erase(std::unique(bounds.begin(), bounds.end()), bounds.end());
-
-	std::vector<const SpriteGroup *> target;
-	for (uint j = 0; j < bounds.size(); ++j) {
-		uint32 v = bounds[j];
-		const SpriteGroup *t = default_group;
-		for (uint i = 0; i < ranges.size(); i++) {
-			if (ranges[i].low <= v && v <= ranges[i].high) {
-				t = ranges[i].group;
-				break;
-			}
-		}
-		target.push_back(t);
-	}
-	assert(target.size() == bounds.size());
-
-	for (uint j = 0; j < bounds.size(); ) {
-		if (target[j] != default_group) {
-			DeterministicSpriteGroupRange &r = ranges_out.emplace_back();
-			r.group = target[j];
-			r.low = bounds[j];
-			while (j < bounds.size() && target[j] == r.group) {
-				j++;
-			}
-			r.high = j < bounds.size() ? bounds[j] - 1 : UINT32_MAX;
-		} else {
-			j++;
-		}
-	}
-}
-
 const SpriteGroup *PruneTargetSpriteGroup(const SpriteGroup *result)
 {
 	if (HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2) || HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_GROUP_PRUNE)) return result;
