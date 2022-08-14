@@ -26,6 +26,7 @@
 #include "ship.h"
 #include "scope_info.h"
 #include "newgrf_extension.h"
+#include "newgrf_analysis.h"
 
 #include "safeguards.h"
 

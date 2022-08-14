@@ -50,43 +50,7 @@ enum SpriteGroupType : uint8 {
 struct SpriteGroup;
 typedef uint32 SpriteGroupID;
 struct ResolverObject;
-
-enum AnalyseCallbackOperationMode : uint8 {
-	ACOM_CB_VAR,
-	ACOM_CB36_PROP,
-	ACOM_FIND_CB_RESULT,
-	ACOM_CB36_SPEED,
-	ACOM_INDUSTRY_TILE,
-	ACOM_CB_REFIT_CAPACITY,
-};
-
-struct AnalyseCallbackOperationIndustryTileData;
-
-enum AnalyseCallbackOperationResultFlags : uint8 {
-	ACORF_NONE                              = 0,
-	ACORF_CB_RESULT_FOUND                   = 1 << 0,
-	ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND  = 1 << 1,
-	ACORF_CB_REFIT_CAP_SEEN_VAR_47          = 1 << 2,
-};
-DECLARE_ENUM_AS_BIT_SET(AnalyseCallbackOperationResultFlags)
-
-struct AnalyseCallbackOperation {
-	struct FindCBResultData {
-		uint16 callback;
-		bool check_var_10;
-		uint8 var_10_value;
-	};
-
-	btree::btree_set<const SpriteGroup *> seen;
-	AnalyseCallbackOperationMode mode = ACOM_CB_VAR;
-	SpriteGroupCallbacksUsed callbacks_used = SGCU_NONE;
-	AnalyseCallbackOperationResultFlags result_flags = ACORF_NONE;
-	uint64 properties_used = 0;
-	union {
-		FindCBResultData cb_result;
-		AnalyseCallbackOperationIndustryTileData *indtile;
-	} data;
-};
+struct AnalyseCallbackOperation;
 
 /* SPRITE_WIDTH is 24. ECS has roughly 30 sprite groups per real sprite.
  * Adding an 'extra' margin would be assuming 64 sprite groups per real

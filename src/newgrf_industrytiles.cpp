@@ -17,6 +17,7 @@
 #include "command_func.h"
 #include "water.h"
 #include "newgrf_animation_base.h"
+#include "newgrf_analysis.h"
 #include "newgrf_industrytiles_analysis.h"
 
 #include "table/strings.h"
