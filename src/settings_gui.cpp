@@ -1938,6 +1938,7 @@ static SettingsContainer &GetSettingsTree()
 			interface->Add(new SettingEntry("gui.disable_water_animation"));
 			interface->Add(new SettingEntry("gui.show_order_occupancy_by_default"));
 			interface->Add(new SettingEntry("gui.show_group_hierarchy_name"));
+			interface->Add(new ConditionallyHiddenSettingEntry("gui.show_vehicle_group_hierarchy_name", []() -> bool { return !_settings_client.gui.show_group_hierarchy_name; }));
 		}
 
 		SettingsPage *advisors = main->Add(new SettingsPage(STR_CONFIG_SETTING_ADVISORS));

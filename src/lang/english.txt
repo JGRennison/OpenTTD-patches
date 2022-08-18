@@ -1638,6 +1638,9 @@ STR_CONFIG_SETTING_SHOW_ORDER_OCCUPANCY_BY_DEFAULT_HELPTEXT     :Show detailed p
 STR_CONFIG_SETTING_SHOW_GROUP_HIERARCHY_NAME                    :Show group hierarchy in name: {STRING2}
 STR_CONFIG_SETTING_SHOW_GROUP_HIERARCHY_NAME_HELPTEXT           :When enabled, group names include the full hierarchy of their parent group names
 
+STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_HIERARCHY_NAME            :Show group hierarchy in vehicle names: {STRING2}
+STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_HIERARCHY_NAME_HELPTEXT   :When enabled, and show group hierarchy in name is enabled, vehicle names which include a group name use the full group name with hierarchy
+
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :Enable signals on bridges/tunnels advanced modes: {STRING2}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :Enables use of advanced modes of signal simulation on bridges and tunnels. When disabled, bridges/tunnels which are not already in an advanced mode cannot be changed to an advanced mode, however other players may choose to enable this setting and use an advanced mode.
 
