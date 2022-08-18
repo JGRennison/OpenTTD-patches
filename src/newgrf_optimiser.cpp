@@ -1003,6 +1003,12 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeatu
 				group->dsg_flags |= DSGF_CHECK_INSERT_JUMP;
 			}
 		}
+		if (adjust.operation == DSGA_OP_RST && adjust.type == DSGA_TYPE_MOD && adjust.divmod_val == 2) {
+			/* Non-negative value % 2 implies VA2AIF_ONE_OR_ZERO */
+			if ((uint64)adjust.and_mask + (uint64)adjust.add_val < (uint64)get_sign_bit()) {
+				state.inference |= VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+			}
+		}
 	} else {
 		if (adjust.and_mask == 0 && IsEvalAdjustWithZeroRemovable(adjust.operation)) {
 			/* Delete useless zero operations */
