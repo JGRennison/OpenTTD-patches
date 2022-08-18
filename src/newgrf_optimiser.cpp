@@ -2233,6 +2233,15 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 		group->error_group = target;
 		group->ranges.clear();
 	}
+	if (!HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_GROUP_PRUNE) && (state.inference & VA2AIF_ONE_OR_ZERO) && !group->calculated_result && group->ranges.size() == 1) {
+		/* See if sprite group uses ranges as a cast to bool, when the result is already bool */
+		const DeterministicSpriteGroupRange &r0 = group->ranges[0];
+		if (r0.low == 0 && r0.high == 0 && r0.group != nullptr && r0.group->type == SGT_CALLBACK && static_cast<const CallbackResultSpriteGroup*>(r0.group)->result == 0 &&
+				group->default_group != nullptr && group->default_group->type == SGT_CALLBACK && static_cast<const CallbackResultSpriteGroup*>(group->default_group)->result == 1) {
+			group->calculated_result = true;
+			group->ranges.clear();
+		}
+	}
 
 	std::bitset<256> bits;
 	std::bitset<256> pending_bits;
