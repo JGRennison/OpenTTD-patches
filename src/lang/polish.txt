@@ -4249,6 +4249,7 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Koszt ut
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Ładowność: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(przebudowywalny)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Zaprojektowany: {GOLD}{NUM}{BLACK} Żywotność: {GOLD}{COMMA} lat
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Zaprojektowany: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Maksymalna niezawodność: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Koszt: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Koszt: {GOLD}{CURRENCY_LONG}{BLACK} (Koszt przebudowy: {GOLD}{CURRENCY_LONG}{BLACK})

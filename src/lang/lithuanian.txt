@@ -4006,6 +4006,7 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Eksploat
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Talpa: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(permontuojamas)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Sukurtas: {GOLD}{NUM}{BLACK} Tarnavimo laikas: {GOLD}{COMMA} met{P ai ai ų}
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Sukurtas: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Didž. patikimumas: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Kaina: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Kaina: {GOLD}{CURRENCY_LONG}{BLACK} (Pertvarkymas: {GOLD}{CURRENCY_LONG}{BLACK})

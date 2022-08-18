@@ -3851,6 +3851,7 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Cost de 
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Capacitate: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(suportă alte mărfuri)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}An apariţie: {GOLD}{NUM}{BLACK} Durata de viaţă: {GOLD}{COMMA} ani
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}An apariţie: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Eficienţă max.: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Cost: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Cost: {GOLD}{CURRENCY_LONG}{BLACK} (Cost reparații: {GOLD}{CURRENCY_LONG}{BLACK})

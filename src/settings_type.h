@@ -227,6 +227,7 @@ struct GUISettings : public TimeSettings {
 	uint8  osk_activation;                   ///< Mouse gesture to trigger the OSK.
 	byte   starting_colour;                  ///< default color scheme for the company to start a new game with
 	bool   show_newgrf_name;                 ///< Show the name of the NewGRF in the build vehicle window
+	bool   show_wagon_intro_year;            ///< Show the introduction year for wagons in the build vehicle window
 	bool   auto_remove_signals;              ///< automatically remove signals when in the way during rail construction
 	uint16 refresh_rate;                     ///< How often we refresh the screen (time between draw-ticks).
 	uint16 fast_forward_speed_limit;         ///< Game speed to use when fast-forward is enabled.

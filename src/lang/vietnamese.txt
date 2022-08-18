@@ -3869,6 +3869,7 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Chi phí
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Sức chứa: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(cải biến được)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Thiết kế: {GOLD}{NUM}{BLACK} Niên hạn: {GOLD}{COMMA} năm
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Thiết kế: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Độ tin cậy tối đa: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Giá thành: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Giá: {GOLD}{CURRENCY_LONG}{BLACK} (Giá cải biến: {GOLD}{CURRENCY_LONG}{BLACK})

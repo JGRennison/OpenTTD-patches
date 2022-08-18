@@ -3755,6 +3755,7 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Pretium 
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Capacitas: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(refectabilis)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Productum: {GOLD}{NUM}{BLACK} Aetas: {GOLD}{COMMA} ann{P us i}
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Productum: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Constantia Maxima: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Pretium: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Pretium: {GOLD}{CURRENCY_LONG}{BLACK} (Pretium Reficiendi: {GOLD}{CURRENCY_LONG}{BLACK})

@@ -3301,6 +3301,7 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}تكلف
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}السعة: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(قابل لتغيي)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}تصميم: {GOLD}{NUM}{BLACK} العمر الافتراضي: {GOLD}{COMMA} سنة
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}تصميم: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}الاعتمادية القصوى: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}التكلفة: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}التكلفة: {GOLD}{CURRENCY_LONG}{BLACK} (تكلفة التغيير: {GOLD}{CURRENCY_LONG}{BLACK})

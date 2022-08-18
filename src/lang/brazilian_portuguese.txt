@@ -3870,6 +3870,7 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Manuten�
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Capacidade: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(adaptável)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Desenvolvida: {GOLD}{NUM}{BLACK} Vida: {GOLD}{COMMA} ano{P "" s}
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Desenvolvida: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Confiabilidade Máx.: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Preço: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Custo: {GOLD}{CURRENCY_LONG}{BLACK} (Custo para Reequipar: {GOLD}{CURRENCY_LONG}{BLACK})

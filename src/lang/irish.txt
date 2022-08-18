@@ -3839,6 +3839,7 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Costas C
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Toilleadh: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(is féidir athfheistiú)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Deartha: {GOLD}{NUM}{BLACK} Saolré: {GOLD}{COMMA} bliain
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Deartha: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Iontaofacht uasta: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Costas: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Costas: {GOLD}{CURRENCY_LONG}{BLACK} (Costas athfheistithe: {GOLD}{CURRENCY_LONG}{BLACK})

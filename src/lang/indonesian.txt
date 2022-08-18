@@ -3869,6 +3869,7 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Biaya Op
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Kapasitas: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(kargo dapat diubah)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Desain: {GOLD}{NUM}{BLACK} Usia: {GOLD}{COMMA} tahun
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Desain: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Kehandalan Maks.: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Biaya: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Biaya: {GOLD}{CURRENCY_LONG}{BLACK} (Biaya Karoseri: {GOLD}{CURRENCY_LONG}{BLACK})

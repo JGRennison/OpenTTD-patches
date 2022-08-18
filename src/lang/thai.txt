@@ -3604,6 +3604,7 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}ค่�
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}ความจุ: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(ดัดแปลงได้)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}สร้างครั้งแรก: {GOLD}{NUM}{BLACK} อายุการใช้งาน: {GOLD}{COMMA} ปี
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}สร้างครั้งแรก: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}ประสิทธิภาพสูงสุด: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}มูลค่า: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}ราคา: {GOLD}{CURRENCY_LONG}{BLACK} (ค่าติดตั้งใหม่: {GOLD}{CURRENCY_LONG}{BLACK})

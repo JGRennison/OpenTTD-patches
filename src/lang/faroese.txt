@@ -3127,6 +3127,7 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Rakstrar
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Pláss: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(kann umbyggjast)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Sniðgivi: {GOLD}{NUM}{BLACK} Livitíð: {GOLD}{COMMA} ár
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Sniðgivi: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Maks. Álítandi: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Kostnaður: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_WEIGHT_CWEIGHT                                :{BLACK}Vekt: {GOLD}{WEIGHT_SHORT} ({WEIGHT_SHORT})

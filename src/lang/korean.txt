@@ -4991,6 +4991,7 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}유지�
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}수송량: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(개조 가능)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}개발: {GOLD}{NUM}{BLACK} 수명: {GOLD}{COMMA}년
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}개발: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}최고 신뢰도: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}가격: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}가격: {GOLD}{CURRENCY_LONG}{BLACK} (개조 가격: {GOLD}{CURRENCY_LONG}{BLACK})

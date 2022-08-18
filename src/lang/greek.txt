@@ -3956,6 +3956,7 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Λειτ
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Χωρητικότητα: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(μετατρέψιμο)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Έτος σχεδίασης: {GOLD}{NUM}{BLACK} Χρόνος ζωής: {GOLD}{COMMA} χρόν{P ο ια}
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Έτος σχεδίασης: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Μέγ. Αξιοπιστία: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Κόστος: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Κόστος: {GOLD}{CURRENCY_LONG}{BLACK} (Κόστος μετατροπής: {GOLD}{CURRENCY_LONG}{BLACK})

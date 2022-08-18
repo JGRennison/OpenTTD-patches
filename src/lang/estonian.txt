@@ -3856,6 +3856,7 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Käitusk
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Kandevõime: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(ümberseadistatav)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Kujundatud: {GOLD}{NUM}{BLACK} Vanus: {GOLD}{COMMA} aasta{P "" t}
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Kujundatud: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Parim tehnoseisund: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Hind: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Maksumus: {GOLD}{CURRENCY_LONG}{BLACK} (Ümberseadistamise maksumus: {GOLD}{CURRENCY_LONG}{BLACK})
