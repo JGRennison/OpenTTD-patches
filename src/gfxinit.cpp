@@ -388,7 +388,7 @@ void CheckBlitter()
 	ReInitAllWindows(false);
 }
 
-static void UpdateRouteStepSpriteSize()
+void UpdateRouteStepSpriteSize()
 {
 	extern uint _vp_route_step_width;
 	extern uint _vp_route_step_height_top;

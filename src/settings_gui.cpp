@@ -604,6 +604,7 @@ struct GameOptionsWindow : Window {
 					_gui_zoom_cfg = new_zoom;
 					UpdateGUIZoom();
 					UpdateCursorSize();
+					UpdateRouteStepSpriteSize();
 					UpdateAllVirtCoords();
 					FixTitleGameZoom();
 					ReInitAllWindows(true);
@@ -618,6 +619,7 @@ struct GameOptionsWindow : Window {
 					GfxClearSpriteCache();
 					_font_zoom_cfg = new_zoom;
 					UpdateGUIZoom();
+					UpdateRouteStepSpriteSize();
 					LoadStringWidthTable();
 					UpdateAllVirtCoords();
 					ReInitAllWindows(true);

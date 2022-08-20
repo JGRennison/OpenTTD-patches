@@ -1252,6 +1252,7 @@ static void ZoomMinMaxChanged(int32 new_value)
 		/* Restrict GUI zoom if it is no longer available. */
 		_gui_zoom = _settings_client.gui.zoom_min;
 		UpdateCursorSize();
+		UpdateRouteStepSpriteSize();
 		UpdateFontHeightCache();
 		LoadStringWidthTable();
 	}
