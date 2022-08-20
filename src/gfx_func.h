@@ -110,7 +110,7 @@ void DrawBox(int x, int y, int dx1, int dy1, int dx2, int dy2, int dx3, int dy3)
 
 Dimension GetStringBoundingBox(const char *str, FontSize start_fontsize = FS_NORMAL);
 Dimension GetStringBoundingBox(const std::string &str, FontSize start_fontsize = FS_NORMAL);
-Dimension GetStringBoundingBox(StringID strid);
+Dimension GetStringBoundingBox(StringID strid, FontSize start_fontsize = FS_NORMAL);
 int GetStringHeight(const char *str, int maxw, FontSize fontsize = FS_NORMAL);
 int GetStringHeight(StringID str, int maxw);
 int GetStringLineCount(StringID str, int maxw);
