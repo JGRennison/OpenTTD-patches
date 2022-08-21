@@ -611,7 +611,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *paddi
 			if (*padding == 0 && !dsg->calculated_result && default_group != nullptr) {
 				this->top_default_group = default_group;
 			}
-			if (dsg == this->top_default_group && !((flags & SGDF_DEFAULT)) && strlen(padding) == 4) {
+			if (dsg == this->top_default_group && !((flags & SGDF_DEFAULT) && strlen(padding) == 2)) {
 				seprintf(this->buffer, lastof(this->buffer), "%sTOP LEVEL DEFAULT GROUP: Deterministic (%s, %s), [%u]",
 						padding, _sg_scope_names[dsg->var_scope], _sg_size_names[dsg->size], dsg->nfo_line);
 				print();
