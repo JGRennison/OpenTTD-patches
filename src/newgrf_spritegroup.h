@@ -440,6 +440,7 @@ struct DeterministicSpriteGroupShadowCopy {
 	std::vector<DeterministicSpriteGroupAdjust> adjusts;
 	std::vector<DeterministicSpriteGroupRange> ranges;
 	const SpriteGroup *default_group;
+	bool calculated_result;
 };
 
 struct DeterministicSpriteGroup : SpriteGroup {

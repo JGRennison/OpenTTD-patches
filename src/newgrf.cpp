@@ -5788,6 +5788,7 @@ static void NewSpriteGroup(ByteReader *buf)
 			group->default_group = GetGroupFromGroupID(setid, type, buf->ReadWord());
 
 			if (unlikely(shadow != nullptr)) {
+				shadow->calculated_result = ranges.size() == 0;
 				ProcessDeterministicSpriteGroupRanges(ranges, shadow->ranges, group->default_group);
 				shadow->default_group = group->default_group;
 

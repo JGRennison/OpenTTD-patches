@@ -589,6 +589,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *paddi
 			const SpriteGroup *default_group = dsg->default_group;
 			const std::vector<DeterministicSpriteGroupAdjust> *adjusts = &(dsg->adjusts);
 			const std::vector<DeterministicSpriteGroupRange> *ranges = &(dsg->ranges);
+			bool calculated_result = dsg->calculated_result;
 
 			if (SpriteGroupDumper::use_shadows) {
 				auto iter = _deterministic_sg_shadows.find(dsg);
@@ -596,16 +597,17 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *paddi
 					default_group = iter->second.default_group;
 					adjusts = &(iter->second.adjusts);
 					ranges = &(iter->second.ranges);
+					calculated_result = iter->second.calculated_result;
 				}
 			}
 
 			bool is_callback_group = false;
-			if (adjusts->size() == 1 && !dsg->calculated_result) {
+			if (adjusts->size() == 1 && !calculated_result) {
 				const DeterministicSpriteGroupAdjust &adjust = (*adjusts)[0];
 				if (adjust.variable == 0xC && (adjust.operation == DSGA_OP_ADD || adjust.operation == DSGA_OP_RST)
 						&& adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
 					is_callback_group = true;
-					if (*padding == 0 && !dsg->calculated_result && ranges->size() > 0) {
+					if (*padding == 0 && !calculated_result && ranges->size() > 0) {
 						const DeterministicSpriteGroupRange &first_range = (*ranges)[0];
 						if (first_range.low == 0 && first_range.high == 0 && first_range.group != nullptr) {
 							this->top_graphics_group = first_range.group;
@@ -614,7 +616,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *paddi
 				}
 			}
 
-			if (*padding == 0 && !dsg->calculated_result && default_group != nullptr) {
+			if (*padding == 0 && !calculated_result && default_group != nullptr) {
 				this->top_default_group = default_group;
 			}
 			if (dsg == this->top_default_group && !((flags & SGDF_DEFAULT) && strlen(padding) == 2)) {
@@ -665,7 +667,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *paddi
 					this->DumpSpriteGroup(adjust.subroutine, subroutine_padding.c_str(), 0);
 				}
 			}
-			if (dsg->calculated_result) {
+			if (calculated_result) {
 				seprintf(this->buffer, lastof(this->buffer), "%scalculated_result", padding);
 				print();
 			} else {
