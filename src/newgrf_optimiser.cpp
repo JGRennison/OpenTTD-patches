@@ -2728,10 +2728,25 @@ const SpriteGroup *PruneTargetSpriteGroup(const SpriteGroup *result)
 						break;
 					}
 				}
-				if (candidate != nullptr && candidate->type == SGT_DETERMINISTIC && static_cast<const DeterministicSpriteGroup *>(candidate)->dsg_flags & DSGF_REQUIRES_VAR1C) {
+
+				auto need_var1C = y_combinator([&](auto need_var1C, const SpriteGroup *sg) -> bool {
+					if (sg == nullptr) return false;
+					if (sg->type == SGT_RANDOMIZED) {
+						const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)sg;
+						for (const auto &group : rsg->groups) {
+							if (need_var1C(group)) return true;
+						}
+					} else if (sg->type == SGT_DETERMINISTIC) {
+						const DeterministicSpriteGroup *sub = static_cast<const DeterministicSpriteGroup *>(sg);
+						if (sub->dsg_flags & DSGF_REQUIRES_VAR1C) return true;
+					}
+					return false;
+				});
+				if (need_var1C(candidate)) {
 					/* Can't skip this group as the child group requires the result of this group for variable 1C */
 					return result;
 				}
+
 				result = candidate;
 				continue;
 			}
