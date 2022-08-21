@@ -1602,7 +1602,7 @@ void AnalyseEngineCallbacks()
 		auto process_sg = [&](const SpriteGroup *sg, bool is_purchase) {
 			if (sg == nullptr) return;
 
-			AnalyseCallbackOperation op;
+			AnalyseCallbackOperation op(ACOM_CB_VAR);
 			sg->AnalyseCallbacks(op);
 			callbacks_used |= op.callbacks_used;
 			cb36_properties_used |= op.properties_used;

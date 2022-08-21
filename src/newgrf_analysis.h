@@ -43,7 +43,7 @@ struct AnalyseCallbackOperation {
 	};
 
 	btree::btree_set<const SpriteGroup *> seen;
-	AnalyseCallbackOperationMode mode = ACOM_CB_VAR;
+	AnalyseCallbackOperationMode mode;
 	SpriteGroupCallbacksUsed callbacks_used = SGCU_NONE;
 	AnalyseCallbackOperationResultFlags result_flags = ACORF_NONE;
 	uint64 properties_used = 0;
@@ -51,6 +51,9 @@ struct AnalyseCallbackOperation {
 		FindCBResultData cb_result;
 		AnalyseCallbackOperationIndustryTileData *indtile;
 	} data;
+
+	AnalyseCallbackOperation(AnalyseCallbackOperationMode mode) :
+		mode(mode) {}
 };
 
 #endif /* NEWGRF_ANALYSIS_H */

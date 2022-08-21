@@ -444,8 +444,7 @@ void AnalyseIndustryTileSpriteGroups()
 				data.layout_index = idx + 1;
 				data.anim_state_at_offset = false;
 
-				AnalyseCallbackOperation op;
-				op.mode = ACOM_INDUSTRY_TILE;
+				AnalyseCallbackOperation op(ACOM_INDUSTRY_TILE);
 				op.data.indtile = &data;
 				tilespec.grf_prop.spritegroup[0]->AnalyseCallbacks(op);
 

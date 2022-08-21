@@ -80,8 +80,7 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 
 	auto find_cb_result = [&](const SpriteGroup *group, AnalyseCallbackOperation::FindCBResultData data) -> bool {
 		if (group == nullptr) return false;
-		AnalyseCallbackOperation cbr_op;
-		cbr_op.mode = ACOM_FIND_CB_RESULT;
+		AnalyseCallbackOperation cbr_op(ACOM_FIND_CB_RESULT);
 		cbr_op.data.cb_result = data;
 		group->AnalyseCallbacks(cbr_op);
 		return (cbr_op.result_flags & ACORF_CB_RESULT_FOUND);
@@ -109,8 +108,7 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 
 							case CBID_VEHICLE_MODIFY_PROPERTY:
 								if (range.group != nullptr) {
-									AnalyseCallbackOperation cb36_op;
-									cb36_op.mode = ACOM_CB36_PROP;
+									AnalyseCallbackOperation cb36_op(ACOM_CB36_PROP);
 									range.group->AnalyseCallbacks(cb36_op);
 									op.properties_used |= cb36_op.properties_used;
 									op.callbacks_used |= cb36_op.callbacks_used;
@@ -120,8 +118,7 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 							case CBID_VEHICLE_REFIT_CAPACITY:
 								found_refit_cap = true;
 								if (range.group != nullptr) {
-									AnalyseCallbackOperation cb_refit_op;
-									cb_refit_op.mode = ACOM_CB_REFIT_CAPACITY;
+									AnalyseCallbackOperation cb_refit_op(ACOM_CB_REFIT_CAPACITY);
 									range.group->AnalyseCallbacks(cb_refit_op);
 									op.result_flags |= (cb_refit_op.result_flags & (ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND | ACORF_CB_REFIT_CAP_SEEN_VAR_47));
 								}
@@ -153,8 +150,7 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 								if (range.low == 0x9) {
 									/* Speed */
 									if (range.group != nullptr) {
-										AnalyseCallbackOperation cb36_speed;
-										cb36_speed.mode = ACOM_CB36_SPEED;
+										AnalyseCallbackOperation cb36_speed(ACOM_CB36_SPEED);
 										range.group->AnalyseCallbacks(cb36_speed);
 										op.callbacks_used |= cb36_speed.callbacks_used;
 									}
@@ -233,8 +229,7 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 							AnalyseCallbackOperationIndustryTileData data = *(op.data.indtile);
 							data.check_mask = new_check_mask;
 
-							AnalyseCallbackOperation sub_op;
-							sub_op.mode = ACOM_INDUSTRY_TILE;
+							AnalyseCallbackOperation sub_op(ACOM_INDUSTRY_TILE);
 							sub_op.data.indtile = &data;
 							range.group->AnalyseCallbacks(sub_op);
 
@@ -251,8 +246,7 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 					AnalyseCallbackOperationIndustryTileData data = *(op.data.indtile);
 					data.check_mask = default_mask;
 
-					AnalyseCallbackOperation sub_op;
-					sub_op.mode = ACOM_INDUSTRY_TILE;
+					AnalyseCallbackOperation sub_op(ACOM_INDUSTRY_TILE);
 					sub_op.data.indtile = &data;
 
 					this->default_group->AnalyseCallbacks(sub_op);
