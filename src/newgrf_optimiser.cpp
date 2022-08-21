@@ -640,8 +640,8 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeatu
 		}
 	});
 
-	auto try_restore_inference_backup = [&]() {
-		if (state.inference_backup.adjust_size != 0 && state.inference_backup.adjust_size == (uint)group->adjusts.size()) {
+	auto try_restore_inference_backup = [&](uint offset) {
+		if (state.inference_backup.adjust_size != 0 && state.inference_backup.adjust_size == (uint)group->adjusts.size() - offset) {
 			state.inference = state.inference_backup.inference;
 			state.current_constant = state.inference_backup.current_constant;
 		}
@@ -845,7 +845,7 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeatu
 			}
 		}
 		if (removed) {
-			state.inference = prev_inference;
+			try_restore_inference_backup(1);
 			OptimiseVarAction2Adjust(state, feature, varsize, group, group->adjusts.back());
 			return;
 		}
@@ -882,7 +882,7 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeatu
 				break;
 			}
 		}
-		try_restore_inference_backup();
+		try_restore_inference_backup(0);
 		current.operation = DSGA_OP_RST;
 		current.adjust_flags = DSGAF_NONE;
 		group->adjusts.push_back(current);
