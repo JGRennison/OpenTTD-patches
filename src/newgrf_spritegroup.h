@@ -432,6 +432,7 @@ enum DeterministicSpriteGroupFlags : uint8 {
 	DSGF_REQUIRES_VAR1C          = 1 << 3,
 	DSGF_CHECK_EXPENSIVE_VARS    = 1 << 4,
 	DSGF_CHECK_INSERT_JUMP       = 1 << 5,
+	DSGF_CB_HANDLER              = 1 << 6,
 };
 DECLARE_ENUM_AS_BIT_SET(DeterministicSpriteGroupFlags)
 
@@ -727,10 +728,12 @@ private:
 	DumpSpriteGroupPrinter print_fn;
 
 	const SpriteGroup *top_default_group = nullptr;
+	const SpriteGroup *top_graphics_group = nullptr;
 	btree::btree_set<const DeterministicSpriteGroup *> seen_dsgs;
 
 	enum SpriteGroupDumperFlags {
 		SGDF_DEFAULT          = 1 << 0,
+		SGDF_RANGE            = 1 << 1,
 	};
 
 	void DumpSpriteGroup(const SpriteGroup *sg, const char *prefix, uint flags);

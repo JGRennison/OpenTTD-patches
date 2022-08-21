@@ -605,6 +605,12 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *paddi
 				if (adjust.variable == 0xC && (adjust.operation == DSGA_OP_ADD || adjust.operation == DSGA_OP_RST)
 						&& adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
 					is_callback_group = true;
+					if (*padding == 0 && !dsg->calculated_result && ranges->size() > 0) {
+						const DeterministicSpriteGroupRange &first_range = (*ranges)[0];
+						if (first_range.low == 0 && first_range.high == 0 && first_range.group != nullptr) {
+							this->top_graphics_group = first_range.group;
+						}
+					}
 				}
 			}
 
@@ -613,6 +619,12 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *paddi
 			}
 			if (dsg == this->top_default_group && !((flags & SGDF_DEFAULT) && strlen(padding) == 2)) {
 				seprintf(this->buffer, lastof(this->buffer), "%sTOP LEVEL DEFAULT GROUP: Deterministic (%s, %s), [%u]",
+						padding, _sg_scope_names[dsg->var_scope], _sg_size_names[dsg->size], dsg->nfo_line);
+				print();
+				return;
+			}
+			if (dsg == this->top_graphics_group && !((flags & SGDF_RANGE) && strlen(padding) == 2)) {
+				seprintf(this->buffer, lastof(this->buffer), "%sTOP LEVEL GRAPHICS GROUP: Deterministic (%s, %s), [%u]",
 						padding, _sg_scope_names[dsg->var_scope], _sg_size_names[dsg->size], dsg->nfo_line);
 				print();
 				return;
@@ -634,6 +646,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *paddi
 				if (dsg->dsg_flags & DSGF_REQUIRES_VAR1C) p += seprintf(p, lastof(this->buffer), ", REQ_1C");
 				if (dsg->dsg_flags & DSGF_CHECK_EXPENSIVE_VARS) p += seprintf(p, lastof(this->buffer), ", CHECK_EXP_VAR");
 				if (dsg->dsg_flags & DSGF_CHECK_INSERT_JUMP) p += seprintf(p, lastof(this->buffer), ", CHECK_INS_JMP");
+				if (dsg->dsg_flags & DSGF_CB_HANDLER) p += seprintf(p, lastof(this->buffer), ", CB_HANDLER");
 			}
 			print();
 			emit_start();
@@ -668,7 +681,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *paddi
 						}
 					}
 					print();
-					this->DumpSpriteGroup(range.group, subgroup_padding.c_str(), 0);
+					this->DumpSpriteGroup(range.group, subgroup_padding.c_str(), SGDF_RANGE);
 				}
 				if (default_group != nullptr) {
 					seprintf(this->buffer, lastof(this->buffer), "%sdefault", padding);

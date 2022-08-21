@@ -5539,16 +5539,20 @@ static void SkipAct1(ByteReader *buf)
 	grfmsg(3, "SkipAct1: Skipping %d sprites", _cur.skip_sprites);
 }
 
-static const CallbackResultSpriteGroup *NewCallbackResultSpriteGroup(uint16 groupid)
+const CallbackResultSpriteGroup *NewCallbackResultSpriteGroupNoTransform(uint16 result)
 {
-	uint16 result = CallbackResultSpriteGroup::TransformResultValue(groupid, _cur.grffile->grf_version >= 8);
-
 	const CallbackResultSpriteGroup *&ptr = _callback_result_cache[result];
 	if (ptr == nullptr) {
 		assert(CallbackResultSpriteGroup::CanAllocateItem());
 		ptr = new CallbackResultSpriteGroup(result);
 	}
 	return ptr;
+}
+
+static const CallbackResultSpriteGroup *NewCallbackResultSpriteGroup(uint16 groupid)
+{
+	uint16 result = CallbackResultSpriteGroup::TransformResultValue(groupid, _cur.grffile->grf_version >= 8);
+	return NewCallbackResultSpriteGroupNoTransform(result);
 }
 
 /* Helper function to either create a callback or link to a previously
