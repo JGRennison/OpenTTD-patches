@@ -2230,7 +2230,6 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 			}
 		}
 		group->default_group = target;
-		group->error_group = target;
 		group->ranges.clear();
 	}
 	if (!HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_GROUP_PRUNE) && (state.inference & VA2AIF_ONE_OR_ZERO) && !group->calculated_result && group->ranges.size() == 1) {
