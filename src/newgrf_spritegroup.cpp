@@ -648,7 +648,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *paddi
 					for (uint i = 0; i < conditional_indent; i++) {
 						subroutine_padding += "> ";
 					}
-					subroutine_padding += "     ";
+					subroutine_padding += "   | ";
 					this->DumpSpriteGroup(adjust.subroutine, subroutine_padding.c_str(), 0);
 				}
 			}
