@@ -2522,12 +2522,26 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 									DeterministicSpriteGroupAdjust &next = group->adjusts[i + 1];
 									if (prev.operation == DSGA_OP_STO && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A &&
 											prev.shift_num == 0 && prev.and_mask < 0x100 &&
-											next.operation == DSGA_OP_RST && next.type == DSGA_TYPE_NONE && next.variable == 0x7D &&
+											next.operation == DSGA_OP_RST && next.variable == 0x7D &&
 											next.parameter == prev.and_mask && next.shift_num == 0 && next.and_mask == 0xFFFFFFFF) {
-										/* Removing the dead store results in a store/load sequence, remove the load and re-check */
-										erase_adjust(i + 1);
-										restart();
-										break;
+										if (next.type == DSGA_TYPE_NONE) {
+											/* Removing the dead store results in a store/load sequence, remove the load and re-check */
+											erase_adjust(i + 1);
+											restart();
+											break;
+										}
+										if ((next.type == DSGA_TYPE_EQ || next.type == DSGA_TYPE_NEQ) && next.add_val == 0 && i + 2 < (int)group->adjusts.size()) {
+											DeterministicSpriteGroupAdjust &next2 = group->adjusts[i + 2];
+											if (next2.operation == DSGA_OP_TERNARY) {
+												/* Removing the dead store results in a store, load with bool/invert, ternary sequence, remove the load, adjust ternary and re-check */
+												if (next.type == DSGA_TYPE_EQ) {
+													std::swap(next2.and_mask, next2.add_val);
+												}
+												erase_adjust(i + 1);
+												restart();
+												break;
+											}
+										}
 									}
 									if (next.operation == DSGA_OP_RST) {
 										/* See if this is a repeated load of a variable (not procedure call) */
