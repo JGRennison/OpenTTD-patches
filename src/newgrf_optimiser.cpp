@@ -2250,6 +2250,10 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 				group->default_group != nullptr && group->default_group->type == SGT_CALLBACK && static_cast<const CallbackResultSpriteGroup*>(group->default_group)->result == 1) {
 			group->calculated_result = true;
 			group->ranges.clear();
+		} else if (r0.low == 1 && r0.high == 1 && r0.group != nullptr && r0.group->type == SGT_CALLBACK && static_cast<const CallbackResultSpriteGroup*>(r0.group)->result == 1 &&
+				group->default_group != nullptr && group->default_group->type == SGT_CALLBACK && static_cast<const CallbackResultSpriteGroup*>(group->default_group)->result == 0) {
+			group->calculated_result = true;
+			group->ranges.clear();
 		}
 	}
 
