@@ -1442,7 +1442,7 @@ void VehicleTickMotion(Vehicle *v, Vehicle *front)
 	if (v->vehstatus & VS_HIDDEN) return;
 
 	v->motion_counter += front->cur_speed;
-	if (_settings_client.sound.vehicle) {
+	if (_settings_client.sound.vehicle && _settings_client.music.effect_vol != 0) {
 		/* Play a running sound if the motion counter passes 256 (Do we not skip sounds?) */
 		if (GB(v->motion_counter, 0, 8) < front->cur_speed) PlayVehicleSound(v, VSE_RUNNING);
 

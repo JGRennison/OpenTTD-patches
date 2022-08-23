@@ -185,7 +185,7 @@ SoundID GetNewGRFSoundID(const GRFFile *file, SoundID sound_id)
  */
 bool PlayVehicleSound(const Vehicle *v, VehicleSoundEvent event)
 {
-	if (!_settings_client.sound.vehicle) return true;
+	if (!_settings_client.sound.vehicle || _settings_client.music.effect_vol == 0) return true;
 
 	const GRFFile *file = v->GetGRF();
 	uint16 callback;
