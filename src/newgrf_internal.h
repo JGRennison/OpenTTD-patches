@@ -237,6 +237,8 @@ struct VarAction2OptimiseState {
 	bool check_expensive_vars = false;
 	bool enable_dse = false;
 	uint default_variable_version = 0;
+	uint32 special_register_store_values[16];
+	uint16 special_register_store_mask = 0;
 
 	inline VarAction2GroupVariableTracking *GetVarTracking(DeterministicSpriteGroup *group)
 	{

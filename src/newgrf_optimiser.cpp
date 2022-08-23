@@ -717,6 +717,7 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeatu
 			it.second.version++;
 		}
 		state.default_variable_version++;
+		state.special_register_store_mask = 0;
 	};
 	auto handle_unpredictable_temp_store = [&]() {
 		reset_store_values();
@@ -900,6 +901,7 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeatu
 			std::bitset<256> seen_stores;
 			bool seen_unpredictable_store = false;
 			bool seen_special_store = false;
+			uint16 seen_special_store_mask = 0;
 			bool seen_perm_store = false;
 			auto handle_proc_stores = y_combinator([&](auto handle_proc_stores, const SpriteGroup *sg) -> void {
 				if (sg == nullptr) return;
@@ -921,6 +923,7 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeatu
 									seen_stores.set(adjust.and_mask, true);
 								} else {
 									seen_special_store = true;
+									if (adjust.and_mask >= 0x100 && adjust.and_mask < 0x110) SetBit(seen_special_store_mask, adjust.and_mask - 0x100);
 								}
 							} else {
 								/* Unpredictable store */
@@ -932,6 +935,7 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeatu
 								seen_stores.set(adjust.divmod_val, true);
 							} else {
 								seen_special_store = true;
+								if (adjust.divmod_val >= 0x100 && adjust.divmod_val < 0x110) SetBit(seen_special_store_mask, adjust.divmod_val - 0x100);
 							}
 						}
 						if (adjust.operation == DSGA_OP_STOP) {
@@ -991,6 +995,7 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeatu
 					}
 				}
 			}
+			state.special_register_store_mask &= ~seen_special_store_mask;
 
 			state.seen_procedure_call = true;
 		} else if (adjust.operation == DSGA_OP_RST) {
@@ -1392,6 +1397,22 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeatu
 								}
 							}
 						} else {
+							if (adjust.and_mask >= 0x100 && adjust.and_mask < 0x110) {
+								uint idx = adjust.and_mask - 0x100;
+								if (prev_inference & VA2AIF_HAVE_CONSTANT) {
+									if (HasBit(state.special_register_store_mask, idx) && state.special_register_store_values[idx] == state.current_constant) {
+										/* Remove redundant special store of same constant value */
+										group->adjusts.pop_back();
+										state.inference = prev_inference;
+										break;
+									}
+									SetBit(state.special_register_store_mask, idx);
+									state.special_register_store_values[idx] = state.current_constant;
+								} else {
+									ClrBit(state.special_register_store_mask, idx);
+								}
+							}
+
 							/* Store to special register, this can change the result of future variable loads for some variables.
 							 * Assume all variables except temp storage for now.
 							 */
