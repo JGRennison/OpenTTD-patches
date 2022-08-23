@@ -2084,6 +2084,8 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 			uint32 special_stores[16];
 			uint16 special_stores_mask = 0;
 			int j = i - 1;
+			int skip_count = 0;
+			const DeterministicSpriteGroupAdjustFlags skip_mask = adjust.adjust_flags & (DSGAF_SKIP_ON_ZERO | DSGAF_SKIP_ON_LSB_SET);
 			while (j >= 0) {
 				DeterministicSpriteGroupAdjust &prev = group->adjusts[j];
 
@@ -2124,9 +2126,12 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 					ok_stores.set(prev.parameter & 0xFF, true);
 				}
 
+				/* Avoid creating jumps for skip on zero/LSB set sequences */
+				if (prev.adjust_flags & skip_mask) skip_count++;
+
 				j--;
 			}
-			if (j < i - 1) {
+			if (j < i - 1 && (i - j) > (skip_count + 2)) {
 				auto mark_end_block = [&](uint index, uint inc) {
 					if (group->adjusts[index].variable == 0x7E) {
 						/* Procedure call, can't mark this as an end block directly, so insert a NOOP and use that */
