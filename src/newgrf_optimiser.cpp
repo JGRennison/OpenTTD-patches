@@ -1488,37 +1488,61 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeatu
 	}
 }
 
-static bool CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSpriteGroup *group, std::bitset<256> bits, bool quick_exit);
+static bool CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSpriteGroup *group, std::bitset<256> bits, std::bitset<256> *store_input_bits, bool quick_exit);
 
-static void RecursiveDisallowDSEForProcedure(const SpriteGroup *group)
-{
-	if (group == nullptr) return;
+struct CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler {
+	std::bitset<256> &bits;             // Needed output bits
+	const std::bitset<256> output_bits; // Snapshots of needed output bits at construction
 
-	if (group->type == SGT_RANDOMIZED) {
-		const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)group;
-		for (const auto &g : rsg->groups) {
-			RecursiveDisallowDSEForProcedure(g);
+	CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler(std::bitset<256> &bits)
+			: bits(bits), output_bits(bits) {}
+
+	/* return true if non-handled leaf node found */
+	bool ProcessGroup(const SpriteGroup *sg, std::bitset<256> *input_bits, bool top_level)
+	{
+		if (sg == nullptr) return true;
+		if (sg->type == SGT_RANDOMIZED) {
+			const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)sg;
+			if (rsg->groups.empty()) return true;
+			bool non_handled = false;
+			for (const auto &group : rsg->groups) {
+				non_handled |= this->ProcessGroup(group, input_bits, top_level);
+			}
+			return non_handled;
+		} else if (sg->type == SGT_DETERMINISTIC) {
+			const DeterministicSpriteGroup *sub = static_cast<const DeterministicSpriteGroup *>(sg);
+
+			std::bitset<256> child_input_bits;
+
+			bool is_leaf_node = false;
+			if (sub->calculated_result) {
+				is_leaf_node = true;
+			} else {
+				is_leaf_node |= this->ProcessGroup(sub->default_group, &child_input_bits, false);
+				for (const auto &range : sub->ranges) {
+					is_leaf_node |= this->ProcessGroup(range.group, &child_input_bits, false);
+				}
+			}
+
+			VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sub, true);
+			std::bitset<256> new_proc_call_out = (is_leaf_node ? this->output_bits : child_input_bits) | var_tracking->proc_call_out;
+			if (new_proc_call_out != var_tracking->proc_call_out) {
+				var_tracking->proc_call_out = new_proc_call_out;
+				std::bitset<256> old_total = var_tracking->out | var_tracking->proc_call_out;
+				std::bitset<256> new_total = var_tracking->out | new_proc_call_out;
+				if (old_total != new_total) {
+					CheckDeterministicSpriteGroupOutputVarBits(sub, new_total, input_bits, false);
+				}
+			}
+			if (top_level) this->bits |= var_tracking->in;
+			return false;
+		} else {
+			return true;
 		}
-		return;
 	}
+};
 
-	if (group->type != SGT_DETERMINISTIC) return;
-
-	const DeterministicSpriteGroup *sub = static_cast<const DeterministicSpriteGroup *>(group);
-	if (sub->dsg_flags & DSGF_DSE_RECURSIVE_DISABLE) return;
-	const_cast<DeterministicSpriteGroup *>(sub)->dsg_flags |= (DSGF_NO_DSE | DSGF_DSE_RECURSIVE_DISABLE);
-	for (const DeterministicSpriteGroupAdjust &adjust : sub->adjusts) {
-		if (adjust.variable == 0x7E) RecursiveDisallowDSEForProcedure(adjust.subroutine);
-	}
-	if (!sub->calculated_result) {
-		RecursiveDisallowDSEForProcedure(sub->default_group);
-		for (const auto &range : sub->ranges) {
-			RecursiveDisallowDSEForProcedure(range.group);
-		}
-	}
-}
-
-static bool CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSpriteGroup *group, std::bitset<256> bits, bool quick_exit)
+static bool CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSpriteGroup *group, std::bitset<256> bits, std::bitset<256> *store_input_bits, bool quick_exit)
 {
 	bool dse = false;
 	for (int i = (int)group->adjusts.size() - 1; i >= 0; i--) {
@@ -1551,44 +1575,11 @@ static bool CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSprite
 		}
 		if (adjust.variable == 0x7E) {
 			/* procedure call */
-			auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
-				if (sg == nullptr) return;
-				if (sg->type == SGT_RANDOMIZED) {
-					const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)sg;
-					for (const auto &group : rsg->groups) {
-						handle_group(group);
-					}
-				} else if (sg->type == SGT_DETERMINISTIC) {
-					const DeterministicSpriteGroup *sub = static_cast<const DeterministicSpriteGroup *>(sg);
-					VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sub, true);
-					auto procedure_dse_ok = [&]() -> bool {
-						if (sub->calculated_result) return true;
-
-						if (sub->default_group != nullptr && sub->default_group->type != SGT_CALLBACK) return false;
-						for (const auto &range : sub->ranges) {
-							if (range.group != nullptr && range.group->type != SGT_CALLBACK) return false;
-						}
-						return true;
-					};
-					if (procedure_dse_ok()) {
-						std::bitset<256> new_proc_call_out = bits | var_tracking->proc_call_out;
-						if (new_proc_call_out != var_tracking->proc_call_out) {
-							var_tracking->proc_call_out = new_proc_call_out;
-							std::bitset<256> old_total = var_tracking->out | var_tracking->proc_call_out;
-							std::bitset<256> new_total = var_tracking->out | new_proc_call_out;
-							if (old_total != new_total) {
-								CheckDeterministicSpriteGroupOutputVarBits(sub, new_total, false);
-							}
-						}
-					} else {
-						RecursiveDisallowDSEForProcedure(sub);
-					}
-					bits |= var_tracking->in;
-				}
-			});
-			handle_group(adjust.subroutine);
+			CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler proc_handler(bits);
+			proc_handler.ProcessGroup(adjust.subroutine, nullptr, true);
 		}
 	}
+	if (store_input_bits != nullptr) *store_input_bits |= bits;
 	return dse;
 }
 
@@ -1913,13 +1904,9 @@ static VarAction2ProcedureAnnotation *OptimiseVarAction2GetFilledProcedureAnnota
 				anno->unskippable = true;
 			} else if (sg->type == SGT_DETERMINISTIC) {
 				const DeterministicSpriteGroup *dsg = static_cast<const DeterministicSpriteGroup *>(sg);
-				if (dsg->dsg_flags & DSGF_DSE_RECURSIVE_DISABLE) {
-					anno->unskippable = true;
-					return;
-				}
 
 				for (const DeterministicSpriteGroupAdjust &adjust : dsg->adjusts) {
-					/* Don't try to skip over: unpredictable or special stores, procedure calls, permanent stores, or another jump */
+					/* Don't try to skip over: unpredictable stores, non-constant special stores, or permanent stores */
 					if (adjust.operation == DSGA_OP_STO && (adjust.type != DSGA_TYPE_NONE || adjust.variable != 0x1A || adjust.shift_num != 0 || adjust.and_mask >= 0x100)) {
 						anno->unskippable = true;
 						return;
@@ -1944,6 +1931,13 @@ static VarAction2ProcedureAnnotation *OptimiseVarAction2GetFilledProcedureAnnota
 
 					if (adjust.operation == DSGA_OP_STO) anno->stores.set(adjust.and_mask, true);
 					if (adjust.operation == DSGA_OP_STO_NC) anno->stores.set(adjust.divmod_val, true);
+				}
+
+				if (!dsg->calculated_result) {
+					handle_group_contents(dsg->default_group);
+					for (const auto &range : dsg->ranges) {
+						handle_group_contents(range.group);
+					}
 				}
 			}
 		});
@@ -2039,6 +2033,24 @@ static void OptimiseVarAction2DeterministicSpriteGroupPopulateLastVarReadAnnotat
 
 			std::bitset<256> orig_bits = bits;
 
+			auto check_randomised_group = y_combinator([&](auto check_randomised_group, const SpriteGroup *sg) -> void {
+				if (sg == nullptr) return;
+				if (sg->type == SGT_RANDOMIZED) {
+					/* Don't try to skip over procedure calls to randomised groups */
+					anno.unskippable = true;
+				} else if (sg->type == SGT_DETERMINISTIC) {
+					const DeterministicSpriteGroup *dsg = static_cast<const DeterministicSpriteGroup *>(sg);
+					if (!dsg->calculated_result) {
+						if (anno.unskippable) return;
+						check_randomised_group(dsg->default_group);
+						for (const auto &range : dsg->ranges) {
+							if (anno.unskippable) return;
+							check_randomised_group(range.group);
+						}
+					}
+				}
+			});
+
 			auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
 				if (sg == nullptr) return;
 				if (sg->type == SGT_RANDOMIZED) {
@@ -2059,8 +2071,13 @@ static void OptimiseVarAction2DeterministicSpriteGroupPopulateLastVarReadAnnotat
 
 					if (sub->dsg_flags & DSGF_REQUIRES_VAR1C) need_var1C = true;
 
-					if (sub->dsg_flags & DSGF_DSE_RECURSIVE_DISABLE) anno.unskippable = true;
-					/* No need to check default_group and ranges here as if those contain deterministic groups then DSGF_DSE_RECURSIVE_DISABLE would be set */
+					if (!sub->calculated_result && !anno.unskippable) {
+						check_randomised_group(sub->default_group);
+						for (const auto &range : sub->ranges) {
+							if (anno.unskippable) break;
+							check_randomised_group(range.group);
+						}
+					}
 				}
 			});
 			handle_group(anno.subroutine);
@@ -2416,7 +2433,7 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 	bool dse_allowed = IsFeatureUsableForDSE(feature) && !HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_DSE);
 	bool dse_eligible = state.enable_dse;
 	if (dse_allowed && !dse_eligible) {
-		dse_eligible |= CheckDeterministicSpriteGroupOutputVarBits(group, bits, true);
+		dse_eligible |= CheckDeterministicSpriteGroupOutputVarBits(group, bits, nullptr, true);
 	}
 	if (state.seen_procedure_call) {
 		/* Be more pessimistic with procedures as the ordering is different.
@@ -2424,7 +2441,7 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 		 * where earlier groups can require variables set in later groups.
 		 * DSE on the procedure runs before the groups which use it, so set the procedure
 		 * output bits not using values from call site groups before DSE. */
-		CheckDeterministicSpriteGroupOutputVarBits(group, bits | pending_bits, false);
+		CheckDeterministicSpriteGroupOutputVarBits(group, bits | pending_bits, nullptr, false);
 	}
 	bool dse_candidate = (dse_allowed && dse_eligible);
 	if (!dse_candidate && (seen_pending || (group->dsg_flags & DSGF_CHECK_INSERT_JUMP))) {
