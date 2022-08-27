@@ -3583,6 +3583,10 @@ SaveOrLoadResult LoadWithFilter(LoadFilter *reader)
 		return DoLoad(reader, false);
 	} catch (...) {
 		ClearSaveLoadState();
+
+		/* Skip the "colour" character */
+		DEBUG(sl, 0, "%s", GetSaveLoadErrorString() + 3);
+
 		return SL_REINIT;
 	}
 }
