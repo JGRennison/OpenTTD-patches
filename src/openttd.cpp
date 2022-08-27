@@ -1161,8 +1161,10 @@ static void MakeNewEditorWorld()
  * @param newgm switch to this mode of loading fails due to some unknown error
  * @param subdir default directory to look for filename, set to 0 if not needed
  * @param lf Load filter to use, if nullptr: use filename + subdir.
+ * @param error_detail Optional string to fill with detaied error information.
  */
-bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileType dft, GameMode newgm, Subdirectory subdir, struct LoadFilter *lf = nullptr)
+bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileType dft, GameMode newgm, Subdirectory subdir,
+		struct LoadFilter *lf = nullptr, std::string *error_detail = nullptr)
 {
 	assert(fop == SLO_LOAD);
 	assert(dft == DFT_GAME_FILE || (lf == nullptr && dft == DFT_OLD_GAME_FILE));
@@ -1174,6 +1176,7 @@ bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileTy
 		case SL_OK: return true;
 
 		case SL_REINIT:
+			if (error_detail != nullptr) *error_detail = GetSaveLoadErrorString();
 			if (_network_dedicated) {
 				/*
 				 * We need to reinit a network map...
@@ -1198,6 +1201,7 @@ bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileTy
 			return false;
 
 		default:
+			if (error_detail != nullptr) *error_detail = GetSaveLoadErrorString();
 			_game_mode = ogm;
 			return false;
 	}

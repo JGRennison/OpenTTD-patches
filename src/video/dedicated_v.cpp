@@ -129,7 +129,8 @@ static void *_dedicated_video_mem;
 /* Whether a fork has been done. */
 bool _dedicated_forks;
 
-extern bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileType dft, GameMode newgm, Subdirectory subdir, struct LoadFilter *lf = nullptr);
+extern bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileType dft, GameMode newgm, Subdirectory subdir,
+		struct LoadFilter *lf = nullptr, std::string *error_detail = nullptr);
 
 static FVideoDriver_Dedicated iFVideoDriver_Dedicated;
 
