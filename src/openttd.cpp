@@ -728,7 +728,7 @@ int openttd_main(int argc, char *argv[])
 			videodriver = "dedicated";
 			blitter = "null";
 			dedicated = true;
-			SetDebugString("net=3");
+			SetDebugString("net=3", ShowInfo);
 			if (mgo.opt != nullptr) {
 				scanner->dedicated_host = ParseFullConnectionString(mgo.opt, scanner->dedicated_port);
 			}
@@ -752,7 +752,7 @@ int openttd_main(int argc, char *argv[])
 #if defined(_WIN32)
 				CreateConsole();
 #endif
-				if (mgo.opt != nullptr) SetDebugString(mgo.opt);
+				if (mgo.opt != nullptr) SetDebugString(mgo.opt, ShowInfo);
 				break;
 			}
 		case 'e': _switch_mode = (_switch_mode == SM_LOAD_GAME || _switch_mode == SM_LOAD_SCENARIO ? SM_LOAD_SCENARIO : SM_EDITOR); break;

@@ -1050,7 +1050,7 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :4x Grootte
 STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Lettergrootte
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Hiermee kies je hoe groot de letters op het scherm moeten zijn
 
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(auto-detect)Status: Vermist
+STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(automatische detectie)
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normaal
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Dubbele grootte
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Viervoudige grootte
@@ -4485,7 +4485,7 @@ STR_TIMETABLE_STATUS_NOT_STARTED                                :{BLACK}Deze die
 STR_TIMETABLE_STATUS_START_AT                                   :{BLACK}Deze dienstregeling begint op {STRING}
 
 STR_TIMETABLE_STARTING_DATE                                     :{BLACK}Startdatum
-STR_TIMETABLE_STARTING_DATE_TOOLTIP                             :{BLACK}Selecteer een datum als startpunt voor deze dienstregeling. Ctrl + klik geeft het startpunt van deze dienstregeling en verdeelt alle voertuigen die deze orders delen gelijkmatig op basis van hun relatieve volgorde, als de order volledig is ingeroosterd.
+STR_TIMETABLE_STARTING_DATE_TOOLTIP                             :{BLACK}Selecteer een datum als startpunt voor deze dienstregeling. Ctrl + klik verdeelt alle voertuigen die deze orders delen gelijkmatig vanaf deze datum op basis van hun relatieve volgorde, als de order volledig is ingeroosterd.
 
 STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}Tijd wijzigen
 STR_TIMETABLE_WAIT_TIME_TOOLTIP                                 :{BLACK}Verander de tijdsduur die de geselecteerde order mag duren

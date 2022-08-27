@@ -1729,7 +1729,7 @@ DEF_CONSOLE_CMD(ConDebugLevel)
 	if (argc == 1) {
 		IConsolePrintF(CC_DEFAULT, "Current debug-level: '%s'", GetDebugString());
 	} else {
-		SetDebugString(argv[1]);
+		SetDebugString(argv[1], [](const char *err) { IConsolePrint(CC_ERROR, err); });
 	}
 
 	return true;

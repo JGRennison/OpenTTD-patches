@@ -843,13 +843,13 @@ STR_MESSAGE_NEWS_FORMAT                                         :{STRING}  -  {S
 STR_NEWS_MESSAGE_CAPTION                                        :{WHITE}메시지
 STR_NEWS_CUSTOM_ITEM                                            :{BIG_FONT}{BLACK}{STRING}
 
-STR_NEWS_FIRST_TRAIN_ARRIVAL                                    :{BIG_FONT}{BLACK}시민들이 축하하고 있습니다 . . .{}{STATION}에 처음으로 열차가 도착했습니다!
-STR_NEWS_FIRST_BUS_ARRIVAL                                      :{BIG_FONT}{BLACK}시민들이 축하하고 있습니다 . . .{}{STATION}에 처음으로 버스가 도착했습니다!
-STR_NEWS_FIRST_TRUCK_ARRIVAL                                    :{BIG_FONT}{BLACK}시민들이 축하하고 있습니다 . . .{}{STATION}에 처음으로 트럭이 도착했습니다!
-STR_NEWS_FIRST_PASSENGER_TRAM_ARRIVAL                           :{BIG_FONT}{BLACK}시민들이 축하하고 있습니다 . . .{}{STATION}에 처음으로 여객 전차가 도착했습니다!
-STR_NEWS_FIRST_CARGO_TRAM_ARRIVAL                               :{BIG_FONT}{BLACK}시민들이 축하하고 있습니다 . . .{}{STATION}에 처음으로 화물 전차가 도착했습니다!
-STR_NEWS_FIRST_SHIP_ARRIVAL                                     :{BIG_FONT}{BLACK}시민들이 축하하고 있습니다 . . .{}{STATION}에 처음으로 선박이 도착했습니다!
-STR_NEWS_FIRST_AIRCRAFT_ARRIVAL                                 :{BIG_FONT}{BLACK}시민들이 축하하고 있습니다 . . .{}{STATION}에 처음으로 항공기가 도착했습니다!
+STR_NEWS_FIRST_TRAIN_ARRIVAL                                    :{BIG_FONT}{BLACK}시민들이 기뻐합니다 . . .{}{STATION}에 처음으로 열차가 도착했습니다!
+STR_NEWS_FIRST_BUS_ARRIVAL                                      :{BIG_FONT}{BLACK}시민들이 기뻐합니다 . . .{}{STATION}에 처음으로 버스가 도착했습니다!
+STR_NEWS_FIRST_TRUCK_ARRIVAL                                    :{BIG_FONT}{BLACK}시민들이 기뻐합니다 . . .{}{STATION}에 처음으로 트럭이 도착했습니다!
+STR_NEWS_FIRST_PASSENGER_TRAM_ARRIVAL                           :{BIG_FONT}{BLACK}시민들이 기뻐합니다 . . .{}{STATION}에 처음으로 여객 전차가 도착했습니다!
+STR_NEWS_FIRST_CARGO_TRAM_ARRIVAL                               :{BIG_FONT}{BLACK}시민들이 기뻐합니다 . . .{}{STATION}에 처음으로 화물 전차가 도착했습니다!
+STR_NEWS_FIRST_SHIP_ARRIVAL                                     :{BIG_FONT}{BLACK}시민들이 기뻐합니다 . . .{}{STATION}에 처음으로 선박이 도착했습니다!
+STR_NEWS_FIRST_AIRCRAFT_ARRIVAL                                 :{BIG_FONT}{BLACK}시민들이 기뻐합니다 . . .{}{STATION}에 처음으로 항공기가 도착했습니다!
 
 STR_NEWS_TRAIN_CRASH                                            :{BIG_FONT}{BLACK}열차 충돌 사고!{}충돌로 인한 폭발로 {COMMA}명의 사망자가 발생하였습니다!
 STR_NEWS_ROAD_VEHICLE_CRASH_DRIVER                              :{BIG_FONT}{BLACK}차량 충돌!{}열차 충돌로 운전자가 사망했습니다!
@@ -5799,7 +5799,7 @@ STR_TIMETABLE_STATUS_NOT_STARTED                                :{BLACK}이 시�
 STR_TIMETABLE_STATUS_START_AT                                   :{BLACK}이 시간표는 {STRING}에 시작될 것입니다
 
 STR_TIMETABLE_STARTING_DATE                                     :{BLACK}시작 날짜
-STR_TIMETABLE_STARTING_DATE_TOOLTIP                             :{BLACK}이 시간표의 시작 날짜를 선택하세요. CTRL+클릭하면 이 차량과 경로를 공유하는 모든 차량에 대하여, 만약 시간표가 완전히 작성되어 있다면 그 경로의 상대적인 순서에 따라 시간표의 시작점을 설정하고 적절히 분배합니다
+STR_TIMETABLE_STARTING_DATE_TOOLTIP                             :{BLACK}이 시간표의 시작 날짜를 선택하세요. CTRL+클릭하면, 시간표가 모두 작성되어 있다는 가정 하에, 주어진 경로를 기반으로 설정한 날짜부터 이 경로를 공유하는 모든 차량을 균등하게 출발시킵니다
 
 STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}시간값 변경
 STR_TIMETABLE_WAIT_TIME_TOOLTIP                                 :{BLACK}선택한 경로에서 소요되는 시간 값을 변경합니다
