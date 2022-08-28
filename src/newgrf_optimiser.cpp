@@ -350,6 +350,56 @@ static VarAction2AdjustsBooleanInverseResult AreVarAction2AdjustsBooleanInverse(
 	return VA2ABIR_NO;
 }
 
+static void GetBoolMulSourceAdjusts(std::vector<DeterministicSpriteGroupAdjust> &adjusts, int start_index, uint store_var, DeterministicSpriteGroupAdjust &synth_adjust,
+	VarAction2AdjustDescriptor &found1, VarAction2AdjustDescriptor &found2, uint *mul_index)
+{
+	bool have_mul = false;
+	for (int i = start_index; i >= 0; i--) {
+		const DeterministicSpriteGroupAdjust &prev = adjusts[i];
+		if (prev.variable == 0x7E || prev.variable == 0x7B) {
+			/* Procedure call or load depends on the last value, don't use or go past this */
+			return;
+		}
+		if (prev.operation == DSGA_OP_STO) {
+			if (prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask < 0x100) {
+				/* Temp store */
+				if (prev.and_mask == (store_var & 0xFF)) return;
+			} else {
+				/* Special register store or unpredictable store, don't use or go past this */
+				return;
+			}
+		} else if (prev.operation == DSGA_OP_MUL && !have_mul) {
+			/* First source is the variable of mul, if it's a temporary storage load, try to follow it */
+			if (mul_index != nullptr) *mul_index = i;
+			if (prev.variable == 0x7D && prev.type == DSGA_TYPE_NONE && prev.shift_num == 0 && prev.and_mask == 0xFFFFFFFF) {
+				int store_index = GetVarAction2AdjustOfPreviousTempStoreSource(adjusts.data(), i - 1, (prev.parameter & 0xFF));
+				if (store_index >= 1) {
+					/* Found the referenced temp store, use that */
+					found1 = { adjusts.data(), nullptr, store_index - 1 };
+					have_mul = true;
+				}
+			}
+			if (!have_mul) {
+				/* It's not a temporary storage load which can be followed, synthesise an RST */
+				synth_adjust = prev;
+				synth_adjust.operation = DSGA_OP_RST;
+				synth_adjust.adjust_flags = DSGAF_NONE;
+				found1 = { adjusts.data(), &synth_adjust, i };
+				have_mul = true;
+			}
+		} else if (prev.operation == DSGA_OP_STOP) {
+			/* Don't try to handle writes to permanent storage */
+			return;
+		} else if (have_mul) {
+			/* Found second source */
+			found2 = { adjusts.data(), nullptr, i };
+			return;
+		} else {
+			return;
+		}
+	}
+}
+
 /*
  * Find and replace the result of:
  *   (var * flag) + (var * !flag) with var
@@ -365,51 +415,7 @@ static bool TryMergeBoolMulCombineVarAction2Adjust(VarAction2OptimiseState &stat
 	uint mul_indices[2] = {};
 
 	auto find_adjusts = [&](int start_index, uint save_index) {
-		bool have_mul = false;
-		for (int i = start_index; i >= 0; i--) {
-			const DeterministicSpriteGroupAdjust &prev = adjusts[i];
-			if (prev.variable == 0x7E || prev.variable == 0x7B) {
-				/* Procedure call or load depends on the last value, don't use or go past this */
-				return;
-			}
-			if (prev.operation == DSGA_OP_STO) {
-				if (prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask < 0x100) {
-					/* Temp store */
-					if (prev.and_mask == (store_var & 0xFF)) return;
-				} else {
-					/* Special register store or unpredictable store, don't use or go past this */
-					return;
-				}
-			} else if (prev.operation == DSGA_OP_MUL && !have_mul) {
-				/* First source is the variable of mul, if it's a temporary storage load, try to follow it */
-				mul_indices[save_index] = i;
-				if (prev.variable == 0x7D && prev.type == DSGA_TYPE_NONE && prev.shift_num == 0 && prev.and_mask == 0xFFFFFFFF) {
-					int store_index = GetVarAction2AdjustOfPreviousTempStoreSource(adjusts.data(), i - 1, (prev.parameter & 0xFF));
-					if (store_index >= 1) {
-						/* Found the referenced temp store, use that */
-						found_adjusts[save_index * 2] = { adjusts.data(), nullptr, store_index - 1 };
-						have_mul = true;
-					}
-				}
-				if (!have_mul) {
-					/* It's not a temporary storage load which can be followed, synthesise an RST */
-					synth_adjusts[save_index] = prev;
-					synth_adjusts[save_index].operation = DSGA_OP_RST;
-					synth_adjusts[save_index].adjust_flags = DSGAF_NONE;
-					found_adjusts[save_index * 2] = { adjusts.data(), synth_adjusts + save_index, i };
-					have_mul = true;
-				}
-			} else if (prev.operation == DSGA_OP_STOP) {
-				/* Don't try to handle writes to permanent storage */
-				return;
-			} else if (have_mul) {
-				/* Found second source */
-				found_adjusts[(save_index * 2) + 1] = { adjusts.data(), nullptr, i };
-				return;
-			} else {
-				return;
-			}
-		}
+		GetBoolMulSourceAdjusts(adjusts, start_index, store_var, synth_adjusts[save_index], found_adjusts[save_index * 2], found_adjusts[(save_index * 2) + 1], mul_indices + save_index);
 	};
 
 	find_adjusts(adjust_index - 1, 0); // A (first, closest)
@@ -1051,6 +1057,41 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeatu
 			}
 			switch (adjust.operation) {
 				case DSGA_OP_ADD:
+					if (adjust.variable == 0x7D && adjust.shift_num == 0 && adjust.and_mask == 0xFFFFFFFF &&
+							(prev_inference & VA2AIF_ONE_OR_ZERO) && (non_const_var_inference & VA2AIF_ONE_OR_ZERO) &&
+							((prev_inference & VA2AIF_MUL_BOOL) || (non_const_var_inference & VA2AIF_MUL_BOOL))) {
+						/* See if this is a ternary operation where both cases result in bool */
+						auto check_ternary_bool = [&]() -> bool {
+							int store_index = GetVarAction2AdjustOfPreviousTempStoreSource(group->adjusts.data(), ((int)group->adjusts.size()) - 2, (adjust.parameter & 0xFF));
+							if (store_index < 0) return false;
+
+							DeterministicSpriteGroupAdjust synth_adjusts[2];
+							VarAction2AdjustDescriptor found_adjusts[4] = {};
+
+							if (prev_inference & VA2AIF_MUL_BOOL) {
+								GetBoolMulSourceAdjusts(group->adjusts, ((int)group->adjusts.size()) - 2, adjust.parameter, synth_adjusts[0], found_adjusts[0], found_adjusts[1], nullptr);
+							} else if (group->adjusts.size() >= 2) {
+								found_adjusts[0] = { group->adjusts.data(), nullptr, ((int)group->adjusts.size()) - 2 };
+							}
+							if (!found_adjusts[0].IsValid() && !found_adjusts[1].IsValid()) return false;
+
+							if (non_const_var_inference & VA2AIF_MUL_BOOL) {
+								GetBoolMulSourceAdjusts(group->adjusts, store_index - 1, adjust.parameter, synth_adjusts[1], found_adjusts[2], found_adjusts[3], nullptr);
+							} else if (store_index >= 1) {
+								found_adjusts[2] = { group->adjusts.data(), nullptr, store_index - 1 };
+							}
+							if (!found_adjusts[2].IsValid() && !found_adjusts[3].IsValid()) return false;
+
+							if (AreVarAction2AdjustsBooleanInverse(found_adjusts[0], found_adjusts[2]) != VA2ABIR_NO) return true;
+							if (AreVarAction2AdjustsBooleanInverse(found_adjusts[0], found_adjusts[3]) != VA2ABIR_NO) return true;
+							if (AreVarAction2AdjustsBooleanInverse(found_adjusts[1], found_adjusts[2]) != VA2ABIR_NO) return true;
+							if (AreVarAction2AdjustsBooleanInverse(found_adjusts[1], found_adjusts[3]) != VA2ABIR_NO) return true;
+							return false;
+						};
+						if (check_ternary_bool()) {
+							state.inference |= VA2AIF_ONE_OR_ZERO | VA2AIF_SIGNED_NON_NEGATIVE;
+						}
+					}
 					try_merge_with_previous();
 					break;
 				case DSGA_OP_SUB:
