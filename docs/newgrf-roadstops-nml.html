@@ -82,6 +82,8 @@
 			<span class="indent">Do not show catenary graphics. (This only takes effect from <span class="code">road_stops</span> version 2).</span></p>
 			<p><b>RST_GENERAL_FLAG_DRIVE_THROUGH_ONLY</b><br />
 			<span class="indent">Only allow drive-through stops (not bay stops). (This only takes effect from <span class="code">road_stops</span> version 2).</span></p>
+			<p><b>RST_GENERAL_FLAG_NO_AUTO_ROAD_CONNECTION</b><br />
+			<span class="indent">Do not automatically build connecting road pieces. (This only takes effect from <span class="code">road_stops</span> version 3).</span></p>
 		</td></tr>
 		<tr><td>minimum_bridge_height</td><td>Array of 6 items [0..255, ...]</td><td>Minimum clearances required for a bridge for each of the <a href="#roadstop_views">6 views/rotations</a> (or 0 to not allow any bridge). Values are given in height level units (1 level == 8px).</td></tr>
 		<tr><td>disallowed_bridge_pillars</td><td>Array of 6 items [bitmask(RST_BRIDGE_PILLAR_FLAG_, ...), ...]</td><td>
