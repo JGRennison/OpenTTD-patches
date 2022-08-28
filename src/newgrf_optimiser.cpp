@@ -1015,6 +1015,9 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeatu
 				adjust.adjust_flags |= DSGAF_JUMP_INS_HINT;
 				group->dsg_flags |= DSGF_CHECK_INSERT_JUMP;
 			}
+			if (adjust.operation == DSGA_OP_MUL && (prev_inference & VA2AIF_ONE_OR_ZERO)) {
+				state.inference |= VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+			}
 		}
 		if (adjust.operation == DSGA_OP_RST && adjust.type == DSGA_TYPE_MOD && adjust.divmod_val == 2) {
 			/* Non-negative value % 2 implies VA2AIF_ONE_OR_ZERO */
@@ -1329,6 +1332,9 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeatu
 					}
 					if ((prev_inference & VA2AIF_ONE_OR_ZERO) || (non_const_var_inference & VA2AIF_ONE_OR_ZERO)) {
 						state.inference |= VA2AIF_MUL_BOOL;
+					}
+					if ((prev_inference & VA2AIF_ONE_OR_ZERO) && (non_const_var_inference & VA2AIF_ONE_OR_ZERO)) {
+						state.inference |= VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
 					}
 					if (non_const_var_inference & VA2AIF_ONE_OR_ZERO) {
 						adjust.adjust_flags |= DSGAF_JUMP_INS_HINT;
