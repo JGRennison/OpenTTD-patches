@@ -146,7 +146,7 @@ static uint GetMaxCategoriesWidth()
 		/* Title of category */
 		max_width = std::max(max_width, GetStringBoundingBox(STR_FINANCES_REVENUE_TITLE + i).width);
 		/* Entries in category */
-		max_width = std::max(max_width, _expenses_list_types[i].GetListWidth());
+		max_width = std::max(max_width, EXP_INDENT + _expenses_list_types[i].GetListWidth());
 	}
 
 	return max_width;
