@@ -109,6 +109,7 @@ void MusicLoop();
 void ResetMusic();
 void CallWindowGameTickEvent();
 bool HandleBootstrap();
+void OnTick_Companies(bool main_tick);
 
 extern void ShowOSErrorBox(const char *buf, bool system);
 extern std::string _config_file;
@@ -1938,6 +1939,7 @@ void StateGameLoop()
 		if (_tick_skip_counter < _settings_game.economy.day_length_factor) {
 			AnimateAnimatedTiles();
 			CallVehicleTicks();
+			OnTick_Companies(false);
 		} else {
 			_tick_skip_counter = 0;
 			IncreaseDate();
@@ -1945,6 +1947,7 @@ void StateGameLoop()
 			RunTileLoop();
 			CallVehicleTicks();
 			CallLandscapeTick();
+			OnTick_Companies(true);
 		}
 		BasePersistentStorageArray::SwitchMode(PSM_LEAVE_GAMELOOP);
 

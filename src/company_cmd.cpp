@@ -737,14 +737,20 @@ static void HandleBankruptcyTakeover(Company *c)
 }
 
 /** Called every tick for updating some company info. */
-void OnTick_Companies()
+void OnTick_Companies(bool main_tick)
 {
 	if (_game_mode == GM_EDITOR) return;
 
-	Company *c = Company::GetIfValid(_cur_company_tick_index);
-	if (c != nullptr) {
+	if (main_tick) {
+		Company *c = Company::GetIfValid(_cur_company_tick_index);
+		if (c != nullptr) {
+			if (c->bankrupt_asked != 0) HandleBankruptcyTakeover(c);
+		}
+		_cur_company_tick_index = (_cur_company_tick_index + 1) % MAX_COMPANIES;
+	}
+	for (Company *c : Company::Iterate()) {
 		if (c->name_1 != 0) GenerateCompanyName(c);
-		if (c->bankrupt_asked != 0) HandleBankruptcyTakeover(c);
+		if (c->bankrupt_asked != 0 && c->bankrupt_timeout == 0) HandleBankruptcyTakeover(c);
 	}
 
 	if (_next_competitor_start == 0) {
@@ -762,8 +768,6 @@ void OnTick_Companies()
 			if (_networking) break;
 		} while (AI::GetStartNextTime() == 0);
 	}
-
-	_cur_company_tick_index = (_cur_company_tick_index + 1) % MAX_COMPANIES;
 }
 
 /**
