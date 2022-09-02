@@ -628,10 +628,12 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 static void CompanyCheckBankrupt(Company *c)
 {
 	/*  If the company has money again, it does not go bankrupt */
+	if (c->bankrupt_flags & CBRF_SALE) return;
 	if (c->money - c->current_loan >= -_economy.max_loan) {
 		int previous_months_of_bankruptcy = CeilDiv(c->months_of_bankruptcy, 3);
 		c->months_of_bankruptcy = 0;
 		c->bankrupt_asked = 0;
+		DeleteWindowById(WC_BUY_COMPANY, c->index);
 		if (previous_months_of_bankruptcy != 0) CompanyAdminUpdate(c);
 		return;
 	}

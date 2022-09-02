@@ -681,6 +681,7 @@ static void HandleBankruptcyTakeover(Company *c)
 
 	assert(c->bankrupt_asked != 0);
 
+
 	/* We're currently asking some company to buy 'us' */
 	if (c->bankrupt_timeout != 0) {
 		c->bankrupt_timeout -= MAX_COMPANIES;
@@ -698,7 +699,7 @@ static void HandleBankruptcyTakeover(Company *c)
 
 	/* Ask the company with the highest performance history first */
 	for (Company *c2 : Company::Iterate()) {
-		if (c2->bankrupt_asked == 0 && // Don't ask companies going bankrupt themselves
+		if ((c2->bankrupt_asked == 0 || (c2->bankrupt_flags & CBRF_SALE_ONLY)) && // Don't ask companies going bankrupt themselves
 				!HasBit(c->bankrupt_asked, c2->index) &&
 				best_performance < c2->old_economy[1].performance_history &&
 				MayCompanyTakeOver(c2->index, c->index)) {
@@ -709,7 +710,13 @@ static void HandleBankruptcyTakeover(Company *c)
 
 	/* Asked all companies? */
 	if (best_performance == -1) {
-		c->bankrupt_asked = MAX_UVALUE(CompanyMask);
+		if (c->bankrupt_flags & CBRF_SALE_ONLY) {
+			c->bankrupt_asked = 0;
+			DeleteWindowById(WC_BUY_COMPANY, c->index);
+		} else {
+			c->bankrupt_asked = MAX_UVALUE(CompanyMask);
+		}
+		c->bankrupt_flags = CBRF_NONE;
 		return;
 	}
 
@@ -962,9 +969,12 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 			if (!(flags & DC_EXEC)) return CommandCost();
 
+			c->bankrupt_flags |= CBRF_SALE;
+			if (c->bankrupt_asked == 0) c->bankrupt_flags |= CBRF_SALE_ONLY;
 			c->bankrupt_value = CalculateCompanyValue(c, false);
 			c->bankrupt_asked = 1 << c->index; // Don't ask the owner
 			c->bankrupt_timeout = 0;
+			DeleteWindowById(WC_BUY_COMPANY, c->index);
 			break;
 		}
 
