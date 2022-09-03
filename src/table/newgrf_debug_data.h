@@ -897,6 +897,10 @@ class NIHIndustry : public NIHelper {
 				seprintf(buffer, lastof(buffer), "  Layout anim inhibit mask %u: " OTTD_PRINTFHEX64, (uint)i, indsp->layout_anim_masks[i]);
 				output.print(buffer);
 			}
+			if (indsp->grf_prop.grffile != nullptr) {
+				seprintf(buffer, lastof(buffer), "  GRF local ID: %u", indsp->grf_prop.local_id);
+				output.print(buffer);
+			}
 		}
 	}
 
