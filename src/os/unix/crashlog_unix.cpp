@@ -144,7 +144,7 @@ static bool ExecReadStdout(const char *file, char *const *args, char *&buffer, c
 		nulls.Close();
 
 		execvp(file, args);
-		exit(42);
+		_exit(42);
 	}
 
 	/* parent */
@@ -207,7 +207,7 @@ static bool ExecReadStdoutThroughFile(const char *file, char *const *args, char 
 		nulls.Close();
 
 		execvp(file, args);
-		exit(42);
+		_exit(42);
 	}
 
 	/* parent */
