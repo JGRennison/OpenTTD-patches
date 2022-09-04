@@ -548,6 +548,27 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 				if (bfd_info.file_name != nullptr) {
 					buffer += seprintf(buffer, last, " (%s:%d)", bfd_info.file_name, bfd_info.line);
 				}
+				if (bfd_info.found && bfd_info.abfd) {
+					const char *file_name = nullptr;
+					const char *func_name = nullptr;
+					uint line_num = 0;
+					while (bfd_find_inliner_info(bfd_info.abfd, &file_name, &func_name, &line_num)) {
+						buffer += seprintf(buffer, last, "\n[inlined]%*s", (int)(19 + (sizeof(void *) * 2)), "");
+						if (func_name) {
+							int status = -1;
+							char *demangled = nullptr;
+#if defined(WITH_DEMANGLE)
+							demangled = abi::__cxa_demangle(func_name, nullptr, 0, &status);
+#endif
+							const char *name = (demangled != nullptr && status == 0) ? demangled : func_name;
+							buffer += seprintf(buffer, last, " %s", name);
+							free(demangled);
+						}
+						if (file_name != nullptr) {
+							buffer += seprintf(buffer, last, " (%s:%u)", file_name, line_num);
+						}
+					}
+				}
 #endif
 			}
 			buffer += seprintf(buffer, last, "\n");
