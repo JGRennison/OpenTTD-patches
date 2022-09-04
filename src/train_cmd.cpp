@@ -7320,10 +7320,12 @@ int GetTrainRealisticAccelerationAtSpeed(const int speed, const int mass, const 
 	return acceleration;
 }
 
-int GetTrainEstimatedMaxAchievableSpeed(const Train *train, const int mass, const int speed_cap)
+int GetTrainEstimatedMaxAchievableSpeed(const Train *train, int mass, const int speed_cap)
 {
 	int max_speed = 0;
 	int acceleration;
+
+	if (mass < 1) mass = 1;
 
 	do
 	{
