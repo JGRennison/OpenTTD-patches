@@ -65,7 +65,7 @@ macro(test_compile_libbfd var libs)
         link_libraries(${libs})
     endif ()
 
-    if (BFD_FOUND)
+    if (BFD_FOUND OR UNIX)
         if (NOT (CMAKE_BUILD_TYPE STREQUAL "DEBUG" OR CMAKE_BUILD_TYPE STREQUAL "RELWITHDEBINFO"))
             if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
                 add_compile_options(-gline-tables-only)
