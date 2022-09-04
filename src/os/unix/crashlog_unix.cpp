@@ -597,6 +597,28 @@ class CrashLogUnix : public CrashLog {
 			if (file_name != nullptr) {
 				buffer += seprintf(buffer, last, "%*s%s:%u\n", 7 + ptr_str_size, "", file_name, line_num);
 			}
+#if defined(WITH_BFD)
+			if (ok && bfd_info.found && bfd_info.abfd) {
+				while (bfd_find_inliner_info(bfd_info.abfd, &file_name, &func_name, &line_num)) {
+					if (func_name) {
+						int status = -1;
+						char *demangled = nullptr;
+#if defined(WITH_DEMANGLE)
+						demangled = abi::__cxa_demangle(func_name, nullptr, 0, &status);
+#endif /* WITH_DEMANGLE */
+						const char *name = (demangled != nullptr && status == 0) ? demangled : func_name;
+						buffer += seprintf(buffer, last, " [inlined] %*s %s\n", ptr_str_size + 36, "",
+								name);
+						free(demangled);
+					} else if (file_name) {
+						buffer += seprintf(buffer, last, " [inlined]\n");
+					}
+					if (file_name != nullptr) {
+						buffer += seprintf(buffer, last, "%*s%s:%u\n", 7 + ptr_str_size, "", file_name, line_num);
+					}
+				}
+			}
+#endif /* WITH_BFD */
 			if (ok) continue;
 #endif /* WITH_DL */
 			buffer += seprintf(buffer, last, " [%02i] %s\n", i, messages[i]);
