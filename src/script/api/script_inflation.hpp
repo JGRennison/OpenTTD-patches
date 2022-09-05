@@ -30,6 +30,22 @@ public:
 	 * @return Inflation factor, 16 bit fixed point.
 	 */
 	static int64 GetPaymentFactor();
+
+	/**
+	 * Set the inflation factor for prices.
+	 * @param factor Inflation factor, 16 bit fixed point.
+	 * @return True, if the inflation factor was changed.
+	 * @api -ai
+	 */
+	static bool SetPriceFactor(int64 factor);
+
+	/**
+	 * Set the inflation factor for payments.
+	 * @param factor Inflation factor, 16 bit fixed point.
+	 * @return True, if the inflation factor was changed.
+	 * @api -ai
+	 */
+	static bool SetPaymentFactor(int64 factor);
 };
 
 #endif /* SCRIPT_INFLATION_HPP */

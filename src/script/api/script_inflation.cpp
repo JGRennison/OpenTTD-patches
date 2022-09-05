@@ -9,7 +9,10 @@
 
 #include "../../stdafx.h"
 #include "script_inflation.hpp"
+#include "script_error.hpp"
 #include "../../economy_func.h"
+#include "../../cheat_type.h"
+#include "../../command_type.h"
 
 #include "../../safeguards.h"
 
@@ -21,4 +24,18 @@
 /* static */ int64 ScriptInflation::GetPaymentFactor()
 {
 	return _economy.inflation_payment;
+}
+
+/* static */ bool ScriptInflation::SetPriceFactor(int64 factor)
+{
+	EnforcePrecondition(false, factor >= 1 << 16 && factor <= (int64)MAX_INFLATION);
+	if ((uint64)factor == _economy.inflation_prices) return true;
+	return ScriptObject::DoCommand(0, CHT_INFLATION_COST, (uint32)factor, CMD_CHEAT_SETTING);
+}
+
+/* static */ bool ScriptInflation::SetPaymentFactor(int64 factor)
+{
+	EnforcePrecondition(false, factor >= 1 << 16 && factor <= (int64)MAX_INFLATION);
+	if ((uint64)factor == _economy.inflation_payment) return true;
+	return ScriptObject::DoCommand(0, CHT_INFLATION_INCOME, (uint32)factor, CMD_CHEAT_SETTING);
 }
