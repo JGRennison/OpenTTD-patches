@@ -839,7 +839,7 @@ public:
 
 	CargoTypes station_cargo_history_cargoes;                                              ///< Bitmask of cargoes in station_cargo_history
 	uint8 station_cargo_history_offset;                                                    ///< Start offset in station_cargo_history cargo ring buffer
-	std::vector<std::array<uint16, MAX_STATION_CARGO_HISTORY_DAYS>> station_cargo_history; ///< Station history of waiting cargo.
+	std::vector<std::array<uint16, MAX_STATION_CARGO_HISTORY_DAYS>> station_cargo_history; ///< Station history of waiting cargo, dynamic range compressed (see RXCompressUint)
 
 	Station(TileIndex tile = INVALID_TILE);
 	~Station();

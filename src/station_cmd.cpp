@@ -59,6 +59,7 @@
 #include "tunnelbridge_map.h"
 #include "cheat_type.h"
 #include "newgrf_roadstop.h"
+#include "core/math_func.hpp"
 
 #include "table/strings.h"
 
@@ -475,7 +476,7 @@ void Station::UpdateCargoHistory()
 				this->station_cargo_history.emplace(this->station_cargo_history.begin() + storage_offset);
 			}
 		}
-		this->station_cargo_history[storage_offset][this->station_cargo_history_offset] = static_cast<uint16>(std::clamp<uint>(amount, (uint)0, (uint)UINT16_MAX));
+		this->station_cargo_history[storage_offset][this->station_cargo_history_offset] = RXCompressUint(amount);
 		storage_offset++;
 	}
 	this->station_cargo_history_offset++;

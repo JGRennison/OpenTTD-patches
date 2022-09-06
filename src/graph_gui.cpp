@@ -23,6 +23,7 @@
 #include "currency.h"
 #include "zoom_func.h"
 #include "unit_conversion.h"
+#include "core/math_func.hpp"
 
 #include "widgets/graph_widget.h"
 
@@ -1847,7 +1848,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 
 			uint offset = station->station_cargo_history_offset;
 			for (uint j = 0; j < MAX_STATION_CARGO_HISTORY_DAYS; j++) {
-				this->cost[i][j] = history[offset];
+				this->cost[i][j] = RXDecompressUint(history[offset]);
 				offset++;
 				if (offset == MAX_STATION_CARGO_HISTORY_DAYS) offset = 0;
 			}

@@ -14,6 +14,7 @@
 #include "../vehicle_base.h"
 #include "../newgrf_station.h"
 #include "../newgrf_roadstop.h"
+#include "../core/math_func.hpp"
 
 #include "saveload.h"
 #include "saveload_buffer.h"
@@ -678,6 +679,13 @@ static void Load_STNN()
 			for (auto &history : st->station_cargo_history) {
 				for (uint16 &amount : history) {
 					amount = buffer->RawReadUint16();
+				}
+			}
+			if (SlXvIsFeaturePresent(XSLFI_STATION_CARGO_HISTORY, 1, 1)) {
+				for (auto &history : st->station_cargo_history) {
+					for (uint16 &amount : history) {
+						amount = RXCompressUint(amount);
+					}
 				}
 			}
 			st->station_cargo_history_offset = 0;
