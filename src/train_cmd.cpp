@@ -7091,14 +7091,13 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 		}
 	} else {
 		CommandCost buyCost = TestBuyAllTemplateVehiclesInChain(tv, tile);
-		if (!buyCost.Succeeded() || !CheckCompanyHasMoney(buyCost)) {
+		if (!buyCost.Succeeded()) {
 			if (leaveDepot) incoming->vehstatus &= ~VS_STOPPED;
-
-			if (!buyCost.Succeeded() && buyCost.GetErrorMessage() != INVALID_STRING_ID) {
-				return buyCost;
-			} else {
-				return_cmd_error(STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY);
-			}
+			if (buyCost.GetErrorMessage() == INVALID_STRING_ID) return_cmd_error(STR_ERROR_CAN_T_BUY_TRAIN);
+			return buyCost;
+		} else if (!CheckCompanyHasMoney(buyCost)) {
+			if (leaveDepot) incoming->vehstatus &= ~VS_STOPPED;
+			return_cmd_error(STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY);
 		}
 	}
 
