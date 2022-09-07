@@ -1419,7 +1419,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 	const RailVehicleInfo *rvi = &e->u.rail;
 
 	/* Check that the wagon can drive on the track in question */
-	if (!IsCompatibleRail(rvi->railtype, GetRailType(tile))) return CMD_ERROR;
+	if (!IsCompatibleRail(rvi->railtype, GetRailType(tile))) return_cmd_error(STR_ERROR_DEPOT_HAS_WRONG_RAIL_TYPE);
 
 	if (flags & DC_EXEC) {
 		Train *v = new Train();
