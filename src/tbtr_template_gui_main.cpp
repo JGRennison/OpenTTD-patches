@@ -674,15 +674,20 @@ public:
 			}
 
 			bool buildable = true;
+			RailTypes types = static_cast<RailTypes>(UINT64_MAX);
 			for (const TemplateVehicle *u = v; u != nullptr; u = u->GetNextUnit()) {
 				if (!IsEngineBuildable(u->engine_type, VEH_TRAIN, u->owner)) {
 					buildable = false;
 					break;
+				} else {
+					types &= (GetRailTypeInfo(Engine::Get(u->engine_type)->u.rail.railtype))->compatible_railtypes;
 				}
 			}
 			/* Draw a notification string for chains that are not buildable */
 			if (!buildable) {
 				DrawString(left, right - ScaleGUITrad(24), y + ScaleGUITrad(2), STR_TMPL_WARNING_VEH_UNAVAILABLE, TC_RED, SA_CENTER);
+			} else if (types == RAILTYPES_NONE) {
+				DrawString(left, right - ScaleGUITrad(24), y + ScaleGUITrad(2), STR_TMPL_WARNING_VEH_NO_COMPATIBLE_RAIL_TYPE, TC_RED, SA_CENTER);
 			}
 
 			/* Draw the template's length in tile-units */
