@@ -625,6 +625,7 @@ STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}Cargo Pa
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL                           :{TINY_FONT}{BLACK}Days in transit
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED                     :{TINY_FONT}{BLACK}Average transit speed ({STRING})
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}Payment for delivering 10 units (or 10,000 litres) of cargo a distance of 20 squares
+STR_GRAPH_CARGO_PAYMENT_RATES_TITLE_AVG_SPEED                   :{TINY_FONT}{BLACK}Payment for delivering 1 unit (or 1,000 litres) of cargo a distance of 200 squares
 STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}Enable all
 STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}Disable all
 STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Display all cargoes on the cargo payment rates graph
