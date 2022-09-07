@@ -1585,7 +1585,7 @@ void CallVehicleTicks()
 	}
 	v = nullptr;
 
-	/* do Template Replacement */
+	/* Handle vehicles marked for immediate sale */
 	Backup<CompanyID> sell_cur_company(_current_company, FILE_LINE);
 	for (VehicleID index : _vehicles_to_sell) {
 		Vehicle *v = Vehicle::Get(index);
