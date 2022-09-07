@@ -153,6 +153,7 @@ enum TraceRestrictItemType {
 	TRIT_COND_TIME_DATE_VALUE     = 28,   ///< Test time/date value
 	TRIT_COND_RESERVED_TILES      = 29,   ///< Test reserved tiles ahead of train
 	TRIT_COND_CATEGORY            = 30,   ///< Test train category
+	TRIT_COND_TARGET_DIRECTION    = 31,   ///< Test direction of order target tile relative to this signal tile
 
 	TRIT_COND_END                 = 48,   ///< End (exclusive) of conditional item types, note that this has the same value as TRIT_REVERSE
 	TRIT_REVERSE                  = 48,   ///< Reverse behind signal
@@ -256,6 +257,15 @@ enum TraceRestrictCatgeoryCondAuxField {
 enum TraceRestrictPathfinderPenaltyAuxField {
 	TRPPAF_VALUE                  = 0,       ///< value field is a the pathfinder penalty to use
 	TRPPAF_PRESET                 = 1,       ///< value field is a pathfinder penalty prefix index: TraceRestrictPathfinderPenaltyPresetIndex
+	/* space up to 3 */
+};
+
+/**
+ * TraceRestrictItem auxiliary type field, for TRIT_COND_TARGET_DIRECTION
+ */
+enum TraceRestrictTargetDirectionCondAuxField {
+	TRTDCAF_CURRENT_ORDER         = 0,       ///< Current order
+	TRTDCAF_NEXT_ORDER            = 1,       ///< Next order
 	/* space up to 3 */
 };
 
@@ -706,6 +716,7 @@ enum TraceRestrictValueType {
 	TRVT_PF_PENALTY_CONTROL       = 47,///< takes a TraceRestrictPfPenaltyControlField
 	TRVT_SPEED_ADAPTATION_CONTROL = 48,///< takes a TraceRestrictSpeedAdaptationControlField
 	TRVT_SIGNAL_MODE_CONTROL      = 49,///< takes a TraceRestrictSignalModeControlField
+	TRVT_ORDER_TARGET_DIAGDIR     = 50,///< takes a DiagDirection, and the order type in the auxiliary field
 };
 
 /**
@@ -853,6 +864,11 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 						NOT_REACHED();
 						break;
 				}
+				break;
+
+			case TRIT_COND_TARGET_DIRECTION:
+				out.value_type = TRVT_ORDER_TARGET_DIAGDIR;
+				out.cond_type = TRCOT_BINARY;
 				break;
 
 			default:

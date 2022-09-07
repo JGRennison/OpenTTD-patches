@@ -3269,6 +3269,7 @@ STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE_WEIGHT_RATIO           :max T.E. / weig
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_OWNER                         :train owner
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_STATUS                        :train status
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_ENGINE_CLASS                  :engine class
+STR_TRACE_RESTRICT_VARIABLE_ORDER_TARGET_DIRECTION              :direction of order target
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :undefined
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED                       :{RED}undefined
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER                  :{STRING} {STRING} {STRING} {COMMA} then
@@ -3298,6 +3299,7 @@ STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS                     :{STRING} train 
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER                          :{STRING} value of counter: {TRCOUNTER} {STRING} {COMMA} then
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING} value of counter: {STRING} {BLACK}{STRING} {STRING} {COMMA} then
 STR_TRACE_RESTRICT_CONDITIONAL_ENGINE_CLASSES                   :{STRING} train {STRING}: {STRING} then
+STR_TRACE_RESTRICT_CONDITIONAL_TARGET_DIRECTION                 :{STRING} tile of {STRING} {STRING} further {STRING} than this signal tile then
 STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}undefined {BLACK}{STRING}then
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}undefined {BLACK}{STRING}then
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :Add pathfinder penalty: {COMMA}

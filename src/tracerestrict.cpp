@@ -569,6 +569,49 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 					}
 
+					case TRIT_COND_TARGET_DIRECTION: {
+						const Order *o = nullptr;
+						switch (static_cast<TraceRestrictTargetDirectionCondAuxField>(GetTraceRestrictAuxField(item))) {
+							case TRTDCAF_CURRENT_ORDER:
+								o = &(v->current_order);
+								break;
+
+							case TRTDCAF_NEXT_ORDER:
+								if (v->orders == nullptr) break;
+								if (v->orders->GetNumOrders() == 0) break;
+
+								const Order *current_order = v->GetOrder(v->cur_real_order_index);
+								for (const Order *order = v->orders->GetNext(current_order); order != current_order; order = v->orders->GetNext(order)) {
+									if (order->IsGotoOrder()) {
+										o = order;
+										break;
+									}
+								}
+								break;
+						}
+
+						if (o == nullptr) break;
+
+						TileIndex target = o->GetLocation(v, true);
+						if (target == INVALID_TILE) break;
+
+						switch (condvalue) {
+							case DIAGDIR_NE:
+								result = TestBinaryConditionCommon(item, TileX(target) < TileX(input.tile));
+								break;
+							case DIAGDIR_SE:
+								result = TestBinaryConditionCommon(item, TileY(target) > TileY(input.tile));
+								break;
+							case DIAGDIR_SW:
+								result = TestBinaryConditionCommon(item, TileX(target) > TileX(input.tile));
+								break;
+							case DIAGDIR_NW:
+								result = TestBinaryConditionCommon(item, TileY(target) < TileY(input.tile));
+								break;
+						}
+						break;
+					}
+
 					default:
 						NOT_REACHED();
 				}
@@ -980,6 +1023,7 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 				case TRIT_COND_CURRENT_ORDER:
 				case TRIT_COND_NEXT_ORDER:
 				case TRIT_COND_LAST_STATION:
+				case TRIT_COND_TARGET_DIRECTION:
 					actions_used_flags |= TRPAUF_ORDER_CONDITIONALS;
 					break;
 
@@ -1198,6 +1242,7 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_PF_PENALTY_CONTROL:
 		case TRVT_SPEED_ADAPTATION_CONTROL:
 		case TRVT_SIGNAL_MODE_CONTROL:
+		case TRVT_ORDER_TARGET_DIAGDIR:
 			SetTraceRestrictValue(item, 0);
 			if (!IsTraceRestrictTypeAuxSubtype(GetTraceRestrictType(item))) {
 				SetTraceRestrictAuxField(item, 0);
