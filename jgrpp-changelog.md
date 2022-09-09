@@ -2,6 +2,28 @@
 
 * * *
 
+### v0.48.2 (2022-09-09)
+* Fix excessive braking for slopes with realistic train braking.
+* Fix incorrect infrastructure totals when overbuilding bay road stops with a different road/tram type active.
+* Fix route step markers being rendered incorrectly with some fonts or when the zoom level is changed.
+* Fix conflicts between company bankruptcy and manually triggered company sales, reduce delays before showing purchase company prompts.
+* Fix crash when showing the maximum achievable speed estimate for trains of 0 mass.
+* Fix crash which could occur with autoreplace failure news messages in some languages.
+* Fix crash which could occur when adding plans in single player.
+* Fix some industry NewGRFs having incorrect behaviour (when querying the closest industry of an invalid or non present type).
+* Template-based train replacement:
+  * Fix incorrect template replacement error message when the template is not buildable.
+  * Show warning if template trains are not compatible with any rail type.
+* Only apply the highest resolution sprites to use setting when the NewGRF supplies suitable fallback graphics.
+* Add a setting to show the introduction year for train wagons.
+* Add setting to show group hierarchy in vehicle names.
+* Add routing restriction conditional on direction of order target from signal.
+* Remove road vehicles during load which are uncorrectably invalid (i.e. when required NewGRFs are missing), instead of crashing.
+* AI/GS script:
+  * Increase the maximum number of operations which scripts can use when saving the game.
+  * Add script functions to get and set inflation factors.
+* Bump trunk base from commit ccb9d9988011725c1ff0d415af37efb99e2b0849 to commit 03552996395be4c468d64adc7a076e1b233f0d4c.
+
 ### v0.48.1 (2022-08-01)
 * Fix various issues that could occur when attempting to disable infrastructure sharing when shared infrastructure is still in use.
 * Fix crashes and other issues when removing a company would remove infrastructure which is in use by the train reservation of another company when realistic braking is enabled.

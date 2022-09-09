@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.48.1
+## JGR's Patchpack version 0.48.2
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -56,6 +56,7 @@ See [installation.md](/installation.md) for instructions on how to install.
   These are not shown in the build signal window by default.
 * Add client setting to show all signals using the default baseset sprites.
 * Remember the last-used signal type between games.
+* Add client setting to show the introduction year for train wagons.
 
 #### Roads and Road Vehicles
 
@@ -121,6 +122,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Slots and counters.  
   See the [guide on the wiki](https://github.com/JGRennison/OpenTTD-patches/wiki/Signalling) for more information.
 * Add cargo capacity / running cost sort mode to the build vehicle window.
+* Add client settings to show the full group hierarchy in group and vehicle names.
 
 #### Orders and Timetabling
 
