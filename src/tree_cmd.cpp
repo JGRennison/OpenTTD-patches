@@ -248,9 +248,6 @@ static void PlaceTree(TileIndex tile, uint32 r)
 		if (ground != TREE_GROUND_SNOW_DESERT && ground != TREE_GROUND_ROUGH_SNOW && ground != TREE_GROUND_SHORE) {
 			SetTreeGroundDensity(tile, (TreeGround)GB(r, 28, 1), 3);
 		}
-
-		/* Set the counter to a random start value */
-		SetTreeCounter(tile, (TreeGround)GB(r, 24, 4));
 	}
 }
 
@@ -914,10 +911,13 @@ static void TileLoop_Trees(TileIndex tile)
 
 	AmbientSoundEffect(tile);
 
-	uint treeCounter = GetTreeCounter(tile);
+	/* _tick_counter is incremented by 256 between each call, so ignore lower 8 bits.
+	 * Also, we add tile % 31 to spread the updates evenly over the map,
+	 * where 31 is just some prime number that looks ok. */
+	uint32 cycle = (uint32)tile % 31 + (_tick_counter >> 8);
 
 	/* Handle growth of grass (under trees/on MP_TREES tiles) at every 8th processings, like it's done for grass on MP_CLEAR tiles. */
-	if ((treeCounter & 7) == 7 && GetTreeGround(tile) == TREE_GROUND_GRASS) {
+	if ((cycle & 7) == 7 && GetTreeGround(tile) == TREE_GROUND_GRASS) {
 		uint density = GetTreeDensity(tile);
 		if (density < 3) {
 			SetTreeGroundDensity(tile, TREE_GROUND_GRASS, density + 1);
@@ -925,11 +925,7 @@ static void TileLoop_Trees(TileIndex tile)
 		}
 	}
 
-	if (GetTreeCounter(tile) < 15) {
-		AddTreeCounter(tile, 1);
-		return;
-	}
-	SetTreeCounter(tile, 0);
+	if ((cycle & 15) < 15) return;
 
 	if (_settings_game.construction.extra_tree_placement == ETP_NO_GROWTH_NO_SPREAD) return;
 
