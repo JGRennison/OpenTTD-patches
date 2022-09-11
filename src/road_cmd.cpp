@@ -180,12 +180,24 @@ RoadType AllocateRoadType(RoadTypeLabel label, RoadTramType rtt)
 }
 
 /**
- * Verify whether a road vehicle is available.
- * @return \c true if at least one road vehicle is available, \c false if not
+ * Verify whether a road vehicle has been built.
+ * @return \c true if at least one road vehicle has been built, \c false if not
  */
 bool RoadVehiclesAreBuilt()
 {
 	return !RoadVehicle::Iterate().empty();
+}
+
+/**
+ * Verify whether a road vehicle has been built and is not in a depot.
+ * @return \c true if at least one road vehicle has been built and is not in a depot, \c false if not
+ */
+bool RoadVehiclesExistOutsideDepots()
+{
+	for (const RoadVehicle *rv : RoadVehicle::Iterate()) {
+		if (rv->IsFrontEngine() && !rv->IsChainInDepot()) return true;
+	}
+	return false;
 }
 
 static DisallowedRoadDirections GetOneWayRoadTileDisallowedRoadDirections(TileIndex tile)
