@@ -56,8 +56,10 @@ class CrashLogWindows : public CrashLog {
 	char *LogRegisters(char *buffer, const char *last) const override;
 	char *LogModules(char *buffer, const char *last) const override;
 public:
-#if defined(_MSC_VER) || defined(WITH_DBGHELP)
+#if defined(_MSC_VER)
 	int WriteCrashDump(char *filename, const char *filename_last) const override;
+#endif /* _MSC_VER */
+#if defined(_MSC_VER) || defined(WITH_DBGHELP)
 	char *AppendDecodedStacktrace(char *buffer, const char *last) const;
 #else
 	char *AppendDecodedStacktrace(char *buffer, const char *last) const { return buffer; }
@@ -579,7 +581,9 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 
 	return buffer + seprintf(buffer, last, "\n*** End of additional info ***\n");
 }
+#endif /* _MSC_VER  || WITH_DBGHELP */
 
+#if defined(_MSC_VER)
 /* virtual */ int CrashLogWindows::WriteCrashDump(char *filename, const char *filename_last) const
 {
 	if (_settings_client.gui.developer == 0) return 0;
