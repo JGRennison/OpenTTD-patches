@@ -95,5 +95,30 @@
 			<div class="methodtext">Checks whether the given road type is buildable by towns.</div>
 		</div>
 	</div>
+
+	<h3>Inflation: GSInflation Class and AIInflation Class</h3>
+	<div class="indent">
+		<h4>Static Public Member Functions:</h4>
+		<div class="indent">
+			<div class="code">static int64 GetPriceFactor ()</div>
+			<div class="methodtext">Get the inflation factor for prices.</div>
+			<div class="methodtext">Returns the inflation factor as a fixed point value (16 bits).</div>
+		</div>
+		<div class="indent">
+			<div class="code">static int64 GetPaymentFactor ()</div>
+			<div class="methodtext">Get the inflation factor for payments.</div>
+			<div class="methodtext">Returns the inflation factor as a fixed point value (16 bits).</div>
+		</div>
+		<div class="indent">
+			<div class="code">static bool SetPriceFactor (int64 factor)</div>
+			<div class="methodtext">Set the inflation factor for prices (GS only).</div>
+			<div class="methodtext">The inflation factor is a fixed point value (16 bits).</div>
+		</div>
+		<div class="indent">
+			<div class="code">static bool SetPaymentFactor (int64 factor)</div>
+			<div class="methodtext">Set the inflation factor for payments (GS only).</div>
+			<div class="methodtext">The inflation factor is a fixed point value (16 bits).</div>
+		</div>
+	</div>
 </body>
 </html>

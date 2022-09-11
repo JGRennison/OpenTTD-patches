@@ -124,6 +124,7 @@ void IConsolePrint(TextColour colour_code, const char *string)
 
 	IConsoleWriteToLogFile(str);
 	IConsoleGUIPrint(colour_code, str);
+	free(str);
 }
 
 /**

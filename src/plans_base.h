@@ -232,14 +232,15 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 		if (this->temp_line->tiles.size() > 1) {
 			uint buffer_length = 0;
 			const TileIndex *buffer = this->temp_line->Export(&buffer_length);
-			if (buffer) {
-				this->SetVisibility(true, false);
-				ret = DoCommandPEx(0, this->index, (uint32) this->temp_line->tiles.size(), 0, CMD_ADD_PLAN_LINE, nullptr, (const char *) buffer, buffer_length);
-				free(buffer);
-			}
+			uint tiles = (uint)this->temp_line->tiles.size();
 			this->temp_line->MarkDirty();
 			this->last_tile = this->temp_line->tiles.back();
 			this->temp_line->Clear();
+			if (buffer) {
+				this->SetVisibility(true, false);
+				ret = DoCommandPEx(0, this->index, tiles, 0, CMD_ADD_PLAN_LINE, nullptr, (const char *) buffer, buffer_length);
+				free(buffer);
+			}
 		}
 		return ret;
 	}

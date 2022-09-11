@@ -23,6 +23,7 @@
 #include "currency.h"
 #include "zoom_func.h"
 #include "unit_conversion.h"
+#include "core/math_func.hpp"
 
 #include "widgets/graph_widget.h"
 
@@ -1084,7 +1085,7 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 			this->colours[i] = cs->legend_colour;
 			for (int j = 0; j != 20; j++) {
 				const byte ctt = _cargo_payment_x_mode ? static_cast<byte>(factor / static_cast<float>((j + 1) * this->x_values_increment)) : (j + 1) * 4;
-				this->cost[i][j] = GetTransportedGoodsIncome(10, 20, ctt, cs->Index());
+				this->cost[i][j] = GetTransportedGoodsIncome(_cargo_payment_x_mode ? 1 : 10, _cargo_payment_x_mode ? 200 : 20, ctt, cs->Index());
 			}
 			i++;
 		}
@@ -1102,6 +1103,14 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 					SetDParam(0, STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL);
 				}
 				break;
+
+			case WID_CPR_HEADER:
+				if (_cargo_payment_x_mode) {
+					SetDParam(0, STR_GRAPH_CARGO_PAYMENT_RATES_TITLE_AVG_SPEED);
+				} else {
+					SetDParam(0, STR_GRAPH_CARGO_PAYMENT_RATES_TITLE);
+				}
+				break;
 		}
 	}
 };
@@ -1116,9 +1125,7 @@ static const NWidgetPart _nested_cargo_payment_rates_widgets[] = {
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_BROWN, WID_CPR_BACKGROUND), SetMinimalSize(568, 128),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(NWID_SPACER), SetFill(1, 0), SetResize(1, 0),
-			NWidget(WWT_TEXT, COLOUR_BROWN, WID_CPR_HEADER), SetMinimalSize(0, 6), SetPadding(2, 0, 2, 0), SetDataTip(STR_GRAPH_CARGO_PAYMENT_RATES_TITLE, STR_NULL),
-			NWidget(NWID_SPACER), SetFill(1, 0), SetResize(1, 0),
+			NWidget(WWT_TEXT, COLOUR_BROWN, WID_CPR_HEADER), SetMinimalSize(0, 6), SetAlignment(SA_CENTER), SetPadding(2, 0, 2, 0), SetDataTip(STR_JUST_STRING1, STR_NULL), SetFill(1, 0), SetResize(1, 0),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
 			NWidget(WWT_EMPTY, COLOUR_BROWN, WID_CPR_GRAPH), SetMinimalSize(495, 0), SetFill(1, 1), SetResize(1, 1),
@@ -1847,7 +1854,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 
 			uint offset = station->station_cargo_history_offset;
 			for (uint j = 0; j < MAX_STATION_CARGO_HISTORY_DAYS; j++) {
-				this->cost[i][j] = history[offset];
+				this->cost[i][j] = RXDecompressUint(history[offset]);
 				offset++;
 				if (offset == MAX_STATION_CARGO_HISTORY_DAYS) offset = 0;
 			}

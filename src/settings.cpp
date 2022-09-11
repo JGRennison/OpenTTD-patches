@@ -1252,6 +1252,7 @@ static void ZoomMinMaxChanged(int32 new_value)
 		/* Restrict GUI zoom if it is no longer available. */
 		_gui_zoom = _settings_client.gui.zoom_min;
 		UpdateCursorSize();
+		UpdateRouteStepSpriteSize();
 		UpdateFontHeightCache();
 		LoadStringWidthTable();
 	}
@@ -1617,7 +1618,7 @@ static void StationCatchmentChanged(int32 new_value)
 
 static bool CheckSharingRail(int32 &new_value)
 {
-	return CheckSharingChangePossible(VEH_TRAIN);
+	return CheckSharingChangePossible(VEH_TRAIN, new_value);
 }
 
 static void SharingRailChanged(int32 new_value)
@@ -1627,17 +1628,17 @@ static void SharingRailChanged(int32 new_value)
 
 static bool CheckSharingRoad(int32 &new_value)
 {
-	return CheckSharingChangePossible(VEH_ROAD);
+	return CheckSharingChangePossible(VEH_ROAD, new_value);
 }
 
 static bool CheckSharingWater(int32 &new_value)
 {
-	return CheckSharingChangePossible(VEH_SHIP);
+	return CheckSharingChangePossible(VEH_SHIP, new_value);
 }
 
 static bool CheckSharingAir(int32 &new_value)
 {
-	return CheckSharingChangePossible(VEH_AIRCRAFT);
+	return CheckSharingChangePossible(VEH_AIRCRAFT, new_value);
 }
 
 static void MaxVehiclesChanged(int32 new_value)
@@ -1780,19 +1781,6 @@ static bool LinkGraphDistributionSettingGUI(SettingOnGuiCtrlData &data)
 		case SOGCT_DESCRIPTION_TEXT:
 			SetDParam(0, data.text);
 			data.text = STR_CONFIG_SETTING_DISTRIBUTION_HELPTEXT_EXTRA;
-			return true;
-
-		default:
-			return false;
-	}
-}
-
-static bool SpriteZoomMinSettingGUI(SettingOnGuiCtrlData &data)
-{
-	switch (data.type) {
-		case SOGCT_DESCRIPTION_TEXT:
-			SetDParam(0, data.text);
-			data.text = STR_CONFIG_SETTING_SPRITE_ZOOM_MIN_HELPTEXT_EXTRA;
 			return true;
 
 		default:

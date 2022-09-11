@@ -82,7 +82,7 @@ static bool ExecReadStdoutThroughFile(const char *file, char *const *args, char 
 		close(null_fd);
 
 		execvp(file, args);
-		exit(42);
+		_Exit(42);
 	}
 
 	/* parent */

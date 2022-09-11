@@ -150,8 +150,9 @@
 	<tr><th>Bit</th><th>Value</th><th>Meaning</th></tr>
 	<tr><td>0</td><td>1</td><td>Callback 141 needs random bits in variable 10</td></tr>
 	<tr><td>1</td><td>2</td><td>Do not show one way road overlay sprites, this should only be set if different graphics are provided for the different one-way states using bits 0..1 of variable 50.</td></tr>
-	<tr><td>2</td><td>4</td><td>Do not catenary graphics.</br>This requires <font face="monospace">road_stops</font>, version 2.</td></tr>
+	<tr><td>2</td><td>4</td><td>Do not show catenary graphics.</br>This requires <font face="monospace">road_stops</font>, version 2.</td></tr>
 	<tr><td>3</td><td>8</td><td>Only allow drive-through stops (not bay stops).</br>This requires <font face="monospace">road_stops</font>, version 2.</td></tr>
+	<tr><td>4</td><td>10</td><td>Do not automatically build connecting road pieces.</br>This requires <font face="monospace">road_stops</font>, version 3.</td></tr>
 	</table>
 	The default value is 0 (no flags enabled).
 	</p>
@@ -290,8 +291,8 @@
 	<tr><td>0 - 1</td><td>
 		One-way road information:<br />
 		0 - Two-way traffic<br />
-		1 - North-bound only<br />
-		2 - South-bound only<br />
+		1 - West-bound only<br />
+		2 - East-bound only<br />
 		3 - No entry
 	</td></tr>
 	</table>

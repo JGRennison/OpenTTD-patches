@@ -146,7 +146,7 @@ static uint GetMaxCategoriesWidth()
 		/* Title of category */
 		max_width = std::max(max_width, GetStringBoundingBox(STR_FINANCES_REVENUE_TITLE + i).width);
 		/* Entries in category */
-		max_width = std::max(max_width, _expenses_list_types[i].GetListWidth());
+		max_width = std::max(max_width, EXP_INDENT + _expenses_list_types[i].GetListWidth());
 	}
 
 	return max_width;
@@ -2885,12 +2885,13 @@ struct BuyCompanyWindow : Window {
 	BuyCompanyWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
 	{
 		this->InitNested(window_number);
+		this->owner = _local_company;
 	}
 
 	~BuyCompanyWindow()
 	{
 		const Company *c = Company::GetIfValid((CompanyID)this->window_number);
-		if (c != nullptr && HasBit(c->bankrupt_asked, _current_company)) {
+		if (c != nullptr && HasBit(c->bankrupt_asked, this->owner)) {
 			DoCommandP(0, this->window_number, 0, CMD_DECLINE_BUY_COMPANY);
 		}
 	}

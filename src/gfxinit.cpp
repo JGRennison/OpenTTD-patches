@@ -388,33 +388,42 @@ void CheckBlitter()
 	ReInitAllWindows(false);
 }
 
-static void UpdateRouteStepSpriteSize()
+void UpdateRouteStepSpriteSize()
 {
-	extern uint _vp_route_step_width;
+	extern uint _vp_route_step_sprite_width;
+	extern uint _vp_route_step_base_width;
 	extern uint _vp_route_step_height_top;
-	extern uint _vp_route_step_height_middle;
 	extern uint _vp_route_step_height_bottom;
-	extern SubSprite _vp_route_step_subsprite;
+	extern uint _vp_route_step_string_width[4];
 
 	Dimension d0 = GetSpriteSize(SPR_ROUTE_STEP_TOP);
-	_vp_route_step_width = d0.width;
+	_vp_route_step_sprite_width = d0.width;
 	_vp_route_step_height_top = d0.height;
 
-	Dimension d1 = GetSpriteSize(SPR_ROUTE_STEP_MIDDLE);
-	_vp_route_step_height_middle = d1.height;
+	_vp_route_step_base_width = (_vp_route_step_height_top + 1) * 2;
 
 	Dimension d2 = GetSpriteSize(SPR_ROUTE_STEP_BOTTOM);
 	_vp_route_step_height_bottom = d2.height;
 
-	if (d0.width != d1.width || d0.width != d2.width) {
-		DEBUG(sprite, 0, "Route step sprite widths do not match. Probable cause: NewGRF interference.");
+	const uint min_width = _vp_route_step_sprite_width > _vp_route_step_base_width ? _vp_route_step_sprite_width - _vp_route_step_base_width : 0;
+	uint extra = 0;
+	for (uint i = 0; i < 4; i++) {
+		SetDParamMaxDigits(0, i + 2, FS_SMALL);
+		SetDParam(1, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_STATION);
+		const uint base_width = GetStringBoundingBox(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, FS_SMALL).width;
+		if (i == 0) {
+			uint width = base_width;
+			auto process_string = [&](StringID str) {
+				SetDParam(1, str);
+				width = std::max(width, GetStringBoundingBox(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, FS_SMALL).width);
+			};
+			process_string(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_DEPOT);
+			process_string(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_WAYPOINT);
+			process_string(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_IMPLICIT);
+			extra = width - base_width;
+		}
+		_vp_route_step_string_width[i] = std::max(min_width, base_width + extra);
 	}
-
-	const int char_height = GetCharacterHeight(FS_SMALL) + 1;
-	_vp_route_step_subsprite.right = ScaleByZoom(_vp_route_step_width, ZOOM_LVL_GUI);
-	_vp_route_step_subsprite.bottom = ScaleByZoom(char_height, ZOOM_LVL_GUI);
-	_vp_route_step_subsprite.left = 0;
-	_vp_route_step_subsprite.top = 0;
 }
 
 #if !defined(DEDICATED)

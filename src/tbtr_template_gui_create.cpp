@@ -308,12 +308,21 @@ public:
 					int y = ScaleGUITrad(4) - this->vscroll->GetPosition();
 					bool buildable = true;
 					Money buy_cost = 0;
+					RailTypes types = static_cast<RailTypes>(UINT64_MAX);
 					for (Train *train = this->virtual_train; train != nullptr; train = train->GetNextUnit()) {
-						if (!IsEngineBuildable(train->engine_type, VEH_TRAIN, train->owner)) buildable = false;
-						buy_cost += Engine::Get(train->engine_type)->GetCost();
+						const Engine *e = Engine::Get(train->engine_type);
+						if (!IsEngineBuildable(train->engine_type, VEH_TRAIN, train->owner)) {
+							buildable = false;
+						} else {
+							types &= (GetRailTypeInfo(e->u.rail.railtype))->compatible_railtypes;
+						}
+						buy_cost += e->GetCost();
 					}
 					if (!buildable) {
 						DrawString(8, r.right, y, STR_TMPL_WARNING_VEH_UNAVAILABLE);
+						y += FONT_HEIGHT_NORMAL;
+					} else if (types == RAILTYPES_NONE) {
+						DrawString(8, r.right, y, STR_TMPL_WARNING_VEH_NO_COMPATIBLE_RAIL_TYPE);
 						y += FONT_HEIGHT_NORMAL;
 					}
 

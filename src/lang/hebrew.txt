@@ -3549,6 +3549,7 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   ::לשנה {GOLD
 STR_PURCHASE_INFO_CAPACITY                                      :{GOLD}{1:STRING} {0:CARGO_LONG}{BLACK} :קיבולת
 STR_PURCHASE_INFO_REFITTABLE                                    :(ניתן להתאמה)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}מודל: {GOLD}{NUM}{BLACK} משך חיים: {GOLD}{COMMA} שנ{P ה ים}
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}מודל: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{GOLD}{COMMA}%{BLACK} :אמינות מירבית
 STR_PURCHASE_INFO_COST                                          :{GOLD}{CURRENCY_LONG}{BLACK} :מחיר
 STR_PURCHASE_INFO_WEIGHT_CWEIGHT                                :{BLACK}משקל: {GOLD}{WEIGHT_SHORT} ({WEIGHT_SHORT})

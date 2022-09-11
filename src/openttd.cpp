@@ -109,6 +109,7 @@ void MusicLoop();
 void ResetMusic();
 void CallWindowGameTickEvent();
 bool HandleBootstrap();
+void OnTick_Companies(bool main_tick);
 
 extern void ShowOSErrorBox(const char *buf, bool system);
 extern std::string _config_file;
@@ -513,6 +514,7 @@ static void LoadIntroGame(bool load_newgrfs = true)
 
 	FixTitleGameZoom();
 	_pause_mode = PM_UNPAUSED;
+	_pause_countdown = 0;
 	_cursor.fix_at = false;
 
 	CheckForMissingGlyphs();
@@ -728,7 +730,7 @@ int openttd_main(int argc, char *argv[])
 			videodriver = "dedicated";
 			blitter = "null";
 			dedicated = true;
-			SetDebugString("net=3");
+			SetDebugString("net=3", ShowInfo);
 			if (mgo.opt != nullptr) {
 				scanner->dedicated_host = ParseFullConnectionString(mgo.opt, scanner->dedicated_port);
 			}
@@ -752,7 +754,7 @@ int openttd_main(int argc, char *argv[])
 #if defined(_WIN32)
 				CreateConsole();
 #endif
-				if (mgo.opt != nullptr) SetDebugString(mgo.opt);
+				if (mgo.opt != nullptr) SetDebugString(mgo.opt, ShowInfo);
 				break;
 			}
 		case 'e': _switch_mode = (_switch_mode == SM_LOAD_GAME || _switch_mode == SM_LOAD_SCENARIO ? SM_LOAD_SCENARIO : SM_EDITOR); break;
@@ -1161,8 +1163,10 @@ static void MakeNewEditorWorld()
  * @param newgm switch to this mode of loading fails due to some unknown error
  * @param subdir default directory to look for filename, set to 0 if not needed
  * @param lf Load filter to use, if nullptr: use filename + subdir.
+ * @param error_detail Optional string to fill with detaied error information.
  */
-bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileType dft, GameMode newgm, Subdirectory subdir, struct LoadFilter *lf = nullptr)
+bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileType dft, GameMode newgm, Subdirectory subdir,
+		struct LoadFilter *lf = nullptr, std::string *error_detail = nullptr)
 {
 	assert(fop == SLO_LOAD);
 	assert(dft == DFT_GAME_FILE || (lf == nullptr && dft == DFT_OLD_GAME_FILE));
@@ -1174,6 +1178,7 @@ bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileTy
 		case SL_OK: return true;
 
 		case SL_REINIT:
+			if (error_detail != nullptr) *error_detail = GetSaveLoadErrorString();
 			if (_network_dedicated) {
 				/*
 				 * We need to reinit a network map...
@@ -1198,6 +1203,7 @@ bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileTy
 			return false;
 
 		default:
+			if (error_detail != nullptr) *error_detail = GetSaveLoadErrorString();
 			_game_mode = ogm;
 			return false;
 	}
@@ -1933,6 +1939,7 @@ void StateGameLoop()
 		if (_tick_skip_counter < _settings_game.economy.day_length_factor) {
 			AnimateAnimatedTiles();
 			CallVehicleTicks();
+			OnTick_Companies(false);
 		} else {
 			_tick_skip_counter = 0;
 			IncreaseDate();
@@ -1940,6 +1947,7 @@ void StateGameLoop()
 			RunTileLoop();
 			CallVehicleTicks();
 			CallLandscapeTick();
+			OnTick_Companies(true);
 		}
 		BasePersistentStorageArray::SwitchMode(PSM_LEAVE_GAMELOOP);
 
@@ -1962,6 +1970,11 @@ void StateGameLoop()
 		cur_company.Restore();
 	}
 	if (_extra_aspects > 0) FlushDeferredAspectUpdates();
+
+	if (_pause_countdown > 0 && --_pause_countdown == 0) {
+		_pause_mode = PM_PAUSED_NORMAL;
+		SetWindowDirty(WC_MAIN_TOOLBAR, 0);
+	}
 
 	assert(IsLocalCompany());
 }

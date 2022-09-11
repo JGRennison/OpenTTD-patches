@@ -604,6 +604,7 @@ struct GameOptionsWindow : Window {
 					_gui_zoom_cfg = new_zoom;
 					UpdateGUIZoom();
 					UpdateCursorSize();
+					UpdateRouteStepSpriteSize();
 					UpdateAllVirtCoords();
 					FixTitleGameZoom();
 					ReInitAllWindows(true);
@@ -618,6 +619,7 @@ struct GameOptionsWindow : Window {
 					GfxClearSpriteCache();
 					_font_zoom_cfg = new_zoom;
 					UpdateGUIZoom();
+					UpdateRouteStepSpriteSize();
 					LoadStringWidthTable();
 					UpdateAllVirtCoords();
 					ReInitAllWindows(true);
@@ -1919,6 +1921,7 @@ static SettingsContainer &GetSettingsTree()
 			interface->Add(new SettingEntry("gui.prefer_teamchat"));
 			interface->Add(new SettingEntry("gui.advanced_vehicle_list"));
 			interface->Add(new SettingEntry("gui.show_newgrf_name"));
+			interface->Add(new SettingEntry("gui.show_wagon_intro_year"));
 			interface->Add(new SettingEntry("gui.show_train_length_in_details"));
 			interface->Add(new SettingEntry("gui.show_train_weight_ratios_in_details"));
 			interface->Add(new SettingEntry("gui.show_vehicle_group_in_details"));
@@ -1937,6 +1940,7 @@ static SettingsContainer &GetSettingsTree()
 			interface->Add(new SettingEntry("gui.disable_water_animation"));
 			interface->Add(new SettingEntry("gui.show_order_occupancy_by_default"));
 			interface->Add(new SettingEntry("gui.show_group_hierarchy_name"));
+			interface->Add(new ConditionallyHiddenSettingEntry("gui.show_vehicle_group_hierarchy_name", []() -> bool { return !_settings_client.gui.show_group_hierarchy_name; }));
 		}
 
 		SettingsPage *advisors = main->Add(new SettingsPage(STR_CONFIG_SETTING_ADVISORS));

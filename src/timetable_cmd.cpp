@@ -483,7 +483,7 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			std::sort(vehs.begin(), vehs.end(), &VehicleTimetableSorter);
 		}
 
-		int idx = vehs.begin() - std::find(vehs.begin(), vehs.end(), v);
+		int idx = 0;
 
 		for (Vehicle *w : vehs) {
 			w->lateness_counter = 0;

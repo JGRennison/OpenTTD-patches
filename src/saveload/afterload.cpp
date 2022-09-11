@@ -4109,6 +4109,8 @@ bool AfterLoadGame()
 	AfterLoadCompanyStats();
 	AfterLoadStoryBook();
 
+	AfterLoadVehiclesRemoveAnyFoundInvalid();
+
 	GamelogPrintDebug(1);
 
 	InitializeWindowsAndCaches();

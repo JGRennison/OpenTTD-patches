@@ -3209,7 +3209,7 @@ STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Sposta i
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Sposta in giù di uno l'altezza delle nevi perenni
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Generatore:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Tipo di terreno:
-STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Livello del mare:
+STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Livello di mare:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Fiumi:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Levigatezza:
 STR_MAPGEN_VARIETY                                              :{BLACK}Varietà del terreno:
@@ -3909,6 +3909,7 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Costo di
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Capacità: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(riadattabile)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Progettato nel: {GOLD}{NUM}{BLACK} Vita: {GOLD}{COMMA} ann{P o i}
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Progettato nel: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Affidabilità massima: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Costo: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Costo: {GOLD}{CURRENCY_LONG}{BLACK} (Costo riadattamento: {GOLD}{CURRENCY_LONG}{BLACK})
@@ -4524,7 +4525,7 @@ STR_TIMETABLE_STATUS_NOT_STARTED                                :{BLACK}Il viagg
 STR_TIMETABLE_STATUS_START_AT                                   :{BLACK}Il viaggio inizierà in data {STRING}
 
 STR_TIMETABLE_STARTING_DATE                                     :{BLACK}Data iniziale
-STR_TIMETABLE_STARTING_DATE_TOOLTIP                             :{BLACK}Seleziona una data come punto di partenza della tabella oraria. CTRL+clic imposta la data iniziale di questa tabella oraria per tutti i veicoli che condividono gli ordini, distribuendole equamente in base in base al loro ordinamento relativo, ammesso che i tempi siano tutti specificati
+STR_TIMETABLE_STARTING_DATE_TOOLTIP                             :{BLACK}Seleziona una data come punto di partenza della tabella oraria. Ctrl+click distribuisce tutti i veicoli che condividono questo ordine in modo uniforme dalla data indicata in base al loro ordine relativo, se l'ordine è completamente programmato.
 
 STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}Cambia tempo
 STR_TIMETABLE_WAIT_TIME_TOOLTIP                                 :{BLACK}Cambia la quantità di tempo che dovrebbe essere impiegata per l'ordine selezionato

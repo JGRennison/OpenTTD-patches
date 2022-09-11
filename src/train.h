@@ -520,6 +520,6 @@ inline int GetTileMarginInFrontOfTrain(const Train *v)
 int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, bool update_train_state, int *station_ahead, int *station_length);
 
 int GetTrainRealisticAccelerationAtSpeed(const int speed, const int mass, const uint32 cached_power, const uint32 max_te, const uint32 air_drag, const RailType railtype);
-int GetTrainEstimatedMaxAchievableSpeed(const Train *train, const int mass, const int speed_cap);
+int GetTrainEstimatedMaxAchievableSpeed(const Train *train, int mass, const int speed_cap);
 
 #endif /* TRAIN_H */

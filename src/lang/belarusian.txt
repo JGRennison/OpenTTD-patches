@@ -3957,6 +3957,7 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Кошт
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Ёмістасьць: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(пераабст.)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Распрацаваны ў {GOLD}{NUM} г.{BLACK} Тэрмін службы: {GOLD}{COMMA} г{P од ады адоў}
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Распрацаваны ў {GOLD}{NUM} г.
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Макс. надзейнасьць: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Кошт: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Кошт: {GOLD}{CURRENCY_LONG}{BLACK} (Кошт пераабсталявання: {GOLD}{CURRENCY_LONG}{BLACK})

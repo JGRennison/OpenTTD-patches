@@ -1853,12 +1853,14 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 					buff = GetStringWithArgs(buff, STR_JUST_RAW_STRING, &tmp_params, last);
 				} else if (v->group_id != DEFAULT_GROUP && _settings_client.gui.vehicle_names != 0 && v->type < VEH_COMPANY_END) {
 					/* The vehicle has no name, but is member of a group, so print group name */
+					uint32 group_name = v->group_id;
+					if (_settings_client.gui.show_vehicle_group_hierarchy_name) group_name |= GROUP_NAME_HIERARCHY;
 					if (_settings_client.gui.vehicle_names == 1) {
-						int64 args_array[] = {v->group_id, v->unitnumber};
+						int64 args_array[] = {group_name, v->unitnumber};
 						StringParameters tmp_params(args_array);
 						buff = GetStringWithArgs(buff, STR_FORMAT_GROUP_VEHICLE_NAME, &tmp_params, last);
 					} else {
-						int64 args_array[] = {v->group_id, STR_TRADITIONAL_TRAIN_NAME + v->type, v->unitnumber};
+						int64 args_array[] = {group_name, STR_TRADITIONAL_TRAIN_NAME + v->type, v->unitnumber};
 						StringParameters tmp_params(args_array);
 						buff = GetStringWithArgs(buff, STR_FORMAT_GROUP_VEHICLE_NAME_LONG, &tmp_params, last);
 					}

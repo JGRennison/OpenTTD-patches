@@ -3450,6 +3450,7 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Разх
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Капацитет: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(преустроим)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Модел: {GOLD}{NUM}{BLACK} Живот: {GOLD}{COMMA} години
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Модел: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Макс. надеждност: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Цена: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Цена: {GOLD}{CURRENCY_LONG}{BLACK} (Цена за преустройване: {GOLD}{CURRENCY_LONG}{BLACK})

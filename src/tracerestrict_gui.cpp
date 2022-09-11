@@ -397,6 +397,40 @@ static const TraceRestrictDropDownListSet _engine_class_value = {
 	_engine_class_value_str, _engine_class_value_val,
 };
 
+static const StringID _diagdir_value_str[] = {
+	STR_TRACE_RESTRICT_DIRECTION_NE,
+	STR_TRACE_RESTRICT_DIRECTION_SE,
+	STR_TRACE_RESTRICT_DIRECTION_SW,
+	STR_TRACE_RESTRICT_DIRECTION_NW,
+	INVALID_STRING_ID
+};
+static const uint _diagdir_value_val[] = {
+	DIAGDIR_NE,
+	DIAGDIR_SE,
+	DIAGDIR_SW,
+	DIAGDIR_NW,
+};
+
+/** value drop down list for DiagDirection strings and values */
+static const TraceRestrictDropDownListSet _diagdir_value = {
+	_diagdir_value_str, _diagdir_value_val,
+};
+
+static const StringID _dtarget_direction_aux_value_str[] = {
+	STR_TRACE_RESTRICT_VARIABLE_CURRENT_ORDER,
+	STR_TRACE_RESTRICT_VARIABLE_NEXT_ORDER,
+	INVALID_STRING_ID
+};
+static const uint _target_direction_aux_value_val[] = {
+	TRTDCAF_CURRENT_ORDER,
+	TRTDCAF_NEXT_ORDER,
+};
+
+/** value drop down list for TRIT_COND_TARGET_DIRECTION auxiliary type strings and values */
+static const TraceRestrictDropDownListSet _target_direction_aux_value = {
+	_dtarget_direction_aux_value_str, _target_direction_aux_value_val,
+};
+
 static const StringID _pf_penalty_control_value_str[] = {
 	STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_SHORT,
 	STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_CANCEL_SHORT,
@@ -553,6 +587,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		STR_TRACE_RESTRICT_VARIABLE_TIME_DATE_VALUE,
 		STR_TRACE_RESTRICT_VARIABLE_RESERVED_TILES_AHEAD,
 		STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE,
+		STR_TRACE_RESTRICT_VARIABLE_ORDER_TARGET_DIRECTION,
 		STR_TRACE_RESTRICT_VARIABLE_UNDEFINED,
 		INVALID_STRING_ID,
 	};
@@ -583,6 +618,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		TRIT_COND_TIME_DATE_VALUE,
 		TRIT_COND_RESERVED_TILES,                                     // 0x1000000
 		TRIT_COND_PBS_ENTRY_SIGNAL | (TRPESAF_RES_END_TILE << 16),
+		TRIT_COND_TARGET_DIRECTION,
 		TRIT_COND_UNDEFINED,
 	};
 	static const TraceRestrictDropDownListSet set_cond = {
@@ -786,7 +822,7 @@ static const uint _train_status_cond_ops_val[] = {
 	TRCO_IS,
 	TRCO_ISNOT,
 };
-/** cargo conditional operators dropdown list set */
+/** train status conditional operators dropdown list set */
 static const TraceRestrictDropDownListSet _train_status_cond_ops = {
 	_train_status_cond_ops_str, _train_status_cond_ops_val,
 };
@@ -1439,6 +1475,15 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					SetDParam(2, GetDropDownStringByValue(&_engine_class_value, GetTraceRestrictValue(item)));
 					break;
 
+				case TRVT_ORDER_TARGET_DIAGDIR:
+					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_TARGET_DIRECTION;
+					assert(GetTraceRestrictCondFlags(item) <= TRCF_OR);
+					SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
+					SetDParam(1, GetDropDownStringByValue(&_target_direction_aux_value, GetTraceRestrictAuxField(item)));
+					SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
+					SetDParam(3, GetDropDownStringByValue(&_diagdir_value, GetTraceRestrictValue(item)));
+					break;
+
 				default:
 					NOT_REACHED();
 					break;
@@ -2028,6 +2073,10 @@ public:
 						this->ShowDropDownListWithValue(&_signal_mode_control_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0);
 						break;
 
+					case TRVT_ORDER_TARGET_DIAGDIR:
+						this->ShowDropDownListWithValue(&_diagdir_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0);
+						break;
+
 					default:
 						break;
 				}
@@ -2053,6 +2102,11 @@ public:
 
 					case TRVT_TIME_DATE_INT: {
 						this->ShowDropDownListWithValue(&_time_date_value, GetTraceRestrictValue(item), false, TR_WIDGET_LEFT_AUX_DROPDOWN, _settings_game.game_time.time_in_minutes ? 0 : 7, 0, UINT_MAX);
+						break;
+					}
+
+					case TRVT_ORDER_TARGET_DIAGDIR: {
+						this->ShowDropDownListWithValue(&_target_direction_aux_value, GetTraceRestrictAuxField(item), false, TR_WIDGET_LEFT_AUX_DROPDOWN, 0, 0, 0);
 						break;
 					}
 
@@ -2169,6 +2223,11 @@ public:
 			if (this->value_drop_down_is_company || type.value_type == TRVT_GROUP_INDEX || type.value_type == TRVT_SLOT_INDEX || type.value_type == TRVT_SLOT_INDEX_INT || type.value_type == TRVT_COUNTER_INDEX_INT || type.value_type == TRVT_TIME_DATE_INT) {
 				// this is a special company drop-down or group/slot-index drop-down
 				SetTraceRestrictValue(item, index);
+				TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
+				return;
+			}
+			if (type.value_type == TRVT_ORDER_TARGET_DIAGDIR && widget == TR_WIDGET_LEFT_AUX_DROPDOWN) {
+				SetTraceRestrictAuxField(item, index);
 				TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 				return;
 			}
@@ -3167,6 +3226,17 @@ private:
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
 							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
 									GetDropDownStringByValue(&_signal_mode_control_value, GetTraceRestrictValue(item));
+							break;
+
+						case TRVT_ORDER_TARGET_DIAGDIR:
+							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
+							left_aux_sel->SetDisplayedPlane(DPLA_DROPDOWN);
+							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
+							this->EnableWidget(TR_WIDGET_LEFT_AUX_DROPDOWN);
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
+									GetDropDownStringByValue(&_diagdir_value, GetTraceRestrictValue(item));
+							this->GetWidget<NWidgetCore>(TR_WIDGET_LEFT_AUX_DROPDOWN)->widget_data =
+									GetDropDownStringByValue(&_target_direction_aux_value, GetTraceRestrictAuxField(item));
 							break;
 
 						default:

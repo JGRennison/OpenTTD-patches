@@ -26,6 +26,7 @@
 #include "ship.h"
 #include "scope_info.h"
 #include "newgrf_extension.h"
+#include "newgrf_analysis.h"
 
 #include "safeguards.h"
 
@@ -1601,7 +1602,7 @@ void AnalyseEngineCallbacks()
 		auto process_sg = [&](const SpriteGroup *sg, bool is_purchase) {
 			if (sg == nullptr) return;
 
-			AnalyseCallbackOperation op;
+			AnalyseCallbackOperation op(ACOM_CB_VAR);
 			sg->AnalyseCallbacks(op);
 			callbacks_used |= op.callbacks_used;
 			cb36_properties_used |= op.properties_used;
@@ -1682,7 +1683,7 @@ void DumpVehicleSpriteGroup(const Vehicle *v, DumpSpriteGroupPrinter print)
 	}
 
 	SpriteGroupDumper dumper(print);
-	dumper.DumpSpriteGroup(root_spritegroup, 0, 0);
+	dumper.DumpSpriteGroup(root_spritegroup, 0);
 
 	for (uint i = 0; i < NUM_CARGO + 2; i++) {
 		if (e->grf_prop.spritegroup[i] != root_spritegroup && e->grf_prop.spritegroup[i] != nullptr) {
@@ -1699,14 +1700,14 @@ void DumpVehicleSpriteGroup(const Vehicle *v, DumpSpriteGroupPrinter print)
 					break;
 			}
 			print(nullptr, DSGPO_PRINT, 0, buffer);
-			dumper.DumpSpriteGroup(e->grf_prop.spritegroup[i], 0, 0);
+			dumper.DumpSpriteGroup(e->grf_prop.spritegroup[i], 0);
 		}
 	}
 	for (const WagonOverride &wo : e->overrides) {
 		if (wo.group != root_spritegroup && wo.group != nullptr) {
 			print(nullptr, DSGPO_PRINT, 0, "");
 			print(nullptr, DSGPO_PRINT, 0, "OTHER SPRITE GROUP: Wagon override");
-			dumper.DumpSpriteGroup(wo.group, 0, 0);
+			dumper.DumpSpriteGroup(wo.group, 0);
 		}
 	}
 }

@@ -199,11 +199,23 @@ void CcRoadStop(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2,
 	DiagDirection dir = (DiagDirection)GB(p2, 3, 2);
 	if (_settings_client.sound.confirm) SndPlayTileFx(SND_1F_CONSTRUCTION_OTHER, tile);
 	if (!_settings_client.gui.persistent_buildingtools) ResetObjectToPlace();
-	TileArea roadstop_area(tile, GB(p1, 0, 8), GB(p1, 8, 8));
-	for (TileIndex cur_tile : roadstop_area) {
-		ConnectRoadToStructure(cur_tile, dir);
-		/* For a drive-through road stop build connecting road for other entrance. */
-		if (HasBit(p2, 1)) ConnectRoadToStructure(cur_tile, ReverseDiagDir(dir));
+
+	bool connect_to_road = true;
+
+	RoadStopClassID spec_class = Extract<RoadStopClassID, 0, 8>(p3);
+	byte spec_index            = GB(p3, 8, 8);
+	if ((uint)spec_class < RoadStopClass::GetClassCount() && spec_index < RoadStopClass::Get(spec_class)->GetSpecCount()) {
+		const RoadStopSpec *roadstopspec = RoadStopClass::Get(spec_class)->GetSpec(spec_index);
+		if (roadstopspec != nullptr && HasBit(roadstopspec->flags, RSF_NO_AUTO_ROAD_CONNECTION)) connect_to_road = false;
+	}
+
+	if (connect_to_road) {
+		TileArea roadstop_area(tile, GB(p1, 0, 8), GB(p1, 8, 8));
+		for (TileIndex cur_tile : roadstop_area) {
+			ConnectRoadToStructure(cur_tile, dir);
+			/* For a drive-through road stop build connecting road for other entrance. */
+			if (HasBit(p2, 1)) ConnectRoadToStructure(cur_tile, ReverseDiagDir(dir));
+		}
 	}
 }
 

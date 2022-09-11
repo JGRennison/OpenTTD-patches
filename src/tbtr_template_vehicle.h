@@ -225,6 +225,6 @@ short DeleteTemplateReplacementsByGroupID(GroupID);
 
 void ReindexTemplateReplacements();
 
-int GetTemplateVehicleEstimatedMaxAchievableSpeed(const TemplateVehicle *tv, const int mass, const int speed_cap);
+int GetTemplateVehicleEstimatedMaxAchievableSpeed(const TemplateVehicle *tv, int mass, const int speed_cap);
 
 #endif /* TEMPLATE_VEH_H */

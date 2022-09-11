@@ -281,11 +281,11 @@ std::vector<Rect> _viewport_vehicle_map_redraw_rects;
 
 RouteStepsMap _vp_route_steps;
 RouteStepsMap _vp_route_steps_last_mark_dirty;
-uint _vp_route_step_width = 0;
+uint _vp_route_step_sprite_width = 0;
+uint _vp_route_step_base_width = 0;
 uint _vp_route_step_height_top = 0;
-uint _vp_route_step_height_middle = 0;
 uint _vp_route_step_height_bottom = 0;
-SubSprite _vp_route_step_subsprite;
+uint _vp_route_step_string_width[4] = {};
 
 struct DrawnPathRouteTileLine {
 	TileIndex from_tile;
@@ -2351,12 +2351,27 @@ static void ViewportMapDrawVehicleRoute(const Viewport *vp)
 static inline void DrawRouteStep(const Viewport * const vp, const TileIndex tile, const RankOrderTypeList list)
 {
 	if (tile == INVALID_TILE) return;
-	const uint step_count = list.size() > max_rank_order_type_count ? 1 : (uint)list.size();
 	const int x_pos = TileX(tile) * TILE_SIZE + TILE_SIZE / 2;
 	const int y_pos = TileY(tile) * TILE_SIZE + TILE_SIZE / 2;
 	Point pt = RemapCoords(x_pos, y_pos, 0);
-	const int x = UnScaleByZoomLower(pt.x - _vd.dpi.left, _vd.dpi.zoom) - (_vp_route_step_width / 2);
-	if (x >= _cur_dpi->width || (x + _vp_route_step_width) <= 0) return;
+	uint width_bucket = 0;
+	if (list.size() <= max_rank_order_type_count) {
+		for (RankOrderTypeList::const_iterator cit = list.begin(); cit != list.end(); cit++) {
+			if (cit->first >= 10000) {
+				width_bucket = std::max<uint>(width_bucket, 3);
+			} else if (cit->first >= 1000) {
+				width_bucket = std::max<uint>(width_bucket, 2);
+			} else if (cit->first >= 100) {
+				width_bucket = std::max<uint>(width_bucket, 1);
+			}
+		}
+	}
+	const uint str_width = _vp_route_step_string_width[width_bucket];
+	const uint total_width = str_width + _vp_route_step_base_width;
+	const int x_centre = UnScaleByZoomLower(pt.x - _vd.dpi.left, _vd.dpi.zoom);
+	const int x = x_centre - (total_width / 2);
+	if (x >= _cur_dpi->width || (x + total_width) <= 0) return;
+	const uint step_count = list.size() > max_rank_order_type_count ? 1 : (uint)list.size();
 	pt.y -= GetSlopePixelZ(x_pos, y_pos) * ZOOM_LVL_BASE;
 	const int char_height = GetCharacterHeight(FS_SMALL) + 1;
 	const int rsth = _vp_route_step_height_top + (int) step_count * char_height + _vp_route_step_height_bottom;
@@ -2364,26 +2379,32 @@ static inline void DrawRouteStep(const Viewport * const vp, const TileIndex tile
 	if (y >= _cur_dpi->height || (y + rsth) <= 0) return;
 
 	/* Draw the background. */
-	DrawSprite(SPR_ROUTE_STEP_TOP, PAL_NONE, _cur_dpi->left + x, _cur_dpi->top + y);
-	uint y2 = y + _vp_route_step_height_top;
+	GfxFillRect(_cur_dpi->left + x, _cur_dpi->top + y, _cur_dpi->left + x + total_width - 1, _cur_dpi->top + y + _vp_route_step_height_top - 1, PC_BLACK);
+	int y2 = y + _vp_route_step_height_top + (char_height * step_count);
 
-	for (uint r = step_count; r != 0; r--, y2 += char_height) {
-		DrawSprite(SPR_ROUTE_STEP_MIDDLE, PAL_NONE, _cur_dpi->left + x, _cur_dpi->top + y2, &_vp_route_step_subsprite);
+	GfxFillRect(_cur_dpi->left + x, _cur_dpi->top + y + _vp_route_step_height_top, _cur_dpi->left + x + total_width - 1, _cur_dpi->top + y2 - 1, PC_WHITE);
+	GfxFillRect(_cur_dpi->left + x, _cur_dpi->top + y + _vp_route_step_height_top, _cur_dpi->left + x + _vp_route_step_height_top - 1, _cur_dpi->top + y2 - 1, PC_BLACK);
+	GfxFillRect(_cur_dpi->left + x + total_width - _vp_route_step_height_top, _cur_dpi->top + y + _vp_route_step_height_top, _cur_dpi->left + x + total_width - 1, _cur_dpi->top + y2 - 1, PC_BLACK);
+
+	if (total_width > _vp_route_step_sprite_width) {
+		GfxFillRect(_cur_dpi->left + x, _cur_dpi->top + y2, _cur_dpi->left + x + total_width - 1, _cur_dpi->top + y2 + _vp_route_step_height_top - 1, PC_BLACK);
 	}
 
-	DrawSprite(SPR_ROUTE_STEP_BOTTOM, PAL_NONE, _cur_dpi->left + x, _cur_dpi->top + y2);
+	const int x_bottom_spr = x_centre - (_vp_route_step_sprite_width / 2);
+	DrawSprite(SPR_ROUTE_STEP_BOTTOM, PAL_NONE, _cur_dpi->left + x_bottom_spr, _cur_dpi->top + y2);
 	SpriteID s = SPR_ROUTE_STEP_BOTTOM_SHADOW;
-	DrawSprite(SetBit(s, PALETTE_MODIFIER_TRANSPARENT), PALETTE_TO_TRANSPARENT, _cur_dpi->left + x, _cur_dpi->top + y2);
+	DrawSprite(SetBit(s, PALETTE_MODIFIER_TRANSPARENT), PALETTE_TO_TRANSPARENT, _cur_dpi->left + x_bottom_spr, _cur_dpi->top + y2);
 
 	/* Fill with the data. */
 	DrawPixelInfo *old_dpi = _cur_dpi;
 	y2 = y + _vp_route_step_height_top;
 	_cur_dpi = &_dpi_for_text;
 
+	const int x_str = x_centre - (str_width / 2);
 	if (list.size() > max_rank_order_type_count) {
 		/* Write order overflow item */
 		SetDParam(0, list.size());
-		DrawString(_dpi_for_text.left + x, _dpi_for_text.left + x + _vp_route_step_width - 1, _dpi_for_text.top + y2,
+		DrawString(_dpi_for_text.left + x_str, _dpi_for_text.left + x_str + str_width - 1, _dpi_for_text.top + y2,
 				STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_OVERFLOW, TC_FROMSTRING, SA_CENTER, false, FS_SMALL);
 	} else {
 		for (RankOrderTypeList::const_iterator cit = list.begin(); cit != list.end(); cit++, y2 += char_height) {
@@ -2408,7 +2429,7 @@ static inline void DrawRouteStep(const Viewport * const vp, const TileIndex tile
 			if (ok) {
 				/* Write order's info */
 				SetDParam(0, cit->first);
-				DrawString(_dpi_for_text.left + x, _dpi_for_text.left + x + _vp_route_step_width - 1, _dpi_for_text.top + y2,
+				DrawString(_dpi_for_text.left + x_str, _dpi_for_text.left + x_str + str_width - 1, _dpi_for_text.top + y2,
 						STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, TC_FROMSTRING, SA_CENTER, false, FS_SMALL);
 			}
 		}
@@ -3281,7 +3302,9 @@ static void ViewportMapDrawBridgeTunnel(Viewport * const vp, const TunnelBridgeT
 	}
 
 	TileIndexDiff delta = TileOffsByDiagDir(GetTunnelBridgeDirection(tile));
+	uint zoom_mask = (1 << (vp->zoom - ZOOM_LVL_DRAW_MAP)) - 1;
 	for (tile += delta; tile != tbtm->to_tile; tile += delta) { // For each tile
+		if (zoom_mask != 0 && ((TileX(tile) ^ TileY(tile)) & zoom_mask)) continue;
 		const Point pt = RemapCoords(TileX(tile) * TILE_SIZE, TileY(tile) * TILE_SIZE, z);
 		const int x = UnScaleByZoomLower(pt.x - _vd.dpi.left, _vd.dpi.zoom);
 		if (IsInsideMM(x, 0, w)) {
@@ -3913,8 +3936,10 @@ static void MarkRouteStepDirty(const TileIndex tile, uint order_nr)
 	assert(tile != INVALID_TILE);
 	const Point pt = RemapCoords2(TileX(tile) * TILE_SIZE + TILE_SIZE / 2, TileY(tile) * TILE_SIZE + TILE_SIZE / 2);
 	const int char_height = GetCharacterHeight(FS_SMALL) + 1;
+	const int max_width = _vp_route_step_base_width + _vp_route_step_string_width[3];
+	const int half_width_base = (max_width / 2) + 1;
 	for (Viewport * const vp : _viewport_window_cache) {
-		const int half_width = ScaleByZoom((_vp_route_step_width / 2) + 1, vp->zoom);
+		const int half_width = ScaleByZoom(half_width_base, vp->zoom);
 		const int height = ScaleByZoom(_vp_route_step_height_top + char_height * order_nr + _vp_route_step_height_bottom, vp->zoom);
 		MarkViewportDirty(vp, pt.x - half_width, pt.y - height, pt.x + half_width, pt.y, VMDF_NOT_LANDSCAPE);
 	}

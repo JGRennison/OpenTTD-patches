@@ -4498,6 +4498,7 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Provozn�
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Kapacita: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(lze přestavět)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Vyvinuto: {GOLD}{NUM}{BLACK} Životnost: {GOLD}{COMMA} {P rok roky let}
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Vyvinuto: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Max. spolehlivost: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Cena: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Náklady: {GOLD}{CURRENCY_LONG}{BLACK} (Náklady na přestavbu: {GOLD}{CURRENCY_LONG}{BLACK})

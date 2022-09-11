@@ -53,6 +53,7 @@ std::atomic<bool> _exit_game;
 GameMode _game_mode;
 SwitchMode _switch_mode;  ///< The next mainloop command.
 PauseMode _pause_mode;
+uint32 _pause_countdown;
 Palette _cur_palette;
 std::mutex _cur_palette_mutex;
 std::string _switch_baseset;
@@ -935,12 +936,12 @@ Dimension GetStringBoundingBox(const std::string &str, FontSize start_fontsize)
  * @param strid String to examine.
  * @return Width and height of the bounding box for the string in pixels.
  */
-Dimension GetStringBoundingBox(StringID strid)
+Dimension GetStringBoundingBox(StringID strid, FontSize start_fontsize)
 {
 	char buffer[DRAW_STRING_BUFFER];
 
 	GetString(buffer, strid, lastof(buffer));
-	return GetStringBoundingBox(buffer);
+	return GetStringBoundingBox(buffer, start_fontsize);
 }
 
 /**

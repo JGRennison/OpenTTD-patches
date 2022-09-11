@@ -502,10 +502,12 @@ void UpdateAllTemplateVehicleImages()
 	_template_vehicle_images_valid = true;
 }
 
-int GetTemplateVehicleEstimatedMaxAchievableSpeed(const TemplateVehicle *tv, const int mass, const int speed_cap)
+int GetTemplateVehicleEstimatedMaxAchievableSpeed(const TemplateVehicle *tv, int mass, const int speed_cap)
 {
 	int max_speed = 0;
 	int acceleration;
+
+	if (mass < 1) mass = 1;
 
 	do
 	{

@@ -59,6 +59,7 @@
 #include "scope_info.h"
 #include "event_logs.h"
 #include "tile_cmd.h"
+#include "object_base.h"
 #include <time.h>
 
 #include <set>
@@ -802,6 +803,19 @@ DEF_CONSOLE_CMD(ConUnpauseGame)
 	} else {
 		IConsolePrint(CC_DEFAULT, "Game is already unpaused.");
 	}
+
+	return true;
+}
+
+DEF_CONSOLE_CMD(ConStepGame)
+{
+	if (argc == 0 || argc > 2) {
+		IConsoleHelp("Advances the game for a certain amount of ticks (default 1). Usage: 'step [n]'");
+		return true;
+	}
+	auto n = (argc > 1 ? atoi(argv[1]) : 1);
+
+	DoCommandP(0, PM_PAUSED_NORMAL, 0 | (n << 1), CMD_PAUSE);
 
 	return true;
 }
@@ -1728,7 +1742,7 @@ DEF_CONSOLE_CMD(ConDebugLevel)
 	if (argc == 1) {
 		IConsolePrintF(CC_DEFAULT, "Current debug-level: '%s'", GetDebugString());
 	} else {
-		SetDebugString(argv[1]);
+		SetDebugString(argv[1], [](const char *err) { IConsolePrint(CC_ERROR, err); });
 	}
 
 	return true;
@@ -2508,6 +2522,7 @@ DEF_CONSOLE_CMD(ConMapStats)
 	IConsolePrint(CC_DEFAULT, "");
 	IConsolePrintF(CC_DEFAULT, "towns: %u", (uint) Town::GetNumItems());
 	IConsolePrintF(CC_DEFAULT, "industries: %u", (uint) Industry::GetNumItems());
+	IConsolePrintF(CC_DEFAULT, "objects: %u", (uint) Object::GetNumItems());
 	return true;
 }
 
@@ -3649,6 +3664,7 @@ void IConsoleStdLibRegister()
 
 	IConsole::CmdRegister("pause",                   ConPauseGame,        ConHookServerOrNoNetwork);
 	IConsole::CmdRegister("unpause",                 ConUnpauseGame,      ConHookServerOrNoNetwork);
+	IConsole::CmdRegister("step",                    ConStepGame,         ConHookNoNetwork);
 
 	IConsole::CmdRegister("company_pw",              ConCompanyPassword,  ConHookNeedNetwork);
 	IConsole::AliasRegister("company_password",      "company_pw %+");

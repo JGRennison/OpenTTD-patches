@@ -110,6 +110,6 @@ void DumpNewSignalsSpriteGroups(DumpSpriteGroupPrinter print)
 		seprintf(buffer, lastof(buffer), "GRF: %08X", BSWAP32(grf->grfid));
 		print(nullptr, DSGPO_PRINT, 0, buffer);
 		first = false;
-		dumper.DumpSpriteGroup(grf->new_signals_group, 0, 0);
+		dumper.DumpSpriteGroup(grf->new_signals_group, 0);
 	}
 }

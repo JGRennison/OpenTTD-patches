@@ -144,7 +144,7 @@ static bool ExecReadStdout(const char *file, char *const *args, char *&buffer, c
 		nulls.Close();
 
 		execvp(file, args);
-		exit(42);
+		_exit(42);
 	}
 
 	/* parent */
@@ -207,7 +207,7 @@ static bool ExecReadStdoutThroughFile(const char *file, char *const *args, char 
 		nulls.Close();
 
 		execvp(file, args);
-		exit(42);
+		_exit(42);
 	}
 
 	/* parent */
@@ -540,6 +540,32 @@ class CrashLogUnix : public CrashLog {
 			void *func_addr = info.dli_saddr;
 			const char *file_name = nullptr;
 			unsigned int line_num = 0;
+			const int ptr_str_size = (2 + sizeof(void*) * 2);
+			if (dladdr_result && info.dli_fname) {
+				char *saved_buffer = buffer;
+				char addr_ptr_buffer[64];
+				seprintf(addr_ptr_buffer, lastof(addr_ptr_buffer), PRINTF_SIZEX, (char *)trace[i] - (char *)info.dli_fbase);
+				const char *args[] = {
+					"addr2line",
+					"-e",
+					info.dli_fname,
+					"-C",
+					"-i",
+					"-f",
+					"-p",
+					addr_ptr_buffer,
+					nullptr,
+				};
+				buffer += seprintf(buffer, last, " [%02i] %*p %-40s ", i, ptr_str_size, trace[i], info.dli_fname);
+				const char *buffer_start = buffer;
+				bool result = ExecReadStdout("addr2line", const_cast<char* const*>(args), buffer, last);
+				if (result && strstr(buffer_start, "??") == nullptr) {
+					while (buffer[-1] == '\n' && buffer[-2] == '\n') buffer--;
+					continue;
+				}
+				buffer = saved_buffer;
+				*buffer = 0;
+			}
 #if defined(WITH_BFD)
 			/* subtract one to get the line before the return address, i.e. the function call line */
 			sym_info_bfd bfd_info(reinterpret_cast<bfd_vma>(trace[i]) - reinterpret_cast<bfd_vma>(info.dli_fbase) - 1);
@@ -552,7 +578,6 @@ class CrashLogUnix : public CrashLog {
 			}
 #endif /* WITH_BFD */
 			bool ok = true;
-			const int ptr_str_size = (2 + sizeof(void*) * 2);
 			if (dladdr_result && func_name) {
 				int status = -1;
 				char *demangled = nullptr;
@@ -572,6 +597,28 @@ class CrashLogUnix : public CrashLog {
 			if (file_name != nullptr) {
 				buffer += seprintf(buffer, last, "%*s%s:%u\n", 7 + ptr_str_size, "", file_name, line_num);
 			}
+#if defined(WITH_BFD)
+			if (ok && bfd_info.found && bfd_info.abfd) {
+				while (bfd_find_inliner_info(bfd_info.abfd, &file_name, &func_name, &line_num)) {
+					if (func_name) {
+						int status = -1;
+						char *demangled = nullptr;
+#if defined(WITH_DEMANGLE)
+						demangled = abi::__cxa_demangle(func_name, nullptr, 0, &status);
+#endif /* WITH_DEMANGLE */
+						const char *name = (demangled != nullptr && status == 0) ? demangled : func_name;
+						buffer += seprintf(buffer, last, " [inlined] %*s %s\n", ptr_str_size + 36, "",
+								name);
+						free(demangled);
+					} else if (file_name) {
+						buffer += seprintf(buffer, last, " [inlined]\n");
+					}
+					if (file_name != nullptr) {
+						buffer += seprintf(buffer, last, "%*s%s:%u\n", 7 + ptr_str_size, "", file_name, line_num);
+					}
+				}
+			}
+#endif /* WITH_BFD */
 			if (ok) continue;
 #endif /* WITH_DL */
 			buffer += seprintf(buffer, last, " [%02i] %s\n", i, messages[i]);

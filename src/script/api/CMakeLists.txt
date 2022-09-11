@@ -175,6 +175,7 @@ add_files(
     script_industrylist.hpp
     script_industrytype.hpp
     script_industrytypelist.hpp
+    script_inflation.hpp
     script_info_docs.hpp
     script_infrastructure.hpp
     script_list.hpp
@@ -246,6 +247,7 @@ add_files(
     script_industrylist.cpp
     script_industrytype.cpp
     script_industrytypelist.cpp
+    script_inflation.cpp
     script_infrastructure.cpp
     script_list.cpp
     script_log.cpp

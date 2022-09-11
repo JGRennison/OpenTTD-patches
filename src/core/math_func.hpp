@@ -376,4 +376,7 @@ uint32 IntSqrt(uint32 num);
 uint32 IntSqrt64(uint64 num);
 uint32 IntCbrt(uint64 num);
 
+uint16 RXCompressUint(uint32 num);
+uint32 RXDecompressUint(uint16 num);
+
 #endif /* MATH_FUNC_HPP */

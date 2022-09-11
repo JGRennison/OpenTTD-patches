@@ -22,6 +22,15 @@ struct Sprite {
 	byte data[];   ///< Sprite data.
 };
 
+enum SpriteCacheCtrlFlags {
+	SCCF_WARNED                   = 0, ///< True iff the user has been warned about incorrect use of this sprite.
+	SCCF_HAS_NON_PALETTE          = 1, ///< True iff there is at least one non-paletter sprite present (such that 32bpp mode can be used).
+	SCCF_ALLOW_ZOOM_MIN_1X_PAL    = 2, ///< Allow use of sprite min zoom setting at 1x in palette mode.
+	SCCF_ALLOW_ZOOM_MIN_1X_32BPP  = 3, ///< Allow use of sprite min zoom setting at 1x in 32bpp mode.
+	SCCF_ALLOW_ZOOM_MIN_2X_PAL    = 4, ///< Allow use of sprite min zoom setting at 2x in palette mode.
+	SCCF_ALLOW_ZOOM_MIN_2X_32BPP  = 5, ///< Allow use of sprite min zoom setting at 2x in 32bpp mode.
+};
+
 extern uint _sprite_cache_size;
 
 typedef void *AllocatorProc(size_t size);

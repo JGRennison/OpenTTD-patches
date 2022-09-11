@@ -162,3 +162,23 @@ uint32 IntCbrt(uint64 num)
 
 	return ((uint32) r1); /* floor(cbrt(x)); */
 }
+
+/**
+ * Compress unsigned integer into 16 bits, in a way that increases dynamic range, at the expense of precision for large values
+ */
+uint16 RXCompressUint(uint32 num)
+{
+	if (num <= 0x100) return num;
+	if (num <= 0x7900) return 0x100 + ((num - 0x100) >> 3);
+	return std::min<uint32>(UINT16_MAX, 0x1000 + ((num - 0x7900) >> 6));
+}
+
+/**
+ * Inverse of RXCompressUint
+ */
+uint32 RXDecompressUint(uint16 num)
+{
+	if (num > 0x1000) return ((num - 0x1000) << 6) + 0x7900;
+	if (num > 0x100) return ((num - 0x100) << 3) + 0x100;
+	return num;
+}

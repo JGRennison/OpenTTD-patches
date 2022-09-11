@@ -16,7 +16,6 @@
 #include "newgrf_cache_check.h"
 #include "string_func.h"
 #include "newgrf_extension.h"
-#include "newgrf_industrytiles_analysis.h"
 #include "scope.h"
 #include "debug_settings.h"
 
@@ -169,6 +168,17 @@ static U EvalAdjustT(const DeterministicSpriteGroupAdjust &adjust, ScopeResolver
 		case DSGA_TYPE_NONE: break;
 	}
 
+	auto handle_jump = [&](bool jump, U jump_return_value) -> U {
+		if (jump && adjust_iter != nullptr) {
+			/* Jump */
+			(*adjust_iter) += adjust.jump;
+			return jump_return_value;
+		} else {
+			/* Don't jump */
+			return last_value;
+		}
+	};
+
 	switch (adjust.operation) {
 		case DSGA_OP_ADD:  return last_value + value;
 		case DSGA_OP_SUB:  return last_value - value;
@@ -202,16 +212,11 @@ static U EvalAdjustT(const DeterministicSpriteGroupAdjust &adjust, ScopeResolver
 		case DSGA_OP_RSUB: return value - last_value;
 		case DSGA_OP_STO_NC: _temp_store.StoreValue(adjust.divmod_val, (S)value); return last_value;
 		case DSGA_OP_ABS:  return ((S)last_value < 0) ? -((S)last_value) : (S)last_value;
-		case DSGA_OP_JZ: {
-			if (value == 0 && adjust_iter != nullptr) {
-				/* Jump */
-				(*adjust_iter) += adjust.jump;
-				return 0;
-			} else {
-				/* Don't jump */
-				return last_value;
-			}
-		}
+		case DSGA_OP_JZ:     return handle_jump(value == 0, value);
+		case DSGA_OP_JNZ:    return handle_jump(value != 0, value);
+		case DSGA_OP_JZ_LV:  return handle_jump(last_value == 0, last_value);
+		case DSGA_OP_JNZ_LV: return handle_jump(last_value != 0, last_value);
+		case DSGA_OP_NOOP: return last_value;
 		default:           return value;
 	}
 }
@@ -305,299 +310,12 @@ const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) con
 	return SpriteGroup::Resolve(this->default_group, object, false);
 }
 
-void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) const
-{
-	auto res = op.seen.insert(this);
-	if (!res.second) {
-		/* Already seen this group */
-		return;
-	}
-
-	if (op.mode == ACOM_INDUSTRY_TILE && op.data.indtile->anim_state_at_offset) return;
-
-	auto check_1A_range = [&]() -> bool {
-		if (this->GroupMayBeBypassed()) {
-			/* Not clear why some GRFs do this, perhaps a way of commenting out a branch */
-			uint32 value = (this->adjusts.size() == 1) ? EvaluateDeterministicSpriteGroupAdjust(this->size, this->adjusts[0], nullptr, 0, UINT_MAX) : 0;
-			for (const auto &range : this->ranges) {
-				if (range.low <= value && value <= range.high) {
-					if (range.group != nullptr) range.group->AnalyseCallbacks(op);
-					return true;
-				}
-			}
-			if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
-			return true;
-		}
-		return false;
-	};
-
-	if (op.mode == ACOM_FIND_CB_RESULT) {
-		if (this->calculated_result) {
-			op.result_flags |= ACORF_CB_RESULT_FOUND;
-			return;
-		} else if (!(op.result_flags & ACORF_CB_RESULT_FOUND)) {
-			if (check_1A_range()) return;
-			auto check_var_filter = [&](uint8 var, uint value) -> bool {
-				if (this->adjusts.size() == 1 && this->adjusts[0].variable == var && (this->adjusts[0].operation == DSGA_OP_ADD || this->adjusts[0].operation == DSGA_OP_RST)) {
-					const auto &adjust = this->adjusts[0];
-					if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
-						for (const auto &range : this->ranges) {
-							if (range.low == range.high && range.low == value) {
-								if (range.group != nullptr) range.group->AnalyseCallbacks(op);
-								return true;
-							}
-						}
-						if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
-						return true;
-					}
-				}
-				return false;
-			};
-			if (check_var_filter(0xC, op.data.cb_result.callback)) return;
-			if (op.data.cb_result.check_var_10 && check_var_filter(0x10, op.data.cb_result.var_10_value)) return;
-			for (const auto &range : this->ranges) {
-				if (range.group != nullptr) range.group->AnalyseCallbacks(op);
-			}
-			if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
-		}
-		return;
-	}
-
-	if (check_1A_range()) return;
-
-	if ((op.mode == ACOM_CB_VAR || op.mode == ACOM_CB_REFIT_CAPACITY) && this->var_scope != VSG_SCOPE_SELF) {
-		op.result_flags |= ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND;
-	}
-
-	auto find_cb_result = [&](const SpriteGroup *group, AnalyseCallbackOperation::FindCBResultData data) -> bool {
-		if (group == nullptr) return false;
-		AnalyseCallbackOperation cbr_op;
-		cbr_op.mode = ACOM_FIND_CB_RESULT;
-		cbr_op.data.cb_result = data;
-		group->AnalyseCallbacks(cbr_op);
-		return (cbr_op.result_flags & ACORF_CB_RESULT_FOUND);
-	};
-
-	if (this->adjusts.size() == 1 && !this->calculated_result && (this->adjusts[0].operation == DSGA_OP_ADD || this->adjusts[0].operation == DSGA_OP_RST)) {
-		const auto &adjust = this->adjusts[0];
-		if (op.mode == ACOM_CB_VAR && adjust.variable == 0xC) {
-			if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
-				bool found_refit_cap = false;
-				for (const auto &range : this->ranges) {
-					if (range.low == range.high) {
-						switch (range.low) {
-							case CBID_VEHICLE_32DAY_CALLBACK:
-								op.callbacks_used |= SGCU_VEHICLE_32DAY_CALLBACK;
-								break;
-
-							case CBID_VEHICLE_REFIT_COST:
-								op.callbacks_used |= SGCU_VEHICLE_REFIT_COST;
-								break;
-
-							case CBID_RANDOM_TRIGGER:
-								op.callbacks_used |= SGCU_RANDOM_TRIGGER;
-								break;
-
-							case CBID_VEHICLE_MODIFY_PROPERTY:
-								if (range.group != nullptr) {
-									AnalyseCallbackOperation cb36_op;
-									cb36_op.mode = ACOM_CB36_PROP;
-									range.group->AnalyseCallbacks(cb36_op);
-									op.properties_used |= cb36_op.properties_used;
-									op.callbacks_used |= cb36_op.callbacks_used;
-								}
-								break;
-
-							case CBID_VEHICLE_REFIT_CAPACITY:
-								found_refit_cap = true;
-								if (range.group != nullptr) {
-									AnalyseCallbackOperation cb_refit_op;
-									cb_refit_op.mode = ACOM_CB_REFIT_CAPACITY;
-									range.group->AnalyseCallbacks(cb_refit_op);
-									op.result_flags |= (cb_refit_op.result_flags & (ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND | ACORF_CB_REFIT_CAP_SEEN_VAR_47));
-								}
-								break;
-						}
-					} else {
-						if (range.group != nullptr) range.group->AnalyseCallbacks(op);
-					}
-				}
-				if (this->default_group != nullptr) {
-					AnalyseCallbackOperationResultFlags prev_result = op.result_flags;
-					this->default_group->AnalyseCallbacks(op);
-					if (found_refit_cap) {
-						const AnalyseCallbackOperationResultFlags save_mask = ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND | ACORF_CB_REFIT_CAP_SEEN_VAR_47;
-						op.result_flags &= ~save_mask;
-						op.result_flags |= (prev_result & save_mask);
-					}
-				}
-				return;
-			}
-		}
-		if (op.mode == ACOM_CB36_PROP && adjust.variable == 0x10) {
-			if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
-				for (const auto &range : this->ranges) {
-					if (range.low == range.high) {
-						if (range.low < 64) {
-							if (find_cb_result(range.group, { CBID_VEHICLE_MODIFY_PROPERTY, true, (uint8)range.low })) {
-								SetBit(op.properties_used, range.low);
-								if (range.low == 0x9) {
-									/* Speed */
-									if (range.group != nullptr) {
-										AnalyseCallbackOperation cb36_speed;
-										cb36_speed.mode = ACOM_CB36_SPEED;
-										range.group->AnalyseCallbacks(cb36_speed);
-										op.callbacks_used |= cb36_speed.callbacks_used;
-									}
-								}
-							}
-						}
-					} else {
-						if (range.group != nullptr) range.group->AnalyseCallbacks(op);
-					}
-				}
-				if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
-				return;
-			}
-		}
-		if (op.mode == ACOM_CB36_PROP && adjust.variable == 0xC) {
-			if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
-				for (const auto &range : this->ranges) {
-					if (range.low <= CBID_VEHICLE_MODIFY_PROPERTY && CBID_VEHICLE_MODIFY_PROPERTY <= range.high) {
-						if (range.group != nullptr) range.group->AnalyseCallbacks(op);
-						return;
-					}
-				}
-				if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
-				return;
-			}
-		}
-		if (op.mode == ACOM_CB36_SPEED && adjust.variable == 0x4A) {
-			op.callbacks_used |= SGCU_CB36_SPEED_RAILTYPE;
-			return;
-		}
-		if (op.mode == ACOM_INDUSTRY_TILE && adjust.variable == 0xC) {
-			if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
-				/* Callback switch, skip to the default/graphics chain */
-				for (const auto &range : this->ranges) {
-					if (range.low == 0) {
-						if (range.group != nullptr) range.group->AnalyseCallbacks(op);
-						return;
-					}
-				}
-				if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
-				return;
-			}
-		}
-		if (op.mode == ACOM_INDUSTRY_TILE && adjust.variable == 0x44 && this->var_scope == VSG_SCOPE_PARENT) {
-			if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
-				/* Layout index switch */
-				for (const auto &range : this->ranges) {
-					if (range.low <= op.data.indtile->layout_index && op.data.indtile->layout_index <= range.high) {
-						if (range.group != nullptr) range.group->AnalyseCallbacks(op);
-						return;
-					}
-				}
-				if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
-				return;
-			}
-		}
-		if (op.mode == ACOM_INDUSTRY_TILE && adjust.variable == 0x43 && this->var_scope == VSG_SCOPE_SELF) {
-			if (adjust.shift_num == 0 && adjust.and_mask == 0xFFFF && adjust.type == DSGA_TYPE_NONE) {
-				/* Relative position switch */
-				uint64 default_mask = op.data.indtile->check_mask;
-				for (const auto &range : this->ranges) {
-					if (range.high - range.low < 32) {
-						uint64 new_check_mask = 0;
-						for (uint i = range.low; i <= range.high; i++) {
-							int16 x = i & 0xFF;
-							int16 y = (i >> 8) & 0xFF;
-							for (uint bit : SetBitIterator<uint, uint64>(op.data.indtile->check_mask)) {
-								const TileIndexDiffC &ti = (*(op.data.indtile->layout))[bit].ti;
-								if (ti.x == x && ti.y == y) {
-									SetBit(new_check_mask, bit);
-								}
-							}
-						}
-						default_mask &= ~new_check_mask;
-						if (range.group != nullptr) {
-							AnalyseCallbackOperationIndustryTileData data = *(op.data.indtile);
-							data.check_mask = new_check_mask;
-
-							AnalyseCallbackOperation sub_op;
-							sub_op.mode = ACOM_INDUSTRY_TILE;
-							sub_op.data.indtile = &data;
-							range.group->AnalyseCallbacks(sub_op);
-
-							if (data.anim_state_at_offset) {
-								op.data.indtile->anim_state_at_offset = true;
-								return;
-							}
-						}
-					} else {
-						if (range.group != nullptr) range.group->AnalyseCallbacks(op);
-					}
-				}
-				if (this->default_group != nullptr) {
-					AnalyseCallbackOperationIndustryTileData data = *(op.data.indtile);
-					data.check_mask = default_mask;
-
-					AnalyseCallbackOperation sub_op;
-					sub_op.mode = ACOM_INDUSTRY_TILE;
-					sub_op.data.indtile = &data;
-
-					this->default_group->AnalyseCallbacks(sub_op);
-				}
-				return;
-			}
-		}
-	}
-	for (const auto &adjust : this->adjusts) {
-		if (op.mode == ACOM_CB_VAR && adjust.variable == 0xC) {
-			op.callbacks_used |= SGCU_ALL;
-		}
-		if (op.mode == ACOM_CB36_PROP && adjust.variable == 0x10) {
-			if (find_cb_result(this, { CBID_VEHICLE_MODIFY_PROPERTY, false, 0 })) {
-				op.properties_used |= UINT64_MAX;
-			}
-		}
-		if ((op.mode == ACOM_CB_VAR || op.mode == ACOM_CB_REFIT_CAPACITY) && !(adjust.variable == 0xC || adjust.variable == 0x1A || adjust.variable == 0x47 || adjust.variable == 0x7D || adjust.variable == 0x7E)) {
-			op.result_flags |= ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND;
-		}
-		if ((op.mode == ACOM_CB_VAR || op.mode == ACOM_CB_REFIT_CAPACITY) && adjust.variable == 0x47) {
-			op.result_flags |= ACORF_CB_REFIT_CAP_SEEN_VAR_47;
-		}
-		if (adjust.variable == 0x7E && adjust.subroutine != nullptr) {
-			adjust.subroutine->AnalyseCallbacks(op);
-		}
-		if (op.mode == ACOM_INDUSTRY_TILE && this->var_scope == VSG_SCOPE_SELF && (adjust.variable == 0x44 || (adjust.variable == 0x61 && adjust.parameter == 0))) {
-			*(op.data.indtile->result_mask) &= ~op.data.indtile->check_mask;
-			return;
-		}
-		if (op.mode == ACOM_INDUSTRY_TILE && ((this->var_scope == VSG_SCOPE_SELF && adjust.variable == 0x61) || (this->var_scope == VSG_SCOPE_PARENT && adjust.variable == 0x63))) {
-			op.data.indtile->anim_state_at_offset = true;
-			return;
-		}
-	}
-	if (!this->calculated_result) {
-		for (const auto &range : this->ranges) {
-			if (range.group != nullptr) range.group->AnalyseCallbacks(op);
-		}
-		if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
-	}
-}
-
 bool DeterministicSpriteGroup::GroupMayBeBypassed() const
 {
 	if (this->calculated_result) return false;
 	if (this->adjusts.size() == 0) return true;
 	if ((this->adjusts.size() == 1 && this->adjusts[0].variable == 0x1A && (this->adjusts[0].operation == DSGA_OP_ADD || this->adjusts[0].operation == DSGA_OP_RST))) return true;
 	return false;
-}
-
-void CallbackResultSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) const
-{
-	if (op.mode == ACOM_FIND_CB_RESULT) op.result_flags |= ACORF_CB_RESULT_FOUND;
 }
 
 const SpriteGroup *RandomizedSpriteGroup::Resolve(ResolverObject &object) const
@@ -618,17 +336,6 @@ const SpriteGroup *RandomizedSpriteGroup::Resolve(ResolverObject &object) const
 	byte index = (scope->GetRandomBits() & mask) >> this->lowest_randbit;
 
 	return SpriteGroup::Resolve(this->groups[index], object, false);
-}
-
-void RandomizedSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) const
-{
-	op.result_flags |= ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND;
-
-	if (op.mode == ACOM_CB_VAR) op.callbacks_used |= SGCU_RANDOM_TRIGGER;
-
-	for (const SpriteGroup *group: this->groups) {
-		if (group != nullptr) group->AnalyseCallbacks(op);
-	}
 }
 
 const SpriteGroup *RealSpriteGroup::Resolve(ResolverObject &object) const
@@ -700,6 +407,10 @@ static const char *_dsg_op_special_names[] {
 	"STO_NC",
 	"ABS",
 	"JZ",
+	"JNZ",
+	"JZ_LV",
+	"JNZ_LV",
+	"NOOP",
 };
 static_assert(lengthof(_dsg_op_special_names) == DSGA_OP_SPECIAL_END - DSGA_OP_TERNARY);
 
@@ -723,14 +434,14 @@ static char *GetAdjustOperationName(char *str, const char *last, DeterministicSp
 	return str + seprintf(str, last, "\?\?\?(0x%X)", operation);
 }
 
-static char *DumpSpriteGroupAdjust(char *p, const char *last, const DeterministicSpriteGroupAdjust &adjust, int padding, uint32 &highlight_tag, uint &conditional_indent)
+static char *DumpSpriteGroupAdjust(char *p, const char *last, const DeterministicSpriteGroupAdjust &adjust, const char *padding, uint32 &highlight_tag, uint &conditional_indent)
 {
 	if (adjust.variable == 0x7D) {
 		/* Temp storage load */
 		highlight_tag = (1 << 16) | (adjust.parameter & 0xFFFF);
 	}
 
-	p += seprintf(p, last, "%*s", padding, "");
+	p += seprintf(p, last, "%s", padding);
 	for (uint i = 0; i < conditional_indent; i++) {
 		p += seprintf(p, last, "> ");
 	}
@@ -753,7 +464,7 @@ static char *DumpSpriteGroupAdjust(char *p, const char *last, const Deterministi
 		}
 	};
 
-	if (adjust.operation == DSGA_OP_JZ) {
+	if (IsEvalAdjustJumpOperation(adjust.operation)) {
 		conditional_indent++;
 	}
 	if (adjust.adjust_flags & DSGAF_END_BLOCK) {
@@ -767,6 +478,17 @@ static char *DumpSpriteGroupAdjust(char *p, const char *last, const Deterministi
 	}
 	if (adjust.operation == DSGA_OP_ABS) {
 		p += seprintf(p, last, "ABS");
+		append_flags();
+		return p;
+	}
+	if (adjust.operation == DSGA_OP_NOOP) {
+		p += seprintf(p, last, "NOOP");
+		append_flags();
+		return p;
+	}
+	if (adjust.operation == DSGA_OP_JZ_LV || adjust.operation == DSGA_OP_JNZ_LV) {
+		p = GetAdjustOperationName(p, last, adjust.operation);
+		p += seprintf(p, last, " +%u", adjust.jump);
 		append_flags();
 		return p;
 	}
@@ -801,7 +523,7 @@ static char *DumpSpriteGroupAdjust(char *p, const char *last, const Deterministi
 	}
 	p += seprintf(p, last, ", op: ");
 	p = GetAdjustOperationName(p, last, adjust.operation);
-	if (adjust.operation == DSGA_OP_JZ) {
+	if (IsEvalAdjustJumpOperation(adjust.operation)) {
 		p += seprintf(p, last, " +%u", adjust.jump);
 	}
 	append_flags();
@@ -810,7 +532,7 @@ static char *DumpSpriteGroupAdjust(char *p, const char *last, const Deterministi
 
 bool SpriteGroupDumper::use_shadows = false;
 
-void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint flags)
+void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *padding, uint flags)
 {
 	uint32 highlight_tag = 0;
 	auto print = [&]() {
@@ -819,7 +541,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 	};
 
 	if (sg == nullptr) {
-		seprintf(this->buffer, lastof(this->buffer), "%*sNULL GROUP", padding, "");
+		seprintf(this->buffer, lastof(this->buffer), "%sNULL GROUP", padding);
 		print();
 		return;
 	}
@@ -833,7 +555,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 	};
 	auto guard = scope_guard([&]() {
 		if (start_emitted) {
-			this->print_fn(sg, DSGPO_END, padding, nullptr);
+			this->print_fn(sg, DSGPO_END, 0, padding);
 		}
 	});
 
@@ -843,19 +565,21 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 	switch (sg->type) {
 		case SGT_REAL: {
 			const RealSpriteGroup *rsg = (const RealSpriteGroup*)sg;
-			seprintf(this->buffer, lastof(this->buffer), "%*sReal (loaded: %u, loading: %u)%s [%u]",
-					padding, "", (uint)rsg->loaded.size(), (uint)rsg->loading.size(), extra_info, sg->nfo_line);
+			seprintf(this->buffer, lastof(this->buffer), "%sReal (loaded: %u, loading: %u)%s [%u]",
+					padding, (uint)rsg->loaded.size(), (uint)rsg->loading.size(), extra_info, sg->nfo_line);
 			print();
 			emit_start();
+			std::string sub_padding(padding);
+			sub_padding += "    ";
 			for (size_t i = 0; i < rsg->loaded.size(); i++) {
-				seprintf(this->buffer, lastof(this->buffer), "%*sLoaded %u", padding + 2, "", (uint)i);
+				seprintf(this->buffer, lastof(this->buffer), "%s  Loaded %u", padding, (uint)i);
 				print();
-				this->DumpSpriteGroup(rsg->loaded[i], padding + 4, 0);
+				this->DumpSpriteGroup(rsg->loaded[i], sub_padding.c_str(), 0);
 			}
 			for (size_t i = 0; i < rsg->loading.size(); i++) {
-				seprintf(this->buffer, lastof(this->buffer), "%*sLoading %u", padding + 2, "", (uint)i);
+				seprintf(this->buffer, lastof(this->buffer), "%s  Loading %u", padding, (uint)i);
 				print();
-				this->DumpSpriteGroup(rsg->loading[i], padding + 4, 0);
+				this->DumpSpriteGroup(rsg->loading[i], sub_padding.c_str(), 0);
 			}
 			break;
 		}
@@ -865,6 +589,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 			const SpriteGroup *default_group = dsg->default_group;
 			const std::vector<DeterministicSpriteGroupAdjust> *adjusts = &(dsg->adjusts);
 			const std::vector<DeterministicSpriteGroupRange> *ranges = &(dsg->ranges);
+			bool calculated_result = dsg->calculated_result;
 
 			if (SpriteGroupDumper::use_shadows) {
 				auto iter = _deterministic_sg_shadows.find(dsg);
@@ -872,60 +597,97 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 					default_group = iter->second.default_group;
 					adjusts = &(iter->second.adjusts);
 					ranges = &(iter->second.ranges);
+					calculated_result = iter->second.calculated_result;
 				}
 			}
 
-			if (padding == 0 && !dsg->calculated_result && default_group != nullptr) {
+			bool is_callback_group = false;
+			if (adjusts->size() == 1 && !calculated_result) {
+				const DeterministicSpriteGroupAdjust &adjust = (*adjusts)[0];
+				if (adjust.variable == 0xC && (adjust.operation == DSGA_OP_ADD || adjust.operation == DSGA_OP_RST)
+						&& adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
+					is_callback_group = true;
+					if (*padding == 0 && !calculated_result && ranges->size() > 0) {
+						const DeterministicSpriteGroupRange &first_range = (*ranges)[0];
+						if (first_range.low == 0 && first_range.high == 0 && first_range.group != nullptr) {
+							this->top_graphics_group = first_range.group;
+						}
+					}
+				}
+			}
+
+			if (*padding == 0 && !calculated_result && default_group != nullptr) {
 				this->top_default_group = default_group;
 			}
-			if (dsg == this->top_default_group && !(padding == 4 && (flags & SGDF_DEFAULT))) {
-				seprintf(this->buffer, lastof(this->buffer), "%*sTOP LEVEL DEFAULT GROUP: Deterministic (%s, %s), [%u]",
-						padding, "", _sg_scope_names[dsg->var_scope], _sg_size_names[dsg->size], dsg->nfo_line);
+			if (dsg == this->top_default_group && !((flags & SGDF_DEFAULT) && strlen(padding) == 2)) {
+				seprintf(this->buffer, lastof(this->buffer), "%sTOP LEVEL DEFAULT GROUP: Deterministic (%s, %s), [%u]",
+						padding, _sg_scope_names[dsg->var_scope], _sg_size_names[dsg->size], dsg->nfo_line);
+				print();
+				return;
+			}
+			if (dsg == this->top_graphics_group && !((flags & SGDF_RANGE) && strlen(padding) == 2)) {
+				seprintf(this->buffer, lastof(this->buffer), "%sTOP LEVEL GRAPHICS GROUP: Deterministic (%s, %s), [%u]",
+						padding, _sg_scope_names[dsg->var_scope], _sg_size_names[dsg->size], dsg->nfo_line);
 				print();
 				return;
 			}
 			auto res = this->seen_dsgs.insert(dsg);
 			if (!res.second) {
-				seprintf(this->buffer, lastof(this->buffer), "%*sGROUP SEEN ABOVE: Deterministic (%s, %s), [%u]",
-						padding, "", _sg_scope_names[dsg->var_scope], _sg_size_names[dsg->size], dsg->nfo_line);
+				seprintf(this->buffer, lastof(this->buffer), "%sGROUP SEEN ABOVE: Deterministic (%s, %s), [%u]",
+						padding, _sg_scope_names[dsg->var_scope], _sg_size_names[dsg->size], dsg->nfo_line);
 				print();
 				return;
 			}
 			char *p = this->buffer;
-			p += seprintf(p, lastof(this->buffer), "%*sDeterministic (%s, %s)%s [%u]",
-					padding, "", _sg_scope_names[dsg->var_scope], _sg_size_names[dsg->size], extra_info, dsg->nfo_line);
+			p += seprintf(p, lastof(this->buffer), "%sDeterministic (%s, %s)%s [%u]",
+					padding, _sg_scope_names[dsg->var_scope], _sg_size_names[dsg->size], extra_info, dsg->nfo_line);
 			if (HasBit(_misc_debug_flags, MDF_NEWGRF_SG_DUMP_MORE_DETAIL)) {
 				if (dsg->dsg_flags & DSGF_NO_DSE) p += seprintf(p, lastof(this->buffer), ", NO_DSE");
-				if (dsg->dsg_flags & DSGF_DSE_RECURSIVE_DISABLE) p += seprintf(p, lastof(this->buffer), ", DSE_RD");
 				if (dsg->dsg_flags & DSGF_VAR_TRACKING_PENDING) p += seprintf(p, lastof(this->buffer), ", VAR_PENDING");
 				if (dsg->dsg_flags & DSGF_REQUIRES_VAR1C) p += seprintf(p, lastof(this->buffer), ", REQ_1C");
 				if (dsg->dsg_flags & DSGF_CHECK_EXPENSIVE_VARS) p += seprintf(p, lastof(this->buffer), ", CHECK_EXP_VAR");
 				if (dsg->dsg_flags & DSGF_CHECK_INSERT_JUMP) p += seprintf(p, lastof(this->buffer), ", CHECK_INS_JMP");
+				if (dsg->dsg_flags & DSGF_CB_HANDLER) p += seprintf(p, lastof(this->buffer), ", CB_HANDLER");
 			}
 			print();
 			emit_start();
-			padding += 2;
+			std::string sub_padding(padding);
+			sub_padding += "  ";
 			uint conditional_indent = 0;
 			for (const auto &adjust : (*adjusts)) {
-				DumpSpriteGroupAdjust(this->buffer, lastof(this->buffer), adjust, padding, highlight_tag, conditional_indent);
+				DumpSpriteGroupAdjust(this->buffer, lastof(this->buffer), adjust, sub_padding.c_str(), highlight_tag, conditional_indent);
 				print();
 				if (adjust.variable == 0x7E && adjust.subroutine != nullptr) {
-					this->DumpSpriteGroup(adjust.subroutine, padding + 5, 0);
+					std::string subroutine_padding(sub_padding);
+					for (uint i = 0; i < conditional_indent; i++) {
+						subroutine_padding += "> ";
+					}
+					subroutine_padding += "   | ";
+					this->DumpSpriteGroup(adjust.subroutine, subroutine_padding.c_str(), 0);
 				}
 			}
-			if (dsg->calculated_result) {
-				seprintf(this->buffer, lastof(this->buffer), "%*scalculated_result", padding, "");
+			if (calculated_result) {
+				seprintf(this->buffer, lastof(this->buffer), "%scalculated_result", padding);
 				print();
 			} else {
+				std::string subgroup_padding(padding);
+				subgroup_padding += "  ";
 				for (const auto &range : (*ranges)) {
-					seprintf(this->buffer, lastof(this->buffer), "%*srange: %X -> %X", padding, "", range.low, range.high);
+					char *p = this->buffer;
+					p += seprintf(p, lastof(this->buffer), "%srange: %X -> %X", padding, range.low, range.high);
+					if (range.low == range.high && is_callback_group) {
+						const char *cb_name = GetNewGRFCallbackName((CallbackID)range.low);
+						if (cb_name != nullptr) {
+							p += seprintf(p, lastof(this->buffer), " (%s)", cb_name);
+						}
+					}
 					print();
-					this->DumpSpriteGroup(range.group, padding + 2, 0);
+					this->DumpSpriteGroup(range.group, subgroup_padding.c_str(), SGDF_RANGE);
 				}
 				if (default_group != nullptr) {
-					seprintf(this->buffer, lastof(this->buffer), "%*sdefault", padding, "");
+					seprintf(this->buffer, lastof(this->buffer), "%sdefault", padding);
 					print();
-					this->DumpSpriteGroup(default_group, padding + 2, SGDF_DEFAULT);
+					this->DumpSpriteGroup(default_group, subgroup_padding.c_str(), SGDF_DEFAULT);
 				}
 			}
 			break;
@@ -942,31 +704,32 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 				}
 			}
 
-			seprintf(this->buffer, lastof(this->buffer), "%*sRandom (%s, %s, triggers: %X, count: %X, lowest_randbit: %X, groups: %u)%s [%u]",
-					padding, "", _sg_scope_names[rsg->var_scope], rsg->cmp_mode == RSG_CMP_ANY ? "ANY" : "ALL",
+			seprintf(this->buffer, lastof(this->buffer), "%sRandom (%s, %s, triggers: %X, count: %X, lowest_randbit: %X, groups: %u)%s [%u]",
+					padding, _sg_scope_names[rsg->var_scope], rsg->cmp_mode == RSG_CMP_ANY ? "ANY" : "ALL",
 					rsg->triggers, rsg->count, rsg->lowest_randbit, (uint)rsg->groups.size(), extra_info, rsg->nfo_line);
 			print();
 			emit_start();
+			std::string sub_padding(padding);
+			sub_padding += "  ";
 			for (const auto &group : (*groups)) {
-				this->DumpSpriteGroup(group, padding + 2, 0);
+				this->DumpSpriteGroup(group, sub_padding.c_str(), 0);
 			}
 			break;
 		}
 		case SGT_CALLBACK:
-			seprintf(this->buffer, lastof(this->buffer), "%*sCallback Result: %X", padding, "", ((const CallbackResultSpriteGroup *) sg)->result);
+			seprintf(this->buffer, lastof(this->buffer), "%sCallback Result: %X", padding, ((const CallbackResultSpriteGroup *) sg)->result);
 			print();
 			break;
 		case SGT_RESULT:
-			seprintf(this->buffer, lastof(this->buffer), "%*sSprite Result: SpriteID: %u, num: %u",
-					padding, "", ((const ResultSpriteGroup *) sg)->sprite, ((const ResultSpriteGroup *) sg)->num_sprites);
+			seprintf(this->buffer, lastof(this->buffer), "%sSprite Result: SpriteID: %u, num: %u",
+					padding, ((const ResultSpriteGroup *) sg)->sprite, ((const ResultSpriteGroup *) sg)->num_sprites);
 			print();
 			break;
 		case SGT_TILELAYOUT: {
 			const TileLayoutSpriteGroup *tlsg = (const TileLayoutSpriteGroup*)sg;
-			seprintf(this->buffer, lastof(this->buffer), "%*sTile Layout%s [%u]", padding, "", extra_info, sg->nfo_line);
+			seprintf(this->buffer, lastof(this->buffer), "%sTile Layout%s [%u]", padding, extra_info, sg->nfo_line);
 			print();
 			emit_start();
-			padding += 2;
 			if (tlsg->dts.registers != nullptr) {
 				const TileLayoutRegisters *registers = tlsg->dts.registers;
 				size_t count = 1; // 1 for the ground sprite
@@ -974,12 +737,12 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 				foreach_draw_tile_seq(element, tlsg->dts.seq) count++;
 				for (size_t i = 0; i < count; i ++) {
 					const TileLayoutRegisters *reg = registers + i;
-					seprintf(this->buffer, lastof(this->buffer), "%*ssection: %X, register flags: %X", padding, "", (uint)i, reg->flags);
+					seprintf(this->buffer, lastof(this->buffer), "%s  section: %X, register flags: %X", padding, (uint)i, reg->flags);
 					print();
 					auto log_reg = [&](TileLayoutFlags flag, const char *name, uint8 flag_reg) {
 						if (reg->flags & flag) {
 							highlight_tag = (1 << 16) | flag_reg;
-							seprintf(this->buffer, lastof(this->buffer), "%*s%s reg: %X", padding + 2, "", name, flag_reg);
+							seprintf(this->buffer, lastof(this->buffer), "%s    %s reg: %X", padding, name, flag_reg);
 							print();
 						}
 					};
@@ -992,11 +755,11 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 					log_reg(TLF_CHILD_X_OFFSET, "TLF_CHILD_X_OFFSET", reg->delta.child[0]);
 					log_reg(TLF_CHILD_Y_OFFSET, "TLF_CHILD_Y_OFFSET", reg->delta.child[1]);
 					if (reg->flags & TLF_SPRITE_VAR10) {
-						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_SPRITE_VAR10 value: %X", padding + 2, "", reg->sprite_var10);
+						seprintf(this->buffer, lastof(this->buffer), "%s    TLF_SPRITE_VAR10 value: %X", padding, reg->sprite_var10);
 						print();
 					}
 					if (reg->flags & TLF_PALETTE_VAR10) {
-						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_PALETTE_VAR10 value: %X", padding + 2, "", reg->palette_var10);
+						seprintf(this->buffer, lastof(this->buffer), "%s    TLF_PALETTE_VAR10 value: %X", padding, reg->palette_var10);
 						print();
 					}
 				}
@@ -1005,17 +768,17 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 		}
 		case SGT_INDUSTRY_PRODUCTION: {
 			const IndustryProductionSpriteGroup *ipsg = (const IndustryProductionSpriteGroup*)sg;
-			seprintf(this->buffer, lastof(this->buffer), "%*sIndustry Production (version %X) [%u]", padding, "", ipsg->version, ipsg->nfo_line);
+			seprintf(this->buffer, lastof(this->buffer), "%sIndustry Production (version %X) [%u]", padding, ipsg->version, ipsg->nfo_line);
 			print();
 			emit_start();
 			auto log_io = [&](const char *prefix, int i, int quantity, CargoID cargo) {
 				if (ipsg->version >= 1) highlight_tag = (1 << 16) | quantity;
 				if (ipsg->version >= 2) {
-					seprintf(this->buffer, lastof(this->buffer), "%*s%s %X: reg %X, cargo ID: %X", padding + 2, "", prefix, i, quantity, cargo);
+					seprintf(this->buffer, lastof(this->buffer), "%s  %s %X: reg %X, cargo ID: %X", padding, prefix, i, quantity, cargo);
 					print();
 				} else {
 					const char *type = (ipsg->version >= 1) ? "reg" : "value";
-					seprintf(this->buffer, lastof(this->buffer), "%*s%s %X: %s %X", padding + 2, "", prefix, i, type, quantity);
+					seprintf(this->buffer, lastof(this->buffer), "%s  %s %X: %s %X", padding, prefix, i, type, quantity);
 					print();
 				}
 			};
@@ -1026,7 +789,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 				log_io("Add input", i, ipsg->add_output[i], ipsg->cargo_output[i]);
 			}
 			if (ipsg->version >= 1) highlight_tag = (1 << 16) | ipsg->again;
-			seprintf(this->buffer, lastof(this->buffer), "%*sAgain: %s %X", padding + 2, "", (ipsg->version >= 1) ? "reg" : "value", ipsg->again);
+			seprintf(this->buffer, lastof(this->buffer), "%s  Again: %s %X", padding, (ipsg->version >= 1) ? "reg" : "value", ipsg->again);
 			print();
 			break;
 		}
@@ -1036,5 +799,5 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 void DumpSpriteGroup(const SpriteGroup *sg, DumpSpriteGroupPrinter print)
 {
 	SpriteGroupDumper dumper(std::move(print));
-	dumper.DumpSpriteGroup(sg, 0, 0);
+	dumper.DumpSpriteGroup(sg, 0);
 }

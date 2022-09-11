@@ -3610,6 +3610,7 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Loopkost
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Kapasiteit: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(herboubaar)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Ontwerp: {GOLD}{NUM}{BLACK} Leeftyd: {GOLD}{COMMA} jaar
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Ontwerp: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Maks. betroubaarheid: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Kos: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Koste: {GOLD}{CURRENCY_LONG}{BLACK} (Herbou Koste: {GOLD}{CURRENCY_LONG}{BLACK})

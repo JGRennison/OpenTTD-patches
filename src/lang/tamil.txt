@@ -3445,6 +3445,7 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}செ�
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}கொள்ளளவு: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(மாற்றியமைக்கலாம்)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}வடிவமைக்கப்பட்டது: {GOLD}{NUM}{BLACK} வாழ்க்கை: {GOLD}{COMMA} வருடம்{P "" கள்}
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}வடிவமைக்கப்பட்டது: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}அதி. நம்பகத்தன்மை: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}விலை: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_WEIGHT_CWEIGHT                                :{BLACK}எடை: {GOLD}{WEIGHT_SHORT} ({WEIGHT_SHORT})

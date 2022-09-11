@@ -828,7 +828,8 @@ static int64 GetRealisticBrakingDistanceForSpeed(const TrainDecelerationStats &s
 
 	if (z_delta < 0 && _settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
 		/* descending */
-		int64 slope_dist = (ke_delta - (z_delta * 400 * _settings_game.vehicle.train_slope_steepness)) / stats.uncapped_deceleration_x2;
+		/* (5/18) is due to KE being in km/h derived units instead of m/s */
+		int64 slope_dist = (ke_delta - (z_delta * ((400 * 5) / 18) * _settings_game.vehicle.train_slope_steepness)) / stats.uncapped_deceleration_x2;
 		dist = std::max<int64>(dist, slope_dist);
 	}
 	return dist;
@@ -847,7 +848,8 @@ static int GetRealisticBrakingSpeedForDistance(const TrainDecelerationStats &sta
 
 	if (z_delta < 0 && _settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
 		/* descending */
-		int64 sloped_ke = target_ke + (z_delta * 400 * _settings_game.vehicle.train_slope_steepness);
+		/* (5/18) is due to KE being in km/h derived units instead of m/s */
+		int64 sloped_ke = target_ke + (z_delta * ((400 * 5) / 18) * _settings_game.vehicle.train_slope_steepness);
 		int64 slope_speed_sqr = sloped_ke + ((int64)stats.uncapped_deceleration_x2 * (int64)distance);
 		if (slope_speed_sqr < speed_sqr &&
 				_settings_game.vehicle.train_acceleration_model == AM_REALISTIC && GetRailTypeInfo(stats.t->railtype)->acceleration_type != 2) {
@@ -959,7 +961,8 @@ static void ApplyLookAheadItem(const Train *v, const TrainReservationLookAheadIt
 			break;
 
 		case TRLIT_SIGNAL:
-			if (_settings_game.vehicle.realistic_braking_aspect_limited == TRBALM_ON && v->lookahead->lookahead_end_position == item.start) {
+			if (_settings_game.vehicle.realistic_braking_aspect_limited == TRBALM_ON &&
+					(v->lookahead->lookahead_end_position == item.start || v->lookahead->lookahead_end_position == item.start + 1)) {
 				limit_advisory_speed(item.start, 0, item.z_pos);
 			}
 			break;
@@ -1416,7 +1419,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 	const RailVehicleInfo *rvi = &e->u.rail;
 
 	/* Check that the wagon can drive on the track in question */
-	if (!IsCompatibleRail(rvi->railtype, GetRailType(tile))) return CMD_ERROR;
+	if (!IsCompatibleRail(rvi->railtype, GetRailType(tile))) return_cmd_error(STR_ERROR_DEPOT_HAS_WRONG_RAIL_TYPE);
 
 	if (flags & DC_EXEC) {
 		Train *v = new Train();
@@ -3074,6 +3077,7 @@ CommandCost CmdReverseTrainDirection(TileIndex tile, DoCommandFlag flags, uint32
 		}
 	} else {
 		/* turn the whole train around */
+		if (!v->IsPrimaryVehicle()) return CMD_ERROR;
 		if ((v->vehstatus & VS_CRASHED) || HasBit(v->flags, VRF_BREAKDOWN_STOPPED)) return CMD_ERROR;
 
 		if (flags & DC_EXEC) {
@@ -7087,14 +7091,13 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 		}
 	} else {
 		CommandCost buyCost = TestBuyAllTemplateVehiclesInChain(tv, tile);
-		if (!buyCost.Succeeded() || !CheckCompanyHasMoney(buyCost)) {
+		if (!buyCost.Succeeded()) {
 			if (leaveDepot) incoming->vehstatus &= ~VS_STOPPED;
-
-			if (!buyCost.Succeeded() && buyCost.GetErrorMessage() != INVALID_STRING_ID) {
-				return buyCost;
-			} else {
-				return_cmd_error(STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY);
-			}
+			if (buyCost.GetErrorMessage() == INVALID_STRING_ID) return_cmd_error(STR_ERROR_CAN_T_BUY_TRAIN);
+			return buyCost;
+		} else if (!CheckCompanyHasMoney(buyCost)) {
+			if (leaveDepot) incoming->vehstatus &= ~VS_STOPPED;
+			return_cmd_error(STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY);
 		}
 	}
 
@@ -7316,10 +7319,12 @@ int GetTrainRealisticAccelerationAtSpeed(const int speed, const int mass, const 
 	return acceleration;
 }
 
-int GetTrainEstimatedMaxAchievableSpeed(const Train *train, const int mass, const int speed_cap)
+int GetTrainEstimatedMaxAchievableSpeed(const Train *train, int mass, const int speed_cap)
 {
 	int max_speed = 0;
 	int acceleration;
+
+	if (mass < 1) mass = 1;
 
 	do
 	{

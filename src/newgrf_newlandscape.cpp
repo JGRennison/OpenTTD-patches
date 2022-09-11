@@ -43,7 +43,6 @@ std::vector<const GRFFile *> _new_landscape_rocks_grfs;
 			return this->ti->z / TILE_HEIGHT;
 
 		case 0x43:
-			/* Knuth hash */
 			return SimpleHash32(this->ti->tile);
 
 		case 0x44:
