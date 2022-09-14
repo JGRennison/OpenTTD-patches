@@ -7088,8 +7088,7 @@ STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_TEXT                      :{WHITE}Seguro q
 
 ######################### Update 2022-09-14
 # Remember to first update the project and rebuild it all to have the latest instance of strgen.
-# Obtained with: ../../build/src/strgen/strgen -w galician.txt 2>&1 >/dev/null | cut -d"'" -f 2 > galician_missing.txt
-# Obtained translations strings with: ../../build/src/strgen/strgen -w galician.txt 2>&1 >/dev/null | cut -d"'" -f 2 | xargs -I U grep -w "U"  english.txt  >> galician_missing_trans.txt
+# Obtained translations strings with: ../../build/src/strgen/strgen -w galician.txt 2>&1 | cut -d\' -f 2 | head -n-1 | xargs -I $ grep -w $ english.txt >> galician.txt
 #########################
 STR_HIERARCHY_SEPARATOR                                         :{SP}/{SP}
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE_AVG_SPEED                   :{TINY_FONT}{BLACK}Pago pola entrega de 1 unidade (ou 1.000 litros) de carga nunha distancia de 200 cadros
