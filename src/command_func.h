@@ -85,6 +85,10 @@ static inline DoCommandFlag CommandFlagsToDCFlags(CommandFlags cmd_flags)
 void ClearCommandLog();
 char *DumpCommandLog(char *buffer, const char *last);
 
+void ExecuteCommandQueue();
+void ClearCommandQueue();
+void EnqueueDoCommandP(CommandContainer cmd);
+
 /*** All command callbacks that exist ***/
 
 /* ai/ai_instance.cpp */

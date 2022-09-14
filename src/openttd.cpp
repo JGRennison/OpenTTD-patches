@@ -467,6 +467,7 @@ static void ShutdownGame()
 	ClearVehicleTickCaches();
 	InvalidateTemplateReplacementImages();
 	ClearCommandLog();
+	ClearCommandQueue();
 	ClearSpecialEventsLog();
 	ClearDesyncMsgLog();
 
@@ -2078,6 +2079,7 @@ void GameLoop()
 		/* Singleplayer */
 		StateGameLoop();
 	}
+	ExecuteCommandQueue();
 
 	if (!_pause_mode && HasBit(_display_opt, DO_FULL_ANIMATION)) {
 		extern std::mutex _cur_palette_mutex;

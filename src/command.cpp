@@ -34,6 +34,7 @@
 #include "debug_desync.h"
 #include "order_backup.h"
 #include <array>
+#include <deque>
 
 #include "table/strings.h"
 
@@ -585,6 +586,12 @@ struct CommandLog {
 static CommandLog _command_log;
 static CommandLog _command_log_aux;
 
+struct CommandQueueItem {
+	CommandContainer cmd;
+	CompanyID company;
+};
+static std::deque<CommandQueueItem> _command_queue;
+
 void ClearCommandLog()
 {
 	_command_log.Reset();
@@ -971,6 +978,33 @@ CommandCost DoCommandPScript(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, ui
 	}
 
 	return res;
+}
+
+void ExecuteCommandQueue()
+{
+	while (!_command_queue.empty()) {
+		Backup<CompanyID> cur_company(_current_company, FILE_LINE);
+		cur_company.Change(_command_queue.front().company);
+		DoCommandP(&_command_queue.front().cmd);
+		cur_company.Restore();
+		_command_queue.pop_front();
+	}
+}
+
+void ClearCommandQueue()
+{
+	_command_queue.clear();
+}
+
+void EnqueueDoCommandP(CommandContainer cmd)
+{
+	if (_docommand_recursive == 0) {
+		DoCommandP(&cmd);
+	} else {
+		CommandQueueItem &item = _command_queue.emplace_back();
+		item.cmd = std::move(cmd);
+		item.company = _current_company;
+	}
 }
 
 
