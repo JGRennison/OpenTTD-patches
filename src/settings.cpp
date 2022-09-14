@@ -1483,8 +1483,8 @@ static void MaxNoAIsChange(int32 new_value)
  */
 static bool CheckRoadSide(int32 &new_value)
 {
-	extern bool RoadVehiclesAreBuilt();
-	return (_game_mode == GM_MENU || !RoadVehiclesAreBuilt());
+	extern bool RoadVehiclesExistOutsideDepots();
+	return (_game_mode == GM_MENU || !RoadVehiclesExistOutsideDepots());
 }
 
 static void RoadSideChanged(int32 new_value)
