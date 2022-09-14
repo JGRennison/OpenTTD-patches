@@ -881,6 +881,7 @@ bool DoCommandPEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, C
 	bool estimate_only = _shift_pressed && IsLocalCompany() &&
 			!_generating_world &&
 			!(cmd & CMD_NETWORK_COMMAND) &&
+			!(cmd & CMD_NO_SHIFT_ESTIMATE) &&
 			!(GetCommandFlags(cmd) & CMD_NO_EST);
 
 	/* We're only sending the command, so don't do

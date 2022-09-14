@@ -510,6 +510,7 @@ DECLARE_ENUM_AS_BIT_SET(DoCommandFlag)
  */
 enum FlaggedCommands {
 	CMD_NETWORK_COMMAND       = 0x0100, ///< execute the command without sending it on the network
+	CMD_NO_SHIFT_ESTIMATE     = 0x0200, ///< do not check shift key state for whether to estimate command
 	CMD_FLAGS_MASK            = 0xFF00, ///< mask for all command flags
 	CMD_ID_MASK               = 0x00FF, ///< mask for the command ID
 };
