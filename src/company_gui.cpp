@@ -2891,7 +2891,7 @@ struct BuyCompanyWindow : Window {
 	~BuyCompanyWindow()
 	{
 		const Company *c = Company::GetIfValid((CompanyID)this->window_number);
-		if (c != nullptr && HasBit(c->bankrupt_asked, this->owner)) {
+		if (c != nullptr && HasBit(c->bankrupt_asked, this->owner) && _current_company == this->owner) {
 			EnqueueDoCommandP(NewCommandContainerBasic(0, this->window_number, 0, CMD_DECLINE_BUY_COMPANY | CMD_NO_SHIFT_ESTIMATE));
 		}
 	}
