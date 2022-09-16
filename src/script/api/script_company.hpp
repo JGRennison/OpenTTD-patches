@@ -97,7 +97,6 @@ public:
 
 	/**
 	 * Types of expenses.
-	 * @api -ai
 	 */
 	enum ExpensesType : byte {
 		EXPENSES_CONSTRUCTION = ::EXPENSES_CONSTRUCTION,     ///< Construction costs.
@@ -113,6 +112,8 @@ public:
 		EXPENSES_SHIP_INC     = ::EXPENSES_SHIP_REVENUE,     ///< Revenue from ships.
 		EXPENSES_LOAN_INT     = ::EXPENSES_LOAN_INTEREST,    ///< Interest payments over the loan.
 		EXPENSES_OTHER        = ::EXPENSES_OTHER,            ///< Other expenses.
+		EXPENSES_SHARING_COST = ::EXPENSES_SHARING_COST,     ///< Infrastructure sharing costs.
+		EXPENSES_SHARING_INC  = ::EXPENSES_SHARING_INC,      ///< Infrastructure sharing income.
 		EXPENSES_INVALID      = ::INVALID_EXPENSES,          ///< Invalid expense type.
 	};
 
@@ -309,6 +310,17 @@ public:
 	 * @return The value of the company in the given quarter.
 	 */
 	static Money GetQuarterlyCompanyValue(CompanyID company, uint32 quarter);
+
+	/**
+	 * Get the expense category value of the company in the given year (relative to the current year).
+	 * @param company The company to get the value of.
+	 * @param year_offset The year, relative to the current year (value values are 0, 1, and 2).
+	 * @param expenses_type The expense category to return.
+	 * @pre ResolveCompanyID(company) != COMPANY_INVALID.
+	 * @pre year_offset <= 2.
+	 * @return The value of the company in the given quarter.
+	 */
+	static Money GetAnnualExpenseValue(CompanyID company, uint32 year_offset, ExpensesType expenses_type);
 
 	/**
 	 * Build your company's HQ on the given tile.

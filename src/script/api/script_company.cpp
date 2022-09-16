@@ -167,6 +167,17 @@
 	return ::Company::Get(company)->old_economy[quarter - 1].company_value;
 }
 
+/* static */ Money ScriptCompany::GetAnnualExpenseValue(CompanyID company, uint32 year_offset, ExpensesType expenses_type)
+{
+	EnforcePrecondition(false, expenses_type < (ExpensesType)::EXPENSES_END);
+	EnforcePrecondition(false, year_offset <= 2);
+
+	company = ResolveCompanyID(company);
+	if (company == COMPANY_INVALID) return -1;
+
+	return ::Company::Get(company)->yearly_expenses[year_offset][expenses_type];
+}
+
 
 /* static */ Money ScriptCompany::GetBankBalance(ScriptCompany::CompanyID company)
 {
