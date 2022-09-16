@@ -2615,6 +2615,7 @@ void SyncCompanySettings()
 	const void *new_object = &_settings_client.company;
 	for (auto &sd : _company_settings) {
 		if (!sd->IsIntSetting()) continue;
+		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		uint32 old_value = (uint32)sd->AsIntSetting()->Read(new_object);
 		uint32 new_value = (uint32)sd->AsIntSetting()->Read(old_object);
 		if (old_value != new_value) NetworkSendCommand(0, 0, new_value, 0, CMD_CHANGE_COMPANY_SETTING, nullptr, sd->name, _local_company, 0);
