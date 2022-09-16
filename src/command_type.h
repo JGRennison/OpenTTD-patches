@@ -391,6 +391,8 @@ enum Commands {
 	CMD_DELETE_VIRTUAL_TRAIN,         ///< Delete a virtual train
 	CMD_BUILD_VIRTUAL_RAIL_VEHICLE,   ///< Build a virtual train
 	CMD_REPLACE_TEMPLATE_VEHICLE,     ///< Replace a template vehicle with another one based on a virtual train
+	CMD_MOVE_VIRTUAL_RAIL_VEHICLE,    ///< Move a virtual rail vehicle
+	CMD_SELL_VIRTUAL_VEHICLE,         ///< Sell a virtual vehicle
 
 	CMD_CLONE_TEMPLATE_VEHICLE_FROM_TRAIN, ///< clone a train and create a new template vehicle based on it
 	CMD_DELETE_TEMPLATE_VEHICLE,      ///< delete a template vehicle

@@ -258,6 +258,14 @@ CommandCost CmdSellVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	return ret;
 }
 
+CommandCost CmdSellVirtualVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	Train *v = Train::GetIfValid(GB(p1, 0, 20));
+	if (v == nullptr || !v->IsVirtual()) return CMD_ERROR;
+
+	return CmdSellVehicle(tile, flags, p1, p2, text);
+}
+
 /**
  * Helper to run the refit cost callback.
  * @param v The vehicle we are refitting, can be nullptr.

@@ -2001,6 +2001,14 @@ static void NormaliseTrainHead(Train *head)
 	head->unitnumber = GetFreeUnitNumber(VEH_TRAIN);
 }
 
+CommandCost CmdMoveVirtualRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	Train *src = Train::GetIfValid(GB(p1, 0, 20));
+	if (src == nullptr || !src->IsVirtual()) return CMD_ERROR;
+
+	return CmdMoveRailVehicle(tile, flags, p1, p2, text);
+}
+
 /**
  * Move a rail vehicle around inside the depot.
  * @param tile unused
