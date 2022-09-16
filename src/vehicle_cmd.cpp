@@ -167,7 +167,16 @@ CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 			value.AddCost(CmdRefitVehicle(tile, flags, v->index, cargo | (1 << 16), nullptr));
 		} else {
 			/* Fill in non-refitted capacities */
-			_returned_refit_capacity = e->GetDisplayDefaultCapacity(&_returned_mail_refit_capacity);
+			if (e->type == VEH_TRAIN || e->type == VEH_ROAD) {
+				_returned_vehicle_capacities = GetCapacityOfArticulatedParts(eid);
+				_returned_refit_capacity = _returned_vehicle_capacities[default_cargo];
+				_returned_mail_refit_capacity = 0;
+			} else {
+				_returned_refit_capacity = e->GetDisplayDefaultCapacity(&_returned_mail_refit_capacity);
+				_returned_vehicle_capacities.Clear();
+				_returned_vehicle_capacities[default_cargo] = _returned_refit_capacity;
+				_returned_vehicle_capacities[CT_MAIL] = _returned_mail_refit_capacity;
+			}
 		}
 
 		if (flags & DC_EXEC) {
@@ -370,6 +379,7 @@ static CommandCost RefitVehicle(Vehicle *v, bool only_this, uint8 num_vehicles, 
 	uint total_capacity = 0;
 	uint total_mail_capacity = 0;
 	num_vehicles = num_vehicles == 0 ? UINT8_MAX : num_vehicles;
+	_returned_vehicle_capacities.Clear();
 
 	VehicleSet vehicles_to_refit;
 	if (!only_this) {
@@ -394,7 +404,11 @@ static CommandCost RefitVehicle(Vehicle *v, bool only_this, uint8 num_vehicles, 
 		/* If the vehicle is not refittable, or does not allow automatic refitting,
 		 * count its capacity nevertheless if the cargo matches */
 		bool refittable = HasBit(e->info.refit_mask, new_cid) && (!auto_refit || HasBit(e->info.misc_flags, EF_AUTO_REFIT));
-		if (!refittable && v->cargo_type != new_cid) continue;
+		if (!refittable && v->cargo_type != new_cid) {
+			uint amount = e->DetermineCapacity(v, nullptr);
+			if (amount > 0) _returned_vehicle_capacities[v->cargo_type] += amount;
+			continue;
+		}
 
 		/* Determine best fitting subtype if requested */
 		if (actual_subtype == 0xFF) {
@@ -414,6 +428,9 @@ static CommandCost RefitVehicle(Vehicle *v, bool only_this, uint8 num_vehicles, 
 		total_capacity += amount;
 		/* mail_capacity will always be zero if the vehicle is not an aircraft. */
 		total_mail_capacity += mail_capacity;
+
+		_returned_vehicle_capacities[new_cid] += amount;
+		_returned_vehicle_capacities[CT_MAIL] += mail_capacity;
 
 		if (!refittable) continue;
 

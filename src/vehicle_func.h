@@ -19,6 +19,7 @@
 #include "newgrf_config.h"
 #include "track_type.h"
 #include "livery.h"
+#include "cargo_type.h"
 
 #define is_custom_sprite(x) (x >= 0xFD)
 #define IS_CUSTOM_FIRSTHEAD_SPRITE(x) (x == 0xFD)
@@ -245,6 +246,7 @@ CommandCost EnsureNoTrainOnTrackBits(TileIndex tile, TrackBits track_bits);
 extern VehicleID _new_vehicle_id;
 extern uint _returned_refit_capacity;
 extern uint16 _returned_mail_refit_capacity;
+extern CargoArray _returned_vehicle_capacities;
 
 bool CanVehicleUseStation(EngineID engine_type, const struct Station *st);
 bool CanVehicleUseStation(const Vehicle *v, const struct Station *st);

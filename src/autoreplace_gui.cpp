@@ -479,8 +479,7 @@ public:
 					const Engine *e = Engine::Get(this->sel_engine[side]);
 					TestedEngineDetails ted;
 					ted.cost = 0;
-					ted.cargo = e->GetDefaultCargoType();
-					ted.capacity = e->GetDisplayDefaultCapacity(&ted.mail_capacity);
+					ted.FillDefaultCapacities(e);
 
 					NWidgetBase *nwi = this->GetWidget<NWidgetBase>(side == 0 ? WID_RV_LEFT_DETAILS : WID_RV_RIGHT_DETAILS);
 					int text_end = DrawVehiclePurchaseInfo(nwi->pos_x + WD_FRAMETEXT_LEFT, nwi->pos_x + nwi->current_x - WD_FRAMETEXT_RIGHT,

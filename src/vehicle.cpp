@@ -95,6 +95,7 @@ static const uint GEN_HASHY_BUCKET_BITS = 6;
 VehicleID _new_vehicle_id;
 uint _returned_refit_capacity;        ///< Stores the capacity after a refit operation.
 uint16 _returned_mail_refit_capacity; ///< Stores the mail capacity after a refit operation (Aircraft only).
+CargoArray _returned_vehicle_capacities; ///< Stores the cargo capacities after a vehicle build operation
 
 
 /** The pool with all our precious vehicles. */
