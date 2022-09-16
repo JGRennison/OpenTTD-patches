@@ -3186,6 +3186,7 @@ bool AfterLoadGame()
 
 	/* Set some breakdown-related variables to the correct values. */
 	if (SlXvIsFeatureMissing(XSLFI_IMPROVED_BREAKDOWNS)) {
+		_settings_game.vehicle.improved_breakdowns = false;
 		for (Train *v : Train::Iterate()) {
 			if (v->IsFrontEngine()) {
 				if (v->breakdown_ctr == 1) SetBit(v->flags, VRF_BREAKDOWN_STOPPED);
