@@ -199,8 +199,8 @@ class NIHVehicle : public NIHelper {
 			seprintf(buffer, lastof(buffer), "  Speed restriction: %u, signal speed restriction (ATC): %u",
 					t->speed_restriction, t->signal_speed_restriction);
 			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  Railtype: %u, compatible_railtypes: 0x" OTTD_PRINTFHEX64,
-					t->railtype, t->compatible_railtypes);
+			seprintf(buffer, lastof(buffer), "  Railtype: %u, compatible_railtypes: 0x" OTTD_PRINTFHEX64 ", acceleration type: %u",
+					t->railtype, t->compatible_railtypes, t->GetAccelerationType());
 			output.print(buffer);
 			if (t->vehstatus & VS_CRASHED) {
 				seprintf(buffer, lastof(buffer), "  CRASHED: anim pos: %u", t->crash_anim_pos);

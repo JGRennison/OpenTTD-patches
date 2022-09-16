@@ -768,8 +768,10 @@ public:
 			SetDParam(0, tmp->full_weight);
 			if (_settings_client.gui.show_train_weight_ratios_in_details) {
 				SetDParam(1, STR_VEHICLE_INFO_WEIGHT_RATIOS);
-				SetDParam(2, (100 * tmp->power) / std::max<uint>(1, tmp->full_weight));
-				SetDParam(3, (tmp->max_te / 10) / std::max<uint>(1, tmp->full_weight));
+				SetDParam(2, STR_VEHICLE_INFO_POWER_WEIGHT_RATIO);
+				SetDParam(3, (100 * tmp->power) / std::max<uint>(1, tmp->full_weight));
+				SetDParam(4, GetRailTypeInfo(tmp->railtype)->acceleration_type == 2 ? STR_EMPTY : STR_VEHICLE_INFO_TE_WEIGHT_RATIO);
+				SetDParam(5, (tmp->max_te / 10) / std::max<uint>(1, tmp->full_weight));
 			} else {
 				SetDParam(1, STR_EMPTY);
 			}

@@ -321,6 +321,15 @@ public:
 		return this->GetCargoWeight(this->cargo.StoredCount());
 	}
 
+	/**
+	 * Allows to know the acceleration type of a vehicle.
+	 * @return Acceleration type of the vehicle.
+	 */
+	inline int GetAccelerationType() const
+	{
+		return GetRailTypeInfo(this->railtype)->acceleration_type;
+	}
+
 protected: // These functions should not be called outside acceleration code.
 	/**
 	 * Gets the speed a broken down train (low speed breakdown) is limited to.
@@ -437,15 +446,6 @@ protected: // These functions should not be called outside acceleration code.
 		 * The friction coefficient increases with speed in a way that
 		 * it doubles at 512 km/h, triples at 1024 km/h and so on. */
 		return 15 * (512 + this->GetCurrentSpeed()) / 512;
-	}
-
-	/**
-	 * Allows to know the acceleration type of a vehicle.
-	 * @return Acceleration type of the vehicle.
-	 */
-	inline int GetAccelerationType() const
-	{
-		return GetRailTypeInfo(this->railtype)->acceleration_type;
 	}
 
 	/**

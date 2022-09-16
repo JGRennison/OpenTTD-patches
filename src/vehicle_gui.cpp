@@ -2899,8 +2899,10 @@ struct VehicleDetailsWindow : Window {
 					dim = maxdim(dim, GetStringBoundingBox(STR_VEHICLE_INFO_GROUP));
 				}
 				if (this->vehicle_weight_ratio_line_shown) {
-					SetDParamMaxValue(0, 1 << 16);
+					SetDParam(0, STR_VEHICLE_INFO_POWER_WEIGHT_RATIO);
 					SetDParamMaxValue(1, 1 << 16);
+					SetDParam(2, (v->type != VEH_TRAIN || Train::From(v)->GetAccelerationType() == 2) ? STR_EMPTY : STR_VEHICLE_INFO_TE_WEIGHT_RATIO);
+					SetDParamMaxValue(3, 1 << 16);
 					dim = maxdim(dim, GetStringBoundingBox(STR_VEHICLE_INFO_WEIGHT_RATIOS));
 				}
 				SetDParam(0, STR_VEHICLE_INFO_AGE);
@@ -3047,8 +3049,10 @@ struct VehicleDetailsWindow : Window {
 
 				bool should_show_weight_ratio = this->ShouldShowWeightRatioLine(v);
 				if (should_show_weight_ratio) {
-					SetDParam(0, (100 * Train::From(v)->gcache.cached_power) / std::max<uint>(1, Train::From(v)->gcache.cached_weight));
-					SetDParam(1, (Train::From(v)->gcache.cached_max_te / 10) / std::max<uint>(1, Train::From(v)->gcache.cached_weight));
+					SetDParam(0, STR_VEHICLE_INFO_POWER_WEIGHT_RATIO);
+					SetDParam(1, (100 * Train::From(v)->gcache.cached_power) / std::max<uint>(1, Train::From(v)->gcache.cached_weight));
+					SetDParam(2, Train::From(v)->GetAccelerationType() == 2 ? STR_EMPTY : STR_VEHICLE_INFO_TE_WEIGHT_RATIO);
+					SetDParam(3, (Train::From(v)->gcache.cached_max_te / 10) / std::max<uint>(1, Train::From(v)->gcache.cached_weight));
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_VEHICLE_INFO_WEIGHT_RATIOS);
 					y += FONT_HEIGHT_NORMAL;
 				}
