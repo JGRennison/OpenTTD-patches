@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.48.2
+## JGR's Patchpack version 0.48.3
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -70,6 +70,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add a setting to turn off road vehicles slowing in curves.
 * Add a setting to disable road vehicles from passing through each other when blocked for an extended period of time.
 * Allow road vehicle go to station/waypoint orders to have an associated required stop/bay/waypoint direction.
+* Allow changing road vehicle driving side when all road vehicles are in depots.
 
 #### Level Crossings
 

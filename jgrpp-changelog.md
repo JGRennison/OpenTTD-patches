@@ -2,6 +2,16 @@
 
 * * *
 
+### v0.48.3 (2022-09-18)
+* Fix crash when joining a multiplayer server when a saved default face is set.
+* Fix displayed capacities/weights of articulated vehicles in build window.
+* Fix moving and selling template train wagons/engines being disallowed when paused, when build while paused setting disallows construction actions.
+* Fix improved breakdowns being incorrectly enabled after loading old/other savegames.
+* Allow changing road vehicle driving side when all road vehicles are in depots.
+* Add AI/GS script method to get annual expense category value.
+* Do not show max TE/weight for maglevs.
+* Bump trunk base from commit 03552996395be4c468d64adc7a076e1b233f0d4c to commit 81388d9425c63121eeb43bf247fb1458ca6ead92.
+
 ### v0.48.2 (2022-09-09)
 * Fix excessive braking for slopes with realistic train braking.
 * Fix incorrect infrastructure totals when overbuilding bay road stops with a different road/tram type active.
