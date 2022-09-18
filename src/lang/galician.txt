@@ -6580,7 +6580,7 @@ STR_RUNNING                                                     :{LTBLUE}Funcion
 STR_NEED_REPAIR                                                 :{ORANGE}O vehículo precisa reparacións - velocidade máxima reducida a {VELOCITY}
 STR_CURRENT_STATUS                                              :{BLACK}Estado actual: {STRING}
 STR_VEHICLE_INFO_TRAIN_LENGTH                                   :{BLACK}Lonxitude do tren {LTBLUE}{DECIMAL} cadro{P "" s} {STRING}
-STR_VEHICLE_INFO_WEIGHT_RATIOS                                  :{STRING1} {STRING1}
+STR_VEHICLE_INFO_WEIGHT_RATIOS                                  :{STRING} {STRING}
 STR_VEHICLE_INFO_POWER_WEIGHT_RATIO                             :{BLACK}Potencia / peso: {LTBLUE}{POWER_WEIGHT_RATIO}
 STR_VEHICLE_INFO_TE_WEIGHT_RATIO                                :{BLACK}Esforzo máximo de tracción / peso: {LTBLUE}{FORCE_WEIGHT_RATIO}
 STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS                        :{BLACK}Peso total: {LTBLUE}{WEIGHT_SHORT} {STRING}

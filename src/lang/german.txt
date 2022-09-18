@@ -5378,7 +5378,7 @@ STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Gewicht:
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Gewicht: {LTBLUE}{WEIGHT_SHORT} {BLACK}Leistung: {LTBLUE}{POWER}{BLACK} Max. Geschw.: {LTBLUE}{VELOCITY} {BLACK}Max. Zugkraft: {LTBLUE}{FORCE}
 
 STR_VEHICLE_INFO_TRAIN_LENGTH                                   :{BLACK}Zuglänge: {LTBLUE}{DECIMAL} Kachel{P "" n} {STRING}
-STR_VEHICLE_INFO_WEIGHT_RATIOS                                  :{STRING1} {STRING1}
+STR_VEHICLE_INFO_WEIGHT_RATIOS                                  :{STRING} {STRING}
 STR_VEHICLE_INFO_POWER_WEIGHT_RATIO                             :{BLACK}Leistung / Gewicht: {LTBLUE}{POWER_WEIGHT_RATIO}
 STR_VEHICLE_INFO_TE_WEIGHT_RATIO                                :{BLACK}Max. Zugkraft / Gewicht: {LTBLUE}{FORCE_WEIGHT_RATIO}
 STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS                        :{BLACK}Volles Gewicht: {LTBLUE}{WEIGHT_SHORT} {STRING}
