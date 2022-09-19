@@ -11207,11 +11207,11 @@ static void FinalisePriceBaseMultipliers()
 				if (!HasBit(file->grf_features, _price_base_specs[p].grf_feature)) {
 					/* The grf does not define any objects of the feature,
 					 * so it must be a difficulty setting. Apply it globally */
-					DEBUG(grf, 3, "'%s' sets global price base multiplier %d", file->filename, p);
+					DEBUG(grf, 3, "'%s' sets global price base multiplier %d to %d", file->filename, p, price_base_multipliers[p]);
 					SetPriceBaseMultiplier(p, price_base_multipliers[p]);
 					price_base_multipliers[p] = 0;
 				} else {
-					DEBUG(grf, 3, "'%s' sets local price base multiplier %d", file->filename, p);
+					DEBUG(grf, 3, "'%s' sets local price base multiplier %d to %d", file->filename, p, price_base_multipliers[p]);
 				}
 			}
 		}
