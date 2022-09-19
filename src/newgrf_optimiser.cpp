@@ -2453,9 +2453,9 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 			}
 		}
 
-		if (bits.any()) {
+		std::bitset<256> in_bits = bits | pending_bits;
+		if (in_bits.any()) {
 			state.GetVarTracking(group)->out = bits;
-			std::bitset<256> in_bits = bits | pending_bits;
 			for (auto &it : state.temp_stores) {
 				in_bits.set(it.first, false);
 			}
