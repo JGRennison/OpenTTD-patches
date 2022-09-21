@@ -1350,15 +1350,17 @@ static const NWidgetPart _nested_client_list_widgets[] = {
 				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_CL_CLIENT_NAME_EDIT), SetMinimalSize(12, 14), SetDataTip(SPR_RENAME, STR_NETWORK_CLIENT_LIST_PLAYER_NAME_EDIT_TOOLTIP),
 			EndContainer(),
 		EndContainer(),
-		NWidget(NWID_HORIZONTAL),
-			NWidget(NWID_VERTICAL),
-				NWidget(WWT_MATRIX, COLOUR_GREY, WID_CL_MATRIX), SetMinimalSize(180, 0), SetResize(1, 1), SetFill(1, 1), SetMatrixDataTip(1, 0, STR_NULL), SetScrollbar(WID_CL_SCROLLBAR),
+	EndContainer(),
+	NWidget(NWID_HORIZONTAL),
+		NWidget(NWID_VERTICAL),
+			NWidget(WWT_MATRIX, COLOUR_GREY, WID_CL_MATRIX), SetMinimalSize(180, 0), SetResize(1, 1), SetFill(1, 1), SetMatrixDataTip(1, 0, STR_NULL), SetScrollbar(WID_CL_SCROLLBAR),
+			NWidget(WWT_PANEL, COLOUR_GREY),
 				NWidget(WWT_TEXT, COLOUR_GREY, WID_CL_CLIENT_COMPANY_COUNT), SetFill(1, 0), SetMinimalTextLines(1, 0), SetResize(1, 0), SetPadding(2, 1, 2, 1), SetAlignment(SA_CENTER), SetDataTip(STR_NETWORK_CLIENT_LIST_CLIENT_COMPANY_COUNT, STR_NULL),
 			EndContainer(),
-			NWidget(NWID_VERTICAL),
-				NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_CL_SCROLLBAR),
-				NWidget(WWT_RESIZEBOX, COLOUR_GREY),
-			EndContainer(),
+		EndContainer(),
+		NWidget(NWID_VERTICAL),
+			NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_CL_SCROLLBAR),
+			NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 		EndContainer(),
 	EndContainer(),
 };
@@ -2129,21 +2131,19 @@ public:
 		}
 	}
 
-	virtual void OnMouseLoop() override
+	void OnMouseOver(Point pt, int widget) override
 	{
-		if (GetWidgetFromPos(this, _cursor.pos.x - this->left, _cursor.pos.y - this->top) != WID_CL_MATRIX) {
-			this->hover_index = -1;
-			this->SetDirty();
-			return;
-		}
-
-		NWidgetBase *nwi = this->GetWidget<NWidgetBase>(WID_CL_MATRIX);
-		int y = _cursor.pos.y - this->top - nwi->pos_y - 2;
-		int index = y / this->line_height;
-
-		if (index != this->hover_index) {
-			this->hover_index = index;
-			this->SetDirty();
+		if (widget != WID_CL_MATRIX) {
+			if (this->hover_index != -1) {
+				this->hover_index = -1;
+				this->SetWidgetDirty(WID_CL_MATRIX);
+			}
+		} else {
+			int index = this->GetRowFromWidget(pt.y, widget, 0, -1);
+			if (index != this->hover_index) {
+				this->hover_index = index;
+				this->SetWidgetDirty(WID_CL_MATRIX);
+			}
 		}
 	}
 };
