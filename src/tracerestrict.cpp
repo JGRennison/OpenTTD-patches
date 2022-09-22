@@ -1416,7 +1416,9 @@ bool TraceRestrictRemoveProgramMapping(TraceRestrictRefId ref)
 			TraceRestrictRemoveProgramMapping(const_cast<const TraceRestrictProgram *>(prog)->GetRefIdsPtr()[0]);
 		}
 
-		if (update_reserve_through) UpdateSignalReserveThroughBit(tile, track, true);
+		if (update_reserve_through && IsTileType(tile, MP_RAILWAY)) {
+			UpdateSignalReserveThroughBit(tile, track, true);
+		}
 		return true;
 	} else {
 		return false;
