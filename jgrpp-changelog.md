@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.48.4 (2022-09-26)
+* Fix crash when a tram attempted to turn around against the underside of a tram custom bridge head.
+* Fix crash when removing a routing restriction which enabled reserve through from a tunnel/bridge with signals.
+* Fix some NewGRFs having incorrect behaviour in some special cases.
+* Bump trunk base from commit 81388d9425c63121eeb43bf247fb1458ca6ead92 to commit 164ec3ac07c514cdce692554f6339ce1f05d8869.
+
 ### v0.48.3 (2022-09-18)
 * Fix crash when joining a multiplayer server when a saved default face is set.
 * Fix displayed capacities/weights of articulated vehicles in build window.
