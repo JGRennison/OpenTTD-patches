@@ -1465,6 +1465,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		if (!e->CanCarryCargo()) {
 			this->te.cost = 0;
 			this->te.cargo = CT_INVALID;
+			this->te.all_capacities.Clear();
 			return;
 		}
 
@@ -2248,6 +2249,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		if (!e->CanCarryCargo()) {
 			state.te.cost = 0;
 			state.te.cargo = CT_INVALID;
+			state.te.all_capacities.Clear();
 			return;
 		}
 
