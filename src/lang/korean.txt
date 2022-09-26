@@ -3305,16 +3305,16 @@ STR_TRACE_RESTRICT_END                                          :구문 끝
 STR_TRACE_RESTRICT_PF_DENY                                      :진입 거부
 STR_TRACE_RESTRICT_PF_ALLOW                                     :진입 허용
 STR_TRACE_RESTRICT_PF_ALLOW_LONG                                :진입 허용 (이전의 거부 취소)
-STR_TRACE_RESTRICT_RESERVE_THROUGH                              :경로 예약
-STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL                       :경로 예약 취소
-STR_TRACE_RESTRICT_LONG_RESERVE                                 :목적지까지 경로 예약
-STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL                          :목적지까지 경로 예약 취소
+STR_TRACE_RESTRICT_RESERVE_THROUGH                              :경로 통과 예약
+STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL                       :경로 통과 예약 취소
+STR_TRACE_RESTRICT_LONG_RESERVE                                 :추가 경로 예약
+STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL                          :추가 경로 예약 취소
 STR_TRACE_RESTRICT_WAIT_AT_PBS                                  :경로 신호기에서 대기
 STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL                           :경로 신호기에서 대기 취소
 STR_TRACE_RESTRICT_PBS_RES_END_WAIT                             :경로 예약이 여기서 끝날 때까지 입구 경로 신호기에서 대기
 STR_TRACE_RESTRICT_PBS_RES_END_WAIT_CANCEL                      :경로 예약이 여기서 끝날 때까지 입구 경로 신호기에서 대기 취소
-STR_TRACE_RESTRICT_PBS_RES_END_WAIT_SHORT                       :경로 예약 종료 대기
-STR_TRACE_RESTRICT_PBS_RES_END_WAIT_CANCEL_SHORT                :경로 예약 종료 대기 취소
+STR_TRACE_RESTRICT_PBS_RES_END_WAIT_SHORT                       :경로 탐색 시작 신호기에서 대기
+STR_TRACE_RESTRICT_PBS_RES_END_WAIT_CANCEL_SHORT                :경로 탐색 시작 신호기에서 대기 취소
 STR_TRACE_RESTRICT_PF_PENALTY                                   :우선순위 낮춤
 STR_TRACE_RESTRICT_PF_VALUE_SMALL                               :조금
 STR_TRACE_RESTRICT_PF_VALUE_MEDIUM                              :중간 정도
