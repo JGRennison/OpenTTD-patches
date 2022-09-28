@@ -3545,6 +3545,7 @@ void ReInitWindow(Window *w, bool zoom_changed)
 /** Re-initialize all windows. */
 void ReInitAllWindows(bool zoom_changed)
 {
+	SetupWidgetDimensions();
 	NWidgetLeaf::InvalidateDimensionCache(); // Reset cached sizes of several widgets.
 	NWidgetScrollbar::InvalidateDimensionCache();
 
