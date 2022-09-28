@@ -62,3 +62,5 @@ Rect BoundingRect(const Rect &r1, const Rect &r2)
 
 	return r;
 }
+
+const RectPadding RectPadding::zero = {0, 0, 0, 0};
