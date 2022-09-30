@@ -2400,13 +2400,16 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 						if (reg->flags & TLF_DODRAW) bits.set(reg->dodraw, true);
 						if (reg->flags & TLF_SPRITE) bits.set(reg->sprite, true);
 						if (reg->flags & TLF_PALETTE) bits.set(reg->palette, true);
-						if (reg->flags & TLF_BB_XY_OFFSET) {
-							bits.set(reg->delta.parent[0], true);
-							bits.set(reg->delta.parent[1], true);
+						if (element->IsParentSprite()) {
+							if (reg->flags & TLF_BB_XY_OFFSET) {
+								bits.set(reg->delta.parent[0], true);
+								bits.set(reg->delta.parent[1], true);
+							}
+							if (reg->flags & TLF_BB_Z_OFFSET) bits.set(reg->delta.parent[2], true);
+						} else {
+							if (reg->flags & TLF_CHILD_X_OFFSET) bits.set(reg->delta.child[0], true);
+							if (reg->flags & TLF_CHILD_Y_OFFSET) bits.set(reg->delta.child[1], true);
 						}
-						if (reg->flags & TLF_BB_Z_OFFSET) bits.set(reg->delta.parent[2], true);
-						if (reg->flags & TLF_CHILD_X_OFFSET) bits.set(reg->delta.child[0], true);
-						if (reg->flags & TLF_CHILD_Y_OFFSET) bits.set(reg->delta.child[1], true);
 					}
 				}
 			}

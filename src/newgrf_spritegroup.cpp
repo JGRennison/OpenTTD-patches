@@ -749,11 +749,14 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *paddi
 					log_reg(TLF_DODRAW, "TLF_DODRAW", reg->dodraw);
 					log_reg(TLF_SPRITE, "TLF_SPRITE", reg->sprite);
 					log_reg(TLF_PALETTE, "TLF_PALETTE", reg->palette);
-					log_reg(TLF_BB_XY_OFFSET, "TLF_BB_XY_OFFSET x", reg->delta.parent[0]);
-					log_reg(TLF_BB_XY_OFFSET, "TLF_BB_XY_OFFSET y", reg->delta.parent[1]);
-					log_reg(TLF_BB_Z_OFFSET, "TLF_BB_Z_OFFSET", reg->delta.parent[2]);
-					log_reg(TLF_CHILD_X_OFFSET, "TLF_CHILD_X_OFFSET", reg->delta.child[0]);
-					log_reg(TLF_CHILD_Y_OFFSET, "TLF_CHILD_Y_OFFSET", reg->delta.child[1]);
+					if (element->IsParentSprite()) {
+						log_reg(TLF_BB_XY_OFFSET, "TLF_BB_XY_OFFSET x", reg->delta.parent[0]);
+						log_reg(TLF_BB_XY_OFFSET, "TLF_BB_XY_OFFSET y", reg->delta.parent[1]);
+						log_reg(TLF_BB_Z_OFFSET, "TLF_BB_Z_OFFSET", reg->delta.parent[2]);
+					} else {
+						log_reg(TLF_CHILD_X_OFFSET, "TLF_CHILD_X_OFFSET", reg->delta.child[0]);
+						log_reg(TLF_CHILD_Y_OFFSET, "TLF_CHILD_Y_OFFSET", reg->delta.child[1]);
+					}
 					if (reg->flags & TLF_SPRITE_VAR10) {
 						seprintf(this->buffer, lastof(this->buffer), "%s    TLF_SPRITE_VAR10 value: %X", padding, reg->sprite_var10);
 						print();
