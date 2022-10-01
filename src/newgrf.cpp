@@ -5722,6 +5722,8 @@ static void NewSpriteGroup(ByteReader *buf)
 			if (unlikely(HasBit(_misc_debug_flags, MDF_NEWGRF_SG_SAVE_RAW))) {
 				shadow = &(_deterministic_sg_shadows[group]);
 			}
+			static std::vector<DeterministicSpriteGroupAdjust> current_adjusts;
+			current_adjusts.clear();
 
 			VarAction2OptimiseState va2_opt_state;
 			/* The initial value is always the constant 0 */
@@ -5731,7 +5733,7 @@ static void NewSpriteGroup(ByteReader *buf)
 			/* Loop through the var adjusts. Unfortunately we don't know how many we have
 			 * from the outset, so we shall have to keep reallocing. */
 			do {
-				DeterministicSpriteGroupAdjust &adjust = group->adjusts.emplace_back();
+				DeterministicSpriteGroupAdjust &adjust = current_adjusts.emplace_back();
 
 				/* The first var adjust doesn't have an operation specified, so we set it to add. */
 				adjust.operation = first_adjust ? DSGA_OP_ADD : (DeterministicSpriteGroupAdjustOperation)buf->ReadByte();
@@ -5784,10 +5786,15 @@ static void NewSpriteGroup(ByteReader *buf)
 					if (adjust.subroutine != nullptr) adjust.subroutine = PruneTargetSpriteGroup(adjust.subroutine);
 				}
 
-				OptimiseVarAction2Adjust(va2_opt_state, feature, varsize, group, adjust);
+				OptimiseVarAction2PreCheckAdjust(va2_opt_state, adjust);
 
 				/* Continue reading var adjusts while bit 5 is set. */
 			} while (HasBit(varadjust, 5));
+
+			for (const DeterministicSpriteGroupAdjust &adjust : current_adjusts) {
+				group->adjusts.push_back(adjust);
+				OptimiseVarAction2Adjust(va2_opt_state, feature, varsize, group, group->adjusts.back());
+			}
 
 			std::vector<DeterministicSpriteGroupRange> ranges;
 			ranges.resize(buf->ReadByte());
@@ -5817,7 +5824,7 @@ static void NewSpriteGroup(ByteReader *buf)
 
 			ProcessDeterministicSpriteGroupRanges(ranges, group->ranges, group->default_group);
 
-			OptimiseVarAction2DeterministicSpriteGroup(va2_opt_state, feature, varsize, group);
+			OptimiseVarAction2DeterministicSpriteGroup(va2_opt_state, feature, varsize, group, current_adjusts);
 			break;
 		}
 

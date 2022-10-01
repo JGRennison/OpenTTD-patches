@@ -61,6 +61,7 @@ extern SpriteGroupPool _spritegroup_pool;
 enum SpriteGroupFlags : uint8 {
 	SGF_NONE                     = 0,
 	SGF_ACTION6                  = 1 << 0,
+	SGF_INLINING                 = 1 << 1,
 };
 DECLARE_ENUM_AS_BIT_SET(SpriteGroupFlags)
 
@@ -432,6 +433,7 @@ enum DeterministicSpriteGroupFlags : uint8 {
 	DSGF_CHECK_EXPENSIVE_VARS    = 1 << 4,
 	DSGF_CHECK_INSERT_JUMP       = 1 << 5,
 	DSGF_CB_HANDLER              = 1 << 6,
+	DSGF_INLINE_CANDIDATE        = 1 << 7,
 };
 DECLARE_ENUM_AS_BIT_SET(DeterministicSpriteGroupFlags)
 

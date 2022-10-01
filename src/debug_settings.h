@@ -36,6 +36,7 @@ enum NewGRFOptimiserFlags {
 	NGOF_NO_OPT_VARACT2_ADJUST_ORDERING = 5,
 	NGOF_NO_OPT_VARACT2_INSERT_JUMPS    = 6,
 	NGOF_NO_OPT_VARACT2_CB_QUICK_EXIT   = 7,
+	NGOF_NO_OPT_VARACT2_PROC_INLINE     = 8,
 };
 
 inline bool HasGrfOptimiserFlag(NewGRFOptimiserFlags flag)

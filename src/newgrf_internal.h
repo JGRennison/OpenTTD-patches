@@ -72,6 +72,8 @@ public:
 	UniformArenaAllocator<sizeof(VarAction2GroupVariableTracking), 1024> group_temp_store_variable_tracking_storage;
 	btree::btree_map<const SpriteGroup *, VarAction2ProcedureAnnotation *> procedure_annotations;
 	UniformArenaAllocator<sizeof(VarAction2ProcedureAnnotation), 1024> procedure_annotations_storage;
+	btree::btree_map<const DeterministicSpriteGroup *, std::vector<DeterministicSpriteGroupAdjust> *> inlinable_adjust_groups;
+	UniformArenaAllocator<sizeof(std::vector<DeterministicSpriteGroupAdjust>), 1024> inlinable_adjust_groups_storage;
 	std::vector<DeterministicSpriteGroup *> dead_store_elimination_candidates;
 
 	VarAction2GroupVariableTracking *GetVarAction2GroupVariableTracking(const SpriteGroup *group, bool make_new)
@@ -98,6 +100,19 @@ public:
 		}
 	}
 
+	std::vector<DeterministicSpriteGroupAdjust> *GetInlinableGroupAdjusts(const DeterministicSpriteGroup *group, bool make_new)
+	{
+		if (make_new) {
+			std::vector<DeterministicSpriteGroupAdjust> *&ptr = this->inlinable_adjust_groups[group];
+			if (!ptr) ptr = new (this->inlinable_adjust_groups_storage.Allocate()) std::vector<DeterministicSpriteGroupAdjust>();
+			return ptr;
+		} else {
+			auto iter = this->inlinable_adjust_groups.find(group);
+			if (iter != this->inlinable_adjust_groups.end()) return iter->second;
+			return nullptr;
+		}
+	}
+
 	/** Clear temporary data before processing the next file in the current loading stage */
 	void ClearDataForNextFile()
 	{
@@ -114,6 +129,8 @@ public:
 		this->group_temp_store_variable_tracking_storage.EmptyArena();
 		this->procedure_annotations.clear();
 		this->procedure_annotations_storage.EmptyArena();
+		this->inlinable_adjust_groups.clear();
+		this->inlinable_adjust_groups_storage.EmptyArena();
 		this->dead_store_elimination_candidates.clear();
 	}
 
@@ -234,6 +251,7 @@ struct VarAction2OptimiseState {
 	VarAction2InferenceBackup inference_backup;
 	VarAction2GroupVariableTracking *var_tracking = nullptr;
 	bool seen_procedure_call = false;
+	bool var_1C_present = false;
 	bool check_expensive_vars = false;
 	bool enable_dse = false;
 	uint default_variable_version = 0;
@@ -249,9 +267,16 @@ struct VarAction2OptimiseState {
 	}
 };
 
+inline void OptimiseVarAction2PreCheckAdjust(VarAction2OptimiseState &state, const DeterministicSpriteGroupAdjust &adjust)
+{
+	uint16 variable = adjust.variable;
+	if (variable == 0x7B) variable = adjust.parameter;
+	if (variable == 0x1C) state.var_1C_present = true;
+}
+
 const SpriteGroup *PruneTargetSpriteGroup(const SpriteGroup *result);
 void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeature feature, const byte varsize, DeterministicSpriteGroup *group, DeterministicSpriteGroupAdjust &adjust);
-void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, const GrfSpecFeature feature, const byte varsize, DeterministicSpriteGroup *group);
+void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, const GrfSpecFeature feature, const byte varsize, DeterministicSpriteGroup *group, std::vector<DeterministicSpriteGroupAdjust> &saved_adjusts);
 void HandleVarAction2OptimisationPasses();
 
 #endif /* NEWGRF_INTERNAL_H */
