@@ -216,6 +216,18 @@ static inline void SetTreeGrowth(TileIndex t, uint g)
 }
 
 /**
+ * Clear the old tick counter for a tree-tile
+ *
+ * @param t The tile to clear the old tick counter
+ * @pre Tile must be of type MP_TREES
+ */
+static inline void ClearOldTreeCounter(TileIndex t)
+{
+	assert_tile(IsTileType(t, MP_TREES), t);
+	SB(_m[t].m2, 0, 4, 0);
+}
+
+/**
  * Make a tree-tile.
  *
  * This functions change the tile to a tile with trees and all information which belongs to it.

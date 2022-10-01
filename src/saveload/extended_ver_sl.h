@@ -127,6 +127,7 @@ enum SlXvFeatureIndex {
 	XSLFI_GRF_ROADSTOPS,                          ///< NewGRF road stops
 	XSLFI_INDUSTRY_ANIM_MASK,                     ///< Industry tile animation masking
 	XSLFI_NEW_SIGNAL_STYLES,                      ///< New signal styles
+	XSLFI_NO_TREE_COUNTER,                        ///< No tree counter
 
 	XSLFI_SCRIPT_INT64,                           ///< See: SLV_SCRIPT_INT64
 
