@@ -4184,8 +4184,8 @@ void ReloadNewGRFData()
 
 	/* reload grf data */
 	GfxLoadSprites();
-	LoadStringWidthTable();
 	RecomputePrices();
+	LoadStringWidthTable();
 	/* reload vehicles */
 	ResetVehicleHash();
 	AfterLoadEngines();
