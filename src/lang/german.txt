@@ -1294,7 +1294,7 @@ STR_CONFIG_SETTING_RUNNING_COSTS_IN_DEPOT_HELPTEXT              :Legt die Höhe 
 STR_CONFIG_SETTING_RUNNING_COSTS_IN_DEPOT_VALUE                 :1 / {COMMA}
 
 STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED                   :Betriebskosten gestoppter Fahrzeuge: {STRING}
-STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED_HELPTEXT          :Legt die Höhe der Wartungs- und Betriebskosten gestoppter Fahrzeuge fest, die sich nicht im Depot befinden
+STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED_HELPTEXT          :Legt die Höhe der Wartungs- und Betriebskosten gestoppter Fahrzeuge, die sich nicht im Depot befinden, fest
 STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED_VALUE             :1 / {COMMA}
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Baugeschwindigkeit: {STRING}
