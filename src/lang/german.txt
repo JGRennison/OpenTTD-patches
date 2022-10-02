@@ -1294,7 +1294,7 @@ STR_CONFIG_SETTING_RUNNING_COSTS_IN_DEPOT_HELPTEXT              :Legt die Höhe 
 STR_CONFIG_SETTING_RUNNING_COSTS_IN_DEPOT_VALUE                 :1 / {COMMA}
 
 STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED                   :Betriebskosten gestoppter Fahrzeuge: {STRING}
-STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED_HELPTEXT          :Legt die Höhe der Wartungs- und Betriebskosten gestoppter Fahrzeugefest, die sich nicht im Depot befinden
+STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED_HELPTEXT          :Legt die Höhe der Wartungs- und Betriebskosten gestoppter Fahrzeuge, die sich nicht im Depot befinden, fest
 STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED_VALUE             :1 / {COMMA}
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Baugeschwindigkeit: {STRING}
@@ -1502,7 +1502,7 @@ STR_CONFIG_SETTING_ROADVEH_CANT_QUANTUM_TUNNEL                  :Verhindert das 
 STR_CONFIG_SETTING_ROADVEH_CANT_QUANTUM_TUNNEL_HELPTEXT         :Deaktiviert das Durchfahren eines Straßenfahrzeugs durch ein anderes, wenn dessen Weg für längere Zeit blockiert ist und es deshalb den Weg anderer Straßenfahrzeuge blockiert.
 
 STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT                    :Durchfahrts-Zugdepots: {STRING}
-STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT_HELPTEXT           :Aktiviert die Emulation von Durchfahrts-Zugdepots. Züge können sich zwischen Zugdepots bewegen, die Rücken an Rücken platziert sind, optional mit weiteren Depots dazwischen. Erforder den YAPF-Pathfinder.
+STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT_HELPTEXT           :Aktiviert die Emulation von Durchfahrts-Zugdepots. Züge können sich zwischen Zugdepots bewegen, die Rücken an Rücken platziert sind, optional mit weiteren Depots dazwischen. Erfordert den YAPF-Pathfinder.
 
 STR_CONFIG_SETTING_COMPANY_STARTING_COLOUR                      :Firmenfarbe zu Spielbeginn: {STRING}
 STR_CONFIG_SETTING_COMPANY_STARTING_COLOUR_HELPTEXT             :Wähle die Firmenfarbe zu Spielbeginn
@@ -1597,7 +1597,7 @@ STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREY_TO_RED                :Grau zu rot
 STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREYSCALE                  :Graustufe
 
 STR_CONFIG_SETTING_VEHICLE_NAMES                                :Fahrzeugnamen: {STRING}
-STR_CONFIG_SETTING_VEHICLE_NAMES_HELPTEXT                       :Legt das Namensschema für Fahrzeugnamen fest. Dies wird niht auf Fahrzeuge angewendet, die einen selbst festgelegten Namen haben.
+STR_CONFIG_SETTING_VEHICLE_NAMES_HELPTEXT                       :Legt das Namensschema für Fahrzeugnamen fest. Dies wird nicht auf Fahrzeuge angewendet, die einen selbst festgelegten Namen haben.
 STR_CONFIG_SETTING_VEHICLE_NAMES_TRADITIONAL                    :Traditionell
 STR_CONFIG_SETTING_VEHICLE_NAMES_MODERN                         :Modern
 STR_CONFIG_SETTING_VEHICLE_NAMES_LONG                           :Lang
@@ -1845,10 +1845,10 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Schließt ein F
 STR_CONFIG_SETTING_AUTOSAVE                                     :Autosicherung: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Intervall zwischen automatischen Speicherungen wählen
 
-STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_DAYS                         :benutzerdefinierter Autosicherungsintervall in Tagen: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_DAYS                         :Benutzerdefinierter Autosicherungsintervall in Tagen: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_DAYS_HELPTEXT                :Legt einen benutzerdefinierten Intervall für die Autosicherung in Tagen fest.
 
-STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_MINUTES                      :benutzerdefinierter Autosicherungsintervall in Echtzeitminuten: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_MINUTES                      :Benutzerdefinierter Autosicherungsintervall in Echtzeitminuten: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_MINUTES_HELPTEXT             :Legt eine Zeitspanne in Echtzeitminuten für den Abstand zwischen Autosicherungen fest.
 
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT               :Autosichern bei Verbindungsabbruch: {STRING}
