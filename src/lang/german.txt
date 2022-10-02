@@ -1687,11 +1687,11 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :Sehr zerklüfte
 STR_CONFIG_SETTING_VARIETY                                      :Größe der Geländeformen: {STRING}
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :(nur TerraGenesis) Beinflusst, ob die Karte sowohl bergige als auch ebene Gegenden enthält. Weil dieses die Karte nur ebener macht, sollten andere Einstellungen auf bergig gesetzt werden.
 STR_CONFIG_SETTING_RIVER_MIN_LENGTH                             :Mindestlänge von Flüssen: {STRING}
-STR_CONFIG_SETTING_RIVER_MIN_LENGTH_HELPTEXT                    :Mininale Länge von Flüssen. Damit wird auch die Erstellung von Seen bestimmt.
-STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM                           :Zufällgikeit von Flussläufen: {STRING}
+STR_CONFIG_SETTING_RIVER_MIN_LENGTH_HELPTEXT                    :Minimale Länge von Flüssen. Damit wird auch die Erstellung von Seen bestimmt.
+STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM                           :Zufälligkeit von Flussläufen: {STRING}
 STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM_HELPTEXT                  :Wähle, wie zufällig die Flussläufe aussehen sollen.
 STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL                           :Flussläufe sollen von höhreren zu niedrigeren Höhenstufen verlaufen: {STRING}
-STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL_HELPTEXT                  :Legt fest, ob die Quellen von Flüssen in den bergen liegen sollen.
+STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL_HELPTEXT                  :Legt fest, ob die Quellen von Flüssen in den Bergen liegen sollen.
 STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH                          :Breite des tropischen Geländes um Flussläufe herum: {STRING}
 STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH_HELPTEXT                 :Legt die Breite des tropischen Geländes fest, das Flüsse umgibt.{}This is the total width of the zone on both sides of the river.
 STR_CONFIG_SETTING_LAKE_TROPICS_WIDTH                           :Breite des tropischen Geländes um Seen herum: {STRING}
