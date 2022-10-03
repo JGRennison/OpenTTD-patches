@@ -76,13 +76,6 @@ public:
 	virtual int GetFontSize() const { return this->height; }
 
 	/**
-	 * Get the SpriteID mapped to the given key
-	 * @param key The key to get the sprite for.
-	 * @return The sprite.
-	 */
-	virtual SpriteID GetUnicodeGlyph(WChar key) = 0;
-
-	/**
 	 * Map a SpriteID to the key
 	 * @param key The key to map to.
 	 * @param sprite The sprite that is being mapped.
@@ -170,12 +163,6 @@ public:
 	virtual bool IsBuiltInFont() = 0;
 };
 
-/** Get the SpriteID mapped to the given font size and key */
-static inline SpriteID GetUnicodeGlyph(FontSize size, WChar key)
-{
-	return FontCache::Get(size)->GetUnicodeGlyph(key);
-}
-
 /** Map a SpriteID to the font size and key */
 static inline void SetUnicodeGlyph(FontSize size, WChar key, SpriteID sprite)
 {
@@ -216,8 +203,8 @@ static inline bool GetDrawGlyphShadow(FontSize size)
 	return FontCache::Get(size)->GetDrawGlyphShadow();
 }
 
-/** Settings for a single freetype font. */
-struct FreeTypeSubSetting {
+/** Settings for a single font. */
+struct FontCacheSubSetting {
 	std::string font; ///< The name of the font, or path to the font.
 	uint size;        ///< The (requested) size of the font.
 	bool aa;          ///< Whether to do anti aliasing or not.
@@ -225,18 +212,20 @@ struct FreeTypeSubSetting {
 	const void *os_handle = nullptr; ///< Optional native OS font info. Only valid during font search.
 };
 
-/** Settings for the freetype fonts. */
-struct FreeTypeSettings {
-	FreeTypeSubSetting small;  ///< The smallest font; mostly used for zoomed out view.
-	FreeTypeSubSetting medium; ///< The normal font size.
-	FreeTypeSubSetting large;  ///< The largest font; mostly used for newspapers.
-	FreeTypeSubSetting mono;   ///< The mono space font used for license/readme viewers.
+/** Settings for the four different fonts. */
+struct FontCacheSettings {
+	FontCacheSubSetting small;  ///< The smallest font; mostly used for zoomed out view.
+	FontCacheSubSetting medium; ///< The normal font size.
+	FontCacheSubSetting large;  ///< The largest font; mostly used for newspapers.
+	FontCacheSubSetting mono;   ///< The mono space font used for license/readme viewers.
 };
 
-extern FreeTypeSettings _freetype;
+extern FontCacheSettings _fcsettings;
 
-void InitFreeType(bool monospace);
-void UninitFreeType();
+void InitFontCache(bool monospace);
+void UninitFontCache();
 bool HasAntialiasedFonts();
+
+bool GetFontAAState(FontSize size, bool check_blitter = true);
 
 #endif /* FONTCACHE_H */

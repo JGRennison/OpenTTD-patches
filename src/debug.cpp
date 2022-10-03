@@ -56,7 +56,7 @@ int _debug_sprite_level;
 int _debug_oldloader_level;
 int _debug_npf_level;
 int _debug_yapf_level;
-int _debug_freetype_level;
+int _debug_fontcache_level;
 int _debug_script_level;
 int _debug_sl_level;
 int _debug_gamelog_level;
@@ -93,7 +93,7 @@ struct DebugLevel {
 	DEBUG_LEVEL(oldloader),
 	DEBUG_LEVEL(npf),
 	DEBUG_LEVEL(yapf),
-	DEBUG_LEVEL(freetype),
+	DEBUG_LEVEL(fontcache),
 	DEBUG_LEVEL(script),
 	DEBUG_LEVEL(sl),
 	DEBUG_LEVEL(gamelog),
