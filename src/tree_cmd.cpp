@@ -914,7 +914,7 @@ static void TileLoop_Trees(TileIndex tile)
 	/* _tick_counter is incremented by 256 between each call, so ignore lower 8 bits.
 	 * Also, we add tile % 31 to spread the updates evenly over the map,
 	 * where 31 is just some prime number that looks ok. */
-	uint32 cycle = (uint32)tile % 31 + (_tick_counter >> 8);
+	uint32 cycle = (uint32)((tile % 31) + (_tick_counter >> 8));
 
 	/* Handle growth of grass (under trees/on MP_TREES tiles) at every 8th processings, like it's done for grass on MP_CLEAR tiles. */
 	if ((cycle & 7) == 7 && GetTreeGround(tile) == TREE_GROUND_GRASS) {

@@ -15,7 +15,7 @@
 extern YearMonthDay _cur_date_ymd;
 extern Date      _date;
 extern DateFract _date_fract;
-extern uint16    _tick_counter;
+extern uint64    _tick_counter;
 extern uint8     _tick_skip_counter;
 extern uint32    _scaled_tick_counter;
 extern DateTicksScaled _scaled_date_ticks;
