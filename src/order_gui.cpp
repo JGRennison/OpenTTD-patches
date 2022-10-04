@@ -1322,6 +1322,8 @@ private:
 		/* WID_O_SEL_TOP_ROW */
 		DP_ROW_LOAD        = 0, ///< Display 'load' / 'unload' / 'refit' buttons in the top row of the ship/airplane order window.
 		DP_ROW_DEPOT       = 1, ///< Display 'refit' / 'service' buttons in the top row of the ship/airplane order window.
+		DP_ROW_CONDITIONAL = 2, ///< Display the conditional order buttons in the top row of the ship/airplane order window.
+		DP_ROW_SLOT        = 3, ///< Display the release slot buttons in the top row of the ship/airplane order window.
 
 		/* WID_O_SEL_COND_VALUE */
 		DP_COND_VALUE_NUMBER = 0, ///< Display number widget
@@ -1338,8 +1340,6 @@ private:
 		/* WID_O_SEL_COND_AUX2 */
 		DP_COND_AUX2_VIA = 0, ///< Display via button
 		DP_COND_AUX2_SCHED_TEST = 1, ///< Display dropdown for scheduled dispatch test selection
-
-		DP_ROW_CONDITIONAL = 2, ///< Display the conditional order buttons in the top row of the ship/airplane order window.
 
 		/* WID_O_SEL_BOTTOM_LEFT */
 		DP_BOTTOM_LEFT_SKIP        = 0, ///< Display 'skip' in the left button of the bottom row of the vehicle order window.
@@ -2083,7 +2083,7 @@ public:
 
 				case OT_RELEASE_SLOT: {
 					if (row_sel != nullptr) {
-						NOT_REACHED();
+						row_sel->SetDisplayedPlane(DP_ROW_SLOT);
 					} else {
 						train_row_sel->SetDisplayedPlane(DP_GROUNDVEHICLE_ROW_SLOT);
 					}
@@ -3251,6 +3251,14 @@ static const NWidgetPart _nested_orders_widgets[] = {
 					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_SLOT), SetMinimalSize(124, 12), SetFill(1, 0),
 													SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_SLOT_TOOLTIP), SetResize(1, 0),
 				EndContainer(),
+			EndContainer(),
+
+			/* Buttons for releasing a slot. */
+			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
+				NWidget(WWT_PANEL, COLOUR_GREY), EndContainer(),
+				NWidget(WWT_PANEL, COLOUR_GREY), EndContainer(),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_RELEASE_SLOT), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_NULL, STR_ORDER_RELEASE_SLOT_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
 		EndContainer(),
 
