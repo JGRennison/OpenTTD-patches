@@ -1453,6 +1453,19 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeatu
 					if (adjust.variable == 0x1A && adjust.shift_num == 0) {
 						state.inference |= VA2AIF_PREV_STORE_TMP;
 						if (adjust.and_mask < 0x100) {
+							bool invert_store = false;
+							const DeterministicSpriteGroupAdjust *prev_store = get_prev_single_store((prev_inference & VA2AIF_ONE_OR_ZERO) ? &invert_store : nullptr);
+							if (prev_store != nullptr && prev_store->and_mask == adjust.and_mask) {
+								if (invert_store) {
+									/* Inverted store of self, don't try to handle this */
+									invert_store = false;
+									prev_store = nullptr;
+								} else {
+									/* Duplicate store, don't make any changes */
+									break;
+								}
+							}
+
 							for (auto &it : state.temp_stores) {
 								/* Check if some other variable is marked as a copy of the one we are overwriting */
 								if ((it.second.inference & VA2AIF_SINGLE_LOAD) && it.second.var_source.variable == 0x7D && (it.second.var_source.parameter & 0xFF) == adjust.and_mask) {
@@ -1470,8 +1483,6 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeatu
 							store.inference = prev_inference & (~VA2AIF_PREV_MASK);
 							store.store_constant = state.current_constant;
 
-							bool invert_store = false;
-							const DeterministicSpriteGroupAdjust *prev_store = get_prev_single_store((prev_inference & VA2AIF_ONE_OR_ZERO) ? &invert_store : nullptr);
 							if (prev_store != nullptr) {
 								/* This store is a clone of the previous store, or inverted clone of the previous store (bool) */
 								store.inference |= VA2AIF_SINGLE_LOAD;
@@ -1489,6 +1500,10 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeatu
 								bool invert = false;
 								const DeterministicSpriteGroupAdjust *prev_load = get_prev_single_load(&invert);
 								if (prev_load != nullptr && (!invert || IsConstantComparisonAdjustType(prev_load->type))) {
+									if (prev_load->variable == 0x7D && (prev_load->parameter & 0xFF) == adjust.and_mask) {
+										/* Store to same variable as previous load, do not mark store as clone of itself */
+										break;
+									}
 									store.inference |= VA2AIF_SINGLE_LOAD;
 									store.var_source.type = prev_load->type;
 									if (invert) store.var_source.type = InvertConstantComparisonAdjustType(store.var_source.type);
