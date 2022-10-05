@@ -440,6 +440,10 @@ static char *DumpSpriteGroupAdjust(char *p, const char *last, const Deterministi
 		/* Temp storage load */
 		highlight_tag = (1 << 16) | (adjust.parameter & 0xFFFF);
 	}
+	if (adjust.variable == 0x7C) {
+		/* Perm storage load */
+		highlight_tag = (2 << 16) | (adjust.parameter & 0xFFFF);
+	}
 
 	p += seprintf(p, last, "%s", padding);
 	for (uint i = 0; i < conditional_indent; i++) {
@@ -495,6 +499,10 @@ static char *DumpSpriteGroupAdjust(char *p, const char *last, const Deterministi
 	if (adjust.operation == DSGA_OP_STO && adjust.type == DSGA_TYPE_NONE && adjust.variable == 0x1A && adjust.shift_num == 0) {
 		/* Temp storage store */
 		highlight_tag = (1 << 16) | (adjust.and_mask & 0xFFFF);
+	}
+	if (adjust.operation == DSGA_OP_STOP && adjust.type == DSGA_TYPE_NONE && adjust.variable == 0x1A && adjust.shift_num == 0) {
+		/* Perm storage store */
+		highlight_tag = (2 << 16) | (adjust.and_mask & 0xFFFF);
 	}
 	p += seprintf(p, last, "var: %X", adjust.variable);
 	if (adjust.variable == A2VRI_VEHICLE_CURRENT_SPEED_SCALED) {
