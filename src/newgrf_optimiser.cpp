@@ -814,7 +814,9 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeatu
 	}
 
 	VarAction2AdjustInferenceFlags non_const_var_inference = VA2AIF_NONE;
-	while (adjust.variable == 0x7D) {
+	int iteration = 32;
+	while (adjust.variable == 0x7D && iteration > 0) {
+		iteration--;
 		non_const_var_inference = VA2AIF_NONE;
 		auto iter = state.temp_stores.find(adjust.parameter & 0xFF);
 		if (iter == state.temp_stores.end()) {
