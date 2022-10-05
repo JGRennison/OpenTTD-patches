@@ -2,6 +2,15 @@
 
 * * *
 
+### v0.48.5 (2022-10-05)
+* Fix vehicles with no cargo being shown with the cargo of the last selected vehicle in the build vehicle window.
+* Fix animation of NewGRF road stops.
+* Fix crash when reloading NewGRFs when the landscape info window is open.
+* Fix crash when selecting a release slot order in ship and aircraft order windows.
+* Fix hang which could occur with some NewGRFs.
+* Slightly reduce the map entropy of tree tiles.
+* Bump trunk base from commit 164ec3ac07c514cdce692554f6339ce1f05d8869 to commit f011a559d01db3eb43e71031ff03fa904a41d068.
+
 ### v0.48.4 (2022-09-26)
 * Fix crash when a tram attempted to turn around against the underside of a tram custom bridge head.
 * Fix crash when removing a routing restriction which enabled reserve through from a tunnel/bridge with signals.
