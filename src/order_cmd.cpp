@@ -967,6 +967,57 @@ CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	return CmdInsertOrderIntl(flags, Vehicle::GetIfValid(veh), sel_ord, new_order, false);
 }
 
+/**
+ * Duplicate an order in the orderlist of a vehicle.
+ * @param tile unused
+ * @param flags operation to perform
+ * @param p1 various bitstuffed elements
+ * - p1 = (bit  0 - 19) - ID of the vehicle
+ * @param p2 various bitstuffed elements
+ *  - p2 = (bit 0 - 15) - The order to duplicate
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdDuplicateOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	VehicleID veh_id = GB(p1, 0, 20);
+	VehicleOrderID sel_ord = GB(p2, 0, 16);
+
+	Vehicle *v = Vehicle::GetIfValid(veh_id);
+
+	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
+
+	CommandCost ret = CheckOwnership(v->owner);
+	if (ret.Failed()) return ret;
+
+	if (sel_ord >= v->GetNumOrders()) return CMD_ERROR;
+
+	const Order *src_order = v->GetOrder(sel_ord);
+	if (src_order == nullptr) return CMD_ERROR;
+
+	Order new_order;
+	new_order.AssignOrder(*src_order);
+	const bool wait_fixed = new_order.IsWaitFixed();
+	const bool wait_timetabled = wait_fixed && new_order.IsWaitTimetabled();
+	new_order.SetWaitTimetabled(false);
+	new_order.SetTravelTimetabled(false);
+	new_order.SetTravelTime(0);
+	new_order.SetTravelFixed(false);
+	CommandCost cost = CmdInsertOrderIntl(flags, v, sel_ord + 1, new_order, true);
+	if (cost.Failed()) return cost;
+	if (flags & DC_EXEC) {
+		Order *order = v->orders->GetOrderAt(sel_ord + 1);
+		order->SetRefit(new_order.GetRefitCargo());
+		order->SetMaxSpeed(new_order.GetMaxSpeed());
+		if (wait_fixed) {
+			extern void SetOrderFixedWaitTime(Vehicle *v, VehicleOrderID order_number, uint32 wait_time, bool wait_timetabled);
+			SetOrderFixedWaitTime(v, sel_ord + 1, new_order.GetWaitTime(), wait_timetabled);
+		}
+	}
+	new_order.Free();
+	return CommandCost();
+}
+
 CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID sel_ord, const Order &new_order, bool allow_load_by_cargo_type) {
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
@@ -1895,7 +1946,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			break;
 
 		case MOF_COND_DESTINATION:
-			if (data >= v->GetNumOrders()) return CMD_ERROR;
+			if (data >= v->GetNumOrders() || data == sel_ord) return CMD_ERROR;
 			break;
 
 		case MOF_WAYPOINT_FLAGS:

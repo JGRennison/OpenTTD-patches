@@ -640,6 +640,12 @@ static const StringID _order_manage_list_dropdown[] = {
 	INVALID_STRING_ID
 };
 
+static const StringID _order_manage_dropdown[] = {
+	STR_ORDER_DUPLICATE_ORDER,
+	STR_ORDER_CHANGE_JUMP_TARGET,
+	INVALID_STRING_ID
+};
+
 /** Variables for conditional orders; this defines the order of appearance in the dropdown box */
 static const OrderConditionVariable _order_conditional_variable[] = {
 	OCV_LOAD_PERCENTAGE,
@@ -1296,6 +1302,7 @@ private:
 		OPOS_CONDITIONAL,
 		OPOS_SHARE,
 		OPOS_COND_VIA,
+		OPOS_CONDITIONAL_RETARGET,
 		OPOS_END,
 	};
 
@@ -1352,6 +1359,10 @@ private:
 		/* WID_O_SEL_SHARED */
 		DP_SHARED_LIST       = 0, ///< Display shared order list button
 		DP_SHARED_VEH_GROUP  = 1, ///< Display add veh to new group button
+
+		/* WID_O_SEL_MGMT */
+		DP_MGMT_BTN          = 0, ///< Display order management button
+		DP_MGMT_LIST_BTN     = 1, ///< Display order list management button
 	};
 
 	int selected_order;
@@ -1364,6 +1375,7 @@ private:
 	int query_text_widget; ///< widget which most recently called ShowQueryString
 	int current_aux_plane;
 	int current_aux2_plane;
+	int current_mgmt_plane;
 
 	/**
 	 * Return the memorised selected order.
@@ -1449,11 +1461,13 @@ private:
 			HT_NONE,              // OPOS_CONDITIONAL
 			HT_VEHICLE,           // OPOS_SHARE
 			HT_RECT,              // OPOS_COND_VIA
+			HT_NONE,              // OPOS_CONDITIONAL_RETARGET
 		};
 		SetObjectToPlaceWnd(ANIMCURSOR_PICKSTATION, PAL_NONE, goto_place_style[type - 1], this);
 		this->goto_type = type;
 		this->SetWidgetDirty(WID_O_GOTO);
 		this->SetWidgetDirty(WID_O_COND_AUX_VIA);
+		this->SetWidgetDirty(WID_O_MGMT_BTN);
 	}
 
 	/**
@@ -1667,6 +1681,15 @@ private:
 		}
 	}
 
+	int GetOrderManagementPlane() const
+	{
+		if (_settings_client.gui.show_order_management_button) {
+			return this->selected_order == this->vehicle->GetNumOrders() ? DP_MGMT_LIST_BTN : DP_MGMT_BTN;
+		} else {
+			return SZSP_NONE;
+		}
+	}
+
 public:
 	OrdersWindow(WindowDesc *desc, const Vehicle *v) : Window(desc)
 	{
@@ -1676,12 +1699,14 @@ public:
 		this->vscroll = this->GetScrollbar(WID_O_SCROLLBAR);
 		this->GetWidget<NWidgetStacked>(WID_O_SEL_OCCUPANCY)->SetDisplayedPlane(_settings_client.gui.show_order_occupancy_by_default ? 0 : SZSP_NONE);
 		this->SetWidgetLoweredState(WID_O_OCCUPANCY_TOGGLE, _settings_client.gui.show_order_occupancy_by_default);
-		if (v->owner == _local_company) {
-			this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_AUX)->SetDisplayedPlane(SZSP_NONE);
-			this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_AUX2)->SetDisplayedPlane(SZSP_NONE);
-		}
 		this->current_aux_plane = SZSP_NONE;
 		this->current_aux2_plane = SZSP_NONE;
+		this->current_mgmt_plane = this->GetOrderManagementPlane();
+		if (v->owner == _local_company) {
+			this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_AUX)->SetDisplayedPlane(this->current_aux_plane);
+			this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_AUX2)->SetDisplayedPlane(this->current_aux2_plane);
+			this->GetWidget<NWidgetStacked>(WID_O_SEL_MGMT)->SetDisplayedPlane(this->current_mgmt_plane);
+		}
 		this->FinishInitNested(v->index);
 		if (v->owner == _local_company) {
 			this->DisableWidget(WID_O_EMPTY);
@@ -1896,7 +1921,9 @@ public:
 		/* skip / extra menu */
 		NWidgetStacked *skip_sel = this->GetWidget<NWidgetStacked>(WID_O_SEL_BOTTOM_LEFT);
 		NWidgetLeaf *manage_list_dropdown = this->GetWidget<NWidgetLeaf>(WID_O_MANAGE_LIST);
-		skip_sel->SetDisplayedPlane((manage_list_dropdown->IsLowered() || (_ctrl_pressed && this->selected_order == this->vehicle->GetNumOrders())) ? DP_BOTTOM_LEFT_MANAGE_LIST : DP_BOTTOM_LEFT_SKIP);
+		skip_sel->SetDisplayedPlane((manage_list_dropdown->IsLowered() ||
+				(!_settings_client.gui.show_order_management_button && _ctrl_pressed && this->selected_order == this->vehicle->GetNumOrders()))
+				? DP_BOTTOM_LEFT_MANAGE_LIST : DP_BOTTOM_LEFT_SKIP);
 
 		/* First row. */
 		this->RaiseWidget(WID_O_FULL_LOAD);
@@ -1915,6 +1942,8 @@ public:
 
 		NWidgetStacked *aux_sel = this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_AUX);
 		NWidgetStacked *aux2_sel = this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_AUX2);
+		NWidgetStacked *mgmt_sel = this->GetWidget<NWidgetStacked>(WID_O_SEL_MGMT);
+		mgmt_sel->SetDisplayedPlane(this->GetOrderManagementPlane());
 
 		auto aux_plane_guard = scope_guard([&]() {
 			if (this->current_aux_plane != aux_sel->shown_plane) {
@@ -1924,6 +1953,12 @@ public:
 			if (this->current_aux2_plane != aux2_sel->shown_plane) {
 				this->current_aux2_plane = aux2_sel->shown_plane;
 				this->ReInit();
+			}
+			if ((this->current_mgmt_plane == SZSP_NONE) != (mgmt_sel->shown_plane == SZSP_NONE)) {
+				this->current_mgmt_plane = mgmt_sel->shown_plane;
+				this->ReInit();
+			} else if (this->current_mgmt_plane != mgmt_sel->shown_plane) {
+				this->current_mgmt_plane = mgmt_sel->shown_plane;
 			}
 		});
 
@@ -1941,9 +1976,11 @@ public:
 			this->DisableWidget(WID_O_FULL_LOAD);
 			this->DisableWidget(WID_O_UNLOAD);
 			this->DisableWidget(WID_O_REFIT_DROPDOWN);
+			this->DisableWidget(WID_O_MGMT_BTN);
 		} else {
 			this->SetWidgetDisabledState(WID_O_FULL_LOAD, (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) != 0); // full load
 			this->SetWidgetDisabledState(WID_O_UNLOAD,    (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) != 0); // unload
+			this->EnableWidget(WID_O_MGMT_BTN);
 
 			switch (order->GetType()) {
 				case OT_GOTO_STATION:
@@ -2126,8 +2163,9 @@ public:
 		if (this->vehicle->owner != _local_company) {
 			this->selected_order = -1; // Disable selection any selected row at a competitor order window.
 		} else {
-			this->SetWidgetLoweredState(WID_O_GOTO, this->goto_type != OPOS_NONE && this->goto_type != OPOS_COND_VIA);
+			this->SetWidgetLoweredState(WID_O_GOTO, this->goto_type != OPOS_NONE && this->goto_type != OPOS_COND_VIA && this->goto_type != OPOS_CONDITIONAL_RETARGET);
 			this->SetWidgetLoweredState(WID_O_COND_AUX_VIA, this->goto_type == OPOS_COND_VIA);
+			this->SetWidgetLoweredState(WID_O_MGMT_BTN, this->goto_type == OPOS_CONDITIONAL_RETARGET);
 		}
 		this->DrawWidgets();
 	}
@@ -2375,6 +2413,14 @@ public:
 					ResetObjectToPlace();
 					break;
 				}
+				if (this->goto_type == OPOS_CONDITIONAL_RETARGET) {
+					VehicleOrderID order_id = this->GetOrderFromPt(_cursor.pos.y - this->top);
+					if (order_id != INVALID_VEH_ORDER_ID) {
+						this->ModifyOrder(this->OrderGetSel(), MOF_COND_DESTINATION | (order_id << 4));
+					}
+					ResetObjectToPlace();
+					break;
+				}
 
 				VehicleOrderID sel = this->GetOrderFromPt(pt.y);
 
@@ -2434,7 +2480,8 @@ public:
 				this->OrderClick_Skip();
 				break;
 
-			case WID_O_MANAGE_LIST: {
+			case WID_O_MANAGE_LIST:
+			case WID_O_MGMT_LIST_BTN: {
 				uint disabled_mask = (this->vehicle->GetNumOrders() < 2 ? 1 : 0) | (this->vehicle->GetNumOrders() < 3 ? 2 : 0);
 				uint order_count = this->vehicle->GetNumOrders();
 				for (uint i = 0; i < order_count; i++) {
@@ -2443,7 +2490,19 @@ public:
 						break;
 					}
 				}
-				ShowDropDownMenu(this, _order_manage_list_dropdown, -1, WID_O_MANAGE_LIST, disabled_mask, 0, 0, DDSF_LOST_FOCUS);
+				ShowDropDownMenu(this, _order_manage_list_dropdown, -1, widget, disabled_mask, 0, 0, DDSF_LOST_FOCUS);
+				break;
+			}
+
+			case WID_O_MGMT_BTN: {
+				VehicleOrderID sel = this->OrderGetSel();
+				const Order *order = this->vehicle->GetOrder(sel);
+				if (order == nullptr) break;
+
+				uint hidden_mask = 0;
+				if (!order->IsType(OT_CONDITIONAL)) hidden_mask |= 2;
+
+				ShowDropDownMenu(this, _order_manage_dropdown, -1, widget, 0, hidden_mask, UINT_MAX, DDSF_LOST_FOCUS);
 				break;
 			}
 
@@ -2480,6 +2539,7 @@ public:
 						case OPOS_GOTO:        sel =  0; break;
 						case OPOS_CONDITIONAL: sel =  2; break;
 						case OPOS_SHARE:       sel =  3; break;
+						case OPOS_CONDITIONAL_RETARGET: sel = -1; break;
 						default: NOT_REACHED();
 					}
 					ShowDropDownMenu(this, this->vehicle->type == VEH_AIRCRAFT ? _order_goto_dropdown_aircraft : _order_goto_dropdown, sel, WID_O_GOTO,
@@ -2861,10 +2921,30 @@ public:
 				break;
 
 			case WID_O_MANAGE_LIST:
+			case WID_O_MGMT_LIST_BTN:
 				switch (index) {
 					case 0: this->OrderClick_ReverseOrderList(0); break;
 					case 1: this->OrderClick_ReverseOrderList(1); break;
 					default: NOT_REACHED();
+				}
+				break;
+
+			case WID_O_MGMT_BTN:
+				if (this->goto_type == OPOS_CONDITIONAL_RETARGET) {
+					ResetObjectToPlace();
+					break;
+				}
+				switch (index) {
+					case 0:
+						DoCommandP(this->vehicle->tile, this->vehicle->index, this->OrderGetSel(), CMD_DUPLICATE_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER));
+						break;
+
+					case 1:
+						this->OrderClick_Goto(OPOS_CONDITIONAL_RETARGET);
+						break;
+
+					default:
+						NOT_REACHED();
 				}
 				break;
 		}
@@ -2977,6 +3057,7 @@ public:
 		this->goto_type = OPOS_NONE;
 		this->SetWidgetDirty(WID_O_GOTO);
 		this->SetWidgetDirty(WID_O_COND_AUX_VIA);
+		this->SetWidgetDirty(WID_O_MGMT_BTN);
 
 		/* Remove drag highlighting if it exists. */
 		if (this->order_over != INVALID_VEH_ORDER_ID) {
@@ -3155,19 +3236,25 @@ static const NWidgetPart _nested_orders_train_widgets[] = {
 	/* Second button row. */
 	NWidget(NWID_HORIZONTAL),
 		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
+			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_MGMT),
+				NWidget(NWID_BUTTON_DROPDOWN, COLOUR_GREY, WID_O_MGMT_BTN), SetMinimalSize(100, 12), SetFill(1, 0),
+														SetDataTip(STR_ORDERS_MANAGE_ORDER, STR_ORDERS_MANAGE_ORDER_TOOLTIP), SetResize(1, 0), SetAlignment(SA_TOP | SA_LEFT),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_MGMT_LIST_BTN), SetMinimalSize(100, 12), SetFill(1, 0),
+														SetDataTip(STR_ORDERS_MANAGE_LIST, STR_ORDERS_MANAGE_LIST_TOOLTIP), SetResize(1, 0),
+			EndContainer(),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_BOTTOM_LEFT),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_SKIP), SetMinimalSize(124, 12), SetFill(1, 0),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_SKIP), SetMinimalSize(100, 12), SetFill(1, 0),
 														SetDataTip(STR_ORDERS_SKIP_BUTTON, STR_ORDERS_SKIP_TOOLTIP), SetResize(1, 0),
-				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_MANAGE_LIST), SetMinimalSize(124, 12), SetFill(1, 0),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_MANAGE_LIST), SetMinimalSize(100, 12), SetFill(1, 0),
 														SetDataTip(STR_ORDERS_MANAGE_LIST, STR_ORDERS_MANAGE_LIST_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_BOTTOM_MIDDLE),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_DELETE), SetMinimalSize(124, 12), SetFill(1, 0),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_DELETE), SetMinimalSize(100, 12), SetFill(1, 0),
 														SetDataTip(STR_ORDERS_DELETE_BUTTON, STR_ORDERS_DELETE_TOOLTIP), SetResize(1, 0),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_STOP_SHARING), SetMinimalSize(124, 12), SetFill(1, 0),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_STOP_SHARING), SetMinimalSize(100, 12), SetFill(1, 0),
 														SetDataTip(STR_ORDERS_STOP_SHARING_BUTTON, STR_ORDERS_STOP_SHARING_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
-			NWidget(NWID_BUTTON_DROPDOWN, COLOUR_GREY, WID_O_GOTO), SetMinimalSize(124, 12), SetFill(1, 0),
+			NWidget(NWID_BUTTON_DROPDOWN, COLOUR_GREY, WID_O_GOTO), SetMinimalSize(100, 12), SetFill(1, 0),
 													SetDataTip(STR_ORDERS_GO_TO_BUTTON, STR_ORDERS_GO_TO_TOOLTIP), SetResize(1, 0),
 		EndContainer(),
 		NWidget(WWT_RESIZEBOX, COLOUR_GREY),
@@ -3271,19 +3358,25 @@ static const NWidgetPart _nested_orders_widgets[] = {
 
 	/* Second button row. */
 	NWidget(NWID_HORIZONTAL),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_MGMT),
+			NWidget(NWID_BUTTON_DROPDOWN, COLOUR_GREY, WID_O_MGMT_BTN), SetMinimalSize(100, 12), SetFill(1, 0),
+													SetDataTip(STR_ORDERS_MANAGE_ORDER, STR_ORDERS_MANAGE_ORDER_TOOLTIP), SetResize(1, 0), SetAlignment(SA_TOP | SA_LEFT),
+			NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_MGMT_LIST_BTN), SetMinimalSize(100, 12), SetFill(1, 0),
+													SetDataTip(STR_ORDERS_MANAGE_LIST, STR_ORDERS_MANAGE_LIST_TOOLTIP), SetResize(1, 0),
+		EndContainer(),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_BOTTOM_LEFT),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_SKIP), SetMinimalSize(124, 12), SetFill(1, 0),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_SKIP), SetMinimalSize(100, 12), SetFill(1, 0),
 													SetDataTip(STR_ORDERS_SKIP_BUTTON, STR_ORDERS_SKIP_TOOLTIP), SetResize(1, 0),
-			NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_MANAGE_LIST), SetMinimalSize(124, 12), SetFill(1, 0),
+			NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_MANAGE_LIST), SetMinimalSize(100, 12), SetFill(1, 0),
 													SetDataTip(STR_ORDERS_MANAGE_LIST, STR_ORDERS_MANAGE_LIST_TOOLTIP), SetResize(1, 0),
 		EndContainer(),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_BOTTOM_MIDDLE),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_DELETE), SetMinimalSize(124, 12), SetFill(1, 0),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_DELETE), SetMinimalSize(100, 12), SetFill(1, 0),
 													SetDataTip(STR_ORDERS_DELETE_BUTTON, STR_ORDERS_DELETE_TOOLTIP), SetResize(1, 0),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_STOP_SHARING), SetMinimalSize(124, 12), SetFill(1, 0),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_STOP_SHARING), SetMinimalSize(100, 12), SetFill(1, 0),
 													SetDataTip(STR_ORDERS_STOP_SHARING_BUTTON, STR_ORDERS_STOP_SHARING_TOOLTIP), SetResize(1, 0),
 		EndContainer(),
-		NWidget(NWID_BUTTON_DROPDOWN, COLOUR_GREY, WID_O_GOTO), SetMinimalSize(124, 12), SetFill(1, 0),
+		NWidget(NWID_BUTTON_DROPDOWN, COLOUR_GREY, WID_O_GOTO), SetMinimalSize(100, 12), SetFill(1, 0),
 											SetDataTip(STR_ORDERS_GO_TO_BUTTON, STR_ORDERS_GO_TO_TOOLTIP), SetResize(1, 0),
 		NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 	EndContainer(),

@@ -249,6 +249,7 @@ struct GUISettings : public TimeSettings {
 	bool   allow_hiding_waypoint_labels;     ///< Allow hiding waypoint viewport labels
 	uint8  disable_water_animation;          ///< Disable water animation depending on zoom level
 	bool   show_order_occupancy_by_default;  ///< Show order occupancy by default in vehicle order window
+	bool   show_order_management_button;     ///< Show order management button in vehicle order window
 	bool   show_group_hierarchy_name;        ///< Show the full hierarchy in group names
 	bool   show_vehicle_group_hierarchy_name;///< Show the full group hierarchy in vehicle names
 
