@@ -599,7 +599,8 @@ class CrashLogUnix : public CrashLog {
 			}
 #if defined(WITH_BFD)
 			if (ok && bfd_info.found && bfd_info.abfd) {
-				while (bfd_find_inliner_info(bfd_info.abfd, &file_name, &func_name, &line_num)) {
+				uint iteration_limit = 32;
+				while (iteration_limit-- && bfd_find_inliner_info(bfd_info.abfd, &file_name, &func_name, &line_num)) {
 					if (func_name) {
 						int status = -1;
 						char *demangled = nullptr;

@@ -554,7 +554,8 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 					const char *file_name = nullptr;
 					const char *func_name = nullptr;
 					uint line_num = 0;
-					while (bfd_find_inliner_info(bfd_info.abfd, &file_name, &func_name, &line_num)) {
+					uint iteration_limit = 32;
+					while (iteration_limit-- && bfd_find_inliner_info(bfd_info.abfd, &file_name, &func_name, &line_num)) {
 						buffer += seprintf(buffer, last, "\n[inlined]%*s", (int)(19 + (sizeof(void *) * 2)), "");
 						if (func_name) {
 							int status = -1;
