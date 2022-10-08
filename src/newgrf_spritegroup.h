@@ -204,6 +204,7 @@ inline bool IsEvalAdjustWithZeroRemovable(DeterministicSpriteGroupAdjustOperatio
 		case DSGA_OP_SHL:
 		case DSGA_OP_SHR:
 		case DSGA_OP_SAR:
+		case DSGA_OP_UMAX:
 			return true;
 
 		default:
