@@ -922,6 +922,82 @@ static const NIFeature _nif_industry = {
 };
 
 
+/*** NewGRF cargos ***/
+
+#define NICC(cb_id, bit) NIC(cb_id, CargoSpec, callback_mask, bit)
+static const NICallback _nic_cargo[] = {
+	NICC(CBID_CARGO_PROFIT_CALC,               CBM_CARGO_PROFIT_CALC),
+	NICC(CBID_CARGO_STATION_RATING_CALC,       CBM_CARGO_STATION_RATING_CALC),
+	NIC_END()
+};
+
+class NIHCargo : public NIHelper {
+	bool IsInspectable(uint index) const override        { return true; }
+	bool ShowExtraInfoOnly(uint index) const override    { return CargoSpec::Get(index)->grffile == nullptr; }
+	bool ShowSpriteDumpButton(uint index) const override { return true; }
+	uint GetParent(uint index) const override            { return UINT32_MAX; }
+	const void *GetInstance(uint index)const override    { return nullptr; }
+	const void *GetSpec(uint index) const override       { return CargoSpec::Get(index); }
+	void SetStringParameters(uint index) const override  { SetDParam(0, CargoSpec::Get(index)->name); }
+	uint32 GetGRFID(uint index) const override           { return (!this->ShowExtraInfoOnly(index)) ? CargoSpec::Get(index)->grffile->grfid : 0; }
+
+	uint Resolve(uint index, uint var, uint param, GetVariableExtra *extra) const override
+	{
+		return 0;
+	}
+
+	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
+	{
+		char buffer[1024];
+
+		output.print("Debug Info:");
+		seprintf(buffer, lastof(buffer), "  Index: %u", index);
+		output.print(buffer);
+
+		const CargoSpec *spec = CargoSpec::Get(index);
+		seprintf(buffer, lastof(buffer), "  Bit: %2u, Label: %c%c%c%c, Callback mask: 0x%02X",
+				spec->bitnum,
+				spec->label >> 24, spec->label >> 16, spec->label >> 8, spec->label,
+				spec->callback_mask);
+		output.print(buffer);
+		char *b = buffer + seprintf(buffer, lastof(buffer), "  Cargo class: %s%s%s%s%s%s%s%s%s%s%s",
+				(spec->classes & CC_PASSENGERS)   != 0 ? "passenger, " : "",
+				(spec->classes & CC_MAIL)         != 0 ? "mail, " : "",
+				(spec->classes & CC_EXPRESS)      != 0 ? "express, " : "",
+				(spec->classes & CC_ARMOURED)     != 0 ? "armoured, " : "",
+				(spec->classes & CC_BULK)         != 0 ? "bulk, " : "",
+				(spec->classes & CC_PIECE_GOODS)  != 0 ? "piece goods, " : "",
+				(spec->classes & CC_LIQUID)       != 0 ? "liquid, " : "",
+				(spec->classes & CC_REFRIGERATED) != 0 ? "refrigerated, " : "",
+				(spec->classes & CC_HAZARDOUS)    != 0 ? "hazardous, " : "",
+				(spec->classes & CC_COVERED)      != 0 ? "covered/sheltered, " : "",
+				(spec->classes & CC_SPECIAL)      != 0 ? "special, " : "");
+		if (b[-2] == ',') b[-2] = 0;
+		output.print(buffer);
+
+		seprintf(buffer, lastof(buffer), "  Weight: %u, Capacity multiplier: %u", spec->weight, spec->multiplier);
+		output.print(buffer);
+		seprintf(buffer, lastof(buffer), "  Initial payment: %d, Current payment: " OTTD_PRINTF64 ", Transit days: (%u, %u)",
+				spec->initial_payment, (int64)spec->current_payment, spec->transit_days[0], spec->transit_days[1]);
+		output.print(buffer);
+		seprintf(buffer, lastof(buffer), "  Freight: %s, Town effect: %u", spec->is_freight ? "yes" : "no", spec->town_effect);
+		output.print(buffer);
+	}
+
+	/* virtual */ void SpriteDump(uint index, DumpSpriteGroupPrinter print) const override
+	{
+		DumpSpriteGroup(CargoSpec::Get(index)->group, std::move(print));
+	}
+};
+
+static const NIFeature _nif_cargo = {
+	nullptr,
+	_nic_cargo,
+	nullptr,
+	new NIHCargo(),
+};
+
+
 /*** NewGRF signals ***/
 void DumpTileSignalsInfo(char *buffer, const char *last, uint index, NIExtraInfoOutput &output)
 {
@@ -1681,7 +1757,7 @@ static const NIFeature * const _nifeatures[] = {
 	nullptr,               // GSF_GLOBALVAR (has no "physical" objects)
 	&_nif_industrytile, // GSF_INDUSTRYTILES
 	&_nif_industry,     // GSF_INDUSTRIES
-	nullptr,               // GSF_CARGOES (has no "physical" objects)
+	&_nif_cargo,        // GSF_CARGOES (has no "physical" objects)
 	nullptr,               // GSF_SOUNDFX (has no "physical" objects)
 	nullptr,               // GSF_AIRPORTS (feature not implemented)
 	&_nif_signals,      // GSF_SIGNALS
