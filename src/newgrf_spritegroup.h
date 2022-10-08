@@ -225,6 +225,19 @@ inline bool IsEvalAdjustWithZeroAlwaysZero(DeterministicSpriteGroupAdjustOperati
 	}
 }
 
+inline bool IsEvalAdjustWithOneRemovable(DeterministicSpriteGroupAdjustOperation op)
+{
+	switch (op) {
+		case DSGA_OP_MUL:
+		case DSGA_OP_SDIV:
+		case DSGA_OP_UDIV:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
 inline bool IsEvalAdjustWithSideEffects(DeterministicSpriteGroupAdjustOperation op)
 {
 	switch (op) {

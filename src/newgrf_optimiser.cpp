@@ -1097,6 +1097,10 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeatu
 		} else if (adjust.and_mask == 0 && IsEvalAdjustWithZeroAlwaysZero(adjust.operation)) {
 			/* Operation always returns 0, replace it and any useless prior operations */
 			replace_with_constant_load(0);
+		} else if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 1 && IsEvalAdjustWithOneRemovable(adjust.operation)) {
+			/* Delete useless operations with a constant of 1 */
+			group->adjusts.pop_back();
+			state.inference = prev_inference;
 		} else {
 			if (adjust.variable == 0x7D && adjust.shift_num == 0 && adjust.and_mask == get_full_mask() && IsEvalAdjustOperationCommutative(adjust.operation) && group->adjusts.size() >= 2) {
 				DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
