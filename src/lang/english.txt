@@ -5887,6 +5887,8 @@ STR_TIMETABLE_NON_TIMETABLED_BRANCH                             :{BLACK}Not all 
 STR_TIMETABLE_WARNING_NO_SCHEDULED_DISPATCH_ORDER_ASSIGNED      :{BLACK}The dispatch schedule is not assigned to an order
 STR_TIMETABLE_WARNING_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME     :{BLACK}The scheduled dispatch order should have a timetabled wait time
 STR_TIMETABLE_WARNING_SCHEDULE_ID                               :{BLACK}Schedule {NUM}: {STRING}
+STR_TIMETABLE_FILL_TIMETABLE_SUGGESTION                         :{BLACK}Enable 'Automate' to automatically fill in and update the wait and travel times.
+STR_TIMETABLE_FILL_TIMETABLE_SUGGESTION_2                       :{BLACK}(Alternatively, enable 'Autofill' or manually fill in all the timetable fields).
 
 STR_TIMETABLE_WARNINGS_OMITTED                                  :{BLACK}{NUM} further warnings omitted...
 

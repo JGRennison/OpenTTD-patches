@@ -311,6 +311,8 @@ void ProcessTimetableWarnings(const Vehicle *v, std::function<void(StringID, boo
 				handler(STR_TIMETABLE_AUTOSEP_TIMETABLE_INCOMPLETE, false);
 			} else {
 				handler(STR_TIMETABLE_WARNING_AUTOSEP_MISSING_TIMINGS, true);
+				handler(STR_TIMETABLE_FILL_TIMETABLE_SUGGESTION, false);
+				handler(STR_TIMETABLE_FILL_TIMETABLE_SUGGESTION_2, false);
 			}
 		} else if (v->GetNumOrders() == 0) {
 			handler(STR_TIMETABLE_AUTOSEP_TIMETABLE_INCOMPLETE, false);
