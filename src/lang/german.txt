@@ -5365,7 +5365,7 @@ STR_VEHICLE_LOAD_THROUGH_ABORTED_INSUFFICIENT_TRACK             :{WHITE}{VEHICLE
 STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT                          :{WHITE}{VEHICLE}: durchgehendes Laden aufgrund Depot bei {STATION} abgebrochen
 
 STR_RUNNING                                                     :{LTBLUE}Funktioniert
-STR_NEED_REPAIR                                                 :{ORANGE}Der Fahrzeuge ist reparaturbedürftig - die Höchstgeschwindigkeit ist auf {VELOCITY} reduziert
+STR_NEED_REPAIR                                                 :{ORANGE}Das Fahrzeug ist reparaturbedürftig - die Höchstgeschwindigkeit ist auf {VELOCITY} reduziert
 STR_CURRENT_STATUS                                              :{BLACK}Momentaner Status: {STRING}
 
 # The next two need to stay in this order
