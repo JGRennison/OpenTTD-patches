@@ -3376,7 +3376,7 @@ STR_TRACE_RESTRICT_TRAIN_STATUS_REQUIRES_SERVICE                :benötigt Wartu
 STR_TRACE_RESTRICT_REVERSE_SIG                                  :Wende nach Signal
 STR_TRACE_RESTRICT_REVERSE_SIG_CANCEL                           :Breche Wenden ab
 STR_TRACE_RESTRICT_SET_SPEED_RESTRICTION                        :Beschränke Fahrtgeschwindigkeit auf: {VELOCITY}
-STR_TRACE_RESTRICT_REMOVE_SPEED_RESTRICTION                     :Hebe Beschränkung der Fahrtgeschwindig auf
+STR_TRACE_RESTRICT_REMOVE_SPEED_RESTRICTION                     :Freie Fahrt für freie Tfs
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK                              :Zug kommt voran, zeige keine Nachrichten zu an diesem Pfadsignal wartenden Zügen
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL                       :Hebe Zug kommt voran auf, zeige Nachrichten zu an diesem Pfadsignal wartenden Zügen
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_SHORT                        :Zug kommt voran...
