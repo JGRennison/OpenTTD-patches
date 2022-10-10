@@ -2195,6 +2195,11 @@ STR_CONFIG_SETTING_TOWN_TUNNELS_FORBIDDEN                       :Forbidden
 STR_CONFIG_SETTING_TOWN_TUNNELS_ALLOWED_OBSTRUCTION             :Allowed only for small obstructions
 STR_CONFIG_SETTING_TOWN_TUNNELS_ALLOWED                         :Allowed
 
+STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE                          :Limit towns building continuous inclined roads: {STRING2}
+STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_HELPTEXT                 :Limit the length of consecutive sloped road tiles which towns will build. This can be used to prevent towns from growing long straight road segments up or down mountain sides
+STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_VALUE                    :{NUM} tile{P "" s}
+STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_ZERO                     :No limit
+
 STR_CONFIG_SETTING_NOISE_LEVEL                                  :Allow town controlled noise level for airports: {STRING2}
 STR_CONFIG_SETTING_NOISE_LEVEL_HELPTEXT                         :With this setting disabled, there can be two airports in each town. With this setting enabled, the number of airports in a town is limited by the noise acceptance of the town, which depends on population and airport size and distance
 

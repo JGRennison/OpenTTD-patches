@@ -1592,6 +1592,35 @@ static void GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, DiagDirection t
 				break;
 		}
 
+		if (_settings_game.economy.town_max_road_slope > 0 && ((rcmd == ROAD_X) || (rcmd == ROAD_Y))) {
+			/* Limit consecutive sloped road tiles */
+
+			auto get_road_slope = [rcmd](TileIndex t) -> Slope {
+				Slope slope = GetTileSlope(t);
+				extern Foundation GetRoadFoundation(Slope tileh, RoadBits bits);
+				ApplyFoundationToSlope(GetRoadFoundation(slope, rcmd), &slope);
+				return slope;
+			};
+
+			const Slope slope = get_road_slope(tile);
+			if (slope != SLOPE_FLAT) {
+				const int delta = TileOffsByDiagDir(ReverseDiagDir(target_dir));
+				bool ok = false;
+				TileIndex t = tile;
+				for (uint i = 0; i < _settings_game.economy.town_max_road_slope; i++) {
+					t += delta;
+					if (!IsValidTile(t) || !IsNormalRoadTile(t) || GetRoadBits(t, RTT_ROAD) != rcmd || get_road_slope(t) != slope) {
+						ok = true;
+						break;
+					}
+				}
+				if (!ok) {
+					/* All tested tiles had the same incline, disallow road */
+					return;
+				}
+			}
+		}
+
 	} else if (target_dir < DIAGDIR_END && !(cur_rb & DiagDirToRoadBits(ReverseDiagDir(target_dir)))) {
 		/* Continue building on a partial road.
 		 * Should be always OK, so we only generate

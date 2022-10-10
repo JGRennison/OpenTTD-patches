@@ -494,7 +494,7 @@ extern const RoadBits _invalid_tileh_slopes_road[2][15] = {
 	}
 };
 
-static Foundation GetRoadFoundation(Slope tileh, RoadBits bits);
+Foundation GetRoadFoundation(Slope tileh, RoadBits bits);
 
 void NotifyRoadLayoutChangedIfTileNonLeaf(TileIndex tile, RoadTramType rtt, RoadBits present_bits)
 {
@@ -1831,7 +1831,7 @@ struct DrawRoadTileStruct {
  * @param bits The RoadBits part
  * @return The resulting Foundation
  */
-static Foundation GetRoadFoundation(Slope tileh, RoadBits bits)
+Foundation GetRoadFoundation(Slope tileh, RoadBits bits)
 {
 	/* Flat land and land without a road doesn't require a foundation */
 	if (tileh == SLOPE_FLAT || bits == ROAD_NONE) return FOUNDATION_NONE;
