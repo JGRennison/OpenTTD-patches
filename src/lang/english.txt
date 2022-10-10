@@ -2188,6 +2188,13 @@ STR_CONFIG_SETTING_ALLOW_TOWN_ROADS_HELPTEXT                    :Allow towns to 
 STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS                   :Towns are allowed to build level crossings: {STRING2}
 STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS_HELPTEXT          :Enabling this setting allows towns to build level crossings
 
+STR_CONFIG_SETTING_TOWN_TUNNELS                                 :Towns are allowed to build tunnels: {STRING2}
+STR_CONFIG_SETTING_TOWN_TUNNELS_HELPTEXT                        :Under what conditions are towns allowed to build road tunnels
+###length 3
+STR_CONFIG_SETTING_TOWN_TUNNELS_FORBIDDEN                       :Forbidden
+STR_CONFIG_SETTING_TOWN_TUNNELS_ALLOWED_OBSTRUCTION             :Allowed only for small obstructions
+STR_CONFIG_SETTING_TOWN_TUNNELS_ALLOWED                         :Allowed
+
 STR_CONFIG_SETTING_NOISE_LEVEL                                  :Allow town controlled noise level for airports: {STRING2}
 STR_CONFIG_SETTING_NOISE_LEVEL_HELPTEXT                         :With this setting disabled, there can be two airports in each town. With this setting enabled, the number of airports in a town is limited by the noise acceptance of the town, which depends on population and airport size and distance
 

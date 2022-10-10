@@ -1426,6 +1426,8 @@ static bool GrowTownWithTunnel(const Town *t, const TileIndex tile, const DiagDi
 {
 	assert(tunnel_dir < DIAGDIR_END);
 
+	if (_settings_game.economy.town_build_tunnels == TTM_FORBIDDEN) return false;
+
 	Slope slope = GetTileSlope(tile);
 
 	/* Only consider building a tunnel if the starting tile is sloped properly. */
@@ -1439,6 +1441,8 @@ static bool GrowTownWithTunnel(const Town *t, const TileIndex tile, const DiagDi
 
 	/* There are two conditions for building tunnels: Under a mountain and under an obstruction. */
 	if (CanRoadContinueIntoNextTile(t, tile, tunnel_dir)) {
+		if (_settings_game.economy.town_build_tunnels != TTM_ALLOWED) return false;
+
 		/* Only tunnel under a mountain if the slope is continuous for at least 4 tiles. We want tunneling to be a last resort for large hills. */
 		TileIndex slope_tile = tile;
 		for (uint8 tiles = 0; tiles < 4; tiles++) {
