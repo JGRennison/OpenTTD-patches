@@ -1730,14 +1730,14 @@ CommandCost CmdReverseOrderList(TileIndex tile, DoCommandFlag flags, uint32 p1, 
  * @param tile unused
  * @param flags operation to perform
  * @param p1 various bitstuffed elements
- * - p1 = (bit  0 - 19) - ID of the vehicle
+ * - p1 = (bit  0  - 19) - ID of the vehicle
  * @param p2 various bitstuffed elements
- *  - p2 = (bit 0 -  3) - what data to modify (@see ModifyOrderFlags)
- *  - p2 = (bit 4 - 19) - the data to modify
- *  - p2 = (bit 20 - 27) - a CargoID for cargo type orders (MOF_CARGO_TYPE_UNLOAD or MOF_CARGO_TYPE_LOAD)
+ *  - p2 = (bit 0  -  7) - what data to modify (@see ModifyOrderFlags)
+ *  - p2 = (bit 8  - 23) - the data to modify
+ *  - p2 = (bit 24 - 31) - a CargoID for cargo type orders (MOF_CARGO_TYPE_UNLOAD or MOF_CARGO_TYPE_LOAD)
  * @param p3 various bitstuffed elements
- *  - p3 = (bit 0 - 15) - the selected order (if any). If the last order is given,
- *                        the order will be inserted before that one
+ *  - p3 = (bit 0  - 15) - the selected order (if any). If the last order is given,
+ *                         the order will be inserted before that one
  * @param text unused
  * @return the cost of this operation or an error
  */
@@ -1745,9 +1745,9 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 {
 	VehicleOrderID sel_ord = GB(p3,  0, 16);
 	VehicleID veh          = GB(p1,  0, 20);
-	ModifyOrderFlags mof   = Extract<ModifyOrderFlags, 0, 4>(p2);
-	uint16 data            = GB(p2,  4, 16);
-	CargoID cargo_id       = (mof == MOF_CARGO_TYPE_UNLOAD || mof == MOF_CARGO_TYPE_LOAD) ? (CargoID) GB(p2, 20, 8) : (CargoID) CT_INVALID;
+	ModifyOrderFlags mof   = Extract<ModifyOrderFlags, 0, 8>(p2);
+	uint16 data            = GB(p2,  8, 16);
+	CargoID cargo_id       = (mof == MOF_CARGO_TYPE_UNLOAD || mof == MOF_CARGO_TYPE_LOAD) ? (CargoID) GB(p2, 24, 8) : (CargoID) CT_INVALID;
 
 	if (mof >= MOF_END) return CMD_ERROR;
 

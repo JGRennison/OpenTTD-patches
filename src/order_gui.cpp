@@ -255,12 +255,12 @@ public:
 
 			if (action_type == order_action_type) return;
 
-			ModifyOrder(this->vehicle, this->order_id, mof | (action_type << 4) | (cargo_id << 20));
+			ModifyOrder(this->vehicle, this->order_id, mof | (action_type << 8) | (cargo_id << 24));
 
 			this->GetWidget<NWidgetCore>(widget)->SetDataTip(this->cargo_type_order_dropdown[this->GetOrderActionTypeForCargo(cargo_id)], STR_CARGO_TYPE_LOAD_ORDERS_DROP_TOOLTIP + this->variant);
 			this->SetWidgetDirty(widget);
 		} else if (widget == WID_CTO_SET_TO_ALL_DROPDOWN) {
-			ModifyOrder(this->vehicle, this->order_id, mof | (action_type << 4) | (CT_INVALID << 20));
+			ModifyOrder(this->vehicle, this->order_id, mof | (action_type << 8) | (CT_INVALID << 24));
 
 			for (int i = 0; i < (int)_sorted_standard_cargo_specs.size(); i++) {
 				const CargoSpec *cs = _sorted_cargo_specs[i];
@@ -1486,7 +1486,7 @@ private:
 			load_type = OLF_LOAD_IF_POSSIBLE; // reset to 'default'
 		}
 		if (order->GetLoadType() != load_type) {
-			this->ModifyOrder(sel_ord, MOF_LOAD | (load_type << 4));
+			this->ModifyOrder(sel_ord, MOF_LOAD | (load_type << 8));
 		}
 
 		if (load_type == OLFB_CARGO_TYPE_LOAD) ShowCargoTypeOrdersWindow(this->vehicle, this, sel_ord, CTOWV_LOAD);
@@ -1504,7 +1504,7 @@ private:
 			if (order == nullptr) return;
 			i = (order->GetDepotOrderType() & ODTFB_SERVICE) ? DA_ALWAYS_GO : DA_SERVICE;
 		}
-		this->ModifyOrder(sel_ord, MOF_DEPOT_ACTION | (i << 4));
+		this->ModifyOrder(sel_ord, MOF_DEPOT_ACTION | (i << 8));
 	}
 
 	/**
@@ -1553,12 +1553,12 @@ private:
 		if (order->GetUnloadType() == unload_type && unload_type != OUFB_CARGO_TYPE_UNLOAD) return; // If we still match, do nothing
 
 		if (order->GetUnloadType() != unload_type) {
-			this->ModifyOrder(sel_ord, MOF_UNLOAD | (unload_type << 4));
+			this->ModifyOrder(sel_ord, MOF_UNLOAD | (unload_type << 8));
 		}
 
 		if (unload_type == OUFB_TRANSFER || unload_type == OUFB_UNLOAD) {
 			/* Transfer and unload orders with leave empty as default */
-			this->ModifyOrder(sel_ord, MOF_LOAD | (OLFB_NO_LOAD << 4), false);
+			this->ModifyOrder(sel_ord, MOF_LOAD | (OLFB_NO_LOAD << 8), false);
 			this->SetWidgetDirty(WID_O_FULL_LOAD);
 		} else if (unload_type == OUFB_CARGO_TYPE_UNLOAD) {
 			ShowCargoTypeOrdersWindow(this->vehicle, this, sel_ord, CTOWV_UNLOAD);
@@ -1587,7 +1587,7 @@ private:
 		}
 
 		this->SetWidgetDirty(WID_O_NON_STOP);
-		this->ModifyOrder(sel_ord, MOF_NON_STOP | non_stop << 4);
+		this->ModifyOrder(sel_ord, MOF_NON_STOP | non_stop << 8);
 	}
 
 	/**
@@ -2416,7 +2416,7 @@ public:
 				if (this->goto_type == OPOS_CONDITIONAL_RETARGET) {
 					VehicleOrderID order_id = this->GetOrderFromPt(_cursor.pos.y - this->top);
 					if (order_id != INVALID_VEH_ORDER_ID) {
-						this->ModifyOrder(this->OrderGetSel(), MOF_COND_DESTINATION | (order_id << 4));
+						this->ModifyOrder(this->OrderGetSel(), MOF_COND_DESTINATION | (order_id << 8));
 					}
 					ResetObjectToPlace();
 					break;
@@ -2452,14 +2452,14 @@ public:
 								}
 							}
 						}
-						this->ModifyOrder(sel, MOF_STOP_LOCATION | osl << 4);
+						this->ModifyOrder(sel, MOF_STOP_LOCATION | osl << 8);
 					}
 					if (this->vehicle->type == VEH_ROAD && sel < this->vehicle->GetNumOrders() && _settings_game.pf.pathfinder_for_roadvehs == VPF_YAPF) {
 						DiagDirection current = this->vehicle->GetOrder(sel)->GetRoadVehTravelDirection();
 						if (_settings_client.gui.show_adv_load_mode_features || current != INVALID_DIAGDIR) {
 							uint dir = (current + 1) & 0xFF;
 							if (dir >= DIAGDIR_END) dir = INVALID_DIAGDIR;
-							this->ModifyOrder(sel, MOF_RV_TRAVEL_DIR | dir << 4);
+							this->ModifyOrder(sel, MOF_RV_TRAVEL_DIR | dir << 8);
 						}
 					}
 				} else {
@@ -2640,7 +2640,7 @@ public:
 
 				if (order == nullptr) break;
 
-				this->ModifyOrder(sel_ord, MOF_WAYPOINT_FLAGS | (order->GetWaypointFlags() ^ OWF_REVERSE) << 4);
+				this->ModifyOrder(sel_ord, MOF_WAYPOINT_FLAGS | (order->GetWaypointFlags() ^ OWF_REVERSE) << 8);
 				break;
 			}
 
@@ -2660,7 +2660,7 @@ public:
 				if (this->goto_type != OPOS_NONE) {
 					ResetObjectToPlace();
 				} else if (GB(this->vehicle->GetOrder(this->OrderGetSel())->GetXData(), 16, 16) != 0) {
-					this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_3 | NEW_STATION << 4);
+					this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_3 | NEW_STATION << 8);
 				} else {
 					this->OrderClick_Goto(OPOS_COND_VIA);
 				}
@@ -2823,7 +2823,7 @@ public:
 					value = Clamp(value, 0, 2047);
 					break;
 			}
-			this->ModifyOrder(sel, MOF_COND_VALUE | value << 4);
+			this->ModifyOrder(sel, MOF_COND_VALUE | value << 8);
 		}
 
 		if (this->query_text_widget == WID_O_ADD_VEH_GROUP) {
@@ -2866,58 +2866,58 @@ public:
 				break;
 
 			case WID_O_COND_VARIABLE:
-				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VARIABLE | index << 4);
+				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VARIABLE | index << 8);
 				break;
 
 			case WID_O_COND_COMPARATOR:
 				if (index >= 0x100) {
 					const Order *o = this->vehicle->GetOrder(this->OrderGetSel());
 					if (o == nullptr || o->GetConditionVariable() != OCV_DISPATCH_SLOT) return;
-					this->ModifyOrder(this->OrderGetSel(), MOF_COND_COMPARATOR | ((index & 1) ? OCC_IS_FALSE : OCC_IS_TRUE) << 4);
-					this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2 | ((o->GetConditionValue() & 2) | ((index & 2) >> 1)) << 4);
+					this->ModifyOrder(this->OrderGetSel(), MOF_COND_COMPARATOR | ((index & 1) ? OCC_IS_FALSE : OCC_IS_TRUE) << 8);
+					this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2 | ((o->GetConditionValue() & 2) | ((index & 2) >> 1)) << 8);
 				} else {
-					this->ModifyOrder(this->OrderGetSel(), MOF_COND_COMPARATOR | index << 4);
+					this->ModifyOrder(this->OrderGetSel(), MOF_COND_COMPARATOR | index << 8);
 				}
 				break;
 
 			case WID_O_COND_CARGO:
-				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE | index << 4);
+				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE | index << 8);
 				break;
 
 			case WID_O_COND_AUX_CARGO:
-				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2 | index << 4);
+				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2 | index << 8);
 				break;
 
 			case WID_O_COND_SLOT:
-				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE | index << 4);
+				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE | index << 8);
 				break;
 
 			case WID_O_COND_COUNTER:
-				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2 | index << 4);
+				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2 | index << 8);
 				break;
 
 			case WID_O_COND_TIME_DATE:
-				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2 | index << 4);
+				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2 | index << 8);
 				break;
 
 			case WID_O_COND_TIMETABLE:
-				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2 | index << 4);
+				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2 | index << 8);
 				break;
 
 			case WID_O_COND_SCHED_SELECT:
-				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE | index << 4);
+				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE | index << 8);
 				break;
 
 			case WID_O_COND_SCHED_TEST: {
 				const Order *o = this->vehicle->GetOrder(this->OrderGetSel());
 				if (o == nullptr) return;
 				index = (index * 2) | (o->GetConditionValue() & 1);
-				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2 | index << 4);
+				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2 | index << 8);
 				break;
 			}
 
 			case WID_O_RELEASE_SLOT:
-				this->ModifyOrder(this->OrderGetSel(), MOF_SLOT | index << 4);
+				this->ModifyOrder(this->OrderGetSel(), MOF_SLOT | index << 8);
 				break;
 
 			case WID_O_MANAGE_LIST:
@@ -3026,7 +3026,7 @@ public:
 					st = in->neutral_station;
 				}
 				if (st != nullptr && IsInfraUsageAllowed(this->vehicle->type, this->vehicle->owner, st->owner)) {
-					if (this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_3 | st->index << 4)) {
+					if (this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_3 | st->index << 8)) {
 						ResetObjectToPlace();
 					}
 				}
