@@ -1190,6 +1190,23 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, 
 }
 #undef return_dcpi
 
+CommandCost::CommandCost(const CommandCost &other)
+{
+	*this = other;
+}
+
+CommandCost &CommandCost::operator=(const CommandCost &other)
+{
+	this->cost = other.cost;
+	this->expense_type = other.expense_type;
+	this->success = other.success;
+	this->message = other.message;
+	this->extra_message = other.extra_message;
+	if (other.aux_data) {
+		this->aux_data.reset(new CommandCostAuxliaryData(*other.aux_data));
+	}
+	return *this;
+}
 
 /**
  * Adds the cost of the given command return value to this cost.
@@ -1206,13 +1223,6 @@ void CommandCost::AddCost(const CommandCost &ret)
 }
 
 /**
- * Values to put on the #TextRefStack for the error message.
- * There is only one static instance of the array, just like there is only one
- * instance of normal DParams.
- */
-uint32 CommandCost::textref_stack[16];
-
-/**
  * Activate usage of the NewGRF #TextRefStack for the error message.
  * @param grffile NewGRF that provides the #TextRefStack
  * @param num_registers number of entries to copy from the temporary NewGRF registers
@@ -1221,11 +1231,15 @@ void CommandCost::UseTextRefStack(const GRFFile *grffile, uint num_registers)
 {
 	extern TemporaryStorageArray<int32, 0x110> _temp_store;
 
-	assert(num_registers < lengthof(textref_stack));
-	this->textref_stack_grffile = grffile;
-	this->textref_stack_size = num_registers;
+	if (!this->aux_data) {
+		this->aux_data.reset(new CommandCostAuxliaryData());
+	}
+
+	assert(num_registers < lengthof(this->aux_data->textref_stack));
+	this->aux_data->textref_stack_grffile = grffile;
+	this->aux_data->textref_stack_size = num_registers;
 	for (uint i = 0; i < num_registers; i++) {
-		textref_stack[i] = _temp_store.GetValue(0x100 + i);
+		this->aux_data->textref_stack[i] = _temp_store.GetValue(0x100 + i);
 	}
 }
 
@@ -1241,7 +1255,8 @@ int CommandCost::WriteSummaryMessage(char *buf, char *last, StringID cmd_msg) co
 	if (this->Succeeded()) {
 		return seprintf(buf, last, "Success: cost: " OTTD_PRINTF64, (int64) this->GetCost());
 	} else {
-		if (this->textref_stack_size > 0) StartTextRefStackUsage(this->textref_stack_grffile, this->textref_stack_size, textref_stack);
+		const uint textref_stack_size = this->GetTextRefStackSize();
+		if (textref_stack_size > 0) StartTextRefStackUsage(this->GetTextRefStackGRF(), textref_stack_size, this->GetTextRefStack());
 
 		char *b = buf;
 		b += seprintf(b, last, "Failed: cost: " OTTD_PRINTF64, (int64) this->GetCost());
@@ -1254,7 +1269,7 @@ int CommandCost::WriteSummaryMessage(char *buf, char *last, StringID cmd_msg) co
 			b = GetString(b, this->message, last);
 		}
 
-		if (this->textref_stack_size > 0) StopTextRefStackUsage();
+		if (textref_stack_size > 0) StopTextRefStackUsage();
 
 		return b - buf;
 	}
