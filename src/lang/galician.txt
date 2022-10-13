@@ -6046,7 +6046,7 @@ STR_TRACE_RESTRICT_VARIABLE_TRAIN_OWNER                         :propietario do 
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_STATUS                        :estado do tren
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_ENGINE_CLASS                  :clase do motor
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :indefinido
-STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED                       :{RED}indefinido
+STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED                       :{PUSH_COLOUR}{RED}indefinido{POP_COLOUR}
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER                  :{STRING} {STRING} {STRING} {COMMA} then
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_SPEED                    :{STRING} {STRING} {STRING} {VELOCITY} then
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_WEIGHT                   :{STRING} {STRING} {STRING} {WEIGHT_SHORT} then
@@ -6140,11 +6140,11 @@ STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}Slot{CON
 STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR                          :{BLACK}, {LTBLUE}
 STR_TRACE_RESTRICT_COUNTER_NAME                                 :{TRCOUNTER}
 STR_TRACE_RESTRICT_COUNTER_INCREASE                             :Incrementar
-STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM                        :Incrementar contador: {STRING}{BLACK}{STRING} en {COMMA}
+STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM                        :Incrementar contador: {STRING} en {COMMA}
 STR_TRACE_RESTRICT_COUNTER_DECREASE                             :Disminuir
-STR_TRACE_RESTRICT_COUNTER_DECREASE_ITEM                        :Disminuir contador: {STRING}{BLACK}{STRING} en {COMMA}
+STR_TRACE_RESTRICT_COUNTER_DECREASE_ITEM                        :Disminuir contador: {STRING} en {COMMA}
 STR_TRACE_RESTRICT_COUNTER_SET                                  :Fixar
-STR_TRACE_RESTRICT_COUNTER_SET_ITEM                             :Fixar contador: {STRING}{BLACK}{STRING} a {COMMA}
+STR_TRACE_RESTRICT_COUNTER_SET_ITEM                             :Fixar contador: {STRING} a {COMMA}
 STR_TRACE_RESTRICT_COUNTER_SET_VALUE                            :{BLACK}Fixar valor
 STR_TRACE_RESTRICT_COUNTER_SET_VALUE_TOOLTIP                    :{BLACK}Fixar o valor do contador seleccionado
 STR_TRACE_RESTRICT_COUNTER_SET_VALUE_CAPTION                    :{BLACK}Fixar o valor do contador

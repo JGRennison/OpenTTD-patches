@@ -1676,8 +1676,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					SetDParam(0, STR_TRACE_RESTRICT_COUNTER_NAME);
 					SetDParam(1, GetTraceRestrictValue(item));
 				}
-				SetDParam(2, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
-				SetDParam(3, value);
+				SetDParam(2, value);
 				break;
 			}
 

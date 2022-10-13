@@ -3264,7 +3264,7 @@ STR_TRACE_RESTRICT_VARIABLE_TRAIN_OWNER                         :Zugbesitzer
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_STATUS                        :Zugstatus
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_ENGINE_CLASS                  :Antriebsart
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :undefiniert
-STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED                       :{RED}undefiniert
+STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED                       :{PUSH_COLOUR}{RED}undefiniert{POP_COLOUR}
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER                  :{STRING} {STRING} {STRING} {COMMA} dann
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_SPEED                    :{STRING} {STRING} {STRING} {VELOCITY} dann
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_WEIGHT                   :{STRING} {STRING} {STRING} {WEIGHT_SHORT} dann
@@ -3359,9 +3359,9 @@ STR_TRACE_RESTRICT_COUNTER_NAME                                 :{TRCOUNTER}
 STR_TRACE_RESTRICT_COUNTER_INCREASE                             :Inkrementiere
 STR_TRACE_RESTRICT_COUNTER_DECREASE                             :Dekrementiere
 STR_TRACE_RESTRICT_COUNTER_SET                                  :Setze
-STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM                        :Inkrementiere Zähler: {STRING}{BLACK}{STRING} um {COMMA}
-STR_TRACE_RESTRICT_COUNTER_DECREASE_ITEM                        :Dekrementiere Zähler: {STRING}{BLACK}{STRING} um {COMMA}
-STR_TRACE_RESTRICT_COUNTER_SET_ITEM                             :Setze Zähler: {STRING}{BLACK}{STRING} auf {COMMA}
+STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM                        :Inkrementiere Zähler: {STRING} um {COMMA}
+STR_TRACE_RESTRICT_COUNTER_DECREASE_ITEM                        :Dekrementiere Zähler: {STRING} um {COMMA}
+STR_TRACE_RESTRICT_COUNTER_SET_ITEM                             :Setze Zähler: {STRING} auf {COMMA}
 STR_TRACE_RESTRICT_TRAIN_STATUS_EMPTY                           :leer
 STR_TRACE_RESTRICT_TRAIN_STATUS_FULL                            :voll
 STR_TRACE_RESTRICT_TRAIN_STATUS_BROKEN_DOWN                     :hat eine Panne

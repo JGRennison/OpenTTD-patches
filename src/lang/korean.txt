@@ -3362,9 +3362,9 @@ STR_TRACE_RESTRICT_COUNTER_NAME                                 :{TRCOUNTER}
 STR_TRACE_RESTRICT_COUNTER_INCREASE                             :증가
 STR_TRACE_RESTRICT_COUNTER_DECREASE                             :감소
 STR_TRACE_RESTRICT_COUNTER_SET                                  :설정
-STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM                        :카운터: {0:STRING}{BLACK}{1:STRING}의 값을 {2:COMMA}만큼 증가
-STR_TRACE_RESTRICT_COUNTER_DECREASE_ITEM                        :카운터: {0:STRING}{BLACK}{1:STRING}의 값을 {2:COMMA}만큼 감소
-STR_TRACE_RESTRICT_COUNTER_SET_ITEM                             :카운터: {0:STRING}{BLACK}{1:STRING}의 값을 {2:COMMA}(으)로 설정
+STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM                        :카운터: {0:STRING}의 값을 {1:COMMA}만큼 증가
+STR_TRACE_RESTRICT_COUNTER_DECREASE_ITEM                        :카운터: {0:STRING}의 값을 {1:COMMA}만큼 감소
+STR_TRACE_RESTRICT_COUNTER_SET_ITEM                             :카운터: {0:STRING}의 값을 {1:COMMA}(으)로 설정
 STR_TRACE_RESTRICT_TRAIN_STATUS_EMPTY                           :{G=f}빈 상태
 STR_TRACE_RESTRICT_TRAIN_STATUS_FULL                            :{G=f}가득 찬 상태
 STR_TRACE_RESTRICT_TRAIN_STATUS_BROKEN_DOWN                     :{G=f}고장난 상태

@@ -3287,7 +3287,7 @@ STR_TRACE_RESTRICT_VARIABLE_TRAIN_STATUS                        :train status
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_ENGINE_CLASS                  :engine class
 STR_TRACE_RESTRICT_VARIABLE_ORDER_TARGET_DIRECTION              :direction of order target
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :undefined
-STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED                       :{RED}undefined
+STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED                       :{PUSH_COLOUR}{RED}undefined{POP_COLOUR}
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER                  :{STRING} {STRING} {STRING} {COMMA} then
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_SPEED                    :{STRING} {STRING} {STRING} {VELOCITY} then
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_WEIGHT                   :{STRING} {STRING} {STRING} {WEIGHT_SHORT} then
@@ -3383,9 +3383,9 @@ STR_TRACE_RESTRICT_COUNTER_NAME                                 :{TRCOUNTER}
 STR_TRACE_RESTRICT_COUNTER_INCREASE                             :Increase
 STR_TRACE_RESTRICT_COUNTER_DECREASE                             :Decrease
 STR_TRACE_RESTRICT_COUNTER_SET                                  :Set
-STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM                        :Increase counter: {STRING1}{BLACK}{STRING} by {COMMA}
-STR_TRACE_RESTRICT_COUNTER_DECREASE_ITEM                        :Decrease counter: {STRING1}{BLACK}{STRING} by {COMMA}
-STR_TRACE_RESTRICT_COUNTER_SET_ITEM                             :Set counter: {STRING1}{BLACK}{STRING} to {COMMA}
+STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM                        :Increase counter: {STRING1} by {COMMA}
+STR_TRACE_RESTRICT_COUNTER_DECREASE_ITEM                        :Decrease counter: {STRING1} by {COMMA}
+STR_TRACE_RESTRICT_COUNTER_SET_ITEM                             :Set counter: {STRING1} to {COMMA}
 STR_TRACE_RESTRICT_TRAIN_STATUS_EMPTY                           :empty
 STR_TRACE_RESTRICT_TRAIN_STATUS_FULL                            :full
 STR_TRACE_RESTRICT_TRAIN_STATUS_BROKEN_DOWN                     :broken down
