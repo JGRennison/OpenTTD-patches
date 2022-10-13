@@ -32,6 +32,7 @@ class CommandCost {
 		uint32 textref_stack[16] = {};
 		const GRFFile *textref_stack_grffile = nullptr; ///< NewGRF providing the #TextRefStack content.
 		uint textref_stack_size = 0;                    ///< Number of uint32 values to put on the #TextRefStack for the error message.
+		TileIndex tile = INVALID_TILE;
 	};
 	std::unique_ptr<CommandCostAuxliaryData> aux_data;
 
@@ -225,6 +226,13 @@ public:
 		res.success = false;
 		return res;
 	}
+
+	TileIndex GetTile() const
+	{
+		return this->aux_data != nullptr ? this->aux_data->tile : INVALID_TILE;
+	}
+
+	void SetTile(TileIndex tile);
 };
 
 /**

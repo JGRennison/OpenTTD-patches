@@ -1274,3 +1274,13 @@ int CommandCost::WriteSummaryMessage(char *buf, char *last, StringID cmd_msg) co
 		return b - buf;
 	}
 }
+
+void CommandCost::SetTile(TileIndex tile)
+{
+	if (tile == this->GetTile()) return;
+
+	if (!this->aux_data) {
+		this->aux_data.reset(new CommandCostAuxliaryData());
+	}
+	this->aux_data->tile = tile;
+}
