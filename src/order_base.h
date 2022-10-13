@@ -181,6 +181,7 @@ public:
 	void MakeWaiting();
 	void MakeLoadingAdvance(StationID destination);
 	void MakeReleaseSlot();
+	void MakeChangeCounter();
 
 	/**
 	 * Is this a 'goto' order with a real destination?
@@ -202,7 +203,7 @@ public:
 
 	/**
 	 * Gets the destination of this order.
-	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION) || IsType(OT_RELEASE_SLOT).
+	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION) || IsType(OT_RELEASE_SLOT) || IsType(OT_COUNTER).
 	 * @return the destination of the order.
 	 */
 	inline DestinationID GetDestination() const { return this->dest; }
@@ -210,7 +211,7 @@ public:
 	/**
 	 * Sets the destination of this order.
 	 * @param destination the new destination of the order.
-	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION) || IsType(OT_RELEASE_SLOT).
+	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION) || IsType(OT_RELEASE_SLOT) || IsType(OT_COUNTER).
 	 */
 	inline void SetDestination(DestinationID destination) { this->dest = destination; }
 
@@ -349,6 +350,8 @@ public:
 	inline uint16 GetConditionValue() const { return GB(this->dest, 0, 11); }
 	/** Get counter for the 'jump xx% of times' option */
 	inline int8 GetJumpCounter() const { return GB(this->GetXData(), 0, 8); }
+	/** Get counter operation */
+	inline uint8 GetCounterOperation() const { return GB(this->flags, 0, 8); }
 
 	/** Set how the consist must be loaded. */
 	inline void SetLoadType(OrderLoadFlags load_type)
@@ -410,8 +413,10 @@ public:
 	inline void SetConditionSkipToOrder(VehicleOrderID order_id) { this->flags = order_id; }
 	/** Set the value to base the skip on. */
 	inline void SetConditionValue(uint16 value) { SB(this->dest, 0, 11, value); }
-	/** Get counter for the 'jump xx% of times' option */
+	/** Set counter for the 'jump xx% of times' option */
 	inline void SetJumpCounter(int8 jump_counter) { SB(this->GetXDataRef(), 0, 8, jump_counter); }
+	/** Set counter operation */
+	inline void SetCounterOperation(uint8 op) { SB(this->flags, 0, 8, op); }
 
 	/* As conditional orders write their "skip to" order all over the flags, we cannot check the
 	 * flags to find out if timetabling is enabled. However, as conditional orders are never

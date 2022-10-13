@@ -46,6 +46,9 @@ enum OrderWidgets {
 	WID_O_COND_AUX_VIA,              ///< Condition via button.
 	WID_O_COND_SCHED_TEST,           ///< Choose scheduled dispatch test.
 	WID_O_RELEASE_SLOT,              ///< Choose slot to release.
+	WID_O_COUNTER_OP,                ///< Choose counter operation.
+	WID_O_CHANGE_COUNTER,            ///< Choose counter to change.
+	WID_O_COUNTER_VALUE,             ///< Choose counter value.
 	WID_O_SEL_COND_VALUE,            ///< Widget for conditional value or conditional cargo type.
 	WID_O_SEL_COND_AUX,              ///< Widget for auxiliary conditional cargo type.
 	WID_O_SEL_COND_AUX2,             ///< Widget for auxiliary conditional via button.

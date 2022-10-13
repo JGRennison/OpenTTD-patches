@@ -622,6 +622,7 @@ static const StringID _order_goto_dropdown[] = {
 	STR_ORDER_CONDITIONAL,
 	STR_ORDER_SHARE,
 	STR_ORDER_RELEASE_SLOT_BUTTON,
+	STR_ORDER_CHANGE_COUNTER_BUTTON,
 	INVALID_STRING_ID
 };
 
@@ -631,6 +632,7 @@ static const StringID _order_goto_dropdown_aircraft[] = {
 	STR_ORDER_CONDITIONAL,
 	STR_ORDER_SHARE,
 	STR_ORDER_RELEASE_SLOT_BUTTON,
+	STR_ORDER_CHANGE_COUNTER_BUTTON,
 	INVALID_STRING_ID
 };
 
@@ -1121,6 +1123,33 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 			}
 			break;
 
+		case OT_COUNTER:
+			switch (static_cast<TraceRestrictCounterCondOpField>(order->GetCounterOperation())) {
+				case TRCCOF_INCREASE:
+					SetDParam(0, STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM);
+					break;
+
+				case TRCCOF_DECREASE:
+					SetDParam(0, STR_TRACE_RESTRICT_COUNTER_DECREASE_ITEM);
+					break;
+
+				case TRCCOF_SET:
+					SetDParam(0, STR_TRACE_RESTRICT_COUNTER_SET_ITEM);
+					break;
+
+				default:
+					NOT_REACHED();
+					break;
+			}
+			if (order->GetDestination() == INVALID_TRACE_RESTRICT_COUNTER_ID) {
+				SetDParam(1, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
+			} else {
+				SetDParam(1, STR_TRACE_RESTRICT_COUNTER_NAME);
+				SetDParam(2, order->GetDestination());
+			}
+			SetDParam(3, order->GetXData());
+			break;
+
 		default: NOT_REACHED();
 	}
 
@@ -1312,6 +1341,7 @@ private:
 		DP_GROUNDVEHICLE_ROW_NORMAL      = 0, ///< Display the row for normal/depot orders in the top row of the train/rv order window.
 		DP_GROUNDVEHICLE_ROW_CONDITIONAL = 1, ///< Display the row for conditional orders in the top row of the train/rv order window.
 		DP_GROUNDVEHICLE_ROW_SLOT        = 2, ///< Display the row for release slot orders in the top row of the train/rv order window.
+		DP_GROUNDVEHICLE_ROW_COUNTER     = 3, ///< Display the row for change counter orders in the top row of the train/rv order window.
 
 		/* WID_O_SEL_TOP_LEFT */
 		DP_LEFT_LOAD       = 0, ///< Display 'load' in the left button of the top row of the train/rv order window.
@@ -1331,6 +1361,7 @@ private:
 		DP_ROW_DEPOT       = 1, ///< Display 'refit' / 'service' buttons in the top row of the ship/airplane order window.
 		DP_ROW_CONDITIONAL = 2, ///< Display the conditional order buttons in the top row of the ship/airplane order window.
 		DP_ROW_SLOT        = 3, ///< Display the release slot buttons in the top row of the ship/airplane order window.
+		DP_ROW_COUNTER     = 4, ///< Display the change counter buttons in the top row of the ship/airplane order window.
 
 		/* WID_O_SEL_COND_VALUE */
 		DP_COND_VALUE_NUMBER = 0, ///< Display number widget
@@ -1531,6 +1562,19 @@ private:
 		order.next = nullptr;
 		order.index = 0;
 		order.MakeReleaseSlot();
+
+		this->InsertNewOrder(order.Pack());
+	}
+
+	/**
+	 * Handle the click on the change counter button.
+	 */
+	void OrderClick_ChangeCounter()
+	{
+		Order order;
+		order.next = nullptr;
+		order.index = 0;
+		order.MakeChangeCounter();
 
 		this->InsertNewOrder(order.Pack());
 	}
@@ -2131,6 +2175,19 @@ public:
 					break;
 				}
 
+				case OT_COUNTER: {
+					if (row_sel != nullptr) {
+						row_sel->SetDisplayedPlane(DP_ROW_COUNTER);
+					} else {
+						train_row_sel->SetDisplayedPlane(DP_GROUNDVEHICLE_ROW_COUNTER);
+					}
+
+					TraceRestrictCounterID ctr_id = (order != nullptr && TraceRestrictCounter::IsValidID(order->GetDestination()) ? order->GetDestination() : INVALID_TRACE_RESTRICT_COUNTER_ID);
+
+					this->GetWidget<NWidgetCore>(WID_O_CHANGE_COUNTER)->widget_data = (ctr_id != INVALID_TRACE_RESTRICT_COUNTER_ID) ? STR_TRACE_RESTRICT_COUNTER_NAME : STR_TRACE_RESTRICT_VARIABLE_UNDEFINED;
+					break;
+				}
+
 				default: // every other order
 					if (row_sel != nullptr) {
 						row_sel->SetDisplayedPlane(DP_ROW_LOAD);
@@ -2393,6 +2450,39 @@ public:
 				}
 				break;
 			}
+
+			case WID_O_COUNTER_OP: {
+				VehicleOrderID sel = this->OrderGetSel();
+				const Order *order = this->vehicle->GetOrder(sel);
+
+				if (order != nullptr && order->IsType(OT_COUNTER)) {
+					SetDParam(0, STR_TRACE_RESTRICT_COUNTER_INCREASE + order->GetCounterOperation());
+				} else {
+					SetDParam(0, STR_EMPTY);
+				}
+				break;
+			}
+
+			case WID_O_CHANGE_COUNTER: {
+				VehicleOrderID sel = this->OrderGetSel();
+				const Order *order = this->vehicle->GetOrder(sel);
+
+				if (order != nullptr && order->IsType(OT_COUNTER)) {
+					TraceRestrictCounterID value = order->GetDestination();
+					SetDParam(0, value);
+				}
+				break;
+			}
+
+			case WID_O_COUNTER_VALUE: {
+				VehicleOrderID sel = this->OrderGetSel();
+				const Order *order = this->vehicle->GetOrder(sel);
+
+				if (order != nullptr && order->IsType(OT_COUNTER)) {
+					SetDParam(0, order->GetXData());
+				}
+				break;
+			}
 		}
 	}
 
@@ -2542,8 +2632,24 @@ public:
 						case OPOS_CONDITIONAL_RETARGET: sel = -1; break;
 						default: NOT_REACHED();
 					}
+					uint32 hidden_mask = 0;
+					if (_settings_client.gui.show_adv_tracerestrict_features) {
+						bool have_counters = false;
+						for (const TraceRestrictCounter *ctr : TraceRestrictCounter::Iterate()) {
+							if (ctr->owner == this->vehicle->owner) {
+								have_counters = true;
+								break;
+							}
+						}
+						if (!have_counters) {
+							// Owner has no counters, don't both showing the menu item
+							hidden_mask |= 0x20;
+						}
+					} else {
+						hidden_mask |= 0x30;
+					}
 					ShowDropDownMenu(this, this->vehicle->type == VEH_AIRCRAFT ? _order_goto_dropdown_aircraft : _order_goto_dropdown, sel, WID_O_GOTO,
-							0, (_settings_client.gui.show_adv_tracerestrict_features ? 0 : 0x10), 0, DDSF_LOST_FOCUS);
+							0, hidden_mask, 0, DDSF_LOST_FOCUS);
 				}
 				break;
 
@@ -2784,6 +2890,32 @@ public:
 				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_RELEASE_SLOT, 0, true);
 				break;
 			}
+
+			case WID_O_COUNTER_OP: {
+				DropDownList list;
+				list.emplace_back(new DropDownListStringItem(STR_TRACE_RESTRICT_COUNTER_INCREASE, 0, false));
+				list.emplace_back(new DropDownListStringItem(STR_TRACE_RESTRICT_COUNTER_DECREASE, 1, false));
+				list.emplace_back(new DropDownListStringItem(STR_TRACE_RESTRICT_COUNTER_SET, 2, false));
+				int selected = this->vehicle->GetOrder(this->OrderGetSel())->GetCounterOperation();
+				ShowDropDownList(this, std::move(list), selected, WID_O_COUNTER_OP, 0, true);
+				break;
+			}
+
+			case WID_O_CHANGE_COUNTER: {
+				int selected;
+				TraceRestrictCounterID value = this->vehicle->GetOrder(this->OrderGetSel())->GetDestination();
+				DropDownList list = GetCounterDropDownList(this->vehicle->owner, value, selected);
+				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_CHANGE_COUNTER, 0, true);
+				break;
+			}
+
+			case WID_O_COUNTER_VALUE: {
+				const Order *order = this->vehicle->GetOrder(this->OrderGetSel());
+				this->query_text_widget = widget;
+				SetDParam(0, order->GetXData());
+				ShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_VALUE_CAPTION, 10, this, CS_NUMERAL, QSF_NONE);
+				break;
+			}
 		}
 	}
 
@@ -2826,6 +2958,12 @@ public:
 			this->ModifyOrder(sel, MOF_COND_VALUE | value << 8);
 		}
 
+		if (this->query_text_widget == WID_O_COUNTER_VALUE && !StrEmpty(str)) {
+			VehicleOrderID sel = this->OrderGetSel();
+			uint value = Clamp(atoi(str), 0, 0xFFFF);
+			this->ModifyOrder(sel, MOF_COUNTER_VALUE | value << 8);
+		}
+
 		if (this->query_text_widget == WID_O_ADD_VEH_GROUP) {
 			DoCommandP(0, VehicleListIdentifier(VL_SINGLE_VEH, this->vehicle->type, this->vehicle->owner, this->vehicle->index).Pack(), 0, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), nullptr, str);
 		}
@@ -2853,6 +2991,7 @@ public:
 					case 2: this->OrderClick_Goto(OPOS_CONDITIONAL); break;
 					case 3: this->OrderClick_Goto(OPOS_SHARE); break;
 					case 4: this->OrderClick_ReleaseSlot(); break;
+					case 5: this->OrderClick_ChangeCounter(); break;
 					default: NOT_REACHED();
 				}
 				break;
@@ -2918,6 +3057,14 @@ public:
 
 			case WID_O_RELEASE_SLOT:
 				this->ModifyOrder(this->OrderGetSel(), MOF_SLOT | index << 8);
+				break;
+
+			case WID_O_COUNTER_OP:
+				this->ModifyOrder(this->OrderGetSel(), MOF_COUNTER_OP | index << 8);
+				break;
+
+			case WID_O_CHANGE_COUNTER:
+				this->ModifyOrder(this->OrderGetSel(), MOF_COUNTER_ID | index << 8);
 				break;
 
 			case WID_O_MANAGE_LIST:
@@ -3225,6 +3372,14 @@ static const NWidgetPart _nested_orders_train_widgets[] = {
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_RELEASE_SLOT), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_NULL, STR_ORDER_RELEASE_SLOT_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
+			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COUNTER_OP), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_JUST_STRING, STR_TRACE_RESTRICT_COUNTER_OP_TOOLTIP), SetResize(1, 0),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_CHANGE_COUNTER), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_NULL, STR_ORDER_CHANGE_COUNTER_TOOLTIP), SetResize(1, 0),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_COUNTER_VALUE), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_BLACK_COMMA, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
+			EndContainer(),
 		EndContainer(),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_O_OCCUPANCY_TOGGLE), SetMinimalSize(36, 12), SetDataTip(STR_ORDERS_OCCUPANCY_BUTTON, STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_SHARED),
@@ -3346,6 +3501,16 @@ static const NWidgetPart _nested_orders_widgets[] = {
 				NWidget(WWT_PANEL, COLOUR_GREY), EndContainer(),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_RELEASE_SLOT), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_NULL, STR_ORDER_RELEASE_SLOT_TOOLTIP), SetResize(1, 0),
+			EndContainer(),
+
+			/* Buttons for changing a counter. */
+			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COUNTER_OP), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_JUST_STRING, STR_TRACE_RESTRICT_COUNTER_OP_TOOLTIP), SetResize(1, 0),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_CHANGE_COUNTER), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_NULL, STR_ORDER_CHANGE_COUNTER_TOOLTIP), SetResize(1, 0),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_COUNTER_VALUE), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_BLACK_COMMA, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
 		EndContainer(),
 

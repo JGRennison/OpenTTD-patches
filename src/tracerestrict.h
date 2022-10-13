@@ -1111,6 +1111,13 @@ struct TraceRestrictCounter : TraceRestrictCounterPool::PoolItem<&_tracerestrict
 	}
 
 	void UpdateValue(int32 new_value);
+
+	static int32 ApplyValue(int32 current, TraceRestrictCounterCondOpField op, int32 value);
+
+	void ApplyUpdate(TraceRestrictCounterCondOpField op, int32 value)
+	{
+		this->UpdateValue(TraceRestrictCounter::ApplyValue(this->value, op, value));
+	}
 };
 
 #endif /* TRACERESTRICT_H */

@@ -4321,7 +4321,10 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 		 * Also check if the current order is a service order so we don't reserve a path to
 		 * the destination but instead to the next one if service isn't needed. */
 		CheckIfTrainNeedsService(v);
-		if (v->current_order.IsType(OT_DUMMY) || v->current_order.IsType(OT_CONDITIONAL) || v->current_order.IsType(OT_GOTO_DEPOT) || v->current_order.IsType(OT_RELEASE_SLOT)) ProcessOrders(v);
+		if (v->current_order.IsType(OT_DUMMY) || v->current_order.IsType(OT_CONDITIONAL) || v->current_order.IsType(OT_GOTO_DEPOT) ||
+				v->current_order.IsType(OT_RELEASE_SLOT) || v->current_order.IsType(OT_COUNTER)) {
+			ProcessOrders(v);
+		}
 	}
 
 	/* Save the current train order. The destructor will restore the old order on function exit. */
@@ -6404,7 +6407,7 @@ static bool TrainLocoHandler(Train *v, bool mode)
 	/* exit if train is stopped */
 	if ((v->vehstatus & VS_STOPPED) && v->cur_speed == 0) return true;
 
-	bool valid_order = !v->current_order.IsType(OT_NOTHING) && v->current_order.GetType() != OT_CONDITIONAL && !v->current_order.IsType(OT_RELEASE_SLOT);
+	bool valid_order = !v->current_order.IsType(OT_NOTHING) && v->current_order.GetType() != OT_CONDITIONAL && !v->current_order.IsType(OT_RELEASE_SLOT) && !v->current_order.IsType(OT_COUNTER);
 	if (ProcessOrders(v) && CheckReverseTrain(v)) {
 		v->wait_counter = 0;
 		v->cur_speed = 0;

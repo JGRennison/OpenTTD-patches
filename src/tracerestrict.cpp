@@ -793,23 +793,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						if (!(input.permitted_slot_operations & TRPISP_CHANGE_COUNTER)) break;
 						TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(GetTraceRestrictValue(item));
 						if (ctr == nullptr) break;
-						switch (static_cast<TraceRestrictCounterCondOpField>(GetTraceRestrictCondOp(item))) {
-							case TRCCOF_INCREASE:
-								ctr->UpdateValue(ctr->value + value);
-								break;
-
-							case TRCCOF_DECREASE:
-								ctr->UpdateValue(ctr->value - value);
-								break;
-
-							case TRCCOF_SET:
-								ctr->UpdateValue(value);
-								break;
-
-							default:
-								NOT_REACHED();
-								break;
-						}
+						ctr->ApplyUpdate(static_cast<TraceRestrictCounterCondOpField>(GetTraceRestrictCondOp(item)), value);
 						break;
 					}
 
@@ -2604,6 +2588,24 @@ void TraceRestrictCounter::UpdateValue(int32 new_value)
 	}
 }
 
+int32 TraceRestrictCounter::ApplyValue(int32 current, TraceRestrictCounterCondOpField op, int32 value)
+{
+	switch (op) {
+		case TRCCOF_INCREASE:
+			return std::max<int32>(0, current + value);
+
+		case TRCCOF_DECREASE:
+			return std::max<int32>(0, current - value);
+
+		case TRCCOF_SET:
+			return std::max<int32>(0, value);
+
+		default:
+			NOT_REACHED();
+			break;
+	}
+}
+
 static bool IsUniqueCounterName(const char *name)
 {
 	for (const TraceRestrictCounter *ctr : TraceRestrictCounter::Iterate()) {
@@ -2634,6 +2636,10 @@ void TraceRestrictRemoveCounterID(TraceRestrictCounterID index)
 				(o->GetConditionVariable() == OCV_COUNTER_VALUE) &&
 				GB(o->GetXData(), 16, 16) == index) {
 			SB(o->GetXDataRef(), 16, 16, INVALID_TRACE_RESTRICT_COUNTER_ID);
+			changed_order = true;
+		}
+		if (o->IsType(OT_COUNTER) && o->GetDestination() == index) {
+			o->SetDestination(INVALID_TRACE_RESTRICT_COUNTER_ID);
 			changed_order = true;
 		}
 	}
