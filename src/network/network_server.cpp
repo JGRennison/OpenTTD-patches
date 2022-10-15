@@ -1157,6 +1157,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_COMMAND(Packet 
 	}
 
 	if (GetCommandFlags(cp.cmd) & CMD_CLIENT_ID) cp.p2 = this->client_id;
+	cp.client_id = this->client_id;
 
 	this->incoming_queue.Append(std::move(cp));
 	return NETWORK_RECV_STATUS_OKAY;

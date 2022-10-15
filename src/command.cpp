@@ -536,6 +536,7 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdDesyncCheck,                           CMD_SERVER, CMDT_SERVER_SETTING        ), // CMD_DESYNC_CHECK
 };
 
+ClientID _cmd_client_id = INVALID_CLIENT_ID;
 
 /**
  * List of flags for a command log entry
@@ -569,12 +570,13 @@ struct CommandLogEntry {
 	CompanyID current_company;
 	CompanyID local_company;
 	CommandLogEntryFlag log_flags;
+	ClientID client_id;
 
 	CommandLogEntry() { }
 
 	CommandLogEntry(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandLogEntryFlag log_flags, std::string text)
 			: text(text), tile(tile), p1(p1), p2(p2), cmd(cmd), p3(p3), date(_date), date_fract(_date_fract), tick_skip_counter(_tick_skip_counter),
-			current_company(_current_company), local_company(_local_company), log_flags(log_flags) { }
+			current_company(_current_company), local_company(_local_company), log_flags(log_flags), client_id(_cmd_client_id) { }
 };
 
 struct CommandLog {
@@ -631,8 +633,11 @@ static void DumpSubCommandLog(char *&buffer, const char *last, const CommandLog 
 		if (entry.p3 != 0) {
 			buffer += seprintf(buffer, last, "p3: 0x" OTTD_PRINTFHEX64PAD ", ", entry.p3);
 		}
-		buffer += seprintf(buffer, last, "cc: %3u, lc: %3u, cmd: 0x%08X (%s)",
-				(uint) entry.current_company, (uint) entry.local_company, entry.cmd, GetCommandName(entry.cmd));
+		buffer += seprintf(buffer, last, "cc: %3u, lc: %3u, ", (uint) entry.current_company, (uint) entry.local_company);
+		if (_network_server) {
+			buffer += seprintf(buffer, last, "client: %4u, ", entry.client_id);
+		}
+		buffer += seprintf(buffer, last, "cmd: 0x%08X (%s)", entry.cmd, GetCommandName(entry.cmd));
 
 		switch (entry.cmd & CMD_ID_MASK) {
 			case CMD_CHANGE_SETTING:

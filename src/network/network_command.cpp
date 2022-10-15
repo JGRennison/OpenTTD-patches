@@ -212,6 +212,7 @@ void NetworkSyncCommandQueue(NetworkClientSocket *cs)
  */
 void NetworkExecuteLocalCommandQueue()
 {
+	extern ClientID _cmd_client_id;
 	assert(IsLocalCompany());
 
 	CommandQueue &queue = (_network_server ? _local_execution_queue : ClientNetworkGameSocketHandler::my_client->incoming_queue);
@@ -230,6 +231,7 @@ void NetworkExecuteLocalCommandQueue()
 
 		/* We can execute this command */
 		_current_company = cp->company;
+		_cmd_client_id = cp->client_id;
 		cp->cmd |= CMD_NETWORK_COMMAND;
 		DoCommandP(cp, cp->my_cmd);
 
@@ -238,6 +240,7 @@ void NetworkExecuteLocalCommandQueue()
 
 	/* Local company may have changed, so we should not restore the old value */
 	_current_company = _local_company;
+	_cmd_client_id = INVALID_CLIENT_ID;
 }
 
 /**
