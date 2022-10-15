@@ -1499,8 +1499,20 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 
 		uint i = 0;
 		for (Town *t : Town::Iterate()) {
-			if (MemCmpT(old_town_caches.data() + i, &t->cache) != 0) {
-				CCLOG("town cache mismatch: town %i", (int)t->index);
+			if (old_town_caches[i].num_houses != t->cache.num_houses) {
+				CCLOG("town cache num_houses mismatch: town %i, (old size: %u, new size: %u)", (int)t->index, old_town_caches[i].num_houses, t->cache.num_houses);
+			}
+			if (old_town_caches[i].population != t->cache.population) {
+				CCLOG("town cache population mismatch: town %i, (old size: %u, new size: %u)", (int)t->index, old_town_caches[i].population, t->cache.population);
+			}
+			if (old_town_caches[i].part_of_subsidy != t->cache.part_of_subsidy) {
+				CCLOG("town cache population mismatch: town %i, (old size: %u, new size: %u)", (int)t->index, old_town_caches[i].part_of_subsidy, t->cache.part_of_subsidy);
+			}
+			if (MemCmpT(old_town_caches[i].squared_town_zone_radius, t->cache.squared_town_zone_radius, lengthof(t->cache.squared_town_zone_radius)) != 0) {
+				CCLOG("town cache squared_town_zone_radius mismatch: town %i", (int)t->index);
+			}
+			if (MemCmpT(&old_town_caches[i].building_counts, &t->cache.building_counts) != 0) {
+				CCLOG("town cache building_counts mismatch: town %i", (int)t->index);
 			}
 			if (old_town_stations_nears[i] != t->stations_near) {
 				CCLOG("town stations_near mismatch: town %i, (old size: %u, new size: %u)", (int)t->index, (uint)old_town_stations_nears[i].size(), (uint)t->stations_near.size());
