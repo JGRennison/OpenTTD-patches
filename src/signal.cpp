@@ -1581,8 +1581,8 @@ void DetermineCombineNormalShuntModeWithLookahead(Train *v, TileIndex tile, Trac
 			for (size_t j = i + 1; j < count; j++) {
 				const TrainReservationLookAheadItem &ahead = v->lookahead->items[j];
 				if (ahead.type == TRLIT_SIGNAL) {
-					if (HasBit(item.data_aux, TRSLAI_COMBINED)) return;
-					if (!HasBit(item.data_aux, TRSLAI_NO_ASPECT_INC) && !HasBit(item.data_aux, TRSLAI_NEXT_ONLY)) return;
+					if (HasBit(ahead.data_aux, TRSLAI_COMBINED)) return;
+					if (!HasBit(ahead.data_aux, TRSLAI_NO_ASPECT_INC) && !HasBit(ahead.data_aux, TRSLAI_NEXT_ONLY)) return;
 				}
 			}
 
