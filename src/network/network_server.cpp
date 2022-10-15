@@ -937,6 +937,8 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_JOIN(Packet *p)
 	NetworkClientInfo *ci = new NetworkClientInfo(this->client_id);
 	this->SetInfo(ci);
 	ci->join_date = _date;
+	ci->join_date_fract = _date_fract;
+	ci->join_tick_skip_counter = _tick_skip_counter;
 	ci->client_name = client_name;
 	ci->client_playas = playas;
 	DEBUG(desync, 1, "client: date{%08x; %02x; %02x}; client: %02x; company: %02x", _date, _date_fract, _tick_skip_counter, (int)ci->index, (int)ci->client_playas);
@@ -2276,4 +2278,24 @@ void NetworkServerNewCompany(const Company *c, NetworkClientInfo *ci)
 		   and then learn about a possibly joining client (see FS#6025) */
 		NetworkServerSendChat(NETWORK_ACTION_COMPANY_NEW, DESTTYPE_BROADCAST, 0, "", ci->client_id, c->index + 1);
 	}
+}
+
+char *NetworkServerDumpClients(char *buffer, const char *last)
+{
+	for (NetworkClientInfo *ci : NetworkClientInfo::Iterate()) {
+		YearMonthDay ymd;
+		ConvertDateToYMD(ci->join_date, &ymd);
+		buffer += seprintf(buffer, last, "  #%d: name: '%s', company: %u",
+				ci->client_id,
+				ci->client_name.c_str(),
+				ci->client_playas);
+		if (ci->join_date != 0) {
+			YearMonthDay ymd;
+			ConvertDateToYMD(ci->join_date, &ymd);
+			buffer += seprintf(buffer, last, ", joined: %4i-%02i-%02i, %2i, %3i",
+					ymd.year, ymd.month + 1, ymd.day, ci->join_date_fract, ci->join_tick_skip_counter);
+		}
+		buffer += seprintf(buffer, last, "\n");
+	}
+	return buffer;
 }

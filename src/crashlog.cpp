@@ -262,6 +262,13 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 		buffer += seprintf(buffer, last, "\n");
 	}
 
+	if (_network_server) {
+		extern char *NetworkServerDumpClients(char *buffer, const char *last);
+		buffer += seprintf(buffer, last, "Clients:\n");
+		buffer = NetworkServerDumpClients(buffer, last);
+		buffer += seprintf(buffer, last, "\n");
+	}
+
 	return buffer;
 }
 
