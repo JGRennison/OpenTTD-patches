@@ -17,6 +17,7 @@
 #include "settings_type.h"
 #include "network/network.h"
 #include "network/network_func.h"
+#include "window_gui.h"
 #include "window_func.h"
 #include "newgrf_debug.h"
 #include "thread.h"
@@ -25,6 +26,7 @@
 #include "framerate_type.h"
 #include "transparency.h"
 #include "core/backup_type.hpp"
+#include "viewport_func.h"
 
 #include "table/palettes.h"
 #include "table/string_colours.h"
@@ -2334,6 +2336,38 @@ void UpdateGUIZoom()
 	}
 
 	UpdateFontHeightCache();
+}
+
+/**
+ * Resolve GUI zoom level and adjust GUI to new zoom, if auto-suggestion is requested.
+ * @returns true when the zoom level has changed, caller must call ReInitAllWindows(true)
+ * after resizing the application's window/buffer.
+ */
+bool AdjustGUIZoom()
+{
+	auto old_zoom = _gui_zoom;
+	UpdateGUIZoom();
+	if (old_zoom == _gui_zoom) return false;
+	GfxClearSpriteCache();
+	VideoDriver::GetInstance()->ClearSystemSprites();
+	ClearFontCache();
+	GfxClearSpriteCache();
+	UpdateAllVirtCoords();
+
+	/* Adjust all window sizes to match the new zoom level, so that they don't appear
+	   to move around when the application is moved to a screen with different DPI. */
+	auto zoom_shift = old_zoom - _gui_zoom;
+	for (Window *w : Window::IterateFromBack()) {
+		w->left = AdjustByZoom(w->left, zoom_shift);
+		w->top = AdjustByZoom(w->top, zoom_shift);
+		w->width = AdjustByZoom(w->width, zoom_shift);
+		w->height = AdjustByZoom(w->height, zoom_shift);
+		if (w->viewport != nullptr) {
+			w->viewport->zoom = Clamp(ZoomLevel(w->viewport->zoom - zoom_shift), _settings_client.gui.zoom_min, _settings_client.gui.zoom_max);
+		}
+	}
+
+	return true;
 }
 
 void ChangeGameSpeed(bool enable_fast_forward)

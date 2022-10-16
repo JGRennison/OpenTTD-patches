@@ -64,6 +64,8 @@
 
 #include <set>
 
+#include <sstream>
+
 #include "safeguards.h"
 
 /* scriptfile handling */
@@ -1297,42 +1299,67 @@ static void PrintLineByLine(char *buf)
 	});
 }
 
+/**
+ * Print a text buffer line by line to the console. Lines are separated by '\n'.
+ * @param full_string The multi-line string to print.
+ */
+static void PrintLineByLine(const std::string &full_string)
+{
+	std::istringstream in(full_string);
+	std::string line;
+	while (std::getline(in, line)) {
+		IConsolePrint(CC_DEFAULT, line.c_str());
+	}
+}
+
 DEF_CONSOLE_CMD(ConListAILibs)
 {
-	char buf[4096];
-	AI::GetConsoleLibraryList(buf, lastof(buf));
+	if (argc == 0) {
+		IConsoleHelp("List installed AI libraries. Usage: 'list_ai_libs'.");
+		return true;
+	}
 
-	PrintLineByLine(buf);
+	const std::string output_str = AI::GetConsoleLibraryList();
+	PrintLineByLine(output_str);
 
 	return true;
 }
 
 DEF_CONSOLE_CMD(ConListAI)
 {
-	char buf[4096];
-	AI::GetConsoleList(buf, lastof(buf));
+	if (argc == 0) {
+		IConsoleHelp("List installed AIs. Usage: 'list_ai'.");
+		return true;
+	}
 
-	PrintLineByLine(buf);
+	const std::string output_str = AI::GetConsoleList();
+	PrintLineByLine(output_str);
 
 	return true;
 }
 
 DEF_CONSOLE_CMD(ConListGameLibs)
 {
-	char buf[4096];
-	Game::GetConsoleLibraryList(buf, lastof(buf));
+	if (argc == 0) {
+		IConsoleHelp("List installed Game Script libraries. Usage: 'list_game_libs'.");
+		return true;
+	}
 
-	PrintLineByLine(buf);
+	const std::string output_str = Game::GetConsoleLibraryList();
+	PrintLineByLine(output_str);
 
 	return true;
 }
 
 DEF_CONSOLE_CMD(ConListGame)
 {
-	char buf[4096];
-	Game::GetConsoleList(buf, lastof(buf));
+	if (argc == 0) {
+		IConsoleHelp("List installed Game Scripts. Usage: 'list_game'.");
+		return true;
+	}
 
-	PrintLineByLine(buf);
+	const std::string output_str = Game::GetConsoleList();
+	PrintLineByLine(output_str);
 
 	return true;
 }
