@@ -192,6 +192,7 @@ struct AIListWindow : public Window {
 		DeleteWindowByClass(WC_QUERY_STRING);
 		InvalidateWindowClassesData(WC_TEXTFILE);
 		if (_game_mode == GM_NORMAL && slot == OWNER_DEITY) {
+			DeleteWindowByClass(WC_AI_SETTINGS);
 			InvalidateWindowData(WC_AI_DEBUG, 0, -1);
 			SetWindowClassesDirty(WC_AI_DEBUG);
 		}
