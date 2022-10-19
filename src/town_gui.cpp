@@ -44,6 +44,7 @@
 #include <algorithm>
 
 #include "safeguards.h"
+#include "zoom_func.h"
 
 TownKdtree _town_local_authority_kdtree(&Kdtree_TownXYFunc);
 
@@ -338,7 +339,7 @@ public:
 
 		this->flags |= WF_DISABLE_VP_SCROLL;
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_TV_VIEWPORT);
-		nvp->InitializeViewport(this, this->town->xy, ZOOM_LVL_NEWS);
+		nvp->InitializeViewport(this, this->town->xy, ScaleZoomGUI(ZOOM_LVL_TOWN));
 	}
 
 	~TownViewWindow()

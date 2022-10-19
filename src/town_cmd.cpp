@@ -1318,6 +1318,27 @@ static bool CanRoadContinueIntoNextTile(const Town *t, const TileIndex tile, con
 }
 
 /**
+ * CircularTileSearch proc which checks for a nearby parallel bridge to avoid building redundant bridges.
+ * @param tile The tile to search.
+ * @param user_data Reference to the valid direction of the proposed bridge.
+ * @return true if another bridge exists, else false.
+ */
+static bool RedundantBridgeExistsNearby(TileIndex tile, void *user_data)
+{
+	/* Don't look into the void. */
+	if (!IsValidTile(tile)) return false;
+
+	/* Only consider bridge head tiles. */
+	if (!IsBridgeTile(tile)) return false;
+
+	/* Only consider road bridges. */
+	if (GetTunnelBridgeTransportType(tile) != TRANSPORT_ROAD) return false;
+
+	/* If the bridge is facing the same direction as the proposed bridge, we've found a redundant bridge. */
+	return (GetTileSlope(tile) & InclinedSlope(ReverseDiagDir(*(DiagDirection *)user_data)));
+}
+
+/**
  * Grows the town with a bridge.
  *  At first we check if a bridge is reasonable.
  *  If so we check if we are able to build it.
@@ -1381,9 +1402,14 @@ static bool GrowTownWithBridge(const Town *t, const TileIndex tile, const DiagDi
 	/* Make sure the road can be continued past the bridge. At this point, bridge_tile holds the end tile of the bridge. */
 	if (!CanRoadContinueIntoNextTile(t, bridge_tile, bridge_dir)) return false;
 
+	/* If another parallel bridge exists nearby, this one would be redundant and shouldn't be built. We don't care about flat bridges. */
+	TileIndex search = tile;
+	DiagDirection direction_to_match = bridge_dir;
+	if (slope != SLOPE_FLAT && CircularTileSearch(&search, bridge_length, 0, 0, RedundantBridgeExistsNearby, &direction_to_match)) return false;
+
 	std::bitset <MAX_BRIDGES> tried;
 	uint n = MAX_BRIDGES;
-	byte bridge_type = RandomRange (n);
+	byte bridge_type = RandomRange(n);
 
 	for (;;) {
 		/* Can we actually build the bridge? */
@@ -1397,14 +1423,14 @@ static bool GrowTownWithBridge(const Town *t, const TileIndex tile, const DiagDi
 		/* Try a different bridge. */
 		tried[bridge_type] = true;
 		n--;
-		assert (n + tried.count() == MAX_BRIDGES);
+		assert(n + tried.count() == MAX_BRIDGES);
 		if (n == 0) break;
 
 		bridge_type = 0;
-		uint i = RandomRange (n);
+		uint i = RandomRange(n);
 		while (tried[bridge_type] || (i-- > 0)) {
 			bridge_type++;
-			assert (bridge_type < MAX_BRIDGES);
+			assert(bridge_type < MAX_BRIDGES);
 		}
 	}
 
