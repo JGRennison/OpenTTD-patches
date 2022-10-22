@@ -41,6 +41,9 @@ macro(compile_flags)
         "$<$<CONFIG:Debug>:-D_DEBUG>"
         "$<$<NOT:$<CONFIG:Debug>>:-D_FORTIFY_SOURCE=2>" # FORTIFY_SOURCE should only be used in non-debug builds (requires -O1+)
     )
+    if(CMAKE_BUILD_TYPE AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+        add_compile_options(-DFEWER_ASSERTS)
+    endif()
     if(MINGW)
         add_link_options(
             "$<$<NOT:$<CONFIG:Debug>>:-fstack-protector>" # Prevent undefined references when _FORTIFY_SOURCE > 0

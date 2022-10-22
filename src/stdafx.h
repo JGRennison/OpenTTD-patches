@@ -478,6 +478,18 @@ const char *assert_tile_info(uint32 tile);
 #	define assert_msg_tile(expression, tile, ...)
 #	define assert_tile(expression, tile)
 #endif
+#if !defined(FEWER_ASSERTS)
+#	define WITH_FULL_ASSERTS
+#	define dbg_assert(expression) assert(expression)
+#	define dbg_assert_msg(expression, ...) assert_msg(expression, __VA_ARGS__)
+#	define dbg_assert_msg_tile(expression, tile, ...) assert_msg_tile(expression, tile, __VA_ARGS__)
+#	define dbg_assert_tile(expression, tile) assert_tile(expression, tile)
+#else
+#	define dbg_assert(expression)
+#	define dbg_assert_msg(expression, ...)
+#	define dbg_assert_msg_tile(expression, tile, ...)
+#	define dbg_assert_tile(expression, tile)
+#endif
 
 #if defined(OPENBSD)
 	/* OpenBSD uses strcasecmp(3) */
