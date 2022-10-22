@@ -1247,7 +1247,7 @@ static void River_FoundEndNode(AyStar *aystar, OpenListNode *current)
 
 			MarkTileDirtyByTile(tile);
 
-			if (_is_main_river && (radius > 1)) {
+			if (_settings_game.game_creation.land_generator != LG_ORIGINAL && _is_main_river && (radius > 1)) {
 				CircularTileSearch(&tile, radius + RandomRange(1), RiverMakeWider, (void *)&path->node.tile);
 			} else {
 				/* Remove desert directly around the river tile. */
