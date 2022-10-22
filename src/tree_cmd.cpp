@@ -98,8 +98,8 @@ static bool CanPlantTreesOnTile(TileIndex tile, bool allow_desert)
  */
 static void PlantTreesOnTile(TileIndex tile, TreeType treetype, uint count, uint growth)
 {
-	assert(treetype != TREE_INVALID);
-	assert_tile(CanPlantTreesOnTile(tile, true), tile);
+	dbg_assert(treetype != TREE_INVALID);
+	dbg_assert_tile(CanPlantTreesOnTile(tile, true), tile);
 
 	TreeGround ground;
 	uint density = 3;
@@ -457,7 +457,7 @@ void RemoveAllTrees()
  */
 uint PlaceTreeGroupAroundTile(TileIndex tile, TreeType treetype, uint radius, uint count, bool set_zone)
 {
-	assert(treetype < TREE_TOYLAND + TREE_COUNT_TOYLAND);
+	dbg_assert(treetype < TREE_TOYLAND + TREE_COUNT_TOYLAND);
 	const bool allow_desert = treetype == TREE_CACTUS;
 	uint planted = 0;
 
@@ -725,7 +725,7 @@ static void DrawTile_Trees(TileInfo *ti, DrawTileProcParams params)
 		index += 164 - (TREE_SUB_ARCTIC << 2);
 	}
 
-	assert(index < lengthof(_tree_layout_sprite));
+	dbg_assert(index < lengthof(_tree_layout_sprite));
 
 	const PalSpriteID *s = _tree_layout_sprite[index];
 	const TreePos *d = _tree_layout_xy[GB(tmp, 2, 2)];

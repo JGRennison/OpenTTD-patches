@@ -205,7 +205,7 @@ void CheckTrainsLengths()
  */
 void CheckBreakdownFlags(Train *v)
 {
-	assert(v->IsFrontEngine());
+	dbg_assert(v->IsFrontEngine());
 	/* clear the flags we're gonna check first, we'll set them again later (if applicable) */
 	CLRBITS(v->flags, (1 << VRF_BREAKDOWN_BRAKING) | VRF_IS_BROKEN);
 
@@ -255,7 +255,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 {
 	uint16 max_speed = UINT16_MAX;
 
-	assert(this->IsFrontEngine() || this->IsFreeWagon());
+	dbg_assert(this->IsFrontEngine() || this->IsFreeWagon());
 
 	const RailVehicleInfo *rvi_v = RailVehInfo(this->engine_type);
 	EngineID first_engine = this->IsFrontEngine() ? this->engine_type : INVALID_ENGINE;
@@ -271,7 +271,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 		const RailVehicleInfo *rvi_u = RailVehInfo(u->engine_type);
 
 		/* Check the this->first cache. */
-		assert_msg(u->First() == this, "u: %s, this: %s",
+		dbg_assert_msg(u->First() == this, "u: %s, this: %s",
 				scope_dumper().VehicleInfo(u), scope_dumper().VehicleInfo(this));
 
 		/* update the 'first engine' */
@@ -613,7 +613,7 @@ int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, bool up
  */
 int Train::GetCurveSpeedLimit() const
 {
-	assert(this->First() == this);
+	dbg_assert(this->First() == this);
 
 	static const int absolute_max_speed = UINT16_MAX;
 	int max_speed = absolute_max_speed;
@@ -690,7 +690,7 @@ void AdvanceOrderIndex(const Vehicle *v, VehicleOrderID &index)
 		if (index >= v->GetNumOrders()) index = 0;
 
 		Order *order = v->GetOrder(index);
-		assert(order != nullptr);
+		dbg_assert(order != nullptr);
 
 		switch (order->GetType()) {
 			case OT_GOTO_DEPOT:
@@ -1157,7 +1157,7 @@ uint32 Train::CalculateOverallZPos() const
 /** Update acceleration of the train from the cached power and weight. */
 void Train::UpdateAcceleration()
 {
-	assert(this->IsFrontEngine() || this->IsFreeWagon());
+	dbg_assert(this->IsFrontEngine() || this->IsFreeWagon());
 
 	uint power = this->gcache.cached_power;
 	uint weight = this->gcache.cached_weight;
@@ -1285,7 +1285,7 @@ int Train::GetDisplayImageWidth(Point *offset) const
 
 static SpriteID GetDefaultTrainSprite(uint8 spritenum, Direction direction)
 {
-	assert(IsValidImageIndex<VEH_TRAIN>(spritenum));
+	dbg_assert(IsValidImageIndex<VEH_TRAIN>(spritenum));
 	return ((direction + _engine_sprite_add[spritenum]) & _engine_sprite_and[spritenum]) + _engine_sprite_base[spritenum];
 }
 
@@ -1308,7 +1308,7 @@ void Train::GetImage(Direction direction, EngineImageType image_type, VehicleSpr
 		spritenum = this->GetEngine()->original_image_index;
 	}
 
-	assert(IsValidImageIndex<VEH_TRAIN>(spritenum));
+	dbg_assert(IsValidImageIndex<VEH_TRAIN>(spritenum));
 	SpriteID sprite = GetDefaultTrainSprite(spritenum, direction);
 
 	if (this->cargo.StoredCount() >= this->cargo_cap / 2U) sprite += _wagon_full_adder[spritenum];
@@ -2595,7 +2595,7 @@ static Vehicle *TrainApproachingCrossingEnum(Vehicle *v, void *data)
  */
 static bool TrainApproachingCrossing(TileIndex tile)
 {
-	assert_tile(IsLevelCrossingTile(tile), tile);
+	dbg_assert_tile(IsLevelCrossingTile(tile), tile);
 
 	DiagDirection dir = AxisToDiagDir(GetCrossingRailAxis(tile));
 	TileIndex tile_from = tile + TileOffsByDiagDir(dir);
@@ -2627,7 +2627,7 @@ static inline bool CheckLevelCrossing(TileIndex tile)
  */
 static void UpdateLevelCrossingTile(TileIndex tile, bool sound, bool is_forced, bool forced_state)
 {
-	assert_tile(IsLevelCrossingTile(tile), tile);
+	dbg_assert_tile(IsLevelCrossingTile(tile), tile);
 	bool new_state;
 
 	if (is_forced) {
@@ -3656,7 +3656,7 @@ void FreeTrainTrackReservation(Train *v, TileIndex origin, Trackdir orig_td)
 		tile = ft.m_new_tile;
 		TrackdirBits bits = ft.m_new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(tile));
 		td = RemoveFirstTrackdir(&bits);
-		assert(bits == TRACKDIR_BIT_NONE);
+		dbg_assert(bits == TRACKDIR_BIT_NONE);
 
 		if (!IsValidTrackdir(td)) break;
 
@@ -3817,9 +3817,9 @@ static PBSTileInfo ExtendTrainReservation(const Train *v, const PBSTileInfo &ori
 
 		if (ft.m_tiles_skipped == 0 && Rail90DegTurnDisallowedTilesFromTrackdir(ft.m_old_tile, ft.m_new_tile, ft.m_old_td)) {
 			ft.m_new_td_bits &= ~TrackdirCrossesTrackdirs(ft.m_old_td);
-			assert(ft.m_new_td_bits != TRACKDIR_BIT_NONE);
+			dbg_assert(ft.m_new_td_bits != TRACKDIR_BIT_NONE);
 		}
-		assert(KillFirstBit(ft.m_new_td_bits) == TRACKDIR_BIT_NONE);
+		dbg_assert(KillFirstBit(ft.m_new_td_bits) == TRACKDIR_BIT_NONE);
 
 		tile = ft.m_new_tile;
 		cur_td = FindFirstTrackdir(ft.m_new_td_bits);
@@ -3915,7 +3915,7 @@ public:
 			if (this->v->cur_real_order_index >= this->v->GetNumOrders()) this->v->cur_real_order_index = 0;
 
 			Order *order = this->v->GetOrder(this->v->cur_real_order_index);
-			assert(order != nullptr);
+			dbg_assert(order != nullptr);
 
 			switch (order->GetType()) {
 				case OT_GOTO_DEPOT:
@@ -4228,7 +4228,7 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 	bool do_track_reservation = _settings_game.pf.reserve_paths || (flags & CTTF_FORCE_RES);
 	Trackdir changed_signal = INVALID_TRACKDIR;
 
-	assert((tracks & ~TRACK_BIT_MASK) == 0);
+	dbg_assert((tracks & ~TRACK_BIT_MASK) == 0);
 
 	bool got_reservation = false;
 	if (p_got_reservation != nullptr) *p_got_reservation = got_reservation;
@@ -4464,7 +4464,7 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
  */
 bool TryPathReserve(Train *v, bool mark_as_stuck, bool first_tile_okay)
 {
-	assert(v->IsFrontEngine());
+	dbg_assert(v->IsFrontEngine());
 
 	ClearLookAheadIfInvalid(v);
 
@@ -4585,7 +4585,7 @@ static bool CheckReverseTrain(const Train *v)
 		return false;
 	}
 
-	assert(v->track != TRACK_BIT_NONE);
+	dbg_assert(v->track != TRACK_BIT_NONE);
 
 	switch (_settings_game.pf.pathfinder_for_trains) {
 		case VPF_NPF: return NPFTrainCheckReverse(v);
@@ -4659,7 +4659,7 @@ int Train::UpdateSpeed(MaxSpeedInfo max_speed_info)
  */
 static bool HandlePossibleBreakdowns(Train *v)
 {
-	assert(v->IsFrontEngine());
+	dbg_assert(v->IsFrontEngine());
 	for (Train *u = v; u != nullptr; u = u->Next()) {
 		if (u->breakdown_ctr != 0 && (u->IsEngine() || u->IsMultiheaded())) {
 			if (u->breakdown_ctr <= 2) {
@@ -4806,7 +4806,7 @@ void Train::ReserveTrackUnderConsist() const
 				/* reserve the first available track */
 				TrackBits bits = GetAcrossTunnelBridgeTrackBits(u->tile);
 				Track first_track = RemoveFirstTrack(&bits);
-				assert(IsValidTrack(first_track));
+				dbg_assert(IsValidTrack(first_track));
 				TryReserveRailTrack(u->tile, first_track);
 			} else {
 				TryReserveRailTrack(u->tile, DiagDirToDiagTrack(GetTunnelBridgeDirection(u->tile)));
@@ -4943,7 +4943,7 @@ static bool CheckTrainCollision(Train *v)
 	/* can't collide in depot */
 	if (v->track == TRACK_BIT_DEPOT) return false;
 
-	assert(v->track & TRACK_BIT_WORMHOLE || TileVirtXY(v->x_pos, v->y_pos) == v->tile);
+	dbg_assert(v->track & TRACK_BIT_WORMHOLE || TileVirtXY(v->x_pos, v->y_pos) == v->tile);
 
 	TrainCollideChecker tcc;
 	tcc.v = v;
@@ -5420,7 +5420,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 
 				/* Determine what direction we're entering the new tile from */
 				enterdir = DiagdirBetweenTiles(gp.old_tile, gp.new_tile);
-				assert(IsValidDiagDirection(enterdir));
+				dbg_assert(IsValidDiagDirection(enterdir));
 
 				enter_new_tile:
 
@@ -5454,7 +5454,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					/* Currently the locomotive is active. Determine which one of the
 					 * available tracks to choose */
 					chosen_track = TrackToTrackBits(ChooseTrainTrack(v, gp.new_tile, enterdir, bits, CTTF_MARK_STUCK | CTTF_NON_LOOKAHEAD, nullptr));
-					assert_msg_tile(chosen_track & (bits | GetReservedTrackbits(gp.new_tile)), gp.new_tile, "0x%X, 0x%X, 0x%X", chosen_track, bits, GetReservedTrackbits(gp.new_tile));
+					dbg_assert_msg_tile(chosen_track & (bits | GetReservedTrackbits(gp.new_tile)), gp.new_tile, "0x%X, 0x%X, 0x%X", chosen_track, bits, GetReservedTrackbits(gp.new_tile));
 
 					if (v->force_proceed != TFP_NONE && IsPlainRailTile(gp.new_tile) && HasSignals(gp.new_tile)) {
 						/* For each signal we find decrease the counter by one.
@@ -5543,7 +5543,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 						if (prev->track & TRACK_BIT_WORMHOLE) {
 							/* Vehicles entering tunnels enter the wormhole earlier than for bridges.
 							 * However, just choose the track into the wormhole. */
-							assert_tile(IsTunnel(prev->tile), prev->tile);
+							dbg_assert_tile(IsTunnel(prev->tile), prev->tile);
 							chosen_track = bits;
 						} else {
 							chosen_track = prev->track;
@@ -5563,14 +5563,14 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 							{TRACK_BIT_RIGHT, TRACK_BIT_NONE,  TRACK_BIT_LOWER, TRACK_BIT_Y    }
 						};
 						DiagDirection exitdir = DiagdirBetweenTiles(gp.new_tile, TileVirtXY(prev->x_pos, prev->y_pos));
-						assert(IsValidDiagDirection(exitdir));
+						dbg_assert(IsValidDiagDirection(exitdir));
 						chosen_track = _connecting_track[enterdir][exitdir];
 					}
 					chosen_track &= bits;
 				}
 
 				/* Make sure chosen track is a valid track */
-				assert(
+				dbg_assert(
 						chosen_track == TRACK_BIT_X     || chosen_track == TRACK_BIT_Y ||
 						chosen_track == TRACK_BIT_UPPER || chosen_track == TRACK_BIT_LOWER ||
 						chosen_track == TRACK_BIT_LEFT  || chosen_track == TRACK_BIT_RIGHT);
@@ -5631,7 +5631,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 
 					v->tile = gp.new_tile;
 					v->track = chosen_track;
-					assert(v->track);
+					dbg_assert(v->track);
 
 					if (GetTileRailTypeByTrackBit(gp.new_tile, chosen_track) != GetTileRailTypeByTrackBit(gp.old_tile, old_trackbits)) {
 						/* v->track and v->tile must both be valid and consistent before this is called */
@@ -6108,7 +6108,7 @@ static void DeleteLastWagon(Train *v)
 		FindVehicleOnPos(tile, VEH_TRAIN, &remaining_trackbits, CollectTrackbitsFromCrashedVehiclesEnum);
 
 		/* It is important that these two are the first in the loop, as reservation cannot deal with every trackbit combination */
-		assert(TRACK_BEGIN == TRACK_X && TRACK_Y == TRACK_BEGIN + 1);
+		dbg_assert(TRACK_BEGIN == TRACK_X && TRACK_Y == TRACK_BEGIN + 1);
 		for (Track t : SetTrackBitIterator(remaining_trackbits)) TryReserveRailTrack(tile, t);
 	}
 
@@ -6296,8 +6296,8 @@ static bool TrainCanLeaveTile(const Train *v)
  */
 static TileIndex TrainApproachingCrossingTile(const Train *v)
 {
-	assert(v->IsFrontEngine());
-	assert(!(v->vehstatus & VS_CRASHED));
+	dbg_assert(v->IsFrontEngine());
+	dbg_assert(!(v->vehstatus & VS_CRASHED));
 
 	if (!TrainCanLeaveTile(v)) return INVALID_TILE;
 

@@ -1991,7 +1991,7 @@ void StateGameLoop()
 		SetWindowDirty(WC_MAIN_TOOLBAR, 0);
 	}
 
-	assert(IsLocalCompany());
+	dbg_assert(IsLocalCompany());
 }
 
 FiosNumberedSaveName &GetAutoSaveFiosNumberedSaveName()

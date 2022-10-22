@@ -122,13 +122,13 @@ class safe_btree_iterator {
   // This reference value is potentially invalidated by any non-const
   // method on the tree; it is NOT safe.
   reference operator*() const {
-    assert(generation_ > 0);
+    dbg_assert(generation_ > 0);
     return iter().operator*();
   }
   // This pointer value is potentially invalidated by any non-const
   // method on the tree; it is NOT safe.
   pointer operator->() const {
-    assert(generation_ > 0);
+    dbg_assert(generation_ > 0);
     return iter().operator->();
   }
 

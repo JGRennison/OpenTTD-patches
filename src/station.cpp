@@ -306,8 +306,8 @@ void Station::MarkTilesDirty(bool cargo_change) const
 {
 	TileIndex start_tile = tile;
 	uint length = 0;
-	assert_tile(IsRailStationTile(tile), tile);
-	assert(dir < DIAGDIR_END);
+	dbg_assert_tile(IsRailStationTile(tile), tile);
+	dbg_assert(dir < DIAGDIR_END);
 
 	do {
 		length++;
@@ -326,7 +326,7 @@ void Station::MarkTilesDirty(bool cargo_change) const
  */
 static uint GetTileCatchmentRadius(TileIndex tile, const Station *st)
 {
-	assert(IsTileType(tile, MP_STATION));
+	dbg_assert(IsTileType(tile, MP_STATION));
 
 	const int32 inc = _settings_game.station.catchment_increase;
 
@@ -385,7 +385,7 @@ uint Station::GetCatchmentRadius() const
  */
 Rect Station::GetCatchmentRectUsingRadius(uint catchment_radius) const
 {
-	assert(!this->rect.IsEmpty());
+	dbg_assert(!this->rect.IsEmpty());
 
 	/* Compute acceptance rectangle */
 	Rect ret = {
@@ -618,7 +618,7 @@ CommandCost StationRect::BeforeAddTile(TileIndex tile, StationRectMode mode)
 		int w = new_rect.right - new_rect.left + 1;
 		int h = new_rect.bottom - new_rect.top + 1;
 		if (mode != ADD_FORCE && (w > _settings_game.station.station_spread || h > _settings_game.station.station_spread)) {
-			assert(mode != ADD_TRY);
+			dbg_assert(mode != ADD_TRY);
 			return_cmd_error(STR_ERROR_STATION_TOO_SPREAD_OUT);
 		}
 
@@ -715,8 +715,8 @@ bool StationRect::AfterRemoveTile(BaseStation *st, TileIndex tile)
 
 bool StationRect::AfterRemoveRect(BaseStation *st, TileArea ta)
 {
-	assert(this->PtInExtendedRect(TileX(ta.tile), TileY(ta.tile)));
-	assert(this->PtInExtendedRect(TileX(ta.tile) + ta.w - 1, TileY(ta.tile) + ta.h - 1));
+	dbg_assert(this->PtInExtendedRect(TileX(ta.tile), TileY(ta.tile)));
+	dbg_assert(this->PtInExtendedRect(TileX(ta.tile) + ta.w - 1, TileY(ta.tile) + ta.h - 1));
 
 	bool empty = this->AfterRemoveTile(st, ta.tile);
 	if (ta.w != 1 || ta.h != 1) empty = empty || this->AfterRemoveTile(st, TILE_ADDXY(ta.tile, ta.w - 1, ta.h - 1));

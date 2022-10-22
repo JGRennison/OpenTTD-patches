@@ -38,7 +38,7 @@ struct GUIVehicleGroup {
 
 	const Vehicle *GetSingleVehicle() const
 	{
-		assert(this->NumVehicles() == 1);
+		dbg_assert(this->NumVehicles() == 1);
 		return this->vehicles_begin[0];
 	}
 

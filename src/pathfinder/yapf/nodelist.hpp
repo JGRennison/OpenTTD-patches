@@ -80,7 +80,7 @@ public:
 	/** insert given item as open node (into m_open and m_open_queue) */
 	inline void InsertOpenNode(Titem_ &item)
 	{
-		assert(m_closed.Find(item.GetKey()) == nullptr);
+		dbg_assert(m_closed.Find(item.GetKey()) == nullptr);
 		m_open.Push(item);
 		m_open_queue.Include(&item);
 		if (&item == m_new_node) {
@@ -110,7 +110,7 @@ public:
 
 	inline void DequeueBestOpenNode()
 	{
-		assert(!m_open_queue.IsEmpty());
+		dbg_assert(!m_open_queue.IsEmpty());
 		m_open_queue.Shift();
 	}
 
@@ -143,7 +143,7 @@ public:
 	/** close node */
 	inline void InsertClosedNode(Titem_ &item)
 	{
-		assert(m_open.Find(item.GetKey()) == nullptr);
+		dbg_assert(m_open.Find(item.GetKey()) == nullptr);
 		m_closed.Push(item);
 	}
 

@@ -126,7 +126,7 @@ struct HouseSpec {
 
 	static inline HouseSpec *Get(size_t house_id)
 	{
-		assert(house_id < NUM_HOUSES);
+		dbg_assert(house_id < NUM_HOUSES);
 		extern HouseSpec _house_specs[];
 		return &_house_specs[house_id];
 	}

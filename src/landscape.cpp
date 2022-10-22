@@ -849,7 +849,7 @@ void RunTileLoop()
 
 	TileIndex tile = _cur_tileloop_tile;
 	/* The LFSR cannot have a zeroed state. */
-	assert(tile != 0);
+	dbg_assert(tile != 0);
 
 	SCOPE_INFO_FMT([&], "RunTileLoop: tile: %dx%d", TileX(tile), TileY(tile));
 
@@ -1170,7 +1170,7 @@ static bool MakeLake(TileIndex tile, void *user_data)
  */
 static bool FlowsDown(TileIndex begin, TileIndex end)
 {
-	assert(DistanceManhattan(begin, end) == 1);
+	dbg_assert(DistanceManhattan(begin, end) == 1);
 
 	int heightBegin;
 	int heightEnd;

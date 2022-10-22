@@ -58,22 +58,22 @@ struct CFollowTrackT
 
 	inline CFollowTrackT(Owner o, RailTypes railtype_override = INVALID_RAILTYPES)
 	{
-		assert(IsRailTT());
+		dbg_assert(IsRailTT());
 		m_veh = nullptr;
 		Init(o, railtype_override);
 	}
 
 	inline void Init(const VehicleType *v, RailTypes railtype_override)
 	{
-		assert(!IsRailTT() || (v != nullptr && v->type == VEH_TRAIN));
+		dbg_assert(!IsRailTT() || (v != nullptr && v->type == VEH_TRAIN));
 		m_veh = v;
 		Init(v != nullptr ? v->owner : INVALID_OWNER, IsRailTT() && railtype_override == INVALID_RAILTYPES ? Train::From(v)->compatible_railtypes : railtype_override);
 	}
 
 	inline void Init(Owner o, RailTypes railtype_override)
 	{
-		assert(!IsRoadTT() || m_veh != nullptr);
-		assert(!IsRailTT() || railtype_override != INVALID_RAILTYPES);
+		dbg_assert(!IsRoadTT() || m_veh != nullptr);
+		dbg_assert(!IsRailTT() || railtype_override != INVALID_RAILTYPES);
 		m_veh_owner = o;
 		/* don't worry, all is inlined so compiler should remove unnecessary initializations */
 		m_old_tile = INVALID_TILE;
@@ -98,7 +98,7 @@ struct CFollowTrackT
 	/** Tests if a tile is a road tile with a single tramtrack (tram can reverse) */
 	inline DiagDirection GetSingleTramBit(TileIndex tile)
 	{
-		assert(IsTram()); // this function shouldn't be called in other cases
+		dbg_assert(IsTram()); // this function shouldn't be called in other cases
 
 		const bool is_bridge = IsRoadCustomBridgeHeadTile(tile);
 		if (is_bridge || IsNormalRoadTile(tile)) {
@@ -123,7 +123,7 @@ struct CFollowTrackT
 		m_old_tile = old_tile;
 		m_old_td = old_td;
 		m_err = EC_NONE;
-		assert_tile(
+		dbg_assert_tile(
 			((TrackStatusToTrackdirBits(
 				GetTileTrackStatus(m_old_tile, TT(), (IsRoadTT() && m_veh != nullptr) ? (this->IsTram() ? RTT_TRAM : RTT_ROAD) : 0)
 			) & TrackdirToTrackdirBits(m_old_td)) != 0) ||
@@ -219,7 +219,9 @@ protected:
 				m_tiles_skipped = GetTunnelBridgeLength(m_new_tile, m_old_tile);
 				return;
 			}
-			if (!IsRoadCustomBridgeHeadTile(m_old_tile) && !IsRailCustomBridgeHeadTile(m_old_tile)) assert(ReverseDiagDir(enterdir) == m_exitdir);
+			if (!IsRoadCustomBridgeHeadTile(m_old_tile) && !IsRailCustomBridgeHeadTile(m_old_tile)) {
+				dbg_assert(ReverseDiagDir(enterdir) == m_exitdir);
+			}
 		}
 
 		/* normal or station tile, do one step */

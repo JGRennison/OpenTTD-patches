@@ -166,7 +166,7 @@ public:
 	/** Check the node for a possible reservation target. */
 	inline void FindSafePositionOnNode(Node *node)
 	{
-		assert(node->m_parent != nullptr);
+		dbg_assert(node->m_parent != nullptr);
 
 		/* We will never pass more than two non-reserve-through signals, no need to check for a safe tile. */
 		if (node->m_parent->m_num_signals_passed - node->m_parent->m_num_signals_res_through_passed >= 2) return;

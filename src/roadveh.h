@@ -91,7 +91,7 @@ struct RoadVehPathCache {
 
 	inline size_t size() const
 	{
-		assert(this->td.size() == this->tile.size());
+		dbg_assert(this->td.size() == this->tile.size());
 		return this->td.size();
 	}
 

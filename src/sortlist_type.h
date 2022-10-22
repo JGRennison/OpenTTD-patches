@@ -297,7 +297,7 @@ public:
 	 */
 	bool Sort()
 	{
-		assert(this->sort_func_list != nullptr);
+		dbg_assert(this->sort_func_list != nullptr);
 		return this->Sort(this->sort_func_list[this->sort_type]);
 	}
 

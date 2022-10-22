@@ -112,7 +112,7 @@ TileIndex TileAdd(TileIndex tile, TileIndexDiff add,
 #endif
 	}
 
-	assert(TileXY(x, y) == TILE_MASK(tile + add));
+	dbg_assert(TileXY(x, y) == TILE_MASK(tile + add));
 
 	return TileXY(x, y);
 }
@@ -297,8 +297,8 @@ uint DistanceFromEdgeDir(TileIndex tile, DiagDirection dir)
  */
 bool CircularTileSearch(TileIndex *tile, uint size, TestTileOnSearchProc proc, void *user_data)
 {
-	assert(proc != nullptr);
-	assert(size > 0);
+	dbg_assert(proc != nullptr);
+	dbg_assert(size > 0);
 
 	if (size % 2 == 1) {
 		/* If the length of the side is uneven, the center has to be checked
@@ -335,8 +335,8 @@ bool CircularTileSearch(TileIndex *tile, uint size, TestTileOnSearchProc proc, v
  */
 bool CircularTileSearch(TileIndex *tile, uint radius, uint w, uint h, TestTileOnSearchProc proc, void *user_data)
 {
-	assert(proc != nullptr);
-	assert(radius > 0);
+	dbg_assert(proc != nullptr);
+	dbg_assert(radius > 0);
 
 	uint x = TileX(*tile) + w + 1;
 	uint y = TileY(*tile);
@@ -384,7 +384,7 @@ bool CircularTileSearch(TileIndex *tile, uint radius, uint w, uint h, TestTileOn
  */
 bool EnoughContiguousTilesMatchingCondition(TileIndex tile, uint threshold, TestTileOnSearchProc proc, void *user_data)
 {
-	assert(proc != nullptr);
+	dbg_assert(proc != nullptr);
 	if (threshold == 0) return true;
 
 	static_assert(MAX_MAP_TILES_BITS <= 30);

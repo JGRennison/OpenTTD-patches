@@ -240,7 +240,7 @@ void Window::DisableAllWidgetHighlight()
  */
 void Window::SetWidgetHighlight(byte widget_index, TextColour highlighted_colour)
 {
-	assert(widget_index < this->nested_array_size);
+	dbg_assert(widget_index < this->nested_array_size);
 
 	NWidgetBase *nwid = this->GetWidget<NWidgetBase>(widget_index);
 	if (nwid == nullptr) return;
@@ -273,7 +273,7 @@ void Window::SetWidgetHighlight(byte widget_index, TextColour highlighted_colour
  */
 bool Window::IsWidgetHighlighted(byte widget_index) const
 {
-	assert(widget_index < this->nested_array_size);
+	dbg_assert(widget_index < this->nested_array_size);
 
 	const NWidgetBase *nwid = this->GetWidget<NWidgetBase>(widget_index);
 	if (nwid == nullptr) return false;
@@ -521,7 +521,7 @@ bool Window::SetFocusedWidget(int widget_index)
 	/* Do nothing if widget_index is already focused, or if it wasn't a valid widget. */
 	if ((uint)widget_index >= this->nested_array_size) return false;
 
-	assert(this->nested_array[widget_index] != nullptr); // Setting focus to a non-existing widget is a bad idea.
+	dbg_assert(this->nested_array[widget_index] != nullptr); // Setting focus to a non-existing widget is a bad idea.
 	if (this->nested_focus != nullptr) {
 		if (this->GetWidget<NWidgetCore>(widget_index) == this->nested_focus) return false;
 
@@ -1403,7 +1403,7 @@ static uint GetWindowZPriority(WindowClass wc)
  */
 static void AddWindowToZOrdering(Window *w)
 {
-	assert(w->z_front == nullptr && w->z_back == nullptr);
+	dbg_assert(w->z_front == nullptr && w->z_back == nullptr);
 
 	if (_z_front_window == nullptr) {
 		/* It's the only window. */
@@ -1417,7 +1417,7 @@ static void AddWindowToZOrdering(Window *w)
 		while (v != nullptr && (v->window_class == WC_INVALID || GetWindowZPriority(v->window_class) > GetWindowZPriority(w->window_class))) {
 			if (v->window_class != WC_INVALID) {
 				/* Sanity check z-ordering, while we're at it. */
-				assert(last_z_priority >= GetWindowZPriority(v->window_class));
+				dbg_assert(last_z_priority >= GetWindowZPriority(v->window_class));
 				last_z_priority = GetWindowZPriority(v->window_class);
 			}
 
@@ -1454,14 +1454,14 @@ static void AddWindowToZOrdering(Window *w)
 static void RemoveWindowFromZOrdering(WindowBase *w)
 {
 	if (w->z_front == nullptr) {
-		assert(_z_front_window == w);
+		dbg_assert(_z_front_window == w);
 		_z_front_window = w->z_back;
 	} else {
 		w->z_front->z_back = w->z_back;
 	}
 
 	if (w->z_back == nullptr) {
-		assert(_z_back_window == w);
+		dbg_assert(_z_back_window == w);
 		_z_back_window = w->z_front;
 	} else {
 		w->z_back->z_front = w->z_front;
@@ -1764,7 +1764,7 @@ restart:
 Point GetToolbarAlignedWindowPosition(int window_width)
 {
 	const Window *w = FindWindowById(WC_MAIN_TOOLBAR, 0);
-	assert(w != nullptr);
+	dbg_assert(w != nullptr);
 	Point pt = { _current_text_dir == TD_RTL ? w->left : (w->left + w->width) - window_width, w->top + w->height };
 	return pt;
 }

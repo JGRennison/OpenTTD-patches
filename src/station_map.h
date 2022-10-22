@@ -27,7 +27,7 @@ typedef byte StationGfx; ///< Index of station graphics. @see _station_display_d
  */
 static inline StationID GetStationIndex(TileIndex t)
 {
-	assert_tile(IsTileType(t, MP_STATION), t);
+	dbg_assert_tile(IsTileType(t, MP_STATION), t);
 	return (StationID)_m[t].m2;
 }
 
@@ -43,7 +43,7 @@ static const int GFX_TRUCK_BUS_DRIVETHROUGH_OFFSET =  4; ///< The offset for the
  */
 static inline StationType GetStationType(TileIndex t)
 {
-	assert_tile(IsTileType(t, MP_STATION), t);
+	dbg_assert_tile(IsTileType(t, MP_STATION), t);
 	return (StationType)GB(_me[t].m6, 3, 4);
 }
 
@@ -55,7 +55,7 @@ static inline StationType GetStationType(TileIndex t)
  */
 static inline RoadStopType GetRoadStopType(TileIndex t)
 {
-	assert_tile(GetStationType(t) == STATION_TRUCK || GetStationType(t) == STATION_BUS, t);
+	dbg_assert_tile(GetStationType(t) == STATION_TRUCK || GetStationType(t) == STATION_BUS, t);
 	return GetStationType(t) == STATION_TRUCK ? ROADSTOP_TRUCK : ROADSTOP_BUS;
 }
 
@@ -67,7 +67,7 @@ static inline RoadStopType GetRoadStopType(TileIndex t)
  */
 static inline StationGfx GetStationGfx(TileIndex t)
 {
-	assert_tile(IsTileType(t, MP_STATION), t);
+	dbg_assert_tile(IsTileType(t, MP_STATION), t);
 	return _m[t].m5;
 }
 
@@ -79,7 +79,7 @@ static inline StationGfx GetStationGfx(TileIndex t)
  */
 static inline void SetStationGfx(TileIndex t, StationGfx gfx)
 {
-	assert_tile(IsTileType(t, MP_STATION), t);
+	dbg_assert_tile(IsTileType(t, MP_STATION), t);
 	_m[t].m5 = gfx;
 }
 
@@ -222,7 +222,7 @@ static inline bool IsRoadWaypointTile(TileIndex t)
  */
 static inline bool IsStationRoadStop(TileIndex t)
 {
-	assert_tile(IsTileType(t, MP_STATION), t);
+	dbg_assert_tile(IsTileType(t, MP_STATION), t);
 	return IsTruckStop(t) || IsBusStop(t);
 }
 
@@ -244,7 +244,7 @@ static inline bool IsStationRoadStopTile(TileIndex t)
  */
 static inline bool IsAnyRoadStop(TileIndex t)
 {
-	assert_tile(IsTileType(t, MP_STATION), t);
+	dbg_assert_tile(IsTileType(t, MP_STATION), t);
 	return IsTruckStop(t) || IsBusStop(t) || IsRoadWaypoint(t);
 }
 
@@ -285,7 +285,7 @@ static inline bool IsDriveThroughStopTile(TileIndex t)
  */
 static inline DisallowedRoadDirections GetDriveThroughStopDisallowedRoadDirections(TileIndex t)
 {
-	assert_tile(IsDriveThroughStopTile(t), t);
+	dbg_assert_tile(IsDriveThroughStopTile(t), t);
 	return (DisallowedRoadDirections)GB(_m[t].m3, 0, 2);
 }
 
@@ -296,8 +296,8 @@ static inline DisallowedRoadDirections GetDriveThroughStopDisallowedRoadDirectio
  */
 static inline void SetDriveThroughStopDisallowedRoadDirections(TileIndex t, DisallowedRoadDirections drd)
 {
-	assert_tile(IsDriveThroughStopTile(t), t);
-	assert(drd < DRD_END);
+	dbg_assert_tile(IsDriveThroughStopTile(t), t);
+	dbg_assert(drd < DRD_END);
 	SB(_m[t].m3, 0, 2, drd);
 }
 
@@ -308,7 +308,7 @@ static inline void SetDriveThroughStopDisallowedRoadDirections(TileIndex t, Disa
  */
 static inline Roadside GetRoadWaypointRoadside(TileIndex tile)
 {
-	assert_tile(IsRoadWaypointTile(tile), tile);
+	dbg_assert_tile(IsRoadWaypointTile(tile), tile);
 	return (Roadside)GB(_m[tile].m3, 2, 2);
 }
 
@@ -319,7 +319,7 @@ static inline Roadside GetRoadWaypointRoadside(TileIndex tile)
  */
 static inline void SetRoadWaypointRoadside(TileIndex tile, Roadside s)
 {
-	assert_tile(IsRoadWaypointTile(tile), tile);
+	dbg_assert_tile(IsRoadWaypointTile(tile), tile);
 	SB(_m[tile].m3, 2, 2, s);
 }
 
@@ -330,7 +330,7 @@ static inline void SetRoadWaypointRoadside(TileIndex tile, Roadside s)
  */
 static inline bool IsRoadWaypointOnSnowOrDesert(TileIndex t)
 {
-	assert_tile(IsRoadWaypointTile(t), t);
+	dbg_assert_tile(IsRoadWaypointTile(t), t);
 	return HasBit(_me[t].m8, 15);
 }
 
@@ -340,7 +340,7 @@ static inline bool IsRoadWaypointOnSnowOrDesert(TileIndex t)
  */
 static inline void ToggleRoadWaypointOnSnowOrDesert(TileIndex t)
 {
-	assert_tile(IsRoadWaypointTile(t), t);
+	dbg_assert_tile(IsRoadWaypointTile(t), t);
 	ToggleBit(_me[t].m8, 15);
 }
 
@@ -352,7 +352,7 @@ static inline void ToggleRoadWaypointOnSnowOrDesert(TileIndex t)
  */
 static inline StationGfx GetAirportGfx(TileIndex t)
 {
-	assert_tile(IsAirport(t), t);
+	dbg_assert_tile(IsAirport(t), t);
 	extern StationGfx GetTranslatedAirportTileID(StationGfx gfx);
 	return GetTranslatedAirportTileID(GetStationGfx(t));
 }
@@ -366,7 +366,7 @@ static inline StationGfx GetAirportGfx(TileIndex t)
 static inline DiagDirection GetRoadStopDir(TileIndex t)
 {
 	StationGfx gfx = GetStationGfx(t);
-	assert_tile(IsAnyRoadStopTile(t), t);
+	dbg_assert_tile(IsAnyRoadStopTile(t), t);
 	if (gfx < GFX_TRUCK_BUS_DRIVETHROUGH_OFFSET) {
 		return (DiagDirection)(gfx);
 	} else {
@@ -445,7 +445,7 @@ static inline bool IsHangarTile(TileIndex t)
  */
 static inline Axis GetRailStationAxis(TileIndex t)
 {
-	assert_tile(HasStationRail(t), t);
+	dbg_assert_tile(HasStationRail(t), t);
 	return HasBit(GetStationGfx(t), 0) ? AXIS_Y : AXIS_X;
 }
 
@@ -486,7 +486,7 @@ static inline TrackBits GetRailStationTrackBits(TileIndex t)
  */
 static inline bool IsCompatibleTrainStationTile(TileIndex test_tile, TileIndex station_tile)
 {
-	assert_tile(IsRailStationTile(station_tile), station_tile);
+	dbg_assert_tile(IsRailStationTile(station_tile), station_tile);
 	return IsRailStationTile(test_tile) && IsCompatibleRail(GetRailType(test_tile), GetRailType(station_tile)) &&
 			GetRailStationAxis(test_tile) == GetRailStationAxis(station_tile) &&
 			GetStationIndex(test_tile) == GetStationIndex(station_tile) &&
@@ -501,7 +501,7 @@ static inline bool IsCompatibleTrainStationTile(TileIndex test_tile, TileIndex s
  */
 static inline bool HasStationReservation(TileIndex t)
 {
-	assert_tile(HasStationRail(t), t);
+	dbg_assert_tile(HasStationRail(t), t);
 	return HasBit(_me[t].m6, 2);
 }
 
@@ -513,7 +513,7 @@ static inline bool HasStationReservation(TileIndex t)
  */
 static inline void SetRailStationReservation(TileIndex t, bool b)
 {
-	assert_tile(HasStationRail(t), t);
+	dbg_assert_tile(HasStationRail(t), t);
 	SB(_me[t].m6, 2, 1, b ? 1 : 0);
 }
 
@@ -538,7 +538,7 @@ static inline TrackBits GetStationReservationTrackBits(TileIndex t)
 static inline DiagDirection GetDockDirection(TileIndex t)
 {
 	StationGfx gfx = GetStationGfx(t);
-	assert_tile(IsDock(t) && gfx < GFX_DOCK_BASE_WATER_PART, t);
+	dbg_assert_tile(IsDock(t) && gfx < GFX_DOCK_BASE_WATER_PART, t);
 	return (DiagDirection)(gfx);
 }
 
@@ -559,12 +559,12 @@ static inline TileIndexDiffC GetDockOffset(TileIndex t)
 		{ 2,  0},
 		{ 0, -2},
 	};
-	assert_tile(IsTileType(t, MP_STATION), t);
+	dbg_assert_tile(IsTileType(t, MP_STATION), t);
 
 	if (IsBuoy(t)) return buoy_offset;
 	if (IsOilRig(t)) return oilrig_offset;
 
-	assert_tile(IsDock(t), t);
+	dbg_assert_tile(IsDock(t), t);
 
 	return dock_offset[GetDockDirection(t)];
 }
@@ -577,7 +577,7 @@ static inline TileIndexDiffC GetDockOffset(TileIndex t)
  */
 static inline bool IsCustomStationSpecIndex(TileIndex t)
 {
-	assert_tile(HasStationTileRail(t), t);
+	dbg_assert_tile(HasStationTileRail(t), t);
 	return _m[t].m4 != 0;
 }
 
@@ -589,7 +589,7 @@ static inline bool IsCustomStationSpecIndex(TileIndex t)
  */
 static inline void SetCustomStationSpecIndex(TileIndex t, byte specindex)
 {
-	assert_tile(HasStationTileRail(t), t);
+	dbg_assert_tile(HasStationTileRail(t), t);
 	_m[t].m4 = specindex;
 }
 
@@ -601,7 +601,7 @@ static inline void SetCustomStationSpecIndex(TileIndex t, byte specindex)
  */
 static inline uint GetCustomStationSpecIndex(TileIndex t)
 {
-	assert_tile(HasStationTileRail(t), t);
+	dbg_assert_tile(HasStationTileRail(t), t);
 	return _m[t].m4;
 }
 
@@ -613,7 +613,7 @@ static inline uint GetCustomStationSpecIndex(TileIndex t)
  */
 static inline bool IsCustomRoadStopSpecIndex(TileIndex t)
 {
-	assert_tile(IsAnyRoadStopTile(t), t);
+	dbg_assert_tile(IsAnyRoadStopTile(t), t);
 	return GB(_me[t].m8, 0, 6) != 0;
 }
 
@@ -625,7 +625,7 @@ static inline bool IsCustomRoadStopSpecIndex(TileIndex t)
  */
 static inline void SetCustomRoadStopSpecIndex(TileIndex t, byte specindex)
 {
-	assert_tile(IsAnyRoadStopTile(t), t);
+	dbg_assert_tile(IsAnyRoadStopTile(t), t);
 	SB(_me[t].m8, 0, 6, specindex);
 }
 
@@ -637,7 +637,7 @@ static inline void SetCustomRoadStopSpecIndex(TileIndex t, byte specindex)
  */
 static inline uint GetCustomRoadStopSpecIndex(TileIndex t)
 {
-	assert_tile(IsAnyRoadStopTile(t), t);
+	dbg_assert_tile(IsAnyRoadStopTile(t), t);
 	return GB(_me[t].m8, 0, 6);
 }
 
@@ -649,7 +649,7 @@ static inline uint GetCustomRoadStopSpecIndex(TileIndex t)
  */
 static inline void SetStationTileRandomBits(TileIndex t, byte random_bits)
 {
-	assert_tile(IsTileType(t, MP_STATION), t);
+	dbg_assert_tile(IsTileType(t, MP_STATION), t);
 	SB(_m[t].m3, 4, 4, random_bits);
 }
 
@@ -661,7 +661,7 @@ static inline void SetStationTileRandomBits(TileIndex t, byte random_bits)
  */
 static inline byte GetStationTileRandomBits(TileIndex t)
 {
-	assert_tile(IsTileType(t, MP_STATION), t);
+	dbg_assert_tile(IsTileType(t, MP_STATION), t);
 	return GB(_m[t].m3, 4, 4);
 }
 

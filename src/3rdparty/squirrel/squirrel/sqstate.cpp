@@ -281,7 +281,7 @@ SQInteger SQSharedState::CollectGarbage(SQVM *vm)
 
 	SQGCMarkerQueue queue;
 	queue.Enqueue(vms);
-#ifdef WITH_ASSERT
+#ifdef WITH_FULL_ASSERTS
 	SQInteger x = _table(_thread(_root_vm)->_roottable)->CountUsed();
 #endif
 	_refs_table.EnqueueMarkObject(queue);
@@ -329,7 +329,7 @@ SQInteger SQSharedState::CollectGarbage(SQVM *vm)
 		t = t->_next;
 	}
 	_gc_chain = tchain;
-#ifdef WITH_ASSERT
+#ifdef WITH_FULL_ASSERTS
 	SQInteger z = _table(_thread(_root_vm)->_roottable)->CountUsed();
 	assert(z == x);
 #endif

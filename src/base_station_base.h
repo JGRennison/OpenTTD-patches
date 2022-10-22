@@ -299,7 +299,7 @@ struct SpecializedStation : public BaseStation {
 	 */
 	static inline T *From(BaseStation *st)
 	{
-		assert(IsExpected(st));
+		dbg_assert(IsExpected(st));
 		return (T *)st;
 	}
 
@@ -310,7 +310,7 @@ struct SpecializedStation : public BaseStation {
 	 */
 	static inline const T *From(const BaseStation *st)
 	{
-		assert(IsExpected(st));
+		dbg_assert(IsExpected(st));
 		return (const T *)st;
 	}
 

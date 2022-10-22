@@ -83,7 +83,7 @@ int CDECL vseprintf(char *str, const char *last, const char *format, va_list ap)
  */
 char *strecat(char *dst, const char *src, const char *last)
 {
-	assert(dst <= last);
+	dbg_assert(dst <= last);
 	while (*dst != '\0') {
 		if (dst == last) return dst;
 		dst++;
@@ -111,7 +111,7 @@ char *strecat(char *dst, const char *src, const char *last)
  */
 char *strecpy(char *dst, const char *src, const char *last, bool quiet_mode)
 {
-	assert(dst <= last);
+	dbg_assert(dst <= last);
 	while (dst != last && *src != '\0') {
 		*dst++ = *src++;
 	}
@@ -684,7 +684,7 @@ char *md5sumToString(char *buf, const char *last, const uint8 md5sum[16])
  */
 size_t Utf8Decode(WChar *c, const char *s)
 {
-	assert(c != nullptr);
+	dbg_assert(c != nullptr);
 
 	if (!HasBit(s[0], 7)) {
 		/* Single byte character: 0xxxxxxx */
@@ -1072,7 +1072,7 @@ public:
 
 	virtual size_t SetCurPosition(size_t pos)
 	{
-		assert(this->string != nullptr && pos <= this->len);
+		dbg_assert(this->string != nullptr && pos <= this->len);
 		/* Sanitize in case we get a position inside an UTF-8 sequence. */
 		while (pos > 0 && IsUtf8Part(this->string[pos])) pos--;
 		return this->cur_pos = pos;
@@ -1080,7 +1080,7 @@ public:
 
 	virtual size_t Next(IterType what)
 	{
-		assert(this->string != nullptr);
+		dbg_assert(this->string != nullptr);
 
 		/* Already at the end? */
 		if (this->cur_pos >= this->len) return END;
@@ -1118,7 +1118,7 @@ public:
 
 	virtual size_t Prev(IterType what)
 	{
-		assert(this->string != nullptr);
+		dbg_assert(this->string != nullptr);
 
 		/* Already at the beginning? */
 		if (this->cur_pos == 0) return END;

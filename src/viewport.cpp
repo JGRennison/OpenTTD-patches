@@ -855,7 +855,7 @@ void HandleZoomMessage(Window *w, const Viewport *vp, byte widget_zoom_in, byte 
  */
 static void AddTileSpriteToDraw(SpriteID image, PaletteID pal, int32 x, int32 y, int z, const SubSprite *sub = nullptr, int extra_offs_x = 0, int extra_offs_y = 0)
 {
-	assert((image & SPRITE_MASK) < MAX_SPRITES);
+	dbg_assert((image & SPRITE_MASK) < MAX_SPRITES);
 
 	TileSpriteToDraw &ts = _vd.tile_sprites_to_draw.emplace_back();
 	ts.image = image;
@@ -880,8 +880,8 @@ static void AddTileSpriteToDraw(SpriteID image, PaletteID pal, int32 x, int32 y,
  */
 static void AddChildSpriteToFoundation(SpriteID image, PaletteID pal, const SubSprite *sub, FoundationPart foundation_part, int extra_offs_x, int extra_offs_y)
 {
-	assert(IsInsideMM(foundation_part, 0, FOUNDATION_PART_END));
-	assert(_vd.foundation[foundation_part] != -1);
+	dbg_assert(IsInsideMM(foundation_part, 0, FOUNDATION_PART_END));
+	dbg_assert(_vd.foundation[foundation_part] != -1);
 	Point offs = _vd.foundation_offset[foundation_part];
 
 	/* Change the active ChildSprite list to the one of the foundation */
@@ -1025,7 +1025,7 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 {
 	int32 left, right, top, bottom;
 
-	assert((image & SPRITE_MASK) < MAX_SPRITES);
+	dbg_assert((image & SPRITE_MASK) < MAX_SPRITES);
 
 	/* make the sprites transparent with the right palette */
 	if (transparent) {
@@ -1136,7 +1136,7 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
  */
 void StartSpriteCombine()
 {
-	assert(_vd.combine_sprites == SPRITE_COMBINE_NONE);
+	dbg_assert(_vd.combine_sprites == SPRITE_COMBINE_NONE);
 	_vd.combine_sprites = SPRITE_COMBINE_PENDING;
 }
 
@@ -1146,7 +1146,7 @@ void StartSpriteCombine()
  */
 void EndSpriteCombine()
 {
-	assert(_vd.combine_sprites != SPRITE_COMBINE_NONE);
+	dbg_assert(_vd.combine_sprites != SPRITE_COMBINE_NONE);
 	if (_vd.combine_sprites == SPRITE_COMBINE_ACTIVE) {
 		ParentSpriteToDraw &ps = _vd.parent_sprites_to_draw[_vd.combine_psd_index];
 		ps.left = _vd.combine_left;
@@ -1206,7 +1206,7 @@ static bool IsInsideSelectedRectangle(int x, int y)
  */
 void AddChildSpriteScreen(SpriteID image, PaletteID pal, int x, int y, bool transparent, const SubSprite *sub, bool scale, bool relative)
 {
-	assert((image & SPRITE_MASK) < MAX_SPRITES);
+	dbg_assert((image & SPRITE_MASK) < MAX_SPRITES);
 
 	/* If the ParentSprite was clipped by the viewport bounds, do not draw the ChildSprites either */
 	if (_vd.last_child == nullptr) return;
@@ -1238,7 +1238,7 @@ void AddChildSpriteScreen(SpriteID image, PaletteID pal, int x, int y, bool tran
 
 static void AddStringToDraw(int x, int y, StringID string, uint64 params_1, uint64 params_2, Colours colour, uint16 width)
 {
-	assert(width != 0);
+	dbg_assert(width != 0);
 	StringSpriteToDraw &ss = _vd.string_sprites_to_draw.emplace_back();
 	ss.string = string;
 	ss.x = x;
@@ -1576,8 +1576,8 @@ static int GetViewportY(Point tile)
  */
 static void ViewportAddLandscape()
 {
-	assert(_vd.dpi.top <= _vd.dpi.top + _vd.dpi.height);
-	assert(_vd.dpi.left <= _vd.dpi.left + _vd.dpi.width);
+	dbg_assert(_vd.dpi.top <= _vd.dpi.top + _vd.dpi.height);
+	dbg_assert(_vd.dpi.left <= _vd.dpi.left + _vd.dpi.width);
 
 	Point upper_left = InverseRemapCoords(_vd.dpi.left, _vd.dpi.top);
 	Point upper_right = InverseRemapCoords(_vd.dpi.left + _vd.dpi.width, _vd.dpi.top);
@@ -1615,8 +1615,8 @@ static void ViewportAddLandscape()
 			Point tilecoord;
 			tilecoord.x = (row - column) / 2;
 			tilecoord.y = (row + column) / 2;
-			assert(column == tilecoord.y - tilecoord.x);
-			assert(row == tilecoord.y + tilecoord.x);
+			dbg_assert(column == tilecoord.y - tilecoord.x);
+			dbg_assert(row == tilecoord.y + tilecoord.x);
 
 			TileType tile_type;
 			TileInfo tile_info;
@@ -3325,7 +3325,7 @@ static void ViewportMapDrawBridgeTunnel(Viewport * const vp, const TunnelBridgeT
 template <bool is_32bpp, bool show_slope>
 void ViewportMapDraw(Viewport * const vp)
 {
-	assert(vp != nullptr);
+	dbg_assert(vp != nullptr);
 	Blitter * const blitter = BlitterFactory::GetCurrentBlitter();
 
 	SmallMapWindow::RebuildColourIndexIfNecessary();
@@ -3933,7 +3933,7 @@ static void MarkRouteStepDirty(RouteStepsMap::const_iterator cit)
 
 static void MarkRouteStepDirty(const TileIndex tile, uint order_nr)
 {
-	assert(tile != INVALID_TILE);
+	dbg_assert(tile != INVALID_TILE);
 	const Point pt = RemapCoords2(TileX(tile) * TILE_SIZE + TILE_SIZE / 2, TileY(tile) * TILE_SIZE + TILE_SIZE / 2);
 	const int char_height = GetCharacterHeight(FS_SMALL) + 1;
 	const int max_width = _vp_route_step_base_width + _vp_route_step_string_width[3];
@@ -4088,8 +4088,8 @@ void MarkViewportLineDirty(Viewport * const vp, const Point from_pt, const Point
 
 void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile, ViewportMarkDirtyFlags flags)
 {
-	assert(from_tile != INVALID_TILE);
-	assert(to_tile != INVALID_TILE);
+	dbg_assert(from_tile != INVALID_TILE);
+	dbg_assert(to_tile != INVALID_TILE);
 
 	const Point from_pt = RemapCoords2(TileX(from_tile) * TILE_SIZE + TILE_SIZE / 2, TileY(from_tile) * TILE_SIZE + TILE_SIZE / 2);
 	const Point to_pt = RemapCoords2(TileX(to_tile) * TILE_SIZE + TILE_SIZE / 2, TileY(to_tile) * TILE_SIZE + TILE_SIZE / 2);
@@ -4192,8 +4192,8 @@ static void SetSelectionTilesDirty()
 		x_size -= TILE_SIZE;
 		y_size -= TILE_SIZE;
 
-		assert(x_size >= 0);
-		assert(y_size >= 0);
+		dbg_assert(x_size >= 0);
+		dbg_assert(y_size >= 0);
 
 		int x_end = Clamp(x_start + x_size, 0, MapSizeX() * TILE_SIZE - TILE_SIZE);
 		int y_end = Clamp(y_start + y_size, 0, MapSizeY() * TILE_SIZE - TILE_SIZE);
@@ -4202,7 +4202,7 @@ static void SetSelectionTilesDirty()
 		y_start = Clamp(y_start, 0, MapSizeY() * TILE_SIZE - TILE_SIZE);
 
 		/* make sure everything is multiple of TILE_SIZE */
-		assert((x_end | y_end | x_start | y_start) % TILE_SIZE == 0);
+		dbg_assert((x_end | y_end | x_start | y_start) % TILE_SIZE == 0);
 
 		/* How it works:
 		 * Suppose we have to mark dirty rectangle of 3x4 tiles:
@@ -5173,7 +5173,7 @@ static int CalcHeightdiff(HighLightStyle style, uint distance, TileIndex start_t
 
 			/* Use lookup table for start-tile based on HighLightStyle direction */
 			byte style_t = style * 2;
-			assert(style_t < lengthof(heightdiff_line_by_dir) - 13);
+			dbg_assert(style_t < lengthof(heightdiff_line_by_dir) - 13);
 			h0 = TileHeight(TILE_ADD(start_tile, ToTileIndexDiff(heightdiff_line_by_dir[style_t])));
 			uint ht = TileHeight(TILE_ADD(start_tile, ToTileIndexDiff(heightdiff_line_by_dir[style_t + 1])));
 			h0 = std::max(h0, ht);
@@ -5181,7 +5181,7 @@ static int CalcHeightdiff(HighLightStyle style, uint distance, TileIndex start_t
 			/* Use lookup table for end-tile based on HighLightStyle direction
 			 * flip around side (lower/upper, left/right) based on distance */
 			if (distance == 0) style_t = flip_style_direction[style] * 2;
-			assert(style_t < lengthof(heightdiff_line_by_dir) - 13);
+			dbg_assert(style_t < lengthof(heightdiff_line_by_dir) - 13);
 			h1 = TileHeight(TILE_ADD(end_tile, ToTileIndexDiff(heightdiff_line_by_dir[12 + style_t])));
 			ht = TileHeight(TILE_ADD(end_tile, ToTileIndexDiff(heightdiff_line_by_dir[12 + style_t + 1])));
 			h1 = std::max(h1, ht);
@@ -6061,7 +6061,7 @@ void InitializeSpriteSorter()
 			break;
 		}
 	}
-	assert(_vp_sprite_sorter != nullptr);
+	dbg_assert(_vp_sprite_sorter != nullptr);
 }
 
 /**
