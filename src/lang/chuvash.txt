@@ -1067,6 +1067,8 @@ STR_CONTENT_DETAIL_VERSION                                      :{SILVER}Вер�
 
 # Linkgraph legend window and linkgraph legend in smallmap
 
+# Linkgraph tooltip
+
 # Base for station construction window(s)
 
 # Join station window

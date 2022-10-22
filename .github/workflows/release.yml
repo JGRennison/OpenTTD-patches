@@ -138,10 +138,10 @@ jobs:
         echo "Folder on CDN: ${FOLDER}"
         echo "Workflow trigger: ${TRIGGER_TYPE}"
 
-        echo "::set-output name=version::$(cat .version)"
-        echo "::set-output name=is_tag::${IS_TAG}"
-        echo "::set-output name=folder::${FOLDER}"
-        echo "::set-output name=trigger_type::${TRIGGER_TYPE}"
+        echo "version=$(cat .version)" >> $GITHUB_OUTPUT
+        echo "is_tag=${IS_TAG}" >> $GITHUB_OUTPUT
+        echo "folder=${FOLDER}" >> $GITHUB_OUTPUT
+        echo "trigger_type=${TRIGGER_TYPE}" >> $GITHUB_OUTPUT
       env:
         NIGHTLIES_BRANCH: master
         FOLDER_RELEASES: openttd-releases
@@ -505,7 +505,7 @@ jobs:
     - name: Prepare cache key
       id: key
       run: |
-        echo "::set-output name=image::$ImageOS-$ImageVersion"
+        echo "image=$ImageOS-$ImageVersion" >> $GITHUB_OUTPUT
 
     - name: Enable vcpkg cache
       uses: actions/cache@v3
@@ -712,7 +712,7 @@ jobs:
         # Work around caching failure with GNU tar
         New-Item -Type Junction -Path vcpkg -Target c:\vcpkg
 
-        Write-Output "::set-output name=image::$env:ImageOS-$env:ImageVersion"
+        Write-Output "image=$env:ImageOS-$env:ImageVersion" >> $env:GITHUB_OUTPUT
 
     - name: Enable vcpkg cache
       uses: actions/cache@v3
