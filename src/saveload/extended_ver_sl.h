@@ -128,6 +128,7 @@ enum SlXvFeatureIndex {
 	XSLFI_INDUSTRY_ANIM_MASK,                     ///< Industry tile animation masking
 	XSLFI_NEW_SIGNAL_STYLES,                      ///< New signal styles
 	XSLFI_NO_TREE_COUNTER,                        ///< No tree counter
+	XSLFI_TOWN_SETTING_OVERRIDE,                  ///< Town setting overrides
 
 	XSLFI_SCRIPT_INT64,                           ///< See: SLV_SCRIPT_INT64
 	XSLFI_U64_TICK_COUNTER,                       ///< See: SLV_U64_TICK_COUNTER

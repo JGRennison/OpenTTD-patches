@@ -68,7 +68,10 @@ static const NWidgetPart _nested_town_authority_widgets[] = {
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_BROWN, WID_TA_ACTION_INFO), SetMinimalSize(317, 52), SetResize(1, 0), EndContainer(),
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_TA_EXECUTE),  SetMinimalSize(317, 12), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_LOCAL_AUTHORITY_DO_IT_BUTTON, STR_LOCAL_AUTHORITY_DO_IT_TOOLTIP),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_TA_BTN_SEL),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_TA_EXECUTE),  SetMinimalSize(317, 12), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_LOCAL_AUTHORITY_DO_IT_BUTTON, STR_LOCAL_AUTHORITY_DO_IT_TOOLTIP),
+			NWidget(WWT_DROPDOWN, COLOUR_BROWN, WID_TA_SETTING),  SetMinimalSize(317, 12), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_BLACK_STRING1, STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TOOLTIP),
+		EndContainer(),
 		NWidget(WWT_RESIZEBOX, COLOUR_BROWN),
 	EndContainer()
 };
@@ -101,6 +104,14 @@ private:
 		return -1;
 	}
 
+	static bool ChangeSettingsDisabled()
+	{
+		return _networking && !(_network_server || _network_settings_access) &&
+				!(_local_company != COMPANY_SPECTATOR && _settings_game.difficulty.override_town_settings_in_multiplayer);
+	}
+
+	static const uint SETTING_OVERRIDE_COUNT = 4;
+
 public:
 	TownAuthorityWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc), sel_index(-1), displayed_actions_on_previous_painting(0)
 	{
@@ -114,17 +125,20 @@ public:
 	{
 		int numact;
 		uint buttons = GetMaskOfTownActions(&numact, _local_company, this->town);
+		numact += SETTING_OVERRIDE_COUNT;
 		if (buttons != displayed_actions_on_previous_painting) this->SetDirty();
 		displayed_actions_on_previous_painting = buttons;
 
 		this->vscroll->SetCount(numact + 1);
 
-		if (this->sel_index != -1 && !HasBit(buttons, this->sel_index)) {
+		if (this->sel_index != -1 && this->sel_index < 0x100 && !HasBit(buttons, this->sel_index)) {
 			this->sel_index = -1;
 		}
 
 		this->SetWidgetLoweredState(WID_TA_ZONE_BUTTON, this->town->show_zone);
-		this->SetWidgetDisabledState(WID_TA_EXECUTE, this->sel_index == -1);
+		this->SetWidgetDisabledState(WID_TA_EXECUTE, this->sel_index == -1 || this->sel_index >= 0x100);
+		this->SetWidgetDisabledState(WID_TA_SETTING, ChangeSettingsDisabled());
+		this->GetWidget<NWidgetStacked>(WID_TA_BTN_SEL)->SetDisplayedPlane(this->sel_index >= 0x100 ? 1 : 0);
 
 		this->DrawWidgets();
 		if (!this->IsShaded()) this->DrawRatings();
@@ -193,7 +207,31 @@ public:
 
 	void SetStringParameters(int widget) const override
 	{
-		if (widget == WID_TA_CAPTION) SetDParam(0, this->window_number);
+		if (widget == WID_TA_CAPTION) {
+			SetDParam(0, this->window_number);
+		} else if (widget == WID_TA_SETTING) {
+			SetDParam(0, STR_EMPTY);
+			if (this->sel_index >= 0x100 && this->sel_index < (int)(0x100 + SETTING_OVERRIDE_COUNT)) {
+				if (!HasBit(this->town->override_flags, this->sel_index - 0x100)) {
+					SetDParam(0, STR_COLOUR_DEFAULT);
+				} else {
+					int idx = this->sel_index - 0x100;
+					switch (idx) {
+						case TSOF_OVERRIDE_BUILD_ROADS:
+						case TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS:
+							SetDParam(0, HasBit(this->town->override_values, idx) ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
+							break;
+						case TSOF_OVERRIDE_BUILD_TUNNELS:
+							SetDParam(0, STR_CONFIG_SETTING_TOWN_TUNNELS_FORBIDDEN + this->town->build_tunnels);
+							break;
+						case TSOF_OVERRIDE_BUILD_INCLINED_ROADS:
+							SetDParam(0, STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_VALUE + ((this->town->max_road_slope == 0) ? 1 : 0));
+							SetDParam(1, this->town->max_road_slope);
+							break;
+					}
+				}
+			}
+		}
 	}
 
 	void DrawWidget(const Rect &r, int widget) const override
@@ -201,14 +239,36 @@ public:
 		switch (widget) {
 			case WID_TA_ACTION_INFO:
 				if (this->sel_index != -1) {
-					SetDParam(0, _price[PR_TOWN_ACTION] * _town_action_costs[this->sel_index] >> 8);
-					DrawStringMultiLine(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, r.top + WD_FRAMERECT_TOP, r.bottom - WD_FRAMERECT_BOTTOM,
-								STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING + this->sel_index);
+					StringID text = STR_NULL;
+					if (this->sel_index >= 0x100) {
+						SetDParam(1, STR_EMPTY);
+						switch (this->sel_index - 0x100) {
+							case TSOF_OVERRIDE_BUILD_ROADS:
+								SetDParam(1, STR_CONFIG_SETTING_ALLOW_TOWN_ROADS_HELPTEXT);
+								break;
+							case TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS:
+								SetDParam(1, STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS_HELPTEXT);
+								break;
+							case TSOF_OVERRIDE_BUILD_TUNNELS:
+								SetDParam(1, STR_CONFIG_SETTING_TOWN_TUNNELS_HELPTEXT);
+								break;
+							case TSOF_OVERRIDE_BUILD_INCLINED_ROADS:
+								SetDParam(1, STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_HELPTEXT);
+								break;
+						}
+						text = STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TEXT;
+						SetDParam(0, STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_ROADS + this->sel_index - 0x100);
+					} else {
+						text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING + this->sel_index;
+						SetDParam(0, _price[PR_TOWN_ACTION] * _town_action_costs[this->sel_index] >> 8);
+					}
+					DrawStringMultiLine(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, r.top + WD_FRAMERECT_TOP, r.bottom - WD_FRAMERECT_BOTTOM, text);
 				}
 				break;
 			case WID_TA_COMMAND_LIST: {
 				int numact;
 				uint buttons = GetMaskOfTownActions(&numact, _local_company, this->town);
+				numact += SETTING_OVERRIDE_COUNT;
 				int y = r.top + WD_FRAMERECT_TOP;
 				int pos = this->vscroll->GetPosition();
 
@@ -218,11 +278,44 @@ public:
 				}
 
 				for (int i = 0; buttons; i++, buttons >>= 1) {
-					if (pos <= -5) break; ///< Draw only the 5 fitting lines
-
 					if ((buttons & 1) && --pos < 0) {
 						DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y,
 								STR_LOCAL_AUTHORITY_ACTION_SMALL_ADVERTISING_CAMPAIGN + i, this->sel_index == i ? TC_WHITE : TC_ORANGE);
+						y += FONT_HEIGHT_NORMAL;
+					}
+				}
+				for (int i = 0; i < (int)SETTING_OVERRIDE_COUNT; i++) {
+					if (--pos < 0) {
+						const bool disabled = ChangeSettingsDisabled();
+						const bool selected = (this->sel_index == (0x100 + i));
+						const TextColour tc = disabled ? (TC_NO_SHADE | (selected ? TC_SILVER : TC_GREY)) : (selected ? TC_WHITE : TC_ORANGE);
+						const bool overriden = HasBit(this->town->override_flags, i);
+						SetDParam(0, STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_ROADS + i);
+						SetDParam(1, overriden ? STR_JUST_STRING1 : STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_DEFAULT);
+						switch (i) {
+							case TSOF_OVERRIDE_BUILD_ROADS:
+								SetDParam(2, this->town->GetAllowBuildRoads() ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
+								break;
+
+							case TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS:
+								SetDParam(2, this->town->GetAllowBuildLevelCrossings() ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
+								break;
+
+							case TSOF_OVERRIDE_BUILD_TUNNELS: {
+								TownTunnelMode tunnel_mode = this->town->GetBuildTunnelMode();
+								SetDParam(2, STR_CONFIG_SETTING_TOWN_TUNNELS_FORBIDDEN + tunnel_mode);
+								break;
+							}
+
+							case TSOF_OVERRIDE_BUILD_INCLINED_ROADS: {
+								uint8 max_slope = this->town->GetBuildMaxRoadSlope();
+								SetDParam(2, STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_VALUE + ((max_slope == 0) ? 1 : 0));
+								SetDParam(3, max_slope);
+								break;
+							}
+						}
+						DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y,
+								STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_STR, tc);
 						y += FONT_HEIGHT_NORMAL;
 					}
 				}
@@ -250,7 +343,7 @@ public:
 			}
 
 			case WID_TA_COMMAND_LIST:
-				size->height = WD_FRAMERECT_TOP + 5 * FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM;
+				size->height = WD_FRAMERECT_TOP + (5 + SETTING_OVERRIDE_COUNT) * FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM;
 				size->width = GetStringBoundingBox(STR_LOCAL_AUTHORITY_ACTIONS_TITLE).width;
 				for (uint i = 0; i < TACT_COUNT; i++ ) {
 					size->width = std::max(size->width, GetStringBoundingBox(STR_LOCAL_AUTHORITY_ACTION_SMALL_ADVERTISING_CAMPAIGN + i).width);
@@ -283,10 +376,16 @@ public:
 
 			case WID_TA_COMMAND_LIST: {
 				int y = this->GetRowFromWidget(pt.y, WID_TA_COMMAND_LIST, 1, FONT_HEIGHT_NORMAL);
-				if (!IsInsideMM(y, 0, 5)) return;
+				if (!IsInsideMM(y, 0, 5 + SETTING_OVERRIDE_COUNT)) return;
 
-				y = GetNthSetBit(GetMaskOfTownActions(nullptr, _local_company, this->town), y + this->vscroll->GetPosition() - 1);
-				if (y >= 0) {
+				const uint setting_override_offset = 32 - SETTING_OVERRIDE_COUNT;
+
+				y = GetNthSetBit(GetMaskOfTownActions(nullptr, _local_company, this->town) | (UINT32_MAX << setting_override_offset), y + this->vscroll->GetPosition() - 1);
+				if (y >= (int)setting_override_offset) {
+					this->sel_index = y + 0x100 - setting_override_offset;
+					this->SetDirty();
+					break;
+				} else if (y >= 0) {
 					this->sel_index = y;
 					this->SetDirty();
 				}
@@ -298,7 +397,69 @@ public:
 			case WID_TA_EXECUTE:
 				DoCommandP(this->town->xy, this->window_number, this->sel_index, CMD_DO_TOWN_ACTION | CMD_MSG(STR_ERROR_CAN_T_DO_THIS));
 				break;
+
+			case WID_TA_SETTING: {
+				uint8 idx = this->sel_index - 0x100;
+				switch (idx) {
+					case TSOF_OVERRIDE_BUILD_ROADS:
+					case TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS: {
+						int value = HasBit(this->town->override_flags, idx) ? (HasBit(this->town->override_values, idx) ? 2 : 1) : 0;
+						const StringID names[] = {
+							STR_COLOUR_DEFAULT,
+							STR_CONFIG_SETTING_OFF,
+							STR_CONFIG_SETTING_ON,
+							INVALID_STRING_ID
+						};
+						ShowDropDownMenu(this, names, value, WID_TA_SETTING, 0, 0);
+						break;
+					}
+					case TSOF_OVERRIDE_BUILD_TUNNELS: {
+						const StringID names[] = {
+							STR_COLOUR_DEFAULT,
+							STR_CONFIG_SETTING_TOWN_TUNNELS_FORBIDDEN,
+							STR_CONFIG_SETTING_TOWN_TUNNELS_ALLOWED_OBSTRUCTION,
+							STR_CONFIG_SETTING_TOWN_TUNNELS_ALLOWED,
+							INVALID_STRING_ID
+						};
+						ShowDropDownMenu(this, names, HasBit(this->town->override_flags, idx) ? this->town->build_tunnels + 1 : 0, WID_TA_SETTING, 0, 0);
+						break;
+					}
+					case TSOF_OVERRIDE_BUILD_INCLINED_ROADS:
+						DropDownList dlist;
+						dlist.emplace_back(new DropDownListStringItem(STR_COLOUR_DEFAULT, 0, false));
+						dlist.emplace_back(new DropDownListStringItem(STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_ZERO, 1, false));
+						for (int i = 1; i <= 8; i++) {
+							DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_VALUE, i + 1, false);
+							item->SetParam(0, i);
+							dlist.emplace_back(item);
+						}
+						ShowDropDownList(this, std::move(dlist), HasBit(this->town->override_flags, idx) ? this->town->max_road_slope + 1 : 0, WID_TA_SETTING);
+						break;
+				}
+				break;
+			}
 		}
+	}
+
+
+	virtual void OnDropdownSelect(int widget, int index) override
+	{
+		switch (widget) {
+			case WID_TA_SETTING: {
+				if (index < 0) break;
+				uint32 p2 = this->sel_index - 0x100;
+				if (index > 0) {
+					SetBit(p2, 16);
+					p2 |= (index - 1) << 8;
+				}
+				DoCommandP(this->town->xy, this->window_number, p2, CMD_TOWN_SETTING_OVERRIDE | CMD_MSG(STR_ERROR_CAN_T_DO_THIS));
+				break;
+			}
+
+			default: NOT_REACHED();
+		}
+
+		this->SetDirty();
 	}
 
 	void OnHundredthTick() override
@@ -477,7 +638,7 @@ public:
 				/* Warn the user if towns are not allowed to build roads, but do this only once per OpenTTD run. */
 				static bool _warn_town_no_roads = false;
 
-				if (!_settings_game.economy.allow_town_roads && !_warn_town_no_roads) {
+				if (!Town::Get(this->window_number)->GetAllowBuildRoads() && !_warn_town_no_roads) {
 					ShowErrorMessage(STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS, INVALID_STRING_ID, WL_WARNING);
 					_warn_town_no_roads = true;
 				}

@@ -155,6 +155,7 @@ CommandProc CmdFoundTown;
 CommandProc CmdRenameTown;
 CommandProc CmdRenameTownNonAdmin;
 CommandProc CmdDoTownAction;
+CommandProc CmdOverrideTownSetting;
 CommandProc CmdTownGrowthRate;
 CommandProc CmdTownRating;
 CommandProc CmdTownCargoGoal;
@@ -401,6 +402,7 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdRenameTown,                CMD_DEITY | CMD_SERVER, CMDT_OTHER_MANAGEMENT      ), // CMD_RENAME_TOWN
 	DEF_CMD(CmdRenameTownNonAdmin,                             0, CMDT_OTHER_MANAGEMENT      ), // CMD_RENAME_TOWN_NON_ADMIN
 	DEF_CMD(CmdDoTownAction,                                   0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_DO_TOWN_ACTION
+	DEF_CMD(CmdOverrideTownSetting,                            0, CMDT_OTHER_MANAGEMENT      ), // CMD_TOWN_SETTING_OVERRIDE
 	DEF_CMD(CmdTownCargoGoal,            CMD_LOG_AUX | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_TOWN_CARGO_GOAL
 	DEF_CMD(CmdTownGrowthRate,           CMD_LOG_AUX | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_TOWN_GROWTH_RATE
 	DEF_CMD(CmdTownRating,               CMD_LOG_AUX | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_TOWN_RATING

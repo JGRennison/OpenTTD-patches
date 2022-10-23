@@ -1465,6 +1465,11 @@ static void DifficultyRenameTownsMultiplayerChange(int32 new_value)
 	SetWindowClassesDirty(WC_TOWN_VIEW);
 }
 
+static void DifficultyOverrideTownSettingsMultiplayerChange(int32 new_value)
+{
+	SetWindowClassesDirty(WC_TOWN_AUTHORITY);
+}
+
 static void MaxNoAIsChange(int32 new_value)
 {
 	if (GetGameSettings().difficulty.max_no_competitors != 0 &&

@@ -2283,6 +2283,7 @@ static SettingsContainer &GetSettingsTree()
 			ai->Add(new SettingEntry("economy.min_years_for_shares"));
 			ai->Add(new SettingEntry("difficulty.money_cheat_in_multiplayer"));
 			ai->Add(new SettingEntry("difficulty.rename_towns_in_multiplayer"));
+			ai->Add(new SettingEntry("difficulty.override_town_settings_in_multiplayer"));
 		}
 
 		SettingsPage *scenario = main->Add(new SettingsPage(STR_CONFIG_SETTING_SCENARIO_EDITOR));
