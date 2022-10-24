@@ -66,6 +66,7 @@ enum OrderWidgets {
 	WID_O_SEL_OCCUPANCY,             ///< #NWID_SELECTION widget for the occupancy list panel.
 	WID_O_OCCUPANCY_LIST,            ///< Occupancy list panel.
 	WID_O_OCCUPANCY_TOGGLE,          ///< Toggle display of occupancy measures.
+	WID_O_TOGGLE_SIZE,               ///< Toggle show order management button.
 };
 
 /** Widgets of the #CargoTypeOrdersWindow class. */

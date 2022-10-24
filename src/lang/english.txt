@@ -5528,6 +5528,7 @@ STR_REFIT_AIRCRAFT_REFIT_TOOLTIP                                :{BLACK}Refit ai
 STR_ORDERS_CAPTION                                              :{WHITE}{VEHICLE} (Orders)
 STR_ORDERS_TIMETABLE_VIEW                                       :{BLACK}Timetable
 STR_ORDERS_TIMETABLE_VIEW_TOOLTIP                               :{BLACK}Switch to the timetable view
+STR_ORDERS_TOGGLE_MANAGEMENT_BUTTON_TOOLTIP                     :{BLACK}Toggle showing order management button
 
 STR_ORDERS_LIST_TOOLTIP                                         :{BLACK}Order list - click on an order to highlight it. Ctrl+Click scrolls to the order's destination
 STR_ORDER_INDEX                                                 :{COMMA}:{NBSP}
