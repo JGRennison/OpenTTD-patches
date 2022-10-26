@@ -2492,15 +2492,13 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 				const TileLayoutSpriteGroup *tlsg = (const TileLayoutSpriteGroup*)sg;
 				if (tlsg->dts.registers != nullptr) {
 					const TileLayoutRegisters *registers = tlsg->dts.registers;
-					size_t count = 1; // 1 for the ground sprite
-					const DrawTileSeqStruct *element;
-					foreach_draw_tile_seq(element, tlsg->dts.seq) count++;
-					for (size_t i = 0; i < count; i ++) {
+
+					auto process_registers = [&](uint i, bool is_parent) {
 						const TileLayoutRegisters *reg = registers + i;
 						if (reg->flags & TLF_DODRAW) bits.set(reg->dodraw, true);
 						if (reg->flags & TLF_SPRITE) bits.set(reg->sprite, true);
 						if (reg->flags & TLF_PALETTE) bits.set(reg->palette, true);
-						if (element->IsParentSprite()) {
+						if (is_parent) {
 							if (reg->flags & TLF_BB_XY_OFFSET) {
 								bits.set(reg->delta.parent[0], true);
 								bits.set(reg->delta.parent[1], true);
@@ -2510,6 +2508,14 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 							if (reg->flags & TLF_CHILD_X_OFFSET) bits.set(reg->delta.child[0], true);
 							if (reg->flags & TLF_CHILD_Y_OFFSET) bits.set(reg->delta.child[1], true);
 						}
+					};
+					process_registers(0, false);
+
+					uint offset = 0; // offset 0 is the ground sprite
+					const DrawTileSeqStruct *element;
+					foreach_draw_tile_seq(element, tlsg->dts.seq) {
+						offset++;
+						process_registers(offset, element->IsParentSprite());
 					}
 				}
 			}
