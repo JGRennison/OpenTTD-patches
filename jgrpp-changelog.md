@@ -2,6 +2,23 @@
 
 * * *
 
+### v0.49.0 (2022-10-27)
+* Fix calculating train curve speed limit on dual rail type tiles.
+* Fix crash if GS is removed when GS settings window is open.
+* Orders:
+  * Add support for duplicating individual orders.
+  * Allow moving the jump target of an existing conditional order.
+  * Add a change counter value order type.
+* Towns:
+  * Add setting for if/when towns can build road tunnels.
+  * Add setting to limit length of continuous inclined roads built by towns.
+  * Allow overriding town road construction settings on a per-town basis, add setting to enable this for multiplayer clients.
+* Custom signal style (normal/shunt combined mode):
+  * Fix incorrect default for reservations through intermediary shunt signals.
+  * Reservations ending in a depot now default to shunt mode.
+* MacOS: Re-enable touchbar support.
+* Bump trunk base from commit f011a559d01db3eb43e71031ff03fa904a41d068 to commit 4daad7f34840bcec2a568eb54149286c7f68c892.
+
 ### v0.48.5 (2022-10-05)
 * Fix vehicles with no cargo being shown with the cargo of the last selected vehicle in the build vehicle window.
 * Fix animation of NewGRF road stops.
