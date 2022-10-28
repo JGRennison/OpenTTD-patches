@@ -5547,7 +5547,6 @@ STR_JUST_DATE_SHORT                                             :{DATE_SHORT}
 STR_JUST_DATE_LONG                                              :{DATE_LONG}
 STR_JUST_DATE_ISO                                               :{DATE_ISO}
 STR_JUST_STRING                                                 :{STRING}
-STR_JUST_STRING2                                                :{STRING}
 STR_JUST_STRING_STRING                                          :{STRING}{STRING}
 
 # Slightly 'raw' stringcodes with colour or size
@@ -7184,3 +7183,39 @@ STR_ERROR_NO_ROAD_WAYPOINT                                      :{WHITE}Non hai 
 STR_ERROR_NO_BUOY                                               :{WHITE}Non hai boia...
 STR_BLACK_STRING1                                               :{BLACK}{STRING}
 STR_TMPL_WARNING_VEH_NO_COMPATIBLE_RAIL_TYPE                    :{RED}Tren non construíble: A cadea non é compatible con ningún tipo de ferrocarril
+STR_CONFIG_SETTING_SHARING_FEE_HELPTEXT                         :Esta taxa é por dia sen escalar (por exemplo, cunha duración dun día por defecto, 74 ticks).
+STR_FINANCES_ZERO_INCOME                                        :{CURRENCY_LONG}
+STR_CONFIG_SETTING_OVERRIDE_TOWN_SETTINGS_MULTIPLAYER           :Permitir os clientes multixogador sobreescribir as opcións das vilas: {STRING}
+STR_CONFIG_SETTING_OVERRIDE_TOWN_SETTINGS_MULTIPLAYER_HELPTEXT  :Se se permite, os xogadores non-admins que non estean de espectadores poden sobrescribir os axustes das vilas, por separado en cada unha. Sobreescribir estes axustes no modo Un-Xogador sempre está activo, así como para os administradores no multixogador.
+STR_CONFIG_SETTING_SHOW_ORDER_MANAGEMENT_BY_DEFAULT             :Amosar o botón de xestión de ordes: {STRING}
+STR_CONFIG_SETTING_SHOW_ORDER_MANAGEMENT_BY_DEFAULT_HELPTEXT    :Amosa un botón para a xestión de ordes na ventá de ordes do vehículo
+STR_CONFIG_SETTING_TOWN_TUNNELS                                 :Permitir as vilas construír túneis: {STRING}
+STR_CONFIG_SETTING_TOWN_TUNNELS_HELPTEXT                        :Baixo que condicións poden construír túneis de estrada as vilas
+STR_CONFIG_SETTING_TOWN_TUNNELS_FORBIDDEN                       :Prohibido
+STR_CONFIG_SETTING_TOWN_TUNNELS_ALLOWED_OBSTRUCTION             :Permitido só para pequenas obstrucións
+STR_CONFIG_SETTING_TOWN_TUNNELS_ALLOWED                         :Permitido
+STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE                          :Limitar a construción de estradas en pendente polas vilas: {STRING}
+STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_HELPTEXT                 :Limita a cantidade de cadros consecutivos de estrada en pendente que as vilas poden construír. Isto úsase para previr que as vilas fagan largos segmentos de estrada subindo ou baixando grandes desniveis.
+STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_VALUE                    :{NUM} cadro{P "" s}
+STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_ZERO                     :Sen límite
+STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{CARGO_LONG} transportaranse cada mes dende {STATION} a {STATION} ({COMMA}% da capacidade){STRING}
+STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} transportaranse de volta ({COMMA}% da capacidade)
+STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Tempo medio de viaxe: {NUM}{NBSP}día{P "" s}
+STR_STATION_BUILD_INFRASTRUCTURE_COST                           :{BLACK}Custo de mantemento: {GOLD}{CURRENCY_SHORT}/ano
+STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_ROADS                :Permitido construír estradas
+STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_LEVEL_CROSSINGS      :Permitido construír pasos a nivel
+STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TUNNELS                    :Permitido construír túneis
+STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_MAX_ROAD_SLOPE             :Limitar a construción contínua de estradas en pendente
+STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_DEFAULT                    :Por defecto ({STRING})
+STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_STR                        :{STRING}: {PUSH_COLOUR}{YELLOW}{STRING}{POP_COLOUR}
+STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TEXT                       :{YELLOW}Sobrescribir o seguinte axuste para esta vila en concreto:{}{STRING}{}{STRING}
+STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TOOLTIP                    :{BLACK}Modificar o axuste sobrescrito
+STR_ORDERS_TOGGLE_MANAGEMENT_BUTTON_TOOLTIP                     :{BLACK}Alternar amosar o botón de xestión de ordes
+STR_ORDERS_MANAGE_ORDER                                         :{BLACK}Xestionar orde
+STR_ORDERS_MANAGE_ORDER_TOOLTIP                                 :{BLACK}Xestionar esta orde
+STR_ORDER_DUPLICATE_ORDER                                       :Duplicar orde
+STR_ORDER_CHANGE_JUMP_TARGET                                    :Modificar obxectivo de salto
+STR_ORDER_CHANGE_COUNTER_BUTTON                                 :Modificar contador
+STR_ORDER_CHANGE_COUNTER_TOOLTIP                                :{BLACK}O contador a modificar
+STR_TIMETABLE_FILL_TIMETABLE_SUGGESTION                         :{BLACK}Activa 'automático' para encher e actualizar automáticamente os tempos de espera e viaxe.
+STR_TIMETABLE_FILL_TIMETABLE_SUGGESTION_2                       :{BLACK}(Alternativamente, activa 'Autorecheo' ou cubreo manualmente nos campos da táboa de horarios).
