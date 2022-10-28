@@ -626,6 +626,7 @@ STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}화물 �
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL                           :{TINY_FONT}{BLACK}통과시간
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED                     :{TINY_FONT}{BLACK}평균 통과 속력 ({STRING})
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}10 단위(1만 리터)의 화물을 20칸 거리만큼 운송할 때의 운송비 지급량
+STR_GRAPH_CARGO_PAYMENT_RATES_TITLE_AVG_SPEED                   :{TINY_FONT}{BLACK}1 단위(1,000 리터)의 화물을 200칸 거리만큼 운송할 때의 운송비 지급량
 STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}모두 사용
 STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}모두 사용 안 함
 STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}화물 운송단가 비율 그래프에서 모든 화물을 표시
@@ -1328,10 +1329,12 @@ STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :일정 구역�
 
 STR_CONFIG_SETTING_CITY_APPROVAL                                :지역 당국의 태도: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :회사가 유발하는 소음과 환경 파괴가 회사에 대한 도시의 평가치와 향후 해당 도시에서 건설하는 행동에 얼마나 영향을 미칠지 선택하세요
-STR_CONFIG_SETTING_MONEY_CHEAT_MULTIPLAYER                      :멀티플레이 유저들이 돈 치트를 사용할 수 있게 허용: {STRING}
-STR_CONFIG_SETTING_MONEY_CHEAT_MULTIPLAYER_HELPTEXT             :이 설정을 켜면, 관리자가 아닌 멀티플레이 유저가 돈 치트를 사용할 수 있습니다. 돈 치트는 싱글플레이 모드에서는 언제나 사용 가능하며, 서버 관리자는 멀티플레이 모드에서도 사용 가능합니다.
-STR_CONFIG_SETTING_RENAME_TOWNS_MULTIPLAYER                     :멀티플레이 유저들이 도시 이름을 바꿀 수 있게 허용: {STRING}
-STR_CONFIG_SETTING_RENAME_TOWNS_MULTIPLAYER_HELPTEXT            :이 설정을 켜면, 관리자나 관전자가 아닌 멀티플레이 유저가 도시 이름을 바꿀 수 있습니다. 싱글플레이에서나 멀티플레이의 관리자는 도시 이름을 항상 변경할 수 있습니다.
+STR_CONFIG_SETTING_MONEY_CHEAT_MULTIPLAYER                      :멀티플레이 접속자가 돈 치트를 사용할 수 있게 허용: {STRING}
+STR_CONFIG_SETTING_MONEY_CHEAT_MULTIPLAYER_HELPTEXT             :이 설정을 켜면, 관리자가 아닌 멀티플레이 접속자가 돈 치트를 사용할 수 있습니다. 돈 치트는 싱글플레이 모드에서는 언제나 사용 가능하며, 서버 관리자는 멀티플레이 모드에서도 사용 가능합니다.
+STR_CONFIG_SETTING_RENAME_TOWNS_MULTIPLAYER                     :멀티플레이 접속자가 도시 이름을 바꿀 수 있게 허용: {STRING}
+STR_CONFIG_SETTING_RENAME_TOWNS_MULTIPLAYER_HELPTEXT            :이 설정을 켜면, 관리자나 관전자가 아닌 멀티플레이 접속자가 도시 이름을 바꿀 수 있습니다. 도시 이름 변경 치트는 싱글플레이 모드에서는 언제나 사용 가능하며, 서버 관리자는 멀티플레이 모드에서도 사용 가능합니다.
+STR_CONFIG_SETTING_OVERRIDE_TOWN_SETTINGS_MULTIPLAYER           :멀티플레이 접속자가 도시 설정을 별도로 적용할 수 있게 허용: {STRING}
+STR_CONFIG_SETTING_OVERRIDE_TOWN_SETTINGS_MULTIPLAYER_HELPTEXT  :이 설정을 켜면, 관전자가 아닌 아닌 멀티플레이 접속자가 도시 설정을, 각 도시별로 별도 적용시킬 수 있습니다. 개별 도시 설정 별도 설정 치트는 싱글플레이 모드에서는 언제나 사용 가능하며, 서버 관리자는 멀티플레이 모드에서도 용 가능합니다.
 
 STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT                             :지도 높이 최댓값: {STRING}
 STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT_HELPTEXT                    :지도 지형의 최대 높이를 설정합니다. "(자동)"으로 설정하면 지형이 생성된 뒤에 적절한 값을 골라줍니다.
@@ -1564,6 +1567,8 @@ STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS_HELPTEXT                :그래프의 �
 
 STR_CONFIG_SETTING_SHOW_NEWGRF_NAME                             :차량 구입 창에 NewGRF 이름 표시: {STRING}
 STR_CONFIG_SETTING_SHOW_NEWGRF_NAME_HELPTEXT                    :차량 구입 창 맨 아래 줄에, 이 차량이 어떤 NewGRF에서 추가되는 지 해당 NewGRF의 이름을 표시해줍니다.
+STR_CONFIG_SETTING_SHOW_WAGON_INTRO_YEAR                        :차량 구입 창에서 화차의 도입 연도 표시: {STRING}
+STR_CONFIG_SETTING_SHOW_WAGON_INTRO_YEAR_HELPTEXT               :차량 구입 창 맨 아래 줄에, 이 화차의 도입 연도를 표시해줍니다.
 STR_CONFIG_SETTING_SHOW_TRAIN_LENGTH_IN_DETAILS                 :상세정보 화면에서 열차 길이 보이기: {STRING}
 STR_CONFIG_SETTING_SHOW_TRAIN_LENGTH_IN_DETAILS_HELPTEXT        :열차의 길이를 상세정보 화면에 표시할지 설정합니다.
 STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_IN_DETAILS                :상세정보에서 열차가 소속된 그룹 이름 보이기: {STRING}
@@ -1634,8 +1639,14 @@ STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_32X                  :32배 확대 �
 STR_CONFIG_SETTING_SHOW_ORDER_OCCUPANCY_BY_DEFAULT              :경로 점유율을 기본적으로 표시: {STRING}
 STR_CONFIG_SETTING_SHOW_ORDER_OCCUPANCY_BY_DEFAULT_HELPTEXT     :차량의 경로 창을 열 때 기본적으로 경로 당 상세 점유율을 보여줍니다
 
+STR_CONFIG_SETTING_SHOW_ORDER_MANAGEMENT_BY_DEFAULT             :경로 관리 버튼 표시: {STRING}
+STR_CONFIG_SETTING_SHOW_ORDER_MANAGEMENT_BY_DEFAULT_HELPTEXT    :차량 경로 창에 경로 관리 버튼을 표시합니다
+
 STR_CONFIG_SETTING_SHOW_GROUP_HIERARCHY_NAME                    :이름에 그룹 순서를 모두 표시: {STRING}
 STR_CONFIG_SETTING_SHOW_GROUP_HIERARCHY_NAME_HELPTEXT           :이 설정을 켜면, 그룹 이름에 그 부모 그룹의 이름을 모두 포함시켜서 표시합니다
+
+STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_HIERARCHY_NAME            :차량 이름에 그룹 체계 표시: {STRING}
+STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_HIERARCHY_NAME_HELPTEXT   :이 설정과 이름에 그룹 순서롤 모두 표시 설정을 켜면, 그룹 이름을 포함한 차량 이름에 부모 그룹의 이름을 모두 포함시켜 표시합니다
 
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :고급 다리/터널 신호기 활성화: {STRING}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :다리와 터널 위 신호기 시뮬레이션 고급 모드를 활성화합니다. 이 설정을 끄면, 고급 모드에 있지 않은 다리와 터널을 고급 모드로 변경할 수 없지만 다른 플레이어는 이 설정을 켜서 고급 모드를 사용할 수 있습니다.
@@ -2027,6 +2038,7 @@ STR_CONFIG_SETTING_SHARING_FEE_RAIL                             :일 선로 사�
 STR_CONFIG_SETTING_SHARING_FEE_ROAD                             :도로 시설 사용료: 1일당 {STRING}
 STR_CONFIG_SETTING_SHARING_FEE_WATER                            :항만 시설 사용료: 1일당 {STRING}
 STR_CONFIG_SETTING_SHARING_FEE_AIR                              :공항 시설 사용료: 1일당 {STRING}
+STR_CONFIG_SETTING_SHARING_FEE_HELPTEXT                         :이 요금은 1일의 길이 조정 설정과 관계없이 기본 하루 길이마다 지불됩니다. (즉, 1일의 길이 조정값의 기본값인 74틱마다 지불됩니다)
 STR_CONFIG_SETTING_SHARING_PAYMENT_IN_DEBT                      :사용료를 지불하기 위해 빚을 지는 것을 허용: {STRING}
 STR_CONFIG_SETTING_SHARING_USED_BY_VEHICLES                     :차량이 공유된 시설을 사용하고 있을 경우 설정을 변경할 수 없습니다.
 STR_CONFIG_SETTING_SHARING_ORDERS_TO_OTHERS                     :차량이 타사의 정류장을 경로에 포함하고 있을 경우 설정을 변경할 수 없습니다.
@@ -2178,6 +2190,18 @@ STR_CONFIG_SETTING_ALLOW_TOWN_ROADS                             :도시 스스�
 STR_CONFIG_SETTING_ALLOW_TOWN_ROADS_HELPTEXT                    :도시가 성장하기 위해 도로를 건설할 수 있도록 허용합니다. 도시 당국이 스스로 도로를 만들지 못하도록 하려면 이 설정을 끄십시오.
 STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS                   :도시가 회사 소유의 선로에 건널목을 만드는 것을 허용: {STRING}
 STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS_HELPTEXT          :도시가 회사 소유의 선로에 건널목을 건설할 수 있도록 허용합니다.
+
+STR_CONFIG_SETTING_TOWN_TUNNELS                                 :도시가 터널을 만드는 것을 허용: {STRING}
+STR_CONFIG_SETTING_TOWN_TUNNELS_HELPTEXT                        :도시가 어떤 조건에서 도로 터널을 만들지 결정합니다
+###length 3
+STR_CONFIG_SETTING_TOWN_TUNNELS_FORBIDDEN                       :금지
+STR_CONFIG_SETTING_TOWN_TUNNELS_ALLOWED_OBSTRUCTION             :작은 방해물이 있을 때만 허용
+STR_CONFIG_SETTING_TOWN_TUNNELS_ALLOWED                         :허용
+
+STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE                          :도시가 연속적인 오르막길을 만드는 것을 제한: {STRING}
+STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_HELPTEXT                 :도시가 만드는 연속적인 오르막길의 길이를 제한할 수 있습니다. 이 설정을 이용하면 도시가 길고 쭉 뻗은 도로를 산의 오르막이나 내리막을 따라 만드는 것을 막을 수 있습니다.
+STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_VALUE                    :{NUM}칸
+STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_ZERO                     :제한 없음
 
 STR_CONFIG_SETTING_NOISE_LEVEL                                  :도시가 공항에서 나오는 소음을 제한하도록 함: {STRING}
 STR_CONFIG_SETTING_NOISE_LEVEL_HELPTEXT                         :이 설정을 끄면, 한 도시에는 공항을 2개까지 지을 수 있습니다. 이 설정을 켜면, 한 도시에 지을 수 있는 공항의 수는 도시가 허용 가능한 소음 기준에 따라 달라집니다. 소음 기준은 도시 인구, 공항의 크기와 거리에 따라 다릅니다.
@@ -3137,6 +3161,7 @@ STR_STATION_BUILD_COVERAGE_AREA_OFF_TOOLTIP                     :{BLACK}역세�
 STR_STATION_BUILD_COVERAGE_AREA_ON_TOOLTIP                      :{BLACK}역세권을 표시합니다
 STR_STATION_BUILD_ACCEPTS_CARGO                                 :{BLACK}받음: {GOLD}{CARGO_LIST}
 STR_STATION_BUILD_SUPPLIES_CARGO                                :{BLACK}공급: {GOLD}{CARGO_LIST}
+STR_STATION_BUILD_INFRASTRUCTURE_COST                           :{BLACK}유지비: {GOLD}{CURRENCY_SHORT}/년
 
 # Join station window
 STR_JOIN_STATION_CAPTION                                        :{WHITE}같은 이름으로 정거장 만들기
@@ -3233,8 +3258,6 @@ STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_CARGO_EQUALS          :실을 수 있�
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_CARGO_NOT_EQUALS      :실을 수 없다면
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_HAS_STATUS            :라면
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_DOESNT_HAVE_STATUS    :아니라면
-STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_HAS_STATUS.case1      :가 맞다면
-STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_DOESNT_HAVE_STATUS.case1:가 아니라면
 STR_TRACE_RESTRICT_CONDITIONAL_IF                               :조건문:
 STR_TRACE_RESTRICT_CONDITIONAL_ELIF                             :아니라면, 조건문:
 STR_TRACE_RESTRICT_CONDITIONAL_ORIF                             :또는, 조건문:
@@ -3271,6 +3294,7 @@ STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE_WEIGHT_RATIO           :최고 견인�
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_OWNER                         :열차 소유주
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_STATUS                        :열차 상태
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_ENGINE_CLASS                  :기관차 종류
+STR_TRACE_RESTRICT_VARIABLE_ORDER_TARGET_DIRECTION              :경로 목적지 방향
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :정의되지 않음
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED                       :{PUSH_COLOUR}{RED}정의되지 않음{POP_COLOUR}
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER                  :{STRING} {STRING} {STRING} {COMMA}{P 3 "이" ""}라면
@@ -3300,6 +3324,7 @@ STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS                     :{STRING} 열차
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER                          :{STRING} 열차의 카운터 값: {TRCOUNTER} {STRING}{3:COMMA}{P 3 "이" ""}라면
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING} 열차의 카운터 값: {STRING} {BLACK}{STRING} {STRING} {4:COMMA}{P 4 "이" ""}라면
 STR_TRACE_RESTRICT_CONDITIONAL_ENGINE_CLASSES                   :{STRING} 열차가 {2:STRING}{1:STRING.case1}
+STR_TRACE_RESTRICT_CONDITIONAL_TARGET_DIRECTION                 :{0:STRING} {1:STRING}의 칸 {2:STRING} 이 신호보다 {3:STRING} 이면
 STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}정의되지 않음 {BLACK}{STRING}이라면
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}정의되지 않음 {BLACK}{STRING}이라면
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :경로 탐색에서 우선순위를 {COMMA} 만큼 뒤로
@@ -4456,6 +4481,17 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{YELLOW}도시 
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{YELLOW}1년 간 수송 권한 독점권을 구입합니다.{}도시 당국은 오직 당신 회사의 역에만 승객과 화물을 실을 것입니다.{}가격: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}성취도를 올리기 위해 처벌을 감수하고 지역 당국에 뇌물을 줍니다.{}가격: {CURRENCY_LONG}
 
+###length 4
+STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_ROADS                :도로 건설
+STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_LEVEL_CROSSINGS      :건널목 건설
+STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TUNNELS                    :터널 건설
+STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_MAX_ROAD_SLOPE             :연속 오르막길 건설 길이 제한
+
+STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_DEFAULT                    :기본값 ({STRING})
+STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_STR                        :{STRING}: {PUSH_COLOUR}{YELLOW}{STRING}{POP_COLOUR}
+STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TEXT                       :{YELLOW}이 도시에만 다음 설정을 적용합니다:{}{STRING}{}{STRING}
+STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TOOLTIP                    :{BLACK}설정을 별도로 적용합니다
+
 # Goal window
 STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} 목표
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}전체 목표
@@ -5493,6 +5529,7 @@ STR_REFIT_AIRCRAFT_REFIT_TOOLTIP                                :{BLACK}선택�
 STR_ORDERS_CAPTION                                              :{WHITE}{VEHICLE} (경로)
 STR_ORDERS_TIMETABLE_VIEW                                       :{BLACK}시간표
 STR_ORDERS_TIMETABLE_VIEW_TOOLTIP                               :{BLACK}시간표 보기 전환
+STR_ORDERS_TOGGLE_MANAGEMENT_BUTTON_TOOLTIP                     :{BLACK}경로 관리 버튼 보기 전환
 
 STR_ORDERS_LIST_TOOLTIP                                         :{BLACK}이 열차의 경로 - 선택하려면 클릭하세요. CTRL+클릭하시면 그 역이 있는 장소로 이동합니다
 STR_ORDER_INDEX                                                 :{COMMA}:{NBSP}
@@ -5627,8 +5664,12 @@ STR_ORDERS_SKIP_TOOLTIP                                         :{BLACK}현재 �
 
 STR_ORDERS_MANAGE_LIST                                          :{BLACK}목록 관리
 STR_ORDERS_MANAGE_LIST_TOOLTIP                                  :{BLACK}이 경로 목록 관리
+STR_ORDERS_MANAGE_ORDER                                         :{BLACK}경로 관리
+STR_ORDERS_MANAGE_ORDER_TOOLTIP                                 :{BLACK}이 경로 관리
 STR_ORDER_REVERSE_ORDER_LIST                                    :경로 목록 반전
 STR_ORDER_APPEND_REVERSED_ORDER_LIST                            :반전된 경로 추가
+STR_ORDER_DUPLICATE_ORDER                                       :경로 복제
+STR_ORDER_CHANGE_JUMP_TARGET                                    :건너뛰기 번호 변경
 
 STR_ORDERS_DELETE_BUTTON                                        :{BLACK}삭제
 STR_ORDERS_DELETE_TOOLTIP                                       :{BLACK}선택된 경로를 삭제합니다
@@ -5642,9 +5683,12 @@ STR_ORDER_GO_TO_NEAREST_HANGAR                                  :가까운 격�
 STR_ORDER_CONDITIONAL                                           :조건부 경로 건너뛰기
 STR_ORDER_SHARE                                                 :경로 공유하기
 STR_ORDER_RELEASE_SLOT_BUTTON                                   :슬롯 해제
+STR_ORDER_CHANGE_COUNTER_BUTTON                                 :카운터 값 변경
 STR_ORDERS_GO_TO_TOOLTIP                                        :{BLACK}선택된 경로 바로 전이나 목록 맨 끝에 새 경로를 삽입합니다. CTRL 키와 함께 누르면, 역에서는 '아무 화물이나 가득 싣기'로, 경유지에서는 '직행'으로, 차량기지에서는 '점검'으로 지정됩니다. '공유된 경로'를 클릭하거나 CTRL 키를 누르면 선택한 차량과 이 차량의 경로를 공유합니다. 단순히 클릭하면 그 차량의 경로를 복사하기만 합니다. 차량기지를 경로에 포함시키면 이 차량은 자동으로 점검을 하러 가지 않게 됩니다.
 
 STR_ORDER_RELEASE_SLOT_TOOLTIP                                  :{BLACK}해제할 슬롯을 선택하세요
+
+STR_ORDER_CHANGE_COUNTER_TOOLTIP                                :{BLACK}변경할 카운터 값을 입력하세요
 
 STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP                  :{BLACK}이 경로를 공유하고 있는 모든 차량을 표시합니다.
 
@@ -5879,6 +5923,8 @@ STR_TIMETABLE_NON_TIMETABLED_BRANCH                             :{BLACK}하나 �
 STR_TIMETABLE_WARNING_NO_SCHEDULED_DISPATCH_ORDER_ASSIGNED      :{BLACK}이 배차 일정은 경로에 할당되지 않았습니다.
 STR_TIMETABLE_WARNING_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME     :{BLACK}배차 기준은 대기 시간이 작성되어 있어야 합니다.
 STR_TIMETABLE_WARNING_SCHEDULE_ID                               :{BLACK}일정 {NUM}: {STRING}
+STR_TIMETABLE_FILL_TIMETABLE_SUGGESTION                         :{BLACK}자동으로 대기 시간과 운행 시간을 채우려면 '자동' 버튼을 활성화하세요.
+STR_TIMETABLE_FILL_TIMETABLE_SUGGESTION_2                       :{BLACK}(또는, '자동 배차' 버튼을 활성화하거나 수동으로 시간표를 입력하세요)
 
 STR_TIMETABLE_WARNINGS_OMITTED                                  :{BLACK}{NUM}개의 추가 경고가 생략되었습니다...
 
@@ -6066,6 +6112,7 @@ STR_GAME_SAVELOAD_ERROR_DATA_INTEGRITY_CHECK_FAILED             :데이터 무�
 STR_GAME_SAVELOAD_ERROR_PATCHPACK                               :수정된 버전의 게임 저장 파일입니다
 STR_GAME_SAVELOAD_NOT_AVAILABLE                                 :<사용 불가능>
 STR_WARNING_LOADGAME_REMOVED_TRAMS                              :{WHITE}전차를 지원하지 않는 버전으로 게임이 저장되었습니다. 모든 전차는 제거되었습니다.
+STR_WARNING_LOADGAME_REMOVED_UNCORRECTABLE_VEHICLES             :{WHITE}게임을 불러오는 도중 수정 불가능한 오류 차량 {NUM}대가 제거되었습니다.
 
 STR_GAME_SAVELOAD_FROM_VERSION                                  : ({PUSH_COLOUR}{ORANGE}{STRING}{POP_COLOUR} 버전){}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_FEATURE_VERSION                 :세이브파일 {0:STRING}의 버전은 '{PUSH_COLOUR}{ORANGE}{1:STRING}{POP_COLOUR}' 기능의 {PUSH_COLOUR}{ORANGE}{2:NUM}{POP_COLOUR}입니다만, 최대로 지원하는 버전은 {PUSH_COLOUR}{ORANGE}{3:NUM}{POP_COLOUR}입니다.
@@ -7216,6 +7263,7 @@ STR_TMPL_TEMPLATE_OVR_RUNNING_COST                              :{BLACK}예상 �
 STR_TMPL_TEMPLATE_OVR_MULTIPLE                                  :{BLACK}{STRING}{BLACK} {STRING}
 STR_TMPL_WARNING_FREE_WAGON                                     :{RED}객차/화차만 있음: 운행할 수 없습니다!
 STR_TMPL_WARNING_VEH_UNAVAILABLE                                :{RED}열차 구성 불가: 차량을 사용할 수 없습니다!
+STR_TMPL_WARNING_VEH_NO_COMPATIBLE_RAIL_TYPE                    :{RED}열차 구성 불가: 이 편성을 사용할 수 있는 선로가 없습니다
 STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}{NUM}번 템플릿 사용 중
 STR_TMP_TEMPLATE_IN_USE                                         :템플릿이 사용 중입니다.
 STR_TMP_TEMPLATE_FROM_PARENT_GROUP                              :상위 그룹의 템플릿 사용
