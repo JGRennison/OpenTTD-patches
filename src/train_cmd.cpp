@@ -3031,7 +3031,7 @@ void ReverseTrainDirection(Train *v)
 		if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(v->GetVehicleTrackdir()), true);
 		if (TryPathReserve(v, false, first_tile_okay)) {
 			/* Do a look-ahead now in case our current tile was already a safe tile. */
-			if (!v->current_order.IsType(OT_WAITING)) CheckNextTrainTile(v);
+			CheckNextTrainTile(v);
 		} else if (v->current_order.GetType() != OT_LOADING) {
 			/* Do not wait for a way out when we're still loading */
 			MarkTrainAsStuck(v);
@@ -3226,6 +3226,9 @@ static void CheckNextTrainTile(Train *v)
 
 	/* Exit if we are inside a depot. */
 	if (v->track == TRACK_BIT_DEPOT) return;
+
+	/* Exit if we are currently in a waiting order */
+	if (v->current_order.IsType(OT_WAITING)) return;
 
 	/* Exit if we are on a station tile and are going to stop. */
 	if (HasStationTileRail(v->tile) && v->current_order.ShouldStopAtStation(v, GetStationIndex(v->tile), IsRailWaypoint(v->tile))) return;
