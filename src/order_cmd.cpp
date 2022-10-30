@@ -3567,3 +3567,25 @@ void ShiftOrderDates(int interval)
 	SetWindowClassesDirty(WC_SCHDISPATCH_SLOTS);
 	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
 }
+
+const char *GetOrderTypeName(OrderType order_type)
+{
+	static const char *names[] = {
+		"OT_NOTHING",
+		"OT_GOTO_STATION",
+		"OT_GOTO_DEPOT",
+		"OT_LOADING",
+		"OT_LEAVESTATION",
+		"OT_DUMMY",
+		"OT_GOTO_WAYPOINT",
+		"OT_CONDITIONAL",
+		"OT_IMPLICIT",
+		"OT_WAITING",
+		"OT_LOADING_ADVANCE",
+		"OT_RELEASE_SLOT",
+		"OT_COUNTER",
+	};
+	static_assert(lengthof(names) == OT_END);
+	if (order_type < OT_END) return names[order_type];
+	return "???";
+}

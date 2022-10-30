@@ -148,8 +148,8 @@ class NIHVehicle : public NIHelper {
 		output.print(buffer);
 
 		if (v->IsPrimaryVehicle()) {
-			seprintf(buffer, lastof(buffer), "  Order indices: real: %u, implicit: %u, tt: %u",
-					v->cur_real_order_index, v->cur_implicit_order_index, v->cur_timetable_order_index);
+			seprintf(buffer, lastof(buffer), "  Order indices: real: %u, implicit: %u, tt: %u, current type: %s",
+					v->cur_real_order_index, v->cur_implicit_order_index, v->cur_timetable_order_index, GetOrderTypeName(v->current_order.GetType()));
 			output.print(buffer);
 		}
 		seprintf(buffer, lastof(buffer), "  V Cache: max speed: %u, cargo age period: %u, vis effect: %u",
