@@ -452,7 +452,8 @@ public:
 					SetBit(p2, 16);
 					p2 |= (index - 1) << 8;
 				}
-				DoCommandP(this->town->xy, this->window_number, p2, CMD_TOWN_SETTING_OVERRIDE | CMD_MSG(STR_ERROR_CAN_T_DO_THIS));
+				Commands cmd = (_networking && !(_network_server || _network_settings_access)) ? CMD_TOWN_SETTING_OVERRIDE_NON_ADMIN : CMD_TOWN_SETTING_OVERRIDE;
+				DoCommandP(this->town->xy, this->window_number, p2, cmd | CMD_MSG(STR_ERROR_CAN_T_DO_THIS));
 				break;
 			}
 

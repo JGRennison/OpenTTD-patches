@@ -348,6 +348,7 @@ enum Commands {
 	CMD_RENAME_TOWN_NON_ADMIN,        ///< rename a town, non-admin command
 	CMD_DO_TOWN_ACTION,               ///< do a action from the town detail window (like advertises or bribe)
 	CMD_TOWN_SETTING_OVERRIDE,        ///< override a town setting
+	CMD_TOWN_SETTING_OVERRIDE_NON_ADMIN, ///< override a town setting, non-admin command
 	CMD_TOWN_CARGO_GOAL,              ///< set the goal of a cargo for a town
 	CMD_TOWN_GROWTH_RATE,             ///< set the town growth rate
 	CMD_TOWN_RATING,                  ///< set rating of a company in a town
