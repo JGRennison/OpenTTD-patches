@@ -1265,11 +1265,6 @@ static void SpriteZoomMinChanged(int32 new_value)
 	MarkWholeScreenDirty();
 }
 
-static void InvalidateSettingsWindow(int32 new_value)
-{
-	InvalidateWindowClassesData(WC_GAME_OPTIONS);
-}
-
 static void DeveloperModeChanged(int32 new_value)
 {
 	DebugReconsiderSendRemoteMessages();
@@ -1693,6 +1688,17 @@ static void DayLengthChanged(int32 new_value)
 	AdjustAllSignalSpeedRestrictionTickValues(_scaled_date_ticks - old_scaled_date_ticks);
 
 	MarkWholeScreenDirty();
+}
+
+static void TownZoneModeChanged(int32 new_value)
+{
+	InvalidateWindowClassesData(WC_GAME_OPTIONS);
+	UpdateTownRadii();
+}
+
+static void TownZoneCustomValueChanged(int32 new_value)
+{
+	if (_settings_game.economy.town_zone_calc_mode) UpdateTownRadii();
 }
 
 /**

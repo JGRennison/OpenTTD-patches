@@ -2081,6 +2081,13 @@ void UpdateTownRadius(Town *t)
 	}
 }
 
+void UpdateTownRadii()
+{
+	for (Town *town : Town::Iterate()) {
+		UpdateTownRadius(town);
+	}
+}
+
 void UpdateTownMaxPass(Town *t)
 {
 	t->supplied[CT_PASSENGERS].old_max = t->cache.population >> 3;
