@@ -130,7 +130,11 @@
 #	define __int64 long long
 	/* Warn about functions using 'printf' format syntax. First argument determines which parameter
 	 * is the format string, second argument is start of values passed to printf. */
-	#define WARN_FORMAT(string, args) __attribute__ ((format (printf, string, args)))
+#	if defined(__MINGW32__) && defined(__USE_MINGW_ANSI_STDIO)
+#		define WARN_FORMAT(string, args) __attribute__ ((format (__MINGW_PRINTF_FORMAT, string, args)))
+#	else
+#		define WARN_FORMAT(string, args) __attribute__ ((format (printf, string, args)))
+#	endif
 	#define WARN_TIME_FORMAT(string) __attribute__ ((format (strftime, string, 0)))
 	#define FINAL final
 
@@ -300,13 +304,13 @@
 #define PACK(type_dec) PACK_N(type_dec, 1)
 
 /* MSVCRT of course has to have a different syntax for long long *sigh* */
-#if defined(_MSC_VER) || defined(__MINGW32__)
+#if defined(_MSC_VER) || (defined(__MINGW32__) && !defined(__USE_MINGW_ANSI_STDIO))
 #   define OTTD_PRINTF64 "%I64d"
 #   define OTTD_PRINTF64U "%I64u"
-#   define OTTD_PRINTFHEX64 "%I64X"
-#   define OTTD_PRINTFHEX64PAD "%016I64X"
+#   define OTTD_PRINTFHEX64_SUFFIX "I64X"
 #   define PRINTF_SIZE "%Iu"
 #   define PRINTF_SIZEX "%IX"
+#   define PRINTF_SIZEX_SUFFIX "IX"
 #else
 #if defined(PRId64)
 #   define OTTD_PRINTF64 "%" PRId64
@@ -319,15 +323,16 @@
 #   define OTTD_PRINTF64U "%llu"
 #endif
 #if defined(PRIX64)
-#   define OTTD_PRINTFHEX64 "%" PRIX64
-#   define OTTD_PRINTFHEX64PAD "%016" PRIX64
+#   define OTTD_PRINTFHEX64_SUFFIX PRIX64
 #else
-#   define OTTD_PRINTFHEX64 "%llX"
-#   define OTTD_PRINTFHEX64PAD "%016llX"
+#   define OTTD_PRINTFHEX64_SUFFIX "llX"
 #endif
 #   define PRINTF_SIZE "%zu"
 #   define PRINTF_SIZEX "%zX"
+#   define PRINTF_SIZEX_SUFFIX "zX"
 #endif
+#define OTTD_PRINTFHEX64 "%" OTTD_PRINTFHEX64_SUFFIX
+#define OTTD_PRINTFHEX64PAD "%016" OTTD_PRINTFHEX64_SUFFIX
 
 typedef unsigned char byte;
 

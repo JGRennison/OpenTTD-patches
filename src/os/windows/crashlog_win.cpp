@@ -36,11 +36,11 @@
 
 /* printf format specification for 32/64-bit addresses. */
 #ifdef _M_AMD64
-#define PRINTF_PTR "0x%016IX"
-#define PRINTF_LOC "%.16IX"
+#define PRINTF_PTR "0x%016" PRINTF_SIZEX_SUFFIX
+#define PRINTF_LOC "%.16" PRINTF_SIZEX_SUFFIX
 #else
-#define PRINTF_PTR "0x%08X"
-#define PRINTF_LOC "%.8IX"
+#define PRINTF_PTR "0x%08" PRINTF_SIZEX_SUFFIX
+#define PRINTF_LOC "%.8" PRINTF_SIZEX_SUFFIX
 #endif
 
 /**
@@ -145,14 +145,14 @@ static const char *GetAccessViolationTypeString(uint type)
 					" Fault addr: " PRINTF_LOC "\n",
 					(uint) record->ExceptionInformation[0],
 					GetAccessViolationTypeString(record->ExceptionInformation[0]),
-					record->ExceptionInformation[1]
+					(size_t)record->ExceptionInformation[1]
 			);
 		} else {
 			for (uint i = 0; i < (uint) record->NumberParameters; i++) {
 				buffer += seprintf(buffer, last,
 						" Info %u:     " PRINTF_LOC "\n",
 						i,
-						record->ExceptionInformation[i]
+						(size_t)record->ExceptionInformation[i]
 				);
 			}
 		}
@@ -275,11 +275,11 @@ static char *PrintModuleInfo(char *output, const char *last, HMODULE mod)
 	buffer += seprintf(buffer, last, "Registers:\n");
 #ifdef _M_AMD64
 	buffer += seprintf(buffer, last,
-		" RAX: %.16I64X RBX: %.16I64X RCX: %.16I64X RDX: %.16I64X\n"
-		" RSI: %.16I64X RDI: %.16I64X RBP: %.16I64X RSP: %.16I64X\n"
-		" R8:  %.16I64X R9:  %.16I64X R10: %.16I64X R11: %.16I64X\n"
-		" R12: %.16I64X R13: %.16I64X R14: %.16I64X R15: %.16I64X\n"
-		" RIP: %.16I64X EFLAGS: %.8lX\n",
+		" RAX: " PRINTF_LOC " RBX: " PRINTF_LOC " RCX: " PRINTF_LOC " RDX: " PRINTF_LOC "\n"
+		" RSI: " PRINTF_LOC " RDI: " PRINTF_LOC " RBP: " PRINTF_LOC " RSP: " PRINTF_LOC "\n"
+		" R8:  " PRINTF_LOC " R9:  " PRINTF_LOC " R10: " PRINTF_LOC " R11: " PRINTF_LOC "\n"
+		" R12: " PRINTF_LOC " R13: " PRINTF_LOC " R14: " PRINTF_LOC " R15: " PRINTF_LOC "\n"
+		" RIP: " PRINTF_LOC " EFLAGS: %.8lX\n",
 		ep->ContextRecord->Rax,
 		ep->ContextRecord->Rbx,
 		ep->ContextRecord->Rcx,
@@ -317,14 +317,14 @@ static char *PrintModuleInfo(char *output, const char *last, HMODULE mod)
 	);
 #elif defined(_M_ARM64)
 	buffer += seprintf(buffer, last,
-		" X0:  %.16I64X X1:  %.16I64X X2:  %.16I64X X3:  %.16I64X\n"
-		" X4:  %.16I64X X5:  %.16I64X X6:  %.16I64X X7:  %.16I64X\n"
-		" X8:  %.16I64X X9:  %.16I64X X10: %.16I64X X11: %.16I64X\n"
-		" X12: %.16I64X X13: %.16I64X X14: %.16I64X X15: %.16I64X\n"
-		" X16: %.16I64X X17: %.16I64X X18: %.16I64X X19: %.16I64X\n"
-		" X20: %.16I64X X21: %.16I64X X22: %.16I64X X23: %.16I64X\n"
-		" X24: %.16I64X X25: %.16I64X X26: %.16I64X X27: %.16I64X\n"
-		" X28: %.16I64X Fp:  %.16I64X Lr:  %.16I64X\n",
+		" X0:  " PRINTF_LOC " X1:  " PRINTF_LOC " X2:  " PRINTF_LOC " X3:  " PRINTF_LOC "\n"
+		" X4:  " PRINTF_LOC " X5:  " PRINTF_LOC " X6:  " PRINTF_LOC " X7:  " PRINTF_LOC "\n"
+		" X8:  " PRINTF_LOC " X9:  " PRINTF_LOC " X10: " PRINTF_LOC " X11: " PRINTF_LOC "\n"
+		" X12: " PRINTF_LOC " X13: " PRINTF_LOC " X14: " PRINTF_LOC " X15: " PRINTF_LOC "\n"
+		" X16: " PRINTF_LOC " X17: " PRINTF_LOC " X18: " PRINTF_LOC " X19: " PRINTF_LOC "\n"
+		" X20: " PRINTF_LOC " X21: " PRINTF_LOC " X22: " PRINTF_LOC " X23: " PRINTF_LOC "\n"
+		" X24: " PRINTF_LOC " X25: " PRINTF_LOC " X26: " PRINTF_LOC " X27: " PRINTF_LOC "\n"
+		" X28: " PRINTF_LOC " Fp:  " PRINTF_LOC " Lr:  " PRINTF_LOC "\n",
 		ep->ContextRecord->X0,
 		ep->ContextRecord->X1,
 		ep->ContextRecord->X2,
@@ -514,7 +514,7 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 			/* Get symbol name and line info if possible. */
 			DWORD64 offset;
 			if (proc.pSymGetSymFromAddr64(hCur, frame.AddrPC.Offset, &offset, sym_info)) {
-				buffer += seprintf(buffer, last, " %s + %I64u", sym_info->Name, offset);
+				buffer += seprintf(buffer, last, " %s + " OTTD_PRINTF64U, sym_info->Name, offset);
 
 				DWORD line_offs;
 				IMAGEHLP_LINE64 line;
@@ -544,7 +544,7 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 					free(demangled);
 #endif
 					if (symbol_ok && bfd_info.function_addr) {
-						buffer += seprintf(buffer, last, " + %I64u", frame.AddrPC.Offset - static_cast<DWORD64>(bfd_info.function_addr));
+						buffer += seprintf(buffer, last, " + " OTTD_PRINTF64U, frame.AddrPC.Offset - static_cast<DWORD64>(bfd_info.function_addr));
 					}
 				}
 				if (bfd_info.file_name != nullptr) {
