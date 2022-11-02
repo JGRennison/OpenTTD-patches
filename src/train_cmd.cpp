@@ -2681,7 +2681,7 @@ void UpdateLevelCrossing(TileIndex tile, bool sound, bool force_close)
 
 void MarkDirtyAdjacentLevelCrossingTilesOnAddRemove(TileIndex tile, Axis road_axis)
 {
-	if (!(_settings_game.vehicle.safer_crossings && _settings_game.vehicle.adjacent_crossings)) return;
+	if (!_settings_game.vehicle.adjacent_crossings) return;
 
 	const DiagDirection dir1 = AxisToDiagDir(road_axis);
 	const DiagDirection dir2 = ReverseDiagDir(dir1);

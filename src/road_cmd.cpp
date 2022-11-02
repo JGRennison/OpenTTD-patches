@@ -2274,7 +2274,7 @@ static void DrawTile_Road(TileInfo *ti, DrawTileProcParams params)
 				DrawGroundSprite(rail, pal);
 
 
-				if (_settings_game.vehicle.safer_crossings && _settings_game.vehicle.adjacent_crossings) {
+				if (_settings_game.vehicle.adjacent_crossings) {
 					const Axis axis = GetCrossingRoadAxis(ti->tile);
 					const DiagDirection dir1 = AxisToDiagDir(axis);
 					const DiagDirection dir2 = ReverseDiagDir(dir1);
