@@ -544,7 +544,11 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 					free(demangled);
 #endif
 					if (symbol_ok && bfd_info.function_addr) {
-						buffer += seprintf(buffer, last, " + " OTTD_PRINTF64U, frame.AddrPC.Offset - static_cast<DWORD64>(bfd_info.function_addr));
+						if (bfd_info.function_addr < frame.AddrPC.Offset) {
+							buffer += seprintf(buffer, last, " - " OTTD_PRINTF64U, static_cast<DWORD64>(bfd_info.function_addr) - frame.AddrPC.Offset);
+						} else {
+							buffer += seprintf(buffer, last, " + " OTTD_PRINTF64U, frame.AddrPC.Offset - static_cast<DWORD64>(bfd_info.function_addr));
+						}
 					}
 				}
 				if (bfd_info.file_name != nullptr) {
