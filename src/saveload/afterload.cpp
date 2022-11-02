@@ -3812,6 +3812,10 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (!IsSavegameVersionBefore(SLV_MULTITRACK_LEVEL_CROSSINGS)) {
+		_settings_game.vehicle.adjacent_crossings = true;
+	}
+
 	/* Compute station catchment areas. This is needed here in case UpdateStationAcceptance is called below. */
 	Station::RecomputeCatchmentForAll();
 
