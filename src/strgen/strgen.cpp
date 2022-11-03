@@ -365,6 +365,7 @@ struct LanguageFileWriter : LanguageWriter, FileWriter {
 
 	void Write(const byte *buffer, size_t length)
 	{
+		if (length == 0) return;
 		if (fwrite(buffer, sizeof(*buffer), length, this->fh) != length) {
 			error("Could not write to %s", this->filename);
 		}
