@@ -129,6 +129,9 @@ public:
 		this->group_temp_store_variable_tracking_storage.EmptyArena();
 		this->procedure_annotations.clear();
 		this->procedure_annotations_storage.EmptyArena();
+		for (auto iter : this->inlinable_adjust_groups) {
+			iter.second->~vector<DeterministicSpriteGroupAdjust>();
+		}
 		this->inlinable_adjust_groups.clear();
 		this->inlinable_adjust_groups_storage.EmptyArena();
 		this->dead_store_elimination_candidates.clear();

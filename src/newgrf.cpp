@@ -5825,6 +5825,7 @@ static void NewSpriteGroup(ByteReader *buf)
 			ProcessDeterministicSpriteGroupRanges(ranges, group->ranges, group->default_group);
 
 			OptimiseVarAction2DeterministicSpriteGroup(va2_opt_state, feature, varsize, group, current_adjusts);
+			current_adjusts.clear();
 			break;
 		}
 
