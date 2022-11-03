@@ -2336,7 +2336,7 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 						i--;
 					}
 				}
-				group->adjusts.insert(group->adjusts.begin() + j + 1, current);
+				group->adjusts.insert(group->adjusts.begin() + (j + 1), current);
 				group->dsg_flags |= DSGF_CHECK_INSERT_JUMP;
 				i++;
 			}
