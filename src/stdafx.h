@@ -483,7 +483,7 @@ const char *assert_tile_info(uint32 tile);
 #	define assert_msg_tile(expression, tile, ...)
 #	define assert_tile(expression, tile)
 #endif
-#if !defined(FEWER_ASSERTS)
+#if (!defined(NDEBUG) || defined(WITH_ASSERT)) && !defined(FEWER_ASSERTS)
 #	define WITH_FULL_ASSERTS
 #	define dbg_assert(expression) assert(expression)
 #	define dbg_assert_msg(expression, ...) assert_msg(expression, __VA_ARGS__)
