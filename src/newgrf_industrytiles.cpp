@@ -430,7 +430,7 @@ void AnalyseIndustryTileSpriteGroups()
 				const IndustryTileSpec &tilespec = _industry_tile_specs[gfx];
 				if (tilespec.grf_prop.spritegroup[0] == nullptr) continue;
 
-				if (HasBit(tilespec.callback_mask, CBID_INDTILE_ANIM_NEXT_FRAME)) {
+				if (HasBit(tilespec.callback_mask, CBM_INDT_ANIM_NEXT_FRAME)) {
 					/* There may be sound effects, or custom animation start/stop behaviour, don't inhibit */
 					continue;
 				}
