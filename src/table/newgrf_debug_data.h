@@ -167,7 +167,7 @@ class NIHVehicle : public NIHelper {
 			output.print(buffer);
 		}
 		if (BaseStation::IsValidID(v->last_loading_station)) {
-			seprintf(buffer, lastof(buffer), "  V Last loading visited: %u, %s", v->last_loading_station, BaseStation::Get(v->last_loading_station)->GetCachedName());
+			seprintf(buffer, lastof(buffer), "  V Last loading station: %u, %s", v->last_loading_station, BaseStation::Get(v->last_loading_station)->GetCachedName());
 			output.print(buffer);
 		}
 		if (v->IsGroundVehicle()) {

@@ -3812,6 +3812,13 @@ bool AfterLoadGame()
 		}
 	}
 
+	/* Use current order time to approximate last loading time */
+	if (IsSavegameVersionBefore(SLV_LAST_LOADING_TICK) && SlXvIsFeatureMissing(XSLFI_LAST_LOADING_TICK)) {
+		for (Vehicle *v : Vehicle::Iterate()) {
+			v->last_loading_tick = std::max(_tick_counter, static_cast<uint64>(v->current_order_time)) - v->current_order_time;
+		}
+	}
+
 	if (!IsSavegameVersionBefore(SLV_MULTITRACK_LEVEL_CROSSINGS)) {
 		_settings_game.vehicle.adjacent_crossings = true;
 	} else if (SlXvIsFeatureMissing(XSLFI_ADJACENT_CROSSINGS)) {
