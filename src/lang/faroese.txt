@@ -907,36 +907,6 @@ STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Sjálvgjørt...
 STR_GAME_OPTIONS_CURRENCY_GEL                                   :Georgiskur Lari
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Iranskur Rial
 
-###length 2
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Vinstrakoyring
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :Høgrakoyring
-
-STR_GAME_OPTIONS_TOWN_NAMES_FRAME                               :{BLACK}Bygdar nøvn
-STR_GAME_OPTIONS_TOWN_NAMES_DROPDOWN_TOOLTIP                    :{BLACK}Áset slag av bygdar nøvnum
-
-###length 21
-STR_GAME_OPTIONS_TOWN_NAME_ORIGINAL_ENGLISH                     :Ensk (Upprunalig)
-STR_GAME_OPTIONS_TOWN_NAME_FRENCH                               :Fronsk
-STR_GAME_OPTIONS_TOWN_NAME_GERMAN                               :Týsk
-STR_GAME_OPTIONS_TOWN_NAME_ADDITIONAL_ENGLISH                   :Ensk (Meiri)
-STR_GAME_OPTIONS_TOWN_NAME_LATIN_AMERICAN                       :Latin-Amerikonsk
-STR_GAME_OPTIONS_TOWN_NAME_SILLY                                :Fjákut
-STR_GAME_OPTIONS_TOWN_NAME_SWEDISH                              :Svensk
-STR_GAME_OPTIONS_TOWN_NAME_DUTCH                                :Niðurlendsk
-STR_GAME_OPTIONS_TOWN_NAME_FINNISH                              :Finsk
-STR_GAME_OPTIONS_TOWN_NAME_POLISH                               :Polsk
-STR_GAME_OPTIONS_TOWN_NAME_SLOVAK                               :Slovakisk
-STR_GAME_OPTIONS_TOWN_NAME_NORWEGIAN                            :Norsk
-STR_GAME_OPTIONS_TOWN_NAME_HUNGARIAN                            :Ungarsk
-STR_GAME_OPTIONS_TOWN_NAME_AUSTRIAN                             :Eysturrísk
-STR_GAME_OPTIONS_TOWN_NAME_ROMANIAN                             :Rumensk
-STR_GAME_OPTIONS_TOWN_NAME_CZECH                                :Tjekkisk
-STR_GAME_OPTIONS_TOWN_NAME_SWISS                                :Sveisisk
-STR_GAME_OPTIONS_TOWN_NAME_DANISH                               :Donsk
-STR_GAME_OPTIONS_TOWN_NAME_TURKISH                              :Turkisk
-STR_GAME_OPTIONS_TOWN_NAME_ITALIAN                              :Italiensk
-STR_GAME_OPTIONS_TOWN_NAME_CATALAN                              :Katalanisk
-
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Sjálvgoymsla
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Vel títtleika av sjálvgoymslu
 
@@ -1009,8 +979,6 @@ STR_CURRENCY_PREVIEW                                            :{LTBLUE}Undanv�
 STR_CURRENCY_CUSTOM_CURRENCY_PREVIEW_TOOLTIP                    :{BLACK}10000 Pund (£) í tínum gjaldsoyra
 STR_CURRENCY_CHANGE_PARAMETER                                   :{BLACK}Broyt parametur í sjálvgjørda gjaldsoyranum
 
-STR_DIFFICULTY_LEVEL_SETTING_MAXIMUM_NO_COMPETITORS             :{LTBLUE}Hægsta tali av kappingarneytum: {ORANGE}{COMMA}
-
 STR_NONE                                                        :Einki
 STR_FUNDING_ONLY                                                :Fíggjing einans
 STR_MINIMAL                                                     :Minst
@@ -1059,6 +1027,12 @@ STR_SUBSIDY_X1_5                                                :x1.5
 STR_SUBSIDY_X2                                                  :x2
 STR_SUBSIDY_X3                                                  :x3
 STR_SUBSIDY_X4                                                  :x4
+
+###length 4
+STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :Lýtt landslag
+STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :Undir-arktiskt landslag
+STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :Undir-tropiskt landslag
+STR_CLIMATE_TOYLAND_LANDSCAPE                                   :Leikuland landslag
 
 ###length 7
 STR_TERRAIN_TYPE_VERY_FLAT                                      :Sera flatt
@@ -1365,6 +1339,10 @@ STR_CONFIG_SETTING_TREE_PLACER_NONE                             :Eingin
 STR_CONFIG_SETTING_TREE_PLACER_ORIGINAL                         :Upprunalig
 STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Betra
 
+
+###length 2
+STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :Vinstrakoyring
+STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :Høgrakoyring
 
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Hæddarkort snarðing: {STRING}
 ###length 2
@@ -1743,7 +1721,7 @@ STR_CONFIG_SETTING_PATHFINDER_FOR_SHIPS                         :Leiðbeinari fy
 STR_CONFIG_SETTING_PATHFINDER_FOR_SHIPS_HELPTEXT                :Leið beinari at nýta fyri skip
 ###length 2
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
-STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Viðmældur)
+STR_CONFIG_SETTING_PATHFINDER_YAPF                              :YAPF {BLUE}(Viðmældur)
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Broyt ásetings virði
 
@@ -1817,12 +1795,6 @@ STR_CHEAT_NO_JETCRASH                                           :{LTBLUE}Jetflog
 STR_CHEAT_CHANGE_DATE                                           :{LTBLUE}Broyt dato: {ORANGE}{DATE_SHORT}
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Broyt núverðandi ár
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Gilda broytingar av framleiðslu virðum: {ORANGE}{STRING}
-
-###length 4
-STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :Lýtt landslag
-STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :Undir-arktiskt landslag
-STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :Undir-tropiskt landslag
-STR_CHEAT_SWITCH_CLIMATE_TOYLAND_LANDSCAPE                      :Leikuland landslag
 
 # Livery window
 
@@ -2587,6 +2559,8 @@ STR_MAPGEN_MAPSIZE                                              :{BLACK}Stødd �
 STR_MAPGEN_MAPSIZE_TOOLTIP                                      :{BLACK}Vel stødd av korti í puntum. Talið av tøkum puntum verur eitt sindur minni
 STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Nr. av bygdum:
+STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Bygdar nøvn
+STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Áset slag av bygdar nøvnum
 STR_MAPGEN_DATE                                                 :{BLACK}Dato:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Nr. av ídnaðum:
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Hædd á kava linju:
@@ -2599,6 +2573,29 @@ STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Løkar:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Mjúkleiki:
 STR_MAPGEN_VARIETY                                              :{BLACK}Fjølbroytnis útluting:
 STR_MAPGEN_GENERATE                                             :{WHITE}Framleið
+
+###length 21
+STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH                           :Ensk (Upprunalig)
+STR_MAPGEN_TOWN_NAME_FRENCH                                     :Fronsk
+STR_MAPGEN_TOWN_NAME_GERMAN                                     :Týsk
+STR_MAPGEN_TOWN_NAME_ADDITIONAL_ENGLISH                         :Ensk (Meiri)
+STR_MAPGEN_TOWN_NAME_LATIN_AMERICAN                             :Latin-Amerikonsk
+STR_MAPGEN_TOWN_NAME_SILLY                                      :Fjákut
+STR_MAPGEN_TOWN_NAME_SWEDISH                                    :Svensk
+STR_MAPGEN_TOWN_NAME_DUTCH                                      :Niðurlendsk
+STR_MAPGEN_TOWN_NAME_FINNISH                                    :Finsk
+STR_MAPGEN_TOWN_NAME_POLISH                                     :Polsk
+STR_MAPGEN_TOWN_NAME_SLOVAK                                     :Slovakisk
+STR_MAPGEN_TOWN_NAME_NORWEGIAN                                  :Norsk
+STR_MAPGEN_TOWN_NAME_HUNGARIAN                                  :Ungarsk
+STR_MAPGEN_TOWN_NAME_AUSTRIAN                                   :Eysturrísk
+STR_MAPGEN_TOWN_NAME_ROMANIAN                                   :Rumensk
+STR_MAPGEN_TOWN_NAME_CZECH                                      :Tjekkisk
+STR_MAPGEN_TOWN_NAME_SWISS                                      :Sveisisk
+STR_MAPGEN_TOWN_NAME_DANISH                                     :Donsk
+STR_MAPGEN_TOWN_NAME_TURKISH                                    :Turkisk
+STR_MAPGEN_TOWN_NAME_ITALIAN                                    :Italiensk
+STR_MAPGEN_TOWN_NAME_CATALAN                                    :Katalanisk
 
 # Strings for map borders at game generation
 STR_MAPGEN_BORDER_TYPE                                          :{BLACK}Kort eggir:
@@ -3674,6 +3671,7 @@ STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}AI sum v
 STR_AI_CONFIG_HUMAN_PLAYER                                      :Menniskja spælari
 STR_AI_CONFIG_RANDOM_AI                                         :Tilvildarligt AI
 STR_AI_CONFIG_NONE                                              :(einki)
+STR_AI_CONFIG_MAX_COMPETITORS                                   :{LTBLUE}Hægsta tali av kappingarneytum: {ORANGE}{COMMA}
 
 STR_AI_CONFIG_MOVE_UP                                           :{BLACK}Flyt upp
 STR_AI_CONFIG_MOVE_UP_TOOLTIP                                   :{BLACK}Flyt valda AI upp í listanum

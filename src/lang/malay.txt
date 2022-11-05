@@ -910,36 +910,6 @@ STR_GAME_OPTIONS_CURRENCY_ZAR                                   :South African R
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Sesuaikan...
 STR_GAME_OPTIONS_CURRENCY_GEL                                   :Georgian Lari (GEL)
 
-###length 2
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Memandu di sebelah kiri
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :Memandu di sebelah kanan
-
-STR_GAME_OPTIONS_TOWN_NAMES_FRAME                               :{BLACK}Nama bandar
-STR_GAME_OPTIONS_TOWN_NAMES_DROPDOWN_TOOLTIP                    :{BLACK}Pilih tema untuk nama bandar
-
-###length 21
-STR_GAME_OPTIONS_TOWN_NAME_ORIGINAL_ENGLISH                     :Inggeris (Asal)
-STR_GAME_OPTIONS_TOWN_NAME_FRENCH                               :Peranchis
-STR_GAME_OPTIONS_TOWN_NAME_GERMAN                               :Jerman
-STR_GAME_OPTIONS_TOWN_NAME_ADDITIONAL_ENGLISH                   :Inggeris (Tambahan)
-STR_GAME_OPTIONS_TOWN_NAME_LATIN_AMERICAN                       :Amerika Latin
-STR_GAME_OPTIONS_TOWN_NAME_SILLY                                :Mengarut
-STR_GAME_OPTIONS_TOWN_NAME_SWEDISH                              :Swedish
-STR_GAME_OPTIONS_TOWN_NAME_DUTCH                                :Dutch
-STR_GAME_OPTIONS_TOWN_NAME_FINNISH                              :Finnish
-STR_GAME_OPTIONS_TOWN_NAME_POLISH                               :Polish
-STR_GAME_OPTIONS_TOWN_NAME_SLOVAK                               :Slovak
-STR_GAME_OPTIONS_TOWN_NAME_NORWEGIAN                            :Norwegian
-STR_GAME_OPTIONS_TOWN_NAME_HUNGARIAN                            :Hungarian
-STR_GAME_OPTIONS_TOWN_NAME_AUSTRIAN                             :Austrian
-STR_GAME_OPTIONS_TOWN_NAME_ROMANIAN                             :Romanian
-STR_GAME_OPTIONS_TOWN_NAME_CZECH                                :Czech
-STR_GAME_OPTIONS_TOWN_NAME_SWISS                                :Swiss
-STR_GAME_OPTIONS_TOWN_NAME_DANISH                               :Danish
-STR_GAME_OPTIONS_TOWN_NAME_TURKISH                              :Turkish
-STR_GAME_OPTIONS_TOWN_NAME_ITALIAN                              :Italian
-STR_GAME_OPTIONS_TOWN_NAME_CATALAN                              :Catalan
-
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Simpanan automatik
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Pilih tempoh untuk simpanan permainan automatik
 
@@ -1018,8 +988,6 @@ STR_CURRENCY_PREVIEW                                            :{LTBLUE}Previu:
 STR_CURRENCY_CUSTOM_CURRENCY_PREVIEW_TOOLTIP                    :{BLACK}Mata wang anda berbanding 10000 Pound (£)
 STR_CURRENCY_CHANGE_PARAMETER                                   :{BLACK}Tukar parameter matawang pilihan diri
 
-STR_DIFFICULTY_LEVEL_SETTING_MAXIMUM_NO_COMPETITORS             :{LTBLUE}Jumlah maksimum pesaing: {ORANGE}{COMMA}
-
 STR_NONE                                                        :Tiada
 STR_FUNDING_ONLY                                                :Melalui pembiayaan sahaja
 STR_MINIMAL                                                     :Minimum
@@ -1068,6 +1036,12 @@ STR_SUBSIDY_X1_5                                                :x1.5
 STR_SUBSIDY_X2                                                  :x2
 STR_SUBSIDY_X3                                                  :x3
 STR_SUBSIDY_X4                                                  :x4
+
+###length 4
+STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :Lanskap temperate
+STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :Lanskap subartik
+STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :Lanskap subtropik
+STR_CLIMATE_TOYLAND_LANDSCAPE                                   :Lanskap alam permainan
 
 ###length 7
 STR_TERRAIN_TYPE_VERY_FLAT                                      :Sangat Rata
@@ -1351,6 +1325,10 @@ STR_CONFIG_SETTING_TREE_PLACER_ORIGINAL                         :Asal
 STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Diperbaiki
 
 STR_CONFIG_SETTING_ROAD_SIDE                                    :Kenderaan: {STRING}
+
+###length 2
+STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :Memandu di sebelah kiri
+STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :Memandu di sebelah kanan
 
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Putaran heightmap: {STRING}
 ###length 2
@@ -1669,7 +1647,7 @@ STR_CONFIG_SETTING_REVERSE_AT_SIGNALS                           :Berundur secara
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :Benarkan keretapi berundur di lampu isyarat, jika ia menuggu lama
 ###length 2
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
-STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Disyorkan)
+STR_CONFIG_SETTING_PATHFINDER_YAPF                              :YAPF {BLUE}(Disyorkan)
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Tukar nilai tetapan
 
@@ -1756,12 +1734,6 @@ STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}Ubah ket
 STR_CHEAT_CHANGE_DATE                                           :{LTBLUE}Tukar tarikh: {ORANGE}{DATE_SHORT}
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Tukar tahun semasa
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Bolehkan pengubahsuaian nilai-nilai pengeluaran: {ORANGE}{STRING}
-
-###length 4
-STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :Lanskap temperate
-STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :Lanskap subartik
-STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :Lanskap subtropik
-STR_CHEAT_SWITCH_CLIMATE_TOYLAND_LANDSCAPE                      :Lanskap alam permainan
 
 # Livery window
 
@@ -2595,6 +2567,8 @@ STR_MAPGEN_MAPSIZE                                              :{BLACK}Saiz pet
 STR_MAPGEN_MAPSIZE_TOOLTIP                                      :{BLACK}Pilih saiz peta dalam petak. Nombor petak bersesuaian akan lebih kecil sedikit
 STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Jumlah bandar:
+STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Nama bandar
+STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Pilih tema untuk nama bandar
 STR_MAPGEN_DATE                                                 :{BLACK}Tarikh:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Jumlah industri:
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Paras ketinggian garis salji:
@@ -2607,6 +2581,29 @@ STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Sungai:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Kelicinan:
 STR_MAPGEN_VARIETY                                              :{BLACK}Pembahagian variasi:
 STR_MAPGEN_GENERATE                                             :{WHITE}Janakan
+
+###length 21
+STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH                           :Inggeris (Asal)
+STR_MAPGEN_TOWN_NAME_FRENCH                                     :Peranchis
+STR_MAPGEN_TOWN_NAME_GERMAN                                     :Jerman
+STR_MAPGEN_TOWN_NAME_ADDITIONAL_ENGLISH                         :Inggeris (Tambahan)
+STR_MAPGEN_TOWN_NAME_LATIN_AMERICAN                             :Amerika Latin
+STR_MAPGEN_TOWN_NAME_SILLY                                      :Mengarut
+STR_MAPGEN_TOWN_NAME_SWEDISH                                    :Swedish
+STR_MAPGEN_TOWN_NAME_DUTCH                                      :Dutch
+STR_MAPGEN_TOWN_NAME_FINNISH                                    :Finnish
+STR_MAPGEN_TOWN_NAME_POLISH                                     :Polish
+STR_MAPGEN_TOWN_NAME_SLOVAK                                     :Slovak
+STR_MAPGEN_TOWN_NAME_NORWEGIAN                                  :Norwegian
+STR_MAPGEN_TOWN_NAME_HUNGARIAN                                  :Hungarian
+STR_MAPGEN_TOWN_NAME_AUSTRIAN                                   :Austrian
+STR_MAPGEN_TOWN_NAME_ROMANIAN                                   :Romanian
+STR_MAPGEN_TOWN_NAME_CZECH                                      :Czech
+STR_MAPGEN_TOWN_NAME_SWISS                                      :Swiss
+STR_MAPGEN_TOWN_NAME_DANISH                                     :Danish
+STR_MAPGEN_TOWN_NAME_TURKISH                                    :Turkish
+STR_MAPGEN_TOWN_NAME_ITALIAN                                    :Italian
+STR_MAPGEN_TOWN_NAME_CATALAN                                    :Catalan
 
 # Strings for map borders at game generation
 STR_MAPGEN_BORDER_TYPE                                          :{BLACK}Hujung peta:
@@ -3823,6 +3820,7 @@ STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}Kepintar
 STR_AI_CONFIG_HUMAN_PLAYER                                      :Pemain manusia
 STR_AI_CONFIG_RANDOM_AI                                         :Kepintaran Tiruan rawak
 STR_AI_CONFIG_NONE                                              :(tiada)
+STR_AI_CONFIG_MAX_COMPETITORS                                   :{LTBLUE}Jumlah maksimum pesaing: {ORANGE}{COMMA}
 
 STR_AI_CONFIG_MOVE_UP                                           :{BLACK}Pindah ke Atas
 STR_AI_CONFIG_MOVE_UP_TOOLTIP                                   :{BLACK}Pindah Kepintaran Tiruan yang dipilih di dalam senarai ke atas

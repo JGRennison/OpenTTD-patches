@@ -410,11 +410,6 @@ STR_NEWS_VEHICLE_IS_LOST                                        :{WHITE}{VEHICLE
 
 ###length 42
 
-###length 2
-
-
-###length 21
-
 
 # Autosave dropdown
 ###length 5
@@ -445,7 +440,6 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :oħrajn
 
 
 
-
 ###length 5
 
 ###length 6
@@ -453,6 +447,8 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :oħrajn
 ###length 4
 
 ###length 3
+
+###length 4
 
 ###length 4
 
@@ -580,6 +576,8 @@ STR_CONFIG_SETTING_WARN_LOST_VEHICLE                            :Avza jekk jinti
 
 ###length 3
 
+
+###length 2
 
 ###length 2
 
@@ -750,8 +748,6 @@ STR_INTRO_CAPTION                                               :{WHITE}OpenTTD 
 
 # Cheat window
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Ibdel is-sena
-
-###length 4
 
 # Livery window
 
@@ -939,6 +935,8 @@ STR_OBJECT_BUILD_CLASS_TOOLTIP                                  :{BLACK}Aghzel i
 
 # World generation
 STR_MAPGEN_BY                                                   :{BLACK}*
+
+###length 21
 
 # Strings for map borders at game generation
 

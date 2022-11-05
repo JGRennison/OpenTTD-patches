@@ -979,36 +979,6 @@ STR_GAME_OPTIONS_CURRENCY_INR                                   :Indijas rūpija
 STR_GAME_OPTIONS_CURRENCY_IDR                                   :Indonēzijas rūpija (IDR)
 STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malaizijas Ringits (MYR)
 
-###length 2
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Brauc pa kreiso pusi
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :Brauc pa labo pusi
-
-STR_GAME_OPTIONS_TOWN_NAMES_FRAME                               :{BLACK}Pilsētu nosaukumi:
-STR_GAME_OPTIONS_TOWN_NAMES_DROPDOWN_TOOLTIP                    :{BLACK}Pilsētu nosaukumu stila izvēle
-
-###length 21
-STR_GAME_OPTIONS_TOWN_NAME_ORIGINAL_ENGLISH                     :Angļu (sākotnējie)
-STR_GAME_OPTIONS_TOWN_NAME_FRENCH                               :Franču
-STR_GAME_OPTIONS_TOWN_NAME_GERMAN                               :Vācu
-STR_GAME_OPTIONS_TOWN_NAME_ADDITIONAL_ENGLISH                   :Angļu (papildu)
-STR_GAME_OPTIONS_TOWN_NAME_LATIN_AMERICAN                       :Latīņamerikāņu
-STR_GAME_OPTIONS_TOWN_NAME_SILLY                                :Muļķīgie
-STR_GAME_OPTIONS_TOWN_NAME_SWEDISH                              :Zviedru
-STR_GAME_OPTIONS_TOWN_NAME_DUTCH                                :Holandiešu
-STR_GAME_OPTIONS_TOWN_NAME_FINNISH                              :Somu
-STR_GAME_OPTIONS_TOWN_NAME_POLISH                               :Poļu
-STR_GAME_OPTIONS_TOWN_NAME_SLOVAK                               :Slovāku
-STR_GAME_OPTIONS_TOWN_NAME_NORWEGIAN                            :Norvēģu
-STR_GAME_OPTIONS_TOWN_NAME_HUNGARIAN                            :Ungāru
-STR_GAME_OPTIONS_TOWN_NAME_AUSTRIAN                             :Austriešu
-STR_GAME_OPTIONS_TOWN_NAME_ROMANIAN                             :Rumāņu
-STR_GAME_OPTIONS_TOWN_NAME_CZECH                                :Čehu
-STR_GAME_OPTIONS_TOWN_NAME_SWISS                                :Šveiciešu
-STR_GAME_OPTIONS_TOWN_NAME_DANISH                               :Dāņu
-STR_GAME_OPTIONS_TOWN_NAME_TURKISH                              :Turku
-STR_GAME_OPTIONS_TOWN_NAME_ITALIAN                              :Itāļu
-STR_GAME_OPTIONS_TOWN_NAME_CATALAN                              :Katalāņu
-
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Automātiskā saglabāšana
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Izvēlēties spēles automātiskās saglabāšanas starplaikus
 
@@ -1107,8 +1077,6 @@ STR_CURRENCY_PREVIEW                                            :{LTBLUE}Priekš
 STR_CURRENCY_CUSTOM_CURRENCY_PREVIEW_TOOLTIP                    :{BLACK}10000 mārciņas (£) jūsu valūtā
 STR_CURRENCY_CHANGE_PARAMETER                                   :{BLACK}Mainīt pielāgotās valūtas rādītāju
 
-STR_DIFFICULTY_LEVEL_SETTING_MAXIMUM_NO_COMPETITORS             :{LTBLUE}Maksimālais sāncenšu daudzums: {ORANGE}{COMMA}
-
 STR_NONE                                                        :Nav
 STR_FUNDING_ONLY                                                :Tikai līdzekļu piešķiršana
 STR_MINIMAL                                                     :Minimāls
@@ -1157,6 +1125,12 @@ STR_SUBSIDY_X1_5                                                :x1.5
 STR_SUBSIDY_X2                                                  :x2
 STR_SUBSIDY_X3                                                  :x3
 STR_SUBSIDY_X4                                                  :x4
+
+###length 4
+STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :Mērena klimata ainava
+STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :Subarktikas klimata ainava
+STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :Subtropu klimata ainava
+STR_CLIMATE_TOYLAND_LANDSCAPE                                   :Rotaļlietu zemes ainava
 
 ###length 7
 STR_TERRAIN_TYPE_VERY_FLAT                                      :Ļoti līdzens
@@ -1516,6 +1490,10 @@ STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Uzlabotais
 
 STR_CONFIG_SETTING_ROAD_SIDE                                    :Autotransporta līdzekļi: {STRING}
 STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Izvēlieties braukšanas pusi
+
+###length 2
+STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :Brauc pa kreiso pusi
+STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :Brauc pa labo pusi
 
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Augstumu kartes pagriešana: {STRING}
 ###length 2
@@ -2053,7 +2031,7 @@ STR_CONFIG_SETTING_REVERSE_AT_SIGNALS                           :Automātiska ap
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :Atļauj vilcieniem apgriezties pie signālierīcēm, ja tie te ir gaidījuši ilgu laiku
 ###length 2
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
-STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(ieteicamais)
+STR_CONFIG_SETTING_PATHFINDER_YAPF                              :YAPF {BLUE}(ieteicamais)
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Mainīt iestatījuma vērtību
 
@@ -2147,12 +2125,6 @@ STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}Izmainī
 STR_CHEAT_CHANGE_DATE                                           :{LTBLUE}Nomainīt datumu: {ORANGE} {DATE_SHORT}
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Mainīt pašreizējo gadu
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Ieslēgt ražojumu vērtības maiņu: {ORANGE}{STRING}
-
-###length 4
-STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :Mērena klimata ainava
-STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :Subarktikas klimata ainava
-STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :Subtropu klimata ainava
-STR_CHEAT_SWITCH_CLIMATE_TOYLAND_LANDSCAPE                      :Rotaļlietu zemes ainava
 
 # Livery window
 STR_LIVERY_CAPTION                                              :{WHITE}{COMPANY} - krāsu shēma
@@ -3157,6 +3129,8 @@ STR_MAPGEN_MAPSIZE                                              :{BLACK}Kartes i
 STR_MAPGEN_MAPSIZE_TOOLTIP                                      :{BLACK}Izvēlieties kartes izmēru, izteikts lauciņos. Pieejamo lauciņu skaits var būt nedaudz mazāks
 STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Pilsētu daudzums:
+STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Pilsētu nosaukumi:
+STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Pilsētu nosaukumu stila izvēle
 STR_MAPGEN_DATE                                                 :{BLACK}Datums:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Ražotņu daudzums:
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Augstākā virsotne:
@@ -3180,6 +3154,29 @@ STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Upes:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Gludums:
 STR_MAPGEN_VARIETY                                              :{BLACK}Dažādības sadalījums:
 STR_MAPGEN_GENERATE                                             :{WHITE}Radīt
+
+###length 21
+STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH                           :Angļu (sākotnējie)
+STR_MAPGEN_TOWN_NAME_FRENCH                                     :Franču
+STR_MAPGEN_TOWN_NAME_GERMAN                                     :Vācu
+STR_MAPGEN_TOWN_NAME_ADDITIONAL_ENGLISH                         :Angļu (papildu)
+STR_MAPGEN_TOWN_NAME_LATIN_AMERICAN                             :Latīņamerikāņu
+STR_MAPGEN_TOWN_NAME_SILLY                                      :Muļķīgie
+STR_MAPGEN_TOWN_NAME_SWEDISH                                    :Zviedru
+STR_MAPGEN_TOWN_NAME_DUTCH                                      :Holandiešu
+STR_MAPGEN_TOWN_NAME_FINNISH                                    :Somu
+STR_MAPGEN_TOWN_NAME_POLISH                                     :Poļu
+STR_MAPGEN_TOWN_NAME_SLOVAK                                     :Slovāku
+STR_MAPGEN_TOWN_NAME_NORWEGIAN                                  :Norvēģu
+STR_MAPGEN_TOWN_NAME_HUNGARIAN                                  :Ungāru
+STR_MAPGEN_TOWN_NAME_AUSTRIAN                                   :Austriešu
+STR_MAPGEN_TOWN_NAME_ROMANIAN                                   :Rumāņu
+STR_MAPGEN_TOWN_NAME_CZECH                                      :Čehu
+STR_MAPGEN_TOWN_NAME_SWISS                                      :Šveiciešu
+STR_MAPGEN_TOWN_NAME_DANISH                                     :Dāņu
+STR_MAPGEN_TOWN_NAME_TURKISH                                    :Turku
+STR_MAPGEN_TOWN_NAME_ITALIAN                                    :Itāļu
+STR_MAPGEN_TOWN_NAME_CATALAN                                    :Katalāņu
 
 # Strings for map borders at game generation
 STR_MAPGEN_BORDER_TYPE                                          :{BLACK}Kartes malas:
@@ -4566,6 +4563,7 @@ STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}MI, kas 
 STR_AI_CONFIG_HUMAN_PLAYER                                      :Spēlētājs (cilvēks)
 STR_AI_CONFIG_RANDOM_AI                                         :Nejaušs MI
 STR_AI_CONFIG_NONE                                              :(nav)
+STR_AI_CONFIG_MAX_COMPETITORS                                   :{LTBLUE}Maksimālais sāncenšu daudzums: {ORANGE}{COMMA}
 
 STR_AI_CONFIG_MOVE_UP                                           :{BLACK}Pacelt uz augšu
 STR_AI_CONFIG_MOVE_UP_TOOLTIP                                   :{BLACK}Pacelt izvēlētos MI sarakstā uz augšu

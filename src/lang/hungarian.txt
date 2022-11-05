@@ -294,7 +294,7 @@ STR_UNITS_HEIGHT_SI                                             :{COMMA}{NBSP}m
 
 # Common window strings
 STR_LIST_FILTER_TITLE                                           :{BLACK}Szűrő kifejezés:
-STR_LIST_FILTER_OSKTITLE                                        :{BLACK}Kulcsszó megadása a szűréshez
+STR_LIST_FILTER_OSKTITLE                                        :{BLACK}Egy vagy több kulcsszó megadása a szűréshez
 STR_LIST_FILTER_TOOLTIP                                         :{BLACK}Írj ide egy kulcsszót ami alapján szűrni szeretnéd a listát
 
 STR_TOOLTIP_GROUP_ORDER                                         :{BLACK}Csoportosítási szempont kiválasztása
@@ -447,7 +447,7 @@ STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}Út ép�
 STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION                          :{BLACK}Villamospálya építése
 STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}Faültetés. Shift lenyomásával megmutatja a becsült építési költséget
 STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}Felirat lerakása
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Objektum elhelyezése. Shift lenyomásával megmutatja a várható költséget
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Objektum építése. Ctrl lenyomásával átlós terület jelölhető ki. Shift lenyomásával megmutatja a becsült építési költséget.
 
 # Scenario editor file menu
 ###length 7
@@ -1041,36 +1041,6 @@ STR_GAME_OPTIONS_CURRENCY_INR                                   :Indiai Rúpia (
 STR_GAME_OPTIONS_CURRENCY_IDR                                   :Indonéz rúpia (IDR)
 STR_GAME_OPTIONS_CURRENCY_MYR                                   :Maláj ringgit (MYR)
 
-###length 2
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Balra hajtás
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :Jobbra hajtás
-
-STR_GAME_OPTIONS_TOWN_NAMES_FRAME                               :{BLACK}Városnevek:
-STR_GAME_OPTIONS_TOWN_NAMES_DROPDOWN_TOOLTIP                    :{BLACK}A városnevek stílusának kiválasztása
-
-###length 21
-STR_GAME_OPTIONS_TOWN_NAME_ORIGINAL_ENGLISH                     :Angol (Eredeti)
-STR_GAME_OPTIONS_TOWN_NAME_FRENCH                               :Francia
-STR_GAME_OPTIONS_TOWN_NAME_GERMAN                               :Német
-STR_GAME_OPTIONS_TOWN_NAME_ADDITIONAL_ENGLISH                   :Angol (További)
-STR_GAME_OPTIONS_TOWN_NAME_LATIN_AMERICAN                       :Latin-amerikai
-STR_GAME_OPTIONS_TOWN_NAME_SILLY                                :Komolytalan
-STR_GAME_OPTIONS_TOWN_NAME_SWEDISH                              :Svéd
-STR_GAME_OPTIONS_TOWN_NAME_DUTCH                                :Holland
-STR_GAME_OPTIONS_TOWN_NAME_FINNISH                              :Finn
-STR_GAME_OPTIONS_TOWN_NAME_POLISH                               :Lengyel
-STR_GAME_OPTIONS_TOWN_NAME_SLOVAK                               :Szlovák
-STR_GAME_OPTIONS_TOWN_NAME_NORWEGIAN                            :Norvég
-STR_GAME_OPTIONS_TOWN_NAME_HUNGARIAN                            :Magyar
-STR_GAME_OPTIONS_TOWN_NAME_AUSTRIAN                             :Osztrák
-STR_GAME_OPTIONS_TOWN_NAME_ROMANIAN                             :Romániai
-STR_GAME_OPTIONS_TOWN_NAME_CZECH                                :Cseh
-STR_GAME_OPTIONS_TOWN_NAME_SWISS                                :Svájci
-STR_GAME_OPTIONS_TOWN_NAME_DANISH                               :Dán
-STR_GAME_OPTIONS_TOWN_NAME_TURKISH                              :Török
-STR_GAME_OPTIONS_TOWN_NAME_ITALIAN                              :Olasz
-STR_GAME_OPTIONS_TOWN_NAME_CATALAN                              :Katalán
-
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Automatikus mentés
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Az automatikus mentések közötti időtartam kiválasztása
 
@@ -1169,8 +1139,6 @@ STR_CURRENCY_PREVIEW                                            :{LTBLUE}Előné
 STR_CURRENCY_CUSTOM_CURRENCY_PREVIEW_TOOLTIP                    :{BLACK}10000 Font (£) a pénznemedben
 STR_CURRENCY_CHANGE_PARAMETER                                   :{BLACK}A saját pénznem paramétereinek megváltoztatása
 
-STR_DIFFICULTY_LEVEL_SETTING_MAXIMUM_NO_COMPETITORS             :{LTBLUE}Ellenfelek száma legfeljebb: {ORANGE}{COMMA}
-
 STR_NONE                                                        :Semmi
 STR_FUNDING_ONLY                                                :Csak finanszírozás
 STR_MINIMAL                                                     :Minimális
@@ -1219,6 +1187,12 @@ STR_SUBSIDY_X1_5                                                :1,5x
 STR_SUBSIDY_X2                                                  :2x
 STR_SUBSIDY_X3                                                  :3x
 STR_SUBSIDY_X4                                                  :4x
+
+###length 4
+STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :Mérsékelt táj
+STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :Szubarktikus táj
+STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :Szubtrópusi táj
+STR_CLIMATE_TOYLAND_LANDSCAPE                                   :Játékvilág táj
 
 ###length 7
 STR_TERRAIN_TYPE_VERY_FLAT                                      :Nagyon sík
@@ -1578,6 +1552,10 @@ STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Javított
 
 STR_CONFIG_SETTING_ROAD_SIDE                                    :Közúti járművek: {STRING}
 STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Melyik oldalon közlekedjenek a közúti járművek
+
+###length 2
+STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :Balra hajtás
+STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :Jobbra hajtás
 
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Magasságtérkép forgatása: {STRING}
 ###length 2
@@ -2113,7 +2091,7 @@ STR_CONFIG_SETTING_REVERSE_AT_SIGNALS                           :Automatikus meg
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :A vonatok automatikus megfordításának engedélyezése, ha azok túl hosszú ideje várakoznak egy jelző előtt
 ###length 2
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
-STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Ajánlott)
+STR_CONFIG_SETTING_PATHFINDER_YAPF                              :YAPF {BLUE}(Ajánlott)
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Válassz beállítási értéket
 
@@ -2207,12 +2185,6 @@ STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}A térk�
 STR_CHEAT_CHANGE_DATE                                           :{LTBLUE}Dátum módosítás: {ORANGE} {DATE_SHORT}
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Aktuális év megváltoztatása
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}A nyersanyagüzemek termelése változtatható: {ORANGE}{STRING}
-
-###length 4
-STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :Mérsékelt táj
-STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :Szubarktikus táj
-STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :Szubtrópusi táj
-STR_CHEAT_SWITCH_CLIMATE_TOYLAND_LANDSCAPE                      :Játékvilág táj
 
 # Livery window
 STR_LIVERY_CAPTION                                              :{WHITE}{COMPANY} színsémája
@@ -2573,11 +2545,11 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :várakozás a k
 
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :kilépés
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} csatlakozott a játékhoz
-STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {STRING} csatlakozott a játékhoz ({2:NUM}. számú kliens)
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} csatlakozott a(z) {2:NUM}. számú vállalathoz
+STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {0:STRING} csatlakozott a játékhoz ({2:NUM}. számú kliens)
+STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} csatlakozott a(z) {2:NUM}. számú vállalathoz
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} csatlakozott a megfigyelőkhöz
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} új vállalatot alapított (#{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} kilépett a játékból ({2:STRING})
+STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} új vállalatot alapított (#{2:NUM})
+STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} kilépett a játékból ({2:STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} nevet változtatott. Új neve: {STRING}
 STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {0:STRING} a következő összeget utalta {1:STRING} részére: {2:CURRENCY_LONG}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}A szerver leállította a játékot
@@ -2694,6 +2666,9 @@ STR_LINKGRAPH_LEGEND_SATURATED                                  :{TINY_FONT}{BLA
 STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLACK}túlterhelt
 
 # Linkgraph tooltip
+STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{CARGO_LONG} elszállítva havonta innen: {STATION} ide: {STATION} ({COMMA}% elszállítva){STRING}
+STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} visszaszállításra ({COMMA}% elszállítva)
+STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Átlagos utazási idő: {NUM}{NBSP}nap{P "" s}
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Lefedett terület mutatása:
@@ -2703,6 +2678,7 @@ STR_STATION_BUILD_COVERAGE_AREA_OFF_TOOLTIP                     :{BLACK}Az állo
 STR_STATION_BUILD_COVERAGE_AREA_ON_TOOLTIP                      :{BLACK}Az állomással lefedett terület mutatása (vonzáskörzet)
 STR_STATION_BUILD_ACCEPTS_CARGO                                 :{BLACK}Elfogad:{GOLD}{CARGO_LIST}
 STR_STATION_BUILD_SUPPLIES_CARGO                                :{BLACK}Termel: {GOLD}{CARGO_LIST}
+STR_STATION_BUILD_INFRASTRUCTURE_COST                           :{BLACK}Javítás költsége: {GOLD}{CURRENCY_SHORT}/év
 
 # Join station window
 STR_JOIN_STATION_CAPTION                                        :{WHITE}Állomás egyesítése
@@ -2890,11 +2866,11 @@ STR_LANDSCAPING_TOOLBAR                                         :{WHITE}Tájrend
 STR_LANDSCAPING_TOOLTIP_LOWER_A_CORNER_OF_LAND                  :{BLACK}Egy pont lesüllyesztése. Húzással az első kiválasztott sarkot lesüllyeszti, majd a kiválasztott területet vele egy szintbe hozza. Ctrl lenyomásával átlós terület jelölhető ki. Shift lenyomásával megmutatja a terepsüllyesztés várható építési költségét
 STR_LANDSCAPING_TOOLTIP_RAISE_A_CORNER_OF_LAND                  :{BLACK}Egy sarokpont megemelése. Húzással az első kiválasztott sarkot megemeli, majd a kiválasztott területet vele egy szintbe hozza. Ctrl lenyomásával átlós terület jelölhető ki. Shift lenyomásával megmutatja a terepemelés várható építési költségét
 STR_LANDSCAPING_LEVEL_LAND_TOOLTIP                              :{BLACK}Talaj a kijelölt sarokpont szintjére hozása. Ctrl lenyomásával átlós terület jelölhető ki. Shift lenyomásával megmutatja az átalakítás várható költségét
-STR_LANDSCAPING_TOOLTIP_PURCHASE_LAND                           :{BLACK}Földterület megvétele későbbi használatra. Shift lenyomásával megmutatja a várható költséget
+STR_LANDSCAPING_TOOLTIP_PURCHASE_LAND                           :{BLACK}Földterület megvétele későbbi használatra. Ctrl lenyomásával átlós terület jelölhető ki. Shift lenyomásával megmutatja a várható költséget
 
 # Object construction window
 STR_OBJECT_BUILD_CAPTION                                        :{WHITE}Objektum kiválasztása
-STR_OBJECT_BUILD_TOOLTIP                                        :{BLACK}Építendő objektum kiválasztása. Shift lenyomásával megmutatja a várható költséget
+STR_OBJECT_BUILD_TOOLTIP                                        :{BLACK}Építendő objektum kiválasztása. Ctrl lenyomásával átlós terület jelölhető ki. Shift lenyomásával megmutatja a becsült költséget
 STR_OBJECT_BUILD_CLASS_TOOLTIP                                  :{BLACK}Építendő objektum típusának kiválasztása
 STR_OBJECT_BUILD_PREVIEW_TOOLTIP                                :{BLACK}Objektum előnézete
 STR_OBJECT_BUILD_SIZE                                           :{BLACK}Méret: {GOLD}{NUM} x {NUM} mező
@@ -3216,6 +3192,8 @@ STR_MAPGEN_MAPSIZE                                              :{BLACK}Térkép
 STR_MAPGEN_MAPSIZE_TOOLTIP                                      :{BLACK}Válaszd ki a térkép méretét. Az elérhető mezők száma egy kicsit kevesebb lesz
 STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Várossűrűség:
+STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Városnevek:
+STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}A városnevek stílusának kiválasztása
 STR_MAPGEN_DATE                                                 :{BLACK}Dátum:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Gazd. épületek száma:
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Legmagasabb pont:
@@ -3239,6 +3217,29 @@ STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Folyók:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Simaság:
 STR_MAPGEN_VARIETY                                              :{BLACK}Változatosság eloszlása:
 STR_MAPGEN_GENERATE                                             :{WHITE}Generál
+
+###length 21
+STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH                           :Angol (Eredeti)
+STR_MAPGEN_TOWN_NAME_FRENCH                                     :Francia
+STR_MAPGEN_TOWN_NAME_GERMAN                                     :Német
+STR_MAPGEN_TOWN_NAME_ADDITIONAL_ENGLISH                         :Angol (További)
+STR_MAPGEN_TOWN_NAME_LATIN_AMERICAN                             :Latin-amerikai
+STR_MAPGEN_TOWN_NAME_SILLY                                      :Komolytalan
+STR_MAPGEN_TOWN_NAME_SWEDISH                                    :Svéd
+STR_MAPGEN_TOWN_NAME_DUTCH                                      :Holland
+STR_MAPGEN_TOWN_NAME_FINNISH                                    :Finn
+STR_MAPGEN_TOWN_NAME_POLISH                                     :Lengyel
+STR_MAPGEN_TOWN_NAME_SLOVAK                                     :Szlovák
+STR_MAPGEN_TOWN_NAME_NORWEGIAN                                  :Norvég
+STR_MAPGEN_TOWN_NAME_HUNGARIAN                                  :Magyar
+STR_MAPGEN_TOWN_NAME_AUSTRIAN                                   :Osztrák
+STR_MAPGEN_TOWN_NAME_ROMANIAN                                   :Romániai
+STR_MAPGEN_TOWN_NAME_CZECH                                      :Cseh
+STR_MAPGEN_TOWN_NAME_SWISS                                      :Svájci
+STR_MAPGEN_TOWN_NAME_DANISH                                     :Dán
+STR_MAPGEN_TOWN_NAME_TURKISH                                    :Török
+STR_MAPGEN_TOWN_NAME_ITALIAN                                    :Olasz
+STR_MAPGEN_TOWN_NAME_CATALAN                                    :Katalán
 
 # Strings for map borders at game generation
 STR_MAPGEN_BORDER_TYPE                                          :{BLACK}Térkép határai:
@@ -3298,7 +3299,7 @@ STR_NEWGRF_SETTINGS_INFO_TITLE                                  :{WHITE}Részlet
 STR_NEWGRF_SETTINGS_ACTIVE_LIST                                 :{WHITE}Aktív NewGRF fájlok
 STR_NEWGRF_SETTINGS_INACTIVE_LIST                               :{WHITE}Inaktív NewGRF fájlok
 STR_NEWGRF_SETTINGS_SELECT_PRESET                               :{ORANGE}Lista kiválasztása:
-STR_NEWGRF_FILTER_TITLE                                         :{ORANGE}Szűrendő kifejezés:
+STR_NEWGRF_FILTER_TITLE                                         :{ORANGE}Szűrő kifejezés:
 STR_NEWGRF_SETTINGS_PRESET_LIST_TOOLTIP                         :{BLACK}Kiválasztott lista betöltése
 STR_NEWGRF_SETTINGS_PRESET_SAVE                                 :{BLACK}Lista mentése
 STR_NEWGRF_SETTINGS_PRESET_SAVE_TOOLTIP                         :{BLACK}A kiválasztott elemek listába mentése
@@ -3402,15 +3403,15 @@ STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Végzetes 
 STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Egy végzetes NewGRF hiba történt:{}{STRING}
 STR_NEWGRF_ERROR_POPUP                                          :{WHITE}NewGRF hiba történt:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} nem fog működni az OpenTTD által jelentett TTDPatch verzióval
-STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} a TTD {STRING} verziójához van
-STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} úgy lett tervezve, hogy együtt lesz használva ezzel: {STRING}
-STR_NEWGRF_ERROR_INVALID_PARAMETER                              :Hibás paraméterérték ehhez: {1:STRING}: paraméter {STRING} ({NUM})
-STR_NEWGRF_ERROR_LOAD_BEFORE                                    :{1:STRING} muszáj, hogy betöltődjön ezelőtt: {STRING}
-STR_NEWGRF_ERROR_LOAD_AFTER                                     :{1:STRING} muszáj, hogy ezután töltődjön be: {STRING}
-STR_NEWGRF_ERROR_OTTD_VERSION_NUMBER                            :{1:STRING} csak a {STRING} vagy újabb verziójú OpenTTD-vel működik
+STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} a TTD {2:STRING} verziójához van
+STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} úgy lett tervezve, hogy együtt lesz használva ezzel: {2:STRING}
+STR_NEWGRF_ERROR_INVALID_PARAMETER                              :Hibás paraméterérték ehhez: {1:STRING}: paraméter {2:STRING} ({NUM})
+STR_NEWGRF_ERROR_LOAD_BEFORE                                    :{1:STRING} muszáj, hogy betöltődjön ezelőtt: {2:STRING}
+STR_NEWGRF_ERROR_LOAD_AFTER                                     :{1:STRING} muszáj, hogy ezután töltődjön be: {2:STRING}
+STR_NEWGRF_ERROR_OTTD_VERSION_NUMBER                            :{1:STRING} csak a {2:STRING} vagy újabb verziójú OpenTTD-vel működik
 STR_NEWGRF_ERROR_AFTER_TRANSLATED_FILE                          :az adott GRF fájl célja egy másik lefordítása
 STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED                        :Túl sok NewGRF van betöltve
-STR_NEWGRF_ERROR_STATIC_GRF_CAUSES_DESYNC                       :{1:STRING} betöltése mint statikus NewGRF {STRING} mellett ütközést okozhat
+STR_NEWGRF_ERROR_STATIC_GRF_CAUSES_DESYNC                       :{1:STRING} betöltése mint statikus NewGRF {2:STRING} mellett ütközést okozhat
 STR_NEWGRF_ERROR_UNEXPECTED_SPRITE                              :Váratlan sprite (sprite {3:NUM})
 STR_NEWGRF_ERROR_UNKNOWN_PROPERTY                               :Ismeretlen Action 0 tulajdonság {4:HEX} (sprite {3:NUM})
 STR_NEWGRF_ERROR_INVALID_ID                                     :Érvénytelen ID használat (sprite {3:NUM})
@@ -3723,6 +3724,7 @@ STR_FINANCES_SECTION_LOAN_INTEREST                              :{GOLD}Kölcsön
 STR_FINANCES_SECTION_OTHER                                      :{GOLD}Egyéb
 
 STR_FINANCES_NEGATIVE_INCOME                                    :-{CURRENCY_LONG}
+STR_FINANCES_ZERO_INCOME                                        :{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :+{CURRENCY_LONG}
 STR_FINANCES_NET_PROFIT                                         :{WHITE}Nettó Profit
 STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}Banki egyenleg
@@ -3831,7 +3833,7 @@ STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Termel: 
 STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :, {STRING}{STRING}
 
 STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Elfogad:
-STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}{BLACK}{3:STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{0:STRING}{BLACK}{3:STRING}
 STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{STRING}{BLACK}: {CARGO_SHORT} várakozik{STRING}
 
 STR_CONFIG_GAME_PRODUCTION                                      :{WHITE}Termelés megváltoztatása (8 többszörösei 2040-ig)
@@ -4121,7 +4123,7 @@ STR_ENGINE_PREVIEW_AIRCRAFT                                     :repülőgép
 STR_ENGINE_PREVIEW_SHIP                                         :hajó
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Ár: {CURRENCY_LONG} Súly: {WEIGHT_SHORT}{}Sebesség: {VELOCITY} Teljesítmény: {POWER}{}Üzemeltetés: {CURRENCY_LONG}/év{}Kapacitás: {CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Ár: {CURRENCY_LONG} Súly: {WEIGHT_SHORT}{}Sebesség: {VELOCITY} Teljesítmény: {POWER} Maximális vonóerő: {6:FORCE}{}Üzemeltetés: {4:CURRENCY_LONG}/év{}Kapacitás: {5:CARGO_LONG}
+STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Ár: {0:CURRENCY_LONG} Súly: {1:WEIGHT_SHORT}{}Sebesség: {2:VELOCITY} Teljesítmény: {3:POWER} Maximális vonóerő: {6:FORCE}{}Üzemeltetés: {4:CURRENCY_LONG}/év{}Kapacitás: {5:CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Ár: {CURRENCY_LONG} Végsebesség: {VELOCITY}{}Kapacitás: {CARGO_LONG}{}Üzemeltetés: {CURRENCY_LONG}/év
 STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_CAP_RUNCOST          :{BLACK}Ár: {CURRENCY_LONG} Sebesség: {VELOCITY}{}Típus: {STRING}{}Kapacitás: {CARGO_LONG}, {CARGO_LONG}{}Üzemeltetés: {CURRENCY_LONG}/év
 STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_RUNCOST              :{BLACK}Ár: {CURRENCY_LONG} Sebesség: {VELOCITY}{}Típus: {STRING}{}Kapacitás: {CARGO_LONG}{}Üzemeltetés: {CURRENCY_LONG}/év
@@ -4284,8 +4286,8 @@ STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Megbízh
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}Vásárlás éve: {LTBLUE}{NUM}{BLACK} Érték: {LTBLUE}{CURRENCY_LONG}
 STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}Kapacitás: {LTBLUE}Nincs{STRING}
-STR_VEHICLE_INFO_CAPACITY                                       :{BLACK}Kapacitás: {LTBLUE}{CARGO_LONG}{3:STRING}
-STR_VEHICLE_INFO_CAPACITY_MULT                                  :{BLACK}Kapacitás: {LTBLUE}{CARGO_LONG}{3:STRING} (x{4:NUM})
+STR_VEHICLE_INFO_CAPACITY                                       :{BLACK}Kapacitás: {LTBLUE}{0:CARGO_LONG}{3:STRING}
+STR_VEHICLE_INFO_CAPACITY_MULT                                  :{BLACK}Kapacitás: {LTBLUE}{0:CARGO_LONG}{3:STRING} (x{4:NUM})
 STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}Kapacitás: {LTBLUE}{CARGO_LONG}, {CARGO_LONG}{STRING}
 
 STR_VEHICLE_INFO_FEEDER_CARGO_VALUE                             :{BLACK}Szállítási díj: {LTBLUE}{CURRENCY_LONG}
@@ -4619,6 +4621,7 @@ STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}A követ
 STR_AI_CONFIG_HUMAN_PLAYER                                      :Játékos
 STR_AI_CONFIG_RANDOM_AI                                         :Véletlenszerűen választott MI
 STR_AI_CONFIG_NONE                                              :(nincs)
+STR_AI_CONFIG_MAX_COMPETITORS                                   :{LTBLUE}Ellenfelek száma legfeljebb: {ORANGE}{COMMA}
 
 STR_AI_CONFIG_MOVE_UP                                           :{BLACK}Mozgatás Fel
 STR_AI_CONFIG_MOVE_UP_TOOLTIP                                   :{BLACK}Kiválasztott MI mozgatása felfelé a listában
@@ -5007,6 +5010,7 @@ STR_ERROR_OBJECT_IN_THE_WAY                                     :{WHITE}Objektum
 STR_ERROR_COMPANY_HEADQUARTERS_IN                               :{WHITE}... vállalat székháza van az útban
 STR_ERROR_CAN_T_PURCHASE_THIS_LAND                              :{WHITE}Nem veheted meg ezt a földterületet...
 STR_ERROR_YOU_ALREADY_OWN_IT                                    :{WHITE}... már a tiéd!
+STR_ERROR_BUILD_OBJECT_LIMIT_REACHED                            :{WHITE}... objektum építési limit elérve
 
 # Group related errors
 STR_ERROR_GROUP_CAN_T_CREATE                                    :{WHITE}Csoport létrehozás sikertelen...
