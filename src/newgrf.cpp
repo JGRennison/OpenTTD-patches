@@ -2885,7 +2885,7 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, co
 			case A0RPI_GLOBALVAR_LIGHTHOUSE_GENERATE_AMOUNT:
 			case A0RPI_GLOBALVAR_TRANSMITTER_GENERATE_AMOUNT: {
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				extern ObjectSpec _object_specs[NUM_OBJECTS];
+				extern std::vector<ObjectSpec> _object_specs;
 				ObjectType type = (prop == A0RPI_GLOBALVAR_LIGHTHOUSE_GENERATE_AMOUNT) ? OBJECT_LIGHTHOUSE : OBJECT_TRANSMITTER;
 				_object_specs[type].generate_amount = buf->ReadByte();
 				break;

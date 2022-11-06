@@ -269,7 +269,7 @@ CommandCost CmdBuildObject(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 
 	ObjectType type = (ObjectType)GB(p1, 0, 16);
-	if (type >= NUM_OBJECTS) return CMD_ERROR;
+	if (type >= ObjectSpec::Count()) return CMD_ERROR;
 	uint8 view = GB(p2, 0, 2);
 	const ObjectSpec *spec = ObjectSpec::Get(type);
 	if (_game_mode == GM_NORMAL && !spec->IsAvailable() && !_generating_world) return CMD_ERROR;
@@ -521,7 +521,7 @@ CommandCost CmdBuildObjectArea(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	if (!_settings_game.construction.build_object_area_permitted) return_cmd_error(STR_BUILD_OBJECT_NOT_PERMITTED_BULK);
 
 	ObjectType type = (ObjectType)GB(p2, 3, 16);
-	if (type >= NUM_OBJECTS) return CMD_ERROR;
+	if (type >= ObjectSpec::Count()) return CMD_ERROR;
 	uint8 view = GB(p2, 1, 2);
 	const ObjectSpec *spec = ObjectSpec::Get(type);
 	if (view >= spec->views) return CMD_ERROR;
@@ -1085,7 +1085,7 @@ static bool TryBuildTransmitter()
 void GenerateObjects()
 {
 	/* Set a guestimate on how much we progress */
-	SetGeneratingWorldProgress(GWP_OBJECT, NUM_OBJECTS);
+	SetGeneratingWorldProgress(GWP_OBJECT, (uint)ObjectSpec::Count());
 
 	/* Determine number of water tiles at map border needed for freeform_edges */
 	uint num_water_tiles = 0;
@@ -1101,7 +1101,7 @@ void GenerateObjects()
 	}
 
 	/* Iterate over all possible object types */
-	for (uint i = 0; i < NUM_OBJECTS; i++) {
+	for (uint i = 0; i < ObjectSpec::Count(); i++) {
 		const ObjectSpec *spec = ObjectSpec::Get(i);
 
 		/* Continue, if the object was never available till now or shall not be placed */
