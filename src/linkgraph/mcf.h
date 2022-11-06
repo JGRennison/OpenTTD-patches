@@ -89,4 +89,11 @@ public:
 	virtual ~MCFHandler() {}
 };
 
+inline bool IsLinkGraphCargoExpress(CargoID cargo)
+{
+	return IsCargoInClass(cargo, CC_PASSENGERS) ||
+			IsCargoInClass(cargo, CC_MAIL) ||
+			IsCargoInClass(cargo, CC_EXPRESS);
+}
+
 #endif /* MCF_H */

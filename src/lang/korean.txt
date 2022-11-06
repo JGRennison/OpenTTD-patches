@@ -3124,6 +3124,7 @@ STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLA
 STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{1:STATION}에서 {2:STATION}까지 매달 {0:CARGO_LONG} {G 0 "을" "를"} 수송해야 함 (수용량의 {3:COMMA}%){4:STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{0:CARGO_LONG}{G 0 "을" "를"} 다시 수송해와야 함 (수용량의 {1:COMMA}%)
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}평균 운행 시간: {NUM}일
+STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}평균 운행 시간: {STRING}
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}역세권 표시

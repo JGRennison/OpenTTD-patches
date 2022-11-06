@@ -2772,6 +2772,7 @@ STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLA
 STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{CARGO_LONG} в месяц к перевозке от {STATION} к {STATION} ({COMMA}% ёмкости){STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} к возврату ({COMMA}% ёмкости)
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Среднее время в пути: {NUM}{NBSP}д{P ень ня ней}
+STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Среднее время в пути: {STRING}
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Подсветка зоны покрытия

@@ -23,7 +23,7 @@
  * Only the cargo type of the most saturated linkgraph is taken into account.
  */
 struct LinkProperties {
-	LinkProperties() : capacity(0), usage(0), planned(0), cargo(CT_INVALID), shared(false) {}
+	LinkProperties() : capacity(0), usage(0), planned(0), cargo(CT_INVALID), time(0), shared(false) {}
 
 	/** Return the usage of the link to display. */
 	uint Usage() const { return std::max(this->usage, this->planned); }
@@ -32,6 +32,7 @@ struct LinkProperties {
 	uint usage;    ///< Actual usage of the link.
 	uint planned;  ///< Planned usage of the link.
 	CargoID cargo; ///< Cargo type of the link.
+	uint32 time;   ///< Travel time of the link.
 	bool shared;   ///< If this is a shared link to be drawn dashed.
 };
 
@@ -112,7 +113,7 @@ protected:
 	bool IsPointVisible(Point pt, const DrawPixelInfo *dpi, int padding = 0) const;
 	void GetWidgetDpi(DrawPixelInfo *dpi, uint margin = 0) const;
 
-	static void AddStats(CargoID new_cargo, uint new_cap, uint new_usg, uint new_flow, bool new_shared, LinkProperties &cargo);
+	static void AddStats(CargoID new_cargo, uint new_cap, uint new_usg, uint new_plan, uint32 time, bool new_shared, LinkProperties &cargo);
 	static void DrawVertex(int x, int y, int size, int colour, int border_colour);
 };
 

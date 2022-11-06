@@ -3099,6 +3099,7 @@ STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLA
 STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{CARGO_LONG} Zum Transport pro Monat votgesehen von {STATION} zu {STATION}({COMMA}% der Kapazitäten){STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} ZUM Rücktransport vorgesehen ({COMMA}% der Kapazitäten)
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Durchschnittliche Reisezeit: {NUM}{NBSP}Tag{P "" s}
+STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Durchschnittliche Reisezeit: {STRING}
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Einzugsgebiet anzeigen

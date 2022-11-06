@@ -313,9 +313,7 @@ void MultiCommodityFlow::Dijkstra(NodeID source_node, PathVector &paths)
 			/* Prioritize the fastest route for passengers, mail and express cargo,
 			 * and the shortest route for other classes of cargo.
 			 * In-between stops are punished with a 1 tile or 1 day penalty. */
-			bool express = IsCargoInClass(this->job.Cargo(), CC_PASSENGERS) ||
-				IsCargoInClass(this->job.Cargo(), CC_MAIL) ||
-				IsCargoInClass(this->job.Cargo(), CC_EXPRESS);
+			bool express = IsLinkGraphCargoExpress(this->job.Cargo());
 
 			auto calculate_distance = [&]() {
 				return DistanceMaxPlusManhattan(this->job[from].XY(), this->job[to].XY()) + 1;

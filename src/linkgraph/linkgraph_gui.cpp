@@ -171,7 +171,9 @@ void LinkGraphOverlay::RebuildCache(bool incremental)
 					item->to_pt = to_pt;
 				}
 				this->AddStats(c, lg.Monthly(edge.Capacity()), lg.Monthly(edge.Usage()),
-						ge.flows.GetFlowVia(to->index), from->owner == OWNER_NONE || to->owner == OWNER_NONE,
+						ge.flows.GetFlowVia(to->index),
+						edge.TravelTime(),
+						from->owner == OWNER_NONE || to->owner == OWNER_NONE,
 						item->prop);
 			}
 		}
@@ -345,7 +347,7 @@ inline bool LinkGraphOverlay::IsLinkVisible(Point pta, Point ptb, const DrawPixe
  * @param new_shared If the new link is shared.
  * @param cargo LinkProperties to write the information to.
  */
-/* static */ void LinkGraphOverlay::AddStats(CargoID new_cargo, uint new_cap, uint new_usg, uint new_plan, bool new_shared, LinkProperties &cargo)
+/* static */ void LinkGraphOverlay::AddStats(CargoID new_cargo, uint new_cap, uint new_usg, uint new_plan, uint32 time, bool new_shared, LinkProperties &cargo)
 {
 	/* multiply the numbers by 32 in order to avoid comparing to 0 too often. */
 	if (cargo.capacity == 0 ||
@@ -354,6 +356,7 @@ inline bool LinkGraphOverlay::IsLinkVisible(Point pta, Point ptb, const DrawPixe
 		cargo.capacity = new_cap;
 		cargo.usage = new_usg;
 		cargo.planned = new_plan;
+		cargo.time = time;
 	}
 	if (new_shared) cargo.shared = true;
 }
@@ -505,18 +508,33 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 				check_distance()) {
 
 			static char buf[1024];
+			char *buf_end = buf;
 			buf[0] = 0;
 
 			/* Fill buf with more information if this is a bidirectional link. */
+			uint32 back_time = 0;
 			for (LinkList::const_reverse_iterator j = std::next(i); j != this->cached_links.rend(); ++j) {
 				if (j->from_id == i->to_id && j->to_id == i->from_id) {
+					back_time = j->prop.time;
 					if (j->prop.Usage() > 0) {
 						SetDParam(0, j->prop.cargo);
 						SetDParam(1, j->prop.Usage());
 						SetDParam(2, j->prop.Usage() * 100 / (j->prop.capacity + 1));
-						GetString(buf, STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION, lastof(buf));
+						buf_end = GetString(buf, STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION, lastof(buf));
 					}
 					break;
+				}
+			}
+			/* Add information about the travel time if known. */
+			const uint32 time = link.time ? (back_time ? ((link.time + back_time) / 2) : link.time) : back_time;
+			if (time > 0) {
+				if (_settings_time.time_in_minutes) {
+					SetDParam(0, STR_TIMETABLE_MINUTES);
+					SetDParam(1, time / _settings_time.ticks_per_minute);
+					buf_end = GetString(buf_end, STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL, lastof(buf));
+				} else {
+					SetDParam(0, time / (DAY_TICKS * _settings_game.economy.day_length_factor));
+					buf_end = GetString(buf_end, STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION, lastof(buf));
 				}
 			}
 

@@ -2669,6 +2669,7 @@ STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLA
 STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{CARGO_LONG} elszállítva havonta innen: {STATION} ide: {STATION} ({COMMA}% elszállítva){STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} visszaszállításra ({COMMA}% elszállítva)
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Átlagos utazási idő: {NUM}{NBSP}nap{P "" s}
+STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Átlagos utazási idő: {STRING}
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Lefedett terület mutatása:
