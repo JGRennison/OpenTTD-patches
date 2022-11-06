@@ -418,6 +418,13 @@ class NIHVehicle : public NIHelper {
 					seprintf(buffer, lastof(buffer), "    Railtype: %u (0x" OTTD_PRINTFHEX64 "), Compatible: 0x" OTTD_PRINTFHEX64 ", Powered: 0x" OTTD_PRINTFHEX64 ", All compatible: 0x" OTTD_PRINTFHEX64,
 							e->u.rail.railtype, (static_cast<RailTypes>(1) << e->u.rail.railtype), rti->compatible_railtypes, rti->powered_railtypes, rti->all_compatible_railtypes);
 					output.print(buffer);
+					static const char *engine_types[] = {
+						"SINGLEHEAD",
+						"MULTIHEAD",
+						"WAGON",
+					};
+					seprintf(buffer, lastof(buffer), "    Rail veh type: %s, power: %u", engine_types[e->u.rail.railveh_type], e->u.rail.power);
+					output.print(buffer);
 				}
 				if (e->type == VEH_ROAD) {
 					const RoadTypeInfo* rti = GetRoadTypeInfo(e->u.road.roadtype);
