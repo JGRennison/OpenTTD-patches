@@ -531,7 +531,7 @@ const RoadStopSpec *GetRoadStopSpec(TileIndex t)
 
 	const BaseStation *st = BaseStation::GetByTile(t);
 	uint specindex = GetCustomRoadStopSpecIndex(t);
-	return specindex < st->num_roadstop_specs ? st->roadstop_speclist[specindex].spec : nullptr;
+	return specindex < st->roadstop_speclist.size() ? st->roadstop_speclist[specindex].spec : nullptr;
 }
 
 int AllocateRoadStopSpecToStation(const RoadStopSpec *statspec, BaseStation *st, bool exec)
@@ -541,12 +541,12 @@ int AllocateRoadStopSpecToStation(const RoadStopSpec *statspec, BaseStation *st,
 	if (statspec == nullptr || st == nullptr) return 0;
 
 	/* Try to find the same spec and return that one */
-	for (i = 1; i < st->num_roadstop_specs && i < NUM_ROADSTOPSPECS_PER_STATION; i++) {
+	for (i = 1; i < st->roadstop_speclist.size() && i < NUM_ROADSTOPSPECS_PER_STATION; i++) {
 		if (st->roadstop_speclist[i].spec == statspec) return i;
 	}
 
 	/* Try to find an unused spec slot */
-	for (i = 1; i < st->num_roadstop_specs && i < NUM_ROADSTOPSPECS_PER_STATION; i++) {
+	for (i = 1; i < st->roadstop_speclist.size() && i < NUM_ROADSTOPSPECS_PER_STATION; i++) {
 		if (st->roadstop_speclist[i].spec == nullptr && st->roadstop_speclist[i].grfid == 0) break;
 	}
 
@@ -556,18 +556,7 @@ int AllocateRoadStopSpecToStation(const RoadStopSpec *statspec, BaseStation *st,
 	}
 
 	if (exec) {
-		if (i >= st->num_roadstop_specs) {
-			st->num_roadstop_specs = i + 1;
-			st->roadstop_speclist = ReallocT(st->roadstop_speclist, st->num_roadstop_specs);
-
-			if (st->num_roadstop_specs == 2) {
-				/* Initial allocation */
-				st->roadstop_speclist[0].spec     = nullptr;
-				st->roadstop_speclist[0].grfid    = 0;
-				st->roadstop_speclist[0].localidx = 0;
-			}
-		}
-
+		if (i >= st->roadstop_speclist.size()) st->roadstop_speclist.resize(i + 1);
 		st->roadstop_speclist[i].spec     = statspec;
 		st->roadstop_speclist[i].grfid    = statspec->grf_prop.grffile->grfid;
 		st->roadstop_speclist[i].localidx = statspec->grf_prop.local_id;
@@ -596,15 +585,16 @@ void DeallocateRoadStopSpecFromStation(BaseStation *st, byte specindex)
 	st->roadstop_speclist[specindex].localidx = 0;
 
 	/* If this was the highest spec index, reallocate */
-	if (specindex == st->num_roadstop_specs - 1) {
-		for (; st->roadstop_speclist[st->num_roadstop_specs - 1].grfid == 0 && st->num_roadstop_specs > 1; st->num_roadstop_specs--) {}
+	if (specindex == st->roadstop_speclist.size() - 1) {
+		size_t num_specs;
+		for (num_specs = st->roadstop_speclist.size() - 1; num_specs > 0; num_specs--) {
+			if (st->roadstop_speclist[num_specs].grfid != 0) break;
+		}
 
-		if (st->num_roadstop_specs > 1) {
-			st->roadstop_speclist = ReallocT(st->roadstop_speclist, st->num_roadstop_specs);
+		if (num_specs > 0) {
+			st->roadstop_speclist.resize(num_specs + 1);
 		} else {
-			free(st->roadstop_speclist);
-			st->num_roadstop_specs = 0;
-			st->roadstop_speclist  = nullptr;
+			st->roadstop_speclist.clear();
 			st->cached_roadstop_anim_triggers = 0;
 			st->cached_roadstop_cargo_triggers = 0;
 			return;
@@ -625,7 +615,7 @@ void StationUpdateRoadStopCachedTriggers(BaseStation *st)
 
 	/* Combine animation trigger bitmask for all road stop specs
 	 * of this station. */
-	for (uint i = 0; i < st->num_roadstop_specs; i++) {
+	for (uint i = 0; i < st->roadstop_speclist.size(); i++) {
 		const RoadStopSpec *ss = st->roadstop_speclist[i].spec;
 		if (ss != nullptr) {
 			st->cached_roadstop_anim_triggers |= ss->animation.triggers;

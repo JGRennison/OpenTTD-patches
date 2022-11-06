@@ -71,10 +71,8 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 	Owner owner;                    ///< The owner of this station
 	StationFacility facilities;     ///< The facilities that this station has
 
-	uint8 num_specs;                ///< Number of specs in the speclist
-	uint8 num_roadstop_specs;       ///< Number of road stop specs in the roadstop_speclist
-	StationSpecList *speclist;      ///< List of station specs of this station
-	RoadStopSpecList *roadstop_speclist; ///< List of road stop specs of this station
+	std::vector<StationSpecList> speclist;           ///< List of rail station specs of this station.
+	std::vector<RoadStopSpecList> roadstop_speclist; ///< List of road stop specs of this station
 
 	Date build_date;                ///< Date of construction
 

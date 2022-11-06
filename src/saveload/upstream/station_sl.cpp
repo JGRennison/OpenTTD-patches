@@ -85,24 +85,19 @@ public:
 
 	void Save(BaseStation *bst) const override
 	{
-		SlSetStructListLength(bst->num_specs);
-		for (uint i = 0; i < bst->num_specs; i++) {
+		SlSetStructListLength(bst->speclist.size());
+		for (uint i = 0; i < bst->speclist.size(); i++) {
 			SlObject(&bst->speclist[i], this->GetDescription());
 		}
 	}
 
 	void Load(BaseStation *bst) const override
 	{
-		if (!IsSavegameVersionBefore(SLV_SAVELOAD_LIST_LENGTH)) {
-			bst->num_specs = (uint8)SlGetStructListLength(UINT8_MAX);
-		}
+		uint8 num_specs = (uint8)SlGetStructListLength(UINT8_MAX);
 
-		if (bst->num_specs != 0) {
-			/* Allocate speclist memory when loading a game */
-			bst->speclist = CallocT<StationSpecList>(bst->num_specs);
-			for (uint i = 0; i < bst->num_specs; i++) {
-				SlObject(&bst->speclist[i], this->GetLoadDescription());
-			}
+		bst->speclist.resize(num_specs);
+		for (uint i = 0; i < num_specs; i++) {
+			SlObject(&bst->speclist[i], this->GetLoadDescription());
 		}
 	}
 };
@@ -319,7 +314,6 @@ public:
 		/* Used by newstations for graphic variations */
 		    SLE_VAR(BaseStation, random_bits,            SLE_UINT16),
 		    SLE_VAR(BaseStation, waiting_triggers,       SLE_UINT8),
-		SLE_CONDVAR(BaseStation, num_specs,              SLE_UINT8,                   SL_MIN_VERSION, SLV_SAVELOAD_LIST_LENGTH),
 	};
 	inline const static SaveLoadCompatTable compat_description = _station_base_sl_compat;
 
