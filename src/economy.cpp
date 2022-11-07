@@ -2010,6 +2010,11 @@ static void LoadUnloadVehicle(Vehicle *front)
 
 		GoodsEntry *ge = &st->goods[v->cargo_type];
 
+		if (HasBit(v->vehicle_flags, VF_CARGO_UNLOADING) && payment == nullptr) {
+			/* Once the payment has been made, never attempt to unload again */
+			ClrBit(v->vehicle_flags, VF_CARGO_UNLOADING);
+		}
+
 		if (HasBit(v->vehicle_flags, VF_CARGO_UNLOADING) && (GetUnloadType(v) & OUFB_NO_UNLOAD) == 0) {
 			uint cargo_count = v->cargo.UnloadCount();
 			uint amount_unloaded = _settings_game.order.gradual_loading ? std::min(cargo_count, GetLoadAmount(v)) : cargo_count;
@@ -2074,9 +2079,6 @@ static void LoadUnloadVehicle(Vehicle *front)
 			}
 
 			continue;
-		} else if (HasBit(v->vehicle_flags, VF_CARGO_UNLOADING) && payment == nullptr) {
-			/* Once the payment has been made, never attempt to unload again */
-			ClrBit(v->vehicle_flags, VF_CARGO_UNLOADING);
 		}
 
 		/* Do not pick up goods when we have no-load set or loading is stopped.
