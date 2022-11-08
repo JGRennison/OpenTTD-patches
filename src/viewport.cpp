@@ -1906,7 +1906,7 @@ void ViewportSign::MarkDirty(ZoomLevel maxzoom) const
 static void ViewportDrawTileSprites(const TileSpriteToDrawVector *tstdv)
 {
 	for (const TileSpriteToDraw &ts : *tstdv) {
-		DrawSpriteViewport(ts.image, ts.pal, ts.x, ts.y, ts.sub);
+		DrawSpriteViewport(_cur_dpi, ts.image, ts.pal, ts.x, ts.y, ts.sub);
 	}
 }
 
@@ -1977,7 +1977,7 @@ static void ViewportSortParentSprites(ParentSpriteToSortVector *psdv)
 static void ViewportDrawParentSprites(const ParentSpriteToSortVector *psd, const ChildScreenSpriteToDrawVector *csstdv)
 {
 	for (const ParentSpriteToDraw *ps : *psd) {
-		if (ps->image != SPR_EMPTY_BOUNDING_BOX) DrawSpriteViewport(ps->image, ps->pal, ps->x, ps->y, ps->sub);
+		if (ps->image != SPR_EMPTY_BOUNDING_BOX) DrawSpriteViewport(_cur_dpi, ps->image, ps->pal, ps->x, ps->y, ps->sub);
 
 		int child_idx = ps->first_child;
 		while (child_idx >= 0) {
@@ -1989,7 +1989,7 @@ static void ViewportDrawParentSprites(const ParentSpriteToSortVector *psd, const
 				x += ps->left;
 				y += ps->top;
 			}
-			DrawSpriteViewport(cs->image, cs->pal, x, y, cs->sub);
+			DrawSpriteViewport(_cur_dpi, cs->image, cs->pal, x, y, cs->sub);
 		}
 	}
 }
