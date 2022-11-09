@@ -25,8 +25,19 @@
 #include "game/game_instance.hpp"
 
 #include "widgets/framerate_widget.h"
+
+#include <atomic>
+#include <mutex>
+#if defined(__MINGW32__)
+#include "3rdparty/mingw-std-threads/mingw.mutex.h"
+#endif
+#include <vector>
+
 #include "safeguards.h"
 
+static std::mutex _sound_perf_lock;
+static std::atomic<bool> _sound_perf_pending;
+static std::vector<TimingMeasurement> _sound_perf_measurements;
 
 /**
  * Private declarations for performance measurement implementation
@@ -250,6 +261,15 @@ PerformanceMeasurer::~PerformanceMeasurer()
 			PerformanceMeasurer::SetInactive(PFE_ALLSCRIPTS);
 			return;
 		}
+	}
+	if (this->elem == PFE_SOUND) {
+		TimingMeasurement end = GetPerformanceTimer();
+		std::lock_guard lk(_sound_perf_lock);
+		if (_sound_perf_measurements.size() >= NUM_FRAMERATE_POINTS * 2) return;
+		_sound_perf_measurements.push_back(this->start_time);
+		_sound_perf_measurements.push_back(end);
+		_sound_perf_pending.store(true, std::memory_order_release);
+		return;
 	}
 	_pf_data[this->elem].Add(this->start_time, GetPerformanceTimer());
 }
@@ -1076,5 +1096,17 @@ void ConPrintFramerate()
 
 	if (!printed_anything) {
 		IConsoleWarning("No performance measurements have been taken yet");
+	}
+}
+
+void ProcessPendingPerformanceMeasurements()
+{
+	if (_sound_perf_pending.load(std::memory_order_acquire)) {
+		std::lock_guard lk(_sound_perf_lock);
+		for (size_t i = 0; i < _sound_perf_measurements.size(); i += 2) {
+			_pf_data[PFE_SOUND].Add(_sound_perf_measurements[i], _sound_perf_measurements[i + 1]);
+		}
+		_sound_perf_measurements.clear();
+		_sound_perf_pending.store(false, std::memory_order_relaxed);
 	}
 }
