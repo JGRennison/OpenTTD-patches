@@ -33,6 +33,8 @@
 #include "table/sprites.h"
 #include "table/control_codes.h"
 
+#include <atomic>
+
 #include "safeguards.h"
 
 byte _dirkeys;        ///< 1 = left, 2 = up, 4 = right, 8 = down
@@ -114,7 +116,7 @@ int8 _font_zoom_cfg; ///< Font zoom level in config.
  * @ingroup dirty
  */
 
-extern uint _dirty_block_colour;
+extern std::atomic<uint> _dirty_block_colour;
 static bool _whole_screen_dirty = false;
 bool _gfx_draw_active = false;
 
@@ -1052,18 +1054,18 @@ static BlitterMode GetBlitterMode(PaletteID pal)
  * @param y    Top coordinate of image in viewport, scaled by zoom
  * @param sub  If available, draw only specified part of the sprite
  */
-void DrawSpriteViewport(const DrawPixelInfo *dpi, SpriteID img, PaletteID pal, int x, int y, const SubSprite *sub)
+void DrawSpriteViewport(const SpritePointerHolder &sprite_store, const DrawPixelInfo *dpi, SpriteID img, PaletteID pal, int x, int y, const SubSprite *sub)
 {
-	GfxBlitterCtx ctx(_cur_dpi);
+	GfxBlitterCtx ctx(dpi);
 	SpriteID real_sprite = GB(img, 0, SPRITE_WIDTH);
 	if (HasBit(img, PALETTE_MODIFIER_TRANSPARENT)) {
-		ctx.colour_remap_ptr = GetNonSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1;
-		GfxMainBlitterViewport(ctx, GetSprite(real_sprite, ST_NORMAL), x, y, BM_TRANSPARENT, sub, real_sprite);
+		ctx.colour_remap_ptr = sprite_store.GetRecolourSprite(GB(pal, 0, PALETTE_WIDTH)) + 1;
+		GfxMainBlitterViewport(ctx, sprite_store.GetSprite(real_sprite, ST_NORMAL), x, y, BM_TRANSPARENT, sub, real_sprite);
 	} else if (pal != PAL_NONE) {
 		if (HasBit(pal, PALETTE_TEXT_RECOLOUR)) {
 			ctx.SetColourRemap((TextColour)GB(pal, 0, PALETTE_WIDTH));
 		} else if (GB(pal, 0, PALETTE_WIDTH) != PAL_NONE) {
-			ctx.colour_remap_ptr = GetNonSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1;
+			ctx.colour_remap_ptr = sprite_store.GetRecolourSprite(GB(pal, 0, PALETTE_WIDTH)) + 1;
 		}
 		if (HasBit(pal, PALETTE_BRIGHTNESS_MODIFY)) {
 			int adjust = GB(pal, PALETTE_BRIGHTNESS_OFFSET, PALETTE_BRIGHTNESS_WIDTH);
@@ -1071,9 +1073,22 @@ void DrawSpriteViewport(const DrawPixelInfo *dpi, SpriteID img, PaletteID pal, i
 			int sign_bit = 1 << (PALETTE_BRIGHTNESS_WIDTH - 1);
 			ctx.sprite_brightness_adjust = (adjust ^ sign_bit) - sign_bit;
 		}
-		GfxMainBlitterViewport(ctx, GetSprite(real_sprite, ST_NORMAL), x, y, GetBlitterMode(pal), sub, real_sprite);
+		GfxMainBlitterViewport(ctx, sprite_store.GetSprite(real_sprite, ST_NORMAL), x, y, GetBlitterMode(pal), sub, real_sprite);
 	} else {
-		GfxMainBlitterViewport(ctx, GetSprite(real_sprite, ST_NORMAL), x, y, BM_NORMAL, sub, real_sprite);
+		GfxMainBlitterViewport(ctx, sprite_store.GetSprite(real_sprite, ST_NORMAL), x, y, BM_NORMAL, sub, real_sprite);
+	}
+}
+
+void PrepareDrawSpriteViewportSpriteStore(SpritePointerHolder &sprite_store, SpriteID img, PaletteID pal)
+{
+	SpriteID real_sprite = GB(img, 0, SPRITE_WIDTH);
+	sprite_store.CacheSprite(real_sprite, ST_NORMAL);
+	if (HasBit(img, PALETTE_MODIFIER_TRANSPARENT)) {
+		sprite_store.CacheSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR);
+	} else if (pal != PAL_NONE) {
+		if (!HasBit(pal, PALETTE_TEXT_RECOLOUR) && GB(pal, 0, PALETTE_WIDTH) != PAL_NONE) {
+			sprite_store.CacheSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR);
+		}
 	}
 }
 
@@ -1678,12 +1693,8 @@ static void DrawDirtyViewport(uint occlusion, int left, int top, int right, int 
 	if (_game_mode == GM_MENU) {
 		RedrawScreenRect(left, top, right, bottom);
 	} else {
-		extern void ViewportDrawChk(Viewport *vp, int left, int top, int right, int bottom);
-		ViewportDrawChk(_dirty_viewport, left, top, right, bottom);
-		if (_dirty_viewport_disp_flags & (ND_SHADE_GREY | ND_SHADE_DIMMED)) {
-			GfxFillRect(left, top, right - 1, bottom - 1,
-					(_dirty_viewport_disp_flags & ND_SHADE_DIMMED) ? PALETTE_TO_TRANSPARENT : PALETTE_NEWSPAPER, FILLRECT_RECOLOUR);
-		}
+		extern void ViewportDrawChk(Viewport *vp, int left, int top, int right, int bottom, uint8 display_flags);
+		ViewportDrawChk(_dirty_viewport, left, top, right, bottom, _dirty_viewport_disp_flags);
 		VideoDriver::GetInstance()->MakeDirty(left, top, right - left, bottom - top);
 	}
 }
@@ -1743,7 +1754,7 @@ void DrawDirtyBlocks()
 				DrawOverlappedWindowFlags flags = DOWF_MARK_DIRTY;
 				if (unlikely(HasBit(_gfx_debug_flags, GDF_SHOW_WINDOW_DIRTY))) {
 					flags |= DOWF_SHOW_DEBUG;
-					_dirty_block_colour++;
+					_dirty_block_colour.fetch_add(1, std::memory_order_relaxed);
 				}
 				DrawOverlappedWindowWithClipping(w, w->left, w->top, w->left + w->width, w->top + w->height, flags);
 				w->flags &= ~(WF_DIRTY | WF_WIDGETS_DIRTY);
@@ -1755,7 +1766,7 @@ void DrawDirtyBlocks()
 						DrawOverlappedWindowFlags flags = DOWF_MARK_DIRTY;
 						if (unlikely(HasBit(_gfx_debug_flags, GDF_SHOW_WIDGET_DIRTY))) {
 							flags |= DOWF_SHOW_DEBUG;
-							_dirty_block_colour++;
+							_dirty_block_colour.fetch_add(1, std::memory_order_relaxed);
 						}
 						DrawOverlappedWindowWithClipping(w, w->left + widget->pos_x, w->top + widget->pos_y, w->left + widget->pos_x + widget->current_x, w->top + widget->pos_y + widget->current_y, flags);
 					}
@@ -1883,8 +1894,9 @@ void DrawDirtyBlocks()
 			RedrawScreenRect(r.left, r.top, r.right, r.bottom);
 		}
 		if (unlikely(HasBit(_gfx_debug_flags, GDF_SHOW_RECT_DIRTY))) {
+			ViewportDoDrawProcessAllPending();
 			for (const Rect &r : _dirty_blocks) {
-				GfxFillRect(r.left, r.top, r.right, r.bottom, _string_colourmap[++_dirty_block_colour & 0xF], FILLRECT_CHECKER);
+				GfxFillRect(r.left, r.top, r.right, r.bottom, _string_colourmap[(_dirty_block_colour.fetch_add(1, std::memory_order_relaxed) + 1) & 0xF], FILLRECT_CHECKER);
 			}
 		}
 	}
@@ -1900,8 +1912,9 @@ void DrawDirtyBlocks()
 		}
 		_dirty_blocks.clear();
 	}
+	ViewportDoDrawProcessAllPending();
 	_gfx_draw_active = false;
-	++_dirty_block_colour;
+	_dirty_block_colour.fetch_add(1, std::memory_order_relaxed);
 
 	extern void ClearViewportCaches();
 	ClearViewportCaches();

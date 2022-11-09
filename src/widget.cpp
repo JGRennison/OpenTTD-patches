@@ -2147,16 +2147,10 @@ void NWidgetViewport::Draw(const Window *w)
 	if (this->disp_flags & ND_NO_TRANSPARENCY) {
 		TransparencyOptionBits to_backup = _transparency_opt;
 		_transparency_opt &= (1 << TO_SIGNS) | (1 << TO_LOADING); // Disable all transparency, except textual stuff
-		w->DrawViewport();
+		w->DrawViewport(this->disp_flags);
 		_transparency_opt = to_backup;
 	} else {
-		w->DrawViewport();
-	}
-
-	/* Optionally shade the viewport. */
-	if (this->disp_flags & (ND_SHADE_GREY | ND_SHADE_DIMMED)) {
-		GfxFillRect(this->pos_x, this->pos_y, this->pos_x + this->current_x - 1, this->pos_y + this->current_y - 1,
-				(this->disp_flags & ND_SHADE_DIMMED) ? PALETTE_TO_TRANSPARENT : PALETTE_NEWSPAPER, FILLRECT_RECOLOUR);
+		w->DrawViewport(this->disp_flags);
 	}
 }
 

@@ -276,6 +276,8 @@ struct MainWindow : Window
 	{
 		this->DrawWidgets();
 		if (_game_mode == GM_MENU) {
+			ViewportDoDrawProcessAllPending();
+
 			static const SpriteID title_sprites[] = {SPR_OTTD_O, SPR_OTTD_P, SPR_OTTD_E, SPR_OTTD_N, SPR_OTTD_T, SPR_OTTD_T, SPR_OTTD_D};
 			uint letter_spacing = ScaleGUITrad(10);
 			int name_width = (lengthof(title_sprites) - 1) * letter_spacing;

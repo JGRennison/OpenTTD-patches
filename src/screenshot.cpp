@@ -669,11 +669,14 @@ static void LargeWorldCallback(void *userdata, void *buf, uint y, uint pitch, ui
 			ScaleByZoom(left - wx - vp->left, vp->zoom) + vp->virtual_left,
 			ScaleByZoom(y - vp->top, vp->zoom) + vp->virtual_top,
 			ScaleByZoom(left - vp->left, vp->zoom) + vp->virtual_left,
-			ScaleByZoom((y + n) - vp->top, vp->zoom) + vp->virtual_top
+			ScaleByZoom((y + n) - vp->top, vp->zoom) + vp->virtual_top,
+			0
 		);
 	}
 
 	_cur_dpi = old_dpi;
+
+	ViewportDoDrawProcessAllPending();
 
 	/* Switch back to rendering to the screen */
 	_screen = old_screen;

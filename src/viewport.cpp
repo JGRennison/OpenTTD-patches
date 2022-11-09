@@ -113,12 +113,21 @@
 #include "newgrf_object.h"
 #include "infrastructure_func.h"
 #include "tracerestrict.h"
+#include "worker_thread.h"
 
 #include <map>
 #include <vector>
 #include <math.h>
 #include <algorithm>
 #include <tuple>
+#include <atomic>
+
+#include <mutex>
+#include <condition_variable>
+#if defined(__MINGW32__)
+#include "3rdparty/mingw-std-threads/mingw.mutex.h"
+#include "3rdparty/mingw-std-threads/mingw.condition_variable.h"
+#endif
 
 #include "table/strings.h"
 #include "table/string_colours.h"
@@ -238,19 +247,8 @@ struct BridgeSetYComparator {
 
 /** Data structure storing rendering information */
 struct ViewportDrawer {
-	DrawPixelInfo dpi;
-	int offset_x;
-	int offset_y;
-
-	StringSpriteToDrawVector string_sprites_to_draw;
-	TileSpriteToDrawVector tile_sprites_to_draw;
-	ParentSpriteToDrawVector parent_sprites_to_draw;
-	ParentSpriteToSortVector parent_sprites_to_sort; ///< Parent sprite pointer array used for sorting
-	ChildScreenSpriteToDrawVector child_screen_sprites_to_draw;
 	TunnelToMapStorage tunnel_to_map_x;
 	TunnelToMapStorage tunnel_to_map_y;
-	btree::btree_map<TileIndex, TileIndex, BridgeSetXComparator> bridge_to_map_x;
-	btree::btree_map<TileIndex, TileIndex, BridgeSetYComparator> bridge_to_map_y;
 
 	int *last_child;
 
@@ -266,13 +264,65 @@ struct ViewportDrawer {
 	int *last_foundation_child[FOUNDATION_PART_END]; ///< Tail of ChildSprite list of the foundations. (index into child_screen_sprites_to_draw)
 	Point foundation_offset[FOUNDATION_PART_END];    ///< Pixel offset for ground sprites on the foundations.
 };
+static ViewportDrawer _vd;
+
+struct ViewportProcessParentSpritesData {
+	DrawPixelInfo dpi;
+	ParentSpriteToSortVector psts;
+};
+
+/** Data structure storing rendering information */
+struct ViewportDrawerDynamic {
+	DrawPixelInfo dpi;
+	int offset_x;
+	int offset_y;
+
+	StringSpriteToDrawVector string_sprites_to_draw;
+	TileSpriteToDrawVector tile_sprites_to_draw;
+	ParentSpriteToDrawVector parent_sprites_to_draw;
+	std::vector<ViewportProcessParentSpritesData> parent_sprite_sets;
+	ChildScreenSpriteToDrawVector child_screen_sprites_to_draw;
+	btree::btree_map<TileIndex, TileIndex, BridgeSetXComparator> bridge_to_map_x;
+	btree::btree_map<TileIndex, TileIndex, BridgeSetYComparator> bridge_to_map_y;
+
+	uint8 display_flags;
+
+	std::atomic<uint> draw_jobs_active;
+
+	TransparencyOptionBits transparency_opt;
+	TransparencyOptionBits invisibility_opt;
+
+	const byte *pal2trsp_remap_ptr = nullptr;
+
+	SpritePointerHolder sprite_data;
+
+	inline bool IsTransparencySet(TransparencyOption to)
+	{
+		return (HasBit(this->transparency_opt, to) && _game_mode != GM_MENU);
+	}
+
+	inline bool IsInvisibilitySet(TransparencyOption to)
+	{
+		return (HasBit(this->transparency_opt & this->invisibility_opt, to) && _game_mode != GM_MENU);
+	}
+};
 
 static void MarkRouteStepDirty(RouteStepsMap::const_iterator cit);
 static void MarkRouteStepDirty(const TileIndex tile, uint order_nr);
 static void HideMeasurementTooltips();
 
 static DrawPixelInfo _dpi_for_text;
-static ViewportDrawer _vd;
+static std::unique_ptr<ViewportDrawerDynamic> _vdd;
+std::vector<std::unique_ptr<ViewportDrawerDynamic>> _spare_viewport_drawers;
+
+struct ViewportDrawerReturn {
+	Viewport *vp;
+	std::unique_ptr<ViewportDrawerDynamic> vdd;
+};
+static std::mutex _viewport_drawer_return_lock;
+static std::vector<ViewportDrawerReturn> _viewport_drawer_returns;
+static std::condition_variable _viewport_drawer_empty_cv;
+static uint _viewport_drawer_jobs = 0;
 
 static std::vector<Viewport *> _viewport_window_cache;
 static std::vector<Rect> _viewport_coverage_rects;
@@ -317,7 +367,7 @@ TileHighlightData _thd;
 static TileInfo *_cur_ti;
 bool _draw_bounding_boxes = false;
 bool _draw_dirty_blocks = false;
-uint _dirty_block_colour = 0;
+std::atomic<uint> _dirty_block_colour;
 static VpSpriteSorter _vp_sprite_sorter = nullptr;
 
 const byte *_pal2trsp_remap_ptr = nullptr;
@@ -857,7 +907,7 @@ static void AddTileSpriteToDraw(SpriteID image, PaletteID pal, int32 x, int32 y,
 {
 	dbg_assert((image & SPRITE_MASK) < MAX_SPRITES);
 
-	TileSpriteToDraw &ts = _vd.tile_sprites_to_draw.emplace_back();
+	TileSpriteToDraw &ts = _vdd->tile_sprites_to_draw.emplace_back();
 	ts.image = image;
 	ts.pal = pal;
 	ts.sub = sub;
@@ -956,7 +1006,7 @@ void OffsetGroundSprite(int x, int y)
 	}
 
 	/* _vd.last_child == nullptr if foundation sprite was clipped by the viewport bounds */
-	if (_vd.last_child != nullptr) _vd.foundation[_vd.foundation_part] = (uint)_vd.parent_sprites_to_draw.size() - 1;
+	if (_vd.last_child != nullptr) _vd.foundation[_vd.foundation_part] = (uint)_vdd->parent_sprites_to_draw.size() - 1;
 
 	_vd.foundation_offset[_vd.foundation_part].x = x * ZOOM_LVL_BASE;
 	_vd.foundation_offset[_vd.foundation_part].y = y * ZOOM_LVL_BASE;
@@ -983,10 +1033,10 @@ static void AddCombinedSprite(SpriteID image, PaletteID pal, int x, int y, int z
 	int right = pt.x + spr->x_offs + spr->width;
 	int top = pt.y + spr->y_offs;
 	int bottom = pt.y + spr->y_offs + spr->height;
-	if (left >= _vd.dpi.left + _vd.dpi.width ||
-			right <= _vd.dpi.left ||
-			top >= _vd.dpi.top + _vd.dpi.height ||
-			bottom <= _vd.dpi.top)
+	if (left >= _vdd->dpi.left + _vdd->dpi.width ||
+			right <= _vdd->dpi.left ||
+			top >= _vdd->dpi.top + _vdd->dpi.height ||
+			bottom <= _vdd->dpi.top)
 		return;
 
 	AddChildSpriteScreen(image, pal, pt.x, pt.y, false, sub, false, false);
@@ -1071,14 +1121,14 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 	}
 
 	/* Do not add the sprite to the viewport, if it is outside */
-	if (left   >= _vd.dpi.left + _vd.dpi.width ||
-	    right  <= _vd.dpi.left                 ||
-	    top    >= _vd.dpi.top + _vd.dpi.height ||
-	    bottom <= _vd.dpi.top) {
+	if (left   >= _vdd->dpi.left + _vdd->dpi.width  ||
+		right  <= _vdd->dpi.left                   ||
+		top    >= _vdd->dpi.top  + _vdd->dpi.height ||
+		bottom <= _vdd->dpi.top) {
 		return;
 	}
 
-	ParentSpriteToDraw &ps = _vd.parent_sprites_to_draw.emplace_back();
+	ParentSpriteToDraw &ps = _vdd->parent_sprites_to_draw.emplace_back();
 	ps.x = tmp_x;
 	ps.y = tmp_y;
 
@@ -1108,7 +1158,7 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 
 	if (_vd.combine_sprites == SPRITE_COMBINE_PENDING) {
 		_vd.combine_sprites = SPRITE_COMBINE_ACTIVE;
-		_vd.combine_psd_index = (uint)_vd.parent_sprites_to_draw.size() - 1;
+		_vd.combine_psd_index = (uint)_vdd->parent_sprites_to_draw.size() - 1;
 		_vd.combine_left = tmp_left;
 		_vd.combine_right = right;
 		_vd.combine_top = tmp_top;
@@ -1148,7 +1198,7 @@ void EndSpriteCombine()
 {
 	dbg_assert(_vd.combine_sprites != SPRITE_COMBINE_NONE);
 	if (_vd.combine_sprites == SPRITE_COMBINE_ACTIVE) {
-		ParentSpriteToDraw &ps = _vd.parent_sprites_to_draw[_vd.combine_psd_index];
+		ParentSpriteToDraw &ps = _vdd->parent_sprites_to_draw[_vd.combine_psd_index];
 		ps.left = _vd.combine_left;
 		ps.top = _vd.combine_top;
 		ps.width = _vd.combine_right - _vd.combine_left;
@@ -1217,9 +1267,9 @@ void AddChildSpriteScreen(SpriteID image, PaletteID pal, int x, int y, bool tran
 		pal = PALETTE_TO_TRANSPARENT;
 	}
 
-	*_vd.last_child = (uint)_vd.child_screen_sprites_to_draw.size();
+	*_vd.last_child = (uint)_vdd->child_screen_sprites_to_draw.size();
 
-	ChildScreenSpriteToDraw &cs = _vd.child_screen_sprites_to_draw.emplace_back();
+	ChildScreenSpriteToDraw &cs = _vdd->child_screen_sprites_to_draw.emplace_back();
 	cs.image = image;
 	cs.pal = pal;
 	cs.sub = sub;
@@ -1236,10 +1286,10 @@ void AddChildSpriteScreen(SpriteID image, PaletteID pal, int x, int y, bool tran
 	_vd.last_child = &cs.next;
 }
 
-static void AddStringToDraw(int x, int y, StringID string, uint64 params_1, uint64 params_2, Colours colour, uint16 width)
+static void AddStringToDraw(ViewportDrawerDynamic *vdd, int x, int y, StringID string, uint64 params_1, uint64 params_2, Colours colour, uint16 width)
 {
 	dbg_assert(width != 0);
-	StringSpriteToDraw &ss = _vd.string_sprites_to_draw.emplace_back();
+	StringSpriteToDraw &ss = vdd->string_sprites_to_draw.emplace_back();
 	ss.string = string;
 	ss.x = x;
 	ss.y = y;
@@ -1576,11 +1626,11 @@ static int GetViewportY(Point tile)
  */
 static void ViewportAddLandscape()
 {
-	dbg_assert(_vd.dpi.top <= _vd.dpi.top + _vd.dpi.height);
-	dbg_assert(_vd.dpi.left <= _vd.dpi.left + _vd.dpi.width);
+	dbg_assert(_vdd->dpi.top <= _vdd->dpi.top + _vdd->dpi.height);
+	dbg_assert(_vdd->dpi.left <= _vdd->dpi.left + _vdd->dpi.width);
 
-	Point upper_left = InverseRemapCoords(_vd.dpi.left, _vd.dpi.top);
-	Point upper_right = InverseRemapCoords(_vd.dpi.left + _vd.dpi.width, _vd.dpi.top);
+	Point upper_left = InverseRemapCoords(_vdd->dpi.left, _vdd->dpi.top);
+	Point upper_right = InverseRemapCoords(_vdd->dpi.left + _vdd->dpi.width, _vdd->dpi.top);
 
 	/* Transformations between tile coordinates and viewport rows/columns: See vp_column_row
 	 *   column = y - x
@@ -1643,14 +1693,14 @@ static void ViewportAddLandscape()
 
 			int viewport_y = GetViewportY(tilecoord);
 
-			if (viewport_y + MAX_TILE_EXTENT_BOTTOM < _vd.dpi.top) {
+			if (viewport_y + MAX_TILE_EXTENT_BOTTOM < _vdd->dpi.top) {
 				/* The tile in this column is not visible yet.
 				 * Tiles in other columns may be visible, but we need more rows in any case. */
 				last_row = false;
 				continue;
 			}
 
-			int min_visible_height = viewport_y - (_vd.dpi.top + _vd.dpi.height);
+			int min_visible_height = viewport_y - (_vdd->dpi.top + _vdd->dpi.height);
 			bool tile_visible = min_visible_height <= 0;
 
 			if (tile_type != MP_VOID) {
@@ -1694,6 +1744,7 @@ static void ViewportAddLandscape()
 
 /**
  * Add a string to draw in the viewport
+ * @param vdd viewport drawer
  * @param dpi current viewport area
  * @param small_from Zoomlevel from when the small font should be used
  * @param sign sign position and dimension
@@ -1702,7 +1753,7 @@ static void ViewportAddLandscape()
  * @param string_small_shadow Shadow string for 4x and 8x zoom level; or #STR_NULL if no shadow
  * @param colour colour of the sign background; or INVALID_COLOUR if transparent
  */
-void ViewportAddString(const DrawPixelInfo *dpi, ZoomLevel small_from, const ViewportSign *sign, StringID string_normal, StringID string_small, StringID string_small_shadow, uint64 params_1, uint64 params_2, Colours colour)
+void ViewportAddString(ViewportDrawerDynamic *vdd, const DrawPixelInfo *dpi, ZoomLevel small_from, const ViewportSign *sign, StringID string_normal, StringID string_small, StringID string_small_shadow, uint64 params_1, uint64 params_2, Colours colour)
 {
 	bool small = dpi->zoom >= small_from;
 
@@ -1722,14 +1773,14 @@ void ViewportAddString(const DrawPixelInfo *dpi, ZoomLevel small_from, const Vie
 	}
 
 	if (!small) {
-		AddStringToDraw(sign->center - sign_half_width, sign->top, string_normal, params_1, params_2, colour, sign->width_normal);
+		AddStringToDraw(vdd, sign->center - sign_half_width, sign->top, string_normal, params_1, params_2, colour, sign->width_normal);
 	} else {
 		int shadow_offset = 0;
 		if (string_small_shadow != STR_NULL) {
 			shadow_offset = 4;
-			AddStringToDraw(sign->center - sign_half_width + shadow_offset, sign->top, string_small_shadow, params_1, params_2, INVALID_COLOUR, sign->width_small);
+			AddStringToDraw(vdd, sign->center - sign_half_width + shadow_offset, sign->top, string_small_shadow, params_1, params_2, INVALID_COLOUR, sign->width_small);
 		}
-		AddStringToDraw(sign->center - sign_half_width, sign->top - shadow_offset, string_small, params_1, params_2,
+		AddStringToDraw(vdd, sign->center - sign_half_width, sign->top - shadow_offset, string_small, params_1, params_2,
 				colour, sign->width_small | 0x8000);
 	}
 }
@@ -1750,7 +1801,7 @@ static Rect ExpandRectWithViewportSignMargins(Rect r, ZoomLevel zoom)
 	return r;
 }
 
-static void ViewportAddKdtreeSigns(DrawPixelInfo *dpi, bool towns_only)
+static void ViewportAddKdtreeSigns(ViewportDrawerDynamic *vdd, DrawPixelInfo *dpi, bool towns_only)
 {
 	Rect search_rect{ dpi->left, dpi->top, dpi->left + dpi->width, dpi->top + dpi->height };
 	search_rect = ExpandRectWithViewportSignMargins(search_rect, dpi->zoom);
@@ -1758,7 +1809,7 @@ static void ViewportAddKdtreeSigns(DrawPixelInfo *dpi, bool towns_only)
 	bool show_stations = HasBit(_display_opt, DO_SHOW_STATION_NAMES) && _game_mode != GM_MENU && !towns_only;
 	bool show_waypoints = HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES) && _game_mode != GM_MENU && !towns_only;
 	bool show_towns = HasBit(_display_opt, DO_SHOW_TOWN_NAMES) && _game_mode != GM_MENU;
-	bool show_signs = HasBit(_display_opt, DO_SHOW_SIGNS) && !IsInvisibilitySet(TO_SIGNS) && !towns_only;
+	bool show_signs = HasBit(_display_opt, DO_SHOW_SIGNS) && !vdd->IsInvisibilitySet(TO_SIGNS) && !towns_only;
 	bool show_competitors = HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS) && !towns_only;
 	bool hide_hidden_waypoints = _settings_client.gui.allow_hiding_waypoint_labels && !HasBit(_extra_display_opt, XDO_SHOW_HIDDEN_SIGNS);
 
@@ -1818,27 +1869,27 @@ static void ViewportAddKdtreeSigns(DrawPixelInfo *dpi, bool towns_only)
 	/* Layering order (bottom to top): Town names, signs, stations */
 
 	for (const auto *t : towns) {
-		ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &t->cache.sign,
+		ViewportAddString(vdd, dpi, ZOOM_LVL_OUT_16X, &t->cache.sign,
 			t->Label(), t->SmallLabel(), STR_VIEWPORT_TOWN_TINY_BLACK,
 			t->index, t->cache.population);
 	}
 
 	for (const auto *si : signs) {
-		ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &si->sign,
+		ViewportAddString(vdd, dpi, ZOOM_LVL_OUT_16X, &si->sign,
 			STR_WHITE_SIGN,
-			(IsTransparencySet(TO_SIGNS) || si->owner == OWNER_DEITY) ? STR_VIEWPORT_SIGN_SMALL_WHITE : STR_VIEWPORT_SIGN_SMALL_BLACK, STR_NULL,
+			(vdd->IsTransparencySet(TO_SIGNS) || si->owner == OWNER_DEITY) ? STR_VIEWPORT_SIGN_SMALL_WHITE : STR_VIEWPORT_SIGN_SMALL_BLACK, STR_NULL,
 			si->index, 0, (si->owner == OWNER_NONE) ? COLOUR_GREY : (si->owner == OWNER_DEITY ? INVALID_COLOUR : _company_colours[si->owner]));
 	}
 
 	for (const auto *st : stations) {
 		if (Station::IsExpected(st)) {
 			/* Station */
-			ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &st->sign,
+			ViewportAddString(vdd, dpi, ZOOM_LVL_OUT_16X, &st->sign,
 				STR_VIEWPORT_STATION, STR_VIEWPORT_STATION_TINY, STR_NULL,
 				st->index, st->facilities, (st->owner == OWNER_NONE || !st->IsInUse()) ? COLOUR_GREY : _company_colours[st->owner]);
 		} else {
 			/* Waypoint */
-			ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &st->sign,
+			ViewportAddString(vdd, dpi, ZOOM_LVL_OUT_16X, &st->sign,
 				STR_VIEWPORT_WAYPOINT, STR_VIEWPORT_WAYPOINT_TINY, STR_NULL,
 				st->index, st->facilities, (st->owner == OWNER_NONE || !st->IsInUse()) ? COLOUR_GREY : _company_colours[st->owner]);
 		}
@@ -1903,10 +1954,10 @@ void ViewportSign::MarkDirty(ZoomLevel maxzoom) const
 	}
 }
 
-static void ViewportDrawTileSprites(const TileSpriteToDrawVector *tstdv)
+static void ViewportDrawTileSprites(const ViewportDrawerDynamic *vdd)
 {
-	for (const TileSpriteToDraw &ts : *tstdv) {
-		DrawSpriteViewport(_cur_dpi, ts.image, ts.pal, ts.x, ts.y, ts.sub);
+	for (const TileSpriteToDraw &ts : vdd->tile_sprites_to_draw) {
+		DrawSpriteViewport(vdd->sprite_data, &vdd->dpi, ts.image, ts.pal, ts.x, ts.y, ts.sub);
 	}
 }
 
@@ -1974,10 +2025,10 @@ static void ViewportSortParentSprites(ParentSpriteToSortVector *psdv)
 	}
 }
 
-static void ViewportDrawParentSprites(const ParentSpriteToSortVector *psd, const ChildScreenSpriteToDrawVector *csstdv)
+static void ViewportDrawParentSprites(const ViewportDrawerDynamic *vdd, const DrawPixelInfo *dpi, const ParentSpriteToSortVector *psd, const ChildScreenSpriteToDrawVector *csstdv)
 {
 	for (const ParentSpriteToDraw *ps : *psd) {
-		if (ps->image != SPR_EMPTY_BOUNDING_BOX) DrawSpriteViewport(_cur_dpi, ps->image, ps->pal, ps->x, ps->y, ps->sub);
+		if (ps->image != SPR_EMPTY_BOUNDING_BOX) DrawSpriteViewport(vdd->sprite_data, dpi, ps->image, ps->pal, ps->x, ps->y, ps->sub);
 
 		int child_idx = ps->first_child;
 		while (child_idx >= 0) {
@@ -1989,7 +2040,7 @@ static void ViewportDrawParentSprites(const ParentSpriteToSortVector *psd, const
 				x += ps->left;
 				y += ps->top;
 			}
-			DrawSpriteViewport(_cur_dpi, cs->image, cs->pal, x, y, cs->sub);
+			DrawSpriteViewport(vdd->sprite_data, dpi, cs->image, cs->pal, x, y, cs->sub);
 		}
 	}
 }
@@ -1998,13 +2049,13 @@ static void ViewportDrawParentSprites(const ParentSpriteToSortVector *psd, const
  * Draws the bounding boxes of all ParentSprites
  * @param psd Array of ParentSprites
  */
-static void ViewportDrawBoundingBoxes(const ParentSpriteToSortVector *psd)
+static void ViewportDrawBoundingBoxes(const ParentSpriteToDrawVector &psd)
 {
-	for (const ParentSpriteToDraw *ps : *psd) {
-		Point pt1 = RemapCoords(ps->xmax + 1, ps->ymax + 1, ps->zmax + 1); // top front corner
-		Point pt2 = RemapCoords(ps->xmin    , ps->ymax + 1, ps->zmax + 1); // top left corner
-		Point pt3 = RemapCoords(ps->xmax + 1, ps->ymin    , ps->zmax + 1); // top right corner
-		Point pt4 = RemapCoords(ps->xmax + 1, ps->ymax + 1, ps->zmin    ); // bottom front corner
+	for (const ParentSpriteToDraw &ps : psd) {
+		Point pt1 = RemapCoords(ps.xmax + 1, ps.ymax + 1, ps.zmax + 1); // top front corner
+		Point pt2 = RemapCoords(ps.xmin    , ps.ymax + 1, ps.zmax + 1); // top left corner
+		Point pt3 = RemapCoords(ps.xmax + 1, ps.ymin    , ps.zmax + 1); // top right corner
+		Point pt4 = RemapCoords(ps.xmax + 1, ps.ymax + 1, ps.zmin    ); // bottom front corner
 
 		DrawBox(        pt1.x,         pt1.y,
 		        pt2.x - pt1.x, pt2.y - pt1.y,
@@ -2026,41 +2077,41 @@ static void ViewportMapStoreBridge(const Viewport * const vp, const TileIndex ti
 	switch (GetTunnelBridgeDirection(tile)) {
 		case DIAGDIR_NE: {
 			/* X axis: tile at higher coordinate, facing towards lower coordinate */
-			auto iter = _vd.bridge_to_map_x.lower_bound(tile);
-			if (iter != _vd.bridge_to_map_x.begin()) {
+			auto iter = _vdd->bridge_to_map_x.lower_bound(tile);
+			if (iter != _vdd->bridge_to_map_x.begin()) {
 				auto prev = iter;
 				--prev;
 				if (prev->second == tile) return;
 			}
-			_vd.bridge_to_map_x.insert(iter, std::make_pair(GetOtherTunnelBridgeEnd(tile), tile));
+			_vdd->bridge_to_map_x.insert(iter, std::make_pair(GetOtherTunnelBridgeEnd(tile), tile));
 			break;
 		}
 
 		case DIAGDIR_NW: {
 			/* Y axis: tile at higher coordinate, facing towards lower coordinate */
-			auto iter = _vd.bridge_to_map_y.lower_bound(tile);
-			if (iter != _vd.bridge_to_map_y.begin()) {
+			auto iter = _vdd->bridge_to_map_y.lower_bound(tile);
+			if (iter != _vdd->bridge_to_map_y.begin()) {
 				auto prev = iter;
 				--prev;
 				if (prev->second == tile) return;
 			}
-			_vd.bridge_to_map_y.insert(iter, std::make_pair(GetOtherTunnelBridgeEnd(tile), tile));
+			_vdd->bridge_to_map_y.insert(iter, std::make_pair(GetOtherTunnelBridgeEnd(tile), tile));
 			break;
 		}
 
 		case DIAGDIR_SW: {
 			/* X axis: tile at lower coordinate, facing towards higher coordinate */
-			auto iter = _vd.bridge_to_map_x.lower_bound(tile);
-			if (iter != _vd.bridge_to_map_x.end() && iter->first == tile) return;
-			_vd.bridge_to_map_x.insert(iter, std::make_pair(tile, GetOtherTunnelBridgeEnd(tile)));
+			auto iter = _vdd->bridge_to_map_x.lower_bound(tile);
+			if (iter != _vdd->bridge_to_map_x.end() && iter->first == tile) return;
+			_vdd->bridge_to_map_x.insert(iter, std::make_pair(tile, GetOtherTunnelBridgeEnd(tile)));
 			break;
 		}
 
 		case DIAGDIR_SE: {
 			/* Y axis: tile at lower coordinate, facing towards higher coordinate */
-			auto iter = _vd.bridge_to_map_y.lower_bound(tile);
-			if (iter != _vd.bridge_to_map_y.end() && iter->first == tile) return;
-			_vd.bridge_to_map_y.insert(iter, std::make_pair(tile, GetOtherTunnelBridgeEnd(tile)));
+			auto iter = _vdd->bridge_to_map_y.lower_bound(tile);
+			if (iter != _vdd->bridge_to_map_y.end() && iter->first == tile) return;
+			_vdd->bridge_to_map_y.insert(iter, std::make_pair(tile, GetOtherTunnelBridgeEnd(tile)));
 			break;
 		}
 
@@ -2144,15 +2195,15 @@ void ViewportMapBuildTunnelCache()
 /**
  * Draw/colour the blocks that have been redrawn.
  */
-void ViewportDrawDirtyBlocks()
+void ViewportDrawDirtyBlocks(const DrawPixelInfo *dpi, bool increment_colour)
 {
 	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
-	const DrawPixelInfo *dpi = _cur_dpi;
 	void *dst;
 	int right =  UnScaleByZoom(dpi->width,  dpi->zoom);
 	int bottom = UnScaleByZoom(dpi->height, dpi->zoom);
 
-	int colour = _string_colourmap[_dirty_block_colour & 0xF];
+	const uint dirty_block_colour = increment_colour ? _dirty_block_colour.fetch_add(1, std::memory_order_relaxed) : _dirty_block_colour.load(std::memory_order_relaxed);
+	int colour = _string_colourmap[dirty_block_colour];
 
 	dst = dpi->dst_ptr;
 
@@ -2163,7 +2214,7 @@ void ViewportDrawDirtyBlocks()
 	} while (--bottom > 0);
 }
 
-static void ViewportDrawStrings(ZoomLevel zoom, const StringSpriteToDrawVector *sstdv)
+static void ViewportDrawStrings(ViewportDrawerDynamic *vdd, ZoomLevel zoom, const StringSpriteToDrawVector *sstdv)
 {
 	for (const StringSpriteToDraw &ss : *sstdv) {
 		TextColour colour = TC_BLACK;
@@ -2178,9 +2229,9 @@ static void ViewportDrawStrings(ZoomLevel zoom, const StringSpriteToDrawVector *
 
 		if (ss.colour != INVALID_COLOUR) {
 			/* Do not draw signs nor station names if they are set invisible */
-			if (IsInvisibilitySet(TO_SIGNS) && ss.string != STR_WHITE_SIGN) continue;
+			if (vdd->IsInvisibilitySet(TO_SIGNS) && ss.string != STR_WHITE_SIGN) continue;
 
-			if (IsTransparencySet(TO_SIGNS) && ss.string != STR_WHITE_SIGN) {
+			if (vdd->IsTransparencySet(TO_SIGNS) && ss.string != STR_WHITE_SIGN) {
 				/* Don't draw the rectangle.
 				 * Real colours need the TC_IS_PALETTE_COLOUR flag.
 				 * Otherwise colours from _string_colourmap are assumed. */
@@ -2190,7 +2241,7 @@ static void ViewportDrawStrings(ZoomLevel zoom, const StringSpriteToDrawVector *
 				 * or if we are drawing a general text sign (STR_WHITE_SIGN). */
 				DrawFrameRect(
 					x, y, x + w, y + h, ss.colour,
-					IsTransparencySet(TO_SIGNS) ? FR_TRANSPARENT : FR_NONE
+					vdd->IsTransparencySet(TO_SIGNS) ? FR_TRANSPARENT : FR_NONE
 				);
 			}
 		}
@@ -2368,14 +2419,14 @@ static inline void DrawRouteStep(const Viewport * const vp, const TileIndex tile
 	}
 	const uint str_width = _vp_route_step_string_width[width_bucket];
 	const uint total_width = str_width + _vp_route_step_base_width;
-	const int x_centre = UnScaleByZoomLower(pt.x - _vd.dpi.left, _vd.dpi.zoom);
+	const int x_centre = UnScaleByZoomLower(pt.x - _vdd->dpi.left, _vdd->dpi.zoom);
 	const int x = x_centre - (total_width / 2);
 	if (x >= _cur_dpi->width || (x + total_width) <= 0) return;
 	const uint step_count = list.size() > max_rank_order_type_count ? 1 : (uint)list.size();
 	pt.y -= GetSlopePixelZ(x_pos, y_pos) * ZOOM_LVL_BASE;
 	const int char_height = GetCharacterHeight(FS_SMALL) + 1;
 	const int rsth = _vp_route_step_height_top + (int) step_count * char_height + _vp_route_step_height_bottom;
-	const int y = UnScaleByZoomLower(pt.y - _vd.dpi.top,  _vd.dpi.zoom) - rsth;
+	const int y = UnScaleByZoomLower(pt.y - _vdd->dpi.top,  _vdd->dpi.zoom) - rsth;
 	if (y >= _cur_dpi->height || (y + rsth) <= 0) return;
 
 	/* Draw the background. */
@@ -3050,13 +3101,13 @@ static inline void ViewportMapStoreBridgeAboveTile(const Viewport * const vp, co
 	if (!_settings_client.gui.show_bridges_on_map) return;
 
 	if (GetBridgeAxis(tile) == AXIS_X) {
-		auto iter = _vd.bridge_to_map_x.lower_bound(tile);
-		if (iter != _vd.bridge_to_map_x.end() && iter->first < tile && iter->second > tile) return; /* already covered */
-		_vd.bridge_to_map_x.insert(iter, std::make_pair(GetNorthernBridgeEnd(tile), GetSouthernBridgeEnd(tile)));
+		auto iter = _vdd->bridge_to_map_x.lower_bound(tile);
+		if (iter != _vdd->bridge_to_map_x.end() && iter->first < tile && iter->second > tile) return; /* already covered */
+		_vdd->bridge_to_map_x.insert(iter, std::make_pair(GetNorthernBridgeEnd(tile), GetSouthernBridgeEnd(tile)));
 	} else {
-		auto iter = _vd.bridge_to_map_y.lower_bound(tile);
-		if (iter != _vd.bridge_to_map_y.end() && iter->first < tile && iter->second > tile) return; /* already covered */
-		_vd.bridge_to_map_y.insert(iter, std::make_pair(GetNorthernBridgeEnd(tile), GetSouthernBridgeEnd(tile)));
+		auto iter = _vdd->bridge_to_map_y.lower_bound(tile);
+		if (iter != _vdd->bridge_to_map_y.end() && iter->first < tile && iter->second > tile) return; /* already covered */
+		_vdd->bridge_to_map_y.insert(iter, std::make_pair(GetNorthernBridgeEnd(tile), GetSouthernBridgeEnd(tile)));
 	}
 }
 
@@ -3188,25 +3239,25 @@ static void ViewportMapDrawScrollingViewportBox(const Viewport * const vp)
 			const int mask = ScaleByZoom(-1, vp->zoom);
 			const int vp_scrolling_virtual_top_mask = vp_scrolling->virtual_top & mask;
 			const int vp_scrolling_virtual_bottom_mask = (vp_scrolling->virtual_top + vp_scrolling->virtual_height) & mask;
-			const int t_inter = std::max(vp_scrolling_virtual_top_mask, _vd.dpi.top);
-			const int b_inter = std::min(vp_scrolling_virtual_bottom_mask, _vd.dpi.top + _vd.dpi.height);
+			const int t_inter = std::max(vp_scrolling_virtual_top_mask, _vdd->dpi.top);
+			const int b_inter = std::min(vp_scrolling_virtual_bottom_mask, _vdd->dpi.top + _vdd->dpi.height);
 			if (t_inter < b_inter) {
 				const int vp_scrolling_virtual_left_mask = vp_scrolling->virtual_left & mask;
 				const int vp_scrolling_virtual_right_mask = (vp_scrolling->virtual_left + vp_scrolling->virtual_width) & mask;
-				const int l_inter = std::max(vp_scrolling_virtual_left_mask, _vd.dpi.left);
-				const int r_inter = std::min(vp_scrolling_virtual_right_mask, _vd.dpi.left + _vd.dpi.width);
+				const int l_inter = std::max(vp_scrolling_virtual_left_mask, _vdd->dpi.left);
+				const int r_inter = std::min(vp_scrolling_virtual_right_mask, _vdd->dpi.left + _vdd->dpi.width);
 				if (l_inter < r_inter) {
 					/* OK, so we can draw something that tells where the scrolling viewport is */
 					Blitter * const blitter = BlitterFactory::GetCurrentBlitter();
 					const int w_inter = UnScaleByZoom(r_inter - l_inter, vp->zoom);
 					const int h_inter = UnScaleByZoom(b_inter - t_inter, vp->zoom);
-					const int x = UnScaleByZoom(l_inter - _vd.dpi.left, vp->zoom);
-					const int y = UnScaleByZoom(t_inter - _vd.dpi.top, vp->zoom);
+					const int x = UnScaleByZoom(l_inter - _vdd->dpi.left, vp->zoom);
+					const int y = UnScaleByZoom(t_inter - _vdd->dpi.top, vp->zoom);
 
 					/* If asked, with 32bpp we can do some blending */
 					if (_settings_client.gui.show_scrolling_viewport_on_map >= 2 && blitter->GetScreenDepth() == 32) {
 						for (int j = y; j < y + h_inter; j++) {
-							uint32 *buf = (uint32*) blitter->MoveTo(_vd.dpi.dst_ptr, x, j);
+							uint32 *buf = (uint32*) blitter->MoveTo(_vdd->dpi.dst_ptr, x, j);
 							for (int i = 0; i < w_inter; i++) {
 								PixelBlend(buf + i, 0x40FCFCFC);
 							}
@@ -3217,16 +3268,16 @@ static void ViewportMapDrawScrollingViewportBox(const Viewport * const vp)
 					if (_settings_client.gui.show_scrolling_viewport_on_map != 2) {
 						if (t_inter == vp_scrolling_virtual_top_mask)
 							for (int i = x; i < x + w_inter; i += 2)
-								blitter->SetPixel(_vd.dpi.dst_ptr, i, y, PC_WHITE);
+								blitter->SetPixel(_vdd->dpi.dst_ptr, i, y, PC_WHITE);
 						if (b_inter == vp_scrolling_virtual_bottom_mask)
 							for (int i = x; i < x + w_inter; i += 2)
-								blitter->SetPixel(_vd.dpi.dst_ptr, i, y + h_inter, PC_WHITE);
+								blitter->SetPixel(_vdd->dpi.dst_ptr, i, y + h_inter, PC_WHITE);
 						if (l_inter == vp_scrolling_virtual_left_mask)
 							for (int j = y; j < y + h_inter; j += 2)
-								blitter->SetPixel(_vd.dpi.dst_ptr, x, j, PC_WHITE);
+								blitter->SetPixel(_vdd->dpi.dst_ptr, x, j, PC_WHITE);
 						if (r_inter == vp_scrolling_virtual_right_mask)
 							for (int j = y; j < y + h_inter; j += 2)
-								blitter->SetPixel(_vd.dpi.dst_ptr, x + w_inter, j, PC_WHITE);
+								blitter->SetPixel(_vdd->dpi.dst_ptr, x + w_inter, j, PC_WHITE);
 					}
 				}
 			}
@@ -3306,11 +3357,11 @@ static void ViewportMapDrawBridgeTunnel(Viewport * const vp, const TunnelBridgeT
 	for (tile += delta; tile != tbtm->to_tile; tile += delta) { // For each tile
 		if (zoom_mask != 0 && ((TileX(tile) ^ TileY(tile)) & zoom_mask)) continue;
 		const Point pt = RemapCoords(TileX(tile) * TILE_SIZE, TileY(tile) * TILE_SIZE, z);
-		const int x = UnScaleByZoomLower(pt.x - _vd.dpi.left, _vd.dpi.zoom);
+		const int x = UnScaleByZoomLower(pt.x - _vdd->dpi.left, _vdd->dpi.zoom);
 		if (IsInsideMM(x, 0, w)) {
-			const int y = UnScaleByZoomLower(pt.y - _vd.dpi.top, _vd.dpi.zoom);
+			const int y = UnScaleByZoomLower(pt.y - _vdd->dpi.top, _vdd->dpi.zoom);
 			if (IsInsideMM(y, 0, h)) {
-				uint idx = (x + _vd.offset_x) + ((y + _vd.offset_y) * vp->width);
+				uint idx = (x + _vdd->offset_x) + ((y + _vdd->offset_y) * vp->width);
 				if (is_32bpp) {
 					reinterpret_cast<uint32 *>(vp->land_pixel_cache.data())[idx] = COL8TO32(colour);
 				} else {
@@ -3337,20 +3388,20 @@ void ViewportMapDraw(Viewport * const vp)
 	 *   line 3: ABCDABCDABCD
 	 * => colour_index_base's second bit is changed every new line.
 	 */
-	const  int sx = UnScaleByZoomLower(_vd.dpi.left, _vd.dpi.zoom);
-	const  int sy = UnScaleByZoomLower(_vd.dpi.top, _vd.dpi.zoom);
+	const  int sx = UnScaleByZoomLower(_vdd->dpi.left, _vdd->dpi.zoom);
+	const  int sy = UnScaleByZoomLower(_vdd->dpi.top, _vdd->dpi.zoom);
 	const uint line_padding = 2 * (sy & 1);
 	uint       colour_index_base = (sx + line_padding) & 3;
 
 	const  int incr_a = (1 << (vp->zoom - 2)) / ZOOM_LVL_BASE;
 	const  int incr_b = (1 << (vp->zoom - 1)) / ZOOM_LVL_BASE;
-	const  int a = (_vd.dpi.left >> 2) / ZOOM_LVL_BASE;
-	int        b = (_vd.dpi.top >> 1) / ZOOM_LVL_BASE;
-	const  int w = UnScaleByZoom(_vd.dpi.width, vp->zoom);
-	const  int h = UnScaleByZoom(_vd.dpi.height, vp->zoom);
+	const  int a = (_vdd->dpi.left >> 2) / ZOOM_LVL_BASE;
+	int        b = (_vdd->dpi.top >> 1) / ZOOM_LVL_BASE;
+	const  int w = UnScaleByZoom(_vdd->dpi.width, vp->zoom);
+	const  int h = UnScaleByZoom(_vdd->dpi.height, vp->zoom);
 	int        j = 0;
 
-	const int land_cache_start = _vd.offset_x + (_vd.offset_y * vp->width);
+	const int land_cache_start = _vdd->offset_x + (_vdd->offset_y * vp->width);
 	uint32 *land_cache_ptr32 = reinterpret_cast<uint32 *>(vp->land_pixel_cache.data()) + land_cache_start;
 	uint8 *land_cache_ptr8 = reinterpret_cast<uint8 *>(vp->land_pixel_cache.data()) + land_cache_start;
 
@@ -3400,11 +3451,11 @@ void ViewportMapDraw(Viewport * const vp)
 			const Point pt_to = RemapCoords(TileX(ttm.tb.to_tile) * TILE_SIZE, TileY(ttm.tb.to_tile) * TILE_SIZE, tunnel_z);
 
 			/* check if tunnel is wholly outside redrawing area */
-			const int x_from = UnScaleByZoomLower(pt_from.x - _vd.dpi.left, _vd.dpi.zoom);
-			const int x_to = UnScaleByZoomLower(pt_to.x - _vd.dpi.left, _vd.dpi.zoom);
+			const int x_from = UnScaleByZoomLower(pt_from.x - _vdd->dpi.left, _vdd->dpi.zoom);
+			const int x_to = UnScaleByZoomLower(pt_to.x - _vdd->dpi.left, _vdd->dpi.zoom);
 			if ((x_from < 0 && x_to < 0) || (x_from > w && x_to > w)) continue;
-			const int y_from = UnScaleByZoomLower(pt_from.y - _vd.dpi.top, _vd.dpi.zoom);
-			const int y_to = UnScaleByZoomLower(pt_to.y - _vd.dpi.top, _vd.dpi.zoom);
+			const int y_from = UnScaleByZoomLower(pt_from.y - _vdd->dpi.top, _vdd->dpi.zoom);
+			const int y_to = UnScaleByZoomLower(pt_to.y - _vdd->dpi.top, _vdd->dpi.zoom);
 			if ((y_from < 0 && y_to < 0) || (y_from > h && y_to > h)) continue;
 
 			ViewportMapDrawBridgeTunnel<is_32bpp>(vp, &ttm.tb, tunnel_z, true, w, h, blitter);
@@ -3414,25 +3465,25 @@ void ViewportMapDraw(Viewport * const vp)
 	if (cache_updated) {
 		/* Render tunnels */
 		if (_settings_client.gui.show_tunnels_on_map && _vd.tunnel_to_map_x.tunnels.size() != 0) {
-			const int y_intercept_min = _vd.dpi.top + (_vd.dpi.left / 2);
-			const int y_intercept_max = _vd.dpi.top + _vd.dpi.height + ((_vd.dpi.left + _vd.dpi.width) / 2);
+			const int y_intercept_min = _vdd->dpi.top + (_vdd->dpi.left / 2);
+			const int y_intercept_max = _vdd->dpi.top + _vdd->dpi.height + ((_vdd->dpi.left + _vdd->dpi.width) / 2);
 			draw_tunnels(y_intercept_min, y_intercept_max, _vd.tunnel_to_map_x);
 		}
 		if (_settings_client.gui.show_tunnels_on_map && _vd.tunnel_to_map_y.tunnels.size() != 0) {
-			const int y_intercept_min = _vd.dpi.top - ((_vd.dpi.left + _vd.dpi.width) / 2);
-			const int y_intercept_max = _vd.dpi.top + _vd.dpi.height - (_vd.dpi.left / 2);
+			const int y_intercept_min = _vdd->dpi.top - ((_vdd->dpi.left + _vdd->dpi.width) / 2);
+			const int y_intercept_max = _vdd->dpi.top + _vdd->dpi.height - (_vdd->dpi.left / 2);
 			draw_tunnels(y_intercept_min, y_intercept_max, _vd.tunnel_to_map_y);
 		}
 
 		/* Render bridges */
-		if (_settings_client.gui.show_bridges_on_map && _vd.bridge_to_map_x.size() != 0) {
-			for (const auto &it : _vd.bridge_to_map_x) { // For each bridge
+		if (_settings_client.gui.show_bridges_on_map && _vdd->bridge_to_map_x.size() != 0) {
+			for (const auto &it : _vdd->bridge_to_map_x) { // For each bridge
 				TunnelBridgeToMap tbtm { it.first, it.second };
 				ViewportMapDrawBridgeTunnel<is_32bpp>(vp, &tbtm, (GetBridgeHeight(tbtm.from_tile) - 1) * TILE_HEIGHT, false, w, h, blitter);
 			}
 		}
-		if (_settings_client.gui.show_bridges_on_map && _vd.bridge_to_map_y.size() != 0) {
-			for (const auto &it : _vd.bridge_to_map_y) { // For each bridge
+		if (_settings_client.gui.show_bridges_on_map && _vdd->bridge_to_map_y.size() != 0) {
+			for (const auto &it : _vdd->bridge_to_map_y) { // For each bridge
 				TunnelBridgeToMap tbtm { it.first, it.second };
 				ViewportMapDrawBridgeTunnel<is_32bpp>(vp, &tbtm, (GetBridgeHeight(tbtm.from_tile) - 1) * TILE_HEIGHT, false, w, h, blitter);
 			}
@@ -3440,119 +3491,128 @@ void ViewportMapDraw(Viewport * const vp)
 	}
 
 	if (is_32bpp) {
-		blitter->SetRect32(_vd.dpi.dst_ptr, 0, 0, reinterpret_cast<uint32 *>(vp->land_pixel_cache.data()) + land_cache_start, h, w, vp->width);
+		blitter->SetRect32(_vdd->dpi.dst_ptr, 0, 0, reinterpret_cast<uint32 *>(vp->land_pixel_cache.data()) + land_cache_start, h, w, vp->width);
 	} else {
-		blitter->SetRect(_vd.dpi.dst_ptr, 0, 0, reinterpret_cast<uint8 *>(vp->land_pixel_cache.data()) + land_cache_start, h, w, vp->width);
+		blitter->SetRect(_vdd->dpi.dst_ptr, 0, 0, reinterpret_cast<uint8 *>(vp->land_pixel_cache.data()) + land_cache_start, h, w, vp->width);
 	}
 
 	if (unlikely(HasBit(_viewport_debug_flags, VDF_SHOW_NO_LANDSCAPE_MAP_DRAW)) && !cache_updated) {
-		ViewportDrawDirtyBlocks();
-		++_dirty_block_colour;
+		ViewportDrawDirtyBlocks(_cur_dpi, true);
 	}
 }
 
-static void ViewportProcessParentSprites()
+static void ViewportProcessParentSprites(ViewportDrawerDynamic *vdd, uint data_index)
 {
-	if (_vd.parent_sprites_to_sort.size() > 60 && (_cur_dpi->width >= 256 || _cur_dpi->height >= 256) && !_draw_bounding_boxes && !HasBit(_viewport_debug_flags, VDF_DISABLE_DRAW_SPLIT)) {
+	ViewportProcessParentSpritesData *data = &vdd->parent_sprite_sets[data_index];
+	if (data->psts.size() > 80 && (UnScaleByZoomLower(data->dpi.width, data->dpi.zoom) >= 64 || UnScaleByZoomLower(data->dpi.height, data->dpi.zoom) >= 64) && !HasBit(_viewport_debug_flags, VDF_DISABLE_DRAW_SPLIT)) {
 		/* split drawing region */
-		ParentSpriteToSortVector all_sprites = std::move(_vd.parent_sprites_to_sort);
-		_vd.parent_sprites_to_sort.clear();
-		void *saved_dst_ptr = _cur_dpi->dst_ptr;
-		if (_cur_dpi->height > _cur_dpi->width) {
+
+		uint data_index_2 = (uint)vdd->parent_sprite_sets.size();
+		vdd->parent_sprite_sets.emplace_back();
+		data = &vdd->parent_sprite_sets[data_index];
+		ViewportProcessParentSpritesData *data2 = &vdd->parent_sprite_sets[data_index_2];
+		data2->dpi = data->dpi;
+
+		if (data->dpi.height > data->dpi.width) {
 			/* vertical split: upper half */
-			const int orig_height = _cur_dpi->height;
-			const int orig_top = _cur_dpi->top;
-			_cur_dpi->height = (orig_height / 2) & ScaleByZoom(-1, _cur_dpi->zoom);
-			int split = _cur_dpi->top + _cur_dpi->height;
-			for (ParentSpriteToDraw *psd : all_sprites) {
-				if (psd->top < split) _vd.parent_sprites_to_sort.push_back(psd);
+			const int upper_height = (data->dpi.height / 2) & ScaleByZoom(-1, data->dpi.zoom);
+			const int split = data2->dpi.top + upper_height;
+			data2->dpi.height = upper_height;
+			for (ParentSpriteToDraw *psd : data->psts) {
+				if (psd->top < split) data2->psts.push_back(psd);
 			}
-			ViewportProcessParentSprites();
-			_vd.parent_sprites_to_sort.clear();
+
+			ViewportProcessParentSprites(vdd, data_index_2);
+			data = &vdd->parent_sprite_sets[data_index];
 
 			/* vertical split: lower half */
-			_cur_dpi->dst_ptr = BlitterFactory::GetCurrentBlitter()->MoveTo(_cur_dpi->dst_ptr, 0, UnScaleByZoom(_cur_dpi->height, _cur_dpi->zoom));
-			_cur_dpi->top = split;
-			_cur_dpi->height = orig_height - _cur_dpi->height;
+			data->dpi.dst_ptr = BlitterFactory::GetCurrentBlitter()->MoveTo(data->dpi.dst_ptr, 0, UnScaleByZoom(upper_height, data->dpi.zoom));
+			data->dpi.top = split;
+			data->dpi.height = data->dpi.height - upper_height;
 
-			for (ParentSpriteToDraw *psd : all_sprites) {
+			ParentSpriteToSortVector psts;
+			for (ParentSpriteToDraw *psd : data->psts) {
 				psd->SetComparisonDone(false);
-				if (psd->top + psd->height > _cur_dpi->top) {
-					_vd.parent_sprites_to_sort.push_back(psd);
+				if (psd->top + psd->height > data->dpi.top) {
+					psts.push_back(psd);
 				}
 			}
-			ViewportProcessParentSprites();
+			data->psts = std::move(psts);
 
-			/* restore _cur_dpi */
-			_cur_dpi->height = orig_height;
-			_cur_dpi->top = orig_top;
+			ViewportProcessParentSprites(vdd, data_index);
 		} else {
 			/* horizontal split: left half */
-			const int orig_width = _cur_dpi->width;
-			const int orig_left = _cur_dpi->left;
-			_cur_dpi->width = (orig_width / 2) & ScaleByZoom(-1, _cur_dpi->zoom);
-			const int margin = UnScaleByZoom(128, _cur_dpi->zoom); // Half tile (1 column) margin either side of split
-			const int split = _cur_dpi->left + _cur_dpi->width;
-			for (ParentSpriteToDraw *psd : all_sprites) {
-				if (psd->left < split + margin) _vd.parent_sprites_to_sort.push_back(psd);
+			const int left_width = (data->dpi.width / 2) & ScaleByZoom(-1, data->dpi.zoom);
+			const int margin = UnScaleByZoom(128, data->dpi.zoom); // Half tile (1 column) margin either side of split
+			const int split = data2->dpi.left + left_width;
+			data2->dpi.width = left_width;
+			for (ParentSpriteToDraw *psd : data->psts) {
+				if (psd->left < split + margin) data2->psts.push_back(psd);
 			}
-			ViewportProcessParentSprites();
-			_vd.parent_sprites_to_sort.clear();
+
+			ViewportProcessParentSprites(vdd, data_index_2);
+			data = &vdd->parent_sprite_sets[data_index];
 
 			/* horizontal split: right half */
-			_cur_dpi->dst_ptr = BlitterFactory::GetCurrentBlitter()->MoveTo(_cur_dpi->dst_ptr, UnScaleByZoom(_cur_dpi->width, _cur_dpi->zoom), 0);
-			_cur_dpi->left = split;
-			_cur_dpi->width = orig_width - _cur_dpi->width;
+			data->dpi.dst_ptr = BlitterFactory::GetCurrentBlitter()->MoveTo(data->dpi.dst_ptr, UnScaleByZoom(left_width, data->dpi.zoom), 0);
+			data->dpi.left = split;
+			data->dpi.width = data->dpi.width - left_width;
 
-			for (ParentSpriteToDraw *psd : all_sprites) {
+			ParentSpriteToSortVector psts;
+			for (ParentSpriteToDraw *psd : data->psts) {
 				psd->SetComparisonDone(false);
-				if (psd->left + psd->width > _cur_dpi->left - margin) {
-					_vd.parent_sprites_to_sort.push_back(psd);
+				if (psd->left + psd->width > data->dpi.left - margin) {
+					psts.push_back(psd);
 				}
 			}
-			ViewportProcessParentSprites();
+			data->psts = std::move(psts);
 
-			/* restore _cur_dpi */
-			_cur_dpi->width = orig_width;
-			_cur_dpi->left = orig_left;
+			ViewportProcessParentSprites(vdd, data_index);
 		}
-		_cur_dpi->dst_ptr = saved_dst_ptr;
 	} else {
-		_vp_sprite_sorter(&_vd.parent_sprites_to_sort);
-		ViewportDrawParentSprites(&_vd.parent_sprites_to_sort, &_vd.child_screen_sprites_to_draw);
-
-		if (_draw_dirty_blocks && HasBit(_viewport_debug_flags, VDF_DIRTY_BLOCK_PER_SPLIT)) {
-			ViewportDrawDirtyBlocks();
-			++_dirty_block_colour;
-		}
+		_vp_sprite_sorter(&data->psts);
 	}
 }
 
-void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom)
-{
-	DrawPixelInfo *old_dpi = _cur_dpi;
-	_cur_dpi = &_vd.dpi;
+static void ViewportDoDrawPhase2(Viewport *vp);
+static void ViewportDoDrawRenderJob(Viewport *vp, ViewportDrawerDynamic *vdd);
 
-	_vd.dpi.zoom = vp->zoom;
+void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint8 display_flags)
+{
+	if (_spare_viewport_drawers.empty()) {
+		_vdd.reset(new ViewportDrawerDynamic());
+	} else {
+		_vdd = std::move(_spare_viewport_drawers.back());
+		_spare_viewport_drawers.pop_back();
+	}
+
+	DrawPixelInfo *old_dpi = _cur_dpi;
+	_cur_dpi = &_vdd->dpi;
+
+	_vdd->display_flags = display_flags;
+	_vdd->transparency_opt = _transparency_opt;
+	_vdd->invisibility_opt = _invisibility_opt;
+
+	_vdd->dpi.zoom = vp->zoom;
 	int mask = ScaleByZoom(-1, vp->zoom);
 
 	_vd.combine_sprites = SPRITE_COMBINE_NONE;
 
-	_vd.dpi.width = (right - left) & mask;
-	_vd.dpi.height = (bottom - top) & mask;
-	_vd.dpi.left = left & mask;
-	_vd.dpi.top = top & mask;
-	_vd.dpi.pitch = old_dpi->pitch;
+	_vdd->dpi.width = (right - left) & mask;
+	_vdd->dpi.height = (bottom - top) & mask;
+	_vdd->dpi.left = left & mask;
+	_vdd->dpi.top = top & mask;
+	_vdd->dpi.pitch = old_dpi->pitch;
 	_vd.last_child = nullptr;
 
-	_vd.offset_x = UnScaleByZoomLower(_vd.dpi.left - (vp->virtual_left & mask), vp->zoom);
-	_vd.offset_y = UnScaleByZoomLower(_vd.dpi.top - (vp->virtual_top & mask), vp->zoom);
-	int x = _vd.offset_x + vp->left;
-	int y = _vd.offset_y + vp->top;
+	_vdd->offset_x = UnScaleByZoomLower(_vdd->dpi.left - (vp->virtual_left & mask), vp->zoom);
+	_vdd->offset_y = UnScaleByZoomLower(_vdd->dpi.top - (vp->virtual_top & mask), vp->zoom);
+	int x = _vdd->offset_x + vp->left;
+	int y = _vdd->offset_y + vp->top;
 
-	_vd.dpi.dst_ptr = BlitterFactory::GetCurrentBlitter()->MoveTo(old_dpi->dst_ptr, x - old_dpi->left, y - old_dpi->top);
+	_vdd->dpi.dst_ptr = BlitterFactory::GetCurrentBlitter()->MoveTo(old_dpi->dst_ptr, x - old_dpi->left, y - old_dpi->top);
 
-	_dpi_for_text        = _vd.dpi;
+	_dpi_for_text        = _vdd->dpi;
 	_dpi_for_text.left   = UnScaleByZoom(_dpi_for_text.left,   _dpi_for_text.zoom);
 	_dpi_for_text.top    = UnScaleByZoom(_dpi_for_text.top,    _dpi_for_text.zoom);
 	_dpi_for_text.width  = UnScaleByZoom(_dpi_for_text.width,  _dpi_for_text.zoom);
@@ -3569,36 +3629,133 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom)
 			if (_settings_client.gui.show_slopes_on_viewport_map) ViewportMapDraw<false, true>(vp);
 			else ViewportMapDraw<false, false>(vp);
 		}
-		ViewportMapDrawVehicles(&_vd.dpi, vp);
+		ViewportMapDrawVehicles(&_vdd->dpi, vp);
 		if (_scrolling_viewport && _settings_client.gui.show_scrolling_viewport_on_map) ViewportMapDrawScrollingViewportBox(vp);
 		if (unlikely(_thd.place_mode == (HT_SPECIAL | HT_MAP) && (_thd.drawstyle & HT_DRAG_MASK) == HT_RECT && _thd.select_proc == DDSP_MEASURE)) ViewportMapDrawSelection(vp);
-		if (vp->zoom < ZOOM_LVL_OUT_256X) ViewportAddKdtreeSigns(&_vd.dpi, true);
+		if (vp->zoom < ZOOM_LVL_OUT_256X) ViewportAddKdtreeSigns(_vdd.get(), &_vdd->dpi, true);
+
+		ViewportDoDrawPhase2(vp);
 	} else {
 		/* Classic rendering. */
 		ViewportAddLandscape();
-		ViewportAddVehicles(&_vd.dpi, vp->update_vehicles);
+		ViewportAddVehicles(&_vdd->dpi, vp->update_vehicles);
 
-		ViewportAddKdtreeSigns(&_vd.dpi, false);
-
-		DrawTextEffects(&_vd.dpi);
-
-		if (_vd.tile_sprites_to_draw.size() != 0) ViewportDrawTileSprites(&_vd.tile_sprites_to_draw);
-
-		for (auto &psd : _vd.parent_sprites_to_draw) {
-			_vd.parent_sprites_to_sort.push_back(&psd);
+		for (const TileSpriteToDraw &ts : _vdd->tile_sprites_to_draw) {
+			PrepareDrawSpriteViewportSpriteStore(_vdd->sprite_data, ts.image, ts.pal);
+		}
+		for (const ParentSpriteToDraw &ps : _vdd->parent_sprites_to_draw) {
+			if (ps.image != SPR_EMPTY_BOUNDING_BOX) PrepareDrawSpriteViewportSpriteStore(_vdd->sprite_data, ps.image, ps.pal);
+		}
+		for (const ChildScreenSpriteToDraw &cs : _vdd->child_screen_sprites_to_draw) {
+			PrepareDrawSpriteViewportSpriteStore(_vdd->sprite_data, cs.image, cs.pal);
 		}
 
-		ViewportProcessParentSprites();
-
-		if (_draw_bounding_boxes) ViewportDrawBoundingBoxes(&_vd.parent_sprites_to_sort);
+		_viewport_drawer_jobs++;
+		_general_worker_pool.EnqueueJob([](void *data1, void *data2, void *data3) {
+			ViewportDoDrawRenderJob(static_cast<Viewport *>(data1), static_cast<ViewportDrawerDynamic *>(data2));
+		}, vp, _vdd.release());
 	}
+
+	_cur_dpi = old_dpi;
+}
+
+static void ViewportDoDrawRenderSubJob(Viewport *vp, ViewportDrawerDynamic *vdd, uint data_index) {
+	ViewportDrawParentSprites(vdd, &vdd->parent_sprite_sets[data_index].dpi, &vdd->parent_sprite_sets[data_index].psts, &vdd->child_screen_sprites_to_draw);
+
+	if (_draw_dirty_blocks && HasBit(_viewport_debug_flags, VDF_DIRTY_BLOCK_PER_SPLIT)) {
+		ViewportDrawDirtyBlocks(&vdd->parent_sprite_sets[data_index].dpi, true);
+	}
+
+	if (vdd->draw_jobs_active.fetch_sub(1) != 1) return;
+
+	std::unique_lock<std::mutex> lk(_viewport_drawer_return_lock);
+	bool notify = _viewport_drawer_returns.empty();
+	ViewportDrawerReturn &ret = _viewport_drawer_returns.emplace_back();
+	ret.vp = vp;
+	ret.vdd.reset(vdd);
+	lk.unlock();
+	if (notify) _viewport_drawer_empty_cv.notify_one();
+}
+
+static void ViewportDoDrawRenderJob(Viewport *vp, ViewportDrawerDynamic *vdd)
+{
+	ViewportAddKdtreeSigns(vdd, &vdd->dpi, false);
+
+	DrawTextEffects(vdd, &vdd->dpi, vdd->IsTransparencySet(TO_LOADING));
+
+	if (vdd->tile_sprites_to_draw.size() != 0) {
+		ViewportDrawTileSprites(vdd);
+	}
+
+	vdd->parent_sprite_sets.resize(1);
+	vdd->parent_sprite_sets[0].psts.reserve(vdd->parent_sprites_to_draw.size());
+	for (auto &psd : vdd->parent_sprites_to_draw) {
+		vdd->parent_sprite_sets[0].psts.push_back(&psd);
+	}
+	vdd->parent_sprite_sets[0].dpi = vdd->dpi;
+
+	ViewportProcessParentSprites(vdd, 0);
+
+	vdd->draw_jobs_active.store((uint)vdd->parent_sprite_sets.size(), std::memory_order_relaxed);
+
+	for (uint i = 1; i < (uint)vdd->parent_sprite_sets.size(); i++) {
+		_general_worker_pool.EnqueueJob([](void *data1, void *data2, void *data3) {
+			ViewportDoDrawRenderSubJob(static_cast<Viewport *>(data1), static_cast<ViewportDrawerDynamic *>(data2), static_cast<uint>(reinterpret_cast<uintptr_t>(data3)));
+		}, vp, vdd, reinterpret_cast<void *>(static_cast<uintptr_t>(i)));
+	}
+
+	ViewportDoDrawRenderSubJob(vp, vdd, 0);
+}
+
+void ViewportDoDrawProcessAllPending()
+{
+	if (_viewport_drawer_jobs == 0) return;
+
+	PerformanceAccumulator framerate(PFE_DRAWWORLD);
+
+	std::unique_lock<std::mutex> lk(_viewport_drawer_return_lock);
+	while (true) {
+		if (_viewport_drawer_returns.empty()) {
+			_viewport_drawer_empty_cv.wait(lk);
+		} else {
+			Viewport *vp = _viewport_drawer_returns.back().vp;
+			_vdd = std::move(_viewport_drawer_returns.back().vdd);
+			_viewport_drawer_returns.pop_back();
+			lk.unlock();
+
+			DrawPixelInfo *old_dpi = _cur_dpi;
+			_cur_dpi = &_vdd->dpi;
+
+			_dpi_for_text        = _vdd->dpi;
+			_dpi_for_text.left   = UnScaleByZoom(_dpi_for_text.left,   _dpi_for_text.zoom);
+			_dpi_for_text.top    = UnScaleByZoom(_dpi_for_text.top,    _dpi_for_text.zoom);
+			_dpi_for_text.width  = UnScaleByZoom(_dpi_for_text.width,  _dpi_for_text.zoom);
+			_dpi_for_text.height = UnScaleByZoom(_dpi_for_text.height, _dpi_for_text.zoom);
+			_dpi_for_text.zoom   = ZOOM_LVL_NORMAL;
+
+			ViewportDoDrawPhase2(vp);
+			_cur_dpi = old_dpi;
+
+			_viewport_drawer_jobs--;
+			if (_viewport_drawer_jobs == 0) return;
+			lk.lock();
+		}
+	}
+}
+
+static void ViewportDoDrawPhase2(Viewport *vp)
+{
+	if (vp->zoom < ZOOM_LVL_DRAW_MAP) {
+		/* Classic rendering. */
+		if (_draw_bounding_boxes) ViewportDrawBoundingBoxes(_vdd->parent_sprites_to_draw);
+	}
+
 	if (_draw_dirty_blocks && !(HasBit(_viewport_debug_flags, VDF_DIRTY_BLOCK_PER_SPLIT) && vp->zoom < ZOOM_LVL_DRAW_MAP)) {
-		ViewportDrawDirtyBlocks();
-		if (HasBit(_viewport_debug_flags, VDF_DIRTY_BLOCK_PER_DRAW)) ++_dirty_block_colour;
+		ViewportDrawDirtyBlocks(_cur_dpi, HasBit(_viewport_debug_flags, VDF_DIRTY_BLOCK_PER_DRAW));
 	}
 
-	DrawPixelInfo dp = _vd.dpi;
-	ZoomLevel zoom = _vd.dpi.zoom;
+	DrawPixelInfo dp = _vdd->dpi;
+	ZoomLevel zoom = _vdd->dpi.zoom;
 	dp.zoom = ZOOM_LVL_NORMAL;
 	dp.width = UnScaleByZoom(dp.width, zoom);
 	dp.height = UnScaleByZoom(dp.height, zoom);
@@ -3606,59 +3763,66 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom)
 
 	if (vp->overlay != nullptr && vp->overlay->GetCargoMask() != 0 && vp->overlay->GetCompanyMask() != 0) {
 		/* translate to window coordinates */
-		dp.left = x;
-		dp.top = y;
+		dp.left = _vdd->offset_x + vp->left;
+		dp.top = _vdd->offset_y + vp->top;
 		vp->overlay->Draw(&dp);
 	}
 
 	if (_settings_client.gui.show_vehicle_route) ViewportMapDrawVehicleRoute(vp);
-	if (_vd.string_sprites_to_draw.size() != 0) {
+	if (_vdd->string_sprites_to_draw.size() != 0) {
 		/* translate to world coordinates */
-		dp.left = UnScaleByZoom(_vd.dpi.left, zoom);
-		dp.top = UnScaleByZoom(_vd.dpi.top, zoom);
-		ViewportDrawStrings(zoom, &_vd.string_sprites_to_draw);
+		dp.left = UnScaleByZoom(_vdd->dpi.left, zoom);
+		dp.top = UnScaleByZoom(_vdd->dpi.top, zoom);
+		ViewportDrawStrings(_vdd.get(), zoom, &_vdd->string_sprites_to_draw);
 	}
 	if (_settings_client.gui.show_vehicle_route_steps) ViewportDrawVehicleRouteSteps(vp);
 	ViewportDrawPlans(vp);
 
-	_cur_dpi = old_dpi;
+	if (_vdd->display_flags & (ND_SHADE_GREY | ND_SHADE_DIMMED)) {
+		GfxFillRect(dp.left, dp.top, dp.left + dp.width, dp.top + dp.height,
+				(_vdd->display_flags & ND_SHADE_DIMMED) ? PALETTE_TO_TRANSPARENT : PALETTE_NEWSPAPER, FILLRECT_RECOLOUR);
+	}
 
-	_vd.bridge_to_map_x.clear();
-	_vd.bridge_to_map_y.clear();
-	_vd.string_sprites_to_draw.clear();
-	_vd.tile_sprites_to_draw.clear();
-	_vd.parent_sprites_to_draw.clear();
-	_vd.parent_sprites_to_sort.clear();
-	_vd.child_screen_sprites_to_draw.clear();
+	_vdd->bridge_to_map_x.clear();
+	_vdd->bridge_to_map_y.clear();
+	_vdd->string_sprites_to_draw.clear();
+	_vdd->tile_sprites_to_draw.clear();
+	_vdd->parent_sprites_to_draw.clear();
+	_vdd->parent_sprite_sets.clear();
+	_vdd->child_screen_sprites_to_draw.clear();
+	_vdd->sprite_data.Clear();
+
+	_spare_viewport_drawers.emplace_back(std::move(_vdd));
 }
 
 /**
  * Make sure we don't draw a too big area at a time.
  * If we do, the sprite sorter will run into major performance problems and the sprite memory may overflow.
  */
-void ViewportDrawChk(Viewport *vp, int left, int top, int right, int bottom)
+void ViewportDrawChk(Viewport *vp, int left, int top, int right, int bottom, uint8 display_flags)
 {
 	if ((vp->zoom < ZOOM_LVL_DRAW_MAP) && ((int64)ScaleByZoom(bottom - top, vp->zoom) * (int64)ScaleByZoom(right - left, vp->zoom) > (int64)(1000000 * ZOOM_LVL_BASE * ZOOM_LVL_BASE))) {
 		if ((bottom - top) > (right - left)) {
 			int t = (top + bottom) >> 1;
-			ViewportDrawChk(vp, left, top, right, t);
-			ViewportDrawChk(vp, left, t, right, bottom);
+			ViewportDrawChk(vp, left, top, right, t, display_flags);
+			ViewportDrawChk(vp, left, t, right, bottom, display_flags);
 		} else {
 			int t = (left + right) >> 1;
-			ViewportDrawChk(vp, left, top, t, bottom);
-			ViewportDrawChk(vp, t, top, right, bottom);
+			ViewportDrawChk(vp, left, top, t, bottom, display_flags);
+			ViewportDrawChk(vp, t, top, right, bottom, display_flags);
 		}
 	} else {
 		ViewportDoDraw(vp,
 			ScaleByZoom(left - vp->left, vp->zoom) + vp->virtual_left,
 			ScaleByZoom(top - vp->top, vp->zoom) + vp->virtual_top,
 			ScaleByZoom(right - vp->left, vp->zoom) + vp->virtual_left,
-			ScaleByZoom(bottom - vp->top, vp->zoom) + vp->virtual_top
+			ScaleByZoom(bottom - vp->top, vp->zoom) + vp->virtual_top,
+			display_flags
 		);
 	}
 }
 
-static inline void ViewportDraw(Viewport *vp, int left, int top, int right, int bottom)
+static inline void ViewportDraw(Viewport *vp, int left, int top, int right, int bottom, uint8 display_flags)
 {
 	if (right <= vp->left || bottom <= vp->top) return;
 
@@ -3674,13 +3838,13 @@ static inline void ViewportDraw(Viewport *vp, int left, int top, int right, int 
 
 	vp->is_drawn = true;
 
-	ViewportDrawChk(vp, left, top, right, bottom);
+	ViewportDrawChk(vp, left, top, right, bottom, display_flags);
 }
 
 /**
  * Draw the viewport of this window.
  */
-void Window::DrawViewport() const
+void Window::DrawViewport(uint8 display_flags) const
 {
 	PerformanceAccumulator framerate(PFE_DRAWWORLD);
 
@@ -3689,7 +3853,7 @@ void Window::DrawViewport() const
 	dpi->left += this->left;
 	dpi->top += this->top;
 
-	ViewportDraw(this->viewport, dpi->left, dpi->top, dpi->left + dpi->width, dpi->top + dpi->height);
+	ViewportDraw(this->viewport, dpi->left, dpi->top, dpi->left + dpi->width, dpi->top + dpi->height, display_flags);
 
 	dpi->left -= this->left;
 	dpi->top -= this->top;

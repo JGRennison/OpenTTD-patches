@@ -948,8 +948,8 @@ void DrawOverlappedWindow(Window *w, int left, int top, int right, int bottom, D
 	dp->zoom = ZOOM_LVL_NORMAL;
 	w->OnPaint();
 	if (unlikely(flags & DOWF_SHOW_DEBUG)) {
-		extern void ViewportDrawDirtyBlocks();
-		ViewportDrawDirtyBlocks();
+		extern void ViewportDrawDirtyBlocks(const DrawPixelInfo *dpi, bool increment_colour);
+		ViewportDrawDirtyBlocks(_cur_dpi, false);
 	}
 	if (flags & DOWF_MARK_DIRTY) {
 		VideoDriver::GetInstance()->MakeDirty(left, top, right - left, bottom - top);
@@ -3295,6 +3295,7 @@ void UpdateWindows()
 		/* Update viewport only if window is not shaded. */
 		if (w->viewport != nullptr && !w->IsShaded()) UpdateViewportPosition(w);
 	}
+	ViewportDoDrawProcessAllPending();
 	NetworkDrawChatMessage();
 	/* Redraw mouse cursor in case it was hidden */
 	DrawMouseCursor();
