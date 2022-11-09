@@ -84,6 +84,7 @@
 #include "debug_desync.h"
 #include "event_logs.h"
 #include "tunnelbridge.h"
+#include "worker_thread.h"
 
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
@@ -991,7 +992,11 @@ int openttd_main(int argc, char *argv[])
 	/* ScanNewGRFFiles now has control over the scanner. */
 	RequestNewGRFScan(scanner.release());
 
+	_general_worker_pool.Start("ottd:worker", 8);
+
 	VideoDriver::GetInstance()->MainLoop();
+
+	_general_worker_pool.Stop();
 
 	WaitTillSaved();
 

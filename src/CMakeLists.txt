@@ -539,6 +539,8 @@ add_files(
     window_func.h
     window_gui.h
     window_type.h
+    worker_thread.cpp
+    worker_thread.h
     zoom_func.h
     zoom_type.h
     zoning.h
