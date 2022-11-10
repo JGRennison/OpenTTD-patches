@@ -3020,6 +3020,7 @@ DEF_CONSOLE_CMD(ConViewportDebug)
 		IConsoleHelp("   8: VDF_DISABLE_DRAW_SPLIT");
 		IConsoleHelp("  10: VDF_SHOW_NO_LANDSCAPE_MAP_DRAW");
 		IConsoleHelp("  20: VDF_DISABLE_LANDSCAPE_CACHE");
+		IConsoleHelp("  40: VDF_DISABLE_THREAD");
 		return true;
 	}
 
