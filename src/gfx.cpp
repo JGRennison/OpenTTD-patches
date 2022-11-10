@@ -134,6 +134,7 @@ uint32 _gfx_debug_flags;
  * Applies a certain FillRectMode-operation to a rectangle [left, right] x [top, bottom] on the screen.
  *
  * @pre dpi->zoom == ZOOM_LVL_NORMAL, right >= left, bottom >= top
+ * @param dpi Draw pixel info
  * @param left Minimum X (inclusive)
  * @param top Minimum Y (inclusive)
  * @param right Maximum X (inclusive)
@@ -144,10 +145,9 @@ uint32 _gfx_debug_flags;
  *         FILLRECT_CHECKER:  Like FILLRECT_OPAQUE, but only draw every second pixel (used to grey out things)
  *         FILLRECT_RECOLOUR:  Apply a recolour sprite to every pixel in the rectangle currently on screen
  */
-void GfxFillRect(int left, int top, int right, int bottom, int colour, FillRectMode mode)
+void GfxFillRect(const DrawPixelInfo *dpi, int left, int top, int right, int bottom, int colour, FillRectMode mode)
 {
 	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
-	const DrawPixelInfo *dpi = _cur_dpi;
 	void *dst;
 	const int otop = top;
 	const int oleft = left;
@@ -406,7 +406,7 @@ static inline void GfxDoDrawLine(void *video, int x, int y, int x2, int y2, int 
  * @return True if the line is likely to be visible, false if it's certainly
  *         invisible.
  */
-static inline bool GfxPreprocessLine(DrawPixelInfo *dpi, int &x, int &y, int &x2, int &y2, int width)
+static inline bool GfxPreprocessLine(const DrawPixelInfo *dpi, int &x, int &y, int &x2, int &y2, int width)
 {
 	x -= dpi->left;
 	x2 -= dpi->left;
@@ -421,17 +421,15 @@ static inline bool GfxPreprocessLine(DrawPixelInfo *dpi, int &x, int &y, int &x2
 	return true;
 }
 
-void GfxDrawLine(int x, int y, int x2, int y2, int colour, int width, int dash)
+void GfxDrawLine(const DrawPixelInfo *dpi, int x, int y, int x2, int y2, int colour, int width, int dash)
 {
-	DrawPixelInfo *dpi = _cur_dpi;
 	if (GfxPreprocessLine(dpi, x, y, x2, y2, width)) {
 		GfxDoDrawLine(dpi->dst_ptr, x, y, x2, y2, dpi->width, dpi->height, colour, width, dash);
 	}
 }
 
-void GfxDrawLineUnscaled(int x, int y, int x2, int y2, int colour)
+void GfxDrawLineUnscaled(const DrawPixelInfo *dpi, int x, int y, int x2, int y2, int colour)
 {
-	DrawPixelInfo *dpi = _cur_dpi;
 	if (GfxPreprocessLine(dpi, x, y, x2, y2, 1)) {
 		GfxDoDrawLine(dpi->dst_ptr,
 				UnScaleByZoom(x, dpi->zoom), UnScaleByZoom(y, dpi->zoom),
@@ -444,6 +442,7 @@ void GfxDrawLineUnscaled(int x, int y, int x2, int y2, int colour)
  * Draws the projection of a parallelepiped.
  * This can be used to draw boxes in world coordinates.
  *
+ * @param dpi Draw pixel info.
  * @param x   Screen X-coordinate of top front corner.
  * @param y   Screen Y-coordinate of top front corner.
  * @param dx1 Screen X-length of first edge.
@@ -453,7 +452,7 @@ void GfxDrawLineUnscaled(int x, int y, int x2, int y2, int colour)
  * @param dx3 Screen X-length of third edge.
  * @param dy3 Screen Y-length of third edge.
  */
-void DrawBox(int x, int y, int dx1, int dy1, int dx2, int dy2, int dx3, int dy3)
+void DrawBox(const DrawPixelInfo *dpi, int x, int y, int dx1, int dy1, int dx2, int dy2, int dx3, int dy3)
 {
 	/*           ....
 	 *         ..    ....
@@ -472,16 +471,16 @@ void DrawBox(int x, int y, int dx1, int dy1, int dx2, int dy2, int dx3, int dy3)
 
 	static const byte colour = PC_WHITE;
 
-	GfxDrawLineUnscaled(x, y, x + dx1, y + dy1, colour);
-	GfxDrawLineUnscaled(x, y, x + dx2, y + dy2, colour);
-	GfxDrawLineUnscaled(x, y, x + dx3, y + dy3, colour);
+	GfxDrawLineUnscaled(dpi, x, y, x + dx1, y + dy1, colour);
+	GfxDrawLineUnscaled(dpi, x, y, x + dx2, y + dy2, colour);
+	GfxDrawLineUnscaled(dpi, x, y, x + dx3, y + dy3, colour);
 
-	GfxDrawLineUnscaled(x + dx1, y + dy1, x + dx1 + dx2, y + dy1 + dy2, colour);
-	GfxDrawLineUnscaled(x + dx1, y + dy1, x + dx1 + dx3, y + dy1 + dy3, colour);
-	GfxDrawLineUnscaled(x + dx2, y + dy2, x + dx2 + dx1, y + dy2 + dy1, colour);
-	GfxDrawLineUnscaled(x + dx2, y + dy2, x + dx2 + dx3, y + dy2 + dy3, colour);
-	GfxDrawLineUnscaled(x + dx3, y + dy3, x + dx3 + dx1, y + dy3 + dy1, colour);
-	GfxDrawLineUnscaled(x + dx3, y + dy3, x + dx3 + dx2, y + dy3 + dy2, colour);
+	GfxDrawLineUnscaled(dpi, x + dx1, y + dy1, x + dx1 + dx2, y + dy1 + dy2, colour);
+	GfxDrawLineUnscaled(dpi, x + dx1, y + dy1, x + dx1 + dx3, y + dy1 + dy3, colour);
+	GfxDrawLineUnscaled(dpi, x + dx2, y + dy2, x + dx2 + dx1, y + dy2 + dy1, colour);
+	GfxDrawLineUnscaled(dpi, x + dx2, y + dy2, x + dx2 + dx3, y + dy2 + dy3, colour);
+	GfxDrawLineUnscaled(dpi, x + dx3, y + dy3, x + dx3 + dx1, y + dy3 + dy1, colour);
+	GfxDrawLineUnscaled(dpi, x + dx3, y + dy3, x + dx3 + dx2, y + dy3 + dy2, colour);
 }
 
 /**

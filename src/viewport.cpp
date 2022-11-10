@@ -2058,7 +2058,8 @@ static void ViewportDrawBoundingBoxes(const ParentSpriteToDrawVector &psd)
 		Point pt3 = RemapCoords(ps.xmax + 1, ps.ymin    , ps.zmax + 1); // top right corner
 		Point pt4 = RemapCoords(ps.xmax + 1, ps.ymax + 1, ps.zmin    ); // bottom front corner
 
-		DrawBox(        pt1.x,         pt1.y,
+		DrawBox(_cur_dpi,
+		                pt1.x,         pt1.y,
 		        pt2.x - pt1.x, pt2.y - pt1.y,
 		        pt3.x - pt1.x, pt3.y - pt1.y,
 		        pt4.x - pt1.x, pt4.y - pt1.y);

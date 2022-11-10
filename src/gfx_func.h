@@ -69,6 +69,8 @@ extern std::vector<Dimension> _resolutions;
 extern Dimension _cur_resolution;
 extern Palette _cur_palette; ///< Current palette
 
+extern DrawPixelInfo *_cur_dpi;
+
 void HandleToolbarHotkey(int hotkey);
 void HandleKeypress(uint keycode, WChar key);
 void HandleTextInput(const char *str, bool marked = false, const char *caret = nullptr, const char *insert_location = nullptr, const char *replacement_end = nullptr);
@@ -106,10 +108,12 @@ int DrawStringMultiLine(int left, int right, int top, int bottom, StringID str, 
 
 void DrawCharCentered(WChar c, const Rect &r, TextColour colour);
 
-void GfxFillRect(int left, int top, int right, int bottom, int colour, FillRectMode mode = FILLRECT_OPAQUE);
+void GfxFillRect(const DrawPixelInfo *dpi, int left, int top, int right, int bottom, int colour, FillRectMode mode = FILLRECT_OPAQUE);
+inline void GfxFillRect(int left, int top, int right, int bottom, int colour, FillRectMode mode = FILLRECT_OPAQUE) { GfxFillRect(_cur_dpi, left, top, right, bottom, colour, mode); }
 void GfxFillPolygon(const std::vector<Point> &shape, int colour, FillRectMode mode = FILLRECT_OPAQUE, GfxFillRectModeFunctor *fill_functor = nullptr);
-void GfxDrawLine(int left, int top, int right, int bottom, int colour, int width = 1, int dash = 0);
-void DrawBox(int x, int y, int dx1, int dy1, int dx2, int dy2, int dx3, int dy3);
+void GfxDrawLine(const DrawPixelInfo *dpi, int left, int top, int right, int bottom, int colour, int width = 1, int dash = 0);
+inline void GfxDrawLine(int left, int top, int right, int bottom, int colour, int width = 1, int dash = 0) { GfxDrawLine(_cur_dpi, left, top, right, bottom, colour, width, dash); }
+void DrawBox(const DrawPixelInfo *dpi, int x, int y, int dx1, int dy1, int dx2, int dy2, int dx3, int dy3);
 
 Dimension GetStringBoundingBox(const char *str, FontSize start_fontsize = FS_NORMAL);
 Dimension GetStringBoundingBox(const std::string &str, FontSize start_fontsize = FS_NORMAL);
@@ -193,8 +197,6 @@ inline int GetCharacterHeight(FontSize size)
 
 /** Height of characters in the large (#FS_MONO) font. @note Some characters may be oversized. */
 #define FONT_HEIGHT_MONO  (GetCharacterHeight(FS_MONO))
-
-extern DrawPixelInfo *_cur_dpi;
 
 TextColour GetContrastColour(uint8 background, uint8 threshold = 128);
 
