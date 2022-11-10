@@ -1701,6 +1701,17 @@ static void TownZoneCustomValueChanged(int32 new_value)
 	if (_settings_game.economy.town_zone_calc_mode) UpdateTownRadii();
 }
 
+static bool CheckTTDPatchSettingFlag(uint flag)
+{
+	extern bool HasTTDPatchFlagBeenObserved(uint flag);
+	if (_networking && HasTTDPatchFlagBeenObserved(flag)) {
+		ShowErrorMessage(STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED, STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED_NEWGRF, WL_ERROR);
+		return false;
+	}
+
+	return true;
+}
+
 /**
  * Replace a passwords that are a literal asterisk with an empty string.
  * @param newval The new string value for this password field.

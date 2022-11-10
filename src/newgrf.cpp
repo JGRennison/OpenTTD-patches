@@ -86,6 +86,7 @@ byte _misc_grf_features = 0;
 
 /** 32 * 8 = 256 flags. Apparently TTDPatch uses this many.. */
 static uint32 _ttdpatch_flags[8];
+static uint32 _observed_ttdpatch_flags[8];
 
 /** Indicates which are the newgrf features currently loaded ingame */
 GRFLoadedFeatures _loaded_newgrf_features;
@@ -7315,8 +7316,14 @@ static uint32 GetParamVal(byte param, uint32 *cond_val)
 				return 0;
 			} else {
 				uint32 index = *cond_val / 0x20;
-				uint32 param_val = index < lengthof(_ttdpatch_flags) ? _ttdpatch_flags[index] : 0;
 				*cond_val %= 0x20;
+				uint32 param_val = 0;
+				if (index < lengthof(_ttdpatch_flags)) {
+					param_val = _ttdpatch_flags[index];
+					if (!HasBit(_cur.grfconfig->flags, GCF_STATIC) && !HasBit(_cur.grfconfig->flags, GCF_SYSTEM)) {
+						SetBit(_observed_ttdpatch_flags[index], *cond_val);
+					}
+				}
 				return param_val;
 			}
 
@@ -9954,6 +9961,15 @@ static void InitializeGRFSpecial()
 
 	_ttdpatch_flags[4] =                                                       (1U << 0x00)  // larger persistent storage
 	                   |             ((_settings_game.economy.inflation ? 1U : 0U) << 0x01); // inflation is on
+	MemSetT(_observed_ttdpatch_flags, 0, lengthof(_observed_ttdpatch_flags));
+}
+
+bool HasTTDPatchFlagBeenObserved(uint flag)
+{
+	uint index = flag / 0x20;
+	flag %= 0x20;
+	if (index >= lengthof(_ttdpatch_flags)) return false;
+	return HasBit(_observed_ttdpatch_flags[index], flag);
 }
 
 /** Reset and clear all NewGRF stations */
