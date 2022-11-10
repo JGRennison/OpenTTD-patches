@@ -1753,7 +1753,6 @@ void DrawDirtyBlocks()
 				DrawOverlappedWindowFlags flags = DOWF_MARK_DIRTY;
 				if (unlikely(HasBit(_gfx_debug_flags, GDF_SHOW_WINDOW_DIRTY))) {
 					flags |= DOWF_SHOW_DEBUG;
-					_dirty_block_colour.fetch_add(1, std::memory_order_relaxed);
 				}
 				DrawOverlappedWindowWithClipping(w, w->left, w->top, w->left + w->width, w->top + w->height, flags);
 				w->flags &= ~(WF_DIRTY | WF_WIDGETS_DIRTY);
@@ -1765,7 +1764,6 @@ void DrawDirtyBlocks()
 						DrawOverlappedWindowFlags flags = DOWF_MARK_DIRTY;
 						if (unlikely(HasBit(_gfx_debug_flags, GDF_SHOW_WIDGET_DIRTY))) {
 							flags |= DOWF_SHOW_DEBUG;
-							_dirty_block_colour.fetch_add(1, std::memory_order_relaxed);
 						}
 						DrawOverlappedWindowWithClipping(w, w->left + widget->pos_x, w->top + widget->pos_y, w->left + widget->pos_x + widget->current_x, w->top + widget->pos_y + widget->current_y, flags);
 					}

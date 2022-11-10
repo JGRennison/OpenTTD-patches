@@ -2215,7 +2215,7 @@ void ViewportDrawDirtyBlocks(const DrawPixelInfo *dpi, bool increment_colour)
 	int bottom = UnScaleByZoom(dpi->height, dpi->zoom);
 
 	const uint dirty_block_colour = increment_colour ? _dirty_block_colour.fetch_add(1, std::memory_order_relaxed) : _dirty_block_colour.load(std::memory_order_relaxed);
-	int colour = _string_colourmap[dirty_block_colour];
+	int colour = _string_colourmap[dirty_block_colour & 0xF];
 
 	dst = dpi->dst_ptr;
 
