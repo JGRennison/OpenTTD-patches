@@ -76,7 +76,8 @@ public:
 	void RebuildCache(bool incremental = false);
 	bool CacheStillValid() const;
 	void MarkStationViewportLinksDirty(const Station *st);
-	void Draw(const DrawPixelInfo *dpi);
+	void PrepareDraw();
+	void Draw(const DrawPixelInfo *dpi) const;
 	void SetCargoMask(CargoTypes cargo_mask);
 	void SetCompanyMask(uint32 company_mask);
 
@@ -108,13 +109,13 @@ protected:
 	void RefreshDrawCache();
 	void DrawLinks(const DrawPixelInfo *dpi) const;
 	void DrawStationDots(const DrawPixelInfo *dpi) const;
-	void DrawContent(Point pta, Point ptb, const LinkProperties &cargo) const;
+	void DrawContent(const DrawPixelInfo *dpi, Point pta, Point ptb, const LinkProperties &cargo) const;
 	bool IsLinkVisible(Point pta, Point ptb, const DrawPixelInfo *dpi, int padding = 0) const;
 	bool IsPointVisible(Point pt, const DrawPixelInfo *dpi, int padding = 0) const;
 	void GetWidgetDpi(DrawPixelInfo *dpi, uint margin = 0) const;
 
 	static void AddStats(CargoID new_cargo, uint new_cap, uint new_usg, uint new_plan, uint32 time, bool new_shared, LinkProperties &cargo);
-	static void DrawVertex(int x, int y, int size, int colour, int border_colour);
+	static void DrawVertex(const DrawPixelInfo *dpi, int x, int y, int size, int colour, int border_colour);
 };
 
 void ShowLinkGraphLegend();

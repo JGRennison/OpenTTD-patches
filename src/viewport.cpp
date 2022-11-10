@@ -305,13 +305,23 @@ struct ViewportDrawerDynamic {
 	{
 		return (HasBit(this->transparency_opt & this->invisibility_opt, to) && _game_mode != GM_MENU);
 	}
+
+	inline DrawPixelInfo MakeDPIForText() const
+	{
+		DrawPixelInfo dpi_for_text = this->dpi;
+		dpi_for_text.left   = UnScaleByZoom(this->dpi.left,   this->dpi.zoom);
+		dpi_for_text.top    = UnScaleByZoom(this->dpi.top,    this->dpi.zoom);
+		dpi_for_text.width  = UnScaleByZoom(this->dpi.width,  this->dpi.zoom);
+		dpi_for_text.height = UnScaleByZoom(this->dpi.height, this->dpi.zoom);
+		dpi_for_text.zoom   = ZOOM_LVL_NORMAL;
+		return dpi_for_text;
+	}
 };
 
 static void MarkRouteStepDirty(RouteStepsMap::const_iterator cit);
 static void MarkRouteStepDirty(const TileIndex tile, uint order_nr);
 static void HideMeasurementTooltips();
 
-static DrawPixelInfo _dpi_for_text;
 static std::unique_ptr<ViewportDrawerDynamic> _vdd;
 std::vector<std::unique_ptr<ViewportDrawerDynamic>> _spare_viewport_drawers;
 
@@ -2050,7 +2060,7 @@ static void ViewportDrawParentSprites(const ViewportDrawerDynamic *vdd, const Dr
  * Draws the bounding boxes of all ParentSprites
  * @param psd Array of ParentSprites
  */
-static void ViewportDrawBoundingBoxes(const ParentSpriteToDrawVector &psd)
+static void ViewportDrawBoundingBoxes(const DrawPixelInfo *dpi, const ParentSpriteToDrawVector &psd)
 {
 	for (const ParentSpriteToDraw &ps : psd) {
 		Point pt1 = RemapCoords(ps.xmax + 1, ps.ymax + 1, ps.zmax + 1); // top front corner
@@ -2058,7 +2068,7 @@ static void ViewportDrawBoundingBoxes(const ParentSpriteToDrawVector &psd)
 		Point pt3 = RemapCoords(ps.xmax + 1, ps.ymin    , ps.zmax + 1); // top right corner
 		Point pt4 = RemapCoords(ps.xmax + 1, ps.ymax + 1, ps.zmin    ); // bottom front corner
 
-		DrawBox(_cur_dpi,
+		DrawBox(dpi,
 		                pt1.x,         pt1.y,
 		        pt2.x - pt1.x, pt2.y - pt1.y,
 		        pt3.x - pt1.x, pt3.y - pt1.y,
@@ -2360,13 +2370,14 @@ static bool ViewportMapPrepareVehicleRoute(const Vehicle * const veh)
 }
 
 /** Draw the route of a vehicle. */
-static void ViewportMapDrawVehicleRoute(const Viewport *vp)
+static void ViewportMapDrawVehicleRoute(const Viewport *vp, ViewportDrawerDynamic *vdd)
 {
 	switch (_settings_client.gui.show_vehicle_route) {
 		/* case 0: return; // No */
 		case 1: { // Simple
-			DrawPixelInfo *old_dpi = _cur_dpi;
-			_cur_dpi = &_dpi_for_text;
+			if (_vp_route_paths.empty()) return;
+
+			DrawPixelInfo dpi_for_text = vdd->MakeDPIForText();
 
 			for (const auto &iter : _vp_route_paths) {
 				const int from_tile_x = TileX(iter.from_tile) * TILE_SIZE + TILE_SIZE / 2;
@@ -2379,8 +2390,8 @@ static void ViewportMapDrawVehicleRoute(const Viewport *vp)
 				Point to_pt = RemapCoords(to_tile_x, to_tile_y, 0);
 				const int to_x = UnScaleByZoom(to_pt.x, vp->zoom);
 
-				if (from_x < _cur_dpi->left - 1 && to_x < _cur_dpi->left - 1) continue;
-				if (from_x > _cur_dpi->left + _cur_dpi->width + 1 && to_x > _cur_dpi->left + _cur_dpi->width + 1) continue;
+				if (from_x < dpi_for_text.left - 1 && to_x < dpi_for_text.left - 1) continue;
+				if (from_x > dpi_for_text.left + dpi_for_text.width + 1 && to_x > dpi_for_text.left + dpi_for_text.width + 1) continue;
 
 				from_pt.y -= GetSlopePixelZ(from_tile_x, from_tile_y) * ZOOM_LVL_BASE;
 				to_pt.y -= GetSlopePixelZ(to_tile_x, to_tile_y) * ZOOM_LVL_BASE;
@@ -2389,13 +2400,11 @@ static void ViewportMapDrawVehicleRoute(const Viewport *vp)
 
 				int line_width = 3;
 				if (_settings_client.gui.dash_level_of_route_lines == 0) {
-					GfxDrawLine(from_x, from_y, to_x, to_y, PC_BLACK, 3, _settings_client.gui.dash_level_of_route_lines);
+					GfxDrawLine(&dpi_for_text, from_x, from_y, to_x, to_y, PC_BLACK, 3, _settings_client.gui.dash_level_of_route_lines);
 					line_width = 1;
 				}
-				GfxDrawLine(from_x, from_y, to_x, to_y, iter.order_match ? PC_WHITE : PC_YELLOW, line_width, _settings_client.gui.dash_level_of_route_lines);
+				GfxDrawLine(&dpi_for_text, from_x, from_y, to_x, to_y, iter.order_match ? PC_WHITE : PC_YELLOW, line_width, _settings_client.gui.dash_level_of_route_lines);
 			}
-
-			_cur_dpi = old_dpi;
 			break;
 		}
 	}
@@ -2451,13 +2460,14 @@ static inline void DrawRouteStep(const Viewport * const vp, const TileIndex tile
 	/* Fill with the data. */
 	DrawPixelInfo *old_dpi = _cur_dpi;
 	y2 = y + _vp_route_step_height_top;
-	_cur_dpi = &_dpi_for_text;
+	DrawPixelInfo dpi_for_text = _vdd->MakeDPIForText();
+	_cur_dpi = &dpi_for_text;
 
 	const int x_str = x_centre - (str_width / 2);
 	if (list.size() > max_rank_order_type_count) {
 		/* Write order overflow item */
 		SetDParam(0, list.size());
-		DrawString(_dpi_for_text.left + x_str, _dpi_for_text.left + x_str + str_width - 1, _dpi_for_text.top + y2,
+		DrawString(dpi_for_text.left + x_str, dpi_for_text.left + x_str + str_width - 1, dpi_for_text.top + y2,
 				STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_OVERFLOW, TC_FROMSTRING, SA_CENTER, false, FS_SMALL);
 	} else {
 		for (RankOrderTypeList::const_iterator cit = list.begin(); cit != list.end(); cit++, y2 += char_height) {
@@ -2482,7 +2492,7 @@ static inline void DrawRouteStep(const Viewport * const vp, const TileIndex tile
 			if (ok) {
 				/* Write order's info */
 				SetDParam(0, cit->first);
-				DrawString(_dpi_for_text.left + x_str, _dpi_for_text.left + x_str + str_width - 1, _dpi_for_text.top + y2,
+				DrawString(dpi_for_text.left + x_str, dpi_for_text.left + x_str + str_width - 1, dpi_for_text.top + y2,
 						STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, TC_FROMSTRING, SA_CENTER, false, FS_SMALL);
 			}
 		}
@@ -2561,14 +2571,14 @@ void ViewportDrawPlans(const Viewport *vp)
 {
 	if (Plan::GetNumItems() == 0 && !(_current_plan && _current_plan->temp_line->tiles.size() > 1)) return;
 
-	DrawPixelInfo *old_dpi = _cur_dpi;
-	_cur_dpi = &_dpi_for_text;
+	DrawPixelInfo dpi_for_text = _vdd->MakeDPIForText();
+	_cur_dpi = &dpi_for_text;
 
 	const Rect bounds = {
-		ScaleByZoom(_dpi_for_text.left - 2, vp->zoom),
-		ScaleByZoom(_dpi_for_text.top - 2, vp->zoom),
-		ScaleByZoom(_dpi_for_text.left + _dpi_for_text.width + 2, vp->zoom),
-		ScaleByZoom(_dpi_for_text.top + _dpi_for_text.height + 2, vp->zoom) + (int)(ZOOM_LVL_BASE * TILE_HEIGHT * _settings_game.construction.map_height_limit)
+		ScaleByZoom(dpi_for_text.left - 2, vp->zoom),
+		ScaleByZoom(dpi_for_text.top - 2, vp->zoom),
+		ScaleByZoom(dpi_for_text.left + dpi_for_text.width + 2, vp->zoom),
+		ScaleByZoom(dpi_for_text.top + dpi_for_text.height + 2, vp->zoom) + (int)(ZOOM_LVL_BASE * TILE_HEIGHT * _settings_game.construction.map_height_limit)
 	};
 
 	const int min_coord_delta = bounds.left / (int)(2 * ZOOM_LVL_BASE * TILE_SIZE);
@@ -2643,7 +2653,7 @@ void ViewportDrawPlans(const Viewport *vp)
 		}
 	}
 
-	_cur_dpi = old_dpi;
+	_cur_dpi = nullptr;
 }
 
 #define SLOPIFY_COLOUR(tile, height, vF, vW, vS, vE, vN, action) { \
@@ -3290,7 +3300,8 @@ static void ViewportMapDrawScrollingViewportBox(const Viewport * const vp)
 static void ViewportMapDrawSelection(const Viewport * const vp)
 {
 	DrawPixelInfo *old_dpi = _cur_dpi;
-	_cur_dpi = &_dpi_for_text;
+	DrawPixelInfo dpi_for_text = _vdd->MakeDPIForText();
+	_cur_dpi = &dpi_for_text;
 
 	auto draw_line = [&](Point from_pt, Point to_pt) {
 		GfxDrawLine(from_pt.x, from_pt.y, to_pt.x, to_pt.y, PC_WHITE, 2, 0);
@@ -3576,9 +3587,11 @@ static void ViewportProcessParentSprites(ViewportDrawerDynamic *vdd, uint data_i
 	}
 }
 
-static void ViewportDoDrawPhase2(Viewport *vp);
+static void ViewportDoDrawPhase2(Viewport *vp, ViewportDrawerDynamic *vdd);
+static void ViewportDoDrawPhase3(Viewport *vp);
 static void ViewportDoDrawRenderJob(Viewport *vp, ViewportDrawerDynamic *vdd);
 
+/* This is run in the main thread */
 void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint8 display_flags)
 {
 	if (_spare_viewport_drawers.empty()) {
@@ -3614,12 +3627,9 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint
 
 	_vdd->dpi.dst_ptr = BlitterFactory::GetCurrentBlitter()->MoveTo(old_dpi->dst_ptr, x - old_dpi->left, y - old_dpi->top);
 
-	_dpi_for_text        = _vdd->dpi;
-	_dpi_for_text.left   = UnScaleByZoom(_dpi_for_text.left,   _dpi_for_text.zoom);
-	_dpi_for_text.top    = UnScaleByZoom(_dpi_for_text.top,    _dpi_for_text.zoom);
-	_dpi_for_text.width  = UnScaleByZoom(_dpi_for_text.width,  _dpi_for_text.zoom);
-	_dpi_for_text.height = UnScaleByZoom(_dpi_for_text.height, _dpi_for_text.zoom);
-	_dpi_for_text.zoom   = ZOOM_LVL_NORMAL;
+	if (vp->overlay != nullptr && vp->overlay->GetCargoMask() != 0 && vp->overlay->GetCompanyMask() != 0) {
+		vp->overlay->PrepareDraw();
+	}
 
 	if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
 		/* Here the rendering is like smallmap. */
@@ -3636,7 +3646,8 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint
 		if (unlikely(_thd.place_mode == (HT_SPECIAL | HT_MAP) && (_thd.drawstyle & HT_DRAG_MASK) == HT_RECT && _thd.select_proc == DDSP_MEASURE)) ViewportMapDrawSelection(vp);
 		if (vp->zoom < ZOOM_LVL_OUT_256X) ViewportAddKdtreeSigns(_vdd.get(), &_vdd->dpi, true);
 
-		ViewportDoDrawPhase2(vp);
+		ViewportDoDrawPhase2(vp, _vdd.get());
+		ViewportDoDrawPhase3(vp);
 	} else {
 		/* Classic rendering. */
 		ViewportAddLandscape();
@@ -3665,6 +3676,7 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint
 	_cur_dpi = old_dpi;
 }
 
+/* This is run in a worker thread */
 static void ViewportDoDrawRenderSubJob(Viewport *vp, ViewportDrawerDynamic *vdd, uint data_index) {
 	ViewportDrawParentSprites(vdd, &vdd->parent_sprite_sets[data_index].dpi, &vdd->parent_sprite_sets[data_index].psts, &vdd->child_screen_sprites_to_draw);
 
@@ -3673,6 +3685,10 @@ static void ViewportDoDrawRenderSubJob(Viewport *vp, ViewportDrawerDynamic *vdd,
 	}
 
 	if (vdd->draw_jobs_active.fetch_sub(1) != 1) return;
+
+	if (_draw_bounding_boxes) ViewportDrawBoundingBoxes(&vdd->dpi, vdd->parent_sprites_to_draw);
+
+	ViewportDoDrawPhase2(vp, vdd);
 
 	std::unique_lock<std::mutex> lk(_viewport_drawer_return_lock);
 	bool notify = _viewport_drawer_returns.empty();
@@ -3683,6 +3699,7 @@ static void ViewportDoDrawRenderSubJob(Viewport *vp, ViewportDrawerDynamic *vdd,
 	if (notify) _viewport_drawer_empty_cv.notify_one();
 }
 
+/* This is run in a worker thread */
 static void ViewportDoDrawRenderJob(Viewport *vp, ViewportDrawerDynamic *vdd)
 {
 	ViewportAddKdtreeSigns(vdd, &vdd->dpi, false);
@@ -3734,16 +3751,7 @@ void ViewportDoDrawProcessAllPending()
 			lk.unlock();
 
 			DrawPixelInfo *old_dpi = _cur_dpi;
-			_cur_dpi = &_vdd->dpi;
-
-			_dpi_for_text        = _vdd->dpi;
-			_dpi_for_text.left   = UnScaleByZoom(_dpi_for_text.left,   _dpi_for_text.zoom);
-			_dpi_for_text.top    = UnScaleByZoom(_dpi_for_text.top,    _dpi_for_text.zoom);
-			_dpi_for_text.width  = UnScaleByZoom(_dpi_for_text.width,  _dpi_for_text.zoom);
-			_dpi_for_text.height = UnScaleByZoom(_dpi_for_text.height, _dpi_for_text.zoom);
-			_dpi_for_text.zoom   = ZOOM_LVL_NORMAL;
-
-			ViewportDoDrawPhase2(vp);
+			ViewportDoDrawPhase3(vp);
 			_cur_dpi = old_dpi;
 
 			_viewport_drawer_jobs--;
@@ -3753,43 +3761,55 @@ void ViewportDoDrawProcessAllPending()
 	}
 }
 
-static void ViewportDoDrawPhase2(Viewport *vp)
+/* This may be run either in a worker thread, or in the main thead */
+static void ViewportDoDrawPhase2(Viewport *vp, ViewportDrawerDynamic *vdd)
 {
-	if (vp->zoom < ZOOM_LVL_DRAW_MAP) {
-		/* Classic rendering. */
-		if (_draw_bounding_boxes) ViewportDrawBoundingBoxes(_vdd->parent_sprites_to_draw);
-	}
-
 	if (_draw_dirty_blocks && !(HasBit(_viewport_debug_flags, VDF_DIRTY_BLOCK_PER_SPLIT) && vp->zoom < ZOOM_LVL_DRAW_MAP)) {
-		ViewportDrawDirtyBlocks(_cur_dpi, HasBit(_viewport_debug_flags, VDF_DIRTY_BLOCK_PER_DRAW));
+		ViewportDrawDirtyBlocks(&vdd->dpi, HasBit(_viewport_debug_flags, VDF_DIRTY_BLOCK_PER_DRAW));
 	}
 
+	if (vp->overlay != nullptr && vp->overlay->GetCargoMask() != 0 && vp->overlay->GetCompanyMask() != 0) {
+		/* translate to window coordinates */
+		DrawPixelInfo dp = vdd->dpi;
+		ZoomLevel zoom = vdd->dpi.zoom;
+		dp.zoom = ZOOM_LVL_NORMAL;
+		dp.width = UnScaleByZoom(dp.width, zoom);
+		dp.height = UnScaleByZoom(dp.height, zoom);
+		dp.left = vdd->offset_x + vp->left;
+		dp.top = vdd->offset_y + vp->top;
+		vp->overlay->Draw(&dp);
+	}
+
+	if (_settings_client.gui.show_vehicle_route) ViewportMapDrawVehicleRoute(vp, vdd);
+}
+
+/* This is run in the main thread */
+static void ViewportDoDrawPhase3(Viewport *vp)
+{
 	DrawPixelInfo dp = _vdd->dpi;
 	ZoomLevel zoom = _vdd->dpi.zoom;
 	dp.zoom = ZOOM_LVL_NORMAL;
 	dp.width = UnScaleByZoom(dp.width, zoom);
 	dp.height = UnScaleByZoom(dp.height, zoom);
 	_cur_dpi = &dp;
-
-	if (vp->overlay != nullptr && vp->overlay->GetCargoMask() != 0 && vp->overlay->GetCompanyMask() != 0) {
-		/* translate to window coordinates */
-		dp.left = _vdd->offset_x + vp->left;
-		dp.top = _vdd->offset_y + vp->top;
-		vp->overlay->Draw(&dp);
-	}
-
-	if (_settings_client.gui.show_vehicle_route) ViewportMapDrawVehicleRoute(vp);
 	if (_vdd->string_sprites_to_draw.size() != 0) {
 		/* translate to world coordinates */
 		dp.left = UnScaleByZoom(_vdd->dpi.left, zoom);
 		dp.top = UnScaleByZoom(_vdd->dpi.top, zoom);
 		ViewportDrawStrings(_vdd.get(), zoom, &_vdd->string_sprites_to_draw);
 	}
-	if (_settings_client.gui.show_vehicle_route_steps) ViewportDrawVehicleRouteSteps(vp);
+	if (_settings_client.gui.show_vehicle_route_steps && !_vp_route_steps.empty()) {
+		dp.left = _vdd->offset_x + vp->left;
+		dp.top = _vdd->offset_y + vp->top;
+		ViewportDrawVehicleRouteSteps(vp);
+	}
+	_cur_dpi = nullptr;
+
 	ViewportDrawPlans(vp);
 
 	if (_vdd->display_flags & (ND_SHADE_GREY | ND_SHADE_DIMMED)) {
-		GfxFillRect(dp.left, dp.top, dp.left + dp.width, dp.top + dp.height,
+		DrawPixelInfo dp = _vdd->MakeDPIForText();
+		GfxFillRect(&dp, dp.left, dp.top, dp.left + dp.width, dp.top + dp.height,
 				(_vdd->display_flags & ND_SHADE_DIMMED) ? PALETTE_TO_TRANSPARENT : PALETTE_NEWSPAPER, FILLRECT_RECOLOUR);
 	}
 
