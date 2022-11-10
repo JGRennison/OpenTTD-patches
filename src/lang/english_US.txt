@@ -3175,7 +3175,7 @@ STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Move the
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Move the snow line height down one
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Land generator:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Terrain type:
-STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Sea level:
+STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Sea level:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Rivers:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Smoothness:
 STR_MAPGEN_VARIETY                                              :{BLACK}Variety distribution:

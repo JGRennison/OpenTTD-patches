@@ -3093,7 +3093,7 @@ STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Gluais a
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Gluais an loidhne-shneachda sìos aon cheum
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Gineadair crutha-thìre:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Seòrsa a' chrutha-thìre:
-STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Àirde na mara:
+STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Àirde na mara:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Aibhnichean:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Dè cho rèidh:
 STR_MAPGEN_VARIETY                                              :{BLACK}Sgaoileadh caochlaidh:

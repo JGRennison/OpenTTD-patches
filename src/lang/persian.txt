@@ -2541,7 +2541,7 @@ STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}اضاف
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}کم کردن یک واحد از ارتفاع خط برف
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}سازنده زمین:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}نوع پستی/بلندی:
-STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}سطح دریا:
+STR_MAPGEN_SEA_LEVEL                                            :{BLACK}سطح دریا:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}رودخانه ها:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}همواری:
 STR_MAPGEN_VARIETY                                              :{BLACK}توزیع انواع:

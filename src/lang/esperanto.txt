@@ -2413,7 +2413,7 @@ STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Altigu l
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Malaltigu la neĝlinion per unu
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Landgenerilo:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Terentipo:
-STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Marnivelo:
+STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Marnivelo:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Riveroj:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Reguleco:
 STR_MAPGEN_VARIETY                                              :{BLACK}Diverseca distribuo:

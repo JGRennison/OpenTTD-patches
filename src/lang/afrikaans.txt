@@ -2914,7 +2914,7 @@ STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Beweeg d
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Beweeg die sneeu lyn een af
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Land genereerder:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Terrein tipe:
-STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Seevlak:
+STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Seevlak:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Riviere:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Gladheid:
 STR_MAPGEN_VARIETY                                              :{BLACK}Verskeidenheid verspreiding:
