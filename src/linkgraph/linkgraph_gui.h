@@ -70,7 +70,7 @@ public:
 	 * @param scale Desired thickness of lines and size of station dots.
 	 */
 	LinkGraphOverlay(Window *w, uint wid, CargoTypes cargo_mask, uint32 company_mask, uint scale) :
-			window(w), widget_id(wid), cargo_mask(cargo_mask), company_mask(company_mask), scale(scale)
+			window(w), widget_id(wid), cargo_mask(cargo_mask), company_mask(company_mask), scale(scale), dirty(true)
 	{}
 
 	void RebuildCache(bool incremental = false);

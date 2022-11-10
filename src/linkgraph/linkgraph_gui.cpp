@@ -112,6 +112,7 @@ void LinkGraphOverlay::MarkStationViewportLinksDirty(const Station *st)
 void LinkGraphOverlay::RebuildCache(bool incremental)
 {
 	if (!incremental) {
+		this->dirty = false;
 		this->cached_links.clear();
 		this->cached_stations.clear();
 		this->last_update_number = GetWindowUpdateNumber();
@@ -387,7 +388,6 @@ void LinkGraphOverlay::PrepareDraw()
 {
 	if (this->dirty) {
 		this->RebuildCache();
-		this->dirty = false;
 	}
 	if (this->last_update_number != GetWindowUpdateNumber()) {
 		this->last_update_number = GetWindowUpdateNumber();
