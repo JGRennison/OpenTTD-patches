@@ -45,8 +45,7 @@ private:
 public:
 	static SQTable* Create(SQSharedState *ss,SQInteger nInitialSize)
 	{
-		SQTable *newtable = (SQTable*)SQ_MALLOC(sizeof(SQTable));
-		new (newtable) SQTable(ss, nInitialSize);
+		SQTable *newtable = new (SQAllocationTag{}) SQTable(ss, nInitialSize);
 		newtable->_delegate = nullptr;
 		return newtable;
 	}
@@ -87,7 +86,7 @@ public:
 	}
 	void FinalFree() override
 	{
-		sq_delete(this, SQTable);
+		sq_delete_refcounted(this, SQTable);
 	}
 
 };
