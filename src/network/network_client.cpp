@@ -243,7 +243,7 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 		/* This means the server closed the connection. Emergency save is
 		 * already created if this was appropriate during handling of the
 		 * disconnect. */
-		this->SendPackets();
+		this->SendPackets(true);
 		this->CloseConnection(res);
 	} else {
 		/* This means we as client made a boo-boo. */
@@ -252,7 +252,7 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 		/* Close connection before we make an emergency save, as the save can
 		 * take a bit of time; better that the server doesn't stall while we
 		 * are doing the save, and already disconnects us. */
-		this->SendPackets();
+		this->SendPackets(true);
 		this->CloseConnection(res);
 		ClientNetworkEmergencySave();
 	}
