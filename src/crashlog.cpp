@@ -701,7 +701,7 @@ void CrashLog::FlushCrashLogBuffer()
  * @param filename_last The last position in the filename buffer.
  * @return true when the crash save was successfully made.
  */
-bool CrashLog::WriteSavegame(char *filename, const char *filename_last, const char *name) const
+/* static */ bool CrashLog::WriteSavegame(char *filename, const char *filename_last, const char *name)
 {
 	/* If the map array doesn't exist, saving will fail too. If the map got
 	 * initialised, there is a big chance the rest is initialised too. */
@@ -720,6 +720,30 @@ bool CrashLog::WriteSavegame(char *filename, const char *filename_last, const ch
 }
 
 /**
+ * Write the (desync) savegame to a file, threaded.
+ * @note On success the filename will be filled with the full path of the
+ *       crash save file. Make sure filename is at least \c MAX_PATH big.
+ * @param filename      Output for the filename of the written file.
+ * @param filename_last The last position in the filename buffer.
+ * @return true when the crash save was successfully made.
+ */
+/* static */ bool CrashLog::WriteDiagnosticSavegame(char *filename, const char *filename_last, const char *name)
+{
+	/* If the map array doesn't exist, saving will fail too. If the map got
+	 * initialised, there is a big chance the rest is initialised too. */
+	if (_m == nullptr) return false;
+
+	try {
+		seprintf(filename, filename_last, "%s%s.sav", _personal_dir.c_str(), name);
+
+		/* Don't do a threaded saveload. */
+		return SaveOrLoad(filename, SLO_SAVE, DFT_GAME_FILE, NO_DIRECTORY, true) == SL_OK;
+	} catch (...) {
+		return false;
+	}
+}
+
+/**
  * Write the (crash) screenshot to a file.
  * @note On success the filename will be filled with the full path of the
  *       screenshot. Make sure filename is at least \c MAX_PATH big.
@@ -727,7 +751,7 @@ bool CrashLog::WriteSavegame(char *filename, const char *filename_last, const ch
  * @param filename_last The last position in the filename buffer.
  * @return true when the crash screenshot was successfully made.
  */
-bool CrashLog::WriteScreenshot(char *filename, const char *filename_last, const char *name) const
+/* static */ bool CrashLog::WriteScreenshot(char *filename, const char *filename_last, const char *name)
 {
 	/* Don't draw when we have invalid screen size */
 	if (_screen.width < 1 || _screen.height < 1 || _screen.dst_ptr == nullptr) return false;
@@ -898,13 +922,26 @@ bool CrashLog::MakeDesyncCrashLog(const std::string *log_in, std::string *log_ou
 		ret = false;
 	}
 
-	_savegame_DBGL_data = buffer;
+	if (info.defer_savegame_write != nullptr) {
+		info.defer_savegame_write->name_buffer = name_buffer;
+	} else {
+		bret = this->WriteDesyncSavegame(buffer, name_buffer);
+		if (!bret) ret = false;
+	}
+
+	return ret;
+}
+
+/* static */ bool CrashLog::WriteDesyncSavegame(const char *log_data, const char *name_buffer)
+{
+	char filename[MAX_PATH];
+
+	_savegame_DBGL_data = log_data;
 	_save_DBGC_data = true;
-	bret = this->WriteSavegame(filename, lastof(filename), name_buffer);
-	if (bret) {
+	bool ret = CrashLog::WriteDiagnosticSavegame(filename, lastof(filename), name_buffer);
+	if (ret) {
 		printf("Desync savegame written to %s. Please add this file and the last (auto)save to any bug reports.\n\n", filename);
 	} else {
-		ret = false;
 		printf("Writing desync savegame failed. Please attach the last (auto)save to any bug reports.\n\n");
 	}
 	_savegame_DBGL_data = nullptr;
@@ -950,7 +987,7 @@ bool CrashLog::MakeInconsistencyLog(const InconsistencyExtraInfo &info) const
 
 	_savegame_DBGL_data = buffer;
 	_save_DBGC_data = true;
-	bret = this->WriteSavegame(filename, lastof(filename), name_buffer);
+	bret = this->WriteDiagnosticSavegame(filename, lastof(filename), name_buffer);
 	if (bret) {
 		printf("info savegame written to %s. Please add this file and the last (auto)save to any bug reports.\n\n", filename);
 	} else {

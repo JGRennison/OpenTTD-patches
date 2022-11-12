@@ -14,6 +14,10 @@
 #include <string>
 #include <vector>
 
+struct DesyncDeferredSaveInfo {
+	std::string name_buffer;
+};
+
 struct DesyncExtraInfo {
 	enum Flags {
 		DEIF_NONE       = 0,      ///< no flags
@@ -27,6 +31,7 @@ struct DesyncExtraInfo {
 	const char *client_name = nullptr;
 	int client_id = -1;
 	FILE **log_file = nullptr; ///< save unclosed log file handle here
+	DesyncDeferredSaveInfo *defer_savegame_write = nullptr;
 };
 DECLARE_ENUM_AS_BIT_SET(DesyncExtraInfo::Flags)
 
@@ -154,12 +159,15 @@ public:
 	 *         was successful (not all OSes support dumping files).
 	 */
 	virtual int WriteCrashDump(char *filename, const char *filename_last) const;
-	bool WriteSavegame(char *filename, const char *filename_last, const char *name = "crash") const;
-	bool WriteScreenshot(char *filename, const char *filename_last, const char *name = "crash") const;
+
+	static bool WriteSavegame(char *filename, const char *filename_last, const char *name = "crash");
+	static bool WriteDiagnosticSavegame(char *filename, const char *filename_last, const char *name);
+	static bool WriteScreenshot(char *filename, const char *filename_last, const char *name = "crash");
 
 	bool MakeCrashLog(char *buffer, const char *last);
 	bool MakeCrashLogWithStackBuffer();
 	bool MakeDesyncCrashLog(const std::string *log_in, std::string *log_out, const DesyncExtraInfo &info) const;
+	static bool WriteDesyncSavegame(const char *log_data, const char *name_buffer);
 	bool MakeInconsistencyLog(const InconsistencyExtraInfo &info) const;
 	bool MakeVersionInfoLog() const;
 	bool MakeCrashSavegameAndScreenshot() const;

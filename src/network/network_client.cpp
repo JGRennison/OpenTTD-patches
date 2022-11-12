@@ -324,10 +324,13 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 				DEBUG(net, 0, "Sync error detected!");
 
 				std::string desync_log;
+				DesyncDeferredSaveInfo deferred_save;
 				info.log_file = &(my_client->desync_log_file);
+				info.defer_savegame_write = &deferred_save;
 				CrashLog::DesyncCrashLog(nullptr, &desync_log, info);
 				my_client->SendDesyncLog(desync_log);
 				my_client->ClientError(NETWORK_RECV_STATUS_DESYNC);
+				CrashLog::WriteDesyncSavegame(desync_log.c_str(), deferred_save.name_buffer.c_str());
 				return false;
 			}
 			_last_sync_date = _date;
