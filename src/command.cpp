@@ -561,6 +561,8 @@ enum CommandLogEntryFlag : uint16 {
 };
 DECLARE_ENUM_AS_BIT_SET(CommandLogEntryFlag)
 
+extern uint32 _frame_counter;
+
 struct CommandLogEntry {
 	std::string text;
 	TileIndex tile;
@@ -575,12 +577,13 @@ struct CommandLogEntry {
 	CompanyID local_company;
 	CommandLogEntryFlag log_flags;
 	ClientID client_id;
+	uint32 frame_counter;
 
 	CommandLogEntry() { }
 
 	CommandLogEntry(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandLogEntryFlag log_flags, std::string text)
 			: text(text), tile(tile), p1(p1), p2(p2), cmd(cmd), p3(p3), date(_date), date_fract(_date_fract), tick_skip_counter(_tick_skip_counter),
-			current_company(_current_company), local_company(_local_company), log_flags(log_flags), client_id(_cmd_client_id) { }
+			current_company(_current_company), local_company(_local_company), log_flags(log_flags), client_id(_cmd_client_id), frame_counter(_frame_counter) { }
 };
 
 struct CommandLog {
@@ -627,8 +630,11 @@ static void DumpSubCommandLog(char *&buffer, const char *last, const CommandLog 
 
 		YearMonthDay ymd;
 		ConvertDateToYMD(entry.date, &ymd);
-		buffer += seprintf(buffer, last, " %3u | %4i-%02i-%02i, %2i, %3i | ", i, ymd.year, ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter);
-		buffer += seprintf(buffer, last, "%c%c%c%c%c%c%c%c%c%c%c | ",
+		buffer += seprintf(buffer, last, " %3u | %4i-%02i-%02i, %2i, %3i", i, ymd.year, ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter);
+		if (_networking) {
+			buffer += seprintf(buffer, last, ", %08X", entry.frame_counter);
+		}
+		buffer += seprintf(buffer, last, " | %c%c%c%c%c%c%c%c%c%c%c | ",
 				fc(CLEF_ORDER_BACKUP, 'o'), fc(CLEF_RANDOM, 'r'), fc(CLEF_TWICE, '2'),
 				fc(CLEF_SCRIPT, 'a'),fc(CLEF_BINARY, 'b'), fc(CLEF_MY_CMD, 'm'), fc(CLEF_ONLY_SENDING, 's'),
 				fc(CLEF_ESTIMATE_ONLY, 'e'), fc(CLEF_TEXT, 't'), fc(CLEF_GENERATING_WORLD, 'g'), fc(CLEF_CMD_FAILED, 'f'));
@@ -853,6 +859,7 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32
 		if (current.log_flags & CLEF_ONLY_SENDING && ((current.log_flags ^ log_flags) & ~(CLEF_SCRIPT | CLEF_MY_CMD)) == CLEF_ONLY_SENDING &&
 				current.tile == tile && current.p1 == p1 && current.p2 == p2 && current.p3 == p3 && ((current.cmd ^ cmd) & ~CMD_NETWORK_COMMAND) == 0 && current.date == _date &&
 				current.date_fract == _date_fract && current.tick_skip_counter == _tick_skip_counter &&
+				current.frame_counter == _frame_counter &&
 				current.current_company == _current_company && current.local_company == _local_company) {
 			current.log_flags |= log_flags | CLEF_TWICE;
 			current.log_flags &= ~CLEF_ONLY_SENDING;
