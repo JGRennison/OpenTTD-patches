@@ -336,6 +336,7 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 			_last_sync_date = _date;
 			_last_sync_date_fract = _date_fract;
 			_last_sync_tick_skip_counter = _tick_skip_counter;
+			_last_sync_frame_counter = _sync_frame;
 
 			/* If this is the first time we have a sync-frame, we
 			 *   need to let the server know that we are ready and at the same

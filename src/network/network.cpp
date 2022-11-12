@@ -87,6 +87,7 @@ uint32 _sync_frame;                   ///< The frame to perform the sync check.
 Date   _last_sync_date;               ///< The game date of the last successfully received sync frame
 DateFract _last_sync_date_fract;      ///< "
 uint8  _last_sync_tick_skip_counter;  ///< "
+uint32 _last_sync_frame_counter;      ///< "
 bool _network_first_time;             ///< Whether we have finished joining or not.
 CompanyMask _network_company_passworded; ///< Bitmask of the password status of all companies.
 
@@ -661,6 +662,7 @@ static void NetworkInitialize(bool close_admins = true)
 	_last_sync_date = 0;
 	_last_sync_date_fract = 0;
 	_last_sync_tick_skip_counter = 0;
+	_last_sync_frame_counter = 0;
 }
 
 /** Non blocking connection to query servers for their game info. */

@@ -523,7 +523,10 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 				flag_check(DesyncExtraInfo::DEIF_DBL_RAND, "D"));
 	}
 
-	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u)\n", _cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, _settings_game.economy.day_length_factor);
+	extern uint32 _frame_counter;
+
+	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u), %08X\n",
+			_cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, _settings_game.economy.day_length_factor, _frame_counter);
 	if (_game_load_time != 0) {
 		buffer += seprintf(buffer, last, "Game loaded at: %i-%02i-%02i (%i, %i), %s",
 				_game_load_cur_date_ymd.year, _game_load_cur_date_ymd.month + 1, _game_load_cur_date_ymd.day, _game_load_date_fract, _game_load_tick_skip_counter, asctime(gmtime(&_game_load_time)));
@@ -532,11 +535,12 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 		extern Date   _last_sync_date;
 		extern DateFract _last_sync_date_fract;
 		extern uint8  _last_sync_tick_skip_counter;
+		extern uint32 _last_sync_frame_counter;
 
 		YearMonthDay ymd;
 		ConvertDateToYMD(_last_sync_date, &ymd);
-		buffer += seprintf(buffer, last, "Last sync at: %i-%02i-%02i (%i, %i)",
-				ymd.year, ymd.month + 1, ymd.day, _last_sync_date_fract, _last_sync_tick_skip_counter);
+		buffer += seprintf(buffer, last, "Last sync at: %i-%02i-%02i (%i, %i), %08X",
+				ymd.year, ymd.month + 1, ymd.day, _last_sync_date_fract, _last_sync_tick_skip_counter, _last_sync_frame_counter);
 	}
 	if (info.client_id >= 0) {
 		buffer += seprintf(buffer, last, "Client #%d, \"%s\"\n", info.client_id, info.client_name != nullptr ? info.client_name : "");
@@ -584,7 +588,10 @@ char *CrashLog::FillInconsistencyLog(char *buffer, const char *last, const Incon
 	buffer += WriteScopeLog(buffer, last);
 #endif
 
-	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u)\n", _cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, _settings_game.economy.day_length_factor);
+	extern uint32 _frame_counter;
+
+	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u), %08X\n",
+			_cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, _settings_game.economy.day_length_factor, _frame_counter);
 	if (_game_load_time != 0) {
 		buffer += seprintf(buffer, last, "Game loaded at: %i-%02i-%02i (%i, %i), %s",
 				_game_load_cur_date_ymd.year, _game_load_cur_date_ymd.month + 1, _game_load_cur_date_ymd.day, _game_load_date_fract, _game_load_tick_skip_counter, asctime(gmtime(&_game_load_time)));
@@ -593,11 +600,12 @@ char *CrashLog::FillInconsistencyLog(char *buffer, const char *last, const Incon
 		extern Date   _last_sync_date;
 		extern DateFract _last_sync_date_fract;
 		extern uint8  _last_sync_tick_skip_counter;
+		extern uint32 _last_sync_frame_counter;
 
 		YearMonthDay ymd;
 		ConvertDateToYMD(_last_sync_date, &ymd);
-		buffer += seprintf(buffer, last, "Last sync at: %i-%02i-%02i (%i, %i)",
-				ymd.year, ymd.month + 1, ymd.day, _last_sync_date_fract, _last_sync_tick_skip_counter);
+		buffer += seprintf(buffer, last, "Last sync at: %i-%02i-%02i (%i, %i), %08X",
+				ymd.year, ymd.month + 1, ymd.day, _last_sync_date_fract, _last_sync_tick_skip_counter, _last_sync_frame_counter);
 	}
 	buffer += seprintf(buffer, last, "\n");
 

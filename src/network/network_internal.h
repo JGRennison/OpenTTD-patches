@@ -84,6 +84,7 @@ extern uint32 _sync_frame;
 extern Date   _last_sync_date;
 extern DateFract _last_sync_date_fract;
 extern uint8  _last_sync_tick_skip_counter;
+extern uint32  _last_sync_frame_counter;
 extern bool _network_first_time;
 /* Vars needed for the join-GUI */
 extern NetworkJoinStatus _network_join_status;
