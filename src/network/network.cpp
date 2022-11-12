@@ -226,7 +226,7 @@ std::string GenerateCompanyPasswordHash(const std::string &password, const std::
  */
 bool NetworkCompanyIsPassworded(CompanyID company_id)
 {
-	return HasBit(_network_company_passworded, company_id);
+	return company_id < MAX_COMPANIES && HasBit(_network_company_passworded, company_id);
 }
 
 /* This puts a text-message to the console, or in the future, the chat-box,
