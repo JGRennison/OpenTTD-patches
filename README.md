@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.49.0
+## JGR's Patchpack version 0.49.1
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 

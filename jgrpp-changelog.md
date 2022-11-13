@@ -2,6 +2,22 @@
 
 * * *
 
+### v0.49.1 (2022-11-13)
+* Fix crash when the unload type of an order was changed to no unload and then back to unload, whilst a vehicle was unloading using that order.
+* Fix multiplayer desync when changing the town zone settings in multiplayer.
+* Fix multiplayer desync when creating companies in multiplayer when a saved default face feature was present at the client but not the server or vice versa.
+* Fix town setting overrides not being allowed for multiplayer admins when the setting to enable for clients was not enabled.
+* Fix trains making a PBS reservation when starting a timetabled wait at a waypoint in some cases.
+* Fix new companies created in multiplayer not inheriting the client's default company settings.
+* Fix crash if a network client's connection fails during the reporting of a connection problem to the server.
+* Prevent spread/regrowth of temperate trees already on snowy ground, in the arctic climate.
+* Enable upstream feature: prioritise faster routes for passengers, mail and express cargo.
+* Increase maximum engine name length.
+* Only show edge level crossing overlays for multi-track level crossings, even when the safer crossings settings is off.
+* Allow various game settings to be changed in multiplayer, unless prevented by a NewGRF.
+* Minor performance improvements to the rendering of normal-mode viewports.
+* Bump trunk base from commit 4daad7f34840bcec2a568eb54149286c7f68c892 to commit 019dcb7b7b010ce85260aa075f859d63fa020868.
+
 ### v0.49.0 (2022-10-27)
 * Fix calculating train curve speed limit on dual rail type tiles.
 * Fix crash if GS is removed when GS settings window is open.
