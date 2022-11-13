@@ -1985,9 +1985,28 @@ void StateGameLoop()
 		CallWindowGameTickEvent();
 		NewsLoop();
 
-		for (Company *c : Company::Iterate()) {
-			DEBUG_UPDATESTATECHECKSUM("Company: %u, Money: " OTTD_PRINTF64, c->index, (int64)c->money);
-			UpdateStateChecksum(c->money);
+		if (_networking) {
+			for (Company *c : Company::Iterate()) {
+				DEBUG_UPDATESTATECHECKSUM("Company: %u, Money: " OTTD_PRINTF64, c->index, (int64)c->money);
+				UpdateStateChecksum(c->money);
+
+				for (uint i = 0; i < ROADTYPE_END; i++) {
+					DEBUG_UPDATESTATECHECKSUM("Company: %u, road[%u]: %u", c->index, i, c->infrastructure.road[i]);
+					UpdateStateChecksum(c->infrastructure.road[i]);
+				}
+
+				for (uint i = 0; i < RAILTYPE_END; i++) {
+					DEBUG_UPDATESTATECHECKSUM("Company: %u, rail[%u]: %u", c->index, i, c->infrastructure.rail[i]);
+					UpdateStateChecksum(c->infrastructure.rail[i]);
+				}
+
+				DEBUG_UPDATESTATECHECKSUM("Company: %u, signal: %u, water: %u, station: %u, airport: %u",
+						c->index, c->infrastructure.signal, c->infrastructure.water, c->infrastructure.station, c->infrastructure.airport);
+				UpdateStateChecksum(c->infrastructure.signal);
+				UpdateStateChecksum(c->infrastructure.water);
+				UpdateStateChecksum(c->infrastructure.station);
+				UpdateStateChecksum(c->infrastructure.airport);
+			}
 		}
 		cur_company.Restore();
 	}
