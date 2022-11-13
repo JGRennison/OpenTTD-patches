@@ -17,6 +17,10 @@
 #include "../command_type.h"
 #include "../date_type.h"
 
+#include <vector>
+#include <array>
+#include <memory>
+
 static const uint32 FIND_SERVER_EXTENDED_TOKEN = 0x2A49582A;
 
 #ifdef RANDOM_DEBUG
