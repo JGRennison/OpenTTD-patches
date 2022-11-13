@@ -477,17 +477,18 @@ void TriggerRoadStopRandomisation(Station *st, TileIndex tile, RoadStopRandomTri
 
 /**
  * Checks if there's any new stations by a specific RoadStopType
- * @param rs the RoadStopType to check for.
- * @return true if there was any new RoadStopSpec's found for the given RoadStopType, else false.
+ * @param rs the RoadStopType to check.
+ * @param roadtype the RoadType to check.
+ * @return true if there was any new RoadStopSpec's found for the given RoadStopType and RoadType, else false.
  */
-bool GetIfNewStopsByType(RoadStopType rs)
+bool GetIfNewStopsByType(RoadStopType rs, RoadType roadtype)
 {
 	if (!(RoadStopClass::GetClassCount() > 1 || RoadStopClass::Get(ROADSTOP_CLASS_DFLT)->GetSpecCount() > 1)) return false;
 	for (uint i = 0; i < RoadStopClass::GetClassCount(); i++) {
 		// We don't want to check the default or waypoint classes. These classes are always available.
 		if (i == ROADSTOP_CLASS_DFLT || i == ROADSTOP_CLASS_WAYP) continue;
 		RoadStopClass *roadstopclass = RoadStopClass::Get((RoadStopClassID)i);
-		if (GetIfClassHasNewStopsByType(roadstopclass, rs)) return true;
+		if (GetIfClassHasNewStopsByType(roadstopclass, rs, roadtype)) return true;
 	}
 	return false;
 }
@@ -495,13 +496,14 @@ bool GetIfNewStopsByType(RoadStopType rs)
 /**
  * Checks if the given RoadStopClass has any specs assigned to it, compatible with the given RoadStopType.
  * @param roadstopclass the RoadStopClass to check.
- * @param rs the RoadStopType to check by.
- * @return true if the roadstopclass has any specs compatible with the given RoadStopType.
+ * @param rs the RoadStopType to check.
+ * @param roadtype the RoadType to check.
+ * @return true if the RoadStopSpec has any specs compatible with the given RoadStopType and RoadType.
  */
-bool GetIfClassHasNewStopsByType(RoadStopClass *roadstopclass, RoadStopType rs)
+bool GetIfClassHasNewStopsByType(RoadStopClass *roadstopclass, RoadStopType rs, RoadType roadtype)
 {
 	for (uint j = 0; j < roadstopclass->GetSpecCount(); j++) {
-		if (GetIfStopIsForType(roadstopclass->GetSpec(j), rs)) return true;
+		if (GetIfStopIsForType(roadstopclass->GetSpec(j), rs, roadtype)) return true;
 	}
 	return false;
 }
@@ -509,13 +511,18 @@ bool GetIfClassHasNewStopsByType(RoadStopClass *roadstopclass, RoadStopType rs)
 /**
  * Checks if the given RoadStopSpec is compatible with the given RoadStopType.
  * @param roadstopspec the RoadStopSpec to check.
- * @param rs the RoadStopType to check by.
- * @return true if the roadstopspec is compatible with the given RoadStopType.
+ * @param rs the RoadStopType to check.
+ * @param roadtype the RoadType to check.
+ * @return true if the RoadStopSpec is compatible with the given RoadStopType and RoadType.
  */
-bool GetIfStopIsForType(const RoadStopSpec *roadstopspec, RoadStopType rs)
+bool GetIfStopIsForType(const RoadStopSpec *roadstopspec, RoadStopType rs, RoadType roadtype)
 {
 	// The roadstopspec is nullptr, must be the default station, always return true.
 	if (roadstopspec == nullptr) return true;
+
+	if (HasBit(roadstopspec->flags, RSF_BUILD_MENU_ROAD_ONLY) && !RoadTypeIsRoad(roadtype)) return false;
+	if (HasBit(roadstopspec->flags, RSF_BUILD_MENU_TRAM_ONLY) && !RoadTypeIsTram(roadtype)) return false;
+
 	if (roadstopspec->stop_type == ROADSTOPTYPE_ALL) return true;
 
 	switch (rs) {

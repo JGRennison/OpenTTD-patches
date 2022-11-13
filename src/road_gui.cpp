@@ -95,7 +95,12 @@ static RoadType _cur_roadtype;
  */
 static bool IsRoadStopAvailable(const RoadStopSpec *roadstopspec, StationType type)
 {
-	if (roadstopspec == nullptr || !HasBit(roadstopspec->callback_mask, CBM_ROAD_STOP_AVAIL)) return true;
+	if (roadstopspec == nullptr) return true;
+
+	if (HasBit(roadstopspec->flags, RSF_BUILD_MENU_ROAD_ONLY) && !RoadTypeIsRoad(_cur_roadtype)) return false;
+	if (HasBit(roadstopspec->flags, RSF_BUILD_MENU_TRAM_ONLY) && !RoadTypeIsTram(_cur_roadtype)) return false;
+
+	if (!HasBit(roadstopspec->callback_mask, CBM_ROAD_STOP_AVAIL)) return true;
 
 	uint16 cb_res = GetRoadStopCallback(CBID_STATION_AVAILABILITY, 0, 0, roadstopspec, nullptr, INVALID_TILE, _cur_roadtype, type, 0);
 	if (cb_res == CALLBACK_FAILED) return true;
@@ -788,7 +793,7 @@ struct BuildRoadToolbarWindow : Window {
 
 				case DDSP_BUILD_BUSSTOP:
 				case DDSP_REMOVE_BUSSTOP:
-					if (this->IsWidgetLowered(WID_ROT_BUS_STATION) && GetIfClassHasNewStopsByType(RoadStopClass::Get(_roadstop_gui_settings.roadstop_class), ROADSTOP_BUS)) {
+					if (this->IsWidgetLowered(WID_ROT_BUS_STATION) && GetIfClassHasNewStopsByType(RoadStopClass::Get(_roadstop_gui_settings.roadstop_class), ROADSTOP_BUS, _cur_roadtype)) {
 						if (_remove_button_clicked) {
 							TileArea ta(start_tile, end_tile);
 							DoCommandP(ta.tile, ta.w | ta.h << 8, (_ctrl_pressed << 1) | ROADSTOP_BUS, CMD_REMOVE_ROAD_STOP | CMD_MSG(this->rti->strings.err_remove_station[ROADSTOP_BUS]), CcPlaySound_CONSTRUCTION_OTHER);
@@ -800,7 +805,7 @@ struct BuildRoadToolbarWindow : Window {
 
 				case DDSP_BUILD_TRUCKSTOP:
 				case DDSP_REMOVE_TRUCKSTOP:
-					if (this->IsWidgetLowered(WID_ROT_TRUCK_STATION) && GetIfClassHasNewStopsByType(RoadStopClass::Get(_roadstop_gui_settings.roadstop_class), ROADSTOP_TRUCK)) {
+					if (this->IsWidgetLowered(WID_ROT_TRUCK_STATION) && GetIfClassHasNewStopsByType(RoadStopClass::Get(_roadstop_gui_settings.roadstop_class), ROADSTOP_TRUCK, _cur_roadtype)) {
 						if (_remove_button_clicked) {
 							TileArea ta(start_tile, end_tile);
 							DoCommandP(ta.tile, ta.w | ta.h << 8, (_ctrl_pressed << 1) | ROADSTOP_TRUCK, CMD_REMOVE_ROAD_STOP | CMD_MSG(this->rti->strings.err_remove_station[ROADSTOP_TRUCK]), CcPlaySound_CONSTRUCTION_OTHER);
@@ -1245,7 +1250,7 @@ public:
 		this->vscrollList = nullptr;
 		this->vscrollMatrix = nullptr;
 		this->roadStopType = rs;
-		bool newstops = GetIfNewStopsByType(rs);
+		bool newstops = GetIfNewStopsByType(rs, _cur_roadtype);
 
 		this->CreateNestedTree();
 
@@ -1302,7 +1307,7 @@ public:
 		}
 		if (newstops) {
 			/* The currently selected class doesn't have any stops for this RoadStopType, reset the selection. */
-			if (!GetIfClassHasNewStopsByType(RoadStopClass::Get(_roadstop_gui_settings.roadstop_class), rs)) {
+			if (!GetIfClassHasNewStopsByType(RoadStopClass::Get(_roadstop_gui_settings.roadstop_class), rs, _cur_roadtype)) {
 				_roadstop_gui_settings.roadstop_class = ROADSTOP_CLASS_DFLT;
 				_roadstop_gui_settings.roadstop_type = 0;
 			}
@@ -1310,7 +1315,7 @@ public:
 			_roadstop_gui_settings.roadstop_type = std::min((int)_roadstop_gui_settings.roadstop_type, _roadstop_gui_settings.roadstop_count - 1);
 
 			/* Reset back to default class if the previously selected class is not available for this road stop type. */
-			if (!GetIfClassHasNewStopsByType(RoadStopClass::Get(_roadstop_gui_settings.roadstop_class), roadStopType)) {
+			if (!GetIfClassHasNewStopsByType(RoadStopClass::Get(_roadstop_gui_settings.roadstop_class), roadStopType, _cur_roadtype)) {
 				_roadstop_gui_settings.roadstop_class = ROADSTOP_CLASS_DFLT;
 			}
 
@@ -1364,7 +1369,7 @@ public:
 				continue;
 			}
 			RoadStopClass *rs_class = RoadStopClass::Get(rs_id);
-			if (GetIfClassHasNewStopsByType(rs_class, this->roadStopType)) this->roadstop_classes.push_back(rs_id);
+			if (GetIfClassHasNewStopsByType(rs_class, this->roadStopType, _cur_roadtype)) this->roadstop_classes.push_back(rs_id);
 		}
 
 		if (this->ShowNewStops()) {
@@ -1614,7 +1619,7 @@ public:
 				int y = this->vscrollList->GetScrolledRowFromWidget(pt.y, this, WID_BROS_NEWST_LIST);
 				if (y >= (int)this->roadstop_classes.size()) return;
 				RoadStopClassID class_id = this->roadstop_classes[y];
-				if (_roadstop_gui_settings.roadstop_class != class_id && GetIfClassHasNewStopsByType(RoadStopClass::Get(class_id), roadStopType)) {
+				if (_roadstop_gui_settings.roadstop_class != class_id && GetIfClassHasNewStopsByType(RoadStopClass::Get(class_id), roadStopType, _cur_roadtype)) {
 					_roadstop_gui_settings.roadstop_class = class_id;
 					RoadStopClass *rsclass   = RoadStopClass::Get(_roadstop_gui_settings.roadstop_class);
 					_roadstop_gui_settings.roadstop_count = rsclass->GetSpecCount();
