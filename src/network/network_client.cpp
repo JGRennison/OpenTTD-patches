@@ -329,6 +329,7 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 				info.defer_savegame_write = &deferred_save;
 				CrashLog::DesyncCrashLog(nullptr, &desync_log, info);
 				my_client->SendDesyncLog(desync_log);
+				my_client->SendDesyncSyncData();
 				my_client->ClientError(NETWORK_RECV_STATUS_DESYNC);
 				CrashLog::WriteDesyncSavegame(desync_log.c_str(), deferred_save.name_buffer.c_str());
 				return false;
@@ -337,6 +338,7 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 			_last_sync_date_fract = _date_fract;
 			_last_sync_tick_skip_counter = _tick_skip_counter;
 			_last_sync_frame_counter = _sync_frame;
+			_network_client_sync_records.clear();
 
 			/* If this is the first time we have a sync-frame, we
 			 *   need to let the server know that we are ready and at the same
@@ -351,6 +353,10 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 			DEBUG(net, 1, "Missed frame for sync-test: %d / %d", _sync_frame, _frame_counter);
 			_sync_frame = 0;
 		}
+	}
+
+	if (_network_client_sync_records.size() <= 256) {
+		_network_client_sync_records.push_back({ _frame_counter, _random.state[0], _state_checksum.state });
 	}
 
 	return true;
@@ -566,6 +572,22 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncMessage(const char *
 	p->Send_uint16(_date_fract);
 	p->Send_uint8(_tick_skip_counter);
 	p->Send_string(msg);
+	my_client->SendPacket(p);
+	return NETWORK_RECV_STATUS_OKAY;
+}
+
+/** Send an error-packet over the network */
+NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncSyncData()
+{
+	if (_network_client_sync_records.empty()) return NETWORK_RECV_STATUS_OKAY;
+
+	Packet *p = new Packet(PACKET_CLIENT_DESYNC_SYNC_DATA, SHRT_MAX);
+	p->Send_uint32(_network_client_sync_records[0].frame);
+	p->Send_uint32((uint)_network_client_sync_records.size());
+	for (uint i = 0; i < (uint)_network_client_sync_records.size(); i++) {
+		p->Send_uint32(_network_client_sync_records[i].seed_1);
+		p->Send_uint64(_network_client_sync_records[i].state_checksum);
+	}
 	my_client->SendPacket(p);
 	return NETWORK_RECV_STATUS_OKAY;
 }

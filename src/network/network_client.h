@@ -95,6 +95,7 @@ public:
 	static NetworkRecvStatus SendError(NetworkErrorCode errorno, NetworkRecvStatus recvstatus = NETWORK_RECV_STATUS_OKAY);
 	static NetworkRecvStatus SendDesyncLog(const std::string &log);
 	static NetworkRecvStatus SendDesyncMessage(const char *msg);
+	static NetworkRecvStatus SendDesyncSyncData();
 	static NetworkRecvStatus SendQuit();
 	static NetworkRecvStatus SendAck();
 

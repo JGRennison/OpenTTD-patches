@@ -101,6 +101,16 @@ extern uint8 _network_reconnect;
 
 extern CompanyMask _network_company_passworded;
 
+/* Sync debugging */
+struct NetworkSyncRecord {
+	uint32 frame;
+	uint32 seed_1;
+	uint64 state_checksum;
+};
+extern std::vector<NetworkSyncRecord> _network_client_sync_records;
+extern std::unique_ptr<std::array<NetworkSyncRecord, 1024>> _network_server_sync_records;
+extern uint32 _network_server_sync_records_next;
+
 void NetworkQueryServer(const std::string &connection_string);
 
 void GetBindAddresses(NetworkAddressList *addresses, uint16 port);

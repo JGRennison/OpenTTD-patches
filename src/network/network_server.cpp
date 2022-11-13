@@ -1202,6 +1202,8 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ERROR(Packet *p
 		DesyncExtraInfo info;
 		info.client_name = client_name;
 		info.client_id = this->client_id;
+		info.desync_frame_seed = this->desync_frame_seed;
+		info.desync_frame_state_checksum = this->desync_frame_state_checksum;
 		CrashLog::DesyncCrashLog(&(this->desync_log), &server_desync_log, info);
 		this->SendDesyncLog(server_desync_log);
 
@@ -1240,6 +1242,39 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_DESYNC_MSG(Pack
 	DEBUG(desync, 0, "Client-id %d desync msg: %s", this->client_id, msg.c_str());
 	extern void LogRemoteDesyncMsg(Date date, DateFract date_fract, uint8 tick_skip_counter, uint32 src_id, std::string msg);
 	LogRemoteDesyncMsg(date, date_fract, tick_skip_counter, this->client_id, std::move(msg));
+	return NETWORK_RECV_STATUS_OKAY;
+}
+
+NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_DESYNC_SYNC_DATA(Packet *p)
+{
+	uint32 frame = p->Recv_uint32();
+	uint32 count = p->Recv_uint32();
+
+	DEBUG(net, 2, "Received desync sync data: %u frames from %08X", count, frame);
+
+	uint server_idx = UINT32_MAX;
+	for (uint i = 0; i < _network_server_sync_records->size(); i++) {
+		if ((*_network_server_sync_records)[i].frame == frame) {
+			server_idx = i;
+			break;
+		}
+	}
+	if (server_idx == UINT32_MAX) return NETWORK_RECV_STATUS_OKAY;
+
+	for (uint i = 0; i < count; i++) {
+		uint32 seed_1 = p->Recv_uint32();
+		uint64 state_checksum = p->Recv_uint64();
+
+		const NetworkSyncRecord &record = (*_network_server_sync_records)[server_idx];
+
+		if (record.frame != frame) break;
+		if (record.seed_1 != seed_1 && this->desync_frame_seed == 0) this->desync_frame_seed = frame;
+		if (record.state_checksum != state_checksum && this->desync_frame_state_checksum == 0) this->desync_frame_state_checksum = frame;
+
+		frame++;
+		server_idx = (server_idx + 1) % _network_server_sync_records->size();
+	}
+
 	return NETWORK_RECV_STATUS_OKAY;
 }
 

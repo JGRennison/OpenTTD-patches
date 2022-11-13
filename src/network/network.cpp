@@ -91,6 +91,10 @@ uint32 _last_sync_frame_counter;      ///< "
 bool _network_first_time;             ///< Whether we have finished joining or not.
 CompanyMask _network_company_passworded; ///< Bitmask of the password status of all companies.
 
+std::vector<NetworkSyncRecord> _network_client_sync_records;
+std::unique_ptr<std::array<NetworkSyncRecord, 1024>> _network_server_sync_records;
+uint32 _network_server_sync_records_next;
+
 static_assert((int)NETWORK_COMPANY_NAME_LENGTH == MAX_LENGTH_COMPANY_NAME_CHARS * MAX_CHAR_LENGTH);
 
 /** The amount of clients connected */
@@ -647,6 +651,10 @@ void NetworkClose(bool close_admins)
 	_network_company_server_id.clear();
 
 	InitializeNetworkPools(close_admins);
+
+	_network_client_sync_records.clear();
+	_network_client_sync_records.shrink_to_fit();
+	_network_server_sync_records.reset();
 }
 
 /* Initializes the network (cleans sockets and stuff) */
@@ -938,6 +946,10 @@ bool NetworkServerStart()
 	_last_sync_frame = 0;
 	_network_own_client_id = CLIENT_ID_SERVER;
 
+	_network_server_sync_records.reset(new std::array<NetworkSyncRecord, 1024>());
+	_network_server_sync_records->fill({ 0, 0, 0 });
+	_network_server_sync_records_next = 0;
+
 	_network_clients_connected = 0;
 	_network_company_passworded = 0;
 
@@ -1226,6 +1238,9 @@ void NetworkGameLoop()
 		_sync_seed_2 = _random.state[1];
 #endif
 		_sync_state_checksum = _state_checksum.state;
+
+		(*_network_server_sync_records)[_network_server_sync_records_next] = { _frame_counter, _random.state[0], _state_checksum.state };
+		_network_server_sync_records_next = (_network_server_sync_records_next + 1) % _network_server_sync_records->size();
 
 		NetworkServer_Tick(send_frame);
 	} else {

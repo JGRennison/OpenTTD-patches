@@ -522,6 +522,9 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 				flag_check(DesyncExtraInfo::DEIF_STATE, "S"),
 				flag_check(DesyncExtraInfo::DEIF_DBL_RAND, "D"));
 	}
+	if (_network_server && (info.desync_frame_seed || info.desync_frame_state_checksum)) {
+		buffer += seprintf(buffer, last, "Desync frame: %08X (seed), %08X (state checksum)\n", info.desync_frame_seed, info.desync_frame_state_checksum);
+	}
 
 	extern uint32 _frame_counter;
 
