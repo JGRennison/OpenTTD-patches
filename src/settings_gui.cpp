@@ -1786,9 +1786,6 @@ static SettingsContainer &GetSettingsTree()
 			graphics->Add(new SettingEntry("gui.smallmap_land_colour"));
 			graphics->Add(new SettingEntry("gui.linkgraph_colours"));
 			graphics->Add(new SettingEntry("gui.graph_line_thickness"));
-			graphics->Add(new SettingEntry("gui.show_vehicle_route_steps"));
-			graphics->Add(new SettingEntry("gui.show_vehicle_route"));
-			graphics->Add(new SettingEntry("gui.dash_level_of_route_lines"));
 		}
 
 		SettingsPage *sound = main->Add(new SettingsPage(STR_CONFIG_SETTING_SOUND));
@@ -1833,6 +1830,13 @@ static SettingsContainer &GetSettingsTree()
 					viewport_signals->Add(new SettingEntry("construction.train_signal_side"));
 					viewport_signals->Add(new SettingEntry("gui.show_restricted_signal_default"));
 					viewport_signals->Add(new SettingEntry("gui.show_all_signal_default"));
+				}
+				SettingsPage *viewport_route_overlay = viewports->Add(new SettingsPage(STR_CONFIG_SETTING_VEHICLE_ROUTE_OVERLAY));
+				{
+					viewport_route_overlay->Add(new SettingEntry("gui.show_vehicle_route_mode"));
+					viewport_route_overlay->Add(new ConditionallyHiddenSettingEntry("gui.show_vehicle_route_steps", []() -> bool { return _settings_client.gui.show_vehicle_route_mode == 0; }));
+					viewport_route_overlay->Add(new ConditionallyHiddenSettingEntry("gui.show_vehicle_route", []() -> bool { return _settings_client.gui.show_vehicle_route_mode == 0; }));
+					viewport_route_overlay->Add(new ConditionallyHiddenSettingEntry("gui.dash_level_of_route_lines", []() -> bool { return _settings_client.gui.show_vehicle_route_mode == 0 || !_settings_client.gui.show_vehicle_route; }));
 				}
 
 				viewports->Add(new SettingEntry("gui.auto_scrolling"));

@@ -46,6 +46,7 @@ void MarkViewportLineDirty(Viewport * const vp, const Point from_pt, const Point
 void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile, ViewportMarkDirtyFlags flags);
 void MarkAllRoutePathsDirty(const Vehicle *veh);
 void CheckMarkDirtyFocusedRoutePaths(const Vehicle *veh);
+void CheckMarkDirtyFocusedRoutePaths();
 
 bool DoZoomInOutWindow(ZoomStateChange how, Window *w);
 void ZoomInOrOutToCursorWindow(bool in, Window * w);

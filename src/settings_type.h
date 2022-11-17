@@ -170,8 +170,6 @@ struct GUISettings : public TimeSettings {
 	uint32 show_scrolling_viewport_on_map;   ///< when a no map viewport is scrolled, its location is marked on the other map viewports
 	bool   show_bridges_on_map;              ///< bridges are rendered on a viewport in map mode
 	bool   show_tunnels_on_map;              ///< tunnels are rendered on a viewport in map mode
-	uint32 show_vehicle_route;               ///< show a vehicle's route when its orders/timetable window is focused
-	uint32 dash_level_of_route_lines;        ///< the dash level passed to GfxDrawLine() (plain if 0)
 	bool   use_owner_colour_for_tunnelbridge;///< bridges and tunnels are rendered with their owner's colour
 	bool   timetable_arrival_departure;      ///< show arrivals and departures in vehicle timetables
 	uint8  max_departures;                   ///< maximum number of departures to show per station
@@ -232,7 +230,10 @@ struct GUISettings : public TimeSettings {
 	bool   auto_remove_signals;              ///< automatically remove signals when in the way during rail construction
 	uint16 refresh_rate;                     ///< How often we refresh the screen (time between draw-ticks).
 	uint16 fast_forward_speed_limit;         ///< Game speed to use when fast-forward is enabled.
-	bool   show_vehicle_route_steps;         ///< when a window related to a specific vehicle is focused, show route steps
+	uint8  show_vehicle_route_mode;          ///< How to show a vehicle's route when one of its windows is focused
+	bool   show_vehicle_route;               ///< Show route lines when vehicles route overlay is being shown
+	bool   show_vehicle_route_steps;         ///< Show route step markers when vehicles route overlay is being shown
+	uint8  dash_level_of_route_lines;        ///< the dash level passed to GfxDrawLine() (plain if 0)
 	bool   show_vehicle_list_company_colour; ///< show the company colour of vehicles which have an owner different to the owner of the vehicle list
 	bool   enable_single_veh_shared_order_gui;    ///< enable showing a single vehicle in the shared order GUI window
 	bool   show_adv_load_mode_features;      ///< enable advanced loading mode features in UI

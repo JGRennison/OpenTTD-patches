@@ -233,6 +233,7 @@ enum {
 	GHK_CLOSE_ERROR,
 	GHK_CHANGE_MAP_MODE_PREV,
 	GHK_CHANGE_MAP_MODE_NEXT,
+	GHK_SWITCH_VIEWPORT_ROUTE_OVERLAY_MODE,
 };
 
 struct MainWindow : Window
@@ -458,6 +459,13 @@ struct MainWindow : Window
 					this->SetDirty();
 				}
 				break;
+			case GHK_SWITCH_VIEWPORT_ROUTE_OVERLAY_MODE:
+				if (_settings_client.gui.show_vehicle_route_mode != 0) {
+					_settings_client.gui.show_vehicle_route_mode ^= 3;
+					CheckMarkDirtyFocusedRoutePaths();
+					SetWindowDirty(WC_GAME_OPTIONS, WN_GAME_OPTIONS_GAME_SETTINGS);
+				}
+				break;
 
 			default: return ES_NOT_HANDLED;
 		}
@@ -576,6 +584,7 @@ static Hotkey global_hotkeys[] = {
 	Hotkey(WKC_SPACE, "close_error", GHK_CLOSE_ERROR),
 	Hotkey(WKC_PAGEUP,   "previous_map_mode", GHK_CHANGE_MAP_MODE_PREV),
 	Hotkey(WKC_PAGEDOWN, "next_map_mode",     GHK_CHANGE_MAP_MODE_NEXT),
+	Hotkey((uint16)0,    "switch_viewport_route_overlay_mode", GHK_SWITCH_VIEWPORT_ROUTE_OVERLAY_MODE),
 	HOTKEY_LIST_END
 };
 HotkeyList MainWindow::hotkeys("global", global_hotkeys);
