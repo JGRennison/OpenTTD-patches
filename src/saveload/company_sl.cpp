@@ -591,7 +591,7 @@ static void Load_PLYP()
 	ReadBuffer::GetCurrent()->CopyBytes(buffer.data(), buffer.size());
 
 	if (crypto_unlock(buffer.data(), _network_company_password_storage_key, nonce, mac, buffer.data(), buffer.size()) == 0) {
-		SlLoadFromBuffer(buffer.data(), buffer.size(), [](void *) {
+		SlLoadFromBuffer(buffer.data(), buffer.size(), []() {
 			_network_company_server_id.resize(SlReadUint32());
 			ReadBuffer::GetCurrent()->CopyBytes((uint8 *)_network_company_server_id.data(), _network_company_server_id.size());
 
@@ -605,7 +605,7 @@ static void Load_PLYP()
 			}
 
 			ReadBuffer::GetCurrent()->SkipBytes(SlReadByte()); // Skip padding
-		}, nullptr);
+		});
 		DEBUG(sl, 2, "Decrypted company passwords");
 	} else {
 		DEBUG(sl, 2, "Failed to decrypt company passwords");

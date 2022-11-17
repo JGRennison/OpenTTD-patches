@@ -629,11 +629,31 @@ int SlIterateArray();
 
 void SlAutolength(AutolengthProc *proc, void *arg);
 std::vector<uint8> SlSaveToVector(AutolengthProc *proc, void *arg);
-void SlLoadFromBuffer(const byte *buffer, size_t length, AutolengthProc *proc, void *arg);
 size_t SlGetFieldLength();
 void SlSetLength(size_t length);
 size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld);
 size_t SlCalcObjLength(const void *object, const SaveLoadTable &slt);
+
+struct SlLoadFromBufferState {
+	size_t old_obj_len;
+	byte *old_bufp;
+	byte *old_bufe;
+};
+
+/**
+ * Run proc, loading exactly length bytes from the contents of buffer
+ * @param proc The callback procedure that is called
+ */
+template <typename F>
+void SlLoadFromBuffer(const byte *buffer, size_t length, F proc)
+{
+	extern SlLoadFromBufferState SlLoadFromBufferSetup(const byte *buffer, size_t length);
+	extern void SlLoadFromBufferRestore(const SlLoadFromBufferState &state, const byte *buffer, size_t length);
+
+	SlLoadFromBufferState state = SlLoadFromBufferSetup(buffer, length);
+	proc();
+	SlLoadFromBufferRestore(state, buffer, length);
+}
 
 void SlGlobList(const SaveLoadTable &slt);
 void SlArray(void *array, size_t length, VarType conv);

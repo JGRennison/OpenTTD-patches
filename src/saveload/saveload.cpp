@@ -2071,33 +2071,34 @@ std::vector<byte> SlSaveToVector(AutolengthProc *proc, void *arg)
 	return std::vector<uint8>(result.first, result.first + result.second);
 }
 
-/**
- * Run proc, loading exactly length bytes from the contents of buffer
- * @param proc The callback procedure that is called
- * @param arg The variable that will be used for the callback procedure
- */
-void SlLoadFromBuffer(const byte *buffer, size_t length, AutolengthProc *proc, void *arg)
+SlLoadFromBufferState SlLoadFromBufferSetup(const byte *buffer, size_t length)
 {
 	assert(_sl.action == SLA_LOAD || _sl.action == SLA_LOAD_CHECK);
 
-	size_t old_obj_len = _sl.obj_len;
+	SlLoadFromBufferState state;
+
+	state.old_obj_len = _sl.obj_len;
 	_sl.obj_len = length;
 
 	ReadBuffer *reader = ReadBuffer::GetCurrent();
-	byte *old_bufp = reader->bufp;
-	byte *old_bufe = reader->bufe;
+	state.old_bufp = reader->bufp;
+	state.old_bufe = reader->bufe;
 	reader->bufp = const_cast<byte *>(buffer);
 	reader->bufe = const_cast<byte *>(buffer) + length;
 
-	proc(arg);
+	return state;
+}
 
+void SlLoadFromBufferRestore(const SlLoadFromBufferState &state, const byte *buffer, size_t length)
+{
+	ReadBuffer *reader = ReadBuffer::GetCurrent();
 	if (reader->bufp != reader->bufe || reader->bufe != buffer + length) {
 		SlErrorCorrupt("SlLoadFromBuffer: Wrong number of bytes read");
 	}
 
-	_sl.obj_len = old_obj_len;
-	reader->bufp = old_bufp;
-	reader->bufe = old_bufe;
+	_sl.obj_len = state.old_obj_len;
+	reader->bufp = state.old_bufp;
+	reader->bufe = state.old_bufe;
 }
 
 /*
