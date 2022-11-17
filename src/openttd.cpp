@@ -475,6 +475,9 @@ static void ShutdownGame()
 	ClearSpecialEventsLog();
 	ClearDesyncMsgLog();
 
+	extern void UninitializeCompanies();
+	UninitializeCompanies();
+
 	_loaded_local_company = COMPANY_SPECTATOR;
 	_game_events_since_load = (GameEventFlags) 0;
 	_game_events_overall = (GameEventFlags) 0;

@@ -569,8 +569,23 @@ static void Save_PLYX()
 static void Load_PLYP()
 {
 	size_t size = SlGetFieldLength();
-	if (size <= 16 + 24 + 16 || !_network_server) {
+	CompanyMask invalid_mask = 0;
+	if (SlXvIsFeaturePresent(XSLFI_COMPANY_PW, 2)) {
+		if (size <= 2) return;
+		invalid_mask = SlReadUint16();
+		size -= 2;
+	}
+	if (size <= 16 + 24 + 16 || (_networking && !_network_server)) {
 		SlSkipBytes(size);
+		return;
+	}
+	if (!_network_server) {
+		extern CompanyMask _saved_PLYP_invalid_mask;
+		extern std::vector<uint8> _saved_PLYP_data;
+
+		_saved_PLYP_invalid_mask = invalid_mask;
+		_saved_PLYP_data.resize(size);
+		ReadBuffer::GetCurrent()->CopyBytes(_saved_PLYP_data.data(), _saved_PLYP_data.size());
 		return;
 	}
 
@@ -591,7 +606,7 @@ static void Load_PLYP()
 	ReadBuffer::GetCurrent()->CopyBytes(buffer.data(), buffer.size());
 
 	if (crypto_unlock(buffer.data(), _network_company_password_storage_key, nonce, mac, buffer.data(), buffer.size()) == 0) {
-		SlLoadFromBuffer(buffer.data(), buffer.size(), []() {
+		SlLoadFromBuffer(buffer.data(), buffer.size(), [invalid_mask]() {
 			_network_company_server_id.resize(SlReadUint32());
 			ReadBuffer::GetCurrent()->CopyBytes((uint8 *)_network_company_server_id.data(), _network_company_server_id.size());
 
@@ -601,7 +616,9 @@ static void Load_PLYP()
 				std::string password;
 				password.resize(SlReadUint32());
 				ReadBuffer::GetCurrent()->CopyBytes((uint8 *)password.data(), password.size());
-				NetworkServerSetCompanyPassword((CompanyID)cid, password, true);
+				if (!HasBit(invalid_mask, cid)) {
+					NetworkServerSetCompanyPassword((CompanyID)cid, password, true);
+				}
 			}
 
 			ReadBuffer::GetCurrent()->SkipBytes(SlReadByte()); // Skip padding
@@ -614,8 +631,21 @@ static void Load_PLYP()
 
 static void Save_PLYP()
 {
-	if (!_network_server || IsNetworkServerSave()) {
+	if ((_networking && !_network_server) || IsNetworkServerSave()) {
 		SlSetLength(0);
+		return;
+	}
+	if (!_network_server) {
+		extern CompanyMask _saved_PLYP_invalid_mask;
+		extern std::vector<uint8> _saved_PLYP_data;
+
+		if (_saved_PLYP_data.empty()) {
+			SlSetLength(0);
+		} else {
+			SlSetLength(2 + _saved_PLYP_data.size());
+			SlWriteUint16(_saved_PLYP_invalid_mask);
+			MemoryDumper::GetCurrent()->CopyBytes((const uint8 *)_saved_PLYP_data.data(), _saved_PLYP_data.size());
+		}
 		return;
 	}
 
@@ -656,7 +686,8 @@ static void Save_PLYP()
 	/* Encrypt in place */
 	crypto_lock(mac, buffer.data(), _network_company_password_storage_key, nonce, buffer.data(), buffer.size());
 
-	SlSetLength(16 + 24 + 16 + buffer.size());
+	SlSetLength(2 + 16 + 24 + 16 + buffer.size());
+	SlWriteUint16(0); // Invalid mask
 	MemoryDumper::GetCurrent()->CopyBytes(_network_company_password_storage_token, 16);
 	MemoryDumper::GetCurrent()->CopyBytes(nonce, 24);
 	MemoryDumper::GetCurrent()->CopyBytes(mac, 16);

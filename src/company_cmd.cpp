@@ -42,6 +42,8 @@
 
 #include "table/strings.h"
 
+#include <vector>
+
 #include "safeguards.h"
 
 void ClearEnginesHiddenFlagOfCompany(CompanyID cid);
@@ -53,6 +55,9 @@ Colours _company_colours[MAX_COMPANIES];  ///< NOSAVE: can be determined from co
 CompanyManagerFace _company_manager_face; ///< for company manager face storage in openttd.cfg
 uint _next_competitor_start;              ///< the number of ticks before the next AI is started
 uint _cur_company_tick_index;             ///< used to generate a name for one company that doesn't have a name yet per tick
+
+CompanyMask _saved_PLYP_invalid_mask;
+std::vector<uint8> _saved_PLYP_data;
 
 CompanyPool _company_pool("Company"); ///< Pool of companies.
 INSTANTIATE_POOL_METHODS(Company)
@@ -83,6 +88,7 @@ Company::~Company()
 	if (CleaningPool()) return;
 
 	DeleteCompanyWindows(this->index);
+	SetBit(_saved_PLYP_invalid_mask, this->index);
 }
 
 /**
@@ -640,10 +646,22 @@ static bool MaybeStartNewCompany()
 	return false;
 }
 
+static void ClearSavedPLYP()
+{
+	_saved_PLYP_invalid_mask = 0;
+	_saved_PLYP_data.clear();
+}
+
 /** Initialize the pool of companies. */
 void InitializeCompanies()
 {
 	_cur_company_tick_index = 0;
+	ClearSavedPLYP();
+}
+
+void UninitializeCompanies()
+{
+	ClearSavedPLYP();
 }
 
 /**
