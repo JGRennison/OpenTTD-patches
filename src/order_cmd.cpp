@@ -2719,7 +2719,12 @@ void CheckOrders(const Vehicle *v)
 		if (v->orders != nullptr) v->orders->DebugCheckSanity();
 #endif
 
-		if (message == INVALID_STRING_ID && !has_depot_order && v->type != VEH_AIRCRAFT && _settings_client.gui.no_depot_order_warn) message = STR_NEWS_VEHICLE_NO_DEPOT_ORDER;
+		if (message == INVALID_STRING_ID && !has_depot_order && v->type != VEH_AIRCRAFT) {
+			if (_settings_client.gui.no_depot_order_warn == 1 ||
+					(_settings_client.gui.no_depot_order_warn == 2 && _settings_game.difficulty.vehicle_breakdowns != 0)) {
+				message = STR_NEWS_VEHICLE_NO_DEPOT_ORDER;
+			}
+		}
 
 		/* We don't have a problem */
 		if (message == INVALID_STRING_ID) return;

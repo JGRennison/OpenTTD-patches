@@ -122,7 +122,7 @@ struct GUISettings : public TimeSettings {
 	bool   lost_vehicle_warn;                ///< if a vehicle can't find its destination, show a warning
 	bool   restriction_wait_vehicle_warn;    ///< if a vehicle is waiting for an extended time due to a routing restriction, show a warning
 	uint8  order_review_system;              ///< perform order reviews on vehicles
-	bool   no_depot_order_warn;              ///< if a non-air vehicle doesn't have at least one depot order, show a warning
+	uint8  no_depot_order_warn;              ///< if a non-air vehicle doesn't have at least one depot order, show a warning
 	bool   vehicle_income_warn;              ///< if a vehicle isn't generating income, show a warning
 	bool   show_finances;                    ///< show finances at end of year
 	bool   sg_new_nonstop;                   ///< ttdpatch compatible nonstop handling read from pre v93 savegames
