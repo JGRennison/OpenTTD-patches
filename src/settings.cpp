@@ -409,6 +409,10 @@ size_t IntSettingDesc::ParseValue(const char *str) const
 	char *end;
 	size_t val = strtoul(str, &end, 0);
 	if (end == str) {
+		if (this->flags & SF_CONVERT_BOOL_TO_INT) {
+			if (strcmp(str, "true") == 0 || strcmp(str, "on") == 0) return 1;
+			if (strcmp(str, "false") == 0 || strcmp(str, "off") == 0) return 0;
+		}
 		ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_VALUE);
 		msg.SetDParamStr(0, str);
 		msg.SetDParamStr(1, this->name);
