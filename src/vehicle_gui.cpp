@@ -2133,6 +2133,15 @@ private:
 		BP_SHARED_ORDERS, ///< Show the normal caption.
 	};
 
+	void RefreshRouteOverlay() const
+	{
+		if (this->vli.type == VL_SHARED_ORDERS) {
+			const Vehicle *v = Vehicle::GetIfValid(this->vli.index);
+			MarkAllRoutePathsDirty(v);
+			MarkAllRouteStepsDirty(v);
+		}
+	}
+
 public:
 	VehicleListWindow(WindowDesc *desc, WindowNumber window_number) : BaseVehicleListWindow(desc, window_number)
 	{
@@ -2168,6 +2177,17 @@ public:
 	~VehicleListWindow()
 	{
 		*this->sorting = this->vehgroups.GetListing();
+		this->RefreshRouteOverlay();
+	}
+
+	virtual void OnFocus(Window *previously_focused_window) override
+	{
+		this->RefreshRouteOverlay();
+	}
+
+	virtual void OnFocusLost(Window *newly_focused_window) override
+	{
+		this->RefreshRouteOverlay();
 	}
 
 	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override

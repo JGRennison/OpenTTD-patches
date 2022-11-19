@@ -114,6 +114,7 @@
 #include "infrastructure_func.h"
 #include "tracerestrict.h"
 #include "worker_thread.h"
+#include "vehiclelist.h"
 
 #include <map>
 #include <vector>
@@ -2280,6 +2281,16 @@ static inline Vehicle *GetVehicleFromWindow(Window *w)
 			case WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS:
 				if (wn != INVALID_VEHICLE) return Vehicle::Get(wn);
 				break;
+			case WC_TRAINS_LIST:
+			case WC_ROADVEH_LIST:
+			case WC_SHIPS_LIST:
+			case WC_AIRCRAFT_LIST: {
+				VehicleListIdentifier vli = VehicleListIdentifier::UnPack(wn);
+				if (vli.type == VL_SHARED_ORDERS) {
+					return Vehicle::GetIfValid(vli.index);
+				}
+				break;
+			}
 			default:
 				break;
 		}
