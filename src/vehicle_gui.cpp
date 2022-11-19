@@ -275,7 +275,7 @@ void BaseVehicleListWindow::BuildVehicleList()
 }
 
 /** Cargo filter functions */
-static bool CDECL CargoFilter(const Vehicle * const *vid, const CargoID cid)
+static bool CargoFilter(const Vehicle * const *vid, const CargoID cid)
 {
 	if (cid == BaseVehicleListWindow::CF_ANY) {
 		return true;
@@ -308,7 +308,7 @@ static bool CDECL CargoFilter(const Vehicle * const *vid, const CargoID cid)
 	}
 }
 
-static bool CDECL GroupCargoFilter(const GUIVehicleGroup* group, const CargoID cid)
+static bool GroupCargoFilter(const GUIVehicleGroup* group, const CargoID cid)
 {
 	if (cid == BaseVehicleListWindow::CF_ANY) return true;
 	for (VehicleList::const_iterator v = group->vehicles_begin; v != group->vehicles_end; ++v) {

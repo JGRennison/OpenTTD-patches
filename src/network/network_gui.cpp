@@ -389,7 +389,7 @@ protected:
 		}
 	}
 
-	static bool CDECL NGameSearchFilter(NetworkGameList * const *item, StringFilter &sf)
+	static bool NGameSearchFilter(NetworkGameList * const *item, StringFilter &sf)
 	{
 		assert(item != nullptr);
 		assert((*item) != nullptr);

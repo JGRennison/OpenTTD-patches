@@ -724,7 +724,7 @@ const StringID _engine_sort_listing[][14] = {{
 }};
 
 /** Filters vehicles by cargo and engine (in case of rail vehicle). */
-static bool CDECL CargoAndEngineFilter(const EngineID *eid, const CargoID cid)
+static bool CargoAndEngineFilter(const EngineID *eid, const CargoID cid)
 {
 	if (cid == CF_ANY) {
 		return true;

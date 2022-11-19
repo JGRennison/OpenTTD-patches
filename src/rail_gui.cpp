@@ -1185,7 +1185,7 @@ public:
 	}
 
 	/** Filter station classes by class name. */
-	static bool CDECL TagNameFilter(StationClassID const * sc, StringFilter &filter)
+	static bool TagNameFilter(StationClassID const * sc, StringFilter &filter)
 	{
 		char buffer[DRAW_STRING_BUFFER];
 		GetString(buffer, StationClass::Get(*sc)->name, lastof(buffer));

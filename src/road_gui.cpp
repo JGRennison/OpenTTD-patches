@@ -1341,7 +1341,7 @@ public:
 	}
 
 	/** Filter classes by class name. */
-	static bool CDECL TagNameFilter(RoadStopClassID const *sc, StringFilter &filter)
+	static bool TagNameFilter(RoadStopClassID const *sc, StringFilter &filter)
 	{
 		char buffer[DRAW_STRING_BUFFER];
 		GetString(buffer, RoadStopClass::Get(*sc)->name, lastof(buffer));

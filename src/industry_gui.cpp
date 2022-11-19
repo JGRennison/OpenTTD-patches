@@ -1281,7 +1281,7 @@ enum CargoFilterSpecialType {
  * @param cargoes The accepted and produced cargo pair to look for.
  * @return bool Whether the given cargoes accepted and produced by the industry.
  */
-static bool CDECL CargoFilter(const Industry * const *industry, const std::pair<CargoID, CargoID> &cargoes)
+static bool CargoFilter(const Industry * const *industry, const std::pair<CargoID, CargoID> &cargoes)
 {
 	auto accepted_cargo = cargoes.first;
 	auto produced_cargo = cargoes.second;
