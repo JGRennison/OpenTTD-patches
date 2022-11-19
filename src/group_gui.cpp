@@ -881,7 +881,7 @@ public:
 
 			case WID_GL_START_ALL:
 			case WID_GL_STOP_ALL: { // Start/stop all vehicles of the list
-				DoCommandP(0, (1 << 1) | (widget == WID_GL_START_ALL ? (1 << 0) : 0), this->vli.Pack(), CMD_MASS_START_STOP);
+				DoCommandP(0, (1 << 1) | (widget == WID_GL_START_ALL ? (1 << 0) : 0) | (this->GetCargoFilter() << 8), this->vli.Pack(), CMD_MASS_START_STOP);
 				break;
 			}
 
@@ -1005,7 +1005,7 @@ public:
 
 				std::string name = GenerateAutoNameForVehicleGroup(v);
 
-				DoCommandP(0, VehicleListIdentifier(_ctrl_pressed ? VL_SHARED_ORDERS : VL_SINGLE_VEH, v->type, v->owner, v->index).Pack(), 0, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), nullptr, name.c_str());
+				DoCommandP(0, VehicleListIdentifier(_ctrl_pressed ? VL_SHARED_ORDERS : VL_SINGLE_VEH, v->type, v->owner, v->index).Pack(), CF_ANY, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), nullptr, name.c_str());
 
 				break;
 			}
@@ -1060,14 +1060,14 @@ public:
 						break;
 					case ADI_SERVICE: // Send for servicing
 					case ADI_DEPOT: { // Send to Depots
-						DoCommandP(0, DEPOT_MASS_SEND | (index == ADI_SERVICE ? DEPOT_SERVICE : 0U), this->vli.Pack(), GetCmdSendToDepot(this->vli.vtype));
+						DoCommandP(0, DEPOT_MASS_SEND | (index == ADI_SERVICE ? DEPOT_SERVICE : 0U) | this->GetCargoFilter(), this->vli.Pack(), GetCmdSendToDepot(this->vli.vtype));
 						break;
 					}
 					case ADI_DEPOT_SELL:
-						DoCommandP(0, DEPOT_MASS_SEND | DEPOT_SELL, this->vli.Pack(), GetCmdSendToDepot(this->vli.vtype));
+						DoCommandP(0, DEPOT_MASS_SEND | DEPOT_SELL | this->GetCargoFilter(), this->vli.Pack(), GetCmdSendToDepot(this->vli.vtype));
 						break;
 					case ADI_CANCEL_DEPOT:
-						DoCommandP(0, DEPOT_MASS_SEND | DEPOT_CANCEL, this->vli.Pack(), GetCmdSendToDepot(this->vli.vtype));
+						DoCommandP(0, DEPOT_MASS_SEND | DEPOT_CANCEL | this->GetCargoFilter(), this->vli.Pack(), GetCmdSendToDepot(this->vli.vtype));
 						break;
 
 					case ADI_ADD_SHARED: // Add shared Vehicles
