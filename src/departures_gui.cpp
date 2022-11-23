@@ -82,7 +82,7 @@ static bool cached_arr_dep_display_method; ///< Whether to show departures and a
 void FlushDeparturesWindowTextCaches()
 {
 	cached_date_width = cached_status_width = cached_date_arrow_width = cached_veh_type_width = 0;
-	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
+	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 1);
 }
 
 template<bool Twaypoint = false>
@@ -217,11 +217,11 @@ public:
 		arrivals(new DepartureList()),
 		departures_invalid(true),
 		vehicles_invalid(true),
-		entry_height(1 + FONT_HEIGHT_NORMAL + 1 + (_settings_client.gui.departure_larger_font ? FONT_HEIGHT_NORMAL : FONT_HEIGHT_SMALL) + 1 + 1),
 		tick_count(0),
 		calc_tick_countdown(0),
 		min_width(400)
 	{
+		this->SetupValues();
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_DB_SCROLLBAR);
 		this->FinishInitNested(window_number);
@@ -260,10 +260,6 @@ public:
 			this->LowerWidget(WID_DB_SHOW_VIA);
 		}
 
-		if (cached_veh_type_width == 0) {
-			cached_veh_type_width = GetStringBoundingBox(STR_DEPARTURES_TYPE_PLANE).width;
-		}
-
 		this->RefreshVehicleList();
 
 		if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
@@ -273,6 +269,15 @@ public:
 	{
 		this->DeleteDeparturesList(departures);
 		this->DeleteDeparturesList(this->arrivals);
+	}
+
+	void SetupValues()
+	{
+		this->entry_height = 1 + FONT_HEIGHT_NORMAL + 1 + (_settings_client.gui.departure_larger_font ? FONT_HEIGHT_NORMAL : FONT_HEIGHT_SMALL) + 1 + 1;
+
+		if (cached_veh_type_width == 0) {
+			cached_veh_type_width = GetStringBoundingBox(STR_DEPARTURES_TYPE_PLANE).width;
+		}
 	}
 
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
@@ -535,6 +540,11 @@ public:
 	{
 		this->vehicles_invalid = true;
 		this->departures_invalid = true;
+		if (data > 0) {
+			this->SetupValues();
+			this->ReInit();
+			if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
+		}
 	}
 };
 
