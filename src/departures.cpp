@@ -95,7 +95,7 @@ static uint8 GetDepartureConditionalOrderMode(const Order *order, const Vehicle 
 	return _settings_client.gui.departure_conditionals;
 }
 
-static inline bool VehicleSetNextDepartureTime(DateTicks *previous_departure, uint *waiting_time, const DateTicksScaled date_only_scaled, const Vehicle *v, const Order *order, bool arrived_at_timing_point, schdispatch_cache_t &dept_schedule_last)
+static bool VehicleSetNextDepartureTime(DateTicks *previous_departure, uint *waiting_time, const DateTicksScaled date_only_scaled, const Vehicle *v, const Order *order, bool arrived_at_timing_point, schdispatch_cache_t &dept_schedule_last)
 {
 	if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
 		auto is_current_implicit_order = [&v](const Order *o) -> bool {
@@ -117,8 +117,9 @@ static inline bool VehicleSetNextDepartureTime(DateTicks *previous_departure, ui
 			DateTicksScaled earliest_departure = begin_time + ds.GetScheduledDispatchLastDispatch();
 
 			/* Earliest possible departure according to vehicle current timetable */
-			if (earliest_departure + max_delay < date_only_scaled + *previous_departure + order->GetTravelTime()) {
-				earliest_departure = date_only_scaled + *previous_departure + order->GetTravelTime() - max_delay - 1;
+			const uint32 ready_to_depart_time = date_only_scaled + *previous_departure + order->GetTravelTime() + order->GetTimetabledWait();
+			if (earliest_departure + max_delay < ready_to_depart_time) {
+				earliest_departure = ready_to_depart_time - max_delay - 1;
 				/* -1 because this number is actually a moment before actual departure */
 			}
 
@@ -142,8 +143,8 @@ static inline bool VehicleSetNextDepartureTime(DateTicks *previous_departure, ui
 				}
 			}
 
-			*waiting_time = order->GetWaitTime() + actual_departure - date_only_scaled - *previous_departure - order->GetTravelTime();
-			*previous_departure = actual_departure - date_only_scaled + order->GetWaitTime();
+			*waiting_time = actual_departure - date_only_scaled - *previous_departure - order->GetTravelTime();
+			*previous_departure = actual_departure - date_only_scaled;
 			slot_cache.insert(actual_departure);
 
 			/* Return true means that vehicle lateness should be clear from this point onward */
