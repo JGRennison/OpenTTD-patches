@@ -142,6 +142,12 @@ struct AnimationBase {
 			case 0xFF: DeleteAnimatedTile(tile);     break;
 			default:
 				bool changed = Tframehelper::Set(obj, tile, callback);
+				if (callback >= spec->animation.frames && (spec->animation.status != ANIM_STATUS_LOOPING || spec->animation.frames == 0) &&
+						!HasBit(spec->callback_mask, Tbase::cbm_animation_next_frame)) {
+					/* The animation would be stopped on this frame in the next AnimateTile call, don't bother animating it */
+					if (changed) MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+					break;
+				}
 				AddAnimatedTile(tile, changed);
 				break;
 		}
