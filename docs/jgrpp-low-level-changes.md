@@ -58,6 +58,7 @@ This document does not describe the player-visible changes/additions described i
 * Reduce unnecessary region redraws when scrolling viewports.
 * Reduce viewport invalidation region size of track reservation and signal state changes.
 * Cache landscape background in map mode.
+* Partial parallelisation of non-map mode viewport rendering.
 
 ### Rendering
 
@@ -143,8 +144,10 @@ This document does not describe the player-visible changes/additions described i
 
 * [NewGRF specification additions](docs/newgrf-additions.html).
 * Add workaround for a known buggy NewGRF to avoid desync issues.
-* Apply various optimisations to VarAction2 deterministic sprite groups.
+* Apply many optimisations to VarAction2 deterministic sprite groups.
+* Avoid making callbacks which can be pre-determined to be unhandled, or which can be statically determined ahead of time.
 * Avoid animating industry tiles which are not actually animated in the current layout.
+* Avoid unnecessarily triggering or redrawing NewGRF houses.
 
 ### SDL2
 * Update whole window surface if >= 80% needs updating.
@@ -174,7 +177,6 @@ This document does not describe the player-visible changes/additions described i
 
 * Use of __builtin_expect, byte-swap builtins, overflow builtins, and various bitmath builtins.
 * Add various debug console commands.
-* Increase the number of file slots.
 * Cache font heights.
 * Cache resolved names for stations, towns and industries.
 * Change inheritance model of class Window to keep UndefinedBehaviorSanitizer happy.
