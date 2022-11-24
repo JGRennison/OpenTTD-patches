@@ -2453,10 +2453,11 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 	bool seen_req_var1C = false;
 	if (!group->calculated_result) {
 		bool is_cb_switch = false;
-		if (possible_callback_handler && group->adjusts.size() == 1 && !group->calculated_result &&
+		if (possible_callback_handler && group->adjusts.size() > 0 && !group->calculated_result &&
 				IsFeatureUsableForCBQuickExit(group->feature) && !HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_CB_QUICK_EXIT)) {
-			const auto &adjust = group->adjusts[0];
-			if (adjust.variable == 0xC && (adjust.operation == DSGA_OP_ADD || adjust.operation == DSGA_OP_RST) &&
+			size_t idx = group->adjusts.size() - 1;
+			const auto &adjust = group->adjusts[idx];
+			if (adjust.variable == 0xC && ((adjust.operation == DSGA_OP_ADD && idx == 0) || adjust.operation == DSGA_OP_RST) &&
 					adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
 				is_cb_switch = true;
 			}
