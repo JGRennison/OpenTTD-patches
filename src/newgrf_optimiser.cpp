@@ -2545,9 +2545,11 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 		if (!default_group_state.have_cb_handler && is_cb_switch) {
 			bool found_zero_value = false;
 			bool found_non_zero_value = false;
+			bool found_random_cb_value = false;
 			for (const auto &range : group->ranges) {
 				if (range.low == 0) found_zero_value = true;
 				if (range.high > 0) found_non_zero_value = true;
+				if (range.low <= 1 && range.high >= 1) found_random_cb_value = true;
 			}
 			if (!found_non_zero_value) {
 				/* Group looks at var C but has no branches for non-zero cases, so don't consider it a callback handler.
@@ -2555,8 +2557,8 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 				 */
 				possible_callback_handler = false;
 			}
-			if (!found_zero_value) {
-				group->ranges.insert(group->ranges.begin(), { group->default_group, 0, 0 });
+			if (!found_zero_value && !found_random_cb_value) {
+				group->ranges.insert(group->ranges.begin(), { group->default_group, 0, 1 });
 				extern const CallbackResultSpriteGroup *NewCallbackResultSpriteGroupNoTransform(uint16 result);
 				group->default_group = NewCallbackResultSpriteGroupNoTransform(CALLBACK_FAILED);
 			}
