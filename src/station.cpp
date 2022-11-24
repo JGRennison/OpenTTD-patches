@@ -183,16 +183,18 @@ void BaseStation::PostDestructor(size_t index)
 	InvalidateWindowData(WC_SELECT_STATION, 0, 0);
 }
 
-void BaseStation::SetRoadStopTileData(TileIndex tile, byte data, byte offset)
+bool BaseStation::SetRoadStopTileData(TileIndex tile, byte data, byte offset)
 {
 	for (size_t i = 0; i < this->custom_road_stop_tiles.size(); i++) {
 		if (this->custom_road_stop_tiles[i] == tile) {
+			if (GB(this->custom_road_stop_data[i], offset, 8) == data) return false;
 			SB(this->custom_road_stop_data[i], offset, 8, data);
-			return;
+			return true;
 		}
 	}
 	this->custom_road_stop_tiles.push_back(tile);
 	this->custom_road_stop_data.push_back(((uint)data) << offset);
+	return data != 0;
 }
 
 void BaseStation::RemoveRoadStopTileData(TileIndex tile)

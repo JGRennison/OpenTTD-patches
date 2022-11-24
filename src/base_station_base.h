@@ -211,11 +211,11 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 	}
 
 private:
-	void SetRoadStopTileData(TileIndex tile, byte data, byte offset);
+	bool SetRoadStopTileData(TileIndex tile, byte data, byte offset);
 
 public:
 	inline void SetRoadStopRandomBits(TileIndex tile, byte random_bits) { this->SetRoadStopTileData(tile, random_bits, 0); }
-	inline void SetRoadStopAnimationFrame(TileIndex tile, byte frame) { this->SetRoadStopTileData(tile, frame, 8); }
+	inline bool SetRoadStopAnimationFrame(TileIndex tile, byte frame) { return this->SetRoadStopTileData(tile, frame, 8); }
 	void RemoveRoadStopTileData(TileIndex tile);
 
 	static void PostDestructor(size_t index);

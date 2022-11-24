@@ -20,7 +20,16 @@
 template <typename Tobj>
 struct TileAnimationFrameAnimationHelper {
 	static byte Get(Tobj *obj, TileIndex tile) { return GetAnimationFrame(tile); }
-	static void Set(Tobj *obj, TileIndex tile, byte frame) { SetAnimationFrame(tile, frame); }
+	static bool Set(Tobj *obj, TileIndex tile, byte frame)
+	{
+		byte prev = GetAnimationFrame(tile);
+		if (frame != prev) {
+			SetAnimationFrame(tile, frame);
+			return true;
+		} else {
+			return false;
+		}
+	}
 };
 
 /**
@@ -105,8 +114,9 @@ struct AnimationBase {
 			}
 		}
 
-		Tframehelper::Set(obj, tile, frame);
-		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+		if (Tframehelper::Set(obj, tile, frame)) {
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+		}
 	}
 
 	/**
@@ -127,12 +137,12 @@ struct AnimationBase {
 		if (callback == CALLBACK_FAILED) return;
 
 		switch (callback & 0xFF) {
-			case 0xFD: /* Do nothing. */         break;
-			case 0xFE: AddAnimatedTile(tile);    break;
-			case 0xFF: DeleteAnimatedTile(tile); break;
+			case 0xFD: /* Do nothing. */             break;
+			case 0xFE: AddAnimatedTile(tile, false); break;
+			case 0xFF: DeleteAnimatedTile(tile);     break;
 			default:
-				Tframehelper::Set(obj, tile, callback);
-				AddAnimatedTile(tile);
+				bool changed = Tframehelper::Set(obj, tile, callback);
+				AddAnimatedTile(tile, changed);
 				break;
 		}
 
