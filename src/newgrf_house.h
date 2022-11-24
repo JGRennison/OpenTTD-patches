@@ -166,4 +166,6 @@ enum HouseTrigger {
 };
 void TriggerHouse(TileIndex t, HouseTrigger trigger);
 
+void AnalyseHouseSpriteGroups();
+
 #endif /* NEWGRF_HOUSE_H */

@@ -952,6 +952,8 @@ bool AfterLoadGame()
 
 	AfterLoadEngines();
 	AnalyseIndustryTileSpriteGroups();
+	extern void AnalyseHouseSpriteGroups();
+	AnalyseHouseSpriteGroups();
 
 	/* Update all vehicles */
 	AfterLoadVehicles(true);
@@ -4211,6 +4213,8 @@ void ReloadNewGRFData()
 	ResetVehicleHash();
 	AfterLoadEngines();
 	AnalyseIndustryTileSpriteGroups();
+	extern void AnalyseHouseSpriteGroups();
+	AnalyseHouseSpriteGroups();
 	AfterLoadVehicles(false);
 	StartupEngines();
 	GroupStatistics::UpdateAfterLoad();

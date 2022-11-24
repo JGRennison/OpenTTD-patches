@@ -22,6 +22,7 @@
 #include "newgrf_animation_base.h"
 #include "newgrf_cargo.h"
 #include "station_base.h"
+#include "newgrf_analysis.h"
 
 #include "safeguards.h"
 
@@ -727,8 +728,12 @@ bool NewHouseTileLoop(TileIndex tile)
 		return true;
 	}
 
-	TriggerHouse(tile, HOUSE_TRIGGER_TILE_LOOP);
-	if (hs->building_flags & BUILDING_HAS_1_TILE) TriggerHouse(tile, HOUSE_TRIGGER_TILE_LOOP_TOP);
+	bool do_triggers = !(hs->ctrl_flags & HCF_NO_TRIGGERS);
+
+	if (do_triggers) {
+		TriggerHouse(tile, HOUSE_TRIGGER_TILE_LOOP);
+		if (hs->building_flags & BUILDING_HAS_1_TILE) TriggerHouse(tile, HOUSE_TRIGGER_TILE_LOOP_TOP);
+	}
 
 	if (HasBit(hs->callback_mask, CBM_HOUSE_ANIMATION_START_STOP)) {
 		/* If this house is marked as having a synchronised callback, all the
@@ -758,7 +763,7 @@ bool NewHouseTileLoop(TileIndex tile)
 	}
 
 	SetHouseProcessingTime(tile, hs->processing_time);
-	MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+	if (do_triggers) MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 	return true;
 }
 
@@ -857,3 +862,21 @@ void WatchedCargoCallback(TileIndex tile, CargoTypes trigger_cargoes)
 	if (hs->building_flags & BUILDING_HAS_4_TILES) DoWatchedCargoCallback(TILE_ADDXY(north, 1, 1), tile, trigger_cargoes, r);
 }
 
+void AnalyseHouseSpriteGroups()
+{
+	for (uint i = 0; i < NUM_HOUSES; i++) {
+		HouseSpec *spec = HouseSpec::Get(i);
+		spec->ctrl_flags = HCF_NONE;
+
+		if (spec->grf_prop.spritegroup[0] == nullptr) {
+			spec->ctrl_flags |= HCF_NO_TRIGGERS;
+			continue;
+		}
+
+		AnalyseCallbackOperation find_triggers_op(ACOM_FIND_RANDOM_TRIGGER);
+		spec->grf_prop.spritegroup[0]->AnalyseCallbacks(find_triggers_op);
+		if ((find_triggers_op.callbacks_used & SGCU_RANDOM_TRIGGER) == 0) {
+			spec->ctrl_flags |= HCF_NO_TRIGGERS;
+		}
+	}
+}

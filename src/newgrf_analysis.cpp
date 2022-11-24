@@ -299,7 +299,9 @@ void RandomizedSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) const
 {
 	op.result_flags |= ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND;
 
-	if (op.mode == ACOM_CB_VAR) op.callbacks_used |= SGCU_RANDOM_TRIGGER;
+	if ((op.mode == ACOM_CB_VAR || op.mode == ACOM_FIND_RANDOM_TRIGGER) && (this->triggers != 0 || this->cmp_mode == RSG_CMP_ALL)) {
+		op.callbacks_used |= SGCU_RANDOM_TRIGGER;
+	}
 
 	for (const SpriteGroup *group: this->groups) {
 		if (group != nullptr) group->AnalyseCallbacks(op);

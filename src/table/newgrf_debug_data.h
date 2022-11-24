@@ -592,7 +592,7 @@ class NIHHouse : public NIHelper {
 		const HouseSpec *hs = HouseSpec::Get(GetHouseType(index));
 		seprintf(buffer, lastof(buffer), "  building_flags: 0x%X", hs->building_flags);
 		output.print(buffer);
-		seprintf(buffer, lastof(buffer), "  extra_flags: 0x%X", hs->extra_flags);
+		seprintf(buffer, lastof(buffer), "  extra_flags: 0x%X, ctrl_flags: 0x%X", hs->extra_flags, hs->ctrl_flags);
 		output.print(buffer);
 		seprintf(buffer, lastof(buffer), "  remove_rating_decrease: %u, minimum_life: %u", hs->remove_rating_decrease, hs->minimum_life);
 		output.print(buffer);

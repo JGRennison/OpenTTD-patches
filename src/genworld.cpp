@@ -320,6 +320,8 @@ void GenerateWorld(GenWorldMode mode, uint size_x, uint size_y, bool reset_setti
 	LoadStringWidthTable();
 	AnalyseEngineCallbacks();
 	AnalyseIndustryTileSpriteGroups();
+	extern void AnalyseHouseSpriteGroups();
+	AnalyseHouseSpriteGroups();
 
 	/* Re-init the windowing system */
 	ResetWindowSystem();
