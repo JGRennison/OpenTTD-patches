@@ -2482,6 +2482,10 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 					group->dsg_flags |= DSGF_CB_HANDLER;
 					state.have_cb_handler = true;
 				}
+				if ((dsg->dsg_flags & DSGF_CB_RESULT) && !state.ignore_cb_handler) {
+					group->dsg_flags |= DSGF_CB_RESULT;
+					state.have_cb_handler = true;
+				}
 			}
 			if (sg != nullptr && sg->type == SGT_RANDOMIZED) {
 				const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)sg;
@@ -2532,6 +2536,12 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 					bits.set(ipsg->again, true);
 				}
 			}
+			if (sg != nullptr && sg->type == SGT_CALLBACK) {
+				if (!state.ignore_cb_handler) {
+					group->dsg_flags |= DSGF_CB_RESULT;
+					state.have_cb_handler = true;
+				}
+			}
 		});
 
 		HandleGroupState default_group_state;
@@ -2573,6 +2583,8 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 			}
 			state.GetVarTracking(group)->in |= in_bits;
 		}
+	} else {
+		group->dsg_flags |= DSGF_CB_RESULT;
 	}
 	if (possible_callback_handler) group->dsg_flags |= DSGF_CB_HANDLER;
 

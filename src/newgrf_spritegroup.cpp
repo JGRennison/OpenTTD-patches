@@ -658,6 +658,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *paddi
 				if (dsg->dsg_flags & DSGF_REQUIRES_VAR1C) p += seprintf(p, lastof(this->buffer), ", REQ_1C");
 				if (dsg->dsg_flags & DSGF_CHECK_EXPENSIVE_VARS) p += seprintf(p, lastof(this->buffer), ", CHECK_EXP_VAR");
 				if (dsg->dsg_flags & DSGF_CHECK_INSERT_JUMP) p += seprintf(p, lastof(this->buffer), ", CHECK_INS_JMP");
+				if (dsg->dsg_flags & DSGF_CB_RESULT) p += seprintf(p, lastof(this->buffer), ", CB_RESULT");
 				if (dsg->dsg_flags & DSGF_CB_HANDLER) p += seprintf(p, lastof(this->buffer), ", CB_HANDLER");
 				if (dsg->dsg_flags & DSGF_INLINE_CANDIDATE) p += seprintf(p, lastof(this->buffer), ", INLINE_CANDIDATE");
 			}

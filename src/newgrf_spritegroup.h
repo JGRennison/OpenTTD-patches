@@ -442,6 +442,7 @@ struct DeterministicSpriteGroupRange {
 enum DeterministicSpriteGroupFlags : uint8 {
 	DSGF_NONE                    = 0,
 	DSGF_NO_DSE                  = 1 << 0,
+	DSGF_CB_RESULT               = 1 << 1,
 	DSGF_VAR_TRACKING_PENDING    = 1 << 2,
 	DSGF_REQUIRES_VAR1C          = 1 << 3,
 	DSGF_CHECK_EXPENSIVE_VARS    = 1 << 4,
