@@ -204,6 +204,7 @@ STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}�
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}匹
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}千瓦
 
+
 STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA}{NBSP}短噸
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}{NBSP}噸
 STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}{NBSP}公斤
@@ -396,10 +397,9 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :離開
 
 # Settings menu
-###length 14
+###length 15
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :遊戲選項
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :設定
-STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :AI / 遊戲腳本設定
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF 設定
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :透明度選項
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :顯示市鎮名稱
@@ -2069,7 +2069,6 @@ STR_INTRO_HIGHSCORE                                             :{BLACK}積分�
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}設定
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF 設定
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}檢查線上內容
-STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}AI / 遊戲腳本設定
 STR_INTRO_QUIT                                                  :{BLACK}離開
 
 STR_INTRO_TOOLTIP_NEW_GAME                                      :{BLACK}開始新遊戲。按住 Ctrl 點選可跳過地圖設定畫面
@@ -2089,7 +2088,6 @@ STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}顯示�
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}顯示設定
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}顯示 NewGRF 設定
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}檢查有無最新或可更新的內容可下載
-STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}顯示AI和遊戲腳本設定
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}離開「OpenTTD」
 
 STR_INTRO_BASESET                                               :{BLACK}目前圖形設定缺少 {NUM}個貼圖。 請確認基礎貼圖組是否有更新。
@@ -3885,6 +3883,8 @@ STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}最大�
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}範圍：{GOLD}{COMMA} 方格
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}飛機類型：{GOLD}{STRING}
 
+###length 3
+
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}列車選單。點選機車或車卡檢視詳細資訊，或者按住 Ctrl 鍵再點選機車或車卡以切換是否顯示機車或車卡的種類
 STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}車輛選單。點選車輛檢視詳細資訊，或者按住 Ctrl 鍵再點選車輛以切換是否顯示車輛的種類
@@ -4545,7 +4545,6 @@ STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}正在�
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}AI/只可於伺服器打開遊戲腳本除錯視窗
 
 # AI configuration window
-STR_AI_CONFIG_CAPTION                                           :{WHITE}AI /遊戲腳本的組態
 STR_AI_CONFIG_GAMELIST_TOOLTIP                                  :{BLACK}將於下一次遊戲中載入的腳本
 STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}下局開始時將啟用AI
 STR_AI_CONFIG_HUMAN_PLAYER                                      :人類玩家
@@ -4561,8 +4560,6 @@ STR_AI_CONFIG_MOVE_DOWN_TOOLTIP                                 :{BLACK}向下�
 STR_AI_CONFIG_GAMESCRIPT                                        :{SILVER}遊戲腳本
 STR_AI_CONFIG_AI                                                :{SILVER}AI
 
-STR_AI_CONFIG_CHANGE                                            :{BLACK}選擇 {STRING}
-STR_AI_CONFIG_CHANGE_NONE                                       :
 STR_AI_CONFIG_CHANGE_AI                                         :AI
 STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :遊戲腳本
 STR_AI_CONFIG_CHANGE_TOOLTIP                                    :{BLACK}載入另一腳本
@@ -4593,9 +4590,7 @@ STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}高度�
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}小地圖截圖
 
 # AI Parameters
-STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} 參數
 STR_AI_SETTINGS_CAPTION_AI                                      :AI
-STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :遊戲腳本
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}關閉
 STR_AI_SETTINGS_RESET                                           :{BLACK}重設
 STR_AI_SETTINGS_SETTING                                         :{STRING}：{ORANGE}{STRING}

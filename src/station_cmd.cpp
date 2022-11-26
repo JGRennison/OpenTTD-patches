@@ -3018,7 +3018,7 @@ CommandCost CmdBuildDock(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 	if (ret.Failed()) return ret;
 	cost.AddCost(ret);
 
-	if (!IsTileType(flat_tile, MP_WATER) || !IsTileFlat(flat_tile)) {
+	if (!HasTileWaterGround(flat_tile) || !IsTileFlat(flat_tile)) {
 		return_cmd_error(STR_ERROR_SITE_UNSUITABLE);
 	}
 
@@ -3027,8 +3027,10 @@ CommandCost CmdBuildDock(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 	/* Get the water class of the water tile before it is cleared.*/
 	WaterClass wc = GetWaterClass(flat_tile);
 
+	bool add_cost = !IsWaterTile(flat_tile);
 	ret = DoCommand(flat_tile, 0, 0, flags | DC_ALLOW_REMOVE_WATER, CMD_LANDSCAPE_CLEAR);
 	if (ret.Failed()) return ret;
+	if (add_cost) cost.AddCost(ret);
 
 	TileIndex adjacent_tile = flat_tile + TileOffsByDiagDir(direction);
 	if (!IsTileType(adjacent_tile, MP_WATER) || !IsTileFlat(adjacent_tile)) {

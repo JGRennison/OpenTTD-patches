@@ -207,6 +207,7 @@ STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}hk
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}hk
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW
 
+
 STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA}{NBSP}t
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}{NBSP}t
 STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}{NBSP}kg
@@ -399,10 +400,9 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Avslutt
 
 # Settings menu
-###length 14
+###length 15
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Spillinnstillinger
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Innstillinger
-STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :AI-/Spillskript-innstillinger
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF-innstillinger
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Instillinger for gjennomsiktighet
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Vis bynavn
@@ -2065,7 +2065,6 @@ STR_INTRO_HIGHSCORE                                             :{BLACK}Tavle me
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Innstillinger
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF-innstillinger
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Se etter innhold på nettet
-STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}AI/Spillskript-innstillinger
 STR_INTRO_QUIT                                                  :{BLACK}Avslutt
 
 STR_INTRO_TOOLTIP_NEW_GAME                                      :{BLACK}Start et nytt spill. Ctrl+klikk hopper over kartkonfigurering
@@ -2085,7 +2084,6 @@ STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Vise tav
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Vis innstillinger
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Vis NewGRF-instillinger
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Se etter nytt og oppdatert innhold for nedlasting
-STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Vis AI/Spillskript-innstillinger
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Avslutt 'OpenTTD'
 
 STR_INTRO_BASESET                                               :{BLACK}Det valgte innebygde grafikksettet mangler {NUM} sprite{P "" r}. Se etter oppdateringer for settet.
@@ -3871,6 +3869,8 @@ STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Maks tre
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Rekkevidde: {GOLD}{COMMA} ruter
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Flytype: {GOLD}{STRING}
 
+###length 3
+
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Liste over tog/vogner - klikk på tog/vogn for mer informasjon. Ctrl+klikk for å skjule/vise denne typen
 STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}Liste over kjøretøy - klikk på kjøretøy for mer informasjon. Ctrl+klikk for å skjule/vise kjøretøytypen
@@ -4531,7 +4531,6 @@ STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}Et skrip
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}AI/Spillskript-feilsøkingsvindu er kun tilgjengelig for tjeneren
 
 # AI configuration window
-STR_AI_CONFIG_CAPTION                                           :{WHITE}AI/Spillskript-konfigurasjon
 STR_AI_CONFIG_GAMELIST_TOOLTIP                                  :{BLACK}Spillskriptet som vil bli lastet i neste spill
 STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}AI-ene som vil bli lastet i neste spill
 STR_AI_CONFIG_HUMAN_PLAYER                                      :Menneskelig spiller
@@ -4547,9 +4546,6 @@ STR_AI_CONFIG_MOVE_DOWN_TOOLTIP                                 :{BLACK}Flytt va
 STR_AI_CONFIG_GAMESCRIPT                                        :{SILVER}Spillskript
 STR_AI_CONFIG_AI                                                :{SILVER}AI-er
 
-STR_AI_CONFIG_CHANGE                                            :{BLACK}Velg {STRING}
-STR_AI_CONFIG_CHANGE_NONE                                       :
-STR_AI_CONFIG_CHANGE_NONE.small                                 :AI
 STR_AI_CONFIG_CHANGE_AI                                         :AI
 STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :Spillskript
 STR_AI_CONFIG_CHANGE_TOOLTIP                                    :{BLACK}Last enda et skript
@@ -4580,9 +4576,7 @@ STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Høydeka
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Oversiktskart skjermbilde
 
 # AI Parameters
-STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Parametre
 STR_AI_SETTINGS_CAPTION_AI                                      :AI
-STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Spillskript
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Lukk
 STR_AI_SETTINGS_RESET                                           :{BLACK}Tilbakestill
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}

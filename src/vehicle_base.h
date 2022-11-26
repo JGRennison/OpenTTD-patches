@@ -381,6 +381,15 @@ public:
 	NewGRFCache grf_cache;              ///< Cache of often used calculated NewGRF values
 	VehicleCache vcache;                ///< Cache of often used vehicle values.
 
+	/**
+	 * Calculates the weight value that this vehicle will have when fully loaded with its current cargo.
+	 * @return Weight value in tonnes.
+	 */
+	virtual uint16 GetMaxWeight() const
+	{
+		return 0;
+	}
+
 	Vehicle(VehicleType type = VEH_INVALID);
 
 	void PreDestructor();
@@ -477,8 +486,9 @@ public:
 
 	/**
 	 * Play the sound associated with leaving the station
+	 * @param force Should we play the sound even if sound effects are muted? (horn hotkey)
 	 */
-	virtual void PlayLeaveStationSound() const {}
+	virtual void PlayLeaveStationSound(bool force = false) const {}
 
 	/**
 	 * Whether this is the primary vehicle in the chain.
@@ -1201,6 +1211,9 @@ public:
 	 * @return an iterable ensemble of orders of a vehicle
 	 */
 	IterateWrapper Orders() const { return IterateWrapper(this->orders); }
+
+	uint32 GetDisplayMaxWeight() const;
+	uint32 GetDisplayMinPowerToWeight() const;
 };
 
 inline bool IsPointInViewportVehicleRedrawArea(const std::vector<Rect> &viewport_redraw_rects, const Point &pt)

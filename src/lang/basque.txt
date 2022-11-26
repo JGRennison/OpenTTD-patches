@@ -202,6 +202,7 @@ STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}hp
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}hp
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW
 
+
 STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA}{NBSP}t
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}{NBSP}t
 STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}{NBSP}kg
@@ -376,10 +377,9 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Irten
 
 # Settings menu
-###length 14
+###length 15
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Jokoaren aukerak
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Ezarpenak
-STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :IA/Jokoaren scriptaren ezaugarriak
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF ezarpenak
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Transparentzia ezarpenak
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Herri izenak erakutsita
@@ -1843,7 +1843,6 @@ STR_INTRO_HIGHSCORE                                             :{BLACK}Puntuazi
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Ezarpenak
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF-ren Ezarpenak
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Edukiak Online Kontsultatu
-STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}IA/Joko Scripten Ezarpenak
 STR_INTRO_QUIT                                                  :{BLACK}Irten
 
 STR_INTRO_TOOLTIP_NEW_GAME                                      :{BLACK}Joko berria hasi. Krtl+klik mapa konfigurazioa desgaitzen du
@@ -1863,7 +1862,6 @@ STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Puntuazi
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Ezarpenak erakutsi
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}NewGRF ezarpenak erakutsi
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Bilatu eduki berria eta eguneratua deskargatzeko
-STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}IA/Joko Scripten Ezarpenak
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}'OpenTTD'-tik Irten
 
 STR_INTRO_TRANSLATION                                           :{BLACK}Itzultze honi {NUM} string falta zaio/zaizkio. Mesedez OpenTTD hobeago egiten lagundu itzultzaile bezala aritzen. Ikusi readme.txt xehetasunentzako.
@@ -3405,6 +3403,8 @@ STR_PURCHASE_INFO_ALL_BUT                                       :Guztia {CARGO_L
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Gehienezko trakzio indarra: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Irismena: {GOLD}{COMMA} lauki
 
+###length 3
+
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Trenak aukeratzeko zerrenda - Klik xehetasunak ikusteko. Ctrl+Klik ibilgailu motaren ezkutapenaren artean aukeratzeko
 STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}Errepide ibilbideak aukeratzeko zerrenda - Klik xehetasunak ikusteko
@@ -4016,7 +4016,6 @@ STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}Abiarazi
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}IA/Joko Script Garbitzailearen lehioa bakarrik zerbitzariarentzako erabilgarria da
 
 # AI configuration window
-STR_AI_CONFIG_CAPTION                                           :{WHITE}IA/Joko Script-aren Ezarpenak
 STR_AI_CONFIG_GAMELIST_TOOLTIP                                  :{BLACK}Hurrengo jokoan kargatuko den Joko Script-a
 STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}Hurrengo jokoan kargatuko diren IA-k
 STR_AI_CONFIG_HUMAN_PLAYER                                      :Jokalaria
@@ -4032,8 +4031,6 @@ STR_AI_CONFIG_MOVE_DOWN_TOOLTIP                                 :{BLACK}Aukeratu
 STR_AI_CONFIG_GAMESCRIPT                                        :{SILVER}Jokoaren Script-a
 STR_AI_CONFIG_AI                                                :{SILVER}IAk
 
-STR_AI_CONFIG_CHANGE                                            :{BLACK}Aukeratu {STRING}
-STR_AI_CONFIG_CHANGE_NONE                                       :
 STR_AI_CONFIG_CHANGE_AI                                         :IA
 STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :Script jokoa
 STR_AI_CONFIG_CHANGE_TOOLTIP                                    :{BLACK}Bestelako script bat kargatu
@@ -4057,9 +4054,7 @@ STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Ez aldat
 
 
 # AI Parameters
-STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Parametroak
 STR_AI_SETTINGS_CAPTION_AI                                      :IA
-STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Jokoaren Script-ak
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Itxi
 STR_AI_SETTINGS_RESET                                           :{BLACK}Berrabiarazi
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}

@@ -72,6 +72,7 @@ STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}hp
 
 
 
+
 # Common window strings
 
 
@@ -115,7 +116,7 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :निकास
 
 # Settings menu
-###length 14
+###length 15
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :समायोजन
 STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED                           :पथ-संकेतों के नाम दिखायें
 STR_SETTINGS_MENU_TRANSPARENT_SIGNS                             :पारदर्शी संकेत
@@ -1034,6 +1035,8 @@ STR_BUY_VEHICLE_TRAIN_ALL_CAPTION                               :नई ट्�
 STR_PURCHASE_INFO_COST_WEIGHT                                   :{BLACK}मूल्य : {GOLD}{CURRENCY_LONG}{BLACK} भार : {GOLD}{WEIGHT_SHORT}
 STR_PURCHASE_INFO_WEIGHT_CWEIGHT                                :{BLACK}भार : {GOLD}{WEIGHT_SHORT} ({WEIGHT_SHORT})
 
+###length 3
+
 ###length VEHICLE_TYPES
 
 ###length VEHICLE_TYPES
@@ -1247,7 +1250,6 @@ STR_AI_DEBUG_NAME_AND_VERSION                                   :{BLACK}{STRING}
 
 
 
-STR_AI_CONFIG_CHANGE_NONE                                       :
 
 # Available AIs window
 

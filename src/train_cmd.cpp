@@ -3199,7 +3199,7 @@ bool Train::FindClosestDepot(TileIndex *location, DestinationID *destination, bo
 }
 
 /** Play a sound for a train leaving the station. */
-void Train::PlayLeaveStationSound() const
+void Train::PlayLeaveStationSound(bool force) const
 {
 	static const SoundFx sfx[] = {
 		SND_04_DEPARTURE_STEAM,
@@ -3209,10 +3209,9 @@ void Train::PlayLeaveStationSound() const
 		SND_41_DEPARTURE_MAGLEV
 	};
 
-	if (PlayVehicleSound(this, VSE_START)) return;
+	if (PlayVehicleSound(this, VSE_START, force)) return;
 
-	EngineID engtype = this->engine_type;
-	SndPlayVehicleFx(sfx[RailVehInfo(engtype)->engclass], this);
+	SndPlayVehicleFx(sfx[RailVehInfo(this->engine_type)->engclass], this);
 }
 
 /**
@@ -7409,4 +7408,21 @@ void ApplySignalTrainAdaptationSpeed(Train *v, TileIndex tile, uint16 track)
 	} else {
 		v->signal_speed_restriction = 0;
 	}
+}
+
+uint16 Train::GetMaxWeight() const
+{
+	uint16 weight = CargoSpec::Get(this->cargo_type)->WeightOfNUnitsInTrain(this->GetEngine()->DetermineCapacity(this));
+
+	/* Vehicle weight is not added for articulated parts. */
+	if (!this->IsArticulatedPart()) {
+		weight += GetVehicleProperty(this, PROP_TRAIN_WEIGHT, RailVehInfo(this->engine_type)->weight);
+	}
+
+	/* Powered wagons have extra weight added. */
+	if (HasBit(this->flags, VRF_POWEREDWAGON)) {
+		weight += RailVehInfo(this->gcache.first_engine)->pow_wag_weight;
+	}
+
+	return weight;
 }
