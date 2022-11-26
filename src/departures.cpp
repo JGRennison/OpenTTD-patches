@@ -279,8 +279,11 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 				/* vehicle is taking a conditional order branch, adjust start time to compensate */
 				const Order *real_current_order = v->GetOrder(v->cur_real_order_index);
 				const Order *real_timetable_order = v->GetOrder(v->cur_timetable_order_index);
-				assert(real_timetable_order->IsType(OT_CONDITIONAL));
-				start_date += (real_timetable_order->GetWaitTime() - real_current_order->GetTravelTime());
+				if (real_timetable_order->IsType(OT_CONDITIONAL)) {
+					start_date += (real_timetable_order->GetWaitTime() - real_current_order->GetTravelTime());
+				} else {
+					/* This can also occur with implicit orders, when there are no real orders, do nothing */
+				}
 			}
 			DepartureStatus status = D_TRAVELLING;
 			bool should_reset_lateness = false;
