@@ -26,6 +26,7 @@
 #include "../company_base.h"
 #include "../company_func.h"
 #include "../fileio_func.h"
+#include "../league_type.h"
 
 #include "../safeguards.h"
 
@@ -320,6 +321,17 @@ void ScriptInstance::CollectGarbage()
 {
 	instance->engine->InsertResult(ScriptObject::GetNewStoryPageElementID());
 }
+
+/* static */ void ScriptInstance::DoCommandReturnLeagueTableElementID(ScriptInstance *instance)
+{
+	instance->engine->InsertResult(static_cast<LeagueTableElementID>(ScriptObject::GetLastCommandResultData()));
+}
+
+/* static */ void ScriptInstance::DoCommandReturnLeagueTableID(ScriptInstance *instance)
+{
+	instance->engine->InsertResult(static_cast<LeagueTableID>(ScriptObject::GetLastCommandResultData()));
+}
+
 
 ScriptStorage *ScriptInstance::GetStorage()
 {

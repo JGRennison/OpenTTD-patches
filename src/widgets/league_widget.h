@@ -5,22 +5,20 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graph_gui.h Graph GUI functions. */
+/** @file league_widget.h Types related to the graph widgets. */
 
-#ifndef GRAPH_GUI_H
-#define GRAPH_GUI_H
+#ifndef WIDGETS_LEAGUE_WIDGET_H
+#define WIDGETS_LEAGUE_WIDGET_H
 
-extern uint8 _cargo_payment_x_mode;
+/** Widget of the #PerformanceLeagueWindow class. */
+enum PerformanceLeagueWidgets {
+	WID_PLT_BACKGROUND, ///< Background of the window.
+};
 
-typedef uint16 StationID;
+/** Widget of the #ScriptLeagueWindow class. */
+enum ScriptLeagueWidgets {
+	WID_SLT_CAPTION,    ///< Caption of the window.
+	WID_SLT_BACKGROUND, ///< Background of the window.
+};
 
-void ShowOperatingProfitGraph();
-void ShowIncomeGraph();
-void ShowDeliveredCargoGraph();
-void ShowPerformanceHistoryGraph();
-void ShowCompanyValueGraph();
-void ShowCargoPaymentRates();
-void ShowPerformanceRatingDetail();
-void ShowStationCargo(StationID);
-
-#endif /* GRAPH_GUI_H */
+#endif /* WIDGETS_LEAGUE_WIDGET_H */

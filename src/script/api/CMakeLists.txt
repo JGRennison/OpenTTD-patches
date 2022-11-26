@@ -178,6 +178,7 @@ add_files(
     script_inflation.hpp
     script_info_docs.hpp
     script_infrastructure.hpp
+    script_league.hpp
     script_list.hpp
     script_log.hpp
     script_map.hpp
@@ -249,6 +250,7 @@ add_files(
     script_industrytypelist.cpp
     script_inflation.cpp
     script_infrastructure.cpp
+    script_league.cpp
     script_list.cpp
     script_log.cpp
     script_map.cpp

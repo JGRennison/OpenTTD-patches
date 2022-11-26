@@ -5,22 +5,19 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graph_gui.h Graph GUI functions. */
+/** @file league_sl.cpp Code handling saving and loading of league tables */
+#include "../stdafx.h"
 
-#ifndef GRAPH_GUI_H
-#define GRAPH_GUI_H
+#include "saveload.h"
 
-extern uint8 _cargo_payment_x_mode;
+struct GetLeagueChunkLoadInfo
+{
+	static SaveLoadVersion GetVersion() { return SLV_MULTITRACK_LEVEL_CROSSINGS; }
+};
 
-typedef uint16 StationID;
+static const ChunkHandler league_chunk_handlers[] = {
+	MakeUpstreamChunkHandler<'LEAE', GetLeagueChunkLoadInfo>(),
+	MakeUpstreamChunkHandler<'LEAT', GetLeagueChunkLoadInfo>(),
+};
 
-void ShowOperatingProfitGraph();
-void ShowIncomeGraph();
-void ShowDeliveredCargoGraph();
-void ShowPerformanceHistoryGraph();
-void ShowCompanyValueGraph();
-void ShowCargoPaymentRates();
-void ShowPerformanceRatingDetail();
-void ShowStationCargo(StationID);
-
-#endif /* GRAPH_GUI_H */
+extern const ChunkHandlerTable _league_chunk_handlers(league_chunk_handlers);

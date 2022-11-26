@@ -134,6 +134,7 @@ enum SlXvFeatureIndex {
 	XSLFI_U64_TICK_COUNTER,                       ///< See: SLV_U64_TICK_COUNTER
 	XSLFI_LINKGRAPH_TRAVEL_TIME,                  ///< See: SLV_LINKGRAPH_TRAVEL_TIME
 	XSLFI_LAST_LOADING_TICK,                      ///< See: SLV_LAST_LOADING_TICK
+	XSLFI_SCRIPT_LEAGUE_TABLES,                   ///< See: Scriptable league tables (PR #10001)
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk
