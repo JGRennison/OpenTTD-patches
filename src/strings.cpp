@@ -2239,6 +2239,7 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 	BuildIndustriesLegend();
 	BuildContentTypeStringList();
 	InvalidateWindowClassesData(WC_BUILD_VEHICLE);      // Build vehicle window.
+	InvalidateWindowClassesData(WC_BUILD_VIRTUAL_TRAIN);// Build template trains window.
 	InvalidateWindowClassesData(WC_TRAINS_LIST);        // Train group window.
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);// Trace restrict slots window.
 	InvalidateWindowClassesData(WC_ROADVEH_LIST);       // Road vehicle group window.

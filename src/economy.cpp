@@ -878,6 +878,7 @@ void RecomputePrices()
 	}
 
 	SetWindowClassesDirty(WC_BUILD_VEHICLE);
+	SetWindowClassesDirty(WC_BUILD_VIRTUAL_TRAIN);
 	SetWindowClassesDirty(WC_REPLACE_VEHICLE);
 	SetWindowClassesDirty(WC_VEHICLE_DETAILS);
 	SetWindowClassesDirty(WC_COMPANY_INFRASTRUCTURE);

@@ -64,6 +64,7 @@ void AddRemoveEngineFromAutoreplaceAndBuildWindows(VehicleType type)
 {
 	InvalidateWindowData(WC_REPLACE_VEHICLE, type, 0); // Update the autoreplace window
 	InvalidateWindowClassesData(WC_BUILD_VEHICLE); // The build windows needs updating as well
+	InvalidateWindowClassesData(WC_BUILD_VIRTUAL_TRAIN);
 }
 
 static const StringID _start_replace_dropdown[] = {

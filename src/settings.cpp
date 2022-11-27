@@ -960,6 +960,7 @@ static void UpdateConsists(int32 new_value)
 	AfterLoadTemplateVehiclesUpdateProperties();
 
 	InvalidateWindowClassesData(WC_BUILD_VEHICLE, 0);
+	InvalidateWindowClassesData(WC_BUILD_VIRTUAL_TRAIN, 0);
 	SetWindowClassesDirty(WC_TEMPLATEGUI_MAIN);
 	SetWindowClassesDirty(WC_CREATE_TEMPLATE);
 }
@@ -1045,6 +1046,7 @@ static void TrainAccelerationModelChanged(int32 new_value)
 	/* These windows show acceleration values only when realistic acceleration is on. They must be redrawn after a setting change. */
 	SetWindowClassesDirty(WC_ENGINE_PREVIEW);
 	InvalidateWindowClassesData(WC_BUILD_VEHICLE, 0);
+	InvalidateWindowClassesData(WC_BUILD_VIRTUAL_TRAIN, 0);
 	SetWindowClassesDirty(WC_VEHICLE_DETAILS);
 	SetWindowClassesDirty(WC_TEMPLATEGUI_MAIN);
 	SetWindowClassesDirty(WC_CREATE_TEMPLATE);
@@ -1183,6 +1185,7 @@ static void RoadVehAccelerationModelChanged(int32 new_value)
 	/* These windows show acceleration values only when realistic acceleration is on. They must be redrawn after a setting change. */
 	SetWindowClassesDirty(WC_ENGINE_PREVIEW);
 	InvalidateWindowClassesData(WC_BUILD_VEHICLE, 0);
+	InvalidateWindowClassesData(WC_BUILD_VIRTUAL_TRAIN, 0);
 	SetWindowClassesDirty(WC_VEHICLE_DETAILS);
 }
 
