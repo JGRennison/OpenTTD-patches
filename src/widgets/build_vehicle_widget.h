@@ -26,7 +26,7 @@ enum BuildVehicleWidgets {
 	WID_BV_RENAME,                    ///< Rename button.
 
 	WID_BV_CAPTION_LOCO,                   ///< Caption of locomotive half of the window.
-	WID_BV_SORT_ASSENDING_DESCENDING_LOCO, ///< Sort direction.
+	WID_BV_SORT_ASCENDING_DESCENDING_LOCO, ///< Sort direction.
 	WID_BV_SORT_DROPDOWN_LOCO,             ///< Criteria of sorting dropdown.
 	WID_BV_CARGO_FILTER_DROPDOWN_LOCO,     ///< Cargo filter dropdown.
 	WID_BV_SHOW_HIDDEN_LOCOS,              ///< Toggle whether to display the hidden locomotives.
@@ -39,7 +39,7 @@ enum BuildVehicleWidgets {
 	WID_BV_RENAME_LOCO,                    ///< Rename button.
 
 	WID_BV_CAPTION_WAGON,                   ///< Caption of wagon half of the window.
-	WID_BV_SORT_ASSENDING_DESCENDING_WAGON, ///< Sort direction.
+	WID_BV_SORT_ASCENDING_DESCENDING_WAGON, ///< Sort direction.
 	WID_BV_SORT_DROPDOWN_WAGON,             ///< Criteria of sorting dropdown.
 	WID_BV_CARGO_FILTER_DROPDOWN_WAGON,     ///< Cargo filter dropdown.
 	WID_BV_SHOW_HIDDEN_WAGONS,              ///< Toggle whether to display the hidden wagons.

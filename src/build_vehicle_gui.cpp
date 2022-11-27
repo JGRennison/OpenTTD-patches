@@ -109,7 +109,7 @@ static const NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 			NWidget(WWT_PANEL, COLOUR_GREY),
 				NWidget(NWID_VERTICAL),
 					NWidget(NWID_HORIZONTAL),
-						NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SORT_ASSENDING_DESCENDING_LOCO), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER), SetFill(1, 0),
+						NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SORT_ASCENDING_DESCENDING_LOCO), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER), SetFill(1, 0),
 						NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_SORT_DROPDOWN_LOCO), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_SORT_CRITERIA),
 					EndContainer(),
 					NWidget(NWID_HORIZONTAL),
@@ -145,7 +145,7 @@ static const NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 			NWidget(WWT_PANEL, COLOUR_GREY),
 				NWidget(NWID_VERTICAL),
 					NWidget(NWID_HORIZONTAL),
-						NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SORT_ASSENDING_DESCENDING_WAGON), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER), SetFill(1, 0),
+						NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SORT_ASCENDING_DESCENDING_WAGON), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER), SetFill(1, 0),
 						NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_SORT_DROPDOWN_WAGON), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_SORT_CRITERIA),
 					EndContainer(),
 					NWidget(NWID_HORIZONTAL),
@@ -2386,7 +2386,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 			/* Locomotives */
 
-			case WID_BV_SORT_ASSENDING_DESCENDING_LOCO: {
+			case WID_BV_SORT_ASCENDING_DESCENDING_LOCO: {
 				this->loco.descending_sort_order ^= true;
 				_last_sort_order_loco = this->loco.descending_sort_order;
 				this->loco.eng_list.ForceRebuild();
@@ -2453,7 +2453,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 			/* Wagons */
 
-			case WID_BV_SORT_ASSENDING_DESCENDING_WAGON: {
+			case WID_BV_SORT_ASCENDING_DESCENDING_WAGON: {
 				this->wagon.descending_sort_order ^= true;
 				_last_sort_order_wagon = this->wagon.descending_sort_order;
 				this->wagon.eng_list.ForceRebuild();
@@ -2613,7 +2613,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				break;
 			}
 
-			case WID_BV_SORT_ASSENDING_DESCENDING_LOCO: {
+			case WID_BV_SORT_ASCENDING_DESCENDING_LOCO: {
 				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->widget_data);
 				d.width += padding.width + Window::SortButtonWidth() * 2; // Doubled since the string is centred and it also looks better.
 				d.height += padding.height;
@@ -2632,7 +2632,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				break;
 			}
 
-			case WID_BV_SORT_ASSENDING_DESCENDING_WAGON: {
+			case WID_BV_SORT_ASCENDING_DESCENDING_WAGON: {
 				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->widget_data);
 				d.width += padding.width + Window::SortButtonWidth() * 2; // Doubled since the string is centred and it also looks better.
 				d.height += padding.height;
@@ -2668,8 +2668,8 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				break;
 			}
 
-			case WID_BV_SORT_ASSENDING_DESCENDING_LOCO: {
-				this->DrawSortButtonState(WID_BV_SORT_ASSENDING_DESCENDING_LOCO, this->loco.descending_sort_order ? SBS_DOWN : SBS_UP);
+			case WID_BV_SORT_ASCENDING_DESCENDING_LOCO: {
+				this->DrawSortButtonState(WID_BV_SORT_ASCENDING_DESCENDING_LOCO, this->loco.descending_sort_order ? SBS_DOWN : SBS_UP);
 				break;
 			}
 
@@ -2682,8 +2682,8 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				break;
 			}
 
-			case WID_BV_SORT_ASSENDING_DESCENDING_WAGON: {
-				this->DrawSortButtonState(WID_BV_SORT_ASSENDING_DESCENDING_WAGON, this->wagon.descending_sort_order ? SBS_DOWN : SBS_UP);
+			case WID_BV_SORT_ASCENDING_DESCENDING_WAGON: {
+				this->DrawSortButtonState(WID_BV_SORT_ASCENDING_DESCENDING_WAGON, this->wagon.descending_sort_order ? SBS_DOWN : SBS_UP);
 				break;
 			}
 		}
