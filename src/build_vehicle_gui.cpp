@@ -126,12 +126,14 @@ static const NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 			/* Panel with details for locomotives. */
 			NWidget(WWT_PANEL, COLOUR_GREY, WID_BV_PANEL_LOCO), SetMinimalSize(240, 122), SetResize(1, 0), EndContainer(),
 			/* Build/rename buttons, resize button for locomotives. */
-			NWidget(NWID_HORIZONTAL),
-				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_BUILD_SEL_LOCO),
-					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_BUILD_LOCO), SetMinimalSize(50, 1), SetResize(1, 0), SetFill(1, 0),
+			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_LOCO_BUTTONS_SEL),
+				NWidget(NWID_HORIZONTAL),
+					NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_BUILD_SEL_LOCO),
+						NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_BUILD_LOCO), SetMinimalSize(50, 1), SetResize(1, 0), SetFill(1, 0),
+					EndContainer(),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SHOW_HIDE_LOCO), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_NULL),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_RENAME_LOCO), SetResize(1, 0), SetFill(1, 0),
 				EndContainer(),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SHOW_HIDE_LOCO), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_NULL),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_RENAME_LOCO), SetResize(1, 0), SetFill(1, 0),
 			EndContainer(),
 
 		EndContainer(),
@@ -162,16 +164,28 @@ static const NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 			/* Panel with details for wagons. */
 			NWidget(WWT_PANEL, COLOUR_GREY, WID_BV_PANEL_WAGON), SetMinimalSize(240, 122), SetResize(1, 0), EndContainer(),
 			/* Build/rename buttons, resize button for wagons. */
-			NWidget(NWID_HORIZONTAL),
-				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_BUILD_SEL_WAGON),
-					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_BUILD_WAGON), SetMinimalSize(50, 1), SetResize(1, 0), SetFill(1, 0),
+			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_WAGON_BUTTONS_SEL),
+				NWidget(NWID_HORIZONTAL),
+					NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_BUILD_SEL_WAGON),
+						NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_BUILD_WAGON), SetMinimalSize(50, 1), SetResize(1, 0), SetFill(1, 0),
+					EndContainer(),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SHOW_HIDE_WAGON), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_NULL),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_RENAME_WAGON), SetResize(1, 0), SetFill(1, 0),
+					NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 				EndContainer(),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SHOW_HIDE_WAGON), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_NULL),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_RENAME_WAGON), SetResize(1, 0), SetFill(1, 0),
-				NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 			EndContainer(),
 		EndContainer(),
+	EndContainer(),
+	NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_COMB_BUTTONS_SEL),
+		NWidget(NWID_HORIZONTAL),
+			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_COMB_BUILD_SEL),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_COMB_BUILD), SetMinimalSize(50, 1), SetResize(1, 0), SetFill(1, 0),
+			EndContainer(),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_COMB_SHOW_HIDE), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_BUY_VEHICLE_TRAIN_HIDE_SHOW_TOGGLE_TOOLTIP),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_COMB_RENAME), SetResize(1, 0), SetFill(1, 0),
+			NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 		EndContainer(),
+	EndContainer(),
 };
 
 /** Special cargo filter criteria */
@@ -2053,6 +2067,8 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 	PanelState loco {};
 	PanelState wagon {};
+	bool wagon_selected = false;
+	bool dual_button_mode = false;
 
 	bool GetRefitButtonMode(const PanelState &state) const
 	{
@@ -2061,9 +2077,9 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		return refit;
 	}
 
-	void SetBuyLocomotiveText()
+	void SetBuyLocomotiveText(int widget_id = WID_BV_BUILD_LOCO)
 	{
-		const auto widget = this->GetWidget<NWidgetCore>(WID_BV_BUILD_LOCO);
+		const auto widget = this->GetWidget<NWidgetCore>(widget_id);
 
 		if (this->virtual_train_mode) {
 			widget->widget_data = STR_TMPL_CONFIRM;
@@ -2079,9 +2095,9 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		}
 	}
 
-	void SetBuyWagonText()
+	void SetBuyWagonText(int widget_id = WID_BV_BUILD_WAGON)
 	{
-		const auto widget = this->GetWidget<NWidgetCore>(WID_BV_BUILD_WAGON);
+		const auto widget = this->GetWidget<NWidgetCore>(widget_id);
 
 		if (this->virtual_train_mode) {
 			widget->widget_data = STR_TMPL_CONFIRM;
@@ -2122,6 +2138,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		 * So we just hide it, and enlarge the Rename button by the now vacant place. */
 		if (this->listview_mode) this->GetWidget<NWidgetStacked>(WID_BV_BUILD_SEL_LOCO)->SetDisplayedPlane(SZSP_NONE);
 		if (this->listview_mode) this->GetWidget<NWidgetStacked>(WID_BV_BUILD_SEL_WAGON)->SetDisplayedPlane(SZSP_NONE);
+		if (this->listview_mode) this->GetWidget<NWidgetStacked>(WID_BV_COMB_BUILD_SEL)->SetDisplayedPlane(SZSP_NONE);
 
 		/* Locomotives */
 
@@ -2157,6 +2174,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		widget_wagon->tool_tip    = STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN_TOOLTIP + VEH_TRAIN;
 		widget_wagon->SetLowered(this->wagon.show_hidden);
 
+		this->UpdateButtonMode();
 
 		this->loco.details_height = this->wagon.details_height = 10 * FONT_HEIGHT_NORMAL + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
 
@@ -2175,6 +2193,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 		this->SetBuyLocomotiveText();
 		this->SetBuyWagonText();
+		this->SelectColumn(false);
 	}
 
 	/** Set the filter type according to the depot type */
@@ -2291,6 +2310,28 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		state.te.FillDefaultCapacities(e);
 	}
 
+	void SelectColumn(bool wagon)
+	{
+		this->wagon_selected = wagon;
+		if (wagon) {
+			this->SetBuyWagonText(WID_BV_COMB_BUILD);
+		} else {
+			this->SetBuyLocomotiveText(WID_BV_COMB_BUILD);
+		}
+
+		NWidgetCore *rename = this->GetWidget<NWidgetCore>(WID_BV_COMB_RENAME);
+		rename->widget_data = wagon ? STR_BUY_VEHICLE_TRAIN_RENAME_WAGON_BUTTON : STR_BUY_VEHICLE_TRAIN_RENAME_LOCOMOTIVE_BUTTON;
+		rename->tool_tip    = wagon ? STR_BUY_VEHICLE_TRAIN_RENAME_WAGON_TOOLTIP : STR_BUY_VEHICLE_TRAIN_RENAME_LOCOMOTIVE_TOOLTIP;
+	}
+
+	void UpdateButtonMode()
+	{
+		this->dual_button_mode = _settings_client.gui.dual_pane_train_purchase_window_dual_buttons;
+		this->GetWidget<NWidgetStacked>(WID_BV_LOCO_BUTTONS_SEL)->SetDisplayedPlane(this->dual_button_mode ? 0 : SZSP_HORIZONTAL);
+		this->GetWidget<NWidgetStacked>(WID_BV_WAGON_BUTTONS_SEL)->SetDisplayedPlane(this->dual_button_mode ? 0 : SZSP_HORIZONTAL);
+		this->GetWidget<NWidgetStacked>(WID_BV_COMB_BUTTONS_SEL)->SetDisplayedPlane(this->dual_button_mode ? SZSP_HORIZONTAL : 0);
+	}
+
 	void OnInit() override
 	{
 		this->SetCargoFilterArray(this->loco, _last_filter_criteria_loco);
@@ -2382,6 +2423,14 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 	void OnClick(Point pt, int widget, int click_count) override
 	{
+		if (widget == WID_BV_COMB_BUILD) {
+			widget = !this->wagon_selected ? WID_BV_BUILD_LOCO : WID_BV_BUILD_WAGON;
+		} else if (widget == WID_BV_COMB_SHOW_HIDE) {
+			widget = !this->wagon_selected ? WID_BV_SHOW_HIDE_LOCO : WID_BV_SHOW_HIDE_WAGON;
+		} else if (widget == WID_BV_COMB_RENAME) {
+			widget = !this->wagon_selected ? WID_BV_RENAME_LOCO : WID_BV_RENAME_WAGON;
+		}
+
 		switch (widget) {
 
 			/* Locomotives */
@@ -2407,6 +2456,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				const uint i = this->loco.vscroll->GetScrolledRowFromWidget(pt.y, this, WID_BV_LIST_LOCO);
 				const size_t num_items = this->loco.eng_list.size();
 				this->SelectEngine(this->loco, (i < num_items) ? this->loco.eng_list[i] : INVALID_ENGINE);
+				this->SelectColumn(false);
 				this->SetDirty();
 
 				if (_ctrl_pressed) {
@@ -2474,6 +2524,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				const uint i = this->wagon.vscroll->GetScrolledRowFromWidget(pt.y, this, WID_BV_LIST_WAGON);
 				const size_t num_items = this->wagon.eng_list.size();
 				this->SelectEngine(this->wagon, (i < num_items) ? this->wagon.eng_list[i] : INVALID_ENGINE);
+				this->SelectColumn(true);
 				this->SetDirty();
 
 				if (_ctrl_pressed) {
@@ -2532,6 +2583,11 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		/* When switching to original acceleration model for road vehicles, clear the selected sort criteria if it is not available now. */
 		this->loco.eng_list.ForceRebuild();
 		this->wagon.eng_list.ForceRebuild();
+
+		if (this->dual_button_mode != _settings_client.gui.dual_pane_train_purchase_window_dual_buttons) {
+			this->UpdateButtonMode();
+			this->ReInit();
+		}
 	}
 
 	void SetStringParameters(int widget) const override
@@ -2596,6 +2652,17 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				}
 				break;
 			}
+
+			case WID_BV_COMB_SHOW_HIDE: {
+				const PanelState &state = this->wagon_selected ? this->wagon : this->loco;
+				const Engine *engine = (state.sel_engine == INVALID_ENGINE) ? nullptr : Engine::GetIfValid(state.sel_engine);
+				if (engine != nullptr && engine->IsHidden(_local_company)) {
+					SetDParam(0, STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON + this->vehicle_type);
+				} else {
+					SetDParam(0, STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON + this->vehicle_type);
+				}
+				break;
+			}
 		}
 	}
 
@@ -2641,7 +2708,8 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			}
 
 			case WID_BV_SHOW_HIDE_LOCO: // Fallthrough
-			case WID_BV_SHOW_HIDE_WAGON: {
+			case WID_BV_SHOW_HIDE_WAGON:
+			case WID_BV_COMB_SHOW_HIDE: {
 				*size = GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON + this->vehicle_type);
 				*size = maxdim(*size, GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON + this->vehicle_type));
 				size->width += padding.width;

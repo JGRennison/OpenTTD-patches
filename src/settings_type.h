@@ -248,6 +248,7 @@ struct GUISettings : public TimeSettings {
 	uint8  station_rating_tooltip_mode;      ///< Station rating tooltip mode
 	uint8  demolish_confirm_mode;            ///< Demolition confirmation mode
 	bool   dual_pane_train_purchase_window;  ///< Dual pane train purchase window
+	bool   dual_pane_train_purchase_window_dual_buttons;  ///< Dual pane train purchase window: dual buttons
 	bool   allow_hiding_waypoint_labels;     ///< Allow hiding waypoint viewport labels
 	uint8  disable_water_animation;          ///< Disable water animation depending on zoom level
 	bool   show_order_occupancy_by_default;  ///< Show order occupancy by default in vehicle order window

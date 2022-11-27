@@ -1954,6 +1954,7 @@ static SettingsContainer &GetSettingsTree()
 			interface->Add(new SettingEntry("gui.vehicle_names"));
 			interface->Add(new SettingEntry("gui.station_rating_tooltip_mode"));
 			interface->Add(new SettingEntry("gui.dual_pane_train_purchase_window"));
+			interface->Add(new ConditionallyHiddenSettingEntry("gui.dual_pane_train_purchase_window_dual_buttons", []() -> bool { return !_settings_client.gui.dual_pane_train_purchase_window; }));
 			interface->Add(new SettingEntry("gui.allow_hiding_waypoint_labels"));
 			interface->Add(new SettingEntry("gui.disable_water_animation"));
 			interface->Add(new SettingEntry("gui.show_order_occupancy_by_default"));

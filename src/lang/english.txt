@@ -1612,6 +1612,9 @@ STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_ALL                    :Industries and 
 STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW              :Separate locomotives and wagons in train purchase window: {STRING2}
 STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_HELPTEXT     :When enabled, the train purchase window shows locomotives and wagons in separate side-by-side lists.
 
+STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_DUAL_BUTTONS :Show separate button sets in train purchase window: {STRING2}
+STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_DUAL_BUTTONS_HELPTEXT:When enabled, the locomotive and wagon lists in the train purchase window each have their own set of buttons.
+
 STR_CONFIG_SETTING_ALLOW_HIDE_WAYPOINT_LABEL                    :Allow hiding waypoint viewport labels: {STRING2}
 STR_CONFIG_SETTING_ALLOW_HIDE_WAYPOINT_LABEL_HELPTEXT           :When enabled, waypoints can have their viewport labels individually hidden.{}This is useful when waypoints are used decoratively or when minor waypoints do not require a label.
 
