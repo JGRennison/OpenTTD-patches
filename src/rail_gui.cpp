@@ -1826,7 +1826,7 @@ private:
 	{
 		Point offset;
 		Dimension sprite_size = GetSpriteSize(image.sprite, &offset);
-		int x = CenterBounds(r.left, r.right, sprite_size.width - offset.x);
+		int x = CenterBounds(r.left, r.right, sprite_size.width - offset.x) - offset.x; // centered
 		int y = r.top - sig_sprite_bottom_offset + WD_IMGBTN_TOP +
 				(r.bottom - r.top - WD_IMGBTN_TOP - WD_IMGBTN_BOTTOM + sig_sprite_size.height) / 2; // aligned to bottom
 
