@@ -2,6 +2,28 @@
 
 * * *
 
+### v0.49.2 (2022-11-28)
+* Fix crash when clicking non-train counter value or scheduled dispatch conditional order.
+* Fix order window dropdown issues with timetable state and scheduled dispatch conditional orders.
+* Fix companies being shown as passworded in single-player, after exiting a multiplayer game.
+* Fix some NewGRFs having incorrect behaviour in some special cases.
+* Fix engine changes not updating build template train windows.
+* Vehicle list commands (e.g. start/stop, send to depot) now take into account the cargo type filter.
+* Viewport route overlay:
+  * Fix go to nearest depot orders incorrectly showing as going to a specific depot.
+  * Add a mode setting: off, all locations, station stops only.
+  * Add an unset hotkey to switch the mode setting.
+  * Show viewport route overlay for shared order vehicle list windows.
+* Departure boards:
+  * Fix crash with vehicles which only have implicit orders.
+  * Fix scheduled dispatch departure time when wait time set.
+  * Fix windows not being refreshed when changing settings.
+* Add a "if breakdowns enabled" mode to the no depot order warn setting, change the default value to off.
+* Add a setting for whether the dual pane train purchase window uses combined buttons.
+* Do not clear network server save encrypted saved passwords when saving in single-player.
+* Minor performance improvements with some NewGRF houses.
+* Bump trunk base from commit 019dcb7b7b010ce85260aa075f859d63fa020868 to commit 7c3c92f8b8d0c67d817095d367720272d96882ab.
+
 ### v0.49.1 (2022-11-13)
 * Fix crash when the unload type of an order was changed to no unload and then back to unload, whilst a vehicle was unloading using that order.
 * Fix multiplayer desync when changing the town zone settings in multiplayer.
