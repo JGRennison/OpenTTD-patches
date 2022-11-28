@@ -7308,6 +7308,15 @@ STR_TMPL_CREATEGUI_TITLE                                        :{WHITE}Create/E
 STR_TMPL_MAINGUI_DEFINEDGROUPS                                  :{BLACK}Defined Groups for Company
 STR_TMPL_TMPLRPL_EX_DIFF_RAILTYPE                               :Uses Template of different rail type
 
+STR_TMPL_ADD_LOCOMOTIVE                                         :{BLACK}Add locomotive
+STR_TMPL_ADD_WAGON                                              :{BLACK}Add wagon
+STR_TMPL_ADD_VEHICLE                                            :{BLACK}Add vehicle
+STR_TMPL_ADD_LOCOMOTIVE_REFIT                                   :{BLACK}Add and refit locomotive
+STR_TMPL_ADD_WAGON_REFIT                                        :{BLACK}Add and refit wagon
+STR_TMPL_ADD_VEHICLE_REFIT                                      :{BLACK}Add and refit vehicle
+STR_TMPL_ADD_TOOLTIP                                            :{BLACK}Add the highlighted vehicle to the template.
+STR_TMPL_ADD_REFIT_TOOLTIP                                      :{BLACK}Add and refit the highlighted vehicle to the template.
+
 STR_TMPL_SET_USEDEPOT                                           :{BLACK}Use vehicles in depot
 STR_TMPL_SET_USEDEPOT_TIP                                       :{BLACK}Use vehicles inside the depot that are in a neutral and idle state to compose trains on template replacement in order to reduce buying costs
 STR_TMPL_SET_KEEPREMAINDERS                                     :{BLACK}Keep remainders

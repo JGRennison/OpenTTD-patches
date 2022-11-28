@@ -1322,8 +1322,13 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		if (refit) refit = Engine::Get(this->sel_engine)->GetDefaultCargoType() != this->cargo_filter[this->cargo_filter_criteria];
 
 		if (this->virtual_train_mode) {
-			widget->widget_data = STR_TMPL_CONFIRM;
-			widget->tool_tip    = STR_TMPL_CONFIRM;
+			if (refit) {
+				widget->widget_data = STR_TMPL_ADD_VEHICLE_REFIT;
+				widget->tool_tip    = STR_TMPL_ADD_REFIT_TOOLTIP;
+			} else {
+				widget->widget_data = STR_TMPL_ADD_VEHICLE;
+				widget->tool_tip    = STR_TMPL_ADD_TOOLTIP;
+			}
 		} else {
 			if (refit) {
 				widget->widget_data = STR_BUY_VEHICLE_TRAIN_BUY_REFIT_VEHICLE_BUTTON + this->vehicle_type;
@@ -2082,8 +2087,13 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		const auto widget = this->GetWidget<NWidgetCore>(widget_id);
 
 		if (this->virtual_train_mode) {
-			widget->widget_data = STR_TMPL_CONFIRM;
-			widget->tool_tip    = STR_TMPL_CONFIRM;
+			if (GetRefitButtonMode(this->loco)) {
+				widget->widget_data = STR_TMPL_ADD_LOCOMOTIVE_REFIT;
+				widget->tool_tip    = STR_TMPL_ADD_REFIT_TOOLTIP;
+			} else {
+				widget->widget_data = STR_TMPL_ADD_LOCOMOTIVE;
+				widget->tool_tip    = STR_TMPL_ADD_TOOLTIP;
+			}
 		} else {
 			if (GetRefitButtonMode(this->loco)) {
 				widget->widget_data = STR_BUY_VEHICLE_TRAIN_BUY_REFIT_LOCOMOTIVE_BUTTON;
@@ -2100,8 +2110,13 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		const auto widget = this->GetWidget<NWidgetCore>(widget_id);
 
 		if (this->virtual_train_mode) {
-			widget->widget_data = STR_TMPL_CONFIRM;
-			widget->tool_tip    = STR_TMPL_CONFIRM;
+			if (GetRefitButtonMode(this->wagon)) {
+				widget->widget_data = STR_TMPL_ADD_WAGON_REFIT;
+				widget->tool_tip    = STR_TMPL_ADD_REFIT_TOOLTIP;
+			} else {
+				widget->widget_data = STR_TMPL_ADD_WAGON;
+				widget->tool_tip    = STR_TMPL_ADD_TOOLTIP;
+			}
 		} else {
 			if (GetRefitButtonMode(this->wagon)) {
 				widget->widget_data = STR_BUY_VEHICLE_TRAIN_BUY_REFIT_WAGON_BUTTON;
