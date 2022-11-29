@@ -817,8 +817,8 @@ static void DispatchRightClickEvent(Window *w, int x, int y)
 		if (w->OnRightClick(pt, wid->index)) return;
 	}
 
-	/* Right-click close is enabled and there is a closebox */
-	if (_settings_client.gui.right_mouse_wnd_close && w->nested_root->GetWidgetOfType(WWT_CLOSEBOX) && (w->flags & WF_STICKY) == 0) {
+	/* Right-click close is enabled and there is a closebox and the window is not pinned (when right-click close pinned windows is prevented) */
+	if (_settings_client.gui.right_mouse_wnd_close && w->nested_root->GetWidgetOfType(WWT_CLOSEBOX) && ((w->flags & WF_STICKY) == 0 || !_settings_client.gui.right_mouse_wnd_dont_close_sticky)) {
 		delete w;
 	} else if (_settings_client.gui.hover_delay_ms == 0 && !w->OnTooltip(pt, wid->index, TCC_RIGHT_CLICK) && wid->tool_tip != 0) {
 		GuiShowTooltips(w, wid->tool_tip, 0, nullptr, TCC_RIGHT_CLICK);

@@ -189,6 +189,7 @@ struct GUISettings : public TimeSettings {
 	bool   departure_show_all_stops;         ///< whether to show stops regardless of loading/unloading done at them
 	bool   departure_merge_identical;        ///< whether to merge identical departures
 	bool   right_mouse_wnd_close;            ///< close window with right click
+	bool   right_mouse_wnd_dont_close_sticky;///< don't close pinned windows on right click
 	bool   pause_on_newgame;                 ///< whether to start new games paused or not
 	SignalGUISettings signal_gui_mode;       ///< select which signal types are shown in the signal GUI
 	SignalCycleSettings cycle_signal_types;  ///< Which signal types to cycle with the build signal tool.

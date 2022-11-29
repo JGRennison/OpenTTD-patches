@@ -1810,6 +1810,7 @@ static SettingsContainer &GetSettingsTree()
 				general->Add(new SettingEntry("gui.window_snap_radius"));
 				general->Add(new SettingEntry("gui.window_soft_limit"));
 				general->Add(new SettingEntry("gui.right_mouse_wnd_close"));
+				general->Add(new SettingEntry("gui.right_mouse_wnd_dont_close_sticky"));
 			}
 
 			SettingsPage *viewports = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_VIEWPORTS));
