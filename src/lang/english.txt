@@ -1855,8 +1855,8 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Off
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Close window on right-click: {STRING2}
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Closes a window by right-clicking inside it. Disables the tooltip on right-click!
 
-STR_CONFIG_SETTING_RIGHT_MOUSE_DONT_CLOSE_PINNED                :Prevent right-click closing pinned windows: {STRING2}
-STR_CONFIG_SETTING_RIGHT_MOUSE_DONT_CLOSE_PINNED_HELPTEXT       :Prevents closing a window by right-clicking whenever the window is pinned
+STR_CONFIG_SETTING_RIGHT_MOUSE_DONT_CLOSE_STICKY                :Prevent right-click closing pinned windows: {STRING2}
+STR_CONFIG_SETTING_RIGHT_MOUSE_DONT_CLOSE_STICKY_HELPTEXT       :Prevents closing a window by right-clicking whenever the window is pinned
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :Autosave: {STRING2}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Select interval between automatic game saves
