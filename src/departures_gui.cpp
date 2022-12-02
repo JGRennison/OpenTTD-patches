@@ -307,8 +307,8 @@ public:
 			case WID_DB_SHOW_SHIPS:
 			case WID_DB_SHOW_PLANES: {
 				uint64 params[1];
-				params[0] = STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP + (widget - WID_DB_SHOW_TRAINS);
-				GuiShowTooltips(this, STR_STATION_VIEW_SCHEDULED_TOOLTIP_CTRL_SUFFIX, 1, params, close_cond);
+				params[0] = STR_DEPARTURES_SHOW_TRAINS_TOOLTIP + (widget - WID_DB_SHOW_TRAINS);
+				GuiShowTooltips(this, STR_DEPARTURES_SHOW_TYPE_TOOLTIP_CTRL_SUFFIX, 1, params, close_cond);
 				return true;
 			}
 			default:
