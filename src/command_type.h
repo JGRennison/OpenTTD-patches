@@ -20,6 +20,9 @@ struct GRFFile;
 enum CommandCostIntlFlags : uint8 {
 	CCIF_NONE                     = 0,
 	CCIF_SUCCESS                  = 1 << 0,
+	CCIF_INLINE_EXTRA_MSG         = 1 << 1,
+	CCIF_INLINE_TILE              = 1 << 2,
+	CCIF_INLINE_RESULT            = 1 << 3,
 };
 DECLARE_ENUM_AS_BIT_SET(CommandCostIntlFlags)
 
@@ -32,15 +35,24 @@ class CommandCost {
 	ExpensesType expense_type;                  ///< the type of expence as shown on the finances view
 	CommandCostIntlFlags flags;                 ///< Flags: see CommandCostIntlFlags
 	StringID message;                           ///< Warning message for when success is unset
-	StringID extra_message = INVALID_STRING_ID; ///< Additional warning message for when success is unset
+	union {
+		uint32 result = 0;
+		StringID extra_message;                 ///< Additional warning message for when success is unset
+		TileIndex tile;
+	} inl;
 
-	struct CommandCostAuxliaryData {
+	struct CommandCostAuxiliaryData {
 		uint32 textref_stack[16] = {};
 		const GRFFile *textref_stack_grffile = nullptr; ///< NewGRF providing the #TextRefStack content.
 		uint textref_stack_size = 0;                    ///< Number of uint32 values to put on the #TextRefStack for the error message.
+		StringID extra_message = INVALID_STRING_ID;     ///< Additional warning message for when success is unset
 		TileIndex tile = INVALID_TILE;
+		uint32 result = 0;
 	};
-	std::unique_ptr<CommandCostAuxliaryData> aux_data;
+	std::unique_ptr<CommandCostAuxiliaryData> aux_data;
+
+	void AllocAuxData();
+	bool AddInlineData(CommandCostIntlFlags inline_flag);
 
 public:
 	/**
@@ -64,7 +76,8 @@ public:
 	static CommandCost DualErrorMessage(StringID msg, StringID extra_msg)
 	{
 		CommandCost cc(msg);
-		cc.extra_message = extra_msg;
+		cc.flags |= CCIF_INLINE_EXTRA_MSG;
+		cc.inl.extra_message = extra_msg;
 		return cc;
 	}
 
@@ -124,12 +137,12 @@ public:
 	 * Makes this #CommandCost behave like an error command.
 	 * @param message The error message.
 	 */
-	void MakeError(StringID message, StringID extra_message = INVALID_STRING_ID)
+	void MakeError(StringID message)
 	{
 		assert(message != INVALID_STRING_ID);
-		this->flags &= ~CCIF_SUCCESS;
+		this->flags &= ~(CCIF_SUCCESS | CCIF_INLINE_EXTRA_MSG);
 		this->message = message;
-		this->extra_message = extra_message;
+		if (this->aux_data) this->aux_data->extra_message = INVALID_STRING_ID;
 	}
 
 	void UseTextRefStack(const GRFFile *grffile, uint num_registers);
@@ -178,7 +191,8 @@ public:
 	StringID GetExtraErrorMessage() const
 	{
 		if (this->Succeeded()) return INVALID_STRING_ID;
-		return this->extra_message;
+		if (this->flags & CCIF_INLINE_EXTRA_MSG) return this->inl.extra_message;
+		return this->aux_data != nullptr ? this->aux_data->extra_message : INVALID_STRING_ID;
 	}
 
 	/**
@@ -235,10 +249,19 @@ public:
 
 	TileIndex GetTile() const
 	{
+		if (this->flags & CCIF_INLINE_TILE) return this->inl.tile;
 		return this->aux_data != nullptr ? this->aux_data->tile : INVALID_TILE;
 	}
 
 	void SetTile(TileIndex tile);
+
+	uint32 GetResultData() const
+	{
+		if (this->flags & CCIF_INLINE_RESULT) return this->inl.result;
+		return this->aux_data != nullptr ? this->aux_data->result : 0;
+	}
+
+	void SetResultData(uint32 result);
 };
 
 /**

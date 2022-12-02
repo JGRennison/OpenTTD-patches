@@ -1218,9 +1218,9 @@ CommandCost &CommandCost::operator=(const CommandCost &other)
 	this->expense_type = other.expense_type;
 	this->flags = other.flags;
 	this->message = other.message;
-	this->extra_message = other.extra_message;
+	this->inl = other.inl;
 	if (other.aux_data) {
-		this->aux_data.reset(new CommandCostAuxliaryData(*other.aux_data));
+		this->aux_data.reset(new CommandCostAuxiliaryData(*other.aux_data));
 	}
 	return *this;
 }
@@ -1249,7 +1249,7 @@ void CommandCost::UseTextRefStack(const GRFFile *grffile, uint num_registers)
 	extern TemporaryStorageArray<int32, 0x110> _temp_store;
 
 	if (!this->aux_data) {
-		this->aux_data.reset(new CommandCostAuxliaryData());
+		this->AllocAuxData();
 	}
 
 	assert(num_registers < lengthof(this->aux_data->textref_stack));
@@ -1292,12 +1292,53 @@ int CommandCost::WriteSummaryMessage(char *buf, char *last, StringID cmd_msg) co
 	}
 }
 
+void CommandCost::AllocAuxData()
+{
+	this->aux_data.reset(new CommandCostAuxiliaryData());
+	if (this->flags & CCIF_INLINE_EXTRA_MSG) {
+		this->aux_data->extra_message = this->inl.extra_message;
+		this->flags &= ~CCIF_INLINE_EXTRA_MSG;
+	} else if (this->flags & CCIF_INLINE_TILE) {
+		this->aux_data->tile = this->inl.tile;
+		this->flags &= ~CCIF_INLINE_TILE;
+	} else if (this->flags & CCIF_INLINE_RESULT) {
+		this->aux_data->result = this->inl.result;
+		this->flags &= ~CCIF_INLINE_RESULT;
+	}
+}
+
+bool CommandCost::AddInlineData(CommandCostIntlFlags inline_flag)
+{
+	if (this->aux_data) return true;
+	if (this->flags & inline_flag) {
+		return false;
+	}
+	if (this->flags & ~CCIF_SUCCESS) {
+		this->AllocAuxData();
+		return true;
+	}
+	this->flags |= inline_flag;
+	return false;
+}
+
 void CommandCost::SetTile(TileIndex tile)
 {
 	if (tile == this->GetTile()) return;
 
-	if (!this->aux_data) {
-		this->aux_data.reset(new CommandCostAuxliaryData());
+	if (this->AddInlineData(CCIF_INLINE_TILE)) {
+		this->aux_data->tile = tile;
+	} else {
+		this->inl.tile = tile;
 	}
-	this->aux_data->tile = tile;
+}
+
+void CommandCost::SetResultData(uint32 result)
+{
+	if (result == this->GetResultData()) return;
+
+	if (this->AddInlineData(CCIF_INLINE_RESULT)) {
+		this->aux_data->result = result;
+	} else {
+		this->inl.result = result;
+	}
 }
