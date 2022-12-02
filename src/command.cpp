@@ -1216,7 +1216,7 @@ CommandCost &CommandCost::operator=(const CommandCost &other)
 {
 	this->cost = other.cost;
 	this->expense_type = other.expense_type;
-	this->success = other.success;
+	this->flags = other.flags;
 	this->message = other.message;
 	this->extra_message = other.extra_message;
 	if (other.aux_data) {
@@ -1233,9 +1233,9 @@ CommandCost &CommandCost::operator=(const CommandCost &other)
 void CommandCost::AddCost(const CommandCost &ret)
 {
 	this->AddCost(ret.cost);
-	if (this->success && !ret.success) {
+	if (this->Succeeded() && !ret.Succeeded()) {
 		this->message = ret.message;
-		this->success = false;
+		this->flags &= ~CCIF_SUCCESS;
 	}
 }
 

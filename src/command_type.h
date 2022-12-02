@@ -17,16 +17,22 @@
 
 struct GRFFile;
 
+enum CommandCostIntlFlags : uint8 {
+	CCIF_NONE                     = 0,
+	CCIF_SUCCESS                  = 1 << 0,
+};
+DECLARE_ENUM_AS_BIT_SET(CommandCostIntlFlags)
+
 /**
  * Common return value for all commands. Wraps the cost and
  * a possible error message/state together.
  */
 class CommandCost {
-	Money cost;       ///< The cost of this action
-	ExpensesType expense_type; ///< the type of expence as shown on the finances view
-	bool success;     ///< Whether the comment went fine up to this moment
-	StringID message; ///< Warning message for when success is unset
-	StringID extra_message = INVALID_STRING_ID;    ///< Additional warning message for when success is unset
+	Money cost;                                 ///< The cost of this action
+	ExpensesType expense_type;                  ///< the type of expence as shown on the finances view
+	CommandCostIntlFlags flags;                 ///< Flags: see CommandCostIntlFlags
+	StringID message;                           ///< Warning message for when success is unset
+	StringID extra_message = INVALID_STRING_ID; ///< Additional warning message for when success is unset
 
 	struct CommandCostAuxliaryData {
 		uint32 textref_stack[16] = {};
@@ -40,12 +46,12 @@ public:
 	/**
 	 * Creates a command cost return with no cost and no error
 	 */
-	CommandCost() : cost(0), expense_type(INVALID_EXPENSES), success(true), message(INVALID_STRING_ID) {}
+	CommandCost() : cost(0), expense_type(INVALID_EXPENSES), flags(CCIF_SUCCESS), message(INVALID_STRING_ID) {}
 
 	/**
 	 * Creates a command return value the is failed with the given message
 	 */
-	explicit CommandCost(StringID msg) : cost(0), expense_type(INVALID_EXPENSES), success(false), message(msg) {}
+	explicit CommandCost(StringID msg) : cost(0), expense_type(INVALID_EXPENSES), flags(CCIF_NONE), message(msg) {}
 
 	CommandCost(const CommandCost &other);
 	CommandCost(CommandCost &&other) = default;
@@ -66,14 +72,14 @@ public:
 	 * Creates a command cost with given expense type and start cost of 0
 	 * @param ex_t the expense type
 	 */
-	explicit CommandCost(ExpensesType ex_t) : cost(0), expense_type(ex_t), success(true), message(INVALID_STRING_ID) {}
+	explicit CommandCost(ExpensesType ex_t) : cost(0), expense_type(ex_t), flags(CCIF_SUCCESS), message(INVALID_STRING_ID) {}
 
 	/**
 	 * Creates a command return value with the given start cost and expense type
 	 * @param ex_t the expense type
 	 * @param cst the initial cost of this command
 	 */
-	CommandCost(ExpensesType ex_t, const Money &cst) : cost(cst), expense_type(ex_t), success(true), message(INVALID_STRING_ID) {}
+	CommandCost(ExpensesType ex_t, const Money &cst) : cost(cst), expense_type(ex_t), flags(CCIF_SUCCESS), message(INVALID_STRING_ID) {}
 
 
 	/**
@@ -121,7 +127,7 @@ public:
 	void MakeError(StringID message, StringID extra_message = INVALID_STRING_ID)
 	{
 		assert(message != INVALID_STRING_ID);
-		this->success = false;
+		this->flags &= ~CCIF_SUCCESS;
 		this->message = message;
 		this->extra_message = extra_message;
 	}
@@ -161,7 +167,7 @@ public:
 	 */
 	StringID GetErrorMessage() const
 	{
-		if (this->success) return INVALID_STRING_ID;
+		if (this->Succeeded()) return INVALID_STRING_ID;
 		return this->message;
 	}
 
@@ -171,7 +177,7 @@ public:
 	 */
 	StringID GetExtraErrorMessage() const
 	{
-		if (this->success) return INVALID_STRING_ID;
+		if (this->Succeeded()) return INVALID_STRING_ID;
 		return this->extra_message;
 	}
 
@@ -181,7 +187,7 @@ public:
 	 */
 	inline bool Succeeded() const
 	{
-		return this->success;
+		return (this->flags & CCIF_SUCCESS);
 	}
 
 	/**
@@ -190,7 +196,7 @@ public:
 	 */
 	inline bool Failed() const
 	{
-		return !this->success;
+		return !(this->flags & CCIF_SUCCESS);
 	}
 
 	/**
@@ -216,14 +222,14 @@ public:
 	void MakeSuccessWithMessage()
 	{
 		assert(this->message != INVALID_STRING_ID);
-		this->success = true;
+		this->flags |= CCIF_SUCCESS;
 	}
 
 	CommandCost UnwrapSuccessWithMessage() const
 	{
 		assert(this->IsSuccessWithMessage());
 		CommandCost res = *this;
-		res.success = false;
+		res.flags &= ~CCIF_SUCCESS;
 		return res;
 	}
 
