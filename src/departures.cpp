@@ -351,14 +351,8 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 					break;
 				}
 
-				/* Skip it if it's an automatic order. */
-				if (order->IsType(OT_IMPLICIT)) {
-					order = (order->next == nullptr) ? v->GetFirstOrder() : order->next;
-					continue;
-				}
-
 				/* If an order has a 0 travel time, and it's not explictly set, then stop. */
-				if (order->GetTravelTime() == 0 && !order->IsTravelTimetabled()) {
+				if (order->GetTravelTime() == 0 && !order->IsTravelTimetabled() && !order->IsType(OT_IMPLICIT)) {
 					break;
 				}
 
@@ -758,14 +752,8 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 				break;
 			}
 
-			/* Skip it if it's an automatic order. */
-			if (order->IsType(OT_IMPLICIT)) {
-				order = (order->next == nullptr) ? least_order->v->GetFirstOrder() : order->next;
-				continue;
-			}
-
 			/* If an order has a 0 travel time, and it's not explictly set, then stop. */
-			if (order->GetTravelTime() == 0 && !order->IsTravelTimetabled()) {
+			if (order->GetTravelTime() == 0 && !order->IsTravelTimetabled() && !order->IsType(OT_IMPLICIT)) {
 				break;
 			}
 
