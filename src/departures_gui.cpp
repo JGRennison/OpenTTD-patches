@@ -365,16 +365,19 @@ public:
 					this->RaiseWidget(widget);
 				}
 
-				if (!this->departure_types[0]) {
-					this->RaiseWidget(WID_DB_SHOW_VIA);
-					this->DisableWidget(WID_DB_SHOW_VIA);
-				} else {
-					this->EnableWidget(WID_DB_SHOW_VIA);
-
-					if (this->departure_types[2]) {
-						this->LowerWidget(WID_DB_SHOW_VIA);
+				/* Side effects */
+				if (widget == WID_DB_SHOW_DEPS) {
+					if (!this->departure_types[0]) {
+						this->RaiseWidget(WID_DB_SHOW_VIA);
+						this->DisableWidget(WID_DB_SHOW_VIA);
+					} else {
+						this->EnableWidget(WID_DB_SHOW_VIA);
+						this->SetWidgetLoweredState(WID_DB_SHOW_VIA,this->departure_types[2]);
 					}
+					/* Redraw required. */
+					this->SetWidgetDirty(WID_DB_SHOW_VIA);
 				}
+
 				/* We need to recompute the departures list. */
 				this->calc_tick_countdown = 0;
 				/* We need to redraw the button that was pressed. */
