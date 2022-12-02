@@ -100,6 +100,14 @@ static bool IsRoadStopAvailable(const RoadStopSpec *roadstopspec, StationType ty
 	if (HasBit(roadstopspec->flags, RSF_BUILD_MENU_ROAD_ONLY) && !RoadTypeIsRoad(_cur_roadtype)) return false;
 	if (HasBit(roadstopspec->flags, RSF_BUILD_MENU_TRAM_ONLY) && !RoadTypeIsTram(_cur_roadtype)) return false;
 
+	if (roadstopspec->stop_type != ROADSTOPTYPE_ALL) {
+		switch (type) {
+			case STATION_BUS:   if (roadstopspec->stop_type != ROADSTOPTYPE_PASSENGER) return false; break;
+			case STATION_TRUCK: if (roadstopspec->stop_type != ROADSTOPTYPE_FREIGHT)   return false; break;
+			default: break;
+		}
+	}
+
 	if (!HasBit(roadstopspec->callback_mask, CBM_ROAD_STOP_AVAIL)) return true;
 
 	uint16 cb_res = GetRoadStopCallback(CBID_STATION_AVAILABILITY, 0, 0, roadstopspec, nullptr, INVALID_TILE, _cur_roadtype, type, 0);
