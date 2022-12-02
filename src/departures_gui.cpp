@@ -337,11 +337,11 @@ public:
 				} else {
 					this->show_types[widget - WID_DB_SHOW_TRAINS] = !this->show_types[widget - WID_DB_SHOW_TRAINS];
 					this->SetWidgetLoweredState(widget, this->show_types[widget - WID_DB_SHOW_TRAINS]);
+					/* We need to redraw the button that was pressed. */
 					this->SetWidgetDirty(widget);
 				}
 				/* We need to recompute the departures list. */
 				this->RefreshVehicleList();
-				/* We need to redraw the button that was pressed. */
 				if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
 				break;
 			}
