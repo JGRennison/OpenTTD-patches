@@ -336,12 +336,7 @@ public:
 					}
 				} else {
 					this->show_types[widget - WID_DB_SHOW_TRAINS] = !this->show_types[widget - WID_DB_SHOW_TRAINS];
-					if (this->show_types[widget - WID_DB_SHOW_TRAINS]) {
-						this->LowerWidget(widget);
-					}
-					else {
-						this->RaiseWidget(widget);
-					}
+					this->SetWidgetLoweredState(widget, this->show_types[widget - WID_DB_SHOW_TRAINS]);
 					this->SetWidgetDirty(widget);
 				}
 				/* We need to recompute the departures list. */
@@ -359,11 +354,7 @@ public:
 			case WID_DB_SHOW_VIA:
 
 				this->departure_types[widget - WID_DB_SHOW_DEPS] = !this->departure_types[widget - WID_DB_SHOW_DEPS];
-				if (this->departure_types[widget - WID_DB_SHOW_DEPS]) {
-					this->LowerWidget(widget);
-				} else {
-					this->RaiseWidget(widget);
-				}
+				this->SetWidgetLoweredState(widget, this->departure_types[widget - WID_DB_SHOW_DEPS]);
 
 				/* Side effects */
 				if (widget == WID_DB_SHOW_DEPS) {
@@ -372,7 +363,7 @@ public:
 						this->DisableWidget(WID_DB_SHOW_VIA);
 					} else {
 						this->EnableWidget(WID_DB_SHOW_VIA);
-						this->SetWidgetLoweredState(WID_DB_SHOW_VIA,this->departure_types[2]);
+						this->SetWidgetLoweredState(WID_DB_SHOW_VIA, this->departure_types[2]);
 					}
 					/* Redraw required. */
 					this->SetWidgetDirty(WID_DB_SHOW_VIA);
