@@ -343,6 +343,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 								continue;
 							}
 					}
+					break;
 				}
 
 				/* If the scheduled departure date is too far in the future, stop. */
@@ -505,6 +506,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 								continue;
 							}
 					}
+					break;
 				}
 
 				/* If we reach the original station again, then use it as the terminus. */
@@ -753,6 +755,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 							continue;
 						}
 				}
+				break;
 			}
 
 			/* Skip it if it's an automatic order. */
