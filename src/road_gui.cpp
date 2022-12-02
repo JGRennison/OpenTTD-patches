@@ -1327,6 +1327,8 @@ public:
 				_roadstop_gui_settings.roadstop_class = ROADSTOP_CLASS_DFLT;
 			}
 
+			this->SelectFirstAvailableTypeIfUnavailable();
+
 			NWidgetMatrix *matrix = this->GetWidget<NWidgetMatrix>(WID_BROS_MATRIX);
 			matrix->SetScrollbar(this->vscrollMatrix);
 			matrix->SetCount(_roadstop_gui_settings.roadstop_count);
@@ -1387,6 +1389,20 @@ public:
 			this->roadstop_classes.Sort();
 
 			this->vscrollList->SetCount((uint)this->roadstop_classes.size());
+		}
+	}
+
+	void SelectFirstAvailableTypeIfUnavailable()
+	{
+		const RoadStopClass *rs_class = RoadStopClass::Get(_roadstop_gui_settings.roadstop_class);
+		StationType st = GetRoadStationTypeByWindowClass(this->window_class);
+
+		if (IsRoadStopAvailable(rs_class->GetSpec(_roadstop_gui_settings.roadstop_type), st)) return;
+		for (uint i = 0; i < _roadstop_gui_settings.roadstop_count; i++) {
+			if (IsRoadStopAvailable(rs_class->GetSpec(i), st)) {
+				_roadstop_gui_settings.roadstop_type = i;
+				break;
+			}
 		}
 	}
 
@@ -1629,9 +1645,10 @@ public:
 				RoadStopClassID class_id = this->roadstop_classes[y];
 				if (_roadstop_gui_settings.roadstop_class != class_id && GetIfClassHasNewStopsByType(RoadStopClass::Get(class_id), roadStopType, _cur_roadtype)) {
 					_roadstop_gui_settings.roadstop_class = class_id;
-					RoadStopClass *rsclass   = RoadStopClass::Get(_roadstop_gui_settings.roadstop_class);
+					RoadStopClass *rsclass = RoadStopClass::Get(_roadstop_gui_settings.roadstop_class);
 					_roadstop_gui_settings.roadstop_count = rsclass->GetSpecCount();
 					_roadstop_gui_settings.roadstop_type = std::min((int)_roadstop_gui_settings.roadstop_type, std::max(0, (int)_roadstop_gui_settings.roadstop_count - 1));
+					this->SelectFirstAvailableTypeIfUnavailable();
 
 					NWidgetMatrix *matrix = this->GetWidget<NWidgetMatrix>(WID_BROS_MATRIX);
 					matrix->SetCount(_roadstop_gui_settings.roadstop_count);
