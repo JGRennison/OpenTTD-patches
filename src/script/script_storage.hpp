@@ -41,6 +41,7 @@ private:
 
 	CommandCost costs;               ///< The costs the script is tracking.
 	Money last_cost;                 ///< The last cost of the command.
+	uint32 last_result;              ///< The last result data of the command.
 	uint last_error;                 ///< The last error of the command.
 	bool last_command_res;           ///< The last result of the command.
 
@@ -75,6 +76,7 @@ public:
 		allow_do_command  (true),
 		/* costs (can't be set) */
 		last_cost         (0),
+		last_result       (0),
 		last_error        (STR_NULL),
 		last_command_res  (true),
 		last_tile         (INVALID_TILE),

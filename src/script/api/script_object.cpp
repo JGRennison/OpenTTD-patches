@@ -143,6 +143,16 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	return GetStorage()->last_cost;
 }
 
+/* static */ void ScriptObject::SetLastCommandResultData(uint32 last_result)
+{
+	GetStorage()->last_result = last_result;
+}
+
+/* static */ uint32 ScriptObject::GetLastCommandResultData()
+{
+	return GetStorage()->last_result;
+}
+
 /* static */ void ScriptObject::SetRoadType(RoadType road_type)
 {
 	GetStorage()->road_type = road_type;
@@ -358,6 +368,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 
 	/* Costs of this operation. */
 	SetLastCost(res.GetCost());
+	SetLastCommandResultData(res.GetResultData());
 	SetLastCommandRes(true);
 
 	if (_generating_world) {

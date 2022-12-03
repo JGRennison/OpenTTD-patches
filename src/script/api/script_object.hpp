@@ -238,6 +238,16 @@ protected:
 	static Money GetLastCost();
 
 	/**
+	 * Set the result data of the last command.
+	 */
+	static void SetLastCommandResultData(uint32 last_result);
+
+	/**
+	 * Get the result data of the last command.
+	 */
+	static uint32 GetLastCommandResultData();
+
+	/**
 	 * Set a variable that can be used by callback functions to pass information.
 	 */
 	static void SetCallbackVariable(int index, int value);

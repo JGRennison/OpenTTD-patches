@@ -737,6 +737,7 @@ bool ScriptInstance::DoCommandCallback(const CommandCost &result, TileIndex tile
 	} else {
 		ScriptObject::IncreaseDoCommandCosts(result.GetCost());
 		ScriptObject::SetLastCost(result.GetCost());
+		ScriptObject::SetLastCommandResultData(result.GetResultData());
 	}
 
 	ScriptObject::SetLastCommand(INVALID_TILE, 0, 0, 0, CMD_END);
