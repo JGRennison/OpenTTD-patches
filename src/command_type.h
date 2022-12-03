@@ -588,6 +588,7 @@ enum CommandFlags {
 	CMD_SERVER_NS = 0x1000, ///< the command can only be initiated by the server (this is not executed in spectator mode)
 	CMD_LOG_AUX   = 0x2000, ///< the command should be logged in the auxiliary log instead of the main log
 	CMD_P1_TILE   = 0x4000, ///< use p1 for money text and error tile
+	CMD_STR_SEP  =  0x8000, ///< the command's string may contain separator control characters
 };
 DECLARE_ENUM_AS_BIT_SET(CommandFlags)
 

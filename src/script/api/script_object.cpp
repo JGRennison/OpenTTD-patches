@@ -319,7 +319,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 		/* The string must be valid, i.e. not contain special codes. Since some
 		 * can be made with GSText, make sure the control codes are removed. */
 		text_validated = text;
-		::StrMakeValidInPlace(text_validated, SVS_NONE);
+		::StrMakeValidInPlace(text_validated, (GetCommandFlags(cmd) & CMD_STR_SEP) ? SVS_ALLOW_SEPARATOR_CODE : SVS_NONE);
 		text = text_validated.c_str();
 	}
 

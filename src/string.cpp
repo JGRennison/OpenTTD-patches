@@ -261,6 +261,8 @@ static void StrMakeValidInPlace(T &dst, const char *str, const char *last, Strin
 			} while (--len != 0);
 		} else if ((settings & SVS_ALLOW_NEWLINE) != 0 && c == '\n') {
 			*dst++ = *str++;
+		} else if ((settings & SVS_ALLOW_SEPARATOR_CODE) != 0 && c == 0x1F) {
+			*dst++ = *str++;
 		} else {
 			if ((settings & SVS_ALLOW_NEWLINE) != 0 && c == '\r' && str[1] == '\n') {
 				str += len;
@@ -416,6 +418,21 @@ bool StrEndsWith(const std::string_view str, const std::string_view suffix)
 	return str.compare(str.size() - suffix_len, suffix_len, suffix, 0, suffix_len) == 0;
 }
 
+const char *StrConsumeToSeparator(std::string &result, const char *str)
+{
+	if (str == nullptr) {
+		result = "";
+		return nullptr;
+	}
+
+	const char *end = str;
+	while (*end != '\0' && *end != 0x1F) {
+		end++;
+	}
+	result.assign(str, end);
+	if (*end == 0x1F) return end + 1;
+	return nullptr;
+}
 
 /** Scans the string for colour codes and strips them */
 void str_strip_colours(char *str)

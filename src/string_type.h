@@ -52,6 +52,7 @@ enum StringValidationSettings {
 	SVS_REPLACE_WITH_QUESTION_MARK = 1 << 0, ///< Replace the unknown/bad bits with question marks.
 	SVS_ALLOW_NEWLINE              = 1 << 1, ///< Allow newlines.
 	SVS_ALLOW_CONTROL_CODE         = 1 << 2, ///< Allow the special control codes.
+	SVS_ALLOW_SEPARATOR_CODE       = 1 << 3, ///< Allow separator control code (0x1F).
 };
 DECLARE_ENUM_AS_BIT_SET(StringValidationSettings)
 
