@@ -98,6 +98,7 @@ protected:
 	int calc_tick_countdown;   ///< The number of ticks to wait until recomputing the departure list. Signed in case it goes below zero.
 	bool show_types[4];        ///< The vehicle types to show in the departure list.
 	bool departure_types[3];   ///< The types of departure to show in the departure list.
+	bool departure_types_both; ///< Arrivals and departures buttons disabled (shown combined as single entry)
 	bool show_pax;             ///< Show passenger vehicles
 	bool show_freight;         ///< Show freight vehicles
 	bool cargo_buttons_disabled;///< Show pax/freight buttons disabled
@@ -133,6 +134,20 @@ protected:
 			this->LowerWidget(WID_DB_SHOW_PAX);
 			this->show_freight = false;
 			this->RaiseWidget(WID_DB_SHOW_FREIGHT);
+		}
+	}
+
+	void SetDepartureTypesDisabledState()
+	{
+		this->departure_types_both = _settings_client.gui.departure_show_both;
+		this->SetWidgetDisabledState(WID_DB_SHOW_DEPS, departure_types_both);
+		this->SetWidgetDisabledState(WID_DB_SHOW_ARRS, departure_types_both);
+		if (this->departure_types_both) {
+			this->LowerWidget(WID_DB_SHOW_DEPS);
+			this->LowerWidget(WID_DB_SHOW_ARRS);
+		} else {
+			this->SetWidgetLoweredState(WID_DB_SHOW_DEPS, this->departure_types[0]);
+			this->SetWidgetLoweredState(WID_DB_SHOW_ARRS, this->departure_types[1]);
 		}
 	}
 
@@ -237,6 +252,7 @@ public:
 		this->RaiseWidget(WID_DB_SHOW_VIA);
 		this->LowerWidget(WID_DB_SHOW_PAX);
 		this->LowerWidget(WID_DB_SHOW_FREIGHT);
+		this->SetDepartureTypesDisabledState();
 		this->SetCargoFilterDisabledState();
 
 		for (uint i = 0; i < 4; ++i) {
@@ -453,6 +469,13 @@ public:
 			this->SetWidgetDirty(WID_DB_SHOW_FREIGHT);
 		}
 
+		if (!Twaypoint && this->departure_types_both != _settings_client.gui.departure_show_both) {
+			this->SetDepartureTypesDisabledState();
+			this->calc_tick_countdown = 0;
+			this->SetWidgetDirty(WID_DB_SHOW_DEPS);
+			this->SetWidgetDirty(WID_DB_SHOW_ARRS);
+		}
+
 		/* We need to redraw the scrolling text in its new position. */
 		this->SetWidgetDirty(WID_DB_LIST);
 
@@ -498,14 +521,6 @@ public:
 
 	virtual void OnPaint() override
 	{
-		if (Twaypoint || _settings_client.gui.departure_show_both) {
-			this->DisableWidget(WID_DB_SHOW_ARRS);
-			this->DisableWidget(WID_DB_SHOW_DEPS);
-		} else {
-			this->EnableWidget(WID_DB_SHOW_ARRS);
-			this->EnableWidget(WID_DB_SHOW_DEPS);
-		}
-
 		this->vscroll->SetCount(std::min<uint>(_settings_client.gui.max_departures, (uint)this->departures->size() + (uint)this->arrivals->size()));
 		this->DrawWidgets();
 	}
