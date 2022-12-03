@@ -1242,13 +1242,13 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 	switch (widget) {
 		case WID_SM_MAP: {
 			DrawPixelInfo new_dpi;
-			if (!FillDrawPixelInfo(&new_dpi, r.left + 1, r.top + 1, r.right - r.left - 1, r.bottom - r.top - 1)) return;
+			if (!FillDrawPixelInfo(&new_dpi, r.left + 1, r.top + 1, r.Width(), r.Height())) return;
 			this->DrawSmallMap(&new_dpi);
 			break;
 		}
 
 		case WID_SM_LEGEND: {
-			uint columns = this->GetNumberColumnsLegend(r.right - r.left + 1);
+			uint columns = this->GetNumberColumnsLegend(r.Width());
 			uint number_of_rows = this->GetNumberRowsLegend(columns);
 			bool rtl = _current_text_dir == TD_RTL;
 			uint y_org = r.top + WD_FRAMERECT_TOP;
@@ -1750,8 +1750,8 @@ void SmallMapWindow::SmallMapCenterOnCurrentPos()
  */
 Point SmallMapWindow::GetStationMiddle(const Station *st) const
 {
-	int x = (st->rect.right + st->rect.left + 1) / 2;
-	int y = (st->rect.bottom + st->rect.top + 1) / 2;
+	int x = CenterBounds(st->rect.left, st->rect.right, 0);
+	int y = CenterBounds(st->rect.top, st->rect.bottom, 0);
 	Point ret = this->RemapTile(x, y);
 
 	/* Same magic 3 as in DrawVehicles; that's where I got it from.

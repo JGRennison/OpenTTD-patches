@@ -35,7 +35,7 @@ static const NWidgetPart _nested_errmsg_widgets[] = {
 		NWidget(WWT_CAPTION, COLOUR_RED, WID_EM_CAPTION), SetDataTip(STR_ERROR_MESSAGE_CAPTION, STR_NULL),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_RED),
-		NWidget(WWT_EMPTY, COLOUR_RED, WID_EM_MESSAGE), SetPadding(0, 2, 0, 2), SetMinimalSize(236, 32),
+		NWidget(WWT_EMPTY, COLOUR_RED, WID_EM_MESSAGE), SetPadding(WD_FRAMETEXT_TOP, WD_FRAMETEXT_RIGHT, WD_FRAMETEXT_BOTTOM, WD_FRAMETEXT_LEFT), SetFill(1, 0), SetMinimalSize(236, 0),
 	EndContainer(),
 };
 
@@ -52,9 +52,9 @@ static const NWidgetPart _nested_errmsg_face_widgets[] = {
 		NWidget(WWT_CAPTION, COLOUR_RED, WID_EM_CAPTION), SetDataTip(STR_ERROR_MESSAGE_CAPTION_OTHER_COMPANY, STR_NULL),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_RED),
-		NWidget(NWID_HORIZONTAL), SetPIP(2, 1, 2),
-			NWidget(WWT_EMPTY, COLOUR_RED, WID_EM_FACE), SetMinimalSize(92, 119), SetFill(0, 1), SetPadding(2, 0, 1, 0),
-			NWidget(WWT_EMPTY, COLOUR_RED, WID_EM_MESSAGE), SetFill(0, 1), SetMinimalSize(238, 123),
+		NWidget(NWID_HORIZONTAL),
+			NWidget(WWT_EMPTY, COLOUR_RED, WID_EM_FACE), SetPadding(2, 0, 2, 2), SetFill(0, 1), SetMinimalSize(92, 119),
+			NWidget(WWT_EMPTY, COLOUR_RED, WID_EM_MESSAGE), SetPadding(WD_FRAMETEXT_TOP, WD_FRAMETEXT_RIGHT, WD_FRAMETEXT_BOTTOM, WD_FRAMETEXT_LEFT), SetFill(1, 1), SetMinimalSize(236, 0),
 		EndContainer(),
 	EndContainer(),
 };
@@ -203,14 +203,13 @@ public:
 				CopyInDParam(0, this->decode_params, lengthof(this->decode_params));
 				if (this->textref_stack_size > 0) StartTextRefStackUsage(this->textref_stack_grffile, this->textref_stack_size, this->textref_stack);
 
-				int text_width = std::max(0, (int)size->width - WD_FRAMETEXT_LEFT - WD_FRAMETEXT_RIGHT);
-				this->height_summary = GetStringHeight(this->summary_msg, text_width);
-				this->height_detailed = (this->detailed_msg == INVALID_STRING_ID) ? 0 : GetStringHeight(this->detailed_msg, text_width);
-				this->height_extra = (this->extra_msg == INVALID_STRING_ID) ? 0 : GetStringHeight(this->extra_msg, text_width);
+				this->height_summary = GetStringHeight(this->summary_msg, size->width);
+				this->height_detailed = (this->detailed_msg == INVALID_STRING_ID) ? 0 : GetStringHeight(this->detailed_msg, size->width);
+				this->height_extra = (this->extra_msg == INVALID_STRING_ID) ? 0 : GetStringHeight(this->extra_msg, size->width);
 
 				if (this->textref_stack_size > 0) StopTextRefStackUsage();
 
-				uint panel_height = WD_FRAMERECT_TOP + this->height_summary + WD_FRAMERECT_BOTTOM;
+				uint panel_height = this->height_summary;
 				if (this->detailed_msg != INVALID_STRING_ID) panel_height += this->height_detailed + WD_PAR_VSEP_WIDE;
 				if (this->extra_msg != INVALID_STRING_ID) panel_height += this->height_extra + WD_PAR_VSEP_WIDE;
 
@@ -287,34 +286,25 @@ public:
 				if (this->textref_stack_size > 0) StartTextRefStackUsage(this->textref_stack_grffile, this->textref_stack_size, this->textref_stack);
 
 				if (this->detailed_msg == INVALID_STRING_ID) {
-					DrawStringMultiLine(r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT, r.top + WD_FRAMERECT_TOP, r.bottom - WD_FRAMERECT_BOTTOM,
-							this->summary_msg, TC_FROMSTRING, SA_CENTER);
+					DrawStringMultiLine(r, this->summary_msg, TC_FROMSTRING, SA_CENTER);
 				} else if (this->extra_msg == INVALID_STRING_ID) {
-					int extra = (r.bottom - r.top + 1 - this->height_summary - this->height_detailed - WD_PAR_VSEP_WIDE) / 2;
+					/* Extra space when message is shorter than company face window */
+					int extra = (r.Height() - this->height_summary - this->height_detailed - WD_PAR_VSEP_WIDE) / 2;
 
 					/* Note: NewGRF supplied error message often do not start with a colour code, so default to white. */
-					int top = r.top + WD_FRAMERECT_TOP;
-					int bottom = top + this->height_summary + extra;
-					DrawStringMultiLine(r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT, top, bottom, this->summary_msg, TC_WHITE, SA_CENTER);
-
-					bottom = r.bottom - WD_FRAMERECT_BOTTOM;
-					top = bottom - this->height_detailed - extra;
-					DrawStringMultiLine(r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT, top, bottom, this->detailed_msg, TC_WHITE, SA_CENTER);
+					DrawStringMultiLine(r.WithHeight(this->height_summary + extra, false), this->summary_msg, TC_WHITE, SA_CENTER);
+					DrawStringMultiLine(r.WithHeight(this->height_detailed + extra, true), this->detailed_msg, TC_WHITE, SA_CENTER);
 				} else {
-					int extra = (r.bottom - r.top + 1 - this->height_summary - this->height_detailed - this->height_extra - (WD_PAR_VSEP_WIDE * 2)) / 3;
+					/* Extra space when message is shorter than company face window */
+					int extra = (r.Height() - this->height_summary - this->height_detailed - this->height_extra - (WD_PAR_VSEP_WIDE * 2)) / 3;
 
 					/* Note: NewGRF supplied error message often do not start with a colour code, so default to white. */
-					int top = r.top + WD_FRAMERECT_TOP;
-					int bottom = top + this->height_summary + extra;
-					DrawStringMultiLine(r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT, top, bottom, this->summary_msg, TC_WHITE, SA_CENTER);
-
-					top = bottom + WD_PAR_VSEP_WIDE;
-					bottom = top + this->height_detailed + extra;
-					DrawStringMultiLine(r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT, top, bottom, this->detailed_msg, TC_WHITE, SA_CENTER);
-
-					bottom = r.bottom - WD_FRAMERECT_BOTTOM;
-					top = bottom - this->height_extra - extra;
-					DrawStringMultiLine(r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT, top, bottom, this->extra_msg, TC_WHITE, SA_CENTER);
+					Rect top_section = r.WithHeight(this->height_summary + extra, false);
+					Rect bottom_section = r.WithHeight(this->height_extra + extra, true);
+					Rect middle_section = { top_section.left, top_section.bottom, top_section.right, bottom_section.top };
+					DrawStringMultiLine(top_section, this->summary_msg, TC_WHITE, SA_CENTER);
+					DrawStringMultiLine(middle_section, this->detailed_msg, TC_WHITE, SA_CENTER);
+					DrawStringMultiLine(bottom_section, this->extra_msg, TC_WHITE, SA_CENTER);
 				}
 
 				if (this->textref_stack_size > 0) StopTextRefStackUsage();

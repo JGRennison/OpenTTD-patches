@@ -156,7 +156,7 @@ public:
 		if (widget >= WID_BT_TYPE_BUTTON_FIRST) {
 			const int index = widget - WID_BT_TYPE_BUTTON_FIRST;
 			/* Trees "grow" in the centre on the bottom line of the buttons */
-			DrawSprite(_tree_sprites[index].sprite, _tree_sprites[index].pal, (r.left + r.right) / 2 + WD_FRAMERECT_LEFT, r.bottom - ScaleGUITrad(BUTTON_BOTTOM_OFFSET));
+			DrawSprite(_tree_sprites[index].sprite, _tree_sprites[index].pal, CenterBounds(r.left, r.right, 0) + WD_FRAMERECT_LEFT, r.bottom - ScaleGUITrad(BUTTON_BOTTOM_OFFSET));
 		}
 	}
 

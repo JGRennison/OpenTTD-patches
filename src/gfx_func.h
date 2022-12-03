@@ -115,6 +115,42 @@ void GfxDrawLine(const DrawPixelInfo *dpi, int left, int top, int right, int bot
 inline void GfxDrawLine(int left, int top, int right, int bottom, int colour, int width = 1, int dash = 0) { GfxDrawLine(_cur_dpi, left, top, right, bottom, colour, width, dash); }
 void DrawBox(const DrawPixelInfo *dpi, int x, int y, int dx1, int dy1, int dx2, int dy2, int dx3, int dy3);
 
+/* Versions of DrawString/DrawStringMultiLine that accept a Rect instead of separate left, right, top and bottom parameters. */
+static inline int DrawString(const Rect &r, const char *str, TextColour colour = TC_FROMSTRING, StringAlignment align = SA_LEFT, bool underline = false, FontSize fontsize = FS_NORMAL)
+{
+	return DrawString(r.left, r.right, r.top, str, colour, align, underline, fontsize);
+}
+
+static inline int DrawString(const Rect &r, const std::string &str, TextColour colour = TC_FROMSTRING, StringAlignment align = SA_LEFT, bool underline = false, FontSize fontsize = FS_NORMAL)
+{
+	return DrawString(r.left, r.right, r.top, str, colour, align, underline, fontsize);
+}
+
+static inline int DrawString(const Rect &r, StringID str, TextColour colour = TC_FROMSTRING, StringAlignment align = SA_LEFT, bool underline = false, FontSize fontsize = FS_NORMAL)
+{
+	return DrawString(r.left, r.right, r.top, str, colour, align, underline, fontsize);
+}
+
+static inline int DrawStringMultiLine(const Rect &r, const char *str, TextColour colour = TC_FROMSTRING, StringAlignment align = (SA_TOP | SA_LEFT), bool underline = false, FontSize fontsize = FS_NORMAL)
+{
+	return DrawStringMultiLine(r.left, r.right, r.top, r.bottom, str, colour, align, underline, fontsize);
+}
+
+static inline int DrawStringMultiLine(const Rect &r, const std::string &str, TextColour colour = TC_FROMSTRING, StringAlignment align = (SA_TOP | SA_LEFT), bool underline = false, FontSize fontsize = FS_NORMAL)
+{
+	return DrawStringMultiLine(r.left, r.right, r.top, r.bottom, str, colour, align, underline, fontsize);
+}
+
+static inline int DrawStringMultiLine(const Rect &r, StringID str, TextColour colour = TC_FROMSTRING, StringAlignment align = (SA_TOP | SA_LEFT), bool underline = false, FontSize fontsize = FS_NORMAL)
+{
+	return DrawStringMultiLine(r.left, r.right, r.top, r.bottom, str, colour, align, underline, fontsize);
+}
+
+static inline void GfxFillRect(const Rect &r, int colour, FillRectMode mode = FILLRECT_OPAQUE)
+{
+	GfxFillRect(r.left, r.top, r.right, r.bottom, colour, mode);
+}
+
 Dimension GetStringBoundingBox(const char *str, FontSize start_fontsize = FS_NORMAL);
 Dimension GetStringBoundingBox(const std::string &str, FontSize start_fontsize = FS_NORMAL);
 Dimension GetStringBoundingBox(StringID strid, FontSize start_fontsize = FS_NORMAL);
@@ -147,7 +183,7 @@ bool FillDrawPixelInfo(DrawPixelInfo *n, int left, int top, int width, int heigh
  */
 static inline int CenterBounds(int min, int max, int size)
 {
-	return min + (max - min - size + 1) / 2;
+	return (min + max - size + 1) / 2;
 }
 
 /* window.cpp */

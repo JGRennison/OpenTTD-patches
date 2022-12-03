@@ -37,7 +37,7 @@ public:
 	virtual bool Selectable() const { return false; }
 	virtual uint Height(uint width) const { return FONT_HEIGHT_NORMAL; }
 	virtual uint Width() const { return 0; }
-	virtual void Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const;
+	virtual void Draw(const Rect &r, bool sel, Colours bg_colour) const;
 };
 
 /**
@@ -52,7 +52,7 @@ public:
 
 	bool Selectable() const override { return true; }
 	uint Width() const override;
-	void Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const override;
+	void Draw(const Rect &r, bool sel, Colours bg_colour) const override;
 	virtual StringID String() const { return this->string; }
 	void SetColourFlags(TextColour colour_flags) { this->colour_flags = colour_flags; }
 
@@ -98,7 +98,7 @@ public:
 
 	uint Height(uint width) const override;
 	uint Width() const override;
-	void Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const override;
+	void Draw(const Rect &r, bool sel, Colours bg_colour) const override;
 	void SetDimension(Dimension d);
 };
 
