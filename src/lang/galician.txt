@@ -7225,9 +7225,9 @@ STR_UNITS_POWER_SI_TO_WEIGHT_SI                                 :{DECIMAL}{NBSP}
 STR_SETTINGS_MENU_AI_SETTINGS                                   :Axustes da IA
 STR_SETTINGS_MENU_GAMESCRIPT_SETTINGS                           :Axustes dos scripts de xogo
 STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_IF_BREAKDOWNS_ON         :Se as avarías dos vehículos están habilitadas
-STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_DUAL_BUTTONS :Amosar sets de botóns separados na fiestra de mercar trens: {STRING2}
+STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_DUAL_BUTTONS :Amosar sets de botóns separados na fiestra de mercar trens: {STRING}
 STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_DUAL_BUTTONS_HELPTEXT:Cando se habilita, as listas de locomotoras e vagóns das fiestras de compra de trens cada unha ten o seu set de botóns.
-STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE                      :Amosar ruta superposta do vehículo enfocado: {STRING2}
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE                      :Amosar ruta superposta do vehículo enfocado: {STRING}
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_HELPTEXT             :Cando se habilita e hai unha fiestra dun vehículo focalizada, amosar marcadores e/ou liñas entre as localizacións das ordes do vehículo.{}O modo Só estación de parada amosa só as ordes onde o vehículo para na estación (exclúe puntos de ruta, depósitos e "vías").
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_OFF                  :Desactivado
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_ALL_LOCATIONS        :Todas as localizacións das ordes
