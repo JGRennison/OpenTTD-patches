@@ -77,12 +77,22 @@ bool IsNetworkServerSave();
 typedef void ChunkSaveLoadProc();
 typedef void AutolengthProc(void *arg);
 
+void SlUnreachablePlaceholder();
+
+enum ChunkSaveLoadSpecialOp {
+	CSLSO_PRE_LOAD,
+	CSLSO_PRE_LOADCHECK,
+};
+typedef bool ChunkSaveLoadSpecialProc(uint32, ChunkSaveLoadSpecialOp);
+
 /** Type of a chunk. */
 enum ChunkType {
 	CH_RIFF = 0,
 	CH_ARRAY = 1,
 	CH_SPARSE_ARRAY = 2,
 	CH_EXT_HDR      = 15, ///< Extended chunk header
+
+	CH_UPSTREAM_SAVE = 0x80,
 };
 
 /** Handlers and description of chunk. */
@@ -93,7 +103,61 @@ struct ChunkHandler {
 	ChunkSaveLoadProc *ptrs_proc;       ///< Manipulate pointers in the chunk.
 	ChunkSaveLoadProc *load_check_proc; ///< Load procedure for game preview.
 	ChunkType type;                     ///< Type of the chunk. @see ChunkType
+	ChunkSaveLoadSpecialProc *special_proc = nullptr;
 };
+
+template <typename F>
+void SlExecWithSlVersion(SaveLoadVersion use_version, F proc)
+{
+	extern SaveLoadVersion _sl_version;
+	SaveLoadVersion old_ver = _sl_version;
+	_sl_version = use_version;
+	proc();
+	_sl_version = old_ver;
+}
+
+namespace upstream_sl {
+	template <uint32 id, typename F>
+	ChunkHandler MakeUpstreamChunkHandler()
+	{
+		extern void SlLoadChunkByID(uint32);
+		extern void SlLoadCheckChunkByID(uint32);
+		extern void SlFixPointerChunkByID(uint32);
+
+		ChunkHandler ch = {
+			id,
+			nullptr,
+			SlUnreachablePlaceholder,
+			[]() {
+				SlExecWithSlVersion(F::GetVersion(), []() {
+					SlFixPointerChunkByID(id);
+				});
+			},
+			SlUnreachablePlaceholder,
+			CH_UPSTREAM_SAVE
+		};
+		ch.special_proc = [](uint32 chunk_id, ChunkSaveLoadSpecialOp op) -> bool {
+			assert(id == chunk_id);
+			switch (op) {
+				case CSLSO_PRE_LOAD:
+					SlExecWithSlVersion(F::GetVersion(), []() {
+						SlLoadChunkByID(id);
+					});
+					break;
+				case CSLSO_PRE_LOADCHECK:
+					SlExecWithSlVersion(F::GetVersion(), []() {
+						SlLoadCheckChunkByID(id);
+					});
+					break;
+			}
+
+			return true; // chunk has been consumed
+		};
+		return ch;
+	}
+}
+
+using upstream_sl::MakeUpstreamChunkHandler;
 
 struct NullStruct {
 	byte null;

@@ -2014,6 +2014,18 @@ void SlLoadChunks()
 	}
 }
 
+/** Load a chunk */
+void SlLoadChunkByID(uint32 id)
+{
+	_sl.action = SLA_LOAD;
+
+	DEBUG(sl, 2, "Loading chunk %c%c%c%c", id >> 24, id >> 16, id >> 8, id);
+
+	const ChunkHandler *ch = SlFindChunkHandler(id);
+	if (ch == nullptr) SlErrorCorrupt("Unknown chunk type");
+	SlLoadChunk(*ch);
+}
+
 /** Load all chunks for savegame checking */
 void SlLoadCheckChunks()
 {
@@ -2031,6 +2043,18 @@ void SlLoadCheckChunks()
 	}
 }
 
+/** Load a chunk for savegame checking */
+void SlLoadCheckChunkByID(uint32 id)
+{
+	_sl.action = SLA_LOAD_CHECK;
+
+	DEBUG(sl, 2, "Loading chunk %c%c%c%c", id >> 24, id >> 16, id >> 8, id);
+
+	const ChunkHandler *ch = SlFindChunkHandler(id);
+	if (ch == nullptr) SlErrorCorrupt("Unknown chunk type");
+	SlLoadCheckChunk(*ch);
+}
+
 /** Fix all pointers (convert index -> pointer) */
 void SlFixPointers()
 {
@@ -2042,6 +2066,64 @@ void SlFixPointers()
 	}
 
 	assert(_sl.action == SLA_PTRS);
+}
+
+void SlFixPointerChunkByID(uint32 id)
+{
+	const ChunkHandler *ch = SlFindChunkHandler(id);
+	if (ch == nullptr) SlErrorCorrupt("Unknown chunk type");
+	DEBUG(sl, 3, "Fixing pointers for %c%c%c%c", ch->id >> 24, ch->id >> 16, ch->id >> 8, ch->id);
+	ch->FixPointers();
+}
+
+/**
+ * Save a chunk of data (eg. vehicles, stations, etc.). Each chunk is
+ * prefixed by an ID identifying it, followed by data, and terminator where appropriate
+ * @param ch The chunkhandler that will be used for the operation
+ */
+static void SlSaveChunk(const ChunkHandler &ch)
+{
+	if (ch.type == CH_READONLY) return;
+
+	SlWriteUint32(ch.id);
+	DEBUG(sl, 2, "Saving chunk %c%c%c%c", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
+
+	_sl.block_mode = ch.type;
+	_sl.expect_table_header = (_sl.block_mode == CH_TABLE || _sl.block_mode == CH_SPARSE_TABLE);
+
+	_sl.need_length = (_sl.expect_table_header || _sl.block_mode == CH_RIFF) ? NL_WANTLENGTH : NL_NONE;
+
+	switch (_sl.block_mode) {
+		case CH_RIFF:
+			ch.Save();
+			break;
+		case CH_TABLE:
+		case CH_ARRAY:
+			_sl.last_array_index = 0;
+			SlWriteByte(_sl.block_mode);
+			ch.Save();
+			SlWriteArrayLength(0); // Terminate arrays
+			break;
+		case CH_SPARSE_TABLE:
+		case CH_SPARSE_ARRAY:
+			SlWriteByte(_sl.block_mode);
+			ch.Save();
+			SlWriteArrayLength(0); // Terminate arrays
+			break;
+		default: NOT_REACHED();
+	}
+
+	if (_sl.expect_table_header) SlErrorCorrupt("Table chunk without header");
+}
+
+/** Save a chunk of data */
+void SlSaveChunkChunkByID(uint32 id)
+{
+	const ChunkHandler *ch = SlFindChunkHandler(id);
+	if (ch == nullptr) SlErrorCorrupt("Unknown chunk type");
+
+	_sl.action = SLA_SAVE;
+	SlSaveChunk(*ch);
 }
 
 SaveLoadTable SaveLoadHandler::GetLoadDescription() const

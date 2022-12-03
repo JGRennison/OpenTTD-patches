@@ -95,8 +95,12 @@ extern bool _sl_upstream_mode;
 namespace upstream_sl {
 	void SlNullPointers();
 	void SlLoadChunks();
+	void SlLoadChunkByID(uint32 id);
 	void SlLoadCheckChunks();
+	void SlLoadCheckChunkByID(uint32 id);
 	void SlFixPointers();
+	void SlFixPointerChunkByID(uint32 id);
+	void SlSaveChunkChunkByID(uint32 id);
 }
 
 /** What are we currently doing? */
@@ -2132,6 +2136,10 @@ inline void SlRIFFSpringPPCheck(size_t len)
  */
 static void SlLoadChunk(const ChunkHandler &ch)
 {
+	if (ch.special_proc != nullptr) {
+		if (ch.special_proc(ch.id, CSLSO_PRE_LOADCHECK)) return;
+	}
+
 	byte m = SlReadByte();
 	size_t len;
 	size_t endoffs;
@@ -2195,6 +2203,10 @@ static void SlLoadChunk(const ChunkHandler &ch)
  */
 static void SlLoadCheckChunk(const ChunkHandler *ch)
 {
+	if (ch && ch->special_proc != nullptr) {
+		if (ch->special_proc(ch->id, CSLSO_PRE_LOAD)) return;
+	}
+
 	byte m = SlReadByte();
 	size_t len;
 	size_t endoffs;
@@ -2281,6 +2293,14 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
  */
 static void SlSaveChunk(const ChunkHandler &ch)
 {
+	if (ch.type == CH_UPSTREAM_SAVE) {
+		SaveLoadVersion old_ver = _sl_version;
+		_sl_version = MAX_LOAD_SAVEGAME_VERSION;
+		upstream_sl::SlSaveChunkChunkByID(ch.id);
+		_sl_version = old_ver;
+		return;
+	}
+
 	ChunkSaveLoadProc *proc = ch.save_proc;
 
 	/* Don't save any chunk information if there is no save handler. */
@@ -3803,4 +3823,9 @@ void FileToSaveLoad::SetTitle(const char *title)
 bool SaveLoadFileTypeIsScenario()
 {
 	return _file_to_saveload.abstract_ftype == FT_SCENARIO;
+}
+
+void SlUnreachablePlaceholder()
+{
+	NOT_REACHED();
 }
