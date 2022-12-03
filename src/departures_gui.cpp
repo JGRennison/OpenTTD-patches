@@ -467,7 +467,7 @@ public:
 			this->DeleteDeparturesList(this->arrivals);
 			bool show_pax = _settings_client.gui.departure_only_passengers ? true : this->show_pax;
 			bool show_freight = _settings_client.gui.departure_only_passengers ? false : this->show_freight;
-			this->departures = (this->departure_types[0] ? MakeDepartureList(this->station, this->vehicles, D_DEPARTURE, Twaypoint || this->departure_types[2], show_pax, show_freight) : new DepartureList());
+			this->departures = (this->departure_types[0] || _settings_client.gui.departure_show_both ? MakeDepartureList(this->station, this->vehicles, D_DEPARTURE, Twaypoint || this->departure_types[2], show_pax, show_freight) : new DepartureList());
 			this->arrivals   = (this->departure_types[1] && !_settings_client.gui.departure_show_both ? MakeDepartureList(this->station, this->vehicles, D_ARRIVAL, false, show_pax, show_freight) : new DepartureList());
 			this->departures_invalid = false;
 			this->SetWidgetDirty(WID_DB_LIST);
