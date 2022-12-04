@@ -934,12 +934,6 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :lain
 
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Saiz Antaramuka
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Sila pilih saiz elemen antara muka untuk digunakan
-
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Biasa
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Saiz berganda
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Saiz kuad
 
 
 
@@ -4247,6 +4241,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Terlalu 
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Tidak boleh tukar tempoh perkhidmatan...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... kenderaan sudah musnah
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_YET_EXPLANATION                 :{WHITE}Mulakan permainan baru selepas {DATE_SHORT} atau gunakan NewGRF yang digunakan kenderaan terdahulu
 

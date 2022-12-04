@@ -931,7 +931,6 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :دیگر
 
 
 
-
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}بُنیادی گرافک سیٹ
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}بُنیادی گرافک سیٹ اختیار کریں
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} missing/corrupted file{P "" s}
@@ -2911,6 +2910,7 @@ STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}ھوائ
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}کھیل میں بہت زیادہ سواریاں
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}مرمت کا دورانیہ تبدیل نہین کرسکتے
+
 
 
 

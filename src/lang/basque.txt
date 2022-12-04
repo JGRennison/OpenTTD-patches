@@ -951,11 +951,6 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :besteak
 
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Interfaze tamaina
-
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normala
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Tamaina doblea
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Tamaina laukoitza
 
 
 
@@ -4454,6 +4449,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Jokoan i
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Ezin da garraio tartea aldatu...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... garraioa suntsituta
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Ez da ibilgailu erabilgarririk egongo
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Aldatu zure NewGRF konfigurazioa

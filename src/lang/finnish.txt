@@ -1009,21 +1009,8 @@ STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Valitse 
 
 STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}Nykyinen ajuri: {STRING}
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Käyttöliittymän koko
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Valitse käyttöliittymäelementtien koko
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(tunnista automaattisesti)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Tavallinen
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Kaksinkertainen
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Nelinkertainen
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Kirjasinkoko
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Valitse käyttöliittymän kirjasinkoko
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(tunnista automaattisesti)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normaali
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Kaksinkertainen koko
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Nelinkertainen koko
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Grafiikka
 
@@ -3655,7 +3642,6 @@ STR_FINANCES_SECTION_OTHER                                      :{GOLD}Muut
 
 STR_FINANCES_NEGATIVE_INCOME                                    :-{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :+{CURRENCY_LONG}
-STR_FINANCES_NET_PROFIT                                         :{WHITE}Puhdas voitto
 STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}Tilin saldo
 STR_FINANCES_OWN_FUNDS_TITLE                                    :{WHITE}Omat varat
 STR_FINANCES_LOAN_TITLE                                         :{WHITE}Laina
@@ -5007,6 +4993,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Liian mo
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Huoltoväliä ei voi muuttaa.
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... kulkuneuvo on tuhoutunut
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Yhtään kulkuneuvoa ei ole saatavilla
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Muuta NewGRF-asetuksiasi

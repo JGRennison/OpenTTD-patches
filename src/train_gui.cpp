@@ -76,8 +76,8 @@ static int HighlightDragPosition(int px, int max_width, VehicleID selection, boo
 	int drag_hlight_width = std::max(drag_hlight_right - drag_hlight_left + 1, 0);
 
 	if (drag_hlight_width > 0) {
-		GfxFillRect(drag_hlight_left + WD_FRAMERECT_LEFT, WD_FRAMERECT_TOP + 1,
-				drag_hlight_right - WD_FRAMERECT_RIGHT, ScaleGUITrad(13) - WD_FRAMERECT_BOTTOM, _colour_gradient[COLOUR_GREY][7]);
+		GfxFillRect(drag_hlight_left + WidgetDimensions::scaled.framerect.left, WidgetDimensions::scaled.framerect.top + 1,
+				drag_hlight_right - WidgetDimensions::scaled.framerect.right, ScaleSpriteTrad(13) - WidgetDimensions::scaled.framerect.bottom, _colour_gradient[COLOUR_GREY][7]);
 	}
 
 	return drag_hlight_width;
@@ -86,14 +86,12 @@ static int HighlightDragPosition(int px, int max_width, VehicleID selection, boo
 /**
  * Draws an image of a whole train
  * @param v         Front vehicle
- * @param left      The minimum horizontal position
- * @param right     The maximum horizontal position
- * @param y         Vertical position to draw at
+ * @param r         Rect to draw at
  * @param selection Selected vehicle to draw a frame around
  * @param skip      Number of pixels to skip at the front (for scrolling)
  * @param drag_dest The vehicle another one is dragged over, \c INVALID_VEHICLE if none.
  */
-void DrawTrainImage(const Train *v, int left, int right, int y, VehicleID selection, EngineImageType image_type, int skip, VehicleID drag_dest)
+void DrawTrainImage(const Train *v, const Rect &r, VehicleID selection, EngineImageType image_type, int skip, VehicleID drag_dest)
 {
 	bool rtl = _current_text_dir == TD_RTL;
 	Direction dir = rtl ? DIR_E : DIR_W;
@@ -102,15 +100,15 @@ void DrawTrainImage(const Train *v, int left, int right, int y, VehicleID select
 	/* Position of highlight box */
 	int highlight_l = 0;
 	int highlight_r = 0;
-	int max_width = right - left + 1;
-	int height = ScaleGUITrad(14);
+	int max_width = r.Width();
 
-	if (!FillDrawPixelInfo(&tmp_dpi, left, y, max_width, height)) return;
+	if (!FillDrawPixelInfo(&tmp_dpi, r.left, r.top, r.Width(), r.Height())) return;
 
 	old_dpi = _cur_dpi;
 	_cur_dpi = &tmp_dpi;
 
 	int px = rtl ? max_width + skip : -skip;
+	int y = r.Height() / 2;
 	bool sel_articulated = false;
 	bool dragging = (drag_dest != INVALID_VEHICLE);
 	bool drag_at_end_of_train = (drag_dest == v->index); // Head index is used to mark dragging at end of train.
@@ -128,7 +126,7 @@ void DrawTrainImage(const Train *v, int left, int right, int y, VehicleID select
 			PaletteID pal = (v->vehstatus & VS_CRASHED) ? PALETTE_CRASH : GetVehiclePalette(v);
 			VehicleSpriteSeq seq;
 			v->GetImage(dir, image_type, &seq);
-			seq.Draw(px + (rtl ? -offset.x : offset.x), height / 2 + offset.y, pal, (v->vehstatus & VS_CRASHED) != 0);
+			seq.Draw(px + (rtl ? -offset.x : offset.x), y + offset.y, pal, (v->vehstatus & VS_CRASHED) != 0);
 		}
 
 		if (!v->IsArticulatedPart()) sel_articulated = false;
@@ -154,13 +152,15 @@ void DrawTrainImage(const Train *v, int left, int right, int y, VehicleID select
 		HighlightDragPosition(px, max_width, selection, _cursor.vehchain);
 	}
 
+	_cur_dpi = old_dpi;
+
 	if (highlight_l != highlight_r) {
 		/* Draw the highlight. Now done after drawing all the engines, as
 		 * the next engine after the highlight could overlap it. */
-		DrawFrameRect(highlight_l, 0, highlight_r, height - 1, COLOUR_WHITE, FR_BORDERONLY);
+		int height = ScaleSpriteTrad(12);
+		Rect hr = {highlight_l, 0, highlight_r, height - 1};
+		DrawFrameRect(hr.Translate(r.left, CenterBounds(r.top, r.bottom, height)).Expand(WidgetDimensions::scaled.bevel), COLOUR_WHITE, FR_BORDERONLY);
 	}
-
-	_cur_dpi = old_dpi;
 }
 
 /** Helper struct for the cargo details information */
@@ -186,7 +186,6 @@ struct CargoSummaryItem {
 
 static const uint TRAIN_DETAILS_MIN_INDENT  = 32; ///< Minimum indent level in the train details window
 static const uint TRAIN_DETAILS_MAX_INDENT  = 72; ///< Maximum indent level in the train details window; wider than this and we start on a new line
-static const int  TRAIN_DETAILS_LIST_INDENT = 10; ///< Indent for list items in the Total Cargo window
 
 /** Container for the cargo summary information. */
 typedef std::vector<CargoSummaryItem> CargoSummary;
@@ -403,7 +402,7 @@ int GetTrainDetailsWndVScroll(VehicleID veh_id, TrainDetailsWindowTabs det_tab)
 			num += std::max(1u, (unsigned)_cargo_summary.size());
 
 			uint length = GetLengthOfArticulatedVehicle(v);
-			if (length > TRAIN_DETAILS_MAX_INDENT) num++;
+			if (length > (uint)ScaleSpriteTrad(TRAIN_DETAILS_MAX_INDENT)) num++;
 		}
 		if (det_tab == 1) num += 2 * Train::Get(veh_id)->tcache.cached_num_engines;
 	}
@@ -446,7 +445,7 @@ void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16 vsc
 					int pitch = 0;
 					const Engine *e = Engine::Get(v->engine_type);
 					if (e->GetGRF() != nullptr) {
-						pitch = ScaleGUITrad(e->GetGRF()->traininfo_vehicle_pitch);
+						pitch = ScaleSpriteTrad(e->GetGRF()->traininfo_vehicle_pitch);
 					}
 					PaletteID pal = (v->vehstatus & VS_CRASHED) ? PALETTE_CRASH : GetVehiclePalette(v);
 					VehicleSpriteSeq seq;
@@ -458,20 +457,20 @@ void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16 vsc
 				u = u->Next();
 			} while (u != nullptr && u->IsArticulatedPart());
 
-			bool separate_sprite_row = (dx > (uint)ScaleGUITrad(TRAIN_DETAILS_MAX_INDENT));
+			bool separate_sprite_row = (dx > (uint)ScaleSpriteTrad(TRAIN_DETAILS_MAX_INDENT));
 			if (separate_sprite_row) {
 				vscroll_pos--;
 				dx = 0;
 			}
 
-			int sprite_width = std::max<int>(dx, ScaleGUITrad(TRAIN_DETAILS_MIN_INDENT)) + 3;
+			int sprite_width = std::max<int>(dx, ScaleSpriteTrad(TRAIN_DETAILS_MIN_INDENT)) + WidgetDimensions::scaled.hsep_normal;
 			Rect dr = r.Indent(sprite_width, rtl);
 			uint num_lines = std::max(1u, (unsigned)_cargo_summary.size());
 			for (uint i = 0; i < num_lines;) {
 				if (vscroll_pos <= 0 && vscroll_pos > -vscroll_cap) {
 					int py = r.top - line_height * vscroll_pos + text_y_offset;
 					if (i > 0 || separate_sprite_row) {
-						if (vscroll_pos != 0) GfxFillRect(r.left, py - WD_MATRIX_TOP - 1, r.right, py - WD_MATRIX_TOP, _colour_gradient[COLOUR_GREY][5]);
+						if (vscroll_pos != 0) GfxFillRect(r.left, py - WidgetDimensions::scaled.matrix.top - 1, r.right, py - WidgetDimensions::scaled.matrix.top, _colour_gradient[COLOUR_GREY][5]);
 					}
 					switch (det_tab) {
 						case TDW_TAB_CARGO:
@@ -554,7 +553,7 @@ void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16 vsc
 		}
 
 		/* Indent the total cargo capacity details */
-		Rect ir = r.Indent(TRAIN_DETAILS_LIST_INDENT, rtl);
+		Rect ir = r.Indent(WidgetDimensions::scaled.hsep_indent, rtl);
 		for (CargoID i = 0; i < NUM_CARGO; i++) {
 			if (max_cargo[i] > 0 && --vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
 				SetDParam(0, i);            // {CARGO} #1

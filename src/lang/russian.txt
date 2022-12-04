@@ -537,6 +537,8 @@ STR_SCENEDIT_FILE_MENU_QUIT                                     :Выход
 ###length 15
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Основные настройки
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Расширенные настройки
+STR_SETTINGS_MENU_AI_SETTINGS                                   :Настройки ИИ
+STR_SETTINGS_MENU_GAMESCRIPT_SETTINGS                           :Настройки игровых скриптов
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :Настройки NewGRF
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Настройки прозрачности
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Показывать названия городов
@@ -1164,21 +1166,19 @@ STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Вклю
 
 STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}Видеодрайвер: {STRING}
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Размер элементов интерфейса
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Выберите размер элементов интерфейса
+STR_GAME_OPTIONS_GUI_SCALE_FRAME                                :{BLACK}Масштаб интерфейса
+STR_GAME_OPTIONS_GUI_SCALE_TOOLTIP                              :{BLACK}Изменяйте масштаб интерфейса с помощью ползунка. Удерживайте Ctrl для тонкой настройки.
+STR_GAME_OPTIONS_GUI_SCALE_AUTO                                 :{BLACK}Автоопределение
+STR_GAME_OPTIONS_GUI_SCALE_AUTO_TOOLTIP                         :{BLACK}Нажмите для автоматической установки масштаба интерфейса
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(Автовыбор)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Обычный
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Удвоенный
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Учетверённый
+STR_GAME_OPTIONS_GUI_SCALE_BEVELS                               :{BLACK}Масштабировать рельеф
+STR_GAME_OPTIONS_GUI_SCALE_BEVELS_TOOLTIP                       :{BLACK}Масштабировать рельефные элементы интерфейса
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Размер шрифта
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Выберите размер шрифта, используемого в игре
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(Автовыбор)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Нормальный
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Двукратный
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Четырёхкратный
+STR_GAME_OPTIONS_GUI_SCALE_1X                                   :1x
+STR_GAME_OPTIONS_GUI_SCALE_2X                                   :2x
+STR_GAME_OPTIONS_GUI_SCALE_3X                                   :3x
+STR_GAME_OPTIONS_GUI_SCALE_4X                                   :4x
+STR_GAME_OPTIONS_GUI_SCALE_5X                                   :5x
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Настройки графики
 
@@ -2234,6 +2234,8 @@ STR_INTRO_HIGHSCORE                                             :{BLACK}Табл
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Расширенные настройки
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Настройки NewGRF
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Проверить онлайн-контент
+STR_INTRO_AI_SETTINGS                                           :{BLACK}Настройки ИИ
+STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Настройки игровых скриптов
 STR_INTRO_QUIT                                                  :{BLACK}Выход
 
 STR_INTRO_TOOLTIP_NEW_GAME                                      :{BLACK}Начать новую игру. Ctrl+щелчок пропускает этап настройки карты.
@@ -2253,6 +2255,8 @@ STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Пока
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Изменить расширенные настройки игры
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Показать настройки NewGRF
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Найти новый и обновлённый контент для загрузки
+STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Показать настройки ИИ
+STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Показать настройки игровых скриптов
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Выйти из OpenTTD
 
 STR_INTRO_BASESET                                               :{BLACK}В выбранном наборе базовой графики отсутству{P 0 е ю ю}т {NUM} спрайт{P "" а ов}. Пожалуйста, обновите набор графики.
@@ -3343,6 +3347,12 @@ STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Коли
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Грубость ландшафта:
 STR_MAPGEN_VARIETY                                              :{BLACK}Разнообразие ландшафта:
 STR_MAPGEN_GENERATE                                             :{WHITE}Создать
+STR_MAPGEN_NEWGRF_SETTINGS                                      :{BLACK}Настройки NewGRF
+STR_MAPGEN_NEWGRF_SETTINGS_TOOLTIP                              :{BLACK}Показать настройки NewGRF
+STR_MAPGEN_AI_SETTINGS                                          :{BLACK}Настройки ИИ
+STR_MAPGEN_AI_SETTINGS_TOOLTIP                                  :{BLACK}Показать настройки ИИ
+STR_MAPGEN_GS_SETTINGS                                          :{BLACK}Настройки игровых скриптов
+STR_MAPGEN_GS_SETTINGS_TOOLTIP                                  :{BLACK}Показать настройки игровых скриптов
 
 ###length 21
 STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH                           :Английские
@@ -3669,14 +3679,14 @@ STR_LOCAL_AUTHORITY_ACTION_EXCLUSIVE_TRANSPORT                  :Купить э
 STR_LOCAL_AUTHORITY_ACTION_BRIBE                                :Взятка местной администрации
 
 ###length 8
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING            :{YELLOW}Провести малую рекламную кампанию для увеличения грузо- и пассажиропотока на ваших станциях.{}Она временно повысит рейтинг ваших станций, построенных рядом с центром города.{}Стоимость: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING           :{YELLOW}Провести среднюю рекламную кампанию для увеличения грузо- и пассажиропотока на ваших станциях.{}Она временно повысит рейтинг ваших станций, находящихся не очень далеко от центра города.{}Стоимость: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING            :{YELLOW}Провести большую рекламную кампанию для увеличения грузо- и пассажиропотока на ваших станциях.{}Она временно повысит рейтинг ваших станций на значительной площади в городе и окрестностях.{}Стоимость: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION          :{YELLOW}Профинансировать реконструкцию городских дорог.{}Вызывает большие нарушения движения на срок до 6 месяцев.{}Стоимость: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{YELLOW}Установить статую в честь вашей компании.{}Она добавит рейтинг вашим станциям.{}Стоимость: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{YELLOW}Профинансировать строительство новых зданий.{}Это временно ускорит рост города.{}Стоимость: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{YELLOW}Купить годовые эксклюзивные права на транспортные перевозки в городе.{}Администрация разрешит пользоваться ТОЛЬКО вашими станциями.{}Стоимость: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Дать взятку городской администрации для повышения рейтинга. Существует риск санкций, если факт подкупа раскроется.{}Цена: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING            :{PUSH_COLOUR}{YELLOW}Провести малую рекламную кампанию для увеличения грузо- и пассажиропотока на ваших станциях.{}Она временно повысит рейтинг ваших станций, построенных рядом с центром города.{}{POP_COLOUR}Стоимость: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING           :{PUSH_COLOUR}{YELLOW}Провести среднюю рекламную кампанию для увеличения грузо- и пассажиропотока на ваших станциях.{}Она временно повысит рейтинг ваших станций, находящихся не очень далеко от центра города.{}{POP_COLOUR}Стоимость: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING            :{PUSH_COLOUR}{YELLOW}Провести большую рекламную кампанию для увеличения грузо- и пассажиропотока на ваших станциях.{}Она временно повысит рейтинг ваших станций на значительной площади в городе и окрестностях.{}{POP_COLOUR}Стоимость: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION          :{PUSH_COLOUR}{YELLOW}Профинансировать реконструкцию городских дорог.{}Вызывает большие нарушения движения на срок до 6 месяцев.{}{POP_COLOUR}Стоимость: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{PUSH_COLOUR}{YELLOW}Установить статую в честь вашей компании.{}Она добавит рейтинг вашим станциям.{}{POP_COLOUR}Стоимость: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{PUSH_COLOUR}{YELLOW}Профинансировать строительство новых зданий.{}Это временно ускорит рост города.{}{POP_COLOUR}Стоимость: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{PUSH_COLOUR}{YELLOW}Приобрести годовые эксклюзивные права на транспортные перевозки в городе.{}Городская администрация разрешит пользоваться ТОЛЬКО вашими станциями.{}{POP_COLOUR}Стоимость: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{PUSH_COLOUR}{YELLOW}Дать взятку городской администрации для повышения рейтинга. Существует риск санкций, если факт подкупа раскроется.{}{POP_COLOUR}Цена: {CURRENCY_LONG}
 
 # Goal window
 STR_GOALS_CAPTION                                               :{WHITE}Задачи компании «{COMPANY}»
@@ -3829,8 +3839,8 @@ STR_FINANCES_CAPTION                                            :{WHITE}Фина
 STR_FINANCES_YEAR                                               :{WHITE}{NUM}
 
 ###length 3
-STR_FINANCES_REVENUE_TITLE                                      :{WHITE}Доход
-STR_FINANCES_OPERATING_EXPENSES_TITLE                           :{WHITE}Эксплуатационные расходы
+STR_FINANCES_REVENUE_TITLE                                      :{WHITE}Доходы
+STR_FINANCES_OPERATING_EXPENSES_TITLE                           :{WHITE}Операционные расходы
 STR_FINANCES_CAPITAL_EXPENSES_TITLE                             :{WHITE}Капитальные расходы
 
 
@@ -3849,16 +3859,18 @@ STR_FINANCES_SECTION_SHIP_REVENUE                               :{GOLD}Суда
 STR_FINANCES_SECTION_LOAN_INTEREST                              :{GOLD}Платёж по кредиту
 STR_FINANCES_SECTION_OTHER                                      :{GOLD}Прочие расходы
 
+STR_FINANCES_TOTAL_CAPTION                                      :{WHITE}Всего
 STR_FINANCES_NEGATIVE_INCOME                                    :-{CURRENCY_LONG}
 STR_FINANCES_ZERO_INCOME                                        :{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :+{CURRENCY_LONG}
-STR_FINANCES_NET_PROFIT                                         :{WHITE}Чистая прибыль
+STR_FINANCES_PROFIT                                             :{WHITE}Прибыль
 STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}Баланс:
 STR_FINANCES_OWN_FUNDS_TITLE                                    :{WHITE}Собственные средства
 STR_FINANCES_LOAN_TITLE                                         :{WHITE}Взято в кредит
 STR_FINANCES_INTEREST_RATE                                      :{WHITE}Проценты по кредиту: {BLACK}{NUM}%
 STR_FINANCES_MAX_LOAN                                           :{WHITE}Макс. сумма кредита: {BLACK}{CURRENCY_LONG}
 STR_FINANCES_TOTAL_CURRENCY                                     :{BLACK}{CURRENCY_LONG}
+STR_FINANCES_BANK_BALANCE                                       :{WHITE}{CURRENCY_LONG}
 STR_FINANCES_BORROW_BUTTON                                      :{BLACK}Занять {CURRENCY_LONG}
 STR_FINANCES_BORROW_TOOLTIP                                     :{BLACK}Взять деньги в кредит. Ctrl+щелчок - взять максимально возможную сумму.
 STR_FINANCES_REPAY_BUTTON                                       :{BLACK}Отдать {CURRENCY_LONG}
@@ -4428,6 +4440,7 @@ STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Масс
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Масса: {LTBLUE}{WEIGHT_SHORT} {BLACK}Мощность: {LTBLUE}{POWER}{BLACK} Макс. скорость: {LTBLUE}{VELOCITY} {BLACK}Макс. ТУ: {LTBLUE}{FORCE}
 
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Прибыль в этом году: {LTBLUE}{CURRENCY_LONG} (в прошлом году: {CURRENCY_LONG})
+STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}Прибыль в этом году: {LTBLUE}{CURRENCY_LONG} (в прошлом году: {CURRENCY_LONG}) {BLACK}Мин. удельная мощн.: {LTBLUE}{POWER_TO_WEIGHT}
 STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Надёжность: {LTBLUE}{COMMA}% {BLACK}Поломок после ТО: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}Построен в {LTBLUE}{NUM} г.{BLACK} Стоимость: {LTBLUE}{CURRENCY_LONG}
@@ -4771,6 +4784,8 @@ STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}Один
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}Окно отладки ИИ / скрипта доступно только для сервера
 
 # AI configuration window
+STR_AI_CONFIG_CAPTION_AI                                        :{WHITE}Настройки ИИ
+STR_AI_CONFIG_CAPTION_GAMESCRIPT                                :{WHITE}Настройки игровых скриптов
 STR_AI_CONFIG_GAMELIST_TOOLTIP                                  :{BLACK}Игровой скрипт, который будет загружен в следующей игре
 STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}Модули ИИ, которые будут загружены в следующей игре
 STR_AI_CONFIG_HUMAN_PLAYER                                      :Человек
@@ -4784,10 +4799,11 @@ STR_AI_CONFIG_MOVE_DOWN                                         :{BLACK}Вниз
 STR_AI_CONFIG_MOVE_DOWN_TOOLTIP                                 :{BLACK}Переместить этот модуль ИИ вниз по списку
 
 STR_AI_CONFIG_GAMESCRIPT                                        :{SILVER}Игровой скрипт
+STR_AI_CONFIG_GAMESCRIPT_PARAM                                  :{SILVER}Параметры
 STR_AI_CONFIG_AI                                                :{SILVER}ИИ
 
-STR_AI_CONFIG_CHANGE_AI                                         :ИИ
-STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :Игровой скрипт
+STR_AI_CONFIG_CHANGE_AI                                         :{BLACK}ИИ
+STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :{BLACK}Игровой скрипт
 STR_AI_CONFIG_CHANGE_TOOLTIP                                    :{BLACK}Загрузить другой скрипт
 STR_AI_CONFIG_CONFIGURE                                         :{BLACK}Конфигурация
 STR_AI_CONFIG_CONFIGURE_TOOLTIP                                 :{BLACK}Настроить параметры скрипта
@@ -4816,7 +4832,7 @@ STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Сним
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Снимок миникарты
 
 # AI Parameters
-STR_AI_SETTINGS_CAPTION_AI                                      :ИИ
+STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}Параметры ИИ
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Закрыть
 STR_AI_SETTINGS_RESET                                           :{BLACK}Сброс
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
@@ -5233,6 +5249,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Слиш
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Невозможно изменить частоту тех. обслуживания...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... транспортное средство уничтожено
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Все транспортные средства будут недоступны
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Измените конфигурацию модуля NewGRF

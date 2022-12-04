@@ -1116,15 +1116,8 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :drugo
 
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Velikost vmesnika
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Izberi velikost elementa vmesnika
-
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normalno
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dvojna velikost
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Velikost kvadrata
 
 
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(samodejno zaznaj)
 
 
 
@@ -4739,6 +4732,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Preveč 
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Ni mogoče spremeniti obdobja servisiranja...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... vozilo je uničeno
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Sploh ni razpoložljivih vozil
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Zamenjaj svojo NewGRF konfiguracijo

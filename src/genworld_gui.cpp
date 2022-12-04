@@ -1496,12 +1496,10 @@ void ShowCreateScenario()
 static const NWidgetPart _nested_generate_progress_widgets[] = {
 	NWidget(WWT_CAPTION, COLOUR_GREY), SetDataTip(STR_GENERATION_WORLD, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 	NWidget(WWT_PANEL, COLOUR_GREY),
-		NWidget(NWID_HORIZONTAL), SetPIP(20, 0, 20),
-			NWidget(NWID_VERTICAL), SetPIP(11, 8, 11),
-				NWidget(WWT_EMPTY, INVALID_COLOUR, WID_GP_PROGRESS_BAR), SetFill(1, 0),
-				NWidget(WWT_EMPTY, INVALID_COLOUR, WID_GP_PROGRESS_TEXT), SetFill(1, 0),
-				NWidget(WWT_TEXTBTN, COLOUR_WHITE, WID_GP_ABORT), SetDataTip(STR_GENERATION_ABORT, STR_NULL), SetFill(1, 0),
-			EndContainer(),
+		NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_wide, 0), SetPadding(WidgetDimensions::unscaled.modalpopup),
+			NWidget(WWT_EMPTY, INVALID_COLOUR, WID_GP_PROGRESS_BAR), SetFill(1, 0),
+			NWidget(WWT_EMPTY, INVALID_COLOUR, WID_GP_PROGRESS_TEXT), SetFill(1, 0),
+			NWidget(WWT_TEXTBTN, COLOUR_WHITE, WID_GP_ABORT), SetDataTip(STR_GENERATION_ABORT, STR_NULL), SetFill(1, 0),
 		EndContainer(),
 	EndContainer(),
 };
@@ -1580,8 +1578,8 @@ struct GenerateProgressWindow : public Window {
 				SetDParamMaxValue(0, 100);
 				*size = GetStringBoundingBox(STR_GENERATION_PROGRESS);
 				/* We need some spacing for the 'border' */
-				size->height += 8;
-				size->width += 8;
+				size->height += WidgetDimensions::scaled.frametext.Horizontal();
+				size->width  += WidgetDimensions::scaled.frametext.Vertical();
 				break;
 			}
 
@@ -1589,7 +1587,7 @@ struct GenerateProgressWindow : public Window {
 				for (uint i = 0; i < GWP_CLASS_COUNT; i++) {
 					size->width = std::max(size->width, GetStringBoundingBox(_generation_class_table[i]).width);
 				}
-				size->height = FONT_HEIGHT_NORMAL * 2 + WD_PAR_VSEP_NORMAL;
+				size->height = FONT_HEIGHT_NORMAL * 2 + WidgetDimensions::scaled.vsep_normal;
 				break;
 		}
 	}
@@ -1599,11 +1597,11 @@ struct GenerateProgressWindow : public Window {
 		switch (widget) {
 			case WID_GP_PROGRESS_BAR: {
 				/* Draw the % complete with a bar and a text */
-				DrawFrameRect(r, COLOUR_GREY, FR_BORDERONLY);
-				Rect br = r.Shrink(WD_BEVEL_LEFT, WD_BEVEL_TOP, WD_BEVEL_RIGHT, WD_BEVEL_BOTTOM);
+				DrawFrameRect(r, COLOUR_GREY, FR_BORDERONLY | FR_LOWERED);
+				Rect br = r.Shrink(WidgetDimensions::scaled.bevel);
 				DrawFrameRect(br.WithWidth(br.Width() * _gws.percent / 100, false), COLOUR_MAUVE, FR_NONE);
 				SetDParam(0, _gws.percent);
-				DrawString(r.left, r.right, CenterBounds(r.top, r.bottom, FONT_HEIGHT_NORMAL), STR_GENERATION_PROGRESS, TC_FROMSTRING, SA_HOR_CENTER);
+				DrawString(br.left, br.right, CenterBounds(br.top, br.bottom, FONT_HEIGHT_NORMAL), STR_GENERATION_PROGRESS, TC_FROMSTRING, SA_HOR_CENTER);
 				break;
 			}
 
@@ -1614,7 +1612,7 @@ struct GenerateProgressWindow : public Window {
 				/* And say where we are in that class */
 				SetDParam(0, _gws.current);
 				SetDParam(1, _gws.total);
-				DrawString(r.left, r.right, r.top + FONT_HEIGHT_NORMAL + WD_PAR_VSEP_NORMAL, STR_GENERATION_PROGRESS_NUM, TC_FROMSTRING, SA_HOR_CENTER);
+				DrawString(r.left, r.right, r.top + FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.vsep_normal, STR_GENERATION_PROGRESS_NUM, TC_FROMSTRING, SA_HOR_CENTER);
 		}
 	}
 };

@@ -935,7 +935,6 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :annað
 
 
 
-
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Grunngrafík
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Nota grunngrafíkina
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} týnd{P "" ar} eða ónýt{P "" ar} skrá{P "" r}
@@ -4335,6 +4334,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Of mörg
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Get ekki breytt viðgerðarmillibili...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... ökutæki er eyðilagt
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Engin farartæki verða í boði
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Breyta NewGRF stillingunum þínum

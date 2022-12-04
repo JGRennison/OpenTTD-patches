@@ -1009,21 +1009,8 @@ STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Marca es
 
 STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}Controlador actual: {STRING}
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Tamaño da interface
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Seleciona o tamaño de elementos da interface a usar
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(auto-detectar)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normal
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dobre tamaño
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Tamaño do cadro
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Tamaño da letra
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Escoller o tamaño de fonte da interfaz
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(auto-detectar)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normal
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Tamaño doble
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Tamaño do cadro
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Gráficos
 
@@ -3655,7 +3642,6 @@ STR_FINANCES_SECTION_OTHER                                      :{GOLD}Outros
 
 STR_FINANCES_NEGATIVE_INCOME                                    :-{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :+{CURRENCY_LONG}
-STR_FINANCES_NET_PROFIT                                         :{WHITE}Beneficio neto
 STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}Balance bancario
 STR_FINANCES_OWN_FUNDS_TITLE                                    :{WHITE}Fondos propios
 STR_FINANCES_LOAN_TITLE                                         :{WHITE}Préstamo
@@ -5007,6 +4993,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Demasiad
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Non se pode cambia-lo intervalo de servizo...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... o vehículo está destruído
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Non haberá vehículos dispoñibles
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Cambia a túa configuración NewGRF
@@ -6499,7 +6486,7 @@ STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_EXTENSION                 :{}{BLACK}{CARGO
 STR_TOWN_NAME_TOOLTIP                                           :{BLACK}{TOWN}
 STR_VEHICLE_LIST_AGE                                            :{STRING}, Idade: {COMMA} ano{P "" s} ({COMMA})
 STR_VEHICLE_LIST_AGE_RED                                        :{STRING}, Idade: {RED}{COMMA} {BLACK}ano{P "" s} ({COMMA})
-STR_VEHICLE_LIST_CARGO                                          :{STRING}, Cargas: {CARGO_LIST}
+STR_VEHICLE_LIST_CARGO_LIST                                     :{STRING}, Cargas: {CARGO_LIST}
 STR_VEHICLE_LIST_RELIABILITY                                    :{STRING}, Fiabilidade: {COMMA}%
 STR_VEHICLE_LIST_RELIABILITY_RED                                :{STRING}, Fiabilidade: {RED}{COMMA}%
 STR_VEHICLE_LIST_MAX_SPEED                                      :{STRING}, Velocidade máxima: {VELOCITY}

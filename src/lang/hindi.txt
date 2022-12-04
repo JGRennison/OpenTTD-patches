@@ -288,8 +288,6 @@ STR_GAME_OPTIONS_LANGUAGE_PERCENTAGE                            :{STRING} ({NUM}
 
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :सामान्य
-
 
 
 
@@ -1368,6 +1366,7 @@ STR_ERROR_CAN_T_RENAME_SHIP                                     :{WHITE}जह�
 
 ###length VEHICLE_TYPES
 STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}रेल वाहन नहीं बेच सकते...
+
 
 
 

@@ -422,18 +422,18 @@ struct TimetableWindow : GeneralVehicleWindow {
 				SetDParamMaxValue(0, _settings_time.time_in_minutes ? 0 : MAX_YEAR * DAYS_IN_YEAR);
 				this->deparr_time_width = GetStringBoundingBox(STR_JUST_DATE_WALLCLOCK_TINY).width + 4;
 				this->deparr_abbr_width = std::max(GetStringBoundingBox(STR_TIMETABLE_ARRIVAL_ABBREVIATION).width, GetStringBoundingBox(STR_TIMETABLE_DEPARTURE_ABBREVIATION).width);
-				size->width = WD_FRAMERECT_LEFT + this->deparr_abbr_width + 10 + this->deparr_time_width + WD_FRAMERECT_RIGHT;
+				size->width = this->deparr_abbr_width + WidgetDimensions::scaled.hsep_wide + this->deparr_time_width + padding.width;
 				FALLTHROUGH;
 
 			case WID_VT_ARRIVAL_DEPARTURE_SELECTION:
 			case WID_VT_TIMETABLE_PANEL:
 				resize->height = std::max<int>(FONT_HEIGHT_NORMAL, GetSpriteSize(SPR_LOCK).height);
-				size->height = WD_FRAMERECT_TOP + 8 * resize->height + WD_FRAMERECT_BOTTOM;
+				size->height = 8 * resize->height + padding.height;
 				break;
 
 			case WID_VT_SUMMARY_PANEL: {
 				Dimension d = GetSpriteSize(SPR_WARNING_SIGN);
-				size->height = WD_FRAMERECT_TOP + 2 * FONT_HEIGHT_NORMAL + std::min<int>(MAX_SUMMARY_WARNINGS, this->summary_warnings) * std::max<int>(d.height, FONT_HEIGHT_NORMAL) + WD_FRAMERECT_BOTTOM;
+				size->height = 2 * FONT_HEIGHT_NORMAL + std::min<int>(MAX_SUMMARY_WARNINGS, this->summary_warnings) * std::max<int>(d.height, FONT_HEIGHT_NORMAL) + padding.height;
 				break;
 			}
 		}
@@ -441,7 +441,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 	int GetOrderFromTimetableWndPt(int y, const Vehicle *v)
 	{
-		int sel = (y - this->GetWidget<NWidgetBase>(WID_VT_TIMETABLE_PANEL)->pos_y - WD_FRAMERECT_TOP) / std::max<int>(FONT_HEIGHT_NORMAL, GetSpriteSize(SPR_LOCK).height);
+		int sel = (y - this->GetWidget<NWidgetBase>(WID_VT_TIMETABLE_PANEL)->pos_y - WidgetDimensions::scaled.framerect.top) / std::max<int>(FONT_HEIGHT_NORMAL, GetSpriteSize(SPR_LOCK).height);
 
 		if ((uint)sel >= this->vscroll->GetCapacity()) return INVALID_ORDER;
 
@@ -670,7 +670,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 		switch (widget) {
 			case WID_VT_TIMETABLE_PANEL: {
-				Rect tr = r.Shrink(WD_FRAMERECT_LEFT, WD_FRAMERECT_TOP, WD_FRAMERECT_RIGHT, WD_FRAMERECT_BOTTOM);
+				Rect tr = r.Shrink(WidgetDimensions::scaled.framerect);
 				int i = this->vscroll->GetPosition();
 				Dimension lock_d = GetSpriteSize(SPR_LOCK);
 				int line_height = std::max<int>(FONT_HEIGHT_NORMAL, lock_d.height);
@@ -679,7 +679,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 				bool rtl = _current_text_dir == TD_RTL;
 				SetDParamMaxValue(0, v->GetNumOrders(), 2);
-				int index_column_width = GetStringBoundingBox(STR_ORDER_INDEX).width + 2 * GetSpriteSize(rtl ? SPR_ARROW_RIGHT : SPR_ARROW_LEFT).width + 3;
+				int index_column_width = GetStringBoundingBox(STR_ORDER_INDEX).width + 2 * GetSpriteSize(rtl ? SPR_ARROW_RIGHT : SPR_ARROW_LEFT).width + WidgetDimensions::scaled.hsep_normal;
 				int middle = rtl ? tr.right - index_column_width : tr.left + index_column_width;
 
 				const Order *order = v->GetOrder(order_id);
@@ -761,7 +761,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 				VehicleOrderID earlyID = BuildArrivalDepartureList(v, arr_dep) ? cur_order : (VehicleOrderID)INVALID_VEH_ORDER_ID;
 
-				Rect tr = r.Shrink(WD_FRAMERECT_LEFT, WD_FRAMERECT_TOP, WD_FRAMERECT_RIGHT, WD_FRAMERECT_BOTTOM);
+				Rect tr = r.Shrink(WidgetDimensions::scaled.framerect);
 				Dimension lock_d = GetSpriteSize(SPR_LOCK);
 				int line_height = std::max<int>(FONT_HEIGHT_NORMAL, lock_d.height);
 
@@ -802,7 +802,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 			}
 
 			case WID_VT_SUMMARY_PANEL: {
-				Rect tr = r.Shrink(WD_FRAMERECT_LEFT, WD_FRAMERECT_TOP, WD_FRAMERECT_RIGHT, WD_FRAMERECT_BOTTOM);
+				Rect tr = r.Shrink(WidgetDimensions::scaled.framerect);
 
 				Ticks total_time = v->orders != nullptr ? v->orders->GetTimetableDurationIncomplete() : 0;
 				if (total_time != 0) {
@@ -1153,7 +1153,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 	void OnResize() override
 	{
 		/* Update the scroll bar */
-		this->vscroll->SetCapacityFromWidget(this, WID_VT_TIMETABLE_PANEL, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM);
+		this->vscroll->SetCapacityFromWidget(this, WID_VT_TIMETABLE_PANEL, WidgetDimensions::scaled.framerect.Vertical());
 	}
 
 	/**

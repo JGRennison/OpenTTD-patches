@@ -1009,21 +1009,8 @@ STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Markera 
 
 STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}Nuvarande drivrutin: {STRING}
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Gränssnittstorlek
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Välj vilken gränssnittsstorlek som ska användas
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(Upptäck automatiskt)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normal
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dubbel storlek
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Fyrdubbel storlek
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Storlek på typsnitt
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Välj vilken storlek som ska användas på gränssnittets typsnitt
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(Upptäck automatiskt)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normal
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Dubbel storlek
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Kvadrupel storlek
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Grafik
 
@@ -3655,7 +3642,6 @@ STR_FINANCES_SECTION_OTHER                                      :{GOLD}Övrigt
 
 STR_FINANCES_NEGATIVE_INCOME                                    :-{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :+{CURRENCY_LONG}
-STR_FINANCES_NET_PROFIT                                         :{WHITE}Nettoförtjänst
 STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}Banksaldo
 STR_FINANCES_OWN_FUNDS_TITLE                                    :{WHITE}Egna medel
 STR_FINANCES_LOAN_TITLE                                         :{WHITE}Lån
@@ -5007,6 +4993,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}För må
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Kan inte ändra service-intervall...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... fordonet är förstört
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Inga fordon alls kommer att vara tillgängliga
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Ändra din konfiguration av NewGRF:er

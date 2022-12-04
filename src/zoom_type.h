@@ -15,8 +15,6 @@
 static uint const ZOOM_LVL_SHIFT = 2;
 static int const ZOOM_LVL_BASE  = 1 << ZOOM_LVL_SHIFT;
 
-static const int8 ZOOM_LVL_CFG_AUTO = -1;
-
 /** All zoom levels we know. */
 enum ZoomLevel : byte {
 	/* Our possible zoom-levels */
@@ -55,12 +53,13 @@ enum ZoomLevel : byte {
 };
 DECLARE_POSTFIX_INCREMENT(ZoomLevel)
 
-extern int8 _gui_zoom_cfg;
-extern int8 _font_zoom_cfg;
+extern int _gui_scale;
+extern int _gui_scale_cfg;
 
 extern ZoomLevel _gui_zoom;
-extern ZoomLevel _font_zoom;
 #define ZOOM_LVL_GUI (_gui_zoom)
-#define ZOOM_LVL_FONT (_font_zoom)
+
+static const int MIN_INTERFACE_SCALE = 100;
+static const int MAX_INTERFACE_SCALE = 500;
 
 #endif /* ZOOM_TYPE_H */

@@ -1209,21 +1209,8 @@ STR_GAME_OPTIONS_VIDEO_ACCELERATION_RESTART                     :{WHITE}Kad pake
 STR_GAME_OPTIONS_VIDEO_VSYNC                                    :{BLACK}Vertikalioji sinchronizacija (VSync)
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Sąsajos elementų dydis
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Pasirinkite vartotojo sąsajos elementų santykinį dydį
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(aptikti automatiškai)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normalus
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dvigubas
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Keturgubas
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Šrifto dydis
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Pasirinkite vartotojo sąsajos šrifto dydį
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(aptikti automatiškai)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normalus
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Dvigubas
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Keturgubas
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Grafika
 
@@ -5197,6 +5184,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Per daug
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Aptarnavimo intervalo keisti negalima...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... automobilis sunaikintas
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Nebus įmanoma įsigyti jokių transporto priemonių
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Pakeiskite plėtinių nuostatas

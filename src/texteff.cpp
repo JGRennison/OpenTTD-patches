@@ -16,6 +16,7 @@
 #include "settings_type.h"
 #include "guitimer_func.h"
 #include "zoom_func.h"
+#include "window_gui.h"
 
 #include "safeguards.h"
 
@@ -132,7 +133,7 @@ void DrawTextEffects(ViewportDrawerDynamic *vdd, DrawPixelInfo *dpi, bool load_t
 	if (dpi->zoom > ZOOM_LVL_OUT_8X) return;
 
 	const int bottom_threshold = dpi->top + dpi->height;
-	const int top_threshold = dpi->top - ScaleByZoom(VPSM_TOP + FONT_HEIGHT_NORMAL + VPSM_BOTTOM, dpi->zoom);
+	const int top_threshold = dpi->top - ScaleByZoom(WidgetDimensions::scaled.framerect.Horizontal() + FONT_HEIGHT_NORMAL, dpi->zoom);
 	const bool show_loading = (_settings_client.gui.loading_indicators && !load_transparent);
 
 	for (TextEffect &te : _text_effects) {

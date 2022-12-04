@@ -22,7 +22,7 @@ void BuildTemplateGuiList(GUITemplateList*, Scrollbar*, Owner, RailType);
 Money CalculateOverallTemplateCost(const TemplateVehicle*);
 Money CalculateOverallTemplateDisplayRunningCost(const TemplateVehicle*);
 
-void DrawTemplate(const TemplateVehicle*, int, int, int);
+void DrawTemplate(const TemplateVehicle*, int, int, int, int);
 
 TemplateVehicle* TemplateVehicleFromVirtualTrain(Train *virt);
 Train* DeleteVirtualTrain(Train*, Train *);

@@ -1058,21 +1058,19 @@ STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}화면�
 
 STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}현재 드라이버: {STRING}
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}인터페이스 크기
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}인터페이스의 크기를 선택합니다.
+STR_GAME_OPTIONS_GUI_SCALE_FRAME                                :{BLACK}인터페이스 크기
+STR_GAME_OPTIONS_GUI_SCALE_TOOLTIP                              :{BLACK}인터페이스 크기를 설정하려면 슬라이더를 드래그하세요. CTRL 키를 누르고 있으면 미세 조정이 가능합니다
+STR_GAME_OPTIONS_GUI_SCALE_AUTO                                 :{BLACK}크기 자동 탐지
+STR_GAME_OPTIONS_GUI_SCALE_AUTO_TOOLTIP                         :{BLACK}인터페이스 크기를 자동으로 탐지하려면 이 박스에 체크하세요
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(자동 탐지)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :기본 크기
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :2배 크기
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :4배 크기
+STR_GAME_OPTIONS_GUI_SCALE_BEVELS                               :{BLACK}크기 조절
+STR_GAME_OPTIONS_GUI_SCALE_BEVELS_TOOLTIP                       :{BLACK}인터페이스 크기를 슬라이더로 조절하려면 이 박스에 체크하세요
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}글씨 크기
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}인터페이스에서 사용할 글씨 크기를 선택하세요
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(자동 탐지)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :기본 크기
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :2배 크기
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :4배 크기
+STR_GAME_OPTIONS_GUI_SCALE_1X                                   :1x
+STR_GAME_OPTIONS_GUI_SCALE_2X                                   :2x
+STR_GAME_OPTIONS_GUI_SCALE_3X                                   :3x
+STR_GAME_OPTIONS_GUI_SCALE_4X                                   :4x
+STR_GAME_OPTIONS_GUI_SCALE_5X                                   :5x
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}그래픽
 
@@ -2015,7 +2013,7 @@ STR_CONFIG_SETTING_AI_BUILDS_SHIPS                              :컴퓨터의 �
 STR_CONFIG_SETTING_AI_BUILDS_SHIPS_HELPTEXT                     :이 설정을 켜면, 컴퓨터 플레이어가 선박을 사용할 수 없게 됩니다.
 
 STR_CONFIG_SETTING_AI_PROFILE                                   :기본 설정 난이도: {STRING}
-STR_CONFIG_SETTING_AI_PROFILE_HELPTEXT                          :무작위 인공지능이 사용할 난이도 설정이나, 인공지능 또는 게임 스크립트를 추가할 때의 난이도 초기값을 고르십시오.
+STR_CONFIG_SETTING_AI_PROFILE_HELPTEXT                          :무작위 인공지능이 사용할 난이도 설정이나 인공지능 또는 게임 스크립트를 추가할 때 사용할 난이도 초기값을 고르십시오
 ###length 3
 STR_CONFIG_SETTING_AI_PROFILE_EASY                              :쉬움
 STR_CONFIG_SETTING_AI_PROFILE_MEDIUM                            :중간
@@ -2623,8 +2621,8 @@ STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}장난�
 
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}게임 기본 설정 창을 보여줍니다.
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}고득점 순위표를 보여줍니다.
-STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}설정 창을 엽니다.
-STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}NewGRF 설정 창을 엽니다.
+STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}설정 창을 엽니다
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}NewGRF 설정 창을 엽니다
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}새로 나왔거나 업데이트된 콘텐츠를 체크하여 다운로드합니다.
 STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}인공지능 설정 창을 엽니다
 STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}게임 스크립트 설정 창을 엽니다
@@ -4505,14 +4503,14 @@ STR_LOCAL_AUTHORITY_ACTION_EXCLUSIVE_TRANSPORT                  :수송 권한 �
 STR_LOCAL_AUTHORITY_ACTION_BRIBE                                :지역 당국에게 뇌물 주기
 
 ###length 8
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING            :{YELLOW}더 많은 승객과 화물을 유치하기 위해 소규모의 광고 캠페인을 시작합니다.{}도시 중심 주위의 좁은 반경 안에 있는 역 등급을 일시적으로 올려줍니다.{}가격: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING           :{YELLOW}더 많은 승객과 화물을 유치하기 위해 중간 규모의 광고 캠페인을 시작합니다.{}도시 중심 주위의 적당한 반경 안에 있는 역 등급을 일시적으로 올려줍니다.{}가격: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING            :{YELLOW}더 많은 승객과 화물을 유치하기 위해 대규모의 광고 캠페인을 시작합니다.{}도시 중심 주위의 넓은 반경 안에 있는 역 등급을 일시적으로 올려줍니다.{}가격: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION          :{YELLOW}도시 도로망 보수공사를 시행합니다.{}앞으로 6개월간 극심한 도로 혼잡을 일으킵니다.{}가격: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{YELLOW}당신의 회사를 대표하는 '명예의 동상'을 건설합니다.{}이 도시에 있는 역 등급을 영구적으로 올려줍니다.{}가격: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{YELLOW}도시 상업 건물의 건설에 투자합니다.{}도시의 성장을 일시적으로 빠르게 만들어줍니다.{}가격: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{YELLOW}1년 간 수송 권한 독점권을 구입합니다.{}도시 당국은 오직 당신 회사의 역에만 승객과 화물을 실을 것입니다.{}가격: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}성취도를 올리기 위해 처벌을 감수하고 지역 당국에 뇌물을 줍니다.{}가격: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING            :{PUSH_COLOUR}{YELLOW}더 많은 승객과 화물을 유치하기 위해 소규모의 광고 캠페인을 시작합니다.{}도시 중심 주위의 좁은 반경 안에 있는 역 등급을 일시적으로 올려줍니다.{}{POP_COLOUR}가격: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING           :{PUSH_COLOUR}{YELLOW}더 많은 승객과 화물을 유치하기 위해 중간 규모의 광고 캠페인을 시작합니다.{}도시 중심 주위의 적당한 반경 안에 있는 역 등급을 일시적으로 올려줍니다.{}{POP_COLOUR}가격: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING            :{PUSH_COLOUR}{YELLOW}더 많은 승객과 화물을 유치하기 위해 대규모의 광고 캠페인을 시작합니다.{}도시 중심 주위의 넓은 반경 안에 있는 역 등급을 일시적으로 올려줍니다.{}{POP_COLOUR}가격: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION          :{PUSH_COLOUR}{YELLOW}도시 도로망 보수공사를 시행합니다.{}앞으로 6개월간 극심한 도로 혼잡을 일으킵니다.{}{POP_COLOUR}가격: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{PUSH_COLOUR}{YELLOW}당신의 회사를 대표하는 '명예의 동상'을 건설합니다.{}이 도시에 있는 역 등급을 영구적으로 올려줍니다.{}{POP_COLOUR}가격: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{PUSH_COLOUR}{YELLOW}도시 상업 건물의 건설에 투자합니다.{}도시의 성장을 일시적으로 빠르게 만들어줍니다.{}가격: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{PUSH_COLOUR}{YELLOW}1년 간 수송 권한 독점권을 구입합니다.{}도시 당국은 오직 당신 회사의 역에만 승객과 화물을 실을 것입니다.{}{POP_COLOUR}가격: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{PUSH_COLOUR}{YELLOW}성취도를 올리기 위해 처벌을 감수하고 지역 당국에 뇌물을 줍니다.{}{POP_COLOUR}가격: {CURRENCY_LONG}
 
 ###length 4
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_ROADS                :도로 건설
@@ -4804,16 +4802,18 @@ STR_FINANCES_SECTION_OTHER                                      :{GOLD}기타
 STR_FINANCES_SECTION_INFRASTRUCTURE_COSTS                       :{GOLD}타사 시설 사용비
 STR_FINANCES_SECTION_INFRASTRUCTURE_INCOME                      :{GOLD}시설 공유 수익
 
+STR_FINANCES_TOTAL_CAPTION                                      :{WHITE}종합
 STR_FINANCES_NEGATIVE_INCOME                                    :-{CURRENCY_LONG}
 STR_FINANCES_ZERO_INCOME                                        :{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :+{CURRENCY_LONG}
-STR_FINANCES_NET_PROFIT                                         :{WHITE}순이익
+STR_FINANCES_PROFIT                                             :{WHITE}이익
 STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}현 보유 금액
 STR_FINANCES_OWN_FUNDS_TITLE                                    :{WHITE}보유 자금
 STR_FINANCES_LOAN_TITLE                                         :{WHITE}대출
 STR_FINANCES_INTEREST_RATE                                      :{WHITE}대출 금리: {BLACK}{NUM}%
 STR_FINANCES_MAX_LOAN                                           :{WHITE}최대 대출: {BLACK}{CURRENCY_LONG}
 STR_FINANCES_TOTAL_CURRENCY                                     :{BLACK}{CURRENCY_LONG}
+STR_FINANCES_BANK_BALANCE                                       :{WHITE}{CURRENCY_LONG}
 STR_FINANCES_BORROW_BUTTON                                      :{BLACK}{CURRENCY_LONG} 빌리기
 STR_FINANCES_BORROW_TOOLTIP                                     :{BLACK}돈을 빌립니다. CTRL+클릭하면 빌릴 수 있는 만큼 빌립니다
 STR_FINANCES_REPAY_BUTTON                                       :{BLACK}{CURRENCY_LONG} 갚기
@@ -4945,7 +4945,7 @@ STR_VEHICLE_LIST_AIRCRAFT_TOOLTIP                               :{BLACK}항공�
 
 STR_VEHICLE_LIST_AGE                                            :{STRING}, 연령: {COMMA}년 ({COMMA})
 STR_VEHICLE_LIST_AGE_RED                                        :{STRING}, 연령: {RED}{COMMA} {BLACK}년 ({COMMA})
-STR_VEHICLE_LIST_CARGO                                          :{STRING}, 화물: {CARGO_LIST}
+STR_VEHICLE_LIST_CARGO_LIST                                     :{STRING}, 화물: {CARGO_LIST}
 STR_VEHICLE_LIST_RELIABILITY                                    :{STRING}, 신뢰도: {COMMA}%
 STR_VEHICLE_LIST_RELIABILITY_RED                                :{STRING}, 신뢰도: {RED}{COMMA}%
 STR_VEHICLE_LIST_MAX_SPEED                                      :{STRING}, 최고 속력: {VELOCITY}
@@ -5086,7 +5086,7 @@ STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}항공�
 
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :모든 화물 종류
-STR_CARGO_TYPE_FILTER_FREIGHT                                   :화물
+STR_CARGO_TYPE_FILTER_FREIGHT                                   :무게
 STR_CARGO_TYPE_FILTER_NONE                                      :없음
 
 ###length VEHICLE_TYPES
@@ -5472,7 +5472,6 @@ STR_VEHICLE_INFO_MAX_SPEED_LOADED                               :{BLACK}가득 �
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}올해 이익: {LTBLUE}{CURRENCY_LONG} (작년: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING} (평생: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}올해 이익: {LTBLUE}{CURRENCY_LONG} (작년: {CURRENCY_LONG}) {BLACK}최소 성취도: {LTBLUE}{POWER_TO_WEIGHT}
-
 STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}신뢰도: {LTBLUE}{COMMA}%  {BLACK}최근 점검 이후 고장 횟수: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_GROUP                                          :{BLACK}그룹: {LTBLUE}{GROUP}
@@ -6034,8 +6033,8 @@ STR_AI_CONFIG_GAMESCRIPT                                        :{SILVER}게임 
 STR_AI_CONFIG_GAMESCRIPT_PARAM                                  :{SILVER}매개 변수
 STR_AI_CONFIG_AI                                                :{SILVER}인공지능
 
-STR_AI_CONFIG_CHANGE_AI                                         :인공지능
-STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :게임 스크립트
+STR_AI_CONFIG_CHANGE_AI                                         :{BLACK}인공지능을 선택하세요
+STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :{BLACK}게임 스크립트를 선택하세요
 STR_AI_CONFIG_CHANGE_TOOLTIP                                    :{BLACK}다른 스크립트 불러오기
 STR_AI_CONFIG_CONFIGURE                                         :{BLACK}설정
 STR_AI_CONFIG_CONFIGURE_TOOLTIP                                 :{BLACK}인공지능의 매개 변수를 설정합니다
@@ -6067,7 +6066,7 @@ STR_SCREENSHOT_TOPOGRAPHY_SCREENSHOT                            :{BLACK}지형 �
 STR_SCREENSHOT_INDUSTRY_SCREENSHOT                              :{BLACK}산업시설 스크린 샷
 
 # AI Parameters
-STR_AI_SETTINGS_CAPTION_AI                                      :인공지능
+STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}인공지능 매개 변수
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}닫기
 STR_AI_SETTINGS_RESET                                           :{BLACK}초기화
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
@@ -6546,6 +6545,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}게임�
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}점검 간격 설정을 바꿀 수 없습니다...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... 차량이 파괴되었습니다
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}사용할 수 있는 차량이 모두 없어질 것입니다
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}NewGRF 설정을 변경하십시오

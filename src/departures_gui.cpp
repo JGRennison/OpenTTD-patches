@@ -647,13 +647,13 @@ void DeparturesWindow<Twaypoint>::DeleteDeparturesList(DepartureList *list)
 template<bool Twaypoint>
 void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 {
-	int left = r.left + WD_MATRIX_LEFT;
-	int right = r.right - WD_MATRIX_RIGHT;
+	int left = r.left + WidgetDimensions::scaled.matrix.left;
+	int right = r.right - WidgetDimensions::scaled.matrix.right;
 
 	bool rtl = _current_text_dir == TD_RTL;
 	bool ltr = !rtl;
 
-	int text_offset = WD_FRAMERECT_RIGHT;
+	int text_offset = WidgetDimensions::scaled.framerect.right;
 	int text_left  = left  + (rtl ?           0 : text_offset);
 	int text_right = right - (rtl ? text_offset :           0);
 

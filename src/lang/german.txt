@@ -1045,21 +1045,8 @@ STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Dieses K
 
 STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}Aktueller Treiber: {STRING}
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Größe der Bedienelemente
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Wähle die Größe der Bedienelemente
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(automatisch erkennen)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normal
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Doppelt
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Vierfach
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Schriftgröße
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Die Schriftgröße der Spieloberfläche auswählen
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(automatisch erkennen)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normal
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Doppelt
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Vierfach
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Grafik
 
@@ -4726,7 +4713,6 @@ STR_FINANCES_SECTION_INFRASTRUCTURE_INCOME                      :{GOLD}Einnahmen
 STR_FINANCES_NEGATIVE_INCOME                                    :-{CURRENCY_LONG}
 STR_FINANCES_ZERO_INCOME                                        :{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :+{CURRENCY_LONG}
-STR_FINANCES_NET_PROFIT                                         :{WHITE}Reingewinn
 STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}Kontostand
 STR_FINANCES_OWN_FUNDS_TITLE                                    :{WHITE}Eigenes Kapital
 STR_FINANCES_LOAN_TITLE                                         :{WHITE}Kredit
@@ -4864,7 +4850,7 @@ STR_VEHICLE_LIST_AIRCRAFT_TOOLTIP                               :{BLACK}Flugzeug
 
 STR_VEHICLE_LIST_AGE                                            :{STRING}, Alter: {COMMA} Jahr{P "" e} ({COMMA})
 STR_VEHICLE_LIST_AGE_RED                                        :{STRING}, Alter: {RED}{COMMA} {BLACK}Jahr{P "" e} ({COMMA})
-STR_VEHICLE_LIST_CARGO                                          :{STRING}, Fracht: {CARGO_LIST}
+STR_VEHICLE_LIST_CARGO_LIST                                     :{STRING}, Fracht: {CARGO_LIST}
 STR_VEHICLE_LIST_RELIABILITY                                    :{STRING}, Zuverlässigkeit: {COMMA}%
 STR_VEHICLE_LIST_RELIABILITY_RED                                :{STRING}, Zuverlässigkeit: {RED}{COMMA}%
 STR_VEHICLE_LIST_MAX_SPEED                                      :{STRING}, Max. Geschwindigkeit: {VELOCITY}
@@ -6445,6 +6431,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Zu viele
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Das Wartungsintervall kann nicht geändert werden ...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... Fahrzeug ist zerstört
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Es sind keine Fahrzeuge verfügbar!
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Bitte die NewGRF-Einstellungen ändern, damit Fahrzeuge früher verfügbar sind

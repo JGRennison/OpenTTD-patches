@@ -754,7 +754,6 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :अन्य
 
 
 
-
 # Custom currency window
 
 
@@ -1865,6 +1864,7 @@ STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}पू�
 ###length VEHICLE_TYPES
 
 ###length VEHICLE_TYPES
+
 
 
 

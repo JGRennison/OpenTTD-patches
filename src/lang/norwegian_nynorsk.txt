@@ -961,12 +961,6 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :anna
 
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Grensesnittstorleik
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Vel storleik å bruke på grensesnittet
-
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normal
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dobbel størrelse
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Firedobbel størrelse
 
 
 
@@ -4480,6 +4474,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}For mang
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Kan ikkje endre vedlikehaldsintervall...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... køyretøy er øydelagd
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Ingen køyretøy vert tilgjengelege
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Byt NewGRF-innstillingar

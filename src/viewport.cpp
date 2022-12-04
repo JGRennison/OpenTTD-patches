@@ -1774,7 +1774,7 @@ void ViewportAddString(ViewportDrawerDynamic *vdd, const DrawPixelInfo *dpi, Zoo
 	int right  = left + dpi->width;
 	int bottom = top + dpi->height;
 
-	int sign_height     = ScaleByZoom(VPSM_TOP + FONT_HEIGHT_NORMAL + VPSM_BOTTOM, dpi->zoom);
+	int sign_height     = ScaleByZoom(WidgetDimensions::scaled.framerect.top + FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.framerect.bottom, dpi->zoom);
 	int sign_half_width = ScaleByZoom((small ? sign->width_small : sign->width_normal) / 2, dpi->zoom);
 
 	if (bottom < sign->top ||
@@ -1802,8 +1802,8 @@ static Rect ExpandRectWithViewportSignMargins(Rect r, ZoomLevel zoom)
 	/* Pessimistically always use normal font, but also assume small font is never larger in either dimension */
 	const int fh = FONT_HEIGHT_NORMAL;
 	const int max_tw = _viewport_sign_maxwidth / 2 + 1;
-	const int expand_y = ScaleByZoom(VPSM_TOP + fh + VPSM_BOTTOM, zoom);
-	const int expand_x = ScaleByZoom(VPSM_LEFT + max_tw + VPSM_RIGHT, zoom);
+	const int expand_y = ScaleByZoom(WidgetDimensions::scaled.framerect.top + fh + WidgetDimensions::scaled.framerect.bottom, zoom);
+	const int expand_x = ScaleByZoom(WidgetDimensions::scaled.framerect.left + max_tw + WidgetDimensions::scaled.framerect.right, zoom);
 
 	r.left -= expand_x;
 	r.right += expand_x;
@@ -1925,14 +1925,14 @@ void ViewportSign::UpdatePosition(ZoomLevel maxzoom, int center, int top, String
 	char buffer[DRAW_STRING_BUFFER];
 
 	GetString(buffer, str, lastof(buffer));
-	this->width_normal = VPSM_LEFT + Align(GetStringBoundingBox(buffer).width, 2) + VPSM_RIGHT;
+	this->width_normal = WidgetDimensions::scaled.framerect.left + Align(GetStringBoundingBox(buffer).width, 2) + WidgetDimensions::scaled.framerect.right;
 	this->center = center;
 
 	/* zoomed out version */
 	if (str_small != STR_NULL) {
 		GetString(buffer, str_small, lastof(buffer));
 	}
-	this->width_small = VPSM_LEFT + Align(GetStringBoundingBox(buffer, FS_SMALL).width, 2) + VPSM_RIGHT;
+	this->width_small = WidgetDimensions::scaled.framerect.left + Align(GetStringBoundingBox(buffer, FS_SMALL).width, 2) + WidgetDimensions::scaled.framerect.right;
 
 	this->MarkDirty(maxzoom);
 }
@@ -1955,7 +1955,7 @@ void ViewportSign::MarkDirty(ZoomLevel maxzoom) const
 		zoomlevels[zoom].left   = this->center - ScaleByZoom(width / 2 + 1, zoom);
 		zoomlevels[zoom].top    = this->top    - ScaleByZoom(1, zoom);
 		zoomlevels[zoom].right  = this->center + ScaleByZoom(width / 2 + 1, zoom);
-		zoomlevels[zoom].bottom = this->top    + ScaleByZoom(VPSM_TOP + FONT_HEIGHT_NORMAL + VPSM_BOTTOM + 1, zoom);
+		zoomlevels[zoom].bottom = this->top    + ScaleByZoom(WidgetDimensions::scaled.framerect.top + FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.framerect.bottom + 1, zoom);
 	}
 
 	for (Viewport *vp : _viewport_window_cache) {
@@ -2235,7 +2235,7 @@ static void ViewportDrawStrings(ViewportDrawerDynamic *vdd, ZoomLevel zoom, cons
 		int w = GB(ss.width, 0, 15);
 		int x = UnScaleByZoom(ss.x, zoom);
 		int y = UnScaleByZoom(ss.y, zoom);
-		int h = VPSM_TOP + (small ? FONT_HEIGHT_SMALL : FONT_HEIGHT_NORMAL) + VPSM_BOTTOM;
+		int h = WidgetDimensions::scaled.framerect.Vertical() + (small ? FONT_HEIGHT_SMALL : FONT_HEIGHT_NORMAL);
 
 		SetDParam(0, ss.params[0]);
 		SetDParam(1, ss.params[1]);
@@ -2259,7 +2259,7 @@ static void ViewportDrawStrings(ViewportDrawerDynamic *vdd, ZoomLevel zoom, cons
 			}
 		}
 
-		DrawString(x + VPSM_LEFT, x + w - 1 - VPSM_RIGHT, y + VPSM_TOP, ss.string, colour, SA_HOR_CENTER);
+		DrawString(x + WidgetDimensions::scaled.framerect.left, x + w - 1 - WidgetDimensions::scaled.framerect.right, y + WidgetDimensions::scaled.framerect.top, ss.string, colour, SA_HOR_CENTER);
 	}
 }
 
@@ -4519,7 +4519,7 @@ static bool CheckClickOnViewportSign(const Viewport *vp, int x, int y, const Vie
 {
 	bool small = (vp->zoom >= ZOOM_LVL_OUT_16X);
 	int sign_half_width = ScaleByZoom((small ? sign->width_small : sign->width_normal) / 2, vp->zoom);
-	int sign_height = ScaleByZoom(VPSM_TOP + (small ? FONT_HEIGHT_SMALL : FONT_HEIGHT_NORMAL) + VPSM_BOTTOM, vp->zoom);
+	int sign_height = ScaleByZoom(WidgetDimensions::scaled.framerect.top + (small ? FONT_HEIGHT_SMALL : FONT_HEIGHT_NORMAL) + WidgetDimensions::scaled.framerect.bottom, vp->zoom);
 
 	return y >= sign->top && y < sign->top + sign_height &&
 			x >= sign->center - sign_half_width && x < sign->center + sign_half_width;

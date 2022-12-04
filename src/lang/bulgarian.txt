@@ -955,12 +955,6 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :друго
 
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Интерфейс размер
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Изберете размера на интерфейс елемент за използване
-
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Нормално
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Двукратно
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Четирикратно
 
 
 
@@ -4536,6 +4530,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Прек
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Интервала на техн. преглед не може да се промени...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... машината е унищожена
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Никакви превозни средства няма да бъдат налични
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Промени своята NewGRF конфигурация

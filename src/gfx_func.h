@@ -83,8 +83,7 @@ void ChangeGameSpeed(bool enable_fast_forward);
 void DrawMouseCursor();
 void ScreenSizeChanged();
 void GameSizeChanged();
-void UpdateGUIZoom();
-bool AdjustGUIZoom();
+bool AdjustGUIZoom(bool automatic);
 void UndrawMouseCursor();
 
 /** Size of the buffer used for drawing strings. */
@@ -98,6 +97,7 @@ struct SpritePointerHolder;
 void DrawSpriteViewport(const SpritePointerHolder &sprite_store, const DrawPixelInfo *dpi, SpriteID img, PaletteID pal, int x, int y, const SubSprite *sub = nullptr);
 void PrepareDrawSpriteViewportSpriteStore(SpritePointerHolder &sprite_store, SpriteID img, PaletteID pal);
 void DrawSprite(SpriteID img, PaletteID pal, int x, int y, const SubSprite *sub = nullptr, ZoomLevel zoom = ZOOM_LVL_GUI);
+void DrawSpriteIgnorePadding(SpriteID img, PaletteID pal, const Rect &r, bool clicked, StringAlignment align); /* widget.cpp */
 std::unique_ptr<uint32[]> DrawSpriteToRgbaBuffer(SpriteID spriteId, ZoomLevel zoom = ZOOM_LVL_GUI);
 
 int DrawString(int left, int right, int top, const char *str, TextColour colour = TC_FROMSTRING, StringAlignment align = SA_LEFT, bool underline = false, FontSize fontsize = FS_NORMAL);

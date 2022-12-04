@@ -58,17 +58,17 @@ struct TemplateVehicleImageDimensions {
 
 	int GetDisplayImageWidth() const
 	{
-		return ScaleGUITrad(this->cached_veh_length * this->reference_width / VEHICLE_LENGTH);
+		return ScaleSpriteTrad(this->cached_veh_length * this->reference_width / VEHICLE_LENGTH);
 	}
 
 	int GetOffsetX() const
 	{
-		return ScaleGUITrad(this->reference_width) / 2;
+		return ScaleSpriteTrad(this->reference_width) / 2;
 	}
 
 	int GetOffsetY() const
 	{
-		return ScaleGUITrad(this->vehicle_pitch);
+		return ScaleSpriteTrad(this->vehicle_pitch);
 	}
 };
 

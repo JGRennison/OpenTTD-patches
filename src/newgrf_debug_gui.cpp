@@ -415,15 +415,15 @@ struct NewGRFInspectWindow : Window {
 			case WID_NGRFI_VEH_CHAIN: {
 				assert(this->HasChainIndex());
 				GrfSpecFeature f = GetFeatureNum(this->window_number);
-				size->height = std::max(size->height, GetVehicleImageCellSize((VehicleType)(VEH_TRAIN + (f - GSF_TRAINS)), EIT_IN_DEPOT).height + 2 + WD_BEVEL_TOP + WD_BEVEL_BOTTOM);
+				size->height = std::max(size->height, GetVehicleImageCellSize((VehicleType)(VEH_TRAIN + (f - GSF_TRAINS)), EIT_IN_DEPOT).height + 2 + WidgetDimensions::scaled.bevel.Vertical());
 				break;
 			}
 
 			case WID_NGRFI_MAINPANEL:
-				resize->height = std::max(11, FONT_HEIGHT_NORMAL + 1);
+				resize->height = std::max(11, FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.vsep_normal);
 				resize->width  = 1;
 
-				size->height = 5 * resize->height + WD_FRAMETEXT_TOP + WD_FRAMETEXT_BOTTOM;
+				size->height = 5 * resize->height + WidgetDimensions::scaled.frametext.Vertical();
 				break;
 		}
 	}
@@ -448,7 +448,7 @@ struct NewGRFInspectWindow : Window {
 		offset -= this->vscroll->GetPosition();
 		if (offset < 0 || offset >= this->vscroll->GetCapacity()) return;
 
-		::DrawString(r.Shrink(WD_FRAMETEXT_LEFT, WD_FRAMETEXT_TOP + (offset * this->resize.step_height), WD_FRAMETEXT_RIGHT, WD_FRAMETEXT_BOTTOM), buf, TC_BLACK);
+		::DrawString(r.Shrink(WidgetDimensions::scaled.frametext).Shrink(0, offset * this->resize.step_height, 0, 0), buf, TC_BLACK);
 	}
 
 	void DrawWidget(const Rect &r, int widget) const override
@@ -469,7 +469,7 @@ struct NewGRFInspectWindow : Window {
 					if (u == v) sel_end = total_width;
 				}
 
-				Rect br = r.Shrink(WD_BEVEL_LEFT, WD_BEVEL_TOP, WD_BEVEL_RIGHT, WD_BEVEL_BOTTOM);
+				Rect br = r.Shrink(WidgetDimensions::scaled.bevel);
 				int width = br.Width();
 				int skip = 0;
 				if (total_width > width) {
@@ -480,7 +480,7 @@ struct NewGRFInspectWindow : Window {
 				GrfSpecFeature f = GetFeatureNum(this->window_number);
 				int h = GetVehicleImageCellSize((VehicleType)(VEH_TRAIN + (f - GSF_TRAINS)), EIT_IN_DEPOT).height;
 				int y = CenterBounds(br.top, br.bottom, h);
-				DrawVehicleImage(v->First(), br.left, br.right, y + 1, INVALID_VEHICLE, EIT_IN_DETAILS, skip);
+				DrawVehicleImage(v->First(), br, INVALID_VEHICLE, EIT_IN_DETAILS, skip);
 
 				/* Highlight the articulated part (this is different to the whole-vehicle highlighting of DrawVehicleImage */
 				if (_current_text_dir == TD_RTL) {
@@ -493,6 +493,8 @@ struct NewGRFInspectWindow : Window {
 		}
 
 		if (widget != WID_NGRFI_MAINPANEL) return;
+
+		Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
 
 		if (this->log_console) {
 			GetFeatureHelper(this->window_number)->SetStringParameters(this->GetFeatureIndex());
@@ -536,7 +538,7 @@ struct NewGRFInspectWindow : Window {
 			offset -= this->vscroll->GetPosition();
 			if (offset < 0 || offset >= this->vscroll->GetCapacity()) return;
 
-			::DrawString(r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT, r.top + WD_FRAMETEXT_TOP + (offset * this->resize.step_height), buf, TC_BLACK);
+			::DrawString(ir.left, ir.right, ir.top + (offset * this->resize.step_height), buf, TC_BLACK);
 		};
 		const_cast<NewGRFInspectWindow *>(this)->sprite_group_lines.clear();
 		const_cast<NewGRFInspectWindow *>(this)->highlight_tag_lines.clear();
@@ -597,7 +599,7 @@ struct NewGRFInspectWindow : Window {
 						}
 					}
 				}
-				::DrawString(r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT, r.top + WD_FRAMETEXT_TOP + (scroll_offset * this->resize.step_height), buf, colour);
+				::DrawString(ir.left, ir.right, ir.top + (scroll_offset * this->resize.step_height), buf, colour);
 			});
 			SpriteGroupDumper::use_shadows = false;
 			return;
@@ -667,9 +669,9 @@ struct NewGRFInspectWindow : Window {
 								if (offset >= 0 && offset < this->vscroll->GetCapacity()) {
 									char buf[512];
 									seprintf(buf, lastof(buf), "  %s: ", info->name);
-									::DrawString(r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT, r.top + WD_FRAMETEXT_TOP + (offset * this->resize.step_height), buf, TC_BLACK);
+									::DrawString(ir.left, ir.right, ir.top + (offset * this->resize.step_height), buf, TC_BLACK);
 									seprintf(buf, lastof(buf), "%08x (%s)", value, niv->name);
-									::DrawString(r.left + WD_FRAMETEXT_LEFT + prefix_width, r.right - WD_FRAMETEXT_RIGHT, r.top + WD_FRAMETEXT_TOP + (offset * this->resize.step_height), buf, TC_BLACK);
+									::DrawString(ir.left, ir.right, ir.top + (offset * this->resize.step_height), buf, TC_BLACK);
 								}
 							}
 							break;
@@ -822,7 +824,7 @@ struct NewGRFInspectWindow : Window {
 
 			case WID_NGRFI_MAINPANEL: {
 				/* Get the line, make sure it's within the boundaries. */
-				int line = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_NGRFI_MAINPANEL, WD_FRAMETEXT_TOP);
+				int line = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_NGRFI_MAINPANEL, WidgetDimensions::scaled.framerect.top);
 				if (line == INT_MAX) return;
 
 				if (this->sprite_dump) {
@@ -970,7 +972,7 @@ struct NewGRFInspectWindow : Window {
 
 	void OnResize() override
 	{
-		this->vscroll->SetCapacityFromWidget(this, WID_NGRFI_MAINPANEL, WD_FRAMETEXT_TOP + WD_FRAMETEXT_BOTTOM);
+		this->vscroll->SetCapacityFromWidget(this, WID_NGRFI_MAINPANEL, WidgetDimensions::scaled.frametext.Vertical());
 	}
 
 	/**
@@ -1297,7 +1299,7 @@ struct SpriteAlignerWindow : Window {
 			case WID_SA_SPRITE: {
 				/* Center the sprite ourselves */
 				const Sprite *spr = GetSprite(this->current_sprite, ST_NORMAL);
-				Rect ir = r.Shrink(WD_BEVEL_LEFT, WD_BEVEL_TOP, WD_BEVEL_RIGHT, WD_BEVEL_BOTTOM);
+				Rect ir = r.Shrink(WidgetDimensions::scaled.bevel);
 				int x = -UnScaleGUI(spr->x_offs) + (ir.Width()  - UnScaleGUI(spr->width) ) / 2;
 				int y = -UnScaleGUI(spr->y_offs) + (ir.Height() - UnScaleGUI(spr->height)) / 2;
 
@@ -1320,7 +1322,7 @@ struct SpriteAlignerWindow : Window {
 				std::vector<SpriteID> &list = _newgrf_debug_sprite_picker.sprites;
 				int max = std::min<int>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), (uint)list.size());
 
-				Rect ir = r.Shrink(WD_FRAMERECT_LEFT, WD_FRAMERECT_TOP, WD_FRAMERECT_RIGHT, WD_FRAMERECT_BOTTOM);
+				Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
 				for (int i = this->vscroll->GetPosition(); i < max; i++) {
 					SetDParam(0, list[i]);
 					DrawString(ir, STR_BLACK_COMMA, TC_FROMSTRING, SA_RIGHT | SA_FORCE);

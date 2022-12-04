@@ -1289,18 +1289,8 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :Iншае
 
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Памер элементаў інтэрфейсу
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Выберыце памер элементаў інтэрфейсу
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Звычайны
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Падвоены
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Пачацвяроны
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Памер шрыфта
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Абярыце памер шрыфта, выкарыстоўванага ў гульні
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Звычайны
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Падвоены
 
 
 STR_GAME_OPTIONS_REFRESH_RATE                                   :{BLACK}Чашчыня абнаўлення экрана
@@ -5078,6 +5068,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Зана
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Не атрымалася зьмяніць інтэрвал абслугоўваньня...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... транспартны сродак зьнішчаны
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Усе транспартныя сродкі будуць недаступныя
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Зьмяніце канфігурацыю модуля NewGRF

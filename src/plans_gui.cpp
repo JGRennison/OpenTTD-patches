@@ -172,7 +172,7 @@ struct PlansWindow : Window {
 				break;
 			}
 			case WID_PLN_LIST: {
-				int new_selected = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_PLN_LIST, WD_FRAMERECT_TOP);
+				int new_selected = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_PLN_LIST, WidgetDimensions::scaled.framerect.top);
 				if (_ctrl_pressed) {
 					if (new_selected != INT_MAX) {
 						TileIndex t;
@@ -265,17 +265,18 @@ struct PlansWindow : Window {
 	{
 		switch (widget) {
 			case WID_PLN_LIST: {
-				uint y = r.top + WD_FRAMERECT_TOP; // Offset from top of widget.
+				Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
+				uint y = ir.top; // Offset from top of widget.
 				if (this->vscroll->GetCount() == 0) {
-					DrawString(r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT, y, STR_STATION_LIST_NONE);
+					DrawString(ir.left, ir.right, y, STR_STATION_LIST_NONE);
 					return;
 				}
 
 				bool rtl = _current_text_dir == TD_RTL;
-				uint icon_left  = (rtl ? r.right - WD_FRAMERECT_RIGHT - this->company_icon_spr_dim.width : WD_FRAMETEXT_LEFT + r.left);
+				uint icon_left  = (rtl ? ir.right - this->company_icon_spr_dim.width : r.left);
 				uint btn_left   = (rtl ? icon_left - SETTING_BUTTON_WIDTH - 4 : icon_left + this->company_icon_spr_dim.width + 4);
-				uint text_left  = (rtl ? r.left + WD_FRAMERECT_LEFT : btn_left + SETTING_BUTTON_WIDTH + 4);
-				uint text_right = (rtl ? btn_left - 4 : r.right - WD_FRAMERECT_RIGHT);
+				uint text_left  = (rtl ? ir.left : btn_left + SETTING_BUTTON_WIDTH + 4);
+				uint text_right = (rtl ? btn_left - 4 : ir.right);
 				const_cast<PlansWindow*>(this)->vis_btn_left = btn_left;
 
 				for (uint16 i = this->vscroll->GetPosition(); this->vscroll->IsVisible(i) && i < this->vscroll->GetCount(); i++) {
@@ -325,7 +326,7 @@ struct PlansWindow : Window {
 
 	virtual void OnResize() override
 	{
-		this->vscroll->SetCapacityFromWidget(this, WID_PLN_LIST, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM);
+		this->vscroll->SetCapacityFromWidget(this, WID_PLN_LIST, WidgetDimensions::scaled.framerect.Vertical());
 	}
 
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
@@ -334,7 +335,7 @@ struct PlansWindow : Window {
 			case WID_PLN_LIST:
 				this->company_icon_spr_dim = GetSpriteSize(SPR_COMPANY_ICON);
 				resize->height = std::max<int>(FONT_HEIGHT_NORMAL, SETTING_BUTTON_HEIGHT);
-				size->height = resize->height * 5 + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
+				size->height = resize->height * 5 + WidgetDimensions::scaled.framerect.Vertical();
 				break;
 
 			case WID_PLN_NEW:

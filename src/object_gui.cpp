@@ -310,8 +310,8 @@ public:
 				break;
 
 			case WID_BO_SELECT_IMAGE:
-				size->width  = ScaleGUITrad(64) + WD_BEVEL_LEFT + WD_BEVEL_RIGHT;
-				size->height = ScaleGUITrad(58) + WD_BEVEL_TOP + WD_BEVEL_BOTTOM;
+				size->width  = ScaleGUITrad(64) + WidgetDimensions::scaled.fullbevel.Horizontal();
+				size->height = ScaleGUITrad(58) + WidgetDimensions::scaled.fullbevel.Vertical();
 				break;
 
 			default: break;
@@ -322,7 +322,7 @@ public:
 	{
 		switch (GB(widget, 0, 16)) {
 			case WID_BO_CLASS_LIST: {
-				Rect mr = r.Shrink(WD_MATRIX_LEFT, WD_MATRIX_TOP, WD_MATRIX_RIGHT, WD_MATRIX_BOTTOM);
+				Rect mr = r.Shrink(WidgetDimensions::scaled.matrix);
 				uint pos = 0;
 				for (auto object_class_id : this->object_classes) {
 					ObjectClass *objclass = ObjectClass::Get(object_class_id);
@@ -357,9 +357,9 @@ public:
 					if (spec->grf_prop.grffile == nullptr) {
 						extern const DrawTileSprites _objects[];
 						const DrawTileSprites *dts = &_objects[spec->grf_prop.local_id];
-						DrawOrigTileSeqInGUI(r.Width() / 2 - 1, (r.Height() + matrix_height / 2) / 2 - OBJECT_MARGIN - ScaleGUITrad(TILE_PIXELS), dts, PAL_NONE);
+						DrawOrigTileSeqInGUI(r.Width() / 2 - 1, (r.Height() + matrix_height / 2) / 2 - OBJECT_MARGIN - ScaleSpriteTrad(TILE_PIXELS), dts, PAL_NONE);
 					} else {
-						DrawNewObjectTileInGUI(r.Width() / 2 - 1, (r.Height() + matrix_height / 2) / 2 - OBJECT_MARGIN - ScaleGUITrad(TILE_PIXELS), spec, GB(widget, 16, 16));
+						DrawNewObjectTileInGUI(r.Width() / 2 - 1, (r.Height() + matrix_height / 2) / 2 - OBJECT_MARGIN - ScaleSpriteTrad(TILE_PIXELS), spec, GB(widget, 16, 16));
 					}
 					_cur_dpi = old_dpi;
 				}
@@ -374,7 +374,7 @@ public:
 				if (spec == nullptr) break;
 
 				if (!spec->IsAvailable()) {
-					GfxFillRect(r.Shrink(WD_BEVEL_LEFT, WD_BEVEL_TOP, WD_BEVEL_RIGHT, WD_BEVEL_BOTTOM), PC_BLACK, FILLRECT_CHECKER);
+					GfxFillRect(r.Shrink(WidgetDimensions::scaled.bevel), PC_BLACK, FILLRECT_CHECKER);
 				}
 				DrawPixelInfo tmp_dpi;
 				/* Set up a clipping area for the preview. */
@@ -384,9 +384,9 @@ public:
 					if (spec->grf_prop.grffile == nullptr) {
 						extern const DrawTileSprites _objects[];
 						const DrawTileSprites *dts = &_objects[spec->grf_prop.local_id];
-						DrawOrigTileSeqInGUI(r.Width() / 2 - 1, r.Height() - OBJECT_MARGIN - ScaleGUITrad(TILE_PIXELS), dts, PAL_NONE);
+						DrawOrigTileSeqInGUI(r.Width() / 2 - 1, r.Height() - OBJECT_MARGIN - ScaleSpriteTrad(TILE_PIXELS), dts, PAL_NONE);
 					} else {
-						DrawNewObjectTileInGUI(r.Width() / 2 - 1, r.Height() - OBJECT_MARGIN - ScaleGUITrad(TILE_PIXELS), spec,
+						DrawNewObjectTileInGUI(r.Width() / 2 - 1, r.Height() - OBJECT_MARGIN - ScaleSpriteTrad(TILE_PIXELS), spec,
 								std::min<int>(_selected_object_view, spec->views - 1));
 					}
 					_cur_dpi = old_dpi;

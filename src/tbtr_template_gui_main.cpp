@@ -216,7 +216,7 @@ public:
 
 		this->sel_railtype = INVALID_RAILTYPE;
 
-		this->details_height = 10 * FONT_HEIGHT_NORMAL + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
+		this->details_height = 10 * FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.framerect.Vertical();
 
 		this->CreateNestedTree(wdesc != nullptr);
 		this->vscroll[0] = this->GetScrollbar(TRW_WIDGET_TOP_SCROLLBAR);
@@ -252,12 +252,12 @@ public:
 	{
 		switch (widget) {
 			case TRW_WIDGET_TOP_MATRIX:
-				resize->height = WD_MATRIX_TOP + FONT_HEIGHT_NORMAL + WD_MATRIX_BOTTOM;
+				resize->height = FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.matrix.Vertical();
 				size->height = 8 * resize->height;
 				break;
 			case TRW_WIDGET_BOTTOM_MATRIX: {
-				int base_resize = WD_MATRIX_TOP + FONT_HEIGHT_NORMAL + WD_MATRIX_BOTTOM;
-				int target_resize = WD_MATRIX_TOP + FONT_HEIGHT_NORMAL + ScaleGUITrad(GetVehicleHeight(VEH_TRAIN));
+				int base_resize = FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.matrix.Vertical();
+				int target_resize = WidgetDimensions::scaled.matrix.top + FONT_HEIGHT_NORMAL + ScaleGUITrad(GetVehicleHeight(VEH_TRAIN));
 				this->bottom_matrix_item_size = resize->height = CeilT<int>(target_resize, base_resize);
 				size->height = 4 * resize->height;
 				break;
@@ -433,7 +433,7 @@ public:
 				ShowDropDownList(this, GetRailTypeDropDownList(true, true), this->sel_railtype, TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN);
 				break;
 			case TRW_WIDGET_TOP_MATRIX: {
-				uint16 newindex = (uint16)((pt.y - this->nested_array[TRW_WIDGET_TOP_MATRIX]->pos_y) / (WD_MATRIX_TOP + FONT_HEIGHT_NORMAL+ WD_MATRIX_BOTTOM) ) + this->vscroll[0]->GetPosition();
+				uint16 newindex = (uint16)((pt.y - this->nested_array[TRW_WIDGET_TOP_MATRIX]->pos_y) / (FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.matrix.Vertical()) ) + this->vscroll[0]->GetPosition();
 				if (newindex == this->selected_group_index || newindex >= this->groups.size()) {
 					this->selected_group_index = -1;
 				} else if (newindex < this->groups.size()) {
@@ -593,8 +593,8 @@ public:
 
 	void DrawAllGroupsFunction(const Rect &r) const
 	{
-		int left = r.left + WD_MATRIX_LEFT;
-		int right = r.right - WD_MATRIX_RIGHT;
+		int left = r.left + WidgetDimensions::scaled.matrix.left;
+		int right = r.right - WidgetDimensions::scaled.matrix.right;
 		int y = r.top;
 		int max = std::min<int>(this->vscroll[0]->GetPosition() + this->vscroll[0]->GetCapacity(), (int)this->groups.size());
 
@@ -605,10 +605,10 @@ public:
 
 			/* Fill the background of the current cell in a darker tone for the currently selected template */
 			if (this->selected_group_index == i) {
-				GfxFillRect(r.left + 1, y, r.right, y + WD_MATRIX_TOP + FONT_HEIGHT_NORMAL + WD_MATRIX_BOTTOM, _colour_gradient[COLOUR_GREY][3]);
+				GfxFillRect(r.left + 1, y, r.right, y + FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.matrix.Vertical(), _colour_gradient[COLOUR_GREY][3]);
 			}
 
-			int text_y = y + WD_MATRIX_TOP;
+			int text_y = y + WidgetDimensions::scaled.matrix.top;
 
 			SetDParam(0, g_id);
 			StringID str = STR_GROUP_NAME;
@@ -636,10 +636,10 @@ public:
 				SetDParam(0, num_trains);
 				int inner_right = DrawString(left, right - ScaleGUITrad(4), text_y, STR_JUST_INT, num_trains ? TC_ORANGE : TC_GREY, SA_RIGHT);
 				// Draw text
-				DrawString(left, inner_right - ScaleFontTrad(4), text_y, STR_TMPL_NUM_TRAINS_NEED_RPL, num_trains ? TC_BLACK : TC_GREY, SA_RIGHT);
+				DrawString(left, inner_right - ScaleGUITrad(4), text_y, STR_TMPL_NUM_TRAINS_NEED_RPL, num_trains ? TC_BLACK : TC_GREY, SA_RIGHT);
 			}
 
-			y += WD_MATRIX_TOP + FONT_HEIGHT_NORMAL + WD_MATRIX_BOTTOM;
+			y += FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.matrix.Vertical();
 		}
 	}
 
@@ -666,7 +666,7 @@ public:
 			}
 
 			/* Draw the template */
-			DrawTemplate(v, left + ScaleGUITrad(36), right - ScaleGUITrad(24), y);
+			DrawTemplate(v, left + ScaleGUITrad(36), right - ScaleGUITrad(24), y, ScaleGUITrad(15));
 
 			/* Draw a notification string for chains that are not runnable */
 			if (v->IsFreeWagonChain()) {
@@ -695,7 +695,7 @@ public:
 			SetDParam(1, 1);
 			DrawString(left, right - ScaleGUITrad(4), y + ScaleGUITrad(2), STR_TINY_BLACK_DECIMAL, TC_BLACK, SA_RIGHT);
 
-			int bottom_edge = y + this->bottom_matrix_item_size - FONT_HEIGHT_NORMAL - WD_FRAMERECT_BOTTOM;
+			int bottom_edge = y + this->bottom_matrix_item_size - FONT_HEIGHT_NORMAL - WidgetDimensions::scaled.framerect.bottom;
 
 			/* Buying cost */
 			SetDParam(0, CalculateOverallTemplateCost(v));
@@ -707,7 +707,7 @@ public:
 
 			/* Draw whether the current template is in use by any group */
 			if (v->NumGroupsUsingTemplate() > 0) {
-				DrawString(left + ScaleGUITrad(35), right, bottom_edge - FONT_HEIGHT_NORMAL - WD_FRAMERECT_BOTTOM,
+				DrawString(left + ScaleGUITrad(35), right, bottom_edge - FONT_HEIGHT_NORMAL - WidgetDimensions::scaled.framerect.bottom,
 						STR_TMP_TEMPLATE_IN_USE, TC_GREEN, SA_LEFT);
 			}
 
@@ -715,16 +715,16 @@ public:
 			TextColour color;
 
 			color = v->IsSetReuseDepotVehicles() ? TC_LIGHT_BLUE : TC_GREY;
-			DrawString(right - ScaleFontTrad(300), right, bottom_edge, STR_TMPL_CONFIG_USEDEPOT, color, SA_LEFT);
+			DrawString(right - ScaleGUITrad(300), right, bottom_edge, STR_TMPL_CONFIG_USEDEPOT, color, SA_LEFT);
 
 			color = v->IsSetKeepRemainingVehicles() ? TC_LIGHT_BLUE : TC_GREY;
-			DrawString(right - ScaleFontTrad(225), right, bottom_edge, STR_TMPL_CONFIG_KEEPREMAINDERS, color, SA_LEFT);
+			DrawString(right - ScaleGUITrad(225), right, bottom_edge, STR_TMPL_CONFIG_KEEPREMAINDERS, color, SA_LEFT);
 
 			color = v->IsSetRefitAsTemplate() ? TC_LIGHT_BLUE : TC_GREY;
-			DrawString(right - ScaleFontTrad(150), right, bottom_edge, STR_TMPL_CONFIG_REFIT, color, SA_LEFT);
+			DrawString(right - ScaleGUITrad(150), right, bottom_edge, STR_TMPL_CONFIG_REFIT, color, SA_LEFT);
 
 			color = v->IsReplaceOldOnly() ? TC_LIGHT_BLUE : TC_GREY;
-			DrawString(right - ScaleFontTrad(75), right, bottom_edge, STR_TMPL_CONFIG_OLD_ONLY, color, SA_LEFT);
+			DrawString(right - ScaleGUITrad(75), right, bottom_edge, STR_TMPL_CONFIG_OLD_ONLY, color, SA_LEFT);
 
 			y += this->bottom_matrix_item_size;
 		}

@@ -1008,21 +1008,8 @@ STR_GAME_OPTIONS_VIDEO_VSYNC                                    :{BLACK}VSync
 STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Wiel des Optioun fir de V-Sync unzeman. Des gëtt eréit no engem Neistart benotzt. Funktionéiert nëmmen wann Hardwarebeschleunigung un ass
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Interfacegréisst
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Wiel d'Gréisst déi fir den Interface soll benotzt ginn
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(auto-Detekt.)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normal
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Duebel
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Véierfach
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Schrëftgréisst
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Wiel d'Interface-Schrëftgréisst aus
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(auto-Detekt.)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normal
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Duebel Gréisst
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Véierfach
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Graphik
 
@@ -4984,6 +4971,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Ze vill 
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}De Service-Intervall kann net geännert ginn...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... Gefier ass zerstéiert
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Keng Gefierer verfügbar
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Änner d'NewGRF Konfiguratioun

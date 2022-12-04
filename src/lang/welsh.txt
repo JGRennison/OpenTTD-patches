@@ -963,12 +963,6 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :arall
 
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Maint rhyngwyneb
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Dewis maint yr elfennau rhyngwyneb i'w defnyddio
-
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Arferol
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dyblyg
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Pedwarplyg
 
 
 
@@ -4605,6 +4599,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Mae gorm
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Methu newid hyd y cyfnod rhwng pob gwasanaeth...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... cerbyd wedi ei ddinistrio
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Ni fydd cerbydau ar gael o gwbl
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Newid eich ffurfweddiad NewGRF

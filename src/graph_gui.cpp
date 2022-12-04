@@ -69,11 +69,11 @@ struct GraphLegendWindow : Window {
 
 		bool rtl = _current_text_dir == TD_RTL;
 
-		const Rect ir = r.Shrink(WD_FRAMERECT_LEFT, WD_FRAMERECT_TOP, WD_FRAMERECT_RIGHT, WD_FRAMERECT_BOTTOM);
+		const Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
 		Dimension d = GetSpriteSize(SPR_COMPANY_ICON);
 		DrawCompanyIcon(cid, rtl ? ir.right - d.width : ir.left, CenterBounds(ir.top, ir.bottom, d.height));
 
-		const Rect tr = ir.Indent(d.width + ScaleGUITrad(2), rtl);
+		const Rect tr = ir.Indent(d.width + WidgetDimensions::scaled.hsep_normal, rtl);
 		SetDParam(0, cid);
 		SetDParam(1, cid);
 		DrawString(tr.left, tr.right, CenterBounds(tr.top, tr.bottom, FONT_HEIGHT_NORMAL), STR_COMPANY_NAME_COMPANY_NUM, HasBit(_legend_excluded_companies, cid) ? TC_BLACK : TC_WHITE);
@@ -122,8 +122,8 @@ static NWidgetBase *MakeNWidgetCompanyLines(int *biggest_index)
 
 	for (int widnum = WID_GL_FIRST_COMPANY; widnum <= WID_GL_LAST_COMPANY; widnum++) {
 		NWidgetBackground *panel = new NWidgetBackground(WWT_PANEL, COLOUR_BROWN, widnum);
-		panel->SetMinimalSize(246, sprite_height + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM);
-		panel->SetMinimalTextLines(1, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM, FS_NORMAL);
+		panel->SetMinimalSize(246, sprite_height + WidgetDimensions::unscaled.framerect.Vertical());
+		panel->SetMinimalTextLines(1, WidgetDimensions::unscaled.framerect.Vertical(), FS_NORMAL);
 		panel->SetFill(1, 1);
 		panel->SetDataTip(0x0, STR_GRAPH_KEY_COMPANY_SELECTION_TOOLTIP);
 		vert->Add(panel);
@@ -303,15 +303,15 @@ protected:
 
 		/* Rect r will be adjusted to contain just the graph, with labels being
 		 * placed outside the area. */
-		r.top    += 5 + GetCharacterHeight(FS_SMALL) / 2;
-		r.bottom -= (this->month == 0xFF ? 1 : 2) * GetCharacterHeight(FS_SMALL) + 4;
-		r.left   += 9;
-		r.right  -= 5;
+		r.top    += ScaleGUITrad(5) + GetCharacterHeight(FS_SMALL) / 2;
+		r.bottom -= (this->month == 0xFF ? 1 : 2) * GetCharacterHeight(FS_SMALL) + ScaleGUITrad(4);
+		r.left   += ScaleGUITrad(9);
+		r.right  -= ScaleGUITrad(5);
 
 		/* Initial number of horizontal lines. */
-		int num_hori_lines = 160 / MIN_GRID_PIXEL_SIZE;
+		int num_hori_lines = 160 / ScaleGUITrad(MIN_GRID_PIXEL_SIZE);
 		/* For the rest of the height, the number of horizontal lines will increase more slowly. */
-		int resize = (r.bottom - r.top - 160) / (2 * MIN_GRID_PIXEL_SIZE);
+		int resize = (r.bottom - r.top - 160) / (2 * ScaleGUITrad(MIN_GRID_PIXEL_SIZE));
 		if (resize > 0) num_hori_lines += resize;
 
 		interval = GetValuesInterval(num_hori_lines);
@@ -349,7 +349,7 @@ protected:
 		y = r.bottom;
 
 		for (int i = 0; i < (num_hori_lines + 1); i++) {
-			GfxFillRect(r.left - 3, y, r.left - 1, y, GRAPH_AXIS_LINE_COLOUR);
+			GfxFillRect(r.left - ScaleGUITrad(3), y, r.left - 1, y, GRAPH_AXIS_LINE_COLOUR);
 			GfxFillRect(r.left, y, r.right, y, GRAPH_GRID_COLOUR);
 			y -= y_sep;
 		}
@@ -376,7 +376,7 @@ protected:
 		for (int i = 0; i < (num_hori_lines + 1); i++) {
 			SetDParam(0, this->format_str_y_axis);
 			SetDParam(1, y_label);
-			DrawString(r.left - label_width - 4, r.left - 4, y, STR_GRAPH_Y_LABEL, GRAPH_AXIS_LABEL_COLOUR, SA_RIGHT);
+			DrawString(r.left - label_width - ScaleGUITrad(4), r.left - ScaleGUITrad(4), y, STR_GRAPH_Y_LABEL, GRAPH_AXIS_LABEL_COLOUR, SA_RIGHT);
 
 			y_label -= y_label_separation;
 			y += y_sep;
@@ -385,7 +385,7 @@ protected:
 		/* Draw x-axis labels and markings for graphs based on financial quarters and years.  */
 		if (this->month != 0xFF) {
 			x = r.left;
-			y = r.bottom + 2;
+			y = r.bottom + ScaleGUITrad(2);
 			byte month = this->month;
 			Year year  = this->year;
 			for (int i = 0; i < this->num_on_x_axis; i++) {
@@ -406,7 +406,7 @@ protected:
 		} else {
 			/* Draw x-axis labels for graphs not based on quarterly performance (cargo payment rates). */
 			x = r.left;
-			y = r.bottom + 2;
+			y = r.bottom + ScaleGUITrad(2);
 			uint16 label = this->x_values_start;
 
 			for (int i = 0; i < this->num_on_x_axis; i++) {
@@ -526,8 +526,8 @@ public:
 		SetDParam(1, INT64_MAX);
 		uint y_label_width = GetStringBoundingBox(STR_GRAPH_Y_LABEL).width;
 
-		size->width  = std::max<uint>(size->width,  5 + y_label_width + this->num_on_x_axis * (x_label_width + 5) + 9);
-		size->height = std::max<uint>(size->height, 5 + (1 + MIN_GRAPH_NUM_LINES_Y * 2 + (this->month != 0xFF ? 3 : 1)) * FONT_HEIGHT_SMALL + 4);
+		size->width  = std::max<uint>(size->width,  ScaleGUITrad(5) + y_label_width + this->num_on_x_axis * (x_label_width + ScaleGUITrad(5)) + ScaleGUITrad(9));
+		size->height = std::max<uint>(size->height, ScaleGUITrad(5) + (1 + MIN_GRAPH_NUM_LINES_Y * 2 + (this->month != 0xFF ? 3 : 1)) * FONT_HEIGHT_SMALL + ScaleGUITrad(4));
 		size->height = std::max<uint>(size->height, size->width / 3);
 	}
 
@@ -640,7 +640,7 @@ static const NWidgetPart _nested_operating_profit_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
 		NWidget(WWT_CAPTION, COLOUR_BROWN), SetDataTip(STR_GRAPH_OPERATING_PROFIT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_CV_KEY_BUTTON), SetMinimalSize(50, 0), SetMinimalTextLines(1, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM + 2), SetDataTip(STR_GRAPH_KEY_BUTTON, STR_GRAPH_KEY_TOOLTIP),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_CV_KEY_BUTTON), SetMinimalSize(50, 0), SetMinimalTextLines(1, WidgetDimensions::unscaled.framerect.Vertical() + 2), SetDataTip(STR_GRAPH_KEY_BUTTON, STR_GRAPH_KEY_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
 		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
@@ -691,7 +691,7 @@ static const NWidgetPart _nested_income_graph_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
 		NWidget(WWT_CAPTION, COLOUR_BROWN), SetDataTip(STR_GRAPH_INCOME_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_CV_KEY_BUTTON), SetMinimalSize(50, 0), SetMinimalTextLines(1, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM + 2), SetDataTip(STR_GRAPH_KEY_BUTTON, STR_GRAPH_KEY_TOOLTIP),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_CV_KEY_BUTTON), SetMinimalSize(50, 0), SetMinimalTextLines(1, WidgetDimensions::unscaled.framerect.Vertical() + 2), SetDataTip(STR_GRAPH_KEY_BUTTON, STR_GRAPH_KEY_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
 		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
@@ -740,7 +740,7 @@ static const NWidgetPart _nested_delivered_cargo_graph_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
 		NWidget(WWT_CAPTION, COLOUR_BROWN), SetDataTip(STR_GRAPH_CARGO_DELIVERED_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_CV_KEY_BUTTON), SetMinimalSize(50, 0), SetMinimalTextLines(1, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM + 2), SetDataTip(STR_GRAPH_KEY_BUTTON, STR_GRAPH_KEY_TOOLTIP),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_CV_KEY_BUTTON), SetMinimalSize(50, 0), SetMinimalTextLines(1, WidgetDimensions::unscaled.framerect.Vertical() + 2), SetDataTip(STR_GRAPH_KEY_BUTTON, STR_GRAPH_KEY_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
 		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
@@ -795,8 +795,8 @@ static const NWidgetPart _nested_performance_history_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
 		NWidget(WWT_CAPTION, COLOUR_BROWN), SetDataTip(STR_GRAPH_COMPANY_PERFORMANCE_RATINGS_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_PHG_DETAILED_PERFORMANCE), SetMinimalSize(50, 0), SetMinimalTextLines(1, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM + 2), SetDataTip(STR_PERFORMANCE_DETAIL_KEY, STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_PHG_KEY), SetMinimalSize(50, 0), SetMinimalTextLines(1, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM + 2), SetDataTip(STR_GRAPH_KEY_BUTTON, STR_GRAPH_KEY_TOOLTIP),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_PHG_DETAILED_PERFORMANCE), SetMinimalSize(50, 0), SetMinimalTextLines(1, WidgetDimensions::unscaled.framerect.Vertical() + 2), SetDataTip(STR_PERFORMANCE_DETAIL_KEY, STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_PHG_KEY), SetMinimalSize(50, 0), SetMinimalTextLines(1, WidgetDimensions::unscaled.framerect.Vertical() + 2), SetDataTip(STR_GRAPH_KEY_BUTTON, STR_GRAPH_KEY_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
 		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
@@ -845,7 +845,7 @@ static const NWidgetPart _nested_company_value_graph_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
 		NWidget(WWT_CAPTION, COLOUR_BROWN), SetDataTip(STR_GRAPH_COMPANY_VALUES_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_CV_KEY_BUTTON), SetMinimalSize(50, 0), SetMinimalTextLines(1, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM + 2), SetDataTip(STR_GRAPH_KEY_BUTTON, STR_GRAPH_KEY_TOOLTIP),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_CV_KEY_BUTTON), SetMinimalSize(50, 0), SetMinimalTextLines(1, WidgetDimensions::unscaled.framerect.Vertical() + 2), SetDataTip(STR_GRAPH_KEY_BUTTON, STR_GRAPH_KEY_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
 		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
@@ -925,7 +925,7 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 	void OnInit() override
 	{
 		/* Width of the legend blob. */
-		this->legend_width = (FONT_HEIGHT_SMALL - ScaleFontTrad(1)) * 8 / 5;
+		this->legend_width = (FONT_HEIGHT_SMALL - ScaleGUITrad(1)) * 8 / 5;
 	}
 
 	void UpdateExcludedData()
@@ -949,9 +949,9 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			SetDParam(0, cs->name);
 			Dimension d = GetStringBoundingBox(STR_GRAPH_CARGO_PAYMENT_CARGO);
-			d.width += this->legend_width + 4; // colour field
-			d.width += WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
-			d.height += WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
+			d.width += this->legend_width + WidgetDimensions::scaled.hsep_normal; // colour field
+			d.width += WidgetDimensions::scaled.framerect.Horizontal();
+			d.height += WidgetDimensions::scaled.framerect.Vertical();
 			*size = maxdim(d, *size);
 		}
 
@@ -983,16 +983,16 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 			/* Redraw frame if lowered */
 			if (lowered) DrawFrameRect(line, COLOUR_BROWN, FR_LOWERED);
 
-			const Rect text = line.Shrink(WD_FRAMERECT_LEFT, WD_FRAMERECT_TOP, WD_FRAMERECT_RIGHT, WD_FRAMERECT_BOTTOM).Translate(lowered ? 1 : 0, lowered ? 1 : 0);
+			const Rect text = line.Shrink(WidgetDimensions::scaled.framerect).Translate(lowered ? WidgetDimensions::scaled.pressed : 0, lowered ? WidgetDimensions::scaled.pressed : 0);
 
 			/* Cargo-colour box with outline */
 			const Rect cargo = text.WithWidth(this->legend_width, rtl);
 			GfxFillRect(cargo, PC_BLACK);
-			GfxFillRect(cargo.Shrink(WD_BEVEL_LEFT, WD_BEVEL_TOP, WD_BEVEL_RIGHT, WD_BEVEL_BOTTOM), cs->legend_colour);
+			GfxFillRect(cargo.Shrink(WidgetDimensions::scaled.bevel), cs->legend_colour);
 
 			/* Cargo name */
 			SetDParam(0, cs->name);
-			DrawString(text.Indent(this->legend_width + 4, rtl), STR_GRAPH_CARGO_PAYMENT_CARGO);
+			DrawString(text.Indent(this->legend_width + WidgetDimensions::scaled.hsep_normal, rtl), STR_GRAPH_CARGO_PAYMENT_CARGO);
 
 			line = line.Translate(0, this->line_height);
 		}
@@ -1140,7 +1140,7 @@ static const NWidgetPart _nested_cargo_payment_rates_widgets[] = {
 			NWidget(NWID_SPACER), SetMinimalSize(5, 0), SetFill(0, 1), SetResize(0, 1),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(NWID_SPACER), SetMinimalSize(WD_RESIZEBOX_WIDTH, 0), SetFill(0, 0), SetResize(0, 0),
+			NWidget(NWID_SPACER), SetMinimalSize(12, 0), SetFill(0, 0), SetResize(0, 0),
 			NWidget(WWT_TEXT, COLOUR_BROWN, WID_CPR_FOOTER), SetMinimalSize(0, 6), SetAlignment(SA_CENTER), SetPadding(2, 0, 2, 0), SetDataTip(STR_JUST_STRING1, STR_NULL), SetFill(1, 0), SetResize(1, 0),
 			NWidget(WWT_RESIZEBOX, COLOUR_BROWN, WID_CPR_RESIZE),
 		EndContainer(),
@@ -1200,18 +1200,18 @@ struct PerformanceRatingDetailWindow : Window {
 	{
 		switch (widget) {
 			case WID_PRD_SCORE_FIRST:
-				this->bar_height = FONT_HEIGHT_NORMAL + 4;
-				size->height = this->bar_height + 2 * WD_MATRIX_TOP;
+				this->bar_height = FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.fullbevel.Vertical();
+				size->height = this->bar_height + WidgetDimensions::scaled.matrix.Vertical();
 
 				uint score_info_width = 0;
 				for (uint i = SCORE_BEGIN; i < SCORE_END; i++) {
 					score_info_width = std::max(score_info_width, GetStringBoundingBox(STR_PERFORMANCE_DETAIL_VEHICLES + i).width);
 				}
 				SetDParamMaxValue(0, 1000);
-				score_info_width += GetStringBoundingBox(STR_BLACK_COMMA).width + WD_FRAMERECT_LEFT;
+				score_info_width += GetStringBoundingBox(STR_BLACK_COMMA).width + WidgetDimensions::scaled.hsep_wide;
 
 				SetDParamMaxValue(0, 100);
-				this->bar_width = GetStringBoundingBox(STR_PERFORMANCE_DETAIL_PERCENT).width + 20; // Wide bars!
+				this->bar_width = GetStringBoundingBox(STR_PERFORMANCE_DETAIL_PERCENT).width + WidgetDimensions::scaled.hsep_indent * 2; // Wide bars!
 
 				/* At this number we are roughly at the max; it can become wider,
 				 * but then you need at 1000 times more money. At that time you're
@@ -1237,9 +1237,9 @@ struct PerformanceRatingDetailWindow : Window {
 				SetDParam(1, max);
 				uint score_detail_width = GetStringBoundingBox(STR_PERFORMANCE_DETAIL_AMOUNT_CURRENCY).width;
 
-				size->width = 7 + score_info_width + 5 + this->bar_width + 5 + score_detail_width + 7;
-				uint left  = 7;
-				uint right = size->width - 7;
+				size->width = WidgetDimensions::scaled.frametext.Horizontal() + score_info_width + WidgetDimensions::scaled.hsep_wide + this->bar_width + WidgetDimensions::scaled.hsep_wide + score_detail_width;
+				uint left  = WidgetDimensions::scaled.frametext.left;
+				uint right = size->width - WidgetDimensions::scaled.frametext.right;
 
 				bool rtl = _current_text_dir == TD_RTL;
 				this->score_info_left  = rtl ? right - score_info_width : left;
@@ -1248,8 +1248,8 @@ struct PerformanceRatingDetailWindow : Window {
 				this->score_detail_left  = rtl ? left : right - score_detail_width;
 				this->score_detail_right = rtl ? left + score_detail_width : right;
 
-				this->bar_left  = left + (rtl ? score_detail_width : score_info_width) + 5;
-				this->bar_right = this->bar_left + this->bar_width;
+				this->bar_left  = left + (rtl ? score_detail_width : score_info_width) + WidgetDimensions::scaled.hsep_wide;
+				this->bar_right = this->bar_left + this->bar_width - 1;
 				break;
 		}
 	}
@@ -1262,7 +1262,7 @@ struct PerformanceRatingDetailWindow : Window {
 		if (IsInsideMM(widget, WID_PRD_COMPANY_FIRST, WID_PRD_COMPANY_LAST + 1)) {
 			if (this->IsWidgetDisabled(widget)) return;
 			CompanyID cid = (CompanyID)(widget - WID_PRD_COMPANY_FIRST);
-			int offset = (cid == this->company) ? 1 : 0;
+			int offset = (cid == this->company) ? WidgetDimensions::scaled.pressed : 0;
 			Dimension sprite_size = GetSpriteSize(SPR_COMPANY_ICON);
 			DrawCompanyIcon(cid, CenterBounds(r.left, r.right, sprite_size.width) + offset, CenterBounds(r.top, r.bottom, sprite_size.height) + offset);
 			return;
@@ -1287,8 +1287,8 @@ struct PerformanceRatingDetailWindow : Window {
 			needed = SCORE_MAX;
 		}
 
-		uint bar_top  = r.top + WD_MATRIX_TOP;
-		uint text_top = bar_top + 2;
+		uint bar_top  = CenterBounds(r.top, r.bottom, this->bar_height);
+		uint text_top = CenterBounds(r.top, r.bottom, FONT_HEIGHT_NORMAL);
 
 		DrawString(this->score_info_left, this->score_info_right, text_top, STR_PERFORMANCE_DETAIL_VEHICLES + score_type);
 
@@ -1306,8 +1306,8 @@ struct PerformanceRatingDetailWindow : Window {
 		}
 
 		/* Draw the bar */
-		if (x != this->bar_left)  GfxFillRect(this->bar_left, bar_top, x, bar_top + this->bar_height, rtl ? colour_notdone : colour_done);
-		if (x != this->bar_right) GfxFillRect(x, bar_top, this->bar_right, bar_top + this->bar_height, rtl ? colour_done : colour_notdone);
+		if (x != this->bar_left)  GfxFillRect(this->bar_left, bar_top, x,               bar_top + this->bar_height - 1, rtl ? colour_notdone : colour_done);
+		if (x != this->bar_right) GfxFillRect(x,              bar_top, this->bar_right, bar_top + this->bar_height - 1, rtl ? colour_done : colour_notdone);
 
 		/* Draw it */
 		SetDParam(0, Clamp<int64>(val, 0, needed) * 100 / needed);
@@ -1438,7 +1438,7 @@ static const NWidgetPart _nested_performance_rating_detail_widgets[] = {
 		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_BROWN),
-		NWidgetFunction(MakeCompanyButtonRowsGraphGUI), SetPadding(0, 1, 1, 2),
+		NWidgetFunction(MakeCompanyButtonRowsGraphGUI), SetPadding(2),
 	EndContainer(),
 	NWidgetFunction(MakePerformanceDetailPanels),
 };
@@ -1495,7 +1495,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 	void OnInit() override
 	{
 		/* Width of the legend blob. */
-		this->legend_width = (FONT_HEIGHT_SMALL - ScaleFontTrad(1)) * 8 / 5;
+		this->legend_width = (FONT_HEIGHT_SMALL - ScaleGUITrad(1)) * 8 / 5;
 		this->legend_excluded_cargo = 0;
 	}
 
@@ -1532,8 +1532,8 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 			SetDParam(0, cs->name);
 			Dimension d = GetStringBoundingBox(STR_GRAPH_CARGO_PAYMENT_CARGO);
 			d.width += this->legend_width + 4; // color field
-			d.width += WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
-			d.height += WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
+			d.width += WidgetDimensions::scaled.framerect.Horizontal();
+			d.height += WidgetDimensions::scaled.framerect.Vertical();
 			*size = maxdim(d, *size);
 		}
 
@@ -1550,12 +1550,14 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 			return;
 		}
 
+		Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
+
 		const bool rtl = _current_text_dir == TD_RTL;
 
-		int x = r.left + WD_FRAMERECT_LEFT;
-		int y = r.top;
+		int x = ir.left;
+		int y = ir.top;
 		const uint row_height = FONT_HEIGHT_SMALL;
-		const int padding = ScaleFontTrad(1);
+		const int padding = ScaleGUITrad(1);
 
 		int pos = this->vscroll->GetPosition();
 		int max = pos + this->vscroll->GetCapacity();
@@ -1571,12 +1573,12 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 			if (lowered) DrawFrameRect(r.left, y, r.right, y + this->line_height - 1, COLOUR_BROWN, lowered ? FR_LOWERED : FR_NONE);
 
 			const byte clk_dif = lowered ? 1 : 0;
-			const int rect_x = clk_dif + (rtl ? r.right - this->legend_width - WD_FRAMERECT_RIGHT : r.left + WD_FRAMERECT_LEFT);
+			const int rect_x = clk_dif + (rtl ? ir.right - this->legend_width : ir.left);
 
 			GfxFillRect(rect_x, y + padding + clk_dif, rect_x + this->legend_width, y + row_height - 1 + clk_dif, PC_BLACK);
 			GfxFillRect(rect_x + 1, y + padding + 1 + clk_dif, rect_x + this->legend_width - 1, y + row_height - 2 + clk_dif, cs->legend_colour);
 			SetDParam(0, cs->name);
-			DrawString(rtl ? r.left : x + this->legend_width + 4 + clk_dif, (rtl ? r.right - this->legend_width - 4 + clk_dif : r.right), y + clk_dif, STR_GRAPH_CARGO_PAYMENT_CARGO);
+			DrawString(rtl ? ir.left : x + this->legend_width + 4 + clk_dif, (rtl ? ir.right - this->legend_width - 4 + clk_dif : ir.right), y + clk_dif, STR_GRAPH_CARGO_PAYMENT_CARGO);
 
 			y += this->line_height;
 		}
@@ -1707,7 +1709,7 @@ static const NWidgetPart _nested_station_cargo_widgets[] = {
 			NWidget(NWID_SPACER), SetMinimalSize(5, 0), SetFill(0, 1), SetResize(0, 1),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(NWID_SPACER), SetMinimalSize(WD_RESIZEBOX_WIDTH, 0), SetFill(1, 0), SetResize(1, 0),
+			NWidget(NWID_SPACER), SetMinimalSize(WidgetDimensions::unscaled.resizebox.Horizontal(), 0), SetFill(1, 0), SetResize(1, 0),
 			NWidget(WWT_TEXT, COLOUR_GREY, WID_SCG_FOOTER), SetMinimalSize(0, 6), SetPadding(2, 0, 2, 0), SetDataTip(STR_GRAPH_STATION_CARGO_X_LABEL, STR_NULL),
 			NWidget(NWID_SPACER), SetFill(1, 0), SetResize(1, 0),
 			NWidget(WWT_RESIZEBOX, COLOUR_GREY, WID_SCG_RESIZE),

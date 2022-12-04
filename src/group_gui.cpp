@@ -35,8 +35,6 @@
 
 #include "safeguards.h"
 
-static const int LEVEL_WIDTH = 10; ///< Indenting width of a sub-group in pixels
-
 typedef GUIList<const Group*> GUIGroupList;
 
 static const NWidgetPart _nested_group_widgets[] = {
@@ -57,7 +55,7 @@ static const NWidgetPart _nested_group_widgets[] = {
 						SetFill(1, 0), SetResize(0, 1), SetScrollbar(WID_GL_LIST_GROUP_SCROLLBAR),
 				NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_GL_LIST_GROUP_SCROLLBAR),
 			EndContainer(),
-			NWidget(WWT_PANEL, COLOUR_GREY, WID_GL_INFO), SetFill(1, 1), SetMinimalTextLines(3, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM), EndContainer(),
+			NWidget(WWT_PANEL, COLOUR_GREY, WID_GL_INFO), SetFill(1, 1), SetMinimalTextLines(3, WidgetDimensions::unscaled.framerect.Vertical()), EndContainer(),
 			NWidget(NWID_HORIZONTAL),
 				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_GL_CREATE_GROUP),
 						SetDataTip(SPR_GROUP_CREATE_TRAIN, STR_GROUP_CREATE_TOOLTIP),
@@ -241,7 +239,7 @@ private:
 		this->tiny_step_height = this->column_size[VGC_FOLD].height;
 
 		this->column_size[VGC_NAME] = maxdim(GetStringBoundingBox(STR_GROUP_DEFAULT_TRAINS + this->vli.vtype), GetStringBoundingBox(STR_GROUP_ALL_TRAINS + this->vli.vtype));
-		this->column_size[VGC_NAME].width = std::max((170u * FONT_HEIGHT_NORMAL) / 10u, this->column_size[VGC_NAME].width);
+		this->column_size[VGC_NAME].width = std::max((170u * FONT_HEIGHT_NORMAL) / 10u, this->column_size[VGC_NAME].width) + WidgetDimensions::scaled.hsep_indent;
 		this->tiny_step_height = std::max(this->tiny_step_height, this->column_size[VGC_NAME].height);
 
 		this->column_size[VGC_PROTECT] = GetSpriteSize(SPR_GROUP_REPLACE_PROTECT);
@@ -265,16 +263,16 @@ private:
 		this->column_size[VGC_NUMBER] = GetStringBoundingBox(STR_GROUP_COUNT_WITH_SUBGROUP);
 		this->tiny_step_height = std::max(this->tiny_step_height, this->column_size[VGC_NUMBER].height);
 
-		this->tiny_step_height += WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM + 1;
+		this->tiny_step_height += WidgetDimensions::scaled.framerect.Vertical() + 1;
 
-		return WD_FRAMERECT_LEFT + 8 +
-			this->column_size[VGC_FOLD].width + 2 +
-			this->column_size[VGC_NAME].width + 8 +
-			this->column_size[VGC_PROTECT].width + 2 +
-			this->column_size[VGC_AUTOREPLACE].width + 2 +
-			this->column_size[VGC_PROFIT].width + 2 +
-			this->column_size[VGC_NUMBER].width + 2 +
-			WD_FRAMERECT_RIGHT;
+		return WidgetDimensions::scaled.framerect.left +
+			this->column_size[VGC_FOLD].width + WidgetDimensions::scaled.hsep_normal +
+			this->column_size[VGC_NAME].width + WidgetDimensions::scaled.hsep_wide +
+			this->column_size[VGC_PROTECT].width + WidgetDimensions::scaled.hsep_normal +
+			this->column_size[VGC_AUTOREPLACE].width + WidgetDimensions::scaled.hsep_normal +
+			this->column_size[VGC_PROFIT].width + WidgetDimensions::scaled.hsep_normal +
+			this->column_size[VGC_NUMBER].width +
+			WidgetDimensions::scaled.framerect.right;
 	}
 
 	/**
@@ -291,7 +289,7 @@ private:
 	{
 		/* Highlight the group if a vehicle is dragged over it */
 		if (g_id == this->group_over) {
-			GfxFillRect(left + WD_FRAMERECT_LEFT, y + WD_FRAMERECT_TOP + 1, right - WD_FRAMERECT_RIGHT, y + this->tiny_step_height - WD_FRAMERECT_BOTTOM - 1, _colour_gradient[COLOUR_GREY][7]);
+			GfxFillRect(left + WidgetDimensions::scaled.bevel.left, y + WidgetDimensions::scaled.framerect.top, right - WidgetDimensions::scaled.bevel.right, y + this->tiny_step_height - 1 - WidgetDimensions::scaled.framerect.bottom, _colour_gradient[COLOUR_GREY][7]);
 		}
 
 		if (g_id == NEW_GROUP) return;
@@ -302,7 +300,7 @@ private:
 		bool rtl = _current_text_dir == TD_RTL;
 
 		/* draw fold / unfold button */
-		int x = rtl ? right - WD_FRAMERECT_RIGHT - 8 - this->column_size[VGC_FOLD].width + 1 : left + WD_FRAMERECT_LEFT + 8;
+		int x = rtl ? right - WidgetDimensions::scaled.framerect.right - this->column_size[VGC_FOLD].width + 1 : left + WidgetDimensions::scaled.framerect.left;
 		if (has_children) {
 			DrawSprite(Group::Get(g_id)->folded ? SPR_CIRCLE_FOLDED : SPR_CIRCLE_UNFOLDED, PAL_NONE, rtl ? x - indent : x + indent, y + (this->tiny_step_height - this->column_size[VGC_FOLD].height) / 2);
 		}
@@ -317,19 +315,19 @@ private:
 			SetDParam(0, g_id);
 			str = STR_GROUP_NAME;
 		}
-		x = rtl ? x - 2 - this->column_size[VGC_NAME].width : x + 2 + this->column_size[VGC_FOLD].width;
+		x = rtl ? x - WidgetDimensions::scaled.hsep_normal - this->column_size[VGC_NAME].width : x + WidgetDimensions::scaled.hsep_normal + this->column_size[VGC_FOLD].width;
 		DrawString(x + (rtl ? 0 : indent), x + this->column_size[VGC_NAME].width - 1 - (rtl ? indent : 0), y + (this->tiny_step_height - this->column_size[VGC_NAME].height) / 2, str, colour);
 
 		/* draw autoreplace protection */
-		x = rtl ? x - 2 - this->column_size[VGC_PROTECT].width : x + 2 + this->column_size[VGC_NAME].width;
+		x = rtl ? x - WidgetDimensions::scaled.hsep_wide - this->column_size[VGC_PROTECT].width : x + WidgetDimensions::scaled.hsep_wide + this->column_size[VGC_NAME].width;
 		if (protection) DrawSprite(SPR_GROUP_REPLACE_PROTECT, PAL_NONE, x, y + (this->tiny_step_height - this->column_size[VGC_PROTECT].height) / 2);
 
 		/* draw autoreplace status */
-		x = rtl ? x - 2 - this->column_size[VGC_AUTOREPLACE].width : x + 2 + this->column_size[VGC_PROTECT].width;
+		x = rtl ? x - WidgetDimensions::scaled.hsep_normal - this->column_size[VGC_AUTOREPLACE].width : x + WidgetDimensions::scaled.hsep_normal + this->column_size[VGC_PROTECT].width;
 		if (stats.autoreplace_defined) DrawSprite(SPR_GROUP_REPLACE_ACTIVE, stats.autoreplace_finished ? PALETTE_CRASH : PAL_NONE, x, y + (this->tiny_step_height - this->column_size[VGC_AUTOREPLACE].height) / 2);
 
 		/* draw the profit icon */
-		x = rtl ? x - 2 - this->column_size[VGC_PROFIT].width : x + 2 + this->column_size[VGC_AUTOREPLACE].width;
+		x = rtl ? x - WidgetDimensions::scaled.hsep_normal - this->column_size[VGC_PROFIT].width : x + WidgetDimensions::scaled.hsep_normal + this->column_size[VGC_AUTOREPLACE].width;
 		SpriteID spr;
 		uint num_profit_vehicle = GetGroupNumProfitVehicle(this->vli.company, g_id, this->vli.vtype);
 		Money profit_last_year = GetGroupProfitLastYear(this->vli.company, g_id, this->vli.vtype);
@@ -345,7 +343,7 @@ private:
 		DrawSprite(spr, PAL_NONE, x, y + (this->tiny_step_height - this->column_size[VGC_PROFIT].height) / 2);
 
 		/* draw the number of vehicles of the group */
-		x = rtl ? x - 2 - this->column_size[VGC_NUMBER].width : x + 2 + this->column_size[VGC_PROFIT].width;
+		x = rtl ? x - WidgetDimensions::scaled.hsep_normal - this->column_size[VGC_NUMBER].width : x + WidgetDimensions::scaled.hsep_normal + this->column_size[VGC_PROFIT].width;
 		int num_vehicle_with_subgroups = GetGroupNumVehicle(this->vli.company, g_id, this->vli.vtype);
 		int num_vehicle = GroupStatistics::Get(this->vli.company, g_id, this->vli.vtype).num_vehicle;
 		if (IsAllGroupID(g_id) || IsDefaultGroupID(g_id) || num_vehicle_with_subgroups == num_vehicle) {
@@ -623,16 +621,16 @@ public:
 	{
 		switch (widget) {
 			case WID_GL_ALL_VEHICLES:
-				DrawGroupInfo(r.top + WD_FRAMERECT_TOP, r.left, r.right, ALL_GROUP);
+				DrawGroupInfo(r.top + WidgetDimensions::scaled.framerect.top, r.left, r.right, ALL_GROUP);
 				break;
 
 			case WID_GL_DEFAULT_VEHICLES:
-				DrawGroupInfo(r.top + WD_FRAMERECT_TOP, r.left, r.right, DEFAULT_GROUP);
+				DrawGroupInfo(r.top + WidgetDimensions::scaled.framerect.top, r.left, r.right, DEFAULT_GROUP);
 				break;
 
 			case WID_GL_INFO: {
-				const int left  = r.left + WD_FRAMERECT_LEFT + 8;
-				const int right = r.right - WD_FRAMERECT_RIGHT - 8;
+				const int left  = r.left + WidgetDimensions::scaled.framerect.left + WidgetDimensions::scaled.vsep_wide;
+				const int right = r.right - WidgetDimensions::scaled.framerect.right - WidgetDimensions::scaled.vsep_wide;
 
 				int y = r.top + (1 + r.bottom - r.top - (3 * FONT_HEIGHT_NORMAL)) / 2;
 				DrawString(left, right, y, STR_GROUP_PROFIT_THIS_YEAR, TC_BLACK);
@@ -655,14 +653,14 @@ public:
 			}
 
 			case WID_GL_LIST_GROUP: {
-				int y1 = r.top + WD_FRAMERECT_TOP;
+				int y1 = r.top + WidgetDimensions::scaled.framerect.top;
 				int max = std::min<size_t>(this->group_sb->GetPosition() + this->group_sb->GetCapacity(), this->groups.size());
 				for (int i = this->group_sb->GetPosition(); i < max; ++i) {
 					const Group *g = this->groups[i];
 
 					assert(g->owner == this->owner);
 
-					DrawGroupInfo(y1, r.left, r.right, g->index, this->indents[i] * LEVEL_WIDTH, HasBit(g->flags, GroupFlags::GF_REPLACE_PROTECTION), g->folded || (i + 1 < (int)this->groups.size() && indents[i + 1] > this->indents[i]));
+					DrawGroupInfo(y1, r.left, r.right, g->index, this->indents[i] * WidgetDimensions::scaled.hsep_indent, HasBit(g->flags, GroupFlags::GF_REPLACE_PROTECTION), g->folded || (i + 1 < (int)this->groups.size() && indents[i + 1] > this->indents[i]));
 
 					y1 += this->tiny_step_height;
 				}
@@ -684,7 +682,7 @@ public:
 					for (uint i = this->vscroll->GetPosition(); i < max; ++i) {
 						const Vehicle *v = this->vehgroups[i].GetSingleVehicle();
 						if (v->group_id != this->vli.index) {
-							GfxFillRect(mr.Shrink(WD_BEVEL_LEFT, WD_BEVEL_TOP, WD_BEVEL_RIGHT, WD_BEVEL_BOTTOM), _colour_gradient[COLOUR_GREY][3], FILLRECT_CHECKER);
+							GfxFillRect(mr.Shrink(WidgetDimensions::scaled.bevel), _colour_gradient[COLOUR_GREY][3], FILLRECT_CHECKER);
 						}
 						mr = mr.Translate(0, this->resize.step_height);
 					}
@@ -749,8 +747,8 @@ public:
 					/* The group has children, check if the user clicked the fold / unfold button. */
 					NWidgetCore *group_display = this->GetWidget<NWidgetCore>(widget);
 					int x = _current_text_dir == TD_RTL ?
-							group_display->pos_x + group_display->current_x - WD_FRAMERECT_RIGHT - 8 - this->indents[id_g] * LEVEL_WIDTH - this->column_size[VGC_FOLD].width :
-							group_display->pos_x + WD_FRAMERECT_LEFT + 8 + this->indents[id_g] * LEVEL_WIDTH;
+							group_display->pos_x + group_display->current_x - WidgetDimensions::scaled.framerect.right - this->indents[id_g] * WidgetDimensions::scaled.hsep_indent - this->column_size[VGC_FOLD].width :
+							group_display->pos_x + WidgetDimensions::scaled.framerect.left + this->indents[id_g] * WidgetDimensions::scaled.hsep_indent;
 					if (click_count > 1 || (pt.x >= x && pt.x < (int)(x + this->column_size[VGC_FOLD].width))) {
 
 						GroupID g = this->vli.index;
@@ -978,14 +976,14 @@ public:
 					}
 
 					case GB_SHARED_ORDERS: {
-						const Vehicle *v = vehgroup.vehicles_begin[0];
-						/* We do not support VehicleClicked() here since the contextual action may only make sense for individual vehicles */
-
-						if (vindex == v->index) {
-							if (vehgroup.NumVehicles() == 1) {
-								ShowVehicleViewWindow(v);
-							} else {
-								ShowVehicleListWindow(v);
+						if (!VehicleClicked(vehgroup)) {
+							const Vehicle* v = vehgroup.vehicles_begin[0];
+							if (vindex == v->index) {
+								if (vehgroup.NumVehicles() == 1) {
+									ShowVehicleViewWindow(v);
+								} else {
+									ShowVehicleListWindow(v);
+								}
 							}
 						}
 						break;

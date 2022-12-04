@@ -978,12 +978,6 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :אחר
 
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}גודל ממשק
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}בחר את ממשק גודל העצם לשימוש
-
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :רגיל
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :גודל כפול
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :גודל מרובע
 
 
 
@@ -4635,6 +4629,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}יותר
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}לא ניתן לשנות את מרווחי הטיפול...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... הרכב נהרס
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}כלי תחבורה לא יהיו זמינים
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}שנה הגדרות NewGRF

@@ -65,18 +65,19 @@ void FreeTypeFontCache::SetFontSize(FontSize fs, FT_Face face, int pixels)
 {
 	if (pixels == 0) {
 		/* Try to determine a good height based on the minimal height recommended by the font. */
-		int scaled_height = ScaleFontTrad(this->GetDefaultFontHeight(this->fs));
+		int scaled_height = ScaleGUITrad(this->GetDefaultFontHeight(this->fs));
 		pixels = scaled_height;
 
 		TT_Header *head = (TT_Header *)FT_Get_Sfnt_Table(this->face, ft_sfnt_head);
 		if (head != nullptr) {
 			/* Font height is minimum height plus the difference between the default
 			 * height for this font size and the small size. */
-			int diff = scaled_height - ScaleFontTrad(this->GetDefaultFontHeight(FS_SMALL));
-			pixels = Clamp(std::min<uint>(head->Lowest_Rec_PPEM, MAX_FONT_MIN_REC_SIZE) + diff, scaled_height, MAX_FONT_SIZE);
+			int diff = scaled_height - ScaleGUITrad(this->GetDefaultFontHeight(FS_SMALL));
+			/* Clamp() is not used as scaled_height could be greater than MAX_FONT_SIZE, which is not permitted in Clamp(). */
+			pixels = std::min(std::max(std::min<int>(head->Lowest_Rec_PPEM, MAX_FONT_MIN_REC_SIZE) + diff, scaled_height), MAX_FONT_SIZE);
 		}
 	} else {
-		pixels = ScaleFontTrad(pixels);
+		pixels = ScaleGUITrad(pixels);
 	}
 	this->used_size = pixels;
 
@@ -239,9 +240,10 @@ const Sprite *FreeTypeFontCache::InternalGetGlyph(GlyphID key, bool aa)
 	/* Despite requesting a normal glyph, FreeType may have returned a bitmap */
 	aa = (slot->bitmap.pixel_mode == FT_PIXEL_MODE_GRAY);
 
-	/* Add 1 pixel for the shadow on the medium font. Our sprite must be at least 1x1 pixel */
-	uint width  = std::max(1U, (uint)slot->bitmap.width + (this->fs == FS_NORMAL));
-	uint height = std::max(1U, (uint)slot->bitmap.rows  + (this->fs == FS_NORMAL));
+	/* Add 1 scaled pixel for the shadow on the medium font. Our sprite must be at least 1x1 pixel */
+	uint shadow = (this->fs == FS_NORMAL) ? ScaleGUITrad(1) : 0;
+	uint width  = std::max(1U, (uint)slot->bitmap.width + shadow);
+	uint height = std::max(1U, (uint)slot->bitmap.rows  + shadow);
 
 	/* Limit glyph size to prevent overflows later on. */
 	if (width > MAX_GLYPH_DIM || height > MAX_GLYPH_DIM) usererror("Font glyph is too large");
@@ -261,8 +263,8 @@ const Sprite *FreeTypeFontCache::InternalGetGlyph(GlyphID key, bool aa)
 		for (uint y = 0; y < (uint)slot->bitmap.rows; y++) {
 			for (uint x = 0; x < (uint)slot->bitmap.width; x++) {
 				if (HasBit(slot->bitmap.buffer[(x / 8) + y * slot->bitmap.pitch], 7 - (x % 8))) {
-					sprite.data[1 + x + (1 + y) * sprite.width].m = SHADOW_COLOUR;
-					sprite.data[1 + x + (1 + y) * sprite.width].a = 0xFF;
+					sprite.data[shadow + x + (shadow + y) * sprite.width].m = SHADOW_COLOUR;
+					sprite.data[shadow + x + (shadow + y) * sprite.width].a = 0xFF;
 				}
 			}
 		}

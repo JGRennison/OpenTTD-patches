@@ -972,19 +972,8 @@ STR_GAME_OPTIONS_RESOLUTION_ITEM                                :{NUM}x{NUM}
 STR_GAME_OPTIONS_VIDEO_VSYNC                                    :{BLACK}VSync
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}இடைமுக அளவு
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}பயன்படுத்த இடைமுக உறுப்பு அளவை தேர்ந்தெடுக்கவும்
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(தானாக கண்டறி)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :சராசரி
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :இரண்டு மடங்கு
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :நான்கு மடங்கு
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}எழுத்துரு அளவு
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :இயல்பான
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :இரண்டு மடங்கு
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :நான்கு மடங்கு
 
 
 STR_GAME_OPTIONS_REFRESH_RATE_ITEM                              :{NUM}Hz
@@ -4527,6 +4516,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}ஆட�
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}சர்வீஸ் இடைவேளியினை மாற்ற இயலாது...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... வாகனம் அழிக்கப்பட்டுள்ளது
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}எந்த வாகனங்களும் தற்போது கிடையாது
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}தங்களது NewGRF அமைப்பினை மாற்றவும்

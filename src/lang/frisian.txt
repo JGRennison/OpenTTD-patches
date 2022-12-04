@@ -977,19 +977,8 @@ STR_GAME_OPTIONS_RESOLUTION_ITEM                                :{NUM}x{NUM}
 
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Interfacegrutte
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(automatysk)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normaal
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dûbele grutte
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Fjouwerdûbele grutte
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Lettergrutte
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(automatysk)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normaal
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Dûbele grutte
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Fjouwerdûbele grutte
 
 
 STR_GAME_OPTIONS_REFRESH_RATE                                   :{BLACK}Byldferfaskingssnelheid
@@ -4292,6 +4281,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Te folle
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Kin tiid tusken ûnderhâldsbeurten net feroarje...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... wein verneatige
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Hielendal gjin fiertugen talitten
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Feroarje jo NewGRF-konfiguraasje

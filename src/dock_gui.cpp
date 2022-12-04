@@ -190,7 +190,7 @@ struct BuildDocksToolbarWindow : Window {
 	{
 		switch (this->last_clicked_widget) {
 			case WID_DT_CANAL: // Build canal button
-				VpStartPlaceSizing(tile, (_game_mode == GM_EDITOR) ? VPM_X_AND_Y : VPM_X_OR_Y, DDSP_CREATE_WATER);
+				VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_CREATE_WATER);
 				break;
 
 			case WID_DT_LOCK: // Build lock button
@@ -444,9 +444,9 @@ public:
 
 		/* strings such as 'Size' and 'Coverage Area' */
 		Rect r = this->GetWidget<NWidgetBase>(BDSW_ACCEPTANCE)->GetCurrentRect();
-		int top = r.top + ScaleGUITrad(WD_PAR_VSEP_NORMAL);
-		top = DrawStationCoverageAreaText(r.left, r.right, top, SCT_ALL, rad, false) + ScaleGUITrad(WD_PAR_VSEP_NORMAL);
-		top = DrawStationCoverageAreaText(r.left, r.right, top, SCT_ALL, rad, true) + ScaleGUITrad(WD_PAR_VSEP_NORMAL);
+		int top = r.top + WidgetDimensions::scaled.vsep_normal;
+		top = DrawStationCoverageAreaText(r.left, r.right, top, SCT_ALL, rad, false) + WidgetDimensions::scaled.vsep_normal;
+		top = DrawStationCoverageAreaText(r.left, r.right, top, SCT_ALL, rad, true) + WidgetDimensions::scaled.vsep_normal;
 		/* Resize background if the window is too small.
 		 * Never make the window smaller to avoid oscillating if the size change affects the acceptance.
 		 * (This is the case, if making the window bigger moves the mouse into the window.) */
@@ -483,12 +483,12 @@ static const NWidgetPart _nested_build_dock_station_widgets[] = {
 		NWidget(WWT_CAPTION, COLOUR_DARK_GREEN), SetDataTip(STR_STATION_BUILD_DOCK_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_DARK_GREEN, BDSW_BACKGROUND),
-		NWidget(WWT_LABEL, COLOUR_DARK_GREEN, BDSW_INFO), SetPadding(WD_FRAMERECT_TOP, WD_FRAMERECT_RIGHT, WD_FRAMERECT_BOTTOM, WD_FRAMERECT_LEFT), SetDataTip(STR_STATION_BUILD_COVERAGE_AREA_TITLE, STR_NULL), SetFill(1, 0),
+		NWidget(WWT_LABEL, COLOUR_DARK_GREEN, BDSW_INFO), SetPadding(WidgetDimensions::unscaled.framerect), SetDataTip(STR_STATION_BUILD_COVERAGE_AREA_TITLE, STR_NULL), SetFill(1, 0),
 		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(14, 0, 14),
 			NWidget(WWT_TEXTBTN, COLOUR_GREY, BDSW_LT_OFF), SetMinimalSize(60, 12), SetFill(1, 0), SetDataTip(STR_STATION_BUILD_COVERAGE_OFF, STR_STATION_BUILD_COVERAGE_AREA_OFF_TOOLTIP),
 			NWidget(WWT_TEXTBTN, COLOUR_GREY, BDSW_LT_ON), SetMinimalSize(60, 12), SetFill(1, 0), SetDataTip(STR_STATION_BUILD_COVERAGE_ON, STR_STATION_BUILD_COVERAGE_AREA_ON_TOOLTIP),
 		EndContainer(),
-		NWidget(WWT_EMPTY, COLOUR_GREY, BDSW_ACCEPTANCE), SetPadding(0, WD_FRAMERECT_RIGHT, 0, WD_FRAMERECT_LEFT), SetResize(0, 1),
+		NWidget(WWT_EMPTY, COLOUR_GREY, BDSW_ACCEPTANCE), SetPadding(WidgetDimensions::unscaled.framerect), SetResize(0, 1),
 	EndContainer(),
 };
 
@@ -528,8 +528,8 @@ public:
 		switch (widget) {
 			case WID_BDD_X:
 			case WID_BDD_Y:
-				size->width  = ScaleGUITrad(96) + WD_BEVEL_LEFT + WD_BEVEL_RIGHT;
-				size->height = ScaleGUITrad(64) + WD_BEVEL_TOP + WD_BEVEL_BOTTOM;
+				size->width  = ScaleGUITrad(96) + WidgetDimensions::scaled.fullbevel.Horizontal();
+				size->height = ScaleGUITrad(64) + WidgetDimensions::scaled.fullbevel.Vertical();
 				break;
 		}
 	}
@@ -546,12 +546,12 @@ public:
 				if (FillDrawPixelInfo(&tmp_dpi, r.left, r.top, r.Width(), r.Height())) {
 					DrawPixelInfo *old_dpi = _cur_dpi;
 					_cur_dpi = &tmp_dpi;
-					int x = (r.Width()  - ScaleGUITrad(96)) / 2;
-					int y = (r.Height() - ScaleGUITrad(64)) / 2;
-					int x1 = ScaleGUITrad(63);
-					int x2 = ScaleGUITrad(31);
-					DrawShipDepotSprite(x + (axis == AXIS_X ? x1 : x2), y + ScaleGUITrad(17), axis, DEPOT_PART_NORTH);
-					DrawShipDepotSprite(x + (axis == AXIS_X ? x2 : x1), y + ScaleGUITrad(33), axis, DEPOT_PART_SOUTH);
+					int x = (r.Width()  - ScaleSpriteTrad(96)) / 2;
+					int y = (r.Height() - ScaleSpriteTrad(64)) / 2;
+					int x1 = ScaleSpriteTrad(63);
+					int x2 = ScaleSpriteTrad(31);
+					DrawShipDepotSprite(x + (axis == AXIS_X ? x1 : x2), y + ScaleSpriteTrad(17), axis, DEPOT_PART_NORTH);
+					DrawShipDepotSprite(x + (axis == AXIS_X ? x2 : x1), y + ScaleSpriteTrad(33), axis, DEPOT_PART_SOUTH);
 					_cur_dpi = old_dpi;
 				}
 				break;

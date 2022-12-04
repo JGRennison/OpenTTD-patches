@@ -56,7 +56,7 @@ static const NWidgetPart _nested_town_authority_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
 		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_TA_CAPTION), SetDataTip(STR_LOCAL_AUTHORITY_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_TA_ZONE_BUTTON), SetMinimalSize(50, 0), SetMinimalTextLines(1, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM + 2), SetDataTip(STR_LOCAL_AUTHORITY_ZONE, STR_LOCAL_AUTHORITY_ZONE_TOOLTIP),
+		NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_TA_ZONE_BUTTON), SetMinimalSize(50, 0), SetMinimalTextLines(1, WidgetDimensions::unscaled.framerect.Vertical() + 2), SetDataTip(STR_LOCAL_AUTHORITY_ZONE, STR_LOCAL_AUTHORITY_ZONE_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
 		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
@@ -118,7 +118,7 @@ public:
 		this->town = Town::Get(window_number);
 		this->InitNested(window_number);
 		this->vscroll = this->GetScrollbar(WID_TA_SCROLLBAR);
-		this->vscroll->SetCapacity((this->GetWidget<NWidgetBase>(WID_TA_COMMAND_LIST)->current_y - WD_FRAMERECT_TOP - WD_FRAMERECT_BOTTOM) / FONT_HEIGHT_NORMAL);
+		this->vscroll->SetCapacity((this->GetWidget<NWidgetBase>(WID_TA_COMMAND_LIST)->current_y - WidgetDimensions::scaled.framerect.Vertical()) / FONT_HEIGHT_NORMAL);
 	}
 
 	void OnPaint() override
@@ -147,7 +147,7 @@ public:
 	/** Draw the contents of the ratings panel. May request a resize of the window if the contents does not fit. */
 	void DrawRatings()
 	{
-		Rect r = this->GetWidget<NWidgetBase>(WID_TA_RATING_INFO)->GetCurrentRect().Shrink(WD_FRAMERECT_LEFT, WD_FRAMERECT_TOP, WD_FRAMERECT_RIGHT, WD_FRAMERECT_BOTTOM);
+		Rect r = this->GetWidget<NWidgetBase>(WID_TA_RATING_INFO)->GetCurrentRect().Shrink(WidgetDimensions::scaled.framerect);
 
 		DrawString(r, STR_LOCAL_AUTHORITY_COMPANY_RATINGS);
 		r.top += FONT_HEIGHT_NORMAL;
@@ -161,9 +161,9 @@ public:
 		int exclusive_y_offset   = (FONT_HEIGHT_NORMAL - exclusive_size.height) / 2;
 
 		bool rtl = _current_text_dir == TD_RTL;
-		Rect text = r.Indent(icon_width + exclusive_width + 4, rtl);
+		Rect text = r.Indent(icon_width + WidgetDimensions::scaled.hsep_normal + exclusive_width + WidgetDimensions::scaled.hsep_normal, rtl);
 		uint icon_left = r.WithWidth(icon_width, rtl).left;
-		uint exclusive_left = r.Indent(icon_width + 2, rtl).WithWidth(exclusive_width, rtl).left;
+		uint exclusive_left = r.Indent(icon_width + WidgetDimensions::scaled.hsep_normal, rtl).WithWidth(exclusive_width, rtl).left;
 
 		/* Draw list of companies */
 		for (const Company *c : Company::Iterate()) {
@@ -257,24 +257,25 @@ public:
 						text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING + this->sel_index;
 						SetDParam(0, _price[PR_TOWN_ACTION] * _town_action_costs[this->sel_index] >> 8);
 					}
-					DrawStringMultiLine(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, r.top + WD_FRAMERECT_TOP, r.bottom - WD_FRAMERECT_BOTTOM, text);
+					DrawStringMultiLine(r.Shrink(WidgetDimensions::scaled.framerect), text);
 				}
 				break;
 			case WID_TA_COMMAND_LIST: {
 				int numact;
 				uint buttons = GetMaskOfTownActions(&numact, _local_company, this->town);
 				numact += SETTING_OVERRIDE_COUNT;
-				int y = r.top + WD_FRAMERECT_TOP;
+				Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
+				int y = ir.top;
 				int pos = this->vscroll->GetPosition();
 
 				if (--pos < 0) {
-					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_LOCAL_AUTHORITY_ACTIONS_TITLE);
+					DrawString(ir.left, ir.right, y, STR_LOCAL_AUTHORITY_ACTIONS_TITLE);
 					y += FONT_HEIGHT_NORMAL;
 				}
 
 				for (int i = 0; buttons; i++, buttons >>= 1) {
 					if ((buttons & 1) && --pos < 0) {
-						DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y,
+						DrawString(ir.left, ir.right, y,
 								STR_LOCAL_AUTHORITY_ACTION_SMALL_ADVERTISING_CAMPAIGN + i, this->sel_index == i ? TC_WHITE : TC_ORANGE);
 						y += FONT_HEIGHT_NORMAL;
 					}
@@ -309,7 +310,7 @@ public:
 								break;
 							}
 						}
-						DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y,
+						DrawString(ir.left, ir.right, y,
 								STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_STR, tc);
 						y += FONT_HEIGHT_NORMAL;
 					}
@@ -324,31 +325,29 @@ public:
 		switch (widget) {
 			case WID_TA_ACTION_INFO: {
 				assert(size->width > padding.width && size->height > padding.height);
-				size->width -= WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
-				size->height -= WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
 				Dimension d = {0, 0};
 				for (int i = 0; i < TACT_COUNT; i++) {
 					SetDParam(0, _price[PR_TOWN_ACTION] * _town_action_costs[i] >> 8);
 					d = maxdim(d, GetStringMultiLineBoundingBox(STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING + i, *size));
 				}
+				d.width += padding.width;
+				d.height += padding.height;
 				*size = maxdim(*size, d);
-				size->width += WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
-				size->height += WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
 				break;
 			}
 
 			case WID_TA_COMMAND_LIST:
-				size->height = WD_FRAMERECT_TOP + (5 + SETTING_OVERRIDE_COUNT) * FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM;
+				size->height = (5 + SETTING_OVERRIDE_COUNT) * FONT_HEIGHT_NORMAL + padding.height;
 				size->width = GetStringBoundingBox(STR_LOCAL_AUTHORITY_ACTIONS_TITLE).width;
 				for (uint i = 0; i < TACT_COUNT; i++ ) {
 					size->width = std::max(size->width, GetStringBoundingBox(STR_LOCAL_AUTHORITY_ACTION_SMALL_ADVERTISING_CAMPAIGN + i).width);
 				}
-				size->width += WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
+				size->width += padding.width;
 				break;
 
 			case WID_TA_RATING_INFO:
 				resize->height = FONT_HEIGHT_NORMAL;
-				size->height = WD_FRAMERECT_TOP + 9 * FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM;
+				size->height = 9 * FONT_HEIGHT_NORMAL + padding.height;
 				break;
 		}
 	}
@@ -523,7 +522,7 @@ public:
 	{
 		if (widget != WID_TV_INFO) return;
 
-		Rect tr = r.Shrink(WD_FRAMERECT_LEFT, WD_FRAMERECT_TOP, WD_FRAMERECT_RIGHT, WD_FRAMERECT_BOTTOM);
+		Rect tr = r.Shrink(WidgetDimensions::scaled.framerect);
 
 		SetDParam(0, this->town->cache.population);
 		SetDParam(1, this->town->cache.num_houses);
@@ -659,7 +658,7 @@ public:
 	{
 		switch (widget) {
 			case WID_TV_INFO:
-				size->height = GetDesiredInfoHeight(size->width);
+				size->height = GetDesiredInfoHeight(size->width) + padding.height;
 				break;
 		}
 	}
@@ -670,7 +669,7 @@ public:
 	 */
 	uint GetDesiredInfoHeight(int width) const
 	{
-		uint aimed_height = 3 * FONT_HEIGHT_NORMAL + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
+		uint aimed_height = 3 * FONT_HEIGHT_NORMAL;
 
 		bool first = true;
 		for (int i = TE_BEGIN; i < TE_END; i++) {
@@ -690,7 +689,7 @@ public:
 
 		if (!this->town->text.empty()) {
 			SetDParamStr(0, this->town->text);
-			aimed_height += GetStringHeight(STR_JUST_RAW_STRING, width - WD_FRAMERECT_LEFT - WD_FRAMERECT_RIGHT);
+			aimed_height += GetStringHeight(STR_JUST_RAW_STRING, width - WidgetDimensions::scaled.framerect.Horizontal());
 		}
 
 		return aimed_height;
@@ -974,7 +973,7 @@ public:
 
 			case WID_TD_LIST: {
 				int n = 0;
-				Rect tr = r.Shrink(WD_FRAMERECT_LEFT, WD_FRAMERECT_TOP, WD_FRAMERECT_RIGHT, WD_FRAMERECT_BOTTOM);
+				Rect tr = r.Shrink(WidgetDimensions::scaled.framerect);
 				if (this->towns.size() == 0) { // No towns available.
 					DrawString(tr, STR_TOWN_DIRECTORY_NONE);
 					break;
@@ -984,7 +983,7 @@ public:
 				bool rtl = _current_text_dir == TD_RTL;
 				Dimension icon_size = GetSpriteSize(SPR_TOWN_RATING_GOOD);
 				int icon_x = tr.WithWidth(icon_size.width, rtl).left;
-				tr = tr.Indent(icon_size.width + 2, rtl);
+				tr = tr.Indent(icon_size.width + WidgetDimensions::scaled.hsep_normal, rtl);
 
 				for (uint i = this->vscroll->GetPosition(); i < this->towns.size(); i++) {
 					const Town *t = this->towns[i];
@@ -1048,8 +1047,8 @@ public:
 				d.height = std::max(d.height, icon_size.height);
 				resize->height = d.height;
 				d.height *= 5;
-				d.width += padding.width + WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
-				d.height += padding.height + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
+				d.width += padding.width;
+				d.height += padding.height;
 				*size = maxdim(*size, d);
 				break;
 			}
@@ -1086,7 +1085,7 @@ public:
 				break;
 
 			case WID_TD_LIST: { // Click on Town Matrix
-				uint id_v = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_TD_LIST, WD_FRAMERECT_TOP);
+				uint id_v = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_TD_LIST, WidgetDimensions::scaled.framerect.top);
 				if (id_v >= this->towns.size()) return; // click out of town bounds
 
 				const Town *t = this->towns[id_v];
@@ -1802,7 +1801,7 @@ public:
 					max_w = std::max(max_w, GetStringBoundingBox(this->house_list.GetNameOfHouseSet(i)).width);
 				}
 				size->width = std::max(size->width, max_w + padding.width);
-				this->line_height = FONT_HEIGHT_NORMAL + WD_MATRIX_TOP + WD_MATRIX_BOTTOM;
+				this->line_height = FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.matrix.Vertical();
 				size->height = this->house_list.NumHouseSets() * this->line_height;
 				break;
 			}
@@ -1873,10 +1872,10 @@ public:
 	{
 		switch (GB(widget, 0, 16)) {
 			case WID_HP_HOUSE_SETS: {
-				int y = r.top + WD_MATRIX_TOP;
+				int y = r.top + WidgetDimensions::scaled.matrix.top;
 				for (uint i = 0; i < this->house_list.NumHouseSets(); i++) {
 					SetDParamStr(0, this->house_list.GetNameOfHouseSet(i));
-					DrawString(r.left + WD_MATRIX_LEFT, r.right - WD_MATRIX_RIGHT, y, STR_JUST_RAW_STRING, i == this->house_set ? TC_WHITE : TC_BLACK);
+					DrawString(r.left + WidgetDimensions::scaled.matrix.left, r.right - WidgetDimensions::scaled.matrix.right, y, STR_JUST_RAW_STRING, i == this->house_set ? TC_WHITE : TC_BLACK);
 					y += this->line_height;
 				}
 				break;
@@ -1892,8 +1891,8 @@ public:
 				HouseID house = this->house_list.GetHouseAtOffset(this->house_set, GB(widget, 16, 16));
 				int lowered = (house == _cur_house) ? 1 : 0;
 				DrawHouseImage(house,
-						r.left  + WD_MATRIX_LEFT  + lowered, r.top    + WD_MATRIX_TOP    + lowered,
-						r.right - WD_MATRIX_RIGHT + lowered, r.bottom - WD_MATRIX_BOTTOM + lowered);
+						r.left  + WidgetDimensions::scaled.matrix.left  + lowered, r.top    + WidgetDimensions::scaled.matrix.top    + lowered,
+						r.right - WidgetDimensions::scaled.matrix.right + lowered, r.bottom - WidgetDimensions::scaled.matrix.bottom + lowered);
 				const HouseSpec *hs = HouseSpec::Get(house);
 				/* disabled? */
 				if (_cur_year < hs->min_year || _cur_year > hs->max_year) {
@@ -2038,8 +2037,8 @@ struct SelectTownWindow : Window {
 
 		resize->height = d.height;
 		d.height *= 5;
-		d.width += WD_FRAMERECT_RIGHT + WD_FRAMERECT_LEFT;
-		d.height += WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
+		d.width += WidgetDimensions::scaled.framerect.Horizontal();
+		d.height += WidgetDimensions::scaled.framerect.Vertical();
 		*size = d;
 	}
 
@@ -2047,11 +2046,12 @@ struct SelectTownWindow : Window {
 	{
 		if (widget != WID_ST_PANEL) return;
 
-		uint y = r.top + WD_FRAMERECT_TOP;
+		Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
+		uint y = ir.top;
 		uint end = std::min<uint>(this->vscroll->GetCount(), this->vscroll->GetPosition() + this->vscroll->GetCapacity());
 		for (uint i = this->vscroll->GetPosition(); i < end; i++) {
 			SetDParam(0, this->towns[i]);
-			DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SELECT_TOWN_LIST_ITEM);
+			DrawString(ir.left, ir.right, y, STR_SELECT_TOWN_LIST_ITEM);
 			y += this->resize.step_height;
 		}
 	}
@@ -2060,7 +2060,7 @@ struct SelectTownWindow : Window {
 	{
 		if (widget != WID_ST_PANEL) return;
 
-		uint pos = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_ST_PANEL, WD_FRAMERECT_TOP);
+		uint pos = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_ST_PANEL, WidgetDimensions::scaled.framerect.top);
 		if (pos >= this->towns.size()) return;
 
 		/* Place a house */
@@ -2073,7 +2073,7 @@ struct SelectTownWindow : Window {
 
 	virtual void OnResize()
 	{
-		this->vscroll->SetCapacityFromWidget(this, WID_ST_PANEL, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM);
+		this->vscroll->SetCapacityFromWidget(this, WID_ST_PANEL, WidgetDimensions::scaled.framerect.Vertical());
 	}
 };
 

@@ -1010,21 +1010,8 @@ STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Marque e
 
 STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}Motorista atual: {STRING}
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Tamanho da interface
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Selecione o tamanho de elemento de interface a ser usado
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(detecção automática)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normal
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dobro
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Quádruplo
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Tamanho da fonte
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Selecione o tamanho da fonte da interface a ser usado
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(detecção automática)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normal
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Tamanho duplo
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Tamanho quádruplo
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Gráficos
 
@@ -3656,7 +3643,6 @@ STR_FINANCES_SECTION_OTHER                                      :{GOLD}Outros
 
 STR_FINANCES_NEGATIVE_INCOME                                    :-{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :+{CURRENCY_LONG}
-STR_FINANCES_NET_PROFIT                                         :{WHITE}Lucro Líquido
 STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}Balanço Bancário
 STR_FINANCES_OWN_FUNDS_TITLE                                    :{WHITE}Fundos Próprios
 STR_FINANCES_LOAN_TITLE                                         :{WHITE}Empréstimo
@@ -5008,6 +4994,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Existem 
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Impossível alterar o intervalo de manutenção...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... veículo está destruído
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Não haverá nenhum veículo disponível
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Altere sua configuração de NewGRF

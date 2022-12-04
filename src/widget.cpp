@@ -24,6 +24,113 @@
 
 #include "safeguards.h"
 
+/** Distances used in drawing widgets. */
+enum WidgetDrawDistances {
+	/* WWT_IMGBTN(_2) */
+	WD_IMGBTN_LEFT    = 1,      ///< Left offset of the image in the button.
+	WD_IMGBTN_RIGHT   = 2,      ///< Right offset of the image in the button.
+	WD_IMGBTN_TOP     = 1,      ///< Top offset of image in the button.
+	WD_IMGBTN_BOTTOM  = 2,      ///< Bottom offset of image in the button.
+
+	/* WWT_INSET */
+	WD_INSET_LEFT  = 2,         ///< Left offset of string.
+	WD_INSET_RIGHT = 2,         ///< Right offset of string.
+	WD_INSET_TOP   = 1,         ///< Top offset of string.
+
+	WD_VSCROLLBAR_LEFT   = 2,   ///< Left offset of vertical scrollbar.
+	WD_VSCROLLBAR_RIGHT  = 2,   ///< Right offset of vertical scrollbar.
+	WD_VSCROLLBAR_TOP    = 3,   ///< Top offset of vertical scrollbar.
+	WD_VSCROLLBAR_BOTTOM = 3,   ///< Bottom offset of vertical scrollbar.
+
+	WD_HSCROLLBAR_LEFT   = 3,   ///< Left offset of horizontal scrollbar.
+	WD_HSCROLLBAR_RIGHT  = 3,   ///< Right offset of horizontal scrollbar.
+	WD_HSCROLLBAR_TOP    = 2,   ///< Top offset of horizontal scrollbar.
+	WD_HSCROLLBAR_BOTTOM = 2,   ///< Bottom offset of horizontal scrollbar.
+
+	/* Size of the pure frame bevel without any padding. */
+	WD_BEVEL_LEFT       = 1,    ///< Width of left bevel border.
+	WD_BEVEL_RIGHT      = 1,    ///< Width of right bevel border.
+	WD_BEVEL_TOP        = 1,    ///< Height of top bevel border.
+	WD_BEVEL_BOTTOM     = 1,    ///< Height of bottom bevel border.
+
+	/* FrameRect widgets, all text buttons, panel, editbox */
+	WD_FRAMERECT_LEFT   = 2,    ///< Offset at left to draw the frame rectangular area
+	WD_FRAMERECT_RIGHT  = 2,    ///< Offset at right to draw the frame rectangular area
+	WD_FRAMERECT_TOP    = 1,    ///< Offset at top to draw the frame rectangular area
+	WD_FRAMERECT_BOTTOM = 1,    ///< Offset at bottom to draw the frame rectangular area
+
+	/* WWT_FRAME */
+	WD_FRAMETEXT_LEFT   = 6,    ///< Left offset of the text of the frame.
+	WD_FRAMETEXT_RIGHT  = 6,    ///< Right offset of the text of the frame.
+	WD_FRAMETEXT_TOP    = 6,    ///< Top offset of the text of the frame
+	WD_FRAMETEXT_BOTTOM = 6,    ///< Bottom offset of the text of the frame
+
+	/* WWT_MATRIX */
+	WD_MATRIX_LEFT   = 2,       ///< Offset at left of a matrix cell.
+	WD_MATRIX_RIGHT  = 2,       ///< Offset at right of a matrix cell.
+	WD_MATRIX_TOP    = 3,       ///< Offset at top of a matrix cell.
+	WD_MATRIX_BOTTOM = 1,       ///< Offset at bottom of a matrix cell.
+
+	/* WWT_SHADEBOX */
+	WD_SHADEBOX_WIDTH  = 12,    ///< Width of a standard shade box widget.
+	WD_SHADEBOX_LEFT   = 2,     ///< Left offset of shade sprite.
+	WD_SHADEBOX_RIGHT  = 2,     ///< Right offset of shade sprite.
+	WD_SHADEBOX_TOP    = 3,     ///< Top offset of shade sprite.
+	WD_SHADEBOX_BOTTOM = 3,     ///< Bottom offset of shade sprite.
+
+	/* WWT_STICKYBOX */
+	WD_STICKYBOX_WIDTH  = 12,   ///< Width of a standard sticky box widget.
+	WD_STICKYBOX_LEFT   = 2,    ///< Left offset of sticky sprite.
+	WD_STICKYBOX_RIGHT  = 2,    ///< Right offset of sticky sprite.
+	WD_STICKYBOX_TOP    = 3,    ///< Top offset of sticky sprite.
+	WD_STICKYBOX_BOTTOM = 3,    ///< Bottom offset of sticky sprite.
+
+	/* WWT_DEBUGBOX */
+	WD_DEBUGBOX_WIDTH  = 12,    ///< Width of a standard debug box widget.
+	WD_DEBUGBOX_LEFT   = 2,     ///< Left offset of debug sprite.
+	WD_DEBUGBOX_RIGHT  = 2,     ///< Right offset of debug sprite.
+	WD_DEBUGBOX_TOP    = 3,     ///< Top offset of debug sprite.
+	WD_DEBUGBOX_BOTTOM = 3,     ///< Bottom offset of debug sprite.
+
+	/* WWT_DEFSIZEBOX */
+	WD_DEFSIZEBOX_WIDTH  = 12,  ///< Width of a standard defsize box widget.
+	WD_DEFSIZEBOX_LEFT   = 2,   ///< Left offset of defsize sprite.
+	WD_DEFSIZEBOX_RIGHT  = 2,   ///< Right offset of defsize sprite.
+	WD_DEFSIZEBOX_TOP    = 3,   ///< Top offset of defsize sprite.
+	WD_DEFSIZEBOX_BOTTOM = 3,   ///< Bottom offset of defsize sprite.
+
+	/* WWT_RESIZEBOX */
+	WD_RESIZEBOX_WIDTH  = 12,   ///< Width of a resize box widget.
+	WD_RESIZEBOX_LEFT   = 2,    ///< Left offset of resize sprite.
+	WD_RESIZEBOX_RIGHT  = 2,    ///< Right offset of resize sprite.
+	WD_RESIZEBOX_TOP    = 2,    ///< Top offset of resize sprite.
+	WD_RESIZEBOX_BOTTOM = 2,    ///< Bottom offset of resize sprite.
+
+	/* WWT_CLOSEBOX */
+	WD_CLOSEBOX_WIDTH  = 11,    ///< Width of a close box widget.
+	WD_CLOSEBOX_LEFT   = 2,     ///< Left offset of closebox string.
+	WD_CLOSEBOX_RIGHT  = 1,     ///< Right offset of closebox string.
+	WD_CLOSEBOX_TOP    = 2,     ///< Top offset of closebox string.
+	WD_CLOSEBOX_BOTTOM = 2,     ///< Bottom offset of closebox string.
+
+	/* WWT_CAPTION */
+	WD_CAPTION_HEIGHT     = 14, ///< Height of a title bar.
+	WD_CAPTIONTEXT_LEFT   = 2,  ///< Offset of the caption text at the left.
+	WD_CAPTIONTEXT_RIGHT  = 2,  ///< Offset of the caption text at the right.
+	WD_CAPTIONTEXT_TOP    = 2,  ///< Offset of the caption text at the top.
+	WD_CAPTIONTEXT_BOTTOM = 2,  ///< Offset of the caption text at the bottom.
+
+	/* Dropdown widget. */
+	WD_DROPDOWN_HEIGHT     = 12, ///< Height of a drop down widget.
+	WD_DROPDOWNTEXT_LEFT   = 2,  ///< Left offset of the dropdown widget string.
+	WD_DROPDOWNTEXT_RIGHT  = 2,  ///< Right offset of the dropdown widget string.
+	WD_DROPDOWNTEXT_TOP    = 1,  ///< Top offset of the dropdown widget string.
+	WD_DROPDOWNTEXT_BOTTOM = 1,  ///< Bottom offset of the dropdown widget string.
+
+	WD_PAR_VSEP_NORMAL = 2,      ///< Normal amount of vertical space between two paragraphs of text.
+	WD_PAR_VSEP_WIDE   = 8,      ///< Large amount of vertical space between two paragraphs of text.
+};
+
 const WidgetDimensions WidgetDimensions::unscaled = {
 	{WD_IMGBTN_LEFT,       WD_IMGBTN_TOP,       WD_IMGBTN_RIGHT,       WD_IMGBTN_BOTTOM},       ///< imgbtn
 	{WD_INSET_LEFT,        WD_INSET_TOP,        WD_INSET_RIGHT,        WD_BEVEL_BOTTOM},        ///< inset
@@ -33,7 +140,6 @@ const WidgetDimensions WidgetDimensions::unscaled = {
 	{WD_BEVEL_LEFT,        WD_BEVEL_TOP,        WD_BEVEL_RIGHT,        WD_BEVEL_BOTTOM},        ///< fullbevel
 	{WD_FRAMERECT_LEFT,    WD_FRAMERECT_TOP,    WD_FRAMERECT_RIGHT,    WD_FRAMERECT_BOTTOM},    ///< framerect
 	{WD_FRAMETEXT_LEFT,    WD_FRAMETEXT_TOP,    WD_FRAMETEXT_RIGHT,    WD_FRAMETEXT_BOTTOM},    ///< frametext
-	{WD_FRAMETEXT_LEFT,    WD_TEXTPANEL_TOP,    WD_FRAMETEXT_RIGHT,    WD_TEXTPANEL_BOTTOM},    ///< textpanel
 	{WD_MATRIX_LEFT,       WD_MATRIX_TOP,       WD_MATRIX_RIGHT,       WD_MATRIX_BOTTOM},       ///< matrix
 	{WD_SHADEBOX_LEFT,     WD_SHADEBOX_TOP,     WD_SHADEBOX_RIGHT,     WD_SHADEBOX_BOTTOM},     ///< shadebox
 	{WD_STICKYBOX_LEFT,    WD_STICKYBOX_TOP,    WD_STICKYBOX_RIGHT,    WD_STICKYBOX_BOTTOM},    ///< stickybox
@@ -43,6 +149,7 @@ const WidgetDimensions WidgetDimensions::unscaled = {
 	{WD_CLOSEBOX_LEFT,     WD_CLOSEBOX_TOP,     WD_CLOSEBOX_RIGHT,     WD_CLOSEBOX_BOTTOM},     ///< closebox
 	{WD_CAPTIONTEXT_LEFT,  WD_CAPTIONTEXT_TOP,  WD_CAPTIONTEXT_RIGHT,  WD_CAPTIONTEXT_BOTTOM},  ///< captiontext
 	{WD_DROPDOWNTEXT_LEFT, WD_DROPDOWNTEXT_TOP, WD_DROPDOWNTEXT_RIGHT, WD_DROPDOWNTEXT_BOTTOM}, ///< dropdowntext
+	{20, 10, 20, 10},    ///< modalpopup
 	1,                   ///< pressed
 	WD_PAR_VSEP_NORMAL,  ///< vsep_normal
 	WD_PAR_VSEP_WIDE,    ///< vsep_wide
@@ -95,11 +202,14 @@ void SetupWidgetDimensions()
 	WidgetDimensions::scaled.inset        = ScaleGUITrad(WidgetDimensions::unscaled.inset);
 	WidgetDimensions::scaled.vscrollbar   = ScaleGUITrad(WidgetDimensions::unscaled.vscrollbar);
 	WidgetDimensions::scaled.hscrollbar   = ScaleGUITrad(WidgetDimensions::unscaled.hscrollbar);
-	WidgetDimensions::scaled.bevel        = WidgetDimensions::unscaled.bevel;
+	if (_settings_client.gui.scale_bevels) {
+		WidgetDimensions::scaled.bevel    = ScaleGUITrad(WidgetDimensions::unscaled.bevel);
+	} else {
+		WidgetDimensions::scaled.bevel    = WidgetDimensions::unscaled.bevel;
+	}
 	WidgetDimensions::scaled.fullbevel    = ScaleGUITrad(WidgetDimensions::unscaled.fullbevel);
 	WidgetDimensions::scaled.framerect    = ScaleGUITrad(WidgetDimensions::unscaled.framerect);
 	WidgetDimensions::scaled.frametext    = ScaleGUITrad(WidgetDimensions::unscaled.frametext);
-	WidgetDimensions::scaled.textpanel    = ScaleGUITrad(WidgetDimensions::unscaled.textpanel);
 	WidgetDimensions::scaled.matrix       = ScaleGUITrad(WidgetDimensions::unscaled.matrix);
 	WidgetDimensions::scaled.shadebox     = ScaleGUITrad(WidgetDimensions::unscaled.shadebox);
 	WidgetDimensions::scaled.stickybox    = ScaleGUITrad(WidgetDimensions::unscaled.stickybox);
@@ -109,6 +219,7 @@ void SetupWidgetDimensions()
 	WidgetDimensions::scaled.closebox     = ScaleGUITrad(WidgetDimensions::unscaled.closebox);
 	WidgetDimensions::scaled.captiontext  = ScaleGUITrad(WidgetDimensions::unscaled.captiontext);
 	WidgetDimensions::scaled.dropdowntext = ScaleGUITrad(WidgetDimensions::unscaled.dropdowntext);
+	WidgetDimensions::scaled.modalpopup   = ScaleGUITrad(WidgetDimensions::unscaled.modalpopup);
 
 	WidgetDimensions::scaled.pressed      = ScaleGUITrad(WidgetDimensions::unscaled.pressed);
 	WidgetDimensions::scaled.vsep_normal  = ScaleGUITrad(WidgetDimensions::unscaled.vsep_normal);
@@ -336,7 +447,7 @@ void DrawFrameRect(int left, int top, int right, int bottom, Colours colour, Fra
 	}
 }
 
-void DrawSpriteIgnorePadding(const Rect &r, SpriteID img, bool clicked, StringAlignment align)
+void DrawSpriteIgnorePadding(SpriteID img, PaletteID pal, const Rect &r, bool clicked, StringAlignment align)
 {
 	Point offset;
 	Dimension d = GetSpriteSize(img, &offset);
@@ -345,7 +456,7 @@ void DrawSpriteIgnorePadding(const Rect &r, SpriteID img, bool clicked, StringAl
 
 	Point p = GetAlignedPosition(r, d, align);
 	int o = clicked ? WidgetDimensions::scaled.pressed : 0;
-	DrawSprite(img, PAL_NONE, p.x + o - offset.x, p.y + o - offset.y);
+	DrawSprite(img, pal, p.x + o - offset.x, p.y + o - offset.y);
 }
 
 /**
@@ -363,7 +474,7 @@ static inline void DrawImageButtons(const Rect &r, WidgetType type, Colours colo
 	DrawFrameRect(r.left, r.top, r.right, r.bottom, colour, (clicked) ? FR_LOWERED : FR_NONE);
 
 	if ((type & WWT_MASK) == WWT_IMGBTN_2 && clicked) img++; // Show different image when clicked for #WWT_IMGBTN_2.
-	DrawSpriteIgnorePadding(r, img, clicked, align);
+	DrawSpriteIgnorePadding(img, PAL_NONE, r, clicked, align);
 }
 
 /**
@@ -662,7 +773,7 @@ static inline void DrawDebugBox(const Rect &r, Colours colour, bool clicked)
 static inline void DrawResizeBox(const Rect &r, Colours colour, bool at_left, bool clicked)
 {
 	DrawFrameRect(r.left, r.top, r.right, r.bottom, colour, (clicked) ? FR_LOWERED : FR_NONE);
-	DrawSpriteIgnorePadding(r.Shrink(ScaleGUITrad(2)), at_left ? SPR_WINDOW_RESIZE_LEFT : SPR_WINDOW_RESIZE_RIGHT, clicked, at_left ? (SA_LEFT | SA_BOTTOM | SA_FORCE) : (SA_RIGHT | SA_BOTTOM | SA_FORCE));
+	DrawSpriteIgnorePadding(at_left ? SPR_WINDOW_RESIZE_LEFT : SPR_WINDOW_RESIZE_RIGHT, PAL_NONE, r.Shrink(ScaleGUITrad(2)), clicked, at_left ? (SA_LEFT | SA_BOTTOM | SA_FORCE) : (SA_RIGHT | SA_BOTTOM | SA_FORCE));
 }
 
 /**
@@ -677,7 +788,7 @@ static inline void DrawCloseBox(const Rect &r, Colours colour)
 	Dimension d = GetSpriteSize(SPR_CLOSEBOX, &offset);
 	d.width  -= offset.x;
 	d.height -= offset.y;
-	int s = ScaleGUITrad(1); /* Offset to account for shadow of SPR_CLOSEBOX */
+	int s = ScaleSpriteTrad(1); /* Offset to account for shadow of SPR_CLOSEBOX */
 	DrawSprite(SPR_CLOSEBOX, (colour != COLOUR_WHITE ? TC_BLACK : TC_SILVER) | (1U << PALETTE_TEXT_RECOLOUR), CenterBounds(r.left, r.right, d.width - s) - offset.x, CenterBounds(r.top, r.bottom, d.height - s) - offset.y);
 }
 
@@ -786,7 +897,7 @@ void Window::DrawSortButtonState(int widget, SortButtonState state) const
 	/* Sort button uses the same sprites as vertical scrollbar */
 	Dimension dim = NWidgetScrollbar::GetVerticalDimension();
 
-	DrawSpriteIgnorePadding(r.WithWidth(dim.width, _current_text_dir == TD_LTR), state == SBS_DOWN ? SPR_ARROW_DOWN : SPR_ARROW_UP, this->IsWidgetLowered(widget), SA_CENTER);
+	DrawSpriteIgnorePadding(state == SBS_DOWN ? SPR_ARROW_DOWN : SPR_ARROW_UP, PAL_NONE, r.WithWidth(dim.width, _current_text_dir == TD_LTR), this->IsWidgetLowered(widget), SA_CENTER);
 }
 
 /**
@@ -988,7 +1099,7 @@ void NWidgetResizeBase::SetMinimalSizeAbsolute(uint min_x, uint min_y)
 /**
  * Set minimal text lines for the widget.
  * @param min_lines Number of text lines of the widget.
- * @param spacing   Extra spacing (eg WD_FRAMERECT_TOP + _BOTTOM) of the widget.
+ * @param spacing   Extra unscaled spacing (eg WidgetDimensions::unscaled.framerect.Vertical()) of the widget.
  * @param size      Font size of text.
  */
 void NWidgetResizeBase::SetMinimalTextLines(uint8 min_lines, uint8 spacing, FontSize size)

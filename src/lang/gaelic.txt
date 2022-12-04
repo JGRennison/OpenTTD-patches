@@ -1164,12 +1164,6 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :Gnàthaichte
 
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Meud na h-eadar-aghaidh
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Tagh am meud airson rud san eadar-aghaidh
-
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Àbhaisteach
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dà uiread a mheud
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Ceithir uiread a mheud
 
 
 
@@ -4856,6 +4850,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Tha cus 
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Cha ghabh tricead na h-obrach-glèidhidh atharrachadh...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... chaidh an carbad a mhilleadh
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Cha bhi carbad sam bith ri làimh
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Atharraich an rèiteachadh NewGRF agad

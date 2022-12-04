@@ -431,7 +431,6 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :oħrajn
 
 
 
-
 # Custom currency window
 
 
@@ -1440,6 +1439,7 @@ STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Ma tista
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Ma tistax tbigħ dan l-ajruplan...
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Hemm wisq vetturi fil-logħba
+
 
 
 

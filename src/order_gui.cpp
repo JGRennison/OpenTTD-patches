@@ -31,6 +31,7 @@
 #include "engine_func.h"
 #include "vehicle_func.h"
 #include "vehiclelist.h"
+#include "error.h"
 #include "tracerestrict.h"
 #include "scope.h"
 
@@ -187,37 +188,38 @@ public:
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		if (widget == WID_CTO_HEADER) {
-			(*size).height = std::max((*size).height, (uint) WD_FRAMERECT_TOP + FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM);
+			(*size).height = std::max((*size).height, (uint) FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.framerect.Vertical());
 		} else if (WID_CTO_CARGO_LABEL_FIRST <= widget && widget <= WID_CTO_CARGO_LABEL_LAST) {
-			(*size).width  = std::max((*size).width,  WD_FRAMERECT_LEFT + this->CARGO_ICON_WIDTH + WD_FRAMETEXT_LEFT + this->max_cargo_name_width + WD_FRAMETEXT_RIGHT + padding.width);
-			(*size).height = std::max((*size).height, (uint) WD_FRAMERECT_TOP + FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM);
+			(*size).width  = std::max((*size).width, WidgetDimensions::scaled.framerect.left + this->CARGO_ICON_WIDTH + WidgetDimensions::scaled.framerect.Horizontal() + this->max_cargo_name_width + padding.width);
+			(*size).height = std::max((*size).height, (uint) FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.framerect.Vertical());
 		} else if ((WID_CTO_CARGO_DROPDOWN_FIRST <= widget && widget <= WID_CTO_CARGO_DROPDOWN_LAST) || widget == WID_CTO_SET_TO_ALL_DROPDOWN) {
-			(*size).width  = std::max((*size).width,  WD_DROPDOWNTEXT_LEFT + this->max_cargo_dropdown_width + WD_DROPDOWNTEXT_RIGHT + NWidgetLeaf::dropdown_dimension.width);
-			(*size).height = std::max((*size).height, (uint) WD_DROPDOWNTEXT_TOP + FONT_HEIGHT_NORMAL + WD_DROPDOWNTEXT_BOTTOM);
+			(*size).width  = std::max((*size).width, WidgetDimensions::scaled.dropdowntext.Horizontal() + this->max_cargo_dropdown_width + NWidgetLeaf::dropdown_dimension.width);
+			(*size).height = std::max((*size).height, (uint) WidgetDimensions::scaled.dropdowntext.Vertical() + FONT_HEIGHT_NORMAL);
 		} else if (widget == WID_CTO_SET_TO_ALL_LABEL) {
-			(*size).width = std::max((*size).width, this->max_cargo_name_width + WD_FRAMETEXT_RIGHT + padding.width);
-			(*size).height = std::max((*size).height, (uint) WD_FRAMERECT_TOP + FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM);
+			(*size).width = std::max((*size).width, this->max_cargo_name_width + WidgetDimensions::scaled.framerect.right + padding.width);
+			(*size).height = std::max((*size).height, (uint) FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.framerect.Vertical());
 		}
 	}
 
 	virtual void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (WID_CTO_CARGO_LABEL_FIRST <= widget && widget <= WID_CTO_CARGO_LABEL_LAST) {
+			Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
 			const CargoSpec *cs = _sorted_cargo_specs[widget - WID_CTO_CARGO_LABEL_FIRST];
 			bool rtl = (_current_text_dir == TD_RTL);
 
 			/* Draw cargo icon. */
-			int rect_left   = rtl ? r.right - WD_FRAMETEXT_RIGHT - this->CARGO_ICON_WIDTH : r.left + WD_FRAMERECT_LEFT;
+			int rect_left   = rtl ? ir.right - this->CARGO_ICON_WIDTH : ir.left;
 			int rect_right  = rect_left + this->CARGO_ICON_WIDTH;
-			int rect_top    = r.top + WD_FRAMERECT_TOP + ((r.bottom - WD_FRAMERECT_BOTTOM - r.top - WD_FRAMERECT_TOP) - this->CARGO_ICON_HEIGHT) / 2;
+			int rect_top    = ir.top + ((ir.bottom - ir.top) - this->CARGO_ICON_HEIGHT) / 2;
 			int rect_bottom = rect_top + this->CARGO_ICON_HEIGHT;
 			GfxFillRect(rect_left, rect_top, rect_right, rect_bottom, PC_BLACK);
 			GfxFillRect(rect_left + 1, rect_top + 1, rect_right - 1, rect_bottom - 1, cs->legend_colour);
 
 			/* Draw cargo name */
-			int text_left  = rtl ? r.left + WD_FRAMETEXT_LEFT : rect_right + WD_FRAMETEXT_LEFT;
-			int text_right = rtl ? rect_left - WD_FRAMETEXT_LEFT : r.right - WD_FRAMETEXT_RIGHT;
-			int text_top   = r.top + WD_FRAMERECT_TOP;
+			int text_left  = rtl ? ir.left : rect_right + WidgetDimensions::scaled.framerect.left;
+			int text_right = rtl ? rect_left - WidgetDimensions::scaled.framerect.left : ir.right;
+			int text_top   = ir.top;
 			SetDParam(0, cs->name);
 			DrawString(text_left, text_right, text_top, STR_BLACK_STRING);
 		}
@@ -394,7 +396,7 @@ static const NWidgetPart _nested_cargo_type_orders_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(1, 4), SetFill(1, 0), SetResize(1, 0), EndContainer(), // SPACER
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_PANEL, COLOUR_GREY),
-			NWidget(WWT_TEXT, COLOUR_GREY, WID_CTO_SET_TO_ALL_LABEL), SetPadding(0, 0, 0, WD_FRAMERECT_LEFT + 12 + WD_FRAMETEXT_LEFT), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_CARGO_TYPE_ORDERS_SET_TO_ALL_LABEL, STR_CARGO_TYPE_ORDERS_SET_TO_ALL_TOOLTIP),
+			NWidget(WWT_TEXT, COLOUR_GREY, WID_CTO_SET_TO_ALL_LABEL), SetPadding(0, 0, 0, 12 + WidgetDimensions::unscaled.framerect.Horizontal()), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_CARGO_TYPE_ORDERS_SET_TO_ALL_LABEL, STR_CARGO_TYPE_ORDERS_SET_TO_ALL_TOOLTIP),
 		EndContainer(),
 		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_CTO_SET_TO_ALL_DROPDOWN), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_NULL, STR_CARGO_TYPE_ORDERS_SET_TO_ALL_TOOLTIP),
 	EndContainer(),
@@ -1430,7 +1432,7 @@ private:
 	VehicleOrderID GetOrderFromPt(int y)
 	{
 		NWidgetBase *nwid = this->GetWidget<NWidgetBase>(WID_O_ORDER_LIST);
-		int sel = (y - nwid->pos_y - WD_FRAMERECT_TOP) / nwid->resize_y; // Selected line in the WID_O_ORDER_LIST panel.
+		int sel = (y - nwid->pos_y - WidgetDimensions::scaled.framerect.top) / nwid->resize_y; // Selected line in the WID_O_ORDER_LIST panel.
 
 		if ((uint)sel >= this->vscroll->GetCapacity()) return INVALID_VEH_ORDER_ID;
 
@@ -1789,7 +1791,7 @@ public:
 		switch (widget) {
 			case WID_O_OCCUPANCY_LIST:
 				SetDParamMaxValue(0, 100);
-				size->width = WD_FRAMERECT_LEFT + GetStringBoundingBox(STR_ORDERS_OCCUPANCY_PERCENT).width + 10 + WD_FRAMERECT_RIGHT;
+				size->width = GetStringBoundingBox(STR_ORDERS_OCCUPANCY_PERCENT).width + 10 + WidgetDimensions::unscaled.framerect.Horizontal();
 				/* FALL THROUGH */
 
 			case WID_O_SEL_OCCUPANCY:
@@ -1825,13 +1827,13 @@ public:
 
 			case WID_O_OCCUPANCY_TOGGLE:
 				SetDParamMaxValue(0, 100);
-				size->width = WD_FRAMERECT_LEFT + GetStringBoundingBox(STR_ORDERS_OCCUPANCY_PERCENT).width + 10 + WD_FRAMERECT_RIGHT;
+				size->width = GetStringBoundingBox(STR_ORDERS_OCCUPANCY_PERCENT).width + 10 + WidgetDimensions::unscaled.framerect.Horizontal();
 				break;
 
 			case WID_O_TIMETABLE_VIEW: {
 				Dimension d = GetStringBoundingBox(STR_ORDERS_TIMETABLE_VIEW);
 				Dimension spr_d = GetSpriteSize(SPR_WARNING_SIGN);
-				d.width += spr_d.width + 2;
+				d.width += spr_d.width + WidgetDimensions::scaled.hsep_normal;
 				d.height = std::max(d.height, spr_d.height);
 				d.width += padding.width;
 				d.height += padding.height;
@@ -2246,10 +2248,10 @@ public:
 
 	void DrawOrderListWidget(const Rect &r) const
 	{
-		Rect ir = r.Shrink(WD_FRAMETEXT_LEFT, WD_FRAMERECT_TOP, WD_FRAMETEXT_RIGHT, WD_FRAMERECT_BOTTOM);
+		Rect ir = r.Shrink(WidgetDimensions::scaled.frametext, WidgetDimensions::scaled.framerect);
 		bool rtl = _current_text_dir == TD_RTL;
 		SetDParamMaxValue(0, this->vehicle->GetNumOrders(), 2);
-		int index_column_width = GetStringBoundingBox(STR_ORDER_INDEX).width + 2 * GetSpriteSize(rtl ? SPR_ARROW_RIGHT : SPR_ARROW_LEFT).width + 3;
+		int index_column_width = GetStringBoundingBox(STR_ORDER_INDEX).width + 2 * GetSpriteSize(rtl ? SPR_ARROW_RIGHT : SPR_ARROW_LEFT).width + WidgetDimensions::scaled.hsep_normal;
 		int middle = rtl ? ir.right - index_column_width : ir.left + index_column_width;
 
 		int y = ir.top;
@@ -2265,7 +2267,7 @@ public:
 
 				if (i != this->selected_order && i == this->order_over) {
 					/* Highlight dragged order destination. */
-					int top = (this->order_over < this->selected_order ? y : y + line_height) - WD_FRAMERECT_TOP;
+					int top = (this->order_over < this->selected_order ? y : y + line_height) - WidgetDimensions::scaled.framerect.top;
 					int bottom = std::min(top + 2, ir.bottom);
 					top = std::max(top - 3, ir.top);
 					GfxFillRect(ir.left, top, ir.right, bottom, _colour_gradient[COLOUR_GREY][7]);
@@ -2278,7 +2280,7 @@ public:
 			}
 
 			/* Reset counters for drawing the orders. */
-			y = r.top + WD_FRAMERECT_TOP;
+			y = ir.top;
 			i = this->vscroll->GetPosition();
 			order = this->vehicle->GetOrder(i);
 		}
@@ -2288,7 +2290,7 @@ public:
 			/* Don't draw anything if it extends past the end of the window. */
 			if (!this->vscroll->IsVisible(i)) break;
 
-			DrawOrderString(this->vehicle, order, i, y, i == this->selected_order, false, r.left + WD_FRAMETEXT_LEFT, middle, r.right - WD_FRAMETEXT_RIGHT);
+			DrawOrderString(this->vehicle, order, i, y, i == this->selected_order, false, ir.left, middle, ir.right);
 			y += line_height;
 
 			i++;
@@ -2297,13 +2299,14 @@ public:
 
 		if (this->vscroll->IsVisible(i)) {
 			StringID str = this->vehicle->IsOrderListShared() ? STR_ORDERS_END_OF_SHARED_ORDERS : STR_ORDERS_END_OF_ORDERS;
-			DrawString(rtl ? r.left + WD_FRAMETEXT_LEFT : middle, rtl ? middle : r.right - WD_FRAMETEXT_RIGHT, y, str, (i == this->selected_order) ? TC_WHITE : TC_BLACK);
+			DrawString(rtl ? ir.left : middle, rtl ? middle : ir.right, y, str, (i == this->selected_order) ? TC_WHITE : TC_BLACK);
 		}
 	}
 
 	void DrawOccupancyListWidget(const Rect &r) const
 	{
-		int y = r.top + WD_FRAMERECT_TOP;
+		Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
+		int y = ir.top;
 		int line_height = this->GetWidget<NWidgetBase>(WID_O_ORDER_LIST)->resize_y;
 
 		int i = this->vscroll->GetPosition();
@@ -2316,7 +2319,7 @@ public:
 			uint8 occupancy = order->GetOccupancy();
 			if (occupancy > 0) {
 				SetDParam(0, occupancy - 1);
-				DrawString(r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT, y, STR_ORDERS_OCCUPANCY_PERCENT, (i == this->selected_order) ? TC_WHITE : TC_BLACK);
+				DrawString(ir.left, ir.right, y, STR_ORDERS_OCCUPANCY_PERCENT, (i == this->selected_order) ? TC_WHITE : TC_BLACK);
 			}
 			y += line_height;
 
@@ -3203,6 +3206,40 @@ public:
 			this->selected_order = -1;
 			ResetObjectToPlace();
 		}
+		return true;
+	}
+
+	/**
+	 * Clones an order list from a vehicle list.  If this doesn't make sense (because not all vehicles in the list have the same orders), then it displays an error.
+	 * @return This always returns true, which indicates that the contextual action handled the mouse click.
+	 *         Note that it's correct behaviour to always handle the click even though an error is displayed,
+	 *         because users aren't going to expect the default action to be performed just because they overlooked that cloning doesn't make sense.
+	 */
+	bool OnVehicleSelect(VehicleList::const_iterator begin, VehicleList::const_iterator end) override
+	{
+		bool share_order = _ctrl_pressed || this->goto_type == OPOS_SHARE;
+		if (this->vehicle->GetNumOrders() != 0 && !share_order) return false;
+
+		if (!share_order) {
+			/* If CTRL is not pressed: If all the vehicles in this list have the same orders, then copy orders */
+			if (AllEqual(begin, end, [](const Vehicle *v1, const Vehicle *v2) {
+				return VehiclesHaveSameOrderList(v1, v2);
+			})) {
+				OnVehicleSelect(*begin);
+			} else {
+				ShowErrorMessage(STR_ERROR_CAN_T_COPY_ORDER_LIST, STR_ERROR_CAN_T_COPY_ORDER_VEHICLE_LIST, WL_INFO);
+			}
+		} else {
+			/* If CTRL is pressed: If all the vehicles in this list share orders, then copy orders */
+			if (AllEqual(begin, end, [](const Vehicle *v1, const Vehicle *v2) {
+				return v1->FirstShared() == v2->FirstShared();
+			})) {
+				OnVehicleSelect(*begin);
+			} else {
+				ShowErrorMessage(STR_ERROR_CAN_T_SHARE_ORDER_LIST, STR_ERROR_CAN_T_SHARE_ORDER_VEHICLE_LIST, WL_INFO);
+			}
+		}
+
 		return true;
 	}
 

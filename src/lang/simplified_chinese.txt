@@ -1009,21 +1009,8 @@ STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}点击�
 
 STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}使用中的驱动程序: {STRING}
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}界面大小
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}选择使用的界面元素大小
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(自动检测)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :正常大小
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :两倍大小
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :四倍大小
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}字体大小
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}选择此字体大小
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(自动检测)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :正常
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :两倍大小
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :四倍大小
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}图像
 
@@ -3656,7 +3643,6 @@ STR_FINANCES_SECTION_OTHER                                      :{GOLD}其他费
 STR_FINANCES_NEGATIVE_INCOME                                    :-{CURRENCY_LONG}
 STR_FINANCES_ZERO_INCOME                                        :{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :+{CURRENCY_LONG}
-STR_FINANCES_NET_PROFIT                                         :{WHITE}净利润
 STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}流动资金
 STR_FINANCES_OWN_FUNDS_TITLE                                    :{WHITE}自有资金
 STR_FINANCES_LOAN_TITLE                                         :{WHITE}已贷款额
@@ -5008,6 +4994,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}游戏�
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}不能改变保养周期……
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... 运具已撞毁
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}没有可用的运输工具
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}请改动您的 NewGRF 设置

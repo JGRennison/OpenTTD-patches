@@ -35,7 +35,7 @@ static const NWidgetPart _nested_errmsg_widgets[] = {
 		NWidget(WWT_CAPTION, COLOUR_RED, WID_EM_CAPTION), SetDataTip(STR_ERROR_MESSAGE_CAPTION, STR_NULL),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_RED),
-		NWidget(WWT_EMPTY, COLOUR_RED, WID_EM_MESSAGE), SetPadding(WD_FRAMETEXT_TOP, WD_FRAMETEXT_RIGHT, WD_FRAMETEXT_BOTTOM, WD_FRAMETEXT_LEFT), SetFill(1, 0), SetMinimalSize(236, 0),
+		NWidget(WWT_EMPTY, COLOUR_RED, WID_EM_MESSAGE), SetPadding(WidgetDimensions::unscaled.modalpopup), SetFill(1, 0), SetMinimalSize(236, 0),
 	EndContainer(),
 };
 
@@ -54,7 +54,7 @@ static const NWidgetPart _nested_errmsg_face_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_RED),
 		NWidget(NWID_HORIZONTAL),
 			NWidget(WWT_EMPTY, COLOUR_RED, WID_EM_FACE), SetPadding(2, 0, 2, 2), SetFill(0, 1), SetMinimalSize(92, 119),
-			NWidget(WWT_EMPTY, COLOUR_RED, WID_EM_MESSAGE), SetPadding(WD_FRAMETEXT_TOP, WD_FRAMETEXT_RIGHT, WD_FRAMETEXT_BOTTOM, WD_FRAMETEXT_LEFT), SetFill(1, 1), SetMinimalSize(236, 0),
+			NWidget(WWT_EMPTY, COLOUR_RED, WID_EM_MESSAGE), SetPadding(WidgetDimensions::unscaled.modalpopup), SetFill(1, 1), SetMinimalSize(236, 0),
 		EndContainer(),
 	EndContainer(),
 };
@@ -210,9 +210,8 @@ public:
 				if (this->textref_stack_size > 0) StopTextRefStackUsage();
 
 				uint panel_height = this->height_summary;
-				if (this->detailed_msg != INVALID_STRING_ID) panel_height += this->height_detailed + WD_PAR_VSEP_WIDE;
-				if (this->extra_msg != INVALID_STRING_ID) panel_height += this->height_extra + WD_PAR_VSEP_WIDE;
-
+				if (this->detailed_msg != INVALID_STRING_ID) panel_height += this->height_detailed + WidgetDimensions::scaled.vsep_wide;
+				if (this->extra_msg != INVALID_STRING_ID) panel_height += this->height_extra + WidgetDimensions::scaled.vsep_wide;
 				size->height = std::max(size->height, panel_height);
 				break;
 			}
@@ -250,8 +249,8 @@ public:
 			pt.y = UnScaleByZoom(pt.y - vp->virtual_top, vp->zoom) + vp->top;
 			pt.y = (pt.y < (_screen.height >> 1)) ? scr_bot - sm_height : scr_top;
 		} else {
-			pt.x = Clamp(UnScaleByZoom(pt.x - vp->virtual_left, vp->zoom) + vp->left - (sm_width / 2),  0, _screen.width  - sm_width);
-			pt.y = Clamp(UnScaleByZoom(pt.y - vp->virtual_top,  vp->zoom) + vp->top  - (sm_height / 2), scr_top, scr_bot - sm_height);
+			pt.x = std::min(std::max(UnScaleByZoom(pt.x - vp->virtual_left, vp->zoom) + vp->left - (sm_width / 2), 0), _screen.width - sm_width);
+			pt.y = std::min(std::max(UnScaleByZoom(pt.y - vp->virtual_top,  vp->zoom) + vp->top  - (sm_height / 2), scr_top), scr_bot - sm_height);
 		}
 		return pt;
 	}
@@ -289,14 +288,14 @@ public:
 					DrawStringMultiLine(r, this->summary_msg, TC_FROMSTRING, SA_CENTER);
 				} else if (this->extra_msg == INVALID_STRING_ID) {
 					/* Extra space when message is shorter than company face window */
-					int extra = (r.Height() - this->height_summary - this->height_detailed - WD_PAR_VSEP_WIDE) / 2;
+					int extra = (r.Height() - this->height_summary - this->height_detailed - WidgetDimensions::scaled.vsep_wide) / 2;
 
 					/* Note: NewGRF supplied error message often do not start with a colour code, so default to white. */
 					DrawStringMultiLine(r.WithHeight(this->height_summary + extra, false), this->summary_msg, TC_WHITE, SA_CENTER);
 					DrawStringMultiLine(r.WithHeight(this->height_detailed + extra, true), this->detailed_msg, TC_WHITE, SA_CENTER);
 				} else {
 					/* Extra space when message is shorter than company face window */
-					int extra = (r.Height() - this->height_summary - this->height_detailed - this->height_extra - (WD_PAR_VSEP_WIDE * 2)) / 3;
+					int extra = (r.Height() - this->height_summary - this->height_detailed - this->height_extra - (WidgetDimensions::scaled.vsep_wide * 2)) / 3;
 
 					/* Note: NewGRF supplied error message often do not start with a colour code, so default to white. */
 					Rect top_section = r.WithHeight(this->height_summary + extra, false);

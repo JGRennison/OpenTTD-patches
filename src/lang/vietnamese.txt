@@ -1009,21 +1009,8 @@ STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Đánh d
 
 STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}Trình điều khiển hiện tại: {STRING}
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Kích thước giao diện
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Chọn kích thước của các đối tượng trên giao diện
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(nhận diện tự động)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Bình thường
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Gấp 2 lần
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Gấp 4 lần
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Cỡ chữ
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Chọn cỡ chữ trong giao diện
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(nhận diện tự động)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Bình thường
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Phóng to gấp đôi
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Phóng nhân bốn
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Hình ảnh
 
@@ -3661,7 +3648,6 @@ STR_FINANCES_SECTION_OTHER                                      :{GOLD}Khác
 STR_FINANCES_NEGATIVE_INCOME                                    :-{CURRENCY_LONG}
 STR_FINANCES_ZERO_INCOME                                        :{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :+{CURRENCY_LONG}
-STR_FINANCES_NET_PROFIT                                         :{WHITE}Lợi Nhuận Ròng
 STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}Số dư hiện có
 STR_FINANCES_OWN_FUNDS_TITLE                                    :{WHITE}Nguồn Vốn Riêng
 STR_FINANCES_LOAN_TITLE                                         :{WHITE}Đi vay
@@ -5014,6 +5000,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Quá nhi
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Không thể thay đổi tần suất bảo trì...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... xe đã bị phá hủy
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Không có phương tiện nào sẵn sàng cả
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Thay đổi tham số NewGRF

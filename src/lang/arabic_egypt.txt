@@ -973,20 +973,8 @@ STR_GAME_OPTIONS_VIDEO_ACCELERATION_RESTART                     :{WHITE}لن ي�
 
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}حجم اللوحة
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}حدد العنصر المطلوب
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :تقريب عادي
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :تقريب ×2
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :تقريب ×4
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}حجم الخط
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}حدد حجم خط الواجهة المراد استخدامه
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(كشف أوتوماتيكي)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :عادي
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :حجم مزدوج
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :حجم رباعي
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}الرسومات
 
@@ -4358,6 +4346,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}العر
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}لا يمكن تغيير فترات الصيانة
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... العربة تحطمت
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}لن تتوافر اى وسائل نقل على اﻹطلاق
 STR_ERROR_NO_VEHICLES_AVAILABLE_YET                             :{WHITE}لا تتوافر اى آليه نقل بعد

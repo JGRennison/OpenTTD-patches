@@ -226,6 +226,7 @@ struct GUISettings : public TimeSettings {
 	uint8  osk_activation;                   ///< Mouse gesture to trigger the OSK.
 	byte   starting_colour;                  ///< default color scheme for the company to start a new game with
 	bool   show_newgrf_name;                 ///< Show the name of the NewGRF in the build vehicle window
+	bool   show_cargo_in_vehicle_lists;      ///< Show the cargoes the vehicles can carry in the list windows
 	bool   show_wagon_intro_year;            ///< Show the introduction year for wagons in the build vehicle window
 	bool   auto_remove_signals;              ///< automatically remove signals when in the way during rail construction
 	uint16 refresh_rate;                     ///< How often we refresh the screen (time between draw-ticks).
@@ -276,6 +277,8 @@ struct GUISettings : public TimeSettings {
 	uint8  newgrf_default_palette;           ///< default palette to use for NewGRFs without action 14 palette information
 	bool   console_show_unlisted;            ///< whether to show unlisted console commands
 	bool   newgrf_disable_big_gui;           ///< whether to disable "big GUI" NewGRFs
+
+	bool   scale_bevels;                     ///< bevels are scaled with GUI scale.
 
 	/**
 	 * Returns true when the user has sufficient privileges to edit newgrfs on a running game

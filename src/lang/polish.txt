@@ -580,10 +580,19 @@ STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
 STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :pola/dzień
 
-STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}KM
+STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}hp
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}KM
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW
 
+STR_UNITS_POWER_IMPERIAL_TO_WEIGHT_IMPERIAL                     :{DECIMAL}{NBSP}hp/t
+STR_UNITS_POWER_IMPERIAL_TO_WEIGHT_METRIC                       :{DECIMAL}{NBSP}hp/t
+STR_UNITS_POWER_IMPERIAL_TO_WEIGHT_SI                           :{DECIMAL}{NBSP}hp/Mg
+STR_UNITS_POWER_METRIC_TO_WEIGHT_IMPERIAL                       :{DECIMAL}{NBSP}KM/t
+STR_UNITS_POWER_METRIC_TO_WEIGHT_METRIC                         :{DECIMAL}{NBSP}KM/t
+STR_UNITS_POWER_METRIC_TO_WEIGHT_SI                             :{DECIMAL}{NBSP}KM/Mg
+STR_UNITS_POWER_SI_TO_WEIGHT_IMPERIAL                           :{DECIMAL}{NBSP}kW/t
+STR_UNITS_POWER_SI_TO_WEIGHT_METRIC                             :{DECIMAL}{NBSP}kW/t
+STR_UNITS_POWER_SI_TO_WEIGHT_SI                                 :{DECIMAL}{NBSP}W/kg
 
 STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA}{NBSP}t
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}{NBSP}t
@@ -780,6 +789,8 @@ STR_SCENEDIT_FILE_MENU_QUIT                                     :Wyjście
 ###length 15
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Opcje gry
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Ustawienia
+STR_SETTINGS_MENU_AI_SETTINGS                                   :Ustawienia SI
+STR_SETTINGS_MENU_GAMESCRIPT_SETTINGS                           :Ustawienia Game Script
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :Ustawienia NewGRF
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Opcje przeźroczystości
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Wyświetlanie nazw miast
@@ -1373,7 +1384,7 @@ STR_GAME_OPTIONS_LANGUAGE_TOOLTIP                               :{BLACK}Wybierz 
 STR_GAME_OPTIONS_LANGUAGE_PERCENTAGE                            :{STRING} (ukończono {NUM}%)
 
 STR_GAME_OPTIONS_FULLSCREEN                                     :{BLACK}Pełny ekran
-STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}Zaznacz, jeśli chcesz grać w OpenTTD w trybie pełnoekranowym
+STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}Zaznacz to pole, jeśli chcesz grać w OpenTTD w trybie pełnoekranowym
 
 STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Rozdzielczość ekranu
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Wybierz rozdzielczość ekranu
@@ -1389,21 +1400,19 @@ STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Zaznacz 
 
 STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}Bieżący sterownik: {STRING}
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Rozmiar interfejsu
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Wybierz rozmiar elementów interfejsu
+STR_GAME_OPTIONS_GUI_SCALE_FRAME                                :{BLACK}Rozmiar interfejsu
+STR_GAME_OPTIONS_GUI_SCALE_TOOLTIP                              :{BLACK}Przeciągnij suwak, aby ustawić rozmiar interfejsu. Przytrzymaj Ctrl, aby uzyskać płynną regulację
+STR_GAME_OPTIONS_GUI_SCALE_AUTO                                 :{BLACK}Wykryj rozmiar automatycznie
+STR_GAME_OPTIONS_GUI_SCALE_AUTO_TOOLTIP                         :{BLACK}Zaznacz to pole, aby rozmiar interfejsu był wykrywany automatycznie
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(wykryj automatycznie)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normalny
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Podwójny
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Poczwórny
+STR_GAME_OPTIONS_GUI_SCALE_BEVELS                               :{BLACK}Skaluj fazy krawędzi
+STR_GAME_OPTIONS_GUI_SCALE_BEVELS_TOOLTIP                       :{BLACK}Zaznacz to pole, aby skalować fazy krawędzi zgodnie z rozmiarem interfejsu
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Wielkość czcionki
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Wybierz wielkość czcionki interfejsu
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(wykryj automatycznie)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normalna
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Podwójna
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Poczwórna
+STR_GAME_OPTIONS_GUI_SCALE_1X                                   :1x
+STR_GAME_OPTIONS_GUI_SCALE_2X                                   :2x
+STR_GAME_OPTIONS_GUI_SCALE_3X                                   :3x
+STR_GAME_OPTIONS_GUI_SCALE_4X                                   :4x
+STR_GAME_OPTIONS_GUI_SCALE_5X                                   :5x
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Grafika
 
@@ -2082,7 +2091,7 @@ STR_CONFIG_SETTING_AI_PROFILE_HARD                              :Trudny
 STR_CONFIG_SETTING_AI_IN_MULTIPLAYER                            :Pozwól na SI w grze wieloosobowej: {STRING}
 STR_CONFIG_SETTING_AI_IN_MULTIPLAYER_HELPTEXT                   :Pozwól komputerowym graczom SI na udział w grach dla wielu graczy
 
-STR_CONFIG_SETTING_SCRIPT_MAX_OPCODES                           :ilość #opcodes przed uśpieniem skryptu: {STRING}
+STR_CONFIG_SETTING_SCRIPT_MAX_OPCODES                           :Liczba wysyłanych kodów instrukcji przed zawieszeniem skryptów: {STRING}
 STR_CONFIG_SETTING_SCRIPT_MAX_OPCODES_HELPTEXT                  :Maksymalna liczba kroków obliczeniowych, jakie skrypt może zrobić w jednej kolejce
 STR_CONFIG_SETTING_SCRIPT_MAX_MEMORY                            :Maksymalne zużycie pamięci na skrypt: {STRING}
 STR_CONFIG_SETTING_SCRIPT_MAX_MEMORY_HELPTEXT                   :Ilość pamięci jaką może zużywać pojedynczy skrypt zanim zostanie przymusowo zakończony. Może wymagać zwiększenia dla większych map.
@@ -2341,7 +2350,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER                     :Jednostka mocy 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_HELPTEXT            :Kiedy moc pojazdu jest pokazywana w interfejsie użytkownika, wyświetl ją w wybranych jednostkach
 ###length 3
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_IMPERIAL            :Imperialne (hp)
-STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_METRIC              :Metryczne (hp)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_METRIC              :Metryczne (KM)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_SI                  :SI (kW)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_WEIGHT                    :Jednostki wagi: {STRING}
@@ -2450,6 +2459,8 @@ STR_INTRO_HIGHSCORE                                             :{BLACK}Tabela w
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Ustawienia
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Ustawienia NewGRF
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Sprawdź dodatki online
+STR_INTRO_AI_SETTINGS                                           :{BLACK}Ustawienia SI
+STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Ustawienia Game Script
 STR_INTRO_QUIT                                                  :{BLACK}Wyjście
 
 STR_INTRO_TOOLTIP_NEW_GAME                                      :{BLACK}Rozpocznij nową grę. Ctrl+klik pomija konfigurowanie mapy
@@ -2469,6 +2480,8 @@ STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Wyświet
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Wyświetl ustawienia gry
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Wyświetl ustawienia NewGRF
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Poszukaj nowych lub zaktualizowanych dodatków do pobrania
+STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Wyświetl ustawienia SI
+STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Wyświetl ustawienia Game Script
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Wyjdź z „OpenTTD”
 
 STR_INTRO_BASESET                                               :{BLACK}Aktualnie używany podstawowy zestaw graficzny nie posiada {NUM} wymagan{P ego ych ych} sprite{P 'u 'ów 'ów}. Proszę poszukać aktualizacji dla zestawu podstawowego.
@@ -3532,6 +3545,12 @@ STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Liczba r
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Gładkość:
 STR_MAPGEN_VARIETY                                              :{BLACK}Różnorodność:
 STR_MAPGEN_GENERATE                                             :{WHITE}Stwórz
+STR_MAPGEN_NEWGRF_SETTINGS                                      :{BLACK}Ustawienia NewGRF
+STR_MAPGEN_NEWGRF_SETTINGS_TOOLTIP                              :{BLACK}Wyświetl ustawienia NewGRF
+STR_MAPGEN_AI_SETTINGS                                          :{BLACK}Ustawienia SI
+STR_MAPGEN_AI_SETTINGS_TOOLTIP                                  :{BLACK}Wyświetl ustawienia SI
+STR_MAPGEN_GS_SETTINGS                                          :{BLACK}Ustawienia Game Script
+STR_MAPGEN_GS_SETTINGS_TOOLTIP                                  :{BLACK}Wyświetl ustawienia Game Script
 
 ###length 21
 STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH                           :Angielskie (Oryginalne)
@@ -3858,14 +3877,14 @@ STR_LOCAL_AUTHORITY_ACTION_EXCLUSIVE_TRANSPORT                  :Kup wyłączno�
 STR_LOCAL_AUTHORITY_ACTION_BRIBE                                :Daj łapówkę lokalnym władzom
 
 ###length 8
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING            :{YELLOW}Rozpocznij małą kampanię reklamową aby zachęcić trochę pasażerów i fabryk do korzystania z Twoich usług transportowych.{}Zapewnia tymczasowy wzrost oceny stacji w małym promieniu wokół centrum miasta.{}Koszt: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING           :{YELLOW}Rozpocznij średnią kampanię reklamową, aby zachęcić więcej pasażerów i fabryk do korzystania z Twoich usług transportowych.{}Zapewnia tymczasowy wzrost oceny stacji w średnim promieniu wokół centrum miasta.{}Koszt: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING            :{YELLOW}Rozpocznij dużą kampanię reklamową aby zachęcić mnóstwo pasażerów i fabryk do korzystania z Twoich usług transportowych.{}Zapewnia tymczasowy wzrost oceny stacji w dużym promieniu wokół centrum miasta.{}Koszt: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION          :{YELLOW}Ufunduj remont sieci dróg.{}Spowoduje to zakłócenia w ruchu ulicznym do 6 miesięcy.{}Koszt: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{YELLOW}Zbuduj pomnik dla uczczenia twojej firmy.{}Trwale podniesie to ocenę twoich stacji w pobliżu tego miasta.{}Koszt: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{YELLOW}Ufunduj nowe budynki komercyjne w mieście.{}Daje jednorazowy impuls do szybszego wzrostu miasta.{}Koszt: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{YELLOW}Kup roczną wyłączność na prawa transportowe w mieście.{} Lokalne władze nie pozwolą pasażerom ani przedsiębiorstwom korzystać z usług innych firm.{}Koszt: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Daj łapówkę lokalnym władzom. Powiększ swoją ocenę, ryzykując poważne kary w razie złapania.{}Koszt: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING            :{PUSH_COLOUR}{YELLOW}Rozpocznij małą lokalną kampanię reklamową, aby przyciągnąć więcej pasażerów i ładunków do twoich usług transportowych.{}Zapewnia tymczasowe zwiększenie oceny stacji w małym promieniu wokół centrum miasta.{}{POP_COLOUR}Koszt: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING           :{PUSH_COLOUR}{YELLOW}Rozpocznij średnią lokalną kampanię reklamową, aby przyciągnąć więcej pasażerów i ładunków do twoich usług transportowych.{}Zapewnia tymczasowe zwiększenie oceny stacji w umiarkowanym promieniu wokół centrum miasta.{}{POP_COLOUR}Koszt: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING            :{PUSH_COLOUR}{YELLOW}Rozpocznij dużą lokalną kampanię reklamową, aby przyciągnąć więcej pasażerów i ładunków do twoich usług transportowych.{}Zapewnia tymczasowe zwiększenie oceny stacji w dużym promieniu wokół centrum miasta.{}{POP_COLOUR}Koszt: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION          :{PUSH_COLOUR}{YELLOW}Ufunduj remont sieci dróg.{}Spowoduje to zakłócenia w ruchu ulicznym do 6 miesięcy.{}{POP_COLOUR}Koszt: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{PUSH_COLOUR}{YELLOW}Zbuduj statuę dla uczczenia swojej firmy.{}Trwale podniesie to ocenę twoich stacji w pobliżu tego miasta.{}{POP_COLOUR}Koszt: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{PUSH_COLOUR}{YELLOW}Ufunduj nowe budynki w mieście.{}Zapewnia tymczasowe przyspieszenie rozwoju tego miasta.{}{POP_COLOUR}Koszt: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{PUSH_COLOUR}{YELLOW}Kup roczną wyłączność na prawa transportowe w mieście.{}Lokalne władze nie pozwolą pasażerom ani przedsiębiorstwom korzystać z usług innych firm.{}{POP_COLOUR}Koszt: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{PUSH_COLOUR}{YELLOW}Przekup lokalne władze, aby zwiększyć swoją ocenę, ryzykując surową karę w przypadku przyłapania.{}{POP_COLOUR}Koszt: {CURRENCY_LONG}
 
 # Goal window
 STR_GOALS_CAPTION                                               :{WHITE}Cele firmy {COMPANY}
@@ -4038,16 +4057,18 @@ STR_FINANCES_SECTION_SHIP_REVENUE                               :{GOLD}Statki
 STR_FINANCES_SECTION_LOAN_INTEREST                              :{GOLD}Odsetki od pożyczki
 STR_FINANCES_SECTION_OTHER                                      :{GOLD}Inne
 
+STR_FINANCES_TOTAL_CAPTION                                      :{WHITE}Łącznie
 STR_FINANCES_NEGATIVE_INCOME                                    :-{CURRENCY_LONG}
 STR_FINANCES_ZERO_INCOME                                        :{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :+{CURRENCY_LONG}
-STR_FINANCES_NET_PROFIT                                         :{WHITE}Zysk netto
+STR_FINANCES_PROFIT                                             :{WHITE}Zysk
 STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}Bilans bankowy
 STR_FINANCES_OWN_FUNDS_TITLE                                    :{WHITE}Środki własne
 STR_FINANCES_LOAN_TITLE                                         :{WHITE}Pożyczka
 STR_FINANCES_INTEREST_RATE                                      :{WHITE}Oprocentowanie pożyczki: {BLACK}{NUM}%
 STR_FINANCES_MAX_LOAN                                           :{WHITE}Maksymalna pożyczka: {BLACK}{CURRENCY_LONG}
 STR_FINANCES_TOTAL_CURRENCY                                     :{BLACK}{CURRENCY_LONG}
+STR_FINANCES_BANK_BALANCE                                       :{WHITE}{CURRENCY_LONG}
 STR_FINANCES_BORROW_BUTTON                                      :{BLACK}Pożyczka {CURRENCY_LONG}
 STR_FINANCES_BORROW_TOOLTIP                                     :{BLACK}Zwiększ wielkość pożyczki. Ctrl+klik pożycza największą możliwą kwotę
 STR_FINANCES_REPAY_BUTTON                                       :{BLACK}Zwrot {CURRENCY_LONG}
@@ -4132,7 +4153,7 @@ STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUST
 STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Nazwy przedsiębiorstw - kliknij na nazwę przedsiębiorstwa, aby wyśrodkować na nim widok główny. Ctrl+klik otwiera nowy podgląd na lokalizację przedsiębiorstwa
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Akceptowany ładunek: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Produkowany ładunek: {SILVER}{STRING}
-STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :Wszystkie typy ładunku
+STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :Wszystkie typy ładunków
 STR_INDUSTRY_DIRECTORY_FILTER_NONE                              :Żadne
 
 # Industry view
@@ -4262,7 +4283,7 @@ STR_PURCHASE_INFO_COST_REFIT_SPEED                              :{BLACK}Koszt: {
 STR_PURCHASE_INFO_AIRCRAFT_CAPACITY                             :{BLACK}Ładowność: {GOLD}{CARGO_LONG}, {CARGO_LONG}
 STR_PURCHASE_INFO_PWAGPOWER_PWAGWEIGHT                          :{BLACK}Moc: {GOLD}+{POWER}{BLACK} Masa: {GOLD}+{WEIGHT_SHORT}
 STR_PURCHASE_INFO_REFITTABLE_TO                                 :{BLACK}Można przystosować do: {GOLD}{STRING}
-STR_PURCHASE_INFO_ALL_TYPES                                     :wszystkie typy ładunków
+STR_PURCHASE_INFO_ALL_TYPES                                     :Wszystkie typy ładunków
 STR_PURCHASE_INFO_NONE                                          :Żadne
 STR_PURCHASE_INFO_ENGINES_ONLY                                  :Tylko lokomotywy
 STR_PURCHASE_INFO_ALL_BUT                                       :wszystko oprócz {CARGO_LIST}
@@ -4271,6 +4292,9 @@ STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Zasięg:
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Typ samolotu: {GOLD}{STRING}
 
 ###length 3
+STR_CARGO_TYPE_FILTER_ALL                                       :Wszystkie typy ładunków
+STR_CARGO_TYPE_FILTER_FREIGHT                                   :Fracht
+STR_CARGO_TYPE_FILTER_NONE                                      :Żaden
 
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Lista wyboru pociągów - kliknij na pojazd, aby uzyskać informacje. Ctrl+klik przełącza ukrywanie typu pojazdu
@@ -4604,7 +4628,8 @@ STR_VEHICLE_INFO_MAX_SPEED_TYPE_RANGE                           :{BLACK}Max. pr�
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Masa: {LTBLUE}{WEIGHT_SHORT} {BLACK}Moc: {LTBLUE}{POWER}{BLACK} Prędkość maksymalna: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Masa: {LTBLUE}{WEIGHT_SHORT} {BLACK}Moc: {LTBLUE}{POWER}{BLACK} Prędkość maksymalna: {LTBLUE}{VELOCITY} {BLACK}Maksymalna siła pociągowa: {LTBLUE}{FORCE}
 
-STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Zysk w tym roku: {LTBLUE}{CURRENCY_LONG} (w zeszłym roku: {CURRENCY_LONG})
+STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Zysk w tym roku: {LTBLUE}{CURRENCY_LONG} (ostatni rok: {CURRENCY_LONG})
+STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}Zysk w tym roku: {LTBLUE}{CURRENCY_LONG} (ostatni rok: {CURRENCY_LONG}) {BLACK}Min. wydajność: {LTBLUE}{POWER_TO_WEIGHT}
 STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Niezawodność: {LTBLUE}{COMMA}%  {BLACK}Awarie od ostatniego serwisowania: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}Zakupiony: {LTBLUE}{NUM}{BLACK} Wartość: {LTBLUE}{CURRENCY_LONG}
@@ -4938,6 +4963,8 @@ STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}Jeden z 
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}Okno debugowania SI / Game Script jest dostępne tylko na serwerze
 
 # AI configuration window
+STR_AI_CONFIG_CAPTION_AI                                        :{WHITE}Konfiguracja SI
+STR_AI_CONFIG_CAPTION_GAMESCRIPT                                :{WHITE}Konfiguracja Game Script
 STR_AI_CONFIG_GAMELIST_TOOLTIP                                  :{BLACK}Game Script, który zostanie załadowany podczas kolejnej gry
 STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}SI, które zostaną załadowane podczas kolejnej gry
 STR_AI_CONFIG_HUMAN_PLAYER                                      :Ludzki gracz
@@ -4951,17 +4978,18 @@ STR_AI_CONFIG_MOVE_DOWN                                         :{BLACK}Przesuń
 STR_AI_CONFIG_MOVE_DOWN_TOOLTIP                                 :{BLACK}Przesuń wybraną SI w dół listy
 
 STR_AI_CONFIG_GAMESCRIPT                                        :{SILVER}Game Script
+STR_AI_CONFIG_GAMESCRIPT_PARAM                                  :{SILVER}Parametry
 STR_AI_CONFIG_AI                                                :{SILVER}SI
 
-STR_AI_CONFIG_CHANGE_AI                                         :SI
-STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :Game Script
+STR_AI_CONFIG_CHANGE_AI                                         :{BLACK}Wybierz SI
+STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :{BLACK}Wybierz Game Script
 STR_AI_CONFIG_CHANGE_TOOLTIP                                    :{BLACK}Wczytaj kolejny skrypt
 STR_AI_CONFIG_CONFIGURE                                         :{BLACK}Konfiguruj
 STR_AI_CONFIG_CONFIGURE_TOOLTIP                                 :{BLACK}Konfiguruj parametry skryptu
 
 # Available AIs window
 STR_AI_LIST_CAPTION                                             :{WHITE}Dostępne {STRING}
-STR_AI_LIST_CAPTION_AI                                          :Gracze SI
+STR_AI_LIST_CAPTION_AI                                          :SI
 STR_AI_LIST_CAPTION_GAMESCRIPT                                  :Game Scripty
 STR_AI_LIST_TOOLTIP                                             :{BLACK}Kliknij, aby wybrać skrypt
 
@@ -4983,7 +5011,7 @@ STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Zrzut ek
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Zrzut ekranu minimapy
 
 # AI Parameters
-STR_AI_SETTINGS_CAPTION_AI                                      :SI
+STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}Parametry SI
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Zamknij
 STR_AI_SETTINGS_RESET                                           :{BLACK}Resetuj
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
@@ -5400,6 +5428,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Za dużo
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Nie można zmienić okresu między serwisowaniami...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... pojazd jest zniszczony
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Żadne pojazdy nie będą dostępne
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Zmień konfigurację swoich NewGRF-ów

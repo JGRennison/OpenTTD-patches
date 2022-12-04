@@ -101,12 +101,9 @@ static void GfxMainBlitter(const GfxBlitterCtx &ctx, const Sprite *sprite, int x
 
 static ReusableBuffer<uint8> _cursor_backup;
 
-ZoomLevel _gui_zoom; ///< GUI Zoom level
-ZoomLevel _font_zoom; ///< Font Zoom level
-
-int8 _gui_zoom_cfg;  ///< GUI zoom level in config.
-int8 _font_zoom_cfg; ///< Font zoom level in config.
-
+ZoomLevel _gui_zoom = ZOOM_LVL_OUT_4X;     ///< GUI Zoom level
+int _gui_scale      = MIN_INTERFACE_SCALE; ///< GUI scale, 100 is 100%.
+int _gui_scale_cfg;                        ///< GUI scale in config.
 
 /**
  * The rect for repaint.
@@ -598,6 +595,8 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 
 	GfxBlitterCtx ctx(_cur_dpi);
 
+	const uint shadow_offset = ScaleGUITrad(1);
+
 	TextColour colour = TC_BLACK;
 	bool draw_shadow = false;
 	for (int run_index = 0; run_index < line.CountRuns(); run_index++) {
@@ -633,7 +632,7 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 
 			if (draw_shadow && (glyph & SPRITE_GLYPH) == 0) {
 				ctx.SetColourRemap(TC_BLACK);
-				GfxMainBlitter(ctx, sprite, begin_x + 1, top + 1, BM_COLOUR_REMAP);
+				GfxMainBlitter(ctx, sprite, begin_x + shadow_offset, top + shadow_offset, BM_COLOUR_REMAP);
 				ctx.SetColourRemap(colour);
 			}
 			GfxMainBlitter(ctx, sprite, begin_x, top, BM_COLOUR_REMAP);
@@ -645,7 +644,7 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 		for (int i = 0; i < 3; i++, x += dot_width) {
 			if (draw_shadow) {
 				ctx.SetColourRemap(TC_BLACK);
-				GfxMainBlitter(ctx, dot_sprite, x + 1, y + 1, BM_COLOUR_REMAP);
+				GfxMainBlitter(ctx, dot_sprite, x + shadow_offset, y + shadow_offset, BM_COLOUR_REMAP);
 				ctx.SetColourRemap(colour);
 			}
 			GfxMainBlitter(ctx, dot_sprite, x, y, BM_COLOUR_REMAP);
@@ -2336,57 +2335,66 @@ void SortResolutions()
  */
 void UpdateGUIZoom()
 {
+	int old_scale = _gui_scale;
+
 	/* Determine real GUI zoom to use. */
-	if (_gui_zoom_cfg == ZOOM_LVL_CFG_AUTO) {
-		_gui_zoom = static_cast<ZoomLevel>(Clamp(VideoDriver::GetInstance()->GetSuggestedUIZoom(), _settings_client.gui.zoom_min, _settings_client.gui.zoom_max));
+	if (_gui_scale_cfg == -1) {
+		_gui_scale = VideoDriver::GetInstance()->GetSuggestedUIScale();
 	} else {
-		/* Ensure the gui_zoom is clamped between min/max. Change the
-		 * _gui_zoom_cfg if it isn't, as this is used to visually show the
-		 * selection in the Game Options. */
-		_gui_zoom_cfg = Clamp(_gui_zoom_cfg, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max);
-		_gui_zoom = static_cast<ZoomLevel>(_gui_zoom_cfg);
+		_gui_scale = Clamp(_gui_scale_cfg, MIN_INTERFACE_SCALE, MAX_INTERFACE_SCALE);
 	}
 
-	ZoomLevel old_font_zoom = _font_zoom;
+	int8 new_zoom = ScaleGUITrad(1) <= 1 ? ZOOM_LVL_OUT_4X : ScaleGUITrad(1) >= 4 ? ZOOM_LVL_MIN : ZOOM_LVL_OUT_2X;
+	/* Ensure the gui_zoom is clamped between min/max. */
+	new_zoom = Clamp(new_zoom, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max);
+	_gui_zoom = static_cast<ZoomLevel>(new_zoom);
 
-	/* Determine real font zoom to use. */
-	if (_font_zoom_cfg == ZOOM_LVL_CFG_AUTO) {
-		_font_zoom = static_cast<ZoomLevel>(VideoDriver::GetInstance()->GetSuggestedUIZoom());
-	} else {
-		_font_zoom = static_cast<ZoomLevel>(_font_zoom_cfg);
-	}
-
-	if (old_font_zoom != _font_zoom) {
+	if (old_scale != _gui_scale) {
 		ClearFontCache();
 	}
-
 	UpdateFontHeightCache();
 }
 
 /**
  * Resolve GUI zoom level and adjust GUI to new zoom, if auto-suggestion is requested.
+ * @param automatic Set if the change is occuring due to OS DPI scaling being changed.
  * @returns true when the zoom level has changed, caller must call ReInitAllWindows(true)
  * after resizing the application's window/buffer.
  */
-bool AdjustGUIZoom()
+bool AdjustGUIZoom(bool automatic)
 {
-	auto old_zoom = _gui_zoom;
+	ZoomLevel old_zoom = _gui_zoom;
+	int old_scale = _gui_scale;
 	UpdateGUIZoom();
-	if (old_zoom == _gui_zoom) return false;
-	GfxClearSpriteCache();
-	VideoDriver::GetInstance()->ClearSystemSprites();
+	if (old_scale == _gui_scale) return false;
+
+	/* Reload sprites if sprite zoom level has changed. */
+	if (old_zoom != _gui_zoom) {
+		GfxClearSpriteCache();
+		VideoDriver::GetInstance()->ClearSystemSprites();
+		UpdateCursorSize();
+		UpdateRouteStepSpriteSize();
+	}
+
 	ClearFontCache();
-	GfxClearSpriteCache();
+	UpdateFontHeightCache();
+	LoadStringWidthTable();
 	UpdateAllVirtCoords();
+	FixTitleGameZoom();
+
+	extern void FlushDeparturesWindowTextCaches();
+	FlushDeparturesWindowTextCaches();
 
 	/* Adjust all window sizes to match the new zoom level, so that they don't appear
 	   to move around when the application is moved to a screen with different DPI. */
 	auto zoom_shift = old_zoom - _gui_zoom;
 	for (Window *w : Window::IterateFromBack()) {
-		w->left = AdjustByZoom(w->left, zoom_shift);
-		w->top = AdjustByZoom(w->top, zoom_shift);
-		w->width = AdjustByZoom(w->width, zoom_shift);
-		w->height = AdjustByZoom(w->height, zoom_shift);
+		if (automatic) {
+			w->left   = (w->left   * _gui_scale) / old_scale;
+			w->top    = (w->top    * _gui_scale) / old_scale;
+			w->width  = (w->width  * _gui_scale) / old_scale;
+			w->height = (w->height * _gui_scale) / old_scale;
+		}
 		if (w->viewport != nullptr) {
 			w->viewport->zoom = Clamp(ZoomLevel(w->viewport->zoom - zoom_shift), _settings_client.gui.zoom_min, _settings_client.gui.zoom_max);
 		}

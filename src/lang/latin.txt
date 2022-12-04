@@ -1156,19 +1156,8 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :alia
 
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Magnitudo interfaciei
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Eligere magnitudinem interfaciei adhibendam
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Simplex
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Duplex
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Quadruplex
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Magnitudo Litterarum
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Eligere magnitudinem litterarum adhibendam
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Simplex
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Duplex
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Quadruplex
 
 
 
@@ -4854,6 +4843,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Nimis ve
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Non licet intervallum ministrationis mutare...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... vehiculum est destructum!
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Nulla vehicula omnino parabilia erunt
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Muta configurationem NewGRF tuam

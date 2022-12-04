@@ -1009,21 +1009,8 @@ STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Centang 
 
 STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}Pengendali piranti: {STRING}
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Ukuran antarmuka
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Pilih ukuran elemen antarmuka yang akan digunakan
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(deteksi-otomatis)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normal
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Kali dua
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Kali empat
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Ukuran font
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Pilih ukuran font antarmuka yang akan digunakan
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(deteksi-otomatis)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normal
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Kali dua
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :4 kali
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Grafik
 
@@ -3655,7 +3642,6 @@ STR_FINANCES_SECTION_OTHER                                      :{GOLD}Lainnya
 
 STR_FINANCES_NEGATIVE_INCOME                                    :-{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :+{CURRENCY_LONG}
-STR_FINANCES_NET_PROFIT                                         :{WHITE}Laba bersih
 STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}Saldo Bank
 STR_FINANCES_OWN_FUNDS_TITLE                                    :{WHITE}Dana Pribadi
 STR_FINANCES_LOAN_TITLE                                         :{WHITE}Pinjaman
@@ -5007,6 +4993,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Terlalu 
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Tidak dapat mengubah waktu perbaikan...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... kendaraan hancur
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Tak satupun kendaraan tersedia
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Tukarkan konfigurasi NewGRF anda

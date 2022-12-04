@@ -1129,8 +1129,8 @@ struct BuildRoadDepotWindow : public PickerWindowBase {
 	{
 		if (!IsInsideMM(widget, WID_BROD_DEPOT_NE, WID_BROD_DEPOT_NW + 1)) return;
 
-		size->width  = ScaleGUITrad(64) + WD_BEVEL_LEFT + WD_BEVEL_RIGHT;
-		size->height = ScaleGUITrad(48) + WD_BEVEL_TOP + WD_BEVEL_BOTTOM;
+		size->width  = ScaleGUITrad(64) + WidgetDimensions::scaled.fullbevel.Horizontal();
+		size->height = ScaleGUITrad(48) + WidgetDimensions::scaled.fullbevel.Vertical();
 	}
 
 	void DrawWidget(const Rect &r, int widget) const override
@@ -1141,8 +1141,8 @@ struct BuildRoadDepotWindow : public PickerWindowBase {
 		if (FillDrawPixelInfo(&tmp_dpi, r.left, r.top, r.Width(), r.Height())) {
 			DrawPixelInfo *old_dpi = _cur_dpi;
 			_cur_dpi = &tmp_dpi;
-			int x = (r.Width()  - ScaleGUITrad(64)) / 2 + ScaleGUITrad(31);
-			int y = (r.Height() + ScaleGUITrad(48)) / 2 - ScaleGUITrad(31);
+			int x = (r.Width()  - ScaleSpriteTrad(64)) / 2 + ScaleSpriteTrad(31);
+			int y = (r.Height() + ScaleSpriteTrad(48)) / 2 - ScaleSpriteTrad(31);
 			DrawRoadDepotSprite(x, y, (DiagDirection)(widget - WID_BROD_DEPOT_NE + DIAGDIR_NE), _cur_roadtype);
 			_cur_dpi = old_dpi;
 		}
@@ -1262,7 +1262,7 @@ private:
 public:
 	BuildRoadStationWindow(WindowDesc *desc, Window *parent, RoadStopType rs) : PickerWindowBase(desc, parent), filter_editbox(EDITBOX_MAX_SIZE * MAX_CHAR_LENGTH, EDITBOX_MAX_SIZE)
 	{
-		this->coverage_height = 2 * FONT_HEIGHT_NORMAL + 3 * WD_PAR_VSEP_NORMAL;
+		this->coverage_height = 2 * FONT_HEIGHT_NORMAL + 3 * WidgetDimensions::scaled.vsep_normal;
 		this->vscrollList = nullptr;
 		this->vscrollMatrix = nullptr;
 		this->roadStopType = rs;
@@ -1461,21 +1461,13 @@ public:
 		StationCoverageType sct = (this->window_class == WC_BUS_STATION) ? SCT_PASSENGERS_ONLY : SCT_NON_PASSENGERS_ONLY;
 
 		NWidgetBase *cov = this->GetWidget<NWidgetBase>(WID_BROS_INFO);
-		int top = cov->pos_y + WD_PAR_VSEP_NORMAL;
-		int left = cov->pos_x + WD_FRAMERECT_LEFT;
-		int right = cov->pos_x + cov->current_x - WD_FRAMERECT_RIGHT;
+		int top = cov->pos_y + WidgetDimensions::scaled.vsep_normal;
+		int left = cov->pos_x + WidgetDimensions::scaled.framerect.left;
+		int right = cov->pos_x + cov->current_x - WidgetDimensions::scaled.framerect.right;
 		int bottom = cov->pos_y + cov->current_y;
-		top = DrawStationCoverageAreaText(left, right, top, sct, rad, false) + WD_PAR_VSEP_NORMAL;
-		top = DrawStationCoverageAreaText(left, right, top, sct, rad, true) + WD_PAR_VSEP_NORMAL;
+		top = DrawStationCoverageAreaText(left, right, top, sct, rad, false) + WidgetDimensions::scaled.vsep_normal;
+		top = DrawStationCoverageAreaText(left, right, top, sct, rad, true) + WidgetDimensions::scaled.vsep_normal;
 
-		/*
-		int top = this->GetWidget<NWidgetBase>(WID_BROS_LT_ON)->pos_y + this->GetWidget<NWidgetBase>(WID_BROS_LT_ON)->current_y + WD_PAR_VSEP_NORMAL;
-		NWidgetBase *back_nwi = this->GetWidget<NWidgetBase>(WID_BROS_BACKGROUND);
-		int right = back_nwi->pos_x + back_nwi->current_x;
-		int bottom = back_nwi->pos_y + back_nwi->current_y;
-		top = DrawStationCoverageAreaText(back_nwi->pos_x + WD_FRAMERECT_LEFT, right - WD_FRAMERECT_RIGHT, top, sct, rad, false) + WD_PAR_VSEP_NORMAL;
-		top = DrawStationCoverageAreaText(back_nwi->pos_x + WD_FRAMERECT_LEFT, right - WD_FRAMERECT_RIGHT, top, sct, rad, true) + WD_PAR_VSEP_NORMAL;
-		*/
 		/* Resize background if the window is too small.
 		 * Never make the window smaller to avoid oscillating if the size change affects the acceptance.
 		 * (This is the case, if making the window bigger moves the mouse into the window.) */
@@ -1494,15 +1486,15 @@ public:
 					d = maxdim(d, GetStringBoundingBox(RoadStopClass::Get(rs_class)->name));
 				}
 				size->width = std::max(size->width, d.width + padding.width);
-				this->line_height = FONT_HEIGHT_NORMAL + WD_MATRIX_TOP + WD_MATRIX_BOTTOM;
+				this->line_height = FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.matrix.Vertical();
 				size->height = 5 * this->line_height;
 				resize->height = this->line_height;
 				break;
 			}
 
 			case WID_BROS_IMAGE:
-				size->width  = ScaleGUITrad(64) + WD_BEVEL_LEFT + WD_BEVEL_RIGHT;
-				size->height = ScaleGUITrad(48) + WD_BEVEL_TOP + WD_BEVEL_BOTTOM;
+				size->width  = ScaleGUITrad(64) + WidgetDimensions::scaled.fullbevel.Horizontal();
+				size->height = ScaleGUITrad(48) + WidgetDimensions::scaled.fullbevel.Vertical();
 				break;
 
 			case WID_BROS_STATION_NE:
@@ -1552,14 +1544,14 @@ public:
 					if (FillDrawPixelInfo(&tmp_dpi, r.left, r.top, r.Width(), r.Height())) {
 						DrawPixelInfo *old_dpi = _cur_dpi;
 						_cur_dpi = &tmp_dpi;
-						int x = (r.Width()  - ScaleGUITrad(64)) / 2 + ScaleGUITrad(31);
-						int y = (r.Height() + ScaleGUITrad(48)) / 2 - ScaleGUITrad(31);
+						int x = (r.Width()  - ScaleSpriteTrad(64)) / 2 + ScaleSpriteTrad(31);
+						int y = (r.Height() + ScaleSpriteTrad(48)) / 2 - ScaleSpriteTrad(31);
 						StationPickerDrawSprite(x, y, st, INVALID_RAILTYPE, _cur_roadtype, widget - WID_BROS_STATION_NE);
 						if (disabled) GfxFillRect(1, 1, r.Width() - 1, r.Height() - 1, PC_BLACK, FILLRECT_CHECKER);
 						_cur_dpi = old_dpi;
 					}
 				} else {
-					DrawRoadStopTile(r.left + WD_MATRIX_LEFT + ScaleGUITrad(31), r.bottom - ScaleGUITrad(31), _cur_roadtype, spec, st, (int)widget - WID_BROS_STATION_NE);
+					DrawRoadStopTile(r.left + WidgetDimensions::scaled.matrix.left + ScaleGUITrad(31), r.bottom - ScaleGUITrad(31), _cur_roadtype, spec, st, (int)widget - WID_BROS_STATION_NE);
 				}
 				break;
 			}
@@ -1569,7 +1561,7 @@ public:
 				uint row = 0;
 				for (auto rs_class : this->roadstop_classes) {
 					if (this->vscrollList->IsVisible(statclass)) {
-						DrawString(r.left + WD_MATRIX_LEFT, r.right, row * this->line_height + r.top + WD_MATRIX_TOP,
+						DrawString(r.left + WidgetDimensions::scaled.matrix.left, r.right, row * this->line_height + r.top + WidgetDimensions::scaled.matrix.top,
 								RoadStopClass::Get(rs_class)->name,
 								rs_class == _roadstop_gui_settings.roadstop_class ? TC_WHITE : TC_BLACK);
 						row++;
@@ -1594,11 +1586,11 @@ public:
 				if (FillDrawPixelInfo(&tmp_dpi, r.left, r.top, r.right - r.left + 1, r.bottom - r.top + 1)) {
 					DrawPixelInfo *old_dpi = _cur_dpi;
 					_cur_dpi = &tmp_dpi;
-					int x = ScaleGUITrad(31) + 1;
-					int y = r.bottom - r.top - ScaleGUITrad(31);
+					int x = ScaleSpriteTrad(31) + 1;
+					int y = r.bottom - r.top - ScaleSpriteTrad(31);
 					// Instead of "5" (5th view), pass the orientation clicked in the selection.
 					if (spec == nullptr) {
-						StationPickerDrawSprite(r.left + 1 + ScaleGUITrad(31), r.bottom - ScaleGUITrad(31), st, INVALID_RAILTYPE, _cur_roadtype, _roadstop_gui_settings.orientation);
+						StationPickerDrawSprite(r.left + 1 + ScaleSpriteTrad(31), r.bottom - ScaleSpriteTrad(31), st, INVALID_RAILTYPE, _cur_roadtype, _roadstop_gui_settings.orientation);
 					} else {
 						DiagDirection orientation = _roadstop_gui_settings.orientation;
 						if (orientation < DIAGDIR_END && HasBit(spec->flags, RSF_DRIVE_THROUGH_ONLY)) orientation = DIAGDIR_END;
@@ -1884,7 +1876,7 @@ static const NWidgetPart _nested_tram_station_picker_widgets[] = {
 			EndContainer(),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_EMPTY, INVALID_COLOUR, WID_BROS_INFO), SetFill(1, 1), SetResize(1, 0),
+			NWidget(WWT_EMPTY, INVALID_COLOUR, WID_BROS_INFO), SetPadding(WidgetDimensions::unscaled.framerect), SetFill(1, 1), SetResize(1, 0),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_SHOW_NEWST_RESIZE),
 				NWidget(NWID_VERTICAL),
 					NWidget(WWT_PANEL, COLOUR_DARK_GREEN), SetFill(0, 1), EndContainer(),

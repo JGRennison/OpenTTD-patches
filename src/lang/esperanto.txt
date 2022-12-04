@@ -943,11 +943,6 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :alia
 
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Interfacgrandeco
-
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normala
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Duobla grandeco
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Kvaroble grandeco
 
 
 
@@ -3962,6 +3957,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Tro da v
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Ne povas ŝanĝi prizorgintervalon...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... veturilo estas detrua
+
 
 
 # Specific vehicle errors

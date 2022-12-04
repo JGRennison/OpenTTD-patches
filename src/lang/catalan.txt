@@ -1010,21 +1010,8 @@ STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Seleccio
 
 STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}Controlador actual: {STRING}
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Mida de la interfície
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Escull la mida dels elements de la interfície
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(detecta automàticament)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normal
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Doble
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Quàdruple
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Mida de la lletra
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Seleccioneu la mida de les fonts de la interfície.
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(detecta automàticament)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normal
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Doble
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Quàdruple
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Gràfics
 
@@ -3661,7 +3648,6 @@ STR_FINANCES_SECTION_OTHER                                      :{GOLD}Altres
 STR_FINANCES_NEGATIVE_INCOME                                    :-{CURRENCY_LONG}
 STR_FINANCES_ZERO_INCOME                                        :{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :+{CURRENCY_LONG}
-STR_FINANCES_NET_PROFIT                                         :{WHITE}Benefici net
 STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}Balanç bancari
 STR_FINANCES_OWN_FUNDS_TITLE                                    :{WHITE}Fons propis
 STR_FINANCES_LOAN_TITLE                                         :{WHITE}Préstec
@@ -5014,6 +5000,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Massa ve
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}No es pot canviar l'interval de les revisions...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... vehicle està destruït
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}No hi haurà cap vehicle disponible
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Canvia la teva configuració dels NewGRF

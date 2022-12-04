@@ -521,7 +521,6 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :расна
 
 
 
-
 # Custom currency window
 
 
@@ -1703,6 +1702,7 @@ STR_ERROR_OBJECT_IN_THE_WAY                                     :{WHITE}Ҫул �
 ###length VEHICLE_TYPES
 
 ###length VEHICLE_TYPES
+
 
 
 

@@ -120,15 +120,15 @@ Money CalculateOverallTemplateDisplayRunningCost(const TemplateVehicle *tv)
 	return val;
 }
 
-void DrawTemplate(const TemplateVehicle *tv, int left, int right, int y)
+void DrawTemplate(const TemplateVehicle *tv, int left, int right, int y, int height)
 {
 	if (!tv) return;
 
 	DrawPixelInfo tmp_dpi, *old_dpi;
 	int max_width = right - left + 1;
-	int height = ScaleGUITrad(14);
-	int padding = ScaleGUITrad(1);
-	if (!FillDrawPixelInfo(&tmp_dpi, left, y - padding, max_width, height + (2 * padding))) return;
+	int veh_height = ScaleSpriteTrad(14);
+	int padding = height - veh_height;
+	if (!FillDrawPixelInfo(&tmp_dpi, left, y + (padding / 2), max_width, height)) return;
 
 	old_dpi = _cur_dpi;
 	_cur_dpi = &tmp_dpi;
@@ -137,7 +137,7 @@ void DrawTemplate(const TemplateVehicle *tv, int left, int right, int y)
 	int offset = 0;
 
 	while (t) {
-		t->sprite_seq.Draw(offset + t->image_dimensions.GetOffsetX(), t->image_dimensions.GetOffsetY() + ScaleGUITrad(10), t->colourmap, false);
+		t->sprite_seq.Draw(offset + t->image_dimensions.GetOffsetX(), t->image_dimensions.GetOffsetY() + ScaleSpriteTrad(10), t->colourmap, false);
 
 		offset += t->image_dimensions.GetDisplayImageWidth();
 		t = t->Next();
