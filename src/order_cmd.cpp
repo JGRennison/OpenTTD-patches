@@ -871,7 +871,7 @@ void OrderList::DebugCheckSanity() const
 static inline bool OrderGoesToStation(const Vehicle *v, const Order *o)
 {
 	return o->IsType(OT_GOTO_STATION) ||
-			(v->type == VEH_AIRCRAFT && o->IsType(OT_GOTO_DEPOT) && o->GetDestination() != INVALID_STATION);
+			(v->type == VEH_AIRCRAFT && o->IsType(OT_GOTO_DEPOT) && !(o->GetDepotActionType() & ODATFB_NEAREST_DEPOT) && o->GetDestination() != INVALID_STATION);
 }
 
 /**
