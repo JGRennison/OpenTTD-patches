@@ -76,16 +76,15 @@ public:
 	{
 		if (widget != WID_LI_BACKGROUND) return;
 
-		uint y = r.top + WD_TEXTPANEL_TOP;
+		Rect ir = r.Shrink(WD_FRAMETEXT_LEFT, WD_TEXTPANEL_TOP, WD_FRAMETEXT_RIGHT, WD_TEXTPANEL_BOTTOM);
 		for (size_t i = 0; i < this->landinfo_data.size(); i++) {
-			DrawString(r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT, y, this->landinfo_data[i], i == 0 ? TC_LIGHT_BLUE : TC_FROMSTRING, SA_HOR_CENTER);
-			y += FONT_HEIGHT_NORMAL + WD_PAR_VSEP_NORMAL;
-			if (i == 0) y += 4;
+			DrawString(ir, this->landinfo_data[i], i == 0 ? TC_LIGHT_BLUE : TC_FROMSTRING, SA_HOR_CENTER);
+			ir.top += FONT_HEIGHT_NORMAL + (i == 0 ? WD_PAR_VSEP_WIDE : WD_PAR_VSEP_NORMAL);
 		}
 
 		if (!this->cargo_acceptance.empty()) {
 			SetDParamStr(0, this->cargo_acceptance);
-			DrawStringMultiLine(r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT, y, r.bottom - WD_TEXTPANEL_BOTTOM, STR_JUST_RAW_STRING, TC_FROMSTRING, SA_CENTER);
+			DrawStringMultiLine(ir, STR_JUST_RAW_STRING, TC_FROMSTRING, SA_CENTER);
 		}
 	}
 
@@ -98,8 +97,7 @@ public:
 			uint width = GetStringBoundingBox(this->landinfo_data[i]).width + WD_FRAMETEXT_LEFT + WD_FRAMETEXT_RIGHT;
 			size->width = std::max(size->width, width);
 
-			size->height += FONT_HEIGHT_NORMAL + WD_PAR_VSEP_NORMAL;
-			if (i == 0) size->height += 4;
+			size->height += FONT_HEIGHT_NORMAL + (i == 0 ? WD_PAR_VSEP_WIDE : WD_PAR_VSEP_NORMAL);
 		}
 
 		if (!this->cargo_acceptance.empty()) {
@@ -778,15 +776,15 @@ struct TooltipsWindow : public Window
 		}
 
 		/* Increase slightly to have some space around the box. */
-		size->width  += 2 + WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
-		size->height += 2 + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
+		size->width  += 2 + padding.width;
+		size->height += 2 + padding.height;
 	}
 
 	void DrawWidget(const Rect &r, int widget) const override
 	{
 		/* There is only one widget. */
-		GfxFillRect(r.left, r.top, r.right, r.bottom, PC_BLACK);
-		GfxFillRect(r.left + 1, r.top + 1, r.right - 1, r.bottom - 1, PC_LIGHT_YELLOW);
+		GfxFillRect(r, PC_BLACK);
+		GfxFillRect(r.Shrink(WD_BEVEL_LEFT, WD_BEVEL_TOP, WD_BEVEL_RIGHT, WD_BEVEL_BOTTOM), PC_LIGHT_YELLOW);
 
 		if (this->paramcount == 0) {
 			DrawStringMultiLine(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, r.top + WD_FRAMERECT_TOP, r.bottom - WD_FRAMERECT_BOTTOM, this->buffer, TC_FROMSTRING, SA_CENTER);
@@ -873,24 +871,21 @@ void QueryString::DrawEditBox(const Window *w, int wid) const
 	Dimension sprite_size = GetSpriteSize(rtl ? SPR_IMG_DELETE_RIGHT : SPR_IMG_DELETE_LEFT);
 	int clearbtn_width = sprite_size.width + WD_IMGBTN_LEFT + WD_IMGBTN_RIGHT;
 
-	int clearbtn_left  = wi->pos_x + (rtl ? 0 : wi->current_x - clearbtn_width);
-	int clearbtn_right = wi->pos_x + (rtl ? clearbtn_width : wi->current_x) - 1;
-	int left   = wi->pos_x + (rtl ? clearbtn_width : 0);
-	int right  = wi->pos_x + (rtl ? wi->current_x : wi->current_x - clearbtn_width) - 1;
+	Rect r = wi->GetCurrentRect();
+	Rect cr = r.WithWidth(clearbtn_width, !rtl);
+	Rect fr = r.Indent(clearbtn_width, !rtl);
 
-	int top    = wi->pos_y;
-	int bottom = wi->pos_y + wi->current_y - 1;
+	DrawFrameRect(cr, wi->colour, wi->IsLowered() ? FR_LOWERED : FR_NONE);
+	DrawSprite(rtl ? SPR_IMG_DELETE_RIGHT : SPR_IMG_DELETE_LEFT, PAL_NONE, cr.left + WD_IMGBTN_LEFT + (wi->IsLowered() ? 1 : 0), CenterBounds(r.top, r.bottom, sprite_size.height) + (wi->IsLowered() ? 1 : 0));
+	if (this->text.bytes == 1) GfxFillRect(cr.Shrink(WD_BEVEL_LEFT, WD_BEVEL_TOP, WD_BEVEL_RIGHT, WD_BEVEL_BOTTOM), _colour_gradient[wi->colour & 0xF][2], FILLRECT_CHECKER);
 
-	DrawFrameRect(clearbtn_left, top, clearbtn_right, bottom, wi->colour, wi->IsLowered() ? FR_LOWERED : FR_NONE);
-	DrawSprite(rtl ? SPR_IMG_DELETE_RIGHT : SPR_IMG_DELETE_LEFT, PAL_NONE, clearbtn_left + WD_IMGBTN_LEFT + (wi->IsLowered() ? 1 : 0), CenterBounds(top, bottom, sprite_size.height) + (wi->IsLowered() ? 1 : 0));
-	if (this->text.bytes == 1) GfxFillRect(clearbtn_left + 1, top + 1, clearbtn_right - 1, bottom - 1, _colour_gradient[wi->colour & 0xF][2], FILLRECT_CHECKER);
+	DrawFrameRect(fr, wi->colour, FR_LOWERED | FR_DARKENED);
+	GfxFillRect(fr.Shrink(WD_BEVEL_LEFT, WD_BEVEL_TOP, WD_BEVEL_RIGHT, WD_BEVEL_BOTTOM), PC_BLACK);
 
-	DrawFrameRect(left, top, right, bottom, wi->colour, FR_LOWERED | FR_DARKENED);
-	GfxFillRect(left + 1, top + 1, right - 1, bottom - 1, PC_BLACK);
-
+	fr = fr.Shrink(WD_FRAMERECT_LEFT, WD_FRAMERECT_TOP, WD_FRAMERECT_RIGHT, WD_FRAMERECT_BOTTOM);
 	/* Limit the drawing of the string inside the widget boundaries */
 	DrawPixelInfo dpi;
-	if (!FillDrawPixelInfo(&dpi, left + WD_FRAMERECT_LEFT, top + WD_FRAMERECT_TOP, right - left - WD_FRAMERECT_RIGHT, bottom - top - WD_FRAMERECT_BOTTOM)) return;
+	if (!FillDrawPixelInfo(&dpi, fr.left, fr.top, fr.Width(), fr.Height())) return;
 
 	DrawPixelInfo *old_dpi = _cur_dpi;
 	_cur_dpi = &dpi;
@@ -898,12 +893,12 @@ void QueryString::DrawEditBox(const Window *w, int wid) const
 	/* We will take the current widget length as maximum width, with a small
 	 * space reserved at the end for the caret to show */
 	const Textbuf *tb = &this->text;
-	int delta = std::min(0, (right - left) - tb->pixels - 10);
+	int delta = std::min(0, (fr.right - fr.left) - tb->pixels - 10);
 
 	if (tb->caretxoffs + delta < 0) delta = -tb->caretxoffs;
 
 	/* If we have a marked area, draw a background highlight. */
-	if (tb->marklength != 0) GfxFillRect(delta + tb->markxoffs, 0, delta + tb->markxoffs + tb->marklength - 1, bottom - top, PC_GREY);
+	if (tb->marklength != 0) GfxFillRect(delta + tb->markxoffs, 0, delta + tb->markxoffs + tb->marklength - 1, fr.bottom - fr.top, PC_GREY);
 
 	DrawString(delta, tb->pixels, 0, tb->buf, TC_YELLOW);
 	bool focussed = w->IsWidgetGloballyFocused(wid) || IsOSKOpenedFor(w, wid);
@@ -931,15 +926,14 @@ Point QueryString::GetCaretPosition(const Window *w, int wid) const
 	Dimension sprite_size = GetSpriteSize(rtl ? SPR_IMG_DELETE_RIGHT : SPR_IMG_DELETE_LEFT);
 	int clearbtn_width = sprite_size.width + WD_IMGBTN_LEFT + WD_IMGBTN_RIGHT;
 
-	int left   = wi->pos_x + (rtl ? clearbtn_width : 0);
-	int right  = wi->pos_x + (rtl ? wi->current_x : wi->current_x - clearbtn_width) - 1;
+	Rect r = wi->GetCurrentRect().Indent(clearbtn_width, !rtl).Shrink(WD_FRAMERECT_LEFT, WD_FRAMERECT_TOP, WD_FRAMERECT_RIGHT, WD_FRAMERECT_BOTTOM);
 
 	/* Clamp caret position to be inside out current width. */
 	const Textbuf *tb = &this->text;
-	int delta = std::min(0, (right - left) - tb->pixels - 10);
+	int delta = std::min(0, (r.right - r.left) - tb->pixels - 10);
 	if (tb->caretxoffs + delta < 0) delta = -tb->caretxoffs;
 
-	Point pt = {left + WD_FRAMERECT_LEFT + tb->caretxoffs + delta, (int)wi->pos_y + WD_FRAMERECT_TOP};
+	Point pt = {r.left + tb->caretxoffs + delta, r.top};
 	return pt;
 }
 
@@ -961,24 +955,18 @@ Rect QueryString::GetBoundingRect(const Window *w, int wid, const char *from, co
 	Dimension sprite_size = GetSpriteSize(rtl ? SPR_IMG_DELETE_RIGHT : SPR_IMG_DELETE_LEFT);
 	int clearbtn_width = sprite_size.width + WD_IMGBTN_LEFT + WD_IMGBTN_RIGHT;
 
-	int left   = wi->pos_x + (rtl ? clearbtn_width : 0);
-	int right  = wi->pos_x + (rtl ? wi->current_x : wi->current_x - clearbtn_width) - 1;
-
-	int top    = wi->pos_y + WD_FRAMERECT_TOP;
-	int bottom = wi->pos_y + wi->current_y - 1 - WD_FRAMERECT_BOTTOM;
+	Rect r = wi->GetCurrentRect().Indent(clearbtn_width, !rtl).Shrink(WD_FRAMERECT_LEFT, WD_FRAMERECT_TOP, WD_FRAMERECT_RIGHT, WD_FRAMERECT_BOTTOM);
 
 	/* Clamp caret position to be inside our current width. */
 	const Textbuf *tb = &this->text;
-	int delta = std::min(0, (right - left) - tb->pixels - 10);
+	int delta = std::min(0, r.Width() - tb->pixels - 10);
 	if (tb->caretxoffs + delta < 0) delta = -tb->caretxoffs;
 
 	/* Get location of first and last character. */
 	Point p1 = GetCharPosInString(tb->buf, from, FS_NORMAL);
 	Point p2 = from != to ? GetCharPosInString(tb->buf, to, FS_NORMAL) : p1;
 
-	Rect r = { Clamp(left + p1.x + delta + WD_FRAMERECT_LEFT, left, right), top, Clamp(left + p2.x + delta + WD_FRAMERECT_LEFT, left, right - WD_FRAMERECT_RIGHT), bottom };
-
-	return r;
+	return { Clamp(r.left + p1.x + delta, r.left, r.right), r.top, Clamp(r.left + p2.x + delta, r.left, r.right), r.bottom };
 }
 
 /**
@@ -998,20 +986,16 @@ const char *QueryString::GetCharAtPosition(const Window *w, int wid, const Point
 	Dimension sprite_size = GetSpriteSize(rtl ? SPR_IMG_DELETE_RIGHT : SPR_IMG_DELETE_LEFT);
 	int clearbtn_width = sprite_size.width + WD_IMGBTN_LEFT + WD_IMGBTN_RIGHT;
 
-	int left   = wi->pos_x + (rtl ? clearbtn_width : 0);
-	int right  = wi->pos_x + (rtl ? wi->current_x : wi->current_x - clearbtn_width) - 1;
+	Rect r = wi->GetCurrentRect().Indent(clearbtn_width, !rtl).Shrink(WD_FRAMERECT_LEFT, WD_FRAMERECT_TOP, WD_FRAMERECT_RIGHT, WD_FRAMERECT_BOTTOM);
 
-	int top    = wi->pos_y + WD_FRAMERECT_TOP;
-	int bottom = wi->pos_y + wi->current_y - 1 - WD_FRAMERECT_BOTTOM;
-
-	if (!IsInsideMM(pt.y, top, bottom)) return nullptr;
+	if (!IsInsideMM(pt.y, r.top, r.bottom)) return nullptr;
 
 	/* Clamp caret position to be inside our current width. */
 	const Textbuf *tb = &this->text;
-	int delta = std::min(0, (right - left) - tb->pixels - 10);
+	int delta = std::min(0, r.Width() - tb->pixels - 10);
 	if (tb->caretxoffs + delta < 0) delta = -tb->caretxoffs;
 
-	return ::GetCharAtPosition(tb->buf, pt.x - delta - left);
+	return ::GetCharAtPosition(tb->buf, pt.x - delta - r.left);
 }
 
 void QueryString::ClickEditBox(Window *w, Point pt, int wid, int click_count, bool focus_changed)
@@ -1023,9 +1007,9 @@ void QueryString::ClickEditBox(Window *w, Point pt, int wid, int click_count, bo
 	bool rtl = _current_text_dir == TD_RTL;
 	int clearbtn_width = GetSpriteSize(rtl ? SPR_IMG_DELETE_RIGHT : SPR_IMG_DELETE_LEFT).width;
 
-	int clearbtn_left  = wi->pos_x + (rtl ? 0 : wi->current_x - clearbtn_width);
+	Rect cr = wi->GetCurrentRect().WithWidth(clearbtn_width, !rtl);
 
-	if (IsInsideBS(pt.x, clearbtn_left, clearbtn_width)) {
+	if (IsInsideMM(pt.x, cr.left, cr.right)) {
 		if (this->text.bytes > 1) {
 			this->text.DeleteAll();
 			w->HandleButtonClick(wid);
@@ -1116,8 +1100,7 @@ struct QueryStringWindow : public Window
 		if (widget != WID_QS_WARNING) return;
 
 		if (this->flags & QSF_PASSWORD) {
-			DrawStringMultiLine(r.left + WD_FRAMERECT_LEFT + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT - WD_FRAMERECT_RIGHT,
-				r.top + WD_FRAMERECT_TOP + WD_FRAMETEXT_TOP, r.bottom - WD_FRAMERECT_BOTTOM - WD_FRAMETEXT_BOTTOM,
+			DrawStringMultiLine(r.Shrink(WD_FRAMERECT_LEFT + WD_FRAMETEXT_LEFT, WD_FRAMERECT_TOP + WD_FRAMETEXT_TOP, WD_FRAMERECT_RIGHT + WD_FRAMETEXT_RIGHT, WD_FRAMERECT_BOTTOM + WD_FRAMETEXT_BOTTOM),
 				STR_WARNING_PASSWORD_SECURITY, TC_FROMSTRING, SA_CENTER);
 		}
 	}
@@ -1270,7 +1253,7 @@ struct QueryWindow : public Window {
 	{
 		if (widget != WID_Q_TEXT) return;
 
-		DrawStringMultiLine(r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT, r.top + WD_FRAMERECT_TOP, r.bottom - WD_FRAMERECT_BOTTOM,
+		DrawStringMultiLine(r.Shrink(WD_FRAMETEXT_LEFT, WD_FRAMERECT_TOP, WD_FRAMETEXT_RIGHT, WD_FRAMERECT_BOTTOM),
 				this->message, TC_FROMSTRING, SA_CENTER);
 	}
 

@@ -1795,7 +1795,7 @@ public:
 			case WID_O_SEL_OCCUPANCY:
 			case WID_O_ORDER_LIST:
 				resize->height = FONT_HEIGHT_NORMAL;
-				size->height = 6 * resize->height + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
+				size->height = 6 * resize->height + padding.height;
 				break;
 
 			case WID_O_COND_VARIABLE: {
@@ -2246,12 +2246,13 @@ public:
 
 	void DrawOrderListWidget(const Rect &r) const
 	{
+		Rect ir = r.Shrink(WD_FRAMETEXT_LEFT, WD_FRAMERECT_TOP, WD_FRAMETEXT_RIGHT, WD_FRAMERECT_BOTTOM);
 		bool rtl = _current_text_dir == TD_RTL;
 		SetDParamMaxValue(0, this->vehicle->GetNumOrders(), 2);
 		int index_column_width = GetStringBoundingBox(STR_ORDER_INDEX).width + 2 * GetSpriteSize(rtl ? SPR_ARROW_RIGHT : SPR_ARROW_LEFT).width + 3;
-		int middle = rtl ? r.right - WD_FRAMETEXT_RIGHT - index_column_width : r.left + WD_FRAMETEXT_LEFT + index_column_width;
+		int middle = rtl ? ir.right - index_column_width : ir.left + index_column_width;
 
-		int y = r.top + WD_FRAMERECT_TOP;
+		int y = ir.top;
 		int line_height = this->GetWidget<NWidgetBase>(WID_O_ORDER_LIST)->resize_y;
 
 		int i = this->vscroll->GetPosition();
@@ -2265,9 +2266,9 @@ public:
 				if (i != this->selected_order && i == this->order_over) {
 					/* Highlight dragged order destination. */
 					int top = (this->order_over < this->selected_order ? y : y + line_height) - WD_FRAMERECT_TOP;
-					int bottom = std::min(top + 2, r.bottom - WD_FRAMERECT_BOTTOM);
-					top = std::max(top - 3, r.top + WD_FRAMERECT_TOP);
-					GfxFillRect(r.left + WD_FRAMETEXT_LEFT, top, r.right - WD_FRAMETEXT_RIGHT, bottom, _colour_gradient[COLOUR_GREY][7]);
+					int bottom = std::min(top + 2, ir.bottom);
+					top = std::max(top - 3, ir.top);
+					GfxFillRect(ir.left, top, ir.right, bottom, _colour_gradient[COLOUR_GREY][7]);
 					break;
 				}
 				y += line_height;

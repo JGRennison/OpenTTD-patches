@@ -331,7 +331,7 @@ public:
 					size->width = std::max(size->width, GetStringBoundingBox(as->name).width);
 				}
 
-				this->line_height = FONT_HEIGHT_NORMAL + WD_MATRIX_TOP + WD_MATRIX_BOTTOM;
+				this->line_height = FONT_HEIGHT_NORMAL + padding.height;
 				size->height = 5 * this->line_height;
 				break;
 			}
@@ -344,8 +344,8 @@ public:
 						SpriteID sprite = GetCustomAirportSprite(as, layout);
 						if (sprite != 0) {
 							Dimension d = GetSpriteSize(sprite);
-							d.width += WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
-							d.height += WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
+							d.width += padding.width;
+							d.height += padding.height;
 							*size = maxdim(d, *size);
 						}
 					}
@@ -363,6 +363,8 @@ public:
 						/* STR_BLACK_STRING is used to start the string with {BLACK} */
 						SetDParam(0, string);
 						Dimension d = GetStringMultiLineBoundingBox(STR_BLACK_STRING, *size);
+						d.width += padding.width;
+						d.height += padding.height;
 						*size = maxdim(d, *size);
 					}
 				}
@@ -376,15 +378,17 @@ public:
 	{
 		switch (widget) {
 			case WID_AP_AIRPORT_LIST: {
-				int y = r.top;
+				Rect row = r.WithHeight(this->line_height).Shrink(WD_BEVEL_LEFT, WD_BEVEL_TOP, WD_BEVEL_RIGHT, WD_BEVEL_BOTTOM);
+				Rect text = r.WithHeight(this->line_height).Shrink(WD_MATRIX_LEFT, WD_MATRIX_TOP, WD_MATRIX_RIGHT, WD_MATRIX_BOTTOM);
 				AirportClass *apclass = AirportClass::Get(_selected_airport_class);
 				for (uint i = this->vscroll->GetPosition(); this->vscroll->IsVisible(i) && i < apclass->GetSpecCount(); i++) {
 					const AirportSpec *as = apclass->GetSpec(i);
 					if (!as->IsAvailable()) {
-						GfxFillRect(r.left + 1, y + 1, r.right - 1, y + this->line_height - 2, PC_BLACK, FILLRECT_CHECKER);
+						GfxFillRect(row, PC_BLACK, FILLRECT_CHECKER);
 					}
-					DrawString(r.left + WD_MATRIX_LEFT, r.right - WD_MATRIX_RIGHT, y + WD_MATRIX_TOP, as->name, ((int)i == _selected_airport_index) ? TC_WHITE : TC_BLACK);
-					y += this->line_height;
+					DrawString(text, as->name, ((int)i == _selected_airport_index) ? TC_WHITE : TC_BLACK);
+					row = row.Translate(0, this->line_height);
+					text = text.Translate(0, this->line_height);
 				}
 				break;
 			}

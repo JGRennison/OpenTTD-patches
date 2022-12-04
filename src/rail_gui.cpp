@@ -1344,7 +1344,7 @@ public:
 					d = maxdim(d, GetStringBoundingBox(StationClass::Get(station_class)->name));
 				}
 				size->width = std::max(size->width, d.width + padding.width);
-				this->line_height = FONT_HEIGHT_NORMAL + WD_MATRIX_TOP + WD_MATRIX_BOTTOM;
+				this->line_height = FONT_HEIGHT_NORMAL + padding.height;
 				size->height = 5 * this->line_height;
 				resize->height = this->line_height;
 				break;
@@ -1376,8 +1376,8 @@ public:
 			case WID_BRAS_PLATFORM_DIR_X:
 			case WID_BRAS_PLATFORM_DIR_Y:
 			case WID_BRAS_IMAGE:
-				size->width  = ScaleGUITrad(64) + 2;
-				size->height = ScaleGUITrad(58) + 2;
+				size->width  = ScaleGUITrad(64) + WD_BEVEL_LEFT + WD_BEVEL_RIGHT;
+				size->height = ScaleGUITrad(58) + WD_BEVEL_TOP + WD_BEVEL_BOTTOM;
 				break;
 
 			case WID_BRAS_COVERAGE_TEXTS:
@@ -1401,8 +1401,8 @@ public:
 				if (FillDrawPixelInfo(&tmp_dpi, r.left, r.top, r.Width(), r.Height())) {
 					DrawPixelInfo *old_dpi = _cur_dpi;
 					_cur_dpi = &tmp_dpi;
-					int x = ScaleGUITrad(31) + 1;
-					int y = r.bottom - r.top - ScaleGUITrad(31);
+					int x = (r.Width()  - ScaleGUITrad(64)) / 2 + ScaleGUITrad(31);
+					int y = (r.Height() + ScaleGUITrad(58)) / 2 - ScaleGUITrad(31);
 					if (!DrawStationTile(x, y, _cur_railtype, AXIS_X, _railstation.station_class, _railstation.station_type)) {
 						StationPickerDrawSprite(x, y, STATION_RAIL, _cur_railtype, INVALID_ROADTYPE, 2);
 					}
@@ -1415,8 +1415,8 @@ public:
 				if (FillDrawPixelInfo(&tmp_dpi, r.left, r.top, r.Width(), r.Height())) {
 					DrawPixelInfo *old_dpi = _cur_dpi;
 					_cur_dpi = &tmp_dpi;
-					int x = ScaleGUITrad(31) + 1;
-					int y = r.bottom - r.top - ScaleGUITrad(31);
+					int x = (r.Width()  - ScaleGUITrad(64)) / 2 + ScaleGUITrad(31);
+					int y = (r.Height() + ScaleGUITrad(58)) / 2 - ScaleGUITrad(31);
 					if (!DrawStationTile(x, y, _cur_railtype, AXIS_Y, _railstation.station_class, _railstation.station_type)) {
 						StationPickerDrawSprite(x, y, STATION_RAIL, _cur_railtype, INVALID_ROADTYPE, 3);
 					}
@@ -1425,14 +1425,14 @@ public:
 				break;
 
 			case WID_BRAS_NEWST_LIST: {
+				Rect ir = r.Shrink(WD_MATRIX_LEFT, WD_MATRIX_TOP, WD_MATRIX_RIGHT, WD_MATRIX_BOTTOM);
 				uint statclass = 0;
-				uint row = 0;
 				for (auto station_class : this->station_classes) {
 					if (this->vscroll->IsVisible(statclass)) {
-						DrawString(r.left + WD_MATRIX_LEFT, r.right - WD_MATRIX_RIGHT, row * this->line_height + r.top + WD_MATRIX_TOP,
+						DrawString(ir,
 								StationClass::Get(station_class)->name,
 								station_class == _railstation.station_class ? TC_WHITE : TC_BLACK);
-						row++;
+						ir.top += this->line_height;
 					}
 					statclass++;
 				}
@@ -1445,15 +1445,15 @@ public:
 				/* Check station availability callback */
 				const StationSpec *statspec = StationClass::Get(_railstation.station_class)->GetSpec(type);
 				if (!IsStationAvailable(statspec)) {
-					GfxFillRect(r.left + 1, r.top + 1, r.right - 1, r.bottom - 1, PC_BLACK, FILLRECT_CHECKER);
+					GfxFillRect(r.Shrink(WD_BEVEL_LEFT, WD_BEVEL_TOP, WD_BEVEL_RIGHT, WD_BEVEL_BOTTOM), PC_BLACK, FILLRECT_CHECKER);
 				}
 
 				/* Set up a clipping area for the station preview. */
 				if (FillDrawPixelInfo(&tmp_dpi, r.left, r.top, r.Width(), r.Height())) {
 					DrawPixelInfo *old_dpi = _cur_dpi;
 					_cur_dpi = &tmp_dpi;
-					int x = ScaleGUITrad(31) + 1;
-					int y = r.bottom - r.top - ScaleGUITrad(31);
+					int x = (r.Width()  - ScaleGUITrad(64)) / 2 + ScaleGUITrad(31);
+					int y = (r.Height() + ScaleGUITrad(58)) / 2 - ScaleGUITrad(31);
 					if (!DrawStationTile(x, y, _cur_railtype, _railstation.orientation, _railstation.station_class, type)) {
 						StationPickerDrawSprite(x, y, STATION_RAIL, _cur_railtype, INVALID_ROADTYPE, 2 + _railstation.orientation);
 					}
@@ -2291,15 +2291,23 @@ struct BuildRailDepotWindow : public PickerWindowBase {
 	{
 		if (!IsInsideMM(widget, WID_BRAD_DEPOT_NE, WID_BRAD_DEPOT_NW + 1)) return;
 
-		size->width  = ScaleGUITrad(64) + 2;
-		size->height = ScaleGUITrad(48) + 2;
+		size->width  = ScaleGUITrad(64) + WD_BEVEL_LEFT + WD_BEVEL_RIGHT;
+		size->height = ScaleGUITrad(48) + WD_BEVEL_TOP + WD_BEVEL_BOTTOM;
 	}
 
 	void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (!IsInsideMM(widget, WID_BRAD_DEPOT_NE, WID_BRAD_DEPOT_NW + 1)) return;
 
-		DrawTrainDepotSprite(r.left + 1 + ScaleGUITrad(31), r.bottom - ScaleGUITrad(31), widget - WID_BRAD_DEPOT_NE + DIAGDIR_NE, _cur_railtype);
+		DrawPixelInfo tmp_dpi;
+		if (FillDrawPixelInfo(&tmp_dpi, r.left, r.top, r.Width(), r.Height())) {
+			DrawPixelInfo *old_dpi = _cur_dpi;
+			_cur_dpi = &tmp_dpi;
+			int x = (r.Width()  - ScaleGUITrad(64)) / 2 + ScaleGUITrad(31);
+			int y = (r.Height() + ScaleGUITrad(48)) / 2 - ScaleGUITrad(31);
+			DrawTrainDepotSprite(x, y, widget - WID_BRAD_DEPOT_NE + DIAGDIR_NE, _cur_railtype);
+			_cur_dpi = old_dpi;
+		}
 	}
 
 	void OnClick(Point pt, int widget, int click_count) override
@@ -2390,8 +2398,8 @@ struct BuildRailWaypointWindow : PickerWindowBase {
 				break;
 
 			case WID_BRW_WAYPOINT:
-				size->width  = ScaleGUITrad(64) + 2;
-				size->height = ScaleGUITrad(58) + 2;
+				size->width  = ScaleGUITrad(64) + WD_BEVEL_LEFT + WD_BEVEL_RIGHT;
+				size->height = ScaleGUITrad(58) + WD_BEVEL_TOP + WD_BEVEL_BOTTOM;
 				break;
 		}
 	}
@@ -2402,10 +2410,19 @@ struct BuildRailWaypointWindow : PickerWindowBase {
 			case WID_BRW_WAYPOINT: {
 				uint type = GB(widget, 16, 16);
 				const StationSpec *statspec = StationClass::Get(STAT_CLASS_WAYP)->GetSpec(type);
-				DrawWaypointSprite(r.left + 1 + ScaleGUITrad(31), r.bottom - ScaleGUITrad(31), type, _cur_railtype);
+
+				DrawPixelInfo tmp_dpi;
+				if (FillDrawPixelInfo(&tmp_dpi, r.left, r.top, r.Width(), r.Height())) {
+					DrawPixelInfo *old_dpi = _cur_dpi;
+					_cur_dpi = &tmp_dpi;
+					int x = (r.Width()  - ScaleGUITrad(64)) / 2 + ScaleGUITrad(31);
+					int y = (r.Height() + ScaleGUITrad(58)) / 2 - ScaleGUITrad(31);
+					DrawWaypointSprite(x, y, type, _cur_railtype);
+					_cur_dpi = old_dpi;
+				}
 
 				if (!IsStationAvailable(statspec)) {
-					GfxFillRect(r.left + 1, r.top + 1, r.right - 1, r.bottom - 1, PC_BLACK, FILLRECT_CHECKER);
+					GfxFillRect(r.Shrink(WD_BEVEL_LEFT, WD_BEVEL_TOP, WD_BEVEL_RIGHT, WD_BEVEL_BOTTOM), PC_BLACK, FILLRECT_CHECKER);
 				}
 			}
 		}

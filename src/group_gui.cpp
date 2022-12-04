@@ -679,14 +679,14 @@ public:
 			case WID_GL_LIST_VEHICLE:
 				if (this->vli.index != ALL_GROUP && this->grouping == GB_NONE) {
 					/* Mark vehicles which are in sub-groups (only if we are not using shared order coalescing) */
-					int y = r.top;
+					Rect mr = r.WithHeight(this->resize.step_height);
 					uint max = static_cast<uint>(std::min<size_t>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->vehgroups.size()));
 					for (uint i = this->vscroll->GetPosition(); i < max; ++i) {
 						const Vehicle *v = this->vehgroups[i].GetSingleVehicle();
 						if (v->group_id != this->vli.index) {
-							GfxFillRect(r.left + 1, y + 1, r.right - 1, y + this->resize.step_height - 2, _colour_gradient[COLOUR_GREY][3], FILLRECT_CHECKER);
+							GfxFillRect(mr.Shrink(WD_BEVEL_LEFT, WD_BEVEL_TOP, WD_BEVEL_RIGHT, WD_BEVEL_BOTTOM), _colour_gradient[COLOUR_GREY][3], FILLRECT_CHECKER);
 						}
-						y += this->resize.step_height;
+						mr = mr.Translate(0, this->resize.step_height);
 					}
 				}
 

@@ -1129,15 +1129,23 @@ struct BuildRoadDepotWindow : public PickerWindowBase {
 	{
 		if (!IsInsideMM(widget, WID_BROD_DEPOT_NE, WID_BROD_DEPOT_NW + 1)) return;
 
-		size->width  = ScaleGUITrad(64) + 2;
-		size->height = ScaleGUITrad(48) + 2;
+		size->width  = ScaleGUITrad(64) + WD_BEVEL_LEFT + WD_BEVEL_RIGHT;
+		size->height = ScaleGUITrad(48) + WD_BEVEL_TOP + WD_BEVEL_BOTTOM;
 	}
 
 	void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (!IsInsideMM(widget, WID_BROD_DEPOT_NE, WID_BROD_DEPOT_NW + 1)) return;
 
-		DrawRoadDepotSprite(r.left + 1 + ScaleGUITrad(31), r.bottom - ScaleGUITrad(31), (DiagDirection)(widget - WID_BROD_DEPOT_NE + DIAGDIR_NE), _cur_roadtype);
+		DrawPixelInfo tmp_dpi;
+		if (FillDrawPixelInfo(&tmp_dpi, r.left, r.top, r.Width(), r.Height())) {
+			DrawPixelInfo *old_dpi = _cur_dpi;
+			_cur_dpi = &tmp_dpi;
+			int x = (r.Width()  - ScaleGUITrad(64)) / 2 + ScaleGUITrad(31);
+			int y = (r.Height() + ScaleGUITrad(48)) / 2 - ScaleGUITrad(31);
+			DrawRoadDepotSprite(x, y, (DiagDirection)(widget - WID_BROD_DEPOT_NE + DIAGDIR_NE), _cur_roadtype);
+			_cur_dpi = old_dpi;
+		}
 	}
 
 	void OnClick(Point pt, int widget, int click_count) override
@@ -1493,8 +1501,8 @@ public:
 			}
 
 			case WID_BROS_IMAGE:
-				size->width = ScaleGUITrad(64) + 2;
-				size->height = ScaleGUITrad(58) + 2;
+				size->width  = ScaleGUITrad(64) + WD_BEVEL_LEFT + WD_BEVEL_RIGHT;
+				size->height = ScaleGUITrad(48) + WD_BEVEL_TOP + WD_BEVEL_BOTTOM;
 				break;
 
 			case WID_BROS_STATION_NE:
@@ -1540,8 +1548,16 @@ public:
 				const RoadStopSpec *spec = RoadStopClass::Get(_roadstop_gui_settings.roadstop_class)->GetSpec(_roadstop_gui_settings.roadstop_type);
 				bool disabled = (spec != nullptr && widget < WID_BROS_STATION_X && HasBit(spec->flags, RSF_DRIVE_THROUGH_ONLY));
 				if (spec == nullptr || disabled) {
-					StationPickerDrawSprite(r.left + WD_MATRIX_LEFT + ScaleGUITrad(31), r.bottom - ScaleGUITrad(31), st, INVALID_RAILTYPE, _cur_roadtype, widget - WID_BROS_STATION_NE);
-					if (disabled) GfxFillRect(r.left + 1, r.top + 1, r.right - 1, r.bottom - 1, PC_BLACK, FILLRECT_CHECKER);
+					DrawPixelInfo tmp_dpi;
+					if (FillDrawPixelInfo(&tmp_dpi, r.left, r.top, r.Width(), r.Height())) {
+						DrawPixelInfo *old_dpi = _cur_dpi;
+						_cur_dpi = &tmp_dpi;
+						int x = (r.Width()  - ScaleGUITrad(64)) / 2 + ScaleGUITrad(31);
+						int y = (r.Height() + ScaleGUITrad(48)) / 2 - ScaleGUITrad(31);
+						StationPickerDrawSprite(x, y, st, INVALID_RAILTYPE, _cur_roadtype, widget - WID_BROS_STATION_NE);
+						if (disabled) GfxFillRect(1, 1, r.Width() - 1, r.Height() - 1, PC_BLACK, FILLRECT_CHECKER);
+						_cur_dpi = old_dpi;
+					}
 				} else {
 					DrawRoadStopTile(r.left + WD_MATRIX_LEFT + ScaleGUITrad(31), r.bottom - ScaleGUITrad(31), _cur_roadtype, spec, st, (int)widget - WID_BROS_STATION_NE);
 				}
