@@ -1518,6 +1518,17 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 		signal_spacing = Clamp<int>(signal_spacing, 1, 16);
 
 		TileIndex tile_exit = GetOtherTunnelBridgeEnd(tile);
+
+		auto get_one_way_signal_count = [&]() -> uint {
+			uint spacing;
+			if (IsTunnelBridgeWithSignalSimulation(tile)) {
+				spacing = GetTunnelBridgeSignalSimulationSpacing(tile);
+			} else {
+				spacing = GetBestTunnelBridgeSignalSimulationSpacing(tile, tile_exit, signal_spacing);
+			}
+			return 2 + (GetTunnelBridgeLength(tile, tile_exit) / spacing);
+		};
+
 		if (TracksOverlap(GetTunnelBridgeTrackBits(tile)) || TracksOverlap(GetTunnelBridgeTrackBits(tile_exit))) return_cmd_error(STR_ERROR_NO_SUITABLE_RAILROAD_TRACK);
 		bool bidirectional = HasBit(p1, 18) && (sigtype == SIGTYPE_PBS);
 		cost = CommandCost();
@@ -1531,7 +1542,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 		if (!IsTunnelBridgeWithSignalSimulation(tile)) { // toggle signal zero costs.
 			if (convert_signal) return_cmd_error(STR_ERROR_THERE_ARE_NO_SIGNALS);
 			if (!(p2_signal_in && p2_signal_out)) {
-				cost = CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_SIGNALS] * ((GetTunnelBridgeLength(tile, tile_exit) + 4) >> 2) * (bidirectional ? 2 : 1)); // minimal 1
+				cost = CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_SIGNALS] * get_one_way_signal_count() * (bidirectional ? 2 : 1)); // minimal 1
 				if (HasBit(_signal_style_masks.no_tunnel_bridge, signal_style)) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
 				if (!is_style_usable(sigvar, signal_style, bidirectional ? 0x11 : (is_pbs ? 0x21 : 0x1))) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
 			}
@@ -1566,9 +1577,9 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			}
 			if (flip_variant || change_style) {
 				cost = CommandCost(EXPENSES_CONSTRUCTION, ((_price[PR_BUILD_SIGNALS] * (will_be_bidi ? 2 : 1)) + (_price[PR_CLEAR_SIGNALS] * (is_bidi ? 2 : 1))) *
-						((GetTunnelBridgeLength(tile, tile_exit) + 4) >> 2)); // minimal 1
+						get_one_way_signal_count());
 			} else if (is_bidi != will_be_bidi) {
-				cost = CommandCost(EXPENSES_CONSTRUCTION, _price[will_be_bidi ? PR_BUILD_SIGNALS : PR_CLEAR_SIGNALS] * ((GetTunnelBridgeLength(tile, tile_exit) + 4) >> 2)); // minimal 1
+				cost = CommandCost(EXPENSES_CONSTRUCTION, _price[will_be_bidi ? PR_BUILD_SIGNALS : PR_CLEAR_SIGNALS] * get_one_way_signal_count());
 			}
 			if (!is_style_usable(will_be_semaphore ? SIG_SEMAPHORE : SIG_ELECTRIC, will_be_style, will_be_bidi ? 0x11 : (will_be_pbs ? 0x21 : 0x1))) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
 		}
@@ -2173,9 +2184,7 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
 		CommandCost ret = TunnelBridgeIsFree(tile, end, nullptr, true);
 		if (ret.Failed()) return ret;
 
-		cost *= ((GetTunnelBridgeLength(tile, end) + 4) >> 2);
-		if (IsTunnelBridgeSignalSimulationBidirectional(tile)) cost *= 2;
-
+		cost *= GetTunnelBridgeSignalSimulationSignalCount(tile, end);
 	} else {
 		if (!ValParamTrackOrientation(track) || !IsPlainRailTile(tile) || !HasTrack(tile, track)) {
 			return_cmd_error(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
