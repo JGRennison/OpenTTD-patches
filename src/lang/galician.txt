@@ -6398,7 +6398,6 @@ STR_STATION_VIEW_DEPARTURES_BUTTON                              :{BLACK}Saídas
 STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}Amosa a lista das saídas programadas
 STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}Historial
 STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}Amosa o historial de carga a espera
-STR_STATION_VIEW_SCHEDULED_TOOLTIP_CTRL_SUFFIX                  :{BLACK}{STRING}. Ctrl+Click para amosar exclusivamente
 STR_DEPARTURES_CAPTION                                          :{WHITE}{STATION} Informaciónd a viaxe en directo
 STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOINT} Informaciónd a viaxe en directo
 STR_DEPARTURES_PAX                                              :{BLACK}{TINY_FONT}P
@@ -6411,6 +6410,7 @@ STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FO
 STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}Amosar as chegadas programadas
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}{TINY_FONT}vía
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Amosar os vehículos programados que non paran aqui
+STR_DEPARTURES_SHOW_TYPE_TOOLTIP_CTRL_SUFFIX                    :{BLACK}{STRING}. Ctrl+Click para amosar exclusivamente
 STR_DEPARTURES_EMPTY                                            :{ORANGE}Non hai vehículos actualmente programados para esta estación
 STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}Non se solicitou información dos horarios
 STR_DEPARTURES_TIME                                             :{ORANGE}{DATE_WALLCLOCK_TINY}

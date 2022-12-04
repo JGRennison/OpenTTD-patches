@@ -98,6 +98,7 @@ protected:
 	int calc_tick_countdown;   ///< The number of ticks to wait until recomputing the departure list. Signed in case it goes below zero.
 	bool show_types[4];        ///< The vehicle types to show in the departure list.
 	bool departure_types[3];   ///< The types of departure to show in the departure list.
+	bool departure_types_both; ///< Arrivals and departures buttons disabled (shown combined as single entry)
 	bool show_pax;             ///< Show passenger vehicles
 	bool show_freight;         ///< Show freight vehicles
 	bool cargo_buttons_disabled;///< Show pax/freight buttons disabled
@@ -133,6 +134,20 @@ protected:
 			this->LowerWidget(WID_DB_SHOW_PAX);
 			this->show_freight = false;
 			this->RaiseWidget(WID_DB_SHOW_FREIGHT);
+		}
+	}
+
+	void SetDepartureTypesDisabledState()
+	{
+		this->departure_types_both = _settings_client.gui.departure_show_both;
+		this->SetWidgetDisabledState(WID_DB_SHOW_DEPS, departure_types_both);
+		this->SetWidgetDisabledState(WID_DB_SHOW_ARRS, departure_types_both);
+		if (this->departure_types_both) {
+			this->LowerWidget(WID_DB_SHOW_DEPS);
+			this->LowerWidget(WID_DB_SHOW_ARRS);
+		} else {
+			this->SetWidgetLoweredState(WID_DB_SHOW_DEPS, this->departure_types[0]);
+			this->SetWidgetLoweredState(WID_DB_SHOW_ARRS, this->departure_types[1]);
 		}
 	}
 
@@ -237,6 +252,7 @@ public:
 		this->RaiseWidget(WID_DB_SHOW_VIA);
 		this->LowerWidget(WID_DB_SHOW_PAX);
 		this->LowerWidget(WID_DB_SHOW_FREIGHT);
+		if (!Twaypoint) this->SetDepartureTypesDisabledState();
 		this->SetCargoFilterDisabledState();
 
 		for (uint i = 0; i < 4; ++i) {
@@ -307,8 +323,8 @@ public:
 			case WID_DB_SHOW_SHIPS:
 			case WID_DB_SHOW_PLANES: {
 				uint64 params[1];
-				params[0] = STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP + (widget - WID_DB_SHOW_TRAINS);
-				GuiShowTooltips(this, STR_STATION_VIEW_SCHEDULED_TOOLTIP_CTRL_SUFFIX, 1, params, close_cond);
+				params[0] = STR_DEPARTURES_SHOW_TRAINS_TOOLTIP + (widget - WID_DB_SHOW_TRAINS);
+				GuiShowTooltips(this, STR_DEPARTURES_SHOW_TYPE_TOOLTIP_CTRL_SUFFIX, 1, params, close_cond);
 				return true;
 			}
 			default:
@@ -336,17 +352,12 @@ public:
 					}
 				} else {
 					this->show_types[widget - WID_DB_SHOW_TRAINS] = !this->show_types[widget - WID_DB_SHOW_TRAINS];
-					if (this->show_types[widget - WID_DB_SHOW_TRAINS]) {
-						this->LowerWidget(widget);
-					}
-					else {
-						this->RaiseWidget(widget);
-					}
+					this->SetWidgetLoweredState(widget, this->show_types[widget - WID_DB_SHOW_TRAINS]);
+					/* We need to redraw the button that was pressed. */
 					this->SetWidgetDirty(widget);
 				}
 				/* We need to recompute the departures list. */
 				this->RefreshVehicleList();
-				/* We need to redraw the button that was pressed. */
 				if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
 				break;
 			}
@@ -359,22 +370,21 @@ public:
 			case WID_DB_SHOW_VIA:
 
 				this->departure_types[widget - WID_DB_SHOW_DEPS] = !this->departure_types[widget - WID_DB_SHOW_DEPS];
-				if (this->departure_types[widget - WID_DB_SHOW_DEPS]) {
-					this->LowerWidget(widget);
-				} else {
-					this->RaiseWidget(widget);
-				}
+				this->SetWidgetLoweredState(widget, this->departure_types[widget - WID_DB_SHOW_DEPS]);
 
-				if (!this->departure_types[0]) {
-					this->RaiseWidget(WID_DB_SHOW_VIA);
-					this->DisableWidget(WID_DB_SHOW_VIA);
-				} else {
-					this->EnableWidget(WID_DB_SHOW_VIA);
-
-					if (this->departure_types[2]) {
-						this->LowerWidget(WID_DB_SHOW_VIA);
+				/* Side effects */
+				if (widget == WID_DB_SHOW_DEPS) {
+					if (!this->departure_types[0]) {
+						this->RaiseWidget(WID_DB_SHOW_VIA);
+						this->DisableWidget(WID_DB_SHOW_VIA);
+					} else {
+						this->EnableWidget(WID_DB_SHOW_VIA);
+						this->SetWidgetLoweredState(WID_DB_SHOW_VIA, this->departure_types[2]);
 					}
+					/* Redraw required. */
+					this->SetWidgetDirty(WID_DB_SHOW_VIA);
 				}
+
 				/* We need to recompute the departures list. */
 				this->calc_tick_countdown = 0;
 				/* We need to redraw the button that was pressed. */
@@ -459,6 +469,13 @@ public:
 			this->SetWidgetDirty(WID_DB_SHOW_FREIGHT);
 		}
 
+		if (!Twaypoint && this->departure_types_both != _settings_client.gui.departure_show_both) {
+			this->SetDepartureTypesDisabledState();
+			this->calc_tick_countdown = 0;
+			this->SetWidgetDirty(WID_DB_SHOW_DEPS);
+			this->SetWidgetDirty(WID_DB_SHOW_ARRS);
+		}
+
 		/* We need to redraw the scrolling text in its new position. */
 		this->SetWidgetDirty(WID_DB_LIST);
 
@@ -473,7 +490,7 @@ public:
 			this->DeleteDeparturesList(this->arrivals);
 			bool show_pax = _settings_client.gui.departure_only_passengers ? true : this->show_pax;
 			bool show_freight = _settings_client.gui.departure_only_passengers ? false : this->show_freight;
-			this->departures = (this->departure_types[0] ? MakeDepartureList(this->station, this->vehicles, D_DEPARTURE, Twaypoint || this->departure_types[2], show_pax, show_freight) : new DepartureList());
+			this->departures = (this->departure_types[0] || _settings_client.gui.departure_show_both ? MakeDepartureList(this->station, this->vehicles, D_DEPARTURE, Twaypoint || this->departure_types[2], show_pax, show_freight) : new DepartureList());
 			this->arrivals   = (this->departure_types[1] && !_settings_client.gui.departure_show_both ? MakeDepartureList(this->station, this->vehicles, D_ARRIVAL, false, show_pax, show_freight) : new DepartureList());
 			this->departures_invalid = false;
 			this->SetWidgetDirty(WID_DB_LIST);
@@ -504,14 +521,6 @@ public:
 
 	virtual void OnPaint() override
 	{
-		if (Twaypoint || _settings_client.gui.departure_show_both) {
-			this->DisableWidget(WID_DB_SHOW_ARRS);
-			this->DisableWidget(WID_DB_SHOW_DEPS);
-		} else {
-			this->EnableWidget(WID_DB_SHOW_ARRS);
-			this->EnableWidget(WID_DB_SHOW_DEPS);
-		}
-
 		this->vscroll->SetCount(std::min<uint>(_settings_client.gui.max_departures, (uint)this->departures->size() + (uint)this->arrivals->size()));
 		this->DrawWidgets();
 	}

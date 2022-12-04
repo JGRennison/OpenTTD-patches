@@ -4662,7 +4662,6 @@ STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP                       :{BLACK}Show all
 STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP                :{BLACK}Show all road vehicles which have this station on their schedule
 STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP                     :{BLACK}Show all aircraft which have this station on their schedule
 STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP                        :{BLACK}Show all ships which have this station on their schedule
-STR_STATION_VIEW_SCHEDULED_TOOLTIP_CTRL_SUFFIX                  :{BLACK}{STRING}. Ctrl+Click to show exclusively.
 
 STR_STATION_VIEW_RENAME_STATION_CAPTION                         :Rename station/loading area
 STR_STATION_VIEW_CLOSE_AIRPORT                                  :{BLACK}Close airport
@@ -4676,11 +4675,16 @@ STR_DEPARTURES_FREIGHT                                          :{BLACK}{TINY_FO
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}D
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}A
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}{TINY_FONT}via
-STR_DEPARTURES_PAX_TOOLTIP                                      :{BLACK}Show passenger departures
-STR_DEPARTURES_FREIGHT_TOOLTIP                                  :{BLACK}Show freight departures
+STR_DEPARTURES_PAX_TOOLTIP                                      :{BLACK}Show passenger arrivals/departures
+STR_DEPARTURES_FREIGHT_TOOLTIP                                  :{BLACK}Show freight arrivals/departures
 STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}Show timetabled departures
 STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}Show timetabled arrivals
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Show timetabled vehicles that do not stop here
+STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}Show upcoming trains on this station's timetable
+STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}Show upcoming road vehicles on this station's timetable
+STR_DEPARTURES_SHOW_SHIPS_TOOLTIP                               :{BLACK}Show upcoming ships on this station's timetable
+STR_DEPARTURES_SHOW_AIRCRAFT_TOOLTIP                            :{BLACK}Show upcoming aircraft on this station's timetable
+STR_DEPARTURES_SHOW_TYPE_TOOLTIP_CTRL_SUFFIX                    :{BLACK}{STRING}. Ctrl+Click to show exclusively.
 STR_DEPARTURES_EMPTY                                            :{ORANGE}No vehicles are currently timetabled for this station.
 STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}No timetable information has been requested.
 STR_DEPARTURES_TIME                                             :{ORANGE}{DATE_WALLCLOCK_TINY}
@@ -4729,20 +4733,20 @@ STR_DEPARTURES_CANCELLED                                        :{RED}Cancelled
 
 ############ config settings
 STR_CONFIG_SETTING_DEPARTUREBOARDS                              :{ORANGE}Departure boards
-STR_CONFIG_MAX_DEPARTURES                                       :Show at most {STRING2} departures at each station
-STR_CONFIG_MAX_DEPARTURES_HELPTEXT                              :The maximum number of departures to show on a departure board
-STR_CONFIG_MAX_DEPARTURE_TIME                                   :Show departures at most {STRING2} days in advance
-STR_CONFIG_MAX_DEPARTURE_TIME_HELPTEXT                          :How far in advance to show departures, in days
-STR_CONFIG_DEPARTURE_CALC_FREQUENCY                             :Calculate departures every {STRING2} ticks
-STR_CONFIG_DEPARTURE_CALC_FREQUENCY_HELPTEXT                    :How frequently to refresh a list of departures, in ticks
-STR_CONFIG_DEPARTURE_VEHICLE_NAME                               :Show vehicle name with departures: {STRING2}
-STR_CONFIG_DEPARTURE_VEHICLE_NAME_HELPTEXT                      :Whether to show vehicle names next to their departures
-STR_CONFIG_DEPARTURE_GROUP_NAME                                 :Show group name with departures: {STRING2}
-STR_CONFIG_DEPARTURE_GROUP_NAME_HELPTEXT                        :Whether to show names of groups that a vehicle belongs to next to its departures
-STR_CONFIG_DEPARTURE_COMPANY_NAME                               :Show company name with departures: {STRING2}
-STR_CONFIG_DEPARTURE_COMPANY_NAME_HELPTEXT                      :Whether to show a company's name next to its vehicles' departures
-STR_CONFIG_DEPARTURE_VEHICLE_TYPE                               :Show vehicle type icon with departures: {STRING2}
-STR_CONFIG_DEPARTURE_VEHICLE_TYPE_HELPTEXT                      :Whether to show a vehicle's type as an icon next to its departures
+STR_CONFIG_MAX_DEPARTURES                                       :Show at most {STRING2} departure board entries for each station
+STR_CONFIG_MAX_DEPARTURES_HELPTEXT                              :The maximum number of entries to show on a departure board
+STR_CONFIG_MAX_DEPARTURE_TIME                                   :Show arrivals/departures at most {STRING2} days in advance
+STR_CONFIG_MAX_DEPARTURE_TIME_HELPTEXT                          :How far in advance to show arrivals and departures, in days
+STR_CONFIG_DEPARTURE_CALC_FREQUENCY                             :Calculate departure board entries every {STRING2} ticks
+STR_CONFIG_DEPARTURE_CALC_FREQUENCY_HELPTEXT                    :How frequently to refresh a list of arrivals/departures, in ticks
+STR_CONFIG_DEPARTURE_VEHICLE_NAME                               :Show vehicle name in entries: {STRING2}
+STR_CONFIG_DEPARTURE_VEHICLE_NAME_HELPTEXT                      :Whether to show vehicle names in their departure board entries
+STR_CONFIG_DEPARTURE_GROUP_NAME                                 :Show group name in entries: {STRING2}
+STR_CONFIG_DEPARTURE_GROUP_NAME_HELPTEXT                        :Whether to show names of groups that a vehicle belongs to in its departure board entries
+STR_CONFIG_DEPARTURE_COMPANY_NAME                               :Show company name in entries: {STRING2}
+STR_CONFIG_DEPARTURE_COMPANY_NAME_HELPTEXT                      :Whether to show a company's name in its vehicles' departure board entries
+STR_CONFIG_DEPARTURE_VEHICLE_TYPE                               :Show vehicle type icon in entries: {STRING2}
+STR_CONFIG_DEPARTURE_VEHICLE_TYPE_HELPTEXT                      :Whether to show a vehicle's type as an icon in its departure board entries
 STR_CONFIG_DEPARTURE_VEHICLE_COLOR                              :Show vehicle type icon in silver: {STRING2}
 STR_CONFIG_DEPARTURE_VEHICLE_COLOR_HELPTEXT                     :Whether to show vehicle type icons in silver
 STR_CONFIG_DEPARTURE_LARGER_FONT                                :Use larger font for stations called at on departure boards: {STRING2}
@@ -4750,20 +4754,20 @@ STR_CONFIG_DEPARTURE_LARGER_FONT_HELPTEXT                       :Whether to use 
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :Show icons for destinations that are docks or airports: {STRING2}
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE_HELPTEXT                  :Whether to show icons next to destinations that are docks or airports
 STR_CONFIG_DEPARTURE_SHOW_BOTH                                  :Show arrival and departure times on the same line: {STRING2}
-STR_CONFIG_DEPARTURE_SHOW_BOTH_HELPTEXT                         :Whether to show both arrival and departure times next to departures
-STR_CONFIG_DEPARTURE_ONLY_PASSENGERS                            :Only show departures for vehicles that can carry passengers: {STRING2}
-STR_CONFIG_DEPARTURE_ONLY_PASSENGERS_HELPTEXT                   :Whether to only show departures of vehicles that can carry passengers
+STR_CONFIG_DEPARTURE_SHOW_BOTH_HELPTEXT                         :Whether arrival and departure times for a vehicle are combined into a single entry instead of being listed separately
+STR_CONFIG_DEPARTURE_ONLY_PASSENGERS                            :Only show entries for vehicles that can carry passengers: {STRING2}
+STR_CONFIG_DEPARTURE_ONLY_PASSENGERS_HELPTEXT                   :Whether to only show arrivals and departures of vehicles that can carry passengers
 STR_CONFIG_DEPARTURE_SMART_TERMINUS                             :Don't show termini that can be reached sooner on a later vehicle: {STRING2}
 STR_CONFIG_DEPARTURE_SMART_TERMINUS_HELPTEXT                    :Whether to show termini that can be reached sooner on another vehicle that departs later
 STR_CONFIG_DEPARTURE_CONDITIONALS                               :Handle conditional order jumps by: {STRING2}
-STR_CONFIG_DEPARTURE_CONDITIONALS_HELPTEXT                      :How conditional orders should be dealt with when calculating departures
+STR_CONFIG_DEPARTURE_CONDITIONALS_HELPTEXT                      :How conditional orders should be dealt with when calculating departure board entries
 STR_CONFIG_DEPARTURE_CONDITIONALS_1                             :giving up
 STR_CONFIG_DEPARTURE_CONDITIONALS_2                             :assuming they will be taken
 STR_CONFIG_DEPARTURE_CONDITIONALS_3                             :assuming they will not be taken
 STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS                             :Show all stations called at regardless of loading/unloading: {STRING2}
 STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS_HELPTEXT                    :Whether stations that a vehicle only loads from will be shown in the calling at list
-STR_CONFIG_DEPARTURE_MERGE_IDENTICAL                            :Merge identical departures: {STRING2}
-STR_CONFIG_DEPARTURE_MERGE_IDENTICAL_HELPTEXT                   :Whether identical departures should be merged into a single departure
+STR_CONFIG_DEPARTURE_MERGE_IDENTICAL                            :Merge identical entries: {STRING2}
+STR_CONFIG_DEPARTURE_MERGE_IDENTICAL_HELPTEXT                   :Whether identical departure board entries should be merged into a single one
 
 # Waypoint/buoy view window
 STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOINT}

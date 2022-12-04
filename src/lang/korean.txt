@@ -4663,7 +4663,6 @@ STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP                       :{BLACK}이 역�
 STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP                :{BLACK}이 역을 거쳐가는 모든 차량을 보여줍니다
 STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP                     :{BLACK}이 역을 거쳐가는 모든 항공기를 보여줍니다
 STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP                        :{BLACK}이 역을 거쳐가는 모든 선박을 보여줍니다
-STR_STATION_VIEW_SCHEDULED_TOOLTIP_CTRL_SUFFIX                  :{BLACK}{STRING}. CTRL+클릭하면 이 차량 종류만 보여줍니다
 
 STR_STATION_VIEW_RENAME_STATION_CAPTION                         :이 역의 이름을 변경합니다
 STR_STATION_VIEW_CLOSE_AIRPORT                                  :{BLACK}공항 폐쇄
@@ -4682,6 +4681,7 @@ STR_DEPARTURES_FREIGHT_TOOLTIP                                  :{BLACK}화물 �
 STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}도착 시간 보이기
 STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}출발 시간 보이기
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}통과 열차 보이기
+STR_DEPARTURES_SHOW_TYPE_TOOLTIP_CTRL_SUFFIX                    :{BLACK}{STRING}. CTRL+클릭하면 이 차량 종류만 보여줍니다
 STR_DEPARTURES_EMPTY                                            :{ORANGE}시간표가 지정된 차량이 없습니다.
 STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}표시할 정보를 선택하십시오.
 STR_DEPARTURES_TIME                                             :{ORANGE}{DATE_WALLCLOCK_TINY}
