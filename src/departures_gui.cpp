@@ -671,19 +671,21 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 
 	/* Nothing selected? Then display the information text. */
 	bool none_selected[2] = {true, true};
-	for (uint i = 0; i < 4; ++i)
-	{
+	for (uint i = 0; i < 4; ++i) {
 		if (this->show_types[i]) {
 			none_selected[0] = false;
 			break;
 		}
 	}
 
-	for (uint i = 0; i < 2; ++i)
-	{
-		if (this->departure_types[i]) {
-			none_selected[1] = false;
-			break;
+	if (_settings_client.gui.departure_show_both) {
+		none_selected[1] = false;
+	} else {
+		for (uint i = 0; i < 2; ++i) {
+			if (this->departure_types[i]) {
+				none_selected[1] = false;
+				break;
+			}
 		}
 	}
 
