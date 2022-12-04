@@ -252,7 +252,7 @@ public:
 		this->RaiseWidget(WID_DB_SHOW_VIA);
 		this->LowerWidget(WID_DB_SHOW_PAX);
 		this->LowerWidget(WID_DB_SHOW_FREIGHT);
-		this->SetDepartureTypesDisabledState();
+		if (!Twaypoint) this->SetDepartureTypesDisabledState();
 		this->SetCargoFilterDisabledState();
 
 		for (uint i = 0; i < 4; ++i) {
