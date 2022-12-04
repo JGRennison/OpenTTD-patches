@@ -45,6 +45,7 @@
 #include "toolbar_gui.h"
 #include "core/geometry_func.hpp"
 #include "infrastructure_func.h"
+#include "zoom_func.h"
 
 #include "safeguards.h"
 
@@ -3604,7 +3605,7 @@ private:
 		this->column_size[VGC_NUMBER] = GetStringBoundingBox(STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY);
 		this->tiny_step_height = std::max(this->tiny_step_height, this->column_size[VGC_NUMBER].height);
 
-		this->tiny_step_height += WidgetDimensions::scaled.matrix.top;
+		this->tiny_step_height += WidgetDimensions::scaled.matrix.top + ScaleGUITrad(1);
 
 		return WidgetDimensions::scaled.framerect.Horizontal() + WidgetDimensions::scaled.vsep_wide +
 			this->column_size[VGC_NAME].width + WidgetDimensions::scaled.vsep_wide +

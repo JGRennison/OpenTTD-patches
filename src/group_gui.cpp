@@ -263,7 +263,7 @@ private:
 		this->column_size[VGC_NUMBER] = GetStringBoundingBox(STR_GROUP_COUNT_WITH_SUBGROUP);
 		this->tiny_step_height = std::max(this->tiny_step_height, this->column_size[VGC_NUMBER].height);
 
-		this->tiny_step_height += WidgetDimensions::scaled.framerect.Vertical() + 1;
+		this->tiny_step_height += WidgetDimensions::scaled.framerect.Vertical() + ScaleGUITrad(2);
 
 		return WidgetDimensions::scaled.framerect.left +
 			this->column_size[VGC_FOLD].width + WidgetDimensions::scaled.hsep_normal +

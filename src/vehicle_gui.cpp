@@ -1782,9 +1782,9 @@ void DrawVehicleImage(const Vehicle *v, const Rect &r, VehicleID selection, Engi
 uint GetVehicleListHeight(VehicleType type, uint divisor)
 {
 	/* Name + vehicle + profit */
-	uint base = ScaleGUITrad(GetVehicleHeight(type)) + 2 * FONT_HEIGHT_SMALL;
+	uint base = ScaleGUITrad(GetVehicleHeight(type)) + 2 * FONT_HEIGHT_SMALL + ScaleGUITrad(1);
 	/* Drawing of the 4 small orders + profit*/
-	if (type >= VEH_SHIP) base = std::max(base, 5U * FONT_HEIGHT_SMALL);
+	if (type >= VEH_SHIP) base = std::max(base, 5U * FONT_HEIGHT_SMALL + ScaleGUITrad(1));
 
 	if (divisor == 1) return base;
 
