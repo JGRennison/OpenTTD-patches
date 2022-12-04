@@ -110,7 +110,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 
 /* static */ void ScriptObject::SetDoCommandCosts(Money value)
 {
-	GetStorage()->costs = CommandCost(value);
+	GetStorage()->costs = CommandCost(INVALID_EXPENSES, value); // Expense type is never read.
 }
 
 /* static */ void ScriptObject::IncreaseDoCommandCosts(Money value)

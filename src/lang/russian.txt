@@ -1171,7 +1171,7 @@ STR_GAME_OPTIONS_GUI_SCALE_TOOLTIP                              :{BLACK}Изме
 STR_GAME_OPTIONS_GUI_SCALE_AUTO                                 :{BLACK}Автоопределение
 STR_GAME_OPTIONS_GUI_SCALE_AUTO_TOOLTIP                         :{BLACK}Нажмите для автоматической установки масштаба интерфейса
 
-STR_GAME_OPTIONS_GUI_SCALE_BEVELS                               :{BLACK}Масштабировать рельеф
+STR_GAME_OPTIONS_GUI_SCALE_BEVELS                               :{BLACK}Рельефные элементы
 STR_GAME_OPTIONS_GUI_SCALE_BEVELS_TOOLTIP                       :{BLACK}Масштабировать рельефные элементы интерфейса
 
 STR_GAME_OPTIONS_GUI_SCALE_1X                                   :1x
@@ -1596,6 +1596,8 @@ STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS_HELPTEXT                :Толщина 
 
 STR_CONFIG_SETTING_SHOW_NEWGRF_NAME                             :Показывать имя NewGRF в окне покупки транспорта: {STRING}
 STR_CONFIG_SETTING_SHOW_NEWGRF_NAME_HELPTEXT                    :Показывать название модуля NewGRF, содержащего выбранную модель транспортного средства, в окне покупки транспорта.
+STR_CONFIG_SETTING_SHOW_CARGO_IN_LISTS                          :Показывать типы перевозимых грузов в списках ТС: {STRING}
+STR_CONFIG_SETTING_SHOW_CARGO_IN_LISTS_HELPTEXT                 :Если включено, в списках транспорта будут указаны типы грузов, которые каждое ТС может перевозить.
 
 STR_CONFIG_SETTING_LANDSCAPE                                    :Тип карты: {STRING}
 STR_CONFIG_SETTING_LANDSCAPE_HELPTEXT                           :Тип карты определяет основу игрового процесса, например, доступные типы транспорта и грузов, различные условия роста городов. Всё это также может быть изменено с помощью модулей NewGRF и игровых скриптов.
@@ -4001,6 +4003,8 @@ STR_VEHICLE_LIST_MANAGE_LIST_TOOLTIP                            :{BLACK}Упра
 STR_VEHICLE_LIST_REPLACE_VEHICLES                               :Замена транспорта
 STR_VEHICLE_LIST_SEND_FOR_SERVICING                             :Отправить на тех. обслуживание
 STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR                     :{TINY_FONT}{BLACK}Прибыль в этом году: {CURRENCY_LONG} (в прошлом году: {CURRENCY_LONG})
+STR_VEHICLE_LIST_CARGO                                          :{TINY_FONT}{BLACK}[{CARGO_LIST}]
+STR_VEHICLE_LIST_NAME_AND_CARGO                                 :{TINY_FONT}{BLACK}{STRING} {STRING}
 
 STR_VEHICLE_LIST_SEND_TRAIN_TO_DEPOT                            :Отправить в депо
 STR_VEHICLE_LIST_SEND_ROAD_VEHICLE_TO_DEPOT                     :Отправить в гараж
@@ -5250,6 +5254,7 @@ STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Нево
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... транспортное средство уничтожено
 
+STR_ERROR_CAN_T_CLONE_VEHICLE_LIST                              :{WHITE}... не все ТС идентичны друг другу
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Все транспортные средства будут недоступны
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Измените конфигурацию модуля NewGRF
@@ -5277,6 +5282,8 @@ STR_ERROR_CAN_T_SKIP_TO_ORDER                                   :{WHITE}Нево
 STR_ERROR_CAN_T_COPY_SHARE_ORDER                                :{WHITE}... ТС не может достигнуть всех станций
 STR_ERROR_CAN_T_ADD_ORDER                                       :{WHITE}... ТС не может достигнуть этой станции
 STR_ERROR_CAN_T_ADD_ORDER_SHARED                                :{WHITE}... ТС с общим маршрутом не может достигнуть этой станции
+STR_ERROR_CAN_T_COPY_ORDER_VEHICLE_LIST                         :{WHITE}... не у всех ТС одинаковый маршрут
+STR_ERROR_CAN_T_SHARE_ORDER_VEHICLE_LIST                        :{WHITE}... не у всех ТС одинаковый общий маршрут
 
 STR_ERROR_CAN_T_SHARE_ORDER_LIST                                :{WHITE}Невозможно использовать общий маршрут...
 STR_ERROR_CAN_T_STOP_SHARING_ORDER_LIST                         :{WHITE}Невозможно создать индивидуальный маршрут...
