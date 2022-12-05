@@ -112,8 +112,10 @@ public:
 class GraphEdgeIterator {
 private:
 	LinkGraphJob &job; ///< Job being executed
-	EdgeIterator i;    ///< Iterator pointing to current edge.
-	EdgeIterator end;  ///< Iterator pointing beyond last edge.
+	LinkGraph::EdgeMatrix::const_iterator i;     ///< Iterator pointing to current edge.
+	LinkGraph::EdgeMatrix::const_iterator end;   ///< Iterator pointing beyond last edge.
+	NodeID node;                                 ///< Source node
+	const LinkGraph::BaseEdge *saved;            ///< Saved edge
 
 public:
 
@@ -122,7 +124,7 @@ public:
 	 * @param job Job to iterate on.
 	 */
 	GraphEdgeIterator(LinkGraphJob &job) : job(job),
-		i(nullptr, nullptr, INVALID_NODE), end(nullptr, nullptr, INVALID_NODE)
+		i(LinkGraph::EdgeMatrix::const_iterator()), end(LinkGraph::EdgeMatrix::const_iterator()), node(INVALID_NODE), saved(nullptr)
 	{}
 
 	/**
@@ -132,8 +134,9 @@ public:
 	 */
 	void SetNode(NodeID source, NodeID node)
 	{
-		this->i = this->job[node].Begin();
-		this->end = this->job[node].End();
+		this->i = this->job.Graph().GetEdges().lower_bound(std::make_pair(node, (NodeID)0));
+		this->end = this->job.Graph().GetEdges().end();
+		this->node = node;
 	}
 
 	/**
@@ -142,8 +145,18 @@ public:
 	 */
 	NodeID Next()
 	{
-		return this->i != this->end ? (this->i++)->first : INVALID_NODE;
+		if (this->i == this->end) return INVALID_NODE;
+		NodeID from = this->i->first.first;
+		NodeID to = this->i->first.second;
+		if (from != this->node) return INVALID_NODE;
+		this->saved = &(this->i->second);
+		++this->i;
+		return to;
 	}
+
+	bool SavedEdge() const { return true; }
+
+	const LinkGraph::BaseEdge &GetSavedEdge() { return *(this->saved); }
 };
 
 /**
@@ -205,6 +218,10 @@ public:
 		if (this->it == this->end) return INVALID_NODE;
 		return this->station_to_node[(this->it++)->second];
 	}
+
+	bool SavedEdge() const { return false; }
+
+	const LinkGraph::BaseEdge &GetSavedEdge() { NOT_REACHED(); }
 };
 
 /**
@@ -303,7 +320,8 @@ void MultiCommodityFlow::Dijkstra(NodeID source_node, PathVector &paths)
 		iter.SetNode(source_node, from);
 		for (NodeID to = iter.Next(); to != INVALID_NODE; to = iter.Next()) {
 			if (to == from) continue; // Not a real edge but a consumption sign.
-			Edge edge = this->job[from][to];
+			const LinkGraph::BaseEdge &base_edge = iter.SavedEdge() ? iter.GetSavedEdge() : this->job.GetBaseEdge(from, to);
+			Edge edge = this->job[from].MakeEdge(base_edge, to);
 			uint capacity = edge.Capacity();
 			if (this->max_saturation != UINT_MAX) {
 				capacity *= this->max_saturation;
@@ -379,7 +397,7 @@ void MultiCommodityFlow::CleanupPaths(NodeID source_id, PathVector &paths)
  * @param max_saturation If < UINT_MAX only push flow up to the given
  *                       saturation, otherwise the path can be "overloaded".
  */
-uint MultiCommodityFlow::PushFlow(Edge &edge, Path *path, uint accuracy,
+uint MultiCommodityFlow::PushFlow(AnnoEdge &edge, Path *path, uint accuracy,
 		uint max_saturation)
 {
 	assert(edge.UnsatisfiedDemand() > 0);
@@ -428,7 +446,7 @@ void MCF1stPass::EliminateCycle(PathVector &path, Path *cycle_begin, uint flow)
 			}
 		}
 		cycle_begin = path[prev];
-		Edge edge = this->job[prev][cycle_begin->GetNode()];
+		AnnoEdge edge = this->job[prev][cycle_begin->GetNode()];
 		edge.RemoveFlow(flow);
 	} while (cycle_begin != cycle_end);
 }
@@ -556,7 +574,7 @@ MCF1stPass::MCF1stPass(LinkGraphJob &job) : MultiCommodityFlow(job)
 
 			bool source_demand_left = false;
 			for (NodeID dest = 0; dest < size; ++dest) {
-				Edge edge = job[source][dest];
+				AnnoEdge edge = job[source][dest];
 				if (edge.UnsatisfiedDemand() > 0) {
 					Path *path = paths[dest];
 					assert(path != nullptr);
@@ -603,7 +621,7 @@ MCF2ndPass::MCF2ndPass(LinkGraphJob &job) : MultiCommodityFlow(job)
 
 			bool source_demand_left = false;
 			for (NodeID dest = 0; dest < size; ++dest) {
-				Edge edge = this->job[source][dest];
+				AnnoEdge edge = this->job[source][dest];
 				Path *path = paths[dest];
 				if (edge.UnsatisfiedDemand() > 0 && path->GetFreeCapacity() > INT_MIN) {
 					this->PushFlow(edge, path, accuracy, UINT_MAX);

@@ -4405,12 +4405,14 @@ void DeleteStaleLinks(Station *from)
 		GoodsEntry &ge = from->goods[c];
 		LinkGraph *lg = LinkGraph::GetIfValid(ge.link_graph);
 		if (lg == nullptr) continue;
-		Node node = (*lg)[ge.node];
-		for (EdgeIterator it(node.Begin()); it != node.End();) {
-			Edge edge = it->second;
-			Station *to = Station::Get((*lg)[it->first].Station());
-			assert(to->goods[c].node == it->first);
-			++it; // Do that before removing the edge. Anything else may crash.
+		lg->MutableIterateEdgesFromNode(ge.node, [&](LinkGraph::EdgeIterationHelper edge_helper) -> LinkGraph::EdgeIterationResult {
+			Edge edge = edge_helper.GetEdge();
+			NodeID to_id = edge_helper.to_id;
+
+			LinkGraph::EdgeIterationResult result = LinkGraph::EdgeIterationResult::None;
+
+			Station *to = Station::Get((*lg)[to_id].Station());
+			assert(to->goods[c].node == to_id);
 			assert(_date >= edge.LastUpdate());
 			uint timeout = std::max<uint>((LinkGraph::MIN_TIMEOUT_DISTANCE + (DistanceManhattan(from->xy, to->xy) >> 3)) / _settings_game.economy.day_length_factor, 1);
 			if (edge.LastAircraftUpdate() != INVALID_DATE && (uint)(_date - edge.LastAircraftUpdate()) > timeout) {
@@ -4450,7 +4452,11 @@ void DeleteStaleLinks(Station *from)
 							/* Do not refresh links of vehicles that have been stopped in depot for a long time. */
 							if (!v->IsStoppedInDepot() || static_cast<uint>(_date - v->date_of_last_service) <=
 									LinkGraph::STALE_LINK_DEPOT_TIMEOUT) {
+								edge_helper.RecordSize();
 								LinkRefresher::Run(v, false); // Don't allow merging. Otherwise lg might get deleted.
+								if (edge_helper.RefreshIterationIfSizeChanged()) {
+									edge = edge_helper.GetEdge();
+								}
 							}
 						}
 						if (edge.LastUpdate() == _date) {
@@ -4472,7 +4478,7 @@ void DeleteStaleLinks(Station *from)
 
 				if (!updated) {
 					/* If it's still considered dead remove it. */
-					node.RemoveEdge(to->goods[c].node);
+					result = LinkGraph::EdgeIterationResult::EraseEdge;
 					ge.flows.DeleteFlows(to->index);
 					RerouteCargo(from, c, to->index, from->index);
 				}
@@ -4483,7 +4489,9 @@ void DeleteStaleLinks(Station *from)
 			} else if (edge.LastRestrictedUpdate() != INVALID_DATE && (uint)(_date - edge.LastRestrictedUpdate()) > timeout) {
 				edge.Release();
 			}
-		}
+
+			return result;
+		});
 		assert(_date >= lg->LastCompression());
 		if ((uint)(_date - lg->LastCompression()) > std::max<uint>(LinkGraph::COMPRESSION_INTERVAL / _settings_game.economy.day_length_factor, 1)) {
 			lg->Compress();
@@ -4542,7 +4550,7 @@ void IncreaseStats(Station *st, CargoID cargo, StationID next_station_id, uint c
 		}
 	}
 	if (lg != nullptr) {
-		(*lg)[ge1.node].UpdateEdge(ge2.node, capacity, usage, time, mode);
+		lg->UpdateEdge(ge1.node, ge2.node, capacity, usage, time, mode);
 	}
 }
 

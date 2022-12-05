@@ -129,6 +129,7 @@ enum SlXvFeatureIndex {
 	XSLFI_NEW_SIGNAL_STYLES,                      ///< New signal styles
 	XSLFI_NO_TREE_COUNTER,                        ///< No tree counter
 	XSLFI_TOWN_SETTING_OVERRIDE,                  ///< Town setting overrides
+	XSLFI_LINKGRAPH_SPARSE_EDGES,                 ///< Link graph edge matrix is stored in sparse format, and saved in order
 
 	XSLFI_SCRIPT_INT64,                           ///< See: SLV_SCRIPT_INT64
 	XSLFI_U64_TICK_COUNTER,                       ///< See: SLV_U64_TICK_COUNTER

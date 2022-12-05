@@ -125,24 +125,25 @@ void LinkGraphJob::FinaliseJob()
 		LinkGraph *lg = LinkGraph::Get(ge.link_graph);
 		FlowStatMap &flows = from.Flows();
 
-		for (EdgeIterator it(from.Begin()); it != from.End(); ++it) {
-			if (from[it->first].Flow() == 0) continue;
-			StationID to = (*this)[it->first].Station();
+		this->IterateEdgesFromNode(from, [&](NodeID from_id, NodeID to_id, Edge edge) {
+			if (edge.Flow() == 0) return;
+			StationID to = (*this)[to_id].Station();
 			Station *st2 = Station::GetIfValid(to);
+			LinkGraph::ConstEdge lg_edge = lg->GetConstEdge(from_id, to_id);
 			if (st2 == nullptr || st2->goods[this->Cargo()].link_graph != this->link_graph.index ||
-					st2->goods[this->Cargo()].node != it->first ||
-					(*lg)[node_id][it->first].LastUpdate() == INVALID_DATE) {
+					st2->goods[this->Cargo()].node != to_id ||
+					lg_edge.LastUpdate() == INVALID_DATE) {
 				/* Edge has been removed. Delete flows. */
 				StationIDStack erased = flows.DeleteFlows(to);
 				/* Delete old flows for source stations which have been deleted
 				 * from the new flows. This avoids flow cycles between old and
 				 * new flows. */
 				while (!erased.IsEmpty()) ge.flows.erase(erased.Pop());
-			} else if ((*lg)[node_id][it->first].LastUnrestrictedUpdate() == INVALID_DATE) {
+			} else if (lg_edge.LastUnrestrictedUpdate() == INVALID_DATE) {
 				/* Edge is fully restricted. */
 				flows.RestrictFlows(to);
 			}
-		}
+		});
 
 		/* Swap shares and invalidate ones that are completely deleted. Don't
 		 * really delete them as we could then end up with unroutable cargo
@@ -260,7 +261,7 @@ void Path::Fork(Path *base, uint cap, int free_cap, uint dist)
 uint Path::AddFlow(uint new_flow, LinkGraphJob &job, uint max_saturation)
 {
 	if (this->GetParent() != nullptr) {
-		LinkGraphJob::Edge edge = job[this->GetParent()->node][this->node];
+		LinkGraphJob::Edge edge = job[this->GetParent()->node].MakeEdge(job, this->node);
 		if (max_saturation != UINT_MAX) {
 			uint usable_cap = edge.Capacity() * max_saturation / 100;
 			if (usable_cap > edge.Flow()) {

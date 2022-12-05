@@ -163,7 +163,7 @@ void LinkGraphOverlay::RebuildCache(bool incremental)
 				continue;
 			}
 			const LinkGraph &lg = *LinkGraph::Get(ge.link_graph);
-			ConstEdge edge = lg[ge.node][to->goods[c].node];
+			ConstEdge edge = lg.GetConstEdge(ge.node, to->goods[c].node);
 			if (edge.Capacity() > 0) {
 				if (!item) {
 					auto iter = link_cache_map.insert(insert_iter, std::make_pair(std::make_pair(from->index, to->index), LinkCacheItem()));
@@ -198,33 +198,33 @@ void LinkGraphOverlay::RebuildCache(bool incremental)
 
 			ConstNode from_node = lg[sta->goods[c].node];
 			supply += lg.Monthly(from_node.Supply());
-			for (ConstEdgeIterator i = from_node.Begin(); i != from_node.End(); ++i) {
-				StationID to = lg[i->first].Station();
+			lg.IterateEdgesFromNode(from_node.GetNodeID(), [&](NodeID from_id, NodeID to_id, ConstEdge edge) {
+				StationID to = lg[to_id].Station();
 				assert(from != to);
-				if (!Station::IsValidID(to)) continue;
+				if (!Station::IsValidID(to)) return;
 
 				const Station *stb = Station::Get(to);
 				assert(sta != stb);
 
 				/* Show links between stations of selected companies or "neutral" ones like oilrigs. */
-				if (stb->owner != OWNER_NONE && sta->owner != OWNER_NONE && !HasBit(this->company_mask, stb->owner)) continue;
-				if (stb->rect.IsEmpty()) continue;
+				if (stb->owner != OWNER_NONE && sta->owner != OWNER_NONE && !HasBit(this->company_mask, stb->owner)) return;
+				if (stb->rect.IsEmpty()) return;
 
-				if (incremental && std::binary_search(incremental_station_exclude.begin(), incremental_station_exclude.end(), to)) continue;
-				if (incremental && std::binary_search(incremental_link_exclude.begin(), incremental_link_exclude.end(), std::make_pair(from, to))) continue;
+				if (incremental && std::binary_search(incremental_station_exclude.begin(), incremental_station_exclude.end(), to)) return;
+				if (incremental && std::binary_search(incremental_link_exclude.begin(), incremental_link_exclude.end(), std::make_pair(from, to))) return;
 
 				auto key = std::make_pair(from, to);
 				auto iter = link_cache_map.lower_bound(key);
 				if (iter != link_cache_map.end() && !(link_cache_map.key_comp()(key, iter->first))) {
-					continue;
+					return;
 				}
 
 				Point ptb = this->GetStationMiddle(stb);
 
-				if (!cache_all && !this->IsLinkVisible(pta, ptb, &dpi)) continue;
+				if (!cache_all && !this->IsLinkVisible(pta, ptb, &dpi)) return;
 
 				AddLinks(sta, stb, pta, ptb, iter);
-			}
+			});
 		}
 		if (cache_all || this->IsPointVisible(pta, &dpi)) {
 			this->cached_stations.push_back({ from, supply, pta });

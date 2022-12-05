@@ -176,6 +176,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_NEW_SIGNAL_STYLES,      XSCF_NULL,                2,   2, "new_signal_styles",         nullptr, nullptr, "XBST,NSID"    },
 	{ XSLFI_NO_TREE_COUNTER,        XSCF_IGNORABLE_ALL,       1,   1, "no_tree_counter",           nullptr, nullptr, nullptr        },
 	{ XSLFI_TOWN_SETTING_OVERRIDE,  XSCF_NULL,                1,   1, "town_setting_override",     nullptr, nullptr, nullptr        },
+	{ XSLFI_LINKGRAPH_SPARSE_EDGES, XSCF_NULL,                1,   1, "linkgraph_sparse_edges",    nullptr, nullptr, nullptr        },
 	{ XSLFI_SCRIPT_INT64,           XSCF_NULL,                1,   1, "script_int64",              nullptr, nullptr, nullptr        },
 	{ XSLFI_U64_TICK_COUNTER,       XSCF_NULL,                1,   1, "u64_tick_counter",          nullptr, nullptr, nullptr        },
 	{ XSLFI_LINKGRAPH_TRAVEL_TIME,  XSCF_NULL,                1,   1, "linkgraph_travel_time",     nullptr, nullptr, nullptr        },
