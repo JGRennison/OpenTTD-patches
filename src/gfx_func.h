@@ -83,8 +83,14 @@ void ChangeGameSpeed(bool enable_fast_forward);
 void DrawMouseCursor();
 void ScreenSizeChanged();
 void GameSizeChanged();
-bool AdjustGUIZoom(bool automatic);
 void UndrawMouseCursor();
+
+enum AdjustGUIZoomMode {
+	AGZM_MANUAL,
+	AGZM_AUTOMATIC,
+	AGZM_STARTUP,
+};
+bool AdjustGUIZoom(AdjustGUIZoomMode mode);
 
 /** Size of the buffer used for drawing strings. */
 static const int DRAW_STRING_BUFFER = 2048;

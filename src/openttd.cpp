@@ -941,7 +941,7 @@ int openttd_main(int argc, char *argv[])
 	_screen.zoom = ZOOM_LVL_NORMAL;
 
 	/* The video driver is now selected, now initialise GUI zoom */
-	AdjustGUIZoom(false);
+	AdjustGUIZoom(AGZM_STARTUP);
 
 	NetworkStartUp(); // initialize network-core
 

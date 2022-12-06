@@ -520,7 +520,7 @@ struct GameOptionsWindow : Window {
 				} else {
 					_gui_scale_cfg = -1;
 					this->SetWidgetLoweredState(WID_GO_GUI_SCALE_AUTO, true);
-					if (AdjustGUIZoom(false)) ReInitAllWindows(true);
+					if (AdjustGUIZoom(AGZM_MANUAL)) ReInitAllWindows(true);
 					this->gui_scale = _gui_scale;
 				}
 				this->SetWidgetDirty(widget);
@@ -564,7 +564,7 @@ struct GameOptionsWindow : Window {
 
 		_gui_scale_cfg = this->gui_scale;
 
-		if (AdjustGUIZoom(false)) {
+		if (AdjustGUIZoom(AGZM_MANUAL)) {
 			ReInitAllWindows(true);
 			this->SetWidgetLoweredState(WID_GO_GUI_SCALE_AUTO, false);
 			this->SetDirty();

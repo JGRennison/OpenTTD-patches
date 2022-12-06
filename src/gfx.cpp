@@ -2361,7 +2361,7 @@ void UpdateGUIZoom()
  * @returns true when the zoom level has changed, caller must call ReInitAllWindows(true)
  * after resizing the application's window/buffer.
  */
-bool AdjustGUIZoom(bool automatic)
+bool AdjustGUIZoom(AdjustGUIZoomMode mode)
 {
 	ZoomLevel old_zoom = _gui_zoom;
 	int old_scale = _gui_scale;
@@ -2373,14 +2373,14 @@ bool AdjustGUIZoom(bool automatic)
 		GfxClearSpriteCache();
 		VideoDriver::GetInstance()->ClearSystemSprites();
 		UpdateCursorSize();
-		UpdateRouteStepSpriteSize();
+		if (mode != AGZM_STARTUP) UpdateRouteStepSpriteSize();
 	}
 
 	ClearFontCache();
 	UpdateFontHeightCache();
 	LoadStringWidthTable();
 	UpdateAllVirtCoords();
-	FixTitleGameZoom();
+	if (mode != AGZM_STARTUP) FixTitleGameZoom();
 
 	extern void FlushDeparturesWindowTextCaches();
 	FlushDeparturesWindowTextCaches();
@@ -2389,7 +2389,7 @@ bool AdjustGUIZoom(bool automatic)
 	   to move around when the application is moved to a screen with different DPI. */
 	auto zoom_shift = old_zoom - _gui_zoom;
 	for (Window *w : Window::IterateFromBack()) {
-		if (automatic) {
+		if (mode == AGZM_AUTOMATIC) {
 			w->left   = (w->left   * _gui_scale) / old_scale;
 			w->top    = (w->top    * _gui_scale) / old_scale;
 			w->width  = (w->width  * _gui_scale) / old_scale;
