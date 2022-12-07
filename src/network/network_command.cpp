@@ -327,7 +327,6 @@ const char *NetworkGameSocketHandler::ReceiveCommand(Packet *p, CommandPacket *c
 	cp->tile    = p->Recv_uint32();
 
 	StringValidationSettings settings = (!_network_server && GetCommandFlags(cp->cmd) & CMD_STR_CTRL) != 0 ? SVS_ALLOW_CONTROL_CODE | SVS_REPLACE_WITH_QUESTION_MARK : SVS_REPLACE_WITH_QUESTION_MARK;
-	if (GetCommandFlags(cp->cmd) & CMD_STR_SEP) settings |= SVS_ALLOW_SEPARATOR_CODE;
 	p->Recv_string(cp->text, settings);
 
 	byte callback = p->Recv_uint8();
