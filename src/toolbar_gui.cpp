@@ -736,7 +736,7 @@ static CallBackFunction ToolbarGraphsClick(Window *w)
 
 	if (_toolbar_mode != TB_NORMAL) AddDropDownLeagueTableOptions(list);
 
-	ShowDropDownList(w, std::move(list), 0, WID_TN_GRAPHS, 140, true, true);
+	ShowDropDownList(w, std::move(list), GRMN_OPERATING_PROFIT_GRAPH, WID_TN_GRAPHS, 140, true, true);
 	if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 
 	return CBF_NONE;
@@ -748,7 +748,8 @@ static CallBackFunction ToolbarLeagueClick(Window *w)
 
 	AddDropDownLeagueTableOptions(list);
 
-	ShowDropDownList(w, std::move(list), 0, WID_TN_LEAGUE, 140, true, true);
+	int selected = list[0]->result;
+	ShowDropDownList(w, std::move(list), selected, WID_TN_LEAGUE, 140, true, true);
 	if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 
 	return CBF_NONE;
