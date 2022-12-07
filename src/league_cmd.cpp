@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "league_base.h"
+#include "league_cmd.h"
 #include "command_type.h"
 #include "command_func.h"
 #include "industry.h"
@@ -175,28 +176,22 @@ CommandCost CmdRemoveLeagueTableElement(DoCommandFlag flags, LeagueTableElementI
 	return CommandCost();
 }
 
-CommandCost CmdCreateLeagueTable(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdCreateLeagueTable(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
-	std::string title, header, footer;
-	text = StrConsumeToSeparator(title, text);
-	if (text == nullptr) return CMD_ERROR;
-	text = StrConsumeToSeparator(header, text);
-	if (text == nullptr) return CMD_ERROR;
-	text = StrConsumeToSeparator(footer, text);
-	if (text != nullptr) return CMD_ERROR;
+	CommandAuxData<LeagueTableCmdData> data;
+	CommandCost ret = data.Load(aux_data);
+	if (ret.Failed()) return ret;
 
-	auto [res, id] = CmdCreateLeagueTable(flags, title, header, footer);
+	auto [res, id] = CmdCreateLeagueTable(flags, data->title, data->header, data->footer);
 	res.SetResultData(id);
 	return res;
 }
 
 CommandCost CmdCreateLeagueTableElement(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
-	std::string text_str, score;
-	text = StrConsumeToSeparator(text_str, text);
-	if (text == nullptr) return CMD_ERROR;
-	text = StrConsumeToSeparator(score, text);
-	if (text != nullptr) return CMD_ERROR;
+	CommandAuxData<LeagueTableElementCmdData> data;
+	CommandCost ret = data.Load(aux_data);
+	if (ret.Failed()) return ret;
 
 	LeagueTableID table = GB(p1, 0, 8);
 	int64 rating = p3;
@@ -204,21 +199,13 @@ CommandCost CmdCreateLeagueTableElement(TileIndex tile, DoCommandFlag flags, uin
 	LinkType link_type = (LinkType)GB(p1, 16, 8);
 	LinkTargetID link_target = (LinkTargetID)p2;
 
-	auto [res, id] = CmdCreateLeagueTableElement(flags, table, rating, company, text_str, score, link_type, link_target);
+	auto [res, id] = CmdCreateLeagueTableElement(flags, table, rating, company, data->text_str, data->score, link_type, link_target);
 	res.SetResultData(id);
 	return res;
 }
 
 CommandCost CmdUpdateLeagueTableElementData(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
-	std::string title, header, footer;
-	text = StrConsumeToSeparator(title, text);
-	if (text == nullptr) return CMD_ERROR;
-	text = StrConsumeToSeparator(header, text);
-	if (text == nullptr) return CMD_ERROR;
-	text = StrConsumeToSeparator(footer, text);
-	if (text != nullptr) return CMD_ERROR;
-
 	LeagueTableElementID element = GB(p1, 0, 16);
 	CompanyID company = (CompanyID)GB(p1, 16, 8);
 	LinkType link_type = (LinkType)GB(p1, 24, 8);

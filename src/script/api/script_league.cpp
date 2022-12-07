@@ -14,6 +14,7 @@
 #include "../script_instance.hpp"
 #include "script_error.hpp"
 #include "../../league_base.h"
+#include "../../league_cmd.h"
 #include "../../string_func.h"
 
 #include "../../safeguards.h"
@@ -35,13 +36,12 @@
 	const char *encoded_title = title->GetEncodedText();
 	EnforcePreconditionEncodedText(LEAGUE_TABLE_INVALID, encoded_title);
 
-	std::string cmd_text = encoded_title;
-	cmd_text.push_back(0x1F);
-	if (header != nullptr) cmd_text += header->GetEncodedText();
-	cmd_text.push_back(0x1F);
-	if (footer != nullptr) cmd_text += footer->GetEncodedText();
+	LeagueTableCmdData data;
+	data.title = encoded_title;
+	data.header = header->GetEncodedText();
+	data.footer = footer->GetEncodedText();
 
-	if (!ScriptObject::DoCommand(0, 0, 0, CMD_CREATE_LEAGUE_TABLE, cmd_text.c_str(), &ScriptInstance::DoCommandReturnLeagueTableID)) return LEAGUE_TABLE_INVALID;
+	if (!ScriptObject::DoCommandEx(0, 0, 0, 0, CMD_CREATE_LEAGUE_TABLE, nullptr, &data, &ScriptInstance::DoCommandReturnLeagueTableID)) return LEAGUE_TABLE_INVALID;
 
 	/* In case of test-mode, we return LeagueTableID 0 */
 	return (ScriptLeagueTable::LeagueTableID)0;
@@ -76,10 +76,11 @@
 
 	EnforcePrecondition(LEAGUE_TABLE_ELEMENT_INVALID, IsValidLink(Link((::LinkType)link_type, link_target)));
 
-	std::string cmd_text = std::move(encoded_text);
-	cmd_text.push_back(0x1F);
-	cmd_text += encoded_score;
-	if (!ScriptObject::DoCommandEx(0, table | (c << 8) | (link_type << 16), link_target, rating, CMD_CREATE_LEAGUE_TABLE_ELEMENT, cmd_text.c_str(), 0, &ScriptInstance::DoCommandReturnLeagueTableElementID)) return LEAGUE_TABLE_ELEMENT_INVALID;
+	LeagueTableElementCmdData data;
+	data.text_str = std::move(encoded_text);
+	data.score = encoded_score;
+
+	if (!ScriptObject::DoCommandEx(0, table | (c << 8) | (link_type << 16), link_target, rating, CMD_CREATE_LEAGUE_TABLE_ELEMENT, nullptr, &data, &ScriptInstance::DoCommandReturnLeagueTableElementID)) return LEAGUE_TABLE_ELEMENT_INVALID;
 
 	/* In case of test-mode, we return LeagueTableElementID 0 */
 	return (ScriptLeagueTable::LeagueTableElementID)0;

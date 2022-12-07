@@ -259,7 +259,7 @@ CommandProc CmdSetTimetableStart;
 
 CommandProc CmdOpenCloseAirport;
 
-CommandProc CmdCreateLeagueTable;
+CommandProcEx CmdCreateLeagueTable;
 CommandProcEx CmdCreateLeagueTableElement;
 CommandProc CmdUpdateLeagueTableElementData;
 CommandProcEx CmdUpdateLeagueTableElementScore;
@@ -510,8 +510,8 @@ static const Command _command_proc_table[] = {
 
 	DEF_CMD(CmdOpenCloseAirport,                               0, CMDT_ROUTE_MANAGEMENT      ), // CMD_OPEN_CLOSE_AIRPORT
 
-	DEF_CMD(CmdCreateLeagueTable,               CMD_STR_SEP | CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_CREATE_LEAGUE_TABLE
-	DEF_CMD(CmdCreateLeagueTableElement,        CMD_STR_SEP | CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_CREATE_LEAGUE_TABLE_ELEMENT
+	DEF_CMD(CmdCreateLeagueTable,                             CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_CREATE_LEAGUE_TABLE
+	DEF_CMD(CmdCreateLeagueTableElement,                      CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_CREATE_LEAGUE_TABLE_ELEMENT
 	DEF_CMD(CmdUpdateLeagueTableElementData,                  CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_UPDATE_LEAGUE_TABLE_ELEMENT_DATA
 	DEF_CMD(CmdUpdateLeagueTableElementScore,                 CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_UPDATE_LEAGUE_TABLE_ELEMENT_SCORE
 	DEF_CMD(CmdRemoveLeagueTableElement,                                     CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_REMOVE_LEAGUE_TABLE_ELEMENT

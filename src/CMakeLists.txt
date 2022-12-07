@@ -222,6 +222,7 @@ add_files(
     language.h
     league_base.h
     league_cmd.cpp
+    league_cmd.h
     league_gui.h
     league_gui.cpp
     league_type.h
