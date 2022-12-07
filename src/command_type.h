@@ -689,6 +689,40 @@ typedef void CommandCallback(const CommandCost &result, TileIndex tile, uint32 p
 
 #define MAX_CMD_TEXT_LENGTH 32000
 
+struct CommandSerialisationBuffer;
+
+struct CommandAuxiliaryBase {
+	virtual ~CommandAuxiliaryBase() {}
+
+	virtual CommandAuxiliaryBase *Clone() const = 0;
+
+	virtual const std::vector<uint8> *GetDeserialisationSrc() const = 0;
+
+	virtual void Serialise(CommandSerialisationBuffer &buffer) const = 0;
+};
+
+struct CommandAuxiliaryPtr : public std::unique_ptr<CommandAuxiliaryBase>
+{
+	using std::unique_ptr<CommandAuxiliaryBase>::unique_ptr;
+
+	CommandAuxiliaryPtr() {};
+
+	CommandAuxiliaryPtr(const CommandAuxiliaryPtr &other) :
+			std::unique_ptr<CommandAuxiliaryBase>(CommandAuxiliaryPtr::Clone(other)) {}
+
+	CommandAuxiliaryPtr& operator=(const CommandAuxiliaryPtr &other)
+	{
+		this->reset(CommandAuxiliaryPtr::Clone(other));
+		return *this;
+	}
+
+private:
+	static CommandAuxiliaryBase *Clone(const CommandAuxiliaryPtr &other)
+	{
+		return other != nullptr ? other->Clone() : nullptr;
+	}
+};
+
 /**
  * Structure for buffering the build command when selecting a station to join.
  */
