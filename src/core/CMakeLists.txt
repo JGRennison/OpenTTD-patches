@@ -26,6 +26,8 @@ add_files(
     pool_type.hpp
     random_func.cpp
     random_func.hpp
+    serialisation.cpp
+    serialisation.hpp
     smallmap_type.hpp
     smallmatrix_type.hpp
     smallstack_type.hpp

@@ -16,6 +16,7 @@
 #include "config.h"
 #include "core.h"
 #include "../../string_type.h"
+#include "../../core/serialisation.hpp"
 #include <string>
 #include <functional>
 #include <limits>
@@ -42,7 +43,7 @@ typedef uint8  PacketType; ///< Identifier for the packet
  *  - years that are leap years in the 'days since X' to 'date' calculations:
  *     (year % 4 == 0) and ((year % 100 != 0) or (year % 400 == 0))
  */
-struct Packet {
+struct Packet : public BufferSerialisationHelper<Packet> {
 private:
 	/** The current read/write position in the packet */
 	PacketSize pos;
@@ -63,15 +64,10 @@ public:
 	/* Sending/writing of packets */
 	void PrepareToSend();
 
+	std::vector<byte> &GetSerialisationBuffer() { return this->buffer; }
+	size_t GetSerialisationLimit() const { return this->limit; }
+
 	bool   CanWriteToPacket(size_t bytes_to_write);
-	void   Send_bool  (bool   data);
-	void   Send_uint8 (uint8  data);
-	void   Send_uint16(uint16 data);
-	void   Send_uint32(uint32 data);
-	void   Send_uint64(uint64 data);
-	void   Send_string(const std::string_view data);
-	size_t Send_bytes (const byte *begin, const byte *end);
-	void   Send_binary(const char *data, const size_t size);
 
 	/* Reading/receiving of packets */
 	size_t ReadRawPacketSize() const;
