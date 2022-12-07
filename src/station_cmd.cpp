@@ -2783,6 +2783,8 @@ CommandCost CmdBuildAirport(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 		if (action == AIRPORT_UPGRADE) {
 			/* delete old airport if upgrading */
 
+			ZoningMarkDirtyStationCoverageArea(st);
+
 			for (uint i = 0; i < st->airport.GetNumHangars(); ++i) {
 				DeleteWindowById(
 					WC_VEHICLE_DEPOT, st->airport.GetHangarTile(i)
