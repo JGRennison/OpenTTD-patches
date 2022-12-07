@@ -393,15 +393,16 @@ void MultiCommodityFlow::CleanupPaths(NodeID source_id, PathVector &paths)
  * edge.
  * @param edge Edge whose ends the path connects.
  * @param path End of the path the flow should be pushed on.
+ * @param min_step_size Minimum flow size.
  * @param accuracy Accuracy of the calculation.
  * @param max_saturation If < UINT_MAX only push flow up to the given
  *                       saturation, otherwise the path can be "overloaded".
  */
-uint MultiCommodityFlow::PushFlow(AnnoEdge &edge, Path *path, uint accuracy,
+uint MultiCommodityFlow::PushFlow(AnnoEdge &edge, Path *path, uint min_step_size, uint accuracy,
 		uint max_saturation)
 {
 	assert(edge.UnsatisfiedDemand() > 0);
-	uint flow = Clamp(edge.Demand() / accuracy, 1, edge.UnsatisfiedDemand());
+	uint flow = std::min(std::max(edge.Demand() / accuracy, min_step_size), edge.UnsatisfiedDemand());
 	flow = path->AddFlow(flow, this->job, max_saturation);
 	edge.SatisfyDemand(flow);
 	return flow;
@@ -564,6 +565,25 @@ MCF1stPass::MCF1stPass(LinkGraphJob &job) : MultiCommodityFlow(job)
 	bool more_loops;
 	std::vector<bool> finished_sources(size);
 
+	uint min_step_size = 1;
+	const uint adjust_threshold = 50;
+	if (size >= adjust_threshold) {
+		uint64 total_demand = 0;
+		uint demand_count = 0;
+		for (NodeID source = 0; source < size; ++source) {
+			for (NodeID dest = 0; dest < size; ++dest) {
+				AnnoEdge edge = job[source][dest];
+				if (edge.UnsatisfiedDemand() > 0) {
+					total_demand += edge.UnsatisfiedDemand();
+					demand_count++;
+				}
+			}
+		}
+		if (demand_count == 0) return;
+		min_step_size = std::max<uint>(min_step_size, (total_demand * (1 + FindLastBit(size / adjust_threshold))) / (size * accuracy));
+		accuracy = Clamp(IntSqrt((4 * accuracy * accuracy * size) / demand_count), CeilDiv(accuracy, 4), accuracy);
+	}
+
 	do {
 		more_loops = false;
 		for (NodeID source = 0; source < size; ++source) {
@@ -582,13 +602,13 @@ MCF1stPass::MCF1stPass(LinkGraphJob &job) : MultiCommodityFlow(job)
 					 * available capacity. But if no demand has been assigned
 					 * yet, make an exception and allow any valid path *once*. */
 					if (path->GetFreeCapacity() > 0 && this->PushFlow(edge, path,
-							accuracy, this->max_saturation) > 0) {
+							min_step_size, accuracy, this->max_saturation) > 0) {
 						/* If a path has been found there is a chance we can
 						 * find more. */
 						more_loops = more_loops || (edge.UnsatisfiedDemand() > 0);
 					} else if (edge.UnsatisfiedDemand() == edge.Demand() &&
 							path->GetFreeCapacity() > INT_MIN) {
-						this->PushFlow(edge, path, accuracy, UINT_MAX);
+						this->PushFlow(edge, path, min_step_size, accuracy, UINT_MAX);
 					}
 					if (edge.UnsatisfiedDemand() > 0) source_demand_left = true;
 				}
@@ -624,7 +644,7 @@ MCF2ndPass::MCF2ndPass(LinkGraphJob &job) : MultiCommodityFlow(job)
 				AnnoEdge edge = this->job[source][dest];
 				Path *path = paths[dest];
 				if (edge.UnsatisfiedDemand() > 0 && path->GetFreeCapacity() > INT_MIN) {
-					this->PushFlow(edge, path, accuracy, UINT_MAX);
+					this->PushFlow(edge, path, 1, accuracy, UINT_MAX);
 					if (edge.UnsatisfiedDemand() > 0) {
 						demand_left = true;
 						source_demand_left = true;
