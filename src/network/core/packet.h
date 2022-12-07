@@ -43,7 +43,7 @@ typedef uint8  PacketType; ///< Identifier for the packet
  *  - years that are leap years in the 'days since X' to 'date' calculations:
  *     (year % 4 == 0) and ((year % 100 != 0) or (year % 400 == 0))
  */
-struct Packet : public BufferSerialisationHelper<Packet> {
+struct Packet : public BufferSerialisationHelper<Packet>, public BufferDeserialisationHelper<Packet> {
 private:
 	/** The current read/write position in the packet */
 	PacketSize pos;
@@ -67,6 +67,11 @@ public:
 	std::vector<byte> &GetSerialisationBuffer() { return this->buffer; }
 	size_t GetSerialisationLimit() const { return this->limit; }
 
+	const byte *GetDeserialisationBuffer() const { return this->buffer.data(); }
+	size_t GetDeserialisationBufferSize() const { return this->buffer.size(); }
+	PacketSize &GetDeserialisationPosition() { return this->pos; }
+	bool CanDeserialiseBytes(size_t bytes_to_read, bool raise_error) { return this->CanReadFromPacket(bytes_to_read, raise_error); }
+
 	bool   CanWriteToPacket(size_t bytes_to_write);
 
 	/* Reading/receiving of packets */
@@ -77,16 +82,7 @@ public:
 	void PrepareToRead();
 	PacketType GetPacketType() const;
 
-	bool   CanReadFromPacket(size_t bytes_to_read, bool close_connection = false);
-	bool   Recv_bool  ();
-	uint8  Recv_uint8 ();
-	uint16 Recv_uint16();
-	uint32 Recv_uint32();
-	uint64 Recv_uint64();
-	std::string Recv_string(size_t length, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK);
-	void   Recv_string(std::string &buffer, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK);
-	void   Recv_binary(char *buffer, size_t size);
-	void   Recv_binary(std::string &buffer, size_t size);
+	bool CanReadFromPacket(size_t bytes_to_read, bool close_connection = false);
 
 	size_t RemainingBytesToTransfer() const;
 

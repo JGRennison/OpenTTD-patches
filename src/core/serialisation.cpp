@@ -9,6 +9,7 @@
 
 #include "../stdafx.h"
 #include "serialisation.hpp"
+#include "../string_func_extra.h"
 
 /**
  * Is it safe to write to the packet, i.e. didn't we run over the buffer?
@@ -134,4 +135,9 @@ void BufferSend_binary(std::vector<byte> &buffer, size_t limit, const char *data
 	assert(data != nullptr);
 	assert(BufferCanWriteToPacket(buffer, limit, size));
 	buffer.insert(buffer.end(), data, data + size);
+}
+
+void BufferRecvStringValidate(std::string &buffer, StringValidationSettings settings)
+{
+	StrMakeValidInPlace(buffer, settings);
 }
