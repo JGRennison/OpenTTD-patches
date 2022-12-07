@@ -72,7 +72,9 @@ public:
 	PacketSize &GetDeserialisationPosition() { return this->pos; }
 	bool CanDeserialiseBytes(size_t bytes_to_read, bool raise_error) { return this->CanReadFromPacket(bytes_to_read, raise_error); }
 
-	bool   CanWriteToPacket(size_t bytes_to_write);
+	bool CanWriteToPacket(size_t bytes_to_write);
+
+	void WriteAtOffset_uint16(size_t offset, uint16);
 
 	/* Reading/receiving of packets */
 	size_t ReadRawPacketSize() const;

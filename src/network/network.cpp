@@ -1120,7 +1120,7 @@ void NetworkGameLoop()
 		while (f != nullptr && !feof(f)) {
 			if (_date == next_date && _date_fract == next_date_fract) {
 				if (cp != nullptr) {
-					NetworkSendCommand(cp->tile, cp->p1, cp->p2, cp->p3, cp->cmd & ~CMD_FLAGS_MASK, nullptr, cp->text.c_str(), cp->company, cp->binary_length);
+					NetworkSendCommand(cp->tile, cp->p1, cp->p2, cp->p3, cp->cmd & ~CMD_FLAGS_MASK, nullptr, cp->text.c_str(), cp->company, cp->aux_data);
 					DEBUG(net, 0, "injecting: date{%08x; %02x; %02x}; %02x; %06x; %08x; %08x; " OTTD_PRINTFHEX64PAD " %08x; \"%s\" (%x) (%s)", _date, _date_fract, _tick_skip_counter, (int)_current_company, cp->tile, cp->p1, cp->p2, cp->p3, cp->cmd, cp->text.c_str(), cp->binary_length, GetCommandName(cp->cmd));
 					cp.reset();
 				}
@@ -1167,7 +1167,7 @@ void NetworkGameLoop()
 				 * string misses because in 99% of the time it's not used. */
 				assert(ret == 10 || ret == 9);
 				cp->company = (CompanyID)company;
-				cp->binary_length = 0;
+				cp->aux_data = nullptr;
 			} else if (strncmp(p, "join: ", 6) == 0) {
 				/* Manually insert a pause when joining; this way the client can join at the exact right time. */
 				int ret = sscanf(p + 6, "date{%x; %x; %x}", &next_date, &next_date_fract, &next_tick_skip_counter);
@@ -1181,7 +1181,7 @@ void NetworkGameLoop()
 				cp->p2 = 1;
 				cp->p3 = 0;
 				cp->callback = nullptr;
-				cp->binary_length = 0;
+				cp->aux_data = nullptr;
 				_ddc_fastforward = false;
 			} else if (strncmp(p, "sync: ", 6) == 0) {
 				int ret = sscanf(p + 6, "date{%x; %x; %x}; %x; %x", &next_date, &next_date_fract, &next_tick_skip_counter, &sync_state[0], &sync_state[1]);

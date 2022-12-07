@@ -621,6 +621,8 @@ enum CommandPauseLevel {
 	CMDPL_ALL_ACTIONS,     ///< All actions may be executed.
 };
 
+struct CommandAuxiliaryBase;
+
 /**
  * Defines the callback type for all command handler functions.
  *
@@ -640,7 +642,7 @@ enum CommandPauseLevel {
  * @return The CommandCost of the command, which can be succeeded or failed.
  */
 typedef CommandCost CommandProc(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text);
-typedef CommandCost CommandProcEx(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length);
+typedef CommandCost CommandProcEx(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data);
 
 /**
  * Define a command with the flags which belongs to it.
@@ -662,9 +664,9 @@ struct Command {
 	Command(CommandProcEx *procex, const char *name, CommandFlags flags, CommandType type)
 			: procex(procex), name(name), flags(flags | CMD_PROCEX), type(type) {}
 
-	inline CommandCost Execute(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length) const {
+	inline CommandCost Execute(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data) const {
 		if (this->flags & CMD_PROCEX) {
-			return this->procex(tile, flags, p1, p2, p3, text, binary_length);
+			return this->procex(tile, flags, p1, p2, p3, text, aux_data);
 		} else {
 			return this->proc(tile, flags, p1, p2, text);
 		}
@@ -733,13 +735,13 @@ struct CommandContainer {
 	uint32 cmd;                      ///< command being executed.
 	uint64 p3;                       ///< parameter p3. (here for alignment)
 	CommandCallback *callback;       ///< any callback function executed upon successful completion of the command.
-	uint32 binary_length;            ///< in case text contains binary data, this describes its length.
 	std::string text;                ///< possible text sent for name changes etc.
+	CommandAuxiliaryPtr aux_data;    ///< Auxiliary command data
 };
 
 inline CommandContainer NewCommandContainerBasic(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallback *callback = nullptr)
 {
-	return { tile, p1, p2, cmd, 0, callback, 0, {} };
+	return { tile, p1, p2, cmd, 0, callback, {}, nullptr };
 }
 
 #endif /* COMMAND_TYPE_H */

@@ -12,6 +12,7 @@
 #include "error.h"
 #include "gui.h"
 #include "command_func.h"
+#include "command_aux.h"
 #include "network/network_type.h"
 #include "network/network.h"
 #include "genworld.h"
@@ -565,7 +566,7 @@ enum CommandLogEntryFlag : uint16 {
 	CLEF_ESTIMATE_ONLY       =  0x08, ///< estimate only
 	CLEF_ONLY_SENDING        =  0x10, ///< only sending
 	CLEF_MY_CMD              =  0x20, ///< locally generated command
-	CLEF_BINARY              =  0x40, ///< binary_length is > 0
+	CLEF_AUX_DATA            =  0x40, ///< have auxiliary data
 	CLEF_SCRIPT              =  0x80, ///< command run by AI/game script
 	CLEF_TWICE               = 0x100, ///< command logged twice (only sending and execution)
 	CLEF_RANDOM              = 0x200, ///< command changed random seed
@@ -648,7 +649,7 @@ static void DumpSubCommandLog(char *&buffer, const char *last, const CommandLog 
 		}
 		buffer += seprintf(buffer, last, " | %c%c%c%c%c%c%c%c%c%c%c | ",
 				fc(CLEF_ORDER_BACKUP, 'o'), fc(CLEF_RANDOM, 'r'), fc(CLEF_TWICE, '2'),
-				fc(CLEF_SCRIPT, 'a'), fc(CLEF_BINARY, 'b'), fc(CLEF_MY_CMD, 'm'), fc(CLEF_ONLY_SENDING, 's'),
+				fc(CLEF_SCRIPT, 'a'), fc(CLEF_AUX_DATA, 'b'), fc(CLEF_MY_CMD, 'm'), fc(CLEF_ONLY_SENDING, 's'),
 				fc(CLEF_ESTIMATE_ONLY, 'e'), fc(CLEF_TEXT, 't'), fc(CLEF_GENERATING_WORLD, 'g'), fc(CLEF_CMD_FAILED, 'f'));
 		buffer += seprintf(buffer, last, " %7d x %7d, p1: 0x%08X, p2: 0x%08X, ",
 				TileX(entry.tile), TileY(entry.tile), entry.p1, entry.p2);
@@ -756,17 +757,15 @@ bool IsCommandAllowedWhilePaused(uint32 cmd)
 static int _docommand_recursive = 0;
 
 struct cmd_text_info_dumper {
-	const char *CommandTextInfo(const char *text, uint32 binary_length)
+	const char *CommandTextInfo(const char *text, const CommandAuxiliaryBase *aux_data)
 	{
 		char *b = this->buffer;
 		const char *last = lastof(this->buffer);
 		if (text) {
-			b += seprintf(b, last, ", text");
+			b += seprintf(b, last, ", text: length: %u", (uint) strlen(text));
 		}
-		if (binary_length) {
-			b += seprintf(b, last, ", bin length: %u", binary_length);
-		} else if (text) {
-			b += seprintf(b, last, ", str length: %u", (uint) strlen(text));
+		if (aux_data) {
+			b += seprintf(b, last, ", aux data");
 		}
 		return this->buffer;
 	}
@@ -789,10 +788,10 @@ private:
  * @see CommandProc
  * @return the cost
  */
-CommandCost DoCommandEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, DoCommandFlag flags, uint32 cmd, const char *text, uint32 binary_length)
+CommandCost DoCommandEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, DoCommandFlag flags, uint32 cmd, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	SCOPE_INFO_FMT([=], "DoCommand: tile: %X (%d x %d), p1: 0x%X, p2: 0x%X, p3: " OTTD_PRINTFHEX64 ", flags: 0x%X, company: %s, cmd: 0x%X (%s)%s",
-			tile, TileX(tile), TileY(tile), p1, p2, p3, flags, scope_dumper().CompanyInfo(_current_company), cmd, GetCommandName(cmd), cmd_text_info_dumper().CommandTextInfo(text, binary_length));
+			tile, TileX(tile), TileY(tile), p1, p2, p3, flags, scope_dumper().CompanyInfo(_current_company), cmd, GetCommandName(cmd), cmd_text_info_dumper().CommandTextInfo(text, aux_data));
 
 	CommandCost res;
 
@@ -808,7 +807,7 @@ CommandCost DoCommandEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, DoComma
 	if (_docommand_recursive == 1 || !(flags & DC_EXEC) ) {
 		if (_docommand_recursive == 1) _cleared_object_areas.clear();
 		SetTownRatingTestMode(true);
-		res = command.Execute(tile, flags & ~DC_EXEC, p1, p2, p3, text, binary_length);
+		res = command.Execute(tile, flags & ~DC_EXEC, p1, p2, p3, text, aux_data);
 		SetTownRatingTestMode(false);
 		if (res.Failed()) {
 			goto error;
@@ -830,7 +829,7 @@ CommandCost DoCommandEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, DoComma
 	/* Execute the command here. All cost-relevant functions set the expenses type
 	 * themselves to the cost object at some point */
 	if (_docommand_recursive == 1) _cleared_object_areas.clear();
-	res = command.Execute(tile, flags, p1, p2, p3, text, binary_length);
+	res = command.Execute(tile, flags, p1, p2, p3, text, aux_data);
 	if (res.Failed()) {
 error:
 		_docommand_recursive--;
@@ -909,10 +908,10 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32
  * @param binary_length The length of binary data in text
  * @return \c true if the command succeeded, else \c false.
  */
-bool DoCommandPEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, uint32 binary_length, bool my_cmd)
+bool DoCommandPEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, const CommandAuxiliaryBase *aux_data, bool my_cmd)
 {
 	SCOPE_INFO_FMT([=], "DoCommandP: tile: %X (%d x %d), p1: 0x%X, p2: 0x%X, p3: 0x" OTTD_PRINTFHEX64 ", company: %s, cmd: 0x%X (%s), my_cmd: %d%s",
-			tile, TileX(tile), TileY(tile), p1, p2, p3, scope_dumper().CompanyInfo(_current_company), cmd, GetCommandName(cmd), my_cmd, cmd_text_info_dumper().CommandTextInfo(text, binary_length));
+			tile, TileX(tile), TileY(tile), p1, p2, p3, scope_dumper().CompanyInfo(_current_company), cmd, GetCommandName(cmd), my_cmd, cmd_text_info_dumper().CommandTextInfo(text, aux_data));
 
 	/* Cost estimation is generally only done when the
 	 * local user presses shift while doing something.
@@ -945,15 +944,15 @@ bool DoCommandPEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, C
 	GameRandomSeedChecker random_state;
 	uint order_backup_update_counter = OrderBackup::GetUpdateCounter();
 
-	CommandCost res = DoCommandPInternal(tile, p1, p2, p3, cmd, callback, text, my_cmd, estimate_only, binary_length);
+	CommandCost res = DoCommandPInternal(tile, p1, p2, p3, cmd, callback, text, my_cmd, estimate_only, aux_data);
 
 	CommandLogEntryFlag log_flags;
 	log_flags = CLEF_NONE;
-	if (binary_length == 0 && !StrEmpty(text)) log_flags |= CLEF_TEXT;
+	if (!StrEmpty(text)) log_flags |= CLEF_TEXT;
 	if (estimate_only) log_flags |= CLEF_ESTIMATE_ONLY;
 	if (only_sending) log_flags |= CLEF_ONLY_SENDING;
 	if (my_cmd) log_flags |= CLEF_MY_CMD;
-	if (binary_length > 0) log_flags |= CLEF_BINARY;
+	if (aux_data != nullptr) log_flags |= CLEF_AUX_DATA;
 	if (!random_state.Check()) log_flags |= CLEF_RANDOM;
 	if (order_backup_update_counter != OrderBackup::GetUpdateCounter()) log_flags |= CLEF_ORDER_BACKUP;
 	AppendCommandLogEntry(res, tile, p1, p2, p3, cmd, log_flags, text);
@@ -988,20 +987,20 @@ bool DoCommandPEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, C
 	return res.Succeeded();
 }
 
-CommandCost DoCommandPScript(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd, bool estimate_only, uint32 binary_length)
+CommandCost DoCommandPScript(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd, bool estimate_only, const CommandAuxiliaryBase *aux_data)
 {
 	GameRandomSeedChecker random_state;
 	uint order_backup_update_counter = OrderBackup::GetUpdateCounter();
 
-	CommandCost res = DoCommandPInternal(tile, p1, p2, p3, cmd, callback, text, my_cmd, estimate_only, binary_length);
+	CommandCost res = DoCommandPInternal(tile, p1, p2, p3, cmd, callback, text, my_cmd, estimate_only, aux_data);
 
 	CommandLogEntryFlag log_flags;
 	log_flags = CLEF_SCRIPT;
-	if (binary_length == 0 && !StrEmpty(text)) log_flags |= CLEF_TEXT;
+	if (!StrEmpty(text)) log_flags |= CLEF_TEXT;
 	if (estimate_only) log_flags |= CLEF_ESTIMATE_ONLY;
 	if (_networking && !(cmd & CMD_NETWORK_COMMAND)) log_flags |= CLEF_ONLY_SENDING;
 	if (my_cmd) log_flags |= CLEF_MY_CMD;
-	if (binary_length > 0) log_flags |= CLEF_BINARY;
+	if (aux_data != nullptr) log_flags |= CLEF_AUX_DATA;
 	if (!random_state.Check()) log_flags |= CLEF_RANDOM;
 	if (order_backup_update_counter != OrderBackup::GetUpdateCounter()) log_flags |= CLEF_ORDER_BACKUP;
 	AppendCommandLogEntry(res, tile, p1, p2, p3, cmd, log_flags, text);
@@ -1063,7 +1062,7 @@ void EnqueueDoCommandP(CommandContainer cmd)
  * @param estimate_only whether to give only the estimate or also execute the command
  * @return the command cost of this function.
  */
-CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd, bool estimate_only, uint32 binary_length)
+CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd, bool estimate_only, const CommandAuxiliaryBase *aux_data)
 {
 	/* Prevent recursion; it gives a mess over the network */
 	assert(_docommand_recursive == 0);
@@ -1113,13 +1112,13 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, 
 	_cleared_object_areas.clear();
 	SetTownRatingTestMode(true);
 	BasePersistentStorageArray::SwitchMode(PSM_ENTER_TESTMODE);
-	CommandCost res = command.Execute(tile, flags, p1, p2, p3, text, binary_length);
+	CommandCost res = command.Execute(tile, flags, p1, p2, p3, text, aux_data);
 	BasePersistentStorageArray::SwitchMode(PSM_LEAVE_TESTMODE);
 	SetTownRatingTestMode(false);
 
 	if (!random_state.Check()) {
-		std::string msg = stdstr_fmt("Random seed changed in test command: company: %02x; tile: %06x (%u x %u); p1: %08x; p2: %08x; p3: " OTTD_PRINTFHEX64PAD "; cmd: %08x; \"%s\" %X (%s)",
-				(int)_current_company, tile, TileX(tile), TileY(tile), p1, p2, p3, cmd & ~CMD_NETWORK_COMMAND, text, binary_length, GetCommandName(cmd));
+		std::string msg = stdstr_fmt("Random seed changed in test command: company: %02x; tile: %06x (%u x %u); p1: %08x; p2: %08x; p3: " OTTD_PRINTFHEX64PAD "; cmd: %08x; \"%s\"%s (%s)",
+				(int)_current_company, tile, TileX(tile), TileY(tile), p1, p2, p3, cmd & ~CMD_NETWORK_COMMAND, text, aux_data != nullptr ? ", aux data present" : "", GetCommandName(cmd));
 		DEBUG(desync, 0, "msg: date{%08x; %02x; %02x}; %s", _date, _date_fract, _tick_skip_counter, msg.c_str());
 		LogDesyncMsg(std::move(msg));
 	}
@@ -1137,8 +1136,8 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, 
 		if (!_networking || _generating_world || (cmd & CMD_NETWORK_COMMAND) != 0) {
 			/* Log the failed command as well. Just to be able to be find
 			 * causes of desyncs due to bad command test implementations. */
-			DEBUG(desync, 1, "cmdf: date{%08x; %02x; %02x}; company: %02x; tile: %06x (%u x %u); p1: %08x; p2: %08x; p3: " OTTD_PRINTFHEX64PAD "; cmd: %08x; \"%s\" %X (%s)",
-					_date, _date_fract, _tick_skip_counter, (int)_current_company, tile, TileX(tile), TileY(tile), p1, p2, p3, cmd & ~CMD_NETWORK_COMMAND, text, binary_length, GetCommandName(cmd));
+			DEBUG(desync, 1, "cmdf: date{%08x; %02x; %02x}; company: %02x; tile: %06x (%u x %u); p1: %08x; p2: %08x; p3: " OTTD_PRINTFHEX64PAD "; cmd: %08x; \"%s\"%s (%s)",
+					_date, _date_fract, _tick_skip_counter, (int)_current_company, tile, TileX(tile), TileY(tile), p1, p2, p3, cmd & ~CMD_NETWORK_COMMAND, text, aux_data != nullptr ? ", aux data present" : "", GetCommandName(cmd));
 		}
 		cur_company.Restore();
 		return_dcpi(res);
@@ -1149,7 +1148,7 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, 
 	 * send it to the command-queue and abort execution
 	 */
 	if (_networking && !_generating_world && !(cmd & CMD_NETWORK_COMMAND)) {
-		NetworkSendCommand(tile, p1, p2, p3, cmd & ~CMD_FLAGS_MASK, callback, text, _current_company, binary_length);
+		NetworkSendCommand(tile, p1, p2, p3, cmd & ~CMD_FLAGS_MASK, callback, text, _current_company, aux_data);
 		cur_company.Restore();
 
 		/* Don't return anything special here; no error, no costs.
@@ -1158,14 +1157,14 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, 
 		 * reset the storages as we've not executed the command. */
 		return_dcpi(CommandCost());
 	}
-	DEBUG(desync, 1, "cmd: date{%08x; %02x; %02x}; company: %02x; tile: %06x (%u x %u); p1: %08x; p2: %08x; p3: " OTTD_PRINTFHEX64PAD "; cmd: %08x; \"%s\" %X (%s)",
-			_date, _date_fract, _tick_skip_counter, (int)_current_company, tile, TileX(tile), TileY(tile), p1, p2, p3, cmd & ~CMD_NETWORK_COMMAND, text, binary_length, GetCommandName(cmd));
+	DEBUG(desync, 1, "cmd: date{%08x; %02x; %02x}; company: %02x; tile: %06x (%u x %u); p1: %08x; p2: %08x; p3: " OTTD_PRINTFHEX64PAD "; cmd: %08x; \"%s\"%s(%s)",
+			_date, _date_fract, _tick_skip_counter, (int)_current_company, tile, TileX(tile), TileY(tile), p1, p2, p3, cmd & ~CMD_NETWORK_COMMAND, text, aux_data != nullptr ? ", aux data present" : "", GetCommandName(cmd));
 
 	/* Actually try and execute the command. If no cost-type is given
 	 * use the construction one */
 	_cleared_object_areas.clear();
 	BasePersistentStorageArray::SwitchMode(PSM_ENTER_COMMAND);
-	CommandCost res2 = command.Execute(tile, flags | DC_EXEC, p1, p2, p3, text, binary_length);
+	CommandCost res2 = command.Execute(tile, flags | DC_EXEC, p1, p2, p3, text, aux_data);
 	BasePersistentStorageArray::SwitchMode(PSM_LEAVE_COMMAND);
 
 	if (cmd_id == CMD_COMPANY_CTRL) {

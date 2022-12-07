@@ -190,7 +190,7 @@ CommandCost CmdCreateLeagueTable(TileIndex tile, DoCommandFlag flags, uint32 p1,
 	return res;
 }
 
-CommandCost CmdCreateLeagueTableElement(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length)
+CommandCost CmdCreateLeagueTableElement(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	std::string text_str, score;
 	text = StrConsumeToSeparator(text_str, text);
@@ -227,7 +227,7 @@ CommandCost CmdUpdateLeagueTableElementData(TileIndex tile, DoCommandFlag flags,
 	return CmdUpdateLeagueTableElementData(flags, element, company, text, link_type, link_target);
 }
 
-CommandCost CmdUpdateLeagueTableElementScore(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length)
+CommandCost CmdUpdateLeagueTableElementScore(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	return CmdUpdateLeagueTableElementScore(flags, p1, p3, text);
 }

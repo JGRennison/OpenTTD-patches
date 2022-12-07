@@ -73,7 +73,7 @@ CommandCost CmdScheduledDispatch(TileIndex tile, DoCommandFlag flags, uint32 p1,
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchAdd(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length)
+CommandCost CmdScheduledDispatchAdd(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	VehicleID veh = GB(p1, 0, 20);
 	uint schedule_index = GB(p1, 20, 12);
@@ -185,7 +185,7 @@ CommandCost CmdScheduledDispatchSetDuration(TileIndex tile, DoCommandFlag flags,
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchSetStartDate(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length)
+CommandCost CmdScheduledDispatchSetStartDate(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	VehicleID veh = GB(p1, 0, 20);
 	uint schedule_index = GB(p1, 20, 12);
@@ -330,7 +330,7 @@ CommandCost CmdScheduledDispatchClear(TileIndex tile, DoCommandFlag flags, uint3
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchAddNewSchedule(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length)
+CommandCost CmdScheduledDispatchAddNewSchedule(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	VehicleID veh = GB(p1, 0, 20);
 

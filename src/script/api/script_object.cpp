@@ -313,7 +313,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	return GetStorage()->callback_value[index];
 }
 
-/* static */ bool ScriptObject::DoCommandEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint cmd, const char *text, uint32 binary_length, Script_SuspendCallbackProc *callback)
+/* static */ bool ScriptObject::DoCommandEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint cmd, const char *text, const CommandAuxiliaryBase *aux_data, Script_SuspendCallbackProc *callback)
 {
 	if (!ScriptObject::CanSuspend()) {
 		throw Script_FatalError("You are not allowed to execute any DoCommand (even indirect) in your constructor, Save(), Load(), and any valuator.");
@@ -325,7 +325,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	}
 
 	std::string text_validated;
-	if (binary_length == 0 && !StrEmpty(text) && (GetCommandFlags(cmd) & CMD_STR_CTRL) == 0) {
+	if (!StrEmpty(text) && (GetCommandFlags(cmd) & CMD_STR_CTRL) == 0) {
 		/* The string must be valid, i.e. not contain special codes. Since some
 		 * can be made with GSText, make sure the control codes are removed. */
 		text_validated = text;
@@ -349,7 +349,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	if (!estimate_only && _networking && !_generating_world) SetLastCommand(tile, p1, p2, p3, cmd);
 
 	/* Try to perform the command. */
-	CommandCost res = ::DoCommandPScript(tile, p1, p2, p3, cmd, (_networking && !_generating_world) ? ScriptObject::GetActiveInstance()->GetDoCommandCallback() : nullptr, text, false, estimate_only, binary_length);
+	CommandCost res = ::DoCommandPScript(tile, p1, p2, p3, cmd, (_networking && !_generating_world) ? ScriptObject::GetActiveInstance()->GetDoCommandCallback() : nullptr, text, false, estimate_only, aux_data);
 
 	/* We failed; set the error and bail out */
 	if (res.Failed()) {

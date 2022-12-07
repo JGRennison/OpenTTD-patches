@@ -2647,7 +2647,7 @@ void SyncCompanySettings()
 		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		uint32 old_value = (uint32)sd->AsIntSetting()->Read(old_object);
 		uint32 new_value = (uint32)sd->AsIntSetting()->Read(new_object);
-		if (old_value != new_value) NetworkSendCommand(0, 0, new_value, 0, CMD_CHANGE_COMPANY_SETTING, nullptr, sd->name, _local_company, 0);
+		if (old_value != new_value) NetworkSendCommand(0, 0, new_value, 0, CMD_CHANGE_COMPANY_SETTING, nullptr, sd->name, _local_company, nullptr);
 	}
 }
 
