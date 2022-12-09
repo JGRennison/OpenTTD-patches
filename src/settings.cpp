@@ -109,6 +109,8 @@ std::string _secrets_file; ///< Secrets configuration file of OpenTTD.
 typedef std::list<ErrorMessageData> ErrorList;
 static ErrorList _settings_error_list; ///< Errors while loading minimal settings.
 
+static bool _fallback_gui_zoom_max = false;
+
 
 /**
  * List of all the generic setting tables.
@@ -1851,6 +1853,24 @@ static bool AllowRoadStopsUnderBridgesSettingGUI(SettingOnGuiCtrlData &data)
 	}
 }
 
+static bool ZoomMaxCfgName(SettingOnGuiCtrlData &data)
+{
+	switch (data.type) {
+		case SOGCT_CFG_NAME:
+			data.str = "gui.zoom_max_extra";
+			_fallback_gui_zoom_max = false;
+			return true;
+
+		case SOGCT_CFG_FALLBACK_NAME:
+			data.str = "zoom_max";
+			_fallback_gui_zoom_max = true;
+			return true;
+
+		default:
+			return false;
+	}
+}
+
 /* End - GUI callbacks */
 
 /**
@@ -2299,6 +2319,9 @@ void LoadFromConfig(bool startup)
 		if (FindWindowById(WC_ERRMSG, 0) == nullptr) ShowFirstError();
 	} else {
 		PostTransparencyOptionLoad();
+		if (_fallback_gui_zoom_max && _settings_client.gui.zoom_max <= ZOOM_LVL_OUT_32X) {
+			_settings_client.gui.zoom_max = ZOOM_LVL_MAX;
+		}
 	}
 }
 
