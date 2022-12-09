@@ -613,6 +613,20 @@ const std::string &StringSettingDesc::Read(const void *object) const
 	return *reinterpret_cast<std::string *>(GetVariableAddress(object, this->save));
 }
 
+static const char *GetSettingConfigName(const SettingDesc &sd)
+{
+	const char *name = sd.name;
+	if (sd.guiproc != nullptr) {
+		SettingOnGuiCtrlData data;
+		data.type = SOGCT_CFG_NAME;
+		data.str = name;
+		if (sd.guiproc(data)) {
+			name = data.str;
+		}
+	}
+	return name;
+}
+
 /**
  * Load values from a group of an IniFile structure into the internal representation
  * @param ini pointer to IniFile structure that holds administrative information
@@ -635,7 +649,7 @@ static void IniLoadSettings(IniFile &ini, const SettingTable &settings_table, co
 			item = nullptr;
 		} else {
 			/* For settings.xx.yy load the settings from [xx] yy = ? */
-			std::string s{ sd->name };
+			std::string s{ GetSettingConfigName(*sd) };
 			auto sc = s.find('.');
 			if (sc != std::string::npos) {
 				group = ini.GetGroup(s.substr(0, sc));
@@ -655,6 +669,13 @@ static void IniLoadSettings(IniFile &ini, const SettingTable &settings_table, co
 				 * did not exist (e.g. loading old config files with a [yapf] section */
 				sc = s.find('.');
 				if (sc != std::string::npos) item = ini.GetGroup(s.substr(0, sc))->GetItem(s.substr(sc + 1), false);
+			}
+			if (item == nullptr && sd->guiproc != nullptr) {
+				SettingOnGuiCtrlData data;
+				data.type = SOGCT_CFG_FALLBACK_NAME;
+				if (sd->guiproc(data)) {
+					item = group->GetItem(data.str, false);
+				}
 			}
 		}
 
@@ -719,7 +740,7 @@ static void IniSaveSettings(IniFile &ini, const SettingTable &settings_table, co
 		if (sd->flags & SF_NO_NEWGAME) continue;
 
 		/* XXX - wtf is this?? (group override?) */
-		std::string s{ sd->name };
+		std::string s{ GetSettingConfigName(*sd) };
 		auto sc = s.find('.');
 		if (sc != std::string::npos) {
 			group = ini.GetGroup(s.substr(0, sc));
@@ -2209,7 +2230,7 @@ static void RemoveEntriesFromIni(IniFile &ini, const SettingTable &table)
 {
 	for (auto &sd : table) {
 		/* For settings.xx.yy load the settings from [xx] yy = ? */
-		std::string s{ sd->name };
+		std::string s{ GetSettingConfigName(*sd) };
 		auto sc = s.find('.');
 		if (sc == std::string::npos) continue;
 
