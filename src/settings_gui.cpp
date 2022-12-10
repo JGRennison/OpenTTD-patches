@@ -40,6 +40,7 @@
 #include "video/video_driver.hpp"
 #include "music/music_driver.hpp"
 #include "gui.h"
+#include "mixer.h"
 #include "scope.h"
 
 #include <vector>
@@ -531,7 +532,11 @@ struct GameOptionsWindow : Window {
 			case WID_GO_BASE_MUSIC_VOLUME: {
 				byte &vol = (widget == WID_GO_BASE_MUSIC_VOLUME) ? _settings_client.music.music_vol : _settings_client.music.effect_vol;
 				if (ClickSliderWidget(this->GetWidget<NWidgetBase>(widget)->GetCurrentRect(), pt, 0, INT8_MAX, vol)) {
-					if (widget == WID_GO_BASE_MUSIC_VOLUME) MusicDriver::GetInstance()->SetVolume(vol);
+					if (widget == WID_GO_BASE_MUSIC_VOLUME) {
+						MusicDriver::GetInstance()->SetVolume(vol);
+					} else {
+						SetEffectVolume(vol);
+					}
 					this->SetWidgetDirty(widget);
 					SetWindowClassesDirty(WC_MUSIC_WINDOW);
 				}
