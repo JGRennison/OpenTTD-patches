@@ -229,7 +229,7 @@ void LinkGraph::Edge::Update(uint capacity, uint usage, uint32 travel_time, Edge
 		if (edge.travel_time_sum == 0) {
 			edge.travel_time_sum = (edge.capacity + capacity) * travel_time;
 		} else if (travel_time == 0) {
-			edge.travel_time_sum += edge.travel_time_sum / edge.capacity * capacity;
+			edge.travel_time_sum += (edge.travel_time_sum / edge.capacity) * capacity;
 		} else {
 			edge.travel_time_sum += travel_time * capacity;
 		}
@@ -239,7 +239,7 @@ void LinkGraph::Edge::Update(uint capacity, uint usage, uint32 travel_time, Edge
 		/* If travel time is not provided, we scale the stored time based on
 		 * the capacity increase. */
 		if (capacity > edge.capacity && travel_time == 0) {
-			edge.travel_time_sum = edge.travel_time_sum / edge.capacity * capacity;
+			edge.travel_time_sum = (edge.travel_time_sum / edge.capacity) * capacity;
 			edge.capacity = capacity;
 		} else {
 			edge.capacity = std::max(edge.capacity, capacity);

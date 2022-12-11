@@ -1717,6 +1717,9 @@ static void DayLengthChanged(int32 new_value)
 	extern void AdjustAllSignalSpeedRestrictionTickValues(DateTicksScaled delta);
 	AdjustAllSignalSpeedRestrictionTickValues(_scaled_date_ticks - old_scaled_date_ticks);
 
+	extern void AdjustVehicleScaledTickBase(int64 delta);
+	AdjustVehicleScaledTickBase(_scaled_date_ticks - old_scaled_date_ticks);
+
 	MarkWholeScreenDirty();
 }
 

@@ -3158,7 +3158,7 @@ static void VehicleIncreaseStats(const Vehicle *front)
 			EdgeUpdateMode restricted_mode = EUM_INCREASE;
 			if (v->type == VEH_AIRCRAFT) restricted_mode |= EUM_AIRCRAFT;
 			IncreaseStats(Station::Get(last_loading_station), v->cargo_type, front->last_station_visited, v->refit_cap,
-				std::min<uint>(v->refit_cap, v->cargo.StoredCount()), _tick_counter - loading_tick, restricted_mode);
+				std::min<uint>(v->refit_cap, v->cargo.StoredCount()), _scaled_tick_counter - loading_tick, restricted_mode);
 		}
 	}
 }
@@ -3379,7 +3379,7 @@ void Vehicle::LeaveStation()
 
 			/* if the vehicle could load here or could stop with cargo loaded set the last loading station */
 			this->last_loading_station = this->last_station_visited;
-			this->last_loading_tick = _tick_counter;
+			this->last_loading_tick = _scaled_tick_counter;
 			ClrBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP);
 		} else if (cargoes_can_leave_with_cargo == 0) {
 			/* can leave with no cargoes */
@@ -3400,7 +3400,7 @@ void Vehicle::LeaveStation()
 				if (u->cargo_type < NUM_CARGO && HasBit(cargoes_can_load_unload, u->cargo_type)) {
 					if (HasBit(cargoes_can_leave_with_cargo, u->cargo_type)) {
 						u->last_loading_station = this->last_station_visited;
-						u->last_loading_tick = _tick_counter;
+						u->last_loading_tick = _scaled_tick_counter;
 					} else {
 						u->last_loading_station = INVALID_STATION;
 					}
@@ -4563,6 +4563,13 @@ void DumpVehicleStats(char *buffer, const char *last)
 	buffer += seprintf(buffer, last, "  %10s: %5u\n", "total", (uint)Vehicle::GetNumItems());
 }
 
+void AdjustVehicleScaledTickBase(int64 delta)
+{
+	for (Vehicle *v : Vehicle::Iterate()) {
+		v->last_loading_tick += delta;
+	}
+}
+
 void ShiftVehicleDates(int interval)
 {
 	for (Vehicle *v : Vehicle::Iterate()) {
@@ -4571,6 +4578,8 @@ void ShiftVehicleDates(int interval)
 
 	extern void AdjustAllSignalSpeedRestrictionTickValues(DateTicksScaled delta);
 	AdjustAllSignalSpeedRestrictionTickValues(interval * DAY_TICKS * _settings_game.economy.day_length_factor);
+
+	AdjustVehicleScaledTickBase(interval * DAY_TICKS * _settings_game.economy.day_length_factor);
 }
 
 /**
