@@ -2620,6 +2620,7 @@ STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{CARGO_L
 STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} a ser transportado de volta ({COMMA}% da capacidade)
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Tempo médio de viagem: {NUM}{NBSP}dia{P "" s}
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Tempo médio de viagem: {STRING}
+STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Capacidade: {CARGO_LONG}
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Exibir área de cobertura

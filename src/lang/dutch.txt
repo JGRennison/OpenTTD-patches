@@ -2619,6 +2619,7 @@ STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{CARGO_L
 STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} voor retourtransport ({COMMA}% van capaciteit)
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Gemiddelde reistijd: {NUM}{NBSP}dag{P "" en}
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Gemiddelde reistijd: {STRING}
+STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Capaciteit: {CARGO_LONG}
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Dekkingsgebied markeren

@@ -2619,6 +2619,7 @@ STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{CARGO_L
 STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} geri nakledilecek ({COMMA}% kapasite ile)
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Ortalama seyahat süresi: {NUM}{NBSP}gün
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Ortalama seyahat süresi: {STRING}
+STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Kapasite: {CARGO_LONG}
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Kapsama alanı

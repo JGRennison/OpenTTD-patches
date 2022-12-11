@@ -2620,6 +2620,7 @@ STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{CARGO_L
 STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} per a transportar de tornada ({COMMA}{NBSP}% de capacitat)
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Temps de viatge mitjà: {NUM}{NBSP}di{P a es}
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Temps de viatge mitjà: {STRING}
+STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Capacitat: {CARGO_LONG}
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Marca l'àrea de cobertura

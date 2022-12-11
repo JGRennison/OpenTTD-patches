@@ -2613,6 +2613,7 @@ STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{CARGO_L
 STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} sẽ được hoàn chuyển ({COMMA}% dung lượng)
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Thời gian đi lại trung bình: {NUM}{NBSP}ngày
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Thời gian đi lại trung bình: {STRING}
+STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Sức chứa: {CARGO_LONG}
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Hiện rõ vùng phủ ảnh hưởng

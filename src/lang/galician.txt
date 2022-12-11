@@ -7181,6 +7181,7 @@ STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{CARGO_L
 STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} transportaranse de volta ({COMMA}% da capacidade)
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Tempo medio de viaxe: {NUM}{NBSP}día{P "" s}
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Tempo medio de viaxe: {STRING}
+STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Capacidade: {CARGO_LONG}
 STR_STATION_BUILD_INFRASTRUCTURE_COST                           :{BLACK}Custo de mantemento: {GOLD}{CURRENCY_SHORT}/ano
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_ROADS                :Permitido construír estradas
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_LEVEL_CROSSINGS      :Permitido construír pasos a nivel

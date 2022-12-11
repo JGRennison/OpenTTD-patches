@@ -2786,6 +2786,7 @@ STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{CARGO_L
 STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} к возврату ({COMMA}% ёмкости)
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Среднее время в пути: {NUM}{NBSP}д{P ень ня ней}
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Среднее время в пути: {STRING}
+STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Ёмкость: {CARGO_LONG}
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Подсветка зоны покрытия

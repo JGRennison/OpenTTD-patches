@@ -2656,6 +2656,7 @@ STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{CARGO_L
 STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} da trasportare indietro ({COMMA}% di capacità)
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}tempo medio di percorrenza: {NUM}{NBSP}giorn{P "o" i}
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}tempo medio di percorrenza: {STRING}
+STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Capacità: {CARGO_LONG}
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Evidenzia area coperta

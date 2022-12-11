@@ -2618,6 +2618,7 @@ STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{CARGO_L
 STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} à transporter en retour ({COMMA}% de la capacité)
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Temps de trajet moyen{NBSP}: {NUM}{NBSP}jour{P "" s}
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Temps de trajet moyen{NBSP}: {STRING}
+STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Capacité{NBSP}: {CARGO_LONG}
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Afficher la zone couverte

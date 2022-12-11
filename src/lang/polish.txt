@@ -2999,6 +2999,7 @@ STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{CARGO_L
 STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} do przetransportowania z powrotem ({COMMA}% przepustowości)
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Średni czas podróży: {NUM}{NBSP}d{P zień ni ni}
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Średni czas podróży: {STRING}
+STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Ładowność: {CARGO_LONG}
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Podświetlaj zasięg

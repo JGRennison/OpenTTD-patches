@@ -3158,6 +3158,7 @@ STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{1:STATI
 STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{0:CARGO_LONG}{G 0 "을" "를"} 다시 수송해와야 함 (수용량의 {1:COMMA}%)
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}평균 운행 시간: {NUM}일
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}평균 운행 시간: {STRING}
+STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}수송량: {CARGO_LONG}
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}역세권 표시
