@@ -2619,6 +2619,7 @@ STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLA
 STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{CARGO_LONG} para ser transportad{G 0 o a}{P 0 "" s} al mes desde {STATION} a {STATION} ({COMMA}% de la capacidad){STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} para ser transportad{G 0 o a}{P 0 "" s} de vuelta ({COMMA}% de la capacidad)
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Tiempo de viaje promedio: {NUM}{NBSP}día{P "" s}
+STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Tiempo de viaje promedio: {STRING}
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Mostrar área de cobertura

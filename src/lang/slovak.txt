@@ -2686,6 +2686,7 @@ STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLA
 STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{CARGO_LONG} na prepravu za mesiac z {STATION} do {STATION} ({COMMA}% kapacity){STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} na prepravu naspäť ({COMMA}% kapacity)
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Priemerný čas cesty: {NUM}{NBSP}d{P eň ni ní}
+STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Priemerný čas cesty: {STRING}
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Ukázať oblasť pokrytia
