@@ -1474,7 +1474,7 @@ void CallVehicleTicks()
 
 		Vehicle *v = nullptr;
 		SCOPE_INFO_FMT([&v], "CallVehicleTicks -> OnPeriodic: %s", scope_dumper().VehicleInfo(v));
-		for (size_t i = _scaled_tick_counter & 0x1FF; i < Vehicle::GetPoolSize(); i += 0x200) {
+		for (size_t i = (size_t)(_scaled_tick_counter & 0x1FF); i < Vehicle::GetPoolSize(); i += 0x200) {
 			v = Vehicle::Get(i);
 			if (v == nullptr) continue;
 
