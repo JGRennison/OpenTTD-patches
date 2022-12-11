@@ -127,9 +127,17 @@ CommandCost CmdChangePlanVisibility(TileIndex tile, DoCommandFlag flags, uint32 
 	CommandCost ret = CheckOwnership(p->owner);
 	if (ret.Failed()) return ret;
 	if (flags & DC_EXEC) {
-		p->visible_by_all = p2 != 0;
-		Window *w = FindWindowById(WC_PLANS, 0);
-		if (w) w->InvalidateData(INVALID_PLAN, false);
+		bool visible = (p2 != 0);
+		if (p->visible_by_all != visible) {
+			p->visible_by_all = visible;
+			Window *w = FindWindowById(WC_PLANS, 0);
+			if (w) w->InvalidateData(INVALID_PLAN, false);
+			if (p->owner != _local_company && p->visible) {
+				for (PlanLine *line : p->lines) {
+					if (line->visible) line->MarkDirty();
+				}
+			}
+		}
 	}
 	return CommandCost();
 }
