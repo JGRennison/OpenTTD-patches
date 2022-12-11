@@ -2,6 +2,27 @@
 
 * * *
 
+### v0.50.0 (2022-12-11)
+* Fix cloning/copying aircraft with go to nearest hangar orders.
+* Fix custom road stops types which are only for the other bus/lorry type not being disabled in the build window.
+* Fix airport catchment overlays not being refreshed when upgrading/moving.
+* Fix the maximum zoom out client setting being reset whenever the config file was saved by vanilla OpenTTD.
+* Fix plan lines of other companies not being redrawn when public/private mode changed.
+* Change the cost of adding/removing signals from tunnels and bridges to be proportional to the number of affected signals.
+* Link graph:
+  * Fix incorrect link travel time estimates with day lengths greater than 1.
+  * Fix link travel time estimates being set too high when refreshing links in some cases.
+  * Fix performance issues when adding a new set of links to an existing large link graph.
+  * Improve link graph recalculation performance on large graphs.
+  * Reduce link graph recalculation scheduling duration on large graphs.
+  * Show more information in the overlay tooltip when holding the ctrl key.
+* Departure boards:
+  * Fix repeated departures when using implicit orders.
+  * Fix handling of conditional orders which cannot be predicted.
+  * Fix buttons not being updated when changing departure board settings with departure board windows open.
+  * Improve various button labels/tooltips and button handling, and setting names.
+* Bump trunk base from commit 7c3c92f8b8d0c67d817095d367720272d96882ab to commit daacde44964e4f42899d9d94f88cc398e17901d7.
+
 ### v0.49.2 (2022-11-28)
 * Fix crash when clicking non-train counter value or scheduled dispatch conditional order.
 * Fix order window dropdown issues with timetable state and scheduled dispatch conditional orders.
