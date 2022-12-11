@@ -509,7 +509,7 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 			return ((a * a) / ((ptb.x - pta.x) * (ptb.x - pta.x) + (ptb.y - pta.y) * (ptb.y - pta.y))) <= 16;
 		};
 		const auto &link = i->prop;
-		if (link.Usage() > 0 &&
+		if ((link.Usage() > 0 || (_ctrl_pressed && link.capacity > 0)) &&
 				pt.x + 2 >= std::min(pta.x, ptb.x) &&
 				pt.x - 2 <= std::max(pta.x, ptb.x) &&
 				check_distance()) {
@@ -518,31 +518,50 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 			char *buf_end = buf;
 			buf[0] = 0;
 
+			auto add_travel_time = [&](uint32 time) {
+				if (time > 0) {
+					if (_settings_time.time_in_minutes) {
+						SetDParam(0, STR_TIMETABLE_MINUTES);
+						SetDParam(1, time / _settings_time.ticks_per_minute);
+						buf_end = GetString(buf_end, STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL, lastof(buf));
+					} else {
+						SetDParam(0, time / (DAY_TICKS * _settings_game.economy.day_length_factor));
+						buf_end = GetString(buf_end, STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION, lastof(buf));
+					}
+				}
+			};
+
+			if (_ctrl_pressed) {
+				SetDParam(0, link.cargo);
+				SetDParam(1, link.capacity);
+				buf_end = GetString(buf_end, STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY, lastof(buf));
+				add_travel_time(link.time);
+			}
+
 			/* Fill buf with more information if this is a bidirectional link. */
 			uint32 back_time = 0;
 			for (LinkList::const_reverse_iterator j = std::next(i); j != this->cached_links.rend(); ++j) {
 				if (j->from_id == i->to_id && j->to_id == i->from_id) {
 					back_time = j->prop.time;
-					if (j->prop.Usage() > 0) {
+					if (j->prop.Usage() > 0 || (_ctrl_pressed && j->prop.capacity > 0)) {
+						if (_ctrl_pressed) buf_end = strecat(buf_end, "\n", lastof(buf));
 						SetDParam(0, j->prop.cargo);
 						SetDParam(1, j->prop.Usage());
 						SetDParam(2, j->prop.Usage() * 100 / (j->prop.capacity + 1));
-						buf_end = GetString(buf, STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION, lastof(buf));
+						buf_end = GetString(buf_end, STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION, lastof(buf));
+						if (_ctrl_pressed) {
+							SetDParam(0, j->prop.cargo);
+							SetDParam(1, j->prop.capacity);
+							buf_end = GetString(buf_end, STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY, lastof(buf));
+							add_travel_time(back_time);
+						}
 					}
 					break;
 				}
 			}
-			/* Add information about the travel time if known. */
-			const uint32 time = link.time ? (back_time ? ((link.time + back_time) / 2) : link.time) : back_time;
-			if (time > 0) {
-				if (_settings_time.time_in_minutes) {
-					SetDParam(0, STR_TIMETABLE_MINUTES);
-					SetDParam(1, time / _settings_time.ticks_per_minute);
-					buf_end = GetString(buf_end, STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL, lastof(buf));
-				} else {
-					SetDParam(0, time / (DAY_TICKS * _settings_game.economy.day_length_factor));
-					buf_end = GetString(buf_end, STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION, lastof(buf));
-				}
+			if (!_ctrl_pressed) {
+				/* Add information about the travel time if known. */
+				add_travel_time(link.time ? (back_time ? ((link.time + back_time) / 2) : link.time) : back_time);
 			}
 
 			SetDParam(0, link.cargo);
