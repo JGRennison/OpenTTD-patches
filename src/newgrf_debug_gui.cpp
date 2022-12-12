@@ -1171,6 +1171,9 @@ GrfSpecFeature GetGrfSpecFeature(TileIndex tile)
 {
 	switch (GetTileType(tile)) {
 		default:              return GSF_INVALID;
+		case MP_CLEAR:
+			if (IsClearGround(tile, CLEAR_ROCKS)) return GSF_NEWLANDSCAPE;
+			return GSF_INVALID;
 		case MP_RAILWAY: {
 			extern std::vector<const GRFFile *> _new_signals_grfs;
 			if (HasSignals(tile) && !_new_signals_grfs.empty()) {

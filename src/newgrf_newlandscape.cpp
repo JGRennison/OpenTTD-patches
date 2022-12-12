@@ -14,6 +14,7 @@
 #include "map_func.h"
 #include "clear_map.h"
 #include "core/hash_func.hpp"
+#include "string_func.h"
 
 #include "safeguards.h"
 
@@ -52,7 +53,7 @@ std::vector<const GRFFile *> _new_landscape_rocks_grfs;
 			TileIndex tile = this->ti->tile;
 			if (parameter != 0) tile = GetNearbyTile(parameter, tile); // only perform if it is required
 			uint32 result = 0;
-			if (extra->mask & ~0x100) result |= GetNearbyTileInformation(tile, this->ro.grffile->grf_version >= 8, extra->mask);
+			if (extra->mask & ~0x100) result |= GetNearbyTileInformation(tile, this->ro.grffile == nullptr || this->ro.grffile->grf_version >= 8, extra->mask);
 			if (extra->mask & 0x100) {
 				switch (this->landscape_type) {
 					case NEW_LANDSCAPE_ROCKS:
@@ -97,5 +98,19 @@ NewLandscapeResolverObject::NewLandscapeResolverObject(const GRFFile *grffile, c
 		}
 	} else {
 		this->root_spritegroup = nullptr;
+	}
+}
+
+void DumpNewLandscapeRocksSpriteGroups(DumpSpriteGroupPrinter print)
+{
+	SpriteGroupDumper dumper(print);
+	bool first = true;
+	for (const GRFFile *grf : _new_landscape_rocks_grfs) {
+		if (!first) print(nullptr, DSGPO_PRINT, 0, "");
+		char buffer[64];
+		seprintf(buffer, lastof(buffer), "GRF: %08X", BSWAP32(grf->grfid));
+		print(nullptr, DSGPO_PRINT, 0, buffer);
+		first = false;
+		dumper.DumpSpriteGroup(grf->new_rocks_group, 0);
 	}
 }
