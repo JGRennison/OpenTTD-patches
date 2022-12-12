@@ -48,6 +48,7 @@
 	<table>
 		<tr><th>Mappable name</th><th>Size in bytes</th><th>Description</th></tr>
 		<tr><td><a href="#newlandscape_enable_recolour">newlandscape_enable_recolour</a></td><td>1</td><td>Enable recolour</td></tr>
+		<tr><td><a href="#newlandscape_enable_draw_snowy_rocks">newlandscape_enable_draw_snowy_rocks</a></td><td>1</td><td>Enable drawing rocky tiles covered by snow</td></tr>
 	</table>
 
 	<h4 id="newlandscape_enable_recolour">Enable recolouring for new landscape graphics (mappable property: newlandscape_enable_recolour)</h4>
@@ -58,6 +59,11 @@
 	<tr><td>24 - 31</td><td>Reserved, set to zero. </td></tr>
 	</table></p>
 	<p>The property length is 1 byte. 0 is disabled (default). 1 is enabled.</p>
+
+	<h4 id="newlandscape_enable_draw_snowy_rocks">Enable drawing rocky tiles covered by snow (mappable property: newlandscape_enable_draw_snowy_rocks)</h4>
+	<p>When enabled, drawing of rocky tiles covered by snow is enabled for this GRF.</p>
+	<p>The property length is 1 byte. 0 is disabled (default). 1 is enabled.<br />
+	This requires <font face="monospace">new_landscape</font>, version 2.</p>
 
 	<h3 id="a2roadstops">Action 2 - New Landscape</h3>
 

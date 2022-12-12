@@ -81,27 +81,32 @@ inline SpriteID GetSpriteIDForRocksUsingOffset(const uint slope_to_sprite_offset
 	return ((HasGrfMiscBit(GMB_SECOND_ROCKY_TILE_SET) && (TileHash(x, y) & 1)) ? SPR_FLAT_ROCKY_LAND_2 : SPR_FLAT_ROCKY_LAND_1) + slope_to_sprite_offset;
 }
 
-void DrawCustomSpriteIDForRocks(const TileInfo *ti)
+bool DrawCustomSpriteIDForRocks(const TileInfo *ti, uint8 slope_to_sprite_offset, bool require_snow_flag)
 {
-	uint8 slope_to_sprite_offset = SlopeToSpriteOffset(ti->tileh);
-
 	for (const GRFFile *grf : _new_landscape_rocks_grfs) {
+		if (require_snow_flag && !HasBit(grf->new_landscape_ctrl_flags, NLCF_ROCKS_DRAW_SNOWY_ENABLED)) continue;
+
 		NewLandscapeResolverObject object(grf, ti, NEW_LANDSCAPE_ROCKS);
 
 		const SpriteGroup *group = object.Resolve();
 		if (group != nullptr && group->GetNumResults() > slope_to_sprite_offset) {
 			PaletteID pal = HasBit(grf->new_landscape_ctrl_flags, NLCF_ROCKS_RECOLOUR_ENABLED) ? GB(GetRegister(0x100), 0, 24) : PAL_NONE;
 			DrawGroundSprite(group->GetResult() + slope_to_sprite_offset, pal);
-			return;
+			return true;
 		}
 	}
 
-	DrawGroundSprite(GetSpriteIDForRocksUsingOffset(slope_to_sprite_offset, ti->x, ti->y), PAL_NONE);
+	return false;
 }
 
 SpriteID GetSpriteIDForFields(const Slope slope, const uint field_type)
 {
 	return _clear_land_sprites_farmland[field_type] + SlopeToSpriteOffset(slope);
+}
+
+inline SpriteID GetSpriteIDForSnowDesertUsingOffset(const uint slope_to_sprite_offset, const uint density)
+{
+	return _clear_land_sprites_snow_desert[density] + slope_to_sprite_offset;
 }
 
 SpriteID GetSpriteIDForSnowDesert(const Slope slope, const uint density)
@@ -162,7 +167,9 @@ static void DrawTile_Clear(TileInfo *ti, DrawTileProcParams params)
 
 		case CLEAR_ROCKS:
 			if (!params.no_ground_tiles) {
-				DrawCustomSpriteIDForRocks(ti);
+				uint8 slope_to_sprite_offset = SlopeToSpriteOffset(ti->tileh);
+				if (DrawCustomSpriteIDForRocks(ti, slope_to_sprite_offset, false)) break;
+				DrawGroundSprite(GetSpriteIDForRocksUsingOffset(slope_to_sprite_offset, ti->x, ti->y), PAL_NONE);
 			}
 			break;
 
@@ -174,6 +181,15 @@ static void DrawTile_Clear(TileInfo *ti, DrawTileProcParams params)
 			break;
 
 		case CLEAR_SNOW:
+			if (!params.no_ground_tiles) {
+				uint8 slope_to_sprite_offset = SlopeToSpriteOffset(ti->tileh);
+				if (GetRawClearGround(ti->tile) == CLEAR_ROCKS && !_new_landscape_rocks_grfs.empty()) {
+					if (DrawCustomSpriteIDForRocks(ti, slope_to_sprite_offset, true)) break;
+				}
+				DrawGroundSprite(GetSpriteIDForSnowDesertUsingOffset(slope_to_sprite_offset, GetClearDensity(ti->tile)), PAL_NONE);
+			}
+			break;
+
 		case CLEAR_DESERT:
 			if (!params.no_ground_tiles) DrawGroundSprite(GetSpriteIDForSnowDesert(ti->tileh, GetClearDensity(ti->tile)), PAL_NONE);
 			break;

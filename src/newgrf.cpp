@@ -5183,6 +5183,15 @@ static ChangeInfoResult NewLandscapeChangeInfo(uint id, int numinfo, int prop, c
 				break;
 			}
 
+			case A0RPI_NEWLANDSCAPE_ENABLE_DRAW_SNOWY_ROCKS: {
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				bool enabled = (buf->ReadByte() != 0 ? 1 : 0);
+				if (id == NLA3ID_CUSTOM_ROCKS) {
+					SB(_cur.grffile->new_landscape_ctrl_flags, NLCF_ROCKS_DRAW_SNOWY_ENABLED, 1, enabled);
+				}
+				break;
+			}
+
 			default:
 				ret = HandleAction0PropertyDefault(buf, prop);
 				break;

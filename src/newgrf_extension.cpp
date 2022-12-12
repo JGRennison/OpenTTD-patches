@@ -56,7 +56,7 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action0_object_flood_resistant", 1),
 	GRFFeatureInfo("action0_object_viewport_map_tile_type", 1),
 	GRFFeatureInfo("road_stops", 4),
-	GRFFeatureInfo("new_landscape", 1),
+	GRFFeatureInfo("new_landscape", 2),
 	GRFFeatureInfo(),
 };
 
@@ -125,6 +125,7 @@ extern const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_DISALLOWED_BRIDGE_PILLARS, "roadstop_disallowed_bridge_pillars"),
 	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_COST_MULTIPLIERS, "roadstop_cost_multipliers"),
 	GRFPropertyMapDefinition(GSF_NEWLANDSCAPE, A0RPI_NEWLANDSCAPE_ENABLE_RECOLOUR, "newlandscape_enable_recolour"),
+	GRFPropertyMapDefinition(GSF_NEWLANDSCAPE, A0RPI_NEWLANDSCAPE_ENABLE_DRAW_SNOWY_ROCKS, "newlandscape_enable_draw_snowy_rocks"),
 	GRFPropertyMapDefinition(),
 };
 
