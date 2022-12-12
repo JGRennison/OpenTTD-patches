@@ -1791,6 +1791,19 @@ class NIHNewLandscape : public NIHelper {
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
 	}
 
+	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
+	{
+		char buffer[1024];
+		output.print("New Landscape GRFs:");
+		for (const GRFFile *grf : _new_landscape_rocks_grfs) {
+			seprintf(buffer, lastof(buffer), "  GRF: %08X", BSWAP32(grf->grfid));
+			output.print(buffer);
+			seprintf(buffer, lastof(buffer), "    Enable rocks recolour: %d, Enable drawing snowy rocks: %d",
+					HasBit(grf->new_landscape_ctrl_flags, NLCF_ROCKS_RECOLOUR_ENABLED), HasBit(grf->new_landscape_ctrl_flags, NLCF_ROCKS_DRAW_SNOWY_ENABLED));
+			output.print(buffer);
+		}
+	}
+
 	/* virtual */ void SpriteDump(uint index, DumpSpriteGroupPrinter print) const override
 	{
 		extern void DumpNewLandscapeRocksSpriteGroups(DumpSpriteGroupPrinter print);
