@@ -441,4 +441,6 @@ struct GrfSpecFeatureRef {
 const char *GetFeatureString(GrfSpecFeatureRef feature);
 const char *GetFeatureString(GrfSpecFeature feature);
 
+void InitGRFGlobalVars();
+
 #endif /* NEWGRF_H */

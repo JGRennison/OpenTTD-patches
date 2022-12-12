@@ -160,6 +160,15 @@ void CheckExternalFiles()
 	if (add_pos != error_msg) ShowInfoF("%s", error_msg);
 }
 
+void InitGRFGlobalVars()
+{
+	extern uint _extra_station_names_used;
+	_extra_station_names_used = 0;
+
+	extern uint8 _extra_station_names_probability;
+	_extra_station_names_probability = 0;
+}
+
 /** Actually load the sprite tables. */
 static void LoadSpriteTables()
 {
@@ -228,11 +237,7 @@ static void LoadSpriteTables()
 	/* Initialize the unicode to sprite mapping table */
 	InitializeUnicodeGlyphMap();
 
-	extern uint _extra_station_names_used;
-	_extra_station_names_used = 0;
-
-	extern uint8 _extra_station_names_probability;
-	_extra_station_names_probability = 0;
+	InitGRFGlobalVars();
 
 	/*
 	 * Load the base and extra NewGRF with OTTD required graphics as first NewGRF.
