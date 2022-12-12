@@ -1762,6 +1762,7 @@ static const NIVariable _niv_newlandscape[] = {
 	NIV(0x42, "tile height"),
 	NIV(0x43, "tile hash"),
 	NIV(0x44, "landscape type"),
+	NIV(0x45, "ground info"),
 	NIV(0x60, "land info of nearby tiles"),
 	NIV_END(),
 };

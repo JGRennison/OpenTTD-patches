@@ -81,6 +81,8 @@
 		<tr><td>tile_height</td><td>0..255</td><td>Height of the lowest corner of the tile</td></tr>
 		<tr><td>tile_hash</td><td>0..4294967295</td><td>Hash value derived from the coordinates of the tile, suitable for pseudo-randomising graphics</td></tr>
 		<tr><td>landscape_type</td><td>NEW_LANDSCAPE_TYPE_XXX</td><td>Landscape type<br />XXX = ROCKS</td></tr>
+		<tr><td>snow_present</td><td>0 or 1</td><td>Snow is present on this tile, at any density.</br>This requires <font face="monospace">new_landscape</font>, version 2.</td></tr>
+		<tr><td>ground_density</td><td>0..3</td><td>Ground density (if snow_present is 1, this is the snow density).</br>This requires <font face="monospace">new_landscape</font>, version 2.</td></tr>
 	</table>
 	<br />
 	Variables that require one or more parameters:

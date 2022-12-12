@@ -157,6 +157,7 @@ extern const GRFVariableMapDefinition _grf_action2_remappable_variables[] = {
 	GRFVariableMapDefinition(GSF_NEWLANDSCAPE, 0x42, "newlandscape_tile_height"),
 	GRFVariableMapDefinition(GSF_NEWLANDSCAPE, 0x43, "newlandscape_tile_hash"),
 	GRFVariableMapDefinition(GSF_NEWLANDSCAPE, 0x44, "newlandscape_landscape_type"),
+	GRFVariableMapDefinition(GSF_NEWLANDSCAPE, 0x45, "newlandscape_ground_info"),
 	GRFVariableMapDefinition(GSF_NEWLANDSCAPE, 0x60, "newlandscape_land_info_nearby_tiles"),
 	GRFVariableMapDefinition(),
 };

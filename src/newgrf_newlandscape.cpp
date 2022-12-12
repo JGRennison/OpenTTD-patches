@@ -49,6 +49,9 @@ std::vector<const GRFFile *> _new_landscape_rocks_grfs;
 		case 0x44:
 			return this->landscape_type;
 
+		case 0x45:
+			return GetClearDensity(this->ti->tile) | (IsSnowTile(this->ti->tile) ? 0x10 : 0);
+
 		case 0x60: {
 			TileIndex tile = this->ti->tile;
 			if (parameter != 0) tile = GetNearbyTile(parameter, tile); // only perform if it is required

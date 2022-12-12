@@ -84,6 +84,7 @@
 		<tr><td><a href="#newlandscape_tile_height">42</a></td><td><a href="#newlandscape_tile_height">newlandscape_tile_height</a></td><td>Tile Height</td></tr>
 		<tr><td><a href="#newlandscape_tile_hash">43</a></td><td><a href="#newlandscape_tile_hash">newlandscape_tile_hash</a></td><td>Tile Hash</td></tr>
 		<tr><td><a href="#newlandscape_landscape_type">44</a></td><td><a href="#newlandscape_landscape_type">newlandscape_landscape_type</a></td><td>Landscape Type</td></tr>
+		<tr><td><a href="#newlandscape_ground_info">45</a></td><td><a href="#newlandscape_ground_info">newlandscape_ground_info</a></td><td>Ground info</td></tr>
 		<tr><td><a href="#newlandscape_land_info_nearby_tiles">60</a></td><td><a href="#newlandscape_land_info_nearby_tiles">newlandscape_land_info_nearby_tiles</a></td><td>Land info of nearby tiles</td></tr>
 	</table>
 
@@ -109,6 +110,18 @@
 
 	<h4 id="newlandscape_landscape_type">Landscape type (44, or mappable variable: newlandscape_landscape_type)</h4>
 	<p>The landscape type, this currently only has the value 0: rocky tiles.</p>
+
+	<h4 id="newlandscape_ground_info">Ground info (45, or mappable variable: newlandscape_ground_info)</h4>
+	<p>Miscellaneous ground info
+	<table>
+	<tr><th>Bits</th><th>Values</th><th>Meaning</th></tr>
+	<tr><td>0 - 3</td><td>0..3</td><td>Ground density (if snow is present, this is the snow density)</td></tr>
+	<tr><td>4</td><td>0 or 1</td><td>Snow is present on this tile, at any density</td></tr>
+	</table>
+	<br />
+	The remaining bits are reserved for future use and should be masked.<br />
+	This requires <font face="monospace">new_landscape</font>, version 2.</p>
+	</p>
 
 	<h4 id="roadstop_land_info_nearby_tiles">Land info of nearby tile (60, or mappable variable: newlandscape_land_info_nearby_tiles)</h4>
 	<p>This has the same value as <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Industry_Tiles#Land_info_of_nearby_tiles_.2860.29">industry tile (feature 9) variable 60</a>.</p>
