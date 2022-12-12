@@ -167,6 +167,9 @@ void InitGRFGlobalVars()
 
 	extern uint8 _extra_station_names_probability;
 	_extra_station_names_probability = 0;
+
+	extern bool _allow_rocks_desert;
+	_allow_rocks_desert = false;
 }
 
 /** Actually load the sprite tables. */

@@ -2850,6 +2850,13 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, co
 				break;
 			}
 
+			case A0RPI_GLOBALVAR_ALLOW_ROCKS_DESERT: {
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				extern bool _allow_rocks_desert;
+				_allow_rocks_desert = (buf->ReadByte() != 0);
+				break;
+			}
+
 			default:
 				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
@@ -2922,6 +2929,7 @@ static ChangeInfoResult GlobalVarReserveInfo(uint gvid, int numinfo, int prop, c
 			case A0RPI_GLOBALVAR_EXTRA_STATION_NAMES_PROBABILITY:
 			case A0RPI_GLOBALVAR_LIGHTHOUSE_GENERATE_AMOUNT:
 			case A0RPI_GLOBALVAR_TRANSMITTER_GENERATE_AMOUNT:
+			case A0RPI_GLOBALVAR_ALLOW_ROCKS_DESERT:
 				buf->Skip(buf->ReadExtendedByte());
 				break;
 

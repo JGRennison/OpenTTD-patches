@@ -24,6 +24,8 @@
 
 #include "safeguards.h"
 
+bool _allow_rocks_desert = false;
+
 static CommandCost ClearTile_Clear(TileIndex tile, DoCommandFlag flags)
 {
 	static const Price clear_price_table[] = {
@@ -298,6 +300,8 @@ static void TileLoopClearDesert(TileIndex tile)
 
 	if (current == expected) return;
 
+	if (_allow_rocks_desert && IsClearGround(tile, CLEAR_ROCKS)) return;
+
 	if (expected == 0) {
 		SetClearGroundDensity(tile, CLEAR_GRASS, 3);
 	} else {
@@ -404,7 +408,7 @@ void GenerateClearTile()
 				do {
 					if (--j == 0) goto get_out;
 					tile_new = tile + TileOffsByDiagDir((DiagDirection)GB(Random(), 0, 2));
-				} while (!IsTileType(tile_new, MP_CLEAR) || IsClearGround(tile_new, CLEAR_DESERT));
+				} while (!IsTileType(tile_new, MP_CLEAR) || (!_allow_rocks_desert && IsClearGround(tile_new, CLEAR_DESERT)));
 				tile = tile_new;
 			}
 get_out:;
