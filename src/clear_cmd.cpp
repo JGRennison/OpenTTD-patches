@@ -414,7 +414,10 @@ void GenerateClearTile()
 		tile = RandomTileSeed(r);
 
 		IncreaseGeneratingWorldProgress(GWP_ROUGH_ROCKY);
-		if (IsTileType(tile, MP_CLEAR) && !IsClearGround(tile, CLEAR_DESERT)) {
+		auto IsUsableTile = [&](TileIndex t) -> bool {
+			return IsTileType(t, MP_CLEAR) && (_allow_rocks_desert || !IsClearGround(t, CLEAR_DESERT));
+		};
+		if (IsUsableTile(tile)) {
 			uint j = GB(r, 16, 4) + _settings_game.game_creation.amount_of_rocks + ((int)TileHeight(tile) * _settings_game.game_creation.height_affects_rocks);
 			for (;;) {
 				TileIndex tile_new;
@@ -424,7 +427,7 @@ void GenerateClearTile()
 				do {
 					if (--j == 0) goto get_out;
 					tile_new = tile + TileOffsByDiagDir((DiagDirection)GB(Random(), 0, 2));
-				} while (!IsTileType(tile_new, MP_CLEAR) || (!_allow_rocks_desert && IsClearGround(tile_new, CLEAR_DESERT)));
+				} while (!IsUsableTile(tile_new));
 				tile = tile_new;
 			}
 get_out:;
