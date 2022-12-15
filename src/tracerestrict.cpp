@@ -2023,13 +2023,13 @@ int GetTraceRestrictTimeDateValueFromDate(TraceRestrictTimeDateValueField type, 
 
 		case TRTDVF_DAY: {
 			YearMonthDay ymd;
-			ConvertDateToYMD(scaled_date_ticks / (DAY_TICKS * _settings_game.economy.day_length_factor), &ymd);
+			ConvertDateToYMD(ScaledDateTicksToDate(scaled_date_ticks), &ymd);
 			return ymd.day;
 		}
 
 		case TRTDVF_MONTH: {
 			YearMonthDay ymd;
-			ConvertDateToYMD(scaled_date_ticks / (DAY_TICKS * _settings_game.economy.day_length_factor), &ymd);
+			ConvertDateToYMD(ScaledDateTicksToDate(scaled_date_ticks), &ymd);
 			return ymd.month + 1;
 		}
 

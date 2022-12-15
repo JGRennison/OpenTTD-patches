@@ -447,7 +447,7 @@ static char *FormatWallClockString(char *buff, DateTicksScaled ticks, const char
 	seprintf(hour,   lastof(hour),   "%02i", (int) MINUTES_HOUR(minutes)  );
 	seprintf(minute, lastof(minute), "%02i", (int) MINUTES_MINUTE(minutes));
 	if (show_date) {
-		int64 args[3] = { (int64)hour, (int64)minute, (int64)ticks / (DAY_TICKS * _settings_game.economy.day_length_factor) };
+		int64 args[3] = { (int64)hour, (int64)minute, ScaledDateTicksToDate(ticks) };
 		if (_settings_client.gui.date_with_time == 1) {
 			YearMonthDay ymd;
 			ConvertDateToYMD(args[2], &ymd);
@@ -1508,7 +1508,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				if (_settings_time.time_in_minutes) {
 					buff = FormatWallClockString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_LONG), last, _settings_client.gui.date_with_time, next_substr_case_index);
 				} else {
-					buff = FormatYmdString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_LONG) / (DAY_TICKS * _settings_game.economy.day_length_factor), last, next_substr_case_index);
+					buff = FormatYmdString(buff, ScaledDateTicksToDate(args->GetInt64(SCC_DATE_WALLCLOCK_LONG)), last, next_substr_case_index);
 				}
 				break;
 			}
@@ -1517,7 +1517,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				if (_settings_time.time_in_minutes) {
 					buff = FormatWallClockString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_SHORT), last, _settings_client.gui.date_with_time, next_substr_case_index);
 				} else {
-					buff = FormatYmdString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_SHORT) / (DAY_TICKS * _settings_game.economy.day_length_factor), last, next_substr_case_index);
+					buff = FormatYmdString(buff, ScaledDateTicksToDate(args->GetInt64(SCC_DATE_WALLCLOCK_SHORT)), last, next_substr_case_index);
 				}
 				break;
 			}
@@ -1526,7 +1526,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				if (_settings_time.time_in_minutes) {
 					buff = FormatWallClockString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_TINY), last, false, next_substr_case_index);
 				} else {
-					buff = FormatTinyOrISODate(buff, args->GetInt64(SCC_DATE_WALLCLOCK_TINY) / (DAY_TICKS * _settings_game.economy.day_length_factor), STR_FORMAT_DATE_TINY, last);
+					buff = FormatTinyOrISODate(buff, ScaledDateTicksToDate(args->GetInt64(SCC_DATE_WALLCLOCK_TINY)), STR_FORMAT_DATE_TINY, last);
 				}
 				break;
 			}
@@ -1535,7 +1535,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				if (_settings_time.time_in_minutes) {
 					buff = FormatWallClockString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_ISO), last, false, next_substr_case_index);
 				} else {
-					buff = FormatTinyOrISODate(buff, args->GetInt64(SCC_DATE_WALLCLOCK_ISO) / (DAY_TICKS * _settings_game.economy.day_length_factor), STR_FORMAT_DATE_ISO, last);
+					buff = FormatTinyOrISODate(buff, ScaledDateTicksToDate(args->GetInt64(SCC_DATE_WALLCLOCK_ISO)), STR_FORMAT_DATE_ISO, last);
 				}
 				break;
 			}

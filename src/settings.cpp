@@ -1711,14 +1711,8 @@ static void ImprovedBreakdownsSettingChanged(int32 new_value)
 
 static void DayLengthChanged(int32 new_value)
 {
-	const DateTicksScaled old_scaled_date_ticks = _scaled_date_ticks;
-	SetScaledTickVariables();
-
-	extern void AdjustAllSignalSpeedRestrictionTickValues(DateTicksScaled delta);
-	AdjustAllSignalSpeedRestrictionTickValues(_scaled_date_ticks - old_scaled_date_ticks);
-
-	extern void AdjustVehicleScaledTickBase(int64 delta);
-	AdjustVehicleScaledTickBase(_scaled_date_ticks - old_scaled_date_ticks);
+	extern void RebaseScaledDateTicksBase();
+	RebaseScaledDateTicksBase();
 
 	MarkWholeScreenDirty();
 }

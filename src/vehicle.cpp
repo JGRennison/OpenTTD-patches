@@ -4575,11 +4575,6 @@ void ShiftVehicleDates(int interval)
 	for (Vehicle *v : Vehicle::Iterate()) {
 		v->date_of_last_service += interval;
 	}
-
-	extern void AdjustAllSignalSpeedRestrictionTickValues(DateTicksScaled delta);
-	AdjustAllSignalSpeedRestrictionTickValues(interval * DAY_TICKS * _settings_game.economy.day_length_factor);
-
-	AdjustVehicleScaledTickBase(interval * DAY_TICKS * _settings_game.economy.day_length_factor);
 }
 
 /**

@@ -11394,6 +11394,8 @@ void LoadNewGRF(uint load_index, uint num_baseset)
 	DateFract date_fract = _date_fract;
 	uint64 tick_counter  = _tick_counter;
 	uint8 tick_skip_counter = _tick_skip_counter;
+	uint64 scaled_tick_counter = _scaled_tick_counter;
+	DateTicksScaled scaled_date_ticks_offset = _scaled_date_ticks_offset;
 	byte display_opt     = _display_opt;
 
 	if (_networking) {
@@ -11402,6 +11404,8 @@ void LoadNewGRF(uint load_index, uint num_baseset)
 		_date_fract   = 0;
 		_tick_counter = 0;
 		_tick_skip_counter = 0;
+		_scaled_tick_counter = 0;
+		_scaled_date_ticks_offset = 0;
 		_display_opt  = 0;
 		UpdateCachedSnowLine();
 		SetScaledTickVariables();
@@ -11507,6 +11511,8 @@ void LoadNewGRF(uint load_index, uint num_baseset)
 	_date_fract   = date_fract;
 	_tick_counter = tick_counter;
 	_tick_skip_counter = tick_skip_counter;
+	_scaled_tick_counter = scaled_tick_counter;
+	_scaled_date_ticks_offset = scaled_date_ticks_offset;
 	_display_opt  = display_opt;
 	UpdateCachedSnowLine();
 	SetScaledTickVariables();
