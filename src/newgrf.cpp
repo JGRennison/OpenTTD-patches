@@ -7210,7 +7210,7 @@ bool GetGlobalVariable(byte param, uint32 *value, const GRFFile *grffile)
 			return true;
 
 		case 0x0A: // animation counter
-			*value = GB(_tick_counter, 0, 16);
+			*value = GB(_scaled_tick_counter, 0, 16);
 			return true;
 
 		case 0x0B: { // TTDPatch version
