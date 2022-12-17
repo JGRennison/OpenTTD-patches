@@ -62,7 +62,7 @@ static void Load_GSDT()
 	_game_saveload_version = -1;
 	SlObject(nullptr, _game_script);
 
-	if (_networking && !_network_server) {
+	if (_game_mode == GM_MENU || (_networking && !_network_server)) {
 		GameInstance::LoadEmpty();
 		if ((CompanyID)SlIterateArray() != (CompanyID)-1) SlErrorCorrupt("Too many GameScript configs");
 		return;

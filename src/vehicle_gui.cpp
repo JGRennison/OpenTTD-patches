@@ -3204,7 +3204,7 @@ struct VehicleDetailsWindow : Window {
 		const Vehicle *v = Vehicle::Get(this->window_number);
 
 		if (v->type == VEH_TRAIN) {
-			this->DisableWidget(this->tab + WID_VD_DETAILS_CARGO_CARRIED);
+			this->LowerWidget(this->tab + WID_VD_DETAILS_CARGO_CARRIED);
 			this->vscroll->SetCount(GetTrainDetailsWndVScroll(v->index, this->tab));
 		}
 
@@ -3248,7 +3248,7 @@ struct VehicleDetailsWindow : Window {
 			case WID_VD_DETAILS_TRAIN_VEHICLES:
 			case WID_VD_DETAILS_CAPACITY_OF_EACH:
 			case WID_VD_DETAILS_TOTAL_CARGO:
-				this->SetWidgetsDisabledState(false,
+				this->SetWidgetsLoweredState(false,
 					WID_VD_DETAILS_CARGO_CARRIED,
 					WID_VD_DETAILS_TRAIN_VEHICLES,
 					WID_VD_DETAILS_CAPACITY_OF_EACH,
