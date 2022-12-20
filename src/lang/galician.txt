@@ -7253,3 +7253,31 @@ STR_TMPL_ADD_WAGON_REFIT                                        :{BLACK}Engadir 
 STR_TMPL_ADD_VEHICLE_REFIT                                      :{BLACK}Engadir e reaxustar vehículo
 STR_TMPL_ADD_TOOLTIP                                            :{BLACK}Engadir o vehículo destacado ó modelo.
 STR_TMPL_ADD_REFIT_TOOLTIP                                      :{BLACK}Engadir e reaxustar o vehículo destacado ó modelo.
+STR_GAME_OPTIONS_GUI_SCALE_FRAME                                :{BLACK}Tamaño da interface
+STR_GAME_OPTIONS_GUI_SCALE_TOOLTIP                              :{BLACK}Arrastra o deslizante para establecer o tamaño da interface. Mantén Ctrl para axuste continuo
+STR_GAME_OPTIONS_GUI_SCALE_AUTO                                 :{BLACK}Autodetectar tamaño
+STR_GAME_OPTIONS_GUI_SCALE_AUTO_TOOLTIP                         :{BLACK}Marca este cadro para detectar o tamaño da interface automáticamente
+STR_GAME_OPTIONS_GUI_SCALE_BEVELS                               :{BLACK}Escalar biseles
+STR_GAME_OPTIONS_GUI_SCALE_BEVELS_TOOLTIP                       :{BLACK}Marca este cadro para escalar os biseles segundo o tamaño da interface
+STR_GAME_OPTIONS_GUI_SCALE_1X                                   :1x
+STR_GAME_OPTIONS_GUI_SCALE_2X                                   :2x
+STR_GAME_OPTIONS_GUI_SCALE_3X                                   :3x
+STR_GAME_OPTIONS_GUI_SCALE_4X                                   :4x
+STR_GAME_OPTIONS_GUI_SCALE_5X                                   :5x
+STR_CONFIG_SETTING_SHOW_CARGO_IN_LISTS                          :Amosar as cargas que os vehículos poden levar nas fiestras de lista {STRING}
+STR_CONFIG_SETTING_SHOW_CARGO_IN_LISTS_HELPTEXT                 :Se se activa, as cargas transportables de vehículos poden aparecer enriba súa nas listas de vehículos
+STR_SPRITE_ALIGNER_CENTRE_OFFSET                                :{BLACK}Desfase centrado
+STR_SPRITE_ALIGNER_CENTRE_SPRITE                                :{BLACK}Sprite centrado
+STR_SPRITE_ALIGNER_CROSSHAIR                                    :{BLACK}Punto de mira
+STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}Amosar próximos trens nos horarios desta estación
+STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}Amosar próximos vehículos de estrada nos horarios desta estación
+STR_DEPARTURES_SHOW_SHIPS_TOOLTIP                               :{BLACK}Amosar próximos barcos nos horarios deste porto
+STR_DEPARTURES_SHOW_AIRCRAFT_TOOLTIP                            :{BLACK}Amosar próximos avións nos horarios deste aeroporto
+STR_FINANCES_TOTAL_CAPTION                                      :{WHITE}Total
+STR_FINANCES_PROFIT                                             :{WHITE}Beneficio
+STR_FINANCES_BANK_BALANCE                                       :{WHITE}{CURRENCY_LONG}
+STR_VEHICLE_LIST_CARGO                                          :{TINY_FONT}{BLACK}[{CARGO_LIST}]
+STR_VEHICLE_LIST_NAME_AND_CARGO                                 :{TINY_FONT}{BLACK}{STRING} {STRING}
+STR_ERROR_CAN_T_CLONE_VEHICLE_LIST                              :{WHITE}... non todos os vehículos son idénticos
+STR_ERROR_CAN_T_COPY_ORDER_VEHICLE_LIST                         :{WHITE}... non todos os vehículos teñen as mesmas ordes
+STR_ERROR_CAN_T_SHARE_ORDER_VEHICLE_LIST                        :{WHITE}... non todos os vehículos comparten ordes
