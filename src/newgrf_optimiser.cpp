@@ -69,11 +69,29 @@ static bool IsExpensiveObjectVariable(uint16 variable)
 	}
 }
 
+static bool IsExpensiveRoadStopsVariable(uint16 variable)
+{
+	switch (variable) {
+		case 0x45:
+		case 0x46:
+		case 0x66:
+		case 0x67:
+		case 0x68:
+		case 0x6A:
+		case 0x6B:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
 static bool IsExpensiveVariable(uint16 variable, GrfSpecFeature feature, VarSpriteGroupScope var_scope)
 {
 	if ((feature >= GSF_TRAINS && feature <= GSF_AIRCRAFT) && IsExpensiveVehicleVariable(variable)) return true;
 	if (feature == GSF_INDUSTRYTILES && var_scope == VSG_SCOPE_SELF && IsExpensiveIndustryTileVariable(variable)) return true;
 	if (feature == GSF_OBJECTS && var_scope == VSG_SCOPE_SELF && IsExpensiveObjectVariable(variable)) return true;
+	if (feature == GSF_ROADSTOPS && var_scope == VSG_SCOPE_SELF && IsExpensiveRoadStopsVariable(variable)) return true;
 	return false;
 }
 
