@@ -55,7 +55,7 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action0_object_edge_foundation_mode", 2),
 	GRFFeatureInfo("action0_object_flood_resistant", 1),
 	GRFFeatureInfo("action0_object_viewport_map_tile_type", 1),
-	GRFFeatureInfo("road_stops", 4),
+	GRFFeatureInfo("road_stops", 5),
 	GRFFeatureInfo("new_landscape", 2),
 	GRFFeatureInfo(),
 };
@@ -147,6 +147,7 @@ extern const GRFVariableMapDefinition _grf_action2_remappable_variables[] = {
 	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x67, "roadstop_land_info_nearby_tiles"),
 	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x68, "roadstop_road_stop_info_nearby_tiles"),
 	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x6A, "roadstop_road_stop_grfid_nearby_tiles"),
+	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x6B, "roadstop_road_info_nearby_tiles"),
 	GRFVariableMapDefinition(GSF_RAILTYPES, A2VRI_RAILTYPE_SIGNAL_RESTRICTION_INFO, "railtype_signal_restriction_info"),
 	GRFVariableMapDefinition(GSF_RAILTYPES, A2VRI_RAILTYPE_SIGNAL_CONTEXT, "railtype_signal_context"),
 	GRFVariableMapDefinition(GSF_SIGNALS, A2VRI_SIGNALS_SIGNAL_RESTRICTION_INFO, "signals_signal_restriction_info"),

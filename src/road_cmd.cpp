@@ -1866,7 +1866,7 @@ const byte _road_sloped_sprites[14] = {
  * @param bits Roadbits
  * @return Offset for the sprite within the spritegroup.
  */
-static uint GetRoadSpriteOffset(Slope slope, RoadBits bits)
+uint GetRoadSpriteOffset(Slope slope, RoadBits bits)
 {
 	if (slope != SLOPE_FLAT) {
 		switch (slope) {

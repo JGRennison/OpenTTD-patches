@@ -187,6 +187,23 @@ uint32 RoadStopScopeResolver::GetVariable(uint16 variable, uint32 parameter, Get
 			return ssl.grfid;
 		}
 
+		/* Road info of nearby tiles */
+		case 0x6B: {
+			if (this->tile == INVALID_TILE) return 0xFFFFFFFF;
+			TileIndex nearby_tile = GetNearbyTile(parameter, this->tile);
+
+			if (!IsNormalRoadTile(nearby_tile)) return 0xFFFFFFFF;
+
+			RoadBits road = GetRoadBits(nearby_tile, RTT_ROAD);
+			RoadBits tram = GetRoadBits(nearby_tile, RTT_TRAM);
+			Slope tileh = GetTileSlope(nearby_tile);
+			extern uint GetRoadSpriteOffset(Slope slope, RoadBits bits);
+			uint road_offset = (road == 0) ? 0xFF : GetRoadSpriteOffset(tileh, road);
+			uint tram_offset = (tram == 0) ? 0xFF : GetRoadSpriteOffset(tileh, tram);
+
+			return (tram_offset << 16) | (road_offset << 8) | (tram << 4) | (road);
+		}
+
 		case 0xF0: return this->st == nullptr ? 0 : this->st->facilities; // facilities
 
 		case 0xFA: return Clamp((this->st == nullptr ? _date : this->st->build_date) - DAYS_TILL_ORIGINAL_BASE_YEAR, 0, 65535); // build date

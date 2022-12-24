@@ -1701,6 +1701,7 @@ static const NIVariable _nif_roadstops[] = {
 	NIV(0x68, "road stop info of nearby tiles"),
 	NIV(0x69, "information about cargo accepted in the past"),
 	NIV(0x6A, "GRFID of nearby road stop tiles"),
+	NIV(0x6B, "Road info of nearby plain road tiles"),
 	NIV_END(),
 };
 
