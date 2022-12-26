@@ -1453,9 +1453,6 @@ STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :Wenn aktiviert,
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY                 :Züge verschiedener Firmen stoßen nicht mehr zusammen: {STRING}
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :Diese Einstellung ist in erster Linie dafür da um zu verhindern, dass Spielern denen man nicht vertraut bewusst Zusammenstöße mit Zügen anderer Firmen in Multiplayer-Spielen mit Infrastructure Sharing provozieren.
 
-STR_CONFIG_SETTING_FLIP_DIRECTION_ALL_TRAINS                    :Erlaube Richtungswechsel aller Züge in Depots: {STRING}
-STR_CONFIG_SETTING_FLIP_DIRECTION_ALL_TRAINS_HELPTEXT           :Aktiviert die Umkehr der Fahrtrichtung aller Züge in Depots, selbst wenn dies nicht durch das NewGRF aktiviert ist.
-
 STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING               :Erlaube Überholen durch mehrgliedrige Straßenfahrzeuge: {STRING}
 STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING_HELPTEXT      :Aktiviert das Überholen von Straßenfahrzeugen durch mehrgliedrige Straßenfahrzeuge.
 

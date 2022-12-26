@@ -2100,7 +2100,6 @@ static SettingsContainer &GetSettingsTree()
 			vehicles->Add(new SettingEntry("order.nonstop_only"));
 			vehicles->Add(new SettingEntry("vehicle.adjacent_crossings"));
 			vehicles->Add(new SettingEntry("vehicle.safer_crossings"));
-			vehicles->Add(new SettingEntry("vehicle.flip_direction_all_trains"));
 		}
 
 		SettingsPage *limitations = main->Add(new SettingsPage(STR_CONFIG_SETTING_LIMITATIONS));

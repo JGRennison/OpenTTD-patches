@@ -1479,9 +1479,6 @@ STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :이 설정을 �
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY                 :다른 회사의 열차가 서로 충돌할 수 없게 함: {STRING}
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :이 옵션은 주로 시설 공유가 활성화된 멀티 플레이 게임에서 신뢰할 수 없는 플레이어에 의해 의도적으로 충돌이 생기는 것을 막기 위해 사용합니다.
 
-STR_CONFIG_SETTING_FLIP_DIRECTION_ALL_TRAINS                    :모든 열차가 차량기지에서 뒤집어질 수 있게 함: {STRING}
-STR_CONFIG_SETTING_FLIP_DIRECTION_ALL_TRAINS_HELPTEXT           :NewGRF에서 차량기지에서 열차의 방향을 뒤집을 수 없도록 설정되어 있어도 무시하고 열차를 차량기지에서 뒤집을 수 있게 합니다.
-
 STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING               :굴절 차량의 추월을 허용: {STRING}
 STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING_HELPTEXT      :굴절 차량이 다른 차량을 추월할 수 있도록 허용합니다.
 

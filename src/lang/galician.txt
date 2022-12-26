@@ -5639,8 +5639,6 @@ STR_CONFIG_SETTING_CHUNNEL                                      :Permitir a cons
 STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :Cando se habilita, pódense construír tunéis baixo masas de auga ao nivel do mar. Isto require que o final do tunel remate polo menos a 3 cadros de distancia da costa.
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY                 :Os trens das distintas compañías non poden chocar entre si: {STRING}
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :Esta opción é básicamente para previr que xogadores que non son de confianza deliberadamente causen accidentes con trens de outras comopañías en multixogador con infraestrutura ferroviaria compartida.
-STR_CONFIG_SETTING_FLIP_DIRECTION_ALL_TRAINS                    :Todos os trens poden cambiar a direción no depósito: {STRING}
-STR_CONFIG_SETTING_FLIP_DIRECTION_ALL_TRAINS_HELPTEXT           :Habilitar o cambio de direción de todos os trens nos depósitos, aínda que non se habilite polos NewGRF.
 STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING               :Os vehículos articulados de estrada poden adiantar: {STRING}
 STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING_HELPTEXT      :Habilitalo permite os vehículos articulados de estrada adiantar a outros vehículos.
 STR_CONFIG_SETTING_ROADVEH_CANT_QUANTUM_TUNNEL                  :Evitar que os vehículos de estrada pasando a través de outros cando están bloqueados: {STRING}
