@@ -862,6 +862,11 @@ void QueryString::HandleEditBox(Window *w, int wid)
 	}
 }
 
+static int GetCaretWidth()
+{
+	return GetCharacterWidth(FS_NORMAL, '_');
+}
+
 void QueryString::DrawEditBox(const Window *w, int wid) const
 {
 	const NWidgetLeaf *wi = w->GetWidget<NWidgetLeaf>(wid);
@@ -894,7 +899,7 @@ void QueryString::DrawEditBox(const Window *w, int wid) const
 	/* We will take the current widget length as maximum width, with a small
 	 * space reserved at the end for the caret to show */
 	const Textbuf *tb = &this->text;
-	int delta = std::min(0, (fr.right - fr.left) - tb->pixels - 10);
+	int delta = std::min(0, (fr.right - fr.left) - tb->pixels - GetCaretWidth());
 
 	if (tb->caretxoffs + delta < 0) delta = -tb->caretxoffs;
 
@@ -931,7 +936,7 @@ Point QueryString::GetCaretPosition(const Window *w, int wid) const
 
 	/* Clamp caret position to be inside out current width. */
 	const Textbuf *tb = &this->text;
-	int delta = std::min(0, (r.right - r.left) - tb->pixels - 10);
+	int delta = std::min(0, (r.right - r.left) - tb->pixels - GetCaretWidth());
 	if (tb->caretxoffs + delta < 0) delta = -tb->caretxoffs;
 
 	Point pt = {r.left + tb->caretxoffs + delta, r.top};
@@ -960,7 +965,7 @@ Rect QueryString::GetBoundingRect(const Window *w, int wid, const char *from, co
 
 	/* Clamp caret position to be inside our current width. */
 	const Textbuf *tb = &this->text;
-	int delta = std::min(0, r.Width() - tb->pixels - 10);
+	int delta = std::min(0, r.Width() - tb->pixels - GetCaretWidth());
 	if (tb->caretxoffs + delta < 0) delta = -tb->caretxoffs;
 
 	/* Get location of first and last character. */
@@ -993,7 +998,7 @@ const char *QueryString::GetCharAtPosition(const Window *w, int wid, const Point
 
 	/* Clamp caret position to be inside our current width. */
 	const Textbuf *tb = &this->text;
-	int delta = std::min(0, r.Width() - tb->pixels - 10);
+	int delta = std::min(0, r.Width() - tb->pixels - GetCaretWidth());
 	if (tb->caretxoffs + delta < 0) delta = -tb->caretxoffs;
 
 	return ::GetCharAtPosition(tb->buf, pt.x - delta - r.left);

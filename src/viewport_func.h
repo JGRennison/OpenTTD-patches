@@ -136,7 +136,7 @@ void ViewportMapInvalidateTunnelCacheByTile(const TileIndex tile, const Axis axi
 void ViewportMapBuildTunnelCache();
 
 void DrawTileSelectionRect(const TileInfo *ti, PaletteID pal);
-void DrawSelectionSprite(SpriteID image, PaletteID pal, const TileInfo *ti, int z_offset, FoundationPart foundation_part, const SubSprite *sub = nullptr);
+void DrawSelectionSprite(SpriteID image, PaletteID pal, const TileInfo *ti, int z_offset, FoundationPart foundation_part, int extra_offs_x = 0, int extra_offs_y = 0, const SubSprite *sub = nullptr);
 
 struct Town;
 struct TraceRestrictProgram;

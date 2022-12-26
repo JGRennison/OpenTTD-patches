@@ -378,7 +378,6 @@ Win32FontCache::Win32FontCache(FontSize fs, const LOGFONT &logfont, int pixels) 
 {
 	this->dc = CreateCompatibleDC(nullptr);
 	this->SetFontSize(fs, pixels);
-	this->fontname = FS2OTTD(this->logfont.lfFaceName);
 }
 
 Win32FontCache::~Win32FontCache()
@@ -443,7 +442,9 @@ void Win32FontCache::SetFontSize(FontSize fs, int pixels)
 
 	font_height_cache[this->fs] = this->GetHeight();
 
-	DEBUG(fontcache, 2, "Loaded font '%s' with size %d", FS2OTTD((LPWSTR)((BYTE *)otm + (ptrdiff_t)otm->otmpFullName)).c_str(), pixels);
+	this->fontname = FS2OTTD((LPWSTR)((BYTE *)otm + (ptrdiff_t)otm->otmpFaceName));
+
+	DEBUG(fontcache, 2, "Loaded font '%s' with size %d", this->fontname.c_str(), pixels);
 }
 
 /**
@@ -582,16 +583,7 @@ void Win32FontCache::ClearFontCache()
  */
 void LoadWin32Font(FontSize fs)
 {
-	static const char *SIZE_TO_NAME[] = { "medium", "small", "large", "mono" };
-
-	FontCacheSubSetting *settings = nullptr;
-	switch (fs) {
-		case FS_SMALL:  settings = &_fcsettings.small;  break;
-		case FS_NORMAL: settings = &_fcsettings.medium; break;
-		case FS_LARGE:  settings = &_fcsettings.large;  break;
-		case FS_MONO:   settings = &_fcsettings.mono;   break;
-		default: NOT_REACHED();
-	}
+	FontCacheSubSetting *settings = GetFontCacheSubSetting(fs);
 
 	if (settings->font.empty()) return;
 
@@ -648,7 +640,7 @@ void LoadWin32Font(FontSize fs)
 					logfont.lfWeight = strcasestr(font_name, " bold") != nullptr || strcasestr(font_name, "-bold") != nullptr ? FW_BOLD : FW_NORMAL; // Poor man's way to allow selecting bold fonts.
 				}
 			} else {
-				ShowInfoF("Unable to load file '%s' for %s font, using default windows font selection instead", font_name, SIZE_TO_NAME[fs]);
+				ShowInfoF("Unable to load file '%s' for %s font, using default windows font selection instead", font_name, FontSizeToName(fs));
 			}
 		}
 	}
@@ -660,7 +652,7 @@ void LoadWin32Font(FontSize fs)
 
 	HFONT font = CreateFontIndirect(&logfont);
 	if (font == nullptr) {
-		ShowInfoF("Unable to use '%s' for %s font, Win32 reported error 0x%lX, using sprite font instead", font_name, SIZE_TO_NAME[fs], GetLastError());
+		ShowInfoF("Unable to use '%s' for %s font, Win32 reported error 0x%lX, using sprite font instead", font_name, FontSizeToName(fs), GetLastError());
 		return;
 	}
 	DeleteObject(font);

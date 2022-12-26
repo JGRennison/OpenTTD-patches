@@ -171,8 +171,8 @@ struct ChildScreenSpriteToDraw {
 	const SubSprite *sub;           ///< only draw a rectangular part of the sprite
 	int32 x;
 	int32 y;
-	int next;                       ///< next child to draw (-1 at the end)
 	bool relative;
+	int next;                       ///< next child to draw (-1 at the end)
 };
 
 /**
@@ -950,7 +950,7 @@ static void AddChildSpriteToFoundation(SpriteID image, PaletteID pal, const SubS
 	int *old_child = _vd.last_child;
 	_vd.last_child = _vd.last_foundation_child[foundation_part];
 
-	AddChildSpriteScreen(image, pal, offs.x + extra_offs_x, offs.y + extra_offs_y, false, sub, false);
+	AddChildSpriteScreen(image, pal, offs.x + extra_offs_x, offs.y + extra_offs_y, false, sub, false, false);
 
 	/* Switch back to last ChildSprite list */
 	_vd.last_child = old_child;
@@ -1264,7 +1264,8 @@ static bool IsInsideSelectedRectangle(int x, int y)
  * @param y sprite y-offset (screen coordinates), optionally relative to parent sprite.
  * @param transparent if true, switch the palette between the provided palette and the transparent palette,
  * @param sub Only draw a part of the sprite.
- * @param relative Whether coordinates are relative.
+ * @param scale if true, scale offsets to base zoom level.
+ * @param relative if true, draw sprite relative to parent sprite offsets.
  */
 void AddChildSpriteScreen(SpriteID image, PaletteID pal, int x, int y, bool transparent, const SubSprite *sub, bool scale, bool relative)
 {
@@ -1287,8 +1288,8 @@ void AddChildSpriteScreen(SpriteID image, PaletteID pal, int x, int y, bool tran
 	cs.sub = sub;
 	cs.x = scale ? x * ZOOM_LVL_BASE : x;
 	cs.y = scale ? y * ZOOM_LVL_BASE : y;
-	cs.next = -1;
 	cs.relative = relative;
+	cs.next = -1;
 
 	/* Append the sprite to the active ChildSprite list.
 	 * If the active ParentSprite is a foundation, update last_foundation_child as well.
@@ -1322,17 +1323,19 @@ static void AddStringToDraw(ViewportDrawerDynamic *vdd, int x, int y, StringID s
  * @param ti TileInfo Tile that is being drawn
  * @param z_offset Z offset relative to the groundsprite. Only used for the sprite position, not for sprite sorting.
  * @param foundation_part Foundation part the sprite belongs to.
+ * @param extra_offs_x Pixel X offset for the sprite position.
+ * @param extra_offs_y Pixel Y offset for the sprite position.
  * @param sub Sub-section of sprite to draw.
  */
-void DrawSelectionSprite(SpriteID image, PaletteID pal, const TileInfo *ti, int z_offset, FoundationPart foundation_part, const SubSprite *sub)
+void DrawSelectionSprite(SpriteID image, PaletteID pal, const TileInfo *ti, int z_offset, FoundationPart foundation_part, int extra_offs_x, int extra_offs_y, const SubSprite *sub)
 {
 	/* FIXME: This is not totally valid for some autorail highlights that extend over the edges of the tile. */
 	if (_vd.foundation[foundation_part] == -1) {
 		/* draw on real ground */
-		AddTileSpriteToDraw(image, pal, ti->x, ti->y, ti->z + z_offset, sub);
+		AddTileSpriteToDraw(image, pal, ti->x, ti->y, ti->z + z_offset, sub, extra_offs_x, extra_offs_y);
 	} else {
 		/* draw on top of foundation */
-		AddChildSpriteToFoundation(image, pal, sub, foundation_part, 0, -z_offset * ZOOM_LVL_BASE);
+		AddChildSpriteToFoundation(image, pal, sub, foundation_part, extra_offs_x, extra_offs_y - z_offset * ZOOM_LVL_BASE);
 	}
 }
 
@@ -1774,7 +1777,7 @@ void ViewportAddString(ViewportDrawerDynamic *vdd, const DrawPixelInfo *dpi, Zoo
 	int right  = left + dpi->width;
 	int bottom = top + dpi->height;
 
-	int sign_height     = ScaleByZoom(WidgetDimensions::scaled.framerect.top + FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.framerect.bottom, dpi->zoom);
+	int sign_height     = ScaleByZoom(WidgetDimensions::scaled.fullbevel.top + FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.fullbevel.bottom, dpi->zoom);
 	int sign_half_width = ScaleByZoom((small ? sign->width_small : sign->width_normal) / 2, dpi->zoom);
 
 	if (bottom < sign->top ||
@@ -1790,7 +1793,7 @@ void ViewportAddString(ViewportDrawerDynamic *vdd, const DrawPixelInfo *dpi, Zoo
 		int shadow_offset = 0;
 		if (string_small_shadow != STR_NULL) {
 			shadow_offset = 4;
-			AddStringToDraw(vdd, sign->center - sign_half_width + shadow_offset, sign->top, string_small_shadow, params_1, params_2, INVALID_COLOUR, sign->width_small);
+			AddStringToDraw(vdd, sign->center - sign_half_width + shadow_offset, sign->top, string_small_shadow, params_1, params_2, INVALID_COLOUR, sign->width_small | 0x8000);
 		}
 		AddStringToDraw(vdd, sign->center - sign_half_width, sign->top - shadow_offset, string_small, params_1, params_2,
 				colour, sign->width_small | 0x8000);
@@ -1802,8 +1805,8 @@ static Rect ExpandRectWithViewportSignMargins(Rect r, ZoomLevel zoom)
 	/* Pessimistically always use normal font, but also assume small font is never larger in either dimension */
 	const int fh = FONT_HEIGHT_NORMAL;
 	const int max_tw = _viewport_sign_maxwidth / 2 + 1;
-	const int expand_y = ScaleByZoom(WidgetDimensions::scaled.framerect.top + fh + WidgetDimensions::scaled.framerect.bottom, zoom);
-	const int expand_x = ScaleByZoom(WidgetDimensions::scaled.framerect.left + max_tw + WidgetDimensions::scaled.framerect.right, zoom);
+	const int expand_y = ScaleByZoom(WidgetDimensions::scaled.fullbevel.top + fh + WidgetDimensions::scaled.fullbevel.bottom, zoom);
+	const int expand_x = ScaleByZoom(WidgetDimensions::scaled.fullbevel.left + max_tw + WidgetDimensions::scaled.fullbevel.right, zoom);
 
 	r.left -= expand_x;
 	r.right += expand_x;
@@ -1925,14 +1928,14 @@ void ViewportSign::UpdatePosition(ZoomLevel maxzoom, int center, int top, String
 	char buffer[DRAW_STRING_BUFFER];
 
 	GetString(buffer, str, lastof(buffer));
-	this->width_normal = WidgetDimensions::scaled.framerect.left + Align(GetStringBoundingBox(buffer).width, 2) + WidgetDimensions::scaled.framerect.right;
+	this->width_normal = WidgetDimensions::scaled.fullbevel.left + Align(GetStringBoundingBox(buffer).width, 2) + WidgetDimensions::scaled.fullbevel.right;
 	this->center = center;
 
 	/* zoomed out version */
 	if (str_small != STR_NULL) {
 		GetString(buffer, str_small, lastof(buffer));
 	}
-	this->width_small = WidgetDimensions::scaled.framerect.left + Align(GetStringBoundingBox(buffer, FS_SMALL).width, 2) + WidgetDimensions::scaled.framerect.right;
+	this->width_small = WidgetDimensions::scaled.fullbevel.left + Align(GetStringBoundingBox(buffer, FS_SMALL).width, 2) + WidgetDimensions::scaled.fullbevel.right;
 
 	this->MarkDirty(maxzoom);
 }
@@ -1955,7 +1958,7 @@ void ViewportSign::MarkDirty(ZoomLevel maxzoom) const
 		zoomlevels[zoom].left   = this->center - ScaleByZoom(width / 2 + 1, zoom);
 		zoomlevels[zoom].top    = this->top    - ScaleByZoom(1, zoom);
 		zoomlevels[zoom].right  = this->center + ScaleByZoom(width / 2 + 1, zoom);
-		zoomlevels[zoom].bottom = this->top    + ScaleByZoom(WidgetDimensions::scaled.framerect.top + FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.framerect.bottom + 1, zoom);
+		zoomlevels[zoom].bottom = this->top    + ScaleByZoom(WidgetDimensions::scaled.fullbevel.top + FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.fullbevel.bottom + 1, zoom);
 	}
 
 	for (Viewport *vp : _viewport_window_cache) {
@@ -2046,13 +2049,11 @@ static void ViewportDrawParentSprites(const ViewportDrawerDynamic *vdd, const Dr
 		while (child_idx >= 0) {
 			const ChildScreenSpriteToDraw *cs = csstdv->data() + child_idx;
 			child_idx = cs->next;
-			int x = cs->x;
-			int y = cs->y;
 			if (cs->relative) {
-				x += ps->left;
-				y += ps->top;
+				DrawSpriteViewport(vdd->sprite_data, dpi, cs->image, cs->pal, ps->left + cs->x, ps->top + cs->y, cs->sub);
+			} else {
+				DrawSpriteViewport(vdd->sprite_data, dpi, cs->image, cs->pal, ps->x + cs->x, ps->y + cs->y, cs->sub);
 			}
-			DrawSpriteViewport(vdd->sprite_data, dpi, cs->image, cs->pal, x, y, cs->sub);
 		}
 	}
 }
@@ -2235,7 +2236,7 @@ static void ViewportDrawStrings(ViewportDrawerDynamic *vdd, ZoomLevel zoom, cons
 		int w = GB(ss.width, 0, 15);
 		int x = UnScaleByZoom(ss.x, zoom);
 		int y = UnScaleByZoom(ss.y, zoom);
-		int h = WidgetDimensions::scaled.framerect.Vertical() + (small ? FONT_HEIGHT_SMALL : FONT_HEIGHT_NORMAL);
+		int h = WidgetDimensions::scaled.fullbevel.Vertical() + (small ? FONT_HEIGHT_SMALL : FONT_HEIGHT_NORMAL);
 
 		SetDParam(0, ss.params[0]);
 		SetDParam(1, ss.params[1]);
@@ -2259,7 +2260,7 @@ static void ViewportDrawStrings(ViewportDrawerDynamic *vdd, ZoomLevel zoom, cons
 			}
 		}
 
-		DrawString(x + WidgetDimensions::scaled.framerect.left, x + w - 1 - WidgetDimensions::scaled.framerect.right, y + WidgetDimensions::scaled.framerect.top, ss.string, colour, SA_HOR_CENTER);
+		DrawString(x + WidgetDimensions::scaled.fullbevel.left, x + w - 1 - WidgetDimensions::scaled.fullbevel.right, y + WidgetDimensions::scaled.fullbevel.top, ss.string, colour, SA_HOR_CENTER, false, small ? FS_SMALL : FS_NORMAL);
 	}
 }
 
@@ -4519,7 +4520,7 @@ static bool CheckClickOnViewportSign(const Viewport *vp, int x, int y, const Vie
 {
 	bool small = (vp->zoom >= ZOOM_LVL_OUT_16X);
 	int sign_half_width = ScaleByZoom((small ? sign->width_small : sign->width_normal) / 2, vp->zoom);
-	int sign_height = ScaleByZoom(WidgetDimensions::scaled.framerect.top + (small ? FONT_HEIGHT_SMALL : FONT_HEIGHT_NORMAL) + WidgetDimensions::scaled.framerect.bottom, vp->zoom);
+	int sign_height = ScaleByZoom(WidgetDimensions::scaled.fullbevel.top + (small ? FONT_HEIGHT_SMALL : FONT_HEIGHT_NORMAL) + WidgetDimensions::scaled.fullbevel.bottom, vp->zoom);
 
 	return y >= sign->top && y < sign->top + sign_height &&
 			x >= sign->center - sign_half_width && x < sign->center + sign_half_width;

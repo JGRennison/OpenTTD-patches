@@ -24,6 +24,7 @@
 #include "settings_func.h"
 #include "fios.h"
 #include "fileio_func.h"
+#include "fontcache.h"
 #include "screenshot.h"
 #include "genworld.h"
 #include "strings_func.h"
@@ -2211,6 +2212,82 @@ DEF_CONSOLE_CMD(ConContent)
 }
 #endif /* defined(WITH_ZLIB) */
 
+DEF_CONSOLE_CMD(ConFont)
+{
+	if (argc == 0) {
+		IConsoleHelp("Manage the fonts configuration.");
+		IConsoleHelp("Usage 'font'.");
+		IConsoleHelp("  Print out the fonts configuration.");
+		IConsoleHelp("Usage 'font [medium|small|large|mono] [<name>] [<size>] [aa|noaa]'.");
+		IConsoleHelp("  Change the configuration for a font.");
+		IConsoleHelp("  Omitting an argument will keep the current value.");
+		IConsoleHelp("  Set <name> to \"\" for the sprite font (size and aa have no effect on sprite font).");
+		return true;
+	}
+
+	FontSize argfs;
+	for (argfs = FS_BEGIN; argfs < FS_END; argfs++) {
+		if (argc > 1 && strcasecmp(argv[1], FontSizeToName(argfs)) == 0) break;
+	}
+
+	/* First argument must be a FontSize. */
+	if (argc > 1 && argfs == FS_END) return false;
+
+	if (argc > 2) {
+		FontCacheSubSetting *setting = GetFontCacheSubSetting(argfs);
+		std::string font = setting->font;
+		uint size = setting->size;
+		bool aa = setting->aa;
+
+		byte arg_index = 2;
+
+		if (argc > arg_index) {
+			/* We may encounter "aa" or "noaa" but it must be the last argument. */
+			if (strcasecmp(argv[arg_index], "aa") == 0 || strcasecmp(argv[arg_index], "noaa") == 0) {
+				aa = strncasecmp(argv[arg_index++], "no", 2) != 0;
+				if (argc > arg_index) return false;
+			} else {
+				/* For <name> we want a string. */
+				uint v;
+				if (!GetArgumentInteger(&v, argv[arg_index])) {
+					font = argv[arg_index++];
+				}
+			}
+		}
+
+		if (argc > arg_index) {
+			/* For <size> we want a number. */
+			uint v;
+			if (GetArgumentInteger(&v, argv[arg_index])) {
+				size = v;
+				arg_index++;
+			}
+		}
+
+		if (argc > arg_index) {
+			/* Last argument must be "aa" or "noaa". */
+			if (strcasecmp(argv[arg_index], "aa") != 0 && strcasecmp(argv[arg_index], "noaa") != 0) return false;
+			aa = strncasecmp(argv[arg_index++], "no", 2) != 0;
+			if (argc > arg_index) return false;
+		}
+
+		SetFont(argfs, font, size, aa);
+	}
+
+	for (FontSize fs = FS_BEGIN; fs < FS_END; fs++) {
+		FontCache *fc = FontCache::Get(fs);
+		FontCacheSubSetting *setting = GetFontCacheSubSetting(fs);
+		/* Make sure all non sprite fonts are loaded. */
+		if (!setting->font.empty() && !fc->HasParent()) {
+			InitFontCache(fs == FS_MONO);
+			fc = FontCache::Get(fs);
+		}
+		IConsolePrintF(CC_DEFAULT, "%s: \"%s\" %d %s [\"%s\" %d %s]", FontSizeToName(fs), fc->GetFontName(), fc->GetFontSize(), GetFontAAState(fs) ? "true" : "false", setting->font.c_str(), setting->size, setting->aa ? "true" : "false");
+	}
+
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConSetting)
 {
 	if (argc == 0) {
@@ -3627,6 +3704,7 @@ void IConsoleStdLibRegister()
 	IConsole::CmdRegister("cd",                      ConChangeDirectory);
 	IConsole::CmdRegister("pwd",                     ConPrintWorkingDirectory);
 	IConsole::CmdRegister("clear",                   ConClearBuffer);
+	IConsole::CmdRegister("font",                    ConFont);
 	IConsole::CmdRegister("setting",                 ConSetting);
 	IConsole::CmdRegister("setting_newgame",         ConSettingNewgame);
 	IConsole::CmdRegister("list_settings",           ConListSettings);
