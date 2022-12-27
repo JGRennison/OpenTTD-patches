@@ -4345,7 +4345,10 @@ STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}현재 �
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}X축이나 Y축 방향으로 스프라이트를 이동시킵니다. CTRL+클릭하면 한 번에 8씩 이동시킬 수 있습니다
 
 ###length 2
+STR_SPRITE_ALIGNER_CENTRE_OFFSET                                :{BLACK}오프셋 가운데로
+STR_SPRITE_ALIGNER_CENTRE_SPRITE                                :{BLACK}스프라이트 가운데로
 
+STR_SPRITE_ALIGNER_CROSSHAIR                                    :{BLACK}십자선
 
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}상대값 초기화
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}현재 상대값 좌표를 초기화
@@ -4687,6 +4690,10 @@ STR_DEPARTURES_FREIGHT_TOOLTIP                                  :{BLACK}화물 �
 STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}도착 시간 보이기
 STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}출발 시간 보이기
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}통과 열차 보이기
+STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}이 역의 시간표에 진입 중인 열차 표시
+STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}이 역의 시간표에 진입 중인 자동차 표시
+STR_DEPARTURES_SHOW_SHIPS_TOOLTIP                               :{BLACK}이 역의 시간표에 다가오는 선박 표시
+STR_DEPARTURES_SHOW_AIRCRAFT_TOOLTIP                            :{BLACK}이 역의 시간표에 다가오는 항공기 표시
 STR_DEPARTURES_SHOW_TYPE_TOOLTIP_CTRL_SUFFIX                    :{BLACK}{STRING}. CTRL+클릭하면 이 차량 종류만 보여줍니다
 STR_DEPARTURES_EMPTY                                            :{ORANGE}시간표가 지정된 차량이 없습니다.
 STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}표시할 정보를 선택하십시오.
@@ -7321,6 +7328,15 @@ STR_TMPL_GROUP_NUM_TRAINS                                       :{BLACK}{NUM}
 STR_TMPL_CREATEGUI_TITLE                                        :{WHITE}템플릿 차량 생성/수정
 STR_TMPL_MAINGUI_DEFINEDGROUPS                                  :{BLACK}만들어진 그룹
 STR_TMPL_TMPLRPL_EX_DIFF_RAILTYPE                               :다른 선로 종류의 템플릿을 사용 중입니다.
+
+STR_TMPL_ADD_LOCOMOTIVE                                         :{BLACK}기관차 추가
+STR_TMPL_ADD_WAGON                                              :{BLACK}객화차 추가
+STR_TMPL_ADD_VEHICLE                                            :{BLACK}차량 추가
+STR_TMPL_ADD_LOCOMOTIVE_REFIT                                   :{BLACK}기관차 추가 및 개조
+STR_TMPL_ADD_WAGON_REFIT                                        :{BLACK}객화차 추가 및 개조
+STR_TMPL_ADD_VEHICLE_REFIT                                      :{BLACK}차량 추가 및 개조
+STR_TMPL_ADD_TOOLTIP                                            :{BLACK}선택한 차량을 템플릿에 추가합니다.
+STR_TMPL_ADD_REFIT_TOOLTIP                                      :{BLACK}선택한 차량을 템플릿에 추가하고 개조합니다.
 
 STR_TMPL_SET_USEDEPOT                                           :{BLACK}차량을 기지에서 사용
 STR_TMPL_SET_USEDEPOT_TIP                                       :{BLACK}구입 비용을 줄이기 위해 차량을 기지 안에 놔 둡니다.
