@@ -3336,13 +3336,13 @@ STR_TRACE_RESTRICT_TRAIN_STATUS_REQUIRES_SERVICE                :benötigt Wartu
 STR_TRACE_RESTRICT_REVERSE_SIG                                  :Wende nach Signal
 STR_TRACE_RESTRICT_REVERSE_SIG_CANCEL                           :Breche Wenden ab
 STR_TRACE_RESTRICT_SET_SPEED_RESTRICTION                        :Beschränke Fahrtgeschwindigkeit auf: {VELOCITY}
-STR_TRACE_RESTRICT_REMOVE_SPEED_RESTRICTION                     :Hebe Beschränkung der Fahrtgeschwindig auf
+STR_TRACE_RESTRICT_REMOVE_SPEED_RESTRICTION                     :Freie Fahrt für freie Tfs
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK                              :Zug kommt voran, zeige keine Nachrichten zu an diesem Pfadsignal wartenden Zügen
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL                       :Hebe Zug kommt voran auf, zeige Nachrichten zu an diesem Pfadsignal wartenden Zügen
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_SHORT                        :Zug kommt voran...
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL_SHORT                 :Hebe Zug kommt voran auf...
 STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY                          :Wende die Strafe beim passieren des Pfadsignals von der Rückseite nicht an.
-STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_CANCEL                   :Hebe die Nichtanwendung der Strafe beim passieren des Pfadsignals vion der Rückseite auf.
+STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_CANCEL                   :Hebe die Nichtanwendung der Strafe beim passieren des Pfadsignals von der Rückseite auf.
 STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_SHORT                    :Keine Strafe beim passieren des Pfadsignals von der Rückseite
 STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_CANCEL_SHORT             :Aufheben der Straffreiheit beim passieren des Pfadsignals von der Rückseite
 STR_TRACE_RESTRICT_MAKE_TRAIN_SPEED_ADAPTATION_EXEMPT           :Nehme den Zug von der automatischen Geschwindigkeitsanpassung aus.
@@ -5354,7 +5354,7 @@ STR_VEHICLE_LOAD_THROUGH_ABORTED_INSUFFICIENT_TRACK             :{WHITE}{VEHICLE
 STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT                          :{WHITE}{VEHICLE}: durchgehendes Laden aufgrund Depot bei {STATION} abgebrochen
 
 STR_RUNNING                                                     :{LTBLUE}Funktioniert
-STR_NEED_REPAIR                                                 :{ORANGE}Der Fahrzeuge ist reparaturbedürftig - die Höchstgeschwindigkeit ist auf {VELOCITY} reduziert
+STR_NEED_REPAIR                                                 :{ORANGE}Das Fahrzeug ist reparaturbedürftig - die Höchstgeschwindigkeit ist auf {VELOCITY} reduziert
 STR_CURRENT_STATUS                                              :{BLACK}Momentaner Status: {STRING}
 
 # The next two need to stay in this order
