@@ -3342,7 +3342,7 @@ STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL                       :Hebe Zug kommt 
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_SHORT                        :Zug kommt voran...
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL_SHORT                 :Hebe Zug kommt voran auf...
 STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY                          :Wende die Strafe beim passieren des Pfadsignals von der Rückseite nicht an.
-STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_CANCEL                   :Hebe die Nichtanwendung der Strafe beim passieren des Pfadsignals vion der Rückseite auf.
+STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_CANCEL                   :Hebe die Nichtanwendung der Strafe beim passieren des Pfadsignals von der Rückseite auf.
 STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_SHORT                    :Keine Strafe beim passieren des Pfadsignals von der Rückseite
 STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_CANCEL_SHORT             :Aufheben der Straffreiheit beim passieren des Pfadsignals von der Rückseite
 STR_TRACE_RESTRICT_MAKE_TRAIN_SPEED_ADAPTATION_EXEMPT           :Nehme den Zug von der automatischen Geschwindigkeitsanpassung aus.
