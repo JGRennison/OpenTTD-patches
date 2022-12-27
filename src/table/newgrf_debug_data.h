@@ -433,6 +433,37 @@ class NIHVehicle : public NIHelper {
 					};
 					seprintf(buffer, lastof(buffer), "    Rail veh type: %s, power: %u", engine_types[e->u.rail.railveh_type], e->u.rail.power);
 					output.print(buffer);
+
+					output.register_next_line_click_flag_toggle(2);
+					if (output.flags & 2) {
+						seprintf(buffer, lastof(buffer), "    [-] Engine Misc Flags:\n");
+						output.print(buffer);
+						auto print_bit = [&](int bit, const char *name) {
+							if (HasBit(e->info.misc_flags, bit)) {
+								seprintf(buffer, lastof(buffer), "      %s\n", name);
+								output.print(buffer);
+							}
+						};
+						print_bit(EF_RAIL_TILTS,                  "EF_RAIL_TILTS");
+						print_bit(EF_USES_2CC,                    "EF_USES_2CC");
+						print_bit(EF_RAIL_IS_MU,                  "EF_RAIL_IS_MU");
+						print_bit(EF_RAIL_FLIPS,                  "EF_RAIL_FLIPS");
+						print_bit(EF_AUTO_REFIT,                  "EF_AUTO_REFIT");
+						print_bit(EF_NO_DEFAULT_CARGO_MULTIPLIER, "EF_NO_DEFAULT_CARGO_MULTIPLIER");
+						print_bit(EF_NO_BREAKDOWN_SMOKE,          "EF_NO_BREAKDOWN_SMOKE");
+						print_bit(EF_SPRITE_STACK,                "EF_SPRITE_STACK");
+					} else {
+						seprintf(buffer, lastof(buffer), "    [+] Engine Misc Flags: %c%c%c%c%c%c%c%c",
+								HasBit(e->info.misc_flags, EF_RAIL_TILTS)                  ? 't' : '-',
+								HasBit(e->info.misc_flags, EF_USES_2CC)                    ? '2' : '-',
+								HasBit(e->info.misc_flags, EF_RAIL_IS_MU)                  ? 'm' : '-',
+								HasBit(e->info.misc_flags, EF_RAIL_FLIPS)                  ? 'f' : '-',
+								HasBit(e->info.misc_flags, EF_AUTO_REFIT)                  ? 'r' : '-',
+								HasBit(e->info.misc_flags, EF_NO_DEFAULT_CARGO_MULTIPLIER) ? 'c' : '-',
+								HasBit(e->info.misc_flags, EF_NO_BREAKDOWN_SMOKE)          ? 'b' : '-',
+								HasBit(e->info.misc_flags, EF_SPRITE_STACK)                ? 's' : '-');
+						output.print(buffer);
+					}
 				}
 				if (e->type == VEH_ROAD) {
 					const RoadTypeInfo* rti = GetRoadTypeInfo(e->u.road.roadtype);
