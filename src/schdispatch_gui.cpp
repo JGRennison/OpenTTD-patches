@@ -84,7 +84,7 @@ static void SetScheduleStartDateCallback(const Window *w, DateTicksScaled date)
  * @param p1 The p1 parameter to send to CmdScheduledDispatchAdd
  * @param date the actually chosen date
  */
-static void ScheduleAddIntl(uint32 p1, DateTicksScaled date, uint extra_slots, uint offset)
+static void ScheduleAddIntl(uint32 p1, DateTicksScaled date, uint extra_slots, uint offset, bool wrap_mode = false)
 {
 	VehicleID veh = GB(p1, 0, 20);
 	uint schedule_index = GB(p1, 20, 12);
@@ -99,7 +99,7 @@ static void ScheduleAddIntl(uint32 p1, DateTicksScaled date, uint extra_slots, u
 	while (date > start_tick) date -= duration;
 	while (date < start_tick) date += duration;
 
-	if (extra_slots > 0 && offset > 0) {
+	if (extra_slots > 0 && offset > 0 && !wrap_mode) {
 		DateTicksScaled end_tick = start_tick + duration;
 		DateTicksScaled max_extra_slots = (end_tick - 1 - date) / offset;
 		if (max_extra_slots < extra_slots) extra_slots = static_cast<uint>(std::max<DateTicksScaled>(0, max_extra_slots));
@@ -882,12 +882,21 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 	void AddMultipleDepartureSlots(uint start, uint step, uint end)
 	{
+		bool wrap_mode = false;
+		if (end < start) {
+			const DispatchSchedule &ds = this->GetSelectedSchedule();
+			if (ds.GetScheduledDispatchDuration() == (1440 * _settings_time.ticks_per_minute)) {
+				/* 24 hour timetabling */
+				end += 1440;
+				wrap_mode = true;
+			}
+		}
 		if (end < start || step == 0 || !this->IsScheduleSelected()) return;
 
 		DateTicksScaled slot = MINUTES_DATE(MINUTES_DAY(CURRENT_MINUTE), 0, start);
 		slot -= _settings_time.clock_offset;
 		slot *= _settings_time.ticks_per_minute;
-		ScheduleAddIntl(this->vehicle->index | (this->schedule_index << 20), slot, (end - start) / step, step * _settings_time.ticks_per_minute);
+		ScheduleAddIntl(this->vehicle->index | (this->schedule_index << 20), slot, (end - start) / step, step * _settings_time.ticks_per_minute, wrap_mode);
 	}
 };
 

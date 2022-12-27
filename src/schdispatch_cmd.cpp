@@ -98,6 +98,7 @@ CommandCost CmdScheduledDispatchAdd(TileIndex tile, DoCommandFlag flags, uint32 
 		ds.AddScheduledDispatch(p2);
 		for (uint i = 0; i < extra_slots; i++) {
 			p2 += offset;
+			if (p2 >= ds.GetScheduledDispatchDuration()) p2 -= ds.GetScheduledDispatchDuration();
 			ds.AddScheduledDispatch(p2);
 		}
 		SetTimetableWindowsDirty(v, true);
