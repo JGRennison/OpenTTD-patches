@@ -61,6 +61,11 @@ void TemplateVehicleImageDimensions::SetFromTrain(const Train *t)
 		this->reference_width = e->GetGRF()->traininfo_vehicle_width;
 		this->vehicle_pitch = e->GetGRF()->traininfo_vehicle_pitch;
 	}
+	if (t->gcache.cached_veh_length != 8 && HasBit(t->flags, VRF_REVERSE_DIRECTION) && !HasBit(EngInfo(t->engine_type)->misc_flags, EF_RAIL_FLIPS)) {
+		this->vehicle_flip_length = t->gcache.cached_veh_length;
+	} else {
+		this->vehicle_flip_length = -1;
+	}
 }
 
 TemplateVehicle::TemplateVehicle(VehicleType ty, EngineID eid, byte subtypeflag, Owner current_owner)
