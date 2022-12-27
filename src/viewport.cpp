@@ -171,7 +171,7 @@ struct ChildScreenSpriteToDraw {
 	const SubSprite *sub;           ///< only draw a rectangular part of the sprite
 	int32 x;
 	int32 y;
-	bool relative;
+	ChildScreenSpritePositionMode position_mode;
 	int next;                       ///< next child to draw (-1 at the end)
 };
 
@@ -950,7 +950,7 @@ static void AddChildSpriteToFoundation(SpriteID image, PaletteID pal, const SubS
 	int *old_child = _vd.last_child;
 	_vd.last_child = _vd.last_foundation_child[foundation_part];
 
-	AddChildSpriteScreen(image, pal, offs.x + extra_offs_x, offs.y + extra_offs_y, false, sub, false, false);
+	AddChildSpriteScreen(image, pal, offs.x + extra_offs_x, offs.y + extra_offs_y, false, sub, false, ChildScreenSpritePositionMode::NON_RELATIVE);
 
 	/* Switch back to last ChildSprite list */
 	_vd.last_child = old_child;
@@ -1051,7 +1051,7 @@ static void AddCombinedSprite(SpriteID image, PaletteID pal, int x, int y, int z
 			bottom <= _vdd->dpi.top)
 		return;
 
-	AddChildSpriteScreen(image, pal, pt.x, pt.y, false, sub, false, false);
+	AddChildSpriteScreen(image, pal, pt.x, pt.y, false, sub, false, ChildScreenSpritePositionMode::ABSOLUTE);
 	if (left < _vd.combine_left) _vd.combine_left = left;
 	if (right > _vd.combine_right) _vd.combine_right = right;
 	if (top < _vd.combine_top) _vd.combine_top = top;
@@ -1265,9 +1265,9 @@ static bool IsInsideSelectedRectangle(int x, int y)
  * @param transparent if true, switch the palette between the provided palette and the transparent palette,
  * @param sub Only draw a part of the sprite.
  * @param scale if true, scale offsets to base zoom level.
- * @param relative if true, draw sprite relative to parent sprite offsets.
+ * @param position_mode position mode.
  */
-void AddChildSpriteScreen(SpriteID image, PaletteID pal, int x, int y, bool transparent, const SubSprite *sub, bool scale, bool relative)
+void AddChildSpriteScreen(SpriteID image, PaletteID pal, int x, int y, bool transparent, const SubSprite *sub, bool scale, ChildScreenSpritePositionMode position_mode)
 {
 	dbg_assert((image & SPRITE_MASK) < MAX_SPRITES);
 
@@ -1288,7 +1288,7 @@ void AddChildSpriteScreen(SpriteID image, PaletteID pal, int x, int y, bool tran
 	cs.sub = sub;
 	cs.x = scale ? x * ZOOM_LVL_BASE : x;
 	cs.y = scale ? y * ZOOM_LVL_BASE : y;
-	cs.relative = relative;
+	cs.position_mode = position_mode;
 	cs.next = -1;
 
 	/* Append the sprite to the active ChildSprite list.
@@ -2049,11 +2049,22 @@ static void ViewportDrawParentSprites(const ViewportDrawerDynamic *vdd, const Dr
 		while (child_idx >= 0) {
 			const ChildScreenSpriteToDraw *cs = csstdv->data() + child_idx;
 			child_idx = cs->next;
-			if (cs->relative) {
-				DrawSpriteViewport(vdd->sprite_data, dpi, cs->image, cs->pal, ps->left + cs->x, ps->top + cs->y, cs->sub);
-			} else {
-				DrawSpriteViewport(vdd->sprite_data, dpi, cs->image, cs->pal, ps->x + cs->x, ps->y + cs->y, cs->sub);
+			int x = cs->x;
+			int y = cs->y;
+			switch (cs->position_mode) {
+				case ChildScreenSpritePositionMode::RELATIVE:
+					x += ps->left;
+					y += ps->top;
+					break;
+				case ChildScreenSpritePositionMode::NON_RELATIVE:
+					x += ps->x;
+					y += ps->y;
+					break;
+				case ChildScreenSpritePositionMode::ABSOLUTE:
+					/* No adjustment */
+					break;
 			}
+			DrawSpriteViewport(vdd->sprite_data, dpi, cs->image, cs->pal, x, y, cs->sub);
 		}
 	}
 }
