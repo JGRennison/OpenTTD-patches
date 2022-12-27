@@ -2163,7 +2163,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 						TriggerStationRandomisation(st, st->xy, SRT_CARGO_TAKEN, v->cargo_type);
 						TriggerStationAnimation(st, st->xy, SAT_CARGO_TAKEN, v->cargo_type);
 						AirportAnimationTrigger(st, AAT_STATION_CARGO_TAKEN, v->cargo_type);
-						TriggerRoadStopAnimation(st, st->xy, SAT_NEW_CARGO, v->cargo_type);
+						TriggerRoadStopAnimation(st, st->xy, SAT_CARGO_TAKEN, v->cargo_type);
 						TriggerRoadStopRandomisation(st, st->xy, RSRT_CARGO_TAKEN, v->cargo_type);
 					}
 
