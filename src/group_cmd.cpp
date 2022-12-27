@@ -517,7 +517,8 @@ CommandCost CmdAlterGroup(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
  * @param tile unused
  * @param flags type of operation
  * @param p1 packed VehicleListIdentifier
- * @param p2   unused
+ * @param p2 bitmask
+ *   - bit 0-7 Cargo filter
  * @param text the new name or an empty string when setting to the default
  * @return the cost of this operation or an error
  */
@@ -527,7 +528,7 @@ CommandCost CmdCreateGroupFromList(TileIndex tile, DoCommandFlag flags, uint32 p
 	VehicleList list;
 	if (!vli.UnpackIfValid(p1)) return CMD_ERROR;
 	if (!IsCompanyBuildableVehicleType(vli.vtype)) return CMD_ERROR;
-	if (!GenerateVehicleSortList(&list, vli)) return CMD_ERROR;
+	if (!GenerateVehicleSortList(&list, vli, GB(p2, 0, 8))) return CMD_ERROR;
 
 	CommandCost ret = DoCommand(tile, vli.vtype, INVALID_GROUP, flags, CMD_CREATE_GROUP);
 	if (ret.Failed()) return ret;

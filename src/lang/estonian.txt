@@ -262,6 +262,7 @@ STR_UNITS_POWER_IMPERIAL                                        :{COMMA}hj
 STR_UNITS_POWER_METRIC                                          :{COMMA}hj
 STR_UNITS_POWER_SI                                              :{COMMA}kW
 
+
 STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA}t
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}t
 STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}kg
@@ -452,10 +453,9 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Välju
 
 # Settings menu
-###length 14
+###length 15
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Mängu seadistus
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Seaded
-STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :AI/GameScripti seaded
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF-i seadistus
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Läbipaistvuse seadistus
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Näidatavad asustuste nimed
@@ -1026,36 +1026,6 @@ STR_GAME_OPTIONS_CURRENCY_INR                                   :India ruupia (I
 STR_GAME_OPTIONS_CURRENCY_IDR                                   :Indoneesia ruupia (IDR)
 STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malaisia ringit (MYR)
 
-###length 2
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Vasakpoolne liiklus
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :Parempoolne liiklus
-
-STR_GAME_OPTIONS_TOWN_NAMES_FRAME                               :{BLACK}Asulanimed:
-STR_GAME_OPTIONS_TOWN_NAMES_DROPDOWN_TOOLTIP                    :{BLACK}Vali asulanimede stiil
-
-###length 21
-STR_GAME_OPTIONS_TOWN_NAME_ORIGINAL_ENGLISH                     :Inglise (algne)
-STR_GAME_OPTIONS_TOWN_NAME_FRENCH                               :Prantsusmaa
-STR_GAME_OPTIONS_TOWN_NAME_GERMAN                               :Saksamaa
-STR_GAME_OPTIONS_TOWN_NAME_ADDITIONAL_ENGLISH                   :Inglise (täiendatud)
-STR_GAME_OPTIONS_TOWN_NAME_LATIN_AMERICAN                       :Ladina-Ameerika
-STR_GAME_OPTIONS_TOWN_NAME_SILLY                                :Tobedad
-STR_GAME_OPTIONS_TOWN_NAME_SWEDISH                              :Rootsi
-STR_GAME_OPTIONS_TOWN_NAME_DUTCH                                :Hollandi
-STR_GAME_OPTIONS_TOWN_NAME_FINNISH                              :Soome
-STR_GAME_OPTIONS_TOWN_NAME_POLISH                               :Poola
-STR_GAME_OPTIONS_TOWN_NAME_SLOVAK                               :Slovakkia
-STR_GAME_OPTIONS_TOWN_NAME_NORWEGIAN                            :Norra
-STR_GAME_OPTIONS_TOWN_NAME_HUNGARIAN                            :Ungari
-STR_GAME_OPTIONS_TOWN_NAME_AUSTRIAN                             :Austria
-STR_GAME_OPTIONS_TOWN_NAME_ROMANIAN                             :Rumeenia
-STR_GAME_OPTIONS_TOWN_NAME_CZECH                                :Tšehhi
-STR_GAME_OPTIONS_TOWN_NAME_SWISS                                :Šveitsi
-STR_GAME_OPTIONS_TOWN_NAME_DANISH                               :Taani
-STR_GAME_OPTIONS_TOWN_NAME_TURKISH                              :Türgi
-STR_GAME_OPTIONS_TOWN_NAME_ITALIAN                              :Itaalia
-STR_GAME_OPTIONS_TOWN_NAME_CATALAN                              :Katalaani
-
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Salvestusvälp
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Vali salvestamise välp
 
@@ -1087,21 +1057,8 @@ STR_GAME_OPTIONS_VIDEO_VSYNC                                    :{BLACK}VSync
 STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Märgi, et ekraani v-sync sisse lülitada. Seade kohaldub alles pärast mängu taaskäivitust. Töötab vaid, kui riistvarakiirendus on peal
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Liidese suurus
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Vali kasutatav liideseelementide suurus
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(automaattuvastus)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Tavaline
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Topeltsuurus
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Neljakordne suurus
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Kirja suurus
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Vali kasutatav liideseelementide suurus
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(automaattuvastus)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Tavaline
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Topeltsuurus
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Neljakordne suurus
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Graafika
 
@@ -1153,8 +1110,6 @@ STR_CURRENCY_PREVIEW                                            :{LTBLUE}Eelvaad
 STR_CURRENCY_CUSTOM_CURRENCY_PREVIEW_TOOLTIP                    :{BLACK}10000 naela (£) sinu valuutas
 STR_CURRENCY_CHANGE_PARAMETER                                   :{BLACK}Muuda personaalse valuuta parameetreid
 
-STR_DIFFICULTY_LEVEL_SETTING_MAXIMUM_NO_COMPETITORS             :{LTBLUE}Vastaseid kuni: {ORANGE}{COMMA}
-
 STR_NONE                                                        :Pole
 STR_FUNDING_ONLY                                                :Ainult rahastatud
 STR_MINIMAL                                                     :Vähene
@@ -1203,6 +1158,12 @@ STR_SUBSIDY_X1_5                                                :1,5x
 STR_SUBSIDY_X2                                                  :2x
 STR_SUBSIDY_X3                                                  :3x
 STR_SUBSIDY_X4                                                  :4x
+
+###length 4
+STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :Parasvöötme maastik
+STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :Lähisarktiline maastik
+STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :Troopiline maastik
+STR_CLIMATE_TOYLAND_LANDSCAPE                                   :Mänguasjamaa
 
 ###length 7
 STR_TERRAIN_TYPE_VERY_FLAT                                      :Väga tasane
@@ -1557,6 +1518,10 @@ STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Täiustatud
 
 STR_CONFIG_SETTING_ROAD_SIDE                                    :Sõidukid: {STRING}
 STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Vali liikluse suund
+
+###length 2
+STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :Vasakpoolne liiklus
+STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :Parempoolne liiklus
 
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Kõrguskaardi pööre: {STRING}
 ###length 2
@@ -2074,7 +2039,7 @@ STR_CONFIG_SETTING_REVERSE_AT_SIGNALS                           :Automaatne taga
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :Luba rongidel ümber pöörata kui nad on pikka aega foori taga oodanud
 ###length 2
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
-STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(soovitatud)
+STR_CONFIG_SETTING_PATHFINDER_YAPF                              :YAPF {BLUE}(soovitatud)
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Määra seade väärtus
 
@@ -2117,7 +2082,6 @@ STR_INTRO_HIGHSCORE                                             :{BLACK}Edetabel
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Seaded
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF-i seadistus
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Aineste allalaadimine
-STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}AI/GameScripti seaded
 STR_INTRO_QUIT                                                  :{BLACK}Välju
 
 STR_INTRO_TOOLTIP_NEW_GAME                                      :{BLACK}Alusta uut mängu. Ctrl+klõps jätab kaardi seadistamise vahele
@@ -2137,7 +2101,6 @@ STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Ava edet
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Ava seaded
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Ava NewGRF-i seadistamine
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Otsi allalaadimiseks uusi ja uuendatud aineseid
-STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Ava AI/GameScripti seaded
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Välju 'OpenTTD'st
 
 STR_INTRO_BASESET                                               :{BLACK}Hetkel valitud lähtegraafikakogust puudub {NUM} sprite{P "" 'i}. Kontrolli, kas lähtekogule on uuendusi.
@@ -2168,12 +2131,6 @@ STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}Muuda ka
 STR_CHEAT_CHANGE_DATE                                           :{LTBLUE}Muuda kuupäeva: {ORANGE} {DATE_SHORT}
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Muuda jooksvat aastaarvu
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Tootmisväärtuste muutmine: {ORANGE}{STRING}
-
-###length 4
-STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :Parasvöötme maastik
-STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :Lähisarktiline maastik
-STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :Troopiline maastik
-STR_CHEAT_SWITCH_CLIMATE_TOYLAND_LANDSCAPE                      :Mänguasjamaa
 
 # Livery window
 STR_LIVERY_CAPTION                                              :{WHITE}{COMPANY} - Värvivalik
@@ -2627,6 +2584,8 @@ STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP                            :{BLACK}{STRING}
 STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}ei kasutata
 STR_LINKGRAPH_LEGEND_SATURATED                                  :{TINY_FONT}{BLACK}küllastunud
 STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLACK}ülekoormatud
+
+# Linkgraph tooltip
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Mõjupiirkonna näitamine
@@ -3148,6 +3107,8 @@ STR_MAPGEN_MAPSIZE                                              :{BLACK}Kaardi m
 STR_MAPGEN_MAPSIZE_TOOLTIP                                      :{BLACK}Määrab kaardi mõõtmed ruutudes. Ruute, mida saab kasutada, on pisut vähem
 STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Asustuste arv:
+STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Asulanimed:
+STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Vali asulanimede stiil
 STR_MAPGEN_DATE                                                 :{BLACK}Algus:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Tööstustihedus:
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Kõrgpunkt:
@@ -3166,11 +3127,34 @@ STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Lumepiir
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Lumepiiri liigutamine ühe võrra alla
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Maatekituse meetod:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Maapinna tüüp:
-STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Merepinna tase:
+STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Merepinna tase:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Jõgesid:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Laugus:
 STR_MAPGEN_VARIETY                                              :{BLACK}Iseärasuste jaotus:
 STR_MAPGEN_GENERATE                                             :{WHITE}Tekita
+
+###length 21
+STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH                           :Inglise (algne)
+STR_MAPGEN_TOWN_NAME_FRENCH                                     :Prantsusmaa
+STR_MAPGEN_TOWN_NAME_GERMAN                                     :Saksamaa
+STR_MAPGEN_TOWN_NAME_ADDITIONAL_ENGLISH                         :Inglise (täiendatud)
+STR_MAPGEN_TOWN_NAME_LATIN_AMERICAN                             :Ladina-Ameerika
+STR_MAPGEN_TOWN_NAME_SILLY                                      :Tobedad
+STR_MAPGEN_TOWN_NAME_SWEDISH                                    :Rootsi
+STR_MAPGEN_TOWN_NAME_DUTCH                                      :Hollandi
+STR_MAPGEN_TOWN_NAME_FINNISH                                    :Soome
+STR_MAPGEN_TOWN_NAME_POLISH                                     :Poola
+STR_MAPGEN_TOWN_NAME_SLOVAK                                     :Slovakkia
+STR_MAPGEN_TOWN_NAME_NORWEGIAN                                  :Norra
+STR_MAPGEN_TOWN_NAME_HUNGARIAN                                  :Ungari
+STR_MAPGEN_TOWN_NAME_AUSTRIAN                                   :Austria
+STR_MAPGEN_TOWN_NAME_ROMANIAN                                   :Rumeenia
+STR_MAPGEN_TOWN_NAME_CZECH                                      :Tšehhi
+STR_MAPGEN_TOWN_NAME_SWISS                                      :Šveitsi
+STR_MAPGEN_TOWN_NAME_DANISH                                     :Taani
+STR_MAPGEN_TOWN_NAME_TURKISH                                    :Türgi
+STR_MAPGEN_TOWN_NAME_ITALIAN                                    :Itaalia
+STR_MAPGEN_TOWN_NAME_CATALAN                                    :Katalaani
 
 # Strings for map borders at game generation
 STR_MAPGEN_BORDER_TYPE                                          :{BLACK}Kaardi ääred:
@@ -3317,6 +3301,10 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Eelmine 
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Proceed to the previous normal sprite, skipping any pseudo/recolour/font sprites and wrapping around at the begin
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Representation of the currently selected sprite. The alignment is ignored when drawing this sprite
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Liiguta spraiti, muutes X ja Y tasakaalu. Ctrl+klõps, et liigutada kaheksa ühiku võrra korraga
+
+###length 2
+
+
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Lähtesta suhteline
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Lähtesta praegused suhtelised kõrvalekalded
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X kõrvalekalle: {NUM}, Y kõrvalekalle: {NUM} (Absoluutne)
@@ -3873,6 +3861,8 @@ STR_PURCHASE_INFO_ALL_BUT                                       :Kõik, välja a
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Suurim veojõud: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Tegevusradius: {GOLD}{COMMA} ruutu
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Õhusõiduki liik: {GOLD}{STRING}
+
+###length 3
 
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Nimekiri raudteesõidukitest - andmete saamiseks klõpsa raudteesõidukile
@@ -4528,12 +4518,12 @@ STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}Üks skr
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}AI/GameScripti debugimise akent saab kasutada ainult serveris
 
 # AI configuration window
-STR_AI_CONFIG_CAPTION                                           :{WHITE}AI/Game Script seadistus
 STR_AI_CONFIG_GAMELIST_TOOLTIP                                  :{BLACK}Järgmises mängus laaditav GameScript
 STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}AI-d järgmises mängus
 STR_AI_CONFIG_HUMAN_PLAYER                                      :Inimene
 STR_AI_CONFIG_RANDOM_AI                                         :Suvaline AI
 STR_AI_CONFIG_NONE                                              :(mitte ühtegi)
+STR_AI_CONFIG_MAX_COMPETITORS                                   :{LTBLUE}Vastaseid kuni: {ORANGE}{COMMA}
 
 STR_AI_CONFIG_MOVE_UP                                           :{BLACK}Tõsta
 STR_AI_CONFIG_MOVE_UP_TOOLTIP                                   :{BLACK}Tõsta valitud AI loendis kõrgemale
@@ -4543,8 +4533,6 @@ STR_AI_CONFIG_MOVE_DOWN_TOOLTIP                                 :{BLACK}Langeta 
 STR_AI_CONFIG_GAMESCRIPT                                        :{SILVER}GameScript
 STR_AI_CONFIG_AI                                                :{SILVER}AI-d
 
-STR_AI_CONFIG_CHANGE                                            :{BLACK}{STRING.g} valimine
-STR_AI_CONFIG_CHANGE_NONE                                       :
 STR_AI_CONFIG_CHANGE_AI                                         :AI
 STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :GameScript
 STR_AI_CONFIG_CHANGE_GAMESCRIPT.g                               :GameScripti
@@ -4576,9 +4564,7 @@ STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Kõrgusk
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Pisikaardi ekraanipilt
 
 # AI Parameters
-STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} parameetrid
 STR_AI_SETTINGS_CAPTION_AI                                      :AI
-STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :GameScript
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Sulge
 STR_AI_SETTINGS_RESET                                           :{BLACK}Nulli
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
@@ -4994,6 +4980,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Mängus 
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Hooldusvahemikku ei saa muuta...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... sõiduk hävitatud
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Ühtegi sõidukit ei ole saadaval
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Muuda NewGRF-i seadistust

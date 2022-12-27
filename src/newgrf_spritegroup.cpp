@@ -658,6 +658,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *paddi
 				if (dsg->dsg_flags & DSGF_REQUIRES_VAR1C) p += seprintf(p, lastof(this->buffer), ", REQ_1C");
 				if (dsg->dsg_flags & DSGF_CHECK_EXPENSIVE_VARS) p += seprintf(p, lastof(this->buffer), ", CHECK_EXP_VAR");
 				if (dsg->dsg_flags & DSGF_CHECK_INSERT_JUMP) p += seprintf(p, lastof(this->buffer), ", CHECK_INS_JMP");
+				if (dsg->dsg_flags & DSGF_CB_RESULT) p += seprintf(p, lastof(this->buffer), ", CB_RESULT");
 				if (dsg->dsg_flags & DSGF_CB_HANDLER) p += seprintf(p, lastof(this->buffer), ", CB_HANDLER");
 				if (dsg->dsg_flags & DSGF_INLINE_CANDIDATE) p += seprintf(p, lastof(this->buffer), ", INLINE_CANDIDATE");
 			}
@@ -742,42 +743,68 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *paddi
 			seprintf(this->buffer, lastof(this->buffer), "%sTile Layout%s [%u]", padding, extra_info, sg->nfo_line);
 			print();
 			emit_start();
-			if (tlsg->dts.registers != nullptr) {
-				const TileLayoutRegisters *registers = tlsg->dts.registers;
-				size_t count = 1; // 1 for the ground sprite
-				const DrawTileSeqStruct *element;
-				foreach_draw_tile_seq(element, tlsg->dts.seq) count++;
-				for (size_t i = 0; i < count; i ++) {
-					const TileLayoutRegisters *reg = registers + i;
-					seprintf(this->buffer, lastof(this->buffer), "%s  section: %X, register flags: %X", padding, (uint)i, reg->flags);
+
+			const TileLayoutRegisters *registers = tlsg->dts.registers;
+			auto print_reg_info = [&](char *b, uint i, bool is_parent) {
+				if (registers == nullptr) {
 					print();
-					auto log_reg = [&](TileLayoutFlags flag, const char *name, uint8 flag_reg) {
-						if (reg->flags & flag) {
-							highlight_tag = (1 << 16) | flag_reg;
-							seprintf(this->buffer, lastof(this->buffer), "%s    %s reg: %X", padding, name, flag_reg);
-							print();
-						}
-					};
-					log_reg(TLF_DODRAW, "TLF_DODRAW", reg->dodraw);
-					log_reg(TLF_SPRITE, "TLF_SPRITE", reg->sprite);
-					log_reg(TLF_PALETTE, "TLF_PALETTE", reg->palette);
-					if (element->IsParentSprite()) {
-						log_reg(TLF_BB_XY_OFFSET, "TLF_BB_XY_OFFSET x", reg->delta.parent[0]);
-						log_reg(TLF_BB_XY_OFFSET, "TLF_BB_XY_OFFSET y", reg->delta.parent[1]);
-						log_reg(TLF_BB_Z_OFFSET, "TLF_BB_Z_OFFSET", reg->delta.parent[2]);
-					} else {
-						log_reg(TLF_CHILD_X_OFFSET, "TLF_CHILD_X_OFFSET", reg->delta.child[0]);
-						log_reg(TLF_CHILD_Y_OFFSET, "TLF_CHILD_Y_OFFSET", reg->delta.child[1]);
-					}
-					if (reg->flags & TLF_SPRITE_VAR10) {
-						seprintf(this->buffer, lastof(this->buffer), "%s    TLF_SPRITE_VAR10 value: %X", padding, reg->sprite_var10);
-						print();
-					}
-					if (reg->flags & TLF_PALETTE_VAR10) {
-						seprintf(this->buffer, lastof(this->buffer), "%s    TLF_PALETTE_VAR10 value: %X", padding, reg->palette_var10);
-						print();
-					}
+					return;
 				}
+				const TileLayoutRegisters *reg = registers + i;
+				if (reg->flags == 0) {
+					print();
+					return;
+				}
+				seprintf(b, lastof(this->buffer), ", register flags: %X", reg->flags);
+				print();
+				auto log_reg = [&](TileLayoutFlags flag, const char *name, uint8 flag_reg) {
+					if (reg->flags & flag) {
+						highlight_tag = (1 << 16) | flag_reg;
+						seprintf(this->buffer, lastof(this->buffer), "%s    %s reg: %X", padding, name, flag_reg);
+						print();
+					}
+				};
+				log_reg(TLF_DODRAW, "TLF_DODRAW", reg->dodraw);
+				log_reg(TLF_SPRITE, "TLF_SPRITE", reg->sprite);
+				log_reg(TLF_PALETTE, "TLF_PALETTE", reg->palette);
+				if (is_parent) {
+					log_reg(TLF_BB_XY_OFFSET, "TLF_BB_XY_OFFSET x", reg->delta.parent[0]);
+					log_reg(TLF_BB_XY_OFFSET, "TLF_BB_XY_OFFSET y", reg->delta.parent[1]);
+					log_reg(TLF_BB_Z_OFFSET, "TLF_BB_Z_OFFSET", reg->delta.parent[2]);
+				} else {
+					log_reg(TLF_CHILD_X_OFFSET, "TLF_CHILD_X_OFFSET", reg->delta.child[0]);
+					log_reg(TLF_CHILD_Y_OFFSET, "TLF_CHILD_Y_OFFSET", reg->delta.child[1]);
+				}
+				if (reg->flags & TLF_SPRITE_VAR10) {
+					seprintf(this->buffer, lastof(this->buffer), "%s    TLF_SPRITE_VAR10 value: %X", padding, reg->sprite_var10);
+					print();
+				}
+				if (reg->flags & TLF_PALETTE_VAR10) {
+					seprintf(this->buffer, lastof(this->buffer), "%s    TLF_PALETTE_VAR10 value: %X", padding, reg->palette_var10);
+					print();
+				}
+			};
+
+			char *b = this->buffer + seprintf(this->buffer, lastof(this->buffer), "%s  ground: (%X, %X)",
+					padding, tlsg->dts.ground.sprite, tlsg->dts.ground.pal);
+			print_reg_info(b, 0, false);
+
+			uint offset = 0; // offset 0 is the ground sprite
+			const DrawTileSeqStruct *element;
+			foreach_draw_tile_seq(element, tlsg->dts.seq) {
+				offset++;
+				char *b = this->buffer;
+				if (element->IsParentSprite()) {
+					b += seprintf(this->buffer, lastof(this->buffer), "%s  section: %X, image: (%X, %X), d: (%d, %d, %d), s: (%d, %d, %d)",
+							padding, offset, element->image.sprite, element->image.pal,
+							element->delta_x, element->delta_y, element->delta_z,
+							element->size_x, element->size_y, element->size_z);
+				} else {
+					b += seprintf(this->buffer, lastof(this->buffer), "%s  section: %X, image: (%X, %X), d: (%d, %d)",
+							padding, offset, element->image.sprite, element->image.pal,
+							element->delta_x, element->delta_y);
+				}
+				print_reg_info(b, offset, element->IsParentSprite());
 			}
 			break;
 		}

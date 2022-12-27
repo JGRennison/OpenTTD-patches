@@ -160,25 +160,26 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 
 	friend struct GroundVehicle<Train, VEH_TRAIN>; // GroundVehicle needs to use the acceleration functions defined at Train.
 
-	void MarkDirty();
-	void UpdateDeltaXY();
-	ExpensesType GetExpenseType(bool income) const { return income ? EXPENSES_TRAIN_REVENUE : EXPENSES_TRAIN_RUN; }
-	void PlayLeaveStationSound() const;
-	bool IsPrimaryVehicle() const { return this->IsFrontEngine(); }
-	void GetImage(Direction direction, EngineImageType image_type, VehicleSpriteSeq *result) const;
-	int GetDisplaySpeed() const { return this->gcache.last_speed; }
-	int GetDisplayMaxSpeed() const { return this->vcache.cached_max_speed; }
-	Money GetRunningCost() const;
+	void MarkDirty() override;
+	void UpdateDeltaXY() override;
+	ExpensesType GetExpenseType(bool income) const override { return income ? EXPENSES_TRAIN_REVENUE : EXPENSES_TRAIN_RUN; }
+	void PlayLeaveStationSound(bool force = false) const override;
+	bool IsPrimaryVehicle() const override { return this->IsFrontEngine(); }
+	void GetImage(Direction direction, EngineImageType image_type, VehicleSpriteSeq *result) const override;
+	int GetDisplaySpeed() const override { return this->gcache.last_speed; }
+	int GetDisplayMaxSpeed() const override { return this->vcache.cached_max_speed; }
+	Money GetRunningCost() const override;
+	int GetCursorImageOffset() const;
 	int GetDisplayImageWidth(Point *offset = nullptr) const;
-	bool IsInDepot() const { return this->track == TRACK_BIT_DEPOT; }
-	bool Tick();
-	void OnNewDay();
-	void OnPeriodic();
-	uint Crash(bool flooded = false);
+	bool IsInDepot() const override { return this->track == TRACK_BIT_DEPOT; }
+	bool Tick() override;
+	void OnNewDay() override;
+	void OnPeriodic() override;
+	uint Crash(bool flooded = false) override;
 	Money CalculateCurrentOverallValue() const;
-	Trackdir GetVehicleTrackdir() const;
-	TileIndex GetOrderStationLocation(StationID station);
-	bool FindClosestDepot(TileIndex *location, DestinationID *destination, bool *reverse);
+	Trackdir GetVehicleTrackdir() const override;
+	TileIndex GetOrderStationLocation(StationID station) override;
+	bool FindClosestDepot(TileIndex *location, DestinationID *destination, bool *reverse) override;
 
 	void ReserveTrackUnderConsist() const;
 
@@ -211,7 +212,7 @@ public:
 		return this->GetCurrentMaxSpeedInfoInternal(true);
 	}
 
-	int GetCurrentMaxSpeed() const;
+	int GetCurrentMaxSpeed() const override;
 
 	uint8 GetZPosCacheUpdateInterval() const
 	{
@@ -285,6 +286,7 @@ public:
 	uint16 GetCargoWeight(uint cargo_amount) const
 	{
 		if (cargo_amount > 0) {
+			CargoSpec::Get(this->cargo_type)->WeightOfNUnitsInTrain(cargo_amount);
 			return (CargoSpec::Get(this->cargo_type)->weight * cargo_amount * FreightWagonMult(this->cargo_type)) / 16;
 		} else {
 			return 0;
@@ -389,6 +391,12 @@ protected: // These functions should not be called outside acceleration code.
 	{
 		return this->GetWeightWithoutCargo() + this->GetCargoWeight();
 	}
+
+	/**
+	 * Calculates the weight value that this vehicle will have when fully loaded with its current cargo.
+	 * @return Weight value in tonnes.
+	 */
+	uint16 GetMaxWeight() const override;
 
 	/**
 	 * Allows to know the tractive effort value that this vehicle will use.

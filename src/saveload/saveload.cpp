@@ -95,8 +95,12 @@ extern bool _sl_upstream_mode;
 namespace upstream_sl {
 	void SlNullPointers();
 	void SlLoadChunks();
+	void SlLoadChunkByID(uint32 id);
 	void SlLoadCheckChunks();
+	void SlLoadCheckChunkByID(uint32 id);
 	void SlFixPointers();
+	void SlFixPointerChunkByID(uint32 id);
+	void SlSaveChunkChunkByID(uint32 id);
 }
 
 /** What are we currently doing? */
@@ -280,6 +284,7 @@ static const std::vector<ChunkHandler> &ChunkHandlers()
 	extern const ChunkHandlerTable _cargomonitor_chunk_handlers;
 	extern const ChunkHandlerTable _goal_chunk_handlers;
 	extern const ChunkHandlerTable _story_page_chunk_handlers;
+	extern const ChunkHandlerTable _league_chunk_handlers;
 	extern const ChunkHandlerTable _ai_chunk_handlers;
 	extern const ChunkHandlerTable _game_chunk_handlers;
 	extern const ChunkHandlerTable _animated_tile_chunk_handlers;
@@ -322,6 +327,7 @@ static const std::vector<ChunkHandler> &ChunkHandlers()
 		_cargomonitor_chunk_handlers,
 		_goal_chunk_handlers,
 		_story_page_chunk_handlers,
+		_league_chunk_handlers,
 		_engine_chunk_handlers,
 		_town_chunk_handlers,
 		_sign_chunk_handlers,
@@ -2071,33 +2077,34 @@ std::vector<byte> SlSaveToVector(AutolengthProc *proc, void *arg)
 	return std::vector<uint8>(result.first, result.first + result.second);
 }
 
-/**
- * Run proc, loading exactly length bytes from the contents of buffer
- * @param proc The callback procedure that is called
- * @param arg The variable that will be used for the callback procedure
- */
-void SlLoadFromBuffer(const byte *buffer, size_t length, AutolengthProc *proc, void *arg)
+SlLoadFromBufferState SlLoadFromBufferSetup(const byte *buffer, size_t length)
 {
 	assert(_sl.action == SLA_LOAD || _sl.action == SLA_LOAD_CHECK);
 
-	size_t old_obj_len = _sl.obj_len;
+	SlLoadFromBufferState state;
+
+	state.old_obj_len = _sl.obj_len;
 	_sl.obj_len = length;
 
 	ReadBuffer *reader = ReadBuffer::GetCurrent();
-	byte *old_bufp = reader->bufp;
-	byte *old_bufe = reader->bufe;
+	state.old_bufp = reader->bufp;
+	state.old_bufe = reader->bufe;
 	reader->bufp = const_cast<byte *>(buffer);
 	reader->bufe = const_cast<byte *>(buffer) + length;
 
-	proc(arg);
+	return state;
+}
 
+void SlLoadFromBufferRestore(const SlLoadFromBufferState &state, const byte *buffer, size_t length)
+{
+	ReadBuffer *reader = ReadBuffer::GetCurrent();
 	if (reader->bufp != reader->bufe || reader->bufe != buffer + length) {
 		SlErrorCorrupt("SlLoadFromBuffer: Wrong number of bytes read");
 	}
 
-	_sl.obj_len = old_obj_len;
-	reader->bufp = old_bufp;
-	reader->bufe = old_bufe;
+	_sl.obj_len = state.old_obj_len;
+	reader->bufp = state.old_bufp;
+	reader->bufe = state.old_bufe;
 }
 
 /*
@@ -2131,6 +2138,10 @@ inline void SlRIFFSpringPPCheck(size_t len)
  */
 static void SlLoadChunk(const ChunkHandler &ch)
 {
+	if (ch.special_proc != nullptr) {
+		if (ch.special_proc(ch.id, CSLSO_PRE_LOAD)) return;
+	}
+
 	byte m = SlReadByte();
 	size_t len;
 	size_t endoffs;
@@ -2194,6 +2205,10 @@ static void SlLoadChunk(const ChunkHandler &ch)
  */
 static void SlLoadCheckChunk(const ChunkHandler *ch)
 {
+	if (ch && ch->special_proc != nullptr) {
+		if (ch->special_proc(ch->id, CSLSO_PRE_LOADCHECK)) return;
+	}
+
 	byte m = SlReadByte();
 	size_t len;
 	size_t endoffs;
@@ -2280,6 +2295,14 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
  */
 static void SlSaveChunk(const ChunkHandler &ch)
 {
+	if (ch.type == CH_UPSTREAM_SAVE) {
+		SaveLoadVersion old_ver = _sl_version;
+		_sl_version = MAX_LOAD_SAVEGAME_VERSION;
+		upstream_sl::SlSaveChunkChunkByID(ch.id);
+		_sl_version = old_ver;
+		return;
+	}
+
 	ChunkSaveLoadProc *proc = ch.save_proc;
 
 	/* Don't save any chunk information if there is no save handler. */
@@ -3802,4 +3825,9 @@ void FileToSaveLoad::SetTitle(const char *title)
 bool SaveLoadFileTypeIsScenario()
 {
 	return _file_to_saveload.abstract_ftype == FT_SCENARIO;
+}
+
+void SlUnreachablePlaceholder()
+{
+	NOT_REACHED();
 }

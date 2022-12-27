@@ -230,7 +230,7 @@ static const PalSpriteID _tree_layout_sprite[164 + (79 - 48 + 1)][4] = {
 
 /** Tree Sprites with their palettes */
 static const PalSpriteID _tree_sprites[] = {
-	{ 1621, PAL_NONE }, { 1587, PAL_NONE }, { 1656, PAL_NONE }, { 1579, PAL_NONE },
+	{ 1621, PAL_NONE }, { 1635, PAL_NONE }, { 1656, PAL_NONE }, { 1579, PAL_NONE },
 	{ 1607, PAL_NONE }, { 1593, PAL_NONE }, { 1614, PAL_NONE }, { 1586, PAL_NONE },
 	{ 1663, PAL_NONE }, { 1677, PAL_NONE }, { 1691, PAL_NONE }, { 1705, PAL_NONE },
 	{ 1711, PAL_NONE }, { 1746, PAL_NONE }, { 1753, PAL_NONE }, { 1732, PAL_NONE },

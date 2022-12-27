@@ -94,7 +94,7 @@ static inline int GetSlopePixelZInCorner(Slope tileh, Corner corner)
  */
 static inline Slope GetFoundationPixelSlope(TileIndex tile, int *z)
 {
-	assert(z != nullptr);
+	dbg_assert(z != nullptr);
 	Slope s = GetFoundationSlope(tile, z);
 	*z *= TILE_HEIGHT;
 	return s;

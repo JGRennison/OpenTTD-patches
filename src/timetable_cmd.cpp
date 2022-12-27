@@ -162,7 +162,7 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint32 val,
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length)
+CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	VehicleID veh = GB(p1, 0, 20);
 
@@ -461,7 +461,7 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 	if (timetable_all && !v->orders->IsCompleteTimetable()) return CMD_ERROR;
 
 	const DateTicksScaled now = _scaled_date_ticks;
-	DateTicksScaled start_date_scaled = (_settings_game.economy.day_length_factor * (((DateTicksScaled)_date * DAY_TICKS) + _date_fract + (DateTicksScaled)(int32)p2)) + sub_ticks;
+	DateTicksScaled start_date_scaled = DateToScaledDateTicks(_date * DAY_TICKS + _date_fract + (int32)p2) + sub_ticks;
 
 	if (flags & DC_EXEC) {
 		std::vector<Vehicle *> vehs;
@@ -493,8 +493,7 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			if (tt_start < now && idx < 0) {
 				tt_start += total_duration;
 			}
-			w->timetable_start = tt_start / _settings_game.economy.day_length_factor;
-			w->timetable_start_subticks = tt_start % _settings_game.economy.day_length_factor;
+			std::tie(w->timetable_start, w->timetable_start_subticks) = ScaledDateTicksToDateTicksAndSubTicks(tt_start);
 			++idx;
 		}
 
@@ -686,8 +685,8 @@ std::vector<TimetableProgress> PopulateSeparationState(const Vehicle *v_start)
 			// Do not try to separate vehicles on depot service or halt orders
 			separation_valid = false;
 		}
-		if (order->IsType(OT_RELEASE_SLOT)) {
-			// Do not try to separate vehicles on release slot orders
+		if (order->IsType(OT_RELEASE_SLOT) || order->IsType(OT_COUNTER)) {
+			// Do not try to separate vehicles on release slot or change counter orders
 			separation_valid = false;
 		}
 		int order_ticks;
@@ -863,7 +862,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		if (!set_scheduled_dispatch) just_started = !HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 
 		if (v->timetable_start != 0) {
-			v->lateness_counter = _scaled_date_ticks - ((_settings_game.economy.day_length_factor * ((DateTicksScaled) v->timetable_start)) + v->timetable_start_subticks);
+			v->lateness_counter = _scaled_date_ticks - (DateTicksToScaledDateTicks(v->timetable_start) + v->timetable_start_subticks);
 			v->timetable_start = 0;
 			v->timetable_start_subticks = 0;
 		}

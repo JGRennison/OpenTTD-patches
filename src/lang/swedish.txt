@@ -205,6 +205,7 @@ STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}hk
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}hk
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW
 
+
 STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA}{NBSP}t
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}{NBSP}t
 STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}{NBSP}kg
@@ -397,10 +398,9 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Avsluta
 
 # Settings menu
-###length 14
+###length 15
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Spelinställningar
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Inställningar
-STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :Inställningar för datorspelare / spelskript
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :Inställningar för NewGRF
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Inställningar för genomskinlighet
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Stadsnamn visas
@@ -977,36 +977,6 @@ STR_GAME_OPTIONS_CURRENCY_INR                                   :Indisk rupie (I
 STR_GAME_OPTIONS_CURRENCY_IDR                                   :Indonesisk rupie (IDR)
 STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malaysisk ringgit (MYR)
 
-###length 2
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Kör på vänster sida
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :Kör på höger sida
-
-STR_GAME_OPTIONS_TOWN_NAMES_FRAME                               :{BLACK}Stadsnamn:
-STR_GAME_OPTIONS_TOWN_NAMES_DROPDOWN_TOOLTIP                    :{BLACK}Välj typ av stadsnamn
-
-###length 21
-STR_GAME_OPTIONS_TOWN_NAME_ORIGINAL_ENGLISH                     :Engelska (Original)
-STR_GAME_OPTIONS_TOWN_NAME_FRENCH                               :Franska
-STR_GAME_OPTIONS_TOWN_NAME_GERMAN                               :Tyska
-STR_GAME_OPTIONS_TOWN_NAME_ADDITIONAL_ENGLISH                   :Engelska (Extra)
-STR_GAME_OPTIONS_TOWN_NAME_LATIN_AMERICAN                       :Latinamerikanska
-STR_GAME_OPTIONS_TOWN_NAME_SILLY                                :Löjliga
-STR_GAME_OPTIONS_TOWN_NAME_SWEDISH                              :Svenska
-STR_GAME_OPTIONS_TOWN_NAME_DUTCH                                :Hollänska
-STR_GAME_OPTIONS_TOWN_NAME_FINNISH                              :Finska
-STR_GAME_OPTIONS_TOWN_NAME_POLISH                               :Polska
-STR_GAME_OPTIONS_TOWN_NAME_SLOVAK                               :Slovakiska
-STR_GAME_OPTIONS_TOWN_NAME_NORWEGIAN                            :Norska
-STR_GAME_OPTIONS_TOWN_NAME_HUNGARIAN                            :Ungerska
-STR_GAME_OPTIONS_TOWN_NAME_AUSTRIAN                             :Österrikiska
-STR_GAME_OPTIONS_TOWN_NAME_ROMANIAN                             :Rumänska
-STR_GAME_OPTIONS_TOWN_NAME_CZECH                                :Tjeckiska
-STR_GAME_OPTIONS_TOWN_NAME_SWISS                                :Schweiziska
-STR_GAME_OPTIONS_TOWN_NAME_DANISH                               :Danska
-STR_GAME_OPTIONS_TOWN_NAME_TURKISH                              :Turkiska
-STR_GAME_OPTIONS_TOWN_NAME_ITALIAN                              :Italienska
-STR_GAME_OPTIONS_TOWN_NAME_CATALAN                              :Katalanska
-
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Spara automatiskt
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Välj intervall mellan automatiskt sparande
 
@@ -1039,21 +1009,8 @@ STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Markera 
 
 STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}Nuvarande drivrutin: {STRING}
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Gränssnittstorlek
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Välj vilken gränssnittsstorlek som ska användas
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(Upptäck automatiskt)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normal
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dubbel storlek
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Fyrdubbel storlek
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Storlek på typsnitt
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Välj vilken storlek som ska användas på gränssnittets typsnitt
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(Upptäck automatiskt)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normal
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Dubbel storlek
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Kvadrupel storlek
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Grafik
 
@@ -1105,8 +1062,6 @@ STR_CURRENCY_PREVIEW                                            :{LTBLUE}Förhan
 STR_CURRENCY_CUSTOM_CURRENCY_PREVIEW_TOOLTIP                    :{BLACK}10000 pund (£) i din valuta
 STR_CURRENCY_CHANGE_PARAMETER                                   :{BLACK}Ändra valutaparametrar
 
-STR_DIFFICULTY_LEVEL_SETTING_MAXIMUM_NO_COMPETITORS             :{LTBLUE}Max antal motståndare: {ORANGE}{COMMA}
-
 STR_NONE                                                        :Ingen
 STR_FUNDING_ONLY                                                :Endast finansiering
 STR_MINIMAL                                                     :Minimal
@@ -1155,6 +1110,12 @@ STR_SUBSIDY_X1_5                                                :x1.5
 STR_SUBSIDY_X2                                                  :x2
 STR_SUBSIDY_X3                                                  :x3
 STR_SUBSIDY_X4                                                  :x4
+
+###length 4
+STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :Tempererat landskap
+STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :Sub-arktiskt landskap
+STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :Sub-tropiskt landskap
+STR_CLIMATE_TOYLAND_LANDSCAPE                                   :Leksakslandskap
 
 ###length 7
 STR_TERRAIN_TYPE_VERY_FLAT                                      :Väldigt platt
@@ -1514,6 +1475,10 @@ STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Förbättrad
 
 STR_CONFIG_SETTING_ROAD_SIDE                                    :Vägfordon: {STRING}
 STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Välj körsida
+
+###length 2
+STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :Kör på vänster sida
+STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :Kör på höger sida
 
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Höjdkartans rotation: {STRING}
 ###length 2
@@ -2049,7 +2014,7 @@ STR_CONFIG_SETTING_REVERSE_AT_SIGNALS                           :Vänd automatis
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :Tillåt att tåg vänder vid en signal om de har väntat där länge
 ###length 2
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
-STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Rekommenderad)
+STR_CONFIG_SETTING_PATHFINDER_YAPF                              :YAPF {BLUE}(Rekommenderad)
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Ändra inställningsvärde
 
@@ -2092,7 +2057,6 @@ STR_INTRO_HIGHSCORE                                             :{BLACK}Bästa s
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Inställningar
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF-inställningar
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Kontrollera online-innehåll
-STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}AI / spelskript-inställningar
 STR_INTRO_QUIT                                                  :{BLACK}Avsluta
 
 STR_INTRO_TOOLTIP_NEW_GAME                                      :{BLACK}Starta ett nytt spel. Ctrl+klick hoppar över landskapskonfigurationen
@@ -2112,7 +2076,6 @@ STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Visar en
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Skärminställningar
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Visa inställningar för NewGRF
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Kolla efter nytt och nyuppdaterat innehåll för nedladdning
-STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Visa inställningar för datorspelare och spelskript
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Avsluta 'OpenTTD'
 
 STR_INTRO_BASESET                                               :{BLACK}Det grafikpaket som för närvarande är valt som standard saknar {NUM} sprite{P "" s}. Vänligen kontrollera om det finns en uppdatering till paketet.
@@ -2143,12 +2106,6 @@ STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}Ändra m
 STR_CHEAT_CHANGE_DATE                                           :{LTBLUE}Byt datum: {ORANGE} {DATE_SHORT}
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Ändra nuvarande år
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Aktivera modifiering av produktionsvärden: {ORANGE}{STRING}
-
-###length 4
-STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :Tempererat landskap
-STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :Sub-arktiskt landskap
-STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :Sub-tropiskt landskap
-STR_CHEAT_SWITCH_CLIMATE_TOYLAND_LANDSCAPE                      :Leksakslandskap
 
 # Livery window
 STR_LIVERY_CAPTION                                              :{WHITE}{COMPANY} - Färgschema
@@ -2628,6 +2585,8 @@ STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP                            :{BLACK}{STRING}
 STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}oanvänd
 STR_LINKGRAPH_LEGEND_SATURATED                                  :{TINY_FONT}{BLACK}mättad
 STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLACK}överbelastad
+
+# Linkgraph tooltip
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Markera upptagningsområde
@@ -3150,6 +3109,8 @@ STR_MAPGEN_MAPSIZE                                              :{BLACK}Kartstor
 STR_MAPGEN_MAPSIZE_TOOLTIP                                      :{BLACK}Ange kartans storlek i rutor. Antalet tillgängliga rutor kommer att bli något lägre
 STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Antal städer:
+STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Stadsnamn:
+STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Välj typ av stadsnamn
 STR_MAPGEN_DATE                                                 :{BLACK}Datum:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Antal industrier:
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Högsta höjdpunkt:
@@ -3168,11 +3129,34 @@ STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Höj sn�
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Sänk snögränsens höjd ett steg
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Landgenerator:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Terrängtyp:
-STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Havsnivå
+STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Havsnivå
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Flod:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Jämnhet:
 STR_MAPGEN_VARIETY                                              :{BLACK}Varierad distribution:
 STR_MAPGEN_GENERATE                                             :{WHITE}Generera
+
+###length 21
+STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH                           :Engelska (Original)
+STR_MAPGEN_TOWN_NAME_FRENCH                                     :Franska
+STR_MAPGEN_TOWN_NAME_GERMAN                                     :Tyska
+STR_MAPGEN_TOWN_NAME_ADDITIONAL_ENGLISH                         :Engelska (Extra)
+STR_MAPGEN_TOWN_NAME_LATIN_AMERICAN                             :Latinamerikanska
+STR_MAPGEN_TOWN_NAME_SILLY                                      :Löjliga
+STR_MAPGEN_TOWN_NAME_SWEDISH                                    :Svenska
+STR_MAPGEN_TOWN_NAME_DUTCH                                      :Hollänska
+STR_MAPGEN_TOWN_NAME_FINNISH                                    :Finska
+STR_MAPGEN_TOWN_NAME_POLISH                                     :Polska
+STR_MAPGEN_TOWN_NAME_SLOVAK                                     :Slovakiska
+STR_MAPGEN_TOWN_NAME_NORWEGIAN                                  :Norska
+STR_MAPGEN_TOWN_NAME_HUNGARIAN                                  :Ungerska
+STR_MAPGEN_TOWN_NAME_AUSTRIAN                                   :Österrikiska
+STR_MAPGEN_TOWN_NAME_ROMANIAN                                   :Rumänska
+STR_MAPGEN_TOWN_NAME_CZECH                                      :Tjeckiska
+STR_MAPGEN_TOWN_NAME_SWISS                                      :Schweiziska
+STR_MAPGEN_TOWN_NAME_DANISH                                     :Danska
+STR_MAPGEN_TOWN_NAME_TURKISH                                    :Turkiska
+STR_MAPGEN_TOWN_NAME_ITALIAN                                    :Italienska
+STR_MAPGEN_TOWN_NAME_CATALAN                                    :Katalanska
 
 # Strings for map borders at game generation
 STR_MAPGEN_BORDER_TYPE                                          :{BLACK}Kartgränser:
@@ -3319,6 +3303,10 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Tidigare
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Fortsätt till föregående normala spriteobjekt, ignorera eventuella pseudo/recolour/font spriteobjekt och börja om från slutet efter första spriteobjektet
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Representation av det valda objektet. Justeringen ignoreras när objektet ritas.
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Flytta runt objektet, ändrar X och Y offsets. Ctrl+klicka för att flyta runt objektet åtta steg i taget
+
+###length 2
+
+
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Återställ relativ
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Återställ den nuvarande relativa offsetten
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X offsett: {NUM}, Y offsett: {NUM} (Absolut)
@@ -3658,7 +3646,6 @@ STR_FINANCES_SECTION_OTHER                                      :{GOLD}Övrigt
 
 STR_FINANCES_NEGATIVE_INCOME                                    :-{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :+{CURRENCY_LONG}
-STR_FINANCES_NET_PROFIT                                         :{WHITE}Nettoförtjänst
 STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}Banksaldo
 STR_FINANCES_OWN_FUNDS_TITLE                                    :{WHITE}Egna medel
 STR_FINANCES_LOAN_TITLE                                         :{WHITE}Lån
@@ -3886,6 +3873,8 @@ STR_PURCHASE_INFO_ALL_BUT                                       :Allt utom {CARG
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Maximal Dragkraft: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Räckvidd: {GOLD}{COMMA} rutor
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Flygplanstyp: {GOLD}{STRING}
+
+###length 3
 
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Lista av tågvagnar. Klicka på tågvagn för information. Ctrl+klick visar eller döljer vagnstypen
@@ -4547,12 +4536,12 @@ STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}Ett av s
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}Felsökning av datorspelare / spelskript är bara tillgänglig för servern
 
 # AI configuration window
-STR_AI_CONFIG_CAPTION                                           :{WHITE}Konfiguration av datorspelare/spelskript
 STR_AI_CONFIG_GAMELIST_TOOLTIP                                  :{BLACK}Spelskriptet som kommer att läsas in i nästa spel
 STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}Datorspelare som kommer att läsas in i nästa spel
 STR_AI_CONFIG_HUMAN_PLAYER                                      :Mänsklig spelare
 STR_AI_CONFIG_RANDOM_AI                                         :Slumpa datorspelare
 STR_AI_CONFIG_NONE                                              :(inget)
+STR_AI_CONFIG_MAX_COMPETITORS                                   :{LTBLUE}Max antal motståndare: {ORANGE}{COMMA}
 
 STR_AI_CONFIG_MOVE_UP                                           :{BLACK}Flytta upp
 STR_AI_CONFIG_MOVE_UP_TOOLTIP                                   :{BLACK}Flytta upp vald datorspelare i listan
@@ -4562,8 +4551,6 @@ STR_AI_CONFIG_MOVE_DOWN_TOOLTIP                                 :{BLACK}Flytta n
 STR_AI_CONFIG_GAMESCRIPT                                        :{SILVER}Spelskript
 STR_AI_CONFIG_AI                                                :{SILVER}Datorspelare
 
-STR_AI_CONFIG_CHANGE                                            :{BLACK}Välj {STRING}
-STR_AI_CONFIG_CHANGE_NONE                                       :
 STR_AI_CONFIG_CHANGE_AI                                         :Datorspelare
 STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :Spelskript
 STR_AI_CONFIG_CHANGE_TOOLTIP                                    :{BLACK}Läs in ett annat skript
@@ -4594,9 +4581,7 @@ STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Skärmdu
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Skärmdump av miniatyrkartan
 
 # AI Parameters
-STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} parametrar
 STR_AI_SETTINGS_CAPTION_AI                                      :Datorspelarens
-STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Spelskriptets
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Stäng
 STR_AI_SETTINGS_RESET                                           :{BLACK}Återställ
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
@@ -5012,6 +4997,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}För må
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Kan inte ändra service-intervall...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... fordonet är förstört
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Inga fordon alls kommer att vara tillgängliga
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Ändra din konfiguration av NewGRF:er

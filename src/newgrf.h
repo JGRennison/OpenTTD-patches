@@ -286,8 +286,9 @@ enum NewSignalAction3ID {
 
 /** New landscape control flags. */
 enum NewLandscapeCtrlFlags {
-	NLCF_ROCKS_SET              = 0,                          ///< Custom landscape rocks sprites group set.
-	NLCF_ROCKS_RECOLOUR_ENABLED = 1,                          ///< Recolour sprites enabled for rocks
+	NLCF_ROCKS_SET                = 0,                        ///< Custom landscape rocks sprites group set.
+	NLCF_ROCKS_RECOLOUR_ENABLED   = 1,                        ///< Recolour sprites enabled for rocks
+	NLCF_ROCKS_DRAW_SNOWY_ENABLED = 2,                        ///< Enable drawing rock tiles on snow
 };
 
 /** New landscape action 3 IDs. */
@@ -440,5 +441,7 @@ struct GrfSpecFeatureRef {
 
 const char *GetFeatureString(GrfSpecFeatureRef feature);
 const char *GetFeatureString(GrfSpecFeature feature);
+
+void InitGRFGlobalVars();
 
 #endif /* NEWGRF_H */

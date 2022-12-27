@@ -61,11 +61,11 @@ WaterClass GetEffectiveWaterClass(TileIndex tile)
 {
 	if (HasTileWaterClass(tile)) return GetWaterClass(tile);
 	if (IsTileType(tile, MP_TUNNELBRIDGE)) {
-		assert_tile(GetTunnelBridgeTransportType(tile) == TRANSPORT_WATER, tile);
+		dbg_assert_tile(GetTunnelBridgeTransportType(tile) == TRANSPORT_WATER, tile);
 		return WATER_CLASS_CANAL;
 	}
 	if (IsTileType(tile, MP_RAILWAY)) {
-		assert_tile(GetRailGroundType(tile) == RAIL_GROUND_WATER, tile);
+		dbg_assert_tile(GetRailGroundType(tile) == RAIL_GROUND_WATER, tile);
 		return WATER_CLASS_SEA;
 	}
 	NOT_REACHED();
@@ -96,7 +96,7 @@ static void GetShipIcon(EngineID engine, EngineImageType image_type, VehicleSpri
 		spritenum = e->original_image_index;
 	}
 
-	assert(IsValidImageIndex<VEH_SHIP>(spritenum));
+	dbg_assert(IsValidImageIndex<VEH_SHIP>(spritenum));
 	result->Set(DIR_W + _ship_sprites[spritenum]);
 }
 
@@ -127,10 +127,10 @@ void GetShipSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, i
 	VehicleSpriteSeq seq;
 	GetShipIcon(engine, image_type, &seq);
 
-	Rect16 rect = seq.GetBounds();
+	Rect rect = ConvertRect<Rect16, Rect>(seq.GetBounds());
 
-	width  = UnScaleGUI(rect.right - rect.left + 1);
-	height = UnScaleGUI(rect.bottom - rect.top + 1);
+	width  = UnScaleGUI(rect.Width());
+	height = UnScaleGUI(rect.Height());
 	xoffs  = UnScaleGUI(rect.left);
 	yoffs  = UnScaleGUI(rect.top);
 }
@@ -148,7 +148,7 @@ void Ship::GetImage(Direction direction, EngineImageType image_type, VehicleSpri
 		spritenum = this->GetEngine()->original_image_index;
 	}
 
-	assert(IsValidImageIndex<VEH_SHIP>(spritenum));
+	dbg_assert(IsValidImageIndex<VEH_SHIP>(spritenum));
 	result->Set(_ship_sprites[spritenum] + direction);
 }
 
@@ -297,16 +297,10 @@ void Ship::MarkDirty()
 	this->UpdateCache();
 }
 
-static void PlayShipSound(const Vehicle *v)
+void Ship::PlayLeaveStationSound(bool force) const
 {
-	if (!PlayVehicleSound(v, VSE_START)) {
-		SndPlayVehicleFx(ShipVehInfo(v->engine_type)->sfx, v);
-	}
-}
-
-void Ship::PlayLeaveStationSound() const
-{
-	PlayShipSound(this);
+	if (PlayVehicleSound(this, VSE_START, force)) return;
+	SndPlayVehicleFx(ShipVehInfo(this->engine_type)->sfx, this);
 }
 
 TileIndex Ship::GetOrderStationLocation(StationID station)
@@ -460,7 +454,7 @@ static bool CheckShipLeaveDepot(Ship *v)
 	v->UpdateViewport(true, true);
 	SetWindowDirty(WC_VEHICLE_DEPOT, v->tile);
 
-	PlayShipSound(v);
+	v->PlayLeaveStationSound();
 	VehicleServiceInDepot(v);
 	InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
 	DirtyVehicleListWindowForVehicle(v);
@@ -550,7 +544,7 @@ static void ShipArrivesAt(const Vehicle *v, Station *st)
  */
 static Track ChooseShipTrack(Ship *v, TileIndex tile, DiagDirection enterdir, TrackBits tracks)
 {
-	assert(IsValidDiagDirection(enterdir));
+	dbg_assert(IsValidDiagDirection(enterdir));
 
 	bool path_found = true;
 	Track track;
@@ -807,7 +801,7 @@ static int ShipTestUpDownOnLock(const Ship *v)
 	if ((v->x_pos & 0xF) != 8 || (v->y_pos & 0xF) != 8) return 0;
 
 	DiagDirection diagdir = GetInclinedSlopeDirection(GetTileSlope(v->tile));
-	assert(IsValidDiagDirection(diagdir));
+	dbg_assert(IsValidDiagDirection(diagdir));
 
 	if (DirToDiagDir(v->direction) == diagdir) {
 		/* Move up */
@@ -848,7 +842,7 @@ static bool ShipMoveUpDownOnLock(Ship *v)
  */
 bool IsShipDestinationTile(TileIndex tile, StationID station)
 {
-	assert(IsDockingTile(tile));
+	dbg_assert(IsDockingTile(tile));
 	/* Check each tile adjacent to docking tile. */
 	for (DiagDirection d = DIAGDIR_BEGIN; d != DIAGDIR_END; d++) {
 		TileIndex t = tile + TileOffsByDiagDir(d);
@@ -977,7 +971,7 @@ static void ShipController(Ship *v)
 			if (!IsValidTile(gp.new_tile)) goto reverse_direction;
 
 			DiagDirection diagdir = DiagdirBetweenTiles(gp.old_tile, gp.new_tile);
-			assert(diagdir != INVALID_DIAGDIR);
+			dbg_assert(diagdir != INVALID_DIAGDIR);
 			tracks = GetAvailShipTracks(gp.new_tile, diagdir);
 			if (tracks == TRACK_BIT_NONE) {
 				Trackdir trackdir = INVALID_TRACKDIR;
@@ -988,7 +982,7 @@ static void ShipController(Ship *v)
 					DIR_SW, DIR_NW, DIR_W, DIR_W, DIR_N, DIR_N, INVALID_DIR, INVALID_DIR,
 				};
 				v->direction = _trackdir_to_direction[trackdir];
-				assert(v->direction != INVALID_DIR);
+				dbg_assert(v->direction != INVALID_DIR);
 				v->state = TrackdirBitsToTrackBits(TrackdirToTrackdirBits(trackdir));
 				goto direction_changed;
 			}

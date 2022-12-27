@@ -97,6 +97,7 @@ struct DifficultySettings {
 	byte   town_council_tolerance;           ///< minimum required town ratings to be allowed to demolish stuff
 	bool   money_cheat_in_multiplayer;       ///< is the money cheat permitted for non-admin multiplayer clients
 	bool   rename_towns_in_multiplayer;      ///< is renaming towns permitted for non-admin multiplayer clients
+	bool   override_town_settings_in_multiplayer; ///< is overriding town settings permitted for non-admin multiplayer clients
 };
 
 /** Settings relating to viewport/smallmap scrolling. */
@@ -121,7 +122,7 @@ struct GUISettings : public TimeSettings {
 	bool   lost_vehicle_warn;                ///< if a vehicle can't find its destination, show a warning
 	bool   restriction_wait_vehicle_warn;    ///< if a vehicle is waiting for an extended time due to a routing restriction, show a warning
 	uint8  order_review_system;              ///< perform order reviews on vehicles
-	bool   no_depot_order_warn;              ///< if a non-air vehicle doesn't have at least one depot order, show a warning
+	uint8  no_depot_order_warn;              ///< if a non-air vehicle doesn't have at least one depot order, show a warning
 	bool   vehicle_income_warn;              ///< if a vehicle isn't generating income, show a warning
 	bool   show_finances;                    ///< show finances at end of year
 	bool   sg_new_nonstop;                   ///< ttdpatch compatible nonstop handling read from pre v93 savegames
@@ -169,8 +170,6 @@ struct GUISettings : public TimeSettings {
 	uint32 show_scrolling_viewport_on_map;   ///< when a no map viewport is scrolled, its location is marked on the other map viewports
 	bool   show_bridges_on_map;              ///< bridges are rendered on a viewport in map mode
 	bool   show_tunnels_on_map;              ///< tunnels are rendered on a viewport in map mode
-	uint32 show_vehicle_route;               ///< show a vehicle's route when its orders/timetable window is focused
-	uint32 dash_level_of_route_lines;        ///< the dash level passed to GfxDrawLine() (plain if 0)
 	bool   use_owner_colour_for_tunnelbridge;///< bridges and tunnels are rendered with their owner's colour
 	bool   timetable_arrival_departure;      ///< show arrivals and departures in vehicle timetables
 	uint8  max_departures;                   ///< maximum number of departures to show per station
@@ -227,11 +226,15 @@ struct GUISettings : public TimeSettings {
 	uint8  osk_activation;                   ///< Mouse gesture to trigger the OSK.
 	byte   starting_colour;                  ///< default color scheme for the company to start a new game with
 	bool   show_newgrf_name;                 ///< Show the name of the NewGRF in the build vehicle window
+	bool   show_cargo_in_vehicle_lists;      ///< Show the cargoes the vehicles can carry in the list windows
 	bool   show_wagon_intro_year;            ///< Show the introduction year for wagons in the build vehicle window
 	bool   auto_remove_signals;              ///< automatically remove signals when in the way during rail construction
 	uint16 refresh_rate;                     ///< How often we refresh the screen (time between draw-ticks).
 	uint16 fast_forward_speed_limit;         ///< Game speed to use when fast-forward is enabled.
-	bool   show_vehicle_route_steps;         ///< when a window related to a specific vehicle is focused, show route steps
+	uint8  show_vehicle_route_mode;          ///< How to show a vehicle's route when one of its windows is focused
+	bool   show_vehicle_route;               ///< Show route lines when vehicles route overlay is being shown
+	bool   show_vehicle_route_steps;         ///< Show route step markers when vehicles route overlay is being shown
+	uint8  dash_level_of_route_lines;        ///< the dash level passed to GfxDrawLine() (plain if 0)
 	bool   show_vehicle_list_company_colour; ///< show the company colour of vehicles which have an owner different to the owner of the vehicle list
 	bool   enable_single_veh_shared_order_gui;    ///< enable showing a single vehicle in the shared order GUI window
 	bool   show_adv_load_mode_features;      ///< enable advanced loading mode features in UI
@@ -246,6 +249,7 @@ struct GUISettings : public TimeSettings {
 	uint8  station_rating_tooltip_mode;      ///< Station rating tooltip mode
 	uint8  demolish_confirm_mode;            ///< Demolition confirmation mode
 	bool   dual_pane_train_purchase_window;  ///< Dual pane train purchase window
+	bool   dual_pane_train_purchase_window_dual_buttons;  ///< Dual pane train purchase window: dual buttons
 	bool   allow_hiding_waypoint_labels;     ///< Allow hiding waypoint viewport labels
 	uint8  disable_water_animation;          ///< Disable water animation depending on zoom level
 	bool   show_order_occupancy_by_default;  ///< Show order occupancy by default in vehicle order window
@@ -266,13 +270,15 @@ struct GUISettings : public TimeSettings {
 	uint8  developer;                        ///< print non-fatal warnings in console (>= 1), copy debug output to console (== 2)
 	bool   show_date_in_logs;                ///< whether to show dates in console logs
 	bool   newgrf_developer_tools;           ///< activate NewGRF developer tools and allow modifying NewGRFs in an existing game
-	bool   ai_developer_tools;               ///< activate AI developer tools
+	bool   ai_developer_tools;               ///< activate AI/GS developer tools
 	bool   scenario_developer;               ///< activate scenario developer: allow modifying NewGRFs in an existing game
 	uint8  settings_restriction_mode;        ///< selected restriction mode in adv. settings GUI. @see RestrictionMode
 	bool   newgrf_show_old_versions;         ///< whether to show old versions in the NewGRF list
 	uint8  newgrf_default_palette;           ///< default palette to use for NewGRFs without action 14 palette information
 	bool   console_show_unlisted;            ///< whether to show unlisted console commands
 	bool   newgrf_disable_big_gui;           ///< whether to disable "big GUI" NewGRFs
+
+	bool   scale_bevels;                     ///< bevels are scaled with GUI scale.
 
 	/**
 	 * Returns true when the user has sufficient privileges to edit newgrfs on a running game
@@ -636,7 +642,6 @@ struct VehicleSettings {
 	uint8  repair_cost;                      ///< cost of repairing vehicle
 	bool   ship_collision_avoidance;         ///< ships try to avoid colliding with each other
 	bool   no_train_crash_other_company;     ///< trains cannot crash with trains from other companies
-	bool   flip_direction_all_trains;        ///< enable flipping direction in depot for all train engine types
 	bool   roadveh_articulated_overtaking;   ///< enable articulated road vehicles overtaking other vehicles
 	bool   roadveh_cant_quantum_tunnel;      ///< enable or disable vehicles quantum tunelling through over vehicles when blocked
 	bool   drive_through_train_depot;        ///< enable drive-through train depot emulation
@@ -688,6 +693,8 @@ struct EconomySettings {
 	uint   sharing_fee[4];                   ///< fees for infrastructure sharing for rail/road/water/air
 	bool   sharing_payment_in_debt;          ///< allow fee payment for companies with more loan than money (switch off to prevent MP exploits)
 	bool   allow_town_level_crossings;       ///< towns are allowed to build level crossings
+	TownTunnelMode town_build_tunnels;       ///< if/when towns are allowed to build road tunnels
+	uint8  town_max_road_slope;              ///< maximum number of consecutive sloped road tiles which towns are allowed to build
 	int8   old_town_cargo_factor;            ///< old power-of-two multiplier for town (passenger, mail) generation. May be negative.
 	int16  town_cargo_scale_factor;          ///< scaled power-of-two multiplier for town (passenger, mail) generation. May be negative.
 	int16  industry_cargo_scale_factor;      ///< scaled power-of-two multiplier for primary industry generation. May be negative.

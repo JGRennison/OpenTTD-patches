@@ -23,6 +23,7 @@ enum AnalyseCallbackOperationMode : uint8 {
 	ACOM_CB36_SPEED,
 	ACOM_INDUSTRY_TILE,
 	ACOM_CB_REFIT_CAPACITY,
+	ACOM_FIND_RANDOM_TRIGGER,
 };
 
 struct AnalyseCallbackOperationIndustryTileData;

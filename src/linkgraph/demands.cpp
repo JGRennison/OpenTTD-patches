@@ -427,10 +427,9 @@ DemandCalculator::DemandCalculator(LinkGraphJob &job) :
 	};
 	std::vector<bool> symmetric_edges(se_index(0, size));
 
-	for (NodeID node_id = 0; node_id < size; ++node_id) {
-		Node from = job[node_id];
-		for (EdgeIterator it(from.Begin()); it != from.End(); ++it) {
-			symmetric_edges[se_index(node_id, it->first)] = true;
+	for (auto &it : job.Graph().GetEdges()) {
+		if (it.first.first != it.first.second) {
+			symmetric_edges[se_index(it.first.first, it.first.second)] = true;
 		}
 	}
 	uint first_unseen = 0;

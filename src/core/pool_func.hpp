@@ -35,9 +35,9 @@ DEFINE_POOL_METHOD(inline)::Pool(const char *name) :
 		first_free(0),
 		first_unused(0),
 		items(0),
-#ifdef WITH_ASSERT
+#ifdef WITH_FULL_dbg_assertS
 		checked(0),
-#endif /* WITH_ASSERT */
+#endif /* WITH_FULL_dbg_assertS */
 		cleaning(false),
 		data(nullptr),
 		free_bitmap(nullptr),
@@ -52,8 +52,8 @@ DEFINE_POOL_METHOD(inline)::Pool(const char *name) :
  */
 DEFINE_POOL_METHOD(inline void)::ResizeFor(size_t index)
 {
-	assert(index >= this->size);
-	assert(index < Tmax_size);
+	dbg_assert(index >= this->size);
+	dbg_assert(index < Tmax_size);
 
 	size_t new_size = std::min(Tmax_size, Align(index + 1, std::max<uint>(64, Tgrowth_step)));
 
@@ -88,14 +88,14 @@ DEFINE_POOL_METHOD(inline size_t)::FindFirstFree()
 		return this->first_unused;
 	}
 
-	assert(this->first_unused == this->size);
+	dbg_assert(this->first_unused == this->size);
 
 	if (this->first_unused < Tmax_size) {
 		this->ResizeFor(this->first_unused);
 		return this->first_unused;
 	}
 
-	assert(this->first_unused == Tmax_size);
+	dbg_assert(this->first_unused == Tmax_size);
 
 	return NO_FREE_ITEM;
 }
@@ -109,14 +109,14 @@ DEFINE_POOL_METHOD(inline size_t)::FindFirstFree()
  */
 DEFINE_POOL_METHOD(inline void *)::AllocateItem(size_t size, size_t index)
 {
-	assert(this->data[index] == nullptr);
+	dbg_assert(this->data[index] == nullptr);
 
 	this->first_unused = std::max(this->first_unused, index + 1);
 	this->items++;
 
 	Titem *item;
 	if (Tcache && this->alloc_cache != nullptr) {
-		assert(sizeof(Titem) == size);
+		dbg_assert(sizeof(Titem) == size);
 		item = (Titem *)this->alloc_cache;
 		this->alloc_cache = this->alloc_cache->next;
 		if (Tzero) {
@@ -145,10 +145,10 @@ DEFINE_POOL_METHOD(void *)::GetNew(size_t size)
 {
 	size_t index = this->FindFirstFree();
 
-#ifdef WITH_ASSERT
-	assert(this->checked != 0);
+#ifdef WITH_FULL_dbg_assertS
+	dbg_assert(this->checked != 0);
 	this->checked--;
-#endif /* WITH_ASSERT */
+#endif /* WITH_FULL_dbg_assertS */
 	if (index == NO_FREE_ITEM) {
 		error("%s: no more free items", this->name);
 	}
@@ -189,8 +189,8 @@ DEFINE_POOL_METHOD(void *)::GetNew(size_t size, size_t index)
  */
 DEFINE_POOL_METHOD(void)::FreeItem(size_t index)
 {
-	assert(index < this->size);
-	assert(this->data[index] != nullptr);
+	dbg_assert(index < this->size);
+	dbg_assert(this->data[index] != nullptr);
 	if (Tcache) {
 		AllocCache *ac = (AllocCache *)this->data[index];
 		ac->next = this->alloc_cache;
@@ -213,7 +213,7 @@ DEFINE_POOL_METHOD(void)::CleanPool()
 	for (size_t i = 0; i < this->first_unused; i++) {
 		delete this->Get(i); // 'delete nullptr;' is very valid
 	}
-	assert(this->items == 0);
+	dbg_assert(this->items == 0);
 	free(this->data);
 	free(this->free_bitmap);
 	this->first_unused = this->first_free = this->size = 0;

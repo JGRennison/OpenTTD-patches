@@ -47,6 +47,7 @@ enum OrderType : byte {
 	OT_WAITING       = 9,
 	OT_LOADING_ADVANCE = 10,
 	OT_RELEASE_SLOT  = 11,
+	OT_COUNTER       = 12,
 	OT_END
 };
 
@@ -198,9 +199,12 @@ enum ModifyOrderFlags {
 	MOF_CARGO_TYPE_LOAD,   ///< Passes an OrderLoadType and a CargoID.
 	MOF_SLOT,            ///< Change the slot value
 	MOF_RV_TRAVEL_DIR,   ///< Change the road vehicle travel direction.
+	MOF_COUNTER_ID,      ///< Change the counter ID
+	MOF_COUNTER_OP,      ///< Change the counter operation
+	MOF_COUNTER_VALUE,   ///< Change the counter value
 	MOF_END
 };
-template <> struct EnumPropsT<ModifyOrderFlags> : MakeEnumPropsT<ModifyOrderFlags, byte, MOF_NON_STOP, MOF_END, MOF_END, 4> {};
+template <> struct EnumPropsT<ModifyOrderFlags> : MakeEnumPropsT<ModifyOrderFlags, byte, MOF_NON_STOP, MOF_END, MOF_END, 8> {};
 
 /**
  * Depot action to switch to when doing a #MOF_DEPOT_ACTION.

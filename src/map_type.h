@@ -60,12 +60,12 @@ struct TileIndexDiffC {
 };
 
 /** Minimal and maximal map width and height */
-static const uint MIN_MAP_SIZE_BITS = 6;                      ///< Minimal size of map is equal to 2 ^ MIN_MAP_SIZE_BITS
-static const uint MAX_MAP_SIZE_BITS = 20;                     ///< Maximal size of map is equal to 2 ^ MAX_MAP_SIZE_BITS
-static const uint MAX_MAP_TILES_BITS = 28;                    ///< Maximal number of tiles in a map is equal to 2 ^ MAX_MAP_TILES_BITS.
-static const uint MIN_MAP_SIZE      = 1 << MIN_MAP_SIZE_BITS; ///< Minimal map size = 64
-static const uint MAX_MAP_SIZE      = 1 << MAX_MAP_SIZE_BITS; ///< Maximal map size = 1M
-static const uint MAX_MAP_TILES     = 1 << MAX_MAP_TILES_BITS;///< Maximal number of tiles in a map = 256M (16k x 16k)
+static const uint MIN_MAP_SIZE_BITS  = 6;                        ///< Minimal size of map is equal to 2 ^ MIN_MAP_SIZE_BITS
+static const uint MAX_MAP_SIZE_BITS  = 20;                       ///< Maximal size of map is equal to 2 ^ MAX_MAP_SIZE_BITS
+static const uint MAX_MAP_TILES_BITS = 28;                       ///< Maximal number of tiles in a map is equal to 2 ^ MAX_MAP_TILES_BITS.
+static const uint MIN_MAP_SIZE       = 1U << MIN_MAP_SIZE_BITS;  ///< Minimal map size = 64
+static const uint MAX_MAP_SIZE       = 1U << MAX_MAP_SIZE_BITS;  ///< Maximal map size = 1M
+static const uint MAX_MAP_TILES      = 1U << MAX_MAP_TILES_BITS; ///< Maximal number of tiles in a map = 256M (16k x 16k)
 
 /**
  * Approximation of the length of a straight track, relative to a diagonal

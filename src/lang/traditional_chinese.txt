@@ -204,6 +204,7 @@ STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}�
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}匹
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}千瓦
 
+
 STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA}{NBSP}短噸
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}{NBSP}噸
 STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}{NBSP}公斤
@@ -396,10 +397,9 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :離開
 
 # Settings menu
-###length 14
+###length 15
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :遊戲選項
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :設定
-STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :AI / 遊戲腳本設定
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF 設定
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :透明度選項
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :顯示市鎮名稱
@@ -976,36 +976,6 @@ STR_GAME_OPTIONS_CURRENCY_INR                                   :印度盧比(IN
 STR_GAME_OPTIONS_CURRENCY_IDR                                   :印尼盾 (IDR)
 STR_GAME_OPTIONS_CURRENCY_MYR                                   :馬來西亞令吉 (MYR)
 
-###length 2
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :靠左行駛
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :靠右行駛
-
-STR_GAME_OPTIONS_TOWN_NAMES_FRAME                               :{BLACK}市鎮名稱:
-STR_GAME_OPTIONS_TOWN_NAMES_DROPDOWN_TOOLTIP                    :{BLACK}選擇市鎮命名風格
-
-###length 21
-STR_GAME_OPTIONS_TOWN_NAME_ORIGINAL_ENGLISH                     :英國 (原版)
-STR_GAME_OPTIONS_TOWN_NAME_FRENCH                               :法國
-STR_GAME_OPTIONS_TOWN_NAME_GERMAN                               :德國
-STR_GAME_OPTIONS_TOWN_NAME_ADDITIONAL_ENGLISH                   :英國 (增訂版)
-STR_GAME_OPTIONS_TOWN_NAME_LATIN_AMERICAN                       :拉丁美洲
-STR_GAME_OPTIONS_TOWN_NAME_SILLY                                :荒唐名稱
-STR_GAME_OPTIONS_TOWN_NAME_SWEDISH                              :瑞典
-STR_GAME_OPTIONS_TOWN_NAME_DUTCH                                :荷蘭
-STR_GAME_OPTIONS_TOWN_NAME_FINNISH                              :芬蘭
-STR_GAME_OPTIONS_TOWN_NAME_POLISH                               :波蘭
-STR_GAME_OPTIONS_TOWN_NAME_SLOVAK                               :斯洛伐克
-STR_GAME_OPTIONS_TOWN_NAME_NORWEGIAN                            :挪威
-STR_GAME_OPTIONS_TOWN_NAME_HUNGARIAN                            :匈牙利
-STR_GAME_OPTIONS_TOWN_NAME_AUSTRIAN                             :奧地利
-STR_GAME_OPTIONS_TOWN_NAME_ROMANIAN                             :羅馬尼亞
-STR_GAME_OPTIONS_TOWN_NAME_CZECH                                :捷克
-STR_GAME_OPTIONS_TOWN_NAME_SWISS                                :瑞士
-STR_GAME_OPTIONS_TOWN_NAME_DANISH                               :丹麥
-STR_GAME_OPTIONS_TOWN_NAME_TURKISH                              :土耳其
-STR_GAME_OPTIONS_TOWN_NAME_ITALIAN                              :義大利
-STR_GAME_OPTIONS_TOWN_NAME_CATALAN                              :加泰隆尼亞
-
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}自動存檔
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}選擇自動存檔頻率
 
@@ -1038,21 +1008,8 @@ STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}勾選�
 
 STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}使用中的驅動程式: {STRING}
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}介面大小
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}選擇使用的介面元素大小
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(自動偵測)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :正常大小
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :兩倍大小
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :四倍大小
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}字體大小
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}選擇此字體大小
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(自動偵測)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :正常
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :兩倍大小
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :四倍大小
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}圖形
 
@@ -1104,8 +1061,6 @@ STR_CURRENCY_PREVIEW                                            :{LTBLUE}預覽�
 STR_CURRENCY_CUSTOM_CURRENCY_PREVIEW_TOOLTIP                    :{BLACK}將10000 Pound (£)換算成你的幣值
 STR_CURRENCY_CHANGE_PARAMETER                                   :{BLACK}修改自訂幣值參數
 
-STR_DIFFICULTY_LEVEL_SETTING_MAXIMUM_NO_COMPETITORS             :{LTBLUE}競爭對手數目上限：{ORANGE}{COMMA}
-
 STR_NONE                                                        :無
 STR_FUNDING_ONLY                                                :只挹注資金
 STR_MINIMAL                                                     :最小
@@ -1154,6 +1109,12 @@ STR_SUBSIDY_X1_5                                                :x1.5
 STR_SUBSIDY_X2                                                  :x2
 STR_SUBSIDY_X3                                                  :x3
 STR_SUBSIDY_X4                                                  :x4
+
+###length 4
+STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :溫帶
+STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :寒帶
+STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :亞熱帶
+STR_CLIMATE_TOYLAND_LANDSCAPE                                   :玩具世界
 
 ###length 7
 STR_TERRAIN_TYPE_VERY_FLAT                                      :非常平坦
@@ -1513,6 +1474,10 @@ STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :改進版
 
 STR_CONFIG_SETTING_ROAD_SIDE                                    :公路車輛：{STRING}
 STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :選擇行車方向。
+
+###length 2
+STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :靠左行駛
+STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :靠右行駛
 
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :旋轉高度圖：{STRING}
 ###length 2
@@ -2048,7 +2013,7 @@ STR_CONFIG_SETTING_REVERSE_AT_SIGNALS                           :在號誌自動
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :設定是否容許列車在號誌前等候超過一段時間後調頭。
 ###length 2
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
-STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(建議)
+STR_CONFIG_SETTING_PATHFINDER_YAPF                              :YAPF {BLUE}(建議)
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}修改設定值
 
@@ -2091,7 +2056,6 @@ STR_INTRO_HIGHSCORE                                             :{BLACK}積分�
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}設定
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF 設定
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}檢查線上內容
-STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}AI / 遊戲腳本設定
 STR_INTRO_QUIT                                                  :{BLACK}離開
 
 STR_INTRO_TOOLTIP_NEW_GAME                                      :{BLACK}開始新遊戲。按住 Ctrl 點選可跳過地圖設定畫面
@@ -2111,7 +2075,6 @@ STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}顯示�
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}顯示設定
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}顯示 NewGRF 設定
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}檢查有無最新或可更新的內容可下載
-STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}顯示AI和遊戲腳本設定
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}離開「OpenTTD」
 
 STR_INTRO_BASESET                                               :{BLACK}目前圖形設定缺少 {NUM}個貼圖。 請確認基礎貼圖組是否有更新。
@@ -2142,12 +2105,6 @@ STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}修改�
 STR_CHEAT_CHANGE_DATE                                           :{LTBLUE}修改日期：{ORANGE} {DATE_SHORT}
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}變更目前年份
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}允許修改產量：{ORANGE}{STRING}
-
-###length 4
-STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :溫帶
-STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :寒帶
-STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :亞熱帶
-STR_CHEAT_SWITCH_CLIMATE_TOYLAND_LANDSCAPE                      :玩具世界
 
 # Livery window
 STR_LIVERY_CAPTION                                              :{WHITE}{COMPANY} 的配色
@@ -2627,6 +2584,8 @@ STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP                            :{BLACK}{STRING}
 STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}未使用
 STR_LINKGRAPH_LEGEND_SATURATED                                  :{TINY_FONT}{BLACK}飽和
 STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLACK}超載
+
+# Linkgraph tooltip
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}顯示運輸涵蓋範圍
@@ -3149,6 +3108,8 @@ STR_MAPGEN_MAPSIZE                                              :{BLACK}地圖�
 STR_MAPGEN_MAPSIZE_TOOLTIP                                      :{BLACK}選擇地圖大小（單位為方格）。實際可供使用的方格數量會比所設定的值略低
 STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}市鎮數量：
+STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}市鎮名稱:
+STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}選擇市鎮命名風格
 STR_MAPGEN_DATE                                                 :{BLACK}日期：
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}工業數量：
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}最高峰：
@@ -3167,11 +3128,34 @@ STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}將雪�
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}將雪線高度下移一層
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}地形產生器：
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}地形種類：
-STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}海平面：
+STR_MAPGEN_SEA_LEVEL                                            :{BLACK}海平面：
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}河流:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}平滑度：
 STR_MAPGEN_VARIETY                                              :{BLACK}地形起伏分佈：
 STR_MAPGEN_GENERATE                                             :{WHITE}產生
+
+###length 21
+STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH                           :英國 (原版)
+STR_MAPGEN_TOWN_NAME_FRENCH                                     :法國
+STR_MAPGEN_TOWN_NAME_GERMAN                                     :德國
+STR_MAPGEN_TOWN_NAME_ADDITIONAL_ENGLISH                         :英國 (增訂版)
+STR_MAPGEN_TOWN_NAME_LATIN_AMERICAN                             :拉丁美洲
+STR_MAPGEN_TOWN_NAME_SILLY                                      :荒唐名稱
+STR_MAPGEN_TOWN_NAME_SWEDISH                                    :瑞典
+STR_MAPGEN_TOWN_NAME_DUTCH                                      :荷蘭
+STR_MAPGEN_TOWN_NAME_FINNISH                                    :芬蘭
+STR_MAPGEN_TOWN_NAME_POLISH                                     :波蘭
+STR_MAPGEN_TOWN_NAME_SLOVAK                                     :斯洛伐克
+STR_MAPGEN_TOWN_NAME_NORWEGIAN                                  :挪威
+STR_MAPGEN_TOWN_NAME_HUNGARIAN                                  :匈牙利
+STR_MAPGEN_TOWN_NAME_AUSTRIAN                                   :奧地利
+STR_MAPGEN_TOWN_NAME_ROMANIAN                                   :羅馬尼亞
+STR_MAPGEN_TOWN_NAME_CZECH                                      :捷克
+STR_MAPGEN_TOWN_NAME_SWISS                                      :瑞士
+STR_MAPGEN_TOWN_NAME_DANISH                                     :丹麥
+STR_MAPGEN_TOWN_NAME_TURKISH                                    :土耳其
+STR_MAPGEN_TOWN_NAME_ITALIAN                                    :義大利
+STR_MAPGEN_TOWN_NAME_CATALAN                                    :加泰隆尼亞
 
 # Strings for map borders at game generation
 STR_MAPGEN_BORDER_TYPE                                          :{BLACK}地圖邊緣：
@@ -3318,6 +3302,10 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}上一�
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}繼續處理上一個正常的子畫面，略過任何虛位／重新著色／文字字型相關的子畫面，並在到達第一個子畫面後，返回最後的子畫面繼續進行處理。
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}顯示目前選取的 sprite。當 sprite 正在描繪時會忽略其定位
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}移動 sprite 到指定的 X 及 Y 座標位移。Ctrl+點擊可以一次移動8個單元格。
+
+###length 2
+
+
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}重設相對值
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}重設目前的相對位移值
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X 位移：{NUM}，Y 位移：{NUM}（絕對值）
@@ -3657,7 +3645,6 @@ STR_FINANCES_SECTION_OTHER                                      :{GOLD}其他
 
 STR_FINANCES_NEGATIVE_INCOME                                    :-{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :+{CURRENCY_LONG}
-STR_FINANCES_NET_PROFIT                                         :{WHITE}淨收益
 STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}銀行餘額
 STR_FINANCES_OWN_FUNDS_TITLE                                    :{WHITE}自有資金
 STR_FINANCES_LOAN_TITLE                                         :{WHITE}貸款
@@ -3885,6 +3872,8 @@ STR_PURCHASE_INFO_ALL_BUT                                       :所有貨物（
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}最大牽引力：{GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}範圍：{GOLD}{COMMA} 方格
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}飛機類型：{GOLD}{STRING}
+
+###length 3
 
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}列車選單。點選機車或車卡檢視詳細資訊，或者按住 Ctrl 鍵再點選機車或車卡以切換是否顯示機車或車卡的種類
@@ -4546,12 +4535,12 @@ STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}正在�
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}AI/只可於伺服器打開遊戲腳本除錯視窗
 
 # AI configuration window
-STR_AI_CONFIG_CAPTION                                           :{WHITE}AI /遊戲腳本的組態
 STR_AI_CONFIG_GAMELIST_TOOLTIP                                  :{BLACK}將於下一次遊戲中載入的腳本
 STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}下局開始時將啟用AI
 STR_AI_CONFIG_HUMAN_PLAYER                                      :人類玩家
 STR_AI_CONFIG_RANDOM_AI                                         :隨機 AI
 STR_AI_CONFIG_NONE                                              :(無)
+STR_AI_CONFIG_MAX_COMPETITORS                                   :{LTBLUE}競爭對手數目上限：{ORANGE}{COMMA}
 
 STR_AI_CONFIG_MOVE_UP                                           :{BLACK}向上移
 STR_AI_CONFIG_MOVE_UP_TOOLTIP                                   :{BLACK}向上移動所選的 AI
@@ -4561,8 +4550,6 @@ STR_AI_CONFIG_MOVE_DOWN_TOOLTIP                                 :{BLACK}向下�
 STR_AI_CONFIG_GAMESCRIPT                                        :{SILVER}遊戲腳本
 STR_AI_CONFIG_AI                                                :{SILVER}AI
 
-STR_AI_CONFIG_CHANGE                                            :{BLACK}選擇 {STRING}
-STR_AI_CONFIG_CHANGE_NONE                                       :
 STR_AI_CONFIG_CHANGE_AI                                         :AI
 STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :遊戲腳本
 STR_AI_CONFIG_CHANGE_TOOLTIP                                    :{BLACK}載入另一腳本
@@ -4593,9 +4580,7 @@ STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}高度�
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}小地圖截圖
 
 # AI Parameters
-STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} 參數
 STR_AI_SETTINGS_CAPTION_AI                                      :AI
-STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :遊戲腳本
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}關閉
 STR_AI_SETTINGS_RESET                                           :{BLACK}重設
 STR_AI_SETTINGS_SETTING                                         :{STRING}：{ORANGE}{STRING}
@@ -5011,6 +4996,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}遊戲�
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}不能更改檢修週期...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... 車輛已被摧毀
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}沒有可用的車輛
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}請修改您的 NewGRF 設定

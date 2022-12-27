@@ -82,20 +82,19 @@ public:
 	DynUniformArenaAllocator path_allocator; ///< Arena allocator used for paths
 
 	/**
-	 * A job edge. Wraps a link graph edge and an edge annotation. The
-	 * annotation can be modified, the edge is constant.
+	 * An annotation-only job edge. Wraps an edge annotation. The
+	 * annotation can be modified.
 	 */
-	class Edge : public LinkGraph::ConstEdge {
+	class AnnoEdge {
 	private:
 		EdgeAnnotation &anno; ///< Annotation being wrapped.
 	public:
 		/**
 		 * Constructor.
-		 * @param edge Link graph edge to be wrapped.
 		 * @param anno Annotation to be wrapped.
 		 */
-		Edge(const LinkGraph::BaseEdge &edge, EdgeAnnotation &anno) :
-				LinkGraph::ConstEdge(edge), anno(anno) {}
+		AnnoEdge(EdgeAnnotation &anno) :
+				anno(anno) {}
 
 		/**
 		 * Get the transport demand between end the points of the edge.
@@ -153,39 +152,18 @@ public:
 	};
 
 	/**
-	 * Iterator for job edges.
+	 * A job edge. Wraps a link graph edge and an edge annotation. The
+	 * annotation can be modified, the edge is constant.
 	 */
-	class EdgeIterator : public LinkGraph::BaseEdgeIterator<const LinkGraph::BaseEdge, Edge, EdgeIterator> {
-		EdgeAnnotation *base_anno; ///< Array of annotations to be (indirectly) iterated.
+	class Edge : public LinkGraph::ConstEdge, public AnnoEdge {
 	public:
 		/**
 		 * Constructor.
-		 * @param base Array of edges to be iterated.
-		 * @param base_anno Array of annotations to be iterated.
-		 * @param current Start offset of iteration.
+		 * @param edge Link graph edge to be wrapped.
+		 * @param anno Annotation to be wrapped.
 		 */
-		EdgeIterator(const LinkGraph::BaseEdge *base, EdgeAnnotation *base_anno, NodeID current) :
-				LinkGraph::BaseEdgeIterator<const LinkGraph::BaseEdge, Edge, EdgeIterator>(base, current),
-				base_anno(base_anno) {}
-
-		/**
-		 * Dereference.
-		 * @return Pair of the edge currently pointed to and the ID of its
-		 *         other end.
-		 */
-		std::pair<NodeID, Edge> operator*() const
-		{
-			return std::pair<NodeID, Edge>(this->current, Edge(this->base[this->current], this->base_anno[this->current]));
-		}
-
-		/**
-		 * Dereference. Has to be repeated here as operator* is different than
-		 * in LinkGraph::EdgeWrapper.
-		 * @return Fake pointer to pair of NodeID/Edge.
-		 */
-		FakePointer operator->() const {
-			return FakePointer(this->operator*());
-		}
+		Edge(const LinkGraph::BaseEdge &edge, EdgeAnnotation &anno) :
+				LinkGraph::ConstEdge(edge), AnnoEdge(anno) {}
 	};
 
 	/**
@@ -214,21 +192,11 @@ public:
 		 * @param to Remote end of the edge.
 		 * @return Edge between this node and "to".
 		 */
-		Edge operator[](NodeID to) const { return Edge(this->edges[to], this->edge_annos[to]); }
+		AnnoEdge operator[](NodeID to) const { return AnnoEdge(this->edge_annos[to]); }
 
-		/**
-		 * Iterator for the "begin" of the edge array. Only edges with capacity
-		 * are iterated. The others are skipped.
-		 * @return Iterator pointing to the first edge.
-		 */
-		EdgeIterator Begin() const { return EdgeIterator(this->edges, this->edge_annos, index); }
+		Edge MakeEdge(const LinkGraph::BaseEdge &base_edge, NodeID to) const { return Edge(base_edge, this->edge_annos[to]); }
 
-		/**
-		 * Iterator for the "end" of the edge array. Only edges with capacity
-		 * are iterated. The others are skipped.
-		 * @return Iterator pointing beyond the last edge.
-		 */
-		EdgeIterator End() const { return EdgeIterator(this->edges, this->edge_annos, INVALID_NODE); }
+		Edge MakeEdge(const LinkGraphJob &lgj, NodeID to) const { return this->MakeEdge(lgj.GetBaseEdge(this->GetNodeID(), to), to); }
 
 		/**
 		 * Get amount of supply that hasn't been delivered, yet.
@@ -390,6 +358,26 @@ public:
 	 * @return Link graph.
 	 */
 	inline const LinkGraph &Graph() const { return this->link_graph; }
+
+	const LinkGraph::BaseEdge &GetBaseEdge(NodeID from, NodeID to) const
+	{
+		return this->link_graph.GetBaseEdge(from, to);
+	}
+
+	template <typename F>
+	void IterateEdgesFromNode(const Node &from_node, F proc)
+	{
+		auto iter = this->link_graph.GetEdges().lower_bound(std::make_pair(from_node.GetNodeID(), (NodeID)0));
+		while (iter != this->link_graph.GetEdges().end()) {
+			NodeID from = iter->first.first;
+			NodeID to = iter->first.second;
+			if (from != from_node.GetNodeID()) return;
+			if (from != to) {
+				proc(from, to, from_node.MakeEdge(iter->second, to));
+			}
+			++iter;
+		}
+	}
 };
 
 /**

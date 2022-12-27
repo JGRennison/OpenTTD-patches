@@ -2087,7 +2087,7 @@ static CommandCost FindJoiningRoadStop(StationID existing_stop, StationID statio
  * @param text Unused.
  * @return The cost of this operation or an error.
  */
-CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length)
+CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	bool type = HasBit(p2, 0);
 	bool is_drive_through = HasBit(p2, 1);
@@ -2235,7 +2235,6 @@ CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 			} else {
 				if (road_rt == INVALID_ROADTYPE && RoadTypeIsRoad(rt)) road_rt = rt;
 				if (tram_rt == INVALID_ROADTYPE && RoadTypeIsTram(rt)) tram_rt = rt;
-				/* Non-drive-through stop never overbuild and always count as two road bits. */
 				MakeRoadStop(cur_tile, st->owner, st->index, rs_type, road_rt, tram_rt, ddir);
 			}
 			UpdateCompanyRoadInfrastructure(road_rt, road_owner, ROAD_STOP_TRACKBIT_FACTOR);
@@ -2784,6 +2783,8 @@ CommandCost CmdBuildAirport(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 		if (action == AIRPORT_UPGRADE) {
 			/* delete old airport if upgrading */
 
+			ZoningMarkDirtyStationCoverageArea(st);
+
 			for (uint i = 0; i < st->airport.GetNumHangars(); ++i) {
 				DeleteWindowById(
 					WC_VEHICLE_DEPOT, st->airport.GetHangarTile(i)
@@ -3019,7 +3020,7 @@ CommandCost CmdBuildDock(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 	if (ret.Failed()) return ret;
 	cost.AddCost(ret);
 
-	if (!IsTileType(flat_tile, MP_WATER) || !IsTileFlat(flat_tile)) {
+	if (!HasTileWaterGround(flat_tile) || !IsTileFlat(flat_tile)) {
 		return_cmd_error(STR_ERROR_SITE_UNSUITABLE);
 	}
 
@@ -3028,8 +3029,10 @@ CommandCost CmdBuildDock(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 	/* Get the water class of the water tile before it is cleared.*/
 	WaterClass wc = GetWaterClass(flat_tile);
 
+	bool add_cost = !IsWaterTile(flat_tile);
 	ret = DoCommand(flat_tile, 0, 0, flags | DC_ALLOW_REMOVE_WATER, CMD_LANDSCAPE_CLEAR);
 	if (ret.Failed()) return ret;
+	if (add_cost) cost.AddCost(ret);
 
 	TileIndex adjacent_tile = flat_tile + TileOffsByDiagDir(direction);
 	if (!IsTileType(adjacent_tile, MP_WATER) || !IsTileFlat(adjacent_tile)) {
@@ -3442,7 +3445,7 @@ static void DrawTile_Station(TileInfo *ti, DrawTileProcParams params)
 				EndSpriteCombine();
 			}
 
-			OffsetGroundSprite(31, 1);
+			OffsetGroundSprite(0, -8);
 			ti->z += ApplyPixelFoundationToSlope(FOUNDATION_LEVELED, &ti->tileh);
 		} else {
 draw_default_foundation:
@@ -4404,12 +4407,14 @@ void DeleteStaleLinks(Station *from)
 		GoodsEntry &ge = from->goods[c];
 		LinkGraph *lg = LinkGraph::GetIfValid(ge.link_graph);
 		if (lg == nullptr) continue;
-		Node node = (*lg)[ge.node];
-		for (EdgeIterator it(node.Begin()); it != node.End();) {
-			Edge edge = it->second;
-			Station *to = Station::Get((*lg)[it->first].Station());
-			assert(to->goods[c].node == it->first);
-			++it; // Do that before removing the edge. Anything else may crash.
+		lg->MutableIterateEdgesFromNode(ge.node, [&](LinkGraph::EdgeIterationHelper edge_helper) -> LinkGraph::EdgeIterationResult {
+			Edge edge = edge_helper.GetEdge();
+			NodeID to_id = edge_helper.to_id;
+
+			LinkGraph::EdgeIterationResult result = LinkGraph::EdgeIterationResult::None;
+
+			Station *to = Station::Get((*lg)[to_id].Station());
+			assert(to->goods[c].node == to_id);
 			assert(_date >= edge.LastUpdate());
 			uint timeout = std::max<uint>((LinkGraph::MIN_TIMEOUT_DISTANCE + (DistanceManhattan(from->xy, to->xy) >> 3)) / _settings_game.economy.day_length_factor, 1);
 			if (edge.LastAircraftUpdate() != INVALID_DATE && (uint)(_date - edge.LastAircraftUpdate()) > timeout) {
@@ -4449,7 +4454,11 @@ void DeleteStaleLinks(Station *from)
 							/* Do not refresh links of vehicles that have been stopped in depot for a long time. */
 							if (!v->IsStoppedInDepot() || static_cast<uint>(_date - v->date_of_last_service) <=
 									LinkGraph::STALE_LINK_DEPOT_TIMEOUT) {
+								edge_helper.RecordSize();
 								LinkRefresher::Run(v, false); // Don't allow merging. Otherwise lg might get deleted.
+								if (edge_helper.RefreshIterationIfSizeChanged()) {
+									edge = edge_helper.GetEdge();
+								}
 							}
 						}
 						if (edge.LastUpdate() == _date) {
@@ -4471,7 +4480,7 @@ void DeleteStaleLinks(Station *from)
 
 				if (!updated) {
 					/* If it's still considered dead remove it. */
-					node.RemoveEdge(to->goods[c].node);
+					result = LinkGraph::EdgeIterationResult::EraseEdge;
 					ge.flows.DeleteFlows(to->index);
 					RerouteCargo(from, c, to->index, from->index);
 				}
@@ -4482,7 +4491,9 @@ void DeleteStaleLinks(Station *from)
 			} else if (edge.LastRestrictedUpdate() != INVALID_DATE && (uint)(_date - edge.LastRestrictedUpdate()) > timeout) {
 				edge.Release();
 			}
-		}
+
+			return result;
+		});
 		assert(_date >= lg->LastCompression());
 		if ((uint)(_date - lg->LastCompression()) > std::max<uint>(LinkGraph::COMPRESSION_INTERVAL / _settings_game.economy.day_length_factor, 1)) {
 			lg->Compress();
@@ -4499,7 +4510,7 @@ void DeleteStaleLinks(Station *from)
  * @param usage Usage to add to link stat.
  * @param mode Update mode to be applied.
  */
-void IncreaseStats(Station *st, CargoID cargo, StationID next_station_id, uint capacity, uint usage, EdgeUpdateMode mode)
+void IncreaseStats(Station *st, CargoID cargo, StationID next_station_id, uint capacity, uint usage, uint32 time, EdgeUpdateMode mode)
 {
 	GoodsEntry &ge1 = st->goods[cargo];
 	Station *st2 = Station::Get(next_station_id);
@@ -4541,7 +4552,7 @@ void IncreaseStats(Station *st, CargoID cargo, StationID next_station_id, uint c
 		}
 	}
 	if (lg != nullptr) {
-		(*lg)[ge1.node].UpdateEdge(ge2.node, capacity, usage, mode);
+		lg->UpdateEdge(ge1.node, ge2.node, capacity, usage, time, mode);
 	}
 }
 

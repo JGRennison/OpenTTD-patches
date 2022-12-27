@@ -42,7 +42,7 @@ struct Ship FINAL : public SpecializedVehicle<Ship, VEH_SHIP> {
 	void MarkDirty();
 	void UpdateDeltaXY();
 	ExpensesType GetExpenseType(bool income) const { return income ? EXPENSES_SHIP_REVENUE : EXPENSES_SHIP_RUN; }
-	void PlayLeaveStationSound() const;
+	void PlayLeaveStationSound(bool force = false) const;
 	bool IsPrimaryVehicle() const { return true; }
 	void GetImage(Direction direction, EngineImageType image_type, VehicleSpriteSeq *result) const;
 	Direction GetMapImageDirection() const { return this->rotation; }

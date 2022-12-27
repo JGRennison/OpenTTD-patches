@@ -95,6 +95,13 @@ enum HouseExtraFlags {
 
 DECLARE_ENUM_AS_BIT_SET(HouseExtraFlags)
 
+enum HouseCtrlFlags {
+	HCF_NONE                 =       0,
+	HCF_NO_TRIGGERS          = 1U << 0,  ///< this house does not use random triggers
+};
+
+DECLARE_ENUM_AS_BIT_SET(HouseCtrlFlags)
+
 struct HouseSpec {
 	/* Standard properties */
 	Year min_year;                            ///< introduction year of the house
@@ -116,6 +123,7 @@ struct HouseSpec {
 	byte random_colour[4];                    ///< 4 "random" colours
 	byte probability;                         ///< Relative probability of appearing (16 is the standard value)
 	HouseExtraFlags extra_flags;              ///< some more flags
+	HouseCtrlFlags ctrl_flags;                ///< control flags
 	HouseClassID class_id;                    ///< defines the class this house has (not grf file based)
 	AnimationInfo animation;                  ///< information about the animation.
 	byte processing_time;                     ///< Periodic refresh multiplier
@@ -126,7 +134,7 @@ struct HouseSpec {
 
 	static inline HouseSpec *Get(size_t house_id)
 	{
-		assert(house_id < NUM_HOUSES);
+		dbg_assert(house_id < NUM_HOUSES);
 		extern HouseSpec _house_specs[];
 		return &_house_specs[house_id];
 	}

@@ -232,6 +232,7 @@ void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint8 flag
 	StationID next_station = next->GetDestination();
 	Station *st = Station::GetIfValid(cur->GetDestination());
 	if (st != nullptr && next_station != INVALID_STATION && next_station != st->index) {
+		Station *st_to = Station::Get(next_station);
 		for (CargoID c = 0; c < NUM_CARGO; c++) {
 			/* Refresh the link and give it a minimum capacity. */
 
@@ -240,15 +241,21 @@ void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint8 flag
 			uint cargo_quantity = this->capacities[c];
 			if (cargo_quantity == 0) continue;
 
+			if (this->vehicle->GetDisplayMaxSpeed() == 0) continue;
+
 			/* If not allowed to merge link graphs, make sure the stations are
 			 * already in the same link graph. */
-			if (!this->allow_merge && st->goods[c].link_graph != Station::Get(next_station)->goods[c].link_graph) {
+			if (!this->allow_merge && st->goods[c].link_graph != st_to->goods[c].link_graph) {
 				continue;
 			}
 
 			/* A link is at least partly restricted if a vehicle can't load at its source. */
 			EdgeUpdateMode restricted_mode = (cur->GetCargoLoadType(c) & OLFB_NO_LOAD) == 0 ?
 						EUM_UNRESTRICTED : EUM_RESTRICTED;
+			/* This estimates the travel time of the link as the time needed
+			 * to travel between the stations at half the max speed of the consist.
+			 * The result is in tiles/tick (= 2048 km-ish/h). */
+			uint32 time_estimate = DistanceManhattan(st->xy, st_to->xy) * 4096U / this->vehicle->GetDisplayMaxSpeed();
 
 			if (HasBit(flags, AIRCRAFT)) restricted_mode |= EUM_AIRCRAFT;
 
@@ -264,15 +271,15 @@ void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint8 flag
 				uint effective_capacity = cargo_quantity * this->vehicle->load_unload_ticks;
 				if (effective_capacity > (uint)this->vehicle->orders->GetTotalDuration()) {
 					IncreaseStats(st, c, next_station, effective_capacity /
-							this->vehicle->orders->GetTotalDuration(), 0,
+							this->vehicle->orders->GetTotalDuration(), 0, 0,
 							EUM_INCREASE | restricted_mode);
 				} else if (RandomRange(this->vehicle->orders->GetTotalDuration()) < effective_capacity) {
-					IncreaseStats(st, c, next_station, 1, 0, EUM_INCREASE | restricted_mode);
+					IncreaseStats(st, c, next_station, 1, 0, 0, EUM_INCREASE | restricted_mode);
 				} else {
-					IncreaseStats(st, c, next_station, cargo_quantity, 0, EUM_REFRESH | restricted_mode);
+					IncreaseStats(st, c, next_station, cargo_quantity, 0, time_estimate, EUM_REFRESH | restricted_mode);
 				}
 			} else {
-				IncreaseStats(st, c, next_station, cargo_quantity, 0, EUM_REFRESH | restricted_mode);
+				IncreaseStats(st, c, next_station, cargo_quantity, 0, time_estimate, EUM_REFRESH | restricted_mode);
 			}
 		}
 	}

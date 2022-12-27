@@ -281,7 +281,7 @@ SQInteger SQSharedState::CollectGarbage(SQVM *vm)
 
 	SQGCMarkerQueue queue;
 	queue.Enqueue(vms);
-#ifdef WITH_ASSERT
+#ifdef WITH_FULL_ASSERTS
 	SQInteger x = _table(_thread(_root_vm)->_roottable)->CountUsed();
 #endif
 	_refs_table.EnqueueMarkObject(queue);
@@ -329,7 +329,7 @@ SQInteger SQSharedState::CollectGarbage(SQVM *vm)
 		t = t->_next;
 	}
 	_gc_chain = tchain;
-#ifdef WITH_ASSERT
+#ifdef WITH_FULL_ASSERTS
 	SQInteger z = _table(_thread(_root_vm)->_roottable)->CountUsed();
 	assert(z == x);
 #endif
@@ -564,8 +564,7 @@ SQString *SQStringTable::Add(const SQChar *news,SQInteger len)
 			return s; //found
 	}
 
-	SQString *t=(SQString *)SQ_MALLOC(len+sizeof(SQString));
-	new (t) SQString(news, len);
+	SQString *t = new (SQSizedAllocationTag(len + sizeof(SQString))) SQString(news, len);
 	t->_next = _strings[h];
 	_strings[h] = t;
 	_slotused++;
@@ -615,9 +614,7 @@ void SQStringTable::Remove(SQString *bs)
 			else
 				_strings[h] = s->_next;
 			_slotused--;
-			SQInteger slen = s->_len;
-			s->~SQString();
-			SQ_FREE(s,sizeof(SQString) + slen);
+			sq_delete_refcounted(s, SQString);
 			return;
 		}
 		prev = s;

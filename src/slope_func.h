@@ -75,7 +75,7 @@ static inline Slope RemoveHalftileSlope(Slope s)
  */
 static inline Slope ComplementSlope(Slope s)
 {
-	assert(!IsSteepSlope(s) && !IsHalftileSlope(s));
+	dbg_assert(!IsSteepSlope(s) && !IsHalftileSlope(s));
 	return s ^ SLOPE_ELEVATED;
 }
 
@@ -98,7 +98,7 @@ static inline bool IsSlopeWithOneCornerRaised(Slope s)
  */
 static inline Slope SlopeWithOneCornerRaised(Corner corner)
 {
-	assert(IsValidCorner(corner));
+	dbg_assert(IsValidCorner(corner));
 	return (Slope)(1 << corner);
 }
 
@@ -147,7 +147,7 @@ static inline Corner GetHighestSlopeCorner(Slope s)
  */
 static inline Corner GetHalftileSlopeCorner(Slope s)
 {
-	assert(IsHalftileSlope(s));
+	dbg_assert(IsHalftileSlope(s));
 	return (Corner)((s >> 6) & 3);
 }
 
@@ -273,7 +273,7 @@ static inline Slope InclinedSlope(DiagDirection dir)
  */
 static inline Slope HalftileSlope(Slope s, Corner corner)
 {
-	assert(IsValidCorner(corner));
+	dbg_assert(IsValidCorner(corner));
 	return (Slope)(s | SLOPE_HALFTILE | (corner << 6));
 }
 
@@ -332,7 +332,7 @@ static inline bool IsNonContinuousFoundation(Foundation f)
  */
 static inline Corner GetHalftileFoundationCorner(Foundation f)
 {
-	assert(IsInsideMM(f, FOUNDATION_HALFTILE_W, FOUNDATION_HALFTILE_N + 1));
+	dbg_assert(IsInsideMM(f, FOUNDATION_HALFTILE_W, FOUNDATION_HALFTILE_N + 1));
 	return (Corner)(f - FOUNDATION_HALFTILE_W);
 }
 
@@ -355,7 +355,7 @@ static inline bool IsSpecialRailFoundation(Foundation f)
  */
 static inline Corner GetRailFoundationCorner(Foundation f)
 {
-	assert(IsSpecialRailFoundation(f));
+	dbg_assert(IsSpecialRailFoundation(f));
 	return (Corner)(f - FOUNDATION_RAIL_W);
 }
 
@@ -390,7 +390,7 @@ static inline Foundation InclinedFoundation(Axis axis)
  */
 static inline Foundation HalftileFoundation(Corner corner)
 {
-	assert(IsValidCorner(corner));
+	dbg_assert(IsValidCorner(corner));
 	return (Foundation)(FOUNDATION_HALFTILE_W + corner);
 }
 
@@ -402,7 +402,7 @@ static inline Foundation HalftileFoundation(Corner corner)
  */
 static inline Foundation SpecialRailFoundation(Corner corner)
 {
-	assert(IsValidCorner(corner));
+	dbg_assert(IsValidCorner(corner));
 	return (Foundation)(FOUNDATION_RAIL_W + corner);
 }
 

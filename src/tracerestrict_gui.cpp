@@ -45,6 +45,7 @@
 #include "toolbar_gui.h"
 #include "core/geometry_func.hpp"
 #include "infrastructure_func.h"
+#include "zoom_func.h"
 
 #include "safeguards.h"
 
@@ -1676,8 +1677,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					SetDParam(0, STR_TRACE_RESTRICT_COUNTER_NAME);
 					SetDParam(1, GetTraceRestrictValue(item));
 				}
-				SetDParam(2, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
-				SetDParam(3, value);
+				SetDParam(2, value);
 				break;
 			}
 
@@ -2517,7 +2517,7 @@ public:
 		switch (widget) {
 			case TR_WIDGET_INSTRUCTION_LIST:
 				resize->height = FONT_HEIGHT_NORMAL;
-				size->height = 6 * resize->height + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
+				size->height = 6 * resize->height + WidgetDimensions::scaled.framerect.Vertical();
 				break;
 
 			case TR_WIDGET_GOTO_SIGNAL:
@@ -2541,7 +2541,7 @@ public:
 	{
 		if (widget != TR_WIDGET_INSTRUCTION_LIST) return;
 
-		int y = r.top + WD_FRAMERECT_TOP;
+		int y = r.top + WidgetDimensions::scaled.framerect.top;
 		int line_height = this->GetWidget<NWidgetBase>(TR_WIDGET_INSTRUCTION_LIST)->resize_y;
 		int scroll_position = this->vscroll->GetPosition();
 
@@ -2567,7 +2567,7 @@ public:
 			}
 
 			if (i >= scroll_position && this->vscroll->IsVisible(i)) {
-				DrawInstructionString(prog, item, i, y, i == this->selected_instruction, this_indent, r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT);
+				DrawInstructionString(prog, item, i, y, i == this->selected_instruction, this_indent, r.left + WidgetDimensions::scaled.framerect.left, r.right - WidgetDimensions::scaled.framerect.right);
 				y += line_height;
 			}
 		}
@@ -2745,7 +2745,7 @@ private:
 	int GetItemIndexFromPt(int y)
 	{
 		NWidgetBase *nwid = this->GetWidget<NWidgetBase>(TR_WIDGET_INSTRUCTION_LIST);
-		int sel = (y - nwid->pos_y - WD_FRAMERECT_TOP) / nwid->resize_y; // Selected line
+		int sel = (y - nwid->pos_y - WidgetDimensions::scaled.framerect.top) / nwid->resize_y; // Selected line
 
 		if ((uint)sel >= this->vscroll->GetCapacity()) return -1;
 
@@ -3504,7 +3504,7 @@ static const NWidgetPart _nested_slot_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		/* left part */
 		NWidget(NWID_VERTICAL),
-			NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalTextLines(1, WD_DROPDOWNTEXT_TOP + WD_DROPDOWNTEXT_BOTTOM), SetFill(1, 0), EndContainer(),
+			NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalTextLines(1, WidgetDimensions::unscaled.dropdowntext.Vertical()), SetFill(1, 0), EndContainer(),
 			NWidget(WWT_PANEL, COLOUR_GREY, WID_TRSL_ALL_VEHICLES), SetFill(1, 0), EndContainer(),
 			NWidget(NWID_HORIZONTAL),
 				NWidget(WWT_MATRIX, COLOUR_GREY, WID_TRSL_LIST_SLOTS), SetMatrixDataTip(1, 0, STR_TRACE_RESTRICT_SLOT_GUI_LIST_TOOLTIP),
@@ -3605,12 +3605,11 @@ private:
 		this->column_size[VGC_NUMBER] = GetStringBoundingBox(STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY);
 		this->tiny_step_height = std::max(this->tiny_step_height, this->column_size[VGC_NUMBER].height);
 
-		this->tiny_step_height += WD_MATRIX_TOP;
+		this->tiny_step_height += WidgetDimensions::scaled.matrix.top + ScaleGUITrad(1);
 
-		return WD_FRAMERECT_LEFT + 8 +
-			this->column_size[VGC_NAME].width + 8 +
-			this->column_size[VGC_NUMBER].width + 2 +
-			WD_FRAMERECT_RIGHT;
+		return WidgetDimensions::scaled.framerect.Horizontal() + WidgetDimensions::scaled.vsep_wide +
+			this->column_size[VGC_NAME].width + WidgetDimensions::scaled.vsep_wide +
+			this->column_size[VGC_NUMBER].width + WidgetDimensions::scaled.vsep_normal;
 	}
 
 	/**
@@ -3624,7 +3623,8 @@ private:
 	{
 		/* Highlight the group if a vehicle is dragged over it */
 		if (slot_id == this->slot_over) {
-			GfxFillRect(left + WD_FRAMERECT_LEFT, y + WD_FRAMERECT_TOP, right - WD_FRAMERECT_RIGHT, y + this->tiny_step_height - WD_FRAMERECT_BOTTOM - WD_MATRIX_TOP, _colour_gradient[COLOUR_GREY][7]);
+			GfxFillRect(left + WidgetDimensions::scaled.framerect.left, y + WidgetDimensions::scaled.framerect.top, right - WidgetDimensions::scaled.framerect.right,
+					y + this->tiny_step_height - WidgetDimensions::scaled.framerect.bottom - WidgetDimensions::scaled.matrix.top, _colour_gradient[COLOUR_GREY][7]);
 		}
 
 		/* draw the selected group in white, else we draw it in black */
@@ -3639,7 +3639,7 @@ private:
 			SetDParam(0, slot_id);
 			str = STR_TRACE_RESTRICT_SLOT_NAME;
 		}
-		int x = rtl ? right - WD_FRAMERECT_RIGHT - 8 - this->column_size[VGC_NAME].width + 1 : left + WD_FRAMERECT_LEFT + 8;
+		int x = rtl ? right - WidgetDimensions::scaled.framerect.right - WidgetDimensions::scaled.vsep_wide - this->column_size[VGC_NAME].width + 1 : left + WidgetDimensions::scaled.framerect.left + WidgetDimensions::scaled.vsep_wide;
 		DrawString(x, x + this->column_size[VGC_NAME].width - 1, y + (this->tiny_step_height - this->column_size[VGC_NAME].height) / 2, str, colour);
 
 		if (slot_id == ALL_TRAINS_TRACE_RESTRICT_SLOT_ID) return;
@@ -3647,7 +3647,7 @@ private:
 		const TraceRestrictSlot *slot = TraceRestrictSlot::Get(slot_id);
 
 		/* draw the number of vehicles of the group */
-		x = rtl ? x - 2 - this->column_size[VGC_NUMBER].width : x + 2 + this->column_size[VGC_NAME].width;
+		x = rtl ? x - WidgetDimensions::scaled.vsep_normal - this->column_size[VGC_NUMBER].width : x + WidgetDimensions::scaled.vsep_normal + this->column_size[VGC_NAME].width;
 		SetDParam(0, slot->occupants.size());
 		SetDParam(1, slot->max_occupancy);
 		DrawString(x, x + this->column_size[VGC_NUMBER].width - 1, y + (this->tiny_step_height - this->column_size[VGC_NUMBER].height) / 2, STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY, colour, SA_RIGHT | SA_FORCE);
@@ -3717,7 +3717,7 @@ public:
 				resize->height = this->tiny_step_height;
 
 				/* Minimum height is the height of the list widget minus all vehicles... */
-				size->height =  4 * GetVehicleListHeight(this->vli.vtype, this->tiny_step_height) - this->tiny_step_height;
+				size->height = 4 * GetVehicleListHeight(this->vli.vtype, this->tiny_step_height) - this->tiny_step_height;
 
 				/* ... minus the buttons at the bottom ... */
 				uint max_icon_height = GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_CREATE_SLOT)->widget_data).height;
@@ -3837,11 +3837,11 @@ public:
 	{
 		switch (widget) {
 			case WID_TRSL_ALL_VEHICLES:
-				DrawSlotInfo(r.top + WD_FRAMERECT_TOP, r.left, r.right, ALL_TRAINS_TRACE_RESTRICT_SLOT_ID);
+				DrawSlotInfo(r.top + WidgetDimensions::scaled.framerect.top, r.left, r.right, ALL_TRAINS_TRACE_RESTRICT_SLOT_ID);
 				break;
 
 			case WID_TRSL_LIST_SLOTS: {
-				int y1 = r.top + WD_FRAMERECT_TOP;
+				int y1 = r.top + WidgetDimensions::scaled.framerect.top;
 				int max = std::min<int>(this->slot_sb->GetPosition() + this->slot_sb->GetCapacity(), (int)this->slots.size());
 				for (int i = this->slot_sb->GetPosition(); i < max; ++i) {
 					const TraceRestrictSlot *slot = this->slots[i];
@@ -4188,7 +4188,6 @@ static const NWidgetPart _nested_counter_widgets[] = {
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
 	EndContainer(),
 	NWidget(NWID_VERTICAL),
-		//NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalTextLines(1, WD_DROPDOWNTEXT_TOP + WD_DROPDOWNTEXT_BOTTOM), SetFill(1, 0), EndContainer(),
 		NWidget(NWID_HORIZONTAL),
 			NWidget(WWT_MATRIX, COLOUR_GREY, WID_TRCL_LIST_COUNTERS), SetMatrixDataTip(1, 0, STR_TRACE_RESTRICT_COUNTER_GUI_LIST_TOOLTIP),
 					SetFill(1, 1), SetResize(1, 1), SetScrollbar(WID_TRCL_LIST_COUNTERS_SCROLLBAR),
@@ -4251,13 +4250,13 @@ private:
 	{
 		SetDParamMaxValue(0, 9999, 3);
 		Dimension dim = GetStringBoundingBox(STR_JUST_COMMA);
-		this->tiny_step_height = dim.height + WD_MATRIX_TOP;
+		this->tiny_step_height = dim.height + WidgetDimensions::scaled.matrix.top;
 		this->value_col_width = dim.width;
 
-		return WD_FRAMERECT_LEFT + 8 +
-			170 + 8 +
-			dim.width + 8 +
-			WD_FRAMERECT_RIGHT;
+		return WidgetDimensions::scaled.framerect.Horizontal() + WidgetDimensions::scaled.vsep_wide +
+			170 + WidgetDimensions::scaled.vsep_wide +
+			dim.width + WidgetDimensions::scaled.vsep_wide +
+			WidgetDimensions::scaled.framerect.right;
 	}
 
 	/**
@@ -4274,13 +4273,13 @@ private:
 		bool rtl = _current_text_dir == TD_RTL;
 
 		SetDParam(0, ctr_id);
-		DrawString(left + WD_FRAMERECT_LEFT + 8 + (rtl ? this->value_col_width + 8 : 0),
-				right - WD_FRAMERECT_RIGHT - 8 - (rtl ? 0 : this->value_col_width + 8),
+		DrawString(left + WidgetDimensions::scaled.vsep_wide + (rtl ? this->value_col_width + WidgetDimensions::scaled.vsep_wide : 0),
+				right - WidgetDimensions::scaled.vsep_wide - (rtl ? 0 : this->value_col_width + WidgetDimensions::scaled.vsep_wide),
 				y, STR_TRACE_RESTRICT_COUNTER_NAME, colour);
 
 		SetDParam(0, TraceRestrictCounter::Get(ctr_id)->value);
-		DrawString(rtl ? left + WD_FRAMERECT_LEFT + 8 : right - WD_FRAMERECT_RIGHT - 8 - this->value_col_width,
-				rtl ? left + WD_FRAMERECT_LEFT + 8 + this->value_col_width : right - WD_FRAMERECT_RIGHT - 8,
+		DrawString(rtl ? left + WidgetDimensions::scaled.vsep_wide : right - WidgetDimensions::scaled.vsep_wide - this->value_col_width,
+				rtl ? left + WidgetDimensions::scaled.vsep_wide + this->value_col_width : right - WidgetDimensions::scaled.vsep_wide,
 				y, STR_JUST_COMMA, colour, SA_RIGHT | SA_FORCE);
 	}
 
@@ -4373,14 +4372,15 @@ public:
 	{
 		switch (widget) {
 			case WID_TRCL_LIST_COUNTERS: {
-				int y1 = r.top + WD_FRAMERECT_TOP;
+				Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
+				int y1 = ir.top;
 				int max = std::min<int>(this->sb->GetPosition() + this->sb->GetCapacity(), (int)this->ctrs.size());
 				for (int i = this->sb->GetPosition(); i < max; ++i) {
 					const TraceRestrictCounter *ctr = this->ctrs[i];
 
 					assert(ctr->owner == this->ctr_company);
 
-					DrawCounterInfo(y1, r.left, r.right, ctr->index);
+					DrawCounterInfo(y1, ir.left, ir.right, ctr->index);
 
 					y1 += this->tiny_step_height;
 				}

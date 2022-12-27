@@ -42,6 +42,7 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("varaction2_railtype_signal_context", 1),
 	GRFFeatureInfo("action0_global_extra_station_names", 2),
 	GRFFeatureInfo("action0_global_default_object_generate_amount", 1),
+	GRFFeatureInfo("action0_global_allow_rocks_in_desert", 1),
 	GRFFeatureInfo("action0_signals_programmable_signals", 1),
 	GRFFeatureInfo("action0_signals_no_entry_signals", 1),
 	GRFFeatureInfo("action0_signals_restricted_signals", 2),
@@ -54,8 +55,8 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action0_object_edge_foundation_mode", 2),
 	GRFFeatureInfo("action0_object_flood_resistant", 1),
 	GRFFeatureInfo("action0_object_viewport_map_tile_type", 1),
-	GRFFeatureInfo("road_stops", 3),
-	GRFFeatureInfo("new_landscape", 1),
+	GRFFeatureInfo("road_stops", 5),
+	GRFFeatureInfo("new_landscape", 2),
 	GRFFeatureInfo(),
 };
 
@@ -86,6 +87,7 @@ extern const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 	GRFPropertyMapDefinition(GSF_GLOBALVAR, A0RPI_GLOBALVAR_EXTRA_STATION_NAMES_PROBABILITY, "global_extra_station_names_probability"),
 	GRFPropertyMapDefinition(GSF_GLOBALVAR, A0RPI_GLOBALVAR_LIGHTHOUSE_GENERATE_AMOUNT, "global_lighthouse_generate_amount"),
 	GRFPropertyMapDefinition(GSF_GLOBALVAR, A0RPI_GLOBALVAR_TRANSMITTER_GENERATE_AMOUNT, "global_transmitter_generate_amount"),
+	GRFPropertyMapDefinition(GSF_GLOBALVAR, A0RPI_GLOBALVAR_ALLOW_ROCKS_DESERT, "global_allow_rocks_in_desert"),
 	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_ENABLE_PROGRAMMABLE_SIGNALS, "signals_enable_programmable_signals"),
 	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_ENABLE_NO_ENTRY_SIGNALS, "signals_enable_no_entry_signals"),
 	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_ENABLE_RESTRICTED_SIGNALS, "signals_enable_restricted_signals"),
@@ -123,6 +125,7 @@ extern const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_DISALLOWED_BRIDGE_PILLARS, "roadstop_disallowed_bridge_pillars"),
 	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_COST_MULTIPLIERS, "roadstop_cost_multipliers"),
 	GRFPropertyMapDefinition(GSF_NEWLANDSCAPE, A0RPI_NEWLANDSCAPE_ENABLE_RECOLOUR, "newlandscape_enable_recolour"),
+	GRFPropertyMapDefinition(GSF_NEWLANDSCAPE, A0RPI_NEWLANDSCAPE_ENABLE_DRAW_SNOWY_ROCKS, "newlandscape_enable_draw_snowy_rocks"),
 	GRFPropertyMapDefinition(),
 };
 
@@ -144,6 +147,7 @@ extern const GRFVariableMapDefinition _grf_action2_remappable_variables[] = {
 	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x67, "roadstop_land_info_nearby_tiles"),
 	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x68, "roadstop_road_stop_info_nearby_tiles"),
 	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x6A, "roadstop_road_stop_grfid_nearby_tiles"),
+	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x6B, "roadstop_road_info_nearby_tiles"),
 	GRFVariableMapDefinition(GSF_RAILTYPES, A2VRI_RAILTYPE_SIGNAL_RESTRICTION_INFO, "railtype_signal_restriction_info"),
 	GRFVariableMapDefinition(GSF_RAILTYPES, A2VRI_RAILTYPE_SIGNAL_CONTEXT, "railtype_signal_context"),
 	GRFVariableMapDefinition(GSF_SIGNALS, A2VRI_SIGNALS_SIGNAL_RESTRICTION_INFO, "signals_signal_restriction_info"),
@@ -154,6 +158,7 @@ extern const GRFVariableMapDefinition _grf_action2_remappable_variables[] = {
 	GRFVariableMapDefinition(GSF_NEWLANDSCAPE, 0x42, "newlandscape_tile_height"),
 	GRFVariableMapDefinition(GSF_NEWLANDSCAPE, 0x43, "newlandscape_tile_hash"),
 	GRFVariableMapDefinition(GSF_NEWLANDSCAPE, 0x44, "newlandscape_landscape_type"),
+	GRFVariableMapDefinition(GSF_NEWLANDSCAPE, 0x45, "newlandscape_ground_info"),
 	GRFVariableMapDefinition(GSF_NEWLANDSCAPE, 0x60, "newlandscape_land_info_nearby_tiles"),
 	GRFVariableMapDefinition(),
 };

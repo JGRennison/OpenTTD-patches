@@ -243,7 +243,7 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 		/* This means the server closed the connection. Emergency save is
 		 * already created if this was appropriate during handling of the
 		 * disconnect. */
-		this->SendPackets();
+		this->SendPackets(true);
 		this->CloseConnection(res);
 	} else {
 		/* This means we as client made a boo-boo. */
@@ -252,7 +252,7 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 		/* Close connection before we make an emergency save, as the save can
 		 * take a bit of time; better that the server doesn't stall while we
 		 * are doing the save, and already disconnects us. */
-		this->SendPackets();
+		this->SendPackets(true);
 		this->CloseConnection(res);
 		ClientNetworkEmergencySave();
 	}
@@ -324,15 +324,21 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 				DEBUG(net, 0, "Sync error detected!");
 
 				std::string desync_log;
+				DesyncDeferredSaveInfo deferred_save;
 				info.log_file = &(my_client->desync_log_file);
+				info.defer_savegame_write = &deferred_save;
 				CrashLog::DesyncCrashLog(nullptr, &desync_log, info);
 				my_client->SendDesyncLog(desync_log);
+				my_client->SendDesyncSyncData();
 				my_client->ClientError(NETWORK_RECV_STATUS_DESYNC);
+				CrashLog::WriteDesyncSavegame(desync_log.c_str(), deferred_save.name_buffer.c_str());
 				return false;
 			}
 			_last_sync_date = _date;
 			_last_sync_date_fract = _date_fract;
 			_last_sync_tick_skip_counter = _tick_skip_counter;
+			_last_sync_frame_counter = _sync_frame;
+			_network_client_sync_records.clear();
 
 			/* If this is the first time we have a sync-frame, we
 			 *   need to let the server know that we are ready and at the same
@@ -347,6 +353,10 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 			DEBUG(net, 1, "Missed frame for sync-test: %d / %d", _sync_frame, _frame_counter);
 			_sync_frame = 0;
 		}
+	}
+
+	if (_network_client_sync_records.size() <= 256) {
+		_network_client_sync_records.push_back({ _frame_counter, _random.state[0], _state_checksum.state });
 	}
 
 	return true;
@@ -562,6 +572,22 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncMessage(const char *
 	p->Send_uint16(_date_fract);
 	p->Send_uint8(_tick_skip_counter);
 	p->Send_string(msg);
+	my_client->SendPacket(p);
+	return NETWORK_RECV_STATUS_OKAY;
+}
+
+/** Send an error-packet over the network */
+NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncSyncData()
+{
+	if (_network_client_sync_records.empty()) return NETWORK_RECV_STATUS_OKAY;
+
+	Packet *p = new Packet(PACKET_CLIENT_DESYNC_SYNC_DATA, SHRT_MAX);
+	p->Send_uint32(_network_client_sync_records[0].frame);
+	p->Send_uint32((uint)_network_client_sync_records.size());
+	for (uint i = 0; i < (uint)_network_client_sync_records.size(); i++) {
+		p->Send_uint32(_network_client_sync_records[i].seed_1);
+		p->Send_uint64(_network_client_sync_records[i].state_checksum);
+	}
 	my_client->SendPacket(p);
 	return NETWORK_RECV_STATUS_OKAY;
 }
@@ -976,7 +1002,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_MAP_DONE(Packet
 			 * the server will give us a client-id and let us in */
 			_network_join_status = NETWORK_JOIN_STATUS_REGISTERING;
 			ShowJoinStatusWindow();
-			NetworkSendCommand(0, CCA_NEW, 0, 0, CMD_COMPANY_CTRL, nullptr, nullptr, _local_company, 0);
+			NetworkSendCommand(0, CCA_NEW, 0, 0, CMD_COMPANY_CTRL, nullptr, nullptr, _local_company, nullptr);
 		}
 	} else {
 		/* take control over an existing company */

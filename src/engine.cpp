@@ -627,7 +627,10 @@ static void CalcEngineReliability(Engine *e)
 		/* Kick this engine out of the lists */
 		RetireEngineIfPossible(e, e->duration_phase_1 + e->duration_phase_2 + e->duration_phase_3);
 	}
+
 	SetWindowClassesDirty(WC_BUILD_VEHICLE); // Update to show the new reliability
+	SetWindowClassesDirty(WC_BUILD_VIRTUAL_TRAIN);
+
 	SetWindowClassesDirty(WC_REPLACE_VEHICLE);
 }
 
@@ -739,6 +742,7 @@ void StartupEngines()
 
 	/* Invalidate any open purchase lists */
 	InvalidateWindowClassesData(WC_BUILD_VEHICLE);
+	InvalidateWindowClassesData(WC_BUILD_VIRTUAL_TRAIN);
 }
 
 /**
@@ -1105,6 +1109,7 @@ void EnginesMonthlyLoop()
 		}
 
 		InvalidateWindowClassesData(WC_BUILD_VEHICLE); // rebuild the purchase list (esp. when sorted by reliability)
+		InvalidateWindowClassesData(WC_BUILD_VIRTUAL_TRAIN);
 	}
 }
 

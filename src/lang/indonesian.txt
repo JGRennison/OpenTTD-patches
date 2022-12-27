@@ -205,6 +205,7 @@ STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}dk
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}dk
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW
 
+
 STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA}{NBSP}t
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}{NBSP}t
 STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}{NBSP}kg
@@ -397,10 +398,9 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Keluar
 
 # Settings menu
-###length 14
+###length 15
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Pengaturan permainan
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Pengaturan
-STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :Pengaturan AI / Skrip Permainan
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :Pengaturan NewGRF
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Pengaturan Transparansi
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Nama kota ditampilkan
@@ -977,36 +977,6 @@ STR_GAME_OPTIONS_CURRENCY_INR                                   :India Rupee (IN
 STR_GAME_OPTIONS_CURRENCY_IDR                                   :Rupiah Indonesia (IDR)
 STR_GAME_OPTIONS_CURRENCY_MYR                                   :Ringgit Malaysia (MYR)
 
-###length 2
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Berkendara di lajur kiri
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :Berkendara di lajur kanan
-
-STR_GAME_OPTIONS_TOWN_NAMES_FRAME                               :{BLACK}Nama kota:
-STR_GAME_OPTIONS_TOWN_NAMES_DROPDOWN_TOOLTIP                    :{BLACK}Pilih model nama kota
-
-###length 21
-STR_GAME_OPTIONS_TOWN_NAME_ORIGINAL_ENGLISH                     :Inggris (Orisinil)
-STR_GAME_OPTIONS_TOWN_NAME_FRENCH                               :Perancis
-STR_GAME_OPTIONS_TOWN_NAME_GERMAN                               :Jerman
-STR_GAME_OPTIONS_TOWN_NAME_ADDITIONAL_ENGLISH                   :Inggris (Tambahan)
-STR_GAME_OPTIONS_TOWN_NAME_LATIN_AMERICAN                       :Amerika-Latin
-STR_GAME_OPTIONS_TOWN_NAME_SILLY                                :Lucu
-STR_GAME_OPTIONS_TOWN_NAME_SWEDISH                              :Swedia
-STR_GAME_OPTIONS_TOWN_NAME_DUTCH                                :Belanda
-STR_GAME_OPTIONS_TOWN_NAME_FINNISH                              :Finlandia
-STR_GAME_OPTIONS_TOWN_NAME_POLISH                               :Polandia
-STR_GAME_OPTIONS_TOWN_NAME_SLOVAK                               :Slovakia
-STR_GAME_OPTIONS_TOWN_NAME_NORWEGIAN                            :Norwegia
-STR_GAME_OPTIONS_TOWN_NAME_HUNGARIAN                            :Hungaria
-STR_GAME_OPTIONS_TOWN_NAME_AUSTRIAN                             :Austria
-STR_GAME_OPTIONS_TOWN_NAME_ROMANIAN                             :Romania
-STR_GAME_OPTIONS_TOWN_NAME_CZECH                                :Ceko
-STR_GAME_OPTIONS_TOWN_NAME_SWISS                                :Swiss
-STR_GAME_OPTIONS_TOWN_NAME_DANISH                               :Denmark
-STR_GAME_OPTIONS_TOWN_NAME_TURKISH                              :Turki
-STR_GAME_OPTIONS_TOWN_NAME_ITALIAN                              :Italia
-STR_GAME_OPTIONS_TOWN_NAME_CATALAN                              :Catalan
-
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Simpan Otomatis
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Pilih selang waktu permainan otomatis disimpan
 
@@ -1039,21 +1009,8 @@ STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Centang 
 
 STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}Pengendali piranti: {STRING}
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Ukuran antarmuka
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Pilih ukuran elemen antarmuka yang akan digunakan
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(deteksi-otomatis)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normal
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Kali dua
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Kali empat
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Ukuran font
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Pilih ukuran font antarmuka yang akan digunakan
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(deteksi-otomatis)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normal
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Kali dua
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :4 kali
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Grafik
 
@@ -1105,8 +1062,6 @@ STR_CURRENCY_PREVIEW                                            :{LTBLUE}Contoh:
 STR_CURRENCY_CUSTOM_CURRENCY_PREVIEW_TOOLTIP                    :{BLACK}10000 Pound (£) pada mata uang Anda
 STR_CURRENCY_CHANGE_PARAMETER                                   :{BLACK}Ubah sendiri parameter mata uang
 
-STR_DIFFICULTY_LEVEL_SETTING_MAXIMUM_NO_COMPETITORS             :{LTBLUE}Jumlah pesaing maksimal: {ORANGE}{COMMA}
-
 STR_NONE                                                        :Tidak ada
 STR_FUNDING_ONLY                                                :Hanya pendanaan
 STR_MINIMAL                                                     :Minimal
@@ -1155,6 +1110,12 @@ STR_SUBSIDY_X1_5                                                :x1.5
 STR_SUBSIDY_X2                                                  :x2
 STR_SUBSIDY_X3                                                  :x3
 STR_SUBSIDY_X4                                                  :x4
+
+###length 4
+STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :Lanskap 'Sedang'
+STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :Lansekap 'Sub Arktik'
+STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :Lansekap 'Sub Tropis'
+STR_CLIMATE_TOYLAND_LANDSCAPE                                   :Lansekap 'Taman Bermain'
 
 ###length 7
 STR_TERRAIN_TYPE_VERY_FLAT                                      :Sangat Datar
@@ -1514,6 +1475,10 @@ STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Telah ditingkat
 
 STR_CONFIG_SETTING_ROAD_SIDE                                    :Kendaraan jalan raya: {STRING}
 STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Memilih sisi mengemudi
+
+###length 2
+STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :Berkendara di lajur kiri
+STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :Berkendara di lajur kanan
 
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Perputaran peta Heightmap: {STRING}
 ###length 2
@@ -2049,7 +2014,7 @@ STR_CONFIG_SETTING_REVERSE_AT_SIGNALS                           :Berputar otomat
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :Perbolehkan kereta berputar di sinyal, jika telah menunggu lama
 ###length 2
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
-STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Recommended)
+STR_CONFIG_SETTING_PATHFINDER_YAPF                              :YAPF {BLUE}(Recommended)
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Ganti nilai tetapan
 
@@ -2092,7 +2057,6 @@ STR_INTRO_HIGHSCORE                                             :{BLACK}Tabel Ni
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Pengaturan
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Pengaturan NewGRF
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Cari Konten Daring
-STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}Pengaturan Skrip AI/Permainan
 STR_INTRO_QUIT                                                  :{BLACK}Keluar
 
 STR_INTRO_TOOLTIP_NEW_GAME                                      :{BLACK}Mulai permainan baru. Ctrl-Klik melewatkan konfigurasi peta
@@ -2112,7 +2076,6 @@ STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Tampilka
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Tampilkan pengaturan
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Tampilkan pengaturan NewGRF
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Cari konten baru dan pembaruan untuk diunduh
-STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Tampilkan pengaturan permainan dan AI
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Keluar OpenTTD
 
 STR_INTRO_BASESET                                               :{BLACK}Kumpulan grafik dasar yang dipilih saat ini hilang {NUM} sprite {P ..}. Silakan periksa pembaruan untuk baseset.
@@ -2143,12 +2106,6 @@ STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}Ubah ket
 STR_CHEAT_CHANGE_DATE                                           :{LTBLUE}Ganti tanggal: {ORANGE} {DATE_SHORT}
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Ubah tahun sekarang
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Aktifkan modifikasi nilai produksi: {ORANGE}{STRING}
-
-###length 4
-STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :Lanskap 'Sedang'
-STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :Lansekap 'Sub Arktik'
-STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :Lansekap 'Sub Tropis'
-STR_CHEAT_SWITCH_CLIMATE_TOYLAND_LANDSCAPE                      :Lansekap 'Taman Bermain'
 
 # Livery window
 STR_LIVERY_CAPTION                                              :{WHITE}{COMPANY} - Skema Warna
@@ -2628,6 +2585,8 @@ STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP                            :{BLACK}{STRING}
 STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}tak terpakai
 STR_LINKGRAPH_LEGEND_SATURATED                                  :{TINY_FONT}{BLACK}sudah penuh (jenuh)
 STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLACK}kelebihan beban
+
+# Linkgraph tooltip
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Jangkauan layanan
@@ -3150,6 +3109,8 @@ STR_MAPGEN_MAPSIZE                                              :{BLACK}Ukuran P
 STR_MAPGEN_MAPSIZE_TOOLTIP                                      :{BLACK}Pilih ukuran peta dalam petak. Jumlah dari petak yang tersedia akan sedikit lebih kecil
 STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Jumlah Kota:
+STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Nama kota:
+STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Pilih model nama kota
 STR_MAPGEN_DATE                                                 :{BLACK}Tgl:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Jumlah industri:
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Puncak tertinggi:
@@ -3168,11 +3129,34 @@ STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Naikkan 
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Turunkan ketinggian garis salju satu angka
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Algoritma pulau:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Jenis dataran:
-STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Area perairan:
+STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Area perairan:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Sungai:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Kehalusan:
 STR_MAPGEN_VARIETY                                              :{BLACK}Macam penyebaran:
 STR_MAPGEN_GENERATE                                             :{WHITE}Buat Peta
+
+###length 21
+STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH                           :Inggris (Orisinil)
+STR_MAPGEN_TOWN_NAME_FRENCH                                     :Perancis
+STR_MAPGEN_TOWN_NAME_GERMAN                                     :Jerman
+STR_MAPGEN_TOWN_NAME_ADDITIONAL_ENGLISH                         :Inggris (Tambahan)
+STR_MAPGEN_TOWN_NAME_LATIN_AMERICAN                             :Amerika-Latin
+STR_MAPGEN_TOWN_NAME_SILLY                                      :Lucu
+STR_MAPGEN_TOWN_NAME_SWEDISH                                    :Swedia
+STR_MAPGEN_TOWN_NAME_DUTCH                                      :Belanda
+STR_MAPGEN_TOWN_NAME_FINNISH                                    :Finlandia
+STR_MAPGEN_TOWN_NAME_POLISH                                     :Polandia
+STR_MAPGEN_TOWN_NAME_SLOVAK                                     :Slovakia
+STR_MAPGEN_TOWN_NAME_NORWEGIAN                                  :Norwegia
+STR_MAPGEN_TOWN_NAME_HUNGARIAN                                  :Hungaria
+STR_MAPGEN_TOWN_NAME_AUSTRIAN                                   :Austria
+STR_MAPGEN_TOWN_NAME_ROMANIAN                                   :Romania
+STR_MAPGEN_TOWN_NAME_CZECH                                      :Ceko
+STR_MAPGEN_TOWN_NAME_SWISS                                      :Swiss
+STR_MAPGEN_TOWN_NAME_DANISH                                     :Denmark
+STR_MAPGEN_TOWN_NAME_TURKISH                                    :Turki
+STR_MAPGEN_TOWN_NAME_ITALIAN                                    :Italia
+STR_MAPGEN_TOWN_NAME_CATALAN                                    :Catalan
 
 # Strings for map borders at game generation
 STR_MAPGEN_BORDER_TYPE                                          :{BLACK}Jenis Tepi Peta:
@@ -3319,6 +3303,10 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Sprite s
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Lanjutkan ke sprite normal sebelumnya, lewati sembarang sprite bayangan/warna ulang/huruf dan pembungkus saat mulai
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Mewakili sprite yang sedang dipilih. Penjajaran diabaikan ketika sprite ini digambar
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Pindahkan sprite, mengubah offset X dan Y
+
+###length 2
+
+
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Reset relatif
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Reset offset relatif saat ini
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X offset: {NUM}, Y offset: {NUM} (Absolute)
@@ -3658,7 +3646,6 @@ STR_FINANCES_SECTION_OTHER                                      :{GOLD}Lainnya
 
 STR_FINANCES_NEGATIVE_INCOME                                    :-{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :+{CURRENCY_LONG}
-STR_FINANCES_NET_PROFIT                                         :{WHITE}Laba bersih
 STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}Saldo Bank
 STR_FINANCES_OWN_FUNDS_TITLE                                    :{WHITE}Dana Pribadi
 STR_FINANCES_LOAN_TITLE                                         :{WHITE}Pinjaman
@@ -3886,6 +3873,8 @@ STR_PURCHASE_INFO_ALL_BUT                                       :Semua tapi tida
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Traksi Maks.: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Jangkauan: {GOLD}{COMMA} kotak
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Jenis pesawat: {GOLD}{STRING}
+
+###length 3
 
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Daftar pilihan kereta - klik pada kereta untuk menampilkan informasi
@@ -4547,12 +4536,12 @@ STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}Salah sa
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}Jendela "Debug" skrip AI hanya tersedia untuk server
 
 # AI configuration window
-STR_AI_CONFIG_CAPTION                                           :{WHITE}Konfigurasi AI
 STR_AI_CONFIG_GAMELIST_TOOLTIP                                  :{BLACK}Skrip Permainan yang akan di jalankan di permainan berikutnya
 STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}AI yg akan dijalankan pada permainan berikutnya
 STR_AI_CONFIG_HUMAN_PLAYER                                      :Pemain Manusia
 STR_AI_CONFIG_RANDOM_AI                                         :AI Acak
 STR_AI_CONFIG_NONE                                              :(tidak ada)
+STR_AI_CONFIG_MAX_COMPETITORS                                   :{LTBLUE}Jumlah pesaing maksimal: {ORANGE}{COMMA}
 
 STR_AI_CONFIG_MOVE_UP                                           :{BLACK}Naikkan
 STR_AI_CONFIG_MOVE_UP_TOOLTIP                                   :{BLACK}Naikkan AI terpilih dalam daftar
@@ -4562,8 +4551,6 @@ STR_AI_CONFIG_MOVE_DOWN_TOOLTIP                                 :{BLACK}Turunkan
 STR_AI_CONFIG_GAMESCRIPT                                        :{SILVER}Skrip Permainan
 STR_AI_CONFIG_AI                                                :{SILVER}AI
 
-STR_AI_CONFIG_CHANGE                                            :{BLACK}Pilih {STRING}
-STR_AI_CONFIG_CHANGE_NONE                                       :
 STR_AI_CONFIG_CHANGE_AI                                         :AI
 STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :Skrip Permainan
 STR_AI_CONFIG_CHANGE_TOOLTIP                                    :{BLACK}Muat skrip yang lain
@@ -4594,9 +4581,7 @@ STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Tangkapa
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Tangkapan layar minimap
 
 # AI Parameters
-STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Parameter
 STR_AI_SETTINGS_CAPTION_AI                                      :AI
-STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Skrip Permainan
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Tutup
 STR_AI_SETTINGS_RESET                                           :{BLACK}Reset
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
@@ -5012,6 +4997,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Terlalu 
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Tidak dapat mengubah waktu perbaikan...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... kendaraan hancur
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Tak satupun kendaraan tersedia
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Tukarkan konfigurasi NewGRF anda

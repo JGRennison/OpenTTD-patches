@@ -251,8 +251,9 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
  */
 static void ChangeTimetableStartIntl(uint32 p1, DateTicksScaled date)
 {
-	DateTicks date_part = date / _settings_game.economy.day_length_factor;
-	uint32 sub_ticks = date % _settings_game.economy.day_length_factor;
+	DateTicks date_part;
+	uint16 sub_ticks;
+	std::tie(date_part, sub_ticks) = ScaledDateTicksToDateTicksAndSubTicks(date);
 	DoCommandP(0, p1 | (sub_ticks << 21), (Ticks)(date_part - (((DateTicks)_date * DAY_TICKS) + _date_fract)), CMD_SET_TIMETABLE_START | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 }
 
@@ -422,18 +423,18 @@ struct TimetableWindow : GeneralVehicleWindow {
 				SetDParamMaxValue(0, _settings_time.time_in_minutes ? 0 : MAX_YEAR * DAYS_IN_YEAR);
 				this->deparr_time_width = GetStringBoundingBox(STR_JUST_DATE_WALLCLOCK_TINY).width + 4;
 				this->deparr_abbr_width = std::max(GetStringBoundingBox(STR_TIMETABLE_ARRIVAL_ABBREVIATION).width, GetStringBoundingBox(STR_TIMETABLE_DEPARTURE_ABBREVIATION).width);
-				size->width = WD_FRAMERECT_LEFT + this->deparr_abbr_width + 10 + this->deparr_time_width + WD_FRAMERECT_RIGHT;
+				size->width = this->deparr_abbr_width + WidgetDimensions::scaled.hsep_wide + this->deparr_time_width + padding.width;
 				FALLTHROUGH;
 
 			case WID_VT_ARRIVAL_DEPARTURE_SELECTION:
 			case WID_VT_TIMETABLE_PANEL:
 				resize->height = std::max<int>(FONT_HEIGHT_NORMAL, GetSpriteSize(SPR_LOCK).height);
-				size->height = WD_FRAMERECT_TOP + 8 * resize->height + WD_FRAMERECT_BOTTOM;
+				size->height = 8 * resize->height + padding.height;
 				break;
 
 			case WID_VT_SUMMARY_PANEL: {
 				Dimension d = GetSpriteSize(SPR_WARNING_SIGN);
-				size->height = WD_FRAMERECT_TOP + 2 * FONT_HEIGHT_NORMAL + std::min<int>(MAX_SUMMARY_WARNINGS, this->summary_warnings) * std::max<int>(d.height, FONT_HEIGHT_NORMAL) + WD_FRAMERECT_BOTTOM;
+				size->height = 2 * FONT_HEIGHT_NORMAL + std::min<int>(MAX_SUMMARY_WARNINGS, this->summary_warnings) * std::max<int>(d.height, FONT_HEIGHT_NORMAL) + padding.height;
 				break;
 			}
 		}
@@ -441,7 +442,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 	int GetOrderFromTimetableWndPt(int y, const Vehicle *v)
 	{
-		int sel = (y - this->GetWidget<NWidgetBase>(WID_VT_TIMETABLE_PANEL)->pos_y - WD_FRAMERECT_TOP) / std::max<int>(FONT_HEIGHT_NORMAL, GetSpriteSize(SPR_LOCK).height);
+		int sel = (y - this->GetWidget<NWidgetBase>(WID_VT_TIMETABLE_PANEL)->pos_y - WidgetDimensions::scaled.framerect.top) / std::max<int>(FONT_HEIGHT_NORMAL, GetSpriteSize(SPR_LOCK).height);
 
 		if ((uint)sel >= this->vscroll->GetCapacity()) return INVALID_ORDER;
 
@@ -670,7 +671,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 		switch (widget) {
 			case WID_VT_TIMETABLE_PANEL: {
-				int y = r.top + WD_FRAMERECT_TOP;
+				Rect tr = r.Shrink(WidgetDimensions::scaled.framerect);
 				int i = this->vscroll->GetPosition();
 				Dimension lock_d = GetSpriteSize(SPR_LOCK);
 				int line_height = std::max<int>(FONT_HEIGHT_NORMAL, lock_d.height);
@@ -679,8 +680,8 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 				bool rtl = _current_text_dir == TD_RTL;
 				SetDParamMaxValue(0, v->GetNumOrders(), 2);
-				int index_column_width = GetStringBoundingBox(STR_ORDER_INDEX).width + 2 * GetSpriteSize(rtl ? SPR_ARROW_RIGHT : SPR_ARROW_LEFT).width + 3;
-				int middle = rtl ? r.right - WD_FRAMERECT_RIGHT - index_column_width : r.left + WD_FRAMERECT_LEFT + index_column_width;
+				int index_column_width = GetStringBoundingBox(STR_ORDER_INDEX).width + 2 * GetSpriteSize(rtl ? SPR_ARROW_RIGHT : SPR_ARROW_LEFT).width + WidgetDimensions::scaled.hsep_normal;
+				int middle = rtl ? tr.right - index_column_width : tr.left + index_column_width;
 
 				const Order *order = v->GetOrder(order_id);
 				while (order != nullptr) {
@@ -688,7 +689,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 					if (!this->vscroll->IsVisible(i)) break;
 
 					if (i % 2 == 0) {
-						DrawOrderString(v, order, order_id, y, i == selected, true, r.left + WD_FRAMERECT_LEFT, middle, r.right - WD_FRAMERECT_RIGHT);
+						DrawOrderString(v, order, order_id, tr.top, i == selected, true, tr.left, middle, tr.right);
 
 						order_id++;
 
@@ -724,16 +725,16 @@ struct TimetableWindow : GeneralVehicleWindow {
 						}
 						SetDParam(string == STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED ? 2 : 4, order->GetMaxSpeed());
 
-						int edge = DrawString(rtl ? r.left + WD_FRAMERECT_LEFT : middle, rtl ? middle : r.right - WD_FRAMERECT_LEFT, y, string, colour);
+						int edge = DrawString(rtl ? tr.left : middle, rtl ? middle : tr.right, tr.top, string, colour);
 
 						if (order->IsTravelFixed()) {
 							Dimension lock_d = GetSpriteSize(SPR_LOCK);
 							DrawPixelInfo tmp_dpi;
-							if (FillDrawPixelInfo(&tmp_dpi, rtl ? r.left + WD_FRAMERECT_LEFT : middle, y, rtl ? middle : r.right - WD_FRAMERECT_LEFT, lock_d.height)) {
+							if (FillDrawPixelInfo(&tmp_dpi, rtl ? tr.left : middle, tr.top, rtl ? middle : tr.right, lock_d.height)) {
 								DrawPixelInfo *old_dpi = _cur_dpi;
 								_cur_dpi = &tmp_dpi;
 
-								DrawSprite(SPR_LOCK, PAL_NONE, rtl ? edge - 3 - lock_d.width - (r.left + WD_FRAMERECT_LEFT) : edge + 3 - middle, 0);
+								DrawSprite(SPR_LOCK, PAL_NONE, rtl ? edge - 3 - lock_d.width - tr.left : edge + 3 - middle, 0);
 
 								_cur_dpi = old_dpi;
 							}
@@ -743,7 +744,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 					}
 
 					i++;
-					y += line_height;
+					tr.top += line_height;
 				}
 				break;
 			}
@@ -761,7 +762,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 				VehicleOrderID earlyID = BuildArrivalDepartureList(v, arr_dep) ? cur_order : (VehicleOrderID)INVALID_VEH_ORDER_ID;
 
-				int y = r.top + WD_FRAMERECT_TOP;
+				Rect tr = r.Shrink(WidgetDimensions::scaled.framerect);
 				Dimension lock_d = GetSpriteSize(SPR_LOCK);
 				int line_height = std::max<int>(FONT_HEIGHT_NORMAL, lock_d.height);
 
@@ -769,10 +770,8 @@ struct TimetableWindow : GeneralVehicleWindow {
 				Ticks offset = show_late ? 0 : -v->lateness_counter;
 
 				bool rtl = _current_text_dir == TD_RTL;
-				int abbr_left  = rtl ? r.right - WD_FRAMERECT_RIGHT - this->deparr_abbr_width : r.left + WD_FRAMERECT_LEFT;
-				int abbr_right = rtl ? r.right - WD_FRAMERECT_RIGHT : r.left + WD_FRAMERECT_LEFT + this->deparr_abbr_width;
-				int time_left  = rtl ? r.left + WD_FRAMERECT_LEFT : r.right - WD_FRAMERECT_RIGHT - this->deparr_time_width;
-				int time_right = rtl ? r.left + WD_FRAMERECT_LEFT + this->deparr_time_width : r.right - WD_FRAMERECT_RIGHT;
+				Rect abbr = tr.WithWidth(this->deparr_abbr_width, rtl);
+				Rect time = tr.WithWidth(this->deparr_time_width, !rtl);
 
 				for (int i = this->vscroll->GetPosition(); i / 2 < v->GetNumOrders(); ++i) { // note: i is also incremented in the loop
 					/* Don't draw anything if it extends past the end of the window. */
@@ -780,56 +779,56 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 					if (i % 2 == 0) {
 						if (arr_dep[i / 2].arrival != INVALID_TICKS) {
-							DrawString(abbr_left, abbr_right, y, STR_TIMETABLE_ARRIVAL_ABBREVIATION, i == selected ? TC_WHITE : TC_BLACK);
+							DrawString(abbr.left, abbr.right, tr.top, STR_TIMETABLE_ARRIVAL_ABBREVIATION, i == selected ? TC_WHITE : TC_BLACK);
 							if (this->show_expected && i / 2 == earlyID) {
 								SetDParam(0, _scaled_date_ticks + arr_dep[i / 2].arrival);
-								DrawString(time_left, time_right, y, STR_JUST_DATE_WALLCLOCK_TINY, TC_GREEN);
+								DrawString(time.left, time.right, tr.top, STR_JUST_DATE_WALLCLOCK_TINY, TC_GREEN);
 							} else {
 								SetDParam(0, _scaled_date_ticks + arr_dep[i / 2].arrival + (HasBit(arr_dep[i / 2].flags, TADF_ARRIVAL_NO_OFFSET) ? 0 : offset));
-								DrawString(time_left, time_right, y, STR_JUST_DATE_WALLCLOCK_TINY,
+								DrawString(time.left, time.right, tr.top, STR_JUST_DATE_WALLCLOCK_TINY,
 										HasBit(arr_dep[i / 2].flags, TADF_ARRIVAL_PREDICTED) ? (TextColour)(TC_IS_PALETTE_COLOUR | TC_NO_SHADE | 4) : (show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK));
 							}
 						}
 					} else {
 						if (arr_dep[i / 2].departure != INVALID_TICKS) {
-							DrawString(abbr_left, abbr_right, y, STR_TIMETABLE_DEPARTURE_ABBREVIATION, i == selected ? TC_WHITE : TC_BLACK);
+							DrawString(abbr.left, abbr.right, tr.top, STR_TIMETABLE_DEPARTURE_ABBREVIATION, i == selected ? TC_WHITE : TC_BLACK);
 							SetDParam(0, _scaled_date_ticks + arr_dep[i/2].departure + (HasBit(arr_dep[i / 2].flags, TADF_DEPARTURE_NO_OFFSET) ? 0 : offset));
-							DrawString(time_left, time_right, y, STR_JUST_DATE_WALLCLOCK_TINY,
+							DrawString(time.left, time.right, tr.top, STR_JUST_DATE_WALLCLOCK_TINY,
 									HasBit(arr_dep[i / 2].flags, TADF_DEPARTURE_PREDICTED) ? (TextColour)(TC_IS_PALETTE_COLOUR | TC_NO_SHADE | 4) : (show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK));
 						}
 					}
-					y += line_height;
+					tr.top += line_height;
 				}
 				break;
 			}
 
 			case WID_VT_SUMMARY_PANEL: {
-				int y = r.top + WD_FRAMERECT_TOP;
+				Rect tr = r.Shrink(WidgetDimensions::scaled.framerect);
 
 				Ticks total_time = v->orders != nullptr ? v->orders->GetTimetableDurationIncomplete() : 0;
 				if (total_time != 0) {
 					SetTimetableParams(0, total_time);
-					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, v->orders->IsCompleteTimetable() ? STR_TIMETABLE_TOTAL_TIME : STR_TIMETABLE_TOTAL_TIME_INCOMPLETE);
+					DrawString(tr, v->orders->IsCompleteTimetable() ? STR_TIMETABLE_TOTAL_TIME : STR_TIMETABLE_TOTAL_TIME_INCOMPLETE);
 				}
-				y += FONT_HEIGHT_NORMAL;
+				tr.top += FONT_HEIGHT_NORMAL;
 
 				if (v->timetable_start != 0) {
 					/* We are running towards the first station so we can start the
 					 * timetable at the given time. */
 					SetDParam(0, STR_JUST_DATE_WALLCLOCK_TINY);
-					SetDParam(1, (((DateTicksScaled) v->timetable_start) * _settings_game.economy.day_length_factor) + v->timetable_start_subticks);
-					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_TIMETABLE_STATUS_START_AT);
+					SetDParam(1, DateTicksToScaledDateTicks(v->timetable_start) + v->timetable_start_subticks);
+					DrawString(tr, STR_TIMETABLE_STATUS_START_AT);
 				} else if (!HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) {
 					/* We aren't running on a timetable yet, so how can we be "on time"
 					 * when we aren't even "on service"/"on duty"? */
-					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_TIMETABLE_STATUS_NOT_STARTED);
+					DrawString(tr, STR_TIMETABLE_STATUS_NOT_STARTED);
 				} else if (v->lateness_counter == 0 || (!_settings_client.gui.timetable_in_ticks && v->lateness_counter / DATE_UNIT_SIZE == 0)) {
-					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_TIMETABLE_STATUS_ON_TIME);
+					DrawString(tr, STR_TIMETABLE_STATUS_ON_TIME);
 				} else {
 					SetTimetableParams(0, abs(v->lateness_counter));
-					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, v->lateness_counter < 0 ? STR_TIMETABLE_STATUS_EARLY : STR_TIMETABLE_STATUS_LATE);
+					DrawString(tr, v->lateness_counter < 0 ? STR_TIMETABLE_STATUS_EARLY : STR_TIMETABLE_STATUS_LATE);
 				}
-				y += FONT_HEIGHT_NORMAL;
+				tr.top += FONT_HEIGHT_NORMAL;
 
 				{
 					const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
@@ -839,18 +838,18 @@ struct TimetableWindow : GeneralVehicleWindow {
 					const bool rtl = _current_text_dir == TD_RTL;
 
 					auto draw_warning = [&](StringID text, bool warning) {
-						int left = r.left + WD_FRAMERECT_LEFT;
-						int right = r.right - WD_FRAMERECT_RIGHT;
+						int left = tr.left;
+						int right = tr.right;
 						if (warning) {
-							DrawSprite(SPR_WARNING_SIGN, 0, rtl ? right - warning_dimensions.width - 5 : left + 5, y + warning_offset_y);
+							DrawSprite(SPR_WARNING_SIGN, 0, rtl ? right - warning_dimensions.width - 5 : left + 5, tr.top + warning_offset_y);
 							if (rtl) {
 								right -= (warning_dimensions.width + 10);
 							} else {
 								left += (warning_dimensions.width + 10);
 							}
 						}
-						DrawString(left, right, y + text_offset_y, text);
-						y += step_height;
+						DrawString(left, right, tr.top + text_offset_y, text);
+						tr.top += step_height;
 					};
 
 					int warning_count = 0;
@@ -1146,7 +1145,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 			}
 
 			case WID_VT_ADD_VEH_GROUP: {
-				DoCommandP(0, VehicleListIdentifier(VL_SINGLE_VEH, v->type, v->owner, v->index).Pack(), 0, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), nullptr, str);
+				DoCommandP(0, VehicleListIdentifier(VL_SINGLE_VEH, v->type, v->owner, v->index).Pack(), CF_ANY, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), nullptr, str);
 				break;
 			}
 		}
@@ -1155,7 +1154,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 	void OnResize() override
 	{
 		/* Update the scroll bar */
-		this->vscroll->SetCapacityFromWidget(this, WID_VT_TIMETABLE_PANEL, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM);
+		this->vscroll->SetCapacityFromWidget(this, WID_VT_TIMETABLE_PANEL, WidgetDimensions::scaled.framerect.Vertical());
 	}
 
 	/**

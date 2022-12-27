@@ -206,6 +206,16 @@ STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}hp
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}ch
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW
 
+STR_UNITS_POWER_IMPERIAL_TO_WEIGHT_IMPERIAL                     :{DECIMAL}{NBSP}hp/t
+STR_UNITS_POWER_IMPERIAL_TO_WEIGHT_METRIC                       :{DECIMAL}{NBSP}hp/t
+STR_UNITS_POWER_IMPERIAL_TO_WEIGHT_SI                           :{DECIMAL}{NBSP}hp/Mg
+STR_UNITS_POWER_METRIC_TO_WEIGHT_IMPERIAL                       :{DECIMAL}{NBSP}hp/t
+STR_UNITS_POWER_METRIC_TO_WEIGHT_METRIC                         :{DECIMAL}{NBSP}hp/t
+STR_UNITS_POWER_METRIC_TO_WEIGHT_SI                             :{DECIMAL}{NBSP}hp/Mg
+STR_UNITS_POWER_SI_TO_WEIGHT_IMPERIAL                           :{DECIMAL}{NBSP}kW/t
+STR_UNITS_POWER_SI_TO_WEIGHT_METRIC                             :{DECIMAL}{NBSP}kW/t
+STR_UNITS_POWER_SI_TO_WEIGHT_SI                                 :{DECIMAL}{NBSP}W/kg
+
 STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{G=f}{COMMA}{NBSP}t
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{G=f}{COMMA}{NBSP}t
 STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}{NBSP}kg
@@ -232,8 +242,8 @@ STR_UNITS_HEIGHT_SI                                             :{COMMA}{NBSP}m
 
 # Common window strings
 STR_LIST_FILTER_TITLE                                           :{BLACK}Filtre{NBSP}:
-STR_LIST_FILTER_OSKTITLE                                        :{BLACK}Entrer le filtre
-STR_LIST_FILTER_TOOLTIP                                         :{BLACK}Entrer un mot-clé pour filtrer la liste
+STR_LIST_FILTER_OSKTITLE                                        :{BLACK}Entrer un ou plusieurs mot-clés pour filtrer la liste
+STR_LIST_FILTER_TOOLTIP                                         :{BLACK}Entrer un ou plusieurs mot-clés pour filtrer la liste
 
 STR_TOOLTIP_GROUP_ORDER                                         :{BLACK}Ordre de regroupement
 STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Choisir l'ordre de tri (croissant/décroissant)
@@ -385,7 +395,7 @@ STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}Construc
 STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION                          :{BLACK}Construction de tramway
 STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}Planter des arbres.{}Shift pour afficher seulement le coût estimé.
 STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}Placer un panneau
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Placer un objet.{}Shift pour afficher seulement le coût estimé.
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Placer un objet.{}Ctrl pour sélectionner en diagonale.{}Shift pour afficher seulement le coût estimé.
 
 # Scenario editor file menu
 ###length 7
@@ -398,10 +408,11 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Quitter
 
 # Settings menu
-###length 14
+###length 15
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Options du Jeu
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Paramètres
-STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :Configuration des scripts
+STR_SETTINGS_MENU_AI_SETTINGS                                   :Configuration des IAs
+STR_SETTINGS_MENU_GAMESCRIPT_SETTINGS                           :Configuration du script de jeu
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :Paramètres NewGRF
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Options de transparence
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Afficher le nom des villes
@@ -978,36 +989,6 @@ STR_GAME_OPTIONS_CURRENCY_INR                                   :Roupie indienne
 STR_GAME_OPTIONS_CURRENCY_IDR                                   :Roupie indonésienne (IDR)
 STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malaysian Ringgit (MYR)
 
-###length 2
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Conduite à gauche
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :Conduite à droite
-
-STR_GAME_OPTIONS_TOWN_NAMES_FRAME                               :{BLACK}Nom des villes{NBSP}:
-STR_GAME_OPTIONS_TOWN_NAMES_DROPDOWN_TOOLTIP                    :{BLACK}Sélectionner la nationalité des noms des villes
-
-###length 21
-STR_GAME_OPTIONS_TOWN_NAME_ORIGINAL_ENGLISH                     :Anglais (originaux)
-STR_GAME_OPTIONS_TOWN_NAME_FRENCH                               :Français
-STR_GAME_OPTIONS_TOWN_NAME_GERMAN                               :Allemands
-STR_GAME_OPTIONS_TOWN_NAME_ADDITIONAL_ENGLISH                   :Anglais (additionnels)
-STR_GAME_OPTIONS_TOWN_NAME_LATIN_AMERICAN                       :Latino-américains
-STR_GAME_OPTIONS_TOWN_NAME_SILLY                                :Drôles
-STR_GAME_OPTIONS_TOWN_NAME_SWEDISH                              :Suédois
-STR_GAME_OPTIONS_TOWN_NAME_DUTCH                                :Hollandais
-STR_GAME_OPTIONS_TOWN_NAME_FINNISH                              :Finlandais
-STR_GAME_OPTIONS_TOWN_NAME_POLISH                               :Polonais
-STR_GAME_OPTIONS_TOWN_NAME_SLOVAK                               :Slovaques
-STR_GAME_OPTIONS_TOWN_NAME_NORWEGIAN                            :Norvégiens
-STR_GAME_OPTIONS_TOWN_NAME_HUNGARIAN                            :Hongrois
-STR_GAME_OPTIONS_TOWN_NAME_AUSTRIAN                             :Autrichiens
-STR_GAME_OPTIONS_TOWN_NAME_ROMANIAN                             :Roumains
-STR_GAME_OPTIONS_TOWN_NAME_CZECH                                :Tchèques
-STR_GAME_OPTIONS_TOWN_NAME_SWISS                                :Suisses
-STR_GAME_OPTIONS_TOWN_NAME_DANISH                               :Danois
-STR_GAME_OPTIONS_TOWN_NAME_TURKISH                              :Turcs
-STR_GAME_OPTIONS_TOWN_NAME_ITALIAN                              :Italiens
-STR_GAME_OPTIONS_TOWN_NAME_CATALAN                              :Catalans
-
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Sauvegarde automatique
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Sélectionner l'intervalle de temps entre les sauvegardes automatiques
 
@@ -1040,21 +1021,19 @@ STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Cochez c
 
 STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}Pilote actif{NBSP}: {STRING}
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Taille d'interface
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Choisir la taille d'élément d'interface à utiliser
+STR_GAME_OPTIONS_GUI_SCALE_FRAME                                :Taille de l'interface
+STR_GAME_OPTIONS_GUI_SCALE_TOOLTIP                              :{BLACK}Faites glisser la souris pour définir la taille de l'interface. Maintenir Ctrl pour un réglage en continu
+STR_GAME_OPTIONS_GUI_SCALE_AUTO                                 :détection automatique de la taille
+STR_GAME_OPTIONS_GUI_SCALE_AUTO_TOOLTIP                         :{BLACK}Cochez cette case pour détecter automatiquement la taille de l'interface
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(auto-détection)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normal
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Taille double
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Taille quadruple
+STR_GAME_OPTIONS_GUI_SCALE_BEVELS                               :{BLACK}Mettre à l’échelle les bordures
+STR_GAME_OPTIONS_GUI_SCALE_BEVELS_TOOLTIP                       :{BLACK}Cochez cette case pour mettre les bordures à l'échelle avec la taille de l'interface
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Taille de police
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Choisir la taille de police d'interface à utiliser
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(auto-détection)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normal
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Taille double
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Taille quadruple
+STR_GAME_OPTIONS_GUI_SCALE_1X                                   :1x
+STR_GAME_OPTIONS_GUI_SCALE_2X                                   :2x
+STR_GAME_OPTIONS_GUI_SCALE_3X                                   :3x
+STR_GAME_OPTIONS_GUI_SCALE_4X                                   :4x
+STR_GAME_OPTIONS_GUI_SCALE_5X                                   :x5
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK} Graphiques
 
@@ -1106,8 +1085,6 @@ STR_CURRENCY_PREVIEW                                            :{LTBLUE}Prévis
 STR_CURRENCY_CUSTOM_CURRENCY_PREVIEW_TOOLTIP                    :{BLACK}10{NBSP}000 livres (£) dans cette devise
 STR_CURRENCY_CHANGE_PARAMETER                                   :{BLACK}Changer les paramètres de la devise personnalisée
 
-STR_DIFFICULTY_LEVEL_SETTING_MAXIMUM_NO_COMPETITORS             :{LTBLUE}Nombre maximal de concurrents{NBSP}: {ORANGE}{COMMA}
-
 STR_NONE                                                        :Aucune
 STR_FUNDING_ONLY                                                :Financement uniquement
 STR_MINIMAL                                                     :Minimal
@@ -1156,6 +1133,12 @@ STR_SUBSIDY_X1_5                                                :x1,5
 STR_SUBSIDY_X2                                                  :x2
 STR_SUBSIDY_X3                                                  :x3
 STR_SUBSIDY_X4                                                  :x4
+
+###length 4
+STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :Environnement «{NBSP}Tempéré{NBSP}»
+STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :Environnement «{NBSP}Arctique{NBSP}»
+STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :Environnement «{NBSP}Tropical{NBSP}»
+STR_CLIMATE_TOYLAND_LANDSCAPE                                   :Environnement «{NBSP}Monde des jouets{NBSP}»
 
 ###length 7
 STR_TERRAIN_TYPE_VERY_FLAT                                      :Très plat
@@ -1515,6 +1498,10 @@ STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Amélioré
 
 STR_CONFIG_SETTING_ROAD_SIDE                                    :Véhicules routiers{NBSP}: {STRING}
 STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Choisir le côté de circulation
+
+###length 2
+STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :Conduite à gauche
+STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :Conduite à droite
 
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Rotation de la carte d'altitude{NBSP}: {STRING}
 ###length 2
@@ -2050,7 +2037,7 @@ STR_CONFIG_SETTING_REVERSE_AT_SIGNALS                           :Demi-tour autom
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :Autoriser les trains a faire demi-tour à un signal, si ils attendent depuis un long moment
 ###length 2
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
-STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(recommandé)
+STR_CONFIG_SETTING_PATHFINDER_YAPF                              :YAPF {BLUE}(recommandé)
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Changer la valeur du paramètre
 
@@ -2093,7 +2080,8 @@ STR_INTRO_HIGHSCORE                                             :{BLACK}Meilleur
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Paramètres
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Paramètres NewGRF
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Vérifier le contenu en ligne
-STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}Paramètres des IA/script jeu
+STR_INTRO_AI_SETTINGS                                           :{BLACK}Configuration des IAs
+STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Configuration du script de jeu
 STR_INTRO_QUIT                                                  :{BLACK}Quitter
 
 STR_INTRO_TOOLTIP_NEW_GAME                                      :{BLACK}Démarrer une nouvelle partie. Ctrl-clic pour passer outre la configuration du terrain.
@@ -2113,7 +2101,8 @@ STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Afficher
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Afficher les paramètres
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Afficher la configuration des NewGRF
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Vérifier les contenus nouveaux ou mis à jour téléchargeables
-STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Afficher la configuration des scripts
+STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Afficher la configuration des IAs
+STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Afficher la configuration du script de jeu
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Quitter OpenTTD
 
 STR_INTRO_BASESET                                               :{BLACK}{NUM} sprite{P "" s} manque{P "" "nt"} dans les graphiques de base actuellement sélectionnés. Veuillez vérifier les mises à jours pour les graphiques de base.
@@ -2144,12 +2133,6 @@ STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}Modifier
 STR_CHEAT_CHANGE_DATE                                           :{LTBLUE}Changer la date{NBSP}: {ORANGE}{DATE_SHORT}
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Modifier l'année courante
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Permettre la modification des valeurs de production{NBSP}: {ORANGE}{STRING}
-
-###length 4
-STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :Environnement «{NBSP}Tempéré{NBSP}»
-STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :Environnement «{NBSP}Arctique{NBSP}»
-STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :Environnement «{NBSP}Tropical{NBSP}»
-STR_CHEAT_SWITCH_CLIMATE_TOYLAND_LANDSCAPE                      :Environnement «{NBSP}Monde des jouets{NBSP}»
 
 # Livery window
 STR_LIVERY_CAPTION                                              :{WHITE}{COMPANY} - Couleur
@@ -2510,13 +2493,13 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :en attente du r
 
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :départ
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} a rejoint la partie
-STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {STRING} a rejoint la partie (Client n°{NBSP}{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} a rejoint la compagnie n°{NBSP}{2:NUM}
+STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {0:STRING} a rejoint la partie (Client n°{NBSP}{2:NUM})
+STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} a rejoint la compagnie n°{NBSP}{2:NUM}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} a rejoint les spectateurs
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} a lancé une nouvelle compagnie (n°{NBSP}{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} a quitté la partie ({2:STRING})
+STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} a lancé une nouvelle compagnie (n°{NBSP}{2:NUM})
+STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} a quitté la partie ({2:STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} a changé son nom en {STRING}
-STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} a donné {2:CURRENCY_LONG} à {1:STRING}
+STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {0:STRING} a donné {2:CURRENCY_LONG} à {1:STRING}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Le serveur a fermé la session
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Le serveur redémarre...{}Veuillez patienter...
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} a été exclu. Raison{NBSP}: ({STRING})
@@ -2630,6 +2613,13 @@ STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLA
 STR_LINKGRAPH_LEGEND_SATURATED                                  :{TINY_FONT}{BLACK}saturé
 STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLACK}surchargé
 
+# Linkgraph tooltip
+STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{CARGO_LONG} à transporter par mois de {STATION} à {STATION} ({COMMA}% de la capacité){STRING}
+STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} à transporter en retour ({COMMA}% de la capacité)
+STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Temps de trajet moyen{NBSP}: {NUM}{NBSP}jour{P "" s}
+STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Temps de trajet moyen{NBSP}: {STRING}
+STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Capacité{NBSP}: {CARGO_LONG}
+
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Afficher la zone couverte
 STR_STATION_BUILD_COVERAGE_OFF                                  :{BLACK}Désactivé
@@ -2638,6 +2628,7 @@ STR_STATION_BUILD_COVERAGE_AREA_OFF_TOOLTIP                     :{BLACK}Ne pas a
 STR_STATION_BUILD_COVERAGE_AREA_ON_TOOLTIP                      :{BLACK}Afficher la zone couverte
 STR_STATION_BUILD_ACCEPTS_CARGO                                 :{BLACK}Accepte{NBSP}: {GOLD}{CARGO_LIST}
 STR_STATION_BUILD_SUPPLIES_CARGO                                :{BLACK}Fournit{NBSP}: {GOLD}{CARGO_LIST}
+STR_STATION_BUILD_INFRASTRUCTURE_COST                           :{BLACK}Coût d'entretien{NBSP}: {GOLD}{CURRENCY_SHORT}/an
 
 # Join station window
 STR_JOIN_STATION_CAPTION                                        :{WHITE}Joindre une station
@@ -2825,11 +2816,11 @@ STR_LANDSCAPING_TOOLBAR                                         :{WHITE}Manipula
 STR_LANDSCAPING_TOOLTIP_LOWER_A_CORNER_OF_LAND                  :{BLACK}Abaisser le terrain.{}Glisser abaisse le premier coin sélectionné et nivelle la zone sélectionnée à cette nouvelle hauteur.{}Ctrl pour sélectionner en diagonale.{}Shift pour afficher seulement le coût estimé.
 STR_LANDSCAPING_TOOLTIP_RAISE_A_CORNER_OF_LAND                  :{BLACK}Élever le terrain.{}Glisser élève le premier coin sélectionné et nivelle la zone sélectionnée à cette nouvelle hauteur.{}Ctrl pour sélectionner en diagonale.{}Shift pour afficher seulement le coût estimé.
 STR_LANDSCAPING_LEVEL_LAND_TOOLTIP                              :{BLACK}Niveler le terrain à la hauteur du premier coin sélectionné.{}Ctrl pour sélectionner en diagonale.{}Shift pour afficher seulement le coût estimé.
-STR_LANDSCAPING_TOOLTIP_PURCHASE_LAND                           :{BLACK}Acheter le terrain pour une utilisation ultérieure.{}Shift pour afficher seulement le coût estimé.
+STR_LANDSCAPING_TOOLTIP_PURCHASE_LAND                           :{BLACK}Acheter le terrain pour une utilisation ultérieure.{}Ctrl pour sélectionner en diagonale.{}Shift pour afficher seulement le coût estimé.
 
 # Object construction window
 STR_OBJECT_BUILD_CAPTION                                        :{WHITE}Sélection de l'objet
-STR_OBJECT_BUILD_TOOLTIP                                        :{BLACK}Sélectionner l'objet à construire.{}Shift pour afficher seulement le coût estimé.
+STR_OBJECT_BUILD_TOOLTIP                                        :{BLACK}Sélectionner l'objet à construire.{}Ctrl pour sélectionner en diagonale.{}Shift pour afficher seulement le coût estimé.
 STR_OBJECT_BUILD_CLASS_TOOLTIP                                  :{BLACK}Choisir le type d'objet à construire
 STR_OBJECT_BUILD_PREVIEW_TOOLTIP                                :{BLACK}Aperçu de l'objet
 STR_OBJECT_BUILD_SIZE                                           :{BLACK}Taille{NBSP}: {GOLD}{NUM}{NBSP}×{NBSP}{NUM} cases
@@ -3151,6 +3142,8 @@ STR_MAPGEN_MAPSIZE                                              :{BLACK}Taille d
 STR_MAPGEN_MAPSIZE_TOOLTIP                                      :{BLACK}Définir la taille de la carte en cases. Le nombre de cases utilisables sera légèrement plus petit
 STR_MAPGEN_BY                                                   :{BLACK}{NBSP}×
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Nb. de villes{NBSP}:
+STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Nom des villes{NBSP}:
+STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Sélectionner la nationalité des noms des villes
 STR_MAPGEN_DATE                                                 :{BLACK}Date{NBSP}:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Nb. d'industries{NBSP}:
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Sommet le plus élevé:
@@ -3169,11 +3162,40 @@ STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Augmente
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Baisser l'altitude d'enneigement
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Générateur{NBSP}:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Type de terrain{NBSP}:
-STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Niveau de la mer{NBSP}:
+STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Niveau de la mer{NBSP}:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Nb. de rivières{NBSP}:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Lissage{NBSP}:
 STR_MAPGEN_VARIETY                                              :{BLACK}Variété de distribution{NBSP}:
 STR_MAPGEN_GENERATE                                             :{WHITE}Créer
+STR_MAPGEN_NEWGRF_SETTINGS                                      :{BLACK}Paramètres NewGRF
+STR_MAPGEN_NEWGRF_SETTINGS_TOOLTIP                              :{BLACK}Afficher la configuration des NewGRF
+STR_MAPGEN_AI_SETTINGS                                          :{BLACK}Paramètres des IAs
+STR_MAPGEN_AI_SETTINGS_TOOLTIP                                  :{BLACK}Afficher la configuration des IAs
+STR_MAPGEN_GS_SETTINGS                                          :{BLACK}Configuration du script de jeu
+STR_MAPGEN_GS_SETTINGS_TOOLTIP                                  :{BLACK}Afficher la configuration du script de jeu
+
+###length 21
+STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH                           :Anglais (originaux)
+STR_MAPGEN_TOWN_NAME_FRENCH                                     :Français
+STR_MAPGEN_TOWN_NAME_GERMAN                                     :Allemands
+STR_MAPGEN_TOWN_NAME_ADDITIONAL_ENGLISH                         :Anglais (additionnels)
+STR_MAPGEN_TOWN_NAME_LATIN_AMERICAN                             :Latino-américains
+STR_MAPGEN_TOWN_NAME_SILLY                                      :Drôles
+STR_MAPGEN_TOWN_NAME_SWEDISH                                    :Suédois
+STR_MAPGEN_TOWN_NAME_DUTCH                                      :Hollandais
+STR_MAPGEN_TOWN_NAME_FINNISH                                    :Finlandais
+STR_MAPGEN_TOWN_NAME_POLISH                                     :Polonais
+STR_MAPGEN_TOWN_NAME_SLOVAK                                     :Slovaques
+STR_MAPGEN_TOWN_NAME_NORWEGIAN                                  :Norvégiens
+STR_MAPGEN_TOWN_NAME_HUNGARIAN                                  :Hongrois
+STR_MAPGEN_TOWN_NAME_AUSTRIAN                                   :Autrichiens
+STR_MAPGEN_TOWN_NAME_ROMANIAN                                   :Roumains
+STR_MAPGEN_TOWN_NAME_CZECH                                      :Tchèques
+STR_MAPGEN_TOWN_NAME_SWISS                                      :Suisses
+STR_MAPGEN_TOWN_NAME_DANISH                                     :Danois
+STR_MAPGEN_TOWN_NAME_TURKISH                                    :Turcs
+STR_MAPGEN_TOWN_NAME_ITALIAN                                    :Italiens
+STR_MAPGEN_TOWN_NAME_CATALAN                                    :Catalans
 
 # Strings for map borders at game generation
 STR_MAPGEN_BORDER_TYPE                                          :{BLACK}Bords de la carte{NBSP}:
@@ -3320,6 +3342,10 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Sprite p
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Se rendre au précédent sprite normal, en ignorant les pseudo-sprites et les sprites de recoloration et de police, et en bouclant du premier vers le dernier
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Representation du sprite actuellement séléctionné. L'alignement est ignoré lors de l'affichage de ce sprite
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Déplacer le sprite, en modifiant les décalages X et Y. Ctrl-clic pour déplacer le sprite de 8 unités à la fois.
+
+###length 2
+
+
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Réinitialiser les relatifs
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Réinitialiser les décalages relatifs courants
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}Décalage X{NBSP}: {NUM}, décalage Y{NBSP}: {NUM} (Absolu)
@@ -3337,15 +3363,15 @@ STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Erreur fat
 STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Une erreur NewGRF fatale est survenue{NBSP}:{}{STRING}
 STR_NEWGRF_ERROR_POPUP                                          :{WHITE}Une erreur NewGRF est survenue{NBSP}:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} ne fonctionnera pas avec la version de TTDPatch rapportée par OpenTTD
-STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} est conçu pour la version {STRING} de TTD
-STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} est conçu pour être utilisé avec {STRING}
-STR_NEWGRF_ERROR_INVALID_PARAMETER                              :Paramètre invalide pour {1:STRING}{NBSP}: paramètre {STRING} ({NUM})
-STR_NEWGRF_ERROR_LOAD_BEFORE                                    :{1:STRING} doit être chargé avant {STRING}
-STR_NEWGRF_ERROR_LOAD_AFTER                                     :{1:STRING} doit être chargé après {STRING}
-STR_NEWGRF_ERROR_OTTD_VERSION_NUMBER                            :{1:STRING} nécessite OpenTTD version {STRING} ou supérieure
+STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} est conçu pour la version {2:STRING} de TTD
+STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} est conçu pour être utilisé avec {2:STRING}
+STR_NEWGRF_ERROR_INVALID_PARAMETER                              :Paramètre invalide pour {1:STRING}{NBSP}: paramètre {2:STRING} ({3:NUM})
+STR_NEWGRF_ERROR_LOAD_BEFORE                                    :{1:STRING} doit être chargé avant {2:STRING}
+STR_NEWGRF_ERROR_LOAD_AFTER                                     :{1:STRING} doit être chargé après {2:STRING}
+STR_NEWGRF_ERROR_OTTD_VERSION_NUMBER                            :{1:STRING} nécessite OpenTTD version {2:STRING} ou supérieure
 STR_NEWGRF_ERROR_AFTER_TRANSLATED_FILE                          :le fichier GRF qu'il doit traduire
 STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED                        :Trop de NewGRFs sont chargés
-STR_NEWGRF_ERROR_STATIC_GRF_CAUSES_DESYNC                       :Charger {1:STRING} comme NewGRF statique avec {STRING} peut provoquer des erreurs de synchronisation
+STR_NEWGRF_ERROR_STATIC_GRF_CAUSES_DESYNC                       :Charger {1:STRING} comme NewGRF statique avec {2:STRING} peut provoquer des erreurs de synchronisation
 STR_NEWGRF_ERROR_UNEXPECTED_SPRITE                              :Sprite inattendu (sprite {3:NUM})
 STR_NEWGRF_ERROR_UNKNOWN_PROPERTY                               :Action 0 avec propriété inconnue {4:HEX} (sprite {3:NUM})
 STR_NEWGRF_ERROR_INVALID_ID                                     :Tentative d'utilisation d'un identifiant invalide (sprite {3:NUM})
@@ -3477,14 +3503,14 @@ STR_LOCAL_AUTHORITY_ACTION_EXCLUSIVE_TRANSPORT                  :Acheter les dro
 STR_LOCAL_AUTHORITY_ACTION_BRIBE                                :Corrompre la municipalité
 
 ###length 8
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING            :{YELLOW}Lancez une petite campagne de publicité locale pour attirer plus de passagers et de marchandises vers vos services de transport.{} Augmente temporairement le classement des gares dans un petit rayon autour du centre-ville.{}Coût: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING           :{YELLOW}Lancer une campagne de publicité moyenne, pour attirer plus de voyageurs et de marchandises sur vos lignes.{}Augmente temporairement le classement de vos gares dans un rayon moyen autour du centre-ville.{}Coût:{CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING            :{YELLOW}Lancer une grande campagne de publicité, pour attirer plus de voyageurs et de marchandises sur vos lignes.{}Augmente temporairement le classement des gares dans un rayon important autour du centre-ville.{}Coût: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION          :{YELLOW}Financer la reconstruction du réseau routier local. Provoque de nombreux problèmes de trafic routier pendant 6 mois.{}Coût: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{YELLOW}Construire une statue en l'honneur de votre compagnie.{}Augmente en permanence le classement de vos stations dans cette ville.{}Coût:{CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{YELLOW}Financer la construction de nouveaux immeubles commerciaux.{}Stimule temporairement la croissance dans cette ville.{}Coût:{CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{YELLOW}Achetez les droits de transport exclusifs d'un an pour la ville.{} La municipalité n'autorisera pas les passagers et les marchandises à utiliser les gares de vos concurrents.{} Coût: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Corrompre la municipalité pour améliorer votre réputation. Risque de pénalisation si le pot-de-vin est dévoilé.{}Coût{NBSP}: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING            :{PUSH_COLOUR}{YELLOW}Lancez une petite campagne de publicité locale pour attirer plus de passagers et de marchandises vers vos services de transport.{}Fournit une amélioration temporaire de la note des gares dans un petit rayon autour du centre-ville.{}{POP_COLOUR}Coût{NBSP}: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING           :{PUSH_COLOUR}{YELLOW}Lancer une campagne de publicité moyenne, pour attirer plus de voyageurs et de marchandises sur vos lignes.{}Augmente temporairement le classement de vos gares dans un rayon moyen autour du centre-ville.{}{POP_COLOUR}Coût{NBSP}:{CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING            :{PUSH_COLOUR}{YELLOW}Lancer une grande campagne de publicité, pour attirer plus de voyageurs et de marchandises sur vos lignes.{}Augmente temporairement le classement des gares dans un rayon important autour du centre-ville.{}{POP_COLOUR}Coût{NBSP}: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION          :{PUSH_COLOUR}{YELLOW}Financer la reconstruction du réseau routier.{}Provoque une perturbation considérable du trafic pendant 6 mois au maximum.{}{POP_COLOUR}Coût : {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{PUSH_COLOUR}{YELLOW}Construire une statue en l'honneur de votre compagnie.{}Augmente en permanence le classement de vos stations dans cette ville.{}{POP_COLOUR}Coût{NBSP}:{CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{PUSH_COLOUR}{YELLOW}Financer la construction de nouveaux immeubles commerciaux.{}Stimule temporairement la croissance dans cette ville.{}{POP_COLOUR}Coût{NBSP}:{CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{PUSH_COLOUR}{YELLOW}Achetez les droits de transport exclusifs d'un an pour la ville.{} La municipalité n'autorisera pas les passagers et les marchandises à utiliser les gares de vos concurrents.{}{POP_COLOUR}Coût{NBSP}: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{PUSH_COLOUR}{YELLOW}Corrompre la municipalité pour améliorer votre réputation. Risque de pénalisation si le pot-de-vin est dévoilé.{}{POP_COLOUR}Coût{NBSP}: {CURRENCY_LONG}
 
 # Goal window
 STR_GOALS_CAPTION                                               :{WHITE}Objectifs de {COMPANY}
@@ -3657,15 +3683,18 @@ STR_FINANCES_SECTION_SHIP_REVENUE                               :{GOLD}Navires
 STR_FINANCES_SECTION_LOAN_INTEREST                              :{GOLD}Intérêts du prêt
 STR_FINANCES_SECTION_OTHER                                      :{GOLD}Autres
 
+STR_FINANCES_TOTAL_CAPTION                                      :{WHITE}Total
 STR_FINANCES_NEGATIVE_INCOME                                    :-{CURRENCY_LONG}
+STR_FINANCES_ZERO_INCOME                                        :{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :+{CURRENCY_LONG}
-STR_FINANCES_NET_PROFIT                                         :{WHITE}Bénéfice net
+STR_FINANCES_PROFIT                                             :{WHITE}Profit
 STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}Solde bancaire
 STR_FINANCES_OWN_FUNDS_TITLE                                    :{WHITE}Fonds propres
 STR_FINANCES_LOAN_TITLE                                         :{WHITE}Emprunt
 STR_FINANCES_INTEREST_RATE                                      :{WHITE}Taux d'intérêt de l'emprunt{NBSP}: {BLACK}{NUM}%
 STR_FINANCES_MAX_LOAN                                           :{WHITE}Emprunt maximum{NBSP}: {BLACK}{CURRENCY_LONG}
 STR_FINANCES_TOTAL_CURRENCY                                     :{BLACK}{CURRENCY_LONG}
+STR_FINANCES_BANK_BALANCE                                       :{WHITE}{CURRENCY_LONG}
 STR_FINANCES_BORROW_BUTTON                                      :{BLACK}Emprunter {CURRENCY_LONG}
 STR_FINANCES_BORROW_TOOLTIP                                     :{BLACK}Augmenter l'emprunt. Ctrl-clic pour emprunter autant que possible.
 STR_FINANCES_REPAY_BUTTON                                       :{BLACK}Rembourser {CURRENCY_LONG}
@@ -3766,7 +3795,7 @@ STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Produit{
 STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :, {STRING}{STRING}
 
 STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Nécessite{NBSP}:
-STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}{BLACK}{3:STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{0:STRING}{BLACK}{3:STRING}
 STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{STRING}{BLACK}{NBSP}: {CARGO_SHORT} en attente{STRING}
 
 STR_CONFIG_GAME_PRODUCTION                                      :{WHITE}Changer la production (multiple de 8, max. 2040)
@@ -3887,6 +3916,11 @@ STR_PURCHASE_INFO_ALL_BUT                                       :Tous sauf {CARG
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Effort de traction max.{NBSP}: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Rayon d'action{NBSP}: {GOLD}{COMMA}{NBSP}cases
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Type d'aéronef{NBSP}: {GOLD}{STRING}
+
+###length 3
+STR_CARGO_TYPE_FILTER_ALL                                       :Tous les types de cargaison
+STR_CARGO_TYPE_FILTER_FREIGHT                                   :Fret
+STR_CARGO_TYPE_FILTER_NONE                                      :Aucun
 
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Choix du véhicule. Cliquer sur un véhicule pour obtenir des informations. Ctrl-clic pour basculer le masquage du type de véhicule
@@ -4056,7 +4090,7 @@ STR_ENGINE_PREVIEW_AIRCRAFT                                     :{G=m2}aéronef
 STR_ENGINE_PREVIEW_SHIP                                         :{G=m}navire
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Prix{NBSP}: {CURRENCY_LONG} − Poids{NBSP}: {WEIGHT_SHORT}{}Vitesse{NBSP}: {VELOCITY} − Puissance{NBSP}: {POWER}{}Coûts d'entretien{NBSP}: {CURRENCY_LONG}/an{}Capacité{NBSP}: {CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Prix{NBSP}: {CURRENCY_LONG} − Poids{NBSP}: {WEIGHT_SHORT}{}Vitesse{NBSP}: {VELOCITY} − Puissance{NBSP}: {POWER}{}Effort de traction max.{NBSP}: {6:FORCE}{}Coûts d'entretien{NBSP}: {4:CURRENCY_LONG}/an{}Capacité{NBSP}: {5:CARGO_LONG}
+STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Prix{NBSP}: {0:CURRENCY_LONG} − Poids{NBSP}: {1:WEIGHT_SHORT}{}Vitesse{NBSP}: {2:VELOCITY} − Puissance{NBSP}: {3:POWER}{}Effort de traction max.{NBSP}: {6:FORCE}{}Coûts d'entretien{NBSP}: {4:CURRENCY_LONG}/an{}Capacité{NBSP}: {5:CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Prix{NBSP}: {CURRENCY_LONG} − Vitesse max.{NBSP}: {VELOCITY}{}Capacité{NBSP}: {CARGO_LONG}{}Coûts d'entretien{NBSP}: {CURRENCY_LONG}/an
 STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_CAP_RUNCOST          :{BLACK}Prix{NBSP}: {CURRENCY_LONG} - Vitesse max.{NBSP}: {VELOCITY}{}Type d'aéronef{NBSP}: {STRING}{}Capacité{NBSP}: {CARGO_LONG}, {CARGO_LONG}{}Coûts d'entretien{NBSP}: {CURRENCY_LONG}/an
 STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_RUNCOST              :{BLACK}Prix{NBSP}: {CURRENCY_LONG} - Vitesse max.{NBSP}: {VELOCITY}{}Type d'aéronef{NBSP}: {STRING}{}Capacité{NBSP}: {CARGO_LONG}{}Coûts d'entretien{NBSP}: {CURRENCY_LONG}/an
@@ -4215,12 +4249,13 @@ STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Poids{NB
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Poids{NBSP}: {LTBLUE}{WEIGHT_SHORT}{BLACK} − Puissance{NBSP}: {LTBLUE}{POWER}{BLACK} − Vitesse max.{NBSP}: {LTBLUE}{VELOCITY}{BLACK} − E.T. max.{NBSP}: {LTBLUE}{FORCE}
 
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Profit cette année{NBSP}: {LTBLUE}{CURRENCY_LONG} (année précédente{NBSP}: {CURRENCY_LONG})
+STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}Profit cette année{NBSP}: {LTBLUE}{CURRENCY_LONG} (année précédente{NBSP}: {CURRENCY_LONG}) {BLACK}Performance min.{NBSP}: {LTBLUE}{POWER_TO_WEIGHT}
 STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Fiabilité{NBSP}: {LTBLUE}{COMMA}{NBSP}%{BLACK} − Pannes depuis le dernier entretien{NBSP}: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE}{BLACK} − Construit en{NBSP}: {LTBLUE}{NUM}{BLACK} − Valeur{NBSP}: {LTBLUE}{CURRENCY_LONG}
 STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}Capacité{NBSP}: {LTBLUE}Aucune{STRING}
-STR_VEHICLE_INFO_CAPACITY                                       :{BLACK}Capacité{NBSP}: {LTBLUE}{CARGO_LONG}{3:STRING}
-STR_VEHICLE_INFO_CAPACITY_MULT                                  :{BLACK}Capacité{NBSP}: {LTBLUE}{CARGO_LONG}{3:STRING} (x{4:NUM})
+STR_VEHICLE_INFO_CAPACITY                                       :{BLACK}Capacité{NBSP}: {LTBLUE}{0:CARGO_LONG}{3:STRING}
+STR_VEHICLE_INFO_CAPACITY_MULT                                  :{BLACK}Capacité{NBSP}: {LTBLUE}{0:CARGO_LONG}{3:STRING} (x{4:NUM})
 STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}Capacité{NBSP}: {LTBLUE}{CARGO_LONG}, {CARGO_LONG}{STRING}
 
 STR_VEHICLE_INFO_FEEDER_CARGO_VALUE                             :{BLACK}Crédits de transfert{NBSP}: {LTBLUE}{CURRENCY_LONG}
@@ -4541,19 +4576,21 @@ STR_AI_DEBUG_CONTINUE                                           :{BLACK}Continue
 STR_AI_DEBUG_CONTINUE_TOOLTIP                                   :{BLACK}Reprendre la partie et continuer l'IA
 STR_AI_DEBUG_SELECT_AI_TOOLTIP                                  :{BLACK}Afficher la sortie de débogage de cette IA
 STR_AI_GAME_SCRIPT                                              :{BLACK}Script de jeu
-STR_AI_GAME_SCRIPT_TOOLTIP                                      :{BLACK}Examiner le journal des scripts de jeu
+STR_AI_GAME_SCRIPT_TOOLTIP                                      :{BLACK}Examiner le journal du script de jeu
 
 STR_ERROR_AI_NO_AI_FOUND                                        :Aucune IA n'a été trouvée.{}Cette IA est factice et ne fera rien.{}Vous pouvez télécharger diverses IA via le système de «{NBSP}Contenu en ligne{NBSP}».
 STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}L'un des scripts a rencontré un problème. Merci de rapporter ceci à l'auteur du script avec une capture d'écran de la fenêtre de débogage de scripts.
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}La fenêtre de débogage de scripts n'est disponible que pour le serveur
 
 # AI configuration window
-STR_AI_CONFIG_CAPTION                                           :{WHITE}Configuration d'IA et de scripts de jeu
+STR_AI_CONFIG_CAPTION_AI                                        :{WHITE}Configuration d'IA
+STR_AI_CONFIG_CAPTION_GAMESCRIPT                                :{WHITE}Configuration du script de jeu
 STR_AI_CONFIG_GAMELIST_TOOLTIP                                  :{BLACK}Le script de jeu qui sera chargé dans la prochaine partie
 STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}Les IAs qui seront chargées dans la prochaine partie
 STR_AI_CONFIG_HUMAN_PLAYER                                      :Joueur humain
 STR_AI_CONFIG_RANDOM_AI                                         :IA aléatoire
 STR_AI_CONFIG_NONE                                              :(aucun)
+STR_AI_CONFIG_MAX_COMPETITORS                                   :{LTBLUE}Nombre maximal de concurrents{NBSP}: {ORANGE}{COMMA}
 
 STR_AI_CONFIG_MOVE_UP                                           :{BLACK}Déplacer vers le haut
 STR_AI_CONFIG_MOVE_UP_TOOLTIP                                   :{BLACK}Déplacer l'IA sélectionnée vers le haut
@@ -4561,12 +4598,11 @@ STR_AI_CONFIG_MOVE_DOWN                                         :{BLACK}Déplace
 STR_AI_CONFIG_MOVE_DOWN_TOOLTIP                                 :{BLACK}Déplacer l'IA sélectionnée vers le bas
 
 STR_AI_CONFIG_GAMESCRIPT                                        :{SILVER}Script de jeu
+STR_AI_CONFIG_GAMESCRIPT_PARAM                                  :{SILVER}Paramètres
 STR_AI_CONFIG_AI                                                :{SILVER}IA
 
-STR_AI_CONFIG_CHANGE                                            :{BLACK}Sélectionner {STRING}
-STR_AI_CONFIG_CHANGE_NONE                                       :
-STR_AI_CONFIG_CHANGE_AI                                         :IA
-STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :Script de jeu
+STR_AI_CONFIG_CHANGE_AI                                         :{BLACK}Sélectionner une IA
+STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :{BLACK}Sélectionner le script de jeu
 STR_AI_CONFIG_CHANGE_TOOLTIP                                    :{BLACK}Charger un autre script
 STR_AI_CONFIG_CONFIGURE                                         :{BLACK}Configurer
 STR_AI_CONFIG_CONFIGURE_TOOLTIP                                 :{BLACK}Configurer les paramètres du script
@@ -4595,9 +4631,7 @@ STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Capture 
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Capture d'écran de la mini-carte
 
 # AI Parameters
-STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Paramètres
-STR_AI_SETTINGS_CAPTION_AI                                      :IA
-STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Script de jeu
+STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}Paramètres de l'IA
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Fermer
 STR_AI_SETTINGS_RESET                                           :{BLACK}Réinitialiser
 STR_AI_SETTINGS_SETTING                                         :{STRING}{NBSP}: {ORANGE}{STRING}
@@ -4942,6 +4976,7 @@ STR_ERROR_OBJECT_IN_THE_WAY                                     :{WHITE}Objet pr
 STR_ERROR_COMPANY_HEADQUARTERS_IN                               :{WHITE}... siège de la compagnie présent
 STR_ERROR_CAN_T_PURCHASE_THIS_LAND                              :{WHITE}Impossible d'acheter ce terrain...
 STR_ERROR_YOU_ALREADY_OWN_IT                                    :{WHITE}... il vous appartient déjà{NBSP}!
+STR_ERROR_BUILD_OBJECT_LIMIT_REACHED                            :{WHITE}...{NBSP}limite de construction d'objets atteinte
 
 # Group related errors
 STR_ERROR_GROUP_CAN_T_CREATE                                    :{WHITE}Impossible de créer le groupe...
@@ -5013,6 +5048,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Trop de 
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Impossible de modifier l'intervalle de service...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... véhicule détruit
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Aucun véhicule ne sera disponible
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Modifier votre configuration NewGRF

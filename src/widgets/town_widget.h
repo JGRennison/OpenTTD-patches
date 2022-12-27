@@ -29,6 +29,8 @@ enum TownAuthorityWidgets {
 	WID_TA_SCROLLBAR,    ///< Scrollbar of the list of commands.
 	WID_TA_ACTION_INFO,  ///< Additional information about the action.
 	WID_TA_EXECUTE,      ///< Do-it button.
+	WID_TA_SETTING,      ///< Setting drop-down.
+	WID_TA_BTN_SEL,      ///< Button selector.
 };
 
 /** Widgets of the #TownViewWindow class. */

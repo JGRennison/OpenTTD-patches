@@ -515,6 +515,7 @@ STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}к
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}к.с.
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}кВт
 
+
 STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA}{NBSP}т
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}{NBSP}т
 STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}{NBSP}кг
@@ -696,10 +697,9 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Выхад
 
 # Settings menu
-###length 14
+###length 15
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Наладкі гульні
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Наладкі
-STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :Наладкі ШІ / скрыпту
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :Наладкі NewGRF
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Наладкі празрыстасьці
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Паказваць назвы гарадоў
@@ -1265,36 +1265,6 @@ STR_GAME_OPTIONS_CURRENCY_CNY                                   :Кітайск�
 STR_GAME_OPTIONS_CURRENCY_HKD                                   :Ганконскі даляр (HKD)
 STR_GAME_OPTIONS_CURRENCY_INR                                   :Індыйская рупія (INR)
 
-###length 2
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Езьдзіць леваруч
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :Езьдзіць праваруч
-
-STR_GAME_OPTIONS_TOWN_NAMES_FRAME                               :{BLACK}Назвы гарадоў
-STR_GAME_OPTIONS_TOWN_NAMES_DROPDOWN_TOOLTIP                    :{BLACK}На якой мове будуць назвы населеных пунктаў
-
-###length 21
-STR_GAME_OPTIONS_TOWN_NAME_ORIGINAL_ENGLISH                     :Анґельскія (арыґінальныя)
-STR_GAME_OPTIONS_TOWN_NAME_FRENCH                               :Францускія
-STR_GAME_OPTIONS_TOWN_NAME_GERMAN                               :Нямецкія
-STR_GAME_OPTIONS_TOWN_NAME_ADDITIONAL_ENGLISH                   :Анґельскія (дадатковыя)
-STR_GAME_OPTIONS_TOWN_NAME_LATIN_AMERICAN                       :Лацінаамэрыканскія
-STR_GAME_OPTIONS_TOWN_NAME_SILLY                                :Анґельскія (жартоўныя)
-STR_GAME_OPTIONS_TOWN_NAME_SWEDISH                              :Швэдзкія
-STR_GAME_OPTIONS_TOWN_NAME_DUTCH                                :Нідэрляндзкія
-STR_GAME_OPTIONS_TOWN_NAME_FINNISH                              :Фінскія
-STR_GAME_OPTIONS_TOWN_NAME_POLISH                               :Польскія
-STR_GAME_OPTIONS_TOWN_NAME_SLOVAK                               :Славацкія
-STR_GAME_OPTIONS_TOWN_NAME_NORWEGIAN                            :Нарвэскія
-STR_GAME_OPTIONS_TOWN_NAME_HUNGARIAN                            :Вугорскія
-STR_GAME_OPTIONS_TOWN_NAME_AUSTRIAN                             :Аўстрыйскія
-STR_GAME_OPTIONS_TOWN_NAME_ROMANIAN                             :Румынскія
-STR_GAME_OPTIONS_TOWN_NAME_CZECH                                :Чэскія
-STR_GAME_OPTIONS_TOWN_NAME_SWISS                                :Швайцарскія
-STR_GAME_OPTIONS_TOWN_NAME_DANISH                               :Дацкія
-STR_GAME_OPTIONS_TOWN_NAME_TURKISH                              :Турэцкія
-STR_GAME_OPTIONS_TOWN_NAME_ITALIAN                              :Італьянскія
-STR_GAME_OPTIONS_TOWN_NAME_CATALAN                              :Каталёнскія
-
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Аўтазахаваньне
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Інтэрвал паміж аўтаматычнымі захаваньнямі гульні
 
@@ -1319,18 +1289,8 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :Iншае
 
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Памер элементаў інтэрфейсу
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Выберыце памер элементаў інтэрфейсу
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Звычайны
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Падвоены
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Пачацвяроны
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Памер шрыфта
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Абярыце памер шрыфта, выкарыстоўванага ў гульні
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Звычайны
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Падвоены
 
 
 STR_GAME_OPTIONS_REFRESH_RATE                                   :{BLACK}Чашчыня абнаўлення экрана
@@ -1377,8 +1337,6 @@ STR_CURRENCY_INCREASE_CUSTOM_CURRENCY_TO_EURO_TOOLTIP           :{BLACK}Пера
 STR_CURRENCY_PREVIEW                                            :{LTBLUE}Узор: {ORANGE}{CURRENCY_LONG}
 STR_CURRENCY_CUSTOM_CURRENCY_PREVIEW_TOOLTIP                    :{BLACK}10000 брыт. фунтаў (£) у вашай валюце
 STR_CURRENCY_CHANGE_PARAMETER                                   :{BLACK}Зьмяніць парамэтр уласнай валюты
-
-STR_DIFFICULTY_LEVEL_SETTING_MAXIMUM_NO_COMPETITORS             :{LTBLUE}Максымальная колькасьць канкурэнтаў: {ORANGE}{COMMA}
 
 STR_NONE                                                        :Няма
 STR_FUNDING_ONLY                                                :Будаваць самому
@@ -1428,6 +1386,12 @@ STR_SUBSIDY_X1_5                                                :x1.5
 STR_SUBSIDY_X2                                                  :x2
 STR_SUBSIDY_X3                                                  :x3
 STR_SUBSIDY_X4                                                  :x4
+
+###length 4
+STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :умераны ляндшафт
+STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :субарктычны ляндшафт
+STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :субтрапічны ляндшафт
+STR_CLIMATE_TOYLAND_LANDSCAPE                                   :цацачны ляндшафт
 
 ###length 7
 STR_TERRAIN_TYPE_VERY_FLAT                                      :Вельмі пляскатая
@@ -1769,6 +1733,10 @@ STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Палепша�
 
 STR_CONFIG_SETTING_ROAD_SIDE                                    :Рух аўтатранспарту: {STRING}
 STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Выберыце бок дарогі, па якому рухаецца аўтатранспарт
+
+###length 2
+STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :Езьдзіць леваруч
+STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :Езьдзіць праваруч
 
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Кручэньне мапы вышыняў: {STRING}
 ###length 2
@@ -2266,7 +2234,7 @@ STR_CONFIG_SETTING_REVERSE_AT_SIGNALS                           :Аўтамат�
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :Дазволіць цягнікам разварочвацца перад сыґналамі, калі яны чакаюць доўгі час.
 ###length 2
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
-STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(рэкамэндуецца)
+STR_CONFIG_SETTING_PATHFINDER_YAPF                              :YAPF {BLUE}(рэкамэндуецца)
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Зьмяніць значэньне
 
@@ -2307,7 +2275,6 @@ STR_INTRO_HIGHSCORE                                             :{BLACK}Табл
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Наладкі
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Наладкi NewGRF
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Праверыць анлайн-кантэнт
-STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}Наладкі ШІ / скрыпту
 STR_INTRO_QUIT                                                  :{BLACK}Выхад
 
 STR_INTRO_TOOLTIP_NEW_GAME                                      :{BLACK}Пачаць новую гульню. Ctrl+клік прапускае этап наладак мапы
@@ -2327,7 +2294,6 @@ STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Пака
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Акно наладак
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Паказаць наладкі NewGRF
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Праверыць новы й абноўлены кантэнт, каб спампаваць
-STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Зьмяніць наладкі ШІ ды гульнёвага скрыпту
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Выйсьці з OpenTTD
 
 STR_INTRO_BASESET                                               :{BLACK}У абраным наборы базавай графікі адсутнічае {NUM} спрайт{P "" а аў}. Калі ласка, абнавіце набор графікі.
@@ -2356,12 +2322,6 @@ STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}Зьмя
 STR_CHEAT_CHANGE_DATE                                           :{LTBLUE}Зьмяненьне даты: {ORANGE}{DATE_SHORT}
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Зьмяніць бягучы год
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Дазволіць зьмяненьне прадукцыйнасьці: {ORANGE}{STRING}
-
-###length 4
-STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :умераны ляндшафт
-STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :субарктычны ляндшафт
-STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :субтрапічны ляндшафт
-STR_CHEAT_SWITCH_CLIMATE_TOYLAND_LANDSCAPE                      :цацачны ляндшафт
 
 # Livery window
 STR_LIVERY_CAPTION                                              :{WHITE}Колеры кампаніі «{COMPANY}»
@@ -2790,6 +2750,8 @@ STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP                            :{BLACK}{STRING}
 STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}нявыкарыст.
 STR_LINKGRAPH_LEGEND_SATURATED                                  :{TINY_FONT}{BLACK}насычана
 STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLACK}перагруз
+
+# Linkgraph tooltip
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Падсьветка зоны пакрыцьця
@@ -3279,6 +3241,8 @@ STR_MAPGEN_MAPSIZE                                              :{BLACK}Паме
 STR_MAPGEN_MAPSIZE_TOOLTIP                                      :{BLACK}Выберыце памер памы ў клетках. Колькасьць даступных клетак будзе трохі меншай
 STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Колькасьць гарадоў:
+STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Назвы гарадоў
+STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}На якой мове будуць назвы населеных пунктаў
 STR_MAPGEN_DATE                                                 :{BLACK}Дата:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Колькасьць прадпрыемстваў:
 STR_MAPGEN_SNOW_COVERAGE_TEXT                                   :{BLACK}{NUM}%
@@ -3288,11 +3252,34 @@ STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Падн
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Апусьціць сьнегавую лінію
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Ґенэратар ляндшафту:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Тып ляндшафту:
-STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Колькасьць азёраў/мораў:
+STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Колькасьць азёраў/мораў:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Колькасьць рэк:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Гладкасьць:
 STR_MAPGEN_VARIETY                                              :{BLACK}Разнастайнасьць ляндшафту:
 STR_MAPGEN_GENERATE                                             :{WHITE}Стварыць
+
+###length 21
+STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH                           :Анґельскія (арыґінальныя)
+STR_MAPGEN_TOWN_NAME_FRENCH                                     :Францускія
+STR_MAPGEN_TOWN_NAME_GERMAN                                     :Нямецкія
+STR_MAPGEN_TOWN_NAME_ADDITIONAL_ENGLISH                         :Анґельскія (дадатковыя)
+STR_MAPGEN_TOWN_NAME_LATIN_AMERICAN                             :Лацінаамэрыканскія
+STR_MAPGEN_TOWN_NAME_SILLY                                      :Анґельскія (жартоўныя)
+STR_MAPGEN_TOWN_NAME_SWEDISH                                    :Швэдзкія
+STR_MAPGEN_TOWN_NAME_DUTCH                                      :Нідэрляндзкія
+STR_MAPGEN_TOWN_NAME_FINNISH                                    :Фінскія
+STR_MAPGEN_TOWN_NAME_POLISH                                     :Польскія
+STR_MAPGEN_TOWN_NAME_SLOVAK                                     :Славацкія
+STR_MAPGEN_TOWN_NAME_NORWEGIAN                                  :Нарвэскія
+STR_MAPGEN_TOWN_NAME_HUNGARIAN                                  :Вугорскія
+STR_MAPGEN_TOWN_NAME_AUSTRIAN                                   :Аўстрыйскія
+STR_MAPGEN_TOWN_NAME_ROMANIAN                                   :Румынскія
+STR_MAPGEN_TOWN_NAME_CZECH                                      :Чэскія
+STR_MAPGEN_TOWN_NAME_SWISS                                      :Швайцарскія
+STR_MAPGEN_TOWN_NAME_DANISH                                     :Дацкія
+STR_MAPGEN_TOWN_NAME_TURKISH                                    :Турэцкія
+STR_MAPGEN_TOWN_NAME_ITALIAN                                    :Італьянскія
+STR_MAPGEN_TOWN_NAME_CATALAN                                    :Каталёнскія
 
 # Strings for map borders at game generation
 STR_MAPGEN_BORDER_TYPE                                          :{BLACK}Краі мапы:
@@ -3433,6 +3420,10 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Папя
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Перайсьці да папярэдняга звычайнага спрайта, прапускаючы змяняючыя колер, шрыфтавыя, псэўдаспрайты. Пераход з пачатку сьпісу да апошняга спрайта.
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Прадстаўленьне выбранага спрайта. Выраўноўваньне не ўлічваецца пры прарысоўцы гэтага спрайта.
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Рухайце спрайт, зьмяняючы зрушэньне па X і па Y. Ctrl+пстрычка, каб зрушыць спрайт на восем адзінак за раз
+
+###length 2
+
+
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Скід зрушэння
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Скінуць значэнні адноснага зрушэння
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}Зрушэнне X: {NUM}; зрушэнне Y: {NUM} (абсалютнае)
@@ -3972,6 +3963,8 @@ STR_PURCHASE_INFO_ALL_BUT                                       :Усё, акр�
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Макс. цягавае намаганьне: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Далёкасьць: {GOLD}{COMMA} клет{P ка кi ак}
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Тып паветр. судна: {GOLD}{STRING}
+
+###length 3
 
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Сьпіс лакаматываў і вагонаў - пстрыкніце для атрыманьня інфармацыі. Ctrl+пстрычка схавае/пакажа ТС.
@@ -4633,12 +4626,12 @@ STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}Адзі
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}Вакно адладкі ШІ / скрыпту даступна толькі для сэрвэра
 
 # AI configuration window
-STR_AI_CONFIG_CAPTION                                           :{WHITE}Канфігурацыя ШІ / скрыпту
 STR_AI_CONFIG_GAMELIST_TOOLTIP                                  :{BLACK}Гульнёвы скрыпт, які будзе загружаны ў наступнай гульні
 STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}Модулі ШІ, якія будуць загружаны ў наступнай гульні
 STR_AI_CONFIG_HUMAN_PLAYER                                      :Чалавек
 STR_AI_CONFIG_RANDOM_AI                                         :Выпадковы ШI
 STR_AI_CONFIG_NONE                                              :(няма)
+STR_AI_CONFIG_MAX_COMPETITORS                                   :{LTBLUE}Максымальная колькасьць канкурэнтаў: {ORANGE}{COMMA}
 
 STR_AI_CONFIG_MOVE_UP                                           :{BLACK}Уверх
 STR_AI_CONFIG_MOVE_UP_TOOLTIP                                   :{BLACK}Перамясьціць гэты модуль ШI ўверх па сьпісе
@@ -4648,8 +4641,6 @@ STR_AI_CONFIG_MOVE_DOWN_TOOLTIP                                 :{BLACK}Пера
 STR_AI_CONFIG_GAMESCRIPT                                        :{SILVER}Гульнёвы скрыпт
 STR_AI_CONFIG_AI                                                :{SILVER}ШI
 
-STR_AI_CONFIG_CHANGE                                            :{BLACK}Выбраць {STRING}
-STR_AI_CONFIG_CHANGE_NONE                                       :
 STR_AI_CONFIG_CHANGE_AI                                         :ШI
 STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :Гульнёвы скрыпт
 STR_AI_CONFIG_CHANGE_TOOLTIP                                    :{BLACK}Загрузіць іншы скрыпт
@@ -4674,9 +4665,7 @@ STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Не з�
 STR_SCREENSHOT_ZOOMIN_SCREENSHOT                                :{BLACK}Бачная вобласць у максімальным набліжэнні
 
 # AI Parameters
-STR_AI_SETTINGS_CAPTION                                         :{WHITE}Параметры {STRING}
 STR_AI_SETTINGS_CAPTION_AI                                      :ШI
-STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Гульнёвы скрыпт
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Закрыць
 STR_AI_SETTINGS_RESET                                           :{BLACK}Ськід
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
@@ -5083,6 +5072,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Зана
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Не атрымалася зьмяніць інтэрвал абслугоўваньня...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... транспартны сродак зьнішчаны
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Усе транспартныя сродкі будуць недаступныя
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Зьмяніце канфігурацыю модуля NewGRF

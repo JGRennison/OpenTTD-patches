@@ -37,7 +37,7 @@ static inline bool IsValidRoadBits(RoadBits r)
  */
 static inline RoadBits ComplementRoadBits(RoadBits r)
 {
-	assert(IsValidRoadBits(r));
+	dbg_assert(IsValidRoadBits(r));
 	return (RoadBits)(ROAD_ALL ^ r);
 }
 
@@ -51,7 +51,7 @@ static inline RoadBits ComplementRoadBits(RoadBits r)
  */
 static inline RoadBits MirrorRoadBits(RoadBits r)
 {
-	assert(IsValidRoadBits(r));
+	dbg_assert(IsValidRoadBits(r));
 	return (RoadBits)(GB(r, 0, 2) << 2 | GB(r, 2, 2));
 }
 
@@ -66,7 +66,7 @@ static inline RoadBits MirrorRoadBits(RoadBits r)
  */
 static inline RoadBits RotateRoadBits(RoadBits r, DiagDirDiff rot)
 {
-	assert(IsValidRoadBits(r));
+	dbg_assert(IsValidRoadBits(r));
 	for (; rot > (DiagDirDiff)0; rot--) {
 		r = (RoadBits)(GB(r, 0, 1) << 3 | GB(r, 1, 3));
 	}
@@ -81,7 +81,7 @@ static inline RoadBits RotateRoadBits(RoadBits r, DiagDirDiff rot)
  */
 static inline bool IsStraightRoad(RoadBits r)
 {
-	assert(IsValidRoadBits(r));
+	dbg_assert(IsValidRoadBits(r));
 	return (r == ROAD_X || r == ROAD_Y);
 }
 
@@ -96,7 +96,7 @@ static inline bool IsStraightRoad(RoadBits r)
  */
 static inline RoadBits DiagDirToRoadBits(DiagDirection d)
 {
-	assert(IsValidDiagDirection(d));
+	dbg_assert(IsValidDiagDirection(d));
 	return (RoadBits)(ROAD_NW << (3 ^ d));
 }
 
@@ -111,7 +111,7 @@ static inline RoadBits DiagDirToRoadBits(DiagDirection d)
  */
 static inline RoadBits AxisToRoadBits(Axis a)
 {
-	assert(IsValidAxis(a));
+	dbg_assert(IsValidAxis(a));
 	return a == AXIS_X ? ROAD_X : ROAD_Y;
 }
 
@@ -125,7 +125,7 @@ static inline RoadBits AxisToRoadBits(Axis a)
  */
 static inline Money RoadMaintenanceCost(RoadType roadtype, uint32 num, uint32 total_num)
 {
-	assert(roadtype < ROADTYPE_END);
+	dbg_assert(roadtype < ROADTYPE_END);
 	return (_price[PR_INFRASTRUCTURE_ROAD] * GetRoadTypeInfo(roadtype)->maintenance_multiplier * num * (1 + IntSqrt(total_num))) >> 12;
 }
 
@@ -135,7 +135,7 @@ static inline Money RoadMaintenanceCost(RoadType roadtype, uint32 num, uint32 to
  */
 static inline bool HasRoadCatenary(RoadType roadtype)
 {
-	assert(roadtype < ROADTYPE_END);
+	dbg_assert(roadtype < ROADTYPE_END);
 	return HasBit(GetRoadTypeInfo(roadtype)->flags, ROTF_CATENARY);
 }
 
@@ -162,7 +162,7 @@ void UpdateRoadCachedOneWayStatesAroundTile(TileIndex tile);
 void UpdateCompanyRoadInfrastructure(RoadType rt, Owner o, int count);
 
 struct TileInfo;
-void DrawRoadOverlays(const TileInfo *ti, PaletteID pal, const RoadTypeInfo *road_rti, const RoadTypeInfo *tram_rit, uint road_offset, uint tram_offset);
+void DrawRoadOverlays(const TileInfo *ti, PaletteID pal, const RoadTypeInfo *road_rti, const RoadTypeInfo *tram_rit, uint road_offset, uint tram_offset, bool draw_underlay = true);
 
 inline bool RoadLayoutChangeNotificationEnabled(bool added)
 {

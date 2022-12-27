@@ -187,6 +187,23 @@ uint32 RoadStopScopeResolver::GetVariable(uint16 variable, uint32 parameter, Get
 			return ssl.grfid;
 		}
 
+		/* Road info of nearby tiles */
+		case 0x6B: {
+			if (this->tile == INVALID_TILE) return 0xFFFFFFFF;
+			TileIndex nearby_tile = GetNearbyTile(parameter, this->tile);
+
+			if (!IsNormalRoadTile(nearby_tile)) return 0xFFFFFFFF;
+
+			RoadBits road = GetRoadBits(nearby_tile, RTT_ROAD);
+			RoadBits tram = GetRoadBits(nearby_tile, RTT_TRAM);
+			Slope tileh = GetTileSlope(nearby_tile);
+			extern uint GetRoadSpriteOffset(Slope slope, RoadBits bits);
+			uint road_offset = (road == 0) ? 0xFF : GetRoadSpriteOffset(tileh, road);
+			uint tram_offset = (tram == 0) ? 0xFF : GetRoadSpriteOffset(tileh, tram);
+
+			return (tram_offset << 16) | (road_offset << 8) | (tram << 4) | (road);
+		}
+
 		case 0xF0: return this->st == nullptr ? 0 : this->st->facilities; // facilities
 
 		case 0xFA: return Clamp((this->st == nullptr ? _date : this->st->build_date) - DAYS_TILL_ORIGINAL_BASE_YEAR, 0, 65535); // build date
@@ -333,7 +350,7 @@ uint16 GetAnimRoadStopCallback(CallbackID callback, uint32 param1, uint32 param2
 
 struct RoadStopAnimationFrameAnimationHelper {
 	static byte Get(BaseStation *st, TileIndex tile) { return st->GetRoadStopAnimationFrame(tile); }
-	static void Set(BaseStation *st, TileIndex tile, byte frame) { st->SetRoadStopAnimationFrame(tile, frame); }
+	static bool Set(BaseStation *st, TileIndex tile, byte frame) { return st->SetRoadStopAnimationFrame(tile, frame); }
 };
 
 /** Helper class for animation control. */
@@ -477,17 +494,18 @@ void TriggerRoadStopRandomisation(Station *st, TileIndex tile, RoadStopRandomTri
 
 /**
  * Checks if there's any new stations by a specific RoadStopType
- * @param rs the RoadStopType to check for.
- * @return true if there was any new RoadStopSpec's found for the given RoadStopType, else false.
+ * @param rs the RoadStopType to check.
+ * @param roadtype the RoadType to check.
+ * @return true if there was any new RoadStopSpec's found for the given RoadStopType and RoadType, else false.
  */
-bool GetIfNewStopsByType(RoadStopType rs)
+bool GetIfNewStopsByType(RoadStopType rs, RoadType roadtype)
 {
 	if (!(RoadStopClass::GetClassCount() > 1 || RoadStopClass::Get(ROADSTOP_CLASS_DFLT)->GetSpecCount() > 1)) return false;
 	for (uint i = 0; i < RoadStopClass::GetClassCount(); i++) {
 		// We don't want to check the default or waypoint classes. These classes are always available.
 		if (i == ROADSTOP_CLASS_DFLT || i == ROADSTOP_CLASS_WAYP) continue;
 		RoadStopClass *roadstopclass = RoadStopClass::Get((RoadStopClassID)i);
-		if (GetIfClassHasNewStopsByType(roadstopclass, rs)) return true;
+		if (GetIfClassHasNewStopsByType(roadstopclass, rs, roadtype)) return true;
 	}
 	return false;
 }
@@ -495,13 +513,14 @@ bool GetIfNewStopsByType(RoadStopType rs)
 /**
  * Checks if the given RoadStopClass has any specs assigned to it, compatible with the given RoadStopType.
  * @param roadstopclass the RoadStopClass to check.
- * @param rs the RoadStopType to check by.
- * @return true if the roadstopclass has any specs compatible with the given RoadStopType.
+ * @param rs the RoadStopType to check.
+ * @param roadtype the RoadType to check.
+ * @return true if the RoadStopSpec has any specs compatible with the given RoadStopType and RoadType.
  */
-bool GetIfClassHasNewStopsByType(RoadStopClass *roadstopclass, RoadStopType rs)
+bool GetIfClassHasNewStopsByType(RoadStopClass *roadstopclass, RoadStopType rs, RoadType roadtype)
 {
 	for (uint j = 0; j < roadstopclass->GetSpecCount(); j++) {
-		if (GetIfStopIsForType(roadstopclass->GetSpec(j), rs)) return true;
+		if (GetIfStopIsForType(roadstopclass->GetSpec(j), rs, roadtype)) return true;
 	}
 	return false;
 }
@@ -509,13 +528,18 @@ bool GetIfClassHasNewStopsByType(RoadStopClass *roadstopclass, RoadStopType rs)
 /**
  * Checks if the given RoadStopSpec is compatible with the given RoadStopType.
  * @param roadstopspec the RoadStopSpec to check.
- * @param rs the RoadStopType to check by.
- * @return true if the roadstopspec is compatible with the given RoadStopType.
+ * @param rs the RoadStopType to check.
+ * @param roadtype the RoadType to check.
+ * @return true if the RoadStopSpec is compatible with the given RoadStopType and RoadType.
  */
-bool GetIfStopIsForType(const RoadStopSpec *roadstopspec, RoadStopType rs)
+bool GetIfStopIsForType(const RoadStopSpec *roadstopspec, RoadStopType rs, RoadType roadtype)
 {
 	// The roadstopspec is nullptr, must be the default station, always return true.
 	if (roadstopspec == nullptr) return true;
+
+	if (HasBit(roadstopspec->flags, RSF_BUILD_MENU_ROAD_ONLY) && !RoadTypeIsRoad(roadtype)) return false;
+	if (HasBit(roadstopspec->flags, RSF_BUILD_MENU_TRAM_ONLY) && !RoadTypeIsTram(roadtype)) return false;
+
 	if (roadstopspec->stop_type == ROADSTOPTYPE_ALL) return true;
 
 	switch (rs) {
@@ -531,7 +555,7 @@ const RoadStopSpec *GetRoadStopSpec(TileIndex t)
 
 	const BaseStation *st = BaseStation::GetByTile(t);
 	uint specindex = GetCustomRoadStopSpecIndex(t);
-	return specindex < st->num_roadstop_specs ? st->roadstop_speclist[specindex].spec : nullptr;
+	return specindex < st->roadstop_speclist.size() ? st->roadstop_speclist[specindex].spec : nullptr;
 }
 
 int AllocateRoadStopSpecToStation(const RoadStopSpec *statspec, BaseStation *st, bool exec)
@@ -541,12 +565,12 @@ int AllocateRoadStopSpecToStation(const RoadStopSpec *statspec, BaseStation *st,
 	if (statspec == nullptr || st == nullptr) return 0;
 
 	/* Try to find the same spec and return that one */
-	for (i = 1; i < st->num_roadstop_specs && i < NUM_ROADSTOPSPECS_PER_STATION; i++) {
+	for (i = 1; i < st->roadstop_speclist.size() && i < NUM_ROADSTOPSPECS_PER_STATION; i++) {
 		if (st->roadstop_speclist[i].spec == statspec) return i;
 	}
 
 	/* Try to find an unused spec slot */
-	for (i = 1; i < st->num_roadstop_specs && i < NUM_ROADSTOPSPECS_PER_STATION; i++) {
+	for (i = 1; i < st->roadstop_speclist.size() && i < NUM_ROADSTOPSPECS_PER_STATION; i++) {
 		if (st->roadstop_speclist[i].spec == nullptr && st->roadstop_speclist[i].grfid == 0) break;
 	}
 
@@ -556,18 +580,7 @@ int AllocateRoadStopSpecToStation(const RoadStopSpec *statspec, BaseStation *st,
 	}
 
 	if (exec) {
-		if (i >= st->num_roadstop_specs) {
-			st->num_roadstop_specs = i + 1;
-			st->roadstop_speclist = ReallocT(st->roadstop_speclist, st->num_roadstop_specs);
-
-			if (st->num_roadstop_specs == 2) {
-				/* Initial allocation */
-				st->roadstop_speclist[0].spec     = nullptr;
-				st->roadstop_speclist[0].grfid    = 0;
-				st->roadstop_speclist[0].localidx = 0;
-			}
-		}
-
+		if (i >= st->roadstop_speclist.size()) st->roadstop_speclist.resize(i + 1);
 		st->roadstop_speclist[i].spec     = statspec;
 		st->roadstop_speclist[i].grfid    = statspec->grf_prop.grffile->grfid;
 		st->roadstop_speclist[i].localidx = statspec->grf_prop.local_id;
@@ -596,15 +609,16 @@ void DeallocateRoadStopSpecFromStation(BaseStation *st, byte specindex)
 	st->roadstop_speclist[specindex].localidx = 0;
 
 	/* If this was the highest spec index, reallocate */
-	if (specindex == st->num_roadstop_specs - 1) {
-		for (; st->roadstop_speclist[st->num_roadstop_specs - 1].grfid == 0 && st->num_roadstop_specs > 1; st->num_roadstop_specs--) {}
+	if (specindex == st->roadstop_speclist.size() - 1) {
+		size_t num_specs;
+		for (num_specs = st->roadstop_speclist.size() - 1; num_specs > 0; num_specs--) {
+			if (st->roadstop_speclist[num_specs].grfid != 0) break;
+		}
 
-		if (st->num_roadstop_specs > 1) {
-			st->roadstop_speclist = ReallocT(st->roadstop_speclist, st->num_roadstop_specs);
+		if (num_specs > 0) {
+			st->roadstop_speclist.resize(num_specs + 1);
 		} else {
-			free(st->roadstop_speclist);
-			st->num_roadstop_specs = 0;
-			st->roadstop_speclist  = nullptr;
+			st->roadstop_speclist.clear();
 			st->cached_roadstop_anim_triggers = 0;
 			st->cached_roadstop_cargo_triggers = 0;
 			return;
@@ -625,7 +639,7 @@ void StationUpdateRoadStopCachedTriggers(BaseStation *st)
 
 	/* Combine animation trigger bitmask for all road stop specs
 	 * of this station. */
-	for (uint i = 0; i < st->num_roadstop_specs; i++) {
+	for (uint i = 0; i < st->roadstop_speclist.size(); i++) {
 		const RoadStopSpec *ss = st->roadstop_speclist[i].spec;
 		if (ss != nullptr) {
 			st->cached_roadstop_anim_triggers |= ss->animation.triggers;

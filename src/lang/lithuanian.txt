@@ -400,6 +400,7 @@ STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}AG
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}AG
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW
 
+
 STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA}{NBSP}t
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}{NBSP}t
 STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}{NBSP}kg
@@ -590,10 +591,9 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Išeiti
 
 # Settings menu
-###length 14
+###length 15
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Pagrindinės nuostatos
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Išplėstinės nuostatos
-STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :Dirbtinio intelekto nuostatos
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :Plėtinių nuostatos
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Skaidrumo nuostatos
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Miestų pavadinimai
@@ -1179,36 +1179,6 @@ STR_GAME_OPTIONS_CURRENCY_INR                                   :Indijos rupijos
 STR_GAME_OPTIONS_CURRENCY_IDR                                   :Indonezijos rupijos (IDR)
 STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malaizijos ringitai (MYR)
 
-###length 2
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Kairiąja puse
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :Dešiniąja puse
-
-STR_GAME_OPTIONS_TOWN_NAMES_FRAME                               :{BLACK}Miestų pavadinimai:
-STR_GAME_OPTIONS_TOWN_NAMES_DROPDOWN_TOOLTIP                    :{BLACK}Pasirink miestų pavadinimų tipą
-
-###length 21
-STR_GAME_OPTIONS_TOWN_NAME_ORIGINAL_ENGLISH                     :Anglų (Oginalus)
-STR_GAME_OPTIONS_TOWN_NAME_FRENCH                               :Prancūzų
-STR_GAME_OPTIONS_TOWN_NAME_GERMAN                               :Vokiečių
-STR_GAME_OPTIONS_TOWN_NAME_ADDITIONAL_ENGLISH                   :Anglų (Papildomas)
-STR_GAME_OPTIONS_TOWN_NAME_LATIN_AMERICAN                       :Lotynų-Amerikos
-STR_GAME_OPTIONS_TOWN_NAME_SILLY                                :Kvaili
-STR_GAME_OPTIONS_TOWN_NAME_SWEDISH                              :Švedų
-STR_GAME_OPTIONS_TOWN_NAME_DUTCH                                :Olandų
-STR_GAME_OPTIONS_TOWN_NAME_FINNISH                              :Suomių
-STR_GAME_OPTIONS_TOWN_NAME_POLISH                               :Lenkų
-STR_GAME_OPTIONS_TOWN_NAME_SLOVAK                               :Slovakų
-STR_GAME_OPTIONS_TOWN_NAME_NORWEGIAN                            :Norvegų
-STR_GAME_OPTIONS_TOWN_NAME_HUNGARIAN                            :Vengrų
-STR_GAME_OPTIONS_TOWN_NAME_AUSTRIAN                             :Austrų
-STR_GAME_OPTIONS_TOWN_NAME_ROMANIAN                             :Rumunų
-STR_GAME_OPTIONS_TOWN_NAME_CZECH                                :Čekų
-STR_GAME_OPTIONS_TOWN_NAME_SWISS                                :Šveicarų
-STR_GAME_OPTIONS_TOWN_NAME_DANISH                               :Danų
-STR_GAME_OPTIONS_TOWN_NAME_TURKISH                              :Turkiški
-STR_GAME_OPTIONS_TOWN_NAME_ITALIAN                              :Italų
-STR_GAME_OPTIONS_TOWN_NAME_CATALAN                              :Katalonų
-
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Automatinis išsaugojimas
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Pasirink, kaip dažnai išsaugoti žaidimą
 
@@ -1239,21 +1209,8 @@ STR_GAME_OPTIONS_VIDEO_ACCELERATION_RESTART                     :{WHITE}Kad pake
 STR_GAME_OPTIONS_VIDEO_VSYNC                                    :{BLACK}Vertikalioji sinchronizacija (VSync)
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Sąsajos elementų dydis
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Pasirinkite vartotojo sąsajos elementų santykinį dydį
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(aptikti automatiškai)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normalus
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dvigubas
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Keturgubas
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Šrifto dydis
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Pasirinkite vartotojo sąsajos šrifto dydį
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(aptikti automatiškai)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normalus
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Dvigubas
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Keturgubas
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Grafika
 
@@ -1305,8 +1262,6 @@ STR_CURRENCY_PREVIEW                                            :{LTBLUE}Perži�
 STR_CURRENCY_CUSTOM_CURRENCY_PREVIEW_TOOLTIP                    :{BLACK}10000 svarų (£) jūsų valiuta
 STR_CURRENCY_CHANGE_PARAMETER                                   :{BLACK}Keisti pasirinktos valiutos nustatymus
 
-STR_DIFFICULTY_LEVEL_SETTING_MAXIMUM_NO_COMPETITORS             :{LTBLUE}Didžiausias priešininkų skaičius: {ORANGE}{COMMA}
-
 STR_NONE                                                        :Nėra
 STR_FUNDING_ONLY                                                :Tik finansavimas
 STR_MINIMAL                                                     :Mažiausias
@@ -1355,6 +1310,12 @@ STR_SUBSIDY_X1_5                                                :x1.5
 STR_SUBSIDY_X2                                                  :x2
 STR_SUBSIDY_X3                                                  :x3
 STR_SUBSIDY_X4                                                  :x4
+
+###length 4
+STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :Normalus klimatas
+STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :Sub-arktinis klimatas
+STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :Sub-tropinis klimatas
+STR_CLIMATE_TOYLAND_LANDSCAPE                                   :'Žaislinis' klimatas
 
 ###length 7
 STR_TERRAIN_TYPE_VERY_FLAT                                      :Tik lygumos
@@ -1710,6 +1671,10 @@ STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Naujasis
 
 STR_CONFIG_SETTING_ROAD_SIDE                                    :Automobilių eismas: {STRING}
 STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Eismo pusė
+
+###length 2
+STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :Kairiąja puse
+STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :Dešiniąja puse
 
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Aukščių žemėlapio pasukimas: {STRING}
 ###length 2
@@ -2251,7 +2216,7 @@ STR_CONFIG_SETTING_REVERSE_AT_SIGNALS                           :Apsisukimas pri
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :Leisti traukiniams apsisukti ir bandyti važiuoti priešinga kryptimi, jei ties šviesoforu jiems tenka laukti pernelyg ilgai
 ###length 2
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
-STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Rekomenduojama)
+STR_CONFIG_SETTING_PATHFINDER_YAPF                              :YAPF {BLUE}(Rekomenduojama)
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Keisti reikšmes
 
@@ -2294,7 +2259,6 @@ STR_INTRO_HIGHSCORE                                             :{BLACK}Nugalėt
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Išplėstinės nuostatos
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Plėtiniai
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Interneto turinys
-STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}Dirbtinio intelekto nuostatos
 STR_INTRO_QUIT                                                  :{BLACK}Išeiti
 
 STR_INTRO_TOOLTIP_NEW_GAME                                      :{BLACK}Pradėti naują žaidimą. Spragtelėjus laikant nuspaustą Ctrl klavišą, naujas žemėlapis bus sugeneruotas nedelsiant ir nieko nebeklausiant
@@ -2314,7 +2278,6 @@ STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Rodyti n
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Rodyti išplėstines nuostatas
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Rodyti parsisiųstus plėtinius ir jų nuostatas
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Tikrinti, ar nėra naujų plėtinių arba atnaujinimų jau atsisiųstiems plėtiniams
-STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Rodyti dirbtinio intelekto nuostatas
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Išeiti iš „OpenTTD“ žaidimo
 
 STR_INTRO_BASESET                                               :{BLACK}Šiuo metu pasirinktame grafikos rinkinyje trūksta {NUM} sprukl{P io ių ių}. Patikrinkite, ar nėra naujinių.
@@ -2345,12 +2308,6 @@ STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}Keisti d
 STR_CHEAT_CHANGE_DATE                                           :{LTBLUE}Pakeisti datą: {ORANGE} {DATE_SHORT}
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Pakeisti dabartinius metus
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Leisti keisti produkcijos vertes: {ORANGE}{STRING}
-
-###length 4
-STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :Normalus klimatas
-STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :Sub-arktinis klimatas
-STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :Sub-tropinis klimatas
-STR_CHEAT_SWITCH_CLIMATE_TOYLAND_LANDSCAPE                      :'Žaislinis' klimatas
 
 # Livery window
 STR_LIVERY_CAPTION                                              :{WHITE}{COMPANY} - Kompanijos spalvos
@@ -2778,6 +2735,8 @@ STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP                            :{BLACK}{STRING}
 STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}nenaudojamas
 STR_LINKGRAPH_LEGEND_SATURATED                                  :{TINY_FONT}{BLACK}optimalus
 STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLACK}perkrautas
+
+# Linkgraph tooltip
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Rodyti aptarnaujamą teritoriją?
@@ -3299,6 +3258,8 @@ STR_MAPGEN_MAPSIZE                                              :{BLACK}Žemėla
 STR_MAPGEN_MAPSIZE_TOOLTIP                                      :{BLACK}Pasirinkite žemėlapio dydį langeliais. Prieinamų langelių skaičius bus šiek tiek mažesnis.
 STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Miestų kiekis:
+STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Miestų pavadinimai:
+STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Pasirink miestų pavadinimų tipą
 STR_MAPGEN_DATE                                                 :{BLACK}Pradžios data:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Pramonės įmonių kiekis:
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Didžiausias aukštis
@@ -3317,11 +3278,34 @@ STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Paaukšt
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Pažeminti sniego liniją
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Generavimo algoritmas:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Vietovės tipas:
-STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Jūros lygis:
+STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Jūros lygis:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Upių kiekis:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Jautrumas:
 STR_MAPGEN_VARIETY                                              :{BLACK}Įvairovės paskirstymas:
 STR_MAPGEN_GENERATE                                             :{WHITE}Sukurti
+
+###length 21
+STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH                           :Anglų (Oginalus)
+STR_MAPGEN_TOWN_NAME_FRENCH                                     :Prancūzų
+STR_MAPGEN_TOWN_NAME_GERMAN                                     :Vokiečių
+STR_MAPGEN_TOWN_NAME_ADDITIONAL_ENGLISH                         :Anglų (Papildomas)
+STR_MAPGEN_TOWN_NAME_LATIN_AMERICAN                             :Lotynų-Amerikos
+STR_MAPGEN_TOWN_NAME_SILLY                                      :Kvaili
+STR_MAPGEN_TOWN_NAME_SWEDISH                                    :Švedų
+STR_MAPGEN_TOWN_NAME_DUTCH                                      :Olandų
+STR_MAPGEN_TOWN_NAME_FINNISH                                    :Suomių
+STR_MAPGEN_TOWN_NAME_POLISH                                     :Lenkų
+STR_MAPGEN_TOWN_NAME_SLOVAK                                     :Slovakų
+STR_MAPGEN_TOWN_NAME_NORWEGIAN                                  :Norvegų
+STR_MAPGEN_TOWN_NAME_HUNGARIAN                                  :Vengrų
+STR_MAPGEN_TOWN_NAME_AUSTRIAN                                   :Austrų
+STR_MAPGEN_TOWN_NAME_ROMANIAN                                   :Rumunų
+STR_MAPGEN_TOWN_NAME_CZECH                                      :Čekų
+STR_MAPGEN_TOWN_NAME_SWISS                                      :Šveicarų
+STR_MAPGEN_TOWN_NAME_DANISH                                     :Danų
+STR_MAPGEN_TOWN_NAME_TURKISH                                    :Turkiški
+STR_MAPGEN_TOWN_NAME_ITALIAN                                    :Italų
+STR_MAPGEN_TOWN_NAME_CATALAN                                    :Katalonų
 
 # Strings for map borders at game generation
 STR_MAPGEN_BORDER_TYPE                                          :{BLACK}Žemėlapio kraštai:
@@ -3468,6 +3452,10 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Ankstesn
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Įkelti ankstesnį spruklį
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Pasirinkto spruklio atvaizdas, nekreipiant dėmesio į lygiavimą
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Paslinkti spruklį, keičiant X ir Y poslinkius. Spragtelėjus laikant nuspaustą Ctrl klavišą, spruklys bus slenkamas po aštuonis vienetus
+
+###length 2
+
+
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Atkurti
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Atkurti numatytuosius santykinius poslinkius
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X poslinkis: {NUM}, Y poslinkis: {NUM} (Absoliutus)
@@ -4023,6 +4011,8 @@ STR_PURCHASE_INFO_ALL_BUT                                       :visiems krovini
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Didž. traukos jėga: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Nuotolis: {GOLD}{COMMA} langeliai
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Tipas: {GOLD}{STRING}
+
+###length 3
 
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Lokomotyvų ir vagonų sąrašas. Spragtelėjus bus parodyta platesnė informacija. Spragtelėjus laikant nuspaustą Ctrl klavišą, lokomotyvas ar vagonas bus slepiamas/rodomas sąraše
@@ -4737,12 +4727,12 @@ STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}Vienas i
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}DI / GameScript derinimo langas yra pasiekiamas tik iš serverio
 
 # AI configuration window
-STR_AI_CONFIG_CAPTION                                           :{WHITE}DI / Žaidimo Nustatymai
 STR_AI_CONFIG_GAMELIST_TOOLTIP                                  :{BLACK}Žaidimo skriptas bus įkeltas sekančiame žaidime
 STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}DI'ai bus įkelti sekančiame žaidime
 STR_AI_CONFIG_HUMAN_PLAYER                                      :Žaidėjas Žmogus
 STR_AI_CONFIG_RANDOM_AI                                         :Atsitiktinis DI
 STR_AI_CONFIG_NONE                                              :(tuščia)
+STR_AI_CONFIG_MAX_COMPETITORS                                   :{LTBLUE}Didžiausias priešininkų skaičius: {ORANGE}{COMMA}
 
 STR_AI_CONFIG_MOVE_UP                                           :{BLACK}Perkelti aukščiau
 STR_AI_CONFIG_MOVE_UP_TOOLTIP                                   :{BLACK}Perkelti pasirinktą DI aukščiau
@@ -4752,8 +4742,6 @@ STR_AI_CONFIG_MOVE_DOWN_TOOLTIP                                 :{BLACK}Perkelti
 STR_AI_CONFIG_GAMESCRIPT                                        :{SILVER}Žaidimo skriptas
 STR_AI_CONFIG_AI                                                :{SILVER}DI'ai
 
-STR_AI_CONFIG_CHANGE                                            :{BLACK}Pasirinkti {STRING}
-STR_AI_CONFIG_CHANGE_NONE                                       :
 STR_AI_CONFIG_CHANGE_AI                                         :DI
 STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :Žaidimo skriptas
 STR_AI_CONFIG_CHANGE_TOOLTIP                                    :{BLACK}Užkrauti kitą skriptą
@@ -4784,9 +4772,7 @@ STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Teminio 
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Mini žemėlapio kopija
 
 # AI Parameters
-STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Parametrai
 STR_AI_SETTINGS_CAPTION_AI                                      :DI
-STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Žaidimo skriptas
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Uždaryti
 STR_AI_SETTINGS_RESET                                           :{BLACK}Atstatyti
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
@@ -5202,6 +5188,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Per daug
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Aptarnavimo intervalo keisti negalima...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... automobilis sunaikintas
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Nebus įmanoma įsigyti jokių transporto priemonių
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Pakeiskite plėtinių nuostatas

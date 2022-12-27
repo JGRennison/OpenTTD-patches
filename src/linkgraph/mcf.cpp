@@ -112,8 +112,10 @@ public:
 class GraphEdgeIterator {
 private:
 	LinkGraphJob &job; ///< Job being executed
-	EdgeIterator i;    ///< Iterator pointing to current edge.
-	EdgeIterator end;  ///< Iterator pointing beyond last edge.
+	LinkGraph::EdgeMatrix::const_iterator i;     ///< Iterator pointing to current edge.
+	LinkGraph::EdgeMatrix::const_iterator end;   ///< Iterator pointing beyond last edge.
+	NodeID node;                                 ///< Source node
+	const LinkGraph::BaseEdge *saved;            ///< Saved edge
 
 public:
 
@@ -122,7 +124,7 @@ public:
 	 * @param job Job to iterate on.
 	 */
 	GraphEdgeIterator(LinkGraphJob &job) : job(job),
-		i(nullptr, nullptr, INVALID_NODE), end(nullptr, nullptr, INVALID_NODE)
+		i(LinkGraph::EdgeMatrix::const_iterator()), end(LinkGraph::EdgeMatrix::const_iterator()), node(INVALID_NODE), saved(nullptr)
 	{}
 
 	/**
@@ -132,8 +134,9 @@ public:
 	 */
 	void SetNode(NodeID source, NodeID node)
 	{
-		this->i = this->job[node].Begin();
-		this->end = this->job[node].End();
+		this->i = this->job.Graph().GetEdges().lower_bound(std::make_pair(node, (NodeID)0));
+		this->end = this->job.Graph().GetEdges().end();
+		this->node = node;
 	}
 
 	/**
@@ -142,8 +145,18 @@ public:
 	 */
 	NodeID Next()
 	{
-		return this->i != this->end ? (this->i++)->first : INVALID_NODE;
+		if (this->i == this->end) return INVALID_NODE;
+		NodeID from = this->i->first.first;
+		NodeID to = this->i->first.second;
+		if (from != this->node) return INVALID_NODE;
+		this->saved = &(this->i->second);
+		++this->i;
+		return to;
 	}
+
+	bool SavedEdge() const { return true; }
+
+	const LinkGraph::BaseEdge &GetSavedEdge() { return *(this->saved); }
 };
 
 /**
@@ -205,6 +218,10 @@ public:
 		if (this->it == this->end) return INVALID_NODE;
 		return this->station_to_node[(this->it++)->second];
 	}
+
+	bool SavedEdge() const { return false; }
+
+	const LinkGraph::BaseEdge &GetSavedEdge() { NOT_REACHED(); }
 };
 
 /**
@@ -303,23 +320,39 @@ void MultiCommodityFlow::Dijkstra(NodeID source_node, PathVector &paths)
 		iter.SetNode(source_node, from);
 		for (NodeID to = iter.Next(); to != INVALID_NODE; to = iter.Next()) {
 			if (to == from) continue; // Not a real edge but a consumption sign.
-			Edge edge = this->job[from][to];
+			const LinkGraph::BaseEdge &base_edge = iter.SavedEdge() ? iter.GetSavedEdge() : this->job.GetBaseEdge(from, to);
+			Edge edge = this->job[from].MakeEdge(base_edge, to);
 			uint capacity = edge.Capacity();
 			if (this->max_saturation != UINT_MAX) {
 				capacity *= this->max_saturation;
 				capacity /= 100;
 				if (capacity == 0) capacity = 1;
 			}
-			/* punish in-between stops a little */
-			uint distance = DistanceMaxPlusManhattan(this->job[from].XY(), this->job[to].XY()) + 1;
+			/* Prioritize the fastest route for passengers, mail and express cargo,
+			 * and the shortest route for other classes of cargo.
+			 * In-between stops are punished with a 1 tile or 1 day penalty. */
+			bool express = IsLinkGraphCargoExpress(this->job.Cargo());
+
+			auto calculate_distance = [&]() {
+				return DistanceMaxPlusManhattan(this->job[from].XY(), this->job[to].XY()) + 1;
+			};
+
+			uint distance_anno;
+			if (express) {
+				/* Compute a default travel time from the distance and an average speed of 1 tile/day. */
+				distance_anno = (edge.TravelTime() != 0) ? edge.TravelTime() + DAY_TICKS : calculate_distance() * DAY_TICKS;
+			} else {
+				distance_anno = calculate_distance();
+			}
+
 			if (edge.LastAircraftUpdate() != INVALID_DATE && aircraft_link_scale > 100) {
-				distance *= aircraft_link_scale;
-				distance /= 100;
+				distance_anno *= aircraft_link_scale;
+				distance_anno /= 100;
 			}
 			Tannotation *dest = static_cast<Tannotation *>(paths[to]);
-			if (dest->IsBetter(source, capacity, capacity - edge.Flow(), distance)) {
+			if (dest->IsBetter(source, capacity, capacity - edge.Flow(), distance_anno)) {
 				if (dest->GetAnnosSetFlag()) annos.erase(AnnoSetItem<Tannotation>(dest));
-				dest->Fork(source, capacity, capacity - edge.Flow(), distance);
+				dest->Fork(source, capacity, capacity - edge.Flow(), distance_anno);
 				dest->UpdateAnnotation();
 				annos.insert(AnnoSetItem<Tannotation>(dest));
 				dest->SetAnnosSetFlag(true);
@@ -360,15 +393,16 @@ void MultiCommodityFlow::CleanupPaths(NodeID source_id, PathVector &paths)
  * edge.
  * @param edge Edge whose ends the path connects.
  * @param path End of the path the flow should be pushed on.
+ * @param min_step_size Minimum flow size.
  * @param accuracy Accuracy of the calculation.
  * @param max_saturation If < UINT_MAX only push flow up to the given
  *                       saturation, otherwise the path can be "overloaded".
  */
-uint MultiCommodityFlow::PushFlow(Edge &edge, Path *path, uint accuracy,
+uint MultiCommodityFlow::PushFlow(AnnoEdge &edge, Path *path, uint min_step_size, uint accuracy,
 		uint max_saturation)
 {
 	assert(edge.UnsatisfiedDemand() > 0);
-	uint flow = Clamp(edge.Demand() / accuracy, 1, edge.UnsatisfiedDemand());
+	uint flow = std::min(std::max(edge.Demand() / accuracy, min_step_size), edge.UnsatisfiedDemand());
 	flow = path->AddFlow(flow, this->job, max_saturation);
 	edge.SatisfyDemand(flow);
 	return flow;
@@ -413,7 +447,7 @@ void MCF1stPass::EliminateCycle(PathVector &path, Path *cycle_begin, uint flow)
 			}
 		}
 		cycle_begin = path[prev];
-		Edge edge = this->job[prev][cycle_begin->GetNode()];
+		AnnoEdge edge = this->job[prev][cycle_begin->GetNode()];
 		edge.RemoveFlow(flow);
 	} while (cycle_begin != cycle_end);
 }
@@ -531,6 +565,25 @@ MCF1stPass::MCF1stPass(LinkGraphJob &job) : MultiCommodityFlow(job)
 	bool more_loops;
 	std::vector<bool> finished_sources(size);
 
+	uint min_step_size = 1;
+	const uint adjust_threshold = 50;
+	if (size >= adjust_threshold) {
+		uint64 total_demand = 0;
+		uint demand_count = 0;
+		for (NodeID source = 0; source < size; ++source) {
+			for (NodeID dest = 0; dest < size; ++dest) {
+				AnnoEdge edge = job[source][dest];
+				if (edge.UnsatisfiedDemand() > 0) {
+					total_demand += edge.UnsatisfiedDemand();
+					demand_count++;
+				}
+			}
+		}
+		if (demand_count == 0) return;
+		min_step_size = std::max<uint>(min_step_size, (total_demand * (1 + FindLastBit(size / adjust_threshold))) / (size * accuracy));
+		accuracy = Clamp(IntSqrt((4 * accuracy * accuracy * size) / demand_count), CeilDiv(accuracy, 4), accuracy);
+	}
+
 	do {
 		more_loops = false;
 		for (NodeID source = 0; source < size; ++source) {
@@ -541,7 +594,7 @@ MCF1stPass::MCF1stPass(LinkGraphJob &job) : MultiCommodityFlow(job)
 
 			bool source_demand_left = false;
 			for (NodeID dest = 0; dest < size; ++dest) {
-				Edge edge = job[source][dest];
+				AnnoEdge edge = job[source][dest];
 				if (edge.UnsatisfiedDemand() > 0) {
 					Path *path = paths[dest];
 					assert(path != nullptr);
@@ -549,13 +602,13 @@ MCF1stPass::MCF1stPass(LinkGraphJob &job) : MultiCommodityFlow(job)
 					 * available capacity. But if no demand has been assigned
 					 * yet, make an exception and allow any valid path *once*. */
 					if (path->GetFreeCapacity() > 0 && this->PushFlow(edge, path,
-							accuracy, this->max_saturation) > 0) {
+							min_step_size, accuracy, this->max_saturation) > 0) {
 						/* If a path has been found there is a chance we can
 						 * find more. */
 						more_loops = more_loops || (edge.UnsatisfiedDemand() > 0);
 					} else if (edge.UnsatisfiedDemand() == edge.Demand() &&
 							path->GetFreeCapacity() > INT_MIN) {
-						this->PushFlow(edge, path, accuracy, UINT_MAX);
+						this->PushFlow(edge, path, min_step_size, accuracy, UINT_MAX);
 					}
 					if (edge.UnsatisfiedDemand() > 0) source_demand_left = true;
 				}
@@ -588,10 +641,10 @@ MCF2ndPass::MCF2ndPass(LinkGraphJob &job) : MultiCommodityFlow(job)
 
 			bool source_demand_left = false;
 			for (NodeID dest = 0; dest < size; ++dest) {
-				Edge edge = this->job[source][dest];
+				AnnoEdge edge = this->job[source][dest];
 				Path *path = paths[dest];
 				if (edge.UnsatisfiedDemand() > 0 && path->GetFreeCapacity() > INT_MIN) {
-					this->PushFlow(edge, path, accuracy, UINT_MAX);
+					this->PushFlow(edge, path, 1, accuracy, UINT_MAX);
 					if (edge.UnsatisfiedDemand() > 0) {
 						demand_left = true;
 						source_demand_left = true;

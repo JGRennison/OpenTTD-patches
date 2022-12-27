@@ -84,6 +84,10 @@
 			<span class="indent">Only allow drive-through stops (not bay stops). (This only takes effect from <span class="code">road_stops</span> version 2).</span></p>
 			<p><b>RST_GENERAL_FLAG_NO_AUTO_ROAD_CONNECTION</b><br />
 			<span class="indent">Do not automatically build connecting road pieces. (This only takes effect from <span class="code">road_stops</span> version 3).</span></p>
+			<p><b>RST_GENERAL_FLAG_BUILD_MENU_ROAD_ONLY</b><br />
+			<span class="indent">Only show in the road build menu (not tram). (This only takes effect from <span class="code">road_stops</span> version 4).</span></p>
+			<p><b>RST_GENERAL_FLAG_BUILD_MENU_TRAM_ONLY</b><br />
+			<span class="indent">Only show in the tram build menu (not road). (This only takes effect from <span class="code">road_stops</span> version 4).</span></p>
 		</td></tr>
 		<tr><td>minimum_bridge_height</td><td>Array of 6 items [0..255, ...]</td><td>Minimum clearances required for a bridge for each of the <a href="#roadstop_views">6 views/rotations</a> (or 0 to not allow any bridge). Values are given in height level units (1 level == 8px).</td></tr>
 		<tr><td>disallowed_bridge_pillars</td><td>Array of 6 items [bitmask(RST_BRIDGE_PILLAR_FLAG_, ...), ...]</td><td>
@@ -161,6 +165,12 @@
 		<tr><td>nearby_tile_one_way_info</td><td>x, y offset (-8..7)</td><td>RST_OWI_XXX</td><td>One-way state of nearby drive-through road stop tile</td></tr>
 		<tr><td>nearby_tile_road_stop_info</td><td>x, y offset (-8..7)</td><td></td><td>Above nearby road stop tile variables in one variable (all of variable 0x68)</td></tr>
 		<tr><td>nearby_tile_grfid</td><td>x, y offset (-8..7)</td><td>-1, 0 or a GRFID</td><td>Return value is -1 if the tile is not a road stop, 0 if the tile is a non-custom road stop, or else the GRFID of the NewGRF defining the road stop</td></tr>
+		<tr><td>nearby_tile_is_plain_road</td><td>x, y offset (-8..7)</td><td>0 | 1</td><td>Is nearby tile a plain road tile</td></tr>
+		<tr><td>nearby_tile_road_bits</td><td>x, y offset (-8..7)</td><td>bitmask(ROADBIT_XXX, ...)</td><td>XXX = [NW | SW | SE | NE]<br />Present road bits on nearby tile</td></tr>
+		<tr><td>nearby_tile_tram_bits</td><td>x, y offset (-8..7)</td><td>bitmask(ROADBIT_XXX, ...)</td><td>XXX = [NW | SW | SE | NE]<br />Present tram bits on nearby tile</td></tr>
+		<tr><td>nearby_tile_road_piece</td><td>x, y offset (-8..7)</td><td>0..18 | 0xFF</td><td>Present road piece and slope in <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3/Roadtypes#Road_underlay_.2802.29">sprite order</a>, or 0xFF if none</td></tr>
+		<tr><td>nearby_tile_tram_piece</td><td>x, y offset (-8..7)</td><td>0..18 | 0xFF</td><td>Present tram piece and slope in <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3/Roadtypes#Road_underlay_.2802.29">sprite order</a>, or 0xFF if none</td></tr>
+		<tr><td>nearby_tile_road_stop_info</td><td>x, y offset (-8..7)</td><td></td><td>Above nearby road tile variables in one variable (all of variable 0x6B)</td></tr>
 	</table>
 
 	<h3 id="roadstop_callbacks">Road Stop Callbacks</h3>

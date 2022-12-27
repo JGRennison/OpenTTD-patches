@@ -24,6 +24,7 @@
 #include "settings_func.h"
 #include "fios.h"
 #include "fileio_func.h"
+#include "fontcache.h"
 #include "screenshot.h"
 #include "genworld.h"
 #include "strings_func.h"
@@ -63,6 +64,8 @@
 #include <time.h>
 
 #include <set>
+
+#include <sstream>
 
 #include "safeguards.h"
 
@@ -1297,42 +1300,67 @@ static void PrintLineByLine(char *buf)
 	});
 }
 
+/**
+ * Print a text buffer line by line to the console. Lines are separated by '\n'.
+ * @param full_string The multi-line string to print.
+ */
+static void PrintLineByLine(const std::string &full_string)
+{
+	std::istringstream in(full_string);
+	std::string line;
+	while (std::getline(in, line)) {
+		IConsolePrint(CC_DEFAULT, line.c_str());
+	}
+}
+
 DEF_CONSOLE_CMD(ConListAILibs)
 {
-	char buf[4096];
-	AI::GetConsoleLibraryList(buf, lastof(buf));
+	if (argc == 0) {
+		IConsoleHelp("List installed AI libraries. Usage: 'list_ai_libs'.");
+		return true;
+	}
 
-	PrintLineByLine(buf);
+	const std::string output_str = AI::GetConsoleLibraryList();
+	PrintLineByLine(output_str);
 
 	return true;
 }
 
 DEF_CONSOLE_CMD(ConListAI)
 {
-	char buf[4096];
-	AI::GetConsoleList(buf, lastof(buf));
+	if (argc == 0) {
+		IConsoleHelp("List installed AIs. Usage: 'list_ai'.");
+		return true;
+	}
 
-	PrintLineByLine(buf);
+	const std::string output_str = AI::GetConsoleList();
+	PrintLineByLine(output_str);
 
 	return true;
 }
 
 DEF_CONSOLE_CMD(ConListGameLibs)
 {
-	char buf[4096];
-	Game::GetConsoleLibraryList(buf, lastof(buf));
+	if (argc == 0) {
+		IConsoleHelp("List installed Game Script libraries. Usage: 'list_game_libs'.");
+		return true;
+	}
 
-	PrintLineByLine(buf);
+	const std::string output_str = Game::GetConsoleLibraryList();
+	PrintLineByLine(output_str);
 
 	return true;
 }
 
 DEF_CONSOLE_CMD(ConListGame)
 {
-	char buf[4096];
-	Game::GetConsoleList(buf, lastof(buf));
+	if (argc == 0) {
+		IConsoleHelp("List installed Game Scripts. Usage: 'list_game'.");
+		return true;
+	}
 
-	PrintLineByLine(buf);
+	const std::string output_str = Game::GetConsoleList();
+	PrintLineByLine(output_str);
 
 	return true;
 }
@@ -1595,17 +1623,18 @@ DEF_CONSOLE_CMD(ConScreenShot)
 {
 	if (argc == 0) {
 		IConsoleHelp("Create a screenshot of the game. Usage: 'screenshot [viewport | normal | big | giant | world | heightmap | minimap] [no_con] [size <width> <height>] [<filename>]'");
-		IConsoleHelp("'viewport' (default) makes a screenshot of the current viewport (including menus, windows, ..), "
-				"'normal' makes a screenshot of the visible area, "
-				"'big' makes a zoomed-in screenshot of the visible area, "
-				"'giant' makes a screenshot of the whole map using the default zoom level, "
-				"'world' makes a screenshot of the whole map using the current zoom level, "
-				"'heightmap' makes a heightmap screenshot of the map that can be loaded in as heightmap, "
-				"'minimap' makes a top-viewed minimap screenshot of the whole world which represents one tile by one pixel. "
-				"'topography' makes a top-viewed topography screenshot of the whole world which represents one tile by one pixel. "
-				"'industry' makes a top-viewed industries screenshot of the whole world which represents one tile by one pixel. "
-				"'no_con' hides the console to create the screenshot (only useful in combination with 'viewport'). "
-				"'size' sets the width and height of the viewport to make a screenshot of (only useful in combination with 'normal' or 'big').");
+		IConsoleHelp("  'viewport' (default) makes a screenshot of the current viewport (including menus, windows, ..).");
+		IConsoleHelp("  'normal' makes a screenshot of the visible area.");
+		IConsoleHelp("  'big' makes a zoomed-in screenshot of the visible area.");
+		IConsoleHelp("  'giant' makes a screenshot of the whole map using the default zoom level.");
+		IConsoleHelp("  'world' makes a screenshot of the whole map using the current zoom level.");
+		IConsoleHelp("  'heightmap' makes a heightmap screenshot of the map that can be loaded in as heightmap.");
+		IConsoleHelp("  'minimap' makes a top-viewed minimap screenshot of the whole world which represents one tile by one pixel.");
+		IConsoleHelp("  'topography' makes a top-viewed topography screenshot of the whole world which represents one tile by one pixel.");
+		IConsoleHelp("  'industry' makes a top-viewed industries screenshot of the whole world which represents one tile by one pixel.");
+		IConsoleHelp("  'no_con' hides the console to create the screenshot (only useful in combination with 'viewport').");
+		IConsoleHelp("  'size' sets the width and height of the viewport to make a screenshot of (only useful in combination with 'normal' or 'big').");
+		IConsoleHelp("  A filename ending in # will prevent overwriting existing files and will number files counting upwards.");
 		return true;
 	}
 
@@ -2182,6 +2211,82 @@ DEF_CONSOLE_CMD(ConContent)
 	return false;
 }
 #endif /* defined(WITH_ZLIB) */
+
+DEF_CONSOLE_CMD(ConFont)
+{
+	if (argc == 0) {
+		IConsoleHelp("Manage the fonts configuration.");
+		IConsoleHelp("Usage 'font'.");
+		IConsoleHelp("  Print out the fonts configuration.");
+		IConsoleHelp("Usage 'font [medium|small|large|mono] [<name>] [<size>] [aa|noaa]'.");
+		IConsoleHelp("  Change the configuration for a font.");
+		IConsoleHelp("  Omitting an argument will keep the current value.");
+		IConsoleHelp("  Set <name> to \"\" for the sprite font (size and aa have no effect on sprite font).");
+		return true;
+	}
+
+	FontSize argfs;
+	for (argfs = FS_BEGIN; argfs < FS_END; argfs++) {
+		if (argc > 1 && strcasecmp(argv[1], FontSizeToName(argfs)) == 0) break;
+	}
+
+	/* First argument must be a FontSize. */
+	if (argc > 1 && argfs == FS_END) return false;
+
+	if (argc > 2) {
+		FontCacheSubSetting *setting = GetFontCacheSubSetting(argfs);
+		std::string font = setting->font;
+		uint size = setting->size;
+		bool aa = setting->aa;
+
+		byte arg_index = 2;
+
+		if (argc > arg_index) {
+			/* We may encounter "aa" or "noaa" but it must be the last argument. */
+			if (strcasecmp(argv[arg_index], "aa") == 0 || strcasecmp(argv[arg_index], "noaa") == 0) {
+				aa = strncasecmp(argv[arg_index++], "no", 2) != 0;
+				if (argc > arg_index) return false;
+			} else {
+				/* For <name> we want a string. */
+				uint v;
+				if (!GetArgumentInteger(&v, argv[arg_index])) {
+					font = argv[arg_index++];
+				}
+			}
+		}
+
+		if (argc > arg_index) {
+			/* For <size> we want a number. */
+			uint v;
+			if (GetArgumentInteger(&v, argv[arg_index])) {
+				size = v;
+				arg_index++;
+			}
+		}
+
+		if (argc > arg_index) {
+			/* Last argument must be "aa" or "noaa". */
+			if (strcasecmp(argv[arg_index], "aa") != 0 && strcasecmp(argv[arg_index], "noaa") != 0) return false;
+			aa = strncasecmp(argv[arg_index++], "no", 2) != 0;
+			if (argc > arg_index) return false;
+		}
+
+		SetFont(argfs, font, size, aa);
+	}
+
+	for (FontSize fs = FS_BEGIN; fs < FS_END; fs++) {
+		FontCache *fc = FontCache::Get(fs);
+		FontCacheSubSetting *setting = GetFontCacheSubSetting(fs);
+		/* Make sure all non sprite fonts are loaded. */
+		if (!setting->font.empty() && !fc->HasParent()) {
+			InitFontCache(fs == FS_MONO);
+			fc = FontCache::Get(fs);
+		}
+		IConsolePrintF(CC_DEFAULT, "%s: \"%s\" %d %s [\"%s\" %d %s]", FontSizeToName(fs), fc->GetFontName(), fc->GetFontSize(), GetFontAAState(fs) ? "true" : "false", setting->font.c_str(), setting->size, setting->aa ? "true" : "false");
+	}
+
+	return true;
+}
 
 DEF_CONSOLE_CMD(ConSetting)
 {
@@ -2993,6 +3098,7 @@ DEF_CONSOLE_CMD(ConViewportDebug)
 		IConsoleHelp("   8: VDF_DISABLE_DRAW_SPLIT");
 		IConsoleHelp("  10: VDF_SHOW_NO_LANDSCAPE_MAP_DRAW");
 		IConsoleHelp("  20: VDF_DISABLE_LANDSCAPE_CACHE");
+		IConsoleHelp("  40: VDF_DISABLE_THREAD");
 		return true;
 	}
 
@@ -3598,6 +3704,7 @@ void IConsoleStdLibRegister()
 	IConsole::CmdRegister("cd",                      ConChangeDirectory);
 	IConsole::CmdRegister("pwd",                     ConPrintWorkingDirectory);
 	IConsole::CmdRegister("clear",                   ConClearBuffer);
+	IConsole::CmdRegister("font",                    ConFont);
 	IConsole::CmdRegister("setting",                 ConSetting);
 	IConsole::CmdRegister("setting_newgame",         ConSettingNewgame);
 	IConsole::CmdRegister("list_settings",           ConListSettings);

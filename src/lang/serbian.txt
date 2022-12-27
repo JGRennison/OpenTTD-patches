@@ -393,6 +393,7 @@ STR_UNITS_POWER_IMPERIAL                                        :{COMMA}ks
 STR_UNITS_POWER_METRIC                                          :{COMMA}ks
 STR_UNITS_POWER_SI                                              :{COMMA}kW
 
+
 STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA}t
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}t
 STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}kg
@@ -585,10 +586,9 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Izađi
 
 # Settings menu
-###length 14
+###length 15
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Opcije
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Podešavanja
-STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :Podešavanja VI/Skripte partije
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF podešavanja
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Opcije transparentnosti
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Prikazana imena naselja
@@ -1172,36 +1172,6 @@ STR_GAME_OPTIONS_CURRENCY_INR                                   :Indijska rupija
 STR_GAME_OPTIONS_CURRENCY_IDR                                   :Indonezijska rupija (IDR)
 STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malezijski ringit (MYR)
 
-###length 2
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Levom stranom
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :Desnom stranom
-
-STR_GAME_OPTIONS_TOWN_NAMES_FRAME                               :{BLACK}Imena naselja:
-STR_GAME_OPTIONS_TOWN_NAMES_DROPDOWN_TOOLTIP                    :{BLACK}Izaberi stil imena naselja
-
-###length 21
-STR_GAME_OPTIONS_TOWN_NAME_ORIGINAL_ENGLISH                     :Engleska (Originalna)
-STR_GAME_OPTIONS_TOWN_NAME_FRENCH                               :Francuska
-STR_GAME_OPTIONS_TOWN_NAME_GERMAN                               :Nemačka
-STR_GAME_OPTIONS_TOWN_NAME_ADDITIONAL_ENGLISH                   :Engleska (Dodatna)
-STR_GAME_OPTIONS_TOWN_NAME_LATIN_AMERICAN                       :Latinoamerička
-STR_GAME_OPTIONS_TOWN_NAME_SILLY                                :Šašava
-STR_GAME_OPTIONS_TOWN_NAME_SWEDISH                              :Švedska
-STR_GAME_OPTIONS_TOWN_NAME_DUTCH                                :Holandska
-STR_GAME_OPTIONS_TOWN_NAME_FINNISH                              :Finska
-STR_GAME_OPTIONS_TOWN_NAME_POLISH                               :Poljska
-STR_GAME_OPTIONS_TOWN_NAME_SLOVAK                               :Slovačka
-STR_GAME_OPTIONS_TOWN_NAME_NORWEGIAN                            :Norveška
-STR_GAME_OPTIONS_TOWN_NAME_HUNGARIAN                            :Mađarska
-STR_GAME_OPTIONS_TOWN_NAME_AUSTRIAN                             :Austrijanska
-STR_GAME_OPTIONS_TOWN_NAME_ROMANIAN                             :Rumunska
-STR_GAME_OPTIONS_TOWN_NAME_CZECH                                :Češka
-STR_GAME_OPTIONS_TOWN_NAME_SWISS                                :Švajcarska
-STR_GAME_OPTIONS_TOWN_NAME_DANISH                               :Danska
-STR_GAME_OPTIONS_TOWN_NAME_TURKISH                              :Turska
-STR_GAME_OPTIONS_TOWN_NAME_ITALIAN                              :Italijanska
-STR_GAME_OPTIONS_TOWN_NAME_CATALAN                              :Katalonska
-
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Auto čuvanje pozicije
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Izbor vremenskog intervala između dve automatski sačuvane pozicije
 
@@ -1233,21 +1203,8 @@ STR_GAME_OPTIONS_VIDEO_VSYNC                                    :{BLACK}VSync
 STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Štikliranjem se uključuje v-sync. Promena ovog podešavanja će biti vidljiva tek nakon ponovnog pokretanja igre. Radi jedino sa uključenim hardverskim ubrzanjem.
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Veličina interfejsa
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Izaberite većinu elementa koja će se koristiti
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(automatska detekcija)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normalna veličina
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Uvećavajte veličinu dva puta
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Uvećavajte veličinu četiri puta
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Veličina fonta
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Izaberi veličinu fonta za interfejs
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(automatska detekcija)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Uobičajen
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Dvostruka veličina
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Četvorostruka veličina
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Grafike
 
@@ -1299,8 +1256,6 @@ STR_CURRENCY_PREVIEW                                            :{LTBLUE}Primer:
 STR_CURRENCY_CUSTOM_CURRENCY_PREVIEW_TOOLTIP                    :{BLACK}10000 funti (£) u vašoj moneti
 STR_CURRENCY_CHANGE_PARAMETER                                   :{BLACK}Promena parametara sopstvene monete
 
-STR_DIFFICULTY_LEVEL_SETTING_MAXIMUM_NO_COMPETITORS             :{LTBLUE}Najveći broj suparnika: {ORANGE}{COMMA}
-
 STR_NONE                                                        :Nijedan
 STR_FUNDING_ONLY                                                :Samo finansiranje
 STR_MINIMAL                                                     :Najmanji
@@ -1349,6 +1304,12 @@ STR_SUBSIDY_X1_5                                                :x1.5
 STR_SUBSIDY_X2                                                  :x2
 STR_SUBSIDY_X3                                                  :x3
 STR_SUBSIDY_X4                                                  :x4
+
+###length 4
+STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :Umereni klimatski pojas
+STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :Subpolarni klimatski pojas
+STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :Suptropski klimatski pojas
+STR_CLIMATE_TOYLAND_LANDSCAPE                                   :Zemlja igračaka
 
 ###length 7
 STR_TERRAIN_TYPE_VERY_FLAT                                      :Ravničarski
@@ -1707,6 +1668,10 @@ STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Unapređen
 
 STR_CONFIG_SETTING_ROAD_SIDE                                    :Drumskih vozila: {STRING}
 STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Odaberite stranu saobraćaja
+
+###length 2
+STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :Levom stranom
+STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :Desnom stranom
 
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Orijentacija elevacione karte: {STRING}
 ###length 2
@@ -2234,7 +2199,7 @@ STR_CONFIG_SETTING_REVERSE_AT_SIGNALS                           :Automatska prom
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :Dozvoljeno okretanje vozova na signalu, ako su dugo čekali
 ###length 2
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
-STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Preporučuje se)
+STR_CONFIG_SETTING_PATHFINDER_YAPF                              :YAPF {BLUE}(Preporučuje se)
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Promena vrednosti
 
@@ -2277,7 +2242,6 @@ STR_INTRO_HIGHSCORE                                             :{BLACK}Tabela n
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Podešavanja
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF Podešavanja
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Spisak Dodataka na Mreži
-STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}Podešavanja VI/Skripte Partije
 STR_INTRO_QUIT                                                  :{BLACK}Izađi
 
 STR_INTRO_TOOLTIP_NEW_GAME                                      :{BLACK}Započinje novu partiju. Ctrl+Klik preskače konfiguraciju mape
@@ -2297,7 +2261,6 @@ STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Prikazuj
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Prikaži podešavanje
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Prikazuje NewGRF podešavanja
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Pregled novih i ažureiranih dodatka za preuzimanje
-STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Prikazuje podešavanja za VI/Skriptu partije
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Napušta 'OpenTTD'
 
 STR_INTRO_BASESET                                               :{BLACK}Trenutno odabranom skupu osnovne grafike nedostaje {NUM} sprajt{P "" "ova" "ova"}. Proverite da li postoje izmene za ovaj skup.
@@ -2328,12 +2291,6 @@ STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}Promenit
 STR_CHEAT_CHANGE_DATE                                           :{LTBLUE}Promena datuma: {ORANGE} {DATE_SHORT}
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Promena trenutne godine
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Dozvoliti promenu količine proizvodnje: {ORANGE}{STRING}
-
-###length 4
-STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :Umereni klimatski pojas
-STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :Subpolarni klimatski pojas
-STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :Suptropski klimatski pojas
-STR_CHEAT_SWITCH_CLIMATE_TOYLAND_LANDSCAPE                      :Zemlja igračaka
 
 # Livery window
 STR_LIVERY_CAPTION                                              :{WHITE}{COMPANY} - Šema boja
@@ -2812,6 +2769,8 @@ STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP                            :{BLACK}{STRING}
 STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}neiskorišćen
 STR_LINKGRAPH_LEGEND_SATURATED                                  :{TINY_FONT}{BLACK}zasićen
 STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLACK}Preopterećen
+
+# Linkgraph tooltip
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Označavanje zahvaćenog područja
@@ -3333,6 +3292,8 @@ STR_MAPGEN_MAPSIZE                                              :{BLACK}Veličin
 STR_MAPGEN_MAPSIZE_TOOLTIP                                      :{BLACK}Izaberite veličinu mape u pločicama. Broj dostupnih pločica će biti neznatno manji
 STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Broj naselja:
+STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Imena naselja:
+STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Izaberi stil imena naselja
 STR_MAPGEN_DATE                                                 :{BLACK}Datum:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Broj fabrika:
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Najviši vrh:
@@ -3351,11 +3312,34 @@ STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Sužava 
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Proširuje snežni pojas naniže za jedan
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Oblikovanje reljefa:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Vrsta terena:
-STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Nivo mora:
+STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Nivo mora:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Broj reka:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Postepenost:
 STR_MAPGEN_VARIETY                                              :{BLACK}Raznolikost:
 STR_MAPGEN_GENERATE                                             :{WHITE}Napravi
+
+###length 21
+STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH                           :Engleska (Originalna)
+STR_MAPGEN_TOWN_NAME_FRENCH                                     :Francuska
+STR_MAPGEN_TOWN_NAME_GERMAN                                     :Nemačka
+STR_MAPGEN_TOWN_NAME_ADDITIONAL_ENGLISH                         :Engleska (Dodatna)
+STR_MAPGEN_TOWN_NAME_LATIN_AMERICAN                             :Latinoamerička
+STR_MAPGEN_TOWN_NAME_SILLY                                      :Šašava
+STR_MAPGEN_TOWN_NAME_SWEDISH                                    :Švedska
+STR_MAPGEN_TOWN_NAME_DUTCH                                      :Holandska
+STR_MAPGEN_TOWN_NAME_FINNISH                                    :Finska
+STR_MAPGEN_TOWN_NAME_POLISH                                     :Poljska
+STR_MAPGEN_TOWN_NAME_SLOVAK                                     :Slovačka
+STR_MAPGEN_TOWN_NAME_NORWEGIAN                                  :Norveška
+STR_MAPGEN_TOWN_NAME_HUNGARIAN                                  :Mađarska
+STR_MAPGEN_TOWN_NAME_AUSTRIAN                                   :Austrijanska
+STR_MAPGEN_TOWN_NAME_ROMANIAN                                   :Rumunska
+STR_MAPGEN_TOWN_NAME_CZECH                                      :Češka
+STR_MAPGEN_TOWN_NAME_SWISS                                      :Švajcarska
+STR_MAPGEN_TOWN_NAME_DANISH                                     :Danska
+STR_MAPGEN_TOWN_NAME_TURKISH                                    :Turska
+STR_MAPGEN_TOWN_NAME_ITALIAN                                    :Italijanska
+STR_MAPGEN_TOWN_NAME_CATALAN                                    :Katalonska
 
 # Strings for map borders at game generation
 STR_MAPGEN_BORDER_TYPE                                          :{BLACK}Ivice terena:
@@ -3502,6 +3486,10 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Prethodn
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Vraća se na prethodni normalan sprajt, preskačući sve pseudo/prebojavajuće/font sprajtove i prelazi na kraj posle početnog
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Prikaz trenutno odabranog sprajta. Poravnanje se ignoriše tokom iscrtavanja ovog sprajta
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Premeštanje sprajta po kordinatama, menjanjem X i Y pomeraja. Ctrl+Klik za pomeranje sprajta osam jedinica odjednom
+
+###length 2
+
+
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Poništi relativne
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Poništi trenutne relativne pomake
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X pomak: {NUM}, Y pomak: {NUM} (Apsolutni)
@@ -4058,6 +4046,8 @@ STR_PURCHASE_INFO_ALL_BUT                                       :Sve sem {CARGO_
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Najveća vučna snaga: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Domet: {GOLD}{COMMA} pločica
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK} Tip aviona: {GOLD} {STRING}
+
+###length 3
 
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Spisak probranih šinskih vozila - kliknite na vozilo za više podataka
@@ -4735,12 +4725,12 @@ STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}Jedna od
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}Prozor za korigovanje VI / Skripte Partije je dostupan samo na serveru
 
 # AI configuration window
-STR_AI_CONFIG_CAPTION                                           :{WHITE}Podešavanja VI / skripte igre
 STR_AI_CONFIG_GAMELIST_TOOLTIP                                  :{BLACK}Skripta igre koja će biti pokrenuta u sledećoj partiji
 STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}Veštačke inteligencije koje će biti pokrenute u sledećoj partiji
 STR_AI_CONFIG_HUMAN_PLAYER                                      :Ljudsko biće
 STR_AI_CONFIG_RANDOM_AI                                         :Proizvoljna VI
 STR_AI_CONFIG_NONE                                              :(nijedna)
+STR_AI_CONFIG_MAX_COMPETITORS                                   :{LTBLUE}Najveći broj suparnika: {ORANGE}{COMMA}
 
 STR_AI_CONFIG_MOVE_UP                                           :{BLACK}Pomeri Naviše
 STR_AI_CONFIG_MOVE_UP_TOOLTIP                                   :{BLACK}Pomera obeleženu VI naviše u listi
@@ -4750,8 +4740,6 @@ STR_AI_CONFIG_MOVE_DOWN_TOOLTIP                                 :{BLACK}Pomera o
 STR_AI_CONFIG_GAMESCRIPT                                        :{SILVER}Skripta igre
 STR_AI_CONFIG_AI                                                :{SILVER}VIe
 
-STR_AI_CONFIG_CHANGE                                            :{BLACK}Izaberi {STRING}
-STR_AI_CONFIG_CHANGE_NONE                                       :
 STR_AI_CONFIG_CHANGE_AI                                         :VI
 STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :Skripta igre
 STR_AI_CONFIG_CHANGE_TOOLTIP                                    :{BLACK}Učitava drugu skriptu
@@ -4782,9 +4770,7 @@ STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Slika ek
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Slika umanjene mape
 
 # AI Parameters
-STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Parametri
 STR_AI_SETTINGS_CAPTION_AI                                      :VI
-STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Skripta Partije
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Zatvori
 STR_AI_SETTINGS_RESET                                           :{BLACK}Poništi
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
@@ -5200,6 +5186,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Previše
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Servisni interval nije moguće promeniti...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... vozilo je uništeno
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Nijedno vozilo neće biti dostupno
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Promenite konfiguraciju za NewGRF

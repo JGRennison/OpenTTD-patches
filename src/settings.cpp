@@ -109,6 +109,8 @@ std::string _secrets_file; ///< Secrets configuration file of OpenTTD.
 typedef std::list<ErrorMessageData> ErrorList;
 static ErrorList _settings_error_list; ///< Errors while loading minimal settings.
 
+static bool _fallback_gui_zoom_max = false;
+
 
 /**
  * List of all the generic setting tables.
@@ -409,6 +411,10 @@ size_t IntSettingDesc::ParseValue(const char *str) const
 	char *end;
 	size_t val = strtoul(str, &end, 0);
 	if (end == str) {
+		if (this->flags & SF_CONVERT_BOOL_TO_INT) {
+			if (strcmp(str, "true") == 0 || strcmp(str, "on") == 0) return 1;
+			if (strcmp(str, "false") == 0 || strcmp(str, "off") == 0) return 0;
+		}
 		ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_VALUE);
 		msg.SetDParamStr(0, str);
 		msg.SetDParamStr(1, this->name);
@@ -609,6 +615,20 @@ const std::string &StringSettingDesc::Read(const void *object) const
 	return *reinterpret_cast<std::string *>(GetVariableAddress(object, this->save));
 }
 
+static const char *GetSettingConfigName(const SettingDesc &sd)
+{
+	const char *name = sd.name;
+	if (sd.guiproc != nullptr) {
+		SettingOnGuiCtrlData data;
+		data.type = SOGCT_CFG_NAME;
+		data.str = name;
+		if (sd.guiproc(data)) {
+			name = data.str;
+		}
+	}
+	return name;
+}
+
 /**
  * Load values from a group of an IniFile structure into the internal representation
  * @param ini pointer to IniFile structure that holds administrative information
@@ -631,7 +651,7 @@ static void IniLoadSettings(IniFile &ini, const SettingTable &settings_table, co
 			item = nullptr;
 		} else {
 			/* For settings.xx.yy load the settings from [xx] yy = ? */
-			std::string s{ sd->name };
+			std::string s{ GetSettingConfigName(*sd) };
 			auto sc = s.find('.');
 			if (sc != std::string::npos) {
 				group = ini.GetGroup(s.substr(0, sc));
@@ -651,6 +671,13 @@ static void IniLoadSettings(IniFile &ini, const SettingTable &settings_table, co
 				 * did not exist (e.g. loading old config files with a [yapf] section */
 				sc = s.find('.');
 				if (sc != std::string::npos) item = ini.GetGroup(s.substr(0, sc))->GetItem(s.substr(sc + 1), false);
+			}
+			if (item == nullptr && sd->guiproc != nullptr) {
+				SettingOnGuiCtrlData data;
+				data.type = SOGCT_CFG_FALLBACK_NAME;
+				if (sd->guiproc(data)) {
+					item = group->GetItem(data.str, false);
+				}
 			}
 		}
 
@@ -715,7 +742,7 @@ static void IniSaveSettings(IniFile &ini, const SettingTable &settings_table, co
 		if (sd->flags & SF_NO_NEWGAME) continue;
 
 		/* XXX - wtf is this?? (group override?) */
-		std::string s{ sd->name };
+		std::string s{ GetSettingConfigName(*sd) };
 		auto sc = s.find('.');
 		if (sc != std::string::npos) {
 			group = ini.GetGroup(s.substr(0, sc));
@@ -956,6 +983,7 @@ static void UpdateConsists(int32 new_value)
 	AfterLoadTemplateVehiclesUpdateProperties();
 
 	InvalidateWindowClassesData(WC_BUILD_VEHICLE, 0);
+	InvalidateWindowClassesData(WC_BUILD_VIRTUAL_TRAIN, 0);
 	SetWindowClassesDirty(WC_TEMPLATEGUI_MAIN);
 	SetWindowClassesDirty(WC_CREATE_TEMPLATE);
 }
@@ -1041,6 +1069,7 @@ static void TrainAccelerationModelChanged(int32 new_value)
 	/* These windows show acceleration values only when realistic acceleration is on. They must be redrawn after a setting change. */
 	SetWindowClassesDirty(WC_ENGINE_PREVIEW);
 	InvalidateWindowClassesData(WC_BUILD_VEHICLE, 0);
+	InvalidateWindowClassesData(WC_BUILD_VIRTUAL_TRAIN, 0);
 	SetWindowClassesDirty(WC_VEHICLE_DETAILS);
 	SetWindowClassesDirty(WC_TEMPLATEGUI_MAIN);
 	SetWindowClassesDirty(WC_CREATE_TEMPLATE);
@@ -1179,6 +1208,7 @@ static void RoadVehAccelerationModelChanged(int32 new_value)
 	/* These windows show acceleration values only when realistic acceleration is on. They must be redrawn after a setting change. */
 	SetWindowClassesDirty(WC_ENGINE_PREVIEW);
 	InvalidateWindowClassesData(WC_BUILD_VEHICLE, 0);
+	InvalidateWindowClassesData(WC_BUILD_VIRTUAL_TRAIN, 0);
 	SetWindowClassesDirty(WC_VEHICLE_DETAILS);
 }
 
@@ -1265,11 +1295,6 @@ static void SpriteZoomMinChanged(int32 new_value)
 	MarkWholeScreenDirty();
 }
 
-static void InvalidateSettingsWindow(int32 new_value)
-{
-	InvalidateWindowClassesData(WC_GAME_OPTIONS);
-}
-
 static void DeveloperModeChanged(int32 new_value)
 {
 	DebugReconsiderSendRemoteMessages();
@@ -1285,7 +1310,7 @@ static void InvalidateNewGRFChangeWindows(int32 new_value)
 {
 	InvalidateWindowClassesData(WC_SAVELOAD);
 	DeleteWindowByClass(WC_GAME_OPTIONS);
-	ReInitAllWindows(_gui_zoom_cfg);
+	ReInitAllWindows(false);
 }
 
 static void InvalidateCompanyLiveryWindow(int32 new_value)
@@ -1463,6 +1488,11 @@ static void DifficultyMoneyCheatMultiplayerChange(int32 new_value)
 static void DifficultyRenameTownsMultiplayerChange(int32 new_value)
 {
 	SetWindowClassesDirty(WC_TOWN_VIEW);
+}
+
+static void DifficultyOverrideTownSettingsMultiplayerChange(int32 new_value)
+{
+	SetWindowClassesDirty(WC_TOWN_AUTHORITY);
 }
 
 static void MaxNoAIsChange(int32 new_value)
@@ -1681,13 +1711,32 @@ static void ImprovedBreakdownsSettingChanged(int32 new_value)
 
 static void DayLengthChanged(int32 new_value)
 {
-	const DateTicksScaled old_scaled_date_ticks = _scaled_date_ticks;
-	SetScaledTickVariables();
-
-	extern void AdjustAllSignalSpeedRestrictionTickValues(DateTicksScaled delta);
-	AdjustAllSignalSpeedRestrictionTickValues(_scaled_date_ticks - old_scaled_date_ticks);
+	extern void RebaseScaledDateTicksBase();
+	RebaseScaledDateTicksBase();
 
 	MarkWholeScreenDirty();
+}
+
+static void TownZoneModeChanged(int32 new_value)
+{
+	InvalidateWindowClassesData(WC_GAME_OPTIONS);
+	UpdateTownRadii();
+}
+
+static void TownZoneCustomValueChanged(int32 new_value)
+{
+	if (_settings_game.economy.town_zone_calc_mode) UpdateTownRadii();
+}
+
+static bool CheckTTDPatchSettingFlag(uint flag)
+{
+	extern bool HasTTDPatchFlagBeenObserved(uint flag);
+	if (_networking && HasTTDPatchFlagBeenObserved(flag)) {
+		ShowErrorMessage(STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED, STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED_NEWGRF, WL_ERROR);
+		return false;
+	}
+
+	return true;
 }
 
 /**
@@ -1794,6 +1843,24 @@ static bool AllowRoadStopsUnderBridgesSettingGUI(SettingOnGuiCtrlData &data)
 		case SOGCT_DESCRIPTION_TEXT:
 			SetDParam(0, data.text);
 			data.text = STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT_EXTRA;
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+static bool ZoomMaxCfgName(SettingOnGuiCtrlData &data)
+{
+	switch (data.type) {
+		case SOGCT_CFG_NAME:
+			data.str = "gui.zoom_max_extra";
+			_fallback_gui_zoom_max = false;
+			return true;
+
+		case SOGCT_CFG_FALLBACK_NAME:
+			data.str = "zoom_max";
+			_fallback_gui_zoom_max = true;
 			return true;
 
 		default:
@@ -2008,7 +2075,7 @@ static GRFConfig *GRFLoadConfig(IniFile &ini, const char *grpname, bool is_stati
 				SetDParam(1, STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN);
 			}
 
-			SetDParamStr(0, StrEmpty(filename) ? item->name : filename);
+			SetDParamStr(0, StrEmpty(filename) ? item->name.c_str() : filename);
 			ShowErrorMessage(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_GRF, WL_CRITICAL);
 			delete c;
 			continue;
@@ -2180,7 +2247,7 @@ static void RemoveEntriesFromIni(IniFile &ini, const SettingTable &table)
 {
 	for (auto &sd : table) {
 		/* For settings.xx.yy load the settings from [xx] yy = ? */
-		std::string s{ sd->name };
+		std::string s{ GetSettingConfigName(*sd) };
 		auto sc = s.find('.');
 		if (sc == std::string::npos) continue;
 
@@ -2249,6 +2316,9 @@ void LoadFromConfig(bool startup)
 		if (FindWindowById(WC_ERRMSG, 0) == nullptr) ShowFirstError();
 	} else {
 		PostTransparencyOptionLoad();
+		if (_fallback_gui_zoom_max && _settings_client.gui.zoom_max <= ZOOM_LVL_OUT_32X) {
+			_settings_client.gui.zoom_max = ZOOM_LVL_MAX;
+		}
 	}
 }
 
@@ -2616,9 +2686,9 @@ void SyncCompanySettings()
 	for (auto &sd : _company_settings) {
 		if (!sd->IsIntSetting()) continue;
 		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
-		uint32 old_value = (uint32)sd->AsIntSetting()->Read(new_object);
-		uint32 new_value = (uint32)sd->AsIntSetting()->Read(old_object);
-		if (old_value != new_value) NetworkSendCommand(0, 0, new_value, 0, CMD_CHANGE_COMPANY_SETTING, nullptr, sd->name, _local_company, 0);
+		uint32 old_value = (uint32)sd->AsIntSetting()->Read(old_object);
+		uint32 new_value = (uint32)sd->AsIntSetting()->Read(new_object);
+		if (old_value != new_value) NetworkSendCommand(0, 0, new_value, 0, CMD_CHANGE_COMPANY_SETTING, nullptr, sd->name, _local_company, nullptr);
 	}
 }
 

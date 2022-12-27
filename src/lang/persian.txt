@@ -201,6 +201,7 @@ STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}ا
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}اسب بخار
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}کیلووات
 
+
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}{NBSP}تن
 STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}{NBSP}کیلوگرم
 
@@ -371,9 +372,8 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :خروج
 
 # Settings menu
-###length 14
+###length 15
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :تنظیمات بازی
-STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :هوش مصنوعی / تنظیمات بازی
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :تنظیمات NewGRF
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :گزینه های شفافیت
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :نام شهرها نشان داده شود
@@ -927,36 +927,6 @@ STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :دلخواه...
 STR_GAME_OPTIONS_CURRENCY_GEL                                   :لیره گرجستان (GEL)
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :ریال ایران (IRR)
 
-###length 2
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :چپ فرمان
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :راست فرمان
-
-STR_GAME_OPTIONS_TOWN_NAMES_FRAME                               :{BLACK} نام شهرها
-STR_GAME_OPTIONS_TOWN_NAMES_DROPDOWN_TOOLTIP                    :{BLACK}انتخاب نوع نام شهرها
-
-###length 21
-STR_GAME_OPTIONS_TOWN_NAME_ORIGINAL_ENGLISH                     :انگلیسی (اصلی)
-STR_GAME_OPTIONS_TOWN_NAME_FRENCH                               :فرانسوی
-STR_GAME_OPTIONS_TOWN_NAME_GERMAN                               :آلمانی
-STR_GAME_OPTIONS_TOWN_NAME_ADDITIONAL_ENGLISH                   :انگلیسی (اضافه)
-STR_GAME_OPTIONS_TOWN_NAME_LATIN_AMERICAN                       :آمریکای لاتین
-STR_GAME_OPTIONS_TOWN_NAME_SILLY                                :سیلی
-STR_GAME_OPTIONS_TOWN_NAME_SWEDISH                              :سوئدی
-STR_GAME_OPTIONS_TOWN_NAME_DUTCH                                :هلندی
-STR_GAME_OPTIONS_TOWN_NAME_FINNISH                              :فنلاند
-STR_GAME_OPTIONS_TOWN_NAME_POLISH                               :لهستان
-STR_GAME_OPTIONS_TOWN_NAME_SLOVAK                               :اسلواکی
-STR_GAME_OPTIONS_TOWN_NAME_NORWEGIAN                            :نروژی
-STR_GAME_OPTIONS_TOWN_NAME_HUNGARIAN                            :مجاری
-STR_GAME_OPTIONS_TOWN_NAME_AUSTRIAN                             :اتریشی
-STR_GAME_OPTIONS_TOWN_NAME_ROMANIAN                             :رومانیایی
-STR_GAME_OPTIONS_TOWN_NAME_CZECH                                :چکی
-STR_GAME_OPTIONS_TOWN_NAME_SWISS                                :سوییسی
-STR_GAME_OPTIONS_TOWN_NAME_DANISH                               :دانمارکی
-STR_GAME_OPTIONS_TOWN_NAME_TURKISH                              :ترکیه ای
-STR_GAME_OPTIONS_TOWN_NAME_ITALIAN                              :ایتالیایی
-STR_GAME_OPTIONS_TOWN_NAME_CATALAN                              :کاتالانی
-
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK} ذخیره اتوماتیک
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK} انتخاب فاصله زمانی بین ذخیره کردن های اتوماتیک
 
@@ -981,8 +951,6 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :دیگر
 
 
 
-
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :دو برابر
 
 
 
@@ -1030,8 +998,6 @@ STR_CURRENCY_INCREASE_CUSTOM_CURRENCY_TO_EURO_TOOLTIP           :{BLACK}دیرت
 STR_CURRENCY_PREVIEW                                            :{LTBLUE}پیشنما: {ORANGE}{CURRENCY_LONG}
 STR_CURRENCY_CUSTOM_CURRENCY_PREVIEW_TOOLTIP                    :{BLACK}۱۰۰۰۰ پوند (£) به واحد پول شما می شود
 STR_CURRENCY_CHANGE_PARAMETER                                   :{BLACK}تغییر دلخواه پارامترهای واحد پول
-
-STR_DIFFICULTY_LEVEL_SETTING_MAXIMUM_NO_COMPETITORS             :{LTBLUE}حد اکثر تعداد رقبا :{ORANGE}{COMMA}
 
 STR_NONE                                                        :هیچکدام
 STR_FUNDING_ONLY                                                :فقط سرمایه گذاری
@@ -1081,6 +1047,12 @@ STR_SUBSIDY_X1_5                                                :x1.5
 STR_SUBSIDY_X2                                                  :x2
 STR_SUBSIDY_X3                                                  :x3
 STR_SUBSIDY_X4                                                  :x4
+
+###length 4
+STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :آب و هوای معتدل
+STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :آب و هوای قطبی
+STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :آب و هوای استوایی
+STR_CLIMATE_TOYLAND_LANDSCAPE                                   :دنیای اسباب بازی ها
 
 ###length 7
 STR_TERRAIN_TYPE_VERY_FLAT                                      :بسیار یکدست
@@ -1326,6 +1298,10 @@ STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :بهبودیا�
 
 STR_CONFIG_SETTING_ROAD_SIDE                                    :خودروهای جاده ای: {STRING}
 STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :انتخاب جهت رانندگی
+
+###length 2
+STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :چپ فرمان
+STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :راست فرمان
 
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :جهت چرخش نقشه بلندی: {STRING}
 ###length 2
@@ -1639,7 +1615,7 @@ STR_CONFIG_SETTING_PATHFINDER_FOR_SHIPS                         :مسیریاب 
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS                           :برگشت خودکار با رسیدن به نشانه ها: {STRING}
 ###length 2
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
-STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(توصیه می گردد)
+STR_CONFIG_SETTING_PATHFINDER_YAPF                              :YAPF {BLUE}(توصیه می گردد)
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}تغییر مقدار
 
@@ -1673,7 +1649,6 @@ STR_INTRO_MULTIPLAYER                                           :{BLACK}بازی
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}تنضیمات بازی
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}تنظیمات NewGRF
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}چک کردن محتوی آنلاین
-STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK} تنظیمات هوش مصنوعی / اسکریپت
 STR_INTRO_QUIT                                                  :{BLACK}خروج
 
 STR_INTRO_TOOLTIP_NEW_GAME                                      :{BLACK}شروع بازی جدید. Ctrl+Click پیش تنظیمات نقشه را رد و از تنظیمات گذشته استفاده می کند.
@@ -1692,7 +1667,6 @@ STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}نشان
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}نمایش جدول بالاترین امتیازات
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}نمایش تنظیمات NewGRF
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}بررسی وجود مجموعه ها و به روز رسانی های جدید در اینترنت
-STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}نمایش تنظیمات هوش مصنوعی و اسکریپت های بازی
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK} خروج از 'OpenTTD'
 
 STR_INTRO_TRANSLATION                                           :{BLACK}این ترجمه {NUM} رشته{P ی های}ترجمه نشده دارد. با ثبت نام کردن به عنوان مترجم ما را در بهتر سازی OpenTTD یاری نمایید. فایل readme.txt را برای جزییات بیشتر بخوانید.
@@ -1719,12 +1693,6 @@ STR_CHEAT_NO_JETCRASH                                           :{LTBLUE}هوا�
 STR_CHEAT_CHANGE_DATE                                           :{LTBLUE}تغییر تاریخ: {ORANGE}{DATE_SHORT}
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}تغییر سال جاری
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}قابلیت تغییر سطح تولید صنایع: {ORANGE}{STRING}
-
-###length 4
-STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :آب و هوای معتدل
-STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :آب و هوای قطبی
-STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :آب و هوای استوایی
-STR_CHEAT_SWITCH_CLIMATE_TOYLAND_LANDSCAPE                      :دنیای اسباب بازی ها
 
 # Livery window
 
@@ -2118,6 +2086,8 @@ STR_LINKGRAPH_LEGEND_SELECT_COMPANIES                           :{BLACK}شرکت
 STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}بلااستفاده
 STR_LINKGRAPH_LEGEND_SATURATED                                  :{TINY_FONT}{BLACK}اشباع شده
 STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLACK}بیش از ظرفیت
+
+# Linkgraph tooltip
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}نور ناحیه ی اطراف ایستگاه
@@ -2558,6 +2528,8 @@ STR_MAPGEN_WORLD_GENERATION_CAPTION                             :{WHITE}ساخت
 STR_MAPGEN_MAPSIZE                                              :{BLACK}اندازه نقشه:
 STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}تعداد شهرها:
+STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK} نام شهرها
+STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}انتخاب نوع نام شهرها
 STR_MAPGEN_DATE                                                 :{BLACK}تاریخ:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}تعداد صنایع:
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}ارتفاع خط برف:
@@ -2565,11 +2537,34 @@ STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}اضاف
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}کم کردن یک واحد از ارتفاع خط برف
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}سازنده زمین:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}نوع پستی/بلندی:
-STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}سطح دریا:
+STR_MAPGEN_SEA_LEVEL                                            :{BLACK}سطح دریا:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}رودخانه ها:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}همواری:
 STR_MAPGEN_VARIETY                                              :{BLACK}توزیع انواع:
 STR_MAPGEN_GENERATE                                             :{WHITE}بساز
+
+###length 21
+STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH                           :انگلیسی (اصلی)
+STR_MAPGEN_TOWN_NAME_FRENCH                                     :فرانسوی
+STR_MAPGEN_TOWN_NAME_GERMAN                                     :آلمانی
+STR_MAPGEN_TOWN_NAME_ADDITIONAL_ENGLISH                         :انگلیسی (اضافه)
+STR_MAPGEN_TOWN_NAME_LATIN_AMERICAN                             :آمریکای لاتین
+STR_MAPGEN_TOWN_NAME_SILLY                                      :سیلی
+STR_MAPGEN_TOWN_NAME_SWEDISH                                    :سوئدی
+STR_MAPGEN_TOWN_NAME_DUTCH                                      :هلندی
+STR_MAPGEN_TOWN_NAME_FINNISH                                    :فنلاند
+STR_MAPGEN_TOWN_NAME_POLISH                                     :لهستان
+STR_MAPGEN_TOWN_NAME_SLOVAK                                     :اسلواکی
+STR_MAPGEN_TOWN_NAME_NORWEGIAN                                  :نروژی
+STR_MAPGEN_TOWN_NAME_HUNGARIAN                                  :مجاری
+STR_MAPGEN_TOWN_NAME_AUSTRIAN                                   :اتریشی
+STR_MAPGEN_TOWN_NAME_ROMANIAN                                   :رومانیایی
+STR_MAPGEN_TOWN_NAME_CZECH                                      :چکی
+STR_MAPGEN_TOWN_NAME_SWISS                                      :سوییسی
+STR_MAPGEN_TOWN_NAME_DANISH                                     :دانمارکی
+STR_MAPGEN_TOWN_NAME_TURKISH                                    :ترکیه ای
+STR_MAPGEN_TOWN_NAME_ITALIAN                                    :ایتالیایی
+STR_MAPGEN_TOWN_NAME_CATALAN                                    :کاتالانی
 
 # Strings for map borders at game generation
 STR_MAPGEN_BORDER_TYPE                                          :{BLACK}لبه های نقشه:
@@ -2707,6 +2702,10 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}تصوی
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}نمایش تصویر عادی قبلی، بدون انجام دادن هر گونه تغییرات
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}نمایش تصویر انتخاب شده. تغییر مکان تصویر در زمان بارگزاری اعمال نمی شود
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}تغییر مکان تصویر، تغییر مقدار اضافه شونده به X و Y
+
+###length 2
+
+
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}برداشتن تصویر
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}برداشتن یک تصویر از یک نقطه از صفحه نمایش
 
@@ -3106,6 +3105,8 @@ STR_PURCHASE_INFO_SPEED_CANAL                                   :{BLACK}سرعت
 STR_PURCHASE_INFO_REFITTABLE                                    :(قابل تعمیر)
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}برد: {GOLD}{COMMA} قطعه
 
+###length 3
+
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}لیست انتخاب قطار - برای اطلاعات بیشتر روی وسیله کلیک کنید. برای مخفی یا پدیدار کردن انواع قطار کنترل+کلیک کنید
 STR_BUY_VEHICLE_SHIP_LIST_TOOLTIP                               :{BLACK}لیست انتخاب کشتی - برای اطلاعات بیشتر روی کشتی کلیک کنید. برای مخفی یا دوباره پدیدار کردن نوع کشتی ها، کنترل+کلیک کنید
@@ -3459,12 +3460,12 @@ STR_AI_GAME_SCRIPT_TOOLTIP                                      :{BLACK}دیدن
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}پنجره رفع اشکال کد فقط برای سرور قابل دسترس است
 
 # AI configuration window
-STR_AI_CONFIG_CAPTION                                           :{WHITE}تنظیمات هوش مصنوعی / بازی
 STR_AI_CONFIG_GAMELIST_TOOLTIP                                  :{BLACK}کد بازی که در بازی بعدی بارگذاری می شود
 STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}هوش مصنوعی که در بازی بعدی بارگذاری می شود
 STR_AI_CONFIG_HUMAN_PLAYER                                      :بازیکن آدمیزاد
 STR_AI_CONFIG_RANDOM_AI                                         :انتخاب هوش مصنوعی به صورت اتفاقی
 STR_AI_CONFIG_NONE                                              :(هیچکدام)
+STR_AI_CONFIG_MAX_COMPETITORS                                   :{LTBLUE}حد اکثر تعداد رقبا :{ORANGE}{COMMA}
 
 STR_AI_CONFIG_MOVE_UP                                           :حرکت به بالا
 STR_AI_CONFIG_MOVE_UP_TOOLTIP                                   :{BLACK}حرکت دادن AI انتخاب شده به سمت بالا در لیست
@@ -3474,8 +3475,6 @@ STR_AI_CONFIG_MOVE_DOWN_TOOLTIP                                 :{BLACK}حرکت
 STR_AI_CONFIG_GAMESCRIPT                                        :{SILVER}کدبازی
 STR_AI_CONFIG_AI                                                :{SILVER}هوشهای مصنوعی
 
-STR_AI_CONFIG_CHANGE                                            :{BLACK}انتخاب {STRING}
-STR_AI_CONFIG_CHANGE_NONE                                       :
 STR_AI_CONFIG_CHANGE_AI                                         :هوش مصنوعی(AI)
 STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :کد بازی
 STR_AI_CONFIG_CHANGE_TOOLTIP                                    :{BLACK}بارگزاری کد دیگر
@@ -3498,9 +3497,7 @@ STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}کد ر�
 
 
 # AI Parameters
-STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} پارامترها
 STR_AI_SETTINGS_CAPTION_AI                                      :هوش مصنوعی(AI)
-STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :کد بازی
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}بستن
 STR_AI_SETTINGS_RESET                                           :{BLACK}بازنشاندن
 STR_AI_SETTINGS_START_DELAY                                     :تعداد روزهایی که این بازیگر هوش مصنوعی پس از بازیگر هوش مصنوعی قبلی قبل از اتصال صبر می کند(کم و بیش): {ORANGE}{STRING}
@@ -3781,6 +3778,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}ماشی
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}امکان تغییر فواصل زمانی سرویس وجود ندارد...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... وسیله نقلیه منهدم شد
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}بطور کلی هیچ خودرویی در دسترس نخواهد بود
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}تنظیمات مربوط به NewGRF را تغییر دهید

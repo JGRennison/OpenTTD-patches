@@ -155,7 +155,7 @@ enum EngineMiscFlags {
 	EF_ROAD_TRAM  = 0, ///< Road vehicle is a tram/light rail vehicle
 	EF_USES_2CC   = 1, ///< Vehicle uses two company colours
 	EF_RAIL_IS_MU = 2, ///< Rail vehicle is a multiple-unit (DMU/EMU)
-	EF_RAIL_FLIPS = 3, ///< Rail vehicle can be flipped in the depot
+	EF_RAIL_FLIPS = 3, ///< Rail vehicle has old depot-flip handling
 	EF_AUTO_REFIT = 4, ///< Automatic refitting is allowed
 	EF_NO_DEFAULT_CARGO_MULTIPLIER = 5, ///< Use the new capacity algorithm. The default cargotype of the vehicle does not affect capacity multipliers. CB 15 is also called in purchase list.
 	EF_NO_BREAKDOWN_SMOKE          = 6, ///< Do not show black smoke during a breakdown.
@@ -170,7 +170,7 @@ enum EngineFlags {
 	ENGINE_EXCLUSIVE_PREVIEW = 2, ///< This vehicle is in the exclusive preview stage, either being used or being offered to a company.
 };
 
-static const uint MAX_LENGTH_ENGINE_NAME_CHARS = 32; ///< The maximum length of an engine name in characters including '\0'
+static const uint MAX_LENGTH_ENGINE_NAME_CHARS = 64; ///< The maximum length of an engine name in characters including '\0'
 
 static const EngineID INVALID_ENGINE = 0xFFFF; ///< Constant denoting an invalid engine.
 

@@ -35,6 +35,7 @@ enum SettingFlag : uint32 {
 	SF_GUI_VELOCITY            = 1 << 18, ///< setting value is a velocity
 	SF_GUI_ADVISE_DEFAULT      = 1 << 19, ///< Advise the user to leave this setting at its default value
 	SF_ENUM_PRE_CB_VALIDATE    = 1 << 20, ///< Call the pre_check callback for enum incoming value validation
+	SF_CONVERT_BOOL_TO_INT     = 1 << 21, ///< Accept a boolean value when loading an int-type setting from the config file
 };
 DECLARE_ENUM_AS_BIT_SET(SettingFlag)
 
@@ -76,12 +77,15 @@ enum SettingType {
 enum SettingOnGuiCtrlType {
 	SOGCT_DESCRIPTION_TEXT,   ///< Description text callback
 	SOGCT_GUI_DROPDOWN_ORDER, ///< SF_GUI_DROPDOWN reordering callback
+	SOGCT_CFG_NAME,           ///< Config file name override
+	SOGCT_CFG_FALLBACK_NAME,  ///< Config file name within group fallback
 };
 
 struct SettingOnGuiCtrlData {
 	SettingOnGuiCtrlType type;
 	StringID text;
 	int val;
+	const char *str = nullptr;
 };
 
 struct IniItem;

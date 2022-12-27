@@ -205,6 +205,7 @@ STR_UNITS_POWER_IMPERIAL                                        :{COMMA}cp
 STR_UNITS_POWER_METRIC                                          :{COMMA}cp
 STR_UNITS_POWER_SI                                              :{COMMA}kW
 
+
 STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA}t
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}t
 STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}kg
@@ -397,10 +398,10 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Ieşire din joc
 
 # Settings menu
-###length 14
+###length 15
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Opţiunile jocului
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Setări
-STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :Setări IA / Script Joc
+STR_SETTINGS_MENU_AI_SETTINGS                                   :Setările AI
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :Setări NewGRF
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Opţiuni transparenţă
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Afişează numele oraşelor
@@ -977,36 +978,6 @@ STR_GAME_OPTIONS_CURRENCY_INR                                   :Rupia Indiană 
 STR_GAME_OPTIONS_CURRENCY_IDR                                   :Rupia indoneziană (IDR)
 STR_GAME_OPTIONS_CURRENCY_MYR                                   :Ringgit Malaysian (MYR)
 
-###length 2
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Pe partea stângă
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :Pe partea dreaptă
-
-STR_GAME_OPTIONS_TOWN_NAMES_FRAME                               :{BLACK}Numele orașelor:
-STR_GAME_OPTIONS_TOWN_NAMES_DROPDOWN_TOOLTIP                    :{BLACK}Alege naţionalitatea numelor oraşelor
-
-###length 21
-STR_GAME_OPTIONS_TOWN_NAME_ORIGINAL_ENGLISH                     :Englezeşti (Original)
-STR_GAME_OPTIONS_TOWN_NAME_FRENCH                               :Franţuzeşti
-STR_GAME_OPTIONS_TOWN_NAME_GERMAN                               :Nemţeşti
-STR_GAME_OPTIONS_TOWN_NAME_ADDITIONAL_ENGLISH                   :Englezeşti (Adiţional)
-STR_GAME_OPTIONS_TOWN_NAME_LATIN_AMERICAN                       :Latino-Americane
-STR_GAME_OPTIONS_TOWN_NAME_SILLY                                :Amuzante
-STR_GAME_OPTIONS_TOWN_NAME_SWEDISH                              :Suedeze
-STR_GAME_OPTIONS_TOWN_NAME_DUTCH                                :Olandeze
-STR_GAME_OPTIONS_TOWN_NAME_FINNISH                              :Finlandeze
-STR_GAME_OPTIONS_TOWN_NAME_POLISH                               :Poloneze
-STR_GAME_OPTIONS_TOWN_NAME_SLOVAK                               :Slovace
-STR_GAME_OPTIONS_TOWN_NAME_NORWEGIAN                            :Norvegiene
-STR_GAME_OPTIONS_TOWN_NAME_HUNGARIAN                            :Ungureşti
-STR_GAME_OPTIONS_TOWN_NAME_AUSTRIAN                             :Austriece
-STR_GAME_OPTIONS_TOWN_NAME_ROMANIAN                             :Româneşti
-STR_GAME_OPTIONS_TOWN_NAME_CZECH                                :Ceheşti
-STR_GAME_OPTIONS_TOWN_NAME_SWISS                                :Elveţiene
-STR_GAME_OPTIONS_TOWN_NAME_DANISH                               :Daneze
-STR_GAME_OPTIONS_TOWN_NAME_TURKISH                              :Turceşti
-STR_GAME_OPTIONS_TOWN_NAME_ITALIAN                              :Italieneşti
-STR_GAME_OPTIONS_TOWN_NAME_CATALAN                              :Catalană
-
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Salvare automată
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Alege intervalul de timp dintre salvările automate
 
@@ -1039,21 +1010,9 @@ STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Bifați 
 
 STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}Driver curent: {STRING}
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Mărime interfată
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Alege mărimea elementelor de interfaţa
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(auto-detecție)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normală
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Mărime dublă
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Mărime cvadruplă
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Dimensiune font
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Alege dimensiunea fontului pentru interfață
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(auto-detecție)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normal
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Mărime dublă
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Mărime cvadruplă
+STR_GAME_OPTIONS_GUI_SCALE_2X                                   :2x
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Grafică
 
@@ -1105,8 +1064,6 @@ STR_CURRENCY_PREVIEW                                            :{LTBLUE}Previzu
 STR_CURRENCY_CUSTOM_CURRENCY_PREVIEW_TOOLTIP                    :{BLACK}10000 de Lire sterline (£) în moneda proprie
 STR_CURRENCY_CHANGE_PARAMETER                                   :{BLACK}Schimbă un parametru al monedei proprii
 
-STR_DIFFICULTY_LEVEL_SETTING_MAXIMUM_NO_COMPETITORS             :{LTBLUE}Numărul maxim de companii concurente: {ORANGE}{COMMA}
-
 STR_NONE                                                        :Nimic
 STR_FUNDING_ONLY                                                :Doar finanțare
 STR_MINIMAL                                                     :Minim
@@ -1155,6 +1112,12 @@ STR_SUBSIDY_X1_5                                                :x1,5
 STR_SUBSIDY_X2                                                  :x2
 STR_SUBSIDY_X3                                                  :x3
 STR_SUBSIDY_X4                                                  :x4
+
+###length 4
+STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :peisajul temperat
+STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :peisajul sub-arctic
+STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :peisajul sub-tropical
+STR_CLIMATE_TOYLAND_LANDSCAPE                                   :peisajul 'ţara jucăriilor'
 
 ###length 7
 STR_TERRAIN_TYPE_VERY_FLAT                                      :Foarte plat
@@ -1461,6 +1424,7 @@ STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS_HELPTEXT                :Grosimea liniil
 
 STR_CONFIG_SETTING_SHOW_NEWGRF_NAME                             :Afișează numele NewGRF în fereastra de construcție a vehiculului: {STRING}
 STR_CONFIG_SETTING_SHOW_NEWGRF_NAME_HELPTEXT                    :Adaugă o linie în fereastra de construcție a vehiculului, afișând din care NewGRF vine vehiculul selectat.
+STR_CONFIG_SETTING_SHOW_CARGO_IN_LISTS                          :Afișați mărfurile pe care vehiculele le pot transporta în ferestrele listei {STRING}
 
 STR_CONFIG_SETTING_LANDSCAPE                                    :Peisaj: {STRING}
 STR_CONFIG_SETTING_LANDSCAPE_HELPTEXT                           :Peisajele definesc scenariile de bază a jocului cu cerințe diferite pentru încărcături și dezvoltare a orașelor. NewGRF și scripturile de joc permit un control mai fin
@@ -1514,6 +1478,10 @@ STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Îmbunătăţit
 
 STR_CONFIG_SETTING_ROAD_SIDE                                    :Autovehicule: {STRING}
 STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Alege banda pentru condus
+
+###length 2
+STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :Pe partea stângă
+STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :Pe partea dreaptă
 
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Rotaţie hartă înălţimi: {STRING}
 ###length 2
@@ -2049,7 +2017,7 @@ STR_CONFIG_SETTING_REVERSE_AT_SIGNALS                           :Întoarcere aut
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :Permite trenurilor să întoarcă la semafor, dacă aşteaptă de mult timp
 ###length 2
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
-STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Recomandat)
+STR_CONFIG_SETTING_PATHFINDER_YAPF                              :YAPF {BLUE}(Recomandat)
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Schimbă valoarea setării
 
@@ -2092,7 +2060,6 @@ STR_INTRO_HIGHSCORE                                             :{BLACK}Tabela c
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Setări
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Setări NewGRF
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Resurse online
-STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}Setări IA / Scripturi Joc
 STR_INTRO_QUIT                                                  :{BLACK}Ieşire
 
 STR_INTRO_TOOLTIP_NEW_GAME                                      :{BLACK}Începere joc nou. Ctrl+Click pentru a sări peste fereastra de configuraţie a harţii
@@ -2112,7 +2079,6 @@ STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Afișeaz
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Setări afişare
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Afişează setările NewGRF
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Verifică dacă există resurse noi sau actualizate pentru descărcare
-STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Afişează setările pentru Inteligența Artificială şi pentru Scripturi Joc
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Ieși din 'OpenTTD'
 
 STR_INTRO_BASESET                                               :{BLACK}Setul grafic actual are lipsă {NUM} {P sprite spriteuri "de spriteuri"}. Verificați actualizările pentru setul de bază.
@@ -2143,12 +2109,6 @@ STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}Schimbă
 STR_CHEAT_CHANGE_DATE                                           :{LTBLUE}Schimbă data: {ORANGE}{DATE_SHORT}
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Schimbă anul curent
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Activează accesul la valorile de producţie: {ORANGE}{STRING}
-
-###length 4
-STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :peisajul temperat
-STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :peisajul sub-arctic
-STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :peisajul sub-tropical
-STR_CHEAT_SWITCH_CLIMATE_TOYLAND_LANDSCAPE                      :peisajul 'ţara jucăriilor'
 
 # Livery window
 STR_LIVERY_CAPTION                                              :{WHITE}{COMPANY} - Schemă de culori
@@ -2628,6 +2588,8 @@ STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP                            :{BLACK}{STRING}
 STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}nefolosit
 STR_LINKGRAPH_LEGEND_SATURATED                                  :{TINY_FONT}{BLACK}saturat
 STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLACK}supraîncărcat
+
+# Linkgraph tooltip
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Aria de acoperire
@@ -3150,6 +3112,8 @@ STR_MAPGEN_MAPSIZE                                              :{BLACK}Mărime 
 STR_MAPGEN_MAPSIZE_TOOLTIP                                      :{BLACK}Alege mărimea hărții folosind ca unitate de măsură suprafețele. Numărul de suprafețe disponibile va fi puțin mai mic decât această valoare
 STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Nr. de oraşe:
+STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Numele orașelor:
+STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Alege naţionalitatea numelor oraşelor
 STR_MAPGEN_DATE                                                 :{BLACK}Data:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Nr. de industrii:
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Cel mai înalt vârf:
@@ -3168,11 +3132,34 @@ STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Mută li
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Mută linia zăpezii cu un punct în jos
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Generator de teren:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Tip teren:
-STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Nivelul mării:
+STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Nivelul mării:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Râuri:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Netezime:
 STR_MAPGEN_VARIETY                                              :{BLACK}Distribuţia varietăţii:
 STR_MAPGEN_GENERATE                                             :{WHITE}Generează
+
+###length 21
+STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH                           :Englezeşti (Original)
+STR_MAPGEN_TOWN_NAME_FRENCH                                     :Franţuzeşti
+STR_MAPGEN_TOWN_NAME_GERMAN                                     :Nemţeşti
+STR_MAPGEN_TOWN_NAME_ADDITIONAL_ENGLISH                         :Englezeşti (Adiţional)
+STR_MAPGEN_TOWN_NAME_LATIN_AMERICAN                             :Latino-Americane
+STR_MAPGEN_TOWN_NAME_SILLY                                      :Amuzante
+STR_MAPGEN_TOWN_NAME_SWEDISH                                    :Suedeze
+STR_MAPGEN_TOWN_NAME_DUTCH                                      :Olandeze
+STR_MAPGEN_TOWN_NAME_FINNISH                                    :Finlandeze
+STR_MAPGEN_TOWN_NAME_POLISH                                     :Poloneze
+STR_MAPGEN_TOWN_NAME_SLOVAK                                     :Slovace
+STR_MAPGEN_TOWN_NAME_NORWEGIAN                                  :Norvegiene
+STR_MAPGEN_TOWN_NAME_HUNGARIAN                                  :Ungureşti
+STR_MAPGEN_TOWN_NAME_AUSTRIAN                                   :Austriece
+STR_MAPGEN_TOWN_NAME_ROMANIAN                                   :Româneşti
+STR_MAPGEN_TOWN_NAME_CZECH                                      :Ceheşti
+STR_MAPGEN_TOWN_NAME_SWISS                                      :Elveţiene
+STR_MAPGEN_TOWN_NAME_DANISH                                     :Daneze
+STR_MAPGEN_TOWN_NAME_TURKISH                                    :Turceşti
+STR_MAPGEN_TOWN_NAME_ITALIAN                                    :Italieneşti
+STR_MAPGEN_TOWN_NAME_CATALAN                                    :Catalană
 
 # Strings for map borders at game generation
 STR_MAPGEN_BORDER_TYPE                                          :{BLACK}Margine:
@@ -3319,6 +3306,10 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Imaginea
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Mergi la precedenta imagine normală, sărind peste pseudo-imagini, recolorări sau fonturi şi reporneşte când s-a ajuns la sfârşit
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Reprezentarea imaginii curente. Aliniamentul este ignorat
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Mișcă imaginea schimbând distanțele pe axele X şi Y. Ctrl+Clic pentru mutarea imaginii câte opt unități la un pas
+
+###length 2
+
+
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Resetează relativele
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Resetază limitele relative actuale
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}Limita X: {NUM}, Limita Y: {NUM} (Absolut)
@@ -3658,7 +3649,6 @@ STR_FINANCES_SECTION_OTHER                                      :{GOLD}Altele
 
 STR_FINANCES_NEGATIVE_INCOME                                    :-{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :+{CURRENCY_LONG}
-STR_FINANCES_NET_PROFIT                                         :{WHITE}Profit Net
 STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}Balanţă curentă
 STR_FINANCES_OWN_FUNDS_TITLE                                    :{WHITE}Fonduri proprii
 STR_FINANCES_LOAN_TITLE                                         :{WHITE}Credite
@@ -3886,6 +3876,8 @@ STR_PURCHASE_INFO_ALL_BUT                                       :Toate, cu excep
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Efort tractor max.: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Rază acțiune: {GOLD}{COMMA} pătrățele
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Tip de aeronavă: {GOLD}{STRING}
+
+###length 3
 
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Lista de selectie a componentelor trenului - clic pe vehicule pt. informatii
@@ -4547,12 +4539,12 @@ STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}O Inteli
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}Fereastra pentru depanare IA / Script Joc este disponibilă doar serverului
 
 # AI configuration window
-STR_AI_CONFIG_CAPTION                                           :{WHITE}Configurație Inteligentă Artificială / Scripturi Joc
 STR_AI_CONFIG_GAMELIST_TOOLTIP                                  :{BLACK}Script Joc încărcat în jocul următor
 STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}Modulul de IA care va fi încărcat în jocul următor
 STR_AI_CONFIG_HUMAN_PLAYER                                      :Jucator uman
 STR_AI_CONFIG_RANDOM_AI                                         :IA aleator
 STR_AI_CONFIG_NONE                                              :(niciunul)
+STR_AI_CONFIG_MAX_COMPETITORS                                   :{LTBLUE}Numărul maxim de companii concurente: {ORANGE}{COMMA}
 
 STR_AI_CONFIG_MOVE_UP                                           :{BLACK}În sus
 STR_AI_CONFIG_MOVE_UP_TOOLTIP                                   :{BLACK}Mută IA selectată sus în listă
@@ -4562,8 +4554,6 @@ STR_AI_CONFIG_MOVE_DOWN_TOOLTIP                                 :{BLACK}Mută IA
 STR_AI_CONFIG_GAMESCRIPT                                        :{SILVER}Script Joc
 STR_AI_CONFIG_AI                                                :{SILVER}IA
 
-STR_AI_CONFIG_CHANGE                                            :{BLACK}Selectare {STRING}
-STR_AI_CONFIG_CHANGE_NONE                                       :
 STR_AI_CONFIG_CHANGE_AI                                         :IA
 STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :Script Joc
 STR_AI_CONFIG_CHANGE_TOOLTIP                                    :{BLACK}Încarcă un alt script
@@ -4594,9 +4584,7 @@ STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Captură
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Captură de hartă a lumii
 
 # AI Parameters
-STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Parametrii
 STR_AI_SETTINGS_CAPTION_AI                                      :IA
-STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Script Joc
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Închide
 STR_AI_SETTINGS_RESET                                           :{BLACK}Resetează
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
@@ -4941,6 +4929,7 @@ STR_ERROR_OBJECT_IN_THE_WAY                                     :{WHITE}Obiect �
 STR_ERROR_COMPANY_HEADQUARTERS_IN                               :{WHITE}... sediu de companie în cale
 STR_ERROR_CAN_T_PURCHASE_THIS_LAND                              :{WHITE}Nu poţi cumpăra teren aici...
 STR_ERROR_YOU_ALREADY_OWN_IT                                    :{WHITE}... este deja în proprietatea ta!
+STR_ERROR_BUILD_OBJECT_LIMIT_REACHED                            :{WHITE}... limita de obiecte construibile a fost atinsă
 
 # Group related errors
 STR_ERROR_GROUP_CAN_T_CREATE                                    :{WHITE}Nu pot crea grupul...
@@ -5012,6 +5001,8 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Prea mul
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Nu se poate schimba intervalul de întreţinere...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... vehiculul este distrus
+
+STR_ERROR_CAN_T_CLONE_VEHICLE_LIST                              :{WHITE}... nu toate vehiculele sunt identice
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Niciun vehicul nu va fi disponibil
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Schimbă configuraţia NewGRF

@@ -17,6 +17,7 @@
 #include "settings_type.h"
 #include "network/network.h"
 #include "network/network_func.h"
+#include "window_gui.h"
 #include "window_func.h"
 #include "newgrf_debug.h"
 #include "thread.h"
@@ -25,11 +26,14 @@
 #include "framerate_type.h"
 #include "transparency.h"
 #include "core/backup_type.hpp"
+#include "viewport_func.h"
 
 #include "table/palettes.h"
 #include "table/string_colours.h"
 #include "table/sprites.h"
 #include "table/control_codes.h"
+
+#include <atomic>
 
 #include "safeguards.h"
 
@@ -81,17 +85,25 @@ byte _colour_value[COLOUR_END] = {
 	 15, // COLOUR_WHITE,
 };
 
-static void GfxMainBlitterViewport(const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite *sub = nullptr, SpriteID sprite_id = SPR_CURSOR_MOUSE);
-static void GfxMainBlitter(const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite *sub = nullptr, SpriteID sprite_id = SPR_CURSOR_MOUSE, ZoomLevel zoom = ZOOM_LVL_NORMAL);
+struct GfxBlitterCtx {
+	const DrawPixelInfo *dpi;
+	const byte *colour_remap_ptr = nullptr;
+	byte string_colourremap[3]; ///< Recoloursprite for stringdrawing. The grf loader ensures that #ST_FONT sprites only use colours 0 to 2.
+	int sprite_brightness_adjust = 0;
+
+	GfxBlitterCtx(const DrawPixelInfo *dpi) : dpi(dpi) {}
+
+	void SetColourRemap(TextColour colour);
+};
+
+static void GfxMainBlitterViewport(const GfxBlitterCtx &ctx, const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite *sub = nullptr, SpriteID sprite_id = SPR_CURSOR_MOUSE);
+static void GfxMainBlitter(const GfxBlitterCtx &ctx, const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite *sub = nullptr, SpriteID sprite_id = SPR_CURSOR_MOUSE, ZoomLevel zoom = ZOOM_LVL_NORMAL);
 
 static ReusableBuffer<uint8> _cursor_backup;
 
-ZoomLevel _gui_zoom; ///< GUI Zoom level
-ZoomLevel _font_zoom; ///< Font Zoom level
-
-int8 _gui_zoom_cfg;  ///< GUI zoom level in config.
-int8 _font_zoom_cfg; ///< Font zoom level in config.
-
+ZoomLevel _gui_zoom = ZOOM_LVL_OUT_4X;     ///< GUI Zoom level
+int _gui_scale      = MIN_INTERFACE_SCALE; ///< GUI scale, 100 is 100%.
+int _gui_scale_cfg;                        ///< GUI scale in config.
 
 /**
  * The rect for repaint.
@@ -100,11 +112,8 @@ int8 _font_zoom_cfg; ///< Font zoom level in config.
  *
  * @ingroup dirty
  */
-static const byte *_colour_remap_ptr;
-static byte _string_colourremap[3]; ///< Recoloursprite for stringdrawing. The grf loader ensures that #ST_FONT sprites only use colours 0 to 2.
-static int _sprite_brightness_adjust;
 
-extern uint _dirty_block_colour;
+extern std::atomic<uint> _dirty_block_colour;
 static bool _whole_screen_dirty = false;
 bool _gfx_draw_active = false;
 
@@ -122,6 +131,7 @@ uint32 _gfx_debug_flags;
  * Applies a certain FillRectMode-operation to a rectangle [left, right] x [top, bottom] on the screen.
  *
  * @pre dpi->zoom == ZOOM_LVL_NORMAL, right >= left, bottom >= top
+ * @param dpi Draw pixel info
  * @param left Minimum X (inclusive)
  * @param top Minimum Y (inclusive)
  * @param right Maximum X (inclusive)
@@ -132,10 +142,9 @@ uint32 _gfx_debug_flags;
  *         FILLRECT_CHECKER:  Like FILLRECT_OPAQUE, but only draw every second pixel (used to grey out things)
  *         FILLRECT_RECOLOUR:  Apply a recolour sprite to every pixel in the rectangle currently on screen
  */
-void GfxFillRect(int left, int top, int right, int bottom, int colour, FillRectMode mode)
+void GfxFillRect(const DrawPixelInfo *dpi, int left, int top, int right, int bottom, int colour, FillRectMode mode)
 {
 	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
-	const DrawPixelInfo *dpi = _cur_dpi;
 	void *dst;
 	const int otop = top;
 	const int oleft = left;
@@ -394,7 +403,7 @@ static inline void GfxDoDrawLine(void *video, int x, int y, int x2, int y2, int 
  * @return True if the line is likely to be visible, false if it's certainly
  *         invisible.
  */
-static inline bool GfxPreprocessLine(DrawPixelInfo *dpi, int &x, int &y, int &x2, int &y2, int width)
+static inline bool GfxPreprocessLine(const DrawPixelInfo *dpi, int &x, int &y, int &x2, int &y2, int width)
 {
 	x -= dpi->left;
 	x2 -= dpi->left;
@@ -409,17 +418,15 @@ static inline bool GfxPreprocessLine(DrawPixelInfo *dpi, int &x, int &y, int &x2
 	return true;
 }
 
-void GfxDrawLine(int x, int y, int x2, int y2, int colour, int width, int dash)
+void GfxDrawLine(const DrawPixelInfo *dpi, int x, int y, int x2, int y2, int colour, int width, int dash)
 {
-	DrawPixelInfo *dpi = _cur_dpi;
 	if (GfxPreprocessLine(dpi, x, y, x2, y2, width)) {
 		GfxDoDrawLine(dpi->dst_ptr, x, y, x2, y2, dpi->width, dpi->height, colour, width, dash);
 	}
 }
 
-void GfxDrawLineUnscaled(int x, int y, int x2, int y2, int colour)
+void GfxDrawLineUnscaled(const DrawPixelInfo *dpi, int x, int y, int x2, int y2, int colour)
 {
-	DrawPixelInfo *dpi = _cur_dpi;
 	if (GfxPreprocessLine(dpi, x, y, x2, y2, 1)) {
 		GfxDoDrawLine(dpi->dst_ptr,
 				UnScaleByZoom(x, dpi->zoom), UnScaleByZoom(y, dpi->zoom),
@@ -432,6 +439,7 @@ void GfxDrawLineUnscaled(int x, int y, int x2, int y2, int colour)
  * Draws the projection of a parallelepiped.
  * This can be used to draw boxes in world coordinates.
  *
+ * @param dpi Draw pixel info.
  * @param x   Screen X-coordinate of top front corner.
  * @param y   Screen Y-coordinate of top front corner.
  * @param dx1 Screen X-length of first edge.
@@ -441,7 +449,7 @@ void GfxDrawLineUnscaled(int x, int y, int x2, int y2, int colour)
  * @param dx3 Screen X-length of third edge.
  * @param dy3 Screen Y-length of third edge.
  */
-void DrawBox(int x, int y, int dx1, int dy1, int dx2, int dy2, int dx3, int dy3)
+void DrawBox(const DrawPixelInfo *dpi, int x, int y, int dx1, int dy1, int dx2, int dy2, int dx3, int dy3)
 {
 	/*           ....
 	 *         ..    ....
@@ -460,23 +468,23 @@ void DrawBox(int x, int y, int dx1, int dy1, int dx2, int dy2, int dx3, int dy3)
 
 	static const byte colour = PC_WHITE;
 
-	GfxDrawLineUnscaled(x, y, x + dx1, y + dy1, colour);
-	GfxDrawLineUnscaled(x, y, x + dx2, y + dy2, colour);
-	GfxDrawLineUnscaled(x, y, x + dx3, y + dy3, colour);
+	GfxDrawLineUnscaled(dpi, x, y, x + dx1, y + dy1, colour);
+	GfxDrawLineUnscaled(dpi, x, y, x + dx2, y + dy2, colour);
+	GfxDrawLineUnscaled(dpi, x, y, x + dx3, y + dy3, colour);
 
-	GfxDrawLineUnscaled(x + dx1, y + dy1, x + dx1 + dx2, y + dy1 + dy2, colour);
-	GfxDrawLineUnscaled(x + dx1, y + dy1, x + dx1 + dx3, y + dy1 + dy3, colour);
-	GfxDrawLineUnscaled(x + dx2, y + dy2, x + dx2 + dx1, y + dy2 + dy1, colour);
-	GfxDrawLineUnscaled(x + dx2, y + dy2, x + dx2 + dx3, y + dy2 + dy3, colour);
-	GfxDrawLineUnscaled(x + dx3, y + dy3, x + dx3 + dx1, y + dy3 + dy1, colour);
-	GfxDrawLineUnscaled(x + dx3, y + dy3, x + dx3 + dx2, y + dy3 + dy2, colour);
+	GfxDrawLineUnscaled(dpi, x + dx1, y + dy1, x + dx1 + dx2, y + dy1 + dy2, colour);
+	GfxDrawLineUnscaled(dpi, x + dx1, y + dy1, x + dx1 + dx3, y + dy1 + dy3, colour);
+	GfxDrawLineUnscaled(dpi, x + dx2, y + dy2, x + dx2 + dx1, y + dy2 + dy1, colour);
+	GfxDrawLineUnscaled(dpi, x + dx2, y + dy2, x + dx2 + dx3, y + dy2 + dy3, colour);
+	GfxDrawLineUnscaled(dpi, x + dx3, y + dy3, x + dx3 + dx1, y + dy3 + dy1, colour);
+	GfxDrawLineUnscaled(dpi, x + dx3, y + dy3, x + dx3 + dx2, y + dy3 + dy2, colour);
 }
 
 /**
  * Set the colour remap to be for the given colour.
  * @param colour the new colour of the remap.
  */
-static void SetColourRemap(TextColour colour)
+void GfxBlitterCtx::SetColourRemap(TextColour colour)
 {
 	if (colour == TC_INVALID) return;
 
@@ -486,9 +494,9 @@ static void SetColourRemap(TextColour colour)
 	bool raw_colour = (colour & TC_IS_PALETTE_COLOUR) != 0;
 	colour &= ~(TC_NO_SHADE | TC_IS_PALETTE_COLOUR | TC_FORCED);
 
-	_string_colourremap[1] = raw_colour ? (byte)colour : _string_colourmap[colour];
-	_string_colourremap[2] = no_shade ? 0 : 1;
-	_colour_remap_ptr = _string_colourremap;
+	this->string_colourremap[1] = raw_colour ? (byte)colour : _string_colourmap[colour];
+	this->string_colourremap[2] = no_shade ? 0 : 1;
+	this->colour_remap_ptr = this->string_colourremap;
 }
 
 /**
@@ -585,6 +593,10 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 			NOT_REACHED();
 	}
 
+	GfxBlitterCtx ctx(_cur_dpi);
+
+	const uint shadow_offset = ScaleGUITrad(1);
+
 	TextColour colour = TC_BLACK;
 	bool draw_shadow = false;
 	for (int run_index = 0; run_index < line.CountRuns(); run_index++) {
@@ -593,13 +605,13 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 
 		FontCache *fc = f->fc;
 		colour = f->colour;
-		SetColourRemap(colour);
+		ctx.SetColourRemap(colour);
 
 		DrawPixelInfo *dpi = _cur_dpi;
 		int dpi_left  = dpi->left;
 		int dpi_right = dpi->left + dpi->width - 1;
 
-		draw_shadow = fc->GetDrawGlyphShadow() && (colour & TC_NO_SHADE) == 0 && colour != TC_BLACK;
+		draw_shadow = fc->GetDrawGlyphShadow() && (colour & TC_NO_SHADE) == 0 && (colour & ~TC_FORCED) != TC_BLACK;
 
 		for (int i = 0; i < run.GetGlyphCount(); i++) {
 			GlyphID glyph = run.GetGlyphs()[i];
@@ -619,11 +631,11 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 			if (begin_x + sprite->x_offs > dpi_right || begin_x + sprite->x_offs + sprite->width /* - 1 + 1 */ < dpi_left) continue;
 
 			if (draw_shadow && (glyph & SPRITE_GLYPH) == 0) {
-				SetColourRemap(TC_BLACK);
-				GfxMainBlitter(sprite, begin_x + 1, top + 1, BM_COLOUR_REMAP);
-				SetColourRemap(colour);
+				ctx.SetColourRemap(TC_BLACK);
+				GfxMainBlitter(ctx, sprite, begin_x + shadow_offset, top + shadow_offset, BM_COLOUR_REMAP);
+				ctx.SetColourRemap(colour);
 			}
-			GfxMainBlitter(sprite, begin_x, top, BM_COLOUR_REMAP);
+			GfxMainBlitter(ctx, sprite, begin_x, top, BM_COLOUR_REMAP);
 		}
 	}
 
@@ -631,16 +643,16 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 		int x = (_current_text_dir == TD_RTL) ? left : (right - 3 * dot_width);
 		for (int i = 0; i < 3; i++, x += dot_width) {
 			if (draw_shadow) {
-				SetColourRemap(TC_BLACK);
-				GfxMainBlitter(dot_sprite, x + 1, y + 1, BM_COLOUR_REMAP);
-				SetColourRemap(colour);
+				ctx.SetColourRemap(TC_BLACK);
+				GfxMainBlitter(ctx, dot_sprite, x + shadow_offset, y + shadow_offset, BM_COLOUR_REMAP);
+				ctx.SetColourRemap(colour);
 			}
-			GfxMainBlitter(dot_sprite, x, y, BM_COLOUR_REMAP);
+			GfxMainBlitter(ctx, dot_sprite, x, y, BM_COLOUR_REMAP);
 		}
 	}
 
 	if (underline) {
-		GfxFillRect(left, y + h, right, y + h, _string_colourremap[1]);
+		GfxFillRect(left, y + h, right, y + h, ctx.string_colourremap[1]);
 	}
 
 	return (align & SA_HOR_MASK) == SA_RIGHT ? left : right;
@@ -982,8 +994,9 @@ const char *GetCharAtPosition(const char *str, int x, FontSize start_fontsize)
  */
 void DrawCharCentered(WChar c, const Rect &r, TextColour colour)
 {
-	SetColourRemap(colour);
-	GfxMainBlitter(GetGlyph(FS_NORMAL, c),
+	GfxBlitterCtx ctx(_cur_dpi);
+	ctx.SetColourRemap(colour);
+	GfxMainBlitter(ctx, GetGlyph(FS_NORMAL, c),
 		CenterBounds(r.left, r.right, GetCharacterWidth(FS_NORMAL, c)),
 		CenterBounds(r.top, r.bottom, FONT_HEIGHT_NORMAL),
 		BM_COLOUR_REMAP);
@@ -1032,33 +1045,48 @@ static BlitterMode GetBlitterMode(PaletteID pal)
 
 /**
  * Draw a sprite in a viewport.
+ * @param dpi  Draw pixel info
  * @param img  Image number to draw
  * @param pal  Palette to use.
  * @param x    Left coordinate of image in viewport, scaled by zoom
  * @param y    Top coordinate of image in viewport, scaled by zoom
  * @param sub  If available, draw only specified part of the sprite
  */
-void DrawSpriteViewport(SpriteID img, PaletteID pal, int x, int y, const SubSprite *sub)
+void DrawSpriteViewport(const SpritePointerHolder &sprite_store, const DrawPixelInfo *dpi, SpriteID img, PaletteID pal, int x, int y, const SubSprite *sub)
 {
+	GfxBlitterCtx ctx(dpi);
 	SpriteID real_sprite = GB(img, 0, SPRITE_WIDTH);
 	if (HasBit(img, PALETTE_MODIFIER_TRANSPARENT)) {
-		_colour_remap_ptr = GetNonSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1;
-		GfxMainBlitterViewport(GetSprite(real_sprite, ST_NORMAL), x, y, BM_TRANSPARENT, sub, real_sprite);
+		ctx.colour_remap_ptr = sprite_store.GetRecolourSprite(GB(pal, 0, PALETTE_WIDTH)) + 1;
+		GfxMainBlitterViewport(ctx, sprite_store.GetSprite(real_sprite, ST_NORMAL), x, y, BM_TRANSPARENT, sub, real_sprite);
 	} else if (pal != PAL_NONE) {
 		if (HasBit(pal, PALETTE_TEXT_RECOLOUR)) {
-			SetColourRemap((TextColour)GB(pal, 0, PALETTE_WIDTH));
+			ctx.SetColourRemap((TextColour)GB(pal, 0, PALETTE_WIDTH));
 		} else if (GB(pal, 0, PALETTE_WIDTH) != PAL_NONE) {
-			_colour_remap_ptr = GetNonSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1;
+			ctx.colour_remap_ptr = sprite_store.GetRecolourSprite(GB(pal, 0, PALETTE_WIDTH)) + 1;
 		}
 		if (HasBit(pal, PALETTE_BRIGHTNESS_MODIFY)) {
 			int adjust = GB(pal, PALETTE_BRIGHTNESS_OFFSET, PALETTE_BRIGHTNESS_WIDTH);
 			/* Sign extend */
 			int sign_bit = 1 << (PALETTE_BRIGHTNESS_WIDTH - 1);
-			_sprite_brightness_adjust = (adjust ^ sign_bit) - sign_bit;
+			ctx.sprite_brightness_adjust = (adjust ^ sign_bit) - sign_bit;
 		}
-		GfxMainBlitterViewport(GetSprite(real_sprite, ST_NORMAL), x, y, GetBlitterMode(pal), sub, real_sprite);
+		GfxMainBlitterViewport(ctx, sprite_store.GetSprite(real_sprite, ST_NORMAL), x, y, GetBlitterMode(pal), sub, real_sprite);
 	} else {
-		GfxMainBlitterViewport(GetSprite(real_sprite, ST_NORMAL), x, y, BM_NORMAL, sub, real_sprite);
+		GfxMainBlitterViewport(ctx, sprite_store.GetSprite(real_sprite, ST_NORMAL), x, y, BM_NORMAL, sub, real_sprite);
+	}
+}
+
+void PrepareDrawSpriteViewportSpriteStore(SpritePointerHolder &sprite_store, SpriteID img, PaletteID pal)
+{
+	SpriteID real_sprite = GB(img, 0, SPRITE_WIDTH);
+	sprite_store.CacheSprite(real_sprite, ST_NORMAL);
+	if (HasBit(img, PALETTE_MODIFIER_TRANSPARENT)) {
+		sprite_store.CacheSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR);
+	} else if (pal != PAL_NONE) {
+		if (!HasBit(pal, PALETTE_TEXT_RECOLOUR) && GB(pal, 0, PALETTE_WIDTH) != PAL_NONE) {
+			sprite_store.CacheSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR);
+		}
 	}
 }
 
@@ -1073,19 +1101,20 @@ void DrawSpriteViewport(SpriteID img, PaletteID pal, int x, int y, const SubSpri
  */
 void DrawSprite(SpriteID img, PaletteID pal, int x, int y, const SubSprite *sub, ZoomLevel zoom)
 {
+	GfxBlitterCtx ctx(_cur_dpi);
 	SpriteID real_sprite = GB(img, 0, SPRITE_WIDTH);
 	if (HasBit(img, PALETTE_MODIFIER_TRANSPARENT)) {
-		_colour_remap_ptr = GetNonSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1;
-		GfxMainBlitter(GetSprite(real_sprite, ST_NORMAL), x, y, BM_TRANSPARENT, sub, real_sprite, zoom);
+		ctx.colour_remap_ptr = GetNonSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1;
+		GfxMainBlitter(ctx, GetSprite(real_sprite, ST_NORMAL), x, y, BM_TRANSPARENT, sub, real_sprite, zoom);
 	} else if (pal != PAL_NONE) {
 		if (HasBit(pal, PALETTE_TEXT_RECOLOUR)) {
-			SetColourRemap((TextColour)GB(pal, 0, PALETTE_WIDTH));
+			ctx.SetColourRemap((TextColour)GB(pal, 0, PALETTE_WIDTH));
 		} else {
-			_colour_remap_ptr = GetNonSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1;
+			ctx.colour_remap_ptr = GetNonSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1;
 		}
-		GfxMainBlitter(GetSprite(real_sprite, ST_NORMAL), x, y, GetBlitterMode(pal), sub, real_sprite, zoom);
+		GfxMainBlitter(ctx, GetSprite(real_sprite, ST_NORMAL), x, y, GetBlitterMode(pal), sub, real_sprite, zoom);
 	} else {
-		GfxMainBlitter(GetSprite(real_sprite, ST_NORMAL), x, y, BM_NORMAL, sub, real_sprite, zoom);
+		GfxMainBlitter(ctx, GetSprite(real_sprite, ST_NORMAL), x, y, BM_NORMAL, sub, real_sprite, zoom);
 	}
 }
 
@@ -1102,9 +1131,9 @@ void DrawSprite(SpriteID img, PaletteID pal, int x, int y, const SubSprite *sub,
  * @tparam SCALED_XY Whether the X and Y are scaled or unscaled.
  */
 template <int ZOOM_BASE, bool SCALED_XY>
-static void GfxBlitter(const Sprite * const sprite, int x, int y, BlitterMode mode, const SubSprite * const sub, SpriteID sprite_id, ZoomLevel zoom, const DrawPixelInfo *dst = nullptr)
+static void GfxBlitter(const GfxBlitterCtx &ctx, const Sprite * const sprite, int x, int y, BlitterMode mode, const SubSprite * const sub, SpriteID sprite_id, ZoomLevel zoom)
 {
-	const DrawPixelInfo *dpi = (dst != nullptr) ? dst : _cur_dpi;
+	const DrawPixelInfo *dpi = ctx.dpi;
 	Blitter::BlitterParams bp;
 
 	if (SCALED_XY) {
@@ -1152,8 +1181,8 @@ static void GfxBlitter(const Sprite * const sprite, int x, int y, BlitterMode mo
 
 	bp.dst = dpi->dst_ptr;
 	bp.pitch = dpi->pitch;
-	bp.remap = _colour_remap_ptr;
-	bp.brightness_adjust = _sprite_brightness_adjust;
+	bp.remap = ctx.colour_remap_ptr;
+	bp.brightness_adjust = ctx.sprite_brightness_adjust;
 
 	if (bp.width <= 0) return;
 	if (bp.height <= 0) return;
@@ -1263,7 +1292,8 @@ std::unique_ptr<uint32[]> DrawSpriteToRgbaBuffer(SpriteID spriteId, ZoomLevel zo
 
 	/* Temporarily disable screen animations while blitting - This prevents 40bpp_anim from writing to the animation buffer. */
 	Backup<bool> disable_anim(_screen_disable_anim, true, FILE_LINE);
-	GfxBlitter<1, true>(sprite, 0, 0, BM_NORMAL, nullptr, real_sprite, zoom, &dpi);
+	GfxBlitterCtx ctx(&dpi);
+	GfxBlitter<1, true>(ctx, sprite, 0, 0, BM_NORMAL, nullptr, real_sprite, zoom);
 	disable_anim.Restore();
 
 	if (blitter->GetScreenDepth() == 8) {
@@ -1278,14 +1308,14 @@ std::unique_ptr<uint32[]> DrawSpriteToRgbaBuffer(SpriteID spriteId, ZoomLevel zo
 	return result;
 }
 
-static void GfxMainBlitterViewport(const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite *sub, SpriteID sprite_id)
+static void GfxMainBlitterViewport(const GfxBlitterCtx &ctx, const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite *sub, SpriteID sprite_id)
 {
-	GfxBlitter<ZOOM_LVL_BASE, false>(sprite, x, y, mode, sub, sprite_id, _cur_dpi->zoom);
+	GfxBlitter<ZOOM_LVL_BASE, false>(ctx, sprite, x, y, mode, sub, sprite_id, ctx.dpi->zoom);
 }
 
-static void GfxMainBlitter(const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite *sub, SpriteID sprite_id, ZoomLevel zoom)
+static void GfxMainBlitter(const GfxBlitterCtx &ctx, const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite *sub, SpriteID sprite_id, ZoomLevel zoom)
 {
-	GfxBlitter<1, true>(sprite, x, y, mode, sub, sprite_id, zoom);
+	GfxBlitter<1, true>(ctx, sprite, x, y, mode, sub, sprite_id, zoom);
 }
 
 void DoPaletteAnimations();
@@ -1661,12 +1691,8 @@ static void DrawDirtyViewport(uint occlusion, int left, int top, int right, int 
 	if (_game_mode == GM_MENU) {
 		RedrawScreenRect(left, top, right, bottom);
 	} else {
-		extern void ViewportDrawChk(Viewport *vp, int left, int top, int right, int bottom);
-		ViewportDrawChk(_dirty_viewport, left, top, right, bottom);
-		if (_dirty_viewport_disp_flags & (ND_SHADE_GREY | ND_SHADE_DIMMED)) {
-			GfxFillRect(left, top, right - 1, bottom - 1,
-					(_dirty_viewport_disp_flags & ND_SHADE_DIMMED) ? PALETTE_TO_TRANSPARENT : PALETTE_NEWSPAPER, FILLRECT_RECOLOUR);
-		}
+		extern void ViewportDrawChk(Viewport *vp, int left, int top, int right, int bottom, uint8 display_flags);
+		ViewportDrawChk(_dirty_viewport, left, top, right, bottom, _dirty_viewport_disp_flags);
 		VideoDriver::GetInstance()->MakeDirty(left, top, right - left, bottom - top);
 	}
 }
@@ -1726,7 +1752,6 @@ void DrawDirtyBlocks()
 				DrawOverlappedWindowFlags flags = DOWF_MARK_DIRTY;
 				if (unlikely(HasBit(_gfx_debug_flags, GDF_SHOW_WINDOW_DIRTY))) {
 					flags |= DOWF_SHOW_DEBUG;
-					_dirty_block_colour++;
 				}
 				DrawOverlappedWindowWithClipping(w, w->left, w->top, w->left + w->width, w->top + w->height, flags);
 				w->flags &= ~(WF_DIRTY | WF_WIDGETS_DIRTY);
@@ -1738,7 +1763,6 @@ void DrawDirtyBlocks()
 						DrawOverlappedWindowFlags flags = DOWF_MARK_DIRTY;
 						if (unlikely(HasBit(_gfx_debug_flags, GDF_SHOW_WIDGET_DIRTY))) {
 							flags |= DOWF_SHOW_DEBUG;
-							_dirty_block_colour++;
 						}
 						DrawOverlappedWindowWithClipping(w, w->left + widget->pos_x, w->top + widget->pos_y, w->left + widget->pos_x + widget->current_x, w->top + widget->pos_y + widget->current_y, flags);
 					}
@@ -1866,8 +1890,9 @@ void DrawDirtyBlocks()
 			RedrawScreenRect(r.left, r.top, r.right, r.bottom);
 		}
 		if (unlikely(HasBit(_gfx_debug_flags, GDF_SHOW_RECT_DIRTY))) {
+			ViewportDoDrawProcessAllPending();
 			for (const Rect &r : _dirty_blocks) {
-				GfxFillRect(r.left, r.top, r.right, r.bottom, _string_colourmap[++_dirty_block_colour & 0xF], FILLRECT_CHECKER);
+				GfxFillRect(r.left, r.top, r.right, r.bottom, _string_colourmap[(_dirty_block_colour.fetch_add(1, std::memory_order_relaxed) + 1) & 0xF], FILLRECT_CHECKER);
 			}
 		}
 	}
@@ -1883,8 +1908,9 @@ void DrawDirtyBlocks()
 		}
 		_dirty_blocks.clear();
 	}
+	ViewportDoDrawProcessAllPending();
 	_gfx_draw_active = false;
-	++_dirty_block_colour;
+	_dirty_block_colour.fetch_add(1, std::memory_order_relaxed);
 
 	extern void ClearViewportCaches();
 	ClearViewportCaches();
@@ -2309,31 +2335,72 @@ void SortResolutions()
  */
 void UpdateGUIZoom()
 {
+	int old_scale = _gui_scale;
+
 	/* Determine real GUI zoom to use. */
-	if (_gui_zoom_cfg == ZOOM_LVL_CFG_AUTO) {
-		_gui_zoom = static_cast<ZoomLevel>(Clamp(VideoDriver::GetInstance()->GetSuggestedUIZoom(), _settings_client.gui.zoom_min, _settings_client.gui.zoom_max));
+	if (_gui_scale_cfg == -1) {
+		_gui_scale = VideoDriver::GetInstance()->GetSuggestedUIScale();
 	} else {
-		/* Ensure the gui_zoom is clamped between min/max. Change the
-		 * _gui_zoom_cfg if it isn't, as this is used to visually show the
-		 * selection in the Game Options. */
-		_gui_zoom_cfg = Clamp(_gui_zoom_cfg, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max);
-		_gui_zoom = static_cast<ZoomLevel>(_gui_zoom_cfg);
+		_gui_scale = Clamp(_gui_scale_cfg, MIN_INTERFACE_SCALE, MAX_INTERFACE_SCALE);
 	}
 
-	ZoomLevel old_font_zoom = _font_zoom;
+	int8 new_zoom = ScaleGUITrad(1) <= 1 ? ZOOM_LVL_OUT_4X : ScaleGUITrad(1) >= 4 ? ZOOM_LVL_MIN : ZOOM_LVL_OUT_2X;
+	/* Ensure the gui_zoom is clamped between min/max. */
+	new_zoom = Clamp(new_zoom, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max);
+	_gui_zoom = static_cast<ZoomLevel>(new_zoom);
 
-	/* Determine real font zoom to use. */
-	if (_font_zoom_cfg == ZOOM_LVL_CFG_AUTO) {
-		_font_zoom = static_cast<ZoomLevel>(VideoDriver::GetInstance()->GetSuggestedUIZoom());
-	} else {
-		_font_zoom = static_cast<ZoomLevel>(_font_zoom_cfg);
-	}
-
-	if (old_font_zoom != _font_zoom) {
+	if (old_scale != _gui_scale) {
 		ClearFontCache();
 	}
-
 	UpdateFontHeightCache();
+}
+
+/**
+ * Resolve GUI zoom level and adjust GUI to new zoom, if auto-suggestion is requested.
+ * @param automatic Set if the change is occuring due to OS DPI scaling being changed.
+ * @returns true when the zoom level has changed, caller must call ReInitAllWindows(true)
+ * after resizing the application's window/buffer.
+ */
+bool AdjustGUIZoom(AdjustGUIZoomMode mode)
+{
+	ZoomLevel old_zoom = _gui_zoom;
+	int old_scale = _gui_scale;
+	UpdateGUIZoom();
+	if (old_scale == _gui_scale) return false;
+
+	/* Reload sprites if sprite zoom level has changed. */
+	if (old_zoom != _gui_zoom) {
+		GfxClearSpriteCache();
+		VideoDriver::GetInstance()->ClearSystemSprites();
+		UpdateCursorSize();
+		if (mode != AGZM_STARTUP) UpdateRouteStepSpriteSize();
+	}
+
+	ClearFontCache();
+	UpdateFontHeightCache();
+	LoadStringWidthTable();
+	UpdateAllVirtCoords();
+	if (mode != AGZM_STARTUP) FixTitleGameZoom();
+
+	extern void FlushDeparturesWindowTextCaches();
+	FlushDeparturesWindowTextCaches();
+
+	/* Adjust all window sizes to match the new zoom level, so that they don't appear
+	   to move around when the application is moved to a screen with different DPI. */
+	auto zoom_shift = old_zoom - _gui_zoom;
+	for (Window *w : Window::IterateFromBack()) {
+		if (mode == AGZM_AUTOMATIC) {
+			w->left   = (w->left   * _gui_scale) / old_scale;
+			w->top    = (w->top    * _gui_scale) / old_scale;
+			w->width  = (w->width  * _gui_scale) / old_scale;
+			w->height = (w->height * _gui_scale) / old_scale;
+		}
+		if (w->viewport != nullptr) {
+			w->viewport->zoom = Clamp(ZoomLevel(w->viewport->zoom - zoom_shift), _settings_client.gui.zoom_min, _settings_client.gui.zoom_max);
+		}
+	}
+
+	return true;
 }
 
 void ChangeGameSpeed(bool enable_fast_forward)

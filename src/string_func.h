@@ -59,6 +59,8 @@ void StrTrimInPlace(std::string &str);
 bool StrStartsWith(const std::string_view str, const std::string_view prefix);
 bool StrEndsWith(const std::string_view str, const std::string_view suffix);
 
+const char *StrConsumeToSeparator(std::string &result, const char *str);
+
 /**
  * Check if a string buffer is empty.
  *

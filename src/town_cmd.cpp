@@ -67,7 +67,7 @@ static Rect _record_house_rect;
 TownPool _town_pool("Town");
 INSTANTIATE_POOL_METHODS(Town)
 
-static bool CanFollowRoad(TileIndex tile, DiagDirection dir);
+static bool CanFollowRoad(const Town *t, TileIndex tile, DiagDirection dir);
 
 TownKdtree _town_kdtree(&Kdtree_TownXYFunc);
 
@@ -525,7 +525,7 @@ void Town::UpdateVirtCoord()
 
 	SetDParam(0, this->index);
 	SetDParam(1, this->cache.population);
-	this->cache.sign.UpdatePosition(HasBit(_display_opt, DO_SHOW_TOWN_NAMES) ? ZOOM_LVL_OUT_128X : ZOOM_LVL_END, pt.x, pt.y - 24 * ZOOM_LVL_BASE, this->Label(), STR_VIEWPORT_TOWN);
+	this->cache.sign.UpdatePosition(HasBit(_display_opt, DO_SHOW_TOWN_NAMES) ? ZOOM_LVL_OUT_128X : ZOOM_LVL_END, pt.x, pt.y - 24 * ZOOM_LVL_BASE, this->Label(), STR_VIEWPORT_TOWN_TINY_WHITE);
 
 	if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeTown(this->index));
 
@@ -1311,10 +1311,31 @@ static bool CanRoadContinueIntoNextTile(const Town *t, const TileIndex tile, con
 
 	/* If the next tile is a railroad track, check if towns are allowed to build level crossings.
 	 * If level crossing are not allowed, reject the construction. Else allow DoCommand to determine if the rail track is buildable. */
-	if (IsTileType(next_tile, MP_RAILWAY) && !_settings_game.economy.allow_town_level_crossings) return false;
+	if (IsTileType(next_tile, MP_RAILWAY) && !t->GetAllowBuildLevelCrossings()) return false;
 
 	/* If a road tile can be built, the construction is allowed. */
 	return DoCommand(next_tile, rcmd | (rt << 4), t->index, DC_AUTO | DC_NO_WATER, CMD_BUILD_ROAD).Succeeded();
+}
+
+/**
+ * CircularTileSearch proc which checks for a nearby parallel bridge to avoid building redundant bridges.
+ * @param tile The tile to search.
+ * @param user_data Reference to the valid direction of the proposed bridge.
+ * @return true if another bridge exists, else false.
+ */
+static bool RedundantBridgeExistsNearby(TileIndex tile, void *user_data)
+{
+	/* Don't look into the void. */
+	if (!IsValidTile(tile)) return false;
+
+	/* Only consider bridge head tiles. */
+	if (!IsBridgeTile(tile)) return false;
+
+	/* Only consider road bridges. */
+	if (GetTunnelBridgeTransportType(tile) != TRANSPORT_ROAD) return false;
+
+	/* If the bridge is facing the same direction as the proposed bridge, we've found a redundant bridge. */
+	return (GetTileSlope(tile) & InclinedSlope(ReverseDiagDir(*(DiagDirection *)user_data)));
 }
 
 /**
@@ -1381,9 +1402,14 @@ static bool GrowTownWithBridge(const Town *t, const TileIndex tile, const DiagDi
 	/* Make sure the road can be continued past the bridge. At this point, bridge_tile holds the end tile of the bridge. */
 	if (!CanRoadContinueIntoNextTile(t, bridge_tile, bridge_dir)) return false;
 
+	/* If another parallel bridge exists nearby, this one would be redundant and shouldn't be built. We don't care about flat bridges. */
+	TileIndex search = tile;
+	DiagDirection direction_to_match = bridge_dir;
+	if (slope != SLOPE_FLAT && CircularTileSearch(&search, bridge_length, 0, 0, RedundantBridgeExistsNearby, &direction_to_match)) return false;
+
 	std::bitset <MAX_BRIDGES> tried;
 	uint n = MAX_BRIDGES;
-	byte bridge_type = RandomRange (n);
+	byte bridge_type = RandomRange(n);
 
 	for (;;) {
 		/* Can we actually build the bridge? */
@@ -1397,14 +1423,14 @@ static bool GrowTownWithBridge(const Town *t, const TileIndex tile, const DiagDi
 		/* Try a different bridge. */
 		tried[bridge_type] = true;
 		n--;
-		assert (n + tried.count() == MAX_BRIDGES);
+		assert(n + tried.count() == MAX_BRIDGES);
 		if (n == 0) break;
 
 		bridge_type = 0;
-		uint i = RandomRange (n);
+		uint i = RandomRange(n);
 		while (tried[bridge_type] || (i-- > 0)) {
 			bridge_type++;
-			assert (bridge_type < MAX_BRIDGES);
+			assert(bridge_type < MAX_BRIDGES);
 		}
 	}
 
@@ -1426,6 +1452,9 @@ static bool GrowTownWithTunnel(const Town *t, const TileIndex tile, const DiagDi
 {
 	assert(tunnel_dir < DIAGDIR_END);
 
+	const TownTunnelMode tunnel_mode = t->GetBuildTunnelMode();
+	if (tunnel_mode == TTM_FORBIDDEN) return false;
+
 	Slope slope = GetTileSlope(tile);
 
 	/* Only consider building a tunnel if the starting tile is sloped properly. */
@@ -1439,6 +1468,8 @@ static bool GrowTownWithTunnel(const Town *t, const TileIndex tile, const DiagDi
 
 	/* There are two conditions for building tunnels: Under a mountain and under an obstruction. */
 	if (CanRoadContinueIntoNextTile(t, tile, tunnel_dir)) {
+		if (tunnel_mode != TTM_ALLOWED) return false;
+
 		/* Only tunnel under a mountain if the slope is continuous for at least 4 tiles. We want tunneling to be a last resort for large hills. */
 		TileIndex slope_tile = tile;
 		for (uint8 tiles = 0; tiles < 4; tiles++) {
@@ -1541,8 +1572,8 @@ static void GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, DiagDirection t
 		 * to say that this is the last iteration. */
 		_grow_town_result = GROWTH_SEARCH_STOPPED;
 
-		if (!_settings_game.economy.allow_town_roads && !_generating_world) return;
-		if (!_settings_game.economy.allow_town_level_crossings && IsTileType(tile, MP_RAILWAY)) return;
+		if (!t1->GetAllowBuildRoads() && !_generating_world) return;
+		if (!t1->GetAllowBuildLevelCrossings() && IsTileType(tile, MP_RAILWAY)) return;
 		if (!MayTownModifyRoad(tile)) return;
 
 		/* Remove hills etc */
@@ -1588,13 +1619,43 @@ static void GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, DiagDirection t
 				break;
 		}
 
+		const uint8 max_road_slope = t1->GetBuildMaxRoadSlope();
+		if (max_road_slope > 0 && ((rcmd == ROAD_X) || (rcmd == ROAD_Y))) {
+			/* Limit consecutive sloped road tiles */
+
+			auto get_road_slope = [rcmd](TileIndex t) -> Slope {
+				Slope slope = GetTileSlope(t);
+				extern Foundation GetRoadFoundation(Slope tileh, RoadBits bits);
+				ApplyFoundationToSlope(GetRoadFoundation(slope, rcmd), &slope);
+				return slope;
+			};
+
+			const Slope slope = get_road_slope(tile);
+			if (slope != SLOPE_FLAT) {
+				const int delta = TileOffsByDiagDir(ReverseDiagDir(target_dir));
+				bool ok = false;
+				TileIndex t = tile;
+				for (uint i = 0; i < max_road_slope; i++) {
+					t += delta;
+					if (!IsValidTile(t) || !IsNormalRoadTile(t) || GetRoadBits(t, RTT_ROAD) != rcmd || get_road_slope(t) != slope) {
+						ok = true;
+						break;
+					}
+				}
+				if (!ok) {
+					/* All tested tiles had the same incline, disallow road */
+					return;
+				}
+			}
+		}
+
 	} else if (target_dir < DIAGDIR_END && !(cur_rb & DiagDirToRoadBits(ReverseDiagDir(target_dir)))) {
 		/* Continue building on a partial road.
 		 * Should be always OK, so we only generate
 		 * the fitting RoadBits */
 		_grow_town_result = GROWTH_SEARCH_STOPPED;
 
-		if (!_settings_game.economy.allow_town_roads && !_generating_world) return;
+		if (!t1->GetAllowBuildRoads() && !_generating_world) return;
 
 		switch (t1->layout) {
 			default: NOT_REACHED();
@@ -1632,7 +1693,7 @@ static void GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, DiagDirection t
 						target_bits = DiagDirToRoadBits(target_dir);
 					} while (!(cur_rb & target_bits));
 					cur_rb &= ~target_bits;
-				} while (!(target_dir == GetTunnelBridgeDirection(tile) || CanFollowRoad(tile, target_dir)));
+				} while (!(target_dir == GetTunnelBridgeDirection(tile) || CanFollowRoad(t1, tile, target_dir)));
 				if (target_dir == GetTunnelBridgeDirection(tile)) {
 					/* cross the bridge */
 					*tile_ptr = GetOtherTunnelBridgeEnd(tile);
@@ -1687,7 +1748,7 @@ static void GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, DiagDirection t
 
 		if (!IsValidTile(house_tile)) return;
 
-		if (target_dir != DIAGDIR_END && (_settings_game.economy.allow_town_roads || _generating_world)) {
+		if (target_dir != DIAGDIR_END && (t1->GetAllowBuildRoads() || _generating_world)) {
 			switch (t1->layout) {
 				default: NOT_REACHED();
 
@@ -1752,18 +1813,19 @@ static void GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, DiagDirection t
 /**
  * Checks whether a road can be followed or is a dead end, that can not be extended to the next tile.
  * This only checks trivial but often cases.
+ * @param t Town doing the following
  * @param tile Start tile for road.
  * @param dir Direction for road to follow or build.
  * @return true If road is or can be connected in the specified direction.
  */
-static bool CanFollowRoad(TileIndex tile, DiagDirection dir)
+static bool CanFollowRoad(const Town *t, TileIndex tile, DiagDirection dir)
 {
 	TileIndex target_tile = tile + TileOffsByDiagDir(dir);
 	if (!IsValidTile(target_tile)) return false;
 	if (HasTileWaterGround(target_tile)) return false;
 
 	RoadBits target_rb = GetTownRoadBits(target_tile);
-	if (_settings_game.economy.allow_town_roads || _generating_world) {
+	if (t->GetAllowBuildRoads() || _generating_world) {
 		/* Check whether a road connection exists or can be build. */
 		switch (GetTileType(target_tile)) {
 			case MP_ROAD:
@@ -1863,7 +1925,7 @@ static bool GrowTownAtRoad(Town *t, TileIndex tile)
 					target_bits = DiagDirToRoadBits(target_dir);
 				} while (!(cur_rb & target_bits));
 				cur_rb &= ~target_bits;
-			} while (!CanFollowRoad(tile, target_dir));
+			} while (!CanFollowRoad(t, tile, target_dir));
 		}
 		tile = TileAddByDiagDir(tile, target_dir);
 
@@ -1942,7 +2004,7 @@ static bool GrowTown(Town *t)
 
 	/* No road available, try to build a random road block by
 	 * clearing some land and then building a road there. */
-	if (_settings_game.economy.allow_town_roads || _generating_world) {
+	if (t->GetAllowBuildRoads() || _generating_world) {
 		tile = t->xy;
 		for (ptr = _town_coord_mod; ptr != endof(_town_coord_mod); ++ptr) {
 			/* Only work with plain land that not already has a house */
@@ -2016,6 +2078,13 @@ void UpdateTownRadius(Town *t)
 		t->cache.squared_town_zone_radius[2] = 0;
 		t->cache.squared_town_zone_radius[3] = mass * 5 - 5;
 		t->cache.squared_town_zone_radius[4] = mass * 3 + 5;
+	}
+}
+
+void UpdateTownRadii()
+{
+	for (Town *town : Town::Iterate()) {
+		UpdateTownRadius(town);
 	}
 }
 
@@ -2562,7 +2631,7 @@ static inline void ClearMakeHouseTile(TileIndex tile, Town *t, byte counter, byt
 
 	IncreaseBuildingCount(t, type);
 	MakeHouseTile(tile, t->index, counter, stage, type, random_bits);
-	if (HouseSpec::Get(type)->building_flags & BUILDING_IS_ANIMATED) AddAnimatedTile(tile);
+	if (HouseSpec::Get(type)->building_flags & BUILDING_IS_ANIMATED) AddAnimatedTile(tile, false);
 
 	MarkTileDirtyByTile(tile);
 }
@@ -2730,7 +2799,7 @@ static inline CommandCost IsAnotherHouseTypeAllowedInTown(Town *t, HouseID house
 static inline bool TownLayoutAllowsHouseHere(Town *t, const TileArea &ta)
 {
 	/* Allow towns everywhere when we don't build roads */
-	if (!_settings_game.economy.allow_town_roads && !_generating_world) return true;
+	if (!t->GetAllowBuildRoads() && !_generating_world) return true;
 
 	TileIndexDiffC grid_pos = TileIndexToTileIndexDiffC(t->xy, ta.tile);
 
@@ -3731,6 +3800,84 @@ CommandCost CmdDoTownAction(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 	}
 
 	return cost;
+}
+
+/**
+ * Override a town setting
+ * @param tile unused
+ * @param flags type of operation
+ * @param p1 town to do the action at
+ * @param p2 various bitstuffed elements
+ *  - p2 = (bit 0  -  7) - what setting to change
+ *  - p2 = (bit 8  - 15) - the data to modify
+ *  - p2 = (bit 16)      - whether to override the value, or use the default
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdOverrideTownSetting(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	Town *t = Town::GetIfValid(p1);
+	if (t == nullptr) return CMD_ERROR;
+
+	const uint8 setting = GB(p2, 0, 8);
+	const bool is_override = HasBit(p2, 16);
+	const uint8 value = GB(p2, 8, 8);
+	switch (setting) {
+		case TSOF_OVERRIDE_BUILD_ROADS:
+		case TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS:
+			if (is_override && value != 0 && value != 1) return CMD_ERROR;
+			break;
+		case TSOF_OVERRIDE_BUILD_TUNNELS:
+			if (is_override && value >= TTM_END) return CMD_ERROR;
+			break;
+		case TSOF_OVERRIDE_BUILD_INCLINED_ROADS:
+			if (is_override && value > 8) return CMD_ERROR;
+			break;
+		default:
+			return CMD_ERROR;
+	}
+
+	if (flags & DC_EXEC) {
+		SB(t->override_flags, setting, 1, is_override ? 1 : 0);
+		if (is_override) {
+			switch (setting) {
+				case TSOF_OVERRIDE_BUILD_ROADS:
+				case TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS:
+					SB(t->override_values, setting, 1, value & 1);
+					break;
+				case TSOF_OVERRIDE_BUILD_TUNNELS:
+					t->build_tunnels = (TownTunnelMode)value;
+					break;
+				case TSOF_OVERRIDE_BUILD_INCLINED_ROADS:
+					t->max_road_slope = value;
+					break;
+				default:
+					NOT_REACHED();
+			}
+		}
+		SetWindowDirty(WC_TOWN_AUTHORITY, p1);
+	}
+
+	return CommandCost();
+}
+
+/**
+ * Override a town setting (non-admin use)
+ * @param tile unused
+ * @param flags type of operation
+ * @param p1 town to do the action at
+ * @param p2 various bitstuffed elements
+ *  - p2 = (bit 0  -  7) - what setting to change
+ *  - p2 = (bit 8  - 15) - the data to modify
+ *  - p2 = (bit 16)      - whether to override the value, or use the default
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdOverrideTownSettingNonAdmin(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	if (_networking && !_settings_game.difficulty.override_town_settings_in_multiplayer) return CMD_ERROR;
+
+	return CmdOverrideTownSetting(tile, flags, p1, p2, text);
 }
 
 template <typename Func>

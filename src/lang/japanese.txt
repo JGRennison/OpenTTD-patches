@@ -204,6 +204,7 @@ STR_UNITS_POWER_IMPERIAL                                        :{COMMA}英馬�
 STR_UNITS_POWER_METRIC                                          :{COMMA}仏馬力
 STR_UNITS_POWER_SI                                              :{COMMA}kW
 
+
 STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA}t
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}t.
 STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}kg
@@ -396,10 +397,9 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :―――――
 STR_SCENEDIT_FILE_MENU_QUIT                                     :OpenTTDを終了
 
 # Settings menu
-###length 14
+###length 15
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :ゲームオプション設定
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :設定
-STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :AI/ゲームスクリプト設定
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRFの設定
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :透過表示設定
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :街名を表示
@@ -977,36 +977,6 @@ STR_GAME_OPTIONS_CURRENCY_INR                                   :インド・ル
 STR_GAME_OPTIONS_CURRENCY_IDR                                   :インドネシア・ルピア(IDR)
 STR_GAME_OPTIONS_CURRENCY_MYR                                   :マレーシア・リンギット(MYR)
 
-###length 2
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :左側通行
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :右側通行
-
-STR_GAME_OPTIONS_TOWN_NAMES_FRAME                               :{BLACK}街の名前:
-STR_GAME_OPTIONS_TOWN_NAMES_DROPDOWN_TOOLTIP                    :{BLACK}街名のスタイルを選択します
-
-###length 21
-STR_GAME_OPTIONS_TOWN_NAME_ORIGINAL_ENGLISH                     :イギリス
-STR_GAME_OPTIONS_TOWN_NAME_FRENCH                               :フランス
-STR_GAME_OPTIONS_TOWN_NAME_GERMAN                               :ドイツ
-STR_GAME_OPTIONS_TOWN_NAME_ADDITIONAL_ENGLISH                   :イギリス(追加)
-STR_GAME_OPTIONS_TOWN_NAME_LATIN_AMERICAN                       :ラテンアメリカ
-STR_GAME_OPTIONS_TOWN_NAME_SILLY                                :無邪気の国
-STR_GAME_OPTIONS_TOWN_NAME_SWEDISH                              :スウェーデン
-STR_GAME_OPTIONS_TOWN_NAME_DUTCH                                :オランダ
-STR_GAME_OPTIONS_TOWN_NAME_FINNISH                              :フィンランド
-STR_GAME_OPTIONS_TOWN_NAME_POLISH                               :ポーランド
-STR_GAME_OPTIONS_TOWN_NAME_SLOVAK                               :スロバキア
-STR_GAME_OPTIONS_TOWN_NAME_NORWEGIAN                            :ノルウェー
-STR_GAME_OPTIONS_TOWN_NAME_HUNGARIAN                            :ハンガリー
-STR_GAME_OPTIONS_TOWN_NAME_AUSTRIAN                             :オーストリア
-STR_GAME_OPTIONS_TOWN_NAME_ROMANIAN                             :ルーマニア
-STR_GAME_OPTIONS_TOWN_NAME_CZECH                                :チェコ
-STR_GAME_OPTIONS_TOWN_NAME_SWISS                                :スイス
-STR_GAME_OPTIONS_TOWN_NAME_DANISH                               :デンマーク
-STR_GAME_OPTIONS_TOWN_NAME_TURKISH                              :トルコ
-STR_GAME_OPTIONS_TOWN_NAME_ITALIAN                              :イタリア
-STR_GAME_OPTIONS_TOWN_NAME_CATALAN                              :カタラン
-
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}オートセーブ
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}自動保存の間隔を選択します
 
@@ -1038,21 +1008,8 @@ STR_GAME_OPTIONS_VIDEO_VSYNC                                    :{BLACK} 垂直�
 STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}ここをチェックして垂直同期を有効にします。設定はゲームを再起動した後に適用されます。ハードウェアアクセラレーションが有効な環境でしか機能しません。
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}インターフェイスのサイズ
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}インターフェイス上の単位サイズを指定します
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :（自動検出）
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :ノーマル
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :2倍
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :4倍
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}フォントサイズ
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}使用するインターフェースのフォントサイズを選択します
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :（自動検出）
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :ノーマル
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :ダブルサイズ
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :4倍
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}グラフィクス
 
@@ -1104,8 +1061,6 @@ STR_CURRENCY_PREVIEW                                            :{LTBLUE}プレ�
 STR_CURRENCY_CUSTOM_CURRENCY_PREVIEW_TOOLTIP                    :{BLACK}}£10,000(英ポンド)に対する為替レートを設定します
 STR_CURRENCY_CHANGE_PARAMETER                                   :{BLACK}カスタム通貨の設定を変更
 
-STR_DIFFICULTY_LEVEL_SETTING_MAXIMUM_NO_COMPETITORS             :{LTBLUE}最大競争会社数: {ORANGE}{COMMA}
-
 STR_NONE                                                        :なし
 STR_FUNDING_ONLY                                                :出資のみ
 STR_MINIMAL                                                     :最小
@@ -1154,6 +1109,12 @@ STR_SUBSIDY_X1_5                                                :×1.5
 STR_SUBSIDY_X2                                                  :×2
 STR_SUBSIDY_X3                                                  :×3
 STR_SUBSIDY_X4                                                  :×4
+
+###length 4
+STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :温帯
+STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :亜寒帯
+STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :亜熱帯
+STR_CLIMATE_TOYLAND_LANDSCAPE                                   :おもちゃの国
 
 ###length 7
 STR_TERRAIN_TYPE_VERY_FLAT                                      :特に平地
@@ -1512,6 +1473,10 @@ STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :改良版
 
 STR_CONFIG_SETTING_ROAD_SIDE                                    :車両: {STRING}
 STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :左側/右側通行を設定します
+
+###length 2
+STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :左側通行
+STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :右側通行
 
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :ハイトマップの回転方向: {STRING}
 ###length 2
@@ -2045,7 +2010,7 @@ STR_CONFIG_SETTING_REVERSE_AT_SIGNALS                           :信号待ちで
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :列車が信号で長く待たされた場合、進路を反転することを許可します
 ###length 2
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
-STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF{BLUE}(おすすめ)
+STR_CONFIG_SETTING_PATHFINDER_YAPF                              :YAPF{BLUE}(おすすめ)
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}設定を変更します
 
@@ -2088,7 +2053,6 @@ STR_INTRO_HIGHSCORE                                             :{BLACK}ハイ�
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}設定
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRFの設定
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}オンラインコンテンツの確認
-STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}AI/ゲームスクリプトの設定
 STR_INTRO_QUIT                                                  :{BLACK}終了
 
 STR_INTRO_TOOLTIP_NEW_GAME                                      :{BLACK}新規ゲームを開始します。Ctrl＋クリックで地形生成設定をスキップします
@@ -2108,7 +2072,6 @@ STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}ハイ�
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}設定を表示
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}NewGRFの有効/無効化、各パラメータの設定ができます
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}公式オンラインコンテンツのデータベースからデータの確認・追加・更新ができます
-STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}AI/ゲームスクリプトの設定を行います
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}OpenTTD を終了します
 
 STR_INTRO_BASESET                                               :現在選択されているグラフィックのベースセットは {NUM} つのスプライトが欠けています。ベースセットの更新を確認してみてください。
@@ -2139,12 +2102,6 @@ STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}マッ�
 STR_CHEAT_CHANGE_DATE                                           :{LTBLUE}日付を変更: {ORANGE}{DATE_SHORT}
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}現在日時を変更
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}生産量変更: {ORANGE}{STRING}
-
-###length 4
-STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :温帯
-STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :亜寒帯
-STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :亜熱帯
-STR_CHEAT_SWITCH_CLIMATE_TOYLAND_LANDSCAPE                      :おもちゃの国
 
 # Livery window
 STR_LIVERY_CAPTION                                              :{WHITE}{COMPANY} - 配色
@@ -2624,6 +2581,8 @@ STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP                            :{BLACK}{STRING}
 STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}未使用(運送過多)
 STR_LINKGRAPH_LEGEND_SATURATED                                  :{TINY_FONT}{BLACK}適正
 STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLACK}供給過多
+
+# Linkgraph tooltip
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}集荷範囲のハイライト
@@ -3146,6 +3105,8 @@ STR_MAPGEN_MAPSIZE                                              :{BLACK}地図�
 STR_MAPGEN_MAPSIZE_TOOLTIP                                      :{BLACK}生成する地図のサイズです。実際にはこのサイズより少し小さくなります
 STR_MAPGEN_BY                                                   :{BLACK}×
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}街数:
+STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}街の名前:
+STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}街名のスタイルを選択します
 STR_MAPGEN_DATE                                                 :{BLACK}日付:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}産業数:
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}最高峰:
@@ -3164,11 +3125,34 @@ STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}雪線�
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}雪線を下げる
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}地形作成:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}地形種類:
-STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}海水位:
+STR_MAPGEN_SEA_LEVEL                                            :{BLACK}海水位:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}河川:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}地形のなだらかさ:
 STR_MAPGEN_VARIETY                                              :{BLACK}地形の地域性:
 STR_MAPGEN_GENERATE                                             :{WHITE}作成
+
+###length 21
+STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH                           :イギリス
+STR_MAPGEN_TOWN_NAME_FRENCH                                     :フランス
+STR_MAPGEN_TOWN_NAME_GERMAN                                     :ドイツ
+STR_MAPGEN_TOWN_NAME_ADDITIONAL_ENGLISH                         :イギリス(追加)
+STR_MAPGEN_TOWN_NAME_LATIN_AMERICAN                             :ラテンアメリカ
+STR_MAPGEN_TOWN_NAME_SILLY                                      :無邪気の国
+STR_MAPGEN_TOWN_NAME_SWEDISH                                    :スウェーデン
+STR_MAPGEN_TOWN_NAME_DUTCH                                      :オランダ
+STR_MAPGEN_TOWN_NAME_FINNISH                                    :フィンランド
+STR_MAPGEN_TOWN_NAME_POLISH                                     :ポーランド
+STR_MAPGEN_TOWN_NAME_SLOVAK                                     :スロバキア
+STR_MAPGEN_TOWN_NAME_NORWEGIAN                                  :ノルウェー
+STR_MAPGEN_TOWN_NAME_HUNGARIAN                                  :ハンガリー
+STR_MAPGEN_TOWN_NAME_AUSTRIAN                                   :オーストリア
+STR_MAPGEN_TOWN_NAME_ROMANIAN                                   :ルーマニア
+STR_MAPGEN_TOWN_NAME_CZECH                                      :チェコ
+STR_MAPGEN_TOWN_NAME_SWISS                                      :スイス
+STR_MAPGEN_TOWN_NAME_DANISH                                     :デンマーク
+STR_MAPGEN_TOWN_NAME_TURKISH                                    :トルコ
+STR_MAPGEN_TOWN_NAME_ITALIAN                                    :イタリア
+STR_MAPGEN_TOWN_NAME_CATALAN                                    :カタラン
 
 # Strings for map borders at game generation
 STR_MAPGEN_BORDER_TYPE                                          :{BLACK}地図端:
@@ -3315,6 +3299,10 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}前の�
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}前のノーマルスプライトに戻ります。始端と終端は連続しているものとみなし、疑似/リカラー/フォントスプライトはスキップします
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}現在選択されているスプライトの代表絵を示します。この配列はスプライトを描画するときには無視されます
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}X・Yオフセットを変更し、スプライトを移動します
+
+###length 2
+
+
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK} 相対値リセット
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK} 現在の相対オフセットをリセットします。
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}Xオフセット : {NUM},Yオフセット : {NUM} (絶対値)
@@ -3949,6 +3937,8 @@ STR_PURCHASE_INFO_ALL_BUT                                       :{CARGO_LIST}を
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}最大牽引力: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}航続距離: {GOLD}{COMMA} タイル
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}航空機の機種: {GOLD}{STRING}
+
+###length 3
 
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}列車リスト - 個々の情報を見るには列車をクリックします。Ctrl+クリックでその列車種の表示/非表示を切り替えます
@@ -4610,12 +4600,12 @@ STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}実行�
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}AI/ゲームスクリプトのデバッグウインドウはサーバーでのみ使用できます
 
 # AI configuration window
-STR_AI_CONFIG_CAPTION                                           :{WHITE}AIの設定
 STR_AI_CONFIG_GAMELIST_TOOLTIP                                  :{BLACK}このゲームスクリプトは次のゲーム開始時からロードされます
 STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}}このAIは次のゲーム開始時からロードされます
 STR_AI_CONFIG_HUMAN_PLAYER                                      :人間のプレーヤー
 STR_AI_CONFIG_RANDOM_AI                                         :ランダムなAI
 STR_AI_CONFIG_NONE                                              :(なし)
+STR_AI_CONFIG_MAX_COMPETITORS                                   :{LTBLUE}最大競争会社数: {ORANGE}{COMMA}
 
 STR_AI_CONFIG_MOVE_UP                                           :{BLACK}上に移動
 STR_AI_CONFIG_MOVE_UP_TOOLTIP                                   :{BLACK}選択したAIの順位を上げる
@@ -4625,8 +4615,6 @@ STR_AI_CONFIG_MOVE_DOWN_TOOLTIP                                 :{BLACK}選択�
 STR_AI_CONFIG_GAMESCRIPT                                        :{SILVER}ゲームスクリプト
 STR_AI_CONFIG_AI                                                :{SILVER}AI
 
-STR_AI_CONFIG_CHANGE                                            :{BLACK}{STRING}を選択
-STR_AI_CONFIG_CHANGE_NONE                                       :
 STR_AI_CONFIG_CHANGE_AI                                         :AI
 STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :ゲームスクリプト
 STR_AI_CONFIG_CHANGE_TOOLTIP                                    :{BLACK}他のスクリプトをロードします
@@ -4657,9 +4645,7 @@ STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}ハイ�
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}ミニマップのスクリーンショット
 
 # AI Parameters
-STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} パラメータ
 STR_AI_SETTINGS_CAPTION_AI                                      :AI
-STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :ゲームスクリプト
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}閉じる
 STR_AI_SETTINGS_RESET                                           :{BLACK}リセット
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
@@ -5096,6 +5082,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}輸送�
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}点検周期を変更できません
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}輸送機器が破壊されます
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}利用できる輸送機器が全くなくなります
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}NewGRFの設定を変更してください

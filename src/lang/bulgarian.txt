@@ -200,6 +200,7 @@ STR_UNITS_POWER_IMPERIAL                                        :{COMMA} к.с.
 STR_UNITS_POWER_METRIC                                          :{COMMA} к.с.
 STR_UNITS_POWER_SI                                              :{COMMA} kW
 
+
 STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA}т
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA} т.
 STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA} кг.
@@ -376,10 +377,9 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Изход
 
 # Settings menu
-###length 14
+###length 15
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Игрови опции
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Настройки
-STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :Настройка на ИИ програмите
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :Newgrf настройки
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Настройки на прозрачност
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Показване имената на градовете
@@ -931,36 +931,6 @@ STR_GAME_OPTIONS_CURRENCY_IRR                                   :Ирански 
 STR_GAME_OPTIONS_CURRENCY_NTD                                   :Нов тайвански долар
 STR_GAME_OPTIONS_CURRENCY_HKD                                   :Хонгконгски долар (HKD)
 
-###length 2
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :ляво
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :дясно
-
-STR_GAME_OPTIONS_TOWN_NAMES_FRAME                               :{BLACK}Имена на градовете
-STR_GAME_OPTIONS_TOWN_NAMES_DROPDOWN_TOOLTIP                    :{BLACK}Избор стила на имената на градовете
-
-###length 21
-STR_GAME_OPTIONS_TOWN_NAME_ORIGINAL_ENGLISH                     :английски (оригинални)
-STR_GAME_OPTIONS_TOWN_NAME_FRENCH                               :френски
-STR_GAME_OPTIONS_TOWN_NAME_GERMAN                               :германски
-STR_GAME_OPTIONS_TOWN_NAME_ADDITIONAL_ENGLISH                   :английски (допълнителни)
-STR_GAME_OPTIONS_TOWN_NAME_LATIN_AMERICAN                       :латиноамерикански
-STR_GAME_OPTIONS_TOWN_NAME_SILLY                                :глупави
-STR_GAME_OPTIONS_TOWN_NAME_SWEDISH                              :шведски
-STR_GAME_OPTIONS_TOWN_NAME_DUTCH                                :холандски
-STR_GAME_OPTIONS_TOWN_NAME_FINNISH                              :финландски
-STR_GAME_OPTIONS_TOWN_NAME_POLISH                               :полски
-STR_GAME_OPTIONS_TOWN_NAME_SLOVAK                               :словашки
-STR_GAME_OPTIONS_TOWN_NAME_NORWEGIAN                            :норвежки
-STR_GAME_OPTIONS_TOWN_NAME_HUNGARIAN                            :унгарски
-STR_GAME_OPTIONS_TOWN_NAME_AUSTRIAN                             :австрийски
-STR_GAME_OPTIONS_TOWN_NAME_ROMANIAN                             :румънски
-STR_GAME_OPTIONS_TOWN_NAME_CZECH                                :чешки
-STR_GAME_OPTIONS_TOWN_NAME_SWISS                                :швейцарски
-STR_GAME_OPTIONS_TOWN_NAME_DANISH                               :датски
-STR_GAME_OPTIONS_TOWN_NAME_TURKISH                              :турски
-STR_GAME_OPTIONS_TOWN_NAME_ITALIAN                              :италиански
-STR_GAME_OPTIONS_TOWN_NAME_CATALAN                              :каталонски
-
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Автозаписване
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Интервала между две автозаписваня
 
@@ -985,12 +955,6 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :друго
 
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Интерфейс размер
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Изберете размера на интерфейс елемент за използване
-
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Нормално
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Двукратно
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Четирикратно
 
 
 
@@ -1038,8 +1002,6 @@ STR_CURRENCY_INCREASE_CUSTOM_CURRENCY_TO_EURO_TOOLTIP           :{BLACK}Прем
 STR_CURRENCY_PREVIEW                                            :{LTBLUE}Преглед: {ORANGE}{CURRENCY_LONG}
 STR_CURRENCY_CUSTOM_CURRENCY_PREVIEW_TOOLTIP                    :{BLACK}10000 лири(£) в твоята валута
 STR_CURRENCY_CHANGE_PARAMETER                                   :{BLACK}Промяна параметрите на парична единица
-
-STR_DIFFICULTY_LEVEL_SETTING_MAXIMUM_NO_COMPETITORS             :{LTBLUE}Максимален брой конкуренти: {ORANGE}{COMMA}
 
 STR_NONE                                                        :николко
 STR_FUNDING_ONLY                                                :Единствено финансиране
@@ -1089,6 +1051,12 @@ STR_SUBSIDY_X1_5                                                :x1.5
 STR_SUBSIDY_X2                                                  :x2
 STR_SUBSIDY_X3                                                  :x3
 STR_SUBSIDY_X4                                                  :x4
+
+###length 4
+STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :умерен климат
+STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :Арктичен климат
+STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :Тропически климат
+STR_CLIMATE_TOYLAND_LANDSCAPE                                   :Земята на играчките
 
 ###length 7
 STR_TERRAIN_TYPE_VERY_FLAT                                      :платовиден
@@ -1417,6 +1385,10 @@ STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :подобре�
 
 STR_CONFIG_SETTING_ROAD_SIDE                                    :Пътни превозни средства: {STRING}
 STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Изберете страна шофиране
+
+###length 2
+STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :ляво
+STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :дясно
 
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Завъртане на картата: {STRING}
 ###length 2
@@ -1865,7 +1837,7 @@ STR_CONFIG_SETTING_REVERSE_AT_SIGNALS                           :Автомат�
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :Позволява на влаковете да обръщат ако са чакали твърде дълго
 ###length 2
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
-STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(препоръчва се)
+STR_CONFIG_SETTING_PATHFINDER_YAPF                              :YAPF {BLUE}(препоръчва се)
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Промяна стойноста на настройка
 
@@ -1905,7 +1877,6 @@ STR_INTRO_HIGHSCORE                                             :{BLACK}Табл
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Настройки
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF настройки
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Провери онлайн съдържанието
-STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}ИИ/Игрови настройки
 STR_INTRO_QUIT                                                  :{BLACK}Изход
 
 STR_INTRO_TOOLTIP_NEW_GAME                                      :{BLACK}Започни нова игра. Ctrl+Click пропуска конфигурацията на картата
@@ -1925,7 +1896,6 @@ STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Пока
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Настройки на дисплея
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Покажи NewGRF настройки
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Провери за ново съдържание за сваляне
-STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Показва настройките на ИИ
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Изход от 'OpenTTD'
 
 STR_INTRO_TRANSLATION                                           :{BLACK}На този превод му липсват {NUM} string{P "" s}. Помогнете на OpenTTD като се запишете за преводач. Вижте readme.txt за повече информация.
@@ -1953,12 +1923,6 @@ STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}Реда
 STR_CHEAT_CHANGE_DATE                                           :{LTBLUE}Промяна на датата: {ORANGE} {DATE_SHORT}
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Промяна настоящата година
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Промяна на производствените стойности: {ORANGE}{STRING}
-
-###length 4
-STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :умерен климат
-STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :Арктичен климат
-STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :Тропически климат
-STR_CHEAT_SWITCH_CLIMATE_TOYLAND_LANDSCAPE                      :Земята на играчките
 
 # Livery window
 
@@ -2355,6 +2319,8 @@ STR_LINKGRAPH_LEGEND_SELECT_COMPANIES                           :{BLACK}Избе
 STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}неизползван
 STR_LINKGRAPH_LEGEND_SATURATED                                  :{TINY_FONT}{BLACK}наситен
 STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLACK}претоварен
+
+# Linkgraph tooltip
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Маркиране на Отбелязаната зона
@@ -2810,6 +2776,8 @@ STR_MAPGEN_MAPSIZE                                              :{BLACK}Разм
 STR_MAPGEN_MAPSIZE_TOOLTIP                                      :{BLACK}Изберете големината на картата в полета. Броя на наличните полета ще е малко по-малък.
 STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Брой градове:
+STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Имена на градовете
+STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Избор стила на имената на градовете
 STR_MAPGEN_DATE                                                 :{BLACK}Дата:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Брой индустрии:
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Снежна линия:
@@ -2817,11 +2785,34 @@ STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Прем
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Преместване снежната линия надолу
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Земегенератор:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Тип на терен:
-STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Морско ниво:
+STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Морско ниво:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Реки:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Полегатост:
 STR_MAPGEN_VARIETY                                              :{BLACK}Разнообразност:
 STR_MAPGEN_GENERATE                                             :{WHITE}Генериране
+
+###length 21
+STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH                           :английски (оригинални)
+STR_MAPGEN_TOWN_NAME_FRENCH                                     :френски
+STR_MAPGEN_TOWN_NAME_GERMAN                                     :германски
+STR_MAPGEN_TOWN_NAME_ADDITIONAL_ENGLISH                         :английски (допълнителни)
+STR_MAPGEN_TOWN_NAME_LATIN_AMERICAN                             :латиноамерикански
+STR_MAPGEN_TOWN_NAME_SILLY                                      :глупави
+STR_MAPGEN_TOWN_NAME_SWEDISH                                    :шведски
+STR_MAPGEN_TOWN_NAME_DUTCH                                      :холандски
+STR_MAPGEN_TOWN_NAME_FINNISH                                    :финландски
+STR_MAPGEN_TOWN_NAME_POLISH                                     :полски
+STR_MAPGEN_TOWN_NAME_SLOVAK                                     :словашки
+STR_MAPGEN_TOWN_NAME_NORWEGIAN                                  :норвежки
+STR_MAPGEN_TOWN_NAME_HUNGARIAN                                  :унгарски
+STR_MAPGEN_TOWN_NAME_AUSTRIAN                                   :австрийски
+STR_MAPGEN_TOWN_NAME_ROMANIAN                                   :румънски
+STR_MAPGEN_TOWN_NAME_CZECH                                      :чешки
+STR_MAPGEN_TOWN_NAME_SWISS                                      :швейцарски
+STR_MAPGEN_TOWN_NAME_DANISH                                     :датски
+STR_MAPGEN_TOWN_NAME_TURKISH                                    :турски
+STR_MAPGEN_TOWN_NAME_ITALIAN                                    :италиански
+STR_MAPGEN_TOWN_NAME_CATALAN                                    :каталонски
 
 # Strings for map borders at game generation
 STR_MAPGEN_BORDER_TYPE                                          :{BLACK}Краищата на картата да са:
@@ -2958,6 +2949,10 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Пред
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Продължи към предишен нормален sprite, Пропускайки всички псевдо/прерисувани/текстови sprite и ги облечи в края
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Показване на избрания sprite. Подредбата се пренебрегва при рисуването му.
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Преместване на sprite, променяйки X и Y координатите
+
+###length 2
+
+
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}Избери sprite
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}Избери sprite от целия екран
 
@@ -3465,6 +3460,8 @@ STR_PURCHASE_INFO_NONE                                          :Нищо
 STR_PURCHASE_INFO_ALL_BUT                                       :Всичко освен {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Макс. теглеща сила: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Обхват: {GOLD}{COMMA} полета
+
+###length 3
 
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Списък с влакове - натисни върху влак за информация
@@ -4093,12 +4090,12 @@ STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}Един
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}ИИ Дебъг прозореца е на разположение само на сървъра
 
 # AI configuration window
-STR_AI_CONFIG_CAPTION                                           :{WHITE}ИИ Настройки
 STR_AI_CONFIG_GAMELIST_TOOLTIP                                  :{BLACK}Иговия скрипт ще бъде зареден в следващата игра
 STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}ИИ-тата ще бъдат заредени в следващата игра
 STR_AI_CONFIG_HUMAN_PLAYER                                      :Човешки играч
 STR_AI_CONFIG_RANDOM_AI                                         :Случаен AI
 STR_AI_CONFIG_NONE                                              :(нищо)
+STR_AI_CONFIG_MAX_COMPETITORS                                   :{LTBLUE}Максимален брой конкуренти: {ORANGE}{COMMA}
 
 STR_AI_CONFIG_MOVE_UP                                           :{BLACK}Премести нагоре
 STR_AI_CONFIG_MOVE_UP_TOOLTIP                                   :{BLACK}Премести маркирания AI нагоре в списъка
@@ -4108,8 +4105,6 @@ STR_AI_CONFIG_MOVE_DOWN_TOOLTIP                                 :{BLACK}Прем
 STR_AI_CONFIG_GAMESCRIPT                                        :{SILVER}Игрови скрипт
 STR_AI_CONFIG_AI                                                :{SILVER}AI-та
 
-STR_AI_CONFIG_CHANGE                                            :{BLACK}Избери {STRING}
-STR_AI_CONFIG_CHANGE_NONE                                       :
 STR_AI_CONFIG_CHANGE_AI                                         :AI
 STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :Програмен език на играта
 STR_AI_CONFIG_CHANGE_TOOLTIP                                    :{BLACK}Зареди друг скрипт
@@ -4133,9 +4128,7 @@ STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Не п�
 
 
 # AI Parameters
-STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Параметри
 STR_AI_SETTINGS_CAPTION_AI                                      :AI
-STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Програмен език на играта
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Затвори
 STR_AI_SETTINGS_RESET                                           :{BLACK}Рестартиране
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
@@ -4541,6 +4534,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Прек
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Интервала на техн. преглед не може да се промени...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... машината е унищожена
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Никакви превозни средства няма да бъдат налични
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Промени своята NewGRF конфигурация

@@ -607,7 +607,7 @@ public:
 		switch (widget) {
 			case PROGRAM_WIDGET_INSTRUCTION_LIST:
 				resize->height = FONT_HEIGHT_NORMAL;
-				size->height = 6 * resize->height + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
+				size->height = 6 * resize->height + WidgetDimensions::scaled.framerect.Vertical();
 				break;
 		}
 	}
@@ -627,7 +627,8 @@ public:
 	{
 		if (widget != PROGRAM_WIDGET_INSTRUCTION_LIST) return;
 
-		int y = r.top + WD_FRAMERECT_TOP;
+		Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
+		int y = ir.top;
 		int line_height = this->GetWidget<NWidgetBase>(PROGRAM_WIDGET_INSTRUCTION_LIST)->resize_y;
 
 		for (int no = this->vscroll->GetPosition(); no < (int) instructions.size(); no++) {
@@ -635,7 +636,7 @@ public:
 			/* Don't draw anything if it extends past the end of the window. */
 			if (!this->vscroll->IsVisible(no)) break;
 
-			DrawInstructionString(i.insn, y, no == this->selected_instruction, i.indent, r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT);
+			DrawInstructionString(i.insn, y, no == this->selected_instruction, i.indent, ir.left, ir.right);
 			y += line_height;
 		}
 	}
@@ -700,7 +701,7 @@ private:
 	int GetInstructionFromPt(int y)
 	{
 		NWidgetBase *nwid = this->GetWidget<NWidgetBase>(PROGRAM_WIDGET_INSTRUCTION_LIST);
-		int sel = (y - nwid->pos_y - WD_FRAMERECT_TOP) / nwid->resize_y; // Selected line
+		int sel = (y - nwid->pos_y - WidgetDimensions::scaled.framerect.top) / nwid->resize_y; // Selected line
 
 		if ((uint)sel >= this->vscroll->GetCapacity()) return -1;
 

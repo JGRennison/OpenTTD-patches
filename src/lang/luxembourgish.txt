@@ -205,6 +205,7 @@ STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}bh
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}ps
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW
 
+
 STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA}{NBSP}t
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}{NBSP}t
 STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}{NBSP}kg
@@ -397,10 +398,9 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Eraus
 
 # Settings menu
-###length 14
+###length 15
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Spilloptiounen
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Astellungen
-STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :KI / Spill-Script Astellungen
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF Astellungen
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Transparenz Optiounen
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Stiednimm uweisen
@@ -977,36 +977,6 @@ STR_GAME_OPTIONS_CURRENCY_INR                                   :Indiesch Rupee 
 STR_GAME_OPTIONS_CURRENCY_IDR                                   :Indonesesch Rupiah (IDR)
 STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malaysesche Ringgit (MYR)
 
-###length 2
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Lénks fueren
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :Riets fueren
-
-STR_GAME_OPTIONS_TOWN_NAMES_FRAME                               :{BLACK}Stiednimm:
-STR_GAME_OPTIONS_TOWN_NAMES_DROPDOWN_TOOLTIP                    :{BLACK}Stil vun de Stiednimm wielen
-
-###length 21
-STR_GAME_OPTIONS_TOWN_NAME_ORIGINAL_ENGLISH                     :Englesch (Original)
-STR_GAME_OPTIONS_TOWN_NAME_FRENCH                               :Franséisch
-STR_GAME_OPTIONS_TOWN_NAME_GERMAN                               :Däitsch
-STR_GAME_OPTIONS_TOWN_NAME_ADDITIONAL_ENGLISH                   :Englesch (Erweidert)
-STR_GAME_OPTIONS_TOWN_NAME_LATIN_AMERICAN                       :Lateinamerikanesch
-STR_GAME_OPTIONS_TOWN_NAME_SILLY                                :Blöd
-STR_GAME_OPTIONS_TOWN_NAME_SWEDISH                              :Schwedesch
-STR_GAME_OPTIONS_TOWN_NAME_DUTCH                                :Holländesch
-STR_GAME_OPTIONS_TOWN_NAME_FINNISH                              :Finnesch
-STR_GAME_OPTIONS_TOWN_NAME_POLISH                               :Polnesch
-STR_GAME_OPTIONS_TOWN_NAME_SLOVAK                               :Slovakesch
-STR_GAME_OPTIONS_TOWN_NAME_NORWEGIAN                            :Norwegesch
-STR_GAME_OPTIONS_TOWN_NAME_HUNGARIAN                            :Ungaresch
-STR_GAME_OPTIONS_TOWN_NAME_AUSTRIAN                             :Éisträichesch
-STR_GAME_OPTIONS_TOWN_NAME_ROMANIAN                             :Rumänesch
-STR_GAME_OPTIONS_TOWN_NAME_CZECH                                :Tschechesch
-STR_GAME_OPTIONS_TOWN_NAME_SWISS                                :Schwäitzer
-STR_GAME_OPTIONS_TOWN_NAME_DANISH                               :Dänesch
-STR_GAME_OPTIONS_TOWN_NAME_TURKISH                              :Türkesch
-STR_GAME_OPTIONS_TOWN_NAME_ITALIAN                              :Italienesch
-STR_GAME_OPTIONS_TOWN_NAME_CATALAN                              :Katalanesch
-
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Autospäicheren
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Wiel den Intervall aus fir d'Autospäicherung
 
@@ -1038,21 +1008,8 @@ STR_GAME_OPTIONS_VIDEO_VSYNC                                    :{BLACK}VSync
 STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Wiel des Optioun fir de V-Sync unzeman. Des gëtt eréit no engem Neistart benotzt. Funktionéiert nëmmen wann Hardwarebeschleunigung un ass
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Interfacegréisst
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Wiel d'Gréisst déi fir den Interface soll benotzt ginn
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(auto-Detekt.)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normal
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Duebel
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Véierfach
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Schrëftgréisst
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Wiel d'Interface-Schrëftgréisst aus
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(auto-Detekt.)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normal
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Duebel Gréisst
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Véierfach
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Graphik
 
@@ -1104,8 +1061,6 @@ STR_CURRENCY_PREVIEW                                            :{LTBLUE}Prouf: 
 STR_CURRENCY_CUSTOM_CURRENCY_PREVIEW_TOOLTIP                    :{BLACK}10000 Pond (£) an denger Währung
 STR_CURRENCY_CHANGE_PARAMETER                                   :{BLACK}Änner Währungsparameter
 
-STR_DIFFICULTY_LEVEL_SETTING_MAXIMUM_NO_COMPETITORS             :{LTBLUE}Maximal Unzuel vu Géigner: {ORANGE}{COMMA}
-
 STR_NONE                                                        :Keng
 STR_FUNDING_ONLY                                                :Nëmmen finanzéiren
 STR_MINIMAL                                                     :Minimal
@@ -1154,6 +1109,12 @@ STR_SUBSIDY_X1_5                                                :x1.5
 STR_SUBSIDY_X2                                                  :x2
 STR_SUBSIDY_X3                                                  :x3
 STR_SUBSIDY_X4                                                  :x4
+
+###length 4
+STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :Gemässegt Klima Landschaft
+STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :Sub-Arktesch Landschaft
+STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :Sub-Tropesch Landschaft
+STR_CLIMATE_TOYLAND_LANDSCAPE                                   :Spillsaacheland Landschaft
 
 ###length 7
 STR_TERRAIN_TYPE_VERY_FLAT                                      :Ganz Flaach
@@ -1512,6 +1473,10 @@ STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Verbessert
 
 STR_CONFIG_SETTING_ROAD_SIDE                                    :Stroossegefierer: {STRING}
 STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Wiel d'Säit op där gefuer gëtt
+
+###length 2
+STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :Lénks fueren
+STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :Riets fueren
 
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Héichtenkaartrotatioun: {STRING}
 ###length 2
@@ -2039,7 +2004,7 @@ STR_CONFIG_SETTING_REVERSE_AT_SIGNALS                           :Automatescht Em
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :Erlab Zich bei engem Signal emzedréinen, wann se eng laang Zäit geward hunn
 ###length 2
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
-STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(recommandéiert)
+STR_CONFIG_SETTING_PATHFINDER_YAPF                              :YAPF {BLUE}(recommandéiert)
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Astellung änneren
 
@@ -2082,7 +2047,6 @@ STR_INTRO_HIGHSCORE                                             :{BLACK}Beschtel
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Astellungen
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF Astellungen
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Check Online Inhalt
-STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}KI / Spill-Script Astellungen
 STR_INTRO_QUIT                                                  :{BLACK}Eraus
 
 STR_INTRO_TOOLTIP_NEW_GAME                                      :{BLACK}Start en neit Spill. Ctrl+Klick iwwerspréngt Kaartenkonfiguratioun
@@ -2102,7 +2066,6 @@ STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Beschtel
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Displayastellungen
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}NewGRF Astellungen uweisen
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Check op neien Inhalt kann downgeload gin
-STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Weis KI an Spill-Script-Astellungen
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Aus 'OpenTTD' eraus goen
 
 STR_INTRO_BASESET                                               :{BLACK}Dem grad ausgewielte Basis Grafikset fehlen {NUM} Sprite{P "" s}. W.e.g. no Updates fir dëse Set sichen.
@@ -2133,12 +2096,6 @@ STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}Änner d
 STR_CHEAT_CHANGE_DATE                                           :{LTBLUE}Datum änneren: {ORANGE} {DATE_SHORT}
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Änner dat aktuellt Joer
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Erlaabt d'ännere vun de Produktiounswäerter: {ORANGE}{STRING}
-
-###length 4
-STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :Gemässegt Klima Landschaft
-STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :Sub-Arktesch Landschaft
-STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :Sub-Tropesch Landschaft
-STR_CHEAT_SWITCH_CLIMATE_TOYLAND_LANDSCAPE                      :Spillsaacheland Landschaft
 
 # Livery window
 STR_LIVERY_CAPTION                                              :{WHITE}{COMPANY} - Neie Faarfschema
@@ -2617,6 +2574,8 @@ STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP                            :{BLACK}{STRING}
 STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}onbenotzt
 STR_LINKGRAPH_LEGEND_SATURATED                                  :{TINY_FONT}{BLACK}gesättegt
 STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLACK}iwwerlaascht
+
+# Linkgraph tooltip
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Reechwäit markéieren
@@ -3138,6 +3097,8 @@ STR_MAPGEN_MAPSIZE                                              :{BLACK}Kaartegr
 STR_MAPGEN_MAPSIZE_TOOLTIP                                      :{BLACK}Wiel d'Gréisst vun der Kaart a Felder. D'Unzuel vu benotzbare Felder wäert e bësse méi kleng sinn
 STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Unz. Dierfer:
+STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Stiednimm:
+STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Stil vun de Stiednimm wielen
 STR_MAPGEN_DATE                                                 :{BLACK}Datum:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Unz. Industrien:
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Héchste Punkt:
@@ -3156,11 +3117,34 @@ STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Beweg Sc
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Beweg Schnéilinnhéicht erof
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Landgenerator:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Terrain Typ:
-STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Mieresspigel:
+STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Mieresspigel:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Flëss:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Mëllt:
 STR_MAPGEN_VARIETY                                              :{BLACK}Vielfaltverdeelung:
 STR_MAPGEN_GENERATE                                             :{WHITE}Generéiren
+
+###length 21
+STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH                           :Englesch (Original)
+STR_MAPGEN_TOWN_NAME_FRENCH                                     :Franséisch
+STR_MAPGEN_TOWN_NAME_GERMAN                                     :Däitsch
+STR_MAPGEN_TOWN_NAME_ADDITIONAL_ENGLISH                         :Englesch (Erweidert)
+STR_MAPGEN_TOWN_NAME_LATIN_AMERICAN                             :Lateinamerikanesch
+STR_MAPGEN_TOWN_NAME_SILLY                                      :Blöd
+STR_MAPGEN_TOWN_NAME_SWEDISH                                    :Schwedesch
+STR_MAPGEN_TOWN_NAME_DUTCH                                      :Holländesch
+STR_MAPGEN_TOWN_NAME_FINNISH                                    :Finnesch
+STR_MAPGEN_TOWN_NAME_POLISH                                     :Polnesch
+STR_MAPGEN_TOWN_NAME_SLOVAK                                     :Slovakesch
+STR_MAPGEN_TOWN_NAME_NORWEGIAN                                  :Norwegesch
+STR_MAPGEN_TOWN_NAME_HUNGARIAN                                  :Ungaresch
+STR_MAPGEN_TOWN_NAME_AUSTRIAN                                   :Éisträichesch
+STR_MAPGEN_TOWN_NAME_ROMANIAN                                   :Rumänesch
+STR_MAPGEN_TOWN_NAME_CZECH                                      :Tschechesch
+STR_MAPGEN_TOWN_NAME_SWISS                                      :Schwäitzer
+STR_MAPGEN_TOWN_NAME_DANISH                                     :Dänesch
+STR_MAPGEN_TOWN_NAME_TURKISH                                    :Türkesch
+STR_MAPGEN_TOWN_NAME_ITALIAN                                    :Italienesch
+STR_MAPGEN_TOWN_NAME_CATALAN                                    :Katalanesch
 
 # Strings for map borders at game generation
 STR_MAPGEN_BORDER_TYPE                                          :{BLACK}Kaarteränner:
@@ -3307,6 +3291,10 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Viregt S
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Géi weider op déi nächst normal Sprite, iwwersprang all pseudo/recolour/font Sprite an sprang zréck op den Ufank no der leschter.
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Representatioun vun der grad gewielter Sprite. Den Alignement gëtt ignoréiert wann d'Sprite gezun gëtt
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Beweg Sprite, X an Y offsets enneren sech. Ctrl+Klick fir de Sprite8 Eenheete matenen ze bewegen.
+
+###length 2
+
+
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Relativ zerécksetzen
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Momentan relativ Offsets zerécksetzen
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X-Offset: {NUM}, Y-Offset: {NUM} (Absolut)
@@ -3863,6 +3851,8 @@ STR_PURCHASE_INFO_ALL_BUT                                       :Alles ausser {C
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Max. Zéikraaft: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Distanz: {GOLD}{COMMA} Felder
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Fliger Typ: {GOLD}{STRING}
+
+###length 3
 
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Zuchlëscht - klick op en Zuch fir Informatiounen. Ctrl+Klick fir tëscht dem Verstoppen hin an hier ze sprangen
@@ -4524,12 +4514,12 @@ STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}En Scrip
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}KI / Spill-Script Debugfënster ass nëmmen fir Serveren verfügbar
 
 # AI configuration window
-STR_AI_CONFIG_CAPTION                                           :{WHITE}KI /Spill-Script Konfiguratioun
 STR_AI_CONFIG_GAMELIST_TOOLTIP                                  :{BLACK}D'Spill-Script dat am nächsten Spill geluede gëtt
 STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}D'KIën déi am nächsten Spill geluede ginn
 STR_AI_CONFIG_HUMAN_PLAYER                                      :Mënschleche Spiller
 STR_AI_CONFIG_RANDOM_AI                                         :Zoufälleg KI
 STR_AI_CONFIG_NONE                                              :(keng)
+STR_AI_CONFIG_MAX_COMPETITORS                                   :{LTBLUE}Maximal Unzuel vu Géigner: {ORANGE}{COMMA}
 
 STR_AI_CONFIG_MOVE_UP                                           :{BLACK}Eropsetzen
 STR_AI_CONFIG_MOVE_UP_TOOLTIP                                   :{BLACK}Gewielte KI an der Lëscht no uewen setzen
@@ -4539,8 +4529,6 @@ STR_AI_CONFIG_MOVE_DOWN_TOOLTIP                                 :{BLACK}Gewielte
 STR_AI_CONFIG_GAMESCRIPT                                        :{SILVER}Spill-Script
 STR_AI_CONFIG_AI                                                :{SILVER}KIën
 
-STR_AI_CONFIG_CHANGE                                            :{BLACK}Wiel {STRING} aus
-STR_AI_CONFIG_CHANGE_NONE                                       :
 STR_AI_CONFIG_CHANGE_AI                                         :KI
 STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :Spill-Script
 STR_AI_CONFIG_CHANGE_TOOLTIP                                    :{BLACK}Lued en aneren Script
@@ -4571,9 +4559,7 @@ STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Héichte
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Minimap-Screenshot
 
 # AI Parameters
-STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Parameter
 STR_AI_SETTINGS_CAPTION_AI                                      :KI
-STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Spill-Script
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Zoumaachen
 STR_AI_SETTINGS_RESET                                           :{BLACK}Reset
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
@@ -4989,6 +4975,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Ze vill 
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}De Service-Intervall kann net geännert ginn...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... Gefier ass zerstéiert
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Keng Gefierer verfügbar
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Änner d'NewGRF Konfiguratioun

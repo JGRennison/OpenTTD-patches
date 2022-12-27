@@ -55,7 +55,7 @@ struct AnalyseCallbackOperation;
 /* SPRITE_WIDTH is 24. ECS has roughly 30 sprite groups per real sprite.
  * Adding an 'extra' margin would be assuming 64 sprite groups per real
  * sprite. 64 = 2^6, so 2^30 should be enough (for now) */
-typedef Pool<SpriteGroup, SpriteGroupID, 1024, 1 << 30, PT_DATA> SpriteGroupPool;
+typedef Pool<SpriteGroup, SpriteGroupID, 1024, 1U << 30, PT_DATA> SpriteGroupPool;
 extern SpriteGroupPool _spritegroup_pool;
 
 enum SpriteGroupFlags : uint8 {
@@ -442,6 +442,7 @@ struct DeterministicSpriteGroupRange {
 enum DeterministicSpriteGroupFlags : uint8 {
 	DSGF_NONE                    = 0,
 	DSGF_NO_DSE                  = 1 << 0,
+	DSGF_CB_RESULT               = 1 << 1,
 	DSGF_VAR_TRACKING_PENDING    = 1 << 2,
 	DSGF_REQUIRES_VAR1C          = 1 << 3,
 	DSGF_CHECK_EXPENSIVE_VARS    = 1 << 4,

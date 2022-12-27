@@ -154,6 +154,7 @@ STR_UNITS_POWER_IMPERIAL                                        :{COMMA}hp
 STR_UNITS_POWER_METRIC                                          :{COMMA}hp
 STR_UNITS_POWER_SI                                              :{COMMA}kW
 
+
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}t
 STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}kg
 
@@ -270,7 +271,7 @@ STR_TOOLBAR_TOOLTIP_FUND_CONSTRUCTION_OF_NEW                    :{BLACK}Ibni ind
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 
 # Settings menu
-###length 14
+###length 15
 
 # File menu
 ###length 5
@@ -410,11 +411,6 @@ STR_NEWS_VEHICLE_IS_LOST                                        :{WHITE}{VEHICLE
 
 ###length 42
 
-###length 2
-
-
-###length 21
-
 
 # Autosave dropdown
 ###length 5
@@ -422,7 +418,6 @@ STR_NEWS_VEHICLE_IS_LOST                                        :{WHITE}{VEHICLE
 
 
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :oħrajn
-
 
 
 
@@ -445,7 +440,6 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :oħrajn
 
 
 
-
 ###length 5
 
 ###length 6
@@ -453,6 +447,8 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :oħrajn
 ###length 4
 
 ###length 3
+
+###length 4
 
 ###length 4
 
@@ -580,6 +576,8 @@ STR_CONFIG_SETTING_WARN_LOST_VEHICLE                            :Avza jekk jinti
 
 ###length 3
 
+
+###length 2
 
 ###length 2
 
@@ -751,8 +749,6 @@ STR_INTRO_CAPTION                                               :{WHITE}OpenTTD 
 # Cheat window
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Ibdel is-sena
 
-###length 4
-
 # Livery window
 
 
@@ -839,6 +835,8 @@ STR_NETWORK_SERVER_MESSAGE                                      :*** {1:STRING}
 # Linkgraph legend window
 
 # Linkgraph legend window and linkgraph legend in smallmap
+
+# Linkgraph tooltip
 
 # Base for station construction window(s)
 
@@ -938,6 +936,8 @@ STR_OBJECT_BUILD_CLASS_TOOLTIP                                  :{BLACK}Aghzel i
 # World generation
 STR_MAPGEN_BY                                                   :{BLACK}*
 
+###length 21
+
 # Strings for map borders at game generation
 
 
@@ -969,6 +969,10 @@ STR_NEWGRF_SETTINGS_INCOMPATIBLE                                :{RED}Ma jaqblux
 
 
 # Sprite aligner window
+
+###length 2
+
+
 
 
 # NewGRF (self) generated warnings/errors
@@ -1104,6 +1108,8 @@ STR_FINANCES_POSITIVE_INCOME                                    :{BLACK}+{CURREN
 # Vehicle availability
 ###length VEHICLE_TYPES
 
+
+###length 3
 
 ###length VEHICLE_TYPES
 
@@ -1316,7 +1322,6 @@ STR_TIMETABLE_CLEAR_SPEED_TOOLTIP                               :{BLACK}Исчи
 
 
 
-STR_AI_CONFIG_CHANGE_NONE                                       :
 
 # Available AIs window
 
@@ -1438,6 +1443,7 @@ STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Ma tista
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Ma tistax tbigħ dan l-ajruplan...
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Hemm wisq vetturi fil-logħba
+
 
 
 

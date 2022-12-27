@@ -19,14 +19,20 @@
 #include <vector>
 
 /**
- * Properties of a link between two stations.
+ * Monthly statistics for a link between two stations.
+ * Only the cargo type of the most saturated linkgraph is taken into account.
  */
 struct LinkProperties {
-	LinkProperties() : capacity(0), usage(0), planned(0), shared(false) {}
+	LinkProperties() : capacity(0), usage(0), planned(0), cargo(CT_INVALID), time(0), shared(false) {}
+
+	/** Return the usage of the link to display. */
+	uint Usage() const { return std::max(this->usage, this->planned); }
 
 	uint capacity; ///< Capacity of the link.
 	uint usage;    ///< Actual usage of the link.
 	uint planned;  ///< Planned usage of the link.
+	CargoID cargo; ///< Cargo type of the link.
+	uint32 time;   ///< Travel time of the link.
 	bool shared;   ///< If this is a shared link to be drawn dashed.
 };
 
@@ -64,15 +70,18 @@ public:
 	 * @param scale Desired thickness of lines and size of station dots.
 	 */
 	LinkGraphOverlay(Window *w, uint wid, CargoTypes cargo_mask, uint32 company_mask, uint scale) :
-			window(w), widget_id(wid), cargo_mask(cargo_mask), company_mask(company_mask), scale(scale)
+			window(w), widget_id(wid), cargo_mask(cargo_mask), company_mask(company_mask), scale(scale), dirty(true)
 	{}
 
 	void RebuildCache(bool incremental = false);
 	bool CacheStillValid() const;
 	void MarkStationViewportLinksDirty(const Station *st);
-	void Draw(const DrawPixelInfo *dpi);
+	void PrepareDraw();
+	void Draw(const DrawPixelInfo *dpi) const;
 	void SetCargoMask(CargoTypes cargo_mask);
 	void SetCompanyMask(uint32 company_mask);
+
+	bool ShowTooltip(Point pt, TooltipCloseCondition close_cond);
 
 	/** Mark the linkgraph dirty to be rebuilt next time Draw() is called. */
 	void SetDirty() { this->dirty = true; }
@@ -100,13 +109,13 @@ protected:
 	void RefreshDrawCache();
 	void DrawLinks(const DrawPixelInfo *dpi) const;
 	void DrawStationDots(const DrawPixelInfo *dpi) const;
-	void DrawContent(Point pta, Point ptb, const LinkProperties &cargo) const;
+	void DrawContent(const DrawPixelInfo *dpi, Point pta, Point ptb, const LinkProperties &cargo) const;
 	bool IsLinkVisible(Point pta, Point ptb, const DrawPixelInfo *dpi, int padding = 0) const;
 	bool IsPointVisible(Point pt, const DrawPixelInfo *dpi, int padding = 0) const;
 	void GetWidgetDpi(DrawPixelInfo *dpi, uint margin = 0) const;
 
-	static void AddStats(uint new_cap, uint new_usg, uint new_flow, bool new_shared, LinkProperties &cargo);
-	static void DrawVertex(int x, int y, int size, int colour, int border_colour);
+	static void AddStats(CargoID new_cargo, uint new_cap, uint new_usg, uint new_plan, uint32 time, bool new_shared, LinkProperties &cargo);
+	static void DrawVertex(const DrawPixelInfo *dpi, int x, int y, int size, int colour, int border_colour);
 };
 
 void ShowLinkGraphLegend();

@@ -98,8 +98,8 @@ static bool CanPlantTreesOnTile(TileIndex tile, bool allow_desert)
  */
 static void PlantTreesOnTile(TileIndex tile, TreeType treetype, uint count, uint growth)
 {
-	assert(treetype != TREE_INVALID);
-	assert_tile(CanPlantTreesOnTile(tile, true), tile);
+	dbg_assert(treetype != TREE_INVALID);
+	dbg_assert_tile(CanPlantTreesOnTile(tile, true), tile);
 
 	TreeGround ground;
 	uint density = 3;
@@ -457,7 +457,7 @@ void RemoveAllTrees()
  */
 uint PlaceTreeGroupAroundTile(TileIndex tile, TreeType treetype, uint radius, uint count, bool set_zone)
 {
-	assert(treetype < TREE_TOYLAND + TREE_COUNT_TOYLAND);
+	dbg_assert(treetype < TREE_TOYLAND + TREE_COUNT_TOYLAND);
 	const bool allow_desert = treetype == TREE_CACTUS;
 	uint planted = 0;
 
@@ -725,7 +725,7 @@ static void DrawTile_Trees(TileInfo *ti, DrawTileProcParams params)
 		index += 164 - (TREE_SUB_ARCTIC << 2);
 	}
 
-	assert(index < lengthof(_tree_layout_sprite));
+	dbg_assert(index < lengthof(_tree_layout_sprite));
 
 	const PalSpriteID *s = _tree_layout_sprite[index];
 	const TreePos *d = _tree_layout_xy[GB(tmp, 2, 2)];
@@ -898,6 +898,15 @@ static bool CanPlantExtraTrees(TileIndex tile)
 		_settings_game.construction.extra_tree_placement == ETP_SPREAD_ALL);
 }
 
+static bool IsTemperateTreeOnSnow(TileIndex tile)
+{
+	if (_settings_game.game_creation.landscape == LT_ARCTIC && IsInsideMM(GetTreeType(tile), TREE_TEMPERATE, TREE_SUB_ARCTIC)) {
+		TreeGround ground = GetTreeGround(tile);
+		if (ground == TREE_GROUND_SNOW_DESERT || ground == TREE_GROUND_ROUGH_SNOW) return true;
+	}
+	return false;
+}
+
 static void TileLoop_Trees(TileIndex tile)
 {
 	if (GetTreeGround(tile) == TREE_GROUND_SHORE) {
@@ -947,7 +956,9 @@ static void TileLoop_Trees(TileIndex tile)
 					GetTropicZone(tile) == TROPICZONE_DESERT) {
 				AddTreeGrowth(tile, 1);
 			} else {
-				switch (GB(Random(), 0, 3)) {
+				uint mode = GB(Random(), 0, 3);
+				if (IsTemperateTreeOnSnow(tile)) mode = 0;
+				switch (mode) {
 					case 0: // start destructing
 						AddTreeGrowth(tile, 1);
 						break;
@@ -1000,7 +1011,7 @@ static void TileLoop_Trees(TileIndex tile)
 			break;
 
 		case 6: // final stage of tree destruction
-			if (!CanPlantExtraTrees(tile)) {
+			if (!CanPlantExtraTrees(tile) && !IsTemperateTreeOnSnow(tile)) {
 				/* if trees can't spread just plant a new one to prevent deforestation */
 				SetTreeGrowth(tile, 0);
 			} else if (GetTreeCount(tile) > 1) {

@@ -86,6 +86,7 @@ byte _misc_grf_features = 0;
 
 /** 32 * 8 = 256 flags. Apparently TTDPatch uses this many.. */
 static uint32 _ttdpatch_flags[8];
+static uint32 _observed_ttdpatch_flags[8];
 
 /** Indicates which are the newgrf features currently loaded ingame */
 GRFLoadedFeatures _loaded_newgrf_features;
@@ -226,7 +227,6 @@ struct GRFTempEngineData {
 	uint8 roadtramtype;
 	const GRFFile *defaultcargo_grf; ///< GRF defining the cargo translation table to use if the default cargo is the 'first refittable'.
 	Refittability refittability;     ///< Did the newgrf set any refittability property? If not, default refittability will be applied.
-	bool prop27_set;         ///< Did the NewGRF set property 27 (misc flags)?
 	uint8 rv_max_speed;      ///< Temporary storage of RV prop 15, maximum speed in mph/0.8
 	CargoTypes ctt_include_mask; ///< Cargo types always included in the refit mask.
 	CargoTypes ctt_exclude_mask; ///< Cargo types always excluded from the refit mask.
@@ -1236,7 +1236,6 @@ static ChangeInfoResult RailVehicleChangeInfo(uint engine, int numinfo, int prop
 			case 0x27: // Miscellaneous flags
 				ei->misc_flags = buf->ReadByte();
 				_loaded_newgrf_features.has_2CC |= HasBit(ei->misc_flags, EF_USES_2CC);
-				_gted[e->index].prop27_set = true;
 				break;
 
 			case 0x28: // Cargo classes allowed
@@ -2849,6 +2848,13 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, co
 				break;
 			}
 
+			case A0RPI_GLOBALVAR_ALLOW_ROCKS_DESERT: {
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				extern bool _allow_rocks_desert;
+				_allow_rocks_desert = (buf->ReadByte() != 0);
+				break;
+			}
+
 			default:
 				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
@@ -2921,6 +2927,7 @@ static ChangeInfoResult GlobalVarReserveInfo(uint gvid, int numinfo, int prop, c
 			case A0RPI_GLOBALVAR_EXTRA_STATION_NAMES_PROBABILITY:
 			case A0RPI_GLOBALVAR_LIGHTHOUSE_GENERATE_AMOUNT:
 			case A0RPI_GLOBALVAR_TRANSMITTER_GENERATE_AMOUNT:
+			case A0RPI_GLOBALVAR_ALLOW_ROCKS_DESERT:
 				buf->Skip(buf->ReadExtendedByte());
 				break;
 
@@ -4267,7 +4274,7 @@ static ChangeInfoResult ObjectChangeInfo(uint id, int numinfo, int prop, const G
 				if (*ospec == nullptr) {
 					*ospec = CallocT<ObjectSpec>(1);
 					(*ospec)->views = 1; // Default for NewGRFs that don't set it.
-					(*ospec)->size = 0x11; // Default for NewGRFs that manage to not set it (1x1)
+					(*ospec)->size = OBJECT_SIZE_1X1; // Default for NewGRFs that manage to not set it (1x1)
 				}
 
 				/* Swap classid because we read it in BE. */
@@ -4295,7 +4302,7 @@ static ChangeInfoResult ObjectChangeInfo(uint id, int numinfo, int prop, const G
 				spec->size = buf->ReadByte();
 				if (GB(spec->size, 0, 4) == 0 || GB(spec->size, 4, 4) == 0) {
 					grfmsg(0, "ObjectChangeInfo: Invalid object size requested (0x%x) for object id %u. Ignoring.", spec->size, id + i);
-					spec->size = 0x11; // 1x1
+					spec->size = OBJECT_SIZE_1X1;
 				}
 				break;
 
@@ -5174,6 +5181,15 @@ static ChangeInfoResult NewLandscapeChangeInfo(uint id, int numinfo, int prop, c
 				break;
 			}
 
+			case A0RPI_NEWLANDSCAPE_ENABLE_DRAW_SNOWY_ROCKS: {
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				bool enabled = (buf->ReadByte() != 0 ? 1 : 0);
+				if (id == NLA3ID_CUSTOM_ROCKS) {
+					SB(_cur.grffile->new_landscape_ctrl_flags, NLCF_ROCKS_DRAW_SNOWY_ENABLED, 1, enabled);
+				}
+				break;
+			}
+
 			default:
 				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
@@ -5825,6 +5841,7 @@ static void NewSpriteGroup(ByteReader *buf)
 			ProcessDeterministicSpriteGroupRanges(ranges, group->ranges, group->default_group);
 
 			OptimiseVarAction2DeterministicSpriteGroup(va2_opt_state, feature, varsize, group, current_adjusts);
+			current_adjusts.clear();
 			break;
 		}
 
@@ -7007,7 +7024,7 @@ static const Action5Type _action5_types[] = {
 	/* 0x11 */ { A5BLOCK_ALLOW_OFFSET, SPR_ROADSTOP_BASE,            1, ROADSTOP_SPRITE_COUNT,                       "Road stop graphics"       },
 	/* 0x12 */ { A5BLOCK_ALLOW_OFFSET, SPR_AQUEDUCT_BASE,            1, AQUEDUCT_SPRITE_COUNT,                       "Aqueduct graphics"        },
 	/* 0x13 */ { A5BLOCK_ALLOW_OFFSET, SPR_AUTORAIL_BASE,            1, AUTORAIL_SPRITE_COUNT,                       "Autorail graphics"        },
-	/* 0x14 */ { A5BLOCK_ALLOW_OFFSET, SPR_FLAGS_BASE,               1, FLAGS_SPRITE_COUNT,                          "Flag graphics"            },
+	/* 0x14 */ { A5BLOCK_INVALID,      0,                            1, 0,                                           "Flag graphics"            }, // deprecated, no longer used.
 	/* 0x15 */ { A5BLOCK_ALLOW_OFFSET, SPR_OPENTTD_BASE,             1, OPENTTD_SPRITE_COUNT,                        "OpenTTD GUI graphics"     },
 	/* 0x16 */ { A5BLOCK_ALLOW_OFFSET, SPR_AIRPORT_PREVIEW_BASE,     1, SPR_AIRPORT_PREVIEW_COUNT,                   "Airport preview graphics" },
 	/* 0x17 */ { A5BLOCK_ALLOW_OFFSET, SPR_RAILTYPE_TUNNEL_BASE,     1, RAILTYPE_TUNNEL_BASE_COUNT,                  "Railtype tunnel base"     },
@@ -7191,7 +7208,7 @@ bool GetGlobalVariable(byte param, uint32 *value, const GRFFile *grffile)
 			return true;
 
 		case 0x0A: // animation counter
-			*value = GB(_tick_counter, 0, 16);
+			*value = GB(_scaled_tick_counter, 0, 16);
 			return true;
 
 		case 0x0B: { // TTDPatch version
@@ -7314,8 +7331,14 @@ static uint32 GetParamVal(byte param, uint32 *cond_val)
 				return 0;
 			} else {
 				uint32 index = *cond_val / 0x20;
-				uint32 param_val = index < lengthof(_ttdpatch_flags) ? _ttdpatch_flags[index] : 0;
 				*cond_val %= 0x20;
+				uint32 param_val = 0;
+				if (index < lengthof(_ttdpatch_flags)) {
+					param_val = _ttdpatch_flags[index];
+					if (!HasBit(_cur.grfconfig->flags, GCF_STATIC) && !HasBit(_cur.grfconfig->flags, GCF_SYSTEM)) {
+						SetBit(_observed_ttdpatch_flags[index], *cond_val);
+					}
+				}
 				return param_val;
 			}
 
@@ -9870,89 +9893,98 @@ static void GRFUnsafe(ByteReader *buf)
 /** Initialize the TTDPatch flags */
 static void InitializeGRFSpecial()
 {
-	_ttdpatch_flags[0] = ((_settings_game.station.never_expire_airports ? 1 : 0) << 0x0C)  // keepsmallairport
-	                   |                                                      (1 << 0x0D)  // newairports
-	                   |                                                      (1 << 0x0E)  // largestations
-	                   | ((_settings_game.construction.max_bridge_length > 16 ? 1 : 0) << 0x0F)  // longbridges
-	                   |                                                      (0 << 0x10)  // loadtime
-	                   |                                                      (1 << 0x12)  // presignals
-	                   |                                                      (1 << 0x13)  // extpresignals
-	                   | ((_settings_game.vehicle.never_expire_vehicles ? 1 : 0) << 0x16)  // enginespersist
-	                   |                                                      (1 << 0x1B)  // multihead
-	                   |                                                      (1 << 0x1D)  // lowmemory
-	                   |                                                      (1 << 0x1E); // generalfixes
+	_ttdpatch_flags[0] = ((_settings_game.station.never_expire_airports ? 1U : 0U) << 0x0C)  // keepsmallairport
+	                   |                                                       (1U << 0x0D)  // newairports
+	                   |                                                       (1U << 0x0E)  // largestations
+	                   | ((_settings_game.construction.max_bridge_length > 16 ? 1U : 0U) << 0x0F)  // longbridges
+	                   |                                                       (0U << 0x10)  // loadtime
+	                   |                                                       (1U << 0x12)  // presignals
+	                   |                                                       (1U << 0x13)  // extpresignals
+	                   | ((_settings_game.vehicle.never_expire_vehicles ? 1U : 0U) << 0x16)  // enginespersist
+	                   |                                                       (1U << 0x1B)  // multihead
+	                   |                                                       (1U << 0x1D)  // lowmemory
+	                   |                                                       (1U << 0x1E); // generalfixes
 
-	_ttdpatch_flags[1] =   ((_settings_game.economy.station_noise_level ? 1 : 0) << 0x07)  // moreairports - based on units of noise
-	                   |                                                      (1 << 0x08)  // mammothtrains
-	                   |                                                      (1 << 0x09)  // trainrefit
-	                   |                                                      (0 << 0x0B)  // subsidiaries
-	                   |         ((_settings_game.order.gradual_loading ? 1 : 0) << 0x0C)  // gradualloading
-	                   |                                                      (1 << 0x12)  // unifiedmaglevmode - set bit 0 mode. Not revelant to OTTD
-	                   |                                                      (1 << 0x13)  // unifiedmaglevmode - set bit 1 mode
-	                   |                                                      (1 << 0x14)  // bridgespeedlimits
-	                   |                                                      (1 << 0x16)  // eternalgame
-	                   |                                                      (1 << 0x17)  // newtrains
-	                   |                                                      (1 << 0x18)  // newrvs
-	                   |                                                      (1 << 0x19)  // newships
-	                   |                                                      (1 << 0x1A)  // newplanes
-	                   | ((_settings_game.construction.train_signal_side == 1 ? 1 : 0) << 0x1B)  // signalsontrafficside
-	                   |       ((_settings_game.vehicle.disable_elrails ? 0 : 1) << 0x1C); // electrifiedrailway
+	_ttdpatch_flags[1] =   ((_settings_game.economy.station_noise_level ? 1U : 0U) << 0x07)  // moreairports - based on units of noise
+	                   |                                                       (1U << 0x08)  // mammothtrains
+	                   |                                                       (1U << 0x09)  // trainrefit
+	                   |                                                       (0U << 0x0B)  // subsidiaries
+	                   |         ((_settings_game.order.gradual_loading ? 1U : 0U) << 0x0C)  // gradualloading
+	                   |                                                       (1U << 0x12)  // unifiedmaglevmode - set bit 0 mode. Not revelant to OTTD
+	                   |                                                       (1U << 0x13)  // unifiedmaglevmode - set bit 1 mode
+	                   |                                                       (1U << 0x14)  // bridgespeedlimits
+	                   |                                                       (1U << 0x16)  // eternalgame
+	                   |                                                       (1U << 0x17)  // newtrains
+	                   |                                                       (1U << 0x18)  // newrvs
+	                   |                                                       (1U << 0x19)  // newships
+	                   |                                                       (1U << 0x1A)  // newplanes
+	                   | ((_settings_game.construction.train_signal_side == 1 ? 1U : 0U) << 0x1B)  // signalsontrafficside
+	                   |       ((_settings_game.vehicle.disable_elrails ? 0U : 1U) << 0x1C); // electrifiedrailway
 
-	_ttdpatch_flags[2] =                                                      (1 << 0x01)  // loadallgraphics - obsolote
-	                   |                                                      (1 << 0x03)  // semaphores
-	                   |                                                      (1 << 0x0A)  // newobjects
-	                   |                                                      (0 << 0x0B)  // enhancedgui
-	                   |                                                      (0 << 0x0C)  // newagerating
-	                   |  ((_settings_game.construction.build_on_slopes ? 1 : 0) << 0x0D)  // buildonslopes
-	                   |                                                      (1 << 0x0E)  // fullloadany
-	                   |                                                      (1 << 0x0F)  // planespeed
-	                   |                                                      (0 << 0x10)  // moreindustriesperclimate - obsolete
-	                   |                                                      (0 << 0x11)  // moretoylandfeatures
-	                   |                                                      (1 << 0x12)  // newstations
-	                   |                                                      (1 << 0x13)  // tracktypecostdiff
-	                   |                                                      (1 << 0x14)  // manualconvert
-	                   |  ((_settings_game.construction.build_on_slopes ? 1 : 0) << 0x15)  // buildoncoasts
-	                   |                                                      (1 << 0x16)  // canals
-	                   |                                                      (1 << 0x17)  // newstartyear
-	                   |    ((_settings_game.vehicle.freight_trains > 1 ? 1 : 0) << 0x18)  // freighttrains
-	                   |                                                      (1 << 0x19)  // newhouses
-	                   |                                                      (1 << 0x1A)  // newbridges
-	                   |                                                      (1 << 0x1B)  // newtownnames
-	                   |                                                      (1 << 0x1C)  // moreanimation
-	                   |    ((_settings_game.vehicle.wagon_speed_limits ? 1 : 0) << 0x1D)  // wagonspeedlimits
-	                   |                                                      (1 << 0x1E)  // newshistory
-	                   |                                                      (0 << 0x1F); // custombridgeheads
+	_ttdpatch_flags[2] =                                                       (1U << 0x01)  // loadallgraphics - obsolote
+	                   |                                                       (1U << 0x03)  // semaphores
+	                   |                                                       (1U << 0x0A)  // newobjects
+	                   |                                                       (0U << 0x0B)  // enhancedgui
+	                   |                                                       (0U << 0x0C)  // newagerating
+	                   |  ((_settings_game.construction.build_on_slopes ? 1U : 0U) << 0x0D)  // buildonslopes
+	                   |                                                       (1U << 0x0E)  // fullloadany
+	                   |                                                       (1U << 0x0F)  // planespeed
+	                   |                                                       (0U << 0x10)  // moreindustriesperclimate - obsolete
+	                   |                                                       (0U << 0x11)  // moretoylandfeatures
+	                   |                                                       (1U << 0x12)  // newstations
+	                   |                                                       (1U << 0x13)  // tracktypecostdiff
+	                   |                                                       (1U << 0x14)  // manualconvert
+	                   |  ((_settings_game.construction.build_on_slopes ? 1U : 0U) << 0x15)  // buildoncoasts
+	                   |                                                       (1U << 0x16)  // canals
+	                   |                                                       (1U << 0x17)  // newstartyear
+	                   |    ((_settings_game.vehicle.freight_trains > 1 ? 1U : 0U) << 0x18)  // freighttrains
+	                   |                                                       (1U << 0x19)  // newhouses
+	                   |                                                       (1U << 0x1A)  // newbridges
+	                   |                                                       (1U << 0x1B)  // newtownnames
+	                   |                                                       (1U << 0x1C)  // moreanimation
+	                   |    ((_settings_game.vehicle.wagon_speed_limits ? 1U : 0U) << 0x1D)  // wagonspeedlimits
+	                   |                                                       (1U << 0x1E)  // newshistory
+	                   |                                                       (0U << 0x1F); // custombridgeheads
 
-	_ttdpatch_flags[3] =                                                      (0 << 0x00)  // newcargodistribution
-	                   |                                                      (1 << 0x01)  // windowsnap
-	                   | ((_settings_game.economy.allow_town_roads || _generating_world ? 0 : 1) << 0x02)  // townbuildnoroad
-	                   |                                                      (1 << 0x03)  // pathbasedsignalling
-	                   |                                                      (0 << 0x04)  // aichoosechance
-	                   |                                                      (1 << 0x05)  // resolutionwidth
-	                   |                                                      (1 << 0x06)  // resolutionheight
-	                   |                                                      (1 << 0x07)  // newindustries
-	                   |           ((_settings_game.order.improved_load ? 1 : 0) << 0x08)  // fifoloading
-	                   |                                                      (0 << 0x09)  // townroadbranchprob
-	                   |                                                      (0 << 0x0A)  // tempsnowline
-	                   |                                                      (1 << 0x0B)  // newcargo
-	                   |                                                      (1 << 0x0C)  // enhancemultiplayer
-	                   |                                                      (1 << 0x0D)  // onewayroads
-	                   |                                                      (1 << 0x0E)  // irregularstations
-	                   |                                                      (1 << 0x0F)  // statistics
-	                   |                                                      (1 << 0x10)  // newsounds
-	                   |                                                      (1 << 0x11)  // autoreplace
-	                   |                                                      (1 << 0x12)  // autoslope
-	                   |                                                      (0 << 0x13)  // followvehicle
-	                   |                                                      (1 << 0x14)  // trams
-	                   |                                                      (0 << 0x15)  // enhancetunnels
-	                   |                                                      (1 << 0x16)  // shortrvs
-	                   |                                                      (1 << 0x17)  // articulatedrvs
-	                   |       ((_settings_game.vehicle.dynamic_engines ? 1 : 0) << 0x18)  // dynamic engines
-	                   |                                                      (1 << 0x1E)  // variablerunningcosts
-	                   |                                                      (1 << 0x1F); // any switch is on
+	_ttdpatch_flags[3] =                                                       (0U << 0x00)  // newcargodistribution
+	                   |                                                       (1U << 0x01)  // windowsnap
+	                   | ((_settings_game.economy.allow_town_roads || _generating_world ? 0U : 1U) << 0x02)  // townbuildnoroad
+	                   |                                                       (1U << 0x03)  // pathbasedsignalling
+	                   |                                                       (0U << 0x04)  // aichoosechance
+	                   |                                                       (1U << 0x05)  // resolutionwidth
+	                   |                                                       (1U << 0x06)  // resolutionheight
+	                   |                                                       (1U << 0x07)  // newindustries
+	                   |           ((_settings_game.order.improved_load ? 1U : 0U) << 0x08)  // fifoloading
+	                   |                                                       (0U << 0x09)  // townroadbranchprob
+	                   |                                                       (0U << 0x0A)  // tempsnowline
+	                   |                                                       (1U << 0x0B)  // newcargo
+	                   |                                                       (1U << 0x0C)  // enhancemultiplayer
+	                   |                                                       (1U << 0x0D)  // onewayroads
+	                   |                                                       (1U << 0x0E)  // irregularstations
+	                   |                                                       (1U << 0x0F)  // statistics
+	                   |                                                       (1U << 0x10)  // newsounds
+	                   |                                                       (1U << 0x11)  // autoreplace
+	                   |                                                       (1U << 0x12)  // autoslope
+	                   |                                                       (0U << 0x13)  // followvehicle
+	                   |                                                       (1U << 0x14)  // trams
+	                   |                                                       (0U << 0x15)  // enhancetunnels
+	                   |                                                       (1U << 0x16)  // shortrvs
+	                   |                                                       (1U << 0x17)  // articulatedrvs
+	                   |       ((_settings_game.vehicle.dynamic_engines ? 1U : 0U) << 0x18)  // dynamic engines
+	                   |                                                       (1U << 0x1E)  // variablerunningcosts
+	                   |                                                       (1U << 0x1F); // any switch is on
 
-	_ttdpatch_flags[4] =                                                      (1 << 0x00)  // larger persistent storage
-	                   |             ((_settings_game.economy.inflation ? 1 : 0) << 0x01); // inflation is on
+	_ttdpatch_flags[4] =                                                       (1U << 0x00)  // larger persistent storage
+	                   |             ((_settings_game.economy.inflation ? 1U : 0U) << 0x01); // inflation is on
+	MemSetT(_observed_ttdpatch_flags, 0, lengthof(_observed_ttdpatch_flags));
+}
+
+bool HasTTDPatchFlagBeenObserved(uint flag)
+{
+	uint index = flag / 0x20;
+	flag %= 0x20;
+	if (index >= lengthof(_ttdpatch_flags)) return false;
+	return HasBit(_observed_ttdpatch_flags[index], flag);
 }
 
 /** Reset and clear all NewGRF stations */
@@ -10524,13 +10556,6 @@ static void FinaliseEngineArray()
 		}
 
 		if (!HasBit(e->info.climates, _settings_game.game_creation.landscape)) continue;
-
-		/* When the train does not set property 27 (misc flags), but it
-		 * is overridden by a NewGRF graphically we want to disable the
-		 * flipping possibility. */
-		if (e->type == VEH_TRAIN && !_gted[e->index].prop27_set && e->GetGRF() != nullptr && is_custom_sprite(e->u.rail.image_index)) {
-			ClrBit(e->info.misc_flags, EF_RAIL_FLIPS);
-		}
 
 		/* Skip wagons, there livery is defined via the engine */
 		if (e->type != VEH_TRAIN || e->u.rail.railveh_type != RAILVEH_WAGON) {
@@ -11360,6 +11385,8 @@ void LoadNewGRF(uint load_index, uint num_baseset)
 	DateFract date_fract = _date_fract;
 	uint64 tick_counter  = _tick_counter;
 	uint8 tick_skip_counter = _tick_skip_counter;
+	uint64 scaled_tick_counter = _scaled_tick_counter;
+	DateTicksScaled scaled_date_ticks_offset = _scaled_date_ticks_offset;
 	byte display_opt     = _display_opt;
 
 	if (_networking) {
@@ -11368,6 +11395,8 @@ void LoadNewGRF(uint load_index, uint num_baseset)
 		_date_fract   = 0;
 		_tick_counter = 0;
 		_tick_skip_counter = 0;
+		_scaled_tick_counter = 0;
+		_scaled_date_ticks_offset = 0;
 		_display_opt  = 0;
 		UpdateCachedSnowLine();
 		SetScaledTickVariables();
@@ -11473,6 +11502,8 @@ void LoadNewGRF(uint load_index, uint num_baseset)
 	_date_fract   = date_fract;
 	_tick_counter = tick_counter;
 	_tick_skip_counter = tick_skip_counter;
+	_scaled_tick_counter = scaled_tick_counter;
+	_scaled_date_ticks_offset = scaled_date_ticks_offset;
 	_display_opt  = display_opt;
 	UpdateCachedSnowLine();
 	SetScaledTickVariables();

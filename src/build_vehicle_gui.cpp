@@ -32,6 +32,7 @@
 #include "autoreplace_func.h"
 #include "train.h"
 #include "error.h"
+#include "zoom_func.h"
 
 #include "widgets/build_vehicle_widget.h"
 
@@ -46,7 +47,7 @@
  */
 uint GetEngineListHeight(VehicleType type)
 {
-	return std::max<uint>(FONT_HEIGHT_NORMAL + WD_MATRIX_TOP + WD_MATRIX_BOTTOM, GetVehicleImageCellSize(type, EIT_PURCHASE).height);
+	return std::max<uint>(FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.matrix.Vertical(), GetVehicleImageCellSize(type, EIT_PURCHASE).height);
 }
 
 /* Normal layout for roadvehicles, ships and airplanes. */
@@ -109,7 +110,7 @@ static const NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 			NWidget(WWT_PANEL, COLOUR_GREY),
 				NWidget(NWID_VERTICAL),
 					NWidget(NWID_HORIZONTAL),
-						NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SORT_ASSENDING_DESCENDING_LOCO), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER), SetFill(1, 0),
+						NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SORT_ASCENDING_DESCENDING_LOCO), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER), SetFill(1, 0),
 						NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_SORT_DROPDOWN_LOCO), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_SORT_CRITERIA),
 					EndContainer(),
 					NWidget(NWID_HORIZONTAL),
@@ -126,12 +127,14 @@ static const NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 			/* Panel with details for locomotives. */
 			NWidget(WWT_PANEL, COLOUR_GREY, WID_BV_PANEL_LOCO), SetMinimalSize(240, 122), SetResize(1, 0), EndContainer(),
 			/* Build/rename buttons, resize button for locomotives. */
-			NWidget(NWID_HORIZONTAL),
-				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_BUILD_SEL_LOCO),
-					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_BUILD_LOCO), SetMinimalSize(50, 1), SetResize(1, 0), SetFill(1, 0),
+			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_LOCO_BUTTONS_SEL),
+				NWidget(NWID_HORIZONTAL),
+					NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_BUILD_SEL_LOCO),
+						NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_BUILD_LOCO), SetMinimalSize(50, 1), SetResize(1, 0), SetFill(1, 0),
+					EndContainer(),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SHOW_HIDE_LOCO), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_NULL),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_RENAME_LOCO), SetResize(1, 0), SetFill(1, 0),
 				EndContainer(),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SHOW_HIDE_LOCO), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_NULL),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_RENAME_LOCO), SetResize(1, 0), SetFill(1, 0),
 			EndContainer(),
 
 		EndContainer(),
@@ -145,7 +148,7 @@ static const NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 			NWidget(WWT_PANEL, COLOUR_GREY),
 				NWidget(NWID_VERTICAL),
 					NWidget(NWID_HORIZONTAL),
-						NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SORT_ASSENDING_DESCENDING_WAGON), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER), SetFill(1, 0),
+						NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SORT_ASCENDING_DESCENDING_WAGON), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER), SetFill(1, 0),
 						NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_SORT_DROPDOWN_WAGON), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_SORT_CRITERIA),
 					EndContainer(),
 					NWidget(NWID_HORIZONTAL),
@@ -162,16 +165,28 @@ static const NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 			/* Panel with details for wagons. */
 			NWidget(WWT_PANEL, COLOUR_GREY, WID_BV_PANEL_WAGON), SetMinimalSize(240, 122), SetResize(1, 0), EndContainer(),
 			/* Build/rename buttons, resize button for wagons. */
-			NWidget(NWID_HORIZONTAL),
-				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_BUILD_SEL_WAGON),
-					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_BUILD_WAGON), SetMinimalSize(50, 1), SetResize(1, 0), SetFill(1, 0),
+			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_WAGON_BUTTONS_SEL),
+				NWidget(NWID_HORIZONTAL),
+					NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_BUILD_SEL_WAGON),
+						NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_BUILD_WAGON), SetMinimalSize(50, 1), SetResize(1, 0), SetFill(1, 0),
+					EndContainer(),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SHOW_HIDE_WAGON), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_NULL),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_RENAME_WAGON), SetResize(1, 0), SetFill(1, 0),
+					NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 				EndContainer(),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SHOW_HIDE_WAGON), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_NULL),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_RENAME_WAGON), SetResize(1, 0), SetFill(1, 0),
-				NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 			EndContainer(),
 		EndContainer(),
+	EndContainer(),
+	NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_COMB_BUTTONS_SEL),
+		NWidget(NWID_HORIZONTAL),
+			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_COMB_BUILD_SEL),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_COMB_BUILD), SetMinimalSize(50, 1), SetResize(1, 0), SetFill(1, 0),
+			EndContainer(),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_COMB_SHOW_HIDE), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_BUY_VEHICLE_TRAIN_HIDE_SHOW_TOGGLE_TOOLTIP),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_COMB_RENAME), SetResize(1, 0), SetFill(1, 0),
+			NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 		EndContainer(),
+	EndContainer(),
 };
 
 /** Special cargo filter criteria */
@@ -724,7 +739,7 @@ const StringID _engine_sort_listing[][14] = {{
 }};
 
 /** Filters vehicles by cargo and engine (in case of rail vehicle). */
-static bool CDECL CargoAndEngineFilter(const EngineID *eid, const CargoID cid)
+static bool CargoAndEngineFilter(const EngineID *eid, const CargoID cid)
 {
 	if (cid == CF_ANY) {
 		return true;
@@ -1162,9 +1177,7 @@ int DrawVehiclePurchaseInfo(int left, int right, int y, EngineID engine_number, 
 /**
  * Engine drawing loop
  * @param type Type of vehicle (VEH_*)
- * @param l The left most location of the list
- * @param r The right most location of the list
- * @param y The top most location of the list
+ * @param r The Rect of the list
  * @param eng_list What engines to draw
  * @param min where to start in the list
  * @param max where in the list to end
@@ -1172,7 +1185,7 @@ int DrawVehiclePurchaseInfo(int left, int right, int y, EngineID engine_number, 
  * @param show_count Whether to show the amount of engines or not
  * @param selected_group the group to list the engines of
  */
-void DrawEngineList(VehicleType type, int l, int r, int y, const GUIEngineList *eng_list, uint16 min, uint16 max, EngineID selected_id, bool show_count, GroupID selected_group)
+void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList *eng_list, uint16 min, uint16 max, EngineID selected_id, bool show_count, GroupID selected_group)
 {
 	static const int sprite_y_offsets[] = { -1, -1, -2, -2 };
 
@@ -1185,8 +1198,9 @@ void DrawEngineList(VehicleType type, int l, int r, int y, const GUIEngineList *
 	int sprite_right = GetVehicleImageCellSize(type, EIT_PURCHASE).extend_right;
 	int sprite_width = sprite_left + sprite_right;
 
-	int sprite_x        = rtl ? r - sprite_right - 1 : l + sprite_left + 1;
-	int sprite_y_offset = sprite_y_offsets[type] + step_size / 2;
+	Rect ir      = r.WithHeight(step_size).Shrink(WidgetDimensions::scaled.matrix);
+	int sprite_x = ir.WithWidth(sprite_width, rtl).left + sprite_left;
+	int sprite_y_offset = ScaleSpriteTrad(sprite_y_offsets[type]) + ir.Height() / 2;
 
 	Dimension replace_icon = {0, 0};
 	int count_width = 0;
@@ -1196,16 +1210,16 @@ void DrawEngineList(VehicleType type, int l, int r, int y, const GUIEngineList *
 		count_width = GetStringBoundingBox(STR_TINY_BLACK_COMA).width;
 	}
 
-	int text_left  = l + (rtl ? WD_FRAMERECT_LEFT + replace_icon.width + 8 + count_width : sprite_width + WD_FRAMETEXT_LEFT);
-	int text_right = r - (rtl ? sprite_width + WD_FRAMETEXT_RIGHT : WD_FRAMERECT_RIGHT + replace_icon.width + 8 + count_width);
-	int replace_icon_left = rtl ? l + WD_FRAMERECT_LEFT : r - WD_FRAMERECT_RIGHT - replace_icon.width;
-	int count_left = l;
-	int count_right = rtl ? text_left : r - WD_FRAMERECT_RIGHT - replace_icon.width - 8;
+	Rect tr = ir.Indent(sprite_width + WidgetDimensions::scaled.hsep_wide, rtl);                                      // Name position
+	Rect cr = tr.Indent(replace_icon.width + WidgetDimensions::scaled.hsep_wide, !rtl).WithWidth(count_width, !rtl);  // Count position
+	Rect rr = tr.WithWidth(replace_icon.width, !rtl);                                                                 // Replace icon position
+	if (show_count) tr = tr.Indent(count_width + WidgetDimensions::scaled.hsep_normal + replace_icon.width + WidgetDimensions::scaled.hsep_wide, !rtl);
 
-	int normal_text_y_offset = (step_size - FONT_HEIGHT_NORMAL) / 2;
-	int small_text_y_offset  = step_size - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 1;
-	int replace_icon_y_offset = (step_size - replace_icon.height) / 2 - 1;
+	int normal_text_y_offset = (ir.Height() - FONT_HEIGHT_NORMAL) / 2;
+	int small_text_y_offset  = ir.Height() - FONT_HEIGHT_SMALL;
+	int replace_icon_y_offset = (ir.Height() - replace_icon.height) / 2;
 
+	int y = ir.top;
 	for (; min < max; min++, y += step_size) {
 		const EngineID engine = (*eng_list)[min];
 		/* Note: num_engines is only used in the autoreplace GUI, so it is correct to use _local_company here. */
@@ -1217,12 +1231,12 @@ void DrawEngineList(VehicleType type, int l, int r, int y, const GUIEngineList *
 		TextColour tc = (engine == selected_id) ? TC_WHITE : (TC_NO_SHADE | (hidden ? TC_GREY : TC_BLACK));
 
 		SetDParam(0, engine);
-		DrawString(text_left, text_right, y + normal_text_y_offset, str, tc);
-		DrawVehicleEngine(l, r, sprite_x, y + sprite_y_offset, engine, (show_count && num_engines == 0) ? PALETTE_CRASH : GetEnginePalette(engine, _local_company), EIT_PURCHASE);
+		DrawString(tr.left, tr.right, y + normal_text_y_offset, str, tc);
+		DrawVehicleEngine(r.left, r.right, sprite_x, y + sprite_y_offset, engine, (show_count && num_engines == 0) ? PALETTE_CRASH : GetEnginePalette(engine, _local_company), EIT_PURCHASE);
 		if (show_count) {
 			SetDParam(0, num_engines);
-			DrawString(count_left, count_right, y + small_text_y_offset, STR_TINY_BLACK_COMA, TC_FROMSTRING, SA_RIGHT | SA_FORCE);
-			if (EngineHasReplacementForCompany(Company::Get(_local_company), engine, selected_group)) DrawSprite(SPR_GROUP_REPLACE_ACTIVE, num_engines == 0 ? PALETTE_CRASH : PAL_NONE, replace_icon_left, y + replace_icon_y_offset);
+			DrawString(cr.left, cr.right, y + small_text_y_offset, STR_TINY_BLACK_COMA, TC_FROMSTRING, SA_RIGHT | SA_FORCE);
+			if (EngineHasReplacementForCompany(Company::Get(_local_company), engine, selected_group)) DrawSprite(SPR_GROUP_REPLACE_ACTIVE, num_engines == 0 ? PALETTE_CRASH : PAL_NONE, rr.left, y + replace_icon_y_offset);
 		}
 	}
 }
@@ -1308,8 +1322,13 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		if (refit) refit = Engine::Get(this->sel_engine)->GetDefaultCargoType() != this->cargo_filter[this->cargo_filter_criteria];
 
 		if (this->virtual_train_mode) {
-			widget->widget_data = STR_TMPL_CONFIRM;
-			widget->tool_tip    = STR_TMPL_CONFIRM;
+			if (refit) {
+				widget->widget_data = STR_TMPL_ADD_VEHICLE_REFIT;
+				widget->tool_tip    = STR_TMPL_ADD_REFIT_TOOLTIP;
+			} else {
+				widget->widget_data = STR_TMPL_ADD_VEHICLE;
+				widget->tool_tip    = STR_TMPL_ADD_TOOLTIP;
+			}
 		} else {
 			if (refit) {
 				widget->widget_data = STR_BUY_VEHICLE_TRAIN_BUY_REFIT_VEHICLE_BUTTON + this->vehicle_type;
@@ -1819,7 +1838,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 			case WID_BV_LIST:
 				resize->height = GetEngineListHeight(this->vehicle_type);
 				size->height = 3 * resize->height;
-				size->width = std::max(size->width, GetVehicleImageCellSize(this->vehicle_type, EIT_PURCHASE).extend_left + GetVehicleImageCellSize(this->vehicle_type, EIT_PURCHASE).extend_right + 165);
+				size->width = std::max(size->width, GetVehicleImageCellSize(this->vehicle_type, EIT_PURCHASE).extend_left + GetVehicleImageCellSize(this->vehicle_type, EIT_PURCHASE).extend_right + 165) + padding.width;
 				break;
 
 			case WID_BV_PANEL:
@@ -1856,9 +1875,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 			case WID_BV_LIST:
 				DrawEngineList(
 					this->vehicle_type,
-					r.left + WD_FRAMERECT_LEFT,
-					r.right - WD_FRAMERECT_RIGHT,
-					r.top + WD_FRAMERECT_TOP,
+					r,
 					&this->eng_list,
 					this->vscroll->GetPosition(),
 					static_cast<uint16>(std::min<size_t>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->eng_list.size())),
@@ -1893,10 +1910,9 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 			int needed_height = this->details_height;
 			/* Draw details panels. */
 			if (this->sel_engine != INVALID_ENGINE) {
-				NWidgetBase *nwi = this->GetWidget<NWidgetBase>(WID_BV_PANEL);
-				int text_end = DrawVehiclePurchaseInfo(nwi->pos_x + WD_FRAMETEXT_LEFT, nwi->pos_x + nwi->current_x - WD_FRAMETEXT_RIGHT,
-						nwi->pos_y + WD_FRAMERECT_TOP, this->sel_engine, this->te);
-				needed_height = std::max(needed_height, (text_end - (int)nwi->pos_y - WD_FRAMERECT_TOP) / FONT_HEIGHT_NORMAL);
+				const Rect r = this->GetWidget<NWidgetBase>(WID_BV_PANEL)->GetCurrentRect().Shrink(WidgetDimensions::scaled.frametext, WidgetDimensions::scaled.framerect);
+				int text_end = DrawVehiclePurchaseInfo(r.left, r.right, r.top, this->sel_engine, this->te);
+				needed_height = std::max(needed_height, (text_end - r.top) / FONT_HEIGHT_NORMAL);
 			}
 			if (needed_height != this->details_height) { // Details window are not high enough, enlarge them.
 				int resize = needed_height - this->details_height;
@@ -2053,6 +2069,8 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 	PanelState loco {};
 	PanelState wagon {};
+	bool wagon_selected = false;
+	bool dual_button_mode = false;
 
 	bool GetRefitButtonMode(const PanelState &state) const
 	{
@@ -2061,13 +2079,18 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		return refit;
 	}
 
-	void SetBuyLocomotiveText()
+	void SetBuyLocomotiveText(int widget_id = WID_BV_BUILD_LOCO)
 	{
-		const auto widget = this->GetWidget<NWidgetCore>(WID_BV_BUILD_LOCO);
+		const auto widget = this->GetWidget<NWidgetCore>(widget_id);
 
 		if (this->virtual_train_mode) {
-			widget->widget_data = STR_TMPL_CONFIRM;
-			widget->tool_tip    = STR_TMPL_CONFIRM;
+			if (GetRefitButtonMode(this->loco)) {
+				widget->widget_data = STR_TMPL_ADD_LOCOMOTIVE_REFIT;
+				widget->tool_tip    = STR_TMPL_ADD_REFIT_TOOLTIP;
+			} else {
+				widget->widget_data = STR_TMPL_ADD_LOCOMOTIVE;
+				widget->tool_tip    = STR_TMPL_ADD_TOOLTIP;
+			}
 		} else {
 			if (GetRefitButtonMode(this->loco)) {
 				widget->widget_data = STR_BUY_VEHICLE_TRAIN_BUY_REFIT_LOCOMOTIVE_BUTTON;
@@ -2079,13 +2102,18 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		}
 	}
 
-	void SetBuyWagonText()
+	void SetBuyWagonText(int widget_id = WID_BV_BUILD_WAGON)
 	{
-		const auto widget = this->GetWidget<NWidgetCore>(WID_BV_BUILD_WAGON);
+		const auto widget = this->GetWidget<NWidgetCore>(widget_id);
 
 		if (this->virtual_train_mode) {
-			widget->widget_data = STR_TMPL_CONFIRM;
-			widget->tool_tip    = STR_TMPL_CONFIRM;
+			if (GetRefitButtonMode(this->wagon)) {
+				widget->widget_data = STR_TMPL_ADD_WAGON_REFIT;
+				widget->tool_tip    = STR_TMPL_ADD_REFIT_TOOLTIP;
+			} else {
+				widget->widget_data = STR_TMPL_ADD_WAGON;
+				widget->tool_tip    = STR_TMPL_ADD_TOOLTIP;
+			}
 		} else {
 			if (GetRefitButtonMode(this->wagon)) {
 				widget->widget_data = STR_BUY_VEHICLE_TRAIN_BUY_REFIT_WAGON_BUTTON;
@@ -2122,6 +2150,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		 * So we just hide it, and enlarge the Rename button by the now vacant place. */
 		if (this->listview_mode) this->GetWidget<NWidgetStacked>(WID_BV_BUILD_SEL_LOCO)->SetDisplayedPlane(SZSP_NONE);
 		if (this->listview_mode) this->GetWidget<NWidgetStacked>(WID_BV_BUILD_SEL_WAGON)->SetDisplayedPlane(SZSP_NONE);
+		if (this->listview_mode) this->GetWidget<NWidgetStacked>(WID_BV_COMB_BUILD_SEL)->SetDisplayedPlane(SZSP_NONE);
 
 		/* Locomotives */
 
@@ -2157,8 +2186,9 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		widget_wagon->tool_tip    = STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN_TOOLTIP + VEH_TRAIN;
 		widget_wagon->SetLowered(this->wagon.show_hidden);
 
+		this->UpdateButtonMode();
 
-		this->loco.details_height = this->wagon.details_height = 10 * FONT_HEIGHT_NORMAL + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
+		this->loco.details_height = this->wagon.details_height = 10 * FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.framerect.Vertical();
 
 		this->FinishInitNested(this->window_number);
 
@@ -2175,6 +2205,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 		this->SetBuyLocomotiveText();
 		this->SetBuyWagonText();
+		this->SelectColumn(false);
 	}
 
 	/** Set the filter type according to the depot type */
@@ -2291,6 +2322,28 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		state.te.FillDefaultCapacities(e);
 	}
 
+	void SelectColumn(bool wagon)
+	{
+		this->wagon_selected = wagon;
+		if (wagon) {
+			this->SetBuyWagonText(WID_BV_COMB_BUILD);
+		} else {
+			this->SetBuyLocomotiveText(WID_BV_COMB_BUILD);
+		}
+
+		NWidgetCore *rename = this->GetWidget<NWidgetCore>(WID_BV_COMB_RENAME);
+		rename->widget_data = wagon ? STR_BUY_VEHICLE_TRAIN_RENAME_WAGON_BUTTON : STR_BUY_VEHICLE_TRAIN_RENAME_LOCOMOTIVE_BUTTON;
+		rename->tool_tip    = wagon ? STR_BUY_VEHICLE_TRAIN_RENAME_WAGON_TOOLTIP : STR_BUY_VEHICLE_TRAIN_RENAME_LOCOMOTIVE_TOOLTIP;
+	}
+
+	void UpdateButtonMode()
+	{
+		this->dual_button_mode = _settings_client.gui.dual_pane_train_purchase_window_dual_buttons;
+		this->GetWidget<NWidgetStacked>(WID_BV_LOCO_BUTTONS_SEL)->SetDisplayedPlane(this->dual_button_mode ? 0 : SZSP_HORIZONTAL);
+		this->GetWidget<NWidgetStacked>(WID_BV_WAGON_BUTTONS_SEL)->SetDisplayedPlane(this->dual_button_mode ? 0 : SZSP_HORIZONTAL);
+		this->GetWidget<NWidgetStacked>(WID_BV_COMB_BUTTONS_SEL)->SetDisplayedPlane(this->dual_button_mode ? SZSP_HORIZONTAL : 0);
+	}
+
 	void OnInit() override
 	{
 		this->SetCargoFilterArray(this->loco, _last_filter_criteria_loco);
@@ -2382,11 +2435,19 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 	void OnClick(Point pt, int widget, int click_count) override
 	{
+		if (widget == WID_BV_COMB_BUILD) {
+			widget = !this->wagon_selected ? WID_BV_BUILD_LOCO : WID_BV_BUILD_WAGON;
+		} else if (widget == WID_BV_COMB_SHOW_HIDE) {
+			widget = !this->wagon_selected ? WID_BV_SHOW_HIDE_LOCO : WID_BV_SHOW_HIDE_WAGON;
+		} else if (widget == WID_BV_COMB_RENAME) {
+			widget = !this->wagon_selected ? WID_BV_RENAME_LOCO : WID_BV_RENAME_WAGON;
+		}
+
 		switch (widget) {
 
 			/* Locomotives */
 
-			case WID_BV_SORT_ASSENDING_DESCENDING_LOCO: {
+			case WID_BV_SORT_ASCENDING_DESCENDING_LOCO: {
 				this->loco.descending_sort_order ^= true;
 				_last_sort_order_loco = this->loco.descending_sort_order;
 				this->loco.eng_list.ForceRebuild();
@@ -2407,6 +2468,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				const uint i = this->loco.vscroll->GetScrolledRowFromWidget(pt.y, this, WID_BV_LIST_LOCO);
 				const size_t num_items = this->loco.eng_list.size();
 				this->SelectEngine(this->loco, (i < num_items) ? this->loco.eng_list[i] : INVALID_ENGINE);
+				this->SelectColumn(false);
 				this->SetDirty();
 
 				if (_ctrl_pressed) {
@@ -2453,7 +2515,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 			/* Wagons */
 
-			case WID_BV_SORT_ASSENDING_DESCENDING_WAGON: {
+			case WID_BV_SORT_ASCENDING_DESCENDING_WAGON: {
 				this->wagon.descending_sort_order ^= true;
 				_last_sort_order_wagon = this->wagon.descending_sort_order;
 				this->wagon.eng_list.ForceRebuild();
@@ -2474,6 +2536,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				const uint i = this->wagon.vscroll->GetScrolledRowFromWidget(pt.y, this, WID_BV_LIST_WAGON);
 				const size_t num_items = this->wagon.eng_list.size();
 				this->SelectEngine(this->wagon, (i < num_items) ? this->wagon.eng_list[i] : INVALID_ENGINE);
+				this->SelectColumn(true);
 				this->SetDirty();
 
 				if (_ctrl_pressed) {
@@ -2532,6 +2595,11 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		/* When switching to original acceleration model for road vehicles, clear the selected sort criteria if it is not available now. */
 		this->loco.eng_list.ForceRebuild();
 		this->wagon.eng_list.ForceRebuild();
+
+		if (this->dual_button_mode != _settings_client.gui.dual_pane_train_purchase_window_dual_buttons) {
+			this->UpdateButtonMode();
+			this->ReInit();
+		}
 	}
 
 	void SetStringParameters(int widget) const override
@@ -2596,6 +2664,17 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				}
 				break;
 			}
+
+			case WID_BV_COMB_SHOW_HIDE: {
+				const PanelState &state = this->wagon_selected ? this->wagon : this->loco;
+				const Engine *engine = (state.sel_engine == INVALID_ENGINE) ? nullptr : Engine::GetIfValid(state.sel_engine);
+				if (engine != nullptr && engine->IsHidden(_local_company)) {
+					SetDParam(0, STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON + this->vehicle_type);
+				} else {
+					SetDParam(0, STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON + this->vehicle_type);
+				}
+				break;
+			}
 		}
 	}
 
@@ -2613,7 +2692,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				break;
 			}
 
-			case WID_BV_SORT_ASSENDING_DESCENDING_LOCO: {
+			case WID_BV_SORT_ASCENDING_DESCENDING_LOCO: {
 				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->widget_data);
 				d.width += padding.width + Window::SortButtonWidth() * 2; // Doubled since the string is centred and it also looks better.
 				d.height += padding.height;
@@ -2632,7 +2711,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				break;
 			}
 
-			case WID_BV_SORT_ASSENDING_DESCENDING_WAGON: {
+			case WID_BV_SORT_ASCENDING_DESCENDING_WAGON: {
 				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->widget_data);
 				d.width += padding.width + Window::SortButtonWidth() * 2; // Doubled since the string is centred and it also looks better.
 				d.height += padding.height;
@@ -2641,7 +2720,8 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			}
 
 			case WID_BV_SHOW_HIDE_LOCO: // Fallthrough
-			case WID_BV_SHOW_HIDE_WAGON: {
+			case WID_BV_SHOW_HIDE_WAGON:
+			case WID_BV_COMB_SHOW_HIDE: {
 				*size = GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON + this->vehicle_type);
 				*size = maxdim(*size, GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON + this->vehicle_type));
 				size->width += padding.width;
@@ -2660,30 +2740,30 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 	{
 		switch (widget) {
 			case WID_BV_LIST_LOCO: {
-				DrawEngineList(this->vehicle_type, r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT,
-					r.top + WD_FRAMERECT_TOP, &this->loco.eng_list, this->loco.vscroll->GetPosition(),
+				DrawEngineList(this->vehicle_type, r,
+					&this->loco.eng_list, this->loco.vscroll->GetPosition(),
 					std::min<uint16>(this->loco.vscroll->GetPosition() + this->loco.vscroll->GetCapacity(),
 						static_cast<uint16>(this->loco.eng_list.size())), this->loco.sel_engine, false,
 					DEFAULT_GROUP);
 				break;
 			}
 
-			case WID_BV_SORT_ASSENDING_DESCENDING_LOCO: {
-				this->DrawSortButtonState(WID_BV_SORT_ASSENDING_DESCENDING_LOCO, this->loco.descending_sort_order ? SBS_DOWN : SBS_UP);
+			case WID_BV_SORT_ASCENDING_DESCENDING_LOCO: {
+				this->DrawSortButtonState(WID_BV_SORT_ASCENDING_DESCENDING_LOCO, this->loco.descending_sort_order ? SBS_DOWN : SBS_UP);
 				break;
 			}
 
 			case WID_BV_LIST_WAGON: {
-				DrawEngineList(this->vehicle_type, r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT,
-					r.top + WD_FRAMERECT_TOP, &this->wagon.eng_list, this->wagon.vscroll->GetPosition(),
+				DrawEngineList(this->vehicle_type, r,
+					&this->wagon.eng_list, this->wagon.vscroll->GetPosition(),
 					std::min<uint16>(this->wagon.vscroll->GetPosition() + this->wagon.vscroll->GetCapacity(),
 						static_cast<uint16>(this->wagon.eng_list.size())), this->wagon.sel_engine, false,
 					DEFAULT_GROUP);
 				break;
 			}
 
-			case WID_BV_SORT_ASSENDING_DESCENDING_WAGON: {
-				this->DrawSortButtonState(WID_BV_SORT_ASSENDING_DESCENDING_WAGON, this->wagon.descending_sort_order ? SBS_DOWN : SBS_UP);
+			case WID_BV_SORT_ASCENDING_DESCENDING_WAGON: {
+				this->DrawSortButtonState(WID_BV_SORT_ASCENDING_DESCENDING_WAGON, this->wagon.descending_sort_order ? SBS_DOWN : SBS_UP);
 				break;
 			}
 		}
@@ -2695,12 +2775,12 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		/* Draw details panels. */
 		if (state.sel_engine != INVALID_ENGINE) {
 			const auto widget = this->GetWidget<NWidgetBase>(widget_id);
-			const int text_end = DrawVehiclePurchaseInfo(widget->pos_x + WD_FRAMETEXT_LEFT,
+			const int text_end = DrawVehiclePurchaseInfo(widget->pos_x + WidgetDimensions::scaled.framerect.left,
 				static_cast<int>(
 					widget->pos_x + widget->current_x -
-					WD_FRAMETEXT_RIGHT), widget->pos_y + WD_FRAMERECT_TOP,
+					WidgetDimensions::scaled.framerect.right), widget->pos_y + WidgetDimensions::scaled.framerect.top,
 				state.sel_engine, state.te);
-			needed_height = std::max(needed_height, text_end - widget->pos_y + WD_FRAMERECT_BOTTOM);
+			needed_height = std::max(needed_height, text_end - widget->pos_y + WidgetDimensions::scaled.framerect.bottom);
 		}
 		if (needed_height != state.details_height) { // Details window are not high enough, enlarge them.
 			const int resize = needed_height - state.details_height;

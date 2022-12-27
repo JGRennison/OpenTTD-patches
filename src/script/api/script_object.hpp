@@ -18,6 +18,8 @@
 #include "../script_suspend.hpp"
 #include "../squirrel.hpp"
 
+struct CommandAuxiliaryBase;
+
 /**
  * The callback function for Mode-classes.
  */
@@ -69,7 +71,7 @@ protected:
 	/**
 	 * Executes a raw DoCommand for the script.
 	 */
-	static bool DoCommandEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint cmd, const char *text = nullptr, uint32 binary_length = 0, Script_SuspendCallbackProc *callback = nullptr);
+	static bool DoCommandEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint cmd, const char *text = nullptr, const CommandAuxiliaryBase *aux_data = nullptr, Script_SuspendCallbackProc *callback = nullptr);
 
 	static bool DoCommand(TileIndex tile, uint32 p1, uint32 p2, uint cmd, const char *text = nullptr, Script_SuspendCallbackProc *callback = nullptr)
 	{
@@ -236,6 +238,16 @@ protected:
 	 * Get the cost of the last command.
 	 */
 	static Money GetLastCost();
+
+	/**
+	 * Set the result data of the last command.
+	 */
+	static void SetLastCommandResultData(uint32 last_result);
+
+	/**
+	 * Get the result data of the last command.
+	 */
+	static uint32 GetLastCommandResultData();
 
 	/**
 	 * Set a variable that can be used by callback functions to pass information.

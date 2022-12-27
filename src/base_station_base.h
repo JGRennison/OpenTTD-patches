@@ -71,10 +71,8 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 	Owner owner;                    ///< The owner of this station
 	StationFacility facilities;     ///< The facilities that this station has
 
-	uint8 num_specs;                ///< Number of specs in the speclist
-	uint8 num_roadstop_specs;       ///< Number of road stop specs in the roadstop_speclist
-	StationSpecList *speclist;      ///< List of station specs of this station
-	RoadStopSpecList *roadstop_speclist; ///< List of road stop specs of this station
+	std::vector<StationSpecList> speclist;           ///< List of rail station specs of this station.
+	std::vector<RoadStopSpecList> roadstop_speclist; ///< List of road stop specs of this station
 
 	Date build_date;                ///< Date of construction
 
@@ -213,11 +211,11 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 	}
 
 private:
-	void SetRoadStopTileData(TileIndex tile, byte data, byte offset);
+	bool SetRoadStopTileData(TileIndex tile, byte data, byte offset);
 
 public:
 	inline void SetRoadStopRandomBits(TileIndex tile, byte random_bits) { this->SetRoadStopTileData(tile, random_bits, 0); }
-	inline void SetRoadStopAnimationFrame(TileIndex tile, byte frame) { this->SetRoadStopTileData(tile, frame, 8); }
+	inline bool SetRoadStopAnimationFrame(TileIndex tile, byte frame) { return this->SetRoadStopTileData(tile, frame, 8); }
 	void RemoveRoadStopTileData(TileIndex tile);
 
 	static void PostDestructor(size_t index);
@@ -299,7 +297,7 @@ struct SpecializedStation : public BaseStation {
 	 */
 	static inline T *From(BaseStation *st)
 	{
-		assert(IsExpected(st));
+		dbg_assert(IsExpected(st));
 		return (T *)st;
 	}
 
@@ -310,7 +308,7 @@ struct SpecializedStation : public BaseStation {
 	 */
 	static inline const T *From(const BaseStation *st)
 	{
-		assert(IsExpected(st));
+		dbg_assert(IsExpected(st));
 		return (const T *)st;
 	}
 

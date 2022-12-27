@@ -378,7 +378,6 @@ Win32FontCache::Win32FontCache(FontSize fs, const LOGFONT &logfont, int pixels) 
 {
 	this->dc = CreateCompatibleDC(nullptr);
 	this->SetFontSize(fs, pixels);
-	this->fontname = FS2OTTD(this->logfont.lfFaceName);
 }
 
 Win32FontCache::~Win32FontCache()
@@ -392,7 +391,7 @@ void Win32FontCache::SetFontSize(FontSize fs, int pixels)
 {
 	if (pixels == 0) {
 		/* Try to determine a good height based on the minimal height recommended by the font. */
-		int scaled_height = ScaleFontTrad(this->GetDefaultFontHeight(this->fs));
+		int scaled_height = ScaleGUITrad(FontCache::GetDefaultFontHeight(this->fs));
 		pixels = scaled_height;
 
 		HFONT temp = CreateFontIndirect(&this->logfont);
@@ -405,14 +404,15 @@ void Win32FontCache::SetFontSize(FontSize fs, int pixels)
 
 			/* Font height is minimum height plus the difference between the default
 			 * height for this font size and the small size. */
-			int diff = scaled_height - ScaleFontTrad(this->GetDefaultFontHeight(FS_SMALL));
-			pixels = Clamp(std::min(otm->otmusMinimumPPEM, MAX_FONT_MIN_REC_SIZE) + diff, scaled_height, MAX_FONT_SIZE);
+			int diff = scaled_height - ScaleGUITrad(FontCache::GetDefaultFontHeight(FS_SMALL));
+			/* Clamp() is not used as scaled_height could be greater than MAX_FONT_SIZE, which is not permitted in Clamp(). */
+			pixels = std::min(std::max(std::min<int>(otm->otmusMinimumPPEM, MAX_FONT_MIN_REC_SIZE) + diff, scaled_height), MAX_FONT_SIZE);
 
 			SelectObject(dc, old);
 			DeleteObject(temp);
 		}
 	} else {
-		pixels = ScaleFontTrad(pixels);
+		pixels = ScaleGUITrad(pixels);
 	}
 	this->used_size = pixels;
 
@@ -442,7 +442,9 @@ void Win32FontCache::SetFontSize(FontSize fs, int pixels)
 
 	font_height_cache[this->fs] = this->GetHeight();
 
-	DEBUG(fontcache, 2, "Loaded font '%s' with size %d", FS2OTTD((LPWSTR)((BYTE *)otm + (ptrdiff_t)otm->otmpFullName)).c_str(), pixels);
+	this->fontname = FS2OTTD((LPWSTR)((BYTE *)otm + (ptrdiff_t)otm->otmpFaceName));
+
+	DEBUG(fontcache, 2, "Loaded font '%s' with size %d", this->fontname.c_str(), pixels);
 }
 
 /**
@@ -478,9 +480,10 @@ void Win32FontCache::ClearFontCache()
 		GetGlyphOutline(this->dc, key, GGO_GLYPH_INDEX | (aa ? GGO_GRAY8_BITMAP : GGO_BITMAP), &gm, size, bmp, &mat);
 	}
 
-	/* Add 1 pixel for the shadow on the medium font. Our sprite must be at least 1x1 pixel. */
-	uint width = std::max(1U, (uint)gm.gmBlackBoxX + (this->fs == FS_NORMAL));
-	uint height = std::max(1U, (uint)gm.gmBlackBoxY + (this->fs == FS_NORMAL));
+	/* Add 1 scaled pixel for the shadow on the medium font. Our sprite must be at least 1x1 pixel. */
+	uint shadow = (this->fs == FS_NORMAL) ? ScaleGUITrad(1) : 0;
+	uint width = std::max(1U, (uint)gm.gmBlackBoxX + shadow);
+	uint height = std::max(1U, (uint)gm.gmBlackBoxY + shadow);
 
 	/* Limit glyph size to prevent overflows later on. */
 	if (width > MAX_GLYPH_DIM || height > MAX_GLYPH_DIM) usererror("Font glyph is too large");
@@ -508,8 +511,8 @@ void Win32FontCache::ClearFontCache()
 			for (uint y = 0; y < gm.gmBlackBoxY; y++) {
 				for (uint x = 0; x < gm.gmBlackBoxX; x++) {
 					if (aa ? (bmp[x + y * pitch] > 0) : HasBit(bmp[(x / 8) + y * pitch], 7 - (x % 8))) {
-						sprite.data[1 + x + (1 + y) * sprite.width].m = SHADOW_COLOUR;
-						sprite.data[1 + x + (1 + y) * sprite.width].a = aa ? (bmp[x + y * pitch] << 2) - 1 : 0xFF;
+						sprite.data[shadow + x + (shadow + y) * sprite.width].m = SHADOW_COLOUR;
+						sprite.data[shadow + x + (shadow + y) * sprite.width].a = aa ? (bmp[x + y * pitch] << 2) - 1 : 0xFF;
 					}
 				}
 			}
@@ -580,16 +583,7 @@ void Win32FontCache::ClearFontCache()
  */
 void LoadWin32Font(FontSize fs)
 {
-	static const char *SIZE_TO_NAME[] = { "medium", "small", "large", "mono" };
-
-	FontCacheSubSetting *settings = nullptr;
-	switch (fs) {
-		case FS_SMALL:  settings = &_fcsettings.small;  break;
-		case FS_NORMAL: settings = &_fcsettings.medium; break;
-		case FS_LARGE:  settings = &_fcsettings.large;  break;
-		case FS_MONO:   settings = &_fcsettings.mono;   break;
-		default: NOT_REACHED();
-	}
+	FontCacheSubSetting *settings = GetFontCacheSubSetting(fs);
 
 	if (settings->font.empty()) return;
 
@@ -646,7 +640,7 @@ void LoadWin32Font(FontSize fs)
 					logfont.lfWeight = strcasestr(font_name, " bold") != nullptr || strcasestr(font_name, "-bold") != nullptr ? FW_BOLD : FW_NORMAL; // Poor man's way to allow selecting bold fonts.
 				}
 			} else {
-				ShowInfoF("Unable to load file '%s' for %s font, using default windows font selection instead", font_name, SIZE_TO_NAME[fs]);
+				ShowInfoF("Unable to load file '%s' for %s font, using default windows font selection instead", font_name, FontSizeToName(fs));
 			}
 		}
 	}
@@ -658,7 +652,7 @@ void LoadWin32Font(FontSize fs)
 
 	HFONT font = CreateFontIndirect(&logfont);
 	if (font == nullptr) {
-		ShowInfoF("Unable to use '%s' for %s font, Win32 reported error 0x%lX, using sprite font instead", font_name, SIZE_TO_NAME[fs], GetLastError());
+		ShowInfoF("Unable to use '%s' for %s font, Win32 reported error 0x%lX, using sprite font instead", font_name, FontSizeToName(fs), GetLastError());
 		return;
 	}
 	DeleteObject(font);

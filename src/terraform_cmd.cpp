@@ -36,8 +36,6 @@ struct TerraformerState {
 	TileIndexToHeightMap tile_to_new_height; ///< The tiles for which the height has changed.
 };
 
-TileIndex _terraform_err_tile; ///< first tile we couldn't terraform
-
 /**
  * Gets the TileHeight (height of north corner) of a tile as of current terraforming progress.
  *
@@ -123,8 +121,9 @@ static CommandCost TerraformTileHeight(TerraformerState *ts, TileIndex tile, int
 		 */
 		if (x == 1) x = 0;
 		if (y == 1) y = 0;
-		_terraform_err_tile = TileXY(x, y);
-		return_cmd_error(STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP);
+		CommandCost err(STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP);
+		err.SetTile(TileXY(x, y));
+		return err;
 	}
 
 	/* Mark incident tiles that are involved in the terraforming. */
@@ -187,8 +186,6 @@ static CommandCost TerraformTileHeight(TerraformerState *ts, TileIndex tile, int
  */
 CommandCost CmdTerraformLand(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
-	_terraform_err_tile = INVALID_TILE;
-
 	CommandCost total_cost(EXPENSES_CONSTRUCTION);
 	int direction = (p2 != 0 ? 1 : -1);
 	TerraformerState ts;
@@ -258,20 +255,23 @@ CommandCost CmdTerraformLand(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 
 					/* Check if bridge would take damage. */
 					if (direction == 1 && bridge_height <= z_max) {
-						_terraform_err_tile = t; // highlight the tile under the bridge
-						return_cmd_error(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
+						CommandCost err(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
+						err.SetTile(t); // highlight the tile under the bridge
+						return err;
 					}
 
 					/* Is the bridge above not too high afterwards? */
 					if (direction == -1 && bridge_height > (z_min + _settings_game.construction.max_bridge_height)) {
-						_terraform_err_tile = t;
-						return_cmd_error(STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND);
+						CommandCost err(STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND);
+						err.SetTile(t);
+						return err;
 					}
 				}
 				/* Check if tunnel would take damage */
 				if (direction == -1 && IsTunnelInWay(t, z_min, ITIWF_IGNORE_CHUNNEL)) {
-					_terraform_err_tile = t; // highlight the tile above the tunnel
-					return_cmd_error(STR_ERROR_EXCAVATION_WOULD_DAMAGE);
+					CommandCost err(STR_ERROR_EXCAVATION_WOULD_DAMAGE);
+					err.SetTile(t); // highlight the tile above the tunnel
+					return err;
 				}
 			}
 
@@ -295,7 +295,7 @@ CommandCost CmdTerraformLand(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 			}
 			old_generating_world.Restore();
 			if (cost.Failed()) {
-				_terraform_err_tile = t;
+				cost.SetTile(t);
 				return cost;
 			}
 			if (pass == 1) total_cost.AddCost(cost);
@@ -345,8 +345,6 @@ CommandCost CmdTerraformLand(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 CommandCost CmdLevelLand(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	if (p1 >= MapSize()) return CMD_ERROR;
-
-	_terraform_err_tile = INVALID_TILE;
 
 	/* remember level height */
 	uint oldh = TileHeight(p1);

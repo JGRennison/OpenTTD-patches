@@ -13,6 +13,7 @@
 #include "sound/sound_driver.hpp"
 #include "music/music_driver.hpp"
 #include "video/video_driver.hpp"
+#include "mixer.h"
 
 #include "fontcache.h"
 #include "error.h"
@@ -83,6 +84,7 @@
 #include "debug_desync.h"
 #include "event_logs.h"
 #include "tunnelbridge.h"
+#include "worker_thread.h"
 
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
@@ -229,7 +231,7 @@ static void ShowHelp()
 		"\n"
 		"Command line options:\n"
 		"  -v drv              = Set video driver (see below)\n"
-		"  -s drv              = Set sound driver (see below) (param bufsize,hz)\n"
+		"  -s drv              = Set sound driver (see below)\n"
 		"  -m drv              = Set music driver (see below)\n"
 		"  -b drv              = Set the blitter to use (see below)\n"
 		"  -r res              = Set resolution (for instance 800x600)\n"
@@ -281,12 +283,14 @@ static void ShowHelp()
 
 	/* We need to initialize the AI, so it finds the AIs */
 	AI::Initialize();
-	p = AI::GetConsoleList(p, lastof(buf), true);
+	const std::string ai_list = AI::GetConsoleList(true);
+	p = strecpy(p, ai_list.c_str(), lastof(buf));
 	AI::Uninitialize(true);
 
 	/* We need to initialize the GameScript, so it finds the GSs */
 	Game::Initialize();
-	p = Game::GetConsoleList(p, lastof(buf), true);
+	const std::string game_list = Game::GetConsoleList(true);
+	p = strecpy(p, game_list.c_str(), lastof(buf));
 	Game::Uninitialize(true);
 
 	/* ShowInfo put output to stderr, but version information should go
@@ -471,6 +475,9 @@ static void ShutdownGame()
 	ClearSpecialEventsLog();
 	ClearDesyncMsgLog();
 
+	extern void UninitializeCompanies();
+	UninitializeCompanies();
+
 	_loaded_local_company = COMPANY_SPECTATOR;
 	_game_events_since_load = (GameEventFlags) 0;
 	_game_events_overall = (GameEventFlags) 0;
@@ -478,10 +485,9 @@ static void ShutdownGame()
 	_game_load_date_fract = 0;
 	_game_load_tick_skip_counter = 0;
 	_game_load_time = 0;
-	_extra_station_names_used = 0;
-	_extra_station_names_probability = 0;
 	_extra_aspects = 0;
 	_aspect_cfg_hash = 0;
+	InitGRFGlobalVars();
 	_loadgame_DBGL_data.clear();
 	_loadgame_DBGC_data.clear();
 }
@@ -611,8 +617,9 @@ struct AfterNewGRFScan : NewGRFScanCallback {
 		/* We have loaded the config, so we may possibly save it. */
 		_save_config = save_config;
 
-		/* restore saved music volume */
+		/* restore saved music and effects volumes */
 		MusicDriver::GetInstance()->SetVolume(_settings_client.music.music_vol);
+		SetEffectVolume(_settings_client.music.effect_vol);
 
 		if (startyear != INVALID_YEAR) IConsoleSetSetting("game_creation.starting_year", startyear);
 		if (generation_seed != GENERATE_NEW_SEED) _settings_newgame.game_creation.generation_seed = generation_seed;
@@ -931,7 +938,9 @@ int openttd_main(int argc, char *argv[])
 
 	/* Initialize the zoom level of the screen to normal */
 	_screen.zoom = ZOOM_LVL_NORMAL;
-	UpdateGUIZoom();
+
+	/* The video driver is now selected, now initialise GUI zoom */
+	AdjustGUIZoom(AGZM_STARTUP);
 
 	NetworkStartUp(); // initialize network-core
 
@@ -987,7 +996,11 @@ int openttd_main(int argc, char *argv[])
 	/* ScanNewGRFFiles now has control over the scanner. */
 	RequestNewGRFScan(scanner.release());
 
+	_general_worker_pool.Start("ottd:worker", 8);
+
 	VideoDriver::GetInstance()->MainLoop();
+
+	_general_worker_pool.Stop();
 
 	WaitTillSaved();
 
@@ -1499,8 +1512,20 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 
 		uint i = 0;
 		for (Town *t : Town::Iterate()) {
-			if (MemCmpT(old_town_caches.data() + i, &t->cache) != 0) {
-				CCLOG("town cache mismatch: town %i", (int)t->index);
+			if (old_town_caches[i].num_houses != t->cache.num_houses) {
+				CCLOG("town cache num_houses mismatch: town %i, (old size: %u, new size: %u)", (int)t->index, old_town_caches[i].num_houses, t->cache.num_houses);
+			}
+			if (old_town_caches[i].population != t->cache.population) {
+				CCLOG("town cache population mismatch: town %i, (old size: %u, new size: %u)", (int)t->index, old_town_caches[i].population, t->cache.population);
+			}
+			if (old_town_caches[i].part_of_subsidy != t->cache.part_of_subsidy) {
+				CCLOG("town cache population mismatch: town %i, (old size: %u, new size: %u)", (int)t->index, old_town_caches[i].part_of_subsidy, t->cache.part_of_subsidy);
+			}
+			if (MemCmpT(old_town_caches[i].squared_town_zone_radius, t->cache.squared_town_zone_radius, lengthof(t->cache.squared_town_zone_radius)) != 0) {
+				CCLOG("town cache squared_town_zone_radius mismatch: town %i", (int)t->index);
+			}
+			if (MemCmpT(&old_town_caches[i].building_counts, &t->cache.building_counts) != 0) {
+				CCLOG("town cache building_counts mismatch: town %i", (int)t->index);
 			}
 			if (old_town_stations_nears[i] != t->stations_near) {
 				CCLOG("town stations_near mismatch: town %i, (old size: %u, new size: %u)", (int)t->index, (uint)old_town_stations_nears[i].size(), (uint)t->stations_near.size());
@@ -1927,8 +1952,8 @@ void StateGameLoop()
 
 		BasePersistentStorageArray::SwitchMode(PSM_ENTER_GAMELOOP);
 		_tick_skip_counter++;
-		_scaled_tick_counter++; // This must update in lock-step with _tick_skip_counter, such that it always matches what SetScaledTickVariables would return.
-		_scaled_date_ticks++;   // "
+		_scaled_tick_counter++;
+		_scaled_date_ticks++;   // This must update in lock-step with _tick_skip_counter, such that it always matches what SetScaledTickVariables would return.
 
 		if (_settings_client.gui.autosave == 6 && !(_game_mode == GM_MENU || _game_mode == GM_BOOTSTRAP) &&
 				(_scaled_date_ticks % (_settings_client.gui.autosave_custom_minutes * (60000 / MILLISECONDS_PER_TICK))) == 0) {
@@ -1964,9 +1989,28 @@ void StateGameLoop()
 		CallWindowGameTickEvent();
 		NewsLoop();
 
-		for (Company *c : Company::Iterate()) {
-			DEBUG_UPDATESTATECHECKSUM("Company: %u, Money: " OTTD_PRINTF64, c->index, (int64)c->money);
-			UpdateStateChecksum(c->money);
+		if (_networking) {
+			for (Company *c : Company::Iterate()) {
+				DEBUG_UPDATESTATECHECKSUM("Company: %u, Money: " OTTD_PRINTF64, c->index, (int64)c->money);
+				UpdateStateChecksum(c->money);
+
+				for (uint i = 0; i < ROADTYPE_END; i++) {
+					DEBUG_UPDATESTATECHECKSUM("Company: %u, road[%u]: %u", c->index, i, c->infrastructure.road[i]);
+					UpdateStateChecksum(c->infrastructure.road[i]);
+				}
+
+				for (uint i = 0; i < RAILTYPE_END; i++) {
+					DEBUG_UPDATESTATECHECKSUM("Company: %u, rail[%u]: %u", c->index, i, c->infrastructure.rail[i]);
+					UpdateStateChecksum(c->infrastructure.rail[i]);
+				}
+
+				DEBUG_UPDATESTATECHECKSUM("Company: %u, signal: %u, water: %u, station: %u, airport: %u",
+						c->index, c->infrastructure.signal, c->infrastructure.water, c->infrastructure.station, c->infrastructure.airport);
+				UpdateStateChecksum(c->infrastructure.signal);
+				UpdateStateChecksum(c->infrastructure.water);
+				UpdateStateChecksum(c->infrastructure.station);
+				UpdateStateChecksum(c->infrastructure.airport);
+			}
 		}
 		cur_company.Restore();
 	}
@@ -1977,7 +2021,7 @@ void StateGameLoop()
 		SetWindowDirty(WC_MAIN_TOOLBAR, 0);
 	}
 
-	assert(IsLocalCompany());
+	dbg_assert(IsLocalCompany());
 }
 
 FiosNumberedSaveName &GetAutoSaveFiosNumberedSaveName()

@@ -13,6 +13,11 @@
 #include "blitter/factory.hpp"
 #include "gfx_layout.h"
 #include "fontcache/spritefontcache.h"
+#include "openttd.h"
+#include "settings_func.h"
+#include "strings_func.h"
+#include "viewport_func.h"
+#include "window_func.h"
 
 #include "safeguards.h"
 
@@ -65,15 +70,51 @@ bool GetFontAAState(FontSize size, bool check_blitter)
 	/* AA is only supported for 32 bpp */
 	if (check_blitter && BlitterFactory::GetCurrentBlitter()->GetScreenDepth() != 32) return false;
 
-	switch (size) {
-		default: NOT_REACHED();
-		case FS_NORMAL: return _fcsettings.medium.aa;
-		case FS_SMALL:  return _fcsettings.small.aa;
-		case FS_LARGE:  return _fcsettings.large.aa;
-		case FS_MONO:   return _fcsettings.mono.aa;
-	}
+	return GetFontCacheSubSetting(size)->aa;
 }
 
+void SetFont(FontSize fontsize, const std::string& font, uint size, bool aa)
+{
+	FontCacheSubSetting *setting = GetFontCacheSubSetting(fontsize);
+	bool changed = false;
+
+	if (setting->font != font) {
+		setting->font = font;
+		changed = true;
+	}
+
+	if (setting->size != size) {
+		setting->size = size;
+		changed = true;
+	}
+
+	if (setting->aa != aa) {
+		setting->aa = aa;
+		changed = true;
+	}
+
+	if (!changed) return;
+
+	if (fontsize != FS_MONO) {
+		/* Try to reload only the modified font. */
+		FontCacheSettings backup = _fcsettings;
+		for (FontSize fs = FS_BEGIN; fs < FS_END; fs++) {
+			if (fs == fontsize) continue;
+			FontCache *fc = FontCache::Get(fs);
+			GetFontCacheSubSetting(fs)->font = fc->HasParent() ? fc->GetFontName() : "";
+		}
+		CheckForMissingGlyphs();
+		_fcsettings = backup;
+	} else {
+		InitFontCache(true);
+	}
+
+	LoadStringWidthTable();
+	UpdateAllVirtCoords();
+	ReInitAllWindows(true);
+
+	if (_save_config) SaveToConfig();
+}
 
 /**
  * (Re)initialize the font cache related things, i.e. load the non-sprite fonts.

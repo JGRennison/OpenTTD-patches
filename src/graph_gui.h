@@ -20,7 +20,6 @@ void ShowDeliveredCargoGraph();
 void ShowPerformanceHistoryGraph();
 void ShowCompanyValueGraph();
 void ShowCargoPaymentRates();
-void ShowCompanyLeagueTable();
 void ShowPerformanceRatingDetail();
 void ShowStationCargo(StationID);
 

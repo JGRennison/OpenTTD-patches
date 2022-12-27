@@ -97,10 +97,10 @@ int RoadVehicle::GetDisplayImageWidth(Point *offset) const
 	int reference_width = ROADVEHINFO_DEFAULT_VEHICLE_WIDTH;
 
 	if (offset != nullptr) {
-		offset->x = ScaleGUITrad(reference_width) / 2;
+		offset->x = ScaleSpriteTrad(reference_width) / 2;
 		offset->y = 0;
 	}
-	return ScaleGUITrad(this->gcache.cached_veh_length * reference_width / VEHICLE_LENGTH);
+	return ScaleSpriteTrad(this->gcache.cached_veh_length * reference_width / VEHICLE_LENGTH);
 }
 
 static void GetRoadVehIcon(EngineID engine, EngineImageType image_type, VehicleSpriteSeq *result)
@@ -174,10 +174,10 @@ void GetRoadVehSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs
 	VehicleSpriteSeq seq;
 	GetRoadVehIcon(engine, image_type, &seq);
 
-	Rect16 rect = seq.GetBounds();
+	Rect rect = ConvertRect<Rect16, Rect>(seq.GetBounds());
 
-	width  = UnScaleGUI(rect.right - rect.left + 1);
-	height = UnScaleGUI(rect.bottom - rect.top + 1);
+	width  = UnScaleGUI(rect.Width());
+	height = UnScaleGUI(rect.Height());
 	xoffs  = UnScaleGUI(rect.left);
 	yoffs  = UnScaleGUI(rect.top);
 }
@@ -2325,4 +2325,17 @@ Trackdir RoadVehicle::GetVehicleTrackdir() const
 	/* If vehicle's state is a valid track direction (vehicle is not turning around) return it,
 	 * otherwise transform it into a valid track direction */
 	return (Trackdir)((IsReversingRoadTrackdir((Trackdir)this->state)) ? (this->state - 6) : this->state);
+}
+
+uint16 RoadVehicle::GetMaxWeight() const
+{
+	uint16 weight = CargoSpec::Get(this->cargo_type)->WeightOfNUnits(this->GetEngine()->DetermineCapacity(this));
+
+	/* Vehicle weight is not added for articulated parts. */
+	if (!this->IsArticulatedPart()) {
+		/* Road vehicle weight is in units of 1/4 t. */
+		weight += GetVehicleProperty(this, PROP_ROADVEH_WEIGHT, RoadVehInfo(this->engine_type)->weight) / 4;
+	}
+
+	return weight;
 }

@@ -17,8 +17,13 @@
  *
  * This version is not yet released. The following changes are not set in stone yet.
  *
+ * API additions:
+ * \li AICargo::GetWeight
  * \li AIIndustryType::ResolveNewGRFID
  * \li AIObjectType::ResolveNewGRFID
+ *
+ * Other changes:
+ * \li AIRoad::HasRoadType now correctly checks RoadType against RoadType
  *
  * \b 12.0
  *

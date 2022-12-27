@@ -655,13 +655,13 @@ static void HeightMapCurves(uint level)
 
 					if (*h >= p1.x && *h < p2.x) {
 						ht[t] = p1.y + (*h - p1.x) * (p2.y - p1.y) / (p2.x - p1.x);
-#ifdef WITH_ASSERT
+#ifdef WITH_FULL_ASSERTS
 						found = true;
 #endif
 						break;
 					}
 				}
-				assert(found);
+				dbg_assert(found);
 			}
 
 			/* Apply interpolation of curve map results. */

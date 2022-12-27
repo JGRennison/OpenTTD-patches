@@ -92,7 +92,7 @@
 	<tr><th>Bit</th><th>Value</th><th>Meaning</th></tr>
 	<tr><td>0</td><td>1</td><td>Bay stops: Draw road type ground sprite</td></tr>
 	<tr><td>1</td><td>2</td><td>Drive through stops: Draw road/tram type overlays</td></tr>
-	<tr><td>4</td><td>4</td><td>Road waypoints: Draw sprite layout ground sprite on top of the underlying road (by default the sprite layout ground sprite is not used)</td></tr>
+	<tr><td>2</td><td>4</td><td>Road waypoints: Draw sprite layout ground sprite on top of the underlying road (by default the sprite layout ground sprite is not used)</td></tr>
 	</table>
 	The default value is 3 (bits 0 and 1 both set).
 	</p>
@@ -153,6 +153,8 @@
 	<tr><td>2</td><td>4</td><td>Do not show catenary graphics.</br>This requires <font face="monospace">road_stops</font>, version 2.</td></tr>
 	<tr><td>3</td><td>8</td><td>Only allow drive-through stops (not bay stops).</br>This requires <font face="monospace">road_stops</font>, version 2.</td></tr>
 	<tr><td>4</td><td>10</td><td>Do not automatically build connecting road pieces.</br>This requires <font face="monospace">road_stops</font>, version 3.</td></tr>
+	<tr><td>5</td><td>20</td><td>Only show in the road build menu (not tram).</br>This requires <font face="monospace">road_stops</font>, version 4.</td></tr>
+	<tr><td>6</td><td>40</td><td>Only show in the tram build menu (not road).</br>This requires <font face="monospace">road_stops</font>, version 4.</td></tr>
 	</table>
 	The default value is 0 (no flags enabled).
 	</p>
@@ -226,6 +228,7 @@
 		<tr><td><a href="#roadstop_road_stop_info_nearby_tiles">68</a></td><td><a href="#roadstop_road_stop_info_nearby_tiles">roadstop_road_stop_info_nearby_tiles</a></td><td>Road stop info of nearby tiles</td></tr>
 		<tr><td><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/BaseStation">69</a></td><td></td><td>Information about cargo accepted in the past (BaseStation)</td></tr>
 		<tr><td><a href="#roadstop_road_stop_grfid_nearby_tiles">6A</a></td><td><a href="#roadstop_road_stop_grfid_nearby_tiles">roadstop_road_stop_grfid_nearby_tiles</a></td><td>GRFID of nearby road stop tiles</td></tr>
+		<tr><td><a href="#roadstop_road_info_nearby_tiles">6B</a></td><td><a href="#roadstop_road_info_nearby_tiles">roadstop_road_info_nearby_tiles</a></td><td>Road info of nearby plain road tiles</td></tr>
 	</table>
 
 	<h4 id="roadstop_view">Road stop view/rotation (40, or mappable variable: roadstop_view)</h4>
@@ -339,6 +342,39 @@
 
 	<h4 id="roadstop_road_stop_grfid_nearby_tiles">GRFID of nearby road stop tile (6A, or mappable variable: roadstop_road_stop_grfid_nearby_tiles)</h4>
 	<p>This has the same value as <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Stations#GRFID_of_nearby_station_tile_.286A.29">station (feature 4) variable 6A</a>.</p>
+
+	<h4 id="roadstop_road_info_nearby_tiles">Road info of nearby plain road tiles (6B, or mappable variable: roadstop_road_info_nearby_tiles)</h4>
+
+	The returned value is 0xFFFFFFFF if the selected tile isn't a plain road tile.<br /><br />
+
+	<table>
+	<tr><th>Bits</th><th>Value</th><th>Meaning</th></tr>
+	<tr><td>0</td><td>01</td><td>North-west road piece is present</td></tr>
+	<tr><td>1</td><td>02</td><td>South-west road piece is present</td></tr>
+	<tr><td>2</td><td>04</td><td>South-east road piece is present</td></tr>
+	<tr><td>3</td><td>08</td><td>North-east road piece is present</td></tr>
+	<tr><td>4</td><td>10</td><td>North-west tram piece is present</td></tr>
+	<tr><td>5</td><td>20</td><td>South-west tram piece is present</td></tr>
+	<tr><td>6</td><td>40</td><td>South-east tram piece is present</td></tr>
+	<tr><td>7</td><td>80</td><td>North-east tram piece is present</td></tr>
+	<tr><td>8 - 15</td><td></td><td>
+		Road piece and slope:<br />
+		(Same order as <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3/Roadtypes#Road_underlay_.2802.29">road sprites</a>).<br />
+		0 - 18: As above<br />
+		0xFF: No road present
+	</td></tr>
+	<tr><td>16 - 23</td><td></td><td>
+		Tram piece and slope:<br />
+		(Same order as <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3/Roadtypes#Road_underlay_.2802.29">road sprites</a>).<br />
+		0 - 18: As above<br />
+		0xFF: No tram present
+	</td></tr>
+	</table>
+	<br />
+	The remaining bits are reserved for future use and should be masked.
+	<br />
+	This requires <font face="monospace">road_stops</font>, version 5.
+	</p>
 
 	<br />
 	<h3 id="randomaction2roadstops">Random Action 2 - Road Stops</h3>

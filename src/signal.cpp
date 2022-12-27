@@ -1581,12 +1581,19 @@ void DetermineCombineNormalShuntModeWithLookahead(Train *v, TileIndex tile, Trac
 			for (size_t j = i + 1; j < count; j++) {
 				const TrainReservationLookAheadItem &ahead = v->lookahead->items[j];
 				if (ahead.type == TRLIT_SIGNAL) {
-					if (HasBit(item.data_aux, TRSLAI_COMBINED)) return;
-					if (!HasBit(item.data_aux, TRSLAI_NO_ASPECT_INC) && !HasBit(item.data_aux, TRSLAI_NEXT_ONLY)) return;
+					if (HasBit(ahead.data_aux, TRSLAI_COMBINED)) return;
+					if (!HasBit(ahead.data_aux, TRSLAI_NO_ASPECT_INC) && !HasBit(ahead.data_aux, TRSLAI_NEXT_ONLY)) return;
 				}
 			}
 
-			if (IsRailDepotTile(v->lookahead->reservation_end_tile) || IsTileType(v->lookahead->reservation_end_tile, MP_TUNNELBRIDGE)) return;
+			if (IsTileType(v->lookahead->reservation_end_tile, MP_TUNNELBRIDGE)) return;
+
+			if (IsRailDepotTile(v->lookahead->reservation_end_tile)) {
+				/* shunt mode */
+				SetSignalAspect(tile, TrackdirToTrack(trackdir), 1);
+				SetBit(item.data_aux, TRSLAI_COMBINED_SHUNT);
+				return;
+			}
 
 			CFollowTrackRail ft(v);
 			if (ft.Follow(v->lookahead->reservation_end_tile, v->lookahead->reservation_end_trackdir)) {

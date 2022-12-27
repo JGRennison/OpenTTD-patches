@@ -16,6 +16,6 @@
 
 typedef LinkGraphJob::Node Node;
 typedef LinkGraphJob::Edge Edge;
-typedef LinkGraphJob::EdgeIterator EdgeIterator;
+typedef LinkGraphJob::AnnoEdge AnnoEdge;
 
 #endif /* LINKGRAPHJOB_BASE_H */

@@ -203,6 +203,7 @@ STR_UNITS_POWER_IMPERIAL                                        :{COMMA} hk
 STR_UNITS_POWER_METRIC                                          :{COMMA} hk
 STR_UNITS_POWER_SI                                              :{COMMA} kW
 
+
 STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA} t
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA} t
 STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA} kg
@@ -381,10 +382,9 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Avslutt
 
 # Settings menu
-###length 14
+###length 15
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Spelinstillingar
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Innstillinger
-STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :AI- / Spelscript-innstillingar
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF-innstillingar
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Gjennomsiktigheitsinnstillingar
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Syne bynamn
@@ -937,36 +937,6 @@ STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Eigendefinert..
 STR_GAME_OPTIONS_CURRENCY_GEL                                   :Georgiske Lari (GEL)
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Iranske Rial (IRR)
 
-###length 2
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Venstrekøyring
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :Høgrekøyring
-
-STR_GAME_OPTIONS_TOWN_NAMES_FRAME                               :{BLACK}Namn på byar
-STR_GAME_OPTIONS_TOWN_NAMES_DROPDOWN_TOOLTIP                    :{BLACK}Vel nasjonalitet på bynamn
-
-###length 21
-STR_GAME_OPTIONS_TOWN_NAME_ORIGINAL_ENGLISH                     :Engelsk
-STR_GAME_OPTIONS_TOWN_NAME_FRENCH                               :Fransk
-STR_GAME_OPTIONS_TOWN_NAME_GERMAN                               :Tysk
-STR_GAME_OPTIONS_TOWN_NAME_ADDITIONAL_ENGLISH                   :Engelsk (utvidet)
-STR_GAME_OPTIONS_TOWN_NAME_LATIN_AMERICAN                       :Latinamerikansk
-STR_GAME_OPTIONS_TOWN_NAME_SILLY                                :Tåpelige
-STR_GAME_OPTIONS_TOWN_NAME_SWEDISH                              :Svensk
-STR_GAME_OPTIONS_TOWN_NAME_DUTCH                                :Nederlandsk
-STR_GAME_OPTIONS_TOWN_NAME_FINNISH                              :Finsk
-STR_GAME_OPTIONS_TOWN_NAME_POLISH                               :Polsk
-STR_GAME_OPTIONS_TOWN_NAME_SLOVAK                               :Slovakisk
-STR_GAME_OPTIONS_TOWN_NAME_NORWEGIAN                            :Norsk
-STR_GAME_OPTIONS_TOWN_NAME_HUNGARIAN                            :Ungarsk
-STR_GAME_OPTIONS_TOWN_NAME_AUSTRIAN                             :Østerriksk
-STR_GAME_OPTIONS_TOWN_NAME_ROMANIAN                             :Rumensk
-STR_GAME_OPTIONS_TOWN_NAME_CZECH                                :Tsjekkisk
-STR_GAME_OPTIONS_TOWN_NAME_SWISS                                :Sveitsisk
-STR_GAME_OPTIONS_TOWN_NAME_DANISH                               :Dansk
-STR_GAME_OPTIONS_TOWN_NAME_TURKISH                              :Tyrkisk
-STR_GAME_OPTIONS_TOWN_NAME_ITALIAN                              :Italiensk
-STR_GAME_OPTIONS_TOWN_NAME_CATALAN                              :Katalansk
-
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Automatisk lagring
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Vel intervall for automatisk lagring
 
@@ -991,12 +961,6 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :anna
 
 
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Grensesnittstorleik
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Vel storleik å bruke på grensesnittet
-
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normal
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dobbel størrelse
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Firedobbel størrelse
 
 
 
@@ -1044,8 +1008,6 @@ STR_CURRENCY_INCREASE_CUSTOM_CURRENCY_TO_EURO_TOOLTIP           :{BLACK}Byt til 
 STR_CURRENCY_PREVIEW                                            :{LTBLUE}Eksempel: {ORANGE}{CURRENCY_LONG}
 STR_CURRENCY_CUSTOM_CURRENCY_PREVIEW_TOOLTIP                    :{BLACK}10000 pund (£) i din valuta
 STR_CURRENCY_CHANGE_PARAMETER                                   :{BLACK}Byt eigendefinert valutaparameter
-
-STR_DIFFICULTY_LEVEL_SETTING_MAXIMUM_NO_COMPETITORS             :{LTBLUE}Maks. antal konkurrentar: {ORANGE}{COMMA}
 
 STR_NONE                                                        :Ingen
 STR_FUNDING_ONLY                                                :Kun finansiering
@@ -1095,6 +1057,12 @@ STR_SUBSIDY_X1_5                                                :x1.5
 STR_SUBSIDY_X2                                                  :x2
 STR_SUBSIDY_X3                                                  :x3
 STR_SUBSIDY_X4                                                  :x4
+
+###length 4
+STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :Temperert landskap
+STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :subarktisk landskap
+STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :subtropisk landskap
+STR_CLIMATE_TOYLAND_LANDSCAPE                                   :"Leikeland"-landskap
 
 ###length 7
 STR_TERRAIN_TYPE_VERY_FLAT                                      :Særs flatt
@@ -1402,6 +1370,10 @@ STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Forbetra
 
 STR_CONFIG_SETTING_ROAD_SIDE                                    :Veg-køyrety: {STRING}
 STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Vel køyreside
+
+###length 2
+STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :Venstrekøyring
+STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :Høgrekøyring
 
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Høgdekartrotering: {STRING}
 ###length 2
@@ -1827,7 +1799,7 @@ STR_CONFIG_SETTING_REVERSE_AT_SIGNALS                           :Automatisk reve
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :La tog snu ved signal, når dei har venta lengje
 ###length 2
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
-STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Anbefalt)
+STR_CONFIG_SETTING_PATHFINDER_YAPF                              :YAPF {BLUE}(Anbefalt)
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Byt innstillingsverdi
 
@@ -1868,7 +1840,6 @@ STR_INTRO_HIGHSCORE                                             :{BLACK}Poengtav
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Innstillinger
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF-innstillingar
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Sjå etter innhald på nett
-STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}AI- / Spelscriptinnstillingar
 STR_INTRO_QUIT                                                  :{BLACK}Avslutt
 
 STR_INTRO_TOOLTIP_NEW_GAME                                      :{BLACK}Start eit nytt spel. CTRL+klikk hoppar over kartkonfigurasjon
@@ -1888,7 +1859,6 @@ STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Syn poen
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Skjerminnstillingar
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Syne NewGRF-instillingar
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Sjå etter nytt og oppdatert innhald som kan lastas ned
-STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Vis AI- og spelscriptinnstillingar
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Avslutt 'OpenTTD'
 
 STR_INTRO_TRANSLATION                                           :{BLACK}Denne nynorsk-omsettinga manglar {NUM} tekst{P "" ar}. Du må gjerne verte med i omsettingsgruppa for å hjelpe til å gjere OpenTTD betre. Sjå readme.txt for detaljar.
@@ -1916,12 +1886,6 @@ STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}Endre ma
 STR_CHEAT_CHANGE_DATE                                           :{LTBLUE}Byt dato: {ORANGE} {DATE_SHORT}
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Byt noverande år
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Tillet endring av produksjonsmengder: {ORANGE}{STRING}
-
-###length 4
-STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :Temperert landskap
-STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :subarktisk landskap
-STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :subtropisk landskap
-STR_CHEAT_SWITCH_CLIMATE_TOYLAND_LANDSCAPE                      :"Leikeland"-landskap
 
 # Livery window
 
@@ -2320,6 +2284,8 @@ STR_LINKGRAPH_LEGEND_SELECT_COMPANIES                           :{BLACK}Vel sels
 STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}ubrukt
 STR_LINKGRAPH_LEGEND_SATURATED                                  :{TINY_FONT}{BLACK}fullt utnytta
 STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLACK}overbelasta
+
+# Linkgraph tooltip
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Syne dekningsområde
@@ -2763,6 +2729,8 @@ STR_MAPGEN_MAPSIZE                                              :{BLACK}Kartstor
 STR_MAPGEN_MAPSIZE_TOOLTIP                                      :{BLACK}Vel storleik på kartet, i ruter. Talet på tilgjengelege ruter vert smått mindre
 STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Antal byar:
+STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Namn på byar
+STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Vel nasjonalitet på bynamn
 STR_MAPGEN_DATE                                                 :{BLACK}Dato:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Antal industriar:
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Høgd på snøgrensa:
@@ -2770,11 +2738,34 @@ STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Flytt h�
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Flytt høgda på snøgrensa eitt hakk ned
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Landskapsgenerator:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Terrengtype
-STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Havflate:
+STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Havflate:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Elver:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Glattleik:
 STR_MAPGEN_VARIETY                                              :{BLACK}Variasjonsdistrubusjon:
 STR_MAPGEN_GENERATE                                             :{WHITE}Generer
+
+###length 21
+STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH                           :Engelsk
+STR_MAPGEN_TOWN_NAME_FRENCH                                     :Fransk
+STR_MAPGEN_TOWN_NAME_GERMAN                                     :Tysk
+STR_MAPGEN_TOWN_NAME_ADDITIONAL_ENGLISH                         :Engelsk (utvidet)
+STR_MAPGEN_TOWN_NAME_LATIN_AMERICAN                             :Latinamerikansk
+STR_MAPGEN_TOWN_NAME_SILLY                                      :Tåpelige
+STR_MAPGEN_TOWN_NAME_SWEDISH                                    :Svensk
+STR_MAPGEN_TOWN_NAME_DUTCH                                      :Nederlandsk
+STR_MAPGEN_TOWN_NAME_FINNISH                                    :Finsk
+STR_MAPGEN_TOWN_NAME_POLISH                                     :Polsk
+STR_MAPGEN_TOWN_NAME_SLOVAK                                     :Slovakisk
+STR_MAPGEN_TOWN_NAME_NORWEGIAN                                  :Norsk
+STR_MAPGEN_TOWN_NAME_HUNGARIAN                                  :Ungarsk
+STR_MAPGEN_TOWN_NAME_AUSTRIAN                                   :Østerriksk
+STR_MAPGEN_TOWN_NAME_ROMANIAN                                   :Rumensk
+STR_MAPGEN_TOWN_NAME_CZECH                                      :Tsjekkisk
+STR_MAPGEN_TOWN_NAME_SWISS                                      :Sveitsisk
+STR_MAPGEN_TOWN_NAME_DANISH                                     :Dansk
+STR_MAPGEN_TOWN_NAME_TURKISH                                    :Tyrkisk
+STR_MAPGEN_TOWN_NAME_ITALIAN                                    :Italiensk
+STR_MAPGEN_TOWN_NAME_CATALAN                                    :Katalansk
 
 # Strings for map borders at game generation
 STR_MAPGEN_BORDER_TYPE                                          :{BLACK}Kartkantar
@@ -2912,6 +2903,10 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Førre s
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Fortsett til neste normale sprite og hopp over einhver pseudo-/omfargings-/skrifttype- sprite, samt start om ved byrjinga
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Førehandsvisning av valgt sprite. Innrettinga ignorerast når spriten tegnes
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Flytt spriten rundt omkring, for å endre X- og Y-forskyvningene
+
+###length 2
+
+
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}Vel sprite
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}Vel ein sprite frå eit vilkårleg sted på skjermen
 
@@ -3418,6 +3413,8 @@ STR_PURCHASE_INFO_ALL_TYPES                                     :Alle varetypar
 STR_PURCHASE_INFO_ALL_BUT                                       :Alt utanom {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Maks. trekkraft: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Rekkevidde: {GOLD}{COMMA} ruter
+
+###length 3
 
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Tog-/vognliste - klikk på tog/vogn for meir informasjon
@@ -4038,12 +4035,12 @@ STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}Ein AI h
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}AI- / Spelscript-feilsøkingvindauget er kun tilgjengeleg for tenaren
 
 # AI configuration window
-STR_AI_CONFIG_CAPTION                                           :{WHITE}AI- / Spelkonfigurasjonar
 STR_AI_CONFIG_GAMELIST_TOOLTIP                                  :{BLACK}Spelscriptet som blir lasta i neste spel
 STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}AIane som blir lasta i neste spel
 STR_AI_CONFIG_HUMAN_PLAYER                                      :Menneskeleg spelar
 STR_AI_CONFIG_RANDOM_AI                                         :Tilfeldig AI
 STR_AI_CONFIG_NONE                                              :(ingen)
+STR_AI_CONFIG_MAX_COMPETITORS                                   :{LTBLUE}Maks. antal konkurrentar: {ORANGE}{COMMA}
 
 STR_AI_CONFIG_MOVE_UP                                           :{BLACK}Flytt oppover
 STR_AI_CONFIG_MOVE_UP_TOOLTIP                                   :{BLACK}Flytt valt AI oppover lista
@@ -4053,8 +4050,6 @@ STR_AI_CONFIG_MOVE_DOWN_TOOLTIP                                 :{BLACK}Flytt va
 STR_AI_CONFIG_GAMESCRIPT                                        :{SILVER}Spelscript
 STR_AI_CONFIG_AI                                                :{SILVER}AIar
 
-STR_AI_CONFIG_CHANGE                                            :{BLACK}Vel {STRING}
-STR_AI_CONFIG_CHANGE_NONE                                       :
 STR_AI_CONFIG_CHANGE_AI                                         :AI
 STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :Spelscript
 STR_AI_CONFIG_CHANGE_TOOLTIP                                    :{BLACK}Last eit anna script
@@ -4078,9 +4073,7 @@ STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Ikkje en
 
 
 # AI Parameters
-STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Parameter
 STR_AI_SETTINGS_CAPTION_AI                                      :AI
-STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Spelscript
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Lukk
 STR_AI_SETTINGS_RESET                                           :{BLACK}Tilbakestill
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
@@ -4485,6 +4478,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}For mang
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Kan ikkje endre vedlikehaldsintervall...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... køyretøy er øydelagd
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Ingen køyretøy vert tilgjengelege
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Byt NewGRF-innstillingar

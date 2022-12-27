@@ -23,6 +23,7 @@
 #include "roadveh.h"
 #include "ship.h"
 #include "aircraft.h"
+#include "zoom_func.h"
 
 #include "widgets/engine_widget.h"
 
@@ -93,11 +94,11 @@ struct EnginePreviewWindow : Window {
 			case VEH_SHIP:     GetShipSpriteSize(    engine, x, y, x_offs, y_offs, image_type); break;
 			case VEH_AIRCRAFT: GetAircraftSpriteSize(engine, x, y, x_offs, y_offs, image_type); break;
 		}
-		this->vehicle_space = std::max<int>(40, y - y_offs);
+		this->vehicle_space = std::max<int>(ScaleSpriteTrad(40), y - y_offs);
 
 		size->width = std::max(size->width, x - x_offs);
 		SetDParam(0, GetEngineCategoryName(engine));
-		size->height = GetStringHeight(STR_ENGINE_PREVIEW_MESSAGE, size->width) + WD_PAR_VSEP_WIDE + FONT_HEIGHT_NORMAL + this->vehicle_space;
+		size->height = GetStringHeight(STR_ENGINE_PREVIEW_MESSAGE, size->width) + WidgetDimensions::scaled.vsep_wide + FONT_HEIGHT_NORMAL + this->vehicle_space;
 		SetDParam(0, engine);
 		size->height += GetStringHeight(GetEngineInfoString(engine), size->width);
 	}
@@ -108,17 +109,16 @@ struct EnginePreviewWindow : Window {
 
 		EngineID engine = this->window_number;
 		SetDParam(0, GetEngineCategoryName(engine));
-		int y = r.top + GetStringHeight(STR_ENGINE_PREVIEW_MESSAGE, r.right - r.left + 1);
-		y = DrawStringMultiLine(r.left, r.right, r.top, y, STR_ENGINE_PREVIEW_MESSAGE, TC_FROMSTRING, SA_CENTER) + WD_PAR_VSEP_WIDE;
+		int y = DrawStringMultiLine(r, STR_ENGINE_PREVIEW_MESSAGE, TC_FROMSTRING, SA_HOR_CENTER | SA_TOP) + WidgetDimensions::scaled.vsep_wide;
 
 		SetDParam(0, engine);
-		DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_ENGINE_NAME, TC_BLACK, SA_HOR_CENTER);
+		DrawString(r.left, r.right, y, STR_ENGINE_NAME, TC_BLACK, SA_HOR_CENTER);
 		y += FONT_HEIGHT_NORMAL;
 
-		DrawVehicleEngine(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, this->width >> 1, y + this->vehicle_space / 2, engine, GetEnginePalette(engine, _local_company), EIT_PREVIEW);
+		DrawVehicleEngine(r.left, r.right, this->width >> 1, y + this->vehicle_space / 2, engine, GetEnginePalette(engine, _local_company), EIT_PREVIEW);
 
 		y += this->vehicle_space;
-		DrawStringMultiLine(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, r.bottom, GetEngineInfoString(engine), TC_FROMSTRING, SA_CENTER);
+		DrawStringMultiLine(r.left, r.right, y, r.bottom, GetEngineInfoString(engine), TC_FROMSTRING, SA_CENTER);
 	}
 
 	void OnClick(Point pt, int widget, int click_count) override

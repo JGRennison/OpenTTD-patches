@@ -69,6 +69,8 @@ enum RoadStopSpecFlags {
 	RSF_NO_CATENARY,          ///< Do not show catenary.
 	RSF_DRIVE_THROUGH_ONLY,   ///< Stop is drive-through only.
 	RSF_NO_AUTO_ROAD_CONNECTION, ///< No auto road connection.
+	RSF_BUILD_MENU_ROAD_ONLY, ///< Only show in the road build menu (not tram).
+	RSF_BUILD_MENU_TRAM_ONLY, ///< Only show in the tram build menu (not road).
 };
 
 enum RoadStopSpecIntlFlags {
@@ -181,9 +183,9 @@ uint8 GetRoadStopTileAnimationSpeed(TileIndex tile);
 void TriggerRoadStopAnimation(BaseStation *st, TileIndex tile, StationAnimationTrigger trigger, CargoID cargo_type = CT_INVALID);
 void TriggerRoadStopRandomisation(Station *st, TileIndex tile, RoadStopRandomTrigger trigger, CargoID cargo_type = CT_INVALID);
 
-bool GetIfNewStopsByType(RoadStopType rs);
-bool GetIfClassHasNewStopsByType(RoadStopClass *roadstopclass, RoadStopType rs);
-bool GetIfStopIsForType(const RoadStopSpec *roadstopspec, RoadStopType rs);
+bool GetIfNewStopsByType(RoadStopType rs, RoadType roadtype);
+bool GetIfClassHasNewStopsByType(RoadStopClass *roadstopclass, RoadStopType rs, RoadType roadtype);
+bool GetIfStopIsForType(const RoadStopSpec *roadstopspec, RoadStopType rs, RoadType roadtype);
 
 uint GetCountOfCompatibleStopsByType(RoadStopClass *roadstopclass, RoadStopType rs);
 

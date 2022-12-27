@@ -14,6 +14,8 @@
 #include "gfx_type.h"
 #include "strings_type.h"
 
+struct ViewportDrawerDynamic;
+
 /**
  * Text effect modes.
  */
@@ -29,7 +31,7 @@ typedef size_t TextEffectID;
 void MoveAllTextEffects(uint delta_ms);
 TextEffectID AddTextEffect(StringID msg, int x, int y, uint8 duration, TextEffectMode mode);
 void InitTextEffects();
-void DrawTextEffects(DrawPixelInfo *dpi);
+void DrawTextEffects(ViewportDrawerDynamic *vdd, DrawPixelInfo *dpi, bool load_transparent);
 void UpdateTextEffect(TextEffectID effect_id, StringID msg);
 void RemoveTextEffect(TextEffectID effect_id);
 void UpdateAllTextEffectVirtCoords();

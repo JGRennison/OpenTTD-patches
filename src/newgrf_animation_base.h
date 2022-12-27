@@ -20,7 +20,16 @@
 template <typename Tobj>
 struct TileAnimationFrameAnimationHelper {
 	static byte Get(Tobj *obj, TileIndex tile) { return GetAnimationFrame(tile); }
-	static void Set(Tobj *obj, TileIndex tile, byte frame) { SetAnimationFrame(tile, frame); }
+	static bool Set(Tobj *obj, TileIndex tile, byte frame)
+	{
+		byte prev = GetAnimationFrame(tile);
+		if (frame != prev) {
+			SetAnimationFrame(tile, frame);
+			return true;
+		} else {
+			return false;
+		}
+	}
 };
 
 /**
@@ -60,7 +69,7 @@ struct AnimationBase {
 		 * increasing this value by one doubles the wait. 0 is the minimum value
 		 * allowed for animation_speed, which corresponds to 30ms, and 16 is the
 		 * maximum, corresponding to around 33 minutes. */
-		if (_scaled_tick_counter % (1 << animation_speed) != 0) return;
+		if ((((uint32)_scaled_tick_counter) & ((1 << animation_speed) - 1)) != 0) return;
 
 		uint8 frame      = Tframehelper::Get(obj, tile);
 		uint8 num_frames = spec->animation.frames;
@@ -105,8 +114,9 @@ struct AnimationBase {
 			}
 		}
 
-		Tframehelper::Set(obj, tile, frame);
-		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+		if (Tframehelper::Set(obj, tile, frame)) {
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+		}
 	}
 
 	/**
@@ -127,12 +137,18 @@ struct AnimationBase {
 		if (callback == CALLBACK_FAILED) return;
 
 		switch (callback & 0xFF) {
-			case 0xFD: /* Do nothing. */         break;
-			case 0xFE: AddAnimatedTile(tile);    break;
-			case 0xFF: DeleteAnimatedTile(tile); break;
+			case 0xFD: /* Do nothing. */             break;
+			case 0xFE: AddAnimatedTile(tile, false); break;
+			case 0xFF: DeleteAnimatedTile(tile);     break;
 			default:
-				Tframehelper::Set(obj, tile, callback);
-				AddAnimatedTile(tile);
+				bool changed = Tframehelper::Set(obj, tile, callback);
+				if (callback >= spec->animation.frames && (spec->animation.status != ANIM_STATUS_LOOPING || spec->animation.frames == 0) &&
+						!HasBit(spec->callback_mask, Tbase::cbm_animation_next_frame)) {
+					/* The animation would be stopped on this frame in the next AnimateTile call, don't bother animating it */
+					if (changed) MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+					break;
+				}
+				AddAnimatedTile(tile, changed);
 				break;
 		}
 

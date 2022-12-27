@@ -153,7 +153,7 @@ public:
 		/* move back to the old tile/trackdir (where ship is coming from) */
 		TileIndex src_tile = TileAddByDiagDir(tile, ReverseDiagDir(enterdir));
 		Trackdir trackdir = v->GetVehicleTrackdir();
-		assert(IsValidTrackdir(trackdir));
+		dbg_assert(IsValidTrackdir(trackdir));
 
 		/* convert origin trackdir to TrackdirBits */
 		TrackdirBits trackdirs = TrackdirToTrackdirBits(trackdir);
@@ -262,8 +262,8 @@ protected:
 public:
 	inline int CurveCost(Trackdir td1, Trackdir td2)
 	{
-		assert(IsValidTrackdir(td1));
-		assert(IsValidTrackdir(td2));
+		dbg_assert(IsValidTrackdir(td1));
+		dbg_assert(IsValidTrackdir(td2));
 
 		if (HasTrackdir(TrackdirCrossesTrackdirs(td1), td2)) {
 			/* 90-deg curve penalty */

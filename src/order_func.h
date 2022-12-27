@@ -43,4 +43,6 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 uint16 GetServiceIntervalClamped(uint interval, bool ispercent);
 bool OrderConditionCompare(OrderConditionComparator occ, int variable, int value);
 
+const char *GetOrderTypeName(OrderType order_type);
+
 #endif /* ORDER_FUNC_H */

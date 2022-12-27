@@ -442,7 +442,7 @@ void DrawTileZoning(const TileInfo *ti)
 					{ -INF    , -INF   , INF    , 30 - 8  }  // CORNER_N, clip  8 pixels from bottom
 				};
 
-				DrawSelectionSprite(sprite, colour, ti, 7 + TILE_HEIGHT, FOUNDATION_PART_HALFTILE, &(sub_sprites[GetHalftileSlopeCorner(ti->tileh)]));
+				DrawSelectionSprite(sprite, colour, ti, 7 + TILE_HEIGHT, FOUNDATION_PART_HALFTILE, 0, 0, &(sub_sprites[GetHalftileSlopeCorner(ti->tileh)]));
 			} else {
 				sprite += SlopeToSpriteOffset(ti->tileh);
 			}

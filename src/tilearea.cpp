@@ -20,8 +20,8 @@
  */
 OrthogonalTileArea::OrthogonalTileArea(TileIndex start, TileIndex end)
 {
-	assert(start < MapSize());
-	assert(end < MapSize());
+	dbg_assert(start < MapSize());
+	dbg_assert(end < MapSize());
 
 	uint sx = TileX(start);
 	uint sy = TileY(start);
@@ -76,7 +76,7 @@ bool OrthogonalTileArea::Intersects(const OrthogonalTileArea &ta) const
 {
 	if (ta.w == 0 || this->w == 0) return false;
 
-	assert(ta.w != 0 && ta.h != 0 && this->w != 0 && this->h != 0);
+	dbg_assert(ta.w != 0 && ta.h != 0 && this->w != 0 && this->h != 0);
 
 	uint left1   = TileX(this->tile);
 	uint top1    = TileY(this->tile);
@@ -105,7 +105,7 @@ bool OrthogonalTileArea::Contains(TileIndex tile) const
 {
 	if (this->w == 0) return false;
 
-	assert(this->w != 0 && this->h != 0);
+	dbg_assert(this->w != 0 && this->h != 0);
 
 	uint left   = TileX(this->tile);
 	uint top    = TileY(this->tile);
@@ -141,7 +141,7 @@ OrthogonalTileArea &OrthogonalTileArea::Expand(int rad)
  */
 void OrthogonalTileArea::ClampToMap()
 {
-	assert(this->tile < MapSize());
+	dbg_assert(this->tile < MapSize());
 	this->w = std::min<int>(this->w, MapSizeX() - TileX(this->tile));
 	this->h = std::min<int>(this->h, MapSizeY() - TileY(this->tile));
 }
@@ -171,8 +171,8 @@ OrthogonalTileIterator OrthogonalTileArea::end() const
  */
 DiagonalTileArea::DiagonalTileArea(TileIndex start, TileIndex end) : tile(start)
 {
-	assert(start < MapSize());
-	assert(end < MapSize());
+	dbg_assert(start < MapSize());
+	dbg_assert(end < MapSize());
 
 	/* Unfortunately we can't find a new base and make all a and b positive because
 	 * the new base might be a "flattened" corner where there actually is no single
@@ -233,7 +233,7 @@ bool DiagonalTileArea::Contains(TileIndex tile) const
  */
 TileIterator &DiagonalTileIterator::operator++()
 {
-	assert(this->tile != INVALID_TILE);
+	dbg_assert(this->tile != INVALID_TILE);
 
 	/* Determine the next tile, while clipping at map borders */
 	bool new_line = false;

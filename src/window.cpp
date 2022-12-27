@@ -240,7 +240,7 @@ void Window::DisableAllWidgetHighlight()
  */
 void Window::SetWidgetHighlight(byte widget_index, TextColour highlighted_colour)
 {
-	assert(widget_index < this->nested_array_size);
+	dbg_assert(widget_index < this->nested_array_size);
 
 	NWidgetBase *nwid = this->GetWidget<NWidgetBase>(widget_index);
 	if (nwid == nullptr) return;
@@ -273,7 +273,7 @@ void Window::SetWidgetHighlight(byte widget_index, TextColour highlighted_colour
  */
 bool Window::IsWidgetHighlighted(byte widget_index) const
 {
-	assert(widget_index < this->nested_array_size);
+	dbg_assert(widget_index < this->nested_array_size);
 
 	const NWidgetBase *nwid = this->GetWidget<NWidgetBase>(widget_index);
 	if (nwid == nullptr) return false;
@@ -350,6 +350,17 @@ QueryString *Window::GetQueryString(uint widnum)
 {
 	SmallMap<int, QueryString*>::Pair *query = this->querystrings.Find(widnum);
 	return query != this->querystrings.End() ? query->second : nullptr;
+}
+
+/**
+ * Update size of all QueryStrings of this window.
+ */
+void Window::UpdateQueryStringSize()
+{
+	for (auto &qs : this->querystrings)
+	{
+		qs.second->text.UpdateSize();
+	}
 }
 
 /**
@@ -521,7 +532,7 @@ bool Window::SetFocusedWidget(int widget_index)
 	/* Do nothing if widget_index is already focused, or if it wasn't a valid widget. */
 	if ((uint)widget_index >= this->nested_array_size) return false;
 
-	assert(this->nested_array[widget_index] != nullptr); // Setting focus to a non-existing widget is a bad idea.
+	dbg_assert(this->nested_array[widget_index] != nullptr); // Setting focus to a non-existing widget is a bad idea.
 	if (this->nested_focus != nullptr) {
 		if (this->GetWidget<NWidgetCore>(widget_index) == this->nested_focus) return false;
 
@@ -948,8 +959,9 @@ void DrawOverlappedWindow(Window *w, int left, int top, int right, int bottom, D
 	dp->zoom = ZOOM_LVL_NORMAL;
 	w->OnPaint();
 	if (unlikely(flags & DOWF_SHOW_DEBUG)) {
-		extern void ViewportDrawDirtyBlocks();
-		ViewportDrawDirtyBlocks();
+		if (w->viewport != nullptr) ViewportDoDrawProcessAllPending();
+		extern void ViewportDrawDirtyBlocks(const DrawPixelInfo *dpi, bool increment_colour);
+		ViewportDrawDirtyBlocks(_cur_dpi, true);
 	}
 	if (flags & DOWF_MARK_DIRTY) {
 		VideoDriver::GetInstance()->MakeDirty(left, top, right - left, bottom - top);
@@ -1403,7 +1415,7 @@ static uint GetWindowZPriority(WindowClass wc)
  */
 static void AddWindowToZOrdering(Window *w)
 {
-	assert(w->z_front == nullptr && w->z_back == nullptr);
+	dbg_assert(w->z_front == nullptr && w->z_back == nullptr);
 
 	if (_z_front_window == nullptr) {
 		/* It's the only window. */
@@ -1417,7 +1429,7 @@ static void AddWindowToZOrdering(Window *w)
 		while (v != nullptr && (v->window_class == WC_INVALID || GetWindowZPriority(v->window_class) > GetWindowZPriority(w->window_class))) {
 			if (v->window_class != WC_INVALID) {
 				/* Sanity check z-ordering, while we're at it. */
-				assert(last_z_priority >= GetWindowZPriority(v->window_class));
+				dbg_assert(last_z_priority >= GetWindowZPriority(v->window_class));
 				last_z_priority = GetWindowZPriority(v->window_class);
 			}
 
@@ -1454,14 +1466,14 @@ static void AddWindowToZOrdering(Window *w)
 static void RemoveWindowFromZOrdering(WindowBase *w)
 {
 	if (w->z_front == nullptr) {
-		assert(_z_front_window == w);
+		dbg_assert(_z_front_window == w);
 		_z_front_window = w->z_back;
 	} else {
 		w->z_front->z_back = w->z_back;
 	}
 
 	if (w->z_back == nullptr) {
-		assert(_z_back_window == w);
+		dbg_assert(_z_back_window == w);
 		_z_back_window = w->z_front;
 	} else {
 		w->z_back->z_front = w->z_front;
@@ -1739,7 +1751,7 @@ static Point GetAutoPlacePosition(int width, int height)
 	 */
 	int left = rtl ? _screen.width - width : 0, top = toolbar_y;
 	int offset_x = rtl ? -(int)NWidgetLeaf::closebox_dimension.width : (int)NWidgetLeaf::closebox_dimension.width;
-	int offset_y = std::max<int>(NWidgetLeaf::closebox_dimension.height, FONT_HEIGHT_NORMAL + WD_CAPTIONTEXT_TOP + WD_CAPTIONTEXT_BOTTOM);
+	int offset_y = std::max<int>(NWidgetLeaf::closebox_dimension.height, FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.captiontext.Vertical());
 
 restart:
 	for (const Window *w : Window::IterateFromBack()) {
@@ -1764,7 +1776,7 @@ restart:
 Point GetToolbarAlignedWindowPosition(int window_width)
 {
 	const Window *w = FindWindowById(WC_MAIN_TOOLBAR, 0);
-	assert(w != nullptr);
+	dbg_assert(w != nullptr);
 	Point pt = { _current_text_dir == TD_RTL ? w->left : (w->left + w->width) - window_width, w->top + w->height };
 	return pt;
 }
@@ -1805,7 +1817,7 @@ static Point LocalGetWindowPlacement(const WindowDesc *desc, int16 sm_width, int
 			 *  - Y position: closebox of parent + closebox of child + statusbar
 			 *  - X position: closebox on left/right, resizebox on right/left (depending on ltr/rtl)
 			 */
-			int indent_y = std::max<int>(NWidgetLeaf::closebox_dimension.height, FONT_HEIGHT_NORMAL + WD_CAPTIONTEXT_TOP + WD_CAPTIONTEXT_BOTTOM);
+			int indent_y = std::max<int>(NWidgetLeaf::closebox_dimension.height, FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.captiontext.Vertical());
 			if (w->top + 3 * indent_y < _screen.height) {
 				pt.y = w->top + indent_y;
 				int indent_close = NWidgetLeaf::closebox_dimension.width;
@@ -2105,28 +2117,30 @@ static void PreventHiding(int *nx, int *ny, const Rect &rect, const Window *v, i
 {
 	if (v == nullptr) return;
 
+	const int min_visible = ScaleGUITrad(MIN_VISIBLE_TITLE_BAR);
+
 	int v_bottom = v->top + v->height;
 	int v_right = v->left + v->width;
-	int safe_y = (dir == PHD_UP) ? (v->top - MIN_VISIBLE_TITLE_BAR - rect.top) : (v_bottom + MIN_VISIBLE_TITLE_BAR - rect.bottom); // Compute safe vertical position.
+	int safe_y = (dir == PHD_UP) ? (v->top - min_visible - rect.top) : (v_bottom + min_visible - rect.bottom); // Compute safe vertical position.
 
-	if (*ny + rect.top <= v->top - MIN_VISIBLE_TITLE_BAR) return; // Above v is enough space
-	if (*ny + rect.bottom >= v_bottom + MIN_VISIBLE_TITLE_BAR) return; // Below v is enough space
+	if (*ny + rect.top <= v->top - min_visible) return; // Above v is enough space
+	if (*ny + rect.bottom >= v_bottom + min_visible) return; // Below v is enough space
 
 	/* Vertically, the rectangle is hidden behind v. */
-	if (*nx + rect.left + MIN_VISIBLE_TITLE_BAR < v->left) { // At left of v.
-		if (v->left < MIN_VISIBLE_TITLE_BAR) *ny = safe_y; // But enough room, force it to a safe position.
+	if (*nx + rect.left + min_visible < v->left) { // At left of v.
+		if (v->left < min_visible) *ny = safe_y; // But enough room, force it to a safe position.
 		return;
 	}
-	if (*nx + rect.right - MIN_VISIBLE_TITLE_BAR > v_right) { // At right of v.
-		if (v_right > _screen.width - MIN_VISIBLE_TITLE_BAR) *ny = safe_y; // Not enough room, force it to a safe position.
+	if (*nx + rect.right - min_visible > v_right) { // At right of v.
+		if (v_right > _screen.width - min_visible) *ny = safe_y; // Not enough room, force it to a safe position.
 		return;
 	}
 
 	/* Horizontally also hidden, force movement to a safe area. */
-	if (px + rect.left < v->left && v->left >= MIN_VISIBLE_TITLE_BAR) { // Coming from the left, and enough room there.
-		*nx = v->left - MIN_VISIBLE_TITLE_BAR - rect.left;
-	} else if (px + rect.right > v_right && v_right <= _screen.width - MIN_VISIBLE_TITLE_BAR) { // Coming from the right, and enough room there.
-		*nx = v_right + MIN_VISIBLE_TITLE_BAR - rect.right;
+	if (px + rect.left < v->left && v->left >= min_visible) { // Coming from the left, and enough room there.
+		*nx = v->left - min_visible - rect.left;
+	} else if (px + rect.right > v_right && v_right <= _screen.width - min_visible) { // Coming from the right, and enough room there.
+		*nx = v_right + min_visible - rect.right;
 	} else {
 		*ny = safe_y;
 	}
@@ -2147,9 +2161,11 @@ static void EnsureVisibleCaption(Window *w, int nx, int ny)
 	if (caption != nullptr) {
 		caption_rect = caption->GetCurrentRect();
 
+		const int min_visible = ScaleGUITrad(MIN_VISIBLE_TITLE_BAR);
+
 		/* Make sure the window doesn't leave the screen */
-		nx = Clamp(nx, MIN_VISIBLE_TITLE_BAR - caption_rect.right, _screen.width - MIN_VISIBLE_TITLE_BAR - caption_rect.left);
-		ny = Clamp(ny, 0, _screen.height - MIN_VISIBLE_TITLE_BAR);
+		nx = Clamp(nx, min_visible - caption_rect.right, _screen.width - min_visible - caption_rect.left);
+		ny = Clamp(ny, 0, _screen.height - min_visible);
 
 		/* Make sure the title bar isn't hidden behind the main tool bar or the status bar. */
 		PreventHiding(&nx, &ny, caption_rect, FindWindowById(WC_MAIN_TOOLBAR, 0), w->left, PHD_DOWN);
@@ -3023,6 +3039,7 @@ static void MouseLoop(MouseClick click, int mousewheel)
 					_scrolling_viewport = w;
 					_cursor.fix_at = (_settings_client.gui.scroll_mode == VSM_VIEWPORT_RMB_FIXED ||
 							_settings_client.gui.scroll_mode == VSM_MAP_RMB_FIXED);
+					DispatchRightClickEvent(w, x - w->left, y - w->top);
 					return;
 				}
 				break;
@@ -3032,27 +3049,25 @@ static void MouseLoop(MouseClick click, int mousewheel)
 		}
 	}
 
-	if (vp == nullptr || (w->flags & WF_DISABLE_VP_SCROLL)) {
-		switch (click) {
-			case MC_LEFT:
-			case MC_DOUBLE_LEFT:
-				DispatchLeftClickEvent(w, x - w->left, y - w->top, click == MC_DOUBLE_LEFT ? 2 : 1);
-				return;
+	switch (click) {
+		case MC_LEFT:
+		case MC_DOUBLE_LEFT:
+			DispatchLeftClickEvent(w, x - w->left, y - w->top, click == MC_DOUBLE_LEFT ? 2 : 1);
+			return;
 
-			default:
-				if (!scrollwheel_scrolling || w == nullptr || w->window_class != WC_SMALLMAP) break;
-				/* We try to use the scrollwheel to scroll since we didn't touch any of the buttons.
-				 * Simulate a right button click so we can get started. */
-				FALLTHROUGH;
+		default:
+			if (!scrollwheel_scrolling || w == nullptr || w->window_class != WC_SMALLMAP) break;
+			/* We try to use the scrollwheel to scroll since we didn't touch any of the buttons.
+			 * Simulate a right button click so we can get started. */
+			FALLTHROUGH;
 
-			case MC_RIGHT:
-				DispatchRightClickEvent(w, x - w->left, y - w->top);
-				return;
+		case MC_RIGHT:
+			DispatchRightClickEvent(w, x - w->left, y - w->top);
+			return;
 
-			case MC_HOVER:
-				DispatchHoverEvent(w, x - w->left, y - w->top);
-				break;
-		}
+		case MC_HOVER:
+			DispatchHoverEvent(w, x - w->left, y - w->top);
+			break;
 	}
 
 	/* We're not doing anything with 2D scrolling, so reset the value.  */
@@ -3121,6 +3136,7 @@ void HandleMouseEvents()
 				click = MC_HOVER;
 				_input_events_this_tick++;
 				_mouse_hovering = true;
+				hover_time = std::chrono::steady_clock::now();
 			}
 		}
 	} else {
@@ -3237,6 +3253,9 @@ void UpdateWindows()
 	PerformanceMeasurer framerate(PFE_DRAWING);
 	PerformanceAccumulator::Reset(PFE_DRAWWORLD);
 
+	extern void ProcessPendingPerformanceMeasurements();
+	ProcessPendingPerformanceMeasurements();
+
 	CallWindowRealtimeTickEvent(delta_ms);
 
 	static GUITimer network_message_timer = GUITimer(1);
@@ -3295,6 +3314,7 @@ void UpdateWindows()
 		/* Update viewport only if window is not shaded. */
 		if (w->viewport != nullptr && !w->IsShaded()) UpdateViewportPosition(w);
 	}
+	ViewportDoDrawProcessAllPending();
 	NetworkDrawChatMessage();
 	/* Redraw mouse cursor in case it was hidden */
 	DrawMouseCursor();
@@ -3530,18 +3550,33 @@ void HideVitalWindows()
 	DeleteWindowById(WC_STATUS_BAR, 0);
 }
 
+void ReInitWindow(Window *w, bool zoom_changed)
+{
+	if (w == nullptr) return;
+	if (zoom_changed) {
+		w->nested_root->AdjustPaddingForZoom();
+		w->UpdateQueryStringSize();
+	}
+	w->ReInit();
+}
+
 /** Re-initialize all windows. */
 void ReInitAllWindows(bool zoom_changed)
 {
+	SetupWidgetDimensions();
 	NWidgetLeaf::InvalidateDimensionCache(); // Reset cached sizes of several widgets.
 	NWidgetScrollbar::InvalidateDimensionCache();
 
 	extern void InitDepotWindowBlockSizes();
 	InitDepotWindowBlockSizes();
 
+	/* When _gui_zoom has changed, we need to resize toolbar and statusbar first,
+	 * so EnsureVisibleCaption uses the updated size information. */
+	ReInitWindow(FindWindowById(WC_MAIN_TOOLBAR, 0), zoom_changed);
+	ReInitWindow(FindWindowById(WC_STATUS_BAR, 0), zoom_changed);
 	for (Window *w : Window::IterateFromBack()) {
-		if (zoom_changed) w->nested_root->AdjustPaddingForZoom();
-		w->ReInit();
+		if (w->window_class == WC_MAIN_TOOLBAR || w->window_class == WC_STATUS_BAR) continue;
+		ReInitWindow(w, zoom_changed);
 	}
 
 	void NetworkReInitChatBoxSize();

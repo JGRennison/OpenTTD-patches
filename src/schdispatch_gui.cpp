@@ -84,7 +84,7 @@ static void SetScheduleStartDateCallback(const Window *w, DateTicksScaled date)
  * @param p1 The p1 parameter to send to CmdScheduledDispatchAdd
  * @param date the actually chosen date
  */
-static void ScheduleAddIntl(uint32 p1, DateTicksScaled date, uint extra_slots, uint offset)
+static void ScheduleAddIntl(uint32 p1, DateTicksScaled date, uint extra_slots, uint offset, bool wrap_mode = false)
 {
 	VehicleID veh = GB(p1, 0, 20);
 	uint schedule_index = GB(p1, 20, 12);
@@ -99,7 +99,7 @@ static void ScheduleAddIntl(uint32 p1, DateTicksScaled date, uint extra_slots, u
 	while (date > start_tick) date -= duration;
 	while (date < start_tick) date += duration;
 
-	if (extra_slots > 0 && offset > 0) {
+	if (extra_slots > 0 && offset > 0 && !wrap_mode) {
 		DateTicksScaled end_tick = start_tick + duration;
 		DateTicksScaled max_extra_slots = (end_tick - 1 - date) / offset;
 		if (max_extra_slots < extra_slots) extra_slots = static_cast<uint>(std::max<DateTicksScaled>(0, max_extra_slots));
@@ -255,11 +255,11 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				SetDParamMaxValue(0, _settings_time.time_in_minutes ? 0 : MAX_YEAR * DAYS_IN_YEAR);
 				Dimension unumber = GetStringBoundingBox(STR_JUST_DATE_WALLCLOCK_TINY);
 				const Sprite *spr = GetSprite(SPR_FLAG_VEH_STOPPED, ST_NORMAL);
-				this->flag_width  = UnScaleGUI(spr->width) + WD_FRAMERECT_RIGHT;
+				this->flag_width  = UnScaleGUI(spr->width) + WidgetDimensions::scaled.framerect.right;
 				this->flag_height = UnScaleGUI(spr->height);
 
-				min_height = std::max<uint>(unumber.height + WD_MATRIX_TOP, UnScaleGUI(spr->height));
-				this->header_width = this->flag_width + WD_FRAMERECT_LEFT;
+				min_height = std::max<uint>(unumber.height + WidgetDimensions::scaled.matrix.top, UnScaleGUI(spr->height));
+				this->header_width = this->flag_width + WidgetDimensions::scaled.framerect.left;
 				this->base_width = unumber.width + this->header_width + 4;
 
 				resize->height = min_height;
@@ -273,7 +273,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			}
 
 			case WID_SCHDISPATCH_SUMMARY_PANEL:
-				size->height = WD_FRAMERECT_TOP + 6 * FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM;
+				size->height = 6 * FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.framerect.Vertical();
 				uint warning_count = this->warning_count;
 				if (this->no_order_warning_pad) {
 					warning_count++;
@@ -399,13 +399,13 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 	{
 		bool rtl = _current_text_dir == TD_RTL;
 		uint diff_x, diff_y;
-		diff_x = this->flag_width + WD_FRAMERECT_LEFT;
+		diff_x = this->flag_width + WidgetDimensions::scaled.framerect.left;
 		diff_y = (this->resize.step_height - this->flag_height) / 2 - 2;
 
 		int text_left  = rtl ? right - this->base_width - 1 : left + diff_x;
 		int text_right = rtl ? right - diff_x : left + this->base_width - 1;
 
-		DrawSprite(SPR_FLAG_VEH_STOPPED, PAL_NONE, rtl ? right - this->flag_width : left + WD_FRAMERECT_LEFT, y + diff_y);
+		DrawSprite(SPR_FLAG_VEH_STOPPED, PAL_NONE, rtl ? right - this->flag_width : left + WidgetDimensions::scaled.framerect.left, y + diff_y);
 
 		SetDParam(0, time);
 		DrawString(text_left, text_right, y + 2, STR_JUST_DATE_WALLCLOCK_TINY, colour);
@@ -464,19 +464,20 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			}
 
 			case WID_SCHDISPATCH_SUMMARY_PANEL: {
-				int y = r.top + WD_FRAMERECT_TOP;
+				Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
+				int y = ir.top;
 
 				if (!HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) || !this->IsScheduleSelected()) {
 					y += FONT_HEIGHT_NORMAL;
-					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SCHDISPATCH_SUMMARY_NOT_ENABLED);
+					DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_NOT_ENABLED);
 				} else {
 					const DispatchSchedule &ds = this->GetSelectedSchedule();
 
 					auto draw_warning = [&](StringID text) {
 						const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
 						int step_height = std::max<int>(warning_dimensions.height, FONT_HEIGHT_NORMAL);
-						int left = r.left + WD_FRAMERECT_LEFT;
-						int right = r.right - WD_FRAMERECT_RIGHT;
+						int left = ir.left;
+						int right = ir.right;
 						const bool rtl = (_current_text_dir == TD_RTL);
 						DrawSprite(SPR_WARNING_SIGN, 0, rtl ? right - warning_dimensions.width - 5 : left + 5, y + (step_height - warning_dimensions.height) / 2);
 						if (rtl) {
@@ -537,14 +538,14 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 								break;
 						}
 
-						DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SCHDISPATCH_ASSIGNED_TO_ORDER);
+						DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_ASSIGNED_TO_ORDER);
 						y += FONT_HEIGHT_NORMAL;
 					}
 
 					const DateTicksScaled last_departure = ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchLastDispatch();
 					SetDParam(0, last_departure);
 					const_cast<SchdispatchWindow*>(this)->last_departure_future = (last_departure > _scaled_date_ticks);
-					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y,
+					DrawString(ir.left, ir.right, y,
 							this->last_departure_future ? STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE : STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST);
 					y += FONT_HEIGHT_NORMAL;
 
@@ -552,22 +553,22 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						const int required_vehicle = CalculateMaxRequiredVehicle(v->orders->GetTimetableTotalDuration(), ds.GetScheduledDispatchDuration(), ds.GetScheduledDispatch());
 						if (required_vehicle > 0) {
 							SetDParam(0, required_vehicle);
-							DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SCHDISPATCH_SUMMARY_L1);
+							DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_L1);
 						}
 					}
 					y += FONT_HEIGHT_NORMAL;
 
 					SetTimetableParams(0, ds.GetScheduledDispatchDuration(), true);
-					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SCHDISPATCH_SUMMARY_L2);
+					DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_L2);
 					y += FONT_HEIGHT_NORMAL;
 
 					SetDParam(0, ds.GetScheduledDispatchStartTick());
 					SetDParam(1, ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchDuration());
-					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SCHDISPATCH_SUMMARY_L3);
+					DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_L3);
 					y += FONT_HEIGHT_NORMAL;
 
 					SetTimetableParams(0, ds.GetScheduledDispatchDelay());
-					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SCHDISPATCH_SUMMARY_L4);
+					DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_L4);
 					y += FONT_HEIGHT_NORMAL;
 
 					uint32 duration = ds.GetScheduledDispatchDuration();
@@ -881,12 +882,21 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 	void AddMultipleDepartureSlots(uint start, uint step, uint end)
 	{
+		bool wrap_mode = false;
+		if (end < start) {
+			const DispatchSchedule &ds = this->GetSelectedSchedule();
+			if (ds.GetScheduledDispatchDuration() == (1440 * _settings_time.ticks_per_minute)) {
+				/* 24 hour timetabling */
+				end += 1440;
+				wrap_mode = true;
+			}
+		}
 		if (end < start || step == 0 || !this->IsScheduleSelected()) return;
 
 		DateTicksScaled slot = MINUTES_DATE(MINUTES_DAY(CURRENT_MINUTE), 0, start);
 		slot -= _settings_time.clock_offset;
 		slot *= _settings_time.ticks_per_minute;
-		ScheduleAddIntl(this->vehicle->index | (this->schedule_index << 20), slot, (end - start) / step, step * _settings_time.ticks_per_minute);
+		ScheduleAddIntl(this->vehicle->index | (this->schedule_index << 20), slot, (end - start) / step, step * _settings_time.ticks_per_minute, wrap_mode);
 	}
 };
 

@@ -704,6 +704,7 @@ CommandCost CmdStartStopVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, 
  * @param p1 bitmask
  *   - bit 0 set = start vehicles, unset = stop vehicles
  *   - bit 1 if set, then it's a vehicle list window, not a depot and Tile is ignored in this case
+ *   - bit 8-15 Cargo filter
  * @param p2 packed VehicleListIdentifier
  * @param text unused
  * @return the cost of this operation or an error
@@ -719,7 +720,7 @@ CommandCost CmdMassStartStopVehicle(TileIndex tile, DoCommandFlag flags, uint32 
 	if (!IsCompanyBuildableVehicleType(vli.vtype)) return CMD_ERROR;
 
 	if (vehicle_list_window) {
-		if (!GenerateVehicleSortList(&list, vli)) return CMD_ERROR;
+		if (!GenerateVehicleSortList(&list, vli, GB(p1, 8, 8))) return CMD_ERROR;
 	} else {
 		if (!IsDepotTile(tile) || !IsTileOwner(tile, _current_company)) return CMD_ERROR;
 		/* Get the list of vehicles in the depot */
@@ -1657,11 +1658,11 @@ CommandCost CmdCloneVehicleFromTemplate(TileIndex tile, DoCommandFlag flags, uin
  * @param vli     identifier of the vehicle list
  * @return 0 for success and CMD_ERROR if no vehicle is able to go to depot
  */
-static CommandCost SendAllVehiclesToDepot(DoCommandFlag flags, DepotCommand depot_flags, const VehicleListIdentifier &vli)
+static CommandCost SendAllVehiclesToDepot(DoCommandFlag flags, DepotCommand depot_flags, const VehicleListIdentifier &vli, const CargoID cid)
 {
 	VehicleList list;
 
-	if (!GenerateVehicleSortList(&list, vli)) return CMD_ERROR;
+	if (!GenerateVehicleSortList(&list, vli, cid)) return CMD_ERROR;
 
 	/* Send all the vehicles to a depot */
 	bool had_success = false;
@@ -1688,7 +1689,8 @@ static CommandCost SendAllVehiclesToDepot(DoCommandFlag flags, DepotCommand depo
  * @param tile unused
  * @param flags for command type
  * @param p1 bitmask
- * - p1 0-20: bitvehicle ID to send to the depot
+ * - p1 0-19: bitvehicle ID to send to the depot
+ * - p1 0- 7: cargo filter for DEPOT_MASS_SEND mode
  * - p1 bits 27-31  - DEPOT_ flags (see vehicle_type.h)
  * @param p2 packed VehicleListIdentifier, or specific depot tile
  * @param text unused
@@ -1702,7 +1704,7 @@ CommandCost CmdSendVehicleToDepot(TileIndex tile, DoCommandFlag flags, uint32 p1
 		if (!vli.UnpackIfValid(p2)) return CMD_ERROR;
 		uint32 depot_flags = (p1 & (DEPOT_SERVICE | DEPOT_CANCEL | DEPOT_SELL));
 		if (!(p1 & DEPOT_CANCEL)) depot_flags |= DEPOT_DONT_CANCEL;
-		return SendAllVehiclesToDepot(flags, (DepotCommand) depot_flags, vli);
+		return SendAllVehiclesToDepot(flags, (DepotCommand) depot_flags, vli, GB(p1, 0, 8));
 	}
 
 	Vehicle *v = Vehicle::GetIfValid(GB(p1, 0, 20));

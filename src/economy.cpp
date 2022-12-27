@@ -108,6 +108,8 @@ Prices _price;
 Money _additional_cash_required;
 static PriceMultipliers _price_base_multiplier;
 
+extern int GetAmountOwnedBy(const Company *c, Owner owner);
+
 /**
  * Calculate the value of the company. That is the value of all
  * assets (vehicles, stations, shares) and money minus the loan,
@@ -122,18 +124,12 @@ Money CalculateCompanyValue(const Company *c, bool including_loan)
 	Money owned_shares_value = 0;
 
 	for (const Company *co : Company::Iterate()) {
-		uint8 shares_owned = 0;
+		int shares_owned = GetAmountOwnedBy(co, c->index);
 
-		for (uint8 i = 0; i < 4; i++) {
-			if (co->share_owners[i] == c->index) {
-				shares_owned++;
-			}
-		}
-
-		owned_shares_value += (CalculateCompanyValueExcludingShares(co) / 4) * shares_owned;
+		if (shares_owned > 0) owned_shares_value += (CalculateCompanyValueExcludingShares(co) / 4) * shares_owned;
 	}
 
-	return std::max<Money>(owned_shares_value + CalculateCompanyValueExcludingShares(c), 1);
+	return owned_shares_value + CalculateCompanyValueExcludingShares(c);
 }
 
 Money CalculateCompanyValueExcludingShares(const Company *c, bool including_loan)
@@ -882,6 +878,7 @@ void RecomputePrices()
 	}
 
 	SetWindowClassesDirty(WC_BUILD_VEHICLE);
+	SetWindowClassesDirty(WC_BUILD_VIRTUAL_TRAIN);
 	SetWindowClassesDirty(WC_REPLACE_VEHICLE);
 	SetWindowClassesDirty(WC_VEHICLE_DETAILS);
 	SetWindowClassesDirty(WC_COMPANY_INFRASTRUCTURE);
@@ -2010,6 +2007,11 @@ static void LoadUnloadVehicle(Vehicle *front)
 
 		GoodsEntry *ge = &st->goods[v->cargo_type];
 
+		if (HasBit(v->vehicle_flags, VF_CARGO_UNLOADING) && payment == nullptr) {
+			/* Once the payment has been made, never attempt to unload again */
+			ClrBit(v->vehicle_flags, VF_CARGO_UNLOADING);
+		}
+
 		if (HasBit(v->vehicle_flags, VF_CARGO_UNLOADING) && (GetUnloadType(v) & OUFB_NO_UNLOAD) == 0) {
 			uint cargo_count = v->cargo.UnloadCount();
 			uint amount_unloaded = _settings_game.order.gradual_loading ? std::min(cargo_count, GetLoadAmount(v)) : cargo_count;
@@ -2074,9 +2076,6 @@ static void LoadUnloadVehicle(Vehicle *front)
 			}
 
 			continue;
-		} else if (HasBit(v->vehicle_flags, VF_CARGO_UNLOADING) && payment == nullptr) {
-			/* Once the payment has been made, never attempt to unload again */
-			ClrBit(v->vehicle_flags, VF_CARGO_UNLOADING);
 		}
 
 		/* Do not pick up goods when we have no-load set or loading is stopped.
@@ -2430,8 +2429,6 @@ static void DoAcquireCompany(Company *c)
 
 	CheckCaches(true, nullptr, CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG);
 }
-
-extern int GetAmountOwnedBy(const Company *c, Owner owner);
 
 /**
  * Acquire shares in an opposing company.

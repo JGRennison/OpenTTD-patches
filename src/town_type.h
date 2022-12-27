@@ -130,4 +130,14 @@ struct TransportedCargoStat {
 	}
 };
 
+
+/** Town allow tunnel building setting values. It needs to be 8bits, because we save and load it as such */
+enum TownTunnelMode : byte {
+	TTM_BEGIN = 0,         ///< Used for iterations and limit testing
+	TTM_FORBIDDEN = 0,     ///< Forbidden
+	TTM_OBSTRUCTION_ONLY,  ///< Allowed only for tunnels under obstructions
+	TTM_ALLOWED,           ///< Allowed in all cases (including through hills)
+	TTM_END,               ///< Used for iterations and limit testing
+};
+
 #endif /* TOWN_TYPE_H */

@@ -161,7 +161,7 @@ bool Vehicle::NeedsAutorenewing(const Company *c, bool use_renew_setting) const
 	 * However this takes time and since the Company pointer is often present
 	 * when this function is called then it's faster to pass the pointer as an
 	 * argument rather than finding it again. */
-	assert(c == Company::Get(this->owner));
+	dbg_assert(c == Company::Get(this->owner));
 
 	if (use_renew_setting && !c->settings.engine_renew) return false;
 	if (this->age - this->max_age < (c->settings.engine_renew_months * 30)) return false;
@@ -179,7 +179,7 @@ bool Vehicle::NeedsAutorenewing(const Company *c, bool use_renew_setting) const
  */
 void VehicleServiceInDepot(Vehicle *v)
 {
-	assert(v != nullptr);
+	dbg_assert(v != nullptr);
 	const Engine *e = Engine::Get(v->engine_type);
 	if (v->type == VEH_TRAIN) {
 		if (v->Next() != nullptr) VehicleServiceInDepot(v->Next());
@@ -450,6 +450,7 @@ Vehicle::Vehicle(VehicleType type)
 	this->cargo_age_counter  = 1;
 	this->last_station_visited = INVALID_STATION;
 	this->last_loading_station = INVALID_STATION;
+	this->last_loading_tick = 0;
 	this->cur_image_valid_dir  = INVALID_DIR;
 	this->vcache.cached_veh_flags = 0;
 }
@@ -1104,7 +1105,7 @@ void Vehicle::PreDestructor()
 		HideFillingPercent(&this->fill_percent_te_id);
 		this->CancelReservation(INVALID_STATION, st);
 		delete this->cargo_payment;
-		assert(this->cargo_payment == nullptr); // cleared by ~CargoPayment
+		dbg_assert(this->cargo_payment == nullptr); // cleared by ~CargoPayment
 	}
 
 	if (this->IsEngineCountable()) {
@@ -1473,7 +1474,7 @@ void CallVehicleTicks()
 
 		Vehicle *v = nullptr;
 		SCOPE_INFO_FMT([&v], "CallVehicleTicks -> OnPeriodic: %s", scope_dumper().VehicleInfo(v));
-		for (size_t i = _scaled_tick_counter & 0x1FF; i < Vehicle::GetPoolSize(); i += 0x200) {
+		for (size_t i = (size_t)(_scaled_tick_counter & 0x1FF); i < Vehicle::GetPoolSize(); i += 0x200) {
 			v = Vehicle::Get(i);
 			if (v == nullptr) continue;
 
@@ -1723,7 +1724,7 @@ void CallVehicleTicks()
 			default:
 				NOT_REACHED();
 		}
-		assert(type != INVALID_EXPENSES);
+		dbg_assert(type != INVALID_EXPENSES);
 
 		Money vehicle_new_value = v->GetEngine()->GetCost();
 
@@ -2475,7 +2476,7 @@ uint8 CalcPercentVehicleFilledOfCargo(const Vehicle *front, CargoID cargo)
 void VehicleEnterDepot(Vehicle *v)
 {
 	/* Always work with the front of the vehicle */
-	assert(v == v->First());
+	dbg_assert(v == v->First());
 
 	switch (v->type) {
 		case VEH_TRAIN: {
@@ -3142,6 +3143,7 @@ static void VehicleIncreaseStats(const Vehicle *front)
 {
 	for (const Vehicle *v = front; v != nullptr; v = v->Next()) {
 		StationID last_loading_station = HasBit(front->vehicle_flags, VF_LAST_LOAD_ST_SEP) ? v->last_loading_station : front->last_loading_station;
+		uint64 loading_tick = HasBit(front->vehicle_flags, VF_LAST_LOAD_ST_SEP) ? v->last_loading_tick : front->last_loading_tick;
 		if (v->refit_cap > 0 &&
 				last_loading_station != INVALID_STATION &&
 				last_loading_station != front->last_station_visited &&
@@ -3156,7 +3158,7 @@ static void VehicleIncreaseStats(const Vehicle *front)
 			EdgeUpdateMode restricted_mode = EUM_INCREASE;
 			if (v->type == VEH_AIRCRAFT) restricted_mode |= EUM_AIRCRAFT;
 			IncreaseStats(Station::Get(last_loading_station), v->cargo_type, front->last_station_visited, v->refit_cap,
-				std::min<uint>(v->refit_cap, v->cargo.StoredCount()), restricted_mode);
+				std::min<uint>(v->refit_cap, v->cargo.StoredCount()), _scaled_tick_counter - loading_tick, restricted_mode);
 		}
 	}
 }
@@ -3337,7 +3339,7 @@ void Vehicle::LeaveStation()
 	assert(this->current_order.IsAnyLoadingType());
 
 	delete this->cargo_payment;
-	assert(this->cargo_payment == nullptr); // cleared by ~CargoPayment
+	dbg_assert(this->cargo_payment == nullptr); // cleared by ~CargoPayment
 
 	ClrBit(this->vehicle_flags, VF_COND_ORDER_WAIT);
 
@@ -3377,6 +3379,7 @@ void Vehicle::LeaveStation()
 
 			/* if the vehicle could load here or could stop with cargo loaded set the last loading station */
 			this->last_loading_station = this->last_station_visited;
+			this->last_loading_tick = _scaled_tick_counter;
 			ClrBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP);
 		} else if (cargoes_can_leave_with_cargo == 0) {
 			/* can leave with no cargoes */
@@ -3390,16 +3393,20 @@ void Vehicle::LeaveStation()
 
 			/* NB: this is saved here as we overwrite it on the first iteration of the loop below */
 			StationID head_last_loading_station = this->last_loading_station;
+			uint64 head_last_loading_tick = this->last_loading_tick;
 			for (Vehicle *u = this; u != nullptr; u = u->Next()) {
 				StationID last_loading_station = HasBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP) ? u->last_loading_station : head_last_loading_station;
+				uint64 last_loading_tick = HasBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP) ? u->last_loading_tick : head_last_loading_tick;
 				if (u->cargo_type < NUM_CARGO && HasBit(cargoes_can_load_unload, u->cargo_type)) {
 					if (HasBit(cargoes_can_leave_with_cargo, u->cargo_type)) {
 						u->last_loading_station = this->last_station_visited;
+						u->last_loading_tick = _scaled_tick_counter;
 					} else {
 						u->last_loading_station = INVALID_STATION;
 					}
 				} else {
 					u->last_loading_station = last_loading_station;
+					u->last_loading_tick = last_loading_tick;
 				}
 			}
 			SetBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP);
@@ -3467,7 +3474,7 @@ void Vehicle::LeaveStation()
 void Vehicle::AdvanceLoadingInStation()
 {
 	assert(this->current_order.IsType(OT_LOADING));
-	assert(this->type == VEH_TRAIN);
+	dbg_assert(this->type == VEH_TRAIN);
 
 	ClrBit(Train::From(this)->flags, VRF_ADVANCE_IN_PLATFORM);
 
@@ -3901,7 +3908,7 @@ int ReversingDistanceTargetSpeed(const Train *v);
  */
 void Vehicle::ShowVisualEffect(uint max_speed) const
 {
-	assert(this->IsPrimaryVehicle());
+	dbg_assert(this->IsPrimaryVehicle());
 	bool sound = false;
 
 	/* Do not show any smoke when:
@@ -4057,7 +4064,7 @@ void Vehicle::ShowVisualEffect(uint max_speed) const
  */
 void Vehicle::SetNext(Vehicle *next)
 {
-	assert(this != next);
+	dbg_assert(this != next);
 
 	if (this->next != nullptr) {
 		/* We had an old next vehicle. Update the first and previous pointers */
@@ -4086,11 +4093,11 @@ void Vehicle::SetNext(Vehicle *next)
  */
 void Vehicle::AddToShared(Vehicle *shared_chain)
 {
-	assert(this->previous_shared == nullptr && this->next_shared == nullptr);
+	dbg_assert(this->previous_shared == nullptr && this->next_shared == nullptr);
 
 	if (shared_chain->orders == nullptr) {
-		assert(shared_chain->previous_shared == nullptr);
-		assert(shared_chain->next_shared == nullptr);
+		dbg_assert(shared_chain->previous_shared == nullptr);
+		dbg_assert(shared_chain->next_shared == nullptr);
 		this->orders = shared_chain->orders = new OrderList(nullptr, shared_chain);
 	}
 
@@ -4332,7 +4339,7 @@ void VehiclesYearlyLoop()
 bool CanVehicleUseStation(EngineID engine_type, const Station *st)
 {
 	const Engine *e = Engine::GetIfValid(engine_type);
-	assert(e != nullptr);
+	dbg_assert(e != nullptr);
 
 	switch (e->type) {
 		case VEH_TRAIN:
@@ -4425,7 +4432,7 @@ StringID GetVehicleCannotUseStationReason(const Vehicle *v, const Station *st)
  */
 GroundVehicleCache *Vehicle::GetGroundVehicleCache()
 {
-	assert(this->IsGroundVehicle());
+	dbg_assert(this->IsGroundVehicle());
 	if (this->type == VEH_TRAIN) {
 		return &Train::From(this)->gcache;
 	} else {
@@ -4440,7 +4447,7 @@ GroundVehicleCache *Vehicle::GetGroundVehicleCache()
  */
 const GroundVehicleCache *Vehicle::GetGroundVehicleCache() const
 {
-	assert(this->IsGroundVehicle());
+	dbg_assert(this->IsGroundVehicle());
 	if (this->type == VEH_TRAIN) {
 		return &Train::From(this)->gcache;
 	} else {
@@ -4455,7 +4462,7 @@ const GroundVehicleCache *Vehicle::GetGroundVehicleCache() const
  */
 uint16 &Vehicle::GetGroundVehicleFlags()
 {
-	assert(this->IsGroundVehicle());
+	dbg_assert(this->IsGroundVehicle());
 	if (this->type == VEH_TRAIN) {
 		return Train::From(this)->gv_flags;
 	} else {
@@ -4470,7 +4477,7 @@ uint16 &Vehicle::GetGroundVehicleFlags()
  */
 const uint16 &Vehicle::GetGroundVehicleFlags() const
 {
-	assert(this->IsGroundVehicle());
+	dbg_assert(this->IsGroundVehicle());
 	if (this->type == VEH_TRAIN) {
 		return Train::From(this)->gv_flags;
 	} else {
@@ -4556,12 +4563,78 @@ void DumpVehicleStats(char *buffer, const char *last)
 	buffer += seprintf(buffer, last, "  %10s: %5u\n", "total", (uint)Vehicle::GetNumItems());
 }
 
+void AdjustVehicleScaledTickBase(int64 delta)
+{
+	for (Vehicle *v : Vehicle::Iterate()) {
+		v->last_loading_tick += delta;
+	}
+}
+
 void ShiftVehicleDates(int interval)
 {
 	for (Vehicle *v : Vehicle::Iterate()) {
 		v->date_of_last_service += interval;
 	}
+}
 
-	extern void AdjustAllSignalSpeedRestrictionTickValues(DateTicksScaled delta);
-	AdjustAllSignalSpeedRestrictionTickValues(interval * DAY_TICKS * _settings_game.economy.day_length_factor);
+/**
+ * Calculates the maximum weight of the ground vehicle when loaded.
+ * @return Weight in tonnes
+ */
+uint32 Vehicle::GetDisplayMaxWeight() const
+{
+	uint32 max_weight = 0;
+
+	for (const Vehicle* u = this; u != nullptr; u = u->Next()) {
+		max_weight += u->GetMaxWeight();
+	}
+
+	return max_weight;
+}
+
+/**
+ * Calculates the minimum power-to-weight ratio using the maximum weight of the ground vehicle
+ * @return power-to-weight ratio in 10ths of hp(I) per tonne
+ */
+uint32 Vehicle::GetDisplayMinPowerToWeight() const
+{
+	uint32 max_weight = GetDisplayMaxWeight();
+	if (max_weight == 0) return 0;
+	return GetGroundVehicleCache()->cached_power * 10u / max_weight;
+}
+
+/**
+ * Checks if two vehicle chains have the same list of engines.
+ * @param v1 First vehicle chain.
+ * @param v1 Second vehicle chain.
+ * @return True if same, false if different.
+ */
+bool VehiclesHaveSameEngineList(const Vehicle *v1, const Vehicle *v2)
+{
+	while (true) {
+		if (v1 == nullptr && v2 == nullptr) return true;
+		if (v1 == nullptr || v2 == nullptr) return false;
+		if (v1->GetEngine() != v2->GetEngine()) return false;
+		v1 = v1->GetNextVehicle();
+		v2 = v2->GetNextVehicle();
+	}
+}
+
+/**
+ * Checks if two vehicles have the same list of orders.
+ * @param v1 First vehicles.
+ * @param v1 Second vehicles.
+ * @return True if same, false if different.
+ */
+bool VehiclesHaveSameOrderList(const Vehicle *v1, const Vehicle *v2)
+{
+	const Order *o1 = v1->GetFirstOrder();
+	const Order *o2 = v2->GetFirstOrder();
+	while (true) {
+		if (o1 == nullptr && o2 == nullptr) return true;
+		if (o1 == nullptr || o2 == nullptr) return false;
+		if (!o1->Equals(*o2)) return false;
+		o1 = o1->next;
+		o2 = o2->next;
+	}
 }

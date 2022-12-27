@@ -42,7 +42,7 @@ struct Object : ObjectPool::PoolItem<&_object_pool> {
 	 */
 	static inline void IncTypeCount(ObjectType type)
 	{
-		assert(type < NUM_OBJECTS);
+		dbg_assert(type < NUM_OBJECTS);
 		counts[type]++;
 	}
 
@@ -53,7 +53,7 @@ struct Object : ObjectPool::PoolItem<&_object_pool> {
 	 */
 	static inline void DecTypeCount(ObjectType type)
 	{
-		assert(type < NUM_OBJECTS);
+		dbg_assert(type < NUM_OBJECTS);
 		counts[type]--;
 	}
 
@@ -64,7 +64,7 @@ struct Object : ObjectPool::PoolItem<&_object_pool> {
 	 */
 	static inline uint16 GetTypeCount(ObjectType type)
 	{
-		assert(type < NUM_OBJECTS);
+		dbg_assert(type < NUM_OBJECTS);
 		return counts[type];
 	}
 

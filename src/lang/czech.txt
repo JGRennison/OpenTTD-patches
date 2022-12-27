@@ -280,6 +280,7 @@ STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}hp
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}hp
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW
 
+
 STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA}{NBSP}t
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}{NBSP}t
 STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}{NBSP}kg
@@ -475,10 +476,9 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Ukončit
 
 # Settings menu
-###length 14
+###length 15
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Možnosti hry
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Nastavení
-STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :Nastavení AI / hry
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :Nastavení grafik
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Nastavení průhlednosti
 STR_SETTINGS_MENU_ZONING                                        :Zóny
@@ -1072,36 +1072,6 @@ STR_GAME_OPTIONS_CURRENCY_INR                                   :Indická rupie 
 STR_GAME_OPTIONS_CURRENCY_IDR                                   :Indonéská rupie (IDR)
 STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malajsijský Ringgit (MYR)
 
-###length 2
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Vlevo
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :Vpravo
-
-STR_GAME_OPTIONS_TOWN_NAMES_FRAME                               :{BLACK}Názvy měst
-STR_GAME_OPTIONS_TOWN_NAMES_DROPDOWN_TOOLTIP                    :{BLACK}Výběr stylu jmen měst
-
-###length 21
-STR_GAME_OPTIONS_TOWN_NAME_ORIGINAL_ENGLISH                     :Anglická (původní)
-STR_GAME_OPTIONS_TOWN_NAME_FRENCH                               :Francouzská
-STR_GAME_OPTIONS_TOWN_NAME_GERMAN                               :Německá
-STR_GAME_OPTIONS_TOWN_NAME_ADDITIONAL_ENGLISH                   :Anglická (další)
-STR_GAME_OPTIONS_TOWN_NAME_LATIN_AMERICAN                       :Latinskoamerická
-STR_GAME_OPTIONS_TOWN_NAME_SILLY                                :Anglická (legrační)
-STR_GAME_OPTIONS_TOWN_NAME_SWEDISH                              :Švédská
-STR_GAME_OPTIONS_TOWN_NAME_DUTCH                                :Holandská
-STR_GAME_OPTIONS_TOWN_NAME_FINNISH                              :Finská
-STR_GAME_OPTIONS_TOWN_NAME_POLISH                               :Polská
-STR_GAME_OPTIONS_TOWN_NAME_SLOVAK                               :Slovenská
-STR_GAME_OPTIONS_TOWN_NAME_NORWEGIAN                            :Norská
-STR_GAME_OPTIONS_TOWN_NAME_HUNGARIAN                            :Maďarská
-STR_GAME_OPTIONS_TOWN_NAME_AUSTRIAN                             :Rakouská
-STR_GAME_OPTIONS_TOWN_NAME_ROMANIAN                             :Rumunská
-STR_GAME_OPTIONS_TOWN_NAME_CZECH                                :Česká
-STR_GAME_OPTIONS_TOWN_NAME_SWISS                                :Švýcarská
-STR_GAME_OPTIONS_TOWN_NAME_DANISH                               :Dánská
-STR_GAME_OPTIONS_TOWN_NAME_TURKISH                              :Turecká
-STR_GAME_OPTIONS_TOWN_NAME_ITALIAN                              :Italská
-STR_GAME_OPTIONS_TOWN_NAME_CATALAN                              :Katalánská
-
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Automatické ukládání
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Volba intervalu mezi automatickým ukládáním hry
 
@@ -1134,21 +1104,8 @@ STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Zaškrtn
 
 STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}Aktuální ovladač: {STRING}
 
-STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Velikost rozhraní
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Zvolit velikost prvků uživatelského rozhraní
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(zjistit automaticky)
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normální
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dvojnásobná velikost
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Čtyřnásobná velikost
 
-STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Velikost písma
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Zvolit velikost písma
-
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(zjistit automaticky)
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Běžné
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Dvojnásobná velikost
-STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Čtyřnásobná velikost
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Grafiky
 
@@ -1200,8 +1157,6 @@ STR_CURRENCY_PREVIEW                                            :{LTBLUE}Náhled
 STR_CURRENCY_CUSTOM_CURRENCY_PREVIEW_TOOLTIP                    :{BLACK}10000 liber (£) ve vlastní měně
 STR_CURRENCY_CHANGE_PARAMETER                                   :{BLACK}Změnit parametry vlastní měny
 
-STR_DIFFICULTY_LEVEL_SETTING_MAXIMUM_NO_COMPETITORS             :{LTBLUE}Maximální počet protivníků: {ORANGE}{COMMA}
-
 STR_NONE                                                        :žádný
 STR_FUNDING_ONLY                                                :Pouze dotace
 STR_MINIMAL                                                     :Nejmenší
@@ -1250,6 +1205,12 @@ STR_SUBSIDY_X1_5                                                :1,5x
 STR_SUBSIDY_X2                                                  :2x
 STR_SUBSIDY_X3                                                  :3x
 STR_SUBSIDY_X4                                                  :4x
+
+###length 4
+STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :krajina mírného pásma
+STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :subarktická krajina
+STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :subtropická kraina
+STR_CLIMATE_TOYLAND_LANDSCAPE                                   :Země hraček
 
 ###length 7
 STR_TERRAIN_TYPE_VERY_FLAT                                      :velmi plochá
@@ -1523,9 +1484,6 @@ STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :Pokud je zapnut
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY                 :Vlaky různých společností nemohou do sebe nabourat: {STRING}
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :Toto nastavení zabraňuje nedůvěryhodným síťovým hráčům záměrně způsobovat srážky vlaků s těmi z jiných společností v síťové hře se sdílenou železniční infrastrukturou.
 
-STR_CONFIG_SETTING_FLIP_DIRECTION_ALL_TRAINS                    :Všechny vlaky se mohou otáčet v depu: {STRING}
-STR_CONFIG_SETTING_FLIP_DIRECTION_ALL_TRAINS_HELPTEXT           :Zapne otáčení vlaků v depech, i když je tato volba vypnutá v nastavení grafik.
-
 STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING               :Dlouhá silniční vozidla mohou předjíždět: {STRING}
 STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING_HELPTEXT      :Zapne předjíždění dlouhých silničních vozidel jiná silniční vozidla.
 
@@ -1672,6 +1630,10 @@ STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :vylepšený
 STR_CONFIG_SETTING_ROAD_SIDE                                    :Silniční vozidla: {STRING}
 STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Zvol na jaké straně vozovky jezdí vozidla
 
+###length 2
+STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :Vlevo
+STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :Vpravo
+
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Otočení výškové mapy: {STRING}
 ###length 2
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_COUNTER_CLOCKWISE         :Doleva
@@ -1775,8 +1737,6 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_DO_NOTHING      :Nic
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_ZOOM_MAIN       :Nastvit 1X zoom
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_NEW_EXTRA       :Otevřít další pohled
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE              :Zobrazit trasu vozidla: {STRING}
-STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE_NO           :Vypnuto
-STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE_SIMPLE       :Jednoduchá
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :Styl vykreslení trasy vozidla: {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :přerušovaná čára široká {COMMA} pixel{P "" y ů}
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :plné čáry
@@ -2355,7 +2315,7 @@ STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :Povoluje vlaků
 
 ###length 2
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
-STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(doporučený)
+STR_CONFIG_SETTING_PATHFINDER_YAPF                              :YAPF {BLUE}(doporučený)
 
 STR_CONFIG_SETTING_ENABLE_ROAD_CUSTOM_BRIDGE_HEADS              :Povolit vlastní konce silničních mostů: {STRING}
 STR_CONFIG_SETTING_ENABLE_ROAD_CUSTOM_BRIDGE_HEADS_HELPTEXT     :Pokud je zapnuto, konce silničních mostů mohou mít na koncích nerovná políčka
@@ -2441,7 +2401,6 @@ STR_INTRO_HIGHSCORE                                             :{BLACK}Nejlepš
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Nastavení
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Nastavení grafik
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Stahovat součásti
-STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}Nastavení AI / hry
 STR_INTRO_QUIT                                                  :{BLACK}Ukončit
 
 STR_INTRO_TOOLTIP_NEW_GAME                                      :{BLACK}Hrát novou hru. Pomocí Ctrl přeskočíš nastavení mapy
@@ -2461,7 +2420,6 @@ STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Zobrazit
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Nastavení zobrazení
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Ukázat nastavení NewGRF
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Ukázat, jaký nový nebo upravený obsah se dá stáhnout
-STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Zobrazit nastavení AI a hry
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Ukončit 'OpenTTD'
 
 STR_INTRO_BASESET                                               :{BLACK}V aktuálně zvolené základní sadě grafiky chybí {NUM} sprit{P "" y ů}. Zkuste, prosím, vyhledat aktualizovanou základní sadu.
@@ -2496,12 +2454,6 @@ STR_CHEAT_INFLATION_COST                                        :{LTBLUE}Změnit
 STR_CHEAT_INFLATION_COST_QUERY_CAPT                             :{WHITE}Změnit faktor inflace nákladů
 STR_CHEAT_INFLATION_INCOME                                      :{LTBLUE}Změnit faktor inflace příjmů: {ORANGE}{DECIMAL}
 STR_CHEAT_INFLATION_INCOME_QUERY_CAPT                           :{WHITE}Změnit faktor inflace příjmů
-
-###length 4
-STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :krajina mírného pásma
-STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :subarktická krajina
-STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :subtropická kraina
-STR_CHEAT_SWITCH_CLIMATE_TOYLAND_LANDSCAPE                      :Země hraček
 
 # Livery window
 STR_LIVERY_CAPTION                                              :{WHITE}{COMPANY} - barevné schéma
@@ -2986,6 +2938,8 @@ STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLA
 STR_LINKGRAPH_LEGEND_SATURATED                                  :{TINY_FONT}{BLACK}nasycený
 STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLACK}přetížení
 
+# Linkgraph tooltip
+
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Zvýraznění oblasti pokrytí
 STR_STATION_BUILD_COVERAGE_OFF                                  :{BLACK}Vypnuto
@@ -3114,7 +3068,7 @@ STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE_WEIGHT_RATIO           :poměr maximál
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_OWNER                         :vlastník vlaku
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_STATUS                        :stav vlaku
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :nedefinováno
-STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED                       :{RED}nedefinováno
+STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED                       :{PUSH_COLOUR}{RED}nedefinováno{POP_COLOUR}
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER                  :{STRING} {STRING} {STRING} {COMMA} pak
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_SPEED                    :{STRING} {STRING} {STRING} {VELOCITY} pak
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_WEIGHT                   :{STRING} {STRING} {STRING} {WEIGHT_SHORT} pak
@@ -3779,6 +3733,8 @@ STR_MAPGEN_MAPSIZE                                              :{BLACK}Velikost
 STR_MAPGEN_MAPSIZE_TOOLTIP                                      :{BLACK}Vybrat velikost mapy ve čtvercích. Počet dostupných čtverců bude o neco nižší
 STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Množství měst:
+STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Názvy měst
+STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Výběr stylu jmen měst
 STR_MAPGEN_DATE                                                 :{BLACK}Datum:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Množství průmyslu:
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Nejvyšší vrchol:
@@ -3797,11 +3753,34 @@ STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Zvýšit
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Snížit sněžnou čáru o jednu úroveň
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Generátor krajiny:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Typ krajiny:
-STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Četnost jezer:
+STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Četnost jezer:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Řeky:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Členitost krajiny:
 STR_MAPGEN_VARIETY                                              :{BLACK}Rozmanitost terénu:
 STR_MAPGEN_GENERATE                                             :{WHITE}Vytvořit
+
+###length 21
+STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH                           :Anglická (původní)
+STR_MAPGEN_TOWN_NAME_FRENCH                                     :Francouzská
+STR_MAPGEN_TOWN_NAME_GERMAN                                     :Německá
+STR_MAPGEN_TOWN_NAME_ADDITIONAL_ENGLISH                         :Anglická (další)
+STR_MAPGEN_TOWN_NAME_LATIN_AMERICAN                             :Latinskoamerická
+STR_MAPGEN_TOWN_NAME_SILLY                                      :Anglická (legrační)
+STR_MAPGEN_TOWN_NAME_SWEDISH                                    :Švédská
+STR_MAPGEN_TOWN_NAME_DUTCH                                      :Holandská
+STR_MAPGEN_TOWN_NAME_FINNISH                                    :Finská
+STR_MAPGEN_TOWN_NAME_POLISH                                     :Polská
+STR_MAPGEN_TOWN_NAME_SLOVAK                                     :Slovenská
+STR_MAPGEN_TOWN_NAME_NORWEGIAN                                  :Norská
+STR_MAPGEN_TOWN_NAME_HUNGARIAN                                  :Maďarská
+STR_MAPGEN_TOWN_NAME_AUSTRIAN                                   :Rakouská
+STR_MAPGEN_TOWN_NAME_ROMANIAN                                   :Rumunská
+STR_MAPGEN_TOWN_NAME_CZECH                                      :Česká
+STR_MAPGEN_TOWN_NAME_SWISS                                      :Švýcarská
+STR_MAPGEN_TOWN_NAME_DANISH                                     :Dánská
+STR_MAPGEN_TOWN_NAME_TURKISH                                    :Turecká
+STR_MAPGEN_TOWN_NAME_ITALIAN                                    :Italská
+STR_MAPGEN_TOWN_NAME_CATALAN                                    :Katalánská
 
 # Strings for map borders at game generation
 STR_MAPGEN_BORDER_TYPE                                          :{BLACK}Okraje mapy:
@@ -3948,6 +3927,10 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Předcho
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Jít na předchozí normální sprite (s grafikou), přičemž se přeskakují pseudo-/barvící/znakové sprity a při dosažení začátku se jde na konec
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Zobrazení vybraného spritu. Posun se při jeho vykreslení neuvažoval
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Posouvání spritu změnou souřadnic X a Y. Ctrl+kliknutí posouvá o osm jednotek najednou.
+
+###length 2
+
+
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Resetovat
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Resetovat aktuání relativní posunutí
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}Posunutí v ose X: {NUM}, Posunutí v ose Y: {NUM} (Absolutní)
@@ -4287,7 +4270,6 @@ STR_FINANCES_SECTION_OTHER                                      :{GOLD}Další
 
 STR_FINANCES_NEGATIVE_INCOME                                    :-{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :+{CURRENCY_LONG}
-STR_FINANCES_NET_PROFIT                                         :{WHITE}Čistý zisk
 STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}Stav na účtu
 STR_FINANCES_OWN_FUNDS_TITLE                                    :{WHITE}Vlastní Prostředky
 STR_FINANCES_LOAN_TITLE                                         :{WHITE}Půjčka
@@ -4515,6 +4497,8 @@ STR_PURCHASE_INFO_ALL_BUT                                       :Všechny kromě
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Max. tažná síla: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Dosah: {GOLD}{COMMA} polí
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Typ letadla: {GOLD}{STRING}
+
+###length 3
 
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Seznam vlaků - pro informace klikni na vlak. Ctrl+kliknutí způsobí přepínání skrytí typů lokomotiv a vagónů.
@@ -5179,12 +5163,12 @@ STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}Někter�
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}Okno na ladění AI / herních skriptů je dostupné pouze na serveru
 
 # AI configuration window
-STR_AI_CONFIG_CAPTION                                           :{WHITE}Nastavení AI / hry
 STR_AI_CONFIG_GAMELIST_TOOLTIP                                  :{BLACK}Herní skripty, které budou načteny v příští hře
 STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}AI, které budou načteny v příští hře
 STR_AI_CONFIG_HUMAN_PLAYER                                      :Lidský hráč
 STR_AI_CONFIG_RANDOM_AI                                         :Náhodná AI
 STR_AI_CONFIG_NONE                                              :(žádný)
+STR_AI_CONFIG_MAX_COMPETITORS                                   :{LTBLUE}Maximální počet protivníků: {ORANGE}{COMMA}
 
 STR_AI_CONFIG_MOVE_UP                                           :{BLACK}Přesunout nahoru
 STR_AI_CONFIG_MOVE_UP_TOOLTIP                                   :{BLACK}Přesunout vybranou AI v seznamu výše
@@ -5194,8 +5178,6 @@ STR_AI_CONFIG_MOVE_DOWN_TOOLTIP                                 :{BLACK}Přesuno
 STR_AI_CONFIG_GAMESCRIPT                                        :{SILVER}Herní skript
 STR_AI_CONFIG_AI                                                :{SILVER}AI
 
-STR_AI_CONFIG_CHANGE                                            :{BLACK}Vybrat {STRING}
-STR_AI_CONFIG_CHANGE_NONE                                       :
 STR_AI_CONFIG_CHANGE_AI                                         :AI
 STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :Herní skript
 STR_AI_CONFIG_CHANGE_TOOLTIP                                    :{BLACK}Načíst další skript
@@ -5226,9 +5208,7 @@ STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Snímek 
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Snímek (náhledové) mapy světa
 
 # AI Parameters
-STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Parametry
 STR_AI_SETTINGS_CAPTION_AI                                      :AI
-STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :herní skript
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Zavřít
 STR_AI_SETTINGS_RESET                                           :{BLACK}Obnovit nastavení
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
@@ -5651,6 +5631,7 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Příli�
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Nelze změnit interval oprav...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... vozidlo bylo zničeno
+
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Žádná vozidla nejsou dostupná
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Zmeň nastavení NewGRF

@@ -147,9 +147,8 @@ void SQInstance::Init(SQSharedState *ss)
 	ADD_TO_CHAIN(&_sharedstate->_gc_chain, this);
 }
 
-SQInstance::SQInstance(SQSharedState *ss, SQClass *c, SQInteger memsize)
+SQInstance::SQInstance(SQSharedState *ss, SQClass *c)
 {
-	_memsize = memsize;
 	_class = c;
 	SQUnsignedInteger nvalues = _class->_defaultvalues.size();
 	for(SQUnsignedInteger n = 0; n < nvalues; n++) {
@@ -158,9 +157,8 @@ SQInstance::SQInstance(SQSharedState *ss, SQClass *c, SQInteger memsize)
 	Init(ss);
 }
 
-SQInstance::SQInstance(SQSharedState *ss, SQInstance *i, SQInteger memsize)
+SQInstance::SQInstance(SQSharedState *ss, SQInstance *i)
 {
-	_memsize = memsize;
 	_class = i->_class;
 	SQUnsignedInteger nvalues = _class->_defaultvalues.size();
 	for(SQUnsignedInteger n = 0; n < nvalues; n++) {

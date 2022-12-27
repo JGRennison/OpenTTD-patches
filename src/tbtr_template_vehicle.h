@@ -53,22 +53,26 @@ struct TemplateVehicleImageDimensions {
 	int reference_width;
 	int vehicle_pitch;
 	int cached_veh_length;
+	int vehicle_flip_length;
 
 	void SetFromTrain(const Train *t);
 
 	int GetDisplayImageWidth() const
 	{
-		return ScaleGUITrad(this->cached_veh_length * this->reference_width / VEHICLE_LENGTH);
+		return ScaleSpriteTrad(this->cached_veh_length * this->reference_width / VEHICLE_LENGTH);
 	}
 
 	int GetOffsetX() const
 	{
-		return ScaleGUITrad(this->reference_width) / 2;
+		if (this->vehicle_flip_length >= 0) {
+			return ScaleSpriteTrad((this->vehicle_flip_length - VEHICLE_LENGTH / 2) * this->reference_width / VEHICLE_LENGTH);
+		}
+		return ScaleSpriteTrad(this->reference_width) / 2;
 	}
 
 	int GetOffsetY() const
 	{
-		return ScaleGUITrad(this->vehicle_pitch);
+		return ScaleSpriteTrad(this->vehicle_pitch);
 	}
 };
 
