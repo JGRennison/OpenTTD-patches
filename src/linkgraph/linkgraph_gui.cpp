@@ -506,7 +506,9 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 		/* Check the distance from the cursor to the line defined by the two stations. */
 		auto check_distance = [&]() -> bool {
 			int64 a = ((ptb.x - pta.x) * (pta.y - pt.y) - (pta.x - pt.x) * (ptb.y - pta.y));
-			return ((a * a) / ((ptb.x - pta.x) * (ptb.x - pta.x) + (ptb.y - pta.y) * (ptb.y - pta.y))) <= 16;
+			int64 b = ((ptb.x - pta.x) * (ptb.x - pta.x) + (ptb.y - pta.y) * (ptb.y - pta.y));
+			if (b == 0) return false;
+			return ((a * a) / b) <= 16;
 		};
 		const auto &link = i->prop;
 		if ((link.Usage() > 0 || (_ctrl_pressed && link.capacity > 0)) &&
