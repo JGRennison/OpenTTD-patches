@@ -701,6 +701,7 @@ struct EconomySettings {
 	bool   infrastructure_maintenance;       ///< enable monthly maintenance fee for owner infrastructure
 	uint8  day_length_factor;                ///< factor which the length of day is multiplied
 	uint16 random_road_reconstruction;       ///< chance out of 1000 per tile loop for towns to start random road re-construction
+	bool disable_inflation_newgrf_flag;      ///< Disable NewGRF inflation flag
 };
 
 struct LinkGraphSettings {

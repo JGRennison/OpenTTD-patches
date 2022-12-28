@@ -9995,7 +9995,7 @@ static void InitializeGRFSpecial()
 	                   |                                                       (1U << 0x1F); // any switch is on
 
 	_ttdpatch_flags[4] =                                                       (1U << 0x00)  // larger persistent storage
-	                   |             ((_settings_game.economy.inflation ? 1U : 0U) << 0x01); // inflation is on
+	                   | ((_settings_game.economy.inflation && !_settings_game.economy.disable_inflation_newgrf_flag ? 1U : 0U) << 0x01); // inflation is on
 	MemSetT(_observed_ttdpatch_flags, 0, lengthof(_observed_ttdpatch_flags));
 }
 
