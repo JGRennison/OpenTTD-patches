@@ -5908,20 +5908,16 @@ STR_TIMETABLE_STARTING_DATE                                     :{BLACK}시작 �
 STR_TIMETABLE_STARTING_DATE_TOOLTIP                             :{BLACK}이 시간표의 시작 날짜를 선택하세요. CTRL+클릭하면, 시간표가 모두 작성되어 있다는 가정 하에, 주어진 경로를 기반으로 설정한 날짜부터 이 경로를 공유하는 모든 차량을 균등하게 출발시킵니다
 
 STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}시간값 변경
-STR_TIMETABLE_WAIT_TIME_TOOLTIP                                 :{BLACK}선택한 경로에서 소요되는 시간 값을 변경합니다
-STR_TIMETABLE_WAIT_TIME_TOOLTIP_EXTRA                           :{BLACK}{STRING} (CTRL+클릭하면 모든 경로의 시간을 설정합니다)
+STR_TIMETABLE_WAIT_TIME_TOOLTIP                                 :{BLACK}선택한 경로에서 소요되는 시간 값을 변경합니다 (CTRL+클릭하면 모든 경로의 시간을 설정합니다)
 
 STR_TIMETABLE_CLEAR_TIME                                        :{BLACK}시간값 초기화
-STR_TIMETABLE_CLEAR_TIME_TOOLTIP                                :{BLACK}선택한 경로에서 소요되는 시간 값을 초기화합니다
-STR_TIMETABLE_CLEAR_TIME_TOOLTIP_EXTRA                          :{BLACK}{STRING} (CTRL+클릭하면 모든 경로의 시간을 초기화합니다)
+STR_TIMETABLE_CLEAR_TIME_TOOLTIP                                :{BLACK}선택한 경로에서 소요되는 시간 값을 초기화합니다 (CTRL+클릭하면 모든 경로의 시간을 초기화합니다)
 
 STR_TIMETABLE_CHANGE_SPEED                                      :{BLACK}속력 제한
-STR_TIMETABLE_CHANGE_SPEED_TOOLTIP                              :{BLACK}선택한 경로의 최대 여행 속력을 제한합니다
-STR_TIMETABLE_CHANGE_SPEED_TOOLTIP_EXTRA                        :{BLACK}{STRING} (CTRL+클릭하면 모든 경로의 속력을 설정합니다)
+STR_TIMETABLE_CHANGE_SPEED_TOOLTIP                              :{BLACK}선택한 경로의 최대 여행 속력을 제한합니다 (CTRL+클릭하면 모든 경로의 속력을 설정합니다)
 
 STR_TIMETABLE_CLEAR_SPEED                                       :{BLACK}속력 제한값 초기화
-STR_TIMETABLE_CLEAR_SPEED_TOOLTIP                               :{BLACK}선택한 경로의 최대 여행 속력 제한값을 초기화합니다
-STR_TIMETABLE_CLEAR_SPEED_TOOLTIP_EXTRA                         :{BLACK}{STRING} (CTRL+클릭하면 모든 경로의 속력을 초기화합니다)
+STR_TIMETABLE_CLEAR_SPEED_TOOLTIP                               :{BLACK}선택한 경로의 최대 여행 속력 제한값을 초기화합니다 (CTRL+클릭하면 모든 경로의 속력을 초기화합니다)
 
 STR_TIMETABLE_RESET_LATENESS                                    :{BLACK}지연 시간 초기화
 STR_TIMETABLE_RESET_LATENESS_TOOLTIP                            :{BLACK}이 차량의 지연 시간값을 초기화하여, 정시운행 상태로 바꿉니다

@@ -108,7 +108,8 @@ struct GRFLabel {
 	byte label;
 	uint32 nfo_line;
 	size_t pos;
-	struct GRFLabel *next;
+
+	GRFLabel(byte label, uint32 nfo_line, size_t pos) : label(label), nfo_line(nfo_line), pos(pos) {}
 };
 
 enum GRFPropertyMapFallbackMode {
@@ -330,7 +331,7 @@ struct GRFFile : ZeroedMemoryAllocator {
 	uint32 param[0x80];
 	uint param_end;  ///< one more than the highest set parameter
 
-	GRFLabel *label; ///< Pointer to the first label. This is a linked list, not an array.
+	std::vector<GRFLabel> labels;                   ///< List of labels
 
 	std::vector<CargoLabel> cargo_list;             ///< Cargo translation table (local ID -> label)
 	uint8 cargo_map[NUM_CARGO];                     ///< Inverse cargo translation table (CargoID -> local ID)

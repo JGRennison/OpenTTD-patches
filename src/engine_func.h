@@ -26,7 +26,8 @@ extern const uint8 _engine_offsets[4];
 bool IsEngineBuildable(EngineID engine, VehicleType type, CompanyID company);
 bool IsEngineRefittable(EngineID engine);
 void SetYearEngineAgingStops();
-void StartupOneEngine(Engine *e, Date aging_date, Date no_introduce_after_date);
+void CalcEngineReliability(Engine *e, bool new_month);
+void StartupOneEngine(Engine *e, Date aging_date, uint32 seed, Date no_introduce_after_date);
 
 uint GetTotalCapacityOfArticulatedParts(EngineID engine);
 

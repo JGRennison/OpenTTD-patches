@@ -4477,16 +4477,16 @@ STR_TIMETABLE_STARTING_DATE                                     :{BLACK}Data com
 STR_TIMETABLE_STARTING_DATE_TOOLTIP                             :{BLACK}Selecciona unha data coma punto de inicio para este horario. Ctrl + click distribúe uniformemente tódolos vehículos que compartan esta orde baséandose na súa orde relativa. se a orde está completamente tabulada nos horarios
 
 STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}Cambiar Tempo
-STR_TIMETABLE_WAIT_TIME_TOOLTIP                                 :{BLACK}Cambiar o tempo que debería levar a orde seleccionada
+STR_TIMETABLE_WAIT_TIME_TOOLTIP                                 :{BLACK}Cambiar o tempo que debería levar a orde seleccionada (Ctrl+Click fixa a hora para todas as ordes)
 
 STR_TIMETABLE_CLEAR_TIME                                        :{BLACK}Borrar tempo
-STR_TIMETABLE_CLEAR_TIME_TOOLTIP                                :{BLACK}Borrar o tempo para a orde seleccionada
+STR_TIMETABLE_CLEAR_TIME_TOOLTIP                                :{BLACK}Borrar o tempo para a orde seleccionada (Ctrl+Click despexa a hora para todas as ordes)
 
 STR_TIMETABLE_CHANGE_SPEED                                      :{BLACK}Cambiar o límite de velocidade
-STR_TIMETABLE_CHANGE_SPEED_TOOLTIP                              :{BLACK}Cambiar a velocidade máxima da orde seleccionada
+STR_TIMETABLE_CHANGE_SPEED_TOOLTIP                              :{BLACK}Cambiar a velocidade máxima da orde seleccionada (Ctrl+Click fixa a velocidade para todas as ordes)
 
 STR_TIMETABLE_CLEAR_SPEED                                       :{BLACK}Borrar o límite de velocidade
-STR_TIMETABLE_CLEAR_SPEED_TOOLTIP                               :{BLACK}Borrar a velocidade máxima da orde seleccionada
+STR_TIMETABLE_CLEAR_SPEED_TOOLTIP                               :{BLACK}Borrar a velocidade máxima da orde seleccionada (Ctrl+Click despexa a velocidade para todas as ordes)
 
 STR_TIMETABLE_RESET_LATENESS                                    :{BLACK}Reiniciar atraso
 STR_TIMETABLE_RESET_LATENESS_TOOLTIP                            :{BLACK}Reiniciar o contador de atraso, para que o vehículo vaia en hora
@@ -6671,10 +6671,6 @@ STR_TIMETABLE_MINUTES_LONG                                      :{COMMA}{NBSP}mi
 STR_TIMETABLE_HOURS                                             :{COMMA}{NBSP}hora{P "" s}
 STR_TIMETABLE_HOURS_MINUTES                                     :{COMMA}{NBSP}hora{P "" s} e {COMMA}{NBSP}minuto{P "" s}
 STR_TIMETABLE_LEFTOVER_TICKS                                    :{STRING} + {COMMA} tick{P "" s}
-STR_TIMETABLE_WAIT_TIME_TOOLTIP_EXTRA                           :{BLACK}{STRING} (Ctrl+Click fixa a hora para todas as ordes)
-STR_TIMETABLE_CLEAR_TIME_TOOLTIP_EXTRA                          :{BLACK}{STRING} (Ctrl+Click despexa a hora para todas as ordes)
-STR_TIMETABLE_CHANGE_SPEED_TOOLTIP_EXTRA                        :{BLACK}{STRING} (Ctrl+Click fixa a velocidade para todas as ordes)
-STR_TIMETABLE_CLEAR_SPEED_TOOLTIP_EXTRA                         :{BLACK}{STRING} (Ctrl+Click despexa a velocidade para todas as ordes)
 STR_TIMETABLE_AUTOMATE                                          :{BLACK}Automatizar
 STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}Xestiona os horarios automáticamente actualizando os valores para cada viaxe
 STR_TIMETABLE_AUTO_SEPARATION                                   :{BLACK}Auto Separation

@@ -126,6 +126,15 @@ struct RoadVehicleInfo {
 	RoadType roadtype;       ///< Road type
 };
 
+enum class ExtraEngineFlags : uint8 {
+	None = 0,
+	NoNews          = (1U << 0), ///< No 'new vehicle' news will be generated.
+	NoPreview       = (1U << 1), ///< No exclusive preview will be offered.
+	JoinPreview     = (1U << 2), ///< Engine will join exclusive preview with variant parent.
+	SyncReliability = (1U << 3), ///< Engine reliability will be synced with variant parent.
+};
+DECLARE_ENUM_AS_BIT_SET(ExtraEngineFlags);
+
 /**
  * Information about a vehicle
  *  @see table/engines.h
@@ -145,6 +154,8 @@ struct EngineInfo {
 	int8 retire_early;  ///< Number of years early to retire vehicle
 	StringID string_id; ///< Default name of engine
 	uint16 cargo_age_period; ///< Number of ticks before carried cargo is aged.
+	EngineID variant_id;     ///< Engine variant ID. If set, will be treated specially in purchase lists.
+	ExtraEngineFlags extra_flags;
 };
 
 /**

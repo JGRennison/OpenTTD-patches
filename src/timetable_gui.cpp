@@ -636,27 +636,19 @@ struct TimetableWindow : GeneralVehicleWindow {
 	{
 		switch (widget) {
 			case WID_VT_CHANGE_TIME: {
-				uint64 params[1];
-				params[0] = STR_TIMETABLE_WAIT_TIME_TOOLTIP;
-				GuiShowTooltips(this, STR_TIMETABLE_WAIT_TIME_TOOLTIP_EXTRA, 1, params, close_cond);
+				GuiShowTooltips(this, STR_TIMETABLE_WAIT_TIME_TOOLTIP, 0, nullptr, close_cond);
 				return true;
 			}
 			case WID_VT_CLEAR_TIME: {
-				uint64 params[1];
-				params[0] = STR_TIMETABLE_CLEAR_TIME_TOOLTIP;
-				GuiShowTooltips(this, STR_TIMETABLE_CLEAR_TIME_TOOLTIP_EXTRA, 1, params, close_cond);
+				GuiShowTooltips(this, STR_TIMETABLE_CLEAR_TIME_TOOLTIP, 0, nullptr, close_cond);
 				return true;
 			}
 			case WID_VT_CHANGE_SPEED: {
-				uint64 params[1];
-				params[0] = STR_TIMETABLE_CHANGE_SPEED_TOOLTIP;
-				GuiShowTooltips(this, STR_TIMETABLE_CHANGE_SPEED_TOOLTIP_EXTRA, 1, params, close_cond);
+				GuiShowTooltips(this, STR_TIMETABLE_CHANGE_SPEED_TOOLTIP, 0, nullptr, close_cond);
 				return true;
 			}
 			case WID_VT_CLEAR_SPEED: {
-				uint64 params[1];
-				params[0] = STR_TIMETABLE_CLEAR_SPEED_TOOLTIP;
-				GuiShowTooltips(this, STR_TIMETABLE_CLEAR_SPEED_TOOLTIP_EXTRA, 1, params, close_cond);
+				GuiShowTooltips(this, STR_TIMETABLE_CLEAR_SPEED_TOOLTIP, 0, nullptr, close_cond);
 				return true;
 			}
 			default:
