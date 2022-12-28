@@ -950,7 +950,7 @@ static void AddChildSpriteToFoundation(SpriteID image, PaletteID pal, const SubS
 	int *old_child = _vd.last_child;
 	_vd.last_child = _vd.last_foundation_child[foundation_part];
 
-	AddChildSpriteScreen(image, pal, offs.x + extra_offs_x, offs.y + extra_offs_y, false, sub, false, ChildScreenSpritePositionMode::NON_RELATIVE);
+	AddChildSpriteScreen(image, pal, offs.x + extra_offs_x, offs.y + extra_offs_y, false, sub, false, ChildScreenSpritePositionMode::NonRelative);
 
 	/* Switch back to last ChildSprite list */
 	_vd.last_child = old_child;
@@ -1051,7 +1051,7 @@ static void AddCombinedSprite(SpriteID image, PaletteID pal, int x, int y, int z
 			bottom <= _vdd->dpi.top)
 		return;
 
-	AddChildSpriteScreen(image, pal, pt.x, pt.y, false, sub, false, ChildScreenSpritePositionMode::ABSOLUTE);
+	AddChildSpriteScreen(image, pal, pt.x, pt.y, false, sub, false, ChildScreenSpritePositionMode::Absolute);
 	if (left < _vd.combine_left) _vd.combine_left = left;
 	if (right > _vd.combine_right) _vd.combine_right = right;
 	if (top < _vd.combine_top) _vd.combine_top = top;
@@ -2052,15 +2052,15 @@ static void ViewportDrawParentSprites(const ViewportDrawerDynamic *vdd, const Dr
 			int x = cs->x;
 			int y = cs->y;
 			switch (cs->position_mode) {
-				case ChildScreenSpritePositionMode::RELATIVE:
+				case ChildScreenSpritePositionMode::Relative:
 					x += ps->left;
 					y += ps->top;
 					break;
-				case ChildScreenSpritePositionMode::NON_RELATIVE:
+				case ChildScreenSpritePositionMode::NonRelative:
 					x += ps->x;
 					y += ps->y;
 					break;
-				case ChildScreenSpritePositionMode::ABSOLUTE:
+				case ChildScreenSpritePositionMode::Absolute:
 					/* No adjustment */
 					break;
 			}
