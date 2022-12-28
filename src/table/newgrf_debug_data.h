@@ -362,9 +362,13 @@ class NIHVehicle : public NIHelper {
 		}
 
 		if (show_engine) {
-			seprintf(buffer, lastof(buffer), "  Engine: %u", v->engine_type);
-			output.print(buffer);
 			const Engine *e = Engine::GetIfValid(v->engine_type);
+			char *b = buffer + seprintf(buffer, lastof(buffer), "  Engine: %u", v->engine_type);
+			if (e->info.variant_id != INVALID_ENGINE) {
+				b += seprintf(b, lastof(buffer), ", variant of: %u", e->info.variant_id);
+			}
+			output.print(buffer);
+
 			if (e != nullptr) {
 				seprintf(buffer, lastof(buffer), "    Callbacks: 0x%X, CB36 Properties: 0x" OTTD_PRINTFHEX64,
 						e->callbacks_used, e->cb36_properties_used);
@@ -469,6 +473,29 @@ class NIHVehicle : public NIHelper {
 					const RoadTypeInfo* rti = GetRoadTypeInfo(e->u.road.roadtype);
 					seprintf(buffer, lastof(buffer), "    Roadtype: %u (0x" OTTD_PRINTFHEX64 "), Powered: 0x" OTTD_PRINTFHEX64,
 							e->u.road.roadtype, (static_cast<RoadTypes>(1) << e->u.road.roadtype), rti->powered_roadtypes);
+					output.print(buffer);
+				}
+
+				output.register_next_line_click_flag_toggle(4);
+				if (output.flags & 4) {
+					seprintf(buffer, lastof(buffer), "    [-] Extra Engine Flags:\n");
+					output.print(buffer);
+					auto print_bit = [&](ExtraEngineFlags flag, const char *name) {
+						if ((e->info.extra_flags & flag) != ExtraEngineFlags::None) {
+							seprintf(buffer, lastof(buffer), "      %s\n", name);
+							output.print(buffer);
+						}
+					};
+					print_bit(ExtraEngineFlags::NoNews,          "NoNews");
+					print_bit(ExtraEngineFlags::NoPreview,       "NoPreview");
+					print_bit(ExtraEngineFlags::JoinPreview,     "JoinPreview");
+					print_bit(ExtraEngineFlags::SyncReliability, "SyncReliability");
+				} else {
+					seprintf(buffer, lastof(buffer), "    [+] Extra Engine Flags: %c%c%c%c",
+							(e->info.extra_flags & ExtraEngineFlags::NoNews)          != ExtraEngineFlags::None ? 'n' : '-',
+							(e->info.extra_flags & ExtraEngineFlags::NoPreview)       != ExtraEngineFlags::None ? 'p' : '-',
+							(e->info.extra_flags & ExtraEngineFlags::JoinPreview)     != ExtraEngineFlags::None ? 'j' : '-',
+							(e->info.extra_flags & ExtraEngineFlags::SyncReliability) != ExtraEngineFlags::None ? 's' : '-');
 					output.print(buffer);
 				}
 			}
