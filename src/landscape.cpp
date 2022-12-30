@@ -786,8 +786,8 @@ CommandCost CmdClearArea(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 	const Company *c = (flags & (DC_AUTO | DC_BANKRUPT)) ? nullptr : Company::GetIfValid(_current_company);
 	int limit = (c == nullptr ? INT32_MAX : GB(c->clear_limit, 16, 16));
 
-	TileIterator *iter = HasBit(p2, 0) ? (TileIterator *)new DiagonalTileIterator(tile, p1) : new OrthogonalTileIterator(tile, p1);
-	for (; *iter != INVALID_TILE; ++(*iter)) {
+	OrthogonalOrDiagonalTileIterator iter(tile, p1, HasBit(p2, 0));
+	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex t = *iter;
 		CommandCost ret = DoCommand(t, 0, 0, flags & ~DC_EXEC, CMD_LANDSCAPE_CLEAR);
 		if (ret.Failed()) {
@@ -803,7 +803,6 @@ CommandCost CmdClearArea(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 			money -= ret.GetCost();
 			if (ret.GetCost() > 0 && money < 0) {
 				_additional_cash_required = ret.GetCost();
-				delete iter;
 				return cost;
 			}
 			DoCommand(t, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
@@ -823,7 +822,6 @@ CommandCost CmdClearArea(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 		cost.AddCost(ret);
 	}
 
-	delete iter;
 	return had_success ? cost : last_error;
 }
 

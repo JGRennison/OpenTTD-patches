@@ -110,17 +110,11 @@ static bool IsQueryConfirmIndustryOrRailStationInArea(TileIndex start_tile, Tile
 {
 	if (_settings_client.gui.demolish_confirm_mode == DCM_OFF) return false;
 
-	std::unique_ptr<TileIterator> tile_iterator;
-
-	if (diagonal) {
-		tile_iterator = std::make_unique<DiagonalTileIterator>(end_tile, start_tile);
-	} else {
-		tile_iterator = std::make_unique<OrthogonalTileIterator>(end_tile, start_tile);
-	}
+	OrthogonalOrDiagonalTileIterator tile_iterator(end_tile, start_tile, diagonal);
 
 	bool destroying_industry_or_station = false;
 
-	for (; *tile_iterator != INVALID_TILE; ++(*tile_iterator)) {
+	for (; *tile_iterator != INVALID_TILE; ++tile_iterator) {
 		if ((_cheats.magic_bulldozer.value && IsTileType(*tile_iterator, MP_INDUSTRY)) ||
 				(_settings_client.gui.demolish_confirm_mode == DCM_INDUSTRY_RAIL_STATION && IsRailStationTile(*tile_iterator))) {
 			destroying_industry_or_station = true;

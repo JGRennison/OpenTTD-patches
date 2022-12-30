@@ -473,8 +473,8 @@ CommandCost CmdPurchaseLandArea(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 	const Company *c = Company::GetIfValid(_current_company);
 	int limit = (c == nullptr ? INT32_MAX : GB(c->purchase_land_limit, 16, 16));
 
-	TileIterator *iter = HasBit(p2, 0) ? (TileIterator *)new DiagonalTileIterator(tile, p1) : new OrthogonalTileIterator(tile, p1);
-	for (; *iter != INVALID_TILE; ++(*iter)) {
+	OrthogonalOrDiagonalTileIterator iter(tile, p1, HasBit(p2, 0));
+	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex t = *iter;
 		CommandCost ret = DoCommand(t, OBJECT_OWNED_LAND, 0, flags & ~DC_EXEC, CMD_BUILD_OBJECT);
 		if (ret.Failed()) {
@@ -490,7 +490,6 @@ CommandCost CmdPurchaseLandArea(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 			money -= ret.GetCost();
 			if (ret.GetCost() > 0 && money < 0) {
 				_additional_cash_required = ret.GetCost();
-				delete iter;
 				return cost;
 			}
 			DoCommand(t, OBJECT_OWNED_LAND, 0, flags, CMD_BUILD_OBJECT);
@@ -501,7 +500,6 @@ CommandCost CmdPurchaseLandArea(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 		cost.AddCost(ret);
 	}
 
-	delete iter;
 	return had_success ? cost : last_error;
 }
 
@@ -538,8 +536,8 @@ CommandCost CmdBuildObjectArea(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	const Company *c = Company::GetIfValid(_current_company);
 	int limit = (c == nullptr ? INT32_MAX : GB(c->build_object_limit, 16, 16));
 
-	TileIterator *iter = HasBit(p2, 0) ? (TileIterator *)new DiagonalTileIterator(tile, p1) : new OrthogonalTileIterator(tile, p1);
-	for (; *iter != INVALID_TILE; ++(*iter)) {
+	OrthogonalOrDiagonalTileIterator iter(tile, p1, HasBit(p2, 0));
+	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex t = *iter;
 		CommandCost ret = DoCommand(t, type, view, flags & ~DC_EXEC, CMD_BUILD_OBJECT);
 		if (ret.Failed()) {
@@ -555,7 +553,6 @@ CommandCost CmdBuildObjectArea(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 			money -= ret.GetCost();
 			if (ret.GetCost() > 0 && money < 0) {
 				_additional_cash_required = ret.GetCost();
-				delete iter;
 				return cost;
 			}
 			DoCommand(t, type, view, flags, CMD_BUILD_OBJECT);
@@ -566,7 +563,6 @@ CommandCost CmdBuildObjectArea(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 		cost.AddCost(ret);
 	}
 
-	delete iter;
 	return had_success ? cost : last_error;
 }
 

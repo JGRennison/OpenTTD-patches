@@ -305,4 +305,56 @@ public:
 	}
 };
 
+class OrthogonalOrDiagonalTileIterator {
+	union {
+		OrthogonalTileIterator ortho;
+		DiagonalTileIterator diag;
+	};
+	bool diagonal;
+
+public:
+
+	OrthogonalOrDiagonalTileIterator(TileIndex corner1, TileIndex corner2, bool diagonal) : diagonal(diagonal)
+	{
+		if (diagonal) {
+			new (&this->diag) DiagonalTileIterator(corner1, corner2);
+		} else {
+			new (&this->ortho) OrthogonalTileIterator(corner1, corner2);
+		}
+	}
+
+	~OrthogonalOrDiagonalTileIterator()
+	{
+		if (diagonal) {
+			this->diag.~DiagonalTileIterator();
+		} else {
+			this->ortho.~OrthogonalTileIterator();
+		}
+	}
+
+	inline operator TileIndex () const
+	{
+		if (diagonal) {
+			return *(this->diag);
+		} else {
+			return *(this->ortho);
+		}
+	}
+
+	inline TileIndex operator *() const
+	{
+		return (TileIndex) (*this);
+	}
+
+	OrthogonalOrDiagonalTileIterator& operator ++()
+	{
+		if (diagonal) {
+			++this->diag;
+		} else {
+			++this->ortho;
+		}
+		return *this;
+	}
+};
+
 #endif /* TILEAREA_TYPE_H */

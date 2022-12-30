@@ -371,8 +371,8 @@ CommandCost CmdLevelLand(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 	int limit = (c == nullptr ? INT32_MAX : GB(c->terraform_limit, 16, 16));
 	if (limit == 0) return_cmd_error(STR_ERROR_TERRAFORM_LIMIT_REACHED);
 
-	TileIterator *iter = HasBit(p2, 0) ? (TileIterator *)new DiagonalTileIterator(tile, p1) : new OrthogonalTileIterator(tile, p1);
-	for (; *iter != INVALID_TILE; ++(*iter)) {
+	OrthogonalOrDiagonalTileIterator iter(tile, p1, HasBit(p2, 0));
+	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex t = *iter;
 		uint curh = TileHeight(t);
 		while (curh != h) {
@@ -389,7 +389,6 @@ CommandCost CmdLevelLand(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 				money -= ret.GetCost();
 				if (money < 0) {
 					_additional_cash_required = ret.GetCost();
-					delete iter;
 					return cost;
 				}
 				DoCommand(t, SLOPE_N, (curh > h) ? 0 : 1, flags, CMD_TERRAFORM_LAND);
@@ -413,6 +412,5 @@ CommandCost CmdLevelLand(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 		if (limit <= 0) break;
 	}
 
-	delete iter;
 	return had_success ? cost : last_error;
 }

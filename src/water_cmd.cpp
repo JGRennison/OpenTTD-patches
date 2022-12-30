@@ -476,8 +476,8 @@ CommandCost CmdBuildCanal(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 
-	std::unique_ptr<TileIterator> iter(HasBit(p2, 2) ? (TileIterator *)new DiagonalTileIterator(tile, p1) : new OrthogonalTileIterator(tile, p1));
-	for (; *iter != INVALID_TILE; ++(*iter)) {
+	OrthogonalOrDiagonalTileIterator iter(tile, p1, HasBit(p2, 2));
+	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex current_tile = *iter;
 		CommandCost ret;
 
