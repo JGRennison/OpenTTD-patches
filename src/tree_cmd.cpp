@@ -538,7 +538,9 @@ void GenerateTrees()
  * Plant a tree.
  * @param tile end tile of area-drag
  * @param flags type of operation
- * @param p1 tree type, TREE_INVALID means random.
+ * @param p1 various bitstuffed data.
+ * - p1 = (bit 0 -  7) - tree type, TREE_INVALID means random.
+ * - p1 = (bit      8) - whether to use the Orthogonal (0) or Diagonal (1) iterator.
  * @param p2 start tile of area-drag of tree plantation
  * @param text unused
  * @return the cost of this operation or an error
@@ -556,8 +558,9 @@ CommandCost CmdPlantTree(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 	Company *c = (_game_mode != GM_EDITOR) ? Company::GetIfValid(_current_company) : nullptr;
 	int limit = (c == nullptr ? INT32_MAX : GB(c->tree_limit, 16, 16));
 
-	TileArea ta(tile, p2);
-	for (TileIndex tile : ta) {
+	OrthogonalOrDiagonalTileIterator iter(tile, p2, HasBit(p1, 8));
+	for (; *iter != INVALID_TILE; ++iter) {
+		TileIndex tile = *iter;
 		switch (GetTileType(tile)) {
 			case MP_TREES: {
 				bool grow_existing_tree_instead = false;

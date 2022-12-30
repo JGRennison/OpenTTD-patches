@@ -90,7 +90,7 @@ class BuildTreesWindow : public Window
 		if (this->tree_to_plant >= 0) {
 			/* Activate placement */
 			if (_settings_client.sound.confirm) SndPlayFx(SND_15_BEEP);
-			SetObjectToPlace(SPR_CURSOR_TREE, PAL_NONE, HT_RECT, this->window_class, this->window_number);
+			SetObjectToPlace(SPR_CURSOR_TREE, PAL_NONE, HT_RECT | HT_DIAGONAL, this->window_class, this->window_number);
 			this->tree_to_plant = current_tree; // SetObjectToPlace may call ResetObjectToPlace which may reset tree_to_plant to -1
 		} else {
 			/* Deactivate placement */
@@ -234,7 +234,7 @@ public:
 	void OnPlaceMouseUp(ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, Point pt, TileIndex start_tile, TileIndex end_tile) override
 	{
 		if (_game_mode != GM_EDITOR && this->mode == PM_NORMAL && pt.x != -1 && select_proc == DDSP_PLANT_TREES) {
-			DoCommandP(end_tile, this->tree_to_plant, start_tile, CMD_PLANT_TREE | CMD_MSG(STR_ERROR_CAN_T_PLANT_TREE_HERE));
+			DoCommandP(end_tile, this->tree_to_plant | ((_ctrl_pressed ? 1 : 0) << 8), start_tile, CMD_PLANT_TREE | CMD_MSG(STR_ERROR_CAN_T_PLANT_TREE_HERE));
 		}
 	}
 
