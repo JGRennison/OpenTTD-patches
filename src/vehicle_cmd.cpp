@@ -722,7 +722,7 @@ CommandCost CmdMassStartStopVehicle(TileIndex tile, DoCommandFlag flags, uint32 
 	if (vehicle_list_window) {
 		if (!GenerateVehicleSortList(&list, vli, GB(p1, 8, 8))) return CMD_ERROR;
 	} else {
-		if (!IsDepotTile(tile) || !IsTileOwner(tile, _current_company)) return CMD_ERROR;
+		if (!IsDepotTile(tile)) return CMD_ERROR;
 		/* Get the list of vehicles in the depot */
 		BuildDepotVehicleList(vli.vtype, tile, &list, nullptr);
 	}
