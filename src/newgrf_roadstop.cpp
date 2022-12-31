@@ -402,8 +402,8 @@ void TriggerRoadStopAnimation(BaseStation *st, TileIndex trigger_tile, StationAn
 	};
 
 	if (trigger == SAT_NEW_CARGO || trigger == SAT_CARGO_TAKEN || trigger == SAT_250_TICKS) {
-		for (TileIndex cur_tile : st->custom_road_stop_tiles) {
-			process_tile(cur_tile);
+		for (const RoadStopTileData &tile_data : st->custom_roadstop_tile_data) {
+			process_tile(tile_data.tile);
 		}
 	} else {
 		process_tile(trigger_tile);
@@ -477,8 +477,8 @@ void TriggerRoadStopRandomisation(Station *st, TileIndex tile, RoadStopRandomTri
 		}
 	};
 	if (trigger == RSRT_NEW_CARGO || trigger == RSRT_CARGO_TAKEN) {
-		for (TileIndex cur_tile : st->custom_road_stop_tiles) {
-			process_tile(cur_tile);
+		for (const RoadStopTileData &tile_data : st->custom_roadstop_tile_data) {
+			process_tile(tile_data.tile);
 		}
 	} else {
 		process_tile(tile);
@@ -597,8 +597,8 @@ void DeallocateRoadStopSpecFromStation(BaseStation *st, byte specindex)
 	if (specindex == 0) return;
 
 	/* Check custom road stop tiles if the specindex is still in use */
-	for (TileIndex tile : st->custom_road_stop_tiles) {
-		if (GetCustomRoadStopSpecIndex(tile) == specindex) {
+	for (const RoadStopTileData &tile_data : st->custom_roadstop_tile_data) {
+		if (GetCustomRoadStopSpecIndex(tile_data.tile) == specindex) {
 			return;
 		}
 	}

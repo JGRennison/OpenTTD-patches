@@ -183,28 +183,30 @@ void BaseStation::PostDestructor(size_t index)
 	InvalidateWindowData(WC_SELECT_STATION, 0, 0);
 }
 
-bool BaseStation::SetRoadStopTileData(TileIndex tile, byte data, byte offset)
+bool BaseStation::SetRoadStopTileData(TileIndex tile, byte data, bool animation)
 {
-	for (size_t i = 0; i < this->custom_road_stop_tiles.size(); i++) {
-		if (this->custom_road_stop_tiles[i] == tile) {
-			if (GB(this->custom_road_stop_data[i], offset, 8) == data) return false;
-			SB(this->custom_road_stop_data[i], offset, 8, data);
+	for (RoadStopTileData &tile_data : this->custom_roadstop_tile_data) {
+		if (tile_data.tile == tile) {
+			uint8 &value = animation ? tile_data.animation_frame : tile_data.random_bits;
+			if (value == data) return false;
+			value = data;
 			return true;
 		}
 	}
-	this->custom_road_stop_tiles.push_back(tile);
-	this->custom_road_stop_data.push_back(((uint)data) << offset);
+	RoadStopTileData tile_data;
+	tile_data.tile = tile;
+	tile_data.animation_frame = animation ? data : 0;
+	tile_data.random_bits = animation ? 0 : data;
+	this->custom_roadstop_tile_data.push_back(tile_data);
 	return data != 0;
 }
 
 void BaseStation::RemoveRoadStopTileData(TileIndex tile)
 {
-	for (size_t i = 0; i < this->custom_road_stop_tiles.size(); i++) {
-		if (this->custom_road_stop_tiles[i] == tile) {
-			this->custom_road_stop_tiles[i] = this->custom_road_stop_tiles.back();
-			this->custom_road_stop_data[i] = this->custom_road_stop_data.back();
-			this->custom_road_stop_tiles.pop_back();
-			this->custom_road_stop_data.pop_back();
+	for (RoadStopTileData &tile_data : this->custom_roadstop_tile_data) {
+		if (tile_data.tile == tile) {
+			tile_data = this->custom_roadstop_tile_data.back();
+			this->custom_roadstop_tile_data.pop_back();
 			return;
 		}
 	}
