@@ -524,6 +524,17 @@ DECLARE_ENUM_AS_BIT_SET(SaveLoadChunkExtHeaderFlags)
 #define SLEG_CONDVEC(variable, type, from, to) SLEG_CONDVEC_X(variable, type, from, to, SlXvFeatureTest())
 
 /**
+ * Storage of a variable vector in some savegame versions.
+ * @param variable Name of the global variable.
+ * @param type     Storage of the data in memory and in the savegame.
+ * @param from     First savegame version that has the list.
+ * @param to       Last savegame version that has the list.
+ * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
+ */
+#define SLEG_CONDVARVEC_X(variable, type, from, to, extver) SLEG_GENERAL_X(SL_VARVEC, variable, type, 0, from, to, extver)
+#define SLEG_CONDVARVEC(variable, type, from, to) SLEG_CONDVARVEC_X(variable, type, from, to, SlXvFeatureTest())
+
+/**
  * Storage of a global variable in every savegame version.
  * @param variable Name of the global variable.
  * @param type     Storage of the data in memory and in the savegame.
