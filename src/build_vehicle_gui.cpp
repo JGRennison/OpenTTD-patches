@@ -1757,7 +1757,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		for (const auto &variant : variants) {
 			if (std::find(this->eng_list.begin(), this->eng_list.end(), variant) == this->eng_list.end()) {
 				const Engine *e = Engine::Get(variant);
-				list.emplace_back(variant, e->info.variant_id, e->display_flags | EngineDisplayFlags::Shaded, 0);
+				this->eng_list.emplace_back(variant, e->info.variant_id, e->display_flags | EngineDisplayFlags::Shaded, 0);
 			}
 		}
 

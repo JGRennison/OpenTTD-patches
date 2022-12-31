@@ -95,9 +95,8 @@ static void Load_GSDT()
 
 	config->StringToSettings(_game_saveload_settings);
 
-	/* Start the GameScript directly if it was active in the savegame */
-	Game::StartNew();
-	Game::Load(_game_saveload_version);
+	/* Load the GameScript saved data */
+	config->SetToLoadData(GameInstance::Load(_game_saveload_version));
 
 	if ((CompanyID)SlIterateArray() != (CompanyID)-1) SlErrorCorrupt("Too many GameScript configs");
 }
