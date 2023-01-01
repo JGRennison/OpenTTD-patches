@@ -29,7 +29,6 @@ add_files(
     serialisation.cpp
     serialisation.hpp
     smallmap_type.hpp
-    smallmatrix_type.hpp
     smallstack_type.hpp
     smallvec_type.hpp
     string_compare_type.hpp
