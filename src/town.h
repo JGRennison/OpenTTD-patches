@@ -65,6 +65,7 @@ enum TownSettingOverrideFlags {
 	TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS     = 1,
 	TSOF_OVERRIDE_BUILD_TUNNELS             = 2,
 	TSOF_OVERRIDE_BUILD_INCLINED_ROADS      = 3,
+	TSOF_OVERRIDE_GROWTH                    = 4,
 };
 
 /** Town data structure. */
@@ -185,6 +186,11 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 		if (!this->name.empty()) return this->name.c_str();
 		if (this->cached_name.empty()) this->FillCachedName();
 		return this->cached_name.c_str();
+	}
+
+	inline bool IsTownGrowthDisabledByOverride() const
+	{
+		return HasBit(this->override_flags, TSOF_OVERRIDE_GROWTH);
 	}
 
 	inline bool GetAllowBuildRoads() const

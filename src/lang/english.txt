@@ -4522,11 +4522,12 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{YELLOW}Fund th
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{YELLOW}Buy 1 year's exclusive transport rights in town.{}Town authority will not allow passengers and cargo to use your competitors' stations.{}Cost: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Bribe the local authority to increase your rating, at the risk of a severe penalty if caught.{}Cost: {CURRENCY_LONG}
 
-###length 4
+###length 5
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_ROADS                :Allowed to build roads
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_LEVEL_CROSSINGS      :Allowed to build level crossings
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TUNNELS                    :Allowed to build tunnels
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_MAX_ROAD_SLOPE             :Limit building continuous inclined roads
+STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TOWN_GROWTH                :Town growth speed
 
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_DEFAULT                    :Default ({STRING1})
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_STR                        :{STRING}: {PUSH_COLOUR}{YELLOW}{STRING2}{POP_COLOUR}

@@ -3823,6 +3823,9 @@ CommandCost CmdOverrideTownSetting(TileIndex tile, DoCommandFlag flags, uint32 p
 	const bool is_override = HasBit(p2, 16);
 	const uint8 value = GB(p2, 8, 8);
 	switch (setting) {
+		case TSOF_OVERRIDE_GROWTH:
+			if (is_override && value != 0) return CMD_ERROR;
+			break;
 		case TSOF_OVERRIDE_BUILD_ROADS:
 		case TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS:
 			if (is_override && value != 0 && value != 1) return CMD_ERROR;
@@ -3841,6 +3844,8 @@ CommandCost CmdOverrideTownSetting(TileIndex tile, DoCommandFlag flags, uint32 p
 		SB(t->override_flags, setting, 1, is_override ? 1 : 0);
 		if (is_override) {
 			switch (setting) {
+				case TSOF_OVERRIDE_GROWTH:
+					break;
 				case TSOF_OVERRIDE_BUILD_ROADS:
 				case TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS:
 					SB(t->override_values, setting, 1, value & 1);
@@ -3856,6 +3861,7 @@ CommandCost CmdOverrideTownSetting(TileIndex tile, DoCommandFlag flags, uint32 p
 			}
 		}
 		SetWindowDirty(WC_TOWN_AUTHORITY, p1);
+		if (setting == TSOF_OVERRIDE_GROWTH) UpdateTownGrowth(t);
 	}
 
 	return CommandCost();
@@ -3938,7 +3944,7 @@ static void UpdateTownRating(Town *t)
  */
 static void UpdateTownGrowCounter(Town *t, uint16 prev_growth_rate)
 {
-	if (t->growth_rate == TOWN_GROWTH_RATE_NONE) return;
+	if (t->growth_rate == TOWN_GROWTH_RATE_NONE || t->IsTownGrowthDisabledByOverride()) return;
 	if (prev_growth_rate == TOWN_GROWTH_RATE_NONE) {
 		t->grow_counter = std::min<uint16>(t->growth_rate, t->grow_counter);
 		return;
@@ -4025,6 +4031,7 @@ static uint GetNormalGrowthRate(Town *t)
 static void UpdateTownGrowthRate(Town *t)
 {
 	if (HasBit(t->flags, TOWN_CUSTOM_GROWTH)) return;
+	if (t->IsTownGrowthDisabledByOverride()) return;
 	uint old_rate = t->growth_rate;
 	t->growth_rate = GetNormalGrowthRate(t);
 	UpdateTownGrowCounter(t, old_rate);
@@ -4047,6 +4054,8 @@ static void UpdateTownGrowth(Town *t)
 
 	ClrBit(t->flags, TOWN_IS_GROWING);
 
+	if (t->IsTownGrowthDisabledByOverride()) return;
+
 	if (_settings_game.economy.town_growth_rate == 0 && t->fund_buildings_months == 0) return;
 
 	if (t->fund_buildings_months == 0) {
@@ -4068,7 +4077,6 @@ static void UpdateTownGrowth(Town *t)
 
 	if (HasBit(t->flags, TOWN_CUSTOM_GROWTH)) {
 		if (t->growth_rate != TOWN_GROWTH_RATE_NONE) SetBit(t->flags, TOWN_IS_GROWING);
-		SetWindowDirty(WC_TOWN_VIEW, t->index);
 		return;
 	}
 

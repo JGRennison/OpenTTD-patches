@@ -113,7 +113,7 @@ private:
 				!(_local_company != COMPANY_SPECTATOR && _settings_game.difficulty.override_town_settings_in_multiplayer);
 	}
 
-	static const uint SETTING_OVERRIDE_COUNT = 4;
+	static const uint SETTING_OVERRIDE_COUNT = 5;
 
 public:
 	TownAuthorityWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc), sel_index(-1), displayed_actions_on_previous_painting(0)
@@ -228,6 +228,9 @@ public:
 							SetDParam(0, STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_VALUE + ((this->town->max_road_slope == 0) ? 1 : 0));
 							SetDParam(1, this->town->max_road_slope);
 							break;
+						case TSOF_OVERRIDE_GROWTH:
+							SetDParam(0, STR_CONFIG_SETTING_TOWN_GROWTH_NONE);
+							break;
 					}
 				}
 			}
@@ -254,6 +257,9 @@ public:
 								break;
 							case TSOF_OVERRIDE_BUILD_INCLINED_ROADS:
 								SetDParam(1, STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_HELPTEXT);
+								break;
+							case TSOF_OVERRIDE_GROWTH:
+								SetDParam(1, STR_CONFIG_SETTING_TOWN_GROWTH_HELPTEXT);
 								break;
 						}
 						text = STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TEXT;
@@ -314,6 +320,10 @@ public:
 								SetDParam(3, max_slope);
 								break;
 							}
+
+							case TSOF_OVERRIDE_GROWTH:
+								SetDParam(1, overriden ? STR_CONFIG_SETTING_TOWN_GROWTH_NONE : STR_COLOUR_DEFAULT);
+								break;
 						}
 						DrawString(ir.left, ir.right, y,
 								STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_STR, tc);
@@ -423,7 +433,7 @@ public:
 						ShowDropDownMenu(this, names, HasBit(this->town->override_flags, idx) ? this->town->build_tunnels + 1 : 0, WID_TA_SETTING, 0, 0);
 						break;
 					}
-					case TSOF_OVERRIDE_BUILD_INCLINED_ROADS:
+					case TSOF_OVERRIDE_BUILD_INCLINED_ROADS: {
 						DropDownList dlist;
 						dlist.emplace_back(new DropDownListStringItem(STR_COLOUR_DEFAULT, 0, false));
 						dlist.emplace_back(new DropDownListStringItem(STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_ZERO, 1, false));
@@ -434,6 +444,17 @@ public:
 						}
 						ShowDropDownList(this, std::move(dlist), HasBit(this->town->override_flags, idx) ? this->town->max_road_slope + 1 : 0, WID_TA_SETTING);
 						break;
+					}
+					case TSOF_OVERRIDE_GROWTH: {
+						int value = HasBit(this->town->override_flags, idx) ? 1 : 0;
+						const StringID names[] = {
+							STR_COLOUR_DEFAULT,
+							STR_CONFIG_SETTING_TOWN_GROWTH_NONE,
+							INVALID_STRING_ID
+						};
+						ShowDropDownMenu(this, names, value, WID_TA_SETTING, 0, 0);
+						break;
+					}
 				}
 				break;
 			}
