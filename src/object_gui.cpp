@@ -755,7 +755,7 @@ static WindowDesc _build_object_desc(
 Window *ShowBuildObjectPicker()
 {
 	/* Don't show the place object button when there are no objects to place. */
-	if (ObjectClass::GetUIClassCount() > 0) {
+	if (ObjectClass::HasUIClass()) {
 		return AllocateWindowDescFront<BuildObjectWindow>(&_build_object_desc, 0);
 	}
 	return nullptr;

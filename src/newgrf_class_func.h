@@ -132,6 +132,18 @@ DEFINE_NEWGRF_CLASS_METHOD(uint)::GetUIClassCount()
 }
 
 /**
+ * Get whether at least one class is available to the user.
+ * @return Whether at least one class is available to the user.
+ */
+DEFINE_NEWGRF_CLASS_METHOD(bool)::HasUIClass()
+{
+	for (uint i = 0; i < Tmax && classes[i].global_id != 0; i++) {
+		if (classes[i].GetUISpecCount() > 0) return true;
+	}
+	return false;
+}
+
+/**
  * Get the nth-class with user available specs.
  * @param index UI index of a class.
  * @return The class ID of the class.
@@ -223,6 +235,7 @@ DEFINE_NEWGRF_CLASS_METHOD(const Tspec *)::GetByGrf(uint32 grfid, byte local_id,
 	template NewGRFClass<Tspec, Tid, Tmax> *name::Get(Tid cls_id); \
 	template uint name::GetClassCount(); \
 	template uint name::GetUIClassCount(); \
+	template bool name::HasUIClass(); \
 	template Tid name::GetUIClass(uint index); \
 	template const Tspec *name::GetSpec(uint index) const; \
 	template int name::GetUIFromIndex(int index) const; \
