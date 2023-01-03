@@ -171,7 +171,7 @@ static void AddEdge(LinkGraph::BaseEdge &edge, uint capacity, uint usage, uint32
 {
 	edge.capacity = capacity;
 	edge.usage = usage;
-	edge.travel_time_sum = travel_time * capacity;
+	edge.travel_time_sum = static_cast<uint64>(travel_time) * capacity;
 	if (mode & EUM_UNRESTRICTED)  edge.last_unrestricted_update = _date;
 	if (mode & EUM_RESTRICTED) edge.last_restricted_update = _date;
 	if (mode & EUM_AIRCRAFT) edge.last_aircraft_update = _date;
@@ -227,11 +227,11 @@ void LinkGraph::Edge::Update(uint capacity, uint usage, uint32 travel_time, Edge
 
 	if (mode & EUM_INCREASE) {
 		if (edge.travel_time_sum == 0) {
-			edge.travel_time_sum = (edge.capacity + capacity) * travel_time;
+			edge.travel_time_sum = static_cast<uint64>(edge.capacity + capacity) * travel_time;
 		} else if (travel_time == 0) {
 			edge.travel_time_sum += (edge.travel_time_sum / edge.capacity) * capacity;
 		} else {
-			edge.travel_time_sum += travel_time * capacity;
+			edge.travel_time_sum += static_cast<uint64>(travel_time) * capacity;
 		}
 		edge.capacity += capacity;
 		edge.usage += usage;
@@ -240,13 +240,13 @@ void LinkGraph::Edge::Update(uint capacity, uint usage, uint32 travel_time, Edge
 		 * the capacity increase. */
 		if (capacity > edge.capacity) {
 			if (travel_time == 0) {
-				edge.travel_time_sum = (edge.travel_time_sum / edge.capacity) * capacity;
+				edge.travel_time_sum = static_cast<uint64>(edge.travel_time_sum / edge.capacity) * capacity;
 			} else {
-				edge.travel_time_sum += (capacity - edge.capacity) * travel_time;
+				edge.travel_time_sum += static_cast<uint64>(capacity - edge.capacity) * travel_time;
 			}
 			edge.capacity = capacity;
 		} else if (edge.travel_time_sum == 0) {
-			edge.travel_time_sum = travel_time * edge.capacity;
+			edge.travel_time_sum = static_cast<uint64>(travel_time) * edge.capacity;
 		}
 		edge.usage = std::max(edge.usage, usage);
 	}

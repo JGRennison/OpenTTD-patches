@@ -92,7 +92,7 @@ bool DecodeSingleSprite(SpriteLoader::Sprite *sprite, SpriteFile &file, size_t f
 
 	if (num != 0) return WarnCorruptSprite(file, file_pos, __LINE__);
 
-	sprite->AllocateData(zoom_lvl, sprite->width * sprite->height);
+	sprite->AllocateData(zoom_lvl, static_cast<size_t>(sprite->width) * sprite->height);
 
 	/* Convert colour depth to pixel size. */
 	int bpp = 0;
@@ -168,13 +168,14 @@ bool DecodeSingleSprite(SpriteLoader::Sprite *sprite, SpriteFile &file, size_t f
 			} while (!last_item);
 		}
 	} else {
-		if (dest_size < sprite->width * sprite->height * bpp) {
+		int64 sprite_size = static_cast<int64>(sprite->width) * sprite->height * bpp;
+		if (dest_size < sprite_size) {
 			return WarnCorruptSprite(file, file_pos, __LINE__);
 		}
 
-		if (dest_size > sprite->width * sprite->height * bpp) {
+		if (dest_size > sprite_size) {
 			static byte warning_level = 0;
-			DEBUG(sprite, warning_level, "Ignoring " OTTD_PRINTF64 " unused extra bytes from the sprite from %s at position %i", dest_size - sprite->width * sprite->height * bpp, file.GetSimplifiedFilename().c_str(), (int)file_pos);
+			DEBUG(sprite, warning_level, "Ignoring " OTTD_PRINTF64 " unused extra bytes from the sprite from %s at position %i", dest_size - sprite_size, file.GetSimplifiedFilename().c_str(), (int)file_pos);
 			warning_level = 6;
 		}
 
