@@ -1202,7 +1202,7 @@ public:
 
 		this->station_classes.clear();
 
-		for (uint i = 0; i < StationClass::GetClassCount(); i++) {
+		for (uint i = 0; StationClass::IsClassIDValid((StationClassID)i); i++) {
 			StationClassID station_class_id = (StationClassID)i;
 			if (station_class_id == StationClassID::STAT_CLASS_WAYP) {
 				// Skip waypoints.
@@ -1236,7 +1236,7 @@ public:
 			/* Check if the previously selected station class is not available anymore as a
 			 * result of starting a new game without the corresponding NewGRF. */
 			bool available = false;
-			for (uint i = 0; i < StationClass::GetClassCount(); ++i) {
+			for (uint i = 0; StationClass::IsClassIDValid((StationClassID)i); ++i) {
 				if ((StationClassID)i == _railstation.station_class) {
 					available = true;
 					break;

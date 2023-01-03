@@ -1374,7 +1374,7 @@ public:
 
 		this->roadstop_classes.clear();
 
-		for (uint i = 0; i < RoadStopClass::GetClassCount(); i++) {
+		for (uint i = 0; RoadStopClass::IsClassIDValid((RoadStopClassID)i); i++) {
 			RoadStopClassID rs_id = (RoadStopClassID)i;
 			if (rs_id == ROADSTOP_CLASS_WAYP) {
 				// Skip waypoints.

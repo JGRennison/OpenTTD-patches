@@ -153,7 +153,7 @@ public:
 
 		this->object_classes.clear();
 
-		for (uint i = 0; i < ObjectClass::GetClassCount(); i++) {
+		for (uint i = 0; ObjectClass::IsClassIDValid((ObjectClassID)i); i++) {
 			ObjectClass *objclass = ObjectClass::Get((ObjectClassID)i);
 			if (objclass->GetUISpecCount() == 0) continue; // Is this needed here?
 			object_classes.push_back((ObjectClassID)i);
@@ -181,7 +181,7 @@ public:
 			/* Check if the previously selected object class is not available anymore as a
 			 * result of starting a new game without the corresponding NewGRF. */
 			bool available = false;
-			for (uint i = 0; ObjectClass::GetClassCount(); ++i) {
+			for (uint i = 0; ObjectClass::IsClassIDValid((ObjectClassID)i); ++i) {
 				if ((ObjectClassID)i == _selected_object_class) {
 					available = true;
 					break;

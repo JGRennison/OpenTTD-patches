@@ -501,7 +501,7 @@ void TriggerRoadStopRandomisation(Station *st, TileIndex tile, RoadStopRandomTri
 bool GetIfNewStopsByType(RoadStopType rs, RoadType roadtype)
 {
 	if (!(RoadStopClass::GetClassCount() > 1 || RoadStopClass::Get(ROADSTOP_CLASS_DFLT)->GetSpecCount() > 1)) return false;
-	for (uint i = 0; i < RoadStopClass::GetClassCount(); i++) {
+	for (uint i = 0; RoadStopClass::IsClassIDValid((RoadStopClassID)i); i++) {
 		// We don't want to check the default or waypoint classes. These classes are always available.
 		if (i == ROADSTOP_CLASS_DFLT || i == ROADSTOP_CLASS_WAYP) continue;
 		RoadStopClass *roadstopclass = RoadStopClass::Get((RoadStopClassID)i);

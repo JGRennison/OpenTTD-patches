@@ -96,6 +96,15 @@ DEFINE_NEWGRF_CLASS_METHOD(void)::Assign(Tspec *spec)
 }
 
 /**
+ * Get whether the class ID is valid (for iteration).
+ * @return Whether the class ID is valid.
+ */
+DEFINE_NEWGRF_CLASS_METHOD(bool)::IsClassIDValid(Tid cls_id)
+{
+	return cls_id < Tmax && classes[cls_id].global_id != 0;
+}
+
+/**
  * Get a particular class.
  * @param cls_id The id for the class.
  * @pre cls_id < Tmax
@@ -232,6 +241,7 @@ DEFINE_NEWGRF_CLASS_METHOD(const Tspec *)::GetByGrf(uint32 grfid, byte local_id,
 	template Tid name::Allocate(uint32 global_id); \
 	template void name::Insert(Tspec *spec); \
 	template void name::Assign(Tspec *spec); \
+	template bool name::IsClassIDValid(Tid cls_id); \
 	template NewGRFClass<Tspec, Tid, Tmax> *name::Get(Tid cls_id); \
 	template uint name::GetClassCount(); \
 	template uint name::GetUIClassCount(); \
