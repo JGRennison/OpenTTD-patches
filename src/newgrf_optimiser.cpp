@@ -125,7 +125,7 @@ static bool IsVariableVeryCheap(uint16 variable, GrfSpecFeature feature)
 
 static bool IsFeatureUsableForDSE(GrfSpecFeature feature)
 {
-	return (feature != GSF_STATIONS);
+	return true;
 }
 
 static bool IsFeatureUsableForCBQuickExit(GrfSpecFeature feature)
