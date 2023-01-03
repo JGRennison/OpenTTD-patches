@@ -14,6 +14,7 @@
 #include "debug_settings.h"
 #include "core/y_combinator.hpp"
 #include "scope.h"
+#include "newgrf_station.h"
 
 #include <tuple>
 
@@ -2444,6 +2445,36 @@ static void OptimiseVarAction2CheckInliningCandidate(DeterministicSpriteGroup *g
 	*(_cur.GetInlinableGroupAdjusts(group, true)) = std::move(saved_adjusts);
 }
 
+static void PopulateRegistersUsedByNewGRFSpriteLayout(const NewGRFSpriteLayout &dts, std::bitset<256> &bits)
+{
+	const TileLayoutRegisters *registers = dts.registers;
+
+	auto process_registers = [&](uint i, bool is_parent) {
+		const TileLayoutRegisters *reg = registers + i;
+		if (reg->flags & TLF_DODRAW) bits.set(reg->dodraw, true);
+		if (reg->flags & TLF_SPRITE) bits.set(reg->sprite, true);
+		if (reg->flags & TLF_PALETTE) bits.set(reg->palette, true);
+		if (is_parent) {
+			if (reg->flags & TLF_BB_XY_OFFSET) {
+				bits.set(reg->delta.parent[0], true);
+				bits.set(reg->delta.parent[1], true);
+			}
+			if (reg->flags & TLF_BB_Z_OFFSET) bits.set(reg->delta.parent[2], true);
+		} else {
+			if (reg->flags & TLF_CHILD_X_OFFSET) bits.set(reg->delta.child[0], true);
+			if (reg->flags & TLF_CHILD_Y_OFFSET) bits.set(reg->delta.child[1], true);
+		}
+	};
+	process_registers(0, false);
+
+	uint offset = 0; // offset 0 is the ground sprite
+	const DrawTileSeqStruct *element;
+	foreach_draw_tile_seq(element, dts.seq) {
+		offset++;
+		process_registers(offset, element->IsParentSprite());
+	}
+}
+
 void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, const GrfSpecFeature feature, const byte varsize, DeterministicSpriteGroup *group, std::vector<DeterministicSpriteGroupAdjust> &saved_adjusts)
 {
 	if (unlikely(HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2))) return;
@@ -2529,32 +2560,7 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 			if (sg != nullptr && sg->type == SGT_TILELAYOUT) {
 				const TileLayoutSpriteGroup *tlsg = (const TileLayoutSpriteGroup*)sg;
 				if (tlsg->dts.registers != nullptr) {
-					const TileLayoutRegisters *registers = tlsg->dts.registers;
-
-					auto process_registers = [&](uint i, bool is_parent) {
-						const TileLayoutRegisters *reg = registers + i;
-						if (reg->flags & TLF_DODRAW) bits.set(reg->dodraw, true);
-						if (reg->flags & TLF_SPRITE) bits.set(reg->sprite, true);
-						if (reg->flags & TLF_PALETTE) bits.set(reg->palette, true);
-						if (is_parent) {
-							if (reg->flags & TLF_BB_XY_OFFSET) {
-								bits.set(reg->delta.parent[0], true);
-								bits.set(reg->delta.parent[1], true);
-							}
-							if (reg->flags & TLF_BB_Z_OFFSET) bits.set(reg->delta.parent[2], true);
-						} else {
-							if (reg->flags & TLF_CHILD_X_OFFSET) bits.set(reg->delta.child[0], true);
-							if (reg->flags & TLF_CHILD_Y_OFFSET) bits.set(reg->delta.child[1], true);
-						}
-					};
-					process_registers(0, false);
-
-					uint offset = 0; // offset 0 is the ground sprite
-					const DrawTileSeqStruct *element;
-					foreach_draw_tile_seq(element, tlsg->dts.seq) {
-						offset++;
-						process_registers(offset, element->IsParentSprite());
-					}
+					PopulateRegistersUsedByNewGRFSpriteLayout(tlsg->dts, bits);
 				}
 			}
 			if (sg != nullptr && sg->type == SGT_INDUSTRY_PRODUCTION) {
@@ -2980,9 +2986,39 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 	return propagate_bits;
 }
 
+static void PopulateRailStationAdvancedLayoutVariableUsage()
+{
+	for (uint i = 0; StationClass::IsClassIDValid((StationClassID)i); i++) {
+		StationClass *stclass = StationClass::Get((StationClassID)i);
+
+		for (uint j = 0; j < stclass->GetSpecCount(); j++) {
+			const StationSpec *statspec = stclass->GetSpec(j);
+			if (statspec == nullptr) continue;
+
+			std::bitset<256> bits;
+			for (const NewGRFSpriteLayout &dts : statspec->renderdata) {
+				if (dts.registers != nullptr) {
+					PopulateRegistersUsedByNewGRFSpriteLayout(dts, bits);
+				}
+			}
+			if (bits.any()) {
+				/* Simulate a procedure call on each of the root sprite groups which requires the bits used in the tile layouts */
+				CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler proc_handler(bits);
+				for (uint k = 0; k < NUM_CARGO + 3; k++) {
+					if (statspec->grf_prop.spritegroup[k] != nullptr) {
+						proc_handler.ProcessGroup(statspec->grf_prop.spritegroup[k], nullptr, true);
+					}
+				}
+			}
+		}
+	}
+}
+
 void HandleVarAction2OptimisationPasses()
 {
 	if (unlikely(HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2))) return;
+
+	PopulateRailStationAdvancedLayoutVariableUsage();
 
 	for (DeterministicSpriteGroup *group : _cur.dead_store_elimination_candidates) {
 		VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(group, false);
