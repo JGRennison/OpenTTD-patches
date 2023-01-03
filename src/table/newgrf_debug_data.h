@@ -576,6 +576,82 @@ class NIHStation : public NIHelper {
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
 	}
 
+	/* virtual */ void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
+	{
+		char buffer[1024];
+
+		const StationSpec *statspec = GetStationSpec(index);
+		if (statspec == nullptr) return;
+
+		for (size_t i = 0; i < statspec->renderdata.size(); i++) {
+			seprintf(buffer, lastof(buffer), "Tile Layout %u:", (uint)i);
+			output.print(buffer);
+			const NewGRFSpriteLayout &dts = statspec->renderdata[i];
+
+			const TileLayoutRegisters *registers = dts.registers;
+			auto print_reg_info = [&](char *b, uint i, bool is_parent) {
+				if (registers == nullptr) {
+					output.print(buffer);
+					return;
+				}
+				const TileLayoutRegisters *reg = registers + i;
+				if (reg->flags == 0) {
+					output.print(buffer);
+					return;
+				}
+				seprintf(b, lastof(buffer), ", register flags: %X", reg->flags);
+				output.print(buffer);
+				auto log_reg = [&](TileLayoutFlags flag, const char *name, uint8 flag_reg) {
+					if (reg->flags & flag) {
+						seprintf(buffer, lastof(buffer), "  %s reg: %X", name, flag_reg);
+						output.print(buffer);
+					}
+				};
+				log_reg(TLF_DODRAW, "TLF_DODRAW", reg->dodraw);
+				log_reg(TLF_SPRITE, "TLF_SPRITE", reg->sprite);
+				log_reg(TLF_PALETTE, "TLF_PALETTE", reg->palette);
+				if (is_parent) {
+					log_reg(TLF_BB_XY_OFFSET, "TLF_BB_XY_OFFSET x", reg->delta.parent[0]);
+					log_reg(TLF_BB_XY_OFFSET, "TLF_BB_XY_OFFSET y", reg->delta.parent[1]);
+					log_reg(TLF_BB_Z_OFFSET, "TLF_BB_Z_OFFSET", reg->delta.parent[2]);
+				} else {
+					log_reg(TLF_CHILD_X_OFFSET, "TLF_CHILD_X_OFFSET", reg->delta.child[0]);
+					log_reg(TLF_CHILD_Y_OFFSET, "TLF_CHILD_Y_OFFSET", reg->delta.child[1]);
+				}
+				if (reg->flags & TLF_SPRITE_VAR10) {
+					seprintf(buffer, lastof(buffer), "  TLF_SPRITE_VAR10 value: %X", reg->sprite_var10);
+					output.print(buffer);
+				}
+				if (reg->flags & TLF_PALETTE_VAR10) {
+					seprintf(buffer, lastof(buffer), "  TLF_PALETTE_VAR10 value: %X", reg->palette_var10);
+					output.print(buffer);
+				}
+			};
+
+			char *b = buffer + seprintf(buffer, lastof(buffer), "  ground: (%X, %X)",
+					dts.ground.sprite, dts.ground.pal);
+			print_reg_info(b, 0, false);
+
+			uint offset = 0; // offset 0 is the ground sprite
+			const DrawTileSeqStruct *element;
+			foreach_draw_tile_seq(element, dts.seq) {
+				offset++;
+				char *b = buffer;
+				if (element->IsParentSprite()) {
+					b += seprintf(buffer, lastof(buffer), "  section: %X, image: (%X, %X), d: (%d, %d, %d), s: (%d, %d, %d)",
+							offset, element->image.sprite, element->image.pal,
+							element->delta_x, element->delta_y, element->delta_z,
+							element->size_x, element->size_y, element->size_z);
+				} else {
+					b += seprintf(buffer, lastof(buffer), "  section: %X, image: (%X, %X), d: (%d, %d)",
+							offset, element->image.sprite, element->image.pal,
+							element->delta_x, element->delta_y);
+				}
+				print_reg_info(b, offset, element->IsParentSprite());
+			}
+		}
+	}
+
 	/* virtual */ void SpriteDump(uint index, DumpSpriteGroupPrinter print) const override
 	{
 		StationResolverObject ro(GetStationSpec(index), Station::GetByTile(index), index, INVALID_RAILTYPE);
