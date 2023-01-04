@@ -724,8 +724,25 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *paddi
 			emit_start();
 			std::string sub_padding(padding);
 			sub_padding += "  ";
-			for (const auto &group : (*groups)) {
-				this->DumpSpriteGroup(group, sub_padding.c_str(), 0);
+			std::string sub_padding_indent(sub_padding);
+			sub_padding_indent += "  ";
+			auto end = groups->end();
+			for (auto iter = groups->begin(); iter != end;) {
+				uint count = 1;
+				const SpriteGroup *group = *iter;
+				while (true) {
+					++iter;
+					if (iter == end) break;
+					if (*iter != group) break;
+					count++;
+				}
+				if (count > 1) {
+					seprintf(this->buffer, lastof(this->buffer), "%s%u x:", sub_padding.c_str(), count);
+					print();
+					this->DumpSpriteGroup(group, sub_padding_indent.c_str(), 0);
+				} else {
+					this->DumpSpriteGroup(group, sub_padding.c_str(), 0);
+				}
 			}
 			break;
 		}
