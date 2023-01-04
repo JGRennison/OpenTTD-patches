@@ -292,7 +292,7 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 
 void CallbackResultSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) const
 {
-	if (op.mode == ACOM_FIND_CB_RESULT) op.result_flags |= ACORF_CB_RESULT_FOUND;
+	if (op.mode == ACOM_FIND_CB_RESULT && this->result != CALLBACK_FAILED) op.result_flags |= ACORF_CB_RESULT_FOUND;
 }
 
 void RandomizedSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) const
