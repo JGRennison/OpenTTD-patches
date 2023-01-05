@@ -3710,9 +3710,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 		return CommandCost();
 	}
 
-	TileIndex location;
-	DestinationID destination;
-	bool reverse;
+	ClosestDepot closestDepot;
 	static const StringID no_depot[] = {STR_ERROR_UNABLE_TO_FIND_ROUTE_TO, STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT, STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT, STR_ERROR_CAN_T_SEND_AIRCRAFT_TO_HANGAR};
 	if (command & DEPOT_SPECIFIC) {
 		if (!(IsDepotTile(specific_depot) && GetDepotVehicleType(specific_depot) == this->type &&
@@ -3723,11 +3721,12 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 				(this->type == VEH_TRAIN && !HasBit(Train::From(this)->compatible_railtypes, GetRailType(tile)))) {
 			return_cmd_error(no_depot[this->type]);
 		}
-		location = specific_depot;
-		destination = (this->type == VEH_AIRCRAFT) ? GetStationIndex(specific_depot) : GetDepotIndex(specific_depot);
-		reverse = false;
+		closestDepot.location = specific_depot;
+		closestDepot.destination = (this->type == VEH_AIRCRAFT) ? GetStationIndex(specific_depot) : GetDepotIndex(specific_depot);
+		closestDepot.reverse = false;
 	} else {
-		if (!this->FindClosestDepot(&location, &destination, &reverse)) return_cmd_error(no_depot[this->type]);
+		closestDepot = this->FindClosestDepot();
+		if (!closestDepot.found) return_cmd_error(no_depot[this->type]);
 	}
 
 	if (flags & DC_EXEC) {
@@ -3745,8 +3744,8 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 			SetBit(gv_flags, GVF_SUPPRESS_IMPLICIT_ORDERS);
 		}
 
-		this->SetDestTile(location);
-		this->current_order.MakeGoToDepot(destination, ODTF_MANUAL);
+		this->SetDestTile(closestDepot.location);
+		this->current_order.MakeGoToDepot(closestDepot.destination, ODTF_MANUAL);
 		if (command & DEPOT_SELL) {
 			this->current_order.SetDepotActionType(ODATFB_HALT | ODATFB_SELL);
 		} else if (!(command & DEPOT_SERVICE)) {
@@ -3758,13 +3757,13 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 		SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
 
 		/* If there is no depot in front and the train is not already reversing, reverse automatically (trains only) */
-		if (this->type == VEH_TRAIN && (reverse ^ HasBit(Train::From(this)->flags, VRF_REVERSING))) {
+		if (this->type == VEH_TRAIN && (closestDepot.reverse ^ HasBit(Train::From(this)->flags, VRF_REVERSING))) {
 			DoCommand(this->tile, this->index, 0, DC_EXEC, CMD_REVERSE_TRAIN_DIRECTION);
 		}
 
 		if (this->type == VEH_AIRCRAFT) {
 			Aircraft *a = Aircraft::From(this);
-			if (a->state == FLYING && a->targetairport != destination) {
+			if (a->state == FLYING && a->targetairport != closestDepot.destination) {
 				/* The aircraft is now heading for a different hangar than the next in the orders */
 				extern void AircraftNextAirportPos_and_Order(Aircraft *a);
 				AircraftNextAirportPos_and_Order(a);

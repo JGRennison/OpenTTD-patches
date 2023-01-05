@@ -2865,6 +2865,8 @@ STR_FOUND_TOWN_RANDOM_TOWN_BUTTON                               :{BLACK}Rastgele
 STR_FOUND_TOWN_RANDOM_TOWN_TOOLTIP                              :{BLACK}Rastgele bir yerde şehir kur
 STR_FOUND_TOWN_MANY_RANDOM_TOWNS                                :{BLACK}Birçok rastgele şehir
 STR_FOUND_TOWN_RANDOM_TOWNS_TOOLTIP                             :{BLACK}Haritayı rastgele şehirlerle doldur
+STR_FOUND_TOWN_EXPAND_ALL_TOWNS                                 :{BLACK}Tüm şehirleri genişlet
+STR_FOUND_TOWN_EXPAND_ALL_TOWNS_TOOLTIP                         :{BLACK}Tüm şehirleri birazcık büyüt
 
 STR_FOUND_TOWN_NAME_TITLE                                       :{YELLOW}Kasaba adı:
 STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}Kasaba adı girin
@@ -3345,7 +3347,10 @@ STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Seçili 
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Nesneyi X ve Y ofsetlerini değiştirerek gezdir. Ctrl+Tıklama ile nesneleri bir kerede sekiz birim kaydır
 
 ###length 2
+STR_SPRITE_ALIGNER_CENTRE_OFFSET                                :{BLACK}Ofset ortalandı
+STR_SPRITE_ALIGNER_CENTRE_SPRITE                                :{BLACK}Nesne ortalandı
 
+STR_SPRITE_ALIGNER_CROSSHAIR                                    :{BLACK}Artı imleci
 
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Bağılı sıfırla
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Geçerli bağıl ofsetleri sıfırla
@@ -4527,22 +4532,22 @@ STR_TIMETABLE_STARTING_DATE                                     :{BLACK}Başlang
 STR_TIMETABLE_STARTING_DATE_TOOLTIP                             :{BLACK}Bu zaman çizelgesinin başlangıcı olarak bir tarih seçin. Ctrl+Tıklama eğer komuta zaman çizelgesi uygulanmışsa bu komutu paylaşan tüm araçlara göreli komutlarını baz alarak belirtilen tarihten itibaren eşit dağıtır.
 
 STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}Zamanı değiştir
-STR_TIMETABLE_WAIT_TIME_TOOLTIP                                 :{BLACK}Seçili talimatın harcaması gereken süreyi değiştir
+STR_TIMETABLE_WAIT_TIME_TOOLTIP                                 :{BLACK}Seçili talimatın harcaması gereken süreyi değiştir. Ctrl+Tıklama bütün talimatların süresini değiştirir
 
 STR_TIMETABLE_CLEAR_TIME                                        :{BLACK}Zamanı Temizle
-STR_TIMETABLE_CLEAR_TIME_TOOLTIP                                :{BLACK}Seçili talimatın harcaması gereken süreyi sil
+STR_TIMETABLE_CLEAR_TIME_TOOLTIP                                :{BLACK}Seçili talimatın harcaması gereken süreyi sil. Ctrl+Tıklama bütün talimatların sürelerini siler
 
 STR_TIMETABLE_CHANGE_SPEED                                      :{BLACK}Hız Sınırını Değiştir
-STR_TIMETABLE_CHANGE_SPEED_TOOLTIP                              :{BLACK}Seçili emrin azami hızını değiştir
+STR_TIMETABLE_CHANGE_SPEED_TOOLTIP                              :{BLACK}Seçili emrin azami seyahat hızını değiştir. Ctrl+Tıklama bütün emirlerin azami hızlarını değiştirir
 
 STR_TIMETABLE_CLEAR_SPEED                                       :{BLACK}Hız Sınırını Kaldır
-STR_TIMETABLE_CLEAR_SPEED_TOOLTIP                               :{BLACK}Seçili emrin azami hızını kaldır
+STR_TIMETABLE_CLEAR_SPEED_TOOLTIP                               :{BLACK}Seçili emrin azami seyahat hızını sil. Ctrl+Tıklama bütün emirlerin azami hızlarını siler
 
 STR_TIMETABLE_RESET_LATENESS                                    :{BLACK}Gecikme sayacını sıfırla
 STR_TIMETABLE_RESET_LATENESS_TOOLTIP                            :{BLACK}Geç kalma sayacını sıfırla, böylece araç zamanında gitmiş sayılacak
 
 STR_TIMETABLE_AUTOFILL                                          :{BLACK}Otomatik doldur
-STR_TIMETABLE_AUTOFILL_TOOLTIP                                  :{BLACK}Zaman tablosunu bir sonraki yolculuktaki değerlerle otomatik doldur (Bekleme sürelerini tutmak için Ctrl ile tıklanır)
+STR_TIMETABLE_AUTOFILL_TOOLTIP                                  :{BLACK}Zaman tablosunu bir sonraki yolculuktaki değerlerle otomatik doldur Bekleme sürelerini tutmak için Ctrl ile tıklanır
 
 STR_TIMETABLE_EXPECTED                                          :{BLACK}Beklenen
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Programlanan
@@ -4798,6 +4803,7 @@ STR_ERROR_TOO_MANY_INDUSTRIES                                   :{WHITE}... çok
 STR_ERROR_CAN_T_GENERATE_INDUSTRIES                             :{WHITE}Fabrika yapılamıyor...
 STR_ERROR_CAN_T_BUILD_HERE                                      :{WHITE}Buraya {STRING} yapılamaz...
 STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY                         :{WHITE}Buraya bu fabrikadan yapılamaz...
+STR_ERROR_CAN_T_PROSPECT_INDUSTRY                               :{WHITE}Endüstri araştırılamaz...
 STR_ERROR_INDUSTRY_TOO_CLOSE                                    :{WHITE}... başka bir fabrikaya çok yakın
 STR_ERROR_MUST_FOUND_TOWN_FIRST                                 :{WHITE}... önce şehir yapılmalı
 STR_ERROR_ONLY_ONE_ALLOWED_PER_TOWN                             :{WHITE}... her şehirde yalnızca bir tane olabilir
@@ -4812,6 +4818,8 @@ STR_ERROR_FOREST_CAN_ONLY_BE_PLANTED                            :{WHITE}... orma
 STR_ERROR_CAN_ONLY_BE_BUILT_ABOVE_SNOW_LINE                     :{WHITE}... yalnız kar çizgisinin üzerinde yapılabilir
 STR_ERROR_CAN_ONLY_BE_BUILT_BELOW_SNOW_LINE                     :{WHITE}... yalnız kar çizgisinin altında yapılabilir
 
+STR_ERROR_PROSPECTING_WAS_UNLUCKY                               :{WHITE}Maalesef finansman sağlanamadı, tekrar deneyin.
+STR_ERROR_NO_SUITABLE_PLACES_FOR_PROSPECTING                    :{WHITE}Bu endüstri için uygun bir konum bulunamadı
 STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES                     :{WHITE}'{STRING}' fabrikaları için uygun bir alan yoktu
 STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES_EXPLANATION         :{WHITE}Daha iyi bir harita için harita oluşturma parametrelerini değiştirin
 
