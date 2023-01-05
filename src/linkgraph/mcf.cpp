@@ -111,11 +111,11 @@ public:
  */
 class GraphEdgeIterator {
 private:
-	LinkGraphJob &job; ///< Job being executed
-	LinkGraph::EdgeMatrix::const_iterator i;     ///< Iterator pointing to current edge.
-	LinkGraph::EdgeMatrix::const_iterator end;   ///< Iterator pointing beyond last edge.
-	NodeID node;                                 ///< Source node
-	const LinkGraph::BaseEdge *saved;            ///< Saved edge
+	LinkGraphJob &job;    ///< Job being executed
+	const Edge *i;        ///< Iterator pointing to current edge.
+	const Edge *end;      ///< Iterator pointing beyond last edge.
+	NodeID node;          ///< Source node
+	const Edge *saved;    ///< Saved edge
 
 public:
 
@@ -124,7 +124,7 @@ public:
 	 * @param job Job to iterate on.
 	 */
 	GraphEdgeIterator(LinkGraphJob &job) : job(job),
-		i(LinkGraph::EdgeMatrix::const_iterator()), end(LinkGraph::EdgeMatrix::const_iterator()), node(INVALID_NODE), saved(nullptr)
+		i(nullptr), end(nullptr), node(INVALID_NODE), saved(nullptr)
 	{}
 
 	/**
@@ -134,8 +134,9 @@ public:
 	 */
 	void SetNode(NodeID source, NodeID node)
 	{
-		this->i = this->job.Graph().GetEdges().lower_bound(std::make_pair(node, (NodeID)0));
-		this->end = this->job.Graph().GetEdges().end();
+		Node node_anno = this->job[node];
+		this->i = node_anno.GetEdges().begin();
+		this->end = node_anno.GetEdges().end();
 		this->node = node;
 	}
 
@@ -146,17 +147,15 @@ public:
 	NodeID Next()
 	{
 		if (this->i == this->end) return INVALID_NODE;
-		NodeID from = this->i->first.first;
-		NodeID to = this->i->first.second;
-		if (from != this->node) return INVALID_NODE;
-		this->saved = &(this->i->second);
+		NodeID to = this->i->To();
+		this->saved = this->i;
 		++this->i;
 		return to;
 	}
 
 	bool SavedEdge() const { return true; }
 
-	const LinkGraph::BaseEdge &GetSavedEdge() { return *(this->saved); }
+	const Edge &GetSavedEdge() { return *(this->saved); }
 };
 
 /**
@@ -221,7 +220,7 @@ public:
 
 	bool SavedEdge() const { return false; }
 
-	const LinkGraph::BaseEdge &GetSavedEdge() { NOT_REACHED(); }
+	const Edge &GetSavedEdge() { NOT_REACHED(); }
 };
 
 /**
@@ -301,8 +300,6 @@ void MultiCommodityFlow::Dijkstra(NodeID source_node, PathVector &paths)
 
 	this->job.path_allocator.SetParameters(sizeof(Tannotation), (8192 - 32) / sizeof(Tannotation));
 
-	const uint16 aircraft_link_scale = this->job.Settings().aircraft_link_scale;
-
 	for (NodeID node = 0; node < size; ++node) {
 		Tannotation *anno = new (this->job.path_allocator.Allocate()) Tannotation(node, node == source_node);
 		anno->UpdateAnnotation();
@@ -320,39 +317,18 @@ void MultiCommodityFlow::Dijkstra(NodeID source_node, PathVector &paths)
 		iter.SetNode(source_node, from);
 		for (NodeID to = iter.Next(); to != INVALID_NODE; to = iter.Next()) {
 			if (to == from) continue; // Not a real edge but a consumption sign.
-			const LinkGraph::BaseEdge &base_edge = iter.SavedEdge() ? iter.GetSavedEdge() : this->job.GetBaseEdge(from, to);
-			Edge edge = this->job[from].MakeEdge(base_edge, to);
+			const Edge &edge = iter.SavedEdge() ? iter.GetSavedEdge() : this->job[from].GetEdgeTo(to);
 			uint capacity = edge.Capacity();
 			if (this->max_saturation != UINT_MAX) {
 				capacity *= this->max_saturation;
 				capacity /= 100;
 				if (capacity == 0) capacity = 1;
 			}
-			/* Prioritize the fastest route for passengers, mail and express cargo,
-			 * and the shortest route for other classes of cargo.
-			 * In-between stops are punished with a 1 tile or 1 day penalty. */
-			bool express = IsLinkGraphCargoExpress(this->job.Cargo());
 
-			auto calculate_distance = [&]() {
-				return DistanceMaxPlusManhattan(this->job[from].XY(), this->job[to].XY()) + 1;
-			};
-
-			uint distance_anno;
-			if (express) {
-				/* Compute a default travel time from the distance and an average speed of 1 tile/day. */
-				distance_anno = (edge.TravelTime() != 0) ? edge.TravelTime() + DAY_TICKS : calculate_distance() * DAY_TICKS;
-			} else {
-				distance_anno = calculate_distance();
-			}
-
-			if (edge.LastAircraftUpdate() != INVALID_DATE && aircraft_link_scale > 100) {
-				distance_anno *= aircraft_link_scale;
-				distance_anno /= 100;
-			}
 			Tannotation *dest = static_cast<Tannotation *>(paths[to]);
-			if (dest->IsBetter(source, capacity, capacity - edge.Flow(), distance_anno)) {
+			if (dest->IsBetter(source, capacity, capacity - edge.Flow(), edge.DistanceAnno())) {
 				if (dest->GetAnnosSetFlag()) annos.erase(AnnoSetItem<Tannotation>(dest));
-				dest->Fork(source, capacity, capacity - edge.Flow(), distance_anno);
+				dest->Fork(source, capacity, capacity - edge.Flow(), edge.DistanceAnno());
 				dest->UpdateAnnotation();
 				annos.insert(AnnoSetItem<Tannotation>(dest));
 				dest->SetAnnosSetFlag(true);
@@ -447,7 +423,7 @@ void MCF1stPass::EliminateCycle(PathVector &path, Path *cycle_begin, uint flow)
 			}
 		}
 		cycle_begin = path[prev];
-		AnnoEdge edge = this->job[prev][cycle_begin->GetNode()];
+		Edge &edge = this->job[prev].GetEdgeTo(cycle_begin->GetNode());
 		edge.RemoveFlow(flow);
 	} while (cycle_begin != cycle_end);
 }

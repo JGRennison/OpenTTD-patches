@@ -41,15 +41,78 @@ public:
 		uint unsatisfied_demand = 0; ///< Demand over this edge that hasn't been satisfied yet.
 	};
 
-private:
 	/**
 	 * Annotation for a link graph flow edge.
 	 */
-	struct EdgeAnnotation {
+	struct Edge {
+	private:
+		NodeID from;             ///< From Node.
+		NodeID to;               ///< To Node.
+		uint capacity;           ///< Capacity of the link.
+		uint distance_anno;      ///< Pre-computed distance annotation.
+
 		uint flow;               ///< Planned flow over this edge.
-		void Init();
+
+	public:
+		/**
+		 * Get edge's from node.
+		 * @return from NodeID.
+		 */
+		NodeID From() const { return this->from; }
+
+		/**
+		 * Get edge's to node.
+		 * @return to NodeID.
+		 */
+		NodeID To() const { return this->to; }
+
+		/**
+		 * Get edge's capacity.
+		 * @return Capacity.
+		 */
+		uint Capacity() const { return this->capacity; }
+
+		/**
+		 * Get edge's distance annotation.
+		 * @return Distance annotation.
+		 */
+		uint DistanceAnno() const { return this->distance_anno; }
+
+		/**
+		 * Get the total flow on the edge.
+		 * @return Flow.
+		 */
+		uint Flow() const { return this->flow; }
+
+		/**
+		 * Add some flow.
+		 * @param flow Flow to be added.
+		 */
+		void AddFlow(uint flow) { this->flow += flow; }
+
+		/**
+		 * Remove some flow.
+		 * @param flow Flow to be removed.
+		 */
+		void RemoveFlow(uint flow)
+		{
+			dbg_assert(flow <= this->flow);
+			this->flow -= flow;
+		}
+
+		void InitEdge(NodeID from, NodeID to, uint capacity, uint distance_anno)
+		{
+			this->from = from;
+			this->to = to;
+			this->capacity = capacity;
+			this->distance_anno = distance_anno;
+			this->flow = 0;
+		}
 	};
 
+	typedef std::vector<Edge> EdgeAnnotationVector;
+
+private:
 	/**
 	 * Annotation for a link graph node.
 	 */
@@ -59,11 +122,11 @@ private:
 		PathList paths;          ///< Paths through this node, sorted so that those with flow == 0 are in the back.
 		FlowStatMap flows;       ///< Planned flows to other nodes.
 		span<DemandAnnotation> demands; ///< Demand annotations belonging to this node.
+		span<Edge> edges;        ///< Edges with annotations belonging to this node.
 		void Init(uint supply);
 	};
 
 	typedef std::vector<NodeAnnotation> NodeAnnotationVector;
-	typedef SmallMatrix<EdgeAnnotation> EdgeAnnotationMatrix;
 
 	friend SaveLoadTable GetLinkGraphJobDesc();
 	friend upstream_sl::SaveLoadTable upstream_sl::GetLinkGraphJobDesc();
@@ -73,12 +136,13 @@ private:
 
 protected:
 	const LinkGraph link_graph;       ///< Link graph to by analyzed. Is copied when job is started and mustn't be modified later.
+
 	std::shared_ptr<LinkGraphJobGroup> group; ///< Job group thread the job is running in or nullptr if it's running in the main thread.
 	const LinkGraphSettings settings; ///< Copy of _settings_game.linkgraph at spawn time.
 	DateTicks join_date_ticks;        ///< Date when the job is to be joined.
 	DateTicks start_date_ticks;       ///< Date when the job was started.
 	NodeAnnotationVector nodes;       ///< Extra node data necessary for link graph calculation.
-	EdgeAnnotationMatrix edges;       ///< Extra edge data necessary for link graph calculation.
+	EdgeAnnotationVector edges;       ///< Edge data necessary for link graph calculation.
 	std::atomic<bool> job_completed;  ///< Is the job still running. This is accessed by multiple threads and reads may be stale.
 	std::atomic<bool> job_aborted;    ///< Has the job been aborted. This is accessed by multiple threads and reads may be stale.
 
@@ -94,66 +158,12 @@ public:
 	DynUniformArenaAllocator path_allocator; ///< Arena allocator used for paths
 
 	/**
-	 * An annotation-only job edge. Wraps an edge annotation. The
-	 * annotation can be modified.
-	 */
-	class AnnoEdge {
-	private:
-		EdgeAnnotation &anno; ///< Annotation being wrapped.
-	public:
-		/**
-		 * Constructor.
-		 * @param anno Annotation to be wrapped.
-		 */
-		AnnoEdge(EdgeAnnotation &anno) :
-				anno(anno) {}
-
-		/**
-		 * Get the total flow on the edge.
-		 * @return Flow.
-		 */
-		uint Flow() const { return this->anno.flow; }
-
-		/**
-		 * Add some flow.
-		 * @param flow Flow to be added.
-		 */
-		void AddFlow(uint flow) { this->anno.flow += flow; }
-
-		/**
-		 * Remove some flow.
-		 * @param flow Flow to be removed.
-		 */
-		void RemoveFlow(uint flow)
-		{
-			assert(flow <= this->anno.flow);
-			this->anno.flow -= flow;
-		}
-	};
-
-	/**
-	 * A job edge. Wraps a link graph edge and an edge annotation. The
-	 * annotation can be modified, the edge is constant.
-	 */
-	class Edge : public LinkGraph::ConstEdge, public AnnoEdge {
-	public:
-		/**
-		 * Constructor.
-		 * @param edge Link graph edge to be wrapped.
-		 * @param anno Annotation to be wrapped.
-		 */
-		Edge(const LinkGraph::BaseEdge &edge, EdgeAnnotation &anno) :
-				LinkGraph::ConstEdge(edge), AnnoEdge(anno) {}
-	};
-
-	/**
 	 * Link graph job node. Wraps a constant link graph node and a modifiable
 	 * node annotation.
 	 */
 	class Node : public LinkGraph::ConstNode {
 	private:
 		NodeAnnotation &node_anno;  ///< Annotation being wrapped.
-		EdgeAnnotation *edge_annos; ///< Edge annotations belonging to this node.
 	public:
 
 		/**
@@ -163,20 +173,8 @@ public:
 		 */
 		Node (LinkGraphJob *lgj, NodeID node) :
 			LinkGraph::ConstNode(&lgj->link_graph, node),
-			node_anno(lgj->nodes[node]), edge_annos(lgj->edges[node])
+			node_anno(lgj->nodes[node])
 		{}
-
-		/**
-		 * Retrieve an edge starting at this node. Mind that this returns an
-		 * object, not a reference.
-		 * @param to Remote end of the edge.
-		 * @return Edge between this node and "to".
-		 */
-		AnnoEdge operator[](NodeID to) const { return AnnoEdge(this->edge_annos[to]); }
-
-		Edge MakeEdge(const LinkGraph::BaseEdge &base_edge, NodeID to) const { return Edge(base_edge, this->edge_annos[to]); }
-
-		Edge MakeEdge(const LinkGraphJob &lgj, NodeID to) const { return this->MakeEdge(lgj.GetBaseEdge(this->GetNodeID(), to), to); }
 
 		/**
 		 * Get amount of supply that hasn't been delivered, yet.
@@ -241,6 +239,21 @@ public:
 		void SetDemandAnnotations(span<DemandAnnotation> demands)
 		{
 			this->node_anno.demands = demands;
+		}
+
+		Edge &GetEdgeTo(NodeID to)
+		{
+			for (Edge &edge : this->node_anno.edges) {
+				if (edge.To() == to) return edge;
+			}
+
+			static Edge empty_edge = {};
+			return empty_edge;
+		}
+
+		span<Edge> GetEdges()
+		{
+			return this->node_anno.edges;
 		}
 	};
 
@@ -346,26 +359,6 @@ public:
 	 * @return Link graph.
 	 */
 	inline const LinkGraph &Graph() const { return this->link_graph; }
-
-	const LinkGraph::BaseEdge &GetBaseEdge(NodeID from, NodeID to) const
-	{
-		return this->link_graph.GetBaseEdge(from, to);
-	}
-
-	template <typename F>
-	void IterateEdgesFromNode(const Node &from_node, F proc)
-	{
-		auto iter = this->link_graph.GetEdges().lower_bound(std::make_pair(from_node.GetNodeID(), (NodeID)0));
-		while (iter != this->link_graph.GetEdges().end()) {
-			NodeID from = iter->first.first;
-			NodeID to = iter->first.second;
-			if (from != from_node.GetNodeID()) return;
-			if (from != to) {
-				proc(from, to, from_node.MakeEdge(iter->second, to));
-			}
-			++iter;
-		}
-	}
 };
 
 /**
@@ -470,5 +463,12 @@ protected:
 	/** Get the parent leg of this one. */
 	inline void SetParent(Path *parent) { this->parent_storage = reinterpret_cast<uintptr_t>(parent) | (this->parent_storage & 1); }
 };
+
+inline bool IsLinkGraphCargoExpress(CargoID cargo)
+{
+	return IsCargoInClass(cargo, CC_PASSENGERS) ||
+			IsCargoInClass(cargo, CC_MAIL) ||
+			IsCargoInClass(cargo, CC_EXPRESS);
+}
 
 #endif /* LINKGRAPHJOB_H */
