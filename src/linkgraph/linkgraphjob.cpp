@@ -212,9 +212,7 @@ void LinkGraphJob::Init()
  */
 void LinkGraphJob::EdgeAnnotation::Init()
 {
-	this->demand = 0;
 	this->flow = 0;
-	this->unsatisfied_demand = 0;
 }
 
 /**

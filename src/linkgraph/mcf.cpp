@@ -391,20 +391,20 @@ void MultiCommodityFlow::CleanupPaths(NodeID source_id, PathVector &paths)
 /**
  * Push flow along a path and update the unsatisfied_demand of the associated
  * edge.
- * @param edge Edge whose ends the path connects.
+ * @param anno Distance annotation whose ends the path connects.
  * @param path End of the path the flow should be pushed on.
  * @param min_step_size Minimum flow size.
  * @param accuracy Accuracy of the calculation.
  * @param max_saturation If < UINT_MAX only push flow up to the given
  *                       saturation, otherwise the path can be "overloaded".
  */
-uint MultiCommodityFlow::PushFlow(AnnoEdge &edge, Path *path, uint min_step_size, uint accuracy,
+uint MultiCommodityFlow::PushFlow(DemandAnnotation &anno, Path *path, uint min_step_size, uint accuracy,
 		uint max_saturation)
 {
-	assert(edge.UnsatisfiedDemand() > 0);
-	uint flow = std::min(std::max(edge.Demand() / accuracy, min_step_size), edge.UnsatisfiedDemand());
+	dbg_assert(anno.unsatisfied_demand > 0);
+	uint flow = std::min(std::max(anno.demand / accuracy, min_step_size), anno.unsatisfied_demand);
 	flow = path->AddFlow(flow, this->job, max_saturation);
-	edge.SatisfyDemand(flow);
+	anno.unsatisfied_demand -= flow;
 	return flow;
 }
 
@@ -571,10 +571,10 @@ MCF1stPass::MCF1stPass(LinkGraphJob &job) : MultiCommodityFlow(job)
 		uint64 total_demand = 0;
 		uint demand_count = 0;
 		for (NodeID source = 0; source < size; ++source) {
-			for (NodeID dest = 0; dest < size; ++dest) {
-				AnnoEdge edge = job[source][dest];
-				if (edge.UnsatisfiedDemand() > 0) {
-					total_demand += edge.UnsatisfiedDemand();
+			const Node &node = job[source];
+			for (const DemandAnnotation &anno : node.GetDemandAnnotations()) {
+				if (anno.unsatisfied_demand > 0) {
+					total_demand += anno.unsatisfied_demand;
 					demand_count++;
 				}
 			}
@@ -593,24 +593,24 @@ MCF1stPass::MCF1stPass(LinkGraphJob &job) : MultiCommodityFlow(job)
 			this->Dijkstra<DistanceAnnotation, GraphEdgeIterator>(source, paths);
 
 			bool source_demand_left = false;
-			for (NodeID dest = 0; dest < size; ++dest) {
-				AnnoEdge edge = job[source][dest];
-				if (edge.UnsatisfiedDemand() > 0) {
+			for (DemandAnnotation &anno : job[source].GetDemandAnnotations()) {
+				NodeID dest = anno.dest;
+				if (anno.unsatisfied_demand > 0) {
 					Path *path = paths[dest];
 					assert(path != nullptr);
 					/* Generally only allow paths that don't exceed the
 					 * available capacity. But if no demand has been assigned
 					 * yet, make an exception and allow any valid path *once*. */
-					if (path->GetFreeCapacity() > 0 && this->PushFlow(edge, path,
+					if (path->GetFreeCapacity() > 0 && this->PushFlow(anno, path,
 							min_step_size, accuracy, this->max_saturation) > 0) {
 						/* If a path has been found there is a chance we can
 						 * find more. */
-						more_loops = more_loops || (edge.UnsatisfiedDemand() > 0);
-					} else if (edge.UnsatisfiedDemand() == edge.Demand() &&
+						more_loops = more_loops || (anno.unsatisfied_demand > 0);
+					} else if (anno.unsatisfied_demand == anno.demand &&
 							path->GetFreeCapacity() > INT_MIN) {
-						this->PushFlow(edge, path, min_step_size, accuracy, UINT_MAX);
+						this->PushFlow(anno, path, min_step_size, accuracy, UINT_MAX);
 					}
-					if (edge.UnsatisfiedDemand() > 0) source_demand_left = true;
+					if (anno.unsatisfied_demand > 0) source_demand_left = true;
 				}
 			}
 			if (!source_demand_left) finished_sources[source] = true;
@@ -640,12 +640,12 @@ MCF2ndPass::MCF2ndPass(LinkGraphJob &job) : MultiCommodityFlow(job)
 			this->Dijkstra<CapacityAnnotation, FlowEdgeIterator>(source, paths);
 
 			bool source_demand_left = false;
-			for (NodeID dest = 0; dest < size; ++dest) {
-				AnnoEdge edge = this->job[source][dest];
-				Path *path = paths[dest];
-				if (edge.UnsatisfiedDemand() > 0 && path->GetFreeCapacity() > INT_MIN) {
-					this->PushFlow(edge, path, 1, accuracy, UINT_MAX);
-					if (edge.UnsatisfiedDemand() > 0) {
+			for (DemandAnnotation &anno : this->job[source].GetDemandAnnotations()) {
+				if (anno.unsatisfied_demand == 0) continue;
+				Path *path = paths[anno.dest];
+				if (path->GetFreeCapacity() > INT_MIN) {
+					this->PushFlow(anno, path, 1, accuracy, UINT_MAX);
+					if (anno.unsatisfied_demand > 0) {
 						demand_left = true;
 						source_demand_left = true;
 					}
