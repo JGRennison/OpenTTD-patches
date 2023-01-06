@@ -226,7 +226,7 @@ static void DrawPrice(Money amount, int left, int right, int top, TextColour col
  * Draw a category of expenses/revenues in the year column.
  * @return The income sum of the category.
  */
-static Money DrawYearCategory (const Rect &r, int start_y, ExpensesList list, const Money(*tbl)[EXPENSES_END])
+static Money DrawYearCategory (const Rect &r, int start_y, ExpensesList list, const Money(&tbl)[EXPENSES_END])
 {
 	int y = start_y;
 	ExpensesType et;
@@ -234,7 +234,7 @@ static Money DrawYearCategory (const Rect &r, int start_y, ExpensesList list, co
 
 	for (uint i = 0; i < list.length; i++) {
 		et = list.et[i];
-		Money cost = (*tbl)[et];
+		Money cost = tbl[et];
 		sum += cost;
 		if (cost != 0) DrawPrice(cost, r.left, r.right, y, TC_BLACK);
 		y += FONT_HEIGHT_NORMAL;
@@ -254,10 +254,10 @@ static Money DrawYearCategory (const Rect &r, int start_y, ExpensesList list, co
  * Draw a column with prices.
  * @param r    Available space for drawing.
  * @param year Year being drawn.
- * @param tbl  Pointer to table of amounts for \a year.
+ * @param tbl  Reference to table of amounts for \a year.
  * @note The environment must provide padding at the left and right of \a r.
  */
-static void DrawYearColumn(const Rect &r, int year, const Money (*tbl)[EXPENSES_END])
+static void DrawYearColumn(const Rect &r, int year, const Money (&tbl)[EXPENSES_END])
 {
 	int y = r.top;
 	Money sum;
@@ -437,7 +437,7 @@ struct CompanyFinancesWindow : Window {
 				int age = std::min(_cur_year - c->inaugurated_year, 2);
 				int wid_offset = widget - WID_CF_EXPS_PRICE1;
 				if (wid_offset <= age) {
-					DrawYearColumn(r, _cur_year - (age - wid_offset), c->yearly_expenses + (age - wid_offset));
+					DrawYearColumn(r, _cur_year - (age - wid_offset), c->yearly_expenses[age - wid_offset]);
 				}
 				break;
 			}
@@ -688,7 +688,7 @@ private:
 		const Company *c;
 		const Livery *livery, *default_livery = nullptr;
 		bool primary = widget == WID_SCL_PRI_COL_DROPDOWN;
-		byte default_col;
+		byte default_col = 0;
 
 		/* Disallow other company colours for the primary colour */
 		if (this->livery_class < LC_GROUP_RAIL && HasBit(this->sel, LS_DEFAULT) && primary) {

@@ -547,7 +547,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 			bool clearable_when_wait_locked = false;
 			if (selected != -1) {
 				const Order *order = v->GetOrder(((selected + 1) / 2) % v->GetNumOrders());
-				if (selected % 2 == 1) {
+				if (selected % 2 != 0) {
 					/* Travel time */
 					disable = order != nullptr && (order->IsType(OT_CONDITIONAL) || order->IsType(OT_IMPLICIT));
 					disable_time = disable;
@@ -577,7 +577,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 					wait_locked = wait_lockable && order->IsWaitFixed();
 				}
 			}
-			bool disable_speed = disable || selected % 2 != 1 || v->type == VEH_AIRCRAFT;
+			bool disable_speed = disable || selected % 2 == 0 || v->type == VEH_AIRCRAFT;
 
 			this->SetWidgetDisabledState(WID_VT_CHANGE_TIME, disable_time || (HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE) && !wait_locked));
 			this->SetWidgetDisabledState(WID_VT_CLEAR_TIME, disable_time || (HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE) && !(wait_locked && clearable_when_wait_locked)));
@@ -936,7 +936,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 				StringID current = STR_EMPTY;
 
 				if (order != nullptr) {
-					uint time = (selected % 2 == 1) ? order->GetTravelTime() : order->GetWaitTime();
+					uint time = (selected % 2 != 0) ? order->GetTravelTime() : order->GetWaitTime();
 					if (!_settings_client.gui.timetable_in_ticks) time /= DATE_UNIT_SIZE;
 
 					if (time != 0) {
