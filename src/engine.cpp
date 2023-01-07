@@ -186,6 +186,35 @@ bool Engine::CanCarryCargo() const
 	return this->GetDefaultCargoType() != CT_INVALID;
 }
 
+bool Engine::CanPossiblyCarryCargo() const
+{
+	if (this->IsGroundVehicle() && HasBit(this->info.callback_mask, CBM_VEHICLE_ARTIC_ENGINE)) return true;
+
+	switch (this->type) {
+		case VEH_TRAIN:
+			if (HasBit(this->cb36_properties_used, PROP_TRAIN_CARGO_CAPACITY)) return true;
+			break;
+
+		case VEH_ROAD:
+			if (HasBit(this->cb36_properties_used, PROP_ROADVEH_CARGO_CAPACITY)) return true;
+			break;
+
+		case VEH_SHIP:
+			if (HasBit(this->cb36_properties_used, PROP_SHIP_CARGO_CAPACITY)) return true;
+			break;
+
+		case VEH_AIRCRAFT:
+			if (HasBit(this->cb36_properties_used, PROP_AIRCRAFT_PASSENGER_CAPACITY)) return true;
+			if (HasBit(this->cb36_properties_used, PROP_AIRCRAFT_MAIL_CAPACITY)) return true;
+			break;
+
+		default:
+			NOT_REACHED();
+	}
+
+	return this->CanCarryCargo();
+}
+
 
 /**
  * Determines capacity of a given vehicle from scratch.

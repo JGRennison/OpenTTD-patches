@@ -1085,6 +1085,7 @@ void TestedEngineDetails::FillDefaultCapacities(const Engine *e)
 		this->all_capacities[this->cargo] = this->capacity;
 		this->all_capacities[CT_MAIL] = this->mail_capacity;
 	}
+	if (this->all_capacities.GetCount() == 0) this->cargo = CT_INVALID;
 }
 
 /**
@@ -1521,7 +1522,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		if (this->sel_engine == INVALID_ENGINE) return;
 
 		const Engine *e = Engine::Get(this->sel_engine);
-		if (!e->CanCarryCargo()) {
+		if (!e->CanPossiblyCarryCargo()) {
 			this->te.cost = 0;
 			this->te.cargo = CT_INVALID;
 			this->te.all_capacities.Clear();
@@ -2377,7 +2378,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		if (state.sel_engine == INVALID_ENGINE) return;
 
 		const Engine *e = Engine::Get(state.sel_engine);
-		if (!e->CanCarryCargo()) {
+		if (!e->CanPossiblyCarryCargo()) {
 			state.te.cost = 0;
 			state.te.cargo = CT_INVALID;
 			state.te.all_capacities.Clear();
@@ -2418,7 +2419,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		}
 
 		/* Purchase test was not possible or failed, fill in the defaults instead. */
-		state.te.cost     = 0;
+		state.te.cost = 0;
 		state.te.FillDefaultCapacities(e);
 	}
 

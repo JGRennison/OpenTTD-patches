@@ -114,6 +114,7 @@ struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	uint DetermineCapacity(const Vehicle *v, uint16 *mail_capacity = nullptr) const;
 
 	bool CanCarryCargo() const;
+	bool CanPossiblyCarryCargo() const;
 
 	/**
 	 * Determines the default cargo capacity of an engine for display purposes.
