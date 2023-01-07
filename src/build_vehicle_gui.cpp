@@ -755,11 +755,17 @@ static GUIEngineList::FilterFunction * const _filter_funcs[] = {
 	&CargoAndEngineFilter,
 };
 
-static uint GetCargoWeight(const CargoArray &cap)
+static uint GetCargoWeight(const CargoArray &cap, VehicleType vtype)
 {
 	uint weight = 0;
 	for (CargoID c = 0; c < NUM_CARGO; c++) {
-		if (cap[c] != 0) weight += CargoSpec::Get(c)->weight * cap[c] / 16;
+		if (cap[c] != 0) {
+			if (vtype == VEH_TRAIN) {
+				weight += CargoSpec::Get(c)->WeightOfNUnitsInTrain(cap[c]);
+			} else {
+				weight += CargoSpec::Get(c)->WeightOfNUnits(cap[c]);
+			}
+		}
 	}
 	return weight;
 }
@@ -798,7 +804,7 @@ static int DrawRailWagonPurchaseInfo(int left, int right, int y, EngineID engine
 	/* Wagon weight - (including cargo) */
 	uint weight = e->GetDisplayWeight();
 	SetDParam(0, weight);
-	SetDParam(1, GetCargoWeight(te.all_capacities) + weight);
+	SetDParam(1, GetCargoWeight(te.all_capacities, VEH_TRAIN) + weight);
 	DrawString(left, right, y, STR_PURCHASE_INFO_WEIGHT_CWEIGHT);
 	y += FONT_HEIGHT_NORMAL;
 
@@ -891,7 +897,7 @@ static int DrawRoadVehPurchaseInfo(int left, int right, int y, EngineID engine_n
 		/* Road vehicle weight - (including cargo) */
 		int16 weight = e->GetDisplayWeight();
 		SetDParam(0, weight);
-		SetDParam(1, GetCargoWeight(te.all_capacities) + weight);
+		SetDParam(1, GetCargoWeight(te.all_capacities, VEH_ROAD) + weight);
 		DrawString(left, right, y, STR_PURCHASE_INFO_WEIGHT_CWEIGHT);
 		y += FONT_HEIGHT_NORMAL;
 
