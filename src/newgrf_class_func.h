@@ -29,11 +29,9 @@ DEFINE_NEWGRF_CLASS_METHOD(void)::ResetClass()
 {
 	this->global_id = 0;
 	this->name      = STR_EMPTY;
-	this->count     = 0;
 	this->ui_count  = 0;
 
-	free(this->spec);
-	this->spec = nullptr;
+	this->spec.clear();
 }
 
 /** Reset the classes, i.e. clear everything. */
@@ -76,12 +74,9 @@ DEFINE_NEWGRF_CLASS_METHOD(Tid)::Allocate(uint32 global_id)
  */
 DEFINE_NEWGRF_CLASS_METHOD(void)::Insert(Tspec *spec)
 {
-	uint i = this->count++;
-	this->spec = ReallocT(this->spec, this->count);
+	this->spec.push_back(spec);
 
-	this->spec[i] = spec;
-
-	if (this->IsUIAvailable(i)) this->ui_count++;
+	if (this->IsUIAvailable(static_cast<uint>(this->spec.size() - 1))) this->ui_count++;
 }
 
 /**
@@ -219,7 +214,8 @@ DEFINE_NEWGRF_CLASS_METHOD(const Tspec *)::GetByGrf(uint32 grfid, byte local_id,
 	uint j;
 
 	for (Tid i = (Tid)0; i < Tmax; i++) {
-		for (j = 0; j < classes[i].count; j++) {
+		uint count = static_cast<uint>(classes[i].spec.size());
+		for (j = 0; j < count; j++) {
 			const Tspec *spec = classes[i].spec[j];
 			if (spec == nullptr) continue;
 			if (spec->grf_prop.grffile->grfid == grfid && spec->grf_prop.local_id == local_id) {
