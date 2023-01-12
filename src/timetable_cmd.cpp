@@ -461,7 +461,7 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 	if (timetable_all && !v->orders->IsCompleteTimetable()) return CMD_ERROR;
 
 	const DateTicksScaled now = _scaled_date_ticks;
-	DateTicksScaled start_date_scaled = DateToScaledDateTicks(_date * DAY_TICKS + _date_fract + (int32)p2) + sub_ticks;
+	DateTicksScaled start_date_scaled = DateTicksToScaledDateTicks(_date * DAY_TICKS + _date_fract + (int32)p2) + sub_ticks;
 
 	if (flags & DC_EXEC) {
 		std::vector<Vehicle *> vehs;
