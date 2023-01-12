@@ -1709,10 +1709,25 @@ static void ImprovedBreakdownsSettingChanged(int32 new_value)
 	}
 }
 
+static uint8 _pre_change_day_length_factor;
+
+static bool DayLengthPreChange(int32 &new_value)
+{
+	_pre_change_day_length_factor = _settings_game.economy.day_length_factor;
+
+	return true;
+}
+
 static void DayLengthChanged(int32 new_value)
 {
+	DateTicksScaled old_scaled_date_ticks = _scaled_date_ticks;
+	DateTicksScaled old_scaled_date_ticks_offset = _scaled_date_ticks_offset;
+
 	extern void RebaseScaledDateTicksBase();
 	RebaseScaledDateTicksBase();
+
+	extern void VehicleDayLengthChanged(DateTicksScaled old_scaled_date_ticks, DateTicksScaled old_scaled_date_ticks_offset, uint8 old_day_length_factor);
+	VehicleDayLengthChanged(old_scaled_date_ticks, old_scaled_date_ticks_offset, _pre_change_day_length_factor);
 
 	MarkWholeScreenDirty();
 }

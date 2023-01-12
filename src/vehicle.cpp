@@ -4576,6 +4576,33 @@ void ShiftVehicleDates(int interval)
 	}
 }
 
+extern void VehicleDayLengthChanged(DateTicksScaled old_scaled_date_ticks, DateTicksScaled old_scaled_date_ticks_offset, uint8 old_day_length_factor)
+{
+	if (_settings_game.economy.day_length_factor == old_day_length_factor || !_settings_game.game_time.time_in_minutes) return;
+
+	for (Vehicle *v : Vehicle::Iterate()) {
+		if (v->timetable_start != 0) {
+			DateTicksScaled tt_start = ((int64)v->timetable_start * old_day_length_factor) + v->timetable_start_subticks + old_scaled_date_ticks_offset;
+			tt_start += (_scaled_date_ticks - old_scaled_date_ticks);
+			std::tie(v->timetable_start, v->timetable_start_subticks) = ScaledDateTicksToDateTicksAndSubTicks(tt_start);
+		}
+	}
+
+	for (OrderList *orderlist : OrderList::Iterate()) {
+		for (DispatchSchedule &ds : orderlist->GetScheduledDispatchScheduleSet()) {
+			if (ds.GetScheduledDispatchStartDatePart() >= 0) {
+				DateTicksScaled start = ((int64)ds.GetScheduledDispatchStartDatePart() * DAY_TICKS * old_day_length_factor) +
+						ds.GetScheduledDispatchStartDateFractPart() + old_scaled_date_ticks_offset;
+				start += (_scaled_date_ticks - old_scaled_date_ticks);
+				Date date;
+				uint16 full_date_fract;
+				std::tie(date, full_date_fract) = ScaledDateTicksToDateAndFullSubTicks(start);
+				ds.SetScheduledDispatchStartDate(date, full_date_fract);
+			}
+		}
+	}
+}
+
 /**
  * Calculates the maximum weight of the ground vehicle when loaded.
  * @return Weight in tonnes
