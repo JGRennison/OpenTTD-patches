@@ -2982,7 +2982,6 @@ STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Število
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Višina snežne meje:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Premik snežne meje eno enoto višje
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Premik snežne meje eno enoto nižje
-STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Ustvarjalec terena:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Tip terena:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Morska gladina:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Reke:

@@ -4145,7 +4145,6 @@ STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}설선 �
 STR_MAPGEN_RAINFOREST_LINE_HEIGHT                               :{BLACK}열대 우림 고도:
 STR_MAPGEN_RAINFOREST_LINE_UP                                   :{BLACK}열대 우림의 고도를 1칸 높입니다
 STR_MAPGEN_RAINFOREST_LINE_DOWN                                 :{BLACK}열대 우림의 고도를 1칸 낮춥니다
-STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}지형 만들기:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}지형 종류:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}해수면:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}강:

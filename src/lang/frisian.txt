@@ -2705,7 +2705,6 @@ STR_MAPGEN_SNOW_COVERAGE                                        :{BLACK}Snie-oer
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Hichte sniegrins:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Sniegrins ien omheech ferpleatsje:
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Sniegrins ien nei beneden ferpleatsje:
-STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Lângenerator:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Terreintype:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Seenivo:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Rivieren:

@@ -3231,7 +3231,6 @@ STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Výška hranice snehu:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Zvýšiť výšku hranice snehu o jedno
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Znížiť výšku hranice snehu o jedno
-STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Generátor krajiny:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Typ terénu:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Rozloha mora:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Rieky:

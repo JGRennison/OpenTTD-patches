@@ -2783,7 +2783,6 @@ STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Брой
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Снежна линия:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Преместване снежната линия нагоре
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Преместване снежната линия надолу
-STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Земегенератор:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Тип на терен:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Морско ниво:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Реки:

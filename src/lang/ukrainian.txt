@@ -3292,7 +3292,6 @@ STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Висота лінії снігу:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Підвищити лінію снігу
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Понизити лінію снігу
-STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Ландшафт:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Тип ландшафту:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Рівень моря:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Ріки:

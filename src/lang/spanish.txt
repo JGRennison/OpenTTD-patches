@@ -3164,7 +3164,6 @@ STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Altura cota nieve:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Sube la cota de nieve una unidad
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Baja la cota de nieve una unidad
-STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Generador terreno:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Tipo de terreno
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Nivel del mar:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Ríos:

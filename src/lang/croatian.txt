@@ -3065,7 +3065,6 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Pustinjs
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Visina linije snijega
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Pomakni visinu linije snijega za jedan gore
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Pomakni visinu linije snijega za jedan dolje
-STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Izrađivač zemljišta:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Vrsta terena:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Razina mora:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Rijeke:

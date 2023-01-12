@@ -3164,7 +3164,6 @@ STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}{NB
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Alçada dels estatges amb neu:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Mou els estatges amb neu un pas amunt
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Mou els estatges amb neu un pas avall
-STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Generació de terrenys:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Tipus de terreny:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Nivell de mar:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Quantitat de rius:

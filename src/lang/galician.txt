@@ -3161,7 +3161,6 @@ STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Cota de neve:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Subir a cota de neve unha altura
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Baixar a cota de neve unha altura
-STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Xerador de terreo:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Tipo de terreo:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Nivel do mar:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Ríos:
@@ -3501,7 +3500,7 @@ STR_LOCAL_AUTHORITY_ACTION_SMALL_ADVERTISING_CAMPAIGN           :Pequena campañ
 STR_LOCAL_AUTHORITY_ACTION_MEDIUM_ADVERTISING_CAMPAIGN          :Campaña publicitaria mediana
 STR_LOCAL_AUTHORITY_ACTION_LARGE_ADVERTISING_CAMPAIGN           :Gran campaña publicitaria
 STR_LOCAL_AUTHORITY_ACTION_ROAD_RECONSTRUCTION                  :Financia-la reparación das fochancas nas rúas da cidade
-STR_LOCAL_AUTHORITY_ACTION_STATUE_OF_COMPANY                    :Construír unha estatua ao propietario da compañía
+STR_LOCAL_AUTHORITY_ACTION_STATUE_OF_COMPANY                    :Construír unha estatua do propietario da compañía
 STR_LOCAL_AUTHORITY_ACTION_NEW_BUILDINGS                        :Financiar novos edificios
 STR_LOCAL_AUTHORITY_ACTION_EXCLUSIVE_TRANSPORT                  :Compra-los dereitos exclusivos de transporte
 STR_LOCAL_AUTHORITY_ACTION_BRIBE                                :Suborna-la autoridade local

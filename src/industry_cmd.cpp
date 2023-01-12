@@ -2146,7 +2146,7 @@ CommandCost CmdBuildIndustry(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 				}
 				cur_company.Restore();
 			}
-			if (ret.Failed()) {
+			if (ret.Failed() && IsLocalCompany()) {
 				if (prospect_success) {
 					ShowErrorMessage(STR_ERROR_CAN_T_PROSPECT_INDUSTRY, STR_ERROR_NO_SUITABLE_PLACES_FOR_PROSPECTING, WL_INFO);
 				} else {

@@ -4142,7 +4142,6 @@ STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Move the
 STR_MAPGEN_RAINFOREST_LINE_HEIGHT                               :{BLACK}Rainforest line height:
 STR_MAPGEN_RAINFOREST_LINE_UP                                   :{BLACK}Move the rainforest line height one up
 STR_MAPGEN_RAINFOREST_LINE_DOWN                                 :{BLACK}Move the rainforest line height one down
-STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Land generator:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Terrain type:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Sea level:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Rivers:

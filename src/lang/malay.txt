@@ -2566,7 +2566,6 @@ STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Jumlah i
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Paras ketinggian garis salji:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Tinggikan paras garis salji satu petak
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Rendahkan paras garis salji satu petak
-STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Janaan tanah:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Jenis rupa bumi:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Paras laut:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Sungai:

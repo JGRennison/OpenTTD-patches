@@ -996,15 +996,6 @@ bool AfterLoadGame()
 	 * version. It didn't show up before r12070. */
 	if (IsSavegameVersionBefore(SLV_87)) UpdateVoidTiles();
 
-	/* If Load Scenario / New (Scenario) Game is used,
-	 *  a company does not exist yet. So create one here.
-	 * 1 exception: network-games. Those can have 0 companies
-	 *   But this exception is not true for non-dedicated network servers! */
-	if (!Company::IsValidID(GetDefaultLocalCompany()) && (!_networking || (_networking && _network_server && !_network_dedicated))) {
-		Company *c = DoStartupNewCompany(DSNC_DURING_LOAD);
-		c->settings = _settings_client.company;
-	}
-
 	/* Fix the cache for cargo payments. */
 	for (CargoPayment *cp : CargoPayment::Iterate()) {
 		cp->front->cargo_payment = cp;
@@ -4200,8 +4191,18 @@ bool AfterLoadGame()
 	_game_load_tick_skip_counter = _tick_skip_counter;
 	_game_load_time = time(nullptr);
 
-	/* Start the scripts. This MUST happen after everything else. */
+	/* Start the scripts. This MUST happen after everything else except
+	 * starting a new company. */
 	StartScripts();
+
+	/* If Load Scenario / New (Scenario) Game is used,
+	 *  a company does not exist yet. So create one here.
+	 * 1 exception: network-games. Those can have 0 companies
+	 *   But this exception is not true for non-dedicated network servers! */
+	if (!Company::IsValidID(GetDefaultLocalCompany()) && (!_networking || (_networking && _network_server && !_network_dedicated))) {
+		Company *c = DoStartupNewCompany(DSNC_DURING_LOAD);
+		c->settings = _settings_client.company;
+	}
 
 	return true;
 }

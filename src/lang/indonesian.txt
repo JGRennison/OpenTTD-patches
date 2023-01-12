@@ -3161,7 +3161,6 @@ STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Tinggi garis salju:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Naikkan ketinggian garis salju satu angka
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Turunkan ketinggian garis salju satu angka
-STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Algoritma pulau:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Jenis dataran:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Area perairan:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Sungai:
