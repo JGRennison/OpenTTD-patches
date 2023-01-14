@@ -154,7 +154,9 @@ public:
 	/**
 	 * Allocate a new iterator that is a copy of this one.
 	 */
-	virtual TileIterator *Clone() const = 0;
+	virtual std::unique_ptr<TileIterator> Clone() const = 0;
+
+	static std::unique_ptr<TileIterator> Create(TileIndex corner1, TileIndex corner2, bool diagonal);
 };
 
 /** Iterator to iterate over a tile area (rectangle) of the map. */
@@ -201,9 +203,9 @@ public:
 		return *this;
 	}
 
-	virtual TileIterator *Clone() const
+	virtual std::unique_ptr<TileIterator> Clone() const
 	{
-		return new OrthogonalTileIterator(*this);
+		return std::make_unique<OrthogonalTileIterator>(*this);
 	}
 };
 
@@ -225,11 +227,6 @@ public:
 	OrthogonalPrefetchTileIterator(const TileArea &ta) : tile(ta.w == 0 || ta.h == 0 ? INVALID_TILE : ta.tile), w(ta.w), x(ta.w), y(ta.h)
 	{
 		PREFETCH_NTA(&_m[ta.tile]);
-	}
-
-	/** Some compilers really like this. */
-	virtual ~OrthogonalPrefetchTileIterator()
-	{
 	}
 
 	/**
@@ -258,11 +255,6 @@ public:
 			this->tile = INVALID_TILE;
 		}
 		return *this;
-	}
-
-	virtual OrthogonalPrefetchTileIterator *Clone() const
-	{
-		return new OrthogonalPrefetchTileIterator(*this);
 	}
 };
 
@@ -299,9 +291,9 @@ public:
 
 	TileIterator& operator ++();
 
-	virtual TileIterator *Clone() const
+	virtual std::unique_ptr<TileIterator> Clone() const
 	{
-		return new DiagonalTileIterator(*this);
+		return std::make_unique<DiagonalTileIterator>(*this);
 	}
 };
 

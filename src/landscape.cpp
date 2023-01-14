@@ -1435,6 +1435,9 @@ static void CreateRivers()
 		}
 	}
 
+	/* Widening rivers may have left some tiles requiring to be watered. */
+	ConvertGroundTilesIntoWaterTiles();
+
 	/* Run tile loop to update the ground density. */
 	for (uint i = 0; i != 256; i++) {
 		if (i % 64 == 0) IncreaseGeneratingWorldProgress(GWP_RIVER);

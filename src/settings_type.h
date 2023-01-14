@@ -416,6 +416,7 @@ struct GameCreationSettings {
 	byte   landscape;                        ///< the landscape we're currently in
 	byte   water_borders;                    ///< bitset of the borders that are water
 	uint16 custom_town_number;               ///< manually entered number of towns
+	uint16 custom_industry_number;           ///< manually entered number of industries
 	byte   variety;                          ///< variety level applied to TGP
 	byte   custom_terrain_type;              ///< manually entered height for TGP to aim for
 	byte   custom_sea_level;                 ///< manually entered percentage of water in the map
@@ -431,7 +432,6 @@ struct GameCreationSettings {
 	uint8  amount_of_rocks;                  ///< the amount of rocks
 	uint8  height_affects_rocks;             ///< the affect that map height has on rocks
 	uint8  build_public_roads;               ///< build public roads connecting towns
-	uint16 custom_industry_number;           ///< manually entered number of industries
 };
 
 /** Settings related to construction in-game */
