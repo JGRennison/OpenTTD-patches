@@ -35,7 +35,7 @@ static std::vector<SaveLoad> GetSettingsDesc(bool is_loading)
 	std::vector<SaveLoad> saveloads;
 	for (auto &sd : GetSettingsTableInternal()) {
 		if (sd->flags & SF_NOT_IN_SAVE) continue;
-		if (sd->patx_name != nullptr) continue;
+		if (sd->patx_name != nullptr && !(is_loading && (sd->flags & SF_ENABLE_UPSTREAM_LOAD))) continue;
 		if (!sd->save.ext_feature_test.IsFeaturePresent(_sl_version, sd->save.version_from, sd->save.version_to)) continue;
 
 		VarType new_type = 0;
