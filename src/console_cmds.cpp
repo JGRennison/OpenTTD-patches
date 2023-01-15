@@ -313,7 +313,11 @@ DEF_CONSOLE_CMD(ConZoomToLevel)
 		case 2: {
 			uint32 level;
 			if (GetArgumentInteger(&level, argv[1])) {
-				if (level < ZOOM_LVL_MIN) {
+				/* In case ZOOM_LVL_MIN is more than 0, the next if statement needs to be amended.
+				 * A simple check for less than ZOOM_LVL_MIN does not work here because we are
+				 * reading an unsigned integer from the console, so just check for a '-' char. */
+				static_assert(ZOOM_LVL_MIN == 0);
+				if (argv[1][0] == '-') {
 					IConsolePrintF(CC_ERROR, "Zoom-in levels below %u are not supported.", ZOOM_LVL_MIN);
 				} else if (level < _settings_client.gui.zoom_min) {
 					IConsolePrintF(CC_ERROR, "Current client settings do not allow zooming in below level %u.", _settings_client.gui.zoom_min);
@@ -322,7 +326,7 @@ DEF_CONSOLE_CMD(ConZoomToLevel)
 				} else if (level > _settings_client.gui.zoom_max) {
 					IConsolePrintF(CC_ERROR, "Current client settings do not allow zooming out beyond level %u.", _settings_client.gui.zoom_max);
 				} else {
-					Window *w = FindWindowById(WC_MAIN_WINDOW, 0);
+					Window *w = GetMainWindow();
 					Viewport *vp = w->viewport;
 					while (vp->zoom > level) DoZoomInOutWindow(ZOOM_IN, w);
 					while (vp->zoom < level) DoZoomInOutWindow(ZOOM_OUT, w);
@@ -529,7 +533,7 @@ DEF_CONSOLE_CMD(ConRemove)
 	_console_file_list.ValidateFileList();
 	const FiosItem *item = _console_file_list.FindItem(file);
 	if (item != nullptr) {
-		if (!FiosDelete(item->name)) {
+		if (unlink(item->name) != 0) {
 			IConsolePrintF(CC_ERROR, "%s: Failed to delete file", file);
 		}
 	} else {
@@ -1031,6 +1035,7 @@ DEF_CONSOLE_CMD(ConResetCompany)
 		return false;
 	}
 	const NetworkClientInfo *ci = NetworkClientInfo::GetByClientID(CLIENT_ID_SERVER);
+	assert(ci != nullptr);
 	if (ci->client_playas == index) {
 		IConsoleError("Cannot remove company: the server is connected to that company.");
 		return true;
@@ -2240,18 +2245,15 @@ DEF_CONSOLE_CMD(ConFont)
 		bool aa = setting->aa;
 
 		byte arg_index = 2;
-
-		if (argc > arg_index) {
-			/* We may encounter "aa" or "noaa" but it must be the last argument. */
-			if (strcasecmp(argv[arg_index], "aa") == 0 || strcasecmp(argv[arg_index], "noaa") == 0) {
-				aa = strncasecmp(argv[arg_index++], "no", 2) != 0;
-				if (argc > arg_index) return false;
-			} else {
-				/* For <name> we want a string. */
-				uint v;
-				if (!GetArgumentInteger(&v, argv[arg_index])) {
-					font = argv[arg_index++];
-				}
+		/* We may encounter "aa" or "noaa" but it must be the last argument. */
+		if (strcasecmp(argv[arg_index], "aa") == 0 || strcasecmp(argv[arg_index], "noaa") == 0) {
+			aa = strncasecmp(argv[arg_index++], "no", 2) != 0;
+			if (argc > arg_index) return false;
+		} else {
+			/* For <name> we want a string. */
+			uint v;
+			if (!GetArgumentInteger(&v, argv[arg_index])) {
+				font = argv[arg_index++];
 			}
 		}
 
@@ -2282,7 +2284,7 @@ DEF_CONSOLE_CMD(ConFont)
 			InitFontCache(fs == FS_MONO);
 			fc = FontCache::Get(fs);
 		}
-		IConsolePrintF(CC_DEFAULT, "%s: \"%s\" %d %s [\"%s\" %d %s]", FontSizeToName(fs), fc->GetFontName(), fc->GetFontSize(), GetFontAAState(fs) ? "true" : "false", setting->font.c_str(), setting->size, setting->aa ? "true" : "false");
+		IConsolePrintF(CC_DEFAULT, "%s: \"%s\" %d %s [\"%s\" %d %s]", FontSizeToName(fs), fc->GetFontName(), fc->GetFontSize(), GetFontAAState(fs) ? "aa" : "noaa", setting->font.c_str(), setting->size, setting->aa ? "aa" : "noaa");
 	}
 
 	return true;

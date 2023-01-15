@@ -1323,7 +1323,7 @@ public:
 
 	void RandomTownName()
 	{
-		this->townnamevalid = GenerateTownName(&this->townnameparts);
+		this->townnamevalid = GenerateTownName(_interactive_random, &this->townnameparts);
 
 		if (!this->townnamevalid) {
 			this->townname_editbox.text.DeleteAll();

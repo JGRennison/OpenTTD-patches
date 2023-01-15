@@ -4306,7 +4306,6 @@ static ChangeInfoResult ObjectChangeInfo(uint id, int numinfo, int prop, const G
 				/* Swap classid because we read it in BE. */
 				uint32 classid = buf->ReadDWord();
 				(*ospec)->cls_id = ObjectClass::Allocate(BSWAP32(classid));
-				(*ospec)->enabled = true;
 				break;
 			}
 
@@ -10857,7 +10856,7 @@ static void FinaliseObjectsArray()
 		ObjectSpec **&objectspec = file->objectspec;
 		if (objectspec != nullptr) {
 			for (int i = 0; i < NUM_OBJECTS_PER_GRF; i++) {
-				if (objectspec[i] != nullptr && objectspec[i]->grf_prop.grffile != nullptr && objectspec[i]->enabled) {
+				if (objectspec[i] != nullptr && objectspec[i]->grf_prop.grffile != nullptr && objectspec[i]->IsEnabled()) {
 					_object_mngr.SetEntitySpec(objectspec[i]);
 				}
 			}

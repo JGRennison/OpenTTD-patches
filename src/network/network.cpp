@@ -649,6 +649,7 @@ void NetworkClose(bool close_admins)
 	delete[] _network_company_states;
 	_network_company_states = nullptr;
 	_network_company_server_id.clear();
+	_network_company_passworded = 0;
 
 	InitializeNetworkPools(close_admins);
 

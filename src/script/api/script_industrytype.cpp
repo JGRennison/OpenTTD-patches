@@ -9,6 +9,7 @@
 
 #include "../../stdafx.h"
 #include "script_industrytype.hpp"
+#include "script_base.hpp"
 #include "script_map.hpp"
 #include "script_error.hpp"
 #include "../../strings_func.h"
@@ -120,8 +121,8 @@
 	EnforcePrecondition(false, CanBuildIndustry(industry_type));
 	EnforcePrecondition(false, ScriptMap::IsValidTile(tile));
 
-	uint32 seed = ::InteractiveRandom();
-	uint32 layout_index = ::InteractiveRandomRange((uint32)::GetIndustrySpec(industry_type)->layouts.size());
+	uint32 seed = ScriptBase::Rand();
+	uint32 layout_index = ScriptBase::RandRange((uint32)::GetIndustrySpec(industry_type)->layouts.size());
 	return ScriptObject::DoCommand(tile, (1 << 16) | (layout_index << 8) | industry_type, seed, CMD_BUILD_INDUSTRY);
 }
 
@@ -129,7 +130,7 @@
 {
 	EnforcePrecondition(false, CanProspectIndustry(industry_type));
 
-	uint32 seed = ::InteractiveRandom();
+	uint32 seed = ScriptBase::Rand();
 	return ScriptObject::DoCommand(0, industry_type, seed, CMD_BUILD_INDUSTRY);
 }
 

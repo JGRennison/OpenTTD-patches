@@ -447,6 +447,18 @@ bool RiverModifyDesertZone(TileIndex tile, void *)
 }
 
 /**
+ * Make a river tile and remove desert directly around it.
+ * @param tile The tile to change into river and create non-desert around
+ */
+void MakeRiverAndModifyDesertZoneAround(TileIndex tile) {
+	MakeRiver(tile, Random());
+	MarkTileDirtyByTile(tile);
+
+	/* Remove desert directly around the river tile. */
+	CircularTileSearch(&tile, RIVER_OFFSET_DESERT_DISTANCE, RiverModifyDesertZone, nullptr);
+}
+
+/**
  * Build a piece of canal.
  * @param tile end tile of stretch-dragging
  * @param flags type of operation

@@ -67,6 +67,7 @@ static const Order *ResolveOrder(VehicleID vehicle_id, ScriptOrder::OrderPositio
 		if (order_position == ScriptOrder::ORDER_INVALID) return nullptr;
 	}
 	const Order *order = v->GetFirstOrder();
+	assert(order != nullptr);
 	while (order->GetType() == OT_IMPLICIT) order = order->next;
 	while (order_position > 0) {
 		order_position = (ScriptOrder::OrderPosition)(order_position - 1);
@@ -91,6 +92,7 @@ static int ScriptOrderPositionToRealOrderPosition(VehicleID vehicle_id, ScriptOr
 
 	int res = (int)order_position;
 	const Order *order = v->orders->GetFirstOrder();
+	assert(order != nullptr);
 	for (; order->GetType() == OT_IMPLICIT; order = order->next) res++;
 	while (order_position > 0) {
 		order_position = (ScriptOrder::OrderPosition)(order_position - 1);
@@ -136,6 +138,7 @@ static int ScriptOrderPositionToRealOrderPosition(VehicleID vehicle_id, ScriptOr
 	if (!IsValidVehicleOrder(vehicle_id, order_position)) return false;
 
 	const Order *order = ::Vehicle::Get(vehicle_id)->GetOrder(ScriptOrderPositionToRealOrderPosition(vehicle_id, order_position));
+	assert(order != nullptr);
 	return order->GetType() == OT_CONDITIONAL;
 }
 
@@ -145,6 +148,7 @@ static int ScriptOrderPositionToRealOrderPosition(VehicleID vehicle_id, ScriptOr
 	if (!IsValidVehicleOrder(vehicle_id, order_position)) return false;
 
 	const Order *order = ::ResolveOrder(vehicle_id, order_position);
+	assert(order != nullptr);
 	return order->GetType() == OT_DUMMY;
 }
 
@@ -176,6 +180,7 @@ static int ScriptOrderPositionToRealOrderPosition(VehicleID vehicle_id, ScriptOr
 	if (order_position == ORDER_CURRENT) {
 		int cur_order_pos = ::Vehicle::Get(vehicle_id)->cur_real_order_index;
 		const Order *order = ::Vehicle::Get(vehicle_id)->GetFirstOrder();
+		assert(order != nullptr);
 		int num_implicit_orders = 0;
 		for (int i = 0; i < cur_order_pos; i++) {
 			if (order->GetType() == OT_IMPLICIT) num_implicit_orders++;

@@ -1778,6 +1778,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	if (sel_ord >= v->GetNumOrders()) return CMD_ERROR;
 
 	Order *order = v->GetOrder(sel_ord);
+	assert(order != nullptr);
 	switch (order->GetType()) {
 		case OT_GOTO_STATION:
 			if (mof != MOF_NON_STOP && mof != MOF_STOP_LOCATION && mof != MOF_UNLOAD && mof != MOF_LOAD && mof != MOF_CARGO_TYPE_UNLOAD && mof != MOF_CARGO_TYPE_LOAD && mof != MOF_RV_TRAVEL_DIR) return CMD_ERROR;

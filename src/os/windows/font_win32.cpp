@@ -233,46 +233,21 @@ err1:
 }
 #endif /* WITH_FREETYPE */
 
-class FontList {
-protected:
-	wchar_t **fonts;
-	uint items;
-	uint capacity;
-
-public:
-	FontList() : fonts(nullptr), items(0), capacity(0) { };
-
-	~FontList() {
-		if (this->fonts == nullptr) return;
-
-		for (uint i = 0; i < this->items; i++) {
-			free(this->fonts[i]);
-		}
-
-		free(this->fonts);
-	}
-
-	bool Add(const wchar_t *font) {
-		for (uint i = 0; i < this->items; i++) {
-			if (wcscmp(this->fonts[i], font) == 0) return false;
-		}
-
-		if (this->items == this->capacity) {
-			this->capacity += 10;
-			this->fonts = ReallocT(this->fonts, this->capacity);
-		}
-
-		this->fonts[this->items++] = wcsdup(font);
-
-		return true;
-	}
-};
-
 struct EFCParam {
 	FontCacheSettings *settings;
 	LOCALESIGNATURE  locale;
 	MissingGlyphSearcher *callback;
-	FontList fonts;
+	std::vector<std::wstring> fonts;
+
+	bool Add(const std::wstring_view &font) {
+		for (const auto &entry : this->fonts) {
+			if (font.compare(entry) == 0) return false;
+		}
+
+		this->fonts.emplace_back(font);
+
+		return true;
+	}
 };
 
 static int CALLBACK EnumFontCallback(const ENUMLOGFONTEX *logfont, const NEWTEXTMETRICEX *metric, DWORD type, LPARAM lParam)
@@ -280,7 +255,7 @@ static int CALLBACK EnumFontCallback(const ENUMLOGFONTEX *logfont, const NEWTEXT
 	EFCParam *info = (EFCParam *)lParam;
 
 	/* Skip duplicates */
-	if (!info->fonts.Add((const wchar_t *)logfont->elfFullName)) return 1;
+	if (!info->Add(logfont->elfFullName)) return 1;
 	/* Only use TrueType fonts */
 	if (!(type & TRUETYPE_FONTTYPE)) return 1;
 	/* Don't use SYMBOL fonts */
@@ -463,22 +438,9 @@ void Win32FontCache::ClearFontCache()
 	GLYPHMETRICS gm;
 	MAT2 mat = { {0, 1}, {0, 0}, {0, 0}, {0, 1} };
 
-	/* Make a guess for the needed memory size. */
-	DWORD size = this->glyph_size.cy * Align(aa ? this->glyph_size.cx : std::max(this->glyph_size.cx / 8l, 1l), 4); // Bitmap data is DWORD-aligned rows.
-	byte *bmp = AllocaM(byte, size);
-	size = GetGlyphOutline(this->dc, key, GGO_GLYPH_INDEX | (aa ? GGO_GRAY8_BITMAP : GGO_BITMAP), &gm, size, bmp, &mat);
-
-	if (size == GDI_ERROR) {
-		/* No dice with the guess. First query size of needed glyph memory, then allocate the
-		 * memory and query again. This dance is necessary as some glyphs will only render with
-		 * the exact matching size; e.g. the space glyph has no pixels and must be requested
-		 * with size == 0, anything else fails. Unfortunately, a failed call doesn't return any
-		 * info about the size and thus the triple GetGlyphOutline()-call. */
-		size = GetGlyphOutline(this->dc, key, GGO_GLYPH_INDEX | (aa ? GGO_GRAY8_BITMAP : GGO_BITMAP), &gm, 0, nullptr, &mat);
-		if (size == GDI_ERROR) usererror("Unable to render font glyph");
-		bmp = AllocaM(byte, size);
-		GetGlyphOutline(this->dc, key, GGO_GLYPH_INDEX | (aa ? GGO_GRAY8_BITMAP : GGO_BITMAP), &gm, size, bmp, &mat);
-	}
+	/* Call GetGlyphOutline with zero size initially to get required memory size. */
+	DWORD size = GetGlyphOutline(this->dc, key, GGO_GLYPH_INDEX | (aa ? GGO_GRAY8_BITMAP : GGO_BITMAP), &gm, 0, nullptr, &mat);
+	if (size == GDI_ERROR) usererror("Unable to render font glyph");
 
 	/* Add 1 scaled pixel for the shadow on the medium font. Our sprite must be at least 1x1 pixel. */
 	uint shadow = (this->fs == FS_NORMAL) ? ScaleGUITrad(1) : 0;
@@ -487,6 +449,10 @@ void Win32FontCache::ClearFontCache()
 
 	/* Limit glyph size to prevent overflows later on. */
 	if (width > MAX_GLYPH_DIM || height > MAX_GLYPH_DIM) usererror("Font glyph is too large");
+
+	/* Call GetGlyphOutline again with size to actually render the glyph. */
+	byte *bmp = AllocaM(byte, size);
+	GetGlyphOutline(this->dc, key, GGO_GLYPH_INDEX | (aa ? GGO_GRAY8_BITMAP : GGO_BITMAP), &gm, size, bmp, &mat);
 
 	/* GDI has rendered the glyph, now we allocate a sprite and copy the image into it. */
 	SpriteLoader::Sprite sprite;

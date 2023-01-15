@@ -578,7 +578,7 @@ static void DrawTile_Object(TileInfo *ti, DrawTileProcParams params)
 	int building_z_offset = 0;
 
 	/* Fall back for when the object doesn't exist anymore. */
-	if (!spec->enabled) {
+	if (!spec->IsEnabled()) {
 		type = OBJECT_TRANSMITTER;
 	} else if ((spec->flags & OBJECT_FLAG_HAS_NO_FOUNDATION) == 0) {
 		if (spec->ctrl_flags & OBJECT_CTRL_FLAG_EDGE_FOUNDATION) {
@@ -1222,7 +1222,7 @@ static CommandCost TerraformTile_Object(TileIndex tile, DoCommandFlag flags, int
 					pre_success_checks();
 					return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_FOUNDATION]);
 				}
-			} else if (spec->enabled) {
+			} else if (spec->IsEnabled()) {
 				/* allow autoslope */
 				pre_success_checks();
 				return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_FOUNDATION]);

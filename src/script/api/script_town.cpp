@@ -303,7 +303,7 @@
 		EnforcePreconditionCustomError(false, ::Utf8StringLength(text) < MAX_LENGTH_TOWN_NAME_CHARS, ScriptError::ERR_PRECONDITION_STRING_TOO_LONG);
 	}
 	uint32 townnameparts;
-	if (!GenerateTownName(&townnameparts)) {
+	if (!GenerateTownName(ScriptObject::GetRandomizer(), &townnameparts)) {
 		ScriptController::DecreaseOps(50000);
 		ScriptObject::SetLastError(ScriptError::ERR_NAME_IS_NOT_UNIQUE);
 		return false;

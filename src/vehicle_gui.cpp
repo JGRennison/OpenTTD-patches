@@ -3878,7 +3878,7 @@ public:
 				if (_ctrl_pressed) {
 					ShowExtraViewportWindow(TileVirtXY(v->x_pos, v->y_pos));
 				} else {
-					const Window *mainwindow = FindWindowById(WC_MAIN_WINDOW, 0);
+					const Window *mainwindow = GetMainWindow();
 					if (click_count > 1 && mainwindow->viewport->zoom < ZOOM_LVL_DRAW_MAP) {
 						/* main window 'follows' vehicle */
 						mainwindow->viewport->follow_vehicle = v->index;
@@ -3949,8 +3949,8 @@ public:
 	{
 		/* If the hotkey is not for any widget in the UI (i.e. for honking) */
 		if (hotkey == WID_VV_HONK_HORN) {
-			const Window* mainwindow = FindWindowById(WC_MAIN_WINDOW, 0);
-			const Vehicle* v = Vehicle::Get(window_number);
+			const Window *mainwindow = GetMainWindow();
+			const Vehicle *v = Vehicle::Get(window_number);
 			/* Only play the sound if we're following this vehicle */
 			if (mainwindow->viewport->follow_vehicle == v->index) {
 				v->PlayLeaveStationSound(true);
@@ -4185,8 +4185,8 @@ bool VehicleClicked(const GUIVehicleGroup &vehgroup)
 
 void StopGlobalFollowVehicle(const Vehicle *v)
 {
-	Window *w = FindWindowById(WC_MAIN_WINDOW, 0);
-	if (w != nullptr && w->viewport->follow_vehicle == v->index) {
+	Window *w = GetMainWindow();
+	if (w->viewport->follow_vehicle == v->index) {
 		ScrollMainWindowTo(v->x_pos, v->y_pos, v->z_pos, true); // lock the main view on the vehicle's last position
 		w->viewport->follow_vehicle = INVALID_VEHICLE;
 	}

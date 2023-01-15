@@ -21,7 +21,7 @@
 #include "newgrf_commons.h"
 
 /** Various object behaviours. */
-enum ObjectFlags {
+enum ObjectFlags : uint16 {
 	OBJECT_FLAG_NONE               =       0, ///< Just nothing.
 	OBJECT_FLAG_ONLY_IN_SCENEDIT   = 1 <<  0, ///< Object can only be constructed in the scenario editor.
 	OBJECT_FLAG_CANNOT_REMOVE      = 1 <<  1, ///< Object can not be removed.
@@ -62,7 +62,7 @@ static const uint8 OBJECT_SIZE_1X1 = 0x11; ///< The value of a NewGRF's size pro
 void ResetObjects();
 
 /** Class IDs for objects. */
-enum ObjectClassID {
+enum ObjectClassID : uint16 {
 	OBJECT_CLASS_BEGIN   =      0, ///< The lowest valid value
 	OBJECT_CLASS_MAX     = 0xFFFF, ///< Maximum number of classes.
 	INVALID_OBJECT_CLASS = 0xFFFF, ///< Class for the less fortunate.
@@ -91,6 +91,7 @@ enum ObjectViewportMapType {
 struct ObjectSpec {
 	/* 2 because of the "normal" and "buy" sprite stacks. */
 	GRFFilePropsBase<2> grf_prop; ///< Properties related the the grf file
+	AnimationInfo animation;      ///< Information about the animation.
 	ObjectClassID cls_id;         ///< The class to which this spec belongs.
 	StringID name;                ///< The name for this object.
 
@@ -103,14 +104,18 @@ struct ObjectSpec {
 	ObjectFlags flags;            ///< Flags/settings related to the object.
 	ObjectCtrlFlags ctrl_flags;   ///< Extra control flags.
 	uint8 edge_foundation[4];     ///< Edge foundation flags
-	AnimationInfo animation;      ///< Information about the animation.
 	uint16 callback_mask;         ///< Bitmask of requested/allowed callbacks.
 	uint8 height;                 ///< The height of this structure, in heightlevels; max MAX_TILE_HEIGHT.
 	uint8 views;                  ///< The number of views.
 	uint8 generate_amount;        ///< Number of objects which are attempted to be generated per 256^2 map during world generation.
-	bool enabled;                 ///< Is this spec enabled?
 	ObjectViewportMapType vport_map_type; ///< Viewport map type
 	uint16 vport_map_subtype;     ///< Viewport map subtype
+
+	/**
+	 * Test if this object is enabled.
+	 * @return True iif this object is enabled.
+	 */
+	bool IsEnabled() const { return this->views > 0; }
 
 	/**
 	 * Get the cost for building a structure of this type.

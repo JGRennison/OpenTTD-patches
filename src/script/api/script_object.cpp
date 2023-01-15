@@ -395,3 +395,19 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 
 	NOT_REACHED();
 }
+
+
+/* static */ Randomizer ScriptObject::random_states[OWNER_END];
+
+Randomizer &ScriptObject::GetRandomizer(Owner owner)
+{
+	return ScriptObject::random_states[owner];
+}
+
+void ScriptObject::InitializeRandomizers()
+{
+	Randomizer random = _random;
+	for (Owner owner = OWNER_BEGIN; owner < OWNER_END; owner++) {
+		ScriptObject::GetRandomizer(owner).SetSeed(random.Next());
+	}
+}

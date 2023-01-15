@@ -36,6 +36,7 @@
 static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint32 val, ModifyTimetableFlags mtf, bool timetabled, bool ignore_lock = false)
 {
 	Order *order = v->GetOrder(order_number);
+	assert(order != nullptr);
 	int total_delta = 0;
 	int timetable_delta = 0;
 
