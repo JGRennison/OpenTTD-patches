@@ -623,7 +623,7 @@ STR_GRAPH_KEY_BUTTON                                            :{BLACK}索引
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}显示图表的公司索引
 STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}
 STR_GRAPH_X_LABEL_MONTH_YEAR                                    :{TINY_FONT}{STRING}{}{NUM}
-STR_GRAPH_Y_LABEL                                               :{TINY_FONT}{STRING2}
+STR_GRAPH_Y_LABEL                                               :{TINY_FONT}{STRING}
 STR_GRAPH_Y_LABEL_NUMBER                                        :{TINY_FONT}{COMMA}
 
 STR_GRAPH_OPERATING_PROFIT_CAPTION                              :{WHITE}利润图表
@@ -932,7 +932,7 @@ STR_NEWS_TRAIN_IS_STUCK                                         :{WHITE}{VEHICLE
 STR_NEWS_VEHICLE_IS_LOST                                        :{WHITE}{VEHICLE} 无法找到路线.
 STR_NEWS_VEHICLE_IS_UNPROFITABLE                                :{WHITE}{VEHICLE}去年的利润为 {CURRENCY_LONG}
 STR_NEWS_AIRCRAFT_DEST_TOO_FAR                                  :{WHITE}{VEHICLE} 由于航程过远，航班无法到达。
-STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE}由于超速无法停在{STRING1}
+STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE}由于超速无法停在{STRING}
 
 STR_NEWS_ORDER_REFIT_FAILED                                     :{WHITE}适配调度计划失败，已终止 {VEHICLE}
 STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}无法自动更新 {VEHICLE}{}{STRING}
@@ -1273,11 +1273,11 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :贷款利率；
 STR_CONFIG_SETTING_RUNNING_COSTS                                :运营费用：{STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :设置维护费用、运营费用的难度
 
-STR_CONFIG_SETTING_RUNNING_COSTS_IN_DEPOT                       :在站车辆运营费用：{STRING2}
+STR_CONFIG_SETTING_RUNNING_COSTS_IN_DEPOT                       :在站车辆运营费用：{STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_IN_DEPOT_HELPTEXT              :设置等待在车站中的车辆的维护及运转支出（未停）
 STR_CONFIG_SETTING_RUNNING_COSTS_IN_DEPOT_VALUE                 :1 / {COMMA}
 
-STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED                   :停放列车运营费用：{STRING2}
+STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED                   :停放列车运营费用：{STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED_HELPTEXT          :设置不在站停放的车辆的维护及运转支出
 STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED_VALUE             :1 / {COMMA}
 
@@ -1311,11 +1311,11 @@ STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :灾难可能引
 
 STR_CONFIG_SETTING_CITY_APPROVAL                                :地区政府对区域改造的态度：{STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :设置相关参数以决定各公司造成的噪音及环境破坏时，各城镇对该公司的评价及未来城镇建设的影响。
-STR_CONFIG_SETTING_MONEY_CHEAT_MULTIPLAYER                      :允许多玩家客户端使用现金作弊：{STRING2}
+STR_CONFIG_SETTING_MONEY_CHEAT_MULTIPLAYER                      :允许多玩家客户端使用现金作弊：{STRING}
 STR_CONFIG_SETTING_MONEY_CHEAT_MULTIPLAYER_HELPTEXT             :若已启用，则非管理员多玩家客户端可使用现金作弊项。现金作弊始终对单玩家模式下的玩家及多玩家模式下的服务器管理员启用。
-STR_CONFIG_SETTING_RENAME_TOWNS_MULTIPLAYER                     :允许多玩家客户端重命名城镇：{STRING2}
+STR_CONFIG_SETTING_RENAME_TOWNS_MULTIPLAYER                     :允许多玩家客户端重命名城镇：{STRING}
 STR_CONFIG_SETTING_RENAME_TOWNS_MULTIPLAYER_HELPTEXT            :若已启用，则非旁观者角色的非管理员多玩家客户端可以重命名城镇。 城镇重命名功能始终对单玩家模式下的玩家及多玩家模式下的服务器管理员启用。
-STR_CONFIG_SETTING_OVERRIDE_TOWN_SETTINGS_MULTIPLAYER           :允许多玩家客户端重设单城镇设定：{STRING2}
+STR_CONFIG_SETTING_OVERRIDE_TOWN_SETTINGS_MULTIPLAYER           :允许多玩家客户端重设单城镇设定：{STRING}
 STR_CONFIG_SETTING_OVERRIDE_TOWN_SETTINGS_MULTIPLAYER_HELPTEXT  :若已启用，则非旁观者角色的非管理员多玩家客户端可以重设单城镇设定。 单城镇设定重设功能始终对单玩家模式下的玩家及多玩家模式下的服务器管理员启用。
 
 STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT                             :地图高度限制：{STRING}
@@ -1333,16 +1333,16 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :启用时不同
 
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :公司私有车站可以服务自带车站的工业设施：{STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :启用后，自带车站的工业设施（如钻井平台）也可以被临近的公司私有车站服务。禁用后，这些工业设施只能被它们自带的车站服务。任何临近的公司车站将不能服务它们，工业设施自有车站也不会提供除本工业设施的产品以外的其他产品
-STR_CONFIG_SETTING_CATCHMENT_INCREASE                           :增加车站覆盖半径：{STRING2}
+STR_CONFIG_SETTING_CATCHMENT_INCREASE                           :增加车站覆盖半径：{STRING}
 STR_CONFIG_SETTING_CATCHMENT_INCREASE_HELPTEXT                  :增加此格数的车站覆盖半径
-STR_CONFIG_SETTING_STATION_RATING_CARGO_CLASS_WAIT_TIME         :车站对货物等待时间容忍度取决于货物等级：{STRING2}
+STR_CONFIG_SETTING_STATION_RATING_CARGO_CLASS_WAIT_TIME         :车站对货物等待时间容忍度取决于货物等级：{STRING}
 STR_CONFIG_SETTING_STATION_RATING_CARGO_CLASS_WAIT_TIME_HELPTEXT:若已启用，自上次提货以来的等待时间对该货物的车站等级的影响取决于货物等级。乘客、邮件、贵重品、食物和货物对等待的容忍度大大降低。对于散装和液体货物更为宽容。
-STR_CONFIG_SETTING_STATION_RATING_SIZE_CARGO_AMOUNT             :车站货物容量及时间宽容度取决于车站大小：{STRING2}
+STR_CONFIG_SETTING_STATION_RATING_SIZE_CARGO_AMOUNT             :车站货物容量及时间宽容度取决于车站大小：{STRING}
 STR_CONFIG_SETTING_STATION_RATING_SIZE_CARGO_AMOUNT_HELPTEXT    :若已启用，等待货物之前车站的货物容量将被考虑，等待货物数量对该货物车站等级的影响取决于车站的大小。更大的车站可以储存更多的货物并有更大的时间宽容度。
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :允许拆除更多的由城镇所有的公路、桥梁、隧道等：{STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :启用时更容易拆除城市自有的设施和建筑
 
-STR_CONFIG_SETTING_CARGO_DELIVERY_MODE                          :货物运输分配模式：{STRING2}
+STR_CONFIG_SETTING_CARGO_DELIVERY_MODE                          :货物运输分配模式：{STRING}
 STR_CONFIG_SETTING_CARGO_DELIVERY_MODE_HELPTEXT                 :向周边行业分配货物的方法
 
 STR_CONFIG_SETTING_TRAIN_LENGTH                                 :火车的最大长度：{STRING}
@@ -1354,11 +1354,11 @@ STR_CONFIG_SETTING_SMOKE_AMOUNT_HELPTEXT                        :设置由火车
 
 STR_CONFIG_SETTING_TRAIN_ACCELERATION_MODEL                     :列车加速度： {STRING}
 STR_CONFIG_SETTING_TRAIN_ACCELERATION_MODEL_HELPTEXT            :选择列车加速度模型，选“原版”时斜坡对所有列车影响相同，“真实”时影响因素包括斜坡长度、转弯半径、牵引力等
-STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL                          :列车制动模型：{STRING2}
+STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL                          :列车制动模型：{STRING}
 STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL_HELPTEXT                 :选择列车制动的物理模型。“原版”模型允许火车立即停止。在“真实”模型中，列车拥有停止距离并需要供停止用的预留量。列车无法立即停车。{}{}“真实”模型对于信号和轨道的布局设计有显著的影响，这是种进阶功能并不适合于初学者。注意，前向信号和双向信号是不被允许的，对于所有信号在此模式只能使用路径信号。
-STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED             :真实列车制动的方向限制：{STRING2}
+STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED             :真实列车制动的方向限制：{STRING}
 STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED_HELPTEXT    :在真实列车制动模型中，在信号灯方向限制列车的前方观察能力（即，不允许观察和预测前方的无限数量的信号灯）。{}这需要NewGRF提供多向信号灯。{}{}这是一个专家设置并将增加游戏难度，需要考虑信号类型及其放置位置。
-STR_CONFIG_SETTING_ROAD_VEHICLE_ACCELERATION_MODEL              :汽车加速模型
+STR_CONFIG_SETTING_ROAD_VEHICLE_ACCELERATION_MODEL              :汽车加速模型: {STRING}
 STR_CONFIG_SETTING_ROAD_VEHICLE_ACCELERATION_MODEL_HELPTEXT     :选择汽车加速度模型，选“原版”时斜坡对所有汽车影响相同，选“真实”时依赖引擎性能，比如“牵引力”
 
 STR_CONFIG_SETTING_TRAIN_SLOPE_STEEPNESS                        :斜坡对火车的影响率：{STRING}
@@ -1368,20 +1368,20 @@ STR_CONFIG_SETTING_PERCENTAGE                                   :{COMMA}%
 STR_CONFIG_SETTING_ROAD_VEHICLE_SLOPE_STEEPNESS                 :斜坡对汽车速度影响率：{STRING}
 STR_CONFIG_SETTING_ROAD_VEHICLE_SLOPE_STEEPNESS_HELPTEXT        :每一格斜坡对汽车速度的影响率，数值越大，汽车越难爬上斜坡
 
-STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT                     :火车通过式装载最高速度：{STRING2}
+STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT                     :火车通过式装载最高速度：{STRING}
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_HELPTEXT            :火车在通过车站时进行装载的所允许的最高速度
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_VAL                 :{VELOCITY}
 
 STR_CONFIG_SETTING_FORBID_90_DEG                                :禁止列车 90 度转弯：{STRING}
 STR_CONFIG_SETTING_FORBID_90_DEG_HELPTEXT                       :当水平方向轨道与垂直方向轨道交叉时，没有采用45度的轨道组合连接，而是采用轨道90度直接连接时，列车通过时需要90度转弯，当本设置”打开“时，将禁止火车90度转弯。
-STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING                :Pathfind up to back of one-way path signals：{STRING2}
+STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING                :Pathfind up to back of one-way path signals：{STRING}
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING_HELPTEXT       :When enabled, the YAPF train pathfinder may pathfind up to the back of a one-way path signal.
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS                        :允许非毗邻站台合并：{STRING}
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS_HELPTEXT               :“打开”时允许为已经存在的车站添加不相邻的站台，建造新的部分时需要按住Ctrl键
 
 STR_CONFIG_SETTING_INFLATION                                    :通货膨胀：{STRING}
 STR_CONFIG_SETTING_INFLATION_HELPTEXT                           :“打开”通货膨胀时，支出比收入增长得稍快
-STR_CONFIG_SETTING_INFLATION_FIXED_DATES                        :应用从1920年到2090年的通货膨胀：{STRING2}
+STR_CONFIG_SETTING_INFLATION_FIXED_DATES                        :应用从1920年到2090年的通货膨胀：{STRING}
 STR_CONFIG_SETTING_INFLATION_FIXED_DATES_HELPTEXT               :当启用时，不管游戏是在哪年进行的，通胀将在1920到2090年间始终持续。这是OpenTTD1.11以来所使用的通胀模型。{}如果禁用，通胀将会在游戏开始后170年里不断持续。这是一直使用到OpenTTD1.10的模型。
 STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH                            :桥梁的最大长度：{STRING}
 STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH_HELPTEXT                   :建设桥梁时允许的最大长度
@@ -1423,7 +1423,7 @@ STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :设置车辆在
 STR_CONFIG_SETTING_STOP_LOCATION_NEAR_END                       :近端
 STR_CONFIG_SETTING_STOP_LOCATION_MIDDLE                         :中间
 STR_CONFIG_SETTING_STOP_LOCATION_FAR_END                        :远端
-STR_CONFIG_SETTING_IMPROVED_BREAKDOWNS                          :使用改进的车辆故障：{STRING2}
+STR_CONFIG_SETTING_IMPROVED_BREAKDOWNS                          :使用改进的车辆故障：{STRING}
 STR_CONFIG_SETTING_AUTOSCROLL                                   :当鼠标移动到屏幕边缘时移动屏幕：{STRING}
 STR_CONFIG_SETTING_AUTOSCROLL_HELPTEXT                          :启用后，鼠标移动到视点窗口边缘时，视点窗口自动滚动
 ###length 4
@@ -1469,22 +1469,22 @@ STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES            :{WHITE}当有�
 
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :加强版固定资产维护：{STRING}
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :固定资产会发生维护费用，“打开”本选项时，维护费用的增长会超过交通网络的增长规模，因而，对大公司影响更大。
-STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :船舶避免碰撞：{STRING2}
+STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :船舶避免碰撞：{STRING}
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :当被启用时，船舶将尝试避免互相穿过。当禁止船舶90度转向时效果最好。
 
-STR_CONFIG_SETTING_CHUNNEL                                      :允许水下隧道的建设：{STRING2}
+STR_CONFIG_SETTING_CHUNNEL                                      :允许水下隧道的建设：{STRING}
 STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :当被启用时，隧道可以被建在海平面以下的水体底部。这要求隧道末端距离岸边三格以上。
 
-STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY                 :不同公司的列车将不会互相碰撞：{STRING2}
+STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY                 :不同公司的列车将不会互相碰撞：{STRING}
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :这是为了防止熊孩子故意在多人游戏中撞毁他人的列车。
 
-STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING               :铰链式道路车辆允许超车：{STRING2}
+STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING               :铰链式道路车辆允许超车：{STRING}
 STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING_HELPTEXT      :允许铰链式道路车辆超车。
 
-STR_CONFIG_SETTING_ROADVEH_CANT_QUANTUM_TUNNEL                  :阻止道路车辆在堵车时穿越其他车辆：{STRING2}
+STR_CONFIG_SETTING_ROADVEH_CANT_QUANTUM_TUNNEL                  :阻止道路车辆在堵车时穿越其他车辆：{STRING}
 STR_CONFIG_SETTING_ROADVEH_CANT_QUANTUM_TUNNEL_HELPTEXT         :当道路长时间堵车时，禁止道路车辆穿越其他的道路车辆。
 
-STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT                    :直通车辆段：{STRING2}
+STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT                    :直通车辆段：{STRING}
 STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT_HELPTEXT           :启用直通车辆段仿真。火车可以在背对背的两个车库之间穿越，也可以经由之间的车库。这需要启用YAPF寻路。
 
 STR_CONFIG_SETTING_COMPANY_STARTING_COLOUR                      :初创公司颜色：{STRING}
@@ -1495,14 +1495,14 @@ STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :“打开”此
 
 STR_CONFIG_SETTING_WARN_LOST_VEHICLE                            :当列车无法找到路线时提示：{STRING}
 STR_CONFIG_SETTING_WARN_LOST_VEHICLE_HELPTEXT                   :“打开”时，当车辆无法找到路径时给出提示
-STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE                :如果列车因为寻路原因被卡住时提示：{STRING2}
+STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE                :如果列车因为寻路原因被卡住时提示：{STRING}
 STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE_HELPTEXT       :当被启用时，车辆如果长时间在路径信号灯处等待时就会给出提示
 STR_CONFIG_SETTING_ORDER_REVIEW                                 :检查车辆的调度计划：{STRING}
 STR_CONFIG_SETTING_ORDER_REVIEW_HELPTEXT                        :启用时，相应类型车辆的调度计划会定期检查，发现的问题会以新闻的形式报告
 STR_CONFIG_SETTING_ORDER_REVIEW_OFF                             :不检查
 STR_CONFIG_SETTING_ORDER_REVIEW_EXDEPOT                         :检查 不包括停运的车辆
 STR_CONFIG_SETTING_ORDER_REVIEW_ON                              :检查 所有车辆
-STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER                          :在车辆没有回库计划时发出提示：{STRING2}
+STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER                          :在车辆没有回库计划时发出提示：{STRING}
 STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_HELPTEXT                 :启用时，若车损已开启，则在火车、道路车辆、船舶的时刻表中没有入库计划时，发出提示。
 STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_IF_BREAKDOWNS_ON         :If vehicle breakdowns enabled
 STR_CONFIG_SETTING_WARN_INCOME_LESS                             :若线路亏损时发出提示： {STRING}
@@ -1510,11 +1510,11 @@ STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :“打开”，
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :车辆永不报废：{STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :“打开”时，所有的车辆在它出现后一直可用
-STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER                     :没有车辆将退役在：{STRING2}
+STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER                     :没有车辆将退役在：{STRING}
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_HELPTEXT            :在这个年份及其之后的列车将不再失效
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_VALUE               :{NUM}
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_ZERO                :关
-STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER                  :没有车辆将发售在：{STRING2}
+STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER                  :没有车辆将发售在：{STRING}
 STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_HELPTEXT         :在这个年份及其之后的列车将不再可供使用
 STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_VALUE            :{NUM}
 STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_ZERO             :关
@@ -1551,33 +1551,33 @@ STR_CONFIG_SETTING_SHOW_NEWGRF_NAME_HELPTEXT                    :在建造运输
 STR_CONFIG_SETTING_SHOW_CARGO_IN_LISTS                          :在列表窗口中显示车辆可以携带的货物 {STRING}
 STR_CONFIG_SETTING_SHOW_CARGO_IN_LISTS_HELPTEXT                 :如果启用，车辆的可运输负载将出现在车辆列表的上方
 
-STR_CONFIG_SETTING_SHOW_WAGON_INTRO_YEAR                        :在车辆建造窗口中展示车厢发售年份：{STRING2}
+STR_CONFIG_SETTING_SHOW_WAGON_INTRO_YEAR                        :在车辆建造窗口中展示车厢发售年份：{STRING}
 STR_CONFIG_SETTING_SHOW_WAGON_INTRO_YEAR_HELPTEXT               :在车辆建造窗口添加一行，显示车厢的发售年份
-STR_CONFIG_SETTING_SHOW_TRAIN_LENGTH_IN_DETAILS                 :在详情窗口显示车辆长度：{STRING2}
+STR_CONFIG_SETTING_SHOW_TRAIN_LENGTH_IN_DETAILS                 :在详情窗口显示车辆长度：{STRING}
 STR_CONFIG_SETTING_SHOW_TRAIN_LENGTH_IN_DETAILS_HELPTEXT        :在车辆详情窗口显示其长度
-STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_IN_DETAILS                :在车辆详情窗口显示其所处车辆组：{STRING2}
+STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_IN_DETAILS                :在车辆详情窗口显示其所处车辆组：{STRING}
 STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_IN_DETAILS_HELPTEXT       :在车辆详情页面显示其所处车辆组的名字
-STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS          :在车辆详情窗口显示列车重量比：{STRING2}
+STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS          :在车辆详情窗口显示列车重量比：{STRING}
 STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS_HELPTEXT :在车辆详情窗口显示列车重量比
-STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF                      :使用缺省图形显示受限的电力信号灯：{STRING2}
+STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF                      :使用缺省图形显示受限的电力信号灯：{STRING}
 STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF_HELPTEXT             :使用具有蓝色信号柱的缺省信号图样显示路由受限的电力信号灯，代替使用任何NewGRF的信号灯图样。这是为了更容易在视觉上去区分受限的电力信号灯。
-STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF                             :使用缺省图形展示所有的信号灯：{STRING2}
+STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF                             :使用缺省图形展示所有的信号灯：{STRING}
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT                    :使用缺省信号灯图样展示所有的信号灯，代替使用任何NewGRF的信号灯图形。这是为了在NewGRF提供不清晰的信号灯图形时更容易去区分信号灯的状态及其类型。
-STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES             :显示进阶路由限制功能：{STRING2}
+STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES             :显示进阶路由限制功能：{STRING}
 STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES_HELPTEXT    :显示进阶路由限制功能。当被禁用时，UI中不会显示这些进阶功能，但仍对所有玩家可用。
-STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES                        :显示可编程入口信号灯功能：{STRING2}
+STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES                        :显示可编程入口信号灯功能：{STRING}
 STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES_HELPTEXT               :显示可编程入口信号灯功能。 当被禁用时，UI不会显示建设和设置可编程入口信号灯的构建选项，但仍对所有玩家可用。
-STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES                     :显示禁止进入信号灯功能：{STRING2}
+STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES                     :显示禁止进入信号灯功能：{STRING}
 STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES_HELPTEXT            :显示禁止进入信号灯功能。当被禁用时，UI不会显示建设和设置禁止进入信号灯的构建选项，但仍对所有玩家可用。
-STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER                   :在车辆列表中显示车厢类型过滤器：{STRING2}
+STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER                   :在车辆列表中显示车厢类型过滤器：{STRING}
 STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER_HELPTEXT          :在车辆列表中显示货车类型过滤器。当被开启时，车辆列表窗口将包括一个扩展过滤器下拉列表。
-STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES               :显示进阶装载模式功能：{STRING2}
+STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES               :显示进阶装载模式功能：{STRING}
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES_HELPTEXT      :展示进阶装载模式功能（通过装载/卸载、道路车辆方向等）当禁用时，一些进阶装载模式功能将不会在用户界面中展示，但仍对所有玩家可用。
-STR_CONFIG_SETTING_DISABLE_TOP_VEH_LIST_MASS_ACTIONS            :禁用高阶车辆列表的批量操作按钮：{STRING2}
+STR_CONFIG_SETTING_DISABLE_TOP_VEH_LIST_MASS_ACTIONS            :禁用高阶车辆列表的批量操作按钮：{STRING}
 STR_CONFIG_SETTING_DISABLE_TOP_VEH_LIST_MASS_ACTIONS_HELPTEXT   :这将所有车辆和所有未分组车辆列表的禁用入库/运行和启/停按钮。这将有助于避免误按带来的负面效应。
-STR_CONFIG_SETTING_SHOW_DEPOT_SELL_GUI                          :显示回库并卖出功能：{STRING2}
+STR_CONFIG_SETTING_SHOW_DEPOT_SELL_GUI                          :显示回库并卖出功能：{STRING}
 STR_CONFIG_SETTING_SHOW_DEPOT_SELL_GUI_HELPTEXT                 :展示回库并卖出功能。当开启之后，Ctrl+点击回库就可改变当前车库命令模式。
-STR_CONFIG_SETTING_OPEN_VEHICLE_GUI_CLONE_SHARE                 :共享调度计划的克隆结束后打开新车辆窗口：{STRING2}
+STR_CONFIG_SETTING_OPEN_VEHICLE_GUI_CLONE_SHARE                 :共享调度计划的克隆结束后打开新车辆窗口：{STRING}
 STR_CONFIG_SETTING_OPEN_VEHICLE_GUI_CLONE_SHARE_HELPTEXT        :若已启用，则当在车库窗口克隆了一辆具有共享调度计划的车辆时打开新克隆的车辆的详情窗口。
 
 STR_CONFIG_SETTING_LINKGRAPH_COLOURS                            :货物分配图配色：{STRING}
@@ -1587,58 +1587,58 @@ STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREEN_TO_BLUE              :绿色到蓝色
 STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREY_TO_RED                :灰色到红色
 STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREYSCALE                  :灰度
 
-STR_CONFIG_SETTING_VEHICLE_NAMES                                :车辆名：{STRING2}
+STR_CONFIG_SETTING_VEHICLE_NAMES                                :车辆名：{STRING}
 STR_CONFIG_SETTING_VEHICLE_NAMES_HELPTEXT                       :设置车辆名使用的命名方案。这不适用于有自定义名称的车辆。
 STR_CONFIG_SETTING_VEHICLE_NAMES_TRADITIONAL                    :传统
 STR_CONFIG_SETTING_VEHICLE_NAMES_MODERN                         :现代
 STR_CONFIG_SETTING_VEHICLE_NAMES_LONG                           :长的
 
-STR_CONFIG_SETTING_SHADED_TREES_ON_SLOPES                       :给斜坡上的树加强阴影：{STRING2}
+STR_CONFIG_SETTING_SHADED_TREES_ON_SLOPES                       :给斜坡上的树加强阴影：{STRING}
 STR_CONFIG_SETTING_SHADED_TREES_ON_SLOPES_HELPTEXT              :改变被画在斜坡上的树的亮度。改善树木在山脉地区的观感表现。
 
-STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE                  :车站等级提示窗：{STRING2}
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE                  :车站等级提示窗：{STRING}
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_HELPTEXT         :设定车站等级和信息详情提示窗是否显示。
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_OFF              :关闭
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_SIMPLE           :简单
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :详细
 
-STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE                        :在摧毁结构前询问：{STRING2}
+STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE                        :在摧毁结构前询问：{STRING}
 STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_HELPTEXT               :在不可更改地摧毁结构之前询问已确定。
 STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_OFF                    :关闭
 STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_INDUSTRY               :工业
 STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_ALL                    :工业及车站
 
-STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW              :将车头与车厢在列车购买窗口中分开：{STRING2}
+STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW              :将车头与车厢在列车购买窗口中分开：{STRING}
 STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_HELPTEXT     :当开启后，火车购买窗口在分开的二栏列表中分别展示火车头和车厢。
 
-STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_DUAL_BUTTONS :分别在火车购买窗口展示按钮组：{STRING2}
+STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_DUAL_BUTTONS :分别在火车购买窗口展示按钮组：{STRING}
 STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_DUAL_BUTTONS_HELPTEXT :当开启后，在火车购买窗口的火车头和车厢列表中，它们共通的一组按钮会分别显示两次。
 
-STR_CONFIG_SETTING_ALLOW_HIDE_WAYPOINT_LABEL                    :允许隐藏路点视口标签：{STRING2}
+STR_CONFIG_SETTING_ALLOW_HIDE_WAYPOINT_LABEL                    :允许隐藏路点视口标签：{STRING}
 STR_CONFIG_SETTING_ALLOW_HIDE_WAYPOINT_LABEL_HELPTEXT           :当开启后，路点可以拥有独立设置的可隐藏的视口标签{}当路点被用来做装饰或它们是主路点的镜像时，这很实用。因为它们不需要独立的标签。
 
-STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION                      :禁用水体动画：{STRING2}
+STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION                      :禁用水体动画：{STRING}
 STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_HELPTEXT             :当开启后，在当前缩放大小是原始缩放大小缩放等级之外的情况下禁用水体动画效果。{}当要避免时在一些图形集中因处在高缩放等级时所产生的伪像时，它是很实用的。
 STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_8X                   :8  倍缩放及以上
 STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_16X                  :16 倍缩放及以上
 STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_32X                  :32 倍缩放及以上
 
-STR_CONFIG_SETTING_SHOW_ORDER_OCCUPANCY_BY_DEFAULT              :显示调度占用情况作为缺省：{STRING2}
+STR_CONFIG_SETTING_SHOW_ORDER_OCCUPANCY_BY_DEFAULT              :显示调度占用情况作为缺省：{STRING}
 STR_CONFIG_SETTING_SHOW_ORDER_OCCUPANCY_BY_DEFAULT_HELPTEXT     :在打开车辆的调度窗口时显示详细的每个调度的占用情况作为缺省设置。
 
-STR_CONFIG_SETTING_SHOW_ORDER_MANAGEMENT_BY_DEFAULT             :显示调度管理按钮：{STRING2}
+STR_CONFIG_SETTING_SHOW_ORDER_MANAGEMENT_BY_DEFAULT             :显示调度管理按钮：{STRING}
 STR_CONFIG_SETTING_SHOW_ORDER_MANAGEMENT_BY_DEFAULT_HELPTEXT    :在车辆调度窗口显示用于调度管理的按钮
 
-STR_CONFIG_SETTING_SHOW_GROUP_HIERARCHY_NAME                    :在名称中显示分组层级：{STRING2}
+STR_CONFIG_SETTING_SHOW_GROUP_HIERARCHY_NAME                    :在名称中显示分组层级：{STRING}
 STR_CONFIG_SETTING_SHOW_GROUP_HIERARCHY_NAME_HELPTEXT           :当被启用时，分组名称将包括他们的父组名的完整层级
 
-STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_HIERARCHY_NAME            :在车名中显示分组层级：{STRING2}
+STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_HIERARCHY_NAME            :在车名中显示分组层级：{STRING}
 STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_HIERARCHY_NAME_HELPTEXT   :当被启用时，分组名称将包括他们的父组名的完整层级
 
-STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :启用在桥隧放置信号的进阶模式：{STRING2}
+STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :启用在桥隧放置信号的进阶模式：{STRING}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :启用在桥隧中的信号模拟的进阶模式。当被禁用时，尚未处于高级模式的桥隧无法更改为高级模式，但其他玩家可以选择启用此设置并使用高级模式。
 
-STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED                    :以最高速度排序轨道类型：{STRING2}
+STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED                    :以最高速度排序轨道类型：{STRING}
 STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED_HELPTEXT           :以兼容性和速度排序轨道并代替缺省排序。
 
 STR_CONFIG_SETTING_LANDSCAPE                                    :景观：{STRING}
@@ -1646,7 +1646,7 @@ STR_CONFIG_SETTING_LANDSCAPE_HELPTEXT                           :此设置决定
 
 STR_CONFIG_SETTING_LAND_GENERATOR                               :生成地形：{STRING}
 STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :使用原始算法时，系统会依赖基础图形组去生成固定的地形。新算法 TerraGenesis 是一个基于柏林噪声的地形生成程序，支持较为细致的地形设置
-STR_CONFIG_SETTING_MAX_SIGNAL_EVALUATIONS                       :被允许的可编程入口信号灯的同时改变的最大数量：{STRING2}
+STR_CONFIG_SETTING_MAX_SIGNAL_EVALUATIONS                       :被允许的可编程入口信号灯的同时改变的最大数量：{STRING}
 STR_CONFIG_SETTING_MAX_SIGNAL_EVALUATIONS_HELPTEXT              :设置被允许的可编程入口信号灯的同时改变的最大数量
 ###length 2
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :原始算法
@@ -1673,7 +1673,7 @@ STR_CONFIG_SETTING_DESERT_COVERAGE_HELPTEXT                     :控制热带气
 STR_CONFIG_SETTING_DESERT_COVERAGE_VALUE                        :{NUM}%
 STR_CONFIG_SETTING_RAINFORESTLINE_HEIGHT                        :雨林线高度：{STRING}
 STR_CONFIG_SETTING_RAINFORESTLINE_HEIGHT_HELPTEXT               :控制在亚热带景观中的雨林在什么高度开始生成。雨林也影响工业生成和城镇需求增长。
-STR_CONFIG_SETTING_CLIMATE_THRESHOLD_MODE                       :气候阈值模式：{STRING2}
+STR_CONFIG_SETTING_CLIMATE_THRESHOLD_MODE                       :气候阈值模式：{STRING}
 STR_CONFIG_SETTING_CLIMATE_THRESHOLD_MODE_HELPTEXT              :决定雪线和雨林/沙漠线是根据范围百分比自动计算还是手动指定。
 STR_CONFIG_SETTING_CLIMATE_THRESHOLD_COVERAGE                   :自动
 STR_CONFIG_SETTING_CLIMATE_THRESHOLD_MANUAL                     :手动
@@ -1746,7 +1746,7 @@ STR_CONFIG_SETTING_STATION_SPREAD_HELPTEXT                      :设置车站最
 
 STR_CONFIG_SETTING_SERVICEATHELIPAD                             :直升机在降落平台自动保养：{STRING}
 STR_CONFIG_SETTING_SERVICEATHELIPAD_HELPTEXT                    :直升飞机在降落平台自动保养，即使机场没有机库
-STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY                           :只允许不停止的调度：{STRING2}
+STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY                           :只允许不停止的调度：{STRING}
 STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY_HELPTEXT                  :只允许创建不停止的调度对于列车和道路车辆。
 STR_CONFIG_SETTING_LINK_TERRAFORM_TOOLBAR                       :将景观美化工具栏与铁道/公路/船只/机场工具栏连接：{STRING}
 STR_CONFIG_SETTING_LINK_TERRAFORM_TOOLBAR_HELPTEXT              :“打开”时，在打开交通建设工具栏时同时打开景观美化工具栏
@@ -1800,38 +1800,38 @@ STR_CONFIG_SETTING_OSK_ACTIVATION_DOUBLE_CLICK                  :双击
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK_FOCUS            :单击（当前焦点）
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK                  :单击（立即）
 
-STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE                      :展示已聚焦车辆在调度路径的路点标志：{STRING2}
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE                      :展示已聚焦车辆在调度路径的路点标志：{STRING}
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_HELPTEXT             :当开启并有车辆窗口被聚焦的时候，在车辆调度站点和/或调度位置之间显示标记。｛｝仅在车站停车模式仅显示车辆在车站停车的调度（这不包括通过调度、航路点和仓库）。
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_OFF                  :关闭
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_ALL_LOCATIONS        :所有调度位置
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_STATIONS_ONLY        :仅经停站
-STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS                     :显示车辆路径覆盖标志：{STRING2}
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS                     :显示车辆路径覆盖标志：{STRING}
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS_HELPTEXT            :当开启并有车辆窗口被聚焦的时候，在每个调度目标的位置将显示一个标志，这个标志显示了路点被经过的顺序编号及其类型。
 
-STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR             :用车辆所属公司的颜色标记在列表上的其他公司的车辆：{STRING2}
+STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR             :用车辆所属公司的颜色标记在列表上的其他公司的车辆：{STRING}
 STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR_HELPTEXT    :在车辆列表窗口的其他公司所属的除窗口所有公司外的车辆将被用一个上了其他公司所属颜色的矩形标记。
-STR_CONFIG_SETTING_ENABLE_SINGLE_VEH_SHARED_ORDER_GUI           :允许在共享调度组窗口中的单个车辆：{STRING2}
+STR_CONFIG_SETTING_ENABLE_SINGLE_VEH_SHARED_ORDER_GUI           :允许在共享调度组窗口中的单个车辆：{STRING}
 STR_CONFIG_SETTING_ENABLE_SINGLE_VEH_SHARED_ORDER_GUI_HELPTEXT  :允许在没有共享调度的时候对单个车辆使用共享调度组窗口。
 
-STR_CONFIG_SETTING_VIEWPORT_MAP_SCAN_SURROUNDINGS               :扫描周围（最好在高缩放比例下）：{STRING2}
-STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SLOPES                     :显示斜坡：{STRING2}
-STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_BRIDGES                    :显示桥梁：{STRING2}
-STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_TUNNELS                    :显示隧道：{STRING2}
-STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP               :显示滚动视口：{STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SCAN_SURROUNDINGS               :扫描周围（最好在高缩放比例下）：{STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SLOPES                     :显示斜坡：{STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_BRIDGES                    :显示桥梁：{STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_TUNNELS                    :显示隧道：{STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP               :显示滚动视口：{STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_NOTHING       :否
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_CONTOUR       :轮廓
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_BLEND         :与白色混合（仅32bpp）
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_ALL           :混合+轮廓
-STR_CONFIG_SETTING_VIEWPORT_MAP_USE_OWNER_COLOUR_BRIDGE_TUNNEL  :在桥梁和隧道使用所有者公司的颜色：{STRING2}
-STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE                    :缺省模式：{STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_USE_OWNER_COLOUR_BRIDGE_TUNNEL  :在桥梁和隧道使用所有者公司的颜色：{STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE                    :缺省模式：{STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE_VEGETATION         :植被
 STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE_OWNER              :所有者
 STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE_INDUSTRY           :工业
-STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK                 :双击值执行功能：{STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK                 :双击值执行功能：{STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_DO_NOTHING      :什么都不做
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_ZOOM_MAIN       :直接缩放到1X
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_NEW_EXTRA       :打开额外视口
-STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE              :显示车辆路径覆盖线：{STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE              :显示车辆路径覆盖线：{STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE_HELPTEXT     :当被启用且车辆窗口被聚焦时，在每个车辆的调度路径的地点之间连线。（当前所选择路径将以黄色线段表示）。
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :车辆路径绘制风格：{STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :以{COMMA}个像素的点构成的点状连线
@@ -1857,13 +1857,13 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :使用在窗口
 STR_CONFIG_SETTING_AUTOSAVE                                     :自动保存：{STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :选择自动存档时间间隔
 
-STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_DAYS                         :自定义以日为单位的自动保存时间间隔：{STRING2}
+STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_DAYS                         :自定义以日为单位的自动保存时间间隔：{STRING}
 STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_DAYS_HELPTEXT                :设置在游戏自动保存之间的自定义日期间隔
 
-STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_MINUTES                      :定义以现实分钟为单位的自动保存时间间隔：{STRING2}
+STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_MINUTES                      :定义以现实分钟为单位的自动保存时间间隔：{STRING}
 STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_MINUTES_HELPTEXT             :设置在游戏自动保存之间的自定义现实分钟间隔
 
-STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT               :在网络断线时自动保存：{STRING2}
+STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT               :在网络断线时自动保存：{STRING}
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT_HELPTEXT      :当启用后，当从服务器断连之后多玩家客户端将自动保存游戏
 
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :使用 {STRING} 形式的文件名存档
@@ -1896,37 +1896,37 @@ STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS_HELPTEXT              :允许使用高
 
 STR_CONFIG_SETTING_LOADING_INDICATORS                           :使用装货进度指示： {STRING}
 STR_CONFIG_SETTING_LOADING_INDICATORS_HELPTEXT                  :选择是否在车辆上方显示装卸货物进度
-STR_CONFIG_SETTING_AUTO_TIMETABLE_BY_DEFAULT                    :缺省使用自动时刻表：{STRING2}
+STR_CONFIG_SETTING_AUTO_TIMETABLE_BY_DEFAULT                    :缺省使用自动时刻表：{STRING}
 STR_CONFIG_SETTING_AUTO_TIMETABLE_BY_DEFAULT_HELPTEXT           :选择对于新车辆的调度，自动时刻表是否应被自动打开。
-STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT              :使用时刻表去确保车辆缺省保持距离：{STRING2}
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT              :使用时刻表去确保车辆缺省保持距离：{STRING}
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT_HELPTEXT     :选择对于新车辆使否确保车辆应自动保持间距。
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :使用时间标记而不是天为单位： {STRING}
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :时刻表以游戏刻而不是天显示。
-STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS                     :显示时刻表中剩余的游戏刻：{STRING2}
+STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS                     :显示时刻表中剩余的游戏刻：{STRING}
 STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS_HELPTEXT            :再把时刻表的单位由游戏刻转换为日和分钟的时候也显示剩余的游戏刻。
-STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS                       :适用客户端时间设置代替游戏保存时间设置：{STRING2}
+STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS                       :适用客户端时间设置代替游戏保存时间设置：{STRING}
 STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS_HELPTEXT              :选择是否使用本地客户端时间显示设置代替游戏存档中所保存的时间设置。
-STR_CONFIG_SETTING_TIME_IN_MINUTES                              :用分钟而不是日来表示时间：{STRING2}
+STR_CONFIG_SETTING_TIME_IN_MINUTES                              :用分钟而不是日来表示时间：{STRING}
 STR_CONFIG_SETTING_TIME_IN_MINUTES_HELPTEXT                     :选择是否使用小时和分钟代替日
-STR_CONFIG_SETTING_TICKS_PER_MINUTE                             :每分钟游戏刻数：{STRING2}
+STR_CONFIG_SETTING_TICKS_PER_MINUTE                             :每分钟游戏刻数：{STRING}
 STR_CONFIG_SETTING_TICKS_PER_MINUTE_HELPTEXT                    :每分钟游戏刻数
-STR_CONFIG_SETTING_DATE_WITH_TIME                               :在状态栏中显示日期和时间：{STRING2}
+STR_CONFIG_SETTING_DATE_WITH_TIME                               :在状态栏中显示日期和时间：{STRING}
 STR_CONFIG_SETTING_DATE_WITH_TIME_HELPTEXT                      :既在状态栏里显示游戏中的时间也显示现实时间和日期
-STR_CONFIG_SETTING_CLOCK_OFFSET                                 :分钟时间偏移：{STRING2}
+STR_CONFIG_SETTING_CLOCK_OFFSET                                 :分钟时间偏移：{STRING}
 STR_CONFIG_SETTING_CLOCK_OFFSET_HELPTEXT                        :游戏时钟的分钟偏移量被决定由
 STR_CONFIG_SETTING_DATE_WITH_TIME_NONE                          :无
 STR_CONFIG_SETTING_DATE_WITH_TIME_Y                             :年
 STR_CONFIG_SETTING_DATE_WITH_TIME_YM                            :月和年
 STR_CONFIG_SETTING_DATE_WITH_TIME_YMD                           :完整日期
-STR_CONFIG_SETTING_TIMETABLE_START_TEXT_ENTRY                   :以文本输入时刻表开始时间（需要带有分钟的时间）：{STRING2}
+STR_CONFIG_SETTING_TIMETABLE_START_TEXT_ENTRY                   :以文本输入时刻表开始时间（需要带有分钟的时间）：{STRING}
 STR_CONFIG_SETTING_TIMETABLE_START_TEXT_ENTRY_HELPTEXT          :选择如果时间以分钟为单位，是否可以以文本形式输入时刻表开始时间
-STR_CONFIG_SETTING_TIMETABLE_SEPARATION                         :使用时刻表来确保时间间隔：{STRING2}
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION                         :使用时刻表来确保时间间隔：{STRING}
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_HELPTEXT                :选择当使用自动时刻表时是否确保车辆的间隔
-STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE                    :自动时刻表车辆间隔因子：{STRING2}
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE                    :自动时刻表车辆间隔因子：{STRING}
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE_HELPTEXT           :在每个步骤中要应用多少车辆分离的自动时刻表变化
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE             :在时刻表中显示到达时间和出发时间： {STRING}
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE_HELPTEXT    :在时刻表中显示预期的到达和出发时间
-STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS            :舍入自动调整的时刻表的游戏刻：{STRING2}
+STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS            :舍入自动调整的时刻表的游戏刻：{STRING}
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_HELPTEXT   :由时刻表自动调整的时刻表时间并不是整数形式的。一天的长度是74个游戏刻。{}如果使用分钟的话游戏缺省将使用每分钟的游戏刻数，否则将使用74刻。
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_VALUE      :{COMMA}刻
 ###setting-zero-is-special
@@ -1937,7 +1937,7 @@ STR_CONFIG_SETTING_QUICKGOTO_HELPTEXT                           :启用时，打
 
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE                            :缺省铁道类型（新建/读取游戏后）： {STRING}
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_HELPTEXT                   :设置开启或者载入游戏时的缺省铁道类型，“第一可用的”是最老的铁道类型，“最后一个可用”的是最新的铁道类型，“最常用的”是当前用的最多的铁道类型
-STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE                            :缺省道路/电车道类型（在新游戏或老存档载入后）：{STRING2}
+STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE                            :缺省道路/电车道类型（在新游戏或老存档载入后）：{STRING}
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE_HELPTEXT                   :在开始或载入一个游戏后的道路/电车道类型。“第一个可用的”选择的是道路/电车道的最古老的类型，“最后一个可用的”选择的是道路/电车道的最新的类型，“最常用的”选择当前使用最多的类型，“缺省”选择了缺省类型。
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_FIRST                      :第一个可用的
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_LAST                       :第后一个可用的
@@ -1959,9 +1959,9 @@ STR_CONFIG_SETTING_FAST_FORWARD_SPEED_LIMIT_VAL                 :{NUM}% 正常�
 ###setting-zero-is-special
 STR_CONFIG_SETTING_FAST_FORWARD_SPEED_LIMIT_ZERO                :无限制（在您计算机允许的范围内）
 
-STR_CONFIG_SETTING_ENABLE_BUILD_RIVER                           :允许建造河流：{STRING2}
+STR_CONFIG_SETTING_ENABLE_BUILD_RIVER                           :允许建造河流：{STRING}
 STR_CONFIG_SETTING_ENABLE_BUILD_RIVER_HELPTEXT                  :允许在场景编辑器之外建造河流
-STR_CONFIG_SETTING_ENABLE_REMOVE_WATER                          :允许移除海洋和河流：{STRING2}
+STR_CONFIG_SETTING_ENABLE_REMOVE_WATER                          :允许移除海洋和河流：{STRING}
 STR_CONFIG_SETTING_ENABLE_REMOVE_WATER_HELPTEXT                 :允许在场景编辑器之外移除海洋和河流
 
 STR_CONFIG_SETTING_SOUND_TICKER                                 :产业新闻：{STRING}
@@ -2028,22 +2028,22 @@ STR_CONFIG_SETTING_SCRIPT_MAX_MEMORY                            :每个脚本的
 STR_CONFIG_SETTING_SCRIPT_MAX_MEMORY_HELPTEXT                   :单个脚本强制终止前可占用的最大内存量。对于大地图可能需要增加。
 STR_CONFIG_SETTING_SCRIPT_MAX_MEMORY_VALUE                      :{COMMA} MiB
 
-STR_CONFIG_SETTING_SHARING_RAIL                                 :启用铁道共享：{STRING2}
-STR_CONFIG_SETTING_SHARING_ROAD                                 :启用汽车站和车库共享：{STRING2}
-STR_CONFIG_SETTING_SHARING_WATER                                :启用码头和船坞共享：{STRING2}
-STR_CONFIG_SETTING_SHARING_AIR                                  :启用机场共享：{STRING2}
-STR_CONFIG_SETTING_SHARING_FEE_RAIL                             :火车每日通行费：{STRING2}每千吨
-STR_CONFIG_SETTING_SHARING_FEE_ROAD                             :公路车辆停放费：{STRING2}每日
-STR_CONFIG_SETTING_SHARING_FEE_WATER                            :船舶停泊费：{STRING2}每日
-STR_CONFIG_SETTING_SHARING_FEE_AIR                              :飞机航站楼费用：{STRING2}每日
+STR_CONFIG_SETTING_SHARING_RAIL                                 :启用铁道共享：{STRING}
+STR_CONFIG_SETTING_SHARING_ROAD                                 :启用汽车站和车库共享：{STRING}
+STR_CONFIG_SETTING_SHARING_WATER                                :启用码头和船坞共享：{STRING}
+STR_CONFIG_SETTING_SHARING_AIR                                  :启用机场共享：{STRING}
+STR_CONFIG_SETTING_SHARING_FEE_RAIL                             :火车每日通行费：{STRING}每千吨
+STR_CONFIG_SETTING_SHARING_FEE_ROAD                             :公路车辆停放费：{STRING}每日
+STR_CONFIG_SETTING_SHARING_FEE_WATER                            :船舶停泊费：{STRING}每日
+STR_CONFIG_SETTING_SHARING_FEE_AIR                              :飞机航站楼费用：{STRING}每日
 STR_CONFIG_SETTING_SHARING_FEE_HELPTEXT                         :这个费用是每个游戏日内交付的（即，每个长度为1的游戏日的持续时间，也就是74刻）。
-STR_CONFIG_SETTING_SHARING_PAYMENT_IN_DEBT                      :允许公司支付费用时赊账：{STRING2}
+STR_CONFIG_SETTING_SHARING_PAYMENT_IN_DEBT                      :允许公司支付费用时赊账：{STRING}
 STR_CONFIG_SETTING_SHARING_USED_BY_VEHICLES                     :不能更改这个设定，正在使用共享设施。
 STR_CONFIG_SETTING_SHARING_ORDERS_TO_OTHERS                     :不能更改这个设定，车辆有途径它公司设施的调度计划。
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_RAIL               :允许竞争者在车库内购买和维护火车：{STRING2}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_ROAD               :允许竞争者在车库内购买和维护汽车：{STRING2}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_WATER              :允许竞争者在船坞内购买和维护轮船：{STRING2}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_AIR                :允许竞争者在机库内购买和维护火车：{STRING2}
+STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_RAIL               :允许竞争者在车库内购买和维护火车：{STRING}
+STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_ROAD               :允许竞争者在车库内购买和维护汽车：{STRING}
+STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_WATER              :允许竞争者在船坞内购买和维护轮船：{STRING}
+STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_AIR                :允许竞争者在机库内购买和维护火车：{STRING}
 
 STR_CONFIG_SETTING_SERVINT_ISPERCENT                            :保养周期（百分数）： {STRING}
 STR_CONFIG_SETTING_SERVINT_ISPERCENT_HELPTEXT                   :选择触发车辆保养的条件，距离上一次保养的时间或者与最高可靠性的百分比
@@ -2065,9 +2065,9 @@ STR_CONFIG_SETTING_NOSERVICE_HELPTEXT                           :“打开”时
 
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :启动车辆限速：{STRING}
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS_HELPTEXT                    :“打开“时，还要根据车辆的限速来决定一列火车的最高速度
-STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION                       :启用火车速度调整：{STRING2}
+STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION                       :启用火车速度调整：{STRING}
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION_HELPTEXT              :当开启后，更快的火车将将它的速度调整到期前方得更慢的火车的速度。
-STR_CONFIG_SETTING_SLOW_ROAD_VEHICLES_IN_CURVES                 :道路车辆在转弯处减速：{STRING2}
+STR_CONFIG_SETTING_SLOW_ROAD_VEHICLES_IN_CURVES                 :道路车辆在转弯处减速：{STRING}
 STR_CONFIG_SETTING_SLOW_ROAD_VEHICLES_IN_CURVES_HELPTEXT        :当开启后，道路车辆将在转弯处减速（仅当真实加速度开启时启用）
 STR_CONFIG_SETTING_DISABLE_ELRAILS                              :禁用电气化铁道：{STRING}
 STR_CONFIG_SETTING_DISABLE_ELRAILS_HELPTEXT                     :“打开”本选项时禁止电气化铁道的使用
@@ -2149,10 +2149,10 @@ STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :设置公司可
 
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :转运系统中支付的利润百分比 {STRING}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :设定在转运系统中支付给前一环节的收入百分比, 从而对收入有更多的控制权
-STR_CONFIG_SETTING_SIMULATE_SIGNALS                             :每{STRING2}模拟桥隧中的信号灯
+STR_CONFIG_SETTING_SIMULATE_SIGNALS                             :每{STRING}模拟桥隧中的信号灯
 STR_CONFIG_SETTING_SIMULATE_SIGNALS_HELPTEXT                    :这为新设信号灯的桥梁和隧道设定了目标信号间距。实际间距可能与此略有不同，以避免间距不均。改变这一设置不会对现有的有信号的桥梁和隧道重新设置信号。
 STR_CONFIG_SETTING_SIMULATE_SIGNALS_VALUE                       :{COMMA}格
-STR_CONFIG_SETTING_DAY_LENGTH_FACTOR                            :日长因子：{STRING2}
+STR_CONFIG_SETTING_DAY_LENGTH_FACTOR                            :日长因子：{STRING}
 STR_CONFIG_SETTING_DAY_LENGTH_FACTOR_HELPTEXT                   :游戏速度将根据此因子减慢。
 STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY                         :当拖动时，放置信号灯每隔：{STRING}
 STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY_HELPTEXT                :设置以拖动的方式建设时，自动放置信号灯时的间距，将以该间距放置信号灯，直到碰到障碍（信号灯，分支）
@@ -2189,17 +2189,17 @@ STR_CONFIG_SETTING_ALLOW_TOWN_ROADS_HELPTEXT                    :“打开”时
 STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS                   :允许城镇建设平交道口：{STRING}
 STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS_HELPTEXT          :“打开”时允许城镇建设平交道口
 
-STR_CONFIG_SETTING_TOWN_TUNNELS                                 :城市被允许建造隧道：{STRING2}
+STR_CONFIG_SETTING_TOWN_TUNNELS                                 :城市被允许建造隧道：{STRING}
 STR_CONFIG_SETTING_TOWN_TUNNELS_HELPTEXT                        :在什么条件下城市被允许建造公路隧道
 ###length 3
 STR_CONFIG_SETTING_TOWN_TUNNELS_FORBIDDEN                       :禁止
 STR_CONFIG_SETTING_TOWN_TUNNELS_ALLOWED_OBSTRUCTION             :仅在有小障碍时被允许
 STR_CONFIG_SETTING_TOWN_TUNNELS_ALLOWED                         :允许
 
-STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE                          :限制城市在坡上建造的连续直路的长度：{STRING2}
+STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE                          :限制城市在坡上建造的连续直路的长度：{STRING}
 STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_HELPTEXT                 :限制城镇建造的连续斜坡路的长度。这可以用来防止城镇在坡上建造长长的直路段。
-STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_VALUE                    :{NUM} tile{P "" s}
-STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_ZERO                     :No limit
+STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_VALUE                    :{NUM}格
+STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_ZERO                     :无限制
 
 STR_CONFIG_SETTING_NOISE_LEVEL                                  :允许城镇控制机场噪音： {STRING}
 STR_CONFIG_SETTING_NOISE_LEVEL_HELPTEXT                         :“关闭”本选项时，每个城镇可以建设两个机场，“打开”时，可以建设的机场数目取决于城市对噪音的忍耐度，而这与城市人口、机场规模和距离有关
@@ -2216,15 +2216,15 @@ STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :城镇客货产
 ###length 2
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_ORIGINAL                   :四倍（原版）
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_BITCOUNT                   :线性
-STR_CONFIG_SETTING_TOWN_CARGO_FACTOR                            :城镇货物生成因子（less < 0 < more）：{STRING2}
+STR_CONFIG_SETTING_TOWN_CARGO_FACTOR                            :城镇货物生成因子（less < 0 < more）：{STRING}
 STR_CONFIG_SETTING_TOWN_CARGO_FACTOR_HELPTEXT                   :旅客、邮件、其他城镇货物生产以近似的二的因子次方缩放（试验性）
-STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR                        :工业货物生成因子（less < 0 < more）：{STRING2}
+STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR                        :工业货物生成因子（less < 0 < more）：{STRING}
 STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR_HELPTEXT               :主要工业货物生产以近似的二的因子次方缩放（试验性）。这不包括伐木工业。{}这不能保证覆盖所有的工业类NewGRF。
-STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :城镇建筑海拔限高：{STRING2}
+STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :城镇建筑海拔限高：{STRING}
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :在地图生成中没有城镇会生成在指定海拔以上。
-STR_CONFIG_SETTING_MIN_TOWN_LAND_AREA                           :最小城镇距离格数：{STRING2}
+STR_CONFIG_SETTING_MIN_TOWN_LAND_AREA                           :最小城镇距离格数：{STRING}
 STR_CONFIG_SETTING_MIN_TOWN_LAND_AREA_HELPTEXT                  :城镇最小距离被设置为该值设定的格数。
-STR_CONFIG_SETTING_MIN_CITY_LAND_AREA                           :最小城市距离格数：{STRING2}
+STR_CONFIG_SETTING_MIN_CITY_LAND_AREA                           :最小城市距离格数：{STRING}
 STR_CONFIG_SETTING_MIN_CITY_LAND_AREA_HELPTEXT                  :城市最小距离被设置为该值设定的格数。
 STR_CONFIG_SETTING_MIN_LAND_AREA_VALUE                          :{NUM}
 STR_CONFIG_SETTING_MIN_LAND_AREA_ZERO                           :无
@@ -2237,20 +2237,20 @@ STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_SPREAD_RAINFOREST       :只生长在雨
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_SPREAD_ALL              :生长并四处扩散
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NO_GROWTH_NO_SPREAD     :不生长、不扩散 {RED}（损坏伐木场）
 
-STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE                        :调整寒带树种生成：{STRING2}
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE                        :调整寒带树种生成：{STRING}
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_HELPTEXT               :调整在寒带气候的雪线附近的树木生成。树木将在雪线以上变得稀少。在雪线的附近的树木是寒带和温带的树种夹杂的。在那之下的树木都是温带类型。
-STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE                  :寒带树种范围：{STRING2}
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE                  :寒带树种范围：{STRING}
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE_HELPTEXT         :在雪线附近的寒带树种的大致生成区间
-STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_DYNAMIC_RANGE          :对于寒带树种的季节性雪线宽度：{STRING2}
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_DYNAMIC_RANGE          :对于寒带树种的季节性雪线宽度：{STRING}
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_DYNAMIC_RANGE_HELPTEXT :当使用季节性可变雪线时，雪线附近的树种寒带变体生成时的概率百分比。0%使用更低的（冬季时的）雪线，100%使用在夏季到冬季时的所有雪线可生成区间范围。
 
-STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS                           :建造连接城镇的公共道路：{STRING2}
+STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS                           :建造连接城镇的公共道路：{STRING}
 STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS_HELPTEXT                  :生成连接城镇的公共道路。在更大的地图需要花费更长的时间进行生成。“生成不含转弯的道路”选项被选用时将避免生成转弯，其结果是道路的连接非常呈网格状布局。
 STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS_NONE                      :无（缺省）
 STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS_WITH_CURVES               :生成包含转弯的道路
 STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS_AVOID_CURVES              :生成不含转弯的道路
 
-STR_CONFIG_SETTING_TREE_GROWTH                                  :树木生长速度：{STRING2}
+STR_CONFIG_SETTING_TREE_GROWTH                                  :树木生长速度：{STRING}
 STR_CONFIG_SETTING_TREE_GROWTH_HELPTEXT                         :控制游戏过程中树木生长的速率。这可能影响到依赖于树木生长的工业，例如伐木场
 STR_CONFIG_SETTING_TREE_GROWTH_NORMAL                           :标准
 STR_CONFIG_SETTING_TREE_GROWTH_SLOW                             :缓慢
@@ -2297,31 +2297,31 @@ STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_IN_2X                        :2x
 STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_NORMAL                       :1x
 
 STR_CONFIG_SETTING_TOWN_ZONES                                   :{ORANGE}自定义城镇区域
-STR_CONFIG_SETTING_TOWN_ZONE_CALC_MODE                          :使用自定义城镇区域计算：{STRING2}
+STR_CONFIG_SETTING_TOWN_ZONE_CALC_MODE                          :使用自定义城镇区域计算：{STRING}
 STR_CONFIG_SETTING_TOWN_ZONE_CALC_MODE_HELPTEXT                 :使用手动设置城镇区域的大小。自定义城镇区域的缺省设置类似于缺省城镇生成设置。当区域0在特定的更大的值得时候一些区域只需要很小的更改。
-STR_CONFIG_SETTING_TOWN_ZONE_0_MULT                             :城镇区域0因子：{STRING2}
+STR_CONFIG_SETTING_TOWN_ZONE_0_MULT                             :城镇区域0因子：{STRING}
 STR_CONFIG_SETTING_TOWN_ZONE_0_MULT_HELPTEXT                    :城镇区域0大小因子（最外面的没有人行道的道路）这个设定适合更大的值。
-STR_CONFIG_SETTING_TOWN_ZONE_1_MULT                             :城镇区域1因子：{STRING2}
+STR_CONFIG_SETTING_TOWN_ZONE_1_MULT                             :城镇区域1因子：{STRING}
 STR_CONFIG_SETTING_TOWN_ZONE_1_MULT_HELPTEXT                    :城镇区域1大小因子（有人行道的外部区域）这个设定在有较小的变更时效果最好。
-STR_CONFIG_SETTING_TOWN_ZONE_2_MULT                             :城镇区域2因子：{STRING2}
+STR_CONFIG_SETTING_TOWN_ZONE_2_MULT                             :城镇区域2因子：{STRING}
 STR_CONFIG_SETTING_TOWN_ZONE_2_MULT_HELPTEXT                    :城镇区域2大小因子（有人行道的外部区域）这个设定在有较小的变更时效果最好。
-STR_CONFIG_SETTING_TOWN_ZONE_3_MULT                             :城镇区域3因子：{STRING2}
+STR_CONFIG_SETTING_TOWN_ZONE_3_MULT                             :城镇区域3因子：{STRING}
 STR_CONFIG_SETTING_TOWN_ZONE_3_MULT_HELPTEXT                    :城镇区域3大小因子（内部树形道路）这个设定在有较小的变更时效果最好。
-STR_CONFIG_SETTING_TOWN_ZONE_4_MULT                             :城镇区域4因子：{STRING2}
+STR_CONFIG_SETTING_TOWN_ZONE_4_MULT                             :城镇区域4因子：{STRING}
 STR_CONFIG_SETTING_TOWN_ZONE_4_MULT_HELPTEXT                    :城镇区域4大小因子（最内部的有路灯的道路）这个设定在有较小的变更时效果最好。
-STR_CONFIG_SETTING_CITY_ZONE_0_MULT                             :城市区域0因子：{STRING2}
+STR_CONFIG_SETTING_CITY_ZONE_0_MULT                             :城市区域0因子：{STRING}
 STR_CONFIG_SETTING_CITY_ZONE_0_MULT_HELPTEXT                    :城市区域0大小因子（最外面的没有人行道的道路）这个设定适合更大的值。
-STR_CONFIG_SETTING_CITY_ZONE_1_MULT                             :城市区域1因子：{STRING2}
+STR_CONFIG_SETTING_CITY_ZONE_1_MULT                             :城市区域1因子：{STRING}
 STR_CONFIG_SETTING_CITY_ZONE_1_MULT_HELPTEXT                    :城市区域1大小因子（有人行道的外部区域）这个设定在有较小的变更时效果最好。
-STR_CONFIG_SETTING_CITY_ZONE_2_MULT                             :城市区域2因子：{STRING2}
+STR_CONFIG_SETTING_CITY_ZONE_2_MULT                             :城市区域2因子：{STRING}
 STR_CONFIG_SETTING_CITY_ZONE_2_MULT_HELPTEXT                    :城市区域2大小因子（有人行道的外部区域）这个设定在有较小的变更时效果最好。
-STR_CONFIG_SETTING_CITY_ZONE_3_MULT                             :城市区域3因子：{STRING2}
+STR_CONFIG_SETTING_CITY_ZONE_3_MULT                             :城市区域3因子：{STRING}
 STR_CONFIG_SETTING_CITY_ZONE_3_MULT_HELPTEXT                    :城市区域3大小因子（内部树形道路）这个设定在有较小的变更时效果最好。
-STR_CONFIG_SETTING_CITY_ZONE_4_MULT                             :城市区域4因子：{STRING2}
+STR_CONFIG_SETTING_CITY_ZONE_4_MULT                             :城市区域4因子：{STRING}
 STR_CONFIG_SETTING_CITY_ZONE_4_MULT_HELPTEXT                    :城市区域4大小因子（最内部的有路灯的道路）这个设定在有较小的变更时效果最好。
 STR_CONFIG_SETTING_TOWN_GROWTH                                  :城镇发展速度：{STRING}
 STR_CONFIG_SETTING_TOWN_GROWTH_HELPTEXT                         :城市发展速度
-STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED                :城镇扩张速度取决于已运输的货物：{STRING2}
+STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED                :城镇扩张速度取决于已运输的货物：{STRING}
 STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED_HELPTEXT       :城镇扩张速度的百分比取决于上个月已经运输到城镇的货物的比例。
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :极其慢
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :非常慢
@@ -2338,16 +2338,16 @@ STR_CONFIG_SETTING_LARGER_TOWNS_VALUE                           :1 / {COMMA}
 STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :没有
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :初始城市规模因子：{STRING}
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :游戏开局时，城市的平均规模相对于普通城镇的比值
-STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION                   :随机城镇道路的重建可能性：{STRING2}
+STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION                   :随机城镇道路的重建可能性：{STRING}
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION_HELPTEXT          :随机城镇道路的重建可能性（0 = 无, 1000 = 最大）
-STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :城镇间最小距离：{STRING2}
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :城镇间最小距离：{STRING}
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :设置在地图生成和随机建立城镇过程中城镇之间的在地图上的最小的以格子计的距离
 
 STR_CONFIG_SETTING_LINKGRAPH_INTERVAL                           :每 {STRING}{NBSP}天刷新一次分配图
 STR_CONFIG_SETTING_LINKGRAPH_INTERVAL_HELPTEXT                  :指定每次计算货物分配图之间的时间。由于每次重新计算只会处理一个货物分配图元件，因此本设定不代表“每若干日重新计算整个货物分配图”。{}如果此设定赋值越小，則系统需要使用更多处理器时间计算货物分配图。相反，如果此设定赋值越大，則货物被派往新路线所需的时间越长。
 STR_CONFIG_SETTING_LINKGRAPH_TIME                               :容许系统用 {STRING}{NBSP}天时间刷新货物分配图
 STR_CONFIG_SETTING_LINKGRAPH_TIME_HELPTEXT                      :当刷新货物分配图时，系统会创建一条线程。此处设定的数值即该线程的持续时间。{}赋值越小，线程越有可能在应当停止的时候还未完成，游戏会暂停运作至线程完成工作。相反，赋值越大，则货物分配功能需要较长时间反映线路网变动的影晌。
-STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED               :不以日长因子对分配图重计算时间缩放：{STRING2}
+STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED               :不以日长因子对分配图重计算时间缩放：{STRING}
 STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED_HELPTEXT      :当启用时，分配图重计算间隔和时间将以未经缩放的单位运算。
 STR_CONFIG_SETTING_DISTRIBUTION_PAX                             :乘客分配方式：{STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PAX_HELPTEXT                    :假设有交通路线连接甲、乙两站。“对称”指甲站往乙站的乘客数量与乙站往甲站的乘客数量大致相同。“不对称”指任何一站往另一站的乘客数量皆由系统随意决定。“手动”指系统不会自动分配乘客的目的地。
@@ -2364,8 +2364,8 @@ STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC_EQ                   :不对称（平
 STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC_NEAREST              :不对称（最近距离）
 STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :对称
 
-STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO                       :对此货物重载分配模式：{STRING2}
-STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_PARAM                 :对{STRING}重载分配模式：{STRING2}
+STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO                       :对此货物重载分配模式：{STRING}
+STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_PARAM                 :对{STRING}重载分配模式：{STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_HELPTEXT              :"（缺省）"意味着对此货物应用缺省分配模式。“对称的”意味着从甲车站运往乙车站的货物数量与从乙车站运往甲车站的大致相同。 “不对称”意味着任何一站前往另一个车站的货物的数量会被系统任意地决定。“手动”意味着对于此类货物系统不会自动分配其目的地。
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_DEFAULT               :（default）
 STR_CONFIG_SETTING_DISTRIBUTION_HELPTEXT_EXTRA                  :{STRING}{}“不对称（平衡分布）”意味着货物将被平均分配到接收该类型货物的车站。“不平衡（最近距离）”意味着货物会被送到最近的任何一个接收该类型货物的车站。
@@ -2380,7 +2380,7 @@ STR_CONFIG_SETTING_DEMAND_SIZE_HELPTEXT                         :如果把此设
 STR_CONFIG_SETTING_SHORT_PATH_SATURATION                        :如果最短路径的饱和度超过{STRING}，把货物改派往容量较大的路径
 STR_CONFIG_SETTING_SHORT_PATH_SATURATION_HELPTEXT               :货物分配功能在派送货物时，会优先使用最短路径，当它饱和后改用第二短的路径，如此类推。当所有路径皆饱和但仍未满足需求，系统會由容量较大的路径开始继续加载货物。{}由于路径饱和度难以准确估算，此设定容许您定义一值，使短路径达到该饱和度后，系统便开始加载容量较大的路径。{}如果此设定的值少於100%，就算系统高估路径容量，也不會使过多的货物滞留在站台上。
 
-STR_CONFIG_SETTING_AIRCRAFT_PATH_COST                           :使用飞机时路径的距离缩放：{STRING2}
+STR_CONFIG_SETTING_AIRCRAFT_PATH_COST                           :使用飞机时路径的距离缩放：{STRING}
 STR_CONFIG_SETTING_AIRCRAFT_PATH_COST_HELPTEXT                  :这是当使用飞机时，对于路径（度量距离）的费用计算的缩放系数，这可以让它们比它们实际更长或更短。这减小了飞机由于直线飞行导致空域超载的趋势。
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY                  :速度单位：{STRING}
@@ -2426,7 +2426,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :英制（呎）
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :公制（米）
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :国际单位制（米）
 
-STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER          :在多玩家模式下的服务器中同步本地化设置：{STRING2}
+STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER          :在多玩家模式下的服务器中同步本地化设置：{STRING}
 STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER_HELPTEXT :当通过网络客户端加入多玩家服务器时，改变本地化设置来匹配服务器
 
 STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}本地化
@@ -2468,7 +2468,7 @@ STR_CONFIG_SETTING_VEHICLE_ROUTE_OVERLAY                        :{ORANGE}车辆�
 STR_CONFIG_SETTING_SHARING                                      :{ORANGE}基建共享
 STR_CONFIG_SETTING_SCENARIO_EDITOR                              :{ORANGE}场景编辑器
 
-STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE                  :当道路布局改变时重新规划道路车辆：{STRING2}
+STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE                  :当道路布局改变时重新规划道路车辆：{STRING}
 STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_HELPTEXT         :当道路布局被改变时是否重新规划地图上全部的道路车辆{}这可以在改变道路布局时改善费用计算情况的准确度{}注意，如果这个选项被设定为“是”，则城市扩张将触发道路车辆的路径重新规划，在大地图，这可能导致卡顿。
 STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_NO               :否
 STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_REMOVE_ONLY      :仅当道路移除时
@@ -2486,36 +2486,36 @@ STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :当列车在信
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF                              :YAPF {BLUE}（推荐）
 
-STR_CONFIG_SETTING_ENABLE_ROAD_CUSTOM_BRIDGE_HEADS              :启用道路自定义桥头：{STRING2}
+STR_CONFIG_SETTING_ENABLE_ROAD_CUSTOM_BRIDGE_HEADS              :启用道路自定义桥头：{STRING}
 STR_CONFIG_SETTING_ENABLE_ROAD_CUSTOM_BRIDGE_HEADS_HELPTEXT     :允许道路桥梁的头尾可以在有自定义的、不平坦地块上被放置。
-STR_CONFIG_SETTING_ENABLE_RAIL_CUSTOM_BRIDGE_HEADS              :启用轨道自定义桥头：{STRING2}
+STR_CONFIG_SETTING_ENABLE_RAIL_CUSTOM_BRIDGE_HEADS              :启用轨道自定义桥头：{STRING}
 STR_CONFIG_SETTING_ENABLE_RAIL_CUSTOM_BRIDGE_HEADS_HELPTEXT     :允许轨道桥梁的头尾可以在有自定义的、不平坦地块上被放置。
 
-STR_CONFIG_SETTING_ALLOW_GRF_OBJECTS_UNDER_BRIDGES              :允许在桥下的NewGRF建筑：{STRING2}
+STR_CONFIG_SETTING_ALLOW_GRF_OBJECTS_UNDER_BRIDGES              :允许在桥下的NewGRF建筑：{STRING}
 STR_CONFIG_SETTING_ALLOW_GRF_OBJECTS_UNDER_BRIDGES_HELPTEXT     :允许全部的NewGRF建筑被建造在桥下。{}这可能导致图像上的错误。
 
-STR_CONFIG_SETTING_ALLOW_GRF_STATIONS_UNDER_BRIDGES             :允许NewGRF火车站/路点被建设在桥下：{STRING2}
+STR_CONFIG_SETTING_ALLOW_GRF_STATIONS_UNDER_BRIDGES             :允许NewGRF火车站/路点被建设在桥下：{STRING}
 STR_CONFIG_SETTING_ALLOW_GRF_STATIONS_UNDER_BRIDGES_HELPTEXT    :如果被开启，不管它们有没有被指定被允许建立在桥下，NewGRF火车站/路点可以指定它们自己可以不可以被建在桥梁的下面。{}这可能导致图像上的问题。
 
-STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES            :允许在桥下建设公路/有轨电车车站：{STRING2}
+STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES            :允许在桥下建设公路/有轨电车车站：{STRING}
 STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT   :允许把公路/有轨电车站建在桥下。车辆通过桥梁而不停站需要桥梁的高度至少为一格，要让车辆停靠在此类站点则要求桥梁的高度至少为两格。
 STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT_EXTRA :{STRING}{}{}NewGRF道路/电车站可以覆盖这一设置，并允许或不允许在桥下建设车站，并设置自定义的高度间隙要求。
 
-STR_CONFIG_SETTING_ALLOW_DOCKS_UNDER_BRIDGES                    :允许在桥下建设船坞：{STRING2}
+STR_CONFIG_SETTING_ALLOW_DOCKS_UNDER_BRIDGES                    :允许在桥下建设船坞：{STRING}
 STR_CONFIG_SETTING_ALLOW_DOCKS_UNDER_BRIDGES_HELPTEXT           :允许把船坞建在桥下。船坞需要两格高度的净空。{}这可能导致图像上的问题。
 
-STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED                      :土地购买许可：{STRING2}
+STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED                      :土地购买许可：{STRING}
 STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED_HELPTEXT             :设定任何公司都被允许购买任意数量的地块
 
-STR_CONFIG_SETTING_BUILD_OBJECT_PERMITTED                       :允许建筑的大量建设：{STRING2}
+STR_CONFIG_SETTING_BUILD_OBJECT_PERMITTED                       :允许建筑的大量建设：{STRING}
 STR_CONFIG_SETTING_BUILD_OBJECT_PERMITTED_HELPTEXT              :设定任何公司都被允许同时建设多个建筑，而不是一次只能建设一个
 
-STR_CONFIG_SETTING_NO_EXPIRE_OBJECTS_AFTER                      :没有建筑在{STRING2}之后过期
+STR_CONFIG_SETTING_NO_EXPIRE_OBJECTS_AFTER                      :没有建筑在{STRING}之后过期
 STR_CONFIG_SETTING_NO_EXPIRE_OBJECTS_AFTER_HELPTEXT             :在指定年份之后，物品不会失效
 STR_CONFIG_SETTING_NO_EXPIRE_OBJECTS_AFTER_VALUE                :{NUM}
 STR_CONFIG_SETTING_NO_EXPIRE_OBJECTS_AFTER_ZERO                 :【禁用】
 
-STR_CONFIG_SETTING_IGNORE_OBJECT_INTRO_DATES                    :忽略建筑引入日期：{STRING2}
+STR_CONFIG_SETTING_IGNORE_OBJECT_INTRO_DATES                    :忽略建筑引入日期：{STRING}
 STR_CONFIG_SETTING_IGNORE_OBJECT_INTRO_DATES_HELPTEXT           :设置是否允许玩家在建筑引入之前就能建设这些建筑。{}这对于在地图生成过程中生成的建筑不适用。
 
 STR_PURCHASE_LAND_PERMITTED_NO                                  :否
@@ -2529,32 +2529,32 @@ STR_BUILD_OBJECT_NOT_PERMITTED_BULK                             :在大范围区
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}改变设置值
 
-STR_CONFIG_SETTING_ADJACENT_CROSSINGS                           :关闭毗连的平交道口：{STRING2}
+STR_CONFIG_SETTING_ADJACENT_CROSSINGS                           :关闭毗连的平交道口：{STRING}
 STR_CONFIG_SETTING_ADJACENT_CROSSINGS_HELPTEXT                  :只要有一个或多个平交道口被占用，就关闭所有与之毗连的平交道口
-STR_CONFIG_SETTING_SAFER_CROSSINGS                              :更安全的平交道口：{STRING2}
+STR_CONFIG_SETTING_SAFER_CROSSINGS                              :更安全的平交道口：{STRING}
 STR_CONFIG_SETTING_SAFER_CROSSINGS_HELPTEXT                     :更改平交到来提升道路车辆安全性
 
-STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE                       :自动支付车辆修理费：{STRING2}
+STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE                       :自动支付车辆修理费：{STRING}
 STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE_HELPTEXT              :对于已经损坏的车辆支付修理费
-STR_CONFIG_SETTING_REPAIR_COST                                  :修复车辆的成本为车辆购置成本的1/{STRING2}
+STR_CONFIG_SETTING_REPAIR_COST                                  :修复车辆的成本为车辆购置成本的1/{STRING}
 STR_CONFIG_SETTING_REPAIR_COST_HELPTEXT                         :修理坏了的车辆的费用，是车辆当前购买成本的一小部分。如果车辆的使用年限超过其最高使用年限，则费用翻倍。
 
-STR_CONFIG_OCCUPANCY_SMOOTHNESS                                 :调度占用的测量平滑度：{STRING2}
+STR_CONFIG_OCCUPANCY_SMOOTHNESS                                 :调度占用的测量平滑度：{STRING}
 STR_CONFIG_OCCUPANCY_SMOOTHNESS_HELPTEXT                        :0%将测量值设置为最新的值，100%则保持不变。
 
-STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE                       :克隆/复制/共享调度计划的进阶设置：{STRING2}
+STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE                       :克隆/复制/共享调度计划的进阶设置：{STRING}
 STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE_HELPTEXT              :在克隆/复制/共享现有车辆的调度计划后。{}对于列车、道路车辆、船舶：如果车辆在一个车库中，该车库在调度计划列表中，则跳到该车库的调度计划之一。{}对于飞机：如果飞机在机库中，相关的机场在调度计划列表中，则跳到该机场的调度计划之一。
 
-STR_CONFIG_SETTING_COPY_CLONE_ADD_TO_GROUP                      :在复制-克隆组中添加车辆：{STRING2}
+STR_CONFIG_SETTING_COPY_CLONE_ADD_TO_GROUP                      :在复制-克隆组中添加车辆：{STRING}
 STR_CONFIG_SETTING_COPY_CLONE_ADD_TO_GROUP_HELPTEXT             :设置是否将不共享调度计划的车辆添加到车辆克隆组中
 
-STR_CONFIG_SETTING_SCENARIO_MULTIPLE_BUILDINGS                  :允许存在多个教堂/体育馆：{STRING2}
+STR_CONFIG_SETTING_SCENARIO_MULTIPLE_BUILDINGS                  :允许存在多个教堂/体育馆：{STRING}
 STR_CONFIG_SETTING_SCENARIO_MULTIPLE_BUILDINGS_HELPTEXT         :允许在城镇中已经拥有了教堂和体育馆的情况下手动添加它们
-STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_DATES                  :忽略房屋年代限制：{STRING2}
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_DATES                  :忽略房屋年代限制：{STRING}
 STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_DATES_HELPTEXT         :允许手动添加房屋尽管它们不适用于当前年份。
-STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES                  :忽略房屋区域限制：{STRING2}
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES                  :忽略房屋区域限制：{STRING}
 STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_HELPTEXT         :允许手动添加房屋尽管它们不适用于目标城镇区。
-STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_GRF                    :忽略房屋GRF限制：{STRING2}
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_GRF                    :忽略房屋GRF限制：{STRING}
 STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_GRF_HELPTEXT           :允许手动添加房屋尽管它们的GRF不允许这样做
 
 STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_OFF              :关闭
@@ -2661,8 +2661,8 @@ STR_CHEAT_INFLATION_COST                                        :{LTBLUE}改变�
 STR_CHEAT_INFLATION_COST_QUERY_CAPT                             :{WHITE}改变支出通胀因子
 STR_CHEAT_INFLATION_INCOME                                      :{LTBLUE}改变收入通胀因子：{ORANGE}{DECIMAL}
 STR_CHEAT_INFLATION_INCOME_QUERY_CAPT                           :{WHITE}改变收入通胀因子
-STR_CHEAT_STATION_RATING                                        :{LTBLUE}车站备货比例以100%调整：{ORANGE}{STRING1}
-STR_CHEAT_TOWN_RATING                                           :{LTBLUE}城镇地方当局评级永远为“卓越”：{ORANGE}{STRING1}
+STR_CHEAT_STATION_RATING                                        :{LTBLUE}车站备货比例以100%调整：{ORANGE}{STRING}
+STR_CHEAT_TOWN_RATING                                           :{LTBLUE}城镇地方当局评级永远为“卓越”：{ORANGE}{STRING}
 
 # Livery window
 STR_LIVERY_CAPTION                                              :{WHITE}{COMPANY} 的色彩方案
@@ -3029,10 +3029,10 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} �
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} 成立了新公司（#{2:NUM}）
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} 已离开游戏（{2:STRING}）
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} 已更改姓名为 {STRING}
-STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {RAW_STRING} 给了您的公司 {2:CURRENCY_LONG}
-STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** 您给了 {1:RAW_STRING} {2:CURRENCY_LONG}
+STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {STRING} 给了您的公司 {2:CURRENCY_LONG}
+STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** 您给了 {1:STRING} {2:CURRENCY_LONG}
 STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {0:STRING} 给予 {1:STRING} {2:CURRENCY_LONG}
-STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION                  :{RAW_STRING}（{COMPANY}）
+STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION                  :{STRING}（{COMPANY}）
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}服务器关闭了进程
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}服务器正在重新启动。{}请等待……
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} 被踢出服务器。原因：（{STRING}）
@@ -3151,7 +3151,7 @@ STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLA
 STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}每月有{CARGO_LONG}待从{STATION}运输到{STATION}（运载能力的{COMMA}%）{STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}有{CARGO_LONG}要运回（运载能力的{COMMA}%）
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}平均行驶时间：{NUM}{NBSP}天
-STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}平均行驶时间：{STRING1}
+STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}平均行驶时间：{STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}容量：{CARGO_LONG}
 
 # Base for station construction window（s）
@@ -3377,25 +3377,25 @@ STR_TRACE_RESTRICT_SLOT_RELEASE_BACK                            :释放（后）
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :路径结束：捕获或等待
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :路径结束：尝试捕获
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :路径结束：释放
-STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :捕获条目：{STRING1}{BLACK}{STRING}，或等待路径信号
-STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :尝试捕获条目：{STRING1}{BLACK}{STRING}，或总是维持
-STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM_RES_ONLY               :尝试捕获（当路径释放）条目：{STRING1}{BLACK}{STRING}，或总是维持
-STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :释放条目：{STRING1}{BLACK}{STRING}（车前）
-STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :释放条目：{STRING1}{BLACK}{STRING}（车后）
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :路径预留在此结束：捕获条目：{STRING1}{BLACK}{STRING}, 或在起点等待
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :路径预留在此结束：捕获条目：{STRING1}{BLACK}{STRING}, 或总是继续
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :路径预留在此结束：释放条目：{STRING1}{BLACK}{STRING}
+STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :捕获条目：{STRING}{BLACK}{STRING}，或等待路径信号
+STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :尝试捕获条目：{STRING}{BLACK}{STRING}，或总是维持
+STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM_RES_ONLY               :尝试捕获（当路径释放）条目：{STRING}{BLACK}{STRING}，或总是维持
+STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :释放条目：{STRING}{BLACK}{STRING}（车前）
+STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :释放条目：{STRING}{BLACK}{STRING}（车后）
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :路径预留在此结束：捕获条目：{STRING}{BLACK}{STRING}, 或在起点等待
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :路径预留在此结束：捕获条目：{STRING}{BLACK}{STRING}, 或总是继续
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :路径预留在此结束：释放条目：{STRING}{BLACK}{STRING}
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED                           :[{STRING}] {TRSLOT}
-STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}Slot{CONSUME_ARG}{P "" s}：{LTBLUE}
+STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}条目{CONSUME_ARG}：{LTBLUE}
 STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR                          :{BLACK}, {LTBLUE}
 STR_TRACE_RESTRICT_COUNTER_NAME                                 :{TRCOUNTER}
 STR_TRACE_RESTRICT_COUNTER_INCREASE                             :增加
 STR_TRACE_RESTRICT_COUNTER_DECREASE                             :减少
 STR_TRACE_RESTRICT_COUNTER_SET                                  :设定
-STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM                        :增加计数器：{STRING1} + {COMMA}
-STR_TRACE_RESTRICT_COUNTER_DECREASE_ITEM                        :减少计数器：{STRING1} - {COMMA}
-STR_TRACE_RESTRICT_COUNTER_SET_ITEM                             :设置计数器：{STRING1} = {COMMA}
+STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM                        :增加计数器：{STRING} + {COMMA}
+STR_TRACE_RESTRICT_COUNTER_DECREASE_ITEM                        :减少计数器：{STRING} - {COMMA}
+STR_TRACE_RESTRICT_COUNTER_SET_ITEM                             :设置计数器：{STRING} = {COMMA}
 STR_TRACE_RESTRICT_TRAIN_STATUS_EMPTY                           :空
 STR_TRACE_RESTRICT_TRAIN_STATUS_FULL                            :满
 STR_TRACE_RESTRICT_TRAIN_STATUS_BROKEN_DOWN                     :已损坏
@@ -3581,7 +3581,7 @@ STR_PROGSIG_INSERT_SET_SIGNAL                                   :设置信号状
 STR_PROGSIG_FIRST                                               :开始
 STR_PROGSIG_LAST                                                :结束
 
-STR_PROGSIG_IF                                                  :若{RAW_STRING}则
+STR_PROGSIG_IF                                                  :若{STRING}则
 STR_PROGSIG_ELSE                                                :否则
 STR_PROGSIG_ENDIF                                               :结束判断
 
@@ -3744,26 +3744,26 @@ STR_OBJECT_CLASS_TRNS                                           :发射机
 
 #House construction window（for SE only）
 STR_HOUSE_BUILD_CAPTION                                         :{WHITE}选择房屋
-STR_HOUSE_BUILD_CUSTOM_CAPTION                                  :{WHITE}{RAW_STRING}
+STR_HOUSE_BUILD_CUSTOM_CAPTION                                  :{WHITE}{STRING}
 STR_HOUSE_BUILD_HOUSESET_LIST_TOOLTIP                           :{BLACK}选择一组房屋
 STR_HOUSE_BUILD_SELECT_HOUSE_TOOLTIP                            :{BLACK}选择房屋来建造
-STR_HOUSE_BUILD_HOUSE_NAME                                      :{GOLD}{STRING1}
+STR_HOUSE_BUILD_HOUSE_NAME                                      :{GOLD}{STRING}
 STR_HOUSE_BUILD_HISTORICAL_BUILDING                             :{GOLD}（历史建筑）
 STR_HOUSE_BUILD_HOUSE_POPULATION                                :{BLACK}人口：{GOLD}{NUM}
-STR_HOUSE_BUILD_HOUSE_ZONES                                     :{BLACK}住宅区：{STRING1} {STRING1} {STRING1} {STRING1} {STRING1}
+STR_HOUSE_BUILD_HOUSE_ZONES                                     :{BLACK}住宅区：{STRING} {STRING} {STRING} {STRING} {STRING}
 STR_HOUSE_BUILD_HOUSE_ZONE_DISABLED                             :{GRAY}{NUM}
 STR_HOUSE_BUILD_HOUSE_ZONE_ENABLED                              :{GOLD}{NUM}
 STR_HOUSE_BUILD_LANDSCAPE                                       :{BLACK}地景：{STRING}
 STR_HOUSE_BUILD_LANDSCAPE_ABOVE_OR_BELOW_SNOWLINE               :{GOLD}在雪线上或下均可
 STR_HOUSE_BUILD_LANDSCAPE_ONLY_ABOVE_SNOWLINE                   :{GOLD}仅在雪线上
 STR_HOUSE_BUILD_LANDSCAPE_ONLY_BELOW_SNOWLINE                   :{GOLD}仅在雪线下
-STR_HOUSE_BUILD_YEARS                                           :{BLACK}年分：{STRING1}{GOLD} - {STRING1}
+STR_HOUSE_BUILD_YEARS                                           :{BLACK}年分：{STRING}{GOLD} - {STRING}
 STR_HOUSE_BUILD_YEARS_BAD_YEAR                                  :{RED}{NUM}
 STR_HOUSE_BUILD_YEARS_GOOD_YEAR                                 :{GOLD}{NUM}
 STR_HOUSE_BUILD_SUPPLIED_CARGO                                  :{BLACK}供给：{GOLD}{CARGO_LIST}
-STR_HOUSE_BUILD_ACCEPTED_CARGO                                  :{BLACK}接受：{GOLD}{RAW_STRING}
-STR_HOUSE_BUILD_CARGO_FIRST                                     :{STRING2}
-STR_HOUSE_BUILD_CARGO_SEPARATED                                 :, {STRING2}
+STR_HOUSE_BUILD_ACCEPTED_CARGO                                  :{BLACK}接受：{GOLD}{STRING}
+STR_HOUSE_BUILD_CARGO_FIRST                                     :{STRING}
+STR_HOUSE_BUILD_CARGO_SEPARATED                                 :, {STRING}
 STR_HOUSE_BUILD_CARGO_VALUE_JUST_NAME                           :{1:STRING}
 STR_HOUSE_BUILD_CARGO_VALUE_EIGHTS                              :（{COMMA}/8 {STRING}）
 STR_BASIC_HOUSE_SET_NAME                                        :基础房屋
@@ -3952,7 +3952,7 @@ STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :铁道列车车
 STR_LAI_RAIL_DESCRIPTION_TRACK_SIGNAL_STYLE                     :{STRING}：（{STRING}）
 STR_LAI_RAIL_DESCRIPTION_TRACK_SIGNAL_STYLE2                    :{STRING}：（{STRING} 和 {STRING}）
 
-STR_LAI_RAIL_DESCRIPTION_RESTRICTED_SIGNAL                      :{STRING3}（受限的）
+STR_LAI_RAIL_DESCRIPTION_RESTRICTED_SIGNAL                      :{STRING}（受限的）
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :公路
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :带路灯的公路
@@ -4142,7 +4142,7 @@ STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}降低�
 STR_MAPGEN_RAINFOREST_LINE_HEIGHT                               :{BLACK}雨林线高度
 STR_MAPGEN_RAINFOREST_LINE_UP                                   :{BLACK}提高雨林线高度
 STR_MAPGEN_RAINFOREST_LINE_DOWN                                 :{BLACK}降低雨林线高度
-STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}生成地形：
+#STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}生成地形：
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}地形特点：
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}海洋面积：
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}河流数量:
@@ -4377,9 +4377,9 @@ STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED                        :加载的NewGRF
 STR_NEWGRF_ERROR_STATIC_GRF_CAUSES_DESYNC                       :载入 {1:STRING} 为静态 NewGRF 时载入 {2:STRING} 可能造成同步错误
 STR_NEWGRF_ERROR_UNEXPECTED_SPRITE                              :异常sprite（sprite {3:NUM}）
 STR_NEWGRF_ERROR_UNKNOWN_PROPERTY                               :未知的Action 0 属性 {4:HEX}（sprite {3:NUM}）
-STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID                 :未生效的重映射特性 ID：name：{2:RAW_STRING}, mapped to：{5:HEX}（sprite {3:NUM}）
-STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY                   :未生效的重映射 Action 0 属性特性：{4:HEX}, name：{2:RAW_STRING}, mapped to：{5:HEX}（sprite {3:NUM}）
-STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_ACTION5_TYPE               :未生效的重映射 Action 5 type：name：{2:RAW_STRING}, mapped to：{4:HEX}（sprite {3:NUM}）
+STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID                 :未生效的重映射特性 ID：name：{2:STRING}, mapped to：{5:HEX}（sprite {3:NUM}）
+STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY                   :未生效的重映射 Action 0 属性特性：{4:HEX}, name：{2:STRING}, mapped to：{5:HEX}（sprite {3:NUM}）
+STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_ACTION5_TYPE               :未生效的重映射 Action 5 type：name：{2:STRING}, mapped to：{4:HEX}（sprite {3:NUM}）
 STR_NEWGRF_ERROR_INVALID_ID                                     :尝试使用非法ID（sprite {3:NUM}）
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} 含有损坏的图形元素{}所有损坏的图形元素{}将显示为红色的问号（？）
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :具有多个Action 8（sprite {3:NUM}）
@@ -4529,8 +4529,8 @@ STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TUNNELS                    :允许建筑隧
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_MAX_ROAD_SLOPE             :限制建造连续的斜向公路
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TOWN_GROWTH                :城镇增长速度
 
-STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_DEFAULT                    :缺省（{STRING1}）
-STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_STR                        :{STRING}：{PUSH_COLOUR}{YELLOW}{STRING2}{POP_COLOUR}
+STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_DEFAULT                    :缺省（{STRING}）
+STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_STR                        :{STRING}：{PUSH_COLOUR}{YELLOW}{STRING}{POP_COLOUR}
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TEXT                       :{YELLOW}重载此独立城镇的以下设置 :{}{STRING}{}{STRING}
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TOOLTIP                    :{BLACK}变更设定并重载
 
@@ -4711,12 +4711,12 @@ STR_DEPARTURES_VEH                                              :{ORANGE}{VEHICL
 STR_DEPARTURES_CALLING_AT                                       :{TINY_FONT}{ORANGE}正在呼叫：
 STR_DEPARTURES_CALLING_AT_LARGE                                 :{ORANGE}正在呼叫:
 STR_DEPARTURES_CALLING_AT_FIRST_STATION                         :{STATION}
-STR_DEPARTURES_CALLING_AT_STATION                               :{RAW_STRING}、{STATION}
-STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{RAW_STRING}和{STATION}
-STR_DEPARTURES_CALLING_AT_LIST                                  :{TINY_FONT}{ORANGE}{RAW_STRING}。
-STR_DEPARTURES_CALLING_AT_LIST_LARGE                            :{ORANGE}{RAW_STRING}。
-STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{TINY_FONT}{ORANGE}{RAW_STRING}。此服务延续到{STATION}。
-STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS_LARGE             :{ORANGE}{RAW_STRING}。此服务延续到{STATION}。
+STR_DEPARTURES_CALLING_AT_STATION                               :{STRING}、{STATION}
+STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{STRING}和{STATION}
+STR_DEPARTURES_CALLING_AT_LIST                                  :{TINY_FONT}{ORANGE}{STRING}。
+STR_DEPARTURES_CALLING_AT_LIST_LARGE                            :{ORANGE}{STRING}。
+STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{TINY_FONT}{ORANGE}{STRING}。此服务延续到{STATION}。
+STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS_LARGE             :{ORANGE}{STRING}。此服务延续到{STATION}。
 
 STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
 STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}
@@ -4743,40 +4743,40 @@ STR_DEPARTURES_CANCELLED                                        :{RED}已取消
 
 ############ config settings
 STR_CONFIG_SETTING_DEPARTUREBOARDS                              :{ORANGE}出发看板
-STR_CONFIG_MAX_DEPARTURES                                       :每个车站的出发看板展示最多{STRING2}个条目
+STR_CONFIG_MAX_DEPARTURES                                       :每个车站的出发看板展示最多{STRING}个条目
 STR_CONFIG_MAX_DEPARTURES_HELPTEXT                              :出发看板显示条目的最大值
-STR_CONFIG_MAX_DEPARTURE_TIME                                   :显示在进程列表的最多在{STRING2}日内的出发/到达信息
+STR_CONFIG_MAX_DEPARTURE_TIME                                   :显示在进程列表的最多在{STRING}日内的出发/到达信息
 STR_CONFIG_MAX_DEPARTURE_TIME_HELPTEXT                          :出发/到达信息显示到哪天，以日计
-STR_CONFIG_DEPARTURE_CALC_FREQUENCY                             :每{STRING2}游戏刻重计算出发看板
+STR_CONFIG_DEPARTURE_CALC_FREQUENCY                             :每{STRING}游戏刻重计算出发看板
 STR_CONFIG_DEPARTURE_CALC_FREQUENCY_HELPTEXT                    :刷新出发/到达列表的频率，以游戏刻计
-STR_CONFIG_DEPARTURE_VEHICLE_NAME                               :显示条目的车辆名：{STRING2}
+STR_CONFIG_DEPARTURE_VEHICLE_NAME                               :显示条目的车辆名：{STRING}
 STR_CONFIG_DEPARTURE_VEHICLE_NAME_HELPTEXT                      :是否在它们的出发看板条目中显示车辆名
-STR_CONFIG_DEPARTURE_GROUP_NAME                                 :在条目中显示组名：{STRING2}
+STR_CONFIG_DEPARTURE_GROUP_NAME                                 :在条目中显示组名：{STRING}
 STR_CONFIG_DEPARTURE_GROUP_NAME_HELPTEXT                        :是否在出发看板条目中显示车辆所属的组的组名
-STR_CONFIG_DEPARTURE_COMPANY_NAME                               :在条目中显示公司名：{STRING2}
+STR_CONFIG_DEPARTURE_COMPANY_NAME                               :在条目中显示公司名：{STRING}
 STR_CONFIG_DEPARTURE_COMPANY_NAME_HELPTEXT                      :是否在车辆出发看板条目中显示其所属公司的名称
-STR_CONFIG_DEPARTURE_VEHICLE_TYPE                               :在条目中显示车辆类型图标：{STRING2}
+STR_CONFIG_DEPARTURE_VEHICLE_TYPE                               :在条目中显示车辆类型图标：{STRING}
 STR_CONFIG_DEPARTURE_VEHICLE_TYPE_HELPTEXT                      :是否在出发看板条目中显示车辆的类型
-STR_CONFIG_DEPARTURE_VEHICLE_COLOR                              :已银色显示车辆类型标志：{STRING2}
+STR_CONFIG_DEPARTURE_VEHICLE_COLOR                              :已银色显示车辆类型标志：{STRING}
 STR_CONFIG_DEPARTURE_VEHICLE_COLOR_HELPTEXT                     :是否以银色显示车辆类型标志
-STR_CONFIG_DEPARTURE_LARGER_FONT                                :适用较大的字体指示自出发条目面板中的即将到达的车站：{STRING2}
+STR_CONFIG_DEPARTURE_LARGER_FONT                                :适用较大的字体指示自出发条目面板中的即将到达的车站：{STRING}
 STR_CONFIG_DEPARTURE_LARGER_FONT_HELPTEXT                       :是否使用较大的字体来显示在车站列表中的即将到达的车站
-STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :显示指示目的地是航站楼还是机场的标志：{STRING2}
+STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :显示指示目的地是航站楼还是机场的标志：{STRING}
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE_HELPTEXT                  :是否在指示目的地的文本之后添加一个标志来指示目的地的类型是航站楼还是机场
-STR_CONFIG_DEPARTURE_SHOW_BOTH                                  :同时显示到达和出发时间：{STRING2}
+STR_CONFIG_DEPARTURE_SHOW_BOTH                                  :同时显示到达和出发时间：{STRING}
 STR_CONFIG_DEPARTURE_SHOW_BOTH_HELPTEXT                         :在同一条目中显示出发和到达时间而不是将其分开
-STR_CONFIG_DEPARTURE_ONLY_PASSENGERS                            :仅当车辆可搭载乘客时显示条目：{STRING2}
+STR_CONFIG_DEPARTURE_ONLY_PASSENGERS                            :仅当车辆可搭载乘客时显示条目：{STRING}
 STR_CONFIG_DEPARTURE_ONLY_PASSENGERS_HELPTEXT                   :是否仅显示可以搭载乘客的车辆的出发和到达信息
-STR_CONFIG_DEPARTURE_SMART_TERMINUS                             :不显示不久后能被另一趟车辆到达的目的地：{STRING2}
+STR_CONFIG_DEPARTURE_SMART_TERMINUS                             :不显示不久后能被另一趟车辆到达的目的地：{STRING}
 STR_CONFIG_DEPARTURE_SMART_TERMINUS_HELPTEXT                    :使否显示不久后会有另一辆车辆到达的目的地
-STR_CONFIG_DEPARTURE_CONDITIONALS                               :由{STRING2}处理条件性调度计划的跳过
+STR_CONFIG_DEPARTURE_CONDITIONALS                               :由{STRING}处理条件性调度计划的跳过
 STR_CONFIG_DEPARTURE_CONDITIONALS_HELPTEXT                      :当计算出发看板条目时，条件性调度计划应被如何处理
 STR_CONFIG_DEPARTURE_CONDITIONALS_1                             :放弃
 STR_CONFIG_DEPARTURE_CONDITIONALS_2                             :若它们将会到达
 STR_CONFIG_DEPARTURE_CONDITIONALS_3                             :若它们将不会到达
-STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS                             :在装载/卸载过程中显示所有的车站：{STRING2}
+STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS                             :在装载/卸载过程中显示所有的车站：{STRING}
 STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS_HELPTEXT                    :当正在装卸作业时车站是否会被显示在呼叫列表上
-STR_CONFIG_DEPARTURE_MERGE_IDENTICAL                            :合并相同的条目
+STR_CONFIG_DEPARTURE_MERGE_IDENTICAL                            :合并相同的条目: {STRING}
 STR_CONFIG_DEPARTURE_MERGE_IDENTICAL_HELPTEXT                   :相同的出发看板条目是否会被合并到一个条目上
 
 # Waypoint/buoy view window
@@ -4932,7 +4932,7 @@ STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}需要�
 STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}产出：{YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :, {STRING}{STRING}
 
-STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP                           :{BLACK}{STRING}{RAW_STRING}
+STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP                           :{BLACK}{STRING}{STRING}
 STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_EXTENSION                 :{}{BLACK}{CARGO_LONG}（{COMMA}%）
 
 STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}需要：
@@ -4958,22 +4958,22 @@ STR_VEHICLE_LIST_ROAD_VEHICLE_TOOLTIP                           :{BLACK}汽车 -
 STR_VEHICLE_LIST_SHIP_TOOLTIP                                   :{BLACK}船只列表 - 点击可以查看详细信息
 STR_VEHICLE_LIST_AIRCRAFT_TOOLTIP                               :{BLACK}飞机 - 点击可以查看详细信息
 
-STR_VEHICLE_LIST_AGE                                            :{STRING2}, 年限：{COMMA} 年（{COMMA}）
-STR_VEHICLE_LIST_AGE_RED                                        :{STRING2}, 年限：{RED}{COMMA} {BLACK}年（{COMMA}）
-STR_VEHICLE_LIST_CARGO_LIST                                     :{STRING2}, 货物：{CARGO_LIST}
-STR_VEHICLE_LIST_RELIABILITY                                    :{STRING2}, 可靠度：{COMMA}%
-STR_VEHICLE_LIST_RELIABILITY_RED                                :{STRING2}, 可靠度：{RED}{COMMA}%
-STR_VEHICLE_LIST_MAX_SPEED                                      :{STRING2}, 最高速度：{VELOCITY}
-STR_VEHICLE_LIST_ENGINE_BUILT                                   :{STRING2}, 型号：{ENGINE}, 建造于：{NUM}
-STR_VEHICLE_LIST_VALUE                                          :{STRING2}, 价格：{CURRENCY_LONG}
-STR_VEHICLE_LIST_LENGTH                                         :{STRING2}, 长度：{DECIMAL} 格
-STR_VEHICLE_LIST_TIME_TO_LIVE                                   :{STRING2}, 寿命：{COMMA} 年 剩余
-STR_VEHICLE_LIST_TIME_TO_LIVE_RED                               :{STRING2}, 寿命：{RED}{COMMA} {BLACK}年 剩余
-STR_VEHICLE_LIST_TIME_TO_LIVE_OVERDUE                           :{STRING2}, 寿命：{RED}{COMMA} {BLACK}年 过期
-STR_VEHICLE_LIST_TIMETABLE_DELAY_LATE                           :{STRING2}, 时间表状态：晚点{RED}{STRING3}
-STR_VEHICLE_LIST_TIMETABLE_DELAY_EARLY                          :{STRING2}, 时间表状态：快了{STRING3} 
-STR_VEHICLE_LIST_TIMETABLE_DELAY_ON_TIME                        :{STRING2}, 时间表状态：准时
-STR_VEHICLE_LIST_ORDER_OCCUPANCY_AVERAGE                        :{STRING2}, Average order occupancy：{COMMA}%
+STR_VEHICLE_LIST_AGE                                            :{STRING}, 年限：{COMMA} 年（{COMMA}）
+STR_VEHICLE_LIST_AGE_RED                                        :{STRING}, 年限：{RED}{COMMA} {BLACK}年（{COMMA}）
+STR_VEHICLE_LIST_CARGO_LIST                                     :{STRING}, 货物：{CARGO_LIST}
+STR_VEHICLE_LIST_RELIABILITY                                    :{STRING}, 可靠度：{COMMA}%
+STR_VEHICLE_LIST_RELIABILITY_RED                                :{STRING}, 可靠度：{RED}{COMMA}%
+STR_VEHICLE_LIST_MAX_SPEED                                      :{STRING}, 最高速度：{VELOCITY}
+STR_VEHICLE_LIST_ENGINE_BUILT                                   :{STRING}, 型号：{ENGINE}, 建造于：{NUM}
+STR_VEHICLE_LIST_VALUE                                          :{STRING}, 价格：{CURRENCY_LONG}
+STR_VEHICLE_LIST_LENGTH                                         :{STRING}, 长度：{DECIMAL} 格
+STR_VEHICLE_LIST_TIME_TO_LIVE                                   :{STRING}, 寿命：{COMMA} 年 剩余
+STR_VEHICLE_LIST_TIME_TO_LIVE_RED                               :{STRING}, 寿命：{RED}{COMMA} {BLACK}年 剩余
+STR_VEHICLE_LIST_TIME_TO_LIVE_OVERDUE                           :{STRING}, 寿命：{RED}{COMMA} {BLACK}年 过期
+STR_VEHICLE_LIST_TIMETABLE_DELAY_LATE                           :{STRING}, 时间表状态：晚点{RED}{STRING}
+STR_VEHICLE_LIST_TIMETABLE_DELAY_EARLY                          :{STRING}, 时间表状态：快了{STRING} 
+STR_VEHICLE_LIST_TIMETABLE_DELAY_ON_TIME                        :{STRING}, 时间表状态：准时
+STR_VEHICLE_LIST_ORDER_OCCUPANCY_AVERAGE                        :{STRING}, Average order occupancy：{COMMA}%
 
 ###length VEHICLE_TYPES
 STR_VEHICLE_LIST_AVAILABLE_TRAINS                               :可用的列车
@@ -4986,7 +4986,7 @@ STR_VEHICLE_LIST_MANAGE_LIST_TOOLTIP                            :{BLACK}向所�
 STR_VEHICLE_LIST_REPLACE_VEHICLES                               :替换车辆/飞机/船只
 STR_VEHICLE_LIST_SEND_FOR_SERVICING                             :进行保养
 STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR                     :{TINY_FONT}{BLACK}今年利润：{CURRENCY_LONG}（去年利润：{CURRENCY_LONG}）
-STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING2}（寿命：{CURRENCY_LONG}）
+STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING}（寿命：{CURRENCY_LONG}）
 STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE                           :取消维修/送往
 STR_VEHICLE_LIST_CARGO                                          :{TINY_FONT}{BLACK}[{CARGO_LIST}]
 STR_VEHICLE_LIST_NAME_AND_CARGO                                 :{TINY_FONT}{BLACK}{STRING} {STRING}
@@ -5409,8 +5409,8 @@ STR_VEHICLE_STATUS_LEAVING                                      :{LTBLUE}发车
 STR_VEHICLE_STATUS_CRASHED                                      :{RED}撞毁!
 STR_VEHICLE_STATUS_BROKEN_DOWN                                  :{RED}抛锚
 STR_VEHICLE_STATUS_STOPPED                                      :{RED}停运
-STR_VEHICLE_STATUS_BROKEN_DOWN_VEL                              :{RED}损坏 - {STRING2}, {LTBLUE} {VELOCITY}
-STR_VEHICLE_STATUS_BROKEN_DOWN_VEL_SHORT                        :{RED}损坏 - {STRING2}
+STR_VEHICLE_STATUS_BROKEN_DOWN_VEL                              :{RED}损坏 - {STRING}, {LTBLUE} {VELOCITY}
+STR_VEHICLE_STATUS_BROKEN_DOWN_VEL_SHORT                        :{RED}损坏 - {STRING}
 STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL                           :{RED}正在停止，{VELOCITY}
 STR_VEHICLE_STATUS_TRAIN_NO_POWER                               :{RED}没有电力
 STR_VEHICLE_STATUS_TRAIN_STUCK                                  :{ORANGE}等待空余轨道
@@ -5467,7 +5467,7 @@ STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT                          :{WHITE}{VEHICLE
 
 STR_RUNNING                                                     :{LTBLUE}Running
 STR_NEED_REPAIR                                                 :{ORANGE}Vehicle needs repair - max speed reduced to {VELOCITY}
-STR_CURRENT_STATUS                                              :{BLACK}Current status：{STRING3}
+STR_CURRENT_STATUS                                              :{BLACK}Current status：{STRING}
 
 # The next two need to stay in this order
 STR_VEHICLE_INFO_AGE                                            :{COMMA} 年（{COMMA}）
@@ -5479,23 +5479,23 @@ STR_VEHICLE_INFO_MAX_SPEED_TYPE_RANGE                           :{BLACK}最大�
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}重量：{LTBLUE}{WEIGHT_SHORT} {BLACK}功率：{LTBLUE}{POWER}{BLACK} 最大速度：{LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}重量：{LTBLUE}{WEIGHT_SHORT} {BLACK}功率：{LTBLUE}{POWER}{BLACK} 最大速度：{LTBLUE}{VELOCITY} {BLACK}最大牵引力：{LTBLUE}{FORCE}
 
-STR_VEHICLE_INFO_TRAIN_LENGTH                                   :{BLACK}火车长度{LTBLUE}{DECIMAL}格{STRING4}
-STR_VEHICLE_INFO_WEIGHT_RATIOS                                  :{STRING1} {STRING1}
+STR_VEHICLE_INFO_TRAIN_LENGTH                                   :{BLACK}火车长度{LTBLUE}{DECIMAL}格{STRING}
+STR_VEHICLE_INFO_WEIGHT_RATIOS                                  :{STRING} {STRING}
 STR_VEHICLE_INFO_POWER_WEIGHT_RATIO                             :{BLACK}功率重量比：{LTBLUE}{POWER_WEIGHT_RATIO}
 STR_VEHICLE_INFO_TE_WEIGHT_RATIO                                :{BLACK}最大T.E.重量比：{LTBLUE}{FORCE_WEIGHT_RATIO}
-STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS                        :{BLACK}最大重量：{LTBLUE}{WEIGHT_SHORT} {STRING4}
+STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS                        :{BLACK}最大重量：{LTBLUE}{WEIGHT_SHORT} {STRING}
 STR_VEHICLE_INFO_MAX_SPEED_LOADED                               :{BLACK}最高速度（完整）：{LTBLUE}{VELOCITY}
 
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}今年利润：{LTBLUE}{CURRENCY_LONG}（去年利润：{CURRENCY_LONG}）
-STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING2}（寿命：{CURRENCY_LONG}）
+STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING}（寿命：{CURRENCY_LONG}）
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}今年利润：{LTBLUE}{CURRENCY_LONG}（去年利润：{CURRENCY_LONG}（{BLACK}最小功率：{LTBLUE}{POWER_TO_WEIGHT}
 
 STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}可靠性：{LTBLUE}{COMMA}%  {BLACK}上次保养后抛锚的次数：{LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_GROUP                                          :{BLACK}组：{LTBLUE}{GROUP}
 
-STR_VEHICLE_AUTO_GROUP_ROUTE                                    :{TOWN}到{TOWN}{STRING1}
-STR_VEHICLE_AUTO_GROUP_LOCAL_ROUTE                              :{TOWN}本地{STRING1}
+STR_VEHICLE_AUTO_GROUP_ROUTE                                    :{TOWN}到{TOWN}{STRING}
+STR_VEHICLE_AUTO_GROUP_LOCAL_ROUTE                              :{TOWN}本地{STRING}
 STR_VEHICLE_AUTO_GROUP_CARGO_LIST                               :（{CARGO_LIST}）
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}建造年份：{LTBLUE}{NUM}{BLACK} 价值：{LTBLUE}{CURRENCY_LONG}
@@ -5747,7 +5747,7 @@ STR_ORDER_CHANGE_COUNTER_TOOLTIP                                :{BLACK}要更�
 
 STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP                  :{BLACK}显示所有共享此调度计划的{}车辆/船只/飞机
 
-STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}{STRING2}%
+STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}{STRING}%
 STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}显示运行平均占用率{}百分比显示的是调度占用的总平均数
 STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}调度占用——这展示了对于共享这些调度的车辆的当离开车站时的最近的运行平均占用率等级
 STR_ORDERS_OCCUPANCY_PERCENT                                    :{NUM}%
@@ -5863,7 +5863,7 @@ STR_ORDER_CONDITIONAL_TIME_HHMM                                 :跳至 {COMMA} 
 STR_ORDER_CONDITIONAL_TIMETABLE                                 :跳至 {COMMA} [ 当 {STRING} {STRING} {TT_TICKS}
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DISPLAY                     :跳至 {COMMA} [ 当 {STRING} {STRING} {STRING}
 
-STR_ORDER_RELEASE_SLOT                                          :Release slot：{STRING1}
+STR_ORDER_RELEASE_SLOT                                          :Release slot：{STRING}
 
 STR_INVALID_ORDER                                               :{RED}（非法的调度计划）
 
@@ -5892,9 +5892,9 @@ STR_TIMETABLE_MINUTES                                           :{COMMA}{NBSP}�
 STR_TIMETABLE_HOURS                                             :{COMMA}{NBSP}时
 STR_TIMETABLE_HOURS_MINUTES                                     :{COMMA}{NBSP}时{COMMA}{NBSP}分
 
-STR_TIMETABLE_LEFTOVER_TICKS                                    :{STRING1} + {COMMA} 刻
+STR_TIMETABLE_LEFTOVER_TICKS                                    :{STRING} + {COMMA} 刻
 
-STR_TIMETABLE_MINUTES_LONG                                      :{COMMA}{NBSP}分（{STRING2}）{STRING3}
+STR_TIMETABLE_MINUTES_LONG                                      :{COMMA}{NBSP}分（{STRING}）{STRING}
 
 STR_TIMETABLE_TOTAL_TIME                                        :{BLACK}该时刻表需要 {STRING} 完成
 STR_TIMETABLE_TOTAL_TIME_INCOMPLETE                             :{BLACK}该时刻表至少需要 {STRING} 完成（并非全部计划的时间）
@@ -5934,8 +5934,8 @@ STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP                           :{BLACK}自动�
 
 STR_TIMETABLE_SCHEDULED_DISPATCH                                :{BLACK}计划调度
 STR_TIMETABLE_SCHEDULED_DISPATCH_TOOLTIP                        :{BLACK}打开计划调度窗口以自动设置时间表的开始时间
-STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER                          :{PUSH_COLOUR}{YELLOW}[{STRING1}计划的调度]{POP_COLOUR}
-STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME             :{PUSH_COLOUR}{RED}[{STRING1}计划的调度 - 不等待时间表上的时间]{POP_COLOUR}
+STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER                          :{PUSH_COLOUR}{YELLOW}[{STRING}计划的调度]{POP_COLOUR}
+STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME             :{PUSH_COLOUR}{RED}[{STRING}计划的调度 - 不等待时间表上的时间]{POP_COLOUR}
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_SCHEDULE_INDEX           :{NUM}{NBSP}-{NBSP}
 
 STR_TIMETABLE_EXPECTED                                          :{BLACK}预期时间
@@ -6115,9 +6115,9 @@ STR_PLANS_COLOUR                                                :{BLACK}颜色
 STR_PLANS_COLOUR_TOOLTIP                                        :{BLACK}设置计划的颜色
 STR_PLANS_DELETE                                                :{BLACK}删除
 STR_PLANS_DELETE_TOOLTIP                                        :删除列表中的所选项
-STR_PLANS_LIST_ITEM_PLAN_PRIVATE                                :[私有]：{STRING3}
+STR_PLANS_LIST_ITEM_PLAN_PRIVATE                                :[私有]：{STRING}
 STR_PLANS_LIST_ITEM_PLAN                                        :计划 #{NUM}：{NUM} 号线（{DATE_SHORT}）
-STR_PLANS_LIST_ITEM_NAMED_PLAN                                  :{RAW_STRING}：{NUM} 号线（{DATE_SHORT}）
+STR_PLANS_LIST_ITEM_NAMED_PLAN                                  :{STRING}：{NUM} 号线（{DATE_SHORT}）
 STR_PLANS_LIST_ITEM_LINE                                        : -- #{NUM}号线：第 {NUM} 部分
 STR_PLANS_LIST_TOOLTIP                                          :{BLACK}双击列表中的任意物品去折叠相关联的计划。{}Ctrl+点击去移动到相应位置。
 STR_PLANS_QUERY_RENAME_PLAN                                     :{WHITE}重命名计划
@@ -6164,9 +6164,9 @@ STR_GAME_SAVELOAD_NOT_AVAILABLE                                 :<不可用>
 STR_WARNING_LOADGAME_REMOVED_TRAMS                              :{WHITE}游戏已保存为无电车版。所有电车已被去除。
 STR_WARNING_LOADGAME_REMOVED_UNCORRECTABLE_VEHICLES             :{WHITE}由于在加载过程中的无可挽回的错误，已经移除了{NUM}辆车
 
-STR_GAME_SAVELOAD_FROM_VERSION                                  :从版本{PUSH_COLOUR}{ORANGE}{RAW_STRING}{POP_COLOUR}{}
-STR_GAME_SAVELOAD_ERROR_TOO_NEW_FEATURE_VERSION                 :存档{0:STRING1} 有版本 {PUSH_COLOUR}{ORANGE}{2:NUM}{POP_COLOUR} 的特性 '{PUSH_COLOUR}{ORANGE}{1:RAW_STRING}{POP_COLOUR}', 但是最高的所支持的版本号为{PUSH_COLOUR}{ORANGE}{3:NUM}{POP_COLOUR}
-STR_GAME_SAVELOAD_ERROR_UNKNOWN_FEATURE                         :存档{0:STRING1} 有未知特性 '{PUSH_COLOUR}{ORANGE}{1:RAW_STRING}{POP_COLOUR}'（version：{PUSH_COLOUR}{ORANGE}{2:NUM}{POP_COLOUR}），这不被支持
+STR_GAME_SAVELOAD_FROM_VERSION                                  :从版本{PUSH_COLOUR}{ORANGE}{STRING}{POP_COLOUR}{}
+STR_GAME_SAVELOAD_ERROR_TOO_NEW_FEATURE_VERSION                 :存档{0:STRING} 有版本 {PUSH_COLOUR}{ORANGE}{2:NUM}{POP_COLOUR} 的特性 '{PUSH_COLOUR}{ORANGE}{1:STRING}{POP_COLOUR}', 但是最高的所支持的版本号为{PUSH_COLOUR}{ORANGE}{3:NUM}{POP_COLOUR}
+STR_GAME_SAVELOAD_ERROR_UNKNOWN_FEATURE                         :存档{0:STRING} 有未知特性 '{PUSH_COLOUR}{ORANGE}{1:STRING}{POP_COLOUR}'（version：{PUSH_COLOUR}{ORANGE}{2:NUM}{POP_COLOUR}），这不被支持
 
 STR_GAME_SAVELOAD_ERROR_HUGE_AIRPORTS_PRESENT                   :存档使用了大型机场
 STR_GAME_SAVELOAD_ERROR_HELI_OILRIG_BUG                         :存档有一个靠近大型油井的直升机
@@ -7049,10 +7049,10 @@ STR_FORMAT_DATE_SHORT                                           :{STRING} {NUM}
 STR_FORMAT_DATE_LONG                                            :{STRING} {STRING} {NUM}
 STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:STRING}-{0:STRING}
 
-STR_FORMAT_DATE_MINUTES                                         :{0:RAW_STRING}:{1:RAW_STRING}
-STR_FORMAT_DATE_MINUTES_WITH_Y                                  :{0:RAW_STRING}:{1:RAW_STRING} / {2:NUM}
-STR_FORMAT_DATE_MINUTES_WITH_YM                                 :{0:RAW_STRING}:{1:RAW_STRING} / {2:DATE_SHORT}
-STR_FORMAT_DATE_MINUTES_WITH_YMD                                :{0:RAW_STRING}:{1:RAW_STRING} / {2:DATE_LONG}
+STR_FORMAT_DATE_MINUTES                                         :{0:STRING}:{1:STRING}
+STR_FORMAT_DATE_MINUTES_WITH_Y                                  :{0:STRING}:{1:STRING} / {2:NUM}
+STR_FORMAT_DATE_MINUTES_WITH_YM                                 :{0:STRING}:{1:STRING} / {2:DATE_SHORT}
+STR_FORMAT_DATE_MINUTES_WITH_YMD                                :{0:STRING}:{1:STRING} / {2:DATE_LONG}
 
 STR_FORMAT_COMPANY_NUM                                          :（公司 {COMMA}）
 STR_FORMAT_GROUP_NAME                                           :组 {COMMA}
@@ -7067,7 +7067,7 @@ STR_FORMAT_BUOY_NAME_SERIAL                                     :{TOWN} 浮标 #
 STR_FORMAT_WAYPOINT_NAME                                        :{TOWN} 路点
 STR_FORMAT_WAYPOINT_NAME_SERIAL                                 :{TOWN} 路点 #{COMMA}
 
-STR_FORMAT_GROUP_VEHICLE_NAME_LONG                              :{GROUP} - {STRING1}
+STR_FORMAT_GROUP_VEHICLE_NAME_LONG                              :{GROUP} - {STRING}
 
 ###length 6
 STR_FORMAT_DEPOT_NAME_TRAIN                                     :{TOWN} 列车车库
@@ -7157,8 +7157,8 @@ STR_JUST_DATE_WALLCLOCK_LONG                                    :{DATE_WALLCLOCK
 STR_JUST_DATE_WALLCLOCK_ISO                                     :{DATE_WALLCLOCK_ISO}
 STR_JUST_TIME_HHMM                                              :{TIME_HHMM}
 STR_JUST_STRING                                                 :{STRING}
-STR_JUST_STRING1                                                :{STRING1}
-STR_JUST_STRING2                                                :{STRING2}
+STR_JUST_STRING1                                                :{STRING}
+STR_JUST_STRING2                                                :{STRING}
 STR_JUST_STRING_STRING                                          :{STRING}{STRING}
 STR_JUST_RAW_STRING                                             :{STRING}
 STR_JUST_BIG_RAW_STRING                                         :{BIG_FONT}{STRING}
@@ -7187,7 +7187,7 @@ STR_RED_INT                                                     :{RED}{NUM}
 STR_WHITE_SIGN                                                  :{WHITE}{SIGN}
 STR_TINY_BLACK_STATION                                          :{TINY_FONT}{BLACK}{STATION}
 STR_BLACK_STRING                                                :{BLACK}{STRING}
-STR_BLACK_STRING1                                               :{BLACK}{STRING1}
+STR_BLACK_STRING1                                               :{BLACK}{STRING}
 STR_BLACK_RAW_STRING                                            :{BLACK}{STRING}
 STR_ORANGE_STRING                                               :{ORANGE}{STRING}
 STR_LTBLUE_STRING                                               :{LTBLUE}{STRING}
@@ -7246,10 +7246,10 @@ STR_STATION_RATING_TOOLTIP_TOTAL_RATING                         :总目标评级
 
 STR_STATION_RATING_TOOLTIP_USING_CHEAT                          :作弊活动
 
-STR_STATION_RATING_TOOLTIP_NEWGRF_RATING                        :NewGRF站点评级：{BLACK}基于{STRING1}
+STR_STATION_RATING_TOOLTIP_NEWGRF_RATING                        :NewGRF站点评级：{BLACK}基于{STRING}
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_0                      :{GOLD}{PLUS_NUM}%
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_1                      :{LTBLUE}{PLUS_NUM}%
-STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED                         :全部车辆的最高速度：{LTBLUE}{VELOCITY}（{STRING2}）
+STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED                         :全部车辆的最高速度：{LTBLUE}{VELOCITY}（{STRING}）
 STR_STATION_RATING_TOOLTIP_NEWGRF_WAITUNITS                     :货物等待（平均每站）：{LTBLUE}{NUM}
 STR_STATION_RATING_TOOLTIP_NEWGRF_WAITTIME                      :上次结余时间距今：{LTBLUE}{NUM} 天
 
@@ -7257,38 +7257,38 @@ STR_STATION_RATING_MAX_PERCENTAGE                               :（max {PLUS_NU
 STR_STATION_RATING_MAX_PERCENTAGE_COMMA                         :, max {PLUS_NUM}%
 STR_STATION_RATING_PERCENTAGE_COMMA                             :, {PLUS_NUM}%
 
-STR_STATION_RATING_TOOLTIP_SPEED                                :全部车辆的最高速度{STRING1}：{STRING3}（{STRING}）
-STR_STATION_RATING_TOOLTIP_SPEED_ZERO                           :{RED}{VELOCITY}{STRING1}
-STR_STATION_RATING_TOOLTIP_SPEED_0                              :{ORANGE}{VELOCITY}{STRING1}
-STR_STATION_RATING_TOOLTIP_SPEED_1                              :{GOLD}{VELOCITY}{STRING1}
-STR_STATION_RATING_TOOLTIP_SPEED_2                              :{YELLOW}{VELOCITY}{STRING1}
-STR_STATION_RATING_TOOLTIP_SPEED_3                              :{GREEN}{VELOCITY}{STRING1}
+STR_STATION_RATING_TOOLTIP_SPEED                                :全部车辆的最高速度{STRING}：{STRING}（{STRING}）
+STR_STATION_RATING_TOOLTIP_SPEED_ZERO                           :{RED}{VELOCITY}{STRING}
+STR_STATION_RATING_TOOLTIP_SPEED_0                              :{ORANGE}{VELOCITY}{STRING}
+STR_STATION_RATING_TOOLTIP_SPEED_1                              :{GOLD}{VELOCITY}{STRING}
+STR_STATION_RATING_TOOLTIP_SPEED_2                              :{YELLOW}{VELOCITY}{STRING}
+STR_STATION_RATING_TOOLTIP_SPEED_3                              :{GREEN}{VELOCITY}{STRING}
 
-STR_STATION_RATING_TOOLTIP_AGE                                  :最大车辆年限{STRING1}：{STRING3}
-STR_STATION_RATING_TOOLTIP_AGE_0                                :{ORANGE}{NUM} 年{STRING1}
-STR_STATION_RATING_TOOLTIP_AGE_1                                :{GOLD}{NUM} 年{STRING1}
-STR_STATION_RATING_TOOLTIP_AGE_2                                :{YELLOW}{NUM} 年{STRING1}
-STR_STATION_RATING_TOOLTIP_AGE_3                                :{GREEN}{NUM} 年{STRING1}
+STR_STATION_RATING_TOOLTIP_AGE                                  :最大车辆年限{STRING}：{STRING}
+STR_STATION_RATING_TOOLTIP_AGE_0                                :{ORANGE}{NUM} 年{STRING}
+STR_STATION_RATING_TOOLTIP_AGE_1                                :{GOLD}{NUM} 年{STRING}
+STR_STATION_RATING_TOOLTIP_AGE_2                                :{YELLOW}{NUM} 年{STRING}
+STR_STATION_RATING_TOOLTIP_AGE_3                                :{GREEN}{NUM} 年{STRING}
 
-STR_STATION_RATING_TOOLTIP_WAITTIME                             :上次结余时间距今{STRING1}：{STRING3}
-STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP                        :上次结余时间距今{STRING1}：{STRING3}（航运）
-STR_STATION_RATING_TOOLTIP_WAITTIME_0                           :{RED}{NUM} 天{STRING1}
-STR_STATION_RATING_TOOLTIP_WAITTIME_1                           :{ORANGE}{NUM} 天{STRING1}
-STR_STATION_RATING_TOOLTIP_WAITTIME_2                           :{GOLD}{NUM} 天{STRING1}
-STR_STATION_RATING_TOOLTIP_WAITTIME_3                           :{YELLOW}{NUM} 天{STRING1}
-STR_STATION_RATING_TOOLTIP_WAITTIME_4                           :{GREEN}{NUM} 天{STRING1}
+STR_STATION_RATING_TOOLTIP_WAITTIME                             :上次结余时间距今{STRING}：{STRING}
+STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP                        :上次结余时间距今{STRING}：{STRING}（航运）
+STR_STATION_RATING_TOOLTIP_WAITTIME_0                           :{RED}{NUM} 天{STRING}
+STR_STATION_RATING_TOOLTIP_WAITTIME_1                           :{ORANGE}{NUM} 天{STRING}
+STR_STATION_RATING_TOOLTIP_WAITTIME_2                           :{GOLD}{NUM} 天{STRING}
+STR_STATION_RATING_TOOLTIP_WAITTIME_3                           :{YELLOW}{NUM} 天{STRING}
+STR_STATION_RATING_TOOLTIP_WAITTIME_4                           :{GREEN}{NUM} 天{STRING}
 
-STR_STATION_RATING_TOOLTIP_WAITUNITS                            :货物等待（在平均每日等待时间{STRING1}）：{STRING3}
-STR_STATION_RATING_TOOLTIP_WAITUNITS_0                          :{RED}{NUM}{STRING1}
-STR_STATION_RATING_TOOLTIP_WAITUNITS_1                          :{ORANGE}{NUM}{STRING1}
-STR_STATION_RATING_TOOLTIP_WAITUNITS_2                          :{GOLD}{NUM}{STRING1}
-STR_STATION_RATING_TOOLTIP_WAITUNITS_3                          :{YELLOW}{NUM}{STRING1}
-STR_STATION_RATING_TOOLTIP_WAITUNITS_4                          :{YELLOW}{NUM}{STRING1}
-STR_STATION_RATING_TOOLTIP_WAITUNITS_5                          :{GREEN}{NUM}{STRING1}
+STR_STATION_RATING_TOOLTIP_WAITUNITS                            :货物等待（在平均每日等待时间{STRING}）：{STRING}
+STR_STATION_RATING_TOOLTIP_WAITUNITS_0                          :{RED}{NUM}{STRING}
+STR_STATION_RATING_TOOLTIP_WAITUNITS_1                          :{ORANGE}{NUM}{STRING}
+STR_STATION_RATING_TOOLTIP_WAITUNITS_2                          :{GOLD}{NUM}{STRING}
+STR_STATION_RATING_TOOLTIP_WAITUNITS_3                          :{YELLOW}{NUM}{STRING}
+STR_STATION_RATING_TOOLTIP_WAITUNITS_4                          :{YELLOW}{NUM}{STRING}
+STR_STATION_RATING_TOOLTIP_WAITUNITS_5                          :{GREEN}{NUM}{STRING}
 
-STR_STATION_RATING_TOOLTIP_STATUE                               :公司雕像{STRING1}：{STRING2}
-STR_STATION_RATING_TOOLTIP_STATUE_NO                            :{GOLD}否{STRING1}
-STR_STATION_RATING_TOOLTIP_STATUE_YES                           :{GREEN}是{STRING1}
+STR_STATION_RATING_TOOLTIP_STATUE                               :公司雕像{STRING}：{STRING}
+STR_STATION_RATING_TOOLTIP_STATUE_NO                            :{GOLD}否{STRING}
+STR_STATION_RATING_TOOLTIP_STATUE_YES                           :{GREEN}是{STRING}
 
 STR_STATION_RATING_TOOLTIP_TRAIN                                :火车
 STR_STATION_RATING_TOOLTIP_ROAD_VEHICLE                         :道路车辆
@@ -7317,7 +7317,7 @@ STR_TMPL_RPL_STOP                                               :{BLACK}停止�
 STR_TMPL_TEMPLATE_OVR_VALUE                                     :{BLACK}购买开销：{GOLD}{CURRENCY_LONG}
 STR_TMPL_TEMPLATE_OVR_VALUE_LTBLUE                              :{BLACK}购买开销：{LTBLUE}{CURRENCY_LONG}
 STR_TMPL_TEMPLATE_OVR_RUNNING_COST                              :{BLACK}预计运营成本：{LTBLUE}{CURRENCY_LONG}
-STR_TMPL_TEMPLATE_OVR_MULTIPLE                                  :{BLACK}{STRING1}{BLACK} {STRING1}
+STR_TMPL_TEMPLATE_OVR_MULTIPLE                                  :{BLACK}{STRING}{BLACK} {STRING}
 STR_TMPL_WARNING_FREE_WAGON                                     :{RED}没有接触网：跑不了！
 STR_TMPL_WARNING_VEH_UNAVAILABLE                                :{RED}火车建造失败：车辆不可用！
 STR_TMPL_WARNING_VEH_NO_COMPATIBLE_RAIL_TYPE                    :{RED}火车建造失败：接触网不兼容当前轨道类型
@@ -7411,15 +7411,15 @@ STR_SCHDISPATCH_SCHEDULE_ID                                     :{BLACK}计划�
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}最新的出发条目在 {DATE_WALLCLOCK_TINY}.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}最新的出发条目还没有离开，它将在{DATE_WALLCLOCK_TINY}离开。
 STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}这个计划调度需要{COMMA}辆车。
-STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}这个计划调度每{STRING8}重复一次。
+STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}这个计划调度每{STRING}重复一次。
 STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}这个计划调度开始在{DATE_WALLCLOCK_TINY}，结束在{DATE_WALLCLOCK_TINY}。
-STR_SCHDISPATCH_SUMMARY_L4                                      :{BLACK}{STRING3}的最大延迟被允许这个条目在之前被跳过。
+STR_SCHDISPATCH_SUMMARY_L4                                      :{BLACK}{STRING}的最大延迟被允许这个条目在之前被跳过。
 STR_SCHDISPATCH_SUMMARY_NOT_ENABLED                             :{BLACK}这个计划调度并未被激活。
 
 STR_SCHDISPATCH_SLOT_OUTSIDE_SCHEDULE                           :{BLACK}在计划调度外有一个或更多的出发条目。
 
 STR_SCHDISPATCH_NOT_ASSIGNED_TO_ORDER                           :{BLACK}这个出发条目并没有被分派到调度计划。
-STR_SCHDISPATCH_ASSIGNED_TO_ORDER                               :{BLACK}这个出发条目已经被分配到调度计划{NUM}：{STRING2}。
+STR_SCHDISPATCH_ASSIGNED_TO_ORDER                               :{BLACK}这个出发条目已经被分配到调度计划{NUM}：{STRING}。
 
 STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_START                       :{BLACK}开始:
 STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_STEP                        :{BLACK}历时:
