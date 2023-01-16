@@ -10887,6 +10887,8 @@ static void FinaliseObjectsArray()
 			}
 		}
 	}
+
+	ObjectSpec::BindToClasses();
 }
 
 /**

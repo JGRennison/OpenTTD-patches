@@ -136,6 +136,8 @@ struct ObjectSpec {
 
 	static const ObjectSpec *Get(ObjectType index);
 	static const ObjectSpec *GetByTile(TileIndex tile);
+
+	static void BindToClasses();
 };
 
 /** Object scope resolver. */
