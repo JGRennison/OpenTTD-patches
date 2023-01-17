@@ -64,6 +64,11 @@ void Blitter_8bppBase::DrawRect(void *video, int width, int height, uint8 colour
 	} while (--height);
 }
 
+void Blitter_8bppBase::DrawRectAt(void *video, int x, int y, int width, int height, uint8 colour)
+{
+	this->Blitter_8bppBase::DrawRect((uint8 *)video + x + y * _screen.pitch, width, height, colour);
+}
+
 void Blitter_8bppBase::CopyFromBuffer(void *video, const void *src, int width, int height)
 {
 	uint8 *dst = (uint8 *)video;

@@ -162,6 +162,17 @@ public:
 	virtual void DrawRect(void *video, int width, int height, uint8 colour) = 0;
 
 	/**
+	 * Make a single horizontal line in a single colour on the video-buffer.
+	 * @param video The destination pointer (video-buffer).
+	 * @param x The x position within video-buffer.
+	 * @param y The y position within video-buffer.
+	 * @param width The length of the line.
+	 * @param height The height of the line.
+	 * @param colour A 8bpp mapping colour.
+	 */
+	virtual void DrawRectAt(void *video, int x, int y, int width, int height, uint8 colour) = 0;
+
+	/**
 	 * Draw a line with a given colour.
 	 * @param video The destination pointer (video-buffer).
 	 * @param x The x coordinate from where the line starts.

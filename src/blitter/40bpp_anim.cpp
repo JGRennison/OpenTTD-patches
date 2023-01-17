@@ -109,6 +109,11 @@ void Blitter_40bppAnim::DrawRect(void *video, int width, int height, uint8 colou
 	} while (--height);
 }
 
+void Blitter_40bppAnim::DrawRectAt(void *video, int x, int y, int width, int height, uint8 colour)
+{
+	this->Blitter_40bppAnim::DrawRect((Colour *)video + x + y * _screen.pitch, width, height, colour);
+}
+
 void Blitter_40bppAnim::DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8 colour, int width, int dash)
 {
 	if (_screen_disable_anim) {

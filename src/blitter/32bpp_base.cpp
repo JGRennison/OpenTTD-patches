@@ -75,6 +75,11 @@ void Blitter_32bppBase::DrawRect(void *video, int width, int height, uint8 colou
 	} while (--height);
 }
 
+void Blitter_32bppBase::DrawRectAt(void *video, int x, int y, int width, int height, uint8 colour)
+{
+	this->Blitter_32bppBase::DrawRect((Colour *)video + x + y * _screen.pitch, width, height, colour);
+}
+
 void Blitter_32bppBase::CopyFromBuffer(void *video, const void *src, int width, int height)
 {
 	uint32 *dst = (uint32 *)video;

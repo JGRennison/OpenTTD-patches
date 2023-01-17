@@ -23,6 +23,7 @@ public:
 	void SetPixel(void *video, int x, int y, uint8 colour) override {};
 	void SetPixel32(void *video, int x, int y, uint8 colour, uint32 colour32) override {};
 	void DrawRect(void *video, int width, int height, uint8 colour) override {};
+	void DrawRectAt(void *video, int x, int y, int width, int height, uint8 colour) override {};
 	void DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8 colour, int width, int dash) override {};
 	void SetRect(void *video, int x, int y, const uint8 *colours, uint lines, uint width, uint pitch) override {};
 	void SetRect32(void *video, int x, int y, const uint32 *colours, uint lines, uint width, uint pitch) override {};

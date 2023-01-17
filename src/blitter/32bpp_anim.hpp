@@ -43,6 +43,7 @@ public:
 	void SetRect(void *video, int x, int y, const uint8 *colours, uint lines, uint width, uint pitch) override;
 	void SetRect32(void *video, int x, int y, const uint32 *colours, uint lines, uint width, uint pitch) override;
 	void DrawRect(void *video, int width, int height, uint8 colour) override;
+	void DrawRectAt(void *video, int x, int y, int width, int height, uint8 colour) override;
 	void CopyFromBuffer(void *video, const void *src, int width, int height) override;
 	void CopyToBuffer(const void *video, void *dst, int width, int height) override;
 	void ScrollBuffer(void *video, int left, int top, int width, int height, int scroll_x, int scroll_y) override;

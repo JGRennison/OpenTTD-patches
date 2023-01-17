@@ -508,6 +508,11 @@ void Blitter_32bppAnim::DrawRect(void *video, int width, int height, uint8 colou
 	} while (--height);
 }
 
+void Blitter_32bppAnim::DrawRectAt(void *video, int x, int y, int width, int height, uint8 colour)
+{
+	this->Blitter_32bppAnim::DrawRect((Colour *)video + x + y * _screen.pitch, width, height, colour);
+}
+
 void Blitter_32bppAnim::CopyFromBuffer(void *video, const void *src, int width, int height)
 {
 	assert(!_screen_disable_anim);
