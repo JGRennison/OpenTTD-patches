@@ -125,7 +125,7 @@ struct EndGameWindow : EndGameHighScoreBaseWindow {
 	~EndGameWindow()
 	{
 		if (!_networking) DoCommandP(0, PM_PAUSED_NORMAL, 0, CMD_PAUSE); // unpause
-		ShowHighscoreTable(this->window_number, this->rank);
+		if (_game_mode != GM_MENU) ShowHighscoreTable(this->window_number, this->rank);
 	}
 
 	void OnPaint() override
