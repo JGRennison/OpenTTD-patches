@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.50.1
+## JGR's Patchpack version 0.50.2
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -191,7 +191,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add public roads (road network automatically built between towns) at map generation and in the scenario editor.
 * Add setting for if/when towns can build road tunnels.
 * Add setting to limit length of continuous inclined roads built by towns.
-* Allow overriding town road construction settings on a per-town basis, add setting to enable this for multiplayer clients.
+* Allow overriding town road construction settings and whether town growth is enabled on a per-town basis, add setting to enable this for multiplayer clients.
 
 #### Industries
 
@@ -246,6 +246,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add display setting for income/cost text effects.
 * Make the company infrastructure window scrollable.
 * Add setting to disable water animation depending on zoom level.
+* Add zoom in support to the minimap window.
 
 #### Limits
 

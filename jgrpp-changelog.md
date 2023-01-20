@@ -2,6 +2,21 @@
 
 * * *
 
+### v0.50.2 (2023-01-20)
+* Fix crash which could occur when refreshing all signal states when rail infrastructure sharing was disabled and signalled tunnel/bridges were present.
+* Fix changing the day length shifting the scheduled dispatch start times, and pending timetable start times, when using time in minutes.
+* Fix the set timetable start time/date button.
+* Fix direction of semaphore no-entry signal sprites for west/east track.
+* Fix freight weight multiplier not being applied in the train build window.
+* Fix cargo capacity display of articulated engines with no capacity in the leading part, in the build vehicle window.
+* Add zoom in support to the minimap window.
+* Add per-town override to disable town growth.
+* Enabling the go to depot and sell feature no longer changes the behaviour of the go to depot button when the ctrl key is not pressed.
+* Infrastructure sharing:
+  * Disallow control over other company trains wholly in depots.
+  * Allow using mass start/stop buttons in other company depots.
+* Bump trunk base from commit f7e2b6ef12b259817d2a4a3705b33f0b09d0eff7 to commit 83d5e681fc133d2820aff3cf05159bce820e2b56.
+
 ### v0.50.1 (2022-12-28)
 * Fix crash on hovering link graph link where both ends have same position.
 * Fix layout issues with the road stop (bus/lorry stop) build window.
