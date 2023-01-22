@@ -237,7 +237,7 @@ static height_t TGPGetMaxHeight()
 		{  12,  19,  25,  31,  67,  75,  87 }, ///< Alpinist
 	};
 
-	int map_size_bucket = std::min(MapLogX(), MapLogY()) - MIN_MAP_SIZE_BITS;
+	int map_size_bucket = std::min<int>(std::min(MapLogX(), MapLogY()) - MIN_MAP_SIZE_BITS, max_height_array_size - 1);
 	int max_height_from_table = max_height[_settings_game.difficulty.terrain_type][map_size_bucket];
 
 	/* If there is a manual map height limit, clamp to it. */
