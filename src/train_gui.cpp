@@ -236,7 +236,7 @@ static void TrainDetailsInfoTab(const Train *v, int left, int right, int y, byte
 	uint16 speed;
 
 	if (rvi->railveh_type == RAILVEH_WAGON) {
-		SetDParam(0, v->engine_type);
+		SetDParam(0, PackEngineNameDParam(v->engine_type, EngineNameContext::VehicleDetails));
 		SetDParam(1, v->value);
 
 		if (show_speed && (speed = GetVehicleProperty(v, PROP_TRAIN_SPEED, rvi->max_speed))) {
@@ -248,7 +248,7 @@ static void TrainDetailsInfoTab(const Train *v, int left, int right, int y, byte
 	} else {
 		switch (line_number) {
 			case 0:
-				SetDParam(0, v->engine_type);
+				SetDParam(0, PackEngineNameDParam(v->engine_type, EngineNameContext::VehicleDetails));
 				SetDParam(1, v->build_year);
 				SetDParam(2, v->value);
 
