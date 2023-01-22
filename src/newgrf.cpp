@@ -468,10 +468,10 @@ static StringID TTDPStringIDToOTTDStringIDMapping(StringID str)
  */
 StringID MapGRFStringID(uint32 grfid, StringID str)
 {
-	if (IsInsideMM(str, 0xD800, 0xE000)) {
+	if (IsInsideMM(str, 0xD800, 0x10000)) {
 		/* General text provided by NewGRF.
 		 * In the specs this is called the 0xDCxx range (misc persistent texts),
-		 * but we meanwhile extended the range to 0xD800-0xDFFF.
+		 * but we meanwhile extended the range to 0xD800-0xFFFF.
 		 * Note: We are not involved in the "persistent" business, since we do not store
 		 * any NewGRF strings in savegames. */
 		return GetGRFStringID(grfid, str);
@@ -6958,7 +6958,7 @@ static void FeatureNewName(ByteReader *buf)
 				break;
 
 			default:
-				if (IsInsideMM(id, 0xD000, 0xD400) || IsInsideMM(id, 0xD800, 0xE000)) {
+				if (IsInsideMM(id, 0xD000, 0xD400) || IsInsideMM(id, 0xD800, 0x10000)) {
 					AddGRFString(_cur.grffile->grfid, id, lang, new_scheme, true, name, STR_UNDEFINED);
 					break;
 				}
@@ -10002,7 +10002,8 @@ static void InitializeGRFSpecial()
 	                   |                                                       (1U << 0x1F); // any switch is on
 
 	_ttdpatch_flags[4] =                                                       (1U << 0x00)  // larger persistent storage
-	                   | ((_settings_game.economy.inflation && !_settings_game.economy.disable_inflation_newgrf_flag ? 1U : 0U) << 0x01); // inflation is on
+	                   | ((_settings_game.economy.inflation && !_settings_game.economy.disable_inflation_newgrf_flag ? 1U : 0U) << 0x01) // inflation is on
+	                   |                                                       (1U << 0x02); // extended string range
 	MemSetT(_observed_ttdpatch_flags, 0, lengthof(_observed_ttdpatch_flags));
 }
 
