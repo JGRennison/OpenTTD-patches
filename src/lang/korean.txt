@@ -4682,11 +4682,11 @@ STR_DEPARTURES_FREIGHT                                          :{BLACK}{TINY_FO
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}발
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}착
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}{TINY_FONT}경유
-STR_DEPARTURES_PAX_TOOLTIP                                      :{BLACK}여객 열차 보이기
-STR_DEPARTURES_FREIGHT_TOOLTIP                                  :{BLACK}화물 열차 보이기
-STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}도착 시간 보이기
-STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}출발 시간 보이기
-STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}통과 열차 보이기
+STR_DEPARTURES_PAX_TOOLTIP                                      :{BLACK}여객 차량 표시
+STR_DEPARTURES_FREIGHT_TOOLTIP                                  :{BLACK}화물 차량 표시
+STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}도착 시간 표시
+STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}출발 시간 표시
+STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}통과 차량 표시
 STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}이 역의 시간표에 진입 중인 열차 표시
 STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}이 역의 시간표에 진입 중인 자동차 표시
 STR_DEPARTURES_SHOW_SHIPS_TOOLTIP                               :{BLACK}이 역의 시간표에 다가오는 선박 표시
