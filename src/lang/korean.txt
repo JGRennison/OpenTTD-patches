@@ -1937,8 +1937,6 @@ STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE                            :철도 형식 �
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_HELPTEXT                   :게임을 새로 시작하거나 불러온 뒤에 사용할 철도의 종류를 선택합니다. '처음 사용 가능한 것'은 가장 오래된 철도 종류를 선택하고, '최신 기술의 철도'는 가장 최신에 나온 철도 종류를 선택하며 '가장 많이 사용한 것'은 현재 가장 많이 사용한 철도 종류를 선택합니다
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE                            :도로/전차 형식 기본값 설정 (게임 시작/불러온 후): {STRING}
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE_HELPTEXT                   :게임을 새로 시작하거나 불러온 뒤에 사용할 도로/전차의 종류를 선택합니다. '처음 사용 가능한 것'은 가장 오래된 도로/전차 종류를 선택하고, '최신 기술의 철도'는 가장 최신에 나온 도로/전차 종류를 선택하며 '가장 많이 사용한 것'은 현재 가장 많이 사용한 철도 종류를 선택하며, '기본값'은 기본 종류를 선택합니다.
-
-###length 3
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_FIRST                      :처음 사용 가능한 것
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_LAST                       :가장 최근에 개발된 철도
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_MOST_USED                  :가장 많이 사용한 것
@@ -4524,6 +4522,7 @@ STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_ROADS                :도로 건설
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_LEVEL_CROSSINGS      :건널목 건설
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TUNNELS                    :터널 건설
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_MAX_ROAD_SLOPE             :연속 오르막길 건설 길이 제한
+STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TOWN_GROWTH                :도시 성장 속도
 
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_DEFAULT                    :기본값 ({STRING})
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_STR                        :{STRING}: {PUSH_COLOUR}{YELLOW}{STRING}{POP_COLOUR}
@@ -4681,11 +4680,11 @@ STR_DEPARTURES_FREIGHT                                          :{BLACK}{TINY_FO
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}발
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}착
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}{TINY_FONT}경유
-STR_DEPARTURES_PAX_TOOLTIP                                      :{BLACK}여객 열차 보이기
-STR_DEPARTURES_FREIGHT_TOOLTIP                                  :{BLACK}화물 열차 보이기
-STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}도착 시간 보이기
-STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}출발 시간 보이기
-STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}통과 열차 보이기
+STR_DEPARTURES_PAX_TOOLTIP                                      :{BLACK}여객 차량 표시
+STR_DEPARTURES_FREIGHT_TOOLTIP                                  :{BLACK}화물 차량 표시
+STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}도착 시간 표시
+STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}출발 시간 표시
+STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}통과 차량 표시
 STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}이 역의 시간표에 진입 중인 열차 표시
 STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}이 역의 시간표에 진입 중인 자동차 표시
 STR_DEPARTURES_SHOW_SHIPS_TOOLTIP                               :{BLACK}이 역의 시간표에 다가오는 선박 표시
