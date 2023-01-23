@@ -3326,8 +3326,6 @@ STR_ERROR_INVALID_SIGNAL                                        :{WHITE}Neplatn�
 STR_SELECT_RAIL_BRIDGE_CAPTION                                  :{WHITE}Zvolit železniční most
 STR_SELECT_ROAD_BRIDGE_CAPTION                                  :{WHITE}Zvolit silniční most
 STR_SELECT_BRIDGE_SELECTION_TOOLTIP                             :{BLACK}Výběr mostů - staví se kliknutím na obrázek mostu
-STR_SELECT_BRIDGE_INFO                                          :{GOLD}{STRING},{} {VELOCITY} {WHITE}{CURRENCY_LONG}
-STR_SELECT_BRIDGE_SCENEDIT_INFO                                 :{GOLD}{STRING},{} {VELOCITY}
 STR_BRIDGE_NAME_SUSPENSION_STEEL                                :Zavěšený, ocelový
 STR_BRIDGE_NAME_GIRDER_STEEL                                    :Trámový, ocelový
 STR_BRIDGE_NAME_CANTILEVER_STEEL                                :Konzolový, ocelový

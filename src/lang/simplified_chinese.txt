@@ -399,7 +399,7 @@ STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}生成�
 STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}生成工业
 STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}公路建设
 STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION                          :{BLACK}电车道建设
-STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}植树。Shift显示预计花费。
+STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}植树。按 Ctrl 沿对角线建造，按 Shift 显示预计花费。
 STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}放置标志
 STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}放置物体，按住Ctrl可沿对角线选择区域，按住Shift键操作显示预计费用
 STR_SCENEDIT_TOOLBAR_PLACE_HOUSE                                :{BLACK}放置房屋
@@ -2346,8 +2346,8 @@ STR_CONFIG_SETTING_LINKGRAPH_TIME                               :容许系统用
 STR_CONFIG_SETTING_LINKGRAPH_TIME_HELPTEXT                      :当刷新货物分配图时，系统会创建一条线程。此处设定的数值即该线程的持续时间。{}赋值越小，线程越有可能在应当停止的时候还未完成，游戏会暂停运作至线程完成工作。相反，赋值越大，则货物分配功能需要较长时间反映线路网变动的影晌。
 STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED               :不以日长因子对分配图重计算时间缩放：{STRING}
 STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED_HELPTEXT      :当启用时，分配图重计算间隔和时间将以未经缩放的单位运算。
-STR_CONFIG_SETTING_DISTRIBUTION_PAX                             :乘客分配方式：{STRING}
-STR_CONFIG_SETTING_DISTRIBUTION_PAX_HELPTEXT                    :假设有交通路线连接甲、乙两站。“对称”指甲站往乙站的乘客数量与乙站往甲站的乘客数量大致相同。“不对称”指任何一站往另一站的乘客数量皆由系统随意决定。“手动”指系统不会自动分配乘客的目的地。
+STR_CONFIG_SETTING_DISTRIBUTION_PAX                             :乗客分配方式：{STRING}
+STR_CONFIG_SETTING_DISTRIBUTION_PAX_HELPTEXT                    :假设有交通路线连接甲、乙两站。“对称”指甲站往乙站的乗客数量与乙站往甲站的乘客数量大致相同。“不对称”指任何一站往另一站的乘客数量皆由系统随意决定。“手动”指系统不会自动分配乘客的目的地。
 STR_CONFIG_SETTING_DISTRIBUTION_MAIL                            :邮件分配方式：{STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_MAIL_HELPTEXT                   :假设有交通路线连接甲、乙两站。“对称”指甲站往乙站的邮件数量与乙站往甲站的邮件数量大致相同。“不对称”指任何一站往另一站的邮件数量皆由系统随意决定。“手动”指系统不会自动分配邮件的目的地。
 STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED                        :装甲货物分配方式：{STRING}
@@ -3618,8 +3618,6 @@ STR_ERROR_INVALID_SIGNAL                                        :{WHITE}非法�
 STR_SELECT_RAIL_BRIDGE_CAPTION                                  :{WHITE}选择铁道桥
 STR_SELECT_ROAD_BRIDGE_CAPTION                                  :{WHITE}选择公路桥梁
 STR_SELECT_BRIDGE_SELECTION_TOOLTIP                             :{BLACK}选择桥梁 - 点击选择喜欢的桥梁进行建设
-STR_SELECT_BRIDGE_INFO                                          :{GOLD}{STRING}，{} {VELOCITY} {WHITE}{CURRENCY_LONG}
-STR_SELECT_BRIDGE_SCENEDIT_INFO                                 :{GOLD}{STRING},{} {VELOCITY}
 STR_BRIDGE_NAME_SUSPENSION_STEEL                                :钢制悬索
 STR_BRIDGE_NAME_GIRDER_STEEL                                    :钢制桁桥
 STR_BRIDGE_NAME_CANTILEVER_STEEL                                :钢制悬臂
@@ -3773,7 +3771,7 @@ STR_SELECT_TOWN_LIST_ITEM                                       :{BLACK}{TOWN}
 STR_PLANT_TREE_CAPTION                                          :{WHITE}树木
 STR_PLANT_TREE_TOOLTIP                                          :{BLACK}选择要种植的树木类型。如果格子内已经有树木，将种植随机类型的树木
 STR_TREES_RANDOM_TYPE                                           :{BLACK}随机类型的树木
-STR_TREES_RANDOM_TYPE_TOOLTIP                                   :{BLACK}种植随机类型的树木，按住 Shift 键可以显示所需资金
+STR_TREES_RANDOM_TYPE_TOOLTIP                                   :{BLACK}种植随机类型的树木。按 Ctrl 键沿对角线建造，按住 Shift 键可以显示所需资金
 STR_TREES_RANDOM_TREES_BUTTON                                   :{BLACK}随机树木
 STR_TREES_RANDOM_TREES_TOOLTIP                                  :{BLACK}随机地种植一些树木
 STR_TREES_REMOVE_TREES_BUTTON                                   :{BLACK}移除所有树木

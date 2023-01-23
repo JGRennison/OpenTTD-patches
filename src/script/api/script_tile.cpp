@@ -250,7 +250,7 @@
 /* static */ bool ScriptTile::RaiseTile(TileIndex tile, int32 slope)
 {
 	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
-	EnforcePrecondition(false, tile < ::MapSize());
+	EnforcePrecondition(false, tile < ScriptMap::GetMapSize());
 
 	return ScriptObject::DoCommand(tile, slope, 1, CMD_TERRAFORM_LAND);
 }
@@ -258,7 +258,7 @@
 /* static */ bool ScriptTile::LowerTile(TileIndex tile, int32 slope)
 {
 	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
-	EnforcePrecondition(false, tile < ::MapSize());
+	EnforcePrecondition(false, tile < ScriptMap::GetMapSize());
 
 	return ScriptObject::DoCommand(tile, slope, 0, CMD_TERRAFORM_LAND);
 }
@@ -266,8 +266,8 @@
 /* static */ bool ScriptTile::LevelTiles(TileIndex start_tile, TileIndex end_tile)
 {
 	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
-	EnforcePrecondition(false, start_tile < ::MapSize());
-	EnforcePrecondition(false, end_tile < ::MapSize());
+	EnforcePrecondition(false, start_tile < ScriptMap::GetMapSize());
+	EnforcePrecondition(false, end_tile < ScriptMap::GetMapSize());
 
 	return ScriptObject::DoCommand(end_tile, start_tile, LM_LEVEL << 1, CMD_LEVEL_LAND);
 }
