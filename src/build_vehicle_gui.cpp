@@ -1431,12 +1431,12 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 
 		this->eng_list.ForceRebuild();
 		this->GenerateBuildList(); // generate the list, since we need it in the next line
-		/* Select the first engine in the list as default when opening the window */
-		if (this->eng_list.size() > 0) {
-			this->SelectEngine(this->eng_list[0].engine_id);
-		} else {
-			this->SelectEngine(INVALID_ENGINE);
-		}
+
+		/* Select the first unshaded engine in the list as default when opening the window */
+		EngineID engine = INVALID_ENGINE;
+		auto it = std::find_if(this->eng_list.begin(), this->eng_list.end(), [&](GUIEngineListItem &item){ return (item.flags & EngineDisplayFlags::Shaded) == EngineDisplayFlags::None; });
+		if (it != this->eng_list.end()) engine = it->engine_id;
+		this->SelectEngine(engine);
 	}
 
 	/** Set the filter type according to the depot type */
@@ -2363,11 +2363,10 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 	void SelectFirstEngine(PanelState &state)
 	{
-		if (state.eng_list.empty()) {
-			this->SelectEngine(state, INVALID_ENGINE);
-		} else {
-			this->SelectEngine(state, state.eng_list[0].engine_id);
-		}
+		EngineID engine = INVALID_ENGINE;
+		auto it = std::find_if(state.eng_list.begin(), state.eng_list.end(), [&](GUIEngineListItem &item){ return (item.flags & EngineDisplayFlags::Shaded) == EngineDisplayFlags::None; });
+		if (it != state.eng_list.end()) engine = it->engine_id;
+		this->SelectEngine(state, engine);
 	}
 
 	void SelectEngine(PanelState &state, const EngineID engine)
