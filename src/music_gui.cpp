@@ -262,7 +262,13 @@ void MusicSystem::CheckStatus()
 	}
 	if (this->active_playlist.empty()) return;
 	/* If we were supposed to be playing, but music has stopped, move to next song */
-	if (this->IsPlaying() && !MusicDriver::GetInstance()->IsSongPlaying()) this->Next();
+	if (this->IsPlaying() && !MusicDriver::GetInstance()->IsSongPlaying()) {
+		if (MusicDriver::GetInstance()->IsInFailedState()) {
+			this->Stop();
+		} else {
+			this->Next();
+		}
+	}
 }
 
 /** Is the player getting music right now? */

@@ -41,6 +41,12 @@ public:
 	virtual void SetVolume(byte vol) = 0;
 
 	/**
+	 * Is playback in a failed state?
+	 * @return True if playback is in a failed state.
+	 */
+	virtual bool IsInFailedState() { return false; }
+
+	/**
 	 * Get the currently active instance of the music driver.
 	 */
 	static MusicDriver *GetInstance() {
