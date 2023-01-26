@@ -41,25 +41,14 @@
  */
 OverrideManagerBase::OverrideManagerBase(uint16 offset, uint16 maximum, uint16 invalid)
 {
-	max_offset = offset;
-	max_new_entities = maximum;
-	invalid_ID = invalid;
+	this->max_offset = offset;
+	this->max_entities = maximum;
+	this->invalid_id = invalid;
 
-	mapping_ID = CallocT<EntityIDMapping>(max_new_entities);
-	entity_overrides = MallocT<uint16>(max_offset);
-	for (size_t i = 0; i < max_offset; i++) entity_overrides[i] = invalid;
-	grfid_overrides = CallocT<uint32>(max_offset);
-}
-
-/**
- * Destructor of the generic class.
- * Frees allocated memory of constructor
- */
-OverrideManagerBase::~OverrideManagerBase()
-{
-	free(mapping_ID);
-	free(entity_overrides);
-	free(grfid_overrides);
+	this->mappings.resize(this->max_entities);
+	this->entity_overrides.resize(this->max_offset);
+	std::fill(this->entity_overrides.begin(), this->entity_overrides.end(), this->invalid_id);
+	this->grfid_overrides.resize(this->max_offset);
 }
 
 /**
@@ -72,26 +61,24 @@ OverrideManagerBase::~OverrideManagerBase()
  */
 void OverrideManagerBase::Add(uint8 local_id, uint32 grfid, uint entity_type)
 {
-	assert(entity_type < max_offset);
+	assert(entity_type < this->max_offset);
 	/* An override can be set only once */
-	if (entity_overrides[entity_type] != invalid_ID) return;
-	entity_overrides[entity_type] = local_id;
-	grfid_overrides[entity_type] = grfid;
+	if (this->entity_overrides[entity_type] != this->invalid_id) return;
+	this->entity_overrides[entity_type] = local_id;
+	this->grfid_overrides[entity_type] = grfid;
 }
 
 /** Resets the mapping, which is used while initializing game */
 void OverrideManagerBase::ResetMapping()
 {
-	memset(mapping_ID, 0, (max_new_entities - 1) * sizeof(EntityIDMapping));
+	std::fill(this->mappings.begin(), this->mappings.end(), EntityIDMapping{});
 }
 
 /** Resets the override, which is used while initializing game */
 void OverrideManagerBase::ResetOverride()
 {
-	for (uint16 i = 0; i < max_offset; i++) {
-		entity_overrides[i] = invalid_ID;
-		grfid_overrides[i] = 0;
-	}
+	std::fill(this->entity_overrides.begin(), this->entity_overrides.end(), this->invalid_id);
+	std::fill(this->grfid_overrides.begin(), this->grfid_overrides.end(), uint32());
 }
 
 /**
@@ -102,16 +89,14 @@ void OverrideManagerBase::ResetOverride()
  */
 uint16 OverrideManagerBase::GetID(uint8 grf_local_id, uint32 grfid) const
 {
-	const EntityIDMapping *map;
-
-	for (uint16 id = 0; id < max_new_entities; id++) {
-		map = &mapping_ID[id];
+	for (uint16 id = 0; id < this->max_entities; id++) {
+		const EntityIDMapping *map = &this->mappings[id];
 		if (map->entity_id == grf_local_id && map->grfid == grfid) {
 			return id;
 		}
 	}
 
-	return invalid_ID;
+	return this->invalid_id;
 }
 
 /**
@@ -124,19 +109,16 @@ uint16 OverrideManagerBase::GetID(uint8 grf_local_id, uint32 grfid) const
 uint16 OverrideManagerBase::AddEntityID(byte grf_local_id, uint32 grfid, byte substitute_id)
 {
 	uint16 id = this->GetID(grf_local_id, grfid);
-	EntityIDMapping *map;
 
 	/* Look to see if this entity has already been added. This is done
 	 * separately from the loop below in case a GRF has been deleted, and there
 	 * are any gaps in the array.
 	 */
-	if (id != invalid_ID) {
-		return id;
-	}
+	if (id != this->invalid_id) return id;
 
 	/* This entity hasn't been defined before, so give it an ID now. */
-	for (id = max_offset; id < max_new_entities; id++) {
-		map = &mapping_ID[id];
+	for (id = this->max_offset; id < this->max_entities; id++) {
+		EntityIDMapping *map = &this->mappings[id];
 
 		if (CheckValidNewID(id) && map->entity_id == 0 && map->grfid == 0) {
 			map->entity_id     = grf_local_id;
@@ -146,7 +128,7 @@ uint16 OverrideManagerBase::AddEntityID(byte grf_local_id, uint32 grfid, byte su
 		}
 	}
 
-	return invalid_ID;
+	return this->invalid_id;
 }
 
 /**
@@ -156,7 +138,7 @@ uint16 OverrideManagerBase::AddEntityID(byte grf_local_id, uint32 grfid, byte su
  */
 uint32 OverrideManagerBase::GetGRFID(uint16 entity_id) const
 {
-	return mapping_ID[entity_id].grfid;
+	return this->mappings[entity_id].grfid;
 }
 
 /**
@@ -166,7 +148,7 @@ uint32 OverrideManagerBase::GetGRFID(uint16 entity_id) const
  */
 uint16 OverrideManagerBase::GetSubstituteID(uint16 entity_id) const
 {
-	return mapping_ID[entity_id].substitute_id;
+	return this->mappings[entity_id].substitute_id;
 }
 
 /**
@@ -178,7 +160,7 @@ void HouseOverrideManager::SetEntitySpec(const HouseSpec *hs)
 {
 	HouseID house_id = this->AddEntityID(hs->grf_prop.local_id, hs->grf_prop.grffile->grfid, hs->grf_prop.subst_id);
 
-	if (house_id == invalid_ID) {
+	if (house_id == this->invalid_id) {
 		grfmsg(1, "House.SetEntitySpec: Too many houses allocated. Ignoring.");
 		return;
 	}
@@ -186,14 +168,14 @@ void HouseOverrideManager::SetEntitySpec(const HouseSpec *hs)
 	MemCpyT(HouseSpec::Get(house_id), hs);
 
 	/* Now add the overrides. */
-	for (int i = 0; i != max_offset; i++) {
+	for (int i = 0; i < this->max_offset; i++) {
 		HouseSpec *overridden_hs = HouseSpec::Get(i);
 
-		if (entity_overrides[i] != hs->grf_prop.local_id || grfid_overrides[i] != hs->grf_prop.grffile->grfid) continue;
+		if (this->entity_overrides[i] != hs->grf_prop.local_id || this->grfid_overrides[i] != hs->grf_prop.grffile->grfid) continue;
 
 		overridden_hs->grf_prop.override = house_id;
-		entity_overrides[i] = invalid_ID;
-		grfid_overrides[i] = 0;
+		this->entity_overrides[i] = this->invalid_id;
+		this->grfid_overrides[i] = 0;
 	}
 }
 
@@ -206,14 +188,14 @@ void HouseOverrideManager::SetEntitySpec(const HouseSpec *hs)
 uint16 IndustryOverrideManager::GetID(uint8 grf_local_id, uint32 grfid) const
 {
 	uint16 id = OverrideManagerBase::GetID(grf_local_id, grfid);
-	if (id != invalid_ID) return id;
+	if (id != this->invalid_id) return id;
 
 	/* No mapping found, try the overrides */
-	for (id = 0; id < max_offset; id++) {
-		if (entity_overrides[id] == grf_local_id && grfid_overrides[id] == grfid) return id;
+	for (id = 0; id < this->max_offset; id++) {
+		if (this->entity_overrides[id] == grf_local_id && this->grfid_overrides[id] == grfid) return id;
 	}
 
-	return invalid_ID;
+	return this->invalid_id;
 }
 
 /**
@@ -226,9 +208,9 @@ uint16 IndustryOverrideManager::GetID(uint8 grf_local_id, uint32 grfid) const
 uint16 IndustryOverrideManager::AddEntityID(byte grf_local_id, uint32 grfid, byte substitute_id)
 {
 	/* This entity hasn't been defined before, so give it an ID now. */
-	for (uint16 id = 0; id < max_new_entities; id++) {
+	for (uint16 id = 0; id < this->max_entities; id++) {
 		/* Skip overridden industries */
-		if (id < max_offset && entity_overrides[id] != invalid_ID) continue;
+		if (id < this->max_offset && this->entity_overrides[id] != this->invalid_id) continue;
 
 		/* Get the real live industry */
 		const IndustrySpec *inds = GetIndustrySpec(id);
@@ -237,7 +219,7 @@ uint16 IndustryOverrideManager::AddEntityID(byte grf_local_id, uint32 grfid, byt
 		 * And it must not already be used by a grf (grffile == nullptr).
 		 * So reserve this slot here, as it is the chosen one */
 		if (!inds->enabled && inds->grf_prop.grffile == nullptr) {
-			EntityIDMapping *map = &mapping_ID[id];
+			EntityIDMapping *map = &this->mappings[id];
 
 			if (map->entity_id == 0 && map->grfid == 0) {
 				/* winning slot, mark it as been used */
@@ -249,7 +231,7 @@ uint16 IndustryOverrideManager::AddEntityID(byte grf_local_id, uint32 grfid, byt
 		}
 	}
 
-	return invalid_ID;
+	return this->invalid_id;
 }
 
 /**
@@ -263,16 +245,16 @@ void IndustryOverrideManager::SetEntitySpec(IndustrySpec *inds)
 	/* First step : We need to find if this industry is already specified in the savegame data. */
 	IndustryType ind_id = this->GetID(inds->grf_prop.local_id, inds->grf_prop.grffile->grfid);
 
-	if (ind_id == invalid_ID) {
+	if (ind_id == this->invalid_id) {
 		/* Not found.
 		 * Or it has already been overridden, so you've lost your place.
 		 * Or it is a simple substitute.
 		 * We need to find a free available slot */
 		ind_id = this->AddEntityID(inds->grf_prop.local_id, inds->grf_prop.grffile->grfid, inds->grf_prop.subst_id);
-		inds->grf_prop.override = invalid_ID;  // make sure it will not be detected as overridden
+		inds->grf_prop.override = this->invalid_id;  // make sure it will not be detected as overridden
 	}
 
-	if (ind_id == invalid_ID) {
+	if (ind_id == this->invalid_id) {
 		grfmsg(1, "Industry.SetEntitySpec: Too many industries allocated. Ignoring.");
 		return;
 	}
@@ -287,7 +269,7 @@ void IndustryTileOverrideManager::SetEntitySpec(const IndustryTileSpec *its)
 {
 	IndustryGfx indt_id = this->AddEntityID(its->grf_prop.local_id, its->grf_prop.grffile->grfid, its->grf_prop.subst_id);
 
-	if (indt_id == invalid_ID) {
+	if (indt_id == this->invalid_id) {
 		grfmsg(1, "IndustryTile.SetEntitySpec: Too many industry tiles allocated. Ignoring.");
 		return;
 	}
@@ -295,15 +277,15 @@ void IndustryTileOverrideManager::SetEntitySpec(const IndustryTileSpec *its)
 	memcpy(&_industry_tile_specs[indt_id], its, sizeof(*its));
 
 	/* Now add the overrides. */
-	for (int i = 0; i < max_offset; i++) {
+	for (int i = 0; i < this->max_offset; i++) {
 		IndustryTileSpec *overridden_its = &_industry_tile_specs[i];
 
-		if (entity_overrides[i] != its->grf_prop.local_id || grfid_overrides[i] != its->grf_prop.grffile->grfid) continue;
+		if (this->entity_overrides[i] != its->grf_prop.local_id || this->grfid_overrides[i] != its->grf_prop.grffile->grfid) continue;
 
 		overridden_its->grf_prop.override = indt_id;
 		overridden_its->enabled = false;
-		entity_overrides[i] = invalid_ID;
-		grfid_overrides[i] = 0;
+		this->entity_overrides[i] = this->invalid_id;
+		this->grfid_overrides[i] = 0;
 	}
 }
 
@@ -318,7 +300,7 @@ void ObjectOverrideManager::SetEntitySpec(ObjectSpec *spec)
 	/* First step : We need to find if this object is already specified in the savegame data. */
 	ObjectType type = this->GetID(spec->grf_prop.local_id, spec->grf_prop.grffile->grfid);
 
-	if (type == invalid_ID) {
+	if (type == this->invalid_id) {
 		/* Not found.
 		 * Or it has already been overridden, so you've lost your place.
 		 * Or it is a simple substitute.
@@ -326,7 +308,7 @@ void ObjectOverrideManager::SetEntitySpec(ObjectSpec *spec)
 		type = this->AddEntityID(spec->grf_prop.local_id, spec->grf_prop.grffile->grfid, OBJECT_TRANSMITTER);
 	}
 
-	if (type == invalid_ID) {
+	if (type == this->invalid_id) {
 		grfmsg(1, "Object.SetEntitySpec: Too many objects allocated. Ignoring.");
 		return;
 	}
