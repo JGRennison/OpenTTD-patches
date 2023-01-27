@@ -338,7 +338,9 @@ void GenerateWorld(GenWorldMode mode, uint size_x, uint size_y, bool reset_setti
 	ShowGenerateWorldProgress();
 
 	/* Centre the view on the map */
-	ScrollMainWindowToTile(TileXY(MapSizeX() / 2, MapSizeY() / 2), true);
+	if (FindWindowById(WC_MAIN_WINDOW, 0) != nullptr) {
+		ScrollMainWindowToTile(TileXY(MapSizeX() / 2, MapSizeY() / 2), true);
+	}
 
 	_GenerateWorld();
 }
