@@ -113,7 +113,7 @@ private:
 				!(_local_company != COMPANY_SPECTATOR && _settings_game.difficulty.override_town_settings_in_multiplayer);
 	}
 
-	static const uint SETTING_OVERRIDE_COUNT = 5;
+	static const uint SETTING_OVERRIDE_COUNT = 6;
 
 public:
 	TownAuthorityWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc), sel_index(-1), displayed_actions_on_previous_painting(0)
@@ -219,6 +219,7 @@ public:
 					switch (idx) {
 						case TSOF_OVERRIDE_BUILD_ROADS:
 						case TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS:
+						case TSOF_OVERRIDE_BUILD_BRIDGES:
 							SetDParam(0, HasBit(this->town->override_values, idx) ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
 							break;
 						case TSOF_OVERRIDE_BUILD_TUNNELS:
@@ -260,6 +261,9 @@ public:
 								break;
 							case TSOF_OVERRIDE_GROWTH:
 								SetDParam(1, STR_CONFIG_SETTING_TOWN_GROWTH_HELPTEXT);
+								break;
+							case TSOF_OVERRIDE_BUILD_BRIDGES:
+								SetDParam(1, STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES_HELPTEXT);
 								break;
 						}
 						text = STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TEXT;
@@ -323,6 +327,10 @@ public:
 
 							case TSOF_OVERRIDE_GROWTH:
 								SetDParam(1, overriden ? STR_CONFIG_SETTING_TOWN_GROWTH_NONE : STR_COLOUR_DEFAULT);
+								break;
+
+							case TSOF_OVERRIDE_BUILD_BRIDGES:
+								SetDParam(2, this->town->GetAllowBuildBridges() ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
 								break;
 						}
 						DrawString(ir.left, ir.right, y,
@@ -411,7 +419,8 @@ public:
 				uint8 idx = this->sel_index - 0x100;
 				switch (idx) {
 					case TSOF_OVERRIDE_BUILD_ROADS:
-					case TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS: {
+					case TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS:
+					case TSOF_OVERRIDE_BUILD_BRIDGES: {
 						int value = HasBit(this->town->override_flags, idx) ? (HasBit(this->town->override_values, idx) ? 2 : 1) : 0;
 						const StringID names[] = {
 							STR_COLOUR_DEFAULT,

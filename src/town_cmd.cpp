@@ -1352,6 +1352,8 @@ static bool GrowTownWithBridge(const Town *t, const TileIndex tile, const DiagDi
 {
 	assert(bridge_dir < DIAGDIR_END);
 
+	if (!t->GetAllowBuildBridges()) return false;
+
 	const Slope slope = GetTileSlope(tile);
 
 	/* Make sure the direction is compatible with the slope.
@@ -3828,6 +3830,7 @@ CommandCost CmdOverrideTownSetting(TileIndex tile, DoCommandFlag flags, uint32 p
 			break;
 		case TSOF_OVERRIDE_BUILD_ROADS:
 		case TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS:
+		case TSOF_OVERRIDE_BUILD_BRIDGES:
 			if (is_override && value != 0 && value != 1) return CMD_ERROR;
 			break;
 		case TSOF_OVERRIDE_BUILD_TUNNELS:
@@ -3848,6 +3851,7 @@ CommandCost CmdOverrideTownSetting(TileIndex tile, DoCommandFlag flags, uint32 p
 					break;
 				case TSOF_OVERRIDE_BUILD_ROADS:
 				case TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS:
+				case TSOF_OVERRIDE_BUILD_BRIDGES:
 					SB(t->override_values, setting, 1, value & 1);
 					break;
 				case TSOF_OVERRIDE_BUILD_TUNNELS:

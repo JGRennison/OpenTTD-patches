@@ -66,6 +66,7 @@ enum TownSettingOverrideFlags {
 	TSOF_OVERRIDE_BUILD_TUNNELS             = 2,
 	TSOF_OVERRIDE_BUILD_INCLINED_ROADS      = 3,
 	TSOF_OVERRIDE_GROWTH                    = 4,
+	TSOF_OVERRIDE_BUILD_BRIDGES             = 5,
 };
 
 /** Town data structure. */
@@ -201,6 +202,11 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	inline bool GetAllowBuildLevelCrossings() const
 	{
 		return HasBit(this->override_flags, TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS) ? HasBit(this->override_values, TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS) : _settings_game.economy.allow_town_level_crossings;
+	}
+
+	inline bool GetAllowBuildBridges() const
+	{
+		return HasBit(this->override_flags, TSOF_OVERRIDE_BUILD_BRIDGES) ? HasBit(this->override_values, TSOF_OVERRIDE_BUILD_BRIDGES) : _settings_game.economy.allow_town_bridges;
 	}
 
 	inline TownTunnelMode GetBuildTunnelMode() const

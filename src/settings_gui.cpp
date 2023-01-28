@@ -2233,6 +2233,7 @@ static SettingsContainer &GetSettingsTree()
 				towns->Add(new SettingEntry("economy.town_zone_calc_mode"));
 				towns->Add(new SettingEntry("economy.allow_town_roads"));
 				towns->Add(new SettingEntry("economy.allow_town_level_crossings"));
+				towns->Add(new SettingEntry("economy.allow_town_bridges"));
 				towns->Add(new SettingEntry("economy.town_build_tunnels"));
 				towns->Add(new SettingEntry("economy.town_max_road_slope"));
 				towns->Add(new SettingEntry("economy.found_town"));
