@@ -418,6 +418,8 @@ DemandCalculator::DemandCalculator(LinkGraphJob &job) :
 		this->mod_dist = 100 + over100 * over100;
 	}
 
+	if (settings.GetDistributionType(cargo) == DT_MANUAL) return;
+
 	const uint size = job.Size();
 
 	/* Symmetric edge matrix
