@@ -3003,9 +3003,10 @@ static void PopulateRailStationAdvancedLayoutVariableUsage()
 			}
 			if (bits.any()) {
 				/* Simulate a procedure call on each of the root sprite groups which requires the bits used in the tile layouts */
-				CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler proc_handler(bits);
 				for (uint k = 0; k < NUM_CARGO + 3; k++) {
 					if (statspec->grf_prop.spritegroup[k] != nullptr) {
+						std::bitset<256> proc_bits = bits;
+						CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler proc_handler(proc_bits);
 						proc_handler.ProcessGroup(statspec->grf_prop.spritegroup[k], nullptr, true);
 					}
 				}
