@@ -1495,8 +1495,6 @@ void LoadStringWidthTable(bool monospace)
 			_stringwidth_table[fs][i] = GetGlyphWidth(fs, i + 32);
 		}
 	}
-
-	ReInitAllWindows(false);
 }
 
 /**
@@ -2397,6 +2395,7 @@ bool AdjustGUIZoom(AdjustGUIZoomMode mode)
 	ClearFontCache();
 	UpdateFontHeightCache();
 	LoadStringWidthTable();
+	ReInitAllWindows(false);
 	UpdateAllVirtCoords();
 	if (mode != AGZM_STARTUP) FixTitleGameZoom();
 

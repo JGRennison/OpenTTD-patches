@@ -1285,6 +1285,7 @@ static void ZoomMinMaxChanged(int32 new_value)
 		UpdateRouteStepSpriteSize();
 		UpdateFontHeightCache();
 		LoadStringWidthTable();
+		ReInitAllWindows(false);
 	}
 }
 

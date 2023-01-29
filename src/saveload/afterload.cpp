@@ -881,6 +881,7 @@ bool AfterLoadGame()
 	/* Load the sprites */
 	GfxLoadSprites();
 	LoadStringWidthTable();
+	ReInitAllWindows(false);
 
 	/* Copy temporary data to Engine pool */
 	CopyTempEngineData();
@@ -4264,6 +4265,8 @@ void ReloadNewGRFData()
 	}
 
 	UpdateExtraAspectsVariable();
+
+	ReInitAllWindows(false);
 
 	/* Update company statistics. */
 	AfterLoadCompanyStats();

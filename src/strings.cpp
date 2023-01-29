@@ -2577,6 +2577,7 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 
 		/* Reset the font width */
 		LoadStringWidthTable(searcher->Monospace());
+		ReInitAllWindows(false);
 		return;
 	}
 
