@@ -694,11 +694,18 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *paddi
 							p += seprintf(p, lastof(this->buffer), " (%s)", cb_name);
 						}
 					}
+					if (HasBit(_misc_debug_flags, MDF_NEWGRF_SG_DUMP_MORE_DETAIL) && range.group == dsg->error_group) {
+						p += seprintf(p, lastof(this->buffer), " (error_group)");
+					}
 					print();
 					this->DumpSpriteGroup(range.group, subgroup_padding.c_str(), SGDF_RANGE);
 				}
 				if (default_group != nullptr) {
-					seprintf(this->buffer, lastof(this->buffer), "%sdefault", padding);
+					char *p = this->buffer;
+					p += seprintf(p, lastof(this->buffer), "%sdefault", padding);
+					if (HasBit(_misc_debug_flags, MDF_NEWGRF_SG_DUMP_MORE_DETAIL) && default_group == dsg->error_group) {
+						p += seprintf(p, lastof(this->buffer), " (error_group)");
+					}
 					print();
 					this->DumpSpriteGroup(default_group, subgroup_padding.c_str(), SGDF_DEFAULT);
 				}
