@@ -2,6 +2,17 @@
 
 * * *
 
+### v0.50.3 (2023-01-29)
+* Fix crash which could occur when loading savegames which were made when a template train was being edited.
+* Fix crash which could occur when reloading NewGRFs when the landscape info window is open.
+* Fix some NewGRF rail stations having incorrect layouts.
+* Fix incorrect water infrastructure totals when building ship depots and docks over water objects.
+* Fix the viewport map default display mode setting.
+* Fix map maximum height when generating landscape with TGP for maps larger than 4k in both axes.
+* Add setting and per-town override for whether towns can build bridges.
+* Music: extmidi (Linux): Don't constantly retry if the music player can't be launched, e.g. if timidity is not installed.
+* Bump trunk base from commit 83d5e681fc133d2820aff3cf05159bce820e2b56 to commit 0b2567d882827f3a2c8b9e927c4d7f354e498a58.
+
 ### v0.50.2 (2023-01-20)
 * Fix crash which could occur when refreshing all signal states when rail infrastructure sharing was disabled and signalled tunnel/bridges were present.
 * Fix changing the day length shifting the scheduled dispatch start times, and pending timetable start times, when using time in minutes.
