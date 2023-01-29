@@ -1063,3 +1063,50 @@ void StationUpdateCachedTriggers(BaseStation *st)
 	}
 }
 
+void DumpStationSpriteGroup(const StationSpec *statspec, BaseStation *st, DumpSpriteGroupPrinter print)
+{
+	char buffer[512];
+
+	StationResolverObject ro(statspec, st, INVALID_TILE, INVALID_RAILTYPE);
+
+	switch (ro.station_scope.cargo_type) {
+		case CT_DEFAULT:
+			seprintf(buffer, lastof(buffer), "CT_DEFAULT");
+			break;
+		case CT_PURCHASE:
+			seprintf(buffer, lastof(buffer), "CT_PURCHASE");
+			break;
+		case CT_DEFAULT_NA:
+			seprintf(buffer, lastof(buffer), "CT_DEFAULT_NA");
+			break;
+		default:
+			seprintf(buffer, lastof(buffer), "Cargo: %u", ro.station_scope.cargo_type);
+			break;
+	}
+	print(nullptr, DSGPO_PRINT, 0, buffer);
+
+	SpriteGroupDumper dumper(print);
+	dumper.DumpSpriteGroup(ro.root_spritegroup, 0);
+
+	for (uint i = 0; i < NUM_CARGO + 3; i++) {
+		if (statspec->grf_prop.spritegroup[i] != ro.root_spritegroup && statspec->grf_prop.spritegroup[i] != nullptr) {
+			print(nullptr, DSGPO_PRINT, 0, "");
+			switch (i) {
+				case CT_DEFAULT:
+					seprintf(buffer, lastof(buffer), "OTHER SPRITE GROUP: CT_DEFAULT");
+					break;
+				case CT_PURCHASE:
+					seprintf(buffer, lastof(buffer), "OTHER SPRITE GROUP: CT_PURCHASE");
+					break;
+				case CT_DEFAULT_NA:
+					seprintf(buffer, lastof(buffer), "OTHER SPRITE GROUP: CT_DEFAULT_NA");
+					break;
+				default:
+					seprintf(buffer, lastof(buffer), "OTHER SPRITE GROUP: Cargo: %u", i);
+					break;
+			}
+			print(nullptr, DSGPO_PRINT, 0, buffer);
+			dumper.DumpSpriteGroup(statspec->grf_prop.spritegroup[i], 0);
+		}
+	}
+}

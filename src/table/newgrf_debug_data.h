@@ -657,8 +657,8 @@ class NIHStation : public NIHelper {
 
 	/* virtual */ void SpriteDump(uint index, DumpSpriteGroupPrinter print) const override
 	{
-		StationResolverObject ro(GetStationSpec(index), Station::GetByTile(index), index, INVALID_RAILTYPE);
-		DumpSpriteGroup(ro.root_spritegroup, std::move(print));
+		extern void DumpStationSpriteGroup(const StationSpec *statspec, BaseStation *st, DumpSpriteGroupPrinter print);
+		DumpStationSpriteGroup(GetStationSpec(index), BaseStation::GetByTile(index), std::move(print));
 	}
 };
 
