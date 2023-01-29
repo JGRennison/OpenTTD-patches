@@ -1689,9 +1689,10 @@ struct CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler {
 				std::bitset<256> new_total = var_tracking->out | new_proc_call_out;
 				var_tracking->proc_call_out = new_proc_call_out;
 				if (old_total != new_total) {
-					CheckDeterministicSpriteGroupOutputVarBits(sub, new_total, input_bits, false);
+					CheckDeterministicSpriteGroupOutputVarBits(sub, new_total, &(var_tracking->proc_call_in), false);
 				}
 			}
+			if (input_bits != nullptr) (*input_bits) |= var_tracking->proc_call_in;
 			if (top_level) this->bits |= var_tracking->in;
 			return false;
 		} else {
@@ -1737,7 +1738,7 @@ static bool CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSprite
 			proc_handler.ProcessGroup(adjust.subroutine, nullptr, true);
 		}
 	}
-	if (store_input_bits != nullptr) *store_input_bits |= bits;
+	if (store_input_bits != nullptr) *store_input_bits = bits;
 	return dse;
 }
 

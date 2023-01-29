@@ -29,6 +29,7 @@ struct VarAction2GroupVariableTracking {
 	std::bitset<256> in;
 	std::bitset<256> out;
 	std::bitset<256> proc_call_out;
+	std::bitset<256> proc_call_in;
 };
 
 struct VarAction2ProcedureAnnotation {
