@@ -189,7 +189,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add "indifferent" mode to the town council attitude to area restructuring setting.
 * Disallow converting town-owned roads to types with the no houses flag.
 * Add public roads (road network automatically built between towns) at map generation and in the scenario editor.
-* Add setting for if/when towns can build road tunnels.
+* Add settings for if/when towns can build road bridges and tunnels.
 * Add setting to limit length of continuous inclined roads built by towns.
 * Allow overriding town road construction settings and whether town growth is enabled on a per-town basis, add setting to enable this for multiplayer clients.
 
