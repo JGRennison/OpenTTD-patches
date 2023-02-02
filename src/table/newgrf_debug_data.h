@@ -1707,6 +1707,8 @@ class NIHStationStruct : public NIHelper {
 			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "  Docking tiles: %X, %u x %u", st->docking_station.tile, st->docking_station.w, st->docking_station.h);
 			output.print(buffer);
+			seprintf(buffer, lastof(buffer), "  Time since: load: %u, unload: %u", st->time_since_load, st->time_since_unload);
+			output.print(buffer);
 		}
 		const Waypoint *wp = Waypoint::GetIfValid(index);
 		if (wp) {
