@@ -32,7 +32,22 @@
 	<li><a href="newgrf-newlandscape-nml.html">New landscape (FEAT_NEWLANDSCAPE)</a></li>
 	</ul>
 
-	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Builtin_functions">Builtin functions</a></h3>
+	<h3 id="sections">Sections</h3>
+	<ul>
+	<li><a href="#builtin-functions">Builtin functions</a></li>
+	<li><a href="#railtype-properties">Railtype properties</a></li>
+	<li><a href="#railtype-variables">Railtype variables</a></li>
+	<li><a href="#roadtype-properties">Roadtype properties</a></li>
+	<li><a href="#tramtype-properties">Tramtype properties</a></li>
+	<li><a href="#object-properties">Object properties</a></li>
+	<li><a href="#object-variables">Object variables</a></li>
+	<li><a href="#global-variable-properties">Global variables properties</a></li>
+	<li><a href="#replace-new-sprites">Replace new sprites</a></li>
+	<li><a href="#signal-graphics">Signal graphics using switches</a></li>
+	</ul>
+	<br />
+
+	<h3 id="builtin-functions"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Builtin_functions">Builtin functions</a></h3>
 
 	<p>
 		<h4>extended_feature_test(feature_name[, min_version[, max_version]])</h4>
@@ -41,7 +56,7 @@
 		In most cases it is not necessary to use this function, as extended properties (listed below) which are not supported are simply skipped/ignored.
 	</p>
 
-	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#Railtype_properties">Railtypes properties</a></h3>
+	<h3 id="railtype-properties"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#Railtype_properties">Railtype properties</a></h3>
 	<table>
 	<tr><th>Property</th><th>Value range</th><th>Comment</th></tr>
 	<tr><td>enable_programmable_pre_signals</td><td>0 or 1</td>
@@ -104,7 +119,7 @@
 		</td>
 	</tr>
 	</table>
-	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#Railtype_variables">Railtypes variables</a></h3>
+	<h3 id="railtype-variables"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#Railtype_variables">Railtype variables</a></h3>
 	<p>Variables in the table below which are not supported by the version of OpenTTD being used return a value of 0.</p>
 	<table>
 	<tr><th>Variable</th><th>Value range</th><th>Comment</th></tr>
@@ -149,7 +164,7 @@
 		</td>
 	</tr>
 	</table>
-	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Roadtypes#Roadtype_properties">Roadtype properties</a></h3>
+	<h3 id="roadtype-properties"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Roadtypes#Roadtype_properties">Roadtype properties</a></h3>
 	<table>
 	<tr><th>Property</th><th>Value range</th><th>Comment</th></tr>
 	<tr><td>roadtype_extra_flags</td><td>bitmask(ROADTYPE_EXTRA_FLAG_XXX, ...)</td>
@@ -163,7 +178,7 @@
 		</td>
 	</tr>
 	</table>
-	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Tramtypes#Tramtype_properties">Tramtype properties</a></h3>
+	<h3 id="tramtype-properties"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Tramtypes#Tramtype_properties">Tramtype properties</a></h3>
 	<table>
 	<tr><th>Property</th><th>Value range</th><th>Comment</th></tr>
 	<tr><td>tramtype_extra_flags</td><td>bitmask(TRAMTYPE_EXTRA_FLAG_XXX, ...)</td>
@@ -177,7 +192,7 @@
 		</td>
 	</tr>
 	</table>
-	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Objects#Object_properties">Object properties</a></h3>
+	<h3 id="object-properties"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Objects#Object_properties">Object properties</a></h3>
 	<table>
 	<tr><th>Property</th><th>Value range</th><th>Comment</th></tr>
 	<tr><td>use_land_ground</td><td>0 or 1</td><td>
@@ -262,7 +277,7 @@
 		</table></p>
 	</td></tr>
 	</table>
-	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Objects#Object_variables">Object variables</a></h3>
+	<h3 id="object-variables"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Objects#Object_variables">Object variables</a></h3>
 	<p>Variables in the table below which are not supported by the version of OpenTTD being used return a value of 0.</p>
 	<table>
 	<tr><th>Variable</th><th>Value range</th><th>Comment</th></tr>
@@ -275,7 +290,7 @@
 		This is useful for xoring with the tile_slope variable, because if this variable is unavailable then the result is still the underlying tile slope.
 	</td></tr>
 	</table>
-	<h3>Global variables properties</h3>
+	<h3 id="global-variable-properties">Global variables properties</h3>
 	<p>The variables listed below should set inside an item and property block of the form:<pre class="code">
 item (FEAT_GLOBALVARS) {
 	property {
@@ -341,7 +356,7 @@ item (FEAT_GLOBALVARS) {
 }
 		</pre>
 	</p>
-	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Replace_new_sprites">Replace new sprites</a></h3>
+	<h3 id="replace-new-sprites"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Replace_new_sprites">Replace new sprites</a></h3>
 	<table>
 	<tr><th>Type</th><th>Number of sprites </th><th>Comment</th></tr>
 	<tr><td>PROGRAMMABLE_PRE_SIGNAL</td><td>32</td>
@@ -381,7 +396,7 @@ item (FEAT_GLOBALVARS) {
 		</td>
 	</tr>
 	</table>
-	<h3>Signal graphics using switches</h3>
+	<h3 id="signal-graphics">Signal graphics using switches</h3>
 	<p>
 		This feature allows signal sprites to be specified using switches in a very similar manner to <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#signals">railtype signals</a> in
 		<span class="code">item (FEAT_RAILTYPES) { graphics { signals: ... } }</span> blocks.<br />
