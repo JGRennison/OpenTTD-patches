@@ -667,11 +667,12 @@ struct NewGRFInspectWindow : Window {
 								int offset = i - this->vscroll->GetPosition();
 								i++;
 								if (offset >= 0 && offset < this->vscroll->GetCapacity()) {
+									Rect sr = r.Shrink(WidgetDimensions::scaled.frametext).Shrink(0, offset * this->resize.step_height, 0, 0);
 									char buf[512];
 									seprintf(buf, lastof(buf), "  %s: ", info->name);
-									::DrawString(ir.left, ir.right, ir.top + (offset * this->resize.step_height), buf, TC_BLACK);
+									::DrawString(sr.left, sr.right, sr.top, buf, TC_BLACK);
 									seprintf(buf, lastof(buf), "%08x (%s)", value, niv->name);
-									::DrawString(ir.left, ir.right, ir.top + (offset * this->resize.step_height), buf, TC_BLACK);
+									::DrawString(sr.left + prefix_width, sr.right, sr.top, buf, TC_BLACK);
 								}
 							}
 							break;
