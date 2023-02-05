@@ -5175,6 +5175,13 @@ static ChangeInfoResult RoadStopChangeInfo(uint id, int numinfo, int prop, const
 				rs->clear_cost_multiplier = buf->ReadByte();
 				break;
 
+			case A0RPI_ROADSTOP_HEIGHT:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x16: // Height
+				rs->height = buf->ReadByte();
+				break;
+
 			default:
 				ret = HandleAction0PropertyDefault(buf, prop);
 				break;

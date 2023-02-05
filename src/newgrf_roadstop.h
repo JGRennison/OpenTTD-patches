@@ -154,6 +154,8 @@ struct RoadStopSpec {
 	uint8 build_cost_multiplier = 16;  ///< Build cost multiplier per tile.
 	uint8 clear_cost_multiplier = 16;  ///< Clear cost multiplier per tile.
 
+	uint8 height;                      ///< The height of this structure, in heightlevels; max MAX_TILE_HEIGHT.
+
 	/**
 	 * Get the cost for building a road stop of this type.
 	 * @return The cost for building.

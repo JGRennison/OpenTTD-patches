@@ -1222,6 +1222,7 @@ private:
 	uint coverage_height; ///< Height of the coverage texts.
 	Scrollbar *vscrollList; ///< Vertical scrollbar of the new station list.
 	Scrollbar *vscrollMatrix; ///< Vertical scrollbar of the station picker matrix.
+	uint building_height = 2; ///< Road stop building height for image size
 
 	typedef GUIList<RoadStopClassID, StringFilter &> GUIRoadStopClassList; ///< Type definition for the list to hold available road stop classes.
 
@@ -1246,17 +1247,18 @@ private:
 		this->vscrollList->ScrollTowards(pos);
 	}
 
-	void CheckOrientationValid()
+	void CheckSelectedSpec()
 	{
-		if (_roadstop_gui_settings.orientation >= DIAGDIR_END) return;
 		const RoadStopSpec *spec = RoadStopClass::Get(_roadstop_gui_settings.roadstop_class)->GetSpec(_roadstop_gui_settings.roadstop_type);
-		if (spec != nullptr && HasBit(spec->flags, RSF_DRIVE_THROUGH_ONLY)) {
+		if (spec == nullptr) return;
+		if (_roadstop_gui_settings.orientation < DIAGDIR_END && HasBit(spec->flags, RSF_DRIVE_THROUGH_ONLY)) {
 			this->RaiseWidget(_roadstop_gui_settings.orientation + WID_BROS_STATION_NE);
 			_roadstop_gui_settings.orientation = DIAGDIR_END;
 			this->LowerWidget(_roadstop_gui_settings.orientation + WID_BROS_STATION_NE);
 			this->SetDirty();
 			DeleteWindowById(WC_SELECT_STATION, 0);
 		}
+		this->UpdateBuildingHeight(spec->height);
 	}
 
 public:
@@ -1337,7 +1339,7 @@ public:
 			matrix->SetClicked(_roadstop_gui_settings.roadstop_type);
 
 			this->EnsureSelectedClassIsVisible();
-			this->CheckOrientationValid();
+			this->CheckSelectedSpec();
 		}
 	}
 
@@ -1471,6 +1473,14 @@ public:
 		}
 	}
 
+	void UpdateBuildingHeight(uint height)
+	{
+		if (height > this->building_height) {
+			this->building_height = height;
+			this->ReInit();
+		}
+	}
+
 	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
@@ -1507,6 +1517,10 @@ public:
 			case WID_BROS_STATION_NW:
 			case WID_BROS_STATION_X:
 			case WID_BROS_STATION_Y:
+				size->width  = ScaleGUITrad(64) + WidgetDimensions::scaled.fullbevel.Horizontal();
+				size->height = ScaleGUITrad(32 + (this->building_height * 8)) + WidgetDimensions::scaled.fullbevel.Vertical();
+				break;
+
 			case WID_BROS_IMAGE:
 				size->width  = ScaleGUITrad(64) + WidgetDimensions::scaled.fullbevel.Horizontal();
 				size->height = ScaleGUITrad(48) + WidgetDimensions::scaled.fullbevel.Vertical();
@@ -1554,6 +1568,7 @@ public:
 					_cur_dpi = &tmp_dpi;
 					int x = (r.Width()  - ScaleSpriteTrad(64)) / 2 + ScaleSpriteTrad(31);
 					int y = (r.Height() + ScaleSpriteTrad(48)) / 2 - ScaleSpriteTrad(31);
+					if (spec != nullptr && spec->height > 2) y += (spec->height - 2) * ScaleSpriteTrad(4);
 					if (spec == nullptr || disabled) {
 						StationPickerDrawSprite(x, y, st, INVALID_RAILTYPE, _cur_roadtype, widget - WID_BROS_STATION_NE);
 						if (disabled) GfxFillRect(1, 1, r.Width() - 1, r.Height() - 1, PC_BLACK, FILLRECT_CHECKER);
@@ -1668,7 +1683,7 @@ public:
 					NWidgetMatrix *matrix = this->GetWidget<NWidgetMatrix>(WID_BROS_MATRIX);
 					matrix->SetCount(_roadstop_gui_settings.roadstop_count);
 					matrix->SetClicked(_roadstop_gui_settings.roadstop_type);
-					this->CheckOrientationValid();
+					this->CheckSelectedSpec();
 				}
 				if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 				this->SetDirty();
@@ -1693,7 +1708,7 @@ public:
 				if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 				this->SetDirty();
 				DeleteWindowById(WC_SELECT_STATION, 0);
-				this->CheckOrientationValid();
+				this->CheckSelectedSpec();
 				break;
 			}
 
