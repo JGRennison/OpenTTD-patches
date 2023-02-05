@@ -4802,7 +4802,7 @@ static ChangeInfoResult RoadTypeChangeInfo(uint id, int numinfo, int prop, const
 				break;
 
 			default:
-				ret = CIR_UNKNOWN;
+				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
 		}
 	}
@@ -4895,7 +4895,7 @@ static ChangeInfoResult RoadTypeReserveInfo(uint id, int numinfo, int prop, cons
 				break;
 
 			default:
-				ret = CIR_UNKNOWN;
+				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
 		}
 	}
@@ -5176,7 +5176,7 @@ static ChangeInfoResult RoadStopChangeInfo(uint id, int numinfo, int prop, const
 				break;
 
 			default:
-				ret = CIR_UNKNOWN;
+				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
 		}
 	}
