@@ -120,6 +120,7 @@ public:
 	uint32 air_drag;
 
 	uint32 ctrl_flags;                  ///< See: TemplateVehicleControlFlags
+	std::string name;
 
 	VehicleSpriteSeq sprite_seq;                     ///< NOSAVE: Vehicle appearance.
 	TemplateVehicleImageDimensions image_dimensions; ///< NOSAVE: image dimensions

@@ -6960,7 +6960,7 @@ STR_TMPL_TEMPLATE_OVR_RUNNING_COST                              :{BLACK}Custo es
 STR_TMPL_TEMPLATE_OVR_MULTIPLE                                  :{BLACK}{STRING}{BLACK} {STRING}
 STR_TMPL_WARNING_FREE_WAGON                                     :{RED}Convoio libre: Non pode moverse!
 STR_TMPL_WARNING_VEH_UNAVAILABLE                                :{RED}Tren non construíble: vehículo non dispoñible!
-STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}Modelo en uso: {NUM}
+STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}Modelo en uso: {STRING}
 STR_TMP_TEMPLATE_IN_USE                                         :O Modelo está en uso
 STR_TMP_TEMPLATE_FROM_PARENT_GROUP                              :Usando modelo do grupo pai
 STR_TMPL_GROUP_NUM_TRAINS                                       :{BLACK}{NUM}

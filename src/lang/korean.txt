@@ -7319,7 +7319,7 @@ STR_TMPL_TEMPLATE_OVR_MULTIPLE                                  :{BLACK}{STRING}
 STR_TMPL_WARNING_FREE_WAGON                                     :{RED}객차/화차만 있음: 운행할 수 없습니다!
 STR_TMPL_WARNING_VEH_UNAVAILABLE                                :{RED}열차 구성 불가: 차량을 사용할 수 없습니다!
 STR_TMPL_WARNING_VEH_NO_COMPATIBLE_RAIL_TYPE                    :{RED}열차 구성 불가: 이 편성을 사용할 수 있는 선로가 없습니다
-STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}{NUM}번 템플릿 사용 중
+STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}{STRING}번 템플릿 사용 중
 STR_TMP_TEMPLATE_IN_USE                                         :템플릿이 사용 중입니다.
 STR_TMP_TEMPLATE_FROM_PARENT_GROUP                              :상위 그룹의 템플릿 사용
 STR_TMPL_GROUP_NUM_TRAINS                                       :{BLACK}{NUM}

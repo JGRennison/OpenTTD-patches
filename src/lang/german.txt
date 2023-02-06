@@ -7176,7 +7176,7 @@ STR_TMPL_TEMPLATE_OVR_RUNNING_COST                              :{BLACK}Erwartet
 STR_TMPL_TEMPLATE_OVR_MULTIPLE                                  :{BLACK}{STRING}{BLACK} {STRING}
 STR_TMPL_WARNING_FREE_WAGON                                     :{RED}Unvollständiger Antriebsstrang: Zug kann nicht bewegt werden!
 STR_TMPL_WARNING_VEH_UNAVAILABLE                                :{RED}Zug nicht erstellbar: Fahrzeug nicht verfügbar!
-STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}Vorlage in Benutzung: {NUM}
+STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}Vorlage in Benutzung: {STRING}
 STR_TMP_TEMPLATE_IN_USE                                         :Vorlage ist in Benutzung
 STR_TMP_TEMPLATE_FROM_PARENT_GROUP                              :Benutze Vorlage von übergeordneter Gruppe
 STR_TMPL_GROUP_NUM_TRAINS                                       :{BLACK}{NUM}

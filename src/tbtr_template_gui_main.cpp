@@ -27,6 +27,7 @@
 #include "rail_gui.h"
 #include "network/network.h"
 #include "zoom_func.h"
+#include "textbuf_gui.h"
 
 #include "table/sprites.h"
 #include "table/strings.h"
@@ -85,6 +86,7 @@ enum TemplateReplaceWindowWidgets {
 	TRW_WIDGET_TMPL_BUTTONS_EDIT,
 	TRW_WIDGET_TMPL_BUTTONS_CLONE,
 	TRW_WIDGET_TMPL_BUTTONS_DELETE,
+	TRW_WIDGET_TMPL_BUTTONS_RENAME,
 
 	TRW_WIDGET_TMPL_BUTTONS_EDIT_RIGHTPANEL,
 
@@ -162,6 +164,7 @@ static const NWidgetPart _widgets[] = {
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_EDIT), SetMinimalSize(75,12), SetResize(0,0), SetDataTip(STR_TMPL_EDIT_TEMPLATE, STR_TMPL_EDIT_TEMPLATE),
 			NWidget(WWT_TEXTBTN, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_CLONE), SetMinimalSize(75,12), SetResize(0,0), SetDataTip(STR_TMPL_CREATE_CLONE_VEH, STR_TMPL_CREATE_CLONE_VEH),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_DELETE), SetMinimalSize(75,12), SetResize(0,0), SetDataTip(STR_TMPL_DELETE_TEMPLATE, STR_TMPL_DELETE_TEMPLATE),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_RENAME), SetMinimalSize(75,12), SetResize(0,0), SetDataTip(STR_BUTTON_RENAME, STR_TMPL_RENAME_TEMPLATE),
 			NWidget(WWT_PANEL, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_EDIT_RIGHTPANEL), SetMinimalSize(50,12), SetResize(1,0), EndContainer(),
 		EndContainer(),
 	EndContainer(),
@@ -427,6 +430,13 @@ public:
 					}
 				}
 				break;
+			case TRW_WIDGET_TMPL_BUTTONS_RENAME:
+				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) && !editInProgress) {
+					const TemplateVehicle *tmp = this->templates[this->selected_template_index];
+					SetDParamStr(0, tmp->name);
+					ShowQueryString(STR_JUST_RAW_STRING, STR_TMPL_RENAME_TEMPLATE, MAX_LENGTH_GROUP_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
+				}
+				break;
 			case TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN: // Railtype selection dropdown menu
 				ShowDropDownList(this, GetRailTypeDropDownList(true, true), this->sel_railtype, TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN);
 				break;
@@ -531,6 +541,14 @@ public:
 		this->SetDirty();
 	}
 
+	void OnQueryTextFinished(char *str) override
+	{
+		if (str != nullptr && (this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) && !editInProgress) {
+			const TemplateVehicle *tmp = this->templates[this->selected_template_index];
+			DoCommandP(0, tmp->index, 0, CMD_RENAME_TMPL_REPLACE | CMD_MSG(STR_TMPL_CANT_RENAME), nullptr, str);
+		}
+	}
+
 	/** For a given group (id) find the template that is issued for template replacement for this group and return this template's index
 	 *  from the gui list */
 	int FindTemplateIndex(TemplateID tid) const
@@ -608,9 +626,12 @@ public:
 
 			int text_y = y + WidgetDimensions::scaled.matrix.top;
 
+			int col1 = left + (2 * left + right) / 3;
+			int col2 = left + (left + 2 * right) / 3;
+
 			SetDParam(0, g_id);
 			StringID str = STR_GROUP_NAME;
-			DrawString(left + ScaleGUITrad(30 + this->indents[i] * 10), right, text_y, str, TC_BLACK);
+			DrawString(left + ScaleGUITrad(4 + this->indents[i] * 10), col1 - ScaleGUITrad(4), text_y, str, TC_BLACK);
 
 			const TemplateID tid = GetTemplateIDByGroupIDRecursive(g_id);
 			const TemplateID tid_self = GetTemplateIDByGroupID(g_id);
@@ -618,12 +639,19 @@ public:
 			/* Draw the template in use for this group, if there is one */
 			int template_in_use = FindTemplateIndex(tid);
 			if (tid != INVALID_TEMPLATE && tid_self == INVALID_TEMPLATE) {
-				DrawString (left, right, text_y, STR_TMP_TEMPLATE_FROM_PARENT_GROUP, TC_SILVER, SA_HOR_CENTER);
+				DrawString (col1 + ScaleGUITrad(4), col2 - ScaleGUITrad(4), text_y, STR_TMP_TEMPLATE_FROM_PARENT_GROUP, TC_SILVER, SA_HOR_CENTER);
 			} else if (template_in_use >= 0) {
-				SetDParam(0, template_in_use);
-				DrawString (left, right, text_y, STR_TMPL_GROUP_USES_TEMPLATE, TC_BLACK, SA_HOR_CENTER);
+				const TemplateVehicle *tv = TemplateVehicle::Get(tid);
+				SetDParam(1, template_in_use);
+				if (tv->name.empty()) {
+					SetDParam(0, STR_JUST_INT);
+				} else {
+					SetDParam(0, STR_TMPL_NAME);
+					SetDParamStr(2, tv->name);
+				}
+				DrawString (col1 + ScaleGUITrad(4), col2 - ScaleGUITrad(4), text_y, STR_TMPL_GROUP_USES_TEMPLATE, TC_BLACK, SA_HOR_CENTER);
 			} else if (tid != INVALID_TEMPLATE) { /* If there isn't a template applied from the current group, check if there is one for another rail type */
-				DrawString (left, right, text_y, STR_TMPL_TMPLRPL_EX_DIFF_RAILTYPE, TC_SILVER, SA_HOR_CENTER);
+				DrawString (col1 + ScaleGUITrad(4), col2 - ScaleGUITrad(4), text_y, STR_TMPL_TMPLRPL_EX_DIFF_RAILTYPE, TC_SILVER, SA_HOR_CENTER);
 			}
 
 			/* Draw the number of trains that still need to be treated by the currently selected template replacement */
@@ -632,9 +660,9 @@ public:
 				const int num_trains = NumTrainsNeedTemplateReplacement(g_id, tv);
 				// Draw number
 				SetDParam(0, num_trains);
-				int inner_right = DrawString(left, right - ScaleGUITrad(4), text_y, STR_JUST_INT, num_trains ? TC_ORANGE : TC_GREY, SA_RIGHT);
+				int inner_right = DrawString(col2 + ScaleGUITrad(4), right - ScaleGUITrad(4), text_y, STR_JUST_INT, num_trains ? TC_ORANGE : TC_GREY, SA_RIGHT);
 				// Draw text
-				DrawString(left, inner_right - ScaleGUITrad(4), text_y, STR_TMPL_NUM_TRAINS_NEED_RPL, num_trains ? TC_BLACK : TC_GREY, SA_RIGHT);
+				DrawString(col2 + ScaleGUITrad(4), inner_right - ScaleGUITrad(4), text_y, STR_TMPL_NUM_TRAINS_NEED_RPL, num_trains ? TC_BLACK : TC_GREY, SA_RIGHT);
 			}
 
 			y += FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.matrix.Vertical();
@@ -695,9 +723,16 @@ public:
 
 			int bottom_edge = y + this->bottom_matrix_item_size - FONT_HEIGHT_NORMAL - WidgetDimensions::scaled.framerect.bottom;
 
+			bool have_name = !v->name.empty();
+
 			/* Buying cost */
 			SetDParam(0, CalculateOverallTemplateCost(v));
-			DrawString(left + ScaleGUITrad(35), right, bottom_edge, STR_TMPL_TEMPLATE_OVR_VALUE, TC_BLUE, SA_LEFT);
+			DrawString(left + ScaleGUITrad(35), have_name ? left + ScaleGUITrad(195) : right - ScaleGUITrad(310), bottom_edge, STR_TMPL_TEMPLATE_OVR_VALUE, TC_BLUE, SA_LEFT);
+
+			if (have_name) {
+				SetDParamStr(0, v->name);
+				DrawString(left + ScaleGUITrad(200), right - ScaleGUITrad(310), bottom_edge, STR_JUST_RAW_STRING, TC_BLACK, SA_LEFT);
+			}
 
 			/* Index of current template vehicle in the list of all templates for its company */
 			SetDParam(0, i);

@@ -7312,6 +7312,7 @@ STR_TMPL_DEFINE_TEMPLATE                                        :{BLACK}New
 STR_TMPL_EDIT_TEMPLATE                                          :{BLACK}Edit
 STR_TMPL_CREATE_CLONE_VEH                                       :{BLACK}Clone
 STR_TMPL_DELETE_TEMPLATE                                        :{BLACK}Delete
+STR_TMPL_RENAME_TEMPLATE                                        :{BLACK}Rename template
 STR_TMPL_RPL_ALL_TMPL                                           :{BLACK}Replace All Templates
 STR_TMPL_NEW_VEHICLE                                            :{BLACK}New Vehicle
 STR_TMPL_CONFIRM                                                :{BLACK}Ok
@@ -7329,7 +7330,8 @@ STR_TMPL_TEMPLATE_OVR_MULTIPLE                                  :{BLACK}{STRING1
 STR_TMPL_WARNING_FREE_WAGON                                     :{RED}Free Chain: not runnable!
 STR_TMPL_WARNING_VEH_UNAVAILABLE                                :{RED}Train not buildable: vehicle unavailable!
 STR_TMPL_WARNING_VEH_NO_COMPATIBLE_RAIL_TYPE                    :{RED}Train not buildable: chain not compatible with any rail type
-STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}Template in use: {NUM}
+STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}Template in use: {STRING2}
+STR_TMPL_NAME                                                   :{NUM}: {RAW_STRING}
 STR_TMP_TEMPLATE_IN_USE                                         :Template is in use
 STR_TMP_TEMPLATE_FROM_PARENT_GROUP                              :Using template from parent group
 STR_TMPL_GROUP_NUM_TRAINS                                       :{BLACK}{NUM}
@@ -7376,6 +7378,7 @@ STR_TMPL_RPLALLGUI_BUTTON_CANCEL                                :{BLACK}Cancel
 STR_TMPL_RPLALLGUI_USE_TIP                                      :{BLACK}Select a vehicle type from each list and press 'Replace All'. If you are happy with the result displayed in the template list, press 'Apply' to actually apply these changes.
 
 STR_TMPL_CANT_CREATE                                            :{WHITE}Can't create template or virtual vehicle...
+STR_TMPL_CANT_RENAME                                            :{WHITE}Can't rename template...
 
 # Scheduled Dispatch
 STR_SCHDISPATCH_CAPTION                                         :{WHITE}{VEHICLE} (Scheduled Dispatch)

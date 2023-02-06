@@ -984,6 +984,43 @@ CommandCost CmdToggleTemplateReplaceOldOnly(TileIndex tile, DoCommandFlag flags,
 }
 
 /**
+ * Rename a template vehicle.
+ * @param tile unused
+ * @param flags type of operation
+ * @param p1 the template vehicle's index
+ * @param p2 unused
+ * @param text new name
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdRenameTemplateReplace(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	TemplateVehicle *template_vehicle = TemplateVehicle::GetIfValid(p1);
+
+	if (template_vehicle == nullptr) return CMD_ERROR;
+	CommandCost ret = CheckOwnership(template_vehicle->owner);
+	if (ret.Failed()) return ret;
+
+	bool reset = StrEmpty(text);
+
+	if (!reset) {
+		if (Utf8StringLength(text) >= MAX_LENGTH_GROUP_NAME_CHARS) return CMD_ERROR;
+	}
+
+	if (flags & DC_EXEC) {
+		/* Assign the new one */
+		if (reset) {
+			template_vehicle->name.clear();
+		} else {
+			template_vehicle->name = text;
+		}
+
+		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN, 0);
+	}
+
+	return CommandCost();
+}
+
+/**
  * Create a virtual train from a template vehicle.
  * @param tile unused
  * @param flags type of operation
@@ -1233,6 +1270,7 @@ CommandCost CmdReplaceTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint3
 		bool keep_remaining_vehicles = false;
 		bool refit_as_template = true;
 		bool replace_old_only = false;
+		std::string name;
 
 		if (template_vehicle != nullptr) {
 			old_ID = template_vehicle->index;
@@ -1241,6 +1279,7 @@ CommandCost CmdReplaceTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint3
 			keep_remaining_vehicles = template_vehicle->keep_remaining_vehicles;
 			refit_as_template = template_vehicle->refit_as_template;
 			replace_old_only = template_vehicle->replace_old_only;
+			name = std::move(template_vehicle->name);
 			delete template_vehicle;
 			template_vehicle = nullptr;
 		}
@@ -1252,6 +1291,7 @@ CommandCost CmdReplaceTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint3
 			template_vehicle->keep_remaining_vehicles = keep_remaining_vehicles;
 			template_vehicle->refit_as_template = refit_as_template;
 			template_vehicle->replace_old_only = replace_old_only;
+			template_vehicle->name = std::move(name);
 		}
 
 		// Make sure our replacements still point to the correct thing.

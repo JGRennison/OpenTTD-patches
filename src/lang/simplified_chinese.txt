@@ -7320,7 +7320,7 @@ STR_TMPL_TEMPLATE_OVR_MULTIPLE                                  :{BLACK}{STRING}
 STR_TMPL_WARNING_FREE_WAGON                                     :{RED}没有接触网：跑不了！
 STR_TMPL_WARNING_VEH_UNAVAILABLE                                :{RED}火车建造失败：车辆不可用！
 STR_TMPL_WARNING_VEH_NO_COMPATIBLE_RAIL_TYPE                    :{RED}火车建造失败：接触网不兼容当前轨道类型
-STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}正在使用的模板：{NUM}
+STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}正在使用的模板：{STRING}
 STR_TMP_TEMPLATE_IN_USE                                         :正在使用的模板
 STR_TMP_TEMPLATE_FROM_PARENT_GROUP                              :使用父组模板
 STR_TMPL_GROUP_NUM_TRAINS                                       :{BLACK}{NUM}
