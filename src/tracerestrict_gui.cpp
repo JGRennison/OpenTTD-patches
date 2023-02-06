@@ -589,6 +589,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		STR_TRACE_RESTRICT_VARIABLE_RESERVED_TILES_AHEAD,
 		STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE,
 		STR_TRACE_RESTRICT_VARIABLE_ORDER_TARGET_DIRECTION,
+		STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH,
 		STR_TRACE_RESTRICT_VARIABLE_UNDEFINED,
 		INVALID_STRING_ID,
 	};
@@ -620,6 +621,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		TRIT_COND_RESERVED_TILES,                                     // 0x1000000
 		TRIT_COND_PBS_ENTRY_SIGNAL | (TRPESAF_RES_END_TILE << 16),
 		TRIT_COND_TARGET_DIRECTION,
+		TRIT_COND_RESERVATION_THROUGH,
 		TRIT_COND_UNDEFINED,
 	};
 	static const TraceRestrictDropDownListSet set_cond = {
@@ -631,7 +633,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		if (_settings_client.gui.show_adv_tracerestrict_features) {
 			*hide_mask = 0;
 		} else {
-			*hide_mask = is_conditional ? 0x1FE0000 : 0xEF0;
+			*hide_mask = is_conditional ? 0x9FE0000 : 0xEF0;
 		}
 		if (is_conditional && _settings_game.vehicle.train_braking_model != TBM_REALISTIC) *hide_mask |= 0x1040000;
 		if (!is_conditional && !_settings_game.vehicle.train_speed_adaptation) *hide_mask |= 0x800;
@@ -828,6 +830,20 @@ static const TraceRestrictDropDownListSet _train_status_cond_ops = {
 	_train_status_cond_ops_str, _train_status_cond_ops_val,
 };
 
+static const StringID _passes_through_cond_ops_str[] = {
+	STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_PASS,
+	STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_DOESNT_PASS,
+	INVALID_STRING_ID,
+};
+static const uint _passes_through_cond_ops_val[] = {
+	TRCO_IS,
+	TRCO_ISNOT,
+};
+/** passes through conditional operators dropdown list set */
+static const TraceRestrictDropDownListSet _passes_through_cond_ops = {
+	_passes_through_cond_ops_str, _passes_through_cond_ops_val,
+};
+
 static const StringID _slot_op_cond_ops_str[] = {
 	STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT,
 	STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE,
@@ -930,6 +946,7 @@ static const TraceRestrictDropDownListSet *GetCondOpDropDownListSet(TraceRestric
 	if (properties.value_type == TRVT_CARGO_ID) return &_cargo_cond_ops;
 	if (properties.value_type == TRVT_TRAIN_STATUS) return &_train_status_cond_ops;
 	if (properties.value_type == TRVT_ENGINE_CLASS) return &_train_status_cond_ops;
+	if (properties.value_type == TRVT_TILE_INDEX_THROUGH) return &_passes_through_cond_ops;
 
 	switch (properties.cond_type) {
 		case TRCOT_NONE:
@@ -1331,6 +1348,23 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 							NOT_REACHED();
 					}
 
+					break;
+				}
+
+				case TRVT_TILE_INDEX_THROUGH: {
+					assert(prog != nullptr);
+					assert(GetTraceRestrictType(item) == TRIT_COND_RESERVATION_THROUGH);
+					TileIndex tile = *(TraceRestrictProgram::InstructionAt(prog->items, index - 1) + 1);
+					if (tile == INVALID_TILE) {
+						DrawInstructionStringConditionalInvalidValue(item, properties, instruction_string, selected);
+					} else {
+						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_PASSES_TILE_INDEX;
+						SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
+						SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
+						SetDParam(3, TileX(tile));
+						SetDParam(4, TileY(tile));
+					}
+					SetDParam(1, STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH_SHORT);
 					break;
 				}
 
@@ -1792,7 +1826,8 @@ public:
 					if (sel == -1) return;
 
 					TraceRestrictItem item = this->GetItem(this->GetProgram(), sel);
-					if (GetTraceRestrictTypeProperties(item).value_type == TRVT_ORDER) {
+					TraceRestrictValueType val_type = GetTraceRestrictTypeProperties(item).value_type;
+					if (val_type == TRVT_ORDER) {
 						switch (static_cast<TraceRestrictOrderCondAuxField>(GetTraceRestrictAuxField(item))) {
 							case TROCAF_STATION:
 							case TROCAF_WAYPOINT: {
@@ -1811,7 +1846,7 @@ public:
 								break;
 							}
 						}
-					} else if (GetTraceRestrictTypeProperties(item).value_type == TRVT_TILE_INDEX) {
+					} else if (val_type == TRVT_TILE_INDEX || val_type == TRVT_TILE_INDEX_THROUGH) {
 						TileIndex tile = *(TraceRestrictProgram::InstructionAt(this->GetProgram()->items, sel - 1) + 1);
 						if (tile != INVALID_TILE) {
 							ScrollMainWindowToTile(tile);
@@ -2469,7 +2504,8 @@ public:
 	void OnPlaceObjectSignalTileValue(Point pt, TileIndex tile, int widget, int error_message)
 	{
 		TraceRestrictItem item = GetSelected();
-		if (GetTraceRestrictTypeProperties(item).value_type != TRVT_TILE_INDEX) return;
+		TraceRestrictValueType val_type = GetTraceRestrictTypeProperties(item).value_type;
+		if (val_type != TRVT_TILE_INDEX && val_type != TRVT_TILE_INDEX_THROUGH) return;
 
 		if (!IsInfraTileUsageAllowed(VEH_TRAIN, _local_company, tile)) {
 			ShowErrorMessage(error_message, STR_ERROR_AREA_IS_OWNED_BY_ANOTHER, WL_INFO);
@@ -2501,7 +2537,8 @@ public:
 	void OnPlaceObjectTileValue(Point pt, TileIndex tile, int widget, int error_message)
 	{
 		TraceRestrictItem item = GetSelected();
-		if (GetTraceRestrictTypeProperties(item).value_type != TRVT_TILE_INDEX) return;
+		TraceRestrictValueType val_type = GetTraceRestrictTypeProperties(item).value_type;
+		if (val_type != TRVT_TILE_INDEX && val_type != TRVT_TILE_INDEX_THROUGH) return;
 
 		TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_DUAL_ITEM, this->selected_instruction - 1, tile, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 	}
@@ -3028,6 +3065,11 @@ private:
 								right_sel->SetDisplayedPlane(DPR_VALUE_SIGNAL);
 								this->EnableWidget(TR_WIDGET_VALUE_SIGNAL);
 							}
+							break;
+
+						case TRVT_TILE_INDEX_THROUGH:
+							right_sel->SetDisplayedPlane(DPR_VALUE_TILE);
+							this->EnableWidget(TR_WIDGET_VALUE_TILE);
 							break;
 
 						case TRVT_PF_PENALTY:

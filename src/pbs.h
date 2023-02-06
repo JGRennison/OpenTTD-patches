@@ -166,6 +166,7 @@ void ApplyAvailableFreeTunnelBridgeTiles(TrainReservationLookAhead *lookahead, i
 void TryCreateLookAheadForTrainInTunnelBridge(Train *t);
 void SetTrainReservationLookaheadEnd(Train *v);
 void FillTrainReservationLookAhead(Train *v);
+bool TrainReservationPassesThroughTile(const Train *v, TileIndex search_tile);
 bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bool include_line_end, bool forbid_90deg = false);
 bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bool forbid_90deg = false, PBSWaitingPositionRestrictedSignalInfo *restricted_signal_info = nullptr);
 

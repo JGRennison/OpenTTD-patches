@@ -612,6 +612,14 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 					}
 
+					case TRIT_COND_RESERVATION_THROUGH: {
+						// TRIT_COND_RESERVATION_THROUGH value type uses the next slot
+						i++;
+						uint32_t test_tile = this->items[i];
+						result = TestBinaryConditionCommon(item, TrainReservationPassesThroughTile(v, test_tile));
+						break;
+					}
+
 					default:
 						NOT_REACHED();
 				}
@@ -1002,6 +1010,7 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 				case TRIT_COND_TIME_DATE_VALUE:
 				case TRIT_COND_RESERVED_TILES:
 				case TRIT_COND_CATEGORY:
+				case TRIT_COND_RESERVATION_THROUGH:
 					break;
 
 				case TRIT_COND_CURRENT_ORDER:
@@ -1209,6 +1218,7 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_DENY:
 		case TRVT_SPEED:
 		case TRVT_TILE_INDEX:
+		case TRVT_TILE_INDEX_THROUGH:
 		case TRVT_RESERVE_THROUGH:
 		case TRVT_LONG_RESERVE:
 		case TRVT_WEIGHT:
@@ -1547,6 +1557,7 @@ static uint32 GetDualInstructionInitialValue(TraceRestrictItem item)
 {
 	switch (GetTraceRestrictType(item)) {
 		case TRIT_COND_PBS_ENTRY_SIGNAL:
+		case TRIT_COND_RESERVATION_THROUGH:
 			return INVALID_TILE;
 
 		case TRIT_COND_SLOT_OCCUPANCY:

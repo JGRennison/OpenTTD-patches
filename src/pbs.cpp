@@ -707,6 +707,108 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 	return PBSTileInfo(tile, trackdir, false);
 }
 
+/** Follow a reservation starting from a specific tile to the end. */
+template <typename T>
+static void FollowReservationEnumerate(Owner o, RailTypes rts, TileIndex tile, Trackdir trackdir, FollowReservationFlags flags, T handler)
+{
+	TileIndex start_tile = tile;
+	Trackdir  start_trackdir = trackdir;
+	bool      first_loop = true;
+
+	/* Start track not reserved? This can happen if two trains
+	 * are on the same tile. The reservation on the next tile
+	 * is not ours in this case, so exit. */
+	if (!(flags & FRF_TB_EXIT_FREE) && !HasReservedTracks(tile, TrackToTrackBits(TrackdirToTrack(trackdir)))) return;
+
+	if (handler(start_tile, start_trackdir)) return;
+
+	/* Do not disallow 90 deg turns as the setting might have changed between reserving and now. */
+	CFollowTrackRail ft(o, rts);
+	auto check_tunnel_bridge = [&]() -> bool {
+		if (IsTunnelBridgeWithSignalSimulation(tile) && TrackdirEntersTunnelBridge(tile, trackdir)) {
+			if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && IsTunnelBridgeSignalSimulationEntrance(tile)) {
+				TileIndex end = GetOtherTunnelBridgeEnd(tile);
+				if (HasAcrossTunnelBridgeReservation(end) && GetTunnelBridgeExitSignalState(end) == SIGNAL_STATE_GREEN &&
+						((flags & FRF_TB_EXIT_FREE) || TunnelBridgeIsFree(tile, end, nullptr, true).Succeeded())) {
+					/* skip far end */
+					Trackdir end_trackdir = GetTunnelBridgeExitTrackdir(end);
+					tile = end;
+					trackdir = end_trackdir;
+					if (handler(tile, trackdir)) return false;
+					return true;
+				}
+			}
+			if ((flags & FRF_IGNORE_ONEWAY) && _settings_game.vehicle.train_braking_model == TBM_REALISTIC && IsTunnelBridgeSignalSimulationExit(tile) &&
+					GetTunnelBridgeExitSignalState(tile) == SIGNAL_STATE_GREEN) {
+				TileIndex end = GetOtherTunnelBridgeEnd(tile);
+				if (HasAcrossTunnelBridgeReservation(end) && TunnelBridgeIsFree(tile, end, nullptr, true).Succeeded()) {
+					/* skip far end */
+					tile = end;
+					trackdir = GetTunnelBridgeExitTrackdir(tile);
+					if (handler(tile, trackdir)) return false;
+					return true;
+				}
+			}
+			return false;
+		}
+		return true;
+	};
+	while (check_tunnel_bridge() && ft.Follow(tile, trackdir)) {
+		flags &= ~FRF_TB_EXIT_FREE;
+		TrackdirBits reserved = ft.m_new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(ft.m_new_tile));
+
+		if (ft.m_is_station) {
+			/* Check skipped station tiles as well, maybe our reservation ends inside the station. */
+			TileIndexDiff diff = TileOffsByDiagDir(ft.m_exitdir);
+			TileIndex t = ft.m_new_tile - (ft.m_tiles_skipped * diff);
+			while (ft.m_tiles_skipped-- > 0) {
+				if (HasStationReservation(t)) {
+					if (handler(t, DiagDirToDiagTrackdir(ft.m_exitdir))) return;
+				} else {
+					break;
+				}
+				t += diff;
+			}
+		}
+
+		/* No reservation --> path end found */
+		if (reserved == TRACKDIR_BIT_NONE) {
+			break;
+		}
+
+		/* Can't have more than one reserved trackdir */
+		Trackdir new_trackdir = FindFirstTrackdir(reserved);
+
+		/* One-way signal against us. The reservation can't be ours as it is not
+		 * a safe position from our direction and we can never pass the signal. */
+		if (!(flags & FRF_IGNORE_ONEWAY) && HasOnewaySignalBlockingTrackdir(ft.m_new_tile, new_trackdir)) break;
+
+		tile = ft.m_new_tile;
+		trackdir = new_trackdir;
+
+		if (handler(tile, trackdir)) return;
+
+		if (first_loop) {
+			/* Update the start tile after we followed the track the first
+			 * time. This is necessary because the track follower can skip
+			 * tiles (in stations for example) which means that we might
+			 * never visit our original starting tile again. */
+			start_tile = tile;
+			start_trackdir = trackdir;
+			first_loop = false;
+		} else {
+			/* Loop encountered? */
+			if (tile == start_tile && trackdir == start_trackdir) break;
+		}
+		/* Depot tile? Can't continue. */
+		if (IsRailDepotTile(tile)) {
+			break;
+		}
+		/* Non-pbs signal? Reservation can't continue. */
+		if (IsTileType(tile, MP_RAILWAY) && HasSignalOnTrackdir(tile, trackdir) && !IsPbsSignal(GetSignalType(tile, TrackdirToTrack(trackdir)))) break;
+	}
+}
+
 /**
  * Helper struct for finding the best matching vehicle on a specific track.
  */
@@ -1300,6 +1402,22 @@ TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const vo
 		tile = ft.m_new_tile;
 		trackdir = FindFirstTrackdir(ft.m_new_td_bits);
 	}
+}
+
+/**
+ * Test whether a train's reservation passes through a given tile.
+ */
+bool TrainReservationPassesThroughTile(const Train *v, TileIndex search_tile)
+{
+	bool found = false;
+	FollowReservationEnumerate(v->owner, GetRailTypeInfo(v->railtype)->all_compatible_railtypes, v->tile, v->GetVehicleTrackdir(), FRF_NONE, [&](TileIndex tile, Trackdir trackdir) -> bool {
+		if (tile == search_tile) {
+			found = true;
+			return true;
+		}
+		return false;
+	});
+	return found;
 }
 
 /**
