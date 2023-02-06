@@ -881,9 +881,9 @@ CommandCost CmdToggleReuseDepotVehicles(TileIndex tile, DoCommandFlag flags, uin
 	// Identify template to toggle
 	TemplateVehicle *template_vehicle = TemplateVehicle::GetIfValid(p1);
 
-	if (template_vehicle == nullptr) {
-		return CMD_ERROR;
-	}
+	if (template_vehicle == nullptr) return CMD_ERROR;
+	CommandCost ret = CheckOwnership(template_vehicle->owner);
+	if (ret.Failed()) return ret;
 
 	bool should_execute = (flags & DC_EXEC) != 0;
 
@@ -910,9 +910,9 @@ CommandCost CmdToggleKeepRemainingVehicles(TileIndex tile, DoCommandFlag flags, 
 	// Identify template to toggle
 	TemplateVehicle *template_vehicle = TemplateVehicle::GetIfValid(p1);
 
-	if (template_vehicle == nullptr) {
-		return CMD_ERROR;
-	}
+	if (template_vehicle == nullptr) return CMD_ERROR;
+	CommandCost ret = CheckOwnership(template_vehicle->owner);
+	if (ret.Failed()) return ret;
 
 	bool should_execute = (flags & DC_EXEC) != 0;
 
@@ -939,9 +939,9 @@ CommandCost CmdToggleRefitAsTemplate(TileIndex tile, DoCommandFlag flags, uint32
 	// Identify template to toggle
 	TemplateVehicle *template_vehicle = TemplateVehicle::GetIfValid(p1);
 
-	if (template_vehicle == nullptr) {
-		return CMD_ERROR;
-	}
+	if (template_vehicle == nullptr) return CMD_ERROR;
+	CommandCost ret = CheckOwnership(template_vehicle->owner);
+	if (ret.Failed()) return ret;
 
 	bool should_execute = (flags & DC_EXEC) != 0;
 
@@ -968,9 +968,9 @@ CommandCost CmdToggleTemplateReplaceOldOnly(TileIndex tile, DoCommandFlag flags,
 	// Identify template to toggle
 	TemplateVehicle *template_vehicle = TemplateVehicle::GetIfValid(p1);
 
-	if (template_vehicle == nullptr) {
-		return CMD_ERROR;
-	}
+	if (template_vehicle == nullptr) return CMD_ERROR;
+	CommandCost ret = CheckOwnership(template_vehicle->owner);
+	if (ret.Failed()) return ret;
 
 	bool should_execute = (flags & DC_EXEC) != 0;
 
@@ -998,13 +998,9 @@ CommandCost CmdVirtualTrainFromTemplateVehicle(TileIndex tile, DoCommandFlag fla
 
 	TemplateVehicle* tv = TemplateVehicle::GetIfValid(template_vehicle_id);
 
-	if (tv == nullptr) {
-		return CMD_ERROR;
-	}
-
-	if (tv->owner != _current_company) {
-		return CMD_ERROR;
-	}
+	if (tv == nullptr) return CMD_ERROR;
+	CommandCost ret = CheckOwnership(tv->owner);
+	if (ret.Failed()) return ret;
 
 	bool should_execute = (flags & DC_EXEC) != 0;
 
@@ -1346,6 +1342,8 @@ CommandCost CmdDeleteTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint32
 	TemplateVehicle *del = TemplateVehicle::GetIfValid(p1);
 
 	if (del == nullptr) return CMD_ERROR;
+	CommandCost ret = CheckOwnership(del->owner);
+	if (ret.Failed()) return ret;
 
 	bool should_execute = (flags & DC_EXEC) != 0;
 
