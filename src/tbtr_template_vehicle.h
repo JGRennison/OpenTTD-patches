@@ -192,7 +192,7 @@ public:
 	SpriteID GetImage(Direction) const;
 	SpriteID GetSpriteID() const;
 
-	short NumGroupsUsingTemplate() const;
+	uint NumGroupsUsingTemplate() const;
 
 };
 
@@ -225,7 +225,7 @@ TemplateID GetTemplateIDByGroupID(GroupID);
 TemplateID GetTemplateIDByGroupIDRecursive(GroupID);
 bool IssueTemplateReplacement(GroupID, TemplateID);
 
-short DeleteTemplateReplacementsByGroupID(GroupID);
+uint DeleteTemplateReplacementsByGroupID(GroupID);
 
 void ReindexTemplateReplacements();
 

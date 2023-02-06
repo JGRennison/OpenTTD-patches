@@ -193,7 +193,6 @@ private:
 
 	std::vector<int> indents; ///< Indentation levels
 
-	short matrixContentLeftMargin;
 	int bottom_matrix_item_size = 0;
 
 	int details_height;           ///< Minimal needed height of the details panels (found so far).
@@ -203,8 +202,8 @@ private:
 	GUITemplateList templates;
 	GUITemplateList::SortFunction **template_sorter_funcs;
 
-	short selected_template_index;
-	short selected_group_index;
+	int selected_template_index;
+	int selected_group_index;
 
 	bool editInProgress;
 
@@ -230,7 +229,6 @@ public:
 		this->groups.NeedResort();
 		this->BuildGroupList();
 
-		this->matrixContentLeftMargin = 40;
 		this->selected_template_index = -1;
 		this->selected_group_index = -1;
 
@@ -317,14 +315,14 @@ public:
 		/* Show the selected railtype in the pulldown menu */
 		this->GetWidget<NWidgetCore>(TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN)->widget_data = (this->sel_railtype == INVALID_RAILTYPE) ? STR_REPLACE_ALL_RAILTYPE : GetRailTypeInfo(this->sel_railtype)->strings.replace_text;
 
-		if ((this->selected_template_index < 0) || (this->selected_template_index >= (short)this->templates.size())) {
+		if ((this->selected_template_index < 0) || (this->selected_template_index >= (int)this->templates.size())) {
 			this->vscroll[2]->SetCount(24);
 		} else {
 			const TemplateVehicle *tmp = this->templates[this->selected_template_index];
 			uint height = ScaleGUITrad(8) + (3 * FONT_HEIGHT_NORMAL);
 			CargoArray cargo_caps;
-			short count_columns = 0;
-			short max_columns = 2;
+			uint count_columns = 0;
+			uint max_columns = 2;
 
 			if (tmp->full_weight > tmp->empty_weight || _settings_client.gui.show_train_weight_ratios_in_details) height += FONT_HEIGHT_NORMAL;
 			if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) height += FONT_HEIGHT_NORMAL;
@@ -358,7 +356,7 @@ public:
 
 		switch (widget) {
 			case TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REUSE: {
-				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.size())) {
+				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size())) {
 					uint32 template_index = ((this->templates)[selected_template_index])->index;
 
 					DoCommandP(0, template_index, 0, CMD_TOGGLE_REUSE_DEPOT_VEHICLES, nullptr);
@@ -366,7 +364,7 @@ public:
 				break;
 			}
 			case TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_KEEP: {
-				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.size())) {
+				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size())) {
 					uint32 template_index = ((this->templates)[selected_template_index])->index;
 
 					DoCommandP(0, template_index, 0, CMD_TOGGLE_KEEP_REMAINING_VEHICLES, nullptr);
@@ -374,7 +372,7 @@ public:
 				break;
 			}
 			case TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT: {
-				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.size())) {
+				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size())) {
 					uint32 template_index = ((this->templates)[selected_template_index])->index;
 
 					DoCommandP(0, template_index, 0, CMD_TOGGLE_REFIT_AS_TEMPLATE, nullptr);
@@ -382,7 +380,7 @@ public:
 				break;
 			}
 			case TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_OLD_ONLY: {
-				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.size())) {
+				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size())) {
 					uint32 template_index = ((this->templates)[selected_template_index])->index;
 
 					DoCommandP(0, template_index, 0, CMD_TOGGLE_TMPL_REPLACE_OLD_ONLY, nullptr);
@@ -396,7 +394,7 @@ public:
 				break;
 			}
 			case TRW_WIDGET_TMPL_BUTTONS_EDIT: {
-				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.size())) {
+				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size())) {
 					editInProgress = true;
 					TemplateVehicle *sel = TemplateVehicle::Get(((this->templates)[selected_template_index])->index);
 					ShowTemplateCreateWindow(sel, &editInProgress);
@@ -417,7 +415,7 @@ public:
 				break;
 			}
 			case TRW_WIDGET_TMPL_BUTTONS_DELETE:
-				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.size()) && !editInProgress) {
+				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) && !editInProgress) {
 
 					uint32 template_index = ((this->templates)[selected_template_index])->index;
 
@@ -455,8 +453,8 @@ public:
 				break;
 			}
 			case TRW_WIDGET_START: {
-				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.size()) &&
-						(this->selected_group_index >= 0) && (this->selected_group_index < (short)this->groups.size())) {
+				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) &&
+						(this->selected_group_index >= 0) && (this->selected_group_index < (int)this->groups.size())) {
 					uint32 tv_index = ((this->templates)[selected_template_index])->index;
 					int current_group_index = (this->groups)[this->selected_group_index]->index;
 
@@ -466,7 +464,7 @@ public:
 				break;
 			}
 			case TRW_WIDGET_STOP:
-				if ((this->selected_group_index < 0) || (this->selected_group_index >= (short)this->groups.size())) {
+				if ((this->selected_group_index < 0) || (this->selected_group_index >= (int)this->groups.size())) {
 					return;
 				}
 
@@ -535,7 +533,7 @@ public:
 
 	/** For a given group (id) find the template that is issued for template replacement for this group and return this template's index
 	 *  from the gui list */
-	short FindTemplateIndex(TemplateID tid) const
+	int FindTemplateIndex(TemplateID tid) const
 	{
 		if (tid == INVALID_TEMPLATE) return -1;
 
@@ -601,7 +599,7 @@ public:
 		/* Then treat all groups defined by/for the current company */
 		for (int i = this->vscroll[0]->GetPosition(); i < max; ++i) {
 			const Group *g = (this->groups)[i];
-			short g_id = g->index;
+			GroupID g_id = g->index;
 
 			/* Fill the background of the current cell in a darker tone for the currently selected template */
 			if (this->selected_group_index == i) {
@@ -618,7 +616,7 @@ public:
 			const TemplateID tid_self = GetTemplateIDByGroupID(g_id);
 
 			/* Draw the template in use for this group, if there is one */
-			short template_in_use = FindTemplateIndex(tid);
+			int template_in_use = FindTemplateIndex(tid);
 			if (tid != INVALID_TEMPLATE && tid_self == INVALID_TEMPLATE) {
 				DrawString (left, right, text_y, STR_TMP_TEMPLATE_FROM_PARENT_GROUP, TC_SILVER, SA_HOR_CENTER);
 			} else if (template_in_use >= 0) {
@@ -732,7 +730,7 @@ public:
 
 	void DrawTemplateInfo(const Rect &r) const
 	{
-		if ((this->selected_template_index < 0) || (this->selected_template_index >= (short)this->templates.size())) {
+		if ((this->selected_template_index < 0) || (this->selected_template_index >= (int)this->templates.size())) {
 			return;
 		}
 
@@ -747,8 +745,8 @@ public:
 
 		const TemplateVehicle *tmp = this->templates[this->selected_template_index];
 
-		short top = ScaleGUITrad(4) - this->vscroll[2]->GetPosition();
-		short left = ScaleGUITrad(8);
+		int top = ScaleGUITrad(4) - this->vscroll[2]->GetPosition();
+		int left = ScaleGUITrad(8);
 
 		SetDParam(0, CalculateOverallTemplateDisplayRunningCost(tmp));
 		DrawString(left, r.right, top, STR_TMPL_TEMPLATE_OVR_RUNNING_COST);
@@ -785,8 +783,8 @@ public:
 
 		/* Draw cargo summary */
 		top += FONT_HEIGHT_NORMAL * 2;
-		short count_columns = 0;
-		short max_columns = 2;
+		int count_columns = 0;
+		int max_columns = 2;
 
 		CargoArray cargo_caps;
 		for (; tmp != nullptr; tmp = tmp->Next()) {
@@ -816,10 +814,10 @@ public:
 		this->BuildGroupList();
 		this->BuildTemplateGuiList();
 
-		bool selected_ok = (this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.size());
-		bool group_ok = (this->selected_group_index >= 0) && (this->selected_group_index < (short)this->groups.size());
+		bool selected_ok = (this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size());
+		bool group_ok = (this->selected_group_index >= 0) && (this->selected_group_index < (int)this->groups.size());
 
-		short g_id = -1;
+		GroupID g_id = -1;
 		if (group_ok) {
 			const Group *g = (this->groups)[this->selected_group_index];
 			g_id = g->index;

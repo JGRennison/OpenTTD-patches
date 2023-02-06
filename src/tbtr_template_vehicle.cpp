@@ -197,9 +197,9 @@ bool IssueTemplateReplacement(GroupID gid, TemplateID tid)
 	}
 }
 
-short TemplateVehicle::NumGroupsUsingTemplate() const
+uint TemplateVehicle::NumGroupsUsingTemplate() const
 {
-	short amount = 0;
+	uint amount = 0;
 	for (const TemplateReplacement *tr : TemplateReplacement::Iterate()) {
 		if (tr->sel_template == this->index) {
 			amount++;
@@ -208,11 +208,11 @@ short TemplateVehicle::NumGroupsUsingTemplate() const
 	return amount;
 }
 
-short DeleteTemplateReplacementsByGroupID(GroupID g_id)
+uint DeleteTemplateReplacementsByGroupID(GroupID g_id)
 {
 	if (GetTemplateIDByGroupID(g_id) == INVALID_TEMPLATE) return 0;
 
-	short del_amount = 0;
+	uint del_amount = 0;
 	for (const TemplateReplacement *tr : TemplateReplacement::Iterate()) {
 		if (tr->group == g_id) {
 			delete tr;
