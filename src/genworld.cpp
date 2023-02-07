@@ -343,4 +343,6 @@ void GenerateWorld(GenWorldMode mode, uint size_x, uint size_y, bool reset_setti
 	}
 
 	_GenerateWorld();
+
+	ReInitAllWindows(false);
 }
