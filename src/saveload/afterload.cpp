@@ -646,6 +646,9 @@ bool AfterLoadGame()
 	/* The LFSR used in RunTileLoop iteration cannot have a zeroed state, make it non-zeroed. */
 	if (_cur_tileloop_tile == 0) _cur_tileloop_tile = 1;
 
+	extern TileIndex _aux_tileloop_tile;
+	if (_aux_tileloop_tile == 0) _aux_tileloop_tile = 1;
+
 	if (IsSavegameVersionBefore(SLV_98)) GamelogOldver();
 
 	GamelogTestRevision();

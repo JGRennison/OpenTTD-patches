@@ -1324,9 +1324,17 @@ void TileLoop_Water(TileIndex tile)
 {
 	if (IsTileType(tile, MP_WATER)) AmbientSoundEffect(tile);
 
+	/* At day lengths > 4, handle flooding in auxiliary tile loop */
+	if (_settings_game.economy.day_length_factor > 4) return;
+
 	if (IsNonFloodingWaterTile(tile)) return;
 
-	switch (GetFloodingBehaviour(tile)) {
+	TileLoopWaterFlooding(GetFloodingBehaviour(tile), tile);
+}
+
+void TileLoopWaterFlooding(FloodingBehaviour flooding_behaviour, TileIndex tile)
+{
+	switch (flooding_behaviour) {
 		case FLOOD_ACTIVE: {
 			int non_water_neighbours = 0;
 			for (Direction dir = DIR_BEGIN; dir < DIR_END; dir++) {

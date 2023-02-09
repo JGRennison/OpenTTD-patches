@@ -827,14 +827,10 @@ CommandCost CmdClearArea(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 
 
 TileIndex _cur_tileloop_tile;
+TileIndex _aux_tileloop_tile;
 
-/**
- * Gradually iterate over all tiles on the map, calling their TileLoopProcs once every 256 ticks.
- */
-void RunTileLoop()
+static uint32 GetTileLoopFeedback()
 {
-	PerformanceAccumulator framerate(PFE_GL_LANDSCAPE);
-
 	/* The pseudorandom sequence of tiles is generated using a Galois linear feedback
 	 * shift register (LFSR). This allows a deterministic pseudorandom ordering, but
 	 * still with minimal state and fast iteration. */
@@ -846,7 +842,17 @@ void RunTileLoop()
 		0x4004B2, 0x800B87, 0x10004F3, 0x200072D, 0x40006AE, 0x80009E3,
 	};
 	static_assert(lengthof(feedbacks) == MAX_MAP_TILES_BITS - 2 * MIN_MAP_SIZE_BITS + 1);
-	const uint32 feedback = feedbacks[MapLogX() + MapLogY() - 2 * MIN_MAP_SIZE_BITS];
+	return feedbacks[MapLogX() + MapLogY() - 2 * MIN_MAP_SIZE_BITS];
+}
+
+/**
+ * Gradually iterate over all tiles on the map, calling their TileLoopProcs once every 256 ticks.
+ */
+void RunTileLoop()
+{
+	PerformanceAccumulator framerate(PFE_GL_LANDSCAPE);
+
+	const uint32 feedback = GetTileLoopFeedback();
 
 	/* We update every tile every 256 ticks, so divide the map size by 2^8 = 256 */
 	uint count = 1 << (MapLogX() + MapLogY() - 8);
@@ -871,6 +877,30 @@ void RunTileLoop()
 	}
 
 	_cur_tileloop_tile = tile;
+}
+
+void RunAuxiliaryTileLoop()
+{
+	/* At day lengths <= 4, flooding is handled by main tile loop */
+	if (_settings_game.economy.day_length_factor <= 4 || (_scaled_tick_counter % 4) != 0) return;
+
+	PerformanceAccumulator framerate(PFE_GL_LANDSCAPE);
+
+	const uint32 feedback = GetTileLoopFeedback();
+	uint count = 1 << (MapLogX() + MapLogY() - 8);
+	TileIndex tile = _aux_tileloop_tile;
+
+	while (count--) {
+		if (!IsNonFloodingWaterTile(tile)) {
+			FloodingBehaviour fb = GetFloodingBehaviour(tile);
+			if (fb != FLOOD_NONE) TileLoopWaterFlooding(fb, tile);
+		}
+
+		/* Get the next tile in sequence using a Galois LFSR. */
+		tile = (tile >> 1) ^ (-(int32)(tile & 1) & feedback);
+	}
+
+	_aux_tileloop_tile = tile;
 }
 
 void InitializeLandscape()

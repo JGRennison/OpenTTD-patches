@@ -166,6 +166,7 @@ bool HasFoundationNE(TileIndex tile, Slope slope_here, uint z_here);
 
 void DoClearSquare(TileIndex tile);
 void RunTileLoop();
+void RunAuxiliaryTileLoop();
 
 void InitializeLandscape();
 void GenerateLandscape(byte mode);

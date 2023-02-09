@@ -1962,6 +1962,7 @@ void StateGameLoop()
 			SetWindowDirty(WC_STATUS_BAR, 0);
 		}
 
+		RunAuxiliaryTileLoop();
 		if (_tick_skip_counter < _settings_game.economy.day_length_factor) {
 			AnimateAnimatedTiles();
 			CallVehicleTicks();

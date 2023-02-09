@@ -44,6 +44,7 @@
 
 
 extern TileIndex _cur_tileloop_tile;
+extern TileIndex _aux_tileloop_tile;
 extern void ClearAllSignalSpeedRestrictions();
 extern void MakeNewgameSettingsLive();
 
@@ -91,6 +92,7 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	_scaled_tick_counter = 0;
 	_scaled_date_ticks_offset = 0;
 	_cur_tileloop_tile = 1;
+	_aux_tileloop_tile = 1;
 	_thd.redsq = INVALID_TILE;
 	_road_layout_change_counter = 0;
 	_loaded_local_company = COMPANY_SPECTATOR;
