@@ -131,6 +131,7 @@ enum SlXvFeatureIndex {
 	XSLFI_TOWN_SETTING_OVERRIDE,                  ///< Town setting overrides
 	XSLFI_LINKGRAPH_SPARSE_EDGES,                 ///< Link graph edge matrix is stored in sparse format, and saved in order
 	XSLFI_AUX_TILE_LOOP,                          ///< Auxiliary tile loop
+	XSLFI_NEWGRF_ENTITY_EXTRA,                    ///< NewGRF entity mappings are 16 bit
 
 	XSLFI_SCRIPT_INT64,                           ///< See: SLV_SCRIPT_INT64
 	XSLFI_U64_TICK_COUNTER,                       ///< See: SLV_U64_TICK_COUNTER
