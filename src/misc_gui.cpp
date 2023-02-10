@@ -29,6 +29,7 @@
 #include "guitimer_func.h"
 #include "viewport_func.h"
 #include "rev.h"
+#include "core/backup_type.hpp"
 
 #include "widgets/misc_widget.h"
 
@@ -893,8 +894,7 @@ void QueryString::DrawEditBox(const Window *w, int wid) const
 	DrawPixelInfo dpi;
 	if (!FillDrawPixelInfo(&dpi, fr.left, fr.top, fr.Width(), fr.Height())) return;
 
-	DrawPixelInfo *old_dpi = _cur_dpi;
-	_cur_dpi = &dpi;
+	AutoRestoreBackup dpi_backup(_cur_dpi, &dpi);
 
 	/* We will take the current widget length as maximum width, with a small
 	 * space reserved at the end for the caret to show */
@@ -912,8 +912,6 @@ void QueryString::DrawEditBox(const Window *w, int wid) const
 		int caret_width = GetStringBoundingBox("_").width;
 		DrawString(tb->caretxoffs + delta, tb->caretxoffs + delta + caret_width, 0, "_", TC_WHITE);
 	}
-
-	_cur_dpi = old_dpi;
 }
 
 /**

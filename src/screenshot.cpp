@@ -8,6 +8,7 @@
 /** @file screenshot.cpp The creation of screenshots! */
 
 #include "stdafx.h"
+#include "core/backup_type.hpp"
 #include "fileio_func.h"
 #include "viewport_func.h"
 #include "gfx_func.h"
@@ -635,7 +636,7 @@ static void CurrentScreenCallback(void *userdata, void *buf, uint y, uint pitch,
 static void LargeWorldCallback(void *userdata, void *buf, uint y, uint pitch, uint n)
 {
 	Viewport *vp = (Viewport *)userdata;
-	DrawPixelInfo dpi, *old_dpi;
+	DrawPixelInfo dpi;
 	int wx, left;
 
 	/* We are no longer rendering to the screen */
@@ -648,8 +649,7 @@ static void LargeWorldCallback(void *userdata, void *buf, uint y, uint pitch, ui
 	_screen.pitch = pitch;
 	_screen_disable_anim = true;
 
-	old_dpi = _cur_dpi;
-	_cur_dpi = &dpi;
+	Backup dpi_backup(_cur_dpi, &dpi, FILE_LINE);
 
 	dpi.dst_ptr = buf;
 	dpi.height = n;
@@ -674,7 +674,7 @@ static void LargeWorldCallback(void *userdata, void *buf, uint y, uint pitch, ui
 		);
 	}
 
-	_cur_dpi = old_dpi;
+	dpi_backup.Restore();
 
 	ViewportDoDrawProcessAllPending();
 

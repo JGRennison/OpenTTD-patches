@@ -2790,12 +2790,12 @@ struct IndustryCargoesWindow : public Window {
 		_displayed_industries_out.set(displayed_it);
 
 		this->fields.clear();
-		CargoesRow &row = this->fields.emplace_back();
-		row.columns[0].MakeHeader(STR_INDUSTRY_CARGOES_PRODUCERS);
-		row.columns[1].MakeEmpty(CFT_SMALL_EMPTY);
-		row.columns[2].MakeEmpty(CFT_SMALL_EMPTY);
-		row.columns[3].MakeEmpty(CFT_SMALL_EMPTY);
-		row.columns[4].MakeHeader(STR_INDUSTRY_CARGOES_CUSTOMERS);
+		CargoesRow &first_row = this->fields.emplace_back();
+		first_row.columns[0].MakeHeader(STR_INDUSTRY_CARGOES_PRODUCERS);
+		first_row.columns[1].MakeEmpty(CFT_SMALL_EMPTY);
+		first_row.columns[2].MakeEmpty(CFT_SMALL_EMPTY);
+		first_row.columns[3].MakeEmpty(CFT_SMALL_EMPTY);
+		first_row.columns[4].MakeHeader(STR_INDUSTRY_CARGOES_CUSTOMERS);
 
 		const IndustrySpec *central_sp = GetIndustrySpec(displayed_it);
 		bool houses_supply = HousesCanSupply(central_sp->accepts_cargo, lengthof(central_sp->accepts_cargo));
@@ -2871,12 +2871,12 @@ struct IndustryCargoesWindow : public Window {
 		_displayed_industries_out.reset();
 
 		this->fields.clear();
-		CargoesRow &row = this->fields.emplace_back();
-		row.columns[0].MakeHeader(STR_INDUSTRY_CARGOES_PRODUCERS);
-		row.columns[1].MakeEmpty(CFT_SMALL_EMPTY);
-		row.columns[2].MakeHeader(STR_INDUSTRY_CARGOES_CUSTOMERS);
-		row.columns[3].MakeEmpty(CFT_SMALL_EMPTY);
-		row.columns[4].MakeEmpty(CFT_SMALL_EMPTY);
+		CargoesRow &first_row = this->fields.emplace_back();
+		first_row.columns[0].MakeHeader(STR_INDUSTRY_CARGOES_PRODUCERS);
+		first_row.columns[1].MakeEmpty(CFT_SMALL_EMPTY);
+		first_row.columns[2].MakeHeader(STR_INDUSTRY_CARGOES_CUSTOMERS);
+		first_row.columns[3].MakeEmpty(CFT_SMALL_EMPTY);
+		first_row.columns[4].MakeEmpty(CFT_SMALL_EMPTY);
 
 		bool houses_supply = HousesCanSupply(&cid, 1);
 		bool houses_accept = HousesCanAccept(&cid, 1);
@@ -2956,10 +2956,9 @@ struct IndustryCargoesWindow : public Window {
 		if (widget != WID_IC_PANEL) return;
 
 		Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
-		DrawPixelInfo tmp_dpi, *old_dpi;
+		DrawPixelInfo tmp_dpi;
 		if (!FillDrawPixelInfo(&tmp_dpi, ir.left, ir.top, ir.Width(), ir.Height())) return;
-		old_dpi = _cur_dpi;
-		_cur_dpi = &tmp_dpi;
+		AutoRestoreBackup dpi_backup(_cur_dpi, &tmp_dpi);
 
 		int left_pos = ir.left;
 		if (this->ind_cargo >= NUM_INDUSTRYTYPES) left_pos += (CargoesField::industry_width + CargoesField::cargo_field_width) / 2;
@@ -2988,8 +2987,6 @@ struct IndustryCargoesWindow : public Window {
 			vpos += row_height;
 			if (vpos >= height) break;
 		}
-
-		_cur_dpi = old_dpi;
 	}
 
 	/**

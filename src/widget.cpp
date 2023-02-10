@@ -8,6 +8,7 @@
 /** @file widget.cpp Handling of the default/simple widgets. */
 
 #include "stdafx.h"
+#include "core/backup_type.hpp"
 #include "company_func.h"
 #include "window_gui.h"
 #include "viewport_func.h"
@@ -2058,8 +2059,7 @@ void NWidgetMatrix::FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widgets)
 	bool rtl = _current_text_dir == TD_RTL;
 	DrawPixelInfo tmp_dpi;
 	if (!FillDrawPixelInfo(&tmp_dpi, this->pos_x + (rtl ? this->pip_post : this->pip_pre), this->pos_y + this->pip_pre, this->current_x - this->pip_pre - this->pip_post, this->current_y - this->pip_pre - this->pip_post)) return;
-	DrawPixelInfo *old_dpi = _cur_dpi;
-	_cur_dpi = &tmp_dpi;
+	AutoRestoreBackup dpi_backup(_cur_dpi, &tmp_dpi);
 
 	/* Get the appropriate offsets so we can draw the right widgets. */
 	NWidgetCore *child = dynamic_cast<NWidgetCore *>(this->head);
@@ -2092,9 +2092,6 @@ void NWidgetMatrix::FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widgets)
 			child->Draw(w);
 		}
 	}
-
-	/* Restore the clipping area. */
-	_cur_dpi = old_dpi;
 }
 
 /**
@@ -2911,8 +2908,7 @@ void NWidgetLeaf::Draw(const Window *w)
 	new_dpi.left += this->pos_x;
 	new_dpi.top += this->pos_y;
 
-	DrawPixelInfo *old_dpi = _cur_dpi;
-	_cur_dpi = &new_dpi;
+	AutoRestoreBackup dpi_backup(_cur_dpi, &new_dpi);
 
 	Rect r = this->GetCurrentRect();
 
@@ -3026,8 +3022,6 @@ void NWidgetLeaf::Draw(const Window *w)
 	if (this->IsDisabled()) {
 		GfxFillRect(r.Shrink(WidgetDimensions::scaled.bevel), _colour_gradient[this->colour & 0xF][2], FILLRECT_CHECKER);
 	}
-
-	_cur_dpi = old_dpi;
 }
 
 /**

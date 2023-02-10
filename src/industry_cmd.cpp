@@ -664,10 +664,8 @@ void AnimateTile_Industry(TileIndex tile)
 	case GFX_PLASTIC_FOUNTAIN_ANIMATED_5: case GFX_PLASTIC_FOUNTAIN_ANIMATED_6:
 	case GFX_PLASTIC_FOUNTAIN_ANIMATED_7: case GFX_PLASTIC_FOUNTAIN_ANIMATED_8:
 		if ((_scaled_tick_counter & 3) == 0) {
-			IndustryGfx gfx = GetIndustryGfx(tile);
-
-			gfx = (gfx < 155) ? gfx + 1 : 148;
-			SetIndustryGfx(tile, gfx);
+			IndustryGfx new_gfx = (gfx < 155) ? gfx + 1 : 148;
+			SetIndustryGfx(tile, new_gfx);
 			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		}
 		break;
@@ -677,8 +675,6 @@ void AnimateTile_Industry(TileIndex tile)
 	case GFX_OILWELL_ANIMATED_3:
 		if ((_scaled_tick_counter & 7) == 0) {
 			bool b = Chance16(1, 7);
-			IndustryGfx gfx = GetIndustryGfx(tile);
-
 			byte m = GetAnimationFrame(tile) + 1;
 			if (m == 4 && (m = 0, ++gfx) == GFX_OILWELL_ANIMATED_3 + 1 && (gfx = GFX_OILWELL_ANIMATED_1, b)) {
 				SetIndustryGfx(tile, GFX_OILWELL_NOT_ANIMATED);

@@ -8,6 +8,7 @@
 /** @file smallmap_gui.cpp GUI that shows a small map of the world with metadata like owner or height. */
 
 #include "stdafx.h"
+#include "core/backup_type.hpp"
 #include "clear_map.h"
 #include "industry.h"
 #include "station_map.h"
@@ -955,10 +956,7 @@ void SmallMapWindow::DrawMapIndicators() const
 void SmallMapWindow::DrawSmallMap(DrawPixelInfo *dpi, bool draw_indicators) const
 {
 	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
-	DrawPixelInfo *old_dpi;
-
-	old_dpi = _cur_dpi;
-	_cur_dpi = dpi;
+	AutoRestoreBackup dpi_backup(_cur_dpi, dpi);
 
 	/* Clear it */
 	GfxFillRect(dpi->left, dpi->top, dpi->left + dpi->width - 1, dpi->top + dpi->height - 1, PC_BLACK);
@@ -1017,8 +1015,6 @@ void SmallMapWindow::DrawSmallMap(DrawPixelInfo *dpi, bool draw_indicators) cons
 
 	/* Draw map indicators */
 	if (draw_indicators) this->DrawMapIndicators();
-
-	_cur_dpi = old_dpi;
 }
 
 /**

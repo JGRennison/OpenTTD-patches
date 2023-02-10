@@ -38,6 +38,7 @@
 #include "network/network_func.h"
 #include "guitimer_func.h"
 #include "news_func.h"
+#include "core/backup_type.hpp"
 
 #include "safeguards.h"
 
@@ -255,9 +256,9 @@ void Window::SetWidgetHighlight(byte widget_index, TextColour highlighted_colour
 		/* If we disable a highlight, check all widgets if anyone still has a highlight */
 		bool valid = false;
 		for (uint i = 0; i < this->nested_array_size; i++) {
-			NWidgetBase *nwid = this->GetWidget<NWidgetBase>(i);
-			if (nwid == nullptr) continue;
-			if (!nwid->IsHighlighted()) continue;
+			NWidgetBase *child_nwid = this->GetWidget<NWidgetBase>(i);
+			if (child_nwid == nullptr) continue;
+			if (!child_nwid->IsHighlighted()) continue;
 
 			valid = true;
 		}
@@ -979,9 +980,8 @@ void DrawOverlappedWindow(Window *w, int left, int top, int right, int bottom, D
  */
 void DrawOverlappedWindowForAll(int left, int top, int right, int bottom)
 {
-	DrawPixelInfo *old_dpi = _cur_dpi;
 	DrawPixelInfo bk;
-	_cur_dpi = &bk;
+	AutoRestoreBackup dpi_backup(_cur_dpi, &bk);
 
 	for (Window *w : Window::IterateFromBack()) {
 		if (MayBeShown(w) &&
@@ -993,7 +993,6 @@ void DrawOverlappedWindowForAll(int left, int top, int right, int bottom)
 			DrawOverlappedWindow(w, std::max(left, w->left), std::max(top, w->top), std::min(right, w->left + w->width), std::min(bottom, w->top + w->height), DOWF_NONE);
 		}
 	}
-	_cur_dpi = old_dpi;
 }
 
 static void SetWindowDirtyPending(Window *w)

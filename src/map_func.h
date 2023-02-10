@@ -161,7 +161,7 @@ typedef int32 TileIndexDiff;
  * @param y The y coordinate of the tile
  * @return The TileIndex calculated by the coordinate
  */
-static inline TileIndex TileXY(uint x, uint y)
+debug_inline static TileIndex TileXY(uint x, uint y)
 {
 	return (y << MapLogX()) + x;
 }
@@ -192,7 +192,7 @@ static inline TileIndexDiff TileDiffXY(int x, int y)
  * @param y The virtual y coordinate of the tile.
  * @return The TileIndex calculated by the coordinate.
  */
-static inline TileIndex TileVirtXY(uint x, uint y)
+debug_inline static TileIndex TileVirtXY(uint x, uint y)
 {
 	return (y >> 4 << MapLogX()) + (x >> 4);
 }
@@ -216,7 +216,7 @@ static inline TileIndex TileVirtXYClampedToMap(int x, int y)
  * @param tile the tile to get the X component of
  * @return the X component
  */
-static inline uint TileX(TileIndex tile)
+debug_inline static uint TileX(TileIndex tile)
 {
 	return tile & MapMaxX();
 }
@@ -226,7 +226,7 @@ static inline uint TileX(TileIndex tile)
  * @param tile the tile to get the Y component of
  * @return the Y component
  */
-static inline uint TileY(TileIndex tile)
+debug_inline static uint TileY(TileIndex tile)
 {
 	return tile >> MapLogX();
 }
