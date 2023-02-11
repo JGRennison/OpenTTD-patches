@@ -2605,6 +2605,7 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 
 	/* Update the font with cache */
 	LoadStringWidthTable(searcher->Monospace());
+	ReInitAllWindows(false);
 
 #if !defined(WITH_ICU_LX) && !defined(WITH_UNISCRIBE) && !defined(WITH_COCOA)
 	/*
