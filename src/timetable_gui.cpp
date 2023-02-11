@@ -999,7 +999,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 			}
 
 			case WID_VT_RESET_LATENESS: // Reset the vehicle's late counter.
-				DoCommandP(0, v->index, 0, CMD_SET_VEHICLE_ON_TIME | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+				DoCommandP(0, v->index | (_ctrl_pressed ? 1 << 20 : 0), 0, CMD_SET_VEHICLE_ON_TIME | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 				break;
 
 			case WID_VT_AUTOFILL: { // Autofill the timetable.

@@ -28,9 +28,9 @@ public:
 	/**
 	 * The goal IDs.
 	 */
-	enum GoalID {
+	enum GoalID : uint16 {
 		/* Note: these values represent part of the in-game GoalID enum */
-		GOAL_INVALID = ::INVALID_GOALTYPE, ///< An invalid goal id.
+		GOAL_INVALID = ::INVALID_GOAL, ///< An invalid goal id.
 	};
 
 	/**
@@ -170,7 +170,7 @@ public:
 	 * @pre question != null && len(question) != 0.
 	 * @pre company == COMPANY_INVALID || ResolveCompanyID(company) != COMPANY_INVALID.
 	 * @pre CountBits(buttons) >= 1 && CountBits(buttons) <= 3.
-	 * @note Replies to the question are given by you via the event ScriptEvent_GoalQuestionAnswer.
+	 * @note Replies to the question are given by you via the event ScriptEventGoalQuestionAnswer.
 	 * @note There is no guarantee you ever get a reply on your question.
 	 */
 	static bool Question(uint16 uniqueid, ScriptCompany::CompanyID company, Text *question, QuestionType type, int buttons);
@@ -188,7 +188,7 @@ public:
 	 * @pre question != null && len(question) != 0.
 	 * @pre ResolveClientID(client) != CLIENT_INVALID.
 	 * @pre CountBits(buttons) >= 1 && CountBits(buttons) <= 3.
-	 * @note Replies to the question are given by you via the event ScriptEvent_GoalQuestionAnswer.
+	 * @note Replies to the question are given by you via the event ScriptEventGoalQuestionAnswer.
 	 * @note There is no guarantee you ever get a reply on your question.
 	 */
 	static bool QuestionClient(uint16 uniqueid, ScriptClient::ClientID client, Text *question, QuestionType type, int buttons);

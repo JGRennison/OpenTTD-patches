@@ -1266,6 +1266,9 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :右侧
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :最大初始贷款：{STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :公司最大贷款额（不考虑通货膨胀的影响）
+STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_VALUE                   :{CURRENCY_LONG}
+###setting-zero-is-special
+STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_DISABLED                :无贷款 {RED}需要有游戏脚本以提供初始资金
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :贷款利率：{STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :贷款利率；如果通货膨胀启用，将同时影响通货膨胀率。
@@ -4362,8 +4365,6 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}警告：{SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}错误：{SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}严重错误：{SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}发生了一个致命的NewGRF错误：{}{STRING}
-STR_NEWGRF_ERROR_POPUP                                          :{WHITE}发生了一个NewGRF错误：{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} 不能与 OpenTTD 报告的 TTDPatch 版本兼容。
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} 是为 {2:STRING} 版 TTD 开发的。
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} 应当与 {2:STRING} 配合
@@ -6078,8 +6079,10 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}小地�
 STR_SCREENSHOT_TOPOGRAPHY_SCREENSHOT                            :{BLACK}地形截图
 STR_SCREENSHOT_INDUSTRY_SCREENSHOT                              :{BLACK}工业截图
 
-# AI Parameters
+# Script Parameters
+STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} 参数
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}AI参数
+STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :游戏脚本
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}关闭
 STR_AI_SETTINGS_RESET                                           :{BLACK}重设
 STR_AI_SETTINGS_SETTING                                         :{STRING}：{ORANGE}{STRING}

@@ -41,7 +41,7 @@
 #include "../company_func.h"
 #include "../road_cmd.h"
 #include "../ai/ai.hpp"
-#include "../ai/ai_gui.hpp"
+#include "../script/script_gui.h"
 #include "../game/game.hpp"
 #include "../town.h"
 #include "../economy_base.h"
@@ -79,6 +79,8 @@
 #include <algorithm>
 
 #include "../safeguards.h"
+
+extern bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev);
 
 /**
  * Makes a tile canal or water depending on the surroundings.
@@ -628,7 +630,7 @@ static void StartScripts()
 		if (Company::IsValidAiID(c->index)) AI::StartNew(c->index, false);
 	}
 
-	ShowAIDebugWindowIfAIError();
+	ShowScriptDebugWindowIfScriptError();
 }
 
 /**
@@ -3402,7 +3404,6 @@ bool AfterLoadGame()
 				RoadVehicle *u = v;
 				RoadVehicle *prev = nullptr;
 				for (uint sf : skip_frames) {
-					extern bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev);
 					if (sf >= cur_skip) IndividualRoadVehicleController(u, prev);
 
 					prev = u;

@@ -1119,6 +1119,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Eskuina
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Gehienezko mailegua joko hasieran: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Konpainiek eskatu dezaketen gehienezko mailegua(inflazioa kontua hartu gabe)
+###setting-zero-is-special
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :Interes tasa: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Maileguen interes tasa; inflazioa ere kontrolatuko du, gaitzen bada
@@ -2907,7 +2908,6 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Kontuz: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Akatsa {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Larria: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}NewGRF-an akats larria gertatu da:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} ez du funtzionatuko OpenTTD-k esandakoTTDPatch bertsioarekin
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} {STRING} TTD bertsioarentzat da
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} {STRING}arekin erabiltzeko diseinatua izan da
@@ -4049,7 +4049,7 @@ STR_AI_LIST_CANCEL                                              :{BLACK}Ezeztatu
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Ez aldatu script-a
 
 
-# AI Parameters
+# Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :IA
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Itxi
 STR_AI_SETTINGS_RESET                                           :{BLACK}Berrabiarazi

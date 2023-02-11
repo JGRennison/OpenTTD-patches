@@ -1265,6 +1265,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Rechts
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Kreditlimit bei Spielbeginn: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Maximaler Kredit für eine Firma (ohne Berücksichtigung der Inflation)
+###setting-zero-is-special
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :Zinssatz: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Zinssatz für Kredite; beeinflusst auch die Inflation, falls aktiv
@@ -4313,8 +4314,6 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Warnung: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Fehler: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Schwerer Fehler: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Ein schwerer NewGRF-Fehler ist aufgetreten:{}{STRING}
-STR_NEWGRF_ERROR_POPUP                                          :{WHITE}Ein NewGRF-Fehler ist aufgetreten:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} funktioniert nicht im Zusammenhang mit der von OpenTTD ermittelten TTDPatch-Version
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} ist für die {2:STRING}-Version von TTD
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} ist für die Nutzung mit {2:STRING} vorgesehen
@@ -5996,7 +5995,7 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Übersic
 STR_SCREENSHOT_TOPOGRAPHY_SCREENSHOT                            :{BLACK}Topographischer Screenshot
 STR_SCREENSHOT_INDUSTRY_SCREENSHOT                              :{BLACK}Industrie-Screenshot
 
-# AI Parameters
+# Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}KI-Parameter
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Schließen
 STR_AI_SETTINGS_RESET                                           :{BLACK}Zurücksetzen

@@ -1169,6 +1169,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :ימין
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :סכום הלוואה ראשוני: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :סכום מירבי שחברה יכולה ללוות (מבלי לקחת בחשבון אינפלציה)
+###setting-zero-is-special
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :ריבית: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :ריבית עבור הלוואות; שולטת גם באינפלציה אם זו מאופשרות
@@ -3137,7 +3138,6 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}אזהרה: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{SILVER}{STRING}{RED}: שגיאה
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{SILVER}{STRING}{RED} :שגיאה חמורה
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}התרחשה שגיאה קריטית ב-NewGRF:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} לא יעבוד עם גרסת ה-TTDPatch שדווחה ע"י OpenTTD.
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} היא עבור גרסת {STRING} של TTD.
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} נועד להיות בשימוש יחד עם {STRING}
@@ -3606,6 +3606,7 @@ STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}קבוצ
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}לחץ ליצירת קבוצה חדשה
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}מחק את הקבוצה שנבחרה
 STR_GROUP_RENAME_TOOLTIP                                        :{BLACK}שנה את שם הקבוצה
+STR_GROUP_LIVERY_TOOLTIP                                        :{BLACK}שינוי צבע הקבוצה שנבחרה
 STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}לחץ על מנת להגן על הכלים בקבוצה בפני החלפה אוטומטית
 
 STR_QUERY_GROUP_DELETE_CAPTION                                  :{WHITE}מחק קבוצה
@@ -3685,6 +3686,7 @@ STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}רכוש
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}רכוש את כלי הטייס שמודגש. Shift+לחיצה מציג הערכת עלות ללא רכישה
 
 ###length VEHICLE_TYPES
+STR_BUY_VEHICLE_TRAIN_BUY_REFIT_VEHICLE_TOOLTIP                 :{BLACK}לרכוש ולאבזר את הרכבת הנבחרת. לחיצה+מקש Shift תציג עלות משוערת מבלי לבצע רכישה בפועל
 
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}שנה שם
@@ -4304,6 +4306,7 @@ STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}חלו�
 
 # AI configuration window
 STR_AI_CONFIG_CAPTION_AI                                        :{WHITE} הגדרת בינה מלאכותית
+STR_AI_CONFIG_CAPTION_GAMESCRIPT                                :{WHITE}הגדרות סקריפטי משחק
 STR_AI_CONFIG_GAMELIST_TOOLTIP                                  :{BLACK}סקריפט המשחק אשר יטען במשחק הבא
 STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}שחקני המחשב אשר יטענו במשחק הבא
 STR_AI_CONFIG_HUMAN_PLAYER                                      :שחקן אנושי
@@ -4345,7 +4348,7 @@ STR_SCREENSHOT_SCREENSHOT                                       :תמונת מס
 STR_SCREENSHOT_DEFAULTZOOM_SCREENSHOT                           :{BLACK}זום ברירת מחדל לצילום מסך
 STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK}צילום מסך של כל המפה
 
-# AI Parameters
+# Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :שחקן מחשב
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}סגור
 STR_AI_SETTINGS_RESET                                           :{BLACK}אתחל

@@ -344,6 +344,8 @@ static inline void ToggleRoadWaypointOnSnowOrDesert(TileIndex t)
 	ToggleBit(_me[t].m8, 15);
 }
 
+StationGfx GetTranslatedAirportTileID(StationGfx gfx);
+
 /**
  * Get the station graphics of this airport tile
  * @param t the tile to query
@@ -353,7 +355,6 @@ static inline void ToggleRoadWaypointOnSnowOrDesert(TileIndex t)
 static inline StationGfx GetAirportGfx(TileIndex t)
 {
 	dbg_assert_tile(IsAirport(t), t);
-	extern StationGfx GetTranslatedAirportTileID(StationGfx gfx);
 	return GetTranslatedAirportTileID(GetStationGfx(t));
 }
 

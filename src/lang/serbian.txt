@@ -1413,6 +1413,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Desno
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Najveći zajam na početku: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Najveći iznos koji preduzeće može da pozajmi (ne uzimajući u obzir inflaciju)
+###setting-zero-is-special
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :Kamatna stopa: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Kamatna stopa na zajam; ako je omogućena, kontroliše inflaciju
@@ -3556,8 +3557,6 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Upozorenje: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Greška: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Kobno: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Došlo je do neotklonljive NewGRF greške:{}{STRING}
-STR_NEWGRF_ERROR_POPUP                                          :{WHITE}Dogodila se greška kod NewGRF-a:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} neće raditi sa TTDPatch verzijom prema prijavi OpenTTD-a
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} je za {2:STRING} verziju TTD-a
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} je napravljen za korišćenje sa {2:STRING}
@@ -4844,7 +4843,7 @@ STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK}Slika ek
 STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Slika ekrana sa elevacionom kartom
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Slika umanjene mape
 
-# AI Parameters
+# Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}Parametri VI
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Zatvori
 STR_AI_SETTINGS_RESET                                           :{BLACK}Poništi

@@ -1152,6 +1152,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :வலது
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :அதிகபட்ச ஆரம்ப கடன்: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :ஒரு நிறுவனத்தால் பெறமுடியும் கடன் (பணவீக்கத்தினைக் கணக்கில் எடுத்துக் கொள்ளாமல்)
+###setting-zero-is-special
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :வட்டி: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :கடன் வட்டி;செயற்படுத்தினால் பணவீக்கத்தினையும் கட்டுப்படுத்தும்
@@ -2978,7 +2979,6 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}எச்சரிக்கை: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}பிழை: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}மரணம்: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}மரணமான NewGRF பிழை ஏற்பட்டுள்ளது:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :OpenTTDஆல் தெரிவித்த TTDPatch விருத்துடன் {1:STRING} செயல்படாது
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} ஆனது {STRING} TTD பதிப்பிற்காகவே
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} ஆனது {STRING} உடன் இணைந்து பயன்படுத்த வடிவமைக்கப்பட்டுள்ளது
@@ -4139,7 +4139,7 @@ STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK}மு�
 STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}உயர்படத்தின் திரைப்பிடிப்பு
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}சிறிய வரைபட திரைபிடிப்பு
 
-# AI Parameters
+# Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :AI
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}மூடு
 STR_AI_SETTINGS_RESET                                           :{BLACK}முன்னிருந்தமாதிரி மாற்று

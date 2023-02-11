@@ -1152,6 +1152,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :ขวา
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :เงินกู้เริ่มต้นสูงสุด: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :บริษัท สามารถกู้ยืมเงินจำนวนสูงสุด (โดยไม่คำนึงถึงอัตราเงินเฟ้อเข้าบัญชี)
+###setting-zero-is-special
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :ดอกเบี้ย: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :อัตราดอกเบี้ยเงินกู้; มีผลกับอัตราเงินเฟ้อถ้าเปิดใช้งาน
@@ -3097,8 +3098,6 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}อันตราย: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Error: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}ร้ายแรง: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}เกิดความผิดพลาดร้ายแรงเกี่ยวกับ NewGRF:{}{STRING}
-STR_NEWGRF_ERROR_POPUP                                          :{WHITE}มี NewGRF ที่เกิดข้อผิดพลาดขึ้น! :{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING}ไม่สามารถทำงานได้บน TTDPatchเวอร์ชั่นนี่ รายงานโดย OpenTTD
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} สำหรับ {STRING} version of TTD
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} ออกแบบมาสำหรับใช้งานกับ {STRING}
@@ -4288,7 +4287,7 @@ STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}ไม�
 STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}บันทึกหน้าจอของ Heightmap
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}จับภาพหน้าจอ มินิแมพ
 
-# AI Parameters
+# Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :AI
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}ปิด
 STR_AI_SETTINGS_RESET                                           :{BLACK}เริ่มใหม่

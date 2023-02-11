@@ -290,7 +290,7 @@
 	EnforcePrecondition(false, size == TOWN_SIZE_SMALL || size == TOWN_SIZE_MEDIUM || size == TOWN_SIZE_LARGE)
 	EnforcePrecondition(false, size != TOWN_SIZE_LARGE || ScriptObject::GetCompany() == OWNER_DEITY);
 	if (ScriptObject::GetCompany() == OWNER_DEITY || _settings_game.economy.found_town == TF_CUSTOM_LAYOUT) {
-		EnforcePrecondition(false, layout == ROAD_LAYOUT_ORIGINAL || layout == ROAD_LAYOUT_BETTER_ROADS || layout == ROAD_LAYOUT_2x2 || layout == ROAD_LAYOUT_3x3);
+		EnforcePrecondition(false, layout >= ROAD_LAYOUT_ORIGINAL && layout <= ROAD_LAYOUT_RANDOM);
 	} else {
 		/* The layout parameter is ignored for AIs when custom layouts is disabled. */
 		layout = (RoadLayout) (byte)_settings_game.economy.town_layout;
@@ -361,10 +361,7 @@
 	int16 new_rating = Clamp(t->ratings[company] + delta, RATING_MINIMUM, RATING_MAXIMUM);
 	if (new_rating == t->ratings[company]) return false;
 
-	uint16 p2 = 0;
-	memcpy(&p2, &new_rating, sizeof(p2));
-
-	return ScriptObject::DoCommand(0, town_id | (company_id << 16), p2, CMD_TOWN_RATING);
+	return ScriptObject::DoCommand(0, town_id | (company_id << 16), new_rating, CMD_TOWN_RATING);
 }
 
 /* static */ int ScriptTown::GetAllowedNoise(TownID town_id)

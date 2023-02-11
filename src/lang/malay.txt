@@ -1099,6 +1099,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Kanan
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Maksimum pinjaman permulaan: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Rantaian industri
+###setting-zero-is-special
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :Kadar faedah: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Kadar faedah pinjaman; juga mengawal inflasi, jika dibolehkan
@@ -2739,7 +2740,6 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Amaran: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Kesilapan: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Bahaya: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Kesilapan NewGRF yang bahaya telah berlaku:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} tidak akan berfungsi dengan versi TTDPatch seperti yang dilaporkan oleh OpenTTD.
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} adalah untuk TTD versi {STRING}.
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} direkabentuk untuk digunakan bersama {STRING}
@@ -3846,7 +3846,7 @@ STR_AI_LIST_CANCEL                                              :{BLACK}Batal
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Jangan ubah skrip
 
 
-# AI Parameters
+# Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :AI
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Tutup
 STR_AI_SETTINGS_RESET                                           :{BLACK}Semula

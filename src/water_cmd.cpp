@@ -149,7 +149,9 @@ CommandCost CmdBuildShipDepot(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 		depot->build_date = _date;
 
 		uint new_water_infra = 2 * LOCK_DEPOT_TILE_FACTOR;
-		/* Update infrastructure counts after the tile clears earlier. */
+		/* Update infrastructure counts after the tile clears earlier.
+		 * Clearing object tiles may result in water tiles which are already accounted for in the water infrastructure total.
+		 * See: MakeWaterKeepingClass() */
 		if (wc1 == WATER_CLASS_CANAL && !(HasTileWaterClass(tile) && GetWaterClass(tile) == WATER_CLASS_CANAL && IsTileOwner(tile, _current_company))) new_water_infra++;
 		if (wc2 == WATER_CLASS_CANAL && !(HasTileWaterClass(tile2) && GetWaterClass(tile2) == WATER_CLASS_CANAL && IsTileOwner(tile2, _current_company))) new_water_infra++;
 

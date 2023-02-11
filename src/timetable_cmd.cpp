@@ -374,6 +374,7 @@ CommandCost CmdBulkChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p
  * @param flags Operation to perform.
  * @param p1 Various bitstuffed elements
  * - p1 = (bit  0-19) - Vehicle with the orders to change.
+ * - p1 = (bit  20)   - Apply to all vehicles in group.
  * @param p2 unused
  * @param text unused
  * @return the cost of this operation or an error
@@ -381,6 +382,7 @@ CommandCost CmdBulkChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p
 CommandCost CmdSetVehicleOnTime(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	VehicleID veh = GB(p1, 0, 20);
+	bool apply_to_group = HasBit(p1, 20);
 
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle() || v->orders == nullptr) return CMD_ERROR;
@@ -389,8 +391,23 @@ CommandCost CmdSetVehicleOnTime(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 	if (ret.Failed()) return ret;
 
 	if (flags & DC_EXEC) {
-		v->lateness_counter = 0;
-		SetWindowDirty(WC_VEHICLE_TIMETABLE, v->index);
+		if (apply_to_group) {
+			int32 most_late = 0;
+			for (Vehicle *u = v->FirstShared(); u != nullptr; u = u->NextShared()) {
+				if (u->lateness_counter > most_late) {
+					most_late = u->lateness_counter;
+				}
+			}
+			if (most_late > 0) {
+				for (Vehicle *u = v->FirstShared(); u != nullptr; u = u->NextShared()) {
+					u->lateness_counter -= most_late;
+					SetWindowDirty(WC_VEHICLE_TIMETABLE, u->index);
+				}
+			}
+		} else {
+			v->lateness_counter = 0;
+			SetWindowDirty(WC_VEHICLE_TIMETABLE, v->index);
+		}
 	}
 
 	return CommandCost();

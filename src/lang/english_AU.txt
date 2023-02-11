@@ -1217,6 +1217,9 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Right
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Maximum initial loan: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Maximum amount a company can loan (without taking inflation into account)
+STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_VALUE                   :{CURRENCY_LONG}
+###setting-zero-is-special
+STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_DISABLED                :No loan {RED}Requires Game Script to provide initial funds
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :Interest rate: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Loan interest rate; also controls inflation, if enabled
@@ -3392,8 +3395,8 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Warning: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Error: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Fatal: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}A fatal NewGRF error has occurred:{}{STRING}
-STR_NEWGRF_ERROR_POPUP                                          :{WHITE}A NewGRF error has occurred:{}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}The NewGRF "{STRING}" has returned a fatal error:{}{STRING}
+STR_NEWGRF_ERROR_POPUP                                          :{WHITE}The NewGRF "{STRING}" has returned an error:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} will not work with the TTDPatch version reported by OpenTTD
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} is for the {2:STRING} version of TTD
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} is designed to be used with {2:STRING}
@@ -4664,8 +4667,10 @@ STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK}Whole ma
 STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Heightmap screenshot
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Minimap screenshot
 
-# AI Parameters
-STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}AI Parameters
+# Script Parameters
+STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Parameters
+STR_AI_SETTINGS_CAPTION_AI                                      :AI
+STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Game Script
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Close
 STR_AI_SETTINGS_RESET                                           :{BLACK}Reset
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}

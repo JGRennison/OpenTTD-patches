@@ -18,7 +18,7 @@
 #include "../script_info.hpp"
 #include "../script_instance.hpp"
 #include "script_log.hpp"
-#include "../../ai/ai_gui.hpp"
+#include "../script_gui.h"
 #include "../../settings_type.h"
 #include "../../network/network.h"
 
@@ -56,7 +56,7 @@
 
 	/* Inform script developer that their script has been paused and
 	 * needs manual action to continue. */
-	ShowAIDebugWindow(ScriptObject::GetRootCompany());
+	ShowScriptDebugWindow(ScriptObject::GetRootCompany());
 
 	if ((_pause_mode & PM_PAUSED_NORMAL) == PM_UNPAUSED) {
 		ScriptObject::DoCommand(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);

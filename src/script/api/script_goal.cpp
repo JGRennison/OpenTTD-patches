@@ -120,7 +120,7 @@
 	EnforcePrecondition(false, buttons < (1 << ::GOAL_QUESTION_BUTTON_COUNT));
 	EnforcePrecondition(false, (int)type < ::GQT_END);
 
-	return ScriptObject::DoCommand(0, uniqueid | (target << 16), buttons | (type << 29) | (is_client ? (1 << 31) : 0), CMD_GOAL_QUESTION, text);
+	return ScriptObject::DoCommandEx(0, uniqueid, buttons | (type << 29) | (is_client ? (1 << 31) : 0), target, CMD_GOAL_QUESTION, text);
 }
 
 /* static */ bool ScriptGoal::Question(uint16 uniqueid, ScriptCompany::CompanyID company, Text *question, QuestionType type, int buttons)
@@ -136,8 +136,6 @@
 {
 	EnforcePrecondition(false, ScriptGame::IsMultiplayer());
 	EnforcePrecondition(false, ScriptClient::ResolveClientID(client) != ScriptClient::CLIENT_INVALID);
-	/* Can only send 16 bits of client_id before proper fix is implemented */
-	EnforcePrecondition(false, client < (1 << 16));
 	return DoQuestion(uniqueid, client, true, question, type, buttons);
 }
 

@@ -1156,6 +1156,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Rjochts
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Maksimale startersliening: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Maksimale bedrach hokker troch in bedriuw lient wurde kin (sûnder acht te slaan op de ynflaasje)
+###setting-zero-is-special
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :Rinte: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Rinte op liening; behearsket ek ynflaasje at dizze oan stiet
@@ -2886,7 +2887,6 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Warskôging: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Flater: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Fatale flater: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Der hat in fatale NewGRF-flater plakfûn:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} sil net wurkje kinne mei de TTDPatch-ferzje dy't troch OpenTTD meldt wurdt
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} is makke foar de {STRING}-ferzje fan TTD
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} makke om te brûken tegeare my{STRING}
@@ -3898,7 +3898,7 @@ STR_AI_LIST_CANCEL                                              :{BLACK}Annulear
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Skript net feroare
 
 
-# AI Parameters
+# Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :AI
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Slúte
 STR_AI_SETTINGS_RESET                                           :{BLACK}Weromsette

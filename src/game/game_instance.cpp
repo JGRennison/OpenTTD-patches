@@ -13,7 +13,7 @@
 #include "../script/squirrel_class.hpp"
 
 #include "../script/script_storage.hpp"
-#include "../ai/ai_gui.hpp"
+#include "../script/script_gui.h"
 #include "game_config.hpp"
 #include "game_info.hpp"
 #include "game_instance.hpp"
@@ -66,7 +66,7 @@ void GameInstance::Died()
 {
 	ScriptInstance::Died();
 
-	ShowAIDebugWindow(OWNER_DEITY);
+	ShowScriptDebugWindow(OWNER_DEITY);
 
 	const GameInfo *info = Game::GetInfo();
 	if (info != nullptr) {

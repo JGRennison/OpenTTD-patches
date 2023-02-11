@@ -113,6 +113,10 @@ void CallWindowGameTickEvent();
 bool HandleBootstrap();
 void OnTick_Companies(bool main_tick);
 
+extern void AfterLoadCompanyStats();
+extern Company *DoStartupNewCompany(bool is_ai, CompanyID company = INVALID_COMPANY);
+extern void OSOpenBrowser(const char *url);
+extern void RebuildTownCaches(bool cargo_update_required, bool old_map_position);
 extern void ShowOSErrorBox(const char *buf, bool system);
 extern std::string _config_file;
 
@@ -566,7 +570,6 @@ void OpenBrowser(const char *url)
 	/* Make sure we only accept urls that are sure to open a browser. */
 	if (strstr(url, "http://") != url && strstr(url, "https://") != url) return;
 
-	extern void OSOpenBrowser(const char *url);
 	OSOpenBrowser(url);
 }
 
@@ -1504,7 +1507,6 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 			old_industry_stations_nears.push_back(ind->stations_near);
 		}
 
-		extern void RebuildTownCaches(bool cargo_update_required, bool old_map_position);
 		RebuildTownCaches(false, false);
 		RebuildSubsidisedSourceAndDestinationCache();
 
@@ -1575,7 +1577,6 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 		std::vector<CompanyInfrastructure> old_infrastructure;
 		for (const Company *c : Company::Iterate()) old_infrastructure.push_back(c->infrastructure);
 
-		extern void AfterLoadCompanyStats();
 		AfterLoadCompanyStats();
 
 		uint i = 0;

@@ -1194,6 +1194,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Højre
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Maksimum startlån: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Maksimumbeløb et selskab kan låne (uden at tage inflation i betragtning)
+###setting-zero-is-special
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :Lånerente: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Lånerente; kontrollerer også inflationen hvis aktiveret
@@ -3310,8 +3311,6 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Advarsel: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Fejl: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Fatalt: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}En fatal NewGRF-fejl er opstået:{}{STRING}
-STR_NEWGRF_ERROR_POPUP                                          :{WHITE}Der er opstået en NewGRF-fejl:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} virker ikke med TTDPatch-versionen rapporteret af OpenTTD.
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} er beregnet til {STRING}-versionen af TTD.
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} er designet til brug sammen med {STRING}
@@ -4559,7 +4558,7 @@ STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK}Fuldt ko
 STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Højdekort skærmbillede
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Minikort skærmbillede
 
-# AI Parameters
+# Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :AI
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Luk
 STR_AI_SETTINGS_RESET                                           :{BLACK}Nulstil

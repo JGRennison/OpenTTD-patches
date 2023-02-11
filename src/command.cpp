@@ -189,7 +189,7 @@ CommandProc CmdRemoveGoal;
 CommandProc CmdSetGoalText;
 CommandProc CmdSetGoalProgress;
 CommandProc CmdSetGoalCompleted;
-CommandProc CmdGoalQuestion;
+CommandProcEx CmdGoalQuestion;
 CommandProc CmdGoalQuestionAnswer;
 CommandProc CmdCreateStoryPage;
 CommandProc CmdCreateStoryPageElement;

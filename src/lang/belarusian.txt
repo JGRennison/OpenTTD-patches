@@ -1467,6 +1467,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :правару�
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Максымальная сума пазыкі: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Максымальная сума пазыкі для кампаніі (без уліку інфляцыі)
+###setting-zero-is-special
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :Адсоткавая стаўка: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Адсоткавая стаўка па пазыках; таксама кантралюе інфляцыю, калі тая ўключана
@@ -3435,8 +3436,6 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Увага: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Памылка: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Крытычная памылка: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Памылка пры рабоце з NewGRF:{}{STRING}
-STR_NEWGRF_ERROR_POPUP                                          :{WHITE}Памылка, звязаная з модулем NewGRF:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} ня будзе працаваць з вэрсіяй TTDPatch, паведламленай OpenTTD.
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :Файл {1:STRING} патрабуе {STRING}-вэрсію TTD.
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} зроблены для выкарыстаньня сумесна з {STRING}
@@ -4661,7 +4660,7 @@ STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Не з�
 
 STR_SCREENSHOT_ZOOMIN_SCREENSHOT                                :{BLACK}Бачная вобласць у максімальным набліжэнні
 
-# AI Parameters
+# Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :ШI
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Закрыць
 STR_AI_SETTINGS_RESET                                           :{BLACK}Ськід

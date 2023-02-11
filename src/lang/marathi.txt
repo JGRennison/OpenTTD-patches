@@ -801,6 +801,7 @@ STR_CONFIG_SETTING_REALISTIC                                    :खरेखु
 
 ###length 3
 
+###setting-zero-is-special
 
 
 
@@ -1755,7 +1756,7 @@ STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}वे�
 
 
 
-# AI Parameters
+# Script Parameters
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 
 

@@ -589,6 +589,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_LEFT                          :Сулахай�
 STR_CONFIG_SETTING_HORIZONTAL_POS_CENTER                        :Варринче
 STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Сылтӑмра
 
+###setting-zero-is-special
 
 
 
@@ -1602,7 +1603,7 @@ STR_AI_LIST_VERSION                                             :{LTBLUE}Вер�
 
 
 
-# AI Parameters
+# Script Parameters
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 
 

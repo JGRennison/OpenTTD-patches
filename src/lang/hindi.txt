@@ -340,6 +340,7 @@ STR_CONFIG_SETTING_COMPANIES_OFF                                :बन्द
 
 ###length 3
 
+###setting-zero-is-special
 
 
 
@@ -1258,7 +1259,7 @@ STR_AI_DEBUG_NAME_AND_VERSION                                   :{BLACK}{STRING}
 
 
 
-# AI Parameters
+# Script Parameters
 
 
 # Textfile window

@@ -234,19 +234,23 @@ CommandCost CmdSetGoalCompleted(TileIndex tile, DoCommandFlag flags, uint32 p1, 
  * @param flags type of operation
  * @param p1 various bitstuffed elements
  * - p1 = (bit  0 - 15) - Unique ID to use for this question.
- * - p1 = (bit 16 - 31) - Company or client for which this question is.
  * @param p2 various bitstuffed elements
  * - p2 = (bit 0 - 17) - Buttons of the question.
  * - p2 = (bit 29 - 30) - Question type.
  * - p2 = (bit 31) - Question target: 0 - company, 1 - client.
+ * @param p3 various bitstuffed elements
+ * - p3 = (bit 0 - 31) - Company or client for which this question is.
  * @param text Text of the question.
  * @return the cost of this operation or an error
  */
-CommandCost CmdGoalQuestion(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdGoalQuestion(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	uint16 uniqueid = (uint16)GB(p1, 0, 16);
-	CompanyID company = (CompanyID)GB(p1, 16, 8);
-	ClientID client = (ClientID)GB(p1, 16, 16);
+	CompanyID company = (CompanyID)GB(p3, 0, 32);
+	ClientID client = (ClientID)GB(p3, 0, 32);
+
+	static_assert(sizeof(uint32) >= sizeof(CompanyID));
+	static_assert(sizeof(uint32) >= sizeof(ClientID));
 
 	static_assert(GOAL_QUESTION_BUTTON_COUNT < 29);
 	uint32 button_mask = GB(p2, 0, GOAL_QUESTION_BUTTON_COUNT);

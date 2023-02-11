@@ -1218,6 +1218,9 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Sağ
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :En yüsek açılış borcu: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Bir şirketin alabileceği en fazla borç (enflasyon hesaba katılmadan)
+STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_VALUE                   :{CURRENCY_LONG}
+###setting-zero-is-special
+STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_DISABLED                :Borç yok seçeneği, başlangıç fonunu sağlamak için oyun betiği {RED}gerektirir.
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :Faiz oranı: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Borç faiz oranı; eğer aktifse aynı zamanda enflasyonu da belirler
@@ -3367,8 +3370,6 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Uyarı: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Hata: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Ölümcül hata: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Ölümcül bir NewGRF hatası oluştu:{}{STRING}
-STR_NEWGRF_ERROR_POPUP                                          :{WHITE}NewGRF hatası oluştu:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} OpenTTD tarafından belirtilen TTDPatch sürümüyle çalışmayacaktır
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING}, TTD'nin {2:STRING} sürümü içindir
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING}, {2:STRING} ile kullanılmak için tasarlanmıştır
@@ -4639,7 +4640,7 @@ STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK}Tüm har
 STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Yükseklik haritası ekran görüntüsü
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Küçük harita ekran görüntüsü
 
-# AI Parameters
+# Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}YZ Parametreleri
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Kapat
 STR_AI_SETTINGS_RESET                                           :{BLACK}Yeniden başlat

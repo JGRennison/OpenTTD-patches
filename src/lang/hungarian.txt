@@ -1282,6 +1282,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Jobbra
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Maximális kezdeti hitelkeret: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Maximálisan kölcsönözhető összeg (az inflációtól eltekintve)
+###setting-zero-is-special
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :Kamatláb: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Banki hitel kamat; inflációt is szabályozza, ha be van kapcsolva
@@ -3427,8 +3428,6 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Figyelmeztetés: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Hiba: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Végzetes hiba: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Egy végzetes NewGRF hiba történt:{}{STRING}
-STR_NEWGRF_ERROR_POPUP                                          :{WHITE}NewGRF hiba történt:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} nem fog működni az OpenTTD által jelentett TTDPatch verzióval
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} a TTD {2:STRING} verziójához van
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} úgy lett tervezve, hogy együtt lesz használva ezzel: {2:STRING}
@@ -4699,7 +4698,7 @@ STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK}Teljes t
 STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Magasságtérkép mentése
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Minitérkép mentése
 
-# AI Parameters
+# Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}MI paraméterei
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Bezárás
 STR_AI_SETTINGS_RESET                                           :{BLACK}Visszaállítás

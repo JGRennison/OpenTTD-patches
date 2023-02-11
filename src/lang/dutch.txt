@@ -1218,6 +1218,9 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Rechts
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Maximale beginlening: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Maximaal bedrag dat een bedrijf kan lenen (zonder rekening te houden met de inflatie)
+STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_VALUE                   :{CURRENCY_LONG}
+###setting-zero-is-special
+STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_DISABLED                :Geen lening {RED}Spelscript vereist voor aanvankelijk saldo
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :Rente van lening: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Percentage rente op lening; bepaald ook het inflatiecijfer wanneer ingeschakeld
@@ -3367,8 +3370,8 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Waarschuwing: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Fout: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Fatale fout: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Een fatale NewGRF-fout is ontstaan:{}{STRING}
-STR_NEWGRF_ERROR_POPUP                                          :{WHITE}Er is een NewGRF-fout opgetreden:{}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}De NewGRF "{STRING}" heeft een fatale fout veroorzaakt:{}{STRING}
+STR_NEWGRF_ERROR_POPUP                                          :{WHITE}De NewGRF "{STRING}" heeft een fout veroorzaakt:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} werkt niet met de TTDPatch-versie die is opgegeven door OpenTTD
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} is voor versie {2:STRING} van TTD
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} is ontwikkeld voor {2:STRING}
@@ -4639,8 +4642,10 @@ STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK}Schermaf
 STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Schermafbeelding van de hoogtekaart
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Schermafbeelding van de minikaart
 
-# AI Parameters
+# Script Parameters
+STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}AI-parameters
+STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Spelscript
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Sluiten
 STR_AI_SETTINGS_RESET                                           :{BLACK}Terugstellen
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}

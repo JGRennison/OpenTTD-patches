@@ -47,6 +47,7 @@
 #include "safeguards.h"
 
 void ClearEnginesHiddenFlagOfCompany(CompanyID cid);
+void UpdateObjectColours(const Company *c);
 
 CompanyID _local_company;   ///< Company controlled by the human player at this client. Can also be #COMPANY_SPECTATOR.
 CompanyID _current_company; ///< Company currently doing an action.
@@ -583,7 +584,8 @@ Company *DoStartupNewCompany(DoStartupNewCompanyFlag flags, CompanyID company)
 	ResetCompanyLivery(c);
 	_company_colours[c->index] = (Colours)c->colour;
 
-	c->money = c->current_loan = (std::min<int64>(INITIAL_LOAN, _economy.max_loan) * _economy.inflation_prices >> 16) / 50000 * 50000;
+	/* Scale the initial loan based on the inflation rounded down to the loan interval. The maximum loan has already been inflation adjusted. */
+	c->money = c->current_loan = std::min<int64>((INITIAL_LOAN * _economy.inflation_prices >> 16) / LOAN_INTERVAL * LOAN_INTERVAL, _economy.max_loan);
 
 	c->share_owners[0] = c->share_owners[1] = c->share_owners[2] = c->share_owners[3] = INVALID_OWNER;
 
@@ -755,11 +757,11 @@ static void HandleBankruptcyTakeover(Company *c)
 	c->bankrupt_last_asked = best->index;
 
 	c->bankrupt_timeout = TAKE_OVER_TIMEOUT;
-	if (best->is_ai) {
-		AI::NewEvent(best->index, new ScriptEventCompanyAskMerger(c->index, ClampToI32(c->bankrupt_value)));
-	} else if (IsInteractiveCompany(best->index)) {
+
+	AI::NewEvent(best->index, new ScriptEventCompanyAskMerger(c->index, c->bankrupt_value));
+	if (IsInteractiveCompany(best->index)) {
 		ShowBuyCompanyDialog(c->index);
-	} else if (!_networking || (_network_server && !NetworkCompanyHasClients(best->index))) {
+	} else if ((!_networking || (_network_server && !NetworkCompanyHasClients(best->index))) && !best->is_ai) {
 		/* This company can never accept the offer as there are no clients connected, decline the offer on the company's behalf */
 		Backup<CompanyID> cur_company(_current_company, best->index, FILE_LINE);
 		DoCommandP(0, c->index, 0, CMD_DECLINE_BUY_COMPANY | CMD_NO_SHIFT_ESTIMATE);
@@ -1015,8 +1017,8 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	}
 
 	InvalidateWindowClassesData(WC_GAME_OPTIONS);
-	InvalidateWindowClassesData(WC_AI_SETTINGS);
-	InvalidateWindowClassesData(WC_AI_LIST);
+	InvalidateWindowClassesData(WC_SCRIPT_SETTINGS);
+	InvalidateWindowClassesData(WC_SCRIPT_LIST);
 
 	return CommandCost();
 }
@@ -1143,7 +1145,6 @@ CommandCost CmdSetCompanyColour(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 			}
 		}
 
-		extern void UpdateObjectColours(const Company *c);
 		UpdateObjectColours(c);
 	}
 	return CommandCost();

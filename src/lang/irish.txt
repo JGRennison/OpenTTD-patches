@@ -1193,6 +1193,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Ar dheis
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Iasacht tosaigh uasta: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Uasmhéid is féidir le cuideachta a chur ar iasacht (gan boilsciú a chur san áireamh)
+###setting-zero-is-special
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :Ráta úis: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Ráta úis ar iasachtaí; rialaíonn sé seo boilsciú freisin, má tá sé cumasaithe
@@ -3300,8 +3301,6 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Rabhadh: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Earráid: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Marfach: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Tharla earráid mharfach NewGRF:{}{STRING}
-STR_NEWGRF_ERROR_POPUP                                          :{WHITE}Tharla earráid NewGRF:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :Ní oibreoidh {1:STRING} leis an leagan de TTDPatch a thuairiscigh OpenTTD.
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING}: Is don leagan {STRING} de TTD é
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :Tá {1:STRING} deartha le húsáid le {STRING}
@@ -4548,7 +4547,7 @@ STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK}Seat sc�
 STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Seat scáileáin den mhapa airde
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Seat scáileáin den mhion-léarscáil
 
-# AI Parameters
+# Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :AI
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Dún
 STR_AI_SETTINGS_RESET                                           :{BLACK}Athshocraigh

@@ -1219,6 +1219,9 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Dreta
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Préstec inicial màxim: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Quantitat màxima del préstec que pot demanar una companyia (sense tenir en compte la inflació)
+STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_VALUE                   :{CURRENCY_LONG}
+###setting-zero-is-special
+STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_DISABLED                :Sense préstec {RED}Fa falta un script de partida que doni els fons inicials
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :Taxa d'interès: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Tipus d'interès dels préstecs; també controla la inflació, si està activada
@@ -3368,8 +3371,6 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Alerta: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Error: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Fatal: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}S'ha produït un error fatal de NewGRF:{}{STRING}
-STR_NEWGRF_ERROR_POPUP                                          :{WHITE}S'ha produït un error relacionat amb els NewGRF:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} no funcionarà amb la versió TTDPatch informada per l'OpenTTD
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} és per a la versió {2:STRING} del TTD
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} està dissenyat per a fer-se servir amb {2:STRING}
@@ -4640,8 +4641,10 @@ STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK}Captura 
 STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Captura de pantalla del mapa d'alçades
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Captura de pantalla del minimapa
 
-# AI Parameters
-STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}Paràmetres de la IA
+# Script Parameters
+STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING}Paràmetres
+STR_AI_SETTINGS_CAPTION_AI                                      :IA
+STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Script de la partida
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Tanca
 STR_AI_SETTINGS_RESET                                           :{BLACK}Restableix
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}

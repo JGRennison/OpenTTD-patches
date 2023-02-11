@@ -1370,6 +1370,9 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :справа
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Максимальная сумма кредита: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Максимальная сумма кредита для компании (без учета инфляции)
+STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_VALUE                   :{CURRENCY_LONG}
+###setting-zero-is-special
+STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_DISABLED                :нет {RED}(необходим игровой скрипт, предоставляющий начальные средства)
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :Процентная ставка: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Процентная ставка по кредитам; также устанавливает уровень инфляции, если та включена.
@@ -3549,8 +3552,8 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Внимание: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Ошибка: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Критическая ошибка: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Ошибка при работе с NewGRF:{}{STRING}
-STR_NEWGRF_ERROR_POPUP                                          :{WHITE}Ошибка, связанная с модулем NewGRF:{}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}В модуле NewGRF «{STRING}» произошла критическая ошибка:{}{STRING}
+STR_NEWGRF_ERROR_POPUP                                          :{WHITE}В модуле NewGRF «{STRING}» произошла ошибка:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} не будет работать с версией TTDPatch, сообщенной OpenTTD.
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :Файл {1:STRING} требует TTD версии {2:STRING}
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} предполагается использовать совместно с {2:STRING}
@@ -4846,8 +4849,10 @@ STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK}Сним
 STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Снимок карты высот
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Снимок миникарты
 
-# AI Parameters
-STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}Параметры ИИ
+# Script Parameters
+STR_AI_SETTINGS_CAPTION                                         :{WHITE}Параметры {STRING}
+STR_AI_SETTINGS_CAPTION_AI                                      :ИИ
+STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :игровых скриптов
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Закрыть
 STR_AI_SETTINGS_RESET                                           :{BLACK}Сброс
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}

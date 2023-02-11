@@ -1340,6 +1340,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Ris an taobh de
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Iasad tòiseachaidh as motha: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :An t-airgead as motha as urrainn dha chompanaidh fhaighinn mar iasad (a' fàgail an atmhorachd dhan darna taobh)
+###setting-zero-is-special
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :Luach-rèidh: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Luach-rèidh iasaid; stiùiridh seo an atmhorachd cuideachd ma tha e an comas
@@ -3269,7 +3270,6 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Rabhadh: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Mearachd: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Marbhtach: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Thachair mearachd NewGRF marbhtach:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :Chan obraich {1:STRING} leis an tionndadh aig TTDPatch a chaidh aithris le OpenTTD
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :Tha {1:STRING} airson tionndadh {STRING} aig TTD
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :Chaidh {1:STRING} a dhealbhachadh gus cleachdadh le {STRING}
@@ -4445,7 +4445,7 @@ STR_AI_LIST_CANCEL                                              :{BLACK}Sguir dh
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Na atharraich an sgriobt
 
 
-# AI Parameters
+# Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :IF
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Dùin
 STR_AI_SETTINGS_RESET                                           :{BLACK}Ath-shuidhich

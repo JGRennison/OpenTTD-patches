@@ -3055,13 +3055,15 @@ CommandCost CmdBuildDock(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 
 	if (flags & DC_EXEC) {
 		st->ship_station.Add(tile);
-		st->ship_station.Add(tile + TileOffsByDiagDir(direction));
+		st->ship_station.Add(flat_tile);
 		st->AddFacility(FACIL_DOCK, tile);
 
 		st->rect.BeforeAddRect(dock_area.tile, dock_area.w, dock_area.h, StationRect::ADD_TRY);
 
 		/* If the water part of the dock is on a canal, update infrastructure counts.
-		 * This is needed as we've cleared that tile before. */
+		 * This is needed as we've cleared that tile before.
+		 * Clearing object tiles may result in water tiles which are already accounted for in the water infrastructure total.
+		 * See: MakeWaterKeepingClass() */
 		if (wc == WATER_CLASS_CANAL && !(HasTileWaterClass(flat_tile) && GetWaterClass(flat_tile) == WATER_CLASS_CANAL && IsTileOwner(flat_tile, _current_company))) {
 			Company::Get(st->owner)->infrastructure.water++;
 		}

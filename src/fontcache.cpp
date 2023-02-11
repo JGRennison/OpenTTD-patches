@@ -116,6 +116,15 @@ void SetFont(FontSize fontsize, const std::string& font, uint size, bool aa)
 	if (_save_config) SaveToConfig();
 }
 
+#ifdef WITH_FREETYPE
+extern void LoadFreeTypeFont(FontSize fs);
+extern void UninitFreeType();
+#elif defined(_WIN32)
+extern void LoadWin32Font(FontSize fs);
+#elif defined(WITH_COCOA)
+extern void LoadCoreTextFont(FontSize fs);
+#endif
+
 /**
  * (Re)initialize the font cache related things, i.e. load the non-sprite fonts.
  * @param monospace Whether to initialise the monospace or regular fonts.
@@ -129,13 +138,10 @@ void InitFontCache(bool monospace)
 		if (fc->HasParent()) delete fc;
 
 #ifdef WITH_FREETYPE
-		extern void LoadFreeTypeFont(FontSize fs);
 		LoadFreeTypeFont(fs);
 #elif defined(_WIN32)
-		extern void LoadWin32Font(FontSize fs);
 		LoadWin32Font(fs);
 #elif defined(WITH_COCOA)
-		extern void LoadCoreTextFont(FontSize fs);
 		LoadCoreTextFont(fs);
 #endif
 	}
@@ -152,7 +158,6 @@ void UninitFontCache()
 	}
 
 #ifdef WITH_FREETYPE
-	extern void UninitFreeType();
 	UninitFreeType();
 #endif /* WITH_FREETYPE */
 }

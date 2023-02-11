@@ -1218,6 +1218,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Kanan
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Maksimum pinjaman awal: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Jumlah maksimum yang dapat dipinjam (tanpa menghitung inflasi)
+###setting-zero-is-special
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :Bunga pinjaman: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Bunga pinjaman; juga mengendalikan inflasi jika dinyalakan
@@ -3361,8 +3362,6 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Peringatan: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Kesalahan: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Fatal: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Kesalahan fatal NewGRF telah terjadi:{}{STRING}
-STR_NEWGRF_ERROR_POPUP                                          :{WHITE}Terjadi galat pada NewGRF:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} tidak akan bekerja dengan versi TTDPatch yang telah dilaporkan oleh OpenTTD
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} untuk TTD versi {2:STRING}
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} didesain untuk digunakan dengan {2:STRING}
@@ -4633,7 +4632,7 @@ STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK} Tangkap
 STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Tangkapan layar Peta Ketinggian
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Tangkapan layar minimap
 
-# AI Parameters
+# Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}Parameter AI
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Tutup
 STR_AI_SETTINGS_RESET                                           :{BLACK}Reset

@@ -1156,6 +1156,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Regs
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Maksimum aanvanklike lening: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Maksimum bedrag wat 'n maatskappy kan leen (sonder die inagneming van inflasie)
+###setting-zero-is-special
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :Rentekoers: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Lening rentekoers: beheer ook inflasie indien aangeskakel
@@ -3085,7 +3086,6 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Waarskuwing: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Fout: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Fataal: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}'n Fataale NewGRF fout het gebeur:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} sal nie met die TTDPatch uitgawe rapporteer deur OpenTTD werk nie.
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} is vir die {STRING} uitgawe van TTD.
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} is onderwerp om saam met {STRING} gebruik te word
@@ -4304,7 +4304,7 @@ STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK}Volledig
 STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Hoogtekaart-skermkiekie
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Minimap-skermkiekie
 
-# AI Parameters
+# Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :AI
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Maak toe
 STR_AI_SETTINGS_RESET                                           :{BLACK}Herstel

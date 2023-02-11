@@ -1209,6 +1209,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :右
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :初期の借入最大額: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :初期の借入限度額を設定します (インフレは考慮されません)
+###setting-zero-is-special
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :金利: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :借入利率を設定します (インフレ設定を有効にしたときのインフレ率にも影響します)
@@ -3344,8 +3345,6 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}警告: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}エラー: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}致命的エラー: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}NewGRFに致命的なエラーが発生しました:{}{STRING}
-STR_NEWGRF_ERROR_POPUP                                          :{WHITE}NewGRFにエラーが発生しました:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING}はOpenTTDのTTDPatchバージョンには対応していません
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING}はTTDのバージョン{STRING}にのみ対応しています
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING}を使用時には{STRING}を有効にしなければなりません
@@ -4679,7 +4678,7 @@ STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK}地図�
 STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}ハイトマップスクリーンショット
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}ミニマップのスクリーンショット
 
-# AI Parameters
+# Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :AI
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}閉じる
 STR_AI_SETTINGS_RESET                                           :{BLACK}リセット

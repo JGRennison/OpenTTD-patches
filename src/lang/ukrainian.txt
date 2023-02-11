@@ -1346,6 +1346,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :правору�
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Максимальна сума позики: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Максимальна сума позики для компанії (без урахування інфляції)
+###setting-zero-is-special
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :Процентна ставка: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Процентна ставка за позиками; також контролює інфляцію, якщо вона увімкнена
@@ -3492,8 +3493,6 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Попередження: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Помилка: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Збій: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Фатальна помилка NewGRF:{}{STRING}
-STR_NEWGRF_ERROR_POPUP                                          :{WHITE}Помилка NewGRF:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} не буде працювати з версією TTDPatch, вказаною OpenTTD
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} для {2:STRING}-версії TTD
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} розроблено для використання з {2:STRING}
@@ -4764,8 +4763,10 @@ STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK}Знят
 STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Зняток мапи висот
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Зняток мінімапи
 
-# AI Parameters
+# Script Parameters
+STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Налаштування
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}Параметри ШІ
+STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Ігровий Скрипт
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Закрити
 STR_AI_SETTINGS_RESET                                           :{BLACK}Скидання
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}

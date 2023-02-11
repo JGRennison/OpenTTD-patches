@@ -1218,6 +1218,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Phải
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Khoảng vay khởi nghiệp tối đa: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Hạn mức tối đa một công ty có thể vay (không tính lạm phát)
+###setting-zero-is-special
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :Lãi suất vay: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Lãi xuất vay; ảnh hưởng tới cả lạm phát nếu bật tùy chọn đó
@@ -3367,8 +3368,6 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Cảnh báo: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Lỗi: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Lỗi nghiêm trọng: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Xảy ra lỗi NewGRF nghiêm trọng:{}{STRING}
-STR_NEWGRF_ERROR_POPUP                                          :{WHITE}Có lỗi NewGRF xảy ra:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} sẽ không hoạt động với phiên bản TTDPatch version theo như báo cáo của OpenTTD.
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} để dành cho phiên bản {2:STRING} của TTD.
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} được thiết kế để dùng với {2:STRING}
@@ -4639,8 +4638,9 @@ STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK}Chụp t
 STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Chụp bản đồ địa hình
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Chụp màn hình bản đồ nhỏ
 
-# AI Parameters
-STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}Tham số AI
+# Script Parameters
+STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Tham số
+STR_AI_SETTINGS_CAPTION_AI                                      :AI
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Đóng
 STR_AI_SETTINGS_RESET                                           :{BLACK}Thiết Lập Lại
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}

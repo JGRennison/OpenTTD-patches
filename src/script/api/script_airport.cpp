@@ -15,6 +15,9 @@
 
 #include "../../safeguards.h"
 
+extern Town *AirportGetNearestTown(const struct AirportSpec *as, const TileIterator &it, uint &mindist);
+extern uint8 GetAirportNoiseLevelForDistance(const struct AirportSpec *as, uint distance);
+
 /* static */ bool ScriptAirport::IsValidAirportType(AirportType type)
 {
 	return IsAirportInformationAvailable(type) && ::AirportSpec::Get(type)->IsAvailable();
@@ -128,9 +131,6 @@
 
 /* static */ int ScriptAirport::GetNoiseLevelIncrease(TileIndex tile, AirportType type)
 {
-	extern Town *AirportGetNearestTown(const AirportSpec *as, const TileIterator &it, uint &mindist);
-	extern uint8 GetAirportNoiseLevelForDistance(const AirportSpec *as, uint distance);
-
 	if (!::IsValidTile(tile)) return -1;
 	if (!IsAirportInformationAvailable(type)) return -1;
 
@@ -149,8 +149,6 @@
 
 /* static */ TownID ScriptAirport::GetNearestTown(TileIndex tile, AirportType type)
 {
-	extern Town *AirportGetNearestTown(const AirportSpec *as, const TileIterator &it, uint &mindist);
-
 	if (!::IsValidTile(tile)) return INVALID_TOWN;
 	if (!IsAirportInformationAvailable(type)) return INVALID_TOWN;
 

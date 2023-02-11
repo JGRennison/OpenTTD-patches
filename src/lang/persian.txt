@@ -1116,6 +1116,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_CENTER                        :مرکز
 STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :راست
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :حداکثر اعتبار اولیه: {STRING}
+###setting-zero-is-special
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :نرخ سود: {STRING}
 
@@ -2713,7 +2714,6 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}هشدار: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}خطا: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}خطای وخیم: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}یک خطای وخیم در NewGRF اتفاق افتاده:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} با TTDPatch که ویرایش آن توسط OpenTTD گزارش شده کار نمی کند
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} برای ویرایش {STRING}TTD می باشد
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} طراحی شده برای استفاده با {STRING}
@@ -3493,7 +3493,7 @@ STR_AI_LIST_CANCEL                                              :{BLACK}لغو
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}کد را تغییر نده
 
 
-# AI Parameters
+# Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :هوش مصنوعی(AI)
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}بستن
 STR_AI_SETTINGS_RESET                                           :{BLACK}بازنشاندن

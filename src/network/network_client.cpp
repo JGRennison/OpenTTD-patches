@@ -258,7 +258,9 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 	}
 
 	DeleteNetworkClientWindows();
-	_switch_mode = SM_MENU;
+	DeleteWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
+
+	if (_game_mode != GM_MENU) _switch_mode = SM_MENU;
 	_networking = false;
 }
 
@@ -299,7 +301,6 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 
 	NetworkExecuteLocalCommandQueue();
 
-	extern void StateGameLoop();
 	StateGameLoop();
 
 	/* Check if we are in sync! */
@@ -679,7 +680,6 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_FULL(Packet *p)
 {
 	/* We try to join a server which is full */
 	ShowErrorMessage(STR_NETWORK_ERROR_SERVER_FULL, INVALID_STRING_ID, WL_CRITICAL);
-	DeleteWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
 
 	return NETWORK_RECV_STATUS_SERVER_FULL;
 }
@@ -688,7 +688,6 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_BANNED(Packet *
 {
 	/* We try to join a server where we are banned */
 	ShowErrorMessage(STR_NETWORK_ERROR_SERVER_BANNED, INVALID_STRING_ID, WL_CRITICAL);
-	DeleteWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
 
 	return NETWORK_RECV_STATUS_SERVER_BANNED;
 }
@@ -794,8 +793,6 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_ERROR(Packet *p
 
 	/* Perform an emergency save if we had already entered the game */
 	if (this->status == STATUS_ACTIVE) ClientNetworkEmergencySave();
-
-	DeleteWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
 
 	return NETWORK_RECV_STATUS_SERVER_ERROR;
 }
@@ -975,7 +972,6 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_MAP_DONE(Packet
 	this->last_packet = std::chrono::steady_clock::now();
 
 	if (!load_success) {
-		DeleteWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
 		StringID detail = INVALID_STRING_ID;
 		if (!error_detail.empty()) {
 			detail = STR_JUST_RAW_STRING;

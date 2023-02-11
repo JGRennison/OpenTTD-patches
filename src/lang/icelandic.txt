@@ -1097,6 +1097,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Hægri
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Hámarkslán: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Hámarks upphæð sem fyrirtæki getur fengið lánað (ekki er gert ráð fyrir verðbólgu)
+###setting-zero-is-special
 
 STR_CONFIG_SETTING_INTEREST_RATE                                :Vextir: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Vextir á lánum, stjórnar einnig verðbólgu, ef hún er virk
@@ -2839,7 +2840,6 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Aðvörun: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Villa: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Banvænt: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Alvarleg NewGRF villa átti sér stað:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} Mun ekki virka með útgáfu TTDPatch sem OpenTTD gefur til kynna.
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} er fyrir {STRING} útgáfu af TTD.
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} er hannað til að notast með {STRING}
@@ -3936,7 +3936,7 @@ STR_AI_LIST_CANCEL                                              :{BLACK}Hætta v
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Hætta við breytingar forskriftar
 
 
-# AI Parameters
+# Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :Gervigreindar
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Loka
 STR_AI_SETTINGS_RESET                                           :{BLACK}Frumstilla
