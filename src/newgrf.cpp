@@ -4289,14 +4289,13 @@ static ChangeInfoResult ObjectChangeInfo(uint id, int numinfo, int prop, const G
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
-	if (id + numinfo > NUM_OBJECTS_PER_GRF) {
-		grfmsg(1, "ObjectChangeInfo: Too many objects loaded (%u), max (%u). Ignoring.", id + numinfo, NUM_OBJECTS_PER_GRF);
+	if (id + numinfo > NUM_OBJECTS) {
+		grfmsg(1, "ObjectChangeInfo: Too many objects loaded (%u), max (%u). Ignoring.", id + numinfo, NUM_OBJECTS);
 		return CIR_INVALID_ID;
 	}
 
-	/* Allocate object specs if they haven't been allocated already. */
-	if (_cur.grffile->objectspec == nullptr) {
-		_cur.grffile->objectspec = CallocT<ObjectSpec*>(NUM_OBJECTS_PER_GRF);
+	if (id + numinfo > _cur.grffile->objectspec.size()) {
+		_cur.grffile->objectspec.resize(id + numinfo);
 	}
 
 	for (int i = 0; i < numinfo; i++) {
@@ -6521,14 +6520,14 @@ static void SignalsMapSpriteGroup(ByteReader *buf, uint8 idcount)
 
 static void ObjectMapSpriteGroup(ByteReader *buf, uint8 idcount)
 {
-	if (_cur.grffile->objectspec == nullptr) {
+	if (_cur.grffile->objectspec.empty()) {
 		grfmsg(1, "ObjectMapSpriteGroup: No object tiles defined, skipping");
 		return;
 	}
 
-	uint8 *objects = AllocaM(uint8, idcount);
+	uint16 *objects = AllocaM(uint16, idcount);
 	for (uint i = 0; i < idcount; i++) {
-		objects[i] = buf->ReadByte();
+		objects[i] = buf->ReadExtendedByte();
 	}
 
 	uint8 cidcount = buf->ReadByte();
@@ -10136,14 +10135,12 @@ static void ResetCustomIndustries()
 static void ResetCustomObjects()
 {
 	for (GRFFile * const file : _grf_files) {
-		ObjectSpec **&objectspec = file->objectspec;
-		if (objectspec == nullptr) continue;
-		for (uint i = 0; i < NUM_OBJECTS_PER_GRF; i++) {
-			free(objectspec[i]);
+		std::vector<ObjectSpec *> &objectspec = file->objectspec;
+		for (ObjectSpec *spec : objectspec) {
+			free(spec);
 		}
 
-		free(objectspec);
-		objectspec = nullptr;
+		objectspec.clear();
 	}
 }
 
@@ -10878,12 +10875,9 @@ static void FinaliseIndustriesArray()
 static void FinaliseObjectsArray()
 {
 	for (GRFFile * const file : _grf_files) {
-		ObjectSpec **&objectspec = file->objectspec;
-		if (objectspec != nullptr) {
-			for (int i = 0; i < NUM_OBJECTS_PER_GRF; i++) {
-				if (objectspec[i] != nullptr && objectspec[i]->grf_prop.grffile != nullptr && objectspec[i]->IsEnabled()) {
-					_object_mngr.SetEntitySpec(objectspec[i]);
-				}
+		for (ObjectSpec *spec : file->objectspec) {
+			if (spec != nullptr && spec->grf_prop.grffile != nullptr && spec->IsEnabled()) {
+				_object_mngr.SetEntitySpec(spec);
 			}
 		}
 	}

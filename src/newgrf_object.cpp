@@ -230,7 +230,7 @@ static uint32 GetClosestObject(TileIndex tile, ObjectType type, const Object *cu
  * @param current  Object for which the inquiry is made
  * @return The formatted answer to the callback : rr(reserved) cc(count) dddd(manhattan distance of closest sister)
  */
-static uint32 GetCountAndDistanceOfClosestInstance(byte local_id, uint32 grfid, TileIndex tile, const Object *current)
+static uint32 GetCountAndDistanceOfClosestInstance(uint32 local_id, uint32 grfid, TileIndex tile, const Object *current)
 {
 	uint32 grf_id = GetRegister(0x100);  // Get the GRFID of the definition to look for in register 100h
 	uint32 idx;

@@ -57,7 +57,7 @@ public:
 	 * Get a specific object-type from a grf.
 	 * @param grfid The ID of the NewGRF.
 	 * @param grf_local_id The ID of the object, local to the NewGRF.
-	 * @pre 0x00 <= grf_local_id < NUM_OBJECTS_PER_GRF.
+	 * @pre 0x00 <= grf_local_id < NUM_OBJECTS.
 	 * @return the object-type ID, local to the current game (this diverges from the grf_local_id).
 	 */
 	static ObjectType ResolveNewGRFID(uint32 grfid, uint16 grf_local_id);

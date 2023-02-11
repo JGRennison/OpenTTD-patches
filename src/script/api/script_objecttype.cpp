@@ -46,7 +46,7 @@
 
 /* static */ ObjectType ScriptObjectType::ResolveNewGRFID(uint32 grfid, uint16 grf_local_id)
 {
-	EnforcePrecondition(INVALID_OBJECT_TYPE, IsInsideBS(grf_local_id, 0x00, NUM_OBJECTS_PER_GRF));
+	EnforcePrecondition(INVALID_OBJECT_TYPE, IsInsideBS(grf_local_id, 0x00, NUM_OBJECTS));
 
 	grfid = BSWAP32(grfid); // Match people's expectations.
 	return _object_mngr.GetID(grf_local_id, grfid);

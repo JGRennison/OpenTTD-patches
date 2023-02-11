@@ -317,7 +317,7 @@ struct GRFFile : ZeroedMemoryAllocator {
 	struct HouseSpec **housespec;
 	struct IndustrySpec **industryspec;
 	struct IndustryTileSpec **indtspec;
-	struct ObjectSpec **objectspec;
+	std::vector<struct ObjectSpec *> objectspec;
 	struct AirportSpec **airportspec;
 	struct AirportTileSpec **airtspec;
 	struct RoadStopSpec **roadstops;
