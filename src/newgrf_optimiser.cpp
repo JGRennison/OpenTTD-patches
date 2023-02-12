@@ -1402,6 +1402,22 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeatu
 						/* Single load tracking can handle bool inverts */
 						state.inference |= (prev_inference & VA2AIF_SINGLE_LOAD);
 					}
+					if (feature == GSF_OBJECTS && group->var_scope == VSG_SCOPE_SELF && group->adjusts.size() >= 2) {
+						auto check_slope_vars = [](const DeterministicSpriteGroupAdjust &a, const DeterministicSpriteGroupAdjust &b) -> bool {
+							return a.variable == A2VRI_OBJECT_FOUNDATION_SLOPE_CHANGE && a.shift_num == 0 && (a.and_mask & 0x1F) == 0x1F &&
+									b.variable == 0x41 && b.shift_num == 8 && b.and_mask == 0x1F;
+						};
+						DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+						if (prev.operation == DSGA_OP_RST && prev.type == DSGA_TYPE_NONE &&
+								(check_slope_vars(adjust, prev) || check_slope_vars(prev, adjust))) {
+							prev.variable = A2VRI_OBJECT_FOUNDATION_SLOPE;
+							prev.shift_num = 0;
+							prev.and_mask = 0x1F;
+							group->adjusts.pop_back();
+							state.inference |= VA2AIF_PREV_MASK_ADJUST | VA2AIF_SINGLE_LOAD;
+							break;
+						}
+					}
 					try_merge_with_previous();
 					break;
 				case DSGA_OP_MUL: {
