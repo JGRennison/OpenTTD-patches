@@ -57,7 +57,7 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action0_object_viewport_map_tile_type", 1),
 	GRFFeatureInfo("road_stops", 7),
 	GRFFeatureInfo("new_landscape", 2),
-	GRFFeatureInfo("more_objects_per_grf", 1),
+	GRFFeatureInfo("more_objects_per_grf", 1, GFTOF_MORE_OBJECTS_PER_GRF),
 	GRFFeatureInfo(),
 };
 

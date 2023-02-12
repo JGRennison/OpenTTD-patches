@@ -86,6 +86,8 @@ enum Action2VariableRemapIds {
 };
 
 enum GRFFeatureTestObservationFlag : uint8 {
+	GFTOF_MORE_OBJECTS_PER_GRF = 0,
+
 	GFTOF_INVALID = 0xFF,
 };
 

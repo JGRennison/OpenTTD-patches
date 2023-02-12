@@ -6529,7 +6529,7 @@ static void ObjectMapSpriteGroup(ByteReader *buf, uint8 idcount)
 
 	uint16 *objects = AllocaM(uint16, idcount);
 	for (uint i = 0; i < idcount; i++) {
-		objects[i] = buf->ReadExtendedByte();
+		objects[i] = HasBit(_cur.grffile->observed_feature_tests, GFTOF_MORE_OBJECTS_PER_GRF) ? buf->ReadExtendedByte() : buf->ReadByte();
 	}
 
 	uint8 cidcount = buf->ReadByte();
