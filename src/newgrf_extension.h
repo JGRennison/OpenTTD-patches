@@ -85,20 +85,27 @@ enum Action2VariableRemapIds {
 	A2VRI_SIGNALS_SIGNAL_STYLE,
 };
 
+enum GRFFeatureTestObservationFlag : uint8 {
+	GFTOF_INVALID = 0xFF,
+};
+
 /** Action14 feature definition */
 struct GRFFeatureInfo {
 	const char *name; // nullptr indicates the end of the list
 	uint16 version;
+	GRFFeatureTestObservationFlag observation_flag;
 
 	/** Create empty object used to identify the end of a list. */
 	GRFFeatureInfo() :
 		name(nullptr),
-		version(0)
+		version(0),
+		observation_flag(GFTOF_INVALID)
 	{}
 
-	GRFFeatureInfo(const char *name, uint16 version) :
+	GRFFeatureInfo(const char *name, uint16 version, GRFFeatureTestObservationFlag observation_flag = GFTOF_INVALID) :
 		name(name),
-		version(version)
+		version(version),
+		observation_flag(observation_flag)
 	{}
 };
 

@@ -9231,6 +9231,9 @@ struct GRFFeatureTest {
 		} else {
 			grfmsg(2, "Action 14 feature test: feature test: doing nothing: %u", has_feature ? 1 : 0);
 		}
+		if (this->feature != nullptr && this->feature->observation_flag != GFTOF_INVALID) {
+			SetBit(_cur.grffile->observed_feature_tests, this->feature->observation_flag);
+		}
 	}
 };
 
