@@ -6540,7 +6540,7 @@ static void ObjectMapSpriteGroup(ByteReader *buf, uint8 idcount)
 		if (ctype == CT_INVALID) continue;
 
 		for (uint i = 0; i < idcount; i++) {
-			ObjectSpec *spec = _cur.grffile->objectspec[objects[i]];
+			ObjectSpec *spec = (objects[i] >= _cur.grffile->objectspec.size()) ? nullptr : _cur.grffile->objectspec[objects[i]];
 
 			if (spec == nullptr) {
 				grfmsg(1, "ObjectMapSpriteGroup: Object with ID 0x%02X undefined, skipping", objects[i]);
@@ -6555,7 +6555,7 @@ static void ObjectMapSpriteGroup(ByteReader *buf, uint8 idcount)
 	if (!IsValidGroupID(groupid, "ObjectMapSpriteGroup")) return;
 
 	for (uint i = 0; i < idcount; i++) {
-		ObjectSpec *spec = _cur.grffile->objectspec[objects[i]];
+		ObjectSpec *spec = (objects[i] >= _cur.grffile->objectspec.size()) ? nullptr : _cur.grffile->objectspec[objects[i]];
 
 		if (spec == nullptr) {
 			grfmsg(1, "ObjectMapSpriteGroup: Object with ID 0x%02X undefined, skipping", objects[i]);
