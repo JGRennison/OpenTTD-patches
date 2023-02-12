@@ -205,9 +205,9 @@ static bool CompareRailTypes(const RailType &first, const RailType &second)
 			}
 		}
 
-		return sort_value[0] < sort_value[1];
+		return std::tie(sort_value[0], first) < std::tie(sort_value[1], second);
 	} else {
-		return GetRailTypeInfo(first)->sorting_order < GetRailTypeInfo(second)->sorting_order;
+		return std::tie(GetRailTypeInfo(first)->sorting_order, first) < std::tie(GetRailTypeInfo(second)->sorting_order, second);
 	}
 }
 
