@@ -39,6 +39,7 @@
 	<li><a href="#railtype-variables">Railtype variables</a></li>
 	<li><a href="#roadtype-properties">Roadtype properties</a></li>
 	<li><a href="#tramtype-properties">Tramtype properties</a></li>
+	<li><a href="#object-ids">Object IDs</a></li>
 	<li><a href="#object-properties">Object properties</a></li>
 	<li><a href="#object-variables">Object variables</a></li>
 	<li><a href="#global-variable-properties">Global variables properties</a></li>
@@ -192,6 +193,12 @@
 		</td>
 	</tr>
 	</table>
+	<h3 id="object-ids"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Objects#Object_IDs">Object IDs</a></h3>
+	<p>
+		Object IDs are NewGRF-local and can be freely chosen in the 0..63999 range, as of the <span class="code">more_objects_per_grf</span> feature.<br />
+		When loaded into a version of OpenTTD without this feature, IDs are limited to the range: 0..254.
+		Any objects with IDs outside this range will be skipped.
+	</p>
 	<h3 id="object-properties"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Objects#Object_properties">Object properties</a></h3>
 	<table>
 	<tr><th>Property</th><th>Value range</th><th>Comment</th></tr>
