@@ -320,7 +320,7 @@ struct GRFFile : ZeroedMemoryAllocator {
 	std::vector<struct ObjectSpec *> objectspec;
 	struct AirportSpec **airportspec;
 	struct AirportTileSpec **airtspec;
-	struct RoadStopSpec **roadstops;
+	std::vector<struct RoadStopSpec *> roadstops;
 
 	GRFFeatureMapRemapSet feature_id_remaps;
 	GRFFilePropertyRemapSet action0_property_remaps[GSF_END];

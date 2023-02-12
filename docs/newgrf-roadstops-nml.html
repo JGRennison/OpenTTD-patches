@@ -43,7 +43,10 @@
 
 	<h3 id="roadstop_ids">Road Stop IDs</h3>
 	<p>
-		Road stop IDs are NewGRF-local and can therefore freely be chosen in the 0..255 range. A road stop is allocated by setting the 'class'-property, which should therefore be set first.
+		A road stop is allocated by setting the 'class'-property, which should therefore be set first.<br />
+		Road stop IDs are NewGRF-local and can be freely chosen in the 0..63999 range, as of version 7 of the <span class="code">road_stops</span> feature.<br />
+		When loaded into a version of OpenTTD with versions 1 to 6 of the <span class="code">road_stops</span> feature, IDs are limited to the range: 0..254.
+		Any road stops with IDs outside this range will be skipped.
 	</p>
 
 	<h3 id="roadstop_properties">Road Stop Properties</h3>
@@ -172,6 +175,7 @@
 		<tr><td>nearby_tile_road_piece</td><td>x, y offset (-8..7)</td><td>0..18 | 0xFF</td><td>Present road piece and slope in <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3/Roadtypes#Road_underlay_.2802.29">sprite order</a>, or 0xFF if none</td></tr>
 		<tr><td>nearby_tile_tram_piece</td><td>x, y offset (-8..7)</td><td>0..18 | 0xFF</td><td>Present tram piece and slope in <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3/Roadtypes#Road_underlay_.2802.29">sprite order</a>, or 0xFF if none</td></tr>
 		<tr><td>nearby_tile_road_stop_info</td><td>x, y offset (-8..7)</td><td></td><td>Above nearby road tile variables in one variable (all of variable 0x6B)</td></tr>
+		<tr><td>nearby_tile_road_stop_info_v2</td><td>x, y offset (-8..7)</td><td></td><td>Above nearby road tile variables in one variable (all of variable roadstop_road_stop_info_nearby_tiles_v2)</td></tr>
 	</table>
 
 	<h3 id="roadstop_callbacks">Road Stop Callbacks</h3>

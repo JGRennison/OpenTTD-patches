@@ -63,7 +63,7 @@ public:
 	static bool IsClassIDValid(Tid cls_id);
 	static NewGRFClass *Get(Tid cls_id);
 
-	static const Tspec *GetByGrf(uint32 grfid, byte local_id, int *index);
+	static const Tspec *GetByGrf(uint32 grfid, uint16 local_id, int *index);
 };
 
 #endif /* NEWGRF_CLASS_H */

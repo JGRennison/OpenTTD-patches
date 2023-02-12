@@ -171,7 +171,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_ROAD_WAYPOINTS,         XSCF_NULL,                1,   1, "road_waypoints",            nullptr, nullptr, nullptr        },
 	{ XSLFI_MORE_STATION_TYPES,     XSCF_NULL,                1,   1, "more_station_types",        nullptr, nullptr, nullptr        },
 	{ XSLFI_RV_ORDER_EXTRA_FLAGS,   XSCF_IGNORABLE_UNKNOWN,   1,   1, "rv_order_extra_flags",      nullptr, nullptr, nullptr        },
-	{ XSLFI_GRF_ROADSTOPS,          XSCF_NULL,                2,   2, "grf_road_stops",            nullptr, nullptr, nullptr        },
+	{ XSLFI_GRF_ROADSTOPS,          XSCF_NULL,                3,   3, "grf_road_stops",            nullptr, nullptr, nullptr        },
 	{ XSLFI_INDUSTRY_ANIM_MASK,     XSCF_IGNORABLE_ALL,       1,   1, "industry_anim_mask",        nullptr, nullptr, nullptr        },
 	{ XSLFI_NEW_SIGNAL_STYLES,      XSCF_NULL,                2,   2, "new_signal_styles",         nullptr, nullptr, "XBST,NSID"    },
 	{ XSLFI_NO_TREE_COUNTER,        XSCF_IGNORABLE_ALL,       1,   1, "no_tree_counter",           nullptr, nullptr, nullptr        },

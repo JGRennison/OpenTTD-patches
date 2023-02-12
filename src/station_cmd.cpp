@@ -2083,7 +2083,7 @@ static CommandCost FindJoiningRoadStop(StationID existing_stop, StationID statio
  *           bit 5..10: The roadtype.
  *           bit 16..31: Station ID to join (NEW_STATION if build new one).
  * @param p3 bit 0..7: Roadstop class.
- *           bit 8..15: Roadstopspec index.
+ *           bit 16..31: Roadstopspec index.
  * @param text Unused.
  * @return The cost of this operation or an error.
  */
@@ -2102,7 +2102,7 @@ CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 	uint8 length = (uint8)GB(p1, 8, 8);
 
 	RoadStopClassID spec_class = Extract<RoadStopClassID, 0, 8>(p3);
-	byte spec_index            = GB(p3, 8, 8);
+	uint16 spec_index          = GB(p3, 16, 16);
 
 	/* Check if the given station class is valid */
 	if ((uint)spec_class >= RoadStopClass::GetClassCount() || spec_class == ROADSTOP_CLASS_WAYP) return CMD_ERROR;

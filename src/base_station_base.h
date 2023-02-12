@@ -30,7 +30,7 @@ struct StationSpecList {
 struct RoadStopSpecList {
 	const RoadStopSpec *spec;
 	uint32 grfid;      ///< GRF ID of this custom road stop
-	uint8  localidx;   ///< Station ID within GRF of road stop
+	uint16 localidx;   ///< Station ID within GRF of road stop
 };
 
 struct RoadStopTileData {

@@ -323,7 +323,10 @@
 
 	<table>
 	<tr><th>Bits</th><th>Meaning</th></tr>
-	<tr><td>0 - 7</td><td>If the tile is defined in the current GRF, this is the setID used in the definition. Otherwise, the content is undefined. </td></tr>
+	<tr><td>0 - 7</td><td>
+		If the tile is defined in the current GRF, this is the lower 8 bits of the setID used in the definition. Otherwise, the content is undefined.<br />
+		Note that if this GRF has any road stop setIDs greater than 255, bits 24 - 31 need to be used as well.
+	</td></tr>
 	<tr><td>8 - 9</td><td>
 		0 - The tile uses original TTD graphics<br />
 		1 - The tile is defined in the current GRF<br />
@@ -339,6 +342,43 @@
 	</td></tr>
 	<tr><td>20</td><td>Set if the stop type (passenger/bus, freight/lorry or road waypoint) is the same as the current tile</td></tr>
 	<tr><td>21 - 22</td><td>
+		One-way road information of the selected tile:<br />
+		0 - Two-way traffic<br />
+		1 - North-bound only<br />
+		2 - South-bound only<br />
+		3 - No entry
+	</td></tr>
+	<tr><td>24 - 31</td><td>
+		If the tile is defined in the current GRF, this is the upper 8 bits of the setID used in the definition. Otherwise, the content is undefined.<br />
+		This can be ignored if this GRF does not have any road stop setIDs greater than 255 (does not define more than 256 road stop types).<br />
+		This requires <font face="monospace">road_stops</font>, version 7.
+	</td></tr>
+	</table>
+	<br />
+	The remaining bits are reserved for future use and should be masked.
+	</p>
+
+	<h4 id="roadstop_road_stop_info_nearby_tiles">Road stop of nearby tile v2 (mappable variable: roadstop_road_stop_info_nearby_tiles_v2)</h4>
+	<p>This has a similar value to <a href="#roadstop_road_stop_info_nearby_tiles">68</a>/<a href="#roadstop_road_stop_info_nearby_tiles">roadstop_road_stop_info_nearby_tiles</a>, above.<br />
+
+	<table>
+	<tr><th>Bits</th><th>Meaning</th></tr>
+	<tr><td>0 - 15</td><td>If the tile is defined in the current GRF, this is the setID used in the definition. Otherwise, the content is undefined. </td></tr>
+	<tr><td>16 - 17</td><td>
+		0 - The tile uses original TTD graphics<br />
+		1 - The tile is defined in the current GRF<br />
+		2 - The tile is defined in another GRF
+	</td></tr>
+	<tr><td>18</td><td>Set if the selected tile belongs to the current station, clear otherwise</td></tr>
+	<tr><td>19</td><td>Clear if the selected tile has the same view/rotation, set if a different view/rotation</td></tr>
+	<tr><td>20 - 23</td><td>View/rotation of the selected tile</td></tr>
+	<tr><td>24 - 27</td><td>
+		0 - Passenger/bus stop<br />
+		1 - Freight/lorry stop<br />
+		2 - Road waypoint
+	</td></tr>
+	<tr><td>28</td><td>Set if the stop type (passenger/bus, freight/lorry or road waypoint) is the same as the current tile</td></tr>
+	<tr><td>29 - 30</td><td>
 		One-way road information of the selected tile:<br />
 		0 - Two-way traffic<br />
 		1 - North-bound only<br />
@@ -414,6 +454,10 @@
 	<p>See the <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3">Action 3 Specification</a> for background information.</p>
 
 	<p>Road stops have the same Action 3 cargo-type values as feature 4 (station).</p>
+
+	<p>In feature name <font face="monospace">road_stops</font> version 7 and later, the Action 3 ID field is an extended byte; GRFs may define more than 255 road stop types.<br />
+	In versions 1 to 6 (inclusive), only 255 road stop types may be defined per GRF, and the extended byte format may not be used.</p>
+	<br />
 
 	<h3 id="erata">Erata</h3>
 

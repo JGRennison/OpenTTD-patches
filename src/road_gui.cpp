@@ -62,8 +62,8 @@ struct RoadStopGUISettings {
 	DiagDirection orientation; // This replaces _road_station_picker_orientation
 
 	RoadStopClassID roadstop_class;
-	byte roadstop_type;
-	byte roadstop_count;
+	uint16 roadstop_type;
+	uint16 roadstop_count;
 };
 static RoadStopGUISettings _roadstop_gui_settings;
 
@@ -217,7 +217,7 @@ void CcRoadStop(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2,
 	bool connect_to_road = true;
 
 	RoadStopClassID spec_class = Extract<RoadStopClassID, 0, 8>(p3);
-	byte spec_index            = GB(p3, 8, 8);
+	uint16 spec_index            = GB(p3, 16, 16);
 	if ((uint)spec_class < RoadStopClass::GetClassCount() && spec_index < RoadStopClass::Get(spec_class)->GetSpecCount()) {
 		const RoadStopSpec *roadstopspec = RoadStopClass::Get(spec_class)->GetSpec(spec_index);
 		if (roadstopspec != nullptr && HasBit(roadstopspec->flags, RSF_NO_AUTO_ROAD_CONNECTION)) connect_to_road = false;
@@ -256,7 +256,7 @@ static void PlaceRoadStop(TileIndex start_tile, TileIndex end_tile, uint32 p2, u
 
 	TileArea ta(start_tile, end_tile);
 	CommandContainer cmdcont = NewCommandContainerBasic(ta.tile, (uint32)(ta.w | ta.h << 8), p2, cmd, CcRoadStop);
-	cmdcont.p3 = (_roadstop_gui_settings.roadstop_type << 8) | _roadstop_gui_settings.roadstop_class;
+	cmdcont.p3 = (_roadstop_gui_settings.roadstop_type << 16) | _roadstop_gui_settings.roadstop_class;
 	ShowSelectStationIfNeeded(cmdcont, ta);
 }
 

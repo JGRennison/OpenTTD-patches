@@ -24,6 +24,7 @@
 #include "viewport_func.h"
 #include "newgrf_animation_base.h"
 #include "newgrf_sound.h"
+#include "newgrf_extension.h"
 
 #include "safeguards.h"
 
@@ -64,6 +65,39 @@ uint32 RoadStopScopeResolver::GetRandomBits() const
 uint32 RoadStopScopeResolver::GetTriggers() const
 {
 	return this->st == nullptr ? 0 : this->st->waiting_triggers;
+}
+
+uint32 RoadStopScopeResolver::GetNearbyRoadStopsInfo(uint32 parameter, bool v2) const
+{
+	if (this->tile == INVALID_TILE) return 0xFFFFFFFF;
+	TileIndex nearby_tile = GetNearbyTile(parameter, this->tile);
+
+	if (!IsAnyRoadStopTile(nearby_tile)) return 0xFFFFFFFF;
+
+	uint32 grfid = this->st->roadstop_speclist[GetCustomRoadStopSpecIndex(this->tile)].grfid;
+	bool same_orientation = GetStationGfx(this->tile) == GetStationGfx(nearby_tile);
+	bool same_station = GetStationIndex(nearby_tile) == this->st->index;
+	uint32 res = GetStationGfx(nearby_tile) << 12 | !same_orientation << 11 | !!same_station << 10;
+	StationType type = GetStationType(nearby_tile);
+	if (type == STATION_TRUCK) res |= (1 << 16);
+	if (type == STATION_ROADWAYPOINT) res |= (2 << 16);
+	if (type == this->type) SetBit(res, 20);
+
+	uint16 localidx = 0;
+	if (IsCustomRoadStopSpecIndex(nearby_tile)) {
+		const RoadStopSpecList ssl = BaseStation::GetByTile(nearby_tile)->roadstop_speclist[GetCustomRoadStopSpecIndex(nearby_tile)];
+		localidx = ssl.localidx;
+		res |= 1 << (ssl.grfid != grfid ? 9 : 8);
+	}
+	if (IsDriveThroughStopTile(nearby_tile)) {
+		res |= (GetDriveThroughStopDisallowedRoadDirections(nearby_tile) << 21);
+	}
+
+	if (v2) {
+		return (res << 8) | localidx;
+	} else {
+		return res | (localidx & 0xFF) | ((localidx & 0xFF00) << 16);
+	}
 }
 
 uint32 RoadStopScopeResolver::GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const
@@ -151,28 +185,12 @@ uint32 RoadStopScopeResolver::GetVariable(uint16 variable, uint32 parameter, Get
 
 		/* Road stop info of nearby tiles */
 		case 0x68: {
-			if (this->tile == INVALID_TILE) return 0xFFFFFFFF;
-			TileIndex nearby_tile = GetNearbyTile(parameter, this->tile);
+			return this->GetNearbyRoadStopsInfo(parameter, false);
+		}
 
-			if (!IsAnyRoadStopTile(nearby_tile)) return 0xFFFFFFFF;
-
-			uint32 grfid = this->st->roadstop_speclist[GetCustomRoadStopSpecIndex(this->tile)].grfid;
-			bool same_orientation = GetStationGfx(this->tile) == GetStationGfx(nearby_tile);
-			bool same_station = GetStationIndex(nearby_tile) == this->st->index;
-			uint32 res = GetStationGfx(nearby_tile) << 12 | !same_orientation << 11 | !!same_station << 10;
-			StationType type = GetStationType(nearby_tile);
-			if (type == STATION_TRUCK) res |= (1 << 16);
-			if (type == STATION_ROADWAYPOINT) res |= (2 << 16);
-			if (type == this->type) SetBit(res, 20);
-
-			if (IsCustomRoadStopSpecIndex(nearby_tile)) {
-				const RoadStopSpecList ssl = BaseStation::GetByTile(nearby_tile)->roadstop_speclist[GetCustomRoadStopSpecIndex(nearby_tile)];
-				res |= 1 << (ssl.grfid != grfid ? 9 : 8) | ssl.localidx;
-			}
-			if (IsDriveThroughStopTile(nearby_tile)) {
-				res |= (GetDriveThroughStopDisallowedRoadDirections(nearby_tile) << 21);
-			}
-			return res;
+		/* Road stop info of nearby tiles: v2 */
+		case A2VRI_ROADSTOP_INFO_NEARBY_TILES_V2: {
+			return this->GetNearbyRoadStopsInfo(parameter, true);
 		}
 
 		/* GRFID of nearby road stop tiles */

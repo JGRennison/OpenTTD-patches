@@ -209,7 +209,7 @@ DEFINE_NEWGRF_CLASS_METHOD(int)::GetUIFromIndex(int index) const
  * @param index    Pointer to return the index of the spec in its class. If nullptr then not used.
  * @return The spec.
  */
-DEFINE_NEWGRF_CLASS_METHOD(const Tspec *)::GetByGrf(uint32 grfid, byte local_id, int *index)
+DEFINE_NEWGRF_CLASS_METHOD(const Tspec *)::GetByGrf(uint32 grfid, uint16 local_id, int *index)
 {
 	uint j;
 
@@ -246,4 +246,4 @@ DEFINE_NEWGRF_CLASS_METHOD(const Tspec *)::GetByGrf(uint32 grfid, byte local_id,
 	template const Tspec *name::GetSpec(uint index) const; \
 	template int name::GetUIFromIndex(int index) const; \
 	template int name::GetIndexFromUI(int ui_index) const; \
-	template const Tspec *name::GetByGrf(uint32 grfid, byte localidx, int *index);
+	template const Tspec *name::GetByGrf(uint32 grfid, uint16 localidx, int *index);

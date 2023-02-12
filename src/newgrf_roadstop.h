@@ -20,7 +20,7 @@
 #include "road.h"
 
 /** The maximum amount of roadstops a single GRF is allowed to add */
-static const int NUM_ROADSTOPS_PER_GRF = 255;
+static const int NUM_ROADSTOPS_PER_GRF = 64000;
 
 enum RoadStopClassID : byte {
 	ROADSTOP_CLASS_BEGIN = 0,    ///< The lowest valid value
@@ -98,6 +98,9 @@ struct RoadStopScopeResolver : public ScopeResolver {
 	uint32 GetTriggers() const override;
 
 	uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const override;
+
+private:
+	uint32 GetNearbyRoadStopsInfo(uint32 parameter, bool v2) const;
 };
 
 /** Road stop resolver. */

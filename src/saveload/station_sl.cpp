@@ -243,6 +243,12 @@ static const SaveLoad _station_speclist_desc[] = {
 	SLE_CONDVAR(StationSpecList, localidx, SLE_UINT8,  SLV_27, SL_MAX_VERSION),
 };
 
+static const SaveLoad _roadstop_speclist_desc[] = {
+	SLE_CONDVAR(RoadStopSpecList, grfid,    SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION),
+	SLE_CONDVAR_X(RoadStopSpecList, localidx, SLE_FILE_U8 | SLE_VAR_U16, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_GRF_ROADSTOPS, 0, 2)),
+	SLE_CONDVAR_X(RoadStopSpecList, localidx, SLE_UINT16,                SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_GRF_ROADSTOPS, 3)),
+};
+
 CargoPacketList _packets;
 uint32 _num_dests;
 
@@ -504,6 +510,7 @@ std::vector<SaveLoad> _filtered_station_desc;
 std::vector<SaveLoad> _filtered_waypoint_desc;
 std::vector<SaveLoad> _filtered_goods_desc;
 std::vector<SaveLoad> _filtered_station_speclist_desc;
+std::vector<SaveLoad> _filtered_roadstop_speclist_desc;
 
 static void SetupDescs_STNN()
 {
@@ -511,6 +518,7 @@ static void SetupDescs_STNN()
 	_filtered_waypoint_desc = SlFilterObject(_waypoint_desc);
 	_filtered_goods_desc = SlFilterObject(GetGoodsDesc());
 	_filtered_station_speclist_desc = SlFilterObject(_station_speclist_desc);
+	_filtered_roadstop_speclist_desc = SlFilterObject(_roadstop_speclist_desc);
 }
 
 std::vector<SaveLoad> _filtered_roadstop_desc;
@@ -584,7 +592,7 @@ static void RealSave_STNN(BaseStation *bst)
 	}
 
 	for (uint i = 0; i < bst->roadstop_speclist.size(); i++) {
-		SlObjectSaveFiltered(&bst->roadstop_speclist[i], _filtered_station_speclist_desc);
+		SlObjectSaveFiltered(&bst->roadstop_speclist[i], _filtered_roadstop_speclist_desc);
 	}
 
 	for (uint i = 0; i < bst->custom_roadstop_tile_data.size(); i++) {
@@ -727,7 +735,7 @@ static void Load_STNN()
 			/* Allocate speclist memory when loading a game */
 			bst->roadstop_speclist.resize(_num_roadstop_specs);
 			for (uint i = 0; i < bst->roadstop_speclist.size(); i++) {
-				SlObjectLoadFiltered(&bst->roadstop_speclist[i], _filtered_station_speclist_desc);
+				SlObjectLoadFiltered(&bst->roadstop_speclist[i], _filtered_roadstop_speclist_desc);
 			}
 		}
 

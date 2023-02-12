@@ -5056,12 +5056,14 @@ static ChangeInfoResult RoadStopChangeInfo(uint id, int numinfo, int prop, const
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
-	if (id + numinfo > 255) {
-		grfmsg(1, "RoadStopChangeInfo: RoadStop %u is invalid, max %u, ignoring", id + numinfo, 255);
+	if (id + numinfo > NUM_ROADSTOPS_PER_GRF) {
+		grfmsg(1, "RoadStopChangeInfo: RoadStop %u is invalid, max %u, ignoring", id + numinfo, NUM_ROADSTOPS_PER_GRF);
 		return CIR_INVALID_ID;
 	}
 
-	if (_cur.grffile->roadstops == nullptr) _cur.grffile->roadstops = CallocT<RoadStopSpec*>(255);
+	if (id + numinfo > _cur.grffile->roadstops.size()) {
+		_cur.grffile->roadstops.resize(id + numinfo);
+	}
 
 	for (int i = 0; i < numinfo; i++) {
 		RoadStopSpec *rs = _cur.grffile->roadstops[id + i];
@@ -6701,9 +6703,9 @@ static void AirportTileMapSpriteGroup(ByteReader *buf, uint8 idcount)
 
 static void RoadStopMapSpriteGroup(ByteReader *buf, uint8 idcount)
 {
-	uint8 *roadstops = AllocaM(uint8, idcount);
+	uint16 *roadstops = AllocaM(uint16, idcount);
 	for (uint i = 0; i < idcount; i++) {
-		roadstops[i] = buf->ReadByte();
+		roadstops[i] = buf->ReadExtendedByte();
 	}
 
 	uint8 cidcount = buf->ReadByte();
@@ -6716,7 +6718,7 @@ static void RoadStopMapSpriteGroup(ByteReader *buf, uint8 idcount)
 		if (ctype == CT_INVALID) continue;
 
 		for (uint i = 0; i < idcount; i++) {
-			RoadStopSpec *roadstopspec = _cur.grffile->roadstops == nullptr ? nullptr : _cur.grffile->roadstops[roadstops[i]];
+			RoadStopSpec *roadstopspec = (roadstops[i] >= _cur.grffile->roadstops.size()) ? nullptr : _cur.grffile->roadstops[roadstops[i]];
 
 			if (roadstopspec == nullptr) {
 				grfmsg(1, "RoadStopMapSpriteGroup: Road stop with ID 0x%02X does not exist, skipping", roadstops[i]);
@@ -6730,13 +6732,13 @@ static void RoadStopMapSpriteGroup(ByteReader *buf, uint8 idcount)
 	uint16 groupid = buf->ReadWord();
 	if (!IsValidGroupID(groupid, "RoadStopMapSpriteGroup")) return;
 
-	if (_cur.grffile->roadstops == nullptr) {
+	if (_cur.grffile->roadstops.empty()) {
 		grfmsg(0, "RoadStopMapSpriteGroup: No roadstops defined, skipping.");
 		return;
 	}
 
 	for (uint i = 0; i < idcount; i++) {
-		RoadStopSpec *roadstopspec = _cur.grffile->roadstops == nullptr ? nullptr : _cur.grffile->roadstops[roadstops[i]];
+		RoadStopSpec *roadstopspec = (roadstops[i] >= _cur.grffile->roadstops.size()) ? nullptr : _cur.grffile->roadstops[roadstops[i]];
 
 		if (roadstopspec == nullptr) {
 			grfmsg(1, "RoadStopMapSpriteGroup: Road stop with ID 0x%02X does not exist, skipping.", roadstops[i]);
@@ -10147,14 +10149,12 @@ static void ResetCustomObjects()
 static void ResetCustomRoadStops()
 {
 	for (auto file : _grf_files) {
-		RoadStopSpec **&roadstopspec = file->roadstops;
-		if (roadstopspec == nullptr) continue;
-		for (uint i = 0; i < NUM_ROADSTOPS_PER_GRF; i++) {
-			free(roadstopspec[i]);
+		std::vector<RoadStopSpec *> &roadstops = file->roadstops;
+		for (RoadStopSpec *spec : roadstops) {
+			free(spec);
 		}
 
-		free(roadstopspec);
-		roadstopspec = nullptr;
+		roadstops.clear();
 	}
 }
 
