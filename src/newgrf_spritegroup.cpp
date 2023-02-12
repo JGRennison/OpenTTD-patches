@@ -468,6 +468,16 @@ static char *DumpSpriteGroupAdjust(char *p, const char *last, const Deterministi
 		}
 	};
 
+	auto append_extended_var = [&](int var_id) {
+		extern const GRFVariableMapDefinition _grf_action2_remappable_variables[];
+		for (const GRFVariableMapDefinition *info = _grf_action2_remappable_variables; info->name != nullptr; info++) {
+			if (var_id == info->id) {
+				p += seprintf(p, last, " (%s)", info->name);
+				break;
+			}
+		}
+	};
+
 	if (IsEvalAdjustJumpOperation(adjust.operation)) {
 		conditional_indent++;
 	}
@@ -508,15 +518,15 @@ static char *DumpSpriteGroupAdjust(char *p, const char *last, const Deterministi
 	if (adjust.variable == A2VRI_VEHICLE_CURRENT_SPEED_SCALED) {
 		p += seprintf(p, last, " (current_speed_scaled)");
 	} else if (adjust.variable >= 0x100) {
-		extern const GRFVariableMapDefinition _grf_action2_remappable_variables[];
-		for (const GRFVariableMapDefinition *info = _grf_action2_remappable_variables; info->name != nullptr; info++) {
-			if (adjust.variable == info->id) {
-				p += seprintf(p, last, " (%s)", info->name);
-				break;
-			}
-		}
+		append_extended_var(adjust.variable);
 	}
-	if ((adjust.variable >= 0x60 && adjust.variable <= 0x7F && adjust.variable != 0x7E) || adjust.parameter != 0) p += seprintf(p, last, " (parameter: %X)", adjust.parameter);
+	if (adjust.variable == 0x7B && adjust.parameter >= 0x100) {
+		p += seprintf(p, last, " (parameter: %X", adjust.parameter);
+		append_extended_var(adjust.parameter);
+		p += seprintf(p, last, ")");
+	} else if ((adjust.variable >= 0x60 && adjust.variable <= 0x7F && adjust.variable != 0x7E) || adjust.parameter != 0) {
+		p += seprintf(p, last, " (parameter: %X)", adjust.parameter);
+	}
 	p += seprintf(p, last, ", shift: %X, and: %X", adjust.shift_num, adjust.and_mask);
 	switch (adjust.type) {
 		case DSGA_TYPE_DIV: p += seprintf(p, last, ", add: %X, div: %X", adjust.add_val, adjust.divmod_val); break;
