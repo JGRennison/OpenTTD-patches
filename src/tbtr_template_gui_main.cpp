@@ -249,7 +249,7 @@ public:
 		DeleteWindowById(WC_CREATE_TEMPLATE, this->window_number);
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case TRW_WIDGET_TOP_MATRIX:
@@ -279,7 +279,7 @@ public:
 		}
 	}
 
-	virtual void SetStringParameters(int widget) const
+	virtual void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case TRW_CAPTION:
@@ -288,7 +288,7 @@ public:
 		}
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	virtual void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (widget) {
 			case TRW_WIDGET_TOP_MATRIX: {
@@ -306,7 +306,7 @@ public:
 		}
 	}
 
-	virtual void OnPaint()
+	virtual void OnPaint() override
 	{
 		this->BuildGroupList();
 		this->BuildTemplateGuiList();
@@ -350,7 +350,7 @@ public:
 		this->DrawWidgets();
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	virtual void OnClick(Point pt, int widget, int click_count) override
 	{
 		if (this->editInProgress) return;
 
@@ -487,7 +487,7 @@ public:
 		this->SetDirty();
 	}
 
-	virtual bool OnVehicleSelect(const Vehicle *v)
+	virtual bool OnVehicleSelect(const Vehicle *v) override
 	{
 		bool succeeded = DoCommandP(0, v->index, 0, CMD_CLONE_TEMPLATE_VEHICLE_FROM_TRAIN | CMD_MSG(STR_TMPL_CANT_CREATE), nullptr);
 
@@ -501,12 +501,12 @@ public:
 		return true;
 	}
 
-	virtual void OnPlaceObjectAbort()
+	virtual void OnPlaceObjectAbort() override
 	{
 		this->RaiseButtons();
 	}
 
-	virtual void OnDropdownSelect(int widget, int index)
+	virtual void OnDropdownSelect(int widget, int index) override
 	{
 		RailType temp = (RailType) index;
 		if (temp == this->sel_railtype) return; // we didn't select a new one. No need to change anything
@@ -518,7 +518,7 @@ public:
 		this->SetDirty();
 	}
 
-	virtual void OnResize()
+	virtual void OnResize() override
 	{
 		/* Top Matrix */
 		NWidgetCore *nwi = this->GetWidget<NWidgetCore>(TRW_WIDGET_TOP_MATRIX);
@@ -533,7 +533,7 @@ public:
 		this->vscroll[2]->SetCapacity(nwi3->current_y);
 	}
 
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	virtual void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		this->groups.ForceRebuild();
 		this->templates.ForceRebuild();
