@@ -357,6 +357,7 @@ struct GRFFile : ZeroedMemoryAllocator {
 
 	uint32 var8D_overlay;                    ///< Overlay for global variable 8D (action 0x14)
 	uint32 var9D_overlay;                    ///< Overlay for global variable 9D (action 0x14)
+	std::vector<uint32> var91_values;        ///< Test result values for global variable 91 (action 0x14, only testable using action 7/9)
 
 	uint32 observed_feature_tests;           ///< Observed feature test bits (see: GRFFeatureTestObservationFlag)
 

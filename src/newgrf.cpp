@@ -7643,6 +7643,13 @@ static void SkipIf(ByteReader *buf)
 
 			default: grfmsg(1, "SkipIf: Unsupported GRF condition type %02X. Ignoring", condtype); return;
 		}
+	} else if (param == 0x91 && (condtype == 0x02 || condtype == 0x03) && cond_val > 0) {
+		const std::vector<uint32> &values = _cur.grffile->var91_values;
+		/* condtype 0x02: skip if test result found
+		 * condtype 0x03: skip if test result not found
+		 */
+		bool found = std::find(values.begin(), values.end(), cond_val) != values.end();
+		result = (found == (condtype == 0x02));
 	} else {
 		/* Tests that use 'param' and are not GRF ID checks.  */
 		uint32 param_val = GetParamVal(param, &cond_val); // cond_val is modified for param == 0x85
@@ -9212,6 +9219,7 @@ struct GRFFeatureTest {
 	uint16 min_version;
 	uint16 max_version;
 	uint8 platform_var_bit;
+	uint32 test_91_value;
 
 	void Reset()
 	{
@@ -9219,6 +9227,7 @@ struct GRFFeatureTest {
 		this->min_version = 1;
 		this->max_version = UINT16_MAX;
 		this->platform_var_bit = 0;
+		this->test_91_value = 0;
 	}
 
 	void ExecuteTest()
@@ -9228,7 +9237,16 @@ struct GRFFeatureTest {
 		if (this->platform_var_bit > 0) {
 			SB(_cur.grffile->var9D_overlay, this->platform_var_bit, 1, has_feature ? 1 : 0);
 			grfmsg(2, "Action 14 feature test: feature test: setting bit %u of var 0x9D to %u, %u", platform_var_bit, has_feature ? 1 : 0, _cur.grffile->var9D_overlay);
-		} else {
+		}
+		if (this->test_91_value > 0) {
+			if (has_feature) {
+				grfmsg(2, "Action 14 feature test: feature test: adding test value 0x%X to var 0x91", this->test_91_value);
+				include(_cur.grffile->var91_values, this->test_91_value);
+			} else {
+				grfmsg(2, "Action 14 feature test: feature test: not adding test value 0x%X to var 0x91", this->test_91_value);
+			}
+		}
+		if (this->platform_var_bit == 0 && this->test_91_value == 0) {
 			grfmsg(2, "Action 14 feature test: feature test: doing nothing: %u", has_feature ? 1 : 0);
 		}
 		if (this->feature != nullptr && this->feature->observation_flag != GFTOF_INVALID) {
@@ -9296,12 +9314,25 @@ static bool ChangeGRFFeatureSetPlatformVarBit(size_t len, ByteReader *buf)
 	return true;
 }
 
+/** Callback function for 'FTST'->'SVAL' to add a test success result value for checking using global variable 91. */
+static bool ChangeGRFFeatureTestSuccessResultValue(size_t len, ByteReader *buf)
+{
+	if (len != 4) {
+		grfmsg(2, "Action 14 feature test: expected 4 bytes for 'FTST'->'SVAL' but got " PRINTF_SIZE ", ignoring this field", len);
+		buf->Skip(len);
+	} else {
+		_current_grf_feature_test.test_91_value = buf->ReadDWord();
+	}
+	return true;
+}
+
 /** Action14 tags for the FTST node */
 AllowedSubtags _tags_ftst[] = {
 	AllowedSubtags('NAME', ChangeGRFFeatureTestName),
 	AllowedSubtags('MINV', ChangeGRFFeatureMinVersion),
 	AllowedSubtags('MAXV', ChangeGRFFeatureMaxVersion),
 	AllowedSubtags('SETP', ChangeGRFFeatureSetPlatformVarBit),
+	AllowedSubtags('SVAL', ChangeGRFFeatureTestSuccessResultValue),
 	AllowedSubtags()
 };
 
@@ -9326,6 +9357,7 @@ struct GRFPropertyMapAction {
 	std::string name;
 	GRFPropertyMapFallbackMode fallback_mode;
 	uint8 ttd_ver_var_bit;
+	uint32 test_91_value;
 	uint8 input_shift;
 	uint8 output_shift;
 	uint input_mask;
@@ -9342,6 +9374,7 @@ struct GRFPropertyMapAction {
 		this->name.clear();
 		this->fallback_mode = GPMFM_IGNORE;
 		this->ttd_ver_var_bit = 0;
+		this->test_91_value = 0;
 		this->input_shift = 0;
 		this->output_shift = 0;
 		this->input_mask = 0;
@@ -9375,6 +9408,9 @@ struct GRFPropertyMapAction {
 		}
 		if (this->ttd_ver_var_bit > 0) {
 			SB(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, 1, success ? 1 : 0);
+		}
+		if (this->test_91_value > 0 && success) {
+			include(_cur.grffile->var91_values, this->test_91_value);
 		}
 		if (!success) {
 			if (this->fallback_mode == GPMFM_ERROR_ON_DEFINITION) {
@@ -9427,6 +9463,9 @@ struct GRFPropertyMapAction {
 		if (this->ttd_ver_var_bit > 0) {
 			SB(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, 1, success ? 1 : 0);
 		}
+		if (this->test_91_value > 0 && success) {
+			include(_cur.grffile->var91_values, this->test_91_value);
+		}
 		if (!success) {
 			if (this->fallback_mode == GPMFM_ERROR_ON_DEFINITION) {
 				grfmsg(0, "Error: Unimplemented mapped %s: %s, feature: %s, mapped to: %X", this->descriptor, str, GetFeatureString(this->feature), this->prop_id);
@@ -9471,6 +9510,9 @@ struct GRFPropertyMapAction {
 		if (this->ttd_ver_var_bit > 0) {
 			SB(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, 1, success ? 1 : 0);
 		}
+		if (this->test_91_value > 0 && success) {
+			include(_cur.grffile->var91_values, this->test_91_value);
+		}
 		if (!success) {
 			grfmsg(2, "Unimplemented mapped %s: %s, feature: %s, mapped to 0", this->descriptor, str, GetFeatureString(this->feature));
 		}
@@ -9501,6 +9543,9 @@ struct GRFPropertyMapAction {
 		}
 		if (this->ttd_ver_var_bit > 0) {
 			SB(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, 1, success ? 1 : 0);
+		}
+		if (this->test_91_value > 0 && success) {
+			include(_cur.grffile->var91_values, this->test_91_value);
 		}
 		if (!success) {
 			if (this->fallback_mode == GPMFM_ERROR_ON_DEFINITION) {
@@ -9625,6 +9670,19 @@ static bool ChangePropertyRemapSetTTDVerVarBit(size_t len, ByteReader *buf)
 	return true;
 }
 
+/** Callback function for >'SVAL' to add a success result value for checking using global variable 91. */
+static bool ChangePropertyRemapSuccessResultValue(size_t len, ByteReader *buf)
+{
+	GRFPropertyMapAction &action = _current_grf_property_map_action;
+	if (len != 4) {
+		grfmsg(2, "Action 14 %s mapping: expected 4 bytes for '%s'->'SVAL' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		buf->Skip(len);
+	} else {
+		action.test_91_value = buf->ReadDWord();
+	}
+	return true;
+}
+
 /** Callback function for ->'RSFT' to set the input shift value for variable remapping. */
 static bool ChangePropertyRemapSetInputShift(size_t len, ByteReader *buf)
 {
@@ -9706,6 +9764,7 @@ AllowedSubtags _tags_fidm[] = {
 	AllowedSubtags('FTID', ChangePropertyRemapFeatureId),
 	AllowedSubtags('FLBK', ChangePropertyRemapSetFallbackMode),
 	AllowedSubtags('SETT', ChangePropertyRemapSetTTDVerVarBit),
+	AllowedSubtags('SVAL', ChangePropertyRemapSuccessResultValue),
 	AllowedSubtags()
 };
 
@@ -9727,6 +9786,7 @@ AllowedSubtags _tags_a0pm[] = {
 	AllowedSubtags('PROP', ChangePropertyRemapPropertyId),
 	AllowedSubtags('FLBK', ChangePropertyRemapSetFallbackMode),
 	AllowedSubtags('SETT', ChangePropertyRemapSetTTDVerVarBit),
+	AllowedSubtags('SVAL', ChangePropertyRemapSuccessResultValue),
 	AllowedSubtags()
 };
 
@@ -9751,6 +9811,7 @@ AllowedSubtags _tags_a2vm[] = {
 	AllowedSubtags('VMSK', ChangePropertyRemapSetOutputMask),
 	AllowedSubtags('VPRM', ChangePropertyRemapSetOutputParam),
 	AllowedSubtags('SETT', ChangePropertyRemapSetTTDVerVarBit),
+	AllowedSubtags('SVAL', ChangePropertyRemapSuccessResultValue),
 	AllowedSubtags()
 };
 
@@ -9771,6 +9832,7 @@ AllowedSubtags _tags_a5tm[] = {
 	AllowedSubtags('TYPE', ChangePropertyRemapTypeId),
 	AllowedSubtags('FLBK', ChangePropertyRemapSetFallbackMode),
 	AllowedSubtags('SETT', ChangePropertyRemapSetTTDVerVarBit),
+	AllowedSubtags('SVAL', ChangePropertyRemapSuccessResultValue),
 	AllowedSubtags()
 };
 

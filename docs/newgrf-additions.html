@@ -81,8 +81,21 @@
 	If the test is successful, the bit is set (to 1), otherwise the bit is cleared (to 0).<br />
 	The bit number MUST be in the range: 4 &le; bit number &le; 31. These bits can be assumed to be 0 on implementations which do not support this feature test mechanism.<br />
 	Global variable 0x9D can then be tested by using a standard <a href="https://newgrf-specs.tt-wiki.net/wiki/Action7">Action 7 or 9</a>, or a standard <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2">Variational Action 2</a>.<br />
-	If this field is omitted, no bit is set or cleared, and the test is not observable.
+	If this field is omitted, no bit is set or cleared, and the test is not observable (unless the SVAL chunk is used).
 	</p>
+	<h4 id="FTST-SVAL">Feature Set Global Variable 0x91 Success Test Value: C "FTST" -> B "SVAL"</h4>
+	<p>Within an FTST chunk, the SVAL binary (type B) field contains a 32 bit value which can be tested using the mechanism below. This is 4 bytes.<br />
+	If the test is successful, the value is added to a list of successful result values which can be checked using the mechanism below.<br />
+	If the test is unsuccessful, no action is taken.<br />
+	The value must be &gt; 0, a value of 0 has no effect.</p>
+	<p>To check if the test succeeded (the value has been added to the list of successful result values), use <a href="https://newgrf-specs.tt-wiki.net/wiki/Action7">Action 7 or 9</a>.<br />
+	The parameter to test is global variable 0x91 (this always has a value of 0, equivalent to the case where the test has failed, if this feature test mechanism is not present).<br />
+	The condition-type to use is: 02 (\7=, equality) to jump if the value is in the list (the test succeeded), or 03 (\7!, inequality) to jump if the value is not in the list (the test did not succeed).<br />
+	The value in the Action 7 or 9 must match the value specified in this SVAL chunk.
+	</p>
+	<p>If this field is omitted, the test is not observable (unless the SETP chunk is used).</p>
+	<p>This chunk and the associated test mechanism requires the feature name: <font face="monospace">feature_test</font>, version 2.<br />
+	Using this chunk instead or as well as SETP allows observing the result of more than 28 feature tests.</p>
 	<br />
 	<h4 id="FTST-example">Example NFO:</h4>
 	<pre>
@@ -134,6 +147,9 @@
 	Global variable 0x8D can then be tested by using a standard <a href="https://newgrf-specs.tt-wiki.net/wiki/Action7">Action 7 or 9</a>, or a standard <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2">Variational Action 2</a>.<br />
 	If this field is omitted, no bit is set or cleared.
 	</p>
+	<h4 id="A0PM-SVAL">Success Indicator Global Variable 0x91 Test Value: C "A0PM" -> B "SVAL"</h4>
+	<p>This behaves identically to the <a href="#FTST-SVAL">C "FTST" -> B "SVAL"</a> case, above</p>
+	<p>This chunk and the associated test mechanism requires the feature name: <font face="monospace">property_mapping</font>, version 2.</p>
 	<h4 id="A0PM-FLBK">Fallback Mode: C "A0PM" -> B "FLBK"</h4>
 	<p>Within an A0PM chunk, the FLBK binary (type B) field contains the fallback mode. This is 1 byte.<br />
 	The fallback mode may take the following values:
@@ -656,6 +672,9 @@
 	If this is not specified, a value of 0 is assumed.</p>
 	<h4 id="A2VM-SETT">Success Indicator Global Variable 0x8D Bit: C "A2VM" -> B "SETT"</h4>
 	<p>This behaves identically to the <a href="#A0PM-SETT">C "A0PM" -> B "SETT"</a> case, above</p>
+	<h4 id="A2VM-SVAL">Success Indicator Global Variable 0x91 Test Value: C "A2VM" -> B "SVAL"</h4>
+	<p>This behaves identically to the <a href="#FTST-SVAL">C "FTST" -> B "SVAL"</a> case, above</p>
+	<p>This chunk and the associated test mechanism requires the feature name: <font face="monospace">variable_mapping</font>, version 3.</p>
 	<h4 id="A2VM-VPRM">Replacement parameter: C "A2VM" -> B "VPRM"</h4>
 	<p>Within an A2VM chunk, the VPRM binary (type B) field contains the Variational Action 2 parameter value (as in 60+X variables) to use on the mapped variable. This is 4 bytes.<br />
 	If this is not specified, a value of 0 is assumed.<br />
@@ -805,6 +824,9 @@
 	It is possible to override existing type IDs, however this use is not recommended.</p>
 	<h4 id="A5TM-SETT">Success Indicator Global Variable 0x8D Bit: C "A5TM" -> B "SETT"</h4>
 	<p>This behaves identically to the <a href="#A0PM-SETT">C "A0PM" -> B "SETT"</a> case, above</p>
+	<h4 id="A5TM-SVAL">Success Indicator Global Variable 0x91 Test Value: C "A5TM" -> B "SVAL"</h4>
+	<p>This behaves identically to the <a href="#FTST-SVAL">C "FTST" -> B "SVAL"</a> case, above</p>
+	<p>This chunk and the associated test mechanism requires the feature name: <font face="monospace">action5_type_id_mapping</font>, version 2.</p>
 	<h4 id="A5TM-FLBK">Fallback Mode: C "A5TM" -> B "FLBK"</h4>
 	<p>This behaves identically to the <a href="#A0PM-FLBK">C "A0PM" -> B "FLBK"</a> case, above</p>
 	<h4 id="A5TM-example">Example NFO:</h4>
@@ -879,6 +901,9 @@
 	At the time of writing known existing feature IDs include the values: 0x00 - 0x13 (inclusive) and 0x48.</p>
 	<h4 id="FIDM-SETT">Success Indicator Global Variable 0x8D Bit: C "FIDM" -> B "SETT"</h4>
 	<p>This behaves identically to the <a href="#A0PM-SETT">C "A0PM" -> B "SETT"</a> case, above</p>
+	<h4 id="FIDM-SVAL">Success Indicator Global Variable 0x91 Test Value: C "FIDM" -> B "SVAL"</h4>
+	<p>This behaves identically to the <a href="#FTST-SVAL">C "FTST" -> B "SVAL"</a> case, above</p>
+	<p>This chunk and the associated test mechanism requires the feature name: <font face="monospace">feature_id_mapping</font>, version 2.</p>
 	<h4 id="FIDM-FLBK">Fallback Mode: C "FIDM" -> B "FLBK"</h4>
 	<p>This behaves identically to the <a href="#A0PM-FLBK">C "A0PM" -> B "FLBK"</a> case, above</p>
 	<h4 id="FIDM-example">Example NFO:</h4>
