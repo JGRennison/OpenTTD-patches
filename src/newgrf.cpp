@@ -912,16 +912,13 @@ typedef ChangeInfoResult (*VCI_Handler)(uint engine, int numinfo, int prop, cons
 
 static ChangeInfoResult HandleAction0PropertyDefault(ByteReader *buf, int prop)
 {
-	switch (prop) {
-		case A0RPI_UNKNOWN_IGNORE:
-			buf->Skip(buf->ReadExtendedByte());
-			return CIR_SUCCESS;
-
-		case A0RPI_UNKNOWN_ERROR:
-			return CIR_DISABLED;
-
-		default:
-			return CIR_UNKNOWN;
+	if (prop == A0RPI_UNKNOWN_ERROR) {
+		return CIR_DISABLED;
+	} else if (prop < A0RPI_UNKNOWN_IGNORE) {
+		return CIR_UNKNOWN;
+	} else {
+		buf->Skip(buf->ReadExtendedByte());
+		return CIR_SUCCESS;
 	}
 }
 
