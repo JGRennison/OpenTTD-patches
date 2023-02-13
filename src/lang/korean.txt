@@ -1828,6 +1828,7 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_BLEND         :반투명 흰�
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_ALL           :반투명 + 윤곽
 STR_CONFIG_SETTING_VIEWPORT_MAP_USE_OWNER_COLOUR_BRIDGE_TUNNEL  :다리와 터널의 소유주 색 적용: {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE                    :기본 모드: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE_HELPTEXT           :지도 모드에서 축소했을 때, 주 화면과 다른 추가 외부 화면에서 사용할 기본 표시 모드입니다.
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK                 :더블 클릭을 하면 실행할 동작: {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_DO_NOTHING      :아무것도 하지 않기
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_ZOOM_MAIN       :확대/축소 배율 원래대로
@@ -2201,6 +2202,9 @@ STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE                          :도시가 연�
 STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_HELPTEXT                 :도시가 만드는 연속적인 오르막길의 길이를 제한할 수 있습니다. 이 설정을 이용하면 도시가 길고 쭉 뻗은 도로를 산의 오르막이나 내리막을 따라 만드는 것을 막을 수 있습니다.
 STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_VALUE                    :{NUM}칸
 STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_ZERO                     :제한 없음
+
+STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES                           :도시가 다리를 만드는 것을 허용: {STRING}
+STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES_HELPTEXT                  :도시가 다리를 만드는 허용하려면 이 설정을 켜세요
 
 STR_CONFIG_SETTING_NOISE_LEVEL                                  :도시가 공항에서 나오는 소음을 제한하도록 함: {STRING}
 STR_CONFIG_SETTING_NOISE_LEVEL_HELPTEXT                         :이 설정을 끄면, 한 도시에는 공항을 2개까지 지을 수 있습니다. 이 설정을 켜면, 한 도시에 지을 수 있는 공항의 수는 도시가 허용 가능한 소음 기준에 따라 달라집니다. 소음 기준은 도시 인구, 공항의 크기와 거리에 따라 다릅니다.
@@ -3260,6 +3264,8 @@ STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_CARGO_EQUALS          :실을 수 있�
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_CARGO_NOT_EQUALS      :실을 수 없다면
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_HAS_STATUS            :라면
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_DOESNT_HAVE_STATUS    :아니라면
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_PASS                  :통과한다면
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_DOESNT_PASS           :통과하지 않는다면
 STR_TRACE_RESTRICT_CONDITIONAL_IF                               :조건문:
 STR_TRACE_RESTRICT_CONDITIONAL_ELIF                             :아니라면, 조건문:
 STR_TRACE_RESTRICT_CONDITIONAL_ORIF                             :또는, 조건문:
@@ -3297,6 +3303,8 @@ STR_TRACE_RESTRICT_VARIABLE_TRAIN_OWNER                         :열차 소유�
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_STATUS                        :열차 상태
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_ENGINE_CLASS                  :기관차 종류
 STR_TRACE_RESTRICT_VARIABLE_ORDER_TARGET_DIRECTION              :경로 목적지 방향
+STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH                 :경로 예약이 칸을 통과한다면
+STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH_SHORT           :경로 예약이 칸을 통과하지 않는다면
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :정의되지 않음
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED                       :{PUSH_COLOUR}{RED}정의되지 않음{POP_COLOUR}
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER                  :{STRING} {STRING} {STRING} {COMMA}{P 3 "이" ""}라면
@@ -3327,6 +3335,7 @@ STR_TRACE_RESTRICT_CONDITIONAL_COUNTER                          :{STRING} 열차
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING} 열차의 카운터 값: {STRING} {BLACK}{STRING} {STRING} {4:COMMA}{P 4 "이" ""}라면
 STR_TRACE_RESTRICT_CONDITIONAL_ENGINE_CLASSES                   :{STRING} 열차가 {2:STRING}{1:STRING.case1}
 STR_TRACE_RESTRICT_CONDITIONAL_TARGET_DIRECTION                 :{0:STRING} {1:STRING}의 칸 {2:STRING} 이 신호보다 {3:STRING} 이면
+STR_TRACE_RESTRICT_CONDITIONAL_PASSES_TILE_INDEX                :{STRING} {STRING} {STRING} {NUM} x {NUM} 이면
 STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}정의되지 않음 {BLACK}{STRING}이라면
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}정의되지 않음 {BLACK}{STRING}이라면
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :경로 탐색에서 우선순위를 {COMMA} 만큼 뒤로
@@ -4365,6 +4374,8 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}경고: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}오류: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}치명적 오류: {SILVER}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}NewGRF "{STRING}"에서 치명적인 오류가 발생했습니다: {}{STRING}
+STR_NEWGRF_ERROR_POPUP                                          :{WHITE}NewGRF "{STRING}"에서 오류가 발생했습니다: {}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING}{G 1 "은" "는"} OpenTTD에서 보고된 TTDPatch 버전에서 작동하지 않을 것입니다
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING}{G 1 "은" "는"} {2:STRING} 버전의 TTD를 위한 것입니다
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING}{G 1 "은" "는"} {2:STRING}{G 1 "와" "과"} 같이 사용해야 합니다
@@ -4522,12 +4533,13 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{PUSH_COLOUR}{Y
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{PUSH_COLOUR}{YELLOW}1년 간 수송 권한 독점권을 구입합니다.{}도시 당국은 오직 당신 회사의 역에만 승객과 화물을 실을 것입니다.{}{POP_COLOUR}가격: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{PUSH_COLOUR}{YELLOW}성취도를 올리기 위해 처벌을 감수하고 지역 당국에 뇌물을 줍니다.{}{POP_COLOUR}가격: {CURRENCY_LONG}
 
-###length 5
+###length 6
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_ROADS                :도로 건설
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_LEVEL_CROSSINGS      :건널목 건설
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TUNNELS                    :터널 건설
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_MAX_ROAD_SLOPE             :연속 오르막길 건설 길이 제한
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TOWN_GROWTH                :도시 성장 속도
+STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_BRIDGES                    :다리 건설 허용
 
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_DEFAULT                    :기본값 ({STRING})
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_STR                        :{STRING}: {PUSH_COLOUR}{YELLOW}{STRING}{POP_COLOUR}
@@ -5489,6 +5501,7 @@ STR_VEHICLE_INFO_MAX_SPEED_LOADED                               :{BLACK}가득 �
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}올해 이익: {LTBLUE}{CURRENCY_LONG} (작년: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING} (평생: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}올해 이익: {LTBLUE}{CURRENCY_LONG} (작년: {CURRENCY_LONG}) {BLACK}최소 성취도: {LTBLUE}{POWER_TO_WEIGHT}
+
 STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}신뢰도: {LTBLUE}{COMMA}%  {BLACK}최근 점검 이후 고장 횟수: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_GROUP                                          :{BLACK}그룹: {LTBLUE}{GROUP}
@@ -6079,7 +6092,9 @@ STR_SCREENSHOT_TOPOGRAPHY_SCREENSHOT                            :{BLACK}지형 �
 STR_SCREENSHOT_INDUSTRY_SCREENSHOT                              :{BLACK}산업시설 스크린 샷
 
 # Script Parameters
+STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} 매개 변수
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}인공지능 매개 변수
+STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :게임 스크립트
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}닫기
 STR_AI_SETTINGS_RESET                                           :{BLACK}초기화
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
@@ -7303,6 +7318,7 @@ STR_TMPL_DEFINE_TEMPLATE                                        :{BLACK}새 템�
 STR_TMPL_EDIT_TEMPLATE                                          :{BLACK}편집
 STR_TMPL_CREATE_CLONE_VEH                                       :{BLACK}복제
 STR_TMPL_DELETE_TEMPLATE                                        :{BLACK}삭제
+STR_TMPL_RENAME_TEMPLATE                                        :{BLACK}템플릿 이름 바꾸기
 STR_TMPL_RPL_ALL_TMPL                                           :{BLACK}모든 템플릿 교체
 STR_TMPL_NEW_VEHICLE                                            :{BLACK}새 차량
 STR_TMPL_CONFIRM                                                :{BLACK}확인
@@ -7321,6 +7337,7 @@ STR_TMPL_WARNING_FREE_WAGON                                     :{RED}객차/화
 STR_TMPL_WARNING_VEH_UNAVAILABLE                                :{RED}열차 구성 불가: 차량을 사용할 수 없습니다!
 STR_TMPL_WARNING_VEH_NO_COMPATIBLE_RAIL_TYPE                    :{RED}열차 구성 불가: 이 편성을 사용할 수 있는 선로가 없습니다
 STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}{STRING}번 템플릿 사용 중
+STR_TMPL_NAME                                                   :{NUM}: {STRING}
 STR_TMP_TEMPLATE_IN_USE                                         :템플릿이 사용 중입니다.
 STR_TMP_TEMPLATE_FROM_PARENT_GROUP                              :상위 그룹의 템플릿 사용
 STR_TMPL_GROUP_NUM_TRAINS                                       :{BLACK}{NUM}
@@ -7367,6 +7384,7 @@ STR_TMPL_RPLALLGUI_BUTTON_CANCEL                                :{BLACK}취소
 STR_TMPL_RPLALLGUI_USE_TIP                                      :{BLACK}각 목록으로부터 차량 종류를 고르고 '모두 교체'를 클릭하십시오. 만약 템플릿 목록에 표시된 결과가 만족스럽다면, '적용'을 클릭해 바뀐 내용을 적용하십시오.
 
 STR_TMPL_CANT_CREATE                                            :{WHITE}템플릿이나 가상 차량을 생성할 수 없습니다...
+STR_TMPL_CANT_RENAME                                            :{WHITE}템플릿 이름을 바꿀 수 없습니다...
 
 # Scheduled Dispatch
 STR_SCHDISPATCH_CAPTION                                         :{WHITE}{VEHICLE} (배차 일정)
