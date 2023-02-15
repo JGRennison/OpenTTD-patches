@@ -144,6 +144,8 @@ private:
 	const int line;
 };
 
+struct AutoRestoreBackupNoNewValueTag {};
+
 /**
  * Class to backup a specific variable and restore it upon destruction of this object to prevent
  * stack values going out of scope before resetting the global to its original value. Contrary to
@@ -156,6 +158,13 @@ struct AutoRestoreBackup {
 	 * for the new value to go out of scope before this object goes out of scope, thus defeating
 	 * the whole goal and reason for existing of this object.
 	 */
+
+	/**
+	 * Backup variable.
+	 * @param original Variable to backup.
+	 * @param tag Tag to indicate that the variable's value should not be changed.
+	 */
+	AutoRestoreBackup(T &original, AutoRestoreBackupNoNewValueTag tag) : original(original), original_value(original) {}
 
 	/**
 	 * Backup variable and switch to new value.
