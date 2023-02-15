@@ -115,6 +115,7 @@
 #include "tracerestrict.h"
 #include "worker_thread.h"
 #include "vehiclelist.h"
+#include "core/backup_type.hpp"
 
 #include <map>
 #include <vector>
@@ -2482,10 +2483,9 @@ static inline void DrawRouteStep(const Viewport * const vp, const TileIndex tile
 	DrawSprite(SetBit(s, PALETTE_MODIFIER_TRANSPARENT), PALETTE_TO_TRANSPARENT, _cur_dpi->left + x_bottom_spr, _cur_dpi->top + y2);
 
 	/* Fill with the data. */
-	DrawPixelInfo *old_dpi = _cur_dpi;
 	y2 = y + _vp_route_step_height_top;
 	DrawPixelInfo dpi_for_text = _vdd->MakeDPIForText();
-	_cur_dpi = &dpi_for_text;
+	AutoRestoreBackup dpi_backup(_cur_dpi, &dpi_for_text);
 
 	const int x_str = x_centre - (str_width / 2);
 	if (list.size() > max_rank_order_type_count) {
@@ -2521,7 +2521,6 @@ static inline void DrawRouteStep(const Viewport * const vp, const TileIndex tile
 			}
 		}
 	}
-	_cur_dpi = old_dpi;
 }
 
 static bool ViewportPrepareVehicleRouteSteps(const Vehicle * const veh)
@@ -3325,9 +3324,8 @@ static void ViewportMapDrawScrollingViewportBox(const Viewport * const vp)
 
 static void ViewportMapDrawSelection(const Viewport * const vp)
 {
-	DrawPixelInfo *old_dpi = _cur_dpi;
 	DrawPixelInfo dpi_for_text = _vdd->MakeDPIForText();
-	_cur_dpi = &dpi_for_text;
+	AutoRestoreBackup dpi_backup(_cur_dpi, &dpi_for_text);
 
 	auto draw_line = [&](Point from_pt, Point to_pt) {
 		GfxDrawLine(from_pt.x, from_pt.y, to_pt.x, to_pt.y, PC_WHITE, 2, 0);
@@ -3368,8 +3366,6 @@ static void ViewportMapDrawSelection(const Viewport * const vp)
 	} else {
 		draw_line(start_pt, end_pt);
 	}
-
-	_cur_dpi = old_dpi;
 }
 
 template <bool is_32bpp>
@@ -3627,9 +3623,6 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint
 		_spare_viewport_drawers.pop_back();
 	}
 
-	DrawPixelInfo *old_dpi = _cur_dpi;
-	_cur_dpi = &_vdd->dpi;
-
 	_vdd->display_flags = display_flags;
 	_vdd->transparency_opt = _transparency_opt;
 	_vdd->invisibility_opt = _invisibility_opt;
@@ -3643,7 +3636,7 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint
 	_vdd->dpi.height = (bottom - top) & mask;
 	_vdd->dpi.left = left & mask;
 	_vdd->dpi.top = top & mask;
-	_vdd->dpi.pitch = old_dpi->pitch;
+	_vdd->dpi.pitch = _cur_dpi->pitch;
 	_vd.last_child = nullptr;
 
 	_vdd->offset_x = UnScaleByZoomLower(_vdd->dpi.left - (vp->virtual_left & mask), vp->zoom);
@@ -3651,7 +3644,9 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint
 	int x = _vdd->offset_x + vp->left;
 	int y = _vdd->offset_y + vp->top;
 
-	_vdd->dpi.dst_ptr = BlitterFactory::GetCurrentBlitter()->MoveTo(old_dpi->dst_ptr, x - old_dpi->left, y - old_dpi->top);
+	_vdd->dpi.dst_ptr = BlitterFactory::GetCurrentBlitter()->MoveTo(_cur_dpi->dst_ptr, x - _cur_dpi->left, y - _cur_dpi->top);
+
+	AutoRestoreBackup dpi_backup(_cur_dpi, &_vdd->dpi);
 
 	if (vp->overlay != nullptr && vp->overlay->GetCargoMask() != 0 && vp->overlay->GetCompanyMask() != 0) {
 		vp->overlay->PrepareDraw();
@@ -3698,8 +3693,6 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint
 			}, vp, _vdd.release());
 		}
 	}
-
-	_cur_dpi = old_dpi;
 }
 
 /* This is run in a worker thread */
@@ -3776,9 +3769,10 @@ void ViewportDoDrawProcessAllPending()
 			_viewport_drawer_returns.pop_back();
 			lk.unlock();
 
-			DrawPixelInfo *old_dpi = _cur_dpi;
-			ViewportDoDrawPhase3(vp);
-			_cur_dpi = old_dpi;
+			{
+				AutoRestoreBackup dpi_backup(_cur_dpi, AutoRestoreBackupNoNewValueTag{});
+				ViewportDoDrawPhase3(vp);
+			}
 
 			_viewport_drawer_jobs--;
 			if (_viewport_drawer_jobs == 0) return;

@@ -124,14 +124,13 @@ void DrawTemplate(const TemplateVehicle *tv, int left, int right, int y, int hei
 {
 	if (!tv) return;
 
-	DrawPixelInfo tmp_dpi, *old_dpi;
+	DrawPixelInfo tmp_dpi;
 	int max_width = right - left + 1;
 	int veh_height = ScaleSpriteTrad(14);
 	int padding = height - veh_height;
 	if (!FillDrawPixelInfo(&tmp_dpi, left, y + (padding / 2), max_width, height)) return;
 
-	old_dpi = _cur_dpi;
-	_cur_dpi = &tmp_dpi;
+	AutoRestoreBackup dpi_backup(_cur_dpi, &tmp_dpi);
 
 	const TemplateVehicle *t = tv;
 	int offset = 0;
@@ -142,8 +141,6 @@ void DrawTemplate(const TemplateVehicle *tv, int left, int right, int y, int hei
 		offset += t->image_dimensions.GetDisplayImageWidth();
 		t = t->Next();
 	}
-
-	_cur_dpi = old_dpi;
 }
 
 // copy important stuff from the virtual vehicle to the template

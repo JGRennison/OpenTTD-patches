@@ -34,6 +34,7 @@
 #include "error.h"
 #include "tracerestrict.h"
 #include "scope.h"
+#include "core/backup_type.hpp"
 
 #include "widgets/order_widget.h"
 
@@ -1171,12 +1172,9 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 		Dimension lock_d = GetSpriteSize(SPR_LOCK);
 		DrawPixelInfo tmp_dpi;
 		if (FillDrawPixelInfo(&tmp_dpi, rtl ? left : middle, y, rtl ? middle - left : right - middle, lock_d.height)) {
-			DrawPixelInfo *old_dpi = _cur_dpi;
-			_cur_dpi = &tmp_dpi;
+			AutoRestoreBackup dpi_backup(_cur_dpi, &tmp_dpi);
 
 			DrawSprite(SPR_LOCK, PAL_NONE, rtl ? edge - 3 - lock_d.width - left : edge + 3 - middle, 0);
-
-			_cur_dpi = old_dpi;
 		}
 	}
 }

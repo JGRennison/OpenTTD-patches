@@ -37,6 +37,7 @@
 #include "station_func.h"
 #include "zoom_func.h"
 #include "sortlist_type.h"
+#include "core/backup_type.hpp"
 
 #include "widgets/company_widget.h"
 
@@ -2087,8 +2088,7 @@ struct CompanyInfrastructureWindow : Window
 		DrawPixelInfo tmp_dpi;
 		if (!FillDrawPixelInfo(&tmp_dpi, r.left, r.top, width + 1, r.bottom - r.top + 1)) return;
 
-		DrawPixelInfo *old_dpi = _cur_dpi;
-		_cur_dpi = &tmp_dpi;
+		AutoRestoreBackup dpi_backup(_cur_dpi, &tmp_dpi);
 
 		int y = -this->vscroll->GetPosition();
 
@@ -2198,9 +2198,6 @@ struct CompanyInfrastructureWindow : Window
 				break;
 			}
 		}
-
-		/* Restore clipping region. */
-		_cur_dpi = old_dpi;
 	}
 
 	virtual void OnResize() override

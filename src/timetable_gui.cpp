@@ -26,6 +26,7 @@
 #include "schdispatch.h"
 #include "vehiclelist.h"
 #include "tracerestrict.h"
+#include "core/backup_type.hpp"
 
 #include "widgets/timetable_widget.h"
 
@@ -723,12 +724,9 @@ struct TimetableWindow : GeneralVehicleWindow {
 							Dimension lock_d = GetSpriteSize(SPR_LOCK);
 							DrawPixelInfo tmp_dpi;
 							if (FillDrawPixelInfo(&tmp_dpi, rtl ? tr.left : middle, tr.top, rtl ? middle : tr.right, lock_d.height)) {
-								DrawPixelInfo *old_dpi = _cur_dpi;
-								_cur_dpi = &tmp_dpi;
+								AutoRestoreBackup dpi_backup(_cur_dpi, &tmp_dpi);
 
 								DrawSprite(SPR_LOCK, PAL_NONE, rtl ? edge - 3 - lock_d.width - tr.left : edge + 3 - middle, 0);
-
-								_cur_dpi = old_dpi;
 							}
 						}
 

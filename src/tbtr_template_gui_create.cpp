@@ -40,6 +40,7 @@
 #include "company_base.h"
 #include "train.h"
 #include "newgrf_debug.h"
+#include "core/backup_type.hpp"
 
 #include "tbtr_template_gui_create.h"
 #include "tbtr_template_vehicle.h"
@@ -298,12 +299,11 @@ public:
 			}
 			case TCW_INFO_PANEL: {
 				if (this->virtual_train) {
-					DrawPixelInfo tmp_dpi, *old_dpi;
+					DrawPixelInfo tmp_dpi;
 
 					if (!FillDrawPixelInfo(&tmp_dpi, r.left, r.top, r.right - r.left, r.bottom - r.top)) break;
 
-					old_dpi = _cur_dpi;
-					_cur_dpi = &tmp_dpi;
+					AutoRestoreBackup dpi_backup(_cur_dpi, &tmp_dpi);
 
 					int y = ScaleGUITrad(4) - this->vscroll->GetPosition();
 					bool buildable = true;
@@ -380,8 +380,6 @@ public:
 							y += FONT_HEIGHT_NORMAL;
 						}
 					}
-
-					_cur_dpi = old_dpi;
 				}
 				break;
 			}

@@ -28,6 +28,7 @@
 #include "network/network.h"
 #include "zoom_func.h"
 #include "textbuf_gui.h"
+#include "core/backup_type.hpp"
 
 #include "table/sprites.h"
 #include "table/strings.h"
@@ -769,14 +770,13 @@ public:
 			return;
 		}
 
-		DrawPixelInfo tmp_dpi, *old_dpi;
+		DrawPixelInfo tmp_dpi;
 
 		if (!FillDrawPixelInfo(&tmp_dpi, r.left, r.top, r.right - r.left, r.bottom - r.top)) {
 			return;
 		}
 
-		old_dpi = _cur_dpi;
-		_cur_dpi = &tmp_dpi;
+		AutoRestoreBackup dpi_backup(_cur_dpi, &tmp_dpi);
 
 		const TemplateVehicle *tmp = this->templates[this->selected_template_index];
 
@@ -840,8 +840,6 @@ public:
 				}
 			}
 		}
-
-		_cur_dpi = old_dpi;
 	}
 
 	void UpdateButtonState()

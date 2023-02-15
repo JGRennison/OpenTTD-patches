@@ -1699,20 +1699,17 @@ void SmallMapWindow::TakeScreenshot()
  */
 void SmallMapWindow::ScreenshotCallbackHandler(void *buf, uint y, uint pitch, uint n)
 {
-	DrawPixelInfo dpi, *old_dpi;
+	DrawPixelInfo dpi;
+	AutoRestoreBackup dpi_backup(_cur_dpi, &dpi);
 
 	/* We are no longer rendering to the screen */
-	DrawPixelInfo old_screen = _screen;
-	bool old_disable_anim = _screen_disable_anim;
+	AutoRestoreBackup screen_backup(_screen, AutoRestoreBackupNoNewValueTag{});
+	AutoRestoreBackup screen_disable_anim_backup(_screen_disable_anim, true);
 
 	_screen.dst_ptr = buf;
 	_screen.width = pitch;
 	_screen.height = n;
 	_screen.pitch = pitch;
-	_screen_disable_anim = true;
-
-	old_dpi = _cur_dpi;
-	_cur_dpi = &dpi;
 
 	dpi.dst_ptr = buf;
 	dpi.height = n;
@@ -1728,12 +1725,6 @@ void SmallMapWindow::ScreenshotCallbackHandler(void *buf, uint y, uint pitch, ui
 
 	/* make the screenshot */
 	this->DrawSmallMap(&dpi, false);
-
-	_cur_dpi = old_dpi;
-
-	/* Switch back to rendering to the screen */
-	_screen = old_screen;
-	_screen_disable_anim = old_disable_anim;
 }
 
 SmallMapWindow::SmallMapType SmallMapWindow::map_type = SMT_CONTOUR;

@@ -1752,9 +1752,8 @@ void DrawDirtyBlocks()
 			cleared_overlays = true;
 		};
 
-		DrawPixelInfo *old_dpi = _cur_dpi;
 		DrawPixelInfo bk;
-		_cur_dpi = &bk;
+		Backup dpi_backup(_cur_dpi, &bk, FILE_LINE);
 
 		for (Window *w : Window::IterateFromBack()) {
 			w->flags &= ~WF_DRAG_DIRTIED;
@@ -1899,7 +1898,7 @@ void DrawDirtyBlocks()
 			}
 		}
 
-		_cur_dpi = old_dpi;
+		dpi_backup.Restore();
 
 		for (const Rect &r : _dirty_blocks) {
 			RedrawScreenRect(r.left, r.top, r.right, r.bottom);
