@@ -192,7 +192,7 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 	PlanLine *NewLine()
 	{
 		PlanLine *pl = new PlanLine();
-		if (pl) this->lines.push_back(pl);
+		this->lines.push_back(pl);
 		return pl;
 	}
 
