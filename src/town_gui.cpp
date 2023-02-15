@@ -243,6 +243,7 @@ public:
 		switch (widget) {
 			case WID_TA_ACTION_INFO:
 				if (this->sel_index != -1) {
+					TextColour colour = TC_FROMSTRING;
 					StringID text = STR_NULL;
 					if (this->sel_index >= 0x100) {
 						SetDParam(1, STR_EMPTY);
@@ -269,10 +270,11 @@ public:
 						text = STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TEXT;
 						SetDParam(0, STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_ROADS + this->sel_index - 0x100);
 					} else {
+						colour = TC_YELLOW;
 						text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING + this->sel_index;
 						SetDParam(0, _price[PR_TOWN_ACTION] * _town_action_costs[this->sel_index] >> 8);
 					}
-					DrawStringMultiLine(r.Shrink(WidgetDimensions::scaled.framerect), text);
+					DrawStringMultiLine(r.Shrink(WidgetDimensions::scaled.framerect), text, colour);
 				}
 				break;
 			case WID_TA_COMMAND_LIST: {
