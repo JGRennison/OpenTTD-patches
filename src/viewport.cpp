@@ -3993,12 +3993,12 @@ void UpdateViewportSizeZoom(Viewport *vp)
 	UpdateViewportDirtyBlockLeftMargin(vp);
 	if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
 		memset(vp->map_draw_vehicles_cache.done_hash_bits, 0, sizeof(vp->map_draw_vehicles_cache.done_hash_bits));
-		vp->map_draw_vehicles_cache.vehicle_pixels.assign(vp->width * vp->height, false);
+		vp->map_draw_vehicles_cache.vehicle_pixels.assign(vp->ScreenArea(), false);
 
 		if (BlitterFactory::GetCurrentBlitter()->GetScreenDepth() == 32) {
-			vp->land_pixel_cache.assign(vp->height * vp->width * 4, 0xD7);
+			vp->land_pixel_cache.assign(vp->ScreenArea() * 4, 0xD7);
 		} else {
-			vp->land_pixel_cache.assign(vp->height * vp->width, 0xD7);
+			vp->land_pixel_cache.assign(vp->ScreenArea(), 0xD7);
 		}
 	} else {
 		vp->map_draw_vehicles_cache.vehicle_pixels.clear();
@@ -4108,7 +4108,7 @@ void MarkViewportDirty(Viewport * const vp, int left, int top, int right, int bo
 		uint bitdepth = BlitterFactory::GetCurrentBlitter()->GetScreenDepth() / 8;
 		uint8 *land_cache = vp->land_pixel_cache.data() + ((l + (t * vp->width)) * bitdepth);
 		while (--h) {
-			memset(land_cache, 0xD7, w * bitdepth);
+			memset(land_cache, 0xD7, (size_t)w * bitdepth);
 			land_cache += vp->width * bitdepth;
 		}
 	}

@@ -68,7 +68,7 @@ static void Load_MAPT()
 
 static void Check_MAPH_common()
 {
-	if (_sl_maybe_chillpp && (SlGetFieldLength() == 0 || SlGetFieldLength() == _map_dim_x * _map_dim_y * 2)) {
+	if (_sl_maybe_chillpp && (SlGetFieldLength() == 0 || SlGetFieldLength() == (size_t)_map_dim_x * (size_t)_map_dim_y * 2)) {
 		_sl_maybe_chillpp = false;
 		extern void SlXvChillPPSpecialSavegameVersions();
 		SlXvChillPPSpecialSavegameVersions();

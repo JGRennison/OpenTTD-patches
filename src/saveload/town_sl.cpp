@@ -345,7 +345,7 @@ static void Load_TOWN()
 			uint16 w = SlReadUint16();
 			uint16 h = SlReadUint16();
 			if (w != 0) {
-				SlSkipBytes((SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_MATRIX) ? 8 : 4) * (w / 4 * h / 4));
+				SlSkipBytes((SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_MATRIX) ? 8 : 4) * ((uint)(w / 4) * (uint)(h / 4)));
 			}
 		}
 	}

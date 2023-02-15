@@ -79,6 +79,11 @@ struct Viewport {
 		this->update_vehicles = false;
 	}
 
+	size_t ScreenArea() const
+	{
+		return ((size_t)this->width) * ((size_t)this->height);
+	}
+
 private:
 	uint GetDirtyBlockShift() const
 	{

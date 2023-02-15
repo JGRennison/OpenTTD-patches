@@ -375,7 +375,7 @@ public:
 	void RemoveEdge(NodeID from, NodeID to);
 
 	inline uint64 CalculateCostEstimate() const {
-		uint64 size_squared = this->Size() * this->Size();
+		uint64 size_squared = (uint32)this->Size() * (uint32)this->Size();
 		return size_squared * FindLastBit(size_squared * size_squared); // N^2 * 4log_2(N)
 	}
 

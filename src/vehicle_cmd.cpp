@@ -1348,7 +1348,7 @@ CommandCost CmdTemplateVehicleFromTrain(TileIndex tile, DoCommandFlag flags, uin
 	bool should_execute = (flags & DC_EXEC) != 0;
 
 	if (should_execute) {
-		TemplateVehicle *tmp;
+		TemplateVehicle *tmp = nullptr;
 		TemplateVehicle *prev = nullptr;
 		for (; clicked != nullptr; clicked = clicked->Next()) {
 			tmp = new TemplateVehicle(clicked->engine_type);

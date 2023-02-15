@@ -45,7 +45,7 @@ void Blitter_40bppAnim::SetPixel32(void *video, int x, int y, uint8 colour, uint
 	} else {
 		*((Colour *)video + x + y * _screen.pitch) = colour32;
 
-		VideoDriver::GetInstance()->GetAnimBuffer()[((uint32 *)video - (uint32 *)_screen.dst_ptr) + x + y * _screen.pitch] = 0;
+		VideoDriver::GetInstance()->GetAnimBuffer()[((uint32 *)video - (uint32 *)_screen.dst_ptr) + x + (ssize_t)y * _screen.pitch] = 0;
 	}
 }
 

@@ -7319,7 +7319,7 @@ int GetTrainRealisticAccelerationAtSpeed(const int speed, const int mass, const 
 	if (!maglev) {
 		/* Static resistance plus rolling friction. */
 		resistance = 10 * mass;
-		resistance += mass * (15 * (512 + speed) / 512);
+		resistance += (int64)mass * (int64)(15 * (512 + speed) / 512);
 	}
 
 	const int area = 14;
