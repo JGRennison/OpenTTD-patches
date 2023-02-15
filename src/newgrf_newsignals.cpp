@@ -20,7 +20,7 @@
 std::vector<const GRFFile *> _new_signals_grfs;
 std::array<NewSignalStyle, MAX_NEW_SIGNAL_STYLES> _new_signal_styles;
 std::array<NewSignalStyleMapping, MAX_NEW_SIGNAL_STYLES> _new_signal_style_mapping;
-uint _num_new_signal_styles = 0;
+uint8 _num_new_signal_styles = 0;
 uint16 _enabled_new_signal_styles_mask = 0;
 
 /* virtual */ uint32 NewSignalsScopeResolver::GetRandomBits() const

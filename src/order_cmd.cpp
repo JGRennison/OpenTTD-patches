@@ -537,7 +537,7 @@ Order *OrderList::GetOrderAtFromList(int index) const
  */
 VehicleOrderID OrderList::GetIndexOfOrder(const Order *order) const
 {
-	for (VehicleOrderID index = 0; index < this->order_index.size(); index++) {
+	for (VehicleOrderID index = 0; index < (VehicleOrderID)this->order_index.size(); index++) {
 		if (this->order_index[index] == order) return index;
 	}
 	return INVALID_VEH_ORDER_ID;
@@ -813,7 +813,7 @@ int OrderList::GetPositionInSharedOrderList(const Vehicle *v) const
  */
 bool OrderList::IsCompleteTimetable() const
 {
-	for (VehicleOrderID index = 0; index < this->order_index.size(); index++) {
+	for (VehicleOrderID index = 0; index < (VehicleOrderID)this->order_index.size(); index++) {
 		const Order *o = this->order_index[index];
 		/* Implicit orders are, by definition, not timetabled. */
 		if (o->IsType(OT_IMPLICIT)) continue;

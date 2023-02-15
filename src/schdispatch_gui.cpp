@@ -448,7 +448,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				const DateTicksScaled end_tick = ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchDuration();
 
 				for (int y = r.top + 1; num < maxval; y += this->resize.step_height) { /* Draw the rows */
-					for (byte i = 0; i < this->num_columns && num < maxval; i++, num++) {
+					for (uint i = 0; i < this->num_columns && num < maxval; i++, num++) {
 						/* Draw all departure time in the current row */
 						if (current_schedule != ds.GetScheduledDispatch().end()) {
 							int x = r.left + (rtl ? (this->num_columns - i - 1) : i) * this->resize.step_width;

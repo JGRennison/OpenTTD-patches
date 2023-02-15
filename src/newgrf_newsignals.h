@@ -56,7 +56,7 @@ struct NewSignalStyleMapping {
 	inline bool operator==(const NewSignalStyleMapping& o) const { return grfid == o.grfid && grf_local_id == o.grf_local_id; }
 };
 extern std::array<NewSignalStyleMapping, MAX_NEW_SIGNAL_STYLES> _new_signal_style_mapping;
-extern uint _num_new_signal_styles;
+extern uint8 _num_new_signal_styles;
 extern uint16 _enabled_new_signal_styles_mask;
 
 /** Resolver for the new signals scope. */
