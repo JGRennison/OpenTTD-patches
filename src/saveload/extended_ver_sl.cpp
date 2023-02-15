@@ -51,17 +51,17 @@
 
 #include "../safeguards.h"
 
-uint16 _sl_xv_feature_versions[XSLFI_SIZE];                 ///< array of all known feature types and their current versions
-uint16 _sl_xv_feature_static_versions[XSLFI_SIZE];          ///< array of all known feature types and their static current version versions
-bool _sl_is_ext_version;                                    ///< is this an extended savegame version, with more info in the SLXI chunk?
-bool _sl_is_faked_ext;                                      ///< is this a faked extended savegame version, with no SLXI chunk? See: SlXvCheckSpecialSavegameVersions.
-bool _sl_maybe_springpp;                                    ///< is this possibly a SpringPP savegame?
-bool _sl_maybe_chillpp;                                     ///< is this possibly a ChillPP v8 savegame?
-bool _sl_upstream_mode;                                     ///< load game using upstream loader
-std::vector<uint32> _sl_xv_discardable_chunk_ids;           ///< list of chunks IDs which we can discard if no chunk loader exists
-std::string _sl_xv_version_label;                           ///< optional SLXI version label
+std::array<uint16, XSLFI_SIZE> _sl_xv_feature_versions;        ///< array of all known feature types and their current versions
+std::array<uint16, XSLFI_SIZE> _sl_xv_feature_static_versions; ///< array of all known feature types and their static current version versions
+bool _sl_is_ext_version;                                       ///< is this an extended savegame version, with more info in the SLXI chunk?
+bool _sl_is_faked_ext;                                         ///< is this a faked extended savegame version, with no SLXI chunk? See: SlXvCheckSpecialSavegameVersions.
+bool _sl_maybe_springpp;                                       ///< is this possibly a SpringPP savegame?
+bool _sl_maybe_chillpp;                                        ///< is this possibly a ChillPP v8 savegame?
+bool _sl_upstream_mode;                                        ///< load game using upstream loader
+std::vector<uint32> _sl_xv_discardable_chunk_ids;              ///< list of chunks IDs which we can discard if no chunk loader exists
+std::string _sl_xv_version_label;                              ///< optional SLXI version label
 
-static const uint32 _sl_xv_slxi_chunk_version = 0;          ///< current version of SLXI chunk
+static const uint32 _sl_xv_slxi_chunk_version = 0;             ///< current version of SLXI chunk
 
 static void loadVL(const SlxiSubChunkInfo *info, uint32 length);
 static uint32 saveVL(const SlxiSubChunkInfo *info, bool dry_run);
@@ -195,7 +195,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
  * and return the combination of the two tests using the operator defined in the constructor.
  * Otherwise just returns the result of the savegame version test
  */
-bool SlXvFeatureTest::IsFeaturePresent(uint16 feature_versions[XSLFI_SIZE], SaveLoadVersion savegame_version, SaveLoadVersion savegame_version_from, SaveLoadVersion savegame_version_to) const
+bool SlXvFeatureTest::IsFeaturePresent(const std::array<uint16, XSLFI_SIZE> &feature_versions, SaveLoadVersion savegame_version, SaveLoadVersion savegame_version_from, SaveLoadVersion savegame_version_to) const
 {
 	bool savegame_version_ok = savegame_version >= savegame_version_from && savegame_version < savegame_version_to;
 
@@ -221,7 +221,7 @@ bool SlXvFeatureTest::IsFeaturePresent(uint16 feature_versions[XSLFI_SIZE], Save
 /**
  * Returns true if @p feature is present and has a version inclusively bounded by @p min_version and @p max_version
  */
-bool SlXvIsFeaturePresent(uint16 feature_versions[XSLFI_SIZE], SlXvFeatureIndex feature, uint16 min_version, uint16 max_version)
+bool SlXvIsFeaturePresent(const std::array<uint16, XSLFI_SIZE> &feature_versions, SlXvFeatureIndex feature, uint16 min_version, uint16 max_version)
 {
 	assert(feature < XSLFI_SIZE);
 	return feature_versions[feature] >= min_version && feature_versions[feature] <= max_version;
@@ -252,7 +252,7 @@ void SlXvResetState()
 	_sl_maybe_chillpp = false;
 	_sl_upstream_mode = false;
 	_sl_xv_discardable_chunk_ids.clear();
-	memset(_sl_xv_feature_versions, 0, sizeof(_sl_xv_feature_versions));
+	std::fill(_sl_xv_feature_versions.begin(), _sl_xv_feature_versions.end(), 0);
 	_sl_xv_version_label.clear();
 }
 
@@ -278,7 +278,7 @@ void SlXvSetCurrentState()
  */
 void SlXvSetStaticCurrentVersions()
 {
-	memset(_sl_xv_feature_static_versions, 0, sizeof(_sl_xv_feature_static_versions));
+	std::fill(_sl_xv_feature_static_versions.begin(), _sl_xv_feature_static_versions.end(), 0);
 
 	const SlxiSubChunkInfo *info = _sl_xv_sub_chunk_infos;
 	for (; info->index != XSLFI_NULL; ++info) {

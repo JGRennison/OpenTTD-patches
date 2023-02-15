@@ -13,6 +13,7 @@
 #include "../core/bitmath_func.hpp"
 #include "../core/enum_type.hpp"
 
+#include <array>
 #include <vector>
 
 enum SaveLoadVersion : uint16;
@@ -152,8 +153,8 @@ enum SlXvFeatureIndex {
 	XSLFI_SIZE,                                   ///< Total count of features, including null feature
 };
 
-extern uint16 _sl_xv_feature_versions[XSLFI_SIZE];
-extern uint16 _sl_xv_feature_static_versions[XSLFI_SIZE];
+extern std::array<uint16, XSLFI_SIZE> _sl_xv_feature_versions;
+extern std::array<uint16, XSLFI_SIZE> _sl_xv_feature_static_versions;
 
 /**
  * Operator to use when combining traditional savegame number test with an extended feature version test
@@ -167,7 +168,7 @@ enum SlXvFeatureTestOperator {
  * Structure to describe an extended feature version test, and how it combines with a traditional savegame version test
  */
 struct SlXvFeatureTest {
-	using TestFunctorPtr = bool (*)(uint16, bool, uint16[XSLFI_SIZE]);  ///< Return true if feature present, first parameter is standard savegame version, second is whether standard savegame version is within bounds
+	using TestFunctorPtr = bool (*)(uint16, bool, const std::array<uint16, XSLFI_SIZE> &);  ///< Return true if feature present, first parameter is standard savegame version, second is whether standard savegame version is within bounds
 
 	private:
 	uint16 min_version;
@@ -186,7 +187,7 @@ struct SlXvFeatureTest {
 	SlXvFeatureTest(TestFunctorPtr functor_)
 			: min_version(0), max_version(0), feature(XSLFI_NULL), op(XSLFTO_OR), functor(functor_) { }
 
-	bool IsFeaturePresent(uint16 feature_versions[XSLFI_SIZE], SaveLoadVersion savegame_version, SaveLoadVersion savegame_version_from, SaveLoadVersion savegame_version_to) const;
+	bool IsFeaturePresent(const std::array<uint16, XSLFI_SIZE> &feature_versions, SaveLoadVersion savegame_version, SaveLoadVersion savegame_version_from, SaveLoadVersion savegame_version_to) const;
 
 	inline bool IsFeaturePresent(SaveLoadVersion savegame_version, SaveLoadVersion savegame_version_from, SaveLoadVersion savegame_version_to) const
 	{
@@ -194,7 +195,7 @@ struct SlXvFeatureTest {
 	}
 };
 
-bool SlXvIsFeaturePresent(uint16 feature_versions[XSLFI_SIZE], SlXvFeatureIndex feature, uint16 min_version = 1, uint16 max_version = 0xFFFF);
+bool SlXvIsFeaturePresent(const std::array<uint16, XSLFI_SIZE> &feature_versions, SlXvFeatureIndex feature, uint16 min_version = 1, uint16 max_version = 0xFFFF);
 
 inline bool SlXvIsFeaturePresent(SlXvFeatureIndex feature, uint16 min_version = 1, uint16 max_version = 0xFFFF)
 {
@@ -212,7 +213,7 @@ inline bool SlXvIsFeatureMissing(SlXvFeatureIndex feature, uint16 min_version = 
 /**
  * Returns true if @p feature is missing (i.e. has a version of 0, or less than the specified minimum version)
  */
-inline bool SlXvIsFeatureMissing(uint16 feature_versions[XSLFI_SIZE], SlXvFeatureIndex feature, uint16 min_version = 1)
+inline bool SlXvIsFeatureMissing(const std::array<uint16, XSLFI_SIZE> &feature_versions, SlXvFeatureIndex feature, uint16 min_version = 1)
 {
 	return !SlXvIsFeaturePresent(feature_versions, feature, min_version);
 }
