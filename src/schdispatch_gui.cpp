@@ -801,10 +801,12 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 			case WID_SCHDISPATCH_ADD: {
 				if (!this->IsScheduleSelected()) break;
-				char *end;
-				int32 val = StrEmpty(str) ? -1 : strtoul(str, &end, 10);
 
-				if (val >= 0 && end && *end == 0) {
+				if (StrEmpty(str)) break;
+
+				char *end;
+				int32 val = strtoul(str, &end, 10);
+				if (val >= 0 && end != nullptr && *end == 0) {
 					uint minutes = (val % 100) % 60;
 					uint hours = (val / 100) % 24;
 					DateTicksScaled slot = MINUTES_DATE(MINUTES_DAY(CURRENT_MINUTE), hours, minutes);
@@ -817,10 +819,12 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 			case WID_SCHDISPATCH_SET_START_DATE: {
 				if (!this->IsScheduleSelected()) break;
-				char *end;
-				int32 val = StrEmpty(str) ? -1 : strtoul(str, &end, 10);
 
-				if (val >= 0 && end && *end == 0) {
+				if (StrEmpty(str)) break;
+
+				char *end;
+				int32 val = strtoul(str, &end, 10);
+				if (val >= 0 && end != nullptr && *end == 0) {
 					uint minutes = (val % 100) % 60;
 					uint hours = (val / 100) % 24;
 					DateTicksScaled start = MINUTES_DATE(MINUTES_DAY(CURRENT_MINUTE), hours, minutes);
@@ -845,10 +849,12 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 			case WID_SCHDISPATCH_SET_DELAY: {
 				if (!this->IsScheduleSelected()) break;
-				char *end;
-				int32 val = StrEmpty(str) ? -1 : strtoul(str, &end, 10);
 
-				if (val >= 0 && end && *end == 0) {
+				if (StrEmpty(str)) break;
+
+				char *end;
+				int32 val = strtoul(str, &end, 10);
+				if (val >= 0 && end != nullptr && *end == 0) {
 					if (!_settings_client.gui.timetable_in_ticks) val *= DATE_UNIT_SIZE;
 
 					DoCommandP(0, v->index | (this->schedule_index << 20), val, CMD_SCHEDULED_DISPATCH_SET_DELAY | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
