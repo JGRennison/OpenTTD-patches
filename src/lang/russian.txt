@@ -322,11 +322,6 @@ STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}к
 STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}м/с
 STR_UNITS_VELOCITY_GAMEUNITS                                    :{DECIMAL}{NBSP}кл./день
 
-STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :миль/ч
-STR_UNIT_NAME_VELOCITY_METRIC                                   :км/ч
-STR_UNIT_NAME_VELOCITY_SI                                       :м/с
-STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :клетки в день
-
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}лс
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}лс
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}кВт
@@ -375,7 +370,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Смен
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Смена критерия сортировки
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Выберите фильтр
 STR_BUTTON_SORT_BY                                              :{BLACK}Сортировка
-STR_BUTTON_RENAME                                               :{BLACK}Переименовать
 STR_BUTTON_CATCHMENT                                            :{BLACK}Охват
 STR_TOOLTIP_CATCHMENT                                           :{BLACK}Показать область, обслуживаемую станцией.
 
@@ -418,8 +412,7 @@ STR_OSK_KEYBOARD_LAYOUT_CAPS                                    :~!@#$%^&*()_+|Q
 STR_MEASURE_LENGTH                                              :{BLACK}Длина: {NUM}
 STR_MEASURE_AREA                                                :{BLACK}Площадь: {NUM} × {NUM}
 STR_MEASURE_LENGTH_HEIGHTDIFF                                   :{BLACK}Длина: {NUM}{}Разница высот: {HEIGHT}
-STR_MEASURE_AREA_HEIGHTDIFF                                     :{BLACK}Площадь: {NUM} x {NUM}{}Разница высот: {HEIGHT}
-STR_MEASURE_DIST_HEIGHTDIFF                                     :{BLACK}Расстояние «Манхэттэн»: {NUM}{}Расстояние по прямой: {NUM}{}Расстояние от ближайшего края: {NUM}{}Высота над уровнем моря: {HEIGHT}{}Разница высот: {HEIGHT}
+STR_MEASURE_AREA_HEIGHTDIFF                                     :{BLACK}Площадь: {NUM} × {NUM}{}Разница высот: {HEIGHT}
 
 
 # These are used in buttons
@@ -735,12 +728,6 @@ STR_MONTH_SEP                                                   :Сентябр�
 STR_MONTH_OCT                                                   :Октябрь
 STR_MONTH_NOV                                                   :Ноябрь
 STR_MONTH_DEC                                                   :Декабрь
-
-###length VEHICLE_TYPES
-STR_VEHICLE_TYPE_TRAINS                                         :Ж/д транспорт
-STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Автотранспорт
-STR_VEHICLE_TYPE_SHIPS                                          :Водный транспорт
-STR_VEHICLE_TYPE_AIRCRAFT                                       :Авиатранспорт
 
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Легенда
@@ -1976,9 +1963,6 @@ STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Минимал�
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :Процент дохода, начисляемый при частичной перевозке: {STRING}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :Процент прибыли, начисляемый транспорту за частичную перевозку груза.
 
-STR_CONFIG_SETTING_SIMULATE_SIGNALS                             :Симуляция светофоров в туннелях и на мостах каждые: {STRING}
-STR_CONFIG_SETTING_SIMULATE_SIGNALS_VALUE                       :{COMMA} клет{P ку ки ок}
-
 STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY                         :При перетаскивании ставить сигналы каждые: {STRING}
 STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY_HELPTEXT                :Настройка периодичности расстановки сигналов методом перетаскивания. Сигналы будут устанавливаться до первого встреченного препятствия (пересечения или другого сигнала).
 STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY_VALUE                   :{COMMA} клет{P ку ки ок}
@@ -2788,8 +2772,6 @@ STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLA
 STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{CARGO_LONG} в месяц к перевозке от {STATION} к {STATION} ({COMMA}% ёмкости){STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} к возврату ({COMMA}% ёмкости)
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Среднее время в пути: {NUM}{NBSP}д{P ень ня ней}
-STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Среднее время в пути: {STRING}
-STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Ёмкость: {CARGO_LONG}
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Подсветка зоны покрытия
@@ -3002,7 +2984,6 @@ STR_LANDSCAPING_TOOLTIP_LOWER_A_CORNER_OF_LAND                  :{BLACK}Опус
 STR_LANDSCAPING_TOOLTIP_RAISE_A_CORNER_OF_LAND                  :{BLACK}Поднять угол земли. Перетаскивание поднимает первый выбранный угол и выравнивает выбранную область до новой высоты угла.{}При нажатом Ctrl - выбор диагональной области.{}При нажатом Shift - оценка стоимости строительства.
 STR_LANDSCAPING_LEVEL_LAND_TOOLTIP                              :{BLACK}Выровнять землю до высоты первого выбранного угла.{}При нажатом Ctrl - выбор диагональной области.{}При нажатом Shift - оценка стоимости выравнивания.
 STR_LANDSCAPING_TOOLTIP_PURCHASE_LAND                           :{BLACK}Покупка земли.{}При нажатом Ctrl - выбор диагональной области.{}При нажатом Shift - оценка стоимости покупки.
-STR_LANDSCAPING_TOOLTIP_RULER_TOOL                              :{BLACK}Виртуальная линейка для измерения расстояний и высот
 
 # Object construction window
 STR_OBJECT_BUILD_CAPTION                                        :{WHITE}Выбор объекта
@@ -3205,10 +3186,8 @@ STR_LAI_WATER_DESCRIPTION_SHIP_DEPOT                            :Верфь
 # Industries come directly from their industry names
 
 STR_LAI_TUNNEL_DESCRIPTION_RAILROAD                             :Железнодорожный туннель
-STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_SIGNAL                      :Железнодорожный туннель с симуляцией светофоров
 STR_LAI_TUNNEL_DESCRIPTION_ROAD                                 :Автомобильный туннель
 
-STR_LAI_BRIDGE_DESCRIPTION_RAILROAD_SIGNAL                      :Железнодорожный мост с симуляцией светофоров
 STR_LAI_BRIDGE_DESCRIPTION_RAIL_SUSPENSION_STEEL                :Стальной висячий ж/д мост
 STR_LAI_BRIDGE_DESCRIPTION_RAIL_GIRDER_STEEL                    :Стальной балочный ж/д мост
 STR_LAI_BRIDGE_DESCRIPTION_RAIL_CANTILEVER_STEEL                :Стальной консольный ж/д мост
@@ -3347,9 +3326,6 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Песч
 STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Увеличить площадь песчаного покрытия на 10%
 STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Уменьшить площадь песчаного покрытия на 10%
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
-STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Снеговая линия:
-STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Поднять снеговую линию
-STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Опустить снеговую линию
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Тип ландшафта:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Количество морей и озёр:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Количество рек:
@@ -3407,7 +3383,6 @@ STR_MAPGEN_TERRAIN_TYPE_QUERY_CAPT                              :{WHITE}Макс
 STR_MAPGEN_HEIGHTMAP_HEIGHT_QUERY_CAPT                          :{WHITE}Cамая высокая вершина
 STR_MAPGEN_SNOW_COVERAGE_QUERY_CAPT                             :{WHITE}Снежное покрытие (в %)
 STR_MAPGEN_DESERT_COVERAGE_QUERY_CAPT                           :{WHITE}Песчаное покрытие (в %)
-STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Изменить высоту снеговой линии
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Изменить год начала игры
 
 # SE Map generation
@@ -4093,7 +4068,6 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Стои
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Ёмкость: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(переоб.)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Разработан в {GOLD}{NUM} г.{BLACK} Срок службы: {GOLD}{COMMA} {P год года лет}
-STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Разработан в {GOLD}{NUM} г.
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Макс. надёжность: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Цена: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Цена: {GOLD}{CURRENCY_LONG}{BLACK} (Стоимость переоборудования: {GOLD}{CURRENCY_LONG}{BLACK})
@@ -4121,9 +4095,6 @@ STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Спис
 STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}Список автотранспорта - щёлкните для получения информации. Ctrl+щелчок скроет/покажет выбранный автомобиль.
 STR_BUY_VEHICLE_SHIP_LIST_TOOLTIP                               :{BLACK}Список судов - щёлкните для получения информации. Ctrl+щелчок скроет/покажет выбранное судно.
 STR_BUY_VEHICLE_AIRCRAFT_LIST_TOOLTIP                           :{BLACK}Список воздушных судов - щёлкните для получения информации. Ctrl+щелчок скроет/покажет ТС.
-
-STR_BUY_REFIT_VEHICLE_BUY_VEHICLE_BUTTON                        :{BLACK}Переоборудовать
-STR_BUY_REFIT_VEHICLE_BUY_VEHICLE_TOOLTIP                       :{BLACK}Переоборудовать купленное транспортное средство сразу после покупки для выделенного вида груза
 
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_BUTTON                        :{BLACK}Купить
@@ -4695,16 +4666,6 @@ STR_ORDER_OUT_OF_RANGE                                          :{RED} (Расс
 STR_ORDER_CONDITIONAL_UNCONDITIONAL                             :Перейти к заданию {COMMA}
 STR_ORDER_CONDITIONAL_NUM                                       :Перейти к заданию {COMMA}, если {STRING} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_TRUE_FALSE                                :Перейти к заданию {COMMA}, если {STRING} - {STRING}
-STR_CONDITIONAL_FREE_PLATFORMS                                  :Перейти к заданию {COMMA} когда след. станция {STRING} {COMMA} свободн{P ая ые ых} платформ{P а ы ""}
-STR_CONDITIONAL_PERCENT                                         :Перейти к заданию {COMMA} {COMMA} процентов времени
-STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS                        :принимает
-STR_ORDER_CONDITIONAL_COMPARATOR_DOES_NOT_ACCEPT                :не принимает
-STR_ORDER_CONDITIONAL_COMPARATOR_HAS                            :имеет
-STR_ORDER_CONDITIONAL_COMPARATOR_HAS_NO                         :не имеет
-STR_ORDER_CONDITIONAL_COMPARATOR_HAS_LESS_THAN                  :имеет меньше чем
-STR_ORDER_CONDITIONAL_COMPARATOR_HAS_LESS_EQUALS                :имеет меньше или равно
-STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_THAN                  :имеет больше чем
-STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_EQUALS                :имеет больше или равно
 
 STR_INVALID_ORDER                                               :{RED} (Неверное место назначения)
 
@@ -5338,11 +5299,6 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Набор му
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Набор музыки из игры Transport Tycoon для DOS.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Пустой музыкальный набор, не содержащий никакой музыки.
 
-STR_TRADITIONAL_TRAIN_NAME                                      :Поезд №{COMMA}
-STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Автомобиль №{COMMA}
-STR_TRADITIONAL_SHIP_NAME                                       :Судно №{COMMA}
-STR_TRADITIONAL_AIRCRAFT_NAME                                   :Борт №{COMMA}
-
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Высотное офисное здание
@@ -5894,8 +5850,3 @@ STR_PLANE                                                       :{BLACK}{PLANE}
 STR_SHIP                                                        :{BLACK}{SHIP}
 
 STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
-
-STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE                       :Взымать плату за починку тс: {STRING}
-STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE_HELPTEXT              :Если включено, в депо бужет взыматься плата за ремонт каждой поломки транспортного средства
-STR_CONFIG_SETTING_REPAIR_COST                                  :Стоимость ремонта: 1/{STRING} полной стоимости тс
-STR_CONFIG_SETTING_REPAIR_COST_HELPTEXT                         :Стоимость ремонта одной поломки транспортного средства

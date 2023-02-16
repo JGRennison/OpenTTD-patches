@@ -196,11 +196,6 @@ STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}km
 STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}m/s
 STR_UNITS_VELOCITY_GAMEUNITS                                    :{DECIMAL}{NBSP}Felder/Dag
 
-STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
-STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
-STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :Felder/Dag
-
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}bhp
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}ps
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW
@@ -249,7 +244,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Richtung
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Argument fir ze sortéieren
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Filterkritère wielen
 STR_BUTTON_SORT_BY                                              :{BLACK}Sortéier no
-STR_BUTTON_RENAME                                               :{BLACK}Ëmbenennen
 STR_BUTTON_CATCHMENT                                            :{BLACK}Reechwäit
 STR_TOOLTIP_CATCHMENT                                           :{BLACK}Reechwäit uweisen un/ausschalten
 
@@ -596,12 +590,6 @@ STR_MONTH_SEP                                                   :September
 STR_MONTH_OCT                                                   :Oktober
 STR_MONTH_NOV                                                   :November
 STR_MONTH_DEC                                                   :Dezember
-
-###length VEHICLE_TYPES
-STR_VEHICLE_TYPE_TRAINS                                         :Zich
-STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Stroossegefierer
-STR_VEHICLE_TYPE_SHIPS                                          :Schëffer
-STR_VEHICLE_TYPE_AIRCRAFT                                       :Fligeren
 
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Legend
@@ -3163,9 +3151,6 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Wüstenu
 STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Wüstenundeel em zéng Prozent eropsetzen
 STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Wüstenundeel em zéng Prozent erofsetzen
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
-STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Weis d'Schnéilinnhéicht
-STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Beweg Schnéilinnhéicht erop
-STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Beweg Schnéilinnhéicht erof
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Terrain Typ:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Mieresspigel:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Flëss:
@@ -3223,7 +3208,6 @@ STR_MAPGEN_TERRAIN_TYPE_QUERY_CAPT                              :{WHITE}Zil Gipf
 STR_MAPGEN_HEIGHTMAP_HEIGHT_QUERY_CAPT                          :{WHITE}Héchste Punkt
 STR_MAPGEN_SNOW_COVERAGE_QUERY_CAPT                             :{WHITE}Schnéiundeel (a %)
 STR_MAPGEN_DESERT_COVERAGE_QUERY_CAPT                           :{WHITE}Wüstenundeel (a %)
-STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Ännert d'Schnéilinnhéicht
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Änner d'Startjoer
 
 # SE Map generation
@@ -3907,7 +3891,6 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Betribsk
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Kapazitéit: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(ëmbaubar)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Designt: {GOLD}{NUM}{BLACK} Liewenszäit: {GOLD}{COMMA} Joer
-STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Designt: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Max. Zouverläss.: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Käschten: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Käschten: {GOLD}{CURRENCY_LONG}{BLACK} (Embaukäschten: {GOLD}{CURRENCY_LONG}{BLACK})
@@ -5126,11 +5109,6 @@ STR_BASEMUSIC_WIN_DESCRIPTION                                   :Original Transp
 STR_BASEMUSIC_DOS_DESCRIPTION                                   :Original Transport Tycoon Deluxe DOS Editioun Musik.
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Original Transport Tycoon (Original/World Editor) DOS Editioun-Musik.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :E Musikpack ouni Musik.
-
-STR_TRADITIONAL_TRAIN_NAME                                      :Zuch {COMMA}
-STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Stroossegefier {COMMA}
-STR_TRADITIONAL_SHIP_NAME                                       :Schëff {COMMA}
-STR_TRADITIONAL_AIRCRAFT_NAME                                   :Fliger {COMMA}
 
 ##id 0x2000
 # Town building names

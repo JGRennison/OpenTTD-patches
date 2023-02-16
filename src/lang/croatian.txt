@@ -291,10 +291,6 @@ STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA}{NBSP}mp
 STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}km/h
 STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}m/s
 
-STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
-STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
-STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}KS
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}KS
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW
@@ -334,7 +330,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Odaberi 
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Odaberi kriterij za sortiranje
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Odaberi kriterij filtriranja
 STR_BUTTON_SORT_BY                                              :{BLACK}Sortiraj prema
-STR_BUTTON_RENAME                                               :{BLACK}Preimenuj
 STR_BUTTON_CATCHMENT                                            :{BLACK}Područje pokrivanja
 STR_TOOLTIP_CATCHMENT                                           :{BLACK}Uključi prikaz područja pokrivanja
 
@@ -673,12 +668,6 @@ STR_MONTH_SEP                                                   :Rujan
 STR_MONTH_OCT                                                   :Listopad
 STR_MONTH_NOV                                                   :Studeni
 STR_MONTH_DEC                                                   :Prosinac
-
-###length VEHICLE_TYPES
-STR_VEHICLE_TYPE_TRAINS                                         :Vlakovi
-STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Cestovna vozila
-STR_VEHICLE_TYPE_SHIPS                                          :Brodovi
-STR_VEHICLE_TYPE_AIRCRAFT                                       :Zrakoplov
 
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Ključ
@@ -3061,9 +3050,6 @@ STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Najviši
 STR_MAPGEN_SNOW_COVERAGE_UP                                     :{BLACK}Povećaj pokrivenost snijega za deset posto
 STR_MAPGEN_SNOW_COVERAGE_DOWN                                   :{BLACK}Smanji pokrivenost snijega za deset posto
 STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Pustinjska pokrivenost:
-STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Visina linije snijega
-STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Pomakni visinu linije snijega za jedan gore
-STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Pomakni visinu linije snijega za jedan dolje
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Vrsta terena:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Razina mora:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Rijeke:
@@ -3113,7 +3099,6 @@ STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x
 
 STR_MAPGEN_HEIGHTMAP_HEIGHT_QUERY_CAPT                          :{WHITE}Najviši vrh
 STR_MAPGEN_DESERT_COVERAGE_QUERY_CAPT                           :{WHITE}Pustinjska pokrivenost (in %)
-STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Promijeni visinu linije snijega
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Promijeni početnu godinu
 
 # SE Map generation
@@ -3607,7 +3592,6 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Premjest
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Izgradi sjedište tvrtke negdje drugdje za 1% troška od cjelokupne vrijednosti tvrtke. Shift+Klik prikazuje trošak bez premještanja sjedišta tvrtke.
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Detalji
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Pogledaj detaljne podatke infrastrukture
-STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Daj novac
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Novo lice
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Odaberi novo lice direktora
@@ -3625,7 +3609,6 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Prodaj 2
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Ime tvrtke
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Ime direktora
-STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Unesite iznos novca koji želite dati
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Tražimo prijevoznu tvrtku koja bi preuzela našu tvrtku.{}{}Želiš li kupiti tvrtku {COMPANY} za {CURRENCY_LONG}?
 
@@ -3774,7 +3757,6 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Trošak 
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Nosivost: {GOLD}{CARGO_LONG}{STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(prenamjenjiv)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Dizajnirano: {GOLD}{NUM}{BLACK} Životni vijek: {GOLD}{COMMA} godina
-STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Dizajnirano: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Najveća pouzdanost: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Cijena: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Cijena: {GOLD}{CURRENCY_LONG}{BLACK} (Cijena prenamjene: {GOLD}{CURRENCY_LONG}{BLACK})
@@ -4965,11 +4947,6 @@ STR_BASEMUSIC_WIN_DESCRIPTION                                   :Originalna glaz
 STR_BASEMUSIC_DOS_DESCRIPTION                                   :Originalna glazba za Transport Tycoon Deluxe DOS izdanje.
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Originalna glazba za Transport Tycoon (original/editor svijeta) DOS izdanje.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Glazbeni paket bez ikakve glazbe.
-
-STR_TRADITIONAL_TRAIN_NAME                                      :Vlak {COMMA}
-STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Cestovno vozilo {COMMA}
-STR_TRADITIONAL_SHIP_NAME                                       :Brod {COMMA}
-STR_TRADITIONAL_AIRCRAFT_NAME                                   :Zrakoplov {COMMA}
 
 ##id 0x2000
 # Town building names

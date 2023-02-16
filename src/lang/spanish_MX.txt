@@ -197,11 +197,6 @@ STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}km
 STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}m/s
 STR_UNITS_VELOCITY_GAMEUNITS                                    :{DECIMAL}{NBSP}casillas/día
 
-STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
-STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
-STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :casillas/día
-
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}hp
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}cv
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW
@@ -250,7 +245,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Elegir o
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Elegir patrón de ordenamiento
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Elegir criterio de filtrado
 STR_BUTTON_SORT_BY                                              :{BLACK}Ordenar
-STR_BUTTON_RENAME                                               :{BLACK}Cambiar nombre
 STR_BUTTON_CATCHMENT                                            :{BLACK}Cobertura
 STR_TOOLTIP_CATCHMENT                                           :{BLACK}Alternar vista de área de cobertura
 
@@ -597,12 +591,6 @@ STR_MONTH_SEP                                                   :Septiembre
 STR_MONTH_OCT                                                   :Octubre
 STR_MONTH_NOV                                                   :Noviembre
 STR_MONTH_DEC                                                   :Diciembre
-
-###length VEHICLE_TYPES
-STR_VEHICLE_TYPE_TRAINS                                         :Trenes
-STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Vehículos de carretera
-STR_VEHICLE_TYPE_SHIPS                                          :Barcos
-STR_VEHICLE_TYPE_AIRCRAFT                                       :Aeronaves
 
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Leyenda
@@ -2622,8 +2610,6 @@ STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLA
 STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{CARGO_LONG} a ser transportad{G 0 o a}{P 0 "" s} al mes desde {STATION} a {STATION} ({COMMA}% de la capacidad){STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} a ser transportad{G 0 o a}{P 0 "" s}) de vuelta ({COMMA}% de la capacidad)
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Tiempo promedio de viaje: {NUM}{NBSP}día{P "" s}
-STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Tiempo promedio de viaje: {STRING}
-STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Capacidad: {CARGO_LONG}
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Mostrar área de recolección
@@ -3166,9 +3152,6 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Extensi�
 STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Incrementar extensión de desierto un 10%
 STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Disminuir extensión de desierto un 10%
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
-STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Nivel de nieve:
-STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Mover el nivel de inicio de nieve hacia arriba
-STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Mover el nivel de inicio de nieve hacia abajo
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Tipo de terreno:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Nivel del mar:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Ríos:
@@ -3226,7 +3209,6 @@ STR_MAPGEN_TERRAIN_TYPE_QUERY_CAPT                              :{WHITE}Altura d
 STR_MAPGEN_HEIGHTMAP_HEIGHT_QUERY_CAPT                          :{WHITE}Cima más alta
 STR_MAPGEN_SNOW_COVERAGE_QUERY_CAPT                             :{WHITE}Extensión de nieve (en %)
 STR_MAPGEN_DESERT_COVERAGE_QUERY_CAPT                           :{WHITE}Extensión de desierto (en %)
-STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Cambiar el nivel de inicio de nieve
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Cambiar año de inicio
 
 # SE Map generation
@@ -3910,7 +3892,6 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Costo de
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Capacidad: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(reformable)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Diseñado: {GOLD}{NUM}{BLACK} Duración: {GOLD}{COMMA} año{P "" s}
-STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Diseñado: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Máx. fiabilidad: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Costo: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Costo: {GOLD}{CURRENCY_LONG}{BLACK} (Costo de reformación: {GOLD}{CURRENCY_LONG}{BLACK})
@@ -5127,11 +5108,6 @@ STR_BASEMUSIC_WIN_DESCRIPTION                                   :Música origina
 STR_BASEMUSIC_DOS_DESCRIPTION                                   :Música original de Transport Tycoon Deluxe para DOS.
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Música original de Transport Tycoon versión World Editor para DOS.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Paquete de música vacío
-
-STR_TRADITIONAL_TRAIN_NAME                                      :Tren {COMMA}
-STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Vehículo de carretera {COMMA}
-STR_TRADITIONAL_SHIP_NAME                                       :Barco {COMMA}
-STR_TRADITIONAL_AIRCRAFT_NAME                                   :Aeronave {COMMA}
 
 ##id 0x2000
 # Town building names

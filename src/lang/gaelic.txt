@@ -381,10 +381,6 @@ STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA}{NBSP}mp
 STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}km/h
 STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}m/s
 
-STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
-STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
-STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}hp
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}hp
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW
@@ -424,7 +420,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Tagh òr
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Tagh cuspairean-deuchainn an t-seòrsachaidh
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Tagh cuspairean-deuchainn a' chriathraidh
 STR_BUTTON_SORT_BY                                              :{BLACK}Seòrsaich a-rèir
-STR_BUTTON_RENAME                                               :{BLACK}Thoir ainm ùr air
 
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Dùin an uinneag
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Tiotal na h-uinneige - slaod seo gus an uinneag a ghluasad
@@ -764,12 +759,6 @@ STR_MONTH_OCT.dat                                               :Dàmhair
 STR_MONTH_NOV                                                   :Samhain
 STR_MONTH_DEC                                                   :Dùbhlachd
 STR_MONTH_DEC.dat                                               :Dùbhlachd
-
-###length VEHICLE_TYPES
-STR_VEHICLE_TYPE_TRAINS                                         :Trèanaichean
-STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Carbadan-rathaid
-STR_VEHICLE_TYPE_SHIPS                                          :Longan
-STR_VEHICLE_TYPE_AIRCRAFT                                       :Carbadan-adhair
 
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Iuchair
@@ -2360,7 +2349,6 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Tha a' c
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Liosta nan cliant
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :Coimhead air
 
 # Network client list
 
@@ -3079,9 +3067,6 @@ STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Ainmean 
 STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Tagh stoidhle aig ainmean nam bailtean
 STR_MAPGEN_DATE                                                 :{BLACK}Ceann-latha:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Gnìomhachasan:
-STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Àirde na loidhne-shneachda:
-STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Gluais an loidhne-shneachda suas aon cheum
-STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Gluais an loidhne-shneachda sìos aon cheum
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Seòrsa a' chrutha-thìre:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Àirde na mara:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Aibhnichean:
@@ -3129,7 +3114,6 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Ainm a' 
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Meud:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
-STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Atharraich àirde na loidhne-shneachda
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Atharraich am bliadhna-tòiseachaidh
 
 # SE Map generation
@@ -3613,7 +3597,6 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Imrich i
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Ath-thog ionad na companaidh àiteigin eile airson cosgais dhe 1% dhe luach a' chompanaidh. Seallaidh Shift+briogadh tuairmse nan cosgaisean gun a bhith ag imrich ionad na companaidh
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Mion-fhiosrachadh
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Seall cunntadh mionaideach a' bhun-structair
-STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Thoir airgead dha
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Aghaidh ùr
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Tagh aghaidh ùr airson an stiùiriche
@@ -3631,7 +3614,6 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Reic ear
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Ainm na companaidh
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Ainm an stiùiriche
-STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Cuir a-steach na tha thu airson toirt seachad
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Tha sinn a' sireadh companaidh giùlain a ghabhas stiùir air a' chompanaidh againn.{}{}A bheil thu airson {COMPANY} a cheannach airson {CURRENCY_LONG}?
 
@@ -3762,7 +3744,6 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Cosgaise
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Tomhas-lìonaidh: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(gabhaidh mùthadh)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Air a dhealbhadh: {GOLD}{NUM}{BLACK} Beatha: {GOLD}{COMMA} bliadhna
-STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Air a dhealbhadh: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Earbsachd as motha: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Cosgais: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_WEIGHT_CWEIGHT                                :{BLACK}Cuideam: {GOLD}{WEIGHT_SHORT} ({WEIGHT_SHORT})
@@ -4913,11 +4894,6 @@ STR_BASEMUSIC_WIN_DESCRIPTION                                   :Ceòl aig an de
 STR_BASEMUSIC_DOS_DESCRIPTION                                   :Ceòl aig an deasachadh DOS tùsail aig Transport Tycoon Deluxe.
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Ceòl aig an deasachadh DOS tùsail aig Transport Tycoon Deluxe (Original/World Editor).
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Pacaid ciùil anns nach eil fonn sam bith.
-
-STR_TRADITIONAL_TRAIN_NAME                                      :{G=f}Trèan {COMMA}
-STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Carbad-rathaid {COMMA}
-STR_TRADITIONAL_SHIP_NAME                                       :{G=f}Long {COMMA}
-STR_TRADITIONAL_AIRCRAFT_NAME                                   :Carbad-adhair {COMMA}
 
 ##id 0x2000
 # Town building names

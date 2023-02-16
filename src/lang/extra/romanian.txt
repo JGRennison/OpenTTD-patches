@@ -1,0 +1,45 @@
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
+STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
+STR_UNIT_NAME_VELOCITY_SI                                       :m/s
+STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :dale/zi
+
+STR_BUTTON_RENAME                                               :{BLACK}Nume nou
+
+STR_VEHICLE_TYPE_TRAINS                                         :Trenuri
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Autovehicule
+STR_VEHICLE_TYPE_SHIPS                                          :Nave
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Aeronave
+
+# Tracerestrict GUI
+
+# Programmable Pre-Signals
+
+#House construction window (for SE only)
+
+#Town select window (for SE only)
+
+STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Înălţimea zăpezii:
+STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Mută linia zăpezii cu un punct în sus
+STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Mută linia zăpezii cu un punct în jos
+STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Modifică înălţimea zăpezii
+
+# Town tooltip
+
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}An apariţie: {GOLD}{NUM}
+
+# Cargo type orders Window
+
+# Plans window
+
+# Clear area query
+
+# Plan related errors
+
+STR_TRADITIONAL_TRAIN_NAME                                      :Trenul {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Autovehiculul {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Nava {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Aeronava {COMMA}
+
+# Scheduled Dispatch
+
+# Modifier key toggle window

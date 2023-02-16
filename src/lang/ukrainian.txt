@@ -321,11 +321,6 @@ STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}к
 STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}м/с
 STR_UNITS_VELOCITY_GAMEUNITS                                    :{DECIMAL}{NBSP}клітинок/день
 
-STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :миль/год
-STR_UNIT_NAME_VELOCITY_METRIC                                   :км/год
-STR_UNIT_NAME_VELOCITY_SI                                       :м/с
-STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :клітинок/день
-
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}к.с.
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}к.с.
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}кВт
@@ -374,7 +369,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Обер
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Оберіть критерій сортування
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Оберіть критерій фільтру
 STR_BUTTON_SORT_BY                                              :{BLACK}Сортувати
-STR_BUTTON_RENAME                                               :{BLACK}Назва
 STR_BUTTON_CATCHMENT                                            :{BLACK}Покриття
 STR_TOOLTIP_CATCHMENT                                           :{BLACK}Вкл./викл. відображення області покриття
 
@@ -724,12 +718,6 @@ STR_MONTH_SEP                                                   :Вересен�
 STR_MONTH_OCT                                                   :Жовтень
 STR_MONTH_NOV                                                   :Листопад
 STR_MONTH_DEC                                                   :Грудень
-
-###length VEHICLE_TYPES
-STR_VEHICLE_TYPE_TRAINS                                         :Поїзди
-STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Авто
-STR_VEHICLE_TYPE_SHIPS                                          :Кораблі
-STR_VEHICLE_TYPE_AIRCRAFT                                       :Авіація
 
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Легенда
@@ -3288,9 +3276,6 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Покр
 STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Збільшити покриття пустелею на 10%
 STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Зменшити покриття пустелею на 10%
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
-STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Висота лінії снігу:
-STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Підвищити лінію снігу
-STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Понизити лінію снігу
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Тип ландшафту:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Рівень моря:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Ріки:
@@ -3348,7 +3333,6 @@ STR_MAPGEN_TERRAIN_TYPE_QUERY_CAPT                              :{WHITE}Висо
 STR_MAPGEN_HEIGHTMAP_HEIGHT_QUERY_CAPT                          :{WHITE}Найвища гора
 STR_MAPGEN_SNOW_COVERAGE_QUERY_CAPT                             :{WHITE}Покриття снігом (у відсотках)
 STR_MAPGEN_DESERT_COVERAGE_QUERY_CAPT                           :{WHITE}Покриття пустелею, у відсотках
-STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Змінити висоту лінії снігу
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Змінити рік початку гри
 
 # SE Map generation
@@ -4032,7 +4016,6 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Тран
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Місткість: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(змінюється)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Рік випуску: {GOLD}{NUM}{BLACK} Вік: {GOLD}{COMMA} р{P ік оки оків}
-STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Рік випуску: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Надійність: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Ціна: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Ціна: {GOLD}{CURRENCY_LONG}{BLACK} (Вартість переобладнання:: {GOLD}{CURRENCY_LONG}{BLACK})
@@ -5251,11 +5234,6 @@ STR_BASEMUSIC_WIN_DESCRIPTION                                   :Оригіна�
 STR_BASEMUSIC_DOS_DESCRIPTION                                   :Оригінальна музика Transport Tycoon Deluxe(DOS)
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Оригінальна музика Transport Tycoon Deluxe(DOS)
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Порожній набір музики.
-
-STR_TRADITIONAL_TRAIN_NAME                                      :Поїзд №{COMMA}
-STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Автотранспорт №{COMMA}
-STR_TRADITIONAL_SHIP_NAME                                       :Судно №{COMMA}
-STR_TRADITIONAL_AIRCRAFT_NAME                                   :Борт №{COMMA}
 
 ##id 0x2000
 # Town building names

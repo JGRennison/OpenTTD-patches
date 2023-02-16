@@ -259,11 +259,6 @@ STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}km
 STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}m/s
 STR_UNITS_VELOCITY_GAMEUNITS                                    :{DECIMAL}{NBSP}mező/nap
 
-STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mi/h
-STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
-STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :mező/nap
-
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}LE
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}LE
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW
@@ -312,7 +307,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Csökken
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Sorbarendezési feltétel
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Szűrési feltétel kiválasztása
 STR_BUTTON_SORT_BY                                              :{BLACK}Rendezés
-STR_BUTTON_RENAME                                               :{BLACK}Átnevez
 STR_BUTTON_CATCHMENT                                            :{BLACK}Lefedett terület
 STR_TOOLTIP_CATCHMENT                                           :{BLACK}Az állomás által lefedett terület mutatása
 
@@ -659,12 +653,6 @@ STR_MONTH_SEP                                                   :szeptember
 STR_MONTH_OCT                                                   :október
 STR_MONTH_NOV                                                   :november
 STR_MONTH_DEC                                                   :december
-
-###length VEHICLE_TYPES
-STR_VEHICLE_TYPE_TRAINS                                         :Vonat
-STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Közúti Jármű
-STR_VEHICLE_TYPE_SHIPS                                          :Hajó
-STR_VEHICLE_TYPE_AIRCRAFT                                       :Repülőgép
 
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Jelkulcs
@@ -2683,8 +2671,6 @@ STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLA
 STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{CARGO_LONG} elszállítva havonta innen: {STATION} ide: {STATION} ({COMMA}% elszállítva){STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} visszaszállításra ({COMMA}% elszállítva)
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Átlagos utazási idő: {NUM}{NBSP}nap{P "" s}
-STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Átlagos utazási idő: {STRING}
-STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Kapacitás: {CARGO_LONG}
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Lefedett terület mutatása:
@@ -3223,9 +3209,6 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Sivatag 
 STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}A sivatag kiterjedésének növelése 10%-kal
 STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}A sivatag kiterjedésének csökkentése 10%-kal
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
-STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Hóhatár:
-STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}A hóhatár megnövelése eggyel
-STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}A hóhatár csökkentése eggyel
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Tereptípus:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Tengerszint:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Folyók:
@@ -3283,7 +3266,6 @@ STR_MAPGEN_TERRAIN_TYPE_QUERY_CAPT                              :{WHITE}A legmag
 STR_MAPGEN_HEIGHTMAP_HEIGHT_QUERY_CAPT                          :{WHITE}Legmagasabb pont
 STR_MAPGEN_SNOW_COVERAGE_QUERY_CAPT                             :{WHITE}A havas terület kiterjedése (százalékban)
 STR_MAPGEN_DESERT_COVERAGE_QUERY_CAPT                           :{WHITE}A sivatag kiterjedése (százalékban)
-STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Hóhatár megváltoztatása
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Kezdő év megváltoztatása
 
 # SE Map generation
@@ -3967,7 +3949,6 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Üzemelt
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Kapacitás: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(átalakítható)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Kifejlesztve: {GOLD}{NUM}{BLACK} Élettartam: {GOLD}{COMMA} év
-STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Kifejlesztve: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Max. megbízhatóság: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Ár: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Ár: {GOLD}{CURRENCY_LONG}{BLACK} (Átalakítás költsége: {GOLD}{CURRENCY_LONG}{BLACK})
@@ -5184,11 +5165,6 @@ STR_BASEMUSIC_WIN_DESCRIPTION                                   :Az eredeti Tran
 STR_BASEMUSIC_DOS_DESCRIPTION                                   :Az eredeti Transport Tycoon Deluxe DOS verziójának zenéje.
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Az eredeti Transport Tycoon (az első változat és a World Editor) DOS verziójának zenéje.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Zenei alapcsomag zene nélkül.
-
-STR_TRADITIONAL_TRAIN_NAME                                      :Vonat {COMMA}
-STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Közúti jármű {COMMA}
-STR_TRADITIONAL_SHIP_NAME                                       :Hajó {COMMA}
-STR_TRADITIONAL_AIRCRAFT_NAME                                   :Repülő {COMMA}
 
 ##id 0x2000
 # Town building names

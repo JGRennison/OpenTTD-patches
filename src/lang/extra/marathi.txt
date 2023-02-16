@@ -1,0 +1,32 @@
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
+STR_UNIT_NAME_VELOCITY_METRIC                                   :किमी / तास
+STR_UNIT_NAME_VELOCITY_SI                                       :m/s
+
+STR_BUTTON_RENAME                                               :{BLACK}नाव बदला
+
+# Tracerestrict GUI
+
+# Programmable Pre-Signals
+
+#House construction window (for SE only)
+
+#Town select window (for SE only)
+
+# Town tooltip
+
+# Cargo type orders Window
+
+# Plans window
+
+# Clear area query
+
+# Plan related errors
+
+STR_TRADITIONAL_TRAIN_NAME                                      :रेल्वे {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :रस्त्यावरील वाहन {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :जहाज {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :विमान {COMMA}
+
+# Scheduled Dispatch
+
+# Modifier key toggle window

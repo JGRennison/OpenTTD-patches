@@ -1,0 +1,48 @@
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
+STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
+STR_UNIT_NAME_VELOCITY_SI                                       :m/s
+STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :riquadri/giorno
+
+STR_BUTTON_RENAME                                               :{BLACK}Rinomina
+
+STR_VEHICLE_TYPE_TRAINS                                         :Treni
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Automezzi
+STR_VEHICLE_TYPE_SHIPS                                          :Navi
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Aeromobili
+
+STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}tempo medio di percorrenza: {STRING}
+STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Capacità: {CARGO_LONG}
+
+# Tracerestrict GUI
+
+# Programmable Pre-Signals
+
+#House construction window (for SE only)
+
+#Town select window (for SE only)
+
+STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Altezza delle nevi:
+STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Sposta in su di uno l'altezza delle nevi perenni
+STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Sposta in giù di uno l'altezza delle nevi perenni
+STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Cambia l'altezza delle nevi perenni
+
+# Town tooltip
+
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Progettato nel: {GOLD}{NUM}
+
+# Cargo type orders Window
+
+# Plans window
+
+# Clear area query
+
+# Plan related errors
+
+STR_TRADITIONAL_TRAIN_NAME                                      :Treno {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Automezzo {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Nave {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Aeromobile {COMMA}
+
+# Scheduled Dispatch
+
+# Modifier key toggle window

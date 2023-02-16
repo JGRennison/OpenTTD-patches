@@ -629,7 +629,12 @@ int CDECL main(int argc, char *argv[])
 
 				const char *translation = replace_pathsep(mgo.argv[i]);
 				const char *file = strrchr(translation, PATHSEPCHAR);
-				FileStringReader translation_reader(data, translation, false, file == nullptr || strcmp(file + 1, "english.txt") != 0);
+				const char *translation2 = nullptr;
+				if (file != nullptr) {
+					mkpath2(pathbuf2, lastof(pathbuf2), src_dir, "extra", file + 1);
+					translation2 = pathbuf2;
+				}
+				FileStringReader translation_reader(data, translation, translation2, false, file == nullptr || strcmp(file + 1, "english.txt") != 0);
 				translation_reader.ParseFile(); // target file
 				if (_errors != 0) return 1;
 

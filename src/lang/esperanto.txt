@@ -194,10 +194,6 @@ STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA}{NBSP}mp
 STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}km/h
 STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}m/s
 
-STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
-STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
-STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}ĉp
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}ĉp
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW
@@ -237,7 +233,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Elektu v
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Elektu ordigaj kondiĉoj
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Selektu kriteriojn por filtrado
 STR_BUTTON_SORT_BY                                              :{BLACK}Ordigu laŭ
-STR_BUTTON_RENAME                                               :{BLACK}Alinomi
 
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Fermu fenestron
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Fenestra titolo - tiru por movi la fenestron
@@ -559,12 +554,6 @@ STR_MONTH_SEP                                                   :Septembro
 STR_MONTH_OCT                                                   :Oktobro
 STR_MONTH_NOV                                                   :Novembro
 STR_MONTH_DEC                                                   :Decembro
-
-###length VEHICLE_TYPES
-STR_VEHICLE_TYPE_TRAINS                                         :Trajnoj
-STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Stratveturiloj
-STR_VEHICLE_TYPE_SHIPS                                          :Ŝipoj
-STR_VEHICLE_TYPE_AIRCRAFT                                       :Aviadiloj
 
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Ŝlosilo
@@ -1816,7 +1805,6 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Kompanio
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Klientlisto
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :Spekti
 
 # Network client list
 
@@ -2402,9 +2390,6 @@ STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Urbonomo
 STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Elektu stilon de urbonomoj
 STR_MAPGEN_DATE                                                 :{BLACK}Dato:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Kiom da industrioj:
-STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Neĝlinia alteco:
-STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Altigu la neĝlinion per unu
-STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Malaltigu la neĝlinion per unu
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Terentipo:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Marnivelo:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Riveroj:
@@ -2452,7 +2437,6 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Mapa nom
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Grandeco:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
-STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Ŝanĝu altecon de la neĝlinio
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Ŝanĝu komencjaron
 
 # SE Map generation
@@ -2812,7 +2796,6 @@ STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}Vidu HQ
 STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP                                :{BLACK}Rigardi kompanian administraciejon
 STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Relokigu HQ
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Rekonstruu kompanian ĉefkonstruaĵon aliloke por 1% de kompanivaloro. Tenu maljuskliga klavo + Klak por (kost)taksi sen rekonstrui ĉefkonstruaĵon
-STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Donu monon
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Nova Vizaĝo
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Elektu novan vizaĝon por la manaĝanto
@@ -2830,7 +2813,6 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Vendu 25
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Kompania Nomo
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Nomo de la Manaĝanto
-STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Tajpu kiom da mono vi volas doni
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Ni serĉas transportkompanion por transpreni nian kompanion.{}{}Ĉu vi volas aĉeti {COMPANY} por {CURRENCY_LONG}?
 
@@ -2940,7 +2922,6 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Irkosto:
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Kapablo: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(transformebla)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Pripensite: {GOLD}{NUM}{BLACK} Vivlongo: {GOLD}{COMMA} jaro{P "" j}
-STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Pripensite: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Pleja Fidebleco: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Kosto: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_WEIGHT_CWEIGHT                                :{BLACK}Pezo: {GOLD}{WEIGHT_SHORT} ({WEIGHT_SHORT})
@@ -4006,11 +3987,6 @@ STR_DESKTOP_SHORTCUT_COMMENT                                    :Al simulado lud
 
 # Translatable descriptions in media/baseset/*.ob* files
 ###external 10
-
-STR_TRADITIONAL_TRAIN_NAME                                      :Trajno {COMMA}
-STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Stratveturilo {COMMA}
-STR_TRADITIONAL_SHIP_NAME                                       :Ŝipo {COMMA}
-STR_TRADITIONAL_AIRCRAFT_NAME                                   :Aviadilo {COMMA}
 
 ##id 0x2000
 # Town building names

@@ -194,10 +194,6 @@ STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA} mílur/
 STR_UNITS_VELOCITY_METRIC                                       :{COMMA} km/klst
 STR_UNITS_VELOCITY_SI                                           :{COMMA} m/s
 
-STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mílur/klst
-STR_UNIT_NAME_VELOCITY_METRIC                                   :km/klst
-STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}hö.
 STR_UNITS_POWER_METRIC                                          :{COMMA}hö.
 STR_UNITS_POWER_SI                                              :{COMMA}kW
@@ -229,7 +225,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Velja up
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Velja uppröðun
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Veldu hvers kyns farartæki þú vilt kaupa
 STR_BUTTON_SORT_BY                                              :{BLACK}Flokka eftir
-STR_BUTTON_RENAME                                               :{BLACK}Endurnefna
 
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Loka glugga
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Haus glugga - dragðu með músinni til að færa gluggann
@@ -543,12 +538,6 @@ STR_MONTH_SEP                                                   :September
 STR_MONTH_OCT                                                   :Október
 STR_MONTH_NOV                                                   :Nóvember
 STR_MONTH_DEC                                                   :Desember
-
-###length VEHICLE_TYPES
-STR_VEHICLE_TYPE_TRAINS                                         :Lestar
-STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Bifreiðir
-STR_VEHICLE_TYPE_SHIPS                                          :Skip
-STR_VEHICLE_TYPE_AIRCRAFT                                       :Flugvélar
 
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Lykill
@@ -2018,7 +2007,6 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Fyrirtæ
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Listi yfir leikmenn
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :Fylgjast með
 
 # Network client list
 
@@ -2667,9 +2655,6 @@ STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Bæjanö
 STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Tungumál bæjarnafna
 STR_MAPGEN_DATE                                                 :{BLACK}Dags.:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Fjöldi iðnaða:
-STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Hæð snjólínu:
-STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Hækka snjólínu upp um eitt þrep
-STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Lækka snjólínu niður um eitt þrep
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Gerð lands:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Magn sjávar:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Ár:
@@ -2717,7 +2702,6 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Nafn hæ
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Stærð:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} * {NUM}
 
-STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Breyta hæð snjólínu
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Breyta upphafsári
 
 # SE Map generation
@@ -3143,7 +3127,6 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Flytja H
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Endurreisa höfuðstöðvarnar annarsstaðar fyrir 1% af verðmæti fyrirtækis. Shift sýnir áætlaðan kostnað við flutning á höfuðstöðvum
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Nánar
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Skoða nánar fjölda innviða
-STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Gefa pening
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Nýtt Andlit
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Velja nýtt andlit á forstöðumanninn
@@ -3161,7 +3144,6 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Selja 25
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Nafn Fyrirtækis
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Nafn forstjóra
-STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Sláðu inn peningaupphæð sem þú vilt láta af hendi rakna
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Við erum að leita að flutningsfyrirtæki til að taka yfir okkar rekstri.{}{}Viltu kaupa {COMPANY} fyrir {CURRENCY_LONG}?
 
@@ -3283,7 +3265,6 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Rekstrar
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Burðargeta: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(breytanlegt)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Hönnun: {GOLD}{NUM}{BLACK} Endingartími: {GOLD}{COMMA} ár
-STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Hönnun: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Hámarks áreiðanleiki: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Verð: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_WEIGHT_CWEIGHT                                :{BLACK}Þyngd: {GOLD}{WEIGHT_SHORT} ({WEIGHT_SHORT})
@@ -4393,11 +4374,6 @@ STR_BASESOUNDS_WIN_DESCRIPTION                                  :Upprunalega hlj
 STR_BASESOUNDS_NONE_DESCRIPTION                                 :Hljóðpakki án hljóðs.
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :Upprunalega tónlistin úr Transport Tycoon Deluxe Windows útgáfunni.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Tónlistarpakki sem er í raun án tónlistar.
-
-STR_TRADITIONAL_TRAIN_NAME                                      :Lest {COMMA}
-STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Bifreið {COMMA}
-STR_TRADITIONAL_SHIP_NAME                                       :Skip {COMMA}
-STR_TRADITIONAL_AIRCRAFT_NAME                                   :Flugvél {COMMA}
 
 ##id 0x2000
 # Town building names

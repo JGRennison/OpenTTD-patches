@@ -194,10 +194,6 @@ STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA} mph
 STR_UNITS_VELOCITY_METRIC                                       :{COMMA} km/t
 STR_UNITS_VELOCITY_SI                                           :{COMMA} m/s
 
-STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
-STR_UNIT_NAME_VELOCITY_METRIC                                   :km/t
-STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}hp
 STR_UNITS_POWER_METRIC                                          :{COMMA}hp
 STR_UNITS_POWER_SI                                              :{COMMA}kW
@@ -229,7 +225,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Vel rað
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Set raðfestingar treytir
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Set filtrerings treytir
 STR_BUTTON_SORT_BY                                              :{BLACK}Sortera eftur
-STR_BUTTON_RENAME                                               :{BLACK}Endurdoyp
 
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Lat glugga aftur
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Glugga heiti - drag her fyri at fyta glugga
@@ -544,12 +539,6 @@ STR_MONTH_SEP                                                   :Septembur
 STR_MONTH_OCT                                                   :Oktobur
 STR_MONTH_NOV                                                   :Novembur
 STR_MONTH_DEC                                                   :Desembur
-
-###length VEHICLE_TYPES
-STR_VEHICLE_TYPE_TRAINS                                         :Tok
-STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Akfør
-STR_VEHICLE_TYPE_SHIPS                                          :Skip
-STR_VEHICLE_TYPE_AIRCRAFT                                       :Flogfør
 
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Lykil
@@ -1980,7 +1969,6 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Fyritøk
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Listi yvir klientar
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :Eygleið
 
 # Network client list
 
@@ -2559,9 +2547,6 @@ STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Bygdar n
 STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Áset slag av bygdar nøvnum
 STR_MAPGEN_DATE                                                 :{BLACK}Dato:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Nr. av ídnaðum:
-STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Hædd á kava linju:
-STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Flyt kava linjuna eitt upp
-STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Flyt kava linjuna eitt niður
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Slag av lendi:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Sjóvarmáli:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Løkar:
@@ -2609,7 +2594,6 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Navn á 
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Stødd:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} * {NUM}
 
-STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Broyt hædd á kava linju
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Broyt byrjunar ár
 
 # SE Map generation
@@ -2986,7 +2970,6 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Flyt HB
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Endurbygg fyritøku høvuðsborg aðrastaðni fyri 1% av virðinum á fyritøkuni. Shift+trýst vísur kostnaðar meting uttan at flyta høvuðsborgina
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Smálutir
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Sjá innankervi í smálutum
-STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Gev pening
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Nýtt andlit
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Vel eitt nýtt andlit til leiðaran
@@ -3004,7 +2987,6 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Sel 25% 
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Navn á Fyritøku
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Navn á leiðara
-STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Skriva nøgdina av peningi tú vil geva
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Vit leita eftir einari flutnings fyritøku at taka yvir okkara fyritøku.{}{}Vil tú keypa {COMPANY} fyri {CURRENCY_LONG}?
 
@@ -3125,7 +3107,6 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Rakstrar
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Pláss: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(kann umbyggjast)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Sniðgivi: {GOLD}{NUM}{BLACK} Livitíð: {GOLD}{COMMA} ár
-STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Sniðgivi: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Maks. Álítandi: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Kostnaður: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_WEIGHT_CWEIGHT                                :{BLACK}Vekt: {GOLD}{WEIGHT_SHORT} ({WEIGHT_SHORT})
@@ -4150,11 +4131,6 @@ STR_DESKTOP_SHORTCUT_COMMENT                                    :Eitt eftirgerð
 
 # Translatable descriptions in media/baseset/*.ob* files
 ###external 10
-
-STR_TRADITIONAL_TRAIN_NAME                                      :{G=n}Tok {COMMA}
-STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :{G=n}Akfar {COMMA}
-STR_TRADITIONAL_SHIP_NAME                                       :{G=n}Skip {COMMA}
-STR_TRADITIONAL_AIRCRAFT_NAME                                   :{G=n}Flogfar {COMMA}
 
 ##id 0x2000
 # Town building names

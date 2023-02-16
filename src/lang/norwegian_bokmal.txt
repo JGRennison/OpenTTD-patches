@@ -198,11 +198,6 @@ STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}km
 STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}m/s
 STR_UNITS_VELOCITY_GAMEUNITS                                    :{DECIMAL}{NBSP}ruter/dag
 
-STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mi/t
-STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
-STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :ruter/dag
-
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}hk
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}hk
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW
@@ -243,7 +238,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Velg sor
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Velg sorteringskriterier
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Velg filtreringskriterier
 STR_BUTTON_SORT_BY                                              :{BLACK}Sorter etter
-STR_BUTTON_RENAME                                               :{BLACK}Gi nytt navn
 STR_BUTTON_CATCHMENT                                            :{BLACK}Dekning
 STR_TOOLTIP_CATCHMENT                                           :{BLACK}Veksle mellom visning av dekningsområde
 
@@ -589,12 +583,6 @@ STR_MONTH_SEP                                                   :september
 STR_MONTH_OCT                                                   :oktober
 STR_MONTH_NOV                                                   :november
 STR_MONTH_DEC                                                   :desember
-
-###length VEHICLE_TYPES
-STR_VEHICLE_TYPE_TRAINS                                         :Tog
-STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Kjøretøy
-STR_VEHICLE_TYPE_SHIPS                                          :Skip
-STR_VEHICLE_TYPE_AIRCRAFT                                       :Luftfartøy
 
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Nøkkel
@@ -3126,9 +3114,6 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Ørkende
 STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Øk ørkendekningen med ti prosent
 STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Reduser ørkendekning med 10 prosent
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
-STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Høyde på snøgrensen:
-STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Flytt høyden på snøgrensen ett hakk opp
-STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Flytt høyden på snøgrensen ett hakk ned
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Terrengtype:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Havnivå:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Elver:
@@ -3180,7 +3165,6 @@ STR_MAPGEN_TERRAIN_TYPE_QUERY_CAPT                              :{WHITE}Valgt fj
 STR_MAPGEN_HEIGHTMAP_HEIGHT_QUERY_CAPT                          :{WHITE}Høyeste fjelltopp
 STR_MAPGEN_SNOW_COVERAGE_QUERY_CAPT                             :{WHITE}Snødekning (i %)
 STR_MAPGEN_DESERT_COVERAGE_QUERY_CAPT                           :{WHITE}Ørkendekning (i %)
-STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Endre høyden på snøgrensen
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Endre startår
 
 # SE Map generation
@@ -3846,7 +3830,6 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Driftsko
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Kapasitet: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(ombyggbart)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Designet: {GOLD}{NUM}{BLACK} Levetid: {GOLD}{COMMA} år
-STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Designet: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Maks pålitelighet: {GOLD}{COMMA}{NBSP}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Kostnad: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Kostnad: {GOLD}{CURRENCY_LONG}{BLACK} (Ombyggingskostnad: {GOLD}{CURRENCY_LONG}{BLACK})
@@ -5049,11 +5032,6 @@ STR_BASEMUSIC_WIN_DESCRIPTION                                   :Original musikk
 STR_BASEMUSIC_DOS_DESCRIPTION                                   :Original Transport Tycoon Deluxe DOS edition music.
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Original Transport Tycoon (Original/World Editor) DOS edition music.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :En musikkpakke uten noe musikk.
-
-STR_TRADITIONAL_TRAIN_NAME                                      :Tog {COMMA}
-STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Kjøretøy {COMMA}
-STR_TRADITIONAL_SHIP_NAME                                       :Skip {COMMA}
-STR_TRADITIONAL_AIRCRAFT_NAME                                   :Luftfartøy {COMMA}
 
 ##id 0x2000
 # Town building names

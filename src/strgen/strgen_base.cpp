@@ -796,8 +796,13 @@ void StringReader::HandleString(char *str)
 		}
 
 		if (ent->translated && casep == nullptr) {
-			strgen_error("String name '%s' is used multiple times", str);
-			return;
+			if (this->data.override_mode) {
+				free(ent->translated);
+				ent->translated = nullptr;
+			} else {
+				strgen_error("String name '%s' is used multiple times", str);
+				return;
+			}
 		}
 
 		/* make sure that the commands match */

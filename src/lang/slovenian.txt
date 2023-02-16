@@ -346,10 +346,6 @@ STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA} mph
 STR_UNITS_VELOCITY_METRIC                                       :{COMMA} km/h
 STR_UNITS_VELOCITY_SI                                           :{COMMA} m/s
 
-STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
-STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
-STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}KM
 STR_UNITS_POWER_METRIC                                          :{COMMA}KM
 STR_UNITS_POWER_SI                                              :{COMMA} kW
@@ -389,7 +385,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Izberite
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Izberite kriterij razvrščanja
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Izberite kriterij filtriranja
 STR_BUTTON_SORT_BY                                              :{BLACK}Razvrsti po
-STR_BUTTON_RENAME                                               :{BLACK}Preimenuj
 
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Zapri okno
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Naziv okna - s tem lahko premaknete okno
@@ -719,12 +714,6 @@ STR_MONTH_SEP                                                   :September
 STR_MONTH_OCT                                                   :Oktober
 STR_MONTH_NOV                                                   :November
 STR_MONTH_DEC                                                   :December
-
-###length VEHICLE_TYPES
-STR_VEHICLE_TYPE_TRAINS                                         :Vlaki
-STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Cestna vozila
-STR_VEHICLE_TYPE_SHIPS                                          :Ladje
-STR_VEHICLE_TYPE_AIRCRAFT                                       :Letala
 
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Ključ
@@ -2312,7 +2301,6 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Podjetje
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Seznam gostov
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :Opazuj
 
 # Network client list
 STR_NETWORK_CLIENT_LIST_SERVER_INVITE_CODE_TOOLTIP              :{BLACK}Koda za povabilo, katero lahko uporabijo drugi igralci za pridružitev temu strežniku
@@ -2978,9 +2966,6 @@ STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Imena me
 STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Izberi slog imena mest
 STR_MAPGEN_DATE                                                 :{BLACK}Datum:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Število industrij:
-STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Višina snežne meje:
-STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Premik snežne meje eno enoto višje
-STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Premik snežne meje eno enoto nižje
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Tip terena:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Morska gladina:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Reke:
@@ -3028,7 +3013,6 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Ime viš
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Velikost:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
-STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Spremeni višino snežne meje
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Spremeni začetno leto
 
 # SE Map generation
@@ -3508,7 +3492,6 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Preseli 
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Preseli sedež podjetja drugam za ceno 1% vrednosti podjetja. Shift+Klik prikaže predviden strošek brez selitve
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Podrobnosti
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Podrobni prikaz količine infrastrukture
-STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Daj denar
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Nov obraz
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Izberi nov obraz za direktorja
@@ -3526,7 +3509,6 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Prodaj 2
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Ime podjetja
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Direktorjevo ime
-STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Vpiši znesek denarja za darovanje
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Iščemo novega lastnika, ki bi prevzel naše podjetje.{}{}Ali želiš odkupiti podjetje {COMPANY} za ceno {CURRENCY_LONG}?
 
@@ -3651,7 +3633,6 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Cena del
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Zmogljivost: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(spremenljivo)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Zasnova: {GOLD}{NUM}{BLACK} Življ. doba: {GOLD}{COMMA} let{P o i a ""}
-STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Zasnova: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Max. zanesljivost: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Cena: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_WEIGHT_CWEIGHT                                :{BLACK}Teža: {GOLD}{WEIGHT_SHORT} ({WEIGHT_SHORT})
@@ -4794,11 +4775,6 @@ STR_BASESOUNDS_NONE_DESCRIPTION                                 :Zvočni paket b
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :Originalna glasba Transport Tycoon Deluxe različice oken(windows).
 STR_BASEMUSIC_DOS_DESCRIPTION                                   :Originalna glasba Transport Tycoon Deluxe DOS različice
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Glasbeni paket z vključeno glasbo.
-
-STR_TRADITIONAL_TRAIN_NAME                                      :Vlak {COMMA}
-STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Cestno vozilo {COMMA}
-STR_TRADITIONAL_SHIP_NAME                                       :Ladja {COMMA}
-STR_TRADITIONAL_AIRCRAFT_NAME                                   :Letalo {COMMA}
 
 ##id 0x2000
 # Town building names

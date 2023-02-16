@@ -195,10 +195,6 @@ STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA} mi/t
 STR_UNITS_VELOCITY_METRIC                                       :{COMMA} km/t
 STR_UNITS_VELOCITY_SI                                           :{COMMA} m/s
 
-STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mi/t
-STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
-STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA} hk
 STR_UNITS_POWER_METRIC                                          :{COMMA} hk
 STR_UNITS_POWER_SI                                              :{COMMA} kW
@@ -238,7 +234,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Vel sort
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Vel sorteringskriterium
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Vel filtreringskriterium
 STR_BUTTON_SORT_BY                                              :{BLACK}Sorter etter
-STR_BUTTON_RENAME                                               :{BLACK}Gje nytt namn
 
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Lukk vindauge
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Tittel på vindauget - dra for å flytte vindauget
@@ -567,12 +562,6 @@ STR_MONTH_SEP                                                   :september
 STR_MONTH_OCT                                                   :oktober
 STR_MONTH_NOV                                                   :november
 STR_MONTH_DEC                                                   :desember
-
-###length VEHICLE_TYPES
-STR_VEHICLE_TYPE_TRAINS                                         :Tog
-STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Køyretøy
-STR_VEHICLE_TYPE_SHIPS                                          :Skip
-STR_VEHICLE_TYPE_AIRCRAFT                                       :Luftfartøy
 
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Nøkkel
@@ -2074,7 +2063,6 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Firmaet 
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Liste over klientar
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :Vær tilskodar
 
 # Network client list
 
@@ -2732,9 +2720,6 @@ STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Namn på
 STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Vel nasjonalitet på bynamn
 STR_MAPGEN_DATE                                                 :{BLACK}Dato:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Antal industriar:
-STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Høgd på snøgrensa:
-STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Flytt høgda på snøgrensa eitt hakk opp
-STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Flytt høgda på snøgrensa eitt hakk ned
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Terrengtype
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Havflate:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Elver:
@@ -2782,7 +2767,6 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Høgdeka
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Storleik:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
-STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Byt høgda på snøgrensa
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Byt startår
 
 # SE Map generation
@@ -3256,7 +3240,6 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Omplasse
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Flytt hovudkontoret til firmaet, til ein kostnad av 1{NBSP}% av firmaverdien. Shift+klikk viser prisoverslag utan å flytte hovudkontoret.
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Detaljar
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Vis detaljert infrastrukturteljing
-STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Gje pengar
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Nytt andlet
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Gje sjefen ei andletslyfting
@@ -3274,7 +3257,6 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Sel 25{N
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Firmanamn
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Namnet til sjefen
-STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Skriv inn kor mykje pengar du ønskar å gje
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Me ser etter eit firma som er villig til å overta firmaet vårt.{}{}Vil du kjøpe {COMPANY} for {CURRENCY_LONG}?
 
@@ -3398,7 +3380,6 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Driftsko
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Kapasitet: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(ombyggbart)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Designa: {GOLD}{NUM}{BLACK} Levetid: {GOLD}{COMMA} år
-STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Designa: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Maks. pålitelegheit: {GOLD}{COMMA}{NBSP}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Kostnad: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_WEIGHT_CWEIGHT                                :{BLACK}Vekt: {GOLD}{WEIGHT_SHORT} ({WEIGHT_SHORT})
@@ -4535,11 +4516,6 @@ STR_BASESOUNDS_WIN_DESCRIPTION                                  :Originale lydar
 STR_BASESOUNDS_NONE_DESCRIPTION                                 :Ei lydpakke utan nokon lydar.
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :Original musikk frå Transport Tycoon Deluxe for Windows.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Ei musikkpakke utan noko musikk.
-
-STR_TRADITIONAL_TRAIN_NAME                                      :Tog {COMMA}
-STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Køyretøy {COMMA}
-STR_TRADITIONAL_SHIP_NAME                                       :Skip {COMMA}
-STR_TRADITIONAL_AIRCRAFT_NAME                                   :Luftfartøy {COMMA}
 
 ##id 0x2000
 # Town building names

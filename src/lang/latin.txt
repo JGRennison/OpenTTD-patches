@@ -383,10 +383,6 @@ STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA}{NBSP}mp
 STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}km/h
 STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}m/s
 
-STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
-STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
-STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}hp
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}hp
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW
@@ -426,7 +422,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Eligere 
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Eligere criteria separandi
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Eligere criteria colandi
 STR_BUTTON_SORT_BY                                              :{BLACK}Ordinare
-STR_BUTTON_RENAME                                               :{BLACK}Renominare
 
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Claudere fenestram
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Titulus fenestrae - hunc trahe ut fenestra moveatur
@@ -756,12 +751,6 @@ STR_MONTH_SEP                                                   :Septembris
 STR_MONTH_OCT                                                   :Octobris
 STR_MONTH_NOV                                                   :Novembris
 STR_MONTH_DEC                                                   :Decembris
-
-###length VEHICLE_TYPES
-STR_VEHICLE_TYPE_TRAINS                                         :Tramina
-STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Vehicula Viaria
-STR_VEHICLE_TYPE_SHIPS                                          :Naves
-STR_VEHICLE_TYPE_AIRCRAFT                                       :Aeroplana
 
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Clavis
@@ -2362,7 +2351,6 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Societas
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Index clientum
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :Spectare
 
 # Network client list
 
@@ -3047,9 +3035,6 @@ STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Nomina o
 STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Eligere oppidorum nomina
 STR_MAPGEN_DATE                                                 :{BLACK}Dies:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Numerus industriarum:
-STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Altitudo nivis lineae:
-STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Tollere altitudinem lineae nivis
-STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Inclinere altitudinem lineae nivis
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Typus terrae:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Magnitudo maris:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Numerus fluviorum:
@@ -3097,7 +3082,6 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Nomen ta
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Magnitudo:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
-STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Mutare altitudinem lineae nivis
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Mutare annum initii
 
 # SE Map generation
@@ -3587,7 +3571,6 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Movere s
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Movere primariam sedem societatis aliquo pretio 1% aestimationis valoris societatis. Shift+Preme ut pretium monstretur sine sedem movendo
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Indicia
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Videre indicia descripta infrastructurae
-STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Dare pecuniam
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Facies Nova
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Eligere novam faciem praesidis
@@ -3605,7 +3588,6 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Quadrant
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Nomen Societatis
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Nomen Praesidis
-STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Inscribe quantitatem pecuniae dandam
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Quaerimus aliam societatem emere nostram societatem.{}{}Visne emere {COMPANY} pretio {CURRENCY_LONG}?
 
@@ -3742,7 +3724,6 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Pretium 
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Capacitas: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(refectabilis)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Productum: {GOLD}{NUM}{BLACK} Aetas: {GOLD}{COMMA} ann{P us i}
-STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Productum: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Constantia Maxima: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Pretium: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Pretium: {GOLD}{CURRENCY_LONG}{BLACK} (Pretium Reficiendi: {GOLD}{CURRENCY_LONG}{BLACK})
@@ -4906,11 +4887,6 @@ STR_BASEMUSIC_WIN_DESCRIPTION                                   :Musica ex editi
 STR_BASEMUSIC_DOS_DESCRIPTION                                   :Musica ex editione originale Transport Tycoon Deluxe DOS.
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Musica ex editione originale Transport Tycoon (Originale/World Editor) DOS.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Sarcina musicae sine ulla musica.
-
-STR_TRADITIONAL_TRAIN_NAME                                      :Tramen {COMMA}
-STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Vehiculum Viarium {COMMA}
-STR_TRADITIONAL_SHIP_NAME                                       :Navis {COMMA}
-STR_TRADITIONAL_AIRCRAFT_NAME                                   :Aeroplanum {COMMA}
 
 ##id 0x2000
 # Town building names

@@ -196,11 +196,6 @@ STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}km
 STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}m/s
 STR_UNITS_VELOCITY_GAMEUNITS                                    :{DECIMAL}{NBSP}ô/ngày
 
-STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
-STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
-STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :ô/ngày
-
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}hp
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}hp
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW
@@ -249,7 +244,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Chọn t
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Chọn tiêu chí sắp xếp
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Chọn tiêu chí lọc bỏ
 STR_BUTTON_SORT_BY                                              :{BLACK}Sắp xếp bởi
-STR_BUTTON_RENAME                                               :{BLACK}Đổi tên
 STR_BUTTON_CATCHMENT                                            :{BLACK}Vùng che phủ
 STR_TOOLTIP_CATCHMENT                                           :{BLACK}Đổi ẩn/hiện vùng che phủ
 
@@ -596,12 +590,6 @@ STR_MONTH_SEP                                                   :Tháng Chín
 STR_MONTH_OCT                                                   :Tháng Mười
 STR_MONTH_NOV                                                   :Tháng Mười Một
 STR_MONTH_DEC                                                   :Tháng Mười Hai
-
-###length VEHICLE_TYPES
-STR_VEHICLE_TYPE_TRAINS                                         :Tàu hỏa
-STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Xe cộ
-STR_VEHICLE_TYPE_SHIPS                                          :Tàu thủy
-STR_VEHICLE_TYPE_AIRCRAFT                                       :Máy bay
 
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Nút
@@ -2619,8 +2607,6 @@ STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLA
 STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{CARGO_LONG} sẽ được vận chuyển hằng tháng từ {STATION} đến {STATION} ({COMMA}% dung lượng){STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} sẽ được hoàn chuyển ({COMMA}% dung lượng)
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Thời gian đi lại trung bình: {NUM}{NBSP}ngày
-STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Thời gian đi lại trung bình: {STRING}
-STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Sức chứa: {CARGO_LONG}
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Hiện rõ vùng phủ ảnh hưởng
@@ -3163,9 +3149,6 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Độ ph
 STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Tăng độ phủ sa mạc lên mười phần trăm
 STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Giảm độ phủ sa mạc đi mười phần trăm
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
-STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Độ cao tuyết phủ:
-STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Di chuyển độ cao tuyết phủ lên cao
-STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Di chuyển độ cao tuyết phủ xuống thấp
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Kiểu nền đất:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Mực nước biển:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Số sông/suối:
@@ -3223,7 +3206,6 @@ STR_MAPGEN_TERRAIN_TYPE_QUERY_CAPT                              :{WHITE}Độ ca
 STR_MAPGEN_HEIGHTMAP_HEIGHT_QUERY_CAPT                          :{WHITE}Độ cao đỉnh cao nhất
 STR_MAPGEN_SNOW_COVERAGE_QUERY_CAPT                             :{WHITE}Độ phủ địa hình tuyết (giá trị %)
 STR_MAPGEN_DESERT_COVERAGE_QUERY_CAPT                           :{WHITE}Độ phủ sa mạc (giá trị %)
-STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Thay đổi độ cao tuyết phủ
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Thay đổi thời điểm bắt đầu
 
 # SE Map generation
@@ -3907,7 +3889,6 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Chi phí
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Sức chứa: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(cải biến được)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Thiết kế: {GOLD}{NUM}{BLACK} Niên hạn: {GOLD}{COMMA} năm
-STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Thiết kế: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Độ tin cậy tối đa: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Giá thành: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Giá: {GOLD}{CURRENCY_LONG}{BLACK} (Giá cải biến: {GOLD}{CURRENCY_LONG}{BLACK})
@@ -5125,11 +5106,6 @@ STR_BASEMUSIC_WIN_DESCRIPTION                                   :Nhạc gốc t�
 STR_BASEMUSIC_DOS_DESCRIPTION                                   :Nhạc của nguyên bản Transport Tycoon Deluxe cho DOS.
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Nhạc của nguyên bản Transport Tycoon (Original/World Editor) cho DOS.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Gói âm nhạc này không có nhạc nào.
-
-STR_TRADITIONAL_TRAIN_NAME                                      :Đoàn tàu {COMMA}
-STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Ôtô {COMMA}
-STR_TRADITIONAL_SHIP_NAME                                       :Tàu thuỷ {COMMA}
-STR_TRADITIONAL_AIRCRAFT_NAME                                   :Máy bay {COMMA}
 
 ##id 0x2000
 # Town building names

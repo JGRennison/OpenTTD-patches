@@ -260,11 +260,6 @@ STR_UNITS_VELOCITY_METRIC                                       :{COMMA} km/h
 STR_UNITS_VELOCITY_SI                                           :{COMMA} m/s
 STR_UNITS_VELOCITY_GAMEUNITS                                    :{DECIMAL}{NBSP}políč{P ko ka ok}/deň
 
-STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
-STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
-STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :políčka/deň
-
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}hp
 STR_UNITS_POWER_METRIC                                          :{COMMA}hp
 STR_UNITS_POWER_SI                                              :{COMMA}kW
@@ -313,7 +308,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Spôsob 
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Zvoľ kritérium triedenia
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Vybrať kritériá filtrovania
 STR_BUTTON_SORT_BY                                              :{BLACK}Usporiadať
-STR_BUTTON_RENAME                                               :{BLACK}Premenovať
 STR_BUTTON_CATCHMENT                                            :{BLACK}Pokrytie
 STR_TOOLTIP_CATCHMENT                                           :{BLACK}Prepnúť zobrazenie oblasti pokrytia
 
@@ -660,12 +654,6 @@ STR_MONTH_SEP                                                   :September
 STR_MONTH_OCT                                                   :Október
 STR_MONTH_NOV                                                   :November
 STR_MONTH_DEC                                                   :December
-
-###length VEHICLE_TYPES
-STR_VEHICLE_TYPE_TRAINS                                         :Vlaky
-STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Cestné vozidlá
-STR_VEHICLE_TYPE_SHIPS                                          :Lode
-STR_VEHICLE_TYPE_AIRCRAFT                                       :Lietadlá
 
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Vyb.
@@ -2687,8 +2675,6 @@ STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLA
 STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{CARGO_LONG} na prepravu za mesiac z {STATION} do {STATION} ({COMMA}% kapacity){STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} na prepravu naspäť ({COMMA}% kapacity)
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Priemerný čas cesty: {NUM}{NBSP}d{P eň ni ní}
-STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Priemerný čas cesty: {STRING}
-STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Kapacita: {CARGO_LONG}
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Ukázať oblasť pokrytia
@@ -3231,9 +3217,6 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Pokrytie
 STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Zvýšiť pokrytie púšťou o desať percent
 STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Znížiť pokrytie púšťou o desať percent
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
-STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Výška hranice snehu:
-STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Zvýšiť výšku hranice snehu o jedno
-STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Znížiť výšku hranice snehu o jedno
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Typ terénu:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Rozloha mora:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Rieky:
@@ -3291,7 +3274,6 @@ STR_MAPGEN_TERRAIN_TYPE_QUERY_CAPT                              :{WHITE}Cieľov�
 STR_MAPGEN_HEIGHTMAP_HEIGHT_QUERY_CAPT                          :{WHITE}Najvyšší vrchol
 STR_MAPGEN_SNOW_COVERAGE_QUERY_CAPT                             :{WHITE}Pokrytie snehom (v %)
 STR_MAPGEN_DESERT_COVERAGE_QUERY_CAPT                           :{WHITE}Pokrytie púšťou (v %)
-STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Zmeniť výšku hranice snehu
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Zmeniť rok začiatku hry
 
 # SE Map generation
@@ -3975,7 +3957,6 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Prevádz
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Kapacita: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(možná prestavba)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Vyrobené: {GOLD}{NUM}{BLACK} Životnosť: {GOLD}{COMMA} rok{P "" y ov}
-STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Vyrobené: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Max. spoľahlivosť: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Cena: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Cena: {GOLD}{CURRENCY_LONG}{BLACK} (Cena prestavby: {GOLD}{CURRENCY_LONG}{BLACK})
@@ -5192,11 +5173,6 @@ STR_BASEMUSIC_WIN_DESCRIPTION                                   :Pôvodná hudba
 STR_BASEMUSIC_DOS_DESCRIPTION                                   :Pôvodná hudba z Transport Tycoon Deluxe (DOS).
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Pôvodná hudba z Transport Tycoon (DOS).
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Sada hudby neobsahujúca hudbu.
-
-STR_TRADITIONAL_TRAIN_NAME                                      :{G=m}Vlak {COMMA}
-STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :{G=s}Cestné vozidlo {COMMA}
-STR_TRADITIONAL_SHIP_NAME                                       :{G=z}Loď {COMMA}
-STR_TRADITIONAL_AIRCRAFT_NAME                                   :{G=s}Lietadlo {COMMA}
 
 ##id 0x2000
 # Town building names

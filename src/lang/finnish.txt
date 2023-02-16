@@ -196,11 +196,6 @@ STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}km
 STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}m/s
 STR_UNITS_VELOCITY_GAMEUNITS                                    :{DECIMAL}{NBSP}ruutua/vrk
 
-STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
-STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
-STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :ruutua/vrk
-
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}hv
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}hv
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW
@@ -249,7 +244,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Valitse 
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Valitse järjestyskriteeri
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Valitse suodatuskriteerit
 STR_BUTTON_SORT_BY                                              :{BLACK}Lajittele
-STR_BUTTON_RENAME                                               :{BLACK}Nimeä uudelleen
 STR_BUTTON_CATCHMENT                                            :{BLACK}Vaikutusalue
 STR_TOOLTIP_CATCHMENT                                           :{BLACK}Valitse, näytetäänkö vaikutusalue
 
@@ -596,12 +590,6 @@ STR_MONTH_SEP                                                   :Syyskuu
 STR_MONTH_OCT                                                   :Lokakuu
 STR_MONTH_NOV                                                   :Marraskuu
 STR_MONTH_DEC                                                   :Joulukuu
-
-###length VEHICLE_TYPES
-STR_VEHICLE_TYPE_TRAINS                                         :Junat
-STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Ajoneuvot
-STR_VEHICLE_TYPE_SHIPS                                          :Laivat
-STR_VEHICLE_TYPE_AIRCRAFT                                       :Ilma-alukset
 
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Selite
@@ -3163,9 +3151,6 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Aavikon 
 STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Kasvata aavikon peittoa 10 prosentilla
 STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Vähennä aavikon peittoa 10 prosentilla
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}{NBSP}%
-STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Lumirajan korkeus:
-STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Siirrä lumirajaa yksi taso ylöspäin
-STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Siirrä lumirajaa yksi taso alaspäin
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Maaston tyyppi:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Merenpinta:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Joet:
@@ -3223,7 +3208,6 @@ STR_MAPGEN_TERRAIN_TYPE_QUERY_CAPT                              :{WHITE}Huipun t
 STR_MAPGEN_HEIGHTMAP_HEIGHT_QUERY_CAPT                          :{WHITE}Korkein huippu
 STR_MAPGEN_SNOW_COVERAGE_QUERY_CAPT                             :{WHITE}Lumen peitto (%)
 STR_MAPGEN_DESERT_COVERAGE_QUERY_CAPT                           :{WHITE}Aavikon peitto (%)
-STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Vaihda lumirajan korkeutta
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Vaihda aloitusvuosi
 
 # SE Map generation
@@ -3909,7 +3893,6 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Käyttö
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Kapasiteetti: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(sovitettavissa)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Suunniteltu: {GOLD}{NUM}{BLACK} Elinikä: {GOLD}{COMMA} vuo{P si tta}
-STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Suunniteltu: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Enimmäisluotettavuus: {GOLD}{COMMA}{NBSP}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Hinta: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Hinta: {GOLD}{CURRENCY_LONG}{BLACK} (Sovituskustannus: {GOLD}{CURRENCY_LONG}{BLACK})
@@ -5128,11 +5111,6 @@ STR_BASEMUSIC_WIN_DESCRIPTION                                   :Alkuperäinen T
 STR_BASEMUSIC_DOS_DESCRIPTION                                   :Alkuperäinen Transport Tycoon Deluxen DOS-version musiikki.
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Alkuperäinen Transport Tycoonin (alkuperäinen / World Editor) DOS-version musiikki.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Musiikkipaketti, jossa ei ole musiikkia.
-
-STR_TRADITIONAL_TRAIN_NAME                                      :Juna {COMMA}
-STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Ajoneuvo {COMMA}
-STR_TRADITIONAL_SHIP_NAME                                       :Laiva {COMMA}
-STR_TRADITIONAL_AIRCRAFT_NAME                                   :Ilma-alus {COMMA}
 
 ##id 0x2000
 # Town building names

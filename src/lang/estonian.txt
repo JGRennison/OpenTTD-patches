@@ -253,11 +253,6 @@ STR_UNITS_VELOCITY_METRIC                                       :{COMMA} km/h
 STR_UNITS_VELOCITY_SI                                           :{COMMA} m/s
 STR_UNITS_VELOCITY_GAMEUNITS                                    :{DECIMAL}{NBSP}ruutu/päev
 
-STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :miili tunnis
-STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
-STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :ruutu/päev
-
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}hj
 STR_UNITS_POWER_METRIC                                          :{COMMA}hj
 STR_UNITS_POWER_SI                                              :{COMMA}kW
@@ -306,7 +301,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Vali jä
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Vali järjestus
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Vali sõelumisalused
 STR_BUTTON_SORT_BY                                              :{BLACK}Järjestus:
-STR_BUTTON_RENAME                                               :{BLACK}Nimevahetus
 STR_BUTTON_CATCHMENT                                            :{BLACK}Mõjupiirkond
 STR_TOOLTIP_CATCHMENT                                           :{BLACK}Vahelda mõjuala näitamist
 
@@ -653,12 +647,6 @@ STR_MONTH_SEP                                                   :september
 STR_MONTH_OCT                                                   :oktoober
 STR_MONTH_NOV                                                   :november
 STR_MONTH_DEC                                                   :detsember
-
-###length VEHICLE_TYPES
-STR_VEHICLE_TYPE_TRAINS                                         :Rongid
-STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Mootorsõidukid
-STR_VEHICLE_TYPE_SHIPS                                          :Laevad
-STR_VEHICLE_TYPE_AIRCRAFT                                       :Õhusõidukid
 
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Selgitus
@@ -3220,9 +3208,6 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Kõrbeka
 STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Suurenda kõrbekatvust kümne protsendi võrra
 STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Vähenda kõrbekatvust kümne protsendi võrra
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
-STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Lumepiiri kõrgus:
-STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Lumepiiri liigutamine ühe võrra üles
-STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Lumepiiri liigutamine ühe võrra alla
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Maapinna tüüp:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Merepinna tase:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Jõgesid:
@@ -3280,7 +3265,6 @@ STR_MAPGEN_TERRAIN_TYPE_QUERY_CAPT                              :{WHITE}Soovitud
 STR_MAPGEN_HEIGHTMAP_HEIGHT_QUERY_CAPT                          :{WHITE}Kõrgpunkt
 STR_MAPGEN_SNOW_COVERAGE_QUERY_CAPT                             :{WHITE}Lumekatvus (%)
 STR_MAPGEN_DESERT_COVERAGE_QUERY_CAPT                           :{WHITE}Kõrbekatvus (%)
-STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Muuda lumepiiri kõrgust
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Muuda algusaastat
 
 # SE Map generation
@@ -3966,7 +3950,6 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Käitusk
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Kandevõime: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(ümberseadistatav)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Kujundatud: {GOLD}{NUM}{BLACK} Vanus: {GOLD}{COMMA} aasta{P "" t}
-STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Kujundatud: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Parim tehnoseisund: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Hind: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Maksumus: {GOLD}{CURRENCY_LONG}{BLACK} (Ümberseadistamise maksumus: {GOLD}{CURRENCY_LONG}{BLACK})
@@ -5186,11 +5169,6 @@ STR_BASEMUSIC_WIN_DESCRIPTION                                   :Algse Transport
 STR_BASEMUSIC_DOS_DESCRIPTION                                   :Algse Transport Tycoon Deluxe DOSi versiooni muusika.
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Algupärase Transport Tycooni (Original/World Editor) DOS-versiooni muusika.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Muusikakogu ilma muusikata.
-
-STR_TRADITIONAL_TRAIN_NAME                                      :Rong {COMMA}
-STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Mootorsõiduk {COMMA}
-STR_TRADITIONAL_SHIP_NAME                                       :Laev {COMMA}
-STR_TRADITIONAL_AIRCRAFT_NAME                                   :Õhusõiduk {COMMA}
 
 ##id 0x2000
 # Town building names

@@ -1,0 +1,32 @@
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
+STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
+STR_UNIT_NAME_VELOCITY_SI                                       :m/s
+
+STR_BUTTON_RENAME                                               :{BLACK}Преименувај
+
+STR_VEHICLE_TYPE_TRAINS                                         :Возови
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Патни Возила
+STR_VEHICLE_TYPE_SHIPS                                          :Бродови
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Летала
+
+# Tracerestrict GUI
+
+# Programmable Pre-Signals
+
+#House construction window (for SE only)
+
+#Town select window (for SE only)
+
+# Town tooltip
+
+# Cargo type orders Window
+
+# Plans window
+
+# Clear area query
+
+# Plan related errors
+
+# Scheduled Dispatch
+
+# Modifier key toggle window

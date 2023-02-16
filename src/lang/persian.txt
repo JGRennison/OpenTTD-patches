@@ -193,10 +193,6 @@ STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA}{NBSP}م
 STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}کیلومتر بر ساعت
 STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}متر بر ثانیه
 
-STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :مایل بر ساعت
-STR_UNIT_NAME_VELOCITY_METRIC                                   :کیلومتر بر ساعت
-STR_UNIT_NAME_VELOCITY_SI                                       :متر بر ثانیه
-
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}اسب بخار
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}اسب بخار
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}کیلووات
@@ -228,7 +224,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}انتخ
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}انتخاب معیار مرتب کردن
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}انتخاب معیار پایش
 STR_BUTTON_SORT_BY                                              :{BLACK}مرتب کردن بر اساس
-STR_BUTTON_RENAME                                               :{BLACK}نام گزاری
 STR_BUTTON_CATCHMENT                                            :{BLACK}تحت پوشش
 
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}بستن پنجره
@@ -557,12 +552,6 @@ STR_MONTH_SEP                                                   :سپتامبر
 STR_MONTH_OCT                                                   :اکتبر
 STR_MONTH_NOV                                                   :نوامبر
 STR_MONTH_DEC                                                   :دسامبر
-
-###length VEHICLE_TYPES
-STR_VEHICLE_TYPE_TRAINS                                         :قطارها
-STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :ماشین ها
-STR_VEHICLE_TYPE_SHIPS                                          :کشتی ها
-STR_VEHICLE_TYPE_AIRCRAFT                                       :هواپیما
 
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}کلید
@@ -1880,7 +1869,6 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}شرکت
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}لیست سرویس گیرنده ها
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}تماشا
 
 # Network client list
 
@@ -2531,9 +2519,6 @@ STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK} نام 
 STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}انتخاب نوع نام شهرها
 STR_MAPGEN_DATE                                                 :{BLACK}تاریخ:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}تعداد صنایع:
-STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}ارتفاع خط برف:
-STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}اضافه کردن یک واحد به ارتفاع خط برف
-STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}کم کردن یک واحد از ارتفاع خط برف
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}نوع پستی/بلندی:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}سطح دریا:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}رودخانه ها:
@@ -2581,7 +2566,6 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}نام �
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}اندازه:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
-STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}تغییر ارتفاع خط برف
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}تغییر سال آغاز
 
 # SE Map generation
@@ -2998,7 +2982,6 @@ STR_COMPANY_VIEW_BUILD_HQ_BUTTON                                :{BLACK}ساخت
 STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}دیدن ساختمان مرکزی
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}جزییات
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}مشاهده جزییات تعداد زیرساخت ها
-STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}پول دادن
 
 STR_COMPANY_VIEW_COLOUR_SCHEME_BUTTON                           :{BLACK}پالت رنگی
 
@@ -3006,7 +2989,6 @@ STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}25% سه
 STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}25% سهام شرکت را بفروش
 STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}25% سهام این شرکت را بخر.Shift+Click برآورد قیمت سهام را بدون فروش سهام نشان می دهد.
 STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}25% سهام این شرکت را بفروش.دکمه Shift+Clickبرآورد قیمت را بدون فروش سهام نمایش می دهد
-STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :مقدار پولی که می خواهید دریافت نمایید را وارد کنید
 
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :مدیر عامل
 
@@ -3834,11 +3816,6 @@ STR_BASESOUNDS_WIN_DESCRIPTION                                  :صوت زمین
 STR_BASESOUNDS_NONE_DESCRIPTION                                 :یک بسته صوت زمینه که حاوی هیچ صوتی نیست
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :موزیک اصلی بازی ترانسپورت تایکون نسخه ویندوز
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :یک بسته موسیقی که حاوی هیچ موزیکی نیست
-
-STR_TRADITIONAL_TRAIN_NAME                                      :قطار {COMMA}
-STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :خودرو جاده ای {COMMA}
-STR_TRADITIONAL_SHIP_NAME                                       :کشتی {COMMA}
-STR_TRADITIONAL_AIRCRAFT_NAME                                   :هواپیما {COMMA}
 
 ##id 0x2000
 # Town building names

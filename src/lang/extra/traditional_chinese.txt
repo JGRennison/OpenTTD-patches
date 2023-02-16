@@ -1,0 +1,44 @@
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :英里/小時
+STR_UNIT_NAME_VELOCITY_METRIC                                   :公里/小時
+STR_UNIT_NAME_VELOCITY_SI                                       :米/秒
+
+STR_BUTTON_RENAME                                               :{BLACK}重新命名
+
+STR_VEHICLE_TYPE_TRAINS                                         :列車
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :公車／貨車
+STR_VEHICLE_TYPE_SHIPS                                          :船舶
+STR_VEHICLE_TYPE_AIRCRAFT                                       :飛機
+
+# Tracerestrict GUI
+
+# Programmable Pre-Signals
+
+#House construction window (for SE only)
+
+#Town select window (for SE only)
+
+STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}雪線高度：
+STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}將雪線高度上移一層
+STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}將雪線高度下移一層
+STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}修改雪線高度
+
+# Town tooltip
+
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}設計年份：{GOLD}{NUM}
+
+# Cargo type orders Window
+
+# Plans window
+
+# Clear area query
+
+# Plan related errors
+
+STR_TRADITIONAL_TRAIN_NAME                                      :列車 {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :車輛 {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :船舶 {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :飛機 {COMMA}
+
+# Scheduled Dispatch
+
+# Modifier key toggle window

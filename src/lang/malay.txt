@@ -193,10 +193,6 @@ STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA} bp/j
 STR_UNITS_VELOCITY_METRIC                                       :{COMMA} km/j
 STR_UNITS_VELOCITY_SI                                           :{COMMA} m/s
 
-STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :bp/j
-STR_UNIT_NAME_VELOCITY_METRIC                                   :km/j
-STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}kk
 STR_UNITS_POWER_METRIC                                          :{COMMA}kk
 STR_UNITS_POWER_SI                                              :{COMMA}kW
@@ -230,7 +226,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Pilih be
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Pilih cara susunan
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Pilih cara penapisan
 STR_BUTTON_SORT_BY                                              :{BLACK}Menyusun mengikuti
-STR_BUTTON_RENAME                                               :{BLACK}Tukar Nama
 
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Tutup tetingkap
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Tajuk tetingkap - seret untuk menggerakkan tetingkap
@@ -547,12 +542,6 @@ STR_MONTH_SEP                                                   :September
 STR_MONTH_OCT                                                   :Oktober
 STR_MONTH_NOV                                                   :November
 STR_MONTH_DEC                                                   :Disember
-
-###length VEHICLE_TYPES
-STR_VEHICLE_TYPE_TRAINS                                         :Keretapi
-STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Kenderaan Jalanraya
-STR_VEHICLE_TYPE_SHIPS                                          :Kapal
-STR_VEHICLE_TYPE_AIRCRAFT                                       :Pesawat
 
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Kunci
@@ -1914,7 +1903,6 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Syarikat
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Senarai klien
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :Saksi
 
 # Network client list
 
@@ -2562,9 +2550,6 @@ STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Nama ban
 STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Pilih tema untuk nama bandar
 STR_MAPGEN_DATE                                                 :{BLACK}Tarikh:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Jumlah industri:
-STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Paras ketinggian garis salji:
-STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Tinggikan paras garis salji satu petak
-STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Rendahkan paras garis salji satu petak
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Jenis rupa bumi:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Paras laut:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Sungai:
@@ -2612,7 +2597,6 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Nama hei
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Saiz:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
-STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Tukarkan paras garis salji
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Tukar tahun permulaan
 
 # SE Map generation
@@ -3045,7 +3029,6 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Tempatka
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Bina semula ibu pejabat syarikat di tempat lain dengan kos 1% nilai syarikat. Shift+Klik untuk menunjukkan anggaran kos tanpa pemindahan HQ
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Butiran
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Lihat kiraan infrastruktur secara terperinci
-STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Beri wang
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Wajah Baru
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Pilih wajah baru untuk pengurus
@@ -3063,7 +3046,6 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Jual 25%
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Nama Syarikat
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Nama Pengurus
-STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Masukkan jumlah wang anda hendak memberikan
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Kami sedang mencari syarikat pengangkutan yang boleh mengambil alih syarikat kami.{}{}Adakah anda ingin membeli {COMPANY} untuk {CURRENCY_LONG}?
 
@@ -3186,7 +3168,6 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Kos Peng
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Muatan: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(boleh diubahsuai)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Direka: {GOLD}{NUM}{BLACK} Jangkahayat: {GOLD}{COMMA} tahun
-STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Direka: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Reliabiliti Maks: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Kos: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_WEIGHT_CWEIGHT                                :{BLACK}Berat: {GOLD}{WEIGHT_SHORT} ({WEIGHT_SHORT})
@@ -4299,11 +4280,6 @@ STR_BASESOUNDS_NONE_DESCRIPTION                                 :Sebuah pek suar
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :Muzik asal Transport Tycoon Deluxe edisi Windows.
 STR_BASEMUSIC_DOS_DESCRIPTION                                   :Muzik asal Transport Tycoon Deluxe edisi DOS
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Pek muzik tanpa muzik sebenar.
-
-STR_TRADITIONAL_TRAIN_NAME                                      :Keretapi {COMMA}
-STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Kenderaan {COMMA}
-STR_TRADITIONAL_SHIP_NAME                                       :Kapal {COMMA}
-STR_TRADITIONAL_AIRCRAFT_NAME                                   :Pesawat {COMMA}
 
 ##id 0x2000
 # Town building names

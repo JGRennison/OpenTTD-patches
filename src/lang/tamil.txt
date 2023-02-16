@@ -196,10 +196,6 @@ STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}km
 STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}m/s
 STR_UNITS_VELOCITY_GAMEUNITS                                    :{DECIMAL}{NBSP}வட்டங்கள்/நாளிற்கு
 
-STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
-STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
-STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}hp
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}hp
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW
@@ -576,12 +572,6 @@ STR_MONTH_SEP                                                   :செப்ட
 STR_MONTH_OCT                                                   :அக்டோபர்
 STR_MONTH_NOV                                                   :நவம்பர்
 STR_MONTH_DEC                                                   :டிசம்பர்
-
-###length VEHICLE_TYPES
-STR_VEHICLE_TYPE_TRAINS                                         :இரயில்வண்டிகள்
-STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :சாலை வாகனங்கள்
-STR_VEHICLE_TYPE_SHIPS                                          :கப்பல்கள்
-STR_VEHICLE_TYPE_AIRCRAFT                                       :விமானங்கள்
 
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}பட விளக்கக் குறிப்பு
@@ -2801,9 +2791,6 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}பா�
 STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}பாலைவன முழுத் தழுவு அளவினை பத்து சதவிகிதம் அதிகப்படுத்து
 STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}பாலைவன முழுத் தழுவு அளவினை பத்து சதவிகிதம் குறைக்கவும்
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
-STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}பனிக் கோடின் உயரம்:
-STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}பனி கோடின் உயரத்தை ஒரு அடி உயர்த்து
-STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}பனி கோடின் உயரத்தை ஒரு அடி இறக்கு
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}நிலவகை:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}கடல் மட்டம்:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}ஆறுகள்:
@@ -2852,7 +2839,6 @@ STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}அள�
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
 STR_MAPGEN_DESERT_COVERAGE_QUERY_CAPT                           :{WHITE}பாலைவன முழுத் தழுவு அளவு (%)
-STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}பனிக் கோடின் உயரத்தினை மாற்று
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}தொடங்கும் வருடத்தினை மாற்று
 
 # SE Map generation
@@ -3469,7 +3455,6 @@ STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}செ�
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}கொள்ளளவு: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(மாற்றியமைக்கலாம்)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}வடிவமைக்கப்பட்டது: {GOLD}{NUM}{BLACK} வாழ்க்கை: {GOLD}{COMMA} வருடம்{P "" கள்}
-STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}வடிவமைக்கப்பட்டது: {GOLD}{NUM}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}அதி. நம்பகத்தன்மை: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}விலை: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_WEIGHT_CWEIGHT                                :{BLACK}எடை: {GOLD}{WEIGHT_SHORT} ({WEIGHT_SHORT})
@@ -4609,11 +4594,6 @@ STR_BASEMUSIC_WIN_DESCRIPTION                                   :அசல் �
 STR_BASEMUSIC_DOS_DESCRIPTION                                   :அசல் டிரான்ஸ்ஃபோர்ட் டைகூன் டீலக்ஸ் DOS பதிப்பு இசை.
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :அசல் டிரான்ஸ்ஃபோர்ட் டைக்கூன் (அசல்/உலக ஆசிரியர்) DOS பதிப்பு இசை.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :இசை இல்லாத இசைத்தொகுப்பு.
-
-STR_TRADITIONAL_TRAIN_NAME                                      :இரயில் {COMMA}
-STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :சாலை வாகனம் {COMMA}
-STR_TRADITIONAL_SHIP_NAME                                       :கப்பல் {COMMA}
-STR_TRADITIONAL_AIRCRAFT_NAME                                   :விமானம் {COMMA}
 
 ##id 0x2000
 # Town building names

@@ -1,0 +1,32 @@
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :мил/с
+STR_UNIT_NAME_VELOCITY_METRIC                                   :км/с
+STR_UNIT_NAME_VELOCITY_SI                                       :м/ҫ
+
+STR_BUTTON_RENAME                                               :{BLACK}Ята улӑштар
+
+STR_VEHICLE_TYPE_TRAINS                                         :Пуйăссем
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Транспорт ҫул
+STR_VEHICLE_TYPE_SHIPS                                          :Карапсем
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Сывлӑш ҫул-йӗрӗ
+
+# Tracerestrict GUI
+
+# Programmable Pre-Signals
+
+#House construction window (for SE only)
+
+#Town select window (for SE only)
+
+# Town tooltip
+
+# Cargo type orders Window
+
+# Plans window
+
+# Clear area query
+
+# Plan related errors
+
+# Scheduled Dispatch
+
+# Modifier key toggle window
