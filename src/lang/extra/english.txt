@@ -15,7 +15,6 @@ STR_TIMETABLE_TOTAL_TIME                                        :{BLACK}This tim
 STR_TIMETABLE_TOTAL_TIME_INCOMPLETE                             :{BLACK}This timetable will take at least {STRING3} to complete (not all timetabled)
 STR_TIMETABLE_STATUS_LATE                                       :{BLACK}This vehicle is currently running {STRING3} late
 STR_TIMETABLE_STATUS_EARLY                                      :{BLACK}This vehicle is currently running {STRING3} early
-STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK}Whole map default zoom screenshot
 ##override off
 
 ##after STR_CONFIG_SETTING_TREE_PLACER_IMPROVED
@@ -1647,7 +1646,10 @@ STR_CARGO_TYPE_UNLOAD_ORDERS_DROP_TOOLTIP                       :{BLACK}Change t
 STR_CARGO_TYPE_ORDERS_SET_TO_ALL_LABEL                          :{BLACK}Set all to:
 STR_CARGO_TYPE_ORDERS_SET_TO_ALL_TOOLTIP                        :{BLACK}Set all cargo type orders to the one selected by the dropdown
 
+##default-translation STR_SCREENSHOT_WORLD_SCREENSHOT
+STR_SCREENSHOT_WORLD_SCREENSHOT_DEFAULT_ZOOM                    :{BLACK}Whole map default zoom screenshot
 STR_SCREENSHOT_WORLD_SCREENSHOT_CURRENT_ZOOM                    :{BLACK}Whole map current zoom screenshot
+
 STR_SCREENSHOT_TOPOGRAPHY_SCREENSHOT                            :{BLACK}Topography screenshot
 STR_SCREENSHOT_INDUSTRY_SCREENSHOT                              :{BLACK}Industries screenshot
 

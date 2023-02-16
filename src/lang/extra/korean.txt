@@ -1614,7 +1614,9 @@ STR_CARGO_TYPE_UNLOAD_ORDERS_DROP_TOOLTIP                       :{BLACK}이 화�
 STR_CARGO_TYPE_ORDERS_SET_TO_ALL_LABEL                          :{BLACK}모두 설정:
 STR_CARGO_TYPE_ORDERS_SET_TO_ALL_TOOLTIP                        :{BLACK}모든 화물의 승/하차 설정을 한 번에 변경합니다.
 
+STR_SCREENSHOT_WORLD_SCREENSHOT_DEFAULT_ZOOM                    :{BLACK}기본 확대 지도 전체 스크린 샷
 STR_SCREENSHOT_WORLD_SCREENSHOT_CURRENT_ZOOM                    :{BLACK}현재 확대 지도 전체 스크린 샷
+
 STR_SCREENSHOT_TOPOGRAPHY_SCREENSHOT                            :{BLACK}지형 스크린 샷
 STR_SCREENSHOT_INDUSTRY_SCREENSHOT                              :{BLACK}산업시설 스크린 샷
 

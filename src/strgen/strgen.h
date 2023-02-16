@@ -36,6 +36,7 @@ struct LangString {
 	int line;              ///< Line of string in source-file.
 	Case *translated_case; ///< Cases of the translation.
 	std::unique_ptr<LangString> chain_next;
+	LangString *default_translation = nullptr;
 
 	LangString(const char *name, const char *english, size_t index, int line);
 	void ReplaceDefinition(const char *name, const char *english, int line);
@@ -54,6 +55,7 @@ struct StringData {
 	std::vector<std::unique_ptr<LangString>> string_store;
 	LangString *insert_after = nullptr;
 	bool override_mode = false;
+	LangString *default_translation = nullptr;
 
 	StringData(size_t tabs);
 	~StringData();

@@ -250,6 +250,14 @@ void FileStringReader::HandlePragma(char *str)
 	} else if (!memcmp(str, "end-after", 10)) {
 		if (this->translation) error("Insert after is only allowed in the base translation.");
 		this->data.insert_after = nullptr;
+	} else if (!memcmp(str, "default-translation ", 20)) {
+		if (this->translation) error("Default translation is only allowed in the base translation.");
+		LangString *ent = this->data.Find(str + 20);
+		if (ent != nullptr) {
+			this->data.default_translation = ent;
+		} else {
+			error("Can't find string to use as default translation: '%s'", str + 20);
+		}
 	} else {
 		StringReader::HandlePragma(str);
 	}

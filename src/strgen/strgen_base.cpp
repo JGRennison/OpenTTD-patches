@@ -782,6 +782,11 @@ void StringReader::HandleString(char *str)
 		this->data.next_string_id = -1;
 		this->data.Add(str, ls.get());
 
+		if (this->data.default_translation != nullptr) {
+			ls->default_translation = this->data.default_translation;
+			this->data.default_translation = nullptr;
+		}
+
 		if (this->data.insert_after != nullptr) {
 			LangString *cur = ls.get();
 			this->data.insert_after->chain_next = std::move(ls);
@@ -1017,7 +1022,9 @@ void LanguageWriter::WriteLang(const StringData &data)
 
 		for (uint j = 0; j != in_use[tab]; j++) {
 			const LangString *ls = data.strings[(tab * TAB_SIZE) + j];
-			if (ls != nullptr && ls->translated == nullptr) _lang.missing++;
+			if (ls != nullptr && ls->translated == nullptr && ls->default_translation == nullptr) {
+				_lang.missing++;
+			}
 		}
 	}
 
@@ -1064,6 +1071,9 @@ void LanguageWriter::WriteLang(const StringData &data)
 			} else {
 				casep = nullptr;
 				cmdp = ls->english;
+				if (ls->default_translation != nullptr && ls->default_translation->translated != nullptr) {
+					cmdp = ls->default_translation->translated;
+				}
 			}
 
 			_translated = cmdp != ls->english;
