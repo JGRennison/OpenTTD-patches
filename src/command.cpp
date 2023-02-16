@@ -50,7 +50,7 @@ CommandProc CmdLandscapeClear;
 
 CommandProc CmdBuildBridge;
 
-CommandProc CmdBuildRailStation;
+CommandProcEx CmdBuildRailStation;
 CommandProc CmdRemoveFromRailStation;
 CommandProc CmdConvertRail;
 
