@@ -1555,9 +1555,9 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 
 					case TRPPAF_PRESET: {
 						instruction_string = STR_TRACE_RESTRICT_PF_PENALTY_ITEM_PRESET;
-						uint16 index = GetTraceRestrictValue(item);
-						assert(index < TRPPPI_END);
-						SetDParam(0, _pf_penalty_dropdown_str[index]);
+						uint16 idx = GetTraceRestrictValue(item);
+						assert(idx < TRPPPI_END);
+						SetDParam(0, _pf_penalty_dropdown_str[idx]);
 						break;
 					}
 

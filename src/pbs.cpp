@@ -98,15 +98,15 @@ bool TryReserveRailTrackdir(const Train *v, TileIndex tile, Trackdir td, bool tr
 /**
  * Try to reserve a specific track on a tile
  * @param tile the tile
- * @param t the track
+ * @param track the track
  * @param trigger_stations whether to call station randomisation trigger
  * @return \c true if reservation was successful, i.e. the track was
  *     free and didn't cross any other reserved tracks.
  */
-bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations)
+bool TryReserveRailTrack(TileIndex tile, Track track, bool trigger_stations)
 {
-	assert_msg_tile((TrackStatusToTrackBits(GetTileTrackStatus(tile, TRANSPORT_RAIL, 0)) & TrackToTrackBits(t)) != 0, tile,
-			"%X, %X, %X", TrackStatusToTrackBits(GetTileTrackStatus(tile, TRANSPORT_RAIL, 0)), t, TrackToTrackBits(t));
+	assert_msg_tile((TrackStatusToTrackBits(GetTileTrackStatus(tile, TRANSPORT_RAIL, 0)) & TrackToTrackBits(track)) != 0, tile,
+			"%X, %X, %X", TrackStatusToTrackBits(GetTileTrackStatus(tile, TRANSPORT_RAIL, 0)), track, TrackToTrackBits(track));
 
 	if (_settings_client.gui.show_track_reservation) {
 		/* show the reserved rail if needed */
@@ -119,7 +119,7 @@ bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations)
 
 	switch (GetTileType(tile)) {
 		case MP_RAILWAY:
-			if (IsPlainRail(tile)) return TryReserveTrack(tile, t);
+			if (IsPlainRail(tile)) return TryReserveTrack(tile, track);
 			if (IsRailDepot(tile)) {
 				if (!HasDepotReservation(tile)) {
 					SetDepotReservation(tile, true);
@@ -166,7 +166,7 @@ bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations)
 					return true;
 				}
 				if (IsBridge(tile)) {
-					if (TryReserveRailBridgeHead(tile, t)) {
+					if (TryReserveRailBridgeHead(tile, track)) {
 						MarkBridgeOrTunnelDirtyOnReservationChange(tile, VMDF_NOT_MAP_MODE);
 						return true;
 					}

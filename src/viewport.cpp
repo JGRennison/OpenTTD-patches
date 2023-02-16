@@ -548,11 +548,11 @@ struct ViewportRedrawRegion {
 
 static std::vector<ViewportRedrawRegion> _vp_redraw_regions;
 
-static void DoViewportRedrawRegions(const Window *w, int left, int top, int width, int height)
+static void DoViewportRedrawRegions(const Window *w_start, int left, int top, int width, int height)
 {
 	if (width <= 0 || height <= 0) return;
 
-	for (const Window *w : Window::IterateFromBack<const Window>(w)) {
+	for (const Window *w : Window::IterateFromBack<const Window>(w_start)) {
 		if (left + width > w->left &&
 				w->left + w->width > left &&
 				top + height > w->top &&
@@ -645,7 +645,7 @@ static void DoSetViewportPositionFillRegion(int left, int top, int width, int he
 	DrawOverlappedWindowForAll(left, top, left + width, top + height);
 };
 
-static void DoSetViewportPosition(Window *w, const int left, const int top, const int width, const int height)
+static void DoSetViewportPosition(Window *w, const int vp_left, const int vp_top, const int vp_width, const int vp_height)
 {
 	const int xo = _vp_move_offs.x;
 	const int yo = _vp_move_offs.y;
@@ -654,9 +654,9 @@ static void DoSetViewportPosition(Window *w, const int left, const int top, cons
 	IncrementWindowUpdateNumber();
 
 	_vp_redraw_regions.clear();
-	DoViewportRedrawRegions(w, left, top, width, height);
+	DoViewportRedrawRegions(w, vp_left, vp_top, vp_width, vp_height);
 
-	if (abs(xo) >= width || abs(yo) >= height) {
+	if (abs(xo) >= vp_width || abs(yo) >= vp_height) {
 		/* fully outside */
 		for (ViewportRedrawRegion &vrr : _vp_redraw_regions) {
 			RedrawScreenRect(vrr.coords.left, vrr.coords.top, vrr.coords.right, vrr.coords.bottom);

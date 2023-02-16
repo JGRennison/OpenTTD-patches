@@ -537,7 +537,7 @@ void GenerateTrees()
 
 /**
  * Plant a tree.
- * @param tile end tile of area-drag
+ * @param end_tile end tile of area-drag
  * @param flags type of operation
  * @param p1 various bitstuffed data.
  * - p1 = (bit 0 -  7) - tree type, TREE_INVALID means random.
@@ -546,7 +546,7 @@ void GenerateTrees()
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdPlantTree(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdPlantTree(TileIndex end_tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	StringID msg = INVALID_STRING_ID;
 	CommandCost cost(EXPENSES_OTHER);
@@ -559,7 +559,7 @@ CommandCost CmdPlantTree(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 	Company *c = (_game_mode != GM_EDITOR) ? Company::GetIfValid(_current_company) : nullptr;
 	int limit = (c == nullptr ? INT32_MAX : GB(c->tree_limit, 16, 16));
 
-	OrthogonalOrDiagonalTileIterator iter(tile, p2, HasBit(p1, 8));
+	OrthogonalOrDiagonalTileIterator iter(end_tile, p2, HasBit(p1, 8));
 	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex tile = *iter;
 		switch (GetTileType(tile)) {
