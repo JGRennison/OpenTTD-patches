@@ -96,6 +96,8 @@ void NORETURN CDECL error(const char *s, ...)
 /** A reader that simply reads using fopen. */
 struct FileStringReader : StringReader {
 	FILE *fh; ///< The file we are reading.
+	FILE *fh2 = nullptr; ///< The file we are reading.
+	std::string file2;
 
 	/**
 	 * Create the reader.
@@ -104,22 +106,42 @@ struct FileStringReader : StringReader {
 	 * @param master      Are we reading the master file?
 	 * @param translation Are we reading a translation?
 	 */
-	FileStringReader(StringData &data, const char *file, bool master, bool translation) :
+	FileStringReader(StringData &data, const char *file, const char *file2, bool master, bool translation) :
 			StringReader(data, file, master, translation)
 	{
 		this->fh = fopen(file, "rb");
 		if (this->fh == nullptr) error("Could not open %s", file);
+
+		if (file2 != nullptr) {
+			this->file2.assign(file2);
+			this->fh2 = fopen(file2, "rb");
+			if (this->fh2 == nullptr) error("Could not open %s", file2);
+		}
 	}
+
+	FileStringReader(StringData &data, const char *file, bool master, bool translation) :
+			FileStringReader(data, file, nullptr, master, translation) {}
 
 	/** Free/close the file. */
 	virtual ~FileStringReader()
 	{
 		fclose(this->fh);
+		if (this->fh2 != nullptr) fclose(this->fh2);
 	}
 
 	char *ReadLine(char *buffer, const char *last) override
 	{
-		return fgets(buffer, ClampToU16(last - buffer + 1), this->fh);
+		char *result = fgets(buffer, ClampToU16(last - buffer + 1), this->fh);
+		if (result == nullptr && this->fh2 != nullptr) {
+			fclose(this->fh);
+			this->fh = this->fh2;
+			this->fh2 = nullptr;
+			this->file = std::move(this->file2);
+			_file = this->file.c_str();
+			_cur_line = 1;
+			return this->FileStringReader::ReadLine(buffer, last);
+		}
+		return result;
 	}
 
 	void HandlePragma(char *str) override;
@@ -199,6 +221,35 @@ void FileStringReader::HandlePragma(char *str)
 			strecpy(_lang.cases[_lang.num_cases], s, lastof(_lang.cases[_lang.num_cases]));
 			_lang.num_cases++;
 		}
+	} else if (!memcmp(str, "override ", 9)) {
+		if (this->translation) error("Overrides are only allowed in the base translation.");
+		if (!memcmp(str + 9, "on", 2)) {
+			this->data.override_mode = true;
+		} else if (!memcmp(str + 9, "off", 3)) {
+			this->data.override_mode = false;
+		} else {
+			error("Invalid override mode %s", str + 9);
+		}
+	} else if (!memcmp(str, "override ", 9)) {
+		if (this->translation) error("Overrides are only allowed in the base translation.");
+		if (!memcmp(str + 9, "on", 2)) {
+			this->data.override_mode = true;
+		} else if (!memcmp(str + 9, "off", 3)) {
+			this->data.override_mode = false;
+		} else {
+			error("Invalid override mode %s", str + 9);
+		}
+	} else if (!memcmp(str, "after ", 6)) {
+		if (this->translation) error("Insert after is only allowed in the base translation.");
+		LangString *ent = this->data.Find(str + 6);
+		if (ent != nullptr) {
+			this->data.insert_after = ent;
+		} else {
+			error("Can't find string to insert after: '%s'", str + 6);
+		}
+	} else if (!memcmp(str, "end-after", 10)) {
+		if (this->translation) error("Insert after is only allowed in the base translation.");
+		this->data.insert_after = nullptr;
 	} else {
 		StringReader::HandlePragma(str);
 	}
@@ -389,14 +440,31 @@ static inline void ottd_mkdir(const char *directory)
  * path separator and the filename. The separator is only appended if the path
  * does not already end with a separator
  */
-static inline char *mkpath(char *buf, const char *last, const char *path, const char *file)
+static inline char *mkpath2(char *buf, const char *last, const char *path, const char *path2, const char *file)
 {
 	strecpy(buf, path, last); // copy directory into buffer
 
 	char *p = strchr(buf, '\0'); // add path separator if necessary
+
+	if (path2 != nullptr) {
+		if (p[-1] != PATHSEPCHAR && p != last) *p++ = PATHSEPCHAR;
+		strecpy(p, path2, last); // concatenate filename at end of buffer
+		p = strchr(buf, '\0');
+	}
+
 	if (p[-1] != PATHSEPCHAR && p != last) *p++ = PATHSEPCHAR;
 	strecpy(p, file, last); // concatenate filename at end of buffer
 	return buf;
+}
+
+/**
+ * Create a path consisting of an already existing path, a possible
+ * path separator and the filename. The separator is only appended if the path
+ * does not already end with a separator
+ */
+static inline char *mkpath(char *buf, const char *last, const char *path, const char *file)
+{
+	return mkpath2(buf, last, path, nullptr, file);
 }
 
 #if defined(_WIN32)
@@ -434,6 +502,7 @@ static const OptionData _opts[] = {
 int CDECL main(int argc, char *argv[])
 {
 	char pathbuf[MAX_PATH];
+	char pathbuf2[MAX_PATH];
 	const char *src_dir = ".";
 	const char *dest_dir = nullptr;
 
@@ -528,10 +597,11 @@ int CDECL main(int argc, char *argv[])
 		 * directory. As input english.txt is parsed from the source directory */
 		if (mgo.numleft == 0) {
 			mkpath(pathbuf, lastof(pathbuf), src_dir, "english.txt");
+			mkpath2(pathbuf2, lastof(pathbuf2), src_dir, "extra", "english.txt");
 
 			/* parse master file */
 			StringData data(TEXT_TAB_END);
-			FileStringReader master_reader(data, pathbuf, true, false);
+			FileStringReader master_reader(data, pathbuf, pathbuf2, true, false);
 			master_reader.ParseFile();
 			if (_errors != 0) return 1;
 
@@ -547,10 +617,11 @@ int CDECL main(int argc, char *argv[])
 			char *r;
 
 			mkpath(pathbuf, lastof(pathbuf), src_dir, "english.txt");
+			mkpath2(pathbuf2, lastof(pathbuf2), src_dir, "extra", "english.txt");
 
 			StringData data(TEXT_TAB_END);
 			/* parse master file and check if target file is correct */
-			FileStringReader master_reader(data, pathbuf, true, false);
+			FileStringReader master_reader(data, pathbuf, pathbuf2, true, false);
 			master_reader.ParseFile();
 
 			for (int i = 0; i < mgo.numleft; i++) {

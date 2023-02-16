@@ -1,5 +1,6 @@
 set(MASTER_LANG_FILE
         ${CMAKE_CURRENT_SOURCE_DIR}/english.txt
+        ${CMAKE_CURRENT_SOURCE_DIR}/extra/english.txt
 )
 
 set(LANG_SOURCE_FILES

@@ -71,6 +71,15 @@ LangString::~LangString()
 	delete this->translated_case;
 }
 
+void LangString::ReplaceDefinition(const char *name, const char *english, int line)
+{
+	free(this->name);
+	free(this->english);
+	this->name = stredup(name);
+	this->english = stredup(english);
+	this->line = line;
+}
+
 /** Free all data related to the translation. */
 void LangString::FreeTranslation()
 {
@@ -88,14 +97,13 @@ void LangString::FreeTranslation()
 StringData::StringData(size_t tabs) : tabs(tabs), max_strings(tabs * TAB_SIZE)
 {
 	this->strings = CallocT<LangString *>(max_strings);
-	this->hash_heads = CallocT<size_t>(max_strings);
+	this->hash_heads = CallocT<LangString *>(max_strings);
 	this->next_string_id = 0;
 }
 
 /** Free everything we allocated. */
 StringData::~StringData()
 {
-	for (size_t i = 0; i < this->max_strings; i++) delete this->strings[i];
 	free(this->strings);
 	free(this->hash_heads);
 }
@@ -131,8 +139,7 @@ void StringData::Add(const char *s, LangString *ls)
 	uint hash = this->HashStr(s);
 	ls->hash_next = this->hash_heads[hash];
 	/* Off-by-one for hash find. */
-	this->hash_heads[hash] = ls->index + 1;
-	this->strings[ls->index] = ls;
+	this->hash_heads[hash] = ls;
 }
 
 /**
@@ -142,13 +149,11 @@ void StringData::Add(const char *s, LangString *ls)
  */
 LangString *StringData::Find(const char *s)
 {
-	size_t idx = this->hash_heads[this->HashStr(s)];
+	LangString *ls = this->hash_heads[this->HashStr(s)];
 
-	while (idx-- > 0) {
-		LangString *ls = this->strings[idx];
-
+	while (ls != nullptr) {
 		if (strcmp(ls->name, s) == 0) return ls;
-		idx = ls->hash_next;
+		ls = ls->hash_next;
 	}
 	return nullptr;
 }
@@ -591,7 +596,6 @@ StringReader::StringReader(StringData &data, const char *file, bool master, bool
 /** Make sure the right reader gets freed. */
 StringReader::~StringReader()
 {
-	free(file);
 }
 
 static void ExtractCommandString(ParsedCommandStruct *p, const char *s, bool warnings)
@@ -758,17 +762,33 @@ void StringReader::HandleString(char *str)
 		}
 
 		if (ent != nullptr) {
+			if (this->data.override_mode) {
+				ent->ReplaceDefinition(str, s, _cur_line);
+				return;
+			}
 			strgen_error("String name '%s' is used multiple times", str);
+			return;
+		} else if (this->data.override_mode) {
+			strgen_error("String '%s' marked as overriding, but does not override", str);
 			return;
 		}
 
-		if (this->data.strings[this->data.next_string_id] != nullptr) {
-			strgen_error("String ID 0x" PRINTF_SIZEX " for '%s' already in use by '%s'", this->data.next_string_id, str, this->data.strings[this->data.next_string_id]->name);
-			return;
+		if (this->data.next_string_id >= 0 && this->data.insert_after != nullptr) {
+			strgen_error("Cannot use insert_after and id at the same time: '%s'", str);
 		}
 
 		/* Allocate a new LangString */
-		this->data.Add(str, new LangString(str, s, this->data.next_string_id++, _cur_line));
+		std::unique_ptr<LangString> ls(new LangString(str, s, this->data.next_string_id, _cur_line));
+		this->data.next_string_id = -1;
+		this->data.Add(str, ls.get());
+
+		if (this->data.insert_after != nullptr) {
+			LangString *cur = ls.get();
+			this->data.insert_after->chain_next = std::move(ls);
+			this->data.insert_after = cur;
+		} else {
+			this->data.string_store.push_back(std::move(ls));
+		}
 	} else {
 		if (ent == nullptr) {
 			strgen_warning("String name '%s' does not exist in master file", str);
@@ -820,7 +840,7 @@ void StringReader::ParseFile()
 	_warnings = _errors = 0;
 
 	_translation = this->translation;
-	_file = this->file;
+	_file = this->file.c_str();
 
 	/* Abusing _show_todo to replace "warning" with "info" for translations. */
 	_show_todo &= 3;
@@ -833,14 +853,38 @@ void StringReader::ParseFile()
 	strecpy(_lang.digit_decimal_separator, ".", lastof(_lang.digit_decimal_separator));
 
 	_cur_line = 1;
-	while (this->data.next_string_id < this->data.max_strings && this->ReadLine(buf, lastof(buf)) != nullptr) {
+	while (this->ReadLine(buf, lastof(buf)) != nullptr) {
 		rstrip(buf);
 		this->HandleString(buf);
 		_cur_line++;
 	}
 
-	if (this->data.next_string_id == this->data.max_strings) {
-		strgen_error("Too many strings, maximum allowed is " PRINTF_SIZE, this->data.max_strings);
+	if (this->master) {
+		/* Allocate IDs */
+		size_t next_id = 0;
+		for (const std::unique_ptr<LangString> &item : this->data.string_store) {
+			LangString *ls = item.get();
+			do {
+				if (ls->index >= 0) {
+					next_id = ls->index;
+				} else {
+					ls->index = next_id;
+				}
+
+				if ((size_t)ls->index >= this->data.max_strings) {
+					strgen_error("Too many strings, maximum allowed is " PRINTF_SIZE, this->data.max_strings);
+					return;
+				} else if (this->data.strings[ls->index] != nullptr) {
+					strgen_error("String ID 0x%X for '%s' already in use by '%s'", (uint)ls->index, ls->name, this->data.strings[ls->index]->name);
+					return;
+				} else {
+					this->data.strings[ls->index] = ls;
+				}
+
+				next_id++;
+				ls = ls->chain_next.get();
+			} while (ls != nullptr);
+		}
 	}
 }
 
