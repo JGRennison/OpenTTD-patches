@@ -54,6 +54,27 @@ STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :Dispatch slot
 ##after STR_ORDER_STOP_LOCATION_FAR_END
 STR_ORDER_STOP_LOCATION_THROUGH                                 :[through load]
 
+##before STR_VIEWPORT_TOWN_POP
+STR_VIEWPORT_TOWN_POP_VERY_POOR_RATING                          :{WHITE}{TOWN} {RED}({COMMA})
+STR_VIEWPORT_TOWN_POP_MEDIOCRE_RATING                           :{WHITE}{TOWN} {ORANGE}({COMMA})
+STR_VIEWPORT_TOWN_POP_GOOD_RATING                               :{WHITE}{TOWN} {YELLOW}({COMMA})
+##after STR_VIEWPORT_TOWN_POP
+STR_VIEWPORT_TOWN_POP_EXCELLENT_RATING                          :{WHITE}{TOWN} {GREEN}({COMMA})
+
+##before STR_VIEWPORT_TOWN
+STR_VIEWPORT_TOWN_VERY_POOR_RATING                              :{RED}{TOWN}
+STR_VIEWPORT_TOWN_MEDIOCRE_RATING                               :{ORANGE}{TOWN}
+STR_VIEWPORT_TOWN_GOOD_RATING                                   :{YELLOW}{TOWN}
+##after STR_VIEWPORT_TOWN
+STR_VIEWPORT_TOWN_EXCELLENT_RATING                              :{GREEN}{TOWN}
+
+##before STR_VIEWPORT_TOWN_TINY_WHITE
+STR_VIEWPORT_TOWN_TINY_VERY_POOR_RATING                         :{TINY_FONT}{RED}{TOWN}
+STR_VIEWPORT_TOWN_TINY_MEDIOCRE_RATING                          :{TINY_FONT}{ORANGE}{TOWN}
+STR_VIEWPORT_TOWN_TINY_GOOD_RATING                              :{TINY_FONT}{YELLOW}{TOWN}
+##after STR_VIEWPORT_TOWN_TINY_WHITE
+STR_VIEWPORT_TOWN_TINY_EXCELLENT_RATING                         :{TINY_FONT}{GREEN}{TOWN}
+
 ##end-after
 
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
@@ -1759,20 +1780,6 @@ STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_WAYPOINT                   :{GRAY}WP
 STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_IMPLICIT                   :{GRAY}IM
 STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_DEPOT                      :{RED}DE
 STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_OVERFLOW                   :{RED}{NUM}x
-
-STR_VIEWPORT_TOWN_POP_VERY_POOR_RATING                          :{WHITE}{TOWN} {RED}({COMMA})
-STR_VIEWPORT_TOWN_POP_MEDIOCRE_RATING                           :{WHITE}{TOWN} {ORANGE}({COMMA})
-STR_VIEWPORT_TOWN_POP_GOOD_RATING                               :{WHITE}{TOWN} {YELLOW}({COMMA})
-STR_VIEWPORT_TOWN_POP_EXCELLENT_RATING                          :{WHITE}{TOWN} {GREEN}({COMMA})
-STR_VIEWPORT_TOWN_VERY_POOR_RATING                              :{RED}{TOWN}
-STR_VIEWPORT_TOWN_MEDIOCRE_RATING                               :{ORANGE}{TOWN}
-STR_VIEWPORT_TOWN_GOOD_RATING                                   :{YELLOW}{TOWN}
-STR_VIEWPORT_TOWN_EXCELLENT_RATING                              :{GREEN}{TOWN}
-
-STR_VIEWPORT_TOWN_TINY_VERY_POOR_RATING                         :{TINY_FONT}{RED}{TOWN}
-STR_VIEWPORT_TOWN_TINY_MEDIOCRE_RATING                          :{TINY_FONT}{ORANGE}{TOWN}
-STR_VIEWPORT_TOWN_TINY_GOOD_RATING                              :{TINY_FONT}{YELLOW}{TOWN}
-STR_VIEWPORT_TOWN_TINY_EXCELLENT_RATING                         :{TINY_FONT}{GREEN}{TOWN}
 
 STR_JUST_DECIMAL                                                :{DECIMAL}
 STR_JUST_DECIMAL1                                               :{DECIMAL1}

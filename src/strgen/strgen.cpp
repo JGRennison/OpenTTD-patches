@@ -244,6 +244,16 @@ void FileStringReader::HandlePragma(char *str)
 		LangString *ent = this->data.Find(str + 6);
 		if (ent != nullptr) {
 			this->data.insert_after = ent;
+			this->data.insert_before = nullptr;
+		} else {
+			error("Can't find string to insert after: '%s'", str + 6);
+		}
+	} else if (!memcmp(str, "before ", 7)) {
+		if (this->translation) error("Insert before is only allowed in the base translation.");
+		LangString *ent = this->data.Find(str + 7);
+		if (ent != nullptr) {
+			this->data.insert_after = nullptr;
+			this->data.insert_before = ent;
 		} else {
 			error("Can't find string to insert after: '%s'", str + 6);
 		}

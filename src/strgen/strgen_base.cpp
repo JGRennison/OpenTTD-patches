@@ -773,8 +773,8 @@ void StringReader::HandleString(char *str)
 			return;
 		}
 
-		if (this->data.next_string_id >= 0 && this->data.insert_after != nullptr) {
-			strgen_error("Cannot use insert_after and id at the same time: '%s'", str);
+		if (this->data.next_string_id >= 0 && (this->data.insert_after != nullptr || this->data.insert_before != nullptr)) {
+			strgen_error("Cannot use insert_after/insert_before and id at the same time: '%s'", str);
 		}
 
 		/* Allocate a new LangString */
@@ -789,7 +789,12 @@ void StringReader::HandleString(char *str)
 
 		if (this->data.insert_after != nullptr) {
 			LangString *cur = ls.get();
-			this->data.insert_after->chain_next = std::move(ls);
+			this->data.insert_after->chain_after = std::move(ls);
+			this->data.insert_after = cur;
+		} else if (this->data.insert_before != nullptr) {
+			LangString *cur = ls.get();
+			this->data.insert_before->chain_before = std::move(ls);
+			this->data.insert_before = nullptr;
 			this->data.insert_after = cur;
 		} else {
 			this->data.string_store.push_back(std::move(ls));
@@ -873,29 +878,35 @@ void StringReader::ParseFile()
 		/* Allocate IDs */
 		size_t next_id = 0;
 		for (const std::unique_ptr<LangString> &item : this->data.string_store) {
-			LangString *ls = item.get();
-			do {
-				if (ls->index >= 0) {
-					next_id = ls->index;
-				} else {
-					ls->index = next_id;
-				}
-
-				if ((size_t)ls->index >= this->data.max_strings) {
-					strgen_error("Too many strings, maximum allowed is " PRINTF_SIZE, this->data.max_strings);
-					return;
-				} else if (this->data.strings[ls->index] != nullptr) {
-					strgen_error("String ID 0x%X for '%s' already in use by '%s'", (uint)ls->index, ls->name, this->data.strings[ls->index]->name);
-					return;
-				} else {
-					this->data.strings[ls->index] = ls;
-				}
-
-				next_id++;
-				ls = ls->chain_next.get();
-			} while (ls != nullptr);
+			this->AssignIDs(next_id, item.get());
 		}
 	}
+}
+
+void StringReader::AssignIDs(size_t &next_id, LangString *ls)
+{
+	do {
+		if (ls->chain_before) this->AssignIDs(next_id, ls->chain_before.get());
+
+		if (ls->index >= 0) {
+			next_id = ls->index;
+		} else {
+			ls->index = next_id;
+		}
+
+		if ((size_t)ls->index >= this->data.max_strings) {
+			strgen_error("Too many strings, maximum allowed is " PRINTF_SIZE, this->data.max_strings);
+			return;
+		} else if (this->data.strings[ls->index] != nullptr) {
+			strgen_error("String ID 0x%X for '%s' already in use by '%s'", (uint)ls->index, ls->name, this->data.strings[ls->index]->name);
+			return;
+		} else {
+			this->data.strings[ls->index] = ls;
+		}
+
+		next_id++;
+		ls = ls->chain_after.get();
+	} while (ls != nullptr);
 }
 
 /**

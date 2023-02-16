@@ -35,7 +35,8 @@ struct LangString {
 	int index;             ///< The index in the language file.
 	int line;              ///< Line of string in source-file.
 	Case *translated_case; ///< Cases of the translation.
-	std::unique_ptr<LangString> chain_next;
+	std::unique_ptr<LangString> chain_before;
+	std::unique_ptr<LangString> chain_after;
 	LangString *default_translation = nullptr;
 
 	LangString(const char *name, const char *english, size_t index, int line);
@@ -53,6 +54,7 @@ struct StringData {
 	int next_string_id;   ///< The next string ID to allocate.
 
 	std::vector<std::unique_ptr<LangString>> string_store;
+	LangString *insert_before = nullptr;
 	LangString *insert_after = nullptr;
 	bool override_mode = false;
 	LangString *default_translation = nullptr;
@@ -97,6 +99,8 @@ struct StringReader {
 	 * Start parsing the file.
 	 */
 	virtual void ParseFile();
+
+	void AssignIDs(size_t &next_id, LangString *ls);
 };
 
 /** Base class for writing the header, i.e. the STR_XXX to numeric value. */

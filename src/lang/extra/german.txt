@@ -28,6 +28,21 @@ STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :Abfahrztszeitfe
 
 STR_ORDER_STOP_LOCATION_THROUGH                                 :[durchgehendes Laden]
 
+STR_VIEWPORT_TOWN_POP_VERY_POOR_RATING                          :{WHITE}{TOWN} {RED}({COMMA})
+STR_VIEWPORT_TOWN_POP_MEDIOCRE_RATING                           :{WHITE}{TOWN} {ORANGE}({COMMA})
+STR_VIEWPORT_TOWN_POP_GOOD_RATING                               :{WHITE}{TOWN} {YELLOW}({COMMA})
+STR_VIEWPORT_TOWN_POP_EXCELLENT_RATING                          :{WHITE}{TOWN} {GREEN}({COMMA})
+
+STR_VIEWPORT_TOWN_VERY_POOR_RATING                              :{RED}{TOWN}
+STR_VIEWPORT_TOWN_MEDIOCRE_RATING                               :{ORANGE}{TOWN}
+STR_VIEWPORT_TOWN_GOOD_RATING                                   :{YELLOW}{TOWN}
+STR_VIEWPORT_TOWN_EXCELLENT_RATING                              :{GREEN}{TOWN}
+
+STR_VIEWPORT_TOWN_TINY_VERY_POOR_RATING                         :{TINY_FONT}{RED}{TOWN}
+STR_VIEWPORT_TOWN_TINY_MEDIOCRE_RATING                          :{TINY_FONT}{ORANGE}{TOWN}
+STR_VIEWPORT_TOWN_TINY_GOOD_RATING                              :{TINY_FONT}{YELLOW}{TOWN}
+STR_VIEWPORT_TOWN_TINY_EXCELLENT_RATING                         :{TINY_FONT}{GREEN}{TOWN}
+
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
@@ -1522,6 +1537,7 @@ STR_CARGO_TYPE_ORDERS_SET_TO_ALL_LABEL                          :{BLACK}Setze al
 STR_CARGO_TYPE_ORDERS_SET_TO_ALL_TOOLTIP                        :{BLACK}Lege für alle Frachttypaufträge das hier gewählten Verhalten fest
 
 STR_SCREENSHOT_WORLD_SCREENSHOT_CURRENT_ZOOM                    :{BLACK}Screenshot des ganzen Spielfeldes auf der gegenwärtigen Zoomstufe
+
 STR_SCREENSHOT_TOPOGRAPHY_SCREENSHOT                            :{BLACK}Topographischer Screenshot
 STR_SCREENSHOT_INDUSTRY_SCREENSHOT                              :{BLACK}Industrie-Screenshot
 
@@ -1629,20 +1645,6 @@ STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_WAYPOINT                   :{GRAY}WP
 STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_IMPLICIT                   :{GRAY}IM
 STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_DEPOT                      :{RED}DE
 STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_OVERFLOW                   :{RED}{NUM}x
-
-STR_VIEWPORT_TOWN_POP_VERY_POOR_RATING                          :{WHITE}{TOWN} {RED}({COMMA})
-STR_VIEWPORT_TOWN_POP_MEDIOCRE_RATING                           :{WHITE}{TOWN} {ORANGE}({COMMA})
-STR_VIEWPORT_TOWN_POP_GOOD_RATING                               :{WHITE}{TOWN} {YELLOW}({COMMA})
-STR_VIEWPORT_TOWN_POP_EXCELLENT_RATING                          :{WHITE}{TOWN} {GREEN}({COMMA})
-STR_VIEWPORT_TOWN_VERY_POOR_RATING                              :{RED}{TOWN}
-STR_VIEWPORT_TOWN_MEDIOCRE_RATING                               :{ORANGE}{TOWN}
-STR_VIEWPORT_TOWN_GOOD_RATING                                   :{YELLOW}{TOWN}
-STR_VIEWPORT_TOWN_EXCELLENT_RATING                              :{GREEN}{TOWN}
-
-STR_VIEWPORT_TOWN_TINY_VERY_POOR_RATING                         :{TINY_FONT}{RED}{TOWN}
-STR_VIEWPORT_TOWN_TINY_MEDIOCRE_RATING                          :{TINY_FONT}{ORANGE}{TOWN}
-STR_VIEWPORT_TOWN_TINY_GOOD_RATING                              :{TINY_FONT}{YELLOW}{TOWN}
-STR_VIEWPORT_TOWN_TINY_EXCELLENT_RATING                         :{TINY_FONT}{GREEN}{TOWN}
 
 STR_JUST_DECIMAL                                                :{DECIMAL}
 STR_JUST_DECIMAL1                                               :{DECIMAL1}
