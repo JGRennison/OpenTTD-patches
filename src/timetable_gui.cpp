@@ -550,7 +550,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 				const Order *order = v->GetOrder(((selected + 1) / 2) % v->GetNumOrders());
 				if (selected % 2 != 0) {
 					/* Travel time */
-					disable = order != nullptr && (order->IsType(OT_CONDITIONAL) || order->IsType(OT_IMPLICIT));
+					disable = order != nullptr && (order->IsType(OT_CONDITIONAL) || order->IsType(OT_IMPLICIT) || order->HasNoTimetableTimes());
 					disable_time = disable;
 					wait_lockable = !disable;
 					wait_locked = wait_lockable && order->IsTravelFixed();
@@ -699,7 +699,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 					} else {
 						StringID string;
 						TextColour colour = (i == selected) ? TC_WHITE : TC_BLACK;
-						if (order->IsType(OT_CONDITIONAL)) {
+						if (order->IsType(OT_CONDITIONAL) || order->HasNoTimetableTimes()) {
 							string = STR_TIMETABLE_NO_TRAVEL;
 						} else if (order->IsType(OT_IMPLICIT)) {
 							string = STR_TIMETABLE_NOT_TIMETABLEABLE;

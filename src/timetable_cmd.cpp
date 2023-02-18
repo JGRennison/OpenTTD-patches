@@ -37,6 +37,8 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint32 val,
 {
 	Order *order = v->GetOrder(order_number);
 	assert(order != nullptr);
+	if (order->HasNoTimetableTimes()) return;
+
 	int total_delta = 0;
 	int timetable_delta = 0;
 
@@ -175,7 +177,7 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 
 	VehicleOrderID order_number = GB(p3,  0, 16);
 	Order *order = v->GetOrder(order_number);
-	if (order == nullptr || order->IsType(OT_IMPLICIT)) return CMD_ERROR;
+	if (order == nullptr || order->IsType(OT_IMPLICIT) || order->HasNoTimetableTimes()) return CMD_ERROR;
 
 	ModifyTimetableFlags mtf = Extract<ModifyTimetableFlags, 28, 3>(p1);
 	if (mtf >= MTF_END) return CMD_ERROR;
@@ -661,6 +663,8 @@ CommandCost CmdTimetableSeparation(TileIndex tile, DoCommandFlag flags, uint32 p
 
 static inline bool IsOrderUsableForSeparation(const Order *order)
 {
+	if (order->HasNoTimetableTimes()) return true;
+
 	if (order->GetWaitTime() == 0 && order->IsType(OT_GOTO_STATION) && !(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) {
 		// non-station orders are permitted to have 0 wait times
 		return false;

@@ -423,10 +423,21 @@ public:
 	 * autofilled we can be sure that any non-zero values for their wait_time and travel_time are
 	 * explicitly set (but travel_time is actually unused for conditionals). */
 
+	/* Does this order not have any associated travel or wait times */
+	inline bool HasNoTimetableTimes() const { return this->IsType(OT_COUNTER) || this->IsType(OT_RELEASE_SLOT); }
+
 	/** Does this order have an explicit wait time set? */
-	inline bool IsWaitTimetabled() const { return this->IsType(OT_CONDITIONAL) ? HasBit(this->GetXFlags(), 0) : HasBit(this->flags, 3); }
+	inline bool IsWaitTimetabled() const
+	{
+		if (this->HasNoTimetableTimes()) return true;
+		return this->IsType(OT_CONDITIONAL) ? HasBit(this->GetXFlags(), 0) : HasBit(this->flags, 3);
+	}
 	/** Does this order have an explicit travel time set? */
-	inline bool IsTravelTimetabled() const { return this->IsType(OT_CONDITIONAL) ? this->travel_time > 0 : HasBit(this->flags, 7); }
+	inline bool IsTravelTimetabled() const
+	{
+		if (this->HasNoTimetableTimes()) return true;
+		return this->IsType(OT_CONDITIONAL) ? this->travel_time > 0 : HasBit(this->flags, 7);
+	}
 
 	/** Get the time in ticks a vehicle should wait at the destination or 0 if it's not timetabled. */
 	inline TimetableTicks GetTimetabledWait() const { return this->IsWaitTimetabled() ? this->wait_time : 0; }
@@ -447,6 +458,7 @@ public:
 	/** Set if the wait time is explicitly timetabled (unless the order is conditional). */
 	inline void SetWaitTimetabled(bool timetabled)
 	{
+		if (this->HasNoTimetableTimes()) return;
 		if (this->IsType(OT_CONDITIONAL)) {
 			SB(this->GetXFlagsRef(), 0, 1, timetabled ? 1 : 0);
 		} else {
@@ -455,7 +467,10 @@ public:
 	}
 
 	/** Set if the travel time is explicitly timetabled (unless the order is conditional). */
-	inline void SetTravelTimetabled(bool timetabled) { if (!this->IsType(OT_CONDITIONAL)) SB(this->flags, 7, 1, timetabled ? 1 : 0); }
+	inline void SetTravelTimetabled(bool timetabled)
+	{
+		if (!this->IsType(OT_CONDITIONAL) && !this->HasNoTimetableTimes()) SB(this->flags, 7, 1, timetabled ? 1 : 0);
+	}
 
 	/**
 	 * Set the time in ticks to wait at the destination.
