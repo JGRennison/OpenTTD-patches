@@ -533,7 +533,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 		return ES_NOT_HANDLED;
 	}
 
-	void OnPaint() override
+	void SetButtonDisabledStates()
 	{
 		const Vehicle *v = this->vehicle;
 		int selected = this->sel_index;
@@ -621,7 +621,11 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 		this->SetWidgetDisabledState(WID_VT_SCHEDULED_DISPATCH, v->orders == nullptr);
 		this->GetWidget<NWidgetStacked>(WID_VT_START_DATE_SELECTION)->SetDisplayedPlane(HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) ? 1 : 0);
+	}
 
+	void OnPaint() override
+	{
+		this->SetButtonDisabledStates();
 		this->DrawWidgets();
 	}
 
@@ -897,7 +901,10 @@ struct TimetableWindow : GeneralVehicleWindow {
 				/* Allow change time by double-clicking order */
 				if (click_count == 2) {
 					this->sel_index = selected == INVALID_ORDER ? -1 : selected;
-					this->OnClick(pt, WID_VT_CHANGE_TIME, click_count);
+					this->SetButtonDisabledStates();
+					if (!this->IsWidgetDisabled(WID_VT_CHANGE_TIME)) {
+						this->OnClick(pt, WID_VT_CHANGE_TIME, click_count);
+					}
 					return;
 				} else {
 					this->sel_index = (selected == INVALID_ORDER || selected == this->sel_index) ? -1 : selected;
