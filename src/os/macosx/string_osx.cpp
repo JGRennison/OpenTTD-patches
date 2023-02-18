@@ -16,6 +16,7 @@
 #include "../../zoom_func.h"
 #include "../../scope.h"
 #include "macos.h"
+#include <cmath>
 
 #include <CoreFoundation/CoreFoundation.h>
 
@@ -254,7 +255,7 @@ CoreTextParagraphLayout::CoreTextVisualRun::CoreTextVisualRun(CTRunRef run, Font
 			this->positions[i * 2 + 1] = pts[i].y;
 		}
 	}
-	this->total_advance = (int)CTRunGetTypographicBounds(run, CFRangeMake(0, 0), nullptr, nullptr, nullptr);
+	this->total_advance = (int)std::ceil(CTRunGetTypographicBounds(run, CFRangeMake(0, 0), nullptr, nullptr, nullptr));
 	this->positions[this->glyphs.size() * 2] = this->positions[0] + this->total_advance;
 }
 
