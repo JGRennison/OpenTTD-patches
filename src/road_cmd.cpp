@@ -1330,6 +1330,8 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 				/* Only allow building the outer roadbit, so building long roads stops at existing bridges */
 				if (MirrorRoadBits(DiagDirToRoadBits(GetTunnelBridgeDirection(tile))) != pieces) goto do_clear;
 				if (HasTileRoadType(tile, rtt)) return_cmd_error(STR_ERROR_ALREADY_BUILT);
+				if (RoadNoTunnels(rt)) return_cmd_error(STR_ERROR_TUNNEL_DISALLOWED_ROAD);
+
 				/* Don't allow adding roadtype to the bridge/tunnel when vehicles are already driving on it */
 				CommandCost ret = TunnelBridgeIsFree(tile, other_end);
 				if (ret.Failed()) return ret;
@@ -3054,6 +3056,10 @@ CommandCost CmdConvertRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				break;
 			case MP_TUNNELBRIDGE:
 				if (GetTunnelBridgeTransportType(tile) != TRANSPORT_ROAD) continue;
+				if (IsTunnel(tile) && RoadNoTunnels(to_type)) {
+					error.MakeError(STR_ERROR_TUNNEL_DISALLOWED_ROAD);
+					continue;
+				}
 				break;
 			default: continue;
 		}

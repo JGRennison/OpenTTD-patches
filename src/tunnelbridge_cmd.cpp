@@ -966,6 +966,7 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 		case TRANSPORT_ROAD:
 			roadtype = Extract<RoadType, 0, 6>(p1);
 			if (!ValParamRoadType(roadtype)) return CMD_ERROR;
+			if (RoadNoTunnels(roadtype)) return_cmd_error(STR_ERROR_TUNNEL_DISALLOWED_ROAD);
 			break;
 
 		default: return CMD_ERROR;

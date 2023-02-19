@@ -2026,3 +2026,5 @@ STR_SHIFT_KEY_NAME                                              :{BLACK}Shift
 STR_CTRL_KEY_NAME                                               :{BLACK}Ctrl
 STR_MODIFIER_TOGGLE_SHIFT_TOOLTIP                               :{BLACK}Click to invert state of Shift key
 STR_MODIFIER_TOGGLE_CTRL_TOOLTIP                                :{BLACK}Click to invert state of Ctrl key
+
+STR_ERROR_TUNNEL_DISALLOWED_ROAD                                :{WHITE}Tunnels not allowed for this road type

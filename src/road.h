@@ -55,10 +55,9 @@ DECLARE_ENUM_AS_BIT_SET(RoadTypeFlags)
 enum RoadTypeExtraFlags {
 	RXTF_NOT_AVAILABLE_AI_GS = 0,                                ///< Bit number for unavailable for AI/GS
 	RXTF_NO_TOWN_MODIFICATION,                                   ///< Bit number for no town modification
+	RXTF_NO_TUNNELS,                                             ///< Bit number for no tunnels
 
 	RXTFB_NONE = 0,                                              ///< All flags cleared.
-	RXTFB_NOT_AVAILABLE_AI_GS = 1 << RXTF_NOT_AVAILABLE_AI_GS,   ///< Value for unavailable for AI/GS
-	RXTFB_NO_TOWN_MODIFICATION = 1 << RXTF_NO_TOWN_MODIFICATION, ///< Value for no town modification
 };
 DECLARE_ENUM_AS_BIT_SET(RoadTypeExtraFlags)
 
@@ -323,6 +322,17 @@ static inline bool RoadNoLevelCrossing(RoadType roadtype)
 {
 	assert(roadtype < ROADTYPE_END);
 	return HasBit(GetRoadTypeInfo(roadtype)->flags, ROTF_NO_LEVEL_CROSSING);
+}
+
+/**
+ * Test if road disallows tunnels
+ * @param roadtype The roadtype we are testing
+ * @return True iff the roadtype disallows tunnels
+ */
+static inline bool RoadNoTunnels(RoadType roadtype)
+{
+	assert(roadtype < ROADTYPE_END);
+	return HasBit(GetRoadTypeInfo(roadtype)->extra_flags, RXTF_NO_TUNNELS);
 }
 
 RoadType GetRoadTypeByLabel(RoadTypeLabel label, bool allow_alternate_labels = true);

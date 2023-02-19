@@ -443,6 +443,7 @@ struct BuildRoadToolbarWindow : Window {
 		}
 		this->GetWidget<NWidgetCore>(WID_ROT_CONVERT_ROAD)->widget_data = rti->gui_sprites.convert_road;
 		this->GetWidget<NWidgetCore>(WID_ROT_BUILD_TUNNEL)->widget_data = rti->gui_sprites.build_tunnel;
+		if (HasBit(rti->extra_flags, RXTF_NO_TUNNELS)) this->DisableWidget(WID_ROT_BUILD_TUNNEL);
 	}
 
 	/**

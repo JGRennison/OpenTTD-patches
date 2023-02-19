@@ -38,7 +38,7 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action0_railtype_disable_realistic_braking", 1),
 	GRFFeatureInfo("action0_railtype_recolour", 1),
 	GRFFeatureInfo("action0_railtype_extra_aspects", 1),
-	GRFFeatureInfo("action0_roadtype_extra_flags", 1),
+	GRFFeatureInfo("action0_roadtype_extra_flags", 2),
 	GRFFeatureInfo("action0_roadtype_collision_mode", 1),
 	GRFFeatureInfo("varaction2_railtype_signal_context", 1),
 	GRFFeatureInfo("action0_global_extra_station_names", 2),
