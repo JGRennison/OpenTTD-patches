@@ -3792,7 +3792,7 @@ static TrackStatus GetTileTrackStatus_Station(TileIndex tile, TransportType mode
 
 		case TRANSPORT_ROAD:
 			if (IsAnyRoadStop(tile)) {
-				RoadTramType rtt = (RoadTramType)sub_mode;
+				RoadTramType rtt = (RoadTramType)GB(sub_mode, 0, 8);
 				if (!HasTileRoadType(tile, rtt)) break;
 
 				DiagDirection dir = GetRoadStopDir(tile);

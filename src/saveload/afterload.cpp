@@ -3877,7 +3877,7 @@ bool AfterLoadGame()
 	if (SlXvIsFeatureMissing(XSLFI_SAFER_CROSSINGS)) {
 		for (TileIndex t = 0; t < map_size; t++) {
 			if (IsLevelCrossingTile(t)) {
-				SetCrossingOccupiedByRoadVehicle(t, EnsureNoRoadVehicleOnGround(t).Failed());
+				SetCrossingOccupiedByRoadVehicle(t, IsTrainCollidableRoadVehicleOnGround(t));
 			}
 		}
 	}

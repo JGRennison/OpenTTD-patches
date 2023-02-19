@@ -562,6 +562,22 @@ static Vehicle *EnsureNoVehicleProcZ(Vehicle *v, void *data)
 }
 
 /**
+ * Callback that returns 'real' train-collidable road vehicles lower or at height \c *(int*)data .
+ * @param v Vehicle to examine.
+ * @param data Pointer to height data.
+ * @return \a v if conditions are met, else \c nullptr.
+ */
+static Vehicle *EnsureNoTrainCollidableRoadVehicleProcZ(Vehicle *v, void *data)
+{
+	int z = static_cast<int>(reinterpret_cast<intptr_t>(data));
+
+	if (v->z_pos > z) return nullptr;
+	if (HasBit(_roadtypes_non_train_colliding, RoadVehicle::From(v)->roadtype)) return nullptr;
+
+	return v;
+}
+
+/**
  * Callback that returns 'real' vehicles lower or at height \c *(int*)data .
  * @param v Vehicle to examine.
  * @param data Pointer to height data.
@@ -621,6 +637,13 @@ CommandCost EnsureNoRoadVehicleOnGround(TileIndex tile)
 	Vehicle *v = VehicleFromPos(tile, VEH_ROAD, reinterpret_cast<void *>(static_cast<intptr_t>(z)), &EnsureNoVehicleProcZ, true);
 	if (v != nullptr) return_cmd_error(STR_ERROR_ROAD_VEHICLE_IN_THE_WAY);
 	return CommandCost();
+}
+
+bool IsTrainCollidableRoadVehicleOnGround(TileIndex tile)
+{
+	int z = GetTileMaxPixelZ(tile);
+
+	return VehicleFromPos(tile, VEH_ROAD, reinterpret_cast<void *>(static_cast<intptr_t>(z)), &EnsureNoTrainCollidableRoadVehicleProcZ, true) != nullptr;
 }
 
 struct GetVehicleTunnelBridgeProcData {

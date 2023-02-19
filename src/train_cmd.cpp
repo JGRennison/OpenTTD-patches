@@ -2729,7 +2729,7 @@ void MarkDirtyAdjacentLevelCrossingTilesOnAddRemove(TileIndex tile, Axis road_ax
 bool IsCrossingOccupiedByRoadVehicle(TileIndex t)
 {
 	if (!IsCrossingPossiblyOccupiedByRoadVehicle(t)) return false;
-	const bool occupied = EnsureNoRoadVehicleOnGround(t).Failed();
+	const bool occupied = IsTrainCollidableRoadVehicleOnGround(t);
 	SetCrossingOccupiedByRoadVehicle(t, occupied);
 	return occupied;
 }

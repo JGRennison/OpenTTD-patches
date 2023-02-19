@@ -52,6 +52,7 @@ RoadTypeInfo _roadtypes[ROADTYPE_END];
 std::vector<RoadType> _sorted_roadtypes;
 RoadTypes _roadtypes_hidden_mask;
 std::array<RoadTypes, RTCM_END> _collision_mode_roadtypes;
+RoadTypes _roadtypes_non_train_colliding;
 
 /**
  * Bitmap of road/tram types.
@@ -138,10 +139,12 @@ void InitRoadTypes()
 void InitRoadTypesCaches()
 {
 	std::fill(_collision_mode_roadtypes.begin(), _collision_mode_roadtypes.end(), ROADTYPES_NONE);
+	_roadtypes_non_train_colliding = ROADTYPES_NONE;
 
 	for (RoadType rt = ROADTYPE_BEGIN; rt != ROADTYPE_END; rt++) {
 		const RoadTypeInfo &rti = _roadtypes[rt];
 		SetBit(_collision_mode_roadtypes[rti.collision_mode], rt);
+		if (HasBit(rti.extra_flags, RXTF_NO_TRAIN_COLLISION)) SetBit(_roadtypes_non_train_colliding, rt);
 	}
 }
 
@@ -2300,15 +2303,22 @@ static void DrawTile_Road(TileInfo *ti, DrawTileProcParams params)
 				SpriteID rail = GetCustomRailSprite(rti, ti->tile, RTSG_CROSSING) + axis;
 				DrawGroundSprite(rail, pal);
 
+				auto is_usable_crossing = [&](TileIndex t) -> bool {
+					if (HasRoadTypeRoad(t) && !HasBit(_roadtypes_non_train_colliding, GetRoadTypeRoad(t))) return true;
+					if (HasRoadTypeTram(t) && !HasBit(_roadtypes_non_train_colliding, GetRoadTypeTram(t))) return true;
+					return false;
+				};
 
-				if (_settings_game.vehicle.adjacent_crossings) {
+				if (!is_usable_crossing(ti->tile)) {
+					/* Do not draw crossing overlays */
+				} else if (_settings_game.vehicle.adjacent_crossings) {
 					const Axis axis = GetCrossingRoadAxis(ti->tile);
 					const DiagDirection dir1 = AxisToDiagDir(axis);
 					const DiagDirection dir2 = ReverseDiagDir(dir1);
 					uint adjacent_diagdirs = 0;
 					for (DiagDirection dir : { dir1, dir2 }) {
 						const TileIndex t = TileAddByDiagDir(ti->tile, dir);
-						if (t < MapSize() && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis) {
+						if (t < MapSize() && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis && is_usable_crossing(t)) {
 							SetBit(adjacent_diagdirs, dir);
 						}
 					}
@@ -2656,7 +2666,7 @@ static TrackStatus GetTileTrackStatus_Road(TileIndex tile, TransportType mode, u
 			break;
 
 		case TRANSPORT_ROAD: {
-			RoadTramType rtt = (RoadTramType)sub_mode;
+			RoadTramType rtt = (RoadTramType)GB(sub_mode, 0, 8);
 			if (!HasTileRoadType(tile, rtt)) break;
 			switch (GetRoadTileType(tile)) {
 				case ROAD_TILE_NORMAL: {
@@ -2704,7 +2714,13 @@ static TrackStatus GetTileTrackStatus_Road(TileIndex tile, TransportType mode, u
 					if (side != INVALID_DIAGDIR && axis != DiagDirToAxis(side)) break;
 
 					trackdirbits = TrackBitsToTrackdirBits(AxisToTrackBits(axis));
-					if (IsCrossingBarred(tile)) {
+					auto is_non_colliding = [&]() -> bool {
+						uint8 rtfield = GB(sub_mode, 8, 8);
+						if (rtfield == 0) return false;
+						RoadType rt = (RoadType)(rtfield - 1);
+						return HasBit(_roadtypes_non_train_colliding, rt);
+					};
+					if (IsCrossingBarred(tile) && !is_non_colliding()) {
 						red_signals = trackdirbits;
 						auto mask_red_signal_bits_if_crossing_barred = [&](TileIndex t, TrackdirBits mask) {
 							if (IsLevelCrossingTile(t) && IsCrossingBarred(t)) red_signals &= mask;

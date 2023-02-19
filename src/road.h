@@ -56,6 +56,7 @@ enum RoadTypeExtraFlags {
 	RXTF_NOT_AVAILABLE_AI_GS = 0,                                ///< Bit number for unavailable for AI/GS
 	RXTF_NO_TOWN_MODIFICATION,                                   ///< Bit number for no town modification
 	RXTF_NO_TUNNELS,                                             ///< Bit number for no tunnels
+	RXTF_NO_TRAIN_COLLISION,                                     ///< Bit number for no train collision
 
 	RXTFB_NONE = 0,                                              ///< All flags cleared.
 };
@@ -346,5 +347,6 @@ bool HasAnyRoadTypesAvail(CompanyID company, RoadTramType rtt);
 extern std::vector<RoadType> _sorted_roadtypes;
 extern RoadTypes _roadtypes_hidden_mask;
 extern std::array<RoadTypes, RTCM_END> _collision_mode_roadtypes;
+extern RoadTypes _roadtypes_non_train_colliding;
 
 #endif /* ROAD_H */
