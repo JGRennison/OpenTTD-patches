@@ -175,7 +175,8 @@ struct GRFFilePropertyRemapEntry {
 	const char *name = nullptr;
 	int id = 0;
 	GrfSpecFeature feature = (GrfSpecFeature)0;
-	uint8 property_id = 0;
+	bool extended = false;
+	uint16 property_id = 0;
 };
 
 struct GRFFilePropertyRemapSet {
@@ -324,6 +325,7 @@ struct GRFFile : ZeroedMemoryAllocator {
 
 	GRFFeatureMapRemapSet feature_id_remaps;
 	GRFFilePropertyRemapSet action0_property_remaps[GSF_END];
+	btree::btree_map<uint32, GRFFilePropertyRemapEntry> action0_extended_property_remaps;
 	Action5TypeRemapSet action5_type_remaps;
 	std::vector<GRFVariableMapEntry> grf_variable_remaps;
 	std::vector<std::unique_ptr<const char, FreeDeleter>> remap_unknown_property_names;

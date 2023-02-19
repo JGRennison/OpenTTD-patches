@@ -206,6 +206,11 @@ public:
 		 * as there may not be any more data read. */
 		if (data > end) throw OTTDByteReaderSignal();
 	}
+
+	inline void ResetReadPosition(byte *pos)
+	{
+		data = pos;
+	}
 };
 
 typedef void (*SpecialSpriteHandler)(ByteReader *buf);
@@ -927,8 +932,10 @@ static bool MappedPropertyLengthMismatch(ByteReader *buf, uint expected_size, co
 	uint length = buf->ReadExtendedByte();
 	if (length != expected_size) {
 		if (mapping_entry != nullptr) {
-			grfmsg(2, "Ignoring use of mapped property: %s, feature: %s, mapped to: %X, with incorrect data size: %u instead of %u",
-					mapping_entry->name, GetFeatureString(mapping_entry->feature), mapping_entry->property_id, length, expected_size);
+			grfmsg(2, "Ignoring use of mapped property: %s, feature: %s, mapped to: %X%s, with incorrect data size: %u instead of %u",
+					mapping_entry->name, GetFeatureString(mapping_entry->feature),
+					mapping_entry->property_id, mapping_entry->extended ? " (extended)" : "",
+					length, expected_size);
 		}
 		buf->Skip(length);
 		return true;
@@ -5400,6 +5407,38 @@ static GRFFilePropertyDescriptor ReadAction0PropertyID(ByteReader *buf, uint8 fe
 			error->param_value[2] = raw_prop;
 		} else if (prop == A0RPI_UNKNOWN_IGNORE) {
 			grfmsg(2, "Ignoring unimplemented mapped property: %s, feature: %s, mapped to: %X", def.name, GetFeatureString(def.feature), raw_prop);
+		} else if (prop == A0RPI_ID_EXTENSION) {
+			byte *outer_data = buf->Data();
+			size_t outer_length = buf->ReadExtendedByte();
+			uint16 mapped_id = buf->ReadWord();
+			byte *inner_data = buf->Data();
+			size_t inner_length = buf->ReadExtendedByte();
+			if (inner_length + (inner_data - outer_data) != outer_length) {
+				grfmsg(2, "Ignoring extended ID property with malformed lengths: %s, feature: %s, mapped to: %X", def.name, GetFeatureString(def.feature), raw_prop);
+				buf->ResetReadPosition(outer_data);
+				return GRFFilePropertyDescriptor(A0RPI_UNKNOWN_IGNORE, &def);
+			}
+
+			auto ext = _cur.grffile->action0_extended_property_remaps.find((((uint32)feature) << 16) | mapped_id);
+			if (ext != _cur.grffile->action0_extended_property_remaps.end()) {
+				buf->ResetReadPosition(inner_data);
+				const GRFFilePropertyRemapEntry &ext_def = ext->second;
+				prop = ext_def.id;
+				if (prop == A0RPI_UNKNOWN_ERROR) {
+					grfmsg(0, "Error: Unimplemented mapped extended ID property: %s, feature: %s, mapped to: %X (via %X)", ext_def.name, GetFeatureString(ext_def.feature), mapped_id, raw_prop);
+					GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY);
+					error->data = stredup(ext_def.name);
+					error->param_value[1] = ext_def.feature;
+					error->param_value[2] = 0xE0000 | mapped_id;
+				} else if (prop == A0RPI_UNKNOWN_IGNORE) {
+					grfmsg(2, "Ignoring unimplemented mapped extended ID property: %s, feature: %s, mapped to: %X (via %X)", ext_def.name, GetFeatureString(ext_def.feature), mapped_id, raw_prop);
+				}
+				return GRFFilePropertyDescriptor(prop, &ext_def);
+			} else {
+				grfmsg(2, "Ignoring unknown extended ID property: %s, feature: %s, mapped to: %X (via %X)", def.name, GetFeatureString(def.feature), mapped_id, raw_prop);
+				buf->ResetReadPosition(outer_data);
+				return GRFFilePropertyDescriptor(A0RPI_UNKNOWN_IGNORE, &def);
+			}
 		}
 		return GRFFilePropertyDescriptor(prop, &def);
 	} else {
@@ -9362,6 +9401,7 @@ struct GRFPropertyMapAction {
 
 	GrfSpecFeature feature;
 	int prop_id;
+	int ext_prop_id;
 	std::string name;
 	GRFPropertyMapFallbackMode fallback_mode;
 	uint8 ttd_ver_var_bit;
@@ -9379,6 +9419,7 @@ struct GRFPropertyMapAction {
 
 		this->feature = GSF_INVALID;
 		this->prop_id = -1;
+		this->ext_prop_id = -1;
 		this->name.clear();
 		this->fallback_mode = GPMFM_IGNORE;
 		this->ttd_ver_var_bit = 0;
@@ -9446,7 +9487,7 @@ struct GRFPropertyMapAction {
 			grfmsg(2, "Action 14 %s remapping: no feature defined, doing nothing", this->descriptor);
 			return;
 		}
-		if (this->prop_id < 0) {
+		if (this->prop_id < 0 && this->ext_prop_id < 0) {
 			grfmsg(2, "Action 14 %s remapping: no property ID defined, doing nothing", this->descriptor);
 			return;
 		}
@@ -9458,12 +9499,22 @@ struct GRFPropertyMapAction {
 		const char *str = this->name.c_str();
 		extern const GRFPropertyMapDefinition _grf_action0_remappable_properties[];
 		for (const GRFPropertyMapDefinition *info = _grf_action0_remappable_properties; info->name != nullptr; info++) {
-			if (info->feature == this->feature && strcmp(info->name, str) == 0) {
-				GRFFilePropertyRemapEntry &entry = _cur.grffile->action0_property_remaps[this->feature].Entry(this->prop_id);
-				entry.name = info->name;
-				entry.id = info->id;
-				entry.feature = this->feature;
-				entry.property_id = this->prop_id;
+			if ((info->feature == GSF_INVALID || info->feature == this->feature) && strcmp(info->name, str) == 0) {
+				if (this->prop_id > 0) {
+					GRFFilePropertyRemapEntry &entry = _cur.grffile->action0_property_remaps[this->feature].Entry(this->prop_id);
+					entry.name = info->name;
+					entry.id = info->id;
+					entry.feature = this->feature;
+					entry.property_id = this->prop_id;
+				}
+				if (this->ext_prop_id > 0) {
+					GRFFilePropertyRemapEntry &entry = _cur.grffile->action0_extended_property_remaps[(((uint32)this->feature) << 16) | this->ext_prop_id];
+					entry.name = info->name;
+					entry.id = info->id;
+					entry.feature = this->feature;
+					entry.extended = true;
+					entry.property_id = this->ext_prop_id;
+				}
 				success = true;
 				break;
 			}
@@ -9475,22 +9526,34 @@ struct GRFPropertyMapAction {
 			include(_cur.grffile->var91_values, this->test_91_value);
 		}
 		if (!success) {
+			uint mapped_to = (this->prop_id > 0) ? this->prop_id : this->ext_prop_id;
+			const char *extended = (this->prop_id > 0) ? "" : " (extended)";
 			if (this->fallback_mode == GPMFM_ERROR_ON_DEFINITION) {
-				grfmsg(0, "Error: Unimplemented mapped %s: %s, feature: %s, mapped to: %X", this->descriptor, str, GetFeatureString(this->feature), this->prop_id);
+				grfmsg(0, "Error: Unimplemented mapped %s: %s, feature: %s, mapped to: %X%s", this->descriptor, str, GetFeatureString(this->feature), mapped_to, extended);
 				GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY);
 				error->data = stredup(str);
 				error->param_value[1] = this->feature;
-				error->param_value[2] = this->prop_id;
+				error->param_value[2] = ((this->prop_id > 0) ? 0 : 0xE0000) | mapped_to;
 			} else {
 				const char *str_store = stredup(str);
-				grfmsg(2, "Unimplemented mapped %s: %s, feature: %s, mapped to: %X, %s on use",
-						this->descriptor, str, GetFeatureString(this->feature), this->prop_id, (this->fallback_mode == GPMFM_IGNORE) ? "ignoring" : "error");
+				grfmsg(2, "Unimplemented mapped %s: %s, feature: %s, mapped to: %X%s, %s on use",
+						this->descriptor, str, GetFeatureString(this->feature), mapped_to, extended, (this->fallback_mode == GPMFM_IGNORE) ? "ignoring" : "error");
 				_cur.grffile->remap_unknown_property_names.emplace_back(str_store);
-				GRFFilePropertyRemapEntry &entry = _cur.grffile->action0_property_remaps[this->feature].Entry(this->prop_id);
-				entry.name = str_store;
-				entry.id = (this->fallback_mode == GPMFM_IGNORE) ? A0RPI_UNKNOWN_IGNORE : A0RPI_UNKNOWN_ERROR;
-				entry.feature = this->feature;
-				entry.property_id = this->prop_id;
+				if (this->prop_id > 0) {
+					GRFFilePropertyRemapEntry &entry = _cur.grffile->action0_property_remaps[this->feature].Entry(this->prop_id);
+					entry.name = str_store;
+					entry.id = (this->fallback_mode == GPMFM_IGNORE) ? A0RPI_UNKNOWN_IGNORE : A0RPI_UNKNOWN_ERROR;
+					entry.feature = this->feature;
+					entry.property_id = this->prop_id;
+				}
+				if (this->ext_prop_id > 0) {
+					GRFFilePropertyRemapEntry &entry = _cur.grffile->action0_extended_property_remaps[(((uint32)this->feature) << 16) | this->ext_prop_id];
+					entry.name = str_store;
+					entry.id = (this->fallback_mode == GPMFM_IGNORE) ? A0RPI_UNKNOWN_IGNORE : A0RPI_UNKNOWN_ERROR;;
+					entry.feature = this->feature;
+					entry.extended = true;
+					entry.property_id = this->ext_prop_id;
+				}
 			}
 		}
 	}
@@ -9612,6 +9675,19 @@ static bool ChangePropertyRemapPropertyId(size_t len, ByteReader *buf)
 		buf->Skip(len);
 	} else {
 		action.prop_id = buf->ReadByte();
+	}
+	return true;
+}
+
+/** Callback function for ->'XPRP' to set the extended property ID to which this item is being mapped. */
+static bool ChangePropertyRemapExtendedPropertyId(size_t len, ByteReader *buf)
+{
+	GRFPropertyMapAction &action = _current_grf_property_map_action;
+	if (len != 2) {
+		grfmsg(2, "Action 14 %s mapping: expected 2 bytes for '%s'->'XPRP' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		buf->Skip(len);
+	} else {
+		action.ext_prop_id = buf->ReadWord();
 	}
 	return true;
 }
@@ -9792,6 +9868,7 @@ AllowedSubtags _tags_a0pm[] = {
 	AllowedSubtags('NAME', ChangePropertyRemapName),
 	AllowedSubtags('FEAT', ChangePropertyRemapFeature),
 	AllowedSubtags('PROP', ChangePropertyRemapPropertyId),
+	AllowedSubtags('XPRP', ChangePropertyRemapExtendedPropertyId),
 	AllowedSubtags('FLBK', ChangePropertyRemapSetFallbackMode),
 	AllowedSubtags('SETT', ChangePropertyRemapSetTTDVerVarBit),
 	AllowedSubtags('SVAL', ChangePropertyRemapSuccessResultValue),

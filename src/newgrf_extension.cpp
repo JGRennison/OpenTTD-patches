@@ -17,7 +17,7 @@
 /** Action14 feature list */
 extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("feature_test", 2),
-	GRFFeatureInfo("property_mapping", 2),
+	GRFFeatureInfo("property_mapping", 3),
 	GRFFeatureInfo("variable_mapping", 3),
 	GRFFeatureInfo("feature_id_mapping", 2),
 	GRFFeatureInfo("action5_type_id_mapping", 2),
@@ -74,6 +74,7 @@ extern const GRFFeatureMapDefinition _grf_remappable_features[] = {
 
 /** Action14 Action0 remappable property list */
 extern const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
+	GRFPropertyMapDefinition(GSF_INVALID, A0RPI_ID_EXTENSION, "id_extension"),
 	GRFPropertyMapDefinition(GSF_STATIONS, A0RPI_STATION_MIN_BRIDGE_HEIGHT, "station_min_bridge_height"),
 	GRFPropertyMapDefinition(GSF_STATIONS, A0RPI_STATION_DISALLOWED_BRIDGE_PILLARS, "station_disallowed_bridge_pillars"),
 	GRFPropertyMapDefinition(GSF_BRIDGES, A0RPI_BRIDGE_MENU_ICON, "bridge_menu_icon"),
