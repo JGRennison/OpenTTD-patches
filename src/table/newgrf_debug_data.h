@@ -1795,6 +1795,8 @@ class NIHRoadType : public NIHelper {
 					HasBit(rti->extra_flags, RXTF_NOT_AVAILABLE_AI_GS) ? 's' : '-',
 					HasBit(rti->extra_flags, RXTF_NO_TOWN_MODIFICATION) ? 't' : '-');
 			output.print(buffer);
+			seprintf(buffer, lastof(buffer), "    Collision mode: %u", rti->collision_mode);
+			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "    Powered: 0x" OTTD_PRINTFHEX64, rti->powered_roadtypes);
 			output.print(buffer);
 			PrintTypeLabels(buffer, lastof(buffer), rti->label, (const uint32*) rti->alternate_labels.data(), rti->alternate_labels.size(), output.print);

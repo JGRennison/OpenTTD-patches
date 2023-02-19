@@ -330,6 +330,18 @@
 	</table>
 	</p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_roadtype_extra_flags</font>, version 1</p>
+	<h4 id="roadtype_collision_mode">Road vehicle collision mode (mappable property: roadtype_collision_mode)</h4>
+	<p>This property sets the road vehicle collision mode for road vehicles of this road/tram type.<br />
+	The property length is 1 byte. The format is:
+	<table>
+	<tr><th>Value</th><th>Meaning</th></tr>
+	<tr><td>0</td><td>Normal: Normal road vehicle collision rules (this is the default)</td></tr>
+	<tr><td>1</td><td>None: Do not collide at all with other road vehicles</td></tr>
+	<tr><td>2</td><td>Elevated: Collide only with other elevated road vehicles</td></tr>
+	</table>
+	Unknown values are ignored. More values may be added in future.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_roadtype_collision_mode</font>, version 1</p>
 	<br />
 	<h3 id="a0globalsettings"><a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Global_Settings">Action 0 - Global Settings</a></h3>
 	<h4 id="global_extra_station_names">Extra station names (mappable property: global_extra_station_names)</h4>

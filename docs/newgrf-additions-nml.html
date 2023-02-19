@@ -178,6 +178,19 @@
 			</dl>
 		</td>
 	</tr>
+	<tr><td>roadtype_collision_mode</td><td>ROADTYPE_COLLISION_MODE_XXX</td>
+		<td>
+			Sets the road vehicle collision mode for road vehicles of this road type.
+			<dl>
+				<dt>NORMAL</dt>
+				<dd>Normal road vehicle collision rules (this is the default)</dd>
+				<dt>NONE</dt>
+				<dd>Do not collide at all with other road vehicles</dd>
+				<dt>ELEVATED</dt>
+				<dd>Collide only with other elevated road vehicles</dd>
+			</dl>
+		</td>
+	</tr>
 	</table>
 	<h3 id="tramtype-properties"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Tramtypes#Tramtype_properties">Tramtype properties</a></h3>
 	<table>
@@ -189,6 +202,19 @@
 				<dd>Scripts (AI/GS) may not build this tramtype</dd>
 				<dt>NO_TOWN_MODIFY</dt>
 				<dd>Towns may not modify tiles of this tramtype in any way whatsoever</dd>
+			</dl>
+		</td>
+	</tr>
+	<tr><td>tramtype_collision_mode</td><td>TRAMTYPE_COLLISION_MODE_XXX</td>
+		<td>
+			Sets the road vehicle collision mode for road vehicles of this tram type.
+			<dl>
+				<dt>NORMAL</dt>
+				<dd>Normal road vehicle collision rules (this is the default)</dd>
+				<dt>NONE</dt>
+				<dd>Do not collide at all with other road vehicles</dd>
+				<dt>ELEVATED</dt>
+				<dd>Collide only with other elevated road vehicles</dd>
 			</dl>
 		</td>
 	</tr>

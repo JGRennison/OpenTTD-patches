@@ -4270,6 +4270,8 @@ void ReloadNewGRFData()
 
 	UpdateExtraAspectsVariable();
 
+	InitRoadTypesCaches();
+
 	ReInitAllWindows(false);
 
 	/* Update company statistics. */

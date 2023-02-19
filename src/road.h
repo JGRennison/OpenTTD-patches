@@ -62,6 +62,14 @@ enum RoadTypeExtraFlags {
 };
 DECLARE_ENUM_AS_BIT_SET(RoadTypeExtraFlags)
 
+enum RoadTypeCollisionMode : uint8 {
+	RTCM_NORMAL = 0,
+	RTCM_NONE,
+	RTCM_ELEVATED,
+
+	RTCM_END,
+};
+
 struct SpriteGroup;
 
 /** Sprite groups for a roadtype. */
@@ -139,6 +147,11 @@ public:
 	 * Bit mask of road type extra flags
 	 */
 	RoadTypeExtraFlags extra_flags;
+
+	/**
+	 * Collision mode
+	 */
+	RoadTypeCollisionMode collision_mode;
 
 	/**
 	 * Cost multiplier for building this road type
@@ -316,10 +329,12 @@ RoadType GetRoadTypeByLabel(RoadTypeLabel label, bool allow_alternate_labels = t
 
 void ResetRoadTypes();
 void InitRoadTypes();
+void InitRoadTypesCaches();
 RoadType AllocateRoadType(RoadTypeLabel label, RoadTramType rtt);
 bool HasAnyRoadTypesAvail(CompanyID company, RoadTramType rtt);
 
 extern std::vector<RoadType> _sorted_roadtypes;
 extern RoadTypes _roadtypes_hidden_mask;
+extern std::array<RoadTypes, RTCM_END> _collision_mode_roadtypes;
 
 #endif /* ROAD_H */

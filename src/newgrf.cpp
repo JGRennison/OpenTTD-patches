@@ -4813,6 +4813,13 @@ static ChangeInfoResult RoadTypeChangeInfo(uint id, int numinfo, int prop, const
 				rti->extra_flags = (RoadTypeExtraFlags)buf->ReadByte();
 				break;
 
+			case A0RPI_ROADTYPE_COLLISION_MODE: {
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				uint8 collision_mode = buf->ReadByte();
+				if (collision_mode < RTCM_END) rti->collision_mode = (RoadTypeCollisionMode)collision_mode;
+				break;
+			}
+
 			default:
 				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
@@ -4903,6 +4910,10 @@ static ChangeInfoResult RoadTypeReserveInfo(uint id, int numinfo, int prop, cons
 				break;
 
 			case A0RPI_ROADTYPE_EXTRA_FLAGS:
+				buf->Skip(buf->ReadExtendedByte());
+				break;
+
+			case A0RPI_ROADTYPE_COLLISION_MODE:
 				buf->Skip(buf->ReadExtendedByte());
 				break;
 
@@ -11427,6 +11438,7 @@ static void AfterLoadGRFs()
 	/* Set up custom rail types */
 	InitRailTypes();
 	InitRoadTypes();
+	InitRoadTypesCaches();
 
 	for (Engine *e : Engine::IterateType(VEH_ROAD)) {
 		if (_gted[e->index].rv_max_speed != 0) {

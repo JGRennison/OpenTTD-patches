@@ -51,6 +51,7 @@ typedef std::vector<RoadVehicle *> RoadVehicleList;
 RoadTypeInfo _roadtypes[ROADTYPE_END];
 std::vector<RoadType> _sorted_roadtypes;
 RoadTypes _roadtypes_hidden_mask;
+std::array<RoadTypes, RTCM_END> _collision_mode_roadtypes;
 
 /**
  * Bitmap of road/tram types.
@@ -72,7 +73,7 @@ void ResetRoadTypes()
 		{ 0, 0, 0, 0, 0, 0 },
 		{ 0, 0, 0, 0, 0, 0 },
 		{ 0, 0, 0, 0, 0, 0, 0, 0, 0, {}, {}, 0, {}, {} },
-		ROADTYPES_NONE, ROTFB_NONE, RXTFB_NONE, 0, 0, 0, 0,
+		ROADTYPES_NONE, ROTFB_NONE, RXTFB_NONE, RTCM_NORMAL, 0, 0, 0, 0,
 		RoadTypeLabelList(), 0, 0, ROADTYPES_NONE, ROADTYPES_NONE, 0,
 		{}, {} };
 	for (; i < lengthof(_roadtypes);          i++) _roadtypes[i] = empty_roadtype;
@@ -134,6 +135,16 @@ void InitRoadTypes()
 	std::sort(_sorted_roadtypes.begin(), _sorted_roadtypes.end(), CompareRoadTypes);
 }
 
+void InitRoadTypesCaches()
+{
+	std::fill(_collision_mode_roadtypes.begin(), _collision_mode_roadtypes.end(), ROADTYPES_NONE);
+
+	for (RoadType rt = ROADTYPE_BEGIN; rt != ROADTYPE_END; rt++) {
+		const RoadTypeInfo &rti = _roadtypes[rt];
+		SetBit(_collision_mode_roadtypes[rti.collision_mode], rt);
+	}
+}
+
 /**
  * Allocate a new road type label
  */
@@ -149,6 +160,7 @@ RoadType AllocateRoadType(RoadTypeLabel label, RoadTramType rtt)
 			rti->alternate_labels.clear();
 			rti->flags = ROTFB_NONE;
 			rti->extra_flags = RXTFB_NONE;
+			rti->collision_mode = RTCM_NORMAL;
 			rti->introduction_date = INVALID_DATE;
 
 			/* Make us compatible with ourself. */

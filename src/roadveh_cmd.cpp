@@ -681,6 +681,7 @@ struct RoadVehFindData {
 	Vehicle *best;
 	uint best_diff;
 	Direction dir;
+	RoadTypeCollisionMode collision_mode;
 };
 
 static Vehicle *EnumCheckRoadVehClose(Vehicle *v, void *data)
@@ -697,6 +698,7 @@ static Vehicle *EnumCheckRoadVehClose(Vehicle *v, void *data)
 			abs(v->z_pos - rvf->veh->z_pos) < 6 &&
 			v->direction == rvf->dir &&
 			rvf->veh->First() != v->First() &&
+			HasBit(_collision_mode_roadtypes[rvf->collision_mode], RoadVehicle::From(v)->roadtype) &&
 			(dist_x[v->direction] >= 0 || (x_diff > dist_x[v->direction] && x_diff <= 0)) &&
 			(dist_x[v->direction] <= 0 || (x_diff < dist_x[v->direction] && x_diff >= 0)) &&
 			(dist_y[v->direction] >= 0 || (y_diff > dist_y[v->direction] && y_diff <= 0)) &&
@@ -714,16 +716,19 @@ static Vehicle *EnumCheckRoadVehClose(Vehicle *v, void *data)
 
 static RoadVehicle *RoadVehFindCloseTo(RoadVehicle *v, int x, int y, Direction dir, bool update_blocked_ctr = true)
 {
-	RoadVehFindData rvf;
-	RoadVehicle *front = v->First();
+	RoadTypeCollisionMode collision_mode = GetRoadTypeInfo(v->roadtype)->collision_mode;
+	if (collision_mode == RTCM_NONE) return nullptr;
 
+	RoadVehicle *front = v->First();
 	if (front->reverse_ctr != 0) return nullptr;
 
+	RoadVehFindData rvf;
 	rvf.x = x;
 	rvf.y = y;
 	rvf.dir = dir;
 	rvf.veh = v;
 	rvf.best_diff = UINT_MAX;
+	rvf.collision_mode = collision_mode;
 
 	if (front->state == RVSB_WORMHOLE) {
 		FindVehicleOnPos(v->tile, VEH_ROAD, &rvf, EnumCheckRoadVehClose);
@@ -741,7 +746,7 @@ static RoadVehicle *RoadVehFindCloseTo(RoadVehicle *v, int x, int y, Direction d
 		return nullptr;
 	}
 
-	if (update_blocked_ctr && ++front->blocked_ctr > 1480  && (!_settings_game.vehicle.roadveh_cant_quantum_tunnel)) return nullptr;
+	if (update_blocked_ctr && ++front->blocked_ctr > 1480 && (!_settings_game.vehicle.roadveh_cant_quantum_tunnel)) return nullptr;
 
 	RoadVehicle *rv = RoadVehicle::From(rvf.best);
 	if (rv != nullptr && front->IsRoadVehicleOnLevelCrossing() && (rv->First()->cur_speed == 0 || rv->First()->IsRoadVehicleStopped())) return nullptr;
@@ -845,6 +850,7 @@ struct OvertakeData {
 	Trackdir trackdir;
 	int tunnelbridge_min;
 	int tunnelbridge_max;
+	RoadTypeCollisionMode collision_mode;
 };
 
 static Vehicle *EnumFindVehBlockingOvertake(Vehicle *v, void *data)
@@ -852,6 +858,7 @@ static Vehicle *EnumFindVehBlockingOvertake(Vehicle *v, void *data)
 	const OvertakeData *od = (OvertakeData*)data;
 
 	if (v->First() == od->u || v->First() == od->v) return nullptr;
+	if (!HasBit(_collision_mode_roadtypes[od->collision_mode], RoadVehicle::From(v)->roadtype)) return nullptr;
 	if (RoadVehicle::From(v)->overtaking != 0 || v->direction != od->v->direction) return v;
 
 	/* Check if other vehicle is behind */
@@ -896,6 +903,7 @@ static Vehicle *EnumFindVehBlockingOvertakeBehind(Vehicle *v, void *data)
 	const OvertakeData *od = (OvertakeData*)data;
 
 	if (v->First() == od->u || v->First() == od->v) return nullptr;
+	if (!HasBit(_collision_mode_roadtypes[od->collision_mode], RoadVehicle::From(v)->roadtype)) return nullptr;
 	if (RoadVehicle::From(v)->overtaking != 0 && TileVirtXY(v->x_pos, v->y_pos) == od->tile) return v;
 	return nullptr;
 }
@@ -1040,6 +1048,7 @@ static void RoadVehCheckOvertake(RoadVehicle *v, RoadVehicle *u)
 	od.v = v;
 	od.u = u;
 	od.trackdir = DiagDirToDiagTrackdir(DirToDiagDir(v->direction));
+	od.collision_mode = GetRoadTypeInfo(v->roadtype)->collision_mode;
 
 	/* Are the current and the next tile suitable for overtaking?
 	 *  - Does the track continue along od.trackdir
@@ -1447,6 +1456,7 @@ struct FinishOvertakeData {
 	int min_coord;
 	int max_coord;
 	uint8 not_road_pos;
+	RoadTypeCollisionMode collision_mode;
 };
 
 static Vehicle *EnumFindVehBlockingFinishOvertake(Vehicle *v, void *data)
@@ -1454,6 +1464,7 @@ static Vehicle *EnumFindVehBlockingFinishOvertake(Vehicle *v, void *data)
 	const FinishOvertakeData *od = (FinishOvertakeData*)data;
 
 	if (v->First() == od->v) return nullptr;
+	if (!HasBit(_collision_mode_roadtypes[od->collision_mode], RoadVehicle::From(v)->roadtype)) return nullptr;
 
 	/* Check if other vehicle is behind */
 	switch (DirToDiagDir(v->direction)) {
@@ -1484,6 +1495,8 @@ static void RoadVehCheckFinishOvertake(RoadVehicle *v)
 	FinishOvertakeData od;
 	od.direction = v->direction;
 	od.v = v;
+	od.collision_mode = GetRoadTypeInfo(v->roadtype)->collision_mode;
+
 	const RoadVehicle *last = v->Last();
 	const int front_margin = 10;
 	const int back_margin = 10;

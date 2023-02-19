@@ -66,6 +66,9 @@ static const RoadTypeInfo _original_roadtypes[] = {
 		/* extra flags */
 		RXTFB_NONE,
 
+		/* collision mode */
+		RTCM_NORMAL,
+
 		/* cost multiplier */
 		8,
 
@@ -148,6 +151,9 @@ static const RoadTypeInfo _original_roadtypes[] = {
 
 		/* extra flags */
 		RXTFB_NONE,
+
+		/* collision mode */
+		RTCM_NORMAL,
 
 		/* cost multiplier */
 		16,
