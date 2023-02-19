@@ -1193,6 +1193,7 @@ static const NIVariable _niv_signals[] = {
 	NIV(A2VRI_SIGNALS_SIGNAL_RESTRICTION_INFO, "restriction info"),
 	NIV(A2VRI_SIGNALS_SIGNAL_CONTEXT, "context"),
 	NIV(A2VRI_SIGNALS_SIGNAL_STYLE, "style"),
+	NIV(A2VRI_SIGNALS_SIGNAL_SIDE, "side"),
 	NIV_END()
 };
 

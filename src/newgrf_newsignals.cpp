@@ -34,6 +34,17 @@ static uint8 MapSignalStyle(uint8 style)
 	return style != 0 ? _new_signal_styles[style - 1].grf_local_id : 0;
 }
 
+uint32 GetNewSignalsSideVariable()
+{
+	bool side;
+	switch (_settings_game.construction.train_signal_side) {
+		case 0:  side = false;                                 break; // left
+		case 2:  side = true;                                  break; // right
+		default: side = _settings_game.vehicle.road_side != 0; break; // driving side
+	}
+	return side ? 1 : 0;
+}
+
 /* virtual */ uint32 NewSignalsScopeResolver::GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	if (this->tile == INVALID_TILE) {
@@ -42,6 +53,7 @@ static uint8 MapSignalStyle(uint8 style)
 			case A2VRI_SIGNALS_SIGNAL_RESTRICTION_INFO: return 0;
 			case A2VRI_SIGNALS_SIGNAL_CONTEXT: return this->signal_context;
 			case A2VRI_SIGNALS_SIGNAL_STYLE: return MapSignalStyle(this->signal_style);
+			case A2VRI_SIGNALS_SIGNAL_SIDE: return GetNewSignalsSideVariable();
 		}
 	}
 
@@ -52,6 +64,7 @@ static uint8 MapSignalStyle(uint8 style)
 		case A2VRI_SIGNALS_SIGNAL_CONTEXT:
 			return GetNewSignalsSignalContext(this->signal_context, this->tile);
 		case A2VRI_SIGNALS_SIGNAL_STYLE: return MapSignalStyle(this->signal_style);
+		case A2VRI_SIGNALS_SIGNAL_SIDE: return GetNewSignalsSideVariable();
 	}
 
 	DEBUG(grf, 1, "Unhandled new signals tile variable 0x%X", variable);

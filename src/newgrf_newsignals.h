@@ -111,4 +111,6 @@ inline uint GetNewSignalsSignalContext(CustomSignalSpriteContext signal_context,
 	return result;
 }
 
+uint32 GetNewSignalsSideVariable();
+
 #endif /* NEWGRF_NEWSIGNALS_H */
