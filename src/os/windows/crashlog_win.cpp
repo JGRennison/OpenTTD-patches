@@ -23,6 +23,7 @@
 #include "../../debug.h"
 #include "../../settings_type.h"
 #include "../../thread.h"
+#include "../../walltime_func.h"
 #if defined(WITH_DEMANGLE)
 #include <cxxabi.h>
 #endif
@@ -700,7 +701,7 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 	CrashLogWindows::current = log;
 	char *buf = log->FillCrashLog(log->crashlog, lastof(log->crashlog));
 	char *name_buffer_date = log->name_buffer + seprintf(log->name_buffer, lastof(log->name_buffer), "crash-");
-	UTCTime::Format(name_buffer_date, lastof(this->name_buffer), "%Y%m%dT%H%M%SZ");
+	UTCTime::Format(name_buffer_date, lastof(log->name_buffer), "%Y%m%dT%H%M%SZ");
 	log->WriteCrashDump(log->crashdump_filename, lastof(log->crashdump_filename));
 	log->AppendDecodedStacktrace(buf, lastof(log->crashlog));
 	log->WriteCrashLog(log->crashlog, log->crashlog_filename, lastof(log->crashlog_filename), log->name_buffer);
