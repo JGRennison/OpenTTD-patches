@@ -56,7 +56,7 @@ Case::~Case()
  * @param index   The index in the string table.
  * @param line    The line this string was found on.
  */
-LangString::LangString(const char *name, const char *english, size_t index, int line) :
+LangString::LangString(const char *name, const char *english, int index, int line) :
 		name(stredup(name)), english(stredup(english)), translated(nullptr),
 		hash_next(0), index(index), line(line), translated_case(nullptr)
 {
@@ -891,7 +891,7 @@ void StringReader::AssignIDs(size_t &next_id, LangString *ls)
 		if (ls->index >= 0) {
 			next_id = ls->index;
 		} else {
-			ls->index = next_id;
+			ls->index = (int)next_id;
 		}
 
 		if ((size_t)ls->index >= this->data.max_strings) {

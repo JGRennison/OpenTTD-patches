@@ -39,7 +39,7 @@ struct LangString {
 	std::unique_ptr<LangString> chain_after;
 	LangString *default_translation = nullptr;
 
-	LangString(const char *name, const char *english, size_t index, int line);
+	LangString(const char *name, const char *english, int index, int line);
 	void ReplaceDefinition(const char *name, const char *english, int line);
 	~LangString();
 	void FreeTranslation();
