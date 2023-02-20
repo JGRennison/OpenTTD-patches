@@ -37,6 +37,9 @@
 #	include <execinfo.h>
 #if defined(WITH_DL)
 #   include <dlfcn.h>
+#if defined(WITH_DL2)
+#	include <link.h>
+#endif
 #endif
 #if defined(WITH_DEMANGLE)
 #   include <cxxabi.h>
@@ -535,16 +538,23 @@ class CrashLogUnix : public CrashLog {
 		for (int i = 0; i < trace_size; i++) {
 #if defined(WITH_DL)
 			Dl_info info;
+#if defined(WITH_DL2)
+			struct link_map *dl_lm = nullptr;
+			int dladdr_result = dladdr1(trace[i], &info, (void **)&dl_lm, RTLD_DL_LINKMAP);
+#else
 			int dladdr_result = dladdr(trace[i], &info);
+#endif /* WITH_DL2 */
 			const char *func_name = info.dli_sname;
 			void *func_addr = info.dli_saddr;
 			const char *file_name = nullptr;
 			unsigned int line_num = 0;
 			const int ptr_str_size = (2 + sizeof(void*) * 2);
-			if (dladdr_result && info.dli_fname) {
+#if defined(WITH_DL2)
+			if (dladdr_result && info.dli_fname && dl_lm != nullptr) {
 				char *saved_buffer = buffer;
 				char addr_ptr_buffer[64];
-				seprintf(addr_ptr_buffer, lastof(addr_ptr_buffer), PRINTF_SIZEX, (char *)trace[i] - (char *)info.dli_fbase);
+				/* subtract one to get the line before the return address, i.e. the function call line */
+				seprintf(addr_ptr_buffer, lastof(addr_ptr_buffer), PRINTF_SIZEX, (char *)trace[i] - (char *)dl_lm->l_addr - 1);
 				const char *args[] = {
 					"addr2line",
 					"-e",
@@ -566,6 +576,7 @@ class CrashLogUnix : public CrashLog {
 				buffer = saved_buffer;
 				*buffer = 0;
 			}
+#endif /* WITH_DL2 */
 #if defined(WITH_BFD)
 			/* subtract one to get the line before the return address, i.e. the function call line */
 			sym_info_bfd bfd_info(reinterpret_cast<bfd_vma>(trace[i]) - reinterpret_cast<bfd_vma>(info.dli_fbase) - 1);
