@@ -170,6 +170,17 @@ macro(compile_flags)
             endif()
         endif()
 
+        if(OPTION_COMPRESS_DEBUG)
+            include(CheckCXXCompilerFlag)
+            check_cxx_compiler_flag("-gz" GZ_FOUND)
+
+            if(GZ_FOUND)
+                # Compress debug sections.
+                add_compile_options(-gz)
+                set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -gz")
+            endif()
+        endif(OPTION_COMPRESS_DEBUG)
+
         if (OPTION_NO_WARN_UNINIT)
             add_compile_options(-Wno-maybe-uninitialized -Wno-uninitialized)
         endif (OPTION_NO_WARN_UNINIT)
