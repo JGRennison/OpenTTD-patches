@@ -332,7 +332,9 @@ jobs:
 
         echo "::group::CMake"
         cmake ${GITHUB_WORKSPACE} \
-          -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DOPTION_COMPRESS_DEBUG=ON \
+          -DOPTION_LTO=ON \
           -DOPTION_PACKAGE_DEPENDENCIES=ON \
           # EOF
         echo "::endgroup::"
@@ -446,7 +448,9 @@ jobs:
 
         echo "::group::CMake"
         CXX=${{ matrix.compiler }} CC=${{ matrix.c_compiler }} cmake ${GITHUB_WORKSPACE} \
-          -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DOPTION_COMPRESS_DEBUG=ON \
+          -DOPTION_LTO=ON \
           -DCMAKE_INSTALL_PREFIX=/usr \
           # EOF
         echo "::endgroup::"
