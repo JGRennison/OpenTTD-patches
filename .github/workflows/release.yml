@@ -577,7 +577,7 @@ jobs:
           -DVCPKG_TARGET_TRIPLET=arm64-osx \
           -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake \
           -DHOST_BINARY_DIR=${GITHUB_WORKSPACE}/build-host \
-          -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+          -DCMAKE_BUILD_TYPE=Release \
           # EOF
         echo "::endgroup::"
 
@@ -597,7 +597,7 @@ jobs:
           -DVCPKG_TARGET_TRIPLET=x64-osx \
           -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake \
           -DHOST_BINARY_DIR=${GITHUB_WORKSPACE}/build-host \
-          -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+          -DCMAKE_BUILD_TYPE=Release \
           -DCPACK_BUNDLE_APPLE_CERT_APP=${{ secrets.APPLE_DEVELOPER_CERTIFICATE_ID }} \
           "-DCPACK_BUNDLE_APPLE_CODESIGN_PARAMETER=--deep -f --options runtime" \
           -DAPPLE_UNIVERSAL_PACKAGE=1 \
