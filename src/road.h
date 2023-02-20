@@ -19,6 +19,7 @@
 #include "newgrf.h"
 #include "economy_func.h"
 
+#include <array>
 #include <vector>
 
 enum RoadTramType : bool {
