@@ -181,6 +181,17 @@ macro(compile_flags)
             endif()
         endif(OPTION_COMPRESS_DEBUG)
 
+        if(OPTION_LTO)
+            include(CheckCXXCompilerFlag)
+            check_cxx_compiler_flag("-flto" LTO_FOUND)
+
+            if(LTO_FOUND)
+                # Enable LTO.
+                add_compile_options(-flto)
+                set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
+            endif()
+        endif(OPTION_LTO)
+
         if (OPTION_NO_WARN_UNINIT)
             add_compile_options(-Wno-maybe-uninitialized -Wno-uninitialized)
         endif (OPTION_NO_WARN_UNINIT)
