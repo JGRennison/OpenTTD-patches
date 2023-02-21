@@ -3,13 +3,36 @@ Monocypher
 
 Monocypher is an easy to use, easy to deploy, auditable crypto library
 written in portable C.  It approaches the size of [TweetNaCl][] and the
-speed of [Libsodium][].
+speed of [libsodium][].
 
 [Official site.](https://monocypher.org/)  
 [Official releases.](https://monocypher.org/download/)
 
-[Libsodium]: https://libsodium.org
+[libsodium]: https://libsodium.org
 [TweetNaCl]: https://tweetnacl.cr.yp.to/
+
+
+Features
+--------
+
+- [Authenticated Encryption][AEAD] with XChaCha20 and Poly1305
+  (RFC&nbsp;8439).
+- [Hashing][HASH] with BLAKE2b.
+- [Password Hashing][PWH] with Argon2i.
+- [Public Key Cryptography][PKC] with X25519 (key exchange).
+- [Public Key Signatures][PKS] with EdDSA (RFC 8032) and Ed25519.
+- [Steganography support][STEG] with Elligator&nbsp;2.
+- [OPRF and PAKE support][PAKE] with Elligator&nbsp;2 and scalar
+  inversion.
+
+[AEAD]: https://monocypher.org/manual/aead
+[HASH]: https://monocypher.org/manual/hash
+[PWH]:  https://monocypher.org/manual/argon2i
+[PKC]:  https://monocypher.org/manual/key_exchange
+[PKS]:  https://monocypher.org/manual/sign
+[STEG]: https://monocypher.org/manual/advanced/elligator
+[PAKE]: https://monocypher.org/manual/advanced/x25519_inverse
+
 
 Manual
 ------
@@ -123,14 +146,14 @@ Speed benchmark
 
 This will give you an idea how fast Monocypher is on your machine.  Make
 sure you run it on the target platform if performance is a concern.  If
-Monocypher is too slow, try Libsodium.  If you're not sure, you can
+Monocypher is too slow, try libsodium.  If you're not sure, you can
 always switch later.
 
 
 Note: the speed benchmark currently requires the POSIX
 `clock_gettime()` function.
 
-There are similar benchmarks for Libsodium, TweetNaCl, LibHydrogen,
+There are similar benchmarks for libsodium, TweetNaCl, LibHydrogen,
 c25519, and ed25519-donna (the portable, 32-bit version):
 
     $ make speed-sodium
@@ -169,10 +192,23 @@ is activated by compiling monocypher.c with the `-DBLAKE2_NO_UNROLLING`
 option.
 
 The `-DBLAKE2_NO_UNROLLING` option is a performance tweak.  By default,
-Monocypher unrolls the Blake2b inner loop, because doing so is over 25%
+Monocypher unrolls the BLAKE2b inner loop, because doing so is over 25%
 faster on modern processors.  Some embedded processors however, run the
 unrolled loop _slower_ (possibly because of the cost of fetching 5KB of
 additional code).  If you're using an embedded platform, try this
 option.  The binary will be about 5KB smaller, and in some cases faster.
+
+The `MONOCYPHER_CPP_NAMESPACE` preprocessor definition allows C++ users
+who compile Monocypher as C++ to wrap it in a namespace. When it is not
+defined (the default), we assume Monocypher is compiled as C, and an
+`extern "C"` declaration is added when we detect that the header is
+included in C++ code.
+
+The `change-prefix.sh` script can rename all functions by replacing
+"crypto_" by a chosen prefix, so you can avoid name clashes. For
+instance, the following command changes all instances of "crypto_" by
+"foobar_" (note the absence of the underscore):
+
+    ./change-prefix.sh foobar
 
 
