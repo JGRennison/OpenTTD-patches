@@ -846,6 +846,12 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeatu
 	if (adjust.variable == 0x1C && !state.seen_procedure_call) {
 		group->dsg_flags |= DSGF_REQUIRES_VAR1C;
 	}
+	if (adjust.variable == 0x11 || (adjust.variable == 0x7B && adjust.parameter == 0x11)) {
+		adjust.variable = 0x1A;
+		adjust.parameter = 0;
+		adjust.shift_num = 0;
+		adjust.and_mask = 0;
+	}
 
 	VarAction2AdjustInferenceFlags non_const_var_inference = VA2AIF_NONE;
 	int iteration = 32;
