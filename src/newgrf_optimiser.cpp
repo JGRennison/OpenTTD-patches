@@ -692,7 +692,7 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeatu
 		}
 	};
 
-	VarAction2AdjustInferenceFlags prev_inference = state.inference;
+	const VarAction2AdjustInferenceFlags prev_inference = state.inference;
 	state.inference = VA2AIF_NONE;
 
 	auto get_sign_bit = [&]() -> uint32 {
