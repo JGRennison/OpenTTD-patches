@@ -2,6 +2,22 @@
 
 * * *
 
+### v0.51.0 (2023-02-24)
+* Fix crash after timetabling change counter and release slot orders.
+* Fix widths of columns in the build vehicle window after map generation.
+* Fix scrollbars of text windows (readme, changelog, etc).
+* Run water flooding at constant speed at day lengths >= 4.
+* Add routing restriction conditional on whether PBS reservation passes through a tile.
+* Template-based train replacement:
+  * Allow naming templates.
+* NewGRF:
+  * Allow NewGRFs to set road/tram type road vehicle collision behaviour, and to disallow tunnels for a road/tram type.
+  * Allow more than 255 object and road stop types per GRF.
+  * Allow NewGRFs to set a height for road stops in the road stop build window.
+  * Add railtype/signal variable to get signal side.
+* Re-organise language/translation files.
+* Bump trunk base from commit 0b2567d882827f3a2c8b9e927c4d7f354e498a58 to commit 09f7f32b8d85ea378984908b6a29764d8576284e.
+
 ### v0.50.3 (2023-01-29)
 * Fix crash which could occur when loading savegames which were made when a template train was being edited.
 * Fix crash which could occur when reloading NewGRFs when the landscape info window is open.
