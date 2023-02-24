@@ -43,6 +43,9 @@ STR_VIEWPORT_TOWN_TINY_MEDIOCRE_RATING                          :{TINY_FONT}{ORA
 STR_VIEWPORT_TOWN_TINY_GOOD_RATING                              :{TINY_FONT}{YELLOW}{TOWN}
 STR_VIEWPORT_TOWN_TINY_EXCELLENT_RATING                         :{TINY_FONT}{GREEN}{TOWN}
 
+STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :Extremadamente lento
+STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :Moi lento
+
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
@@ -556,8 +559,6 @@ STR_CONFIG_SETTING_CITY_ZONE_4_MULT_HELPTEXT                    :Multiplicador p
 
 STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED                :A velocidade de crecemento das vilas depende do transporte das cargas transportadas: {STRING}
 STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED_HELPTEXT       :Porcentaxe da velocidade de crecemento da vila que depende da proporción de carga da vila transportada no último mes
-STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :Extremadamente lento
-STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :Moi lento
 
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION                   :Probabilidade de que as vilas arranxen as estradas aleatoriamente: {STRING}
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION_HELPTEXT          :A probabilidade de que as estradas das vilas sexa aleatoriamente reconstruídas (0 = desactivado, 1000 = máximo)

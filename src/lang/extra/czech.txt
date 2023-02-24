@@ -6,6 +6,9 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_32X                             :32x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_64X                             :64x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_128X                            :128x
 
+STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :extrémně pomalá
+STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :velmi pomalá
+
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
@@ -236,8 +239,6 @@ STR_CONFIG_SETTING_TREE_GROWTH_STATIC                           :nulová
 
 STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED                :Rychlost růstu města závisí na přepraveném nákladu: {STRING}
 STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED_HELPTEXT       :Procento rychlosti růstu města, které závisí na podílu přepraveného městského zboží minulý měsíc
-STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :extrémně pomalá
-STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :velmi pomalá
 
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION                   :Pravděpodobnost náhodné rekonstrukce silnice ve městě: {STRING}
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION_HELPTEXT          :Pravděpodobnost, že na městské silnici náhodně dojde k rekonstrukci (0 = vypnuto, 1000 = maximum)

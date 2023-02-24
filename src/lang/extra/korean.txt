@@ -43,6 +43,9 @@ STR_VIEWPORT_TOWN_TINY_MEDIOCRE_RATING                          :{TINY_FONT}{ORA
 STR_VIEWPORT_TOWN_TINY_GOOD_RATING                              :{TINY_FONT}{YELLOW}{TOWN}
 STR_VIEWPORT_TOWN_TINY_EXCELLENT_RATING                         :{TINY_FONT}{GREEN}{TOWN}
 
+STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :매우 느림
+STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :더 느림
+
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
@@ -556,8 +559,6 @@ STR_CONFIG_SETTING_CITY_ZONE_4_MULT_HELPTEXT                    :대도시의 4�
 
 STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED                :도시의 화물 수송량이 도시 성장 속도에 미치는 영향: {STRING}
 STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED_HELPTEXT       :지난 달의 도시 화물 수송량이 도시 성장 속도에 미치는 영향에 대한 백분율입니다.
-STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :매우 느림
-STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :더 느림
 
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION                   :지역 당국이 임의로 도로 보수공사를 시행할 확률: {STRING}
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION_HELPTEXT          :지역 당국이 임의로 도로 보수공사를 시행할 확률입니다. (0 = 하지 않음, 1000 = 최대)

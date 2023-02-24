@@ -43,6 +43,9 @@ STR_VIEWPORT_TOWN_TINY_MEDIOCRE_RATING                          :{TINY_FONT}{ORA
 STR_VIEWPORT_TOWN_TINY_GOOD_RATING                              :{TINY_FONT}{YELLOW}{TOWN}
 STR_VIEWPORT_TOWN_TINY_EXCELLENT_RATING                         :{TINY_FONT}{GREEN}{TOWN}
 
+STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :极其慢
+STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :非常慢
+
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :英里/小时
 STR_UNIT_NAME_VELOCITY_METRIC                                   :千米/小时
 STR_UNIT_NAME_VELOCITY_SI                                       :米/秒
@@ -552,8 +555,6 @@ STR_CONFIG_SETTING_CITY_ZONE_4_MULT_HELPTEXT                    :城市区域4�
 
 STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED                :城镇扩张速度取决于已运输的货物：{STRING}
 STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED_HELPTEXT       :城镇扩张速度的百分比取决于上个月已经运输到城镇的货物的比例。
-STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :极其慢
-STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :非常慢
 
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION                   :随机城镇道路的重建可能性：{STRING}
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION_HELPTEXT          :随机城镇道路的重建可能性（0 = 无, 1000 = 最大）

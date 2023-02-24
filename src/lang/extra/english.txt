@@ -75,6 +75,10 @@ STR_VIEWPORT_TOWN_TINY_GOOD_RATING                              :{TINY_FONT}{YEL
 ##after STR_VIEWPORT_TOWN_TINY_WHITE
 STR_VIEWPORT_TOWN_TINY_EXCELLENT_RATING                         :{TINY_FONT}{GREEN}{TOWN}
 
+##before STR_CONFIG_SETTING_TOWN_GROWTH_NONE
+STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :Extremely slow
+STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :Very slow
+
 ##end-after
 
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
@@ -593,8 +597,6 @@ STR_CONFIG_SETTING_CITY_ZONE_4_MULT_HELPTEXT                    :Multiplier for 
 
 STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED                :Town growth speed depends on transported cargo: {STRING2}
 STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED_HELPTEXT       :Percentage of town growth speed which depends on proportion of town cargo transported in the last month
-STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :Extremely slow
-STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :Very slow
 
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION                   :Probability of random town road re-construction: {STRING2}
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION_HELPTEXT          :The probability of town roads randomly being re-constructed (0 = off, 1000 = max)
