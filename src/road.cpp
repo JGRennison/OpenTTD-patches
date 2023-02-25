@@ -32,6 +32,7 @@
 #include "map_func.h"
 #include "core/backup_type.hpp"
 #include "core/random_func.hpp"
+#include "core/arena_alloc.hpp"
 
 #include <numeric>
 
@@ -935,7 +936,7 @@ struct TownNetwork
 	std::vector<TileIndex> towns;
 };
 
-void PostProcessNetworks(const std::vector<std::shared_ptr<TownNetwork>>& town_networks)
+void PostProcessNetworks(const std::vector<TownNetwork *>& town_networks)
 {
 	for (auto network : town_networks) {
 		if (network->towns.size() <= 3) {
@@ -988,9 +989,14 @@ void GeneratePublicRoads()
 
 	SetGeneratingWorldProgress(GWP_PUBLIC_ROADS, uint(towns.size() * 2));
 
+	UniformArenaAllocator<sizeof(TownNetwork), 1024> town_network_storage;
+	auto new_town_network = [&]() -> TownNetwork * {
+		return new (town_network_storage.Allocate()) TownNetwork();
+	};
+
 	// Create a list of networks which also contain a value indicating how many times we failed to connect to them.
-	std::vector<std::shared_ptr<TownNetwork>> networks;
-	std::unordered_map<TileIndex, std::shared_ptr<TownNetwork>> town_to_network_map;
+	std::vector<TownNetwork *> networks;
+	std::unordered_map<TileIndex, TownNetwork *> town_to_network_map;
 
 	std::sort(towns.begin(), towns.end(), [&](auto a, auto b) { return DistanceFromEdge(a) > DistanceFromEdge(b); });
 
@@ -1000,7 +1006,7 @@ void GeneratePublicRoads()
 	_public_road_type = GetTownRoadType(Town::GetByTile(main_town));
 	std::unordered_set<TileIndex> checked_towns;
 
-	auto main_network = std::make_shared<TownNetwork>();
+	TownNetwork *main_network = new_town_network();
 	main_network->towns.push_back(main_town);
 	main_network->failures_to_connect = 0;
 
@@ -1009,7 +1015,7 @@ void GeneratePublicRoads()
 
 	IncreaseGeneratingWorldProgress(GWP_PUBLIC_ROADS);
 
-	auto town_network_distance = [](const TileIndex town, const std::shared_ptr<TownNetwork> &network) {
+	auto town_network_distance = [](const TileIndex town, const TownNetwork *network) {
 		int32 best = INT32_MAX;
 		for (TileIndex t : network->towns) {
 			best = std::min<int32>(best, DistanceManhattan(t, town));
@@ -1060,12 +1066,12 @@ void GeneratePublicRoads()
 
 		if (!found_path) {
 			// Sort networks by failed connection attempts, so we try the most likely one first.
-			std::sort(networks.begin(), networks.end(), [&](const std::shared_ptr<TownNetwork> &a, const std::shared_ptr<TownNetwork> &b) {
+			std::sort(networks.begin(), networks.end(), [&](const TownNetwork *a, const TownNetwork *b) {
 				return town_network_distance(start_town, a) < town_network_distance(start_town, b);
 			});
 
-			auto can_reach = [&](const std::shared_ptr<TownNetwork> &network) {
-				if (reachable_from_town != town_to_network_map.end() && network.get() == reachable_from_town->second.get()) {
+			auto can_reach = [&](TownNetwork *network) {
+				if (reachable_from_town != town_to_network_map.end() && network == reachable_from_town->second) {
 					return false;
 				}
 
@@ -1099,7 +1105,7 @@ void GeneratePublicRoads()
 				return found_path;
 			};
 
-			std::vector<std::shared_ptr<TownNetwork>>::iterator networks_end;
+			std::vector<TownNetwork *>::iterator networks_end;
 
 			if (networks.size() > 5) {
 				networks_end = networks.begin() + 5;
@@ -1107,20 +1113,20 @@ void GeneratePublicRoads()
 				networks_end = networks.end();
 			}
 
-			std::vector<std::shared_ptr<TownNetwork>> sampled_networks;
+			std::vector<TownNetwork *> sampled_networks;
 			std::copy(networks.begin(), networks_end, std::back_inserter(sampled_networks));
-			std::sort(sampled_networks.begin(), sampled_networks.end(), [&](const std::shared_ptr<TownNetwork> &a, const std::shared_ptr<TownNetwork> &b) {
+			std::sort(sampled_networks.begin(), sampled_networks.end(), [&](const TownNetwork *a, const TownNetwork *b) {
 				return a->failures_to_connect < b->failures_to_connect;
 			});
 
 			if (!std::any_of(sampled_networks.begin(), sampled_networks.end(), can_reach)) {
 				// We failed so many networks, we are a separate network. Let future towns try to connect to us.
-				auto new_network = std::make_shared<TownNetwork>();
+				TownNetwork *new_network = new_town_network();
 				new_network->towns.push_back(start_town);
 				new_network->failures_to_connect = 0;
 
 				// We basically failed to connect to this many towns.
-				int towns_already_in_networks = std::accumulate(networks.begin(), networks.end(), 0, [&](int accumulator, const std::shared_ptr<TownNetwork> &network) {
+				int towns_already_in_networks = std::accumulate(networks.begin(), networks.end(), 0, [&](int accumulator, TownNetwork *network) {
 					return accumulator + static_cast<int>(network->towns.size());
 				});
 
