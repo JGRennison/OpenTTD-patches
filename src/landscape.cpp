@@ -431,6 +431,14 @@ void GetSlopePixelZOnEdge(Slope tileh, DiagDirection edge, int *z1, int *z2)
 	if (RemoveHalftileSlope(tileh) == corners[edge][3]) *z2 += TILE_HEIGHT; // z2 is highest corner of a steep slope
 }
 
+Slope GetFoundationSlopeFromTileSlope(TileIndex tile, Slope tileh, int *z)
+{
+	Foundation f = _tile_type_procs[GetTileType(tile)]->get_foundation_proc(tile, tileh);
+	uint z_inc = ApplyFoundationToSlope(f, &tileh);
+	if (z != nullptr) *z += z_inc;
+	return tileh;
+}
+
 /**
  * Get slope of a tile on top of a (possible) foundation
  * If a tile does not have a foundation, the function returns the same as GetTileSlope.
@@ -442,10 +450,7 @@ void GetSlopePixelZOnEdge(Slope tileh, DiagDirection edge, int *z1, int *z2)
 Slope GetFoundationSlope(TileIndex tile, int *z)
 {
 	Slope tileh = GetTileSlope(tile, z);
-	Foundation f = _tile_type_procs[GetTileType(tile)]->get_foundation_proc(tile, tileh);
-	uint z_inc = ApplyFoundationToSlope(f, &tileh);
-	if (z != nullptr) *z += z_inc;
-	return tileh;
+	return GetFoundationSlopeFromTileSlope(tile, tileh, z);
 }
 
 

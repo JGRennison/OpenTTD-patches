@@ -63,6 +63,7 @@ inline byte LowestTreePlacementSnowLine()
 }
 
 int GetSlopeZInCorner(Slope tileh, Corner corner);
+Slope GetFoundationSlopeFromTileSlope(TileIndex tile, Slope tileh, int *z = nullptr);
 Slope GetFoundationSlope(TileIndex tile, int *z = nullptr);
 
 uint GetPartialPixelZ(int x, int y, Slope corners);

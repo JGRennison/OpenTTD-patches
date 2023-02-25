@@ -551,8 +551,7 @@ static bool IsValidNeighbourOfPreviousTile(const TileIndex tile, const TileIndex
 
 	const auto forward_direction = DiagdirBetweenTiles(previous_tile, tile);
 
-	if (IsTileType(tile, MP_TUNNELBRIDGE))
-	{
+	if (IsTileType(tile, MP_TUNNELBRIDGE)) {
 		if (GetOtherTunnelBridgeEnd(tile) == previous_tile) return true;
 
 		const auto tunnel_direction = GetTunnelBridgeDirection(tile);
@@ -562,28 +561,69 @@ static bool IsValidNeighbourOfPreviousTile(const TileIndex tile, const TileIndex
 
 	if (!IsTileType(tile, MP_CLEAR) && !IsTileType(tile, MP_TREES) && !IsTileType(tile, MP_ROAD) && !IsCoastTile(tile)) return false;
 
-	const Slope slope = GetTileSlope(tile);
-	if (IsSteepSlope(slope)) return false;
+	struct slope_desc {
+		int tile_z;
+		Slope tile_slope;
+		int z;
+		Slope slope;
+	};
 
-	const Slope foundationSlope = GetFoundationSlope(tile);
+	auto get_slope_info = [](TileIndex t) -> slope_desc {
+		slope_desc desc;
 
-	/* Allow only trivial foundations (3 corners raised or 2 opposite corners raised -> flat) */
-	if (slope != foundationSlope && !HasBit(VALID_LEVEL_CROSSING_SLOPES, slope)) return false;
+		desc.tile_slope = GetTileSlope(t, &desc.tile_z);
 
-	if (IsInclinedSlope(slope)) {
-		const auto slope_direction = GetInclinedSlopeDirection(slope);
+		desc.z = desc.tile_z;
+		desc.slope = GetFoundationSlopeFromTileSlope(t, desc.tile_slope, &desc.z);
+
+		return desc;
+	};
+	const slope_desc sd = get_slope_info(tile);
+	if (IsSteepSlope(sd.slope)) return false;
+
+	const slope_desc previous_sd = get_slope_info(previous_tile);
+
+	auto is_non_trivial_foundation = [](const slope_desc &sd) -> bool {
+		return sd.slope != sd.tile_slope && !HasBit(VALID_LEVEL_CROSSING_SLOPES, sd.tile_slope);
+	};
+
+	/* Check non-trivial foundations (those which aren't 3 corners raised or 2 opposite corners raised -> flat) */
+	if (is_non_trivial_foundation(sd) || is_non_trivial_foundation(previous_sd)) {
+		static const Corner test_corners[16] = {
+			// DIAGDIR_NE
+			CORNER_N, CORNER_W,
+			CORNER_E, CORNER_S,
+
+			// DIAGDIR_SE
+			CORNER_S, CORNER_W,
+			CORNER_E, CORNER_N,
+
+			// DIAGDIR_SW
+			CORNER_S, CORNER_E,
+			CORNER_W, CORNER_N,
+
+			// DIAGDIR_NW
+			CORNER_N, CORNER_E,
+			CORNER_W, CORNER_S
+		};
+		const Corner *corners = test_corners + (forward_direction * 4);
+		return ((previous_sd.z + GetSlopeZInCorner(previous_sd.slope, corners[0])) == (sd.z + GetSlopeZInCorner(sd.slope, corners[1]))) &&
+				((previous_sd.z + GetSlopeZInCorner(previous_sd.slope, corners[2])) == (sd.z + GetSlopeZInCorner(sd.slope, corners[3])));
+	}
+
+	if (IsInclinedSlope(sd.slope)) {
+		const auto slope_direction = GetInclinedSlopeDirection(sd.slope);
 
 		if (slope_direction != forward_direction && ReverseDiagDir(slope_direction) != forward_direction) {
 			return false;
 		}
-	} else if (!HasBit(VALID_LEVEL_CROSSING_SLOPES, slope)) {
+	} else if (!HasBit(VALID_LEVEL_CROSSING_SLOPES, sd.slope)) {
 		return false;
 	} else {
 		/* Check whether the previous tile was an inclined slope, and whether we are leaving the previous tile from a valid direction */
-		if (slope != SLOPE_FLAT) {
-			const Slope previous_slope = GetTileSlope(previous_tile);
-			if (IsInclinedSlope(previous_slope)) {
-				const DiagDirection slope_direction = GetInclinedSlopeDirection(previous_slope);
+		if (sd.tile_slope != SLOPE_FLAT) {
+			if (IsInclinedSlope(previous_sd.slope)) {
+				const DiagDirection slope_direction = GetInclinedSlopeDirection(previous_sd.slope);
 				if (slope_direction != forward_direction && ReverseDiagDir(slope_direction) != forward_direction) return false;
 			}
 		}
