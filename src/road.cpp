@@ -338,8 +338,6 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 CommandCost CmdBuildTunnel(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text = nullptr);
 CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text = nullptr);
 
-static std::vector<TileIndex> _town_centers;
-static std::vector<TileIndex> _towns_visited_along_the_way;
 static RoadType _public_road_type;
 static const uint _public_road_hash_size = 8U; ///< The number of bits the hash for river finding should have.
 
@@ -762,14 +760,6 @@ static void PublicRoad_GetNeighbours(AyStar *aystar, OpenListNode *current)
 /** AyStar callback for checking whether we reached our destination. */
 static int32 PublicRoad_EndNodeCheck(const AyStar *aystar, const OpenListNode *current)
 {
-	// Mark towns visited along the way.
-	const auto search_result =
-		std::find(_town_centers.begin(), _town_centers.end(), current->path.node.tile);
-
-	if (search_result != _town_centers.end()) {
-		_towns_visited_along_the_way.push_back(current->path.node.tile);
-	}
-
 	return current->path.node.tile == static_cast<TileIndex>(reinterpret_cast<uintptr_t>(aystar->user_target)) ? AYSTAR_FOUND_END_NODE : AYSTAR_DONE;
 }
 
@@ -975,15 +965,11 @@ void GeneratePublicRoads()
 {
 	if (_settings_game.game_creation.build_public_roads == PRC_NONE) return;
 
-	_town_centers.clear();
-	_towns_visited_along_the_way.clear();
-
 	std::vector<TileIndex> towns;
 	towns.clear();
 	{
 		for (const Town *town : Town::Iterate()) {
 			towns.push_back(town->xy);
-			_town_centers.push_back(town->xy);
 		}
 	}
 
@@ -1031,8 +1017,6 @@ void GeneratePublicRoads()
 
 	for (auto start_town : towns) {
 		// Check if we can connect to any of the networks.
-		_towns_visited_along_the_way.clear();
-
 		checked_towns.clear();
 
 		auto reachable_from_town = town_to_network_map.find(start_town);
@@ -1051,11 +1035,6 @@ void GeneratePublicRoads()
 				if (reachable_network->failures_to_connect > 0) {
 					reachable_network->failures_to_connect--;
 				}
-
-				for (const TileIndex visited_town : _towns_visited_along_the_way) {
-					town_to_network_map[visited_town] = reachable_network;
-				}
-
 			} else {
 				town_to_network_map.erase(reachable_from_town);
 				reachable_network->failures_to_connect++;
@@ -1123,10 +1102,6 @@ void GeneratePublicRoads()
 				new_network->failures_to_connect += towns_already_in_networks;
 				town_to_network_map[start_town] = new_network;
 				networks.push_back(new_network);
-
-				for (const TileIndex visited_town : _towns_visited_along_the_way) {
-					town_to_network_map[visited_town] = new_network;
-				}
 			}
 		}
 
