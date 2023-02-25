@@ -954,7 +954,7 @@ void PostProcessNetworks(AyStar &finder, const std::vector<TownNetwork *> &town_
 		std::vector towns(network->towns);
 
 		for (auto town_a : network->towns) {
-			std::sort(towns.begin(), towns.end(), [&](const TileIndex& a, const TileIndex& b) { return DistanceManhattan(a, town_a) < DistanceManhattan(b, town_a); });
+			std::partial_sort(towns.begin(), towns.begin() + 4, towns.end(), [&](const TileIndex& a, const TileIndex& b) { return DistanceManhattan(a, town_a) < DistanceManhattan(b, town_a); });
 
 			TileIndex second_closest_town = towns[2];
 			TileIndex third_closest_town = towns[3];
@@ -1001,9 +1001,7 @@ void GeneratePublicRoads()
 	std::vector<TownNetwork *> networks;
 	std::unordered_map<TileIndex, TownNetwork *> town_to_network_map;
 
-	std::sort(towns.begin(), towns.end(), [&](auto a, auto b) { return DistanceFromEdge(a) > DistanceFromEdge(b); });
-
-	TileIndex main_town = *towns.begin();
+	TileIndex main_town = *std::max_element(towns.begin(), towns.end(), [&](TileIndex a, TileIndex b) { return DistanceFromEdge(a) < DistanceFromEdge(b); });
 	towns.erase(towns.begin());
 
 	_public_road_type = GetTownRoadType(Town::GetByTile(main_town));
@@ -1026,7 +1024,7 @@ void GeneratePublicRoads()
 		return best;
 	};
 
-	std::sort(towns.begin(), towns.end(), [&](auto a, auto b) { return DistanceManhattan(a, main_town) < DistanceManhattan(b, main_town); });
+	std::sort(towns.begin(), towns.end(), [&](TileIndex a, TileIndex b) { return DistanceManhattan(a, main_town) < DistanceManhattan(b, main_town); });
 
 	AyStar finder = PublicRoadAyStar();
 
@@ -1040,11 +1038,9 @@ void GeneratePublicRoads()
 		bool found_path = false;
 
 		if (reachable_from_town != town_to_network_map.end()) {
-			auto reachable_network = reachable_from_town->second;
+			TownNetwork *reachable_network = reachable_from_town->second;
 
-			std::sort(reachable_network->towns.begin(), reachable_network->towns.end(), [&](auto a, auto b) { return DistanceManhattan(start_town, a) < DistanceManhattan(start_town, b); });
-
-			const TileIndex end_town = *reachable_network->towns.begin();
+			const TileIndex end_town = *std::min_element(reachable_network->towns.begin(), reachable_network->towns.end(), [&](TileIndex a, TileIndex b) { return DistanceManhattan(start_town, a) < DistanceManhattan(start_town, b); });
 			checked_towns.emplace(end_town);
 
 			found_path = PublicRoadFindPath(finder, start_town, end_town);
@@ -1066,8 +1062,15 @@ void GeneratePublicRoads()
 		}
 
 		if (!found_path) {
-			// Sort networks by failed connection attempts, so we try the most likely one first.
-			std::sort(networks.begin(), networks.end(), [&](const TownNetwork *a, const TownNetwork *b) {
+			std::vector<TownNetwork *>::iterator networks_end;
+
+			if (networks.size() > 5) {
+				networks_end = networks.begin() + 5;
+			} else {
+				networks_end = networks.end();
+			}
+
+			std::partial_sort(networks.begin(), networks_end, networks.end(), [&](const TownNetwork *a, const TownNetwork *b) {
 				return town_network_distance(start_town, a) < town_network_distance(start_town, b);
 			});
 
@@ -1078,8 +1081,7 @@ void GeneratePublicRoads()
 
 				// Try to connect to the town in the network that is closest to us.
 				// If we can't connect to that one, we can't connect to any of them since they are all interconnected.
-				sort(network->towns.begin(), network->towns.end(), [&](auto a, auto b) { return DistanceManhattan(start_town, a) < DistanceManhattan(start_town, b); });
-				const TileIndex end_town = *network->towns.begin();
+				const TileIndex end_town = *std::min_element(network->towns.begin(), network->towns.end(), [&](TileIndex a, TileIndex b) { return DistanceManhattan(start_town, a) < DistanceManhattan(start_town, b); });
 
 				if (checked_towns.find(end_town) != checked_towns.end()) {
 					return false;
@@ -1102,21 +1104,11 @@ void GeneratePublicRoads()
 				return found_path;
 			};
 
-			std::vector<TownNetwork *>::iterator networks_end;
-
-			if (networks.size() > 5) {
-				networks_end = networks.begin() + 5;
-			} else {
-				networks_end = networks.end();
-			}
-
-			std::vector<TownNetwork *> sampled_networks;
-			std::copy(networks.begin(), networks_end, std::back_inserter(sampled_networks));
-			std::sort(sampled_networks.begin(), sampled_networks.end(), [&](const TownNetwork *a, const TownNetwork *b) {
+			std::sort(networks.begin(), networks_end, [&](const TownNetwork *a, const TownNetwork *b) {
 				return a->failures_to_connect < b->failures_to_connect;
 			});
 
-			if (!std::any_of(sampled_networks.begin(), sampled_networks.end(), can_reach)) {
+			if (!std::any_of(networks.begin(), networks_end, can_reach)) {
 				// We failed so many networks, we are a separate network. Let future towns try to connect to us.
 				TownNetwork *new_network = new_town_network();
 				new_network->towns.push_back(start_town);
