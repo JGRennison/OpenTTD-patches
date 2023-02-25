@@ -769,7 +769,7 @@ static int32 PublicRoad_EndNodeCheck(const AyStar *aystar, const OpenListNode *c
 		_towns_visited_along_the_way.push_back(current->path.node.tile);
 	}
 
-	return current->path.node.tile == *static_cast<TileIndex*>(aystar->user_target) ? AYSTAR_FOUND_END_NODE : AYSTAR_DONE;
+	return current->path.node.tile == static_cast<TileIndex>(reinterpret_cast<uintptr_t>(aystar->user_target)) ? AYSTAR_FOUND_END_NODE : AYSTAR_DONE;
 }
 
 /** AyStar callback when an route has been found. */
@@ -899,7 +899,7 @@ static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *
 /** AyStar callback for getting the estimated cost to the destination. */
 static int32 PublicRoad_CalculateH(AyStar *aystar, AyStarNode *current, OpenListNode *parent)
 {
-	return DistanceManhattan(*static_cast<TileIndex*>(aystar->user_target), current->tile) * BASE_COST_PER_TILE;
+	return DistanceManhattan(static_cast<TileIndex>(reinterpret_cast<uintptr_t>(aystar->user_target)), current->tile) * BASE_COST_PER_TILE;
 }
 
 bool FindPath(AyStar& finder, const TileIndex from, TileIndex to)
@@ -909,7 +909,7 @@ bool FindPath(AyStar& finder, const TileIndex from, TileIndex to)
 	finder.GetNeighbours = PublicRoad_GetNeighbours;
 	finder.EndNodeCheck = PublicRoad_EndNodeCheck;
 	finder.FoundEndNode = PublicRoad_FoundEndNode;
-	finder.user_target = &(to);
+	finder.user_target = reinterpret_cast<void *>(static_cast<uintptr_t>(to));
 	finder.max_search_nodes = 1 << 20;
 
 	finder.Init(1 << _public_road_hash_size);
