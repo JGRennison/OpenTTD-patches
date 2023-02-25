@@ -1440,6 +1440,7 @@ void PrintTypeLabels(char * buffer,  const char *last, uint32 label, const uint3
 
 class NIHRailType : public NIHelper {
 	bool IsInspectable(uint index) const override        { return true; }
+	bool ShowSpriteDumpButton(uint index) const override { return true; }
 	uint GetParent(uint index) const override            { return UINT32_MAX; }
 	const void *GetInstance(uint index)const override    { return nullptr; }
 	const void *GetSpec(uint index) const override       { return nullptr; }
@@ -1504,6 +1505,12 @@ class NIHRailType : public NIHelper {
 			seprintf(buffer, lastof(buffer), "Depot: reserved: %u", HasDepotReservation(index));
 			output.print(buffer);
 		}
+	}
+
+	/* virtual */ void SpriteDump(uint index, DumpSpriteGroupPrinter print) const override
+	{
+		extern void DumpRailTypeSpriteGroup(RailType rt, DumpSpriteGroupPrinter print);
+		DumpRailTypeSpriteGroup(GetTileRailType(index), std::move(print));
 	}
 };
 
@@ -1760,6 +1767,7 @@ static const NIVariable _niv_roadtypes[] = {
 
 class NIHRoadType : public NIHelper {
 	bool IsInspectable(uint index) const override        { return true; }
+	bool ShowSpriteDumpButton(uint index) const override { return true; }
 	uint GetParent(uint index) const override            { return UINT32_MAX; }
 	const void *GetInstance(uint index) const override   { return nullptr; }
 	const void *GetSpec(uint index) const override       { return nullptr; }
@@ -1808,6 +1816,17 @@ class NIHRoadType : public NIHelper {
 		};
 		writeInfo(RTT_ROAD);
 		writeInfo(RTT_TRAM);
+	}
+
+	/* virtual */ void SpriteDump(uint index, DumpSpriteGroupPrinter print) const override
+	{
+		for (RoadTramType rtt : { RTT_ROAD, RTT_TRAM }) {
+			RoadType rt = GetRoadType(index, rtt);
+			if (rt == INVALID_ROADTYPE) continue;
+
+			extern void DumpRoadTypeSpriteGroup(RoadType rt, DumpSpriteGroupPrinter print);
+			DumpRoadTypeSpriteGroup(rt, print);
+		}
 	}
 };
 

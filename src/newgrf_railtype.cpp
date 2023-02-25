@@ -236,3 +236,46 @@ uint8 GetReverseRailTypeTranslation(RailType railtype, const GRFFile *grffile)
 	/* If not found, return as invalid */
 	return 0xFF;
 }
+
+void DumpRailTypeSpriteGroup(RailType rt, DumpSpriteGroupPrinter print)
+{
+	char buffer[64];
+	const RailtypeInfo *rti = GetRailTypeInfo(rt);
+
+	static const char *sprite_group_names[] =  {
+		"RTSG_CURSORS",
+		"RTSG_OVERLAY",
+		"RTSG_GROUND",
+		"RTSG_TUNNEL",
+		"RTSG_WIRES",
+		"RTSG_PYLONS",
+		"RTSG_BRIDGE",
+		"RTSG_CROSSING",
+		"RTSG_DEPOT",
+		"RTSG_FENCES",
+		"RTSG_TUNNEL_PORTAL",
+		"RTSG_SIGNALS",
+		"RTSG_GROUND_COMPLETE"
+	};
+	static_assert(lengthof(sprite_group_names) == RTSG_END);
+
+	SpriteGroupDumper dumper(print);
+
+	bool non_first_group = false;
+	for (RailTypeSpriteGroup rtsg = (RailTypeSpriteGroup)0; rtsg < RTSG_END; rtsg = (RailTypeSpriteGroup)(rtsg + 1)) {
+		if (rti->group[rtsg] != nullptr) {
+			if (non_first_group) {
+				print(nullptr, DSGPO_PRINT, 0, "");
+			} else {
+				non_first_group = true;
+			}
+			char *b = buffer;
+			b = strecpy(b, sprite_group_names[rtsg], lastof(buffer));
+			if (rti->grffile[rtsg] != nullptr) {
+				b += seprintf(b, lastof(buffer), ", GRF: %08X", BSWAP32(rti->grffile[rtsg]->grfid));
+			}
+			print(nullptr, DSGPO_PRINT, 0, buffer);
+			dumper.DumpSpriteGroup(rti->group[rtsg], 0);
+		}
+	}
+}
