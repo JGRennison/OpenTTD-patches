@@ -46,6 +46,8 @@ STR_VIEWPORT_TOWN_TINY_EXCELLENT_RATING                         :{TINY_FONT}{GRE
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :매우 느림
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :더 느림
 
+STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :보조 키 창
+
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
@@ -70,8 +72,6 @@ STR_SETTINGS_MENU_MONEY_TEXT_EFFECTS                            :수입/지출 �
 STR_SETTINGS_MENU_SHOW_HIDDEN_SIGNS                             :감춰놓은 팻말과 이름 표시하기
 
 STR_MAP_MENU_PLAN_LIST                                          :계획 목록
-
-STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :보조 키 창
 
 STR_VEHICLE_TYPE_TRAINS                                         :열차
 STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :자동차/전차

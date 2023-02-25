@@ -79,6 +79,9 @@ STR_VIEWPORT_TOWN_TINY_EXCELLENT_RATING                         :{TINY_FONT}{GRE
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :Extremely slow
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :Very slow
 
+##after STR_ABOUT_MENU_SHOW_FRAMERATE
+STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Modifier key window
+
 ##end-after
 
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
@@ -105,8 +108,6 @@ STR_SETTINGS_MENU_MONEY_TEXT_EFFECTS                            :Income/cost tex
 STR_SETTINGS_MENU_SHOW_HIDDEN_SIGNS                             :Hidden signs and names displayed
 
 STR_MAP_MENU_PLAN_LIST                                          :Plan list
-
-STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Modifier key window
 
 STR_VEHICLE_TYPE_TRAINS                                         :Trains
 STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Road Vehicles

@@ -46,6 +46,8 @@ STR_VIEWPORT_TOWN_TINY_EXCELLENT_RATING                         :{TINY_FONT}{GRE
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :Extremadamente lento
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :Moi lento
 
+STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Fiestra da tecla modificadora
+
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
@@ -70,8 +72,6 @@ STR_SETTINGS_MENU_MONEY_TEXT_EFFECTS                            :Amosados textos
 STR_SETTINGS_MENU_SHOW_HIDDEN_SIGNS                             :Sinais ocultas e nomes mostrados
 
 STR_MAP_MENU_PLAN_LIST                                          :Lista de Plans
-
-STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Fiestra da tecla modificadora
 
 STR_VEHICLE_TYPE_TRAINS                                         :Trens
 STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Vehículos de estrada

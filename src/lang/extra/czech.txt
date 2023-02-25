@@ -9,6 +9,8 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_128X                            :128x
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :extrémně pomalá
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :velmi pomalá
 
+STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Okno modifikačních kláves
+
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
@@ -26,8 +28,6 @@ STR_SCENEDIT_TOOLBAR_PLACE_HOUSE                                :{BLACK}Umístit
 STR_SETTINGS_MENU_ZONING                                        :Zóny
 
 STR_MAP_MENU_PLAN_LIST                                          :Seznam plánů
-
-STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Okno modifikačních kláves
 
 STR_VEHICLE_TYPE_TRAINS                                         :Vlaky
 STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Silniční vozidla
