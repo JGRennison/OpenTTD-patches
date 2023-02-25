@@ -902,15 +902,21 @@ static int32 PublicRoad_CalculateH(AyStar *aystar, AyStarNode *current, OpenList
 	return DistanceManhattan(static_cast<TileIndex>(reinterpret_cast<uintptr_t>(aystar->user_target)), current->tile) * BASE_COST_PER_TILE;
 }
 
-bool FindPath(AyStar& finder, const TileIndex from, TileIndex to)
+static AyStar PublicRoadAyStar()
 {
+	AyStar finder;
 	finder.CalculateG = PublicRoad_CalculateG;
 	finder.CalculateH = PublicRoad_CalculateH;
 	finder.GetNeighbours = PublicRoad_GetNeighbours;
 	finder.EndNodeCheck = PublicRoad_EndNodeCheck;
 	finder.FoundEndNode = PublicRoad_FoundEndNode;
-	finder.user_target = reinterpret_cast<void *>(static_cast<uintptr_t>(to));
 	finder.max_search_nodes = 1 << 20;
+	return finder;
+}
+
+static bool PublicRoadFindPath(AyStar& finder, const TileIndex from, TileIndex to)
+{
+	finder.user_target = reinterpret_cast<void *>(static_cast<uintptr_t>(to));
 
 	finder.Init(1 << _public_road_hash_size);
 
@@ -927,6 +933,8 @@ bool FindPath(AyStar& finder, const TileIndex from, TileIndex to)
 
 	const bool found_path = (result == AYSTAR_FOUND_END_NODE);
 
+	finder.Clear();
+
 	return found_path;
 }
 
@@ -936,7 +944,7 @@ struct TownNetwork
 	std::vector<TileIndex> towns;
 };
 
-void PostProcessNetworks(const std::vector<TownNetwork *>& town_networks)
+void PostProcessNetworks(AyStar &finder, const std::vector<TownNetwork *> &town_networks)
 {
 	for (auto network : town_networks) {
 		if (network->towns.size() <= 3) {
@@ -948,16 +956,11 @@ void PostProcessNetworks(const std::vector<TownNetwork *>& town_networks)
 		for (auto town_a : network->towns) {
 			std::sort(towns.begin(), towns.end(), [&](const TileIndex& a, const TileIndex& b) { return DistanceManhattan(a, town_a) < DistanceManhattan(b, town_a); });
 
-			const auto second_closest_town = *(towns.begin() + 2);
-			const auto third_closest_town = *(towns.begin() + 3);
+			TileIndex second_closest_town = towns[2];
+			TileIndex third_closest_town = towns[3];
 
-			AyStar finder {};
-			{
-				FindPath(finder, town_a, second_closest_town);
-				finder.Clear();
-				FindPath(finder, town_a, third_closest_town);
-			}
-			finder.Free();
+			PublicRoadFindPath(finder, town_a, second_closest_town);
+			PublicRoadFindPath(finder, town_a, third_closest_town);
 
 			IncreaseGeneratingWorldProgress(GWP_PUBLIC_ROADS);
 		}
@@ -1025,6 +1028,8 @@ void GeneratePublicRoads()
 
 	std::sort(towns.begin(), towns.end(), [&](auto a, auto b) { return DistanceManhattan(a, main_town) < DistanceManhattan(b, main_town); });
 
+	AyStar finder = PublicRoadAyStar();
+
 	for (auto start_town : towns) {
 		// Check if we can connect to any of the networks.
 		_towns_visited_along_the_way.clear();
@@ -1042,11 +1047,7 @@ void GeneratePublicRoads()
 			const TileIndex end_town = *reachable_network->towns.begin();
 			checked_towns.emplace(end_town);
 
-			AyStar finder {};
-			{
-				found_path = FindPath(finder, start_town, end_town);
-			}
-			finder.Free();
+			found_path = PublicRoadFindPath(finder, start_town, end_town);
 
 			if (found_path) {
 				reachable_network->towns.push_back(start_town);
@@ -1086,11 +1087,7 @@ void GeneratePublicRoads()
 
 				checked_towns.emplace(end_town);
 
-				AyStar finder {};
-				{
-					found_path = FindPath(finder, start_town, end_town);
-				}
-				finder.Free();
+				found_path = PublicRoadFindPath(finder, start_town, end_town);
 
 				if (found_path) {
 					network->towns.push_back(start_town);
@@ -1143,7 +1140,7 @@ void GeneratePublicRoads()
 		IncreaseGeneratingWorldProgress(GWP_PUBLIC_ROADS);
 	}
 
-	PostProcessNetworks(networks);
+	PostProcessNetworks(finder, networks);
 }
 
 /* ========================================================================= */
