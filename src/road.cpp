@@ -33,6 +33,7 @@
 #include "core/backup_type.hpp"
 #include "core/random_func.hpp"
 #include "core/arena_alloc.hpp"
+#include "3rdparty/robin_hood/robin_hood.h"
 
 #include <numeric>
 
@@ -999,13 +1000,13 @@ void GeneratePublicRoads()
 
 	// Create a list of networks which also contain a value indicating how many times we failed to connect to them.
 	std::vector<TownNetwork *> networks;
-	std::unordered_map<TileIndex, TownNetwork *> town_to_network_map;
+	robin_hood::unordered_flat_map<TileIndex, TownNetwork *> town_to_network_map;
 
 	TileIndex main_town = *std::max_element(towns.begin(), towns.end(), [&](TileIndex a, TileIndex b) { return DistanceFromEdge(a) < DistanceFromEdge(b); });
 	towns.erase(towns.begin());
 
 	_public_road_type = GetTownRoadType(Town::GetByTile(main_town));
-	std::unordered_set<TileIndex> checked_towns;
+	robin_hood::unordered_flat_set<TileIndex> checked_towns;
 
 	TownNetwork *main_network = new_town_network();
 	main_network->towns.push_back(main_town);
@@ -1041,7 +1042,7 @@ void GeneratePublicRoads()
 			TownNetwork *reachable_network = reachable_from_town->second;
 
 			const TileIndex end_town = *std::min_element(reachable_network->towns.begin(), reachable_network->towns.end(), [&](TileIndex a, TileIndex b) { return DistanceManhattan(start_town, a) < DistanceManhattan(start_town, b); });
-			checked_towns.emplace(end_town);
+			checked_towns.insert(end_town);
 
 			found_path = PublicRoadFindPath(finder, start_town, end_town);
 
@@ -1087,7 +1088,7 @@ void GeneratePublicRoads()
 					return false;
 				}
 
-				checked_towns.emplace(end_town);
+				checked_towns.insert(end_town);
 
 				found_path = PublicRoadFindPath(finder, start_town, end_town);
 
