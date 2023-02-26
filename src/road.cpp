@@ -1045,10 +1045,10 @@ void GeneratePublicRoads()
 
 	IncreaseGeneratingWorldProgress(GWP_PUBLIC_ROADS);
 
-	auto town_network_distance = [](const TileIndex town, const TownNetwork *network) {
-		int32 best = INT32_MAX;
+	auto town_network_distance = [](const TileIndex town, const TownNetwork *network) -> uint {
+		uint best = UINT_MAX;
 		for (TileIndex t : network->towns) {
-			best = std::min<int32>(best, DistanceManhattan(t, town));
+			best = std::min<uint>(best, DistanceManhattan(t, town));
 		}
 		return best;
 	};
