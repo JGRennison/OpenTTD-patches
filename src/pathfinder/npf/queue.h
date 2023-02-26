@@ -43,7 +43,7 @@ struct BinaryHeap {
 	 */
 	inline BinaryHeapNode &GetElement(uint i)
 	{
-		assert(i > 0);
+		dbg_assert(i > 0);
 		return this->elements[(i - 1) >> BINARY_HEAP_BLOCKSIZE_BITS][(i - 1) & BINARY_HEAP_BLOCKSIZE_MASK];
 	}
 

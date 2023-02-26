@@ -84,11 +84,11 @@ void BinaryHeap::Free(bool free_values)
 bool BinaryHeap::Push(void *item, int priority)
 {
 	if (this->size == this->max_size) return false;
-	assert(this->size < this->max_size);
+	dbg_assert(this->size < this->max_size);
 
 	if (this->elements[this->size >> BINARY_HEAP_BLOCKSIZE_BITS] == nullptr) {
 		/* The currently allocated blocks are full, allocate a new one */
-		assert((this->size & BINARY_HEAP_BLOCKSIZE_MASK) == 0);
+		dbg_assert((this->size & BINARY_HEAP_BLOCKSIZE_MASK) == 0);
 		this->elements[this->size >> BINARY_HEAP_BLOCKSIZE_BITS] = MallocT<BinaryHeapNode>(BINARY_HEAP_BLOCKSIZE);
 		this->blocks++;
 	}
