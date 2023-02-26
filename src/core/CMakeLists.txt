@@ -21,6 +21,7 @@ add_files(
     mem_func.hpp
     multimap.hpp
     overflowsafe_type.hpp
+    pod_pool.hpp
     pool_func.cpp
     pool_func.hpp
     pool_type.hpp
