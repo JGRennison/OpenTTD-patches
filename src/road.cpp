@@ -576,6 +576,12 @@ static bool IsValidNeighbourOfPreviousTile(const TileIndex tile, const TileIndex
 		desc.z = desc.tile_z;
 		desc.slope = GetFoundationSlopeFromTileSlope(t, desc.tile_slope, &desc.z);
 
+		if (desc.slope == desc.tile_slope && desc.slope != SLOPE_FLAT && HasBit(VALID_LEVEL_CROSSING_SLOPES, desc.slope)) {
+			/* Synthesise a trivial flattening foundation */
+			desc.slope = SLOPE_FLAT;
+			desc.z++;
+		}
+
 		return desc;
 	};
 	const slope_desc sd = get_slope_info(tile);
