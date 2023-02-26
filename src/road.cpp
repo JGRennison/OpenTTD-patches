@@ -941,13 +941,15 @@ static AyStar PublicRoadAyStar()
 	finder.GetNeighbours = PublicRoad_GetNeighbours;
 	finder.EndNodeCheck = PublicRoad_EndNodeCheck;
 	finder.FoundEndNode = PublicRoad_FoundEndNode;
-	finder.max_search_nodes = 1 << 20;
 	return finder;
 }
 
 static bool PublicRoadFindPath(AyStar& finder, const TileIndex from, TileIndex to)
 {
 	finder.user_target = reinterpret_cast<void *>(static_cast<uintptr_t>(to));
+
+	uint distance = DistanceManhattan(from, to);
+	finder.max_search_nodes = Clamp<uint32>(distance * distance * 64, 1 << 10, 1 << 20);
 
 	finder.Init(1 << _public_road_hash_size);
 
