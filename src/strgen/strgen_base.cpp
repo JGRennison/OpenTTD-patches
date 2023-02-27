@@ -589,7 +589,7 @@ static const CmdStruct *ParseCommandString(const char **str, char *param, int *a
  * @param translation Are we reading a translation?
  */
 StringReader::StringReader(StringData &data, const char *file, bool master, bool translation) :
-		data(data), file(stredup(file)), master(master), translation(translation)
+		data(data), file(file), master(master), translation(translation)
 {
 }
 
