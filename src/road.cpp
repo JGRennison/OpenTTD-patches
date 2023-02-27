@@ -32,7 +32,6 @@
 #include "map_func.h"
 #include "core/backup_type.hpp"
 #include "core/random_func.hpp"
-#include "core/arena_alloc.hpp"
 #include "3rdparty/robin_hood/robin_hood.h"
 
 #include <numeric>
@@ -941,21 +940,22 @@ static int32 PublicRoad_CalculateH(AyStar *aystar, AyStarNode *current, OpenList
 
 static AyStar PublicRoadAyStar()
 {
-	AyStar finder;
+	AyStar finder {};
 	finder.CalculateG = PublicRoad_CalculateG;
 	finder.CalculateH = PublicRoad_CalculateH;
 	finder.GetNeighbours = PublicRoad_GetNeighbours;
 	finder.EndNodeCheck = PublicRoad_EndNodeCheck;
 	finder.FoundEndNode = PublicRoad_FoundEndNode;
 	finder.max_search_nodes = 1 << 20;
+
+	finder.Init(1 << _public_road_hash_size);
+
 	return finder;
 }
 
 static bool PublicRoadFindPath(AyStar& finder, const TileIndex from, TileIndex to)
 {
 	finder.user_target = reinterpret_cast<void *>(static_cast<uintptr_t>(to));
-
-	finder.Init(1 << _public_road_hash_size);
 
 	AyStarNode start {};
 	start.tile = from;
@@ -981,9 +981,9 @@ struct TownNetwork
 	std::vector<TileIndex> towns;
 };
 
-void PostProcessNetworks(AyStar &finder, const std::vector<TownNetwork *> &town_networks)
+void PostProcessNetworks(AyStar &finder, const std::vector<std::unique_ptr<TownNetwork>> &town_networks)
 {
-	for (auto network : town_networks) {
+	for (const auto &network : town_networks) {
 		if (network->towns.size() <= 3) {
 			continue;
 		}
@@ -1025,13 +1025,9 @@ void GeneratePublicRoads()
 
 	SetGeneratingWorldProgress(GWP_PUBLIC_ROADS, uint(towns.size() * 2));
 
-	UniformArenaAllocator<sizeof(TownNetwork), 1024> town_network_storage;
-	auto new_town_network = [&]() -> TownNetwork * {
-		return new (town_network_storage.Allocate()) TownNetwork();
-	};
 
 	// Create a list of networks which also contain a value indicating how many times we failed to connect to them.
-	std::vector<TownNetwork *> networks;
+	std::vector<std::unique_ptr<TownNetwork>> networks;
 	robin_hood::unordered_flat_map<TileIndex, TownNetwork *> town_to_network_map;
 
 	TileIndex main_town = *std::max_element(towns.begin(), towns.end(), [&](TileIndex a, TileIndex b) { return DistanceFromEdge(a) < DistanceFromEdge(b); });
@@ -1040,11 +1036,13 @@ void GeneratePublicRoads()
 	_public_road_type = GetTownRoadType(Town::GetByTile(main_town));
 	robin_hood::unordered_flat_set<TileIndex> checked_towns;
 
-	TownNetwork *main_network = new_town_network();
+	std::unique_ptr<TownNetwork> new_main_network = std::make_unique<TownNetwork>();
+	TownNetwork *main_network = new_main_network.get();
+	networks.push_back(std::move(new_main_network));
+
 	main_network->towns.push_back(main_town);
 	main_network->failures_to_connect = 0;
 
-	networks.push_back(main_network);
 	town_to_network_map[main_town] = main_network;
 
 	IncreaseGeneratingWorldProgress(GWP_PUBLIC_ROADS);
@@ -1088,7 +1086,7 @@ void GeneratePublicRoads()
 		}
 
 		if (!found_path) {
-			std::vector<TownNetwork *>::iterator networks_end;
+			std::vector<std::unique_ptr<TownNetwork>>::iterator networks_end;
 
 			if (networks.size() > 5) {
 				networks_end = networks.begin() + 5;
@@ -1096,12 +1094,12 @@ void GeneratePublicRoads()
 				networks_end = networks.end();
 			}
 
-			std::partial_sort(networks.begin(), networks_end, networks.end(), [&](const TownNetwork *a, const TownNetwork *b) {
-				return town_network_distance(start_town, a) < town_network_distance(start_town, b);
+			std::partial_sort(networks.begin(), networks_end, networks.end(), [&](const std::unique_ptr<TownNetwork> &a, const std::unique_ptr<TownNetwork> &b) {
+				return town_network_distance(start_town, a.get()) < town_network_distance(start_town, b.get());
 			});
 
-			auto can_reach = [&](TownNetwork *network) {
-				if (reachable_from_town != town_to_network_map.end() && network == reachable_from_town->second) {
+			auto can_reach = [&](const std::unique_ptr<TownNetwork> &network) {
+				if (reachable_from_town != town_to_network_map.end() && network.get() == reachable_from_town->second) {
 					return false;
 				}
 
@@ -1122,7 +1120,7 @@ void GeneratePublicRoads()
 					if (network->failures_to_connect > 0) {
 						network->failures_to_connect--;
 					}
-					town_to_network_map[start_town] = network;
+					town_to_network_map[start_town] = network.get();
 				} else {
 					network->failures_to_connect++;
 				}
@@ -1130,24 +1128,24 @@ void GeneratePublicRoads()
 				return found_path;
 			};
 
-			std::sort(networks.begin(), networks_end, [&](const TownNetwork *a, const TownNetwork *b) {
+			std::sort(networks.begin(), networks_end, [&](const std::unique_ptr<TownNetwork> &a, const std::unique_ptr<TownNetwork> &b) {
 				return a->failures_to_connect < b->failures_to_connect;
 			});
 
 			if (!std::any_of(networks.begin(), networks_end, can_reach)) {
 				// We failed so many networks, we are a separate network. Let future towns try to connect to us.
-				TownNetwork *new_network = new_town_network();
+				std::unique_ptr<TownNetwork> new_network = std::make_unique<TownNetwork>();
 				new_network->towns.push_back(start_town);
 				new_network->failures_to_connect = 0;
 
 				// We basically failed to connect to this many towns.
-				int towns_already_in_networks = std::accumulate(networks.begin(), networks.end(), 0, [&](int accumulator, TownNetwork *network) {
+				int towns_already_in_networks = std::accumulate(networks.begin(), networks.end(), 0, [&](int accumulator, const std::unique_ptr<TownNetwork> &network) {
 					return accumulator + static_cast<int>(network->towns.size());
 				});
 
 				new_network->failures_to_connect += towns_already_in_networks;
-				town_to_network_map[start_town] = new_network;
-				networks.push_back(new_network);
+				town_to_network_map[start_town] = new_network.get();
+				networks.push_back(std::move(new_network));
 			}
 		}
 
@@ -1155,6 +1153,8 @@ void GeneratePublicRoads()
 	}
 
 	PostProcessNetworks(finder, networks);
+
+	finder.Free();
 }
 
 /* ========================================================================= */
