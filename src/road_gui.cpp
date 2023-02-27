@@ -1961,13 +1961,19 @@ struct BuildRoadWaypointWindow : PickerWindowBase {
 			case WID_BROW_WAYPOINT: {
 				uint type = GB(widget, 16, 16);
 				const RoadStopSpec *spec = RoadStopClass::Get(ROADSTOP_CLASS_WAYP)->GetSpec(type);
-				if (spec == nullptr) {
-					StationPickerDrawSprite(r.left + 1 + ScaleGUITrad(31), r.bottom - ScaleGUITrad(31), STATION_ROADWAYPOINT, INVALID_RAILTYPE, _cur_roadtype, 4);
-				} else {
-					DrawRoadStopTile(r.left + 1 + ScaleGUITrad(31), r.bottom - ScaleGUITrad(31), _cur_roadtype, spec, STATION_ROADWAYPOINT, 4);
-				}
-				if (!IsRoadStopAvailable(spec, STATION_ROADWAYPOINT)) {
-					GfxFillRect(r.left + 1, r.top + 1, r.right - 1, r.bottom - 1, PC_BLACK, FILLRECT_CHECKER);
+				DrawPixelInfo tmp_dpi;
+				if (FillDrawPixelInfo(&tmp_dpi, r.left, r.top, r.Width(), r.Height())) {
+					AutoRestoreBackup dpi_backup(_cur_dpi, &tmp_dpi);
+					int x = (r.Width()  - ScaleSpriteTrad(64)) / 2 + ScaleSpriteTrad(31);
+					int y = (r.Height() + ScaleSpriteTrad(48)) / 2 - ScaleSpriteTrad(31);
+					if (spec == nullptr) {
+						StationPickerDrawSprite(x, y, STATION_ROADWAYPOINT, INVALID_RAILTYPE, _cur_roadtype, 4);
+					} else {
+						DrawRoadStopTile(x, y, _cur_roadtype, spec, STATION_ROADWAYPOINT, 4);
+					}
+					if (!IsRoadStopAvailable(spec, STATION_ROADWAYPOINT)) {
+						GfxFillRect(1, 1, r.Width() - 1, r.Height() - 1, PC_BLACK, FILLRECT_CHECKER);
+					}
 				}
 			}
 		}
