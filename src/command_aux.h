@@ -77,11 +77,11 @@ struct CommandAuxiliarySerialisable : public CommandAuxiliaryBase {
 
 template <typename T>
 struct CommandAuxData {
-	private:
+private:
 	opt::optional<T> store;
 	const T *data = nullptr;
 
-	public:
+public:
 	inline CommandCost Load(const CommandAuxiliaryBase *base)
 	{
 		if (base == nullptr) return CMD_ERROR;

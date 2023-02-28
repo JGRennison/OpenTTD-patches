@@ -33,7 +33,7 @@ class PodPool {
 		used_blocks.push_back(current_block);
 	}
 
-	public:
+public:
 	PodPool() = default;
 	PodPool(const PodPool &other) = delete;
 	PodPool& operator=(const PodPool &other) = delete;

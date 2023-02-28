@@ -1099,7 +1099,7 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 	void Clear();
 	void UpdateSignals();
 
-	private:
+private:
 	void DeIndex(VehicleID id);
 };
 

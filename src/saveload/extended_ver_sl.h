@@ -170,14 +170,14 @@ enum SlXvFeatureTestOperator {
 struct SlXvFeatureTest {
 	using TestFunctorPtr = bool (*)(uint16, bool, const std::array<uint16, XSLFI_SIZE> &);  ///< Return true if feature present, first parameter is standard savegame version, second is whether standard savegame version is within bounds
 
-	private:
+private:
 	uint16 min_version;
 	uint16 max_version;
 	SlXvFeatureIndex feature;
 	SlXvFeatureTestOperator op;
 	TestFunctorPtr functor = nullptr;
 
-	public:
+public:
 	SlXvFeatureTest()
 			: min_version(0), max_version(0), feature(XSLFI_NULL), op(XSLFTO_OR) { }
 

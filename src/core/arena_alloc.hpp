@@ -33,7 +33,7 @@ class UniformArenaAllocator {
 		used_blocks.push_back(current_block);
 	}
 
-	public:
+public:
 	UniformArenaAllocator() = default;
 	UniformArenaAllocator(const UniformArenaAllocator &other) = delete;
 	UniformArenaAllocator& operator=(const UniformArenaAllocator &other) = delete;
