@@ -514,6 +514,8 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 		if ((link.Usage() > 0 || (_ctrl_pressed && link.capacity > 0)) &&
 				pt.x + 2 >= std::min(pta.x, ptb.x) &&
 				pt.x - 2 <= std::max(pta.x, ptb.x) &&
+				pt.y + 2 >= std::min(pta.y, ptb.y) &&
+				pt.y - 2 <= std::max(pta.y, ptb.y) &&
 				check_distance()) {
 
 			static char buf[1024];
