@@ -2,6 +2,13 @@
 
 * * *
 
+### v0.51.1 (2023-02-28)
+* Fix crash when looking at the town growth speed setting in the settings window.
+* Fix wrong texts in the about/question mark menu in the main toolbar.
+* Fix template based train replacement template edit window not being refreshed after flipping wagons in multiplayer.
+* Fix oversized road waypoints overlapping in the build window.
+* Improve speed/performance of generating public roads.
+
 ### v0.51.0 (2023-02-24)
 * Fix crash after timetabling change counter and release slot orders.
 * Fix widths of columns in the build vehicle window after map generation.
