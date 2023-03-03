@@ -64,6 +64,7 @@ extern bool _save_DBGC_data;
 extern std::string _loadgame_DBGC_data;
 
 void CDECL debug(const char *dbg, const char *format, ...) WARN_FORMAT(2, 3);
+void debug_print(const char *dbg, const char *buf);
 
 char *DumpDebugFacilityNames(char *buf, char *last);
 void SetDebugString(const char *s, void (*error_func)(const char *));
