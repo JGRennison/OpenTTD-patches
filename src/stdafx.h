@@ -506,6 +506,9 @@ typedef uint32 unaligned_uint32;
 typedef uint64 unaligned_uint64;
 #endif /* __GNUC__ || __clang__ */
 
+/* For the FMT library we only want to use the headers, not link to some library. */
+#define FMT_HEADER_ONLY
+
 void NORETURN CDECL usererror(const char *str, ...) WARN_FORMAT(1, 2);
 void NORETURN CDECL error(const char *str, ...) WARN_FORMAT(1, 2);
 void NORETURN CDECL assert_msg_error(int line, const char *file, const char *expr, const char *extra, const char *str, ...) WARN_FORMAT(5, 6);
