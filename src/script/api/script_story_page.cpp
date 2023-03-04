@@ -51,7 +51,7 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 		c,
 		0,
 		CMD_CREATE_STORY_PAGE,
-		title != nullptr? title->GetEncodedText() : nullptr,
+		title != nullptr ? title->GetEncodedText().c_str() : "",
 		&ScriptInstance::DoCommandReturnStoryPageID)) return STORY_PAGE_INVALID;
 
 	/* In case of test-mode, we return StoryPageID 0 */
@@ -66,7 +66,12 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 
 	EnforcePrecondition(STORY_PAGE_ELEMENT_INVALID, ScriptObject::GetCompany() == OWNER_DEITY);
 	EnforcePrecondition(STORY_PAGE_ELEMENT_INVALID, IsValidStoryPage(story_page_id));
-	EnforcePrecondition(STORY_PAGE_ELEMENT_INVALID, !StoryPageElementTypeRequiresText(btype) || (text != nullptr && !StrEmpty(text->GetEncodedText())));
+	std::string encoded_text;
+	if (StoryPageElementTypeRequiresText(btype)) {
+		EnforcePrecondition(STORY_PAGE_ELEMENT_INVALID, text != nullptr);
+		encoded_text = text->GetEncodedText();
+		EnforcePreconditionEncodedText(STORY_PAGE_ELEMENT_INVALID, encoded_text);
+	}
 	EnforcePrecondition(STORY_PAGE_ELEMENT_INVALID, type != SPET_LOCATION || ::IsValidTile(reference));
 	EnforcePrecondition(STORY_PAGE_ELEMENT_INVALID, type != SPET_GOAL || ScriptGoal::IsValidGoal((ScriptGoal::GoalID)reference));
 	EnforcePrecondition(STORY_PAGE_ELEMENT_INVALID, type != SPET_GOAL || !(StoryPage::Get(story_page_id)->company == INVALID_COMPANY && Goal::Get(reference)->company != INVALID_COMPANY));
@@ -93,7 +98,7 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 			story_page_id + (type << 16),
 			refid,
 			CMD_CREATE_STORY_PAGE_ELEMENT,
-			StoryPageElementTypeRequiresText(btype) ? text->GetEncodedText() : nullptr,
+			encoded_text,
 			&ScriptInstance::DoCommandReturnStoryPageElementID)) return STORY_PAGE_ELEMENT_INVALID;
 
 	/* In case of test-mode, we return StoryPageElementID 0 */
@@ -111,7 +116,12 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 	StoryPage *p = StoryPage::Get(pe->page);
 	::StoryPageElementType type = pe->type;
 
-	EnforcePrecondition(false, !StoryPageElementTypeRequiresText(type) || (text != nullptr && !StrEmpty(text->GetEncodedText())));
+	std::string encoded_text;
+	if (StoryPageElementTypeRequiresText(type)) {
+		EnforcePrecondition(false, text != nullptr);
+		encoded_text = text->GetEncodedText();
+		EnforcePreconditionEncodedText(false, encoded_text);
+	}
 	EnforcePrecondition(false, type != ::SPET_LOCATION || ::IsValidTile(reference));
 	EnforcePrecondition(false, type != ::SPET_GOAL || ScriptGoal::IsValidGoal((ScriptGoal::GoalID)reference));
 	EnforcePrecondition(false, type != ::SPET_GOAL || !(p->company == INVALID_COMPANY && Goal::Get(reference)->company != INVALID_COMPANY));
@@ -138,7 +148,7 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 			story_page_element_id,
 			refid,
 			CMD_UPDATE_STORY_PAGE_ELEMENT,
-			StoryPageElementTypeRequiresText(type) ? text->GetEncodedText() : nullptr);
+			encoded_text);
 }
 
 /* static */ uint32 ScriptStoryPage::GetPageSortValue(StoryPageID story_page_id)
@@ -162,7 +172,7 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 	EnforcePrecondition(false, IsValidStoryPage(story_page_id));
 	EnforcePrecondition(false, ScriptObject::GetCompany() == OWNER_DEITY);
 
-	return ScriptObject::DoCommand(0, story_page_id, 0, CMD_SET_STORY_PAGE_TITLE, title != nullptr? title->GetEncodedText() : nullptr);
+	return ScriptObject::DoCommand(0, story_page_id, 0, CMD_SET_STORY_PAGE_TITLE, title != nullptr ? title->GetEncodedText().c_str() : "");
 }
 
 /* static */ ScriptCompany::CompanyID ScriptStoryPage::GetCompany(StoryPageID story_page_id)

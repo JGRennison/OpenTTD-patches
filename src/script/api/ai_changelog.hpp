@@ -19,6 +19,10 @@
  *
  * API additions:
  * \li AITown::ROAD_LAYOUT_RANDOM
+ * \li AIVehicle::IsPrimaryVehicle
+ *
+ * API removals:
+ * \li AIError::ERR_PRECONDITION_TOO_MANY_PARAMETERS, that error is never returned anymore.
  *
  * \b 13.0
  *

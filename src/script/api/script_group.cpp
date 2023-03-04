@@ -54,7 +54,7 @@
 
 	EnforcePrecondition(false, IsValidGroup(group_id));
 	EnforcePrecondition(false, name != nullptr);
-	const char *text = name->GetDecodedText();
+	const std::string &text = name->GetDecodedText();
 	EnforcePreconditionEncodedText(false, text);
 	EnforcePreconditionCustomError(false, ::Utf8StringLength(text) < MAX_LENGTH_GROUP_NAME_CHARS, ScriptError::ERR_PRECONDITION_STRING_TOO_LONG);
 
@@ -118,7 +118,7 @@
 /* static */ bool ScriptGroup::MoveVehicle(GroupID group_id, VehicleID vehicle_id)
 {
 	EnforcePrecondition(false, IsValidGroup(group_id) || group_id == GROUP_DEFAULT);
-	EnforcePrecondition(false, ScriptVehicle::IsValidVehicle(vehicle_id));
+	EnforcePrecondition(false, ScriptVehicle::IsPrimaryVehicle(vehicle_id));
 
 	return ScriptObject::DoCommand(0, group_id, vehicle_id, CMD_ADD_VEHICLE_GROUP);
 }

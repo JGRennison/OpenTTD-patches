@@ -86,9 +86,19 @@ protected:
 	 */
 	static bool DoCommandEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint cmd, const char *text = nullptr, const CommandAuxiliaryBase *aux_data = nullptr, Script_SuspendCallbackProc *callback = nullptr);
 
+	static bool DoCommandEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint cmd, const std::string &text, const CommandAuxiliaryBase *aux_data = nullptr, Script_SuspendCallbackProc *callback = nullptr)
+	{
+		return ScriptObject::DoCommandEx(tile, p1, p2, p3, cmd, text.c_str(), aux_data, callback);
+	}
+
 	static bool DoCommand(TileIndex tile, uint32 p1, uint32 p2, uint cmd, const char *text = nullptr, Script_SuspendCallbackProc *callback = nullptr)
 	{
-		return ScriptObject::DoCommandEx(tile, p1, p2, 0, cmd, text, 0, callback);
+		return ScriptObject::DoCommandEx(tile, p1, p2, 0, cmd, text, nullptr, callback);
+	}
+
+	static bool DoCommand(TileIndex tile, uint32 p1, uint32 p2, uint cmd, const std::string &text, Script_SuspendCallbackProc *callback = nullptr)
+	{
+		return ScriptObject::DoCommandEx(tile, p1, p2, 0, cmd, text.c_str(), nullptr, callback);
 	}
 
 	/**

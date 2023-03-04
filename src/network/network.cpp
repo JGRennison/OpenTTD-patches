@@ -1356,12 +1356,14 @@ void NetworkStartUp()
 	NetworkUDPInitialize();
 	DEBUG(net, 3, "Network online, multiplayer available");
 	NetworkFindBroadcastIPs(&_broadcast_list);
+	NetworkHTTPInitialize();
 }
 
 /** This shuts the network down */
 void NetworkShutDown()
 {
 	NetworkDisconnect(true);
+	NetworkHTTPUninitialize();
 	NetworkUDPClose();
 
 	DEBUG(net, 3, "Shutting down network");

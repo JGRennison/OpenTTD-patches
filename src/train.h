@@ -89,6 +89,8 @@ void DeleteVisibleTrain(Train *v);
 void CheckBreakdownFlags(Train *v);
 void GetTrainSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, int &yoffs, EngineImageType image_type);
 
+bool TrainOnCrossing(TileIndex tile);
+
 inline int GetTrainRealisticBrakingTargetDecelerationLimit(int acceleration_type)
 {
 	return 120 + (acceleration_type * 48);

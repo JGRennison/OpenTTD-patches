@@ -44,13 +44,12 @@
 {
 	CCountedPtr<Text> counter(name);
 
-	const char *text = nullptr;
+	EnforcePrecondition(false, IsValidTown(town_id));
+	std::string text;
 	if (name != nullptr) {
 		text = name->GetDecodedText();
-		EnforcePreconditionEncodedText(false, text);
 		EnforcePreconditionCustomError(false, ::Utf8StringLength(text) < MAX_LENGTH_TOWN_NAME_CHARS, ScriptError::ERR_PRECONDITION_STRING_TOO_LONG);
 	}
-	EnforcePrecondition(false, IsValidTown(town_id));
 
 	return ScriptObject::DoCommand(0, town_id, 0, CMD_RENAME_TOWN, text);
 }
@@ -59,14 +58,9 @@
 {
 	CCountedPtr<Text> counter(text);
 
-	const char *encoded_text = nullptr;
-	if (text != nullptr) {
-		encoded_text = text->GetEncodedText();
-		EnforcePreconditionEncodedText(false, encoded_text);
-	}
 	EnforcePrecondition(false, IsValidTown(town_id));
 
-	return ScriptObject::DoCommand(::Town::Get(town_id)->xy, town_id, 0, CMD_TOWN_SET_TEXT, encoded_text);
+	return ScriptObject::DoCommand(::Town::Get(town_id)->xy, town_id, 0, CMD_TOWN_SET_TEXT, text != nullptr ? text->GetEncodedText().c_str() : "");
 }
 
 /* static */ int32 ScriptTown::GetPopulation(TownID town_id)
@@ -296,10 +290,9 @@
 		layout = (RoadLayout) (byte)_settings_game.economy.town_layout;
 	}
 
-	const char *text = nullptr;
+	std::string text;
 	if (name != nullptr) {
 		text = name->GetDecodedText();
-		EnforcePreconditionEncodedText(false, text);
 		EnforcePreconditionCustomError(false, ::Utf8StringLength(text) < MAX_LENGTH_TOWN_NAME_CHARS, ScriptError::ERR_PRECONDITION_STRING_TOO_LONG);
 	}
 	uint32 townnameparts;
@@ -309,7 +302,7 @@
 		return false;
 	}
 
-	return ScriptObject::DoCommand(tile, size | (city ? 1 << 2 : 0) | layout << 3, townnameparts, CMD_FOUND_TOWN, text);
+	return ScriptObject::DoCommand(tile, size | (city ? 1 << 2 : 0) | layout << 3, townnameparts, CMD_FOUND_TOWN, text.c_str());
 }
 
 /* static */ ScriptTown::TownRating ScriptTown::GetRating(TownID town_id, ScriptCompany::CompanyID company_id)
