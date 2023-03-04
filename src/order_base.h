@@ -764,7 +764,6 @@ private:
 	friend upstream_sl::SaveLoadTable upstream_sl::GetOrderListDescription(); ///< Saving and loading of order lists.
 	friend void Ptrs_ORDL(); ///< Saving and loading of order lists.
 
-	StationID GetBestLoadableNext(const Vehicle *v, const Order *o1, const Order *o2) const;
 	void ReindexOrderList();
 	Order *GetOrderAtFromList(int index) const;
 

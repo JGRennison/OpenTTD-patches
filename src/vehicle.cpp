@@ -4397,10 +4397,10 @@ bool CanVehicleUseStation(const Vehicle *v, const Station *st)
 }
 
 /**
- * Get reason string why this station can't be used by the given vehicle
- * @param v the vehicle to test
- * @param st the station to test for
- * @return true if and only if the vehicle can use this station.
+ * Get reason string why this station can't be used by the given vehicle.
+ * @param v The vehicle to test.
+ * @param st The station to test for.
+ * @return The string explaining why the vehicle cannot use the station.
  */
 StringID GetVehicleCannotUseStationReason(const Vehicle *v, const Station *st)
 {
@@ -4415,15 +4415,18 @@ StringID GetVehicleCannotUseStationReason(const Vehicle *v, const Station *st)
 			StringID err = rv->IsBus() ? STR_ERROR_NO_BUS_STATION : STR_ERROR_NO_TRUCK_STATION;
 
 			for (; rs != nullptr; rs = rs->next) {
-				/* The vehicle is articulated and can therefore not go to a standard road stop. */
-				if (IsStandardRoadStopTile(rs->xy) && rv->HasArticulatedPart()) {
-					err = STR_ERROR_NO_STOP_ARTIC_VEH;
+				/* Articulated vehicles cannot use bay road stops, only drive-through. Make sure the vehicle can actually use this bay stop */
+				if (HasTileAnyRoadType(rs->xy, rv->compatible_roadtypes) && IsStandardRoadStopTile(rs->xy) && rv->HasArticulatedPart()) {
+					err = STR_ERROR_NO_STOP_ARTICULATED_VEHICLE;
 					continue;
 				}
-				/* The vehicle cannot go to this roadstop (different roadtype) */
-				if (!HasTileAnyRoadType(rs->xy, rv->compatible_roadtypes)) return STR_ERROR_NO_STOP_COMPATIBLE_ROAD_TYPE;
 
-				return INVALID_STRING_ID;
+				/* Bay stop errors take precedence, but otherwise the vehicle may not be compatible with the roadtype/tramtype of this station tile.
+				 * We give bay stop errors precedence because they are usually a bus sent to a tram station or vice versa. */
+				if (!HasTileAnyRoadType(rs->xy, rv->compatible_roadtypes) && err != STR_ERROR_NO_STOP_ARTICULATED_VEHICLE) {
+					err = RoadTypeIsRoad(rv->roadtype) ? STR_ERROR_NO_STOP_COMPATIBLE_ROAD_TYPE : STR_ERROR_NO_STOP_COMPATIBLE_TRAM_TYPE;
+					continue;
+				}
 			}
 
 			return err;
@@ -4437,7 +4440,7 @@ StringID GetVehicleCannotUseStationReason(const Vehicle *v, const Station *st)
 			if (v->GetEngine()->u.air.subtype & AIR_CTOL) {
 				return STR_ERROR_AIRPORT_NO_PLANES;
 			} else {
-				return STR_ERROR_AIRPORT_NO_HELIS;
+				return STR_ERROR_AIRPORT_NO_HELICOPTERS;
 			}
 
 		default:

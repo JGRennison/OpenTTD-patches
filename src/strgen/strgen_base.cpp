@@ -222,17 +222,6 @@ uint StringData::CountInUse(uint tab) const
 
 static const char *_cur_ident;
 
-struct CmdPair {
-	const CmdStruct *a;
-	const char *v;
-};
-
-struct ParsedCommandStruct {
-	uint np;
-	CmdPair pairs[32];
-	const CmdStruct *cmd[32]; // ordered by param #
-};
-
 /* Used when generating some advanced commands. */
 static ParsedCommandStruct _cur_pcs;
 static int _cur_argidx;
@@ -598,7 +587,7 @@ StringReader::~StringReader()
 {
 }
 
-static void ExtractCommandString(ParsedCommandStruct *p, const char *s, bool warnings)
+void ExtractCommandString(ParsedCommandStruct *p, const char *s, bool warnings)
 {
 	char param[MAX_COMMAND_PARAM_SIZE];
 	int argno;
@@ -632,7 +621,7 @@ static void ExtractCommandString(ParsedCommandStruct *p, const char *s, bool war
 }
 
 
-static const CmdStruct *TranslateCmdForCompare(const CmdStruct *a)
+const CmdStruct *TranslateCmdForCompare(const CmdStruct *a)
 {
 	if (a == nullptr) return nullptr;
 

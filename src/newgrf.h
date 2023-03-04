@@ -87,12 +87,12 @@ enum GrfSpecFeature : uint8 {
 	GSF_AIRPORTTILES,
 	GSF_ROADTYPES,
 	GSF_TRAMTYPES,
-
 	GSF_ROADSTOPS,
+
 	GSF_NEWLANDSCAPE,
 	GSF_END,
 
-	GSF_REAL_FEATURE_END = GSF_ROADSTOPS,
+	GSF_REAL_FEATURE_END = GSF_NEWLANDSCAPE,
 
 	GSF_FAKE_TOWNS = GSF_END, ///< Fake town GrfSpecFeature for NewGRF debugging (parent scope)
 	GSF_FAKE_STATION_STRUCT,  ///< Fake station struct GrfSpecFeature for NewGRF debugging

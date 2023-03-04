@@ -19,6 +19,8 @@
 #include "../script_suspend.hpp"
 #include "../squirrel.hpp"
 
+#include <utility>
+
 struct CommandAuxiliaryBase;
 
 /**
@@ -340,6 +342,70 @@ private:
 	static void SetNewStoryPageElementID(StoryPageElementID story_page_element_id);
 
 	static Randomizer random_states[OWNER_END]; ///< Random states for each of the scripts (game script uses OWNER_DEITY)
+};
+
+/**
+ * Internally used class to automate the ScriptObject reference counting.
+ * @api -all
+ */
+template <typename T>
+class ScriptObjectRef {
+private:
+	T *data; ///< The reference counted object.
+public:
+	/**
+	 * Create the reference counter for the given ScriptObject instance.
+	 * @param data The underlying object.
+	 */
+	ScriptObjectRef(T *data) : data(data)
+	{
+		this->data->AddRef();
+	}
+
+	/* No copy constructor. */
+	ScriptObjectRef(const ScriptObjectRef<T> &ref) = delete;
+
+	/* Move constructor. */
+	ScriptObjectRef(ScriptObjectRef<T> &&ref) noexcept : data(std::exchange(ref.data, nullptr))
+	{
+	}
+
+	/* No copy assignment. */
+	ScriptObjectRef& operator=(const ScriptObjectRef<T> &other) = delete;
+
+	/* Move assignment. */
+	ScriptObjectRef& operator=(ScriptObjectRef<T> &&other) noexcept
+	{
+		std::swap(this->data, other.data);
+		return *this;
+	}
+
+	/**
+	 * Release the reference counted object.
+	 */
+	~ScriptObjectRef()
+	{
+		if (this->data != nullptr) this->data->Release();
+	}
+
+	/**
+	 * Dereferencing this reference returns a reference to the reference
+	 * counted object
+	 * @return Reference to the underlying object.
+	 */
+	T &operator*()
+	{
+		return *this->data;
+	}
+
+	/**
+	 * The arrow operator on this reference returns the reference counted object.
+	 * @return Pointer to the underlying object.
+	 */
+	T *operator->()
+	{
+		return this->data;
+	}
 };
 
 #endif /* SCRIPT_OBJECT_HPP */

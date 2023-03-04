@@ -847,9 +847,11 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 	SpriteID sprite = rtl ? SPR_ARROW_LEFT : SPR_ARROW_RIGHT;
 	Dimension sprite_size = GetSpriteSize(sprite);
 	if (v->cur_real_order_index == order_index) {
+		/* Draw two arrows before the next real order. */
 		DrawSprite(sprite, PAL_NONE, rtl ? right -     sprite_size.width : left,                     y + ((int)FONT_HEIGHT_NORMAL - (int)sprite_size.height) / 2);
 		DrawSprite(sprite, PAL_NONE, rtl ? right - 2 * sprite_size.width : left + sprite_size.width, y + ((int)FONT_HEIGHT_NORMAL - (int)sprite_size.height) / 2);
 	} else if (v->cur_implicit_order_index == order_index) {
+		/* Draw one arrow before the next implicit order; the next real order will still get two arrows. */
 		DrawSprite(sprite, PAL_NONE, rtl ? right -     sprite_size.width : left,                     y + ((int)FONT_HEIGHT_NORMAL - (int)sprite_size.height) / 2);
 	}
 
@@ -897,6 +899,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 			SetDParam(2, order->GetDestination());
 
 			if (timetable) {
+				/* Show only wait time in the timetable window. */
 				SetDParam(3, STR_EMPTY);
 
 				if (order->GetWaitTime() > 0 || order->IsWaitTimetabled()) {
@@ -905,6 +908,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				}
 				timetable_wait_time_valid = true;
 			} else {
+				/* Show non-stop, refit and stop location only in the order window. */
 				SetDParam(3, (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) ? STR_EMPTY : _station_load_types[order->IsRefit()][unload][load]);
 				if (order->IsRefit()) {
 					SetDParam(4, order->IsAutoRefit() ? STR_ORDER_AUTO_REFIT_ANY : CargoSpec::Get(order->GetRefitCargo())->name);
@@ -921,6 +925,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 
 		case OT_GOTO_DEPOT:
 			if (order->GetDepotActionType() & ODATFB_NEAREST_DEPOT) {
+				/* Going to the nearest depot. */
 				SetDParam(0, STR_ORDER_GO_TO_NEAREST_DEPOT_FORMAT);
 				if (v->type == VEH_AIRCRAFT) {
 					SetDParam(2, STR_ORDER_NEAREST_HANGAR);
@@ -930,6 +935,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 					SetDParam(3, STR_ORDER_TRAIN_DEPOT + v->type);
 				}
 			} else {
+				/* Going to a specific depot. */
 				SetDParam(0, STR_ORDER_GO_TO_DEPOT_FORMAT);
 				SetDParam(2, v->type);
 				SetDParam(3, order->GetDestination());
@@ -944,10 +950,12 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 			if (!timetable && (order->GetDepotActionType() & ODATFB_SELL)) {
 				SetDParam(7, STR_ORDER_SELL_ORDER);
 			} else {
+				/* Do not show stopping in the depot in the timetable window. */
 				if (!timetable && (order->GetDepotActionType() & ODATFB_HALT)) {
 					SetDParam(7, STR_ORDER_STOP_ORDER);
 				}
 
+				/* Do not show refitting in the depot in the timetable window. */
 				if (!timetable && order->IsRefit()) {
 					SetDParam(7, (order->GetDepotActionType() & ODATFB_HALT) ? STR_ORDER_REFIT_STOP_ORDER : STR_ORDER_REFIT_ORDER);
 					SetDParam(8, CargoSpec::Get(order->GetRefitCargo())->name);

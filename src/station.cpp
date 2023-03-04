@@ -479,6 +479,7 @@ bool Station::CatchmentCoversTown(TownID t) const
 /**
  * Recompute tiles covered in our catchment area.
  * This will additionally recompute nearby towns and industries.
+ * @param no_clear_nearby_lists If Station::RemoveFromAllNearbyLists does not need to be called.
  */
 void Station::RecomputeCatchment(bool no_clear_nearby_lists)
 {

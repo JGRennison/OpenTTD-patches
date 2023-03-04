@@ -14,6 +14,10 @@ on:
         description: 'Ref to build (for Pull Requests, use refs/pull/NNN/head)'
         required: true
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
 jobs:
   analyze:
     name: Analyze

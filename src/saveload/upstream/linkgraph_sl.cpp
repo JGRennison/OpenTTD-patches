@@ -27,6 +27,7 @@ typedef LinkGraph::BaseEdge Edge;
 static uint16 _num_nodes;
 static LinkGraph *_linkgraph; ///< Contains the current linkgraph being saved/loaded.
 static NodeID _linkgraph_from; ///< Contains the current "from" node being saved/loaded.
+static NodeID _edge_dest_node;
 static NodeID _edge_next_edge;
 
 class SlLinkgraphEdge : public DefaultSaveLoadHandler<SlLinkgraphEdge, Node> {
@@ -37,7 +38,8 @@ public:
 		SLE_CONDVAR(Edge, travel_time_sum,          SLE_UINT64, SLV_LINKGRAPH_TRAVEL_TIME, SL_MAX_VERSION),
 		    SLE_VAR(Edge, last_unrestricted_update, SLE_INT32),
 		SLE_CONDVAR(Edge, last_restricted_update,   SLE_INT32, SLV_187, SL_MAX_VERSION),
-		   SLEG_VAR("next_edge", _edge_next_edge,   SLE_UINT16),
+		   SLEG_VAR("dest_node", _edge_dest_node,   SLE_UINT16),
+		SLEG_CONDVAR("next_edge", _edge_next_edge,   SLE_UINT16, SL_MIN_VERSION, SLV_LINKGRAPH_EDGES),
 	};
 	inline const static SaveLoadCompatTable compat_description = _linkgraph_edge_sl_compat;
 
@@ -54,18 +56,29 @@ public:
 			NOT_REACHED();
 		}
 
-		size_t used_size = IsSavegameVersionBefore(SLV_SAVELOAD_LIST_LENGTH) ? max_size : SlGetStructListLength(UINT16_MAX);
+		if (IsSavegameVersionBefore(SLV_LINKGRAPH_EDGES)) {
+			size_t used_size = IsSavegameVersionBefore(SLV_SAVELOAD_LIST_LENGTH) ? max_size : SlGetStructListLength(UINT16_MAX);
 
-		/* ... but as that wasted a lot of space we save a sparse matrix now. */
-		for (NodeID to = _linkgraph_from; to != INVALID_NODE; to = _edge_next_edge) {
-			if (used_size == 0) SlErrorCorrupt("Link graph structure overflow");
-			used_size--;
+			/* ... but as that wasted a lot of space we save a sparse matrix now. */
+			for (NodeID to = _linkgraph_from; to != INVALID_NODE; to = _edge_next_edge) {
+				if (used_size == 0) SlErrorCorrupt("Link graph structure overflow");
+				used_size--;
 
-			if (to >= max_size) SlErrorCorrupt("Link graph structure overflow");
-			SlObject(&_linkgraph->edges[std::make_pair(_linkgraph_from, to)], this->GetLoadDescription());
+				if (to >= max_size) SlErrorCorrupt("Link graph structure overflow");
+				SlObject(&_linkgraph->edges[std::make_pair(_linkgraph_from, to)], this->GetLoadDescription());
+			}
+
+			if (!IsSavegameVersionBefore(SLV_SAVELOAD_LIST_LENGTH) && used_size > 0) SlErrorCorrupt("Corrupted link graph");
+		} else {
+			/* Edge data is now a simple vector and not any kind of matrix. */
+			size_t size = SlGetStructListLength(UINT16_MAX);
+			for (size_t i = 0; i < size; i++) {
+				Edge edge;
+				SlObject(&edge, this->GetLoadDescription());
+				if (_edge_dest_node >= max_size) SlErrorCorrupt("Link graph structure overflow");
+				_linkgraph->edges[std::make_pair(_linkgraph_from, _edge_dest_node)] = edge;
+			}
 		}
-
-		if (!IsSavegameVersionBefore(SLV_SAVELOAD_LIST_LENGTH) && used_size > 0) SlErrorCorrupt("Corrupted link graph");
 	}
 };
 

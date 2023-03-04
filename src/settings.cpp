@@ -1801,7 +1801,10 @@ static void ParseCompanyPasswordStorageSecret(const std::string &value)
 static void UpdateClientConfigValues()
 {
 	NetworkServerUpdateGameInfo();
-	if (_network_server) NetworkServerSendConfigUpdate();
+	if (_network_server) {
+		NetworkServerSendConfigUpdate();
+		SetWindowClassesDirty(WC_CLIENT_LIST);
+	}
 }
 
 /* End - Callback Functions */

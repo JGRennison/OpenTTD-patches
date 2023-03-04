@@ -948,6 +948,7 @@ uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const 
 	switch (scc) {
 		default: break;
 
+		/* These control codes take one string parameter, check there are at least that many available. */
 		case SCC_NEWGRF_PRINT_DWORD_SIGNED:
 		case SCC_NEWGRF_PRINT_WORD_SIGNED:
 		case SCC_NEWGRF_PRINT_BYTE_SIGNED:
@@ -977,6 +978,7 @@ uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const 
 			}
 			break;
 
+		/* These string code take two string parameters, check there are at least that many available. */
 		case SCC_NEWGRF_PRINT_WORD_CARGO_LONG:
 		case SCC_NEWGRF_PRINT_WORD_CARGO_SHORT:
 		case SCC_NEWGRF_PRINT_WORD_CARGO_TINY:
@@ -988,6 +990,8 @@ uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const 
 	}
 
 	if (_newgrf_textrefstack.used && modify_argv) {
+		/* There is data on the NewGRF text stack, and we want to move them to OpenTTD's string stack.
+		 * After this call, a new call is made with `modify_argv` set to false when the string is finally formatted. */
 		switch (scc) {
 			default: NOT_REACHED();
 			case SCC_NEWGRF_PRINT_BYTE_SIGNED:      *argv = _newgrf_textrefstack.PopSignedByte();    break;
@@ -1015,6 +1019,7 @@ uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const 
 			case SCC_NEWGRF_PRINT_DWORD_DATE_SHORT:
 			case SCC_NEWGRF_PRINT_DWORD_HEX:        *argv = _newgrf_textrefstack.PopUnsignedDWord(); break;
 
+			/* Dates from NewGRFs have 1920-01-01 as their zero point, convert it to OpenTTD's epoch. */
 			case SCC_NEWGRF_PRINT_WORD_DATE_LONG:
 			case SCC_NEWGRF_PRINT_WORD_DATE_SHORT:  *argv = _newgrf_textrefstack.PopUnsignedWord() + DAYS_TILL_ORIGINAL_BASE_YEAR; break;
 
@@ -1042,7 +1047,7 @@ uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const 
 			}
 		}
 	} else {
-		/* Consume additional parameter characters */
+		/* Consume additional parameter characters that follow the NewGRF string code. */
 		switch (scc) {
 			default: break;
 
@@ -1053,6 +1058,7 @@ uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const 
 		}
 	}
 
+	/* Emit OpenTTD's internal string code for the different NewGRF variants. */
 	switch (scc) {
 		default: NOT_REACHED();
 		case SCC_NEWGRF_PRINT_DWORD_SIGNED:
@@ -1115,6 +1121,7 @@ uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const 
 		case SCC_NEWGRF_PRINT_WORD_STATION_NAME:
 			return SCC_STATION_NAME;
 
+		/* These NewGRF string codes modify the NewGRF stack or otherwise do not map to OpenTTD string codes. */
 		case SCC_NEWGRF_DISCARD_WORD:
 		case SCC_NEWGRF_ROTATE_TOP_4_WORDS:
 		case SCC_NEWGRF_PUSH_WORD:

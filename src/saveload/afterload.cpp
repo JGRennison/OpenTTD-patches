@@ -2697,8 +2697,7 @@ bool AfterLoadGame()
 			if (IsTileType(t, MP_TREES)) {
 				uint density = GB(_m[t].m2, 6, 2);
 				uint ground = GB(_m[t].m2, 4, 2);
-				uint counter = GB(_m[t].m2, 0, 4);
-				_m[t].m2 = ground << 6 | density << 4 | counter;
+				_m[t].m2 = ground << 6 | density << 4;
 			}
 		}
 	}

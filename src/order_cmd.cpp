@@ -2420,7 +2420,7 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 					 * are temporarily invalid due to reconstruction. */
 					const Station *st = Station::Get(order->GetDestination());
 					if (CanVehicleUseStation(src, st) && !CanVehicleUseStation(dst, st)) {
-						return_cmd_error(STR_ERROR_CAN_T_COPY_SHARE_ORDER);
+						return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_COPY_SHARE_ORDER, GetVehicleCannotUseStationReason(dst, st));
 					}
 				}
 				if (OrderGoesToRoadDepot(dst, order)) {
@@ -2501,9 +2501,9 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 			/* Trucks can't copy all the orders from busses (and visa versa),
 			 * and neither can helicopters and aircraft. */
 			for (const Order *order : src->Orders()) {
-				if (OrderGoesToStation(dst, order) &&
-						!CanVehicleUseStation(dst, Station::Get(order->GetDestination()))) {
-					return_cmd_error(STR_ERROR_CAN_T_COPY_SHARE_ORDER);
+				Station *st = Station::Get(order->GetDestination());
+				if (OrderGoesToStation(dst, order) && !CanVehicleUseStation(dst, st)) {
+					return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_COPY_SHARE_ORDER, GetVehicleCannotUseStationReason(dst, st));
 				}
 				if (OrderGoesToRoadDepot(dst, order)) {
 					const Depot *dp = Depot::GetIfValid(order->GetDestination());
