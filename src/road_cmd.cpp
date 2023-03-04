@@ -2721,7 +2721,7 @@ static TrackStatus GetTileTrackStatus_Road(TileIndex tile, TransportType mode, u
 						RoadType rt = (RoadType)(rtfield - 1);
 						return HasBit(_roadtypes_non_train_colliding, rt);
 					};
-					if (IsCrossingBarred(tile) && !is_non_colliding()) {
+					if (!(sub_mode & TTSSM_NO_RED_SIGNALS) && IsCrossingBarred(tile) && !is_non_colliding()) {
 						red_signals = trackdirbits;
 						if (TrainOnCrossing(tile)) break;
 

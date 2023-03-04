@@ -297,7 +297,7 @@ public:
 		} else {
 			m_dest_station  = INVALID_STATION;
 			m_destTile      = v->dest_tile;
-			m_destTrackdirs = TrackStatusToTrackdirBits(GetTileTrackStatus(v->dest_tile, TRANSPORT_ROAD, GetRoadTramType(v->roadtype)));
+			m_destTrackdirs = GetTileTrackdirBits(v->dest_tile, TRANSPORT_ROAD, GetRoadTramType(v->roadtype));
 		}
 	}
 

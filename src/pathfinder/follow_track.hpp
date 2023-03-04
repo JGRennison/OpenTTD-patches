@@ -124,9 +124,8 @@ struct CFollowTrackT
 		m_old_td = old_td;
 		m_err = EC_NONE;
 		dbg_assert_tile(
-			((TrackStatusToTrackdirBits(
-				GetTileTrackStatus(m_old_tile, TT(), (IsRoadTT() && m_veh != nullptr) ? (this->IsTram() ? RTT_TRAM : RTT_ROAD) : 0)
-			) & TrackdirToTrackdirBits(m_old_td)) != 0) ||
+			((GetTileTrackdirBits(m_old_tile, TT(), (IsRoadTT() && m_veh != nullptr) ? (this->IsTram() ? RTT_TRAM : RTT_ROAD) : 0)
+			& TrackdirToTrackdirBits(m_old_td)) != 0) ||
 			(IsTram() && GetSingleTramBit(m_old_tile) != INVALID_DIAGDIR), // Disable the assertion for single tram bits
 			m_old_tile
 		);
@@ -243,7 +242,7 @@ protected:
 		} else if (IsRoadTT()) {
 			m_new_td_bits = GetTrackdirBitsForRoad(m_new_tile, this->IsTram() ? RTT_TRAM : RTT_ROAD);
 		} else {
-			m_new_td_bits = TrackStatusToTrackdirBits(GetTileTrackStatus(m_new_tile, TT(), 0));
+			m_new_td_bits = GetTileTrackdirBits(m_new_tile, TT(), 0);
 		}
 		return (m_new_td_bits != TRACKDIR_BIT_NONE);
 	}

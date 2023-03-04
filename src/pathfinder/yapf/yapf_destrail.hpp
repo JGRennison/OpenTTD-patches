@@ -167,7 +167,7 @@ public:
 			default:
 				m_destTile = v->dest_tile;
 				m_dest_station_id = INVALID_STATION;
-				m_destTrackdirs = TrackStatusToTrackdirBits(GetTileTrackStatus(v->dest_tile, TRANSPORT_RAIL, 0));
+				m_destTrackdirs = GetTileTrackdirBits(v->dest_tile, TRANSPORT_RAIL, 0);
 				break;
 		}
 		CYapfDestinationRailBase::SetDestination(v);

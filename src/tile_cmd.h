@@ -14,6 +14,7 @@
 #include "vehicle_type.h"
 #include "cargo_type.h"
 #include "track_type.h"
+#include "track_func.h"
 #include "tile_map.h"
 
 /** The returned bits of VehicleEnterTile. */
@@ -168,7 +169,19 @@ struct TileTypeProcs {
 
 extern const TileTypeProcs * const _tile_type_procs[16];
 
+enum TileTrackStatusSubMode {
+	TTSSM_ROAD_RTT_MASK       =    0xFF,
+	TTSSM_ROAD_ROADTYPE_MASK  =  0xFF00,
+	TTSSM_NO_RED_SIGNALS      = 0x10000,
+};
+
 TrackStatus GetTileTrackStatus(TileIndex tile, TransportType mode, uint sub_mode, DiagDirection side = INVALID_DIAGDIR);
+
+inline TrackdirBits GetTileTrackdirBits(TileIndex tile, TransportType mode, uint sub_mode, DiagDirection side = INVALID_DIAGDIR)
+{
+	return TrackStatusToTrackdirBits(GetTileTrackStatus(tile, mode, sub_mode | TTSSM_NO_RED_SIGNALS, side));
+}
+
 VehicleEnterTileStatus VehicleEnterTile(Vehicle *v, TileIndex tile, int x, int y);
 void ChangeTileOwner(TileIndex tile, Owner old_owner, Owner new_owner);
 void GetTileDesc(TileIndex tile, TileDesc *td);

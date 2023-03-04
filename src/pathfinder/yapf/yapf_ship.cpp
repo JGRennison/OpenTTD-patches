@@ -41,7 +41,7 @@ public:
 		} else {
 			m_destStation   = INVALID_STATION;
 			m_destTile      = v->dest_tile;
-			m_destTrackdirs = TrackStatusToTrackdirBits(GetTileTrackStatus(v->dest_tile, TRANSPORT_WATER, 0));
+			m_destTrackdirs = GetTileTrackdirBits(v->dest_tile, TRANSPORT_WATER, 0);
 		}
 	}
 
@@ -216,7 +216,7 @@ public:
 			pf.SetOrigin(tile, TrackdirToTrackdirBits(td1) | TrackdirToTrackdirBits(td2));
 		} else {
 			DiagDirection entry = ReverseDiagDir(VehicleExitDir(v->direction, v->state));
-			TrackdirBits rtds = DiagdirReachesTrackdirs(entry) & TrackStatusToTrackdirBits(GetTileTrackStatus(tile, TRANSPORT_WATER, 0, entry));
+			TrackdirBits rtds = DiagdirReachesTrackdirs(entry) & GetTileTrackdirBits(tile, TRANSPORT_WATER, 0, entry);
 			pf.SetOrigin(tile, rtds);
 		}
 		pf.SetDestination(v);

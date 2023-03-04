@@ -834,7 +834,7 @@ static bool CanEnterTile(TileIndex tile, DiagDirection dir, AyStarUserData *user
  */
 static TrackdirBits GetDriveableTrackdirBits(TileIndex dst_tile, TileIndex src_tile, Trackdir src_trackdir, TransportType type, uint subtype)
 {
-	TrackdirBits trackdirbits = TrackStatusToTrackdirBits(GetTileTrackStatus(dst_tile, type, subtype));
+	TrackdirBits trackdirbits = GetTileTrackdirBits(dst_tile, type, subtype);
 
 	if (trackdirbits == TRACKDIR_BIT_NONE && type == TRANSPORT_ROAD && (RoadTramType)subtype == RTT_TRAM) {
 		/* GetTileTrackStatus() returns 0 for single tram bits.
@@ -1222,7 +1222,7 @@ bool NPFShipCheckReverse(const Ship *v, Trackdir *best_td)
 	AyStarUserData user = { v->owner, TRANSPORT_WATER, RAILTYPES_NONE, ROADTYPES_NONE, 0 };
 	if (best_td != nullptr) {
 		DiagDirection entry = ReverseDiagDir(VehicleExitDir(v->direction, v->state));
-		TrackdirBits rtds = DiagdirReachesTrackdirs(entry) & TrackStatusToTrackdirBits(GetTileTrackStatus(v->tile, TRANSPORT_WATER, 0, entry));
+		TrackdirBits rtds = DiagdirReachesTrackdirs(entry) & GetTileTrackdirBits(v->tile, TRANSPORT_WATER, 0, entry);
 		Trackdir best = (Trackdir)FindFirstBit2x64(rtds);
 		rtds = KillFirstBit(rtds);
 		if (rtds == TRACKDIR_BIT_NONE) return false; /* At most one choice. */
