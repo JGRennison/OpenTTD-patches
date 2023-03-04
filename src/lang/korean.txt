@@ -3914,7 +3914,7 @@ STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}항공�
 
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :모든 화물 종류
-STR_CARGO_TYPE_FILTER_FREIGHT                                   :무게
+STR_CARGO_TYPE_FILTER_FREIGHT                                   :화물
 STR_CARGO_TYPE_FILTER_NONE                                      :없음
 
 ###length VEHICLE_TYPES
