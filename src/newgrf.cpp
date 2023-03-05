@@ -5689,14 +5689,14 @@ static const CallbackResultSpriteGroup *NewCallbackResultSpriteGroup(uint16 grou
 
 /* Helper function to either create a callback or link to a previously
  * defined spritegroup. */
-static const SpriteGroup *GetGroupFromGroupID(byte setid, byte type, uint16 groupid)
+static const SpriteGroup *GetGroupFromGroupID(uint16 setid, byte type, uint16 groupid)
 {
 	if (HasBit(groupid, 15)) {
 		return NewCallbackResultSpriteGroup(groupid);
 	}
 
-	if (groupid > MAX_SPRITEGROUP || _cur.spritegroups[groupid] == nullptr) {
-		grfmsg(1, "GetGroupFromGroupID(0x%02X:0x%02X): Groupid 0x%04X does not exist, leaving empty", setid, type, groupid);
+	if ((size_t)groupid >= _cur.spritegroups.size() || _cur.spritegroups[groupid] == nullptr) {
+		grfmsg(1, "GetGroupFromGroupID(0x%04X:0x%02X): Groupid 0x%04X does not exist, leaving empty", setid, type, groupid);
 		return nullptr;
 	}
 
@@ -5707,6 +5707,8 @@ static const SpriteGroup *GetGroupFromGroupID(byte setid, byte type, uint16 grou
 
 static const SpriteGroup *GetGroupByID(uint16 groupid)
 {
+	if ((size_t)groupid >= _cur.spritegroups.size()) return nullptr;
+
 	const SpriteGroup *result = _cur.spritegroups[groupid];
 	return result;
 }
@@ -5719,14 +5721,14 @@ static const SpriteGroup *GetGroupByID(uint16 groupid)
  * @param spriteid Raw value from the GRF for the new spritegroup; describes either the return value or the referenced spritegroup.
  * @return Created spritegroup.
  */
-static const SpriteGroup *CreateGroupFromGroupID(byte feature, byte setid, byte type, uint16 spriteid)
+static const SpriteGroup *CreateGroupFromGroupID(byte feature, uint16 setid, byte type, uint16 spriteid)
 {
 	if (HasBit(spriteid, 15)) {
 		return NewCallbackResultSpriteGroup(spriteid);
 	}
 
 	if (!_cur.IsValidSpriteSet(feature, spriteid)) {
-		grfmsg(1, "CreateGroupFromGroupID(0x%02X:0x%02X): Sprite set %u invalid", setid, type, spriteid);
+		grfmsg(1, "CreateGroupFromGroupID(0x%04X:0x%02X): Sprite set %u invalid", setid, type, spriteid);
 		return nullptr;
 	}
 
@@ -5787,6 +5789,7 @@ static void NewSpriteGroup(ByteReader *buf)
 	 *
 	 * B feature       see action 1
 	 * B set-id        ID of this particular definition
+	 *                 This is an extended byte if feature "more_action2_ids" is tested for
 	 * B type/num-entries
 	 *                 if 80 or greater, this is a randomized or variational
 	 *                 list definition, see below
@@ -5802,7 +5805,7 @@ static void NewSpriteGroup(ByteReader *buf)
 		return;
 	}
 
-	uint8 setid   = buf->ReadByte();
+	uint16 setid  = HasBit(_cur.grffile->observed_feature_tests, GFTOF_MORE_ACTION2_IDS) ? buf->ReadExtendedByte() : buf->ReadByte();
 	uint8 type    = buf->ReadByte();
 
 	/* Sprite Groups are created here but they are allocated from a pool, so
@@ -6188,6 +6191,7 @@ static void NewSpriteGroup(ByteReader *buf)
 		}
 	}
 
+	if ((size_t)setid >= _cur.spritegroups.size()) _cur.spritegroups.resize(setid + 1);
 	_cur.spritegroups[setid] = act_group;
 }
 
@@ -6250,7 +6254,7 @@ static CargoID TranslateCargo(uint8 feature, uint8 ctype)
 
 static bool IsValidGroupID(uint16 groupid, const char *function)
 {
-	if (groupid > MAX_SPRITEGROUP || _cur.spritegroups[groupid] == nullptr) {
+	if ((size_t)groupid >= _cur.spritegroups.size() || _cur.spritegroups[groupid] == nullptr) {
 		grfmsg(1, "%s: Spritegroup 0x%04X out of range or empty, skipping.", function, groupid);
 		return false;
 	}

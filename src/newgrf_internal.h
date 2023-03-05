@@ -20,8 +20,6 @@
 #include "3rdparty/cpp-btree/btree_map.h"
 #include <bitset>
 
-static const uint MAX_SPRITEGROUP = UINT8_MAX; ///< Maximum GRF-local ID for a spritegroup.
-
 /** Base GRF ID for OpenTTD's base graphics GRFs. */
 static const uint32 OPENTTD_GRAPHICS_BASE_GRF_ID = BSWAP32(0xFF4F5400);
 
@@ -66,7 +64,7 @@ public:
 	int skip_sprites;         ///< Number of pseudo sprites to skip before processing the next one. (-1 to skip to end of file)
 
 	/* Currently referenceable spritegroups */
-	const SpriteGroup *spritegroups[MAX_SPRITEGROUP + 1];
+	std::vector<const SpriteGroup *> spritegroups;
 
 	/* VarAction2 temporary storage variable tracking */
 	btree::btree_map<const SpriteGroup *, VarAction2GroupVariableTracking *> group_temp_store_variable_tracking;
@@ -124,7 +122,7 @@ public:
 			this->spritesets[i].clear();
 		}
 
-		memset(this->spritegroups, 0, sizeof(this->spritegroups));
+		this->spritegroups.clear();
 
 		this->group_temp_store_variable_tracking.clear();
 		this->group_temp_store_variable_tracking_storage.EmptyArena();
