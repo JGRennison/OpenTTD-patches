@@ -1041,7 +1041,7 @@ void GeneratePublicRoads()
 	TileIndex main_town = *std::max_element(towns.begin(), towns.end(), [&](TileIndex a, TileIndex b) { return DistanceFromEdge(a) < DistanceFromEdge(b); });
 	towns.erase(towns.begin());
 
-	_public_road_type = GetTownRoadType(Town::GetByTile(main_town));
+	_public_road_type = GetTownRoadType();
 	robin_hood::unordered_flat_set<TileIndex> checked_towns;
 
 	std::unique_ptr<TownNetwork> new_main_network = std::make_unique<TownNetwork>();

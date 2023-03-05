@@ -2619,7 +2619,7 @@ static void TileLoop_Road(TileIndex tile)
 
 		/* Possibly change road type */
 		if (GetRoadOwner(tile, RTT_ROAD) == OWNER_TOWN) {
-			RoadType rt = GetTownRoadType(t);
+			RoadType rt = GetTownRoadType();
 			if (rt != GetRoadTypeRoad(tile)) {
 				SetRoadType(tile, RTT_ROAD, rt);
 			}

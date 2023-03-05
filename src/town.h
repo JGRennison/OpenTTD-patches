@@ -392,7 +392,7 @@ static inline uint16 TownTicksToGameTicks(uint16 ticks) {
 }
 
 
-RoadType GetTownRoadType(const Town *t);
+RoadType GetTownRoadType();
 bool MayTownModifyRoad(TileIndex tile);
 
 #endif /* TOWN_H */
