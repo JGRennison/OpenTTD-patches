@@ -20,11 +20,10 @@ while read -r line; do
       continue
    fi
    # Extract the string code from the English line
-   STRING_CODE=$(echo $line | cut -d' ' -f1)
+   STRING_CODE=$(echo $line | cut -d':' -f1 | tr -d '[:space:]')
    # Check if the string code exists in the language file
-   if ! grep -qw "$STRING_CODE" "$language_file"; then
+   if ! grep -q "$STRING_CODE" "$language_file"; then
       # If the line doesn't exist, add it to the end of the language file
-      continue
       echo "$line" >>"$language_file"
       echo "Added missing line to $language_file: $line"
    fi
