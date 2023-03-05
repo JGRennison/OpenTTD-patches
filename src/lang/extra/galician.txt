@@ -718,6 +718,8 @@ STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_CARGO_EQUALS          :pode levar
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_CARGO_NOT_EQUALS      :non pode levar
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_HAS_STATUS            :ten
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_DOESNT_HAVE_STATUS    :non ten
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_PASS                  :pasa a través
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_DOESNT_PASS           :non pasa a través
 STR_TRACE_RESTRICT_CONDITIONAL_IF                               :If
 STR_TRACE_RESTRICT_CONDITIONAL_ELIF                             :Else if
 STR_TRACE_RESTRICT_CONDITIONAL_ORIF                             :Or if
@@ -755,6 +757,8 @@ STR_TRACE_RESTRICT_VARIABLE_TRAIN_OWNER                         :propietario do 
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_STATUS                        :estado do tren
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_ENGINE_CLASS                  :clase do motor
 STR_TRACE_RESTRICT_VARIABLE_ORDER_TARGET_DIRECTION              :dirección do obxectivo da orde
+STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH                 :A reserva PBS pasa o cadro
+STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH_SHORT           :Reserva PBS
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :indefinido
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED                       :{PUSH_COLOUR}{RED}indefinido{POP_COLOUR}
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER                  :{STRING} {STRING} {STRING} {COMMA} then
@@ -785,6 +789,7 @@ STR_TRACE_RESTRICT_CONDITIONAL_COUNTER                          :{STRING} valor 
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING} valor do contador: {STRING} {BLACK}{STRING} {STRING} {COMMA} then
 STR_TRACE_RESTRICT_CONDITIONAL_ENGINE_CLASSES                   :{STRING} o tren {STRING}: {STRING} then
 STR_TRACE_RESTRICT_CONDITIONAL_TARGET_DIRECTION                 :{STRING} cadro de {STRING} {STRING} máis lonxe que {STRING} ca este sinal entón
+STR_TRACE_RESTRICT_CONDITIONAL_PASSES_TILE_INDEX                :{STRING} {STRING} {STRING} {NUM} x {NUM} entón
 STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}indefinido {BLACK}{STRING}then
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}indefinido {BLACK}{STRING}then
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :Engadir unha penalización de ruta: {COMMA}
@@ -1625,6 +1630,7 @@ STR_CARGO_TYPE_UNLOAD_ORDERS_DROP_TOOLTIP                       :{BLACK}cambiar 
 STR_CARGO_TYPE_ORDERS_SET_TO_ALL_LABEL                          :{BLACK}Fixar todos a:
 STR_CARGO_TYPE_ORDERS_SET_TO_ALL_TOOLTIP                        :{BLACK}Fixar todas as ordes de tipo de cargamento o que está seleccionado no despregable.
 
+STR_SCREENSHOT_WORLD_SCREENSHOT_DEFAULT_ZOOM                    :{BLACK}Captura de pantalla de todo o mapa co zoom por defecto
 STR_SCREENSHOT_WORLD_SCREENSHOT_CURRENT_ZOOM                    :{BLACK}Captura de pantalla de todo o mapa co zoom actual
 
 STR_SCREENSHOT_TOPOGRAPHY_SCREENSHOT                            :{BLACK}Captura de pantalla topográfica
@@ -1844,6 +1850,7 @@ STR_TMPL_DEFINE_TEMPLATE                                        :{BLACK}Novo
 STR_TMPL_EDIT_TEMPLATE                                          :{BLACK}Editar
 STR_TMPL_CREATE_CLONE_VEH                                       :{BLACK}Clonar
 STR_TMPL_DELETE_TEMPLATE                                        :{BLACK}Eliminar
+STR_TMPL_RENAME_TEMPLATE                                        :{BLACK}Renomear modelo
 STR_TMPL_RPL_ALL_TMPL                                           :{BLACK}Substituír todos os modelos
 STR_TMPL_NEW_VEHICLE                                            :{BLACK}Novo vehículo
 STR_TMPL_CONFIRM                                                :{BLACK}Aceptar
@@ -1862,6 +1869,7 @@ STR_TMPL_WARNING_FREE_WAGON                                     :{RED}Convoio li
 STR_TMPL_WARNING_VEH_UNAVAILABLE                                :{RED}Tren non construíble: vehículo non dispoñible!
 STR_TMPL_WARNING_VEH_NO_COMPATIBLE_RAIL_TYPE                    :{RED}Tren non construíble: A cadea non é compatible con ningún tipo de ferrocarril
 STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}Modelo en uso: {STRING}
+STR_TMPL_NAME                                                   :{NUM}: {STRING}
 STR_TMP_TEMPLATE_IN_USE                                         :O Modelo está en uso
 STR_TMP_TEMPLATE_FROM_PARENT_GROUP                              :Usando modelo do grupo pai
 STR_TMPL_GROUP_NUM_TRAINS                                       :{BLACK}{NUM}
@@ -1908,6 +1916,7 @@ STR_TMPL_RPLALLGUI_BUTTON_CANCEL                                :{BLACK}Cancelar
 STR_TMPL_RPLALLGUI_USE_TIP                                      :{BLACK}Seleccionar un tipo de vehículo de cada lista e premer 'Substituír todos'. Se estás contento co resultado amosado la lista de modelos, premer 'Aplicar' para aplicar estes cambios.
 
 STR_TMPL_CANT_CREATE                                            :{WHITE}Non se pode crear un modelo ou vehículo virtual...
+STR_TMPL_CANT_RENAME                                            :{WHITE}Non se pode renomear o modelo...
 
 # Scheduled Dispatch
 STR_SCHDISPATCH_CAPTION                                         :{WHITE}{VEHICLE} (Saída programada)
@@ -1979,3 +1988,5 @@ STR_SHIFT_KEY_NAME                                              :{BLACK}Shift
 STR_CTRL_KEY_NAME                                               :{BLACK}Ctrl
 STR_MODIFIER_TOGGLE_SHIFT_TOOLTIP                               :{BLACK}Click para invertir o estado da tecla Shift
 STR_MODIFIER_TOGGLE_CTRL_TOOLTIP                                :{BLACK}Click para invertir o estado da tecla Ctrl
+
+STR_ERROR_TUNNEL_DISALLOWED_ROAD                                :{WHITE}Non se permiten túneis neste tipo de estrada
