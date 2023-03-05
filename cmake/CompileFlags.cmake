@@ -195,6 +195,10 @@ macro(compile_flags)
         if (OPTION_NO_WARN_UNINIT)
             add_compile_options(-Wno-maybe-uninitialized -Wno-uninitialized)
         endif (OPTION_NO_WARN_UNINIT)
+
+        if (EMSCRIPTEN)
+            add_compile_options(-Wno-deprecated-builtins)
+        endif()
     elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
         add_compile_options(
             -Wall
