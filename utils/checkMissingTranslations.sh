@@ -1,11 +1,13 @@
 #!/bin/bash
 
+git_top_level=$(git rev-parse --show-toplevel)
+
 if [ $# -eq 0 ]; then
-   echo "Please specify a language file to update"
+   echo "Please specify a language to update"
    exit 1
 fi
 
-language_file="$1"
+language_file="$git_top_level/src/lang/extra/$1.txt"
 
 # Check that the specified file exists
 if [ ! -f "$language_file" ]; then
@@ -38,4 +40,6 @@ while read -r line; do
       echo "$line" >>"$language_file"
       echo "Added missing line to $language_file: $line"
    fi
-done <"english.txt"
+done <"$git_top_level/src/lang/extra/english.txt"
+cd $git_top_level/src/lang/
+perl $git_top_level/utils/conv-lang.pl
