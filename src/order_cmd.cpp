@@ -2425,8 +2425,8 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 				}
 				if (OrderGoesToRoadDepot(dst, order)) {
 					const Depot *dp = Depot::GetIfValid(order->GetDestination());
-					if (!dp || (GetPresentRoadTypes(dp->xy) & RoadVehicle::From(dst)->compatible_roadtypes) == 0) {
-						return_cmd_error(STR_ERROR_CAN_T_COPY_SHARE_ORDER);
+					if (dp != nullptr && (GetPresentRoadTypes(dp->xy) & RoadVehicle::From(dst)->compatible_roadtypes) == 0) {
+						return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_COPY_SHARE_ORDER, RoadTypeIsTram(RoadVehicle::From(dst)->roadtype) ? STR_ERROR_NO_STOP_COMPATIBLE_TRAM_TYPE : STR_ERROR_NO_STOP_COMPATIBLE_ROAD_TYPE);
 					}
 				}
 			}
@@ -2501,14 +2501,16 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 			/* Trucks can't copy all the orders from busses (and visa versa),
 			 * and neither can helicopters and aircraft. */
 			for (const Order *order : src->Orders()) {
-				Station *st = Station::Get(order->GetDestination());
-				if (OrderGoesToStation(dst, order) && !CanVehicleUseStation(dst, st)) {
-					return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_COPY_SHARE_ORDER, GetVehicleCannotUseStationReason(dst, st));
+				if (OrderGoesToStation(dst, order)) {
+					const Station *st = Station::Get(order->GetDestination());
+					if (!CanVehicleUseStation(dst, st)) {
+						return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_COPY_SHARE_ORDER, GetVehicleCannotUseStationReason(dst, st));
+					}
 				}
 				if (OrderGoesToRoadDepot(dst, order)) {
 					const Depot *dp = Depot::GetIfValid(order->GetDestination());
-					if (!dp || (GetPresentRoadTypes(dp->xy) & RoadVehicle::From(dst)->compatible_roadtypes) == 0) {
-						return_cmd_error(STR_ERROR_CAN_T_COPY_SHARE_ORDER);
+					if (dp != nullptr && (GetPresentRoadTypes(dp->xy) & RoadVehicle::From(dst)->compatible_roadtypes) == 0) {
+						return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_COPY_SHARE_ORDER, RoadTypeIsTram(RoadVehicle::From(dst)->roadtype) ? STR_ERROR_NO_STOP_COMPATIBLE_TRAM_TYPE : STR_ERROR_NO_STOP_COMPATIBLE_ROAD_TYPE);
 					}
 				}
 			}
