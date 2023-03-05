@@ -1979,24 +1979,6 @@ STR_SHIFT_KEY_NAME                                              :{BLACK}Shift
 STR_CTRL_KEY_NAME                                               :{BLACK}Ctrl
 STR_MODIFIER_TOGGLE_SHIFT_TOOLTIP                               :{BLACK}Click para invertir o estado da tecla Shift
 STR_MODIFIER_TOGGLE_CTRL_TOOLTIP                                :{BLACK}Click para invertir o estado da tecla Ctrl
-STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Fallou o autorenovado en {VEHICLE}{}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}O NewGRF "{STRING}" devolveu un erro fatal: {}{STRING}
-STR_NEWGRF_ERROR_POPUP                                          :{WHITE}O NewGRF "{STRING}" devolveu un erro: {}{STRING}
-STR_ORDER_TEXT                                                  :{STRING} {STRING} {STRING}
-STR_TIMETABLE_TRAVEL_FOR                                        :Viaxar durante {STRING}
-STR_TIMETABLE_TRAVEL_FOR_SPEED                                  :Viaxar durante {STRING} como moito a {VELOCITY}
-STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Viaxe (durante {STRING}, sen hora programada)
-STR_TIMETABLE_TRAVEL_FOR_SPEED_ESTIMATED                        :Viaxe (durante {STRING}, sen hora programada) como moito a {VELOCITY}
-STR_TIMETABLE_STAY_FOR_ESTIMATED                                :(permanecer durante {STRING}, sen hora programada)
-STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED                          :(viaxar durante {STRING}, sen hora programada)
-STR_TIMETABLE_STAY_FOR                                          :e permanecer durante {STRING}
-STR_TIMETABLE_AND_TRAVEL_FOR                                    :e viaxar durante {STRING}
-STR_TIMETABLE_TOTAL_TIME                                        :{BLACK}Esta programación levará {STRING} para completar
-STR_TIMETABLE_TOTAL_TIME_INCOMPLETE                             :{BLACK}Esta programación levará polo menos {STRING} para completar (non está todo programado)
-STR_TIMETABLE_STATUS_LATE                                       :{BLACK}Este vehículo actualmente vai {STRING} tarde
-STR_TIMETABLE_STATUS_EARLY                                      :{BLACK}Este vehículo actualmente vai {STRING} cedo
-STR_CONFIG_SETTING_STATION_RATING_CARGO_CLASS_WAIT_TIME_HELPTEXT:Cando está habilitado, o efecto do tempo de espera dende a última carga de mercadoría na calificación da estación para esa mercadoría depende da clase de mercadoría. Os pasaxeiros, o correo, a carga blindada, refrixerada e express son menos tolerantes as esperas. As cargas a granel e de líquidos son máis tolereantes.
-STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_DUAL_BUTTONS_HELPTEXT:Cando está habilitado, as listas de locomotoras e coches na fiestra de compra de trens teñen cadanseu propio conxunto de botóns.
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_PASS                  :pasa a través
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_DOESNT_PASS           :non pasa a través
 STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH                 :A reserva PBS pasa o cadro
