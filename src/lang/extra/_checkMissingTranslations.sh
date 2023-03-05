@@ -13,9 +13,20 @@ if [ ! -f "$language_file" ]; then
    exit 1
 fi
 
+in_override_section="true"
 # Read each line from the English file and check if it exists in the language file
 while read -r line; do
-   # Skip lines that start with #
+   # Check if we have reached the end of the override section
+   if [[ $line == "##override off" ]]; then
+      in_override_section="false"
+      continue
+   fi
+
+   # Skip lines before the end of the override section
+   if [[ $in_override_section == "true" ]]; then
+      continue
+   fi
+   # Skip other lines that start with #
    if [[ $line =~ ^#.* ]]; then
       continue
    fi
