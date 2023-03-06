@@ -52,7 +52,7 @@
 	return ::LeagueTableElement::IsValidID(element_id);
 }
 
-/* static */ ScriptLeagueTable::LeagueTableElementID ScriptLeagueTable::NewElement(ScriptLeagueTable::LeagueTableID table, int64 rating, ScriptCompany::CompanyID company, Text *text, Text *score, LinkType link_type, uint32 link_target)
+/* static */ ScriptLeagueTable::LeagueTableElementID ScriptLeagueTable::NewElement(ScriptLeagueTable::LeagueTableID table, SQInteger rating, ScriptCompany::CompanyID company, Text *text, Text *score, LinkType link_type, LinkTargetID link_target)
 {
 	CCountedPtr<Text> text_counter(text);
 	CCountedPtr<Text> score_counter(score);
@@ -105,7 +105,7 @@
 	return ScriptObject::DoCommand(0, element | (c << 16) | (link_type << 24), link_target, CMD_UPDATE_LEAGUE_TABLE_ELEMENT_DATA, encoded_text);
 }
 
-/* static */ bool ScriptLeagueTable::UpdateElementScore(LeagueTableElementID element, int64 rating, Text *score)
+/* static */ bool ScriptLeagueTable::UpdateElementScore(LeagueTableElementID element, SQInteger rating, Text *score)
 {
 	CCountedPtr<Text> score_counter(score);
 

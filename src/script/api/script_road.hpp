@@ -265,7 +265,7 @@ public:
 	 *         they are build or 2 when building the first part automatically
 	 *         builds the second part. -1 means the preconditions are not met.
 	 */
-	static int32 CanBuildConnectedRoadParts(ScriptTile::Slope slope, Array<> existing, TileIndex start, TileIndex end);
+	static SQInteger CanBuildConnectedRoadParts(ScriptTile::Slope slope, Array<> existing, TileIndex start, TileIndex end);
 
 	/**
 	 * Lookup function for building road parts independent of whether the
@@ -286,7 +286,7 @@ public:
 	 *         they are build or 2 when building the first part automatically
 	 *         builds the second part. -1 means the preconditions are not met.
 	 */
-	static int32 CanBuildConnectedRoadPartsHere(TileIndex tile, TileIndex start, TileIndex end);
+	static SQInteger CanBuildConnectedRoadPartsHere(TileIndex tile, TileIndex start, TileIndex end);
 
 	/**
 	 * Count how many neighbours are road.
@@ -295,7 +295,7 @@ public:
 	 * @pre IsRoadTypeAvailable(GetCurrentRoadType()).
 	 * @return 0 means no neighbour road; max value is 4.
 	 */
-	static int32 GetNeighbourRoadCount(TileIndex tile);
+	static SQInteger GetNeighbourRoadCount(TileIndex tile);
 
 	/**
 	 * Gets the tile in front of a road depot.
@@ -580,7 +580,7 @@ public:
 	 *       This is mph / 0.8, which is roughly 0.5 km/h.
 	 *       To get km/h multiply this number by 2.01168.
 	 */
-	static int32 GetMaxSpeed(RoadType road_type);
+	static SQInteger GetMaxSpeed(RoadType road_type);
 
 	/**
 	 * Get the maintenance cost factor of a road type.
@@ -588,7 +588,7 @@ public:
 	 * @pre IsRoadTypeAvailable(roadtype)
 	 * @return Maintenance cost factor of the roadtype.
 	 */
-	static uint16 GetMaintenanceCostFactor(RoadType roadtype);
+	static SQInteger GetMaintenanceCostFactor(RoadType roadtype);
 
 	/**
 	 * Checks whether the given road type uses a catenary.

@@ -50,28 +50,28 @@ public:
 	 */
 	static Date GetCurrentDate();
 
-	static int32 GetDayLengthFactor();
+	static SQInteger GetDayLengthFactor();
 
 	/**
 	 * Get the year of the given date.
 	 * @param date The date to get the year of.
 	 * @return The year.
 	 */
-	static int32 GetYear(Date date);
+	static SQInteger GetYear(Date date);
 
 	/**
 	 * Get the month of the given date.
 	 * @param date The date to get the month of.
 	 * @return The month.
 	 */
-	static int32 GetMonth(Date date);
+	static SQInteger GetMonth(Date date);
 
 	/**
 	 * Get the day (of the month) of the given date.
 	 * @param date The date to get the day of.
 	 * @return The day.
 	 */
-	static int32 GetDayOfMonth(Date date);
+	static SQInteger GetDayOfMonth(Date date);
 
 	/**
 	 * Get the date given a year, month and day of month.
@@ -80,7 +80,7 @@ public:
 	 * @param day_of_month The day of month of the to-be determined date.
 	 * @return The date.
 	 */
-	static Date GetDate(int32 year, int32 month, int32 day_of_month);
+	static Date GetDate(SQInteger year, SQInteger month, SQInteger day_of_month);
 
 	/**
 	 * Get the time of the host system.
@@ -88,17 +88,17 @@ public:
 	 * @api -ai
 	 * @note This uses the clock of the host system, which can skew or be set back. Use with caution.
 	 */
-	static int32 GetSystemTime();
+	static SQInteger GetSystemTime();
 
 	static bool IsTimeShownInMinutes();
 
-	static int32 GetTicksPerMinute();
+	static SQInteger GetTicksPerMinute();
 
-	static DateTicksScaled GetCurrentScaledDateTicks();
+	static SQInteger GetCurrentScaledDateTicks();
 
-	static int32 GetHour(DateTicksScaled ticks);
+	static SQInteger GetHour(DateTicksScaled ticks);
 
-	static int32 GetMinute(DateTicksScaled ticks);
+	static SQInteger GetMinute(DateTicksScaled ticks);
 };
 
 #endif /* SCRIPT_DATE_HPP */

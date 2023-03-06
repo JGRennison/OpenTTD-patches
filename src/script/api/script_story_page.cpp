@@ -58,7 +58,7 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 	return (ScriptStoryPage::StoryPageID)0;
 }
 
-/* static */ ScriptStoryPage::StoryPageElementID ScriptStoryPage::NewElement(StoryPageID story_page_id, StoryPageElementType type, uint32 reference, Text *text)
+/* static */ ScriptStoryPage::StoryPageElementID ScriptStoryPage::NewElement(StoryPageID story_page_id, StoryPageElementType type, SQInteger reference, Text *text)
 {
 	CCountedPtr<Text> counter(text);
 
@@ -105,7 +105,7 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 	return (ScriptStoryPage::StoryPageElementID)0;
 }
 
-/* static */ bool ScriptStoryPage::UpdateElement(StoryPageElementID story_page_element_id, uint32 reference, Text *text)
+/* static */ bool ScriptStoryPage::UpdateElement(StoryPageElementID story_page_element_id, SQInteger reference, Text *text)
 {
 	CCountedPtr<Text> counter(text);
 
@@ -151,14 +151,14 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 			encoded_text);
 }
 
-/* static */ uint32 ScriptStoryPage::GetPageSortValue(StoryPageID story_page_id)
+/* static */ SQInteger ScriptStoryPage::GetPageSortValue(StoryPageID story_page_id)
 {
 	EnforcePrecondition(false, IsValidStoryPage(story_page_id));
 
 	return StoryPage::Get(story_page_id)->sort_value;
 }
 
-/* static */ uint32 ScriptStoryPage::GetPageElementSortValue(StoryPageElementID story_page_element_id)
+/* static */ SQInteger ScriptStoryPage::GetPageElementSortValue(StoryPageElementID story_page_element_id)
 {
 	EnforcePrecondition(false, IsValidStoryPageElement(story_page_element_id));
 

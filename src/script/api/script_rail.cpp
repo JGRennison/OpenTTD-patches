@@ -144,7 +144,7 @@
 	return ScriptObject::DoCommand(tile, ScriptObject::GetRailType(), entrance_dir, CMD_BUILD_TRAIN_DEPOT);
 }
 
-/* static */ bool ScriptRail::BuildRailStation(TileIndex tile, RailTrack direction, uint num_platforms, uint platform_length, StationID station_id)
+/* static */ bool ScriptRail::BuildRailStation(TileIndex tile, RailTrack direction, SQInteger num_platforms, SQInteger platform_length, StationID station_id)
 {
 	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
 	EnforcePrecondition(false, ::IsValidTile(tile));
@@ -160,7 +160,7 @@
 	return ScriptObject::DoCommand(tile, p1, (ScriptStation::IsValidStation(station_id) ? station_id : INVALID_STATION) << 16, CMD_BUILD_RAIL_STATION);
 }
 
-/* static */ bool ScriptRail::BuildNewGRFRailStation(TileIndex tile, RailTrack direction, uint num_platforms, uint platform_length, StationID station_id, CargoID cargo_id, IndustryType source_industry, IndustryType goal_industry, int distance, bool source_station)
+/* static */ bool ScriptRail::BuildNewGRFRailStation(TileIndex tile, RailTrack direction, SQInteger num_platforms, SQInteger platform_length, StationID station_id, CargoID cargo_id, IndustryType source_industry, IndustryType goal_industry, SQInteger distance, bool source_station)
 {
 	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
 	EnforcePrecondition(false, ::IsValidTile(tile));
@@ -184,10 +184,10 @@
 		0,
 		source_industry,
 		goal_industry,
-		std::min(255, distance / 2),
+		std::min<SQInteger>(255, distance / 2),
 		AICE_STATION_GET_STATION_ID,
 		source_station ? 0 : 1,
-		std::min(15u, num_platforms) << 4 | std::min(15u, platform_length),
+		std::min<SQInteger>(15u, num_platforms) << 4 | std::min<SQInteger>(15u, platform_length),
 		&file
 	);
 	uint32 p2 = (ScriptStation::IsValidStation(station_id) ? station_id : INVALID_STATION) << 16;
@@ -276,11 +276,11 @@
 
 	if (tile - from == 1) {
 		if (to - tile == 1) return (GetRailTracks(tile) & RAILTRACK_NE_SW) != 0;
-		if (to - tile == ScriptMap::GetMapSizeX()) return (GetRailTracks(tile) & RAILTRACK_NE_SE) != 0;
-	} else if (tile - from == ScriptMap::GetMapSizeX()) {
+		if (to - tile == (uint)ScriptMap::GetMapSizeX()) return (GetRailTracks(tile) & RAILTRACK_NE_SE) != 0;
+	} else if (tile - from == (uint)ScriptMap::GetMapSizeX()) {
 		if (tile - to == 1) return (GetRailTracks(tile) & RAILTRACK_NW_NE) != 0;
 		if (to - tile == 1) return (GetRailTracks(tile) & RAILTRACK_NW_SW) != 0;
-		if (to - tile == ScriptMap::GetMapSizeX()) return (GetRailTracks(tile) & RAILTRACK_NW_SE) != 0;
+		if (to - tile == (uint)ScriptMap::GetMapSizeX()) return (GetRailTracks(tile) & RAILTRACK_NW_SE) != 0;
 	} else {
 		return (GetRailTracks(tile) & RAILTRACK_SW_SE) != 0;
 	}
@@ -504,14 +504,14 @@ static bool IsValidSignalType(int signal_type)
 	}
 }
 
-/* static */ int32 ScriptRail::GetMaxSpeed(RailType railtype)
+/* static */ SQInteger ScriptRail::GetMaxSpeed(RailType railtype)
 {
 	if (!ScriptRail::IsRailTypeAvailable(railtype)) return -1;
 
 	return ::GetRailTypeInfo((::RailType)railtype)->max_speed;
 }
 
-/* static */ uint16 ScriptRail::GetMaintenanceCostFactor(RailType railtype)
+/* static */ SQInteger ScriptRail::GetMaintenanceCostFactor(RailType railtype)
 {
 	if (!ScriptRail::IsRailTypeAvailable(railtype)) return 0;
 

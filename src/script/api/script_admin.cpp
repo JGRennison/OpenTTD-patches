@@ -13,6 +13,7 @@
 #include "../../network/network_admin.h"
 #include "../script_instance.hpp"
 #include "../../string_func.h"
+#include "../../3rdparty/fmt/format.h"
 
 #include "../../safeguards.h"
 
@@ -28,9 +29,7 @@
 			SQInteger res;
 			sq_getinteger(vm, index, &res);
 
-			char buf[10];
-			seprintf(buf, lastof(buf), "%d", (int32)res);
-			data = buf;
+			data = fmt::format("{}", res);
 			return true;
 		}
 
@@ -44,7 +43,7 @@
 				return false;
 			}
 
-			data = std::string("\"") + buf + "\"";
+			data = fmt::format("\"{}\"", buf);
 			return true;
 		}
 
