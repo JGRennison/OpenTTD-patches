@@ -24,6 +24,7 @@
 #include "scope_info.h"
 #include "vehicle_func.h"
 #include "date_func.h"
+#include "3rdparty/cpp-btree/btree_map.h"
 
 #include <vector>
 #include <algorithm>
@@ -2138,7 +2139,7 @@ void TraceRestrictUpdateCompanyID(CompanyID old_company, CompanyID new_company)
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT_COUNTERS);
 }
 
-static std::unordered_multimap<VehicleID, TraceRestrictSlotID> slot_vehicle_index;
+static btree::btree_multimap<VehicleID, TraceRestrictSlotID> slot_vehicle_index;
 
 /**
  * Add vehicle ID to occupants if possible and not already an occupant
@@ -2151,7 +2152,7 @@ bool TraceRestrictSlot::Occupy(VehicleID id, bool force)
 	if (this->IsOccupant(id)) return true;
 	if (this->occupants.size() >= this->max_occupancy && !force) return false;
 	this->occupants.push_back(id);
-	slot_vehicle_index.emplace(id, this->index);
+	slot_vehicle_index.insert({ id, this->index });
 	SetBit(Vehicle::Get(id)->vehicle_flags, VF_HAVE_SLOT);
 	SetWindowDirty(WC_VEHICLE_DETAILS, id);
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
@@ -2233,14 +2234,14 @@ void TraceRestrictSlot::UpdateSignals() {
 
 void TraceRestrictSlot::DeIndex(VehicleID id)
 {
-	auto range = slot_vehicle_index.equal_range(id);
-	for (auto it = range.first; it != range.second; ++it) {
+	auto start = slot_vehicle_index.lower_bound(id);
+	for (auto it = start; it != slot_vehicle_index.end() && it->first == id; ++it) {
 		if (it->second == this->index) {
-			bool is_first_in_range = (it == range.first);
+			bool is_first_in_range = (it == start);
 
 			auto next = slot_vehicle_index.erase(it);
 
-			if (is_first_in_range && next == range.second) {
+			if (is_first_in_range && (next == slot_vehicle_index.end() || next->first != id)) {
 				/* Only one item, which we've just erased, clear the vehicle flag */
 				ClrBit(Vehicle::Get(id)->vehicle_flags, VF_HAVE_SLOT);
 			}
@@ -2257,16 +2258,16 @@ void TraceRestrictSlot::RebuildVehicleIndex()
 	slot_vehicle_index.clear();
 	for (const TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
 		for (VehicleID id : slot->occupants) {
-			slot_vehicle_index.emplace(id, slot->index);
+			slot_vehicle_index.insert({ id, slot->index });
 		}
 	}
 }
 
 bool TraceRestrictSlot::ValidateVehicleIndex()
 {
-	std::unordered_multimap<VehicleID, TraceRestrictSlotID> saved_slot_vehicle_index = std::move(slot_vehicle_index);
+	btree::btree_multimap<VehicleID, TraceRestrictSlotID> saved_slot_vehicle_index = std::move(slot_vehicle_index);
 	RebuildVehicleIndex();
-	const bool ok = slot_vehicle_index == saved_slot_vehicle_index;
+	bool ok = multimaps_equalivalent(saved_slot_vehicle_index, slot_vehicle_index);
 	slot_vehicle_index = std::move(saved_slot_vehicle_index);
 	return ok;
 }
@@ -2319,17 +2320,17 @@ void TraceRestrictSlot::RevertTemporaryChanges(VehicleID veh)
 /** Remove vehicle ID from all slot occupants */
 void TraceRestrictRemoveVehicleFromAllSlots(VehicleID vehicle_id)
 {
-	const auto range = slot_vehicle_index.equal_range(vehicle_id);
-
-	for (auto it = range.first; it != range.second; ++it) {
+	const auto start = slot_vehicle_index.lower_bound(vehicle_id);
+	auto it = start;
+	for (; it != slot_vehicle_index.end() && it->first == vehicle_id; ++it) {
 		auto slot = TraceRestrictSlot::Get(it->second);
 		container_unordered_remove(slot->occupants, vehicle_id);
 		slot->UpdateSignals();
 	}
 
-	const bool anything_to_erase = range.first != range.second;
+	const bool anything_to_erase = (start != it);
 
-	slot_vehicle_index.erase(range.first, range.second);
+	slot_vehicle_index.erase(start, it);
 
 	if (anything_to_erase) InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
 }
@@ -2337,18 +2338,19 @@ void TraceRestrictRemoveVehicleFromAllSlots(VehicleID vehicle_id)
 /** Replace all instance of a vehicle ID with another, in all slot occupants */
 void TraceRestrictTransferVehicleOccupantInAllSlots(VehicleID from, VehicleID to)
 {
-	auto range = slot_vehicle_index.equal_range(from);
 	std::vector<TraceRestrictSlotID> slots;
-	for (auto it = range.first; it != range.second; ++it) {
+	const auto start = slot_vehicle_index.lower_bound(from);
+	auto it = start;
+	for (; it != slot_vehicle_index.end() && it->first == from; ++it) {
 		slots.push_back(it->second);
 	}
-	slot_vehicle_index.erase(range.first, range.second);
+	slot_vehicle_index.erase(start, it);
 	for (TraceRestrictSlotID slot_id : slots) {
 		TraceRestrictSlot *slot = TraceRestrictSlot::Get(slot_id);
 		for (VehicleID &id : slot->occupants) {
 			if (id == from) {
 				id = to;
-				slot_vehicle_index.emplace(to, slot_id);
+				slot_vehicle_index.insert({ to, slot_id });
 			}
 		}
 	}
@@ -2358,8 +2360,7 @@ void TraceRestrictTransferVehicleOccupantInAllSlots(VehicleID from, VehicleID to
 /** Get list of slots occupied by a vehicle ID */
 void TraceRestrictGetVehicleSlots(VehicleID id, std::vector<TraceRestrictSlotID> &out)
 {
-	auto range = slot_vehicle_index.equal_range(id);
-	for (auto it = range.first; it != range.second; ++it) {
+	for (auto it = slot_vehicle_index.lower_bound(id); it != slot_vehicle_index.end() && it->first == id; ++it) {
 		out.push_back(it->second);
 	}
 }
