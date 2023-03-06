@@ -144,7 +144,13 @@ bool HasRoadTypeAvail(const CompanyID company, RoadType roadtype)
 {
 	if (company == OWNER_DEITY || company == OWNER_TOWN || _game_mode == GM_EDITOR || _generating_world) {
 		const RoadTypeInfo *rti = GetRoadTypeInfo(roadtype);
-		return rti->label != 0 && (rti->flags & ROTFB_HIDDEN) == 0;
+		if (rti->label == 0) return false;
+
+		bool available = (rti->flags & ROTFB_HIDDEN) == 0;
+		if (!available && (company == OWNER_TOWN || _game_mode == GM_EDITOR || _generating_world)) {
+			if (roadtype == GetTownRoadType()) return true;
+		}
+		return available;
 	} else {
 		const Company *c = Company::GetIfValid(company);
 		if (c == nullptr) return false;
