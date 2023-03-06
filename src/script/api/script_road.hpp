@@ -141,7 +141,7 @@ public:
 	/**
 	 * Check if a given RoadType is available.
 	 * @param road_type The RoadType to check for.
-	 * @game @pre Valid ScriptCompanyMode active in scope.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @return True if this RoadType can be used.
 	 */
 	static bool IsRoadTypeAvailable(RoadType road_type);
@@ -187,7 +187,7 @@ public:
 	 * @pre ScriptMap::IsValidTile(start_tile).
 	 * @pre ScriptMap::IsValidTile(end_tile).
 	 * @pre IsRoadTypeAvailable(road_type).
-	 * @game @pre Valid ScriptCompanyMode active in scope.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptRoad::ERR_UNSUITABLE_ROAD
 	 * @return Whether at least some road has been converted successfully.
 	 */
@@ -341,7 +341,7 @@ public:
 	 * @exception ScriptRoad::ERR_ROAD_WORKS_IN_PROGRESS
 	 * @exception ScriptError::ERR_VEHICLE_IN_THE_WAY
 	 * @note Construction will fail if an obstacle is found between the start and end tiles.
-	 * @game @note Building a piece of road (without CompanyMode) results in a piece of road owned by towns.
+	 * @game @note Building a piece of road as deity (ScriptCompanyMode::IsDeity()) results in a piece of road owned by towns.
 	 * @return Whether the road has been/can be build or not.
 	 */
 	static bool BuildRoad(TileIndex start, TileIndex end);
@@ -362,7 +362,7 @@ public:
 	 *  ScriptMap::GetTileX(start) == ScriptMap::GetTileX(end) or
 	 *  ScriptMap::GetTileY(start) == ScriptMap::GetTileY(end).
 	 * @pre GetCurrentRoadType() == ROADTYPE_ROAD.
-	 * @game @pre Valid ScriptCompanyMode active in scope.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptError::ERR_ALREADY_BUILT
 	 * @exception ScriptError::ERR_LAND_SLOPED_WRONG
 	 * @exception ScriptError::ERR_AREA_NOT_CLEAR
@@ -393,7 +393,7 @@ public:
 	 * @exception ScriptRoad::ERR_ROAD_WORKS_IN_PROGRESS
 	 * @exception ScriptError::ERR_VEHICLE_IN_THE_WAY
 	 * @note Construction will fail if an obstacle is found between the start and end tiles.
-	 * @game @note Building a piece of road (without CompanyMode) results in a piece of road owned by towns.
+	 * @game @note Building a piece of road as deity (ScriptCompanyMode::IsDeity()) results in a piece of road owned by towns.
 	 * @return Whether the road has been/can be build or not.
 	 */
 	static bool BuildRoadFull(TileIndex start, TileIndex end);
@@ -414,7 +414,7 @@ public:
 	 *  ScriptMap::GetTileX(start) == ScriptMap::GetTileX(end) or
 	 *  ScriptMap::GetTileY(start) == ScriptMap::GetTileY(end).
 	 * @pre GetCurrentRoadType() == ROADTYPE_ROAD.
-	 * @game @pre Valid ScriptCompanyMode active in scope.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptError::ERR_ALREADY_BUILT
 	 * @exception ScriptError::ERR_LAND_SLOPED_WRONG
 	 * @exception ScriptError::ERR_AREA_NOT_CLEAR
@@ -434,7 +434,7 @@ public:
 	 * @pre ScriptMap::IsValidTile(front).
 	 * @pre 'tile' is not equal to 'front', but in a straight line of it.
 	 * @pre IsRoadTypeAvailable(GetCurrentRoadType()).
-	 * @game @pre Valid ScriptCompanyMode active in scope.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptError::ERR_FLAT_LAND_REQUIRED
 	 * @exception ScriptError::ERR_AREA_NOT_CLEAR
 	 * @return Whether the road depot has been/can be build or not.
@@ -452,7 +452,7 @@ public:
 	 * @pre 'tile' is not equal to 'front', but in a straight line of it.
 	 * @pre station_id == ScriptStation::STATION_NEW || station_id == ScriptStation::STATION_JOIN_ADJACENT || ScriptStation::IsValidStation(station_id).
 	 * @pre GetCurrentRoadType() == ROADTYPE_ROAD.
-	 * @game @pre Valid ScriptCompanyMode active in scope.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptError::ERR_OWNED_BY_ANOTHER_COMPANY
 	 * @exception ScriptError::ERR_AREA_NOT_CLEAR
 	 * @exception ScriptError::ERR_FLAT_LAND_REQUIRED
@@ -477,7 +477,7 @@ public:
 	 * @pre 'tile' is not equal to 'front', but in a straight line of it.
 	 * @pre station_id == ScriptStation::STATION_NEW || station_id == ScriptStation::STATION_JOIN_ADJACENT || ScriptStation::IsValidStation(station_id).
 	 * @pre IsRoadTypeAvailable(GetCurrentRoadType()).
-	 * @game @pre Valid ScriptCompanyMode active in scope.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptError::ERR_OWNED_BY_ANOTHER_COMPANY
 	 * @exception ScriptError::ERR_AREA_NOT_CLEAR
 	 * @exception ScriptError::ERR_FLAT_LAND_REQUIRED
@@ -502,7 +502,7 @@ public:
 	 *  ScriptMap::GetTileX(start) == ScriptMap::GetTileX(end) or
 	 *  ScriptMap::GetTileY(start) == ScriptMap::GetTileY(end).
 	 * @pre IsRoadTypeAvailable(GetCurrentRoadType()).
-	 * @game @pre Valid ScriptCompanyMode active in scope.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptError::ERR_OWNED_BY_ANOTHER_COMPANY
 	 * @exception ScriptError::ERR_VEHICLE_IN_THE_WAY
 	 * @exception ScriptRoad::ERR_ROAD_WORKS_IN_PROGRESS
@@ -522,7 +522,7 @@ public:
 	 *  ScriptMap::GetTileX(start) == ScriptMap::GetTileX(end) or
 	 *  ScriptMap::GetTileY(start) == ScriptMap::GetTileY(end).
 	 * @pre IsRoadTypeAvailable(GetCurrentRoadType()).
-	 * @game @pre Valid ScriptCompanyMode active in scope.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptError::ERR_OWNED_BY_ANOTHER_COMPANY
 	 * @exception ScriptError::ERR_VEHICLE_IN_THE_WAY
 	 * @exception ScriptRoad::ERR_ROAD_WORKS_IN_PROGRESS
@@ -535,7 +535,7 @@ public:
 	 * @param tile Place to remove the depot from.
 	 * @pre ScriptMap::IsValidTile(tile).
 	 * @pre Tile is a road depot.
-	 * @game @pre Valid ScriptCompanyMode active in scope.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptError::ERR_OWNED_BY_ANOTHER_COMPANY
 	 * @exception ScriptError::ERR_VEHICLE_IN_THE_WAY
 	 * @return Whether the road depot has been/can be removed or not.
@@ -547,7 +547,7 @@ public:
 	 * @param tile Place to remove the station from.
 	 * @pre ScriptMap::IsValidTile(tile).
 	 * @pre Tile is a road station.
-	 * @game @pre Valid ScriptCompanyMode active in scope.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptError::ERR_OWNED_BY_ANOTHER_COMPANY
 	 * @exception ScriptError::ERR_VEHICLE_IN_THE_WAY
 	 * @return Whether the station has been/can be removed or not.

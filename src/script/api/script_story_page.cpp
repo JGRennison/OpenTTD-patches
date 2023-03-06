@@ -41,7 +41,7 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 {
 	CCountedPtr<Text> counter(title);
 
-	EnforcePrecondition(STORY_PAGE_INVALID, ScriptObject::GetCompany() == OWNER_DEITY);
+	EnforceDeityMode(STORY_PAGE_INVALID);
 	EnforcePrecondition(STORY_PAGE_INVALID, company == ScriptCompany::COMPANY_INVALID || ScriptCompany::ResolveCompanyID(company) != ScriptCompany::COMPANY_INVALID);
 
 	uint8 c = company;
@@ -64,7 +64,7 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 
 	::StoryPageElementType btype = static_cast<::StoryPageElementType>(type);
 
-	EnforcePrecondition(STORY_PAGE_ELEMENT_INVALID, ScriptObject::GetCompany() == OWNER_DEITY);
+	EnforceDeityMode(STORY_PAGE_ELEMENT_INVALID);
 	EnforcePrecondition(STORY_PAGE_ELEMENT_INVALID, IsValidStoryPage(story_page_id));
 	std::string encoded_text;
 	if (StoryPageElementTypeRequiresText(btype)) {
@@ -109,7 +109,7 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 {
 	CCountedPtr<Text> counter(text);
 
-	EnforcePrecondition(false, ScriptObject::GetCompany() == OWNER_DEITY);
+	EnforceDeityMode(false);
 	EnforcePrecondition(false, IsValidStoryPageElement(story_page_element_id));
 
 	StoryPageElement *pe = StoryPageElement::Get(story_page_element_id);
@@ -170,7 +170,7 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 	CCountedPtr<Text> counter(title);
 
 	EnforcePrecondition(false, IsValidStoryPage(story_page_id));
-	EnforcePrecondition(false, ScriptObject::GetCompany() == OWNER_DEITY);
+	EnforceDeityMode(false);
 
 	return ScriptObject::DoCommand(0, story_page_id, 0, CMD_SET_STORY_PAGE_TITLE, title != nullptr ? title->GetEncodedText().c_str() : "");
 }
@@ -188,7 +188,7 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 /* static */ ScriptDate::Date ScriptStoryPage::GetDate(StoryPageID story_page_id)
 {
 	EnforcePrecondition(ScriptDate::DATE_INVALID, IsValidStoryPage(story_page_id));
-	EnforcePrecondition(ScriptDate::DATE_INVALID, ScriptObject::GetCompany() == OWNER_DEITY);
+	EnforceDeityMode(ScriptDate::DATE_INVALID);
 
 	return (ScriptDate::Date)StoryPage::Get(story_page_id)->date;
 }
@@ -196,7 +196,7 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 /* static */ bool ScriptStoryPage::SetDate(StoryPageID story_page_id, ScriptDate::Date date)
 {
 	EnforcePrecondition(false, IsValidStoryPage(story_page_id));
-	EnforcePrecondition(false, ScriptObject::GetCompany() == OWNER_DEITY);
+	EnforceDeityMode(false);
 
 	return ScriptObject::DoCommand(0, story_page_id, date, CMD_SET_STORY_PAGE_DATE, nullptr);
 }
@@ -205,14 +205,14 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 /* static */ bool ScriptStoryPage::Show(StoryPageID story_page_id)
 {
 	EnforcePrecondition(false, IsValidStoryPage(story_page_id));
-	EnforcePrecondition(false, ScriptObject::GetCompany() == OWNER_DEITY);
+	EnforceDeityMode(false);
 
 	return ScriptObject::DoCommand(0, story_page_id, 0, CMD_SHOW_STORY_PAGE);
 }
 
 /* static */ bool ScriptStoryPage::Remove(StoryPageID story_page_id)
 {
-	EnforcePrecondition(false, ScriptObject::GetCompany() == OWNER_DEITY);
+	EnforceDeityMode(false);
 	EnforcePrecondition(false, IsValidStoryPage(story_page_id));
 
 	return ScriptObject::DoCommand(0, story_page_id, 0, CMD_REMOVE_STORY_PAGE);
@@ -220,7 +220,7 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 
 /* static */ bool ScriptStoryPage::RemoveElement(StoryPageElementID story_page_element_id)
 {
-	EnforcePrecondition(false, ScriptObject::GetCompany() == OWNER_DEITY);
+	EnforceDeityMode(false);
 	EnforcePrecondition(false, IsValidStoryPageElement(story_page_element_id));
 
 	return ScriptObject::DoCommand(0, story_page_element_id, 0, CMD_REMOVE_STORY_PAGE_ELEMENT);

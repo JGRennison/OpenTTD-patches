@@ -31,7 +31,7 @@
 	CCountedPtr<Text> header_counter(header);
 	CCountedPtr<Text> footer_counter(footer);
 
-	EnforcePrecondition(LEAGUE_TABLE_INVALID, ScriptObject::GetCompany() == OWNER_DEITY);
+	EnforceDeityMode(LEAGUE_TABLE_INVALID);
 	EnforcePrecondition(LEAGUE_TABLE_INVALID, title != nullptr);
 	std::string encoded_title = title->GetEncodedText();
 	EnforcePreconditionEncodedText(LEAGUE_TABLE_INVALID, encoded_title);
@@ -57,7 +57,7 @@
 	CCountedPtr<Text> text_counter(text);
 	CCountedPtr<Text> score_counter(score);
 
-	EnforcePrecondition(LEAGUE_TABLE_ELEMENT_INVALID, ScriptObject::GetCompany() == OWNER_DEITY);
+	EnforceDeityMode(LEAGUE_TABLE_ELEMENT_INVALID);
 
 	EnforcePrecondition(LEAGUE_TABLE_ELEMENT_INVALID, IsValidLeagueTable(table));
 
@@ -89,7 +89,7 @@
 {
 	CCountedPtr<Text> text_counter(text);
 
-	EnforcePrecondition(false, ScriptObject::GetCompany() == OWNER_DEITY);
+	EnforceDeityMode(false);
 	EnforcePrecondition(false, IsValidLeagueTableElement(element));
 
 	EnforcePrecondition(false, company == ScriptCompany::COMPANY_INVALID || ScriptCompany::ResolveCompanyID(company) != ScriptCompany::COMPANY_INVALID);
@@ -109,7 +109,7 @@
 {
 	CCountedPtr<Text> score_counter(score);
 
-	EnforcePrecondition(false, ScriptObject::GetCompany() == OWNER_DEITY);
+	EnforceDeityMode(false);
 	EnforcePrecondition(false, IsValidLeagueTableElement(element));
 
 	EnforcePrecondition(false, score != nullptr);
@@ -121,7 +121,7 @@
 
 /* static */ bool ScriptLeagueTable::RemoveElement(LeagueTableElementID element)
 {
-	EnforcePrecondition(false, ScriptObject::GetCompany() == OWNER_DEITY);
+	EnforceDeityMode(false);
 	EnforcePrecondition(false, IsValidLeagueTableElement(element));
 
 	return ScriptObject::DoCommand(0, element, 0, CMD_REMOVE_LEAGUE_TABLE_ELEMENT);

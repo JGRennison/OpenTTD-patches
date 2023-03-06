@@ -73,7 +73,7 @@
 
 /* static */ bool ScriptMarine::BuildWaterDepot(TileIndex tile, TileIndex front)
 {
-	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 	EnforcePrecondition(false, ::IsValidTile(front));
 	EnforcePrecondition(false, (::TileX(front) == ::TileX(tile)) != (::TileY(front) == ::TileY(tile)));
@@ -83,7 +83,7 @@
 
 /* static */ bool ScriptMarine::BuildDock(TileIndex tile, StationID station_id)
 {
-	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 	EnforcePrecondition(false, station_id == ScriptStation::STATION_NEW || station_id == ScriptStation::STATION_JOIN_ADJACENT || ScriptStation::IsValidStation(station_id));
 
@@ -94,7 +94,7 @@
 
 /* static */ bool ScriptMarine::BuildBuoy(TileIndex tile)
 {
-	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 
 	return ScriptObject::DoCommand(tile, 0, 0, CMD_BUILD_BUOY);
@@ -102,7 +102,7 @@
 
 /* static */ bool ScriptMarine::BuildLock(TileIndex tile)
 {
-	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 
 	return ScriptObject::DoCommand(tile, 0, 0, CMD_BUILD_LOCK);
@@ -110,7 +110,7 @@
 
 /* static */ bool ScriptMarine::BuildCanal(TileIndex tile)
 {
-	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 
 	return ScriptObject::DoCommand(tile, tile, WATER_CLASS_CANAL, CMD_BUILD_CANAL);
@@ -125,7 +125,7 @@
 
 /* static */ bool ScriptMarine::RemoveWaterDepot(TileIndex tile)
 {
-	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 	EnforcePrecondition(false, IsWaterDepotTile(tile));
 
@@ -134,7 +134,7 @@
 
 /* static */ bool ScriptMarine::RemoveDock(TileIndex tile)
 {
-	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 	EnforcePrecondition(false, IsDockTile(tile));
 
@@ -143,7 +143,7 @@
 
 /* static */ bool ScriptMarine::RemoveBuoy(TileIndex tile)
 {
-	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 	EnforcePrecondition(false, IsBuoyTile(tile));
 
@@ -152,7 +152,7 @@
 
 /* static */ bool ScriptMarine::RemoveLock(TileIndex tile)
 {
-	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 	EnforcePrecondition(false, IsLockTile(tile));
 
@@ -161,7 +161,7 @@
 
 /* static */ bool ScriptMarine::RemoveCanal(TileIndex tile)
 {
-	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 	EnforcePrecondition(false, IsCanalTile(tile));
 
