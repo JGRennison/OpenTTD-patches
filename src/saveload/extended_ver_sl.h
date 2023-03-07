@@ -24,6 +24,7 @@ enum SaveLoadVersion : uint16;
 enum SlXvFeatureIndex {
 	XSLFI_NULL                          = 0,      ///< Unused value, to indicate that no extended feature test is in use
 	XSLFI_VERSION_LABEL,                          ///< Version label
+	XSLFI_UPSTREAM_VERSION,                       ///< Corresponding upstream savegame version
 	XSLFI_TRACE_RESTRICT,                         ///< Trace restrict
 	XSLFI_TRACE_RESTRICT_OWNER,                   ///< Trace restrict: train owner test
 	XSLFI_TRACE_RESTRICT_ORDRCND,                 ///< Trace restrict: slot conditional order

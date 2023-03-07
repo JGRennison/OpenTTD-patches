@@ -60,16 +60,20 @@ bool _sl_maybe_chillpp;                                        ///< is this poss
 bool _sl_upstream_mode;                                        ///< load game using upstream loader
 std::vector<uint32> _sl_xv_discardable_chunk_ids;              ///< list of chunks IDs which we can discard if no chunk loader exists
 std::string _sl_xv_version_label;                              ///< optional SLXI version label
+SaveLoadVersion _sl_xv_upstream_version;                       ///< optional SLXI upstream version
 
 static const uint32 _sl_xv_slxi_chunk_version = 0;             ///< current version of SLXI chunk
 
 static void loadVL(const SlxiSubChunkInfo *info, uint32 length);
 static uint32 saveVL(const SlxiSubChunkInfo *info, bool dry_run);
+static void loadUV(const SlxiSubChunkInfo *info, uint32 length);
+static uint32 saveUV(const SlxiSubChunkInfo *info, bool dry_run);
 static void loadLC(const SlxiSubChunkInfo *info, uint32 length);
 static uint32 saveLC(const SlxiSubChunkInfo *info, bool dry_run);
 
 const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_VERSION_LABEL,          XSCF_IGNORABLE_ALL,       1,   1, "version_label",             saveVL,  loadVL,  nullptr        },
+	{ XSLFI_UPSTREAM_VERSION,       XSCF_NULL,                1,   1, "upstream_version",          saveUV,  loadUV,  nullptr        },
 	{ XSLFI_TRACE_RESTRICT,         XSCF_NULL,               15,  15, "tracerestrict",             nullptr, nullptr, "TRRM,TRRP,TRRS" },
 	{ XSLFI_TRACE_RESTRICT_OWNER,   XSCF_NULL,                1,   1, "tracerestrict_owner",       nullptr, nullptr, nullptr        },
 	{ XSLFI_TRACE_RESTRICT_ORDRCND, XSCF_NULL,                4,   4, "tracerestrict_order_cond",  nullptr, nullptr, nullptr        },
@@ -254,6 +258,7 @@ void SlXvResetState()
 	_sl_xv_discardable_chunk_ids.clear();
 	std::fill(_sl_xv_feature_versions.begin(), _sl_xv_feature_versions.end(), 0);
 	_sl_xv_version_label.clear();
+	_sl_xv_upstream_version = SL_MIN_VERSION;
 }
 
 /**
@@ -693,6 +698,23 @@ static uint32 saveVL(const SlxiSubChunkInfo *info, bool dry_run)
 	const size_t length = strlen(_openttd_revision);
 	if (!dry_run) MemoryDumper::GetCurrent()->CopyBytes(reinterpret_cast<const byte *>(_openttd_revision), length);
 	return static_cast<uint32>(length);
+}
+
+static void loadUV(const SlxiSubChunkInfo *info, uint32 length)
+{
+	if (length == 2) {
+		_sl_xv_upstream_version = (SaveLoadVersion)SlReadUint16();
+		DEBUG(sl, 2, "SLXI upstream version: %u", _sl_xv_upstream_version);
+	} else {
+		DEBUG(sl, 1, "SLXI chunk: feature: '%s', version: %d, has data of wrong length: %u", info->name, _sl_xv_feature_versions[info->index], length);
+		ReadBuffer::GetCurrent()->SkipBytes(length);
+	}
+}
+
+static uint32 saveUV(const SlxiSubChunkInfo *info, bool dry_run)
+{
+	if (!dry_run) SlWriteUint16(SL_MAX_VERSION - 1);
+	return 2;
 }
 
 static void loadLC(const SlxiSubChunkInfo *info, uint32 length)

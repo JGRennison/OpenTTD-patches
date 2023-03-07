@@ -310,6 +310,7 @@ static void WriteSavegameInfo(const char *name)
 {
 	extern SaveLoadVersion _sl_version;
 	extern std::string _sl_xv_version_label;
+	extern uint16 _sl_xv_upstream_version;
 	uint32 last_ottd_rev = 0;
 	byte ever_modified = 0;
 	bool removed_newgrfs = false;
@@ -330,6 +331,9 @@ static void WriteSavegameInfo(const char *name)
 	p += seprintf(p, lastof(buf), "Savegame ver: %d%s\n", _sl_version, type);
 	if (!_sl_xv_version_label.empty()) {
 		p += seprintf(p, lastof(buf), "    Version label: %s\n", _sl_xv_version_label.c_str());
+	}
+	if (_sl_xv_upstream_version != SL_MIN_VERSION) {
+		p += seprintf(p, lastof(buf), "    Upstream version: %u\n", _sl_xv_upstream_version);
 	}
 	for (size_t i = 0; i < XSLFI_SIZE; i++) {
 		if (_sl_xv_feature_versions[i] > 0) {
