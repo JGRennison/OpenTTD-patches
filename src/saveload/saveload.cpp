@@ -2298,8 +2298,10 @@ static void SlSaveChunk(const ChunkHandler &ch)
 	if (ch.type == CH_UPSTREAM_SAVE) {
 		SaveLoadVersion old_ver = _sl_version;
 		_sl_version = MAX_LOAD_SAVEGAME_VERSION;
+		auto guard = scope_guard([&]() {
+			_sl_version = old_ver;
+		});
 		upstream_sl::SlSaveChunkChunkByID(ch.id);
-		_sl_version = old_ver;
 		return;
 	}
 

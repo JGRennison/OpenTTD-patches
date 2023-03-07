@@ -14,6 +14,7 @@
 #include "../fileio_type.h"
 #include "../fios.h"
 #include "../strings_type.h"
+#include "../scope.h"
 
 #include <stdarg.h>
 #include <vector>
@@ -112,8 +113,10 @@ void SlExecWithSlVersion(SaveLoadVersion use_version, F proc)
 	extern SaveLoadVersion _sl_version;
 	SaveLoadVersion old_ver = _sl_version;
 	_sl_version = use_version;
+	auto guard = scope_guard([&]() {
+		_sl_version = old_ver;
+	});
 	proc();
-	_sl_version = old_ver;
 }
 
 namespace upstream_sl {
@@ -129,7 +132,7 @@ namespace upstream_sl {
 			nullptr,
 			SlUnreachablePlaceholder,
 			[]() {
-				SlExecWithSlVersion(F::GetVersion(), []() {
+				SlExecWithSlVersion(F::GetLoadVersion(), []() {
 					SlFixPointerChunkByID(id);
 				});
 			},
@@ -140,12 +143,12 @@ namespace upstream_sl {
 			assert(id == chunk_id);
 			switch (op) {
 				case CSLSO_PRE_LOAD:
-					SlExecWithSlVersion(F::GetVersion(), []() {
+					SlExecWithSlVersion(F::GetLoadVersion(), []() {
 						SlLoadChunkByID(id);
 					});
 					break;
 				case CSLSO_PRE_LOADCHECK:
-					SlExecWithSlVersion(F::GetVersion(), []() {
+					SlExecWithSlVersion(F::GetLoadVersion(), []() {
 						SlLoadCheckChunkByID(id);
 					});
 					break;
