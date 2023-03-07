@@ -5687,14 +5687,8 @@ static const CallbackResultSpriteGroup *NewCallbackResultSpriteGroup(uint16 grou
 	return NewCallbackResultSpriteGroupNoTransform(result);
 }
 
-/* Helper function to either create a callback or link to a previously
- * defined spritegroup. */
-static const SpriteGroup *GetGroupFromGroupID(uint16 setid, byte type, uint16 groupid)
+static const SpriteGroup *GetGroupFromGroupIDNoCBResult(uint16 setid, byte type, uint16 groupid)
 {
-	if (HasBit(groupid, 15)) {
-		return NewCallbackResultSpriteGroup(groupid);
-	}
-
 	if ((size_t)groupid >= _cur.spritegroups.size() || _cur.spritegroups[groupid] == nullptr) {
 		grfmsg(1, "GetGroupFromGroupID(0x%04X:0x%02X): Groupid 0x%04X does not exist, leaving empty", setid, type, groupid);
 		return nullptr;
@@ -5703,6 +5697,17 @@ static const SpriteGroup *GetGroupFromGroupID(uint16 setid, byte type, uint16 gr
 	const SpriteGroup *result = _cur.spritegroups[groupid];
 	if (likely(!HasBit(_misc_debug_flags, MDF_NEWGRF_SG_SAVE_RAW))) result = PruneTargetSpriteGroup(result);
 	return result;
+}
+
+/* Helper function to either create a callback or link to a previously
+ * defined spritegroup. */
+static const SpriteGroup *GetGroupFromGroupID(uint16 setid, byte type, uint16 groupid)
+{
+	if (HasBit(groupid, 15)) {
+		return NewCallbackResultSpriteGroup(groupid);
+	}
+
+	return GetGroupFromGroupIDNoCBResult(setid, type, groupid);
 }
 
 static const SpriteGroup *GetGroupByID(uint16 groupid)
@@ -5865,7 +5870,7 @@ static void NewSpriteGroup(ByteReader *buf)
 				adjust.variable  = buf->ReadByte();
 				if (adjust.variable == 0x7E) {
 					/* Link subroutine group */
-					adjust.subroutine = GetGroupFromGroupID(setid, type, buf->ReadByte());
+					adjust.subroutine = GetGroupFromGroupIDNoCBResult(setid, type, HasBit(_cur.grffile->observed_feature_tests, GFTOF_MORE_ACTION2_IDS) ? buf->ReadExtendedByte() : buf->ReadByte());
 				} else {
 					adjust.parameter = IsInsideMM(adjust.variable, 0x60, 0x80) ? buf->ReadByte() : 0;
 				}
