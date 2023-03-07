@@ -630,6 +630,7 @@ public:
 
 						InvalidateWindowData(WC_REPLACE_VEHICLE, (VehicleType)this->window_number, 0); // Update the autoreplace window
 						InvalidateWindowClassesData(WC_BUILD_VEHICLE); // The build windows needs updating as well
+						InvalidateWindowClassesData(WC_BUILD_VIRTUAL_TRAIN);
 						return;
 					}
 					if ((item.flags & EngineDisplayFlags::Shaded) == EngineDisplayFlags::None) e = item.engine_id;

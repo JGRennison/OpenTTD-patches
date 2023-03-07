@@ -1202,6 +1202,7 @@ void EnginesMonthlyLoop()
 
 		if (refresh) {
 			SetWindowClassesDirty(WC_BUILD_VEHICLE);
+			SetWindowClassesDirty(WC_BUILD_VIRTUAL_TRAIN);
 			SetWindowClassesDirty(WC_REPLACE_VEHICLE);
 		}
 	}
