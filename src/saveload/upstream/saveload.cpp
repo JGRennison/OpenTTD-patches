@@ -2128,6 +2128,12 @@ void SlSaveChunkChunkByID(uint32 id)
 	SlSaveChunk(*ch);
 }
 
+/** Reset state prior to a load */
+void SlResetLoadState()
+{
+	_next_offs = 0;
+}
+
 SaveLoadTable SaveLoadHandler::GetLoadDescription() const
 {
 	assert(this->load_description.has_value());

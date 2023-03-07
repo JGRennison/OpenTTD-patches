@@ -101,6 +101,7 @@ namespace upstream_sl {
 	void SlFixPointers();
 	void SlFixPointerChunkByID(uint32 id);
 	void SlSaveChunkChunkByID(uint32 id);
+	void SlResetLoadState();
 }
 
 /** What are we currently doing? */
@@ -3515,6 +3516,8 @@ static SaveOrLoadResult DoLoad(LoadFilter *reader, bool load_check)
 	}
 	_sl.reader = new ReadBuffer(_sl.lf);
 	_next_offs = 0;
+
+	upstream_sl::SlResetLoadState();
 
 	if (!load_check) {
 		ResetSaveloadData();
