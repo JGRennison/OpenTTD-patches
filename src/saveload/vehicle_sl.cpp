@@ -22,12 +22,15 @@
 #include "../string_func.h"
 #include "../error.h"
 #include "../strings_func.h"
+#include "../3rdparty/cpp-btree/btree_map.h"
 
 #include "saveload.h"
 
 #include <map>
 
 #include "../safeguards.h"
+
+extern btree::btree_multimap<VehicleID, PendingSpeedRestrictionChange> _pending_speed_restriction_change_map;
 
 /**
  * Link front and rear multiheaded engines to each other
@@ -1134,15 +1137,10 @@ const SaveLoadTable GetVehicleSpeedRestrictionDescription()
 
 void Save_VESR()
 {
-	for (Train *t : Train::Iterate()) {
-		if (HasBit(t->flags, VRF_PENDING_SPEED_RESTRICTION)) {
-			auto range = pending_speed_restriction_change_map.equal_range(t->index);
-			for (auto it = range.first; it != range.second; ++it) {
-				SlSetArrayIndex(t->index);
-				PendingSpeedRestrictionChange *ptr = &(it->second);
-				SlObject(ptr, GetVehicleSpeedRestrictionDescription());
-			}
-		}
+	for (auto &it : _pending_speed_restriction_change_map) {
+		SlSetArrayIndex(it.first);
+		PendingSpeedRestrictionChange *ptr = &(it.second);
+		SlObject(ptr, GetVehicleSpeedRestrictionDescription());
 	}
 }
 
@@ -1150,7 +1148,7 @@ void Load_VESR()
 {
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		auto iter = pending_speed_restriction_change_map.insert({ static_cast<VehicleID>(index), {} });
+		auto iter = _pending_speed_restriction_change_map.insert({ static_cast<VehicleID>(index), {} });
 		PendingSpeedRestrictionChange *ptr = &(iter->second);
 		SlObject(ptr, GetVehicleSpeedRestrictionDescription());
 	}

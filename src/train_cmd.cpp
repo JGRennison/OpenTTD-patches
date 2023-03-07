@@ -46,11 +46,14 @@
 #include "debug_settings.h"
 #include "train_speed_adaptation.h"
 #include "event_logs.h"
+#include "3rdparty/cpp-btree/btree_map.h"
 
 #include "table/strings.h"
 #include "table/train_cmd.h"
 
 #include "safeguards.h"
+
+extern btree::btree_multimap<VehicleID, PendingSpeedRestrictionChange> _pending_speed_restriction_change_map;
 
 enum {
 	REALISTIC_BRAKING_MIN_SPEED = 5,
@@ -2988,12 +2991,11 @@ void ReverseTrainDirection(Train *v)
 	if (crossing != INVALID_TILE) MaybeBarCrossingWithSound(crossing);
 
 	if (HasBit(v->flags, VRF_PENDING_SPEED_RESTRICTION)) {
-		auto range = pending_speed_restriction_change_map.equal_range(v->index);
-		for (auto it = range.first; it != range.second;) {
+		for (auto it = _pending_speed_restriction_change_map.lower_bound(v->index); it != _pending_speed_restriction_change_map.end() && it->first == v->index;) {
 			it->second.distance = (v->gcache.cached_total_length + (HasBit(it->second.flags, PSRCF_DIAGONAL) ? 8 : 4)) - it->second.distance;
 			if (it->second.distance == 0) {
 				v->speed_restriction = it->second.prev_speed;
-				it = pending_speed_restriction_change_map.erase(it);
+				it = _pending_speed_restriction_change_map.erase(it);
 			} else {
 				std::swap(it->second.prev_speed, it->second.new_speed);
 				++it;
@@ -5356,29 +5358,29 @@ int ReversingDistanceTargetSpeed(const Train *v)
 
 void DecrementPendingSpeedRestrictions(Train *v)
 {
-	auto range = pending_speed_restriction_change_map.equal_range(v->index);
-	if (range.first == range.second) ClrBit(v->flags, VRF_PENDING_SPEED_RESTRICTION);
-	for (auto it = range.first; it != range.second;) {
+	bool remaining = false;
+	for (auto it = _pending_speed_restriction_change_map.lower_bound(v->index); it != _pending_speed_restriction_change_map.end() && it->first == v->index;) {
 		if (--it->second.distance == 0) {
 			v->speed_restriction = it->second.new_speed;
-			it = pending_speed_restriction_change_map.erase(it);
+			it = _pending_speed_restriction_change_map.erase(it);
 		} else {
 			++it;
+			remaining = true;
 		}
 	}
+	if (!remaining) ClrBit(v->flags, VRF_PENDING_SPEED_RESTRICTION);
 }
 
 void HandleTraceRestrictSpeedRestrictionAction(const TraceRestrictProgramResult &out, Train *v, Trackdir signal_td)
 {
 	if (out.flags & TRPRF_SPEED_RESTRICTION_SET) {
 		SetBit(v->flags, VRF_PENDING_SPEED_RESTRICTION);
-		auto range = pending_speed_restriction_change_map.equal_range(v->index);
-		for (auto it = range.first; it != range.second; ++it) {
+		for (auto it = _pending_speed_restriction_change_map.lower_bound(v->index); it != _pending_speed_restriction_change_map.end() && it->first == v->index; ++it) {
 			if ((uint16) (out.speed_restriction + 0xFFFF) < (uint16) (it->second.new_speed + 0xFFFF)) it->second.new_speed = out.speed_restriction;
 		}
 		uint16 flags = 0;
 		if (IsDiagonalTrack(TrackdirToTrack(signal_td))) SetBit(flags, PSRCF_DIAGONAL);
-		pending_speed_restriction_change_map.insert({ v->index, { (uint16) (v->gcache.cached_total_length + (HasBit(flags, PSRCF_DIAGONAL) ? 8 : 4)), out.speed_restriction, v->speed_restriction, flags } });
+		_pending_speed_restriction_change_map.insert({ v->index, { (uint16) (v->gcache.cached_total_length + (HasBit(flags, PSRCF_DIAGONAL) ? 8 : 4)), out.speed_restriction, v->speed_restriction, flags } });
 		if ((uint16) (out.speed_restriction + 0xFFFF) < (uint16) (v->speed_restriction + 0xFFFF)) v->speed_restriction = out.speed_restriction;
 	}
 	if (out.flags & TRPRF_SPEED_ADAPT_EXEMPT && !HasBit(v->flags, VRF_SPEED_ADAPTATION_EXEMPT)) {

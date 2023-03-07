@@ -28,7 +28,6 @@
 #include "saveload/saveload_common.h"
 #include <list>
 #include <map>
-#include <unordered_map>
 
 CommandCost CmdRefitVehicle(TileIndex, DoCommandFlag, uint32, uint32, const char*);
 
@@ -224,7 +223,6 @@ struct PendingSpeedRestrictionChange {
 	uint16 prev_speed;
 	uint16 flags;
 };
-extern std::unordered_multimap<VehicleID, PendingSpeedRestrictionChange> pending_speed_restriction_change_map;
 
 /** A vehicle pool for a little over 1 million vehicles. */
 typedef Pool<Vehicle, VehicleID, 512, 0xFF000> VehiclePool;

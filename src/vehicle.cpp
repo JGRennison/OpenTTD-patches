@@ -60,6 +60,7 @@
 #include "scope_info.h"
 #include "debug_settings.h"
 #include "3rdparty/cpp-btree/btree_set.h"
+#include "3rdparty/cpp-btree/btree_map.h"
 
 #include "table/strings.h"
 
@@ -105,7 +106,7 @@ INSTANTIATE_POOL_METHODS(Vehicle)
 static btree::btree_set<VehicleID> _vehicles_to_pay_repair;
 static btree::btree_set<VehicleID> _vehicles_to_sell;
 
-std::unordered_multimap<VehicleID, PendingSpeedRestrictionChange> pending_speed_restriction_change_map;
+btree::btree_multimap<VehicleID, PendingSpeedRestrictionChange> _pending_speed_restriction_change_map;
 
 /**
  * Determine shared bounds of all sprites.
@@ -1168,7 +1169,7 @@ void Vehicle::PreDestructor()
 		ClrBit(this->vehicle_flags, VF_HAVE_SLOT);
 	}
 	if (this->type == VEH_TRAIN && HasBit(Train::From(this)->flags, VRF_PENDING_SPEED_RESTRICTION)) {
-		pending_speed_restriction_change_map.erase(this->index);
+		_pending_speed_restriction_change_map.erase(this->index);
 		ClrBit(Train::From(this)->flags, VRF_PENDING_SPEED_RESTRICTION);
 	}
 
@@ -1240,7 +1241,7 @@ Vehicle::~Vehicle()
  */
 void Vehicle::PreCleanPool()
 {
-	pending_speed_restriction_change_map.clear();
+	_pending_speed_restriction_change_map.clear();
 }
 
 /**
