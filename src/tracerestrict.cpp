@@ -1777,13 +1777,16 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 			if (IsTraceRestrictConditional(*old_item) != IsTraceRestrictConditional(item)) {
 				return_cmd_error(STR_TRACE_RESTRICT_ERROR_CAN_T_CHANGE_CONDITIONALITY);
 			}
-			bool old_is_dual = IsTraceRestrictDoubleItem(*old_item);
+			const TraceRestrictItem old_item_value = *old_item;
+			bool old_is_dual = IsTraceRestrictDoubleItem(old_item_value);
 			bool new_is_dual = IsTraceRestrictDoubleItem(item);
 			*old_item = item;
 			if (old_is_dual && !new_is_dual) {
 				items.erase(old_item + 1);
 			} else if (!old_is_dual && new_is_dual) {
 				items.insert(old_item + 1, GetDualInstructionInitialValue(item));
+			} else if (old_is_dual && new_is_dual && GetTraceRestrictType(old_item_value) != GetTraceRestrictType(item)) {
+				*(old_item + 1) = GetDualInstructionInitialValue(item);
 			}
 			break;
 		}
