@@ -239,10 +239,12 @@ class ReplaceVehicleWindow : public Window {
 				if (this->reset_sel_engine && this->sel_engine[1] != INVALID_ENGINE) {
 					int position = 0;
 					for (const auto &item : this->engines[1]) {
-						if (item.engine_id == this->sel_engine[1]) break;
+						if (item.engine_id == this->sel_engine[1]) {
+							this->vscroll[1]->ScrollTowards(position);
+							break;
+						}
 						++position;
 					}
-					this->vscroll[1]->ScrollTowards(position);
 				}
 			}
 		}
