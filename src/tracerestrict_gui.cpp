@@ -1201,11 +1201,23 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 			SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
 			SetDParam(1, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
 		} else {
+			auto insert_warning = [&](uint dparam_index, StringID warning) {
+				char buf[256];
+				int64 args_array[] = { (int64)GetDParam(dparam_index) };
+				StringParameters tmp_params(args_array);
+				char *end = GetStringWithArgs(buf, warning, &tmp_params, lastof(buf));
+				_temp_special_strings[0].assign(buf, end);
+				SetDParam(dparam_index, SPECSTR_TEMP_START);
+			};
+
 			switch (properties.value_type) {
 				case TRVT_INT:
 				case TRVT_PERCENT:
 					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER;
 					DrawInstructionStringConditionalIntegerCommon(item, properties);
+					if (GetTraceRestrictType(item) == TRIT_COND_RESERVED_TILES && _settings_game.vehicle.train_braking_model != TBM_REALISTIC) {
+						insert_warning(1, STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING);
+					}
 					break;
 
 				case TRVT_SPEED:
@@ -1278,20 +1290,12 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 						SetDParam(3, TileX(tile));
 						SetDParam(4, TileY(tile));
 					}
-					auto insert_warning = [&](StringID warning) {
-						char buf[256];
-						int64 args_array[] = { (int64)GetDParam(1) };
-						StringParameters tmp_params(args_array);
-						char *end = GetStringWithArgs(buf, warning, &tmp_params, lastof(buf));
-						_temp_special_strings[0].assign(buf, end);
-						SetDParam(1, SPECSTR_TEMP_START);
-					};
 					auto check_signal_mode_control = [&](bool allowed) {
 						bool warn = false;
 						IterateActionsInsideConditional(prog, index, [&](const TraceRestrictItem &item) {
 							if ((GetTraceRestrictType(item) == TRIT_SIGNAL_MODE_CONTROL) != allowed) warn = true;
 						});
-						if (warn) insert_warning(allowed ? STR_TRACE_RESTRICT_WARNING_SIGNAL_MODE_CONTROL_ONLY : STR_TRACE_RESTRICT_WARNING_NO_SIGNAL_MODE_CONTROL);
+						if (warn) insert_warning(1, allowed ? STR_TRACE_RESTRICT_WARNING_SIGNAL_MODE_CONTROL_ONLY : STR_TRACE_RESTRICT_WARNING_NO_SIGNAL_MODE_CONTROL);
 					};
 					switch (static_cast<TraceRestrictPBSEntrySignalAuxField>(GetTraceRestrictAuxField(item))) {
 						case TRPESAF_VEH_POS:
@@ -1302,13 +1306,13 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 						case TRPESAF_RES_END:
 							SetDParam(1, STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG);
 							check_signal_mode_control(false);
-							if (_settings_game.vehicle.train_braking_model != TBM_REALISTIC) insert_warning(STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING);
+							if (_settings_game.vehicle.train_braking_model != TBM_REALISTIC) insert_warning(1, STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING);
 							break;
 
 						case TRPESAF_RES_END_TILE:
 							SetDParam(1, STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE_LONG);
 							check_signal_mode_control(true);
-							if (_settings_game.vehicle.train_braking_model != TBM_REALISTIC) insert_warning(STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING);
+							if (_settings_game.vehicle.train_braking_model != TBM_REALISTIC) insert_warning(1, STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING);
 							break;
 
 						default:
