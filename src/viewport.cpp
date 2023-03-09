@@ -6007,8 +6007,7 @@ calc_heightdiff_single_direction:;
 			if (dx != 1 || dy != 1) {
 				heightdiff = CalcHeightdiff(style, 0, t0, t1);
 				params[index++] = DistanceManhattan(t0, t1);
-				params[index++] = sqrtl(dx * dx + dy * dy); //DistanceSquare does not like big numbers
-
+				params[index++] = IntSqrt64(((uint64)dx * (uint64)dx) + ((uint64)dy * (uint64)dy)); // Avoid overflow in DistanceSquare
 			} else {
 				index += 2;
 			}
@@ -6016,8 +6015,8 @@ calc_heightdiff_single_direction:;
 			params[index++] = DistanceFromEdge(t1);
 			params[index++] = GetTileMaxZ(t1) * TILE_HEIGHT_STEP;
 			params[index++] = heightdiff;
-			//Show always the measurement tooltip
-			GuiShowTooltips(_thd.GetCallbackWnd(),STR_MEASURE_DIST_HEIGHTDIFF, index, params, TCC_EXIT_VIEWPORT);
+			/* Always show the measurement tooltip */
+			GuiShowTooltips(_thd.GetCallbackWnd(), STR_MEASURE_DIST_HEIGHTDIFF, index, params, TCC_EXIT_VIEWPORT);
 			break;
 		}
 
