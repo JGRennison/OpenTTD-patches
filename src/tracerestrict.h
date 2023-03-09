@@ -884,34 +884,63 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 		}
 	} else {
 		out.cond_type = TRCOT_NONE;
-		if (GetTraceRestrictType(item) == TRIT_PF_PENALTY) {
-			out.value_type = TRVT_PF_PENALTY;
-		} else if (GetTraceRestrictType(item) == TRIT_PF_DENY) {
-			out.value_type = TRVT_DENY;
-		} else if (GetTraceRestrictType(item) == TRIT_RESERVE_THROUGH) {
-			out.value_type = TRVT_RESERVE_THROUGH;
-		} else if (GetTraceRestrictType(item) == TRIT_LONG_RESERVE) {
-			out.value_type = TRVT_LONG_RESERVE;
-		} else if (GetTraceRestrictType(item) == TRIT_WAIT_AT_PBS) {
-			out.value_type = TRVT_WAIT_AT_PBS;
-		} else if (GetTraceRestrictType(item) == TRIT_SLOT) {
-			out.value_type = TRVT_SLOT_INDEX;
-		} else if (GetTraceRestrictType(item) == TRIT_REVERSE) {
-			out.value_type = TRVT_REVERSE;
-		} else if (GetTraceRestrictType(item) == TRIT_SPEED_RESTRICTION) {
-			out.value_type = TRVT_SPEED;
-		} else if (GetTraceRestrictType(item) == TRIT_NEWS_CONTROL) {
-			out.value_type = TRVT_NEWS_CONTROL;
-		} else if (GetTraceRestrictType(item) == TRIT_COUNTER) {
-			out.value_type = TRVT_COUNTER_INDEX_INT;
-		} else if (GetTraceRestrictType(item) == TRIT_PF_PENALTY_CONTROL) {
-			out.value_type = TRVT_PF_PENALTY_CONTROL;
-		} else if (GetTraceRestrictType(item) == TRIT_SPEED_ADAPTATION_CONTROL) {
-			out.value_type = TRVT_SPEED_ADAPTATION_CONTROL;
-		} else if (GetTraceRestrictType(item) == TRIT_SIGNAL_MODE_CONTROL) {
-			out.value_type = TRVT_SIGNAL_MODE_CONTROL;
-		} else {
-			out.value_type = TRVT_NONE;
+
+		switch (GetTraceRestrictType(item)) {
+			case TRIT_PF_PENALTY:
+				out.value_type = TRVT_PF_PENALTY;
+				break;
+
+			case TRIT_PF_DENY:
+				out.value_type = TRVT_DENY;
+				break;
+
+			case TRIT_RESERVE_THROUGH:
+				out.value_type = TRVT_RESERVE_THROUGH;
+				break;
+
+			case TRIT_LONG_RESERVE:
+				out.value_type = TRVT_LONG_RESERVE;
+				break;
+
+			case TRIT_WAIT_AT_PBS:
+				out.value_type = TRVT_WAIT_AT_PBS;
+				break;
+
+			case TRIT_SLOT:
+				out.value_type = TRVT_SLOT_INDEX;
+				break;
+
+			case TRIT_REVERSE:
+				out.value_type = TRVT_REVERSE;
+				break;
+
+			case TRIT_SPEED_RESTRICTION:
+				out.value_type = TRVT_SPEED;
+				break;
+
+			case TRIT_NEWS_CONTROL:
+				out.value_type = TRVT_NEWS_CONTROL;
+				break;
+
+			case TRIT_COUNTER:
+				out.value_type = TRVT_COUNTER_INDEX_INT;
+				break;
+
+			case TRIT_PF_PENALTY_CONTROL:
+				out.value_type = TRVT_PF_PENALTY_CONTROL;
+				break;
+
+			case TRIT_SPEED_ADAPTATION_CONTROL:
+				out.value_type = TRVT_SPEED_ADAPTATION_CONTROL;
+				break;
+
+			case TRIT_SIGNAL_MODE_CONTROL:
+				out.value_type = TRVT_SIGNAL_MODE_CONTROL;
+				break;
+
+			default:
+				out.value_type = TRVT_NONE;
+				break;
 		}
 	}
 
