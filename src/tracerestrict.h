@@ -45,7 +45,7 @@ struct TraceRestrictSlot;
 
 /** Type of the pool for trace restrict slots. */
 typedef Pool<TraceRestrictSlot, TraceRestrictSlotID, 16, 0xFFF0> TraceRestrictSlotPool;
-/** The actual pool for trace restrict nodes. */
+/** The actual pool for trace restrict slots. */
 extern TraceRestrictSlotPool _tracerestrictslot_pool;
 
 static const TraceRestrictSlotID NEW_TRACE_RESTRICT_SLOT_ID = 0xFFFD;        // for GUI use only
@@ -56,9 +56,9 @@ static const TraceRestrictSlotID INVALID_TRACE_RESTRICT_SLOT_ID = 0xFFFF;
 typedef uint16 TraceRestrictCounterID;
 struct TraceRestrictCounter;
 
-/** Type of the pool for trace restrict slots. */
+/** Type of the pool for trace restrict counters. */
 typedef Pool<TraceRestrictCounter, TraceRestrictCounterID, 16, 0xFFF0> TraceRestrictCounterPool;
-/** The actual pool for trace restrict nodes. */
+/** The actual pool for trace restrict counters. */
 extern TraceRestrictCounterPool _tracerestrictcounter_pool;
 
 static const TraceRestrictCounterID NEW_TRACE_RESTRICT_COUNTER_ID = 0xFFFE;        // for GUI use only
@@ -87,10 +87,10 @@ void ClearTraceRestrictMapping();
 typedef uint32 TraceRestrictItem;
 
 /**
- * Describes the allocation of bits to fields in TraceRestrictItem
- * Of the fields below, the type seem the most likely
+ * Describes the allocation of bits to fields in TraceRestrictItem.
+ * Of the fields below, the type seems the most likely
  * to need future expansion, hence the reserved bits are placed
- * immediately after them
+ * immediately after them.
  *
  * COUNT values describe the field bit width
  * OFFSET values describe the field bit offset
@@ -360,7 +360,7 @@ enum TraceRestrictSlotCondOpField {
 	TRSCOF_PBS_RES_END_ACQ_TRY    = 5,       ///< PBS reservations ending at this signal: acquire a slot, or carry on otherwise
 	TRSCOF_PBS_RES_END_RELEASE    = 6,       ///< PBS reservations ending at this signal: release a slot
 	TRSCOF_ACQUIRE_TRY_ON_RESERVE = 7,       ///< try to acquire a slot (on reserve), or carry on otherwise
-	/* space up to 8 */
+	/* space up to 7 */
 };
 
 /**
@@ -379,7 +379,7 @@ enum TraceRestrictCounterCondOpField {
 	TRCCOF_INCREASE               = 0,       ///< increase counter by value
 	TRCCOF_DECREASE               = 1,       ///< decrease counter by value
 	TRCCOF_SET                    = 2,       ///< set counter to value
-	/* space up to 8 */
+	/* space up to 7 */
 };
 
 /**
@@ -488,7 +488,7 @@ struct TraceRestrictProgramInput {
 struct TraceRestrictProgramResult {
 	uint32 penalty;                          ///< Total additional pathfinder penalty
 	TraceRestrictProgramResultFlags flags;   ///< Flags of other actions to take
-	uint16 speed_restriction;                ///> Speed restriction to apply (if TRPRF_SPEED_RESTRICTION_SET flag present)
+	uint16 speed_restriction;                ///< Speed restriction to apply (if TRPRF_SPEED_RESTRICTION_SET flag present)
 
 	TraceRestrictProgramResult()
 			: penalty(0), flags(static_cast<TraceRestrictProgramResultFlags>(0)) { }
@@ -1103,7 +1103,7 @@ private:
 };
 
 /**
- * Slot type, used for slot operations
+ * Counter type
  */
 struct TraceRestrictCounter : TraceRestrictCounterPool::PoolItem<&_tracerestrictcounter_pool> {
 	int32 value = 0;
