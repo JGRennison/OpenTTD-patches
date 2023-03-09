@@ -7,6 +7,9 @@
 
 /** @file unit_conversion.h Functions related to unit conversion. */
 
+#ifndef UNIT_CONVERSION_H
+#define UNIT_CONVERSION_H
+
 uint ConvertSpeedToDisplaySpeed(uint speed);
 uint ConvertSpeedToUnitDisplaySpeed(uint speed);
 uint ConvertDisplaySpeedToSpeed(uint speed);
@@ -20,3 +23,5 @@ void ConvertPowerWeightRatioToDisplay(uint ratio, int64 &value, int64 &decimals)
 void ConvertForceWeightRatioToDisplay(uint ratio, int64 &value, int64 &decimals);
 uint ConvertDisplayToPowerWeightRatio(double in);
 uint ConvertDisplayToForceWeightRatio(double in);
+
+#endif /* UNIT_CONVERSION_H */
