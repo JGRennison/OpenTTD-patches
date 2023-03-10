@@ -726,25 +726,25 @@ STR_TRACE_RESTRICT_CONDITIONAL_ORIF                             :또는, 조건�
 STR_TRACE_RESTRICT_CONDITIONAL_ELSE                             :아니라면:
 STR_TRACE_RESTRICT_CONDITIONAL_ENDIF                            :조건문 종료
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_LENGTH                        :열차 길이
-STR_TRACE_RESTRICT_VARIABLE_MAX_SPEED                           :최고 속도
+STR_TRACE_RESTRICT_VARIABLE_MAX_SPEED                           :최고 속력
 STR_TRACE_RESTRICT_VARIABLE_CURRENT_ORDER                       :현재 경로
 STR_TRACE_RESTRICT_VARIABLE_NEXT_ORDER                          :다음 경로
 STR_TRACE_RESTRICT_VARIABLE_LAST_VISITED_STATION                :마지막으로 경유한 역
 STR_TRACE_RESTRICT_VARIABLE_CARGO                               :화물
 STR_TRACE_RESTRICT_VARIABLE_LOAD_PERCENT                        :적재율
 STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION                     :진입 방향
-STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL                    :경로 신호기
-STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG               :통과한 경로 신호기
-STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL                  :끝 경로 신호기
-STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG             :현재 예약된 경로의 끝에 있는 신호기
-STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE                    :경로 신호기 예약 끝 칸
+STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL                    :경로 예약 시작 신호기
+STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG               :현재 경로 예약의 시작점 신호기
+STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL                  :경로 예약 끝 신호기
+STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG             :현재 경로 예약의 끝 신호기
+STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE                    :경로 예약 끝 칸
 STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE_LONG               :이 신호기 이후 경로 신호기 예약의 끝에 있는 칸
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_GROUP                         :열차 그룹
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT                          :열차 슬롯
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY                      :슬롯 사용량
-STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING            :남은 슬롯 수용량
+STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING            :남은 슬롯 사용량
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_SHORT                :사용량
-STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING_SHORT      :남은 수용량
+STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING_SHORT      :남은 사용량
 STR_TRACE_RESTRICT_VARIABLE_COUNTER_VALUE                       :카운터 값
 STR_TRACE_RESTRICT_VARIABLE_TIME_DATE_VALUE                     :현재 시각/날짜
 STR_TRACE_RESTRICT_VARIABLE_RESERVED_TILES_AHEAD                :전방에 예약된 칸 개수
@@ -757,8 +757,8 @@ STR_TRACE_RESTRICT_VARIABLE_TRAIN_OWNER                         :열차 소유�
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_STATUS                        :열차 상태
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_ENGINE_CLASS                  :기관차 종류
 STR_TRACE_RESTRICT_VARIABLE_ORDER_TARGET_DIRECTION              :경로 목적지 방향
-STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH                 :경로 예약이 칸을 통과한다면
-STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH_SHORT           :경로 예약이 칸을 통과하지 않는다면
+STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH                 :경로 예약이 통과하는 칸
+STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH_SHORT           :경로 예약
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :정의되지 않음
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED                       :{PUSH_COLOUR}{RED}정의되지 않음{POP_COLOUR}
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER                  :{STRING} {STRING} {STRING} {COMMA}{P 3 "이" ""}라면
@@ -1977,3 +1977,5 @@ STR_SHIFT_KEY_NAME                                              :{BLACK}SHIFT
 STR_CTRL_KEY_NAME                                               :{BLACK}CTRL
 STR_MODIFIER_TOGGLE_SHIFT_TOOLTIP                               :{BLACK}SHIFT 키의 상태를 바꾸려면 클릭하세요
 STR_MODIFIER_TOGGLE_CTRL_TOOLTIP                                :{BLACK}CTRL 키의 상태를 바꾸려면 클릭하세요
+
+STR_ERROR_TUNNEL_DISALLOWED_ROAD                                :{WHITE}이 도로에는 터널을 만들 수 없습니다
