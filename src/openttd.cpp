@@ -310,7 +310,7 @@ static void WriteSavegameInfo(const char *name)
 {
 	extern SaveLoadVersion _sl_version;
 	extern std::string _sl_xv_version_label;
-	extern uint16 _sl_xv_upstream_version;
+	extern SaveLoadVersion _sl_xv_upstream_version;
 	uint32 last_ottd_rev = 0;
 	byte ever_modified = 0;
 	bool removed_newgrfs = false;
