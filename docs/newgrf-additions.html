@@ -941,8 +941,9 @@
 	<h4 id="FIDM-FTID">Property ID: C "FIDM" -> B "FTID"</h4>
 	<p>Within an FTID chunk, the FTID binary (type B) field contains the feature ID to allocate to the named feature. This is 1 byte.<br />
 	Note that the remapped feature ID can only be used after this FIDM chunk in the GRF. It is not applied retrospectively to sprites earlier in the GRF file, or earlier parts of the current Action 14 sprite.<br />
-	It is possible to override existing feature IDs, however this use is STRONGLY NOT RECOMMENDED due to a high potential for confusion when your code is inspected by someone else.<br />
-	At the time of writing known existing feature IDs include the values: 0x00 - 0x13 (inclusive) and 0x48.</p>
+	It is possible to override existing feature IDs, however this use is STRONGLY NOT RECOMMENDED (except in the specific case below) due to a high potential for confusion when your code is inspected by someone else.<br />
+	At the time of writing known existing feature IDs include the values: 0x00 - 0x14 (inclusive) and 0x48.</p>
+	<p>The interface for feature 0x14 (road stops) is mostly equivalent to that of the "roadstops" feature name, therefore it is reasonable to map the "roadstops" feature name to ID 0x14, such that both interfaces can be supported simultaneously.</p>
 	<h4 id="FIDM-SETT">Success Indicator Global Variable 0x8D Bit: C "FIDM" -> B "SETT"</h4>
 	<p>This behaves identically to the <a href="#A0PM-SETT">C "A0PM" -> B "SETT"</a> case, above</p>
 	<h4 id="FIDM-SVAL">Success Indicator Global Variable 0x91 Test Value: C "FIDM" -> B "SVAL"</h4>
