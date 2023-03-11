@@ -90,12 +90,12 @@ enum GrfSpecFeature : uint8 {
 	GSF_ROADSTOPS,
 
 	GSF_NEWLANDSCAPE,
+	GSF_FAKE_TOWNS,           ///< Fake (but mappable) town GrfSpecFeature for NewGRF debugging (parent scope), and generic callbacks
 	GSF_END,
 
 	GSF_REAL_FEATURE_END = GSF_NEWLANDSCAPE,
 
-	GSF_FAKE_TOWNS = GSF_END, ///< Fake town GrfSpecFeature for NewGRF debugging (parent scope)
-	GSF_FAKE_STATION_STRUCT,  ///< Fake station struct GrfSpecFeature for NewGRF debugging
+	GSF_FAKE_STATION_STRUCT = GSF_END,  ///< Fake station struct GrfSpecFeature for NewGRF debugging
 	GSF_FAKE_END,             ///< End of the fake features
 
 	GSF_ERROR_ON_USE = 0xFE,  ///< An invalid value which generates an immediate error on mapping

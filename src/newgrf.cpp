@@ -5352,6 +5352,7 @@ static const char *_feature_names[] = {
 	"TRAMTYPES",
 	"ROADSTOPS",
 	"NEWLANDSCAPE",
+	"TOWN",
 };
 static_assert(lengthof(_feature_names) == GSF_END);
 
@@ -5490,6 +5491,7 @@ static void FeatureChangeInfo(ByteReader *buf)
 		/* GSF_TRAMTYPES */     TramTypeChangeInfo,
 		/* GSF_ROADSTOPS */     RoadStopChangeInfo,
 		/* GSF_NEWLANDSCAPE */  NewLandscapeChangeInfo,
+		/* GSF_FAKE_TOWNS */    nullptr,
 	};
 	static_assert(GSF_END == lengthof(handler));
 	static_assert(lengthof(handler) == lengthof(_cur.grffile->action0_property_remaps), "Action 0 feature list length mismatch");

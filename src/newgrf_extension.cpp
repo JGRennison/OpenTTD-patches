@@ -62,6 +62,7 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("new_landscape", 2),
 	GRFFeatureInfo("more_objects_per_grf", 1, GFTOF_MORE_OBJECTS_PER_GRF),
 	GRFFeatureInfo("more_action2_ids", 1, GFTOF_MORE_ACTION2_IDS),
+	GRFFeatureInfo("town_feature", 1),
 	GRFFeatureInfo(),
 };
 
@@ -69,6 +70,7 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 extern const GRFFeatureMapDefinition _grf_remappable_features[] = {
 	GRFFeatureMapDefinition(GSF_ROADSTOPS, "road_stops"),
 	GRFFeatureMapDefinition(GSF_NEWLANDSCAPE, "new_landscape"),
+	GRFFeatureMapDefinition(GSF_FAKE_TOWNS, "town"),
 	GRFFeatureMapDefinition(),
 };
 
