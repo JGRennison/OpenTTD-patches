@@ -3437,8 +3437,10 @@ static SaveOrLoadResult DoLoad(LoadFilter *reader, bool load_check)
 
 	SlXvResetState();
 	SlResetVENC();
+	SlResetTNNC();
 	auto guard = scope_guard([&]() {
 		SlResetVENC();
+		SlResetTNNC();
 	});
 
 	uint32 hdr[2];

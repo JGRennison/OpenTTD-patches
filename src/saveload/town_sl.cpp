@@ -13,11 +13,14 @@
 #include "../landscape.h"
 #include "../subsidy_func.h"
 #include "../strings_func.h"
+#include "../network/network.h"
 
 #include "saveload.h"
 #include "newgrf_sl.h"
 
 #include "../safeguards.h"
+
+static bool _town_zone_radii_no_update = false;
 
 HouseID SLGetCleanHouseType(TileIndex t, bool old_map_position)
 {
@@ -54,9 +57,11 @@ void RebuildTownCaches(bool cargo_update_required, bool old_map_position)
 		if (GetHouseNorthPart(house_id) == 0) town->cache.num_houses++;
 	}
 
-	/* Update the population and num_house dependent values */
-	for (Town *town : Town::Iterate()) {
-		UpdateTownRadius(town);
+	if (!_town_zone_radii_no_update) {
+		/* Update the population and num_house dependent values */
+		for (Town *town : Town::Iterate()) {
+			UpdateTownRadius(town);
+		}
 	}
 }
 
@@ -363,10 +368,55 @@ static void Ptrs_TOWN()
 	}
 }
 
+void SlResetTNNC()
+{
+	_town_zone_radii_no_update = false;
+}
+
+void Save_TNNC()
+{
+	if (!IsNetworkServerSave()) {
+		SlSetLength(0);
+		return;
+	}
+
+	SlSetLength(4 + (Town::GetNumItems() * (1 + lengthof(TownCache::squared_town_zone_radius)) * 4));
+
+	SlWriteUint32(Town::GetNumItems());
+
+	for (const Town *t : Town::Iterate()) {
+		SlWriteUint32(t->index);
+		for (uint i = 0; i < lengthof(TownCache::squared_town_zone_radius); i++) {
+			SlWriteUint32(t->cache.squared_town_zone_radius[i]);
+		}
+	}
+}
+
+void Load_TNNC()
+{
+	if (SlGetFieldLength() == 0) return;
+
+	if (!_networking || _network_server) {
+		SlSkipBytes(SlGetFieldLength());
+		return;
+	}
+
+	_town_zone_radii_no_update = true;
+
+	const uint32 count = SlReadUint32();
+	for (uint32 idx = 0; idx < count; idx++) {
+		Town *t = Town::Get(SlReadUint32());
+		for (uint i = 0; i < lengthof(TownCache::squared_town_zone_radius); i++) {
+			t->cache.squared_town_zone_radius[i] = SlReadUint32();
+		}
+	}
+}
+
 /** Chunk handler for towns. */
 static const ChunkHandler town_chunk_handlers[] = {
 	{ 'HIDS', Save_HIDS, Load_HIDS, nullptr,   nullptr, CH_ARRAY },
 	{ 'CITY', Save_TOWN, Load_TOWN, Ptrs_TOWN, nullptr, CH_ARRAY },
+	{ 'TNNC', Save_TNNC, Load_TNNC, nullptr,   nullptr, CH_RIFF  },
 };
 
 extern const ChunkHandlerTable _town_chunk_handlers(town_chunk_handlers);

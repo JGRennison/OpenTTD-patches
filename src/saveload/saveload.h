@@ -750,6 +750,8 @@ bool SaveloadCrashWithMissingNewGRFs();
 void SlResetVENC();
 void SlProcessVENC();
 
+void SlResetTNNC();
+
 extern std::string _savegame_format;
 extern bool _do_autosave;
 
