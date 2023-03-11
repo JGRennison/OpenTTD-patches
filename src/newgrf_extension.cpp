@@ -63,6 +63,7 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("more_objects_per_grf", 1, GFTOF_MORE_OBJECTS_PER_GRF),
 	GRFFeatureInfo("more_action2_ids", 1, GFTOF_MORE_ACTION2_IDS),
 	GRFFeatureInfo("town_feature", 1),
+	GRFFeatureInfo("town_uncapped_variables", 1),
 	GRFFeatureInfo(),
 };
 
@@ -167,6 +168,13 @@ extern const GRFVariableMapDefinition _grf_action2_remappable_variables[] = {
 	GRFVariableMapDefinition(GSF_SIGNALS, A2VRI_SIGNALS_SIGNAL_CONTEXT, "signals_signal_context"),
 	GRFVariableMapDefinition(GSF_SIGNALS, A2VRI_SIGNALS_SIGNAL_STYLE, "signals_signal_style"),
 	GRFVariableMapDefinition(GSF_SIGNALS, A2VRI_SIGNALS_SIGNAL_SIDE, "signals_signal_side"),
+	GRFVariableMapDefinition(GSF_FAKE_TOWNS, A2VRI_TOWNS_HOUSE_COUNT, "town_house_count"),
+	GRFVariableMapDefinition(GSF_FAKE_TOWNS, A2VRI_TOWNS_POPULATION, "town_population"),
+	GRFVariableMapDefinition(GSF_FAKE_TOWNS, A2VRI_ZONE_0, "town_zone_0_radius_square"),
+	GRFVariableMapDefinition(GSF_FAKE_TOWNS, A2VRI_ZONE_1, "town_zone_1_radius_square"),
+	GRFVariableMapDefinition(GSF_FAKE_TOWNS, A2VRI_ZONE_2, "town_zone_2_radius_square"),
+	GRFVariableMapDefinition(GSF_FAKE_TOWNS, A2VRI_ZONE_3, "town_zone_3_radius_square"),
+	GRFVariableMapDefinition(GSF_FAKE_TOWNS, A2VRI_ZONE_4, "town_zone_4_radius_square"),
 	GRFVariableMapDefinition(GSF_NEWLANDSCAPE, 0x40, "newlandscape_terrain_type"),
 	GRFVariableMapDefinition(GSF_NEWLANDSCAPE, 0x41, "newlandscape_tile_slope"),
 	GRFVariableMapDefinition(GSF_NEWLANDSCAPE, 0x42, "newlandscape_tile_height"),

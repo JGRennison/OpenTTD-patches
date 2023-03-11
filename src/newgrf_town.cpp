@@ -109,6 +109,15 @@
 		case 0xD3: return GB(this->t->received[TE_WATER].old_act, 8, 8);
 		case 0xD4: return this->t->road_build_months;
 		case 0xD5: return this->t->fund_buildings_months;
+		case A2VRI_TOWNS_HOUSE_COUNT: return this->t->cache.num_houses;
+		case A2VRI_TOWNS_POPULATION: return this->t->cache.population;
+
+		case A2VRI_ZONE_0:
+		case A2VRI_ZONE_1:
+		case A2VRI_ZONE_2:
+		case A2VRI_ZONE_3:
+		case A2VRI_ZONE_4:
+			return this->t->cache.squared_town_zone_radius[variable - A2VRI_ZONE_0];
 	}
 
 	DEBUG(grf, 1, "Unhandled town variable 0x%X", variable);
@@ -163,6 +172,13 @@
 		case 0xC3: case 0xC4: case 0xC5: case 0xC6: case 0xC7: case 0xC8: case 0xC9: case 0xCA:
 		case 0xCB: case 0xCC: case 0xCD: case 0xCE: case 0xCF: case 0xD0: case 0xD1: case 0xD2:
 		case 0xD3: case 0xD4: case 0xD5:
+		case A2VRI_TOWNS_HOUSE_COUNT:
+		case A2VRI_TOWNS_POPULATION:
+		case A2VRI_ZONE_0:
+		case A2VRI_ZONE_1:
+		case A2VRI_ZONE_2:
+		case A2VRI_ZONE_3:
+		case A2VRI_ZONE_4:
 			return 0;
 	}
 
