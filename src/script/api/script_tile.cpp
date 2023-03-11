@@ -22,6 +22,7 @@
 
 /* static */ bool ScriptTile::IsBuildable(TileIndex tile)
 {
+	EnforceDeityOrCompanyModeValid(false);
 	if (!::IsValidTile(tile)) return false;
 
 	switch (::GetTileType(tile)) {
@@ -274,6 +275,7 @@
 
 /* static */ bool ScriptTile::DemolishTile(TileIndex tile)
 {
+	EnforceDeityOrCompanyModeValid(false);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 
 	return ScriptObject::DoCommand(tile, 0, 0, CMD_LANDSCAPE_CLEAR);

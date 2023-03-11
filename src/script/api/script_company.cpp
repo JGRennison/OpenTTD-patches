@@ -43,6 +43,7 @@
 {
 	CCountedPtr<Text> counter(name);
 
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, name != nullptr);
 	const std::string &text = name->GetDecodedText();
 	EnforcePreconditionEncodedText(false, text);
@@ -64,6 +65,7 @@
 {
 	CCountedPtr<Text> counter(name);
 
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, name != nullptr);
 	const std::string &text = name->GetDecodedText();
 	EnforcePreconditionEncodedText(false, text);
@@ -90,6 +92,7 @@
 
 /* static */ bool ScriptCompany::SetPresidentGender(Gender gender)
 {
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, gender == GENDER_MALE || gender == GENDER_FEMALE);
 	EnforcePrecondition(false, GetPresidentGender(ScriptCompany::COMPANY_SELF) != gender);
 
@@ -246,8 +249,6 @@
 {
 	EnforceDeityMode(false);
 	EnforcePrecondition(false, expenses_type < (ExpensesType)::EXPENSES_END);
-	EnforcePrecondition(false, (int64)delta >= INT32_MIN);
-	EnforcePrecondition(false, (int64)delta <= INT32_MAX);
 	EnforcePrecondition(false, tile == INVALID_TILE || ::IsValidTile(tile));
 
 	company = ResolveCompanyID(company);
@@ -276,6 +277,7 @@
 
 /* static */ bool ScriptCompany::SetAutoRenewStatus(bool autorenew)
 {
+	EnforceCompanyModeValid(false);
 	return ScriptObject::DoCommand(0, 0, autorenew ? 1 : 0, CMD_CHANGE_COMPANY_SETTING, "company.engine_renew");
 }
 
@@ -289,7 +291,9 @@
 
 /* static */ bool ScriptCompany::SetAutoRenewMonths(SQInteger months)
 {
+	EnforceCompanyModeValid(false);
 	months = Clamp<SQInteger>(months, INT16_MIN, INT16_MAX);
+
 	return ScriptObject::DoCommand(0, 0, months, CMD_CHANGE_COMPANY_SETTING, "company.engine_renew_months");
 }
 
@@ -303,6 +307,7 @@
 
 /* static */ bool ScriptCompany::SetAutoRenewMoney(Money money)
 {
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, money >= 0);
 	EnforcePrecondition(false, (int64)money <= UINT32_MAX);
 	return ScriptObject::DoCommand(0, 0, money, CMD_CHANGE_COMPANY_SETTING, "company.engine_renew_money");
@@ -318,11 +323,13 @@
 
 /* static */ bool ScriptCompany::SetPrimaryLiveryColour(LiveryScheme scheme, Colours colour)
 {
+	EnforceCompanyModeValid(false);
 	return ScriptObject::DoCommand(0, scheme, colour, CMD_SET_COMPANY_COLOUR);
 }
 
 /* static */ bool ScriptCompany::SetSecondaryLiveryColour(LiveryScheme scheme, Colours colour)
 {
+	EnforceCompanyModeValid(false);
 	return ScriptObject::DoCommand(0, scheme | 1 << 8, colour, CMD_SET_COMPANY_COLOUR);
 }
 

@@ -52,6 +52,7 @@
 {
 	CCountedPtr<Text> counter(text);
 
+	EnforceDeityMode(false);
 	EnforcePrecondition(false, IsValidIndustry(industry_id));
 
 	return ScriptObject::DoCommand(0, industry_id, 0, CMD_INDUSTRY_SET_TEXT, text != nullptr ? text->GetEncodedText().c_str() : "");
@@ -267,6 +268,7 @@
 
 /* static */ bool ScriptIndustry::SetExclusiveSupplier(IndustryID industry_id, ScriptCompany::CompanyID company_id)
 {
+	EnforceDeityMode(false);
 	EnforcePrecondition(false, IsValidIndustry(industry_id));
 
 	auto company = ScriptCompany::ResolveCompanyID(company_id);
@@ -286,6 +288,7 @@
 
 /* static */ bool ScriptIndustry::SetExclusiveConsumer(IndustryID industry_id, ScriptCompany::CompanyID company_id)
 {
+	EnforceDeityMode(false);
 	EnforcePrecondition(false, IsValidIndustry(industry_id));
 
 	auto company = ScriptCompany::ResolveCompanyID(company_id);

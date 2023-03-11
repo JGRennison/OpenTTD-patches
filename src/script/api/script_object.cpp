@@ -319,7 +319,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 		throw Script_FatalError("You are not allowed to execute any DoCommand (even indirect) in your constructor, Save(), Load(), and any valuator.");
 	}
 
-	if (ScriptCompanyMode::IsValid() && !::Company::IsValidID(ScriptObject::GetCompany())) {
+	if (!ScriptCompanyMode::IsDeity() && !ScriptCompanyMode::IsValid()) {
 		ScriptObject::SetLastError(ScriptError::ERR_PRECONDITION_INVALID_COMPANY);
 		return false;
 	}

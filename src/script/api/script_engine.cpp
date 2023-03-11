@@ -23,6 +23,7 @@
 
 /* static */ bool ScriptEngine::IsValidEngine(EngineID engine_id)
 {
+	EnforceDeityOrCompanyModeValid(false);
 	const Engine *e = ::Engine::GetIfValid(engine_id);
 	if (e == nullptr || !e->IsEnabled()) return false;
 
@@ -34,6 +35,7 @@
 
 /* static */ bool ScriptEngine::IsBuildable(EngineID engine_id)
 {
+	EnforceDeityOrCompanyModeValid(false);
 	const Engine *e = ::Engine::GetIfValid(engine_id);
 	return e != nullptr && ::IsEngineBuildable(engine_id, e->type, ScriptObject::GetCompany());
 }

@@ -20,6 +20,7 @@
 
 /* static */ bool ScriptStation::IsValidStation(StationID station_id)
 {
+	EnforceDeityOrCompanyModeValid(false);
 	const Station *st = ::Station::GetIfValid(station_id);
 	return st != nullptr && (st->owner == ScriptObject::GetCompany() || ScriptCompanyMode::IsDeity() || st->owner == OWNER_NONE);
 }
@@ -238,6 +239,7 @@ template<bool Tfrom, bool Tvia>
 
 /* static */ bool ScriptStation::OpenCloseAirport(StationID station_id)
 {
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, IsValidStation(station_id));
 	EnforcePrecondition(false, HasStationType(station_id, STATION_AIRPORT));
 

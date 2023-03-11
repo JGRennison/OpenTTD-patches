@@ -139,6 +139,7 @@ public:
 	 * Set the name of your company.
 	 * @param name The new name of the company (can be either a raw string, or a ScriptText object).
 	 * @pre name != null && len(name) != 0.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptError::ERR_NAME_IS_NOT_UNIQUE
 	 * @return True if the name was changed.
 	 */
@@ -156,6 +157,7 @@ public:
 	 * Set the name of your president.
 	 * @param name The new name of the president (can be either a raw string, or a ScriptText object).
 	 * @pre name != null && len(name) != 0.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptError::ERR_NAME_IS_NOT_UNIQUE
 	 * @return True if the name was changed.
 	 */
@@ -173,6 +175,7 @@ public:
 	 * Set the gender of the president of your company.
 	 * @param gender The new gender for your president.
 	 * @pre GetPresidentGender(ScriptCompany.COMPANY_SELF) != gender.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @return True if the gender was changed.
 	 * @note When successful a random face will be created.
 	 * @api -game
@@ -247,8 +250,6 @@ public:
 	 * @return True, if the bank balance was changed.
 	 * @game @pre ScriptCompanyMode::IsDeity().
 	 * @pre ResolveCompanyID(company) != COMPANY_INVALID.
-	 * @pre delta >= -2**31
-	 * @pre delta <   2**31
 	 * @note You need to create your own news message to inform about costs/gifts that you create using this command.
 	 * @api -ai
 	 */
@@ -347,6 +348,7 @@ public:
 	/**
 	 * Set whether autorenew is enabled for your company.
 	 * @param autorenew The new autorenew status.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @return True if autorenew status has been modified.
 	 * @api -game
 	 */
@@ -364,6 +366,7 @@ public:
 	 * Set the number of months before/after max age to autorenew an engine for your company.
 	 * @param months The new months between autorenew.
 	 *               The value will be clamped to MIN(int16) .. MAX(int16).
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @return True if autorenew months has been modified.
 	 * @api -game
 	 */
@@ -380,6 +383,7 @@ public:
 	/**
 	 * Set the minimum money needed to autorenew an engine for your company.
 	 * @param money The new minimum required money for autorenew to work.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @return True if autorenew money has been modified.
 	 * @pre money >= 0
 	 * @pre money <  2**32
@@ -399,6 +403,7 @@ public:
 	 * Set primary colour for your company.
 	 * @param scheme Livery scheme to set.
 	 * @param colour Colour to set.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @return False if unable to set primary colour of the livery scheme (e.g. colour in use).
 	 */
 	static bool SetPrimaryLiveryColour(LiveryScheme scheme, Colours colour);
@@ -407,6 +412,7 @@ public:
 	 * Set secondary colour for your company.
 	 * @param scheme Livery scheme to set.
 	 * @param colour Colour to set.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @return False if unable to set secondary colour of the livery scheme.
 	 */
 	static bool SetSecondaryLiveryColour(LiveryScheme scheme, Colours colour);

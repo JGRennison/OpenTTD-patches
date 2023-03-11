@@ -43,7 +43,7 @@ struct MusicSystem {
 		uint set_index;        ///< index of song in set
 
 		PlaylistEntry(const MusicSet *set, uint set_index) : MusicSongInfo(set->songinfo[set_index]), set(set), set_index(set_index) { }
-		bool IsValid() const { return !StrEmpty(this->songname); }
+		bool IsValid() const { return !this->songname.empty(); }
 	};
 	typedef std::vector<PlaylistEntry> Playlist;
 
@@ -147,18 +147,20 @@ void MusicSystem::ChangePlaylist(PlaylistChoices pl)
 {
 	assert(pl < PLCH_MAX && pl >= PLCH_ALLMUSIC);
 
-	this->displayed_playlist = this->standard_playlists[pl];
-	this->active_playlist = this->displayed_playlist;
-	this->selected_playlist = pl;
-	this->playlist_position = 0;
+	if (pl != PLCH_THEMEONLY) _settings_client.music.playlist = pl;
 
-	if (this->selected_playlist != PLCH_THEMEONLY) _settings_client.music.playlist = this->selected_playlist;
+	if (_game_mode != GM_MENU || pl == PLCH_THEMEONLY) {
+		this->displayed_playlist = this->standard_playlists[pl];
+		this->active_playlist = this->displayed_playlist;
+		this->selected_playlist = pl;
+		this->playlist_position = 0;
 
-	if (_settings_client.music.shuffle) {
-		this->Shuffle();
-		/* Shuffle() will also Play() if necessary, only start once */
-	} else if (_settings_client.music.playing) {
-		this->Play();
+		if (_settings_client.music.shuffle) {
+			this->Shuffle();
+			/* Shuffle() will also Play() if necessary, only start once */
+		} else if (_settings_client.music.playing) {
+			this->Play();
+		}
 	}
 
 	InvalidateWindowData(WC_MUSIC_TRACK_SELECTION, 0);
@@ -178,6 +180,8 @@ void MusicSystem::ChangeMusicSet(const std::string &set_name)
 	this->ChangePlaylist(this->selected_playlist);
 
 	InvalidateWindowData(WC_GAME_OPTIONS, WN_GAME_OPTIONS_GAME_OPTIONS, 0, true);
+	InvalidateWindowData(WC_MUSIC_TRACK_SELECTION, 0, 1, true);
+	InvalidateWindowData(WC_MUSIC_WINDOW, 0, 1, true);
 }
 
 /** Enable shuffle mode and restart playback */
@@ -486,7 +490,12 @@ struct MusicTrackSelectionWindow : public Window {
 			this->SetWidgetLoweredState(WID_MTS_ALL + i, i == _settings_client.music.playlist);
 		}
 		this->SetWidgetDisabledState(WID_MTS_CLEAR, _settings_client.music.playlist <= 3);
-		this->SetDirty();
+
+		if (data == 1) {
+			this->ReInit();
+		} else {
+			this->SetDirty();
+		}
 	}
 
 	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
@@ -611,9 +620,9 @@ static const NWidgetPart _nested_music_track_selection_widgets[] = {
 		NWidget(NWID_HORIZONTAL), SetPIP(2, 4, 2),
 			/* Left panel. */
 			NWidget(NWID_VERTICAL),
-				NWidget(WWT_LABEL, COLOUR_GREY), SetDataTip(STR_PLAYLIST_TRACK_INDEX, STR_NULL),
-				NWidget(WWT_PANEL, COLOUR_GREY, WID_MTS_LIST_LEFT), SetMinimalSize(180, 194), SetDataTip(0x0, STR_PLAYLIST_TOOLTIP_CLICK_TO_ADD_TRACK), EndContainer(),
-				NWidget(NWID_SPACER), SetMinimalSize(0, 2),
+				NWidget(WWT_LABEL, COLOUR_GREY), SetFill(1, 0), SetDataTip(STR_PLAYLIST_TRACK_INDEX, STR_NULL),
+				NWidget(WWT_PANEL, COLOUR_GREY, WID_MTS_LIST_LEFT), SetFill(1, 1), SetMinimalSize(180, 194), SetDataTip(0x0, STR_PLAYLIST_TOOLTIP_CLICK_TO_ADD_TRACK), EndContainer(),
+				NWidget(NWID_SPACER), SetFill(1, 0), SetMinimalSize(0, 2),
 			EndContainer(),
 			/* Middle buttons. */
 			NWidget(NWID_VERTICAL),
@@ -630,9 +639,9 @@ static const NWidgetPart _nested_music_track_selection_widgets[] = {
 			EndContainer(),
 			/* Right panel. */
 			NWidget(NWID_VERTICAL),
-				NWidget(WWT_LABEL, COLOUR_GREY, WID_MTS_PLAYLIST), SetDataTip(STR_PLAYLIST_PROGRAM, STR_NULL),
-				NWidget(WWT_PANEL, COLOUR_GREY, WID_MTS_LIST_RIGHT), SetMinimalSize(180, 194), SetDataTip(0x0, STR_PLAYLIST_TOOLTIP_CLICK_TO_REMOVE_TRACK), EndContainer(),
-				NWidget(NWID_SPACER), SetMinimalSize(0, 2),
+				NWidget(WWT_LABEL, COLOUR_GREY, WID_MTS_PLAYLIST), SetFill(1, 0), SetDataTip(STR_PLAYLIST_PROGRAM, STR_NULL),
+				NWidget(WWT_PANEL, COLOUR_GREY, WID_MTS_LIST_RIGHT), SetFill(1, 1), SetMinimalSize(180, 194), SetDataTip(0x0, STR_PLAYLIST_TOOLTIP_CLICK_TO_REMOVE_TRACK), EndContainer(),
+				NWidget(NWID_SPACER), SetFill(1, 0), SetMinimalSize(0, 2),
 			EndContainer(),
 		EndContainer(),
 	EndContainer(),
@@ -770,7 +779,11 @@ struct MusicWindow : public Window {
 
 		UpdateDisabledButtons();
 
-		this->SetDirty();
+		if (data == 1) {
+			this->ReInit();
+		} else {
+			this->SetDirty();
+		}
 	}
 
 	void OnClick(Point pt, int widget, int click_count) override

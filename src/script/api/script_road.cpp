@@ -63,6 +63,7 @@
 
 /* static */ bool ScriptRoad::IsRoadTypeAvailable(RoadType road_type)
 {
+	EnforceDeityOrCompanyModeValid(false);
 	return (::RoadType)road_type < ROADTYPE_END && ::HasRoadTypeAvail(ScriptObject::GetCompany(), (::RoadType)road_type) && !HasBit(GetRoadTypeInfo((::RoadType)road_type)->extra_flags, RXTF_NOT_AVAILABLE_AI_GS);
 }
 
@@ -502,6 +503,7 @@ static bool NeighbourHasReachableRoad(::RoadType rt, TileIndex start_tile, DiagD
 
 /* static */ bool ScriptRoad::_BuildRoadInternal(TileIndex start, TileIndex end, bool one_way, bool full)
 {
+	EnforceDeityOrCompanyModeValid(false);
 	EnforcePrecondition(false, start != end);
 	EnforcePrecondition(false, ::IsValidTile(start));
 	EnforcePrecondition(false, ::IsValidTile(end));
