@@ -30,6 +30,24 @@ std::map<const DeterministicSpriteGroup *, DeterministicSpriteGroupShadowCopy> _
 std::map<const RandomizedSpriteGroup *, RandomizedSpriteGroupShadowCopy> _randomized_sg_shadows;
 bool _grfs_loaded_with_sg_shadow_enable = false;
 
+GrfSpecFeature GetGrfSpecFeatureForParentScope(GrfSpecFeature feature)
+{
+	switch (feature) {
+		case GSF_STATIONS:
+		case GSF_BRIDGES:
+		case GSF_HOUSES:
+		case GSF_INDUSTRIES:
+		case GSF_OBJECTS:
+		case GSF_ROADSTOPS:
+			return GSF_FAKE_TOWNS;
+
+		case GSF_INDUSTRYTILES:
+			return GSF_INDUSTRIES;
+
+		default:
+			return feature;
+	}
+}
 
 /**
  * ResolverObject (re)entry point.

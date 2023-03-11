@@ -276,9 +276,15 @@ inline void OptimiseVarAction2PreCheckAdjust(VarAction2OptimiseState &state, con
 	if (variable == 0x1C) state.var_1C_present = true;
 }
 
+struct VarAction2AdjustInfo {
+	GrfSpecFeature feature;
+	GrfSpecFeature scope_feature;
+	byte varsize;
+};
+
 const SpriteGroup *PruneTargetSpriteGroup(const SpriteGroup *result);
-void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeature feature, const byte varsize, DeterministicSpriteGroup *group, DeterministicSpriteGroupAdjust &adjust);
-void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, const GrfSpecFeature feature, const byte varsize, DeterministicSpriteGroup *group, std::vector<DeterministicSpriteGroupAdjust> &saved_adjusts);
+void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const VarAction2AdjustInfo info, DeterministicSpriteGroup *group, DeterministicSpriteGroupAdjust &adjust);
+void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, const VarAction2AdjustInfo info, DeterministicSpriteGroup *group, std::vector<DeterministicSpriteGroupAdjust> &saved_adjusts);
 void HandleVarAction2OptimisationPasses();
 
 #endif /* NEWGRF_INTERNAL_H */

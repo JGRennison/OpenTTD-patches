@@ -5846,6 +5846,8 @@ static void NewSpriteGroup(ByteReader *buf)
 				case 2: group->size = DSG_SIZE_DWORD; varsize = 4; break;
 			}
 
+			const VarAction2AdjustInfo info = { feature, GetGrfSpecFeatureForScope(feature, group->var_scope), varsize };
+
 			DeterministicSpriteGroupShadowCopy *shadow = nullptr;
 			if (unlikely(HasBit(_misc_debug_flags, MDF_NEWGRF_SG_SAVE_RAW))) {
 				shadow = &(_deterministic_sg_shadows[group]);
@@ -5882,7 +5884,7 @@ static void NewSpriteGroup(ByteReader *buf)
 
 				if (adjust.variable == 0x11) {
 					for (const GRFVariableMapEntry &remap : _cur.grffile->grf_variable_remaps) {
-						if (remap.feature == feature && remap.input_shift == adjust.shift_num && remap.input_mask == adjust.and_mask) {
+						if (remap.feature == info.scope_feature && remap.input_shift == adjust.shift_num && remap.input_mask == adjust.and_mask) {
 							adjust.variable = remap.id;
 							adjust.shift_num = remap.output_shift;
 							adjust.and_mask = remap.output_mask;
@@ -5892,7 +5894,7 @@ static void NewSpriteGroup(ByteReader *buf)
 					}
 				} else if (adjust.variable == 0x7B && adjust.parameter == 0x11) {
 					for (const GRFVariableMapEntry &remap : _cur.grffile->grf_variable_remaps) {
-						if (remap.feature == feature && remap.input_shift == adjust.shift_num && remap.input_mask == adjust.and_mask) {
+						if (remap.feature == info.scope_feature && remap.input_shift == adjust.shift_num && remap.input_mask == adjust.and_mask) {
 							adjust.parameter = remap.id;
 							adjust.shift_num = remap.output_shift;
 							adjust.and_mask = remap.output_mask;
@@ -5921,7 +5923,7 @@ static void NewSpriteGroup(ByteReader *buf)
 
 			for (const DeterministicSpriteGroupAdjust &adjust : current_adjusts) {
 				group->adjusts.push_back(adjust);
-				OptimiseVarAction2Adjust(va2_opt_state, feature, varsize, group, group->adjusts.back());
+				OptimiseVarAction2Adjust(va2_opt_state, info, group, group->adjusts.back());
 			}
 
 			std::vector<DeterministicSpriteGroupRange> ranges;
@@ -5952,7 +5954,7 @@ static void NewSpriteGroup(ByteReader *buf)
 
 			ProcessDeterministicSpriteGroupRanges(ranges, group->ranges, group->default_group);
 
-			OptimiseVarAction2DeterministicSpriteGroup(va2_opt_state, feature, varsize, group, current_adjusts);
+			OptimiseVarAction2DeterministicSpriteGroup(va2_opt_state, info, group, current_adjusts);
 			current_adjusts.clear();
 			break;
 		}

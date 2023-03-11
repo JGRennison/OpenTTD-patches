@@ -120,6 +120,17 @@ enum VarSpriteGroupScope : uint8 {
 };
 DECLARE_POSTFIX_INCREMENT(VarSpriteGroupScope)
 
+GrfSpecFeature GetGrfSpecFeatureForParentScope(GrfSpecFeature feature);
+
+inline GrfSpecFeature GetGrfSpecFeatureForScope(GrfSpecFeature feature, VarSpriteGroupScope scope)
+{
+	if (scope == VSG_SCOPE_PARENT) {
+		return GetGrfSpecFeatureForParentScope(feature);
+	}
+
+	return feature;
+}
+
 enum DeterministicSpriteGroupSize : uint8 {
 	DSG_SIZE_BYTE,
 	DSG_SIZE_WORD,
