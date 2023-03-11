@@ -48,6 +48,9 @@ STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :Sehr langsam
 
 STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Hilfstasten-Fenster
 
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_LABEL      :Eigener Zeitraum (Tage)
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :Eigener Zeitraum (Echtzeitminuten)
+
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
@@ -92,8 +95,6 @@ STR_SMALLMAP_SCREENSHOT                                         :{BLACK}Screensh
 STR_NEWS_VEHICLE_NO_DEPOT_ORDER                                 :{WHITE}{VEHICLE} hat keinen Depotauftrag im Fahrplan
 STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE} konnte wegen zu hoher Geschwindigkeit nicht bei {STRING} anhalten
 
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_LABEL      :Eigener Zeitraum (Tage)
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :Eigener Zeitraum (Echtzeitminuten)
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM            :Alle {COMMA}{NBSP}Tage
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_SINGULAR   :Jeden Tag
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :Alle {COMMA} Echtzeitminuten

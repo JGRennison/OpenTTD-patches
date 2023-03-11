@@ -82,6 +82,10 @@ STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :Very slow
 ##after STR_ABOUT_MENU_SHOW_FRAMERATE
 STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Modifier key window
 
+##after STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_12_MONTHS
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_LABEL      :Custom interval (days)
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :Custom interval (real-time minutes)
+
 ##end-after
 
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
@@ -130,8 +134,6 @@ STR_SMALLMAP_SCREENSHOT                                         :{BLACK}Screensh
 STR_NEWS_VEHICLE_NO_DEPOT_ORDER                                 :{WHITE}{VEHICLE} does not have a depot order in its schedule
 STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE} failed to stop at {STRING1} due to excessive speed
 
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_LABEL      :Custom interval (days)
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :Custom interval (real-time minutes)
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM            :Every {COMMA}{NBSP}days
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_SINGULAR   :Every day
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :Every {COMMA} real-time minutes

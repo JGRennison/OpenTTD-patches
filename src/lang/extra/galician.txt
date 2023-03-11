@@ -48,6 +48,9 @@ STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :Moi lento
 
 STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Fiestra da tecla modificadora
 
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_LABEL      :Intervalo personalizado (días)
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :Intervalo personalizado (minutos reais)
+
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
@@ -94,8 +97,6 @@ STR_SMALLMAP_SCREENSHOT                                         :{BLACK}Captura 
 STR_NEWS_VEHICLE_NO_DEPOT_ORDER                                 :{WHITE}{VEHICLE} Non ten unha orde de depósito no seu horario
 STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE} non puido parar en {STRING} polo exceso de velocidade
 
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_LABEL      :Intervalo personalizado (días)
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :Intervalo personalizado (minutos reais)
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM            :Cada {COMMA}{NBSP}días
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_SINGULAR   :Todos os días
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :Cada {COMMA} minutos reais
