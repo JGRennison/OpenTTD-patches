@@ -1593,6 +1593,7 @@ static const NIVariable _niv_towns[] = {
 
 class NIHTown : public NIHelper {
 	bool IsInspectable(uint index) const override        { return Town::IsValidID(index); }
+	bool ShowSpriteDumpButton(uint index) const override { return true; }
 	uint GetParent(uint index) const override            { return UINT32_MAX; }
 	const void *GetInstance(uint index)const override    { return Town::Get(index); }
 	const void *GetSpec(uint index) const override       { return nullptr; }
@@ -1659,6 +1660,12 @@ class NIHTown : public NIHelper {
 				output.print(buffer);
 			}
 		}
+	}
+
+	/* virtual */ void SpriteDump(uint index, DumpSpriteGroupPrinter print) const override
+	{
+		extern void DumpGenericCallbackSpriteGroups(GrfSpecFeature feature, DumpSpriteGroupPrinter print);
+		DumpGenericCallbackSpriteGroups(GSF_FAKE_TOWNS, std::move(print));
 	}
 };
 

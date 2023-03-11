@@ -2052,21 +2052,37 @@ void UpdateTownRadius(Town *t)
 		{121, 81,  0, 49, 36}, // 88
 	};
 
-	if (_settings_game.economy.town_zone_calc_mode && t->larger_town) {
+	if (_settings_game.economy.town_zone_calc_mode) {
 		int mass = t->cache.num_houses / 8;
-		t->cache.squared_town_zone_radius[0] = mass * _settings_game.economy.city_zone_0_mult;
-		t->cache.squared_town_zone_radius[1] = mass * _settings_game.economy.city_zone_1_mult;
-		t->cache.squared_town_zone_radius[2] = mass * _settings_game.economy.city_zone_2_mult;
-		t->cache.squared_town_zone_radius[3] = mass * _settings_game.economy.city_zone_3_mult;
-		t->cache.squared_town_zone_radius[4] = mass * _settings_game.economy.city_zone_4_mult;
-	} else if (_settings_game.economy.town_zone_calc_mode) {
-		int mass = t->cache.num_houses / 8;
-		t->cache.squared_town_zone_radius[0] = mass * _settings_game.economy.town_zone_0_mult;
-		t->cache.squared_town_zone_radius[1] = mass * _settings_game.economy.town_zone_1_mult;
-		t->cache.squared_town_zone_radius[2] = mass * _settings_game.economy.town_zone_2_mult;
-		t->cache.squared_town_zone_radius[3] = mass * _settings_game.economy.town_zone_3_mult;
-		t->cache.squared_town_zone_radius[4] = mass * _settings_game.economy.town_zone_4_mult;
-	} else if (t->cache.num_houses < 92) {
+		if (t->larger_town) {
+			t->cache.squared_town_zone_radius[0] = mass * _settings_game.economy.city_zone_0_mult;
+			t->cache.squared_town_zone_radius[1] = mass * _settings_game.economy.city_zone_1_mult;
+			t->cache.squared_town_zone_radius[2] = mass * _settings_game.economy.city_zone_2_mult;
+			t->cache.squared_town_zone_radius[3] = mass * _settings_game.economy.city_zone_3_mult;
+			t->cache.squared_town_zone_radius[4] = mass * _settings_game.economy.city_zone_4_mult;
+		} else {
+			t->cache.squared_town_zone_radius[0] = mass * _settings_game.economy.town_zone_0_mult;
+			t->cache.squared_town_zone_radius[1] = mass * _settings_game.economy.town_zone_1_mult;
+			t->cache.squared_town_zone_radius[2] = mass * _settings_game.economy.town_zone_2_mult;
+			t->cache.squared_town_zone_radius[3] = mass * _settings_game.economy.town_zone_3_mult;
+			t->cache.squared_town_zone_radius[4] = mass * _settings_game.economy.town_zone_4_mult;
+		}
+		return;
+	}
+
+	MemSetT(t->cache.squared_town_zone_radius, 0, lengthof(t->cache.squared_town_zone_radius));
+
+	uint16 cb_result = GetTownZonesCallback(t);
+	if (cb_result == 0) {
+		t->cache.squared_town_zone_radius[0] = GetRegister(0x100);
+		t->cache.squared_town_zone_radius[1] = GetRegister(0x101);
+		t->cache.squared_town_zone_radius[2] = GetRegister(0x102);
+		t->cache.squared_town_zone_radius[3] = GetRegister(0x103);
+		t->cache.squared_town_zone_radius[4] = GetRegister(0x104);
+		return;
+	}
+
+	if (t->cache.num_houses < 92) {
 		memcpy(t->cache.squared_town_zone_radius, _town_squared_town_zone_radius_data[t->cache.num_houses / 4], sizeof(t->cache.squared_town_zone_radius));
 	} else {
 		int mass = t->cache.num_houses / 8;

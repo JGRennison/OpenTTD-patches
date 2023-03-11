@@ -282,6 +282,11 @@ enum CallbackID {
 
 	/** Called to determine the engine name to show. */
 	CBID_VEHICLE_NAME                    = 0x161, // 15 bit callback
+
+	/** Extended/non-standard callbacks follow */
+
+	/** Called to set town zones */
+	XCBID_TOWN_ZONES                     = 0xEC008001,
 };
 
 /**

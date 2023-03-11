@@ -13,7 +13,10 @@
 #include "industrytype.h"
 #include "core/random_func.hpp"
 #include "newgrf_sound.h"
+#include "newgrf_town.h"
+#include "newgrf_extension.h"
 #include "water_map.h"
+#include "string_func.h"
 #include <list>
 
 #include "safeguards.h"
@@ -260,4 +263,39 @@ void AmbientSoundEffectCallback(TileIndex tile)
 	uint16 callback = GetGenericCallbackResult(GSF_SOUNDFX, object, param1_v7, param1_v8, &grf_file);
 
 	if (callback != CALLBACK_FAILED) PlayTileSound(grf_file, callback, tile);
+}
+
+uint16 GetTownZonesCallback(Town *t)
+{
+	TownResolverObject object(nullptr, t, true);
+	object.callback = XCBID_TOWN_ZONES;
+
+	const uint16 MAX_RETURN_VERSION = 0;
+
+	for (GenericCallbackList::const_iterator it = _gcl[GSF_FAKE_TOWNS].begin(); it != _gcl[GSF_FAKE_TOWNS].end(); ++it) {
+		if (!HasBit(it->file->observed_feature_tests, GFTOF_TOWN_ZONE_CALLBACK)) continue;
+		object.grffile = it->file;
+		object.root_spritegroup = it->group;
+		uint16 result = object.ResolveCallback();
+		if (result == CALLBACK_FAILED || result > MAX_RETURN_VERSION) continue;
+
+		return result;
+	}
+
+	return CALLBACK_FAILED;
+}
+
+void DumpGenericCallbackSpriteGroups(GrfSpecFeature feature, DumpSpriteGroupPrinter print)
+{
+	SpriteGroupDumper dumper(print);
+	bool first = true;
+	for (GenericCallbackList::const_iterator it = _gcl[feature].begin(); it != _gcl[feature].end(); ++it) {
+		if (!first) print(nullptr, DSGPO_PRINT, 0, "");
+		char buffer[64];
+		seprintf(buffer, lastof(buffer), "GRF: %08X, town zone cb enabled: %s",
+				BSWAP32(it->file->grfid), HasBit(it->file->observed_feature_tests, GFTOF_TOWN_ZONE_CALLBACK) ? "yes" : "no");
+		print(nullptr, DSGPO_PRINT, 0, buffer);
+		first = false;
+		dumper.DumpSpriteGroup(it->group, 0);
+	}
 }

@@ -6194,6 +6194,10 @@ static void NewSpriteGroup(ByteReader *buf)
 					break;
 				}
 
+				case GSF_FAKE_TOWNS:
+					act_group = NewCallbackResultSpriteGroupNoTransform(CALLBACK_FAILED);
+					break;
+
 				/* Loading of Tile Layout and Production Callback groups would happen here */
 				default: grfmsg(1, "NewSpriteGroup: Unsupported feature %s, skipping", GetFeatureString(feature));
 			}

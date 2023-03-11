@@ -49,6 +49,7 @@ void AddGenericCallback(GrfSpecFeature feature, const GRFFile *file, const Sprit
 
 uint16 GetAiPurchaseCallbackResult(GrfSpecFeature feature, CargoID cargo_type, uint8 default_selection, IndustryType src_industry, IndustryType dst_industry, uint8 distance, AIConstructionEvent event, uint8 count, uint8 station_size, const GRFFile **file);
 void AmbientSoundEffectCallback(TileIndex tile);
+uint16 GetTownZonesCallback(Town *t);
 
 /** Play an ambient sound effect for an empty tile. */
 static inline void AmbientSoundEffect(TileIndex tile)

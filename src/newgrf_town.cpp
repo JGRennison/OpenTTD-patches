@@ -11,6 +11,7 @@
 #include "debug.h"
 #include "town.h"
 #include "newgrf_town.h"
+#include "newgrf_extension.h"
 
 #include "safeguards.h"
 

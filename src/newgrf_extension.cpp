@@ -64,6 +64,7 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("more_action2_ids", 1, GFTOF_MORE_ACTION2_IDS),
 	GRFFeatureInfo("town_feature", 1),
 	GRFFeatureInfo("town_uncapped_variables", 1),
+	GRFFeatureInfo("town_zone_callback", 1, GFTOF_TOWN_ZONE_CALLBACK),
 	GRFFeatureInfo(),
 };
 
