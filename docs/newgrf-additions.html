@@ -30,6 +30,7 @@
 	<ul>
 	<li><a href="newgrf-roadstops.html">Road stops</a></li>
 	<li><a href="newgrf-newlandscape.html">New landscape (custom graphics)</a></li>
+	<li><a href="newgrf-town.html">Towns (the parent scope for stations, objects, etc.)</a></li>
 	</ul>
 
 	<br />
@@ -671,6 +672,11 @@
 	<p>Within an A2VM chunk, the NAME text (type T) field contains the name of the variable to map. The value of the language ID byte is ignored.</p>
 	<h4 id="A2VM-FEAT">Action 0 Feature ID: C "A2VM" -> B "FEAT"</h4>
 	<p>Within an A2VM chunk, the FEAT binary (type B) field contains the <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2#Feature">Variational Action 2 feature ID</a>. This is 1 byte.</p>
+	<p>In the case where a parent/related scope is used to access a different feature (e.g. the town feature as the parent scope for objects),
+	the feature ID used here is that associated with the scope where the variable is used.<br />
+	To map a town variable, the feature ID should be the result of mapping the "town" feature name using the <a href="#feature-id-mapping">feature mapping mechanism</a>,
+	this is not necessarily the feature ID used directly in the variational action 2.</p>
+	</p>
 	<h4 id="A2VM-RSFT">Shift to replace: C "A2VM" -> B "RSFT"</h4>
 	<p>Within an A2VM chunk, the RSFT binary (type B) field contains the Variational Action 2 varadjust shift-num value to look for. This is 1 byte.<br />
 	The shift-num value must be &lt; 32 (0x20).<br />
@@ -974,6 +980,7 @@
 	<tr><th>Feature name</th><th>Description</th></tr>
 	<tr><td><font face="monospace">road_stops</font></td><td><a href="newgrf-roadstops.html">Custom road stops (bus stops, lorry stops and road waypoints)</a></d></tr>
 	<tr><td><font face="monospace">new_landscape</font></td><td><a href="newgrf-newlandscape.html">Custom landscape graphics (currently rocky tiles only)</a></d></tr>
+	<tr><td><font face="monospace">town</font></td><td><a href="newgrf-town.html">Towns (the parent scope for stations, objects, etc.)</a></d></tr>
 	</table>
 </body>
 </html>
