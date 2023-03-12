@@ -1015,9 +1015,16 @@ class NIHIndustry : public NIHelper {
 				output.print("  Produces:");
 				for (uint i = 0; i < lengthof(ind->produced_cargo); i++) {
 					if (ind->produced_cargo[i] != CT_INVALID) {
-						seprintf(buffer, lastof(buffer), "    %s: waiting: %u, rate: %u, this month: production: %u, transported: %u, last month: production: %u, transported: %u, (%u/255)",
-								GetStringPtr(CargoSpec::Get(ind->produced_cargo[i])->name), ind->produced_cargo_waiting[i], ind->production_rate[i], ind->this_month_production[i],
-								ind->this_month_transported[i], ind->last_month_production[i], ind->last_month_transported[i], ind->last_month_pct_transported[i]);
+						seprintf(buffer, lastof(buffer), "    %s:", GetStringPtr(CargoSpec::Get(ind->produced_cargo[i])->name));
+						output.print(buffer);
+						seprintf(buffer, lastof(buffer), "      Waiting: %u, rate: %u",
+								ind->produced_cargo_waiting[i], ind->production_rate[i]);
+						output.print(buffer);
+						seprintf(buffer, lastof(buffer), "      This month: production: %u, transported: %u",
+								ind->this_month_production[i], ind->this_month_transported[i]);
+						output.print(buffer);
+						seprintf(buffer, lastof(buffer), "      Last month: production: %u, transported: %u, (%u/255)",
+								ind->last_month_production[i], ind->last_month_transported[i], ind->last_month_pct_transported[i]);
 						output.print(buffer);
 					}
 				}
