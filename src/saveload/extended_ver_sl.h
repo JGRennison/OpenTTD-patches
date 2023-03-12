@@ -230,7 +230,7 @@ enum SlxiSubChunkFlags {
 	XSCF_NULL                     = 0,       ///< zero value
 	XSCF_IGNORABLE_UNKNOWN        = 1 << 0,  ///< the loader is free to ignore this without aborting the load if it doesn't know what it is at all
 	XSCF_IGNORABLE_VERSION        = 1 << 1,  ///< the loader is free to ignore this without aborting the load if the version is greater than the maximum that can be loaded
-	XSCF_EXTRA_DATA_PRESENT       = 1 << 2,  ///< extra data field is present, extra data in some sub-chunk/feature specific format, not used for anything yet
+	XSCF_EXTRA_DATA_PRESENT       = 1 << 2,  ///< extra data field is present, extra data in some sub-chunk/feature specific format
 	XSCF_CHUNK_ID_LIST_PRESENT    = 1 << 3,  ///< chunk ID list field is present, list of chunks which this sub-chunk/feature adds to the save game, this can be used to discard the chunks if the feature is unknown
 
 	XSCF_IGNORABLE_ALL            = XSCF_IGNORABLE_UNKNOWN | XSCF_IGNORABLE_VERSION, ///< all "ignorable" flags
