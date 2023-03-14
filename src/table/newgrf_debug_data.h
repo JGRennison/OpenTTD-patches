@@ -155,6 +155,9 @@ class NIHVehicle : public NIHelper {
 					v->cur_real_order_index, v->cur_implicit_order_index, v->cur_timetable_order_index, GetOrderTypeName(v->current_order.GetType()));
 			output.print(buffer);
 		}
+		seprintf(buffer, lastof(buffer), "  Reliability: %u, spd_dec: %u, breakdown: ctr: %u, delay: %u, since svc: %u, chance: %u",
+				v->reliability, v->reliability_spd_dec, v->breakdown_ctr, v->breakdown_delay, v->breakdowns_since_last_service, v->breakdown_chance);
+		output.print(buffer);
 		seprintf(buffer, lastof(buffer), "  V Cache: max speed: %u, cargo age period: %u, vis effect: %u",
 				v->vcache.cached_max_speed, v->vcache.cached_cargo_age_period, v->vcache.cached_vis_effect);
 		output.print(buffer);
@@ -423,8 +426,8 @@ class NIHVehicle : public NIHelper {
 						e->age, e->info.base_life, e->duration_phase_1, e->duration_phase_2, e->duration_phase_3,
 						e->duration_phase_1 + e->duration_phase_2 + e->duration_phase_3);
 				output.print(buffer);
-				seprintf(buffer, lastof(buffer), "    Cargo type: %u, Refit mask: 0x" OTTD_PRINTFHEX64 ", Cargo age period: %u",
-						e->info.cargo_type, e->info.refit_mask, e->info.cargo_age_period);
+				seprintf(buffer, lastof(buffer), "    Reliability: %u, spd_dec: %u, start: %u, max: %u, final: %u",
+						e->reliability, e->reliability_spd_dec, e->reliability_start, e->reliability_max, e->reliability_final);
 				output.print(buffer);
 				if (e->type == VEH_TRAIN) {
 					const RailtypeInfo *rti = GetRailTypeInfo(e->u.rail.railtype);
