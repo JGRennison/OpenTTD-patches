@@ -120,6 +120,22 @@ enum VarSpriteGroupScope : uint8 {
 };
 DECLARE_POSTFIX_INCREMENT(VarSpriteGroupScope)
 
+enum VarSpriteGroupScopeRelativeMode : uint8 {
+	VSGSRM_BACKWARD_SELF         = 0,
+	VSGSRM_FORWARD_SELF          = 1,
+	VSGSRM_BACKWARD_ENGINE       = 2,
+	VSGSRM_BACKWARD_SAMEID       = 3,
+	VSGSRM_END,
+};
+
+/*
+ * Decoded relative scope offset:
+ * Bits 0..7: offset
+ * Bits 8..9: mode (VarSpriteGroupScopeRelativeMode)
+ * Bit    15: use var 0x100
+ */
+typedef uint16 VarSpriteGroupScopeOffset;
+
 GrfSpecFeature GetGrfSpecFeatureForParentScope(GrfSpecFeature feature);
 
 inline GrfSpecFeature GetGrfSpecFeatureForScope(GrfSpecFeature feature, VarSpriteGroupScope scope)
@@ -474,6 +490,7 @@ struct DeterministicSpriteGroup : SpriteGroup {
 	DeterministicSpriteGroup() : SpriteGroup(SGT_DETERMINISTIC) {}
 
 	VarSpriteGroupScope var_scope;
+	VarSpriteGroupScopeOffset var_scope_count;
 	DeterministicSpriteGroupSize size;
 	bool calculated_result;
 	DeterministicSpriteGroupFlags dsg_flags = DSGF_NONE;
@@ -505,10 +522,10 @@ struct RandomizedSpriteGroup : SpriteGroup {
 	RandomizedSpriteGroup() : SpriteGroup(SGT_RANDOMIZED) {}
 
 	VarSpriteGroupScope var_scope;  ///< Take this object:
+	VarSpriteGroupScopeOffset var_scope_count;
 
 	RandomizedSpriteGroupCompareMode cmp_mode; ///< Check for these triggers:
 	byte triggers;
-	byte count;
 
 	byte lowest_randbit; ///< Look for this in the per-object randomized bitmask:
 
@@ -690,7 +707,7 @@ struct ResolverObject {
 
 	virtual const SpriteGroup *ResolveReal(const RealSpriteGroup *group) const;
 
-	virtual ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, byte relative = 0);
+	virtual ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, VarSpriteGroupScopeOffset relative = 0);
 
 	/**
 	 * Returns the waiting triggers that did not trigger any rerandomisation.

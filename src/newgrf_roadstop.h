@@ -111,7 +111,7 @@ struct RoadStopResolverObject : public ResolverObject {
 	RoadStopResolverObject(const RoadStopSpec* roadstopspec, BaseStation* st, TileIndex tile, RoadType roadtype, StationType type, uint8 view, CallbackID callback = CBID_NO_CALLBACK, uint32 param1 = 0, uint32 param2 = 0);
 	~RoadStopResolverObject();
 
-	ScopeResolver* GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, byte relative = 0) override {
+	ScopeResolver* GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, VarSpriteGroupScopeOffset relative = 0) override {
 		switch (scope) {
 			case VSG_SCOPE_SELF: return &this->roadstop_scope;
 			case VSG_SCOPE_PARENT: {

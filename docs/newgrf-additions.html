@@ -47,6 +47,7 @@
 	<li><a href="#a0signals">Action 0 - Signals (Feature 0E)</a></li>
 	<li><a href="#a0objects">Action 0 - Objects</a></li>
 	<li><a href="#variable-mapping">Action 14 - Variable Mapping for Variational Action 2</a></li>
+	<li><a href="#varaction2_additional_types">Variational Action 2 - Additional Types</a></li>
 	<li><a href="#varaction2_station">Variational Action 2 - Stations</a></li>
 	<li><a href="#varaction2_railtypes">Variational Action 2 - Railtypes</a></li>
 	<li><a href="#varaction2_object">Variational Action 2 - Objects</a></li>
@@ -723,6 +724,59 @@
                    02 00    00 04 // range 00 - 04: link to action2ID 02
                    01 00          // default:       link to action2ID 01
 	</pre>
+	<br />
+	<h3 id="varaction2_additional_types">Variational Action 2 - Additional Types</h3>
+	<p>Additional variational action 2 types are indicated by the feature name: <font face="monospace">more_varaction2_types</font>, this document describes version 1.<br />
+	This feature name must be tested for to enable this feature.</p>
+	<p>See the <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2#Type">Variational Action 2 Specification (types)</a> for background information.</p>
+	<p>This feature adds the type value 87, for additional variation action 2 modes/scopes. (This is used instead of the standard values: 81, 82, 85, 86, 89 or 8A).<br />
+	An additional byte follows to specify which sub-type.</p>
+	<p>
+	<pre>&lt;Sprite-number&gt; * &lt;Length&gt; 02 &lt;feature&gt; &lt;set-id&gt; 87 &lt;sub-type&gt; ...</pre>
+	The following sub-types are defined:
+	<table>
+	<tr><th>Sub-type</th><th>Meaning</th></tr>
+	<tr><td>00</td><td>Callback failure group</td></tr>
+	<tr><td>01</td><td>Relative scope for vehicles (same syntax as <a href="https://newgrf-specs.tt-wiki.net/wiki/RandomAction2#80.2F83.2F84">random action 2 type 84</a>)</td></tr>
+	<tr><td>02</td><td>Relative scope for vehicles (longer syntax)</td></tr>
+	</table>
+	<p>If an unknown sub-type is used, or if subsequent sub-type bytes are invalid, a callback failure group is created, the same as sub-type 00.</p>
+	<h4 id="varaction2_additional_type_00">Sub-type 00: Callback failure</h4>
+	<pre>&lt;Sprite-number&gt; * &lt;Length&gt; 02 &lt;feature&gt; &lt;set-id&gt; <b>87 00</b></pre>
+	This produces a callback failed result in all cases (appropriate whether or not variable 0C is currently 0).<br />
+	This can be used to avoiding needing to branch on variable 0C or create empty (feature-dependant) real sprite/sprite layout/industry production groups.
+	</p>
+	<h4 id="varaction2_additional_type_01">Sub-type 01: Relative scope for vehicles (random action 2 type 84 syntax)</h4>
+	<pre>&lt;Sprite-number&gt; * &lt;Length&gt; 02 &lt;feature&gt; &lt;set-id&gt; <b>87 01 &lt;count&gt;</b> &lt;variable&gt; &lt;varadjust&gt; [&lt;operator&gt; &lt;variable&gt; &lt;varadjust&gt;]... &lt;nvar&gt; (&lt;set-id&gt; &lt;low-range&gt; &lt;high-range&gt;){n} &lt;default&gt;</pre>
+	<p>This sub-type is only valid for vehicles.</p>
+	<p>The vehicle which is accessed can be any in the vehicle consist. The <font face="monospace">count</font> byte selects which, this has the same syntax and functionality
+	as the <a href="https://newgrf-specs.tt-wiki.net/wiki/RandomAction2#count"><font face="monospace">count</font> byte in random action 2 type 84</a>.</p>
+	<p>Note: The count byte mode where temporary variable 0x100 is used should be used with caution.</p>
+	<h4 id="varaction2_additional_type_02">Sub-type 02: Relative scope for vehicles (longer syntax)</h4>
+	<pre>&lt;Sprite-number&gt; * &lt;Length&gt; 02 &lt;feature&gt; &lt;set-id&gt; <b>87 02 &lt;mode&gt; &lt;offset&gt;</b> &lt;variable&gt; &lt;varadjust&gt; [&lt;operator&gt; &lt;variable&gt; &lt;varadjust&gt;]... &lt;nvar&gt; (&lt;set-id&gt; &lt;low-range&gt; &lt;high-range&gt;){n} &lt;default&gt;</pre>
+	<p>This sub-type is only valid for vehicles.</p>
+	<p>The vehicle which is accessed can be any in the vehicle consist. The <font face="monospace">mode</font> and <font face="monospace">offset</font> bytes select which.</p>
+	<p>The <font face="monospace">mode</font> byte has the following syntax:
+	<table>
+	<tr><th>Bits</th><th>Meaning</th></tr>
+	<tr><td>0 - 1</td><td>
+		Selection mode:<br/>
+		These values are the same as bits 6 - 7 of the <a href="https://newgrf-specs.tt-wiki.net/wiki/RandomAction2#count"><font face="monospace">count</font> byte in random action 2 type 84</a>.
+		<table>
+		<tr><th>Value</th><th>Meaning</th></tr>
+		<tr><td>0</td><td>Count back (away from the engine), starting at this vehicle</td></tr>
+		<tr><td>1</td><td>Count forward (toward the engine), starting at this vehicle</td></tr>
+		<tr><td>2</td><td>Count back, starting at the engine</td></tr>
+		<tr><td>3</td><td>Count back, starting at the first vehicle in this chain of vehicles with the same ID, as for vehicle variable 41</td></tr>
+		</table>
+	</td></tr>
+	<tr><td>7</td><td>If set, use variable 0x100 for the offset. The offset byte must be 0.</td></tr>
+	</table>
+	The remaining bits are reserved for future used and must be set to 0.
+	</p>
+	<p>The <font face="monospace">offset</font> byte specifies how far to count from the starting vehicle. A value of 0 is not special.<br />
+	Bit 7 of the <font face="monospace">mode</font> byte must be set to use temporary variable 0x100 instead.</p>
+	<p>Note: Using temporary variable 0x100 as the offset should be used with caution.</p>
 	<br />
 	<h3 id="varaction2_station"><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Stations">Variational Action 2 - Stations</a></h3>
 	<h4 id="varaction2_station_var42">Track type in purchase list (42)</h4>

@@ -36,6 +36,7 @@
 	<h3 id="sections">Sections</h3>
 	<ul>
 	<li><a href="#builtin-functions">Builtin functions</a></li>
+	<li><a href="#switch-types">Additional switch types</a></li>
 	<li><a href="#railtype-properties">Railtype properties</a></li>
 	<li><a href="#railtype-variables">Railtype variables</a></li>
 	<li><a href="#roadtype-properties">Roadtype properties</a></li>
@@ -56,6 +57,21 @@
 		This returns true if the given extended feature is present and has a version within the specified minimum and maximum (inclusive).<br />
 		This function should only be used after the grf{} block.<br />
 		In most cases it is not necessary to use this function, as extended properties (listed below) which are not supported are simply skipped/ignored.
+	</p>
+
+	<h3 id="switch-types"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Switch">Additional switch types</a></h3>
+	<p>
+		In addition to SELF and PARENT, switches for vehicle features may use one of the following types below.<br />
+		(These are mostly the same as in <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Random_switch">random_switch</a>).<br />
+		The 'x' parameter (count x vehicles in given direction) is currently required to be a compile-time constant between 0 and 255.
+		<table>
+		<tr><th>Type</th><th>Meaning</th></tr>
+		<tr><td>BACKWARD_SELF(x)</td><td>Count x vehicles backward (away from the engine), starting at the vehicle itself</td></tr>
+		<tr><td>FORWARD_SELF(x)</td><td>Count x vehicles forward (towards the engine), starting at the vehicle itself</td></tr>
+		<tr><td>BACKWARD_ENGINE(x)</td><td>Count x vehicles backward, starting at the leading engine</td></tr>
+		<tr><td>BACKWARD_SAMEID(x)</td><td>Count x vehicles backward, starting at the first vehicle in the chain with the same ID</td></tr>
+		</table>
+		<p>These require the <span class="code">more_varaction2_types</span> feature. If this feature is not present, switches of these types will produce a CB_FAILED result.</p>
 	</p>
 
 	<h3 id="railtype-properties"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#Railtype_properties">Railtype properties</a></h3>
