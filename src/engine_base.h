@@ -163,6 +163,15 @@ struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	}
 
 	/**
+	 * Check if the vehicle type supports articulation.
+	 * @return True iff the vehicle is a train, road vehicle or ship.
+	 */
+	inline bool IsArticulatedCallbackVehicleType() const
+	{
+		return this->type == VEH_TRAIN || this->type == VEH_ROAD || this->type == VEH_SHIP;
+	}
+
+	/**
 	 * Retrieve the NewGRF the engine is tied to.
 	 * This is the GRF providing the Action 3.
 	 * @return NewGRF associated to the engine.

@@ -37,6 +37,7 @@
 #include "industry.h"
 #include "industry_map.h"
 #include "core/checksum_func.hpp"
+#include "articulated_vehicles.h"
 
 #include "table/strings.h"
 
@@ -220,9 +221,13 @@ void Ship::UpdateCache()
 	this->vcache.cached_max_speed = svi->ApplyWaterClassSpeedFrac(raw_speed, is_ocean);
 
 	/* Update cargo aging period. */
-	this->vcache.cached_cargo_age_period = GetVehicleProperty(this, PROP_SHIP_CARGO_AGE_PERIOD, EngInfo(this->engine_type)->cargo_age_period);
+	for (Ship *u = this; u != nullptr; u = u->Next()) {
+		u->vcache.cached_cargo_age_period = GetVehicleProperty(u, PROP_SHIP_CARGO_AGE_PERIOD, EngInfo(u->engine_type)->cargo_age_period);
+	}
 
 	this->UpdateVisualEffect();
+
+	SetBit(this->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT);
 }
 
 Money Ship::GetRunningCost() const
@@ -245,6 +250,8 @@ Money Ship::GetRunningCost() const
 
 void Ship::OnNewDay()
 {
+	if (!this->IsPrimaryVehicle()) return;
+
 	if ((++this->day_counter & 7) == 0) {
 		DecreaseVehicleValue(this);
 	}
@@ -253,6 +260,8 @@ void Ship::OnNewDay()
 
 void Ship::OnPeriodic()
 {
+	if (!this->IsPrimaryVehicle()) return;
+
 	CheckVehicleBreakdown(this);
 	CheckIfShipNeedsService(this);
 
@@ -1155,6 +1164,7 @@ CommandCost CmdBuildShip(TileIndex tile, DoCommandFlag flags, const Engine *e, u
 
 		v->cargo_cap = e->DetermineCapacity(v);
 
+		AddArticulatedParts(v);
 		v->InvalidateNewGRFCacheOfChain();
 
 		v->UpdatePosition();

@@ -577,6 +577,15 @@ public:
 	}
 
 	/**
+	 * Check if the vehicle type supports articulation.
+	 * @return True iff the vehicle is a train, road vehicle or ship.
+	 */
+	debug_inline bool IsArticulatedCallbackVehicleType() const
+	{
+		return this->type == VEH_TRAIN || this->type == VEH_ROAD || this->type == VEH_SHIP;
+	}
+
+	/**
 	 * Gets the speed in km-ish/h that can be sent into SetDParam for string processing.
 	 * @return the vehicle's speed
 	 */

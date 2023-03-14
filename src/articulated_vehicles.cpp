@@ -10,6 +10,7 @@
 #include "stdafx.h"
 #include "train.h"
 #include "roadveh.h"
+#include "ship.h"
 #include "vehicle_func.h"
 #include "engine_func.h"
 #include "company_func.h"
@@ -178,7 +179,7 @@ CargoArray GetCapacityOfArticulatedParts(EngineID engine)
 	uint16 cargo_capacity = GetVehicleDefaultCapacity(engine, &cargo_type);
 	if (cargo_type < NUM_CARGO) capacity[cargo_type] = cargo_capacity;
 
-	if (!e->IsGroundVehicle()) return capacity;
+	if (!e->IsArticulatedCallbackVehicleType()) return capacity;
 
 	if (!HasBit(e->info.callback_mask, CBM_VEHICLE_ARTIC_ENGINE)) return capacity;
 
@@ -203,7 +204,7 @@ bool IsArticulatedVehicleRefittable(EngineID engine)
 	if (IsEngineRefittable(engine)) return true;
 
 	const Engine *e = Engine::Get(engine);
-	if (!e->IsGroundVehicle()) return false;
+	if (!e->IsArticulatedCallbackVehicleType()) return false;
 
 	if (!HasBit(e->info.callback_mask, CBM_VEHICLE_ARTIC_ENGINE)) return false;
 
@@ -231,7 +232,7 @@ void GetArticulatedRefitMasks(EngineID engine, bool include_initial_cargo_type, 
 	*union_mask = veh_cargoes;
 	*intersection_mask = (veh_cargoes != 0) ? veh_cargoes : ALL_CARGOTYPES;
 
-	if (!e->IsGroundVehicle()) return;
+	if (!e->IsArticulatedCallbackVehicleType()) return;
 	if (!HasBit(e->info.callback_mask, CBM_VEHICLE_ARTIC_ENGINE)) return;
 
 	for (uint i = 1; i < MAX_ARTICULATED_PARTS; i++) {
@@ -365,8 +366,11 @@ void AddArticulatedParts(Vehicle *first)
 		 * and we run out of available vehicles, bail out. */
 		if (!Vehicle::CanAllocateItem()) return;
 
-		GroundVehicleCache *gcache = v->GetGroundVehicleCache();
-		gcache->first_engine = v->engine_type; // Needs to be set before first callback
+		GroundVehicleCache *gcache = nullptr;
+		if (type == VEH_TRAIN || type == VEH_ROAD) {
+			gcache = v->GetGroundVehicleCache();
+			gcache->first_engine = v->engine_type; // Needs to be set before first callback
+		}
 
 		const Engine *e_artic = Engine::Get(engine_type);
 		switch (type) {
@@ -424,25 +428,52 @@ void AddArticulatedParts(Vehicle *first)
 				rv->SetArticulatedPart();
 				break;
 			}
+
+			case VEH_SHIP: {
+				Ship *front = Ship::From(first);
+				Ship *s = new Ship();
+				v->SetNext(s);
+				v = s;
+
+				s->direction = DIR_N;
+				s->x_pos = 0;
+				s->y_pos = 0;
+				s->z_pos = 0;
+				s->vehstatus = VS_HIDDEN | VS_UNCLICKABLE;
+				s->subtype = (1 << GVSF_VIRTUAL);
+
+				if (e_artic->CanCarryCargo()) {
+					s->cargo_type = e_artic->GetDefaultCargoType();
+					s->cargo_cap = e_artic->u.ship.capacity;  // Callback 36 is called when the consist is finished
+				} else {
+					s->cargo_type = front->cargo_type;
+					s->cargo_cap = 0;
+				}
+				break;
+			}
 		}
 
 		/* get common values from first engine */
-		v->direction = first->direction;
 		v->owner = first->owner;
-		v->tile = first->tile;
-		v->x_pos = first->x_pos;
-		v->y_pos = first->y_pos;
-		v->z_pos = first->z_pos;
 		v->date_of_last_service = first->date_of_last_service;
 		v->build_year = first->build_year;
-		v->vehstatus = first->vehstatus & ~VS_STOPPED;
 
 		v->cargo_subtype = 0;
 		v->max_age = 0;
 		v->engine_type = engine_type;
 		v->value = 0;
-		v->sprite_seq.Set(SPR_IMG_QUERY);
 		v->random_bits = VehicleRandomBits();
+
+		if (type == VEH_SHIP) continue;
+
+		v->direction = first->direction;
+		v->tile = first->tile;
+		v->x_pos = first->x_pos;
+		v->y_pos = first->y_pos;
+		v->z_pos = first->z_pos;
+		v->vehstatus = first->vehstatus & ~VS_STOPPED;
+
+		v->sprite_seq.Set(SPR_IMG_QUERY);
 
 		if (flip_image) v->spritenum++;
 

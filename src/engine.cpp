@@ -188,7 +188,7 @@ bool Engine::CanCarryCargo() const
 
 bool Engine::CanPossiblyCarryCargo() const
 {
-	if (this->IsGroundVehicle() && HasBit(this->info.callback_mask, CBM_VEHICLE_ARTIC_ENGINE)) return true;
+	if (this->IsArticulatedCallbackVehicleType() && HasBit(this->info.callback_mask, CBM_VEHICLE_ARTIC_ENGINE)) return true;
 
 	switch (this->type) {
 		case VEH_TRAIN:

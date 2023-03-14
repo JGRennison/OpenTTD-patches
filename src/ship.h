@@ -43,7 +43,7 @@ struct Ship FINAL : public SpecializedVehicle<Ship, VEH_SHIP> {
 	void UpdateDeltaXY() override;
 	ExpensesType GetExpenseType(bool income) const override { return income ? EXPENSES_SHIP_REVENUE : EXPENSES_SHIP_RUN; }
 	void PlayLeaveStationSound(bool force = false) const override;
-	bool IsPrimaryVehicle() const override { return true; }
+	bool IsPrimaryVehicle() const override { return this->Previous() == nullptr; }
 	void GetImage(Direction direction, EngineImageType image_type, VehicleSpriteSeq *result) const override;
 	Direction GetMapImageDirection() const { return this->rotation; }
 	int GetDisplaySpeed() const  override{ return this->cur_speed / 2; }

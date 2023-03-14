@@ -37,6 +37,7 @@
 	<ul>
 	<li><a href="#builtin-functions">Builtin functions</a></li>
 	<li><a href="#switch-types">Additional switch types</a></li>
+	<li><a href="#ship-callbacks">Ship callbacks</a></li>
 	<li><a href="#railtype-properties">Railtype properties</a></li>
 	<li><a href="#railtype-variables">Railtype variables</a></li>
 	<li><a href="#roadtype-properties">Roadtype properties</a></li>
@@ -72,6 +73,15 @@
 		<tr><td>BACKWARD_SAMEID(x)</td><td>Count x vehicles backward, starting at the first vehicle in the chain with the same ID</td></tr>
 		</table>
 		<p>These require the <span class="code">more_varaction2_types</span> feature. If this feature is not present, switches of these types will produce a CB_FAILED result.</p>
+	</p>
+
+	<h3 id="ship-callbacks"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Vehicles#Vehicle_callbacks">Ship callbacks</a></h3>
+	<p>
+		The <span class="code">articulated_part</span> callback is also available for ships.<br />
+		Additional ship parts are not used for graphics, they are only used for additional cargo capacity, the default graphics chain is unused.<br />
+		The default graphics chain for the primary vehicle may check the cargo states of the other ship parts if required.<br />
+		Additional ship parts may be refitted individually.
+		<p>This requires the <span class="code">multi_part_ships</span> feature.</p>
 	</p>
 
 	<h3 id="railtype-properties"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#Railtype_properties">Railtype properties</a></h3>

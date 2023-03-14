@@ -257,8 +257,8 @@ void AfterLoadVehicles(bool part_of_load)
 		/* Reinstate the previous pointer */
 		if (v->Next() != nullptr) {
 			v->Next()->previous = v;
-			if (HasBit(v->subtype, GVSF_VIRTUAL) != HasBit(v->Next()->subtype, GVSF_VIRTUAL)) {
-				SlErrorCorrupt("Mixed virtual/non-virtual vehicle consist");
+			if (v->type == VEH_TRAIN && (HasBit(v->subtype, GVSF_VIRTUAL) != HasBit(v->Next()->subtype, GVSF_VIRTUAL))) {
+				SlErrorCorrupt("Mixed virtual/non-virtual train consist");
 			}
 		}
 		if (v->NextShared() != nullptr) v->NextShared()->previous_shared = v;
@@ -457,7 +457,9 @@ void AfterLoadVehicles(bool part_of_load)
 			}
 
 			case VEH_SHIP:
-				Ship::From(v)->UpdateCache();
+				if (Ship::From(v)->IsPrimaryVehicle()) {
+					Ship::From(v)->UpdateCache();
+				}
 				break;
 
 			default: break;

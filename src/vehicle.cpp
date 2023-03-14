@@ -1012,7 +1012,7 @@ bool Vehicle::IsEngineCountable() const
 			return !this->IsArticulatedPart() && // tenders and other articulated parts
 					!Train::From(this)->IsRearDualheaded(); // rear parts of multiheaded engines
 		case VEH_ROAD: return RoadVehicle::From(this)->IsFrontEngine();
-		case VEH_SHIP: return true;
+		case VEH_SHIP: return Ship::From(this)->IsPrimaryVehicle();
 		default: return false; // Only count company buildable vehicles
 	}
 }
@@ -1405,7 +1405,7 @@ void RebuildVehicleTickCaches()
 				break;
 
 			case VEH_SHIP:
-				_tick_ship_cache.push_back(Ship::From(v));
+				if (v->Previous() == nullptr) _tick_ship_cache.push_back(Ship::From(v));
 				break;
 
 			case VEH_EFFECT:
@@ -1597,7 +1597,9 @@ void CallVehicleTicks()
 		for (Ship *s : _tick_ship_cache) {
 			v = s;
 			if (!s->Ship::Tick()) continue;
-			VehicleTickCargoAging(s);
+			for (Ship *u = s; u != nullptr; u = u->Next()) {
+				VehicleTickCargoAging(u);
+			}
 			if (!(s->vehstatus & VS_STOPPED)) VehicleTickMotion(s, s);
 		}
 	}

@@ -352,7 +352,7 @@ struct NewGRFInspectWindow : Window {
 	bool HasChainIndex() const
 	{
 		GrfSpecFeature f = GetFeatureNum(this->window_number);
-		return f == GSF_TRAINS || f == GSF_ROADVEHICLES;
+		return f == GSF_TRAINS || f == GSF_ROADVEHICLES || f == GSF_SHIPS;
 	}
 
 	/**
@@ -416,6 +416,10 @@ struct NewGRFInspectWindow : Window {
 			case WID_NGRFI_VEH_CHAIN: {
 				assert(this->HasChainIndex());
 				GrfSpecFeature f = GetFeatureNum(this->window_number);
+				if (f == GSF_SHIPS) {
+					size->height = FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.framerect.Vertical();
+					break;
+				}
 				size->height = std::max(size->height, GetVehicleImageCellSize((VehicleType)(VEH_TRAIN + (f - GSF_TRAINS)), EIT_IN_DEPOT).height + 2 + WidgetDimensions::scaled.bevel.Vertical());
 				break;
 			}
@@ -457,6 +461,15 @@ struct NewGRFInspectWindow : Window {
 		switch (widget) {
 			case WID_NGRFI_VEH_CHAIN: {
 				const Vehicle *v = Vehicle::Get(this->GetFeatureIndex());
+				if (GetFeatureNum(this->window_number) == GSF_SHIPS) {
+					Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
+					char buffer[64];
+					uint count = 0;
+					for (const Vehicle *u = v->First(); u != nullptr; u = u->Next()) count++;
+					seprintf(buffer, lastof(buffer), "Part %u of %u", this->chain_index + 1, count);
+					::DrawString(ir.left, ir.right, ir.top, buffer, TC_BLACK);
+					break;
+				}
 				int total_width = 0;
 				int sel_start = 0;
 				int sel_end = 0;
@@ -1103,7 +1116,7 @@ void ShowNewGRFInspectWindow(GrfSpecFeature feature, uint index, const uint32 gr
 	if (!IsNewGRFInspectable(feature, index)) return;
 
 	WindowNumber wno = GetInspectWindowNumber(feature, index);
-	WindowDesc *desc = (feature == GSF_TRAINS || feature == GSF_ROADVEHICLES) ? &_newgrf_inspect_chain_desc : &_newgrf_inspect_desc;
+	WindowDesc *desc = (feature == GSF_TRAINS || feature == GSF_ROADVEHICLES || feature == GSF_SHIPS) ? &_newgrf_inspect_chain_desc : &_newgrf_inspect_desc;
 	NewGRFInspectWindow *w = AllocateWindowDescFront<NewGRFInspectWindow>(desc, wno, true);
 	w->SetCallerGRFID(grfid);
 }

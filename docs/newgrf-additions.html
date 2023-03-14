@@ -52,6 +52,7 @@
 	<li><a href="#varaction2_railtypes">Variational Action 2 - Railtypes</a></li>
 	<li><a href="#varaction2_object">Variational Action 2 - Objects</a></li>
 	<li><a href="#varaction2_signals">Variational Action 2 - Signals (Feature 0E)</a></li>
+	<li><a href="#callbacks_ships">Callbacks - Ships</a></li>
 	<li><a href="#a3objects">Action 3 - Objects</a></li>
 	<li><a href="#a3signals">Action 3 - Signals (Feature 0E)</a></li>
 	<li><a href="#action5">Action 14 - Type ID Mapping for Action 5</a></li>
@@ -888,7 +889,18 @@
 	If the signal being drawn uses a custom signal style, the value is the signal style ID as set in the <a href="#signals_define_style">signals_define_style</a> property.<br />
 	Otherwise for signals using the default style, the value is 0.
 	</p>
-	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1.</p>
+	<br />
+	<br />
+	<h3 id="callbacks_ships"><a href="https://newgrf-specs.tt-wiki.net/wiki/Callbacks">Callbacks - Ships</a></h3>
+	<h4 id="callbacks_ships_articulated">Multi-part ships</h4>
+	<p><b><a href="https://newgrf-specs.tt-wiki.net/wiki/Callbacks#Articulated_engine_.2816.29">Callback 16 - Articulated engine</a> may also be used for ships.</b><br />
+	This functions the same as for trains and road vehicles, and is enabled in the same way (bit 4 of ship property 12).<br />
+	Additional ship parts are not used for graphics, they are only used for additional cargo capacity.<br />
+	The graphics chain for the primary vehicle may check the cargo states of the other ship parts if required.<br />
+	Additional ship parts may be refitted individually.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">multi_part_ships</font>, version 1</p>
 	<br />
 	<br />
 	<h3 id="a3objects"><a href="https://newgrf-specs.tt-wiki.net/wiki/Action3">Action 3 - Objects</a></h3>
