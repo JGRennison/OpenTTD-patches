@@ -2190,7 +2190,13 @@ CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 			RoadType tram_rt = MayHaveRoad(cur_tile) ? GetRoadType(cur_tile, RTT_TRAM) : INVALID_ROADTYPE;
 			Owner road_owner = road_rt != INVALID_ROADTYPE ? GetRoadOwner(cur_tile, RTT_ROAD) : _current_company;
 			Owner tram_owner = tram_rt != INVALID_ROADTYPE ? GetRoadOwner(cur_tile, RTT_TRAM) : _current_company;
-			DisallowedRoadDirections drd = IsNormalRoadTile(cur_tile) ? GetDisallowedRoadDirections(cur_tile) : DRD_NONE;
+
+			DisallowedRoadDirections drd = DRD_NONE;
+			if (IsNormalRoadTile(cur_tile)){
+				drd = GetDisallowedRoadDirections(cur_tile);
+			} else if (IsDriveThroughStopTile(cur_tile)) {
+				drd = GetDriveThroughStopDisallowedRoadDirections(cur_tile);
+			}
 
 			if (IsTileType(cur_tile, MP_STATION) && IsAnyRoadStop(cur_tile)) {
 				RemoveRoadStop(cur_tile, flags, specindex);
