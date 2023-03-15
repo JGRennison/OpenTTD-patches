@@ -159,7 +159,11 @@ uint32 RoadStopScopeResolver::GetVariable(uint16 variable, uint32 parameter, Get
 		case 0x50: {
 			uint32 result = 0;
 			if (this->tile != INVALID_TILE) {
-				if (IsDriveThroughStopTile(this->tile)) result |= GetDriveThroughStopDisallowedRoadDirections(this->tile);
+				if (IsDriveThroughStopTile(this->tile)) {
+					result |= GetDriveThroughStopDisallowedRoadDirections(this->tile);
+					RoadCachedOneWayState rcows = GetRoadCachedOneWayState(this->tile);
+					if (rcows <= RCOWS_NO_ACCESS) result |= (rcows << 2);
+				}
 			}
 			return result;
 		}

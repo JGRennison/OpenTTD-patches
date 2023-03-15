@@ -259,9 +259,21 @@ static btree::btree_set<TileIndex> _road_cache_one_way_state_pending_interpolate
 static bool _defer_update_road_cache_one_way_state = false;
 bool _mark_tile_dirty_on_road_cache_one_way_state_update = false;
 
+static void RefreshTileOnCachedOneWayStateChange(TileIndex tile)
+{
+	if (IsAnyRoadStopTile(tile) && IsCustomRoadStopSpecIndex(tile)) {
+		MarkTileGroundDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+		return;
+	}
+	if (unlikely(_mark_tile_dirty_on_road_cache_one_way_state_update)) {
+		MarkTileGroundDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+		return;
+	}
+}
+
 static void UpdateTileRoadCachedOneWayState(TileIndex tile)
 {
-	if (unlikely(_mark_tile_dirty_on_road_cache_one_way_state_update)) MarkTileGroundDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+	RefreshTileOnCachedOneWayStateChange(tile);
 
 	DisallowedRoadDirections drd = GetOneWayRoadTileDisallowedRoadDirections(tile);
 	if (drd != DRD_NONE) {
@@ -364,7 +376,7 @@ static void InterpolateRoadFollowRoadBitSetState(TileIndex tile, uint8 bit, Inte
 			SetRoadCachedOneWayState(tile, (RoadCachedOneWayState)(irr ^ (HasBit(bits_to_rcows, (inbit << 2) | bit) ? 0 : 3)));
 		}
 		_road_cache_one_way_state_pending_interpolate_tiles.erase(tile);
-		if (unlikely(_mark_tile_dirty_on_road_cache_one_way_state_update)) MarkTileGroundDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+		RefreshTileOnCachedOneWayStateChange(tile);
 		TileIndex next = InterpolateRoadFollowTileStep(tile, bit);
 		if (next == INVALID_TILE) return;
 		DisallowedRoadDirections drd = GetOneWayRoadTileDisallowedRoadDirections(next);
