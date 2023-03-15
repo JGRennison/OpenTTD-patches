@@ -901,6 +901,18 @@
 	Additional ship parts may be refitted individually.
 	</p>
 	<p>This is indicated by the feature name: <font face="monospace">multi_part_ships</font>, version 1</p>
+	<p><b>Callback EC008002 - Ship part name for refit window</b><br />
+	This callback is called on the primary vehicle to get the name of each part of the ship (e.g. the name of each cargo hold) in the refit window.<br />
+	This is not called for ships of only one part.<br />
+	If this callback is not handled, a default name is used.<br />
+	Bits 0 - 7 of variable 10 contains the index of the part of the ship. The first/primary part is 0, each subsequent part increases the value by 1.
+	</p>
+	<p>
+		The return value should be the number of a D0xx text to be displayed. The contents of registers 100h..105h are copied onto the text reference stack and can be used with string codes 80/81 to show texts from the D8xx range as well, extending the available unique strings.<br />
+		You can return 400 to use the default name (instead of failing the callback).<br />
+		(This is the same return format as callbacks: 23, 38, 3A, 14D, 15C, 161).
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">multi_part_ships</font>, version 1</p>
 	<br />
 	<br />
 	<h3 id="a3objects"><a href="https://newgrf-specs.tt-wiki.net/wiki/Action3">Action 3 - Objects</a></h3>

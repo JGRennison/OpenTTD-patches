@@ -287,6 +287,9 @@ enum CallbackID {
 
 	/** Called to set town zones */
 	XCBID_TOWN_ZONES                     = 0xEC008001,
+
+	/** Called to get the name of the part of a ship for the refit window */
+	XCBID_SHIP_REFIT_PART_NAME           = 0xEC008002,
 };
 
 /**

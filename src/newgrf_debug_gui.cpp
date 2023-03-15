@@ -1656,6 +1656,7 @@ const char *GetNewGRFCallbackName(CallbackID cbid)
 		CBID(CBID_VEHICLE_SPAWN_VISUAL_EFFECT)
 		CBID(CBID_VEHICLE_NAME)
 		CBID(XCBID_TOWN_ZONES)
+		CBID(XCBID_SHIP_REFIT_PART_NAME)
 		default: return nullptr;
 	}
 }

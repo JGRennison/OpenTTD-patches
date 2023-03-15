@@ -36,6 +36,7 @@ enum VehicleRefitWidgets {
 	WID_VR_VEHICLE_PANEL_DISPLAY, ///< Display with a representation of the vehicle to refit.
 	WID_VR_SHOW_HSCROLLBAR,       ///< Selection widget for the horizontal scrollbar.
 	WID_VR_HSCROLLBAR,            ///< Horizontal scrollbar or the vehicle display.
+	WID_VR_VEHICLE_DROPDOWN,      ///< Dropdown for the vehicle display.
 	WID_VR_SELECT_HEADER,         ///< Header with question about the cargo to carry.
 	WID_VR_MATRIX,                ///< Options to refit to.
 	WID_VR_SCROLLBAR,             ///< Scrollbar for the refit options.

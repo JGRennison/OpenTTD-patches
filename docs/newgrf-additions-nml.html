@@ -83,6 +83,14 @@
 		Additional ship parts may be refitted individually.
 		<p>This requires the <span class="code">multi_part_ships</span> feature.</p>
 	</p>
+	<p>
+		Added callback: <span class="code">refit_part_name</span><br />
+		This callback is called on the primary vehicle to get the name of each part of the ship (e.g. the name of each cargo hold) in the refit window.<br />
+		This is not called for ships of only one part.<br />
+		The callback handler should return a string or CB_RESULT_NO_TEXT.<br />
+		If this callback is not handled or if CB_RESULT_NO_TEXT is returned, a default name is used.<br />
+		<span class="code">getbits(extra_callback_info1, 0, 8)</span> contains the index of the part of the ship. The first/primary part is 0, each subsequent part increases the value by 1.
+	</p>
 
 	<h3 id="railtype-properties"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#Railtype_properties">Railtype properties</a></h3>
 	<table>
