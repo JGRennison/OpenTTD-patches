@@ -183,7 +183,8 @@
 	<p>This property sets the height used to size the road stop build window previews.<br />
 	The nominal height for the road stop preview is set to at least: 32 + "value of this property" * 8.<br />
 	This similar to <a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Objects#Building_height_.2816.29">Object variable 16</a>.<br />
-	The total property length is 1 byte.</a>.
+	The total property length is 1 byte.<br />
+	This requires <font face="monospace">road_stops</font>, version 6.
 	</p>
 
 	<p style="padding-top: 0.25em;">
@@ -235,6 +236,7 @@
 		<tr><td><a href="#roadstop_animation_frame_nearby_tiles">66</a></td><td><a href="#roadstop_animation_frame_nearby_tiles">roadstop_animation_frame_nearby_tiles</a></td><td>Animation frame of nearby tile</td></tr>
 		<tr><td><a href="#roadstop_land_info_nearby_tiles">67</a></td><td><a href="#roadstop_land_info_nearby_tiles">roadstop_land_info_nearby_tiles</a></td><td>Land info of nearby tiles</td></tr>
 		<tr><td><a href="#roadstop_road_stop_info_nearby_tiles">68</a></td><td><a href="#roadstop_road_stop_info_nearby_tiles">roadstop_road_stop_info_nearby_tiles</a></td><td>Road stop info of nearby tiles</td></tr>
+		<tr><td></td><td><a href="#roadstop_road_stop_info_nearby_tiles_v2">roadstop_road_stop_info_nearby_tiles_v2</a></td><td>Road stop info of nearby tiles (v2)</td></tr>
 		<tr><td><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/BaseStation">69</a></td><td></td><td>Information about cargo accepted in the past (BaseStation)</td></tr>
 		<tr><td><a href="#roadstop_road_stop_grfid_nearby_tiles">6A</a></td><td><a href="#roadstop_road_stop_grfid_nearby_tiles">roadstop_road_stop_grfid_nearby_tiles</a></td><td>GRFID of nearby road stop tiles</td></tr>
 		<tr><td><a href="#roadstop_road_info_nearby_tiles">6B</a></td><td><a href="#roadstop_road_info_nearby_tiles">roadstop_road_info_nearby_tiles</a></td><td>Road info of nearby plain road tiles</td></tr>
@@ -358,7 +360,7 @@
 	The remaining bits are reserved for future use and should be masked.
 	</p>
 
-	<h4 id="roadstop_road_stop_info_nearby_tiles">Road stop of nearby tile v2 (mappable variable: roadstop_road_stop_info_nearby_tiles_v2)</h4>
+	<h4 id="roadstop_road_stop_info_nearby_tiles_v2">Road stop of nearby tile v2 (mappable variable: roadstop_road_stop_info_nearby_tiles_v2)</h4>
 	<p>This has a similar value to <a href="#roadstop_road_stop_info_nearby_tiles">68</a>/<a href="#roadstop_road_stop_info_nearby_tiles">roadstop_road_stop_info_nearby_tiles</a>, above.<br />
 
 	<table>
@@ -386,7 +388,8 @@
 		3 - No entry
 	</table>
 	<br />
-	The remaining bits are reserved for future use and should be masked.
+	The remaining bits are reserved for future use and should be masked.<br />
+	This requires <font face="monospace">road_stops</font>, version 7.
 	</p>
 
 	<h4 id="roadstop_road_stop_grfid_nearby_tiles">GRFID of nearby road stop tile (6A, or mappable variable: roadstop_road_stop_grfid_nearby_tiles)</h4>
