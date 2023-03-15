@@ -15,6 +15,7 @@
 #include "engine_func.h"
 #include "company_func.h"
 #include "newgrf.h"
+#include "newgrf_extension.h"
 #include <vector>
 
 #include "table/strings.h"
@@ -36,6 +37,10 @@ static EngineID GetNextArticulatedPart(uint index, EngineID front_type, Vehicle 
 	assert(front == nullptr || front->engine_type == front_type);
 
 	const Engine *front_engine = Engine::Get(front_type);
+
+	if (front_engine->type == VEH_SHIP && !(front_engine->GetGRF() != nullptr && HasBit(front_engine->GetGRF()->observed_feature_tests, GFTOF_MULTI_PART_SHIPS))) {
+		return INVALID_ENGINE;
+	}
 
 	uint16 callback = GetVehicleCallback(CBID_VEHICLE_ARTIC_ENGINE, index, 0, front_type, front);
 	if (callback == CALLBACK_FAILED) return INVALID_ENGINE;

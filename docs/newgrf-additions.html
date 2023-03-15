@@ -895,7 +895,8 @@
 	<h3 id="callbacks_ships"><a href="https://newgrf-specs.tt-wiki.net/wiki/Callbacks">Callbacks - Ships</a></h3>
 	<h4 id="callbacks_ships_articulated">Multi-part ships</h4>
 	<p><b><a href="https://newgrf-specs.tt-wiki.net/wiki/Callbacks#Articulated_engine_.2816.29">Callback 16 - Articulated engine</a> may also be used for ships.</b><br />
-	This functions the same as for trains and road vehicles, and is enabled in the same way (bit 4 of ship property 12).<br />
+	The feature name: <font face="monospace">multi_part_ships</font> must be tested for to enable this callback for ships.<br />
+	This functions the same as for trains and road vehicles, and is enabled for individual engines in the same way (bit 4 of ship property 12).<br />
 	Additional ship parts are not used for graphics, they are only used for additional cargo capacity.<br />
 	The graphics chain for the primary vehicle may check the cargo states of the other ship parts if required.<br />
 	Additional ship parts may be refitted individually.

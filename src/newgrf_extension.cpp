@@ -66,7 +66,7 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("town_uncapped_variables", 1),
 	GRFFeatureInfo("town_zone_callback", 1, GFTOF_TOWN_ZONE_CALLBACK),
 	GRFFeatureInfo("more_varaction2_types", 1, GFTOF_MORE_VARACTION2_TYPES),
-	GRFFeatureInfo("multi_part_ships", 1),
+	GRFFeatureInfo("multi_part_ships", 1, GFTOF_MULTI_PART_SHIPS),
 	GRFFeatureInfo(),
 };
 
