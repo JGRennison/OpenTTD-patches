@@ -87,7 +87,7 @@ struct GenericCallback {
 	{ }
 };
 
-typedef std::list<GenericCallback> GenericCallbackList;
+typedef std::vector<GenericCallback> GenericCallbackList;
 
 static GenericCallbackList _gcl[GSF_END];
 
@@ -117,9 +117,8 @@ void AddGenericCallback(GrfSpecFeature feature, const GRFFile *file, const Sprit
 	}
 
 	/* Generic feature callbacks are evaluated in reverse (i.e. the last group
-	 * to be added is evaluated first, etc) thus we push the group to the
-	 * beginning of the list so a standard iterator will do the right thing. */
-	_gcl[feature].push_front(GenericCallback(file, group));
+	 * to be added is evaluated first, etc) thus reverse iterators must be used. */
+	_gcl[feature].push_back(GenericCallback(file, group));
 }
 
 /* virtual */ uint32 GenericScopeResolver::GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const
@@ -173,7 +172,7 @@ static uint16 GetGenericCallbackResult(uint8 feature, ResolverObject &object, ui
 	assert(feature < lengthof(_gcl));
 
 	/* Test each feature callback sprite group. */
-	for (GenericCallbackList::const_iterator it = _gcl[feature].begin(); it != _gcl[feature].end(); ++it) {
+	for (GenericCallbackList::const_reverse_iterator it = _gcl[feature].rbegin(); it != _gcl[feature].rend(); ++it) {
 		object.grffile = it->file;
 		object.root_spritegroup = it->group;
 		/* Set callback param based on GRF version. */
@@ -272,7 +271,7 @@ uint16 GetTownZonesCallback(Town *t)
 
 	const uint16 MAX_RETURN_VERSION = 0;
 
-	for (GenericCallbackList::const_iterator it = _gcl[GSF_FAKE_TOWNS].begin(); it != _gcl[GSF_FAKE_TOWNS].end(); ++it) {
+	for (GenericCallbackList::const_reverse_iterator it = _gcl[GSF_FAKE_TOWNS].rbegin(); it != _gcl[GSF_FAKE_TOWNS].rend(); ++it) {
 		if (!HasBit(it->file->observed_feature_tests, GFTOF_TOWN_ZONE_CALLBACK)) continue;
 		object.grffile = it->file;
 		object.root_spritegroup = it->group;
@@ -287,7 +286,7 @@ uint16 GetTownZonesCallback(Town *t)
 
 bool IsGetTownZonesCallbackHandlerPresent()
 {
-	for (GenericCallbackList::const_iterator it = _gcl[GSF_FAKE_TOWNS].begin(); it != _gcl[GSF_FAKE_TOWNS].end(); ++it) {
+	for (GenericCallbackList::const_reverse_iterator it = _gcl[GSF_FAKE_TOWNS].rbegin(); it != _gcl[GSF_FAKE_TOWNS].rend(); ++it) {
 		if (HasBit(it->file->observed_feature_tests, GFTOF_TOWN_ZONE_CALLBACK)) return true;
 	}
 
@@ -298,7 +297,7 @@ void DumpGenericCallbackSpriteGroups(GrfSpecFeature feature, DumpSpriteGroupPrin
 {
 	SpriteGroupDumper dumper(print);
 	bool first = true;
-	for (GenericCallbackList::const_iterator it = _gcl[feature].begin(); it != _gcl[feature].end(); ++it) {
+	for (GenericCallbackList::const_reverse_iterator it = _gcl[feature].rbegin(); it != _gcl[feature].rend(); ++it) {
 		if (!first) print(nullptr, DSGPO_PRINT, 0, "");
 		char buffer[64];
 		seprintf(buffer, lastof(buffer), "GRF: %08X, town zone cb enabled: %s",
