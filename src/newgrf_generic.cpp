@@ -285,6 +285,15 @@ uint16 GetTownZonesCallback(Town *t)
 	return CALLBACK_FAILED;
 }
 
+bool IsGetTownZonesCallbackHandlerPresent()
+{
+	for (GenericCallbackList::const_iterator it = _gcl[GSF_FAKE_TOWNS].begin(); it != _gcl[GSF_FAKE_TOWNS].end(); ++it) {
+		if (HasBit(it->file->observed_feature_tests, GFTOF_TOWN_ZONE_CALLBACK)) return true;
+	}
+
+	return false;
+}
+
 void DumpGenericCallbackSpriteGroups(GrfSpecFeature feature, DumpSpriteGroupPrinter print)
 {
 	SpriteGroupDumper dumper(print);

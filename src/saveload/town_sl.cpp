@@ -22,6 +22,8 @@
 
 static bool _town_zone_radii_no_update = false;
 
+extern bool IsGetTownZonesCallbackHandlerPresent();
+
 HouseID SLGetCleanHouseType(TileIndex t, bool old_map_position)
 {
 	if (old_map_position && SlXvIsFeatureMissing(XSLFI_MORE_HOUSES)) {
@@ -375,7 +377,7 @@ void SlResetTNNC()
 
 void Save_TNNC()
 {
-	if (!IsNetworkServerSave()) {
+	if (!IsNetworkServerSave() || !IsGetTownZonesCallbackHandlerPresent()) {
 		SlSetLength(0);
 		return;
 	}
