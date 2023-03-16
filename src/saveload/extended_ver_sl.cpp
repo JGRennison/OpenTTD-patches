@@ -184,6 +184,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_AUX_TILE_LOOP,          XSCF_NULL,                1,   1, "aux_tile_loop",             nullptr, nullptr, nullptr        },
 	{ XSLFI_NEWGRF_ENTITY_EXTRA,    XSCF_NULL,                1,   1, "newgrf_entity_extra",       nullptr, nullptr, nullptr        },
 	{ XSLFI_TNNC_CHUNK,             XSCF_IGNORABLE_ALL,       1,   1, "tnnc_chunk",                nullptr, nullptr, "TNNC"         },
+	{ XSLFI_MULTI_CARGO_SHIPS,      XSCF_NULL,                1,   1, "multi_cargo_ships",         nullptr, nullptr, nullptr        },
 	{ XSLFI_SCRIPT_INT64,           XSCF_NULL,                1,   1, "script_int64",              nullptr, nullptr, nullptr        },
 	{ XSLFI_U64_TICK_COUNTER,       XSCF_NULL,                1,   1, "u64_tick_counter",          nullptr, nullptr, nullptr        },
 	{ XSLFI_LINKGRAPH_TRAVEL_TIME,  XSCF_NULL,                1,   1, "linkgraph_travel_time",     nullptr, nullptr, nullptr        },

@@ -135,6 +135,7 @@ enum SlXvFeatureIndex {
 	XSLFI_AUX_TILE_LOOP,                          ///< Auxiliary tile loop
 	XSLFI_NEWGRF_ENTITY_EXTRA,                    ///< NewGRF entity mappings are 16 bit
 	XSLFI_TNNC_CHUNK,                             ///< TNNC chunk
+	XSLFI_MULTI_CARGO_SHIPS,                      ///< Multi-cargo ships
 
 	XSLFI_SCRIPT_INT64,                           ///< See: SLV_SCRIPT_INT64
 	XSLFI_U64_TICK_COUNTER,                       ///< See: SLV_U64_TICK_COUNTER
