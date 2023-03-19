@@ -3207,6 +3207,8 @@ static CommandCost RemoveDock(TileIndex tile, DoCommandFlag flags)
 		ClearDockingTilesCheckingNeighbours(tile2);
 
 		for (Ship *s : Ship::Iterate()) {
+			if (!s->IsPrimaryVehicle()) continue;
+
 			/* Find all ships going to our dock. */
 			if (s->current_order.GetDestination() != st->index) {
 				continue;
