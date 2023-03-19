@@ -384,7 +384,7 @@ void Save_TNNC()
 
 	SlSetLength(4 + (Town::GetNumItems() * (1 + lengthof(TownCache::squared_town_zone_radius)) * 4));
 
-	SlWriteUint32(Town::GetNumItems());
+	SlWriteUint32((uint32)Town::GetNumItems());
 
 	for (const Town *t : Town::Iterate()) {
 		SlWriteUint32(t->index);
