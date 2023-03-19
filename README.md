@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.51.1
+## JGR's Patchpack version 0.52.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -99,6 +99,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 #### Ships
 
 * [Ship collision avoidance](http://www.tt-forums.net/viewtopic.php?f=33&t=74365).
+* Allow NewGRF ships to carry more than one cargo.
 
 #### Vehicles in General
 
@@ -192,6 +193,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add settings for if/when towns can build road bridges and tunnels.
 * Add setting to limit length of continuous inclined roads built by towns.
 * Allow overriding town road construction settings and whether town growth is enabled on a per-town basis, add setting to enable this for multiplayer clients.
+* Allow NewGRFs to set town zone radii.
 
 #### Industries
 

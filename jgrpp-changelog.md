@@ -2,6 +2,21 @@
 
 * * *
 
+### v0.52.0 (2023-03-19)
+* Fix template based train replacement build window not being refreshed for engine variant changes.
+* Fix building a road stop/waypoint over an existing road stop/waypoint clearing the one-way state.
+* Fix water flooding in the scenario editor at day lengths above 4.
+* Fix crash if screen resized to be smaller than confirmation window.
+* Fix tooltips for vertical link graph lines.
+* Fix dropdown strings for the the autosave setting in the settings window.
+* NewGRF:
+  * Allow ships to carry more than one cargo.
+  * Allow NewGRFs to set town zone radii.
+* Routing restrictions:
+  * Fix values not being fully initialised to their defaults when changing action type in some cases.
+  * Re-order action and condition dropdowns.
+* Bump trunk base from commit 09f7f32b8d85ea378984908b6a29764d8576284e to commit e5438891e27c0895964e1a030c91295d3b6ef474.
+
 ### v0.51.1 (2023-02-28)
 * Fix crash when looking at the town growth speed setting in the settings window.
 * Fix wrong texts in the about/question mark menu in the main toolbar.
