@@ -1475,9 +1475,11 @@ public:
 
 	void UpdateBuildingHeight(uint height)
 	{
-		if (height > this->building_height) {
+		height = std::max<uint>(2, height);
+		if (height != this->building_height) {
+			int y_delta = (height - this->building_height) * ScaleGUITrad(8) * 2;
 			this->building_height = height;
-			this->ReInit();
+			this->ReInit(0, y_delta);
 		}
 	}
 
@@ -1624,6 +1626,9 @@ public:
 	void OnResize() override {
 		if (this->vscrollList != nullptr) {
 			this->vscrollList->SetCapacityFromWidget(this, WID_BROS_NEWST_LIST);
+		}
+		if (this->vscrollMatrix != nullptr) {
+			this->GetWidget<NWidgetMatrix>(WID_BROS_MATRIX)->SetClicked(_roadstop_gui_settings.roadstop_type);
 		}
 	}
 
