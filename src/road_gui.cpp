@@ -1570,12 +1570,12 @@ public:
 					int x = (r.Width()  - ScaleSpriteTrad(64)) / 2 + ScaleSpriteTrad(31);
 					int y = (r.Height() + ScaleSpriteTrad(48)) / 2 - ScaleSpriteTrad(31);
 					if (spec != nullptr && spec->height > 2) y += (spec->height - 2) * ScaleSpriteTrad(4);
-					if (spec == nullptr || disabled) {
+					if (spec == nullptr || (disabled && !HasBit(spec->flags, RSF_BUILD_MENU_DRAW_DISABLED_VIEWS))) {
 						StationPickerDrawSprite(x, y, st, INVALID_RAILTYPE, _cur_roadtype, widget - WID_BROS_STATION_NE);
-						if (disabled) GfxFillRect(1, 1, r.Width() - 1, r.Height() - 1, PC_BLACK, FILLRECT_CHECKER);
 					} else {
 						DrawRoadStopTile(x, y, _cur_roadtype, spec, st, widget - WID_BROS_STATION_NE);
 					}
+					if (disabled) GfxFillRect(1, 1, r.Width() - 1, r.Height() - 1, PC_BLACK, FILLRECT_CHECKER);
 				}
 				break;
 			}
