@@ -296,6 +296,7 @@ private:
 	Script_SuspendCallbackProc *callback; ///< Callback that should be called in the next tick the script runs.
 	size_t last_allocated_memory;         ///< Last known allocated memory value (for display for crashed scripts)
 	const char *APIName;                  ///< Name of the API used for this squirrel.
+	bool allow_text_param_mismatch;       ///< Whether ScriptText parameter mismatches are allowed
 
 	/**
 	 * Call the script Load function if it exists and data was loaded
@@ -322,6 +323,9 @@ private:
 	static bool LoadObjects(ScriptData *data);
 
 	static bool LoadObjects(HSQUIRRELVM vm, ScriptData *data);
+
+public:
+	inline bool IsTextParamMismatchAllowed() const { return this->allow_text_param_mismatch; }
 };
 
 #endif /* SCRIPT_INSTANCE_HPP */

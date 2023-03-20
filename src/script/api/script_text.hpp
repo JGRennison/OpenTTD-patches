@@ -135,6 +135,8 @@ private:
 	std::variant<SQInteger, std::string, ScriptTextRef> param[SCRIPT_TEXT_MAX_PARAMETERS];
 	int paramc;
 
+	void _TextParamError(const std::string &msg);
+
 	/**
 	 * Internal function for recursive calling this function over multiple
 	 *  instances, while writing in the same buffer.
