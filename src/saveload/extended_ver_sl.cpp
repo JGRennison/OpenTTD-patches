@@ -278,6 +278,9 @@ void SlXvSetCurrentState()
 	if (MapSizeX() > 8192 || MapSizeY() > 8192) {
 		_sl_xv_feature_versions[XSLFI_EXTRA_LARGE_MAP] = 1;
 	}
+	if (IsScenarioSave()) {
+		_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] = 0;
+	}
 }
 
 /**
