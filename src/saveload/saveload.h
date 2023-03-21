@@ -86,7 +86,11 @@ enum ChunkSaveLoadSpecialOp {
 	CSLSO_PRE_LOAD,
 	CSLSO_PRE_LOADCHECK,
 };
-typedef bool ChunkSaveLoadSpecialProc(uint32, ChunkSaveLoadSpecialOp);
+enum ChunkSaveLoadSpecialOpResult {
+	CSLSOR_NONE,
+	CSLSOR_LOAD_CHUNK_CONSUMED,
+};
+typedef ChunkSaveLoadSpecialOpResult ChunkSaveLoadSpecialProc(uint32, ChunkSaveLoadSpecialOp);
 
 /** Type of a chunk. */
 enum ChunkType {
@@ -141,22 +145,22 @@ namespace upstream_sl {
 			SlUnreachablePlaceholder,
 			CH_UPSTREAM_SAVE
 		};
-		ch.special_proc = [](uint32 chunk_id, ChunkSaveLoadSpecialOp op) -> bool {
+		ch.special_proc = [](uint32 chunk_id, ChunkSaveLoadSpecialOp op) -> ChunkSaveLoadSpecialOpResult {
 			assert(id == chunk_id);
 			switch (op) {
 				case CSLSO_PRE_LOAD:
 					SlExecWithSlVersion(F::GetLoadVersion(), []() {
 						SlLoadChunkByID(id);
 					});
-					break;
+					return CSLSOR_LOAD_CHUNK_CONSUMED;
 				case CSLSO_PRE_LOADCHECK:
 					SlExecWithSlVersion(F::GetLoadVersion(), []() {
 						SlLoadCheckChunkByID(id);
 					});
-					break;
+					return CSLSOR_LOAD_CHUNK_CONSUMED;
+				default:
+					return CSLSOR_NONE;
 			}
-
-			return true; // chunk has been consumed
 		};
 		return ch;
 	}

@@ -2139,7 +2139,7 @@ inline void SlRIFFSpringPPCheck(size_t len)
 static void SlLoadChunk(const ChunkHandler &ch)
 {
 	if (ch.special_proc != nullptr) {
-		if (ch.special_proc(ch.id, CSLSO_PRE_LOAD)) return;
+		if (ch.special_proc(ch.id, CSLSO_PRE_LOAD) == CSLSOR_LOAD_CHUNK_CONSUMED) return;
 	}
 
 	byte m = SlReadByte();
@@ -2206,7 +2206,7 @@ static void SlLoadChunk(const ChunkHandler &ch)
 static void SlLoadCheckChunk(const ChunkHandler *ch)
 {
 	if (ch && ch->special_proc != nullptr) {
-		if (ch->special_proc(ch->id, CSLSO_PRE_LOADCHECK)) return;
+		if (ch->special_proc(ch->id, CSLSO_PRE_LOADCHECK) == CSLSOR_LOAD_CHUNK_CONSUMED) return;
 	}
 
 	byte m = SlReadByte();
