@@ -56,6 +56,7 @@ enum SaveModeFlags : byte {
 	SMF_NONE             = 0,
 	SMF_NET_SERVER       = 1 << 0, ///< Network server save
 	SMF_ZSTD_OK          = 1 << 1, ///< Zstd OK
+	SMF_SCENARIO         = 1 << 2, ///< Scenario save
 };
 DECLARE_ENUM_AS_BIT_SET(SaveModeFlags);
 
@@ -74,6 +75,7 @@ void DoAutoOrNetsave(FiosNumberedSaveName &counter, bool threaded);
 SaveOrLoadResult SaveWithFilter(struct SaveFilter *writer, bool threaded, SaveModeFlags flags);
 SaveOrLoadResult LoadWithFilter(struct LoadFilter *reader);
 bool IsNetworkServerSave();
+bool IsScenarioSave();
 
 typedef void ChunkSaveLoadProc();
 typedef void AutolengthProc(void *arg);

@@ -3312,6 +3312,11 @@ bool IsNetworkServerSave()
 	return _sl.save_flags & SMF_NET_SERVER;
 }
 
+bool IsScenarioSave()
+{
+	return _sl.save_flags & SMF_SCENARIO;
+}
+
 struct ThreadedLoadFilter : LoadFilter {
 	static const size_t BUFFER_COUNT = 4;
 
