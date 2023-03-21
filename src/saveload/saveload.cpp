@@ -2310,6 +2310,10 @@ static void SlSaveChunk(const ChunkHandler &ch)
 	/* Don't save any chunk information if there is no save handler. */
 	if (proc == nullptr) return;
 
+	if (ch.special_proc != nullptr) {
+		if (ch.special_proc(ch.id, CSLSO_SHOULD_SAVE_CHUNK) == CSLSOR_DONT_SAVE_CHUNK) return;
+	}
+
 	SlWriteUint32(ch.id);
 	DEBUG(sl, 2, "Saving chunk %c%c%c%c", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
 

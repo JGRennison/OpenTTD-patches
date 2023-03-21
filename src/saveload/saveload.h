@@ -85,10 +85,12 @@ void SlUnreachablePlaceholder();
 enum ChunkSaveLoadSpecialOp {
 	CSLSO_PRE_LOAD,
 	CSLSO_PRE_LOADCHECK,
+	CSLSO_SHOULD_SAVE_CHUNK,
 };
 enum ChunkSaveLoadSpecialOpResult {
 	CSLSOR_NONE,
 	CSLSOR_LOAD_CHUNK_CONSUMED,
+	CSLSOR_DONT_SAVE_CHUNK,
 };
 typedef ChunkSaveLoadSpecialOpResult ChunkSaveLoadSpecialProc(uint32, ChunkSaveLoadSpecialOp);
 
