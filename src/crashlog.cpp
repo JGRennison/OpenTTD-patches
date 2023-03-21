@@ -762,7 +762,6 @@ void CrashLog::FlushCrashLogBuffer()
 	try {
 		seprintf(filename, filename_last, "%s%s.sav", _personal_dir.c_str(), name);
 
-		/* Don't do a threaded saveload. */
 		return SaveOrLoad(filename, SLO_SAVE, DFT_GAME_FILE, NO_DIRECTORY, true) == SL_OK;
 	} catch (...) {
 		return false;
