@@ -2175,6 +2175,9 @@ void CheckVehicleBreakdown(Vehicle *v)
 	}
 	/**
 	 * Chance is (1 - reliability) * breakdown_setting * breakdown_chance / 10.
+	 * breakdown_setting is scaled by 2 to support a value of 1/2 (setting value 64).
+	 * Chance is (1 - reliability) * breakdown_scaling_x2 * breakdown_chance / 20.
+	 *
 	 * At 90% reliabilty, normal setting (2) and average breakdown_chance (128),
 	 * a vehicle will break down (on average) every 100 days.
 	 * This *should* mean that vehicles break down about as often as (or a little less than) they used to.
@@ -2182,7 +2185,8 @@ void CheckVehicleBreakdown(Vehicle *v)
 	 * their impact will be significantly less.
 	 */
 	uint32 r1 = Random();
-	if ((uint32) (0xffff - v->reliability) * _settings_game.difficulty.vehicle_breakdowns * chance > GB(r1, 0, 24) * 10) {
+	uint32 breakdown_scaling_x2 = (_settings_game.difficulty.vehicle_breakdowns == 64) ? 1 : (_settings_game.difficulty.vehicle_breakdowns * 2);
+	if ((uint32) (0xffff - v->reliability) * breakdown_scaling_x2 * chance > GB(r1, 0, 24) * 10 * 2) {
 		uint32 r2 = Random();
 		v->breakdown_ctr = GB(r1, 24, 6) + 0xF;
 		if (v->type == VEH_TRAIN) SetBit(Train::From(v)->First()->flags, VRF_CONSIST_BREAKDOWN);

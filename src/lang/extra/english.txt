@@ -2026,3 +2026,5 @@ STR_ERROR_TUNNEL_DISALLOWED_ROAD                                :{WHITE}Tunnels 
 STR_REFIT_SHIP_PART_DROPDOWN_TOOLTIP                            :{BLACK}Select which part of this ship to refit
 STR_REFIT_WHOLE_SHIP                                            :Whole ship
 STR_REFIT_SHIP_PART                                             :Part {NUM}
+
+STR_VERY_REDUCED                                                :Very reduced
