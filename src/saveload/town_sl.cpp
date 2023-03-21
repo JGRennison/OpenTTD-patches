@@ -377,6 +377,8 @@ void SlResetTNNC()
 
 void Save_TNNC()
 {
+	assert(_sl_xv_feature_versions[XSLFI_TNNC_CHUNK] != 0);
+
 	if (!IsNetworkServerSave() || !IsGetTownZonesCallbackHandlerPresent()) {
 		SlSetLength(0);
 		return;
@@ -414,11 +416,24 @@ void Load_TNNC()
 	}
 }
 
+static ChunkSaveLoadSpecialOpResult Special_TNNC(uint32 chunk_id, ChunkSaveLoadSpecialOp op)
+{
+	switch (op) {
+		case CSLSO_SHOULD_SAVE_CHUNK:
+			if (_sl_xv_feature_versions[XSLFI_TNNC_CHUNK] == 0) return CSLSOR_DONT_SAVE_CHUNK;
+			break;
+
+		default:
+			break;
+	}
+	return CSLSOR_NONE;
+}
+
 /** Chunk handler for towns. */
 static const ChunkHandler town_chunk_handlers[] = {
 	{ 'HIDS', Save_HIDS, Load_HIDS, nullptr,   nullptr, CH_ARRAY },
 	{ 'CITY', Save_TOWN, Load_TOWN, Ptrs_TOWN, nullptr, CH_ARRAY },
-	{ 'TNNC', Save_TNNC, Load_TNNC, nullptr,   nullptr, CH_RIFF  },
+	{ 'TNNC', Save_TNNC, Load_TNNC, nullptr,   nullptr, CH_RIFF,  Special_TNNC },
 };
 
 extern const ChunkHandlerTable _town_chunk_handlers(town_chunk_handlers);

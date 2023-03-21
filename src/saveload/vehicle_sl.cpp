@@ -1193,6 +1193,8 @@ static std::vector<aircraft_venc> _aircraft_vencs;
 
 void Save_VENC()
 {
+	assert(_sl_xv_feature_versions[XSLFI_VENC_CHUNK] != 0);
+
 	if (!IsNetworkServerSave()) {
 		SlSetLength(0);
 		return;
@@ -1415,6 +1417,19 @@ void SlProcessVENC()
 	}
 }
 
+static ChunkSaveLoadSpecialOpResult Special_VENC(uint32 chunk_id, ChunkSaveLoadSpecialOp op)
+{
+	switch (op) {
+		case CSLSO_SHOULD_SAVE_CHUNK:
+			if (_sl_xv_feature_versions[XSLFI_VENC_CHUNK] == 0) return CSLSOR_DONT_SAVE_CHUNK;
+			break;
+
+		default:
+			break;
+	}
+	return CSLSOR_NONE;
+}
+
 const SaveLoadTable GetVehicleLookAheadDescription()
 {
 	static const SaveLoad _vehicle_look_ahead_desc[] = {
@@ -1507,7 +1522,7 @@ static const ChunkHandler veh_chunk_handlers[] = {
 	{ 'VEHS', Save_VEHS, Load_VEHS, Ptrs_VEHS, nullptr, CH_SPARSE_ARRAY },
 	{ 'VEOX', Save_VEOX, Load_VEOX, nullptr,   nullptr, CH_SPARSE_ARRAY },
 	{ 'VESR', Save_VESR, Load_VESR, nullptr,   nullptr, CH_SPARSE_ARRAY },
-	{ 'VENC', Save_VENC, Load_VENC, nullptr,   nullptr, CH_RIFF         },
+	{ 'VENC', Save_VENC, Load_VENC, nullptr,   nullptr, CH_RIFF,         Special_VENC },
 	{ 'VLKA', Save_VLKA, Load_VLKA, nullptr,   nullptr, CH_SPARSE_ARRAY },
 };
 

@@ -151,7 +151,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_ORDER_FLAGS_EXTRA,      XSCF_NULL,                1,   1, "order_flags_extra",         nullptr, nullptr, nullptr        },
 	{ XSLFI_ONE_WAY_DT_ROAD_STOP,   XSCF_NULL,                1,   1, "one_way_dt_road_stop",      nullptr, nullptr, nullptr        },
 	{ XSLFI_ONE_WAY_ROAD_STATE,     XSCF_NULL,                1,   1, "one_way_road_state",        nullptr, nullptr, nullptr        },
-	{ XSLFI_VENC_CHUNK,             XSCF_IGNORABLE_ALL,       1,   1, "venc_chunk",                nullptr, nullptr, "VENC"         },
+	{ XSLFI_VENC_CHUNK,             XSCF_IGNORABLE_ALL,       0,   1, "venc_chunk",                nullptr, nullptr, "VENC"         },
 	{ XSLFI_ANIMATED_TILE_EXTRA,    XSCF_NULL,                1,   1, "animated_tile_extra",       nullptr, nullptr, nullptr        },
 	{ XSLFI_NEWGRF_INFO_EXTRA,      XSCF_NULL,                1,   1, "newgrf_info_extra",         nullptr, nullptr, nullptr        },
 	{ XSLFI_INDUSTRY_CARGO_ADJ,     XSCF_IGNORABLE_UNKNOWN,   1,   1, "industry_cargo_adj",        nullptr, nullptr, nullptr        },
@@ -183,7 +183,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_LINKGRAPH_SPARSE_EDGES, XSCF_NULL,                1,   1, "linkgraph_sparse_edges",    nullptr, nullptr, nullptr        },
 	{ XSLFI_AUX_TILE_LOOP,          XSCF_NULL,                1,   1, "aux_tile_loop",             nullptr, nullptr, nullptr        },
 	{ XSLFI_NEWGRF_ENTITY_EXTRA,    XSCF_NULL,                1,   1, "newgrf_entity_extra",       nullptr, nullptr, nullptr        },
-	{ XSLFI_TNNC_CHUNK,             XSCF_IGNORABLE_ALL,       1,   1, "tnnc_chunk",                nullptr, nullptr, "TNNC"         },
+	{ XSLFI_TNNC_CHUNK,             XSCF_IGNORABLE_ALL,       0,   1, "tnnc_chunk",                nullptr, nullptr, "TNNC"         },
 	{ XSLFI_MULTI_CARGO_SHIPS,      XSCF_NULL,                1,   1, "multi_cargo_ships",         nullptr, nullptr, nullptr        },
 	{ XSLFI_SCRIPT_INT64,           XSCF_NULL,                1,   1, "script_int64",              nullptr, nullptr, nullptr        },
 	{ XSLFI_U64_TICK_COUNTER,       XSCF_NULL,                1,   1, "u64_tick_counter",          nullptr, nullptr, nullptr        },
@@ -280,6 +280,10 @@ void SlXvSetCurrentState()
 	}
 	if (IsScenarioSave()) {
 		_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] = 0;
+	}
+	if (IsNetworkServerSave()) {
+		_sl_xv_feature_versions[XSLFI_VENC_CHUNK] = 1;
+		_sl_xv_feature_versions[XSLFI_TNNC_CHUNK] = 1;
 	}
 }
 
