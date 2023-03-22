@@ -105,27 +105,27 @@ class NIHVehicle : public NIHelper {
 
 		Vehicle *v = Vehicle::Get(index);
 		output.print("Debug Info:");
-		this->VehicleInfo(v, output, true);
+		this->VehicleInfo(v, output, true, 0);
 		if (v->type == VEH_AIRCRAFT) {
 			output.print("");
 			output.print("Shadow:");
-			this->VehicleInfo(v->Next(), output, false);
+			this->VehicleInfo(v->Next(), output, false, 8);
 			if (v->Next()->Next() != nullptr) {
 				output.print("");
 				output.print("Rotor:");
-				this->VehicleInfo(v->Next()->Next(), output, false);
+				this->VehicleInfo(v->Next()->Next(), output, false, 16);
 			}
 		}
 	}
 
-	void VehicleInfo(Vehicle *v, NIExtraInfoOutput &output, bool show_engine) const
+	void VehicleInfo(Vehicle *v, NIExtraInfoOutput &output, bool show_engine, uint flag_shift) const
 	{
 		char buffer[1024];
 		seprintf(buffer, lastof(buffer), "  Index: %u", v->index);
 		output.print(buffer);
-		output.register_next_line_click_flag_toggle(1);
+		output.register_next_line_click_flag_toggle(1 << flag_shift);
 		char *b = buffer;
-		if (output.flags & 1) {
+		if (output.flags & (1 << flag_shift)) {
 			b += seprintf(b, lastof(buffer), "  [-] Flags:\n");
 			b = v->DumpVehicleFlagsMultiline(b, lastof(buffer), "    ", "  ");
 			ProcessLineByLine(buffer, output.print);
@@ -442,8 +442,8 @@ class NIHVehicle : public NIHelper {
 					seprintf(buffer, lastof(buffer), "    Rail veh type: %s, power: %u", engine_types[e->u.rail.railveh_type], e->u.rail.power);
 					output.print(buffer);
 
-					output.register_next_line_click_flag_toggle(2);
-					if (output.flags & 2) {
+					output.register_next_line_click_flag_toggle(2 << flag_shift);
+					if (output.flags & (2 << flag_shift)) {
 						seprintf(buffer, lastof(buffer), "    [-] Engine Misc Flags:\n");
 						output.print(buffer);
 						auto print_bit = [&](int bit, const char *name) {
@@ -483,8 +483,8 @@ class NIHVehicle : public NIHelper {
 					output.print(buffer);
 				}
 
-				output.register_next_line_click_flag_toggle(4);
-				if (output.flags & 4) {
+				output.register_next_line_click_flag_toggle(4 << flag_shift);
+				if (output.flags & (2 << flag_shift)) {
 					seprintf(buffer, lastof(buffer), "    [-] Extra Engine Flags:\n");
 					output.print(buffer);
 					auto print_bit = [&](ExtraEngineFlags flag, const char *name) {
