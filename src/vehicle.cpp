@@ -550,29 +550,22 @@ Vehicle *VehicleFromPos(TileIndex tile, VehicleType type, void *data, VehicleFro
 /**
  * Callback that returns 'real' vehicles lower or at height \c *(int*)data .
  * @param v Vehicle to examine.
- * @param data Pointer to height data.
+ * @param data unused.
  * @return \a v if conditions are met, else \c nullptr.
  */
-static Vehicle *EnsureNoVehicleProcZ(Vehicle *v, void *data)
+static Vehicle *EnsureNoVehicleProc(Vehicle *v, void *data)
 {
-	int z = static_cast<int>(reinterpret_cast<intptr_t>(data));
-
-	if (v->z_pos > z) return nullptr;
-
 	return v;
 }
 
 /**
  * Callback that returns 'real' train-collidable road vehicles lower or at height \c *(int*)data .
  * @param v Vehicle to examine.
- * @param data Pointer to height data.
+ * @param data unused
  * @return \a v if conditions are met, else \c nullptr.
  */
-static Vehicle *EnsureNoTrainCollidableRoadVehicleProcZ(Vehicle *v, void *data)
+static Vehicle *EnsureNoTrainCollidableRoadVehicleProc(Vehicle *v, void *data)
 {
-	int z = static_cast<int>(reinterpret_cast<intptr_t>(data));
-
-	if (v->z_pos > z) return nullptr;
 	if (HasBit(_roadtypes_non_train_colliding, RoadVehicle::From(v)->roadtype)) return nullptr;
 
 	return v;
@@ -601,50 +594,36 @@ static Vehicle *EnsureNoAircraftProcZ(Vehicle *v, void *data)
  */
 CommandCost EnsureNoVehicleOnGround(TileIndex tile)
 {
-	int z = GetTileMaxPixelZ(tile);
+	if (IsAirportTile(tile)) {
+		int z = GetTileMaxPixelZ(tile);
+		if (VehicleFromPos(tile, VEH_AIRCRAFT, reinterpret_cast<void *>(static_cast<intptr_t>(z)), &EnsureNoAircraftProcZ, true) != nullptr) {
+			return CommandCost(STR_ERROR_AIRCRAFT_IN_THE_WAY);
+		}
+		return CommandCost();
+	}
 
-	/* Value v is not safe in MP games, however, it is used to generate a local
-	 * error message only (which may be different for different machines).
-	 * Such a message does not affect MP synchronisation.
-	 */
-	if (VehicleFromPos(tile, VEH_TRAIN, reinterpret_cast<void *>(static_cast<intptr_t>(z)), &EnsureNoVehicleProcZ, true) != nullptr) {
-		return_cmd_error(STR_ERROR_TRAIN_IN_THE_WAY);
+	if (IsTileType(tile, MP_RAILWAY) || IsLevelCrossingTile(tile) || HasStationTileRail(tile) || IsRailTunnelBridgeTile(tile)) {
+		if (VehicleFromPos(tile, VEH_TRAIN, nullptr, &EnsureNoVehicleProc, true) != nullptr) {
+			return CommandCost(STR_ERROR_TRAIN_IN_THE_WAY);
+		}
 	}
-	if (VehicleFromPos(tile, VEH_ROAD, reinterpret_cast<void *>(static_cast<intptr_t>(z)), &EnsureNoVehicleProcZ, true) != nullptr) {
-		return_cmd_error(STR_ERROR_ROAD_VEHICLE_IN_THE_WAY);
+	if (IsTileType(tile, MP_ROAD) || IsAnyRoadStopTile(tile) || (IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(tile) == TRANSPORT_ROAD)) {
+		if (VehicleFromPos(tile, VEH_ROAD, nullptr, &EnsureNoVehicleProc, true) != nullptr) {
+			return CommandCost(STR_ERROR_ROAD_VEHICLE_IN_THE_WAY);
+		}
 	}
-	if (VehicleFromPos(tile, VEH_SHIP, reinterpret_cast<void *>(static_cast<intptr_t>(z)), &EnsureNoVehicleProcZ, true) != nullptr) {
-		return_cmd_error(STR_ERROR_SHIP_IN_THE_WAY);
+	if (HasTileWaterClass(tile) || (IsBridgeTile(tile) && GetTunnelBridgeTransportType(tile) == TRANSPORT_WATER)) {
+		if (VehicleFromPos(tile, VEH_SHIP, nullptr, &EnsureNoVehicleProc, true) != nullptr) {
+			return CommandCost(STR_ERROR_SHIP_IN_THE_WAY);
+		}
 	}
-	if (VehicleFromPos(tile, VEH_AIRCRAFT, reinterpret_cast<void *>(static_cast<intptr_t>(z)), &EnsureNoAircraftProcZ, true) != nullptr) {
-		return_cmd_error(STR_ERROR_AIRCRAFT_IN_THE_WAY);
-	}
-	return CommandCost();
-}
 
-/**
- * Ensure there is no road vehicle at the ground at the given position.
- * @param tile Position to examine.
- * @return Succeeded command (ground is free) or failed command (a vehicle is found).
- */
-CommandCost EnsureNoRoadVehicleOnGround(TileIndex tile)
-{
-	int z = GetTileMaxPixelZ(tile);
-
-	/* Value v is not safe in MP games, however, it is used to generate a local
-	 * error message only (which may be different for different machines).
-	 * Such a message does not affect MP synchronisation.
-	 */
-	Vehicle *v = VehicleFromPos(tile, VEH_ROAD, reinterpret_cast<void *>(static_cast<intptr_t>(z)), &EnsureNoVehicleProcZ, true);
-	if (v != nullptr) return_cmd_error(STR_ERROR_ROAD_VEHICLE_IN_THE_WAY);
 	return CommandCost();
 }
 
 bool IsTrainCollidableRoadVehicleOnGround(TileIndex tile)
 {
-	int z = GetTileMaxPixelZ(tile);
-
-	return VehicleFromPos(tile, VEH_ROAD, reinterpret_cast<void *>(static_cast<intptr_t>(z)), &EnsureNoTrainCollidableRoadVehicleProcZ, true) != nullptr;
+	return VehicleFromPos(tile, VEH_ROAD, nullptr, &EnsureNoTrainCollidableRoadVehicleProc, true) != nullptr;
 }
 
 struct GetVehicleTunnelBridgeProcData {
