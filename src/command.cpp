@@ -492,7 +492,7 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdStartStopVehicle,                               0, CMDT_VEHICLE_MANAGEMENT    ), // CMD_START_STOP_VEHICLE
 	DEF_CMD(CmdMassStartStopVehicle,                           0, CMDT_VEHICLE_MANAGEMENT    ), // CMD_MASS_START_STOP
 	DEF_CMD(CmdAutoreplaceVehicle,                             0, CMDT_VEHICLE_MANAGEMENT    ), // CMD_AUTOREPLACE_VEHICLE
-	DEF_CMD(CmdTemplateReplaceVehicle,                         0, CMDT_VEHICLE_MANAGEMENT    ), // CMD_TEMPLATE_REPLACE_VEHICLE
+	DEF_CMD(CmdTemplateReplaceVehicle,               CMD_NO_TEST, CMDT_VEHICLE_MANAGEMENT    ), // CMD_TEMPLATE_REPLACE_VEHICLE
 	DEF_CMD(CmdDepotSellAllVehicles,                           0, CMDT_VEHICLE_CONSTRUCTION  ), // CMD_DEPOT_SELL_ALL_VEHICLES
 	DEF_CMD(CmdDepotMassAutoReplace,                           0, CMDT_VEHICLE_CONSTRUCTION  ), // CMD_DEPOT_MASS_AUTOREPLACE
 	DEF_CMD(CmdCreateGroup,                                    0, CMDT_ROUTE_MANAGEMENT      ), // CMD_CREATE_GROUP

@@ -47,7 +47,7 @@ extern TemplatePool _template_pool;
 extern bool _template_vehicle_images_valid;
 
 /// listing/sorting templates
-typedef GUIList<const TemplateVehicle*> GUITemplateList;
+typedef GUIList<const TemplateVehicle *> GUITemplateList;
 
 struct TemplateVehicleImageDimensions {
 	int reference_width;
@@ -126,7 +126,7 @@ public:
 	TemplateVehicleImageDimensions image_dimensions; ///< NOSAVE: image dimensions
 	SpriteID colourmap;                              ///< NOSAVE: cached colour mapping
 
-	TemplateVehicle(VehicleType type = VEH_INVALID, EngineID e = INVALID_ENGINE, byte B = 0, Owner = _local_company);
+	TemplateVehicle(VehicleType type = VEH_INVALID, EngineID e = INVALID_ENGINE, Owner = _local_company);
 
 	TemplateVehicle(EngineID eid)
 	{
@@ -143,16 +143,16 @@ public:
 
 	~TemplateVehicle();
 
-	inline TemplateVehicle* Next() const { return this->next; }
-	inline TemplateVehicle* Prev() const { return this->previous; }
-	inline TemplateVehicle* First() const { return this->first; }
+	inline TemplateVehicle *Next() const { return this->next; }
+	inline TemplateVehicle *Prev() const { return this->previous; }
+	inline TemplateVehicle *First() const { return this->first; }
 
-	void SetNext(TemplateVehicle*);
-	void SetPrev(TemplateVehicle*);
-	void SetFirst(TemplateVehicle*);
+	void SetNext(TemplateVehicle *v);
+	void SetPrev(TemplateVehicle *v);
+	void SetFirst(TemplateVehicle *v);
 
-	TemplateVehicle* GetNextUnit() const;
-	TemplateVehicle* GetPrevUnit();
+	TemplateVehicle *GetNextUnit() const;
+	TemplateVehicle *GetPrevUnit();
 
 	bool IsSetReuseDepotVehicles() const { return this->reuse_depot_vehicles; }
 	bool IsSetKeepRemainingVehicles() const { return this->keep_remaining_vehicles; }
@@ -176,7 +176,6 @@ public:
 
 	inline bool IsFreeWagonChain() const { return HasBit(this->subtype, GVSF_FREE_WAGON); }
 
-	// since CmdBuildTemplateVehicle(...)
 	inline void SetFrontEngine()     { SetBit(this->subtype, GVSF_FRONT); }
 	inline void SetEngine()          { SetBit(this->subtype, GVSF_ENGINE); }
 	inline void SetArticulatedPart() { SetBit(this->subtype, GVSF_ARTICULATED_PART); }
@@ -206,7 +205,7 @@ struct TemplateReplacement : TemplateReplacementPool::PoolItem<&_template_replac
 	GroupID group;
 	TemplateID sel_template;
 
-	TemplateReplacement(GroupID gid, TemplateID tid) { this->group=gid; this->sel_template=tid; }
+	TemplateReplacement(GroupID gid, TemplateID tid) { this->group = gid; this->sel_template = tid; }
 	TemplateReplacement() {}
 	~TemplateReplacement();
 
@@ -221,12 +220,12 @@ struct TemplateReplacement : TemplateReplacementPool::PoolItem<&_template_replac
 	static void PreCleanPool();
 };
 
-TemplateReplacement* GetTemplateReplacementByGroupID(GroupID);
-TemplateID GetTemplateIDByGroupID(GroupID);
-TemplateID GetTemplateIDByGroupIDRecursive(GroupID);
-bool IssueTemplateReplacement(GroupID, TemplateID);
+TemplateReplacement *GetTemplateReplacementByGroupID(GroupID gid);
+TemplateID GetTemplateIDByGroupID(GroupID gid);
+TemplateID GetTemplateIDByGroupIDRecursive(GroupID gid);
+bool IssueTemplateReplacement(GroupID gid, TemplateID tid);
 
-uint DeleteTemplateReplacementsByGroupID(GroupID);
+uint DeleteTemplateReplacementsByGroupID(GroupID g_id);
 
 void ReindexTemplateReplacements();
 

@@ -658,7 +658,7 @@ public:
 			/* Draw the number of trains that still need to be treated by the currently selected template replacement */
 			if (tid != INVALID_TEMPLATE) {
 				const TemplateVehicle *tv = TemplateVehicle::Get(tid);
-				const int num_trains = NumTrainsNeedTemplateReplacement(g_id, tv);
+				const uint num_trains = CountsTrainsNeedingTemplateReplacement(g_id, tv);
 				// Draw number
 				SetDParam(0, num_trains);
 				int inner_right = DrawString(col2 + ScaleGUITrad(4), right - ScaleGUITrad(4), text_y, STR_JUST_INT, num_trains ? TC_ORANGE : TC_GREY, SA_RIGHT);

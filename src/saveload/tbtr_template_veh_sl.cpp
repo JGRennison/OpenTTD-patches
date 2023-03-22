@@ -68,7 +68,7 @@ static void Load_TMPLS()
 	int index;
 
 	while ((index = SlIterateArray()) != -1) {
-		TemplateVehicle *tv = new (index) TemplateVehicle(); //TODO:check with veh sl code
+		TemplateVehicle *tv = new (index) TemplateVehicle();
 		SlObject(tv, GTD());
 	}
 }

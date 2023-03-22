@@ -1638,12 +1638,14 @@ void CallVehicleTicks()
 
 		tmpl_cur_company.Change(t->owner);
 
+		_new_vehicle_id = INVALID_VEHICLE;
+
 		t->vehstatus |= VS_STOPPED;
 		CommandCost res = DoCommand(t->tile, t->index, leaveDepot ? 1 : 0, DC_EXEC, CMD_TEMPLATE_REPLACE_VEHICLE);
 
-		if (res.Succeeded()) {
+		if (_new_vehicle_id != INVALID_VEHICLE) {
 			VehicleID t_new = _new_vehicle_id;
-			t = Train::From(Vehicle::Get(t_new));
+			t = Train::Get(t_new);
 			const Company *c = Company::Get(_current_company);
 			SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, (Money)c->settings.engine_renew_money));
 			CommandCost res2 = DoCommand(0, t_new, 1, DC_EXEC, CMD_AUTOREPLACE_VEHICLE);
@@ -1653,14 +1655,13 @@ void CallVehicleTicks()
 
 		if (!IsLocalCompany()) continue;
 
-		if (res.Succeeded()) {
-			if (res.GetCost() != 0) {
-				ShowCostOrIncomeAnimation(x, y, z, res.GetCost());
-			}
-			continue;
+		if (res.GetCost() != 0) {
+			ShowCostOrIncomeAnimation(x, y, z, res.GetCost());
 		}
 
-		ShowAutoReplaceAdviceMessage(res, t);
+		if (res.Failed()) {
+			ShowAutoReplaceAdviceMessage(res, t);
+		}
 	}
 	tmpl_cur_company.Restore();
 

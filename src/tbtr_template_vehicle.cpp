@@ -68,9 +68,9 @@ void TemplateVehicleImageDimensions::SetFromTrain(const Train *t)
 	}
 }
 
-TemplateVehicle::TemplateVehicle(VehicleType ty, EngineID eid, byte subtypeflag, Owner current_owner)
+TemplateVehicle::TemplateVehicle(VehicleType type, EngineID eid, Owner current_owner)
 {
-	this->type = ty;
+	this->type = type;
 	this->engine_type = eid;
 
 	this->reuse_depot_vehicles = false;
