@@ -129,6 +129,8 @@ class NIHVehicle : public NIHelper {
 			b += seprintf(b, lastof(buffer), "  [-] Flags:\n");
 			b = v->DumpVehicleFlagsMultiline(b, lastof(buffer), "    ", "  ");
 			ProcessLineByLine(buffer, output.print);
+			seprintf(buffer, lastof(buffer), "    Tile hash: %s", (v->hash_tile_current != nullptr) ? "yes" : "no");
+			output.print(buffer);
 		} else {
 			b += seprintf(b, lastof(buffer), "  [+] Flags: ");
 			b = v->DumpVehicleFlags(b, lastof(buffer), false);
