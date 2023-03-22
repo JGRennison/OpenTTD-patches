@@ -2303,3 +2303,37 @@ void UpdateAirplanesOnNewStation(const Station *st)
 	/* Heliports don't have a hangar. Invalidate all go to hangar orders from all aircraft. */
 	if (!st->airport.HasHangar()) RemoveOrderFromAllVehicles(OT_GOTO_DEPOT, st->index, true);
 }
+
+const char *AirportMovementStateToString(byte state)
+{
+#define AMS(s) case s: return #s;
+	switch (state) {
+		AMS(TO_ALL)
+		AMS(HANGAR)
+		AMS(TERM1)
+		AMS(TERM2)
+		AMS(TERM3)
+		AMS(TERM4)
+		AMS(TERM5)
+		AMS(TERM6)
+		AMS(HELIPAD1)
+		AMS(HELIPAD2)
+		AMS(TAKEOFF)
+		AMS(STARTTAKEOFF)
+		AMS(ENDTAKEOFF)
+		AMS(HELITAKEOFF)
+		AMS(FLYING)
+		AMS(LANDING)
+		AMS(ENDLANDING)
+		AMS(HELILANDING)
+		AMS(HELIENDLANDING)
+		AMS(TERM7)
+		AMS(TERM8)
+		AMS(HELIPAD3)
+		AMS(TERMGROUP)
+
+		default:
+			return "???";
+	}
+#undef AMS
+}

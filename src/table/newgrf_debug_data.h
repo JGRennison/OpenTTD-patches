@@ -343,9 +343,15 @@ class NIHVehicle : public NIHelper {
 		}
 		if (v->type == VEH_AIRCRAFT) {
 			const Aircraft *a = Aircraft::From(v);
-			seprintf(buffer, lastof(buffer), "  Pos: %u, prev pos: %u, state: %u, flags: 0x%X",
-					a->pos, a->previous_pos, a->state, a->flags);
+			b = buffer + seprintf(buffer, lastof(buffer), "  Pos: %u, prev pos: %u, state: %u",
+					a->pos, a->previous_pos, a->state);
+			if (a->IsPrimaryVehicle()) b += seprintf(b, lastof(buffer), " (%s)", AirportMovementStateToString(a->state));
+			b += seprintf(b, lastof(buffer), ", flags: 0x%X", a->flags);
 			output.print(buffer);
+			if (BaseStation::IsValidID(a->targetairport)) {
+				seprintf(buffer, lastof(buffer), "  Target airport: %u, %s", a->targetairport, BaseStation::Get(a->targetairport)->GetCachedName());
+				output.print(buffer);
+			}
 		}
 
 		seprintf(buffer, lastof(buffer), "  Cached sprite bounds: (%d, %d) to (%d, %d), offs: (%d, %d)",

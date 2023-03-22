@@ -145,4 +145,6 @@ void GetRotorImage(const Aircraft *v, EngineImageType image_type, VehicleSpriteS
 Station *GetTargetAirportIfValid(const Aircraft *v);
 void HandleMissingAircraftOrders(Aircraft *v);
 
+const char *AirportMovementStateToString(byte state);
+
 #endif /* AIRCRAFT_H */
