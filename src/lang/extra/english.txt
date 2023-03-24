@@ -1892,7 +1892,9 @@ STR_TMPL_REFIT                                                  :{BLACK}Refit
 STR_TMPL_GROUP_INFO                                             :{BLACK}Group Info: {ORANGE}
 STR_TMPL_TEMPLATE_INFO                                          :{BLACK}Template Info: {ORANGE}
 STR_TMPL_RPL_START                                              :{BLACK}Start replacing
+STR_TMPL_RPL_START_TOOLTIP                                      :{BLACK}Press to start replacement of trains in the selected group with the selected template
 STR_TMPL_RPL_STOP                                               :{BLACK}Stop replacing
+STR_TMPL_RPL_STOP_TOOLTIP                                       :{BLACK}Press to stop replacement of trains in the selected group
 STR_TMPL_TEMPLATE_OVR_VALUE                                     :{BLACK}Buying Cost: {GOLD}{CURRENCY_LONG}
 STR_TMPL_TEMPLATE_OVR_VALUE_LTBLUE                              :{BLACK}Buying Cost: {LTBLUE}{CURRENCY_LONG}
 STR_TMPL_TEMPLATE_OVR_RUNNING_COST                              :{BLACK}Estimated Running Cost: {LTBLUE}{CURRENCY_LONG}
