@@ -35,6 +35,8 @@
 
 #include "3rdparty/robin_hood/robin_hood.h"
 
+#include <functional>
+
 #include "safeguards.h"
 
 TemplatePool _template_pool("TemplatePool");
@@ -329,4 +331,22 @@ void ReindexTemplateReplacementsRecursive()
 			g = Group::Get(g->parent);
 		}
 	}
+}
+
+std::string ValidateTemplateReplacementCaches()
+{
+	robin_hood::unordered_flat_map<GroupID, TemplateID> saved_template_replacement_index = std::move(_template_replacement_index);
+	robin_hood::unordered_flat_map<GroupID, TemplateID> saved_template_replacement_index_recursive = std::move(_template_replacement_index_recursive);
+
+	ReindexTemplateReplacements();
+
+	bool match = (saved_template_replacement_index == _template_replacement_index);
+	bool match_recursive = (saved_template_replacement_index_recursive == _template_replacement_index_recursive);
+	_template_replacement_index = std::move(saved_template_replacement_index);
+	_template_replacement_index_recursive = std::move(saved_template_replacement_index_recursive);
+
+	if (!match) return "Index cache does not match";
+	if (!match_recursive) return "Recursive index cache does not match";
+
+	return "";
 }

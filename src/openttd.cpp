@@ -1863,6 +1863,14 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 			if (tv->Next()) assert_msg(tv->Next()->Prev() == tv, "%u", tv->index);
 		}
 
+		{
+			extern std::string ValidateTemplateReplacementCaches();
+			std::string template_validation_result = ValidateTemplateReplacementCaches();
+			if (!template_validation_result.empty()) {
+				CCLOG("Template replacement cache validation failed: %s", template_validation_result.c_str());
+			}
+		}
+
 		if (!TraceRestrictSlot::ValidateVehicleIndex()) CCLOG("Trace restrict slot vehicle index validation failed");
 		TraceRestrictSlot::ValidateSlotOccupants(log);
 
