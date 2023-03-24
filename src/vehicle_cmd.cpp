@@ -947,6 +947,7 @@ CommandCost CmdToggleRefitAsTemplate(TileIndex tile, DoCommandFlag flags, uint32
 
 	if (should_execute) {
 		template_vehicle->ToggleRefitAsTemplate();
+		MarkTrainsUsingTemplateAsPendingTemplateReplacement(template_vehicle);
 
 		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN, 0);
 	}
@@ -976,6 +977,7 @@ CommandCost CmdToggleTemplateReplaceOldOnly(TileIndex tile, DoCommandFlag flags,
 
 	if (should_execute) {
 		template_vehicle->ToggleReplaceOldOnly();
+		MarkTrainsUsingTemplateAsPendingTemplateReplacement(template_vehicle);
 
 		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN, 0);
 	}
@@ -1307,7 +1309,12 @@ CommandCost CmdReplaceTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint3
 					reindex = true;
 				}
 			}
-			if (reindex) ReindexTemplateReplacements();
+			if (reindex) {
+				ReindexTemplateReplacements();
+				MarkTrainsUsingTemplateAsPendingTemplateReplacement(template_vehicle);
+			}
+		} else if (template_vehicle->NumGroupsUsingTemplate() > 0) {
+			MarkTrainsUsingTemplateAsPendingTemplateReplacement(template_vehicle);
 		}
 
 		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN, 0);

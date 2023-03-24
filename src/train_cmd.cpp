@@ -2218,6 +2218,7 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 				TraceRestrictRemoveVehicleFromAllSlots(src->index);
 				ClrBit(src->vehicle_flags, VF_HAVE_SLOT);
 			}
+			ClrBit(src->vehicle_flags, VF_REPLACEMENT_PENDING);
 			OrderBackup::ClearVehicle(src);
 		}
 

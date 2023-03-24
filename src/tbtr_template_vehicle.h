@@ -224,6 +224,8 @@ TemplateReplacement *GetTemplateReplacementByGroupID(GroupID gid);
 TemplateID GetTemplateIDByGroupID(GroupID gid);
 TemplateID GetTemplateIDByGroupIDRecursive(GroupID gid);
 bool IssueTemplateReplacement(GroupID gid, TemplateID tid);
+bool ShouldServiceTrainForTemplateReplacement(const Train *t, const TemplateVehicle *tv);
+void MarkTrainsUsingTemplateAsPendingTemplateReplacement(const TemplateVehicle *tv);
 
 uint DeleteTemplateReplacementsByGroupID(GroupID g_id);
 

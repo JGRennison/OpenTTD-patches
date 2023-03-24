@@ -63,6 +63,7 @@ enum VehicleFlags {
 	VF_AUTOMATE_TIMETABLE       = 15, ///< Whether the vehicle should manage the timetable automatically.
 	VF_HAVE_SLOT                = 16, ///< Vehicle has 1 or more slots
 	VF_COND_ORDER_WAIT          = 17, ///< Vehicle is waiting due to conditional order loop
+	VF_REPLACEMENT_PENDING      = 18, ///< Autoreplace or template replacement is pending, vehicle should visit the depot
 };
 
 /** Bit numbers used to indicate which of the #NewGRFCache values are valid. */

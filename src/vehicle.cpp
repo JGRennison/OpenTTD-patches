@@ -201,6 +201,7 @@ void VehicleServiceInDepot(Vehicle *v)
 		Ship::From(v)->critical_breakdown_count = 0;
 	}
 	v->vehstatus &= ~VS_AIRCRAFT_BROKEN;
+	ClrBit(v->vehicle_flags, VF_REPLACEMENT_PENDING);
 	SetWindowDirty(WC_VEHICLE_DETAILS, v->index); // ensure that last service date and reliability are updated
 
 	do {
@@ -231,6 +232,7 @@ bool Vehicle::NeedsServicing() const
 	if (this->vehstatus & (VS_STOPPED | VS_CRASHED)) return false;
 
 	/* Are we ready for the next service cycle? */
+	bool needs_service = true;
 	const Company *c = Company::Get(this->owner);
 	if ((this->ServiceIntervalIsPercent() ?
 			(this->reliability >= this->GetEngine()->reliability * (100 - this->service_interval) / 100) :
@@ -238,41 +240,29 @@ bool Vehicle::NeedsServicing() const
 			&& !(this->type == VEH_TRAIN && HasBit(Train::From(this)->flags, VRF_CONSIST_BREAKDOWN) && Train::From(this)->ConsistNeedsRepair())
 			&& !(this->type == VEH_ROAD && RoadVehicle::From(this)->critical_breakdown_count > 0)
 			&& !(this->type == VEH_SHIP && Ship::From(this)->critical_breakdown_count > 0)) {
+		needs_service = false;
+	}
+
+	if (!needs_service && !HasBit(this->vehicle_flags, VF_REPLACEMENT_PENDING)) {
 		return false;
 	}
 
 	/* If we're servicing anyway, because we have not disabled servicing when
 	 * there are no breakdowns or we are playing with breakdowns, bail out. */
-	if (!_settings_game.order.no_servicing_if_no_breakdowns ||
-			_settings_game.difficulty.vehicle_breakdowns != 0) {
+	if (needs_service && (!_settings_game.order.no_servicing_if_no_breakdowns ||
+			_settings_game.difficulty.vehicle_breakdowns != 0)) {
 		return true;
 	}
 
 	/* Is vehicle old and renewing is enabled */
-	if (this->NeedsAutorenewing(c, true)) {
+	if (needs_service && this->NeedsAutorenewing(c, true)) {
 		return true;
 	}
 
 	if (this->type == VEH_TRAIN) {
-		TemplateVehicle *tv = GetTemplateVehicleByGroupIDRecursive(this->group_id);
+		const TemplateVehicle *tv = GetTemplateVehicleByGroupIDRecursive(this->group_id);
 		if (tv != nullptr) {
-			if (tv->IsReplaceOldOnly() && !this->NeedsAutorenewing(c, false)) return false;
-			Money needed_money = c->settings.engine_renew_money;
-			if (needed_money > c->money) return false;
-			bool need_replacement = !TrainMatchesTemplate(Train::From(this), tv);
-			if (need_replacement) {
-				/* Check money.
-				 * We want 2*(the price of the whole template) without looking at the value of the vehicle(s) we are going to sell, or not need to buy. */
-				for (const TemplateVehicle *tv_unit = tv; tv_unit != nullptr; tv_unit = tv_unit->GetNextUnit()) {
-					if (!HasBit(Engine::Get(tv->engine_type)->company_avail, this->owner)) return false;
-					needed_money += 2 * Engine::Get(tv->engine_type)->GetCost();
-				}
-				return needed_money <= c->money;
-			} else if (!TrainMatchesTemplateRefit(Train::From(this), tv) && tv->refit_as_template) {
-				return true;
-			} else {
-				return false;
-			}
+			return ShouldServiceTrainForTemplateReplacement(Train::From(this), tv);
 		}
 	}
 
@@ -4196,6 +4186,7 @@ void DumpVehicleFlagsGeneric(const Vehicle *v, T dump, U dump_header)
 	dump('a', "VF_AUTOMATE_TIMETABLE",      HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
 	dump('Q', "VF_HAVE_SLOT",               HasBit(v->vehicle_flags, VF_HAVE_SLOT));
 	dump('W', "VF_COND_ORDER_WAIT",         HasBit(v->vehicle_flags, VF_COND_ORDER_WAIT));
+	dump('r', "VF_REPLACEMENT_PENDING",     HasBit(v->vehicle_flags, VF_REPLACEMENT_PENDING));
 	dump_header("vcf:", "cached_veh_flags:");
 	dump('l', "VCF_LAST_VISUAL_EFFECT",     HasBit(v->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT));
 	dump('z', "VCF_GV_ZERO_SLOPE_RESIST",   HasBit(v->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST));

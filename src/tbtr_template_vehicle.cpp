@@ -34,6 +34,7 @@
 #include "table/train_cmd.h"
 
 #include "tbtr_template_vehicle.h"
+#include "tbtr_template_vehicle_func.h"
 
 // since doing stuff with sprites
 #include "newgrf_spritegroup.h"
@@ -54,6 +55,7 @@ robin_hood::unordered_flat_map<GroupID, TemplateID> _template_replacement_index;
 robin_hood::unordered_flat_map<GroupID, TemplateID> _template_replacement_index_recursive;
 
 static void ReindexTemplateReplacementsRecursive();
+static void MarkTrainsInGroupAsPendingTemplateReplacement(GroupID gid, const TemplateVehicle *tv);
 
 void TemplateVehicleImageDimensions::SetFromTrain(const Train *t)
 {
@@ -147,12 +149,87 @@ TemplateReplacement::~TemplateReplacement()
 
 	_template_replacement_index.erase(this->Group());
 	ReindexTemplateReplacementsRecursive();
+	MarkTrainsInGroupAsPendingTemplateReplacement(this->Group(), nullptr);
 }
 
 void TemplateReplacement::PreCleanPool()
 {
 	_template_replacement_index.clear();
 	_template_replacement_index_recursive.clear();
+}
+
+bool ShouldServiceTrainForTemplateReplacement(const Train *t, const TemplateVehicle *tv)
+{
+	const Company *c = Company::Get(t->owner);
+	if (tv->IsReplaceOldOnly() && !t->NeedsAutorenewing(c, false)) return false;
+	Money needed_money = c->settings.engine_renew_money;
+	if (needed_money > c->money) return false;
+	bool need_replacement = !TrainMatchesTemplate(t, tv);
+	if (need_replacement) {
+		/* Check money.
+		 * We want 2*(the price of the whole template) without looking at the value of the vehicle(s) we are going to sell, or not need to buy. */
+		for (const TemplateVehicle *tv_unit = tv; tv_unit != nullptr; tv_unit = tv_unit->GetNextUnit()) {
+			if (!HasBit(Engine::Get(tv->engine_type)->company_avail, t->owner)) return false;
+			needed_money += 2 * Engine::Get(tv->engine_type)->GetCost();
+		}
+		return needed_money <= c->money;
+	} else if (!TrainMatchesTemplateRefit(t, tv) && tv->refit_as_template) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+static void MarkTrainsInGroupAsPendingTemplateReplacement(GroupID gid, const TemplateVehicle *tv)
+{
+	std::vector<GroupID> groups;
+	groups.push_back(gid);
+
+	Owner owner = Group::Get(gid)->owner;
+
+	for (const Group *group : Group::Iterate()) {
+		if (group->vehicle_type != VEH_TRAIN || group->owner != owner || group->index == gid) continue;
+
+		auto is_descendant = [gid](const Group *g) -> bool {
+			while (true) {
+				if (g->parent == INVALID_GROUP) return false;
+				if (g->parent == gid) {
+					/* If this group has its own template defined, it's not a descendant for template inheriting purposes */
+					if (_template_replacement_index.find(g->index) != _template_replacement_index.end()) return false;
+					return true;
+				}
+				g = Group::Get(g->parent);
+			}
+
+			NOT_REACHED();
+		};
+		if (is_descendant(group)) {
+			groups.push_back(group->index);
+		}
+	}
+
+	std::sort(groups.begin(), groups.end());
+
+	for (Train *t : Train::Iterate()) {
+		if (!t->IsFrontEngine() || t->owner != owner || t->group_id >= NEW_GROUP) continue;
+
+		if (std::binary_search(groups.begin(), groups.end(), t->group_id)) {
+			SB(t->vehicle_flags, VF_REPLACEMENT_PENDING, 1, (tv != nullptr && ShouldServiceTrainForTemplateReplacement(t, tv)) ? 1 : 0);
+		}
+	}
+}
+
+void MarkTrainsUsingTemplateAsPendingTemplateReplacement(const TemplateVehicle *tv)
+{
+	Owner owner = tv->owner;
+
+	for (Train *t : Train::Iterate()) {
+		if (!t->IsFrontEngine() || t->owner != owner || t->group_id >= NEW_GROUP) continue;
+
+		if (GetTemplateIDByGroupIDRecursive(t->group_id) == tv->index) {
+			SB(t->vehicle_flags, VF_REPLACEMENT_PENDING, 1, ShouldServiceTrainForTemplateReplacement(t, tv) ? 1 : 0);
+		}
+	}
 }
 
 TemplateReplacement *GetTemplateReplacementByGroupID(GroupID gid)
@@ -190,11 +267,13 @@ bool IssueTemplateReplacement(GroupID gid, TemplateID tid)
 		tr->SetTemplate(tid);
 		_template_replacement_index[gid] = tid;
 		ReindexTemplateReplacementsRecursive();
+		MarkTrainsInGroupAsPendingTemplateReplacement(gid, TemplateVehicle::Get(tid));
 		return true;
 	} else if (TemplateReplacement::CanAllocateItem()) {
 		tr = new TemplateReplacement(gid, tid);
 		_template_replacement_index[gid] = tid;
 		ReindexTemplateReplacementsRecursive();
+		MarkTrainsInGroupAsPendingTemplateReplacement(gid, TemplateVehicle::Get(tid));
 		return true;
 	} else {
 		return false;
