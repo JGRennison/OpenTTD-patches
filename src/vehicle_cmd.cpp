@@ -1241,14 +1241,18 @@ CommandCost CmdReplaceTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint3
 	VehicleID template_vehicle_id = p1;
 	VehicleID virtual_train_id = p2;
 
-	TemplateVehicle* template_vehicle = TemplateVehicle::GetIfValid(template_vehicle_id);
-	Vehicle* vehicle = Vehicle::GetIfValid(virtual_train_id);
+	TemplateVehicle *template_vehicle = TemplateVehicle::GetIfValid(template_vehicle_id);
+	Vehicle *vehicle = Vehicle::GetIfValid(virtual_train_id);
 
 	if (vehicle == nullptr || vehicle->type != VEH_TRAIN) {
 		return CMD_ERROR;
 	}
 	CommandCost ret = CheckOwnership(vehicle->owner);
 	if (ret.Failed()) return ret;
+	if (template_vehicle != nullptr) {
+		ret = CheckOwnership(template_vehicle->owner);
+		if (ret.Failed()) return ret;
+	}
 
 	vehicle = vehicle->First();
 
@@ -1295,7 +1299,7 @@ CommandCost CmdReplaceTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint3
 		}
 
 		// Make sure our replacements still point to the correct thing.
-		if (old_ID != template_vehicle->index) {
+		if (old_ID != INVALID_VEHICLE && old_ID != template_vehicle->index) {
 			bool reindex = false;
 			for (TemplateReplacement *tr : TemplateReplacement::Iterate()) {
 				if (tr->GetTemplateVehicleID() == old_ID) {
