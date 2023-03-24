@@ -15,6 +15,7 @@
 #include "gfx_type.h"
 #include "vehicle_type.h"
 #include "engine_base.h"
+#include "window_type.h"
 
 struct GUIEngineListItem {
 	EngineID engine_id;       ///< Engine to display in build purchase list

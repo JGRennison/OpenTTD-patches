@@ -8,38 +8,30 @@
 /** @file tbtr_template_vehicle.cpp Template-based train replacement: template vehicle. */
 
 #include "stdafx.h"
-#include "company_func.h"
-#include "train.h"
-#include "command_func.h"
-#include "engine_func.h"
-#include "vehicle_func.h"
+#include "articulated_vehicles.h"
 #include "autoreplace_func.h"
 #include "autoreplace_gui.h"
-#include "group.h"
-#include "articulated_vehicles.h"
-#include "core/random_func.hpp"
-#include "core/pool_type.hpp"
-#include "engine_type.h"
-#include "group_type.h"
+#include "command_func.h"
+#include "company_func.h"
 #include "core/pool_func.hpp"
-
-#include "table/strings.h"
-
+#include "core/pool_type.hpp"
+#include "core/random_func.hpp"
+#include "engine_func.h"
+#include "engine_type.h"
+#include "group.h"
+#include "group_type.h"
+#include "newgrf_cargo.h"
+#include "newgrf_engine.h"
 #include "newgrf.h"
-
-#include "vehicle_type.h"
+#include "newgrf_spritegroup.h"
+#include "table/strings.h"
+#include "table/train_cmd.h"
+#include "tbtr_template_vehicle_func.h"
+#include "tbtr_template_vehicle.h"
+#include "train.h"
 #include "vehicle_base.h"
 #include "vehicle_func.h"
-
-#include "table/train_cmd.h"
-
-#include "tbtr_template_vehicle.h"
-#include "tbtr_template_vehicle_func.h"
-
-// since doing stuff with sprites
-#include "newgrf_spritegroup.h"
-#include "newgrf_engine.h"
-#include "newgrf_cargo.h"
+#include "vehicle_type.h"
 
 #include "3rdparty/robin_hood/robin_hood.h"
 
