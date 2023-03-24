@@ -1473,8 +1473,11 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 	}
 
 	std::vector<std::string> saved_messages;
+	std::function<void(const char *)> log_orig;
 	if (flags & CHECK_CACHE_EMIT_LOG) {
-		log = [&saved_messages](const char *str) {
+		log_orig = std::move(log);
+		log = [&saved_messages, &log_orig](const char *str) {
+			if (log_orig) log_orig(str);
 			saved_messages.emplace_back(str);
 		};
 	}
