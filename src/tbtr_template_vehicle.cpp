@@ -40,6 +40,8 @@
 #include "newgrf_engine.h"
 #include "newgrf_cargo.h"
 
+#include "3rdparty/robin_hood/robin_hood.h"
+
 #include "safeguards.h"
 
 TemplatePool _template_pool("TemplatePool");
@@ -48,7 +50,10 @@ INSTANTIATE_POOL_METHODS(Template)
 TemplateReplacementPool _template_replacement_pool("TemplateReplacementPool");
 INSTANTIATE_POOL_METHODS(TemplateReplacement)
 
-btree::btree_map<GroupID, TemplateID> _template_replacement_index;
+robin_hood::unordered_flat_map<GroupID, TemplateID> _template_replacement_index;
+robin_hood::unordered_flat_map<GroupID, TemplateID> _template_replacement_index_recursive;
+
+static void ReindexTemplateReplacementsRecursive();
 
 void TemplateVehicleImageDimensions::SetFromTrain(const Train *t)
 {
@@ -141,14 +146,16 @@ TemplateReplacement::~TemplateReplacement()
 	if (CleaningPool()) return;
 
 	_template_replacement_index.erase(this->Group());
+	ReindexTemplateReplacementsRecursive();
 }
 
 void TemplateReplacement::PreCleanPool()
 {
 	_template_replacement_index.clear();
+	_template_replacement_index_recursive.clear();
 }
 
-TemplateReplacement* GetTemplateReplacementByGroupID(GroupID gid)
+TemplateReplacement *GetTemplateReplacementByGroupID(GroupID gid)
 {
 	if (GetTemplateIDByGroupID(gid) == INVALID_TEMPLATE) return nullptr;
 
@@ -169,14 +176,9 @@ TemplateID GetTemplateIDByGroupID(GroupID gid)
 
 TemplateID GetTemplateIDByGroupIDRecursive(GroupID gid)
 {
-	while (gid != INVALID_GROUP) {
-		auto iter = _template_replacement_index.find(gid);
-		if (iter != _template_replacement_index.end()) return iter->second;
-		const Group *g = Group::GetIfValid(gid);
-		if (g == nullptr) break;
-		gid = Group::Get(gid)->parent;
-	}
-	return INVALID_TEMPLATE;
+	auto iter = _template_replacement_index_recursive.find(gid);
+	if (iter == _template_replacement_index_recursive.end()) return INVALID_TEMPLATE;
+	return iter->second;
 }
 
 bool IssueTemplateReplacement(GroupID gid, TemplateID tid)
@@ -187,10 +189,12 @@ bool IssueTemplateReplacement(GroupID gid, TemplateID tid)
 		/* Then set the new TemplateVehicle and return */
 		tr->SetTemplate(tid);
 		_template_replacement_index[gid] = tid;
+		ReindexTemplateReplacementsRecursive();
 		return true;
 	} else if (TemplateReplacement::CanAllocateItem()) {
 		tr = new TemplateReplacement(gid, tid);
 		_template_replacement_index[gid] = tid;
+		ReindexTemplateReplacementsRecursive();
 		return true;
 	} else {
 		return false;
@@ -227,5 +231,25 @@ void ReindexTemplateReplacements()
 	_template_replacement_index.clear();
 	for (const TemplateReplacement *tr : TemplateReplacement::Iterate()) {
 		_template_replacement_index[tr->group] = tr->sel_template;
+	}
+	ReindexTemplateReplacementsRecursive();
+}
+
+static void ReindexTemplateReplacementsRecursive()
+{
+	_template_replacement_index_recursive.clear();
+	for (const Group *group : Group::Iterate()) {
+		if (group->vehicle_type != VEH_TRAIN) continue;
+
+		const Group *g = group;
+		while (true) {
+			auto iter = _template_replacement_index.find(g->index);
+			if (iter != _template_replacement_index.end()) {
+				_template_replacement_index_recursive[group->index] = iter->second;
+				break;
+			}
+			if (g->parent == INVALID_GROUP) break;
+			g = Group::Get(g->parent);
+		}
 	}
 }
