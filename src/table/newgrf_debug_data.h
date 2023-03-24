@@ -157,8 +157,11 @@ class NIHVehicle : public NIHelper {
 					v->cur_real_order_index, v->cur_implicit_order_index, v->cur_timetable_order_index, GetOrderTypeName(v->current_order.GetType()));
 			output.print(buffer);
 		}
-		seprintf(buffer, lastof(buffer), "  Reliability: %u, spd_dec: %u, breakdown: ctr: %u, delay: %u, since svc: %u, chance: %u",
-				v->reliability, v->reliability_spd_dec, v->breakdown_ctr, v->breakdown_delay, v->breakdowns_since_last_service, v->breakdown_chance);
+		seprintf(buffer, lastof(buffer), "  Reliability: %u, spd_dec: %u, needs service: %s",
+				v->reliability, v->reliability_spd_dec, v->NeedsServicing() ? "yes" : "no");
+		output.print(buffer);
+		seprintf(buffer, lastof(buffer), "  Breakdown: ctr: %u, delay: %u, since svc: %u, chance: %u",
+				v->breakdown_ctr, v->breakdown_delay, v->breakdowns_since_last_service, v->breakdown_chance);
 		output.print(buffer);
 		seprintf(buffer, lastof(buffer), "  V Cache: max speed: %u, cargo age period: %u, vis effect: %u",
 				v->vcache.cached_max_speed, v->vcache.cached_cargo_age_period, v->vcache.cached_vis_effect);
