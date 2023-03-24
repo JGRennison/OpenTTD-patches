@@ -385,6 +385,7 @@ CommandCost CmdCreateGroup(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			g->livery.colour1 = pg->livery.colour1;
 			g->livery.colour2 = pg->livery.colour2;
 			g->flags = pg->flags;
+			if (vt == VEH_TRAIN) ReindexTemplateReplacementsRecursive();
 		}
 
 		_new_group_id = g->index;
@@ -440,7 +441,7 @@ CommandCost CmdDeleteGroup(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 		VehicleType vt = g->vehicle_type;
 
 		/* Delete all template replacements using the just deleted group */
-		DeleteTemplateReplacementsByGroupID(g->index);
+		DeleteTemplateReplacementsByGroupID(g);
 
 		/* notify tracerestrict that group is about to be deleted */
 		TraceRestrictRemoveGroupID(g->index);
@@ -506,6 +507,7 @@ CommandCost CmdAlterGroup(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 		if (flags & DC_EXEC) {
 			g->parent = (pg == nullptr) ? INVALID_GROUP : pg->index;
 			GroupStatistics::UpdateAutoreplace(g->owner);
+			if (g->vehicle_type == VEH_TRAIN) ReindexTemplateReplacementsRecursive();
 
 			if (g->livery.in_use == 0) {
 				const Livery *livery = GetParentLivery(g);
@@ -1050,7 +1052,7 @@ void RemoveAllGroupsForCompany(const CompanyID company)
 {
 	for (Group *g : Group::Iterate()) {
 		if (company == g->owner) {
-			DeleteTemplateReplacementsByGroupID(g->index);
+			DeleteTemplateReplacementsByGroupID(g);
 			delete g;
 		}
 	}

@@ -227,9 +227,10 @@ bool IssueTemplateReplacement(GroupID gid, TemplateID tid);
 bool ShouldServiceTrainForTemplateReplacement(const Train *t, const TemplateVehicle *tv);
 void MarkTrainsUsingTemplateAsPendingTemplateReplacement(const TemplateVehicle *tv);
 
-uint DeleteTemplateReplacementsByGroupID(GroupID g_id);
+uint DeleteTemplateReplacementsByGroupID(const Group *g);
 
 void ReindexTemplateReplacements();
+void ReindexTemplateReplacementsRecursive();
 
 int GetTemplateVehicleEstimatedMaxAchievableSpeed(const TemplateVehicle *tv, int mass, const int speed_cap);
 

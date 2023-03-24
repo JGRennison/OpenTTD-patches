@@ -54,7 +54,6 @@ INSTANTIATE_POOL_METHODS(TemplateReplacement)
 robin_hood::unordered_flat_map<GroupID, TemplateID> _template_replacement_index;
 robin_hood::unordered_flat_map<GroupID, TemplateID> _template_replacement_index_recursive;
 
-static void ReindexTemplateReplacementsRecursive();
 static void MarkTrainsInGroupAsPendingTemplateReplacement(GroupID gid, const TemplateVehicle *tv);
 
 void TemplateVehicleImageDimensions::SetFromTrain(const Train *t)
@@ -291,13 +290,20 @@ uint TemplateVehicle::NumGroupsUsingTemplate() const
 	return amount;
 }
 
-uint DeleteTemplateReplacementsByGroupID(GroupID g_id)
+uint DeleteTemplateReplacementsByGroupID(const Group *g)
 {
-	if (GetTemplateIDByGroupID(g_id) == INVALID_TEMPLATE) return 0;
+	if (g->vehicle_type != VEH_TRAIN) return 0;
+
+	if (g->parent != INVALID_GROUP) {
+		/* Erase any inherited replacement */
+		_template_replacement_index_recursive.erase(g->index);
+	}
+
+	if (GetTemplateIDByGroupID(g->index) == INVALID_TEMPLATE) return 0;
 
 	uint del_amount = 0;
 	for (const TemplateReplacement *tr : TemplateReplacement::Iterate()) {
-		if (tr->group == g_id) {
+		if (tr->group == g->index) {
 			delete tr;
 			del_amount++;
 		}
@@ -314,7 +320,7 @@ void ReindexTemplateReplacements()
 	ReindexTemplateReplacementsRecursive();
 }
 
-static void ReindexTemplateReplacementsRecursive()
+void ReindexTemplateReplacementsRecursive()
 {
 	_template_replacement_index_recursive.clear();
 	for (const Group *group : Group::Iterate()) {
