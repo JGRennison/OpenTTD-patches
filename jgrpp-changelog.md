@@ -2,6 +2,15 @@
 
 * * *
 
+### v0.52.1 (2023-03-25)
+* Fix AI/GS scripts which use text strings.
+* Add a "very reduced" mode to the vehicle breakdowns setting.
+* Template-based train replacement:
+  * Trigger early servicing of trains when a template is added/edited which requires the train to be replaced/modified.
+  * Fix wagons in a free wagon chain in the depot not always being used for replacement when this is enabled.
+  * Engines in the depot are no longer used for replacement if there are any wagons or other engines attached.
+* Bump trunk base from commit e5438891e27c0895964e1a030c91295d3b6ef474 to commit 24e9af83aaca7093ca2ab7e5d54565ec63d42433.
+
 ### v0.52.0 (2023-03-19)
 * Fix template based train replacement build window not being refreshed for engine variant changes.
 * Fix building a road stop/waypoint over an existing road stop/waypoint clearing the one-way state.
