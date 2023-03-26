@@ -599,7 +599,7 @@ STR_CONFIG_SETTING_CITY_ZONE_4_MULT                             :Multiplier for 
 STR_CONFIG_SETTING_CITY_ZONE_4_MULT_HELPTEXT                    :Multiplier for the size of City Zone 4 (Innermost roads with street lights). This setting works best with minor alterations.
 
 STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED                :Town growth speed depends on transported cargo: {STRING2}
-STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED_HELPTEXT       :Percentage of town growth speed which depends on proportion of town cargo transported in the last month
+STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED_HELPTEXT       :Percentage of town growth speed which depends on proportion of town cargo transported in the last month.{}This percentage of the calculated town growth speed is multiplied by the fraction of passengers and mail which were transported in the last month. This setting can only decrease the town growth speed, not increase it.
 
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION                   :Probability of random town road re-construction: {STRING2}
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION_HELPTEXT          :The probability of town roads randomly being re-constructed (0 = off, 1000 = max)

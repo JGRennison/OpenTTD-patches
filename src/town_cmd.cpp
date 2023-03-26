@@ -4024,6 +4024,10 @@ static uint GetNormalGrowthRate(Town *t)
 	if (t->larger_town) m /= 2;
 
 	if (_settings_game.economy.town_growth_cargo_transported > 0) {
+		/* The standard growth rate here is proportional to 1/m.
+		 * town_growth_cargo_transported percent of the growth rate is multiplied by the proportion of town cargoes transported.
+		 * The growth rate can only be decreased by this setting, not increased.
+		 */
 		uint32 inverse_m = UINT32_MAX / m;
 		auto calculate_cargo_ratio_fix15 = [](const TransportedCargoStat<uint32> &stat) -> uint32 {
 			return stat.old_max ? ((uint64) (stat.old_act << 15)) / stat.old_max : 1 << 15;
