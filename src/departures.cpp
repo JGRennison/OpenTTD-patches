@@ -299,10 +299,12 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 				status = D_CANCELLED;
 			}
 
+			bool require_travel_time = true;
 			if (v->current_order.IsAnyLoadingType() || v->current_order.IsType(OT_WAITING)) {
 				/* Account for the vehicle having reached the current order and being in the loading phase. */
 				status = D_ARRIVED;
 				start_date -= order->GetTravelTime() + ((v->lateness_counter < 0) ? v->lateness_counter : 0);
+				require_travel_time = false;
 			}
 
 			/* Loop through the vehicle's orders until we've found a suitable order or we've determined that no such order exists. */
@@ -330,7 +332,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 								}
 
 								start_date -= order->GetTravelTime();
-
+								require_travel_time = false;
 								continue;
 							}
 							case 2: {
@@ -340,6 +342,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 								}
 								start_date -= order->GetWaitTime(); /* Added previously in VehicleSetNextDepartureTime */
 								order = (order->next == nullptr) ? v->GetFirstOrder() : order->next;
+								require_travel_time = true;
 								continue;
 							}
 					}
@@ -352,7 +355,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 				}
 
 				/* If an order has a 0 travel time, and it's not explictly set, then stop. */
-				if (order->GetTravelTime() == 0 && !order->IsTravelTimetabled() && !order->IsType(OT_IMPLICIT)) {
+				if (require_travel_time && order->GetTravelTime() == 0 && !order->IsTravelTimetabled() && !order->IsType(OT_IMPLICIT)) {
 					break;
 				}
 
@@ -403,6 +406,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 						status = D_TRAVELLING;
 					}
 					order = (order->next == nullptr) ? v->GetFirstOrder() : order->next;
+					require_travel_time = true;
 				}
 			}
 		}
@@ -717,6 +721,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 		/* Go through the order list to find the next candidate departure. */
 		/* We only need to consider each order at most once. */
 		bool found_next_order = false;
+		bool require_travel_time = true;
 		for (int i = least_order->v->GetNumOrders(); i > 0; --i) {
 			/* If the order is a conditional branch, handle it. */
 			if (order->IsType(OT_CONDITIONAL)) {
@@ -736,7 +741,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 							if (VehicleSetNextDepartureTime(&least_order->expected_date, &least_order->scheduled_waiting_time, date_only_scaled, least_order->v, order, false, schdispatch_last_planned_dispatch)) {
 								least_order->lateness = 0;
 							}
-
+							require_travel_time = false;
 							continue;
 						}
 						case 2: {
@@ -746,6 +751,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 							if (VehicleSetNextDepartureTime(&least_order->expected_date, &least_order->scheduled_waiting_time, date_only_scaled, least_order->v, order, false, schdispatch_last_planned_dispatch)) {
 								least_order->lateness = 0;
 							}
+							require_travel_time = true;
 							continue;
 						}
 				}
@@ -753,7 +759,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 			}
 
 			/* If an order has a 0 travel time, and it's not explictly set, then stop. */
-			if (order->GetTravelTime() == 0 && !order->IsTravelTimetabled() && !order->IsType(OT_IMPLICIT)) {
+			if (require_travel_time && order->GetTravelTime() == 0 && !order->IsTravelTimetabled() && !order->IsType(OT_IMPLICIT)) {
 				break;
 			}
 
@@ -775,6 +781,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 			if (VehicleSetNextDepartureTime(&least_order->expected_date, &least_order->scheduled_waiting_time, date_only_scaled, least_order->v, order, false, schdispatch_last_planned_dispatch)) {
 				least_order->lateness = 0;
 			}
+			require_travel_time = true;
 		}
 
 		/* If we didn't find a suitable order for being a departure, then we can ignore this vehicle from now on. */
