@@ -16,6 +16,7 @@
 #include "../group.h"
 #include "../goal_type.h"
 #include "../story_type.h"
+#include "../3rdparty/robin_hood/robin_hood.h"
 
 #include "table/strings.h"
 #include <vector>
@@ -65,6 +66,8 @@ private:
 
 	void *event_data;                ///< Pointer to the event data storage.
 	void *log_data;                  ///< Pointer to the log data storage.
+
+	robin_hood::unordered_node_set<std::string> seen_unique_log_messages; ///< Messages which have already been logged once and don't need to be logged again
 
 public:
 	ScriptStorage() :

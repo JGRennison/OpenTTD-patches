@@ -304,6 +304,10 @@ protected:
 	 */
 	static char *GetString(StringID string);
 
+	static bool IsNewUniqueLogMessage(const std::string &msg);
+
+	static void RegisterUniqueLogMessage(std::string &&msg);
+
 private:
 	/**
 	 * Store a new_vehicle_id per company.

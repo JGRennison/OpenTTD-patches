@@ -411,3 +411,13 @@ void ScriptObject::InitializeRandomizers()
 		ScriptObject::GetRandomizer(owner).SetSeed(random.Next());
 	}
 }
+
+/* static */ bool ScriptObject::IsNewUniqueLogMessage(const std::string &msg)
+{
+	return !GetStorage()->seen_unique_log_messages.contains(msg);
+}
+
+/* static */ void ScriptObject::RegisterUniqueLogMessage(std::string &&msg)
+{
+	GetStorage()->seen_unique_log_messages.emplace(std::move(msg));
+}

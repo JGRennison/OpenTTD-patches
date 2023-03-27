@@ -170,12 +170,12 @@ const std::string ScriptText::GetEncodedText()
 	return buf;
 }
 
-void ScriptText::_TextParamError(const std::string &msg)
+void ScriptText::_TextParamError(std::string msg)
 {
 	if (this->GetActiveInstance()->IsTextParamMismatchAllowed()) {
-		ScriptLog::Error(msg.c_str());
+		ScriptLog::LogOnce(ScriptLog::LOG_ERROR, std::move(msg));
 	} else {
-		throw Script_FatalError(msg);
+		throw Script_FatalError(std::move(msg));
 	}
 }
 

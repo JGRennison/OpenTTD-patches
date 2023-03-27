@@ -90,3 +90,11 @@
 	free(log->type);
 	delete log;
 }
+
+/* static */ void ScriptLog::LogOnce(ScriptLog::ScriptLogType level, std::string &&message)
+{
+	if (ScriptObject::IsNewUniqueLogMessage(message)) {
+		ScriptLog::Log(level, message.c_str());
+		ScriptObject::RegisterUniqueLogMessage(std::move(message));
+	}
+}
