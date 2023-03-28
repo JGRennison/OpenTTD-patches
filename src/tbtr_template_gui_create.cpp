@@ -659,6 +659,17 @@ public:
 		}
 	}
 
+	EventState OnCTRLStateChange() override
+	{
+		if (this->sel != INVALID_VEHICLE) {
+			_cursor.vehchain = _ctrl_pressed;
+			this->SetWidgetDirty(TCW_NEW_TMPL_PANEL);
+			return ES_HANDLED;
+		}
+
+		return ES_NOT_HANDLED;
+	}
+
 	void VirtualVehicleDeleted(VehicleID id)
 	{
 		this->pending_deletions.erase(id);
