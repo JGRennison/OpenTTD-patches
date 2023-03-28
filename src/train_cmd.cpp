@@ -980,7 +980,7 @@ static void AdvanceLookAheadPosition(Train *v)
 	v->lookahead->current_position++;
 	if (v->lookahead->zpos_refresh_remaining > 0) v->lookahead->zpos_refresh_remaining--;
 
-	if (v->lookahead->current_position > v->lookahead->reservation_end_position + 8) {
+	if (v->lookahead->current_position > v->lookahead->reservation_end_position + 8 && v->track != TRACK_BIT_DEPOT) {
 		/* Beyond end of lookahead, delete it, it will be recreated later with a new reservation */
 		v->lookahead.reset();
 		return;
