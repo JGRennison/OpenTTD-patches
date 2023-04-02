@@ -42,6 +42,8 @@
 
 #include "table/strings.h"
 
+#include "3rdparty/robin_hood/robin_hood.h"
+
 #include "safeguards.h"
 
 /* DestinationID must be at least as large as every these below, because it can
@@ -610,6 +612,11 @@ const Order *OrderList::GetNextDecisionNode(const Order *next, uint hops, CargoT
  */
 CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, CargoTypes cargo_mask, const Order *first, uint hops) const
 {
+	static robin_hood::unordered_flat_set<const Order *> seen_conditional_branches;
+	if (hops == 0) {
+		seen_conditional_branches.clear();
+	}
+
 	const Order *next = first;
 	if (first == nullptr) {
 		next = this->GetOrderAt(v->cur_implicit_order_index);
@@ -630,14 +637,21 @@ CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, Ca
 
 		/* Resolve possibly nested conditionals by estimation. */
 		while (next != nullptr && next->IsType(OT_CONDITIONAL)) {
+			if (!seen_conditional_branches.insert(next).second) {
+				/* Already handled this branch */
+				return CargoMaskedStationIDStack(cargo_mask, INVALID_STATION);
+			}
 			/* We return both options of conditional orders. */
 			const Order *skip_to = this->GetNextDecisionNode(
 					this->GetOrderAt(next->GetConditionSkipToOrder()), hops, cargo_mask);
 			const Order *advance = this->GetNextDecisionNode(
 					this->GetNext(next), hops, cargo_mask);
-			if (advance == nullptr || advance == first || skip_to == advance) {
+			auto seen_target = [&](const Order *target) -> bool {
+				return target->IsType(OT_CONDITIONAL) && seen_conditional_branches.contains(target);
+			};
+			if (advance == nullptr || advance == first || skip_to == advance || seen_target(advance)) {
 				next = (skip_to == first) ? nullptr : skip_to;
-			} else if (skip_to == nullptr || skip_to == first) {
+			} else if (skip_to == nullptr || skip_to == first || seen_target(skip_to)) {
 				next = (advance == first) ? nullptr : advance;
 			} else {
 				CargoMaskedStationIDStack st1 = this->GetNextStoppingStation(v, cargo_mask, skip_to, hops);
