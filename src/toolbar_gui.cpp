@@ -572,9 +572,7 @@ static CallBackFunction ToolbarSubsidiesClick(Window *w)
  */
 static CallBackFunction MenuClickSubsidies(int index)
 {
-	switch (index) {
-		case 0: ShowSubsidiesList(); break;
-	}
+	ShowSubsidiesList();
 	return CBF_NONE;
 }
 

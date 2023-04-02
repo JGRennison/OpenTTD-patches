@@ -396,12 +396,9 @@ public:
 	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
-		switch (data) {
-			case 1:
-				/* ReInit, "debug" sprite might have changed */
-				this->ReInit();
-				break;
-		}
+
+		/* ReInit, "debug" sprite might have changed */
+		if (data == 1) this->ReInit();
 	}
 };
 
@@ -1009,7 +1006,8 @@ void QueryString::ClickEditBox(Window *w, Point pt, int wid, int click_count, bo
 	assert((wi->type & WWT_MASK) == WWT_EDITBOX);
 
 	bool rtl = _current_text_dir == TD_RTL;
-	int clearbtn_width = GetSpriteSize(rtl ? SPR_IMG_DELETE_RIGHT : SPR_IMG_DELETE_LEFT).width;
+	Dimension sprite_size = GetSpriteSize(rtl ? SPR_IMG_DELETE_RIGHT : SPR_IMG_DELETE_LEFT);
+	int clearbtn_width = sprite_size.width + WidgetDimensions::scaled.imgbtn.Horizontal();
 
 	Rect cr = wi->GetCurrentRect().WithWidth(clearbtn_width, !rtl);
 
