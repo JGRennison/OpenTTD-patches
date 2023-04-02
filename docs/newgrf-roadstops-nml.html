@@ -93,6 +93,8 @@
 			<span class="indent">Only show in the tram build menu (not road). (This only takes effect from <span class="code">road_stops</span> version 4).</span></p>
 			<p><b>RST_GENERAL_FLAG_BUILD_MENU_DRAW_DISABLED_VIEWS</b><br />
 			<span class="indent">Use custom graphics for disabled road stop views. (This only takes effect from <span class="code">road_stops</span> version 8).</span></p>
+			<p><b>RST_GENERAL_FLAG_DRAW_MODE_REGISTER</b><br />
+			<span class="indent">Read the road stop draw mode from variable 0x100 (set using STORE_TEMP), this overrides the <span class="code">draw_mode</span> property. (This only takes effect from <span class="code">road_stops</span> version 9).</span></p>
 		</td></tr>
 		<tr><td>minimum_bridge_height</td><td>Array of 6 items [0..255, ...]</td><td>Minimum clearances required for a bridge for each of the <a href="#roadstop_views">6 views/rotations</a> (or 0 to not allow any bridge). Values are given in height level units (1 level == 8px).</td></tr>
 		<tr><td>disallowed_bridge_pillars</td><td>Array of 6 items [bitmask(RST_BRIDGE_PILLAR_FLAG_, ...), ...]</td><td>
