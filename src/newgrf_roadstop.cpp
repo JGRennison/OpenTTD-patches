@@ -164,6 +164,8 @@ uint32 RoadStopScopeResolver::GetVariable(uint16 variable, uint32 parameter, Get
 					RoadCachedOneWayState rcows = GetRoadCachedOneWayState(this->tile);
 					if (rcows <= RCOWS_NO_ACCESS) result |= (rcows << 2);
 				}
+			} else {
+				SetBit(result, 4);
 			}
 			return result;
 		}
