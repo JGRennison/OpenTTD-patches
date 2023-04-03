@@ -854,7 +854,12 @@ void UpdateVehicleTileHash(Vehicle *v, bool remove)
 
 bool ValidateVehicleTileHash(const Vehicle *v)
 {
-	if ((v->type == VEH_TRAIN && Train::From(v)->IsVirtual()) || v->type >= VEH_COMPANY_END) return v->hash_tile_current == nullptr;
+	if ((v->type == VEH_TRAIN && Train::From(v)->IsVirtual())
+			|| (v->type == VEH_SHIP && HasBit(v->subtype, GVSF_VIRTUAL))
+			|| (v->type == VEH_AIRCRAFT && v->tile == 0 && _settings_game.construction.freeform_edges)
+			|| v->type >= VEH_COMPANY_END) {
+		return v->hash_tile_current == nullptr;
+	}
 
 	int x = GB(TileX(v->tile), HASH_RES, HASH_BITS);
 	int y = GB(TileY(v->tile), HASH_RES, HASH_BITS) << HASH_BITS;
