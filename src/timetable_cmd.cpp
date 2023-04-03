@@ -53,7 +53,7 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint32 val,
 			order->SetWaitTimetabled(timetabled);
 			if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && timetabled && order->IsScheduledDispatchOrder(true)) {
 				for (Vehicle *u = v->FirstShared(); u != nullptr; u = u->NextShared()) {
-					if (u->cur_implicit_order_index == order_number && (u->last_station_visited == order->GetDestination())) {
+					if (u->cur_implicit_order_index == order_number && order->IsBaseStationOrder() && u->last_station_visited == order->GetDestination()) {
 						u->lateness_counter += timetable_delta;
 					}
 				}

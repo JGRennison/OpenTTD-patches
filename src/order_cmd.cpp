@@ -677,7 +677,8 @@ CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, Ca
 			});
 			if (invalid) return CargoMaskedStationIDStack(cargo_mask, INVALID_STATION);
 		}
-	} while (next->IsType(OT_GOTO_DEPOT) || next->IsType(OT_RELEASE_SLOT) || next->IsType(OT_COUNTER) || next->IsType(OT_DUMMY) || next->GetDestination() == v->last_station_visited);
+	} while (next->IsType(OT_GOTO_DEPOT) || next->IsType(OT_RELEASE_SLOT) || next->IsType(OT_COUNTER) || next->IsType(OT_DUMMY)
+			|| (next->IsBaseStationOrder() && next->GetDestination() == v->last_station_visited));
 
 	return CargoMaskedStationIDStack(cargo_mask, next->GetDestination());
 }
