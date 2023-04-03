@@ -615,6 +615,9 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 	RegisterGameEvents(new_owner != INVALID_OWNER ? GEF_COMPANY_MERGE : GEF_COMPANY_DELETE);
 
 	MarkWholeScreenDirty();
+
+	extern void MarkAllViewportMapLandscapesDirty();
+	MarkAllViewportMapLandscapesDirty();
 }
 
 /**
