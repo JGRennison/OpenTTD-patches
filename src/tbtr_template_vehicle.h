@@ -232,6 +232,21 @@ uint DeleteTemplateReplacementsByGroupID(const Group *g);
 void ReindexTemplateReplacements();
 void ReindexTemplateReplacementsRecursive();
 
+/**
+ * Guard to inhibit re-indexing of the recursive group to template replacement cache,
+ * and to disable group-based VF_REPLACEMENT_PENDING changes.
+ * May be used recursively.
+ */
+struct ReindexTemplateReplacementsRecursiveGuard {
+	ReindexTemplateReplacementsRecursiveGuard();
+	~ReindexTemplateReplacementsRecursiveGuard();
+
+	ReindexTemplateReplacementsRecursiveGuard(const ReindexTemplateReplacementsRecursiveGuard &copysrc) = delete;
+	ReindexTemplateReplacementsRecursiveGuard(ReindexTemplateReplacementsRecursiveGuard &&movesrc) = delete;
+	ReindexTemplateReplacementsRecursiveGuard &operator=(const ReindexTemplateReplacementsRecursiveGuard &) = delete;
+	ReindexTemplateReplacementsRecursiveGuard &operator=(ReindexTemplateReplacementsRecursiveGuard &&) = delete;
+};
+
 int GetTemplateVehicleEstimatedMaxAchievableSpeed(const TemplateVehicle *tv, int mass, const int speed_cap);
 
 #endif /* TEMPLATE_VEH_H */

@@ -1050,6 +1050,8 @@ Money GetGroupProfitLastYearMinAge(CompanyID company, GroupID id_g, VehicleType 
 
 void RemoveAllGroupsForCompany(const CompanyID company)
 {
+	ReindexTemplateReplacementsRecursiveGuard guard;
+
 	for (Group *g : Group::Iterate()) {
 		if (company == g->owner) {
 			DeleteTemplateReplacementsByGroupID(g);

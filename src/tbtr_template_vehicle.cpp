@@ -47,6 +47,7 @@ INSTANTIATE_POOL_METHODS(TemplateReplacement)
 
 robin_hood::unordered_flat_map<GroupID, TemplateID> _template_replacement_index;
 robin_hood::unordered_flat_map<GroupID, TemplateID> _template_replacement_index_recursive;
+static uint32 _template_replacement_index_recursive_guard = 0;
 
 static void MarkTrainsInGroupAsPendingTemplateReplacement(GroupID gid, const TemplateVehicle *tv);
 
@@ -175,6 +176,8 @@ bool ShouldServiceTrainForTemplateReplacement(const Train *t, const TemplateVehi
 
 static void MarkTrainsInGroupAsPendingTemplateReplacement(GroupID gid, const TemplateVehicle *tv)
 {
+	if (_template_replacement_index_recursive_guard != 0) return;
+
 	std::vector<GroupID> groups;
 	groups.push_back(gid);
 
@@ -316,6 +319,11 @@ void ReindexTemplateReplacements()
 
 void ReindexTemplateReplacementsRecursive()
 {
+	if (_template_replacement_index_recursive_guard != 0) {
+		_template_replacement_index_recursive_guard |= 0x80000000;
+		return;
+	}
+
 	_template_replacement_index_recursive.clear();
 	for (const Group *group : Group::Iterate()) {
 		if (group->vehicle_type != VEH_TRAIN) continue;
@@ -333,8 +341,24 @@ void ReindexTemplateReplacementsRecursive()
 	}
 }
 
+ReindexTemplateReplacementsRecursiveGuard::ReindexTemplateReplacementsRecursiveGuard()
+{
+	_template_replacement_index_recursive_guard++;
+}
+
+ReindexTemplateReplacementsRecursiveGuard::~ReindexTemplateReplacementsRecursiveGuard()
+{
+	_template_replacement_index_recursive_guard--;
+	if (_template_replacement_index_recursive_guard == 0x80000000) {
+		_template_replacement_index_recursive_guard = 0;
+		ReindexTemplateReplacementsRecursive();
+	}
+}
+
 std::string ValidateTemplateReplacementCaches()
 {
+	assert(_template_replacement_index_recursive_guard == 0);
+
 	robin_hood::unordered_flat_map<GroupID, TemplateID> saved_template_replacement_index = std::move(_template_replacement_index);
 	robin_hood::unordered_flat_map<GroupID, TemplateID> saved_template_replacement_index_recursive = std::move(_template_replacement_index_recursive);
 
