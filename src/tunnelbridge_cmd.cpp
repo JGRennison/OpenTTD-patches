@@ -1765,7 +1765,7 @@ static void DrawTunnelBridgeRampSingleSignal(const TileInfo *ti, bool is_green, 
 	}
 	bool show_restricted = IsTunnelBridgeRestrictedSignal(ti->tile);
 	const TraceRestrictProgram *prog = show_restricted ? GetExistingTraceRestrictProgram(ti->tile, FindFirstTrack(GetAcrossTunnelBridgeTrackBits(ti->tile))) : nullptr;
-	const CustomSignalSpriteResult result = GetCustomSignalSprite(rti, ti->tile, type, variant, aspect, show_exit ? CSSC_TUNNEL_BRIDGE_EXIT : CSSC_TUNNEL_BRIDGE_ENTRANCE, style, prog);
+	const CustomSignalSpriteResult result = GetCustomSignalSprite(rti, ti->tile, type, variant, aspect, show_exit ? CSSC_TUNNEL_BRIDGE_EXIT : CSSC_TUNNEL_BRIDGE_ENTRANCE, style, prog, z);
 	PalSpriteID sprite = result.sprite;
 	bool is_custom_sprite = (sprite.sprite != 0);
 
@@ -1943,6 +1943,41 @@ void MarkSingleBridgeSignalDirty(TileIndex tile, TileIndex bridge_start_tile)
 	);
 }
 
+static int GetTunnelBridgeSignalZNonRailCustom(TileIndex tile, bool side, bool exit, DiagDirection dir)
+{
+	int z;
+	if (IsTunnel(tile)) {
+		z = GetTileZ(tile) * TILE_HEIGHT;
+	} else {
+		Slope slope = GetTilePixelSlope(tile, &z);
+		if (slope == SLOPE_FLAT) {
+			if (side == exit && dir == DIAGDIR_SE) z += 2;
+			if (side != exit && dir == DIAGDIR_SW) z += 2;
+		} else {
+			z += 8;
+		}
+	}
+
+	return z;
+}
+
+int GetTunnelBridgeSignalZ(TileIndex tile, bool exit)
+{
+	if (IsRailCustomBridgeHeadTile(tile)) {
+		return GetTileMaxPixelZ(tile);
+	}
+
+	bool opposite_side = false;
+	if (_signal_style_masks.signal_opposite_side != 0) {
+		opposite_side = HasBit(_signal_style_masks.signal_opposite_side, GetTunnelBridgeSignalStyle(tile));
+	}
+
+	bool side = (_settings_game.vehicle.road_side != 0) && _settings_game.construction.train_signal_side;
+	side ^= opposite_side;
+
+	return GetTunnelBridgeSignalZNonRailCustom(tile, side, exit, GetTunnelBridgeDirection(tile));
+}
+
 void MarkTunnelBridgeSignalDirty(TileIndex tile, bool exit)
 {
 	if (_signal_sprite_oversized) {
@@ -1986,18 +2021,7 @@ void MarkTunnelBridgeSignalDirty(TileIndex tile, bool exit)
 	uint x = TileX(tile) * TILE_SIZE + SignalPositions[side != exit][position].x;
 	uint y = TileY(tile) * TILE_SIZE + SignalPositions[side != exit][position].y;
 
-	int z;
-	if (IsTunnel(tile)) {
-		z = GetTileZ(tile) * TILE_HEIGHT;
-	} else {
-		Slope slope = GetTilePixelSlope(tile, &z);
-		if (slope == SLOPE_FLAT) {
-			if (side == exit && dir == DIAGDIR_SE) z += 2;
-			if (side != exit && dir == DIAGDIR_SW) z += 2;
-		} else {
-			z += 8;
-		}
-	}
+	int z = GetTunnelBridgeSignalZNonRailCustom(tile, side, exit, dir);
 
 	Point pt = RemapCoords(x, y, z);
 	MarkAllViewportsDirty(

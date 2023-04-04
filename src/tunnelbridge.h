@@ -17,6 +17,7 @@ uint GetBestTunnelBridgeSignalSimulationSpacing(TileIndex begin, TileIndex end, 
 uint GetTunnelBridgeSignalSimulationSignalCount(TileIndex begin, TileIndex end);
 
 void MarkTunnelBridgeSignalDirty(TileIndex tile, bool exit);
+int GetTunnelBridgeSignalZ(TileIndex tile, bool exit);
 
 /**
  * Calculates the length of a tunnel or a bridge (without end tiles)

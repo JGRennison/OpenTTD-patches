@@ -24,6 +24,7 @@
 #include "../newgrf_extension.h"
 #include "../animated_tile.h"
 #include "../clear_map.h"
+#include "../tunnelbridge.h"
 
 /* Helper for filling property tables */
 #define NIP(prop, base, variable, type, name) { name, (ptrdiff_t)cpp_offsetof(base, variable), cpp_sizeof(base, variable), prop, type }
@@ -1215,6 +1216,7 @@ static const NIVariable _niv_signals[] = {
 	NIV(A2VRI_SIGNALS_SIGNAL_CONTEXT, "context"),
 	NIV(A2VRI_SIGNALS_SIGNAL_STYLE, "style"),
 	NIV(A2VRI_SIGNALS_SIGNAL_SIDE, "side"),
+	NIV(A2VRI_SIGNALS_SIGNAL_VERTICAL_CLEARANCE, "vertical_clearance"),
 	NIV_END()
 };
 
@@ -1233,20 +1235,27 @@ class NIHSignals : public NIHelper {
 		extern TraceRestrictProgram *GetFirstTraceRestrictProgramOnTile(TileIndex t);
 		CustomSignalSpriteContext ctx = CSSC_TRACK;
 		uint8 style = 0;
+		uint z = 0;
 		if (IsTunnelBridgeWithSignalSimulation(index)) {
 			ctx = IsTunnelBridgeSignalSimulationEntrance(index) ? CSSC_TUNNEL_BRIDGE_ENTRANCE : CSSC_TUNNEL_BRIDGE_EXIT;
 			style = GetTunnelBridgeSignalStyle(index);
+			z = GetTunnelBridgeSignalZ(index, !IsTunnelBridgeSignalSimulationEntrance(index));
 		} else if (IsTileType(index, MP_RAILWAY) && HasSignals(index)) {
 			TrackBits bits = GetTrackBits(index);
 			do {
 				Track track = RemoveFirstTrack(&bits);
 				if (HasSignalOnTrack(index, track)) {
 					style = GetSignalStyle(index, track);
+					Trackdir td = TrackToTrackdir(track);
+					if (!HasSignalOnTrackdir(index, td)) td = ReverseTrackdir(td);
+
+					uint x, y;
+					GetSignalXYZByTrackdir(index, td, HasBit(_signal_style_masks.signal_opposite_side, style), x, y, z);
 					break;
 				}
 			} while (bits != TRACK_BIT_NONE);
 		}
-		NewSignalsResolverObject ro(nullptr, index, TCX_NORMAL, 0, 0, ctx, style, GetFirstTraceRestrictProgramOnTile(index));
+		NewSignalsResolverObject ro(nullptr, index, TCX_NORMAL, 0, 0, ctx, style, GetFirstTraceRestrictProgramOnTile(index), z);
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
 	}
 

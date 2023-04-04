@@ -54,6 +54,7 @@ uint32 GetNewSignalsSideVariable()
 			case A2VRI_SIGNALS_SIGNAL_CONTEXT: return this->signal_context;
 			case A2VRI_SIGNALS_SIGNAL_STYLE: return MapSignalStyle(this->signal_style);
 			case A2VRI_SIGNALS_SIGNAL_SIDE: return GetNewSignalsSideVariable();
+			case A2VRI_SIGNALS_SIGNAL_VERTICAL_CLEARANCE: return 0xFF;
 		}
 	}
 
@@ -65,6 +66,7 @@ uint32 GetNewSignalsSideVariable()
 			return GetNewSignalsSignalContext(this->signal_context, this->tile);
 		case A2VRI_SIGNALS_SIGNAL_STYLE: return MapSignalStyle(this->signal_style);
 		case A2VRI_SIGNALS_SIGNAL_SIDE: return GetNewSignalsSideVariable();
+		case A2VRI_SIGNALS_SIGNAL_VERTICAL_CLEARANCE: return GetNewSignalsVerticalClearanceInfo(this->tile, this->z);
 	}
 
 	DEBUG(grf, 1, "Unhandled new signals tile variable 0x%X", variable);
@@ -94,9 +96,11 @@ GrfSpecFeature NewSignalsResolverObject::GetFeature() const
  * @param param2 Extra parameter (second parameter of the callback, except railtypes do not have callbacks).
  * @param signal_context Signal context.
  * @param prog Routing restriction program.
+ * @param z Signal pixel z.
  */
-NewSignalsResolverObject::NewSignalsResolverObject(const GRFFile *grffile, TileIndex tile, TileContext context, uint32 param1, uint32 param2, CustomSignalSpriteContext signal_context, uint8 signal_style, const TraceRestrictProgram *prog)
-	: ResolverObject(grffile, CBID_NO_CALLBACK, param1, param2), newsignals_scope(*this, tile, context, signal_context, signal_style, prog)
+NewSignalsResolverObject::NewSignalsResolverObject(const GRFFile *grffile, TileIndex tile, TileContext context, uint32 param1, uint32 param2,
+		CustomSignalSpriteContext signal_context, uint8 signal_style, const TraceRestrictProgram *prog, uint z)
+	: ResolverObject(grffile, CBID_NO_CALLBACK, param1, param2), newsignals_scope(*this, tile, context, signal_context, signal_style, prog, z)
 {
 	this->root_spritegroup = grffile != nullptr ? grffile->new_signals_group : nullptr;
 }
@@ -111,6 +115,16 @@ uint GetNewSignalsRestrictedSignalsInfo(const TraceRestrictProgram *prog, TileIn
 		if ((prog->actions_used_flags & TRPAUF_REVERSE) && !IsTileType(tile, MP_TUNNELBRIDGE)) result |= 4;
 	}
 	return result;
+}
+
+uint GetNewSignalsVerticalClearanceInfo(TileIndex tile, uint z)
+{
+	if (IsBridgeAbove(tile)) {
+		uint height = GetBridgePixelHeight(GetNorthernBridgeEnd(tile));
+		return std::min<uint>(0xFF, height - z);
+	} else {
+		return 0xFF;
+	}
 }
 
 void DumpNewSignalsSpriteGroups(DumpSpriteGroupPrinter print)

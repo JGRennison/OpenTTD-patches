@@ -101,6 +101,28 @@ static bool IsExpensiveRoadStopsVariable(uint16 variable)
 	}
 }
 
+static bool IsExpensiveRailtypeVariable(uint16 variable)
+{
+	switch (variable) {
+		case A2VRI_RAILTYPE_SIGNAL_VERTICAL_CLEARANCE:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+static bool IsExpensiveSignalVariable(uint16 variable)
+{
+	switch (variable) {
+		case A2VRI_SIGNALS_SIGNAL_VERTICAL_CLEARANCE:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
 static bool IsExpensiveVariable(uint16 variable, GrfSpecFeature scope_feature)
 {
 	switch (scope_feature) {
@@ -121,6 +143,12 @@ static bool IsExpensiveVariable(uint16 variable, GrfSpecFeature scope_feature)
 
 		case GSF_ROADSTOPS:
 			return IsExpensiveRoadStopsVariable(variable);
+
+		case GSF_RAILTYPES:
+			return IsExpensiveRailtypeVariable(variable);
+
+		case GSF_SIGNALS:
+			return IsExpensiveSignalVariable(variable);
 
 		default:
 			return false;
