@@ -1077,7 +1077,7 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) con
 			if (u->track == TRACK_BIT_DEPOT) {
 				SetBit(const_cast<Train *>(this)->flags, VRF_CONSIST_SPEED_REDUCTION);
 				if (_settings_game.vehicle.train_acceleration_model == AM_REALISTIC) {
-					max_speed = std::min(max_speed, 61);
+					max_speed = std::min<int>(max_speed, _settings_game.vehicle.rail_depot_speed_limit);
 				}
 				continue;
 			}
@@ -1112,9 +1112,11 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) con
 			}
 			TrainDecelerationStats stats(this, this->lookahead->cached_zpos);
 			if (HasBit(this->lookahead->flags, TRLF_DEPOT_END)) {
-				LimitSpeedFromLookAhead(max_speed, stats, this->lookahead->current_position, this->lookahead->reservation_end_position - TILE_SIZE, 61, this->lookahead->reservation_end_z - stats.z_pos);
+				LimitSpeedFromLookAhead(max_speed, stats, this->lookahead->current_position, this->lookahead->reservation_end_position - TILE_SIZE,
+						_settings_game.vehicle.rail_depot_speed_limit, this->lookahead->reservation_end_z - stats.z_pos);
 			} else {
-				LimitSpeedFromLookAhead(max_speed, stats, this->lookahead->current_position, this->lookahead->reservation_end_position, 0, this->lookahead->reservation_end_z - stats.z_pos);
+				LimitSpeedFromLookAhead(max_speed, stats, this->lookahead->current_position, this->lookahead->reservation_end_position,
+						0, this->lookahead->reservation_end_z - stats.z_pos);
 			}
 			VehicleOrderID current_order_index = this->cur_real_order_index;
 			const Order *order = &(this->current_order);

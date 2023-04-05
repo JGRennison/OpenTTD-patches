@@ -190,7 +190,9 @@ STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED_HELPTEXT    :In the realisti
 
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT                     :Train through load maximum speed: {STRING2}
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_HELPTEXT            :The maximum permitted speed for trains when through loading at a station
-STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_VAL                 :{VELOCITY}
+
+STR_CONFIG_SETTING_RAIL_DEPOT_SPEED_LIMIT                       :Rail depot maximum speed: {STRING2}
+STR_CONFIG_SETTING_RAIL_DEPOT_SPEED_LIMIT_HELPTEXT              :The maximum permitted speed for trains when entering or exiting a rail depot
 
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING                :Pathfind up to back of one-way path signals: {STRING2}
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING_HELPTEXT       :When enabled, the YAPF train pathfinder may pathfind up to the back of a one-way path signal.
@@ -1786,6 +1788,8 @@ STR_JUST_TIME_HHMM                                              :{TIME_HHMM}
 
 STR_JUST_STRING1                                                :{STRING1}
 STR_JUST_STRING2                                                :{STRING2}
+
+STR_JUST_VELOCITY                                               :{VELOCITY}
 
 STR_BLACK_DECIMAL                                               :{BLACK}{DECIMAL}
 STR_WHITE_DATE_WALLCLOCK_LONG                                   :{WHITE}{DATE_WALLCLOCK_LONG}

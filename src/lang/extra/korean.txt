@@ -153,7 +153,6 @@ STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED_HELPTEXT    :현실적 감�
 
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT                     :차례로 나눠 실을 때 열차 속력: {STRING}
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_HELPTEXT            :역에서 열차가 화물을 차례로 나눠 실으며 움직일 때 열차의 최대 허용 속력입니다.
-STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_VAL                 :{VELOCITY}
 
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING                :단방향 경로 신호기 뒤까지 경로 탐색: {STRING}
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING_HELPTEXT       :이 설정을 켜면, YAPF 열차 경로 탐색 알고리즘이 단방향 경로 신호기 뒤까지 경로를 탐색할 수 있습니다.

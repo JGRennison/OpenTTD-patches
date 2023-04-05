@@ -4066,6 +4066,10 @@ bool AfterLoadGame()
 		_settings_game.vehicle.through_load_speed_limit = 15;
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_RAIL_DEPOT_SPEED_LIMIT)) {
+		_settings_game.vehicle.rail_depot_speed_limit = 61;
+	}
+
 	if (SlXvIsFeaturePresent(XSLFI_SCHEDULED_DISPATCH, 1, 2)) {
 		for (OrderList *order_list : OrderList::Iterate()) {
 			if (order_list->GetScheduledDispatchScheduleCount() == 1) {

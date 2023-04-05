@@ -646,6 +646,7 @@ struct VehicleSettings {
 	bool   roadveh_cant_quantum_tunnel;      ///< enable or disable vehicles quantum tunelling through over vehicles when blocked
 	bool   drive_through_train_depot;        ///< enable drive-through train depot emulation
 	uint16 through_load_speed_limit;         ///< maximum speed for through load
+	uint16 rail_depot_speed_limit;           ///< maximum speed entering/existing rail depots
 };
 
 /** Settings related to the economy. */

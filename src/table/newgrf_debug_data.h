@@ -256,7 +256,7 @@ class NIHVehicle : public NIHelper {
 				b = buffer + seprintf(buffer, lastof(buffer), "    Reservation ends at %X (%u x %u), trackdir: %02X, z: %d",
 						l.reservation_end_tile, TileX(l.reservation_end_tile), TileY(l.reservation_end_tile), l.reservation_end_trackdir, l.reservation_end_z);
 				if (HasBit(l.flags, TRLF_DEPOT_END)) {
-					print_braking_speed(l.reservation_end_position - TILE_SIZE, 61, l.reservation_end_z);
+					print_braking_speed(l.reservation_end_position - TILE_SIZE, _settings_game.vehicle.rail_depot_speed_limit, l.reservation_end_z);
 				} else {
 					print_braking_speed(l.reservation_end_position, 0, l.reservation_end_z);
 				}

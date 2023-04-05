@@ -4144,9 +4144,9 @@ static void GetTileDesc_Track(TileIndex tile, TileDesc *td)
 			td->str = STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT;
 			if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
 				if (td->rail_speed > 0) {
-					td->rail_speed = std::min<uint16>(td->rail_speed, 61);
+					td->rail_speed = std::min<uint16>(td->rail_speed, _settings_game.vehicle.rail_depot_speed_limit);
 				} else {
-					td->rail_speed = 61;
+					td->rail_speed = _settings_game.vehicle.rail_depot_speed_limit;
 				}
 			}
 			td->build_date = Depot::GetByTile(tile)->build_date;

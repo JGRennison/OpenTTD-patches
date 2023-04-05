@@ -153,7 +153,6 @@ STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED_HELPTEXT    :在真实列车
 
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT                     :火车通过式装载最高速度：{STRING}
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_HELPTEXT            :火车在通过车站时进行装载的所允许的最高速度
-STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_VAL                 :{VELOCITY}
 
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING                :Pathfind up to back of one-way path signals：{STRING}
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING_HELPTEXT       :When enabled, the YAPF train pathfinder may pathfind up to the back of a one-way path signal.

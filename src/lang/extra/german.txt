@@ -148,7 +148,6 @@ STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED_HELPTEXT    :In the realisti
 
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT                     :Maximalgeschwindigkeit für das durchgehende Beladen von Zügen: {STRING}
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_HELPTEXT            :Die maximal erlaubte Ladegeschwindigkeit für Züge, die in einer Station durchgehend laden
-STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_VAL                 :{VELOCITY}
 
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING                :Wegsuche bis zur Rückseite eines Einwegpfadsignals: {STRING}
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING_HELPTEXT       :Wenn aktiviert, wird der YAPF-Pfadsucher für Züge versuchen, einen Weg bis zur Rückseite des nächsten Einwegpfadsignals zu suchen.

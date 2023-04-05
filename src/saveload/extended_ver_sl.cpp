@@ -171,6 +171,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_COMPANY_PW,                       XSCF_IGNORABLE_ALL,       2,   2, "company_password",                 nullptr, nullptr, "PLYP"           },
 	{ XSLFI_ST_INDUSTRY_CARGO_MODE,           XSCF_IGNORABLE_UNKNOWN,   1,   1, "st_industry_cargo_mode",           nullptr, nullptr, nullptr          },
 	{ XSLFI_TL_SPEED_LIMIT,                   XSCF_IGNORABLE_UNKNOWN,   1,   1, "tl_speed_limit",                   nullptr, nullptr, nullptr          },
+	{ XSLFI_RAIL_DEPOT_SPEED_LIMIT,           XSCF_IGNORABLE_UNKNOWN,   1,   1, "rail_depot_speed_limit",           nullptr, nullptr, nullptr          },
 	{ XSLFI_WAYPOINT_FLAGS,                   XSCF_NULL,                1,   1, "waypoint_flags",                   nullptr, nullptr, nullptr          },
 	{ XSLFI_ROAD_WAYPOINTS,                   XSCF_NULL,                1,   1, "road_waypoints",                   nullptr, nullptr, nullptr          },
 	{ XSLFI_MORE_STATION_TYPES,               XSCF_NULL,                1,   1, "more_station_types",               nullptr, nullptr, nullptr          },

@@ -153,7 +153,6 @@ STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED_HELPTEXT    :No modelo de fr
 
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT                     :Velocidade máxima de carga en movemento do tren: {STRING}
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_HELPTEXT            :A velocidade máxima permitida os trens cando están cargando en movemento
-STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_VAL                 :{VELOCITY}
 
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING                :Buscar ruta ata detrás dun sinal dun só sentido: {STRING}
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING_HELPTEXT       :Cando se habilita, o buscador de rutas de tren YAPF pode buscar unha ruta ata detrás dun sinal de un só sentido.
