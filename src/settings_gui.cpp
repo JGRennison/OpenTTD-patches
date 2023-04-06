@@ -2043,6 +2043,7 @@ static SettingsContainer &GetSettingsTree()
 			company->Add(new SettingEntry("company.infra_others_buy_in_depot[3]"));
 			company->Add(new SettingEntry("company.advance_order_on_clone"));
 			company->Add(new SettingEntry("company.copy_clone_add_to_group"));
+			company->Add(new SettingEntry("company.remain_if_next_order_same_station"));
 		}
 
 		SettingsPage *accounting = main->Add(new SettingsPage(STR_CONFIG_SETTING_ACCOUNTING));

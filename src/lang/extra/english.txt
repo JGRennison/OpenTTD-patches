@@ -707,6 +707,9 @@ STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE_HELPTEXT              :After cloning a
 STR_CONFIG_SETTING_COPY_CLONE_ADD_TO_GROUP                      :Add vehicle to group on copy-clone: {STRING2}
 STR_CONFIG_SETTING_COPY_CLONE_ADD_TO_GROUP_HELPTEXT             :Set whether cloned vehicles which do not share orders are added to the copied vehicle's group.
 
+STR_CONFIG_SETTING_REMAIN_IF_NEXT_ORDER_SAME_STATION            :Remain in station if next order is for same station: {STRING2}
+STR_CONFIG_SETTING_REMAIN_IF_NEXT_ORDER_SAME_STATION_HELPTEXT   :If a vehicle's next order is for the same station it would be about to leave, start loading/unloading again instead of leaving.
+
 STR_CONFIG_SETTING_SCENARIO_MULTIPLE_BUILDINGS                  :Allow multiple churches/stadiums: {STRING2}
 STR_CONFIG_SETTING_SCENARIO_MULTIPLE_BUILDINGS_HELPTEXT         :Allow manually adding churches and stadiums when there is already one present in the town.
 

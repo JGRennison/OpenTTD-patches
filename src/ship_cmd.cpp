@@ -925,7 +925,8 @@ static void ShipController(Ship *v)
 
 					bool may_reverse = ProcessOrders(v);
 
-					if (v->current_order.IsType(OT_GOTO_STATION) && v->current_order.GetDestination() == station_id && IsDockingTile(gp.new_tile)) {
+					if (v->current_order.IsType(OT_GOTO_STATION) && v->current_order.GetDestination() == station_id &&
+							IsDockingTile(gp.new_tile) && Company::Get(v->owner)->settings.remain_if_next_order_same_station) {
 						Station *st = Station::Get(station_id);
 						if (st->facilities & FACIL_DOCK && st->docking_station.Contains(gp.new_tile) && IsShipDestinationTile(gp.new_tile, station_id)) {
 							v->last_station_visited = station_id;

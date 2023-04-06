@@ -4139,6 +4139,13 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_REMAIN_NEXT_ORDER_STATION)) {
+		for (Company *c : Company::Iterate()) {
+			/* Approximately the same time as when this was feature was added and unconditionally enabled */
+			c->settings.remain_if_next_order_same_station = SlXvIsFeaturePresent(XSLFI_TRACE_RESTRICT_TUNBRIDGE);
+		}
+	}
+
 	InitializeRoadGUI();
 
 	/* This needs to be done after conversion. */

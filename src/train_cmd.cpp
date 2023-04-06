@@ -6551,7 +6551,7 @@ static bool TrainLocoHandler(Train *v, bool mode)
 
 		bool may_reverse = ProcessOrders(v);
 
-		if (IsRailStationTile(v->tile) && GetStationIndex(v->tile) == station_id) {
+		if (IsRailStationTile(v->tile) && GetStationIndex(v->tile) == station_id && Company::Get(v->owner)->settings.remain_if_next_order_same_station) {
 			if (v->current_order.IsType(OT_GOTO_STATION) && v->current_order.GetDestination() == station_id &&
 					!(v->current_order.GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) {
 				v->last_station_visited = station_id;

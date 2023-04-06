@@ -137,6 +137,7 @@ enum SlXvFeatureIndex {
 	XSLFI_NEWGRF_ENTITY_EXTRA,                    ///< NewGRF entity mappings are 16 bit
 	XSLFI_TNNC_CHUNK,                             ///< TNNC chunk
 	XSLFI_MULTI_CARGO_SHIPS,                      ///< Multi-cargo ships
+	XSLFI_REMAIN_NEXT_ORDER_STATION,              ///< Remain in station if next order is for same station
 
 	XSLFI_SCRIPT_INT64,                           ///< See: SLV_SCRIPT_INT64
 	XSLFI_U64_TICK_COUNTER,                       ///< See: SLV_U64_TICK_COUNTER

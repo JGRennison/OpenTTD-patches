@@ -2197,7 +2197,8 @@ static bool AircraftEventHandler(Aircraft *v, int loop)
 		ProcessOrders(v);
 
 		if (v->current_order.IsType(OT_GOTO_STATION) && v->current_order.GetDestination() == station_id &&
-				v->targetairport == station_id && IsAirportTile(v->tile) && GetStationIndex(v->tile) == station_id) {
+				v->targetairport == station_id && IsAirportTile(v->tile) && GetStationIndex(v->tile) == station_id &&
+				Company::Get(v->owner)->settings.remain_if_next_order_same_station) {
 			AircraftEntersTerminal(v);
 			return true;
 		}
