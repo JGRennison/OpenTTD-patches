@@ -512,8 +512,12 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 						(StationID)order->GetDestination() == station &&
 						(order->GetUnloadType() != OUFB_NO_UNLOAD ||
 						_settings_client.gui.departure_show_all_stops) &&
-						order->GetNonStopType() != ONSF_NO_STOP_AT_ANY_STATION &&
-						order->GetNonStopType() != ONSF_NO_STOP_AT_DESTINATION_STATION) {
+						(((order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) || ((least_order->order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) != 0))) {
+					/* If we're not calling anywhere, then skip this departure. */
+					found_terminus = (d->calling_at.size() > 0);
+					break;
+				} else if (order->GetType() == OT_GOTO_WAYPOINT &&
+					(StationID)order->GetDestination() == station) {
 					/* If we're not calling anywhere, then skip this departure. */
 					found_terminus = (d->calling_at.size() > 0);
 					break;
