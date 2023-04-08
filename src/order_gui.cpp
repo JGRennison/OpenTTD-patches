@@ -645,12 +645,6 @@ static const StringID _order_manage_list_dropdown[] = {
 	INVALID_STRING_ID
 };
 
-static const StringID _order_manage_dropdown[] = {
-	STR_ORDER_DUPLICATE_ORDER,
-	STR_ORDER_CHANGE_JUMP_TARGET,
-	INVALID_STRING_ID
-};
-
 /** Variables for conditional orders; this defines the order of appearance in the dropdown box */
 static const OrderConditionVariable _order_conditional_variable[] = {
 	OCV_LOAD_PERCENTAGE,
@@ -858,8 +852,13 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 	TextColour colour = TC_BLACK;
 	if (order->IsType(OT_IMPLICIT)) {
 		colour = (selected ? TC_SILVER : TC_GREY) | TC_NO_SHADE;
-	} else if (selected) {
-		colour = TC_WHITE;
+	} else {
+		if (selected) {
+			colour = TC_WHITE;
+		} else {
+			Colours order_colour = order->GetColour();
+			if (order_colour != INVALID_COLOUR) colour = TC_IS_PALETTE_COLOUR | (TextColour)_colour_value[order_colour];
+		}
 	}
 
 	SetDParam(0, order_index + 1);
@@ -2599,10 +2598,22 @@ public:
 				const Order *order = this->vehicle->GetOrder(sel);
 				if (order == nullptr) break;
 
-				uint hidden_mask = 0;
-				if (!order->IsType(OT_CONDITIONAL)) hidden_mask |= 2;
-
-				ShowDropDownMenu(this, _order_manage_dropdown, -1, widget, 0, hidden_mask, UINT_MAX, DDSF_LOST_FOCUS);
+				DropDownList list;
+				list.emplace_back(new DropDownListStringItem(STR_ORDER_DUPLICATE_ORDER, 0, false));
+				if (order->IsType(OT_CONDITIONAL)) list.emplace_back(new DropDownListStringItem(STR_ORDER_CHANGE_JUMP_TARGET, 1, false));
+				if (!order->IsType(OT_IMPLICIT)) {
+					list.emplace_back(new DropDownListItem(-1, false));
+					list.emplace_back(new DropDownListStringItem(STR_COLOUR_DEFAULT, 0x100 + INVALID_COLOUR, false));
+					auto add_colour = [&](Colours colour) {
+						list.emplace_back(new DropDownListStringItem(STR_COLOUR_DARK_BLUE + colour, 0x100 + colour, false));
+					};
+					add_colour(COLOUR_YELLOW);
+					add_colour(COLOUR_LIGHT_BLUE);
+					add_colour(COLOUR_GREEN);
+					add_colour(COLOUR_ORANGE);
+					add_colour(COLOUR_PINK);
+				}
+				ShowDropDownList(this, std::move(list), 0x100 + order->GetColour(), widget, 0, true, false, DDSF_LOST_FOCUS);
 				break;
 			}
 
@@ -3095,6 +3106,10 @@ public:
 			case WID_O_MGMT_BTN:
 				if (this->goto_type == OPOS_CONDITIONAL_RETARGET) {
 					ResetObjectToPlace();
+					break;
+				}
+				if (index >= 0x100 && index <= 0x100 + INVALID_COLOUR) {
+					this->ModifyOrder(this->OrderGetSel(), MOF_COLOUR | (index & 0xFF) << 8);
 					break;
 				}
 				switch (index) {

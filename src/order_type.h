@@ -202,6 +202,7 @@ enum ModifyOrderFlags {
 	MOF_COUNTER_ID,      ///< Change the counter ID
 	MOF_COUNTER_OP,      ///< Change the counter operation
 	MOF_COUNTER_VALUE,   ///< Change the counter value
+	MOF_COLOUR,          ///< Change the colour value
 	MOF_END
 };
 template <> struct EnumPropsT<ModifyOrderFlags> : MakeEnumPropsT<ModifyOrderFlags, byte, MOF_NON_STOP, MOF_END, MOF_END, 8> {};

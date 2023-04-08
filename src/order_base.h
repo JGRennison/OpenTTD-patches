@@ -19,6 +19,7 @@
 #include "vehicle_type.h"
 #include "date_type.h"
 #include "schdispatch.h"
+#include "gfx_type.h"
 #include "saveload/saveload_common.h"
 
 #include <memory>
@@ -55,6 +56,7 @@ struct OrderExtraInfo {
 	uint32 xdata = 0;                       ///< Extra arbitrary data
 	uint16 dispatch_index = 0;              ///< Scheduled dispatch index + 1
 	uint8 xflags = 0;                       ///< Extra flags
+	uint8 colour = 0;                       ///< Order colour + 1
 };
 
 namespace upstream_sl {
@@ -572,6 +574,22 @@ public:
 	inline bool IsScheduledDispatchOrder(bool require_wait_timetabled) const
 	{
 		return this->extra != nullptr && this->extra->dispatch_index > 0 && (!require_wait_timetabled || this->IsWaitTimetabled());
+	}
+
+	/** Get order colour */
+	inline Colours GetColour() const
+	{
+		uint8 value = this->extra != nullptr ? this->extra->colour : 0;
+		return (Colours)(value - 1);
+	}
+
+	/** Set order colour */
+	inline void SetColour(Colours colour)
+	{
+		if (colour != this->GetColour()) {
+			this->CheckExtraInfoAlloced();
+			this->extra->colour = ((uint8)colour) + 1;
+		}
 	}
 
 	void AssignOrder(const Order &other);

@@ -1794,33 +1794,37 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 	Order *order = v->GetOrder(sel_ord);
 	assert(order != nullptr);
-	switch (order->GetType()) {
-		case OT_GOTO_STATION:
-			if (mof != MOF_NON_STOP && mof != MOF_STOP_LOCATION && mof != MOF_UNLOAD && mof != MOF_LOAD && mof != MOF_CARGO_TYPE_UNLOAD && mof != MOF_CARGO_TYPE_LOAD && mof != MOF_RV_TRAVEL_DIR) return CMD_ERROR;
-			break;
+	if (mof == MOF_COLOUR) {
+		if (order->GetType() == OT_IMPLICIT) return CMD_ERROR;
+	} else {
+		switch (order->GetType()) {
+			case OT_GOTO_STATION:
+				if (mof != MOF_NON_STOP && mof != MOF_STOP_LOCATION && mof != MOF_UNLOAD && mof != MOF_LOAD && mof != MOF_CARGO_TYPE_UNLOAD && mof != MOF_CARGO_TYPE_LOAD && mof != MOF_RV_TRAVEL_DIR) return CMD_ERROR;
+				break;
 
-		case OT_GOTO_DEPOT:
-			if (mof != MOF_NON_STOP && mof != MOF_DEPOT_ACTION) return CMD_ERROR;
-			break;
+			case OT_GOTO_DEPOT:
+				if (mof != MOF_NON_STOP && mof != MOF_DEPOT_ACTION) return CMD_ERROR;
+				break;
 
-		case OT_GOTO_WAYPOINT:
-			if (mof != MOF_NON_STOP && mof != MOF_WAYPOINT_FLAGS && mof != MOF_RV_TRAVEL_DIR) return CMD_ERROR;
-			break;
+			case OT_GOTO_WAYPOINT:
+				if (mof != MOF_NON_STOP && mof != MOF_WAYPOINT_FLAGS && mof != MOF_RV_TRAVEL_DIR) return CMD_ERROR;
+				break;
 
-		case OT_CONDITIONAL:
-			if (mof != MOF_COND_VARIABLE && mof != MOF_COND_COMPARATOR && mof != MOF_COND_VALUE && mof != MOF_COND_VALUE_2 && mof != MOF_COND_VALUE_3 && mof != MOF_COND_DESTINATION) return CMD_ERROR;
-			break;
+			case OT_CONDITIONAL:
+				if (mof != MOF_COND_VARIABLE && mof != MOF_COND_COMPARATOR && mof != MOF_COND_VALUE && mof != MOF_COND_VALUE_2 && mof != MOF_COND_VALUE_3 && mof != MOF_COND_DESTINATION) return CMD_ERROR;
+				break;
 
-		case OT_RELEASE_SLOT:
-			if (mof != MOF_SLOT) return CMD_ERROR;
-			break;
+			case OT_RELEASE_SLOT:
+				if (mof != MOF_SLOT) return CMD_ERROR;
+				break;
 
-		case OT_COUNTER:
-			if (mof != MOF_COUNTER_ID && mof != MOF_COUNTER_OP && mof != MOF_COUNTER_VALUE) return CMD_ERROR;
-			break;
+			case OT_COUNTER:
+				if (mof != MOF_COUNTER_ID && mof != MOF_COUNTER_OP && mof != MOF_COUNTER_VALUE) return CMD_ERROR;
+				break;
 
-		default:
-			return CMD_ERROR;
+			default:
+				return CMD_ERROR;
+		}
 	}
 
 	switch (mof) {
@@ -2016,6 +2020,12 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			break;
 
 		case MOF_COUNTER_VALUE:
+			break;
+
+		case MOF_COLOUR:
+			if (data >= COLOUR_END && data != INVALID_COLOUR) {
+				return CMD_ERROR;
+			}
 			break;
 	}
 
@@ -2256,6 +2266,10 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 			case MOF_COUNTER_VALUE:
 				order->GetXDataRef() = data;
+				break;
+
+			case MOF_COLOUR:
+				order->SetColour((Colours)data);
 				break;
 
 			default: NOT_REACHED();
