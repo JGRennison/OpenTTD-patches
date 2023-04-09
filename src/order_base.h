@@ -51,6 +51,27 @@ template <typename F> void IterateOrderRefcountMapForDestinationID(DestinationID
 void IntialiseOrderDestinationRefcountMap();
 void ClearOrderDestinationRefcountMap();
 
+/*
+ * xflags bits:
+ * Bit 0:    OT_CONDITIONAL: IsWaitTimetabled(): For branch travel time
+ * Bit 1:    IsWaitFixed(): Wait time fixed
+ * Bits 2-3: GetLeaveType(): Order leave type
+ * Bit 4:    IsTravelFixed(): Travel time fixed
+ * Bits 5-7: GetRoadVehTravelDirection(): Road vehicle travel direction
+ */
+/*
+ * xdata users:
+ * OT_COUNTER: Counter operation value (not counter ID)
+ * OCV_SLOT_OCCUPANCY, OCV_VEH_IN_SLOT: Trace restrict slot ID
+ * OCV_COUNTER_VALUE: Bits 0-15: Counter comparison value, Bits 16-31: Counter ID
+ * OCV_TIMETABLE: Timetable lateness/earliness
+ * OCV_TIME_DATE: Time/date
+ * OCV_CARGO_WAITING_AMOUNT: Bits 0-15: Cargo quantity comparison value, Bits 16-31: Via station ID + 2
+ * OCV_CARGO_LOAD_PERCENTAGE: Cargo percentage comparison value
+ * OCV_DISPATCH_SLOT: Bits 0-15: Dispatch schedule ID
+ * OCV_PERCENT: Bits 0-7: Jump counter
+ */
+
 struct OrderExtraInfo {
 	uint8 cargo_type_flags[NUM_CARGO] = {}; ///< Load/unload types for each cargo type.
 	uint32 xdata = 0;                       ///< Extra arbitrary data
