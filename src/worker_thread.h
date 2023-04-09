@@ -30,10 +30,11 @@ private:
 	};
 
 	uint workers = 0;
+	uint workers_waiting = 0;
 	bool exit = false;
 	std::mutex lock;
 	std::queue<WorkerJob> jobs;
-	std::condition_variable empty_cv;
+	std::condition_variable worker_wait_cv;
 	std::condition_variable done_cv;
 
 	static void Run(WorkerThreadPool *pool);

@@ -42,7 +42,7 @@ void WorkerThreadPool::Stop()
 {
 	std::unique_lock<std::mutex> lk(this->lock);
 	this->exit = true;
-	this->empty_cv.notify_all();
+	this->worker_wait_cv.notify_all();
 	this->done_cv.wait(lk, [this]() { return this->workers == 0; });
 }
 
@@ -55,10 +55,10 @@ void WorkerThreadPool::EnqueueJob(WorkerJobFunc *func, void *data1, void *data2,
 		func(data1, data2, data3);
 		return;
 	}
-	bool notify = this->jobs.empty();
+	bool notify = this->jobs.size() < (size_t)this->workers_waiting;
 	this->jobs.push({ func, data1, data2, data3 });
 	lk.unlock();
-	if (notify) this->empty_cv.notify_one();
+	if (notify) this->worker_wait_cv.notify_one();
 }
 
 void WorkerThreadPool::Run(WorkerThreadPool *pool)
@@ -66,7 +66,9 @@ void WorkerThreadPool::Run(WorkerThreadPool *pool)
 	std::unique_lock<std::mutex> lk(pool->lock);
 	while (!pool->exit || !pool->jobs.empty()) {
 		if (pool->jobs.empty()) {
-			pool->empty_cv.wait(lk);
+			pool->workers_waiting++;
+			pool->worker_wait_cv.wait(lk);
+			pool->workers_waiting--;
 		} else {
 			WorkerJob job = pool->jobs.front();
 			pool->jobs.pop();
