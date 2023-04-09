@@ -541,6 +541,7 @@ public:
 
 	virtual void OnResize() override
 	{
+		this->elapsed_ms = 0;
 		this->vscroll->SetCapacityFromWidget(this, WID_DB_LIST);
 		this->GetWidget<NWidgetCore>(WID_DB_LIST)->widget_data = (this->vscroll->GetCapacity() << MAT_ROW_START) + (1 << MAT_COL_START);
 	}
