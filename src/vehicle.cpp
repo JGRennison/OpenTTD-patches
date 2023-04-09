@@ -3503,8 +3503,9 @@ void Vehicle::RecalculateOrderOccupancyAverage()
 	uint total = 0;
 	uint order_count = this->GetNumOrders();
 	for (uint i = 0; i < order_count; i++) {
-		uint occupancy = this->GetOrder(i)->GetOccupancy();
-		if (occupancy > 0) {
+		const Order *order = this->GetOrder(i);
+		uint occupancy = order->GetOccupancy();
+		if (occupancy > 0 && order->UseOccupancyValueForAverage()) {
 			num_valid++;
 			total += (occupancy - 1);
 		}

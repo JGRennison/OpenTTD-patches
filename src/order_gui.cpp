@@ -2381,7 +2381,13 @@ public:
 			uint8 occupancy = order->GetOccupancy();
 			if (occupancy > 0) {
 				SetDParam(0, occupancy - 1);
-				DrawString(ir.left, ir.right, y, STR_ORDERS_OCCUPANCY_PERCENT, (i == this->selected_order) ? TC_WHITE : TC_BLACK);
+				TextColour colour;
+				if (order->UseOccupancyValueForAverage()) {
+					colour = (i == this->selected_order) ? TC_WHITE : TC_BLACK;
+				} else {
+					colour = ((i == this->selected_order) ? TC_SILVER : TC_GREY) | TC_NO_SHADE;
+				}
+				DrawString(ir.left, ir.right, y, STR_ORDERS_OCCUPANCY_PERCENT, colour);
 			}
 			y += line_height;
 

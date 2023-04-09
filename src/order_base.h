@@ -563,6 +563,8 @@ public:
 	 */
 	inline void SetOccupancy(uint8 occupancy) { this->occupancy = occupancy; }
 
+	bool UseOccupancyValueForAverage() const;
+
 	bool ShouldStopAtStation(StationID last_station_visited, StationID station, bool waypoint) const;
 	bool ShouldStopAtStation(const Vehicle *v, StationID station, bool waypoint) const;
 	bool CanLeaveWithCargo(bool has_cargo, CargoID cargo) const;

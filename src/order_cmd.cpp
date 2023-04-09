@@ -3556,6 +3556,19 @@ bool ProcessOrders(Vehicle *v)
 	return UpdateOrderDest(v, order) && may_reverse;
 }
 
+bool Order::UseOccupancyValueForAverage() const
+{
+	if (this->GetOccupancy() == 0) return false;
+	if (this->GetOccupancy() > 1) return true;
+
+	if (this->IsType(OT_GOTO_STATION)) {
+		OrderUnloadFlags unload_type = this->GetUnloadType();
+		if ((unload_type == OUFB_TRANSFER || unload_type == OUFB_UNLOAD) && this->GetLoadType() == OLFB_NO_LOAD) return false;
+	}
+
+	return true;
+}
+
 /**
  * Check whether the given vehicle should stop at the given station
  * based on this order and the non-stop settings.
