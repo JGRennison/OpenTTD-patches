@@ -184,6 +184,7 @@ public:
 	void MakeLoadingAdvance(StationID destination);
 	void MakeReleaseSlot();
 	void MakeChangeCounter();
+	void MakeLabel(OrderLabelSubType subtype);
 
 	/**
 	 * Is this a 'goto' order with a real destination?
@@ -205,7 +206,7 @@ public:
 
 	/**
 	 * Gets the destination of this order.
-	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION) || IsType(OT_RELEASE_SLOT) || IsType(OT_COUNTER).
+	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION) || IsType(OT_RELEASE_SLOT) || IsType(OT_COUNTER) || IsType(OT_LABEL).
 	 * @return the destination of the order.
 	 */
 	inline DestinationID GetDestination() const { return this->dest; }
@@ -213,7 +214,7 @@ public:
 	/**
 	 * Sets the destination of this order.
 	 * @param destination the new destination of the order.
-	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION) || IsType(OT_RELEASE_SLOT) || IsType(OT_COUNTER).
+	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION) || IsType(OT_RELEASE_SLOT) || IsType(OT_COUNTER) || IsType(OT_LABEL).
 	 */
 	inline void SetDestination(DestinationID destination) { this->dest = destination; }
 
@@ -426,7 +427,7 @@ public:
 	 * explicitly set (but travel_time is actually unused for conditionals). */
 
 	/* Does this order not have any associated travel or wait times */
-	inline bool HasNoTimetableTimes() const { return this->IsType(OT_COUNTER) || this->IsType(OT_RELEASE_SLOT); }
+	inline bool HasNoTimetableTimes() const { return this->IsType(OT_COUNTER) || this->IsType(OT_RELEASE_SLOT) || this->IsType(OT_LABEL); }
 
 	/** Does this order have an explicit wait time set? */
 	inline bool IsWaitTimetabled() const
@@ -591,6 +592,14 @@ public:
 			this->extra->colour = ((uint8)colour) + 1;
 		}
 	}
+
+	inline OrderLabelSubType GetLabelSubType() const
+	{
+		return (OrderLabelSubType)GB(this->flags, 0, 8);
+	}
+
+	const char *GetLabelText() const;
+	void SetLabelText(const char *text);
 
 	void AssignOrder(const Order &other);
 	bool Equals(const Order &other) const;

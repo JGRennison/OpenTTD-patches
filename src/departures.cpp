@@ -462,6 +462,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 
 			/* We keep track of potential via stations along the way. If we call at a station immediately after going via it, then it is the via station. */
 			StationID candidate_via = INVALID_STATION;
+			StationID pending_via = INVALID_STATION;
 
 			/* Go through the order list, looping if necessary, to find a terminus. */
 			/* Get the next order, which may be the vehicle's first order. */
@@ -531,6 +532,10 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 					candidate_via = (StationID)order->GetDestination();
 				}
 
+				if (order->GetType() == OT_LABEL && order->GetLabelSubType() == OLST_DEPARTURES_VIA && d->via == INVALID_STATION && pending_via == INVALID_STATION) {
+					pending_via = (StationID)order->GetDestination();
+				}
+
 				if (c.scheduled_date != 0 && (order->GetTravelTime() != 0 || order->IsTravelTimetabled())) {
 					c.scheduled_date += order->GetTravelTime(); /* TODO smart terminal may not work correctly */
 				} else {
@@ -562,6 +567,9 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 						order->GetType() == OT_IMPLICIT) &&
 						order->GetNonStopType() != ONSF_NO_STOP_AT_ANY_STATION &&
 						order->GetNonStopType() != ONSF_NO_STOP_AT_DESTINATION_STATION) {
+					if (d->via == INVALID_STATION && pending_via != INVALID_STATION) {
+						d->via = pending_via;
+					}
 					if (d->via == INVALID_STATION && candidate_via == (StationID)order->GetDestination()) {
 						d->via = (StationID)order->GetDestination();
 					}

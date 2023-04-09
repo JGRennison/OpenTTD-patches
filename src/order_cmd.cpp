@@ -252,6 +252,12 @@ void Order::MakeChangeCounter()
 	this->flags = 0;
 }
 
+void Order::MakeLabel(OrderLabelSubType subtype)
+{
+	this->type = OT_LABEL;
+	this->flags = subtype;
+}
+
 /**
  * Make this depot/station order also a refit order.
  * @param cargo   the cargo type to change to.
@@ -359,6 +365,25 @@ void InvalidateVehicleOrder(const Vehicle *v, int data)
 
 	SetWindowDirty(WC_VEHICLE_ORDERS,    v->index);
 	SetWindowDirty(WC_VEHICLE_TIMETABLE, v->index);
+}
+
+const char *Order::GetLabelText() const
+{
+	assert(this->IsType(OT_LABEL) && this->GetLabelSubType() == OLST_TEXT);
+	if (this->extra == nullptr) return "";
+	const char *text = (const char *)(this->extra->cargo_type_flags);
+	if (ttd_strnlen(text, lengthof(this->extra->cargo_type_flags)) == lengthof(this->extra->cargo_type_flags)) {
+		/* Not null terminated, give up */
+		return "";
+	}
+	return text;
+}
+
+void Order::SetLabelText(const char *text)
+{
+	assert(this->IsType(OT_LABEL) && this->GetLabelSubType() == OLST_TEXT);
+	this->CheckExtraInfoAlloced();
+	strecpy((char *)(this->extra->cargo_type_flags), text, (char *)(lastof(this->extra->cargo_type_flags)));
 }
 
 /**
@@ -677,7 +702,7 @@ CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, Ca
 			});
 			if (invalid) return CargoMaskedStationIDStack(cargo_mask, INVALID_STATION);
 		}
-	} while (next->IsType(OT_GOTO_DEPOT) || next->IsType(OT_RELEASE_SLOT) || next->IsType(OT_COUNTER) || next->IsType(OT_DUMMY)
+	} while (next->IsType(OT_GOTO_DEPOT) || next->IsType(OT_RELEASE_SLOT) || next->IsType(OT_COUNTER) || next->IsType(OT_DUMMY) || next->IsType(OT_LABEL)
 			|| (next->IsBaseStationOrder() && next->GetDestination() == v->last_station_visited));
 
 	return CargoMaskedStationIDStack(cargo_mask, next->GetDestination());
@@ -1284,6 +1309,28 @@ CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID s
 			break;
 		}
 
+		case OT_LABEL: {
+			switch (new_order.GetLabelSubType()) {
+				case OLST_TEXT:
+					break;
+
+				case OLST_DEPARTURES_VIA: {
+					const BaseStation *st = BaseStation::GetIfValid(new_order.GetDestination());
+					if (st == nullptr) return CMD_ERROR;
+
+					if (st->owner != OWNER_NONE) {
+						CommandCost ret = CheckInfraUsageAllowed(v->type, st->owner);
+						if (ret.Failed()) return ret;
+					}
+					break;
+				}
+
+				default:
+					return CMD_ERROR;
+			}
+			break;
+		}
+
 		default: return CMD_ERROR;
 	}
 
@@ -1822,6 +1869,14 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				if (mof != MOF_COUNTER_ID && mof != MOF_COUNTER_OP && mof != MOF_COUNTER_VALUE) return CMD_ERROR;
 				break;
 
+			case OT_LABEL:
+				if (order->GetLabelSubType() == OLST_TEXT) {
+					if (mof != MOF_LABEL_TEXT) return CMD_ERROR;
+				} else {
+					return CMD_ERROR;
+				}
+				break;
+
 			default:
 				return CMD_ERROR;
 		}
@@ -2026,6 +2081,9 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			if (data >= COLOUR_END && data != INVALID_COLOUR) {
 				return CMD_ERROR;
 			}
+			break;
+
+		case MOF_LABEL_TEXT:
 			break;
 	}
 
@@ -2270,6 +2328,10 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 			case MOF_COLOUR:
 				order->SetColour((Colours)data);
+				break;
+
+			case MOF_LABEL_TEXT:
+				order->SetLabelText(text == nullptr ? "" : text);
 				break;
 
 			default: NOT_REACHED();
@@ -2798,6 +2860,7 @@ void RemoveOrderFromAllVehicles(OrderType type, DestinationID destination, bool 
 			if (ot == OT_GOTO_DEPOT && (o->GetDepotActionType() & ODATFB_NEAREST_DEPOT) != 0) return false;
 			if (ot == OT_GOTO_DEPOT && hangar && v->type != VEH_AIRCRAFT) return false; // Not an aircraft? Can't have a hangar order.
 			if (ot == OT_IMPLICIT || (v->type == VEH_AIRCRAFT && ot == OT_GOTO_DEPOT && !hangar)) ot = OT_GOTO_STATION;
+			if (ot == OT_LABEL && o->GetLabelSubType() == OLST_DEPARTURES_VIA && (type == OT_GOTO_STATION || type == OT_GOTO_WAYPOINT) && o->GetDestination() == destination) return true;
 			return (ot == type && o->GetDestination() == destination);
 		});
 	}
@@ -3355,6 +3418,7 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 			break;
 
 		case OT_DUMMY:
+		case OT_LABEL:
 			assert(!pbs_look_ahead);
 			UpdateVehicleTimetable(v, true);
 			v->IncrementRealOrderIndex();
@@ -3632,6 +3696,7 @@ const char *GetOrderTypeName(OrderType order_type)
 		"OT_LOADING_ADVANCE",
 		"OT_RELEASE_SLOT",
 		"OT_COUNTER",
+		"OT_LABEL",
 	};
 	static_assert(lengthof(names) == OT_END);
 	if (order_type < OT_END) return names[order_type];

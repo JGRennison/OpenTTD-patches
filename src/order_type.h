@@ -48,7 +48,13 @@ enum OrderType : byte {
 	OT_LOADING_ADVANCE = 10,
 	OT_RELEASE_SLOT  = 11,
 	OT_COUNTER       = 12,
+	OT_LABEL         = 13,
 	OT_END
+};
+
+enum OrderLabelSubType : byte {
+	OLST_TEXT             = 0,
+	OLST_DEPARTURES_VIA   = 1,
 };
 
 /**
@@ -203,6 +209,7 @@ enum ModifyOrderFlags {
 	MOF_COUNTER_OP,      ///< Change the counter operation
 	MOF_COUNTER_VALUE,   ///< Change the counter value
 	MOF_COLOUR,          ///< Change the colour value
+	MOF_LABEL_TEXT,      ///< Change the label text value
 	MOF_END
 };
 template <> struct EnumPropsT<ModifyOrderFlags> : MakeEnumPropsT<ModifyOrderFlags, byte, MOF_NON_STOP, MOF_END, MOF_END, 8> {};

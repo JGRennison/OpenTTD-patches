@@ -22,6 +22,7 @@
 #include "date_func.h"
 #include "departures_gui.h"
 #include "station_base.h"
+#include "waypoint_base.h"
 #include "vehicle_gui_base.h"
 #include "vehicle_base.h"
 #include "vehicle_gui.h"
@@ -821,8 +822,11 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 			}
 		}
 
-		if (_settings_client.gui.departure_destination_type && d->via != INVALID_STATION) {
-			Station *t = Station::Get(d->via);
+		StationID via = d->via;
+		if (via == d->terminus.station || via == this->station) via = INVALID_STATION;
+
+		if (_settings_client.gui.departure_destination_type && via != INVALID_STATION && Station::IsValidID(via)) {
+			Station *t = Station::Get(via);
 
 			if (t->facilities & FACIL_DOCK &&
 					t->facilities & FACIL_AIRPORT &&
@@ -839,33 +843,41 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 		}
 
 		/* Destination */
-		if (d->via == INVALID_STATION) {
+		if (via == INVALID_STATION) {
 			/* Only show the terminus. */
 			SetDParam(0, d->terminus.station);
 			SetDParam(1, icon);
 			ltr ? DrawString(              text_left + time_width + type_width + 6,   text_right - status_width - (toc_width + veh_width + group_width + 2) - 2, y + 1, STR_DEPARTURES_TERMINUS)
 				: DrawString(text_left + status_width + (toc_width + veh_width + group_width + 2) + 2,                 text_right - time_width - type_width - 6, y + 1, STR_DEPARTURES_TERMINUS);
 		} else {
+			auto set_via_dparams = [&](uint offset) {
+				if (Waypoint::IsValidID(via)) {
+					SetDParam(offset, STR_WAYPOINT_NAME);
+				} else {
+					SetDParam(offset, STR_STATION_NAME);
+				}
+				SetDParam(offset + 1, via);
+			};
 			/* Show the terminus and the via station. */
 			SetDParam(0, d->terminus.station);
 			SetDParam(1, icon);
-			SetDParam(2, d->via);
-			SetDParam(3, icon_via);
+			set_via_dparams(2);
+			SetDParam(4, icon_via);
 			int text_width = (GetStringBoundingBox(STR_DEPARTURES_TERMINUS_VIA_STATION)).width;
 
 			if (text_width < text_right - status_width - (toc_width + veh_width + group_width + 2) - 2 - (text_left + time_width + type_width + 6)) {
 				/* They will both fit, so show them both. */
 				SetDParam(0, d->terminus.station);
 				SetDParam(1, icon);
-				SetDParam(2, d->via);
-				SetDParam(3, icon_via);
+				set_via_dparams(2);
+				SetDParam(4, icon_via);
 				ltr ? DrawString(              text_left + time_width + type_width + 6, text_right - status_width - (toc_width + veh_width + group_width + 2) - 2, y + 1, STR_DEPARTURES_TERMINUS_VIA_STATION)
 					: DrawString(text_left + status_width + (toc_width + veh_width + group_width + 2) + 2,               text_right - time_width - type_width - 6, y + 1, STR_DEPARTURES_TERMINUS_VIA_STATION);
 			} else {
 				/* They won't both fit, so switch between showing the terminus and the via station approximately every 4 seconds. */
 				if (this->tick_count & (1 << 7)) {
-					SetDParam(0, d->via);
-					SetDParam(1, icon_via);
+					set_via_dparams(0);
+					SetDParam(2, icon_via);
 					ltr ? DrawString(              text_left + time_width + type_width + 6, text_right - status_width - (toc_width + veh_width + group_width + 2) - 2, y + 1, STR_DEPARTURES_VIA)
 						: DrawString(text_left + status_width + (toc_width + veh_width + group_width + 2) + 2,               text_right - time_width - type_width - 6, y + 1, STR_DEPARTURES_VIA);
 				} else {

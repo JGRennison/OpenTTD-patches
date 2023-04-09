@@ -906,6 +906,8 @@ STR_TRACE_RESTRICT_COUNTER_SET                                  :Set
 STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM                        :Increase counter: {STRING1} by {COMMA}
 STR_TRACE_RESTRICT_COUNTER_DECREASE_ITEM                        :Decrease counter: {STRING1} by {COMMA}
 STR_TRACE_RESTRICT_COUNTER_SET_ITEM                             :Set counter: {STRING1} to {COMMA}
+STR_TRACE_RESTRICT_LABEL_TEXT                                   :Label: {RAW_STRING}
+STR_TRACE_RESTRICT_LABEL_DEPARTURES_VIA                         :Departure board: Show as via: {STRING1}
 STR_TRACE_RESTRICT_TRAIN_STATUS_EMPTY                           :empty
 STR_TRACE_RESTRICT_TRAIN_STATUS_FULL                            :full
 STR_TRACE_RESTRICT_TRAIN_STATUS_BROKEN_DOWN                     :broken down
@@ -1282,9 +1284,9 @@ STR_DEPARTURES_TIME_DEP                                         :{ORANGE}{DATE_W
 STR_DEPARTURES_TIME_ARR                                         :{ORANGE}{DATE_WALLCLOCK_TINY} {RED}{DOWN_ARROW}
 STR_DEPARTURES_TIME_BOTH                                        :{ORANGE}{1:DATE_WALLCLOCK_TINY} {RED}{DOWN_ARROW} {ORANGE}{0:DATE_WALLCLOCK_TINY} {GREEN}{UP_ARROW}
 STR_DEPARTURES_TERMINUS                                         :{ORANGE}{STATION}{STRING}
-STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STATION}{STRING} via {STATION}{STRING}
+STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STATION}{STRING} via {STRING1}{STRING}
 STR_DEPARTURES_TERMINUS_VIA                                     :{ORANGE}{STATION}{STRING} via
-STR_DEPARTURES_VIA                                              :{ORANGE}via {STATION}{STRING}
+STR_DEPARTURES_VIA                                              :{ORANGE}via {STRING1}{STRING}
 STR_DEPARTURES_TOC                                              :{ORANGE}{COMPANY}
 STR_DEPARTURES_GROUP                                            :{ORANGE}{GROUP}
 STR_DEPARTURES_VEH                                              :{ORANGE}{VEHICLE}
@@ -1555,6 +1557,11 @@ STR_ORDER_CHANGE_COUNTER_BUTTON                                 :Change counter
 STR_ORDER_RELEASE_SLOT_TOOLTIP                                  :{BLACK}The train slot to release
 
 STR_ORDER_CHANGE_COUNTER_TOOLTIP                                :{BLACK}The counter to change
+
+STR_ORDER_TEXT_LABEL_CAPTION                                    :{WHITE}Label
+STR_ORDER_TEXT_LABEL_BUTTON                                     :Label
+STR_ORDER_DEPARTURES_VIA_LABEL_BUTTON                           :Departure board via
+STR_ORDER_TEXT_LABEL_BUTTON_TOOLTIP                             :{BLACK}Change label text
 
 STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}{STRING2}%
 STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}Show occupancy running averages{}The percentage shown is the overall average of the order occupancies
