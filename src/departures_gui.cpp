@@ -96,7 +96,7 @@ protected:
 	bool departures_invalid;   ///< The departures and arrivals list are currently invalid.
 	bool vehicles_invalid;     ///< The vehicles list is currently invalid.
 	uint entry_height;         ///< The height of an entry in the departures list.
-	uint tick_count;           ///< The number of ticks that have elapsed since the window was created. Used for scrolling text.
+	uint64 elapsed_ms;         ///< The number of milliseconds that have elapsed since the window was created. Used for scrolling text.
 	int calc_tick_countdown;   ///< The number of ticks to wait until recomputing the departure list. Signed in case it goes below zero.
 	bool show_types[4];        ///< The vehicle types to show in the departure list.
 	bool departure_types[3];   ///< The types of departure to show in the departure list.
@@ -104,6 +104,7 @@ protected:
 	bool show_pax;             ///< Show passenger vehicles
 	bool show_freight;         ///< Show freight vehicles
 	bool cargo_buttons_disabled;///< Show pax/freight buttons disabled
+	mutable bool scroll_refresh; ///< Whether the window should be refreshed when paused due to scrolling
 	uint min_width;            ///< The minimum width of this window.
 	Scrollbar *vscroll;
 	std::vector<const Vehicle *> vehicles; /// current set of vehicles
@@ -234,7 +235,7 @@ public:
 		arrivals(new DepartureList()),
 		departures_invalid(true),
 		vehicles_invalid(true),
-		tick_count(0),
+		elapsed_ms(0),
 		calc_tick_countdown(0),
 		min_width(400)
 	{
@@ -453,7 +454,6 @@ public:
 	virtual void OnGameTick() override
 	{
 		if (_pause_mode == PM_UNPAUSED) {
-			this->tick_count += 1;
 			this->calc_tick_countdown -= 1;
 		}
 
@@ -516,8 +516,11 @@ public:
 
 	virtual void OnRealtimeTick(uint delta_ms) override
 	{
+		this->elapsed_ms += delta_ms;
 		if (_pause_mode != PM_UNPAUSED && this->calc_tick_countdown <= 0) {
 			this->OnGameTick();
+		} else if (this->scroll_refresh) {
+			this->SetWidgetDirty(WID_DB_LIST);
 		}
 	}
 
@@ -649,6 +652,8 @@ void DeparturesWindow<Twaypoint>::DeleteDeparturesList(DepartureList *list)
 template<bool Twaypoint>
 void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 {
+	this->scroll_refresh = false;
+
 	int left = r.left + WidgetDimensions::scaled.matrix.left;
 	int right = r.right - WidgetDimensions::scaled.matrix.right;
 
@@ -875,7 +880,7 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 					: DrawString(text_left + status_width + (toc_width + veh_width + group_width + 2) + 2,               text_right - time_width - type_width - 6, y + 1, STR_DEPARTURES_TERMINUS_VIA_STATION);
 			} else {
 				/* They won't both fit, so switch between showing the terminus and the via station approximately every 4 seconds. */
-				if (this->tick_count & (1 << 7)) {
+				if ((this->elapsed_ms >> 12) & 1) {
 					set_via_dparams(0);
 					SetDParam(2, icon_via);
 					ltr ? DrawString(              text_left + time_width + type_width + 6, text_right - status_width - (toc_width + veh_width + group_width + 2) - 2, y + 1, STR_DEPARTURES_VIA)
@@ -886,6 +891,7 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 					ltr ? DrawString(              text_left + time_width + type_width + 6, text_right - status_width - (toc_width + veh_width + group_width + 2) - 2, y + 1, STR_DEPARTURES_TERMINUS_VIA)
 						: DrawString(text_left + status_width + (toc_width + veh_width + group_width + 2) + 2,               text_right - time_width - type_width - 6, y + 1, STR_DEPARTURES_TERMINUS_VIA);
 				}
+				this->scroll_refresh = true;
 			}
 		}
 
@@ -1007,6 +1013,8 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 			ltr ? DrawString(text_left + calling_at_width + 2,                        text_right, bottom_y, buffer)
 				: DrawString(                       text_left, text_right - calling_at_width - 2, bottom_y, buffer);
 		} else {
+			this->scroll_refresh = true;
+
 			DrawPixelInfo tmp_dpi;
 			if (ltr
 				? !FillDrawPixelInfo(&tmp_dpi, text_left + calling_at_width + 2, bottom_y, text_right - (text_left + calling_at_width + 2), small_font_size + 3)
@@ -1017,9 +1025,10 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 			AutoRestoreBackup dpi_backup(_cur_dpi, &tmp_dpi);
 
 			/* The scrolling text starts out of view at the right of the screen and finishes when it is out of view at the left of the screen. */
+			int64 elapsed_scroll_px = this->elapsed_ms / 27;
 			int pos = ltr
-				? text_right - (this->tick_count % (list_width + text_right - text_left))
-				:  text_left + (this->tick_count % (list_width + text_right - text_left));
+				? text_right - (elapsed_scroll_px % (list_width + text_right - text_left))
+				:  text_left + (elapsed_scroll_px % (list_width + text_right - text_left));
 
 			ltr ? DrawString(       pos, INT16_MAX, 0, buffer, TC_FROMSTRING,  SA_LEFT | SA_FORCE)
 				: DrawString(-INT16_MAX,       pos, 0, buffer, TC_FROMSTRING, SA_RIGHT | SA_FORCE);
