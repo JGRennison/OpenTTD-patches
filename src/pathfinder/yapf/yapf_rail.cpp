@@ -803,6 +803,6 @@ void YapfCheckRailSignalPenalties()
 	}
 	if (negative) {
 		DEBUG(misc, 0, "Settings: pf.yapf.rail_look_ahead_signal_p0, pf.yapf.rail_look_ahead_signal_p1, pf.yapf.rail_look_ahead_signal_p2 and pf.yapf.rail_look_ahead_max_signal "
-				"are set to incorrect values (i.e. resulting in hegative penalties), negative penalties will be truncated");
+				"are set to incorrect values (i.e. resulting in negative penalties), negative penalties will be truncated");
 	}
 }
