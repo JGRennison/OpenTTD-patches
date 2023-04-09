@@ -906,8 +906,6 @@ STR_TRACE_RESTRICT_COUNTER_SET                                  :Set
 STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM                        :Increase counter: {STRING1} by {COMMA}
 STR_TRACE_RESTRICT_COUNTER_DECREASE_ITEM                        :Decrease counter: {STRING1} by {COMMA}
 STR_TRACE_RESTRICT_COUNTER_SET_ITEM                             :Set counter: {STRING1} to {COMMA}
-STR_TRACE_RESTRICT_LABEL_TEXT                                   :Label: {RAW_STRING}
-STR_TRACE_RESTRICT_LABEL_DEPARTURES_VIA                         :Departure board: Show as via: {STRING1}
 STR_TRACE_RESTRICT_TRAIN_STATUS_EMPTY                           :empty
 STR_TRACE_RESTRICT_TRAIN_STATUS_FULL                            :full
 STR_TRACE_RESTRICT_TRAIN_STATUS_BROKEN_DOWN                     :broken down
@@ -1558,10 +1556,12 @@ STR_ORDER_RELEASE_SLOT_TOOLTIP                                  :{BLACK}The trai
 
 STR_ORDER_CHANGE_COUNTER_TOOLTIP                                :{BLACK}The counter to change
 
-STR_ORDER_TEXT_LABEL_CAPTION                                    :{WHITE}Label
-STR_ORDER_TEXT_LABEL_BUTTON                                     :Label
-STR_ORDER_DEPARTURES_VIA_LABEL_BUTTON                           :Departure board via
-STR_ORDER_TEXT_LABEL_BUTTON_TOOLTIP                             :{BLACK}Change label text
+STR_ORDER_LABEL_TEXT                                            :Label: {RAW_STRING}
+STR_ORDER_LABEL_TEXT_CAPTION                                    :{WHITE}Label
+STR_ORDER_LABEL_TEXT_BUTTON                                     :Label
+STR_ORDER_LABEL_TEXT_BUTTON_TOOLTIP                             :{BLACK}Change label text
+STR_ORDER_LABEL_DEPARTURES_VIA_BUTTON                           :Departure board via
+STR_ORDER_LABEL_DEPARTURES_VIA                                  :Departure board: Show as via: {STRING1}
 
 STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}{STRING2}%
 STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}Show occupancy running averages{}The percentage shown is the overall average of the order occupancies

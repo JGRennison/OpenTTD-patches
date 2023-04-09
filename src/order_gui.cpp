@@ -626,8 +626,8 @@ static const StringID _order_goto_dropdown[] = {
 	STR_ORDER_SHARE,
 	STR_ORDER_RELEASE_SLOT_BUTTON,
 	STR_ORDER_CHANGE_COUNTER_BUTTON,
-	STR_ORDER_TEXT_LABEL_BUTTON,
-	STR_ORDER_DEPARTURES_VIA_LABEL_BUTTON,
+	STR_ORDER_LABEL_TEXT_BUTTON,
+	STR_ORDER_LABEL_DEPARTURES_VIA_BUTTON,
 	INVALID_STRING_ID
 };
 
@@ -638,8 +638,8 @@ static const StringID _order_goto_dropdown_aircraft[] = {
 	STR_ORDER_SHARE,
 	STR_ORDER_RELEASE_SLOT_BUTTON,
 	STR_ORDER_CHANGE_COUNTER_BUTTON,
-	STR_ORDER_TEXT_LABEL_BUTTON,
-	STR_ORDER_DEPARTURES_VIA_LABEL_BUTTON,
+	STR_ORDER_LABEL_TEXT_BUTTON,
+	STR_ORDER_LABEL_DEPARTURES_VIA_BUTTON,
 	INVALID_STRING_ID
 };
 
@@ -1167,14 +1167,14 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 		case OT_LABEL:
 			switch (order->GetLabelSubType()) {
 				case OLST_TEXT: {
-					SetDParam(0, STR_TRACE_RESTRICT_LABEL_TEXT);
+					SetDParam(0, STR_ORDER_LABEL_TEXT);
 					const char *text = order->GetLabelText();
 					SetDParamStr(1, StrEmpty(text) ? "" : text);
 					break;
 				}
 
 				case OLST_DEPARTURES_VIA:
-					SetDParam(0, STR_TRACE_RESTRICT_LABEL_DEPARTURES_VIA);
+					SetDParam(0, STR_ORDER_LABEL_DEPARTURES_VIA);
 					if (Waypoint::IsValidID(order->GetDestination())) {
 						SetDParam(1, STR_WAYPOINT_NAME);
 					} else {
@@ -2999,7 +2999,7 @@ public:
 				const Order *order = this->vehicle->GetOrder(this->OrderGetSel());
 				this->query_text_widget = widget;
 				SetDParamStr(0, order->GetLabelText());
-				ShowQueryString(STR_JUST_RAW_STRING, STR_ORDER_TEXT_LABEL_CAPTION, NUM_CARGO - 1, this, CS_ALPHANUMERAL, QSF_NONE);
+				ShowQueryString(STR_JUST_RAW_STRING, STR_ORDER_LABEL_TEXT_CAPTION, NUM_CARGO - 1, this, CS_ALPHANUMERAL, QSF_NONE);
 				break;
 			}
 
@@ -3543,7 +3543,7 @@ static const NWidgetPart _nested_orders_train_widgets[] = {
 				NWidget(WWT_PANEL, COLOUR_GREY), EndContainer(),
 				NWidget(WWT_PANEL, COLOUR_GREY), EndContainer(),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_TEXT_LABEL), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_ORDER_TEXT_LABEL_BUTTON, STR_ORDER_TEXT_LABEL_BUTTON_TOOLTIP), SetResize(1, 0),
+														SetDataTip(STR_ORDER_LABEL_TEXT_BUTTON, STR_ORDER_LABEL_TEXT_BUTTON_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
 			NWidget(WWT_PANEL, COLOUR_GREY), SetFill(1, 0), SetResize(1, 0), EndContainer(),
 		EndContainer(),
@@ -3687,7 +3687,7 @@ static const NWidgetPart _nested_orders_widgets[] = {
 				NWidget(WWT_PANEL, COLOUR_GREY), EndContainer(),
 				NWidget(WWT_PANEL, COLOUR_GREY), EndContainer(),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_TEXT_LABEL), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_ORDER_TEXT_LABEL_BUTTON, STR_ORDER_TEXT_LABEL_BUTTON_TOOLTIP), SetResize(1, 0),
+														SetDataTip(STR_ORDER_LABEL_TEXT_BUTTON, STR_ORDER_LABEL_TEXT_BUTTON_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
 
 			/* No buttons */
