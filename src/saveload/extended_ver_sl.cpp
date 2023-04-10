@@ -193,6 +193,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_LINKGRAPH_TRAVEL_TIME,            XSCF_NULL,                1,   1, "linkgraph_travel_time",            nullptr, nullptr, nullptr          },
 	{ XSLFI_LAST_LOADING_TICK,                XSCF_NULL,                2,   2, "last_loading_tick",                nullptr, nullptr, nullptr          },
 	{ XSLFI_SCRIPT_LEAGUE_TABLES,             XSCF_NULL,                1,   1, "script_league_tables",             nullptr, nullptr, "LEAE,LEAT"      },
+	{ XSLFI_VELOCITY_NAUTICAL,                XSCF_IGNORABLE_ALL,       1,   1, "velocity_nautical",                nullptr, nullptr, nullptr          },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, nullptr, nullptr, nullptr, nullptr },// This is the end marker
 };
 
