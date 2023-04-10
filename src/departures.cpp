@@ -463,6 +463,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 			/* We keep track of potential via stations along the way. If we call at a station immediately after going via it, then it is the via station. */
 			StationID candidate_via = INVALID_STATION;
 			StationID pending_via = INVALID_STATION;
+			StationID pending_via2 = INVALID_STATION;
 
 			/* Go through the order list, looping if necessary, to find a terminus. */
 			/* Get the next order, which may be the vehicle's first order. */
@@ -534,6 +535,10 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 
 				if (order->GetType() == OT_LABEL && order->GetLabelSubType() == OLST_DEPARTURES_VIA && d->via == INVALID_STATION && pending_via == INVALID_STATION) {
 					pending_via = (StationID)order->GetDestination();
+					const Order *next = (order->next == nullptr) ? least_order->v->GetFirstOrder() : order->next;
+					if (next->GetType() == OT_LABEL && next->GetLabelSubType() == OLST_DEPARTURES_VIA && (StationID)next->GetDestination() != pending_via) {
+						pending_via2 = (StationID)next->GetDestination();
+					}
 				}
 
 				if (c.scheduled_date != 0 && (order->GetTravelTime() != 0 || order->IsTravelTimetabled())) {
@@ -569,6 +574,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 						order->GetNonStopType() != ONSF_NO_STOP_AT_DESTINATION_STATION) {
 					if (d->via == INVALID_STATION && pending_via != INVALID_STATION) {
 						d->via = pending_via;
+						d->via2 = pending_via2;
 					}
 					if (d->via == INVALID_STATION && candidate_via == (StationID)order->GetDestination()) {
 						d->via = (StationID)order->GetDestination();
@@ -618,7 +624,11 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 
 								if (d_first->terminus >= c && d_first->calling_at.size() >= 2) {
 									d_first->terminus = CallAt(d_first->calling_at[k]);
-									if (d_first->via == d_first->terminus.station) d_first->via = INVALID_STATION;
+									if (d_first->via2 == d_first->terminus.station) d_first->via2 = INVALID_STATION;
+									if (d_first->via == d_first->terminus.station) {
+										d_first->via = d_first->via2;
+										d_first->via2 = INVALID_STATION;
+									}
 
 									if (k == 0) break;
 

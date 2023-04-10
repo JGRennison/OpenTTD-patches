@@ -1282,9 +1282,9 @@ STR_DEPARTURES_TIME_DEP                                         :{ORANGE}{DATE_W
 STR_DEPARTURES_TIME_ARR                                         :{ORANGE}{DATE_WALLCLOCK_TINY} {RED}{DOWN_ARROW}
 STR_DEPARTURES_TIME_BOTH                                        :{ORANGE}{1:DATE_WALLCLOCK_TINY} {RED}{DOWN_ARROW} {ORANGE}{0:DATE_WALLCLOCK_TINY} {GREEN}{UP_ARROW}
 STR_DEPARTURES_TERMINUS                                         :{ORANGE}{STATION}{STRING}
-STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STATION}{STRING} via {STRING1}{STRING}
+STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STATION}{STRING} via {STRING}
 STR_DEPARTURES_TERMINUS_VIA                                     :{ORANGE}{STATION}{STRING} via
-STR_DEPARTURES_VIA                                              :{ORANGE}via {STRING1}{STRING}
+STR_DEPARTURES_VIA                                              :{ORANGE}via {STRING}
 STR_DEPARTURES_TOC                                              :{ORANGE}{COMPANY}
 STR_DEPARTURES_GROUP                                            :{ORANGE}{GROUP}
 STR_DEPARTURES_VEH                                              :{ORANGE}{VEHICLE}
@@ -1295,6 +1295,8 @@ STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{RAW_STRING} an
 STR_DEPARTURES_CALLING_AT_LIST                                  :{ORANGE}{RAW_STRING}.
 STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{RAW_STRING}. This service continues to {STATION}.
 STR_DEPARTURES_TINY                                             :{TINY_FONT}{STRING2}
+STR_DEPARTURES_VIA_DESCRIPTOR                                   :{STRING1}{STRING}
+STR_DEPARTURES_VIA_AND                                          :{STRING} and {STRING}
 
 STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
 STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}
