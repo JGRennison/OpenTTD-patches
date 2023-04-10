@@ -612,15 +612,20 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 						for (uint i = 0; i < result->size() - 1; ++i) {
 							Departure *d_first = (*result)[i];
 							uint k = (uint)d_first->calling_at.size() - 2;
-							for (uint j = (uint)d->calling_at.size(); j > 0; --j) {
+							uint j = (uint)d->calling_at.size();
+							while (j > 0) {
 								CallAt c = CallAt(d->calling_at[j - 1]);
 
 								if (d_first->terminus >= c && d_first->calling_at.size() >= 2) {
 									d_first->terminus = CallAt(d_first->calling_at[k]);
+									if (d_first->via == d_first->terminus.station) d_first->via = INVALID_STATION;
 
 									if (k == 0) break;
 
 									k--;
+									j = (uint)d->calling_at.size();
+								} else {
+									j--;
 								}
 							}
 						}
