@@ -979,8 +979,8 @@ static uint ConvertIntegerValue(TraceRestrictValueType type, uint in, bool to_di
 
 		case TRVT_SPEED:
 			return to_display
-					? ConvertKmhishSpeedToDisplaySpeed(in)
-					: ConvertDisplaySpeedToKmhishSpeed(in);
+					? ConvertKmhishSpeedToDisplaySpeed(in, VEH_TRAIN)
+					: ConvertDisplaySpeedToKmhishSpeed(in, VEH_TRAIN);
 
 		case TRVT_WEIGHT:
 			return to_display
@@ -1029,7 +1029,7 @@ static void ConvertValueToDecimal(TraceRestrictValueType type, uint in, int64 &v
 
 		case TRVT_SPEED:
 			decimal = _settings_game.locale.units_velocity == 3 ? 1 : 0;
-			value = ConvertKmhishSpeedToDisplaySpeed(in);
+			value = ConvertKmhishSpeedToDisplaySpeed(in, VEH_TRAIN);
 			break;
 
 		default:
@@ -1050,7 +1050,7 @@ static uint ConvertDecimalToValue(TraceRestrictValueType type, double in)
 			return ConvertDisplayToForceWeightRatio(in);
 
 		case TRVT_SPEED:
-			return ConvertDisplaySpeedToKmhishSpeed(in * (_settings_game.locale.units_velocity == 3 ? 10 : 1));
+			return ConvertDisplaySpeedToKmhishSpeed(in * (_settings_game.locale.units_velocity == 3 ? 10 : 1), VEH_TRAIN);
 
 		default:
 			NOT_REACHED();

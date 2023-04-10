@@ -1808,6 +1808,7 @@ STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Dacă este acti
 
 STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Vârsta minimă a companiilor pentru tranzacțiile cu acțiuni: {STRING}
 STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Stabilește vechimea minimă a unei companii, ca alții să-i poată tranzacționa acțiunile.
+###setting-zero-is-special
 
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :Procentul din profitul pe secţiune care să fie plătit pentru alimentare: {STRING}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :Procentul din câştig care este oferit legăturilor intermediare pentru alimentare, oferind mai mult control asupra încasărilor
@@ -1953,7 +1954,7 @@ STR_CONFIG_SETTING_SHORT_PATH_SATURATION_HELPTEXT               :Adesea, există
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY                  :Unitate viteză: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_HELPTEXT         :Afişează viteza în interfaţă folosind unităţile selectate
-###length 4
+###length 5
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_IMPERIAL         :Imperial (mph)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_METRIC           :Metric (km/h)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_SI               :SI (m/s)
@@ -2358,6 +2359,7 @@ STR_NETWORK_CLIENT_LIST_NEW_COMPANY                             :(Companie nouă
 STR_NETWORK_CLIENT_LIST_NEW_COMPANY_TOOLTIP                     :{BLACK}Creează o nouă companie și intră în ea
 STR_NETWORK_CLIENT_LIST_PLAYER_ICON_SELF_TOOLTIP                :{BLACK}Aici ești tu
 STR_NETWORK_CLIENT_LIST_PLAYER_ICON_HOST_TOOLTIP                :{BLACK}Aceasta este gazda jocului
+STR_NETWORK_CLIENT_LIST_CLIENT_COMPANY_COUNT_TOOLTIP            :{BLACK}Numărul de clienți conectați în prezent, numărul de companii și numărul maxim de companii permis de administratorul serverului
 
 # Matches ConnectionType
 ###length 5
@@ -5084,7 +5086,16 @@ STR_ERROR_TOO_FAR_FROM_PREVIOUS_DESTINATION                     :{WHITE}... prea
 STR_ERROR_AIRCRAFT_NOT_ENOUGH_RANGE                             :{WHITE}... avionul nu are o rază de acțiune suficientă
 
 # Extra messages which go on the third line of errors, explaining why orders failed
+STR_ERROR_NO_RAIL_STATION                                       :{WHITE}Nu există nicio gară
+STR_ERROR_NO_BUS_STATION                                        :{WHITE}Nu există stație de autobuz
+STR_ERROR_NO_TRUCK_STATION                                      :{WHITE}Nu există stație de camion
+STR_ERROR_NO_DOCK                                               :{WHITE}Nu există doc
+STR_ERROR_NO_AIRPORT                                            :{WHITE}Nu există aeroport/heliport
+STR_ERROR_NO_STOP_COMPATIBLE_ROAD_TYPE                          :{WHITE}Nu există opriri cu un tip de drum compatibil
+STR_ERROR_NO_STOP_COMPATIBLE_TRAM_TYPE                          :{WHITE}Nu există stații cu un tip de tramvai compatibil
 STR_ERROR_NO_STOP_ARTICULATED_VEHICLE                           :{WHITE}Nu există opriri care să fie potrivite pentru vehiculele rutiere articulate.{}Vehiculele rutiere articulate necesită o oprire de drum, nu o oprire într-o rampă.
+STR_ERROR_AIRPORT_NO_PLANES                                     :{WHITE}Acest avion nu poate ateriza la acest heliport
+STR_ERROR_AIRPORT_NO_HELICOPTERS                                :{WHITE}Acest elicopter nu poate ateriza pe acest aeroport
 STR_ERROR_NO_RAIL_WAYPOINT                                      :{WHITE}Nu există niciun punct intermediar feroviar
 STR_ERROR_NO_BUOY                                               :{WHITE}Nu există geamanduri
 

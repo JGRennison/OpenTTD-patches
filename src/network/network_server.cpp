@@ -816,6 +816,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendCompanyUpdate()
 {
 	Packet *p = new Packet(PACKET_SERVER_COMPANY_UPDATE, SHRT_MAX);
 
+	static_assert(sizeof(_network_company_passworded) <= sizeof(uint16));
 	p->Send_uint16(_network_company_passworded);
 	this->SendPacket(p);
 	return NETWORK_RECV_STATUS_OKAY;

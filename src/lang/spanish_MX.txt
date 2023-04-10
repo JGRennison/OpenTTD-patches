@@ -1809,6 +1809,7 @@ STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Al activarse, s
 
 STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Edad mínima de la empresa para intercambiar acciones: {STRING}
 STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Establecer la edad mínima que debe tener una empresa para que otros puedan comprarle y venderle acciones.
+###setting-zero-is-special
 
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :Porcentaje de la utilidad total a pagar por transferencias de carga: {STRING}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :Porcentaje de utilidad cedida a los transportes intermedios en sistemas de transferencia de carga, dando un mayor control sobre la utilidad de cada vehículo
@@ -1954,7 +1955,7 @@ STR_CONFIG_SETTING_SHORT_PATH_SATURATION_HELPTEXT               :Entre dos estac
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY                  :Unidades de velocidad: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_HELPTEXT         :Cada vez que se muestre una velocidad en la interfaz de usuario, se emplearán las unidades elegidas
-###length 4
+###length 5
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_IMPERIAL         :Imperial (mph)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_METRIC           :Métrico (km/h)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_SI               :SI (m/s)
@@ -5082,6 +5083,8 @@ STR_ERROR_TOO_FAR_FROM_PREVIOUS_DESTINATION                     :{WHITE}... dema
 STR_ERROR_AIRCRAFT_NOT_ENOUGH_RANGE                             :{WHITE}... la aeronave no tiene suficiente alcance
 
 # Extra messages which go on the third line of errors, explaining why orders failed
+STR_ERROR_NO_BUS_STATION                                        :{WHITE}No hay una estación de autobus
+STR_ERROR_NO_STOP_COMPATIBLE_TRAM_TYPE                          :{WHITE}No hay paradas con un tipo de tramo compatible
 
 # Timetable related errors
 STR_ERROR_CAN_T_TIMETABLE_VEHICLE                               :{WHITE}No se pueden asignar itinerarios al vehículo...

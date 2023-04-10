@@ -10,9 +10,9 @@
 #ifndef UNIT_CONVERSION_H
 #define UNIT_CONVERSION_H
 
-uint ConvertSpeedToDisplaySpeed(uint speed);
-uint ConvertSpeedToUnitDisplaySpeed(uint speed);
-uint ConvertDisplaySpeedToSpeed(uint speed);
+uint ConvertSpeedToDisplaySpeed(uint speed, VehicleType type);
+uint ConvertSpeedToUnitDisplaySpeed(uint speed, VehicleType type);
+uint ConvertDisplaySpeedToSpeed(uint speed, VehicleType type);
 uint ConvertWeightToDisplayWeight(uint weight);
 uint ConvertDisplayWeightToWeight(uint weight);
 uint ConvertPowerToDisplayPower(uint power);

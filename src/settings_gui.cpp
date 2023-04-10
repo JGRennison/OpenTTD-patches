@@ -1791,6 +1791,7 @@ static SettingsContainer &GetSettingsTree()
 		SettingsPage *localisation = main->Add(new SettingsPage(STR_CONFIG_SETTING_LOCALISATION));
 		{
 			localisation->Add(new SettingEntry("locale.units_velocity"));
+			localisation->Add(new SettingEntry("locale.units_velocity_nautical"));
 			localisation->Add(new SettingEntry("locale.units_power"));
 			localisation->Add(new SettingEntry("locale.units_weight"));
 			localisation->Add(new SettingEntry("locale.units_volume"));
@@ -2805,7 +2806,7 @@ struct GameSettingsWindow : Window {
 				int64 value64 = value;
 				/* Show the correct currency or velocity translated value */
 				if (sd->flags & SF_GUI_CURRENCY) value64 *= _currency->rate;
-				if (sd->flags & SF_GUI_VELOCITY) value64 = ConvertKmhishSpeedToDisplaySpeed((uint)value64);
+				if (sd->flags & SF_GUI_VELOCITY) value64 = ConvertKmhishSpeedToDisplaySpeed((uint)value64, VEH_TRAIN);
 
 				this->valuewindow_entry = pe;
 				if (sd->flags & SF_DECIMAL1 || (sd->flags & SF_GUI_VELOCITY && _settings_game.locale.units_velocity == 3)) {
@@ -2856,7 +2857,7 @@ struct GameSettingsWindow : Window {
 			value = (int32)ClampToI32(llvalue);
 
 			/* Save the correct velocity-translated value */
-			if (sd->flags & SF_GUI_VELOCITY) value = ConvertDisplaySpeedToKmhishSpeed(value);
+			if (sd->flags & SF_GUI_VELOCITY) value = ConvertDisplaySpeedToKmhishSpeed(value, VEH_TRAIN);
 		} else {
 			value = sd->def;
 		}

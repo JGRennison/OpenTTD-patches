@@ -1945,7 +1945,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 
 			case 0x0A: { // Copy sprite layout
 				byte srcid = buf->ReadByte();
-				const StationSpec *srcstatspec = _cur.grffile->stations[srcid];
+				const StationSpec *srcstatspec = srcid >= NUM_STATIONS_PER_GRF ? nullptr : _cur.grffile->stations[srcid];
 
 				if (srcstatspec == nullptr) {
 					grfmsg(1, "StationChangeInfo: Station %u is not defined, cannot copy sprite layout to %u.", srcid, stid + i);
@@ -1999,7 +1999,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 
 			case 0x0F: { // Copy custom layout
 				byte srcid = buf->ReadByte();
-				const StationSpec *srcstatspec = _cur.grffile->stations[srcid];
+				const StationSpec *srcstatspec = srcid >= NUM_STATIONS_PER_GRF ? nullptr : _cur.grffile->stations[srcid];
 
 				if (srcstatspec == nullptr) {
 					grfmsg(1, "StationChangeInfo: Station %u is not defined, cannot copy tile layout to %u.", srcid, stid + i);
@@ -6485,6 +6485,11 @@ static void CanalMapSpriteGroup(ByteReader *buf, uint8 idcount)
 
 static void StationMapSpriteGroup(ByteReader *buf, uint8 idcount)
 {
+	if (_cur.grffile->stations == nullptr) {
+		grfmsg(1, "StationMapSpriteGroup: No stations defined, skipping");
+		return;
+	}
+
 	uint8 *stations = AllocaM(uint8, idcount);
 	for (uint i = 0; i < idcount; i++) {
 		stations[i] = buf->ReadByte();
@@ -6500,7 +6505,7 @@ static void StationMapSpriteGroup(ByteReader *buf, uint8 idcount)
 		if (ctype == CT_INVALID) continue;
 
 		for (uint i = 0; i < idcount; i++) {
-			StationSpec *statspec = _cur.grffile->stations == nullptr ? nullptr : _cur.grffile->stations[stations[i]];
+			StationSpec *statspec = stations[i] >= NUM_STATIONS_PER_GRF ? nullptr : _cur.grffile->stations[stations[i]];
 
 			if (statspec == nullptr) {
 				grfmsg(1, "StationMapSpriteGroup: Station with ID 0x%02X does not exist, skipping", stations[i]);
@@ -6515,7 +6520,7 @@ static void StationMapSpriteGroup(ByteReader *buf, uint8 idcount)
 	if (!IsValidGroupID(groupid, "StationMapSpriteGroup")) return;
 
 	for (uint i = 0; i < idcount; i++) {
-		StationSpec *statspec = _cur.grffile->stations == nullptr ? nullptr : _cur.grffile->stations[stations[i]];
+		StationSpec *statspec = stations[i] >= NUM_STATIONS_PER_GRF ? nullptr : _cur.grffile->stations[stations[i]];
 
 		if (statspec == nullptr) {
 			grfmsg(1, "StationMapSpriteGroup: Station with ID 0x%02X does not exist, skipping", stations[i]);
@@ -6537,6 +6542,11 @@ static void StationMapSpriteGroup(ByteReader *buf, uint8 idcount)
 
 static void TownHouseMapSpriteGroup(ByteReader *buf, uint8 idcount)
 {
+	if (_cur.grffile->housespec == nullptr) {
+		grfmsg(1, "TownHouseMapSpriteGroup: No houses defined, skipping");
+		return;
+	}
+
 	uint8 *houses = AllocaM(uint8, idcount);
 	for (uint i = 0; i < idcount; i++) {
 		houses[i] = buf->ReadByte();
@@ -6548,11 +6558,6 @@ static void TownHouseMapSpriteGroup(ByteReader *buf, uint8 idcount)
 
 	uint16 groupid = buf->ReadWord();
 	if (!IsValidGroupID(groupid, "TownHouseMapSpriteGroup")) return;
-
-	if (_cur.grffile->housespec == nullptr) {
-		grfmsg(1, "TownHouseMapSpriteGroup: No houses defined, skipping");
-		return;
-	}
 
 	for (uint i = 0; i < idcount; i++) {
 		HouseSpec *hs = _cur.grffile->housespec[houses[i]];
@@ -6568,6 +6573,11 @@ static void TownHouseMapSpriteGroup(ByteReader *buf, uint8 idcount)
 
 static void IndustryMapSpriteGroup(ByteReader *buf, uint8 idcount)
 {
+	if (_cur.grffile->industryspec == nullptr) {
+		grfmsg(1, "IndustryMapSpriteGroup: No industries defined, skipping");
+		return;
+	}
+
 	uint8 *industries = AllocaM(uint8, idcount);
 	for (uint i = 0; i < idcount; i++) {
 		industries[i] = buf->ReadByte();
@@ -6580,13 +6590,8 @@ static void IndustryMapSpriteGroup(ByteReader *buf, uint8 idcount)
 	uint16 groupid = buf->ReadWord();
 	if (!IsValidGroupID(groupid, "IndustryMapSpriteGroup")) return;
 
-	if (_cur.grffile->industryspec == nullptr) {
-		grfmsg(1, "IndustryMapSpriteGroup: No industries defined, skipping");
-		return;
-	}
-
 	for (uint i = 0; i < idcount; i++) {
-		IndustrySpec *indsp = _cur.grffile->industryspec[industries[i]];
+		IndustrySpec *indsp = industries[i] >= NUM_INDUSTRYTYPES_PER_GRF ? nullptr : _cur.grffile->industryspec[industries[i]];
 
 		if (indsp == nullptr) {
 			grfmsg(1, "IndustryMapSpriteGroup: Industry %d undefined, skipping", industries[i]);
@@ -6599,6 +6604,11 @@ static void IndustryMapSpriteGroup(ByteReader *buf, uint8 idcount)
 
 static void IndustrytileMapSpriteGroup(ByteReader *buf, uint8 idcount)
 {
+	if (_cur.grffile->indtspec == nullptr) {
+		grfmsg(1, "IndustrytileMapSpriteGroup: No industry tiles defined, skipping");
+		return;
+	}
+
 	uint8 *indtiles = AllocaM(uint8, idcount);
 	for (uint i = 0; i < idcount; i++) {
 		indtiles[i] = buf->ReadByte();
@@ -6611,13 +6621,8 @@ static void IndustrytileMapSpriteGroup(ByteReader *buf, uint8 idcount)
 	uint16 groupid = buf->ReadWord();
 	if (!IsValidGroupID(groupid, "IndustrytileMapSpriteGroup")) return;
 
-	if (_cur.grffile->indtspec == nullptr) {
-		grfmsg(1, "IndustrytileMapSpriteGroup: No industry tiles defined, skipping");
-		return;
-	}
-
 	for (uint i = 0; i < idcount; i++) {
-		IndustryTileSpec *indtsp = _cur.grffile->indtspec[indtiles[i]];
+		IndustryTileSpec *indtsp = indtiles[i] >= NUM_INDUSTRYTILES_PER_GRF ? nullptr : _cur.grffile->indtspec[indtiles[i]];
 
 		if (indtsp == nullptr) {
 			grfmsg(1, "IndustrytileMapSpriteGroup: Industry tile %d undefined, skipping", indtiles[i]);
@@ -6810,6 +6815,11 @@ static void RoadTypeMapSpriteGroup(ByteReader *buf, uint8 idcount, RoadTramType 
 
 static void AirportMapSpriteGroup(ByteReader *buf, uint8 idcount)
 {
+	if (_cur.grffile->airportspec == nullptr) {
+		grfmsg(1, "AirportMapSpriteGroup: No airports defined, skipping");
+		return;
+	}
+
 	uint8 *airports = AllocaM(uint8, idcount);
 	for (uint i = 0; i < idcount; i++) {
 		airports[i] = buf->ReadByte();
@@ -6822,13 +6832,8 @@ static void AirportMapSpriteGroup(ByteReader *buf, uint8 idcount)
 	uint16 groupid = buf->ReadWord();
 	if (!IsValidGroupID(groupid, "AirportMapSpriteGroup")) return;
 
-	if (_cur.grffile->airportspec == nullptr) {
-		grfmsg(1, "AirportMapSpriteGroup: No airports defined, skipping");
-		return;
-	}
-
 	for (uint i = 0; i < idcount; i++) {
-		AirportSpec *as = _cur.grffile->airportspec[airports[i]];
+		AirportSpec *as = airports[i] >= NUM_AIRPORTS_PER_GRF ? nullptr : _cur.grffile->airportspec[airports[i]];
 
 		if (as == nullptr) {
 			grfmsg(1, "AirportMapSpriteGroup: Airport %d undefined, skipping", airports[i]);
@@ -6841,6 +6846,11 @@ static void AirportMapSpriteGroup(ByteReader *buf, uint8 idcount)
 
 static void AirportTileMapSpriteGroup(ByteReader *buf, uint8 idcount)
 {
+	if (_cur.grffile->airtspec == nullptr) {
+		grfmsg(1, "AirportTileMapSpriteGroup: No airport tiles defined, skipping");
+		return;
+	}
+
 	uint8 *airptiles = AllocaM(uint8, idcount);
 	for (uint i = 0; i < idcount; i++) {
 		airptiles[i] = buf->ReadByte();
@@ -6853,13 +6863,8 @@ static void AirportTileMapSpriteGroup(ByteReader *buf, uint8 idcount)
 	uint16 groupid = buf->ReadWord();
 	if (!IsValidGroupID(groupid, "AirportTileMapSpriteGroup")) return;
 
-	if (_cur.grffile->airtspec == nullptr) {
-		grfmsg(1, "AirportTileMapSpriteGroup: No airport tiles defined, skipping");
-		return;
-	}
-
 	for (uint i = 0; i < idcount; i++) {
-		AirportTileSpec *airtsp = _cur.grffile->airtspec[airptiles[i]];
+		AirportTileSpec *airtsp = airptiles[i] >= NUM_AIRPORTTILES_PER_GRF ? nullptr : _cur.grffile->airtspec[airptiles[i]];
 
 		if (airtsp == nullptr) {
 			grfmsg(1, "AirportTileMapSpriteGroup: Airport tile %d undefined, skipping", airptiles[i]);
@@ -7151,7 +7156,7 @@ static void FeatureNewName(ByteReader *buf)
 
 				switch (GB(id, 8, 8)) {
 					case 0xC4: // Station class name
-						if (_cur.grffile->stations == nullptr || _cur.grffile->stations[GB(id, 0, 8)] == nullptr) {
+						if (GB(id, 0, 8) >= NUM_STATIONS_PER_GRF || _cur.grffile->stations == nullptr || _cur.grffile->stations[GB(id, 0, 8)] == nullptr) {
 							grfmsg(1, "FeatureNewName: Attempt to name undefined station 0x%X, ignoring", GB(id, 0, 8));
 						} else {
 							StationClassID cls_id = _cur.grffile->stations[GB(id, 0, 8)]->cls_id;
@@ -7160,7 +7165,7 @@ static void FeatureNewName(ByteReader *buf)
 						break;
 
 					case 0xC5: // Station name
-						if (_cur.grffile->stations == nullptr || _cur.grffile->stations[GB(id, 0, 8)] == nullptr) {
+						if (GB(id, 0, 8) >= NUM_STATIONS_PER_GRF || _cur.grffile->stations == nullptr || _cur.grffile->stations[GB(id, 0, 8)] == nullptr) {
 							grfmsg(1, "FeatureNewName: Attempt to name undefined station 0x%X, ignoring", GB(id, 0, 8));
 						} else {
 							_cur.grffile->stations[GB(id, 0, 8)]->name = AddGRFString(_cur.grffile->grfid, id, lang, new_scheme, false, name, STR_UNDEFINED);
@@ -7168,7 +7173,7 @@ static void FeatureNewName(ByteReader *buf)
 						break;
 
 					case 0xC7: // Airporttile name
-						if (_cur.grffile->airtspec == nullptr || _cur.grffile->airtspec[GB(id, 0, 8)] == nullptr) {
+						if (GB(id, 0, 8) >= NUM_AIRPORTTILES_PER_GRF || _cur.grffile->airtspec == nullptr || _cur.grffile->airtspec[GB(id, 0, 8)] == nullptr) {
 							grfmsg(1, "FeatureNewName: Attempt to name undefined airport tile 0x%X, ignoring", GB(id, 0, 8));
 						} else {
 							_cur.grffile->airtspec[GB(id, 0, 8)]->name = AddGRFString(_cur.grffile->grfid, id, lang, new_scheme, false, name, STR_UNDEFINED);
@@ -7176,7 +7181,7 @@ static void FeatureNewName(ByteReader *buf)
 						break;
 
 					case 0xC9: // House name
-						if (_cur.grffile->housespec == nullptr || _cur.grffile->housespec[GB(id, 0, 8)] == nullptr) {
+						if (GB(id, 0, 8) >= NUM_HOUSES_PER_GRF || _cur.grffile->housespec == nullptr || _cur.grffile->housespec[GB(id, 0, 8)] == nullptr) {
 							grfmsg(1, "FeatureNewName: Attempt to name undefined house 0x%X, ignoring.", GB(id, 0, 8));
 						} else {
 							_cur.grffile->housespec[GB(id, 0, 8)]->building_name = AddGRFString(_cur.grffile->grfid, id, lang, new_scheme, false, name, STR_UNDEFINED);

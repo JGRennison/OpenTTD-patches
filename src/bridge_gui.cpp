@@ -115,9 +115,14 @@ private:
 		return a.spec->speed < b.spec->speed;
 	}
 
+	inline TransportType GetTransportType() const
+	{
+		return (TransportType)(this->type >> 15);
+	}
+
 	void BuildBridge(uint8 i)
 	{
-		switch ((TransportType)(this->type >> 15)) {
+		switch (this->GetTransportType()) {
 			case TRANSPORT_RAIL: _last_railbridge_type = this->bridges->at(i).index; break;
 			case TRANSPORT_ROAD: _last_roadbridge_type = this->bridges->at(i).index; break;
 			default: break;
@@ -147,7 +152,7 @@ private:
 	StringID GetBridgeSelectString(const BuildBridgeData &bridge_data) const
 	{
 		SetDParam(0, bridge_data.spec->material);
-		SetDParam(1, bridge_data.spec->speed);
+		SetDParam(1, PackVelocity(bridge_data.spec->speed, static_cast<VehicleType>(this->GetTransportType())));
 		SetDParam(2, bridge_data.cost);
 		/* If the bridge has no meaningful speed limit, don't display it. */
 		if (bridge_data.spec->speed == UINT16_MAX) {

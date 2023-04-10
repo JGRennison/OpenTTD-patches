@@ -769,8 +769,8 @@ static const StringID _order_conditional_condition_dispatch_slot_last[] = {
 	INVALID_STRING_ID,
 };
 
-extern uint ConvertSpeedToDisplaySpeed(uint speed);
-extern uint ConvertDisplaySpeedToSpeed(uint speed);
+extern uint ConvertSpeedToDisplaySpeed(uint speed, VehicleType type);
+extern uint ConvertDisplaySpeedToSpeed(uint speed, VehicleType type);
 
 static const StringID _order_depot_action_dropdown[] = {
 	STR_ORDER_DROP_GO_ALWAYS_DEPOT,
@@ -1109,7 +1109,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 						SetDParam(3, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + occ);
 						break;
 					case OCV_MAX_SPEED:
-						value = ConvertSpeedToDisplaySpeed(value);
+						value = ConvertSpeedToDisplaySpeed(value, v->type);
 						/* FALL THROUGH */
 					default:
 						SetDParam(3, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + occ);
@@ -2455,7 +2455,7 @@ public:
 							value = order->GetConditionValue();
 							break;
 					}
-					if (order->GetConditionVariable() == OCV_MAX_SPEED) value = ConvertSpeedToDisplaySpeed(value);
+					if (order->GetConditionVariable() == OCV_MAX_SPEED) value = ConvertSpeedToDisplaySpeed(value, this->vehicle->type);
 					if (order->GetConditionVariable() == OCV_CARGO_WAITING_AMOUNT) value = ConvertCargoQuantityToDisplayQuantity(order->GetConditionValue(), value);
 					SetDParam(0, value);
 				}
@@ -2943,7 +2943,7 @@ public:
 						value = order->GetConditionValue();
 						break;
 				}
-				if (order->GetConditionVariable() == OCV_MAX_SPEED) value = ConvertSpeedToDisplaySpeed(value);
+				if (order->GetConditionVariable() == OCV_MAX_SPEED) value = ConvertSpeedToDisplaySpeed(value, this->vehicle->type);
 				if (order->GetConditionVariable() == OCV_CARGO_WAITING_AMOUNT) value = ConvertCargoQuantityToDisplayQuantity(order->GetConditionValue(), value);
 				this->query_text_widget = widget;
 				SetDParam(0, value);
@@ -3025,7 +3025,7 @@ public:
 
 			switch (this->vehicle->GetOrder(sel)->GetConditionVariable()) {
 				case OCV_MAX_SPEED:
-					value = Clamp(ConvertDisplaySpeedToSpeed(value), 0, 2047);
+					value = Clamp(ConvertDisplaySpeedToSpeed(value, this->vehicle->type), 0, 2047);
 					break;
 
 				case OCV_PERCENT:

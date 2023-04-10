@@ -356,6 +356,8 @@ enum SaveLoadVersion : uint16 {
 	SLV_NEWGRF_ROAD_STOPS,                  ///< 303  PR#10144 NewGRF road stops.
 	SLV_LINKGRAPH_EDGES,                    ///< 304  PR#10314 Explicitly store link graph edges destination.
 
+	SLV_VELOCITY_NAUTICAL,                  ///< 305  PR#10594 Separation of land and nautical velocity (knots!)
+
 	SL_MAX_VERSION,                         ///< Highest possible saveload version
 
 	SL_SPRING_2013_v2_0_102 = 220,

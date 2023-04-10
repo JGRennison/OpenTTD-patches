@@ -720,7 +720,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 							string = order->GetMaxSpeed() != UINT16_MAX ?
 									STR_TIMETABLE_TRAVEL_FOR_SPEED : STR_TIMETABLE_TRAVEL_FOR;
 						}
-						SetDParam(string == STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED ? 2 : 4, order->GetMaxSpeed());
+						SetDParam(string == STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED ? 2 : 4, PackVelocity(order->GetMaxSpeed(), v->type));
 
 						int edge = DrawString(rtl ? tr.left : middle, rtl ? middle : tr.right, tr.top, string, colour);
 
@@ -966,7 +966,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 				const Order *order = v->GetOrder(real);
 				if (order != nullptr) {
 					if (order->GetMaxSpeed() != UINT16_MAX) {
-						SetDParam(0, ConvertKmhishSpeedToDisplaySpeed(order->GetMaxSpeed()));
+						SetDParam(0, ConvertKmhishSpeedToDisplaySpeed(order->GetMaxSpeed(), v->type));
 						current = STR_JUST_INT;
 					}
 				}
@@ -1113,7 +1113,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 				uint64 val = StrEmpty(str) ? 0 : strtoul(str, nullptr, 10);
 				uint32 p2;
 				if (this->query_is_speed_query) {
-					val = ConvertDisplaySpeedToKmhishSpeed(val);
+					val = ConvertDisplaySpeedToKmhishSpeed(val, v->type);
 					p2 = std::min<uint>(val, UINT16_MAX);
 				} else {
 					if (!_settings_client.gui.timetable_in_ticks) val *= DATE_UNIT_SIZE;
