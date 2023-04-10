@@ -721,8 +721,11 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 	/* Find the maximum width of the status field */
 	int status_width = cached_status_width;
 
+	const StringID size_prefix = _settings_client.gui.departure_larger_font ? STR_JUST_STRING2 : STR_DEPARTURES_TINY;
+
 	/* Find the width of the "Calling at:" field. */
-	int calling_at_width = (GetStringBoundingBox(_settings_client.gui.departure_larger_font ? STR_DEPARTURES_CALLING_AT_LARGE : STR_DEPARTURES_CALLING_AT)).width;
+	SetDParam(0, STR_DEPARTURES_CALLING_AT);
+	int calling_at_width = (GetStringBoundingBox(size_prefix)).width;
 
 	/* Find the maximum company name width. */
 	int toc_width = _settings_client.gui.departure_show_company ? this->toc_width : 0;
@@ -951,8 +954,9 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 		int bottom_y = y + this->entry_height - small_font_size - (_settings_client.gui.departure_larger_font ? 1 : 3);
 
 		/* Calling at */
-		ltr ? DrawString(                    text_left,  text_left + calling_at_width, bottom_y, _settings_client.gui.departure_larger_font ? STR_DEPARTURES_CALLING_AT_LARGE : STR_DEPARTURES_CALLING_AT)
-			: DrawString(text_right - calling_at_width,                    text_right, bottom_y, _settings_client.gui.departure_larger_font ? STR_DEPARTURES_CALLING_AT_LARGE : STR_DEPARTURES_CALLING_AT);
+		SetDParam(0, STR_DEPARTURES_CALLING_AT);
+		ltr ? DrawString(                    text_left,  text_left + calling_at_width, bottom_y, size_prefix)
+			: DrawString(text_right - calling_at_width,                    text_right, bottom_y, size_prefix);
 
 		/* List of stations */
 		/* RTL languages can be handled in the language file, e.g. by having the following: */
@@ -961,13 +965,13 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 		char buffer[512], scratch[512];
 
 		if (d->calling_at.size() != 0) {
-			SetDParam(0, (uint64)(d->calling_at[0]).station);
+			SetDParam(0, (d->calling_at[0]).station);
 			GetString(scratch, STR_DEPARTURES_CALLING_AT_FIRST_STATION, lastof(scratch));
 
-			StationID continuesTo = INVALID_STATION;
+			StationID continues_to = INVALID_STATION;
 
 			if (d->calling_at[0].station == d->terminus.station && d->calling_at.size() > 1) {
-				continuesTo = d->calling_at[d->calling_at.size() - 1].station;
+				continues_to = d->calling_at[d->calling_at.size() - 1].station;
 			} else if (d->calling_at.size() > 1) {
 				/* There's more than one stop. */
 
@@ -976,35 +980,32 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 				for (i = 1; i < d->calling_at.size() - 1; ++i) {
 					StationID s = d->calling_at[i].station;
 					if (s == d->terminus.station) {
-						continuesTo = d->calling_at[d->calling_at.size() - 1].station;
+						continues_to = d->calling_at[d->calling_at.size() - 1].station;
 						break;
 					}
-					SetDParam(0, (uint64)scratch);
-					SetDParam(1, (uint64)s);
+					SetDParamStr(0, scratch);
+					SetDParam(1, s);
 					GetString(buffer, STR_DEPARTURES_CALLING_AT_STATION, lastof(buffer));
 					strncpy(scratch, buffer, sizeof(scratch));
 				}
 
 				/* Finally, finish off with " and <station>". */
-				SetDParam(0, (uint64)scratch);
-				SetDParam(1, (uint64)d->calling_at[i].station);
+				SetDParamStr(0, scratch);
+				SetDParam(1, d->calling_at[i].station);
 				GetString(buffer, STR_DEPARTURES_CALLING_AT_LAST_STATION, lastof(buffer));
 				strncpy(scratch, buffer, sizeof(scratch));
 			}
 
-			SetDParam(0, (uint64)scratch);
-			StringID string;
-			if (continuesTo == INVALID_STATION) {
-				string = _settings_client.gui.departure_larger_font ? STR_DEPARTURES_CALLING_AT_LIST_LARGE : STR_DEPARTURES_CALLING_AT_LIST;
+			SetDParamStr(1, scratch);
+			if (continues_to == INVALID_STATION) {
+				SetDParam(0, STR_DEPARTURES_CALLING_AT_LIST);
 			} else {
-				SetDParam(1, continuesTo);
-				string = _settings_client.gui.departure_larger_font ? STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS_LARGE : STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS;
+				SetDParam(0, STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS);
+				SetDParam(2, continues_to);
 			}
-			GetString(buffer, string, lastof(buffer));
+			GetString(buffer, size_prefix, lastof(buffer));
 		} else {
 			buffer[0] = 0;
-			//SetDParam(0, d->terminus);
-			//GetString(scratch, STR_DEPARTURES_CALLING_AT_FIRST_STATION, lastof(scratch));
 		}
 
 		int list_width = (GetStringBoundingBox(buffer, _settings_client.gui.departure_larger_font ? FS_NORMAL : FS_SMALL)).width;

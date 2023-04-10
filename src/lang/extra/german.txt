@@ -1164,15 +1164,12 @@ STR_DEPARTURES_VIA                                              :{ORANGE}über {
 STR_DEPARTURES_TOC                                              :{ORANGE}{COMPANY}
 STR_DEPARTURES_GROUP                                            :{ORANGE}{GROUP}
 STR_DEPARTURES_VEH                                              :{ORANGE}{VEHICLE}
-STR_DEPARTURES_CALLING_AT                                       :{TINY_FONT}{ORANGE}Hält in:
-STR_DEPARTURES_CALLING_AT_LARGE                                 :{ORANGE}Hält in:
+STR_DEPARTURES_CALLING_AT                                       :{ORANGE}Hält in:
 STR_DEPARTURES_CALLING_AT_FIRST_STATION                         :{STATION}
 STR_DEPARTURES_CALLING_AT_STATION                               :{STRING}, {STATION}
 STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{STRING} und {STATION}
-STR_DEPARTURES_CALLING_AT_LIST                                  :{TINY_FONT}{ORANGE}{STRING}.
-STR_DEPARTURES_CALLING_AT_LIST_LARGE                            :{ORANGE}{STRING}.
-STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{TINY_FONT}{ORANGE}{STRING}. Diese Fahrt verkehrt über {STATION}.
-STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS_LARGE             :{ORANGE}{STRING}. Diese Fahrt verkehrt über {STATION}.
+STR_DEPARTURES_CALLING_AT_LIST                                  :{ORANGE}{STRING}.
+STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{STRING}. Diese Fahrt verkehrt über {STATION}.
 
 STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
 STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}

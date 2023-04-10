@@ -1288,15 +1288,13 @@ STR_DEPARTURES_VIA                                              :{ORANGE}via {ST
 STR_DEPARTURES_TOC                                              :{ORANGE}{COMPANY}
 STR_DEPARTURES_GROUP                                            :{ORANGE}{GROUP}
 STR_DEPARTURES_VEH                                              :{ORANGE}{VEHICLE}
-STR_DEPARTURES_CALLING_AT                                       :{TINY_FONT}{ORANGE}Calling at:
-STR_DEPARTURES_CALLING_AT_LARGE                                 :{ORANGE}Calling at:
+STR_DEPARTURES_CALLING_AT                                       :{ORANGE}Calling at:
 STR_DEPARTURES_CALLING_AT_FIRST_STATION                         :{STATION}
 STR_DEPARTURES_CALLING_AT_STATION                               :{RAW_STRING}, {STATION}
 STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{RAW_STRING} and {STATION}
-STR_DEPARTURES_CALLING_AT_LIST                                  :{TINY_FONT}{ORANGE}{RAW_STRING}.
-STR_DEPARTURES_CALLING_AT_LIST_LARGE                            :{ORANGE}{RAW_STRING}.
-STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{TINY_FONT}{ORANGE}{RAW_STRING}. This service continues to {STATION}.
-STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS_LARGE             :{ORANGE}{RAW_STRING}. This service continues to {STATION}.
+STR_DEPARTURES_CALLING_AT_LIST                                  :{ORANGE}{RAW_STRING}.
+STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{RAW_STRING}. This service continues to {STATION}.
+STR_DEPARTURES_TINY                                             :{TINY_FONT}{STRING2}
 
 STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
 STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}
