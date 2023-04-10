@@ -230,6 +230,7 @@ add_files(
     infrastructure_func.h
     intro_gui.cpp
     landscape.cpp
+    landscape_ppz.cpp
     landscape.h
     landscape_type.h
     language.h
