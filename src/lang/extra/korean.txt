@@ -154,6 +154,9 @@ STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED_HELPTEXT    :현실적 감�
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT                     :차례로 나눠 실을 때 열차 속력: {STRING}
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_HELPTEXT            :역에서 열차가 화물을 차례로 나눠 실으며 움직일 때 열차의 최대 허용 속력입니다.
 
+STR_CONFIG_SETTING_RAIL_DEPOT_SPEED_LIMIT                       :차량 기지 최대 속력: {STRING}
+STR_CONFIG_SETTING_RAIL_DEPOT_SPEED_LIMIT_HELPTEXT              :열차가 차량기지에 들어가거나 나올 때 열차의 최대 속력입니다.
+
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING                :단방향 경로 신호기 뒤까지 경로 탐색: {STRING}
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING_HELPTEXT       :이 설정을 켜면, YAPF 열차 경로 탐색 알고리즘이 단방향 경로 신호기 뒤까지 경로를 탐색할 수 있습니다.
 
@@ -437,6 +440,7 @@ STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE_HELPTEXT           :자동 배차 �
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS            :자동 시간표 설정으로 설정한 시간표의 시간을 다음 값의 배수로 어림: {STRING}
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_HELPTEXT   :자동 시간표로 설정한 시간표의 시간은 어림되지 않습니다. 1일은 74틱입니다.
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_VALUE      :{COMMA}틱
+
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_DEFAULT    :기본
 
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE                            :도로/전차 형식 기본값 설정 (게임 시작/불러온 후): {STRING}
@@ -558,7 +562,7 @@ STR_CONFIG_SETTING_CITY_ZONE_4_MULT                             :대도시의 4�
 STR_CONFIG_SETTING_CITY_ZONE_4_MULT_HELPTEXT                    :대도시의 4구역(가로등이 있는 최내곽 도로 구역)에 적용할 계수값입니다. 이 값은 조금만 바꾸는 게 좋습니다.
 
 STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED                :도시의 화물 수송량이 도시 성장 속도에 미치는 영향: {STRING}
-STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED_HELPTEXT       :지난 달의 도시 화물 수송량이 도시 성장 속도에 미치는 영향에 대한 백분율입니다.
+STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED_HELPTEXT       :지난 달의 도시 화물 수송량이 도시 성장 속도에 미치는 영향에 대한 백분율입니다.{}이 계산된 도시 성장 속도의 비율에다가 지난 달에 운송된 승객과 우편의 비율을 곱합니다. 이 설정은 도시의 성장 속도를 감소시킬 뿐, 증가시키지는 않습니다.
 
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION                   :지역 당국이 임의로 도로 보수공사를 시행할 확률: {STRING}
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION_HELPTEXT          :지역 당국이 임의로 도로 보수공사를 시행할 확률입니다. (0 = 하지 않음, 1000 = 최대)
@@ -663,6 +667,9 @@ STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE_HELPTEXT              :기존에 존�
 
 STR_CONFIG_SETTING_COPY_CLONE_ADD_TO_GROUP                      :복사한 차량을 기존 그룹에 추가: {STRING}
 STR_CONFIG_SETTING_COPY_CLONE_ADD_TO_GROUP_HELPTEXT             :경로를 공유하지 않은 채로 복사한 차량을 기존 차량의 그룹에 추가할지 설정합니다.
+
+STR_CONFIG_SETTING_REMAIN_IF_NEXT_ORDER_SAME_STATION            :다음 경로가 현재 역과 같으면 출발하지 않고 역에 대기: {STRING}
+STR_CONFIG_SETTING_REMAIN_IF_NEXT_ORDER_SAME_STATION_HELPTEXT   :만약 차량의 다음 경로가 지금 출발하려고 하는 역과 같은 역이라면, 역을 떠나지 않고 적재/하차를 다시 시작합니다.
 
 STR_CONFIG_SETTING_SCENARIO_MULTIPLE_BUILDINGS                  :여러 개의 교회/경기장 허용: {STRING}
 STR_CONFIG_SETTING_SCENARIO_MULTIPLE_BUILDINGS_HELPTEXT         :도시에 이미 교회나 경기장 건물이 있어도 수동으로 이를 추가하는 것을 허용합니다.
@@ -1509,6 +1516,13 @@ STR_ORDER_RELEASE_SLOT_TOOLTIP                                  :{BLACK}해제�
 
 STR_ORDER_CHANGE_COUNTER_TOOLTIP                                :{BLACK}변경할 카운터 값을 입력하세요
 
+STR_ORDER_LABEL_TEXT                                            :이름표: {STRING}
+STR_ORDER_LABEL_TEXT_CAPTION                                    :{WHITE}이름표
+STR_ORDER_LABEL_TEXT_BUTTON                                     :이름표
+STR_ORDER_LABEL_TEXT_BUTTON_TOOLTIP                             :{BLACK}이름표 내용 변경
+STR_ORDER_LABEL_DEPARTURES_VIA_BUTTON                           :발착전광판 경유
+STR_ORDER_LABEL_DEPARTURES_VIA                                  :발착전광판: 경유로 표시: {STRING}
+
 STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}{STRING}%
 STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}평균 경로 사용률입니다.{}경로 사용률의 전체 평균을 보여줍니다.
 STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}경로 사용률 - 역의 최근 경로 사용률을 보여줍니다. 이는 모든 경로가 공유된 차량에 공유됩니다.
@@ -1744,6 +1758,8 @@ STR_JUST_TIME_HHMM                                              :{TIME_HHMM}
 STR_JUST_STRING1                                                :{STRING}
 STR_JUST_STRING2                                                :{STRING}
 
+STR_JUST_VELOCITY                                               :{VELOCITY}
+
 STR_BLACK_DECIMAL                                               :{BLACK}{DECIMAL}
 STR_WHITE_DATE_WALLCLOCK_LONG                                   :{WHITE}{DATE_WALLCLOCK_LONG}
 STR_WHITE_DATE_WALLCLOCK_SHORT                                  :{WHITE}{DATE_WALLCLOCK_SHORT}
@@ -1849,7 +1865,9 @@ STR_TMPL_REFIT                                                  :{BLACK}개조
 STR_TMPL_GROUP_INFO                                             :{BLACK}그룹 정보: {ORANGE}
 STR_TMPL_TEMPLATE_INFO                                          :{BLACK}템플릿 정보: {ORANGE}
 STR_TMPL_RPL_START                                              :{BLACK}교체 시작
+STR_TMPL_RPL_START_TOOLTIP                                      :{BLACK}선택한 그룹에 속한 차량을 선택한 템플릿으로 교체하려면 이 버튼을 누르세요
 STR_TMPL_RPL_STOP                                               :{BLACK}교체 중지
+STR_TMPL_RPL_STOP_TOOLTIP                                       :{BLACK}선택한 그룹에 있는 차량의 교체를 중단하려면 이 버튼을 누르세요
 STR_TMPL_TEMPLATE_OVR_VALUE                                     :{BLACK}구입 가격: {GOLD}{CURRENCY_LONG}
 STR_TMPL_TEMPLATE_OVR_VALUE_LTBLUE                              :{BLACK}구입 가격: {LTBLUE}{CURRENCY_LONG}
 STR_TMPL_TEMPLATE_OVR_RUNNING_COST                              :{BLACK}예상 운영 비용: {LTBLUE}{CURRENCY_LONG}
@@ -1979,3 +1997,9 @@ STR_MODIFIER_TOGGLE_SHIFT_TOOLTIP                               :{BLACK}SHIFT �
 STR_MODIFIER_TOGGLE_CTRL_TOOLTIP                                :{BLACK}CTRL 키의 상태를 바꾸려면 클릭하세요
 
 STR_ERROR_TUNNEL_DISALLOWED_ROAD                                :{WHITE}이 도로에는 터널을 만들 수 없습니다
+
+STR_REFIT_SHIP_PART_DROPDOWN_TOOLTIP                            :{BLACK}이 선박의 어느 부분을 개조할지 선택하세요
+STR_REFIT_WHOLE_SHIP                                            :선박 전체
+STR_REFIT_SHIP_PART                                             :{NUM}번 부품
+
+STR_VERY_REDUCED                                                :매우 드묾
