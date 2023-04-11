@@ -306,6 +306,7 @@ static const StringID _train_status_value_str[] = {
 	STR_TRACE_RESTRICT_TRAIN_STATUS_WAITING,
 	STR_TRACE_RESTRICT_TRAIN_STATUS_LOST,
 	STR_TRACE_RESTRICT_TRAIN_STATUS_REQUIRES_SERVICE,
+	STR_TRACE_RESTRICT_TRAIN_STATUS_STOPPING_AT_STATION_WAYPOINT,
 	INVALID_STRING_ID
 };
 static const uint _train_status_value_val[] = {
@@ -320,6 +321,7 @@ static const uint _train_status_value_val[] = {
 	TRTSVF_WAITING,
 	TRTSVF_LOST,
 	TRTSVF_REQUIRES_SERVICE,
+	TRTSVF_STOPPING_AT_STATION_WAYPOINT,
 };
 
 /** value drop down list for train status type strings and values */

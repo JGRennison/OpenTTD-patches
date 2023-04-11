@@ -334,6 +334,7 @@ enum TraceRestrictTrainStatusValueField {
 	TRTSVF_WAITING                     =  8,      ///< Train is waiting
 	TRTSVF_LOST                        =  9,      ///< Train is lost
 	TRTSVF_REQUIRES_SERVICE            = 10,      ///< Train requires service
+	TRTSVF_STOPPING_AT_STATION_WAYPOINT= 11,      ///< Train stops at destination station/waypoint
 };
 
 /**

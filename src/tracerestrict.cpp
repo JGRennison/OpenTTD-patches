@@ -511,6 +511,20 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 							case TRTSVF_REQUIRES_SERVICE:
 								has_status = v->NeedsServicing();
 								break;
+
+							case TRTSVF_STOPPING_AT_STATION_WAYPOINT:
+								switch (v->current_order.GetType()) {
+									case OT_GOTO_STATION:
+									case OT_GOTO_WAYPOINT:
+									case OT_LOADING_ADVANCE:
+										has_status = v->current_order.ShouldStopAtStation(v, v->current_order.GetDestination(), v->current_order.IsType(OT_GOTO_WAYPOINT));
+										break;
+
+									default:
+										has_status = false;
+										break;
+								}
+								break;
 						}
 						result = TestBinaryConditionCommon(item, has_status);
 						break;
@@ -1185,6 +1199,7 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 						case TRTSVF_WAITING:
 						case TRTSVF_LOST:
 						case TRTSVF_REQUIRES_SERVICE:
+						case TRTSVF_STOPPING_AT_STATION_WAYPOINT:
 							break;
 
 						default:
@@ -1242,6 +1257,7 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 						case TRTSVF_HEADING_TO_DEPOT:
 						case TRTSVF_LOADING:
 						case TRTSVF_WAITING:
+						case TRTSVF_STOPPING_AT_STATION_WAYPOINT:
 							actions_used_flags |= TRPAUF_ORDER_CONDITIONALS;
 							break;
 
