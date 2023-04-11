@@ -843,7 +843,7 @@ void ShowCompanyStations(CompanyID company)
 static const NWidgetPart _nested_station_view_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_SV_RENAME), SetMinimalSize(12, 14), SetDataTip(SPR_RENAME, STR_STATION_VIEW_RENAME_TOOLTIP),
+		NWidget(WWT_IMGBTN, COLOUR_GREY, WID_SV_RENAME), SetMinimalSize(12, 14), SetDataTip(SPR_RENAME, 0x0),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_SV_CAPTION), SetDataTip(STR_STATION_VIEW_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_SV_LOCATION), SetMinimalSize(12, 14), SetDataTip(SPR_GOTO_LOCATION, STR_STATION_VIEW_CENTER_TOOLTIP),
 		NWidget(WWT_DEBUGBOX, COLOUR_GREY),
@@ -1369,6 +1369,8 @@ struct StationViewWindow : public Window {
 	CargoDataEntry cached_destinations; ///< Cache for the flows passing through this station.
 	CargoDataVector displayed_rows;     ///< Parent entry of currently displayed rows (including collapsed ones).
 
+	bool place_object_active = false;
+
 	StationViewWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc),
 		scroll_to_row(INT_MAX), grouping_index(0)
 	{
@@ -1577,6 +1579,14 @@ struct StationViewWindow : public Window {
 			Rect waiting_rect = nwi->GetCurrentRect().Shrink(WidgetDimensions::scaled.framerect);
 			this->DrawEntries(&cargo, waiting_rect, pos, maxrows, 0);
 			scroll_to_row = INT_MAX;
+		}
+	}
+
+	virtual void OnHover(Point pt, int widget) override
+	{
+		if (widget == WID_SV_RENAME) {
+			uint64 args[] = { STR_STATION_VIEW_RENAME_TOOLTIP, STR_BUTTON_DEFAULT };
+			GuiShowTooltips(this, STR_STATION_VIEW_RENAME_TOOLTIP_EXTRA, lengthof(args), args, TCC_HOVER);
 		}
 	}
 
@@ -2055,6 +2065,19 @@ struct StationViewWindow : public Window {
 			}
 
 			case WID_SV_RENAME:
+				if (_ctrl_pressed) {
+					this->ToggleWidgetLoweredState(widget);
+					this->SetWidgetDirty(widget);
+					if (this->IsWidgetLowered(widget)) {
+						this->place_object_active = true;
+						SetObjectToPlaceWnd(ANIMCURSOR_PICKSTATION, PAL_NONE, HT_RECT, this);
+					} else {
+						ResetObjectToPlace();
+					}
+					break;
+				}
+				ResetObjectToPlace();
+				this->HandleButtonClick(widget);
 				SetDParam(0, this->window_number);
 				ShowQueryString(STR_STATION_NAME, STR_STATION_VIEW_RENAME_STATION_CAPTION, MAX_LENGTH_STATION_NAME_CHARS,
 						this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
@@ -2121,6 +2144,27 @@ struct StationViewWindow : public Window {
 				}
 				break;
 			}
+		}
+	}
+
+	void OnPlaceObject(Point pt, TileIndex tile) override
+	{
+		DoCommandP(tile, this->window_number, 0, CMD_EXCHANGE_STATION_NAMES | CMD_MSG(STR_ERROR_CAN_T_EXCHANGE_STATION_NAMES));
+		ResetObjectToPlace();
+	}
+
+	void OnPlaceObjectAbort() override
+	{
+		this->place_object_active = false;
+		this->RaiseWidget(WID_SV_RENAME);
+		this->SetWidgetDirty(WID_SV_RENAME);
+	}
+
+	void OnTimeout() override
+	{
+		if (!this->place_object_active) {
+			this->RaiseWidget(WID_SV_RENAME);
+			this->SetWidgetDirty(WID_SV_RENAME);
 		}
 	}
 

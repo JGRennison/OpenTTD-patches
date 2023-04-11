@@ -4781,6 +4781,49 @@ CommandCost CmdRenameStation(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 }
 
 /**
+ * Exchange station names
+ * @param tile tile of other station to exchange name with
+ * @param flags operation to perform
+ * @param p1 station ID to exchange name with
+ * @param p2 unused
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdExchangeStationNames(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	Station *st = Station::GetIfValid(p1);
+	if (st == nullptr) return CMD_ERROR;
+
+	CommandCost ret = CheckOwnership(st->owner);
+	if (ret.Failed()) return ret;
+
+	if (st->industry != nullptr) return CommandCost(STR_ERROR_STATION_ATTACHED_TO_INDUSTRY);
+
+	if (!IsTileType(tile, MP_STATION)) return CommandCost(STR_ERROR_THERE_IS_NO_STATION);
+	Station *st2 = Station::GetByTile(tile);
+
+	ret = CheckOwnership(st2->owner);
+	if (ret.Failed()) return ret;
+
+	if (st2->industry != nullptr) return CommandCost(STR_ERROR_STATION_ATTACHED_TO_INDUSTRY);
+
+	if (st->town != st2->town) return CommandCost(STR_ERROR_STATIONS_NOT_IN_SAME_TOWN);
+
+	if (flags & DC_EXEC) {
+		st->cached_name.clear();
+		st2->cached_name.clear();
+		std::swap(st->name, st2->name);
+		std::swap(st->string_id, st2->string_id);
+		std::swap(st->extra_name_index, st2->extra_name_index);
+		st->UpdateVirtCoord();
+		st2->UpdateVirtCoord();
+		InvalidateWindowData(WC_STATION_LIST, st->owner, 1);
+	}
+
+	return CommandCost();
+}
+
+/**
  * Change whether a cargo may be supplied to a station
  * @param tile unused
  * @param flags operation to perform
