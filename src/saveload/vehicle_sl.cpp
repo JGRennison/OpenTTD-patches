@@ -23,6 +23,7 @@
 #include "../error.h"
 #include "../strings_func.h"
 #include "../3rdparty/cpp-btree/btree_map.h"
+#include "../3rdparty/fmt/format.h"
 
 #include "saveload.h"
 
@@ -1352,8 +1353,9 @@ template <typename T>
 void CheckVehicleVENCProp(T &v_prop, T venc_prop, const Vehicle *v, const char *var)
 {
 	if (v_prop != venc_prop) {
+		std::string data = fmt::format("{} [{:X} != {:X}]", var, v_prop, venc_prop);
 		v_prop = venc_prop;
-		LogVehicleVENCMessage(v, var);
+		LogVehicleVENCMessage(v, data.c_str());
 	}
 }
 
