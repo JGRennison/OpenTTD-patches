@@ -548,6 +548,7 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 		buffer += seprintf(buffer, last, "Game loaded at: %i-%02i-%02i (%i, %i), ",
 				_game_load_cur_date_ymd.year, _game_load_cur_date_ymd.month + 1, _game_load_cur_date_ymd.day, _game_load_date_fract, _game_load_tick_skip_counter);
 		buffer += UTCTime::Format(buffer, last, _game_load_time, "%Y-%m-%d %H:%M:%S");
+		buffer += seprintf(buffer, last, "\n");
 	}
 	if (!_network_server) {
 		extern Date   _last_sync_date;
@@ -557,7 +558,7 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 
 		YearMonthDay ymd;
 		ConvertDateToYMD(_last_sync_date, &ymd);
-		buffer += seprintf(buffer, last, "Last sync at: %i-%02i-%02i (%i, %i), %08X",
+		buffer += seprintf(buffer, last, "Last sync at: %i-%02i-%02i (%i, %i), %08X\n",
 				ymd.year, ymd.month + 1, ymd.day, _last_sync_date_fract, _last_sync_tick_skip_counter, _last_sync_frame_counter);
 	}
 	if (info.client_id >= 0) {
@@ -613,6 +614,7 @@ char *CrashLog::FillInconsistencyLog(char *buffer, const char *last, const Incon
 		buffer += seprintf(buffer, last, "Game loaded at: %i-%02i-%02i (%i, %i), ",
 				_game_load_cur_date_ymd.year, _game_load_cur_date_ymd.month + 1, _game_load_cur_date_ymd.day, _game_load_date_fract, _game_load_tick_skip_counter);
 		buffer += UTCTime::Format(buffer, last, _game_load_time, "%Y-%m-%d %H:%M:%S");
+		buffer += seprintf(buffer, last, "\n");
 	}
 	if (_networking && !_network_server) {
 		extern Date   _last_sync_date;
@@ -622,7 +624,7 @@ char *CrashLog::FillInconsistencyLog(char *buffer, const char *last, const Incon
 
 		YearMonthDay ymd;
 		ConvertDateToYMD(_last_sync_date, &ymd);
-		buffer += seprintf(buffer, last, "Last sync at: %i-%02i-%02i (%i, %i), %08X",
+		buffer += seprintf(buffer, last, "Last sync at: %i-%02i-%02i (%i, %i), %08X\n",
 				ymd.year, ymd.month + 1, ymd.day, _last_sync_date_fract, _last_sync_tick_skip_counter, _last_sync_frame_counter);
 	}
 	buffer += seprintf(buffer, last, "\n");
