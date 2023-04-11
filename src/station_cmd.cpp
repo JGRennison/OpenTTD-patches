@@ -236,7 +236,7 @@ static bool FindNearIndustryName(TileIndex tile, void *user_data)
 	return !sni->indtypes[indtype];
 }
 
-static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming name_class)
+static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming name_class, bool force_change = false)
 {
 	static const uint32 _gen_station_name_bits[] = {
 		0,                                       // STATIONNAMING_RAIL
@@ -256,7 +256,7 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 	std::bitset<MAX_EXTRA_STATION_NAMES> extra_names;
 
 	for (const Station *s : Station::Iterate()) {
-		if (s != st && s->town == t) {
+		if ((force_change || s != st) && s->town == t) {
 			if (s->indtype != IT_INVALID) {
 				indtypes[s->indtype] = true;
 				StringID name = GetIndustrySpec(s->indtype)->station_name;
@@ -281,6 +281,8 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 			}
 		}
 	}
+
+	st->extra_name_index = UINT16_MAX;
 
 	TileIndex indtile = tile;
 	StationNameInformation sni = { free_names, indtypes };
@@ -4727,7 +4729,8 @@ static bool IsUniqueStationName(const char *name)
  * @param tile unused
  * @param flags operation to perform
  * @param p1 station ID that is to be renamed
- * @param p2 unused
+ * @param p2 various bitstuffed elements
+ * - p2 = (bit 0) - whether to generate a new default name, if resetting name
  * @param text the new name or an empty string when resetting to the default
  * @return the cost of this operation or an error
  */
@@ -4750,6 +4753,22 @@ CommandCost CmdRenameStation(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 		st->cached_name.clear();
 		if (reset) {
 			st->name.clear();
+			if (HasBit(p2, 0) && st->industry == nullptr) {
+				StationNaming name_class;
+				if (st->facilities & FACIL_AIRPORT) {
+					name_class = STATIONNAMING_AIRPORT;
+				} else if (st->facilities & FACIL_DOCK) {
+					name_class = STATIONNAMING_DOCK;
+				} else if (st->facilities & FACIL_TRAIN) {
+					name_class = STATIONNAMING_RAIL;
+				} else if (st->facilities & (FACIL_BUS_STOP | FACIL_TRUCK_STOP)) {
+					name_class = STATIONNAMING_ROAD;
+				} else {
+					name_class = STATIONNAMING_RAIL;
+				}
+				Random(); // Advance random seed each time this is called
+				st->string_id = GenerateStationName(st, st->xy, name_class, true);
+			}
 		} else {
 			st->name = text;
 		}
