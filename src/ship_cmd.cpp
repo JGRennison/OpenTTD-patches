@@ -107,7 +107,7 @@ void DrawShipEngine(int left, int right, int preferred_x, int y, EngineID engine
 	GetShipIcon(engine, image_type, &seq);
 
 	Rect16 rect = seq.GetBounds();
-	preferred_x = Clamp(preferred_x,
+	preferred_x = SoftClamp(preferred_x,
 			left - UnScaleGUI(rect.left),
 			right - UnScaleGUI(rect.right));
 
