@@ -413,7 +413,7 @@ void DrawHouseImage(HouseID house_id, int left, int top, int right, int bottom)
 	}
 }
 
-static int GetSlopePixelZ_Town(TileIndex tile, uint x, uint y)
+static int GetSlopePixelZ_Town(TileIndex tile, uint x, uint y, bool ground_vehicle)
 {
 	return GetTileMaxPixelZ(tile);
 }

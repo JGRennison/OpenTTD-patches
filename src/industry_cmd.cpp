@@ -387,7 +387,7 @@ static void DrawTile_Industry(TileInfo *ti, DrawTileProcParams params)
 	}
 }
 
-static int GetSlopePixelZ_Industry(TileIndex tile, uint x, uint y)
+static int GetSlopePixelZ_Industry(TileIndex tile, uint x, uint y, bool ground_vehicle)
 {
 	return GetTileMaxPixelZ(tile);
 }

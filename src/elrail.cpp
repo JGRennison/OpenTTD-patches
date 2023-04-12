@@ -266,7 +266,7 @@ static int GetPCPElevation(TileIndex tile, DiagDirection PCPpos)
 	 */
 
 	int z = GetSlopePixelZ(TileX(tile) * TILE_SIZE + std::min<int8>(x_pcp_offsets[PCPpos], TILE_SIZE - 1),
-	                       TileY(tile) * TILE_SIZE + std::min<int8>(y_pcp_offsets[PCPpos], TILE_SIZE - 1));
+	                       TileY(tile) * TILE_SIZE + std::min<int8>(y_pcp_offsets[PCPpos], TILE_SIZE - 1), true);
 	return (z + 2) & ~3; // this means z = (z + TILE_HEIGHT / 4) / (TILE_HEIGHT / 2) * (TILE_HEIGHT / 2);
 }
 
@@ -591,7 +591,7 @@ static void DrawRailCatenaryRailway(const TileInfo *ti)
 		 * down to the nearest full height change.
 		 */
 		AddSortableSpriteToDraw(wire_base + sss->image_offset, PAL_NONE, ti->x + sss->x_offset, ti->y + sss->y_offset,
-			sss->x_size, sss->y_size, sss->z_size, (GetSlopePixelZ(ti->x + sss->x_offset, ti->y + sss->y_offset) + 4) / 8 * 8 + sss->z_offset,
+			sss->x_size, sss->y_size, sss->z_size, (GetSlopePixelZ(ti->x + sss->x_offset, ti->y + sss->y_offset, true) + 4) / 8 * 8 + sss->z_offset,
 			IsTransparencySet(TO_CATENARY));
 	}
 }

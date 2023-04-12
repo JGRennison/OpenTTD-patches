@@ -1462,7 +1462,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 
 		v->x_pos = x;
 		v->y_pos = y;
-		v->z_pos = GetSlopePixelZ(x, y);
+		v->z_pos = GetSlopePixelZ(x, y, true);
 		v->owner = _current_company;
 		v->track = TRACK_BIT_DEPOT;
 		v->vehstatus = VS_HIDDEN | VS_DEFPAL;
@@ -1602,7 +1602,7 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlag flags, const Engin
 		v->owner = _current_company;
 		v->x_pos = x;
 		v->y_pos = y;
-		v->z_pos = GetSlopePixelZ(x, y);
+		v->z_pos = GetSlopePixelZ(x, y, true);
 		v->track = TRACK_BIT_DEPOT;
 		SetBit(v->flags, VRF_CONSIST_SPEED_REDUCTION);
 		v->vehstatus = VS_HIDDEN | VS_STOPPED | VS_DEFPAL;
@@ -5778,7 +5778,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 
 				if (v->IsFrontEngine()) {
 					/* Check if track in front is free and see if we can leave wormhole. */
-					int z = GetSlopePixelZ(gp.x, gp.y) - v->z_pos;
+					int z = GetSlopePixelZ(gp.x, gp.y, true) - v->z_pos;
 					if (IsTileType(gp.new_tile, MP_TUNNELBRIDGE) &&	!(abs(z) > 2)) {
 						if (CheckTrainStayInWormHole(v, gp.new_tile)) {
 							v->cur_speed = 0;

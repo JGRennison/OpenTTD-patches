@@ -439,7 +439,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 						default: NOT_REACHED();
 					}
 				}
-				z = GetSlopePixelZ(x, y);
+				z = GetSlopePixelZ(x, y, true);
 			}
 		}
 	};

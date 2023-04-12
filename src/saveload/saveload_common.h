@@ -357,6 +357,7 @@ enum SaveLoadVersion : uint16 {
 	SLV_LINKGRAPH_EDGES,                    ///< 304  PR#10314 Explicitly store link graph edges destination.
 
 	SLV_VELOCITY_NAUTICAL,                  ///< 305  PR#10594 Separation of land and nautical velocity (knots!)
+	SLV_CONSISTENT_PARTIAL_Z,               ///< 306  PR#10570 Conversion from an inconsistent partial Z calculation for slopes, to one that is (more) consistent.
 
 	SL_MAX_VERSION,                         ///< Highest possible saveload version
 

@@ -2494,7 +2494,7 @@ void UpdateNearestTownForRoadTiles(bool invalidate)
 	}
 }
 
-static int GetSlopePixelZ_Road(TileIndex tile, uint x, uint y)
+static int GetSlopePixelZ_Road(TileIndex tile, uint x, uint y, bool ground_vehicle)
 {
 
 	if (IsNormalRoad(tile)) {

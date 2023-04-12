@@ -288,7 +288,7 @@ CommandCost CmdBuildRoadVehicle(TileIndex tile, DoCommandFlag flags, const Engin
 		int y = TileY(tile) * TILE_SIZE + TILE_SIZE / 2;
 		v->x_pos = x;
 		v->y_pos = y;
-		v->z_pos = GetSlopePixelZ(x, y);
+		v->z_pos = GetSlopePixelZ(x, y, true);
 
 		v->state = RVSB_IN_DEPOT;
 		v->vehstatus = VS_HIDDEN | VS_STOPPED | VS_DEFPAL;
@@ -2013,7 +2013,7 @@ again:
 		 * A vehicle has to spend at least 9 frames on a tile, so the following articulated part can follow.
 		 * (The following part may only be one tile behind, and the front part is moved before the following ones.)
 		 * The short (inner) curve has 8 frames, this elongates it to 10. */
-		v->UpdateInclination(false, true);
+		v->UpdateViewport(true, true);
 		return true;
 	}
 

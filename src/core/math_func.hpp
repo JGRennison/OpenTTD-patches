@@ -224,7 +224,7 @@ static inline bool IsInsideBS(const T x, const size_t base, const size_t size)
  * @see IsInsideBS()
  */
 template <typename T>
-static inline bool IsInsideMM(const T x, const size_t min, const size_t max)
+static inline constexpr bool IsInsideMM(const T x, const size_t min, const size_t max)
 {
 	return (size_t)(x - min) < (max - min);
 }

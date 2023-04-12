@@ -659,7 +659,7 @@ static void DrawTile_Object(TileInfo *ti, DrawTileProcParams params)
 	DrawBridgeMiddle(ti);
 }
 
-static int GetSlopePixelZ_Object(TileIndex tile, uint x, uint y)
+static int GetSlopePixelZ_Object(TileIndex tile, uint x, uint y, bool ground_vehicle)
 {
 	if (IsObjectType(tile, OBJECT_OWNED_LAND)) {
 		int z;

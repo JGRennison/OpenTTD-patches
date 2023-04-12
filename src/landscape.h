@@ -67,7 +67,7 @@ Slope GetFoundationSlopeFromTileSlope(TileIndex tile, Slope tileh, int *z = null
 Slope GetFoundationSlope(TileIndex tile, int *z = nullptr);
 
 uint GetPartialPixelZ(int x, int y, Slope corners);
-int GetSlopePixelZ(int x, int y);
+int GetSlopePixelZ(int x, int y, bool ground_vehicle = false);
 int GetSlopePixelZOutsideMap(int x, int y);
 void GetSlopePixelZOnEdge(Slope tileh, DiagDirection edge, int *z1, int *z2);
 
@@ -127,7 +127,7 @@ static inline Point RemapCoords(int x, int y, int z)
  */
 static inline Point RemapCoords2(int x, int y)
 {
-	return RemapCoords(x, y, GetSlopePixelZ(x, y));
+	return RemapCoords(x, y, GetSlopePixelZ(x, y, false));
 }
 
 /**
