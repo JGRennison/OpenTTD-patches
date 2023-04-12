@@ -4580,7 +4580,7 @@ void AdjustVehicleScaledTickBase(int64 delta)
 void ShiftVehicleDates(int interval)
 {
 	for (Vehicle *v : Vehicle::Iterate()) {
-		v->date_of_last_service += interval;
+		v->date_of_last_service = std::max(v->date_of_last_service + interval, 0);
 	}
 }
 

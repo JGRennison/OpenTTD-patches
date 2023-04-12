@@ -768,7 +768,7 @@ int SlIterateArray()
 	 * we must have read in all the data, so we must be at end of current block. */
 	if (_next_offs != 0 && _sl.reader->GetSize() != _next_offs) {
 		DEBUG(sl, 1, "Invalid chunk size: " PRINTF_SIZE " != " PRINTF_SIZE, _sl.reader->GetSize(), _next_offs);
-		SlErrorCorrupt("Invalid chunk size");
+		SlErrorCorruptFmt("Invalid chunk size iterating array - expected to be at position " PRINTF_SIZE ", actually at " PRINTF_SIZE, _next_offs, _sl.reader->GetSize());
 	}
 
 	for (;;) {
@@ -2189,7 +2189,8 @@ static void SlLoadChunk(const ChunkHandler &ch)
 				ch.load_proc();
 				if (_sl.reader->GetSize() != endoffs) {
 					DEBUG(sl, 1, "Invalid chunk size: " PRINTF_SIZE " != " PRINTF_SIZE ", (" PRINTF_SIZE ")", _sl.reader->GetSize(), endoffs, len);
-					SlErrorCorrupt("Invalid chunk size");
+					SlErrorCorruptFmt("Invalid chunk size - expected to be at position " PRINTF_SIZE ", actually at " PRINTF_SIZE ", length: " PRINTF_SIZE,
+							endoffs, _sl.reader->GetSize(), len);
 				}
 			} else {
 				SlErrorCorrupt("Invalid chunk type");
@@ -2279,7 +2280,8 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
 				}
 				if (_sl.reader->GetSize() != endoffs) {
 					DEBUG(sl, 1, "Invalid chunk size: " PRINTF_SIZE " != " PRINTF_SIZE ", (" PRINTF_SIZE ")", _sl.reader->GetSize(), endoffs, len);
-					SlErrorCorrupt("Invalid chunk size");
+					SlErrorCorruptFmt("Invalid chunk size - expected to be at position " PRINTF_SIZE ", actually at " PRINTF_SIZE ", length: " PRINTF_SIZE,
+							endoffs, _sl.reader->GetSize(), len);
 				}
 			} else {
 				SlErrorCorrupt("Invalid chunk type");

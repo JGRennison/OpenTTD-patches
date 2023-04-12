@@ -195,6 +195,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_SCRIPT_LEAGUE_TABLES,             XSCF_NULL,                1,   1, "script_league_tables",             nullptr, nullptr, "LEAE,LEAT"      },
 	{ XSLFI_VELOCITY_NAUTICAL,                XSCF_IGNORABLE_ALL,       1,   1, "velocity_nautical",                nullptr, nullptr, nullptr          },
 	{ XSLFI_CONSISTENT_PARTIAL_Z,             XSCF_NULL,                1,   1, "consistent_partial_z",             nullptr, nullptr, nullptr          },
+	{ XSLFI_MORE_CARGO_AGE,                   XSCF_NULL,                1,   1, "more_cargo_age",                   nullptr, nullptr, nullptr          },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, nullptr, nullptr, nullptr, nullptr },// This is the end marker
 };
 
