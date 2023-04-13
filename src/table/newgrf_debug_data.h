@@ -380,8 +380,15 @@ class NIHVehicle : public NIHelper {
 		if (show_engine) {
 			const Engine *e = Engine::GetIfValid(v->engine_type);
 			char *b = buffer + seprintf(buffer, lastof(buffer), "  Engine: %u", v->engine_type);
+			if (e->grf_prop.grffile != nullptr) {
+				b += seprintf(b, lastof(buffer), " (local ID: %u)", e->grf_prop.local_id);
+			}
 			if (e->info.variant_id != INVALID_ENGINE) {
 				b += seprintf(b, lastof(buffer), ", variant of: %u", e->info.variant_id);
+				const Engine *variant_e = Engine::GetIfValid(e->info.variant_id);
+				if (variant_e->grf_prop.grffile != nullptr) {
+					b += seprintf(b, lastof(buffer), " (local ID: %u)", variant_e->grf_prop.local_id);
+				}
 			}
 			output.print(buffer);
 
@@ -602,6 +609,11 @@ class NIHStation : public NIHelper {
 		const StationSpec *statspec = GetStationSpec(index);
 		if (statspec == nullptr) return;
 
+		if (statspec->grf_prop.grffile != nullptr) {
+			seprintf(buffer, lastof(buffer), "GRF local ID: %u", statspec->grf_prop.local_id);
+			output.print(buffer);
+		}
+
 		for (size_t i = 0; i < statspec->renderdata.size(); i++) {
 			seprintf(buffer, lastof(buffer), "Tile Layout %u:", (uint)i);
 			output.print(buffer);
@@ -746,11 +758,14 @@ class NIHHouse : public NIHelper {
 
 	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
 	{
+		const HouseSpec *hs = HouseSpec::Get(GetHouseType(index));
 		char buffer[1024];
 		output.print("Debug Info:");
-		seprintf(buffer, lastof(buffer), "  House Type: %u", GetHouseType(index));
+		char *b = buffer + seprintf(buffer, lastof(buffer), "  House Type: %u", GetHouseType(index));
+		if (hs->grf_prop.grffile != nullptr) {
+			b += seprintf(b, lastof(buffer), "  (local ID: %u)", hs->grf_prop.local_id);
+		}
 		output.print(buffer);
-		const HouseSpec *hs = HouseSpec::Get(GetHouseType(index));
 		seprintf(buffer, lastof(buffer), "  building_flags: 0x%X", hs->building_flags);
 		output.print(buffer);
 		seprintf(buffer, lastof(buffer), "  extra_flags: 0x%X, ctrl_flags: 0x%X", hs->extra_flags, hs->ctrl_flags);
@@ -763,9 +778,12 @@ class NIHHouse : public NIHelper {
 		output.print(buffer);
 
 		if (GetCleanHouseType(index) != GetHouseType(index)) {
-			seprintf(buffer, lastof(buffer), "  Untranslated House Type: %u", GetCleanHouseType(index));
-			output.print(buffer);
 			hs = HouseSpec::Get(GetCleanHouseType(index));
+			b = buffer + seprintf(buffer, lastof(buffer), "  Untranslated House Type: %u", GetCleanHouseType(index));
+			if (hs->grf_prop.grffile != nullptr) {
+				b += seprintf(b, lastof(buffer), "  (local ID: %u)", hs->grf_prop.local_id);
+			}
+			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "    building_flags: 0x%X", hs->building_flags);
 			output.print(buffer);
 		}
@@ -1346,6 +1364,9 @@ class NIHObject : public NIHelper {
 			ObjectID id = GetObjectIndex(index);
 			const Object *obj = Object::Get(id);
 			char *b = buffer + seprintf(buffer, lastof(buffer), "  index: %u, type ID: %u", id, GetObjectType(index));
+			if (spec->grf_prop.grffile != nullptr) {
+				b += seprintf(b, lastof(buffer), "  (local ID: %u)", spec->grf_prop.local_id);
+			}
 			if (spec->cls_id != INVALID_OBJECT_CLASS) {
 				uint class_id = ObjectClass::Get(spec->cls_id)->global_id;
 				b += seprintf(b, lastof(buffer), ", class ID: %c%c%c%c", class_id >> 24, class_id >> 16, class_id >> 8, class_id);
@@ -1942,7 +1963,10 @@ class NIHRoadStop : public NIHelper {
 		const RoadStopSpec *spec = GetRoadStopSpec(index);
 		if (spec) {
 			uint class_id = RoadStopClass::Get(spec->cls_id)->global_id;
-			seprintf(buffer, lastof(buffer), "  class ID: %c%c%c%c, spec ID: %u", class_id >> 24, class_id >> 16, class_id >> 8, class_id, spec->spec_id);
+			char *b = buffer + seprintf(buffer, lastof(buffer), "  class ID: %c%c%c%c, spec ID: %u", class_id >> 24, class_id >> 16, class_id >> 8, class_id, spec->spec_id);
+			if (spec->grf_prop.grffile != nullptr) {
+				b += seprintf(b, lastof(buffer), "  (local ID: %u)", spec->grf_prop.local_id);
+			}
 			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "  spec: stop type: %X, draw mode: %X, cargo triggers: " OTTD_PRINTFHEX64, spec->stop_type, spec->draw_mode, spec->cargo_triggers);
 			output.print(buffer);
