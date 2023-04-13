@@ -113,12 +113,12 @@
 		case A2VRI_TOWNS_HOUSE_COUNT: return this->t->cache.num_houses;
 		case A2VRI_TOWNS_POPULATION: return this->t->cache.population;
 
-		case A2VRI_ZONE_0:
-		case A2VRI_ZONE_1:
-		case A2VRI_ZONE_2:
-		case A2VRI_ZONE_3:
-		case A2VRI_ZONE_4:
-			return this->t->cache.squared_town_zone_radius[variable - A2VRI_ZONE_0];
+		case A2VRI_TOWNS_ZONE_0:
+		case A2VRI_TOWNS_ZONE_1:
+		case A2VRI_TOWNS_ZONE_2:
+		case A2VRI_TOWNS_ZONE_3:
+		case A2VRI_TOWNS_ZONE_4:
+			return this->t->cache.squared_town_zone_radius[variable - A2VRI_TOWNS_ZONE_0];
 	}
 
 	DEBUG(grf, 1, "Unhandled town variable 0x%X", variable);
@@ -175,11 +175,11 @@
 		case 0xD3: case 0xD4: case 0xD5:
 		case A2VRI_TOWNS_HOUSE_COUNT:
 		case A2VRI_TOWNS_POPULATION:
-		case A2VRI_ZONE_0:
-		case A2VRI_ZONE_1:
-		case A2VRI_ZONE_2:
-		case A2VRI_ZONE_3:
-		case A2VRI_ZONE_4:
+		case A2VRI_TOWNS_ZONE_0:
+		case A2VRI_TOWNS_ZONE_1:
+		case A2VRI_TOWNS_ZONE_2:
+		case A2VRI_TOWNS_ZONE_3:
+		case A2VRI_TOWNS_ZONE_4:
 			return 0;
 	}
 

@@ -1634,11 +1634,11 @@ static const NIVariable _niv_towns[] = {
 	NIV(0xB6, "number of buildings"),
 	NIV(A2VRI_TOWNS_HOUSE_COUNT, "number of buildings (uncapped)"),
 	NIV(A2VRI_TOWNS_POPULATION, "population (uncapped)"),
-	NIV(A2VRI_ZONE_0, "zone radius 0 (uncapped)"),
-	NIV(A2VRI_ZONE_1, "zone radius 1 (uncapped)"),
-	NIV(A2VRI_ZONE_2, "zone radius 2 (uncapped)"),
-	NIV(A2VRI_ZONE_3, "zone radius 3 (uncapped)"),
-	NIV(A2VRI_ZONE_4, "zone radius 4 (uncapped)"),
+	NIV(A2VRI_TOWNS_ZONE_0, "zone radius 0 (uncapped)"),
+	NIV(A2VRI_TOWNS_ZONE_1, "zone radius 1 (uncapped)"),
+	NIV(A2VRI_TOWNS_ZONE_2, "zone radius 2 (uncapped)"),
+	NIV(A2VRI_TOWNS_ZONE_3, "zone radius 3 (uncapped)"),
+	NIV(A2VRI_TOWNS_ZONE_4, "zone radius 4 (uncapped)"),
 	NIV_END()
 };
 
