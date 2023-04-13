@@ -496,7 +496,7 @@ class NIHVehicle : public NIHelper {
 				}
 
 				output.register_next_line_click_flag_toggle(4 << flag_shift);
-				if (output.flags & (2 << flag_shift)) {
+				if (output.flags & (4 << flag_shift)) {
 					seprintf(buffer, lastof(buffer), "    [-] Extra Engine Flags:\n");
 					output.print(buffer);
 					auto print_bit = [&](ExtraEngineFlags flag, const char *name) {
