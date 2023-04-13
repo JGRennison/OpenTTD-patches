@@ -348,7 +348,7 @@ static uint32 GetDistanceFromNearbyHouse(uint8 parameter, TileIndex tile, HouseI
 		case 0x46: return IsTileType(this->tile, MP_HOUSE) ? GetAnimationFrame(this->tile) : 0;
 
 		/* Position of the house */
-		case 0x47: return TileY(this->tile) << 16 | TileX(this->tile);
+		case 0x47: return TileY(this->tile) << 16 | (TileX(this->tile) & 0xFFFF);
 
 		/* Building counts for old houses with id = parameter. */
 		case 0x60: return parameter < NEW_HOUSE_OFFSET ? GetNumHouses(parameter, this->town) : 0;
