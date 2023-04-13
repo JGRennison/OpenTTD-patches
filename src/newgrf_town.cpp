@@ -119,6 +119,9 @@
 		case A2VRI_TOWNS_ZONE_3:
 		case A2VRI_TOWNS_ZONE_4:
 			return this->t->cache.squared_town_zone_radius[variable - A2VRI_TOWNS_ZONE_0];
+
+		case A2VRI_TOWNS_XY:
+			return TileY(this->t->xy) << 16 | (TileX(this->t->xy) & 0xFFFF);
 	}
 
 	DEBUG(grf, 1, "Unhandled town variable 0x%X", variable);
@@ -180,6 +183,7 @@
 		case A2VRI_TOWNS_ZONE_2:
 		case A2VRI_TOWNS_ZONE_3:
 		case A2VRI_TOWNS_ZONE_4:
+		case A2VRI_TOWNS_XY:
 			return 0;
 	}
 

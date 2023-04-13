@@ -54,6 +54,7 @@
 		<tr><td><a href="#town_zone_N_radius_square">town_zone_2_radius_square</a></td><td>Town zone 2 radius squared</td></tr>
 		<tr><td><a href="#town_zone_N_radius_square">town_zone_3_radius_square</a></td><td>Town zone 3 radius squared</td></tr>
 		<tr><td><a href="#town_zone_N_radius_square">town_zone_4_radius_square</a></td><td>Town zone 4 radius squared</td></tr>
+		<tr><td><a href="#town_xy">town_xy</a></td><td>Town tile X and Y coordinates</td></tr>
 	</table>
 
 	<h4 id="town_house_count">Number of town house (mappable variable: town_house_count)</h4>
@@ -67,6 +68,16 @@
 	<h4 id="town_zone_N_radius_square">Town zone [0 .. 4] radius squared (mappable variable: town_zone_0_radius_square, town_zone_1_radius_square, town_zone_2_radius_square, town_zone_3_radius_square, town_zone_4_radius_square)</h4>
 	<p>This is the same as <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Towns">town variables 94, 96, 98, 9A, 9C</a>, except 32 bits and not clamped to a maximum value of 0xFFFF.</p>
 	<p>This requires <font face="monospace">town_uncapped_variables</font>, version 1.</p>
+
+	<h4 id="town_xy">Town tile X and Y coordinates (mappable variable: town_xy)</h4>
+	<table>
+	<tr><th>Bits</th><th>Meaning</th></tr>
+	<tr><td>0 - 15</td><td>X coordinate of town tile</td></tr>
+	<tr><td>16 - 31</td><td>Y coordinate of town tile</td></tr>
+	</table>
+	<p>This is similar to town variable 80, except the Y part is in the upper 16 bits and the X part is in the lower 16 bits.</p>
+	<p>This is the same format as <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Houses#XY_Coordinate_of_the_building_.2847.29">house variable 47</a>.</p>
+	<p>This requires <font face="monospace">varaction2_towns_town_xy</font>, version 1.</p>
 
 	<br />
 

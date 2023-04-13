@@ -1639,6 +1639,7 @@ static const NIVariable _niv_towns[] = {
 	NIV(A2VRI_TOWNS_ZONE_2, "zone radius 2 (uncapped)"),
 	NIV(A2VRI_TOWNS_ZONE_3, "zone radius 3 (uncapped)"),
 	NIV(A2VRI_TOWNS_ZONE_4, "zone radius 4 (uncapped)"),
+	NIV(A2VRI_TOWNS_XY, "town tile xy"),
 	NIV_END()
 };
 

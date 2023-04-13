@@ -96,6 +96,7 @@ enum Action2VariableRemapIds {
 	A2VRI_TOWNS_ZONE_2,
 	A2VRI_TOWNS_ZONE_3,
 	A2VRI_TOWNS_ZONE_4,
+	A2VRI_TOWNS_XY,
 };
 
 enum GRFFeatureTestObservationFlag : uint8 {
