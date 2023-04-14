@@ -642,9 +642,9 @@ static void MakeTownHouseBigger(TileIndex tile)
  * @param stations available stations for this house
  * @param economy_adjust true if amount should be reduced during recession
  */
-static void TownGenerateCargo (Town *t, CargoID ct, uint amount, StationFinder &stations, bool economy_adjust)
+static void TownGenerateCargo(Town *t, CargoID ct, uint amount, StationFinder &stations, bool economy_adjust)
 {
-	// when the economy flunctuates, everyone wants to stay at home
+	/* When the economy flunctuates, everyone wants to stay at home */
 	if (economy_adjust && EconomyIsInRecession()) {
 		amount = (amount + 1) >> 1;
 	}
@@ -653,22 +653,8 @@ static void TownGenerateCargo (Town *t, CargoID ct, uint amount, StationFinder &
 
 	if (amount == 0) return;
 
-	// calculate for town stats
-
-	switch (ct) {
-		case CT_PASSENGERS:
-		case CT_MAIL:
-			t->supplied[ct].new_max += amount;
-			t->supplied[ct].new_act += MoveGoodsToStation(ct, amount, ST_TOWN, t->index, stations.GetStations());
-			break;
-
-		default: {
-			const CargoSpec *cs = CargoSpec::Get(ct);
-			t->supplied[cs->Index()].new_max += amount;
-			t->supplied[cs->Index()].new_act += MoveGoodsToStation(ct, amount, ST_TOWN, t->index, stations.GetStations());
-			break;
-		}
-	}
+	t->supplied[ct].new_max += amount;
+	t->supplied[ct].new_act += MoveGoodsToStation(ct, amount, ST_TOWN, t->index, stations.GetStations());
 }
 
 /**
