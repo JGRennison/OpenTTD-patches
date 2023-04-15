@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.52.1
+## JGR's Patchpack version 0.53.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -57,6 +57,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add client setting to show all signals using the default baseset sprites.
 * Remember the last-used signal type between games.
 * Add client setting to show the introduction year for train wagons.
+* Add setting for rail depot maximum speed.
 
 #### Roads and Road Vehicles
 
@@ -158,6 +159,8 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add features to duplicate an individual order and to change the jump target of conditional orders.
 * Add company setting for whether to advance the current order when cloning/copying/sharing (if current depot is in order list).
 * Add vehicle list menu item to mass cancel go to or service at depot orders.
+* Allow changing colour of orders in order list and timetable windows.
+* Add text label and departure board via order types.
 
 #### Stations
 
@@ -179,6 +182,8 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add setting to allow hiding viewport labels of individual waypoints.
 * Increase the distance a station can be from the town centre and still be assigned have the same name as the town (no suffix/prefix), for large towns.
 * [Allow NewGRFs to supply additional station name strings](https://github.com/JGRennison/OpenTTD-patches/wiki/GRF-features#extra-station-names).
+* Allow generating new default name for station (ctrl-click default button in rename station query window).
+* Allow exchanging a station's name with another station in the same town.
 
 #### Towns
 
