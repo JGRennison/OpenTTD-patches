@@ -615,6 +615,12 @@ void DeparturesWindow<Twaypoint>::RecomputeDateWidth()
 	}
 }
 
+static int PadWidth(int width)
+{
+	if (width > 0) width += WidgetDimensions::scaled.hsep_wide;
+	return width;
+}
+
 template<bool Twaypoint>
 uint DeparturesWindow<Twaypoint>::GetMinWidth() const
 {
@@ -627,11 +633,9 @@ uint DeparturesWindow<Twaypoint>::GetMinWidth() const
 	result += _settings_client.gui.departure_show_vehicle_type ? cached_veh_type_width : 0;
 
 	/* Status */
-	result += cached_status_width;
+	result += PadWidth(cached_status_width) + PadWidth(this->toc_width) + PadWidth(this->veh_width) + PadWidth(this->group_width);
 
-	result += this->toc_width + this->veh_width + this->group_width;
-
-	return result + 140;
+	return result + ScaleGUITrad(140);
 }
 
 /**
@@ -659,15 +663,15 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 {
 	this->scroll_refresh = false;
 
-	int left = r.left + WidgetDimensions::scaled.matrix.left;
-	int right = r.right - WidgetDimensions::scaled.matrix.right;
+	const int left = r.left + WidgetDimensions::scaled.matrix.left;
+	const int right = r.right - WidgetDimensions::scaled.matrix.right;
 
-	bool rtl = _current_text_dir == TD_RTL;
-	bool ltr = !rtl;
+	const bool rtl = _current_text_dir == TD_RTL;
+	const bool ltr = !rtl;
 
-	int text_offset = WidgetDimensions::scaled.framerect.right;
-	int text_left  = left  + (rtl ?           0 : text_offset);
-	int text_right = right - (rtl ? text_offset :           0);
+	const int text_offset = WidgetDimensions::scaled.framerect.right;
+	const int text_left  = left  + (rtl ?           0 : text_offset);
+	const int text_right = right - (rtl ? text_offset :           0);
 
 	int y = r.top + 1;
 	uint max_departures = std::min<uint>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), (uint)this->departures->size() + (uint)this->arrivals->size());
@@ -676,7 +680,7 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 		max_departures = _settings_client.gui.max_departures;
 	}
 
-	byte small_font_size = _settings_client.gui.departure_larger_font ? FONT_HEIGHT_NORMAL : FONT_HEIGHT_SMALL;
+	const int small_font_size = _settings_client.gui.departure_larger_font ? FONT_HEIGHT_NORMAL : FONT_HEIGHT_SMALL;
 
 	/* Draw the black background. */
 	GfxFillRect(r.left + 1, r.top, r.right - 1, r.bottom, PC_BLACK);
@@ -787,7 +791,6 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 		ltr ? DrawString(              text_left, text_left + time_width, y + 1, time_str)
 			: DrawString(text_right - time_width,             text_right, y + 1, time_str);
 
-		/* Vehicle type icon, with thanks to sph */
 		if (_settings_client.gui.departure_show_vehicle_type) {
 			StringID type = STR_DEPARTURES_TYPE_TRAIN;
 			int offset = (_settings_client.gui.departure_show_vehicle_color ? 1 : 0);
@@ -843,86 +846,87 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 		if (via2 == d->terminus.station || via2 == this->station) via2 = INVALID_STATION;
 
 		/* Destination */
-		if (via == INVALID_STATION) {
-			/* Only show the terminus. */
-			SetDParam(0, d->terminus.station);
-			SetDParam(1, icon);
-			ltr ? DrawString(              text_left + time_width + type_width + 6,   text_right - status_width - (toc_width + veh_width + group_width + 2) - 2, y + 1, STR_DEPARTURES_TERMINUS)
-				: DrawString(text_left + status_width + (toc_width + veh_width + group_width + 2) + 2,                 text_right - time_width - type_width - 6, y + 1, STR_DEPARTURES_TERMINUS);
-		} else {
-			auto set_via_dparams = [&](uint offset) {
-				auto get_single_via_string = [&](uint temp_str, StationID id) {
-					StringID icon_via = STR_DEPARTURES_STATION_NONE;
-					if (_settings_client.gui.departure_destination_type && Station::IsValidID(id)) {
-						Station *st = Station::Get(id);
+		{
+			const int dest_left = ltr ? text_left + time_width + type_width + ScaleGUITrad(6) : text_left + PadWidth(toc_width) + PadWidth(group_width) + PadWidth(veh_width) + PadWidth(status_width);
+			const int dest_right = ltr ? text_right - PadWidth(toc_width) - PadWidth(group_width) - PadWidth(veh_width) - PadWidth(status_width) : text_right - time_width - type_width - ScaleGUITrad(6);
 
-						if (st->facilities & FACIL_DOCK &&
-								st->facilities & FACIL_AIRPORT &&
-								d->vehicle->type != VEH_SHIP &&
-								d->vehicle->type != VEH_AIRCRAFT) {
-							icon_via = STR_DEPARTURES_STATION_PORTAIRPORT;
-						} else if (st->facilities & FACIL_DOCK &&
-								d->vehicle->type != VEH_SHIP) {
-							icon_via = STR_DEPARTURES_STATION_PORT;
-						} else if (st->facilities & FACIL_AIRPORT &&
-								d->vehicle->type != VEH_AIRCRAFT) {
-							icon_via = STR_DEPARTURES_STATION_AIRPORT;
+			if (via == INVALID_STATION) {
+				/* Only show the terminus. */
+				SetDParam(0, d->terminus.station);
+				SetDParam(1, icon);
+				DrawString(dest_left, dest_right, y + 1, STR_DEPARTURES_TERMINUS);
+			} else {
+				auto set_via_dparams = [&](uint offset) {
+					auto get_single_via_string = [&](uint temp_str, StationID id) {
+						StringID icon_via = STR_DEPARTURES_STATION_NONE;
+						if (_settings_client.gui.departure_destination_type && Station::IsValidID(id)) {
+							Station *st = Station::Get(id);
+
+							if (st->facilities & FACIL_DOCK &&
+									st->facilities & FACIL_AIRPORT &&
+									d->vehicle->type != VEH_SHIP &&
+									d->vehicle->type != VEH_AIRCRAFT) {
+								icon_via = STR_DEPARTURES_STATION_PORTAIRPORT;
+							} else if (st->facilities & FACIL_DOCK &&
+									d->vehicle->type != VEH_SHIP) {
+								icon_via = STR_DEPARTURES_STATION_PORT;
+							} else if (st->facilities & FACIL_AIRPORT &&
+									d->vehicle->type != VEH_AIRCRAFT) {
+								icon_via = STR_DEPARTURES_STATION_AIRPORT;
+							}
 						}
+
+						char buf[256];
+						int64 args_array[] = { Waypoint::IsValidID(id) ? STR_WAYPOINT_NAME : STR_STATION_NAME, id, icon_via };
+						StringParameters tmp_params(args_array);
+						char *end = GetStringWithArgs(buf, STR_DEPARTURES_VIA_DESCRIPTOR, &tmp_params, lastof(buf));
+						_temp_special_strings[temp_str].assign(buf, end);
+					};
+					get_single_via_string(0, via);
+
+					if (via2 != INVALID_STATION) {
+						get_single_via_string(1, via2);
+
+						char buf[512];
+						int64 args_array[] = { SPECSTR_TEMP_START, SPECSTR_TEMP_START + 1 };
+						StringParameters tmp_params(args_array);
+						char *end = GetStringWithArgs(buf, STR_DEPARTURES_VIA_AND, &tmp_params, lastof(buf));
+						_temp_special_strings[0].assign(buf, end);
 					}
 
-					char buf[256];
-					int64 args_array[] = { Waypoint::IsValidID(id) ? STR_WAYPOINT_NAME : STR_STATION_NAME, id, icon_via };
-					StringParameters tmp_params(args_array);
-					char *end = GetStringWithArgs(buf, STR_DEPARTURES_VIA_DESCRIPTOR, &tmp_params, lastof(buf));
-					_temp_special_strings[temp_str].assign(buf, end);
+					SetDParam(offset, SPECSTR_TEMP_START);
 				};
-				get_single_via_string(0, via);
-
-				if (via2 != INVALID_STATION) {
-					get_single_via_string(1, via2);
-
-					char buf[512];
-					int64 args_array[] = { SPECSTR_TEMP_START, SPECSTR_TEMP_START + 1 };
-					StringParameters tmp_params(args_array);
-					char *end = GetStringWithArgs(buf, STR_DEPARTURES_VIA_AND, &tmp_params, lastof(buf));
-					_temp_special_strings[0].assign(buf, end);
-				}
-
-				SetDParam(offset, SPECSTR_TEMP_START);
-			};
-			/* Show the terminus and the via station. */
-			SetDParam(0, d->terminus.station);
-			SetDParam(1, icon);
-			set_via_dparams(2);
-			int text_width = (GetStringBoundingBox(STR_DEPARTURES_TERMINUS_VIA_STATION)).width;
-
-			if (text_width < text_right - status_width - (toc_width + veh_width + group_width + 2) - 2 - (text_left + time_width + type_width + 6)) {
-				/* They will both fit, so show them both. */
+				/* Show the terminus and the via station. */
 				SetDParam(0, d->terminus.station);
 				SetDParam(1, icon);
 				set_via_dparams(2);
-				ltr ? DrawString(              text_left + time_width + type_width + 6, text_right - status_width - (toc_width + veh_width + group_width + 2) - 2, y + 1, STR_DEPARTURES_TERMINUS_VIA_STATION)
-					: DrawString(text_left + status_width + (toc_width + veh_width + group_width + 2) + 2,               text_right - time_width - type_width - 6, y + 1, STR_DEPARTURES_TERMINUS_VIA_STATION);
-			} else {
-				/* They won't both fit, so switch between showing the terminus and the via station approximately every 4 seconds. */
-				if ((this->elapsed_ms >> 12) & 1) {
-					set_via_dparams(0);
-					ltr ? DrawString(              text_left + time_width + type_width + 6, text_right - status_width - (toc_width + veh_width + group_width + 2) - 2, y + 1, STR_DEPARTURES_VIA)
-						: DrawString(text_left + status_width + (toc_width + veh_width + group_width + 2) + 2,               text_right - time_width - type_width - 6, y + 1, STR_DEPARTURES_VIA);
-				} else {
+				int text_width = (GetStringBoundingBox(STR_DEPARTURES_TERMINUS_VIA_STATION)).width;
+
+				if (dest_left + text_width < dest_right) {
+					/* They will both fit, so show them both. */
 					SetDParam(0, d->terminus.station);
 					SetDParam(1, icon);
-					ltr ? DrawString(              text_left + time_width + type_width + 6, text_right - status_width - (toc_width + veh_width + group_width + 2) - 2, y + 1, STR_DEPARTURES_TERMINUS_VIA)
-						: DrawString(text_left + status_width + (toc_width + veh_width + group_width + 2) + 2,               text_right - time_width - type_width - 6, y + 1, STR_DEPARTURES_TERMINUS_VIA);
+					set_via_dparams(2);
+					DrawString(dest_left, dest_right, y + 1, STR_DEPARTURES_TERMINUS_VIA_STATION);
+				} else {
+					/* They won't both fit, so switch between showing the terminus and the via station approximately every 4 seconds. */
+					if ((this->elapsed_ms >> 12) & 1) {
+						set_via_dparams(0);
+						DrawString(dest_left, dest_right, y + 1, STR_DEPARTURES_VIA);
+					} else {
+						SetDParam(0, d->terminus.station);
+						SetDParam(1, icon);
+						DrawString(dest_left, dest_right, y + 1, STR_DEPARTURES_TERMINUS_VIA);
+					}
+					this->scroll_refresh = true;
 				}
-				this->scroll_refresh = true;
 			}
 		}
 
 		/* Status */
 		{
-			int status_left = ltr ? text_right - status_width - 2 - (toc_width + veh_width + group_width + 2) : text_left + (toc_width + veh_width + group_width + 2) + 2;
-			int status_right = ltr ? text_right - (toc_width + veh_width + group_width + 2) + 2 : text_left + status_width + 2 + (toc_width + veh_width + group_width + 2);
+			const int status_left = ltr ? text_right - PadWidth(toc_width) - PadWidth(group_width) - PadWidth(veh_width) - status_width : text_left + PadWidth(toc_width) + PadWidth(group_width) + PadWidth(veh_width);
+			const int status_right = ltr ? text_right - PadWidth(toc_width) - PadWidth(group_width) - PadWidth(veh_width) : text_left + PadWidth(toc_width) + PadWidth(group_width) + PadWidth(veh_width) + status_width;
 
 			if (d->status == D_ARRIVED) {
 				/* The vehicle has arrived. */
@@ -949,26 +953,30 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 		}
 
 		/* Vehicle name */
-
 		if (_settings_client.gui.departure_show_vehicle) {
+			const int veh_left = ltr ? text_right - PadWidth(toc_width) - PadWidth(group_width) - veh_width : text_left + PadWidth(toc_width) + PadWidth(group_width);
+			const int veh_right = ltr ? text_right - PadWidth(toc_width) - PadWidth(group_width) : text_left + PadWidth(toc_width) + PadWidth(group_width) + veh_width;
+
 			SetDParam(0, (uint64)(d->vehicle->index));
-			ltr ? DrawString(text_right - (toc_width + veh_width + group_width + 2),              text_right - toc_width - group_width - 2, y + 1, STR_DEPARTURES_VEH)
-				: DrawString(               text_left + toc_width + group_width + 2, text_left + (toc_width + veh_width + group_width + 2), y + 1, STR_DEPARTURES_VEH);
+			DrawString(veh_left, veh_right, y + 1, STR_DEPARTURES_VEH);
 		}
 
 		/* Group name */
-
 		if (_settings_client.gui.departure_show_group && d->vehicle->group_id != INVALID_GROUP && d->vehicle->group_id != DEFAULT_GROUP) {
+			const int group_left = ltr ? text_right - PadWidth(toc_width) - group_width : text_left + PadWidth(toc_width);
+			const int group_right = ltr ? text_right - PadWidth(toc_width) : text_left + PadWidth(toc_width) + group_width;
+
 			SetDParam(0, (uint64)(d->vehicle->group_id | GROUP_NAME_HIERARCHY));
-			ltr ? DrawString(text_right - (toc_width + group_width + 2),              text_right - toc_width - 2, y + 1, STR_DEPARTURES_GROUP)
-				: DrawString(               text_left + toc_width + 2, text_left + (toc_width + group_width + 2), y + 1, STR_DEPARTURES_GROUP);
+			DrawString(group_left, group_right, y + 1, STR_DEPARTURES_GROUP);
 		}
 
 		/* Operating company */
 		if (_settings_client.gui.departure_show_company) {
+			const int toc_left = ltr ? text_right - toc_width : text_left;
+			const int toc_right = ltr ? text_right : text_left + toc_width;
+
 			SetDParam(0, (uint64)(d->vehicle->owner));
-			ltr ? DrawString(text_right - toc_width,            text_right, y + 1, STR_DEPARTURES_TOC, TC_FROMSTRING, SA_RIGHT)
-				: DrawString(             text_left, text_left + toc_width, y + 1, STR_DEPARTURES_TOC, TC_FROMSTRING, SA_LEFT);
+			DrawString(toc_left, toc_right, y + 1, STR_DEPARTURES_TOC, TC_FROMSTRING, SA_RIGHT);
 		}
 
 		int bottom_y = y + this->entry_height - small_font_size - (_settings_client.gui.departure_larger_font ? 1 : 3);
