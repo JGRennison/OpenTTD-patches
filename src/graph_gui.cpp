@@ -1480,7 +1480,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 
 		this->num_on_x_axis = MAX_STATION_CARGO_HISTORY_DAYS; // Four weeks
 		this->num_vert_lines = MAX_STATION_CARGO_HISTORY_DAYS;
-		this->month = 0xFF;
+		this->draw_dates = false;
 		this->x_values_start = 2;
 		this->x_values_increment = 2;
 
