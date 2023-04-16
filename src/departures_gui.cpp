@@ -172,19 +172,23 @@ protected:
 							&& order->GetDestination() == this->station) {
 						this->vehicles.push_back(v);
 
-						if (v->name.empty() && !(v->group_id != DEFAULT_GROUP && _settings_client.gui.vehicle_names != 0)) {
-							if (v->unitnumber > unitnumber_max[v->type]) unitnumber_max[v->type] = v->unitnumber;
-						} else {
-							SetDParam(0, (uint64)(v->index));
-							int width = (GetStringBoundingBox(STR_DEPARTURES_VEH)).width + 4;
-							if (width > this->veh_width) this->veh_width = width;
+						if (_settings_client.gui.departure_show_vehicle) {
+							if (v->name.empty() && !(v->group_id != DEFAULT_GROUP && _settings_client.gui.vehicle_names != 0)) {
+								if (v->unitnumber > unitnumber_max[v->type]) unitnumber_max[v->type] = v->unitnumber;
+							} else {
+								SetDParam(0, (uint64)(v->index));
+								int width = (GetStringBoundingBox(STR_DEPARTURES_VEH)).width + 4;
+								if (width > this->veh_width) this->veh_width = width;
+							}
 						}
 
-						if (v->group_id != INVALID_GROUP && v->group_id != DEFAULT_GROUP) {
+						if (v->group_id != INVALID_GROUP && v->group_id != DEFAULT_GROUP && _settings_client.gui.departure_show_group) {
 							groups.insert(v->group_id);
 						}
 
-						SetBit(companies, v->owner);
+						if (_settings_client.gui.departure_show_company) {
+							SetBit(companies, v->owner);
+						}
 						break;
 					}
 				}
