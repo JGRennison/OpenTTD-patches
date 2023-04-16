@@ -814,7 +814,8 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 
 			type += offset;
 
-			DrawString(text_left + time_width + 3, text_left + time_width + type_width + 3, y, type);
+			const int icon_left = ltr ? text_left + time_width + ScaleGUITrad(3) : text_right - time_width - ScaleGUITrad(3) - type_width;
+			DrawString(icon_left, icon_left + type_width, y, type);
 		}
 
 		/* The icons to show with the destination and via stations. */
