@@ -379,15 +379,14 @@ char *OneOfManySettingDesc::FormatSingleValue(char *buf, const char *last, uint 
 	return strecpy(buf, this->many[id].c_str(), last);
 }
 
-void OneOfManySettingDesc::FormatValue(char *buf, const char *last, const void *object) const
+void OneOfManySettingDesc::FormatIntValue(char *buf, const char *last, uint32 value) const
 {
-	uint id = (uint)this->Read(object);
-	this->FormatSingleValue(buf, last, id);
+	this->FormatSingleValue(buf, last, value);
 }
 
-void ManyOfManySettingDesc::FormatValue(char *buf, const char *last, const void *object) const
+void ManyOfManySettingDesc::FormatIntValue(char *buf, const char *last, uint32 value) const
 {
-	uint bitmask = (uint)this->Read(object);
+	uint bitmask = (uint)value;
 	if (bitmask == 0) {
 		buf[0] = '\0';
 		return;
@@ -766,13 +765,17 @@ static void IniSaveSettings(IniFile &ini, const SettingTable &settings_table, co
 void IntSettingDesc::FormatValue(char *buf, const char *last, const void *object) const
 {
 	uint32 i = (uint32)this->Read(object);
-	seprintf(buf, last, IsSignedVarMemType(this->save.conv) ? "%d" : "%u", i);
+	this->FormatIntValue(buf, last, i);
 }
 
-void BoolSettingDesc::FormatValue(char *buf, const char *last, const void *object) const
+void IntSettingDesc::FormatIntValue(char *buf, const char *last, uint32 value) const
 {
-	bool val = this->Read(object) != 0;
-	strecpy(buf, val ? "true" : "false", last);
+	seprintf(buf, last, IsSignedVarMemType(this->save.conv) ? "%d" : "%u", value);
+}
+
+void BoolSettingDesc::FormatIntValue(char *buf, const char *last, uint32 value) const
+{
+	strecpy(buf, (value != 0) ? "true" : "false", last);
 }
 
 bool IntSettingDesc::IsSameValue(const IniItem *item, void *object) const
@@ -2862,7 +2865,7 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 	}
 }
 
-static void IConsoleListSettingsTable(const SettingTable &table, const char *prefilter)
+static void IConsoleListSettingsTable(const SettingTable &table, const char *prefilter, bool show_defaults)
 {
 	for (auto &sd : table) {
 		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
@@ -2870,7 +2873,15 @@ static void IConsoleListSettingsTable(const SettingTable &table, const char *pre
 		if ((sd->flags & SF_NO_NEWGAME) && _game_mode == GM_MENU) continue;
 		char value[80];
 		sd->FormatValue(value, lastof(value), &GetGameSettings());
-		IConsolePrintF(CC_DEFAULT, "%s = %s", sd->name, value);
+		if (show_defaults && sd->IsIntSetting()) {
+			const IntSettingDesc *int_setting = sd->AsIntSetting();
+			char defvalue[80];
+			int_setting->FormatIntValue(defvalue, lastof(defvalue), int_setting->def);
+			TextColour colour = (int_setting->Read(&GetGameSettings()) != int_setting->def) ? CC_WARNING : CC_DEFAULT;
+			IConsolePrintF(colour, "%s = %s (default: %s)", sd->name, value, defvalue);
+		} else {
+			IConsolePrintF(CC_DEFAULT, "%s = %s", sd->name, value);
+		}
 	}
 }
 
@@ -2879,18 +2890,18 @@ static void IConsoleListSettingsTable(const SettingTable &table, const char *pre
  *
  * @param prefilter  If not \c nullptr, only list settings with names that begin with \a prefilter prefix
  */
-void IConsoleListSettings(const char *prefilter)
+void IConsoleListSettings(const char *prefilter, bool show_defaults)
 {
-	IConsolePrintF(CC_WARNING, "All settings with their current value:");
+	IConsolePrintF(CC_WARNING, "All settings with their current %s:", show_defaults ? "and default values" : "value");
 
 	for (auto &table : _generic_setting_tables) {
-		IConsoleListSettingsTable(table, prefilter);
+		IConsoleListSettingsTable(table, prefilter, show_defaults);
 	}
 	for (auto &table : _private_setting_tables) {
-		IConsoleListSettingsTable(table, prefilter);
+		IConsoleListSettingsTable(table, prefilter, show_defaults);
 	}
 	for (auto &table : _secrets_setting_tables) {
-		IConsoleListSettingsTable(table, prefilter);
+		IConsoleListSettingsTable(table, prefilter, show_defaults);
 	}
 
 	IConsolePrintF(CC_WARNING, "Use 'setting' command to change a value");

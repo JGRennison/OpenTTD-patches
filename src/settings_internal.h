@@ -220,6 +220,7 @@ struct IntSettingDesc : SettingDesc {
 
 	virtual size_t ParseValue(const char *str) const;
 	void FormatValue(char *buf, const char *last, const void *object) const override;
+	virtual void FormatIntValue(char *buf, const char *last, uint32 value) const;
 	void ParseValue(const IniItem *item, void *object) const override;
 	bool IsSameValue(const IniItem *item, void *object) const override;
 	int32 Read(const void *object) const;
@@ -239,7 +240,7 @@ struct BoolSettingDesc : IntSettingDesc {
 
 	bool IsBoolSetting() const override { return true; }
 	size_t ParseValue(const char *str) const override;
-	void FormatValue(char *buf, const char *last, const void *object) const override;
+	void FormatIntValue(char *buf, const char *last, uint32 value) const override;
 };
 
 /** One of many setting. */
@@ -264,7 +265,7 @@ struct OneOfManySettingDesc : IntSettingDesc {
 	char *FormatSingleValue(char *buf, const char *last, uint id) const;
 
 	size_t ParseValue(const char *str) const override;
-	void FormatValue(char *buf, const char *last, const void *object) const override;
+	void FormatIntValue(char *buf, const char *last, uint32 value) const override;
 };
 
 /** Many of many setting. */
@@ -278,7 +279,7 @@ struct ManyOfManySettingDesc : OneOfManySettingDesc {
 	virtual ~ManyOfManySettingDesc() {}
 
 	size_t ParseValue(const char *str) const override;
-	void FormatValue(char *buf, const char *last, const void *object) const override;
+	void FormatIntValue(char *buf, const char *last, uint32 value) const override;
 };
 
 /** String settings. */

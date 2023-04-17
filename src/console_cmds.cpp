@@ -2340,7 +2340,20 @@ DEF_CONSOLE_CMD(ConListSettings)
 
 	if (argc > 2) return false;
 
-	IConsoleListSettings((argc == 2) ? argv[1] : nullptr);
+	IConsoleListSettings((argc == 2) ? argv[1] : nullptr, false);
+	return true;
+}
+
+DEF_CONSOLE_CMD(ConListSettingsDefaults)
+{
+	if (argc == 0) {
+		IConsoleHelp("List settings and also show default value. Usage: 'list_settings_def [<pre-filter>]'");
+		return true;
+	}
+
+	if (argc > 2) return false;
+
+	IConsoleListSettings((argc == 2) ? argv[1] : nullptr, true);
 	return true;
 }
 
@@ -3711,6 +3724,7 @@ void IConsoleStdLibRegister()
 	IConsole::CmdRegister("setting",                 ConSetting);
 	IConsole::CmdRegister("setting_newgame",         ConSettingNewgame);
 	IConsole::CmdRegister("list_settings",           ConListSettings);
+	IConsole::CmdRegister("list_settings_def",       ConListSettingsDefaults);
 	IConsole::CmdRegister("gamelog",                 ConGamelogPrint);
 	IConsole::CmdRegister("rescan_newgrf",           ConRescanNewGRF);
 	IConsole::CmdRegister("list_dirs",               ConListDirs);
