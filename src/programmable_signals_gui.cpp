@@ -368,7 +368,7 @@ public:
 
 				int selected;
 				DropDownList list = GetSlotDropDownList(this->GetOwner(), sc->slot_id, selected, VEH_TRAIN, true);
-				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, PROGRAM_WIDGET_COND_SLOT, 0, true);
+				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, PROGRAM_WIDGET_COND_SLOT);
 			} break;
 
 			case PROGRAM_WIDGET_COND_COUNTER: {
@@ -380,7 +380,7 @@ public:
 
 				int selected;
 				DropDownList list = GetCounterDropDownList(this->GetOwner(), sc->ctr_id, selected);
-				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, PROGRAM_WIDGET_COND_COUNTER, 0, true);
+				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, PROGRAM_WIDGET_COND_COUNTER);
 			} break;
 
 			case PROGRAM_WIDGET_COND_SET_SIGNAL: {

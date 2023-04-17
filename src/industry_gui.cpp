@@ -3118,7 +3118,7 @@ struct IndustryCargoesWindow : public Window {
 					add_item(STR_INDUSTRY_CARGOES_PRODUCERS, ILM_IN);
 					add_item(STR_INDUSTRY_CARGOES_CUSTOMERS, ILM_OUT);
 					int selected = (this->IsWidgetLowered(WID_IC_NOTIFY)) ? (int)_link_mode : -1;
-					ShowDropDownList(this, std::move(list), selected, WID_IC_NOTIFY, 0, true);
+					ShowDropDownList(this, std::move(list), selected, WID_IC_NOTIFY);
 				}
 				break;
 
@@ -3129,7 +3129,7 @@ struct IndustryCargoesWindow : public Window {
 				}
 				if (!lst.empty()) {
 					int selected = (this->ind_cargo >= NUM_INDUSTRYTYPES) ? (int)(this->ind_cargo - NUM_INDUSTRYTYPES) : -1;
-					ShowDropDownList(this, std::move(lst), selected, WID_IC_CARGO_DROPDOWN, 0, true);
+					ShowDropDownList(this, std::move(lst), selected, WID_IC_CARGO_DROPDOWN);
 				}
 				break;
 			}
@@ -3143,7 +3143,7 @@ struct IndustryCargoesWindow : public Window {
 				}
 				if (!lst.empty()) {
 					int selected = (this->ind_cargo < NUM_INDUSTRYTYPES) ? (int)this->ind_cargo : -1;
-					ShowDropDownList(this, std::move(lst), selected, WID_IC_IND_DROPDOWN, 0, true);
+					ShowDropDownList(this, std::move(lst), selected, WID_IC_IND_DROPDOWN);
 				}
 				break;
 			}

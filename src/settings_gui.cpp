@@ -2745,7 +2745,7 @@ struct GameSettingsWindow : Window {
 						}
 					}
 
-					ShowDropDownListAt(this, std::move(list), value, -1, wi_rect, COLOUR_ORANGE, true);
+					ShowDropDownListAt(this, std::move(list), value, -1, wi_rect, COLOUR_ORANGE);
 				}
 			}
 			this->SetDirty();
