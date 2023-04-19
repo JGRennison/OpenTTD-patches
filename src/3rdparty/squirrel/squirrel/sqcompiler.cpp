@@ -3,6 +3,7 @@
  */
 
 #include "../../../stdafx.h"
+#include "../../../core/format.hpp"
 
 #include <squirrel.h>
 #include "sqpcheader.h"
@@ -65,16 +66,6 @@ public:
 		_lineinfo = lineinfo;_raiseerror = raiseerror;
 	}
 
-	[[noreturn]] void Error(const SQChar *s, ...) WARN_FORMAT(2, 3)
-	{
-		static SQChar temp[256];
-		va_list vl;
-		va_start(vl, s);
-		vseprintf(temp, lastof(temp), s, vl);
-		va_end(vl);
-		throw CompileException(temp);
-	}
-
 	[[noreturn]] void Error(const std::string &msg)
 	{
 		throw CompileException(msg);
@@ -123,9 +114,9 @@ public:
 					default:
 						etypename = _lex.Tok2Str(tok);
 					}
-					Error("expected '%s'", etypename);
+					Error(fmt::format("expected '{}'", etypename));
 				}
-				Error("expected '%c'", (char)tok);
+				Error(fmt::format("expected '{:c}'", tok));
 			}
 		}
 		SQObjectPtr ret;
@@ -650,7 +641,7 @@ public:
 							Expect('.'); constid = Expect(TK_IDENTIFIER);
 							if(!_table(constant)->Get(constid,constval)) {
 								constval.Null();
-								Error("invalid constant [%s.%s]", _stringval(id),_stringval(constid));
+								Error(fmt::format("invalid constant [{}.{}]", _stringval(id),_stringval(constid)));
 							}
 						}
 						else {
