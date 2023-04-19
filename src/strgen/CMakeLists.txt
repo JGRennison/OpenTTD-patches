@@ -10,7 +10,9 @@ if (NOT HOST_BINARY_DIR)
             strgen_base.cpp
             ../core/alloc_func.cpp
             ../misc/getoptdata.cpp
+            ../error.cpp
             ../string.cpp
+            ../3rdparty/fmt/format.cc
     )
     add_definitions(-DSTRGEN)
     add_executable(strgen ${sourcefiles})

@@ -17,6 +17,7 @@
 #include "newgrf_engine.h"
 #include "newgrf_sound.h"
 #include "spritecache.h"
+#include "error_func.h"
 #include "strings_func.h"
 #include "command_func.h"
 #include "window_func.h"
@@ -1728,7 +1729,7 @@ static void AircraftEventHandler_AtTerminal(Aircraft *v, const AirportFTAClass *
 
 static void AircraftEventHandler_General(Aircraft *, const AirportFTAClass *)
 {
-	error("OK, you shouldn't be here, check your Airport Scheme!");
+	FatalError("OK, you shouldn't be here, check your Airport Scheme!");
 }
 
 static void AircraftEventHandler_TakeOff(Aircraft *v, const AirportFTAClass *)

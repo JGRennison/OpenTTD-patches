@@ -10,6 +10,7 @@
 #include "stdafx.h"
 #include "debug.h"
 #include "error.h"
+#include "error_func.h"
 #include "sound/sound_driver.hpp"
 #include "music/music_driver.hpp"
 #include "video/video_driver.hpp"
@@ -89,8 +90,8 @@ void DriverFactoryBase::SelectDriver(const std::string &name, Driver::Type type)
 {
 	if (!DriverFactoryBase::SelectDriverImpl(name, type)) {
 		name.empty() ?
-			usererror("Failed to autoprobe %s driver", GetDriverTypeName(type)) :
-			usererror("Failed to select requested %s driver '%s'", GetDriverTypeName(type), name.c_str());
+			UserError("Failed to autoprobe {} driver", GetDriverTypeName(type)) :
+			UserError("Failed to select requested {} driver '{}'", GetDriverTypeName(type), name.c_str());
 	}
 }
 
@@ -160,7 +161,7 @@ bool DriverFactoryBase::SelectDriverImpl(const std::string &name, Driver::Type t
 				}
 			}
 		}
-		usererror("Couldn't find any suitable %s driver", GetDriverTypeName(type));
+		UserError("Couldn't find any suitable {} driver", GetDriverTypeName(type));
 	} else {
 		/* Extract the driver name and put parameter list in parm */
 		std::istringstream buffer(name);
@@ -189,7 +190,7 @@ bool DriverFactoryBase::SelectDriverImpl(const std::string &name, Driver::Type t
 			const char *err = newd->Start(parms);
 			if (err != nullptr) {
 				delete newd;
-				usererror("Unable to load driver '%s'. The error was: %s", d->name, err);
+				UserError("Unable to load driver '{}'. The error was: {}", d->name, err);
 			}
 
 			DEBUG(driver, 1, "Successfully loaded %s driver '%s'", GetDriverTypeName(type), d->name);
@@ -197,7 +198,7 @@ bool DriverFactoryBase::SelectDriverImpl(const std::string &name, Driver::Type t
 			*GetActiveDriver(type) = newd;
 			return true;
 		}
-		usererror("No such %s driver: %s\n", GetDriverTypeName(type), dname.c_str());
+		UserError("No such {} driver: {}\n", GetDriverTypeName(type), dname);
 	}
 }
 

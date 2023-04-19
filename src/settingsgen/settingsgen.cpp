@@ -12,6 +12,7 @@
 #include "../strings_type.h"
 #include "../misc/getoptdata.h"
 #include "../ini_type.h"
+#include "../error_func.h"
 #include "../core/mem_func.hpp"
 
 #include <stdarg.h>
@@ -28,14 +29,9 @@
  * @param s Format string.
  * @note Function does not return.
  */
-[[noreturn]] void CDECL error(const char *s, ...)
+[[noreturn]] void FatalErrorI(const std::string &msg)
 {
-	char buf[1024];
-	va_list va;
-	va_start(va, s);
-	vseprintf(buf, lastof(buf), s, va);
-	va_end(va);
-	fprintf(stderr, "settingsgen: FATAL: %s\n", buf);
+	fmt::print(stderr, "settingsgen: FATAL: {}\n", msg);
 	exit(1);
 }
 
@@ -72,7 +68,7 @@ public:
 	void Write(FILE *out_fp) const
 	{
 		if (fwrite(this->data, 1, this->size, out_fp) != this->size) {
-			error("Cannot write output");
+			FatalError("Cannot write output");
 		}
 	}
 
@@ -181,7 +177,7 @@ struct SettingsIniFile : IniLoadFile {
 
 	void ReportFileError(const char * const pre, const char * const buffer, const char * const post) override
 	{
-		error("%s%s%s", pre, buffer, post);
+		FatalError("{}{}{}", pre, buffer, post);
 	}
 };
 
@@ -314,7 +310,7 @@ static void DumpSections(const IniLoadFile &ifile)
 
 		const IniItem *template_item = templates_grp->GetItem(grp.name); // Find template value.
 		if (template_item == nullptr || !template_item->value.has_value()) {
-			error("Cannot find template %s", grp.name.c_str());
+			FatalError("Cannot find template {}", grp.name);
 		}
 		DumpLine(template_item, &grp, default_grp, _stored_output);
 
@@ -338,7 +334,7 @@ static void AppendFile(const char *fname, FILE *out_fp)
 
 	FILE *in_fp = fopen(fname, "r");
 	if (in_fp == nullptr) {
-		error("Cannot open file %s for copying", fname);
+		FatalError("Cannot open file {} for copying", fname);
 	}
 
 	char buffer[4096];
@@ -346,7 +342,7 @@ static void AppendFile(const char *fname, FILE *out_fp)
 	do {
 		length = fread(buffer, 1, lengthof(buffer), in_fp);
 		if (fwrite(buffer, 1, length, out_fp) != length) {
-			error("Cannot copy file");
+			FatalError("Cannot copy file");
 		}
 	} while (length == lengthof(buffer));
 
@@ -367,7 +363,7 @@ static bool CompareFiles(const char *n1, const char *n2)
 	FILE *f1 = fopen(n1, "rb");
 	if (f1 == nullptr) {
 		fclose(f2);
-		error("can't open %s", n1);
+		FatalError("can't open {}", n1);
 	}
 
 	size_t l1, l2;
@@ -491,7 +487,7 @@ int CDECL main(int argc, char *argv[])
 
 		FILE *fp = fopen(tmp_output, "w");
 		if (fp == nullptr) {
-			error("Cannot open file %s", tmp_output);
+			FatalError("Cannot open file {}", tmp_output);
 		}
 		AppendFile(before_file, fp);
 		_stored_output.Write(fp);
@@ -508,7 +504,7 @@ int CDECL main(int argc, char *argv[])
 			unlink(output_file);
 #endif
 			if (rename(tmp_output, output_file) == -1) {
-				error("rename(%s, %s) failed: %s", tmp_output, output_file, StrErrorDumper().GetLast());
+				FatalError("rename({}, {}) failed: {}", tmp_output, output_file, StrErrorDumper().GetLast());
 			}
 		}
 	}

@@ -14,6 +14,7 @@
 #include "../command_func.h"
 #include "../command_aux.h"
 #include "../company_func.h"
+#include "../error_func.h"
 #include "../settings_type.h"
 
 #include "../safeguards.h"
@@ -154,7 +155,7 @@ void NetworkExecuteLocalCommandQueue()
 		if (_frame_counter > cp->frame) {
 			/* If we reach here, it means for whatever reason, we've already executed
 			 * past the command we need to execute. */
-			error("[net] Trying to execute a packet in the past!");
+			FatalError("[net] Trying to execute a packet in the past!");
 		}
 
 		/* We can execute this command */

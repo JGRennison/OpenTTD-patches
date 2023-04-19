@@ -17,6 +17,7 @@
 
 #include "fontcache.h"
 #include "error.h"
+#include "error_func.h"
 #include "gui.h"
 
 #include "base_media_base.h"
@@ -138,9 +139,14 @@ std::mutex _music_driver_mutex;
 static std::string _music_driver_params;
 static std::atomic<bool> _music_inited;
 
-[[noreturn]] void usererror_str(const char *msg)
+/**
+ * Error handling for fatal user errors.
+ * @param str the string to print.
+ * @note Does NEVER return.
+ */
+void UserErrorI(const std::string &str)
 {
-	ShowOSErrorBox(msg, false);
+	ShowOSErrorBox(str.c_str(), false);
 	if (VideoDriver::GetInstance() != nullptr) VideoDriver::GetInstance()->Stop();
 
 #ifdef __EMSCRIPTEN__
@@ -152,23 +158,6 @@ static std::atomic<bool> _music_inited;
 #endif
 
 	_exit(1);
-}
-
-/**
- * Error handling for fatal user errors.
- * @param s the string to print.
- * @note Does NEVER return.
- */
-void CDECL usererror(const char *s, ...)
-{
-	va_list va;
-	char buf[512];
-
-	va_start(va, s);
-	vseprintf(buf, lastof(buf), s, va);
-	va_end(va);
-
-	usererror_str(buf);
 }
 
 [[noreturn]] static void fatalerror_common(const char *msg)
@@ -184,28 +173,14 @@ void CDECL usererror(const char *s, ...)
 
 /**
  * Error handling for fatal non-user errors.
- * @param s the string to print.
+ * @param str the string to print.
  * @note Does NEVER return.
  */
-void CDECL error(const char *s, ...)
+void FatalErrorI(const std::string &str)
 {
 	if (CrashLog::HaveAlreadyCrashed()) DoOSAbort();
 
-	va_list va;
-	char buf[2048];
-
-	va_start(va, s);
-	vseprintf(buf, lastof(buf), s, va);
-	va_end(va);
-
-	fatalerror_common(buf);
-}
-
-void fatalerror_str(const char *msg)
-{
-	if (CrashLog::HaveAlreadyCrashed()) DoOSAbort();
-
-	fatalerror_common(msg);
+	fatalerror_common(str.c_str());
 }
 
 void CDECL assert_msg_error(int line, const char *file, const char *expr, const char *extra, const char *str, ...)
@@ -227,18 +202,6 @@ void CDECL assert_msg_error(int line, const char *file, const char *expr, const 
 	va_end(va);
 
 	fatalerror_common(buf);
-}
-
-void assert_str_error(int line, const char *file, const char *expr, const char *str)
-{
-	char buf[2048];
-	seprintf(buf, lastof(buf), "Assertion failed at line %i of %s: %s\n%s", line, file, expr, str);
-	fatalerror_common(buf);
-}
-
-void assert_str_error(int line, const char *file, const char *expr, const std::string &str)
-{
-	assert_str_error(line, file, expr, str.c_str());
 }
 
 const char *assert_tile_info(uint32_t tile) {
@@ -1002,8 +965,8 @@ int openttd_main(std::span<char * const> arguments)
 			BlitterFactory::SelectBlitter("32bpp-anim") == nullptr) {
 		if (BlitterFactory::SelectBlitter(blitter) == nullptr) {
 			blitter.empty() ?
-				usererror("Failed to autoprobe blitter") :
-				usererror("Failed to select requested blitter '%s'; does it exist?", blitter.c_str());
+				UserError("Failed to autoprobe blitter") :
+				UserError("Failed to select requested blitter '{}'; does it exist?", blitter.c_str());
 		}
 	}
 
@@ -1035,7 +998,7 @@ int openttd_main(std::span<char * const> arguments)
 	if (sounds_set.empty() && !BaseSounds::ini_set.empty()) sounds_set = BaseSounds::ini_set;
 	if (!BaseSounds::SetSetByName(sounds_set)) {
 		if (sounds_set.empty() || !BaseSounds::SetSet({})) {
-			usererror("Failed to find a sounds set. Please acquire a sounds set for OpenTTD. See section 1.4 of README.md.");
+			UserError("Failed to find a sounds set. Please acquire a sounds set for OpenTTD. See section 1.4 of README.md.");
 		} else {
 			ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND);
 			msg.SetDParamStr(0, sounds_set);
@@ -1047,7 +1010,7 @@ int openttd_main(std::span<char * const> arguments)
 	if (music_set.empty() && !BaseMusic::ini_set.empty()) music_set = BaseMusic::ini_set;
 	if (!BaseMusic::SetSetByName(music_set)) {
 		if (music_set.empty() || !BaseMusic::SetSet({})) {
-			usererror("Failed to find a music set. Please acquire a music set for OpenTTD. See section 1.4 of README.md.");
+			UserError("Failed to find a music set. Please acquire a music set for OpenTTD. See section 1.4 of README.md.");
 		} else {
 			ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND);
 			msg.SetDParamStr(0, music_set);

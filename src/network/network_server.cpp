@@ -32,6 +32,7 @@
 #include "../timer/timer.h"
 #include "../timer/timer_game_realtime.h"
 #include "../crashlog.h"
+#include "../error_func.h"
 #include "../3rdparty/monocypher/monocypher.h"
 #include <mutex>
 #include <condition_variable>
@@ -675,7 +676,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendMap()
 		/* Make a dump of the current game */
 		SaveModeFlags flags = SMF_NET_SERVER;
 		if (this->supports_zstd) flags |= SMF_ZSTD_OK;
-		if (SaveWithFilter(this->savegame, true, flags) != SL_OK) usererror("network savedump failed");
+		if (SaveWithFilter(this->savegame, true, flags) != SL_OK) UserError("network savedump failed");
 	}
 
 	if (this->status == STATUS_MAP) {

@@ -14,6 +14,7 @@
 #include "debug.h"
 #include "ini_type.h"
 #include "string_func.h"
+#include "error_func.h"
 
 extern void CheckExternalFiles();
 
@@ -386,7 +387,7 @@ template <class Tbase_set>
 		if (index == 0) return s;
 		index--;
 	}
-	error("Base" SET_TYPE "::GetSet(): index %d out of range", index);
+	FatalError("Base" SET_TYPE "::GetSet(): index {} out of range", index);
 }
 
 /**

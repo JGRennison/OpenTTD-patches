@@ -12,6 +12,7 @@
 #include "font_osx.h"
 #include "../../core/math_func.hpp"
 #include "../../blitter/factory.hpp"
+#include "../../error_func.h"
 #include "../../fileio_func.h"
 #include "../../fontdetection.h"
 #include "../../string_func.h"
@@ -216,7 +217,7 @@ const Sprite *CoreTextFontCache::InternalGetGlyph(GlyphID key, bool use_aa)
 	} else {
 		bounds = CTFontGetBoundingRectsForGlyphs(this->font.get(), kCTFontOrientationDefault, &glyph, nullptr, 1);
 	}
-	if (CGRectIsNull(bounds)) usererror("Unable to render font glyph");
+	if (CGRectIsNull(bounds)) UserError("Unable to render font glyph");
 
 	uint bb_width = (uint)std::ceil(bounds.size.width) + 1; // Sometimes the glyph bounds are too tight and cut of the last pixel after rounding.
 	uint bb_height = (uint)std::ceil(bounds.size.height);
@@ -227,7 +228,7 @@ const Sprite *CoreTextFontCache::InternalGetGlyph(GlyphID key, bool use_aa)
 	uint height = std::max(1U, bb_height + shadow);
 
 	/* Limit glyph size to prevent overflows later on. */
-	if (width > MAX_GLYPH_DIM || height > MAX_GLYPH_DIM) usererror("Font glyph is too large");
+	if (width > MAX_GLYPH_DIM || height > MAX_GLYPH_DIM) UserError("Font glyph is too large");
 
 	SpriteLoader::SpriteCollection spritecollection;
 	SpriteLoader::Sprite &sprite = spritecollection[ZOOM_LVL_MIN];

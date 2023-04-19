@@ -112,12 +112,6 @@ void ShowInfoI(std::string_view str);
 
 #define ShowInfo(format_string, ...) ShowInfoI(fmt::format(FMT_STRING(format_string), ## __VA_ARGS__))
 
-[[noreturn]] void usererror_str(const char *msg);
-[[noreturn]] void fatalerror_str(const char *msg);
-
-#define UserError(format_string, ...) usererror_str(fmt::format(FMT_STRING(format_string), ## __VA_ARGS__).c_str())
-#define FatalError(format_string, ...) fatalerror_str(fmt::format(FMT_STRING(format_string), ## __VA_ARGS__).c_str())
-
 struct log_prefix {
 	const char *GetLogPrefix(bool force = false);
 

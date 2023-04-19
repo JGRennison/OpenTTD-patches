@@ -19,6 +19,7 @@
 #include "signs_base.h"
 #include "fontdetection.h"
 #include "error.h"
+#include "error_func.h"
 #include "strings_func.h"
 #include "rev.h"
 #include "core/endian_func.hpp"
@@ -264,7 +265,7 @@ void GetStringWithArgs(StringBuilder builder, StringID string, StringParameters 
 		case TEXT_TAB_OLD_CUSTOM:
 			/* Old table for custom names. This is no longer used */
 			if (!game_script) {
-				error("Incorrect conversion of custom name string.");
+				FatalError("Incorrect conversion of custom name string.");
 			}
 			break;
 
@@ -289,7 +290,7 @@ void GetStringWithArgs(StringBuilder builder, StringID string, StringParameters 
 		if (game_script) {
 			return GetStringWithArgs(builder, STR_UNDEFINED, args);
 		}
-		error("String 0x%X is invalid. You are probably using an old version of the .lng file.\n", string);
+		FatalError("String 0x{:X} is invalid. You are probably using an old version of the .lng file.\n", string);
 	}
 
 	FormatString(builder, GetStringPtr(string), args, case_index);
@@ -2504,7 +2505,7 @@ void InitializeLanguagePacks()
 		std::string path = FioGetDirectory(sp, LANG_DIR);
 		GetLanguageList(path.c_str());
 	}
-	if (_languages.empty()) usererror("No available language packs (invalid versions?)");
+	if (_languages.empty()) UserError("No available language packs (invalid versions?)");
 
 	/* Acquire the locale of the current system */
 	const char *lang = GetCurrentLocale("LC_MESSAGES");

@@ -8,6 +8,7 @@
 /** @file pool_func.cpp Implementation of PoolBase methods. */
 
 #include "../stdafx.h"
+#include "../error_func.h"
 #include "pool_type.hpp"
 #include "format.hpp"
 
@@ -36,6 +37,11 @@
 }
 
 /* These are here to avoid needing formatting includes in pool_func */
+[[noreturn]] void PoolNoMoreFreeItemsError(const char *name)
+{
+	FatalError("{}: no more free items", name);
+}
+
 [[noreturn]] void PoolOutOfRangeError(const char *name, size_t index, size_t max_size)
 {
 	[[noreturn]] extern void SlErrorCorrupt(std::string msg);

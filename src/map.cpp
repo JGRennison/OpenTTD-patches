@@ -11,6 +11,7 @@
 #include "debug.h"
 #include "core/alloc_func.hpp"
 #include "water_map.h"
+#include "error_func.h"
 #include "string_func.h"
 #include "rail_map.h"
 #include "tunnelbridge_map.h"
@@ -73,7 +74,7 @@ void AllocateMap(uint size_x, uint size_y)
 	DEBUG(map, 1, "Allocating map of size %dx%d", size_x, size_y);
 
 	if (!ValidateMapSize(size_x, size_y)) {
-		error("Invalid map size");
+		FatalError("Invalid map size");
 	}
 
 	_map_log_x = FindFirstBit(size_x);

@@ -2822,7 +2822,7 @@ DEF_CONSOLE_CMD(ConDbgSpecial)
 
 	if (argc == 2) {
 		if (strcmp(argv[1], "error") == 0) {
-			error("User triggered");
+			FatalErrorI("User triggered");
 			return true;
 		}
 	}

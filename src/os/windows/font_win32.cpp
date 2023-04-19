@@ -13,6 +13,7 @@
 #include "../../core/alloc_func.hpp"
 #include "../../core/math_func.hpp"
 #include "../../core/mem_func.hpp"
+#include "../../error_func.h"
 #include "../../fileio_func.h"
 #include "../../fontcache.h"
 #include "../../fontcache/truetypefontcache.h"
@@ -197,7 +198,7 @@ void Win32FontCache::ClearFontCache()
 
 	/* Call GetGlyphOutline with zero size initially to get required memory size. */
 	DWORD size = GetGlyphOutline(this->dc, key, GGO_GLYPH_INDEX | (aa ? GGO_GRAY8_BITMAP : GGO_BITMAP), &gm, 0, nullptr, &mat);
-	if (size == GDI_ERROR) usererror("Unable to render font glyph");
+	if (size == GDI_ERROR) UserError("Unable to render font glyph");
 
 	/* Add 1 scaled pixel for the shadow on the medium font. Our sprite must be at least 1x1 pixel. */
 	uint shadow = (this->fs == FS_NORMAL) ? ScaleGUITrad(1) : 0;
@@ -205,7 +206,7 @@ void Win32FontCache::ClearFontCache()
 	uint height = std::max(1U, (uint)gm.gmBlackBoxY + shadow);
 
 	/* Limit glyph size to prevent overflows later on. */
-	if (width > MAX_GLYPH_DIM || height > MAX_GLYPH_DIM) usererror("Font glyph is too large");
+	if (width > MAX_GLYPH_DIM || height > MAX_GLYPH_DIM) UserError("Font glyph is too large");
 
 	/* Call GetGlyphOutline again with size to actually render the glyph. */
 	uint8_t *bmp = AllocaM(uint8_t, size);

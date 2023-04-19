@@ -10,6 +10,7 @@
 #include "stdafx.h"
 #include "base_media_base.h"
 #include "blitter/factory.hpp"
+#include "error_func.h"
 
 #if defined(WITH_FREETYPE) || defined(WITH_UNISCRIBE) || defined(WITH_COCOA)
 
@@ -260,7 +261,7 @@ public:
 	void OnConnect(bool success) override
 	{
 		if (!success) {
-			usererror("Failed to connect to content server. Please acquire a graphics set for OpenTTD. See section 1.4 of README.md.");
+			UserError("Failed to connect to content server. Please acquire a graphics set for OpenTTD. See section 1.4 of README.md.");
 			/* _exit_game is used to break out of the outer video driver's MainLoop. */
 			_exit_game = true;
 			this->Close();
@@ -414,6 +415,6 @@ bool HandleBootstrap()
 
 	/* Failure to get enough working to get a graphics set. */
 failure:
-	usererror("Failed to find a graphics set. Please acquire a graphics set for OpenTTD. See section 1.4 of README.md.");
+	UserError("Failed to find a graphics set. Please acquire a graphics set for OpenTTD. See section 1.4 of README.md.");
 	return false;
 }

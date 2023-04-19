@@ -139,7 +139,7 @@ DEFINE_POOL_METHOD(inline void *)::AllocateItem(size_t size, size_t index, Pool:
  * Allocates new item
  * @param size size of item
  * @return pointer to allocated item
- * @note error() on failure! (no free item)
+ * @note FatalError() on failure! (no free item)
  */
 DEFINE_POOL_METHOD(void *)::GetNew(size_t size, Pool::ParamType param)
 {
@@ -150,7 +150,8 @@ DEFINE_POOL_METHOD(void *)::GetNew(size_t size, Pool::ParamType param)
 	this->checked--;
 #endif /* WITH_FULL_ASSERTS */
 	if (index == NO_FREE_ITEM) {
-		error("%s: no more free items", this->name);
+		[[noreturn]] extern void PoolNoMoreFreeItemsError(const char *name);
+		PoolNoMoreFreeItemsError(this->name);
 	}
 
 	this->first_free = index + 1;

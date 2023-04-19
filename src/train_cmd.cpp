@@ -6229,7 +6229,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 
 invalid_rail:
 	/* We've reached end of line?? */
-	if (prev != nullptr) return true; //error("Disconnecting train");
+	if (prev != nullptr) return true; //FatalError("Disconnecting train");
 
 reverse_train_direction:
 	if (old_trackbits != INVALID_TRACK_BIT && (v->track ^ old_trackbits) & TRACK_BIT_WORMHOLE) {

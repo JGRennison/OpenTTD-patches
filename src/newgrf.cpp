@@ -52,6 +52,7 @@
 #include "smallmap_gui.h"
 #include "genworld.h"
 #include "error.h"
+#include "error_func.h"
 #include "vehicle_func.h"
 #include "language.h"
 #include "vehicle_base.h"
