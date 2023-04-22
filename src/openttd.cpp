@@ -1483,14 +1483,18 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 	}
 
 	char cclog_buffer[1024];
+	auto cclog_common = [&]() {
+		DEBUG(desync, 0, "%s", cclog_buffer);
+		if (log) {
+			log(cclog_buffer);
+		} else {
+			LogDesyncMsg(cclog_buffer);
+		}
+	};
+
 #define CCLOG(...) { \
 	seprintf(cclog_buffer, lastof(cclog_buffer), __VA_ARGS__); \
-	DEBUG(desync, 0, "%s", cclog_buffer); \
-	if (log) { \
-		log(cclog_buffer); \
-	} else { \
-		LogDesyncMsg(cclog_buffer); \
-	} \
+	cclog_common(); \
 }
 
 	auto output_veh_info = [&](char *&p, const Vehicle *u, const Vehicle *v, uint length) {
@@ -1500,12 +1504,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 #define CCLOGV(...) { \
 	char *p = cclog_buffer + seprintf(cclog_buffer, lastof(cclog_buffer), __VA_ARGS__); \
 	output_veh_info(p, u, v, length); \
-	DEBUG(desync, 0, "%s", cclog_buffer); \
-	if (log) { \
-		log(cclog_buffer); \
-	} else { \
-		LogDesyncMsg(cclog_buffer); \
-	} \
+	cclog_common(); \
 }
 
 	if (flags & CHECK_CACHE_GENERAL) {
