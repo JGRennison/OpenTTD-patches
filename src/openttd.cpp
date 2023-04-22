@@ -1500,10 +1500,23 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 	auto output_veh_info = [&](char *&p, const Vehicle *u, const Vehicle *v, uint length) {
 		WriteVehicleInfo(p, lastof(cclog_buffer), u, v, length);
 	};
+	auto output_veh_info_single = [&](char *&p, const Vehicle *v) {
+		uint length = 0;
+		for (const Vehicle *u = v->First(); u != v; u = u->Next()) {
+			length++;
+		}
+		WriteVehicleInfo(p, lastof(cclog_buffer), v, v->First(), length);
+	};
 
 #define CCLOGV(...) { \
 	char *p = cclog_buffer + seprintf(cclog_buffer, lastof(cclog_buffer), __VA_ARGS__); \
 	output_veh_info(p, u, v, length); \
+	cclog_common(); \
+}
+
+#define CCLOGV1(...) { \
+	char *p = cclog_buffer + seprintf(cclog_buffer, lastof(cclog_buffer), __VA_ARGS__); \
+	output_veh_info_single(p, v); \
 	cclog_common(); \
 }
 
@@ -1816,18 +1829,40 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 
 		/* Check whether the caches are still valid */
 		for (Vehicle *v : Vehicle::Iterate()) {
-			byte buff[sizeof(VehicleCargoList)];
-			memcpy(buff, &v->cargo, sizeof(VehicleCargoList));
+			Money old_feeder_share = v->cargo.FeederShare();
+			uint old_count = v->cargo.TotalCount();
+			uint64 old_cargo_days_in_transit = v->cargo.CargoDaysInTransit();
+
 			v->cargo.InvalidateCache();
-			assert(memcmp(&v->cargo, buff, sizeof(VehicleCargoList)) == 0);
+
+			uint changed = 0;
+			if (v->cargo.FeederShare() != old_feeder_share) SetBit(changed, 0);
+			if (v->cargo.TotalCount() != old_count) SetBit(changed, 1);
+			if (v->cargo.CargoDaysInTransit() != old_cargo_days_in_transit) SetBit(changed, 2);
+			if (changed != 0) {
+				CCLOGV1("vehicle cargo cache mismatch: %c%c%c",
+						HasBit(changed, 0) ? 'f' : '-',
+						HasBit(changed, 1) ? 't' : '-',
+						HasBit(changed, 2) ? 'd' : '-');
+			}
 		}
 
 		for (Station *st : Station::Iterate()) {
 			for (CargoID c = 0; c < NUM_CARGO; c++) {
-				byte buff[sizeof(StationCargoList)];
-				memcpy(buff, &st->goods[c].cargo, sizeof(StationCargoList));
+				uint old_count = st->goods[c].cargo.TotalCount();
+				uint64 old_cargo_days_in_transit = st->goods[c].cargo.CargoDaysInTransit();
+
 				st->goods[c].cargo.InvalidateCache();
-				assert(memcmp(&st->goods[c].cargo, buff, sizeof(StationCargoList)) == 0);
+
+				uint changed = 0;
+				if (st->goods[c].cargo.TotalCount() != old_count) SetBit(changed, 0);
+				if (st->goods[c].cargo.CargoDaysInTransit() != old_cargo_days_in_transit) SetBit(changed, 1);
+				if (changed != 0) {
+					CCLOG("station cargo cache mismatch: station %i, company %i, cargo %u: %c%c",
+							st->index, (int)st->owner, c,
+							HasBit(changed, 0) ? 't' : '-',
+							HasBit(changed, 1) ? 'd' : '-');
+				}
 			}
 
 			/* Check docking tiles */
@@ -1903,8 +1938,9 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 		}
 	}
 
-#undef CCLOGV
 #undef CCLOG
+#undef CCLOGV
+#undef CCLOGV1
 }
 
 /**

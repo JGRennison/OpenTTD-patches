@@ -279,6 +279,20 @@ public:
 		return this->count == 0 ? 0 : this->cargo_days_in_transit / this->count;
 	}
 
+	/**
+	 * Returns sum of cargo, including reserved cargo.
+	 * @return Sum of cargo.
+	 */
+	inline uint TotalCount() const
+	{
+		return this->count;
+	}
+
+	inline uint64 CargoDaysInTransit() const
+	{
+		return this->cargo_days_in_transit;
+	}
+
 	void InvalidateCache();
 };
 
@@ -397,15 +411,6 @@ public:
 	inline uint StoredCount() const
 	{
 		return this->count - this->action_counts[MTA_LOAD];
-	}
-
-	/**
-	 * Returns sum of cargo, including reserved cargo.
-	 * @return Sum of cargo.
-	 */
-	inline uint TotalCount() const
-	{
-		return this->count;
 	}
 
 	/**
