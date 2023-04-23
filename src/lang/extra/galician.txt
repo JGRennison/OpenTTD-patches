@@ -154,6 +154,9 @@ STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED_HELPTEXT    :No modelo de fr
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT                     :Velocidade máxima de carga en movemento do tren: {STRING}
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_HELPTEXT            :A velocidade máxima permitida os trens cando están cargando en movemento
 
+STR_CONFIG_SETTING_RAIL_DEPOT_SPEED_LIMIT                       :Límite máximo de velocidade en depósito de ferrocarril: {STRING2}
+STR_CONFIG_SETTING_RAIL_DEPOT_SPEED_LIMIT_HELPTEXT              :A velocidade máxima permitida para trens ao entrar ou saír dun depósito de ferrocarril.
+
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING                :Buscar ruta ata detrás dun sinal dun só sentido: {STRING}
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING_HELPTEXT       :Cando se habilita, o buscador de rutas de tren YAPF pode buscar unha ruta ata detrás dun sinal de un só sentido.
 
@@ -664,6 +667,9 @@ STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE_HELPTEXT              :Despois de clon
 STR_CONFIG_SETTING_COPY_CLONE_ADD_TO_GROUP                      :Engadir o vehículo ó grupo ao copiar-clonar: {STRING}
 STR_CONFIG_SETTING_COPY_CLONE_ADD_TO_GROUP_HELPTEXT             :Indica se os vehículos clonados que non teñen ordes compartidas engádense ao grupo do vehículo copiado.
 
+STR_CONFIG_SETTING_REMAIN_IF_NEXT_ORDER_SAME_STATION            :Quedarse na estación se a seguinte orde é para a mesma estación: {STRING2}
+STR_CONFIG_SETTING_REMAIN_IF_NEXT_ORDER_SAME_STATION_HELPTEXT   :Se a seguinte orde dun vehículo é para a mesma estación da que está a piques de saír, comezar a cargar ou descargar de novo en vez de saír.
+
 STR_CONFIG_SETTING_SCENARIO_MULTIPLE_BUILDINGS                  :Permitir múltiples iglesias/estadios: {STRING}
 STR_CONFIG_SETTING_SCENARIO_MULTIPLE_BUILDINGS_HELPTEXT         :Permitir engadir manualmente iglesias e estadios cando xa hai un presente na vila.
 
@@ -871,6 +877,7 @@ STR_TRACE_RESTRICT_TRAIN_STATUS_LOADING                         :cargando
 STR_TRACE_RESTRICT_TRAIN_STATUS_WAITING                         :agardando
 STR_TRACE_RESTRICT_TRAIN_STATUS_LOST                            :perdido
 STR_TRACE_RESTRICT_TRAIN_STATUS_REQUIRES_SERVICE                :precisa servizo
+STR_TRACE_RESTRICT_TRAIN_STATUS_STOPPING_AT_STATION_WAYPOINT    :parando na estación/punto de ruta
 STR_TRACE_RESTRICT_REVERSE_SIG                                  :Retrodecer detrás do sinal
 STR_TRACE_RESTRICT_REVERSE_SIG_CANCEL                           :Cancelar retroceder detrás do sinal
 STR_TRACE_RESTRICT_SET_SPEED_RESTRICTION                        :Restrinxir velocidade do tren a: {VELOCITY}
@@ -1247,6 +1254,9 @@ STR_DEPARTURES_CALLING_AT_STATION                               :{STRING}, {STAT
 STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{STRING} e {STATION}
 STR_DEPARTURES_CALLING_AT_LIST                                  :{ORANGE}{STRING}.
 STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{STRING}. Este servizo continúa ata {STATION}.
+STR_DEPARTURES_TINY                                             :{TINY_FONT}{STRING2}
+STR_DEPARTURES_VIA_DESCRIPTOR                                   :{STRING1}{STRING}
+STR_DEPARTURES_VIA_AND                                          :{STRING} e {STRING}
 
 STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
 STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}
@@ -1506,6 +1516,12 @@ STR_ORDER_RELEASE_SLOT_TOOLTIP                                  :{BLACK}O slot d
 
 STR_ORDER_CHANGE_COUNTER_TOOLTIP                                :{BLACK}O contador a modificar
 
+STR_ORDER_LABEL_TEXT                                            :Etiqueta: {RAW_STRING}
+STR_ORDER_LABEL_TEXT_CAPTION                                    :{WHITE}Etiqueta
+STR_ORDER_LABEL_TEXT_BUTTON                                     :Etiqueta
+STR_ORDER_LABEL_TEXT_BUTTON_TOOLTIP                             :{BLACK}Cambiar o texto da etiqueta
+STR_ORDER_LABEL_DEPARTURES_VIA_BUTTON                           :Taboleiro de saída vía
+
 STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}{STRING}%
 STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}Amosar a media de ocupacións{}A porcentaxe amosada é a media xeral de ocupación das ordes
 STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}Ocupación das ordes - Isto mostra as medias recentes de nives de ocupación ao saír dunha estación, para todos os vehículso compartindo estas ordes
@@ -1702,18 +1718,7 @@ STR_ERROR_DEPOT_HAS_WRONG_RAIL_TYPE                             :{WHITE}O depós
 
 STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING                 :{WHITE}Achegándose tren en movemento...
 
-STR_ERROR_NO_RAIL_STATION                                       :{WHITE}Non hai estación de ferrocarril...
-STR_ERROR_NO_BUS_STATION                                        :{WHITE}Non hai estación de bus...
-STR_ERROR_NO_TRUCK_STATION                                      :{WHITE}Non hai estación de camións...
-STR_ERROR_NO_DOCK                                               :{WHITE}Non hai porto...
-STR_ERROR_NO_AIRPORT                                            :{WHITE}Non hai aeroporto/heliporto...
-STR_ERROR_NO_STOP_COMPATIBLE_ROAD_TYPE                          :{WHITE}Non hai paradas con un tipo de estrada/tranvía compatible...
-STR_ERROR_NO_STOP_ARTICULATED_VEHICLE                           :{WHITE}Non hai paradas axeitadas para vehículos articulados de estrada.{}Os vehículos de estrada articulados requiren unha parada de vía, non unha estación terminal/baía.
-STR_ERROR_AIRPORT_NO_PLANES                                     :{WHITE}Este avión non pode aterrar neste heliporto...
-STR_ERROR_AIRPORT_NO_HELICOPTERS                                :{WHITE}Este helicóptero non pode aterrar neste aeroporto...
-STR_ERROR_NO_RAIL_WAYPOINT                                      :{WHITE}Non hai punto de ruta de ferrocarril...
 STR_ERROR_NO_ROAD_WAYPOINT                                      :{WHITE}Non hai punto de ruta de estrada...
-STR_ERROR_NO_BUOY                                               :{WHITE}Non hai boia...
 
 # Plan related errors
 STR_ERROR_TOO_MANY_PLANS                                        :{WHITE}... demasiados avións
@@ -1751,6 +1756,8 @@ STR_JUST_TIME_HHMM                                              :{TIME_HHMM}
 
 STR_JUST_STRING1                                                :{STRING}
 STR_JUST_STRING2                                                :{STRING}
+
+STR_JUST_VELOCITY                                               :{VELOCITY}
 
 STR_BLACK_DECIMAL                                               :{BLACK}{DECIMAL}
 STR_WHITE_DATE_WALLCLOCK_LONG                                   :{WHITE}{DATE_WALLCLOCK_LONG}
@@ -1857,7 +1864,9 @@ STR_TMPL_REFIT                                                  :{BLACK}Reaxusta
 STR_TMPL_GROUP_INFO                                             :{BLACK}Información do grupo: {ORANGE}
 STR_TMPL_TEMPLATE_INFO                                          :{BLACK}Información do modelo: {ORANGE}
 STR_TMPL_RPL_START                                              :{BLACK}Comezar a reemplazar
+STR_TMPL_RPL_START_TOOLTIP                                      :{BLACK}Prema para comezar a substitución dos trens no grupo seleccionado co modelo seleccionado
 STR_TMPL_RPL_STOP                                               :{BLACK}Parar de reemplazar
+STR_TMPL_RPL_STOP_TOOLTIP                                       :{BLACK}Prema para deter a substitución dos trens no grupo seleccionado
 STR_TMPL_TEMPLATE_OVR_VALUE                                     :{BLACK}Custo de compra: {GOLD}{CURRENCY_LONG}
 STR_TMPL_TEMPLATE_OVR_VALUE_LTBLUE                              :{BLACK}Custo de compra: {LTBLUE}{CURRENCY_LONG}
 STR_TMPL_TEMPLATE_OVR_RUNNING_COST                              :{BLACK}Custo estimado de mantemento: {LTBLUE}{CURRENCY_LONG}
@@ -1987,3 +1996,13 @@ STR_MODIFIER_TOGGLE_SHIFT_TOOLTIP                               :{BLACK}Click pa
 STR_MODIFIER_TOGGLE_CTRL_TOOLTIP                                :{BLACK}Click para invertir o estado da tecla Ctrl
 
 STR_ERROR_TUNNEL_DISALLOWED_ROAD                                :{WHITE}Non se permiten túneis neste tipo de estrada
+
+STR_REFIT_SHIP_PART_DROPDOWN_TOOLTIP                            :{BLACK}Seleccione a parte deste barco para remodelar
+STR_REFIT_WHOLE_SHIP                                            :Barco completo
+
+STR_VERY_REDUCED                                                :Moi reducido
+
+STR_STATION_VIEW_RENAME_TOOLTIP_EXTRA                           :{BLACK}{STRING}{}(Ctrl+clic no botón "{STRING}" para xerar un novo nome predeterminado).{}{}Ctrl+clic para intercambiar o nome con outra estación.
+STR_ERROR_CAN_T_EXCHANGE_STATION_NAMES                          :{WHITE}Non se poden intercambiar os nomes das estacións...
+STR_ERROR_STATIONS_NOT_IN_SAME_TOWN                             :{WHITE}... as estacións non están na mesma vila
+STR_ERROR_STATION_ATTACHED_TO_INDUSTRY                          :{WHITE}... a estación está conectada a unha industria
