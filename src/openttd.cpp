@@ -85,6 +85,7 @@
 #include "event_logs.h"
 #include "tunnelbridge.h"
 #include "worker_thread.h"
+#include "scope_info.h"
 
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
@@ -1471,6 +1472,8 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 
 		if (desync_level == 1 && _scaled_date_ticks % 500 != 0) return;
 	}
+
+	SCOPE_INFO_FMT([flags], "CheckCaches: %X", flags);
 
 	std::vector<std::string> saved_messages;
 	std::function<void(const char *)> log_orig;
