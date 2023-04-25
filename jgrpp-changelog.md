@@ -2,6 +2,17 @@
 
 * * *
 
+### v0.53.1 (2023-04-25)
+* Fix width of station cargo graph window.
+* Fix incorrect accounting of cargo time in transit values.
+* Fix crash when checking the consistency of cargo time in transit values, when removing/merging companies or after a multiplayer desync has occured.
+* Departure boards:
+  * Change vehicle names using the long format to the traditional format if the group name column is also shown.
+  * Fix position of vehicle type icon in right-to-left languages
+  * Fix hidden columns being included in the minimum window width.
+* Fix crash which could occur when sorting towns by rating or engines by power/running cost or cargo capacity/running cost on MacOS.
+* Bump trunk base from commit 97cfd40649abab832315f00e6a07e5b6b9a17e23 to commit e5af5907ecfe3845adc613a3312695ed8b40bffc.
+
 ### v0.53.0 (2023-04-16)
 * Fix water infrastructure total when building multi-tile objects on unowned canal, and when building canals over unowned objects on canals.
 * Fix crash when showing vehicles with excessively large sprites in the build vehicle window.
