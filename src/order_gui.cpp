@@ -2676,7 +2676,7 @@ public:
 					add_colour(COLOUR_ORANGE);
 					add_colour(COLOUR_PINK);
 				}
-				ShowDropDownList(this, std::move(list), 0x100 + order->GetColour(), widget, 0, true, DDSF_LOST_FOCUS);
+				ShowDropDownList(this, std::move(list), 0x100 + order->GetColour(), widget, 0, false, DDSF_LOST_FOCUS);
 				break;
 			}
 
