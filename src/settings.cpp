@@ -1495,6 +1495,8 @@ static void TrainSpeedAdaptationChanged(int32 new_value) {
 }
 
 static void AutosaveModeChanged(int32 new_value) {
+	extern void ChangeAutosaveFrequency(bool reset);
+	ChangeAutosaveFrequency(false);
 	InvalidateWindowClassesData(WC_GAME_OPTIONS);
 }
 

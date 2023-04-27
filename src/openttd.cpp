@@ -90,6 +90,7 @@
 #include "scope_info.h"
 #include "network/network_survey.h"
 #include "timer/timer.h"
+#include "timer/timer_game_realtime.h"
 #include "timer/timer_game_tick.h"
 #include "network/network_sync.h"
 
@@ -1330,6 +1331,9 @@ void SwitchToMode(SwitchMode new_mode)
 	/* Make sure all AI controllers are gone at quitting game */
 	if (new_mode != SM_SAVE_GAME) AI::KillAll();
 
+	/* When we change mode, reset the autosave. */
+	if (new_mode != SM_SAVE_GAME) ChangeAutosaveFrequency(true);
+
 	/* Transmit the survey if we were in normal-mode and not saving. It always means we leaving the current game. */
 	if (_game_mode == GM_NORMAL && new_mode != SM_SAVE_GAME) _survey.Transmit(NetworkSurveyHandler::Reason::LEAVE);
 
@@ -2200,6 +2204,33 @@ static void DoAutosave()
 	DoAutoOrNetsave(GetAutoSaveFiosNumberedSaveName(), true, lt_counter);
 }
 
+/** Interval for regular autosaves. Initialized at zero to disable till settings are loaded. */
+static IntervalTimer<TimerGameRealtime> _autosave_interval({std::chrono::milliseconds::zero(), TimerGameRealtime::AUTOSAVE}, [](auto)
+{
+	/* We reset the command-during-pause mode here, so we don't continue
+	 * to make auto-saves when nothing more is changing. */
+	_pause_mode &= ~PM_COMMAND_DURING_PAUSE;
+
+	_do_autosave = true;
+	DoAutosave();
+	_do_autosave = false;
+	SetWindowDirty(WC_STATUS_BAR, 0);
+});
+
+/**
+ * Reset the interval of the autosave.
+ *
+ * If reset is not set, this does not set the elapsed time on the timer,
+ * so if the interval is smaller, it might result in an autosave being done
+ * immediately.
+ *
+ * @param reset Whether to reset the timer back to zero, or to continue.
+ */
+void ChangeAutosaveFrequency(bool reset)
+{
+	_autosave_interval.SetInterval({_settings_client.gui.autosave_realtime, TimerGameRealtime::AUTOSAVE}, reset);
+}
+
 /**
  * Request a new NewGRF scan. This will be executed on the next game-tick.
  * This is mostly needed to ensure NewGRF scans (which are blocking) are
@@ -2258,6 +2289,16 @@ void GameLoop()
 	ProcessAsyncSaveFinish();
 
 	if (unlikely(_check_special_modes)) GameLoopSpecial();
+
+	if (_game_mode == GM_NORMAL) {
+		static auto last_time = std::chrono::steady_clock::now();
+		auto now = std::chrono::steady_clock::now();
+		auto delta_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - last_time);
+		if (delta_ms.count() != 0) {
+			TimerManager<TimerGameRealtime>::Elapsed(delta_ms);
+			last_time = now;
+		}
+	}
 
 	/* switch game mode? */
 	if (_switch_mode != SM_NONE && !HasModalProgress()) {

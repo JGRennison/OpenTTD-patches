@@ -719,6 +719,7 @@ struct GameOptionsWindow : Window {
 					ShowQueryString(STR_JUST_INT, STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT, 4, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				} else {
 					_settings_client.gui.autosave_interval = _autosave_dropdown_to_minutes[index];
+					ChangeAutosaveFrequency(false);
 					this->SetDirty();
 				}
 				break;
@@ -781,6 +782,7 @@ struct GameOptionsWindow : Window {
 
 				case QueryTextItem::AutosaveCustomRealTimeMinutes:
 					_settings_client.gui.autosave_interval = Clamp(value, 1, 8000);
+					ChangeAutosaveFrequency(false);
 					this->SetDirty();
 					break;
 			}

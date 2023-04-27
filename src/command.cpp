@@ -1269,6 +1269,9 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, 
 	UpdateSignalsInBuffer();
 	if (_extra_aspects > 0) FlushDeferredAspectUpdates();
 
+	/* Record if there was a command issues during pause; ignore pause/other setting related changes. */
+	if (_pause_mode != PM_UNPAUSED && command.type != CMDT_SERVER_SETTING) _pause_mode |= PM_COMMAND_DURING_PAUSE;
+
 	return_dcpi(res2);
 }
 #undef return_dcpi

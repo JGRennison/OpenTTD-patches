@@ -100,5 +100,6 @@ bool RequestNewGRFScan(struct NewGRFScanCallback *callback = nullptr);
 void GenerateSavegameId();
 
 void OpenBrowser(const char *url);
+void ChangeAutosaveFrequency(bool reset);
 
 #endif /* OPENTTD_H */
