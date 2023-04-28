@@ -2714,6 +2714,7 @@ public:
 						case OPOS_CONDITIONAL: sel =  2; break;
 						case OPOS_SHARE:       sel =  3; break;
 						case OPOS_CONDITIONAL_RETARGET: sel = -1; break;
+						case OPOS_DEPARTURE_VIA:        sel =  7; break;
 						default: NOT_REACHED();
 					}
 					uint32 hidden_mask = 0;
