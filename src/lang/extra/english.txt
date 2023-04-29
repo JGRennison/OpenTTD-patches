@@ -606,6 +606,11 @@ STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED_HELPTEXT       :Percentage of t
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION                   :Probability of random town road re-construction: {STRING2}
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION_HELPTEXT          :The probability of town roads randomly being re-constructed (0 = off, 1000 = max)
 
+STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM                      :Cargo payment algorithm: {STRING2}
+STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_HELPTEXT             :The algorithm to use to calculate how much money to pay for delivering cargo to its destination.
+STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_TRADITIONAL          :Traditional
+STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_MODERN               :Modern
+
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Minimum distance between towns: {STRING2}
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Set the minimum distance in tiles between towns for map generation and random founding
 

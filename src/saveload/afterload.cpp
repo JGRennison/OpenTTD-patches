@@ -4187,6 +4187,10 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_MORE_CARGO_AGE) && IsSavegameVersionBefore(SLV_MORE_CARGO_AGE)) {
+		_settings_game.economy.payment_algorithm = CPA_TRADITIONAL;
+	}
+
 	InitializeRoadGUI();
 
 	/* This needs to be done after conversion. */

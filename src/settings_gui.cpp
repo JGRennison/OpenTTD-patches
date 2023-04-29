@@ -2061,6 +2061,7 @@ static SettingsContainer &GetSettingsTree()
 			accounting->Add(new SettingEntry("difficulty.vehicle_costs_in_depot"));
 			accounting->Add(new SettingEntry("difficulty.vehicle_costs_when_stopped"));
 			accounting->Add(new SettingEntry("difficulty.construction_cost"));
+			accounting->Add(new SettingEntry("economy.payment_algorithm"));
 		}
 
 		SettingsPage *vehicles = main->Add(new SettingsPage(STR_CONFIG_SETTING_VEHICLES));

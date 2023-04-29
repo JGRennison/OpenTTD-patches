@@ -1071,13 +1071,18 @@ Money GetTransportedGoodsIncome(uint num_pieces, uint dist, uint16 transit_days,
 	static const int TIME_FACTOR_FRAC_BITS = 4;
 	static const int TIME_FACTOR_FRAC = 1 << TIME_FACTOR_FRAC_BITS;
 
+	if (_settings_game.economy.payment_algorithm == CPA_TRADITIONAL) transit_days = std::min<uint16>(transit_days, 0xFFu);
+
 	const int days1 = cs->transit_days[0];
 	const int days2 = cs->transit_days[1];
 	const int days_over_days1 = std::max(   transit_days - days1, 0);
 	const int days_over_days2 = std::max(days_over_days1 - days2, 0);
-	int days_over_max = MIN_TIME_FACTOR - MAX_TIME_FACTOR;
-	if (days2 > -days_over_max) days_over_max += transit_days - days1;
-	else days_over_max += 2 * (transit_days - days1) - days2;
+	int days_over_max = 0;
+	if (_settings_game.economy.payment_algorithm == CPA_MODERN) {
+		days_over_max = MIN_TIME_FACTOR - MAX_TIME_FACTOR;
+		if (days2 > -days_over_max) days_over_max += transit_days - days1;
+		else days_over_max += 2 * (transit_days - days1) - days2;
+	}
 
 	/*
 	 * The time factor is calculated based on the time it took
