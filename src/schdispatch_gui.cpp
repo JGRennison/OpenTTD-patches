@@ -38,6 +38,7 @@
 
 enum SchdispatchWidgets {
 	WID_SCHDISPATCH_CAPTION,         ///< Caption of window.
+	WID_SCHDISPATCH_RENAME,          ///< Rename button.
 	WID_SCHDISPATCH_MATRIX,          ///< Matrix of vehicles.
 	WID_SCHDISPATCH_V_SCROLL,        ///< Vertical scrollbar.
     WID_SCHDISPATCH_SUMMARY_PANEL,   ///< Summary panel
@@ -323,6 +324,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_ENABLED, unusable || HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION));
 
+		this->SetWidgetDisabledState(WID_SCHDISPATCH_RENAME, unusable || v->orders->GetScheduledDispatchScheduleCount() == 0);
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_PREV, v->orders == nullptr || this->schedule_index <= 0);
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_NEXT, v->orders == nullptr || this->schedule_index >= (int)(v->orders->GetScheduledDispatchScheduleCount() - 1));
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_ADD_SCHEDULE, unusable || v->orders->GetScheduledDispatchScheduleCount() >= 4096);
@@ -349,9 +351,17 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 			case WID_SCHDISPATCH_HEADER:
 				if (this->IsScheduleSelected()) {
-					SetDParam(0, STR_SCHDISPATCH_SCHEDULE_ID);
-					SetDParam(1, this->schedule_index + 1);
-					SetDParam(2, this->vehicle->orders->GetScheduledDispatchScheduleCount());
+					const DispatchSchedule &ds = this->GetSelectedSchedule();
+					if (ds.ScheduleName().empty()) {
+						SetDParam(0, STR_SCHDISPATCH_SCHEDULE_ID);
+						SetDParam(1, this->schedule_index + 1);
+						SetDParam(2, this->vehicle->orders->GetScheduledDispatchScheduleCount());
+					} else {
+						SetDParam(0, STR_SCHDISPATCH_NAMED_SCHEDULE_ID);
+						SetDParamStr(1, ds.ScheduleName().c_str());
+						SetDParam(2, this->schedule_index + 1);
+						SetDParam(3, this->vehicle->orders->GetScheduledDispatchScheduleCount());
+					}
 				} else {
 					SetDParam(0, STR_SCHDISPATCH_NO_SCHEDULES);
 				}
@@ -737,6 +747,13 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			case WID_SCHDISPATCH_ADD_SCHEDULE:
 				AddNewScheduledDispatchSchedule(this->vehicle->index);
 				break;
+
+			case WID_SCHDISPATCH_RENAME:
+				if (!this->IsScheduleSelected()) break;
+				SetDParamStr(0, this->GetSelectedSchedule().ScheduleName().c_str());
+				ShowQueryString(STR_JUST_RAW_STRING, STR_SCHDISPATCH_RENAME_SCHEDULE_CAPTION,
+						MAX_LENGTH_VEHICLE_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
+				break;
 		}
 
 		this->SetDirty();
@@ -861,6 +878,13 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				}
 				break;
 			}
+
+			case WID_SCHDISPATCH_RENAME: {
+				if (str == nullptr) return;
+
+				DoCommandP(0, v->index | (this->schedule_index << 20), 0, CMD_SCHEDULED_DISPATCH_RENAME_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_RENAME_SCHEDULE), nullptr, str);
+				break;
+			}
 		}
 
 		this->SetDirty();
@@ -919,6 +943,7 @@ void CcAddNewSchDispatchSchedule(const CommandCost &result, TileIndex tile, uint
 static const NWidgetPart _nested_schdispatch_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
+		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_SCHDISPATCH_RENAME), SetMinimalSize(12, 14), SetDataTip(SPR_RENAME, STR_SCHDISPATCH_RENAME_SCHEDULE_TOOLTIP),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_SCHDISPATCH_CAPTION), SetDataTip(STR_SCHDISPATCH_CAPTION, STR_NULL),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
@@ -927,7 +952,7 @@ static const NWidgetPart _nested_schdispatch_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_GREY),
 		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_ENABLED), SetDataTip(STR_SCHDISPATCH_ENABLED, STR_SCHDISPATCH_ENABLED_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
-			NWidget(WWT_TEXT, COLOUR_GREY, WID_SCHDISPATCH_HEADER), SetAlignment(SA_CENTER), SetDataTip(STR_JUST_STRING2, STR_NULL), SetFill(1, 1), SetResize(1, 0),
+			NWidget(WWT_TEXT, COLOUR_GREY, WID_SCHDISPATCH_HEADER), SetAlignment(SA_CENTER), SetDataTip(STR_JUST_STRING3, STR_NULL), SetFill(1, 1), SetResize(1, 0),
 			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_PREV), SetDataTip(STR_SCHDISPATCH_PREV_SCHEDULE, STR_SCHDISPATCH_PREV_SCHEDULE_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_NEXT), SetDataTip(STR_SCHDISPATCH_NEXT_SCHEDULE, STR_SCHDISPATCH_NEXT_SCHEDULE_TOOLTIP), SetFill(1, 1), SetResize(1, 0),

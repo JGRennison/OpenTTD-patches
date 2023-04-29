@@ -1632,6 +1632,7 @@ STR_TIMETABLE_SCHEDULED_DISPATCH_TOOLTIP                        :{BLACK}Open sch
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER                          :{PUSH_COLOUR}{YELLOW}[{STRING1}scheduled dispatch]{POP_COLOUR}
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME             :{PUSH_COLOUR}{RED}[{STRING1}scheduled dispatch - no wait time timetabled]{POP_COLOUR}
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_SCHEDULE_INDEX           :{NUM}{NBSP}-{NBSP}
+STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NAMED_SCHEDULE           :{RAW_STRING}{NBSP}-{NBSP}
 
 STR_TIMETABLE_LOCK_ORDER_TIME_TOOLTIP                           :{BLACK}Lock/unlock the amount of time for the highlighted order (Ctrl+Click set lock state for all orders).{}When locked the time will not be changed by timetable autofill or automate.
 
@@ -1799,6 +1800,7 @@ STR_JUST_TIME_HHMM                                              :{TIME_HHMM}
 
 STR_JUST_STRING1                                                :{STRING1}
 STR_JUST_STRING2                                                :{STRING2}
+STR_JUST_STRING3                                                :{STRING3}
 
 STR_JUST_VELOCITY                                               :{VELOCITY}
 
@@ -2005,6 +2007,10 @@ STR_SCHDISPATCH_REMOVE_SCHEDULE                                 :{BLACK}Remove C
 STR_SCHDISPATCH_REMOVE_SCHEDULE_TOOLTIP                         :{BLACK}Remove this dispatch schedule entirely.
 STR_SCHDISPATCH_NO_SCHEDULES                                    :{BLACK}No Schedules
 STR_SCHDISPATCH_SCHEDULE_ID                                     :{BLACK}Schedule {NUM} of {NUM}
+STR_SCHDISPATCH_NAMED_SCHEDULE_ID                               :{BLACK}{RAW_STRING} ({NUM} of {NUM})
+STR_SCHDISPATCH_RENAME_SCHEDULE_TOOLTIP                         :{BLACK}Name schedule
+STR_SCHDISPATCH_RENAME_SCHEDULE_CAPTION                         :{WHITE}Name schedule
+STR_ERROR_CAN_T_RENAME_SCHEDULE                                 :{WHITE}Can't name schedule...
 
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}Last departure at {DATE_WALLCLOCK_TINY}.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}Last departure has not left yet, it will depart at {DATE_WALLCLOCK_TINY}.

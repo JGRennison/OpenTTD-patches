@@ -1075,11 +1075,16 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 			} else if (ocv == OCV_DISPATCH_SLOT) {
 				SetDParam(0, STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DISPLAY);
 				if (GB(order->GetXData(), 0, 16) != UINT16_MAX) {
-					char buf[256];
-					int64 args_array[] = { GB(order->GetXData(), 0, 16) + 1 };
-					StringParameters tmp_params(args_array);
-					char *end = GetStringWithArgs(buf, STR_TIMETABLE_ASSIGN_SCHEDULE_ID, &tmp_params, lastof(buf));
-					_temp_special_strings[0].assign(buf, end);
+					const DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(GB(order->GetXData(), 0, 16));
+					if (ds.ScheduleName().empty()) {
+						char buf[256];
+						int64 args_array[] = { GB(order->GetXData(), 0, 16) + 1 };
+						StringParameters tmp_params(args_array);
+						char *end = GetStringWithArgs(buf, STR_TIMETABLE_ASSIGN_SCHEDULE_ID, &tmp_params, lastof(buf));
+						_temp_special_strings[0].assign(buf, end);
+					} else {
+						_temp_special_strings[0] = ds.ScheduleName();
+					}
 					SetDParam(2, SPECSTR_TEMP_START);
 				} else {
 					SetDParam(2, STR_TIMETABLE_ASSIGN_SCHEDULE_NONE);
@@ -1199,8 +1204,14 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 	}
 	if (timetable && HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && order->IsScheduledDispatchOrder(false) && edge != 0) {
 		StringID str = order->IsWaitTimetabled() ? STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER : STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME;
-		SetDParam(0, v->orders->GetScheduledDispatchScheduleCount() > 1 ? STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_SCHEDULE_INDEX : STR_EMPTY);
-		SetDParam(1, order->GetDispatchScheduleIndex() + 1);
+		const DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(order->GetDispatchScheduleIndex());
+		if (!ds.ScheduleName().empty()) {
+			SetDParam(0, STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NAMED_SCHEDULE);
+			SetDParamStr(1, ds.ScheduleName().c_str());
+		} else {
+			SetDParam(0, v->orders->GetScheduledDispatchScheduleCount() > 1 ? STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_SCHEDULE_INDEX : STR_EMPTY);
+			SetDParam(1, order->GetDispatchScheduleIndex() + 1);
+		}
 		edge = DrawString(rtl ? left : edge + 3, rtl ? edge - 3 : right, y, str, colour);
 	}
 
@@ -2489,8 +2500,14 @@ public:
 				const Order *order = this->vehicle->GetOrder(sel);
 
 				if (order != nullptr && order->IsType(OT_CONDITIONAL) && GB(order->GetXData(), 0, 16) != UINT16_MAX) {
-					SetDParam(0, STR_TIMETABLE_ASSIGN_SCHEDULE_ID);
-					SetDParam(1, GB(order->GetXData(), 0, 16) + 1);
+					const DispatchSchedule &ds = this->vehicle->orders->GetDispatchScheduleByIndex(GB(order->GetXData(), 0, 16));
+					if (ds.ScheduleName().empty()) {
+						SetDParam(0, STR_TIMETABLE_ASSIGN_SCHEDULE_ID);
+						SetDParam(1, GB(order->GetXData(), 0, 16) + 1);
+					} else {
+						SetDParam(0, STR_JUST_RAW_STRING);
+						SetDParamStr(1, ds.ScheduleName().c_str());
+					}
 				} else {
 					SetDParam(0, STR_TIMETABLE_ASSIGN_SCHEDULE_NONE);
 				}
@@ -2811,9 +2828,15 @@ public:
 				uint count = this->vehicle->orders->GetScheduledDispatchScheduleCount();
 				DropDownList list;
 				for (uint i = 0; i < count; ++i) {
-					DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_TIMETABLE_ASSIGN_SCHEDULE_ID, i, false);
-					item->SetParam(0, i + 1);
-					list.emplace_back(item);
+					const DispatchSchedule &ds = this->vehicle->orders->GetDispatchScheduleByIndex(i);
+					if (ds.ScheduleName().empty()) {
+						DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_TIMETABLE_ASSIGN_SCHEDULE_ID, i, false);
+						item->SetParam(0, i + 1);
+						list.emplace_back(item);
+					} else {
+						DropDownListCharStringItem *item = new DropDownListCharStringItem(ds.ScheduleName(), i, false);
+						list.emplace_back(item);
+					}
 				}
 				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_COND_SCHED_SELECT, 0);
 				break;

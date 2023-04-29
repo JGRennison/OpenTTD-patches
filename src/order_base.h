@@ -697,6 +697,8 @@ private:
 	int32 scheduled_dispatch_last_dispatch = 0;                         ///< Last vehicle dispatched offset
 	int32 scheduled_dispatch_max_delay = 0;                             ///< Maximum allowed delay
 
+	std::string name;                                                   ///< Name of dispatch schedule
+
 	inline void CopyBasicFields(const DispatchSchedule &other)
 	{
 		this->scheduled_dispatch_duration              = other.scheduled_dispatch_duration;
@@ -801,6 +803,9 @@ public:
 	{
 		other.scheduled_dispatch = std::move(this->scheduled_dispatch);
 	}
+
+	inline std::string &ScheduleName() { return this->name; }
+	inline const std::string &ScheduleName() const { return this->name; }
 };
 
 /**

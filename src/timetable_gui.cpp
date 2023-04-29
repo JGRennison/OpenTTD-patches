@@ -1071,9 +1071,15 @@ struct TimetableWindow : GeneralVehicleWindow {
 				list.emplace_back(new DropDownListStringItem(STR_TIMETABLE_ASSIGN_SCHEDULE_NONE, -1, false));
 
 				for (uint i = 0; i < v->orders->GetScheduledDispatchScheduleCount(); i++) {
-					DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_TIMETABLE_ASSIGN_SCHEDULE_ID, i, false);
-					item->SetParam(0, i + 1);
-					list.emplace_back(item);
+					const DispatchSchedule &ds = this->vehicle->orders->GetDispatchScheduleByIndex(i);
+					if (ds.ScheduleName().empty()) {
+						DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_TIMETABLE_ASSIGN_SCHEDULE_ID, i, false);
+						item->SetParam(0, i + 1);
+						list.emplace_back(item);
+					} else {
+						DropDownListCharStringItem *item = new DropDownListCharStringItem(ds.ScheduleName(), i, false);
+						list.emplace_back(item);
+					}
 				}
 				ShowDropDownList(this, std::move(list), order->GetDispatchScheduleIndex(), WID_VT_ASSIGN_SCHEDULE);
 				break;

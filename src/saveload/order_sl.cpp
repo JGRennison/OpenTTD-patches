@@ -266,6 +266,7 @@ SaveLoadTable GetDispatchScheduleDescription()
 		SLE_VAR(DispatchSchedule, scheduled_dispatch_start_full_date_fract, SLE_UINT16),
 		SLE_VAR(DispatchSchedule, scheduled_dispatch_last_dispatch,         SLE_INT32),
 		SLE_VAR(DispatchSchedule, scheduled_dispatch_max_delay,             SLE_INT32),
+		SLE_CONDSSTR_X(DispatchSchedule, name, 0, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH, 4)),
 	};
 
 	return _order_extra_info_desc;
