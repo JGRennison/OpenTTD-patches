@@ -567,6 +567,11 @@ STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED_HELPTEXT       :지난 달의 �
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION                   :지역 당국이 임의로 도로 보수공사를 시행할 확률: {STRING}
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION_HELPTEXT          :지역 당국이 임의로 도로 보수공사를 시행할 확률입니다. (0 = 하지 않음, 1000 = 최대)
 
+STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM                      :화물 보수 지급 알고리즘: {STRING}
+STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_HELPTEXT             :화물을 목적지에 운송했을 때 얼마나 보수를 지급할 지를 계산할 때 사용할 알고리즘을 선택합니다.
+STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_TRADITIONAL          :구식
+STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_MODERN               :개선
+
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :도시 사이의 최소 거리: {STRING}
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :지도를 생성하고 무작위로 도시를 배치할 때 도시 사이의 최소 거리를 설정합니다.
 
@@ -878,6 +883,7 @@ STR_TRACE_RESTRICT_TRAIN_STATUS_LOADING                         :{G=m}싣는 중
 STR_TRACE_RESTRICT_TRAIN_STATUS_WAITING                         :{G=m}기다리는 중
 STR_TRACE_RESTRICT_TRAIN_STATUS_LOST                            :{G=f}경로를 찾을 수 없는 상태
 STR_TRACE_RESTRICT_TRAIN_STATUS_REQUIRES_SERVICE                :{G=f}정비 요구 상태
+STR_TRACE_RESTRICT_TRAIN_STATUS_STOPPING_AT_STATION_WAYPOINT    :{G=f}역/경유지에서 정지하는 중
 STR_TRACE_RESTRICT_REVERSE_SIG                                  :신호기 뒤에서 회차
 STR_TRACE_RESTRICT_REVERSE_SIG_CANCEL                           :신호기 뒤에서 회차 취소
 STR_TRACE_RESTRICT_SET_SPEED_RESTRICTION                        :열차 속력 제한: {VELOCITY}
@@ -1588,6 +1594,7 @@ STR_TIMETABLE_SCHEDULED_DISPATCH_TOOLTIP                        :{BLACK}시간�
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER                          :{PUSH_COLOUR}{YELLOW}[배차 일정{STRING}의 기준]{POP_COLOUR}
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME             :{PUSH_COLOUR}{RED}[{STRING}배차 기준 - 대기 시간표가 작성되지 않음]{POP_COLOUR}
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_SCHEDULE_INDEX           :{NUM}{NBSP}-{NBSP}
+STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NAMED_SCHEDULE           :{STRING}{NBSP}-{NBSP}
 
 STR_TIMETABLE_LOCK_ORDER_TIME_TOOLTIP                           :{BLACK}선택된 경로의 시간 값을 고정하거나 고정 해제합니다.(Ctrl+클릭하면 모두 고정하거나 고정 해제).{}고정된 시간 값은 자동 시간 설정이나 자동 시간표가 변경하지 않습니다.
 
@@ -1754,6 +1761,7 @@ STR_JUST_TIME_HHMM                                              :{TIME_HHMM}
 
 STR_JUST_STRING1                                                :{STRING}
 STR_JUST_STRING2                                                :{STRING}
+STR_JUST_STRING3                                                :{STRING}
 
 STR_JUST_VELOCITY                                               :{VELOCITY}
 
@@ -1960,6 +1968,10 @@ STR_SCHDISPATCH_REMOVE_SCHEDULE                                 :{BLACK}현재 �
 STR_SCHDISPATCH_REMOVE_SCHEDULE_TOOLTIP                         :{BLACK}이 배차 일정을 완전히 제거합니다
 STR_SCHDISPATCH_NO_SCHEDULES                                    :{BLACK}일정 없음
 STR_SCHDISPATCH_SCHEDULE_ID                                     :{BLACK}일정 {NUM}/{NUM}
+STR_SCHDISPATCH_NAMED_SCHEDULE_ID                               :{BLACK}{STRING} ({NUM}/{NUM})
+STR_SCHDISPATCH_RENAME_SCHEDULE_TOOLTIP                         :{BLACK}일정 이름 변경
+STR_SCHDISPATCH_RENAME_SCHEDULE_CAPTION                         :{WHITE}일정 이름 변경
+STR_ERROR_CAN_T_RENAME_SCHEDULE                                 :{WHITE}일정 이름을 변경할 수 없습니다...
 
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}최근 출발: {DATE_WALLCLOCK_TINY}
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}최근 배차된 열차가 아직 출발하지 않았습니다. {DATE_WALLCLOCK_TINY}에 출발할 예정입니다.
@@ -2000,3 +2012,8 @@ STR_REFIT_WHOLE_SHIP                                            :선박 전체
 STR_REFIT_SHIP_PART                                             :{NUM}번 부품
 
 STR_VERY_REDUCED                                                :매우 드묾
+
+STR_STATION_VIEW_RENAME_TOOLTIP_EXTRA                           :{BLACK}{STRING}{}("{STRING}" 버튼을 CTRL+클릭하면 새 기본 이름을 생성할 수 있습니다).{}{}CTRL+클릭해서 다른 역과 이름을 바꿀 수 있습니다.
+STR_ERROR_CAN_T_EXCHANGE_STATION_NAMES                          :{WHITE}역 이름을 바꿀 수 없습니다...
+STR_ERROR_STATIONS_NOT_IN_SAME_TOWN                             :{WHITE}... 역이 같은 도시 안에 있지 않습니다
+STR_ERROR_STATION_ATTACHED_TO_INDUSTRY                          :{WHITE}... 역이 산업시설과 연관되어 있습니다
