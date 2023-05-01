@@ -1424,15 +1424,24 @@ CommandCost FindJoiningWaypoint(StationID existing_waypoint, StationID waypoint_
 }
 
 /**
+ * Clear any rail station platform reservation ahead of and behind train.
+ * @param v vehicle which may hold reservations
+ */
+void FreeTrainStationPlatformReservation(const Train *v)
+{
+	if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(v->GetVehicleTrackdir()), false);
+	v = v->Last();
+	if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(ReverseTrackdir(v->GetVehicleTrackdir())), false);
+}
+
+/**
  * Clear platform reservation during station building/removing.
  * @param v vehicle which holds reservation
  */
 static void FreeTrainReservation(Train *v)
 {
 	FreeTrainTrackReservation(v);
-	if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(v->GetVehicleTrackdir()), false);
-	v = v->Last();
-	if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(ReverseTrackdir(v->GetVehicleTrackdir())), false);
+	FreeTrainStationPlatformReservation(v);
 }
 
 /**

@@ -57,6 +57,8 @@ void IncreaseStats(Station *st, CargoID cargo, StationID next_station_id, uint c
 void RerouteCargo(Station *st, CargoID c, StationID avoid, StationID avoid2);
 void RerouteCargoFromSource(Station *st, CargoID c, StationID source, StationID avoid, StationID avoid2);
 
+void FreeTrainStationPlatformReservation(const Train *v);
+
 /**
  * Calculates the maintenance cost of a number of station tiles.
  * @param num Number of station tiles.

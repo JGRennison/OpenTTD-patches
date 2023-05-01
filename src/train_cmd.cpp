@@ -6831,6 +6831,7 @@ void DeleteVisibleTrain(Train *v)
 	/* delete train from back to front */
 	Train *u;
 	Train *prev = v->Last();
+	FreeTrainStationPlatformReservation(v);
 	do {
 		u = prev;
 		prev = u->Previous();
