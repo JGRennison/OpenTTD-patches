@@ -373,11 +373,11 @@ void DrawHouseImage(HouseID house_id, int left, int top, int right, int bottom)
 
 	/* sprites are relative to the topmost pixel of the ground tile */
 	uint x = (right - left + 1) / 2;
-	uint y = bottom - top + 1 - TILE_PIXELS;
-	if (hs->building_flags & TILE_SIZE_1x2) x -= TILE_PIXELS / 2;
-	if (hs->building_flags & TILE_SIZE_2x1) x += TILE_PIXELS / 2;
-	if (hs->building_flags & BUILDING_HAS_2_TILES) y -= TILE_PIXELS / 2;
-	if (hs->building_flags & BUILDING_HAS_4_TILES) y -= TILE_PIXELS / 2;
+	uint y = bottom - top + 1 - ScaleSpriteTrad(TILE_PIXELS);
+	if (hs->building_flags & TILE_SIZE_1x2) x -= ScaleSpriteTrad(TILE_PIXELS / 2);
+	if (hs->building_flags & TILE_SIZE_2x1) x += ScaleSpriteTrad(TILE_PIXELS / 2);
+	if (hs->building_flags & BUILDING_HAS_2_TILES) y -= ScaleSpriteTrad(TILE_PIXELS / 2);
+	if (hs->building_flags & BUILDING_HAS_4_TILES) y -= ScaleSpriteTrad(TILE_PIXELS / 2);
 
 	bool new_house = false;
 	if (house_id >= NEW_HOUSE_OFFSET) {
@@ -394,7 +394,7 @@ void DrawHouseImage(HouseID house_id, int left, int top, int right, int bottom)
 	uint num_row = (hs->building_flags & BUILDING_2_TILES_X) ? 2 : 1;
 	uint num_col = (hs->building_flags & BUILDING_2_TILES_Y) ? 2 : 1;
 
-	for (bool ground = true; ; ground = !ground) {
+	for (bool ground : { true, false }) {
 		HouseID hid = house_id;
 		for (uint row = 0; row < num_row; row++) {
 			for (uint col = 0; col < num_col; col++) {
@@ -409,7 +409,6 @@ void DrawHouseImage(HouseID house_id, int left, int top, int right, int bottom)
 				hid++;
 			}
 		}
-		if (!ground) break;
 	}
 }
 
