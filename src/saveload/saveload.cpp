@@ -2705,6 +2705,7 @@ struct ZlibLoadFilter : LoadFilter {
 /** Filter using Zlib compression. */
 struct ZlibSaveFilter : SaveFilter {
 	z_stream z; ///< Stream state we are writing to.
+	byte buf[MEMORY_CHUNK_SIZE]; ///< output buffer
 
 	/**
 	 * Initialise this filter.
@@ -2731,13 +2732,12 @@ struct ZlibSaveFilter : SaveFilter {
 	 */
 	void WriteLoop(byte *p, size_t len, int mode)
 	{
-		byte buf[MEMORY_CHUNK_SIZE]; // output buffer
 		uint n;
 		this->z.next_in = p;
 		this->z.avail_in = (uInt)len;
 		do {
-			this->z.next_out = buf;
-			this->z.avail_out = sizeof(buf);
+			this->z.next_out = this->buf;
+			this->z.avail_out = sizeof(this->buf);
 
 			/**
 			 * For the poor next soul who sees many valgrind warnings of the
@@ -2749,8 +2749,8 @@ struct ZlibSaveFilter : SaveFilter {
 			int r = deflate(&this->z, mode);
 
 			/* bytes were emitted? */
-			if ((n = sizeof(buf) - this->z.avail_out) != 0) {
-				this->chain->Write(buf, n);
+			if ((n = sizeof(this->buf) - this->z.avail_out) != 0) {
+				this->chain->Write(this->buf, n);
 			}
 			if (r == Z_STREAM_END) break;
 
@@ -2833,6 +2833,7 @@ struct LZMALoadFilter : LoadFilter {
 /** Filter using LZMA compression. */
 struct LZMASaveFilter : SaveFilter {
 	lzma_stream lzma; ///< Stream state that we are writing to.
+	byte buf[MEMORY_CHUNK_SIZE]; ///< output buffer
 
 	/**
 	 * Initialise this filter.
@@ -2858,19 +2859,18 @@ struct LZMASaveFilter : SaveFilter {
 	 */
 	void WriteLoop(byte *p, size_t len, lzma_action action)
 	{
-		byte buf[MEMORY_CHUNK_SIZE]; // output buffer
 		size_t n;
 		this->lzma.next_in = p;
 		this->lzma.avail_in = len;
 		do {
-			this->lzma.next_out = buf;
-			this->lzma.avail_out = sizeof(buf);
+			this->lzma.next_out = this->buf;
+			this->lzma.avail_out = sizeof(this->buf);
 
 			lzma_ret r = lzma_code(&this->lzma, action);
 
 			/* bytes were emitted? */
-			if ((n = sizeof(buf) - this->lzma.avail_out) != 0) {
-				this->chain->Write(buf, n);
+			if ((n = sizeof(this->buf) - this->lzma.avail_out) != 0) {
+				this->chain->Write(this->buf, n);
 			}
 			if (r == LZMA_STREAM_END) break;
 			if (r != LZMA_OK) SlErrorFmt(STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR, "liblzma returned error code: %u", r);
@@ -2946,6 +2946,7 @@ struct ZSTDLoadFilter : LoadFilter {
 /** Filter using ZSTD compression. */
 struct ZSTDSaveFilter : SaveFilter {
 	ZSTD_CCtx *zstd;  ///< ZSTD compression context
+	byte buf[MEMORY_CHUNK_SIZE]; ///< output buffer
 
 	/**
 	 * Initialise this filter.
@@ -2976,16 +2977,15 @@ struct ZSTDSaveFilter : SaveFilter {
 	 */
 	void WriteLoop(byte *p, size_t len, ZSTD_EndDirective mode)
 	{
-		byte buf[MEMORY_CHUNK_SIZE]; // output buffer
 		ZSTD_inBuffer input{p, len, 0};
 
 		bool finished;
 		do {
-			ZSTD_outBuffer output{buf, sizeof(buf), 0};
+			ZSTD_outBuffer output{this->buf, sizeof(this->buf), 0};
 			size_t remaining = ZSTD_compressStream2(this->zstd, &output, &input, mode);
 			if (ZSTD_isError(remaining)) SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR, "libzstd returned error code");
 
-			if (output.pos != 0) this->chain->Write(buf, output.pos);
+			if (output.pos != 0) this->chain->Write(this->buf, output.pos);
 
 			finished = (mode == ZSTD_e_end ? (remaining == 0) : (input.pos == input.size));
 		} while (!finished);
