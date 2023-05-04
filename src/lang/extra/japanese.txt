@@ -1,0 +1,143 @@
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
+STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
+STR_UNIT_NAME_VELOCITY_SI                                       :m/s
+
+STR_BUTTON_RENAME                                               :{BLACK}名前を変更
+
+STR_MAP_MENU_PLAN_LIST                                          :計画一覧表
+
+STR_VEHICLE_TYPE_TRAINS                                         :列車
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :自動車
+STR_VEHICLE_TYPE_SHIPS                                          :船舶
+STR_VEHICLE_TYPE_AIRCRAFT                                       :航空機
+
+STR_CONFIG_SETTING_INTERFACE_DEPARTUREBOARDS                    :{ORANGE}発車標
+STR_CONFIG_SETTING_INTERFACE_WALLCLOCK                          :{ORANGE}時刻
+STR_CONFIG_SETTING_INTERFACE_TIMETABLE                          :{ORANGE}ダイヤ
+STR_CONFIG_SETTING_INTERFACE_ADV_SIGNALS                        :{ORANGE}信号
+
+# Tracerestrict GUI
+
+# Programmable Pre-Signals
+
+#House construction window (for SE only)
+
+#Town select window (for SE only)
+
+STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}雪線の位置:
+STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}雪線を上げる
+STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}雪線を下げる
+STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}雪線の位置を変更
+
+STR_STATION_VIEW_DEPARTURES_BUTTON                              :{BLACK}発車標
+STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}発車標を表示します。
+
+STR_DEPARTURES_CAPTION                                          :{WHITE}{STATION} 発車標
+STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOINT} 発車標
+STR_DEPARTURES_PAX                                              :{BLACK}{TINY_FONT}旅客
+STR_DEPARTURES_FREIGHT                                          :{BLACK}{TINY_FONT}貨物
+STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}発車
+STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}到着
+STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}{TINY_FONT}経由
+STR_DEPARTURES_PAX_TOOLTIP                                      :{BLACK}旅客を運搬できる車両を表示
+STR_DEPARTURES_FREIGHT_TOOLTIP                                  :{BLACK}貨物を運搬できる車両を表示
+STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}発車時刻表を表示
+STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}到着時刻表を表示
+STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}通過車両を表示
+STR_DEPARTURES_EMPTY                                            :{ORANGE}現在、ダイヤを設定している車両はありません。
+STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}発車標が設定されていません。
+STR_DEPARTURES_TIME                                             :{ORANGE}{DATE_WALLCLOCK_TINY}
+STR_DEPARTURES_TIME_DEP                                         :{ORANGE}{DATE_WALLCLOCK_TINY} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TIME_ARR                                         :{ORANGE}{DATE_WALLCLOCK_TINY} {RED}{DOWN_ARROW}
+STR_DEPARTURES_TIME_BOTH                                        :{ORANGE}{1:DATE_WALLCLOCK_TINY} {RED}{DOWN_ARROW} {ORANGE}{0:DATE_WALLCLOCK_TINY} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TERMINUS                                         :{ORANGE}{STATION}{STRING}
+STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STATION}{STRING} 経由 {STRING}経由
+STR_DEPARTURES_TERMINUS_VIA                                     :{ORANGE}{STATION}{STRING} 経由
+STR_DEPARTURES_VIA                                              :{ORANGE} {STRING} 経由
+STR_DEPARTURES_TOC                                              :{ORANGE}{COMPANY}
+STR_DEPARTURES_GROUP                                            :{ORANGE}{GROUP}
+STR_DEPARTURES_VEH                                              :{ORANGE}{VEHICLE}
+STR_DEPARTURES_CALLING_AT                                       :{ORANGE}停車場:
+STR_DEPARTURES_CALLING_AT_FIRST_STATION                         :{STATION}
+STR_DEPARTURES_CALLING_AT_STATION                               :{STRING}, {STATION}
+STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{STRING} 終点、{STATION}でございます
+STR_DEPARTURES_CALLING_AT_LIST                                  :{ORANGE}{STRING}.
+
+STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
+STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}
+STR_DEPARTURES_TYPE_BUS                                         :{ORANGE}{BUS}
+STR_DEPARTURES_TYPE_BUS_SILVER                                  :{SILVER}{BUS}
+STR_DEPARTURES_TYPE_LORRY                                       :{ORANGE}{LORRY}
+STR_DEPARTURES_TYPE_LORRY_SILVER                                :{SILVER}{LORRY}
+STR_DEPARTURES_TYPE_PLANE                                       :{ORANGE}{PLANE}
+STR_DEPARTURES_TYPE_PLANE_SILVER                                :{SILVER}{PLANE}
+STR_DEPARTURES_TYPE_SHIP                                        :{ORANGE}{SHIP}
+STR_DEPARTURES_TYPE_SHIP_SILVER                                 :{SILVER}{SHIP}
+
+STR_DEPARTURES_STATION_NONE                                     :
+STR_DEPARTURES_STATION_PORT                                     :{ORANGE} {SHIP}
+STR_DEPARTURES_STATION_AIRPORT                                  :{ORANGE} {PLANE}
+STR_DEPARTURES_STATION_PORTAIRPORT                              :{ORANGE} {SHIP} {PLANE}
+
+STR_DEPARTURES_ON_TIME                                          :{GREEN}定時
+STR_DEPARTURES_ARRIVED                                          :{GREEN}到着しました
+STR_DEPARTURES_DELAYED                                          :{YELLOW}遅れています
+STR_DEPARTURES_EXPECTED                                         :{YELLOW} {DATE_WALLCLOCK_TINY}見込み
+STR_DEPARTURES_CANCELLED                                        :{RED}運休
+
+STR_CONFIG_SETTING_DEPARTUREBOARDS                              :{ORANGE}発車標
+STR_CONFIG_DEPARTURE_CALC_FREQUENCY                             :発車標の表示更新タイミング:{STRING} ティック
+STR_CONFIG_DEPARTURE_CALC_FREQUENCY_HELPTEXT                    :発車標の表示を更新するタイミングをティック以内に設定します。
+STR_CONFIG_DEPARTURE_VEHICLE_NAME                               :発車標にて担当車両を表示: {STRING}
+STR_CONFIG_DEPARTURE_VEHICLE_NAME_HELPTEXT                      :発車標にて、担当する車両名を表示します。
+STR_CONFIG_DEPARTURE_GROUP_NAME                                 :発車標にて車両グループを表示: {STRING}
+STR_CONFIG_DEPARTURE_GROUP_NAME_HELPTEXT                        :発車標にて、設定した車両のグループを表示します。
+STR_CONFIG_DEPARTURE_COMPANY_NAME                               :発車標にて会社名を表示: {STRING}
+STR_CONFIG_DEPARTURE_LARGER_FONT                                :発車標の停車場案内を大きいめフォントでの表示: {STRING}
+STR_CONFIG_DEPARTURE_LARGER_FONT_HELPTEXT                       :発車標に表示されている停車場案内を通常より大きいめのフォントで表示します。
+STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :発車標にて行先が港湾や空港の場合はアイコンを表示: {STRING}
+STR_CONFIG_DEPARTURE_DESTINATION_TYPE_HELPTEXT                  :発車標にて、行先が港湾や空港の場合は、船や飛行機のアイコンを表示します。
+STR_CONFIG_DEPARTURE_ONLY_PASSENGERS                            :発車標を旅客車両のみ表示: {STRING}
+STR_CONFIG_DEPARTURE_ONLY_PASSENGERS_HELPTEXT                   :発車標を、旅客を運搬できる車両のみ表示します。
+STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS                             :発車標の停車場案内に運転停車の停車場を含む: {STRING}
+STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS_HELPTEXT                    :発車標に表示されている停車場案内に運転停車の停車場を含めて表示します。
+
+# Town tooltip
+
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}設計年: {GOLD}{NUM}
+
+# Cargo type orders Window
+
+# Plans window
+STR_PLANS_CAPTION                                               :{WHITE}計画一覧表
+STR_PLANS_NEW_PLAN                                              :{BLACK}新規計画
+STR_PLANS_NEW_PLAN_TOOLTIP                                      :{BLACK}新しい計画を作る
+STR_PLANS_ADD_LINES                                             :{BLACK}作成・編集
+STR_PLANS_ADDING_LINES                                          :{BLACK}作成・編集中
+STR_PLANS_HIDE_ALL                                              :{BLACK}全て計画隠す
+STR_PLANS_HIDE_ALL_TOOLTIP                                      :{BLACK}全ての計画を画面から隠します。
+STR_PLANS_SHOW_ALL                                              :{BLACK}全て計画表示
+STR_PLANS_SHOW_ALL_TOOLTIP                                      :{BLACK}全ての計画を画面に表示します。
+STR_PLANS_VISIBILITY_PRIVATE                                    :{BLACK}秘匿にする
+STR_PLANS_VISIBILITY_PUBLIC                                     :{BLACK}公表にする
+STR_PLANS_VISIBILITY_TOOLTIP                                    :{BLACK}計画を秘匿にするか公表にするかを設定します。 公表した計画は他の会社にも表示されていますが、他の会社は編集できません。
+STR_PLANS_DELETE                                                :{BLACK}削除
+STR_PLANS_DELETE_TOOLTIP                                        :{BLACK}計画を削除します
+STR_PLANS_LIST_ITEM_PLAN                                        :第{NUM}計画: {NUM} 線 ({DATE_SHORT})
+STR_PLANS_LIST_ITEM_NAMED_PLAN                                  :{STRING}: {NUM} 線 ({DATE_SHORT})
+STR_PLANS_LIST_ITEM_LINE                                        : -- 第{NUM}線: {NUM} セグメント
+STR_PLANS_LIST_TOOLTIP                                          :{BLACK}ダブルクリックで計画の詳細な表示・編集出来ます。{}Ctrl+クリックでスクロールします。
+STR_PLANS_QUERY_RENAME_PLAN                                     :{WHITE}計画名を変更
+
+# Clear area query
+
+# Plan related errors
+
+STR_TRADITIONAL_TRAIN_NAME                                      :列車{COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :車両{COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :船舶{COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :航空機{COMMA}
+
+# Scheduled Dispatch
+
+# Modifier key toggle window

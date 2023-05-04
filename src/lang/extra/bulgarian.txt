@@ -1,0 +1,40 @@
+STR_BUTTON_RENAME                                               :{BLACK}Преименувай
+
+STR_VEHICLE_TYPE_TRAINS                                         :Влакове
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Камиони/Автобуси
+STR_VEHICLE_TYPE_SHIPS                                          :Кораби
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Самолети
+
+# Tracerestrict GUI
+
+# Programmable Pre-Signals
+
+#House construction window (for SE only)
+
+#Town select window (for SE only)
+
+STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Снежна линия:
+STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Преместване снежната линия нагоре
+STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Преместване снежната линия надолу
+STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Височина на снежната линия
+
+# Town tooltip
+
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Модел: {GOLD}{NUM}
+
+# Cargo type orders Window
+
+# Plans window
+
+# Clear area query
+
+# Plan related errors
+
+STR_TRADITIONAL_TRAIN_NAME                                      :Влак {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Автомобил {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Кораб {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Самолет {COMMA}
+
+# Scheduled Dispatch
+
+# Modifier key toggle window

@@ -21,21 +21,26 @@
 	return sd != nullptr && sd->IsIntSetting();
 }
 
-/* static */ int32 ScriptGameSettings::GetValue(const char *setting)
+/* static */ SQInteger ScriptGameSettings::GetValue(const char *setting)
 {
 	if (!IsValid(setting)) return -1;
 
 	const SettingDesc *sd = GetSettingFromName(setting);
+	assert(sd != nullptr);
 	return sd->AsIntSetting()->Read(&_settings_game);
 }
 
-/* static */ bool ScriptGameSettings::SetValue(const char *setting, int value)
+/* static */ bool ScriptGameSettings::SetValue(const char *setting, SQInteger value)
 {
+	EnforceDeityOrCompanyModeValid(false);
 	if (!IsValid(setting)) return false;
 
 	const SettingDesc *sd = GetSettingFromName(setting);
+	assert(sd != nullptr);
 
 	if ((sd->flags & SF_NO_NETWORK_SYNC) != 0) return false;
+
+	value = Clamp<SQInteger>(value, INT32_MIN, INT32_MAX);
 
 	return ScriptObject::DoCommand(0, 0, value, CMD_CHANGE_SETTING, sd->name);
 }

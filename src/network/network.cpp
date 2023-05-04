@@ -87,16 +87,18 @@ uint32 _sync_frame;                   ///< The frame to perform the sync check.
 Date   _last_sync_date;               ///< The game date of the last successfully received sync frame
 DateFract _last_sync_date_fract;      ///< "
 uint8  _last_sync_tick_skip_counter;  ///< "
+uint32 _last_sync_frame_counter;      ///< "
 bool _network_first_time;             ///< Whether we have finished joining or not.
 CompanyMask _network_company_passworded; ///< Bitmask of the password status of all companies.
+
+std::vector<NetworkSyncRecord> _network_client_sync_records;
+std::unique_ptr<std::array<NetworkSyncRecord, 1024>> _network_server_sync_records;
+uint32 _network_server_sync_records_next;
 
 static_assert((int)NETWORK_COMPANY_NAME_LENGTH == MAX_LENGTH_COMPANY_NAME_CHARS * MAX_CHAR_LENGTH);
 
 /** The amount of clients connected */
 byte _network_clients_connected = 0;
-
-/* Some externs / forwards */
-extern void StateGameLoop();
 
 /**
  * Return whether there is any client connected or trying to connect at all.
@@ -156,6 +158,10 @@ byte NetworkSpectatorCount()
 	if (_network_dedicated) count--;
 
 	return count;
+}
+
+uint NetworkClientCount() {
+	return (uint)NetworkClientInfo::GetNumItems();
 }
 
 /**
@@ -222,7 +228,7 @@ std::string GenerateCompanyPasswordHash(const std::string &password, const std::
  */
 bool NetworkCompanyIsPassworded(CompanyID company_id)
 {
-	return HasBit(_network_company_passworded, company_id);
+	return _networking && company_id < MAX_COMPANIES && HasBit(_network_company_passworded, company_id);
 }
 
 /* This puts a text-message to the console, or in the future, the chat-box,
@@ -640,8 +646,13 @@ void NetworkClose(bool close_admins)
 	delete[] _network_company_states;
 	_network_company_states = nullptr;
 	_network_company_server_id.clear();
+	_network_company_passworded = 0;
 
 	InitializeNetworkPools(close_admins);
+
+	_network_client_sync_records.clear();
+	_network_client_sync_records.shrink_to_fit();
+	_network_server_sync_records.reset();
 }
 
 /* Initializes the network (cleans sockets and stuff) */
@@ -657,6 +668,7 @@ static void NetworkInitialize(bool close_admins = true)
 	_last_sync_date = 0;
 	_last_sync_date_fract = 0;
 	_last_sync_tick_skip_counter = 0;
+	_last_sync_frame_counter = 0;
 }
 
 /** Non blocking connection to query servers for their game info. */
@@ -932,6 +944,10 @@ bool NetworkServerStart()
 	_last_sync_frame = 0;
 	_network_own_client_id = CLIENT_ID_SERVER;
 
+	_network_server_sync_records.reset(new std::array<NetworkSyncRecord, 1024>());
+	_network_server_sync_records->fill({ 0, 0, 0 });
+	_network_server_sync_records_next = 0;
+
 	_network_clients_connected = 0;
 	_network_company_passworded = 0;
 
@@ -1102,7 +1118,7 @@ void NetworkGameLoop()
 		while (f != nullptr && !feof(f)) {
 			if (_date == next_date && _date_fract == next_date_fract) {
 				if (cp != nullptr) {
-					NetworkSendCommand(cp->tile, cp->p1, cp->p2, cp->p3, cp->cmd & ~CMD_FLAGS_MASK, nullptr, cp->text.c_str(), cp->company, cp->binary_length);
+					NetworkSendCommand(cp->tile, cp->p1, cp->p2, cp->p3, cp->cmd & ~CMD_FLAGS_MASK, nullptr, cp->text.c_str(), cp->company, cp->aux_data);
 					DEBUG(net, 0, "injecting: date{%08x; %02x; %02x}; %02x; %06x; %08x; %08x; " OTTD_PRINTFHEX64PAD " %08x; \"%s\" (%x) (%s)", _date, _date_fract, _tick_skip_counter, (int)_current_company, cp->tile, cp->p1, cp->p2, cp->p3, cp->cmd, cp->text.c_str(), cp->binary_length, GetCommandName(cp->cmd));
 					cp.reset();
 				}
@@ -1149,7 +1165,7 @@ void NetworkGameLoop()
 				 * string misses because in 99% of the time it's not used. */
 				assert(ret == 10 || ret == 9);
 				cp->company = (CompanyID)company;
-				cp->binary_length = 0;
+				cp->aux_data = nullptr;
 			} else if (strncmp(p, "join: ", 6) == 0) {
 				/* Manually insert a pause when joining; this way the client can join at the exact right time. */
 				int ret = sscanf(p + 6, "date{%x; %x; %x}", &next_date, &next_date_fract, &next_tick_skip_counter);
@@ -1163,7 +1179,7 @@ void NetworkGameLoop()
 				cp->p2 = 1;
 				cp->p3 = 0;
 				cp->callback = nullptr;
-				cp->binary_length = 0;
+				cp->aux_data = nullptr;
 				_ddc_fastforward = false;
 			} else if (strncmp(p, "sync: ", 6) == 0) {
 				int ret = sscanf(p + 6, "date{%x; %x; %x}; %x; %x", &next_date, &next_date_fract, &next_tick_skip_counter, &sync_state[0], &sync_state[1]);
@@ -1210,6 +1226,7 @@ void NetworkGameLoop()
 		}
 
 		NetworkExecuteLocalCommandQueue();
+		if (_pause_countdown > 0 && --_pause_countdown == 0) DoCommandP(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
 
 		/* Then we make the frame */
 		StateGameLoop();
@@ -1219,6 +1236,9 @@ void NetworkGameLoop()
 		_sync_seed_2 = _random.state[1];
 #endif
 		_sync_state_checksum = _state_checksum.state;
+
+		(*_network_server_sync_records)[_network_server_sync_records_next] = { _frame_counter, _random.state[0], _state_checksum.state };
+		_network_server_sync_records_next = (_network_server_sync_records_next + 1) % _network_server_sync_records->size();
 
 		NetworkServer_Tick(send_frame);
 	} else {
@@ -1336,12 +1356,14 @@ void NetworkStartUp()
 	NetworkUDPInitialize();
 	DEBUG(net, 3, "Network online, multiplayer available");
 	NetworkFindBroadcastIPs(&_broadcast_list);
+	NetworkHTTPInitialize();
 }
 
 /** This shuts the network down */
 void NetworkShutDown()
 {
 	NetworkDisconnect(true);
+	NetworkHTTPUninitialize();
 	NetworkUDPClose();
 
 	DEBUG(net, 3, "Shutting down network");

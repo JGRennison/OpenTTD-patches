@@ -19,6 +19,7 @@
 #include "vehicle_type.h"
 #include "date_type.h"
 #include "schdispatch.h"
+#include "gfx_type.h"
 #include "saveload/saveload_common.h"
 
 #include <memory>
@@ -50,11 +51,33 @@ template <typename F> void IterateOrderRefcountMapForDestinationID(DestinationID
 void IntialiseOrderDestinationRefcountMap();
 void ClearOrderDestinationRefcountMap();
 
+/*
+ * xflags bits:
+ * Bit 0:    OT_CONDITIONAL: IsWaitTimetabled(): For branch travel time
+ * Bit 1:    IsWaitFixed(): Wait time fixed
+ * Bits 2-3: GetLeaveType(): Order leave type
+ * Bit 4:    IsTravelFixed(): Travel time fixed
+ * Bits 5-7: GetRoadVehTravelDirection(): Road vehicle travel direction
+ */
+/*
+ * xdata users:
+ * OT_COUNTER: Counter operation value (not counter ID)
+ * OCV_SLOT_OCCUPANCY, OCV_VEH_IN_SLOT: Trace restrict slot ID
+ * OCV_COUNTER_VALUE: Bits 0-15: Counter comparison value, Bits 16-31: Counter ID
+ * OCV_TIMETABLE: Timetable lateness/earliness
+ * OCV_TIME_DATE: Time/date
+ * OCV_CARGO_WAITING_AMOUNT: Bits 0-15: Cargo quantity comparison value, Bits 16-31: Via station ID + 2
+ * OCV_CARGO_LOAD_PERCENTAGE: Cargo percentage comparison value
+ * OCV_DISPATCH_SLOT: Bits 0-15: Dispatch schedule ID
+ * OCV_PERCENT: Bits 0-7: Jump counter
+ */
+
 struct OrderExtraInfo {
 	uint8 cargo_type_flags[NUM_CARGO] = {}; ///< Load/unload types for each cargo type.
 	uint32 xdata = 0;                       ///< Extra arbitrary data
 	uint16 dispatch_index = 0;              ///< Scheduled dispatch index + 1
 	uint8 xflags = 0;                       ///< Extra flags
+	uint8 colour = 0;                       ///< Order colour + 1
 };
 
 namespace upstream_sl {
@@ -181,6 +204,8 @@ public:
 	void MakeWaiting();
 	void MakeLoadingAdvance(StationID destination);
 	void MakeReleaseSlot();
+	void MakeChangeCounter();
+	void MakeLabel(OrderLabelSubType subtype);
 
 	/**
 	 * Is this a 'goto' order with a real destination?
@@ -202,7 +227,7 @@ public:
 
 	/**
 	 * Gets the destination of this order.
-	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION) || IsType(OT_RELEASE_SLOT).
+	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION) || IsType(OT_RELEASE_SLOT) || IsType(OT_COUNTER) || IsType(OT_LABEL).
 	 * @return the destination of the order.
 	 */
 	inline DestinationID GetDestination() const { return this->dest; }
@@ -210,7 +235,7 @@ public:
 	/**
 	 * Sets the destination of this order.
 	 * @param destination the new destination of the order.
-	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION) || IsType(OT_RELEASE_SLOT).
+	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION) || IsType(OT_RELEASE_SLOT) || IsType(OT_COUNTER) || IsType(OT_LABEL).
 	 */
 	inline void SetDestination(DestinationID destination) { this->dest = destination; }
 
@@ -349,6 +374,8 @@ public:
 	inline uint16 GetConditionValue() const { return GB(this->dest, 0, 11); }
 	/** Get counter for the 'jump xx% of times' option */
 	inline int8 GetJumpCounter() const { return GB(this->GetXData(), 0, 8); }
+	/** Get counter operation */
+	inline uint8 GetCounterOperation() const { return GB(this->flags, 0, 8); }
 
 	/** Set how the consist must be loaded. */
 	inline void SetLoadType(OrderLoadFlags load_type)
@@ -410,18 +437,31 @@ public:
 	inline void SetConditionSkipToOrder(VehicleOrderID order_id) { this->flags = order_id; }
 	/** Set the value to base the skip on. */
 	inline void SetConditionValue(uint16 value) { SB(this->dest, 0, 11, value); }
-	/** Get counter for the 'jump xx% of times' option */
+	/** Set counter for the 'jump xx% of times' option */
 	inline void SetJumpCounter(int8 jump_counter) { SB(this->GetXDataRef(), 0, 8, jump_counter); }
+	/** Set counter operation */
+	inline void SetCounterOperation(uint8 op) { SB(this->flags, 0, 8, op); }
 
 	/* As conditional orders write their "skip to" order all over the flags, we cannot check the
 	 * flags to find out if timetabling is enabled. However, as conditional orders are never
 	 * autofilled we can be sure that any non-zero values for their wait_time and travel_time are
 	 * explicitly set (but travel_time is actually unused for conditionals). */
 
+	/* Does this order not have any associated travel or wait times */
+	inline bool HasNoTimetableTimes() const { return this->IsType(OT_COUNTER) || this->IsType(OT_RELEASE_SLOT) || this->IsType(OT_LABEL); }
+
 	/** Does this order have an explicit wait time set? */
-	inline bool IsWaitTimetabled() const { return this->IsType(OT_CONDITIONAL) ? HasBit(this->GetXFlags(), 0) : HasBit(this->flags, 3); }
+	inline bool IsWaitTimetabled() const
+	{
+		if (this->HasNoTimetableTimes()) return true;
+		return this->IsType(OT_CONDITIONAL) ? HasBit(this->GetXFlags(), 0) : HasBit(this->flags, 3);
+	}
 	/** Does this order have an explicit travel time set? */
-	inline bool IsTravelTimetabled() const { return this->IsType(OT_CONDITIONAL) ? this->travel_time > 0 : HasBit(this->flags, 7); }
+	inline bool IsTravelTimetabled() const
+	{
+		if (this->HasNoTimetableTimes()) return true;
+		return this->IsType(OT_CONDITIONAL) ? this->travel_time > 0 : HasBit(this->flags, 7);
+	}
 
 	/** Get the time in ticks a vehicle should wait at the destination or 0 if it's not timetabled. */
 	inline TimetableTicks GetTimetabledWait() const { return this->IsWaitTimetabled() ? this->wait_time : 0; }
@@ -442,6 +482,7 @@ public:
 	/** Set if the wait time is explicitly timetabled (unless the order is conditional). */
 	inline void SetWaitTimetabled(bool timetabled)
 	{
+		if (this->HasNoTimetableTimes()) return;
 		if (this->IsType(OT_CONDITIONAL)) {
 			SB(this->GetXFlagsRef(), 0, 1, timetabled ? 1 : 0);
 		} else {
@@ -450,7 +491,10 @@ public:
 	}
 
 	/** Set if the travel time is explicitly timetabled (unless the order is conditional). */
-	inline void SetTravelTimetabled(bool timetabled) { if (!this->IsType(OT_CONDITIONAL)) SB(this->flags, 7, 1, timetabled ? 1 : 0); }
+	inline void SetTravelTimetabled(bool timetabled)
+	{
+		if (!this->IsType(OT_CONDITIONAL) && !this->HasNoTimetableTimes()) SB(this->flags, 7, 1, timetabled ? 1 : 0);
+	}
 
 	/**
 	 * Set the time in ticks to wait at the destination.
@@ -498,6 +542,15 @@ public:
 		if (leave_type != this->GetLeaveType()) SB(this->GetXFlagsRef(), 2, 2, leave_type);
 	}
 
+	/** Get the road vehicle travel direction */
+	inline DiagDirection GetRoadVehTravelDirection() const { return (DiagDirection)((GB(this->GetXFlags(), 5, 3) - 1) & 0xFF); }
+
+	/** Set the road vehicle travel direction */
+	inline void SetRoadVehTravelDirection(DiagDirection dir)
+	{
+		if (dir != this->GetRoadVehTravelDirection()) SB(this->GetXFlagsRef(), 5, 3, (dir + 1) & 0x7);
+	}
+
 	/**
 	 * Get the occupancy value
 	 * @return occupancy
@@ -509,6 +562,8 @@ public:
 	 * @param occupancy The occupancy to set
 	 */
 	inline void SetOccupancy(uint8 occupancy) { this->occupancy = occupancy; }
+
+	bool UseOccupancyValueForAverage() const;
 
 	bool ShouldStopAtStation(StationID last_station_visited, StationID station, bool waypoint) const;
 	bool ShouldStopAtStation(const Vehicle *v, StationID station, bool waypoint) const;
@@ -544,6 +599,30 @@ public:
 	{
 		return this->extra != nullptr && this->extra->dispatch_index > 0 && (!require_wait_timetabled || this->IsWaitTimetabled());
 	}
+
+	/** Get order colour */
+	inline Colours GetColour() const
+	{
+		uint8 value = this->extra != nullptr ? this->extra->colour : 0;
+		return (Colours)(value - 1);
+	}
+
+	/** Set order colour */
+	inline void SetColour(Colours colour)
+	{
+		if (colour != this->GetColour()) {
+			this->CheckExtraInfoAlloced();
+			this->extra->colour = ((uint8)colour) + 1;
+		}
+	}
+
+	inline OrderLabelSubType GetLabelSubType() const
+	{
+		return (OrderLabelSubType)GB(this->flags, 0, 8);
+	}
+
+	const char *GetLabelText() const;
+	void SetLabelText(const char *text);
 
 	void AssignOrder(const Order &other);
 	bool Equals(const Order &other) const;
@@ -617,6 +696,8 @@ private:
 	                                                                    ///  this counts to (DAY_TICK * _settings_game.economy.day_length_factor)
 	int32 scheduled_dispatch_last_dispatch = 0;                         ///< Last vehicle dispatched offset
 	int32 scheduled_dispatch_max_delay = 0;                             ///< Maximum allowed delay
+
+	std::string name;                                                   ///< Name of dispatch schedule
 
 	inline void CopyBasicFields(const DispatchSchedule &other)
 	{
@@ -722,6 +803,9 @@ public:
 	{
 		other.scheduled_dispatch = std::move(this->scheduled_dispatch);
 	}
+
+	inline std::string &ScheduleName() { return this->name; }
+	inline const std::string &ScheduleName() const { return this->name; }
 };
 
 /**
@@ -735,7 +819,6 @@ private:
 	friend upstream_sl::SaveLoadTable upstream_sl::GetOrderListDescription(); ///< Saving and loading of order lists.
 	friend void Ptrs_ORDL(); ///< Saving and loading of order lists.
 
-	StationID GetBestLoadableNext(const Vehicle *v, const Order *o1, const Order *o2) const;
 	void ReindexOrderList();
 	Order *GetOrderAtFromList(int index) const;
 

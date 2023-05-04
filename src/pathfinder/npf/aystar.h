@@ -17,13 +17,13 @@
 #define AYSTAR_H
 
 #include "queue.h"
-#include <unordered_map>
 #include <memory>
 
 #include "../../tile_type.h"
 #include "../../track_type.h"
 
-//#define AYSTAR_DEBUG
+#include "../../core/pod_pool.hpp"
+#include "../../3rdparty/robin_hood/robin_hood.h"
 
 /** Return status of #AyStar methods. */
 enum AystarStatus {
@@ -168,13 +168,20 @@ struct AyStar {
 	void CheckTile(AyStarNode *current, OpenListNode *parent);
 
 protected:
-	std::unordered_map<std::pair<TileIndex, Trackdir>, PathNode*, PairHash> closedlist_hash;
+
+	inline uint32 HashKey(TileIndex tile, Trackdir td) const { return tile | (td << 28); }
+
+	PodPool<PathNode*, sizeof(PathNode), 8192> closedlist_nodes;
+	robin_hood::unordered_flat_map<uint32, uint32> closedlist_hash;
+
 	BinaryHeap openlist_queue;  ///< The open queue.
-	std::unordered_map<std::pair<TileIndex, Trackdir>, OpenListNode*, PairHash> openlist_hash;
+
+	PodPool<OpenListNode*, sizeof(OpenListNode), 8192> openlist_nodes;
+	robin_hood::unordered_flat_map<uint32, uint32> openlist_hash;
 
 	void OpenListAdd(PathNode *parent, const AyStarNode *node, int f, int g);
-	OpenListNode *OpenListIsInList(const AyStarNode *node);
-	OpenListNode *OpenListPop();
+	uint32 OpenListIsInList(const AyStarNode *node);
+	std::pair<uint32, OpenListNode *> OpenListPop();
 
 	void ClosedListAdd(const PathNode *node);
 	PathNode *ClosedListIsInList(const AyStarNode *node);

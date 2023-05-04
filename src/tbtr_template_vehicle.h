@@ -47,28 +47,32 @@ extern TemplatePool _template_pool;
 extern bool _template_vehicle_images_valid;
 
 /// listing/sorting templates
-typedef GUIList<const TemplateVehicle*> GUITemplateList;
+typedef GUIList<const TemplateVehicle *> GUITemplateList;
 
 struct TemplateVehicleImageDimensions {
 	int reference_width;
 	int vehicle_pitch;
 	int cached_veh_length;
+	int vehicle_flip_length;
 
 	void SetFromTrain(const Train *t);
 
 	int GetDisplayImageWidth() const
 	{
-		return ScaleGUITrad(this->cached_veh_length * this->reference_width / VEHICLE_LENGTH);
+		return ScaleSpriteTrad(this->cached_veh_length * this->reference_width / VEHICLE_LENGTH);
 	}
 
 	int GetOffsetX() const
 	{
-		return ScaleGUITrad(this->reference_width) / 2;
+		if (this->vehicle_flip_length >= 0) {
+			return ScaleSpriteTrad((this->vehicle_flip_length - VEHICLE_LENGTH / 2) * this->reference_width / VEHICLE_LENGTH);
+		}
+		return ScaleSpriteTrad(this->reference_width) / 2;
 	}
 
 	int GetOffsetY() const
 	{
-		return ScaleGUITrad(this->vehicle_pitch);
+		return ScaleSpriteTrad(this->vehicle_pitch);
 	}
 };
 
@@ -116,12 +120,13 @@ public:
 	uint32 air_drag;
 
 	uint32 ctrl_flags;                  ///< See: TemplateVehicleControlFlags
+	std::string name;
 
 	VehicleSpriteSeq sprite_seq;                     ///< NOSAVE: Vehicle appearance.
 	TemplateVehicleImageDimensions image_dimensions; ///< NOSAVE: image dimensions
 	SpriteID colourmap;                              ///< NOSAVE: cached colour mapping
 
-	TemplateVehicle(VehicleType type = VEH_INVALID, EngineID e = INVALID_ENGINE, byte B = 0, Owner = _local_company);
+	TemplateVehicle(VehicleType type = VEH_INVALID, EngineID e = INVALID_ENGINE, Owner = _local_company);
 
 	TemplateVehicle(EngineID eid)
 	{
@@ -138,16 +143,16 @@ public:
 
 	~TemplateVehicle();
 
-	inline TemplateVehicle* Next() const { return this->next; }
-	inline TemplateVehicle* Prev() const { return this->previous; }
-	inline TemplateVehicle* First() const { return this->first; }
+	inline TemplateVehicle *Next() const { return this->next; }
+	inline TemplateVehicle *Prev() const { return this->previous; }
+	inline TemplateVehicle *First() const { return this->first; }
 
-	void SetNext(TemplateVehicle*);
-	void SetPrev(TemplateVehicle*);
-	void SetFirst(TemplateVehicle*);
+	void SetNext(TemplateVehicle *v);
+	void SetPrev(TemplateVehicle *v);
+	void SetFirst(TemplateVehicle *v);
 
-	TemplateVehicle* GetNextUnit() const;
-	TemplateVehicle* GetPrevUnit();
+	TemplateVehicle *GetNextUnit() const;
+	TemplateVehicle *GetPrevUnit();
 
 	bool IsSetReuseDepotVehicles() const { return this->reuse_depot_vehicles; }
 	bool IsSetKeepRemainingVehicles() const { return this->keep_remaining_vehicles; }
@@ -162,12 +167,15 @@ public:
 	inline bool IsFrontEngine() const { return HasBit(this->subtype, GVSF_FRONT); }
 	inline bool HasArticulatedPart() const { return this->Next() != nullptr && this->Next()->IsArticulatedPart(); }
 
+	inline bool IsEngine() const { return HasBit(this->subtype, GVSF_ENGINE); }
+	inline bool IsWagon() const { return HasBit(this->subtype, GVSF_WAGON); }
+
 	inline bool IsArticulatedPart() const { return HasBit(this->subtype, GVSF_ARTICULATED_PART); }
 	inline bool IsMultiheaded() const { return HasBit(this->subtype, GVSF_MULTIHEADED); }
+	inline bool IsRearDualheaded() const { return this->IsMultiheaded() && !this->IsEngine(); }
 
 	inline bool IsFreeWagonChain() const { return HasBit(this->subtype, GVSF_FREE_WAGON); }
 
-	// since CmdBuildTemplateVehicle(...)
 	inline void SetFrontEngine()     { SetBit(this->subtype, GVSF_FRONT); }
 	inline void SetEngine()          { SetBit(this->subtype, GVSF_ENGINE); }
 	inline void SetArticulatedPart() { SetBit(this->subtype, GVSF_ARTICULATED_PART); }
@@ -184,7 +192,7 @@ public:
 	SpriteID GetImage(Direction) const;
 	SpriteID GetSpriteID() const;
 
-	short NumGroupsUsingTemplate() const;
+	uint NumGroupsUsingTemplate() const;
 
 };
 
@@ -197,7 +205,7 @@ struct TemplateReplacement : TemplateReplacementPool::PoolItem<&_template_replac
 	GroupID group;
 	TemplateID sel_template;
 
-	TemplateReplacement(GroupID gid, TemplateID tid) { this->group=gid; this->sel_template=tid; }
+	TemplateReplacement(GroupID gid, TemplateID tid) { this->group = gid; this->sel_template = tid; }
 	TemplateReplacement() {}
 	~TemplateReplacement();
 
@@ -212,15 +220,33 @@ struct TemplateReplacement : TemplateReplacementPool::PoolItem<&_template_replac
 	static void PreCleanPool();
 };
 
-TemplateReplacement* GetTemplateReplacementByGroupID(GroupID);
-TemplateID GetTemplateIDByGroupID(GroupID);
-TemplateID GetTemplateIDByGroupIDRecursive(GroupID);
-bool IssueTemplateReplacement(GroupID, TemplateID);
+TemplateReplacement *GetTemplateReplacementByGroupID(GroupID gid);
+TemplateID GetTemplateIDByGroupID(GroupID gid);
+TemplateID GetTemplateIDByGroupIDRecursive(GroupID gid);
+bool IssueTemplateReplacement(GroupID gid, TemplateID tid);
+bool ShouldServiceTrainForTemplateReplacement(const Train *t, const TemplateVehicle *tv);
+void MarkTrainsUsingTemplateAsPendingTemplateReplacement(const TemplateVehicle *tv);
 
-short DeleteTemplateReplacementsByGroupID(GroupID);
+uint DeleteTemplateReplacementsByGroupID(const Group *g);
 
 void ReindexTemplateReplacements();
+void ReindexTemplateReplacementsRecursive();
 
-int GetTemplateVehicleEstimatedMaxAchievableSpeed(const TemplateVehicle *tv, const int mass, const int speed_cap);
+/**
+ * Guard to inhibit re-indexing of the recursive group to template replacement cache,
+ * and to disable group-based VF_REPLACEMENT_PENDING changes.
+ * May be used recursively.
+ */
+struct ReindexTemplateReplacementsRecursiveGuard {
+	ReindexTemplateReplacementsRecursiveGuard();
+	~ReindexTemplateReplacementsRecursiveGuard();
+
+	ReindexTemplateReplacementsRecursiveGuard(const ReindexTemplateReplacementsRecursiveGuard &copysrc) = delete;
+	ReindexTemplateReplacementsRecursiveGuard(ReindexTemplateReplacementsRecursiveGuard &&movesrc) = delete;
+	ReindexTemplateReplacementsRecursiveGuard &operator=(const ReindexTemplateReplacementsRecursiveGuard &) = delete;
+	ReindexTemplateReplacementsRecursiveGuard &operator=(ReindexTemplateReplacementsRecursiveGuard &&) = delete;
+};
+
+int GetTemplateVehicleEstimatedMaxAchievableSpeed(const TemplateVehicle *tv, int mass, const int speed_cap);
 
 #endif /* TEMPLATE_VEH_H */

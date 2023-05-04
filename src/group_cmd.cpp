@@ -51,8 +51,9 @@ GroupStatistics::~GroupStatistics()
 void GroupStatistics::Clear()
 {
 	this->num_vehicle = 0;
-	this->num_profit_vehicle = 0;
 	this->profit_last_year = 0;
+	this->num_vehicle_min_age = 0;
+	this->profit_last_year_min_age = 0;
 
 	/* This is also called when NewGRF change. So the number of engines might have changed. Reallocate. */
 	free(this->num_engines);
@@ -147,13 +148,15 @@ void GroupStatistics::Clear()
 	GroupStatistics &stats = GroupStatistics::Get(v);
 
 	stats_all.num_vehicle += delta;
+	stats_all.profit_last_year += v->GetDisplayProfitLastYear() * delta;
 	stats.num_vehicle += delta;
+	stats.profit_last_year += v->GetDisplayProfitLastYear() * delta;
 
 	if (v->age > VEHICLE_PROFIT_MIN_AGE) {
-		stats_all.num_profit_vehicle += delta;
-		stats_all.profit_last_year += v->GetDisplayProfitLastYear() * delta;
-		stats.num_profit_vehicle += delta;
-		stats.profit_last_year += v->GetDisplayProfitLastYear() * delta;
+		stats_all.num_vehicle_min_age += delta;
+		stats_all.profit_last_year_min_age += v->GetDisplayProfitLastYear() * delta;
+		stats.num_vehicle_min_age += delta;
+		stats.profit_last_year_min_age += v->GetDisplayProfitLastYear() * delta;
 	}
 }
 
@@ -173,17 +176,29 @@ void GroupStatistics::Clear()
 }
 
 /**
- * Add a vehicle to the profit sum of its group.
+ * Add a vehicle's last year profit to the profit sum of its group.
  */
-/* static */ void GroupStatistics::VehicleReachedProfitAge(const Vehicle *v)
+/* static */ void GroupStatistics::AddProfitLastYear(const Vehicle *v)
 {
 	GroupStatistics &stats_all = GroupStatistics::GetAllGroup(v);
 	GroupStatistics &stats = GroupStatistics::Get(v);
 
-	stats_all.num_profit_vehicle++;
 	stats_all.profit_last_year += v->GetDisplayProfitLastYear();
-	stats.num_profit_vehicle++;
 	stats.profit_last_year += v->GetDisplayProfitLastYear();
+}
+
+/**
+ * Add a vehicle to the profit sum of its group.
+ */
+/* static */ void GroupStatistics::VehicleReachedMinAge(const Vehicle *v)
+{
+	GroupStatistics &stats_all = GroupStatistics::GetAllGroup(v);
+	GroupStatistics &stats = GroupStatistics::Get(v);
+
+	stats_all.num_vehicle_min_age++;
+	stats_all.profit_last_year_min_age += v->GetDisplayProfitLastYear();
+	stats.num_vehicle_min_age++;
+	stats.profit_last_year_min_age += v->GetDisplayProfitLastYear();
 }
 
 /**
@@ -205,7 +220,10 @@ void GroupStatistics::Clear()
 	}
 
 	for (const Vehicle *v : Vehicle::Iterate()) {
-		if (v->IsPrimaryVehicle() && v->age > VEHICLE_PROFIT_MIN_AGE && !HasBit(v->subtype, GVSF_VIRTUAL)) GroupStatistics::VehicleReachedProfitAge(v);
+		if (v->IsPrimaryVehicle() && !HasBit(v->subtype, GVSF_VIRTUAL)) {
+			GroupStatistics::AddProfitLastYear(v);
+			if (v->age > VEHICLE_PROFIT_MIN_AGE) GroupStatistics::VehicleReachedMinAge(v);
+		}
 	}
 }
 
@@ -367,6 +385,7 @@ CommandCost CmdCreateGroup(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			g->livery.colour1 = pg->livery.colour1;
 			g->livery.colour2 = pg->livery.colour2;
 			g->flags = pg->flags;
+			if (vt == VEH_TRAIN) ReindexTemplateReplacementsRecursive();
 		}
 
 		_new_group_id = g->index;
@@ -422,7 +441,7 @@ CommandCost CmdDeleteGroup(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 		VehicleType vt = g->vehicle_type;
 
 		/* Delete all template replacements using the just deleted group */
-		DeleteTemplateReplacementsByGroupID(g->index);
+		DeleteTemplateReplacementsByGroupID(g);
 
 		/* notify tracerestrict that group is about to be deleted */
 		TraceRestrictRemoveGroupID(g->index);
@@ -488,6 +507,7 @@ CommandCost CmdAlterGroup(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 		if (flags & DC_EXEC) {
 			g->parent = (pg == nullptr) ? INVALID_GROUP : pg->index;
 			GroupStatistics::UpdateAutoreplace(g->owner);
+			if (g->vehicle_type == VEH_TRAIN) ReindexTemplateReplacementsRecursive();
 
 			if (g->livery.in_use == 0) {
 				const Livery *livery = GetParentLivery(g);
@@ -517,7 +537,8 @@ CommandCost CmdAlterGroup(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
  * @param tile unused
  * @param flags type of operation
  * @param p1 packed VehicleListIdentifier
- * @param p2   unused
+ * @param p2 bitmask
+ *   - bit 0-7 Cargo filter
  * @param text the new name or an empty string when setting to the default
  * @return the cost of this operation or an error
  */
@@ -527,7 +548,7 @@ CommandCost CmdCreateGroupFromList(TileIndex tile, DoCommandFlag flags, uint32 p
 	VehicleList list;
 	if (!vli.UnpackIfValid(p1)) return CMD_ERROR;
 	if (!IsCompanyBuildableVehicleType(vli.vtype)) return CMD_ERROR;
-	if (!GenerateVehicleSortList(&list, vli)) return CMD_ERROR;
+	if (!GenerateVehicleSortList(&list, vli, GB(p2, 0, 8))) return CMD_ERROR;
 
 	CommandCost ret = DoCommand(tile, vli.vtype, INVALID_GROUP, flags, CMD_CREATE_GROUP);
 	if (ret.Failed()) return ret;
@@ -1001,37 +1022,39 @@ uint GetGroupNumVehicle(CompanyID company, GroupID id_g, VehicleType type)
  * @param type The vehicle type of the group
  * @return The number of vehicles above profit minimum age in the group
  */
-uint GetGroupNumProfitVehicle(CompanyID company, GroupID id_g, VehicleType type)
+uint GetGroupNumVehicleMinAge(CompanyID company, GroupID id_g, VehicleType type)
 {
 	uint count = 0;
 	IterateDescendantsOfGroup(id_g, [&](Group *g) {
-		count += GroupStatistics::Get(company, g->index, type).num_profit_vehicle;
+		count += GroupStatistics::Get(company, g->index, type).num_vehicle_min_age;
 	});
-	return count + GroupStatistics::Get(company, id_g, type).num_profit_vehicle;
+	return count + GroupStatistics::Get(company, id_g, type).num_vehicle_min_age;
 }
 
 /**
- * Get last year's profit for the group with GroupID
- * id_g and its sub-groups.
+ * Get last year's profit of vehicles above minimum age
+ * for the group with GroupID id_g and its sub-groups.
  * @param company The company the group belongs to
  * @param id_g The GroupID of the group used
  * @param type The vehicle type of the group
- * @return Last year's profit for the group
+ * @return Last year's profit of vehicles above minimum age for the group
  */
-Money GetGroupProfitLastYear(CompanyID company, GroupID id_g, VehicleType type)
+Money GetGroupProfitLastYearMinAge(CompanyID company, GroupID id_g, VehicleType type)
 {
 	Money sum = 0;
 	IterateDescendantsOfGroup(id_g, [&](Group *g) {
-		sum += GroupStatistics::Get(company, g->index, type).profit_last_year;
+		sum += GroupStatistics::Get(company, g->index, type).profit_last_year_min_age;
 	});
-	return sum + GroupStatistics::Get(company, id_g, type).profit_last_year;
+	return sum + GroupStatistics::Get(company, id_g, type).profit_last_year_min_age;
 }
 
 void RemoveAllGroupsForCompany(const CompanyID company)
 {
+	ReindexTemplateReplacementsRecursiveGuard guard;
+
 	for (Group *g : Group::Iterate()) {
 		if (company == g->owner) {
-			DeleteTemplateReplacementsByGroupID(g->index);
+			DeleteTemplateReplacementsByGroupID(g);
 			delete g;
 		}
 	}

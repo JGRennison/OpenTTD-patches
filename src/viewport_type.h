@@ -79,6 +79,11 @@ struct Viewport {
 		this->update_vehicles = false;
 	}
 
+	size_t ScreenArea() const
+	{
+		return ((size_t)this->width) * ((size_t)this->height);
+	}
+
 private:
 	uint GetDirtyBlockShift() const
 	{
@@ -86,14 +91,6 @@ private:
 		if (this->zoom >= ZOOM_LVL_OUT_8X) return 4;
 		return 7 - this->zoom;
 	}
-};
-
-/** Margins for the viewport sign */
-enum ViewportSignMargin {
-	VPSM_LEFT   = 1, ///< Left margin
-	VPSM_RIGHT  = 1, ///< Right margin
-	VPSM_TOP    = 1, ///< Top margin
-	VPSM_BOTTOM = 1, ///< Bottom margin
 };
 
 /** Location information about a sign as seen on the viewport */
@@ -194,8 +191,10 @@ enum ViewportDragDropSelectionProcess {
 	DDSP_PLACE_ROAD_X_DIR,     ///< Road placement (X axis)
 	DDSP_PLACE_ROAD_Y_DIR,     ///< Road placement (Y axis)
 	DDSP_PLACE_AUTOROAD,       ///< Road placement (auto)
+	DDSP_BUILD_ROAD_WAYPOINT,  ///< Road stop placement (waypoint)
 	DDSP_BUILD_BUSSTOP,        ///< Road stop placement (buses)
 	DDSP_BUILD_TRUCKSTOP,      ///< Road stop placement (trucks)
+	DDSP_REMOVE_ROAD_WAYPOINT, ///< Road stop removal (waypoint)
 	DDSP_REMOVE_BUSSTOP,       ///< Road stop removal (buses)
 	DDSP_REMOVE_TRUCKSTOP,     ///< Road stop removal (trucks)
 	DDSP_CONVERT_ROAD,         ///< Road conversion
@@ -226,5 +225,11 @@ enum ViewportMarkDirtyFlags : byte {
 	VMDF_NOT_LANDSCAPE         = 0x4,
 };
 DECLARE_ENUM_AS_BIT_SET(ViewportMarkDirtyFlags)
+
+enum class ChildScreenSpritePositionMode : uint8 {
+	Relative,
+	NonRelative,
+	Absolute,
+};
 
 #endif /* VIEWPORT_TYPE_H */

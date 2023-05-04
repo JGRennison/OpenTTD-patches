@@ -18,7 +18,6 @@
 #include "map_func.h"
 #include "date_func.h"
 #include "viewport_func.h"
-#include "core/endian_func.hpp"
 #include <string>
 #include <vector>
 
@@ -111,30 +110,6 @@ struct PlanLine {
 		}
 	}
 
-	TileIndex *Export(uint *buffer_length)
-	{
-		const uint cnt = (uint) this->tiles.size();
-		const uint datalen = sizeof(TileIndex) * cnt;
-		TileIndex *buffer = (TileIndex *) malloc(datalen);
-		if (buffer) {
-			for (uint i = 0; i < cnt; i++) {
-				buffer[i] = TO_LE32(this->tiles[i]);
-			}
-			if (buffer_length) *buffer_length = datalen;
-		}
-		return buffer;
-	}
-
-	bool Import(const TileIndex* data, const uint data_length)
-	{
-		for (uint i = data_length; i != 0; i--, data++) {
-			TileIndex t = FROM_LE32(*data);
-			if (t >= MapSize()) return false;
-			this->tiles.push_back(t);
-		}
-		return true;
-	}
-
 	void AddLineToCalculateCentreTile(uint64 &x, uint64 &y, uint32 &count) const
 	{
 		for (size_t i = 0; i < this->tiles.size(); i++) {
@@ -217,7 +192,7 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 	PlanLine *NewLine()
 	{
 		PlanLine *pl = new PlanLine();
-		if (pl) this->lines.push_back(pl);
+		this->lines.push_back(pl);
 		return pl;
 	}
 
@@ -226,23 +201,7 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 		return this->temp_line->AppendTile(tile);
 	}
 
-	bool ValidateNewLine()
-	{
-		bool ret = false;
-		if (this->temp_line->tiles.size() > 1) {
-			uint buffer_length = 0;
-			const TileIndex *buffer = this->temp_line->Export(&buffer_length);
-			if (buffer) {
-				this->SetVisibility(true, false);
-				ret = DoCommandPEx(0, this->index, (uint32) this->temp_line->tiles.size(), 0, CMD_ADD_PLAN_LINE, nullptr, (const char *) buffer, buffer_length);
-				free(buffer);
-			}
-			this->temp_line->MarkDirty();
-			this->last_tile = this->temp_line->tiles.back();
-			this->temp_line->Clear();
-		}
-		return ret;
-	}
+	bool ValidateNewLine();
 
 	bool IsListable()
 	{

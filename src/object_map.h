@@ -52,7 +52,7 @@ static inline bool IsObjectTypeTile(TileIndex t, ObjectType type)
  */
 static inline ObjectID GetObjectIndex(TileIndex t)
 {
-	assert_tile(IsTileType(t, MP_OBJECT), t);
+	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
 	return _m[t].m2 | _m[t].m5 << 16;
 }
 
@@ -64,7 +64,7 @@ static inline ObjectID GetObjectIndex(TileIndex t)
  */
 static inline byte GetObjectRandomBits(TileIndex t)
 {
-	assert_tile(IsTileType(t, MP_OBJECT), t);
+	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
 	return _m[t].m3;
 }
 
@@ -76,7 +76,7 @@ static inline byte GetObjectRandomBits(TileIndex t)
  */
 static inline ObjectGround GetObjectGroundType(TileIndex t)
 {
-	assert_tile(IsTileType(t, MP_OBJECT), t);
+	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
 	return (ObjectGround)GB(_m[t].m4, 2, 2);
 }
 
@@ -89,7 +89,7 @@ static inline ObjectGround GetObjectGroundType(TileIndex t)
  */
 static inline uint GetObjectGroundDensity(TileIndex t)
 {
-	assert_tile(IsTileType(t, MP_OBJECT), t);
+	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
 	return GB(_m[t].m4, 0, 2);
 }
 
@@ -102,7 +102,7 @@ static inline uint GetObjectGroundDensity(TileIndex t)
  */
 static inline void SetObjectGroundDensity(TileIndex t, uint d)
 {
-	assert_tile(IsTileType(t, MP_OBJECT), t);
+	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
 	SB(_m[t].m4, 0, 2, d);
 }
 
@@ -114,7 +114,7 @@ static inline void SetObjectGroundDensity(TileIndex t, uint d)
  */
 static inline uint GetObjectGroundCounter(TileIndex t)
 {
-	assert_tile(IsTileType(t, MP_OBJECT), t);
+	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
 	return GB(_m[t].m4, 5, 3);
 }
 
@@ -126,7 +126,7 @@ static inline uint GetObjectGroundCounter(TileIndex t)
  */
 static inline void AddObjectGroundCounter(TileIndex t, int c)
 {
-	assert_tile(IsTileType(t, MP_OBJECT), t);
+	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
 	_m[t].m4 += c << 5;
 }
 
@@ -138,7 +138,7 @@ static inline void AddObjectGroundCounter(TileIndex t, int c)
  */
 static inline void SetObjectGroundCounter(TileIndex t, uint c)
 {
-	assert_tile(IsTileType(t, MP_OBJECT), t);
+	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
 	SB(_m[t].m4, 5, 3, c);
 }
 
@@ -152,20 +152,32 @@ static inline void SetObjectGroundCounter(TileIndex t, uint c)
  */
 static inline void SetObjectGroundTypeDensity(TileIndex t, ObjectGround type, uint density)
 {
-	assert_tile(IsTileType(t, MP_OBJECT), t);
+	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
 	_m[t].m4 = 0 << 5 | type << 2 | density;
 }
 
-static inline bool GetObjectHasNoEffectiveFoundation(TileIndex t)
+static inline ObjectEffectiveFoundationType GetObjectEffectiveFoundationType(TileIndex t)
 {
-	assert_tile(IsTileType(t, MP_OBJECT), t);
-	return GB(_m[t].m4, 4, 1);
+	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
+	return (ObjectEffectiveFoundationType)GB(_me[t].m6, 0, 2);
 }
 
-static inline void SetObjectHasNoEffectiveFoundation(TileIndex t, bool no_foundation)
+static inline void SetObjectEffectiveFoundationType(TileIndex t, ObjectEffectiveFoundationType foundation_type)
 {
-	assert_tile(IsTileType(t, MP_OBJECT), t);
-	SB(_m[t].m4, 4, 1, no_foundation ? 1 : 0);
+	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
+	SB(_me[t].m6, 0, 2, foundation_type);
+}
+
+static inline bool GetObjectHasViewportMapViewOverride(TileIndex t)
+{
+	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
+	return HasBit(_m[t].m4, 4);
+}
+
+static inline void SetObjectHasViewportMapViewOverride(TileIndex t, bool map_view_override)
+{
+	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
+	SB(_m[t].m4, 4, 1, map_view_override ? 1 : 0);
 }
 
 /**

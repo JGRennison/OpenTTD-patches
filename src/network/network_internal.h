@@ -17,6 +17,10 @@
 #include "../command_type.h"
 #include "../date_type.h"
 
+#include <vector>
+#include <array>
+#include <memory>
+
 static const uint32 FIND_SERVER_EXTENDED_TOKEN = 0x2A49582A;
 
 #ifdef RANDOM_DEBUG
@@ -84,6 +88,7 @@ extern uint32 _sync_frame;
 extern Date   _last_sync_date;
 extern DateFract _last_sync_date_fract;
 extern uint8  _last_sync_tick_skip_counter;
+extern uint32  _last_sync_frame_counter;
 extern bool _network_first_time;
 /* Vars needed for the join-GUI */
 extern NetworkJoinStatus _network_join_status;
@@ -100,6 +105,16 @@ extern uint8 _network_reconnect;
 
 extern CompanyMask _network_company_passworded;
 
+/* Sync debugging */
+struct NetworkSyncRecord {
+	uint32 frame;
+	uint32 seed_1;
+	uint64 state_checksum;
+};
+extern std::vector<NetworkSyncRecord> _network_client_sync_records;
+extern std::unique_ptr<std::array<NetworkSyncRecord, 1024>> _network_server_sync_records;
+extern uint32 _network_server_sync_records_next;
+
 void NetworkQueryServer(const std::string &connection_string);
 
 void GetBindAddresses(NetworkAddressList *addresses, uint16 port);
@@ -113,10 +128,11 @@ void UpdateNetworkGameWindow();
  */
 struct CommandPacket : CommandContainer {
 	/** Make sure the pointer is nullptr. */
-	CommandPacket() : next(nullptr), company(INVALID_COMPANY), frame(0), my_cmd(false) {}
+	CommandPacket() : next(nullptr), frame(0), client_id(INVALID_CLIENT_ID), company(INVALID_COMPANY), my_cmd(false) {}
 	CommandPacket *next; ///< the next command packet (if in queue)
-	CompanyID company;   ///< company that is executing the command
 	uint32 frame;        ///< the frame in which this packet is executed
+	ClientID client_id;  ///< originating client ID (or INVALID_CLIENT_ID if not specified)
+	CompanyID company;   ///< company that is executing the command
 	bool my_cmd;         ///< did the command originate from "me"
 };
 
@@ -136,5 +152,7 @@ std::string NetworkGenerateRandomKeyString(uint bytes);
 std::string_view ParseCompanyFromConnectionString(const std::string &connection_string, CompanyID *company_id);
 NetworkAddress ParseConnectionString(const std::string &connection_string, uint16 default_port);
 std::string NormalizeConnectionString(const std::string &connection_string, uint16 default_port);
+
+void ClientNetworkEmergencySave();
 
 #endif /* NETWORK_INTERNAL_H */

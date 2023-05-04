@@ -22,8 +22,8 @@ namespace upstream_sl {
 /** Save and load the mapping between a spec and the NewGRF it came from. */
 static const SaveLoad _newgrf_mapping_desc[] = {
 	SLE_VAR(EntityIDMapping, grfid,         SLE_UINT32),
-	SLE_VAR(EntityIDMapping, entity_id,     SLE_UINT8),
-	SLE_VAR(EntityIDMapping, substitute_id, SLE_UINT8),
+	SLE_VAR(EntityIDMapping, entity_id,     SLE_FILE_U8 | SLE_VAR_U16),
+	SLE_VAR(EntityIDMapping, substitute_id, SLE_FILE_U8 | SLE_VAR_U16),
 };
 
 /**
@@ -31,14 +31,8 @@ static const SaveLoad _newgrf_mapping_desc[] = {
  */
 void NewGRFMappingChunkHandler::Save() const
 {
-	SlTableHeader(_newgrf_mapping_desc);
-
-	for (uint i = 0; i < this->mapping.GetMaxMapping(); i++) {
-		if (this->mapping.mapping_ID[i].grfid == 0 &&
-			this->mapping.mapping_ID[i].entity_id == 0) continue;
-		SlSetArrayIndex(i);
-		SlObject(&this->mapping.mapping_ID[i], _newgrf_mapping_desc);
-	}
+	// removed
+	NOT_REACHED();
 }
 
 /**
@@ -57,7 +51,7 @@ void NewGRFMappingChunkHandler::Load() const
 	int index;
 	while ((index = SlIterateArray()) != -1) {
 		if ((uint)index >= max_id) SlErrorCorrupt("Too many NewGRF entity mappings");
-		SlObject(&this->mapping.mapping_ID[index], slt);
+		SlObject(&this->mapping.mappings[index], slt);
 	}
 }
 

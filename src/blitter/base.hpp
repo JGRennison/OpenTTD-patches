@@ -118,6 +118,17 @@ public:
 	virtual void SetPixel(void *video, int x, int y, uint8 colour) = 0;
 
 	/**
+	 * Draw a pixel with a given 32bpp colour on the video-buffer.
+	 * Fall back to an 8bpp colour if 32bpp colour is not available.
+	 * @param video The destination pointer (video-buffer).
+	 * @param x The x position within video-buffer.
+	 * @param y The y position within video-buffer.
+	 * @param colour A 8bpp mapping colour.
+	 * @param colour32 A 32bpp colour.
+	 */
+	virtual void SetPixel32(void *video, int x, int y, uint8 colour, uint32 colour32) = 0;
+
+	/**
 	 * Draw a rectangle of pixels on the video-buffer.
 	 * @param video The destination pointer (video-buffer).
 	 * @param x The x position within video-buffer.
@@ -149,6 +160,17 @@ public:
 	 * @param colour A 8bpp mapping colour.
 	 */
 	virtual void DrawRect(void *video, int width, int height, uint8 colour) = 0;
+
+	/**
+	 * Make a single horizontal line in a single colour on the video-buffer.
+	 * @param video The destination pointer (video-buffer).
+	 * @param x The x position within video-buffer.
+	 * @param y The y position within video-buffer.
+	 * @param width The length of the line.
+	 * @param height The height of the line.
+	 * @param colour A 8bpp mapping colour.
+	 */
+	virtual void DrawRectAt(void *video, int x, int y, int width, int height, uint8 colour) = 0;
 
 	/**
 	 * Draw a line with a given colour.
@@ -213,7 +235,7 @@ public:
 	 * @param height The height of the buffer-to-be.
 	 * @return The size needed for the buffer.
 	 */
-	virtual int BufferSize(int width, int height) = 0;
+	virtual size_t BufferSize(uint width, uint height) = 0;
 
 	/**
 	 * Called when the 8bpp palette is changed; you should redraw all pixels on the screen that

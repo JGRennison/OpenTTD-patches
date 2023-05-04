@@ -12,8 +12,7 @@ private:
 	}
 public:
 	static SQArray* Create(SQSharedState *ss,SQInteger nInitialSize){
-		SQArray *newarray=(SQArray*)SQ_MALLOC(sizeof(SQArray));
-		new (newarray) SQArray(ss,nInitialSize);
+		SQArray *newarray = new (SQAllocationTag{}) SQArray(ss,nInitialSize);
 		return newarray;
 	}
 #ifndef NO_GARBAGE_COLLECTOR
@@ -84,7 +83,7 @@ public:
 	}
 	void FinalFree() override
 	{
-		sq_delete(this, SQArray);
+		sq_delete_refcounted(this, SQArray);
 	}
 	SQObjectPtrVec _values;
 };

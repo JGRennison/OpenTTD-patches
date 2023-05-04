@@ -127,7 +127,7 @@ private:
 				m_res_fail_td = td;
 			}
 		} else {
-			if (!TryReserveRailTrackdir(tile, td)) {
+			if (!TryReserveRailTrackdir(Yapf().GetVehicle(), tile, td)) {
 				/* Tile couldn't be reserved, undo. */
 				m_res_fail_tile = tile;
 				m_res_fail_td = td;
@@ -166,7 +166,7 @@ public:
 	/** Check the node for a possible reservation target. */
 	inline void FindSafePositionOnNode(Node *node)
 	{
-		assert(node->m_parent != nullptr);
+		dbg_assert(node->m_parent != nullptr);
 
 		/* We will never pass more than two non-reserve-through signals, no need to check for a safe tile. */
 		if (node->m_parent->m_num_signals_passed - node->m_parent->m_num_signals_res_through_passed >= 2) return;
@@ -519,19 +519,19 @@ public:
 		return 't';
 	}
 
-	static Trackdir stChooseRailTrack(const Train *v, TileIndex tile, DiagDirection enterdir, TrackBits tracks, bool &path_found, bool reserve_track, PBSTileInfo *target)
+	static Trackdir stChooseRailTrack(const Train *v, TileIndex tile, DiagDirection enterdir, TrackBits tracks, bool &path_found, bool reserve_track, PBSTileInfo *target, TileIndex *dest)
 	{
 		/* create pathfinder instance */
 		Tpf pf1;
 		Trackdir result1;
 
 		if (_debug_yapfdesync_level < 1 && _debug_desync_level < 2) {
-			result1 = pf1.ChooseRailTrack(v, tile, enterdir, tracks, path_found, reserve_track, target);
+			result1 = pf1.ChooseRailTrack(v, tile, enterdir, tracks, path_found, reserve_track, target, dest);
 		} else {
-			result1 = pf1.ChooseRailTrack(v, tile, enterdir, tracks, path_found, false, nullptr);
+			result1 = pf1.ChooseRailTrack(v, tile, enterdir, tracks, path_found, false, nullptr, nullptr);
 			Tpf pf2;
 			pf2.DisableCache(true);
-			Trackdir result2 = pf2.ChooseRailTrack(v, tile, enterdir, tracks, path_found, reserve_track, target);
+			Trackdir result2 = pf2.ChooseRailTrack(v, tile, enterdir, tracks, path_found, reserve_track, target, dest);
 			if (result1 != result2) {
 				DEBUG(desync, 0, "CACHE ERROR: ChooseRailTrack() = [%d, %d]", result1, result2);
 				DumpState(pf1, pf2);
@@ -543,9 +543,10 @@ public:
 		return result1;
 	}
 
-	inline Trackdir ChooseRailTrack(const Train *v, TileIndex tile, DiagDirection enterdir, TrackBits tracks, bool &path_found, bool reserve_track, PBSTileInfo *target)
+	inline Trackdir ChooseRailTrack(const Train *v, TileIndex tile, DiagDirection enterdir, TrackBits tracks, bool &path_found, bool reserve_track, PBSTileInfo *target, TileIndex *dest)
 	{
 		if (target != nullptr) target->tile = INVALID_TILE;
+		if (dest != nullptr) *dest = INVALID_TILE;
 
 		/* set origin and destination nodes */
 		PBSTileInfo origin = FollowTrainReservation(v, nullptr, FTRF_OKAY_UNUSED);
@@ -575,7 +576,10 @@ public:
 			Node &best_next_node = *pPrev;
 			next_trackdir = best_next_node.GetTrackdir();
 
-			if (reserve_track && path_found) this->TryReservePath(target, pNode->GetLastTile());
+			if (reserve_track && path_found) {
+				if (dest != nullptr) *dest = Yapf().GetBestNode()->GetLastTile();
+				this->TryReservePath(target, pNode->GetLastTile());
+			}
 		}
 
 		/* Treat the path as found if stopped on the first two way signal(s). */
@@ -656,10 +660,10 @@ struct CYapfAnySafeTileRail1 : CYapfT<CYapfRail_TypesT<CYapfAnySafeTileRail1, CF
 struct CYapfAnySafeTileRail2 : CYapfT<CYapfRail_TypesT<CYapfAnySafeTileRail2, CFollowTrackFreeRailNo90, CRailNodeListTrackDir, CYapfDestinationAnySafeTileRailT , CYapfFollowAnySafeTileRailT> > {};
 
 
-Track YapfTrainChooseTrack(const Train *v, TileIndex tile, DiagDirection enterdir, TrackBits tracks, bool &path_found, bool reserve_track, PBSTileInfo *target)
+Track YapfTrainChooseTrack(const Train *v, TileIndex tile, DiagDirection enterdir, TrackBits tracks, bool &path_found, bool reserve_track, PBSTileInfo *target, TileIndex *dest)
 {
 	/* default is YAPF type 2 */
-	typedef Trackdir (*PfnChooseRailTrack)(const Train*, TileIndex, DiagDirection, TrackBits, bool&, bool, PBSTileInfo*);
+	typedef Trackdir (*PfnChooseRailTrack)(const Train*, TileIndex, DiagDirection, TrackBits, bool&, bool, PBSTileInfo*, TileIndex*);
 	PfnChooseRailTrack pfnChooseRailTrack = &CYapfRail1::stChooseRailTrack;
 
 	/* check if non-default YAPF type needed */
@@ -667,7 +671,7 @@ Track YapfTrainChooseTrack(const Train *v, TileIndex tile, DiagDirection enterdi
 		pfnChooseRailTrack = &CYapfRail2::stChooseRailTrack; // Trackdir, forbid 90-deg
 	}
 
-	Trackdir td_ret = pfnChooseRailTrack(v, tile, enterdir, tracks, path_found, reserve_track, target);
+	Trackdir td_ret = pfnChooseRailTrack(v, tile, enterdir, tracks, path_found, reserve_track, target, dest);
 	return (td_ret != INVALID_TRACKDIR) ? TrackdirToTrack(td_ret) : FindFirstTrack(tracks);
 }
 
@@ -799,6 +803,6 @@ void YapfCheckRailSignalPenalties()
 	}
 	if (negative) {
 		DEBUG(misc, 0, "Settings: pf.yapf.rail_look_ahead_signal_p0, pf.yapf.rail_look_ahead_signal_p1, pf.yapf.rail_look_ahead_signal_p2 and pf.yapf.rail_look_ahead_max_signal "
-				"are set to incorrect values (i.e. resulting in hegative penalties), negative penalties will be truncated");
+				"are set to incorrect values (i.e. resulting in negative penalties), negative penalties will be truncated");
 	}
 }

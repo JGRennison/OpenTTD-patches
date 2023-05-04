@@ -12,6 +12,7 @@
 #include "network_client.h"
 #include "network_server.h"
 #include "../command_func.h"
+#include "../command_aux.h"
 #include "../company_func.h"
 #include "../settings_type.h"
 
@@ -53,6 +54,7 @@ static CommandCallback * const _callback_table[] = {
 	/* 0x1F */ CcDeleteVirtualTrain,
 	/* 0x20 */ CcAddVirtualEngine,
 	/* 0x21 */ CcMoveNewVirtualEngine,
+	/* 0x22 */ CcAddNewSchDispatchSchedule,
 };
 
 /**
@@ -142,9 +144,9 @@ static CommandQueue _local_execution_queue;
  * @param callback A callback function to call after the command is finished
  * @param text The text to pass
  * @param company The company that wants to send the command
- * @param binary_length The quantity of binary data in text
+ * @param aux_data Auxiliary command data
  */
-void NetworkSendCommand(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, CompanyID company, uint32 binary_length)
+void NetworkSendCommand(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, CompanyID company, const CommandAuxiliaryBase *aux_data)
 {
 	assert((cmd & CMD_FLAGS_MASK) == 0);
 
@@ -156,16 +158,12 @@ void NetworkSendCommand(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 
 	c.p3       = p3;
 	c.cmd      = cmd;
 	c.callback = callback;
+	if (aux_data != nullptr) c.aux_data.reset(aux_data->Clone());
 
-	c.binary_length = binary_length;
-	if (binary_length == 0) {
-		if (text != nullptr) {
-			c.text.assign(text);
-		} else {
-			c.text.clear();
-		}
+	if (text != nullptr) {
+		c.text.assign(text);
 	} else {
-		c.text.assign(text, binary_length);
+		c.text.clear();
 	}
 
 	if (_network_server) {
@@ -211,6 +209,7 @@ void NetworkSyncCommandQueue(NetworkClientSocket *cs)
  */
 void NetworkExecuteLocalCommandQueue()
 {
+	extern ClientID _cmd_client_id;
 	assert(IsLocalCompany());
 
 	CommandQueue &queue = (_network_server ? _local_execution_queue : ClientNetworkGameSocketHandler::my_client->incoming_queue);
@@ -229,6 +228,7 @@ void NetworkExecuteLocalCommandQueue()
 
 		/* We can execute this command */
 		_current_company = cp->company;
+		_cmd_client_id = cp->client_id;
 		cp->cmd |= CMD_NETWORK_COMMAND;
 		DoCommandP(cp, cp->my_cmd);
 
@@ -237,6 +237,7 @@ void NetworkExecuteLocalCommandQueue()
 
 	/* Local company may have changed, so we should not restore the old value */
 	_current_company = _local_company;
+	_cmd_client_id = INVALID_CLIENT_ID;
 }
 
 /**
@@ -324,19 +325,23 @@ const char *NetworkGameSocketHandler::ReceiveCommand(Packet *p, CommandPacket *c
 	cp->p2      = p->Recv_uint32();
 	cp->p3      = p->Recv_uint64();
 	cp->tile    = p->Recv_uint32();
-	cp->binary_length = p->Recv_uint32();
-	if (cp->binary_length == 0) {
-		p->Recv_string(cp->text, (!_network_server && GetCommandFlags(cp->cmd) & CMD_STR_CTRL) != 0 ? SVS_ALLOW_CONTROL_CODE | SVS_REPLACE_WITH_QUESTION_MARK : SVS_REPLACE_WITH_QUESTION_MARK);
-	} else {
-		if (!p->CanReadFromPacket(cp->binary_length + /* callback index */ 1)) return "invalid binary data length";
-		if (cp->binary_length > MAX_CMD_TEXT_LENGTH) return "over-size binary data length";
-		p->Recv_binary(cp->text, cp->binary_length);
-	}
+
+	StringValidationSettings settings = (!_network_server && GetCommandFlags(cp->cmd) & CMD_STR_CTRL) != 0 ? SVS_ALLOW_CONTROL_CODE | SVS_REPLACE_WITH_QUESTION_MARK : SVS_REPLACE_WITH_QUESTION_MARK;
+	p->Recv_string(cp->text, settings);
 
 	byte callback = p->Recv_uint8();
 	if (callback >= lengthof(_callback_table))  return "invalid callback";
 
 	cp->callback = _callback_table[callback];
+
+	uint16 aux_data_size = p->Recv_uint16();
+	if (aux_data_size > 0 && p->CanReadFromPacket(aux_data_size, true)) {
+		CommandAuxiliarySerialised *aux_data = new CommandAuxiliarySerialised();
+		cp->aux_data.reset(aux_data);
+		aux_data->serialised_data.resize(aux_data_size);
+		p->Recv_binary((char *)(aux_data->serialised_data.data()), aux_data_size);
+	}
+
 	return nullptr;
 }
 
@@ -353,13 +358,7 @@ void NetworkGameSocketHandler::SendCommand(Packet *p, const CommandPacket *cp)
 	p->Send_uint32(cp->p2);
 	p->Send_uint64(cp->p3);
 	p->Send_uint32(cp->tile);
-	p->Send_uint32(cp->binary_length);
-	if (cp->binary_length == 0) {
-		p->Send_string(cp->text.c_str());
-	} else {
-		assert(cp->text.size() >= cp->binary_length);
-		p->Send_binary(cp->text.c_str(), cp->binary_length);
-	}
+	p->Send_string(cp->text.c_str());
 
 	byte callback = 0;
 	while (callback < lengthof(_callback_table) && _callback_table[callback] != cp->callback) {
@@ -371,4 +370,12 @@ void NetworkGameSocketHandler::SendCommand(Packet *p, const CommandPacket *cp)
 		callback = 0; // _callback_table[0] == nullptr
 	}
 	p->Send_uint8 (callback);
+
+	size_t aux_data_size_pos = p->Size();
+	p->Send_uint16(0);
+	if (cp->aux_data != nullptr) {
+		CommandSerialisationBuffer serialiser(p->GetSerialisationBuffer(), p->GetSerialisationLimit());
+		cp->aux_data->Serialise(serialiser);
+		p->WriteAtOffset_uint16(aux_data_size_pos, (uint16)(p->Size() - aux_data_size_pos - 2));
+	}
 }

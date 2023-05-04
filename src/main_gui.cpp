@@ -182,7 +182,7 @@ void FixTitleGameZoom(int zoom_adjust)
 {
 	if (_game_mode != GM_MENU) return;
 
-	Viewport *vp = FindWindowByClass(WC_MAIN_WINDOW)->viewport;
+	Viewport *vp = GetMainWindow()->viewport;
 
 	/* Adjust the zoom in/out.
 	 * Can't simply add, since operator+ is not defined on the ZoomLevel type. */
@@ -233,6 +233,7 @@ enum {
 	GHK_CLOSE_ERROR,
 	GHK_CHANGE_MAP_MODE_PREV,
 	GHK_CHANGE_MAP_MODE_NEXT,
+	GHK_SWITCH_VIEWPORT_ROUTE_OVERLAY_MODE,
 };
 
 struct MainWindow : Window
@@ -250,10 +251,10 @@ struct MainWindow : Window
 		ResizeWindow(this, _screen.width, _screen.height);
 
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_M_VIEWPORT);
-		nvp->InitializeViewport(this, TileXY(32, 32), ZOOM_LVL_VIEWPORT);
+		nvp->InitializeViewport(this, TileXY(32, 32), ScaleZoomGUI(ZOOM_LVL_VIEWPORT));
 
 		this->viewport->map_type = (ViewportMapType) _settings_client.gui.default_viewport_map_mode;
-		this->viewport->overlay = new LinkGraphOverlay(this, WID_M_VIEWPORT, 0, 0, 3);
+		this->viewport->overlay = new LinkGraphOverlay(this, WID_M_VIEWPORT, 0, 0, 2);
 		this->refresh.SetInterval(LINKGRAPH_DELAY);
 	}
 
@@ -276,9 +277,11 @@ struct MainWindow : Window
 	{
 		this->DrawWidgets();
 		if (_game_mode == GM_MENU) {
+			ViewportDoDrawProcessAllPending();
+
 			static const SpriteID title_sprites[] = {SPR_OTTD_O, SPR_OTTD_P, SPR_OTTD_E, SPR_OTTD_N, SPR_OTTD_T, SPR_OTTD_T, SPR_OTTD_D};
-			static const uint LETTER_SPACING = 10;
-			int name_width = (lengthof(title_sprites) - 1) * LETTER_SPACING;
+			uint letter_spacing = ScaleGUITrad(10);
+			int name_width = (lengthof(title_sprites) - 1) * letter_spacing;
 
 			for (uint i = 0; i < lengthof(title_sprites); i++) {
 				name_width += GetSpriteSize(title_sprites[i]).width;
@@ -286,8 +289,8 @@ struct MainWindow : Window
 			int off_x = (this->width - name_width) / 2;
 
 			for (uint i = 0; i < lengthof(title_sprites); i++) {
-				DrawSprite(title_sprites[i], PAL_NONE, off_x, 50);
-				off_x += GetSpriteSize(title_sprites[i]).width + LETTER_SPACING;
+				DrawSprite(title_sprites[i], PAL_NONE, off_x, ScaleGUITrad(50));
+				off_x += GetSpriteSize(title_sprites[i]).width + letter_spacing;
 			}
 		}
 	}
@@ -456,6 +459,13 @@ struct MainWindow : Window
 					this->SetDirty();
 				}
 				break;
+			case GHK_SWITCH_VIEWPORT_ROUTE_OVERLAY_MODE:
+				if (_settings_client.gui.show_vehicle_route_mode != 0) {
+					_settings_client.gui.show_vehicle_route_mode ^= 3;
+					CheckMarkDirtyFocusedRoutePaths();
+					SetWindowDirty(WC_GAME_OPTIONS, WN_GAME_OPTIONS_GAME_SETTINGS);
+				}
+				break;
 
 			default: return ES_NOT_HANDLED;
 		}
@@ -491,6 +501,12 @@ struct MainWindow : Window
 		}
 	}
 
+	bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
+	{
+		if (widget != WID_M_VIEWPORT) return false;
+		return this->viewport->overlay->ShowTooltip(pt, close_cond);
+	}
+
 	/**
 	 * Some data on this window has become invalid.
 	 * @param data Information about the changed data.
@@ -505,7 +521,7 @@ struct MainWindow : Window
 
 	virtual void OnMouseOver(Point pt, int widget) override
 	{
-		if (pt.x != -1 && _game_mode != GM_MENU && (_mouse_hovering || _settings_client.gui.hover_delay_ms == 0)) {
+		if (pt.x != -1 && _game_mode != GM_MENU && (_settings_client.gui.hover_delay_ms == 0 ? _right_button_down : _mouse_hovering)) {
 			/* Show tooltip with last month production or town name */
 			const Point p = GetTileBelowCursor();
 			const TileIndex tile = TileVirtXY(p.x, p.y);
@@ -568,6 +584,7 @@ static Hotkey global_hotkeys[] = {
 	Hotkey(WKC_SPACE, "close_error", GHK_CLOSE_ERROR),
 	Hotkey(WKC_PAGEUP,   "previous_map_mode", GHK_CHANGE_MAP_MODE_PREV),
 	Hotkey(WKC_PAGEDOWN, "next_map_mode",     GHK_CHANGE_MAP_MODE_NEXT),
+	Hotkey((uint16)0,    "switch_viewport_route_overlay_mode", GHK_SWITCH_VIEWPORT_ROUTE_OVERLAY_MODE),
 	HOTKEY_LIST_END
 };
 HotkeyList MainWindow::hotkeys("global", global_hotkeys);

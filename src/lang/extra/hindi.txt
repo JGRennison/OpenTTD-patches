@@ -1,0 +1,21 @@
+# Tracerestrict GUI
+
+# Programmable Pre-Signals
+
+#House construction window (for SE only)
+
+#Town select window (for SE only)
+
+# Town tooltip
+
+# Cargo type orders Window
+
+# Plans window
+
+# Clear area query
+
+# Plan related errors
+
+# Scheduled Dispatch
+
+# Modifier key toggle window

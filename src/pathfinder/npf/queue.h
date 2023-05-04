@@ -14,7 +14,7 @@
 
 
 struct BinaryHeapNode {
-	void *item;
+	uint32 item;
 	int priority;
 };
 
@@ -30,11 +30,11 @@ struct BinaryHeap {
 
 	void Init(uint max_size);
 
-	bool Push(void *item, int priority);
-	void *Pop();
-	bool Delete(void *item, int priority);
-	void Clear(bool free_values);
-	void Free(bool free_values);
+	bool Push(uint32 item, int priority);
+	uint32 Pop();
+	bool Delete(uint32 item, int priority);
+	void Clear();
+	void Free();
 
 	/**
 	 * Get an element from the #elements.
@@ -43,7 +43,7 @@ struct BinaryHeap {
 	 */
 	inline BinaryHeapNode &GetElement(uint i)
 	{
-		assert(i > 0);
+		dbg_assert(i > 0);
 		return this->elements[(i - 1) >> BINARY_HEAP_BLOCKSIZE_BITS][(i - 1) & BINARY_HEAP_BLOCKSIZE_MASK];
 	}
 

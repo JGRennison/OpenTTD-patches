@@ -106,6 +106,7 @@ using IndustryTileLayout = std::vector<IndustryTileLayoutTile>;
  */
 struct IndustrySpec {
 	std::vector<IndustryTileLayout> layouts;    ///< List of possible tile layouts for the industry
+	std::vector<uint64> layout_anim_masks;      ///< Animation inhibit masks for tile layouts for the industry
 	uint8 cost_multiplier;                      ///< Base construction cost multiplier.
 	uint32 removal_cost_multiplier;             ///< Base removal cost multiplier.
 	uint32 prospecting_chance;                  ///< Chance prospecting succeeds
@@ -199,7 +200,7 @@ static inline IndustryGfx GetTranslatedIndustryTileID(IndustryGfx gfx)
 	 * will never be assigned as a tile index and is only required in order to do some
 	 * tests while building the industry (as in WATER REQUIRED */
 	if (gfx != 0xFF) {
-		assert(gfx < INVALID_INDUSTRYTILE);
+		dbg_assert(gfx < INVALID_INDUSTRYTILE);
 		const IndustryTileSpec *it = &_industry_tile_specs[gfx];
 		return it->grf_prop.override == INVALID_INDUSTRYTILE ? gfx : it->grf_prop.override;
 	} else {

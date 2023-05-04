@@ -52,12 +52,13 @@ struct Time {
 	 * Format the current time with the given strftime format specifiers.
 	 * @param buffer The buffer to write the time string to.
 	 * @param last   The last element in the buffer.
+	 * @param time_since_epoch Time since epoch.
 	 * @param format The format according to strftime format specifiers.
 	 * @return The number of characters that were written to the buffer.
 	 */
-	static inline size_t Format(char *buffer, const char *last, const char *format) NOACCESS(2) WARN_TIME_FORMAT(3)
+	static inline size_t Format(char *buffer, const char *last, std::time_t time_since_epoch, const char *format) NOACCESS(2) WARN_TIME_FORMAT(4)
 	{
-		std::tm time_struct = T::ToTimeStruct(time(nullptr));
+		std::tm time_struct = T::ToTimeStruct(time_since_epoch);
 #ifndef _MSC_VER
 		/* GCC bug #39438; unlike for printf where the appropriate attribute prevent the
 		 * "format non literal" warning, that does not happen for strftime. Even though
@@ -65,7 +66,29 @@ struct Time {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
 #endif /* _MSC_VER */
-		return strftime(buffer, last - buffer, format, &time_struct);
+		return strftime(buffer, last - buffer + 1, format, &time_struct);
+#ifndef _MSC_VER
+#pragma GCC diagnostic pop
+#endif /* _MSC_VER */
+	}
+
+	/**
+	 * Format the current time with the given strftime format specifiers.
+	 * @param buffer The buffer to write the time string to.
+	 * @param last   The last element in the buffer.
+	 * @param format The format according to strftime format specifiers.
+	 * @return The number of characters that were written to the buffer.
+	 */
+	static inline size_t Format(char *buffer, const char *last, const char *format) NOACCESS(2) WARN_TIME_FORMAT(3)
+	{
+#ifndef _MSC_VER
+		/* GCC bug #39438; unlike for printf where the appropriate attribute prevent the
+		 * "format non literal" warning, that does not happen for strftime. Even though
+		 * format warnings will be created for invalid strftime formats. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif /* _MSC_VER */
+		return Format(buffer, last, time(nullptr), format);
 #ifndef _MSC_VER
 #pragma GCC diagnostic pop
 #endif /* _MSC_VER */

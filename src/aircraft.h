@@ -93,7 +93,7 @@ struct Aircraft FINAL : public SpecializedVehicle<Aircraft, VEH_AIRCRAFT> {
 
 	void MarkDirty();
 	void UpdateDeltaXY();
-	ExpensesType GetExpenseType(bool income) const { return income ? EXPENSES_AIRCRAFT_INC : EXPENSES_AIRCRAFT_RUN; }
+	ExpensesType GetExpenseType(bool income) const { return income ? EXPENSES_AIRCRAFT_REVENUE : EXPENSES_AIRCRAFT_RUN; }
 	bool IsPrimaryVehicle() const                  { return this->IsNormalAircraft(); }
 	void GetImage(Direction direction, EngineImageType image_type, VehicleSpriteSeq *result) const;
 	Direction GetMapImageDirection() const { return this->First()->direction; }
@@ -114,7 +114,7 @@ struct Aircraft FINAL : public SpecializedVehicle<Aircraft, VEH_AIRCRAFT> {
 	void OnPeriodic();
 	uint Crash(bool flooded = false);
 	TileIndex GetOrderStationLocation(StationID station);
-	bool FindClosestDepot(TileIndex *location, DestinationID *destination, bool *reverse);
+	ClosestDepot FindClosestDepot();
 
 	/**
 	 * Check if the aircraft type is a normal flying device; eg
@@ -143,5 +143,8 @@ struct Aircraft FINAL : public SpecializedVehicle<Aircraft, VEH_AIRCRAFT> {
 void GetRotorImage(const Aircraft *v, EngineImageType image_type, VehicleSpriteSeq *result);
 
 Station *GetTargetAirportIfValid(const Aircraft *v);
+void HandleMissingAircraftOrders(Aircraft *v);
+
+const char *AirportMovementStateToString(byte state);
 
 #endif /* AIRCRAFT_H */

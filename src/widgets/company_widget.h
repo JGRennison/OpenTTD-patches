@@ -68,9 +68,9 @@ enum CompanyFinancesWidgets {
 	WID_CF_SEL_MAXLOAN,    ///< Selection of maxloan column.
 	WID_CF_BALANCE_VALUE,  ///< Bank balance value.
 	WID_CF_LOAN_VALUE,     ///< Loan.
-	WID_CF_LOAN_LINE,      ///< Line for summing bank balance and loan.
-	WID_CF_TOTAL_VALUE,    ///< Total.
-	WID_CF_MAXLOAN_GAP,    ///< Gap above max loan widget.
+	WID_CF_BALANCE_LINE,   ///< Available cash.
+	WID_CF_OWN_VALUE,      ///< Own funds, not including loan.
+	WID_CF_INTEREST_RATE,  ///< Loan interest rate.
 	WID_CF_MAXLOAN_VALUE,  ///< Max loan widget.
 	WID_CF_SEL_BUTTONS,    ///< Selection of buttons.
 	WID_CF_INCREASE_LOAN,  ///< Increase loan.
@@ -174,18 +174,9 @@ enum SelectCompanyManagerFaceWidgets {
 /** Widgets of the #CompanyInfrastructureWindow class. */
 enum CompanyInfrastructureWidgets {
 	WID_CI_CAPTION,       ///< Caption of window.
-	WID_CI_RAIL_DESC,     ///< Description of rail.
-	WID_CI_RAIL_COUNT,    ///< Count of rail.
-	WID_CI_ROAD_DESC,     ///< Description of road.
-	WID_CI_ROAD_COUNT,    ///< Count of road.
-	WID_CI_TRAM_DESC,     ///< Description of tram.
-	WID_CI_TRAM_COUNT,    ///< Count of tram.
-	WID_CI_WATER_DESC,    ///< Description of water.
-	WID_CI_WATER_COUNT,   ///< Count of water.
-	WID_CI_STATION_DESC,  ///< Description of station.
-	WID_CI_STATION_COUNT, ///< Count of station.
-	WID_CI_TOTAL_DESC,    ///< Description of total.
-	WID_CI_TOTAL,         ///< Count of total.
+	WID_CI_DESC,          ///< Description.
+	WID_CI_COUNT,         ///< Count.
+	WID_CI_SCROLLBAR,     ///< Scrollbar.
 };
 
 /** Widgets of the #BuyCompanyWindow class. */

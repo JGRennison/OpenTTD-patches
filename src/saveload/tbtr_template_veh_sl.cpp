@@ -43,6 +43,7 @@ const SaveLoadTable GTD() {
 		SLE_CONDVAR_X(TemplateVehicle, air_drag, SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 8)),
 
 		SLE_CONDVAR_X(TemplateVehicle, ctrl_flags, SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 7)),
+		SLE_CONDSSTR_X(TemplateVehicle, name, SLE_STR | SLF_ALLOW_CONTROL, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 9)),
 
 		SLE_CONDNULL_X(1, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 0, 3)),
 		SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 0, 1)),
@@ -67,7 +68,7 @@ static void Load_TMPLS()
 	int index;
 
 	while ((index = SlIterateArray()) != -1) {
-		TemplateVehicle *tv = new (index) TemplateVehicle(); //TODO:check with veh sl code
+		TemplateVehicle *tv = new (index) TemplateVehicle();
 		SlObject(tv, GTD());
 	}
 }

@@ -29,6 +29,8 @@ enum TownAuthorityWidgets {
 	WID_TA_SCROLLBAR,    ///< Scrollbar of the list of commands.
 	WID_TA_ACTION_INFO,  ///< Additional information about the action.
 	WID_TA_EXECUTE,      ///< Do-it button.
+	WID_TA_SETTING,      ///< Setting drop-down.
+	WID_TA_BTN_SEL,      ///< Button selector.
 };
 
 /** Widgets of the #TownViewWindow class. */
@@ -49,6 +51,7 @@ enum TownFoundingWidgets {
 	WID_TF_NEW_TOWN,          ///< Create a new town.
 	WID_TF_RANDOM_TOWN,       ///< Randomly place a town.
 	WID_TF_MANY_RANDOM_TOWNS, ///< Randomly place many towns.
+	WID_TF_EXPAND_ALL_TOWNS,  ///< Make all towns grow slightly.
 	WID_TF_TOWN_NAME_EDITBOX, ///< Editor for the town name.
 	WID_TF_TOWN_NAME_RANDOM,  ///< Generate a random town name.
 	WID_TF_SIZE_SMALL,        ///< Selection for a small town.

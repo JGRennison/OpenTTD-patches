@@ -1,0 +1,46 @@
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :miles/t
+STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
+STR_UNIT_NAME_VELOCITY_SI                                       :m/s
+
+STR_BUTTON_RENAME                                               :{BLACK}Omdøb
+
+STR_SETTINGS_MENU_ZONING                                        :Zoning
+
+STR_VEHICLE_TYPE_TRAINS                                         :Toge
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Vejkøretøjer
+STR_VEHICLE_TYPE_SHIPS                                          :Skibe
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Fly
+
+# Tracerestrict GUI
+
+# Programmable Pre-Signals
+
+#House construction window (for SE only)
+
+#Town select window (for SE only)
+
+STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Snegrænse
+STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Flyt snegrænsen een op
+STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Flyt snegrænsen een ned
+STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Ændre snegrænsen
+
+# Town tooltip
+
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Designet: {GOLD}{NUM}
+
+# Cargo type orders Window
+
+# Plans window
+
+# Clear area query
+
+# Plan related errors
+
+STR_TRADITIONAL_TRAIN_NAME                                      :Tog {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Vejkøretøj {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Skib {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Fly {COMMA}
+
+# Scheduled Dispatch
+
+# Modifier key toggle window

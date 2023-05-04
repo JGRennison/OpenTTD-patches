@@ -42,7 +42,8 @@ struct Object : ObjectPool::PoolItem<&_object_pool> {
 	 */
 	static inline void IncTypeCount(ObjectType type)
 	{
-		assert(type < NUM_OBJECTS);
+		dbg_assert(type < NUM_OBJECTS);
+		if (type >= counts.size()) counts.resize(type + 1);
 		counts[type]++;
 	}
 
@@ -53,7 +54,8 @@ struct Object : ObjectPool::PoolItem<&_object_pool> {
 	 */
 	static inline void DecTypeCount(ObjectType type)
 	{
-		assert(type < NUM_OBJECTS);
+		dbg_assert(type < NUM_OBJECTS);
+		dbg_assert(type < counts.size());
 		counts[type]--;
 	}
 
@@ -64,18 +66,19 @@ struct Object : ObjectPool::PoolItem<&_object_pool> {
 	 */
 	static inline uint16 GetTypeCount(ObjectType type)
 	{
-		assert(type < NUM_OBJECTS);
+		dbg_assert(type < NUM_OBJECTS);
+		if (type >= counts.size()) return 0;
 		return counts[type];
 	}
 
 	/** Resets object counts. */
 	static inline void ResetTypeCounts()
 	{
-		memset(&counts, 0, sizeof(counts));
+		counts.clear();
 	}
 
 protected:
-	static uint16 counts[NUM_OBJECTS]; ///< Number of objects per type ingame
+	static std::vector<uint16> counts; ///< Number of objects per type ingame
 };
 
 /**

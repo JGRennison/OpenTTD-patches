@@ -142,7 +142,7 @@ public:
 	 * Checks whether the given order id is valid for the given vehicle.
 	 * @param vehicle_id The vehicle to check the order index for.
 	 * @param order_position The order index to check.
-	 * @pre ScriptVehicle::IsValidVehicle(vehicle_id).
+	 * @pre ScriptVehicle::IsPrimaryVehicle(vehicle_id).
 	 * @return True if and only if the order_position is valid for the given vehicle.
 	 */
 	static bool IsValidVehicleOrder(VehicleID vehicle_id, OrderPosition order_position);
@@ -207,7 +207,7 @@ public:
 	/**
 	 * Checks whether the current order is part of the orderlist.
 	 * @param vehicle_id The vehicle to check.
-	 * @pre ScriptVehicle::IsValidVehicle(vehicle_id).
+	 * @pre ScriptVehicle::IsPrimaryVehicle(vehicle_id).
 	 * @return True if and only if the current order is part of the order list.
 	 * @note If the order is a non-'non-stop' order, and the vehicle is currently
 	 * (un)loading at a station that is not the final destination, this function
@@ -222,7 +222,7 @@ public:
 	 *  given index does not exist it will return ORDER_INVALID.
 	 * @param vehicle_id The vehicle to check the order index for.
 	 * @param order_position The order index to resolve.
-	 * @pre ScriptVehicle::IsValidVehicle(vehicle_id).
+	 * @pre ScriptVehicle::IsPrimaryVehicle(vehicle_id).
 	 * @return The resolved order index.
 	 */
 	static OrderPosition ResolveOrderPosition(VehicleID vehicle_id, OrderPosition order_position);
@@ -246,11 +246,11 @@ public:
 	/**
 	 * Returns the number of orders for the given vehicle.
 	 * @param vehicle_id The vehicle to get the order count of.
-	 * @pre ScriptVehicle::IsValidVehicle(vehicle_id).
+	 * @pre ScriptVehicle::IsPrimaryVehicle(vehicle_id).
 	 * @return The number of orders for the given vehicle or a negative
 	 *   value when the vehicle does not exist.
 	 */
-	static int32 GetOrderCount(VehicleID vehicle_id);
+	static SQInteger GetOrderCount(VehicleID vehicle_id);
 
 	/**
 	 * Gets the destination of the given order for the given vehicle.
@@ -320,7 +320,7 @@ public:
 	 * @pre order_position != ORDER_CURRENT && IsConditionalOrder(vehicle_id, order_position).
 	 * @return The value to compare against of the order.
 	 */
-	static int32 GetOrderCompareValue(VehicleID vehicle_id, OrderPosition order_position);
+	static SQInteger GetOrderCompareValue(VehicleID vehicle_id, OrderPosition order_position);
 
 	/**
 	 * Gets the stoplocation of the given order for the given train.
@@ -356,6 +356,7 @@ public:
 	 * @pre IsValidVehicleOrder(vehicle_id, order_position).
 	 * @pre IsValidVehicleOrder(vehicle_id, jump_to).
 	 * @pre order_position != ORDER_CURRENT && IsConditionalOrder(vehicle_id, order_position).
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @return Whether the order has been/can be changed.
 	 * @api -game
 	 */
@@ -369,6 +370,7 @@ public:
 	 * @pre IsValidVehicleOrder(vehicle_id, order_position).
 	 * @pre order_position != ORDER_CURRENT && IsConditionalOrder(vehicle_id, order_position).
 	 * @pre condition >= OC_LOAD_PERCENTAGE && condition <= OC_UNCONDITIONALLY.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @return Whether the order has been/can be changed.
 	 * @api -game
 	 */
@@ -382,6 +384,7 @@ public:
 	 * @pre IsValidVehicleOrder(vehicle_id, order_position).
 	 * @pre order_position != ORDER_CURRENT && IsConditionalOrder(vehicle_id, order_position).
 	 * @pre compare >= CF_EQUALS && compare <= CF_IS_FALSE.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @return Whether the order has been/can be changed.
 	 * @api -game
 	 */
@@ -395,10 +398,11 @@ public:
 	 * @pre IsValidVehicleOrder(vehicle_id, order_position).
 	 * @pre order_position != ORDER_CURRENT && IsConditionalOrder(vehicle_id, order_position).
 	 * @pre value >= 0 && value < 2048.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @return Whether the order has been/can be changed.
 	 * @api -game
 	 */
-	static bool SetOrderCompareValue(VehicleID vehicle_id, OrderPosition order_position, int32 value);
+	static bool SetOrderCompareValue(VehicleID vehicle_id, OrderPosition order_position, SQInteger value);
 
 	/**
 	 * Sets the stoplocation of the given order for the given train.
@@ -409,6 +413,7 @@ public:
 	 * @pre ScriptVehicle::GetVehicleType(vehicle_id) == ScriptVehicle::VT_RAIL.
 	 * @pre IsGotoStationOrder(vehicle_id, order_position).
 	 * @pre stop_location >= STOPLOCATION_NEAR && stop_location <= STOPLOCATION_FAR
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @return Whether the order has been/can be changed.
 	 * @api -game
 	 */
@@ -422,6 +427,7 @@ public:
 	 * @pre IsValidVehicleOrder(vehicle_id, order_position).
 	 * @pre IsGotoStationOrder(vehicle_id, order_position) || (IsGotoDepotOrder(vehicle_id, order_position) && refit_cargo != CT_AUTO_REFIT).
 	 * @pre ScriptCargo::IsValidCargo(refit_cargo) || refit_cargo == CT_AUTO_REFIT || refit_cargo == CT_NO_REFIT
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @return Whether the order has been/can be changed.
 	 * @api -game
 	 */
@@ -432,8 +438,9 @@ public:
 	 * @param vehicle_id The vehicle to append the order to.
 	 * @param destination The destination of the order.
 	 * @param order_flags The flags given to the order.
-	 * @pre ScriptVehicle::IsValidVehicle(vehicle_id).
+	 * @pre ScriptVehicle::IsPrimaryVehicle(vehicle_id).
 	 * @pre AreOrderFlagsValid(destination, order_flags).
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptError::ERR_OWNED_BY_ANOTHER_COMPANY
 	 * @exception ScriptOrder::ERR_ORDER_TOO_MANY
 	 * @exception ScriptOrder::ERR_ORDER_TOO_FAR_AWAY_FROM_PREVIOUS_DESTINATION
@@ -446,8 +453,9 @@ public:
 	 * Appends a conditional order to the end of the vehicle's order list.
 	 * @param vehicle_id The vehicle to append the order to.
 	 * @param jump_to The OrderPosition to jump to if the condition is true.
-	 * @pre ScriptVehicle::IsValidVehicle(vehicle_id).
+	 * @pre ScriptVehicle::IsPrimaryVehicle(vehicle_id).
 	 * @pre IsValidVehicleOrder(vehicle_id, jump_to).
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptError::ERR_OWNED_BY_ANOTHER_COMPANY
 	 * @exception ScriptOrder::ERR_ORDER_TOO_MANY
 	 * @return True if and only if the order was appended.
@@ -461,8 +469,10 @@ public:
 	 * @param order_position The order to place the new order before.
 	 * @param destination The destination of the order.
 	 * @param order_flags The flags given to the order.
+	 * @pre ScriptVehicle::IsPrimaryVehicle(vehicle_id)
 	 * @pre IsValidVehicleOrder(vehicle_id, order_position).
 	 * @pre AreOrderFlagsValid(destination, order_flags).
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptError::ERR_OWNED_BY_ANOTHER_COMPANY
 	 * @exception ScriptOrder::ERR_ORDER_TOO_MANY
 	 * @exception ScriptOrder::ERR_ORDER_TOO_FAR_AWAY_FROM_PREVIOUS_DESTINATION
@@ -476,8 +486,10 @@ public:
 	 * @param vehicle_id The vehicle to add the order to.
 	 * @param order_position The order to place the new order before.
 	 * @param jump_to The OrderPosition to jump to if the condition is true.
+	 * @pre ScriptVehicle::IsPrimaryVehicle(vehicle_id).
 	 * @pre IsValidVehicleOrder(vehicle_id, order_position).
 	 * @pre IsValidVehicleOrder(vehicle_id, jump_to).
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptError::ERR_OWNED_BY_ANOTHER_COMPANY
 	 * @exception ScriptOrder::ERR_ORDER_TOO_MANY
 	 * @return True if and only if the order was inserted.
@@ -490,6 +502,7 @@ public:
 	 * @param vehicle_id The vehicle to remove the order from.
 	 * @param order_position The order to remove from the order list.
 	 * @pre IsValidVehicleOrder(vehicle_id, order_position).
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptError::ERR_OWNED_BY_ANOTHER_COMPANY
 	 * @return True if and only if the order was removed.
 	 * @api -game
@@ -510,6 +523,7 @@ public:
 	 * @pre IsValidVehicleOrder(vehicle_id, order_position).
 	 * @pre AreOrderFlagsValid(GetOrderDestination(vehicle_id, order_position), order_flags).
 	 * @pre (order_flags & OF_GOTO_NEAREST_DEPOT) == (GetOrderFlags(vehicle_id, order_position) & OF_GOTO_NEAREST_DEPOT).
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptError::ERR_OWNED_BY_ANOTHER_COMPANY
 	 * @return True if and only if the order was changed.
 	 * @api -game
@@ -524,6 +538,7 @@ public:
 	 * @pre IsValidVehicleOrder(vehicle_id, order_position_move).
 	 * @pre IsValidVehicleOrder(vehicle_id, order_position_target).
 	 * @pre order_position_move != order_position_target.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptError::ERR_OWNED_BY_ANOTHER_COMPANY
 	 * @return True if and only if the order was moved.
 	 * @note If the order is moved to a lower place (e.g. from 7 to 2)
@@ -539,6 +554,7 @@ public:
 	 * @param vehicle_id The vehicle that should skip some orders.
 	 * @param next_order The order the vehicle should skip to.
 	 * @pre IsValidVehicleOrder(vehicle_id, next_order).
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptError::ERR_OWNED_BY_ANOTHER_COMPANY
 	 * @return True if and only the current order was changed.
 	 * @api -game
@@ -550,8 +566,9 @@ public:
 	 *  are going to be the orders of the changed vehicle.
 	 * @param vehicle_id The vehicle to copy the orders to.
 	 * @param main_vehicle_id The vehicle to copy the orders from.
-	 * @pre ScriptVehicle::IsValidVehicle(vehicle_id).
-	 * @pre ScriptVehicle::IsValidVehicle(main_vehicle_id).
+	 * @pre ScriptVehicle::IsPrimaryVehicle(vehicle_id).
+	 * @pre ScriptVehicle::IsPrimaryVehicle(main_vehicle_id).
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptError::ERR_OWNED_BY_ANOTHER_COMPANY
 	 * @exception ScriptOrder::ERR_ORDER_TOO_MANY
 	 * @exception ScriptOrder::ERR_ORDER_AIRCRAFT_NOT_ENOUGH_RANGE
@@ -565,8 +582,9 @@ public:
 	 * vehicle are going to be the orders of the changed vehicle.
 	 * @param vehicle_id The vehicle to add to the shared order list.
 	 * @param main_vehicle_id The vehicle to share the orders with.
-	 * @pre ScriptVehicle::IsValidVehicle(vehicle_id).
-	 * @pre ScriptVehicle::IsValidVehicle(main_vehicle_id).
+	 * @pre ScriptVehicle::IsPrimaryVehicle(vehicle_id).
+	 * @pre ScriptVehicle::IsPrimaryVehicle(main_vehicle_id).
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptError::ERR_OWNED_BY_ANOTHER_COMPANY
 	 * @exception ScriptOrder::ERR_ORDER_AIRCRAFT_NOT_ENOUGH_RANGE
 	 * @return True if and only if the sharing succeeded.
@@ -578,7 +596,8 @@ public:
 	 * Removes the given vehicle from a shared orders list.
 	 * After unsharing orders, the orders list of the vehicle is empty.
 	 * @param vehicle_id The vehicle to remove from the shared order list.
-	 * @pre ScriptVehicle::IsValidVehicle(vehicle_id).
+	 * @pre ScriptVehicle::IsPrimaryVehicle(vehicle_id).
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @return True if and only if the unsharing succeeded.
 	 * @api -game
 	 */
@@ -599,7 +618,7 @@ public:
 	 *         not be compared with map distances
 	 * @see ScriptEngine::GetMaximumOrderDistance and ScriptVehicle::GetMaximumOrderDistance
 	 */
-	static uint GetOrderDistance(ScriptVehicle::VehicleType vehicle_type, TileIndex origin_tile, TileIndex dest_tile);
+	static SQInteger GetOrderDistance(ScriptVehicle::VehicleType vehicle_type, TileIndex origin_tile, TileIndex dest_tile);
 
 protected:
 	static bool ScriptOrderModifyOrder(VehicleID vehicle_id, VehicleOrderID order_position, uint32 p2, Script_SuspendCallbackProc *callback = nullptr);

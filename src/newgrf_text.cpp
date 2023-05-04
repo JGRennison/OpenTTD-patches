@@ -573,22 +573,29 @@ StringID AddGRFString(uint32 grfid, uint16 stringid, byte langid_to_add, bool ne
 	}
 
 	uint id;
-	for (id = 0; id < _num_grf_texts; id++) {
-		if (_grf_text[id].grfid == grfid && _grf_text[id].stringid == stringid) {
-			break;
-		}
-	}
+	extern GRFFile *GetFileByGRFIDExpectCurrent(uint32 grfid);
+	GRFFile *grf = GetFileByGRFIDExpectCurrent(grfid);
+	if (grf == nullptr) return STR_EMPTY;
 
-	/* Too many strings allocated, return empty */
-	if (id == lengthof(_grf_text)) {
-		_grf_bug_too_many_strings = true;
-		return STR_EMPTY;
+	auto iter = grf->string_map.lower_bound(stringid);
+	if (iter != grf->string_map.end() && iter->first == stringid) {
+		/* Found */
+		id = iter->second;
+	} else {
+		/* Allocate new ID */
+		id = _num_grf_texts;
+
+		/* Too many strings allocated, return empty */
+		if (id == lengthof(_grf_text)) {
+			_grf_bug_too_many_strings = true;
+			return STR_EMPTY;
+		}
+
+		grf->string_map.insert(iter, std::make_pair(stringid, id));
+		_num_grf_texts++;
 	}
 
 	std::string newtext = TranslateTTDPatchCodes(grfid, langid_to_add, allow_newlines, text_to_add);
-
-	/* If we didn't find our stringid and grfid in the list, allocate a new id */
-	if (id == _num_grf_texts) _num_grf_texts++;
 
 	if (_grf_text[id].textholder.empty()) {
 		_grf_text[id].grfid      = grfid;
@@ -607,10 +614,17 @@ StringID AddGRFString(uint32 grfid, uint16 stringid, byte langid_to_add, bool ne
  */
 StringID GetGRFStringID(uint32 grfid, StringID stringid)
 {
-	for (uint id = 0; id < _num_grf_texts; id++) {
-		if (_grf_text[id].grfid == grfid && _grf_text[id].stringid == stringid) {
-			return MakeStringID(TEXT_TAB_NEWGRF_START, id);
+	extern GRFFile *GetFileByGRFIDExpectCurrent(uint32 grfid);
+	GRFFile *grf = GetFileByGRFIDExpectCurrent(grfid);
+	if (unlikely(grf == nullptr)) {
+		for (uint id = 0; id < _num_grf_texts; id++) {
+			if (_grf_text[id].grfid == grfid && _grf_text[id].stringid == stringid) {
+				return MakeStringID(TEXT_TAB_NEWGRF_START, id);
+			}
 		}
+	} else {
+		auto iter = grf->string_map.find(stringid);
+		if (iter != grf->string_map.end()) return MakeStringID(TEXT_TAB_NEWGRF_START, iter->second);
 	}
 
 	return STR_UNDEFINED;
@@ -934,6 +948,7 @@ uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const 
 	switch (scc) {
 		default: break;
 
+		/* These control codes take one string parameter, check there are at least that many available. */
 		case SCC_NEWGRF_PRINT_DWORD_SIGNED:
 		case SCC_NEWGRF_PRINT_WORD_SIGNED:
 		case SCC_NEWGRF_PRINT_BYTE_SIGNED:
@@ -963,6 +978,7 @@ uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const 
 			}
 			break;
 
+		/* These string code take two string parameters, check there are at least that many available. */
 		case SCC_NEWGRF_PRINT_WORD_CARGO_LONG:
 		case SCC_NEWGRF_PRINT_WORD_CARGO_SHORT:
 		case SCC_NEWGRF_PRINT_WORD_CARGO_TINY:
@@ -974,6 +990,8 @@ uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const 
 	}
 
 	if (_newgrf_textrefstack.used && modify_argv) {
+		/* There is data on the NewGRF text stack, and we want to move them to OpenTTD's string stack.
+		 * After this call, a new call is made with `modify_argv` set to false when the string is finally formatted. */
 		switch (scc) {
 			default: NOT_REACHED();
 			case SCC_NEWGRF_PRINT_BYTE_SIGNED:      *argv = _newgrf_textrefstack.PopSignedByte();    break;
@@ -1001,6 +1019,7 @@ uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const 
 			case SCC_NEWGRF_PRINT_DWORD_DATE_SHORT:
 			case SCC_NEWGRF_PRINT_DWORD_HEX:        *argv = _newgrf_textrefstack.PopUnsignedDWord(); break;
 
+			/* Dates from NewGRFs have 1920-01-01 as their zero point, convert it to OpenTTD's epoch. */
 			case SCC_NEWGRF_PRINT_WORD_DATE_LONG:
 			case SCC_NEWGRF_PRINT_WORD_DATE_SHORT:  *argv = _newgrf_textrefstack.PopUnsignedWord() + DAYS_TILL_ORIGINAL_BASE_YEAR; break;
 
@@ -1028,7 +1047,7 @@ uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const 
 			}
 		}
 	} else {
-		/* Consume additional parameter characters */
+		/* Consume additional parameter characters that follow the NewGRF string code. */
 		switch (scc) {
 			default: break;
 
@@ -1039,6 +1058,7 @@ uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const 
 		}
 	}
 
+	/* Emit OpenTTD's internal string code for the different NewGRF variants. */
 	switch (scc) {
 		default: NOT_REACHED();
 		case SCC_NEWGRF_PRINT_DWORD_SIGNED:
@@ -1101,6 +1121,7 @@ uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const 
 		case SCC_NEWGRF_PRINT_WORD_STATION_NAME:
 			return SCC_STATION_NAME;
 
+		/* These NewGRF string codes modify the NewGRF stack or otherwise do not map to OpenTTD string codes. */
 		case SCC_NEWGRF_DISCARD_WORD:
 		case SCC_NEWGRF_ROTATE_TOP_4_WORDS:
 		case SCC_NEWGRF_PUSH_WORD:

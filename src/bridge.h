@@ -89,7 +89,7 @@ bool HasBridgeFlatRamp(Slope tileh, Axis axis);
  */
 static inline const BridgeSpec *GetBridgeSpec(BridgeType i)
 {
-	assert(i < lengthof(_bridge));
+	dbg_assert(i < lengthof(_bridge));
 	return &_bridge[i];
 }
 

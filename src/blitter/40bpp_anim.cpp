@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /*
  * This file is part of OpenTTD.
  * OpenTTD is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 2.
@@ -33,9 +31,22 @@ void Blitter_40bppAnim::SetPixel(void *video, int x, int y, uint8 colour)
 	if (_screen_disable_anim) {
 		Blitter_32bppOptimized::SetPixel(video, x, y, colour);
 	} else {
-		*((Colour *)video + x + y * _screen.pitch) = _black_colour;
+		size_t y_offset = static_cast<size_t>(y) * _screen.pitch;
+		*((Colour *)video + x + y_offset) = _black_colour;
 
-		VideoDriver::GetInstance()->GetAnimBuffer()[((uint32 *)video - (uint32 *)_screen.dst_ptr) + x + y * _screen.pitch] = colour;
+		VideoDriver::GetInstance()->GetAnimBuffer()[((uint32 *)video - (uint32 *)_screen.dst_ptr) + x + y_offset] = colour;
+	}
+}
+
+void Blitter_40bppAnim::SetPixel32(void *video, int x, int y, uint8 colour, uint32 colour32)
+{
+	if (_screen_disable_anim) {
+		Blitter_32bppOptimized::SetPixel32(video, x, y, colour, colour32);
+	} else {
+		size_t y_offset = static_cast<size_t>(y) * _screen.pitch;
+		*((Colour *)video + x + y_offset) = colour32;
+
+		VideoDriver::GetInstance()->GetAnimBuffer()[((uint32 *)video - (uint32 *)_screen.dst_ptr) + x + y_offset] = 0;
 	}
 }
 
@@ -97,6 +108,11 @@ void Blitter_40bppAnim::DrawRect(void *video, int width, int height, uint8 colou
 		video = (uint32 *)video + _screen.pitch;
 		anim_line += _screen.pitch;
 	} while (--height);
+}
+
+void Blitter_40bppAnim::DrawRectAt(void *video, int x, int y, int width, int height, uint8 colour)
+{
+	this->Blitter_40bppAnim::DrawRect((Colour *)video + x + y * _screen.pitch, width, height, colour);
 }
 
 void Blitter_40bppAnim::DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8 colour, int width, int dash)
@@ -562,9 +578,9 @@ void Blitter_40bppAnim::ScrollBuffer(void *video, int left, int top, int width, 
 	Blitter_32bppBase::ScrollBuffer(video, left, top, width, height, scroll_x, scroll_y);
 }
 
-int Blitter_40bppAnim::BufferSize(int width, int height)
+size_t Blitter_40bppAnim::BufferSize(uint width, uint height)
 {
-	return width * height * (sizeof(uint32) + sizeof(uint8));
+	return (sizeof(uint32) + sizeof(uint8)) * width * height;
 }
 
 Blitter::PaletteAnimation Blitter_40bppAnim::UsePaletteAnimation()

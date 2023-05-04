@@ -37,6 +37,7 @@ extern StringList _network_host_list;
 extern StringList _network_ban_list;
 
 byte NetworkSpectatorCount();
+uint NetworkClientCount();
 bool NetworkIsValidClientName(const std::string_view client_name);
 bool NetworkValidateOurClientName();
 bool NetworkValidateClientName(std::string &client_name);
@@ -64,6 +65,7 @@ void NetworkClientSendChat(NetworkAction action, DestType type, int dest, const 
 void NetworkClientSendDesyncMsg(const char *msg);
 bool NetworkClientPreferTeamChat(const NetworkClientInfo *cio);
 bool NetworkCompanyIsPassworded(CompanyID company_id);
+uint NetworkMaxCompaniesAllowed();
 bool NetworkMaxCompaniesReached();
 void NetworkPrintClients();
 void NetworkHandlePauseChange(PauseMode prev_mode, PauseMode changed_mode);
@@ -90,6 +92,7 @@ uint NetworkServerKickOrBanIP(ClientID client_id, bool ban, const std::string &r
 uint NetworkServerKickOrBanIP(const std::string &ip, bool ban, const std::string &reason);
 
 void NetworkInitChatMessage();
+void NetworkReInitChatBoxSize();
 void CDECL NetworkAddChatMessage(TextColour colour, uint duration, const std::string &message);
 void NetworkUndrawChatMessage();
 void NetworkChatMessageLoop();

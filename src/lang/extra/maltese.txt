@@ -1,0 +1,32 @@
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
+STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
+STR_UNIT_NAME_VELOCITY_SI                                       :m/s
+
+STR_BUTTON_RENAME                                               :{BLACK}Semmi mil-ġdid
+
+# Tracerestrict GUI
+
+# Programmable Pre-Signals
+
+#House construction window (for SE only)
+
+#Town select window (for SE only)
+
+# Town tooltip
+
+# Cargo type orders Window
+
+# Plans window
+
+# Clear area query
+
+# Plan related errors
+
+STR_TRADITIONAL_TRAIN_NAME                                      :Ferrovija {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Vettura tat-triq {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Vapur {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Ajruplan {COMMA}
+
+# Scheduled Dispatch
+
+# Modifier key toggle window

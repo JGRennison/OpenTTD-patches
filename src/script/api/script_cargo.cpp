@@ -70,14 +70,26 @@
 	return (ScriptCargo::TownEffect)::CargoSpec::Get(cargo_type)->town_effect;
 }
 
-/* static */ Money ScriptCargo::GetCargoIncome(CargoID cargo_type, uint32 distance, uint32 days_in_transit)
+/* static */ Money ScriptCargo::GetCargoIncome(CargoID cargo_type, SQInteger distance, SQInteger days_in_transit)
 {
 	if (!IsValidCargo(cargo_type)) return -1;
-	return ::GetTransportedGoodsIncome(1, distance, Clamp(days_in_transit * 2 / 5, 0, 255), cargo_type);
+
+	distance = Clamp<SQInteger>(distance, 0, UINT32_MAX);
+
+	return ::GetTransportedGoodsIncome(1, distance, Clamp(days_in_transit * 2 / 5, 0, UINT16_MAX), cargo_type);
 }
 
 /* static */ ScriptCargo::DistributionType ScriptCargo::GetDistributionType(CargoID cargo_type)
 {
 	if (!ScriptCargo::IsValidCargo(cargo_type)) return INVALID_DISTRIBUTION_TYPE;
 	return (ScriptCargo::DistributionType)_settings_game.linkgraph.GetDistributionType(cargo_type);
+}
+
+/* static */ SQInteger ScriptCargo::GetWeight(CargoID cargo_type, SQInteger amount)
+{
+	if (!IsValidCargo(cargo_type)) return -1;
+
+	amount = Clamp<SQInteger>(amount, 0, UINT32_MAX);
+
+	return ::CargoSpec::Get(cargo_type)->WeightOfNUnits(amount);
 }

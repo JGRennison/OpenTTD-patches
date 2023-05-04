@@ -80,8 +80,8 @@ the array so you can quickly see what is used and what is not.
     <tr>
       <td rowspan="2">0</td>
       <td class="caption">ground</td>
-      <td class="bits" rowspan=29><span class="used" title="Tile type">XXXX</span> <span class="used" title="Presence and direction of bridge above">XX</span> <span class="used" title="Tropic Zone: only meaningful in tropic climate. It contains the definition of the available zones">XX</span></td>
-      <td class="bits" rowspan=29><span class="used" title="Tile height">XXXX XXXX</span></td>
+      <td class="bits" rowspan=30><span class="used" title="Tile type">XXXX</span> <span class="used" title="Presence and direction of bridge above">XX</span> <span class="used" title="Tropic Zone: only meaningful in tropic climate. It contains the definition of the available zones">XX</span></td>
+      <td class="bits" rowspan=30><span class="used" title="Tile height">XXXX XXXX</span></td>
       <td class="bits" rowspan=2><span class="free">OOO</span><span class="usable" title="Owner (always OWNER_NONE)">1 OOOO</span></td>
       <td class="bits"><span class="free">OOOO OOOO OOOO OOOO</span></td>
       <td class="bits"><span class="used" title="Type of hedge on NE border">XXX</span> <span class="used" title="Snow presence">X</span><span class="free">OOOO</span></td>
@@ -103,7 +103,7 @@ the array so you can quickly see what is used and what is not.
       <td class="bits"><span class="free">OOOO OOOO</span> </td>
       <td class="bits"><span class="free">OOOO</span> <span class="used" title="Ground type: fences, snow, desert">XXXX</span></td>
       <td class="bits"><span class="used" title="Rail tile type: rail, rail with signals, depot">OO</span> <span class="used" title="Track pieces">XXXXXX</span></td>
-      <td class="bits" rowspan=3><span class="free">OOOO OOOO</span></td>
+      <td class="bits"><span class="free">OOOO OOOO</span></td>
       <td class="bits"><span class="free">OOOO OOOO</span></td>
       <td class="bits" rowspan=2><span class="free">OOOO</span> <span class="patch" title="Secondary railway type (used for lower or right track when two parallel tracks on tile)">PPPP PP</span><span class="used" title="Railway type">XX XXXX</span></td>
     </tr>
@@ -113,7 +113,8 @@ the array so you can quickly see what is used and what is not.
       <td class="bits"><span class="used" title="Signals present">XXXX</span> <span class="free">OOOO</span></td>
       <td class="bits"><span class="used" title="Signals colors">XXXX</span> <span class="used" title="Ground type: fences, snow, desert">XXXX</span></td>
       <td class="bits"><span class="used" title="Rail tile type: rail, rail with signals, depot">O1</span> <span class="used" title="Track pieces">XXXXXX</span></td>
-      <td class="bits"><span class="free">OO</span> <span class="patch" title="Signal aspects">PPPPPP</span></td>
+      <td class="bits"><span class="patch" title="Signal styles">PPPP PPPP</span></td>
+      <td class="bits"><span class="patch" title="Signal always reserve through">PP</span> <span class="patch" title="Signal aspects">PPPPPP</span></td>
     </tr>
     <tr>
       <td class="caption">depot</td>
@@ -121,6 +122,7 @@ the array so you can quickly see what is used and what is not.
       <td class="bits"><span class="free">OOOO</span> <span class="free">OOOO</span></td>
       <td class="bits"><span class="free">OOOO</span> <span class="used" title="Ground type: fences, snow, desert (fences on depot are not valid)">XXXX</span></td>
       <td class="bits"><span class="used" title="Rail tile type: rail, rail with signals, depot">11</span><span class="free">O</span><span class="used" title="PBS reservation">X</span> <span class="free">OO</span><span class="used" title="Depot exit direction">XX</span></td>
+      <td class="bits"><span class="free">OOOO OOOO</span></td>
       <td class="bits"><span class="free">OOOO OOOO</span></td>
       <td class="bits"><span class="free">OOOO OOOO OO</span><span class="used" title="Railway type">XX XXXX</span></td>
     </tr>
@@ -176,7 +178,7 @@ the array so you can quickly see what is used and what is not.
       <td>4</td>
       <td class="caption">trees</td>
       <td class="bits"><span class="free">O</span><span class="used" title="Water class">XX</span><span class="usable" title="Owner (always OWNER_NONE)">1 OOOO</span></td>
-      <td class="bits"><span class="free">OOOO OOO</span><span class="used" title="Tree ground">XXX</span> <span class="used" title="Tree density">XX</span> <span class="used" title="Tree counter">XXXX</span></td>
+      <td class="bits"><span class="free">OOOO OOO</span><span class="used" title="Tree ground">XXX</span> <span class="used" title="Tree density">XX</span> <span class="free" title="Old tree counter">OOOO</span></td>
       <td class="bits"><span class="usable" title="Tree type unused bits">XX</span><span class="used" title="Tree type">XX XXXX</span></td>
       <td class="bits"><span class="free">OOOO OOOO</span></td>
       <td class="bits"><span class="used" title="Number of trees on tile (+1)">XX</span><span class="free">OO O</span><span class="used" title="Tree growth">XXX</span></td>
@@ -185,14 +187,14 @@ the array so you can quickly see what is used and what is not.
       <td class="bits"><span class="free">OOOO OOOO OOOO OOOO</span></td>
     </tr>
     <tr>
-      <td rowspan=7>5</td>
+      <td rowspan=8>5</td>
       <td class="caption">rail station</td>
-      <td class="bits" rowspan=7><span class="free">O</span><span class="used" title="Water class">XX</span> <span class="used" title="Owner">XXXXX</span></td>
-      <td class="bits" rowspan=7><span class="pool" title="Station index on pool">XXXX XXXX XXXX XXXX</span></td>
+      <td class="bits" rowspan=8><span class="free">O</span><span class="used" title="Water class">XX</span> <span class="used" title="Owner">XXXXX</span></td>
+      <td class="bits" rowspan=8><span class="pool" title="Station index on pool">XXXX XXXX XXXX XXXX</span></td>
       <td class="bits" rowspan=2><span class="used" title="Random bits">XXXX</span> <span class="free">OOOO</span></td>
       <td class="bits" rowspan=2><span class="used" title="Custom station specifications ID">XXXX XXXX</span></td>
       <td class="bits"><span class="used" title="Graphics index">XXXX XXXX</span></td>
-      <td class="bits" rowspan=2><span class="free">OO</span><span class="used" title="Station type">XXX</span> <span class="used" title="Reserved track">X</span><span class="free">OO</span></td>
+      <td class="bits" rowspan=2><span class="free">O<span class="patch" title="Station type (extra bit)">P</span></span><span class="used" title="Station type">XXX</span> <span class="used" title="Reserved track">X</span><span class="free">OO</span></td>
       <td class="bits" rowspan=2><span class="used" title="Animation frame">XXXX XXXX</span></td>
       <td class="bits" rowspan=2><span class="free">OOOO OOOO OO</span><span class="used" title="Railway type">XX XXXX</span></td>
     </tr>
@@ -203,11 +205,16 @@ the array so you can quickly see what is used and what is not.
     <tr>
       <td class="caption">road stop</td>
       <td class="bits"><span class="used" title="Owner of tram">XXXX</span> <span class="free">OO</span><span class="patch" title="Disallow vehicles to go a specific direction (drive-through road stop)">PP</span></td>
-      <td class="bits"><span class="free">OO</span><span class="used" title="Roadtype for road stop">XX XXXX</span></td>
-      <td class="bits"><span class="usable" title="Graphics index">OOOO O</span><span class="used" title="Graphics index: 00 (exit towards NE), 01 (exit towards SE), 02 (exit towards SW), 03 (exit towards NW), 04 (drive through X), 05 (drive through Y)">XXX</span></td>
-      <td class="bits" rowspan=5><span class="free">OO</span><span class="used" title="Station type">XX X</span><span class="free">OOO</span></td>
-      <td class="bits"><span class="free">OOO</span><span class="used" title="Owner of road">X XXXX</span></td>
-      <td class="bits"><span class="free">O</span><span class="patch" title="Road cached one way state">PPP</span> <span class="used" title="Tram type">XXXX XX<span class="free">OO OOOO</span></td>
+      <td class="bits" rowspan=2><span class="free">OO</span><span class="used" title="Roadtype for road stop">XX XXXX</span></td>
+      <td class="bits" rowspan=2><span class="usable" title="Graphics index">OOOO O</span><span class="used" title="Graphics index: 00 (exit towards NE), 01 (exit towards SE), 02 (exit towards SW), 03 (exit towards NW), 04 (drive through X), 05 (drive through Y)">XXX</span></td>
+      <td class="bits" rowspan=6><span class="free">O<span class="patch" title="Station type (extra bit)">P</span></span><span class="used" title="Station type">XXX</span> <span class="free">OOO</span></td>
+      <td class="bits" rowspan=2><span class="free">OOO</span><span class="used" title="Owner of road">X XXXX</span></td>
+      <td class="bits"><span class="free">O</span><span class="patch" title="Road cached one way state">PPP</span> <span class="used" title="Tram type">XXXX XX</span><span class="patch" title="Custom road stops specifications ID">PP PPPP</span></td>
+    </tr>
+    <tr>
+      <td class="caption">road waypoint</td>
+      <td class="bits"><span class="used" title="Owner of tram">XXXX</span> <span class="patch" title="Pavement type">PP</span> <span class="patch" title="Disallow vehicles to go a specific direction (drive-through road stop)">PP</span></td>
+      <td class="bits"><span class="patch" title="Snow/desert present">P</span> <span class="patch" title="Road cached one way state">PPP</span> <span class="used" title="Tram type">XXXX XX</span><span class="patch" title="Custom road stops specifications ID">PP PPPP</span></td>
     </tr>
     <tr>
       <td class="caption">airport</td>
@@ -287,7 +294,7 @@ the array so you can quickly see what is used and what is not.
       <td class="caption">tunnel entrance</td>
       <td class="bits" rowspan=3><span class="free">OOO</span> <span class="used" title="Owner">XXXXX</span></td>
       <td class="bits"><span class="patch-pool" title="Tunnel index on pool (or overflow sentinel)">PPPP PPPP PPPP PPPP</span></td>
-      <td class="bits" rowspan=4><span class="rearrange" title="Owner of tram (road only; a rearrangement can free some of these bits)">XXXX</span> <span class="free">OOOO</span><br /><span class="free">O</span><span class="patch" title="Routing restrictions present on entrance/exit signal(s)">P</span> <span class="patch" title="Entrance/exit signal aspects (rail only)">PPPPPP</span></td>
+      <td class="bits" rowspan=4><span class="rearrange" title="Owner of tram (road only; a rearrangement can free some of these bits)">XXXX</span> <span class="free">OOOO</span><br /><span class="patch" title="New signal style is non-zero (rail only)">P</span> <span class="patch" title="Routing restrictions present on entrance/exit signal(s)">P</span> <span class="patch" title="Entrance/exit signal aspects (rail only)">PPPPPP</span></td>
       <td class="bits"><span class="free">OO</span><span class="used" title="Road type">XX XXXX</span></td>
       <td class="bits"><span class="used" title="Bridge or tunnel bit">O</span><span class="patch" title="Signal simulation mode (rail only)">PP</span><span class="rearrange" title="PBS reservation (rail; a rearrangement can free some of these bits)">X</span> <span class="used" title="Transport type">XX</span> <span class="used" title="Direction of the tunnel/bridge">XX</span></td>
       <td class="bits"><span class="patch" title="PBS mode, exit signal state">PP</span><span class="free">OO OO</span><span class="patch" title="Semaphore/light mode, entrance signal state">PP</span></td>
@@ -324,9 +331,9 @@ the array so you can quickly see what is used and what is not.
       <td class="bits"><span class="free">O</span><span class="used" title="Water class">XX</span> <span class="used" title="Owner">XXXXX</span></td>
       <td class="bits"><span class="pool" title="Object index on pool (m2 + m5)">XXXX XXXX XXXX XXXX</span></td>
       <td class="bits"><span class="used" title="Random bits">XXXX XXXX</span></td>
-      <td class="bits"><span class="patch" title="Ground update counter">PPP</span> <span class="patch" title="Tile has no effective foundation">P</span> <span class="patch" title="Ground type: grass/bare, snow/desert, shore">PP</span> <span class="patch" title="Ground density">PP</span></td>
+      <td class="bits"><span class="patch" title="Ground update counter">PPP</span> <span class="patch" title="Viewport map override">P</span> <span class="patch" title="Ground type: grass/bare, snow/desert, shore">PP</span> <span class="patch" title="Ground density">PP</span></td>
       <td class="bits"><span class="pool" title="Object index on pool (m2 + m5)">XXXX XXXX</span></td>
-      <td class="bits"><span class="free">OOOO OOOO</span></td>
+      <td class="bits"><span class="free">OOOO OO</span><span class="patch" title="Foundation type">PP</span> </td>
       <td class="bits"><span class="used" title="Animation counter">XXXX XXXX</span></td>
       <td class="bits" rowspan=1><span class="free">OOOO OOOO OOOO OOOO</span></td>
     </tr>

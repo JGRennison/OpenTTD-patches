@@ -54,7 +54,7 @@ struct CargoPacket : CargoPacketPool::PoolItem<&_cargopacket_pool> {
 private:
 	Money feeder_share;     ///< Value of feeder pickup to be paid for on delivery of cargo.
 	uint16 count;           ///< The amount of cargo in this packet.
-	byte days_in_transit;   ///< Amount of days this packet has been in transit.
+	uint16 days_in_transit; ///< Amount of days this packet has been in transit.
 	SourceType source_type; ///< Type of \c source_id.
 	SourceID source_id;     ///< Index of source, INVALID_SOURCE if unknown/invalid.
 	StationID source;       ///< The station where the cargo came from first.
@@ -84,7 +84,7 @@ public:
 
 	CargoPacket();
 	CargoPacket(StationID source, TileIndex source_xy, uint16 count, SourceType source_type, SourceID source_id);
-	CargoPacket(uint16 count, byte days_in_transit, StationID source, TileIndex source_xy, TileIndex loaded_at_xy, Money feeder_share = 0, SourceType source_type = ST_INDUSTRY, SourceID source_id = INVALID_SOURCE);
+	CargoPacket(uint16 count, uint16 days_in_transit, StationID source, TileIndex source_xy, TileIndex loaded_at_xy, Money feeder_share = 0, SourceType source_type = ST_INDUSTRY, SourceID source_id = INVALID_SOURCE);
 	~CargoPacket();
 
 	CargoPacket *Split(uint new_size);
@@ -145,10 +145,10 @@ public:
 	/**
 	 * Gets the number of days this cargo has been in transit.
 	 * This number isn't really in days, but in 2.5 days (CARGO_AGING_TICKS = 185 ticks) and
-	 * it is capped at 255.
+	 * it is capped at UINT16_MAX.
 	 * @return Length this cargo has been in transit.
 	 */
-	inline byte DaysInTransit() const
+	inline uint16 DaysInTransit() const
 	{
 		return this->days_in_transit;
 	}
@@ -242,8 +242,8 @@ public:
 	};
 
 protected:
-	uint count;                 ///< Cache for the number of cargo entities.
-	uint cargo_days_in_transit; ///< Cache for the sum of number of days in transit of each entity; comparable to man-hours.
+	uint count;                   ///< Cache for the number of cargo entities.
+	uint64 cargo_days_in_transit; ///< Cache for the sum of number of days in transit of each entity; comparable to man-hours.
 
 	Tcont packets;              ///< The cargo packets in this list.
 
@@ -277,6 +277,20 @@ public:
 	inline uint DaysInTransit() const
 	{
 		return this->count == 0 ? 0 : this->cargo_days_in_transit / this->count;
+	}
+
+	/**
+	 * Returns sum of cargo, including reserved cargo.
+	 * @return Sum of cargo.
+	 */
+	inline uint TotalCount() const
+	{
+		return this->count;
+	}
+
+	inline uint64 CargoDaysInTransit() const
+	{
+		return this->cargo_days_in_transit;
 	}
 
 	void InvalidateCache();
@@ -397,15 +411,6 @@ public:
 	inline uint StoredCount() const
 	{
 		return this->count - this->action_counts[MTA_LOAD];
-	}
-
-	/**
-	 * Returns sum of cargo, including reserved cargo.
-	 * @return Sum of cargo.
-	 */
-	inline uint TotalCount() const
-	{
-		return this->count;
 	}
 
 	/**

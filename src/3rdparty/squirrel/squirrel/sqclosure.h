@@ -10,12 +10,11 @@ private:
 	SQClosure(SQSharedState *ss,SQFunctionProto *func){_function=func; INIT_CHAIN();ADD_TO_CHAIN(&_ss(this)->_gc_chain,this);}
 public:
 	static SQClosure *Create(SQSharedState *ss,SQFunctionProto *func){
-		SQClosure *nc=(SQClosure*)SQ_MALLOC(sizeof(SQClosure));
-		new (nc) SQClosure(ss,func);
+		SQClosure *nc = new (SQAllocationTag{}) SQClosure(ss,func);
 		return nc;
 	}
 	void Release(){
-		sq_delete(this,SQClosure);
+		sq_delete_refcounted(this,SQClosure);
 	}
 	SQClosure *Clone()
 	{
@@ -48,8 +47,7 @@ private:
 	SQGenerator(SQSharedState *ss,SQClosure *closure){_closure=closure;_state=eRunning;_ci._generator=nullptr;INIT_CHAIN();ADD_TO_CHAIN(&_ss(this)->_gc_chain,this);}
 public:
 	static SQGenerator *Create(SQSharedState *ss,SQClosure *closure){
-		SQGenerator *nc=(SQGenerator*)SQ_MALLOC(sizeof(SQGenerator));
-		new (nc) SQGenerator(ss,closure);
+		SQGenerator *nc = new (SQAllocationTag{}) SQGenerator(ss,closure);
 		return nc;
 	}
 	~SQGenerator()
@@ -61,7 +59,7 @@ public:
 		_stack.resize(0);
 		_closure=_null_;}
 	void Release(){
-		sq_delete(this,SQGenerator);
+		sq_delete_refcounted(this,SQGenerator);
 	}
 	bool Yield(SQVM *v);
 	bool Resume(SQVM *v,SQInteger target);
@@ -84,8 +82,7 @@ private:
 public:
 	static SQNativeClosure *Create(SQSharedState *ss,SQFUNCTION func)
 	{
-		SQNativeClosure *nc=(SQNativeClosure*)SQ_MALLOC(sizeof(SQNativeClosure));
-		new (nc) SQNativeClosure(ss,func);
+		SQNativeClosure *nc = new (SQAllocationTag{}) SQNativeClosure(ss,func);
 		return nc;
 	}
 	SQNativeClosure *Clone()
@@ -103,7 +100,7 @@ public:
 		REMOVE_FROM_CHAIN(&_ss(this)->_gc_chain,this);
 	}
 	void Release(){
-		sq_delete(this,SQNativeClosure);
+		sq_delete_refcounted(this,SQNativeClosure);
 	}
 #ifndef NO_GARBAGE_COLLECTOR
 	void EnqueueMarkObjectForChildren(SQGCMarkerQueue &queue);

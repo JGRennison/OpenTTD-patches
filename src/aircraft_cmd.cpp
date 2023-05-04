@@ -237,7 +237,7 @@ void DrawAircraftEngine(int left, int right, int preferred_x, int y, EngineID en
 	GetAircraftIcon(engine, image_type, &seq);
 
 	Rect16 rect = seq.GetBounds();
-	preferred_x = Clamp(preferred_x,
+	preferred_x = SoftClamp(preferred_x,
 			left - UnScaleGUI(rect.left),
 			right - UnScaleGUI(rect.right));
 
@@ -247,7 +247,7 @@ void DrawAircraftEngine(int left, int right, int preferred_x, int y, EngineID en
 		VehicleSpriteSeq rotor_seq;
 		GetCustomRotorIcon(engine, image_type, &rotor_seq);
 		if (!rotor_seq.IsValid()) rotor_seq.Set(SPR_ROTOR_STOPPED);
-		rotor_seq.Draw(preferred_x, y - ScaleGUITrad(5), PAL_NONE, false);
+		rotor_seq.Draw(preferred_x, y - ScaleSpriteTrad(5), PAL_NONE, false);
 	}
 }
 
@@ -265,10 +265,10 @@ void GetAircraftSpriteSize(EngineID engine, uint &width, uint &height, int &xoff
 	VehicleSpriteSeq seq;
 	GetAircraftIcon(engine, image_type, &seq);
 
-	Rect16 rect = seq.GetBounds();
+	Rect rect = ConvertRect<Rect16, Rect>(seq.GetBounds());
 
-	width  = UnScaleGUI(rect.right - rect.left + 1);
-	height = UnScaleGUI(rect.bottom - rect.top + 1);
+	width  = UnScaleGUI(rect.Width());
+	height = UnScaleGUI(rect.Height());
 	xoffs  = UnScaleGUI(rect.left);
 	yoffs  = UnScaleGUI(rect.top);
 }
@@ -414,7 +414,7 @@ CommandCost CmdBuildAircraft(TileIndex tile, DoCommandFlag flags, const Engine *
 }
 
 
-bool Aircraft::FindClosestDepot(TileIndex *location, DestinationID *destination, bool *reverse)
+ClosestDepot Aircraft::FindClosestDepot()
 {
 	const Station *st = GetTargetAirportIfValid(this);
 	/* If the station is not a valid airport or if it has no hangars */
@@ -422,15 +422,12 @@ bool Aircraft::FindClosestDepot(TileIndex *location, DestinationID *destination,
 		/* the aircraft has to search for a hangar on its own */
 		StationID station = FindNearestHangar(this);
 
-		if (station == INVALID_STATION) return false;
+		if (station == INVALID_STATION) return ClosestDepot();
 
 		st = Station::Get(station);
 	}
 
-	if (location    != nullptr) *location    = st->xy;
-	if (destination != nullptr) *destination = st->index;
-
-	return true;
+	return ClosestDepot(st->xy, st->index);
 }
 
 static void CheckIfAircraftNeedsService(Aircraft *v)
@@ -1217,7 +1214,8 @@ void FindBreakdownDestination(Aircraft *v)
 	DestinationID destination = INVALID_STATION;
 	if (v->breakdown_type == BREAKDOWN_AIRCRAFT_DEPOT) {
 		/* Go to a hangar, if possible at our current destination */
-		v->FindClosestDepot(nullptr, &destination, nullptr);
+		ClosestDepot closestDepot = v->FindClosestDepot();
+		if (closestDepot.found) destination = closestDepot.destination;
 	} else if (v->breakdown_type == BREAKDOWN_AIRCRAFT_EM_LANDING) {
 		/* Go to the nearest airport with a hangar */
 		destination = FindNearestHangar(v);
@@ -1225,7 +1223,7 @@ void FindBreakdownDestination(Aircraft *v)
 		NOT_REACHED();
 	}
 
-	if(destination != INVALID_STATION) {
+	if (destination != INVALID_STATION) {
 		if(destination != v->current_order.GetDestination()) {
 			v->current_order.MakeGoToDepot(destination, ODTFB_BREAKDOWN);
 			if (v->state == FLYING) {
@@ -2190,7 +2188,24 @@ static bool AircraftEventHandler(Aircraft *v, int loop)
 	ProcessOrders(v);
 	v->HandleLoading(loop != 0);
 
-	if (v->current_order.IsType(OT_LOADING) || v->current_order.IsType(OT_LEAVESTATION)) return true;
+	if (v->current_order.IsType(OT_LOADING)) return true;
+
+	if (v->current_order.IsType(OT_LEAVESTATION)) {
+		StationID station_id = v->current_order.GetDestination();
+		v->current_order.Free();
+
+		ProcessOrders(v);
+
+		if (v->current_order.IsType(OT_GOTO_STATION) && v->current_order.GetDestination() == station_id &&
+				v->targetairport == station_id && IsAirportTile(v->tile) && GetStationIndex(v->tile) == station_id &&
+				Company::Get(v->owner)->settings.remain_if_next_order_same_station) {
+			AircraftEntersTerminal(v);
+			return true;
+		}
+
+		v->PlayLeaveStationSound();
+		return true;
+	}
 
 	if (v->state >= ENDTAKEOFF && v->state <= HELIENDLANDING) {
 		/* If we are flying, unconditionally clear the 'dest too far' state. */
@@ -2288,4 +2303,38 @@ void UpdateAirplanesOnNewStation(const Station *st)
 
 	/* Heliports don't have a hangar. Invalidate all go to hangar orders from all aircraft. */
 	if (!st->airport.HasHangar()) RemoveOrderFromAllVehicles(OT_GOTO_DEPOT, st->index, true);
+}
+
+const char *AirportMovementStateToString(byte state)
+{
+#define AMS(s) case s: return #s;
+	switch (state) {
+		AMS(TO_ALL)
+		AMS(HANGAR)
+		AMS(TERM1)
+		AMS(TERM2)
+		AMS(TERM3)
+		AMS(TERM4)
+		AMS(TERM5)
+		AMS(TERM6)
+		AMS(HELIPAD1)
+		AMS(HELIPAD2)
+		AMS(TAKEOFF)
+		AMS(STARTTAKEOFF)
+		AMS(ENDTAKEOFF)
+		AMS(HELITAKEOFF)
+		AMS(FLYING)
+		AMS(LANDING)
+		AMS(ENDLANDING)
+		AMS(HELILANDING)
+		AMS(HELIENDLANDING)
+		AMS(TERM7)
+		AMS(TERM8)
+		AMS(HELIPAD3)
+		AMS(TERMGROUP)
+
+		default:
+			return "???";
+	}
+#undef AMS
 }

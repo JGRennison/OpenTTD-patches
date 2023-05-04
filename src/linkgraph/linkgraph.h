@@ -12,13 +12,13 @@
 
 #include "../core/pool_type.hpp"
 #include "../core/smallmap_type.hpp"
-#include "../core/smallmatrix_type.hpp"
 #include "../core/bitmath_func.hpp"
 #include "../station_base.h"
 #include "../cargotype.h"
 #include "../date_func.h"
 #include "../saveload/saveload_common.h"
 #include "linkgraph_type.h"
+#include "../3rdparty/cpp-btree/btree_map.h"
 #include <utility>
 
 class LinkGraph;
@@ -70,12 +70,26 @@ public:
 	struct BaseEdge {
 		uint capacity;                 ///< Capacity of the link.
 		uint usage;                    ///< Usage of the link.
+		uint64 travel_time_sum;        ///< Sum of the travel times of the link, in ticks.
 		Date last_unrestricted_update; ///< When the unrestricted part of the link was last updated.
 		Date last_restricted_update;   ///< When the restricted part of the link was last updated.
 		Date last_aircraft_update;     ///< When aircraft capacity of the link was last updated.
-		NodeID next_edge;              ///< Destination of next valid edge starting at the same source node.
-		void Init();
+
+		void Init()
+		{
+			this->capacity = 0;
+			this->usage = 0;
+			this->travel_time_sum = 0;
+			this->last_unrestricted_update = INVALID_DATE;
+			this->last_restricted_update = INVALID_DATE;
+			this->last_aircraft_update = INVALID_DATE;
+		}
+
+		BaseEdge() { this->Init(); }
 	};
+
+	typedef std::vector<BaseNode> NodeVector;
+	typedef btree::btree_map<std::pair<NodeID, NodeID>, BaseEdge> EdgeMatrix;
 
 	/**
 	 * Wrapper for an edge (const or not) allowing retrieval, but no modification.
@@ -84,7 +98,7 @@ public:
 	template<typename Tedge>
 	class EdgeWrapper {
 	protected:
-		Tedge &edge; ///< Actual edge to be used.
+		Tedge *edge; ///< Actual edge to be used.
 
 	public:
 
@@ -92,67 +106,69 @@ public:
 		 * Wrap a an edge.
 		 * @param edge Edge to be wrapped.
 		 */
-		EdgeWrapper (Tedge &edge) : edge(edge) {}
+		EdgeWrapper (Tedge &edge) : edge(&edge) {}
 
 		/**
 		 * Get edge's capacity.
 		 * @return Capacity.
 		 */
-		uint Capacity() const { return this->edge.capacity; }
+		uint Capacity() const { return this->edge->capacity; }
 
 		/**
 		 * Get edge's usage.
 		 * @return Usage.
 		 */
-		uint Usage() const { return this->edge.usage; }
+		uint Usage() const { return this->edge->usage; }
+
+		/**
+		 * Get edge's average travel time.
+		 * @return Travel time, in ticks.
+		 */
+		uint32 TravelTime() const { return this->edge->travel_time_sum / this->edge->capacity; }
 
 		/**
 		 * Get the date of the last update to the edge's unrestricted capacity.
 		 * @return Last update.
 		 */
-		Date LastUnrestrictedUpdate() const { return this->edge.last_unrestricted_update; }
+		Date LastUnrestrictedUpdate() const { return this->edge->last_unrestricted_update; }
 
 		/**
 		 * Get the date of the last update to the edge's restricted capacity.
 		 * @return Last update.
 		 */
-		Date LastRestrictedUpdate() const { return this->edge.last_restricted_update; }
+		Date LastRestrictedUpdate() const { return this->edge->last_restricted_update; }
 
 		/**
 		 * Get the date of the last update to the edge's aircraft capacity.
 		 * @return Last update.
 		 */
-		Date LastAircraftUpdate() const { return this->edge.last_aircraft_update; }
+		Date LastAircraftUpdate() const { return this->edge->last_aircraft_update; }
 
 		/**
 		 * Get the date of the last update to any part of the edge's capacity.
 		 * @return Last update.
 		 */
-		Date LastUpdate() const { return std::max(this->edge.last_unrestricted_update, this->edge.last_restricted_update); }
+		Date LastUpdate() const { return std::max(this->edge->last_unrestricted_update, this->edge->last_restricted_update); }
 	};
 
 	/**
 	 * Wrapper for a node (const or not) allowing retrieval, but no modification.
 	 * @tparam Tedge Actual node class, may be "const BaseNode" or just "BaseNode".
-	 * @tparam Tedge Actual edge class, may be "const BaseEdge" or just "BaseEdge".
 	 */
-	template<typename Tnode, typename Tedge>
+	template<typename Tnode>
 	class NodeWrapper {
 	protected:
-		Tnode &node;  ///< Node being wrapped.
-		Tedge *edges; ///< Outgoing edges for wrapped node.
-		NodeID index; ///< ID of wrapped node.
+		Tnode &node;          ///< Node being wrapped.
+		NodeID index;         ///< ID of wrapped node.
 
 	public:
 
 		/**
 		 * Wrap a node.
 		 * @param node Node to be wrapped.
-		 * @param edges Outgoing edges for node to be wrapped.
 		 * @param index ID of node to be wrapped.
 		 */
-		NodeWrapper(Tnode &node, Tedge *edges, NodeID index) : node(node),
-			edges(edges), index(index) {}
+		NodeWrapper(Tnode &node, NodeID index) : node(node), index(index) {}
 
 		/**
 		 * Get supply of wrapped node.
@@ -183,117 +199,8 @@ public:
 		 * @return Location of the station.
 		 */
 		TileIndex XY() const { return this->node.xy; }
-	};
 
-	/**
-	 * Base class for iterating across outgoing edges of a node. Only the real
-	 * edges (those with capacity) are iterated. The ones with only distance
-	 * information are skipped.
-	 * @tparam Tedge Actual edge class. May be "BaseEdge" or "const BaseEdge".
-	 * @tparam Titer Actual iterator class.
-	 */
-	template <class Tedge, class Tedge_wrapper, class Titer>
-	class BaseEdgeIterator {
-	protected:
-		Tedge *base;    ///< Array of edges being iterated.
-		NodeID current; ///< Current offset in edges array.
-
-		/**
-		 * A "fake" pointer to enable operator-> on temporaries. As the objects
-		 * returned from operator* aren't references but real objects, we have
-		 * to return something that implements operator->, but isn't a pointer
-		 * from operator->. A fake pointer.
-		 */
-		class FakePointer : public std::pair<NodeID, Tedge_wrapper> {
-		public:
-
-			/**
-			 * Construct a fake pointer from a pair of NodeID and edge.
-			 * @param pair Pair to be "pointed" to (in fact shallow-copied).
-			 */
-			FakePointer(const std::pair<NodeID, Tedge_wrapper> &pair) : std::pair<NodeID, Tedge_wrapper>(pair) {}
-
-			/**
-			 * Retrieve the pair by operator->.
-			 * @return Pair being "pointed" to.
-			 */
-			std::pair<NodeID, Tedge_wrapper> *operator->() { return this; }
-		};
-
-	public:
-		/**
-		 * Constructor.
-		 * @param base Array of edges to be iterated.
-		 * @param current ID of current node (to locate the first edge).
-		 */
-		BaseEdgeIterator (Tedge *base, NodeID current) :
-			base(base),
-			current(current == INVALID_NODE ? current : base[current].next_edge)
-		{}
-
-		/**
-		 * Prefix-increment.
-		 * @return This.
-		 */
-		Titer &operator++()
-		{
-			this->current = this->base[this->current].next_edge;
-			return static_cast<Titer &>(*this);
-		}
-
-		/**
-		 * Postfix-increment.
-		 * @return Version of this before increment.
-		 */
-		Titer operator++(int)
-		{
-			Titer ret(static_cast<Titer &>(*this));
-			this->current = this->base[this->current].next_edge;
-			return ret;
-		}
-
-		/**
-		 * Compare with some other edge iterator. The other one may be of a
-		 * child class.
-		 * @tparam Tother Class of other iterator.
-		 * @param other Instance of other iterator.
-		 * @return If the iterators have the same edge array and current node.
-		 */
-		template<class Tother>
-		bool operator==(const Tother &other)
-		{
-			return this->base == other.base && this->current == other.current;
-		}
-
-		/**
-		 * Compare for inequality with some other edge iterator. The other one
-		 * may be of a child class.
-		 * @tparam Tother Class of other iterator.
-		 * @param other Instance of other iterator.
-		 * @return If either the edge arrays or the current nodes differ.
-		 */
-		template<class Tother>
-		bool operator!=(const Tother &other)
-		{
-			return this->base != other.base || this->current != other.current;
-		}
-
-		/**
-		 * Dereference with operator*.
-		 * @return Pair of current target NodeID and edge object.
-		 */
-		std::pair<NodeID, Tedge_wrapper> operator*() const
-		{
-			return std::pair<NodeID, Tedge_wrapper>(this->current, Tedge_wrapper(this->base[this->current]));
-		}
-
-		/**
-		 * Dereference with operator->.
-		 * @return Fake pointer to Pair of current target NodeID and edge object.
-		 */
-		FakePointer operator->() const {
-			return FakePointer(this->operator*());
-		}
+		NodeID GetNodeID() const { return this->index; }
 	};
 
 	/**
@@ -311,47 +218,17 @@ public:
 		 * @param edge Edge to be wrapped.
 		 */
 		Edge(BaseEdge &edge) : EdgeWrapper<BaseEdge>(edge) {}
-		void Update(uint capacity, uint usage, EdgeUpdateMode mode);
-		void Restrict() { this->edge.last_unrestricted_update = INVALID_DATE; }
-		void Release() { this->edge.last_restricted_update = INVALID_DATE; }
-		void ClearAircraft() { this->edge.last_aircraft_update = INVALID_DATE; }
-	};
-
-	/**
-	 * An iterator for const edges. Cannot be typedef'ed because of
-	 * template-reference to ConstEdgeIterator itself.
-	 */
-	class ConstEdgeIterator : public BaseEdgeIterator<const BaseEdge, ConstEdge, ConstEdgeIterator> {
-	public:
-		/**
-		 * Constructor.
-		 * @param edges Array of edges to be iterated over.
-		 * @param current ID of current edge's end node.
-		 */
-		ConstEdgeIterator(const BaseEdge *edges, NodeID current) :
-			BaseEdgeIterator<const BaseEdge, ConstEdge, ConstEdgeIterator>(edges, current) {}
-	};
-
-	/**
-	 * An iterator for non-const edges. Cannot be typedef'ed because of
-	 * template-reference to EdgeIterator itself.
-	 */
-	class EdgeIterator : public BaseEdgeIterator<BaseEdge, Edge, EdgeIterator> {
-	public:
-		/**
-		 * Constructor.
-		 * @param edges Array of edges to be iterated over.
-		 * @param current ID of current edge's end node.
-		 */
-		EdgeIterator(BaseEdge *edges, NodeID current) :
-			BaseEdgeIterator<BaseEdge, Edge, EdgeIterator>(edges, current) {}
+		void Update(uint capacity, uint usage, uint32 time, EdgeUpdateMode mode);
+		void Restrict() { this->edge->last_unrestricted_update = INVALID_DATE; }
+		void Release() { this->edge->last_restricted_update = INVALID_DATE; }
+		void ClearAircraft() { this->edge->last_aircraft_update = INVALID_DATE; }
 	};
 
 	/**
 	 * Constant node class. Only retrieval operations are allowed on both the
 	 * node itself and its edges.
 	 */
-	class ConstNode : public NodeWrapper<const BaseNode, const BaseEdge> {
+	class ConstNode : public NodeWrapper<const BaseNode> {
 	public:
 		/**
 		 * Constructor.
@@ -359,34 +236,14 @@ public:
 		 * @param node ID of the node.
 		 */
 		ConstNode(const LinkGraph *lg, NodeID node) :
-			NodeWrapper<const BaseNode, const BaseEdge>(lg->nodes[node], lg->edges[node], node)
+			NodeWrapper<const BaseNode>(lg->nodes[node], node)
 		{}
-
-		/**
-		 * Get a ConstEdge. This is not a reference as the wrapper objects are
-		 * not actually persistent.
-		 * @param to ID of end node of edge.
-		 * @return Constant edge wrapper.
-		 */
-		ConstEdge operator[](NodeID to) const { return ConstEdge(this->edges[to]); }
-
-		/**
-		 * Get an iterator pointing to the start of the edges array.
-		 * @return Constant edge iterator.
-		 */
-		ConstEdgeIterator Begin() const { return ConstEdgeIterator(this->edges, this->index); }
-
-		/**
-		 * Get an iterator pointing beyond the end of the edges array.
-		 * @return Constant edge iterator.
-		 */
-		ConstEdgeIterator End() const { return ConstEdgeIterator(this->edges, INVALID_NODE); }
 	};
 
 	/**
 	 * Updatable node class. The node itself as well as its edges can be modified.
 	 */
-	class Node : public NodeWrapper<BaseNode, BaseEdge> {
+	class Node : public NodeWrapper<BaseNode> {
 	public:
 		/**
 		 * Constructor.
@@ -394,28 +251,8 @@ public:
 		 * @param node ID of the node.
 		 */
 		Node(LinkGraph *lg, NodeID node) :
-			NodeWrapper<BaseNode, BaseEdge>(lg->nodes[node], lg->edges[node], node)
+			NodeWrapper<BaseNode>(lg->nodes[node], node)
 		{}
-
-		/**
-		 * Get an Edge. This is not a reference as the wrapper objects are not
-		 * actually persistent.
-		 * @param to ID of end node of edge.
-		 * @return Edge wrapper.
-		 */
-		Edge operator[](NodeID to) { return Edge(this->edges[to]); }
-
-		/**
-		 * Get an iterator pointing to the start of the edges array.
-		 * @return Edge iterator.
-		 */
-		EdgeIterator Begin() { return EdgeIterator(this->edges, this->index); }
-
-		/**
-		 * Get an iterator pointing beyond the end of the edges array.
-		 * @return Constant edge iterator.
-		 */
-		EdgeIterator End() { return EdgeIterator(this->edges, INVALID_NODE); }
 
 		/**
 		 * Update the node's supply and set last_update to the current date.
@@ -444,14 +281,7 @@ public:
 		{
 			this->node.demand = demand;
 		}
-
-		void AddEdge(NodeID to, uint capacity, uint usage, EdgeUpdateMode mode);
-		void UpdateEdge(NodeID to, uint capacity, uint usage, EdgeUpdateMode mode);
-		void RemoveEdge(NodeID to);
 	};
-
-	typedef std::vector<BaseNode> NodeVector;
-	typedef SmallMatrix<BaseEdge> EdgeMatrix;
 
 	/** Minimum effective distance for timeout calculation. */
 	static const uint MIN_TIMEOUT_DISTANCE = 32;
@@ -541,8 +371,11 @@ public:
 	NodeID AddNode(const Station *st);
 	void RemoveNode(NodeID id);
 
+	void UpdateEdge(NodeID from, NodeID to, uint capacity, uint usage, uint32 time, EdgeUpdateMode mode);
+	void RemoveEdge(NodeID from, NodeID to);
+
 	inline uint64 CalculateCostEstimate() const {
-		uint64 size_squared = this->Size() * this->Size();
+		uint64 size_squared = (uint32)this->Size() * (uint32)this->Size();
 		return size_squared * FindLastBit(size_squared * size_squared); // N^2 * 4log_2(N)
 	}
 
@@ -563,6 +396,89 @@ protected:
 	Date last_compression; ///< Last time the capacities and supplies were compressed.
 	NodeVector nodes;      ///< Nodes in the component.
 	EdgeMatrix edges;      ///< Edges in the component.
+
+public:
+	const EdgeMatrix &GetEdges() const { return this->edges; }
+
+	const BaseEdge &GetBaseEdge(NodeID from, NodeID to) const
+	{
+		auto iter = this->edges.find(std::make_pair(from, to));
+		if (iter != this->edges.end()) return iter->second;
+
+		static LinkGraph::BaseEdge empty_edge = {};
+		return empty_edge;
+	}
+
+	ConstEdge GetConstEdge(NodeID from, NodeID to) const { return ConstEdge(this->GetBaseEdge(from, to)); }
+
+	template <typename F>
+	void IterateEdgesFromNode(NodeID from_id, F proc) const
+	{
+		auto iter = this->edges.lower_bound(std::make_pair(from_id, (NodeID)0));
+		while (iter != this->edges.end()) {
+			NodeID from = iter->first.first;
+			NodeID to = iter->first.second;
+			if (from != from_id) return;
+			if (from != to) {
+				proc(from, to, ConstEdge(iter->second));
+			}
+			++iter;
+		}
+	}
+
+	enum class EdgeIterationResult {
+		None,
+		EraseEdge,
+	};
+
+	struct EdgeIterationHelper {
+		EdgeMatrix &edges;
+		EdgeMatrix::iterator &iter;
+		const NodeID from_id;
+		const NodeID to_id;
+		size_t expected_size;
+
+		EdgeIterationHelper(EdgeMatrix &edges, EdgeMatrix::iterator &iter, NodeID from_id, NodeID to_id) :
+				edges(edges), iter(iter), from_id(from_id), to_id(to_id), expected_size(0) {}
+
+		Edge GetEdge() { return Edge(this->iter->second); }
+
+		void RecordSize() { this->expected_size = this->edges.size(); }
+
+		bool RefreshIterationIfSizeChanged()
+		{
+			if (this->expected_size != this->edges.size()) {
+				/* Edges container has resized, our iterator is now invalid, so find it again */
+				this->iter = this->edges.find(std::make_pair(this->from_id, this->to_id));
+				return true;
+			} else {
+				return false;
+			}
+		}
+	};
+
+	template <typename F>
+	void MutableIterateEdgesFromNode(NodeID from_id, F proc)
+	{
+		EdgeMatrix::iterator iter = this->edges.lower_bound(std::make_pair(from_id, (NodeID)0));
+		while (iter != this->edges.end()) {
+			NodeID from = iter->first.first;
+			NodeID to = iter->first.second;
+			if (from != from_id) return;
+			EdgeIterationResult result = EdgeIterationResult::None;
+			if (from != to) {
+				result = proc(EdgeIterationHelper(this->edges, iter, from, to));
+			}
+			switch (result) {
+				case EdgeIterationResult::None:
+					++iter;
+					break;
+				case EdgeIterationResult::EraseEdge:
+					iter = this->edges.erase(iter);
+					break;
+			}
+		}
+	}
 };
 
 #endif /* LINKGRAPH_H */

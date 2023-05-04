@@ -20,6 +20,7 @@ add_files(
     error_widget.h
     fios_widget.h
     framerate_widget.h
+    game_widget.h
     genworld_widget.h
     goal_widget.h
     graph_widget.h
@@ -27,6 +28,7 @@ add_files(
     highscore_widget.h
     industry_widget.h
     intro_widget.h
+    league_widget.h
     link_graph_legend_widget.h
     main_widget.h
     misc_widget.h
@@ -44,6 +46,7 @@ add_files(
     rail_widget.h
     road_widget.h
     screenshot_widget.h
+    script_widget.h
     settings_widget.h
     sign_widget.h
     slider.cpp

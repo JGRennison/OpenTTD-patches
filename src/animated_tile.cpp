@@ -70,9 +70,9 @@ static void UpdateAnimatedTileSpeed(TileIndex tile, AnimatedTileInfo &info)
  * on that table yet). Also increases the size of the table if necessary.
  * @param tile the tile to make animated
  */
-void AddAnimatedTile(TileIndex tile)
+void AddAnimatedTile(TileIndex tile, bool mark_dirty)
 {
-	MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+	if (mark_dirty) MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 	AnimatedTileInfo &info = _animated_tiles[tile];
 	UpdateAnimatedTileSpeed(tile, info);
 	info.pending_deletion = false;

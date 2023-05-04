@@ -53,7 +53,7 @@ static inline bool IsValidAxis(Axis d)
  */
 static inline Direction ReverseDir(Direction d)
 {
-	assert(IsValidDirection(d));
+	dbg_assert(IsValidDirection(d));
 	return (Direction)(4 ^ d);
 }
 
@@ -67,8 +67,8 @@ static inline Direction ReverseDir(Direction d)
  */
 static inline DirDiff DirDifference(Direction d0, Direction d1)
 {
-	assert(IsValidDirection(d0));
-	assert(IsValidDirection(d1));
+	dbg_assert(IsValidDirection(d0));
+	dbg_assert(IsValidDirection(d1));
 	/* Cast to uint so compiler can use bitmask. If the difference is negative
 	 * and we used int instead of uint, further "+ 8" would have to be added. */
 	return (DirDiff)((uint)(d0 - d1) % 8);
@@ -103,7 +103,7 @@ static inline DirDiff ChangeDirDiff(DirDiff d, DirDiff delta)
  */
 static inline Direction ChangeDir(Direction d, DirDiff delta)
 {
-	assert(IsValidDirection(d));
+	dbg_assert(IsValidDirection(d));
 	/* Cast to uint so compiler can use bitmask. Result can never be negative. */
 	return (Direction)((uint)(d + delta) % 8);
 }
@@ -117,7 +117,7 @@ static inline Direction ChangeDir(Direction d, DirDiff delta)
  */
 static inline DiagDirection ReverseDiagDir(DiagDirection d)
 {
-	assert(IsValidDiagDirection(d));
+	dbg_assert(IsValidDiagDirection(d));
 	return (DiagDirection)(2 ^ d);
 }
 
@@ -130,8 +130,8 @@ static inline DiagDirection ReverseDiagDir(DiagDirection d)
  */
 static inline DiagDirDiff DiagDirDifference(DiagDirection d0, DiagDirection d1)
 {
-	assert(IsValidDiagDirection(d0));
-	assert(IsValidDiagDirection(d1));
+	dbg_assert(IsValidDiagDirection(d0));
+	dbg_assert(IsValidDiagDirection(d1));
 	/* Cast to uint so compiler can use bitmask. Result can never be negative. */
 	return (DiagDirDiff)((uint)(d0 - d1) % 4);
 }
@@ -148,7 +148,7 @@ static inline DiagDirDiff DiagDirDifference(DiagDirection d0, DiagDirection d1)
  */
 static inline DiagDirection ChangeDiagDir(DiagDirection d, DiagDirDiff delta)
 {
-	assert(IsValidDiagDirection(d));
+	dbg_assert(IsValidDiagDirection(d));
 	/* Cast to uint so compiler can use bitmask. Result can never be negative. */
 	return (DiagDirection)((uint)(d + delta) % 4);
 }
@@ -165,7 +165,7 @@ static inline DiagDirection ChangeDiagDir(DiagDirection d, DiagDirDiff delta)
  */
 static inline DiagDirection DirToDiagDir(Direction dir)
 {
-	assert(IsValidDirection(dir));
+	dbg_assert(IsValidDirection(dir));
 	return (DiagDirection)(dir >> 1);
 }
 
@@ -181,7 +181,7 @@ static inline DiagDirection DirToDiagDir(Direction dir)
  */
 static inline Direction DiagDirToDir(DiagDirection dir)
 {
-	assert(IsValidDiagDirection(dir));
+	dbg_assert(IsValidDiagDirection(dir));
 	return (Direction)(dir * 2 + 1);
 }
 
@@ -196,7 +196,7 @@ static inline Direction DiagDirToDir(DiagDirection dir)
  */
 static inline Axis OtherAxis(Axis a)
 {
-	assert(IsValidAxis(a));
+	dbg_assert(IsValidAxis(a));
 	return (Axis)(a ^ 1);
 }
 
@@ -213,7 +213,7 @@ static inline Axis OtherAxis(Axis a)
  */
 static inline Axis DiagDirToAxis(DiagDirection d)
 {
-	assert(IsValidDiagDirection(d));
+	dbg_assert(IsValidDiagDirection(d));
 	return (Axis)(d & 1);
 }
 
@@ -231,7 +231,7 @@ static inline Axis DiagDirToAxis(DiagDirection d)
  */
 static inline DiagDirection AxisToDiagDir(Axis a)
 {
-	assert(IsValidAxis(a));
+	dbg_assert(IsValidAxis(a));
 	return (DiagDirection)(2 - a);
 }
 
@@ -248,7 +248,7 @@ static inline DiagDirection AxisToDiagDir(Axis a)
  */
 static inline Direction AxisToDirection(Axis a)
 {
-	assert(IsValidAxis(a));
+	dbg_assert(IsValidAxis(a));
 	return (Direction)(5 - 2 * a);
 }
 
@@ -260,7 +260,7 @@ static inline Direction AxisToDirection(Axis a)
  */
 static inline DiagDirection XYNSToDiagDir(Axis xy, uint ns)
 {
-	assert(IsValidAxis(xy));
+	dbg_assert(IsValidAxis(xy));
 	return (DiagDirection)(xy * 3 ^ ns * 2);
 }
 
@@ -272,7 +272,7 @@ static inline DiagDirection XYNSToDiagDir(Axis xy, uint ns)
  */
 static inline bool IsDiagonalDirection(Direction dir)
 {
-	assert(IsValidDirection(dir));
+	dbg_assert(IsValidDirection(dir));
 	return (dir & 1) != 0;
 }
 
@@ -289,8 +289,8 @@ static inline bool IsDiagonalDirection(Direction dir)
  */
 static inline DiagDirection DirToDiagDirAlongAxis(Direction dir, Axis axis)
 {
-	assert(IsValidDirection(dir));
-	assert(IsValidAxis(axis));
+	dbg_assert(IsValidDirection(dir));
+	dbg_assert(IsValidAxis(axis));
 	if ((dir & 3) == (3 ^ (axis << 1))) return INVALID_DIAGDIR;
 	/* Mapping:
 	 * X 4, 5, 6 -> 2    0, 1, 2 -> 0

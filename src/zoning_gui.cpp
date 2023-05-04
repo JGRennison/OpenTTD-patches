@@ -24,9 +24,7 @@
 #include "zoning.h"
 
 enum ZoningToolbarWidgets {
-	ZTW_OUTER = 4,
 	ZTW_OUTER_DROPDOWN,
-	ZTW_INNER,
 	ZTW_INNER_DROPDOWN,
 	ZTW_CAPTION
 };
@@ -139,6 +137,9 @@ struct ZoningWindow : public Window {
 			case ZTW_INNER_DROPDOWN:
 				strs = _zone_type_strings;
 				break;
+
+			default:
+				return;
 		}
 		if (strs != nullptr) {
 			while (*strs != INVALID_STRING_ID) {
@@ -146,7 +147,7 @@ struct ZoningWindow : public Window {
 			}
 		}
 		size->width += padding.width;
-		size->height = FONT_HEIGHT_NORMAL + WD_DROPDOWNTEXT_TOP + WD_DROPDOWNTEXT_BOTTOM;
+		size->height = FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.dropdowntext.Vertical();
 	}
 };
 
@@ -160,17 +161,13 @@ static const NWidgetPart _nested_zoning_widgets[] = {
 
 	NWidget(WWT_PANEL, COLOUR_GREY),
 		NWidget(NWID_HORIZONTAL, COLOUR_GREY), SetPIP(10, 3, 10),
-			NWidget(NWID_VERTICAL, COLOUR_GREY), SetPadding(5, 0, 5, 0),
+			NWidget(NWID_VERTICAL, COLOUR_GREY), SetPadding(5, 0, 5, 0), SetPIP(0, 5, 0),
 				NWidget(WWT_TEXT, COLOUR_GREY), SetDataTip(STR_ZONING_OUTER, STR_NULL), SetResize(1, 0), SetPadding(1, 6, 1, 6),
-				NWidget(WWT_TEXT, COLOUR_GREY, ZTW_OUTER),
 				NWidget(WWT_TEXT, COLOUR_GREY), SetDataTip(STR_ZONING_INNER, STR_NULL), SetResize(1, 0), SetPadding(1, 6, 1, 6),
-				NWidget(WWT_TEXT, COLOUR_GREY, ZTW_INNER),
 			EndContainer(),
-			NWidget(NWID_VERTICAL, COLOUR_GREY), SetPadding(5, 0, 5, 0),
+			NWidget(NWID_VERTICAL, COLOUR_GREY), SetPadding(5, 0, 5, 0), SetPIP(0, 5, 0),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, ZTW_OUTER_DROPDOWN), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
-				NWidget(WWT_TEXT, COLOUR_GREY),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, ZTW_INNER_DROPDOWN), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
-				NWidget(WWT_TEXT, COLOUR_GREY),
 			EndContainer(),
 		EndContainer(),
 	EndContainer()

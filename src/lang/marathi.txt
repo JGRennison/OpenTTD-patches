@@ -193,12 +193,9 @@ STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA} mph
 STR_UNITS_VELOCITY_METRIC                                       :{COMMA} किमी / तास
 STR_UNITS_VELOCITY_SI                                           :{COMMA} m/s
 
-STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
-STR_UNIT_NAME_VELOCITY_METRIC                                   :किमी / तास
-STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}hp
 STR_UNITS_POWER_METRIC                                          :{COMMA}hp
+
 
 STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA}ट
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}ट
@@ -226,7 +223,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}वर�
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}वर्गीकरण निकष निवडा
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}फिल्टरिंग निकष निवडा
 STR_BUTTON_SORT_BY                                              :{BLACK}यानुसार क्रमवारी लावा
-STR_BUTTON_RENAME                                               :{BLACK}नाव बदला
 
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}खिडकी बंद करा
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}खिडकीचं नाव - खिडकी हलवण्यासाठी हे पकडून ओढा.
@@ -351,9 +347,8 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :बंद करा
 
 # Settings menu
-###length 14
+###length 15
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :खेळाचे पर्याय
-STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :ए.आय. / गेम स्क्रिप्ट सेटिंग्ज
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF पर्याय
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :पारदर्शकता पर्याय
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :शहरांची नावे दाखवा
@@ -729,27 +724,6 @@ STR_GAME_OPTIONS_CURRENCY_SEK                                   :स्वीड
 STR_GAME_OPTIONS_CURRENCY_TRY                                   :तुर्की लिरा (TRY)
 STR_GAME_OPTIONS_CURRENCY_SKK                                   :स्लोवाक कोरुना (SKK)
 
-###length 2
-
-
-###length 21
-STR_GAME_OPTIONS_TOWN_NAME_FRENCH                               :फ्रेंच
-STR_GAME_OPTIONS_TOWN_NAME_GERMAN                               :जर्मन
-STR_GAME_OPTIONS_TOWN_NAME_SWEDISH                              :स्वीडीश
-STR_GAME_OPTIONS_TOWN_NAME_DUTCH                                :डच
-STR_GAME_OPTIONS_TOWN_NAME_FINNISH                              :फिन्निश
-STR_GAME_OPTIONS_TOWN_NAME_POLISH                               :पोलिश
-STR_GAME_OPTIONS_TOWN_NAME_SLOVAK                               :स्लोवाक
-STR_GAME_OPTIONS_TOWN_NAME_NORWEGIAN                            :नोर्वेगीअन
-STR_GAME_OPTIONS_TOWN_NAME_HUNGARIAN                            :हंगेरियन
-STR_GAME_OPTIONS_TOWN_NAME_AUSTRIAN                             :ओस्त्रिअन
-STR_GAME_OPTIONS_TOWN_NAME_ROMANIAN                             :रोमेनिअन
-STR_GAME_OPTIONS_TOWN_NAME_CZECH                                :झेख
-STR_GAME_OPTIONS_TOWN_NAME_SWISS                                :स्विस
-STR_GAME_OPTIONS_TOWN_NAME_DANISH                               :डेनिष
-STR_GAME_OPTIONS_TOWN_NAME_TURKISH                              :तुर्की
-STR_GAME_OPTIONS_TOWN_NAME_ITALIAN                              :ईटेलिअन
-
 
 # Autosave dropdown
 ###length 5
@@ -784,7 +758,6 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :अन्य
 
 
 
-
 ###length 5
 
 ###length 6
@@ -799,9 +772,11 @@ STR_SUBSIDY_X2                                                  :x२
 STR_SUBSIDY_X3                                                  :x३
 STR_SUBSIDY_X4                                                  :x४
 
+###length 4
+
 ###length 7
 
-###length 3
+###length 4
 
 
 # Settings tree window
@@ -821,6 +796,7 @@ STR_CONFIG_SETTING_REALISTIC                                    :खरेखु
 
 ###length 3
 
+###setting-zero-is-special
 
 
 
@@ -915,10 +891,14 @@ STR_CONFIG_SETTING_WARN_LOST_VEHICLE                            : वाहन �
 
 ###length 2
 
+###length 2
+
 
 
 
 ###length 3
+
+###length 4
 
 ###length 4
 
@@ -955,7 +935,6 @@ STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_ACTIONS              :सर्व �
 
 
 
-
 ###setting-zero-is-special
 
 
@@ -1007,6 +986,7 @@ STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_ACTIONS              :सर्व �
 ###length 3
 
 
+###setting-zero-is-special
 
 
 
@@ -1043,7 +1023,7 @@ STR_CONFIG_SETTING_STATUSBAR_POS                                :स्टेट
 
 
 
-###length 4
+###length 5
 
 ###length 3
 
@@ -1078,8 +1058,6 @@ STR_INTRO_CAPTION                                               :{WHITE}ओप�
 
 # Cheat window
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}चालू वर्ष बदला
-
-###length 4
 
 # Livery window
 
@@ -1204,6 +1182,8 @@ STR_NETWORK_SERVER_MESSAGE                                      :*** {1:STRING}
 
 # Linkgraph legend window and linkgraph legend in smallmap
 
+# Linkgraph tooltip
+
 # Base for station construction window(s)
 
 # Join station window
@@ -1226,8 +1206,6 @@ STR_NETWORK_SERVER_MESSAGE                                      :*** {1:STRING}
 # Signal window
 
 # Bridge selection window
-STR_SELECT_BRIDGE_INFO                                          :{GOLD}{STRING},{} {VELOCITY} {WHITE}{CURRENCY_LONG}
-STR_SELECT_BRIDGE_SCENEDIT_INFO                                 :{GOLD}{STRING},{} {VELOCITY}
 STR_BRIDGE_NAME_WOODEN                                          :लाकडी
 
 
@@ -1329,6 +1307,24 @@ STR_SAVELOAD_DETAIL_COMPANY_INDEX                               :{SILVER}{COMMA}
 STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_DATE                                                 :{BLACK}तिथी:
 
+###length 21
+STR_MAPGEN_TOWN_NAME_FRENCH                                     :फ्रेंच
+STR_MAPGEN_TOWN_NAME_GERMAN                                     :जर्मन
+STR_MAPGEN_TOWN_NAME_SWEDISH                                    :स्वीडीश
+STR_MAPGEN_TOWN_NAME_DUTCH                                      :डच
+STR_MAPGEN_TOWN_NAME_FINNISH                                    :फिन्निश
+STR_MAPGEN_TOWN_NAME_POLISH                                     :पोलिश
+STR_MAPGEN_TOWN_NAME_SLOVAK                                     :स्लोवाक
+STR_MAPGEN_TOWN_NAME_NORWEGIAN                                  :नोर्वेगीअन
+STR_MAPGEN_TOWN_NAME_HUNGARIAN                                  :हंगेरियन
+STR_MAPGEN_TOWN_NAME_AUSTRIAN                                   :ओस्त्रिअन
+STR_MAPGEN_TOWN_NAME_ROMANIAN                                   :रोमेनिअन
+STR_MAPGEN_TOWN_NAME_CZECH                                      :झेख
+STR_MAPGEN_TOWN_NAME_SWISS                                      :स्विस
+STR_MAPGEN_TOWN_NAME_DANISH                                     :डेनिष
+STR_MAPGEN_TOWN_NAME_TURKISH                                    :तुर्की
+STR_MAPGEN_TOWN_NAME_ITALIAN                                    :ईटेलिअन
+
 # Strings for map borders at game generation
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}पाणी
 
@@ -1359,6 +1355,10 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_OBJECT                     :वस्तू
 
 
 # Sprite aligner window
+
+###length 2
+
+
 
 
 # NewGRF (self) generated warnings/errors
@@ -1448,17 +1448,17 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 
 
 # Finances window
-STR_FINANCES_EXPENDITURE_INCOME_TITLE                           :{WHITE}खर्च/कमाई
 STR_FINANCES_YEAR                                               :{WHITE}{NUM}
+
+###length 3
+
 
 ###length 13
 STR_FINANCES_SECTION_AIRCRAFT_RUNNING_COSTS                     :{GOLD}विमान चालवण्याचा खर्च
-STR_FINANCES_SECTION_AIRCRAFT_INCOME                            :{GOLD}विमानाची कमाई
 STR_FINANCES_SECTION_OTHER                                      :{GOLD}अन्य
 
 STR_FINANCES_NEGATIVE_INCOME                                    :{BLACK}-{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :{BLACK}+{CURRENCY_LONG}
-STR_FINANCES_TOTAL_CAPTION                                      :{WHITE}संपूर्ण:
 STR_FINANCES_LOAN_TITLE                                         :{WHITE}कर्ज
 STR_FINANCES_TOTAL_CURRENCY                                     :{BLACK}{CURRENCY_LONG}
 
@@ -1537,6 +1537,8 @@ STR_PURCHASE_INFO_SPEED                                         :{BLACK}गत�
 STR_PURCHASE_INFO_COST                                          :{BLACK}किंमत: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_WEIGHT_CWEIGHT                                :{BLACK}वजन: {GOLD}{WEIGHT_SHORT} ({WEIGHT_SHORT})
 STR_PURCHASE_INFO_COST_SPEED                                    :{BLACK}किंमत: {GOLD}{CURRENCY_LONG}{BLACK} गती: {GOLD}{VELOCITY}
+
+###length 3
 
 ###length VEHICLE_TYPES
 
@@ -1744,14 +1746,13 @@ STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}वे�
 
 
 
-STR_AI_CONFIG_CHANGE_NONE                                       :
 
 # Available AIs window
 
 
 
 
-# AI Parameters
+# Script Parameters
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 
 
@@ -1866,12 +1867,15 @@ STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}पू�
 
 
 
+
 # Specific vehicle errors
 
 
 
 # Order related errors
 
+
+# Extra messages which go on the third line of errors, explaining why orders failed
 
 # Timetable related errors
 
@@ -1882,11 +1886,6 @@ STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}पू�
 
 # Translatable descriptions in media/baseset/*.ob* files
 ###external 10
-
-STR_TRADITIONAL_TRAIN_NAME                                      :रेल्वे {COMMA}
-STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :रस्त्यावरील वाहन {COMMA}
-STR_TRADITIONAL_SHIP_NAME                                       :जहाज {COMMA}
-STR_TRADITIONAL_AIRCRAFT_NAME                                   :विमान {COMMA}
 
 ##id 0x2000
 # Town building names

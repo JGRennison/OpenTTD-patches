@@ -74,7 +74,9 @@ void CcBuildBridge(const CommandCost &result, TileIndex end_tile, uint32 p1, uin
 		ConnectRoadToStructure(p1, start_direction);
 	}
 
-	StoreRailPlacementEndpoints(p1, end_tile, (TileX(p1) == TileX(end_tile)) ? TRACK_Y : TRACK_X, false);
+	if (transport_type == TRANSPORT_RAIL) {
+		StoreRailPlacementEndpoints(p1, end_tile, (TileX(p1) == TileX(end_tile)) ? TRACK_Y : TRACK_X, false);
+	}
 }
 
 /** Window class for handling the bridge-build GUI. */
@@ -113,9 +115,14 @@ private:
 		return a.spec->speed < b.spec->speed;
 	}
 
+	inline TransportType GetTransportType() const
+	{
+		return (TransportType)(this->type >> 15);
+	}
+
 	void BuildBridge(uint8 i)
 	{
-		switch ((TransportType)(this->type >> 15)) {
+		switch (this->GetTransportType()) {
 			case TRANSPORT_RAIL: _last_railbridge_type = this->bridges->at(i).index; break;
 			case TRANSPORT_ROAD: _last_roadbridge_type = this->bridges->at(i).index; break;
 			default: break;
@@ -135,6 +142,23 @@ private:
 		/* Set the modified widgets dirty */
 		this->SetWidgetDirty(WID_BBS_DROPDOWN_CRITERIA);
 		this->SetWidgetDirty(WID_BBS_BRIDGE_LIST);
+	}
+
+	/**
+	 * Get the StringID to draw in the selection list and set the appropriate DParams.
+	 * @param bridge_data the bridge to get the StringID of.
+	 * @return the StringID.
+	 */
+	StringID GetBridgeSelectString(const BuildBridgeData &bridge_data) const
+	{
+		SetDParam(0, bridge_data.spec->material);
+		SetDParam(1, PackVelocity(bridge_data.spec->speed, static_cast<VehicleType>(this->GetTransportType())));
+		SetDParam(2, bridge_data.cost);
+		/* If the bridge has no meaningful speed limit, don't display it. */
+		if (bridge_data.spec->speed == UINT16_MAX) {
+			return _game_mode == GM_EDITOR ? STR_SELECT_BRIDGE_INFO_NAME : STR_SELECT_BRIDGE_INFO_NAME_COST;
+		}
+		return _game_mode == GM_EDITOR ? STR_SELECT_BRIDGE_INFO_NAME_MAX_SPEED : STR_SELECT_BRIDGE_INFO_NAME_MAX_SPEED_COST;
 	}
 
 public:
@@ -189,21 +213,16 @@ public:
 			case WID_BBS_BRIDGE_LIST: {
 				Dimension sprite_dim = {0, 0}; // Biggest bridge sprite dimension
 				Dimension text_dim   = {0, 0}; // Biggest text dimension
-				for (int i = 0; i < (int)this->bridges->size(); i++) {
-					const BridgeSpec *b = this->bridges->at(i).spec;
-					sprite_dim = maxdim(sprite_dim, GetSpriteSize(b->sprite));
-
-					SetDParam(2, this->bridges->at(i).cost);
-					SetDParam(1, b->speed);
-					SetDParam(0, b->material);
-					text_dim = maxdim(text_dim, GetStringBoundingBox(_game_mode == GM_EDITOR ? STR_SELECT_BRIDGE_SCENEDIT_INFO : STR_SELECT_BRIDGE_INFO));
+				for (const BuildBridgeData &bridge_data : *this->bridges) {
+					sprite_dim = maxdim(sprite_dim, GetSpriteSize(bridge_data.spec->sprite));
+					text_dim = maxdim(text_dim, GetStringBoundingBox(GetBridgeSelectString(bridge_data)));
 				}
 				sprite_dim.height++; // Sprite is rendered one pixel down in the matrix field.
 				text_dim.height++; // Allowing the bottom row pixels to be rendered on the edge of the matrix field.
-				resize->height = std::max(sprite_dim.height, text_dim.height) + 2; // Max of both sizes + account for matrix edges.
+				resize->height = std::max(sprite_dim.height, text_dim.height) + padding.height; // Max of both sizes + account for matrix edges.
 
-				this->bridgetext_offset = WD_MATRIX_LEFT + sprite_dim.width + 1; // Left edge of text, 1 pixel distance from the sprite.
-				size->width = this->bridgetext_offset + text_dim.width + WD_MATRIX_RIGHT;
+				this->bridgetext_offset = sprite_dim.width + WidgetDimensions::scaled.hsep_normal; // Left edge of text, 1 pixel distance from the sprite.
+				size->width = this->bridgetext_offset + text_dim.width + padding.width;
 				size->height = 4 * resize->height; // Smallest bridge gui is 4 entries high in the matrix.
 				break;
 			}
@@ -228,18 +247,13 @@ public:
 				break;
 
 			case WID_BBS_BRIDGE_LIST: {
-				uint y = r.top;
+				Rect tr = r.WithHeight(this->resize.step_height).Shrink(WidgetDimensions::scaled.matrix);
 				for (int i = this->vscroll->GetPosition(); this->vscroll->IsVisible(i) && i < (int)this->bridges->size(); i++) {
-					const BridgeSpec *b = this->bridges->at(i).spec;
-
-					SetDParam(2, this->bridges->at(i).cost);
-					SetDParam(1, b->speed);
-					SetDParam(0, b->material);
-
-					DrawSprite(b->sprite, b->pal, r.left + WD_MATRIX_LEFT, y + this->resize.step_height - 1 - GetSpriteSize(b->sprite).height);
-					DrawStringMultiLine(r.left + this->bridgetext_offset, r.right, y + 2, y + this->resize.step_height,
-							_game_mode == GM_EDITOR ? STR_SELECT_BRIDGE_SCENEDIT_INFO : STR_SELECT_BRIDGE_INFO);
-					y += this->resize.step_height;
+					const BuildBridgeData &bridge_data = this->bridges->at(i);
+					const BridgeSpec *b = bridge_data.spec;
+					DrawSprite(b->sprite, b->pal, tr.left, tr.bottom - GetSpriteSize(b->sprite).height);
+					DrawStringMultiLine(tr.Indent(this->bridgetext_offset, false), GetBridgeSelectString(bridge_data));
+					tr = tr.Translate(0, this->resize.step_height);
 				}
 				break;
 			}
@@ -449,7 +463,7 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 				 * bridge itself (not computed with DC_QUERY_COST) */
 				item.cost = ret.GetCost() + (((int64)tot_bridgedata_len * _price[PR_BUILD_BRIDGE] * item.spec->price) >> 8) + infra_cost;
 				any_available = true;
-			} else if (type_check.GetErrorMessage() != INVALID_STRING_ID) {
+			} else if (type_check.GetErrorMessage() != INVALID_STRING_ID && !query_per_bridge_type) {
 				type_errmsg = type_check.GetErrorMessage();
 			}
 		}

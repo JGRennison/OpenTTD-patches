@@ -23,6 +23,7 @@
 #include "../../debug.h"
 #include "../../settings_type.h"
 #include "../../thread.h"
+#include "../../walltime_func.h"
 #if defined(WITH_DEMANGLE)
 #include <cxxabi.h>
 #endif
@@ -36,11 +37,11 @@
 
 /* printf format specification for 32/64-bit addresses. */
 #ifdef _M_AMD64
-#define PRINTF_PTR "0x%016IX"
-#define PRINTF_LOC "%.16IX"
+#define PRINTF_PTR "0x%016" PRINTF_SIZEX_SUFFIX
+#define PRINTF_LOC "%.16" PRINTF_SIZEX_SUFFIX
 #else
-#define PRINTF_PTR "0x%08X"
-#define PRINTF_LOC "%.8IX"
+#define PRINTF_PTR "0x%08" PRINTF_SIZEX_SUFFIX
+#define PRINTF_LOC "%.8" PRINTF_SIZEX_SUFFIX
 #endif
 
 /**
@@ -56,8 +57,10 @@ class CrashLogWindows : public CrashLog {
 	char *LogRegisters(char *buffer, const char *last) const override;
 	char *LogModules(char *buffer, const char *last) const override;
 public:
-#if defined(_MSC_VER) || defined(WITH_DBGHELP)
+#if defined(_MSC_VER)
 	int WriteCrashDump(char *filename, const char *filename_last) const override;
+#endif /* _MSC_VER */
+#if defined(_MSC_VER) || defined(WITH_DBGHELP)
 	char *AppendDecodedStacktrace(char *buffer, const char *last) const;
 #else
 	char *AppendDecodedStacktrace(char *buffer, const char *last) const { return buffer; }
@@ -143,20 +146,50 @@ static const char *GetAccessViolationTypeString(uint type)
 					" Fault addr: " PRINTF_LOC "\n",
 					(uint) record->ExceptionInformation[0],
 					GetAccessViolationTypeString(record->ExceptionInformation[0]),
-					record->ExceptionInformation[1]
+					(size_t)record->ExceptionInformation[1]
 			);
 		} else {
 			for (uint i = 0; i < (uint) record->NumberParameters; i++) {
 				buffer += seprintf(buffer, last,
 						" Info %u:     " PRINTF_LOC "\n",
 						i,
-						record->ExceptionInformation[i]
+						(size_t)record->ExceptionInformation[i]
 				);
 			}
 		}
 	}
 	buffer += seprintf(buffer, last, " Message:    %s\n\n",
 			message == nullptr ? "<none>" : message);
+
+	if (message != nullptr && strcasestr(message, "out of memory") != nullptr) {
+		PROCESS_MEMORY_COUNTERS pmc;
+		if (GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc))) {
+			buffer += seprintf(buffer, last, " WorkingSetSize: " PRINTF_SIZE "\n", (size_t)pmc.WorkingSetSize);
+			buffer += seprintf(buffer, last, " PeakWorkingSetSize: " PRINTF_SIZE "\n", (size_t)pmc.PeakWorkingSetSize);
+			buffer += seprintf(buffer, last, " QuotaPagedPoolUsage: " PRINTF_SIZE "\n", (size_t)pmc.QuotaPagedPoolUsage);
+			buffer += seprintf(buffer, last, " QuotaPeakPagedPoolUsage: " PRINTF_SIZE "\n", (size_t)pmc.QuotaPeakPagedPoolUsage);
+			buffer += seprintf(buffer, last, " QuotaNonPagedPoolUsage: " PRINTF_SIZE "\n", (size_t)pmc.QuotaNonPagedPoolUsage);
+			buffer += seprintf(buffer, last, " QuotaPeakNonPagedPoolUsage: " PRINTF_SIZE "\n", (size_t)pmc.QuotaPeakNonPagedPoolUsage);
+			buffer += seprintf(buffer, last, " PagefileUsage: " PRINTF_SIZE "\n", (size_t)pmc.PagefileUsage);
+			buffer += seprintf(buffer, last, " PeakPagefileUsage: " PRINTF_SIZE "\n\n", (size_t)pmc.PeakPagefileUsage);
+		}
+		PERFORMANCE_INFORMATION perf;
+		if (GetPerformanceInfo(&perf, sizeof(perf))) {
+			buffer += seprintf(buffer, last, " CommitTotal: " PRINTF_SIZE "\n", (size_t)perf.CommitTotal);
+			buffer += seprintf(buffer, last, " CommitLimit: " PRINTF_SIZE "\n", (size_t)perf.CommitLimit);
+			buffer += seprintf(buffer, last, " CommitPeak: " PRINTF_SIZE "\n", (size_t)perf.CommitPeak);
+			buffer += seprintf(buffer, last, " PhysicalTotal: " PRINTF_SIZE "\n", (size_t)perf.PhysicalTotal);
+			buffer += seprintf(buffer, last, " PhysicalAvailable: " PRINTF_SIZE "\n", (size_t)perf.PhysicalAvailable);
+			buffer += seprintf(buffer, last, " SystemCache: " PRINTF_SIZE "\n", (size_t)perf.SystemCache);
+			buffer += seprintf(buffer, last, " KernelTotal: " PRINTF_SIZE "\n", (size_t)perf.KernelTotal);
+			buffer += seprintf(buffer, last, " KernelPaged: " PRINTF_SIZE "\n", (size_t)perf.KernelPaged);
+			buffer += seprintf(buffer, last, " KernelNonpaged: " PRINTF_SIZE "\n", (size_t)perf.KernelNonpaged);
+			buffer += seprintf(buffer, last, " PageSize: " PRINTF_SIZE "\n", (size_t)perf.PageSize);
+			buffer += seprintf(buffer, last, " HandleCount: %u\n", (uint)perf.HandleCount);
+			buffer += seprintf(buffer, last, " ProcessCount: %u\n", (uint)perf.ProcessCount);
+			buffer += seprintf(buffer, last, " ThreadCount: %u\n\n", (uint)perf.ThreadCount);
+		}
+	}
 	return buffer;
 }
 
@@ -273,11 +306,11 @@ static char *PrintModuleInfo(char *output, const char *last, HMODULE mod)
 	buffer += seprintf(buffer, last, "Registers:\n");
 #ifdef _M_AMD64
 	buffer += seprintf(buffer, last,
-		" RAX: %.16I64X RBX: %.16I64X RCX: %.16I64X RDX: %.16I64X\n"
-		" RSI: %.16I64X RDI: %.16I64X RBP: %.16I64X RSP: %.16I64X\n"
-		" R8:  %.16I64X R9:  %.16I64X R10: %.16I64X R11: %.16I64X\n"
-		" R12: %.16I64X R13: %.16I64X R14: %.16I64X R15: %.16I64X\n"
-		" RIP: %.16I64X EFLAGS: %.8lX\n",
+		" RAX: " PRINTF_LOC " RBX: " PRINTF_LOC " RCX: " PRINTF_LOC " RDX: " PRINTF_LOC "\n"
+		" RSI: " PRINTF_LOC " RDI: " PRINTF_LOC " RBP: " PRINTF_LOC " RSP: " PRINTF_LOC "\n"
+		" R8:  " PRINTF_LOC " R9:  " PRINTF_LOC " R10: " PRINTF_LOC " R11: " PRINTF_LOC "\n"
+		" R12: " PRINTF_LOC " R13: " PRINTF_LOC " R14: " PRINTF_LOC " R15: " PRINTF_LOC "\n"
+		" RIP: " PRINTF_LOC " EFLAGS: %.8lX\n",
 		ep->ContextRecord->Rax,
 		ep->ContextRecord->Rbx,
 		ep->ContextRecord->Rcx,
@@ -315,14 +348,14 @@ static char *PrintModuleInfo(char *output, const char *last, HMODULE mod)
 	);
 #elif defined(_M_ARM64)
 	buffer += seprintf(buffer, last,
-		" X0:  %.16I64X X1:  %.16I64X X2:  %.16I64X X3:  %.16I64X\n"
-		" X4:  %.16I64X X5:  %.16I64X X6:  %.16I64X X7:  %.16I64X\n"
-		" X8:  %.16I64X X9:  %.16I64X X10: %.16I64X X11: %.16I64X\n"
-		" X12: %.16I64X X13: %.16I64X X14: %.16I64X X15: %.16I64X\n"
-		" X16: %.16I64X X17: %.16I64X X18: %.16I64X X19: %.16I64X\n"
-		" X20: %.16I64X X21: %.16I64X X22: %.16I64X X23: %.16I64X\n"
-		" X24: %.16I64X X25: %.16I64X X26: %.16I64X X27: %.16I64X\n"
-		" X28: %.16I64X Fp:  %.16I64X Lr:  %.16I64X\n",
+		" X0:  " PRINTF_LOC " X1:  " PRINTF_LOC " X2:  " PRINTF_LOC " X3:  " PRINTF_LOC "\n"
+		" X4:  " PRINTF_LOC " X5:  " PRINTF_LOC " X6:  " PRINTF_LOC " X7:  " PRINTF_LOC "\n"
+		" X8:  " PRINTF_LOC " X9:  " PRINTF_LOC " X10: " PRINTF_LOC " X11: " PRINTF_LOC "\n"
+		" X12: " PRINTF_LOC " X13: " PRINTF_LOC " X14: " PRINTF_LOC " X15: " PRINTF_LOC "\n"
+		" X16: " PRINTF_LOC " X17: " PRINTF_LOC " X18: " PRINTF_LOC " X19: " PRINTF_LOC "\n"
+		" X20: " PRINTF_LOC " X21: " PRINTF_LOC " X22: " PRINTF_LOC " X23: " PRINTF_LOC "\n"
+		" X24: " PRINTF_LOC " X25: " PRINTF_LOC " X26: " PRINTF_LOC " X27: " PRINTF_LOC "\n"
+		" X28: " PRINTF_LOC " Fp:  " PRINTF_LOC " Lr:  " PRINTF_LOC "\n",
 		ep->ContextRecord->X0,
 		ep->ContextRecord->X1,
 		ep->ContextRecord->X2,
@@ -512,7 +545,7 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 			/* Get symbol name and line info if possible. */
 			DWORD64 offset;
 			if (proc.pSymGetSymFromAddr64(hCur, frame.AddrPC.Offset, &offset, sym_info)) {
-				buffer += seprintf(buffer, last, " %s + %I64u", sym_info->Name, offset);
+				buffer += seprintf(buffer, last, " %s + " OTTD_PRINTF64U, sym_info->Name, offset);
 
 				DWORD line_offs;
 				IMAGEHLP_LINE64 line;
@@ -542,11 +575,37 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 					free(demangled);
 #endif
 					if (symbol_ok && bfd_info.function_addr) {
-						buffer += seprintf(buffer, last, " + %I64u", frame.AddrPC.Offset - static_cast<DWORD64>(bfd_info.function_addr));
+						if (bfd_info.function_addr > frame.AddrPC.Offset) {
+							buffer += seprintf(buffer, last, " - " OTTD_PRINTF64U, static_cast<DWORD64>(bfd_info.function_addr) - frame.AddrPC.Offset);
+						} else {
+							buffer += seprintf(buffer, last, " + " OTTD_PRINTF64U, frame.AddrPC.Offset - static_cast<DWORD64>(bfd_info.function_addr));
+						}
 					}
 				}
 				if (bfd_info.file_name != nullptr) {
 					buffer += seprintf(buffer, last, " (%s:%d)", bfd_info.file_name, bfd_info.line);
+				}
+				if (bfd_info.found && bfd_info.abfd) {
+					const char *file_name = nullptr;
+					const char *func_name = nullptr;
+					uint line_num = 0;
+					uint iteration_limit = 32;
+					while (iteration_limit-- && bfd_find_inliner_info(bfd_info.abfd, &file_name, &func_name, &line_num)) {
+						buffer += seprintf(buffer, last, "\n[inlined]%*s", (int)(19 + (sizeof(void *) * 2)), "");
+						if (func_name) {
+							int status = -1;
+							char *demangled = nullptr;
+#if defined(WITH_DEMANGLE)
+							demangled = abi::__cxa_demangle(func_name, nullptr, 0, &status);
+#endif
+							const char *name = (demangled != nullptr && status == 0) ? demangled : func_name;
+							buffer += seprintf(buffer, last, " %s", name);
+							free(demangled);
+						}
+						if (file_name != nullptr) {
+							buffer += seprintf(buffer, last, " (%s:%u)", file_name, line_num);
+						}
+					}
 				}
 #endif
 			}
@@ -558,7 +617,9 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 
 	return buffer + seprintf(buffer, last, "\n*** End of additional info ***\n");
 }
+#endif /* _MSC_VER  || WITH_DBGHELP */
 
+#if defined(_MSC_VER)
 /* virtual */ int CrashLogWindows::WriteCrashDump(char *filename, const char *filename_last) const
 {
 	if (_settings_client.gui.developer == 0) return 0;
@@ -640,8 +701,7 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 	CrashLogWindows::current = log;
 	char *buf = log->FillCrashLog(log->crashlog, lastof(log->crashlog));
 	char *name_buffer_date = log->name_buffer + seprintf(log->name_buffer, lastof(log->name_buffer), "crash-");
-	time_t cur_time = time(nullptr);
-	strftime(name_buffer_date, lastof(log->name_buffer) - name_buffer_date, "%Y%m%dT%H%M%SZ", gmtime(&cur_time));
+	UTCTime::Format(name_buffer_date, lastof(log->name_buffer), "%Y%m%dT%H%M%SZ");
 	log->WriteCrashDump(log->crashdump_filename, lastof(log->crashdump_filename));
 	log->AppendDecodedStacktrace(buf, lastof(log->crashlog));
 	log->WriteCrashLog(log->crashlog, log->crashlog_filename, lastof(log->crashlog_filename), log->name_buffer);

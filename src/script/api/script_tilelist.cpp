@@ -53,7 +53,7 @@ void ScriptTileList::RemoveTile(TileIndex tile)
  * @param radius Catchment radius to test
  * @param bta BitmapTileArea to fill
  */
-static void FillIndustryCatchment(const Industry *i, int radius, BitmapTileArea &bta)
+static void FillIndustryCatchment(const Industry *i, SQInteger radius, BitmapTileArea &bta)
 {
 	for (TileIndex cur_tile : i->location) {
 		if (!::IsTileType(cur_tile, MP_INDUSTRY) || ::GetIndustryIndex(cur_tile) != i->index) continue;
@@ -73,7 +73,7 @@ static void FillIndustryCatchment(const Industry *i, int radius, BitmapTileArea 
 	}
 }
 
-ScriptTileList_IndustryAccepting::ScriptTileList_IndustryAccepting(IndustryID industry_id, int radius)
+ScriptTileList_IndustryAccepting::ScriptTileList_IndustryAccepting(IndustryID industry_id, SQInteger radius)
 {
 	if (!ScriptIndustry::IsValidIndustry(industry_id) || radius <= 0) return;
 
@@ -113,7 +113,7 @@ ScriptTileList_IndustryAccepting::ScriptTileList_IndustryAccepting(IndustryID in
 	}
 }
 
-ScriptTileList_IndustryProducing::ScriptTileList_IndustryProducing(IndustryID industry_id, int radius)
+ScriptTileList_IndustryProducing::ScriptTileList_IndustryProducing(IndustryID industry_id, SQInteger radius)
 {
 	if (!ScriptIndustry::IsValidIndustry(industry_id) || radius <= 0) return;
 
@@ -155,7 +155,7 @@ ScriptTileList_StationType::ScriptTileList_StationType(StationID station_id, Scr
 	if ((station_type & ScriptStation::STATION_AIRPORT) != 0)    station_type_value |= (1 << ::STATION_AIRPORT) | (1 << ::STATION_OILRIG);
 	if ((station_type & ScriptStation::STATION_DOCK) != 0)       station_type_value |= (1 << ::STATION_DOCK)    | (1 << ::STATION_OILRIG);
 
-	TileArea ta(::TileXY(rect->left, rect->top), rect->right - rect->left + 1, rect->bottom - rect->top + 1);
+	TileArea ta(::TileXY(rect->left, rect->top), rect->Width(), rect->Height());
 	for (TileIndex cur_tile : ta) {
 		if (!::IsTileType(cur_tile, MP_STATION)) continue;
 		if (::GetStationIndex(cur_tile) != station_id) continue;

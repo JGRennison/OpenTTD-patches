@@ -399,6 +399,15 @@ void Blitter_32bppAnim::SetPixel(void *video, int x, int y, uint8 colour)
 	this->anim_buf[this->ScreenToAnimOffset((uint32 *)video) + x + y * this->anim_buf_pitch] = colour | (DEFAULT_BRIGHTNESS << 8);
 }
 
+void Blitter_32bppAnim::SetPixel32(void *video, int x, int y, uint8 colour, uint32 colour32)
+{
+	*((Colour *)video + x + y * _screen.pitch) = colour32;
+
+	/* Set the colour in the anim-buffer too, if we are rendering to the screen */
+	if (_screen_disable_anim) return;
+	this->anim_buf[this->ScreenToAnimOffset((uint32 *)video) + x + y * this->anim_buf_pitch] = 0;
+}
+
 void Blitter_32bppAnim::DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8 colour, int width, int dash)
 {
 	const Colour c = LookupColourInPalette(colour);
@@ -499,6 +508,11 @@ void Blitter_32bppAnim::DrawRect(void *video, int width, int height, uint8 colou
 	} while (--height);
 }
 
+void Blitter_32bppAnim::DrawRectAt(void *video, int x, int y, int width, int height, uint8 colour)
+{
+	this->Blitter_32bppAnim::DrawRect((Colour *)video + x + y * _screen.pitch, width, height, colour);
+}
+
 void Blitter_32bppAnim::CopyFromBuffer(void *video, const void *src, int width, int height)
 {
 	assert(!_screen_disable_anim);
@@ -517,7 +531,7 @@ void Blitter_32bppAnim::CopyFromBuffer(void *video, const void *src, int width, 
 		dst += _screen.pitch;
 		/* Copy back the anim-buffer */
 		memcpy(anim_line, usrc, width * sizeof(uint16));
-		usrc = (const uint32 *)((const uint16 *)usrc + width);
+		usrc = (const uint32 *)&((const uint16 *)usrc)[width];
 		anim_line += this->anim_buf_pitch;
 
 		/* Okay, it is *very* likely that the image we stored is using
@@ -556,7 +570,7 @@ void Blitter_32bppAnim::CopyToBuffer(const void *video, void *dst, int width, in
 		udst += width;
 		/* Copy the anim-buffer */
 		memcpy(udst, anim_line, width * sizeof(uint16));
-		udst = (uint32 *)((uint16 *)udst + width);
+		udst = (uint32 *)&((uint16 *)udst)[width];
 		anim_line += this->anim_buf_pitch;
 	}
 }
@@ -612,9 +626,9 @@ void Blitter_32bppAnim::ScrollBuffer(void *video, int left, int top, int width, 
 	Blitter_32bppBase::ScrollBuffer(video, left, top, width, height, scroll_x, scroll_y);
 }
 
-int Blitter_32bppAnim::BufferSize(int width, int height)
+size_t Blitter_32bppAnim::BufferSize(uint width, uint height)
 {
-	return width * height * (sizeof(uint32) + sizeof(uint16));
+	return (sizeof(uint32) + sizeof(uint16)) * width * height;
 }
 
 void Blitter_32bppAnim::PaletteAnimate(const Palette &palette)

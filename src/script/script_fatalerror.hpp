@@ -22,6 +22,9 @@ public:
 	Script_FatalError(const std::string &msg) :
 		msg(msg)
 	{}
+	Script_FatalError(std::string &&msg) :
+		msg(std::move(msg))
+	{}
 
 	/**
 	 * The error message associated with the fatal error.

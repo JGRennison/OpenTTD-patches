@@ -52,8 +52,10 @@ void CcTerraform(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2
 	if (result.Succeeded()) {
 		if (_settings_client.sound.confirm) SndPlayTileFx(SND_1F_CONSTRUCTION_OTHER, tile);
 	} else {
-		extern TileIndex _terraform_err_tile;
-		SetRedErrorSquare(_terraform_err_tile);
+		TileIndex err_tile = result.GetTile();
+		if (err_tile == INVALID_TILE || IsValidTile(err_tile)) {
+			SetRedErrorSquare(err_tile);
+		}
 	}
 }
 
@@ -108,17 +110,11 @@ static bool IsQueryConfirmIndustryOrRailStationInArea(TileIndex start_tile, Tile
 {
 	if (_settings_client.gui.demolish_confirm_mode == DCM_OFF) return false;
 
-	std::unique_ptr<TileIterator> tile_iterator;
-
-	if (diagonal) {
-		tile_iterator = std::make_unique<DiagonalTileIterator>(end_tile, start_tile);
-	} else {
-		tile_iterator = std::make_unique<OrthogonalTileIterator>(end_tile, start_tile);
-	}
+	OrthogonalOrDiagonalTileIterator tile_iterator(end_tile, start_tile, diagonal);
 
 	bool destroying_industry_or_station = false;
 
-	for (; *tile_iterator != INVALID_TILE; ++(*tile_iterator)) {
+	for (; *tile_iterator != INVALID_TILE; ++tile_iterator) {
 		if ((_cheats.magic_bulldozer.value && IsTileType(*tile_iterator, MP_INDUSTRY)) ||
 				(_settings_client.gui.demolish_confirm_mode == DCM_INDUSTRY_RAIL_STATION && IsRailStationTile(*tile_iterator))) {
 			destroying_industry_or_station = true;
@@ -225,7 +221,7 @@ struct TerraformToolbarWindow : Window {
 	{
 		/* Don't show the place object button when there are no objects to place. */
 		NWidgetStacked *show_object = this->GetWidget<NWidgetStacked>(WID_TT_SHOW_PLACE_OBJECT);
-		show_object->SetDisplayedPlane(ObjectClass::GetUIClassCount() != 0 ? 0 : SZSP_NONE);
+		show_object->SetDisplayedPlane(ObjectClass::HasUIClass() ? 0 : SZSP_NONE);
 		SetWidgetDisabledState(WID_TT_BUY_LAND, _settings_game.construction.purchase_land_permitted == 0);
 	}
 
@@ -264,7 +260,7 @@ struct TerraformToolbarWindow : Window {
 				break;
 
 			case WID_TT_MEASUREMENT_TOOL:
-				HandlePlacePushButton(this, WID_TT_MEASUREMENT_TOOL, SPR_CURSOR_QUERY, HT_RECT);
+				HandlePlacePushButton(this, WID_TT_MEASUREMENT_TOOL, SPR_CURSOR_QUERY, HT_RECT | HT_MAP);
 				this->last_user_action = widget;
 				break;
 

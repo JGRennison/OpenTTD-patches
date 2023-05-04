@@ -2,6 +2,406 @@
 
 * * *
 
+### v0.53.1 (2023-04-25)
+* Fix width of station cargo graph window.
+* Fix incorrect accounting of cargo time in transit values.
+* Fix crash when checking the consistency of cargo time in transit values, when removing/merging companies or after a multiplayer desync has occured.
+* Departure boards:
+  * Change vehicle names using the long format to the traditional format if the group name column is also shown.
+  * Fix position of vehicle type icon in right-to-left languages
+  * Fix hidden columns being included in the minimum window width.
+* Fix crash which could occur when sorting towns by rating or engines by power/running cost or cargo capacity/running cost on MacOS.
+* Bump trunk base from commit 97cfd40649abab832315f00e6a07e5b6b9a17e23 to commit e5af5907ecfe3845adc613a3312695ed8b40bffc.
+
+### v0.53.0 (2023-04-16)
+* Fix water infrastructure total when building multi-tile objects on unowned canal, and when building canals over unowned objects on canals.
+* Fix crash when showing vehicles with excessively large sprites in the build vehicle window.
+* Fix trains slowing down when part-way into a depot with realistic train braking.
+* Fix performance issues with order lists with high numbers of conditional order chains/loops.
+* Skip over dummy/invalid orders in destination/next order prediction.
+* Add setting for rail depot maximum speed.
+* Template-based train replacement:
+  * Add train information tooltips in template edit window.
+  * Fix crash when removing a company with template replacements applied to nested groups.
+* Departure boards:
+  * Fix handling of missing travel times with conditional orders.
+  * Fix terminus detection from via stops.
+  * Fix smart terminus detection with circular routes.
+  * Scroll departure boards at constant speed, even if paused or fast forwarding.
+  * Add departure board via order type, add support for dual via in departure board.
+* Vehicle orders:
+  * Allow changing colour of orders in order list and timetable windows.
+  * Add company setting for whether to remain at station if next order for same station.
+  * Add text label order type.
+* Add railtype and signals NewGRF variables for signal vertical clearance.
+* Routing restrictions: Add status test for if train is stopping at the current order's station/waypoint destination.
+* Fix viewport map mode not being refreshed when removing/merging company.
+* Allow generating new default name for station (ctrl-click default button in rename station query window).
+* Allow exchanging a station's name with another station in the same town.
+* Don't use occupancy of unload and leave empty orders for occupancy average.
+* Update OpenTTD content server vanilla compatibility to verison 13.0.
+* Only log each AI/GS text string error once.
+* Bump trunk base from commit 24e9af83aaca7093ca2ab7e5d54565ec63d42433 to commit 97cfd40649abab832315f00e6a07e5b6b9a17e23.
+
+### v0.52.1 (2023-03-25)
+* Fix AI/GS scripts which use text strings.
+* Add a "very reduced" mode to the vehicle breakdowns setting.
+* Template-based train replacement:
+  * Trigger early servicing of trains when a template is added/edited which requires the train to be replaced/modified.
+  * Fix wagons in a free wagon chain in the depot not always being used for replacement when this is enabled.
+  * Engines in the depot are no longer used for replacement if there are any wagons or other engines attached.
+* Bump trunk base from commit e5438891e27c0895964e1a030c91295d3b6ef474 to commit 24e9af83aaca7093ca2ab7e5d54565ec63d42433.
+
+### v0.52.0 (2023-03-19)
+* Fix template based train replacement build window not being refreshed for engine variant changes.
+* Fix building a road stop/waypoint over an existing road stop/waypoint clearing the one-way state.
+* Fix water flooding in the scenario editor at day lengths above 4.
+* Fix crash if screen resized to be smaller than confirmation window.
+* Fix tooltips for vertical link graph lines.
+* Fix dropdown strings for the the autosave setting in the settings window.
+* NewGRF:
+  * Allow ships to carry more than one cargo.
+  * Allow NewGRFs to set town zone radii.
+* Routing restrictions:
+  * Fix values not being fully initialised to their defaults when changing action type in some cases.
+  * Re-order action and condition dropdowns.
+* Bump trunk base from commit 09f7f32b8d85ea378984908b6a29764d8576284e to commit e5438891e27c0895964e1a030c91295d3b6ef474.
+
+### v0.51.1 (2023-02-28)
+* Fix crash when looking at the town growth speed setting in the settings window.
+* Fix wrong texts in the about/question mark menu in the main toolbar.
+* Fix template based train replacement template edit window not being refreshed after flipping wagons in multiplayer.
+* Fix oversized road waypoints overlapping in the build window.
+* Improve speed/performance of generating public roads.
+
+### v0.51.0 (2023-02-24)
+* Fix crash after timetabling change counter and release slot orders.
+* Fix widths of columns in the build vehicle window after map generation.
+* Fix scrollbars of text windows (readme, changelog, etc).
+* Run water flooding at constant speed at day lengths >= 4.
+* Add routing restriction conditional on whether PBS reservation passes through a tile.
+* Template-based train replacement:
+  * Allow naming templates.
+* NewGRF:
+  * Allow NewGRFs to set road/tram type road vehicle collision behaviour, and to disallow tunnels for a road/tram type.
+  * Allow more than 255 object and road stop types per GRF.
+  * Allow NewGRFs to set a height for road stops in the road stop build window.
+  * Add railtype/signal variable to get signal side.
+* Re-organise language/translation files.
+* Bump trunk base from commit 0b2567d882827f3a2c8b9e927c4d7f354e498a58 to commit 09f7f32b8d85ea378984908b6a29764d8576284e.
+
+### v0.50.3 (2023-01-29)
+* Fix crash which could occur when loading savegames which were made when a template train was being edited.
+* Fix crash which could occur when reloading NewGRFs when the landscape info window is open.
+* Fix some NewGRF rail stations having incorrect layouts.
+* Fix incorrect water infrastructure totals when building ship depots and docks over water objects.
+* Fix the viewport map default display mode setting.
+* Fix map maximum height when generating landscape with TGP for maps larger than 4k in both axes.
+* Add setting and per-town override for whether towns can build bridges.
+* Music: extmidi (Linux): Don't constantly retry if the music player can't be launched, e.g. if timidity is not installed.
+* Bump trunk base from commit 83d5e681fc133d2820aff3cf05159bce820e2b56 to commit 0b2567d882827f3a2c8b9e927c4d7f354e498a58.
+
+### v0.50.2 (2023-01-20)
+* Fix crash which could occur when refreshing all signal states when rail infrastructure sharing was disabled and signalled tunnel/bridges were present.
+* Fix changing the day length shifting the scheduled dispatch start times, and pending timetable start times, when using time in minutes.
+* Fix the set timetable start time/date button.
+* Fix direction of semaphore no-entry signal sprites for west/east track.
+* Fix freight weight multiplier not being applied in the train build window.
+* Fix cargo capacity display of articulated engines with no capacity in the leading part, in the build vehicle window.
+* Add zoom in support to the minimap window.
+* Add per-town override to disable town growth.
+* Enabling the go to depot and sell feature no longer changes the behaviour of the go to depot button when the ctrl key is not pressed.
+* Infrastructure sharing:
+  * Disallow control over other company trains wholly in depots.
+  * Allow using mass start/stop buttons in other company depots.
+* Bump trunk base from commit f7e2b6ef12b259817d2a4a3705b33f0b09d0eff7 to commit 83d5e681fc133d2820aff3cf05159bce820e2b56.
+
+### v0.50.1 (2022-12-28)
+* Fix crash on hovering link graph link where both ends have same position.
+* Fix layout issues with the road stop (bus/lorry stop) build window.
+* Fix font shadows being drawn for black text when font AA enabled in some windows.
+* Changing the day length or the calendar date no longer changes the current time in minutes.
+* NewGRF:
+  * Allow NewGRFs to enable generating rocky tiles in desert areas.
+  * Allow NewGRFs to provide custom graphics for rocky tiles covered with snow.
+* Scheduled dispatch: Allow wrapping at midnight when bulk inserting slots into a 24 hour dispatch schedule.
+* Bump trunk base from commit daacde44964e4f42899d9d94f88cc398e17901d7 to commit f7e2b6ef12b259817d2a4a3705b33f0b09d0eff7.
+
+### v0.50.0 (2022-12-11)
+* Fix cloning/copying aircraft with go to nearest hangar orders.
+* Fix custom road stops types which are only for the other bus/lorry type not being disabled in the build window.
+* Fix airport catchment overlays not being refreshed when upgrading/moving.
+* Fix the maximum zoom out client setting being reset whenever the config file was saved by vanilla OpenTTD.
+* Fix plan lines of other companies not being redrawn when public/private mode changed.
+* Change the cost of adding/removing signals from tunnels and bridges to be proportional to the number of affected signals.
+* Link graph:
+  * Fix incorrect link travel time estimates with day lengths greater than 1.
+  * Fix link travel time estimates being set too high when refreshing links in some cases.
+  * Fix performance issues when adding a new set of links to an existing large link graph.
+  * Improve link graph recalculation performance on large graphs.
+  * Reduce link graph recalculation scheduling duration on large graphs.
+  * Show more information in the overlay tooltip when holding the ctrl key.
+* Departure boards:
+  * Fix repeated departures when using implicit orders.
+  * Fix handling of conditional orders which cannot be predicted.
+  * Fix buttons not being updated when changing departure board settings with departure board windows open.
+  * Improve various button labels/tooltips and button handling, and setting names.
+* Bump trunk base from commit 7c3c92f8b8d0c67d817095d367720272d96882ab to commit daacde44964e4f42899d9d94f88cc398e17901d7.
+
+### v0.49.2 (2022-11-28)
+* Fix crash when clicking non-train counter value or scheduled dispatch conditional order.
+* Fix order window dropdown issues with timetable state and scheduled dispatch conditional orders.
+* Fix companies being shown as passworded in single-player, after exiting a multiplayer game.
+* Fix some NewGRFs having incorrect behaviour in some special cases.
+* Fix engine changes not updating build template train windows.
+* Vehicle list commands (e.g. start/stop, send to depot) now take into account the cargo type filter.
+* Viewport route overlay:
+  * Fix go to nearest depot orders incorrectly showing as going to a specific depot.
+  * Add a mode setting: off, all locations, station stops only.
+  * Add an unset hotkey to switch the mode setting.
+  * Show viewport route overlay for shared order vehicle list windows.
+* Departure boards:
+  * Fix crash with vehicles which only have implicit orders.
+  * Fix scheduled dispatch departure time when wait time set.
+  * Fix windows not being refreshed when changing settings.
+* Add a "if breakdowns enabled" mode to the no depot order warn setting, change the default value to off.
+* Add a setting for whether the dual pane train purchase window uses combined buttons.
+* Do not clear network server save encrypted saved passwords when saving in single-player.
+* Minor performance improvements with some NewGRF houses.
+* Bump trunk base from commit 019dcb7b7b010ce85260aa075f859d63fa020868 to commit 7c3c92f8b8d0c67d817095d367720272d96882ab.
+
+### v0.49.1 (2022-11-13)
+* Fix crash when the unload type of an order was changed to no unload and then back to unload, whilst a vehicle was unloading using that order.
+* Fix multiplayer desync when changing the town zone settings in multiplayer.
+* Fix multiplayer desync when creating companies in multiplayer when a saved default face feature was present at the client but not the server or vice versa.
+* Fix town setting overrides not being allowed for multiplayer admins when the setting to enable for clients was not enabled.
+* Fix trains making a PBS reservation when starting a timetabled wait at a waypoint in some cases.
+* Fix new companies created in multiplayer not inheriting the client's default company settings.
+* Fix crash if a network client's connection fails during the reporting of a connection problem to the server.
+* Prevent spread/regrowth of temperate trees already on snowy ground, in the arctic climate.
+* Enable upstream feature: prioritise faster routes for passengers, mail and express cargo.
+* Increase maximum engine name length.
+* Only show edge level crossing overlays for multi-track level crossings, even when the safer crossings settings is off.
+* Allow various game settings to be changed in multiplayer, unless prevented by a NewGRF.
+* Minor performance improvements to the rendering of normal-mode viewports.
+* Bump trunk base from commit 4daad7f34840bcec2a568eb54149286c7f68c892 to commit 019dcb7b7b010ce85260aa075f859d63fa020868.
+
+### v0.49.0 (2022-10-27)
+* Fix calculating train curve speed limit on dual rail type tiles.
+* Fix crash if GS is removed when GS settings window is open.
+* Orders:
+  * Add support for duplicating individual orders.
+  * Allow moving the jump target of an existing conditional order.
+  * Add a change counter value order type.
+* Towns:
+  * Add setting for if/when towns can build road tunnels.
+  * Add setting to limit length of continuous inclined roads built by towns.
+  * Allow overriding town road construction settings on a per-town basis, add setting to enable this for multiplayer clients.
+* Custom signal style (normal/shunt combined mode):
+  * Fix incorrect default for reservations through intermediary shunt signals.
+  * Reservations ending in a depot now default to shunt mode.
+* MacOS: Re-enable touchbar support.
+* Bump trunk base from commit f011a559d01db3eb43e71031ff03fa904a41d068 to commit 4daad7f34840bcec2a568eb54149286c7f68c892.
+
+### v0.48.5 (2022-10-05)
+* Fix vehicles with no cargo being shown with the cargo of the last selected vehicle in the build vehicle window.
+* Fix animation of NewGRF road stops.
+* Fix crash when reloading NewGRFs when the landscape info window is open.
+* Fix crash when selecting a release slot order in ship and aircraft order windows.
+* Fix hang which could occur with some NewGRFs.
+* Slightly reduce the map entropy of tree tiles.
+* Bump trunk base from commit 164ec3ac07c514cdce692554f6339ce1f05d8869 to commit f011a559d01db3eb43e71031ff03fa904a41d068.
+
+### v0.48.4 (2022-09-26)
+* Fix crash when a tram attempted to turn around against the underside of a tram custom bridge head.
+* Fix crash when removing a routing restriction which enabled reserve through from a tunnel/bridge with signals.
+* Fix some NewGRFs having incorrect behaviour in some special cases.
+* Bump trunk base from commit 81388d9425c63121eeb43bf247fb1458ca6ead92 to commit 164ec3ac07c514cdce692554f6339ce1f05d8869.
+
+### v0.48.3 (2022-09-18)
+* Fix crash when joining a multiplayer server when a saved default face is set.
+* Fix displayed capacities/weights of articulated vehicles in build window.
+* Fix moving and selling template train wagons/engines being disallowed when paused, when build while paused setting disallows construction actions.
+* Fix improved breakdowns being incorrectly enabled after loading old/other savegames.
+* Allow changing road vehicle driving side when all road vehicles are in depots.
+* Add AI/GS script method to get annual expense category value.
+* Do not show max TE/weight for maglevs.
+* Bump trunk base from commit 03552996395be4c468d64adc7a076e1b233f0d4c to commit 81388d9425c63121eeb43bf247fb1458ca6ead92.
+
+### v0.48.2 (2022-09-09)
+* Fix excessive braking for slopes with realistic train braking.
+* Fix incorrect infrastructure totals when overbuilding bay road stops with a different road/tram type active.
+* Fix route step markers being rendered incorrectly with some fonts or when the zoom level is changed.
+* Fix conflicts between company bankruptcy and manually triggered company sales, reduce delays before showing purchase company prompts.
+* Fix crash when showing the maximum achievable speed estimate for trains of 0 mass.
+* Fix crash which could occur with autoreplace failure news messages in some languages.
+* Fix crash which could occur when adding plans in single player.
+* Fix some industry NewGRFs having incorrect behaviour (when querying the closest industry of an invalid or non present type).
+* Template-based train replacement:
+  * Fix incorrect template replacement error message when the template is not buildable.
+  * Show warning if template trains are not compatible with any rail type.
+* Only apply the highest resolution sprites to use setting when the NewGRF supplies suitable fallback graphics.
+* Add a setting to show the introduction year for train wagons.
+* Add setting to show group hierarchy in vehicle names.
+* Add routing restriction conditional on direction of order target from signal.
+* Remove road vehicles during load which are uncorrectably invalid (i.e. when required NewGRFs are missing), instead of crashing.
+* AI/GS script:
+  * Increase the maximum number of operations which scripts can use when saving the game.
+  * Add script functions to get and set inflation factors.
+* Bump trunk base from commit ccb9d9988011725c1ff0d415af37efb99e2b0849 to commit 03552996395be4c468d64adc7a076e1b233f0d4c.
+
+### v0.48.1 (2022-08-01)
+* Fix various issues that could occur when attempting to disable infrastructure sharing when shared infrastructure is still in use.
+* Fix crashes and other issues when removing a company would remove infrastructure which is in use by the train reservation of another company when realistic braking is enabled.
+* Fix some NewGRFs having incorrect behaviour (when using variational action 2 variable 1C in some cases).
+* Fix crash which could occur with tooltip windows in some special cases.
+* Fix viewport map mode bridges/tunnels not appearing dotted at high zoom.
+* Fix insufficient train braking when in realistic braking mode when train lookahead is aspect limited is enabled and the lookahead distance is shorter than the reservation.
+* Do not enable the behaviour where vehicles continue loading if the next order is for the same station for implicit orders.
+* Do not apply the show signals using default graphics settings for custom signal styles
+* Bump trunk base from commit 19af139631b5bc98dba6de4c4f0b7aeb6b3ac6aa to commit ccb9d9988011725c1ff0d415af37efb99e2b0849.
+
+### v0.48.0 (2022-07-03)
+* Fix crash which could occur after removing non-rectangular airports.
+* Fix crash which could occur with non-buildable template trains with some NewGRFs.
+* Fix not being able to construct industries of only one tile.
+* Fix the land info window showing incorrect text for no-entry signals.
+* Fix wrong powered state or visual effect type, or desync warning messages, which could occur with trains from some NewGRFs and tiles of two different rail types.
+* Fix reservation error when a reserve through signal was the last tile, when there were no junctions earlier in the reservation.
+* Fix desync which could occur after removing part of a station moved the station sign within the catchment of industries.
+* Fix not being able to build waypoints when custom types are no longer present and a custom type was previously selected.
+* Fix timetable automation not updating conditional jump travel times.
+* Fix road/tram type check when moving depot orders to another depot.
+* Add setting to show order occupancy values by default.
+* Add conditional order to test if last or next scheduled dispatch is the first or last dispatch slot.
+* Show group name when grouping vehicles by shared orders, if all vehicles in shared order set are in the same group.
+* Add setting to show full group hierarchy in group names.
+* Enable shared orders and occupancy buttons for competitor order windows.
+* Add button to highlight all signals using a particular routing restriction program.
+* Sending a vehicle to a depot for sale can now sell immediately, if the vehicle is already stopped in a suitable depot.
+* NewGRF:
+  * Allow signal graphics NewGRF to define additional signal styles and test for additional signal properties.
+  * Allow NewGRFs to provide custom graphics for landscape rocky tiles.
+* Add a hotkey to toggle the via state of an order.
+* Remove the tunnel/bridge signal spacing setting, the usual signal spacing setting in the signal window is used instead.
+* Slightly boost the realistic braking stats of trains affected by the freight weight multiplier.
+* Add a setting to limit train lookahead to the signal aspect when using realistic braking and multi-aspect signalling.
+* Bump trunk base from commit 0d3756818fc2178242b0a72d979131a9cb376d76 to commit 19af139631b5bc98dba6de4c4f0b7aeb6b3ac6aa.
+
+### v0.47.3 (2022-06-09)
+* Fix being able to add/remove/modify tunnel/bridge signals when occupied by trains, which could result in train or game crashes.
+* Fix crash when building public roads encountered level crossings and other non-normal road.
+* Fix performance problems refreshing the cargodist link graph when order lists contained many conditional order loops.
+* Fix timetable autofill activation when scheduled dispatch is active.
+* Disabling timetable automation without holding the ctrl key no longer clears the timetable.
+* Support railtype-dependant GRF train speed limits with realistic braking.
+* Fix selecting a savegame with realistic braking enabled in the load savegame window triggering realistic braking signal checks on the current game.
+* Allow ctrl-clicking on trains of other companies on own track to start/stop.
+* Add setting to disable water animation depending on zoom level.
+* Add setting to disable object expiry after a given year.
+* Add setting to ignore object introduction dates.
+* Allow linking only inputs or outputs to smallmap and viewport map mode in industry chain window.
+* Viewport map mode:
+  * Fix ships not always updating in viewport map mode.
+  * Fix the industry chain window not always updating viewports in industry map mode.
+  * Fix scrolling viewport overlay over vehicle dots on animated blitters.
+  * Fix scrolling viewport overlay on emscripten.
+  * Allow using the measurement tool in viewport map mode.
+* Trees:
+  * Fix tree tile grass not growing when tree growth/spread was disabled.
+  * Make tree tile grass growth speed independent of the tree growth speed.
+  * Adjust positioning of seasonally variable snow line width for arctic tree placement.
+* Improve reliability of crashlog writing on Unix/Linux and MacOS.
+* Add various features to the NewGRF debug window.
+* Various NewGRF and realistic braking related minor performance improvements.
+* Bump trunk base from commit e79724ea22b2c4428ab402a808b7ab777fec2985 to commit 0d3756818fc2178242b0a72d979131a9cb376d76.
+
+### v0.47.2 (2022-05-01)
+* Fix crash and/or multiplayer desync after a new industry is built within the catchment of an existing station.
+* Fix multiplayer desync after a raise land action removed a water object next to a dock.
+* Fix wrong water infrastructure total and multiplayer desync after building canal/river over a canal tile with an object on it.
+* Fix adding a new scheduled dispatch schedule not updating the window in multiplayer.
+* Make the company infrastructure window scrollable.
+* Snow:
+  * Fix arctic tree range around snow line setting not handling seasonally variable snow lines.
+  * Add a setting to adjust seasonally variable snow line width for arctic tree placement.
+  * Fix flat road tiles with foundations on the snow line not being drawn with snow.
+* Station names:
+  * Increase the distance a station can be from the town centre and still be assigned have the same name as the town (no suffix/prefix), for large towns.
+  * Allow extra station name GRFs to use extra names even when there are default names available.
+* Bump trunk base from commit 8537fa72063a7376065fd996fa249cc7dbfdb2f3 to commit e79724ea22b2c4428ab402a808b7ab777fec2985.
+
+### v0.47.1 (2022-04-02)
+* Fix crash when a road vehicle leaves a bus/truck stop when it is has no orders.
+* Fix road vehicles incorrectly being allowed to be ordered to incompatible depots.
+* Fix viewport town/industry tooltips being shown on mouseover when in right-click to show tooltips mode.
+* Routing restrictions:
+  * Fix deny and penalty actions not being applied to no-entry signals.
+  * Fix the restricted signal zoning overlay mode not including tunnels/bridges with restricted signals.
+  * Fix the PBS reservation end actions incorrectly handling the case where the state of a slot is tested after an instruction which would change the vehicle's membership of the slot.
+* Include a specific reason why a vehicle cannot be ordered to a particular station in the error message.
+* Bump trunk base from commit 0d8fbf647b2c819bee0a0883b5fc831aa64e4ee0 to commit 8537fa72063a7376065fd996fa249cc7dbfdb2f3.
+
+### v0.47.0 (2022-03-12)
+* Fix crash in scheduled dispatch window with nearest depot dispatch order.
+* Fix non-rail bridge construction setting polyrail endpoints.
+* Fix the autosave interval setting being reset at startup when it was previously set to use a custom interval.
+* Add NewGRF road stops.
+* Add routing restriction action to make the train exempt from automatic train speed adaptation.
+* Add hotkeys for building road waypoints to the road/tram toolbars.
+* Implement automatic train speed adaptation on signalled tunnels/bridges.
+* Allow configuring the width of tropic zones around water during map generation.
+* If an aircraft or road vehicle's next order is for the current station when leaving, start loading again without moving, instead of leaving.
+* Bump trunk base from commit 83b6defbfb0fa649a854767ae7c8b5a18f917e80 to commit 0d8fbf647b2c819bee0a0883b5fc831aa64e4ee0.
+
+### v0.46.1 (2022-02-07)
+* Fix crash or incorrect text in the scheduled dispatch window when a dispatch schedule is assigned to a depot order.
+* Fix crash which could occur when using aircraft with cargodist after loading a 12.x vanilla savegame/scenario.
+* Fix some non-vanilla settings having invalid values after loading a 12.x vanilla savegame/scenario.
+* Add NewGRF properties for NewGRF object tile type to use in the small map window and in viewport map mode.
+* Bump trunk base from commit 2c42b6adc87765750436dc5005e9e186db84daeb to commit 83b6defbfb0fa649a854767ae7c8b5a18f917e80.
+
+### v0.46.0 (2022-02-01)
+* Add build vehicle window sort mode: cargo capacity / running cost.
+* Add Korean translations by TELK.
+* Bump trunk base from commit 9e47df298faf6889c8be7dd0b0eeedeb65db1cdc to commit 2c42b6adc87765750436dc5005e9e186db84daeb.
+
+### v0.46-rc2 (2022-01-29)
+* Road waypoints:
+  * Fix crash when changing one-way state of road waypoints.
+  * Fix crash in road vehicle overtaking checks with road waypoints.
+  * Fix removal of road waypoints during bankruptcy.
+  * Road waypoints no longer block road inferred one-way state interpolation.
+* Fix crash when opening rail waypoint window if there are now fewer types available than the type that was last selected.
+* Add Korean translations by TELK.
+
+### v0.46-rc1 (2022-01-28)
+* Fix timetable wait times not being cleared when changing to a non-stopping order.
+* Fix text input and display of speeds in tiles/day units in routing restriction window.
+* Fix industry monthly production figures being able to overflow when industry production scaling is set to a high value.
+* Fix station catchment highlight from coverage button in station window not being redrawn when station extents changed.
+* Fix various issues in unserved industries zoning overlay mode.
+* Fix wrong error message when building a bridge over an obstructing station.
+* Fix window preference save/load of build vehicle windows.
+* Conditional orders:
+  * Fix crash when evaluating a train in slot conditional order when no slot was assigned.
+  * Fix manual setting of conditional order jump taken travel times.
+  * Improve handling of conditional order waiting loops.
+  * Follow predictable conditional orders in timetable and departure windows.
+* Add support for multiple scheduled dispatch schedules per order list.
+* Allow non-train vehicles to test counter values in conditional orders.
+* Add road waypoints.
+* Allow road vehicle go to station/waypoint orders to have an associated required stop/bay/waypoint direction.
+* Add slot support to road vehicles, ships and aircraft.
+* Add train through load speed limit setting.
+* Add client setting for whether to sync localisation settings with the server in multiplayer.
+* Add client setting to allow hiding viewport labels of individual waypoints.
+* Add NewGRF properties for default object map generation amounts.
+* Remember the last-used signal type between games.
+* Disable touchbar support to fix crash issues on MacOS.
+* Add Korean translations by TELK.
+* Bump trunk base from commit 93e8d4871d3c927cf08eaa322bfdcd2cb73a1730 to commit 9e47df298faf6889c8be7dd0b0eeedeb65db1cdc.
+
 ### v0.45.1 (2022-01-10)
 * Fix crash which could occur when removing invalidated link graph flows.
 * Fix template replacement without refitting selecting the wrong cargo when using zero capacity engines with a livery cargo.

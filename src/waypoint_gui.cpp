@@ -28,12 +28,14 @@
 #include "table/strings.h"
 
 #include "safeguards.h"
+#include "zoom_func.h"
 
 /** GUI for accessing waypoints and buoys. */
 struct WaypointWindow : Window {
 private:
 	VehicleType vt; ///< Vehicle type using the waypoint.
 	Waypoint *wp;   ///< Waypoint displayed by the window.
+	bool show_hide_label; ///< Show hide label button
 
 	/**
 	 * Get the center tile of the waypoint.
@@ -44,7 +46,24 @@ private:
 		if (!this->wp->IsInUse()) return this->wp->xy;
 
 		TileArea ta;
-		this->wp->GetTileArea(&ta, this->vt == VEH_TRAIN ? STATION_WAYPOINT : STATION_BUOY);
+		StationType type;
+		switch (this->vt) {
+			case VEH_TRAIN:
+				type = STATION_WAYPOINT;
+				break;
+
+			case VEH_ROAD:
+				type = STATION_ROADWAYPOINT;
+				break;
+
+			case VEH_SHIP:
+				type = STATION_BUOY;
+				break;
+
+			default:
+				NOT_REACHED();
+		}
+		this->wp->GetTileArea(&ta, type);
 		return ta.GetCenterTile();
 	}
 
@@ -57,21 +76,32 @@ public:
 	WaypointWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
 	{
 		this->wp = Waypoint::Get(window_number);
-		this->vt = (wp->string_id == STR_SV_STNAME_WAYPOINT) ? VEH_TRAIN : VEH_SHIP;
+		if (wp->string_id == STR_SV_STNAME_WAYPOINT) {
+			this->vt = HasBit(this->wp->waypoint_flags, WPF_ROAD) ? VEH_ROAD : VEH_TRAIN;
+		} else {
+			this->vt = VEH_SHIP;
+		}
 
 		this->CreateNestedTree();
 		if (this->vt == VEH_TRAIN) {
 			this->GetWidget<NWidgetCore>(WID_W_SHOW_VEHICLES)->SetDataTip(STR_TRAIN, STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP);
+		}
+		if (this->vt == VEH_ROAD) {
+			this->GetWidget<NWidgetCore>(WID_W_SHOW_VEHICLES)->SetDataTip(STR_LORRY, STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP);
+		}
+		if (this->vt != VEH_SHIP) {
 			this->GetWidget<NWidgetCore>(WID_W_CENTER_VIEW)->tool_tip = STR_WAYPOINT_VIEW_CENTER_TOOLTIP;
 			this->GetWidget<NWidgetCore>(WID_W_RENAME)->tool_tip = STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME;
 		}
+		this->show_hide_label = (this->vt != VEH_SHIP && _settings_client.gui.allow_hiding_waypoint_labels);
+		this->GetWidget<NWidgetStacked>(WID_W_TOGGLE_HIDDEN_SEL)->SetDisplayedPlane(this->show_hide_label ? 0 : SZSP_NONE);
 		this->FinishInitNested(window_number);
 
 		this->owner = this->wp->owner;
 		this->flags |= WF_DISABLE_VP_SCROLL;
 
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_W_VIEWPORT);
-		nvp->InitializeViewport(this, this->GetCenterTile(), ZOOM_LVL_VIEWPORT);
+		nvp->InitializeViewport(this, this->GetCenterTile(), ScaleZoomGUI(ZOOM_LVL_VIEWPORT));
 
 		this->OnInvalidateData(0);
 	}
@@ -109,6 +139,10 @@ public:
 			case WID_W_DEPARTURES: // show departure times of vehicles
 				ShowWaypointDepartures((StationID)this->wp->index);
 				break;
+
+			case WID_W_TOGGLE_HIDDEN:
+				DoCommandP(0, this->window_number, HasBit(this->wp->waypoint_flags, WPF_HIDE_LABEL) ? 0 : 1, CMD_SET_WAYPOINT_LABEL_HIDDEN | CMD_MSG(STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME));
+				break;
 		}
 	}
 
@@ -122,8 +156,18 @@ public:
 		if (!gui_scope) return;
 		/* You can only change your own waypoints */
 		this->SetWidgetDisabledState(WID_W_RENAME, !this->wp->IsInUse() || (this->wp->owner != _local_company && this->wp->owner != OWNER_NONE));
+		this->SetWidgetDisabledState(WID_W_TOGGLE_HIDDEN, !this->wp->IsInUse() || this->wp->owner != _local_company);
 		/* Disable the widget for waypoints with no use */
 		this->SetWidgetDisabledState(WID_W_SHOW_VEHICLES, !this->wp->IsInUse());
+
+		this->SetWidgetLoweredState(WID_W_TOGGLE_HIDDEN, HasBit(this->wp->waypoint_flags, WPF_HIDE_LABEL));
+
+		bool show_hide_label = (this->vt != VEH_SHIP && _settings_client.gui.allow_hiding_waypoint_labels);
+		if (show_hide_label != this->show_hide_label) {
+			this->show_hide_label = show_hide_label;
+			this->GetWidget<NWidgetStacked>(WID_W_TOGGLE_HIDDEN_SEL)->SetDisplayedPlane(this->show_hide_label ? 0 : SZSP_NONE);
+			this->ReInit();
+		}
 
 		ScrollWindowToTile(this->GetCenterTile(), this, true);
 	}
@@ -176,6 +220,9 @@ static const NWidgetPart _nested_waypoint_view_widgets[] = {
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_W_DEPARTURES), SetMinimalSize(100, 12), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_STATION_VIEW_DEPARTURES_BUTTON, STR_STATION_VIEW_DEPARTURES_TOOLTIP),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_W_TOGGLE_HIDDEN_SEL),
+			NWidget(WWT_IMGBTN, COLOUR_GREY, WID_W_TOGGLE_HIDDEN), SetMinimalSize(15, 12), SetDataTip(SPR_MISC_GUI_BASE, STR_WAYPOINT_VIEW_HIDE_VIEWPORT_LABEL),
+		EndContainer(),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_W_SHOW_VEHICLES), SetMinimalSize(15, 12), SetDataTip(STR_SHIP, STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP),
 		NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 	EndContainer(),

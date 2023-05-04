@@ -47,3 +47,19 @@ void PlanLine::UpdateVisualExtents()
 	this->viewport_extents = { (int)(min_x * TILE_SIZE * 2 * ZOOM_LVL_BASE), (int)(min_y * TILE_SIZE * ZOOM_LVL_BASE),
 			(int)((max_x + 1) * TILE_SIZE * 2 * ZOOM_LVL_BASE), (int)((max_y + 1) * TILE_SIZE * ZOOM_LVL_BASE) };
 }
+
+bool Plan::ValidateNewLine()
+{
+	extern bool AddPlanLine(PlanID plan, TileVector tiles);
+
+	bool ret = false;
+	if (this->temp_line->tiles.size() > 1) {
+		this->temp_line->MarkDirty();
+		this->last_tile = this->temp_line->tiles.back();
+		this->SetVisibility(true, false);
+		TileVector tiles = std::move(this->temp_line->tiles);
+		this->temp_line->Clear();
+		ret = AddPlanLine(this->index, std::move(tiles));
+	}
+	return ret;
+}

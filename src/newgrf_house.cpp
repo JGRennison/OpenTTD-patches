@@ -22,6 +22,7 @@
 #include "newgrf_animation_base.h"
 #include "newgrf_cargo.h"
 #include "station_base.h"
+#include "newgrf_analysis.h"
 
 #include "safeguards.h"
 
@@ -202,10 +203,10 @@ static uint32 GetNumHouses(HouseID house_id, const Town *town)
  * @param grf_version8 True, if we are dealing with a new NewGRF which uses GRF version >= 8.
  * @return a construction of bits obeying the newgrf format
  */
-static uint32 GetNearbyTileInformation(byte parameter, TileIndex tile, bool grf_version8)
+static uint32 GetNearbyTileInformation(byte parameter, TileIndex tile, bool grf_version8, uint32 mask)
 {
 	tile = GetNearbyTile(parameter, tile);
-	return GetNearbyTileInformation(tile, grf_version8);
+	return GetNearbyTileInformation(tile, grf_version8, mask);
 }
 
 /** Structure with user-data for SearchNearbyHouseXXX - functions */
@@ -322,7 +323,7 @@ static uint32 GetDistanceFromNearbyHouse(uint8 parameter, TileIndex tile, HouseI
 /**
  * @note Used by the resolver to get values for feature 07 deterministic spritegroups.
  */
-/* virtual */ uint32 HouseScopeResolver::GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const
+/* virtual */ uint32 HouseScopeResolver::GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	switch (variable) {
 		/* Construction stage. */
@@ -347,7 +348,7 @@ static uint32 GetDistanceFromNearbyHouse(uint8 parameter, TileIndex tile, HouseI
 		case 0x46: return IsTileType(this->tile, MP_HOUSE) ? GetAnimationFrame(this->tile) : 0;
 
 		/* Position of the house */
-		case 0x47: return TileY(this->tile) << 16 | TileX(this->tile);
+		case 0x47: return TileY(this->tile) << 16 | (TileX(this->tile) & 0xFFFF);
 
 		/* Building counts for old houses with id = parameter. */
 		case 0x60: return parameter < NEW_HOUSE_OFFSET ? GetNumHouses(parameter, this->town) : 0;
@@ -362,7 +363,7 @@ static uint32 GetDistanceFromNearbyHouse(uint8 parameter, TileIndex tile, HouseI
 		}
 
 		/* Land info for nearby tiles. */
-		case 0x62: return GetNearbyTileInformation(parameter, this->tile, this->ro.grffile->grf_version >= 8);
+		case 0x62: return GetNearbyTileInformation(parameter, this->tile, this->ro.grffile->grf_version >= 8, extra->mask);
 
 		/* Current animation frame of nearby house tiles */
 		case 0x63: {
@@ -446,7 +447,7 @@ static uint32 GetDistanceFromNearbyHouse(uint8 parameter, TileIndex tile, HouseI
 /**
  * @note Used by the resolver to get values for feature 07 deterministic spritegroups.
  */
-/* virtual */ uint32 FakeHouseScopeResolver::GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const
+/* virtual */ uint32 FakeHouseScopeResolver::GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	switch (variable) {
 		/* Construction stage. */
@@ -637,7 +638,7 @@ uint16 GetSimpleHouseCallback(CallbackID callback, uint32 param1, uint32 param2,
 }
 
 /** Helper class for animation control. */
-struct HouseAnimationBase : public AnimationBase<HouseAnimationBase, HouseSpec, Town, CargoTypes, GetSimpleHouseCallback> {
+struct HouseAnimationBase : public AnimationBase<HouseAnimationBase, HouseSpec, Town, CargoTypes, GetSimpleHouseCallback, TileAnimationFrameAnimationHelper<Town> > {
 	static const CallbackID cb_animation_speed      = CBID_HOUSE_ANIMATION_SPEED;
 	static const CallbackID cb_animation_next_frame = CBID_HOUSE_ANIMATION_NEXT_FRAME;
 
@@ -727,8 +728,12 @@ bool NewHouseTileLoop(TileIndex tile)
 		return true;
 	}
 
-	TriggerHouse(tile, HOUSE_TRIGGER_TILE_LOOP);
-	if (hs->building_flags & BUILDING_HAS_1_TILE) TriggerHouse(tile, HOUSE_TRIGGER_TILE_LOOP_TOP);
+	bool do_triggers = !(hs->ctrl_flags & HCF_NO_TRIGGERS);
+
+	if (do_triggers) {
+		TriggerHouse(tile, HOUSE_TRIGGER_TILE_LOOP);
+		if (hs->building_flags & BUILDING_HAS_1_TILE) TriggerHouse(tile, HOUSE_TRIGGER_TILE_LOOP_TOP);
+	}
 
 	if (HasBit(hs->callback_mask, CBM_HOUSE_ANIMATION_START_STOP)) {
 		/* If this house is marked as having a synchronised callback, all the
@@ -758,7 +763,7 @@ bool NewHouseTileLoop(TileIndex tile)
 	}
 
 	SetHouseProcessingTime(tile, hs->processing_time);
-	MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+	if (do_triggers) MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 	return true;
 }
 
@@ -857,3 +862,21 @@ void WatchedCargoCallback(TileIndex tile, CargoTypes trigger_cargoes)
 	if (hs->building_flags & BUILDING_HAS_4_TILES) DoWatchedCargoCallback(TILE_ADDXY(north, 1, 1), tile, trigger_cargoes, r);
 }
 
+void AnalyseHouseSpriteGroups()
+{
+	for (uint i = 0; i < NUM_HOUSES; i++) {
+		HouseSpec *spec = HouseSpec::Get(i);
+		spec->ctrl_flags = HCF_NONE;
+
+		if (spec->grf_prop.spritegroup[0] == nullptr) {
+			spec->ctrl_flags |= HCF_NO_TRIGGERS;
+			continue;
+		}
+
+		AnalyseCallbackOperation find_triggers_op(ACOM_FIND_RANDOM_TRIGGER);
+		spec->grf_prop.spritegroup[0]->AnalyseCallbacks(find_triggers_op);
+		if ((find_triggers_op.callbacks_used & SGCU_RANDOM_TRIGGER) == 0) {
+			spec->ctrl_flags |= HCF_NO_TRIGGERS;
+		}
+	}
+}

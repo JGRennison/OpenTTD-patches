@@ -24,6 +24,8 @@
 #include "string_func.h"
 #include "scope_info.h"
 #include "order_cmd.h"
+#include "strings_func.h"
+#include "scope.h"
 
 #include "table/strings.h"
 
@@ -237,13 +239,19 @@ static void FixAllReservations()
  * If vehicles are still on others' infrastructure or using others' stations,
  * The change is not possible and false is returned.
  * @param type The type of vehicle whose setting will be changed.
+ * @param new_value True if sharing will become enabled.
  * @return True if the change can take place, false otherwise.
  */
-bool CheckSharingChangePossible(VehicleType type)
+bool CheckSharingChangePossible(VehicleType type, bool new_value)
 {
 	if (type != VEH_AIRCRAFT) YapfNotifyTrackLayoutChange(INVALID_TILE, INVALID_TRACK);
 	/* Only do something when sharing is being disabled */
-	if (_settings_game.economy.infrastructure_sharing[type]) return true;
+	if (!_settings_game.economy.infrastructure_sharing[type] || new_value) return true;
+
+	_settings_game.economy.infrastructure_sharing[type] = false;
+	auto guard = scope_guard([type]() {
+		_settings_game.economy.infrastructure_sharing[type] = true;
+	});
 
 	StringID error_message = STR_NULL;
 	for (Vehicle *v : Vehicle::Iterate()) {
@@ -271,8 +279,37 @@ bool CheckSharingChangePossible(VehicleType type)
 		}
 	}
 
+	if (type == VEH_TRAIN && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+		for (Train *v : Train::Iterate()) {
+			if (!v->IsPrimaryVehicle() || (v->vehstatus & VS_CRASHED) != 0 || HasBit(v->subtype, GVSF_VIRTUAL)) continue;
+			/* It might happen that the train reserved additional tracks,
+			 * but FollowTrainReservation can't detect those because they are no longer reachable.
+			 * detect this by first finding the end of the reservation,
+			 * then switch sharing on and try again. If these two ends differ,
+			 * disallow changing the sharing state */
+			PBSTileInfo end_tile_info = FollowTrainReservation(v, nullptr, FTRF_IGNORE_LOOKAHEAD | FTRF_OKAY_UNUSED);
+
+			/* first do a quick test to determine whether the next tile has any reservation at all */
+			TileIndex next_tile = end_tile_info.tile + TileOffsByDiagDir(TrackdirToExitdir(end_tile_info.trackdir));
+			/* If the next tile doesn't have a reservation at all, the reservation surely ends here. Thus all is well */
+			if (GetReservedTrackbits(next_tile) == TRACK_BIT_NONE) continue;
+
+			/* change sharing setting temporarily */
+			_settings_game.economy.infrastructure_sharing[VEH_TRAIN] = true;
+			PBSTileInfo end_tile_info2 = FollowTrainReservation(v, nullptr, FTRF_IGNORE_LOOKAHEAD | FTRF_OKAY_UNUSED);
+			_settings_game.economy.infrastructure_sharing[VEH_TRAIN] = false;
+
+			/* if these two reservation ends differ, disallow changing the sharing state */
+			if (end_tile_info.tile != end_tile_info2.tile || end_tile_info.trackdir != end_tile_info2.trackdir) {
+				error_message = STR_CONFIG_SETTING_SHARING_USED_BY_VEHICLES;
+				break;
+			}
+		}
+	}
+
 	if (error_message != STR_NULL) {
-		ShowErrorMessage(error_message, INVALID_STRING_ID, WL_ERROR);
+		SetDParam(0, error_message);
+		ShowErrorMessage(STR_WHITE_STRING, INVALID_STRING_ID, WL_ERROR);
 		return false;
 	}
 
@@ -319,6 +356,34 @@ void HandleSharingCompanyDeletion(Owner owner)
 			return !OrderDestinationIsAllowed(o, v, owner);
 		});
 	}
+
+	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && _settings_game.economy.infrastructure_sharing[VEH_TRAIN]) {
+		for (TileIndex t = 0; t < MapSize(); t++) {
+			switch (GetTileType(t)) {
+				case MP_RAILWAY:
+				case MP_ROAD:
+				case MP_STATION:
+				case MP_TUNNELBRIDGE:
+					if (GetTileOwner(t) == owner) {
+						TrackBits bits = GetReservedTrackbits(t);
+						if (bits != TRACK_BIT_NONE) {
+							/* Vehicles of this company and vehicles physically on tiles of this company have all been removed, but this tile is still reserved.
+							 * The reservation may belong to a train of another company which is still on another company's infrastructure, remove it.
+							 */
+							for (Track track : SetTrackBitIterator(bits)) {
+								Train *v = GetTrainForReservation(t, track);
+								if (v != nullptr) RemoveAndSellVehicle(v, v->owner != owner);
+							}
+						}
+					}
+					break;
+
+				default:
+					break;
+			}
+		}
+
+	}
 }
 
 /**
@@ -329,18 +394,22 @@ void HandleSharingCompanyDeletion(Owner owner)
 void UpdateAllBlockSignals(Owner owner)
 {
 	Owner last_owner = INVALID_OWNER;
+	auto check_owner = [&](Owner track_owner) -> bool {
+		if (owner != INVALID_OWNER && track_owner != owner) return true;
+
+		if (!IsOneSignalBlock(track_owner, last_owner)) {
+			/* Cannot update signals of two different companies in one run,
+			 * if these signal blocks are not joined */
+			UpdateSignalsInBuffer();
+			last_owner = track_owner;
+		}
+		return false;
+	};
 	TileIndex tile = 0;
 	do {
 		if (IsTileType(tile, MP_RAILWAY) && HasSignals(tile)) {
 			Owner track_owner = GetTileOwner(tile);
-			if (owner != INVALID_OWNER && track_owner != owner) continue;
-
-			if (!IsOneSignalBlock(track_owner, last_owner)) {
-				/* Cannot update signals of two different companies in one run,
-				 * if these signal blocks are not joined */
-				UpdateSignalsInBuffer();
-				last_owner = track_owner;
-			}
+			if (check_owner(track_owner)) continue;
 			TrackBits bits = GetTrackBits(tile);
 			do {
 				Track track = RemoveFirstTrack(&bits);
@@ -351,8 +420,10 @@ void UpdateAllBlockSignals(Owner owner)
 		} else if (IsLevelCrossingTile(tile) && (owner == INVALID_OWNER || GetTileOwner(tile) == owner)) {
 			UpdateLevelCrossing(tile);
 		} else if (IsTunnelBridgeWithSignalSimulation(tile)) {
+			Owner track_owner = GetTileOwner(tile);
+			if (check_owner(track_owner)) continue;
 			if (IsTunnelBridgeSignalSimulationExit(tile)) {
-				AddSideToSignalBuffer(tile, INVALID_DIAGDIR, GetTileOwner(tile));
+				AddSideToSignalBuffer(tile, INVALID_DIAGDIR, track_owner);
 			}
 			if (_extra_aspects > 0 && IsTunnelBridgeSignalSimulationEntrance(tile) && GetTunnelBridgeEntranceSignalState(tile) == SIGNAL_STATE_GREEN) {
 				SetTunnelBridgeEntranceSignalAspect(tile, 0);

@@ -17,6 +17,8 @@
 #include "command_func.h"
 #include "water.h"
 #include "newgrf_animation_base.h"
+#include "newgrf_analysis.h"
+#include "newgrf_industrytiles_analysis.h"
 
 #include "table/strings.h"
 
@@ -31,12 +33,14 @@
  * @param grf_version8 True, if we are dealing with a new NewGRF which uses GRF version >= 8.
  * @return a construction of bits obeying the newgrf format
  */
-uint32 GetNearbyIndustryTileInformation(byte parameter, TileIndex tile, IndustryID index, bool signed_offsets, bool grf_version8)
+uint32 GetNearbyIndustryTileInformation(byte parameter, TileIndex tile, IndustryID index, bool signed_offsets, bool grf_version8, uint32 mask)
 {
 	if (parameter != 0) tile = GetNearbyTile(parameter, tile, signed_offsets); // only perform if it is required
 	bool is_same_industry = (IsTileType(tile, MP_INDUSTRY) && GetIndustryIndex(tile) == index);
 
-	return GetNearbyTileInformation(tile, grf_version8) | (is_same_industry ? 1 : 0) << 8;
+	uint32 result = (is_same_industry ? 1 : 0) << 8;
+	if (mask & ~0x100) result |= GetNearbyTileInformation(tile, grf_version8, mask);
+	return result;
 }
 
 /**
@@ -58,7 +62,7 @@ uint32 GetRelativePosition(TileIndex tile, TileIndex ind_tile)
 	return ((y & 0xF) << 20) | ((x & 0xF) << 16) | (y << 8) | x;
 }
 
-/* virtual */ uint32 IndustryTileScopeResolver::GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const
+/* virtual */ uint32 IndustryTileScopeResolver::GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	switch (variable) {
 		/* Construction state of the tile: a value between 0 and 3 */
@@ -78,7 +82,7 @@ uint32 GetRelativePosition(TileIndex tile, TileIndex ind_tile)
 
 		/* Land info of nearby tiles */
 		case 0x60: return GetNearbyIndustryTileInformation(parameter, this->tile,
-				this->industry == nullptr ? (IndustryID)INVALID_INDUSTRY : this->industry->index, true, this->ro.grffile->grf_version >= 8);
+				this->industry == nullptr ? (IndustryID)INVALID_INDUSTRY : this->industry->index, true, this->ro.grffile->grf_version >= 8, extra->mask);
 
 		/* Animation stage of nearby tiles */
 		case 0x61: {
@@ -257,7 +261,7 @@ uint16 GetSimpleIndustryCallback(CallbackID callback, uint32 param1, uint32 para
 }
 
 /** Helper class for animation control. */
-struct IndustryAnimationBase : public AnimationBase<IndustryAnimationBase, IndustryTileSpec, Industry, int, GetSimpleIndustryCallback> {
+struct IndustryAnimationBase : public AnimationBase<IndustryAnimationBase, IndustryTileSpec, Industry, int, GetSimpleIndustryCallback, TileAnimationFrameAnimationHelper<Industry> > {
 	static const CallbackID cb_animation_speed      = CBID_INDTILE_ANIMATION_SPEED;
 	static const CallbackID cb_animation_next_frame = CBID_INDTILE_ANIM_NEXT_FRAME;
 
@@ -388,3 +392,97 @@ void TriggerIndustry(Industry *ind, IndustryTileTrigger trigger)
 	DoReseedIndustry(ind, reseed_industry);
 }
 
+void AnalyseIndustryTileSpriteGroups()
+{
+	for (IndustrySpec &spec : _industry_specs) {
+		const uint layout_count = (uint)spec.layouts.size();
+		spec.layout_anim_masks.clear();
+		spec.layout_anim_masks.resize(layout_count);
+
+		IndustryTileLayout layout;
+		for (uint idx = 0; idx < layout_count; idx++) {
+			btree::btree_set<IndustryGfx> seen_gfx;
+			layout.clear();
+			for (IndustryTileLayoutTile it : spec.layouts[idx]) {
+				if (it.gfx == 0xFF) continue;
+
+				IndustryGfx gfx = GetTranslatedIndustryTileID(it.gfx);
+				layout.push_back({ it.ti, gfx });
+				seen_gfx.insert(gfx);
+				if (layout.size() == 64) break;
+			}
+
+			/* Layout now contains the translated tile layout with gaps removed, up to a maximum of 64 tiles */
+
+			uint64 anim_mask = 0;
+
+			uint64 to_check = UINT64_MAX >> (64 - layout.size());
+
+			while (to_check != 0) {
+				uint64 current = 0;
+				uint i = FindFirstBit(to_check);
+				IndustryGfx gfx = layout[i].gfx;
+				for (; i < layout.size(); i++) {
+					if (gfx == layout[i].gfx) SetBit(current, i);
+				}
+				to_check &= ~current;
+
+				const IndustryTileSpec &tilespec = _industry_tile_specs[gfx];
+				if (tilespec.grf_prop.spritegroup[0] == nullptr) continue;
+
+				if (HasBit(tilespec.callback_mask, CBM_INDT_ANIM_NEXT_FRAME)) {
+					/* There may be sound effects, or custom animation start/stop behaviour, don't inhibit */
+					continue;
+				}
+
+				anim_mask |= current;
+
+				AnalyseCallbackOperationIndustryTileData data;
+				data.layout = &layout;
+				data.check_mask = current;
+				data.result_mask = &anim_mask;
+				data.layout_index = idx + 1;
+				data.anim_state_at_offset = false;
+
+				AnalyseCallbackOperation op(ACOM_INDUSTRY_TILE);
+				op.data.indtile = &data;
+				tilespec.grf_prop.spritegroup[0]->AnalyseCallbacks(op);
+
+				if (data.anim_state_at_offset) {
+					/* Give up: use of get anim state of offset tiles */
+					anim_mask = 0;
+					break;
+				}
+			}
+
+			spec.layout_anim_masks[idx] = anim_mask;
+		}
+	}
+}
+
+void ApplyIndustryTileAnimMasking()
+{
+	for (Industry *ind : Industry::Iterate()) {
+		const IndustrySpec *spec = GetIndustrySpec(ind->type);
+
+		if (ind->selected_layout == 0 || ind->selected_layout > spec->layouts.size()) continue;
+
+		uint64 mask = spec->layout_anim_masks[ind->selected_layout - 1];
+
+		uint idx = 0;
+		for (IndustryTileLayoutTile it : spec->layouts[ind->selected_layout - 1]) {
+			if (it.gfx == 0xFF) continue;
+
+			TileIndex tile = AddTileIndexDiffCWrap(ind->location.tile, it.ti);
+			if (!IsValidTile(tile) || !ind->TileBelongsToIndustry(tile)) break;
+
+			IndustryGfx gfx = GetTranslatedIndustryTileID(it.gfx);
+			if (gfx != GetIndustryGfx(tile)) break;
+
+			if (HasBit(mask, idx)) DeleteAnimatedTile(tile);
+
+			idx++;
+			if (idx == 64) break;
+		}
+	}
+}

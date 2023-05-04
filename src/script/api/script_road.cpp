@@ -50,7 +50,7 @@
 	if (!::IsValidTile(tile)) return false;
 	if (!IsRoadTypeAvailable(GetCurrentRoadType())) return false;
 
-	return ::IsRoadStopTile(tile) && HasBit(::GetPresentRoadTypes(tile), (::RoadType)GetCurrentRoadType());
+	return ::IsStationRoadStopTile(tile) && HasBit(::GetPresentRoadTypes(tile), (::RoadType)GetCurrentRoadType());
 }
 
 /* static */ bool ScriptRoad::IsDriveThroughRoadStationTile(TileIndex tile)
@@ -63,6 +63,7 @@
 
 /* static */ bool ScriptRoad::IsRoadTypeAvailable(RoadType road_type)
 {
+	EnforceDeityOrCompanyModeValid(false);
 	return (::RoadType)road_type < ROADTYPE_END && ::HasRoadTypeAvail(ScriptObject::GetCompany(), (::RoadType)road_type) && !HasBit(GetRoadTypeInfo((::RoadType)road_type)->extra_flags, RXTF_NOT_AVAILABLE_AI_GS);
 }
 
@@ -95,7 +96,7 @@
 {
 	if (!ScriptMap::IsValidTile(tile)) return false;
 	if (!IsRoadTypeAvailable(road_type)) return false;
-	return ::GetAnyRoadBits(tile, ::GetRoadTramType((::RoadType)road_type), false) != ROAD_NONE;
+	return ::MayHaveRoad(tile) && HasBit(::GetPresentRoadTypes(tile), (::RoadType)road_type);
 }
 
 /* static */ bool ScriptRoad::HasRoadTramType(TileIndex tile, RoadTramTypes road_tram_type)
@@ -138,7 +139,7 @@
 
 /* static */ bool ScriptRoad::ConvertRoadType(TileIndex start_tile, TileIndex end_tile, RoadType road_type)
 {
-	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, ::IsValidTile(start_tile));
 	EnforcePrecondition(false, ::IsValidTile(end_tile));
 	EnforcePrecondition(false, IsRoadTypeAvailable(road_type));
@@ -162,9 +163,9 @@
  * @param end The part that will be build second.
  * @return True if and only if the road bits can be build.
  */
-static bool CheckAutoExpandedRoadBits(const Array *existing, int32 start, int32 end)
+static bool CheckAutoExpandedRoadBits(const Array<> &existing, int32 start, int32 end)
 {
-	return (start + end == 0) && (existing->size == 0 || existing->array[0] == start || existing->array[0] == end);
+	return (start + end == 0) && (existing.empty() || existing[0] == start || existing[0] == end);
 }
 
 /**
@@ -177,7 +178,7 @@ static bool CheckAutoExpandedRoadBits(const Array *existing, int32 start, int32 
  *         they are build or 2 when building the first part automatically
  *         builds the second part.
  */
-static int32 LookupWithoutBuildOnSlopes(::Slope slope, const Array *existing, int32 start, int32 end)
+static int32 LookupWithoutBuildOnSlopes(::Slope slope, const Array<> &existing, int32 start, int32 end)
 {
 	switch (slope) {
 		/* Flat slopes can always be build. */
@@ -189,9 +190,9 @@ static int32 LookupWithoutBuildOnSlopes(::Slope slope, const Array *existing, in
 		 * in the game have been changed.
 		 */
 		case SLOPE_NE: case SLOPE_SW:
-			return (CheckAutoExpandedRoadBits(existing, start, end) && (start == 1 || end == 1)) ? (existing->size == 0 ? 2 : 1) : 0;
+			return (CheckAutoExpandedRoadBits(existing, start, end) && (start == 1 || end == 1)) ? (existing.empty() ? 2 : 1) : 0;
 		case SLOPE_SE: case SLOPE_NW:
-			return (CheckAutoExpandedRoadBits(existing, start, end) && (start != 1 && end != 1)) ? (existing->size == 0 ? 2 : 1) : 0;
+			return (CheckAutoExpandedRoadBits(existing, start, end) && (start != 1 && end != 1)) ? (existing.empty() ? 2 : 1) : 0;
 
 		/* Any other tile cannot be built on. */
 		default:
@@ -241,7 +242,7 @@ static RoadBits NeighbourToRoadBits(int32 neighbour)
  *         they are build or 2 when building the first part automatically
  *         builds the second part.
  */
-static int32 LookupWithBuildOnSlopes(::Slope slope, Array *existing, int32 start, int32 end)
+static int32 LookupWithBuildOnSlopes(::Slope slope, const Array<> &existing, int32 start, int32 end)
 {
 	/* Steep slopes behave the same as slopes with one corner raised. */
 	if (IsSteepSlope(slope)) {
@@ -291,9 +292,6 @@ static int32 LookupWithBuildOnSlopes(::Slope slope, Array *existing, int32 start
 
 	/* Now perform the actual rotation. */
 	for (int j = 0; j < base_rotate; j++) {
-		for (size_t i = 0; i < existing->size; i++) {
-			existing->array[i] = RotateNeighbour(existing->array[i]);
-		}
 		start = RotateNeighbour(start);
 		end   = RotateNeighbour(end);
 	}
@@ -302,8 +300,11 @@ static int32 LookupWithBuildOnSlopes(::Slope slope, Array *existing, int32 start
 	RoadBits start_roadbits    = NeighbourToRoadBits(start);
 	RoadBits new_roadbits      = start_roadbits | NeighbourToRoadBits(end);
 	RoadBits existing_roadbits = ROAD_NONE;
-	for (size_t i = 0; i < existing->size; i++) {
-		existing_roadbits |= NeighbourToRoadBits(existing->array[i]);
+	for (int32 neighbour : existing) {
+		for (int j = 0; j < base_rotate; j++) {
+			neighbour = RotateNeighbour(neighbour);
+		}
+		existing_roadbits |= NeighbourToRoadBits(neighbour);
 	}
 
 	switch (slope) {
@@ -391,7 +392,7 @@ static bool NormaliseTileOffset(int32 *tile)
 		return false;
 }
 
-/* static */ int32 ScriptRoad::CanBuildConnectedRoadParts(ScriptTile::Slope slope_, Array *existing, TileIndex start_, TileIndex end_)
+/* static */ SQInteger ScriptRoad::CanBuildConnectedRoadParts(ScriptTile::Slope slope_, Array<> existing, TileIndex start_, TileIndex end_)
 {
 	::Slope slope = (::Slope)slope_;
 	int32 start = start_;
@@ -400,8 +401,8 @@ static bool NormaliseTileOffset(int32 *tile)
 	/* The start tile and end tile cannot be the same tile either. */
 	if (start == end) return -1;
 
-	for (size_t i = 0; i < existing->size; i++) {
-		if (!NormaliseTileOffset(&existing->array[i])) return -1;
+	for (size_t i = 0; i < existing.size(); i++) {
+		if (!NormaliseTileOffset(&existing[i])) return -1;
 	}
 
 	if (!NormaliseTileOffset(&start)) return -1;
@@ -412,15 +413,13 @@ static bool NormaliseTileOffset(int32 *tile)
 	return _settings_game.construction.build_on_slopes ? LookupWithBuildOnSlopes(slope, existing, start, end) : LookupWithoutBuildOnSlopes(slope, existing, start, end);
 }
 
-/* static */ int32 ScriptRoad::CanBuildConnectedRoadPartsHere(TileIndex tile, TileIndex start, TileIndex end)
+/* static */ SQInteger ScriptRoad::CanBuildConnectedRoadPartsHere(TileIndex tile, TileIndex start, TileIndex end)
 {
 	if (!::IsValidTile(tile) || !::IsValidTile(start) || !::IsValidTile(end)) return -1;
 	if (::DistanceManhattan(tile, start) != 1 || ::DistanceManhattan(tile, end) != 1) return -1;
 
 	/*                                           ROAD_NW              ROAD_SW             ROAD_SE             ROAD_NE */
 	const TileIndexDiff neighbours[] = {::TileDiffXY(0, -1), ::TileDiffXY(1, 0), ::TileDiffXY(0, 1), ::TileDiffXY(-1, 0)};
-	Array *existing = (Array*)alloca(sizeof(Array) + lengthof(neighbours) * sizeof(int32));
-	existing->size = 0;
 
 	::RoadBits rb = ::ROAD_NONE;
 	if (::IsNormalRoadTile(tile)) {
@@ -428,8 +427,10 @@ static bool NormaliseTileOffset(int32 *tile)
 	} else {
 		rb = ::GetAnyRoadBits(tile, RTT_ROAD) | ::GetAnyRoadBits(tile, RTT_TRAM);
 	}
+
+	Array<> existing;
 	for (uint i = 0; i < lengthof(neighbours); i++) {
-		if (HasBit(rb, i)) existing->array[existing->size++] = neighbours[i];
+		if (HasBit(rb, i)) existing.emplace_back(neighbours[i]);
 	}
 
 	return ScriptRoad::CanBuildConnectedRoadParts(ScriptTile::GetSlope(tile), existing, start - tile, end - tile);
@@ -463,10 +464,10 @@ static bool NeighbourHasReachableRoad(::RoadType rt, TileIndex start_tile, DiagD
 	}
 }
 
-/* static */ int32 ScriptRoad::GetNeighbourRoadCount(TileIndex tile)
+/* static */ SQInteger ScriptRoad::GetNeighbourRoadCount(TileIndex tile)
 {
-	if (!::IsValidTile(tile)) return false;
-	if (!IsRoadTypeAvailable(GetCurrentRoadType())) return false;
+	if (!::IsValidTile(tile)) return -1;
+	if (!IsRoadTypeAvailable(GetCurrentRoadType())) return -1;
 
 	::RoadType rt = (::RoadType)GetCurrentRoadType();
 	int32 neighbour = 0;
@@ -502,6 +503,7 @@ static bool NeighbourHasReachableRoad(::RoadType rt, TileIndex start_tile, DiagD
 
 /* static */ bool ScriptRoad::_BuildRoadInternal(TileIndex start, TileIndex end, bool one_way, bool full)
 {
+	EnforceDeityOrCompanyModeValid(false);
 	EnforcePrecondition(false, start != end);
 	EnforcePrecondition(false, ::IsValidTile(start));
 	EnforcePrecondition(false, ::IsValidTile(end));
@@ -519,7 +521,7 @@ static bool NeighbourHasReachableRoad(::RoadType rt, TileIndex start_tile, DiagD
 
 /* static */ bool ScriptRoad::BuildOneWayRoad(TileIndex start, TileIndex end)
 {
-	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
+	EnforceCompanyModeValid(false);
 	return _BuildRoadInternal(start, end, true, false);
 }
 
@@ -530,13 +532,13 @@ static bool NeighbourHasReachableRoad(::RoadType rt, TileIndex start_tile, DiagD
 
 /* static */ bool ScriptRoad::BuildOneWayRoadFull(TileIndex start, TileIndex end)
 {
-	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
+	EnforceCompanyModeValid(false);
 	return _BuildRoadInternal(start, end, true, true);
 }
 
 /* static */ bool ScriptRoad::BuildRoadDepot(TileIndex tile, TileIndex front)
 {
-	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, tile != front);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 	EnforcePrecondition(false, ::IsValidTile(front));
@@ -550,7 +552,7 @@ static bool NeighbourHasReachableRoad(::RoadType rt, TileIndex start_tile, DiagD
 
 /* static */ bool ScriptRoad::_BuildRoadStationInternal(TileIndex tile, TileIndex front, RoadVehicleType road_veh_type, bool drive_through, StationID station_id)
 {
-	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, tile != front);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 	EnforcePrecondition(false, ::IsValidTile(front));
@@ -587,7 +589,7 @@ static bool NeighbourHasReachableRoad(::RoadType rt, TileIndex start_tile, DiagD
 
 /* static */ bool ScriptRoad::RemoveRoad(TileIndex start, TileIndex end)
 {
-	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, start != end);
 	EnforcePrecondition(false, ::IsValidTile(start));
 	EnforcePrecondition(false, ::IsValidTile(end));
@@ -599,7 +601,7 @@ static bool NeighbourHasReachableRoad(::RoadType rt, TileIndex start_tile, DiagD
 
 /* static */ bool ScriptRoad::RemoveRoadFull(TileIndex start, TileIndex end)
 {
-	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, start != end);
 	EnforcePrecondition(false, ::IsValidTile(start));
 	EnforcePrecondition(false, ::IsValidTile(end));
@@ -611,7 +613,7 @@ static bool NeighbourHasReachableRoad(::RoadType rt, TileIndex start_tile, DiagD
 
 /* static */ bool ScriptRoad::RemoveRoadDepot(TileIndex tile)
 {
-	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 	EnforcePrecondition(false, IsTileType(tile, MP_ROAD))
 	EnforcePrecondition(false, GetRoadTileType(tile) == ROAD_TILE_DEPOT);
@@ -621,10 +623,10 @@ static bool NeighbourHasReachableRoad(::RoadType rt, TileIndex start_tile, DiagD
 
 /* static */ bool ScriptRoad::RemoveRoadStation(TileIndex tile)
 {
-	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 	EnforcePrecondition(false, IsTileType(tile, MP_STATION));
-	EnforcePrecondition(false, IsRoadStop(tile));
+	EnforcePrecondition(false, IsStationRoadStop(tile));
 
 	return ScriptObject::DoCommand(tile, 1 | 1 << 8, GetRoadStopType(tile), CMD_REMOVE_ROAD_STOP);
 }
@@ -647,14 +649,14 @@ static bool NeighbourHasReachableRoad(::RoadType rt, TileIndex start_tile, DiagD
 	return (RoadTramTypes)(1 << ::GetRoadTramType((::RoadType)roadtype));
 }
 
-/* static */ int32 ScriptRoad::GetMaxSpeed(RoadType road_type)
+/* static */ SQInteger ScriptRoad::GetMaxSpeed(RoadType road_type)
 {
-	if (!ScriptRoad::IsRoadTypeAvailable(road_type)) return 0;
+	if (!ScriptRoad::IsRoadTypeAvailable(road_type)) return -1;
 
 	return GetRoadTypeInfo((::RoadType)road_type)->max_speed;
 }
 
-/* static */ uint16 ScriptRoad::GetMaintenanceCostFactor(RoadType roadtype)
+/* static */ SQInteger ScriptRoad::GetMaintenanceCostFactor(RoadType roadtype)
 {
 	if (!ScriptRoad::IsRoadTypeAvailable(roadtype)) return 0;
 

@@ -39,7 +39,7 @@ struct VehicleScopeResolver : public ScopeResolver {
 	void SetVehicle(const Vehicle *v) { this->v = v; }
 
 	uint32 GetRandomBits() const override;
-	uint32 GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const override;
+	uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const override;
 	uint32 GetTriggers() const override;
 };
 
@@ -57,12 +57,12 @@ struct VehicleResolverObject : public ResolverObject {
 	VehicleScopeResolver parent_scope;   ///< Scope resolver for its parent vehicle.
 
 	VehicleScopeResolver relative_scope; ///< Scope resolver for an other vehicle in the chain.
-	byte cached_relative_count;          ///< Relative position of the other vehicle.
+	VarSpriteGroupScopeOffset cached_relative_count; ///< Relative position of the other vehicle.
 
 	VehicleResolverObject(EngineID engine_type, const Vehicle *v, WagonOverride wagon_override, bool rotor_in_gui = false,
 			CallbackID callback = CBID_NO_CALLBACK, uint32 callback_param1 = 0, uint32 callback_param2 = 0);
 
-	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, byte relative = 0) override;
+	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, VarSpriteGroupScopeOffset relative = 0) override;
 
 	const SpriteGroup *ResolveReal(const RealSpriteGroup *group) const override;
 
@@ -120,5 +120,7 @@ void AlterVehicleListOrder(EngineID engine, uint target);
 void CommitVehicleListOrderChanges();
 
 EngineID GetNewEngineID(const GRFFile *file, VehicleType type, uint16 internal_id);
+
+void FillNewGRFVehicleCache(const Vehicle *v);
 
 #endif /* NEWGRF_ENGINE_H */

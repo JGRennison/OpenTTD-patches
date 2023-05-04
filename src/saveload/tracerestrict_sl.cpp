@@ -77,12 +77,12 @@ static void Load_TRRP()
 			char str[4096];
 			char *strend = str + seprintf(str, lastof(str), "Trace restrict program %d: %s\nProgram dump:",
 					index, GetStringPtr(validation_result.GetErrorMessage()));
-			for (unsigned int i = 0; i < prog->items.size(); i++) {
-				if (i % 3) {
-					strend += seprintf(strend, lastof(str), " %08X", prog->items[i]);
-				} else {
-					strend += seprintf(strend, lastof(str), "\n%4u: %08X", i, prog->items[i]);
+			uint fail_offset = validation_result.GetResultData() ^ (1 << 31);
+			for (uint i = 0; i < (uint)prog->items.size(); i++) {
+				if ((i % 3) == 0) {
+					strend += seprintf(strend, lastof(str), "\n%4u:", i);
 				}
+				strend += seprintf(strend, lastof(str), (i == fail_offset) ? " [%08X]" : " %08X", prog->items[i]);
 			}
 			SlErrorCorrupt(str);
 		}
@@ -211,7 +211,7 @@ void AfterLoadTraceRestrict()
 {
 	for (TraceRestrictMapping::iterator iter = _tracerestrictprogram_mapping.begin();
 			iter != _tracerestrictprogram_mapping.end(); ++iter) {
-		_tracerestrictprogram_pool.Get(iter->second.program_id)->IncrementRefCount();
+		_tracerestrictprogram_pool.Get(iter->second.program_id)->IncrementRefCount(iter->first);
 	}
 }
 

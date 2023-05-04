@@ -129,7 +129,8 @@ static void *_dedicated_video_mem;
 /* Whether a fork has been done. */
 bool _dedicated_forks;
 
-extern bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileType dft, GameMode newgm, Subdirectory subdir, struct LoadFilter *lf = nullptr);
+extern bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileType dft, GameMode newgm, Subdirectory subdir,
+		struct LoadFilter *lf = nullptr, std::string *error_detail = nullptr);
 
 static FVideoDriver_Dedicated iFVideoDriver_Dedicated;
 
@@ -139,7 +140,7 @@ const char *VideoDriver_Dedicated::Start(const StringList &parm)
 	this->UpdateAutoResolution();
 
 	int bpp = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
-	_dedicated_video_mem = (bpp == 0) ? nullptr : MallocT<byte>(_cur_resolution.width * _cur_resolution.height * (bpp / 8));
+	_dedicated_video_mem = (bpp == 0) ? nullptr : MallocT<byte>(static_cast<size_t>(_cur_resolution.width) * _cur_resolution.height * (bpp / 8));
 
 	_screen.width  = _screen.pitch = _cur_resolution.width;
 	_screen.height = _cur_resolution.height;
@@ -251,17 +252,6 @@ void VideoDriver_Dedicated::MainLoop()
 	/* If SwitchMode is SM_LOAD_GAME, it means that the user used the '-g' options */
 	if (_switch_mode != SM_LOAD_GAME) {
 		StartNewGameWithoutGUI(GENERATE_NEW_SEED);
-	} else {
-		/* First we need to test if the savegame can be loaded, else we will end up playing the
-		 *  intro game... */
-		if (SaveOrLoad(_file_to_saveload.name, _file_to_saveload.file_op, _file_to_saveload.detail_ftype, BASE_DIR) == SL_ERROR) {
-			/* Loading failed, pop out.. */
-			DEBUG(net, 0, "Loading requested map failed; closing server.");
-			return;
-		} else {
-			/* We can load this game, so go ahead */
-			_switch_mode = SM_LOAD_GAME;
-		}
 	}
 
 	this->is_game_threaded = false;

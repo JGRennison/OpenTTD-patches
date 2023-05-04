@@ -118,7 +118,7 @@ class Kdtree {
 		}
 
 		this->Build(elements.begin(), elements.end());
-		assert(initial_count == this->Count());
+		dbg_assert(initial_count == this->Count());
 		return true;
 	}
 
@@ -209,7 +209,7 @@ class Kdtree {
 			CoordT ec = this->xyfunc(element, dim);
 			/* Which side to remove from */
 			size_t next = (ec < nc) ? n.left : n.right;
-			assert(next != INVALID_NODE); // node must exist somewhere and must be found before a leaf is reached
+			dbg_assert(next != INVALID_NODE); // node must exist somewhere and must be found before a leaf is reached
 			/* Descend */
 			size_t new_branch = this->RemoveRecursive(element, next, level + 1);
 			if (new_branch != next) {
@@ -317,7 +317,7 @@ class Kdtree {
 		return this->unbalanced > this->Count() / 4;
 	}
 
-	/** Verify that the invariant is true for a sub-tree, assert if not */
+	/** Verify that the invariant is true for a sub-tree, dbg_assert if not */
 	void CheckInvariant(size_t node_idx, int level, CoordT min_x, CoordT max_x, CoordT min_y, CoordT max_y)
 	{
 		if (node_idx == INVALID_NODE) return;
@@ -326,10 +326,10 @@ class Kdtree {
 		CoordT cx = this->xyfunc(n.element, 0);
 		CoordT cy = this->xyfunc(n.element, 1);
 
-		assert(cx >= min_x);
-		assert(cx < max_x);
-		assert(cy >= min_y);
-		assert(cy < max_y);
+		dbg_assert(cx >= min_x);
+		dbg_assert(cx < max_x);
+		dbg_assert(cy >= min_y);
+		dbg_assert(cy < max_y);
 
 		if (level % 2 == 0) {
 			// split in dimension 0 = x
@@ -431,7 +431,7 @@ public:
 	/** Get number of elements stored in tree */
 	size_t Count() const
 	{
-		assert(this->free_list.size() <= this->nodes.size());
+		dbg_assert(this->free_list.size() <= this->nodes.size());
 		return this->nodes.size() - this->free_list.size();
 	}
 
@@ -442,7 +442,7 @@ public:
 	 */
 	T FindNearest(CoordT x, CoordT y) const
 	{
-		assert(this->Count() > 0);
+		dbg_assert(this->Count() > 0);
 
 		CoordT xy[2] = { x, y };
 		return this->FindNearestRecursive(xy, this->root, 0).first;
@@ -460,8 +460,8 @@ public:
 	template <typename Outputter>
 	void FindContained(CoordT x1, CoordT y1, CoordT x2, CoordT y2, const Outputter &outputter) const
 	{
-		assert(x1 < x2);
-		assert(y1 < y2);
+		dbg_assert(x1 < x2);
+		dbg_assert(y1 < y2);
 
 		if (this->Count() == 0) return;
 

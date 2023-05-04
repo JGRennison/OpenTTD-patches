@@ -20,6 +20,23 @@
 #include "vehicle_type.h"
 
 extern uint8 _extra_aspects;
+extern uint64 _aspect_cfg_hash;
+
+static inline uint8 GetMaximumSignalAspect()
+{
+	return _extra_aspects + 1;
+}
+
+struct SignalStyleMasks {
+	uint16 non_aspect_inc = 0;
+	uint16 next_only = 0;
+	uint16 always_reserve_through = 0;
+	uint16 no_tunnel_bridge = 0;
+	uint16 signal_opposite_side = 0;
+	uint16 combined_normal_shunt = 0;
+};
+extern SignalStyleMasks _signal_style_masks;
+
 extern bool _signal_sprite_oversized;
 
 /**
@@ -170,17 +187,37 @@ void AddSideToSignalBuffer(TileIndex tile, DiagDirection side, Owner owner);
 void UpdateSignalsInBuffer();
 void UpdateSignalsInBufferIfOwnerNotAddable(Owner owner);
 uint8 GetForwardAspectFollowingTrack(TileIndex tile, Trackdir trackdir);
-uint8 GetSignalAspectGeneric(TileIndex tile, Trackdir trackdir);
+uint8 GetSignalAspectGeneric(TileIndex tile, Trackdir trackdir, bool check_non_inc_style);
 void PropagateAspectChange(TileIndex tile, Trackdir trackdir, uint8 aspect);
 void UpdateAspectDeferred(TileIndex tile, Trackdir trackdir);
+void UpdateAspectDeferredWithVehicle(const Train *v, TileIndex tile, Trackdir trackdir, bool check_combined_normal_aspect);
+void UpdateLookaheadCombinedNormalShuntSignalDeferred(TileIndex tile, Trackdir trackdir, int lookahead_position);
 void FlushDeferredAspectUpdates();
+void FlushDeferredDetermineCombineNormalShuntMode(Train *v);
 void UpdateAllSignalAspects();
 void UpdateExtraAspectsVariable();
 void InitialiseExtraAspectsVariable();
+bool IsRailSpecialSignalAspect(TileIndex tile, Track track);
 
-inline uint8 GetForwardAspectFollowingTrackAndIncrement(TileIndex tile, Trackdir trackdir)
+inline void AdjustSignalAspectIfNonIncStyle(TileIndex tile, Track track, uint8 &aspect)
 {
-	return std::min<uint8>(GetForwardAspectFollowingTrack(tile, trackdir) + 1, _extra_aspects + 1);
+	extern void AdjustSignalAspectIfNonIncStyleIntl(TileIndex tile, Track track, uint8 &aspect);
+	if (aspect > 0 && (_signal_style_masks.non_aspect_inc != 0 || _signal_style_masks.combined_normal_shunt != 0)) AdjustSignalAspectIfNonIncStyleIntl(tile, track, aspect);
 }
+
+inline uint8 IncrementAspectForSignal(uint8 aspect, bool combined_normal_mode)
+{
+	aspect = std::min<uint8>(aspect + 1, GetMaximumSignalAspect());
+	if (combined_normal_mode) aspect = std::min<uint8>(aspect + 1, 7);
+	return aspect;
+}
+
+inline uint8 GetForwardAspectFollowingTrackAndIncrement(TileIndex tile, Trackdir trackdir, bool combined_normal_mode = false)
+{
+	return IncrementAspectForSignal(GetForwardAspectFollowingTrack(tile, trackdir), combined_normal_mode);
+}
+
+void UpdateSignalReserveThroughBit(TileIndex tile, Track track, bool update_signal);
+void UpdateAllSignalReserveThroughBits();
 
 #endif /* SIGNAL_FUNC_H */

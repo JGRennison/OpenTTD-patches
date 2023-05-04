@@ -17,6 +17,7 @@ private:
 	char **params;
 	char song[MAX_PATH];
 	pid_t pid;
+	bool failed = false;
 
 	void DoPlay();
 	void DoStop();
@@ -34,6 +35,8 @@ public:
 
 	void SetVolume(byte vol) override;
 	const char *GetName() const override { return "extmidi"; }
+
+	bool IsInFailedState() override { return this->failed; }
 };
 
 class FMusicDriver_ExtMidi : public DriverFactoryBase {

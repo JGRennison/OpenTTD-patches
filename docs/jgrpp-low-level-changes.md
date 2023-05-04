@@ -6,7 +6,7 @@ This document does not describe the player-visible changes/additions described i
 
 ### Crash logger and diagnostics
 
-* Additional logged items: current company ID, map size, configure invocation, thread name, recently executed commands.
+* Additional logged items: current company ID, map size, configure invocation, thread name, recently executed commands, static NewGRFs.
 * Additional logged platform-specific items: detailed OS version (Unix), signal details (Unix, Mac), exception record data (Windows).
 * Better handling of crashes which occur in a non-main thread (ask the main thread to do the crash screenshot and savegame).
 * Support logging register values on Unix and Mac.
@@ -19,6 +19,7 @@ This document does not describe the player-visible changes/additions described i
 * Emit a "crash" log, savegame and screenshot on multiplayer desync.
 * Add crash/desync information to output screenshot and savegame files.
 * Multiplayer server and client exchange desync logs after a desync occurs.
+* Multiplayer clients send state hashes and random values since the last sync to the server after a desync, to identify which frame first diverged.
 * Decrease sync frame period when desync occurs.
 
 #### Assertions
@@ -33,6 +34,7 @@ This document does not describe the player-visible changes/additions described i
 #### NewGRF debug window
 
 * Add various supplementary non-GRF information, e.g. vehicle variables and flags.
+* Add NewGRF sprite group dumping and related functionality.
 
 #### Logging
 
@@ -57,6 +59,7 @@ This document does not describe the player-visible changes/additions described i
 * Reduce unnecessary region redraws when scrolling viewports.
 * Reduce viewport invalidation region size of track reservation and signal state changes.
 * Cache landscape background in map mode.
+* Partial parallelisation of non-map mode viewport rendering.
 
 ### Rendering
 
@@ -73,8 +76,7 @@ This document does not describe the player-visible changes/additions described i
 * Various data structures have been replaced with B-tree maps/sets (cpp-btree library).
 * Various lists have been replaced with vectors or deques, etc.
 * Remove mutexes from SmallStack, only used from the main thread.
-* Use std::string in CommandContainer instead of a giant static buffer.
-* Add a third parameter p3 to DoCommand/CommandContainer.
+* Add a third parameter p3, and an auxiliary data mechanism to DoCommand/CommandContainer.
 * Add a free bitmap for pool slots.
 * Maintain free list for text effect entries.
 * Many fields have been widened.
@@ -89,6 +91,7 @@ This document does not describe the player-visible changes/additions described i
 * Add vehicle flag to mark the last vehicle in a consist with a visual effect.
 * Index the vehicle list in per type arrays for use by CallVehicleTicks.
 * Cache whether the vehicle should be drawn.
+* Pre-compute engine refit capacity callbacks if possible.
 
 ### Network/multiplayer
 
@@ -111,8 +114,10 @@ This document does not describe the player-visible changes/additions described i
 * Various forms of caching and incremental updates to the link graph overlay.
 * Change FlowStat from an RB-tree to a flat map with small-object optimisation.
 * Change FlowStatMap from an RB-tree to a B-tree indexed vector.
+* Change LinkGraph::EdgeMatrix to a sparse storage format.
 * Replace MCF Dijkstra RB-tree with B-tree.
 * Reduce performance issues when deleting stale links with refit to any cargo.
+* Dynamically adjust accuracy parameters in MCF 1st pass to avoid computing large numbers of excessively small flows.
 
 ### Pathfinder
 
@@ -142,6 +147,12 @@ This document does not describe the player-visible changes/additions described i
 
 * [NewGRF specification additions](docs/newgrf-additions.html).
 * Add workaround for a known buggy NewGRF to avoid desync issues.
+* Apply many optimisations to VarAction2 deterministic sprite groups.
+* Avoid making callbacks which can be pre-determined to be unhandled, or which can be statically determined ahead of time.
+* Avoid animating industry tiles which are not actually animated in the current layout.
+* Setting the animation frame to its current value no longer triggers a redraw.
+* Animation is not started if it can be determined that it would stop immediately.
+* Avoid unnecessarily triggering or redrawing NewGRF houses.
 
 ### SDL2
 * Update whole window surface if >= 80% needs updating.
@@ -171,9 +182,9 @@ This document does not describe the player-visible changes/additions described i
 
 * Use of __builtin_expect, byte-swap builtins, overflow builtins, and various bitmath builtins.
 * Add various debug console commands.
-* Increase the number of file slots.
 * Cache font heights.
 * Cache resolved names for stations, towns and industries.
 * Change inheritance model of class Window to keep UndefinedBehaviorSanitizer happy.
 * Various other misc changes and fixes to reduce UndefinedBehaviorSanitizer and ThreadSanitizer spam.
 * Add a chicken bits setting, just in case.
+

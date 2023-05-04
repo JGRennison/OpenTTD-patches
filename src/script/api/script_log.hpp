@@ -75,6 +75,12 @@ public:
 	 */
 	static void FreeLogPointer();
 
+	/**
+	 * Log this message once.
+	 * @api -all
+	 */
+	static void LogOnce(ScriptLog::ScriptLogType level, std::string &&message);
+
 private:
 	/**
 	 * Internal command to log the message in a common way.

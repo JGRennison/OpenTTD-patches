@@ -16,6 +16,7 @@
 
 Window *FindWindowById(WindowClass cls, WindowNumber number);
 Window *FindWindowByClass(WindowClass cls);
+Window *GetMainWindow();
 void ChangeWindowOwner(Owner old_owner, Owner new_owner);
 
 void ResizeWindow(Window *w, int x, int y, bool clamp_to_screen = true);
@@ -40,6 +41,7 @@ void DeleteNonVitalWindows();
 void DeleteAllNonVitalWindows();
 void DeleteAllMessages();
 void DeleteConstructionWindows();
+void DeleteNetworkClientWindows();
 void HideVitalWindows();
 void ShowVitalWindows();
 
@@ -54,6 +56,7 @@ void SetWindowDirty(WindowClass cls, WindowNumber number);
 void SetWindowClassesDirty(WindowClass cls);
 
 void DeleteWindowById(WindowClass cls, WindowNumber number, bool force = true);
+void DeleteAllWindowsById(WindowClass cls, WindowNumber number, bool force = true);
 void DeleteWindowByClass(WindowClass cls);
 
 bool FocusWindowById(WindowClass cls, WindowNumber number);

@@ -100,14 +100,14 @@ public:
 	{
 		if (widget == WID_BEM_MESSAGE) {
 			*size = GetStringBoundingBox(STR_MISSING_GRAPHICS_ERROR);
-			size->height = GetStringHeight(STR_MISSING_GRAPHICS_ERROR, size->width - WD_FRAMETEXT_LEFT - WD_FRAMETEXT_RIGHT) + WD_FRAMETEXT_BOTTOM + WD_FRAMETEXT_TOP;
+			size->height = GetStringHeight(STR_MISSING_GRAPHICS_ERROR, size->width - WidgetDimensions::scaled.frametext.Horizontal()) + WidgetDimensions::scaled.frametext.Vertical();
 		}
 	}
 
 	void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (widget == WID_BEM_MESSAGE) {
-			DrawStringMultiLine(r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT, r.top + WD_FRAMETEXT_TOP, r.bottom - WD_FRAMETEXT_BOTTOM, STR_MISSING_GRAPHICS_ERROR, TC_FROMSTRING, SA_CENTER);
+			DrawStringMultiLine(r.Shrink(WidgetDimensions::scaled.frametext), STR_MISSING_GRAPHICS_ERROR, TC_FROMSTRING, SA_CENTER);
 		}
 	}
 
@@ -122,8 +122,11 @@ public:
 /** Nested widgets for the download window. */
 static const NWidgetPart _nested_bootstrap_download_status_window_widgets[] = {
 	NWidget(WWT_CAPTION, COLOUR_GREY), SetDataTip(STR_CONTENT_DOWNLOAD_TITLE, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-	NWidget(WWT_PANEL, COLOUR_GREY, WID_NCDS_BACKGROUND),
-		NWidget(NWID_SPACER), SetMinimalSize(350, 0), SetMinimalTextLines(3, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM + 30),
+	NWidget(WWT_PANEL, COLOUR_GREY),
+		NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_wide, 0), SetPadding(WidgetDimensions::unscaled.modalpopup),
+			NWidget(WWT_EMPTY, INVALID_COLOUR, WID_NCDS_PROGRESS_BAR), SetFill(1, 0),
+			NWidget(WWT_EMPTY, INVALID_COLOUR, WID_NCDS_PROGRESS_TEXT), SetFill(1, 0), SetMinimalSize(350, 0),
+		EndContainer(),
 	EndContainer(),
 };
 
@@ -211,15 +214,15 @@ public:
 		/* We cache the button size. This is safe as no reinit can happen here. */
 		if (this->button_size.width == 0) {
 			this->button_size = maxdim(GetStringBoundingBox(STR_MISSING_GRAPHICS_YES_DOWNLOAD), GetStringBoundingBox(STR_MISSING_GRAPHICS_NO_QUIT));
-			this->button_size.width += WD_FRAMETEXT_LEFT + WD_FRAMETEXT_RIGHT;
-			this->button_size.height += WD_FRAMETEXT_TOP + WD_FRAMETEXT_BOTTOM;
+			this->button_size.width += WidgetDimensions::scaled.frametext.Horizontal();
+			this->button_size.height += WidgetDimensions::scaled.frametext.Vertical();
 		}
 
 		switch (widget) {
 			case WID_BAFD_QUESTION:
 				/* The question is twice as wide as the buttons, and determine the height based on the width. */
 				size->width = this->button_size.width * 2;
-				size->height = GetStringHeight(STR_MISSING_GRAPHICS_SET_MESSAGE, size->width - WD_FRAMETEXT_LEFT - WD_FRAMETEXT_RIGHT) + WD_FRAMETEXT_BOTTOM + WD_FRAMETEXT_TOP;
+				size->height = GetStringHeight(STR_MISSING_GRAPHICS_SET_MESSAGE, size->width - WidgetDimensions::scaled.frametext.Horizontal()) + WidgetDimensions::scaled.frametext.Vertical();
 				break;
 
 			case WID_BAFD_YES:
@@ -233,7 +236,7 @@ public:
 	{
 		if (widget != 0) return;
 
-		DrawStringMultiLine(r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT, r.top + WD_FRAMETEXT_TOP, r.bottom - WD_FRAMETEXT_BOTTOM, STR_MISSING_GRAPHICS_SET_MESSAGE, TC_FROMSTRING, SA_CENTER);
+		DrawStringMultiLine(r.Shrink(WidgetDimensions::scaled.frametext), STR_MISSING_GRAPHICS_SET_MESSAGE, TC_FROMSTRING, SA_CENTER);
 	}
 
 	void OnClick(Point pt, int widget, int click_count) override
@@ -283,16 +286,16 @@ bool HandleBootstrap()
 	/* No user interface, bail out with an error. */
 	if (BlitterFactory::GetCurrentBlitter()->GetScreenDepth() == 0) goto failure;
 
-	/* If there is no network or no freetype, then there is nothing we can do. Go straight to failure. */
+	/* If there is no network or no non-sprite font, then there is nothing we can do. Go straight to failure. */
 #if (defined(_WIN32) && defined(WITH_UNISCRIBE)) || (defined(WITH_FREETYPE) && (defined(WITH_FONTCONFIG) || defined(__APPLE__))) || defined(WITH_COCOA)
 	if (!_network_available) goto failure;
 
 	/* First tell the game we're bootstrapping. */
 	_game_mode = GM_BOOTSTRAP;
 
-	/* Initialise the freetype font code. */
+	/* Initialise the font cache. */
 	InitializeUnicodeGlyphMap();
-	/* Next "force" finding a suitable freetype font as the local font is missing. */
+	/* Next "force" finding a suitable non-sprite font as the local font is missing. */
 	CheckForMissingGlyphs(false);
 
 	/* Initialise the palette. The biggest step is 'faking' some recolour sprites.

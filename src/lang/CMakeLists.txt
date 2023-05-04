@@ -1,5 +1,6 @@
 set(MASTER_LANG_FILE
         ${CMAKE_CURRENT_SOURCE_DIR}/english.txt
+        ${CMAKE_CURRENT_SOURCE_DIR}/extra/english.txt
 )
 
 set(LANG_SOURCE_FILES
@@ -91,6 +92,7 @@ foreach(LANG_SOURCE_FILE IN LISTS LANG_SOURCE_FILES)
             DEPENDS hoststrgen ${MASTER_LANG_FILE}
             MAIN_DEPENDENCY ${LANG_SOURCE_FILE}
             DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/english.txt
+            DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/extra/${LANG_SOURCE_FILE_NAME_WE}.txt
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
             COMMENT "Compiling language ${LANG_SOURCE_FILE_NAME_WE}"
     )

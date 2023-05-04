@@ -15,6 +15,9 @@
 
 #include "../../safeguards.h"
 
+extern Town *AirportGetNearestTown(const struct AirportSpec *as, const TileIterator &it, uint &mindist);
+extern uint8 GetAirportNoiseLevelForDistance(const struct AirportSpec *as, uint distance);
+
 /* static */ bool ScriptAirport::IsValidAirportType(AirportType type)
 {
 	return IsAirportInformationAvailable(type) && ::AirportSpec::Get(type)->IsAvailable();
@@ -47,21 +50,21 @@
 	return ::IsTileType(tile, MP_STATION) && ::IsAirport(tile);
 }
 
-/* static */ int32 ScriptAirport::GetAirportWidth(AirportType type)
+/* static */ SQInteger ScriptAirport::GetAirportWidth(AirportType type)
 {
 	if (!IsAirportInformationAvailable(type)) return -1;
 
 	return ::AirportSpec::Get(type)->size_x;
 }
 
-/* static */ int32 ScriptAirport::GetAirportHeight(AirportType type)
+/* static */ SQInteger ScriptAirport::GetAirportHeight(AirportType type)
 {
 	if (!IsAirportInformationAvailable(type)) return -1;
 
 	return ::AirportSpec::Get(type)->size_y;
 }
 
-/* static */ int32 ScriptAirport::GetAirportCoverageRadius(AirportType type)
+/* static */ SQInteger ScriptAirport::GetAirportCoverageRadius(AirportType type)
 {
 	if (!IsAirportInformationAvailable(type)) return -1;
 
@@ -70,7 +73,7 @@
 
 /* static */ bool ScriptAirport::BuildAirport(TileIndex tile, AirportType type, StationID station_id)
 {
-	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 	EnforcePrecondition(false, IsValidAirportType(type));
 	EnforcePrecondition(false, station_id == ScriptStation::STATION_NEW || station_id == ScriptStation::STATION_JOIN_ADJACENT || ScriptStation::IsValidStation(station_id));
@@ -82,20 +85,21 @@
 
 /* static */ bool ScriptAirport::RemoveAirport(TileIndex tile)
 {
-	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, ::IsValidTile(tile))
 	EnforcePrecondition(false, IsAirportTile(tile) || IsHangarTile(tile));
 
 	return ScriptObject::DoCommand(tile, 0, 0, CMD_LANDSCAPE_CLEAR);
 }
 
-/* static */ int32 ScriptAirport::GetNumHangars(TileIndex tile)
+/* static */ SQInteger ScriptAirport::GetNumHangars(TileIndex tile)
 {
+	EnforceDeityOrCompanyModeValid(-1);
 	if (!::IsValidTile(tile)) return -1;
 	if (!::IsTileType(tile, MP_STATION)) return -1;
 
 	const Station *st = ::Station::GetByTile(tile);
-	if (st->owner != ScriptObject::GetCompany() && ScriptObject::GetCompany() != OWNER_DEITY) return -1;
+	if (st->owner != ScriptObject::GetCompany() && ScriptCompanyMode::IsValid()) return -1;
 	if ((st->facilities & FACIL_AIRPORT) == 0) return -1;
 
 	return st->airport.GetNumHangars();
@@ -103,12 +107,13 @@
 
 /* static */ TileIndex ScriptAirport::GetHangarOfAirport(TileIndex tile)
 {
+	EnforceDeityOrCompanyModeValid(INVALID_TILE);
 	if (!::IsValidTile(tile)) return INVALID_TILE;
 	if (!::IsTileType(tile, MP_STATION)) return INVALID_TILE;
 	if (GetNumHangars(tile) < 1) return INVALID_TILE;
 
 	const Station *st = ::Station::GetByTile(tile);
-	if (st->owner != ScriptObject::GetCompany() && ScriptObject::GetCompany() != OWNER_DEITY) return INVALID_TILE;
+	if (st->owner != ScriptObject::GetCompany() && ScriptCompanyMode::IsValid()) return INVALID_TILE;
 	if ((st->facilities & FACIL_AIRPORT) == 0) return INVALID_TILE;
 
 	return st->airport.GetHangarTile(0);
@@ -126,11 +131,8 @@
 }
 
 
-/* static */ int ScriptAirport::GetNoiseLevelIncrease(TileIndex tile, AirportType type)
+/* static */ SQInteger ScriptAirport::GetNoiseLevelIncrease(TileIndex tile, AirportType type)
 {
-	extern Town *AirportGetNearestTown(const AirportSpec *as, const TileIterator &it, uint &mindist);
-	extern uint8 GetAirportNoiseLevelForDistance(const AirportSpec *as, uint distance);
-
 	if (!::IsValidTile(tile)) return -1;
 	if (!IsAirportInformationAvailable(type)) return -1;
 
@@ -149,8 +151,6 @@
 
 /* static */ TownID ScriptAirport::GetNearestTown(TileIndex tile, AirportType type)
 {
-	extern Town *AirportGetNearestTown(const AirportSpec *as, const TileIterator &it, uint &mindist);
-
 	if (!::IsValidTile(tile)) return INVALID_TOWN;
 	if (!IsAirportInformationAvailable(type)) return INVALID_TOWN;
 
@@ -161,9 +161,9 @@
 	return AirportGetNearestTown(as, AirportTileTableIterator(as->table[0], tile), dist)->index;
 }
 
-/* static */ uint16 ScriptAirport::GetMaintenanceCostFactor(AirportType type)
+/* static */ SQInteger ScriptAirport::GetMaintenanceCostFactor(AirportType type)
 {
-	if (!IsAirportInformationAvailable(type)) return INVALID_TOWN;
+	if (!IsAirportInformationAvailable(type)) return 0;
 
 	return AirportSpec::Get(type)->maintenance_cost;
 }

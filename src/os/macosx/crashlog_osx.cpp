@@ -48,56 +48,69 @@
 #define MAX_STACK_FRAMES 64
 
 #if !defined(WITHOUT_DBG_LLDB)
-static bool ExecReadStdout(const char *file, char *const *args, char *&buffer, const char *last)
+static bool ExecReadStdoutThroughFile(const char *file, char *const *args, char *&buffer, const char *last)
 {
-	int pipefd[2];
-	if (pipe(pipefd) == -1) return false;
+	int null_fd = open("/dev/null", O_RDWR);
+	if (null_fd == -1) return false;
+
+	char name[MAX_PATH];
+	extern std::string _personal_dir;
+	seprintf(name, lastof(name), "%sopenttd-tmp-XXXXXX", _personal_dir.c_str());
+	int fd = mkstemp(name);
+	if (fd == -1) {
+		close(null_fd);
+		return false;
+	}
+
+	/* Unlink file but leave fd open until finished with */
+	unlink(name);
 
 	int pid = fork();
-	if (pid < 0) return false;
+	if (pid < 0) {
+		close(null_fd);
+		close(fd);
+		return false;
+	}
 
 	if (pid == 0) {
 		/* child */
 
-		close(pipefd[0]); /* Close unused read end */
-		dup2(pipefd[1], STDOUT_FILENO);
-		close(pipefd[1]);
-		int null_fd = open("/dev/null", O_RDWR);
-		if (null_fd != -1) {
-			dup2(null_fd, STDERR_FILENO);
-			dup2(null_fd, STDIN_FILENO);
-		}
+		dup2(fd, STDOUT_FILENO);
+		close(fd);
+		dup2(null_fd, STDERR_FILENO);
+		dup2(null_fd, STDIN_FILENO);
+		close(null_fd);
 
 		execvp(file, args);
-		exit(42);
+		_Exit(42);
 	}
 
 	/* parent */
 
-	close(pipefd[1]); /* Close unused write end */
-
-	while (buffer < last) {
-		ssize_t res = read(pipefd[0], buffer, last - buffer);
-		if (res < 0) {
-			if (errno == EINTR) continue;
-			break;
-		} else if (res == 0) {
-			break;
-		} else {
-			buffer += res;
-		}
-	}
-	buffer += seprintf(buffer, last, "\n");
-
-	close(pipefd[0]); /* close read end */
+	close(null_fd);
 
 	int status;
 	int wait_ret = waitpid(pid, &status, 0);
 	if (wait_ret == -1 || !WIFEXITED(status) || WEXITSTATUS(status) != 0) {
 		/* command did not appear to run successfully */
+		close(fd);
 		return false;
 	} else {
 		/* command executed successfully */
+		lseek(fd, 0, SEEK_SET);
+		while (buffer < last) {
+			ssize_t res = read(fd, buffer, last - buffer);
+			if (res < 0) {
+				if (errno == EINTR) continue;
+				break;
+			} else if (res == 0) {
+				break;
+			} else {
+				buffer += res;
+			}
+		}
+		buffer += seprintf(buffer, last, "\n");
+		close(fd);
 		return true;
 	}
 }
@@ -110,7 +123,7 @@ class CrashLogOSX : public CrashLog {
 	/** Signal that has been thrown. */
 	int signum;
 	siginfo_t *si;
-	void *context;
+	[[maybe_unused]] void *context;
 	bool signal_instruction_ptr_valid;
 	void *signal_instruction_ptr;
 
@@ -282,7 +295,7 @@ class CrashLogOSX : public CrashLog {
 		}
 
 		args.push_back(nullptr);
-		if (!ExecReadStdout("lldb", const_cast<char* const*>(&(args[0])), buffer, last)) {
+		if (!ExecReadStdoutThroughFile("lldb", const_cast<char* const*>(&(args[0])), buffer, last)) {
 			buffer = buffer_orig;
 		}
 #endif /* !WITHOUT_DBG_LLDB */

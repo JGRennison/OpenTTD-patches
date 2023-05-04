@@ -1,4 +1,4 @@
-// Monocypher version 3.1.2
+// Monocypher version 3.1.3
 //
 // This file is dual-licensed.  Choose whichever licence you want from
 // the two licences listed below.
@@ -57,7 +57,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#ifdef __cplusplus
+#ifdef MONOCYPHER_CPP_NAMESPACE
+namespace MONOCYPHER_CPP_NAMESPACE {
+#elif defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -83,12 +85,12 @@ typedef struct {
 typedef struct {
     uint32_t r[4];   // constant multiplier (from the secret key)
     uint32_t h[5];   // accumulated hash
-    uint32_t c[5];   // chunk of the message
+    uint8_t  c[16];  // chunk of the message
     uint32_t pad[4]; // random number added at the end (from the secret key)
     size_t   c_idx;  // How many bytes are there in the chunk.
 } crypto_poly1305_ctx;
 
-// Hash (Blake2b)
+// Hash (BLAKE2b)
 typedef struct {
     uint64_t hash[8];
     uint64_t input_offset[2];
@@ -158,7 +160,7 @@ int crypto_unlock_aead(uint8_t       *plain_text,
                        const uint8_t *cipher_text, size_t text_size);
 
 
-// General purpose hash (Blake2b)
+// General purpose hash (BLAKE2b)
 // ------------------------------
 
 // Direct interface
@@ -207,7 +209,7 @@ void crypto_key_exchange(uint8_t       shared_key      [32],
                          const uint8_t their_public_key[32]);
 
 
-// Signatures (EdDSA with curve25519 + Blake2b)
+// Signatures (EdDSA with curve25519 + BLAKE2b)
 // --------------------------------------------
 
 // Generate public key

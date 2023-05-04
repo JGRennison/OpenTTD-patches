@@ -20,12 +20,18 @@
 #include "../disaster_vehicle.h"
 #include "../scope_info.h"
 #include "../string_func.h"
+#include "../error.h"
+#include "../strings_func.h"
+#include "../3rdparty/cpp-btree/btree_map.h"
+#include "../3rdparty/fmt/format.h"
 
 #include "saveload.h"
 
 #include <map>
 
 #include "../safeguards.h"
+
+extern btree::btree_multimap<VehicleID, PendingSpeedRestrictionChange> _pending_speed_restriction_change_map;
 
 /**
  * Link front and rear multiheaded engines to each other
@@ -238,9 +244,13 @@ static void CheckValidVehicles()
 
 extern byte _age_cargo_skip_counter; // From misc_sl.cpp
 
+static std::vector<Vehicle *> _load_invalid_vehicles_to_delete;
+
 /** Called after load to update coordinates */
 void AfterLoadVehicles(bool part_of_load)
 {
+	_load_invalid_vehicles_to_delete.clear();
+
 	const Vehicle *si_v = nullptr;
 	SCOPE_INFO_FMT([&si_v], "AfterLoadVehicles: %s", scope_dumper().VehicleInfo(si_v));
 	for (Vehicle *v : Vehicle::Iterate()) {
@@ -248,8 +258,8 @@ void AfterLoadVehicles(bool part_of_load)
 		/* Reinstate the previous pointer */
 		if (v->Next() != nullptr) {
 			v->Next()->previous = v;
-			if (HasBit(v->subtype, GVSF_VIRTUAL) != HasBit(v->Next()->subtype, GVSF_VIRTUAL)) {
-				SlErrorCorrupt("Mixed virtual/non-virtual vehicle consist");
+			if (v->type == VEH_TRAIN && (HasBit(v->subtype, GVSF_VIRTUAL) != HasBit(v->Next()->subtype, GVSF_VIRTUAL))) {
+				SlErrorCorrupt("Mixed virtual/non-virtual train consist");
 			}
 		}
 		if (v->NextShared() != nullptr) v->NextShared()->previous_shared = v;
@@ -272,26 +282,26 @@ void AfterLoadVehicles(bool part_of_load)
 
 		for (Vehicle *v : Vehicle::Iterate()) {
 			si_v = v;
-			if (v->orders.old != nullptr) {
+			if (v->old_orders != nullptr) {
 				if (IsSavegameVersionBefore(SLV_105)) { // Pre-105 didn't save an OrderList
-					if (mapping[v->orders.old] == nullptr) {
+					if (mapping[v->old_orders] == nullptr) {
 						/* This adds the whole shared vehicle chain for case b */
 
 						/* Creating an OrderList here is safe because the number of vehicles
 						 * allowed in these savegames matches the number of OrderLists. As
 						 * such each vehicle can get an OrderList and it will (still) fit. */
 						assert(OrderList::CanAllocateItem());
-						v->orders.list = mapping[v->orders.old] = new OrderList(v->orders.old, v);
+						v->orders = mapping[v->old_orders] = new OrderList(v->old_orders, v);
 					} else {
-						v->orders.list = mapping[v->orders.old];
+						v->orders = mapping[v->old_orders];
 						/* For old games (case a) we must create the shared vehicle chain */
 						if (IsSavegameVersionBefore(SLV_5, 2)) {
-							v->AddToShared(v->orders.list->GetFirstSharedVehicle());
+							v->AddToShared(v->orders->GetFirstSharedVehicle());
 						}
 					}
 				} else { // OrderList was saved as such, only recalculate not saved values
 					if (v->PreviousShared() == nullptr) {
-						v->orders.list->Initialize(v->orders.list->first, v);
+						v->orders->Initialize(v->orders->first, v);
 					}
 				}
 			}
@@ -313,13 +323,13 @@ void AfterLoadVehicles(bool part_of_load)
 			/* Before 105 there was no order for shared orders, thus it messed up horribly */
 			for (Vehicle *v : Vehicle::Iterate()) {
 				si_v = v;
-				if (v->First() != v || v->orders.list != nullptr || v->previous_shared != nullptr || v->next_shared == nullptr) continue;
+				if (v->First() != v || v->orders != nullptr || v->previous_shared != nullptr || v->next_shared == nullptr) continue;
 
 				/* As above, allocating OrderList here is safe. */
 				assert(OrderList::CanAllocateItem());
-				v->orders.list = new OrderList(nullptr, v);
+				v->orders = new OrderList(nullptr, v);
 				for (Vehicle *u = v; u != nullptr; u = u->next_shared) {
-					u->orders.list = v->orders.list;
+					u->orders = v->orders;
 				}
 			}
 		}
@@ -427,9 +437,16 @@ void AfterLoadVehicles(bool part_of_load)
 
 					rv->roadtype = Engine::Get(rv->engine_type)->u.road.roadtype;
 					rv->compatible_roadtypes = GetRoadTypeInfo(rv->roadtype)->powered_roadtypes;
+					bool is_invalid = false;
 					for (RoadVehicle *u = rv; u != nullptr; u = u->Next()) {
 						u->roadtype = rv->roadtype;
 						u->compatible_roadtypes = rv->compatible_roadtypes;
+						if (GetRoadType(u->tile, GetRoadTramType(u->roadtype)) == INVALID_ROADTYPE) is_invalid = true;
+					}
+
+					if (is_invalid && part_of_load) {
+						_load_invalid_vehicles_to_delete.push_back(rv);
+						break;
 					}
 
 					RoadVehUpdateCache(rv);
@@ -441,7 +458,9 @@ void AfterLoadVehicles(bool part_of_load)
 			}
 
 			case VEH_SHIP:
-				Ship::From(v)->UpdateCache();
+				if (Ship::From(v)->IsPrimaryVehicle()) {
+					Ship::From(v)->UpdateCache();
+				}
 				break;
 
 			default: break;
@@ -484,14 +503,16 @@ void AfterLoadVehicles(bool part_of_load)
 					v->GetImage(v->direction, EIT_ON_MAP, &v->sprite_seq);
 					v->UpdateSpriteSeqBound();
 
-					/* The plane's shadow will have the same image as the plane, but no colour */
+					/* The aircraft's shadow will have the same image as the aircraft, but no colour */
 					Vehicle *shadow = v->Next();
+					if (shadow == nullptr) SlErrorCorrupt("Missing shadow for aircraft");
 					shadow->sprite_seq.CopyWithoutPalette(v->sprite_seq);
 					shadow->sprite_seq_bounds = v->sprite_seq_bounds;
 
 					/* In the case of a helicopter we will update the rotor sprites */
 					if (v->subtype == AIR_HELICOPTER) {
 						Vehicle *rotor = shadow->Next();
+						if (rotor == nullptr) SlErrorCorrupt("Missing rotor for helicopter");
 						GetRotorImage(Aircraft::From(v), EIT_ON_MAP, &rotor->sprite_seq);
 						rotor->UpdateSpriteSeqBound();
 					}
@@ -508,6 +529,21 @@ void AfterLoadVehicles(bool part_of_load)
 		v->UpdateViewport(false);
 		v->cargo.AssertCountConsistency();
 	}
+}
+
+void AfterLoadVehiclesRemoveAnyFoundInvalid()
+{
+	if (!_load_invalid_vehicles_to_delete.empty()) {
+		DEBUG(sl, 0, "Removing %u vehicles found to be uncorrectably invalid during load", (uint)_load_invalid_vehicles_to_delete.size());
+		SetDParam(0, (uint)_load_invalid_vehicles_to_delete.size());
+		ShowErrorMessage(STR_WARNING_LOADGAME_REMOVED_UNCORRECTABLE_VEHICLES, INVALID_STRING_ID, WL_CRITICAL);
+		GroupStatistics::UpdateAfterLoad();
+	}
+
+	for (Vehicle *v : _load_invalid_vehicles_to_delete) {
+		delete v;
+	}
+	_load_invalid_vehicles_to_delete.clear();
 }
 
 bool TrainController(Train *v, Vehicle *nomove, bool reverse = true); // From train_cmd.cpp
@@ -674,11 +710,11 @@ SaveLoadTable GetVehicleDescription(VehicleType vt)
 
 		     SLE_VAR(Vehicle, day_counter,           SLE_UINT8),
 		     SLE_VAR(Vehicle, tick_counter,          SLE_UINT8),
-		SLE_CONDVAR_X(Vehicle, running_ticks,        SLE_FILE_U8  | SLE_VAR_U16,  SLV_88, SL_MAX_VERSION, SlXvFeatureTest([](uint16 version, bool version_in_range) -> bool {
-			return version_in_range && !(SlXvIsFeaturePresent(XSLFI_SPRINGPP, 3) || SlXvIsFeaturePresent(XSLFI_JOKERPP) || SlXvIsFeaturePresent(XSLFI_CHILLPP) || SlXvIsFeaturePresent(XSLFI_VARIABLE_DAY_LENGTH, 2));
+		SLE_CONDVAR_X(Vehicle, running_ticks,        SLE_FILE_U8  | SLE_VAR_U16,  SLV_88, SL_MAX_VERSION, SlXvFeatureTest([](uint16 version, bool version_in_range, const std::array<uint16, XSLFI_SIZE> &feature_versions) -> bool {
+			return version_in_range && !(SlXvIsFeaturePresent(feature_versions, XSLFI_SPRINGPP, 3) || SlXvIsFeaturePresent(feature_versions, XSLFI_JOKERPP) || SlXvIsFeaturePresent(feature_versions, XSLFI_CHILLPP) || SlXvIsFeaturePresent(feature_versions, XSLFI_VARIABLE_DAY_LENGTH, 2));
 		})),
-		SLE_CONDVAR_X(Vehicle, running_ticks,        SLE_UINT16,                  SLV_88, SL_MAX_VERSION, SlXvFeatureTest([](uint16 version, bool version_in_range) -> bool {
-			return version_in_range && (SlXvIsFeaturePresent(XSLFI_SPRINGPP, 2) || SlXvIsFeaturePresent(XSLFI_JOKERPP) || SlXvIsFeaturePresent(XSLFI_CHILLPP) || SlXvIsFeaturePresent(XSLFI_VARIABLE_DAY_LENGTH, 2));
+		SLE_CONDVAR_X(Vehicle, running_ticks,        SLE_UINT16,                  SLV_88, SL_MAX_VERSION, SlXvFeatureTest([](uint16 version, bool version_in_range, const std::array<uint16, XSLFI_SIZE> &feature_versions) -> bool {
+			return version_in_range && (SlXvIsFeaturePresent(feature_versions, XSLFI_SPRINGPP, 2) || SlXvIsFeaturePresent(feature_versions, XSLFI_JOKERPP) || SlXvIsFeaturePresent(feature_versions, XSLFI_CHILLPP) || SlXvIsFeaturePresent(feature_versions, XSLFI_VARIABLE_DAY_LENGTH, 2));
 		})),
 
 		     SLE_VAR(Vehicle, cur_implicit_order_index,   SLE_VEHORDERID),
@@ -769,6 +805,7 @@ SaveLoadTable GetVehicleDescription(VehicleType vt)
 		 SLE_CONDVAR(Vehicle, current_order_time,    SLE_UINT32,                  SLV_67, SL_MAX_VERSION),
 		SLE_CONDVAR_X(Vehicle, current_loading_time, SLE_UINT32,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AUTO_TIMETABLE)),
 		SLE_CONDVAR_X(Vehicle, current_loading_time, SLE_UINT32,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP, SL_JOKER_1_23)),
+		SLE_CONDVAR_X(Vehicle, last_loading_tick,    SLE_UINT64,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LAST_LOADING_TICK)),
 		SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP)),
 		 SLE_CONDVAR(Vehicle, lateness_counter,      SLE_INT32,                   SLV_67, SL_MAX_VERSION),
 
@@ -1103,15 +1140,10 @@ const SaveLoadTable GetVehicleSpeedRestrictionDescription()
 
 void Save_VESR()
 {
-	for (Train *t : Train::Iterate()) {
-		if (HasBit(t->flags, VRF_PENDING_SPEED_RESTRICTION)) {
-			auto range = pending_speed_restriction_change_map.equal_range(t->index);
-			for (auto it = range.first; it != range.second; ++it) {
-				SlSetArrayIndex(t->index);
-				PendingSpeedRestrictionChange *ptr = &(it->second);
-				SlObject(ptr, GetVehicleSpeedRestrictionDescription());
-			}
-		}
+	for (auto &it : _pending_speed_restriction_change_map) {
+		SlSetArrayIndex(it.first);
+		PendingSpeedRestrictionChange *ptr = &(it.second);
+		SlObject(ptr, GetVehicleSpeedRestrictionDescription());
 	}
 }
 
@@ -1119,7 +1151,7 @@ void Load_VESR()
 {
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		auto iter = pending_speed_restriction_change_map.insert({ static_cast<VehicleID>(index), {} });
+		auto iter = _pending_speed_restriction_change_map.insert({ static_cast<VehicleID>(index), {} });
 		PendingSpeedRestrictionChange *ptr = &(iter->second);
 		SlObject(ptr, GetVehicleSpeedRestrictionDescription());
 	}
@@ -1137,6 +1169,7 @@ struct train_venc {
 	uint8 cached_tflags;
 	uint8 cached_num_engines;
 	uint16 cached_centre_mass;
+	uint16 cached_braking_length;
 	uint16 cached_veh_weight;
 	uint16 cached_uncapped_decel;
 	uint8 cached_deceleration;
@@ -1161,6 +1194,8 @@ static std::vector<aircraft_venc> _aircraft_vencs;
 
 void Save_VENC()
 {
+	assert(_sl_xv_feature_versions[XSLFI_VENC_CHUNK] != 0);
+
 	if (!IsNetworkServerSave()) {
 		SlSetLength(0);
 		return;
@@ -1206,6 +1241,7 @@ void Save_VENC()
 			SlWriteByte(t->tcache.cached_tflags);
 			SlWriteByte(t->tcache.cached_num_engines);
 			SlWriteUint16(t->tcache.cached_centre_mass);
+			SlWriteUint16(t->tcache.cached_braking_length);
 			SlWriteUint16(t->tcache.cached_veh_weight);
 			SlWriteUint16(t->tcache.cached_uncapped_decel);
 			SlWriteByte(t->tcache.cached_deceleration);
@@ -1268,6 +1304,7 @@ void Load_VENC()
 		venc.cached_tflags = SlReadByte();
 		venc.cached_num_engines = SlReadByte();
 		venc.cached_centre_mass = SlReadUint16();
+		venc.cached_braking_length = SlReadUint16();
 		venc.cached_veh_weight = SlReadUint16();
 		venc.cached_uncapped_decel = SlReadUint16();
 		venc.cached_deceleration = SlReadByte();
@@ -1316,8 +1353,9 @@ template <typename T>
 void CheckVehicleVENCProp(T &v_prop, T venc_prop, const Vehicle *v, const char *var)
 {
 	if (v_prop != venc_prop) {
+		std::string data = fmt::format("{} [{:X} != {:X}]", var, v_prop, venc_prop);
 		v_prop = venc_prop;
-		LogVehicleVENCMessage(v, var);
+		LogVehicleVENCMessage(v, data.c_str());
 	}
 }
 
@@ -1356,6 +1394,7 @@ void SlProcessVENC()
 		CheckVehicleVENCProp(t->tcache.cached_tflags, (TrainCacheFlags)venc.cached_tflags, t, "cached_tflags");
 		CheckVehicleVENCProp(t->tcache.cached_num_engines, venc.cached_num_engines, t, "cached_num_engines");
 		CheckVehicleVENCProp(t->tcache.cached_centre_mass, venc.cached_centre_mass, t, "cached_centre_mass");
+		CheckVehicleVENCProp(t->tcache.cached_braking_length, venc.cached_braking_length, t, "cached_braking_length");
 		CheckVehicleVENCProp(t->tcache.cached_veh_weight, venc.cached_veh_weight, t, "cached_veh_weight");
 		CheckVehicleVENCProp(t->tcache.cached_uncapped_decel, venc.cached_uncapped_decel, t, "cached_uncapped_decel");
 		CheckVehicleVENCProp(t->tcache.cached_deceleration, venc.cached_deceleration, t, "cached_deceleration");
@@ -1380,6 +1419,19 @@ void SlProcessVENC()
 	}
 }
 
+static ChunkSaveLoadSpecialOpResult Special_VENC(uint32 chunk_id, ChunkSaveLoadSpecialOp op)
+{
+	switch (op) {
+		case CSLSO_SHOULD_SAVE_CHUNK:
+			if (_sl_xv_feature_versions[XSLFI_VENC_CHUNK] == 0) return CSLSOR_DONT_SAVE_CHUNK;
+			break;
+
+		default:
+			break;
+	}
+	return CSLSOR_NONE;
+}
+
 const SaveLoadTable GetVehicleLookAheadDescription()
 {
 	static const SaveLoad _vehicle_look_ahead_desc[] = {
@@ -1387,11 +1439,14 @@ const SaveLoadTable GetVehicleLookAheadDescription()
 		     SLE_VAR(TrainReservationLookAhead, reservation_end_trackdir,     SLE_UINT8),
 		     SLE_VAR(TrainReservationLookAhead, current_position,             SLE_INT32),
 		     SLE_VAR(TrainReservationLookAhead, reservation_end_position,     SLE_INT32),
+		SLE_CONDVAR_X(TrainReservationLookAhead, lookahead_end_position,      SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 9)),
 		     SLE_VAR(TrainReservationLookAhead, reservation_end_z,            SLE_INT16),
 		     SLE_VAR(TrainReservationLookAhead, tunnel_bridge_reserved_tiles, SLE_INT16),
 		     SLE_VAR(TrainReservationLookAhead, flags,                        SLE_UINT16),
 		     SLE_VAR(TrainReservationLookAhead, speed_restriction,            SLE_UINT16),
 		SLE_CONDVAR_X(TrainReservationLookAhead, next_extend_position,        SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 5)),
+		SLE_CONDVAR_X(TrainReservationLookAhead, cached_zpos,                 SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 6)),
+		SLE_CONDVAR_X(TrainReservationLookAhead, zpos_refresh_remaining,      SLE_UINT8,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 6)),
 	};
 
 	return _vehicle_look_ahead_desc;
@@ -1404,6 +1459,7 @@ const SaveLoadTable GetVehicleLookAheadItemDescription()
 		     SLE_VAR(TrainReservationLookAheadItem, end,                      SLE_INT32),
 		     SLE_VAR(TrainReservationLookAheadItem, z_pos,                    SLE_INT16),
 		     SLE_VAR(TrainReservationLookAheadItem, data_id,                  SLE_UINT16),
+		SLE_CONDVAR_X(TrainReservationLookAheadItem, data_aux,                SLE_UINT16,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 9)),
 		     SLE_VAR(TrainReservationLookAheadItem, type,                     SLE_UINT8),
 	};
 
@@ -1468,7 +1524,7 @@ static const ChunkHandler veh_chunk_handlers[] = {
 	{ 'VEHS', Save_VEHS, Load_VEHS, Ptrs_VEHS, nullptr, CH_SPARSE_ARRAY },
 	{ 'VEOX', Save_VEOX, Load_VEOX, nullptr,   nullptr, CH_SPARSE_ARRAY },
 	{ 'VESR', Save_VESR, Load_VESR, nullptr,   nullptr, CH_SPARSE_ARRAY },
-	{ 'VENC', Save_VENC, Load_VENC, nullptr,   nullptr, CH_RIFF         },
+	{ 'VENC', Save_VENC, Load_VENC, nullptr,   nullptr, CH_RIFF,         Special_VENC },
 	{ 'VLKA', Save_VLKA, Load_VLKA, nullptr,   nullptr, CH_SPARSE_ARRAY },
 };
 

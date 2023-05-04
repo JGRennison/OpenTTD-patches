@@ -36,9 +36,6 @@ struct TextfileWindow : public Window, MissingGlyphSearcher {
 
 	uint max_length;                 ///< Maximum length of unwrapped text line.
 
-	static const int TOP_SPACING    = WD_FRAMETEXT_TOP;    ///< Additional spacing at the top of the #WID_TF_BACKGROUND widget.
-	static const int BOTTOM_SPACING = WD_FRAMETEXT_BOTTOM; ///< Additional spacing at the bottom of the #WID_TF_BACKGROUND widget.
-
 	TextfileWindow(TextfileType file_type);
 	~TextfileWindow();
 
@@ -52,7 +49,7 @@ struct TextfileWindow : public Window, MissingGlyphSearcher {
 	FontSize DefaultSize() override;
 	const char *NextString() override;
 	bool Monospace() override;
-	void SetFontNames(FreeTypeSettings *settings, const char *font_name, const void *os_data) override;
+	void SetFontNames(FontCacheSettings *settings, const char *font_name, const void *os_data) override;
 
 	virtual void LoadTextfile(const char *textfile, Subdirectory dir);
 

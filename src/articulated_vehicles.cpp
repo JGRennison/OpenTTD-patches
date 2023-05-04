@@ -10,10 +10,12 @@
 #include "stdafx.h"
 #include "train.h"
 #include "roadveh.h"
+#include "ship.h"
 #include "vehicle_func.h"
 #include "engine_func.h"
 #include "company_func.h"
 #include "newgrf.h"
+#include "newgrf_extension.h"
 #include <vector>
 
 #include "table/strings.h"
@@ -35,6 +37,10 @@ static EngineID GetNextArticulatedPart(uint index, EngineID front_type, Vehicle 
 	assert(front == nullptr || front->engine_type == front_type);
 
 	const Engine *front_engine = Engine::Get(front_type);
+
+	if (front_engine->type == VEH_SHIP && !(front_engine->GetGRF() != nullptr && HasBit(front_engine->GetGRF()->observed_feature_tests, GFTOF_MULTI_PART_SHIPS))) {
+		return INVALID_ENGINE;
+	}
 
 	uint16 callback = GetVehicleCallback(CBID_VEHICLE_ARTIC_ENGINE, index, 0, front_type, front);
 	if (callback == CALLBACK_FAILED) return INVALID_ENGINE;
@@ -178,7 +184,7 @@ CargoArray GetCapacityOfArticulatedParts(EngineID engine)
 	uint16 cargo_capacity = GetVehicleDefaultCapacity(engine, &cargo_type);
 	if (cargo_type < NUM_CARGO) capacity[cargo_type] = cargo_capacity;
 
-	if (!e->IsGroundVehicle()) return capacity;
+	if (!e->IsArticulatedCallbackVehicleType()) return capacity;
 
 	if (!HasBit(e->info.callback_mask, CBM_VEHICLE_ARTIC_ENGINE)) return capacity;
 
@@ -194,41 +200,6 @@ CargoArray GetCapacityOfArticulatedParts(EngineID engine)
 }
 
 /**
- * Get the default cargoes and refits of an articulated vehicle.
- * The refits are linked to a cargo rather than an articulated part to prevent a long list of parts.
- * @param engine Model to investigate.
- * @param[out] cargoes Total amount of units that can be transported, summed by cargo.
- * @param[out] refits Whether a (possibly partial) refit for each cargo is possible.
- * @param cargo_type Selected refitted cargo type
- * @param cargo_capacity Capacity of selected refitted cargo type
- */
-void GetArticulatedVehicleCargoesAndRefits(EngineID engine, CargoArray *cargoes, CargoTypes *refits, CargoID cargo_type, uint cargo_capacity)
-{
-	cargoes->Clear();
-	*refits = 0;
-
-	const Engine *e = Engine::Get(engine);
-
-	if (cargo_type < NUM_CARGO && cargo_capacity > 0) {
-		(*cargoes)[cargo_type] += cargo_capacity;
-		if (IsEngineRefittable(engine)) SetBit(*refits, cargo_type);
-	}
-
-	if (!e->IsGroundVehicle() || !HasBit(e->info.callback_mask, CBM_VEHICLE_ARTIC_ENGINE)) return;
-
-	for (uint i = 1; i < MAX_ARTICULATED_PARTS; i++) {
-		EngineID artic_engine = GetNextArticulatedPart(i, engine);
-		if (artic_engine == INVALID_ENGINE) break;
-
-		cargo_capacity = GetVehicleDefaultCapacity(artic_engine, &cargo_type);
-		if (cargo_type < NUM_CARGO && cargo_capacity > 0) {
-			(*cargoes)[cargo_type] += cargo_capacity;
-			if (IsEngineRefittable(artic_engine)) SetBit(*refits, cargo_type);
-		}
-	}
-}
-
-/**
  * Checks whether any of the articulated parts is refittable
  * @param engine the first part
  * @return true if refittable
@@ -238,7 +209,7 @@ bool IsArticulatedVehicleRefittable(EngineID engine)
 	if (IsEngineRefittable(engine)) return true;
 
 	const Engine *e = Engine::Get(engine);
-	if (!e->IsGroundVehicle()) return false;
+	if (!e->IsArticulatedCallbackVehicleType()) return false;
 
 	if (!HasBit(e->info.callback_mask, CBM_VEHICLE_ARTIC_ENGINE)) return false;
 
@@ -266,7 +237,7 @@ void GetArticulatedRefitMasks(EngineID engine, bool include_initial_cargo_type, 
 	*union_mask = veh_cargoes;
 	*intersection_mask = (veh_cargoes != 0) ? veh_cargoes : ALL_CARGOTYPES;
 
-	if (!e->IsGroundVehicle()) return;
+	if (!e->IsArticulatedCallbackVehicleType()) return;
 	if (!HasBit(e->info.callback_mask, CBM_VEHICLE_ARTIC_ENGINE)) return;
 
 	for (uint i = 1; i < MAX_ARTICULATED_PARTS; i++) {
@@ -400,8 +371,11 @@ void AddArticulatedParts(Vehicle *first)
 		 * and we run out of available vehicles, bail out. */
 		if (!Vehicle::CanAllocateItem()) return;
 
-		GroundVehicleCache *gcache = v->GetGroundVehicleCache();
-		gcache->first_engine = v->engine_type; // Needs to be set before first callback
+		GroundVehicleCache *gcache = nullptr;
+		if (type == VEH_TRAIN || type == VEH_ROAD) {
+			gcache = v->GetGroundVehicleCache();
+			gcache->first_engine = v->engine_type; // Needs to be set before first callback
+		}
 
 		const Engine *e_artic = Engine::Get(engine_type);
 		switch (type) {
@@ -459,25 +433,52 @@ void AddArticulatedParts(Vehicle *first)
 				rv->SetArticulatedPart();
 				break;
 			}
+
+			case VEH_SHIP: {
+				Ship *front = Ship::From(first);
+				Ship *s = new Ship();
+				v->SetNext(s);
+				v = s;
+
+				s->direction = DIR_N;
+				s->x_pos = 0;
+				s->y_pos = 0;
+				s->z_pos = 0;
+				s->vehstatus = VS_HIDDEN | VS_UNCLICKABLE;
+				s->subtype = (1 << GVSF_VIRTUAL);
+
+				if (e_artic->CanCarryCargo()) {
+					s->cargo_type = e_artic->GetDefaultCargoType();
+					s->cargo_cap = e_artic->u.ship.capacity;  // Callback 36 is called when the consist is finished
+				} else {
+					s->cargo_type = front->cargo_type;
+					s->cargo_cap = 0;
+				}
+				break;
+			}
 		}
 
 		/* get common values from first engine */
-		v->direction = first->direction;
 		v->owner = first->owner;
-		v->tile = first->tile;
-		v->x_pos = first->x_pos;
-		v->y_pos = first->y_pos;
-		v->z_pos = first->z_pos;
 		v->date_of_last_service = first->date_of_last_service;
 		v->build_year = first->build_year;
-		v->vehstatus = first->vehstatus & ~VS_STOPPED;
 
 		v->cargo_subtype = 0;
 		v->max_age = 0;
 		v->engine_type = engine_type;
 		v->value = 0;
-		v->sprite_seq.Set(SPR_IMG_QUERY);
 		v->random_bits = VehicleRandomBits();
+
+		if (type == VEH_SHIP) continue;
+
+		v->direction = first->direction;
+		v->tile = first->tile;
+		v->x_pos = first->x_pos;
+		v->y_pos = first->y_pos;
+		v->z_pos = first->z_pos;
+		v->vehstatus = first->vehstatus & ~VS_STOPPED;
+
+		v->sprite_seq.Set(SPR_IMG_QUERY);
 
 		if (flip_image) v->spritenum++;
 

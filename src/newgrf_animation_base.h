@@ -17,6 +17,21 @@
 #include "newgrf_callbacks.h"
 #include "tile_map.h"
 
+template <typename Tobj>
+struct TileAnimationFrameAnimationHelper {
+	static byte Get(Tobj *obj, TileIndex tile) { return GetAnimationFrame(tile); }
+	static bool Set(Tobj *obj, TileIndex tile, byte frame)
+	{
+		byte prev = GetAnimationFrame(tile);
+		if (frame != prev) {
+			SetAnimationFrame(tile, frame);
+			return true;
+		} else {
+			return false;
+		}
+	}
+};
+
 /**
  * Helper class for a unified approach to NewGRF animation.
  * @tparam Tbase       Instantiation of this class.
@@ -24,8 +39,9 @@
  * @tparam Tobj        Object related to the animated tile.
  * @tparam Textra      Custom extra callback data.
  * @tparam GetCallback The callback function pointer.
+ * @tparam Tframehelper The animation frame get/set helper.
  */
-template <typename Tbase, typename Tspec, typename Tobj, typename Textra, uint16 (*GetCallback)(CallbackID callback, uint32 param1, uint32 param2, const Tspec *statspec, Tobj *st, TileIndex tile, Textra extra_data)>
+template <typename Tbase, typename Tspec, typename Tobj, typename Textra, uint16 (*GetCallback)(CallbackID callback, uint32 param1, uint32 param2, const Tspec *statspec, Tobj *st, TileIndex tile, Textra extra_data), typename Tframehelper>
 struct AnimationBase {
 	/**
 	 * Animate a single tile.
@@ -53,9 +69,9 @@ struct AnimationBase {
 		 * increasing this value by one doubles the wait. 0 is the minimum value
 		 * allowed for animation_speed, which corresponds to 30ms, and 16 is the
 		 * maximum, corresponding to around 33 minutes. */
-		if (_scaled_tick_counter % (1 << animation_speed) != 0) return;
+		if ((((uint32)_scaled_tick_counter) & ((1 << animation_speed) - 1)) != 0) return;
 
-		uint8 frame      = GetAnimationFrame(tile);
+		uint8 frame      = Tframehelper::Get(obj, tile);
 		uint8 num_frames = spec->animation.frames;
 
 		bool frame_set_by_callback = false;
@@ -98,8 +114,9 @@ struct AnimationBase {
 			}
 		}
 
-		SetAnimationFrame(tile, frame);
-		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+		if (Tframehelper::Set(obj, tile, frame)) {
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+		}
 	}
 
 	/**
@@ -120,12 +137,18 @@ struct AnimationBase {
 		if (callback == CALLBACK_FAILED) return;
 
 		switch (callback & 0xFF) {
-			case 0xFD: /* Do nothing. */         break;
-			case 0xFE: AddAnimatedTile(tile);    break;
-			case 0xFF: DeleteAnimatedTile(tile); break;
+			case 0xFD: /* Do nothing. */             break;
+			case 0xFE: AddAnimatedTile(tile, false); break;
+			case 0xFF: DeleteAnimatedTile(tile);     break;
 			default:
-				SetAnimationFrame(tile, callback);
-				AddAnimatedTile(tile);
+				bool changed = Tframehelper::Set(obj, tile, callback);
+				if (callback >= spec->animation.frames && (spec->animation.status != ANIM_STATUS_LOOPING || spec->animation.frames == 0) &&
+						!HasBit(spec->callback_mask, Tbase::cbm_animation_next_frame)) {
+					/* The animation would be stopped on this frame in the next AnimateTile call, don't bother animating it */
+					if (changed) MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+					break;
+				}
+				AddAnimatedTile(tile, changed);
 				break;
 		}
 

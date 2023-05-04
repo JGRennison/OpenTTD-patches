@@ -50,8 +50,25 @@ static void Save_XBSS()
 	}
 }
 
+static void Load_XBST()
+{
+	size_t count = SlGetFieldLength() / sizeof(uint32);
+	for (size_t i = 0; i < count; i++) {
+		_bridge_signal_style_map.insert(SlReadUint32());
+	}
+}
+
+static void Save_XBST()
+{
+	SlSetLength(_bridge_signal_style_map.size() * sizeof(uint32));
+	for (uint32 val : _bridge_signal_style_map) {
+		SlWriteUint32(val);
+	}
+}
+
 extern const ChunkHandler bridge_signal_chunk_handlers[] = {
 	{ 'XBSS', Save_XBSS, Load_XBSS, nullptr, nullptr, CH_SPARSE_ARRAY },
+	{ 'XBST', Save_XBST, Load_XBST, nullptr, nullptr, CH_RIFF },
 };
 
 extern const ChunkHandlerTable _bridge_signal_chunk_handlers(bridge_signal_chunk_handlers);

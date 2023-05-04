@@ -97,23 +97,24 @@ public:
 
 	/**
 	 * Types of expenses.
-	 * @api -ai
 	 */
 	enum ExpensesType : byte {
-		EXPENSES_CONSTRUCTION = ::EXPENSES_CONSTRUCTION, ///< Construction costs.
-		EXPENSES_NEW_VEHICLES = ::EXPENSES_NEW_VEHICLES, ///< New vehicles.
-		EXPENSES_TRAIN_RUN    = ::EXPENSES_TRAIN_RUN,    ///< Running costs trains.
-		EXPENSES_ROADVEH_RUN  = ::EXPENSES_ROADVEH_RUN,  ///< Running costs road vehicles.
-		EXPENSES_AIRCRAFT_RUN = ::EXPENSES_AIRCRAFT_RUN, ///< Running costs aircraft.
-		EXPENSES_SHIP_RUN     = ::EXPENSES_SHIP_RUN,     ///< Running costs ships.
-		EXPENSES_PROPERTY     = ::EXPENSES_PROPERTY,     ///< Property costs.
-		EXPENSES_TRAIN_INC    = ::EXPENSES_TRAIN_INC,    ///< Income from trains.
-		EXPENSES_ROADVEH_INC  = ::EXPENSES_ROADVEH_INC,  ///< Income from road vehicles.
-		EXPENSES_AIRCRAFT_INC = ::EXPENSES_AIRCRAFT_INC, ///< Income from aircraft.
-		EXPENSES_SHIP_INC     = ::EXPENSES_SHIP_INC,     ///< Income from ships.
-		EXPENSES_LOAN_INT     = ::EXPENSES_LOAN_INT,     ///< Interest payments over the loan.
-		EXPENSES_OTHER        = ::EXPENSES_OTHER,        ///< Other expenses.
-		EXPENSES_INVALID      = ::INVALID_EXPENSES,      ///< Invalid expense type.
+		EXPENSES_CONSTRUCTION = ::EXPENSES_CONSTRUCTION,     ///< Construction costs.
+		EXPENSES_NEW_VEHICLES = ::EXPENSES_NEW_VEHICLES,     ///< New vehicles.
+		EXPENSES_TRAIN_RUN    = ::EXPENSES_TRAIN_RUN,        ///< Running costs trains.
+		EXPENSES_ROADVEH_RUN  = ::EXPENSES_ROADVEH_RUN,      ///< Running costs road vehicles.
+		EXPENSES_AIRCRAFT_RUN = ::EXPENSES_AIRCRAFT_RUN,     ///< Running costs aircraft.
+		EXPENSES_SHIP_RUN     = ::EXPENSES_SHIP_RUN,         ///< Running costs ships.
+		EXPENSES_PROPERTY     = ::EXPENSES_PROPERTY,         ///< Property costs.
+		EXPENSES_TRAIN_INC    = ::EXPENSES_TRAIN_REVENUE,    ///< Revenue from trains.
+		EXPENSES_ROADVEH_INC  = ::EXPENSES_ROADVEH_REVENUE,  ///< Revenue from road vehicles.
+		EXPENSES_AIRCRAFT_INC = ::EXPENSES_AIRCRAFT_REVENUE, ///< Revenue from aircraft.
+		EXPENSES_SHIP_INC     = ::EXPENSES_SHIP_REVENUE,     ///< Revenue from ships.
+		EXPENSES_LOAN_INT     = ::EXPENSES_LOAN_INTEREST,    ///< Interest payments over the loan.
+		EXPENSES_OTHER        = ::EXPENSES_OTHER,            ///< Other expenses.
+		EXPENSES_SHARING_COST = ::EXPENSES_SHARING_COST,     ///< Infrastructure sharing costs.
+		EXPENSES_SHARING_INC  = ::EXPENSES_SHARING_INC,      ///< Infrastructure sharing income.
+		EXPENSES_INVALID      = ::INVALID_EXPENSES,          ///< Invalid expense type.
 	};
 
 	/**
@@ -137,7 +138,8 @@ public:
 	/**
 	 * Set the name of your company.
 	 * @param name The new name of the company (can be either a raw string, or a ScriptText object).
-	 * @pre name != nullptr && len(name) != 0.
+	 * @pre name != null && len(name) != 0.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptError::ERR_NAME_IS_NOT_UNIQUE
 	 * @return True if the name was changed.
 	 */
@@ -154,7 +156,8 @@ public:
 	/**
 	 * Set the name of your president.
 	 * @param name The new name of the president (can be either a raw string, or a ScriptText object).
-	 * @pre name != nullptr && len(name) != 0.
+	 * @pre name != null && len(name) != 0.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptError::ERR_NAME_IS_NOT_UNIQUE
 	 * @return True if the name was changed.
 	 */
@@ -172,6 +175,7 @@ public:
 	 * Set the gender of the president of your company.
 	 * @param gender The new gender for your president.
 	 * @pre GetPresidentGender(ScriptCompany.COMPANY_SELF) != gender.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @return True if the gender was changed.
 	 * @note When successful a random face will be created.
 	 * @api -game
@@ -192,7 +196,7 @@ public:
 	 * @pre GetLoanInterval() must be a multiplier of 'loan'.
 	 * @pre 'loan' must be below GetMaxLoanAmount().
 	 * @pre 'loan' - GetLoanAmount() + GetBankBalance() must be non-negative.
-	 * @game @pre Valid ScriptCompanyMode active in scope.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @return True if the loan could be set to your requested amount.
 	 */
 	static bool SetLoanAmount(Money loan);
@@ -202,7 +206,7 @@ public:
 	 * @param loan The amount to loan (any positive number).
 	 * @pre 'loan' must be non-negative.
 	 * @pre 'loan' must be below GetMaxLoanAmount().
-	 * @game @pre Valid ScriptCompanyMode active in scope.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @return True if we could allocate a minimum of 'loan' loan.
 	 */
 	static bool SetMinimumLoanAmount(Money loan);
@@ -244,10 +248,8 @@ public:
 	 * @param expenses_type The account in the finances window that will register the cost.
 	 * @param tile The tile to show text effect on or ScriptMap::TILE_INVALID
 	 * @return True, if the bank balance was changed.
-	 * @game @pre No ScriptCompanyMode active in scope.
+	 * @game @pre ScriptCompanyMode::IsDeity().
 	 * @pre ResolveCompanyID(company) != COMPANY_INVALID.
-	 * @pre delta >= -2**31
-	 * @pre delta <   2**31
 	 * @note You need to create your own news message to inform about costs/gifts that you create using this command.
 	 * @api -ai
 	 */
@@ -263,7 +265,7 @@ public:
 	 * @pre quarter <= EARLIEST_QUARTER.
 	 * @return The gross income of the company in the given quarter.
 	 */
-	static Money GetQuarterlyIncome(CompanyID company, uint32 quarter);
+	static Money GetQuarterlyIncome(CompanyID company, SQInteger quarter);
 
 	/**
 	 * Get the expenses of the company in the given quarter.
@@ -276,7 +278,7 @@ public:
 	 * @pre quarter <= EARLIEST_QUARTER.
 	 * @return The expenses of the company in the given quarter.
 	 */
-	static Money GetQuarterlyExpenses(CompanyID company, uint32 quarter);
+	static Money GetQuarterlyExpenses(CompanyID company, SQInteger quarter);
 
 	/**
 	 * Get the amount of cargo delivered by the given company in the given quarter.
@@ -286,7 +288,7 @@ public:
 	 * @pre quarter <= EARLIEST_QUARTER.
 	 * @return The amount of cargo delivered by the given company in the given quarter.
 	 */
-	static int32 GetQuarterlyCargoDelivered(CompanyID company, uint32 quarter);
+	static SQInteger GetQuarterlyCargoDelivered(CompanyID company, SQInteger quarter);
 
 	/**
 	 * Get the performance rating of the given company in the given quarter.
@@ -298,7 +300,7 @@ public:
 	 * @note The performance rating is calculated after every quarter, so the value for CURRENT_QUARTER is undefined.
 	 * @return The performance rating of the given company in the given quarter.
 	 */
-	static int32 GetQuarterlyPerformanceRating(CompanyID company, uint32 quarter);
+	static SQInteger GetQuarterlyPerformanceRating(CompanyID company, SQInteger quarter);
 
 	/**
 	 * Get the value of the company in the given quarter.
@@ -308,13 +310,24 @@ public:
 	 * @pre quarter <= EARLIEST_QUARTER.
 	 * @return The value of the company in the given quarter.
 	 */
-	static Money GetQuarterlyCompanyValue(CompanyID company, uint32 quarter);
+	static Money GetQuarterlyCompanyValue(CompanyID company, SQInteger quarter);
+
+	/**
+	 * Get the expense category value of the company in the given year (relative to the current year).
+	 * @param company The company to get the value of.
+	 * @param year_offset The year, relative to the current year (value values are 0, 1, and 2).
+	 * @param expenses_type The expense category to return.
+	 * @pre ResolveCompanyID(company) != COMPANY_INVALID.
+	 * @pre year_offset <= 2.
+	 * @return The value of the company in the given quarter.
+	 */
+	static Money GetAnnualExpenseValue(CompanyID company, uint32 year_offset, ExpensesType expenses_type);
 
 	/**
 	 * Build your company's HQ on the given tile.
 	 * @param tile The tile to build your HQ on, this tile is the most northern tile of your HQ.
 	 * @pre ScriptMap::IsValidTile(tile).
-	 * @game @pre Valid ScriptCompanyMode active in scope.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @exception ScriptError::ERR_AREA_NOT_CLEAR
 	 * @exception ScriptError::ERR_FLAT_LAND_REQUIRED
 	 * @return True if the HQ could be build.
@@ -335,6 +348,7 @@ public:
 	/**
 	 * Set whether autorenew is enabled for your company.
 	 * @param autorenew The new autorenew status.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @return True if autorenew status has been modified.
 	 * @api -game
 	 */
@@ -351,10 +365,12 @@ public:
 	/**
 	 * Set the number of months before/after max age to autorenew an engine for your company.
 	 * @param months The new months between autorenew.
+	 *               The value will be clamped to MIN(int16) .. MAX(int16).
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @return True if autorenew months has been modified.
 	 * @api -game
 	 */
-	static bool SetAutoRenewMonths(int16 months);
+	static bool SetAutoRenewMonths(SQInteger months);
 
 	/**
 	 * Return the number of months before/after max age to autorenew an engine for a company.
@@ -362,11 +378,12 @@ public:
 	 * @pre ResolveCompanyID(company) != COMPANY_INVALID.
 	 * @return The months before/after max age of engine.
 	 */
-	static int16 GetAutoRenewMonths(CompanyID company);
+	static SQInteger GetAutoRenewMonths(CompanyID company);
 
 	/**
 	 * Set the minimum money needed to autorenew an engine for your company.
 	 * @param money The new minimum required money for autorenew to work.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @return True if autorenew money has been modified.
 	 * @pre money >= 0
 	 * @pre money <  2**32
@@ -386,6 +403,7 @@ public:
 	 * Set primary colour for your company.
 	 * @param scheme Livery scheme to set.
 	 * @param colour Colour to set.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @return False if unable to set primary colour of the livery scheme (e.g. colour in use).
 	 */
 	static bool SetPrimaryLiveryColour(LiveryScheme scheme, Colours colour);
@@ -394,6 +412,7 @@ public:
 	 * Set secondary colour for your company.
 	 * @param scheme Livery scheme to set.
 	 * @param colour Colour to set.
+	 * @game @pre ScriptCompanyMode::IsValid().
 	 * @return False if unable to set secondary colour of the livery scheme.
 	 */
 	static bool SetSecondaryLiveryColour(LiveryScheme scheme, Colours colour);

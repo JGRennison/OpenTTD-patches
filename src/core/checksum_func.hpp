@@ -35,7 +35,7 @@ extern SimpleChecksum64 _state_checksum;
 
 inline void UpdateStateChecksum(uint64 input)
 {
-	_state_checksum.Update(input);
+	if (_networking) _state_checksum.Update(input);
 }
 
 #ifdef RANDOM_DEBUG

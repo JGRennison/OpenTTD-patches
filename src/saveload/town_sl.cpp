@@ -13,11 +13,16 @@
 #include "../landscape.h"
 #include "../subsidy_func.h"
 #include "../strings_func.h"
+#include "../network/network.h"
 
 #include "saveload.h"
 #include "newgrf_sl.h"
 
 #include "../safeguards.h"
+
+static bool _town_zone_radii_no_update = false;
+
+extern bool IsGetTownZonesCallbackHandlerPresent();
 
 HouseID SLGetCleanHouseType(TileIndex t, bool old_map_position)
 {
@@ -54,9 +59,11 @@ void RebuildTownCaches(bool cargo_update_required, bool old_map_position)
 		if (GetHouseNorthPart(house_id) == 0) town->cache.num_houses++;
 	}
 
-	/* Update the population and num_house dependent values */
-	for (Town *town : Town::Iterate()) {
-		UpdateTownRadius(town);
+	if (!_town_zone_radii_no_update) {
+		/* Update the population and num_house dependent values */
+		for (Town *town : Town::Iterate()) {
+			UpdateTownRadius(town);
+		}
 	}
 }
 
@@ -243,6 +250,11 @@ static const SaveLoad _town_desc[] = {
 	SLE_CONDNULL(4, SLV_166, SLV_EXTEND_CARGOTYPES),  ///< cargo_produced, no longer in use
 	SLE_CONDNULL(8, SLV_EXTEND_CARGOTYPES, SLV_REMOVE_TOWN_CARGO_CACHE),  ///< cargo_produced, no longer in use
 	SLE_CONDNULL(30, SLV_2, SLV_REMOVE_TOWN_CARGO_CACHE), ///< old reserved space
+
+	SLE_CONDVAR_X(Town, override_flags,      SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TOWN_SETTING_OVERRIDE)),
+	SLE_CONDVAR_X(Town, override_values,     SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TOWN_SETTING_OVERRIDE)),
+	SLE_CONDVAR_X(Town, build_tunnels,       SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TOWN_SETTING_OVERRIDE)),
+	SLE_CONDVAR_X(Town, max_road_slope,      SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TOWN_SETTING_OVERRIDE)),
 };
 
 static const SaveLoad _town_supplied_desc[] = {
@@ -340,7 +352,7 @@ static void Load_TOWN()
 			uint16 w = SlReadUint16();
 			uint16 h = SlReadUint16();
 			if (w != 0) {
-				SlSkipBytes((SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_MATRIX) ? 8 : 4) * (w / 4 * h / 4));
+				SlSkipBytes((SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_MATRIX) ? 8 : 4) * ((uint)(w / 4) * (uint)(h / 4)));
 			}
 		}
 	}
@@ -358,10 +370,70 @@ static void Ptrs_TOWN()
 	}
 }
 
+void SlResetTNNC()
+{
+	_town_zone_radii_no_update = false;
+}
+
+void Save_TNNC()
+{
+	assert(_sl_xv_feature_versions[XSLFI_TNNC_CHUNK] != 0);
+
+	if (!IsNetworkServerSave() || !IsGetTownZonesCallbackHandlerPresent()) {
+		SlSetLength(0);
+		return;
+	}
+
+	SlSetLength(4 + (Town::GetNumItems() * (1 + lengthof(TownCache::squared_town_zone_radius)) * 4));
+
+	SlWriteUint32((uint32)Town::GetNumItems());
+
+	for (const Town *t : Town::Iterate()) {
+		SlWriteUint32(t->index);
+		for (uint i = 0; i < lengthof(TownCache::squared_town_zone_radius); i++) {
+			SlWriteUint32(t->cache.squared_town_zone_radius[i]);
+		}
+	}
+}
+
+void Load_TNNC()
+{
+	if (SlGetFieldLength() == 0) return;
+
+	if (!_networking || _network_server) {
+		SlSkipBytes(SlGetFieldLength());
+		return;
+	}
+
+	_town_zone_radii_no_update = true;
+
+	const uint32 count = SlReadUint32();
+	for (uint32 idx = 0; idx < count; idx++) {
+		Town *t = Town::Get(SlReadUint32());
+		for (uint i = 0; i < lengthof(TownCache::squared_town_zone_radius); i++) {
+			t->cache.squared_town_zone_radius[i] = SlReadUint32();
+		}
+	}
+}
+
+static ChunkSaveLoadSpecialOpResult Special_TNNC(uint32 chunk_id, ChunkSaveLoadSpecialOp op)
+{
+	switch (op) {
+		case CSLSO_SHOULD_SAVE_CHUNK:
+			if (_sl_xv_feature_versions[XSLFI_TNNC_CHUNK] == 0) return CSLSOR_DONT_SAVE_CHUNK;
+			break;
+
+		default:
+			break;
+	}
+	return CSLSOR_NONE;
+}
+
 /** Chunk handler for towns. */
 static const ChunkHandler town_chunk_handlers[] = {
 	{ 'HIDS', Save_HIDS, Load_HIDS, nullptr,   nullptr, CH_ARRAY },
 	{ 'CITY', Save_TOWN, Load_TOWN, Ptrs_TOWN, nullptr, CH_ARRAY },
+	{ 'TNNC', Save_TNNC, Load_TNNC, nullptr,   nullptr, CH_RIFF,  Special_TNNC },
 };
 
 extern const ChunkHandlerTable _town_chunk_handlers(town_chunk_handlers);

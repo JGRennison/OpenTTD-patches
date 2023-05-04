@@ -130,7 +130,11 @@
 #	define __int64 long long
 	/* Warn about functions using 'printf' format syntax. First argument determines which parameter
 	 * is the format string, second argument is start of values passed to printf. */
-	#define WARN_FORMAT(string, args) __attribute__ ((format (printf, string, args)))
+#	if defined(__MINGW32__) && defined(__USE_MINGW_ANSI_STDIO)
+#		define WARN_FORMAT(string, args) __attribute__ ((format (__MINGW_PRINTF_FORMAT, string, args)))
+#	else
+#		define WARN_FORMAT(string, args) __attribute__ ((format (printf, string, args)))
+#	endif
 	#define WARN_TIME_FORMAT(string) __attribute__ ((format (strftime, string, 0)))
 	#define FINAL final
 
@@ -300,13 +304,13 @@
 #define PACK(type_dec) PACK_N(type_dec, 1)
 
 /* MSVCRT of course has to have a different syntax for long long *sigh* */
-#if defined(_MSC_VER) || defined(__MINGW32__)
+#if defined(_MSC_VER) || (defined(__MINGW32__) && !defined(__USE_MINGW_ANSI_STDIO))
 #   define OTTD_PRINTF64 "%I64d"
 #   define OTTD_PRINTF64U "%I64u"
-#   define OTTD_PRINTFHEX64 "%I64x"
-#   define OTTD_PRINTFHEX64PAD "%016I64x"
+#   define OTTD_PRINTFHEX64_SUFFIX "I64X"
 #   define PRINTF_SIZE "%Iu"
 #   define PRINTF_SIZEX "%IX"
+#   define PRINTF_SIZEX_SUFFIX "IX"
 #else
 #if defined(PRId64)
 #   define OTTD_PRINTF64 "%" PRId64
@@ -318,15 +322,61 @@
 #else
 #   define OTTD_PRINTF64U "%llu"
 #endif
-#if defined(PRIx64)
-#   define OTTD_PRINTFHEX64 "%" PRIx64
-#   define OTTD_PRINTFHEX64PAD "%016" PRIx64
+#if defined(PRIX64)
+#   define OTTD_PRINTFHEX64_SUFFIX PRIX64
 #else
-#   define OTTD_PRINTFHEX64 "%llx"
-#   define OTTD_PRINTFHEX64PAD "%016llx"
+#   define OTTD_PRINTFHEX64_SUFFIX "llX"
 #endif
 #   define PRINTF_SIZE "%zu"
 #   define PRINTF_SIZEX "%zX"
+#   define PRINTF_SIZEX_SUFFIX "zX"
+#endif
+#define OTTD_PRINTFHEX64 "%" OTTD_PRINTFHEX64_SUFFIX
+#define OTTD_PRINTFHEX64PAD "%016" OTTD_PRINTFHEX64_SUFFIX
+
+/*
+ * When making a (pure) debug build, the compiler will by default disable
+ * inlining of functions. This has a detremental effect on the performance of
+ * debug builds, especially when more and more trivial (wrapper) functions get
+ * added to the code base.
+ * Take for example the savegame called "Wentbourne", when running this game
+ * for 100 ticks with the null video driver a number of fairly trivial
+ * functions show up on top. The most common one is the implicit conversion
+ * operator of TileIndex to unsigned int, which takes up over 5% of the total
+ * run time and functionally does absolutely nothing. The remaining functions
+ * for the top 5 are GB, GetTileType, Map::Size and IsTileType to a total of
+ * about 12.5% of the game's total run time.
+ * It is possible to still force inlining in the most commonly used compilers,
+ * but that is at the cost of some problems with debugging due to the forced
+ * inlining. However, the performance benefit can be enormous; when forcing
+ * inlining for the previously mentioned top 5, the debug build ran about 15%
+ * quicker.
+ * The following debug_inline annotation may be added to functions comply
+ * with the following preconditions:
+ *  1: the function takes more than 0.5% of a profiled debug runtime
+ *  2: the function does not modify the game state
+ *  3: the function does not contain selection or iteration statements,
+ *     i.e. no if, switch, for, do, while, etcetera.
+ *  4: the function is one line of code, excluding assertions.
+ *  5: the function is defined in a header file.
+ * The debug_inline annotation must be placed in front of the function, i.e.
+ * before the optional static or constexpr modifier.
+ */
+#if !defined(_DEBUG) || defined(NO_DEBUG_INLINE)
+/*
+ * Do not force inlining when not in debug. This way we do not work against
+ * any carefully designed compiler optimizations.
+ */
+#define debug_inline inline
+#elif defined(__clang__) || defined(__GNUC__)
+#define debug_inline [[gnu::always_inline]] inline
+#else
+/*
+ * MSVC explicitly disables inlining, even forced inlining, in debug builds
+ * so __forceinline makes no difference compared to inline. Other unknown
+ * compilers can also just fallback to a normal inline.
+ */
+#define debug_inline inline
 #endif
 
 typedef unsigned char byte;
@@ -437,11 +487,13 @@ static_assert(SIZE_MAX >= UINT32_MAX);
 #endif /* __APPLE__ */
 
 #if defined(__GNUC__) || defined(__clang__)
-#	define likely(x)   __builtin_expect(!!(x), 1)
-#	define unlikely(x) __builtin_expect(!!(x), 0)
+#	define likely(x)     __builtin_expect(!!(x), 1)
+#	define unlikely(x)   __builtin_expect(!!(x), 0)
+#	define GNU_TARGET(x) [[gnu::target(x)]]
 #else
-#	define likely(x)   (x)
-#	define unlikely(x) (x)
+#	define likely(x)     (x)
+#	define unlikely(x)   (x)
+#	define GNU_TARGET(x)
 #endif /* __GNUC__ || __clang__ */
 
 #if defined(__GNUC__) || defined(__clang__)
@@ -453,6 +505,9 @@ typedef uint16 unaligned_uint16;
 typedef uint32 unaligned_uint32;
 typedef uint64 unaligned_uint64;
 #endif /* __GNUC__ || __clang__ */
+
+/* For the FMT library we only want to use the headers, not link to some library. */
+#define FMT_HEADER_ONLY
 
 void NORETURN CDECL usererror(const char *str, ...) WARN_FORMAT(1, 2);
 void NORETURN CDECL error(const char *str, ...) WARN_FORMAT(1, 2);
@@ -475,6 +530,18 @@ const char *assert_tile_info(uint32 tile);
 #	define assert_msg(expression, ...)
 #	define assert_msg_tile(expression, tile, ...)
 #	define assert_tile(expression, tile)
+#endif
+#if (!defined(NDEBUG) || defined(WITH_ASSERT)) && !defined(FEWER_ASSERTS)
+#	define WITH_FULL_ASSERTS
+#	define dbg_assert(expression) assert(expression)
+#	define dbg_assert_msg(expression, ...) assert_msg(expression, __VA_ARGS__)
+#	define dbg_assert_msg_tile(expression, tile, ...) assert_msg_tile(expression, tile, __VA_ARGS__)
+#	define dbg_assert_tile(expression, tile) assert_tile(expression, tile)
+#else
+#	define dbg_assert(expression)
+#	define dbg_assert_msg(expression, ...)
+#	define dbg_assert_msg_tile(expression, tile, ...)
+#	define dbg_assert_tile(expression, tile)
 #endif
 
 #if defined(OPENBSD)

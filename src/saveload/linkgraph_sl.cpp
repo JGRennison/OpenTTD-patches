@@ -126,10 +126,11 @@ static const SaveLoad _edge_desc[] = {
 	SLE_CONDNULL(4, SL_MIN_VERSION, SLV_191), // distance
 	     SLE_VAR(Edge, capacity,                 SLE_UINT32),
 	     SLE_VAR(Edge, usage,                    SLE_UINT32),
+	SLE_CONDVAR_X(Edge, travel_time_sum,         SLE_UINT64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_TRAVEL_TIME)),
 	     SLE_VAR(Edge, last_unrestricted_update, SLE_INT32),
 	 SLE_CONDVAR(Edge, last_restricted_update,   SLE_INT32, SLV_187, SL_MAX_VERSION),
 	SLE_CONDVAR_X(Edge, last_aircraft_update,    SLE_INT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_AIRCRAFT)),
-	     SLE_VAR(Edge, next_edge,                SLE_UINT16),
+//	     SLE_VAR(Edge, next_edge,                SLE_UINT16), // Removed since XSLFI_LINKGRAPH_SPARSE_EDGES
 };
 
 std::vector<SaveLoad> _filtered_node_desc;
@@ -150,13 +151,19 @@ static void FilterDescs()
 void Save_LinkGraph(LinkGraph &lg)
 {
 	uint16 size = lg.Size();
+	auto edge_iter = lg.edges.begin();
+	auto edge_end = lg.edges.end();
 	for (NodeID from = 0; from < size; ++from) {
 		Node *node = &lg.nodes[from];
 		SlObjectSaveFiltered(node, _filtered_node_desc);
-		/* ... but as that wasted a lot of space we save a sparse matrix now. */
-		for (NodeID to = from; to != INVALID_NODE; to = lg.edges[from][to].next_edge) {
-			SlObjectSaveFiltered(&lg.edges[from][to], _filtered_edge_desc);
+
+		while (edge_iter != edge_end && edge_iter->first.first == from) {
+			SlWriteUint16(edge_iter->first.second);
+			Edge *edge = &edge_iter->second;
+			SlObjectSaveFiltered(edge, _filtered_edge_desc);
+			++edge_iter;
 		}
+		SlWriteUint16(INVALID_NODE);
 	}
 }
 
@@ -167,19 +174,42 @@ void Save_LinkGraph(LinkGraph &lg)
 void Load_LinkGraph(LinkGraph &lg)
 {
 	uint size = lg.Size();
-	for (NodeID from = 0; from < size; ++from) {
-		Node *node = &lg.nodes[from];
-		SlObjectLoadFiltered(node, _filtered_node_desc);
-		if (IsSavegameVersionBefore(SLV_191)) {
+	if (SlXvIsFeaturePresent(XSLFI_LINKGRAPH_SPARSE_EDGES)) {
+		for (NodeID from = 0; from < size; ++from) {
+			Node *node = &lg.nodes[from];
+			SlObjectLoadFiltered(node, _filtered_node_desc);
+			while (true) {
+				NodeID to = SlReadUint16();
+				if (to == INVALID_NODE) break;
+				SlObjectLoadFiltered(&lg.edges[std::make_pair(from, to)], _filtered_edge_desc);
+			}
+		}
+	} else if (IsSavegameVersionBefore(SLV_191)) {
+		std::vector<Edge> temp_edges;
+		std::vector<NodeID> temp_next_edges;
+		temp_edges.resize(size);
+		temp_next_edges.resize(size);
+		for (NodeID from = 0; from < size; ++from) {
+			Node *node = &lg.nodes[from];
+			SlObjectLoadFiltered(node, _filtered_node_desc);
 			/* We used to save the full matrix ... */
 			for (NodeID to = 0; to < size; ++to) {
-				SlObjectLoadFiltered(&lg.edges[from][to], _filtered_edge_desc);
+				SlObjectLoadFiltered(&temp_edges[to], _filtered_edge_desc);
+				temp_next_edges[to] = SlReadUint16();
 			}
-		} else {
+			for (NodeID to = from; to != INVALID_NODE; to = temp_next_edges[to]) {
+				lg.edges[std::make_pair(from, to)] = temp_edges[to];
+			}
+		}
+	} else {
+		for (NodeID from = 0; from < size; ++from) {
+			Node *node = &lg.nodes[from];
+			SlObjectLoadFiltered(node, _filtered_node_desc);
 			/* ... but as that wasted a lot of space we save a sparse matrix now. */
-			for (NodeID to = from; to != INVALID_NODE; to = lg.edges[from][to].next_edge) {
+			for (NodeID to = from; to != INVALID_NODE;) {
 				if (to >= size) SlErrorCorrupt("Link graph structure overflow");
-				SlObjectLoadFiltered(&lg.edges[from][to], _filtered_edge_desc);
+				SlObjectLoadFiltered(&lg.edges[std::make_pair(from, to)], _filtered_edge_desc);
+				to = SlReadUint16();
 			}
 		}
 	}

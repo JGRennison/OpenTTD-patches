@@ -58,22 +58,22 @@ struct CFollowTrackT
 
 	inline CFollowTrackT(Owner o, RailTypes railtype_override = INVALID_RAILTYPES)
 	{
-		assert(IsRailTT());
+		dbg_assert(IsRailTT());
 		m_veh = nullptr;
 		Init(o, railtype_override);
 	}
 
 	inline void Init(const VehicleType *v, RailTypes railtype_override)
 	{
-		assert(!IsRailTT() || (v != nullptr && v->type == VEH_TRAIN));
+		dbg_assert(!IsRailTT() || (v != nullptr && v->type == VEH_TRAIN));
 		m_veh = v;
 		Init(v != nullptr ? v->owner : INVALID_OWNER, IsRailTT() && railtype_override == INVALID_RAILTYPES ? Train::From(v)->compatible_railtypes : railtype_override);
 	}
 
 	inline void Init(Owner o, RailTypes railtype_override)
 	{
-		assert(!IsRoadTT() || m_veh != nullptr);
-		assert(!IsRailTT() || railtype_override != INVALID_RAILTYPES);
+		dbg_assert(!IsRoadTT() || m_veh != nullptr);
+		dbg_assert(!IsRailTT() || railtype_override != INVALID_RAILTYPES);
 		m_veh_owner = o;
 		/* don't worry, all is inlined so compiler should remove unnecessary initializations */
 		m_old_tile = INVALID_TILE;
@@ -87,18 +87,18 @@ struct CFollowTrackT
 		m_railtypes = railtype_override;
 	}
 
-	inline static TransportType TT() { return Ttr_type_; }
-	inline static bool IsWaterTT() { return TT() == TRANSPORT_WATER; }
-	inline static bool IsRailTT() { return TT() == TRANSPORT_RAIL; }
+	debug_inline static TransportType TT() { return Ttr_type_; }
+	debug_inline static bool IsWaterTT() { return TT() == TRANSPORT_WATER; }
+	debug_inline static bool IsRailTT() { return TT() == TRANSPORT_RAIL; }
 	inline bool IsTram() const { return IsRoadTT() && RoadTypeIsTram(RoadVehicle::From(m_veh)->roadtype); }
-	inline static bool IsRoadTT() { return TT() == TRANSPORT_ROAD; }
+	debug_inline static bool IsRoadTT() { return TT() == TRANSPORT_ROAD; }
 	inline static bool Allow90degTurns() { return T90deg_turns_allowed_; }
 	inline static bool DoTrackMasking() { return Tmask_reserved_tracks; }
 
 	/** Tests if a tile is a road tile with a single tramtrack (tram can reverse) */
 	inline DiagDirection GetSingleTramBit(TileIndex tile)
 	{
-		assert(IsTram()); // this function shouldn't be called in other cases
+		dbg_assert(IsTram()); // this function shouldn't be called in other cases
 
 		const bool is_bridge = IsRoadCustomBridgeHeadTile(tile);
 		if (is_bridge || IsNormalRoadTile(tile)) {
@@ -123,10 +123,9 @@ struct CFollowTrackT
 		m_old_tile = old_tile;
 		m_old_td = old_td;
 		m_err = EC_NONE;
-		assert_tile(
-			((TrackStatusToTrackdirBits(
-				GetTileTrackStatus(m_old_tile, TT(), (IsRoadTT() && m_veh != nullptr) ? (this->IsTram() ? RTT_TRAM : RTT_ROAD) : 0)
-			) & TrackdirToTrackdirBits(m_old_td)) != 0) ||
+		dbg_assert_tile(
+			((GetTileTrackdirBits(m_old_tile, TT(), (IsRoadTT() && m_veh != nullptr) ? (this->IsTram() ? RTT_TRAM : RTT_ROAD) : 0)
+			& TrackdirToTrackdirBits(m_old_td)) != 0) ||
 			(IsTram() && GetSingleTramBit(m_old_tile) != INVALID_DIAGDIR), // Disable the assertion for single tram bits
 			m_old_tile
 		);
@@ -219,7 +218,9 @@ protected:
 				m_tiles_skipped = GetTunnelBridgeLength(m_new_tile, m_old_tile);
 				return;
 			}
-			if (!IsRoadCustomBridgeHeadTile(m_old_tile) && !IsRailCustomBridgeHeadTile(m_old_tile)) assert(ReverseDiagDir(enterdir) == m_exitdir);
+			if (!IsRoadCustomBridgeHeadTile(m_old_tile) && !IsRailCustomBridgeHeadTile(m_old_tile)) {
+				dbg_assert(ReverseDiagDir(enterdir) == m_exitdir);
+			}
 		}
 
 		/* normal or station tile, do one step */
@@ -228,7 +229,7 @@ protected:
 		/* special handling for stations */
 		if (IsRailTT() && HasStationTileRail(m_new_tile)) {
 			m_is_station = true;
-		} else if (IsRoadTT() && IsRoadStopTile(m_new_tile)) {
+		} else if (IsRoadTT() && IsStationRoadStopTile(m_new_tile)) {
 			m_is_station = true;
 		}
 	}
@@ -241,7 +242,7 @@ protected:
 		} else if (IsRoadTT()) {
 			m_new_td_bits = GetTrackdirBitsForRoad(m_new_tile, this->IsTram() ? RTT_TRAM : RTT_ROAD);
 		} else {
-			m_new_td_bits = TrackStatusToTrackdirBits(GetTileTrackStatus(m_new_tile, TT(), 0));
+			m_new_td_bits = GetTileTrackdirBits(m_new_tile, TT(), 0);
 		}
 		return (m_new_td_bits != TRACKDIR_BIT_NONE);
 	}
@@ -393,7 +394,7 @@ protected:
 			/* entered railway station
 			 * get platform length */
 			uint length = BaseStation::GetByTile(m_new_tile)->GetPlatformLength(m_new_tile, TrackdirToExitdir(m_old_td));
-			/* how big step we must do to get to the last platform tile; */
+			/* how big step we must do to get to the last platform tile? */
 			m_tiles_skipped = length - 1;
 			/* move to the platform end */
 			TileIndexDiff diff = TileOffsByDiagDir(m_exitdir);

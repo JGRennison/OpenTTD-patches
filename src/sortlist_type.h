@@ -46,7 +46,7 @@ template <typename T, typename F = const char*>
 class GUIList : public std::vector<T> {
 public:
 	typedef bool SortFunction(const T&, const T&);  ///< Signature of sort function.
-	typedef bool CDECL FilterFunction(const T*, F); ///< Signature of filter function.
+	typedef bool FilterFunction(const T*, F); ///< Signature of filter function.
 
 protected:
 	SortFunction * const *sort_func_list;     ///< the sort criteria functions
@@ -297,7 +297,7 @@ public:
 	 */
 	bool Sort()
 	{
-		assert(this->sort_func_list != nullptr);
+		dbg_assert(this->sort_func_list != nullptr);
 		return this->Sort(this->sort_func_list[this->sort_type]);
 	}
 

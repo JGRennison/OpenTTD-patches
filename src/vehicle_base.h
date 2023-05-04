@@ -28,7 +28,6 @@
 #include "saveload/saveload_common.h"
 #include <list>
 #include <map>
-#include <unordered_map>
 
 CommandCost CmdRefitVehicle(TileIndex, DoCommandFlag, uint32, uint32, const char*);
 
@@ -59,11 +58,12 @@ enum VehicleFlags {
 	/* gap, above are common with upstream */
 	VF_SEPARATION_ACTIVE        = 11, ///< Whether timetable auto-separation is currently active
 	VF_SCHEDULED_DISPATCH       = 12, ///< Whether the vehicle should follow a timetabled dispatching schedule
-	VF_LAST_LOAD_ST_SEP         = 13, ///< Each vehicle of this chain has its last_loading_station field set separately
+	VF_LAST_LOAD_ST_SEP         = 13, ///< Each vehicle of this chain has its last_loading_station and last_loading_tick fields set separately
 	VF_TIMETABLE_SEPARATION     = 14, ///< Whether timetable auto-separation is enabled
 	VF_AUTOMATE_TIMETABLE       = 15, ///< Whether the vehicle should manage the timetable automatically.
 	VF_HAVE_SLOT                = 16, ///< Vehicle has 1 or more slots
 	VF_COND_ORDER_WAIT          = 17, ///< Vehicle is waiting due to conditional order loop
+	VF_REPLACEMENT_PENDING      = 18, ///< Autoreplace or template replacement is pending, vehicle should visit the depot
 };
 
 /** Bit numbers used to indicate which of the #NewGRFCache values are valid. */
@@ -159,7 +159,7 @@ struct VehicleCache {
 
 /** Sprite sequence for a vehicle part. */
 struct VehicleSpriteSeq {
-	PalSpriteID seq[4];
+	PalSpriteID seq[8];
 	uint count;
 
 	bool operator==(const VehicleSpriteSeq &other) const
@@ -224,7 +224,6 @@ struct PendingSpeedRestrictionChange {
 	uint16 prev_speed;
 	uint16 flags;
 };
-extern std::unordered_multimap<VehicleID, PendingSpeedRestrictionChange> pending_speed_restriction_change_map;
 
 /** A vehicle pool for a little over 1 million vehicles. */
 typedef Pool<Vehicle, VehicleID, 512, 0xFF000> VehiclePool;
@@ -243,6 +242,23 @@ namespace upstream_sl {
 	class SlVehicleCommon;
 	class SlVehicleDisaster;
 }
+
+/**
+ * Structure to return information about the closest depot location,
+ * and whether it could be found.
+ */
+struct ClosestDepot {
+	TileIndex location;
+	DestinationID destination; ///< The DestinationID as used for orders.
+	bool reverse;
+	bool found;
+
+	ClosestDepot() :
+		location(INVALID_TILE), destination(0), reverse(false), found(false) {}
+
+	ClosestDepot(TileIndex location, DestinationID destination, bool reverse = false) :
+		location(location), destination(destination), reverse(reverse), found(true) {}
+};
 
 /** %Vehicle data structure. */
 struct Vehicle : VehiclePool::PoolItem<&_vehicle_pool>, BaseVehicle, BaseConsist {
@@ -349,6 +365,7 @@ public:
 
 	StationID last_station_visited;     ///< The last station we stopped at.
 	StationID last_loading_station;     ///< Last station the vehicle has stopped at and could possibly leave from with any cargo loaded. (See VF_LAST_LOAD_ST_SEP).
+	uint64 last_loading_tick;           ///< Last time (relative to _scaled_tick_counter) the vehicle has stopped at a station and could possibly leave with any cargo loaded. (See VF_LAST_LOAD_ST_SEP).
 
 	CargoID cargo_type;                 ///< type of cargo this vehicle is carrying
 	byte cargo_subtype;                 ///< Used for livery refits (NewGRF variations)
@@ -368,9 +385,9 @@ public:
 	Order current_order;                ///< The current order (+ status, like: loading)
 
 	union {
-		OrderList *list;            ///< Pointer to the order list for this vehicle
-		Order     *old;             ///< Only used during conversion of old save games
-	} orders;                           ///< The orders currently assigned to the vehicle.
+		OrderList *orders;              ///< Pointer to the order list for this vehicle
+		Order *old_orders;              ///< Only used during conversion of old save games
+	};
 
 	uint16 load_unload_ticks;           ///< Ticks to wait before starting next cycle.
 	GroupID group_id;                   ///< Index of group Pool array
@@ -379,6 +396,15 @@ public:
 
 	NewGRFCache grf_cache;              ///< Cache of often used calculated NewGRF values
 	VehicleCache vcache;                ///< Cache of often used vehicle values.
+
+	/**
+	 * Calculates the weight value that this vehicle will have when fully loaded with its current cargo.
+	 * @return Weight value in tonnes.
+	 */
+	virtual uint16 GetMaxWeight() const
+	{
+		return 0;
+	}
 
 	Vehicle(VehicleType type = VEH_INVALID);
 
@@ -476,8 +502,9 @@ public:
 
 	/**
 	 * Play the sound associated with leaving the station
+	 * @param force Should we play the sound even if sound effects are muted? (horn hotkey)
 	 */
-	virtual void PlayLeaveStationSound() const {}
+	virtual void PlayLeaveStationSound(bool force = false) const {}
 
 	/**
 	 * Whether this is the primary vehicle in the chain.
@@ -545,9 +572,18 @@ public:
 	 * Check if the vehicle is a ground vehicle.
 	 * @return True iff the vehicle is a train or a road vehicle.
 	 */
-	inline bool IsGroundVehicle() const
+	debug_inline bool IsGroundVehicle() const
 	{
 		return this->type == VEH_TRAIN || this->type == VEH_ROAD;
+	}
+
+	/**
+	 * Check if the vehicle type supports articulation.
+	 * @return True iff the vehicle is a train, road vehicle or ship.
+	 */
+	debug_inline bool IsArticulatedCallbackVehicleType() const
+	{
+		return this->type == VEH_TRAIN || this->type == VEH_ROAD || this->type == VEH_SHIP;
 	}
 
 	/**
@@ -746,7 +782,7 @@ public:
 	 * Get the first order of the vehicles order list.
 	 * @return first order of order list.
 	 */
-	inline Order *GetFirstOrder() const { return (this->orders.list == nullptr) ? nullptr : this->orders.list->GetFirstOrder(); }
+	inline Order *GetFirstOrder() const { return (this->orders == nullptr) ? nullptr : this->orders->GetFirstOrder(); }
 
 	/**
 	 * Clears this vehicle's separation status
@@ -772,25 +808,25 @@ public:
 	 * Get the first vehicle of this vehicle chain.
 	 * @return the first vehicle of the chain.
 	 */
-	inline Vehicle *FirstShared() const { return (this->orders.list == nullptr) ? this->First() : this->orders.list->GetFirstSharedVehicle(); }
+	inline Vehicle *FirstShared() const { return (this->orders == nullptr) ? this->First() : this->orders->GetFirstSharedVehicle(); }
 
 	/**
 	 * Check if we share our orders with another vehicle.
 	 * @return true if there are other vehicles sharing the same order
 	 */
-	inline bool IsOrderListShared() const { return this->orders.list != nullptr && this->orders.list->IsShared(); }
+	inline bool IsOrderListShared() const { return this->orders != nullptr && this->orders->IsShared(); }
 
 	/**
 	 * Get the number of orders this vehicle has.
 	 * @return the number of orders this vehicle has.
 	 */
-	inline VehicleOrderID GetNumOrders() const { return (this->orders.list == nullptr) ? 0 : this->orders.list->GetNumOrders(); }
+	inline VehicleOrderID GetNumOrders() const { return (this->orders == nullptr) ? 0 : this->orders->GetNumOrders(); }
 
 	/**
 	 * Get the number of manually added orders this vehicle has.
 	 * @return the number of manually added orders this vehicle has.
 	 */
-	inline VehicleOrderID GetNumManualOrders() const { return (this->orders.list == nullptr) ? 0 : this->orders.list->GetNumManualOrders(); }
+	inline VehicleOrderID GetNumManualOrders() const { return (this->orders == nullptr) ? 0 : this->orders->GetNumManualOrders(); }
 
 	/**
 	 * Get the next station the vehicle will stop at.
@@ -799,7 +835,7 @@ public:
 	inline CargoStationIDStackSet GetNextStoppingStation() const
 	{
 		CargoStationIDStackSet set;
-		if (this->orders.list != nullptr) set.FillNextStoppingStation(this, this->orders.list);
+		if (this->orders != nullptr) set.FillNextStoppingStation(this, this->orders);
 		return set;
 	}
 
@@ -810,7 +846,7 @@ public:
 	inline StationIDStack GetNextStoppingStationCargoIndependent() const
 	{
 		StationIDStack set;
-		if (this->orders.list != nullptr) set = this->orders.list->GetNextStoppingStation(this, 0).station;
+		if (this->orders != nullptr) set = this->orders->GetNextStoppingStation(this, 0).station;
 		return set;
 	}
 
@@ -872,19 +908,16 @@ public:
 	/**
 	 * Find the closest depot for this vehicle and tell us the location,
 	 * DestinationID and whether we should reverse.
-	 * @param location    where do we go to?
-	 * @param destination what hangar do we go to?
-	 * @param reverse     should the vehicle be reversed?
-	 * @return true if a depot could be found.
+	 * @return A structure with information about the closest depot, if found.
 	 */
-	virtual bool FindClosestDepot(TileIndex *location, DestinationID *destination, bool *reverse) { return false; }
+	virtual ClosestDepot FindClosestDepot() { return {}; }
 
 	virtual void SetDestTile(TileIndex tile) { this->dest_tile = tile; }
 
 	CommandCost SendToDepot(DoCommandFlag flags, DepotCommand command, TileIndex specific_depot = 0);
 
 	void UpdateVisualEffect(bool allow_power_change = true);
-	void ShowVisualEffect() const;
+	void ShowVisualEffect(uint max_speed) const;
 
 	/**
 	 * Update the position of the vehicle. This will update the hash that tells
@@ -1003,7 +1036,7 @@ public:
 	 */
 	inline Order *GetOrder(int index) const
 	{
-		return (this->orders.list == nullptr) ? nullptr : this->orders.list->GetOrderAt(index);
+		return (this->orders == nullptr) ? nullptr : this->orders->GetOrderAt(index);
 	}
 
 	/**
@@ -1013,7 +1046,7 @@ public:
 	 */
 	inline VehicleOrderID GetIndexOfOrder(const Order *order) const
 	{
-		return (this->orders.list == nullptr) ? INVALID_VEH_ORDER_ID : this->orders.list->GetIndexOfOrder(order);
+		return (this->orders == nullptr) ? INVALID_VEH_ORDER_ID : this->orders->GetIndexOfOrder(order);
 	}
 
 	/**
@@ -1022,7 +1055,7 @@ public:
 	 */
 	inline Order *GetLastOrder() const
 	{
-		return (this->orders.list == nullptr) ? nullptr : this->orders.list->GetLastOrder();
+		return (this->orders == nullptr) ? nullptr : this->orders->GetLastOrder();
 	}
 
 	bool IsEngineCountable() const;
@@ -1034,7 +1067,7 @@ public:
 	 * Check if the vehicle is a front engine.
 	 * @return Returns true if the vehicle is a front engine.
 	 */
-	inline bool IsFrontEngine() const
+	debug_inline bool IsFrontEngine() const
 	{
 		return this->IsGroundVehicle() && HasBit(this->subtype, GVSF_FRONT);
 	}
@@ -1199,7 +1232,10 @@ public:
 	 * Returns an iterable ensemble of orders of a vehicle
 	 * @return an iterable ensemble of orders of a vehicle
 	 */
-	IterateWrapper Orders() const { return IterateWrapper(this->orders.list); }
+	IterateWrapper Orders() const { return IterateWrapper(this->orders); }
+
+	uint32 GetDisplayMaxWeight() const;
+	uint32 GetDisplayMinPowerToWeight() const;
 };
 
 inline bool IsPointInViewportVehicleRedrawArea(const std::vector<Rect> &viewport_redraw_rects, const Point &pt)
@@ -1450,10 +1486,19 @@ public:
 			return;
 		}
 
+		bool always_update_viewport = false;
+
+		if (EXPECTED_TYPE == VEH_SHIP && update_delta) {
+			extern bool RecentreShipSpriteBounds(Vehicle *v);
+			always_update_viewport = RecentreShipSpriteBounds(this);
+		}
+
 		SetBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH);
 
 		if (force_update) {
 			this->Vehicle::UpdateViewport(IsPointInViewportVehicleRedrawArea(_viewport_vehicle_map_redraw_rects, pt));
+		} else if (always_update_viewport) {
+			this->Vehicle::UpdateViewport(false);
 		}
 	}
 

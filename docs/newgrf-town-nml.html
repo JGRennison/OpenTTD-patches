@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>JGR's Patchpack - NewGRF Town Feature Additions to NewGRF Specifications in NML</title>
+	<style type="text/css">
+		td li      { white-space: nowrap; text-align: left; }
+		th         { white-space: nowrap; text-align: center; }
+		td, th     { border: 1px solid #CCCCCC; padding: 0px 5px; }
+		table      { border-collapse: collapse; empty-cells: show; }
+		.code      { white-space: pre; font-family: "Courier New", Courier, mono; }
+		.indent    { margin-left: 2em; }
+	</style>
+</head>
+<body>
+	<h2>NewGRF Town Feature Additions to NewGRF Specifications in JGR's Patchpack in NML</h2>
+	<p>This document describes the non-standard additions to the <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Towns">town feature in the Official OpenTTD NML Specifications</a>, as implemented in this patchpack, and the associated <a href="https://github.com/JGRennison/nml">NML fork</a></p>
+	<p>This feature allows directly referencing the town feature.<br />
+	Ordinarily this is only accessible as the parent scope for the features: stations, bridges, houses, industries, objects, road stops.</p>
+	<p>This feature may not necessarily match implementations in other patches, branches, etc.<br />
+	This feature as implemented here MAY also be present in other patchpacks.</p>
+
+	<p>The feature identifier is <span class="code">FEAT_TOWN</span>.</p>
+
+	<p>See the <a href="newgrf-additions-nml.html">NewGRF additions (NML)</a> document for background information on additions to NML.</p>
+
+	<p>See the associated <a href="newgrf-town.html">non-NML document</a> for more details on the additions to the NewGRF town feature.</p>
+
+	<p>This feature will be automatically skipped when loaded into a version of OpenTTD which does not support this feature.<br />
+	If this feature is the only significant thing in this GRF, the <span class="code">extended_feature_test(...)</span> function SHOULD be called with the specific feature(s) used and some message, error or other form of
+	signalling to the user used to inform the user that this version of OpenTTD does not support the feature, if the return value is false.<br />
+	Otherwise the GRF could silently do nothing instead of the expected functionality, creating confusion for end users.</p>
+
+	<p><b>Sections:</b>
+	<ul>
+		<li><a href="#town_variables">Variables</a></li>
+		<li><a href="#town_generic_callbacks">Generic Callbacks</a></li>
+		<li><a href="#town_example">Syntax example</a></li>
+	</ul></p>
+
+	<h3 id="town_variables">Additional Town Variables</h3>
+
+	<p>See <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Towns">NML town variables</a> for context.</p>
+
+	<table>
+		<tr><th>Name</th><th>Value range</th><th>Comment</th><th>Requires feature</th></tr>
+		<tr><td>num_houses_uncapped</td><td>0..4294967295</td><td>Number of town houses (not clamped to 0xFFFF)</td><td><font face="monospace">town_uncapped_variables</font>, version 1</td></tr>
+		<tr><td>population_uncapped</td><td>0..4294967295</td><td>Town population (not clamped to 0xFFFF)</td><td><font face="monospace">town_uncapped_variables</font>, version 1</td></tr>
+		<tr><td>town_zone_0_radius_square_uncapped</td><td>0..4294967295</td><td>Town zone 0 radius squared (not clamped to 0xFFFF)</td><td><font face="monospace">town_uncapped_variables</font>, version 1</td></tr>
+		<tr><td>town_zone_1_radius_square_uncapped</td><td>0..4294967295</td><td>Town zone 1 radius squared (not clamped to 0xFFFF)</td><td><font face="monospace">town_uncapped_variables</font>, version 1</td></tr>
+		<tr><td>town_zone_2_radius_square_uncapped</td><td>0..4294967295</td><td>Town zone 2 radius squared (not clamped to 0xFFFF)</td><td><font face="monospace">town_uncapped_variables</font>, version 1</td></tr>
+		<tr><td>town_zone_3_radius_square_uncapped</td><td>0..4294967295</td><td>Town zone 3 radius squared (not clamped to 0xFFFF)</td><td><font face="monospace">town_uncapped_variables</font>, version 1</td></tr>
+		<tr><td>town_zone_4_radius_square_uncapped</td><td>0..4294967295</td><td>Town zone 4 radius squared (not clamped to 0xFFFF)</td><td><font face="monospace">town_uncapped_variables</font>, version 1</td></tr>
+		<tr><td>x_coordinate</td><td>0..65535</td><td>X coordinate of town tile</td><td><font face="monospace">varaction2_towns_town_xy</font>, version 1</td></tr>
+		<tr><td>y_coordinate</td><td>0..65535</td><td>Y coordinate of town tile</td><td><font face="monospace">varaction2_towns_town_xy</font>, version 1</td></tr>
+	</table>
+
+	<h3 id="town_generic_callbacks">Town Generic Callbacks</h3>
+
+	<p>Currently only the <font face="monospace">town_zone</font> callback is defined.<br />
+	This requires the feature: <font face="monospace">town_zone_callback</font>, version 1.
+	</p>
+
+	<pre class="code">
+	item (FEAT_TOWN, ..., GENERIC_CALLBACK) {
+		graphics {
+			town_zone: ...;
+		}
+	}
+	</pre>
+
+	<p>This callback is called whenever the zone radii of a town need to be recalculated.<br />
+	This can occur when:<br />
+	<ul>
+		<li>The number of houses in the town changes</li>
+		<li>When the game is loaded</li>
+		<li>When settings, NewGRFs or other relavant game configuration is changed</li>
+	</ul>
+	</p>
+
+	<p>The callback is not called if the town zone radii calculations have been manually overriden by settings.</p>
+
+	<p>The return value of the callback is the version of the result format returned by the callback.<br />
+	Currently only version 0 is defined.<br />
+	The callback must store the values of the town zone radii into registers: 0x100 to 0x104, for zones 0 to 4 respectively, using <font face="monospace">STORE_TEMP</font>.
+	</p>
+
+	<p>A callback failure result should be returned to use the default town zone radii calculation (or to allow another GRF to handle the callback).</p>
+
+	<p><b>The <font face="monospace">num_houses_uncapped</font> variable should be used instead of <font face="monospace">num_houses</font>, otherwise the results may be incorrect for large towns.</b><br />
+	Implementers of this callback may assume that the <font face="monospace">town_uncapped_variables</font> feature is present.</p>
+
+	<h3 id="town_example">Syntax example</h3>
+	<p>
+		<pre class="code">
+grf {
+	...
+}
+
+if (!extended_feature_test("town_zone_callback")) {
+	error(FATAL, string(STR_UNSUPPORTED_VERSION));
+}
+
+switch (FEAT_TOWN, SELF, town_zone_cb,
+		[
+			STORE_TEMP(num_houses_uncapped * (is_city ? 32 : 16), 0x100),
+			STORE_TEMP((num_houses_uncapped >> 3) * 9, 0x101),
+			STORE_TEMP(0, 0x102),
+			STORE_TEMP((num_houses_uncapped >> 3) * 5, 0x103),
+			STORE_TEMP((num_houses_uncapped >> 3) * 3, 0x104)
+		]) {
+	return 0;
+}
+
+item (FEAT_TOWN, town_cb, GENERIC_CALLBACK) {
+	graphics {
+		town_zone: town_zone_cb;
+	}
+}
+		</pre>
+	</p>
+</body>
+</html>

@@ -41,6 +41,10 @@ void Waypoint::GetTileArea(TileArea *ta, StationType type) const
 			*ta = this->train_station;
 			return;
 
+		case STATION_ROADWAYPOINT:
+			*ta = this->road_waypoint_area;
+			return;
+
 		case STATION_BUOY:
 			ta->tile = this->xy;
 			ta->w    = 1;
@@ -62,4 +66,6 @@ Waypoint::~Waypoint()
 
 	/* Remove all news items */
 	DeleteStationNews(this->index);
+
+	if (ShouldShowBaseStationViewportLabel(this)) this->sign.MarkDirty(ZOOM_LVL_DRAW_SPR);
 }

@@ -93,8 +93,8 @@ public:
 
 	inline int CurveCost(Trackdir td1, Trackdir td2)
 	{
-		assert(IsValidTrackdir(td1));
-		assert(IsValidTrackdir(td2));
+		dbg_assert(IsValidTrackdir(td1));
+		dbg_assert(IsValidTrackdir(td2));
 		int cost = 0;
 		if (TrackFollower::Allow90degTurns()
 				&& HasTrackdir(TrackdirCrossesTrackdirs(td1), td2)) {
@@ -189,6 +189,8 @@ private:
 	 */
 	static TileIndex TraceRestrictPreviousSignalCallback(const Train *v, const void *node_ptr, TraceRestrictPBSEntrySignalAuxField mode)
 	{
+		if (mode == TRPESAF_RES_END_TILE) return INVALID_TILE;
+
 		const Node *node = static_cast<const Node *>(node_ptr);
 		for (;;) {
 			TileIndex last_signal_tile = node->m_last_non_reserve_through_signal_tile;
@@ -423,7 +425,20 @@ public:
 
 				if (has_signal_against) {
 					SignalType sig_type = GetSignalType(tile, TrackdirToTrack(trackdir));
-					if (IsPbsSignal(sig_type) && !IsNoEntrySignal(sig_type)) {
+					if (IsNoEntrySignal(sig_type)) {
+						if (ShouldCheckTraceRestrict(n, tile)) {
+							const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(trackdir));
+							if (prog && prog->actions_used_flags & TRPAUF_PF) {
+								TraceRestrictProgramResult out;
+								prog->Execute(Yapf().GetVehicle(), TraceRestrictProgramInput(tile, trackdir, &TraceRestrictPreviousSignalCallback, &n), out);
+								if (out.flags & TRPRF_DENY) {
+									n.m_segment->m_end_segment_reason |= ESRB_DEAD_END;
+									return -1;
+								}
+								cost += out.penalty;
+							}
+						}
+					} else if (IsPbsSignal(sig_type)) {
 						bool no_add_cost = false;
 
 						if (ShouldCheckTraceRestrict(n, tile)) {
@@ -469,9 +484,9 @@ public:
 	{
 		int cost = 0;
 		const Train *v = Yapf().GetVehicle();
-		assert(v != nullptr);
-		assert(v->type == VEH_TRAIN);
-		assert(v->gcache.cached_total_length != 0);
+		dbg_assert(v != nullptr);
+		dbg_assert(v->type == VEH_TRAIN);
+		dbg_assert(v->gcache.cached_total_length != 0);
 		int missing_platform_length = CeilDiv(v->gcache.cached_total_length, TILE_SIZE) - platform_length;
 		if (missing_platform_length < 0) {
 			/* apply penalty for longer platform than needed */
@@ -496,9 +511,9 @@ public:
 	 */
 	inline bool PfCalcCost(Node &n, const TrackFollower *tf)
 	{
-		assert(!n.flags_u.flags_s.m_targed_seen);
-		assert(tf->m_new_tile == n.m_key.m_tile);
-		assert((HasTrackdir(tf->m_new_td_bits, n.m_key.m_td)));
+		dbg_assert(!n.flags_u.flags_s.m_targed_seen);
+		dbg_assert(tf->m_new_tile == n.m_key.m_tile);
+		dbg_assert((HasTrackdir(tf->m_new_td_bits, n.m_key.m_td)));
 
 		/* Does the node have some parent node? */
 		bool has_parent = (n.m_parent != nullptr);
@@ -553,7 +568,7 @@ public:
 
 		if (!has_parent) {
 			/* We will jump to the middle of the cost calculator assuming that segment cache is not used. */
-			assert(!is_cached_segment);
+			dbg_assert(!is_cached_segment);
 			/* Skip the first transition cost calculation. */
 			goto no_entry_cost;
 		} else if (n.flags_u.flags_s.m_teleport) {
@@ -580,7 +595,7 @@ public:
 					end_segment_reason = segment.m_end_segment_reason;
 					/* We will need also some information about the last signal (if it was red). */
 					if (segment.m_last_signal_tile != INVALID_TILE) {
-						assert_tile(HasSignalOnTrackdir(segment.m_last_signal_tile, segment.m_last_signal_td), segment.m_last_signal_tile);
+						dbg_assert_tile(HasSignalOnTrackdir(segment.m_last_signal_tile, segment.m_last_signal_td), segment.m_last_signal_tile);
 						SignalState sig_state = GetSignalStateByTrackdir(segment.m_last_signal_tile, segment.m_last_signal_td);
 						bool is_red = (sig_state == SIGNAL_STATE_RED);
 						n.flags_u.flags_s.m_last_signal_was_red = is_red;
@@ -619,7 +634,7 @@ no_entry_cost: // jump here at the beginning if the node has no parent (it is th
 			/* Tests for 'potential target' reasons to close the segment. */
 			if (cur.tile == prev.tile) {
 				/* Penalty for reversing in a depot. */
-				assert_tile(IsRailDepot(cur.tile), cur.tile);
+				dbg_assert_tile(IsRailDepot(cur.tile), cur.tile);
 				segment_cost += Yapf().PfGetSettings().rail_depot_reverse_penalty;
 
 			} else if (IsRailDepotTile(cur.tile)) {
@@ -639,7 +654,7 @@ no_entry_cost: // jump here at the beginning if the node has no parent (it is th
 					/* Arbitrary maximum tiles to follow to avoid infinite loops. */
 					uint max_tiles = 20;
 					while (ft.Follow(t, td)) {
-						assert(t != ft.m_new_tile);
+						dbg_assert(t != ft.m_new_tile);
 						t = ft.m_new_tile;
 						if (t == cur.tile || --max_tiles == 0) {
 							/* We looped back on ourself or found another loop, bail out. */
@@ -716,7 +731,7 @@ no_entry_cost: // jump here at the beginning if the node has no parent (it is th
 			tf_local.Init(v, Yapf().GetCompatibleRailTypes());
 
 			if (!tf_local.Follow(cur.tile, cur.td)) {
-				assert(tf_local.m_err != TrackFollower::EC_NONE);
+				dbg_assert(tf_local.m_err != TrackFollower::EC_NONE);
 				/* Can't move to the next tile (EOL?). */
 				if (!(end_segment_reason & (ESRB_RAIL_TYPE | ESRB_DEAD_END))) end_segment_reason |= ESRB_DEAD_END_EOL;
 				if (tf_local.m_err == TrackFollower::EC_RAIL_ROAD_TYPE) {
@@ -840,7 +855,7 @@ no_entry_cost: // jump here at the beginning if the node has no parent (it is th
 			/* Station platform-length penalty. */
 			if ((end_segment_reason & ESRB_STATION) != ESRB_NONE) {
 				const BaseStation *st = BaseStation::GetByTile(n.GetLastTile());
-				assert(st != nullptr);
+				dbg_assert(st != nullptr);
 				uint platform_length = st->GetPlatformLength(n.GetLastTile(), ReverseDiagDir(TrackdirToExitdir(n.GetLastTrackdir())));
 				/* Reduce the extra cost caused by passing-station penalty (each station receives it in the segment cost). */
 				extra_cost -= Yapf().PfGetSettings().rail_station_penalty * platform_length;

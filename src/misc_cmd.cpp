@@ -67,8 +67,10 @@ CommandCost CmdIncreaseLoan(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 			break;
 	}
 
-	/* Overflow protection */
-	if (c->money + c->current_loan + loan < c->money) return CMD_ERROR;
+	/* In case adding the loan triggers the overflow protection of Money,
+	 * we would essentially be losing money as taking and repaying the loan
+	 * immediately would not get us back to the same bank balance anymore. */
+	if (c->money > Money::max() - loan) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
 		c->money        += loan;
@@ -179,8 +181,9 @@ CommandCost CmdPause(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, 
 		} else {
 			PauseMode prev_mode = _pause_mode;
 
-			if (p2 == 0) {
+			if ((p2 & 1) == 0) {
 				_pause_mode = static_cast<PauseMode>(_pause_mode & (byte)~p1);
+				_pause_countdown = (p2 >> 1);
 			} else {
 				_pause_mode = static_cast<PauseMode>(_pause_mode | (byte)p1);
 			}

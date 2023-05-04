@@ -35,6 +35,7 @@
 #include "thread.h"
 #include "tgp.h"
 #include "signal_func.h"
+#include "newgrf_industrytiles.h"
 
 #include "safeguards.h"
 
@@ -95,7 +96,6 @@ static void _GenerateWorld()
 		_generating_world = true;
 		if (_network_dedicated) DEBUG(net, 3, "Generating map, please wait...");
 		/* Set the Random() seed to generation_seed so we produce the same map with the same seed */
-		if (_settings_game.game_creation.generation_seed == GENERATE_NEW_SEED) _settings_game.game_creation.generation_seed = _settings_newgame.game_creation.generation_seed = InteractiveRandom();
 		_random.SetSeed(_settings_game.game_creation.generation_seed);
 
 		/* Generates a unique id for the savegame, to avoid accidentally overwriting a save */
@@ -104,6 +104,7 @@ static void _GenerateWorld()
 
 		SetGeneratingWorldProgress(GWP_MAP_INIT, 2);
 		SetObjectToPlace(SPR_CURSOR_ZZZ, PAL_NONE, HT_NONE, WC_MAIN_WINDOW, 0);
+		ScriptObject::InitializeRandomizers();
 
 		BasePersistentStorageArray::SwitchMode(PSM_ENTER_GAMELOOP);
 
@@ -129,6 +130,7 @@ static void _GenerateWorld()
 
 			_settings_game.game_creation.snow_line_height = DEF_SNOWLINE_HEIGHT;
 			UpdateCachedSnowLine();
+			UpdateCachedSnowLineBounds();
 		} else {
 			GenerateLandscape(_gw.mode);
 			GenerateClearTile();
@@ -311,10 +313,16 @@ void GenerateWorld(GenWorldMode mode, uint size_x, uint size_y, bool reset_setti
 		_settings_game.construction.map_height_limit = std::max(MAP_HEIGHT_LIMIT_AUTO_MINIMUM, std::min(MAX_MAP_HEIGHT_LIMIT, estimated_height + MAP_HEIGHT_LIMIT_AUTO_CEILING_ROOM));
 	}
 
+	if (_settings_game.game_creation.generation_seed == GENERATE_NEW_SEED) _settings_game.game_creation.generation_seed = _settings_newgame.game_creation.generation_seed = InteractiveRandom();
+
 	/* Load the right landscape stuff, and the NewGRFs! */
 	GfxLoadSprites();
 	InitialiseExtraAspectsVariable();
 	LoadStringWidthTable();
+	AnalyseEngineCallbacks();
+	AnalyseIndustryTileSpriteGroups();
+	extern void AnalyseHouseSpriteGroups();
+	AnalyseHouseSpriteGroups();
 
 	/* Re-init the windowing system */
 	ResetWindowSystem();
@@ -335,4 +343,6 @@ void GenerateWorld(GenWorldMode mode, uint size_x, uint size_y, bool reset_setti
 	}
 
 	_GenerateWorld();
+
+	ReInitAllWindows(false);
 }

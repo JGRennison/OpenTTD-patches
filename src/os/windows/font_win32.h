@@ -10,7 +10,7 @@
 #ifndef FONT_WIN32_H
 #define FONT_WIN32_H
 
-#include "../../fontcache_internal.h"
+#include "../../fontcache/truetypefontcache.h"
 #include "win32.h"
 
 /** Font cache for fonts that are based on a Win32 font. */
@@ -21,7 +21,7 @@ private:
 	HDC dc = nullptr;     ///< Cached GDI device context.
 	HGDIOBJ old_font;     ///< Old font selected into the GDI context.
 	SIZE glyph_size;      ///< Maximum size of regular glyphs.
-	std::string fontname; ///< Cached copy of this->logfont.lfFaceName
+	std::string fontname; ///< Cached copy of loaded font facename
 
 	void SetFontSize(FontSize fs, int pixels);
 

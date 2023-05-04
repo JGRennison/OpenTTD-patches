@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>JGR's Patchpack - NewGRF New Landscape Addition to NewGRF Specifications in NML</title>
+	<style type="text/css">
+		td li      { white-space: nowrap; text-align: left; }
+		th         { white-space: nowrap; text-align: center; }
+		td, th     { border: 1px solid #CCCCCC; padding: 0px 5px; }
+		table      { border-collapse: collapse; empty-cells: show; }
+		.code      { white-space: pre; font-family: "Courier New", Courier, mono; }
+		.indent    { margin-left: 2em; }
+	</style>
+</head>
+<body>
+	<h2>NewGRF New Landscape Addition to NewGRF Specifications in JGR's Patchpack in NML</h2>
+	<p>This document describes the non-standard addition of the NewGRF new landscape feature to the <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Main">Official OpenTTD NML Specifications</a>, as implemented in this patchpack, and the associated <a href="https://github.com/JGRennison/nml">NML fork</a></p>
+	<p>This feature allows NewGRF custom graphics using switches and spritesets for landscape tiles. Currently this includes: rock tiles.</p>
+	<p>This feature may not necessarily match implementations of additional landscape graphics features in other patches, branches, etc.<br />
+	This feature as implemented here MAY also be present in other patchpacks.</p>
+
+	<p>The feature identifier is <span class="code">FEAT_NEWLANDSCAPE</span>.<br />
+	There is no permanent storage associated with this feature.</p>
+
+	<p>See the <a href="newgrf-additions-nml.html">NewGRF additions (NML)</a> document for background information on additions to NML.</p>
+
+	<p>See the associated <a href="newgrf-newlandscape.html">non-NML document</a> for more details on the NewGRF new landscape feature.</p>
+
+	<p>This feature will be automatically skipped when loaded into a version of OpenTTD which does not support this feature.<br />
+	If this feature is the only significant thing in this GRF, then <span class="code">extended_feature_test("new_landscape")</span> SHOULD be called and some message, error or other form of
+	signalling to the user used to inform the user that this version of OpenTTD does not support the feature, if the return value is false.<br />
+	Otherwise the GRF could silently do nothing instead of the expected functionality, creating confusion for end users.</p>
+
+	<p><b>Sections:</b>
+	<ul>
+		<li><a href="#newlandscape_ids">IDs</a></li>
+		<li><a href="#newlandscape_properties">Properties</a></li>
+		<li><a href="#newlandscape_variables">Variables</a></li>
+		<li><a href="#newlandscape_example">Syntax example</a></li>
+	</ul></p>
+
+	<h3 id="newlandscape_ids">New Landscape IDs</h3>
+	<p>
+		The ID field for an item must be set to one of the IDs in the table below (further IDs may be allocated for other purposes in future).
+		<table>
+		<tr><th>ID</th><th>Landscape type</th></tr>
+		<tr><td>NEW_LANDSCAPE_ID_ROCKS</td><td>Rocky tiles</td></tr>
+		</table>
+		</p>
+	</p>
+
+	<h3 id="newlandscape_properties">New Landscape Properties</h3>
+
+	<table>
+		<tr><th>Property</th><th>Value range</th><th>Comment</th></tr>
+		<tr><td>enable_recolour</td><td>0 or 1</td>
+			<td>
+				Enable recolouring of graphics.<br />
+				When enabled, in addition to returning a sprite, register 0x100 may be set to the following using STORE_TEMP:
+				<table>
+				<tr><th>Bits</th><th>Meaning</th></tr>
+				<tr><td>0 - 23</td><td>Recolour sprite to use. Set to 0 for no recolouring.</td></tr>
+				<tr><td>24 - 31</td><td>Reserved, set to zero.</td></tr>
+				</table>
+			</td>
+		</tr>
+		<tr><td>enable_draw_snowy_rocks</td><td>0 or 1</td>
+			<td>
+				Enable drawing of rock tiles covered by snow, for this GRF.<br />
+				(This only takes effect from <font face="monospace">new_landscape</font> version 2).
+			</td>
+		</tr>
+	</table>
+
+	<h3 id="newlandscape_variables">New Landscape Variables</h3>
+
+	<table>
+		<tr><th>Name</th><th>Value range</th><th>Comment</th></tr>
+		<tr><td>terrain_type</td><td>TILETYPE_XXX</td><td>XXX = NORMAL | DESERT | RAIN_FOREST | SNOW</td></tr>
+		<tr><td>tile_slope</td><td>SLOPE_XXX</td><td>See <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:List_of_tile_slopes">tile slopes</a> for an overview of possible values</td></tr>
+		<tr><td>tile_height</td><td>0..255</td><td>Height of the lowest corner of the tile</td></tr>
+		<tr><td>tile_hash</td><td>0..4294967295</td><td>Hash value derived from the coordinates of the tile, suitable for pseudo-randomising graphics</td></tr>
+		<tr><td>landscape_type</td><td>NEW_LANDSCAPE_TYPE_XXX</td><td>Landscape type<br />XXX = ROCKS</td></tr>
+		<tr><td>snow_present</td><td>0 or 1</td><td>Snow is present on this tile, at any density.</br>This requires <font face="monospace">new_landscape</font>, version 2.</td></tr>
+		<tr><td>ground_density</td><td>0..3</td><td>Ground density (if snow_present is 1, this is the snow density).</br>This requires <font face="monospace">new_landscape</font>, version 2.</td></tr>
+	</table>
+	<br />
+	Variables that require one or more parameters:
+	<table>
+		<tr><th>Name</th><th>Arguments</th><th>Value range</th><th>Comment</th></tr>
+		<tr><td>nearby_tile_slope</td><td>x, y offset (-8..7)</td><td>SLOPE_XXX</td><td>Slope of a nearby tile</td></tr>
+		<tr><td>nearby_tile_is_same_type</td><td>x, y offset (-8..7)</td><td>0 | 1</td><td>Is nearby tile the same landscape type as this one?</td></tr>
+		<tr><td>nearby_tile_is_water</td><td>x, y offset (-8..7)</td><td>0 | 1</td><td>Is nearby tile a water tile?</td></tr>
+		<tr><td>nearby_tile_terrain_type</td><td>x, y offset (-8..7)</td><td></td><td>See terrain_type</td></tr>
+		<tr><td>nearby_tile_water_class</td><td>x, y offset (-8..7)</td><td>WATER_CLASS_XXX</td><td>XXX = [NONE | SEA | CANAL | RIVER]<br />Note that tiles for which nearby_tile_is_water is 0 may still have a water class, e.g. industry tiles with water beneath them. </td></tr>
+		<tr><td>nearby_tile_height</td><td>x, y offset (-8..7)</td><td></td><td>The minimum height of the given tile in height level units</td></tr>
+		<tr><td>nearby_tile_class</td><td>x, y offset (-8..7)</td><td><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:List_of_tile_classes">tile class</a></td><td></td></tr>
+		<tr><td>nearby_tile_info</td><td>x, y offset (-8..7)</td><td></td><td>Above nearby tile variables in one variable (all of variable 0x60)</td></tr>
+	</table>
+
+	<h3 id="newlandscape_example">Syntax example</h3>
+	<p>
+		<pre class="code">
+grf {
+	...
+}
+
+if (!extended_feature_test("new_landscape")) {
+	error(FATAL, string(STR_UNSUPPORTED_VERSION));
+}
+
+
+spriteset spriteset_rocks {
+	/* 19 tile sprites in the standard order */
+}
+
+switch (FEAT_NEWLANDSCAPE, SELF, switch_rocks, ...) {
+	...
+}
+
+item (FEAT_NEWLANDSCAPE, item_rocks, NEW_LANDSCAPE_ID_ROCKS)  {
+	property {
+		enable_recolour: 0;
+	}
+	graphics {
+		default: switch_rocks;
+	}
+}
+		</pre>
+	</p>
+</body>
+</html>

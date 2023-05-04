@@ -39,6 +39,7 @@ protected:
 	NetworkRecvStatus Receive_CLIENT_ERROR(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_DESYNC_LOG(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_DESYNC_MSG(Packet *p) override;
+	NetworkRecvStatus Receive_CLIENT_DESYNC_SYNC_DATA(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_RCON(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_NEWGRFS_CHECKED(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_MOVE(Packet *p) override;
@@ -85,6 +86,9 @@ public:
 	NetworkAddress client_address; ///< IP-address of the client (so they can be banned)
 
 	std::string desync_log;
+
+	uint desync_frame_seed = 0;
+	uint desync_frame_state_checksum = 0;
 
 	ServerNetworkGameSocketHandler(SOCKET s);
 	~ServerNetworkGameSocketHandler();

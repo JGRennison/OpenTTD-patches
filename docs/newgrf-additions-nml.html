@@ -24,7 +24,34 @@
 	<p>All of the non-standard features listed below will automatically emit suitable feature tests, conditionals, etc. such that NewGRFs which use these features will work correctly
 	on OpenTTD versions which do not support these features, including standard trunk OpenTTD and older/other patchpack versions.</p>
 
-	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Builtin_functions">Builtin functions</a></h3>
+	<p>All of the non-standard variables listed below will return 0 on OpenTTD versions which do not support these features/variables, including standard trunk OpenTTD and older/other patchpack versions.</p>
+
+	<h3>Features with separate pages</h3>
+	<ul>
+	<li><a href="newgrf-roadstops-nml.html">Road stops (FEAT_ROADSTOPS)</a></li>
+	<li><a href="newgrf-newlandscape-nml.html">New landscape (FEAT_NEWLANDSCAPE)</a></li>
+	<li><a href="newgrf-town-nml.html">Towns (the parent scope for stations, objects, etc.) (FEAT_TOWN)</a></li>
+	</ul>
+
+	<h3 id="sections">Sections</h3>
+	<ul>
+	<li><a href="#builtin-functions">Builtin functions</a></li>
+	<li><a href="#switch-types">Additional switch types</a></li>
+	<li><a href="#ship-callbacks">Ship callbacks</a></li>
+	<li><a href="#railtype-properties">Railtype properties</a></li>
+	<li><a href="#railtype-variables">Railtype variables</a></li>
+	<li><a href="#roadtype-properties">Roadtype properties</a></li>
+	<li><a href="#tramtype-properties">Tramtype properties</a></li>
+	<li><a href="#object-ids">Object IDs</a></li>
+	<li><a href="#object-properties">Object properties</a></li>
+	<li><a href="#object-variables">Object variables</a></li>
+	<li><a href="#global-variable-properties">Global variables properties</a></li>
+	<li><a href="#replace-new-sprites">Replace new sprites</a></li>
+	<li><a href="#signal-graphics">Signal graphics using switches</a></li>
+	</ul>
+	<br />
+
+	<h3 id="builtin-functions"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Builtin_functions">Builtin functions</a></h3>
 
 	<p>
 		<h4>extended_feature_test(feature_name[, min_version[, max_version]])</h4>
@@ -33,7 +60,39 @@
 		In most cases it is not necessary to use this function, as extended properties (listed below) which are not supported are simply skipped/ignored.
 	</p>
 
-	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#Railtype_properties">Railtypes properties</a></h3>
+	<h3 id="switch-types"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Switch">Additional switch types</a></h3>
+	<p>
+		In addition to SELF and PARENT, switches for vehicle features may use one of the following types below.<br />
+		(These are mostly the same as in <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Random_switch">random_switch</a>).<br />
+		The 'x' parameter (count x vehicles in given direction) is currently required to be a compile-time constant between 0 and 255.
+		<table>
+		<tr><th>Type</th><th>Meaning</th></tr>
+		<tr><td>BACKWARD_SELF(x)</td><td>Count x vehicles backward (away from the engine), starting at the vehicle itself</td></tr>
+		<tr><td>FORWARD_SELF(x)</td><td>Count x vehicles forward (towards the engine), starting at the vehicle itself</td></tr>
+		<tr><td>BACKWARD_ENGINE(x)</td><td>Count x vehicles backward, starting at the leading engine</td></tr>
+		<tr><td>BACKWARD_SAMEID(x)</td><td>Count x vehicles backward, starting at the first vehicle in the chain with the same ID</td></tr>
+		</table>
+		<p>These require the <span class="code">more_varaction2_types</span> feature. If this feature is not present, switches of these types will produce a CB_FAILED result.</p>
+	</p>
+
+	<h3 id="ship-callbacks"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Vehicles#Vehicle_callbacks">Ship callbacks</a></h3>
+	<p>
+		The <span class="code">articulated_part</span> callback is also available for ships.<br />
+		Additional ship parts are not used for graphics, they are only used for additional cargo capacity, the default graphics chain is unused.<br />
+		The default graphics chain for the primary vehicle may check the cargo states of the other ship parts if required.<br />
+		Additional ship parts may be refitted individually.
+		<p>This requires the <span class="code">multi_part_ships</span> feature.</p>
+	</p>
+	<p>
+		Added callback: <span class="code">refit_part_name</span><br />
+		This callback is called on the primary vehicle to get the name of each part of the ship (e.g. the name of each cargo hold) in the refit window.<br />
+		This is not called for ships of only one part.<br />
+		The callback handler should return a string or CB_RESULT_NO_TEXT.<br />
+		If this callback is not handled or if CB_RESULT_NO_TEXT is returned, a default name is used.<br />
+		<span class="code">getbits(extra_callback_info1, 0, 8)</span> contains the index of the part of the ship. The first/primary part is 0, each subsequent part increases the value by 1.
+	</p>
+
+	<h3 id="railtype-properties"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#Railtype_properties">Railtype properties</a></h3>
 	<table>
 	<tr><th>Property</th><th>Value range</th><th>Comment</th></tr>
 	<tr><td>enable_programmable_pre_signals</td><td>0 or 1</td>
@@ -96,7 +155,68 @@
 		</td>
 	</tr>
 	</table>
-	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Roadtypes#Roadtype_properties">Roadtype properties</a></h3>
+	<h3 id="railtype-variables"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#Railtype_variables">Railtype variables</a></h3>
+	<p>Variables in the table below which are not supported by the version of OpenTTD being used return a value of 0.</p>
+	<table>
+	<tr><th>Variable</th><th>Value range</th><th>Comment</th></tr>
+	<tr><td>signal_restriction_info</td><td>bitmask(SIGNAL_RESTRICTION_INFO_XXX, ...)</td>
+		<td>
+			Information about the restricted signal status of the signal being drawn:
+			<dl>
+				<dt>RESTRICTED</dt>
+				<dd>The signal is restricted (has a routing restriction program attached)</dd>
+				<dt>RESERVE_THROUGH_ALWAYS</dt>
+				<dd>The attached routing restriction program unconditionally sets reserve through</dd>
+				<dt>MAY_REVERSE</dt>
+				<dd>The attached routing restriction program may allow trains to reverse behind this signal</dd>
+			</dl>
+		</td>
+	</tr>
+	<tr><td>signal_context</td><td>SIGNAL_CONTEXT_XXX</td>
+		<td>
+			Information about the context of the signal being drawn:
+			<dl>
+				<dt>GUI</dt>
+				<dd>The signal is being drawn in the GUI (signal window)</dd>
+				<dt>TRACK</dt>
+				<dd>The signal is being drawn on ordinary rail track</dd>
+				<dt>TUNNEL_BRIDGE_ENTRANCE</dt>
+				<dd>The signal is being drawn as a tunnel/bridge entrance signal</dd>
+				<dt>TUNNEL_BRIDGE_EXIT</dt>
+				<dd>The signal is being drawn as a tunnel/bridge exit signal</dd>
+				<dt>BRIDGE_MIDDLE</dt>
+				<dd>The signal is being drawn on the middle of a bridge</dd>
+			</dl>
+		</td>
+	</tr>
+	<tr><td>signal_context_is_tunnel</td><td>0 or 1</td>
+		<td>
+			The signal is being drawn on a tunnel entrance/exit (not a bridge)
+		</td>
+	</tr>
+	<tr><td>signal_context_info</td><td></td>
+		<td>
+			Above signal context variables in one variable (all of the railtype_signal_context variable)
+		</td>
+	</tr>
+	<tr><td>signal_side</td><td>SIGNAL_SIDE_XXX</td>
+		<td>
+			<dl>
+				<dt>LEFT</dt>
+				<dd>Signals are on the left</dd>
+				<dt>RIGHT</dt>
+				<dd>Signals are on the right</dd>
+			</dl>
+		</td>
+	</tr>
+	<tr><td>signal_vertical_clearance</td><td>0 - 255</td>
+		<td>
+			Pixels of vertical clearance between the signal and any bridge above.<br />
+			If there is no bridge above, the value is 0xFF.
+		</td>
+	</tr>
+	</table>
+	<h3 id="roadtype-properties"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Roadtypes#Roadtype_properties">Roadtype properties</a></h3>
 	<table>
 	<tr><th>Property</th><th>Value range</th><th>Comment</th></tr>
 	<tr><td>roadtype_extra_flags</td><td>bitmask(ROADTYPE_EXTRA_FLAG_XXX, ...)</td>
@@ -106,11 +226,28 @@
 				<dd>Scripts (AI/GS) may not build this roadtype</dd>
 				<dt>NO_TOWN_MODIFY</dt>
 				<dd>Towns may not modify tiles of this roadtype in any way whatsoever</dd>
+				<dt>NO_TUNNELS</dt>
+				<dd>Disallow tunnels for this roadtype</dd>
+				<dt>NO_TRAIN_COLLISION</dt>
+				<dd>Disallow collisions with trains for vehicles of this roadtype</dd>
+			</dl>
+		</td>
+	</tr>
+	<tr><td>roadtype_collision_mode</td><td>ROADTYPE_COLLISION_MODE_XXX</td>
+		<td>
+			Sets the road vehicle collision mode for road vehicles of this road type.
+			<dl>
+				<dt>NORMAL</dt>
+				<dd>Normal road vehicle collision rules (this is the default)</dd>
+				<dt>NONE</dt>
+				<dd>Do not collide at all with other road vehicles</dd>
+				<dt>ELEVATED</dt>
+				<dd>Collide only with other elevated road vehicles</dd>
 			</dl>
 		</td>
 	</tr>
 	</table>
-	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Tramtypes#Tramtype_properties">Tramtype properties</a></h3>
+	<h3 id="tramtype-properties"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Tramtypes#Tramtype_properties">Tramtype properties</a></h3>
 	<table>
 	<tr><th>Property</th><th>Value range</th><th>Comment</th></tr>
 	<tr><td>tramtype_extra_flags</td><td>bitmask(TRAMTYPE_EXTRA_FLAG_XXX, ...)</td>
@@ -120,11 +257,34 @@
 				<dd>Scripts (AI/GS) may not build this tramtype</dd>
 				<dt>NO_TOWN_MODIFY</dt>
 				<dd>Towns may not modify tiles of this tramtype in any way whatsoever</dd>
+				<dt>NO_TUNNELS</dt>
+				<dd>Disallow tunnels for this tramtype</dd>
+				<dt>NO_TRAIN_COLLISION</dt>
+				<dd>Disallow collisions with trains for vehicles of this tramtype</dd>
+			</dl>
+		</td>
+	</tr>
+	<tr><td>tramtype_collision_mode</td><td>TRAMTYPE_COLLISION_MODE_XXX</td>
+		<td>
+			Sets the road vehicle collision mode for road vehicles of this tram type.
+			<dl>
+				<dt>NORMAL</dt>
+				<dd>Normal road vehicle collision rules (this is the default)</dd>
+				<dt>NONE</dt>
+				<dd>Do not collide at all with other road vehicles</dd>
+				<dt>ELEVATED</dt>
+				<dd>Collide only with other elevated road vehicles</dd>
 			</dl>
 		</td>
 	</tr>
 	</table>
-	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Objects#Object_properties">Object properties</a></h3>
+	<h3 id="object-ids"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Objects#Object_IDs">Object IDs</a></h3>
+	<p>
+		Object IDs are NewGRF-local and can be freely chosen in the 0..63999 range, as of the <span class="code">more_objects_per_grf</span> feature.<br />
+		When loaded into a version of OpenTTD without this feature, IDs are limited to the range: 0..254.
+		Any objects with IDs outside this range will be skipped.
+	</p>
+	<h3 id="object-properties"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Objects#Object_properties">Object properties</a></h3>
 	<table>
 	<tr><th>Property</th><th>Value range</th><th>Comment</th></tr>
 	<tr><td>use_land_ground</td><td>0 or 1</td><td>
@@ -151,6 +311,7 @@
 			<tr><th>Value</th><th>Meaning</th></tr>
 			<tr><td>OBJECT_EF_FLAG_ADJUST_Z</td><td>Change z-position for the building sprite to the height of the edge</td></tr>
 			<tr><td>OBJECT_EF_FLAG_FOUNDATION_LOWER</td><td>If the height of the edge is lower than the maximum height of the tile, build a foundation</td></tr>
+			<tr><td>OBJECT_EF_FLAG_INCLINE_FOUNDATION</td><td>Use inclined instead of a flat foundations where possible. (Slopes with one corner raised where the height of the edge is at the maximum height of the tile).</td></tr>
 		</table>
 	</td></tr>
 	<tr><td>flood_resistant</td><td>0 or 1</td><td>
@@ -158,8 +319,136 @@
 		Flood resistance is always enabled for objects which can be built on water.<br />
 		This property can be used to enable flood resistance without enabling the object to be built on water.
 	</td></tr>
+	<tr><td>map_tile_type</td><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_XXX</td><td>
+		Set tile type used for display in viewport map mode and the small-map window.<br />
+		The value should be one of:
+		<table>
+			<tr><th>Value</th><th>Meaning</th><th>Notes</th></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_DEFAULT</td><td>Default object</td><td></td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_CLEAR</td><td>Clear/bare dirt</td><td>If use_land_ground is enabled, the underlying ground type will be used instead</td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_GRASS</td><td>Grass</td><td></td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_ROUGH</td><td>Rough ground</td><td></td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_ROCKS</td><td>Rocky ground</td><td></td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_FIELDS</td><td>Farm fields</td><td>The specific type of field can be set using map_tile_subtype</td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_SNOW</td><td>Snow</td><td></td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_DESERT</td><td>Desert</td><td></td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_TREES</td><td>Trees</td><td>The specific tree count and ground type/density can be set using map_tile_subtype</td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_HOUSE</td><td>House</td><td></td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_WATER</td><td>Water</td><td></td></tr>
+		</table>
+	</td></tr>
+	<tr><td>map_tile_subtype</td><td>0 .. 65535</td><td>
+		<p>This can be used to further refine the type set in map_tile_type.</p>
+		<p>Farm fields:
+		<table>
+		<tr><th>Bit</th><th>Meaning</th></tr>
+		<tr><td>0 - 2</td><td>
+			Which field type to use
+		</td></tr>
+		</table></p>
+		<p>Trees:
+		<table>
+			<tr><th>Bit</th><th>Meaning</th></tr>
+			<tr><td>0 - 3</td><td>
+				Tree ground type
+				<table>
+				<tr><th>Value</th><th>Meaning</th></tr>
+				<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_TREE_GROUND_GRASS</td><td>Grass</td></tr>
+				<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_TREE_GROUND_ROUGH</td><td>Rough ground</td></tr>
+				<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_TREE_GROUND_SNOW_DESERT</td><td>Snow/desert</td></tr>
+				<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_TREE_GROUND_SHORE</td><td>Shore</td></tr>
+				<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_TREE_GROUND_ROUGH_SNOW</td><td>Rough snow</td></tr>
+				</table>
+			</td></tr>
+			<tr><td>4 - 7</td><td>
+				Tree ground density (clamped to: 0 - 3)
+			</td></tr>
+			<tr><td>8 - 11</td><td>
+				Number of trees on the tile (clamped to: 1 - 4)
+			</td></tr>
+		</table></p>
+	</td></tr>
 	</table>
-	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Replace_new_sprites">Replace new sprites</a></h3>
+	<h3 id="object-variables"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Objects#Object_variables">Object variables</a></h3>
+	<p>Variables in the table below which are not supported by the version of OpenTTD being used return a value of 0.</p>
+	<table>
+	<tr><th>Variable</th><th>Value range</th><th>Comment</th></tr>
+	<tr><td>foundation_tile_slope</td><td><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:List_of_tile_slopes">SLOPE_XXX</a></td><td>
+		Slope of the tile after any foundation has been applied.
+	</td></tr>
+	<tr><td>foundation_change_tile_slope</td><td><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:List_of_tile_slopes">SLOPE_XXX</a></td><td>
+		Slope of the tile after any foundation has been applied xor the slope of the underlying tile.<br />
+		If this variable is non-zero a foundation is present.<br />
+		This is useful for xoring with the tile_slope variable, because if this variable is unavailable then the result is still the underlying tile slope.
+	</td></tr>
+	</table>
+	<h3 id="global-variable-properties">Global variables properties</h3>
+	<p>The variables listed below should set inside an item and property block of the form:<pre class="code">
+item (FEAT_GLOBALVARS) {
+	property {
+		...
+	}
+}</pre>
+	</p>
+	<table>
+	<tr><th>Property</th><th>Value range</th><th>Comment</th></tr>
+	<tr><td>lighthouse_generate_amount</td><td>0 .. 255</td><td>Sets the frequency at which lighthouse objects are generated during map generation</td></tr>
+	<tr><td>transmitter_generate_amount</td><td>0 .. 255</td><td>Sets the frequency at which transmitter objects are generated during map generation</td></tr>
+	<tr><td>extra_station_name</td><td>[string, bitmask(EXTRA_STATION_NAME_FLAG_XXX, ...)]</td>
+		<td>
+			<p>This adds an extra station name for use when all the available station names for a given town have been used.<br />
+			This property may be used as many times as required.<br />
+			Generally the referenced string should include a <span class="code">{STRING}</span> string code, this is used for the town name.
+			</p>
+			<dl>
+				<dt>EXTRA_STATION_NAME_FLAG_RAIL</dt>
+				<dd>May be used for rail stations</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_ROAD</dt>
+				<dd>May be used for road stations</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_AIRPORT</dt>
+				<dd>May be used for airport stations</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_OIL_RIG</dt>
+				<dd>May be used for oil rig stations</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_DOCK</dt>
+				<dd>May be used for dock stations</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_HELIPORT</dt>
+				<dd>May be used for heliport stations</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_TOWN_CENTRE_ONLY</dt>
+				<dd>May only be used for stations near the town centre</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_NOT_TOWN_CENTRE</dt>
+				<dd>May not be used for stations near the town centre</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_NEAR_WATER_ONLY</dt>
+				<dd>May only be used for stations near water</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_NOT_NEAR_WATER</dt>
+				<dd>May not be used for stations near water</dd>
+			</dl>
+		</td>
+	</tr>
+	<tr><td>extra_station_names_probability</td><td>0 .. 255</td>
+		<td>
+			Sets the probability that an extra station name is used even when the available default names have not been exhausted.<br />
+			Some station names are always used first even when this is non-zero.
+		</td>
+	</tr>
+	<tr><td>allow_rocks_in_desert</td><td>0 or 1</td>
+		<td>
+			Sets whether rocky tiles are allowed to generate in and remain in desert zones (tropical climate).
+		</td>
+	</tr>
+	</table>
+	<p>Syntax example:
+		<pre class="code">
+item (FEAT_GLOBALVARS) {
+	property {
+		lighthouse_generate_amount: 255;
+		transmitter_generate_amount: 0;
+		extra_station_name: [string(STR_STATION_NAME1), bitmask(EXTRA_STATION_NAME_FLAG_RAIL)];
+		extra_station_name: [string(STR_STATION_NAME2), bitmask(EXTRA_STATION_NAME_FLAG_ROAD, EXTRA_STATION_NAME_FLAG_TOWN_CENTRE_ONLY)];
+	}
+}
+		</pre>
+	</p>
+	<h3 id="replace-new-sprites"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Replace_new_sprites">Replace new sprites</a></h3>
 	<table>
 	<tr><th>Type</th><th>Number of sprites </th><th>Comment</th></tr>
 	<tr><td>PROGRAMMABLE_PRE_SIGNAL</td><td>32</td>
@@ -186,8 +475,20 @@
 			</table>
 		</td>
 	</tr>
+	<tr><td>MISC_GUI</td><td>1</td>
+		<td>
+			<b>Miscellaneous GUI graphics</b>
+			<p>There is currently one misc GUI sprite.</p>
+		</td>
+	</tr>
+	<tr><td>ROAD_WAYPOINTS</td><td>4</td>
+		<td>
+			<b>Road waypoint graphics</b>
+			<p>This is the same order and format as the drive-through bus/truck road stop sprites.</p>
+		</td>
+	</tr>
 	</table>
-	<h3>Signal graphics using switches</h3>
+	<h3 id="signal-graphics">Signal graphics using switches</h3>
 	<p>
 		This feature allows signal sprites to be specified using switches in a very similar manner to <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#signals">railtype signals</a> in
 		<span class="code">item (FEAT_RAILTYPES) { graphics { signals: ... } }</span> blocks.<br />
@@ -254,6 +555,171 @@
 			<br />
 			The provided value is currently clamped to be within the range 0 - 6 (inclusive).<br />
 			N.B. Realistic braking must be enabled for additional signal aspects to be used
+		</td>
+	</tr>
+	<tr><td>define_style</td><td>1 - 255</td>
+		<td>
+			Define a custom signal style<br />
+			Signals using this style will only use this GRF, or the default graphics if no graphics are returned.<br />
+			The value supplied is returned in the signal_style variable.<br />
+			This property (and related signal style properties) may be used more than once.<br />
+			The total number of custom signal styles in a game is currently limited to 15.
+		</td>
+	</tr>
+	<tr><td>style_name</td><td>string</td>
+		<td>
+			Set the name of the most recently defined style (defined using the <span class="code">define_style</span> property).<br />
+			This property should be used if using the define_style property, as otherwise the style will have no name.
+		</td>
+	</tr>
+	<tr><td>style_electric_enabled</td><td>bitmask(SIGNAL_TYPE_XXX, ...)</td>
+		<td>
+			Set which electric signal types may be built using this signal style for the most recently defined style (defined using the <span class="code">define_style</span> property).<br />
+			At least one of this property and <span class="code">style_semaphore_enabled</span> should be set to a non-zero value, as otherwise
+			no signal types will be enabled for this custom signal style.<br />
+			If PROG or NO_ENTRY are set, it is not necessary to also set <span class="code">enable_programmable_pre_signals</span> or <span class="code">enable_no_entry_signals</span>.
+			<dl>
+				<dt>NORMAL</dt>
+				<dd>Normal/block signal</dd>
+				<dt>ENTRY</dt>
+				<dd>Pre-signal entry</dd>
+				<dt>EXIT</dt>
+				<dd>Pre-signal exit</dd>
+				<dt>COMBO</dt>
+				<dd>Pre-signal combo</dd>
+				<dt>PBS</dt>
+				<dd>Two-way PBS</dd>
+				<dt>PBS_ONEWAY</dt>
+				<dd>One-way PBS</dd>
+				<dt>PROG</dt>
+				<dd>Programmable pre-signal</dd>
+				<dt>NO_ENTRY</dt>
+				<dd>No-entry</dd>
+			</dl>
+		</td>
+	</tr>
+	<tr><td>style_semaphore_enabled</td><td>bitmask(SIGNAL_TYPE_XXX, ...)</td>
+		<td>
+			Set which semaphore signal types may be built using this signal style for the most recently defined style (defined using the <span class="code">define_style</span> property).<br />
+			See <span class="code">style_electric_enabled</span>, above.
+		</td>
+	</tr>
+	<tr><td>style_no_aspect_increase</td><td>0 or 1</td>
+		<td>
+			Set whether the most recently defined style (defined using the <span class="code">define_style</span> property) does not increase
+			the signal aspect with respect to the signals either side (i.e. function like a banner repeater).
+		</td>
+	</tr>
+	<tr><td>style_always_reserve_through</td><td>0 or 1</td>
+		<td>
+			Set whether reserve through is unconditionally enabled for the most recently defined style (defined using the <span class="code">define_style</span> property).
+		</td>
+	</tr>
+	<tr><td>style_lookahead_extra_aspects</td><td>0 - 6</td>
+		<td>
+			Set the look-ahead extra aspects for the most recently defined style (defined using the <span class="code">define_style</span> property).<br />
+			This property only makes a difference when the "limit train lookahead to signal aspect" game setting is enabled.<br />
+			This limits the signal aspect which the hypothetical train driver can "read" from the signal without affecting signal aspect propagation to other signals, or variable <span class="code">extra_callback_info2</span>.<br />
+			Example values could include: 1 for traditional banner repeater signals.<br />
+			Shunt signals should use <span class="code">style_lookahead_single_signal_only</span> instead.<br />
+			The value is clamped to be less than or equal to the value set in the <span class="code">extra_aspects</span> property.
+		</td>
+	</tr>
+	<tr><td>style_lookahead_single_signal_only</td><td>0 or 1</td>
+		<td>
+			Set the look-ahead to single signal only mode for the most recently defined style (defined using the <span class="code">define_style</span> property).<br />
+			This property only makes a difference when the "limit train lookahead to signal aspect" game setting is enabled, or when using a different signal
+			type which uses <span class="code">tyle_combined_normal_shunt</span>.<br />
+			This is similar to <span class="code">style_lookahead_extra_aspects</span> with a value of 0, except the lookahead always ends at the
+			next signal, even if that signal type sets <span class="code">style_no_aspect_increase</span>.<br />
+			If enabled, this property overrides <span class="code">style_lookahead_extra_aspects</span>.<br />
+			This can be used for shunt signals.
+		</td>
+	</tr>
+	<tr><td>style_combined_normal_shunt</td><td>0 or 1</td>
+		<td>
+			Enable functioning as a combined normal aspect and shunt signal for the most recently defined style (defined using the <span class="code">define_style</span> property).<br />
+			When enabled and displaying a shunt aspect, the signal state in the lowest byte of <span class="code">extra_callback_info2</span> will have the value: 0xFF.
+		</td>
+	</tr>
+	<tr><td>style_opposite_side</td><td>0 or 1</td>
+		<td>
+			Set whether signals should be drawn on the opposite side of the track for the most recently defined style (defined using the <span class="code">define_style</span> property).
+		</td>
+	</tr>
+	<tr><td>style_realistic_braking_only</td><td>0 or 1</td>
+		<td>
+			Set whether signals using this style may only be built when realistic braking is enabled, for the most recently defined style (defined using the <span class="code">define_style</span> property).
+		</td>
+	</tr>
+	<tr><td>no_default_style</td><td>0 or 1</td>
+		<td>
+			When enabled, custom signal graphics from this GRF are only used for custom signal styles, not the default style
+		</td>
+	</tr>
+	</table>
+	<br />
+	<table>
+	<tr><th>Variable</th><th>Value range</th><th>Comment</th></tr>
+	<tr><td>signal_restriction_info</td><td>bitmask(SIGNAL_RESTRICTION_INFO_XXX, ...)</td>
+		<td>
+			Information about the restricted signal status of the signal being drawn:
+			<dl>
+				<dt>RESTRICTED</dt>
+				<dd>The signal is restricted (has a routing restriction program attached)</dd>
+				<dt>RESERVE_THROUGH_ALWAYS</dt>
+				<dd>The attached routing restriction program unconditionally sets reserve through</dd>
+				<dt>MAY_REVERSE</dt>
+				<dd>The attached routing restriction program may allow trains to reverse behind this signal</dd>
+			</dl>
+		</td>
+	</tr>
+	<tr><td>signal_context</td><td>SIGNAL_CONTEXT_XXX</td>
+		<td>
+			Information about the context of the signal being drawn:
+			<dl>
+				<dt>GUI</dt>
+				<dd>The signal is being drawn in the GUI (signal window)</dd>
+				<dt>TRACK</dt>
+				<dd>The signal is being drawn on ordinary rail track</dd>
+				<dt>TUNNEL_BRIDGE_ENTRANCE</dt>
+				<dd>The signal is being drawn as a tunnel/bridge entrance signal</dd>
+				<dt>TUNNEL_BRIDGE_EXIT</dt>
+				<dd>The signal is being drawn as a tunnel/bridge exit signal</dd>
+				<dt>BRIDGE_MIDDLE</dt>
+				<dd>The signal is being drawn on the middle of a bridge</dd>
+			</dl>
+		</td>
+	</tr>
+	<tr><td>signal_context_is_tunnel</td><td>0 or 1</td>
+		<td>
+			The signal is being drawn on a tunnel entrance/exit (not a bridge)
+		</td>
+	</tr>
+	<tr><td>signal_context_info</td><td></td>
+		<td>
+			Above signal context variables in one variable (all of the signals_signal_context variable)
+		</td>
+	</tr>
+	<tr><td>signal_side</td><td>SIGNAL_SIDE_XXX</td>
+		<td>
+			<dl>
+				<dt>LEFT</dt>
+				<dd>Signals are on the left</dd>
+				<dt>RIGHT</dt>
+				<dd>Signals are on the right</dd>
+			</dl>
+		</td>
+	</tr>
+	<tr><td>signal_style</td><td>0 - 255</td>
+		<td>
+			The style ID defined using define_style for signals using a custom style, or 0 for signals using the default style
+		</td>
+	</tr>
+	<tr><td>signal_vertical_clearance</td><td>0 - 255</td>
+		<td>
+			Pixels of vertical clearance between the signal and any bridge above.<br />
+			If there is no bridge above, the value is 0xFF.
 		</td>
 	</tr>
 	</table>

@@ -23,11 +23,13 @@ add_files(
     group_sl.cpp
     industry_sl.cpp
     labelmaps_sl.cpp
+    league_sl.cpp
     linkgraph_sl.cpp
     map_sl.cpp
     misc_sl.cpp
     newgrf_sl.cpp
     newgrf_sl.h
+    newsignals_sl.cpp
     object_sl.cpp
     oldloader.cpp
     oldloader.h

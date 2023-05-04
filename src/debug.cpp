@@ -56,7 +56,7 @@ int _debug_sprite_level;
 int _debug_oldloader_level;
 int _debug_npf_level;
 int _debug_yapf_level;
-int _debug_freetype_level;
+int _debug_fontcache_level;
 int _debug_script_level;
 int _debug_sl_level;
 int _debug_gamelog_level;
@@ -93,7 +93,7 @@ struct DebugLevel {
 	DEBUG_LEVEL(oldloader),
 	DEBUG_LEVEL(npf),
 	DEBUG_LEVEL(yapf),
-	DEBUG_LEVEL(freetype),
+	DEBUG_LEVEL(fontcache),
 	DEBUG_LEVEL(script),
 	DEBUG_LEVEL(sl),
 	DEBUG_LEVEL(gamelog),
@@ -139,7 +139,7 @@ char *DumpDebugFacilityNames(char *buf, char *last)
  * @param dbg Debug category.
  * @param buf Text line to output.
  */
-static void debug_print(const char *dbg, const char *buf)
+void debug_print(const char *dbg, const char *buf)
 {
 	if (_debug_socket != INVALID_SOCKET) {
 		char buf2[1024 + 32];
@@ -245,28 +245,31 @@ void CDECL debug(const char *dbg, const char *format, ...)
  * For setting individual levels a string like \c "net=3,grf=6" should be used.
  * If the string starts with a number, the number is used as global debugging level.
  * @param s Text describing the wanted debugging levels.
+ * @param error_func The function to call if a parse error occurs.
  */
-void SetDebugString(const char *s)
+void SetDebugString(const char *s, void (*error_func)(const char *))
 {
 	int v;
 	char *end;
 	const char *t;
 
-	/* global debugging level? */
+	/* Store planned changes into map during parse */
+	std::map<const char *, int> new_levels;
+
+	/* Global debugging level? */
 	if (*s >= '0' && *s <= '9') {
 		const DebugLevel *i;
 
 		v = strtoul(s, &end, 0);
 		s = end;
 
-		for (i = debug_level; i != endof(debug_level); ++i) *i->level = v;
+		for (i = debug_level; i != endof(debug_level); ++i) {
+			new_levels[i->name] = v;
+		}
 	}
 
-	/* individual levels */
+	/* Individual levels */
 	for (;;) {
-		const DebugLevel *i;
-		int *p;
-
 		/* skip delimiters */
 		while (*s == ' ' || *s == ',' || *s == '\t') s++;
 		if (*s == '\0') break;
@@ -275,10 +278,10 @@ void SetDebugString(const char *s)
 		while (*s >= 'a' && *s <= 'z') s++;
 
 		/* check debugging levels */
-		p = nullptr;
-		for (i = debug_level; i != endof(debug_level); ++i) {
+		const DebugLevel *found = nullptr;
+		for (const DebugLevel *i = debug_level; i != endof(debug_level); ++i) {
 			if (s == t + strlen(i->name) && strncmp(t, i->name, s - t) == 0) {
-				p = i->level;
+				found = i;
 				break;
 			}
 		}
@@ -286,11 +289,21 @@ void SetDebugString(const char *s)
 		if (*s == '=') s++;
 		v = strtoul(s, &end, 0);
 		s = end;
-		if (p != nullptr) {
-			*p = v;
+		if (found != nullptr) {
+			new_levels[found->name] = v;
 		} else {
-			ShowInfoF("Unknown debug level '%.*s'", (int)(s - t), t);
+			char buf[1024];
+			seprintf(buf, lastof(buf), "Unknown debug level '%*s'", (int)(s - t), t);
+			error_func(buf);
 			return;
+		}
+	}
+
+	/* Apply the changes after parse is successful */
+	for (const DebugLevel *i = debug_level; i != endof(debug_level); ++i) {
+		const auto &nl = new_levels.find(i->name);
+		if (nl != new_levels.end()) {
+			*i->level = nl->second;
 		}
 	}
 }

@@ -51,6 +51,8 @@ static const uint TAB_SIZE_GAMESCRIPT = TAB_SIZE * 32;
 /** Number of strings for NewGRFs */
 static const uint TAB_SIZE_NEWGRF     = TAB_SIZE * 256;
 
+extern std::string _temp_special_strings[16];
+
 /** Special string constants */
 enum SpecialStrings {
 
@@ -86,6 +88,8 @@ enum SpecialStrings {
 	SPECSTR_SILLY_NAME         = 0x70E5,
 	SPECSTR_ANDCO_NAME         = 0x70E6,
 	SPECSTR_PRESIDENT_NAME     = 0x70E7,
+
+	SPECSTR_TEMP_START         = 0x7000,
 };
 
 #endif /* STRINGS_TYPE_H */

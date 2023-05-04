@@ -62,13 +62,13 @@ public:
 		this->InitNested(window_number);
 
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_EV_VIEWPORT);
-		nvp->InitializeViewport(this, 0, ZOOM_LVL_VIEWPORT);
-		if (_settings_client.gui.zoom_min == ZOOM_LVL_VIEWPORT) this->DisableWidget(WID_EV_ZOOM_IN);
+		nvp->InitializeViewport(this, 0, ScaleZoomGUI(ZOOM_LVL_VIEWPORT));
+		if (_settings_client.gui.zoom_min == viewport->zoom) this->DisableWidget(WID_EV_ZOOM_IN);
 
 		Point pt;
 		if (tile == INVALID_TILE) {
 			/* No tile? Use center of main viewport. */
-			const Window *w = FindWindowById(WC_MAIN_WINDOW, 0);
+			const Window *w = GetMainWindow();
 
 			/* center on same place as main window (zoom is maximum, no adjustment needed) */
 			pt.x = w->viewport->scrollpos_x + w->viewport->virtual_width / 2;
@@ -101,7 +101,7 @@ public:
 			case WID_EV_ZOOM_OUT: DoZoomInOutWindow(ZOOM_OUT, this); break;
 
 			case WID_EV_MAIN_TO_VIEW: { // location button (move main view to same spot as this view) 'Paste Location'
-				Window *w = FindWindowById(WC_MAIN_WINDOW, 0);
+				Window *w = GetMainWindow();
 				int x = this->viewport->scrollpos_x; // Where is the main looking at
 				int y = this->viewport->scrollpos_y;
 
@@ -113,7 +113,7 @@ public:
 			}
 
 			case WID_EV_VIEW_TO_MAIN: { // inverse location button (move this view to same spot as main view) 'Copy Location'
-				const Window *w = FindWindowById(WC_MAIN_WINDOW, 0);
+				const Window *w = GetMainWindow();
 				int x = w->viewport->scrollpos_x;
 				int y = w->viewport->scrollpos_y;
 
@@ -140,6 +140,11 @@ public:
 		this->viewport->dest_scrollpos_y = this->viewport->scrollpos_y;
 	}
 
+	bool OnRightClick(Point pt, int widget) override
+	{
+		return widget == WID_EV_VIEWPORT;
+	}
+
 	void OnMouseWheel(int wheel) override
 	{
 		if (_ctrl_pressed) {
@@ -153,7 +158,7 @@ public:
 
 	virtual void OnMouseOver(Point pt, int widget) override
 	{
-		if (pt.x != -1 && (_mouse_hovering || _settings_client.gui.hover_delay_ms == 0)) {
+		if (pt.x != -1 && (_settings_client.gui.hover_delay_ms == 0 ? _right_button_down : _mouse_hovering)) {
 			/* Show tooltip with last month production or town name */
 			const Point p = GetTileBelowCursor();
 			const TileIndex tile = TileVirtXY(p.x, p.y);

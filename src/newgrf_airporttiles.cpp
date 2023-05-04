@@ -23,6 +23,7 @@
 
 #include "safeguards.h"
 
+extern uint32 GetRelativePosition(TileIndex tile, TileIndex ind_tile);
 
 AirportTileSpec AirportTileSpec::tiles[NUM_AIRPORTTILES];
 
@@ -67,7 +68,7 @@ void AirportTileOverrideManager::SetEntitySpec(const AirportTileSpec *airpts)
 {
 	StationGfx airpt_id = this->AddEntityID(airpts->grf_prop.local_id, airpts->grf_prop.grffile->grfid, airpts->grf_prop.subst_id);
 
-	if (airpt_id == invalid_ID) {
+	if (airpt_id == this->invalid_id) {
 		grfmsg(1, "AirportTile.SetEntitySpec: Too many airport tiles allocated. Ignoring.");
 		return;
 	}
@@ -75,15 +76,15 @@ void AirportTileOverrideManager::SetEntitySpec(const AirportTileSpec *airpts)
 	memcpy(&AirportTileSpec::tiles[airpt_id], airpts, sizeof(*airpts));
 
 	/* Now add the overrides. */
-	for (int i = 0; i < max_offset; i++) {
+	for (int i = 0; i < this->max_offset; i++) {
 		AirportTileSpec *overridden_airpts = &AirportTileSpec::tiles[i];
 
-		if (entity_overrides[i] != airpts->grf_prop.local_id || grfid_overrides[i] != airpts->grf_prop.grffile->grfid) continue;
+		if (this->entity_overrides[i] != airpts->grf_prop.local_id || this->grfid_overrides[i] != airpts->grf_prop.grffile->grfid) continue;
 
 		overridden_airpts->grf_prop.override = airpt_id;
 		overridden_airpts->enabled = false;
-		entity_overrides[i] = invalid_ID;
-		grfid_overrides[i] = 0;
+		this->entity_overrides[i] = this->invalid_id;
+		this->grfid_overrides[i] = 0;
 	}
 }
 
@@ -106,12 +107,14 @@ StationGfx GetTranslatedAirportTileID(StationGfx gfx)
  * @param grf_version8 True, if we are dealing with a new NewGRF which uses GRF version >= 8.
  * @return a construction of bits obeying the newgrf format
  */
-static uint32 GetNearbyAirportTileInformation(byte parameter, TileIndex tile, StationID index, bool grf_version8)
+static uint32 GetNearbyAirportTileInformation(byte parameter, TileIndex tile, StationID index, bool grf_version8, uint32 mask)
 {
 	if (parameter != 0) tile = GetNearbyTile(parameter, tile); // only perform if it is required
 	bool is_same_airport = (IsTileType(tile, MP_STATION) && IsAirport(tile) && GetStationIndex(tile) == index);
 
-	return GetNearbyTileInformation(tile, grf_version8) | (is_same_airport ? 1 : 0) << 8;
+	uint32 result = (is_same_airport ? 1 : 0) << 8;
+	if (mask & ~0x100) result |= GetNearbyTileInformation(tile, grf_version8, mask);
+	return result;
 }
 
 
@@ -158,11 +161,9 @@ static uint32 GetAirportTileIDAtOffset(TileIndex tile, const Station *st, uint32
 	return 0xFF << 8 | ats->grf_prop.subst_id; // so just give it the substitute
 }
 
-/* virtual */ uint32 AirportTileScopeResolver::GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const
+/* virtual */ uint32 AirportTileScopeResolver::GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	assert(this->st != nullptr);
-
-	extern uint32 GetRelativePosition(TileIndex tile, TileIndex ind_tile);
 
 	switch (variable) {
 		/* Terrain type */
@@ -178,7 +179,7 @@ static uint32 GetAirportTileIDAtOffset(TileIndex tile, const Station *st, uint32
 		case 0x44: return GetAnimationFrame(this->tile);
 
 		/* Land info of nearby tiles */
-		case 0x60: return GetNearbyAirportTileInformation(parameter, this->tile, this->st->index, this->ro.grffile->grf_version >= 8);
+		case 0x60: return GetNearbyAirportTileInformation(parameter, this->tile, this->st->index, this->ro.grffile->grf_version >= 8, extra->mask);
 
 		/* Animation stage of nearby tiles */
 		case 0x61: {
@@ -279,7 +280,7 @@ bool DrawNewAirportTile(TileInfo *ti, Station *st, StationGfx gfx, const Airport
 }
 
 /** Helper class for animation control. */
-struct AirportTileAnimationBase : public AnimationBase<AirportTileAnimationBase, AirportTileSpec, Station, int, GetAirportTileCallback> {
+struct AirportTileAnimationBase : public AnimationBase<AirportTileAnimationBase, AirportTileSpec, Station, int, GetAirportTileCallback, TileAnimationFrameAnimationHelper<Station> > {
 	static const CallbackID cb_animation_speed      = CBID_AIRPTILE_ANIMATION_SPEED;
 	static const CallbackID cb_animation_next_frame = CBID_AIRPTILE_ANIM_NEXT_FRAME;
 

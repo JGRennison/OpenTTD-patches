@@ -24,6 +24,7 @@
 #include "settings_func.h"
 #include "fios.h"
 #include "fileio_func.h"
+#include "fontcache.h"
 #include "screenshot.h"
 #include "genworld.h"
 #include "strings_func.h"
@@ -58,9 +59,13 @@
 #include "debug_desync.h"
 #include "scope_info.h"
 #include "event_logs.h"
+#include "tile_cmd.h"
+#include "object_base.h"
 #include <time.h>
 
 #include <set>
+
+#include <sstream>
 
 #include "safeguards.h"
 
@@ -279,6 +284,63 @@ DEF_CONSOLE_CMD(ConResetTile)
 #endif /* _DEBUG */
 
 /**
+ * Zoom map to given level.
+ * param level As defined by ZoomLevel and as limited by zoom_min/zoom_max from GUISettings.
+ * @return True when either console help was shown or a proper amount of parameters given.
+ */
+DEF_CONSOLE_CMD(ConZoomToLevel)
+{
+	switch (argc) {
+		case 0:
+			IConsoleHelp("Set the current zoom level of the main viewport.");
+			IConsoleHelp("Usage: 'zoomto <level>'.");
+			IConsolePrintF(
+				CC_WARNING,
+				ZOOM_LVL_MIN < _settings_client.gui.zoom_min ?
+					"- The lowest zoom-in level allowed by current client settings is %u." :
+					"- The lowest supported zoom-in level is %u.",
+				std::max(ZOOM_LVL_MIN, _settings_client.gui.zoom_min)
+			);
+			IConsolePrintF(
+				CC_WARNING,
+				_settings_client.gui.zoom_max < ZOOM_LVL_MAX ?
+					"- The highest zoom-out level allowed by current client settings is %u." :
+					"- The highest supported zoom-out level is %u.",
+				std::min(_settings_client.gui.zoom_max, ZOOM_LVL_MAX)
+			);
+			return true;
+
+		case 2: {
+			uint32 level;
+			if (GetArgumentInteger(&level, argv[1])) {
+				/* In case ZOOM_LVL_MIN is more than 0, the next if statement needs to be amended.
+				 * A simple check for less than ZOOM_LVL_MIN does not work here because we are
+				 * reading an unsigned integer from the console, so just check for a '-' char. */
+				static_assert(ZOOM_LVL_MIN == 0);
+				if (argv[1][0] == '-') {
+					IConsolePrintF(CC_ERROR, "Zoom-in levels below %u are not supported.", ZOOM_LVL_MIN);
+				} else if (level < _settings_client.gui.zoom_min) {
+					IConsolePrintF(CC_ERROR, "Current client settings do not allow zooming in below level %u.", _settings_client.gui.zoom_min);
+				} else if (level > ZOOM_LVL_MAX) {
+					IConsolePrintF(CC_ERROR, "Zoom-in levels above %u are not supported.", ZOOM_LVL_MAX);
+				} else if (level > _settings_client.gui.zoom_max) {
+					IConsolePrintF(CC_ERROR, "Current client settings do not allow zooming out beyond level %u.", _settings_client.gui.zoom_max);
+				} else {
+					Window *w = GetMainWindow();
+					Viewport *vp = w->viewport;
+					while (vp->zoom > level) DoZoomInOutWindow(ZOOM_IN, w);
+					while (vp->zoom < level) DoZoomInOutWindow(ZOOM_OUT, w);
+				}
+				return true;
+			}
+			break;
+		}
+	}
+
+	return false;
+}
+
+/**
  * Scroll to a tile on the map.
  * param x tile number or tile x coordinate.
  * param y optional y coordinate.
@@ -289,34 +351,44 @@ DEF_CONSOLE_CMD(ConResetTile)
  */
 DEF_CONSOLE_CMD(ConScrollToTile)
 {
-	switch (argc) {
-		case 0:
-			IConsoleHelp("Center the screen on a given tile.");
-			IConsoleHelp("Usage: 'scrollto <tile>' or 'scrollto <x> <y>'");
-			IConsoleHelp("Numbers can be either decimal (34161) or hexadecimal (0x4a5B).");
-			return true;
+	if (argc == 0) {
+		IConsoleHelp("Center the screen on a given tile.");
+		IConsoleHelp("Usage: 'scrollto [instant] <tile>' or 'scrollto [instant] <x> <y>'.");
+		IConsoleHelp("Numbers can be either decimal (34161) or hexadecimal (0x4a5B).");
+		IConsoleHelp("'instant' will immediately move and redraw viewport without smooth scrolling.");
+		return true;
+	}
+	if (argc < 2) return false;
 
-		case 2: {
+	uint32 arg_index = 1;
+	bool instant = false;
+	if (strcmp(argv[arg_index], "instant") == 0) {
+		++arg_index;
+		instant = true;
+	}
+
+	switch (argc - arg_index) {
+		case 1: {
 			uint32 result;
-			if (GetArgumentInteger(&result, argv[1])) {
+			if (GetArgumentInteger(&result, argv[arg_index])) {
 				if (result >= MapSize()) {
 					IConsolePrint(CC_ERROR, "Tile does not exist");
 					return true;
 				}
-				ScrollMainWindowToTile((TileIndex)result);
+				ScrollMainWindowToTile((TileIndex)result, instant);
 				return true;
 			}
 			break;
 		}
 
-		case 3: {
+		case 2: {
 			uint32 x, y;
-			if (GetArgumentInteger(&x, argv[1]) && GetArgumentInteger(&y, argv[2])) {
+			if (GetArgumentInteger(&x, argv[arg_index]) && GetArgumentInteger(&y, argv[arg_index + 1])) {
 				if (x >= MapSizeX() || y >= MapSizeY()) {
 					IConsolePrint(CC_ERROR, "Tile does not exist");
 					return true;
 				}
-				ScrollMainWindowToTile(TileXY(x, y));
+				ScrollMainWindowToTile(TileXY(x, y), instant);
 				return true;
 			}
 			break;
@@ -461,7 +533,7 @@ DEF_CONSOLE_CMD(ConRemove)
 	_console_file_list.ValidateFileList();
 	const FiosItem *item = _console_file_list.FindItem(file);
 	if (item != nullptr) {
-		if (!FiosDelete(item->name)) {
+		if (unlink(item->name) != 0) {
 			IConsolePrintF(CC_ERROR, "%s: Failed to delete file", file);
 		}
 	} else {
@@ -742,6 +814,19 @@ DEF_CONSOLE_CMD(ConUnpauseGame)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConStepGame)
+{
+	if (argc == 0 || argc > 2) {
+		IConsoleHelp("Advances the game for a certain amount of ticks (default 1). Usage: 'step [n]'");
+		return true;
+	}
+	auto n = (argc > 1 ? atoi(argv[1]) : 1);
+
+	DoCommandP(0, PM_PAUSED_NORMAL, 0 | (n << 1), CMD_PAUSE);
+
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConRcon)
 {
 	if (argc == 0) {
@@ -950,6 +1035,7 @@ DEF_CONSOLE_CMD(ConResetCompany)
 		return false;
 	}
 	const NetworkClientInfo *ci = NetworkClientInfo::GetByClientID(CLIENT_ID_SERVER);
+	assert(ci != nullptr);
 	if (ci->client_playas == index) {
 		IConsoleError("Cannot remove company: the server is connected to that company.");
 		return true;
@@ -1113,6 +1199,9 @@ DEF_CONSOLE_CMD(ConReturn)
  *  default console commands
  ******************************/
 extern bool CloseConsoleLogIfActive();
+extern const std::vector<GRFFile *> &GetAllGRFFiles();
+extern void ConPrintFramerate(); // framerate_gui.cpp
+extern void ShowFramerateWindow();
 
 DEF_CONSOLE_CMD(ConScript)
 {
@@ -1185,7 +1274,7 @@ DEF_CONSOLE_CMD(ConRestart)
 
 	/* Don't copy the _newgame pointers to the real pointers, so call SwitchToMode directly */
 	_settings_game.game_creation.map_x = MapLogX();
-	_settings_game.game_creation.map_y = FindFirstBit(MapSizeY());
+	_settings_game.game_creation.map_y = MapLogY();
 	_switch_mode = SM_RESTARTGAME;
 	return true;
 }
@@ -1202,7 +1291,7 @@ DEF_CONSOLE_CMD(ConReload)
 
 	/* Don't copy the _newgame pointers to the real pointers, so call SwitchToMode directly */
 	_settings_game.game_creation.map_x = MapLogX();
-	_settings_game.game_creation.map_y = FindFirstBit(MapSizeY());
+	_settings_game.game_creation.map_y = MapLogY();
 	_switch_mode = SM_RELOADGAME;
 	return true;
 }
@@ -1219,42 +1308,67 @@ static void PrintLineByLine(char *buf)
 	});
 }
 
+/**
+ * Print a text buffer line by line to the console. Lines are separated by '\n'.
+ * @param full_string The multi-line string to print.
+ */
+static void PrintLineByLine(const std::string &full_string)
+{
+	std::istringstream in(full_string);
+	std::string line;
+	while (std::getline(in, line)) {
+		IConsolePrint(CC_DEFAULT, line.c_str());
+	}
+}
+
 DEF_CONSOLE_CMD(ConListAILibs)
 {
-	char buf[4096];
-	AI::GetConsoleLibraryList(buf, lastof(buf));
+	if (argc == 0) {
+		IConsoleHelp("List installed AI libraries. Usage: 'list_ai_libs'.");
+		return true;
+	}
 
-	PrintLineByLine(buf);
+	const std::string output_str = AI::GetConsoleLibraryList();
+	PrintLineByLine(output_str);
 
 	return true;
 }
 
 DEF_CONSOLE_CMD(ConListAI)
 {
-	char buf[4096];
-	AI::GetConsoleList(buf, lastof(buf));
+	if (argc == 0) {
+		IConsoleHelp("List installed AIs. Usage: 'list_ai'.");
+		return true;
+	}
 
-	PrintLineByLine(buf);
+	const std::string output_str = AI::GetConsoleList();
+	PrintLineByLine(output_str);
 
 	return true;
 }
 
 DEF_CONSOLE_CMD(ConListGameLibs)
 {
-	char buf[4096];
-	Game::GetConsoleLibraryList(buf, lastof(buf));
+	if (argc == 0) {
+		IConsoleHelp("List installed Game Script libraries. Usage: 'list_game_libs'.");
+		return true;
+	}
 
-	PrintLineByLine(buf);
+	const std::string output_str = Game::GetConsoleLibraryList();
+	PrintLineByLine(output_str);
 
 	return true;
 }
 
 DEF_CONSOLE_CMD(ConListGame)
 {
-	char buf[4096];
-	Game::GetConsoleList(buf, lastof(buf));
+	if (argc == 0) {
+		IConsoleHelp("List installed Game Scripts. Usage: 'list_game'.");
+		return true;
+	}
 
-	PrintLineByLine(buf);
+	const std::string output_str = Game::GetConsoleList();
+	PrintLineByLine(output_str);
 
 	return true;
 }
@@ -1517,17 +1631,18 @@ DEF_CONSOLE_CMD(ConScreenShot)
 {
 	if (argc == 0) {
 		IConsoleHelp("Create a screenshot of the game. Usage: 'screenshot [viewport | normal | big | giant | world | heightmap | minimap] [no_con] [size <width> <height>] [<filename>]'");
-		IConsoleHelp("'viewport' (default) makes a screenshot of the current viewport (including menus, windows, ..), "
-				"'normal' makes a screenshot of the visible area, "
-				"'big' makes a zoomed-in screenshot of the visible area, "
-				"'giant' makes a screenshot of the whole map using the default zoom level, "
-				"'world' makes a screenshot of the whole map using the current zoom level, "
-				"'heightmap' makes a heightmap screenshot of the map that can be loaded in as heightmap, "
-				"'minimap' makes a top-viewed minimap screenshot of the whole world which represents one tile by one pixel. "
-				"'topography' makes a top-viewed topography screenshot of the whole world which represents one tile by one pixel. "
-				"'industry' makes a top-viewed industries screenshot of the whole world which represents one tile by one pixel. "
-				"'no_con' hides the console to create the screenshot (only useful in combination with 'viewport'). "
-				"'size' sets the width and height of the viewport to make a screenshot of (only useful in combination with 'normal' or 'big').");
+		IConsoleHelp("  'viewport' (default) makes a screenshot of the current viewport (including menus, windows, ..).");
+		IConsoleHelp("  'normal' makes a screenshot of the visible area.");
+		IConsoleHelp("  'big' makes a zoomed-in screenshot of the visible area.");
+		IConsoleHelp("  'giant' makes a screenshot of the whole map using the default zoom level.");
+		IConsoleHelp("  'world' makes a screenshot of the whole map using the current zoom level.");
+		IConsoleHelp("  'heightmap' makes a heightmap screenshot of the map that can be loaded in as heightmap.");
+		IConsoleHelp("  'minimap' makes a top-viewed minimap screenshot of the whole world which represents one tile by one pixel.");
+		IConsoleHelp("  'topography' makes a top-viewed topography screenshot of the whole world which represents one tile by one pixel.");
+		IConsoleHelp("  'industry' makes a top-viewed industries screenshot of the whole world which represents one tile by one pixel.");
+		IConsoleHelp("  'no_con' hides the console to create the screenshot (only useful in combination with 'viewport').");
+		IConsoleHelp("  'size' sets the width and height of the viewport to make a screenshot of (only useful in combination with 'normal' or 'big').");
+		IConsoleHelp("  A filename ending in # will prevent overwriting existing files and will number files counting upwards.");
 		return true;
 	}
 
@@ -1664,7 +1779,7 @@ DEF_CONSOLE_CMD(ConDebugLevel)
 	if (argc == 1) {
 		IConsolePrintF(CC_DEFAULT, "Current debug-level: '%s'", GetDebugString());
 	} else {
-		SetDebugString(argv[1]);
+		SetDebugString(argv[1], [](const char *err) { IConsolePrint(CC_ERROR, err); });
 	}
 
 	return true;
@@ -2105,6 +2220,79 @@ DEF_CONSOLE_CMD(ConContent)
 }
 #endif /* defined(WITH_ZLIB) */
 
+DEF_CONSOLE_CMD(ConFont)
+{
+	if (argc == 0) {
+		IConsoleHelp("Manage the fonts configuration.");
+		IConsoleHelp("Usage 'font'.");
+		IConsoleHelp("  Print out the fonts configuration.");
+		IConsoleHelp("Usage 'font [medium|small|large|mono] [<name>] [<size>] [aa|noaa]'.");
+		IConsoleHelp("  Change the configuration for a font.");
+		IConsoleHelp("  Omitting an argument will keep the current value.");
+		IConsoleHelp("  Set <name> to \"\" for the sprite font (size and aa have no effect on sprite font).");
+		return true;
+	}
+
+	FontSize argfs;
+	for (argfs = FS_BEGIN; argfs < FS_END; argfs++) {
+		if (argc > 1 && strcasecmp(argv[1], FontSizeToName(argfs)) == 0) break;
+	}
+
+	/* First argument must be a FontSize. */
+	if (argc > 1 && argfs == FS_END) return false;
+
+	if (argc > 2) {
+		FontCacheSubSetting *setting = GetFontCacheSubSetting(argfs);
+		std::string font = setting->font;
+		uint size = setting->size;
+		bool aa = setting->aa;
+
+		byte arg_index = 2;
+		/* We may encounter "aa" or "noaa" but it must be the last argument. */
+		if (strcasecmp(argv[arg_index], "aa") == 0 || strcasecmp(argv[arg_index], "noaa") == 0) {
+			aa = strncasecmp(argv[arg_index++], "no", 2) != 0;
+			if (argc > arg_index) return false;
+		} else {
+			/* For <name> we want a string. */
+			uint v;
+			if (!GetArgumentInteger(&v, argv[arg_index])) {
+				font = argv[arg_index++];
+			}
+		}
+
+		if (argc > arg_index) {
+			/* For <size> we want a number. */
+			uint v;
+			if (GetArgumentInteger(&v, argv[arg_index])) {
+				size = v;
+				arg_index++;
+			}
+		}
+
+		if (argc > arg_index) {
+			/* Last argument must be "aa" or "noaa". */
+			if (strcasecmp(argv[arg_index], "aa") != 0 && strcasecmp(argv[arg_index], "noaa") != 0) return false;
+			aa = strncasecmp(argv[arg_index++], "no", 2) != 0;
+			if (argc > arg_index) return false;
+		}
+
+		SetFont(argfs, font, size, aa);
+	}
+
+	for (FontSize fs = FS_BEGIN; fs < FS_END; fs++) {
+		FontCache *fc = FontCache::Get(fs);
+		FontCacheSubSetting *setting = GetFontCacheSubSetting(fs);
+		/* Make sure all non sprite fonts are loaded. */
+		if (!setting->font.empty() && !fc->HasParent()) {
+			InitFontCache(fs == FS_MONO);
+			fc = FontCache::Get(fs);
+		}
+		IConsolePrintF(CC_DEFAULT, "%s: \"%s\" %d %s [\"%s\" %d %s]", FontSizeToName(fs), fc->GetFontName(), fc->GetFontSize(), GetFontAAState(fs) ? "aa" : "noaa", setting->font.c_str(), setting->size, setting->aa ? "aa" : "noaa");
+	}
+
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConSetting)
 {
 	if (argc == 0) {
@@ -2152,7 +2340,20 @@ DEF_CONSOLE_CMD(ConListSettings)
 
 	if (argc > 2) return false;
 
-	IConsoleListSettings((argc == 2) ? argv[1] : nullptr);
+	IConsoleListSettings((argc == 2) ? argv[1] : nullptr, false);
+	return true;
+}
+
+DEF_CONSOLE_CMD(ConListSettingsDefaults)
+{
+	if (argc == 0) {
+		IConsoleHelp("List settings and also show default value. Usage: 'list_settings_def [<pre-filter>]'");
+		return true;
+	}
+
+	if (argc > 2) return false;
+
+	IConsoleListSettings((argc == 2) ? argv[1] : nullptr, true);
 	return true;
 }
 
@@ -2305,6 +2506,34 @@ DEF_CONSOLE_CMD(ConDeleteVehicleID)
 
 	return false;
 }
+
+DEF_CONSOLE_CMD(ConRunTileLoopTile)
+{
+	if (argc == 0 || argc > 3) {
+		IConsoleHelp("Run tile loop proc on tile.");
+		return true;
+	}
+
+	if (argc >= 2) {
+		uint32 tile;
+		if (!GetArgumentInteger(&tile, argv[1])) return false;
+
+		if (tile >= MapSize()) {
+			IConsolePrint(CC_ERROR, "Tile does not exist");
+			return true;
+		}
+		uint32 count = 1;
+		if (argc >= 3) {
+			if (!GetArgumentInteger(&count, argv[2])) return false;
+		}
+		for (uint32 i = 0; i < count; i++) {
+			_tile_type_procs[GetTileType(tile)]->tile_loop_proc(tile);
+		}
+		return true;
+	}
+
+	return false;
+}
 #endif
 
 DEF_CONSOLE_CMD(ConGetFullDate)
@@ -2416,6 +2645,7 @@ DEF_CONSOLE_CMD(ConMapStats)
 	IConsolePrint(CC_DEFAULT, "");
 	IConsolePrintF(CC_DEFAULT, "towns: %u", (uint) Town::GetNumItems());
 	IConsolePrintF(CC_DEFAULT, "industries: %u", (uint) Industry::GetNumItems());
+	IConsolePrintF(CC_DEFAULT, "objects: %u", (uint) Object::GetNumItems());
 	return true;
 }
 
@@ -2805,7 +3035,10 @@ DEF_CONSOLE_CMD(ConCheckCaches)
 	if (broadcast) {
 		DoCommandP(0, 0, 0, CMD_DESYNC_CHECK);
 	} else {
-		CheckCaches(true, nullptr, CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG);
+		auto logger = [&](const char *str) {
+			IConsolePrint(CC_WARNING, str);
+		};
+		CheckCaches(true, logger, CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG);
 	}
 
 	return true;
@@ -2886,6 +3119,7 @@ DEF_CONSOLE_CMD(ConViewportDebug)
 		IConsoleHelp("   8: VDF_DISABLE_DRAW_SPLIT");
 		IConsoleHelp("  10: VDF_SHOW_NO_LANDSCAPE_MAP_DRAW");
 		IConsoleHelp("  20: VDF_DISABLE_LANDSCAPE_CACHE");
+		IConsoleHelp("  40: VDF_DISABLE_THREAD");
 		return true;
 	}
 
@@ -2991,6 +3225,10 @@ DEF_CONSOLE_CMD(ConMiscDebug)
 		IConsoleHelp("Debug: misc flags.  Usage: 'misc_debug [<flags>]'");
 		IConsoleHelp("  1: MDF_OVERHEAT_BREAKDOWN_OPEN_WIN");
 		IConsoleHelp("  2: MDF_ZONING_RS_WATER_FLOOD_STATE");
+		IConsoleHelp("  4: MDF_ZONING_RS_TROPIC_ZONE");
+		IConsoleHelp("  8: MDF_ZONING_RS_ANIMATED_TILE");
+		IConsoleHelp(" 10: MDF_NEWGRF_SG_SAVE_RAW");
+		IConsoleHelp(" 20: MDF_NEWGRF_SG_DUMP_MORE_DETAIL");
 		return true;
 	}
 
@@ -2998,6 +3236,39 @@ DEF_CONSOLE_CMD(ConMiscDebug)
 		IConsolePrintF(CC_DEFAULT, "Misc debug flags: %X", _misc_debug_flags);
 	} else {
 		_misc_debug_flags = strtoul(argv[1], nullptr, 16);
+	}
+
+	return true;
+}
+
+DEF_CONSOLE_CMD(ConSetNewGRFOptimiserFlags)
+{
+	if (argc < 1 || argc > 2) {
+		IConsoleHelp("Debug: misc set_newgrf_optimiser_flags.  Usage: 'set_newgrf_optimiser_flags [<flags>]'");
+		return true;
+	}
+
+	if (argc == 1) {
+		IConsolePrintF(CC_DEFAULT, "NewGRF optimiser flags: %X", _settings_game.debug.newgrf_optimiser_flags);
+	} else {
+		if (_game_mode == GM_MENU || (_networking && !_network_server)) {
+			IConsoleError("This command is only available in-game and in the editor, and not as a network client.");
+			return true;
+		}
+		extern uint NetworkClientCount();
+		if (_networking && NetworkClientCount() > 1) {
+			IConsoleError("This command is not available when network clients are connected.");
+			return true;
+		}
+
+		uint value = strtoul(argv[1], nullptr, 16);
+		if (_settings_game.debug.newgrf_optimiser_flags == value) return true;
+		_settings_game.debug.newgrf_optimiser_flags = value;
+
+		ReloadNewGRFData();
+
+		extern void PostCheckNewGRFLoadWarnings();
+		PostCheckNewGRFLoadWarnings();
 	}
 
 	return true;
@@ -3092,7 +3363,6 @@ DEF_CONSOLE_CMD(ConNewGRFProfile)
 		return true;
 	}
 
-	extern const std::vector<GRFFile *> &GetAllGRFFiles();
 	const std::vector<GRFFile *> &files = GetAllGRFFiles();
 
 	/* "list" sub-command */
@@ -3327,8 +3597,6 @@ static void IConsoleDebugLibRegister()
 
 DEF_CONSOLE_CMD(ConFramerate)
 {
-	extern void ConPrintFramerate(); // framerate_gui.cpp
-
 	if (argc == 0) {
 		IConsoleHelp("Show frame rate and game speed information");
 		return true;
@@ -3340,8 +3608,6 @@ DEF_CONSOLE_CMD(ConFramerate)
 
 DEF_CONSOLE_CMD(ConFramerateWindow)
 {
-	extern void ShowFramerateWindow();
-
 	if (argc == 0) {
 		IConsoleHelp("Open the frame rate window");
 		return true;
@@ -3441,6 +3707,7 @@ void IConsoleStdLibRegister()
 	IConsole::CmdRegister("screenshot",              ConScreenShot);
 	IConsole::CmdRegister("minimap",                 ConMinimap);
 	IConsole::CmdRegister("script",                  ConScript);
+	IConsole::CmdRegister("zoomto",                  ConZoomToLevel);
 	IConsole::CmdRegister("scrollto",                ConScrollToTile);
 	IConsole::CmdRegister("highlight_tile",          ConHighlightTile);
 	IConsole::AliasRegister("scrollto_highlight",    "scrollto %+; highlight_tile %+");
@@ -3453,9 +3720,11 @@ void IConsoleStdLibRegister()
 	IConsole::CmdRegister("cd",                      ConChangeDirectory);
 	IConsole::CmdRegister("pwd",                     ConPrintWorkingDirectory);
 	IConsole::CmdRegister("clear",                   ConClearBuffer);
+	IConsole::CmdRegister("font",                    ConFont);
 	IConsole::CmdRegister("setting",                 ConSetting);
 	IConsole::CmdRegister("setting_newgame",         ConSettingNewgame);
 	IConsole::CmdRegister("list_settings",           ConListSettings);
+	IConsole::CmdRegister("list_settings_def",       ConListSettingsDefaults);
 	IConsole::CmdRegister("gamelog",                 ConGamelogPrint);
 	IConsole::CmdRegister("rescan_newgrf",           ConRescanNewGRF);
 	IConsole::CmdRegister("list_dirs",               ConListDirs);
@@ -3519,6 +3788,7 @@ void IConsoleStdLibRegister()
 
 	IConsole::CmdRegister("pause",                   ConPauseGame,        ConHookServerOrNoNetwork);
 	IConsole::CmdRegister("unpause",                 ConUnpauseGame,      ConHookServerOrNoNetwork);
+	IConsole::CmdRegister("step",                    ConStepGame,         ConHookNoNetwork);
 
 	IConsole::CmdRegister("company_pw",              ConCompanyPassword,  ConHookNeedNetwork);
 	IConsole::AliasRegister("company_password",      "company_pw %+");
@@ -3596,6 +3866,7 @@ void IConsoleStdLibRegister()
 	IConsole::CmdRegister("csleep",                  ConCSleep,           nullptr, true);
 	IConsole::CmdRegister("recalculate_road_cached_one_way_states", ConRecalculateRoadCachedOneWayStates, ConHookNoNetwork, true);
 	IConsole::CmdRegister("misc_debug",              ConMiscDebug,        nullptr, true);
+	IConsole::CmdRegister("set_newgrf_optimiser_flags", ConSetNewGRFOptimiserFlags, nullptr, true);
 
 	/* NewGRF development stuff */
 	IConsole::CmdRegister("reload_newgrfs",          ConNewGRFReload,     ConHookNewGRFDeveloperTool);
@@ -3614,5 +3885,6 @@ void IConsoleStdLibRegister()
 
 #ifdef _DEBUG
 	IConsole::CmdRegister("delete_vehicle_id",       ConDeleteVehicleID,  ConHookNoNetwork, true);
+	IConsole::CmdRegister("run_tile_loop_tile",      ConRunTileLoopTile,  ConHookNoNetwork, true);
 #endif
 }

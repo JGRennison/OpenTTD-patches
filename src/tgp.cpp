@@ -237,7 +237,7 @@ static height_t TGPGetMaxHeight()
 		{  12,  19,  25,  31,  67,  75,  87 }, ///< Alpinist
 	};
 
-	int map_size_bucket = std::min(MapLogX(), MapLogY()) - MIN_MAP_SIZE_BITS;
+	int map_size_bucket = std::min<int>(std::min(MapLogX(), MapLogY()) - MIN_MAP_SIZE_BITS, max_height_array_size - 1);
 	int max_height_from_table = max_height[_settings_game.difficulty.terrain_type][map_size_bucket];
 
 	/* If there is a manual map height limit, clamp to it. */
@@ -327,7 +327,7 @@ static inline bool AllocHeightMap()
 	_height_map.size_y = MapSizeY();
 
 	/* Allocate memory block for height map row pointers */
-	size_t total_size = (_height_map.size_x + 1) * (_height_map.size_y + 1);
+	size_t total_size = static_cast<size_t>(_height_map.size_x + 1) * (_height_map.size_y + 1);
 	_height_map.dim_x = _height_map.size_x + 1;
 	_height_map.h.resize(total_size);
 
@@ -581,7 +581,7 @@ static void HeightMapCurves(uint level)
 	float factor = sqrt((float)_height_map.size_x / (float)_height_map.size_y);
 	uint sx = Clamp((int)(((1 << level) * factor) + 0.5), 1, 128);
 	uint sy = Clamp((int)(((1 << level) / factor) + 0.5), 1, 128);
-	byte *c = AllocaM(byte, sx * sy);
+	byte *c = AllocaM(byte, static_cast<size_t>(sx) * sy);
 
 	for (uint i = 0; i < sx * sy; i++) {
 		c[i] = Random() % lengthof(curve_maps);
@@ -655,13 +655,13 @@ static void HeightMapCurves(uint level)
 
 					if (*h >= p1.x && *h < p2.x) {
 						ht[t] = p1.y + (*h - p1.x) * (p2.y - p1.y) / (p2.x - p1.x);
-#ifdef WITH_ASSERT
+#ifdef WITH_FULL_ASSERTS
 						found = true;
 #endif
 						break;
 					}
 				}
-				assert(found);
+				dbg_assert(found);
 			}
 
 			/* Apply interpolation of curve map results. */

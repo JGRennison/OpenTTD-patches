@@ -230,8 +230,8 @@ static uint NPFSlopeCost(AyStarNode *current)
 	/* Get the height on both sides of the tile edge.
 	 * Avoid testing the height on the tile-center. This will fail for halftile-foundations.
 	 */
-	int z1 = GetSlopePixelZ(x1 + dx4, y1 + dy4);
-	int z2 = GetSlopePixelZ(x2 - dx4, y2 - dy4);
+	int z1 = GetSlopePixelZ(x1 + dx4, y1 + dy4, true);
+	int z2 = GetSlopePixelZ(x2 - dx4, y2 - dy4, true);
 
 	if (z2 - z1 > 1) {
 		/* Slope up */
@@ -299,7 +299,6 @@ static Vehicle *CountShipProc(Vehicle *v, void *data)
 
 static int32 NPFWaterPathCost(AyStar *as, AyStarNode *current, OpenListNode *parent)
 {
-	/* TileIndex tile = current->tile; */
 	int32 cost = 0;
 	Trackdir trackdir = current->direction;
 
@@ -372,6 +371,7 @@ static int32 NPFRoadPathCost(AyStar *as, AyStarNode *current, OpenListNode *pare
 
 		case MP_STATION: {
 			cost = NPF_TILE_LENGTH;
+			if (IsRoadWaypoint(tile)) break;
 			const RoadStop *rs = RoadStop::GetByTile(tile, GetRoadStopType(tile));
 			if (IsDriveThroughStopTile(tile)) {
 				/* Increase the cost for drive-through road stops */
@@ -865,7 +865,7 @@ static bool CanEnterTile(TileIndex tile, DiagDirection dir, AyStarUserData *user
  */
 static TrackdirBits GetDriveableTrackdirBits(TileIndex dst_tile, TileIndex src_tile, Trackdir src_trackdir, TransportType type, uint subtype)
 {
-	TrackdirBits trackdirbits = TrackStatusToTrackdirBits(GetTileTrackStatus(dst_tile, type, subtype));
+	TrackdirBits trackdirbits = GetTileTrackdirBits(dst_tile, type, subtype);
 
 	if (trackdirbits == TRACKDIR_BIT_NONE && type == TRANSPORT_ROAD && (RoadTramType)subtype == RTT_TRAM) {
 		/* GetTileTrackStatus() returns 0 for single tram bits.
@@ -1143,7 +1143,6 @@ void InitializeNPF()
 	}
 	_npf_aystar.loops_per_tick = 0;
 	_npf_aystar.max_path_cost = 0;
-	//_npf_aystar.max_search_nodes = 0;
 	/* We will limit the number of nodes for now, until we have a better
 	 * solution to really fix performance */
 	_npf_aystar.max_search_nodes = _settings_game.pf.npf.npf_max_search_nodes;
@@ -1162,7 +1161,7 @@ static void NPFFillWithOrderData(NPFFindStationOrTileData *fstd, const Vehicle *
 		if (v->type == VEH_TRAIN) {
 			fstd->station_type = v->current_order.IsType(OT_GOTO_STATION) ? STATION_RAIL : STATION_WAYPOINT;
 		} else if (v->type == VEH_ROAD) {
-			fstd->station_type = RoadVehicle::From(v)->IsBus() ? STATION_BUS : STATION_TRUCK;
+			fstd->station_type = v->current_order.IsType(OT_GOTO_STATION) ? (RoadVehicle::From(v)->IsBus() ? STATION_BUS : STATION_TRUCK) : STATION_ROADWAYPOINT;
 		} else if (v->type == VEH_SHIP) {
 			fstd->station_type = v->current_order.IsType(OT_GOTO_STATION) ? STATION_DOCK : STATION_BUOY;
 		}
@@ -1254,7 +1253,7 @@ bool NPFShipCheckReverse(const Ship *v, Trackdir *best_td)
 	AyStarUserData user = { v->owner, TRANSPORT_WATER, RAILTYPES_NONE, ROADTYPES_NONE, 0 };
 	if (best_td != nullptr) {
 		DiagDirection entry = ReverseDiagDir(VehicleExitDir(v->direction, v->state));
-		TrackdirBits rtds = DiagdirReachesTrackdirs(entry) & TrackStatusToTrackdirBits(GetTileTrackStatus(v->tile, TRANSPORT_WATER, 0, entry));
+		TrackdirBits rtds = DiagdirReachesTrackdirs(entry) & GetTileTrackdirBits(v->tile, TRANSPORT_WATER, 0, entry);
 		Trackdir best = (Trackdir)FindFirstBit2x64(rtds);
 		rtds = KillFirstBit(rtds);
 		if (rtds == TRACKDIR_BIT_NONE) return false; /* At most one choice. */

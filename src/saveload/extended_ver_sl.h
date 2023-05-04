@@ -13,6 +13,7 @@
 #include "../core/bitmath_func.hpp"
 #include "../core/enum_type.hpp"
 
+#include <array>
 #include <vector>
 
 enum SaveLoadVersion : uint16;
@@ -23,6 +24,7 @@ enum SaveLoadVersion : uint16;
 enum SlXvFeatureIndex {
 	XSLFI_NULL                          = 0,      ///< Unused value, to indicate that no extended feature test is in use
 	XSLFI_VERSION_LABEL,                          ///< Version label
+	XSLFI_UPSTREAM_VERSION,                       ///< Corresponding upstream savegame version
 	XSLFI_TRACE_RESTRICT,                         ///< Trace restrict
 	XSLFI_TRACE_RESTRICT_OWNER,                   ///< Trace restrict: train owner test
 	XSLFI_TRACE_RESTRICT_ORDRCND,                 ///< Trace restrict: slot conditional order
@@ -35,6 +37,7 @@ enum SlXvFeatureIndex {
 	XSLFI_TRACE_RESTRICT_CTGRYCND,                ///< Trace restrict: category conditionals
 	XSLFI_TRACE_RESTRICT_PENCTRL,                 ///< Trace restrict: PF penalty control
 	XSLFI_TRACE_RESTRICT_TUNBRIDGE,               ///< Trace restrict: restricted signalled tunnel/bridge support
+	XSLFI_TRACE_RESTRICT_SPDADAPTCTRL,            ///< Trace restrict: speed adaptation control
 	XSLFI_PROG_SIGS,                              ///< programmable pre-signals patch
 	XSLFI_ADJACENT_CROSSINGS,                     ///< Adjacent level crossings closure patch
 	XSLFI_SAFER_CROSSINGS,                        ///< Safer level crossings
@@ -119,8 +122,32 @@ enum SlXvFeatureIndex {
 	XSLFI_COMPANY_PW,                             ///< Company passwords
 	XSLFI_ST_INDUSTRY_CARGO_MODE,                 ///< Station industry cargo mode setting
 	XSLFI_TL_SPEED_LIMIT,                         ///< Through load maximum speed setting
+	XSLFI_RAIL_DEPOT_SPEED_LIMIT,                 ///< Rail depot maximum speed setting
+	XSLFI_WAYPOINT_FLAGS,                         ///< Waypoint flags
+	XSLFI_ROAD_WAYPOINTS,                         ///< Road waypoints
+	XSLFI_MORE_STATION_TYPES,                     ///< More station types (field widening)
+	XSLFI_RV_ORDER_EXTRA_FLAGS,                   ///< Road vehicle order extra flags
+	XSLFI_GRF_ROADSTOPS,                          ///< NewGRF road stops
+	XSLFI_INDUSTRY_ANIM_MASK,                     ///< Industry tile animation masking
+	XSLFI_NEW_SIGNAL_STYLES,                      ///< New signal styles
+	XSLFI_NO_TREE_COUNTER,                        ///< No tree counter
+	XSLFI_TOWN_SETTING_OVERRIDE,                  ///< Town setting overrides
+	XSLFI_LINKGRAPH_SPARSE_EDGES,                 ///< Link graph edge matrix is stored in sparse format, and saved in order
+	XSLFI_AUX_TILE_LOOP,                          ///< Auxiliary tile loop
+	XSLFI_NEWGRF_ENTITY_EXTRA,                    ///< NewGRF entity mappings are 16 bit
+	XSLFI_TNNC_CHUNK,                             ///< TNNC chunk
+	XSLFI_MULTI_CARGO_SHIPS,                      ///< Multi-cargo ships
+	XSLFI_REMAIN_NEXT_ORDER_STATION,              ///< Remain in station if next order is for same station
+	XSLFI_LABEL_ORDERS,                           ///< Label orders
 
 	XSLFI_SCRIPT_INT64,                           ///< See: SLV_SCRIPT_INT64
+	XSLFI_U64_TICK_COUNTER,                       ///< See: SLV_U64_TICK_COUNTER
+	XSLFI_LINKGRAPH_TRAVEL_TIME,                  ///< See: SLV_LINKGRAPH_TRAVEL_TIME
+	XSLFI_LAST_LOADING_TICK,                      ///< See: SLV_LAST_LOADING_TICK
+	XSLFI_SCRIPT_LEAGUE_TABLES,                   ///< See: Scriptable league tables (PR #10001)
+	XSLFI_VELOCITY_NAUTICAL,                      ///< See: SLV_VELOCITY_NAUTICAL (PR #10594)
+	XSLFI_CONSISTENT_PARTIAL_Z,                   ///< See: SLV_CONSISTENT_PARTIAL_Z (PR #10570)
+	XSLFI_MORE_CARGO_AGE,                         ///< See: SLV_MORE_CARGO_AGE (PR #10596)
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk
@@ -135,7 +162,8 @@ enum SlXvFeatureIndex {
 	XSLFI_SIZE,                                   ///< Total count of features, including null feature
 };
 
-extern uint16 _sl_xv_feature_versions[XSLFI_SIZE];
+extern std::array<uint16, XSLFI_SIZE> _sl_xv_feature_versions;
+extern std::array<uint16, XSLFI_SIZE> _sl_xv_feature_static_versions;
 
 /**
  * Operator to use when combining traditional savegame number test with an extended feature version test
@@ -149,16 +177,16 @@ enum SlXvFeatureTestOperator {
  * Structure to describe an extended feature version test, and how it combines with a traditional savegame version test
  */
 struct SlXvFeatureTest {
-	using TestFunctorPtr = bool (*)(uint16, bool);  ///< Return true if feature present, first parameter is standard savegame version, second is whether standard savegame version is within bounds
+	using TestFunctorPtr = bool (*)(uint16, bool, const std::array<uint16, XSLFI_SIZE> &);  ///< Return true if feature present, first parameter is standard savegame version, second is whether standard savegame version is within bounds
 
-	private:
+private:
 	uint16 min_version;
 	uint16 max_version;
 	SlXvFeatureIndex feature;
 	SlXvFeatureTestOperator op;
 	TestFunctorPtr functor = nullptr;
 
-	public:
+public:
 	SlXvFeatureTest()
 			: min_version(0), max_version(0), feature(XSLFI_NULL), op(XSLFTO_OR) { }
 
@@ -168,10 +196,20 @@ struct SlXvFeatureTest {
 	SlXvFeatureTest(TestFunctorPtr functor_)
 			: min_version(0), max_version(0), feature(XSLFI_NULL), op(XSLFTO_OR), functor(functor_) { }
 
-	bool IsFeaturePresent(SaveLoadVersion savegame_version, SaveLoadVersion savegame_version_from, SaveLoadVersion savegame_version_to) const;
+	bool IsFeaturePresent(const std::array<uint16, XSLFI_SIZE> &feature_versions, SaveLoadVersion savegame_version, SaveLoadVersion savegame_version_from, SaveLoadVersion savegame_version_to) const;
+
+	inline bool IsFeaturePresent(SaveLoadVersion savegame_version, SaveLoadVersion savegame_version_from, SaveLoadVersion savegame_version_to) const
+	{
+		return this->IsFeaturePresent(_sl_xv_feature_versions, savegame_version, savegame_version_from, savegame_version_to);
+	}
 };
 
-bool SlXvIsFeaturePresent(SlXvFeatureIndex feature, uint16 min_version = 1, uint16 max_version = 0xFFFF);
+bool SlXvIsFeaturePresent(const std::array<uint16, XSLFI_SIZE> &feature_versions, SlXvFeatureIndex feature, uint16 min_version = 1, uint16 max_version = 0xFFFF);
+
+inline bool SlXvIsFeaturePresent(SlXvFeatureIndex feature, uint16 min_version = 1, uint16 max_version = 0xFFFF)
+{
+	return SlXvIsFeaturePresent(_sl_xv_feature_versions, feature, min_version, max_version);
+}
 
 /**
  * Returns true if @p feature is missing (i.e. has a version of 0, or less than the specified minimum version)
@@ -179,6 +217,14 @@ bool SlXvIsFeaturePresent(SlXvFeatureIndex feature, uint16 min_version = 1, uint
 inline bool SlXvIsFeatureMissing(SlXvFeatureIndex feature, uint16 min_version = 1)
 {
 	return !SlXvIsFeaturePresent(feature, min_version);
+}
+
+/**
+ * Returns true if @p feature is missing (i.e. has a version of 0, or less than the specified minimum version)
+ */
+inline bool SlXvIsFeatureMissing(const std::array<uint16, XSLFI_SIZE> &feature_versions, SlXvFeatureIndex feature, uint16 min_version = 1)
+{
+	return !SlXvIsFeaturePresent(feature_versions, feature, min_version);
 }
 
 const char *SlXvGetFeatureName(SlXvFeatureIndex feature);
@@ -191,7 +237,7 @@ enum SlxiSubChunkFlags {
 	XSCF_NULL                     = 0,       ///< zero value
 	XSCF_IGNORABLE_UNKNOWN        = 1 << 0,  ///< the loader is free to ignore this without aborting the load if it doesn't know what it is at all
 	XSCF_IGNORABLE_VERSION        = 1 << 1,  ///< the loader is free to ignore this without aborting the load if the version is greater than the maximum that can be loaded
-	XSCF_EXTRA_DATA_PRESENT       = 1 << 2,  ///< extra data field is present, extra data in some sub-chunk/feature specific format, not used for anything yet
+	XSCF_EXTRA_DATA_PRESENT       = 1 << 2,  ///< extra data field is present, extra data in some sub-chunk/feature specific format
 	XSCF_CHUNK_ID_LIST_PRESENT    = 1 << 3,  ///< chunk ID list field is present, list of chunks which this sub-chunk/feature adds to the save game, this can be used to discard the chunks if the feature is unknown
 
 	XSCF_IGNORABLE_ALL            = XSCF_IGNORABLE_UNKNOWN | XSCF_IGNORABLE_VERSION, ///< all "ignorable" flags
@@ -218,6 +264,7 @@ struct SlxiSubChunkInfo {
 void SlXvResetState();
 
 void SlXvSetCurrentState();
+void SlXvSetStaticCurrentVersions();
 
 bool SlXvCheckSpecialSavegameVersions();
 

@@ -177,19 +177,19 @@ struct CYapfRailNodeT
 
 	inline TileIndex GetLastTile() const
 	{
-		assert(m_segment != nullptr);
+		dbg_assert(m_segment != nullptr);
 		return m_segment->m_last_tile;
 	}
 
 	inline Trackdir GetLastTrackdir() const
 	{
-		assert(m_segment != nullptr);
+		dbg_assert(m_segment != nullptr);
 		return m_segment->m_last_td;
 	}
 
 	inline void SetLastTileTrackdir(TileIndex tile, Trackdir td)
 	{
-		assert(m_segment != nullptr);
+		dbg_assert(m_segment != nullptr);
 		m_segment->m_last_tile = tile;
 		m_segment->m_last_td = td;
 	}
@@ -206,7 +206,7 @@ struct CYapfRailNodeT
 
 			if (!ft.Follow(cur, cur_td)) break;
 			cur = ft.m_new_tile;
-			assert(KillFirstBit(ft.m_new_td_bits) == TRACKDIR_BIT_NONE);
+			dbg_assert(KillFirstBit(ft.m_new_td_bits) == TRACKDIR_BIT_NONE);
 			cur_td = FindFirstTrackdir(ft.m_new_td_bits);
 		}
 
@@ -227,7 +227,7 @@ struct CYapfRailNodeT
 			if (!ft.Follow(cur, cur_td)) break;
 			length += TILE_SIZE * ft.m_tiles_skipped;
 			cur = ft.m_new_tile;
-			assert(KillFirstBit(ft.m_new_td_bits) == TRACKDIR_BIT_NONE);
+			dbg_assert(KillFirstBit(ft.m_new_td_bits) == TRACKDIR_BIT_NONE);
 			cur_td = FindFirstTrackdir(ft.m_new_td_bits);
 		}
 

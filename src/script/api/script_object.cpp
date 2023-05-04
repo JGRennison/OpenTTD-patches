@@ -110,7 +110,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 
 /* static */ void ScriptObject::SetDoCommandCosts(Money value)
 {
-	GetStorage()->costs = CommandCost(value);
+	GetStorage()->costs = CommandCost(INVALID_EXPENSES, value); // Expense type is never read.
 }
 
 /* static */ void ScriptObject::IncreaseDoCommandCosts(Money value)
@@ -141,6 +141,16 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 /* static */ Money ScriptObject::GetLastCost()
 {
 	return GetStorage()->last_cost;
+}
+
+/* static */ void ScriptObject::SetLastCommandResultData(uint32 last_result)
+{
+	GetStorage()->last_result = last_result;
+}
+
+/* static */ uint32 ScriptObject::GetLastCommandResultData()
+{
+	return GetStorage()->last_result;
 }
 
 /* static */ void ScriptObject::SetRoadType(RoadType road_type)
@@ -303,19 +313,19 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	return GetStorage()->callback_value[index];
 }
 
-/* static */ bool ScriptObject::DoCommandEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint cmd, const char *text, uint32 binary_length, Script_SuspendCallbackProc *callback)
+/* static */ bool ScriptObject::DoCommandEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint cmd, const char *text, const CommandAuxiliaryBase *aux_data, Script_SuspendCallbackProc *callback)
 {
 	if (!ScriptObject::CanSuspend()) {
 		throw Script_FatalError("You are not allowed to execute any DoCommand (even indirect) in your constructor, Save(), Load(), and any valuator.");
 	}
 
-	if (ScriptObject::GetCompany() != OWNER_DEITY && !::Company::IsValidID(ScriptObject::GetCompany())) {
+	if (!ScriptCompanyMode::IsDeity() && !ScriptCompanyMode::IsValid()) {
 		ScriptObject::SetLastError(ScriptError::ERR_PRECONDITION_INVALID_COMPANY);
 		return false;
 	}
 
 	std::string text_validated;
-	if (binary_length == 0 && !StrEmpty(text) && (GetCommandFlags(cmd) & CMD_STR_CTRL) == 0) {
+	if (!StrEmpty(text) && (GetCommandFlags(cmd) & CMD_STR_CTRL) == 0) {
 		/* The string must be valid, i.e. not contain special codes. Since some
 		 * can be made with GSText, make sure the control codes are removed. */
 		text_validated = text;
@@ -339,7 +349,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	if (!estimate_only && _networking && !_generating_world) SetLastCommand(tile, p1, p2, p3, cmd);
 
 	/* Try to perform the command. */
-	CommandCost res = ::DoCommandPScript(tile, p1, p2, p3, cmd, (_networking && !_generating_world) ? ScriptObject::GetActiveInstance()->GetDoCommandCallback() : nullptr, text, false, estimate_only, binary_length);
+	CommandCost res = ::DoCommandPScript(tile, p1, p2, p3, cmd, (_networking && !_generating_world) ? ScriptObject::GetActiveInstance()->GetDoCommandCallback() : nullptr, text, false, estimate_only, aux_data);
 
 	/* We failed; set the error and bail out */
 	if (res.Failed()) {
@@ -358,6 +368,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 
 	/* Costs of this operation. */
 	SetLastCost(res.GetCost());
+	SetLastCommandResultData(res.GetResultData());
 	SetLastCommandRes(true);
 
 	if (_generating_world) {
@@ -383,4 +394,30 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	}
 
 	NOT_REACHED();
+}
+
+
+/* static */ Randomizer ScriptObject::random_states[OWNER_END];
+
+Randomizer &ScriptObject::GetRandomizer(Owner owner)
+{
+	return ScriptObject::random_states[owner];
+}
+
+void ScriptObject::InitializeRandomizers()
+{
+	Randomizer random = _random;
+	for (Owner owner = OWNER_BEGIN; owner < OWNER_END; owner++) {
+		ScriptObject::GetRandomizer(owner).SetSeed(random.Next());
+	}
+}
+
+/* static */ bool ScriptObject::IsNewUniqueLogMessage(const std::string &msg)
+{
+	return !GetStorage()->seen_unique_log_messages.contains(msg);
+}
+
+/* static */ void ScriptObject::RegisterUniqueLogMessage(std::string &&msg)
+{
+	GetStorage()->seen_unique_log_messages.emplace(std::move(msg));
 }

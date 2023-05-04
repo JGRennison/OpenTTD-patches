@@ -143,11 +143,11 @@ static inline uint ScaleByMapSize1D(uint n)
 }
 
 /**
- * An offset value between to tiles.
+ * An offset value between two tiles.
  *
  * This value is used for the difference between
- * two tiles. It can be added to a tileindex to get
- * the resulting tileindex of the start tile applied
+ * two tiles. It can be added to a TileIndex to get
+ * the resulting TileIndex of the start tile applied
  * with this saved difference.
  *
  * @see TileDiffXY(int, int)
@@ -161,7 +161,7 @@ typedef int32 TileIndexDiff;
  * @param y The y coordinate of the tile
  * @return The TileIndex calculated by the coordinate
  */
-static inline TileIndex TileXY(uint x, uint y)
+debug_inline static TileIndex TileXY(uint x, uint y)
 {
 	return (y << MapLogX()) + x;
 }
@@ -169,7 +169,7 @@ static inline TileIndex TileXY(uint x, uint y)
 /**
  * Calculates an offset for the given coordinate(-offset).
  *
- * This function calculate an offset value which can be added to an
+ * This function calculate an offset value which can be added to a
  * #TileIndex. The coordinates can be negative.
  *
  * @param x The offset in x direction
@@ -192,7 +192,7 @@ static inline TileIndexDiff TileDiffXY(int x, int y)
  * @param y The virtual y coordinate of the tile.
  * @return The TileIndex calculated by the coordinate.
  */
-static inline TileIndex TileVirtXY(uint x, uint y)
+debug_inline static TileIndex TileVirtXY(uint x, uint y)
 {
 	return (y >> 4 << MapLogX()) + (x >> 4);
 }
@@ -216,7 +216,7 @@ static inline TileIndex TileVirtXYClampedToMap(int x, int y)
  * @param tile the tile to get the X component of
  * @return the X component
  */
-static inline uint TileX(TileIndex tile)
+debug_inline static uint TileX(TileIndex tile)
 {
 	return tile & MapMaxX();
 }
@@ -226,13 +226,13 @@ static inline uint TileX(TileIndex tile)
  * @param tile the tile to get the Y component of
  * @return the Y component
  */
-static inline uint TileY(TileIndex tile)
+debug_inline static uint TileY(TileIndex tile)
 {
 	return tile >> MapLogX();
 }
 
 /**
- * Return the offset between to tiles from a TileIndexDiffC struct.
+ * Return the offset between two tiles from a TileIndexDiffC struct.
  *
  * This function works like #TileDiffXY(int, int) and returns the
  * difference between two tiles.
@@ -249,7 +249,7 @@ static inline TileIndexDiff ToTileIndexDiff(TileIndexDiffC tidc)
 
 #ifndef _DEBUG
 	/**
-	 * Adds to tiles together.
+	 * Adds two tiles together.
 	 *
 	 * @param x One tile
 	 * @param y Another tile to add

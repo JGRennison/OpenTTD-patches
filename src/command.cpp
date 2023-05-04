@@ -12,6 +12,7 @@
 #include "error.h"
 #include "gui.h"
 #include "command_func.h"
+#include "command_aux.h"
 #include "network/network_type.h"
 #include "network/network.h"
 #include "genworld.h"
@@ -34,6 +35,7 @@
 #include "debug_desync.h"
 #include "order_backup.h"
 #include <array>
+#include <deque>
 
 #include "table/strings.h"
 
@@ -48,7 +50,7 @@ CommandProc CmdLandscapeClear;
 
 CommandProc CmdBuildBridge;
 
-CommandProc CmdBuildRailStation;
+CommandProcEx CmdBuildRailStation;
 CommandProc CmdRemoveFromRailStation;
 CommandProc CmdConvertRail;
 
@@ -67,10 +69,12 @@ CommandProc CmdBuildTunnel;
 
 CommandProc CmdBuildTrainDepot;
 CommandProcEx CmdBuildRailWaypoint;
+CommandProcEx CmdBuildRoadWaypoint;
 CommandProc CmdRenameWaypoint;
+CommandProc CmdSetWaypointLabelHidden;
 CommandProc CmdRemoveFromRailWaypoint;
 
-CommandProc CmdBuildRoadStop;
+CommandProcEx CmdBuildRoadStop;
 CommandProc CmdRemoveRoadStop;
 
 CommandProc CmdBuildLongRoad;
@@ -107,11 +111,14 @@ CommandProcEx CmdModifyOrder;
 CommandProc CmdSkipToOrder;
 CommandProc CmdDeleteOrder;
 CommandProcEx CmdInsertOrder;
+CommandProc CmdDuplicateOrder;
 CommandProc CmdMassChangeOrder;
 CommandProc CmdChangeServiceInt;
 
 CommandProc CmdBuildIndustry;
-CommandProc CmdIndustryCtrl;
+CommandProc CmdIndustrySetFlags;
+CommandProc CmdIndustrySetExclusivity;
+CommandProc CmdIndustrySetText;
 
 CommandProc CmdSetCompanyManagerFace;
 CommandProc CmdSetCompanyColour;
@@ -133,6 +140,7 @@ CommandProc CmdRenamePresident;
 CommandProc CmdRenameStation;
 CommandProc CmdRenameDepot;
 
+CommandProc CmdExchangeStationNames;
 CommandProc CmdSetStationCargoAllowedSupply;
 
 CommandProc CmdPlaceSign;
@@ -151,6 +159,8 @@ CommandProc CmdFoundTown;
 CommandProc CmdRenameTown;
 CommandProc CmdRenameTownNonAdmin;
 CommandProc CmdDoTownAction;
+CommandProc CmdOverrideTownSetting;
+CommandProc CmdOverrideTownSettingNonAdmin;
 CommandProc CmdTownGrowthRate;
 CommandProc CmdTownRating;
 CommandProc CmdTownCargoGoal;
@@ -182,7 +192,7 @@ CommandProc CmdRemoveGoal;
 CommandProc CmdSetGoalText;
 CommandProc CmdSetGoalProgress;
 CommandProc CmdSetGoalCompleted;
-CommandProc CmdGoalQuestion;
+CommandProcEx CmdGoalQuestion;
 CommandProc CmdGoalQuestionAnswer;
 CommandProc CmdCreateStoryPage;
 CommandProc CmdCreateStoryPageElement;
@@ -206,12 +216,15 @@ CommandProc CmdToggleReuseDepotVehicles;
 CommandProc CmdToggleKeepRemainingVehicles;
 CommandProc CmdToggleRefitAsTemplate;
 CommandProc CmdToggleTemplateReplaceOldOnly;
+CommandProc CmdRenameTemplateReplace;
 
 CommandProc CmdVirtualTrainFromTemplateVehicle;
 CommandProc CmdVirtualTrainFromTrain;
 CommandProc CmdDeleteVirtualTrain;
 CommandProc CmdBuildVirtualRailVehicle;
 CommandProc CmdReplaceTemplateVehicle;
+CommandProc CmdMoveVirtualRailVehicle;
+CommandProc CmdSellVirtualVehicle;
 
 CommandProc CmdTemplateVehicleFromTrain;
 CommandProc CmdDeleteTemplateVehicle;
@@ -250,6 +263,12 @@ CommandProc CmdSetTimetableStart;
 
 CommandProc CmdOpenCloseAirport;
 
+CommandProcEx CmdCreateLeagueTable;
+CommandProcEx CmdCreateLeagueTableElement;
+CommandProc CmdUpdateLeagueTableElementData;
+CommandProcEx CmdUpdateLeagueTableElementScore;
+CommandProc CmdRemoveLeagueTableElement;
+
 CommandProc CmdBuildTrafficLights;
 CommandProc CmdRemoveTrafficLights;
 CommandProc CmdBuildYieldSign;
@@ -282,6 +301,7 @@ CommandProc CmdScheduledDispatchResetLastDispatch;
 CommandProc CmdScheduledDispatchClear;
 CommandProcEx CmdScheduledDispatchAddNewSchedule;
 CommandProc CmdScheduledDispatchRemoveSchedule;
+CommandProc CmdScheduledDispatchRenameSchedule;
 
 CommandProc CmdAddPlan;
 CommandProcEx CmdAddPlanLine;
@@ -303,35 +323,37 @@ CommandProc CmdDesyncCheck;
  * as the value from the CMD_* enums.
  */
 static const Command _command_proc_table[] = {
-	DEF_CMD(CmdBuildRailroadTrack, CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION),			  // CMD_BUILD_RAILROAD_TRACK
-	DEF_CMD(CmdRemoveRailroadTrack, CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION),							  // CMD_REMOVE_RAILROAD_TRACK
-	DEF_CMD(CmdBuildSingleRail, CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION),				  // CMD_BUILD_SINGLE_RAIL
-	DEF_CMD(CmdRemoveSingleRail, CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION),							  // CMD_REMOVE_SINGLE_RAIL
-	DEF_CMD(CmdLandscapeClear, CMD_DEITY, CMDT_LANDSCAPE_CONSTRUCTION),								  // CMD_LANDSCAPE_CLEAR
-	DEF_CMD(CmdBuildBridge, CMD_DEITY | CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION),		  // CMD_BUILD_BRIDGE
-	DEF_CMD(CmdBuildRailStation, CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION),				  // CMD_BUILD_RAIL_STATION
-	DEF_CMD(CmdBuildTrainDepot, CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION),				  // CMD_BUILD_TRAIN_DEPOT
-	DEF_CMD(CmdBuildSingleSignal, CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION),							  // CMD_BUILD_SIGNALS
-	DEF_CMD(CmdRemoveSingleSignal, CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION),							  // CMD_REMOVE_SIGNALS
-	DEF_CMD(CmdTerraformLand, CMD_ALL_TILES | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION),				  // CMD_TERRAFORM_LAND
-	DEF_CMD(CmdBuildObject, CMD_DEITY | CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION),		  // CMD_BUILD_OBJECT
+	DEF_CMD(CmdBuildRailroadTrack,       CMD_NO_WATER | CMD_AUTO | CMD_P1_TILE, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_RAILROAD_TRACK
+	DEF_CMD(CmdRemoveRailroadTrack,                     CMD_AUTO | CMD_P1_TILE, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_REMOVE_RAILROAD_TRACK
+	DEF_CMD(CmdBuildSingleRail,          CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_SINGLE_RAIL
+	DEF_CMD(CmdRemoveSingleRail,                        CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_REMOVE_SINGLE_RAIL
+	DEF_CMD(CmdLandscapeClear,                         CMD_DEITY, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_LANDSCAPE_CLEAR
+	DEF_CMD(CmdBuildBridge,  CMD_DEITY | CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_BRIDGE
+	DEF_CMD(CmdBuildRailStation,         CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_RAIL_STATION
+	DEF_CMD(CmdBuildTrainDepot,          CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_TRAIN_DEPOT
+	DEF_CMD(CmdBuildSingleSignal,                       CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_SIGNALS
+	DEF_CMD(CmdRemoveSingleSignal,                      CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_REMOVE_SIGNALS
+	DEF_CMD(CmdTerraformLand,           CMD_ALL_TILES | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_TERRAFORM_LAND
+	DEF_CMD(CmdBuildObject,  CMD_DEITY | CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_OBJECT
 	DEF_CMD(CmdPurchaseLandArea, CMD_NO_WATER | CMD_AUTO | CMD_NO_TEST, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_PURCHASE_LAND_AREA
-	DEF_CMD(CmdBuildObjectArea, CMD_NO_WATER | CMD_AUTO | CMD_NO_TEST, CMDT_LANDSCAPE_CONSTRUCTION),  // CMD_BUILD_OBJECT_AREA
-	DEF_CMD(CmdBuildHouse, CMD_DEITY | CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION),		  // CMD_BUILD_HOUSE
-	DEF_CMD(CmdBuildTunnel, CMD_DEITY | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION),						  // CMD_BUILD_TUNNEL
-	DEF_CMD(CmdRemoveFromRailStation, 0, CMDT_LANDSCAPE_CONSTRUCTION),								  // CMD_REMOVE_FROM_RAIL_STATION
-	DEF_CMD(CmdConvertRail, 0, CMDT_LANDSCAPE_CONSTRUCTION),										  // CMD_CONVERT_RAIL
-	DEF_CMD(CmdBuildRailWaypoint, 0, CMDT_LANDSCAPE_CONSTRUCTION),									  // CMD_BUILD_RAIL_WAYPOINT
-	DEF_CMD(CmdRenameWaypoint, 0, CMDT_OTHER_MANAGEMENT),											  // CMD_RENAME_WAYPOINT
-	DEF_CMD(CmdRemoveFromRailWaypoint, 0, CMDT_LANDSCAPE_CONSTRUCTION),								  // CMD_REMOVE_FROM_RAIL_WAYPOINT
+	DEF_CMD(CmdBuildObjectArea,  CMD_NO_WATER | CMD_AUTO | CMD_NO_TEST, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_OBJECT_AREA
+	DEF_CMD(CmdBuildHouse,   CMD_DEITY | CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_HOUSE
+	DEF_CMD(CmdBuildTunnel,                 CMD_DEITY | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_TUNNEL
+	DEF_CMD(CmdRemoveFromRailStation,                          0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_REMOVE_FROM_RAIL_STATION
+	DEF_CMD(CmdConvertRail,                                    0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_CONVERT_RAIL
+	DEF_CMD(CmdBuildRailWaypoint,                              0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_RAIL_WAYPOINT
+	DEF_CMD(CmdBuildRoadWaypoint,                              0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_ROAD_WAYPOINT
+	DEF_CMD(CmdRenameWaypoint,                                 0, CMDT_OTHER_MANAGEMENT      ), // CMD_RENAME_WAYPOINT
+	DEF_CMD(CmdSetWaypointLabelHidden,                         0, CMDT_OTHER_MANAGEMENT      ), // CMD_SET_WAYPOINT_LABEL_HIDDEN
+	DEF_CMD(CmdRemoveFromRailWaypoint,                         0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_REMOVE_FROM_RAIL_WAYPOINT
 
-	DEF_CMD(CmdBuildRoadStop, CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION),			 // CMD_BUILD_ROAD_STOP
-	DEF_CMD(CmdRemoveRoadStop, 0, CMDT_LANDSCAPE_CONSTRUCTION),									 // CMD_REMOVE_ROAD_STOP
-	DEF_CMD(CmdBuildLongRoad, CMD_DEITY | CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_LONG_ROAD
-	DEF_CMD(CmdRemoveLongRoad, CMD_NO_TEST | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION),			 // CMD_REMOVE_LONG_ROAD; towns may disallow removing road bits (as they are connected) in test, but in exec they're removed and thus removing is allowed.
-	DEF_CMD(CmdBuildRoad, CMD_DEITY | CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION),	 // CMD_BUILD_ROAD
-	DEF_CMD(CmdBuildRoadDepot, CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION),			 // CMD_BUILD_ROAD_DEPOT
-	DEF_CMD(CmdConvertRoad, 0, CMDT_LANDSCAPE_CONSTRUCTION),									 // CMD_CONVERT_ROAD
+	DEF_CMD(CmdBuildRoadStop,            CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_ROAD_STOP
+	DEF_CMD(CmdRemoveRoadStop,                                 0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_REMOVE_ROAD_STOP
+	DEF_CMD(CmdBuildLongRoad,CMD_DEITY | CMD_NO_WATER | CMD_AUTO | CMD_P1_TILE, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_LONG_ROAD
+	DEF_CMD(CmdRemoveLongRoad,            CMD_NO_TEST | CMD_AUTO | CMD_P1_TILE, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_REMOVE_LONG_ROAD; towns may disallow removing road bits (as they are connected) in test, but in exec they're removed and thus removing is allowed.
+	DEF_CMD(CmdBuildRoad,    CMD_DEITY | CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_ROAD
+	DEF_CMD(CmdBuildRoadDepot,           CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_ROAD_DEPOT
+	DEF_CMD(CmdConvertRoad,                                    0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_CONVERT_ROAD
 
 	DEF_CMD(CmdBuildAirport, CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_AIRPORT
 	DEF_CMD(CmdBuildDock, CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION),					// CMD_BUILD_DOCK
@@ -349,17 +371,20 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdForceTrainProceed, 0, CMDT_VEHICLE_MANAGEMENT),	   // CMD_FORCE_TRAIN_PROCEED
 	DEF_CMD(CmdReverseTrainDirection, 0, CMDT_VEHICLE_MANAGEMENT), // CMD_REVERSE_TRAIN_DIRECTION
 
-	DEF_CMD(CmdClearOrderBackup, CMD_CLIENT_ID, CMDT_SERVER_SETTING), // CMD_CLEAR_ORDER_BACKUP
-	DEF_CMD(CmdModifyOrder, 0, CMDT_ROUTE_MANAGEMENT),				  // CMD_MODIFY_ORDER
-	DEF_CMD(CmdSkipToOrder, 0, CMDT_ROUTE_MANAGEMENT),				  // CMD_SKIP_TO_ORDER
-	DEF_CMD(CmdDeleteOrder, 0, CMDT_ROUTE_MANAGEMENT),				  // CMD_DELETE_ORDER
-	DEF_CMD(CmdInsertOrder, 0, CMDT_ROUTE_MANAGEMENT),				  // CMD_INSERT_ORDER
-	DEF_CMD(CmdMassChangeOrder, 0, CMDT_ROUTE_MANAGEMENT),			  // CMD_MASS_CHANGE_ORDER
+	DEF_CMD(CmdClearOrderBackup,                   CMD_CLIENT_ID, CMDT_SERVER_SETTING        ), // CMD_CLEAR_ORDER_BACKUP
+	DEF_CMD(CmdModifyOrder,                                    0, CMDT_ROUTE_MANAGEMENT      ), // CMD_MODIFY_ORDER
+	DEF_CMD(CmdSkipToOrder,                                    0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SKIP_TO_ORDER
+	DEF_CMD(CmdDeleteOrder,                                    0, CMDT_ROUTE_MANAGEMENT      ), // CMD_DELETE_ORDER
+	DEF_CMD(CmdInsertOrder,                                    0, CMDT_ROUTE_MANAGEMENT      ), // CMD_INSERT_ORDER
+	DEF_CMD(CmdDuplicateOrder,                                 0, CMDT_ROUTE_MANAGEMENT      ), // CMD_DUPLICATE_ORDER
+	DEF_CMD(CmdMassChangeOrder,                                0, CMDT_ROUTE_MANAGEMENT      ), // CMD_MASS_CHANGE_ORDER
 
 	DEF_CMD(CmdChangeServiceInt, 0, CMDT_VEHICLE_MANAGEMENT), // CMD_CHANGE_SERVICE_INT
 
-	DEF_CMD(CmdBuildIndustry, CMD_DEITY, CMDT_LANDSCAPE_CONSTRUCTION),		   // CMD_BUILD_INDUSTRY
-	DEF_CMD(CmdIndustryCtrl, CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT), // CMD_INDUSTRY_CTRL
+	DEF_CMD(CmdBuildIndustry,                          CMD_DEITY, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_INDUSTRY
+	DEF_CMD(CmdIndustrySetFlags,        CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_INDUSTRY_SET_FLAGS
+	DEF_CMD(CmdIndustrySetExclusivity,  CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_INDUSTRY_SET_EXCLUSIVITY
+	DEF_CMD(CmdIndustrySetText,         CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_INDUSTRY_SET_TEXT
 
 	DEF_CMD(CmdSetCompanyManagerFace, 0, CMDT_OTHER_MANAGEMENT), // CMD_SET_COMPANY_MANAGER_FACE
 	DEF_CMD(CmdSetCompanyColour, 0, CMDT_OTHER_MANAGEMENT),		 // CMD_SET_COMPANY_COLOUR
@@ -381,7 +406,8 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdRenameStation, 0, CMDT_OTHER_MANAGEMENT), // CMD_RENAME_STATION
 	DEF_CMD(CmdRenameDepot, 0, CMDT_OTHER_MANAGEMENT),	 // CMD_RENAME_DEPOT
 
-	DEF_CMD(CmdSetStationCargoAllowedSupply, 0, CMDT_OTHER_MANAGEMENT), // CMD_SET_STATION_CARGO_ALLOWED_SUPPLY
+	DEF_CMD(CmdExchangeStationNames,                           0, CMDT_OTHER_MANAGEMENT      ), // CMD_EXCHANGE_STATION_NAMES
+	DEF_CMD(CmdSetStationCargoAllowedSupply,                   0, CMDT_OTHER_MANAGEMENT      ), // CMD_SET_STATION_CARGO_ALLOWED_SUPPLY
 
 	DEF_CMD(CmdPlaceSign, CMD_LOG_AUX | CMD_DEITY, CMDT_OTHER_MANAGEMENT),	// CMD_PLACE_SIGN
 	DEF_CMD(CmdRenameSign, CMD_LOG_AUX | CMD_DEITY, CMDT_OTHER_MANAGEMENT), // CMD_RENAME_SIGN
@@ -390,21 +416,23 @@ static const Command _command_proc_table[] = {
 
 	DEF_CMD(CmdPause, CMD_SERVER | CMD_NO_EST, CMDT_SERVER_SETTING), // CMD_PAUSE
 
-	DEF_CMD(CmdBuyShareInCompany, 0, CMDT_MONEY_MANAGEMENT),  // CMD_BUY_SHARE_IN_COMPANY
-	DEF_CMD(CmdSellShareInCompany, 0, CMDT_MONEY_MANAGEMENT), // CMD_SELL_SHARE_IN_COMPANY
-	DEF_CMD(CmdBuyCompany, 0, CMDT_MONEY_MANAGEMENT),		  // CMD_BUY_COMPANY
-	DEF_CMD(CmdDeclineBuyCompany, 0, CMDT_MONEY_MANAGEMENT),  // CMD_DECLINE_BUY_COMPANY
+	DEF_CMD(CmdBuyShareInCompany,                              0, CMDT_MONEY_MANAGEMENT      ), // CMD_BUY_SHARE_IN_COMPANY
+	DEF_CMD(CmdSellShareInCompany,                             0, CMDT_MONEY_MANAGEMENT      ), // CMD_SELL_SHARE_IN_COMPANY
+	DEF_CMD(CmdBuyCompany,                                     0, CMDT_MONEY_MANAGEMENT      ), // CMD_BUY_COMPANY
+	DEF_CMD(CmdDeclineBuyCompany,                              0, CMDT_SERVER_SETTING        ), // CMD_DECLINE_BUY_COMPANY
 
-	DEF_CMD(CmdFoundTown, CMD_DEITY | CMD_NO_TEST, CMDT_LANDSCAPE_CONSTRUCTION),			// CMD_FOUND_TOWN; founding random town can fail only in exec run
-	DEF_CMD(CmdRenameTown, CMD_DEITY | CMD_SERVER, CMDT_OTHER_MANAGEMENT),					// CMD_RENAME_TOWN
-	DEF_CMD(CmdRenameTownNonAdmin, 0, CMDT_OTHER_MANAGEMENT),								// CMD_RENAME_TOWN_NON_ADMIN
-	DEF_CMD(CmdDoTownAction, 0, CMDT_LANDSCAPE_CONSTRUCTION),								// CMD_DO_TOWN_ACTION
-	DEF_CMD(CmdTownCargoGoal, CMD_LOG_AUX | CMD_DEITY, CMDT_OTHER_MANAGEMENT),				// CMD_TOWN_CARGO_GOAL
-	DEF_CMD(CmdTownGrowthRate, CMD_LOG_AUX | CMD_DEITY, CMDT_OTHER_MANAGEMENT),				// CMD_TOWN_GROWTH_RATE
-	DEF_CMD(CmdTownRating, CMD_LOG_AUX | CMD_DEITY, CMDT_OTHER_MANAGEMENT),					// CMD_TOWN_RATING
-	DEF_CMD(CmdTownSetText, CMD_LOG_AUX | CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT), // CMD_TOWN_SET_TEXT
-	DEF_CMD(CmdExpandTown, CMD_DEITY, CMDT_LANDSCAPE_CONSTRUCTION),							// CMD_EXPAND_TOWN
-	DEF_CMD(CmdDeleteTown, CMD_OFFLINE, CMDT_LANDSCAPE_CONSTRUCTION),						// CMD_DELETE_TOWN
+	DEF_CMD(CmdFoundTown,                CMD_DEITY | CMD_NO_TEST, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_FOUND_TOWN; founding random town can fail only in exec run
+	DEF_CMD(CmdRenameTown,                CMD_DEITY | CMD_SERVER, CMDT_OTHER_MANAGEMENT      ), // CMD_RENAME_TOWN
+	DEF_CMD(CmdRenameTownNonAdmin,                             0, CMDT_OTHER_MANAGEMENT      ), // CMD_RENAME_TOWN_NON_ADMIN
+	DEF_CMD(CmdDoTownAction,                                   0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_DO_TOWN_ACTION
+	DEF_CMD(CmdOverrideTownSetting,       CMD_DEITY | CMD_SERVER, CMDT_OTHER_MANAGEMENT      ), // CMD_TOWN_SETTING_OVERRIDE
+	DEF_CMD(CmdOverrideTownSettingNonAdmin,                    0, CMDT_OTHER_MANAGEMENT      ), // CMD_TOWN_SETTING_OVERRIDE_NON_ADMIN
+	DEF_CMD(CmdTownCargoGoal,            CMD_LOG_AUX | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_TOWN_CARGO_GOAL
+	DEF_CMD(CmdTownGrowthRate,           CMD_LOG_AUX | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_TOWN_GROWTH_RATE
+	DEF_CMD(CmdTownRating,               CMD_LOG_AUX | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_TOWN_RATING
+	DEF_CMD(CmdTownSetText,    CMD_LOG_AUX | CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT ), // CMD_TOWN_SET_TEXT
+	DEF_CMD(CmdExpandTown,                             CMD_DEITY, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_EXPAND_TOWN
+	DEF_CMD(CmdDeleteTown,                           CMD_OFFLINE, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_DELETE_TOWN
 
 	DEF_CMD(CmdOrderRefit, 0, CMDT_ROUTE_MANAGEMENT), // CMD_ORDER_REFIT
 	DEF_CMD(CmdCloneOrder, 0, CMDT_ROUTE_MANAGEMENT), // CMD_CLONE_ORDER
@@ -453,12 +481,15 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdToggleKeepRemainingVehicles, CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT),  // CMD_TOGGLE_KEEP_REMAINING_VEHICLES
 	DEF_CMD(CmdToggleRefitAsTemplate, CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT),		  // CMD_TOGGLE_REFIT_AS_TEMPLATE
 	DEF_CMD(CmdToggleTemplateReplaceOldOnly, CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT), // CMD_TOGGLE_TMPL_REPLACE_OLD_ONLY
+	DEF_CMD(CmdRenameTemplateReplace,              CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    ), // CMD_RENAME_TMPL_REPLACE
 
 	DEF_CMD(CmdVirtualTrainFromTemplateVehicle, CMD_CLIENT_ID | CMD_NO_TEST | CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT), // CMD_VIRTUAL_TRAIN_FROM_TEMPLATE_VEHICLE
 	DEF_CMD(CmdVirtualTrainFromTrain, CMD_CLIENT_ID | CMD_NO_TEST | CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT),		   // CMD_VIRTUAL_TRAIN_FROM_TRAIN
 	DEF_CMD(CmdDeleteVirtualTrain, CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT),											   // CMD_DELETE_VIRTUAL_TRAIN
 	DEF_CMD(CmdBuildVirtualRailVehicle, CMD_CLIENT_ID | CMD_NO_TEST | CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT),		   // CMD_BUILD_VIRTUAL_RAIL_VEHICLE
 	DEF_CMD(CmdReplaceTemplateVehicle, CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT),										   // CMD_REPLACE_TEMPLATE_VEHICLE
+	DEF_CMD(CmdMoveVirtualRailVehicle,                                          CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT), // CMD_MOVE_VIRTUAL_RAIL_VEHICLE
+	DEF_CMD(CmdSellVirtualVehicle,                              CMD_CLIENT_ID | CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT), // CMD_SELL_VIRTUAL_VEHICLE
 
 	DEF_CMD(CmdTemplateVehicleFromTrain, CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT), // CMD_CLONE_TEMPLATE_VEHICLE_FROM_TRAIN
 	DEF_CMD(CmdDeleteTemplateVehicle, CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT),	  // CMD_DELETE_TEMPLATE_VEHICLE
@@ -466,32 +497,32 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdIssueTemplateReplacement, CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT),  // CMD_ISSUE_TEMPLATE_REPLACEMENT
 	DEF_CMD(CmdDeleteTemplateReplacement, CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT), // CMD_DELETE_TEMPLATE_REPLACEMENT
 
-	DEF_CMD(CmdCloneVehicle, CMD_NO_TEST, CMDT_VEHICLE_CONSTRUCTION),			  // CMD_CLONE_VEHICLE; NewGRF callbacks influence building and refitting making it impossible to correctly estimate the cost
-	DEF_CMD(CmdCloneVehicleFromTemplate, CMD_NO_TEST, CMDT_VEHICLE_CONSTRUCTION), // CMD_CLONE_VEHICLE_FROM_TEMPLATE; NewGRF callbacks influence building and refitting making it impossible to correctly estimate the cost
-	DEF_CMD(CmdStartStopVehicle, 0, CMDT_VEHICLE_MANAGEMENT),					  // CMD_START_STOP_VEHICLE
-	DEF_CMD(CmdMassStartStopVehicle, 0, CMDT_VEHICLE_MANAGEMENT),				  // CMD_MASS_START_STOP
-	DEF_CMD(CmdAutoreplaceVehicle, 0, CMDT_VEHICLE_MANAGEMENT),					  // CMD_AUTOREPLACE_VEHICLE
-	DEF_CMD(CmdTemplateReplaceVehicle, 0, CMDT_VEHICLE_MANAGEMENT),				  // CMD_TEMPLATE_REPLACE_VEHICLE
-	DEF_CMD(CmdDepotSellAllVehicles, 0, CMDT_VEHICLE_CONSTRUCTION),				  // CMD_DEPOT_SELL_ALL_VEHICLES
-	DEF_CMD(CmdDepotMassAutoReplace, 0, CMDT_VEHICLE_CONSTRUCTION),				  // CMD_DEPOT_MASS_AUTOREPLACE
-	DEF_CMD(CmdCreateGroup, 0, CMDT_ROUTE_MANAGEMENT),							  // CMD_CREATE_GROUP
-	DEF_CMD(CmdDeleteGroup, 0, CMDT_ROUTE_MANAGEMENT),							  // CMD_DELETE_GROUP
-	DEF_CMD(CmdAlterGroup, 0, CMDT_OTHER_MANAGEMENT),							  // CMD_ALTER_GROUP
-	DEF_CMD(CmdCreateGroupFromList, 0, CMDT_OTHER_MANAGEMENT),					  // CMD_CREATE_GROUP_FROM_LIST
-	DEF_CMD(CmdAddVehicleGroup, 0, CMDT_ROUTE_MANAGEMENT),						  // CMD_ADD_VEHICLE_GROUP
-	DEF_CMD(CmdAddSharedVehicleGroup, 0, CMDT_ROUTE_MANAGEMENT),				  // CMD_ADD_SHARE_VEHICLE_GROUP
-	DEF_CMD(CmdRemoveAllVehiclesGroup, 0, CMDT_ROUTE_MANAGEMENT),				  // CMD_REMOVE_ALL_VEHICLES_GROUP
-	DEF_CMD(CmdSetGroupFlag, 0, CMDT_ROUTE_MANAGEMENT),							  // CMD_SET_GROUP_FLAG
-	DEF_CMD(CmdSetGroupLivery, 0, CMDT_ROUTE_MANAGEMENT),						  // CMD_SET_GROUP_LIVERY
-	DEF_CMD(CmdMoveOrder, 0, CMDT_ROUTE_MANAGEMENT),							  // CMD_MOVE_ORDER
-	DEF_CMD(CmdReverseOrderList, 0, CMDT_ROUTE_MANAGEMENT),						  // CMD_REVERSE_ORDER_LIST
-	DEF_CMD(CmdChangeTimetable, 0, CMDT_ROUTE_MANAGEMENT),						  // CMD_CHANGE_TIMETABLE
-	DEF_CMD(CmdBulkChangeTimetable, 0, CMDT_ROUTE_MANAGEMENT),					  // CMD_BULK_CHANGE_TIMETABLE
-	DEF_CMD(CmdSetVehicleOnTime, 0, CMDT_ROUTE_MANAGEMENT),						  // CMD_SET_VEHICLE_ON_TIME
-	DEF_CMD(CmdAutofillTimetable, 0, CMDT_ROUTE_MANAGEMENT),					  // CMD_AUTOFILL_TIMETABLE
-	DEF_CMD(CmdAutomateTimetable, 0, CMDT_ROUTE_MANAGEMENT),					  // CMD_AUTOMATE_TIMETABLE
-	DEF_CMD(CmdTimetableSeparation, 0, CMDT_ROUTE_MANAGEMENT),					  // CMD_TIMETABLE_SEPARATION
-	DEF_CMD(CmdSetTimetableStart, 0, CMDT_ROUTE_MANAGEMENT),					  // CMD_SET_TIMETABLE_START
+	DEF_CMD(CmdCloneVehicle,                         CMD_NO_TEST, CMDT_VEHICLE_CONSTRUCTION  ), // CMD_CLONE_VEHICLE; NewGRF callbacks influence building and refitting making it impossible to correctly estimate the cost
+	DEF_CMD(CmdCloneVehicleFromTemplate,             CMD_NO_TEST, CMDT_VEHICLE_CONSTRUCTION  ), // CMD_CLONE_VEHICLE_FROM_TEMPLATE; NewGRF callbacks influence building and refitting making it impossible to correctly estimate the cost
+	DEF_CMD(CmdStartStopVehicle,                               0, CMDT_VEHICLE_MANAGEMENT    ), // CMD_START_STOP_VEHICLE
+	DEF_CMD(CmdMassStartStopVehicle,                           0, CMDT_VEHICLE_MANAGEMENT    ), // CMD_MASS_START_STOP
+	DEF_CMD(CmdAutoreplaceVehicle,                             0, CMDT_VEHICLE_MANAGEMENT    ), // CMD_AUTOREPLACE_VEHICLE
+	DEF_CMD(CmdTemplateReplaceVehicle,               CMD_NO_TEST, CMDT_VEHICLE_MANAGEMENT    ), // CMD_TEMPLATE_REPLACE_VEHICLE
+	DEF_CMD(CmdDepotSellAllVehicles,                           0, CMDT_VEHICLE_CONSTRUCTION  ), // CMD_DEPOT_SELL_ALL_VEHICLES
+	DEF_CMD(CmdDepotMassAutoReplace,                           0, CMDT_VEHICLE_CONSTRUCTION  ), // CMD_DEPOT_MASS_AUTOREPLACE
+	DEF_CMD(CmdCreateGroup,                                    0, CMDT_ROUTE_MANAGEMENT      ), // CMD_CREATE_GROUP
+	DEF_CMD(CmdDeleteGroup,                                    0, CMDT_ROUTE_MANAGEMENT      ), // CMD_DELETE_GROUP
+	DEF_CMD(CmdAlterGroup,                                     0, CMDT_OTHER_MANAGEMENT      ), // CMD_ALTER_GROUP
+	DEF_CMD(CmdCreateGroupFromList,                            0, CMDT_OTHER_MANAGEMENT      ), // CMD_CREATE_GROUP_FROM_LIST
+	DEF_CMD(CmdAddVehicleGroup,                                0, CMDT_ROUTE_MANAGEMENT      ), // CMD_ADD_VEHICLE_GROUP
+	DEF_CMD(CmdAddSharedVehicleGroup,                          0, CMDT_ROUTE_MANAGEMENT      ), // CMD_ADD_SHARE_VEHICLE_GROUP
+	DEF_CMD(CmdRemoveAllVehiclesGroup,                         0, CMDT_ROUTE_MANAGEMENT      ), // CMD_REMOVE_ALL_VEHICLES_GROUP
+	DEF_CMD(CmdSetGroupFlag,                                   0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SET_GROUP_FLAG
+	DEF_CMD(CmdSetGroupLivery,                                 0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SET_GROUP_LIVERY
+	DEF_CMD(CmdMoveOrder,                                      0, CMDT_ROUTE_MANAGEMENT      ), // CMD_MOVE_ORDER
+	DEF_CMD(CmdReverseOrderList,                               0, CMDT_ROUTE_MANAGEMENT      ), // CMD_REVERSE_ORDER_LIST
+	DEF_CMD(CmdChangeTimetable,                                0, CMDT_ROUTE_MANAGEMENT      ), // CMD_CHANGE_TIMETABLE
+	DEF_CMD(CmdBulkChangeTimetable,                            0, CMDT_ROUTE_MANAGEMENT      ), // CMD_BULK_CHANGE_TIMETABLE
+	DEF_CMD(CmdSetVehicleOnTime,                               0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SET_VEHICLE_ON_TIME
+	DEF_CMD(CmdAutofillTimetable,                              0, CMDT_ROUTE_MANAGEMENT      ), // CMD_AUTOFILL_TIMETABLE
+	DEF_CMD(CmdAutomateTimetable,                              0, CMDT_ROUTE_MANAGEMENT      ), // CMD_AUTOMATE_TIMETABLE
+	DEF_CMD(CmdTimetableSeparation,                            0, CMDT_ROUTE_MANAGEMENT      ), // CMD_TIMETABLE_SEPARATION
+	DEF_CMD(CmdSetTimetableStart,                              0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SET_TIMETABLE_START
 
 	DEF_CMD(CmdOpenCloseAirport, 0, CMDT_ROUTE_MANAGEMENT), // CMD_OPEN_CLOSE_AIRPORT
 
@@ -502,20 +533,34 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdBuildStopSign, 0, CMDT_LANDSCAPE_CONSTRUCTION),	 // CMD_BUILD_STOPSIGN
 	DEF_CMD(CmdRemoveStopSign, 0, CMDT_LANDSCAPE_CONSTRUCTION),	 // CMD_REMOVE_STOPSIGN
 
-	DEF_CMD(CmdProgramSignalTraceRestrict, 0, CMDT_OTHER_MANAGEMENT),	  // CMD_PROGRAM_TRACERESTRICT_SIGNAL
-	DEF_CMD(CmdCreateTraceRestrictSlot, 0, CMDT_OTHER_MANAGEMENT),		  // CMD_CREATE_TRACERESTRICT_SLOT
-	DEF_CMD(CmdAlterTraceRestrictSlot, 0, CMDT_OTHER_MANAGEMENT),		  // CMD_ALTER_TRACERESTRICT_SLOT
-	DEF_CMD(CmdDeleteTraceRestrictSlot, 0, CMDT_OTHER_MANAGEMENT),		  // CMD_DELETE_TRACERESTRICT_SLOT
-	DEF_CMD(CmdAddVehicleTraceRestrictSlot, 0, CMDT_OTHER_MANAGEMENT),	  // CMD_ADD_VEHICLE_TRACERESTRICT_SLOT
-	DEF_CMD(CmdRemoveVehicleTraceRestrictSlot, 0, CMDT_OTHER_MANAGEMENT), // CMD_REMOVE_VEHICLE_TRACERESTRICT_SLOT
-	DEF_CMD(CmdCreateTraceRestrictCounter, 0, CMDT_OTHER_MANAGEMENT),	  // CMD_CREATE_TRACERESTRICT_COUNTER
-	DEF_CMD(CmdAlterTraceRestrictCounter, 0, CMDT_OTHER_MANAGEMENT),	  // CMD_ALTER_TRACERESTRICT_COUNTER
-	DEF_CMD(CmdDeleteTraceRestrictCounter, 0, CMDT_OTHER_MANAGEMENT),	  // CMD_DELETE_TRACERESTRICT_COUNTER
+	DEF_CMD(CmdCreateLeagueTable,                             CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_CREATE_LEAGUE_TABLE
+	DEF_CMD(CmdCreateLeagueTableElement,                      CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_CREATE_LEAGUE_TABLE_ELEMENT
+	DEF_CMD(CmdUpdateLeagueTableElementData,                  CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_UPDATE_LEAGUE_TABLE_ELEMENT_DATA
+	DEF_CMD(CmdUpdateLeagueTableElementScore,                 CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_UPDATE_LEAGUE_TABLE_ELEMENT_SCORE
+	DEF_CMD(CmdRemoveLeagueTableElement,                                     CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_REMOVE_LEAGUE_TABLE_ELEMENT
+
+	DEF_CMD(CmdProgramSignalTraceRestrict,                     0, CMDT_OTHER_MANAGEMENT      ), // CMD_PROGRAM_TRACERESTRICT_SIGNAL
+	DEF_CMD(CmdCreateTraceRestrictSlot,                        0, CMDT_OTHER_MANAGEMENT      ), // CMD_CREATE_TRACERESTRICT_SLOT
+	DEF_CMD(CmdAlterTraceRestrictSlot,                         0, CMDT_OTHER_MANAGEMENT      ), // CMD_ALTER_TRACERESTRICT_SLOT
+	DEF_CMD(CmdDeleteTraceRestrictSlot,                        0, CMDT_OTHER_MANAGEMENT      ), // CMD_DELETE_TRACERESTRICT_SLOT
+	DEF_CMD(CmdAddVehicleTraceRestrictSlot,                    0, CMDT_OTHER_MANAGEMENT      ), // CMD_ADD_VEHICLE_TRACERESTRICT_SLOT
+	DEF_CMD(CmdRemoveVehicleTraceRestrictSlot,                 0, CMDT_OTHER_MANAGEMENT      ), // CMD_REMOVE_VEHICLE_TRACERESTRICT_SLOT
+	DEF_CMD(CmdCreateTraceRestrictCounter,                     0, CMDT_OTHER_MANAGEMENT      ), // CMD_CREATE_TRACERESTRICT_COUNTER
+	DEF_CMD(CmdAlterTraceRestrictCounter,                      0, CMDT_OTHER_MANAGEMENT      ), // CMD_ALTER_TRACERESTRICT_COUNTER
+	DEF_CMD(CmdDeleteTraceRestrictCounter,                     0, CMDT_OTHER_MANAGEMENT      ), // CMD_DELETE_TRACERESTRICT_COUNTER
+
+	DEF_CMD(CmdBuildTrafficLights,                             0, CMDT_LANDSCAPE_CONSTRUCTION),	 // CMD_BUILD_TRAFFICLIGHTS
+	DEF_CMD(CmdRemoveTrafficLights,                            0, CMDT_LANDSCAPE_CONSTRUCTION),  // CMD_REMOVE_TRAFFICLIGHTS
+	DEF_CMD(CmdBuildYieldSign,                                 0, CMDT_LANDSCAPE_CONSTRUCTION),	 // CMD_BUILD_YIELDSIGN
+	DEF_CMD(CmdRemoveYieldSign,                                0, CMDT_LANDSCAPE_CONSTRUCTION),  // CMD_REMOVE_YIELDSIGN
+	DEF_CMD(CmdBuildStopSign,                                  0, CMDT_LANDSCAPE_CONSTRUCTION),	 // CMD_BUILD_STOPSIGN
+	DEF_CMD(CmdRemoveStopSign,                                 0, CMDT_LANDSCAPE_CONSTRUCTION),	 // CMD_REMOVE_STOPSIGN
 
 	DEF_CMD(CmdInsertSignalInstruction, 0, CMDT_OTHER_MANAGEMENT), // CMD_INSERT_SIGNAL_INSTRUCTION
 	DEF_CMD(CmdModifySignalInstruction, 0, CMDT_OTHER_MANAGEMENT), // CMD_MODIFY_SIGNAL_INSTRUCTION
 	DEF_CMD(CmdRemoveSignalInstruction, 0, CMDT_OTHER_MANAGEMENT), // CMD_REMOVE_SIGNAL_INSTRUCTION
 	DEF_CMD(CmdSignalProgramMgmt, 0, CMDT_OTHER_MANAGEMENT),	   // CMD_SIGNAL_PROGRAM_MGMT
+	DEF_CMD(CmdScheduledDispatchRenameSchedule,                0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SCHEDULED_DISPATCH_RENAME_SCHEDULE
 
 	DEF_CMD(CmdScheduledDispatch, 0, CMDT_ROUTE_MANAGEMENT),				  // CMD_SCHEDULED_DISPATCH
 	DEF_CMD(CmdScheduledDispatchAdd, 0, CMDT_ROUTE_MANAGEMENT),				  // CMD_SCHEDULED_DISPATCH_ADD
@@ -539,6 +584,8 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdDesyncCheck, CMD_SERVER, CMDT_SERVER_SETTING), // CMD_DESYNC_CHECK
 };
 
+ClientID _cmd_client_id = INVALID_CLIENT_ID;
+
 /**
  * List of flags for a command log entry
  */
@@ -550,13 +597,15 @@ enum CommandLogEntryFlag : uint16 {
 	CLEF_ESTIMATE_ONLY       =  0x08, ///< estimate only
 	CLEF_ONLY_SENDING        =  0x10, ///< only sending
 	CLEF_MY_CMD              =  0x20, ///< locally generated command
-	CLEF_BINARY              =  0x40, ///< binary_length is > 0
+	CLEF_AUX_DATA            =  0x40, ///< have auxiliary data
 	CLEF_SCRIPT              =  0x80, ///< command run by AI/game script
 	CLEF_TWICE               = 0x100, ///< command logged twice (only sending and execution)
 	CLEF_RANDOM              = 0x200, ///< command changed random seed
 	CLEF_ORDER_BACKUP        = 0x400, ///< command changed order backups
 };
 DECLARE_ENUM_AS_BIT_SET(CommandLogEntryFlag)
+
+extern uint32 _frame_counter;
 
 struct CommandLogEntry {
 	std::string text;
@@ -571,12 +620,14 @@ struct CommandLogEntry {
 	CompanyID current_company;
 	CompanyID local_company;
 	CommandLogEntryFlag log_flags;
+	ClientID client_id;
+	uint32 frame_counter;
 
 	CommandLogEntry() { }
 
 	CommandLogEntry(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandLogEntryFlag log_flags, std::string text)
 			: text(text), tile(tile), p1(p1), p2(p2), cmd(cmd), p3(p3), date(_date), date_fract(_date_fract), tick_skip_counter(_tick_skip_counter),
-			current_company(_current_company), local_company(_local_company), log_flags(log_flags) { }
+			current_company(_current_company), local_company(_local_company), log_flags(log_flags), client_id(_cmd_client_id), frame_counter(_frame_counter) { }
 };
 
 struct CommandLog {
@@ -593,6 +644,12 @@ struct CommandLog {
 
 static CommandLog _command_log;
 static CommandLog _command_log_aux;
+
+struct CommandQueueItem {
+	CommandContainer cmd;
+	CompanyID company;
+};
+static std::deque<CommandQueueItem> _command_queue;
 
 void ClearCommandLog()
 {
@@ -617,18 +674,24 @@ static void DumpSubCommandLog(char *&buffer, const char *last, const CommandLog 
 
 		YearMonthDay ymd;
 		ConvertDateToYMD(entry.date, &ymd);
-		buffer += seprintf(buffer, last, " %3u | %4i-%02i-%02i, %2i, %3i | ", i, ymd.year, ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter);
-		buffer += seprintf(buffer, last, "%c%c%c%c%c%c%c%c%c%c%c | ",
+		buffer += seprintf(buffer, last, " %3u | %4i-%02i-%02i, %2i, %3i", i, ymd.year, ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter);
+		if (_networking) {
+			buffer += seprintf(buffer, last, ", %08X", entry.frame_counter);
+		}
+		buffer += seprintf(buffer, last, " | %c%c%c%c%c%c%c%c%c%c%c | ",
 				fc(CLEF_ORDER_BACKUP, 'o'), fc(CLEF_RANDOM, 'r'), fc(CLEF_TWICE, '2'),
-				fc(CLEF_SCRIPT, 'a'),fc(CLEF_BINARY, 'b'), fc(CLEF_MY_CMD, 'm'), fc(CLEF_ONLY_SENDING, 's'),
+				fc(CLEF_SCRIPT, 'a'), fc(CLEF_AUX_DATA, 'b'), fc(CLEF_MY_CMD, 'm'), fc(CLEF_ONLY_SENDING, 's'),
 				fc(CLEF_ESTIMATE_ONLY, 'e'), fc(CLEF_TEXT, 't'), fc(CLEF_GENERATING_WORLD, 'g'), fc(CLEF_CMD_FAILED, 'f'));
 		buffer += seprintf(buffer, last, " %7d x %7d, p1: 0x%08X, p2: 0x%08X, ",
 				TileX(entry.tile), TileY(entry.tile), entry.p1, entry.p2);
 		if (entry.p3 != 0) {
 			buffer += seprintf(buffer, last, "p3: 0x" OTTD_PRINTFHEX64PAD ", ", entry.p3);
 		}
-		buffer += seprintf(buffer, last, "cc: %3u, lc: %3u, cmd: 0x%08X (%s)",
-				(uint) entry.current_company, (uint) entry.local_company, entry.cmd, GetCommandName(entry.cmd));
+		buffer += seprintf(buffer, last, "cc: %3u, lc: %3u, ", (uint) entry.current_company, (uint) entry.local_company);
+		if (_network_server) {
+			buffer += seprintf(buffer, last, "client: %4u, ", entry.client_id);
+		}
+		buffer += seprintf(buffer, last, "cmd: 0x%08X (%s)", entry.cmd, GetCommandName(entry.cmd));
 
 		switch (entry.cmd & CMD_ID_MASK) {
 			case CMD_CHANGE_SETTING:
@@ -725,17 +788,15 @@ bool IsCommandAllowedWhilePaused(uint32 cmd)
 static int _docommand_recursive = 0;
 
 struct cmd_text_info_dumper {
-	const char *CommandTextInfo(const char *text, uint32 binary_length)
+	const char *CommandTextInfo(const char *text, const CommandAuxiliaryBase *aux_data)
 	{
 		char *b = this->buffer;
 		const char *last = lastof(this->buffer);
 		if (text) {
-			b += seprintf(b, last, ", text");
+			b += seprintf(b, last, ", text: length: %u", (uint) strlen(text));
 		}
-		if (binary_length) {
-			b += seprintf(b, last, ", bin length: %u", binary_length);
-		} else if (text) {
-			b += seprintf(b, last, ", str length: %u", (uint) strlen(text));
+		if (aux_data) {
+			b += seprintf(b, last, ", aux data");
 		}
 		return this->buffer;
 	}
@@ -758,10 +819,10 @@ private:
  * @see CommandProc
  * @return the cost
  */
-CommandCost DoCommandEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, DoCommandFlag flags, uint32 cmd, const char *text, uint32 binary_length)
+CommandCost DoCommandEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, DoCommandFlag flags, uint32 cmd, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	SCOPE_INFO_FMT([=], "DoCommand: tile: %X (%d x %d), p1: 0x%X, p2: 0x%X, p3: " OTTD_PRINTFHEX64 ", flags: 0x%X, company: %s, cmd: 0x%X (%s)%s",
-			tile, TileX(tile), TileY(tile), p1, p2, p3, flags, scope_dumper().CompanyInfo(_current_company), cmd, GetCommandName(cmd), cmd_text_info_dumper().CommandTextInfo(text, binary_length));
+			tile, TileX(tile), TileY(tile), p1, p2, p3, flags, scope_dumper().CompanyInfo(_current_company), cmd, GetCommandName(cmd), cmd_text_info_dumper().CommandTextInfo(text, aux_data));
 
 	CommandCost res;
 
@@ -777,7 +838,7 @@ CommandCost DoCommandEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, DoComma
 	if (_docommand_recursive == 1 || !(flags & DC_EXEC) ) {
 		if (_docommand_recursive == 1) _cleared_object_areas.clear();
 		SetTownRatingTestMode(true);
-		res = command.Execute(tile, flags & ~DC_EXEC, p1, p2, p3, text, binary_length);
+		res = command.Execute(tile, flags & ~DC_EXEC, p1, p2, p3, text, aux_data);
 		SetTownRatingTestMode(false);
 		if (res.Failed()) {
 			goto error;
@@ -799,7 +860,7 @@ CommandCost DoCommandEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, DoComma
 	/* Execute the command here. All cost-relevant functions set the expenses type
 	 * themselves to the cost object at some point */
 	if (_docommand_recursive == 1) _cleared_object_areas.clear();
-	res = command.Execute(tile, flags, p1, p2, p3, text, binary_length);
+	res = command.Execute(tile, flags, p1, p2, p3, text, aux_data);
 	if (res.Failed()) {
 error:
 		_docommand_recursive--;
@@ -840,6 +901,7 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32
 		if (current.log_flags & CLEF_ONLY_SENDING && ((current.log_flags ^ log_flags) & ~(CLEF_SCRIPT | CLEF_MY_CMD)) == CLEF_ONLY_SENDING &&
 				current.tile == tile && current.p1 == p1 && current.p2 == p2 && current.p3 == p3 && ((current.cmd ^ cmd) & ~CMD_NETWORK_COMMAND) == 0 && current.date == _date &&
 				current.date_fract == _date_fract && current.tick_skip_counter == _tick_skip_counter &&
+				current.frame_counter == _frame_counter &&
 				current.current_company == _current_company && current.local_company == _local_company) {
 			current.log_flags |= log_flags | CLEF_TWICE;
 			current.log_flags &= ~CLEF_ONLY_SENDING;
@@ -877,10 +939,10 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32
  * @param binary_length The length of binary data in text
  * @return \c true if the command succeeded, else \c false.
  */
-bool DoCommandPEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, uint32 binary_length, bool my_cmd)
+bool DoCommandPEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, const CommandAuxiliaryBase *aux_data, bool my_cmd)
 {
 	SCOPE_INFO_FMT([=], "DoCommandP: tile: %X (%d x %d), p1: 0x%X, p2: 0x%X, p3: 0x" OTTD_PRINTFHEX64 ", company: %s, cmd: 0x%X (%s), my_cmd: %d%s",
-			tile, TileX(tile), TileY(tile), p1, p2, p3, scope_dumper().CompanyInfo(_current_company), cmd, GetCommandName(cmd), my_cmd, cmd_text_info_dumper().CommandTextInfo(text, binary_length));
+			tile, TileX(tile), TileY(tile), p1, p2, p3, scope_dumper().CompanyInfo(_current_company), cmd, GetCommandName(cmd), my_cmd, cmd_text_info_dumper().CommandTextInfo(text, aux_data));
 
 	/* Cost estimation is generally only done when the
 	 * local user presses shift while doing something.
@@ -890,6 +952,7 @@ bool DoCommandPEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, C
 	bool estimate_only = _shift_pressed && IsLocalCompany() &&
 			!_generating_world &&
 			!(cmd & CMD_NETWORK_COMMAND) &&
+			!(cmd & CMD_NO_SHIFT_ESTIMATE) &&
 			!(GetCommandFlags(cmd) & CMD_NO_EST);
 
 	/* We're only sending the command, so don't do
@@ -897,8 +960,9 @@ bool DoCommandPEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, C
 	bool only_sending = _networking && !(cmd & CMD_NETWORK_COMMAND);
 
 	/* Where to show the message? */
-	int x = TileX(tile) * TILE_SIZE;
-	int y = TileY(tile) * TILE_SIZE;
+	TileIndex msg_tile = ((GetCommandFlags(cmd) & CMD_P1_TILE) && IsValidTile(p1)) ? p1 : tile;
+	int x = TileX(msg_tile) * TILE_SIZE;
+	int y = TileY(msg_tile) * TILE_SIZE;
 
 	if (_pause_mode != PM_UNPAUSED && !IsCommandAllowedWhilePaused(cmd) && !estimate_only) {
 		ShowErrorMessage(GB(cmd, 16, 16), STR_ERROR_NOT_ALLOWED_WHILE_PAUSED, WL_INFO, x, y);
@@ -911,15 +975,15 @@ bool DoCommandPEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, C
 	GameRandomSeedChecker random_state;
 	uint order_backup_update_counter = OrderBackup::GetUpdateCounter();
 
-	CommandCost res = DoCommandPInternal(tile, p1, p2, p3, cmd, callback, text, my_cmd, estimate_only, binary_length);
+	CommandCost res = DoCommandPInternal(tile, p1, p2, p3, cmd, callback, text, my_cmd, estimate_only, aux_data);
 
 	CommandLogEntryFlag log_flags;
 	log_flags = CLEF_NONE;
-	if (binary_length == 0 && !StrEmpty(text)) log_flags |= CLEF_TEXT;
+	if (!StrEmpty(text)) log_flags |= CLEF_TEXT;
 	if (estimate_only) log_flags |= CLEF_ESTIMATE_ONLY;
 	if (only_sending) log_flags |= CLEF_ONLY_SENDING;
 	if (my_cmd) log_flags |= CLEF_MY_CMD;
-	if (binary_length > 0) log_flags |= CLEF_BINARY;
+	if (aux_data != nullptr) log_flags |= CLEF_AUX_DATA;
 	if (!random_state.Check()) log_flags |= CLEF_RANDOM;
 	if (order_backup_update_counter != OrderBackup::GetUpdateCounter()) log_flags |= CLEF_ORDER_BACKUP;
 	AppendCommandLogEntry(res, tile, p1, p2, p3, cmd, log_flags, text);
@@ -938,7 +1002,7 @@ bool DoCommandPEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, C
 		}
 	} else if (estimate_only) {
 		ShowEstimatedCostOrIncome(res.GetCost(), x, y);
-	} else if (!only_sending && res.GetCost() != 0 && tile != 0 && IsLocalCompany() && _game_mode != GM_EDITOR && HasBit(_extra_display_opt, XDO_SHOW_MONEY_TEXT_EFFECTS)) {
+	} else if (!only_sending && tile != 0 && IsLocalCompany() && _game_mode != GM_EDITOR && HasBit(_extra_display_opt, XDO_SHOW_MONEY_TEXT_EFFECTS)) {
 		/* Only show the cost animation when we did actually
 		 * execute the command, i.e. we're not sending it to
 		 * the server, when it has cost the local company
@@ -954,20 +1018,20 @@ bool DoCommandPEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, C
 	return res.Succeeded();
 }
 
-CommandCost DoCommandPScript(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd, bool estimate_only, uint32 binary_length)
+CommandCost DoCommandPScript(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd, bool estimate_only, const CommandAuxiliaryBase *aux_data)
 {
 	GameRandomSeedChecker random_state;
 	uint order_backup_update_counter = OrderBackup::GetUpdateCounter();
 
-	CommandCost res = DoCommandPInternal(tile, p1, p2, p3, cmd, callback, text, my_cmd, estimate_only, binary_length);
+	CommandCost res = DoCommandPInternal(tile, p1, p2, p3, cmd, callback, text, my_cmd, estimate_only, aux_data);
 
 	CommandLogEntryFlag log_flags;
 	log_flags = CLEF_SCRIPT;
-	if (binary_length == 0 && !StrEmpty(text)) log_flags |= CLEF_TEXT;
+	if (!StrEmpty(text)) log_flags |= CLEF_TEXT;
 	if (estimate_only) log_flags |= CLEF_ESTIMATE_ONLY;
 	if (_networking && !(cmd & CMD_NETWORK_COMMAND)) log_flags |= CLEF_ONLY_SENDING;
 	if (my_cmd) log_flags |= CLEF_MY_CMD;
-	if (binary_length > 0) log_flags |= CLEF_BINARY;
+	if (aux_data != nullptr) log_flags |= CLEF_AUX_DATA;
 	if (!random_state.Check()) log_flags |= CLEF_RANDOM;
 	if (order_backup_update_counter != OrderBackup::GetUpdateCounter()) log_flags |= CLEF_ORDER_BACKUP;
 	AppendCommandLogEntry(res, tile, p1, p2, p3, cmd, log_flags, text);
@@ -979,6 +1043,33 @@ CommandCost DoCommandPScript(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, ui
 	}
 
 	return res;
+}
+
+void ExecuteCommandQueue()
+{
+	while (!_command_queue.empty()) {
+		Backup<CompanyID> cur_company(_current_company, FILE_LINE);
+		cur_company.Change(_command_queue.front().company);
+		DoCommandP(&_command_queue.front().cmd);
+		cur_company.Restore();
+		_command_queue.pop_front();
+	}
+}
+
+void ClearCommandQueue()
+{
+	_command_queue.clear();
+}
+
+void EnqueueDoCommandP(CommandContainer cmd)
+{
+	if (_docommand_recursive == 0) {
+		DoCommandP(&cmd);
+	} else {
+		CommandQueueItem &item = _command_queue.emplace_back();
+		item.cmd = std::move(cmd);
+		item.company = _current_company;
+	}
 }
 
 
@@ -1002,7 +1093,7 @@ CommandCost DoCommandPScript(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, ui
  * @param estimate_only whether to give only the estimate or also execute the command
  * @return the command cost of this function.
  */
-CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd, bool estimate_only, uint32 binary_length)
+CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd, bool estimate_only, const CommandAuxiliaryBase *aux_data)
 {
 	/* Prevent recursion; it gives a mess over the network */
 	assert(_docommand_recursive == 0);
@@ -1052,13 +1143,13 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, 
 	_cleared_object_areas.clear();
 	SetTownRatingTestMode(true);
 	BasePersistentStorageArray::SwitchMode(PSM_ENTER_TESTMODE);
-	CommandCost res = command.Execute(tile, flags, p1, p2, p3, text, binary_length);
+	CommandCost res = command.Execute(tile, flags, p1, p2, p3, text, aux_data);
 	BasePersistentStorageArray::SwitchMode(PSM_LEAVE_TESTMODE);
 	SetTownRatingTestMode(false);
 
 	if (!random_state.Check()) {
-		std::string msg = stdstr_fmt("Random seed changed in test command: company: %02x; tile: %06x (%u x %u); p1: %08x; p2: %08x; p3: " OTTD_PRINTFHEX64PAD "; cmd: %08x; \"%s\" %X (%s)",
-				(int)_current_company, tile, TileX(tile), TileY(tile), p1, p2, p3, cmd & ~CMD_NETWORK_COMMAND, text, binary_length, GetCommandName(cmd));
+		std::string msg = stdstr_fmt("Random seed changed in test command: company: %02x; tile: %06x (%u x %u); p1: %08x; p2: %08x; p3: " OTTD_PRINTFHEX64PAD "; cmd: %08x; \"%s\"%s (%s)",
+				(int)_current_company, tile, TileX(tile), TileY(tile), p1, p2, p3, cmd & ~CMD_NETWORK_COMMAND, text, aux_data != nullptr ? ", aux data present" : "", GetCommandName(cmd));
 		DEBUG(desync, 0, "msg: date{%08x; %02x; %02x}; %s", _date, _date_fract, _tick_skip_counter, msg.c_str());
 		LogDesyncMsg(std::move(msg));
 	}
@@ -1076,8 +1167,8 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, 
 		if (!_networking || _generating_world || (cmd & CMD_NETWORK_COMMAND) != 0) {
 			/* Log the failed command as well. Just to be able to be find
 			 * causes of desyncs due to bad command test implementations. */
-			DEBUG(desync, 1, "cmdf: date{%08x; %02x; %02x}; company: %02x; tile: %06x (%u x %u); p1: %08x; p2: %08x; p3: " OTTD_PRINTFHEX64PAD "; cmd: %08x; \"%s\" %X (%s)",
-					_date, _date_fract, _tick_skip_counter, (int)_current_company, tile, TileX(tile), TileY(tile), p1, p2, p3, cmd & ~CMD_NETWORK_COMMAND, text, binary_length, GetCommandName(cmd));
+			DEBUG(desync, 1, "cmdf: date{%08x; %02x; %02x}; company: %02x; tile: %06x (%u x %u); p1: %08x; p2: %08x; p3: " OTTD_PRINTFHEX64PAD "; cmd: %08x; \"%s\"%s (%s)",
+					_date, _date_fract, _tick_skip_counter, (int)_current_company, tile, TileX(tile), TileY(tile), p1, p2, p3, cmd & ~CMD_NETWORK_COMMAND, text, aux_data != nullptr ? ", aux data present" : "", GetCommandName(cmd));
 		}
 		cur_company.Restore();
 		return_dcpi(res);
@@ -1088,7 +1179,7 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, 
 	 * send it to the command-queue and abort execution
 	 */
 	if (_networking && !_generating_world && !(cmd & CMD_NETWORK_COMMAND)) {
-		NetworkSendCommand(tile, p1, p2, p3, cmd & ~CMD_FLAGS_MASK, callback, text, _current_company, binary_length);
+		NetworkSendCommand(tile, p1, p2, p3, cmd & ~CMD_FLAGS_MASK, callback, text, _current_company, aux_data);
 		cur_company.Restore();
 
 		/* Don't return anything special here; no error, no costs.
@@ -1097,14 +1188,14 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, 
 		 * reset the storages as we've not executed the command. */
 		return_dcpi(CommandCost());
 	}
-	DEBUG(desync, 1, "cmd: date{%08x; %02x; %02x}; company: %02x; tile: %06x (%u x %u); p1: %08x; p2: %08x; p3: " OTTD_PRINTFHEX64PAD "; cmd: %08x; \"%s\" %X (%s)",
-			_date, _date_fract, _tick_skip_counter, (int)_current_company, tile, TileX(tile), TileY(tile), p1, p2, p3, cmd & ~CMD_NETWORK_COMMAND, text, binary_length, GetCommandName(cmd));
+	DEBUG(desync, 1, "cmd: date{%08x; %02x; %02x}; company: %02x; tile: %06x (%u x %u); p1: %08x; p2: %08x; p3: " OTTD_PRINTFHEX64PAD "; cmd: %08x; \"%s\"%s(%s)",
+			_date, _date_fract, _tick_skip_counter, (int)_current_company, tile, TileX(tile), TileY(tile), p1, p2, p3, cmd & ~CMD_NETWORK_COMMAND, text, aux_data != nullptr ? ", aux data present" : "", GetCommandName(cmd));
 
 	/* Actually try and execute the command. If no cost-type is given
 	 * use the construction one */
 	_cleared_object_areas.clear();
 	BasePersistentStorageArray::SwitchMode(PSM_ENTER_COMMAND);
-	CommandCost res2 = command.Execute(tile, flags | DC_EXEC, p1, p2, p3, text, binary_length);
+	CommandCost res2 = command.Execute(tile, flags | DC_EXEC, p1, p2, p3, text, aux_data);
 	BasePersistentStorageArray::SwitchMode(PSM_LEAVE_COMMAND);
 
 	if (cmd_id == CMD_COMPANY_CTRL) {
@@ -1158,6 +1249,23 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, 
 }
 #undef return_dcpi
 
+CommandCost::CommandCost(const CommandCost &other)
+{
+	*this = other;
+}
+
+CommandCost &CommandCost::operator=(const CommandCost &other)
+{
+	this->cost = other.cost;
+	this->expense_type = other.expense_type;
+	this->flags = other.flags;
+	this->message = other.message;
+	this->inl = other.inl;
+	if (other.aux_data) {
+		this->aux_data.reset(new CommandCostAuxiliaryData(*other.aux_data));
+	}
+	return *this;
+}
 
 /**
  * Adds the cost of the given command return value to this cost.
@@ -1167,18 +1275,11 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, 
 void CommandCost::AddCost(const CommandCost &ret)
 {
 	this->AddCost(ret.cost);
-	if (this->success && !ret.success) {
+	if (this->Succeeded() && !ret.Succeeded()) {
 		this->message = ret.message;
-		this->success = false;
+		this->flags &= ~CCIF_SUCCESS;
 	}
 }
-
-/**
- * Values to put on the #TextRefStack for the error message.
- * There is only one static instance of the array, just like there is only one
- * instance of normal DParams.
- */
-uint32 CommandCost::textref_stack[16];
 
 /**
  * Activate usage of the NewGRF #TextRefStack for the error message.
@@ -1189,11 +1290,15 @@ void CommandCost::UseTextRefStack(const GRFFile *grffile, uint num_registers)
 {
 	extern TemporaryStorageArray<int32, 0x110> _temp_store;
 
-	assert(num_registers < lengthof(textref_stack));
-	this->textref_stack_grffile = grffile;
-	this->textref_stack_size = num_registers;
+	if (!this->aux_data) {
+		this->AllocAuxData();
+	}
+
+	assert(num_registers < lengthof(this->aux_data->textref_stack));
+	this->aux_data->textref_stack_grffile = grffile;
+	this->aux_data->textref_stack_size = num_registers;
 	for (uint i = 0; i < num_registers; i++) {
-		textref_stack[i] = _temp_store.GetValue(0x100 + i);
+		this->aux_data->textref_stack[i] = _temp_store.GetValue(0x100 + i);
 	}
 }
 
@@ -1209,7 +1314,8 @@ int CommandCost::WriteSummaryMessage(char *buf, char *last, StringID cmd_msg) co
 	if (this->Succeeded()) {
 		return seprintf(buf, last, "Success: cost: " OTTD_PRINTF64, (int64) this->GetCost());
 	} else {
-		if (this->textref_stack_size > 0) StartTextRefStackUsage(this->textref_stack_grffile, this->textref_stack_size, textref_stack);
+		const uint textref_stack_size = this->GetTextRefStackSize();
+		if (textref_stack_size > 0) StartTextRefStackUsage(this->GetTextRefStackGRF(), textref_stack_size, this->GetTextRefStack());
 
 		char *b = buf;
 		b += seprintf(b, last, "Failed: cost: " OTTD_PRINTF64, (int64) this->GetCost());
@@ -1222,8 +1328,59 @@ int CommandCost::WriteSummaryMessage(char *buf, char *last, StringID cmd_msg) co
 			b = GetString(b, this->message, last);
 		}
 
-		if (this->textref_stack_size > 0) StopTextRefStackUsage();
+		if (textref_stack_size > 0) StopTextRefStackUsage();
 
 		return b - buf;
+	}
+}
+
+void CommandCost::AllocAuxData()
+{
+	this->aux_data.reset(new CommandCostAuxiliaryData());
+	if (this->flags & CCIF_INLINE_EXTRA_MSG) {
+		this->aux_data->extra_message = this->inl.extra_message;
+		this->flags &= ~CCIF_INLINE_EXTRA_MSG;
+	} else if (this->flags & CCIF_INLINE_TILE) {
+		this->aux_data->tile = this->inl.tile;
+		this->flags &= ~CCIF_INLINE_TILE;
+	} else if (this->flags & CCIF_INLINE_RESULT) {
+		this->aux_data->result = this->inl.result;
+		this->flags &= ~CCIF_INLINE_RESULT;
+	}
+}
+
+bool CommandCost::AddInlineData(CommandCostIntlFlags inline_flag)
+{
+	if (this->aux_data) return true;
+	if (this->flags & inline_flag) {
+		return false;
+	}
+	if (this->flags & ~CCIF_SUCCESS) {
+		this->AllocAuxData();
+		return true;
+	}
+	this->flags |= inline_flag;
+	return false;
+}
+
+void CommandCost::SetTile(TileIndex tile)
+{
+	if (tile == this->GetTile()) return;
+
+	if (this->AddInlineData(CCIF_INLINE_TILE)) {
+		this->aux_data->tile = tile;
+	} else {
+		this->inl.tile = tile;
+	}
+}
+
+void CommandCost::SetResultData(uint32 result)
+{
+	if (result == this->GetResultData()) return;
+
+	if (this->AddInlineData(CCIF_INLINE_RESULT)) {
+		this->aux_data->result = result;
+	} else {
+		this->inl.result = result;
 	}
 }

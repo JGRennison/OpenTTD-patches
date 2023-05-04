@@ -22,6 +22,7 @@
 #include "water.h"
 #include "clear_func.h"
 #include "newgrf_animation_base.h"
+#include "newgrf_extension.h"
 
 #include "safeguards.h"
 
@@ -30,7 +31,17 @@ ObjectOverrideManager _object_mngr(NEW_OBJECT_OFFSET, NUM_OBJECTS, INVALID_OBJEC
 
 extern const ObjectSpec _original_objects[NEW_OBJECT_OFFSET];
 /** All the object specifications. */
-ObjectSpec _object_specs[NUM_OBJECTS];
+std::vector<ObjectSpec> _object_specs;
+
+const std::vector<ObjectSpec> &ObjectSpec::Specs()
+{
+	return _object_specs;
+}
+
+size_t ObjectSpec::Count()
+{
+	return _object_specs.size();
+}
 
 /**
  * Get the specification associated with a specific ObjectType.
@@ -39,7 +50,11 @@ ObjectSpec _object_specs[NUM_OBJECTS];
  */
 /* static */ const ObjectSpec *ObjectSpec::Get(ObjectType index)
 {
+	/* Empty object if index is out of range -- this might happen if NewGRFs are changed. */
+	static ObjectSpec empty = {};
+
 	assert(index < NUM_OBJECTS);
+	if (index >= _object_specs.size()) return &empty;
 	return &_object_specs[index];
 }
 
@@ -59,7 +74,7 @@ ObjectSpec _object_specs[NUM_OBJECTS];
  */
 bool ObjectSpec::IsEverAvailable() const
 {
-	return this->enabled && HasBit(this->climate, _settings_game.game_creation.landscape) &&
+	return this->IsEnabled() && HasBit(this->climate, _settings_game.game_creation.landscape) &&
 			(this->flags & ((_game_mode != GM_EDITOR && !_generating_world) ? OBJECT_FLAG_ONLY_IN_SCENEDIT : OBJECT_FLAG_ONLY_IN_GAME)) == 0;
 }
 
@@ -69,7 +84,7 @@ bool ObjectSpec::IsEverAvailable() const
  */
 bool ObjectSpec::WasEverAvailable() const
 {
-	return this->IsEverAvailable() && _date > this->introduction_date;
+	return this->IsEverAvailable() && (_date > this->introduction_date || (_settings_game.construction.ignore_object_intro_dates && !_generating_world));
 }
 
 /**
@@ -79,7 +94,8 @@ bool ObjectSpec::WasEverAvailable() const
 bool ObjectSpec::IsAvailable() const
 {
 	return this->WasEverAvailable() &&
-			(_date < this->end_of_life_date || this->end_of_life_date < this->introduction_date + 365);
+			(_date < this->end_of_life_date || this->end_of_life_date < this->introduction_date + 365 ||
+			(_settings_game.construction.no_expire_objects_after != 0 && _cur_year >= _settings_game.construction.no_expire_objects_after));
 }
 
 /**
@@ -88,37 +104,45 @@ bool ObjectSpec::IsAvailable() const
  */
 uint ObjectSpec::Index() const
 {
-	return this - _object_specs;
+	return this - _object_specs.data();
+}
+
+/**
+ * Tie all ObjectSpecs to their class.
+ */
+/* static */ void ObjectSpec::BindToClasses()
+{
+	for (auto &spec : _object_specs) {
+		if (spec.IsEnabled() && spec.cls_id != INVALID_OBJECT_CLASS) {
+			ObjectClass::Assign(&spec);
+		}
+	}
 }
 
 /** This function initialize the spec arrays of objects. */
 void ResetObjects()
 {
 	/* Clean the pool. */
-	for (uint16 i = 0; i < NUM_OBJECTS; i++) {
-		_object_specs[i] = {};
-	}
+	_object_specs.clear();
 
 	/* And add our originals. */
-	MemCpyT(_object_specs, _original_objects, lengthof(_original_objects));
+	_object_specs.resize(lengthof(_original_objects));
 
 	for (uint16 i = 0; i < lengthof(_original_objects); i++) {
+		_object_specs[i] = _original_objects[i];
 		_object_specs[i].grf_prop.local_id = i;
 	}
+
+	/* Set class for originals. */
+	_object_specs[OBJECT_LIGHTHOUSE].cls_id = ObjectClass::Allocate('LTHS');
+	_object_specs[OBJECT_TRANSMITTER].cls_id = ObjectClass::Allocate('TRNS');
 }
 
 template <typename Tspec, typename Tid, Tid Tmax>
 /* static */ void NewGRFClass<Tspec, Tid, Tmax>::InsertDefaults()
 {
-	ObjectClassID cls = ObjectClass::Allocate('LTHS');
-	ObjectClass::Get(cls)->name = STR_OBJECT_CLASS_LTHS;
-	_object_specs[OBJECT_LIGHTHOUSE].cls_id = cls;
-	ObjectClass::Assign(&_object_specs[OBJECT_LIGHTHOUSE]);
-
-	cls = ObjectClass::Allocate('TRNS');
-	ObjectClass::Get(cls)->name = STR_OBJECT_CLASS_TRNS;
-	_object_specs[OBJECT_TRANSMITTER].cls_id = cls;
-	ObjectClass::Assign(&_object_specs[OBJECT_TRANSMITTER]);
+	ObjectClass::Get(ObjectClass::Allocate('LTHS'))->name = STR_OBJECT_CLASS_LTHS;
+	ObjectClass::Get(ObjectClass::Allocate('TRNS'))->name = STR_OBJECT_CLASS_TRNS;
 }
 
 template <typename Tspec, typename Tid, Tid Tmax>
@@ -169,12 +193,14 @@ static uint32 GetObjectIDAtOffset(TileIndex tile, uint32 cur_grfid)
  * @param grf_version8 True, if we are dealing with a new NewGRF which uses GRF version >= 8.
  * @return a construction of bits obeying the newgrf format
  */
-static uint32 GetNearbyObjectTileInformation(byte parameter, TileIndex tile, ObjectID index, bool grf_version8)
+static uint32 GetNearbyObjectTileInformation(byte parameter, TileIndex tile, ObjectID index, bool grf_version8, uint32 mask)
 {
 	if (parameter != 0) tile = GetNearbyTile(parameter, tile); // only perform if it is required
 	bool is_same_object = (IsTileType(tile, MP_OBJECT) && GetObjectIndex(tile) == index);
 
-	return GetNearbyTileInformation(tile, grf_version8) | (is_same_object ? 1 : 0) << 8;
+	uint32 result = (is_same_object ? 1 : 0) << 8;
+	if (mask & ~0x100) result |= GetNearbyTileInformation(tile, grf_version8, mask);
+	return result;
 }
 
 /**
@@ -204,7 +230,7 @@ static uint32 GetClosestObject(TileIndex tile, ObjectType type, const Object *cu
  * @param current  Object for which the inquiry is made
  * @return The formatted answer to the callback : rr(reserved) cc(count) dddd(manhattan distance of closest sister)
  */
-static uint32 GetCountAndDistanceOfClosestInstance(byte local_id, uint32 grfid, TileIndex tile, const Object *current)
+static uint32 GetCountAndDistanceOfClosestInstance(uint32 local_id, uint32 grfid, TileIndex tile, const Object *current)
 {
 	uint32 grf_id = GetRegister(0x100);  // Get the GRFID of the definition to look for in register 100h
 	uint32 idx;
@@ -231,7 +257,7 @@ static uint32 GetCountAndDistanceOfClosestInstance(byte local_id, uint32 grfid, 
 }
 
 /** Used by the resolver to get values for feature 0F deterministic spritegroups. */
-/* virtual */ uint32 ObjectScopeResolver::GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const
+/* virtual */ uint32 ObjectScopeResolver::GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	/* We get the town from the object, or we calculate the closest
 	 * town if we need to when there's no object. */
@@ -262,6 +288,12 @@ static uint32 GetCountAndDistanceOfClosestInstance(byte local_id, uint32 grfid, 
 
 			/* Object view */
 			case 0x48: return this->view;
+
+			case A2VRI_OBJECT_FOUNDATION_SLOPE:
+				return GetTileSlope(this->tile);
+
+			case A2VRI_OBJECT_FOUNDATION_SLOPE_CHANGE:
+				return 0;
 
 			/*
 			 * Disallow the rest:
@@ -323,7 +355,7 @@ static uint32 GetCountAndDistanceOfClosestInstance(byte local_id, uint32 grfid, 
 		}
 
 		/* Land info of nearby tiles */
-		case 0x62: return GetNearbyObjectTileInformation(parameter, this->tile, this->obj == nullptr ? INVALID_OBJECT : this->obj->index, this->ro.grffile->grf_version >= 8);
+		case 0x62: return GetNearbyObjectTileInformation(parameter, this->tile, this->obj == nullptr ? INVALID_OBJECT : this->obj->index, this->ro.grffile->grf_version >= 8, extra->mask);
 
 		/* Animation counter of nearby tile */
 		case 0x63: {
@@ -333,6 +365,21 @@ static uint32 GetCountAndDistanceOfClosestInstance(byte local_id, uint32 grfid, 
 
 		/* Count of object, distance of closest instance */
 		case 0x64: return GetCountAndDistanceOfClosestInstance(parameter, this->ro.grffile->grfid, this->tile, this->obj);
+
+		case A2VRI_OBJECT_FOUNDATION_SLOPE: {
+			extern Foundation GetFoundation_Object(TileIndex tile, Slope tileh);
+			Slope slope = GetTileSlope(this->tile);
+			ApplyFoundationToSlope(GetFoundation_Object(this->tile, slope), &slope);
+			return slope;
+		}
+
+		case A2VRI_OBJECT_FOUNDATION_SLOPE_CHANGE: {
+			extern Foundation GetFoundation_Object(TileIndex tile, Slope tileh);
+			Slope slope = GetTileSlope(this->tile);
+			Slope orig_slope = slope;
+			ApplyFoundationToSlope(GetFoundation_Object(this->tile, slope), &slope);
+			return slope ^ orig_slope;
+		}
 	}
 
 unhandled:
@@ -536,7 +583,7 @@ uint16 StubGetObjectCallback(CallbackID callback, uint32 param1, uint32 param2, 
 }
 
 /** Helper class for animation control. */
-struct ObjectAnimationBase : public AnimationBase<ObjectAnimationBase, ObjectSpec, Object, int, StubGetObjectCallback> {
+struct ObjectAnimationBase : public AnimationBase<ObjectAnimationBase, ObjectSpec, Object, int, StubGetObjectCallback, TileAnimationFrameAnimationHelper<Object> > {
 	static const CallbackID cb_animation_speed      = CBID_OBJECT_ANIMATION_SPEED;
 	static const CallbackID cb_animation_next_frame = CBID_OBJECT_ANIMATION_NEXT_FRAME;
 
@@ -593,7 +640,7 @@ void TriggerObjectAnimation(Object *o, ObjectAnimationTrigger trigger, const Obj
 	}
 }
 
-void DumpObjectSpriteGroup(const ObjectSpec *spec, std::function<void(const char *)> print)
+void DumpObjectSpriteGroup(const ObjectSpec *spec, DumpSpriteGroupPrinter print)
 {
 	DumpSpriteGroup(spec->grf_prop.spritegroup[0], std::move(print));
 }

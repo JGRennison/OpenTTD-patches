@@ -27,9 +27,30 @@ inline bool HasChickenBit(ChickenBitFlags flag)
 	return HasBit(_settings_game.debug.chicken_bits, flag);
 }
 
+enum NewGRFOptimiserFlags {
+	NGOF_NO_OPT_VARACT2                 = 0,
+	NGOF_NO_OPT_VARACT2_DSE             = 1,
+	NGOF_NO_OPT_VARACT2_GROUP_PRUNE     = 2,
+	NGOF_NO_OPT_VARACT2_EXPENSIVE_VARS  = 3,
+	NGOF_NO_OPT_VARACT2_SIMPLIFY_STORES = 4,
+	NGOF_NO_OPT_VARACT2_ADJUST_ORDERING = 5,
+	NGOF_NO_OPT_VARACT2_INSERT_JUMPS    = 6,
+	NGOF_NO_OPT_VARACT2_CB_QUICK_EXIT   = 7,
+	NGOF_NO_OPT_VARACT2_PROC_INLINE     = 8,
+};
+
+inline bool HasGrfOptimiserFlag(NewGRFOptimiserFlags flag)
+{
+	return HasBit(_settings_game.debug.newgrf_optimiser_flags, flag);
+}
+
 enum MiscDebugFlags {
 	MDF_OVERHEAT_BREAKDOWN_OPEN_WIN,
 	MDF_ZONING_RS_WATER_FLOOD_STATE,
+	MDF_ZONING_RS_TROPIC_ZONE,
+	MDF_ZONING_RS_ANIMATED_TILE,
+	MDF_NEWGRF_SG_SAVE_RAW,
+	MDF_NEWGRF_SG_DUMP_MORE_DETAIL,
 };
 extern uint32 _misc_debug_flags;
 

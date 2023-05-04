@@ -82,20 +82,20 @@ void BuildDepotVehicleList(VehicleType type, TileIndex tile, VehicleList *engine
 			case VEH_TRAIN: {
 				const Train *t = Train::From(v);
 				if (t->IsArticulatedPart() || t->IsRearDualheaded()) continue;
-				if (t->track != TRACK_BIT_DEPOT) continue;
+				if (!t->IsInDepot()) continue;
 				if (wagons != nullptr && t->First()->IsFreeWagon()) {
 					if (individual_wagons || t->IsFreeWagon()) wagons->push_back(t);
 					continue;
 				}
+				if (!t->IsPrimaryVehicle()) continue;
 				break;
 			}
 
 			default:
+				if (!v->IsPrimaryVehicle()) continue;
 				if (!v->IsInDepot()) continue;
 				break;
 		}
-
-		if (!v->IsPrimaryVehicle()) continue;
 
 		engines->push_back(v);
 	}
@@ -106,20 +106,58 @@ void BuildDepotVehicleList(VehicleType type, TileIndex tile, VehicleList *engine
 	if (wagons != nullptr && wagons != engines) wagons->shrink_to_fit();
 }
 
+/** Cargo filter functions */
+bool VehicleCargoFilter(const Vehicle *v, const CargoID cid)
+{
+	if (cid == CF_ANY) {
+		return true;
+	} else if (cid == CF_NONE) {
+		for (const Vehicle *w = v; w != nullptr; w = w->Next()) {
+			if (w->cargo_cap > 0) {
+				return false;
+			}
+		}
+		return true;
+	} else if (cid == CF_FREIGHT) {
+		bool have_capacity = false;
+		for (const Vehicle *w = v; w != nullptr; w = w->Next()) {
+			if (w->cargo_cap) {
+				if (IsCargoInClass(w->cargo_type, CC_PASSENGERS)) {
+					return false;
+				} else {
+					have_capacity = true;
+				}
+			}
+		}
+		return have_capacity;
+	} else {
+		for (const Vehicle *w = v; w != nullptr; w = w->Next()) {
+			if (w->cargo_cap > 0 && w->cargo_type == cid) {
+				return true;
+			}
+		}
+		return false;
+	}
+}
+
 /**
  * Generate a list of vehicles based on window type.
  * @param list Pointer to list to add vehicles to
  * @param vli  The identifier of this vehicle list.
  * @return false if invalid list is requested
  */
-bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli)
+bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli, const CargoID cid)
 {
 	list->clear();
+
+	auto add_veh = [&](const Vehicle *v) {
+		if (cid == CF_ANY || VehicleCargoFilter(v, cid)) list->push_back(v);
+	};
 
 	auto fill_all_vehicles = [&]() {
 		for (const Vehicle *v : Vehicle::Iterate()) {
 			if (!HasBit(v->subtype, GVSF_VIRTUAL) && v->type == vli.vtype && v->owner == vli.company && v->IsPrimaryVehicle()) {
-				list->push_back(v);
+				add_veh(v);
 			}
 		}
 	};
@@ -131,7 +169,7 @@ bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli
 					for (const Order *order : v->Orders()) {
 						if ((order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT) || order->IsType(OT_IMPLICIT))
 								&& order->GetDestination() == vli.index) {
-							list->push_back(v);
+							add_veh(v);
 							break;
 						}
 					}
@@ -145,7 +183,7 @@ bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli
 			if (v == nullptr || v->type != vli.vtype || !v->IsPrimaryVehicle()) return false;
 
 			for (; v != nullptr; v = v->NextShared()) {
-				list->push_back(v);
+				add_veh(v);
 			}
 			break;
 		}
@@ -155,7 +193,7 @@ bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli
 				for (const Vehicle *v : Vehicle::Iterate()) {
 					if (!HasBit(v->subtype, GVSF_VIRTUAL) && v->type == vli.vtype && v->IsPrimaryVehicle() &&
 							v->owner == vli.company && GroupIsInGroup(v->group_id, vli.index)) {
-						list->push_back(v);
+						add_veh(v);
 					}
 				}
 				break;
@@ -172,7 +210,7 @@ bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli
 				if (v->type == vli.vtype && v->IsPrimaryVehicle()) {
 					for (const Order *order : v->Orders()) {
 						if (order->IsType(OT_GOTO_DEPOT) && !(order->GetDepotActionType() & ODATFB_NEAREST_DEPOT) && order->GetDestination() == vli.index) {
-							list->push_back(v);
+							add_veh(v);
 							break;
 						}
 					}
@@ -187,7 +225,7 @@ bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli
 				const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(vli.index);
 				if (slot == nullptr) return false;
 				for (VehicleID id : slot->occupants) {
-					list->push_back(Vehicle::Get(id));
+					add_veh(Vehicle::Get(id));
 				}
 			}
 			break;
@@ -195,7 +233,7 @@ bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli
 
 		case VL_SINGLE_VEH: {
 			const Vehicle *v = Vehicle::GetIfValid(vli.index);
-			if (v != nullptr) list->push_back(v);
+			if (v != nullptr) add_veh(v);
 			break;
 		}
 

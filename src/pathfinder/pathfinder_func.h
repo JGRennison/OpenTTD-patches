@@ -59,7 +59,7 @@ static inline TileIndex CalcClosestStationTile(StationID station, TileIndex tile
  */
 static inline TrackdirBits GetTrackdirBitsForRoad(TileIndex tile, RoadTramType rtt)
 {
-	TrackdirBits bits = TrackStatusToTrackdirBits(GetTileTrackStatus(tile, TRANSPORT_ROAD, rtt));
+	TrackdirBits bits = GetTileTrackdirBits(tile, TRANSPORT_ROAD, rtt);
 
 	if (rtt == RTT_TRAM && bits == TRACKDIR_BIT_NONE) {
 		if (IsNormalRoadTile(tile)) {

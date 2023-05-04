@@ -54,6 +54,7 @@ enum DisplayOptions {
 /** Extra Display Options */
 enum ExtraDisplayOptions {
 	XDO_SHOW_MONEY_TEXT_EFFECTS = 0, ///< Display money text effects.
+	XDO_SHOW_HIDDEN_SIGNS       = 1, ///< Show hidden signs
 };
 
 extern GameMode _game_mode;
@@ -80,15 +81,19 @@ DECLARE_ENUM_AS_BIT_SET(PauseMode)
 
 /** The current pause mode */
 extern PauseMode _pause_mode;
+extern uint32 _pause_countdown;
 
 void AskExitGame();
 void AskExitToGameMenu();
 
 int openttd_main(int argc, char *argv[]);
+void StateGameLoop();
 void HandleExitGameRequest();
 
 void SwitchToMode(SwitchMode new_mode);
 
 bool RequestNewGRFScan(struct NewGRFScanCallback *callback = nullptr);
+
+void OpenBrowser(const char *url);
 
 #endif /* OPENTTD_H */

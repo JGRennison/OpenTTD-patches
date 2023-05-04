@@ -75,7 +75,7 @@
 
 	/* Also still print to debug window */
 	DEBUG(script, level, "[%d] [%c] %s", (uint)ScriptObject::GetRootCompany(), logc, log->lines[log->pos]);
-	InvalidateWindowData(WC_AI_DEBUG, 0, ScriptObject::GetRootCompany());
+	InvalidateWindowData(WC_SCRIPT_DEBUG, 0, ScriptObject::GetRootCompany());
 }
 
 /* static */ void ScriptLog::FreeLogPointer()
@@ -89,4 +89,12 @@
 	free(log->lines);
 	free(log->type);
 	delete log;
+}
+
+/* static */ void ScriptLog::LogOnce(ScriptLog::ScriptLogType level, std::string &&message)
+{
+	if (ScriptObject::IsNewUniqueLogMessage(message)) {
+		ScriptLog::Log(level, message.c_str());
+		ScriptObject::RegisterUniqueLogMessage(std::move(message));
+	}
 }

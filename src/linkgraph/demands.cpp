@@ -244,7 +244,8 @@ void AsymmetricScalerEq::SetDemands(LinkGraphJob &job, NodeID from_id, NodeID to
  */
 inline void Scaler::SetDemands(LinkGraphJob &job, NodeID from_id, NodeID to_id, uint demand_forw)
 {
-	job[from_id].DeliverSupply(to_id, demand_forw);
+	job[from_id].DeliverSupply(demand_forw);
+	job.demand_map[std::make_pair(from_id, to_id)] += demand_forw;
 }
 
 /**
@@ -417,6 +418,8 @@ DemandCalculator::DemandCalculator(LinkGraphJob &job) :
 		this->mod_dist = 100 + over100 * over100;
 	}
 
+	if (settings.GetDistributionType(cargo) == DT_MANUAL) return;
+
 	const uint size = job.Size();
 
 	/* Symmetric edge matrix
@@ -427,10 +430,9 @@ DemandCalculator::DemandCalculator(LinkGraphJob &job) :
 	};
 	std::vector<bool> symmetric_edges(se_index(0, size));
 
-	for (NodeID node_id = 0; node_id < size; ++node_id) {
-		Node from = job[node_id];
-		for (EdgeIterator it(from.Begin()); it != from.End(); ++it) {
-			symmetric_edges[se_index(node_id, it->first)] = true;
+	for (auto &it : job.Graph().GetEdges()) {
+		if (it.first.first != it.first.second) {
+			symmetric_edges[se_index(it.first.first, it.first.second)] = true;
 		}
 	}
 	uint first_unseen = 0;
@@ -477,4 +479,25 @@ DemandCalculator::DemandCalculator(LinkGraphJob &job) :
 			first_unseen++;
 		}
 	} while (first_unseen < size);
+
+	if (job.demand_map.size() > 0) {
+		job.demand_annotation_store.resize(job.demand_map.size());
+		size_t start_idx = 0;
+		size_t idx = 0;
+		NodeID last_from = job.demand_map.begin()->first.first;
+		auto flush = [&]() {
+			job[last_from].SetDemandAnnotations({ job.demand_annotation_store.data() + start_idx, idx - start_idx });
+		};
+		for (auto &iter : job.demand_map) {
+			if (iter.first.first != last_from) {
+				flush();
+				last_from = iter.first.first;
+				start_idx = idx;
+			}
+			job.demand_annotation_store[idx] = { iter.first.second, iter.second, iter.second };
+			idx++;
+		}
+		flush();
+		job.demand_map.clear();
+	}
 }

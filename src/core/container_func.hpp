@@ -11,6 +11,7 @@
 #define CONTAINER_FUNC_HPP
 
 #include <iterator>
+#include <algorithm>
 
 template <typename C, typename UP> unsigned int container_unordered_remove_if (C &container, UP predicate) {
 	unsigned int removecount = 0;
@@ -35,6 +36,36 @@ template <typename C, typename V> unsigned int container_unordered_remove(C &con
 	return container_unordered_remove_if (container, [&](const typename C::value_type &v) {
 		return v == value;
 	});
+}
+
+template <typename T>
+bool multimaps_equalivalent(const T &a, const T&b)
+{
+	if (a.size() != b.size()) return false;
+
+	for (auto it_a = a.begin(); it_a != a.end();) {
+		const auto start_a = it_a;
+		const auto key = start_a->first;
+		size_t distance_a = 0;
+		do {
+			++it_a;
+			++distance_a;
+		} while (it_a != a.end() && it_a->first == key);
+
+		const auto start_b = b.lower_bound(key);
+		size_t distance_b = 0;
+		for (auto it_b = start_b; it_b != b.end() && it_b->first == key; ++it_b) {
+			++distance_b;
+		}
+
+		if (distance_a != distance_b) return false;
+
+		if (!std::is_permutation(start_a, it_a, start_b)) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 #endif /* CONTAINER_FUNC_HPP */

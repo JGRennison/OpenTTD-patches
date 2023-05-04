@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "command_func.h"
+#include "command_aux.h"
 #include "plans_base.h"
 #include "plans_func.h"
 #include "window_func.h"
@@ -43,6 +44,36 @@ CommandCost CmdAddPlan(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2
 	return CommandCost();
 }
 
+struct PlanLineCmdData : public CommandAuxiliarySerialisable<PlanLineCmdData> {
+	TileVector tiles;
+
+	virtual void Serialise(CommandSerialisationBuffer &buffer) const override
+	{
+		buffer.Send_uint32((uint32)this->tiles.size());
+		for (TileIndex t : this->tiles) {
+			buffer.Send_uint32(t);
+		}
+	}
+
+	CommandCost Deserialise(CommandDeserialisationBuffer &buffer)
+	{
+		uint32 size = buffer.Recv_uint32();
+		if (!buffer.CanRecvBytes(size * 4)) return CMD_ERROR;
+		this->tiles.resize(size);
+		for (uint i = 0; i < size; i++) {
+			this->tiles[i] = buffer.Recv_uint32();
+		}
+		return CommandCost();
+	}
+};
+
+bool AddPlanLine(PlanID plan, TileVector tiles)
+{
+	PlanLineCmdData data;
+	data.tiles = std::move(tiles);
+	return DoCommandPEx(0, plan, 0, 0, CMD_ADD_PLAN_LINE, nullptr, nullptr, &data);
+}
+
 /**
  * Create a new line in a plan.
  * @param tile unused
@@ -50,25 +81,25 @@ CommandCost CmdAddPlan(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2
  * @param p1 plan id
  * @param p2 number of nodes
  * @param text list of tile indexes that compose the line
- * @param binary_length binary length of text
+ * @param aux_data auxiliary data
  * @return the cost of this operation or an error
  */
-CommandCost CmdAddPlanLine(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length)
+CommandCost CmdAddPlanLine(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	Plan *p = Plan::GetIfValid(p1);
 	if (p == nullptr) return CMD_ERROR;
 	CommandCost ret = CheckOwnership(p->owner);
 	if (ret.Failed()) return ret;
-	if (p2 > (MAX_CMD_TEXT_LENGTH / sizeof(TileIndex))) return_cmd_error(STR_ERROR_TOO_MANY_NODES);
-	if (!text || binary_length != p2 * 4) return CMD_ERROR;
+
+	CommandAuxData<PlanLineCmdData> data;
+	ret = data.Load(aux_data);
+	if (ret.Failed()) return ret;
+
+	if (data->tiles.size() > (MAX_CMD_TEXT_LENGTH / sizeof(TileIndex))) return_cmd_error(STR_ERROR_TOO_MANY_NODES);
 	if (flags & DC_EXEC) {
 		PlanLine *pl = p->NewLine();
 		if (!pl) return_cmd_error(STR_ERROR_NO_MORE_SPACE_FOR_LINES);
-		if (!pl->Import((const TileIndex *) text, p2)) {
-			delete pl;
-			p->lines.pop_back();
-			return CMD_ERROR;
-		}
+		pl->tiles = std::move(data->tiles);
 		pl->UpdateVisualExtents();
 		if (p->IsListable()) {
 			pl->SetVisibility(p->visible);
@@ -96,9 +127,17 @@ CommandCost CmdChangePlanVisibility(TileIndex tile, DoCommandFlag flags, uint32 
 	CommandCost ret = CheckOwnership(p->owner);
 	if (ret.Failed()) return ret;
 	if (flags & DC_EXEC) {
-		p->visible_by_all = p2 != 0;
-		Window *w = FindWindowById(WC_PLANS, 0);
-		if (w) w->InvalidateData(INVALID_PLAN, false);
+		bool visible = (p2 != 0);
+		if (p->visible_by_all != visible) {
+			p->visible_by_all = visible;
+			Window *w = FindWindowById(WC_PLANS, 0);
+			if (w) w->InvalidateData(INVALID_PLAN, false);
+			if (p->owner != _local_company && p->visible) {
+				for (PlanLine *line : p->lines) {
+					if (line->visible) line->MarkDirty();
+				}
+			}
+		}
 	}
 	return CommandCost();
 }

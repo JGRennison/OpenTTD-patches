@@ -27,6 +27,7 @@
 #include "viewport_func.h"
 #include "road_map.h"
 #include "debug_settings.h"
+#include "animated_tile.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 
 Zoning _zoning;
@@ -133,6 +134,8 @@ SpriteID TileZoneCheckTownLimits(TileIndex tile, Owner owner)
 	Town *t;
 	HouseZonesBits grp = HZB_TOWN_EDGE;
 	t = ClosestTownFromTile(tile, (uint)-1);
+	if (t == nullptr) return ZONING_INVALID_SPRITE_ID;
+
 	grp = GetTownRadiusGroup(t, tile);
 
 	return grp >= HZB_TOWN_OUTSKIRT ? SPR_ZONING_INNER_HIGHLIGHT_LIGHT_BLUE : ZONING_INVALID_SPRITE_ID;
@@ -245,11 +248,25 @@ SpriteID TileZoneCheckUnservedBuildingsEvaluation(TileIndex tile, Owner owner)
 SpriteID TileZoneCheckUnservedIndustriesEvaluation(TileIndex tile, Owner owner)
 {
 	if (IsTileType(tile, MP_INDUSTRY)) {
-		StationFinder stations(TileArea(tile, 1, 1));
+		const Industry *ind = Industry::GetByTile(tile);
+		if (ind->neutral_station != nullptr) return ZONING_INVALID_SPRITE_ID;
 
-		for (const Station *st : *stations.GetStations()) {
-			if (st->owner == owner && st->facilities & (~FACIL_BUS_STOP)) {
-				return ZONING_INVALID_SPRITE_ID;
+		for (const Station *st : ind->stations_near) {
+			if (st->owner == owner) {
+				if (st->facilities & (~(FACIL_BUS_STOP | FACIL_TRUCK_STOP)) || st->facilities == (FACIL_BUS_STOP | FACIL_TRUCK_STOP)) {
+					return ZONING_INVALID_SPRITE_ID;
+				} else if (st->facilities & (FACIL_BUS_STOP | FACIL_TRUCK_STOP)) {
+					for (uint i = 0; i < lengthof(ind->produced_cargo); i++) {
+						if (ind->produced_cargo[i] != CT_INVALID && st->facilities & (IsCargoInClass(ind->produced_cargo[i], CC_PASSENGERS) ? FACIL_BUS_STOP : FACIL_TRUCK_STOP)) {
+							return ZONING_INVALID_SPRITE_ID;
+						}
+					}
+					for (uint i = 0; i < lengthof(ind->accepts_cargo); i++) {
+						if (ind->accepts_cargo[i] != CT_INVALID && st->facilities & (IsCargoInClass(ind->accepts_cargo[i], CC_PASSENGERS) ? FACIL_BUS_STOP : FACIL_TRUCK_STOP)) {
+							return ZONING_INVALID_SPRITE_ID;
+						}
+					}
+				}
 			}
 		}
 
@@ -271,10 +288,23 @@ SpriteID TileZoneCheckTraceRestrictEvaluation(TileIndex tile, Owner owner)
 	if (IsTileType(tile, MP_RAILWAY) && HasSignals(tile) && IsRestrictedSignal(tile)) {
 		return SPR_ZONING_INNER_HIGHLIGHT_RED;
 	}
-	if (IsTunnelBridgeWithSignalSimulation(tile)) {
+	if (IsTunnelBridgeWithSignalSimulation(tile) && IsTunnelBridgeRestrictedSignal(tile)) {
 		return SPR_ZONING_INNER_HIGHLIGHT_RED;
 	}
 	if (unlikely(HasBit(_misc_debug_flags, MDF_ZONING_RS_WATER_FLOOD_STATE)) && IsNonFloodingWaterTile(tile)) {
+		return SPR_ZONING_INNER_HIGHLIGHT_YELLOW;
+	}
+	if (unlikely(HasBit(_misc_debug_flags, MDF_ZONING_RS_TROPIC_ZONE))) {
+		switch (GetTropicZone(tile)) {
+			case TROPICZONE_DESERT:
+				return SPR_ZONING_INNER_HIGHLIGHT_YELLOW;
+			case TROPICZONE_RAINFOREST:
+				return SPR_ZONING_INNER_HIGHLIGHT_LIGHT_BLUE;
+			default:
+				break;
+		}
+	}
+	if (unlikely(HasBit(_misc_debug_flags, MDF_ZONING_RS_ANIMATED_TILE)) && _animated_tiles.find(tile) != _animated_tiles.end()) {
 		return SPR_ZONING_INNER_HIGHLIGHT_YELLOW;
 	}
 
@@ -433,7 +463,7 @@ void DrawTileZoning(const TileInfo *ti)
 					{ -INF    , -INF   , INF    , 30 - 8  }  // CORNER_N, clip  8 pixels from bottom
 				};
 
-				DrawSelectionSprite(sprite, colour, ti, 7 + TILE_HEIGHT, FOUNDATION_PART_HALFTILE, &(sub_sprites[GetHalftileSlopeCorner(ti->tileh)]));
+				DrawSelectionSprite(sprite, colour, ti, 7 + TILE_HEIGHT, FOUNDATION_PART_HALFTILE, 0, 0, &(sub_sprites[GetHalftileSlopeCorner(ti->tileh)]));
 			} else {
 				sprite += SlopeToSpriteOffset(ti->tileh);
 			}

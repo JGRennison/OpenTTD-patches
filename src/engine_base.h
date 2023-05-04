@@ -24,8 +24,22 @@ struct WagonOverride {
 	const SpriteGroup *group;
 };
 
+/** Flags used client-side in the purchase/autorenew engine list. */
+enum class EngineDisplayFlags : byte {
+	None        = 0,         ///< No flag set.
+	HasVariants = (1U << 0), ///< Set if engine has variants.
+	IsFolded    = (1U << 1), ///< Set if display of variants should be folded (hidden).
+	Shaded      = (1U << 2), ///< Set if engine should be masked.
+};
+DECLARE_ENUM_AS_BIT_SET(EngineDisplayFlags)
+
 typedef Pool<Engine, EngineID, 64, 64000> EnginePool;
 extern EnginePool _engine_pool;
+
+struct EngineRefitCapacityValue {
+	CargoTypes cargoes;
+	uint32 capacity;
+};
 
 struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	TinyString name;            ///< Custom name of engine.
@@ -47,6 +61,9 @@ struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	CompanyMask company_hidden; ///< Bit for each company whether the engine is normally hidden in the build gui for that company.
 	uint8 original_image_index; ///< Original vehicle image index, thus the image index of the overridden vehicle
 	VehicleType type;           ///< %Vehicle type, ie #VEH_ROAD, #VEH_TRAIN, etc.
+
+	EngineDisplayFlags display_flags; ///< NOSAVE client-side-only display flags for build engine list.
+	EngineID display_last_variant;    ///< NOSAVE client-side-only last variant selected.
 
 	EngineInfo info;
 
@@ -72,6 +89,8 @@ struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	uint64 cb36_properties_used = UINT64_MAX;
 	btree::btree_map<const SpriteGroup *, uint64> sprite_group_cb36_properties_used;
 
+	std::unique_ptr<EngineRefitCapacityValue, FreeDeleter> refit_capacity_values;
+
 	Engine() {}
 	Engine(VehicleType type, EngineID base);
 	bool IsEnabled() const;
@@ -95,6 +114,7 @@ struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	uint DetermineCapacity(const Vehicle *v, uint16 *mail_capacity = nullptr) const;
 
 	bool CanCarryCargo() const;
+	bool CanPossiblyCarryCargo() const;
 
 	/**
 	 * Determines the default cargo capacity of an engine for display purposes.
@@ -140,6 +160,15 @@ struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	inline bool IsGroundVehicle() const
 	{
 		return this->type == VEH_TRAIN || this->type == VEH_ROAD;
+	}
+
+	/**
+	 * Check if the vehicle type supports articulation.
+	 * @return True iff the vehicle is a train, road vehicle or ship.
+	 */
+	inline bool IsArticulatedCallbackVehicleType() const
+	{
+		return this->type == VEH_TRAIN || this->type == VEH_ROAD || this->type == VEH_SHIP;
 	}
 
 	/**

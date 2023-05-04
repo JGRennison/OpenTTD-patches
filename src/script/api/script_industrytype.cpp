@@ -9,6 +9,7 @@
 
 #include "../../stdafx.h"
 #include "script_industrytype.hpp"
+#include "script_base.hpp"
 #include "script_map.hpp"
 #include "script_error.hpp"
 #include "../../strings_func.h"
@@ -94,7 +95,7 @@
 {
 	if (!IsValidIndustryType(industry_type)) return false;
 
-	const bool deity = ScriptObject::GetCompany() == OWNER_DEITY;
+	const bool deity = ScriptCompanyMode::IsDeity();
 	if (::GetIndustryProbabilityCallback(industry_type, deity ? IACT_RANDOMCREATION : IACT_USERCREATION, 1) == 0) return false;
 	if (deity) return true;
 	if (!::GetIndustrySpec(industry_type)->IsRawIndustry()) return true;
@@ -107,7 +108,7 @@
 {
 	if (!IsValidIndustryType(industry_type)) return false;
 
-	const bool deity = ScriptObject::GetCompany() == OWNER_DEITY;
+	const bool deity = ScriptCompanyMode::IsDeity();
 	if (!deity && !::GetIndustrySpec(industry_type)->IsRawIndustry()) return false;
 	if (::GetIndustryProbabilityCallback(industry_type, deity ? IACT_RANDOMCREATION : IACT_USERCREATION, 1) == 0) return false;
 
@@ -117,19 +118,21 @@
 
 /* static */ bool ScriptIndustryType::BuildIndustry(IndustryType industry_type, TileIndex tile)
 {
+	EnforceDeityOrCompanyModeValid(false);
 	EnforcePrecondition(false, CanBuildIndustry(industry_type));
 	EnforcePrecondition(false, ScriptMap::IsValidTile(tile));
 
-	uint32 seed = ::InteractiveRandom();
-	uint32 layout_index = ::InteractiveRandomRange((uint32)::GetIndustrySpec(industry_type)->layouts.size());
+	uint32 seed = ScriptBase::Rand();
+	uint32 layout_index = ScriptBase::RandRange((uint32)::GetIndustrySpec(industry_type)->layouts.size());
 	return ScriptObject::DoCommand(tile, (1 << 16) | (layout_index << 8) | industry_type, seed, CMD_BUILD_INDUSTRY);
 }
 
 /* static */ bool ScriptIndustryType::ProspectIndustry(IndustryType industry_type)
 {
+	EnforceDeityOrCompanyModeValid(false);
 	EnforcePrecondition(false, CanProspectIndustry(industry_type));
 
-	uint32 seed = ::InteractiveRandom();
+	uint32 seed = ScriptBase::Rand();
 	return ScriptObject::DoCommand(0, industry_type, seed, CMD_BUILD_INDUSTRY);
 }
 
@@ -152,4 +155,12 @@
 	if (!IsValidIndustryType(industry_type)) return false;
 
 	return (::GetIndustrySpec(industry_type)->behaviour & INDUSTRYBEH_AI_AIRSHIP_ROUTES) != 0;
+}
+
+/* static */ IndustryType ScriptIndustryType::ResolveNewGRFID(SQInteger grfid, SQInteger grf_local_id)
+{
+	EnforcePrecondition(INVALID_INDUSTRYTYPE, IsInsideBS(grf_local_id, 0x00, NUM_INDUSTRYTYPES_PER_GRF));
+
+	grfid = BSWAP32(GB(grfid, 0, 32)); // Match people's expectations.
+	return _industry_mngr.GetID(grf_local_id, grfid);
 }

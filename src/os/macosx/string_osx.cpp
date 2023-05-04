@@ -13,8 +13,10 @@
 #include "../../strings_func.h"
 #include "../../table/control_codes.h"
 #include "../../fontcache.h"
+#include "../../zoom_func.h"
 #include "../../scope.h"
 #include "macos.h"
+#include <cmath>
 
 #include <CoreFoundation/CoreFoundation.h>
 
@@ -246,14 +248,14 @@ CoreTextParagraphLayout::CoreTextVisualRun::CoreTextVisualRun(CTRunRef run, Font
 		if (buff[this->glyph_to_char[i]] >= SCC_SPRITE_START && buff[this->glyph_to_char[i]] <= SCC_SPRITE_END) {
 			this->glyphs[i] = font->fc->MapCharToGlyph(buff[this->glyph_to_char[i]]);
 			this->positions[i * 2 + 0] = pts[i].x;
-			this->positions[i * 2 + 1] = font->fc->GetAscender() - font->fc->GetGlyph(this->glyphs[i])->height - 1; // Align sprite glyphs to font baseline.
+			this->positions[i * 2 + 1] = (font->fc->GetHeight() - ScaleSpriteTrad(FontCache::GetDefaultFontHeight(font->fc->GetSize()))) / 2; // Align sprite font to centre
 		} else {
 			this->glyphs[i] = gl[i];
 			this->positions[i * 2 + 0] = pts[i].x;
 			this->positions[i * 2 + 1] = pts[i].y;
 		}
 	}
-	this->total_advance = (int)CTRunGetTypographicBounds(run, CFRangeMake(0, 0), nullptr, nullptr, nullptr);
+	this->total_advance = (int)std::ceil(CTRunGetTypographicBounds(run, CFRangeMake(0, 0), nullptr, nullptr, nullptr));
 	this->positions[this->glyphs.size() * 2] = this->positions[0] + this->total_advance;
 }
 
@@ -445,9 +447,9 @@ int MacOSStringCompare(const char *s1, const char *s2)
 	return this->utf16_to_utf8[this->cur_pos];
 }
 
-/* static */ StringIterator *OSXStringIterator::Create()
+/* static */ std::unique_ptr<StringIterator> OSXStringIterator::Create()
 {
 	if (!MacOSVersionIsAtLeast(10, 5, 0)) return nullptr;
 
-	return new OSXStringIterator();
+	return std::make_unique<OSXStringIterator>();
 }

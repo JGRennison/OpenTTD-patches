@@ -95,5 +95,50 @@
 			<div class="methodtext">Checks whether the given road type is buildable by towns.</div>
 		</div>
 	</div>
+
+	<h3>Company: <a href="https://docs.openttd.org/gs-api/classGSCompany.html">GSCompany Class</a> and <a href="https://docs.openttd.org/ai-api/classAICompany.html">AICompany Class</a></h3>
+	<div class="indent">
+		<h4>Additional Static Public Member Functions:</h4>
+		<div class="indent">
+			<div class="code">static bool GetAnnualExpenseValue (CompanyID company, uint32 year_offset, ExpensesType expenses_type)</div>
+			<div class="methodtext">Get the annual expense value for the given company.</div>
+			<div class="methodtext">year_offset is relative to the current year and must be either: 0, 1, or 2.</div>
+		</div>
+		<h4>Additional Enum Values:</h4>
+		<div class="indent">
+
+			<div class="code">ExpensesType</div>
+			<div>Additional value: <span class="code">EXPENSES_SHARING_COST</span></div>
+			<div class="methodtext">Infrastructure sharing costs.</div>
+			<div>Additional value: <span class="code">EXPENSES_SHARING_INC</span></div>
+			<div class="methodtext">Infrastructure sharing income.</div>
+			<div>ExpensesType is additionally available via AICompany.</div>
+		</div>
+	</div>
+
+	<h3>Inflation: GSInflation Class and AIInflation Class</h3>
+	<div class="indent">
+		<h4>Static Public Member Functions:</h4>
+		<div class="indent">
+			<div class="code">static int64 GetPriceFactor ()</div>
+			<div class="methodtext">Get the inflation factor for prices.</div>
+			<div class="methodtext">Returns the inflation factor as a fixed point value (16 bits).</div>
+		</div>
+		<div class="indent">
+			<div class="code">static int64 GetPaymentFactor ()</div>
+			<div class="methodtext">Get the inflation factor for payments.</div>
+			<div class="methodtext">Returns the inflation factor as a fixed point value (16 bits).</div>
+		</div>
+		<div class="indent">
+			<div class="code">static bool SetPriceFactor (int64 factor)</div>
+			<div class="methodtext">Set the inflation factor for prices (GS only).</div>
+			<div class="methodtext">The inflation factor is a fixed point value (16 bits).</div>
+		</div>
+		<div class="indent">
+			<div class="code">static bool SetPaymentFactor (int64 factor)</div>
+			<div class="methodtext">Set the inflation factor for payments (GS only).</div>
+			<div class="methodtext">The inflation factor is a fixed point value (16 bits).</div>
+		</div>
+	</div>
 </body>
 </html>

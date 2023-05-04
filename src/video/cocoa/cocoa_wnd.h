@@ -13,7 +13,7 @@
 #import <Cocoa/Cocoa.h>
 
 #ifdef MAC_OS_X_VERSION_10_12_2
-//#	define HAVE_TOUCHBAR_SUPPORT
+#	define HAVE_TOUCHBAR_SUPPORT
 #endif
 
 class VideoDriver_Cocoa;

@@ -243,7 +243,7 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 		/* This means the server closed the connection. Emergency save is
 		 * already created if this was appropriate during handling of the
 		 * disconnect. */
-		this->SendPackets();
+		this->SendPackets(true);
 		this->CloseConnection(res);
 	} else {
 		/* This means we as client made a boo-boo. */
@@ -252,12 +252,15 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 		/* Close connection before we make an emergency save, as the save can
 		 * take a bit of time; better that the server doesn't stall while we
 		 * are doing the save, and already disconnects us. */
-		this->SendPackets();
+		this->SendPackets(true);
 		this->CloseConnection(res);
 		ClientNetworkEmergencySave();
 	}
 
-	_switch_mode = SM_MENU;
+	DeleteNetworkClientWindows();
+	DeleteWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
+
+	if (_game_mode != GM_MENU) _switch_mode = SM_MENU;
 	_networking = false;
 }
 
@@ -298,7 +301,6 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 
 	NetworkExecuteLocalCommandQueue();
 
-	extern void StateGameLoop();
 	StateGameLoop();
 
 	/* Check if we are in sync! */
@@ -323,15 +325,21 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 				DEBUG(net, 0, "Sync error detected!");
 
 				std::string desync_log;
+				DesyncDeferredSaveInfo deferred_save;
 				info.log_file = &(my_client->desync_log_file);
+				info.defer_savegame_write = &deferred_save;
 				CrashLog::DesyncCrashLog(nullptr, &desync_log, info);
 				my_client->SendDesyncLog(desync_log);
+				my_client->SendDesyncSyncData();
 				my_client->ClientError(NETWORK_RECV_STATUS_DESYNC);
+				CrashLog::WriteDesyncSavegame(desync_log.c_str(), deferred_save.name_buffer.c_str());
 				return false;
 			}
 			_last_sync_date = _date;
 			_last_sync_date_fract = _date_fract;
 			_last_sync_tick_skip_counter = _tick_skip_counter;
+			_last_sync_frame_counter = _sync_frame;
+			_network_client_sync_records.clear();
 
 			/* If this is the first time we have a sync-frame, we
 			 *   need to let the server know that we are ready and at the same
@@ -346,6 +354,10 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 			DEBUG(net, 1, "Missed frame for sync-test: %d / %d", _sync_frame, _frame_counter);
 			_sync_frame = 0;
 		}
+	}
+
+	if (_network_client_sync_records.size() <= 256) {
+		_network_client_sync_records.push_back({ _frame_counter, _random.state[0], _state_checksum.state });
 	}
 
 	return true;
@@ -565,6 +577,22 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncMessage(const char *
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
+/** Send an error-packet over the network */
+NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncSyncData()
+{
+	if (_network_client_sync_records.empty()) return NETWORK_RECV_STATUS_OKAY;
+
+	Packet *p = new Packet(PACKET_CLIENT_DESYNC_SYNC_DATA, SHRT_MAX);
+	p->Send_uint32(_network_client_sync_records[0].frame);
+	p->Send_uint32((uint)_network_client_sync_records.size());
+	for (uint i = 0; i < (uint)_network_client_sync_records.size(); i++) {
+		p->Send_uint32(_network_client_sync_records[i].seed_1);
+		p->Send_uint64(_network_client_sync_records[i].state_checksum);
+	}
+	my_client->SendPacket(p);
+	return NETWORK_RECV_STATUS_OKAY;
+}
+
 /**
  * Tell the server that we like to change the password of the company.
  * @param password The new password.
@@ -645,13 +673,13 @@ bool ClientNetworkGameSocketHandler::IsConnected()
  *   DEF_CLIENT_RECEIVE_COMMAND has parameter: Packet *p
  ************/
 
-extern bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileType dft, GameMode newgm, Subdirectory subdir, struct LoadFilter *lf = nullptr);
+extern bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileType dft, GameMode newgm, Subdirectory subdir,
+		struct LoadFilter *lf = nullptr, std::string *error_detail = nullptr);
 
 NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_FULL(Packet *p)
 {
 	/* We try to join a server which is full */
 	ShowErrorMessage(STR_NETWORK_ERROR_SERVER_FULL, INVALID_STRING_ID, WL_CRITICAL);
-	DeleteWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
 
 	return NETWORK_RECV_STATUS_SERVER_FULL;
 }
@@ -660,7 +688,6 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_BANNED(Packet *
 {
 	/* We try to join a server where we are banned */
 	ShowErrorMessage(STR_NETWORK_ERROR_SERVER_BANNED, INVALID_STRING_ID, WL_CRITICAL);
-	DeleteWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
 
 	return NETWORK_RECV_STATUS_SERVER_BANNED;
 }
@@ -766,8 +793,6 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_ERROR(Packet *p
 
 	/* Perform an emergency save if we had already entered the game */
 	if (this->status == STATUS_ACTIVE) ClientNetworkEmergencySave();
-
-	DeleteWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
 
 	return NETWORK_RECV_STATUS_SERVER_ERROR;
 }
@@ -940,14 +965,19 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_MAP_DONE(Packet
 
 	/* The map is done downloading, load it */
 	ClearErrorMessages();
-	bool load_success = SafeLoad({}, SLO_LOAD, DFT_GAME_FILE, GM_NORMAL, NO_DIRECTORY, lf);
+	std::string error_detail;
+	bool load_success = SafeLoad({}, SLO_LOAD, DFT_GAME_FILE, GM_NORMAL, NO_DIRECTORY, lf, &error_detail);
 
 	/* Long savegame loads shouldn't affect the lag calculation! */
 	this->last_packet = std::chrono::steady_clock::now();
 
 	if (!load_success) {
-		DeleteWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
-		ShowErrorMessage(STR_NETWORK_ERROR_SAVEGAMEERROR, INVALID_STRING_ID, WL_CRITICAL);
+		StringID detail = INVALID_STRING_ID;
+		if (!error_detail.empty()) {
+			detail = STR_JUST_RAW_STRING;
+			SetDParamStr(0, error_detail.c_str());
+		}
+		ShowErrorMessage(STR_NETWORK_ERROR_SAVEGAMEERROR, detail, WL_CRITICAL);
 		return NETWORK_RECV_STATUS_SAVEGAME;
 	}
 	/* If the savegame has successfully loaded, ALL windows have been removed,
@@ -968,7 +998,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_MAP_DONE(Packet
 			 * the server will give us a client-id and let us in */
 			_network_join_status = NETWORK_JOIN_STATUS_REGISTERING;
 			ShowJoinStatusWindow();
-			NetworkSendCommand(0, CCA_NEW, 0, 0, CMD_COMPANY_CTRL, nullptr, nullptr, _local_company, 0);
+			NetworkSendCommand(0, CCA_NEW, 0, 0, CMD_COMPANY_CTRL, nullptr, nullptr, _local_company, nullptr);
 		}
 	} else {
 		/* take control over an existing company */
@@ -1264,6 +1294,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_CONFIG_UPDATE(P
 
 	_network_server_max_companies = p->Recv_uint8();
 	_network_server_name = p->Recv_string(NETWORK_NAME_LENGTH);
+	SetWindowClassesDirty(WC_CLIENT_LIST);
 
 	return NETWORK_RECV_STATUS_OKAY;
 }
@@ -1272,6 +1303,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_COMPANY_UPDATE(
 {
 	if (this->status < STATUS_ACTIVE) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 
+	static_assert(sizeof(_network_company_passworded) <= sizeof(uint16));
 	_network_company_passworded = p->Recv_uint16();
 	SetWindowClassesDirty(WC_COMPANY);
 
@@ -1524,10 +1556,19 @@ bool NetworkClientPreferTeamChat(const NetworkClientInfo *cio)
 }
 
 /**
+ * Get the maximum number of companies that are allowed by the server.
+ * @return The number of companies allowed.
+ */
+uint NetworkMaxCompaniesAllowed()
+{
+	return _network_server ? _settings_client.network.max_companies : _network_server_max_companies;
+}
+
+/**
  * Check if max_companies has been reached on the server (local check only).
  * @return true if the max value has been reached or exceeded, false otherwise.
  */
 bool NetworkMaxCompaniesReached()
 {
-	return Company::GetNumItems() >= (_network_server ? _settings_client.network.max_companies : _network_server_max_companies);
+	return Company::GetNumItems() >= NetworkMaxCompaniesAllowed();
 }

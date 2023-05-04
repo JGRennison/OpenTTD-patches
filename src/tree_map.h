@@ -72,7 +72,7 @@ enum TreeGround {
  */
 static inline TreeType GetTreeType(TileIndex t)
 {
-	assert_tile(IsTileType(t, MP_TREES), t);
+	dbg_assert_tile(IsTileType(t, MP_TREES), t);
 	return (TreeType)_m[t].m3;
 }
 
@@ -87,7 +87,7 @@ static inline TreeType GetTreeType(TileIndex t)
  */
 static inline TreeGround GetTreeGround(TileIndex t)
 {
-	assert_tile(IsTileType(t, MP_TREES), t);
+	dbg_assert_tile(IsTileType(t, MP_TREES), t);
 	return (TreeGround)GB(_m[t].m2, 6, 3);
 }
 
@@ -112,7 +112,7 @@ static inline TreeGround GetTreeGround(TileIndex t)
  */
 static inline uint GetTreeDensity(TileIndex t)
 {
-	assert_tile(IsTileType(t, MP_TREES), t);
+	dbg_assert_tile(IsTileType(t, MP_TREES), t);
 	return GB(_m[t].m2, 4, 2);
 }
 
@@ -129,7 +129,7 @@ static inline uint GetTreeDensity(TileIndex t)
  */
 static inline void SetTreeGroundDensity(TileIndex t, TreeGround g, uint d)
 {
-	assert_tile(IsTileType(t, MP_TREES), t); // XXX incomplete
+	dbg_assert_tile(IsTileType(t, MP_TREES), t); // XXX incomplete
 	SB(_m[t].m2, 4, 2, d);
 	SB(_m[t].m2, 6, 3, g);
 	SetWaterClass(t, g == TREE_GROUND_SHORE ? WATER_CLASS_SEA : WATER_CLASS_INVALID);
@@ -148,7 +148,7 @@ static inline void SetTreeGroundDensity(TileIndex t, TreeGround g, uint d)
  */
 static inline uint GetTreeCount(TileIndex t)
 {
-	assert_tile(IsTileType(t, MP_TREES), t);
+	dbg_assert_tile(IsTileType(t, MP_TREES), t);
 	return GB(_m[t].m5, 6, 2) + 1;
 }
 
@@ -165,7 +165,7 @@ static inline uint GetTreeCount(TileIndex t)
  */
 static inline void AddTreeCount(TileIndex t, int c)
 {
-	assert_tile(IsTileType(t, MP_TREES), t); // XXX incomplete
+	dbg_assert_tile(IsTileType(t, MP_TREES), t); // XXX incomplete
 	_m[t].m5 += ((uint) c) << 6;
 }
 
@@ -180,7 +180,7 @@ static inline void AddTreeCount(TileIndex t, int c)
  */
 static inline uint GetTreeGrowth(TileIndex t)
 {
-	assert_tile(IsTileType(t, MP_TREES), t);
+	dbg_assert_tile(IsTileType(t, MP_TREES), t);
 	return GB(_m[t].m5, 0, 3);
 }
 
@@ -195,7 +195,7 @@ static inline uint GetTreeGrowth(TileIndex t)
  */
 static inline void AddTreeGrowth(TileIndex t, int a)
 {
-	assert_tile(IsTileType(t, MP_TREES), t); // XXX incomplete
+	dbg_assert_tile(IsTileType(t, MP_TREES), t); // XXX incomplete
 	_m[t].m5 += a;
 }
 
@@ -211,52 +211,20 @@ static inline void AddTreeGrowth(TileIndex t, int a)
  */
 static inline void SetTreeGrowth(TileIndex t, uint g)
 {
-	assert_tile(IsTileType(t, MP_TREES), t); // XXX incomplete
+	dbg_assert_tile(IsTileType(t, MP_TREES), t); // XXX incomplete
 	SB(_m[t].m5, 0, 3, g);
 }
 
 /**
- * Get the tick counter of a tree tile.
+ * Clear the old tick counter for a tree-tile
  *
- * Returns the saved tick counter of a given tile.
- *
- * @param t The tile to get the counter value from
+ * @param t The tile to clear the old tick counter
  * @pre Tile must be of type MP_TREES
  */
-static inline uint GetTreeCounter(TileIndex t)
+static inline void ClearOldTreeCounter(TileIndex t)
 {
-	assert_tile(IsTileType(t, MP_TREES), t);
-	return GB(_m[t].m2, 0, 4);
-}
-
-/**
- * Add a value on the tick counter of a tree-tile
- *
- * This function adds a value on the tick counter of a tree-tile.
- *
- * @param t The tile to add the value on
- * @param a The value to add on the tick counter
- * @pre Tile must be of type MP_TREES
- */
-static inline void AddTreeCounter(TileIndex t, int a)
-{
-	assert_tile(IsTileType(t, MP_TREES), t); // XXX incomplete
-	_m[t].m2 += a;
-}
-
-/**
- * Set the tick counter for a tree-tile
- *
- * This function sets directly the tick counter for a tree-tile.
- *
- * @param t The tile to set the tick counter
- * @param c The new tick counter value
- * @pre Tile must be of type MP_TREES
- */
-static inline void SetTreeCounter(TileIndex t, uint c)
-{
-	assert_tile(IsTileType(t, MP_TREES), t); // XXX incomplete
-	SB(_m[t].m2, 0, 4, c);
+	dbg_assert_tile(IsTileType(t, MP_TREES), t);
+	SB(_m[t].m2, 0, 4, 0);
 }
 
 /**

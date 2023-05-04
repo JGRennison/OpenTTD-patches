@@ -16,7 +16,7 @@
 #include "script_config.hpp"
 
 /** The maximum number of operations for saving or loading the data of a script. */
-static const int MAX_SL_OPS             = 100000;
+static const int MAX_SL_OPS             = 2000000;
 /** The maximum number of operations for initial start of a script. */
 static const int MAX_CONSTRUCTOR_OPS    = 100000;
 /** Number of operations to create an instance of a script. */
@@ -163,5 +163,8 @@ private:
 
 	class ScriptScanner *scanner; ///< ScriptScanner object that was used to scan this script info.
 };
+
+void Script_CreateDummyInfo(HSQUIRRELVM vm, const char *type, const char *dir);
+void Script_CreateDummy(HSQUIRRELVM vm, StringID string, const char *type);
 
 #endif /* SCRIPT_INFO_HPP */

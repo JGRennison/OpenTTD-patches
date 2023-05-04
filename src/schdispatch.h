@@ -10,7 +10,7 @@
 #ifndef SCHDISPATCH_H
 #define SCHDISPATCH_H
 
-#include "date_type.h"
+#include "date_func.h"
 #include "vehicle_type.h"
 #include "settings_type.h"
 
@@ -25,7 +25,7 @@ void SchdispatchInvalidateWindows(const Vehicle *v);
  */
 inline DateTicksScaled SchdispatchConvertToScaledTick(Date date, uint16 full_date_fract)
 {
-    return ((DateTicksScaled)date * DAY_TICKS) * _settings_game.economy.day_length_factor + full_date_fract;
+    return DateToScaledDateTicks(date) + full_date_fract;
 }
 
 /**
@@ -36,9 +36,7 @@ inline DateTicksScaled SchdispatchConvertToScaledTick(Date date, uint16 full_dat
  */
 inline void SchdispatchConvertToFullDateFract(DateTicksScaled tick, Date* date, uint16* full_date_fract)
 {
-    const int full_date = _settings_game.economy.day_length_factor * DAY_TICKS;
-    *date = tick / full_date;
-    *full_date_fract = tick % full_date;
+    std::tie(*date, *full_date_fract) = ScaledDateTicksToDateAndFullSubTicks(tick);
 }
 
 #endif /* SCHDISPATCH_H */

@@ -154,8 +154,7 @@ struct SetDateWindow : Window {
 				break;
 			case WID_SD_SET_DATE:
 				if (this->callback != nullptr) {
-					this->callback(this, ConvertYMDToDate(this->date.year, this->date.month, this->date.day)
-							* DAY_TICKS * _settings_game.economy.day_length_factor);
+					this->callback(this, DateToScaledDateTicks(ConvertYMDToDate(this->date.year, this->date.month, this->date.day)));
 				}
 				delete this;
 				break;
@@ -372,8 +371,7 @@ void ShowSetDateWindow(Window *parent, int window_number, DateTicksScaled initia
 	DeleteWindowByClass(WC_SET_DATE);
 
 	if (!_settings_time.time_in_minutes) {
-		new SetDateWindow(&_set_date_desc, window_number, parent, initial_date / (DAY_TICKS * _settings_game.economy.day_length_factor),
-				min_year, max_year, callback, button_text, button_tooltip);
+		new SetDateWindow(&_set_date_desc, window_number, parent, ScaledDateTicksToDate(initial_date), min_year, max_year, callback, button_text, button_tooltip);
 	} else {
 		new SetMinutesWindow(&_set_minutes_desc, window_number, parent,
 				initial_date + (_settings_game.economy.day_length_factor * (_settings_time.clock_offset * _settings_time.ticks_per_minute)),

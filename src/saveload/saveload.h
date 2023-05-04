@@ -14,6 +14,7 @@
 #include "../fileio_type.h"
 #include "../fios.h"
 #include "../strings_type.h"
+#include "../scope.h"
 
 #include <stdarg.h>
 #include <vector>
@@ -55,6 +56,7 @@ enum SaveModeFlags : byte {
 	SMF_NONE             = 0,
 	SMF_NET_SERVER       = 1 << 0, ///< Network server save
 	SMF_ZSTD_OK          = 1 << 1, ///< Zstd OK
+	SMF_SCENARIO         = 1 << 2, ///< Scenario save
 };
 DECLARE_ENUM_AS_BIT_SET(SaveModeFlags);
 
@@ -73,9 +75,24 @@ void DoAutoOrNetsave(FiosNumberedSaveName &counter, bool threaded);
 SaveOrLoadResult SaveWithFilter(struct SaveFilter *writer, bool threaded, SaveModeFlags flags);
 SaveOrLoadResult LoadWithFilter(struct LoadFilter *reader);
 bool IsNetworkServerSave();
+bool IsScenarioSave();
 
 typedef void ChunkSaveLoadProc();
 typedef void AutolengthProc(void *arg);
+
+void SlUnreachablePlaceholder();
+
+enum ChunkSaveLoadSpecialOp {
+	CSLSO_PRE_LOAD,
+	CSLSO_PRE_LOADCHECK,
+	CSLSO_SHOULD_SAVE_CHUNK,
+};
+enum ChunkSaveLoadSpecialOpResult {
+	CSLSOR_NONE,
+	CSLSOR_LOAD_CHUNK_CONSUMED,
+	CSLSOR_DONT_SAVE_CHUNK,
+};
+typedef ChunkSaveLoadSpecialOpResult ChunkSaveLoadSpecialProc(uint32, ChunkSaveLoadSpecialOp);
 
 /** Type of a chunk. */
 enum ChunkType {
@@ -83,6 +100,8 @@ enum ChunkType {
 	CH_ARRAY = 1,
 	CH_SPARSE_ARRAY = 2,
 	CH_EXT_HDR      = 15, ///< Extended chunk header
+
+	CH_UPSTREAM_SAVE = 0x80,
 };
 
 /** Handlers and description of chunk. */
@@ -93,7 +112,63 @@ struct ChunkHandler {
 	ChunkSaveLoadProc *ptrs_proc;       ///< Manipulate pointers in the chunk.
 	ChunkSaveLoadProc *load_check_proc; ///< Load procedure for game preview.
 	ChunkType type;                     ///< Type of the chunk. @see ChunkType
+	ChunkSaveLoadSpecialProc *special_proc = nullptr;
 };
+
+template <typename F>
+void SlExecWithSlVersion(SaveLoadVersion use_version, F proc)
+{
+	extern SaveLoadVersion _sl_version;
+	SaveLoadVersion old_ver = _sl_version;
+	_sl_version = use_version;
+	auto guard = scope_guard([&]() {
+		_sl_version = old_ver;
+	});
+	proc();
+}
+
+namespace upstream_sl {
+	template <uint32 id, typename F>
+	ChunkHandler MakeUpstreamChunkHandler()
+	{
+		extern void SlLoadChunkByID(uint32);
+		extern void SlLoadCheckChunkByID(uint32);
+		extern void SlFixPointerChunkByID(uint32);
+
+		ChunkHandler ch = {
+			id,
+			nullptr,
+			SlUnreachablePlaceholder,
+			[]() {
+				SlExecWithSlVersion(F::GetLoadVersion(), []() {
+					SlFixPointerChunkByID(id);
+				});
+			},
+			SlUnreachablePlaceholder,
+			CH_UPSTREAM_SAVE
+		};
+		ch.special_proc = [](uint32 chunk_id, ChunkSaveLoadSpecialOp op) -> ChunkSaveLoadSpecialOpResult {
+			assert(id == chunk_id);
+			switch (op) {
+				case CSLSO_PRE_LOAD:
+					SlExecWithSlVersion(F::GetLoadVersion(), []() {
+						SlLoadChunkByID(id);
+					});
+					return CSLSOR_LOAD_CHUNK_CONSUMED;
+				case CSLSO_PRE_LOADCHECK:
+					SlExecWithSlVersion(F::GetLoadVersion(), []() {
+						SlLoadCheckChunkByID(id);
+					});
+					return CSLSOR_LOAD_CHUNK_CONSUMED;
+				default:
+					return CSLSOR_NONE;
+			}
+		};
+		return ch;
+	}
+}
+
+using upstream_sl::MakeUpstreamChunkHandler;
 
 struct NullStruct {
 	byte null;
@@ -460,6 +535,17 @@ DECLARE_ENUM_AS_BIT_SET(SaveLoadChunkExtHeaderFlags)
 #define SLEG_CONDVEC(variable, type, from, to) SLEG_CONDVEC_X(variable, type, from, to, SlXvFeatureTest())
 
 /**
+ * Storage of a variable vector in some savegame versions.
+ * @param variable Name of the global variable.
+ * @param type     Storage of the data in memory and in the savegame.
+ * @param from     First savegame version that has the list.
+ * @param to       Last savegame version that has the list.
+ * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
+ */
+#define SLEG_CONDVARVEC_X(variable, type, from, to, extver) SLEG_GENERAL_X(SL_VARVEC, variable, type, 0, from, to, extver)
+#define SLEG_CONDVARVEC(variable, type, from, to) SLEG_CONDVARVEC_X(variable, type, from, to, SlXvFeatureTest())
+
+/**
  * Storage of a global variable in every savegame version.
  * @param variable Name of the global variable.
  * @param type     Storage of the data in memory and in the savegame.
@@ -560,7 +646,7 @@ static inline bool IsSavegameVersionUntil(SaveLoadVersion major)
 static inline bool SlIsObjectCurrentlyValid(SaveLoadVersion version_from, SaveLoadVersion version_to, SlXvFeatureTest ext_feature_test)
 {
 	extern const SaveLoadVersion SAVEGAME_VERSION;
-	if (!ext_feature_test.IsFeaturePresent(SAVEGAME_VERSION, version_from, version_to)) return false;
+	if (!ext_feature_test.IsFeaturePresent(_sl_xv_feature_static_versions, SAVEGAME_VERSION, version_from, version_to)) return false;
 
 	return true;
 }
@@ -629,11 +715,31 @@ int SlIterateArray();
 
 void SlAutolength(AutolengthProc *proc, void *arg);
 std::vector<uint8> SlSaveToVector(AutolengthProc *proc, void *arg);
-void SlLoadFromBuffer(const byte *buffer, size_t length, AutolengthProc *proc, void *arg);
 size_t SlGetFieldLength();
 void SlSetLength(size_t length);
 size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld);
 size_t SlCalcObjLength(const void *object, const SaveLoadTable &slt);
+
+struct SlLoadFromBufferState {
+	size_t old_obj_len;
+	byte *old_bufp;
+	byte *old_bufe;
+};
+
+/**
+ * Run proc, loading exactly length bytes from the contents of buffer
+ * @param proc The callback procedure that is called
+ */
+template <typename F>
+void SlLoadFromBuffer(const byte *buffer, size_t length, F proc)
+{
+	extern SlLoadFromBufferState SlLoadFromBufferSetup(const byte *buffer, size_t length);
+	extern void SlLoadFromBufferRestore(const SlLoadFromBufferState &state, const byte *buffer, size_t length);
+
+	SlLoadFromBufferState state = SlLoadFromBufferSetup(buffer, length);
+	proc();
+	SlLoadFromBufferRestore(state, buffer, length);
+}
 
 void SlGlobList(const SaveLoadTable &slt);
 void SlArray(void *array, size_t length, VarType conv);
@@ -651,6 +757,8 @@ bool SaveloadCrashWithMissingNewGRFs();
 
 void SlResetVENC();
 void SlProcessVENC();
+
+void SlResetTNNC();
 
 extern std::string _savegame_format;
 extern bool _do_autosave;

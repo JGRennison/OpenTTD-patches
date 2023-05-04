@@ -49,6 +49,13 @@ struct CompanyInfrastructure {
 	char *Dump(char *buffer, const char *last) const;
 };
 
+enum CompanyBankruptcyFlags : byte {
+	CBRF_NONE      =   0x0,
+	CBRF_SALE      =   0x1, ///< the company has been marked for sale
+	CBRF_SALE_ONLY =   0x2, ///< the company has been marked for sale without being in a bankruptcy state first
+};
+DECLARE_ENUM_AS_BIT_SET(CompanyBankruptcyFlags)
+
 typedef Pool<Company, CompanyID, 1, MAX_COMPANIES> CompanyPool;
 extern CompanyPool _company_pool;
 
@@ -82,6 +89,7 @@ struct CompanyProperties {
 
 	byte months_of_bankruptcy;       ///< Number of months that the company is unable to pay its debts
 	CompanyID bankrupt_last_asked;   ///< Which company was most recently asked about buying it?
+	CompanyBankruptcyFlags bankrupt_flags; ///< bankruptcy flags
 	CompanyMask bankrupt_asked;      ///< which companies were asked about buying it?
 	int16 bankrupt_timeout;          ///< If bigger than \c 0, amount of time to wait for an answer on an offer to buy this company.
 	Money bankrupt_value;
@@ -113,7 +121,7 @@ struct CompanyProperties {
 		: name_2(0), name_1(0), president_name_1(0), president_name_2(0),
 		  face(0), money(0), money_fraction(0), current_loan(0), colour(0), block_preview(0),
 		  location_of_HQ(0), last_build_coordinate(0), share_owners(), inaugurated_year(0),
-		  months_of_bankruptcy(0), bankrupt_last_asked(INVALID_COMPANY), bankrupt_asked(0), bankrupt_timeout(0), bankrupt_value(0),
+		  months_of_bankruptcy(0), bankrupt_last_asked(INVALID_COMPANY), bankrupt_flags(CBRF_NONE), bankrupt_asked(0), bankrupt_timeout(0), bankrupt_value(0),
 		  terraform_limit(0), clear_limit(0), tree_limit(0), purchase_land_limit(0), build_object_limit(0), is_ai(false), engine_renew_list(nullptr) {}
 };
 
@@ -171,6 +179,7 @@ struct Company : CompanyPool::PoolItem<&_company_pool>, CompanyProperties {
 };
 
 Money CalculateCompanyValue(const Company *c, bool including_loan = true);
+Money CalculateCompanyValueExcludingShares(const Company *c, bool including_loan = true);
 
 extern uint _next_competitor_start;
 extern uint _cur_company_tick_index;

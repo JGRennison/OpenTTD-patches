@@ -39,9 +39,7 @@
  * The cost budget for an individual call to this method is given by U / S.
  * The last scheduled job may exceed the cost budget.
  *
- * For jobs where N <= 1600, the nominal duration of an individual job is D = N / 40
- * For jobs where N > 1600, the nominal duration of an individual job is D = 40 * C / C(1600)
- * Overall D(N) is linear up to N=1600, then ~N^2 log N
+ * The nominal duration of an individual job is D = N / 75
  *
  * The purpose of this algorithm is so that overall responsiveness is not hindered by large numbers of small/cheap
  * jobs which would previously need to be cycled through individually, but equally large/slow jobs have an extended
@@ -80,7 +78,7 @@ void LinkGraphSchedule::SpawnNext()
 		uint64 cost = lg->CalculateCostEstimate();
 		used_budget += cost;
 		if (LinkGraphJob::CanAllocateItem()) {
-			uint duration_multiplier = lg->Size() <= 1600 ? CeilDivT<uint64_t>(lg->Size(), 40) : CeilDivT<uint64_t>(40 * cost, 108993087);
+			uint duration_multiplier = CeilDivT<uint64_t>(lg->Size(), 75);
 			std::unique_ptr<LinkGraphJob> job(new LinkGraphJob(*lg, duration_multiplier));
 			jobs_to_execute.emplace_back(job.get(), cost);
 			if (this->running.empty() || job->JoinDateTicks() >= this->running.back()->JoinDateTicks()) {

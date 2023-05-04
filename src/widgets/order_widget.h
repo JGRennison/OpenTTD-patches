@@ -20,6 +20,8 @@ enum OrderWidgets {
 	WID_O_SCROLLBAR,                 ///< Order list scrollbar.
 	WID_O_SKIP,                      ///< Skip current order.
 	WID_O_MANAGE_LIST,               ///< Manage order list.
+	WID_O_MGMT_BTN,                  ///< Management button.
+	WID_O_MGMT_LIST_BTN,             ///< Management list button.
 	WID_O_DELETE,                    ///< Delete selected order.
 	WID_O_STOP_SHARING,              ///< Stop sharing orders.
 	WID_O_NON_STOP,                  ///< Goto non-stop to destination.
@@ -40,11 +42,18 @@ enum OrderWidgets {
 	WID_O_COND_COUNTER,              ///< Choose condition counter.
 	WID_O_COND_TIME_DATE,            ///< Choose time/date value.
 	WID_O_COND_TIMETABLE,            ///< Choose timetable value.
+	WID_O_COND_SCHED_SELECT,         ///< Choose scheduled dispatch schedule.
 	WID_O_COND_AUX_VIA,              ///< Condition via button.
+	WID_O_COND_SCHED_TEST,           ///< Choose scheduled dispatch test.
 	WID_O_RELEASE_SLOT,              ///< Choose slot to release.
+	WID_O_COUNTER_OP,                ///< Choose counter operation.
+	WID_O_CHANGE_COUNTER,            ///< Choose counter to change.
+	WID_O_COUNTER_VALUE,             ///< Choose counter value.
+	WID_O_TEXT_LABEL,                ///< Choose text label.
 	WID_O_SEL_COND_VALUE,            ///< Widget for conditional value or conditional cargo type.
 	WID_O_SEL_COND_AUX,              ///< Widget for auxiliary conditional cargo type.
 	WID_O_SEL_COND_AUX2,             ///< Widget for auxiliary conditional via button.
+	WID_O_SEL_MGMT,                  ///< Widget for management buttons.
 	WID_O_SEL_TOP_LEFT,              ///< #NWID_SELECTION widget for left part of the top row of the 'your train' order window.
 	WID_O_SEL_TOP_MIDDLE,            ///< #NWID_SELECTION widget for middle part of the top row of the 'your train' order window.
 	WID_O_SEL_TOP_RIGHT,             ///< #NWID_SELECTION widget for right part of the top row of the 'your train' order window.
@@ -58,6 +67,7 @@ enum OrderWidgets {
 	WID_O_SEL_OCCUPANCY,             ///< #NWID_SELECTION widget for the occupancy list panel.
 	WID_O_OCCUPANCY_LIST,            ///< Occupancy list panel.
 	WID_O_OCCUPANCY_TOGGLE,          ///< Toggle display of occupancy measures.
+	WID_O_TOGGLE_SIZE,               ///< Toggle show order management button.
 };
 
 /** Widgets of the #CargoTypeOrdersWindow class. */

@@ -37,6 +37,9 @@
 #	include <execinfo.h>
 #if defined(WITH_DL)
 #   include <dlfcn.h>
+#if defined(WITH_DL2)
+#	include <link.h>
+#endif
 #endif
 #if defined(WITH_DEMANGLE)
 #   include <cxxabi.h>
@@ -72,13 +75,66 @@ static void LogStacktraceSigSegvHandler(int  sig)
 }
 #endif
 
+static int GetTemporaryFD()
+{
+	char name[MAX_PATH];
+	extern std::string _personal_dir;
+	seprintf(name, lastof(name), "%sopenttd-tmp-XXXXXX", _personal_dir.c_str());
+	int fd = mkstemp(name);
+	if (fd != -1) {
+		/* Unlink file but leave fd open until finished with */
+		unlink(name);
+	}
+	return fd;
+}
+
+struct ExecReadNullHandler {
+	int fd[2] = { -1, -1 };
+
+	bool Init() {
+		this->fd[0] = open("/dev/null", O_RDWR);
+		if (this->fd[0] == -1) {
+			this->fd[0] = GetTemporaryFD();
+			if (this->fd[0] == -1) {
+				return false;
+			}
+			this->fd[1] = GetTemporaryFD();
+			if (this->fd[1] == -1) {
+				this->Close();
+				return false;
+			}
+		} else {
+			this->fd[1] = this->fd[0];
+		}
+		return true;
+	}
+
+	void Close() {
+		if (this->fd[0] != -1) close(this->fd[0]);
+		if (this->fd[1] != -1 && this->fd[0] != this->fd[1]) close(this->fd[1]);
+		this->fd[0] = -1;
+		this->fd[1] = -1;
+	}
+};
+
 static bool ExecReadStdout(const char *file, char *const *args, char *&buffer, const char *last)
 {
+	ExecReadNullHandler nulls;
+	if (!nulls.Init()) return false;
+
 	int pipefd[2];
-	if (pipe(pipefd) == -1) return false;
+	if (pipe(pipefd) == -1) {
+		nulls.Close();
+		return false;
+	}
 
 	int pid = fork();
-	if (pid < 0) return false;
+	if (pid < 0) {
+		nulls.Close();
+		close(pipefd[0]);
+		close(pipefd[1]);
+		return false;
+	}
 
 	if (pid == 0) {
 		/* child */
@@ -86,18 +142,17 @@ static bool ExecReadStdout(const char *file, char *const *args, char *&buffer, c
 		close(pipefd[0]); /* Close unused read end */
 		dup2(pipefd[1], STDOUT_FILENO);
 		close(pipefd[1]);
-		int null_fd = open("/dev/null", O_RDWR);
-		if (null_fd != -1) {
-			dup2(null_fd, STDERR_FILENO);
-			dup2(null_fd, STDIN_FILENO);
-		}
+		dup2(nulls.fd[0], STDERR_FILENO);
+		dup2(nulls.fd[1], STDIN_FILENO);
+		nulls.Close();
 
 		execvp(file, args);
-		exit(42);
+		_exit(42);
 	}
 
 	/* parent */
 
+	nulls.Close();
 	close(pipefd[1]); /* Close unused write end */
 
 	while (buffer < last) {
@@ -125,6 +180,69 @@ static bool ExecReadStdout(const char *file, char *const *args, char *&buffer, c
 		return true;
 	}
 }
+
+#if defined(WITH_DBG_GDB)
+static bool ExecReadStdoutThroughFile(const char *file, char *const *args, char *&buffer, const char *last)
+{
+	ExecReadNullHandler nulls;
+	if (!nulls.Init()) return false;
+
+	int fd = GetTemporaryFD();
+	if (fd == -1) {
+		nulls.Close();
+		return false;
+	}
+
+	int pid = fork();
+	if (pid < 0) {
+		nulls.Close();
+		close(fd);
+		return false;
+	}
+
+	if (pid == 0) {
+		/* child */
+
+		dup2(fd, STDOUT_FILENO);
+		close(fd);
+		dup2(nulls.fd[0], STDERR_FILENO);
+		dup2(nulls.fd[1], STDIN_FILENO);
+		nulls.Close();
+
+		execvp(file, args);
+		_exit(42);
+	}
+
+	/* parent */
+
+	nulls.Close();
+
+	int status;
+	int wait_ret = waitpid(pid, &status, 0);
+	if (wait_ret == -1 || !WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+		/* command did not appear to run successfully */
+		close(fd);
+		return false;
+	} else {
+		/* command executed successfully */
+		lseek(fd, 0, SEEK_SET);
+		while (buffer < last) {
+			ssize_t res = read(fd, buffer, last - buffer);
+			if (res < 0) {
+				if (errno == EINTR) continue;
+				break;
+			} else if (res == 0) {
+				break;
+			} else {
+				buffer += res;
+			}
+		}
+		buffer += seprintf(buffer, last, "\n");
+		close(fd);
+		return true;
+	}
+}
+#endif /* WITH_DBG_GDB */
 
 /**
  * Unix implementation for the crash logger.
@@ -355,7 +473,7 @@ class CrashLogUnix : public CrashLog {
 #endif
 
 		args.push_back(nullptr);
-		if (!ExecReadStdout("gdb", const_cast<char* const*>(&(args[0])), buffer, last)) {
+		if (!ExecReadStdoutThroughFile("gdb", const_cast<char* const*>(&(args[0])), buffer, last)) {
 			buffer = buffer_orig;
 		}
 #endif /* WITH_DBG_GDB */
@@ -420,11 +538,45 @@ class CrashLogUnix : public CrashLog {
 		for (int i = 0; i < trace_size; i++) {
 #if defined(WITH_DL)
 			Dl_info info;
+#if defined(WITH_DL2)
+			struct link_map *dl_lm = nullptr;
+			int dladdr_result = dladdr1(trace[i], &info, (void **)&dl_lm, RTLD_DL_LINKMAP);
+#else
 			int dladdr_result = dladdr(trace[i], &info);
+#endif /* WITH_DL2 */
 			const char *func_name = info.dli_sname;
 			void *func_addr = info.dli_saddr;
 			const char *file_name = nullptr;
 			unsigned int line_num = 0;
+			const int ptr_str_size = (2 + sizeof(void*) * 2);
+#if defined(WITH_DL2)
+			if (dladdr_result && info.dli_fname && dl_lm != nullptr) {
+				char *saved_buffer = buffer;
+				char addr_ptr_buffer[64];
+				/* subtract one to get the line before the return address, i.e. the function call line */
+				seprintf(addr_ptr_buffer, lastof(addr_ptr_buffer), PRINTF_SIZEX, (char *)trace[i] - (char *)dl_lm->l_addr - 1);
+				const char *args[] = {
+					"addr2line",
+					"-e",
+					info.dli_fname,
+					"-C",
+					"-i",
+					"-f",
+					"-p",
+					addr_ptr_buffer,
+					nullptr,
+				};
+				buffer += seprintf(buffer, last, " [%02i] %*p %-40s ", i, ptr_str_size, trace[i], info.dli_fname);
+				const char *buffer_start = buffer;
+				bool result = ExecReadStdout("addr2line", const_cast<char* const*>(args), buffer, last);
+				if (result && strstr(buffer_start, "??") == nullptr) {
+					while (buffer[-1] == '\n' && buffer[-2] == '\n') buffer--;
+					continue;
+				}
+				buffer = saved_buffer;
+				*buffer = 0;
+			}
+#endif /* WITH_DL2 */
 #if defined(WITH_BFD)
 			/* subtract one to get the line before the return address, i.e. the function call line */
 			sym_info_bfd bfd_info(reinterpret_cast<bfd_vma>(trace[i]) - reinterpret_cast<bfd_vma>(info.dli_fbase) - 1);
@@ -437,7 +589,6 @@ class CrashLogUnix : public CrashLog {
 			}
 #endif /* WITH_BFD */
 			bool ok = true;
-			const int ptr_str_size = (2 + sizeof(void*) * 2);
 			if (dladdr_result && func_name) {
 				int status = -1;
 				char *demangled = nullptr;
@@ -457,6 +608,29 @@ class CrashLogUnix : public CrashLog {
 			if (file_name != nullptr) {
 				buffer += seprintf(buffer, last, "%*s%s:%u\n", 7 + ptr_str_size, "", file_name, line_num);
 			}
+#if defined(WITH_BFD)
+			if (ok && bfd_info.found && bfd_info.abfd) {
+				uint iteration_limit = 32;
+				while (iteration_limit-- && bfd_find_inliner_info(bfd_info.abfd, &file_name, &func_name, &line_num)) {
+					if (func_name) {
+						int status = -1;
+						char *demangled = nullptr;
+#if defined(WITH_DEMANGLE)
+						demangled = abi::__cxa_demangle(func_name, nullptr, 0, &status);
+#endif /* WITH_DEMANGLE */
+						const char *name = (demangled != nullptr && status == 0) ? demangled : func_name;
+						buffer += seprintf(buffer, last, " [inlined] %*s %s\n", ptr_str_size + 36, "",
+								name);
+						free(demangled);
+					} else if (file_name) {
+						buffer += seprintf(buffer, last, " [inlined]\n");
+					}
+					if (file_name != nullptr) {
+						buffer += seprintf(buffer, last, "%*s%s:%u\n", 7 + ptr_str_size, "", file_name, line_num);
+					}
+				}
+			}
+#endif /* WITH_BFD */
 			if (ok) continue;
 #endif /* WITH_DL */
 			buffer += seprintf(buffer, last, " [%02i] %s\n", i, messages[i]);
@@ -557,7 +731,7 @@ public:
 };
 
 /** The signals we want our crash handler to handle. */
-static const int _signals_to_handle[] = { SIGSEGV, SIGABRT, SIGFPE, SIGBUS, SIGILL };
+static const int _signals_to_handle[] = { SIGSEGV, SIGABRT, SIGFPE, SIGBUS, SIGILL, SIGQUIT };
 
 /**
  * Entry point for the crash handler.

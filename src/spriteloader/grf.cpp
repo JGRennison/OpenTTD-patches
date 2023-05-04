@@ -17,6 +17,7 @@
 #include "../core/math_func.hpp"
 #include "../core/alloc_type.hpp"
 #include "../core/bitmath_func.hpp"
+#include "../spritecache.h"
 #include "grf.hpp"
 
 #include "../safeguards.h"
@@ -58,6 +59,15 @@ static bool WarnCorruptSprite(const SpriteFile &file, size_t file_pos, int line)
  */
 bool DecodeSingleSprite(SpriteLoader::Sprite *sprite, SpriteFile &file, size_t file_pos, SpriteType sprite_type, int64 num, byte type, ZoomLevel zoom_lvl, byte colour_fmt, byte container_format)
 {
+	/*
+	 * Original sprite height was max 255 pixels, with 4x extra zoom => 1020 pixels.
+	 * Original maximum width for sprites was 640 pixels, with 4x extra zoom => 2560 pixels.
+	 * Now up to 5 bytes per pixel => 1020 * 2560 * 5 => ~ 12.5 MiB.
+	 *
+	 * So, any sprite data more than 64 MiB is way larger that we would even expect; prevent allocating more memory!
+	 */
+	if (num < 0 || num > 64 * 1024 * 1024) return WarnCorruptSprite(file, file_pos, __LINE__);
+
 	std::unique_ptr<byte[]> dest_orig(new byte[num]);
 	byte *dest = dest_orig.get();
 	const int64 dest_size = num;
@@ -91,7 +101,7 @@ bool DecodeSingleSprite(SpriteLoader::Sprite *sprite, SpriteFile &file, size_t f
 
 	if (num != 0) return WarnCorruptSprite(file, file_pos, __LINE__);
 
-	sprite->AllocateData(zoom_lvl, sprite->width * sprite->height);
+	sprite->AllocateData(zoom_lvl, static_cast<size_t>(sprite->width) * sprite->height);
 
 	/* Convert colour depth to pixel size. */
 	int bpp = 0;
@@ -167,13 +177,14 @@ bool DecodeSingleSprite(SpriteLoader::Sprite *sprite, SpriteFile &file, size_t f
 			} while (!last_item);
 		}
 	} else {
-		if (dest_size < sprite->width * sprite->height * bpp) {
+		int64 sprite_size = static_cast<int64>(sprite->width) * sprite->height * bpp;
+		if (dest_size < sprite_size) {
 			return WarnCorruptSprite(file, file_pos, __LINE__);
 		}
 
-		if (dest_size > sprite->width * sprite->height * bpp) {
+		if (dest_size > sprite_size) {
 			static byte warning_level = 0;
-			DEBUG(sprite, warning_level, "Ignoring " OTTD_PRINTF64 " unused extra bytes from the sprite from %s at position %i", dest_size - sprite->width * sprite->height * bpp, file.GetSimplifiedFilename().c_str(), (int)file_pos);
+			DEBUG(sprite, warning_level, "Ignoring " OTTD_PRINTF64 " unused extra bytes from the sprite from %s at position %i", dest_size - sprite_size, file.GetSimplifiedFilename().c_str(), (int)file_pos);
 			warning_level = 6;
 		}
 
@@ -245,7 +256,7 @@ uint8 LoadSpriteV1(SpriteLoader::Sprite *sprite, SpriteFile &file, size_t file_p
 	return 0;
 }
 
-uint8 LoadSpriteV2(SpriteLoader::Sprite *sprite, SpriteFile &file, size_t file_pos, SpriteType sprite_type, bool load_32bpp, uint count)
+uint8 LoadSpriteV2(SpriteLoader::Sprite *sprite, SpriteFile &file, size_t file_pos, SpriteType sprite_type, bool load_32bpp, uint count, byte control_flags)
 {
 	static const ZoomLevel zoom_lvl_map[6] = {ZOOM_LVL_OUT_4X, ZOOM_LVL_NORMAL, ZOOM_LVL_OUT_2X, ZOOM_LVL_OUT_8X, ZOOM_LVL_OUT_16X, ZOOM_LVL_OUT_32X};
 
@@ -273,7 +284,20 @@ uint8 LoadSpriteV2(SpriteLoader::Sprite *sprite, SpriteFile &file, size_t file_p
 		bool is_wanted_zoom_lvl;
 
 		if (sprite_type != ST_MAPGEN) {
-			is_wanted_zoom_lvl = (zoom < lengthof(zoom_lvl_map) && zoom_lvl_map[zoom] >= _settings_client.gui.sprite_zoom_min);
+			if (zoom < lengthof(zoom_lvl_map)) {
+				is_wanted_zoom_lvl = true;
+				ZoomLevel zoom_min = sprite_type == ST_FONT ? ZOOM_LVL_NORMAL : _settings_client.gui.sprite_zoom_min;
+				if (zoom_min >= ZOOM_LVL_OUT_2X &&
+						HasBit(control_flags, load_32bpp ? SCCF_ALLOW_ZOOM_MIN_2X_32BPP : SCCF_ALLOW_ZOOM_MIN_2X_PAL) && zoom_lvl_map[zoom] < ZOOM_LVL_OUT_2X) {
+					is_wanted_zoom_lvl = false;
+				}
+				if (zoom_min >= ZOOM_LVL_OUT_4X &&
+						HasBit(control_flags, load_32bpp ? SCCF_ALLOW_ZOOM_MIN_1X_32BPP : SCCF_ALLOW_ZOOM_MIN_1X_PAL) && zoom_lvl_map[zoom] < ZOOM_LVL_OUT_4X) {
+					is_wanted_zoom_lvl = false;
+				}
+			} else {
+				is_wanted_zoom_lvl = false;
+			}
 		} else {
 			is_wanted_zoom_lvl = (zoom == 0);
 		}
@@ -332,10 +356,10 @@ uint8 LoadSpriteV2(SpriteLoader::Sprite *sprite, SpriteFile &file, size_t file_p
 	return loaded_sprites;
 }
 
-uint8 SpriteLoaderGrf::LoadSprite(SpriteLoader::Sprite *sprite, SpriteFile &file, size_t file_pos, SpriteType sprite_type, bool load_32bpp, uint count)
+uint8 SpriteLoaderGrf::LoadSprite(SpriteLoader::Sprite *sprite, SpriteFile &file, size_t file_pos, SpriteType sprite_type, bool load_32bpp, uint count, byte control_flags)
 {
 	if (this->container_ver >= 2) {
-		return LoadSpriteV2(sprite, file, file_pos, sprite_type, load_32bpp, count);
+		return LoadSpriteV2(sprite, file, file_pos, sprite_type, load_32bpp, count, control_flags);
 	} else {
 		return LoadSpriteV1(sprite, file, file_pos, sprite_type, load_32bpp);
 	}

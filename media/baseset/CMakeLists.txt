@@ -24,6 +24,8 @@ set(BASESET_OTHER_SOURCE_FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/tracerestrict.grf
         ${CMAKE_CURRENT_SOURCE_DIR}/trafficlights.grf
         ${CMAKE_CURRENT_SOURCE_DIR}/trafficsigns.grf
+        ${CMAKE_CURRENT_SOURCE_DIR}/misc_gui.grf
+        ${CMAKE_CURRENT_SOURCE_DIR}/road_waypoints.grf
 )
 
 if (UNIX AND NOT APPLE)

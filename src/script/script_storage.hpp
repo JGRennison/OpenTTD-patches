@@ -16,6 +16,7 @@
 #include "../group.h"
 #include "../goal_type.h"
 #include "../story_type.h"
+#include "../3rdparty/robin_hood/robin_hood.h"
 
 #include "table/strings.h"
 #include <vector>
@@ -41,6 +42,7 @@ private:
 
 	CommandCost costs;               ///< The costs the script is tracking.
 	Money last_cost;                 ///< The last cost of the command.
+	uint32 last_result;              ///< The last result data of the command.
 	uint last_error;                 ///< The last error of the command.
 	bool last_command_res;           ///< The last result of the command.
 
@@ -65,6 +67,8 @@ private:
 	void *event_data;                ///< Pointer to the event data storage.
 	void *log_data;                  ///< Pointer to the log data storage.
 
+	robin_hood::unordered_node_set<std::string> seen_unique_log_messages; ///< Messages which have already been logged once and don't need to be logged again
+
 public:
 	ScriptStorage() :
 		mode              (nullptr),
@@ -75,6 +79,7 @@ public:
 		allow_do_command  (true),
 		/* costs (can't be set) */
 		last_cost         (0),
+		last_result       (0),
 		last_error        (STR_NULL),
 		last_command_res  (true),
 		last_tile         (INVALID_TILE),

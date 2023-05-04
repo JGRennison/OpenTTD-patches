@@ -29,10 +29,11 @@
 YearMonthDay _cur_date_ymd; ///< Current date as YearMonthDay struct
 Date      _date;       ///< Current date in days (day counter)
 DateFract _date_fract; ///< Fractional part of the day.
-uint16 _tick_counter;  ///< Ever incrementing (and sometimes wrapping) tick counter for setting off various events
+uint64 _tick_counter;  ///< Ever incrementing tick counter for setting off various events
 uint8 _tick_skip_counter; ///< Counter for ticks, when only vehicles are moving and nothing else happens
-uint32 _scaled_tick_counter; ///< Tick counter in daylength-scaled ticks
+uint64 _scaled_tick_counter; ///< Tick counter in daylength-scaled ticks
 DateTicksScaled _scaled_date_ticks; ///< Date as ticks in daylength-scaled ticks
+DateTicksScaled _scaled_date_ticks_offset; ///< Offset to add when generating _scaled_date_ticks
 uint32    _quit_after_days;  ///< Quit after this many days of run time
 
 YearMonthDay _game_load_cur_date_ymd;
@@ -41,12 +42,48 @@ uint8 _game_load_tick_skip_counter;
 
 extern void ClearOutOfDateSignalSpeedRestrictions();
 
+void CheckScaledDateTicksWrap()
+{
+	DateTicksScaled tick_adjust = 0;
+	auto get_tick_adjust = [&](DateTicksScaled target) {
+		int32 rounding = _settings_time.time_in_minutes * 1440;
+		return target - (target % rounding);
+	};
+	if (_scaled_date_ticks >= ((int64)1 << 60)) {
+		tick_adjust = get_tick_adjust(_scaled_date_ticks);
+	} else if (_scaled_date_ticks <= -((int64)1 << 60)) {
+		tick_adjust = -get_tick_adjust(-_scaled_date_ticks);
+	} else {
+		return;
+	}
+
+	_scaled_date_ticks_offset -= tick_adjust;
+	_scaled_date_ticks -= tick_adjust;
+
+	extern void AdjustAllSignalSpeedRestrictionTickValues(DateTicksScaled delta);
+	AdjustAllSignalSpeedRestrictionTickValues(-tick_adjust);
+
+	extern void AdjustVehicleScaledTickBase(int64 delta);
+	AdjustVehicleScaledTickBase(-tick_adjust);
+}
+
+void RebaseScaledDateTicksBase()
+{
+	DateTicksScaled old_scaled_date_ticks = _scaled_date_ticks;
+	SetScaledTickVariables();
+	_scaled_date_ticks_offset += (old_scaled_date_ticks - _scaled_date_ticks);
+	SetScaledTickVariables();
+	assert(old_scaled_date_ticks == _scaled_date_ticks);
+
+	CheckScaledDateTicksWrap();
+}
+
 /**
  * Set the date.
  * @param date  New date
  * @param fract The number of ticks that have passed on this date.
  */
-void SetDate(Date date, DateFract fract)
+void SetDate(Date date, DateFract fract, bool preserve_scaled_ticks)
 {
 	assert(fract < DAY_TICKS);
 
@@ -56,14 +93,17 @@ void SetDate(Date date, DateFract fract)
 	_date_fract = fract;
 	ConvertDateToYMD(date, &ymd);
 	_cur_date_ymd = ymd;
-	SetScaledTickVariables();
+	if (preserve_scaled_ticks) {
+		RebaseScaledDateTicksBase();
+	} else {
+		SetScaledTickVariables();
+	}
 	UpdateCachedSnowLine();
 }
 
 void SetScaledTickVariables()
 {
-	_scaled_date_ticks = ((((DateTicksScaled)_date * DAY_TICKS) + _date_fract) * _settings_game.economy.day_length_factor) + _tick_skip_counter;
-	_scaled_tick_counter = (((uint32)_tick_counter) * _settings_game.economy.day_length_factor) + _tick_skip_counter;
+	_scaled_date_ticks = ((((DateTicksScaled)_date * DAY_TICKS) + _date_fract) * _settings_game.economy.day_length_factor) + _tick_skip_counter + _scaled_date_ticks_offset;
 }
 
 #define M(a, b) ((a << 5) | b)
@@ -215,6 +255,8 @@ static void OnNewYear()
 	VehiclesYearlyLoop();
 	TownsYearlyLoop();
 	InvalidateWindowClassesData(WC_BUILD_STATION);
+	InvalidateWindowClassesData(WC_BUS_STATION);
+	InvalidateWindowClassesData(WC_TRUCK_STATION);
 	if (_network_server) NetworkServerYearlyLoop();
 
 	if (_cur_date_ymd.year == _settings_client.gui.semaphore_build_before) ResetSignalVariant();
@@ -234,11 +276,14 @@ static void OnNewYear()
 		for (LinkGraph *lg : LinkGraph::Iterate()) lg->ShiftDates(-days_this_year);
 		ShiftOrderDates(-days_this_year);
 		ShiftVehicleDates(-days_this_year);
+		_scaled_date_ticks_offset += ((int64)days_this_year) * (DAY_TICKS * _settings_game.economy.day_length_factor);
 
 		/* Because the _date wraps here, and text-messages expire by game-days, we have to clean out
 		 *  all of them if the date is set back, else those messages will hang for ever */
 		NetworkInitChatMessage();
 	}
+
+	CheckScaledDateTicksWrap();
 
 	if (_settings_client.gui.auto_euro) CheckSwitchToEuro();
 	IConsoleCmdExec("exec scripts/on_newyear.scr 0");

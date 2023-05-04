@@ -34,7 +34,7 @@ class DynUniformArenaAllocator {
 		used_blocks.push_back(current_block);
 	}
 
-	public:
+public:
 	DynUniformArenaAllocator() = default;
 	DynUniformArenaAllocator(const DynUniformArenaAllocator &other) = delete;
 	DynUniformArenaAllocator& operator=(const DynUniformArenaAllocator &other) = delete;

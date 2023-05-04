@@ -26,6 +26,7 @@ void MoveWaypointsToBaseStations();
 SaveLoadTable GetBaseStationDescription();
 
 void AfterLoadVehicles(bool part_of_load);
+void AfterLoadVehiclesRemoveAnyFoundInvalid();
 void AfterLoadEngines();
 void FixupTrainLengths();
 void AfterLoadTemplateVehicles();

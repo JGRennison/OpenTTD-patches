@@ -8,35 +8,31 @@
 /** @file tbtr_template_vehicle_func.cpp Template-based train replacement: template vehicle functions. */
 
 #include "stdafx.h"
-#include "window_gui.h"
-#include "gfx_func.h"
-#include "window_func.h"
-#include "command_func.h"
-#include "vehicle_gui.h"
-#include "train.h"
-#include "strings_func.h"
-#include "vehicle_func.h"
-#include "core/geometry_type.hpp"
-#include "debug.h"
-#include "zoom_func.h"
-#include "core/backup_type.hpp"
-#include "core/random_func.hpp"
-
-#include "table/sprites.h"
-#include "table/strings.h"
-
-#include "cargoaction.h"
-#include "train.h"
-#include "company_func.h"
-#include "newgrf.h"
-#include "spritecache.h"
 #include "articulated_vehicles.h"
 #include "autoreplace_func.h"
-
+#include "cargoaction.h"
+#include "command_func.h"
+#include "company_func.h"
+#include "core/backup_type.hpp"
+#include "core/geometry_type.hpp"
+#include "core/random_func.hpp"
+#include "debug.h"
 #include "depot_base.h"
-
-#include "tbtr_template_vehicle.h"
+#include "gfx_func.h"
+#include "newgrf.h"
+#include "spritecache.h"
+#include "strings_func.h"
+#include "table/sprites.h"
+#include "table/strings.h"
 #include "tbtr_template_vehicle_func.h"
+#include "tbtr_template_vehicle.h"
+#include "train.h"
+#include "vehicle_func.h"
+#include "vehicle_gui.h"
+#include "window_func.h"
+#include "window_gui.h"
+#include "zoom_func.h"
+
 
 #include <map>
 #include <stdio.h>
@@ -44,48 +40,6 @@
 #include "safeguards.h"
 
 bool _template_vehicle_images_valid = false;
-
-#ifdef _DEBUG
-// debugging printing functions for convenience, usually called from gdb
-void tbtr_debug_pat()
-{
-	for (TemplateVehicle *tv : TemplateVehicle::Iterate()) {
-		if (tv->Prev()) continue;
-		tbtr_debug_ptv(tv);
-		printf("__________\n");
-	}
-}
-
-void tbtr_debug_pav()
-{
-	for (Train *t : Train::Iterate()) {
-		if (t->Previous()) continue;
-		tbtr_debug_pvt(t);
-		printf("__________\n");
-	}
-}
-
-void tbtr_debug_ptv(TemplateVehicle* tv)
-{
-	if (!tv) return;
-	while (tv->Next() ) {
-		printf("eid:%3d  st:%2d  tv:%p  next:%p  cargo: %d  cargo_sub: %d\n", tv->engine_type, tv->subtype, tv, tv->Next(), tv->cargo_type, tv->cargo_subtype);
-		tv = tv->Next();
-	}
-	printf("eid:%3d  st:%2d  tv:%p  next:%p  cargo: %d  cargo_sub: %d\n", tv->engine_type, tv->subtype, tv, tv->Next(),  tv->cargo_type, tv->cargo_subtype);
-}
-
-void tbtr_debug_pvt (const Train *printme)
-{
-	for (const Train *tmp = printme; tmp; tmp = tmp->Next()) {
-		if (tmp->index <= 0) {
-			printf("train has weird index: %d %d %p\n", tmp->index, tmp->engine_type, tmp);
-			return;
-		}
-		printf("eid:%3d  index:%2d  subtype:%2d  vehstat: %d  cargo_t: %d   cargo_sub: %d  ref:%p\n", tmp->engine_type, tmp->index, tmp->subtype, tmp->vehstatus, tmp->cargo_type, tmp->cargo_subtype, tmp);
-	}
-}
-#endif
 
 void BuildTemplateGuiList(GUITemplateList *list, Scrollbar *vscroll, Owner oid, RailType railtype)
 {
@@ -120,30 +74,27 @@ Money CalculateOverallTemplateDisplayRunningCost(const TemplateVehicle *tv)
 	return val;
 }
 
-void DrawTemplate(const TemplateVehicle *tv, int left, int right, int y)
+void DrawTemplate(const TemplateVehicle *tv, int left, int right, int y, int height)
 {
 	if (!tv) return;
 
-	DrawPixelInfo tmp_dpi, *old_dpi;
+	DrawPixelInfo tmp_dpi;
 	int max_width = right - left + 1;
-	int height = ScaleGUITrad(14);
-	int padding = ScaleGUITrad(1);
-	if (!FillDrawPixelInfo(&tmp_dpi, left, y - padding, max_width, height + (2 * padding))) return;
+	int veh_height = ScaleSpriteTrad(14);
+	int padding = height - veh_height;
+	if (!FillDrawPixelInfo(&tmp_dpi, left, y + (padding / 2), max_width, height)) return;
 
-	old_dpi = _cur_dpi;
-	_cur_dpi = &tmp_dpi;
+	AutoRestoreBackup dpi_backup(_cur_dpi, &tmp_dpi);
 
 	const TemplateVehicle *t = tv;
 	int offset = 0;
 
 	while (t) {
-		t->sprite_seq.Draw(offset + t->image_dimensions.GetOffsetX(), t->image_dimensions.GetOffsetY() + ScaleGUITrad(10), t->colourmap, false);
+		t->sprite_seq.Draw(offset + t->image_dimensions.GetOffsetX(), t->image_dimensions.GetOffsetY() + ScaleSpriteTrad(10), t->colourmap, false);
 
 		offset += t->image_dimensions.GetDisplayImageWidth();
 		t = t->Next();
 	}
-
-	_cur_dpi = old_dpi;
 }
 
 // copy important stuff from the virtual vehicle to the template
@@ -194,7 +145,7 @@ TemplateVehicle* TemplateVehicleFromVirtualTrain(Train *virt)
 
 	Train *init_virt = virt;
 
-	TemplateVehicle *tmp;
+	TemplateVehicle *tmp = nullptr;
 	TemplateVehicle *prev = nullptr;
 	for (; virt; virt = virt->Next()) {
 		tmp = new TemplateVehicle(virt->engine_type);
@@ -207,14 +158,14 @@ TemplateVehicle* TemplateVehicleFromVirtualTrain(Train *virt)
 }
 
 // forward declaration, defined in train_cmd.cpp
-CommandCost CmdSellRailWagon(DoCommandFlag, Vehicle*, uint16, uint32);
+CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, uint16 data, uint32 user);
 
-Train* DeleteVirtualTrain(Train *chain, Train *to_del) {
+Train *DeleteVirtualTrain(Train *chain, Train *to_del)
+{
 	if (chain != to_del) {
 		CmdSellRailWagon(DC_EXEC, to_del, 0, 0);
 		return chain;
-	}
-	else {
+	} else {
 		chain = chain->GetNextUnit();
 		CmdSellRailWagon(DC_EXEC, to_del, 0, 0);
 		return chain;
@@ -222,13 +173,15 @@ Train* DeleteVirtualTrain(Train *chain, Train *to_del) {
 }
 
 // retrieve template vehicle from template replacement that belongs to the given group
-TemplateVehicle* GetTemplateVehicleByGroupID(GroupID gid) {
+TemplateVehicle *GetTemplateVehicleByGroupID(GroupID gid)
+{
 	if (gid >= NEW_GROUP) return nullptr;
 	const TemplateID tid = GetTemplateIDByGroupID(gid);
 	return tid != INVALID_TEMPLATE ? TemplateVehicle::GetIfValid(tid) : nullptr;
 }
 
-TemplateVehicle* GetTemplateVehicleByGroupIDRecursive(GroupID gid) {
+TemplateVehicle *GetTemplateVehicleByGroupIDRecursive(GroupID gid)
+{
 	if (gid >= NEW_GROUP) return nullptr;
 	const TemplateID tid = GetTemplateIDByGroupIDRecursive(gid);
 	return tid != INVALID_TEMPLATE ? TemplateVehicle::GetIfValid(tid) : nullptr;
@@ -261,30 +214,19 @@ bool TemplateVehicleContainsEngineOfRailtype(const TemplateVehicle *tv, RailType
 	return false;
 }
 
-//helper
-bool ChainContainsVehicle(Train *chain, Train *mem)
+Train *ChainContainsEngine(EngineID eid, Train *chain)
 {
-	for (; chain; chain = chain->Next()) {
-		if (chain == mem) {
-			return true;
-		}
+	for (; chain != nullptr; chain = chain->GetNextUnit()) {
+		if (chain->engine_type == eid) return chain;
 	}
-	return false;
-}
-
-// has O(n)
-Train* ChainContainsEngine(EngineID eid, Train *chain) {
-	for (; chain; chain=chain->GetNextUnit())
-		if (chain->engine_type == eid)
-			return chain;
 	return nullptr;
 }
 
 static bool IsTrainUsableAsTemplateReplacementSource(const Train *t)
 {
-	if (t->IsFreeWagon()) return true;
+	if (t->First()->IsFreeWagon()) return true;
 
-	if (t->IsPrimaryVehicle() && t->IsStoppedInDepot()) {
+	if (t->IsPrimaryVehicle() && t->IsStoppedInDepot() && t->GetNextUnit() == nullptr) {
 		if (t->GetNumOrders() != 0) return false;
 		if (t->IsOrderListShared()) return false;
 		if (t->group_id != DEFAULT_GROUP) return false;
@@ -294,18 +236,33 @@ static bool IsTrainUsableAsTemplateReplacementSource(const Train *t)
 	return false;
 }
 
-// has O(n^2)
-Train* DepotContainsEngine(TileIndex tile, EngineID eid, Train *not_in = nullptr)
+void TemplateDepotVehicles::Init(TileIndex tile)
 {
-	for (Train *t : Train::Iterate()) {
+	FindVehicleOnPos(tile, VEH_TRAIN, this, [](Vehicle *v, void *data) -> Vehicle * {
+		TemplateDepotVehicles *self = static_cast<TemplateDepotVehicles *>(data);
+		self->vehicles.insert(v->index);
+		return v;
+	});
+}
+
+void TemplateDepotVehicles::RemoveVehicle(VehicleID id)
+{
+	this->vehicles.erase(id);
+}
+
+Train *TemplateDepotVehicles::ContainsEngine(EngineID eid, Train *not_in)
+{
+	for (VehicleID id : this->vehicles) {
+		Train *t = Train::GetIfValid(id);
+		if (t == nullptr) continue;
 		// conditions: v is stopped in the given depot, has the right engine and if 'not_in' is given v must not be contained within 'not_in'
 		// if 'not_in' is nullptr, no check is needed
-		if (t->tile == tile
+		if (t->owner == _current_company
 				// If the veh belongs to a chain, wagons will not return true on IsStoppedInDepot(), only primary vehicles will
 				// in case of t not a primary veh, we demand it to be a free wagon to consider it for replacement
 				&& IsTrainUsableAsTemplateReplacementSource(t)
 				&& t->engine_type == eid
-				&& (not_in == nullptr || ChainContainsVehicle(not_in, t) == false)) {
+				&& (not_in == nullptr || not_in->First() != t->First())) {
 			return t;
 		}
 	}
@@ -373,9 +330,9 @@ void CopyWagonStatus(TemplateVehicle *from, Train *to)
 	to->cargo_subtype = from->cargo_subtype;
 }
 
-int NumTrainsNeedTemplateReplacement(GroupID g_id, const TemplateVehicle *tv)
+uint CountsTrainsNeedingTemplateReplacement(GroupID g_id, const TemplateVehicle *tv)
 {
-	int count = 0;
+	uint count = 0;
 	if (!tv) return count;
 
 	for (Train *t : Train::Iterate()) {
@@ -385,6 +342,7 @@ int NumTrainsNeedTemplateReplacement(GroupID g_id, const TemplateVehicle *tv)
 	}
 	return count;
 }
+
 // refit each vehicle in t as is in tv, assume t and tv contain the same types of vehicles
 CommandCost CmdRefitTrainFromTemplate(Train *t, TemplateVehicle *tv, DoCommandFlag flags)
 {
@@ -434,14 +392,14 @@ void TransferCargoForTrain(Train *old_veh, Train *new_head)
 {
 	assert(new_head->IsPrimaryVehicle() || new_head->IsFreeWagon());
 
-	CargoID _cargo_type = old_veh->cargo_type;
-	byte _cargo_subtype = old_veh->cargo_subtype;
+	const CargoID cargo_type = old_veh->cargo_type;
+	const byte cargo_subtype = old_veh->cargo_subtype;
 
 	// how much cargo has to be moved (if possible)
 	uint remainingAmount = old_veh->cargo.TotalCount();
 	// each vehicle in the new chain shall be given as much of the old cargo as possible, until none is left
 	for (Train *tmp = new_head; tmp != nullptr && remainingAmount > 0; tmp = tmp->GetNextUnit()) {
-		if (tmp->cargo_type == _cargo_type && tmp->cargo_subtype == _cargo_subtype) {
+		if (tmp->cargo_type == cargo_type && tmp->cargo_subtype == cargo_subtype) {
 			// calculate the free space for new cargo on the current vehicle
 			uint curCap = tmp->cargo_cap - tmp->cargo.TotalCount();
 			uint moveAmount = std::min(remainingAmount, curCap);
@@ -452,11 +410,6 @@ void TransferCargoForTrain(Train *old_veh, Train *new_head)
 			}
 		}
 	}
-
-	// TODO: needs to be implemented, too
-	// // from autoreplace_cmd.cpp : 121
-	/* Any left-overs will be thrown away, but not their feeder share. */
-	//if (src->cargo_cap < src->cargo.TotalCount()) src->cargo.Truncate(src->cargo.TotalCount() - src->cargo_cap);
 
 	/* Update train weight etc., the old vehicle will be sold anyway */
 	new_head->ConsistChanged(CCF_LOADUNLOAD);
@@ -502,13 +455,14 @@ void UpdateAllTemplateVehicleImages()
 	_template_vehicle_images_valid = true;
 }
 
-int GetTemplateVehicleEstimatedMaxAchievableSpeed(const TemplateVehicle *tv, const int mass, const int speed_cap)
+int GetTemplateVehicleEstimatedMaxAchievableSpeed(const TemplateVehicle *tv, int mass, const int speed_cap)
 {
 	int max_speed = 0;
 	int acceleration;
 
-	do
-	{
+	if (mass < 1) mass = 1;
+
+	do {
 		max_speed++;
 		acceleration = GetTrainRealisticAccelerationAtSpeed(max_speed, mass, tv->power, tv->max_te, tv->air_drag, tv->railtype);
 	} while (acceleration > 0 && max_speed < speed_cap);

@@ -27,6 +27,7 @@ enum VehicleViewWidgets {
 	WID_VV_SELECT_REFIT_TURN,  ///< Selection widget between 'refit' and 'turn around' buttons.
 	WID_VV_TURN_AROUND,        ///< Turn this vehicle around.
 	WID_VV_FORCE_PROCEED,      ///< Force this vehicle to pass a signal at danger.
+	WID_VV_HONK_HORN,          ///< Honk the vehicles horn (not drawn on UI, only used for hotkey).
 };
 
 /** Widgets of the #RefitWindow class. */
@@ -35,6 +36,7 @@ enum VehicleRefitWidgets {
 	WID_VR_VEHICLE_PANEL_DISPLAY, ///< Display with a representation of the vehicle to refit.
 	WID_VR_SHOW_HSCROLLBAR,       ///< Selection widget for the horizontal scrollbar.
 	WID_VR_HSCROLLBAR,            ///< Horizontal scrollbar or the vehicle display.
+	WID_VR_VEHICLE_DROPDOWN,      ///< Dropdown for the vehicle display.
 	WID_VR_SELECT_HEADER,         ///< Header with question about the cargo to carry.
 	WID_VR_MATRIX,                ///< Options to refit to.
 	WID_VR_SCROLLBAR,             ///< Scrollbar for the refit options.

@@ -44,7 +44,7 @@ extern int _debug_sprite_level;
 extern int _debug_oldloader_level;
 extern int _debug_npf_level;
 extern int _debug_yapf_level;
-extern int _debug_freetype_level;
+extern int _debug_fontcache_level;
 extern int _debug_script_level;
 extern int _debug_sl_level;
 extern int _debug_gamelog_level;
@@ -64,9 +64,10 @@ extern bool _save_DBGC_data;
 extern std::string _loadgame_DBGC_data;
 
 void CDECL debug(const char *dbg, const char *format, ...) WARN_FORMAT(2, 3);
+void debug_print(const char *dbg, const char *buf);
 
 char *DumpDebugFacilityNames(char *buf, char *last);
-void SetDebugString(const char *s);
+void SetDebugString(const char *s, void (*error_func)(const char *));
 const char *GetDebugString();
 
 /* Shorter form for passing filename and linenumber */

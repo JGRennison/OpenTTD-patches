@@ -12,6 +12,10 @@
 
 #include "../language.h"
 
+#include <memory>
+#include <string>
+#include <vector>
+
 /** Container for the different cases of a string. */
 struct Case {
 	int caseidx;  ///< The index of the case.
@@ -27,12 +31,16 @@ struct LangString {
 	char *name;            ///< Name of the string.
 	char *english;         ///< English text.
 	char *translated;      ///< Translated text.
-	size_t hash_next;      ///< Next hash entry.
-	size_t index;          ///< The index in the language file.
+	LangString *hash_next; ///< Next hash entry.
+	int index;             ///< The index in the language file.
 	int line;              ///< Line of string in source-file.
 	Case *translated_case; ///< Cases of the translation.
+	std::unique_ptr<LangString> chain_before;
+	std::unique_ptr<LangString> chain_after;
+	LangString *default_translation = nullptr;
 
-	LangString(const char *name, const char *english, size_t index, int line);
+	LangString(const char *name, const char *english, int index, int line);
+	void ReplaceDefinition(const char *name, const char *english, int line);
 	~LangString();
 	void FreeTranslation();
 };
@@ -40,10 +48,16 @@ struct LangString {
 /** Information about the currently known strings. */
 struct StringData {
 	LangString **strings; ///< Array of all known strings.
-	size_t *hash_heads;   ///< Hash table for the strings.
+	LangString **hash_heads; ///< Hash table for the strings.
 	size_t tabs;          ///< The number of 'tabs' of strings.
 	size_t max_strings;   ///< The maximum number of strings.
-	size_t next_string_id;///< The next string ID to allocate.
+	int next_string_id;   ///< The next string ID to allocate.
+
+	std::vector<std::unique_ptr<LangString>> string_store;
+	LangString *insert_before = nullptr;
+	LangString *insert_after = nullptr;
+	bool override_mode = false;
+	LangString *default_translation = nullptr;
 
 	StringData(size_t tabs);
 	~StringData();
@@ -59,7 +73,7 @@ struct StringData {
 /** Helper for reading strings. */
 struct StringReader {
 	StringData &data; ///< The data to fill during reading.
-	const char *file; ///< The file we are reading.
+	std::string file; ///< The file we are reading.
 	bool master;      ///< Are we reading the master file?
 	bool translation; ///< Are we reading a translation, implies !master. However, the base translation will have this false.
 
@@ -85,6 +99,8 @@ struct StringReader {
 	 * Start parsing the file.
 	 */
 	virtual void ParseFile();
+
+	void AssignIDs(size_t &next_id, LangString *ls);
 };
 
 /** Base class for writing the header, i.e. the STR_XXX to numeric value. */
@@ -135,6 +151,22 @@ struct LanguageWriter {
 	virtual void WriteLength(uint length);
 	virtual void WriteLang(const StringData &data);
 };
+
+struct CmdStruct;
+
+struct CmdPair {
+	const CmdStruct *a;
+	const char *v;
+};
+
+struct ParsedCommandStruct {
+	uint np;
+	CmdPair pairs[32];
+	const CmdStruct *cmd[32]; // ordered by param #
+};
+
+const CmdStruct *TranslateCmdForCompare(const CmdStruct *a);
+void ExtractCommandString(ParsedCommandStruct *p, const char *s, bool warnings);
 
 void CDECL strgen_warning(const char *s, ...) WARN_FORMAT(1, 2);
 void CDECL strgen_error(const char *s, ...) WARN_FORMAT(1, 2);

@@ -132,6 +132,7 @@ enum PacketGameType {
 	PACKET_CLIENT_DESYNC_LOG,            ///< A client reports a desync log
 	PACKET_SERVER_DESYNC_LOG,            ///< A server reports a desync log
 	PACKET_CLIENT_DESYNC_MSG,            ///< A client reports a desync message
+	PACKET_CLIENT_DESYNC_SYNC_DATA,      ///< A client reports desync sync data
 
 	PACKET_END,                          ///< Must ALWAYS be on the end of this list!! (period)
 };
@@ -454,6 +455,7 @@ protected:
 	virtual NetworkRecvStatus Receive_CLIENT_DESYNC_LOG(Packet *p);
 	virtual NetworkRecvStatus Receive_SERVER_DESYNC_LOG(Packet *p);
 	virtual NetworkRecvStatus Receive_CLIENT_DESYNC_MSG(Packet *p);
+	virtual NetworkRecvStatus Receive_CLIENT_DESYNC_SYNC_DATA(Packet *p);
 
 	/**
 	 * Notification that a client left the game:

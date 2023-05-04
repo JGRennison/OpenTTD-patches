@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>JGR's Patchpack - NewGRF New Landscape Addition to NewGRF Specifications</title>
+	<style type="text/css">
+		td li      { white-space: nowrap; text-align: left; }
+		th         { white-space: nowrap; text-align: center; }
+		td, th     { border: 1px solid #CCCCCC; padding: 0px 5px; }
+		table      { border-collapse: collapse; empty-cells: show; }
+	</style>
+</head>
+<body>
+	<h2>NewGRF New Landscape Addition to NewGRF Specifications in JGR's Patchpack</h2>
+	<p>This document describes the non-standard addition of the NewGRF new landscape feature to the <a href="https://newgrf-specs.tt-wiki.net/wiki/Main_Page">Official OpenTTD NewGRF Specifications</a>, as implemented in this patchpack.</p>
+	<p>This feature allows NewGRF custom graphics using Action 1/2/3 for landscape tiles. Currently this includes: rock tiles.</p>
+	<p>This feature may not necessarily match implementations of additional landscape graphics features in other patches, branches, etc.<br />
+	This feature as implemented here MAY also be present in other patchpacks.</p>
+	<p>See the <a href="newgrf-additions.html">NewGRF additions</a> document for background information on additions to the NewGRF specifications.</p>
+	<p>The functionality listed below is also supported in a fork of NML, see the associated <a href="newgrf-newlandscape-nml.html">NML new landscape</a> and <a href="newgrf-additions-nml.html">NML additions</a> documents for more details.</p>
+	<p>NewGRFs which use this feature SHOULD use the <a href="newgrf-additions.html#feature-test">feature testing</a> mechanism to check whether the new landscape feature and/or feature ID mapping is supported.</p>
+	<p>NewGRFs which use this feature MUST use the <a href="newgrf-additions.html#feature-id-mapping">feature ID mapping</a> mechanism to map the non-standard NewGRF road stop feature to a local feature ID.</p>
+	<p>This feature is indicated by the feature name: <font face="monospace">new_landscape</font>, version 1.<br />
+	The feature name to use for feature ID mapping is <font face="monospace">new_landscape</font>.<br />
+	Features/properties/variables which require a higher version will indicate the required version. Unless indicated otherwise these will fall back to doing nothing on versions which do not support them.</p>
+
+	<p><h3 id="ids">IDs:</h3>
+	The ID field for Actions 0 and 3 must be set to one of the IDs in the table below (further IDs may be allocated for other purposes in future).
+	<table>
+	<tr><th>ID</th><th>Landscape type</th></tr>
+	<tr><td>0</td><td>Rocky tiles</td></tr>
+	</table>
+	</p>
+
+	<p><h3 id="actions">Actions:</h3>
+	<ul>
+		<li><a href="#a0roadstops">Action 0</a></li>
+		<li><a href="#a2roadstops">Action 2</a></li>
+		<li><a href="#varaction2roadstops">Variational Action 2</a></li>
+		<li><a href="#a3roadstops">Action 3</a></li>
+	</ul></p>
+
+	<h3 id="a0roadstops">Action 0 - New Landscape</h3>
+
+	<p>See the <a href="https://newgrf-specs.tt-wiki.net/wiki/Action0">Action 0 Specification</a> for background information.</p>
+
+	<b>Properties:</b>
+	<table>
+		<tr><th>Mappable name</th><th>Size in bytes</th><th>Description</th></tr>
+		<tr><td><a href="#newlandscape_enable_recolour">newlandscape_enable_recolour</a></td><td>1</td><td>Enable recolour</td></tr>
+		<tr><td><a href="#newlandscape_enable_draw_snowy_rocks">newlandscape_enable_draw_snowy_rocks</a></td><td>1</td><td>Enable drawing rocky tiles covered by snow</td></tr>
+	</table>
+
+	<h4 id="newlandscape_enable_recolour">Enable recolouring for new landscape graphics (mappable property: newlandscape_enable_recolour)</h4>
+	<p>When enabled, in addition to returning a sprite, register 0x100 may be set to the following:
+	<table>
+	<tr><th>Bits</th><th>Meaning</th></tr>
+	<tr><td>0 - 23</td><td>Recolour sprite to use. Set to 0 for no recolouring.</td></tr>
+	<tr><td>24 - 31</td><td>Reserved, set to zero. </td></tr>
+	</table></p>
+	<p>The property length is 1 byte. 0 is disabled (default). 1 is enabled.</p>
+
+	<h4 id="newlandscape_enable_draw_snowy_rocks">Enable drawing rocky tiles covered by snow (mappable property: newlandscape_enable_draw_snowy_rocks)</h4>
+	<p>When enabled, drawing of rocky tiles covered by snow is enabled for this GRF.</p>
+	<p>The property length is 1 byte. 0 is disabled (default). 1 is enabled.<br />
+	This requires <font face="monospace">new_landscape</font>, version 2.</p>
+
+	<h3 id="a2roadstops">Action 2 - New Landscape</h3>
+
+	<p>See the <a href="https://newgrf-specs.tt-wiki.net/wiki/Action2">Action 2 Specification</a> for background information.</p>
+
+	<p>New landscape <b>does not</b> use the special sprite layout format.</p>
+	<br />
+
+	<h3 id="varaction2roadstops">Variational Action 2 - New Landscape</h3>
+
+	<p>See the <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2">Variational Action 2 Specification</a> for background information.</p>
+
+	<b>Variables:</b>
+	<table>
+		<tr><th>Number</th><th>Mappable name</th><th>Description</th></tr>
+		<tr><td><a href="#newlandscape_terrain_type">40</a></td><td><a href="#newlandscape_terrain_type">newlandscape_terrain_type</a></td><td>Terrain type</td></tr>
+		<tr><td><a href="#newlandscape_tile_slope">41</a></td><td><a href="#newlandscape_tile_slope">newlandscape_tile_slope</a></td><td>Tile Slope</td></tr>
+		<tr><td><a href="#newlandscape_tile_height">42</a></td><td><a href="#newlandscape_tile_height">newlandscape_tile_height</a></td><td>Tile Height</td></tr>
+		<tr><td><a href="#newlandscape_tile_hash">43</a></td><td><a href="#newlandscape_tile_hash">newlandscape_tile_hash</a></td><td>Tile Hash</td></tr>
+		<tr><td><a href="#newlandscape_landscape_type">44</a></td><td><a href="#newlandscape_landscape_type">newlandscape_landscape_type</a></td><td>Landscape Type</td></tr>
+		<tr><td><a href="#newlandscape_ground_info">45</a></td><td><a href="#newlandscape_ground_info">newlandscape_ground_info</a></td><td>Ground info</td></tr>
+		<tr><td><a href="#newlandscape_land_info_nearby_tiles">60</a></td><td><a href="#newlandscape_land_info_nearby_tiles">newlandscape_land_info_nearby_tiles</a></td><td>Land info of nearby tiles</td></tr>
+	</table>
+
+	<h4 id="newlandscape_terrain_type">Tile terrain type (40, or mappable variable: newlandscape_terrain_type)</h4>
+	<p>This has the same value as bits 0 - 7 of <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Objects#Tile_information_.2841.29">object (feature F) variable 41</a>.
+		<table>
+		<tr><th>Value</th><th>Meaning</th></tr>
+		<tr><td>0</td><td>Normal</td></tr>
+		<tr><td>1</td><td>Desert</td></tr>
+		<tr><td>2</td><td>Rainforest</td></tr>
+		<tr><td>4</td><td>On or above snowline</td></tr>
+		</table>
+	</p>
+
+	<h4 id="newlandscape_tile_slope">Tile slope (41, or mappable variable: newlandscape_tile_slope)</h4>
+	<p>This has the same value as bits 0 - 7 of <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Industry_Tiles#Land_info_of_nearby_tiles_.2860.29">industry tile (feature 9) variable 60</a> for this tile.</p>
+
+	<h4 id="newlandscape_tile_height">Tile height (42, or mappable variable: newlandscape_tile_height)</h4>
+	<p>The height of the lowest corner of the tile (in units of 1).</p>
+
+	<h4 id="newlandscape_tile_hash">Tile hash (43, or mappable variable: newlandscape_tile_hash)</h4>
+	<p>Hash value derived from the coordinates of the tile, suitable for pseudo-randomising graphics.</p>
+
+	<h4 id="newlandscape_landscape_type">Landscape type (44, or mappable variable: newlandscape_landscape_type)</h4>
+	<p>The landscape type, this currently only has the value 0: rocky tiles.</p>
+
+	<h4 id="newlandscape_ground_info">Ground info (45, or mappable variable: newlandscape_ground_info)</h4>
+	<p>Miscellaneous ground info
+	<table>
+	<tr><th>Bits</th><th>Values</th><th>Meaning</th></tr>
+	<tr><td>0 - 3</td><td>0..3</td><td>Ground density (if snow is present, this is the snow density)</td></tr>
+	<tr><td>4</td><td>0 or 1</td><td>Snow is present on this tile, at any density</td></tr>
+	</table>
+	<br />
+	The remaining bits are reserved for future use and should be masked.<br />
+	This requires <font face="monospace">new_landscape</font>, version 2.</p>
+	</p>
+
+	<h4 id="roadstop_land_info_nearby_tiles">Land info of nearby tile (60, or mappable variable: newlandscape_land_info_nearby_tiles)</h4>
+	<p>This has the same value as <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Industry_Tiles#Land_info_of_nearby_tiles_.2860.29">industry tile (feature 9) variable 60</a>.</p>
+
+	<br />
+
+	<h3 id="a3roadstops">Action 3 - New Landscape</h3>
+
+	<p>See the <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3">Action 3 Specification</a> for background information.</p>
+
+	<p>Note that this is not a generic callback, the sprite group must be assigned to an ID in the <a href="#ids">IDs table</a>.
+	<table>
+	<tr><th>Action 3 ID</th><th>Expected number of sprites</th><th>Landscape type</th></tr>
+	<tr><td>0</td><td>19</td><td>Rocky tiles</td></tr>
+	</table>
+	Cargo type definitions are not used. Only the default set ID is used.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">new_landscape</font>, version 1</p>
+
+
+</body>
+</html>

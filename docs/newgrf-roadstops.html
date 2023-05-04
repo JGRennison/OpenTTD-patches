@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>JGR's Patchpack - NewGRF Road Stops Addition to NewGRF Specifications</title>
+	<style type="text/css">
+		td li      { white-space: nowrap; text-align: left; }
+		th         { white-space: nowrap; text-align: center; }
+		td, th     { border: 1px solid #CCCCCC; padding: 0px 5px; }
+		table      { border-collapse: collapse; empty-cells: show; }
+	</style>
+</head>
+<body>
+	<h2>NewGRF Road Stops Addition to NewGRF Specifications in JGR's Patchpack</h2>
+	<p>This document describes the non-standard addition of the NewGRF road stops feature to the <a href="https://newgrf-specs.tt-wiki.net/wiki/Main_Page">Official OpenTTD NewGRF Specifications</a>, as implemented in this patchpack.</br>
+	This feature does not match OpenTTD PR #7955 in a number of key areas, this feature may not necessarily match implementations of NewGRF road stops in other patches, branches, etc.</br>
+	This feature as implemented here MAY also be present in other patchpacks.</p>
+	<p>See the <a href="newgrf-additions.html">NewGRF additions</a> document for background information on additions to the NewGRF specifications.</p>
+	<p>A subset of the functionality listed below is also supported in a fork of NML, see the associated <a href="newgrf-roadstops-nml.html">NML road stops</a> and <a href="newgrf-additions-nml.html">NML additions</a> documents for more details.</p>
+	<p>NewGRFs which use this feature SHOULD use the <a href="newgrf-additions.html#feature-test">feature testing</a> mechanism to check whether the road stop feature and/or feature ID mapping is supported.</p>
+	<p>NewGRFs which use this feature MUST use the <a href="newgrf-additions.html#feature-id-mapping">feature ID mapping</a> mechanism to map the non-standard NewGRF road stop feature to a local feature ID.</p>
+	<p>This feature is indicated by the feature name: <font face="monospace">road_stops</font>, version 1.<br />
+	The feature name to use for feature ID mapping is <font face="monospace">road_stops</font>.<br />
+	Features/properties/variables which require a higher version will indicate the required version. Unless indicated otherwise these will fall back to doing nothing on versions which do not support them.</p>
+
+
+	<p><b>Sections:</b>
+	<ul>
+		<li><a href="#a0roadstops">Action 0</a></li>
+		<li><a href="#a2roadstops">Action 2</a></li>
+		<li><a href="#varaction2roadstops">Variational Action 2</a></li>
+		<li><a href="#randomaction2roadstops">Random Action 2</a></li>
+		<li><a href="#a3roadstops">Action 3</a></li>
+		<li><a href="#erata">Erata</a></li>
+	</ul></p>
+
+	<h3 id="a0roadstops">Action 0 - Road Stops</h3>
+
+	<p>See the <a href="https://newgrf-specs.tt-wiki.net/wiki/Action0">Action 0 Specification</a> for background information.</p>
+
+	<b>Properties:</b>
+	<table>
+		<tr><th>Number</th><th>Mappable name</th><th>Size in bytes</th><th>Description</th></tr>
+		<tr><td><a href="#roadstop_class_id">08</a></td><td><a href="#roadstop_class_id">roadstop_class_id</a></td><td>4</td><td>Class ID</td></tr>
+		<tr><td><a href="#roadstop_stop_type">09</a></td><td><a href="#roadstop_stop_type">roadstop_stop_type</a></td><td>1</td><td>Stop type availability</td></tr>
+		<tr><td><a href="#roadstop_stop_name">0A</a></td><td><a href="#roadstop_stop_name">roadstop_stop_name</a></td><td>2</td><td>Name</td></tr>
+		<tr><td><a href="#roadstop_class_name">0B</a></td><td><a href="#roadstop_class_name">roadstop_class_name</a></td><td>2</td><td>Class name</td></tr>
+		<tr><td><a href="#roadstop_draw_mode">0C</a></td><td><a href="#roadstop_draw_mode">roadstop_draw_mode</a></td><td>1</td><td>Draw mode</td></tr>
+		<tr><td><a href="#roadstop_random_trigger_cargoes">0D</a></td><td><a href="#roadstop_random_trigger_cargoes">roadstop_random_trigger_cargoes</a></td><td>4</td><td>Random trigger cargoes</td></tr>
+		<tr><td><a href="#roadstop_animation_info">0E</a></td><td><a href="#roadstop_animation_info">roadstop_animation_info</a></td><td>2</td><td>Animation info</td></tr>
+		<tr><td><a href="#roadstop_animation_speed">0F</a></td><td><a href="#roadstop_animation_speed">roadstop_animation_speed</a></td><td>1</td><td>Animation speed</td></tr>
+		<tr><td><a href="#roadstop_animation_triggers">10</a></td><td><a href="#roadstop_animation_triggers">roadstop_animation_triggers</a></td><td>2</td><td>Animation triggers</td></tr>
+		<tr><td><a href="#roadstop_callback_mask">11</a></td><td><a href="#roadstop_callback_mask">roadstop_callback_mask</a></td><td>1</td><td>Callback flags</td></tr>
+		<tr><td><a href="#roadstop_general_flags">12</a></td><td><a href="#roadstop_general_flags">roadstop_general_flags</a></td><td>4</td><td>General flags</td></tr>
+		<tr><td><a href="#roadstop_min_bridge_height">13</a></td><td><a href="#roadstop_min_bridge_height">roadstop_min_bridge_height</a></td><td>6</td><td>Minimum bridge heights</td></tr>
+		<tr><td><a href="#roadstop_disallowed_bridge_pillars">14</a></td><td><a href="#roadstop_disallowed_bridge_pillars">roadstop_disallowed_bridge_pillars</a></td><td>6</td><td>Disallowed bridge pillars</td></tr>
+		<tr><td><a href="#roadstop_cost_multipliers">15</a></td><td><a href="#roadstop_cost_multipliers">roadstop_cost_multipliers</a></td><td>2</td><td>Cost multipliers</td></tr>
+		<tr><td><a href="#roadstop_height">16</a></td><td><a href="#roadstop_height">roadstop_height</a></td><td>1</td><td>Height (for build window)</td></tr>
+	</table>
+
+	<h4 id="roadstop_class_id">Road stop class ID (08, or mappable property: roadstop_class_id)</h4>
+	<p>This property sets the road stop class ID for this road stop ID.<br />
+	This property must be used first before any other property for this road stop ID.<br />
+	Two class names are pre-defined:
+	<table>
+	<tr><th>Name</th><th>Class ID</th><th>Meaning</th></tr>
+	<tr><td>DFLT</td><td>44 46 4C 54</td><td>Default bus and lorry stops</td></tr>
+	<tr><td>WAYP</td><td>57 41 59 50</td><td>This class is used for road waypoints</td></tr>
+	</table>
+	All classes except WAYP are used for bus and/or lorry stops.<br />
+	This functions the same way as <a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Stations#Station_class_.2808.29">station (feature 4) property 08</a>.<br />
+	The property length is 4 bytes.
+	</p>
+	<h4 id="roadstop_stop_type">Road stop type availability (09, or mappable property: roadstop_stop_type)</h4>
+	<p>This property sets the road stop type availability, this is ignored for road stops in the WAYP class.<br />
+	The property length is 1 byte. The format is:
+	<table>
+	<tr><th>Value</th><th>Meaning</th></tr>
+	<tr><td>0</td><td>Passenger/bus stop</td></tr>
+	<tr><td>1</td><td>Freight/lorry stop</td></tr>
+	<tr><td>2</td><td>Both passenger/bus and freight/lorry stops</td></tr>
+	</table>
+	The default value is 2 (both bus and lorry stops).
+	</p>
+	<h4 id="roadstop_stop_name">Road stop name (0A, or mappable property: roadstop_stop_name)</h4>
+	<p>This property sets the road stop name string ID.<br />
+	The property length is 2 bytes. This should be a D8xx or DCxx string ID.</p>
+	<h4 id="roadstop_class_name">Road stop class name (0B, or mappable property: roadstop_class_name)</h4>
+	<p>This property sets the road stop class name string ID.<br />
+	The property length is 2 bytes. This should be a D8xx or DCxx string ID.</p>
+	<h4 id="roadstop_draw_mode">Road stop draw mode (0C, or mappable property: roadstop_draw_mode)</h4>
+	<p>This property sets the road stop draw mode.<br />
+	The property length is 1 byte. The format is:
+	<table>
+	<tr><th>Bit</th><th>Value</th><th>Meaning</th></tr>
+	<tr><td>0</td><td>1</td><td>Bay stops: Draw road type ground sprite</td></tr>
+	<tr><td>1</td><td>2</td><td>Drive through stops: Draw road/tram type overlays</td></tr>
+	<tr><td>2</td><td>4</td><td>Road waypoints: Draw sprite layout ground sprite on top of the underlying road (by default the sprite layout ground sprite is not used)</td></tr>
+	</table>
+	The default value is 3 (bits 0 and 1 both set).
+	</p>
+	<h4 id="roadstop_random_trigger_cargoes">Road stop random trigger cargoes (0D, or mappable property: roadstop_random_trigger_cargoes)</h4>
+	<p>This property sets the cargo types for random triggers.<br />
+	This functions the same way as <a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Stations#Cargo_types_for_random_triggers_.2812.29">station (feature 4) property 12</a>.<br />
+	This sets which cargo types should trigger re-randomizing. The cargo types are given as a bitmask of the bits from column 3 (type B) in CargoTypes.  If nothing is set (the default), the no random triggers will happen, to conserve CPU time.<br />
+	With GRF version 7 and above, the interpretation of bits changes. Instead of climate-dependent cargo slot numbers (type B), you have to set the bits of climate-independent cargo ID (type A).<br />
+	The property length is 4 bytes.</p>
+	<h4 id="roadstop_animation_info">Road stop animation info (0E, or mappable property: roadstop_animation_info)</h4>
+	<p>This property sets the cargo types for random triggers.<br />
+	This functions the same way as <a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Stations#Animation_information_.2816.29">station (feature 4) property 16</a>.<br />
+	The low byte specifies the number of animation frames minus one, so 00 means 1 frame, 01 means 2 frames etc. The maximum number of frames is 256, although you can have some problems if your animation exceeds FD (253) frames.
+	The high byte must be 0 for non-looping animations and 01 for looping animations. Every other value is reserved for future use.
+	In addition, if the whole word contains FFFF, animation is turned off for this station (this is the default value). Since you can't have properties for individual station tiles, this property applies for every tile of the station.
+	If you don't want to animate some tiles, you should check the current position during callback 140 and return FD if the current tile doesn't need to be animated. If you also need animations of different length per tile, you'll have to use callback 141 for that.<br />
+	The property length is 2 bytes.</p>
+	<h4 id="roadstop_animation_speed">Road stop animation speed (0F, or mappable property: roadstop_animation_speed)</h4>
+	<p>This property sets the cargo types for random triggers.<br />
+	This functions the same way as <a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Stations#Animation_speed_.2817.29">station (feature 4) property 17</a>.<br />
+	This is the amount of time between switching frames. The default value is 2, which means the switch occurs every 108 milliseconds. Increasing this value by one doubles the wait, i.e. 3 will cause 216 ms delay, while 4 will pause 432 ms, and so on.
+	The minimum is 0, which means the fastest possible animation, changing frames every game tick (27ms). The maximum is 16, which means 1769 seconds (approx. half an hour) delay. Settings above this value may cause strange behaviour.<br />
+	The property length is 1 byte.</p>
+	<h4 id="roadstop_animation_triggers">Road stop animation triggers (10, or mappable property: roadstop_animation_triggers)</h4>
+	<p>This property sets the cargo types for random triggers.<br />
+	This functions the same way as <a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Stations#Animation_triggers_.2818.29">station (feature 4) property 18</a>.<br />
+	This is a bit mask of events that should trigger callback 140, allowing to change the animation state.<br />
+	<table>
+	<tr><th>Bit</th><th>Value</th><th>Meaning</th><th>Happens on</th><th>Var 18</th></tr>
+	<tr><td>0</td><td>1</td><td>Road stop is built</td><td>newly built tile</td><td></td></tr>
+	<tr><td>1</td><td>2</td><td>New cargo arrives at station</td><td>all tiles</td><td>Bits 8..15 contain the triggering cargo type</td></tr>
+	<tr><td>2</td><td>4</td><td>Cargo removed from station</td><td>all tiles</td><td>Bits 8..15 contain the triggering cargo type</td></tr>
+	<tr><td>3</td><td>8</td><td>Road vehicle enters stop (starts loading/unloading)</td><td>tile where the vehicle is</td><td></td></tr>
+	<tr><td>4</td><td>10</td><td>Road vehicle leaves stop (done loading/unloading)</td><td>tile where the vehicle is</td><td></td></tr>
+	<tr><td>5</td><td>20</td><td>Road vehicle loads/unloads cargo</td><td>tile where the vehicle is</td><td></td></tr>
+	<tr><td>6</td><td>40</td><td>Every 250 ticks</td><td>all tiles</td><td></td></tr>
+	</table>
+	For bits 1 and 2: bits 8..15 of var 18 contain the triggering cargo type. If your GRF has a cargo translation table, the cargo type will be an index in that table, or FFh if the cargo isn't in the table. If you don't have a cargo translation table, the cargo type will simply be the climate-dependent cargo type number.</p>
+	<h4 id="roadstop_callback_mask">Road stop callback flags (11, or mappable property: roadstop_callback_mask)</h4>
+	<p>This property enables callbacks for this road stop type.<br />
+	The property length is 1 byte. The format is:
+	<table>
+	<tr><th>Bit</th><th>Value</th><th>Variable 0C value</th><th>Callback</th></tr>
+	<tr><td>0</td><td>1</td><td>13</td><td>Whether to make road stop available in construction window (non-zero callback return) or not (callback returns zero)</td></tr>
+	<tr><td>1</td><td>2</td><td>141</td><td>Decide next animation frame</td></tr>
+	<tr><td>2</td><td>4</td><td>142</td><td>Decide animation speed</td></tr>
+	</table>
+	Variable 0C value is what variable 0C will be set to, for checking it in the VarAction2 for callbacks.<br />
+	The default value is 0 (no callbacks enabled).
+	</p>
+	<h4 id="roadstop_general_flags">Road stop general flags (12, or mappable property: roadstop_general_flags)</h4>
+	<p>This property sets general flags for this road stop type.<br />
+	The property length is 4 bytes. The format is:
+	<table>
+	<tr><th>Bit</th><th>Value</th><th>Meaning</th></tr>
+	<tr><td>0</td><td>1</td><td>Callback 141 needs random bits in variable 10</td></tr>
+	<tr><td>1</td><td>2</td><td>Do not show one way road overlay sprites, this should only be set if different graphics are provided for the different one-way states using bits 0..1 of variable 50.</td></tr>
+	<tr><td>2</td><td>4</td><td>Do not show catenary graphics.</br>This requires <font face="monospace">road_stops</font>, version 2.</td></tr>
+	<tr><td>3</td><td>8</td><td>Only allow drive-through stops (not bay stops).</br>This requires <font face="monospace">road_stops</font>, version 2.</td></tr>
+	<tr><td>4</td><td>10</td><td>Do not automatically build connecting road pieces.</br>This requires <font face="monospace">road_stops</font>, version 3.</td></tr>
+	<tr><td>5</td><td>20</td><td>Only show in the road build menu (not tram).</br>This requires <font face="monospace">road_stops</font>, version 4.</td></tr>
+	<tr><td>6</td><td>40</td><td>Only show in the tram build menu (not road).</br>This requires <font face="monospace">road_stops</font>, version 4.</td></tr>
+	<tr><td>7</td><td>80</td><td>Use custom graphics for disabled road stop views.</br>This requires <font face="monospace">road_stops</font>, version 8.</td></tr>
+	<tr><td>8</td><td>100</td><td>Read the road stop draw mode from variable 0x100, this overrides the <a href="#roadstop_draw_mode">roadstop_draw_mode</a> property.</br>This requires <font face="monospace">road_stops</font>, version 9.</td></tr>
+	</table>
+	The default value is 0 (no flags enabled).
+	</p>
+	<h4 id="roadstop_min_bridge_height">Road stop minimum bridge heights (13, or mappable property: roadstop_min_bridge_height)</h4>
+	<p>This property allows or disallows building bridges over road stops.<br />
+	The bridge height property defines minimum clearances required for a bridge for each of the 6 views/rotations (or 0 to not allow any bridge). Values are given in height level units (1 level == 8px).<br />
+	Each height value is 1 byte, the total property length is 6 bytes.
+	</p>
+	<h4 id="roadstop_disallowed_bridge_pillars">Road stop disallowed bridge pillars (14, or mappable property: roadstop_disallowed_bridge_pillars)</h4>
+	<p>This property describes which bridge pillars are not allowed on the road stop tile.<br />
+	It consists of a set of pillar flags, for each of the 6 road stop views/rotations.<br />
+	Each set of flags is 1 byte, the total property length is 6 bytes.<br />
+	Each set of flags has the format described in the <a href="newgrf-additions.html#bridge_pillar_flags">bridge_pillar_flags property section</a>.
+	</p>
+	<h4 id="roadstop_cost_multipliers">Road stop cost multipliers (15, or mappable property: roadstop_cost_multipliers)</h4>
+	<p>This property sets the build and removal cost multipliers.<br />
+	The first byte is the build cost multiplier.<br />
+	The second byte is the removal cost multiplier.<br />
+	The total property length is 2 bytes.<br />
+	A value of 16 produces a build or removal cost the same as non-NewGRF road stops.</a>.
+	</p>
+	<h4 id="roadstop_height">Road stop height (in the build window) (16, or mappable property: roadstop_height)</h4>
+	<p>This property sets the height used to size the road stop build window previews.<br />
+	The nominal height for the road stop preview is set to at least: 32 + "value of this property" * 8.<br />
+	This similar to <a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Objects#Building_height_.2816.29">Object variable 16</a>.<br />
+	The total property length is 1 byte.<br />
+	This requires <font face="monospace">road_stops</font>, version 6.
+	</p>
+
+	<p style="padding-top: 0.25em;">
+	<div id="roadstop_views">The 6 road stop views/rotations are described below.</div>
+	<table>
+		<tr><th>Views/rotation</th><th>Type</th><th>Description</tr>
+		<tr><td>0</td><td>Bay</td><td>Facing north-east</td></tr>
+		<tr><td>1</td><td>Bay</td><td>Facing south-east</td></tr>
+		<tr><td>2</td><td>Bay</td><td>Facing south-west</td></tr>
+		<tr><td>3</td><td>Bay</td><td>Facing north-west</td></tr>
+		<tr><td>4</td><td>Drive-through</td><td>X-axis: north-east to south-west</td></tr>
+		<tr><td>5</td><td>Drive-through</td><td>Y-axis: north-west to south-east</td></tr>
+	</table>
+	</p>
+	<br />
+
+	<h3 id="a2roadstops">Action 2 - Road Stops</h3>
+
+	<p>See the <a href="https://newgrf-specs.tt-wiki.net/wiki/Action2">Action 2 Specification</a> for background information.</p>
+
+	<p>Road stops use the <a href="https://newgrf-specs.tt-wiki.net/wiki/Action2/Sprite_Layout">special sprite layout format</a>, the same as Action 2 features: 7 (house), 9 (industry tile), F (object), 11 (airport tile).</p>
+	<br />
+
+	<h3 id="varaction2roadstops">Variational Action 2 - Road Stops</h3>
+
+	<p>See the <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2">Variational Action 2 Specification</a> for background information.</p>
+	<p>The parent scope for this feature is the road stop's station's town.</p>
+
+	<b>Variables:</b>
+	<table>
+		<tr><th>Number</th><th>Mappable name</th><th>Description</th></tr>
+		<tr><td><a href="#roadstop_view">40</a></td><td><a href="#roadstop_view">roadstop_view</a></td><td>View/rotation</td></tr>
+		<tr><td><a href="#roadstop_type">41</a></td><td><a href="#roadstop_type">roadstop_type</a></td><td>Stop type</td></tr>
+		<tr><td><a href="#roadstop_terrain_type">42</a></td><td><a href="#roadstop_terrain_type">roadstop_terrain_type</a></td><td>Terrain type</td></tr>
+		<tr><td><a href="#roadstop_road_type">43</a></td><td><a href="#roadstop_road_type">roadstop_road_type</a></td><td>Road type</td></tr>
+		<tr><td><a href="#roadstop_tram_type">44</a></td><td><a href="#roadstop_tram_type">roadstop_tram_type</a></td><td>Tram type</td></tr>
+		<tr><td><a href="#roadstop_town_zone">45</a></td><td><a href="#roadstop_town_zone">roadstop_town_zone</a></td><td>Town zone and Manhattan distance of town</td></tr>
+		<tr><td><a href="#roadstop_town_distance_squared">46</a></td><td><a href="#roadstop_town_distance_squared">roadstop_town_distance_squared</a></td><td>Square of Euclidean distance of town</td></tr>
+		<tr><td><a href="#roadstop_company_info">47</a></td><td><a href="#roadstop_company_info">roadstop_company_info</a></td><td>Player/company info</td></tr>
+		<tr><td><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/BaseStation">48</a></td><td></td><td>Bitmask of accepted cargoes (BaseStation)</td></tr>
+		<tr><td><a href="#roadstop_animation_frame">49</a></td><td><a href="#roadstop_animation_frame">roadstop_animation_frame</a></td><td>Current animation frame</td></tr>
+		<tr><td><a href="#roadstop_misc_info">50</a></td><td><a href="#roadstop_misc_info">roadstop_misc_info</a></td><td>Miscellaneous info</td></tr>
+		<tr><td><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/BaseStation">60</a></td><td></td><td>Amount of cargo waiting (BaseStation)</td></tr>
+		<tr><td><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/BaseStation">61</a></td><td></td><td>Time since last cargo pickup (BaseStation)</td></tr>
+		<tr><td><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/BaseStation">62</a></td><td></td><td>Rating of cargo (BaseStation)</td></tr>
+		<tr><td><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/BaseStation">63</a></td><td></td><td>Time spent on route (BaseStation)</td></tr>
+		<tr><td><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/BaseStation">64</a></td><td></td><td>Information about last vehicle picking cargo up (BaseStation)</td></tr>
+		<tr><td><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/BaseStation">65</a></td><td></td><td>Amount of cargo acceptance (BaseStation)</td></tr>
+		<tr><td><a href="#roadstop_animation_frame_nearby_tiles">66</a></td><td><a href="#roadstop_animation_frame_nearby_tiles">roadstop_animation_frame_nearby_tiles</a></td><td>Animation frame of nearby tile</td></tr>
+		<tr><td><a href="#roadstop_land_info_nearby_tiles">67</a></td><td><a href="#roadstop_land_info_nearby_tiles">roadstop_land_info_nearby_tiles</a></td><td>Land info of nearby tiles</td></tr>
+		<tr><td><a href="#roadstop_road_stop_info_nearby_tiles">68</a></td><td><a href="#roadstop_road_stop_info_nearby_tiles">roadstop_road_stop_info_nearby_tiles</a></td><td>Road stop info of nearby tiles</td></tr>
+		<tr><td></td><td><a href="#roadstop_road_stop_info_nearby_tiles_v2">roadstop_road_stop_info_nearby_tiles_v2</a></td><td>Road stop info of nearby tiles (v2)</td></tr>
+		<tr><td><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/BaseStation">69</a></td><td></td><td>Information about cargo accepted in the past (BaseStation)</td></tr>
+		<tr><td><a href="#roadstop_road_stop_grfid_nearby_tiles">6A</a></td><td><a href="#roadstop_road_stop_grfid_nearby_tiles">roadstop_road_stop_grfid_nearby_tiles</a></td><td>GRFID of nearby road stop tiles</td></tr>
+		<tr><td><a href="#roadstop_road_info_nearby_tiles">6B</a></td><td><a href="#roadstop_road_info_nearby_tiles">roadstop_road_info_nearby_tiles</a></td><td>Road info of nearby plain road tiles</td></tr>
+	</table>
+
+	<h4 id="roadstop_view">Road stop view/rotation (40, or mappable variable: roadstop_view)</h4>
+	<p>Bits 0 - 7 have the range 0 - 5, see <a href="#roadstop_views">the 6 road stop views/rotations</a><br />
+	The remaining bits are reserved for future use and should be masked.</p>
+
+	<h4 id="roadstop_type">Road stop type (41, or mappable variable: roadstop_type)</h4>
+	<p>Bits 0 - 7 have the values in the table below.
+	<table>
+	<tr><th>Value</th><th>Meaning</th></tr>
+	<tr><td>0</td><td>Passenger/bus stop</td></tr>
+	<tr><td>1</td><td>Freight/lorry stop</td></tr>
+	<tr><td>2</td><td>Road waypoint</td></tr>
+	</table>
+	<br />
+	The remaining bits are reserved for future use and should be masked.
+	</p>
+
+	<h4 id="roadstop_terrain_type">Road stop tile terrain type (42, or mappable variable: roadstop_terrain_type)</h4>
+	<p>This has the same value as bits 0 - 7 of <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Objects#Tile_information_.2841.29">object (feature F) variable 41</a>.
+		<table>
+		<tr><th>Value</th><th>Meaning</th></tr>
+		<tr><td>0</td><td>Normal</td></tr>
+		<tr><td>1</td><td>Desert</td></tr>
+		<tr><td>2</td><td>Rainforest</td></tr>
+		<tr><td>4</td><td>On or above snowline</td></tr>
+		</table>
+	</p>
+
+	<h4 id="roadstop_road_type">Road stop road type (43, or mappable variable: roadstop_road_type)</h4>
+	<p>This has the value of the (translated) roadtype the road stop is built on, or the current roadtype in the build GUI. If the roadtype has no entry in the roadtype translation table of the GRF, this value will be 0xFF. If no translation table is present, the raw value will be returned. Note: only exact matches of roadtypes are reported. If the translation table of the GRF does not contain the exact roadtype 0xFF is returned.<br />
+	If the tile has no road at all (tram only) 0xFFFFFFFF is returned.</p>
+
+	<h4 id="roadstop_tram_type">Road stop tram type (44, or mappable variable: roadstop_road_type)</h4>
+	<p>This has the value of the (translated) tramtype the road stop is built on, or the current tramtype in the build GUI. If the tramtype has no entry in the tramtype translation table of the GRF, this value will be 0xFF. If no translation table is present, the raw value will be returned. Note: only exact matches of tramtypes are reported. If the translation table of the GRF does not contain the exact tramtype 0xFF is returned.<br />
+	If the tile has no tram at all (road only) 0xFFFFFFFF is returned.</p>
+
+	<h4 id="roadstop_town_zone">Town zone and Manhattan distance of town (45, or mappable variable: roadstop_town_zone)</h4>
+	<p>The town used is the one associated with the station/waypoint (this is in the station/waypoint name by default).
+	<table>
+	<tr><th>Bits</th><th>Meaning</th></tr>
+	<tr><td>0 - 15</td><td>Manhattan distance from town</td></tr>
+	<tr><td>16 - 24</td><td>Town zone</td></tr>
+	</table>
+	<br />
+	The remaining bits are reserved for future use and should be masked.
+	</p>
+
+	<h4 id="roadstop_town_distance_squared">Square of Euclidean distance of town (46, or mappable variable: roadstop_town_distance_squared)</h4>
+	<p>The town used is the one associated with the station/waypoint (this is in the station/waypoint name by default).</p>
+
+	<h4 id="roadstop_company_info">Player/company info (47, or mappable variable: roadstop_company_info)</h4>
+	<p>This has the same value as <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Vehicles#Player_info_.2843.29">vehicle (features 0 - 3) variable 43</a>.<br />
+	The company used is the owner of the station/waypoint, not the owner of the underlying road and/or tram.</p>
+
+	<h4 id="roadstop_animation_frame">Current animation frame (49, or mappable variable: roadstop_animation_frame)</h4>
+	<p>This has the same value as <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Stations">station (feature 4) variable 4A</a>.</p>
+
+	<h4 id="roadstop_misc_info">Miscellaneous road stop info (50, or mappable variable: roadstop_misc_info)</h4>
+	<p>
+	<table>
+	<tr><th>Bits</th><th>Meaning</th></tr>
+	<tr><td>0 - 1</td><td>
+		One-way road information:<br />
+		0 - Two-way traffic<br />
+		1 - West-bound only<br />
+		2 - East-bound only<br />
+		3 - No entry
+	</td></tr>
+	<tr><td>2 - 3</td><td>
+		Inferred one-way road information, from examining the road layout:<br />
+		0 - Two-way traffic<br />
+		1 - West-bound only<br />
+		2 - East-bound only<br />
+		3 - No entry<br />
+		This requires <font face="monospace">road_stops</font>, version 8.
+	</td></tr>
+	<tr><td>4</td><td>
+		1 if the road stop is being drawn in the build window<br />
+		This requires <font face="monospace">road_stops</font>, version 9.
+	</td></tr>
+	</table>
+	<br />
+	The remaining bits are reserved for future use and should be masked.
+	</p>
+
+	<h4 id="roadstop_animation_frame_nearby_tiles">Animation frame of nearby tile (66, or mappable variable: roadstop_animation_frame_nearby_tiles)</h4>
+	<p>This has the same value as <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Stations#Animation_frame_of_nearby_tile_.2866.29">station (feature 4) variable 66</a>.</p>
+
+	<h4 id="roadstop_land_info_nearby_tiles">Land info of nearby tile (67, or mappable variable: roadstop_land_info_nearby_tiles)</h4>
+	<p>This has the same value as <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Industry_Tiles#Land_info_of_nearby_tiles_.2860.29">industry tile (feature 9) variable 60</a>.</p>
+
+	<h4 id="roadstop_road_stop_info_nearby_tiles">Road stop of nearby tile (68, or mappable variable: roadstop_road_stop_info_nearby_tiles)</h4>
+	<p>This has a similar value to <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Stations#Station_info_of_nearby_tiles_.2868.29">station (feature 4) variable 68</a>.<br />
+
+	<table>
+	<tr><th>Bits</th><th>Meaning</th></tr>
+	<tr><td>0 - 7</td><td>
+		If the tile is defined in the current GRF, this is the lower 8 bits of the setID used in the definition. Otherwise, the content is undefined.<br />
+		Note that if this GRF has any road stop setIDs greater than 255, bits 24 - 31 need to be used as well.
+	</td></tr>
+	<tr><td>8 - 9</td><td>
+		0 - The tile uses original TTD graphics<br />
+		1 - The tile is defined in the current GRF<br />
+		2 - The tile is defined in another GRF
+	</td></tr>
+	<tr><td>10</td><td>Set if the selected tile belongs to the current station, clear otherwise</td></tr>
+	<tr><td>11</td><td>Clear if the selected tile has the same view/rotation, set if a different view/rotation</td></tr>
+	<tr><td>12 - 15</td><td>View/rotation of the selected tile</td></tr>
+	<tr><td>16 - 19</td><td>
+		0 - Passenger/bus stop<br />
+		1 - Freight/lorry stop<br />
+		2 - Road waypoint
+	</td></tr>
+	<tr><td>20</td><td>Set if the stop type (passenger/bus, freight/lorry or road waypoint) is the same as the current tile</td></tr>
+	<tr><td>21 - 22</td><td>
+		One-way road information of the selected tile:<br />
+		0 - Two-way traffic<br />
+		1 - North-bound only<br />
+		2 - South-bound only<br />
+		3 - No entry
+	</td></tr>
+	<tr><td>24 - 31</td><td>
+		If the tile is defined in the current GRF, this is the upper 8 bits of the setID used in the definition. Otherwise, the content is undefined.<br />
+		This can be ignored if this GRF does not have any road stop setIDs greater than 255 (does not define more than 256 road stop types).<br />
+		This requires <font face="monospace">road_stops</font>, version 7.
+	</td></tr>
+	</table>
+	<br />
+	The remaining bits are reserved for future use and should be masked.
+	</p>
+
+	<h4 id="roadstop_road_stop_info_nearby_tiles_v2">Road stop of nearby tile v2 (mappable variable: roadstop_road_stop_info_nearby_tiles_v2)</h4>
+	<p>This has a similar value to <a href="#roadstop_road_stop_info_nearby_tiles">68</a>/<a href="#roadstop_road_stop_info_nearby_tiles">roadstop_road_stop_info_nearby_tiles</a>, above.<br />
+
+	<table>
+	<tr><th>Bits</th><th>Meaning</th></tr>
+	<tr><td>0 - 15</td><td>If the tile is defined in the current GRF, this is the setID used in the definition. Otherwise, the content is undefined. </td></tr>
+	<tr><td>16 - 17</td><td>
+		0 - The tile uses original TTD graphics<br />
+		1 - The tile is defined in the current GRF<br />
+		2 - The tile is defined in another GRF
+	</td></tr>
+	<tr><td>18</td><td>Set if the selected tile belongs to the current station, clear otherwise</td></tr>
+	<tr><td>19</td><td>Clear if the selected tile has the same view/rotation, set if a different view/rotation</td></tr>
+	<tr><td>20 - 23</td><td>View/rotation of the selected tile</td></tr>
+	<tr><td>24 - 27</td><td>
+		0 - Passenger/bus stop<br />
+		1 - Freight/lorry stop<br />
+		2 - Road waypoint
+	</td></tr>
+	<tr><td>28</td><td>Set if the stop type (passenger/bus, freight/lorry or road waypoint) is the same as the current tile</td></tr>
+	<tr><td>29 - 30</td><td>
+		One-way road information of the selected tile:<br />
+		0 - Two-way traffic<br />
+		1 - North-bound only<br />
+		2 - South-bound only<br />
+		3 - No entry
+	</table>
+	<br />
+	The remaining bits are reserved for future use and should be masked.<br />
+	This requires <font face="monospace">road_stops</font>, version 7.
+	</p>
+
+	<h4 id="roadstop_road_stop_grfid_nearby_tiles">GRFID of nearby road stop tile (6A, or mappable variable: roadstop_road_stop_grfid_nearby_tiles)</h4>
+	<p>This has the same value as <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Stations#GRFID_of_nearby_station_tile_.286A.29">station (feature 4) variable 6A</a>.</p>
+
+	<h4 id="roadstop_road_info_nearby_tiles">Road info of nearby plain road tiles (6B, or mappable variable: roadstop_road_info_nearby_tiles)</h4>
+
+	The returned value is 0xFFFFFFFF if the selected tile isn't a plain road tile.<br /><br />
+
+	<table>
+	<tr><th>Bits</th><th>Value</th><th>Meaning</th></tr>
+	<tr><td>0</td><td>01</td><td>North-west road piece is present</td></tr>
+	<tr><td>1</td><td>02</td><td>South-west road piece is present</td></tr>
+	<tr><td>2</td><td>04</td><td>South-east road piece is present</td></tr>
+	<tr><td>3</td><td>08</td><td>North-east road piece is present</td></tr>
+	<tr><td>4</td><td>10</td><td>North-west tram piece is present</td></tr>
+	<tr><td>5</td><td>20</td><td>South-west tram piece is present</td></tr>
+	<tr><td>6</td><td>40</td><td>South-east tram piece is present</td></tr>
+	<tr><td>7</td><td>80</td><td>North-east tram piece is present</td></tr>
+	<tr><td>8 - 15</td><td></td><td>
+		Road piece and slope:<br />
+		(Same order as <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3/Roadtypes#Road_underlay_.2802.29">road sprites</a>).<br />
+		0 - 18: As above<br />
+		0xFF: No road present
+	</td></tr>
+	<tr><td>16 - 23</td><td></td><td>
+		Tram piece and slope:<br />
+		(Same order as <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3/Roadtypes#Road_underlay_.2802.29">road sprites</a>).<br />
+		0 - 18: As above<br />
+		0xFF: No tram present
+	</td></tr>
+	</table>
+	<br />
+	The remaining bits are reserved for future use and should be masked.
+	<br />
+	This requires <font face="monospace">road_stops</font>, version 5.
+	</p>
+
+	<br />
+	<h3 id="randomaction2roadstops">Random Action 2 - Road Stops</h3>
+
+	<p>See the <a href="https://newgrf-specs.tt-wiki.net/wiki/RandomAction2">Random Action 2 Specification</a> for background information.</p>
+
+	<p>Road stops have 16+8 random bits. Bits 0 to 15 are a property of the station as a whole, and bits 16 to 23 are different for each tile.
+
+	<table>
+	<tr><th>Bit</th><th>Value</th><th>Trigger</th></tr>
+	<tr><td>0</td><td>01</td><td>New cargo waiting</td></tr>
+	<tr><td>1</td><td>02</td><td>No more cargo</td></tr>
+	<tr><td>2</td><td>04</td><td>Road vehicle arrives (starts unloading/loading)</td></tr>
+	<tr><td>3</td><td>08</td><td>Road vehicle leaves (done unloading &amp; loading)</td></tr>
+	<tr><td>4</td><td>10</td><td>Road vehicle loads or unloads cargo</td></tr>
+	</table>
+	Note that a road vehicle arrives trigger does not imply that the stop was previously empty, and a road vehicle leaves trigger does not imply that the stop is now empty.</p>
+	<p>
+	Also note that none of the above triggers will actually trigger unless <a href="#roadstop_random_trigger_cargoes">property 0D/roadstop_random_trigger_cargoes</a> has at least one bit set.<br />
+	Triggers 01 will be triggered for any of the cargo types set in <a href="#roadstop_random_trigger_cargoes">property 0D/roadstop_random_trigger_cargoes</a>, but trigger 02 will only be triggered if all of those cargo types have no more cargo waiting.<br />
+	Triggers 04 and 08 are triggered no matter what cargo types the train transports, as long as <a href="#roadstop_random_trigger_cargoes">property 0D/roadstop_random_trigger_cargoes</a> is not zero.<br />
+	Triggers 04, 08, and 10 only affect the tile on which they occur, as well as the random bits of the station, but not other tiles.
+	</p>
+	<br />
+
+	<h3 id="a3roadstops">Action 3 - Road Stops</h3>
+
+	<p>See the <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3">Action 3 Specification</a> for background information.</p>
+
+	<p>Road stops have the same Action 3 cargo-type values as feature 4 (station).</p>
+
+	<p>In feature name <font face="monospace">road_stops</font> version 7 and later, the Action 3 ID field is an extended byte; GRFs may define more than 255 road stop types.<br />
+	In versions 1 to 6 (inclusive), only 255 road stop types may be defined per GRF, and the extended byte format may not be used.</p>
+	<br />
+
+	<h3 id="erata">Erata</h3>
+
+	<p>In feature name <font face="monospace">road_stops</font> versions 1 to 5 (inclusive), mapped Action 0 properties which are unknown and should be ignored, instead generate an error on use.</p>
+
+
+</body>
+</html>

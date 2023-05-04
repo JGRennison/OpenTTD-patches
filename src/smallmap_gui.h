@@ -46,6 +46,7 @@ struct TunnelBridgeToMap {
 };
 typedef std::vector<TunnelBridgeToMap> TunnelBridgeToMapVector;
 
+void UpdateSmallMapSelectedIndustries();
 void BuildIndustriesLegend();
 void ShowSmallMap();
 void BuildLandLegend();
@@ -101,14 +102,14 @@ protected:
 
 	int32 scroll_x;  ///< Horizontal world coordinate of the base tile left of the top-left corner of the smallmap display.
 	int32 scroll_y;  ///< Vertical world coordinate of the base tile left of the top-left corner of the smallmap display.
-	int32 subscroll; ///< Number of pixels (0..3) between the right end of the base tile and the pixel at the top-left corner of the smallmap display.
-	int zoom;        ///< Zoom level. Bigger number means more zoom-out (further away).
+	int tile_zoom;   ///< Tile zoom level. Bigger number means more zoom-out (further away).
+	int ui_zoom;     ///< UI (pixel doubling) Zoom level. Bigger number means more zoom-in (closer).
+	int zoom = 1;    ///< Zoom level. Bigger number means more zoom-out (further away).
 
 	GUITimer refresh; ///< Refresh timer.
 	LinkGraphOverlay *overlay;
 
 	static void BreakIndustryChainLink();
-	Point SmallmapRemapCoords(int x, int y) const;
 
 	/**
 	 * Draws vertical part of map indicator
@@ -140,7 +141,7 @@ protected:
 	 */
 	inline uint GetMinLegendWidth() const
 	{
-		return WD_FRAMERECT_LEFT + this->min_number_of_columns * this->column_width;
+		return WidgetDimensions::scaled.framerect.left + this->min_number_of_columns * this->column_width;
 	}
 
 	/**
@@ -159,7 +160,7 @@ protected:
 	 */
 	inline uint GetLegendHeight(uint num_columns) const
 	{
-		return WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM +
+		return WidgetDimensions::scaled.framerect.Vertical() +
 				this->GetNumberRowsLegend(num_columns) * FONT_HEIGHT_SMALL;
 	}
 
@@ -168,27 +169,25 @@ protected:
 	 * the _local_company. Spectators get to see all companies' links.
 	 * @return Company mask.
 	 */
-	inline uint32 GetOverlayCompanyMask() const
+	inline CompanyMask GetOverlayCompanyMask() const
 	{
-		return Company::IsValidID(_local_company) ? 1U << _local_company : 0xffffffff;
+		return Company::IsValidID(_local_company) ? 1U << _local_company : MAX_UVALUE(CompanyMask);
 	}
 
 	uint GetNumberRowsLegend(uint columns) const;
 	void SelectLegendItem(int click_pos, LegendAndColour *legend, int end_legend_item, int begin_legend_item = 0);
 	void SwitchMapType(SmallMapType map_type);
-	void SetNewScroll(int sx, int sy, int sub);
 	uint GetRefreshPeriod() const;
 	uint PausedAdjustRefreshTimeDelta(uint delta_ms) const;
 
 	void DrawMapIndicators() const;
-	void DrawSmallMapColumn(void *dst, uint xc, uint yc, int pitch, int reps, int start_pos, int end_pos, Blitter *blitter) const;
+	void DrawSmallMapColumn(void *dst, uint xc, uint yc, int pitch, int reps, int start_pos, int end_pos, int y, int end_y, Blitter *blitter) const;
 	void DrawVehicles(const DrawPixelInfo *dpi, Blitter *blitter) const;
 	void DrawTowns(const DrawPixelInfo *dpi) const;
 	void DrawSmallMap(DrawPixelInfo *dpi, bool draw_indicators = true) const;
 
-	Point RemapTile(int tile_x, int tile_y) const;
-	Point PixelToTile(int px, int py, int *sub, bool add_sub = true) const;
-	Point ComputeScroll(int tx, int ty, int x, int y, int *sub);
+	Point TileToPixel(int tx, int ty) const;
+	Point PixelToTile(int px, int py) const;
 	void SetZoomLevel(ZoomLevelChange change, const Point *zoom_pt);
 	void SetOverlayCargoMask();
 	void SetupWidgetData();

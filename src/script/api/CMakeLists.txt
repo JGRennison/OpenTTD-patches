@@ -75,17 +75,19 @@ foreach(API "ai;AI" "game;GS" "template;Template")
     if(NOT "${APILC}" STREQUAL "template")
         list(APPEND SCRIPT_${APIUC}_BINARY_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${APILC}/${APILC}_controller.hpp.sq")
         set(INCLUDES_BINARY_FILE "${CMAKE_BINARY_DIR}/generated/script/api/${APILC}/${APILC}_includes.hpp")
+        set(API_FILES "${CMAKE_CURRENT_BINARY_DIR}/${APILC}.files")
+        file(GENERATE OUTPUT ${API_FILES} CONTENT "${SCRIPT_${APIUC}_BINARY_FILES}")
         add_custom_command_timestamp(OUTPUT ${INCLUDES_BINARY_FILE}
                 COMMAND ${CMAKE_COMMAND}
                         -DINCLUDES_SOURCE_FILE=${CMAKE_CURRENT_SOURCE_DIR}/script_includes.hpp.in
                         -DINCLUDES_BINARY_FILE=${INCLUDES_BINARY_FILE}
                         -DAPIUC=${APIUC}
                         -DAPILC=${APILC}
+                        -DAPI_FILES=${API_FILES}
                         -P ${CMAKE_SOURCE_DIR}/cmake/scripts/SquirrelIncludes.cmake
-                        --
-                        ${SCRIPT_${APIUC}_BINARY_FILES}
                 MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/script_includes.hpp.in
                 DEPENDS ${SCRIPT_${APIUC}_BINARY_FILES}
+                        ${API_FILES}
                         ${CMAKE_SOURCE_DIR}/cmake/scripts/SquirrelIncludes.cmake
                 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                 COMMENT "Generating ${APILC}/${APILC}_includes.hpp"
@@ -173,8 +175,10 @@ add_files(
     script_industrylist.hpp
     script_industrytype.hpp
     script_industrytypelist.hpp
+    script_inflation.hpp
     script_info_docs.hpp
     script_infrastructure.hpp
+    script_league.hpp
     script_list.hpp
     script_log.hpp
     script_map.hpp
@@ -244,7 +248,9 @@ add_files(
     script_industrylist.cpp
     script_industrytype.cpp
     script_industrytypelist.cpp
+    script_inflation.cpp
     script_infrastructure.cpp
+    script_league.cpp
     script_list.cpp
     script_log.cpp
     script_map.cpp

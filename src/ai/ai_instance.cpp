@@ -14,10 +14,10 @@
 #include "../script/squirrel_class.hpp"
 
 #include "ai_config.hpp"
-#include "ai_gui.hpp"
 #include "ai.hpp"
 
 #include "../script/script_storage.hpp"
+#include "../script/script_gui.h"
 #include "ai_info.hpp"
 #include "ai_instance.hpp"
 
@@ -60,7 +60,10 @@ void AIInstance::Died()
 {
 	ScriptInstance::Died();
 
-	ShowAIDebugWindow(_current_company);
+	/* Intro is not supposed to use AI, but it may have 'dummy' AI which instant dies. */
+	if (_game_mode == GM_MENU) return;
+
+	ShowScriptDebugWindow(_current_company);
 
 	const AIInfo *info = AIConfig::GetConfig(_current_company, AIConfig::SSS_FORCE_GAME)->GetInfo();
 	if (info != nullptr) {
@@ -76,7 +79,6 @@ void AIInstance::Died()
 void AIInstance::LoadDummyScript()
 {
 	ScriptAllocatorScope alloc_scope(this->engine);
-	extern void Script_CreateDummy(HSQUIRRELVM vm, StringID string, const char *type);
 	Script_CreateDummy(this->engine->GetVM(), STR_ERROR_AI_NO_AI_FOUND, "AI");
 }
 

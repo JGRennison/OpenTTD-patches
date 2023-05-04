@@ -527,7 +527,7 @@ class btree_node {
   // be a leaf.
   bool is_root() const { return parent()->leaf(); }
   void make_root() {
-    assert(parent()->is_root());
+    dbg_assert(parent()->is_root());
     fields_.parent = fields_.parent->parent();
   }
 
@@ -1266,7 +1266,7 @@ class btree : public Params::key_compare {
   }
   void delete_internal_node(node_type *node) {
     node->destroy();
-    assert(node != root());
+    dbg_assert(node != root());
     mutable_internal_allocator()->deallocate(
         reinterpret_cast<char*>(node), sizeof(internal_fields));
   }
@@ -1422,7 +1422,7 @@ class btree : public Params::key_compare {
 // btree_node methods
 template <typename P>
 inline void btree_node<P>::insert_value(int i, const value_type &x) {
-  assert(i <= count());
+  dbg_assert(i <= count());
   value_init(count(), x);
   for (int j = count(); j > i; --j) {
     value_swap(j, this, j - 1);
@@ -1442,7 +1442,7 @@ inline void btree_node<P>::insert_value(int i, const value_type &x) {
 template <typename P>
 inline void btree_node<P>::remove_value(int i) {
   if (!leaf()) {
-    assert(child(i + 1)->count() == 0);
+    dbg_assert(child(i + 1)->count() == 0);
     for (int j = i + 1; j < count(); ++j) {
       *mutable_child(j) = child(j + 1);
       child(j)->set_position(j);
@@ -1459,11 +1459,11 @@ inline void btree_node<P>::remove_value(int i) {
 
 template <typename P>
 void btree_node<P>::rebalance_right_to_left(btree_node *src, int to_move) {
-  assert(parent() == src->parent());
-  assert(position() + 1 == src->position());
-  assert(src->count() >= count());
-  assert(to_move >= 1);
-  assert(to_move <= src->count());
+  dbg_assert(parent() == src->parent());
+  dbg_assert(position() + 1 == src->position());
+  dbg_assert(src->count() >= count());
+  dbg_assert(to_move >= 1);
+  dbg_assert(to_move <= src->count());
 
   // Make room in the left node for the new values.
   for (int i = 0; i < to_move; ++i) {
@@ -1493,7 +1493,7 @@ void btree_node<P>::rebalance_right_to_left(btree_node *src, int to_move) {
       set_child(1 + count() + i, src->child(i));
     }
     for (int i = 0; i <= src->count() - to_move; ++i) {
-      assert(i + to_move <= src->max_count());
+      dbg_assert(i + to_move <= src->max_count());
       src->set_child(i, src->child(i + to_move));
       *src->mutable_child(i + to_move) = NULL;
     }
@@ -1506,11 +1506,11 @@ void btree_node<P>::rebalance_right_to_left(btree_node *src, int to_move) {
 
 template <typename P>
 void btree_node<P>::rebalance_left_to_right(btree_node *dest, int to_move) {
-  assert(parent() == dest->parent());
-  assert(position() + 1 == dest->position());
-  assert(count() >= dest->count());
-  assert(to_move >= 1);
-  assert(to_move <= count());
+  dbg_assert(parent() == dest->parent());
+  dbg_assert(position() + 1 == dest->position());
+  dbg_assert(count() >= dest->count());
+  dbg_assert(to_move >= 1);
+  dbg_assert(to_move <= count());
 
   // Make room in the right node for the new values.
   for (int i = 0; i < to_move; ++i) {
@@ -1551,7 +1551,7 @@ void btree_node<P>::rebalance_left_to_right(btree_node *dest, int to_move) {
 
 template <typename P>
 void btree_node<P>::split(btree_node *dest, int insert_position) {
-  assert(dest->count() == 0);
+  dbg_assert(dest->count() == 0);
 
   // We bias the split based on the position being inserted. If we're
   // inserting at the beginning of the left node then bias the split to put
@@ -1565,7 +1565,7 @@ void btree_node<P>::split(btree_node *dest, int insert_position) {
     dest->set_count(count() / 2);
   }
   set_count(count() - dest->count());
-  assert(count() >= 1);
+  dbg_assert(count() >= 1);
 
   // Move values from the left sibling to the right sibling.
   for (int i = 0; i < dest->count(); ++i) {
@@ -1583,7 +1583,7 @@ void btree_node<P>::split(btree_node *dest, int insert_position) {
 
   if (!leaf()) {
     for (int i = 0; i <= dest->count(); ++i) {
-      assert(child(count() + i + 1) != NULL);
+      dbg_assert(child(count() + i + 1) != NULL);
       dest->set_child(i, child(count() + i + 1));
       *mutable_child(count() + i + 1) = NULL;
     }
@@ -1592,8 +1592,8 @@ void btree_node<P>::split(btree_node *dest, int insert_position) {
 
 template <typename P>
 void btree_node<P>::merge(btree_node *src) {
-  assert(parent() == src->parent());
-  assert(position() + 1 == src->position());
+  dbg_assert(parent() == src->parent());
+  dbg_assert(position() + 1 == src->position());
 
   // Move the delimiting value to the left node.
   value_init(count());
@@ -1624,7 +1624,7 @@ void btree_node<P>::merge(btree_node *src) {
 
 template <typename P>
 void btree_node<P>::swap(btree_node *x) {
-  assert(leaf() == x->leaf());
+  dbg_assert(leaf() == x->leaf());
 
   // Swap the values.
   for (int i = count(); i < x->count(); ++i) {
@@ -1666,10 +1666,10 @@ void btree_node<P>::swap(btree_node *x) {
 template <typename N, typename R, typename P>
 void btree_iterator<N, R, P>::increment_slow() {
   if (node->leaf()) {
-    assert(position >= node->count());
+    dbg_assert(position >= node->count());
     self_type save(*this);
     while (position == node->count() && !node->is_root()) {
-      assert(node->parent()->child(node->position()) == node);
+      dbg_assert(node->parent()->child(node->position()) == node);
       position = node->position();
       node = node->parent();
     }
@@ -1677,7 +1677,7 @@ void btree_iterator<N, R, P>::increment_slow() {
       *this = save;
     }
   } else {
-    assert(position < node->count());
+    dbg_assert(position < node->count());
     node = node->child(position + 1);
     while (!node->leaf()) {
       node = node->child(0);
@@ -1706,10 +1706,10 @@ void btree_iterator<N, R, P>::increment_by(int count) {
 template <typename N, typename R, typename P>
 void btree_iterator<N, R, P>::decrement_slow() {
   if (node->leaf()) {
-    assert(position <= -1);
+    dbg_assert(position <= -1);
     self_type save(*this);
     while (position < 0 && !node->is_root()) {
-      assert(node->parent()->child(node->position()) == node);
+      dbg_assert(node->parent()->child(node->position()) == node);
       position = node->position() - 1;
       node = node->parent();
     }
@@ -1717,7 +1717,7 @@ void btree_iterator<N, R, P>::decrement_slow() {
       *this = save;
     }
   } else {
-    assert(position >= 0);
+    dbg_assert(position >= 0);
     node = node->child(position);
     while (!node->leaf()) {
       node = node->child(node->count());
@@ -1870,8 +1870,8 @@ typename btree<P>::iterator btree<P>::erase(iterator iter) {
     // Deletion of a value on an internal node. Swap the key with the largest
     // value of our left child. This is easy, we just decrement iter.
     iterator tmp_iter(iter--);
-    assert(iter.node->leaf());
-    assert(!compare_keys(tmp_iter.key(), iter.key()));
+    dbg_assert(iter.node->leaf());
+    dbg_assert(!compare_keys(tmp_iter.key(), iter.key()));
     iter.node->value_swap(iter.position, tmp_iter.node, tmp_iter.position);
     internal_delete = true;
     --*mutable_size();
@@ -1975,15 +1975,15 @@ void btree<P>::swap(self_type &x) {
 template <typename P>
 void btree<P>::verify() const {
   if (root() != NULL) {
-    assert(size() == internal_verify(root(), NULL, NULL));
-    assert(leftmost() == (++const_iterator(root(), -1)).node);
-    assert(rightmost() == (--const_iterator(root(), root()->count())).node);
-    assert(leftmost()->leaf());
-    assert(rightmost()->leaf());
+    dbg_assert(size() == internal_verify(root(), NULL, NULL));
+    dbg_assert(leftmost() == (++const_iterator(root(), -1)).node);
+    dbg_assert(rightmost() == (--const_iterator(root(), root()->count())).node);
+    dbg_assert(leftmost()->leaf());
+    dbg_assert(rightmost()->leaf());
   } else {
-    assert(size() == 0);
-    assert(leftmost() == NULL);
-    assert(rightmost() == NULL);
+    dbg_assert(size() == 0);
+    dbg_assert(leftmost() == NULL);
+    dbg_assert(rightmost() == NULL);
   }
 }
 
@@ -1991,7 +1991,7 @@ template <typename P>
 void btree<P>::rebalance_or_split(iterator *iter) {
   node_type *&node = iter->node;
   int &insert_position = iter->position;
-  assert(node->count() == node->max_count());
+  dbg_assert(node->count() == node->max_count());
 
   // First try to make room on the node by rebalancing.
   node_type *parent = node->parent();
@@ -2011,14 +2011,14 @@ void btree<P>::rebalance_or_split(iterator *iter) {
             ((left->count() + to_move) < left->max_count())) {
           left->rebalance_right_to_left(node, to_move);
 
-          assert(node->max_count() - node->count() == to_move);
+          dbg_assert(node->max_count() - node->count() == to_move);
           insert_position = insert_position - to_move;
           if (insert_position < 0) {
             insert_position = insert_position + left->count() + 1;
             node = left;
           }
 
-          assert(node->count() < node->max_count());
+          dbg_assert(node->count() < node->max_count());
           return;
         }
       }
@@ -2044,7 +2044,7 @@ void btree<P>::rebalance_or_split(iterator *iter) {
             node = right;
           }
 
-          assert(node->count() < node->max_count());
+          dbg_assert(node->count() < node->max_count());
           return;
         }
       }
@@ -2064,7 +2064,7 @@ void btree<P>::rebalance_or_split(iterator *iter) {
       parent = new_internal_root_node();
       parent->set_child(0, root());
       *mutable_root() = parent;
-      assert(*mutable_rightmost() == parent->child(0));
+      dbg_assert(*mutable_rightmost() == parent->child(0));
     } else {
       // The root node is an internal node. We do not want to create a new root
       // node because the root node is special and holds the size of the tree
@@ -2168,7 +2168,7 @@ void btree<P>::try_shrink() {
   }
   // Deleted the last item on the root node, shrink the height of the tree.
   if (root()->leaf()) {
-    assert(size() == 0);
+    dbg_assert(size() == 0);
     delete_leaf_node(root());
     *mutable_root() = NULL;
   } else {
@@ -2214,7 +2214,7 @@ btree<P>::internal_insert(iterator iter, const value_type &v) {
     if (iter.node->max_count() < kNodeValues) {
       // Insertion into the root where the root is smaller that the full node
       // size. Simply grow the size of the root node.
-      assert(iter.node == root());
+      dbg_assert(iter.node == root());
       iter.node = new_leaf_root_node(
           std::min<int>(kNodeValues, 2 * iter.node->max_count()));
       iter.node->swap(root());
@@ -2369,23 +2369,23 @@ void btree<P>::internal_dump(
 template <typename P>
 int btree<P>::internal_verify(
     const node_type *node, const key_type *lo, const key_type *hi) const {
-  assert(node->count() > 0);
-  assert(node->count() <= node->max_count());
+  dbg_assert(node->count() > 0);
+  dbg_assert(node->count() <= node->max_count());
   if (lo) {
-    assert(!compare_keys(node->key(0), *lo));
+    dbg_assert(!compare_keys(node->key(0), *lo));
   }
   if (hi) {
-    assert(!compare_keys(*hi, node->key(node->count() - 1)));
+    dbg_assert(!compare_keys(*hi, node->key(node->count() - 1)));
   }
   for (int i = 1; i < node->count(); ++i) {
-    assert(!compare_keys(node->key(i), node->key(i - 1)));
+    dbg_assert(!compare_keys(node->key(i), node->key(i - 1)));
   }
   int count = node->count();
   if (!node->leaf()) {
     for (int i = 0; i <= node->count(); ++i) {
-      assert(node->child(i) != NULL);
-      assert(node->child(i)->parent() == node);
-      assert(node->child(i)->position() == i);
+      dbg_assert(node->child(i) != NULL);
+      dbg_assert(node->child(i)->parent() == node);
+      dbg_assert(node->child(i)->position() == i);
       count += internal_verify(
           node->child(i),
           (i == 0) ? lo : &node->key(i - 1),

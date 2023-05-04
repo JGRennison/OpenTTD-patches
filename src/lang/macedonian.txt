@@ -193,13 +193,10 @@ STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA} mph
 STR_UNITS_VELOCITY_METRIC                                       :{COMMA} km/h
 STR_UNITS_VELOCITY_SI                                           :{COMMA} m/s
 
-STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
-STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
-STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}кс
 STR_UNITS_POWER_METRIC                                          :{COMMA}кс
 STR_UNITS_POWER_SI                                              :{COMMA}kW
+
 
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}t
 STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}kg
@@ -226,7 +223,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Избе
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Изберете критериум за сортирање
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Изберете филтрирање критериуми
 STR_BUTTON_SORT_BY                                              :{BLACK}Сортирање според
-STR_BUTTON_RENAME                                               :{BLACK}Преименувај
 
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Затвори го прозорецот
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Наслов на прозорец - влечи тука за да го поместиш прозорецот
@@ -357,9 +353,8 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Напушти
 
 # Settings menu
-###length 14
+###length 15
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :игра опции
-STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :АИ / игри поставувања
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF подесувања
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :транспарентност опции
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Место имиња прикажани
@@ -538,12 +533,6 @@ STR_MONTH_SEP                                                   :Септемв�
 STR_MONTH_OCT                                                   :Октомври
 STR_MONTH_NOV                                                   :ноември
 STR_MONTH_DEC                                                   :декември
-
-###length VEHICLE_TYPES
-STR_VEHICLE_TYPE_TRAINS                                         :Возови
-STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Патни Возила
-STR_VEHICLE_TYPE_SHIPS                                          :Бродови
-STR_VEHICLE_TYPE_AIRCRAFT                                       :Летала
 
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Клучни
@@ -803,11 +792,6 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Опци
 
 ###length 42
 
-###length 2
-
-
-###length 21
-
 
 # Autosave dropdown
 ###length 5
@@ -835,7 +819,6 @@ STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH                :Секој ме
 
 
 
-
 STR_NUM_CUSTOM_NUMBER                                           :Прилагодено ({NUM})
 
 
@@ -851,9 +834,11 @@ STR_SEA_LEVEL_CUSTOM_PERCENTAGE                                 :Прилаго�
 
 ###length 4
 
+###length 4
+
 ###length 7
 
-###length 3
+###length 4
 
 
 # Settings tree window
@@ -874,6 +859,7 @@ STR_CONFIG_SETTING_REALISTIC                                    :Реален
 
 ###length 3
 
+###setting-zero-is-special
 
 
 
@@ -969,10 +955,14 @@ STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS                         :Дебелин�
 
 ###length 2
 
+###length 2
+
 
 
 
 ###length 3
+
+###length 4
 
 ###length 4
 
@@ -1003,7 +993,6 @@ STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS                         :Дебелин�
 
 
 ###length 3
-
 
 
 
@@ -1081,6 +1070,7 @@ STR_CONFIG_SETTING_NEWS_MESSAGES_FULL                           :целосна
 ###length 3
 
 
+###setting-zero-is-special
 
 
 
@@ -1126,7 +1116,7 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_8X                              :8x
 
 
 
-###length 4
+###length 5
 
 ###length 3
 
@@ -1169,11 +1159,9 @@ STR_INTRO_SCENARIO_EDITOR                                       :{BLACK}Сцен
 STR_INTRO_MULTIPLAYER                                           :{BLACK}Повеќе играчи
 
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}Опции на Играта
-STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}АИ / Играта Подесувања
 
 
 
-STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Покажи АИ и игра поставувања
 
 
 # Quit window
@@ -1186,8 +1174,6 @@ STR_ABANDON_GAME_CAPTION                                        :{WHITE}Напу
 STR_ABANDON_GAME_QUERY                                          :{YELLOW}Дали сте сигурни дека сакате да ја напуштите играта?
 
 # Cheat window
-
-###length 4
 
 # Livery window
 
@@ -1280,6 +1266,8 @@ STR_CONTENT_TYPE_GS_LIBRARY                                     :ГШ библи
 # Linkgraph legend window
 
 # Linkgraph legend window and linkgraph legend in smallmap
+
+# Linkgraph tooltip
 
 # Base for station construction window(s)
 STR_STATION_BUILD_ACCEPTS_CARGO                                 :{BLACK}Прифаќа: {GOLD}{CARGO_LIST}
@@ -1455,6 +1443,8 @@ STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}Нов�
 STR_MAPGEN_MAPSIZE                                              :{BLACK}Големина на мапа:
 STR_MAPGEN_BY                                                   :{BLACK}*
 
+###length 21
+
 # Strings for map borders at game generation
 
 
@@ -1504,6 +1494,10 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_OBJECT                     :Објекто�
 
 
 # Sprite aligner window
+
+###length 2
+
+
 
 
 # NewGRF (self) generated warnings/errors
@@ -1606,6 +1600,9 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 # Finances window
 STR_FINANCES_YEAR                                               :{WHITE}{NUM}
 
+###length 3
+
+
 ###length 13
 
 STR_FINANCES_NEGATIVE_INCOME                                    :{BLACK}-{CURRENCY_LONG}
@@ -1697,6 +1694,8 @@ STR_BUY_VEHICLE_TRAIN_ALL_CAPTION                               :Шински в
 STR_BUY_VEHICLE_AIRCRAFT_CAPTION                                :Нов авион
 
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Опсег: {GOLD}{COMMA} плочки
+
+###length 3
 
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_AIRCRAFT_LIST_TOOLTIP                           :{BLACK}Листа за селекција од авиони - кликни на авионот за информации
@@ -1952,7 +1951,6 @@ STR_AI_CONFIG_NONE                                              :(никој)
 STR_AI_CONFIG_GAMESCRIPT                                        :{SILVER}GameScript
 STR_AI_CONFIG_AI                                                :{SILVER}ЗИС
 
-STR_AI_CONFIG_CHANGE_NONE                                       :
 STR_AI_CONFIG_CHANGE_AI                                         :АИ
 STR_AI_CONFIG_CHANGE_GAMESCRIPT                                 :GameScript
 
@@ -1963,9 +1961,8 @@ STR_AI_LIST_CAPTION_GAMESCRIPT                                  :GameScripts
 
 
 
-# AI Parameters
+# Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :АИ
-STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :GameScript
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 STR_AI_SETTINGS_START_DELAY                                     :Број на денови за да започнете оваа Пи по претходниот (се дава или зема): {ORANGE}{STRING}
 
@@ -2122,6 +2119,7 @@ STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Не м�
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... возилото е уништено
 
 
+
 # Specific vehicle errors
 
 
@@ -2131,6 +2129,8 @@ STR_ERROR_AIRCRAFT_IS_IN_FLIGHT                                 :{WHITE}Авио
 
 STR_ERROR_TOO_FAR_FROM_PREVIOUS_DESTINATION                     :{WHITE}... премногу далеку од претходните дестинација
 STR_ERROR_AIRCRAFT_NOT_ENOUGH_RANGE                             :{WHITE}... воздухопловот не е доволно опсег
+
+# Extra messages which go on the third line of errors, explaining why orders failed
 
 # Timetable related errors
 

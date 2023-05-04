@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>JGR's Patchpack - NewGRF Town Feature Additions to NewGRF Specifications</title>
+	<style type="text/css">
+		td li      { white-space: nowrap; text-align: left; }
+		th         { white-space: nowrap; text-align: center; }
+		td, th     { border: 1px solid #CCCCCC; padding: 0px 5px; }
+		table      { border-collapse: collapse; empty-cells: show; }
+	</style>
+</head>
+<body>
+	<h2>NewGRF Town Feature Additions to NewGRF Specifications in JGR's Patchpack</h2>
+	<p>This document describes the non-standard additions to the <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Towns">town feature in the Official OpenTTD NewGRF Specifications</a>, as implemented in this patchpack.</p>
+
+	<p>The town feature is ordinarily only accessible via the parent scope from the features: stations, bridges, houses, industries, objects, road stops.</p>
+	<p>Mapping a feature ID to the town feature allows referencing it directly, this is useful for:<br />
+	<ul>
+		<li>Mapping variables into the town feature using the <a href="newgrf-additions.html#variable-mapping">variable mapping mechanism</a>.</li>
+		<li>Generic town callbacks (town zone radii).</li>
+	</ul>
+	</p>
+
+	<p>NewGRFs which use this feature MUST use the <a href="newgrf-additions.html#feature-id-mapping">feature ID mapping</a> mechanism to map the town feature to a local feature ID.</p>
+	<p>This feature is indicated by the feature name: <font face="monospace">town_feature</font>, version 1.<br />
+	The feature name to use for feature ID mapping is <font face="monospace">town</font>.<br />
+
+	<p>This feature may not necessarily match implementations in other patches, branches, etc.<br />
+	This feature as implemented here MAY also be present in other patchpacks.</p>
+	<p>See the <a href="newgrf-additions.html">NewGRF additions</a> document for background information on additions to the NewGRF specifications.</p>
+
+	<p>The functionality listed below is also supported in a fork of NML, see the associated <a href="newgrf-town-nml.html">NML town feature</a> and <a href="newgrf-additions-nml.html">NML additions</a> documents for more details.</p>
+
+	<p><h3 id="actions">Actions:</h3>
+	<ul>
+		<li><a href="#varaction2town">Variational Action 2</a></li>
+		<li><a href="#a3town">Action 3</a></li>
+	</ul></p>
+
+	<h3 id="varaction2town">Variational Action 2 - Town</h3>
+
+	Note: non-variational action 2 sprites should ONLY be used to implement the return callback failure pattern.
+
+	<p>See the <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2">Variational Action 2 Specification</a> for background information.</p>
+
+	<b>Variables:</b>
+	<table>
+		<tr><th>Mappable name</th><th>Description</th></tr>
+		<tr><td><a href="#town_house_count">town_house_count</a></td><td>Number of town houses</td></tr>
+		<tr><td><a href="#town_population">town_population</a></td><td>Town population</td></tr>
+		<tr><td><a href="#town_zone_N_radius_square">town_zone_0_radius_square</a></td><td>Town zone 0 radius squared</td></tr>
+		<tr><td><a href="#town_zone_N_radius_square">town_zone_1_radius_square</a></td><td>Town zone 1 radius squared</td></tr>
+		<tr><td><a href="#town_zone_N_radius_square">town_zone_2_radius_square</a></td><td>Town zone 2 radius squared</td></tr>
+		<tr><td><a href="#town_zone_N_radius_square">town_zone_3_radius_square</a></td><td>Town zone 3 radius squared</td></tr>
+		<tr><td><a href="#town_zone_N_radius_square">town_zone_4_radius_square</a></td><td>Town zone 4 radius squared</td></tr>
+		<tr><td><a href="#town_xy">town_xy</a></td><td>Town tile X and Y coordinates</td></tr>
+	</table>
+
+	<h4 id="town_house_count">Number of town house (mappable variable: town_house_count)</h4>
+	<p>This is the same as <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Towns">town variable B6</a>, except 32 bits and not clamped to a maximum value of 0xFFFF.</p>
+	<p>This requires <font face="monospace">town_uncapped_variables</font>, version 1.</p>
+
+	<h4 id="town_population">Town population (mappable variable: town_population)</h4>
+	<p>This is the same as <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Towns">town variable 82</a>, except 32 bits and not clamped to a maximum value of 0xFFFF.</p>
+	<p>This requires <font face="monospace">town_uncapped_variables</font>, version 1.</p>
+
+	<h4 id="town_zone_N_radius_square">Town zone [0 .. 4] radius squared (mappable variable: town_zone_0_radius_square, town_zone_1_radius_square, town_zone_2_radius_square, town_zone_3_radius_square, town_zone_4_radius_square)</h4>
+	<p>This is the same as <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Towns">town variables 94, 96, 98, 9A, 9C</a>, except 32 bits and not clamped to a maximum value of 0xFFFF.</p>
+	<p>This requires <font face="monospace">town_uncapped_variables</font>, version 1.</p>
+
+	<h4 id="town_xy">Town tile X and Y coordinates (mappable variable: town_xy)</h4>
+	<table>
+	<tr><th>Bits</th><th>Meaning</th></tr>
+	<tr><td>0 - 15</td><td>X coordinate of town tile</td></tr>
+	<tr><td>16 - 31</td><td>Y coordinate of town tile</td></tr>
+	</table>
+	<p>This is similar to town variable 80, except the Y part is in the upper 16 bits and the X part is in the lower 16 bits.</p>
+	<p>This is the same format as <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Houses#XY_Coordinate_of_the_building_.2847.29">house variable 47</a>.</p>
+	<p>This requires <font face="monospace">varaction2_towns_town_xy</font>, version 1.</p>
+
+	<br />
+
+	<h3 id="a3town">Action 3 - Town</h3>
+
+	<p>See the <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3">Action 3 Specification</a> for background information.</p>
+
+	<p>Only generic callbacks are supported, the "number of IDs" field in the action 3 must be set to 0.</p>
+
+	<p>The variational action 2 sprite group referenced must be a callback handler which properly branches on the value of callback variable 0C.</p>
+
+	<p>The following callbacks are defined:</p>
+
+	<table>
+	<tr><th>Callback ID</th><th>Purpose</th><th>Enabled if</th></tr>
+	<tr><td><a href="#town_zone_cb">0xEC008001</a></td><td>Custom town zone radii</td><td>The <font face="monospace">town_zone_callback</font> feature is tested for</td></tr>
+	</table>
+
+	<h4 id="town_zone_cb">Town zone radii callback 0xEC008001:</h4>
+
+	<p>The <font face="monospace">town_zone_callback</font> feature must be tested for to enable this generic callback.</p>
+
+	<p>This callback is called whenever the zone radii of a town need to be recalculated.<br />
+	This can occur when:<br />
+	<ul>
+		<li>The number of houses in the town changes</li>
+		<li>When the game is loaded</li>
+		<li>When settings, NewGRFs or other relavant game configuration is changed</li>
+	</ul>
+	</p>
+
+	<p>The callback is not called if the town zone radii calculations have been manually overriden by settings.</p>
+
+	<p>The return value of the callback is the version of the result format returned by the callback.<br />
+	Currently only version 0 is defined.<br />
+	The callback must store the values of the town zone radii into registers: 0x100 to 0x104, for zones 0 to 4 respectively.
+	</p>
+
+	<p>A callback failure result should be returned to use the default town zone radii calculation (or to allow another GRF to handle the callback).</p>
+
+	<p><b>The <a href="#town_house_count">town_house_count</a> variable should be used instead of variable B6, otherwise the results may be incorrect for large towns.</b><br />
+	Implementers of this callback may assume that the <font face="monospace">town_uncapped_variables</font> feature is present.</p>
+</body>
+</html>

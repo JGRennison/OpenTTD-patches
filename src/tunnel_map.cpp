@@ -11,7 +11,8 @@
 #include "tunnelbridge_map.h"
 
 #include "core/pool_func.hpp"
-#include <unordered_map>
+#include "3rdparty/robin_hood/robin_hood.h"
+#include "3rdparty/cpp-btree/btree_map.h"
 
 #include "safeguards.h"
 
@@ -19,8 +20,8 @@
 TunnelPool _tunnel_pool("Tunnel");
 INSTANTIATE_POOL_METHODS(Tunnel)
 
-static std::unordered_map<TileIndex, TunnelID> tunnel_tile_index_map;
-static std::unordered_multimap<uint64, Tunnel*> tunnel_axis_height_index;
+static robin_hood::unordered_map<TileIndex, TunnelID> tunnel_tile_index_map;
+static btree::btree_multimap<uint64, Tunnel*> tunnel_axis_height_index;
 
 static uint64 GetTunnelAxisHeightCacheKey(TileIndex tile, uint8 height, bool y_axis) {
 	if (y_axis) {
@@ -48,9 +49,9 @@ Tunnel::~Tunnel()
 		tunnel_tile_index_map.erase(this->tile_s);
 	}
 
-	auto range = tunnel_axis_height_index.equal_range(GetTunnelAxisHeightCacheKey(this));
 	bool have_erased = false;
-	for (auto it = range.first; it != range.second; ++it) {
+	const auto key = GetTunnelAxisHeightCacheKey(this);
+	for (auto it = tunnel_axis_height_index.lower_bound(key); it != tunnel_axis_height_index.end() && it->first == key; ++it) {
 		if (it->second == this) {
 			tunnel_axis_height_index.erase(it);
 			have_erased = true;
@@ -70,7 +71,7 @@ void Tunnel::UpdateIndexes()
 		tunnel_tile_index_map[this->tile_s] = this->index;
 	}
 
-	tunnel_axis_height_index.emplace(GetTunnelAxisHeightCacheKey(this), this);
+	tunnel_axis_height_index.insert({ GetTunnelAxisHeightCacheKey(this), this });
 }
 
 /**
@@ -103,8 +104,8 @@ TileIndex GetOtherTunnelEnd(TileIndex tile)
 
 static inline bool IsTunnelInWaySingleAxis(TileIndex tile, int z, IsTunnelInWayFlags flags, bool y_axis, TileIndexDiff tile_diff)
 {
-	const auto tunnels = tunnel_axis_height_index.equal_range(GetTunnelAxisHeightCacheKey(tile, z, y_axis));
-	for (auto it = tunnels.first; it != tunnels.second; ++it) {
+	const auto key = GetTunnelAxisHeightCacheKey(tile, z, y_axis);
+	for (auto it = tunnel_axis_height_index.lower_bound(key); it != tunnel_axis_height_index.end() && it->first == key; ++it) {
 		const Tunnel *t = it->second;
 		if (t->tile_n > tile || tile > t->tile_s) continue;
 
@@ -132,4 +133,24 @@ static inline bool IsTunnelInWaySingleAxis(TileIndex tile, int z, IsTunnelInWayF
 bool IsTunnelInWay(TileIndex tile, int z, IsTunnelInWayFlags flags)
 {
 	return IsTunnelInWaySingleAxis(tile, z, flags, false, 1) || IsTunnelInWaySingleAxis(tile, z, flags, true, TileOffsByDiagDir(DIAGDIR_SE));
+}
+
+void SetTunnelSignalStyle(TileIndex t, TileIndex end, uint8 style)
+{
+	if (style == 0) {
+		/* Style already 0 */
+		if (!HasBit(_m[t].m3, 7)) return;
+
+		ClrBit(_m[t].m3, 7);
+		ClrBit(_m[end].m3, 7);
+	} else {
+		SetBit(_m[t].m3, 7);
+		SetBit(_m[end].m3, 7);
+	}
+	Tunnel::GetByTile(t)->style = style;
+}
+
+uint8 GetTunnelSignalStyleExtended(TileIndex t)
+{
+	return Tunnel::GetByTile(t)->style;
 }

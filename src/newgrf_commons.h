@@ -21,7 +21,7 @@
 #include "company_type.h"
 
 /** Context for tile accesses */
-enum TileContext {
+enum TileContext : uint8 {
 	TCX_NORMAL,         ///< Nothing special.
 	TCX_UPPER_HALFTILE, ///< Querying information about the upper part of a tile with halftile foundation.
 	TCX_ON_BRIDGE,      ///< Querying information about stuff on the bridge (via some bridgehead).
@@ -185,39 +185,39 @@ private:
  */
 struct EntityIDMapping {
 	uint32 grfid;          ///< The GRF ID of the file the entity belongs to
-	uint8  entity_id;      ///< The entity ID within the GRF file
-	uint8  substitute_id;  ///< The (original) entity ID to use if this GRF is not available
+	uint16 entity_id;      ///< The entity ID within the GRF file
+	uint16 substitute_id;  ///< The (original) entity ID to use if this GRF is not available
 };
 
 class OverrideManagerBase {
 protected:
-	uint16 *entity_overrides;
-	uint32 *grfid_overrides;
+	std::vector<uint16> entity_overrides;
+	std::vector<uint32> grfid_overrides;
 
-	uint16 max_offset;       ///< what is the length of the original entity's array of specs
-	uint16 max_new_entities; ///< what is the amount of entities, old and new summed
+	uint16 max_offset;   ///< what is the length of the original entity's array of specs
+	uint16 max_entities; ///< what is the amount of entities, old and new summed
 
-	uint16 invalid_ID;       ///< ID used to detected invalid entities;
+	uint16 invalid_id;   ///< ID used to detected invalid entities
 	virtual bool CheckValidNewID(uint16 testid) { return true; }
 
 public:
-	EntityIDMapping *mapping_ID; ///< mapping of ids from grf files.  Public out of convenience
+	std::vector<EntityIDMapping> mappings; ///< mapping of ids from grf files.  Public out of convenience
 
 	OverrideManagerBase(uint16 offset, uint16 maximum, uint16 invalid);
-	virtual ~OverrideManagerBase();
+	virtual ~OverrideManagerBase() {}
 
 	void ResetOverride();
 	void ResetMapping();
 
-	void Add(uint8 local_id, uint32 grfid, uint entity_type);
-	virtual uint16 AddEntityID(byte grf_local_id, uint32 grfid, byte substitute_id);
+	void Add(uint16 local_id, uint32 grfid, uint entity_type);
+	virtual uint16 AddEntityID(uint16 grf_local_id, uint32 grfid, uint16 substitute_id);
 
 	uint32 GetGRFID(uint16 entity_id) const;
 	uint16 GetSubstituteID(uint16 entity_id) const;
-	virtual uint16 GetID(uint8 grf_local_id, uint32 grfid) const;
+	virtual uint16 GetID(uint16 grf_local_id, uint32 grfid) const;
 
-	inline uint16 GetMaxMapping() const { return max_new_entities; }
-	inline uint16 GetMaxOffset() const { return max_offset; }
+	inline uint16 GetMaxMapping() const { return this->max_entities; }
+	inline uint16 GetMaxOffset() const { return this->max_offset; }
 };
 
 
@@ -237,8 +237,8 @@ public:
 	IndustryOverrideManager(uint16 offset, uint16 maximum, uint16 invalid) :
 			OverrideManagerBase(offset, maximum, invalid) {}
 
-	uint16 AddEntityID(byte grf_local_id, uint32 grfid, byte substitute_id) override;
-	uint16 GetID(uint8 grf_local_id, uint32 grfid) const override;
+	uint16 AddEntityID(uint16 grf_local_id, uint32 grfid, uint16 substitute_id) override;
+	uint16 GetID(uint16 grf_local_id, uint32 grfid) const override;
 
 	void SetEntitySpec(IndustrySpec *inds);
 };
@@ -267,7 +267,7 @@ public:
 struct AirportTileSpec;
 class AirportTileOverrideManager : public OverrideManagerBase {
 protected:
-	virtual bool CheckValidNewID(uint16 testid) { return testid != 0xFF; }
+	virtual bool CheckValidNewID(uint16 testid) override { return testid != 0xFF; }
 public:
 	AirportTileOverrideManager(uint16 offset, uint16 maximum, uint16 invalid) :
 			OverrideManagerBase(offset, maximum, invalid) {}
@@ -278,7 +278,7 @@ public:
 struct ObjectSpec;
 class ObjectOverrideManager : public OverrideManagerBase {
 protected:
-	virtual bool CheckValidNewID(uint16 testid) { return testid != 0xFF; }
+	virtual bool CheckValidNewID(uint16 testid) override { return testid != 0xFF; }
 public:
 	ObjectOverrideManager(uint16 offset, uint16 maximum, uint16 invalid) :
 			OverrideManagerBase(offset, maximum, invalid) {}
@@ -295,7 +295,7 @@ extern ObjectOverrideManager _object_mngr;
 
 uint32 GetTerrainType(TileIndex tile, TileContext context = TCX_NORMAL);
 TileIndex GetNearbyTile(byte parameter, TileIndex tile, bool signed_offsets = true, Axis axis = INVALID_AXIS);
-uint32 GetNearbyTileInformation(TileIndex tile, bool grf_version8);
+uint32 GetNearbyTileInformation(TileIndex tile, bool grf_version8, uint32 mask);
 uint32 GetCompanyInfo(CompanyID owner, const struct Livery *l = nullptr);
 CommandCost GetErrorMessageFromLocationCallbackResult(uint16 cb_res, const GRFFile *grffile, StringID default_error);
 
@@ -335,11 +335,21 @@ struct GRFFileProps : GRFFilePropsBase<1> {
 
 enum SpriteGroupCallbacksUsed : uint8 {
 	SGCU_NONE                           = 0,
-	SGCU_ALL                            = 0xFF,
+	SGCU_ALL                            = 0xF,
 	SGCU_VEHICLE_32DAY_CALLBACK         = 1 << 0,
 	SGCU_VEHICLE_REFIT_COST             = 1 << 1,
 	SGCU_RANDOM_TRIGGER                 = 1 << 2,
+	SGCU_CB36_SPEED_RAILTYPE            = 1 << 3,
+	SGCU_REFIT_CB_ALL_CARGOES           = 1 << 4,
 };
 DECLARE_ENUM_AS_BIT_SET(SpriteGroupCallbacksUsed)
+
+enum CustomSignalSpriteContext : uint8 {
+	CSSC_GUI = 0,
+	CSSC_TRACK,
+	CSSC_TUNNEL_BRIDGE_ENTRANCE,
+	CSSC_TUNNEL_BRIDGE_EXIT,
+	CSSC_BRIDGE_MIDDLE,
+};
 
 #endif /* NEWGRF_COMMONS_H */

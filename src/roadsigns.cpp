@@ -27,6 +27,7 @@
 #include "date_func.h"
 #include "company_func.h"
 #include "station_map.h"
+#include "road_map.h"
 #include "highway.h"
 
 #include "table/sprites.h"
@@ -56,7 +57,7 @@ RoadSignDirection GetYieldSignDirection(TileIndex tile)
         return ROAD_SIGN_DIRECTION_NONE;
 
     const TileIndex neededNeighbor = AddTileIndexDiffCWrap(tile, neighbors[i]);
-    if (IsRoadStopTile(neededNeighbor) || IsRoadBridgeHeadTile(neededNeighbor) || IsRoadTunnelTile(neededNeighbor))
+    if (IsAnyRoadStopTile(neededNeighbor) || IsRoadBridgeHeadTile(neededNeighbor) || IsRoadTunnelTile(neededNeighbor))
         return (RoadSignDirection)i;
 
     if (neededNeighbor == INVALID_TILE || !IsTileType(neededNeighbor, MP_ROAD))

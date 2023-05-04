@@ -19,6 +19,7 @@
 #include "newgrf.h"
 #include "economy_func.h"
 
+#include <array>
 #include <vector>
 
 enum RoadTramType : bool {
@@ -40,14 +41,14 @@ enum RoadTypeFlags {
 	ROTF_NO_LEVEL_CROSSING,                                ///< Bit number for disabling level crossing
 	ROTF_NO_HOUSES,                                        ///< Bit number for setting this roadtype as not house friendly
 	ROTF_HIDDEN,                                           ///< Bit number for hidden from construction.
-	ROTF_TOWN_BUILD,                                       ///< Bit number for allowing towns to build this roadtype.
+	ROTF_TOWN_BUILD,                                       ///< Bit number for allowing towns to build this roadtype. Does not override ROTF_HIDDEN.
 
 	ROTFB_NONE = 0,                                        ///< All flags cleared.
 	ROTFB_CATENARY          = 1 << ROTF_CATENARY,          ///< Value for drawing a catenary.
 	ROTFB_NO_LEVEL_CROSSING = 1 << ROTF_NO_LEVEL_CROSSING, ///< Value for disabling a level crossing.
 	ROTFB_NO_HOUSES         = 1 << ROTF_NO_HOUSES,         ///< Value for for setting this roadtype as not house friendly.
 	ROTFB_HIDDEN            = 1 << ROTF_HIDDEN,            ///< Value for hidden from construction.
-	ROTFB_TOWN_BUILD        = 1 << ROTF_TOWN_BUILD,        ///< Value for allowing towns to build this roadtype.
+	ROTFB_TOWN_BUILD        = 1 << ROTF_TOWN_BUILD,        ///< Value for allowing towns to build this roadtype. Does not override ROTFB_HIDDEN.
 };
 DECLARE_ENUM_AS_BIT_SET(RoadTypeFlags)
 
@@ -55,12 +56,20 @@ DECLARE_ENUM_AS_BIT_SET(RoadTypeFlags)
 enum RoadTypeExtraFlags {
 	RXTF_NOT_AVAILABLE_AI_GS = 0,                                ///< Bit number for unavailable for AI/GS
 	RXTF_NO_TOWN_MODIFICATION,                                   ///< Bit number for no town modification
+	RXTF_NO_TUNNELS,                                             ///< Bit number for no tunnels
+	RXTF_NO_TRAIN_COLLISION,                                     ///< Bit number for no train collision
 
 	RXTFB_NONE = 0,                                              ///< All flags cleared.
-	RXTFB_NOT_AVAILABLE_AI_GS = 1 << RXTF_NOT_AVAILABLE_AI_GS,   ///< Value for unavailable for AI/GS
-	RXTFB_NO_TOWN_MODIFICATION = 1 << RXTF_NO_TOWN_MODIFICATION, ///< Value for no town modification
 };
 DECLARE_ENUM_AS_BIT_SET(RoadTypeExtraFlags)
+
+enum RoadTypeCollisionMode : uint8 {
+	RTCM_NORMAL = 0,
+	RTCM_NONE,
+	RTCM_ELEVATED,
+
+	RTCM_END,
+};
 
 struct SpriteGroup;
 
@@ -69,7 +78,7 @@ enum RoadTypeSpriteGroup {
 	ROTSG_CURSORS,        ///< Optional: Cursor and toolbar icon images
 	ROTSG_OVERLAY,        ///< Optional: Images for overlaying track
 	ROTSG_GROUND,         ///< Required: Main group of ground images
-	ROTSG_reserved1,      ///<           Placeholder, if we need specific tunnel sprites.
+	ROTSG_TUNNEL,         ///< Optional: Ground images for tunnels
 	ROTSG_CATENARY_FRONT, ///< Optional: Catenary front
 	ROTSG_CATENARY_BACK,  ///< Optional: Catenary back
 	ROTSG_BRIDGE,         ///< Required: Bridge surface images
@@ -77,6 +86,7 @@ enum RoadTypeSpriteGroup {
 	ROTSG_DEPOT,          ///< Optional: Depot images
 	ROTSG_reserved3,      ///<           Placeholder, if we add road fences (for highways).
 	ROTSG_ROADSTOP,       ///< Required: Drive-in stop surface
+	ROTSG_ONEWAY,         ///< Optional: One-way indicator images
 	ROTSG_END,
 };
 
@@ -138,6 +148,11 @@ public:
 	 * Bit mask of road type extra flags
 	 */
 	RoadTypeExtraFlags extra_flags;
+
+	/**
+	 * Collision mode
+	 */
+	RoadTypeCollisionMode collision_mode;
 
 	/**
 	 * Cost multiplier for building this road type
@@ -311,14 +326,28 @@ static inline bool RoadNoLevelCrossing(RoadType roadtype)
 	return HasBit(GetRoadTypeInfo(roadtype)->flags, ROTF_NO_LEVEL_CROSSING);
 }
 
+/**
+ * Test if road disallows tunnels
+ * @param roadtype The roadtype we are testing
+ * @return True iff the roadtype disallows tunnels
+ */
+static inline bool RoadNoTunnels(RoadType roadtype)
+{
+	assert(roadtype < ROADTYPE_END);
+	return HasBit(GetRoadTypeInfo(roadtype)->extra_flags, RXTF_NO_TUNNELS);
+}
+
 RoadType GetRoadTypeByLabel(RoadTypeLabel label, bool allow_alternate_labels = true);
 
 void ResetRoadTypes();
 void InitRoadTypes();
+void InitRoadTypesCaches();
 RoadType AllocateRoadType(RoadTypeLabel label, RoadTramType rtt);
 bool HasAnyRoadTypesAvail(CompanyID company, RoadTramType rtt);
 
 extern std::vector<RoadType> _sorted_roadtypes;
 extern RoadTypes _roadtypes_hidden_mask;
+extern std::array<RoadTypes, RTCM_END> _collision_mode_roadtypes;
+extern RoadTypes _roadtypes_non_train_colliding;
 
 #endif /* ROAD_H */

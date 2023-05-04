@@ -30,8 +30,7 @@ bool IsSnowLineSet();
 void SetSnowLine(byte table[SNOW_LINE_MONTHS][SNOW_LINE_DAYS]);
 byte GetSnowLineUncached();
 void UpdateCachedSnowLine();
-byte HighestSnowLine();
-byte LowestSnowLine();
+void UpdateCachedSnowLineBounds();
 void ClearSnowLine();
 
 inline byte GetSnowLine()
@@ -40,11 +39,35 @@ inline byte GetSnowLine()
 	return _cached_snowline;
 }
 
+inline byte HighestSnowLine()
+{
+	extern byte _cached_highest_snowline;
+	return _cached_highest_snowline;
+}
+
+inline byte LowestSnowLine()
+{
+	extern byte _cached_lowest_snowline;
+	return _cached_lowest_snowline;
+}
+
+inline byte HighestTreePlacementSnowLine()
+{
+	extern byte _cached_tree_placement_highest_snowline;
+	return _cached_tree_placement_highest_snowline;
+}
+
+inline byte LowestTreePlacementSnowLine()
+{
+	return LowestSnowLine();
+}
+
 int GetSlopeZInCorner(Slope tileh, Corner corner);
+Slope GetFoundationSlopeFromTileSlope(TileIndex tile, Slope tileh, int *z = nullptr);
 Slope GetFoundationSlope(TileIndex tile, int *z = nullptr);
 
 uint GetPartialPixelZ(int x, int y, Slope corners);
-int GetSlopePixelZ(int x, int y);
+int GetSlopePixelZ(int x, int y, bool ground_vehicle = false);
 int GetSlopePixelZOutsideMap(int x, int y);
 void GetSlopePixelZOnEdge(Slope tileh, DiagDirection edge, int *z1, int *z2);
 
@@ -72,7 +95,7 @@ static inline int GetSlopePixelZInCorner(Slope tileh, Corner corner)
  */
 static inline Slope GetFoundationPixelSlope(TileIndex tile, int *z)
 {
-	assert(z != nullptr);
+	dbg_assert(z != nullptr);
 	Slope s = GetFoundationSlope(tile, z);
 	*z *= TILE_HEIGHT;
 	return s;
@@ -104,7 +127,7 @@ static inline Point RemapCoords(int x, int y, int z)
  */
 static inline Point RemapCoords2(int x, int y)
 {
-	return RemapCoords(x, y, GetSlopePixelZ(x, y));
+	return RemapCoords(x, y, GetSlopePixelZ(x, y, false));
 }
 
 /**
@@ -144,6 +167,7 @@ bool HasFoundationNE(TileIndex tile, Slope slope_here, uint z_here);
 
 void DoClearSquare(TileIndex tile);
 void RunTileLoop();
+void RunAuxiliaryTileLoop();
 
 void InitializeLandscape();
 void GenerateLandscape(byte mode);

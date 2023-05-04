@@ -22,6 +22,7 @@
 extern SaveLoadVersion _sl_version;
 extern byte            _sl_minor_version;
 extern const SaveLoadVersion SAVEGAME_VERSION;
+extern const SaveLoadVersion MAX_LOAD_SAVEGAME_VERSION;
 
 namespace upstream_sl {
 
@@ -318,6 +319,7 @@ struct SaveLoadCompat {
 /**
  * Storage of simple variables, references (pointers), and arrays.
  * @param cmd      Load/save type. @see SaveLoadType
+ * @param name     Field name for table chunks.
  * @param base     Name of the class or struct containing the variable.
  * @param variable Name of the variable in the class or struct referenced by \a base.
  * @param type     Storage of the data in memory and in the savegame.
@@ -326,8 +328,20 @@ struct SaveLoadCompat {
  * @param extra    Extra data to pass to the address callback function.
  * @note In general, it is better to use one of the SLE_* macros below.
  */
-#define SLE_GENERAL(cmd, base, variable, type, length, from, to, extra) SaveLoad {#variable, cmd, type, length, from, to, cpp_sizeof(base, variable), [] (void *b, size_t) -> void * { assert(b != nullptr); return const_cast<void *>(static_cast<const void *>(std::addressof(static_cast<base *>(b)->variable))); }, extra, nullptr}
-#define SLE_GENERAL2(cmd, base, name, variable, type, length, from, to, extra) SaveLoad {name, cmd, type, length, from, to, cpp_sizeof(base, variable), [] (void *b, size_t) -> void * { assert(b != nullptr); return const_cast<void *>(static_cast<const void *>(std::addressof(static_cast<base *>(b)->variable))); }, extra, nullptr}
+#define SLE_GENERAL_NAME(cmd, name, base, variable, type, length, from, to, extra) SaveLoad {name, cmd, type, length, from, to, cpp_sizeof(base, variable), [] (void *b, size_t) -> void * { assert(b != nullptr); return const_cast<void *>(static_cast<const void *>(std::addressof(static_cast<base *>(b)->variable))); }, extra, nullptr}
+
+/**
+ * Storage of simple variables, references (pointers), and arrays with a custom name.
+ * @param cmd      Load/save type. @see SaveLoadType
+ * @param base     Name of the class or struct containing the variable.
+ * @param variable Name of the variable in the class or struct referenced by \a base.
+ * @param type     Storage of the data in memory and in the savegame.
+ * @param from     First savegame version that has the field.
+ * @param to       Last savegame version that has the field.
+ * @param extra    Extra data to pass to the address callback function.
+ * @note In general, it is better to use one of the SLE_* macros below.
+ */
+#define SLE_GENERAL(cmd, base, variable, type, length, from, to, extra) SLE_GENERAL_NAME(cmd, #variable, base, variable, type, length, from, to, extra)
 
 /**
  * Storage of a variable in some savegame versions.
@@ -338,7 +352,17 @@ struct SaveLoadCompat {
  * @param to       Last savegame version that has the field.
  */
 #define SLE_CONDVAR(base, variable, type, from, to) SLE_GENERAL(SL_VAR, base, variable, type, 0, from, to, 0)
-#define SLE_CONDVAR2(base, name, variable, type, from, to) SLE_GENERAL2(SL_VAR, base, name, variable, type, 0, from, to, 0)
+
+/**
+ * Storage of a variable in some savegame versions.
+ * @param base     Name of the class or struct containing the variable.
+ * @param variable Name of the variable in the class or struct referenced by \a base.
+ * @param name     Field name for table chunks.
+ * @param type     Storage of the data in memory and in the savegame.
+ * @param from     First savegame version that has the field.
+ * @param to       Last savegame version that has the field.
+ */
+#define SLE_CONDVARNAME(base, variable, name, type, from, to) SLE_GENERAL_NAME(SL_VAR, name, base, variable, type, 0, from, to, 0)
 
 /**
  * Storage of a reference in some savegame versions.
@@ -429,7 +453,7 @@ struct SaveLoadCompat {
  * @param type     Storage of the data in memory and in the savegame.
  */
 #define SLE_VAR(base, variable, type) SLE_CONDVAR(base, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
-#define SLE_VAR2(base, name, variable, type) SLE_CONDVAR2(base, name, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
+#define SLE_VAR2(base, name, variable, type) SLE_CONDVARNAME(base, variable, name, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
  * Storage of a reference in every version of a savegame.
@@ -740,18 +764,6 @@ static inline bool IsSavegameVersionBefore(SaveLoadVersion major, byte minor = 0
 static inline bool IsSavegameVersionBeforeOrAt(SaveLoadVersion major)
 {
 	return _sl_version <= major;
-}
-
-/**
- * Checks if some version from/to combination falls within the range of the
- * active savegame version.
- * @param version_from Inclusive savegame version lower bound.
- * @param version_to   Exclusive savegame version upper bound. SL_MAX_VERSION if no upper bound.
- * @return Active savegame version falls within the given range.
- */
-static inline bool SlIsObjectCurrentlyValid(SaveLoadVersion version_from, SaveLoadVersion version_to)
-{
-	return version_from <= SAVEGAME_VERSION && SAVEGAME_VERSION < version_to;
 }
 
 /**

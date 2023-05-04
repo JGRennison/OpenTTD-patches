@@ -13,6 +13,7 @@
 /** %Window numbers. */
 enum WindowNumberEnum {
 	WN_GAME_OPTIONS_AI = 0,          ///< AI settings.
+	WN_GAME_OPTIONS_GS,              ///< GS settings.
 	WN_GAME_OPTIONS_ABOUT,           ///< About window.
 	WN_GAME_OPTIONS_NEWGRF_STATE,    ///< NewGRF settings.
 	WN_GAME_OPTIONS_GAME_OPTIONS,    ///< Game options.
@@ -106,7 +107,7 @@ enum WindowClass {
 	 *   - 0 = #ToolTipsWidgets
 	 */
 	WC_TOOLTIPS,
-	
+
 	/**
 	* Station rating tooltip window; %Window numbers:
 	*   - 0 = #ToolTipsWidgets
@@ -167,10 +168,10 @@ enum WindowClass {
 
 
 	/**
-	 * AI settings; %Window numbers:
-	 *   - 0 = #AISettingsWidgets
+	 * Script settings; %Window numbers:
+	 *   - 0 = #ScriptSettingsWidgets
 	 */
-	WC_AI_SETTINGS,
+	WC_SCRIPT_SETTINGS,
 
 	/**
 	 * NewGRF parameters; %Window numbers:
@@ -294,10 +295,10 @@ enum WindowClass {
 	WC_SIGN_LIST,
 
 	/**
-	 * AI list; %Window numbers:
-	 *   - 0 = #AIListWidgets
+	 * Scripts list; %Window numbers:
+	 *   - 0 = #ScriptListWidgets
 	 */
-	WC_AI_LIST,
+	WC_SCRIPT_LIST,
 
 	/**
 	 * Goals list; %Window numbers:
@@ -632,6 +633,7 @@ enum WindowClass {
 	/**
 	 * Game options window; %Window numbers:
 	 *   - #WN_GAME_OPTIONS_AI = #AIConfigWidgets
+	 *   - #WN_GAME_OPTIONS_GS = #GSConfigWidgets
 	 *   - #WN_GAME_OPTIONS_ABOUT = #AboutWidgets
 	 *   - #WN_GAME_OPTIONS_NEWGRF_STATE = #NewGRFStateWidgets
 	 *   - #WN_GAME_OPTIONS_GAME_OPTIONS = #GameOptionsWidgets
@@ -684,10 +686,10 @@ enum WindowClass {
 
 
 	/**
-	 * AI debug window; %Window numbers:
-	 *   - 0 = #AIDebugWidgets
+	 * Script debug window; %Window numbers:
+	 *   - 0 = #ScriptDebugWidgets
 	 */
-	WC_AI_DEBUG,
+	WC_SCRIPT_DEBUG,
 
 	/**
 	 * NewGRF inspect (debug); %Window numbers:

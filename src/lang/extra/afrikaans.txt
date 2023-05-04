@@ -1,0 +1,44 @@
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mpu
+STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
+STR_UNIT_NAME_VELOCITY_SI                                       :m/s
+
+STR_BUTTON_RENAME                                               :{BLACK}Hernoem
+
+STR_VEHICLE_TYPE_TRAINS                                         :Treine
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Padvoertuie
+STR_VEHICLE_TYPE_SHIPS                                          :Skepe
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Vliegtuie
+
+# Tracerestrict GUI
+
+# Programmable Pre-Signals
+
+#House construction window (for SE only)
+
+#Town select window (for SE only)
+
+STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Sneeu lyn hoogte:
+STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Beweeg die sneeu lyn een op
+STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Beweeg die sneeu lyn een af
+STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Verander sneeu lyn hoogte
+
+# Town tooltip
+
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Ontwerp: {GOLD}{NUM}
+
+# Cargo type orders Window
+
+# Plans window
+
+# Clear area query
+
+# Plan related errors
+
+STR_TRADITIONAL_TRAIN_NAME                                      :Trein {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Pad Voertuig {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Skip {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Vliegtuig {COMMA}
+
+# Scheduled Dispatch
+
+# Modifier key toggle window

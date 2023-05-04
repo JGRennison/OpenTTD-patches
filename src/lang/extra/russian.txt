@@ -1,0 +1,79 @@
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :миль/ч
+STR_UNIT_NAME_VELOCITY_METRIC                                   :км/ч
+STR_UNIT_NAME_VELOCITY_SI                                       :м/с
+STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :клетки в день
+
+STR_BUTTON_RENAME                                               :{BLACK}Переименовать
+
+STR_MEASURE_DIST_HEIGHTDIFF                                     :{BLACK}Расстояние «Манхэттэн»: {NUM}{}Расстояние по прямой: {NUM}{}Расстояние от ближайшего края: {NUM}{}Высота над уровнем моря: {HEIGHT}{}Разница высот: {HEIGHT}
+
+STR_VEHICLE_TYPE_TRAINS                                         :Ж/д транспорт
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Автотранспорт
+STR_VEHICLE_TYPE_SHIPS                                          :Водный транспорт
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Авиатранспорт
+
+STR_CONFIG_SETTING_SIMULATE_SIGNALS                             :Симуляция светофоров в туннелях и на мостах каждые: {STRING}
+STR_CONFIG_SETTING_SIMULATE_SIGNALS_VALUE                       :{COMMA} клет{P ку ки ок}
+
+STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE                       :Взымать плату за починку тс: {STRING}
+STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE_HELPTEXT              :Если включено, в депо бужет взыматься плата за ремонт каждой поломки транспортного средства
+
+STR_CONFIG_SETTING_REPAIR_COST                                  :Стоимость ремонта: 1/{STRING} полной стоимости тс
+STR_CONFIG_SETTING_REPAIR_COST_HELPTEXT                         :Стоимость ремонта одной поломки транспортного средства
+
+STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Среднее время в пути: {STRING}
+STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Ёмкость: {CARGO_LONG}
+
+# Tracerestrict GUI
+
+# Programmable Pre-Signals
+
+STR_LANDSCAPING_TOOLTIP_RULER_TOOL                              :{BLACK}Виртуальная линейка для измерения расстояний и высот
+
+#House construction window (for SE only)
+
+#Town select window (for SE only)
+
+STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_SIGNAL                      :Железнодорожный туннель с симуляцией светофоров
+STR_LAI_BRIDGE_DESCRIPTION_RAILROAD_SIGNAL                      :Железнодорожный мост с симуляцией светофоров
+
+STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Снеговая линия:
+STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Поднять снеговую линию
+STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Опустить снеговую линию
+STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Изменить высоту снеговой линии
+
+# Town tooltip
+
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Разработан в {GOLD}{NUM} г.
+
+STR_BUY_REFIT_VEHICLE_BUY_VEHICLE_BUTTON                        :{BLACK}Переоборудовать
+STR_BUY_REFIT_VEHICLE_BUY_VEHICLE_TOOLTIP                       :{BLACK}Переоборудовать купленное транспортное средство сразу после покупки для выделенного вида груза
+
+STR_CONDITIONAL_FREE_PLATFORMS                                  :Перейти к заданию {COMMA} когда след. станция {STRING} {COMMA} свободн{P ая ые ых} платформ{P а ы ""}
+STR_CONDITIONAL_PERCENT                                         :Перейти к заданию {COMMA} {COMMA} процентов времени
+
+STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS                        :принимает
+STR_ORDER_CONDITIONAL_COMPARATOR_DOES_NOT_ACCEPT                :не принимает
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS                            :имеет
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS_NO                         :не имеет
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS_LESS_THAN                  :имеет меньше чем
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS_LESS_EQUALS                :имеет меньше или равно
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_THAN                  :имеет больше чем
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_EQUALS                :имеет больше или равно
+
+# Cargo type orders Window
+
+# Plans window
+
+# Clear area query
+
+# Plan related errors
+
+STR_TRADITIONAL_TRAIN_NAME                                      :Поезд №{COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Автомобиль №{COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Судно №{COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Борт №{COMMA}
+
+# Scheduled Dispatch
+
+# Modifier key toggle window

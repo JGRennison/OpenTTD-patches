@@ -248,6 +248,7 @@ void SndCopyToPool()
 
 /**
  * Decide 'where' (between left and right speaker) to play the sound effect.
+ * Note: Callers must determine if sound effects are enabled. This plays a sound regardless of the setting.
  * @param sound Sound effect to play
  * @param left   Left edge of virtual coordinates where the sound is produced
  * @param right  Right edge of virtual coordinates where the sound is produced
@@ -256,8 +257,7 @@ void SndCopyToPool()
  */
 static void SndPlayScreenCoordFx(SoundID sound, int left, int right, int top, int bottom)
 {
-	if (_settings_client.music.effect_vol == 0) return;
-
+	/* Iterate from back, so that main viewport is checked first */
 	for (const Window *w : Window::IterateFromBack()) {
 		const Viewport *vp = w->viewport;
 
@@ -280,6 +280,8 @@ static void SndPlayScreenCoordFx(SoundID sound, int left, int right, int top, in
 
 void SndPlayTileFx(SoundID sound, TileIndex tile)
 {
+	if (_settings_client.music.effect_vol == 0) return;
+
 	/* emits sound from center of the tile */
 	int x = std::min(MapMaxX() - 1, TileX(tile)) * TILE_SIZE + TILE_SIZE / 2;
 	int y = std::min(MapMaxY() - 1, TileY(tile)) * TILE_SIZE - TILE_SIZE / 2;
@@ -292,6 +294,8 @@ void SndPlayTileFx(SoundID sound, TileIndex tile)
 
 void SndPlayVehicleFx(SoundID sound, const Vehicle *v)
 {
+	if (_settings_client.music.effect_vol == 0) return;
+
 	SndPlayScreenCoordFx(sound,
 		v->coord.left, v->coord.right,
 		v->coord.top, v->coord.bottom

@@ -19,6 +19,7 @@
 #include "game_info.hpp"
 
 #include "table/strings.h"
+#include "table/strgen_tables.h"
 
 #include <stdarg.h>
 #include <memory>
@@ -225,6 +226,7 @@ public:
 GameStrings *LoadTranslations()
 {
 	const GameInfo *info = Game::GetInfo();
+	assert(info != nullptr);
 	std::string basename(info->GetMainScript());
 	auto e = basename.rfind(PATHSEPCHAR);
 	if (e == std::string::npos) return nullptr;
@@ -272,6 +274,31 @@ GameStrings *LoadTranslations()
 	}
 }
 
+static StringParam::ParamType GetParamType(const CmdStruct *cs)
+{
+	if (cs->value == SCC_RAW_STRING_POINTER) return StringParam::RAW_STRING;
+	if (cs->value == SCC_STRING || cs != TranslateCmdForCompare(cs)) return StringParam::STRING;
+	return StringParam::OTHER;
+}
+
+static void ExtractStringParams(const StringData &data, StringParamsList &params)
+{
+	for (size_t i = 0; i < data.max_strings; i++) {
+		const LangString *ls = data.strings[i];
+
+		if (ls != nullptr) {
+			StringParams &param = params.emplace_back();
+			ParsedCommandStruct pcs;
+			ExtractCommandString(&pcs, ls->english, false);
+
+			for (const CmdStruct *cs : pcs.cmd) {
+				if (cs == nullptr) break;
+				param.emplace_back(GetParamType(cs), cs->consumes);
+			}
+		}
+	}
+}
+
 /** Compile the language. */
 void GameStrings::Compile()
 {
@@ -281,6 +308,8 @@ void GameStrings::Compile()
 	if (_errors != 0) throw std::exception();
 
 	this->version = data.Version();
+
+	ExtractStringParams(data, this->string_params);
 
 	StringNameWriter id_writer(this->string_names);
 	id_writer.WriteHeader(data);
@@ -309,6 +338,34 @@ const char *GetGameStringPtr(uint id)
 {
 	if (id >= _current_data->cur_language->lines.size()) return GetStringPtr(STR_UNDEFINED);
 	return _current_data->cur_language->lines[id].c_str();
+}
+
+/**
+ * Get the string parameters of a particular game string.
+ * @param id The ID of the game string.
+ * @return The string parameters.
+ */
+const StringParams &GetGameStringParams(uint id)
+{
+	/* An empty result for STR_UNDEFINED. */
+	static StringParams empty;
+
+	if (id >= _current_data->string_params.size()) return empty;
+	return _current_data->string_params[id];
+}
+
+/**
+ * Get the name of a particular game string.
+ * @param id The ID of the game string.
+ * @return The name of the string.
+ */
+const std::string &GetGameStringName(uint id)
+{
+	/* The name for STR_UNDEFINED. */
+	static const std::string undefined = "STR_UNDEFINED";
+
+	if (id >= _current_data->string_names.size()) return undefined;
+	return _current_data->string_names[id];
 }
 
 /**

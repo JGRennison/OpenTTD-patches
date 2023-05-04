@@ -1,0 +1,44 @@
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
+STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
+STR_UNIT_NAME_VELOCITY_SI                                       :m/s
+
+STR_BUTTON_RENAME                                               :{BLACK}Thoir ainm ùr air
+
+STR_VEHICLE_TYPE_TRAINS                                         :Trèanaichean
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Carbadan-rathaid
+STR_VEHICLE_TYPE_SHIPS                                          :Longan
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Carbadan-adhair
+
+# Tracerestrict GUI
+
+# Programmable Pre-Signals
+
+#House construction window (for SE only)
+
+#Town select window (for SE only)
+
+STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Àirde na loidhne-shneachda:
+STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Gluais an loidhne-shneachda suas aon cheum
+STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Gluais an loidhne-shneachda sìos aon cheum
+STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Atharraich àirde na loidhne-shneachda
+
+# Town tooltip
+
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Air a dhealbhadh: {GOLD}{NUM}
+
+# Cargo type orders Window
+
+# Plans window
+
+# Clear area query
+
+# Plan related errors
+
+STR_TRADITIONAL_TRAIN_NAME                                      :{G=f}Trèan {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Carbad-rathaid {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :{G=f}Long {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Carbad-adhair {COMMA}
+
+# Scheduled Dispatch
+
+# Modifier key toggle window

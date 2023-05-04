@@ -69,7 +69,7 @@ static bool CanPlantTreesOnTile(TileIndex tile, bool allow_desert)
 {
 	if ((_settings_game.game_creation.tree_placer == TP_PERFECT) &&
 		(_settings_game.game_creation.landscape == LT_ARCTIC) &&
-		(GetTileZ(tile) > (_settings_game.game_creation.snow_line_height + _settings_game.construction.trees_around_snow_line_range))) {
+		(GetTileZ(tile) > (HighestTreePlacementSnowLine() + _settings_game.construction.trees_around_snow_line_range))) {
 		return false;
 	}
 
@@ -98,8 +98,8 @@ static bool CanPlantTreesOnTile(TileIndex tile, bool allow_desert)
  */
 static void PlantTreesOnTile(TileIndex tile, TreeType treetype, uint count, uint growth)
 {
-	assert(treetype != TREE_INVALID);
-	assert_tile(CanPlantTreesOnTile(tile, true), tile);
+	dbg_assert(treetype != TREE_INVALID);
+	dbg_assert_tile(CanPlantTreesOnTile(tile, true), tile);
 
 	TreeGround ground;
 	uint density = 3;
@@ -194,7 +194,13 @@ static TreeType GetRandomTreeType(TileIndex tile, uint seed)
 			if (range != _previous_trees_around_snow_line_range) RecalculateArcticTreeOccuranceArray();
 
 			int z = GetTileZ(tile);
-			int height_above_snow_line = z - _settings_game.game_creation.snow_line_height;
+			int height_above_snow_line = 0;
+
+			if (z > HighestTreePlacementSnowLine()) {
+				height_above_snow_line = z - HighestTreePlacementSnowLine();
+			} else if (z < LowestTreePlacementSnowLine()) {
+				height_above_snow_line = z - LowestTreePlacementSnowLine();
+			}
 			uint normalised_distance = (height_above_snow_line < 0) ? -height_above_snow_line : height_above_snow_line + 1;
 			bool arctic_tree = false;
 			if (normalised_distance < _arctic_tree_occurance.size()) {
@@ -242,9 +248,6 @@ static void PlaceTree(TileIndex tile, uint32 r)
 		if (ground != TREE_GROUND_SNOW_DESERT && ground != TREE_GROUND_ROUGH_SNOW && ground != TREE_GROUND_SHORE) {
 			SetTreeGroundDensity(tile, (TreeGround)GB(r, 28, 1), 3);
 		}
-
-		/* Set the counter to a random start value */
-		SetTreeCounter(tile, (TreeGround)GB(r, 24, 4));
 	}
 }
 
@@ -358,7 +361,7 @@ int MaxTreeCount(const TileIndex tile)
 
 	if (_settings_game.game_creation.landscape == LT_ARCTIC) {
 		if (_settings_game.construction.trees_around_snow_line_range != _previous_trees_around_snow_line_range) RecalculateArcticTreeOccuranceArray();
-		const uint height_above_snow_line = std::max<int>(0, tile_z - _settings_game.game_creation.snow_line_height);
+		const uint height_above_snow_line = std::max<int>(0, tile_z - HighestTreePlacementSnowLine());
 		max_trees_snow_line_based = (height_above_snow_line < _arctic_tree_occurance.size()) ?
 			(1 + (_arctic_tree_occurance[height_above_snow_line] * 4) / 255) :
 			0;
@@ -454,7 +457,8 @@ void RemoveAllTrees()
  */
 uint PlaceTreeGroupAroundTile(TileIndex tile, TreeType treetype, uint radius, uint count, bool set_zone)
 {
-	assert(treetype < TREE_TOYLAND + TREE_COUNT_TOYLAND);
+	dbg_assert(_game_mode == GM_EDITOR); // Due to InteractiveRandom being used in this function
+	dbg_assert(treetype < TREE_TOYLAND + TREE_COUNT_TOYLAND);
 	const bool allow_desert = treetype == TREE_CACTUS;
 	uint planted = 0;
 
@@ -533,14 +537,16 @@ void GenerateTrees()
 
 /**
  * Plant a tree.
- * @param tile end tile of area-drag
+ * @param end_tile end tile of area-drag
  * @param flags type of operation
- * @param p1 tree type, TREE_INVALID means random.
+ * @param p1 various bitstuffed data.
+ * - p1 = (bit 0 -  7) - tree type, TREE_INVALID means random.
+ * - p1 = (bit      8) - whether to use the Orthogonal (0) or Diagonal (1) iterator.
  * @param p2 start tile of area-drag of tree plantation
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdPlantTree(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdPlantTree(TileIndex end_tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	StringID msg = INVALID_STRING_ID;
 	CommandCost cost(EXPENSES_OTHER);
@@ -553,8 +559,9 @@ CommandCost CmdPlantTree(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 	Company *c = (_game_mode != GM_EDITOR) ? Company::GetIfValid(_current_company) : nullptr;
 	int limit = (c == nullptr ? INT32_MAX : GB(c->tree_limit, 16, 16));
 
-	TileArea ta(tile, p2);
-	for (TileIndex tile : ta) {
+	OrthogonalOrDiagonalTileIterator iter(end_tile, p2, HasBit(p1, 8));
+	for (; *iter != INVALID_TILE; ++iter) {
+		TileIndex tile = *iter;
 		switch (GetTileType(tile)) {
 			case MP_TREES: {
 				bool grow_existing_tree_instead = false;
@@ -722,7 +729,7 @@ static void DrawTile_Trees(TileInfo *ti, DrawTileProcParams params)
 		index += 164 - (TREE_SUB_ARCTIC << 2);
 	}
 
-	assert(index < lengthof(_tree_layout_sprite));
+	dbg_assert(index < lengthof(_tree_layout_sprite));
 
 	const PalSpriteID *s = _tree_layout_sprite[index];
 	const TreePos *d = _tree_layout_xy[GB(tmp, 2, 2)];
@@ -781,7 +788,7 @@ static void DrawTile_Trees(TileInfo *ti, DrawTileProcParams params)
 }
 
 
-static int GetSlopePixelZ_Trees(TileIndex tile, uint x, uint y)
+static int GetSlopePixelZ_Trees(TileIndex tile, uint x, uint y, bool ground_vehicle)
 {
 	int z;
 	Slope tileh = GetTilePixelSlope(tile, &z);
@@ -895,6 +902,15 @@ static bool CanPlantExtraTrees(TileIndex tile)
 		_settings_game.construction.extra_tree_placement == ETP_SPREAD_ALL);
 }
 
+static bool IsTemperateTreeOnSnow(TileIndex tile)
+{
+	if (_settings_game.game_creation.landscape == LT_ARCTIC && IsInsideMM(GetTreeType(tile), TREE_TEMPERATE, TREE_SUB_ARCTIC)) {
+		TreeGround ground = GetTreeGround(tile);
+		if (ground == TREE_GROUND_SNOW_DESERT || ground == TREE_GROUND_ROUGH_SNOW) return true;
+	}
+	return false;
+}
+
 static void TileLoop_Trees(TileIndex tile)
 {
 	if (GetTreeGround(tile) == TREE_GROUND_SHORE) {
@@ -908,10 +924,13 @@ static void TileLoop_Trees(TileIndex tile)
 
 	AmbientSoundEffect(tile);
 
-	uint treeCounter = GetTreeCounter(tile);
+	/* _tick_counter is incremented by 256 between each call, so ignore lower 8 bits.
+	 * Also, we add tile % 31 to spread the updates evenly over the map,
+	 * where 31 is just some prime number that looks ok. */
+	uint32 cycle = (uint32)((tile % 31) + (_tick_counter >> 8));
 
 	/* Handle growth of grass (under trees/on MP_TREES tiles) at every 8th processings, like it's done for grass on MP_CLEAR tiles. */
-	if ((treeCounter & 7) == 7 && GetTreeGround(tile) == TREE_GROUND_GRASS) {
+	if ((cycle & 7) == 7 && GetTreeGround(tile) == TREE_GROUND_GRASS) {
 		uint density = GetTreeDensity(tile);
 		if (density < 3) {
 			SetTreeGroundDensity(tile, TREE_GROUND_GRASS, density + 1);
@@ -919,22 +938,20 @@ static void TileLoop_Trees(TileIndex tile)
 		}
 	}
 
+	if ((cycle & 15) < 15) return;
+
 	if (_settings_game.construction.extra_tree_placement == ETP_NO_GROWTH_NO_SPREAD) return;
 
-	if (GetTreeCounter(tile) < 15) {
-		if (_settings_game.construction.tree_growth_rate > 0) {
-			/* slow, very slow, extremely slow */
-			uint16 grow_slowing_values[4] = { 0x10000 / 5, 0x10000 / 20, 0x10000 / 120, 0 };
+	if (_settings_game.construction.tree_growth_rate > 0) {
+		if (_settings_game.construction.tree_growth_rate == 4) return;
 
-			if (GB(Random(), 0, 16) < grow_slowing_values[_settings_game.construction.tree_growth_rate - 1]) {
-				AddTreeCounter(tile, 1);
-			}
-		} else {
-			AddTreeCounter(tile, 1);
+		/* slow, very slow, extremely slow */
+		uint16 grow_slowing_values[4] = { 0x10000 / 5, 0x10000 / 20, 0x10000 / 120, 0 };
+
+		if (GB(Random(), 0, 16) >= grow_slowing_values[_settings_game.construction.tree_growth_rate - 1]) {
+			return;
 		}
-		return;
 	}
-	SetTreeCounter(tile, 0);
 
 	switch (GetTreeGrowth(tile)) {
 		case 3: // regular sized tree
@@ -943,7 +960,9 @@ static void TileLoop_Trees(TileIndex tile)
 					GetTropicZone(tile) == TROPICZONE_DESERT) {
 				AddTreeGrowth(tile, 1);
 			} else {
-				switch (GB(Random(), 0, 3)) {
+				uint mode = GB(Random(), 0, 3);
+				if (IsTemperateTreeOnSnow(tile)) mode = 0;
+				switch (mode) {
 					case 0: // start destructing
 						AddTreeGrowth(tile, 1);
 						break;
@@ -969,7 +988,7 @@ static void TileLoop_Trees(TileIndex tile)
 						if (_settings_game.game_creation.tree_placer == TP_PERFECT &&
 							((_settings_game.game_creation.landscape != LT_TROPIC && GetTileZ(tile) <= GetSparseTreeRange()) ||
 								(GetTreeType(tile) == TREE_CACTUS) ||
-								(_settings_game.game_creation.landscape == LT_ARCTIC && GetTileZ(tile) >= _settings_game.game_creation.snow_line_height + _settings_game.construction.trees_around_snow_line_range / 3))) {
+								(_settings_game.game_creation.landscape == LT_ARCTIC && GetTileZ(tile) >= HighestTreePlacementSnowLine() + _settings_game.construction.trees_around_snow_line_range / 3))) {
 							// On lower levels we spread more randomly to not bunch up.
 							if (GetTreeType(tile) != TREE_CACTUS || (RandomRange(100) < 50)) {
 								PlantTreeAtSameHeight(tile);
@@ -996,7 +1015,7 @@ static void TileLoop_Trees(TileIndex tile)
 			break;
 
 		case 6: // final stage of tree destruction
-			if (!CanPlantExtraTrees(tile)) {
+			if (!CanPlantExtraTrees(tile) && !IsTemperateTreeOnSnow(tile)) {
 				/* if trees can't spread just plant a new one to prevent deforestation */
 				SetTreeGrowth(tile, 0);
 			} else if (GetTreeCount(tile) > 1) {

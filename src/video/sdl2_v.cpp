@@ -872,6 +872,11 @@ const char *VideoDriver_SDL_Base::Start(const StringList &param)
 	const char *dname = SDL_GetCurrentVideoDriver();
 	DEBUG(driver, 1, "SDL2: using driver '%s'", dname);
 
+	this->driver_info = this->GetName();
+	this->driver_info += " (";
+	this->driver_info += dname;
+	this->driver_info += ")";
+
 	MarkWholeScreenDirty();
 
 	SDL_StopTextInput();
@@ -911,13 +916,9 @@ void VideoDriver_SDL_Base::InputLoop()
 	_ctrl_pressed  = !!(mod & KMOD_CTRL) != _invert_ctrl;
 	_shift_pressed = !!(mod & KMOD_SHIFT) != _invert_shift;
 
-#if defined(_DEBUG)
-	this->fast_forward_key_pressed = _shift_pressed;
-#else
 	/* Speedup when pressing tab, except when using ALT+TAB
 	 * to switch to another application. */
 	this->fast_forward_key_pressed = keys[SDL_SCANCODE_TAB] && (mod & KMOD_ALT) == 0;
-#endif /* defined(_DEBUG) */
 
 	/* Determine which directional keys are down. */
 	_dirkeys =
@@ -983,12 +984,11 @@ bool VideoDriver_SDL_Base::ChangeResolution(int w, int h)
 
 bool VideoDriver_SDL_Base::ToggleFullscreen(bool fullscreen)
 {
-	int w, h;
-
 	/* Remember current window size */
-	if (fullscreen) {
-		SDL_GetWindowSize(this->sdl_window, &w, &h);
+	int w, h;
+	SDL_GetWindowSize(this->sdl_window, &w, &h);
 
+	if (fullscreen) {
 		/* Find fullscreen window size */
 		SDL_DisplayMode dm;
 		if (SDL_GetCurrentDisplayMode(0, &dm) < 0) {

@@ -44,7 +44,7 @@ RoadBits GetAnyRoadBits(TileIndex tile, RoadTramType rtt, bool straight_tunnel_b
 			}
 
 		case MP_STATION:
-			if (!IsRoadStopTile(tile)) return ROAD_NONE;
+			if (!IsAnyRoadStopTile(tile)) return ROAD_NONE;
 			if (IsDriveThroughStopTile(tile)) return (GetRoadStopDir(tile) == DIAGDIR_NE) ? ROAD_X : ROAD_Y;
 			return DiagDirToRoadBits(GetRoadStopDir(tile));
 

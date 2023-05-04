@@ -20,7 +20,7 @@ TrackBits GetReservedTrackbits(TileIndex t);
 void SetRailStationPlatformReservation(TileIndex start, DiagDirection dir, bool b);
 
 bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations = true);
-bool TryReserveRailTrackdir(TileIndex tile, Trackdir td, bool trigger_stations = true);
+bool TryReserveRailTrackdir(const Train *v, TileIndex tile, Trackdir td, bool trigger_stations = true);
 void UnreserveRailTrack(TileIndex tile, Track t);
 void UnreserveRailTrackdir(TileIndex tile, Trackdir td);
 
@@ -58,11 +58,19 @@ enum TrainReservationLookAheadItemType : byte {
 	TRLIT_CURVE_SPEED            = 5,     ///< Curve speed limit
 };
 
+enum TrainReservationSignalLookAheadItemFlags {
+	TRSLAI_NO_ASPECT_INC   = 0,           ///< This signal does not increase the signal aspect (e.g. banner repeater)
+	TRSLAI_NEXT_ONLY       = 1,           ///< This signal only permits lookahead up to the next physical signal, even if that has TRSLAI_NO_ASPECT_INC (e.g. shunt)
+	TRSLAI_COMBINED        = 2,           ///< This signal is a combined normal/shunt signal, special handling
+	TRSLAI_COMBINED_SHUNT  = 3,           ///< This signal is a combined normal/shunt signal, in shunt mode
+};
+
 struct TrainReservationLookAheadItem {
 	int32 start;
 	int32 end;
 	int16 z_pos;
 	uint16 data_id;
+	uint16 data_aux;
 	TrainReservationLookAheadItemType type;
 };
 
@@ -83,6 +91,7 @@ struct TrainReservationLookAhead {
 	Trackdir  reservation_end_trackdir;   ///< The reserved trackdir on the end tile.
 	int32 current_position;               ///< Current position of the train on the reservation
 	int32 reservation_end_position;       ///< Position of the end of the reservation
+	int32 lookahead_end_position;         ///< Position of the end of the reservation within the lookahead distance
 	int32 next_extend_position;           ///< Next position to try extending the reservation at the sighting distance of the next mid-reservation signal
 	int16 reservation_end_z;              ///< The z coordinate of the reservation end
 	int16 tunnel_bridge_reserved_tiles;   ///< How many tiles a reservation into the tunnel/bridge currently extends into the wormhole
@@ -90,6 +99,8 @@ struct TrainReservationLookAhead {
 	uint16 speed_restriction;
 	std::deque<TrainReservationLookAheadItem> items;
 	std::deque<TrainReservationLookAheadCurve> curves;
+	int32 cached_zpos = 0;                ///< Cached z position as used in TrainDecelerationStats
+	uint8 zpos_refresh_remaining = 0;     ///< Remaining position updates before next refresh of cached_zpos
 
 	int32 RealEndPosition() const
 	{
@@ -99,38 +110,38 @@ struct TrainReservationLookAhead {
 	void AddStation(int tiles, StationID id, int16 z_pos)
 	{
 		int end = this->RealEndPosition();
-		this->items.push_back({ end, end + (((int)TILE_SIZE) * tiles), z_pos, id, TRLIT_STATION });
+		this->items.push_back({ end, end + (((int)TILE_SIZE) * tiles), z_pos, id, 0, TRLIT_STATION });
 	}
 
 	void AddReverse(int16 z_pos)
 	{
 		int end = this->RealEndPosition();
-		this->items.push_back({ end, end, z_pos, 0, TRLIT_REVERSE });
+		this->items.push_back({ end, end, z_pos, 0, 0, TRLIT_REVERSE });
 	}
 
 	void AddTrackSpeedLimit(uint16 speed, int offset, int duration, int16 z_pos)
 	{
 		int end = this->RealEndPosition();
-		this->items.push_back({ end + offset, end + offset + duration, z_pos, speed, TRLIT_TRACK_SPEED });
+		this->items.push_back({ end + offset, end + offset + duration, z_pos, speed, 0, TRLIT_TRACK_SPEED });
 	}
 
 	void AddSpeedRestriction(uint16 speed, int offset, int duration, int16 z_pos)
 	{
 		int end = this->RealEndPosition();
-		this->items.push_back({ end + offset, end + offset + duration, z_pos, speed, TRLIT_SPEED_RESTRICTION });
+		this->items.push_back({ end + offset, end + offset + duration, z_pos, speed, 0, TRLIT_SPEED_RESTRICTION });
 		this->speed_restriction = speed;
 	}
 
-	void AddSignal(uint16 target_speed, int offset, int16 z_pos)
+	void AddSignal(uint16 target_speed, int offset, int16 z_pos, uint16 flags)
 	{
 		int end = this->RealEndPosition();
-		this->items.push_back({ end + offset, end + offset, z_pos, target_speed, TRLIT_SIGNAL });
+		this->items.push_back({ end + offset, end + offset, z_pos, target_speed, flags, TRLIT_SIGNAL });
 	}
 
 	void AddCurveSpeedLimit(uint16 target_speed, int offset, int16 z_pos)
 	{
 		int end = this->RealEndPosition();
-		this->items.push_back({ end + offset, end + offset, z_pos, target_speed, TRLIT_CURVE_SPEED });
+		this->items.push_back({ end + offset, end + offset, z_pos, target_speed, 0, TRLIT_CURVE_SPEED });
 	}
 
 	void SetNextExtendPosition();
@@ -153,9 +164,9 @@ bool ValidateLookAhead(const Train *v);
 PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res = nullptr, FollowTrainReservationFlags flags = FTRF_NONE);
 void ApplyAvailableFreeTunnelBridgeTiles(TrainReservationLookAhead *lookahead, int free_tiles, TileIndex tile, TileIndex end);
 void TryCreateLookAheadForTrainInTunnelBridge(Train *t);
+void SetTrainReservationLookaheadEnd(Train *v);
 void FillTrainReservationLookAhead(Train *v);
-void SetLookAheadNextExtendPosition(Train *v);
-void SetLookAheadNextExtendPositionIfUnset(Train *v);
+bool TrainReservationPassesThroughTile(const Train *v, TileIndex search_tile);
 bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bool include_line_end, bool forbid_90deg = false);
 bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bool forbid_90deg = false, PBSWaitingPositionRestrictedSignalInfo *restricted_signal_info = nullptr);
 

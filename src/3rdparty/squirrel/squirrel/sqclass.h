@@ -10,6 +10,7 @@ struct SQClassMember {
 		val = o.val;
 		attrs = o.attrs;
 	}
+	SQClassMember& operator=(SQClassMember &o) = delete;
 	SQObjectPtr val;
 	SQObjectPtr attrs;
 };
@@ -31,8 +32,7 @@ struct SQClass : public CHAINABLE_OBJ
 	SQClass(SQSharedState *ss,SQClass *base);
 public:
 	static SQClass* Create(SQSharedState *ss,SQClass *base) {
-		SQClass *newclass = (SQClass *)SQ_MALLOC(sizeof(SQClass));
-		new (newclass) SQClass(ss, base);
+		SQClass *newclass = new (SQAllocationTag{}) SQClass(ss, base);
 		return newclass;
 	}
 	~SQClass();
@@ -55,7 +55,7 @@ public:
 	void Lock() { _locked = true; if(_base) _base->Lock(); }
 	void Release() {
 		if (_hook) { _hook(_typetag,0);}
-		sq_delete(this, SQClass);
+		sq_delete_refcounted(this, SQClass);
 	}
 	void Finalize();
 #ifndef NO_GARBAGE_COLLECTOR
@@ -81,14 +81,13 @@ public:
 struct SQInstance : public SQDelegable
 {
 	void Init(SQSharedState *ss);
-	SQInstance(SQSharedState *ss, SQClass *c, SQInteger memsize);
-	SQInstance(SQSharedState *ss, SQInstance *c, SQInteger memsize);
+	SQInstance(SQSharedState *ss, SQClass *c);
+	SQInstance(SQSharedState *ss, SQInstance *c);
 public:
 	static SQInstance* Create(SQSharedState *ss,SQClass *theclass) {
 
 		SQInteger size = calcinstancesize(theclass);
-		SQInstance *newinst = (SQInstance *)SQ_MALLOC(size);
-		new (newinst) SQInstance(ss, theclass,size);
+		SQInstance *newinst = new (SQSizedAllocationTag(size)) SQInstance(ss, theclass);
 		if(theclass->_udsize) {
 			newinst->_userpointer = ((unsigned char *)newinst) + (size - theclass->_udsize);
 		}
@@ -97,8 +96,7 @@ public:
 	SQInstance *Clone(SQSharedState *ss)
 	{
 		SQInteger size = calcinstancesize(_class);
-		SQInstance *newinst = (SQInstance *)SQ_MALLOC(size);
-		new (newinst) SQInstance(ss, this,size);
+		SQInstance *newinst = new (SQSizedAllocationTag(size)) SQInstance(ss, this);
 		if(_class->_udsize) {
 			newinst->_userpointer = ((unsigned char *)newinst) + (size - _class->_udsize);
 		}
@@ -143,9 +141,7 @@ public:
 	}
 	void FinalFree() override
 	{
-		SQInteger size = _memsize;
-		this->~SQInstance();
-		SQ_FREE(this, size);
+		sq_delete_refcounted(this, SQInstance);
 	}
 	void Finalize() override;
 #ifndef NO_GARBAGE_COLLECTOR
@@ -157,7 +153,6 @@ public:
 	SQClass *_class;
 	SQUserPointer _userpointer;
 	SQRELEASEHOOK _hook;
-	SQInteger _memsize;
 	SQObjectPtr _values[1];
 };
 

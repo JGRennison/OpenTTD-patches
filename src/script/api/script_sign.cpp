@@ -20,6 +20,7 @@
 
 /* static */ bool ScriptSign::IsValidSign(SignID sign_id)
 {
+	EnforceDeityOrCompanyModeValid(false);
 	const Sign *si = ::Sign::GetIfValid(sign_id);
 	return si != nullptr && (si->owner == ScriptObject::GetCompany() || si->owner == OWNER_DEITY);
 }
@@ -35,9 +36,10 @@
 {
 	CCountedPtr<Text> counter(name);
 
+	EnforceDeityOrCompanyModeValid(false);
 	EnforcePrecondition(false, IsValidSign(sign_id));
 	EnforcePrecondition(false, name != nullptr);
-	const char *text = name->GetDecodedText();
+	const std::string &text = name->GetDecodedText();
 	EnforcePreconditionEncodedText(false, text);
 	EnforcePreconditionCustomError(false, ::Utf8StringLength(text) < MAX_LENGTH_SIGN_NAME_CHARS, ScriptError::ERR_PRECONDITION_STRING_TOO_LONG);
 
@@ -62,6 +64,7 @@
 
 /* static */ bool ScriptSign::RemoveSign(SignID sign_id)
 {
+	EnforceDeityOrCompanyModeValid(false);
 	EnforcePrecondition(false, IsValidSign(sign_id));
 	return ScriptObject::DoCommand(0, sign_id, 0, CMD_RENAME_SIGN, "");
 }
@@ -70,9 +73,10 @@
 {
 	CCountedPtr<Text> counter(name);
 
+	EnforceDeityOrCompanyModeValid(INVALID_SIGN);
 	EnforcePrecondition(INVALID_SIGN, ::IsValidTile(location));
 	EnforcePrecondition(INVALID_SIGN, name != nullptr);
-	const char *text = name->GetDecodedText();
+	const std::string &text = name->GetDecodedText();
 	EnforcePreconditionEncodedText(INVALID_SIGN, text);
 	EnforcePreconditionCustomError(INVALID_SIGN, ::Utf8StringLength(text) < MAX_LENGTH_SIGN_NAME_CHARS, ScriptError::ERR_PRECONDITION_STRING_TOO_LONG);
 

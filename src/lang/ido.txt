@@ -192,13 +192,10 @@ STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA} mph
 STR_UNITS_VELOCITY_METRIC                                       :{COMMA} km/h
 STR_UNITS_VELOCITY_SI                                           :{COMMA} m/s
 
-STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
-STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
-STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}kp
 STR_UNITS_POWER_METRIC                                          :{COMMA}kp
 STR_UNITS_POWER_SI                                              :{COMMA}kW
+
 
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}t
 STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}kg
@@ -220,7 +217,6 @@ STR_UNITS_HEIGHT_SI                                             :{COMMA} m
 # Common window strings
 
 STR_BUTTON_SORT_BY                                              :{BLACK}Ordinas per
-STR_BUTTON_RENAME                                               :{BLACK}Rinomizar
 
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Klozas fenestro
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}Baskulas granda/mikra fenestro grandeso
@@ -291,7 +287,7 @@ STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Pozez ob
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 
 # Settings menu
-###length 14
+###length 15
 STR_SETTINGS_MENU_FULL_DETAIL                                   :Plene detaloza
 STR_SETTINGS_MENU_TRANSPARENT_BUILDINGS                         :Diafana konstrukturi
 
@@ -357,12 +353,6 @@ STR_GRAPH_MENU_DELIVERED_CARGO_GRAPH                            :Livrita kargajo
 ###length 12
 
 ###length 12
-
-###length VEHICLE_TYPES
-STR_VEHICLE_TYPE_TRAINS                                         :Treni
-STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Voy-Vehili
-STR_VEHICLE_TYPE_SHIPS                                          :Navi
-STR_VEHICLE_TYPE_AIRCRAFT                                       :Aeroplani
 
 # Graph window
 STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}
@@ -483,11 +473,6 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Ludo Sel
 
 ###length 42
 
-###length 2
-
-
-###length 21
-
 
 # Autosave dropdown
 ###length 5
@@ -509,7 +494,6 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :altra
 
 
 # Custom currency window
-
 
 
 
@@ -546,9 +530,11 @@ STR_SEA_LEVEL_CUSTOM_PERCENTAGE                                 :Kustumigita ({N
 
 ###length 4
 
+###length 4
+
 ###length 7
 
-###length 3
+###length 4
 
 
 # Settings tree window
@@ -566,6 +552,7 @@ STR_CONFIG_SETTING_NONE                                         :Nulo
 
 ###length 3
 
+###setting-zero-is-special
 
 
 
@@ -660,6 +647,8 @@ STR_CONFIG_SETTING_PLANE_CRASHES_NORMAL                         :normala
 
 ###length 2
 
+###length 2
+
 
 
 
@@ -670,6 +659,8 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Violkolora
 
 ###length 4
 
+###length 4
+
 
 
 ###length 3
@@ -701,7 +692,6 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Violkolora
 
 
 
-
 ###setting-zero-is-special
 
 
@@ -753,6 +743,7 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Violkolora
 ###length 3
 
 
+###setting-zero-is-special
 
 
 
@@ -788,7 +779,7 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Violkolora
 
 
 
-###length 4
+###length 5
 
 ###length 3
 
@@ -828,8 +819,6 @@ STR_QUIT_NO                                                     :{BLACK}Ne
 # Abandon game
 
 # Cheat window
-
-###length 4
 
 # Livery window
 
@@ -914,6 +903,8 @@ STR_NETWORK_SERVER_MESSAGE                                      :*** {1:STRING}
 # Linkgraph legend window
 
 # Linkgraph legend window and linkgraph legend in smallmap
+
+# Linkgraph tooltip
 
 # Base for station construction window(s)
 STR_STATION_BUILD_ACCEPTS_CARGO                                 :{BLACK}Aceptas: {GOLD}{CARGO_LIST}
@@ -1038,6 +1029,8 @@ STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NovaGRF
 # World generation
 STR_MAPGEN_BY                                                   :{BLACK}*
 
+###length 21
+
 # Strings for map borders at game generation
 
 
@@ -1071,6 +1064,10 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE                  :Fervoyo-tipo
 
 
 # Sprite aligner window
+
+###length 2
+
+
 
 
 # NewGRF (self) generated warnings/errors
@@ -1153,6 +1150,9 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 # Finances window
 STR_FINANCES_YEAR                                               :{WHITE}{NUM}
 
+###length 3
+
+
 ###length 13
 
 STR_FINANCES_NEGATIVE_INCOME                                    :{BLACK}-{CURRENCY_LONG}
@@ -1231,6 +1231,8 @@ STR_GROUP_DEFAULT_AIRCRAFTS                                     :Negrupigita aer
 # Vehicle availability
 ###length VEHICLE_TYPES
 
+
+###length 3
 
 ###length VEHICLE_TYPES
 
@@ -1446,14 +1448,13 @@ STR_AI_DEBUG_NAME_AND_VERSION                                   :{BLACK}{STRING}
 
 
 
-STR_AI_CONFIG_CHANGE_NONE                                       :
 
 # Available AIs window
 
 
 
 
-# AI Parameters
+# Script Parameters
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 
 
@@ -1574,12 +1575,15 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Tro mult
 
 
 
+
 # Specific vehicle errors
 
 
 
 # Order related errors
 
+
+# Extra messages which go on the third line of errors, explaining why orders failed
 
 # Timetable related errors
 

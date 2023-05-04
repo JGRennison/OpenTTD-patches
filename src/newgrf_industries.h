@@ -33,7 +33,7 @@ struct IndustriesScopeResolver : public ScopeResolver {
 	}
 
 	uint32 GetRandomBits() const override;
-	uint32 GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const override;
+	uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const override;
 	uint32 GetTriggers() const override;
 	void StorePSA(uint pos, int32 value) override;
 };
@@ -49,7 +49,7 @@ struct IndustriesResolverObject : public ResolverObject {
 
 	TownScopeResolver *GetTown();
 
-	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, byte relative = 0) override
+	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, VarSpriteGroupScopeOffset relative = 0) override
 	{
 		switch (scope) {
 			case VSG_SCOPE_SELF: return &industries_scope;
@@ -97,6 +97,6 @@ bool IndustryTemporarilyRefusesCargo(Industry *ind, CargoID cargo_type);
 IndustryType MapNewGRFIndustryType(IndustryType grf_type, uint32 grf_id);
 
 /* in newgrf_industrytiles.cpp*/
-uint32 GetNearbyIndustryTileInformation(byte parameter, TileIndex tile, IndustryID index, bool signed_offsets, bool grf_version8);
+uint32 GetNearbyIndustryTileInformation(byte parameter, TileIndex tile, IndustryID index, bool signed_offsets, bool grf_version8, uint32 mask);
 
 #endif /* NEWGRF_INDUSTRIES_H */

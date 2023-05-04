@@ -19,6 +19,7 @@
 #include "newgrf_config.h"
 #include "track_type.h"
 #include "livery.h"
+#include "cargo_type.h"
 
 #define is_custom_sprite(x) (x >= 0xFD)
 #define IS_CUSTOM_FIRSTHEAD_SPRITE(x) (x == 0xFD)
@@ -239,15 +240,17 @@ static inline uint32 GetCmdSendToDepot(const BaseVehicle *v)
 }
 
 CommandCost EnsureNoVehicleOnGround(TileIndex tile);
-CommandCost EnsureNoRoadVehicleOnGround(TileIndex tile);
+bool IsTrainCollidableRoadVehicleOnGround(TileIndex tile);
 CommandCost EnsureNoTrainOnTrackBits(TileIndex tile, TrackBits track_bits);
 
 extern VehicleID _new_vehicle_id;
 extern uint _returned_refit_capacity;
 extern uint16 _returned_mail_refit_capacity;
+extern CargoArray _returned_vehicle_capacities;
 
 bool CanVehicleUseStation(EngineID engine_type, const struct Station *st);
 bool CanVehicleUseStation(const Vehicle *v, const struct Station *st);
+StringID GetVehicleCannotUseStationReason(const Vehicle *v, const Station *st);
 
 void ReleaseDisastersTargetingVehicle(VehicleID vehicle);
 
@@ -255,5 +258,8 @@ typedef std::vector<VehicleID> VehicleSet;
 void GetVehicleSet(VehicleSet &set, Vehicle *v, uint8 num_vehicles);
 
 void CheckCargoCapacity(Vehicle *v);
+
+bool VehiclesHaveSameEngineList(const Vehicle *v1, const Vehicle *v2);
+bool VehiclesHaveSameOrderList(const Vehicle *v1, const Vehicle *v2);
 
 #endif /* VEHICLE_FUNC_H */

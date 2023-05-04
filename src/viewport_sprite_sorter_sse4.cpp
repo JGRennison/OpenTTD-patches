@@ -24,6 +24,7 @@ static_assert((sizeof(ParentSpriteToDraw) % 16) == 0);
 #endif
 
 /** Sort parent sprites pointer array using SSE4.1 optimizations. */
+GNU_TARGET("sse4.1")
 void ViewportSortParentSpritesSSE41(ParentSpriteToSortVector *psdv)
 {
 	const __m128i mask_ptest = _mm_setr_epi8(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0,  0,  0);

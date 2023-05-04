@@ -96,6 +96,8 @@ void NORETURN CDECL error(const char *s, ...)
 /** A reader that simply reads using fopen. */
 struct FileStringReader : StringReader {
 	FILE *fh; ///< The file we are reading.
+	FILE *fh2 = nullptr; ///< The file we are reading.
+	std::string file2;
 
 	/**
 	 * Create the reader.
@@ -104,22 +106,42 @@ struct FileStringReader : StringReader {
 	 * @param master      Are we reading the master file?
 	 * @param translation Are we reading a translation?
 	 */
-	FileStringReader(StringData &data, const char *file, bool master, bool translation) :
+	FileStringReader(StringData &data, const char *file, const char *file2, bool master, bool translation) :
 			StringReader(data, file, master, translation)
 	{
 		this->fh = fopen(file, "rb");
 		if (this->fh == nullptr) error("Could not open %s", file);
+
+		if (file2 != nullptr) {
+			this->file2.assign(file2);
+			this->fh2 = fopen(file2, "rb");
+			if (this->fh2 == nullptr) error("Could not open %s", file2);
+		}
 	}
+
+	FileStringReader(StringData &data, const char *file, bool master, bool translation) :
+			FileStringReader(data, file, nullptr, master, translation) {}
 
 	/** Free/close the file. */
 	virtual ~FileStringReader()
 	{
 		fclose(this->fh);
+		if (this->fh2 != nullptr) fclose(this->fh2);
 	}
 
 	char *ReadLine(char *buffer, const char *last) override
 	{
-		return fgets(buffer, ClampToU16(last - buffer + 1), this->fh);
+		char *result = fgets(buffer, ClampToU16(last - buffer + 1), this->fh);
+		if (result == nullptr && this->fh2 != nullptr) {
+			fclose(this->fh);
+			this->fh = this->fh2;
+			this->fh2 = nullptr;
+			this->file = std::move(this->file2);
+			_file = this->file.c_str();
+			_cur_line = 1;
+			return this->FileStringReader::ReadLine(buffer, last);
+		}
+		return result;
 	}
 
 	void HandlePragma(char *str) override;
@@ -198,6 +220,53 @@ void FileStringReader::HandlePragma(char *str)
 			if (_lang.num_cases >= MAX_NUM_CASES) error("Too many cases, max %d", MAX_NUM_CASES);
 			strecpy(_lang.cases[_lang.num_cases], s, lastof(_lang.cases[_lang.num_cases]));
 			_lang.num_cases++;
+		}
+	} else if (!memcmp(str, "override ", 9)) {
+		if (this->translation) error("Overrides are only allowed in the base translation.");
+		if (!memcmp(str + 9, "on", 2)) {
+			this->data.override_mode = true;
+		} else if (!memcmp(str + 9, "off", 3)) {
+			this->data.override_mode = false;
+		} else {
+			error("Invalid override mode %s", str + 9);
+		}
+	} else if (!memcmp(str, "override ", 9)) {
+		if (this->translation) error("Overrides are only allowed in the base translation.");
+		if (!memcmp(str + 9, "on", 2)) {
+			this->data.override_mode = true;
+		} else if (!memcmp(str + 9, "off", 3)) {
+			this->data.override_mode = false;
+		} else {
+			error("Invalid override mode %s", str + 9);
+		}
+	} else if (!memcmp(str, "after ", 6)) {
+		if (this->translation) error("Insert after is only allowed in the base translation.");
+		LangString *ent = this->data.Find(str + 6);
+		if (ent != nullptr) {
+			this->data.insert_after = ent;
+			this->data.insert_before = nullptr;
+		} else {
+			error("Can't find string to insert after: '%s'", str + 6);
+		}
+	} else if (!memcmp(str, "before ", 7)) {
+		if (this->translation) error("Insert before is only allowed in the base translation.");
+		LangString *ent = this->data.Find(str + 7);
+		if (ent != nullptr) {
+			this->data.insert_after = nullptr;
+			this->data.insert_before = ent;
+		} else {
+			error("Can't find string to insert after: '%s'", str + 6);
+		}
+	} else if (!memcmp(str, "end-after", 10)) {
+		if (this->translation) error("Insert after is only allowed in the base translation.");
+		this->data.insert_after = nullptr;
+	} else if (!memcmp(str, "default-translation ", 20)) {
+		if (this->translation) error("Default translation is only allowed in the base translation.");
+		LangString *ent = this->data.Find(str + 20);
+		if (ent != nullptr) {
+			this->data.default_translation = ent;
+		} else {
+			error("Can't find string to use as default translation: '%s'", str + 20);
 		}
 	} else {
 		StringReader::HandlePragma(str);
@@ -365,6 +434,7 @@ struct LanguageFileWriter : LanguageWriter, FileWriter {
 
 	void Write(const byte *buffer, size_t length)
 	{
+		if (length == 0) return;
 		if (fwrite(buffer, sizeof(*buffer), length, this->fh) != length) {
 			error("Could not write to %s", this->filename);
 		}
@@ -388,14 +458,31 @@ static inline void ottd_mkdir(const char *directory)
  * path separator and the filename. The separator is only appended if the path
  * does not already end with a separator
  */
-static inline char *mkpath(char *buf, const char *last, const char *path, const char *file)
+static inline char *mkpath2(char *buf, const char *last, const char *path, const char *path2, const char *file)
 {
 	strecpy(buf, path, last); // copy directory into buffer
 
 	char *p = strchr(buf, '\0'); // add path separator if necessary
+
+	if (path2 != nullptr) {
+		if (p[-1] != PATHSEPCHAR && p != last) *p++ = PATHSEPCHAR;
+		strecpy(p, path2, last); // concatenate filename at end of buffer
+		p = strchr(buf, '\0');
+	}
+
 	if (p[-1] != PATHSEPCHAR && p != last) *p++ = PATHSEPCHAR;
 	strecpy(p, file, last); // concatenate filename at end of buffer
 	return buf;
+}
+
+/**
+ * Create a path consisting of an already existing path, a possible
+ * path separator and the filename. The separator is only appended if the path
+ * does not already end with a separator
+ */
+static inline char *mkpath(char *buf, const char *last, const char *path, const char *file)
+{
+	return mkpath2(buf, last, path, nullptr, file);
 }
 
 #if defined(_WIN32)
@@ -433,6 +520,7 @@ static const OptionData _opts[] = {
 int CDECL main(int argc, char *argv[])
 {
 	char pathbuf[MAX_PATH];
+	char pathbuf2[MAX_PATH];
 	const char *src_dir = ".";
 	const char *dest_dir = nullptr;
 
@@ -472,9 +560,9 @@ int CDECL main(int argc, char *argv[])
 
 			case 'P':
 				printf("name\tflags\tdefault\tdescription\n");
-				for (size_t i = 0; i < lengthof(_pragmas); i++) {
+				for (size_t j = 0; j < lengthof(_pragmas); j++) {
 					printf("\"%s\"\t%s\t\"%s\"\t\"%s\"\n",
-							_pragmas[i][0], _pragmas[i][1], _pragmas[i][2], _pragmas[i][3]);
+							_pragmas[j][0], _pragmas[j][1], _pragmas[j][2], _pragmas[j][3]);
 				}
 				return 0;
 
@@ -527,10 +615,11 @@ int CDECL main(int argc, char *argv[])
 		 * directory. As input english.txt is parsed from the source directory */
 		if (mgo.numleft == 0) {
 			mkpath(pathbuf, lastof(pathbuf), src_dir, "english.txt");
+			mkpath2(pathbuf2, lastof(pathbuf2), src_dir, "extra", "english.txt");
 
 			/* parse master file */
 			StringData data(TEXT_TAB_END);
-			FileStringReader master_reader(data, pathbuf, true, false);
+			FileStringReader master_reader(data, pathbuf, pathbuf2, true, false);
 			master_reader.ParseFile();
 			if (_errors != 0) return 1;
 
@@ -546,10 +635,11 @@ int CDECL main(int argc, char *argv[])
 			char *r;
 
 			mkpath(pathbuf, lastof(pathbuf), src_dir, "english.txt");
+			mkpath2(pathbuf2, lastof(pathbuf2), src_dir, "extra", "english.txt");
 
 			StringData data(TEXT_TAB_END);
 			/* parse master file and check if target file is correct */
-			FileStringReader master_reader(data, pathbuf, true, false);
+			FileStringReader master_reader(data, pathbuf, pathbuf2, true, false);
 			master_reader.ParseFile();
 
 			for (int i = 0; i < mgo.numleft; i++) {
@@ -557,7 +647,12 @@ int CDECL main(int argc, char *argv[])
 
 				const char *translation = replace_pathsep(mgo.argv[i]);
 				const char *file = strrchr(translation, PATHSEPCHAR);
-				FileStringReader translation_reader(data, translation, false, file == nullptr || strcmp(file + 1, "english.txt") != 0);
+				const char *translation2 = nullptr;
+				if (file != nullptr) {
+					mkpath2(pathbuf2, lastof(pathbuf2), src_dir, "extra", file + 1);
+					translation2 = pathbuf2;
+				}
+				FileStringReader translation_reader(data, translation, translation2, false, file == nullptr || strcmp(file + 1, "english.txt") != 0);
 				translation_reader.ParseFile(); // target file
 				if (_errors != 0) return 1;
 

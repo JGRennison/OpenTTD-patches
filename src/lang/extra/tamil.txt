@@ -1,0 +1,42 @@
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
+STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
+STR_UNIT_NAME_VELOCITY_SI                                       :m/s
+
+STR_VEHICLE_TYPE_TRAINS                                         :இரயில்வண்டிகள்
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :சாலை வாகனங்கள்
+STR_VEHICLE_TYPE_SHIPS                                          :கப்பல்கள்
+STR_VEHICLE_TYPE_AIRCRAFT                                       :விமானங்கள்
+
+# Tracerestrict GUI
+
+# Programmable Pre-Signals
+
+#House construction window (for SE only)
+
+#Town select window (for SE only)
+
+STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}பனிக் கோடின் உயரம்:
+STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}பனி கோடின் உயரத்தை ஒரு அடி உயர்த்து
+STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}பனி கோடின் உயரத்தை ஒரு அடி இறக்கு
+STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}பனிக் கோடின் உயரத்தினை மாற்று
+
+# Town tooltip
+
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}வடிவமைக்கப்பட்டது: {GOLD}{NUM}
+
+# Cargo type orders Window
+
+# Plans window
+
+# Clear area query
+
+# Plan related errors
+
+STR_TRADITIONAL_TRAIN_NAME                                      :இரயில் {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :சாலை வாகனம் {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :கப்பல் {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :விமானம் {COMMA}
+
+# Scheduled Dispatch
+
+# Modifier key toggle window

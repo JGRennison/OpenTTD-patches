@@ -33,20 +33,6 @@ void PlaceTreesRandomly();
 void RemoveAllTrees();
 uint PlaceTreeGroupAroundTile(TileIndex tile, TreeType treetype, uint radius, uint count, bool set_zone);
 
-/** Tree Sprites with their palettes */
-const PalSpriteID tree_sprites[] = {
-	{ 1621, PAL_NONE }, { 1635, PAL_NONE }, { 1656, PAL_NONE }, { 1579, PAL_NONE },
-	{ 1607, PAL_NONE }, { 1593, PAL_NONE }, { 1614, PAL_NONE }, { 1586, PAL_NONE },
-	{ 1663, PAL_NONE }, { 1677, PAL_NONE }, { 1691, PAL_NONE }, { 1705, PAL_NONE },
-	{ 1711, PAL_NONE }, { 1746, PAL_NONE }, { 1753, PAL_NONE }, { 1732, PAL_NONE },
-	{ 1739, PAL_NONE }, { 1718, PAL_NONE }, { 1725, PAL_NONE }, { 1760, PAL_NONE },
-	{ 1838, PAL_NONE }, { 1844, PAL_NONE }, { 1866, PAL_NONE }, { 1871, PAL_NONE },
-	{ 1899, PAL_NONE }, { 1935, PAL_NONE }, { 1928, PAL_NONE }, { 1915, PAL_NONE },
-	{ 1887, PAL_NONE }, { 1908, PAL_NONE }, { 1824, PAL_NONE }, { 1943, PAL_NONE },
-	{ 1950, PAL_NONE }, { 1957, PALETTE_TO_GREEN }, { 1964, PALETTE_TO_RED },        { 1971, PAL_NONE },
-	{ 1978, PAL_NONE }, { 1985, PALETTE_TO_RED, },  { 1992, PALETTE_TO_PALE_GREEN }, { 1999, PALETTE_TO_YELLOW }, { 2006, PALETTE_TO_RED }
-};
-
 /**
  * Calculate the maximum size of all tree sprites
  * @return Dimension of the largest tree sprite
@@ -59,8 +45,8 @@ static Dimension GetMaxTreeSpriteSize()
 	Dimension size, this_size;
 	Point offset;
 	/* Avoid to use it uninitialized */
-	size.width = 32; // default width - WD_FRAMERECT_LEFT
-	size.height = 39; // default height - BUTTON_BOTTOM_OFFSET
+	size.width = ScaleGUITrad(32); // default width - WD_FRAMERECT_LEFT
+	size.height = ScaleGUITrad(39); // default height - BUTTON_BOTTOM_OFFSET
 	offset.x = 0;
 	offset.y = 0;
 
@@ -104,7 +90,7 @@ class BuildTreesWindow : public Window
 		if (this->tree_to_plant >= 0) {
 			/* Activate placement */
 			if (_settings_client.sound.confirm) SndPlayFx(SND_15_BEEP);
-			SetObjectToPlace(SPR_CURSOR_TREE, PAL_NONE, HT_RECT, this->window_class, this->window_number);
+			SetObjectToPlace(SPR_CURSOR_TREE, PAL_NONE, HT_RECT | HT_DIAGONAL, this->window_class, this->window_number);
 			this->tree_to_plant = current_tree; // SetObjectToPlace may call ResetObjectToPlace which may reset tree_to_plant to -1
 		} else {
 			/* Deactivate placement */
@@ -160,8 +146,8 @@ public:
 		if (widget >= WID_BT_TYPE_BUTTON_FIRST) {
 			/* Ensure tree type buttons are sized after the largest tree type */
 			Dimension d = GetMaxTreeSpriteSize();
-			size->width = d.width + WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
-			size->height = d.height + WD_FRAMERECT_RIGHT + WD_FRAMERECT_BOTTOM + ScaleGUITrad(BUTTON_BOTTOM_OFFSET); // we need some more space
+			size->width = d.width + padding.width;
+			size->height = d.height + padding.height + ScaleGUITrad(BUTTON_BOTTOM_OFFSET); // we need some more space
 		}
 	}
 
@@ -170,7 +156,7 @@ public:
 		if (widget >= WID_BT_TYPE_BUTTON_FIRST) {
 			const int index = widget - WID_BT_TYPE_BUTTON_FIRST;
 			/* Trees "grow" in the centre on the bottom line of the buttons */
-			DrawSprite(tree_sprites[index].sprite, _tree_sprites[index].pal, (r.left + r.right) / 2 + WD_FRAMERECT_LEFT, r.bottom - ScaleGUITrad(BUTTON_BOTTOM_OFFSET));
+			DrawSprite(_tree_sprites[index].sprite, _tree_sprites[index].pal, CenterBounds(r.left, r.right, 0), r.bottom - ScaleGUITrad(BUTTON_BOTTOM_OFFSET));
 		}
 	}
 
@@ -248,7 +234,7 @@ public:
 	void OnPlaceMouseUp(ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, Point pt, TileIndex start_tile, TileIndex end_tile) override
 	{
 		if (_game_mode != GM_EDITOR && this->mode == PM_NORMAL && pt.x != -1 && select_proc == DDSP_PLANT_TREES) {
-			DoCommandP(end_tile, this->tree_to_plant, start_tile, CMD_PLANT_TREE | CMD_MSG(STR_ERROR_CAN_T_PLANT_TREE_HERE));
+			DoCommandP(end_tile, this->tree_to_plant | ((_ctrl_pressed ? 1 : 0) << 8), start_tile, CMD_PLANT_TREE | CMD_MSG(STR_ERROR_CAN_T_PLANT_TREE_HERE));
 		}
 	}
 

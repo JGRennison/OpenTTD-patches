@@ -39,6 +39,10 @@
 #define PM_QS_INPUT 0x20000
 #endif
 
+#ifndef WM_DPICHANGED
+#define WM_DPICHANGED 0x02E0
+#endif
+
 bool _window_maximize;
 static Dimension _bck_resolution;
 DWORD _imm_props;
@@ -672,6 +676,24 @@ LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			return TRUE;
 		}
 
+		case WM_DPICHANGED: {
+			auto did_adjust = AdjustGUIZoom(AGZM_AUTOMATIC);
+
+			/* Resize the window to match the new DPI setting. */
+			RECT *prcNewWindow = (RECT *)lParam;
+			SetWindowPos(hwnd,
+				NULL,
+				prcNewWindow->left,
+				prcNewWindow->top,
+				prcNewWindow->right - prcNewWindow->left,
+				prcNewWindow->bottom - prcNewWindow->top,
+				SWP_NOZORDER | SWP_NOACTIVATE);
+
+			if (did_adjust) ReInitAllWindows(true);
+
+			return 0;
+		}
+
 /* needed for wheel */
 #if !defined(WM_MOUSEWHEEL)
 # define WM_MOUSEWHEEL 0x020A
@@ -828,13 +850,9 @@ void VideoDriver_Win32Base::InputLoop()
 	_ctrl_pressed = (this->has_focus && GetAsyncKeyState(VK_CONTROL) < 0) != _invert_ctrl;
 	_shift_pressed = (this->has_focus && GetAsyncKeyState(VK_SHIFT) < 0) != _invert_shift;
 
-#if defined(_DEBUG)
-	this->fast_forward_key_pressed = _shift_pressed;
-#else
 	/* Speedup when pressing tab, except when using ALT+TAB
 	 * to switch to another application. */
 	this->fast_forward_key_pressed = this->has_focus && GetAsyncKeyState(VK_TAB) < 0 && GetAsyncKeyState(VK_MENU) >= 0;
-#endif
 
 	/* Determine which directional keys are down. */
 	if (this->has_focus) {
@@ -1321,6 +1339,11 @@ const char *VideoDriver_Win32OpenGL::Start(const StringList &param)
 		_cur_resolution = old_res;
 		return err;
 	}
+
+	this->driver_info = GetName();
+	this->driver_info += " (";
+	this->driver_info += OpenGLBackend::Get()->GetDriverName();
+	this->driver_info += ")";
 
 	this->ClientSizeChanged(this->width, this->height, true);
 	/* We should have a valid screen buffer now. If not, something went wrong and we should abort. */

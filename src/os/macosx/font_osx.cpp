@@ -57,7 +57,7 @@ FT_Error GetFontByFaceName(const char *font_name, FT_Face *face)
 	}
 
 	if (os_err == noErr) {
-		DEBUG(freetype, 3, "Font path for %s: %s", font_name, file_path);
+		DEBUG(fontcache, 3, "Font path for %s: %s", font_name, file_path);
 		err = FT_New_Face(_library, (const char *)file_path, 0, face);
 	}
 
@@ -67,7 +67,7 @@ FT_Error GetFontByFaceName(const char *font_name, FT_Face *face)
 #endif /* WITH_FREETYPE */
 
 
-bool SetFallbackFont(FreeTypeSettings *settings, const char *language_isocode, int winlangid, MissingGlyphSearcher *callback)
+bool SetFallbackFont(FontCacheSettings *settings, const char *language_isocode, int winlangid, MissingGlyphSearcher *callback)
 {
 	/* Determine fallback font using CoreText. This uses the language isocode
 	 * to find a suitable font. CoreText is available from 10.5 onwards. */
@@ -134,7 +134,7 @@ bool SetFallbackFont(FreeTypeSettings *settings, const char *language_isocode, i
 			/* Save result. */
 			callback->SetFontNames(settings, name);
 			if (!callback->FindMissingGlyphs()) {
-				DEBUG(freetype, 2, "CT-Font for %s: %s", language_isocode, name);
+				DEBUG(fontcache, 2, "CT-Font for %s: %s", language_isocode, name);
 				result = true;
 				break;
 			}
@@ -173,7 +173,7 @@ void CoreTextFontCache::SetFontSize(int pixels)
 {
 	if (pixels == 0) {
 		/* Try to determine a good height based on the height recommended by the font. */
-		int scaled_height = ScaleFontTrad(this->GetDefaultFontHeight(this->fs));
+		int scaled_height = ScaleGUITrad(FontCache::GetDefaultFontHeight(this->fs));
 		pixels = scaled_height;
 
 		CFAutoRelease<CTFontRef> font(CTFontCreateWithFontDescriptor(this->font_desc.get(), 0.0f, nullptr));
@@ -197,11 +197,12 @@ void CoreTextFontCache::SetFontSize(int pixels)
 
 			/* Font height is minimum height plus the difference between the default
 			 * height for this font size and the small size. */
-			int diff = scaled_height - ScaleFontTrad(this->GetDefaultFontHeight(FS_SMALL));
-			pixels = Clamp(std::min<int>(min_size, MAX_FONT_MIN_REC_SIZE) + diff, scaled_height, MAX_FONT_SIZE);
+			int diff = scaled_height - ScaleGUITrad(FontCache::GetDefaultFontHeight(FS_SMALL));
+			/* Clamp() is not used as scaled_height could be greater than MAX_FONT_SIZE, which is not permitted in Clamp(). */
+			pixels = std::min(std::max(std::min<int>(min_size, MAX_FONT_MIN_REC_SIZE) + diff, scaled_height), MAX_FONT_SIZE);
 		}
 	} else {
-		pixels = ScaleFontTrad(pixels);
+		pixels = ScaleGUITrad(pixels);
 	}
 	this->used_size = pixels;
 
@@ -223,7 +224,7 @@ void CoreTextFontCache::SetFontSize(int pixels)
 	CFStringGetCString(font_name.get(), name, lengthof(name), kCFStringEncodingUTF8);
 	this->font_name = name;
 
-	DEBUG(freetype, 2, "Loaded font '%s' with size %d", this->font_name.c_str(), pixels);
+	DEBUG(fontcache, 2, "Loaded font '%s' with size %d", this->font_name.c_str(), pixels);
 }
 
 GlyphID CoreTextFontCache::MapCharToGlyph(WChar key)
@@ -278,9 +279,10 @@ const Sprite *CoreTextFontCache::InternalGetGlyph(GlyphID key, bool use_aa)
 	uint bb_width = (uint)std::ceil(bounds.size.width) + 1; // Sometimes the glyph bounds are too tight and cut of the last pixel after rounding.
 	uint bb_height = (uint)std::ceil(bounds.size.height);
 
-	/* Add 1 pixel for the shadow on the medium font. Our sprite must be at least 1x1 pixel. */
-	uint width = std::max(1U, bb_width + (this->fs == FS_NORMAL ? 1 : 0));
-	uint height = std::max(1U, bb_height + (this->fs == FS_NORMAL ? 1 : 0));
+	/* Add 1 scaled pixel for the shadow on the medium font. Our sprite must be at least 1x1 pixel. */
+	uint shadow = (this->fs == FS_NORMAL) ? ScaleGUITrad(1) : 0;
+	uint width = std::max(1U, bb_width + shadow);
+	uint height = std::max(1U, bb_height + shadow);
 
 	/* Limit glyph size to prevent overflows later on. */
 	if (width > MAX_GLYPH_DIM || height > MAX_GLYPH_DIM) usererror("Font glyph is too large");
@@ -316,8 +318,8 @@ const Sprite *CoreTextFontCache::InternalGetGlyph(GlyphID key, bool use_aa)
 			for (uint y = 0; y < bb_height; y++) {
 				for (uint x = 0; x < bb_width; x++) {
 					if (bmp[y * pitch + x] > 0) {
-						sprite.data[1 + x + (1 + y) * sprite.width].m = SHADOW_COLOUR;
-						sprite.data[1 + x + (1 + y) * sprite.width].a = use_aa ? bmp[x + y * pitch] : 0xFF;
+						sprite.data[shadow + x + (shadow + y) * sprite.width].m = SHADOW_COLOUR;
+						sprite.data[shadow + x + (shadow + y) * sprite.width].a = use_aa ? bmp[x + y * pitch] : 0xFF;
 					}
 				}
 			}
@@ -350,16 +352,7 @@ const Sprite *CoreTextFontCache::InternalGetGlyph(GlyphID key, bool use_aa)
  */
 void LoadCoreTextFont(FontSize fs)
 {
-	static const char *SIZE_TO_NAME[] = { "medium", "small", "large", "mono" };
-
-	FreeTypeSubSetting *settings = nullptr;
-	switch (fs) {
-		default: NOT_REACHED();
-		case FS_SMALL:  settings = &_freetype.small;  break;
-		case FS_NORMAL: settings = &_freetype.medium; break;
-		case FS_LARGE:  settings = &_freetype.large;  break;
-		case FS_MONO:   settings = &_freetype.mono;   break;
-	}
+	FontCacheSubSetting *settings = GetFontCacheSubSetting(fs);
 
 	if (settings->font.empty()) return;
 
@@ -395,7 +388,7 @@ void LoadCoreTextFont(FontSize fs)
 				font_ref.reset((CTFontDescriptorRef)CFArrayGetValueAtIndex(descs.get(), 0));
 				CFRetain(font_ref.get());
 			} else {
-				ShowInfoF("Unable to load file '%s' for %s font, using default OS font selection instead", settings->font.c_str(), SIZE_TO_NAME[fs]);
+				ShowInfoF("Unable to load file '%s' for %s font, using default OS font selection instead", settings->font.c_str(), FontSizeToName(fs));
 			}
 		}
 	}
@@ -419,7 +412,7 @@ void LoadCoreTextFont(FontSize fs)
 	}
 
 	if (!font_ref) {
-		ShowInfoF("Unable to use '%s' for %s font, using sprite font instead", settings->font.c_str(), SIZE_TO_NAME[fs]);
+		ShowInfoF("Unable to use '%s' for %s font, using sprite font instead", settings->font.c_str(), FontSizeToName(fs));
 		return;
 	}
 

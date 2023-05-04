@@ -1,0 +1,44 @@
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :m/u
+STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
+STR_UNIT_NAME_VELOCITY_SI                                       :m/s
+
+STR_BUTTON_RENAME                                               :{BLACK}Athainmnigh
+
+STR_VEHICLE_TYPE_TRAINS                                         :Traenacha
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Feithiclí Bóithre
+STR_VEHICLE_TYPE_SHIPS                                          :Longa
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Aerárthaigh
+
+# Tracerestrict GUI
+
+# Programmable Pre-Signals
+
+#House construction window (for SE only)
+
+#Town select window (for SE only)
+
+STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Airde na líne sneachta:
+STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Bog airde na líne sneachta suas ceann amháin
+STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Bog airde na líne sneachta síos ceann amháin
+STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Athraigh airde na líne sneachta
+
+# Town tooltip
+
+STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Deartha: {GOLD}{NUM}
+
+# Cargo type orders Window
+
+# Plans window
+
+# Clear area query
+
+# Plan related errors
+
+STR_TRADITIONAL_TRAIN_NAME                                      :Traein {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Feithicil Bóthair {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Long {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Aerárthach {COMMA}
+
+# Scheduled Dispatch
+
+# Modifier key toggle window

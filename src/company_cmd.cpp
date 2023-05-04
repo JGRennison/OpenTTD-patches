@@ -42,9 +42,12 @@
 
 #include "table/strings.h"
 
+#include <vector>
+
 #include "safeguards.h"
 
 void ClearEnginesHiddenFlagOfCompany(CompanyID cid);
+void UpdateObjectColours(const Company *c);
 
 CompanyID _local_company;   ///< Company controlled by the human player at this client. Can also be #COMPANY_SPECTATOR.
 CompanyID _current_company; ///< Company currently doing an action.
@@ -53,6 +56,9 @@ Colours _company_colours[MAX_COMPANIES];  ///< NOSAVE: can be determined from co
 CompanyManagerFace _company_manager_face; ///< for company manager face storage in openttd.cfg
 uint _next_competitor_start;              ///< the number of ticks before the next AI is started
 uint _cur_company_tick_index;             ///< used to generate a name for one company that doesn't have a name yet per tick
+
+CompanyMask _saved_PLYP_invalid_mask;
+std::vector<uint8> _saved_PLYP_data;
 
 CompanyPool _company_pool("Company"); ///< Pool of companies.
 INSTANTIATE_POOL_METHODS(Company)
@@ -83,6 +89,7 @@ Company::~Company()
 	if (CleaningPool()) return;
 
 	DeleteCompanyWindows(this->index);
+	SetBit(_saved_PLYP_invalid_mask, this->index);
 }
 
 /**
@@ -120,8 +127,11 @@ void SetLocalCompany(CompanyID new_company)
 
 	_current_company = _local_company = new_company;
 
-	/* Delete any construction windows... */
-	if (switching_company) DeleteConstructionWindows();
+	if (switching_company) {
+		InvalidateWindowClassesData(WC_COMPANY);
+		/* Delete any construction windows... */
+		DeleteConstructionWindows();
+	}
 
 	if (switching_company && Company::IsValidID(new_company)) {
 		for (Town *town : Town::Iterate()) {
@@ -232,19 +242,19 @@ static void SubtractMoneyFromAnyCompany(Company *c, const CommandCost &cost)
 	c->money -= cost.GetCost();
 	c->yearly_expenses[0][cost.GetExpensesType()] += cost.GetCost();
 
-	if (HasBit(1 << EXPENSES_TRAIN_INC    |
-	           1 << EXPENSES_ROADVEH_INC  |
-	           1 << EXPENSES_AIRCRAFT_INC |
-	           1 << EXPENSES_SHIP_INC     |
-			   1 << EXPENSES_SHARING_INC, cost.GetExpensesType())) {
+	if (HasBit(1 << EXPENSES_TRAIN_REVENUE    |
+	           1 << EXPENSES_ROADVEH_REVENUE  |
+	           1 << EXPENSES_AIRCRAFT_REVENUE |
+	           1 << EXPENSES_SHIP_REVENUE     |
+	           1 << EXPENSES_SHARING_INC, cost.GetExpensesType())) {
 		c->cur_economy.income -= cost.GetCost();
 	} else if (HasBit(1 << EXPENSES_TRAIN_RUN    |
 	                  1 << EXPENSES_ROADVEH_RUN  |
 	                  1 << EXPENSES_AIRCRAFT_RUN |
 	                  1 << EXPENSES_SHIP_RUN     |
 	                  1 << EXPENSES_PROPERTY     |
-	                  1 << EXPENSES_LOAN_INT     |
-					  1 << EXPENSES_SHARING_COST, cost.GetExpensesType())) {
+	                  1 << EXPENSES_LOAN_INTEREST |
+	                  1 << EXPENSES_SHARING_COST, cost.GetExpensesType())) {
 		c->cur_economy.expenses -= cost.GetCost();
 	}
 
@@ -574,14 +584,22 @@ Company *DoStartupNewCompany(DoStartupNewCompanyFlag flags, CompanyID company)
 	ResetCompanyLivery(c);
 	_company_colours[c->index] = (Colours)c->colour;
 
-	c->money = c->current_loan = (std::min<int64>(INITIAL_LOAN, _economy.max_loan) * _economy.inflation_prices >> 16) / 50000 * 50000;
+	/* Scale the initial loan based on the inflation rounded down to the loan interval. The maximum loan has already been inflation adjusted. */
+	c->money = c->current_loan = std::min<int64>((INITIAL_LOAN * _economy.inflation_prices >> 16) / LOAN_INTERVAL * LOAN_INTERVAL, _economy.max_loan);
 
 	c->share_owners[0] = c->share_owners[1] = c->share_owners[2] = c->share_owners[3] = INVALID_OWNER;
 
 	c->avail_railtypes = GetCompanyRailtypes(c->index);
 	c->avail_roadtypes = GetCompanyRoadTypes(c->index);
 	c->inaugurated_year = _cur_year;
-	RandomCompanyManagerFaceBits(c->face, (GenderEthnicity)Random(), false, false); // create a random company manager face
+
+	/* If starting a player company in singleplayer and a favorite company manager face is selected, choose it. Otherwise, use a random face.
+	 * In a network game, we'll choose the favorite face later in CmdCompanyCtrl to sync it to all clients. */
+	if (_company_manager_face != 0 && !is_ai && !_networking) {
+		c->face = _company_manager_face;
+	} else {
+		RandomCompanyManagerFaceBits(c->face, (GenderEthnicity)Random(), false, _random);
+	}
 
 	SetDefaultCompanySettings(c->index);
 	ClearEnginesHiddenFlagOfCompany(c->index);
@@ -630,10 +648,22 @@ static bool MaybeStartNewCompany()
 	return false;
 }
 
+static void ClearSavedPLYP()
+{
+	_saved_PLYP_invalid_mask = 0;
+	_saved_PLYP_data.clear();
+}
+
 /** Initialize the pool of companies. */
 void InitializeCompanies()
 {
 	_cur_company_tick_index = 0;
+	ClearSavedPLYP();
+}
+
+void UninitializeCompanies()
+{
+	ClearSavedPLYP();
 }
 
 /**
@@ -674,8 +704,19 @@ static void HandleBankruptcyTakeover(Company *c)
 
 	assert(c->bankrupt_asked != 0);
 
+
 	/* We're currently asking some company to buy 'us' */
 	if (c->bankrupt_timeout != 0) {
+		if (!Company::IsValidID(c->bankrupt_last_asked)) {
+			c->bankrupt_timeout = 0;
+			return;
+		}
+		if (_network_server && Company::IsValidHumanID(c->bankrupt_last_asked) && !NetworkCompanyHasClients(c->bankrupt_last_asked)) {
+			/* This company can no longer accept the offer as there are no clients connected, decline the offer on the company's behalf */
+			Backup<CompanyID> cur_company(_current_company, c->bankrupt_last_asked, FILE_LINE);
+			DoCommandP(0, c->index, 0, CMD_DECLINE_BUY_COMPANY | CMD_NO_SHIFT_ESTIMATE);
+			cur_company.Restore();
+		}
 		c->bankrupt_timeout -= MAX_COMPANIES;
 		if (c->bankrupt_timeout > 0) return;
 		c->bankrupt_timeout = 0;
@@ -691,7 +732,7 @@ static void HandleBankruptcyTakeover(Company *c)
 
 	/* Ask the company with the highest performance history first */
 	for (Company *c2 : Company::Iterate()) {
-		if (c2->bankrupt_asked == 0 && // Don't ask companies going bankrupt themselves
+		if ((c2->bankrupt_asked == 0 || (c2->bankrupt_flags & CBRF_SALE_ONLY)) && // Don't ask companies going bankrupt themselves
 				!HasBit(c->bankrupt_asked, c2->index) &&
 				best_performance < c2->old_economy[1].performance_history &&
 				MayCompanyTakeOver(c2->index, c->index)) {
@@ -702,7 +743,13 @@ static void HandleBankruptcyTakeover(Company *c)
 
 	/* Asked all companies? */
 	if (best_performance == -1) {
-		c->bankrupt_asked = MAX_UVALUE(CompanyMask);
+		if (c->bankrupt_flags & CBRF_SALE_ONLY) {
+			c->bankrupt_asked = 0;
+			DeleteWindowById(WC_BUY_COMPANY, c->index);
+		} else {
+			c->bankrupt_asked = MAX_UVALUE(CompanyMask);
+		}
+		c->bankrupt_flags = CBRF_NONE;
 		return;
 	}
 
@@ -710,27 +757,33 @@ static void HandleBankruptcyTakeover(Company *c)
 	c->bankrupt_last_asked = best->index;
 
 	c->bankrupt_timeout = TAKE_OVER_TIMEOUT;
-	if (best->is_ai) {
-		AI::NewEvent(best->index, new ScriptEventCompanyAskMerger(c->index, ClampToI32(c->bankrupt_value)));
-	} else if (IsInteractiveCompany(best->index)) {
+
+	AI::NewEvent(best->index, new ScriptEventCompanyAskMerger(c->index, c->bankrupt_value));
+	if (IsInteractiveCompany(best->index)) {
 		ShowBuyCompanyDialog(c->index);
-	} else if (!_networking || (_network_server && !NetworkCompanyHasClients(best->index))) {
+	} else if ((!_networking || (_network_server && !NetworkCompanyHasClients(best->index))) && !best->is_ai) {
 		/* This company can never accept the offer as there are no clients connected, decline the offer on the company's behalf */
 		Backup<CompanyID> cur_company(_current_company, best->index, FILE_LINE);
-		DoCommandP(0, c->index, 0, CMD_DECLINE_BUY_COMPANY);
+		DoCommandP(0, c->index, 0, CMD_DECLINE_BUY_COMPANY | CMD_NO_SHIFT_ESTIMATE);
 		cur_company.Restore();
 	}
 }
 
 /** Called every tick for updating some company info. */
-void OnTick_Companies()
+void OnTick_Companies(bool main_tick)
 {
 	if (_game_mode == GM_EDITOR) return;
 
-	Company *c = Company::GetIfValid(_cur_company_tick_index);
-	if (c != nullptr) {
+	if (main_tick) {
+		Company *c = Company::GetIfValid(_cur_company_tick_index);
+		if (c != nullptr) {
+			if (c->bankrupt_asked != 0) HandleBankruptcyTakeover(c);
+		}
+		_cur_company_tick_index = (_cur_company_tick_index + 1) % MAX_COMPANIES;
+	}
+	for (Company *c : Company::Iterate()) {
 		if (c->name_1 != 0) GenerateCompanyName(c);
-		if (c->bankrupt_asked != 0) HandleBankruptcyTakeover(c);
+		if (c->bankrupt_asked != 0 && c->bankrupt_timeout == 0) HandleBankruptcyTakeover(c);
 	}
 
 	if (_next_competitor_start == 0) {
@@ -748,8 +801,6 @@ void OnTick_Companies()
 			if (_networking) break;
 		} while (AI::GetStartNextTime() == 0);
 	}
-
-	_cur_company_tick_index = (_cur_company_tick_index + 1) % MAX_COMPANIES;
 }
 
 /**
@@ -871,6 +922,10 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 					NetworkChangeCompanyPassword(_local_company, _settings_client.network.default_company_pass);
 				}
 
+				/* In network games, we need to try setting the company manager face here to sync it to all clients.
+				 * If a favorite company manager face is selected, choose it. Otherwise, use a random face. */
+				if (_company_manager_face != 0) NetworkSendCommand(0, 0, _company_manager_face, 0, CMD_SET_COMPANY_MANAGER_FACE, nullptr, nullptr, _local_company, nullptr);
+
 				/* Now that we have a new company, broadcast our company settings to
 				 * all clients so everything is in sync */
 				SyncCompanySettings();
@@ -916,8 +971,6 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 			DEBUG(desync, 1, "delete_company: date{%08x; %02x; %02x}, company_id: %u, reason: %u", _date, _date_fract, _tick_skip_counter, company_id, reason);
 
-			/* Delete any open window of the company */
-			DeleteCompanyWindows(c->index);
 			CompanyNewsInformation *cni = new CompanyNewsInformation(c);
 
 			/* Show the bankrupt news */
@@ -951,9 +1004,12 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 			if (!(flags & DC_EXEC)) return CommandCost();
 
+			c->bankrupt_flags |= CBRF_SALE;
+			if (c->bankrupt_asked == 0) c->bankrupt_flags |= CBRF_SALE_ONLY;
 			c->bankrupt_value = CalculateCompanyValue(c, false);
 			c->bankrupt_asked = 1 << c->index; // Don't ask the owner
 			c->bankrupt_timeout = 0;
+			DeleteWindowById(WC_BUY_COMPANY, c->index);
 			break;
 		}
 
@@ -961,8 +1017,8 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	}
 
 	InvalidateWindowClassesData(WC_GAME_OPTIONS);
-	InvalidateWindowClassesData(WC_AI_SETTINGS);
-	InvalidateWindowClassesData(WC_AI_LIST);
+	InvalidateWindowClassesData(WC_SCRIPT_SETTINGS);
+	InvalidateWindowClassesData(WC_SCRIPT_LIST);
 
 	return CommandCost();
 }
@@ -1089,7 +1145,6 @@ CommandCost CmdSetCompanyColour(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 			}
 		}
 
-		extern void UpdateObjectColours(const Company *c);
 		UpdateObjectColours(c);
 	}
 	return CommandCost();

@@ -95,8 +95,13 @@ extern bool _sl_upstream_mode;
 namespace upstream_sl {
 	void SlNullPointers();
 	void SlLoadChunks();
+	void SlLoadChunkByID(uint32 id);
 	void SlLoadCheckChunks();
+	void SlLoadCheckChunkByID(uint32 id);
 	void SlFixPointers();
+	void SlFixPointerChunkByID(uint32 id);
+	void SlSaveChunkChunkByID(uint32 id);
+	void SlResetLoadState();
 }
 
 /** What are we currently doing? */
@@ -238,7 +243,6 @@ struct SaveLoadParams {
 	StringID error_str;                  ///< the translatable error message to show
 	char *extra_msg;                     ///< the error message
 
-	uint16 game_speed;                   ///< The game speed when saving started.
 	bool saveinprogress;                 ///< Whether there is currently a save in progress.
 	SaveModeFlags save_flags;            ///< Save mode flags
 };
@@ -280,6 +284,7 @@ static const std::vector<ChunkHandler> &ChunkHandlers()
 	extern const ChunkHandlerTable _cargomonitor_chunk_handlers;
 	extern const ChunkHandlerTable _goal_chunk_handlers;
 	extern const ChunkHandlerTable _story_page_chunk_handlers;
+	extern const ChunkHandlerTable _league_chunk_handlers;
 	extern const ChunkHandlerTable _ai_chunk_handlers;
 	extern const ChunkHandlerTable _game_chunk_handlers;
 	extern const ChunkHandlerTable _animated_tile_chunk_handlers;
@@ -300,6 +305,7 @@ static const std::vector<ChunkHandler> &ChunkHandlers()
 	extern const ChunkHandlerTable _bridge_signal_chunk_handlers;
 	extern const ChunkHandlerTable _tunnel_chunk_handlers;
 	extern const ChunkHandlerTable _train_speed_adaptation_chunk_handlers;
+	extern const ChunkHandlerTable _new_signal_chunk_handlers;
 	extern const ChunkHandlerTable _debug_chunk_handlers;
 
 	/** List of all chunks in a savegame. */
@@ -321,6 +327,7 @@ static const std::vector<ChunkHandler> &ChunkHandlers()
 		_cargomonitor_chunk_handlers,
 		_goal_chunk_handlers,
 		_story_page_chunk_handlers,
+		_league_chunk_handlers,
 		_engine_chunk_handlers,
 		_town_chunk_handlers,
 		_sign_chunk_handlers,
@@ -346,6 +353,7 @@ static const std::vector<ChunkHandler> &ChunkHandlers()
 		_bridge_signal_chunk_handlers,
 		_tunnel_chunk_handlers,
 		_train_speed_adaptation_chunk_handlers,
+		_new_signal_chunk_handlers,
 		_debug_chunk_handlers,
 	};
 
@@ -760,7 +768,7 @@ int SlIterateArray()
 	 * we must have read in all the data, so we must be at end of current block. */
 	if (_next_offs != 0 && _sl.reader->GetSize() != _next_offs) {
 		DEBUG(sl, 1, "Invalid chunk size: " PRINTF_SIZE " != " PRINTF_SIZE, _sl.reader->GetSize(), _next_offs);
-		SlErrorCorrupt("Invalid chunk size");
+		SlErrorCorruptFmt("Invalid chunk size iterating array - expected to be at position " PRINTF_SIZE ", actually at " PRINTF_SIZE, _next_offs, _sl.reader->GetSize());
 	}
 
 	for (;;) {
@@ -2069,33 +2077,34 @@ std::vector<byte> SlSaveToVector(AutolengthProc *proc, void *arg)
 	return std::vector<uint8>(result.first, result.first + result.second);
 }
 
-/**
- * Run proc, loading exactly length bytes from the contents of buffer
- * @param proc The callback procedure that is called
- * @param arg The variable that will be used for the callback procedure
- */
-void SlLoadFromBuffer(const byte *buffer, size_t length, AutolengthProc *proc, void *arg)
+SlLoadFromBufferState SlLoadFromBufferSetup(const byte *buffer, size_t length)
 {
 	assert(_sl.action == SLA_LOAD || _sl.action == SLA_LOAD_CHECK);
 
-	size_t old_obj_len = _sl.obj_len;
+	SlLoadFromBufferState state;
+
+	state.old_obj_len = _sl.obj_len;
 	_sl.obj_len = length;
 
 	ReadBuffer *reader = ReadBuffer::GetCurrent();
-	byte *old_bufp = reader->bufp;
-	byte *old_bufe = reader->bufe;
+	state.old_bufp = reader->bufp;
+	state.old_bufe = reader->bufe;
 	reader->bufp = const_cast<byte *>(buffer);
 	reader->bufe = const_cast<byte *>(buffer) + length;
 
-	proc(arg);
+	return state;
+}
 
+void SlLoadFromBufferRestore(const SlLoadFromBufferState &state, const byte *buffer, size_t length)
+{
+	ReadBuffer *reader = ReadBuffer::GetCurrent();
 	if (reader->bufp != reader->bufe || reader->bufe != buffer + length) {
 		SlErrorCorrupt("SlLoadFromBuffer: Wrong number of bytes read");
 	}
 
-	_sl.obj_len = old_obj_len;
-	reader->bufp = old_bufp;
-	reader->bufe = old_bufe;
+	_sl.obj_len = state.old_obj_len;
+	reader->bufp = state.old_bufp;
+	reader->bufe = state.old_bufe;
 }
 
 /*
@@ -2129,6 +2138,10 @@ inline void SlRIFFSpringPPCheck(size_t len)
  */
 static void SlLoadChunk(const ChunkHandler &ch)
 {
+	if (ch.special_proc != nullptr) {
+		if (ch.special_proc(ch.id, CSLSO_PRE_LOAD) == CSLSOR_LOAD_CHUNK_CONSUMED) return;
+	}
+
 	byte m = SlReadByte();
 	size_t len;
 	size_t endoffs;
@@ -2176,7 +2189,8 @@ static void SlLoadChunk(const ChunkHandler &ch)
 				ch.load_proc();
 				if (_sl.reader->GetSize() != endoffs) {
 					DEBUG(sl, 1, "Invalid chunk size: " PRINTF_SIZE " != " PRINTF_SIZE ", (" PRINTF_SIZE ")", _sl.reader->GetSize(), endoffs, len);
-					SlErrorCorrupt("Invalid chunk size");
+					SlErrorCorruptFmt("Invalid chunk size - expected to be at position " PRINTF_SIZE ", actually at " PRINTF_SIZE ", length: " PRINTF_SIZE,
+							endoffs, _sl.reader->GetSize(), len);
 				}
 			} else {
 				SlErrorCorrupt("Invalid chunk type");
@@ -2192,6 +2206,10 @@ static void SlLoadChunk(const ChunkHandler &ch)
  */
 static void SlLoadCheckChunk(const ChunkHandler *ch)
 {
+	if (ch && ch->special_proc != nullptr) {
+		if (ch->special_proc(ch->id, CSLSO_PRE_LOADCHECK) == CSLSOR_LOAD_CHUNK_CONSUMED) return;
+	}
+
 	byte m = SlReadByte();
 	size_t len;
 	size_t endoffs;
@@ -2262,7 +2280,8 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
 				}
 				if (_sl.reader->GetSize() != endoffs) {
 					DEBUG(sl, 1, "Invalid chunk size: " PRINTF_SIZE " != " PRINTF_SIZE ", (" PRINTF_SIZE ")", _sl.reader->GetSize(), endoffs, len);
-					SlErrorCorrupt("Invalid chunk size");
+					SlErrorCorruptFmt("Invalid chunk size - expected to be at position " PRINTF_SIZE ", actually at " PRINTF_SIZE ", length: " PRINTF_SIZE,
+							endoffs, _sl.reader->GetSize(), len);
 				}
 			} else {
 				SlErrorCorrupt("Invalid chunk type");
@@ -2278,10 +2297,24 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
  */
 static void SlSaveChunk(const ChunkHandler &ch)
 {
+	if (ch.type == CH_UPSTREAM_SAVE) {
+		SaveLoadVersion old_ver = _sl_version;
+		_sl_version = MAX_LOAD_SAVEGAME_VERSION;
+		auto guard = scope_guard([&]() {
+			_sl_version = old_ver;
+		});
+		upstream_sl::SlSaveChunkChunkByID(ch.id);
+		return;
+	}
+
 	ChunkSaveLoadProc *proc = ch.save_proc;
 
 	/* Don't save any chunk information if there is no save handler. */
 	if (proc == nullptr) return;
+
+	if (ch.special_proc != nullptr) {
+		if (ch.special_proc(ch.id, CSLSO_SHOULD_SAVE_CHUNK) == CSLSOR_DONT_SAVE_CHUNK) return;
+	}
 
 	SlWriteUint32(ch.id);
 	DEBUG(sl, 2, "Saving chunk %c%c%c%c", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
@@ -3123,15 +3156,9 @@ static inline void ClearSaveLoadState()
 	GamelogStopAnyAction();
 }
 
-/**
- * Update the gui accordingly when starting saving
- * and set locks on saveload. Also turn off fast-forward cause with that
- * saving takes Aaaaages
- */
+/** Update the gui accordingly when starting saving and set locks on saveload. */
 static void SaveFileStart()
 {
-	_sl.game_speed = _game_speed;
-	_game_speed = 100;
 	SetMouseCursorBusy(true);
 
 	InvalidateWindowData(WC_STATUS_BAR, 0, SBI_SAVELOAD_START);
@@ -3141,7 +3168,6 @@ static void SaveFileStart()
 /** Update the gui accordingly when saving is done and release locks on saveload. */
 static void SaveFileDone()
 {
-	if (_game_mode != GM_MENU) _game_speed = _sl.game_speed;
 	SetMouseCursorBusy(false);
 
 	InvalidateWindowData(WC_STATUS_BAR, 0, SBI_SAVELOAD_FINISH);
@@ -3292,6 +3318,11 @@ bool IsNetworkServerSave()
 	return _sl.save_flags & SMF_NET_SERVER;
 }
 
+bool IsScenarioSave()
+{
+	return _sl.save_flags & SMF_SCENARIO;
+}
+
 struct ThreadedLoadFilter : LoadFilter {
 	static const size_t BUFFER_COUNT = 4;
 
@@ -3417,8 +3448,10 @@ static SaveOrLoadResult DoLoad(LoadFilter *reader, bool load_check)
 
 	SlXvResetState();
 	SlResetVENC();
+	SlResetTNNC();
 	auto guard = scope_guard([&]() {
 		SlResetVENC();
+		SlResetTNNC();
 	});
 
 	uint32 hdr[2];
@@ -3498,6 +3531,8 @@ static SaveOrLoadResult DoLoad(LoadFilter *reader, bool load_check)
 	}
 	_sl.reader = new ReadBuffer(_sl.lf);
 	_next_offs = 0;
+
+	upstream_sl::SlResetLoadState();
 
 	if (!load_check) {
 		ResetSaveloadData();
@@ -3581,6 +3616,10 @@ SaveOrLoadResult LoadWithFilter(LoadFilter *reader)
 		return DoLoad(reader, false);
 	} catch (...) {
 		ClearSaveLoadState();
+
+		/* Skip the "colour" character */
+		DEBUG(sl, 0, "%s", GetSaveLoadErrorString() + 3);
+
 		return SL_REINIT;
 	}
 }
@@ -3796,4 +3835,9 @@ void FileToSaveLoad::SetTitle(const char *title)
 bool SaveLoadFileTypeIsScenario()
 {
 	return _file_to_saveload.abstract_ftype == FT_SCENARIO;
+}
+
+void SlUnreachablePlaceholder()
+{
+	NOT_REACHED();
 }

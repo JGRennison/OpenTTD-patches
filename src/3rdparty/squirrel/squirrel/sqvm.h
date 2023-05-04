@@ -36,7 +36,6 @@ struct SQVM : public CHAINABLE_OBJ
 	};
 
 	struct CallInfo{
-		//CallInfo() { _generator._type = OT_NULL;}
 		SQInstruction *_ip;
 		SQObjectPtr *_literals;
 		SQObjectPtr _closure;
@@ -122,7 +121,7 @@ public:
 		_callsstack = &_callstackdata[0];
 		_alloccallsstacksize = newsize;
 	}
-	void Release(){ sq_delete(this,SQVM); } //does nothing
+	void Release(){ sq_delete_refcounted(this,SQVM); } //does nothing
 ////////////////////////////////////////////////////////////////////////////
 	//stack functions for the api
 	void Remove(SQInteger n);

@@ -31,7 +31,7 @@ My patches:
 
 7. Town limits zoning - allows to see where town limits are (different from the authority).
 
-## JGR's Patchpack version 0.45.1
+## JGR's Patchpack version 0.53.1
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -64,7 +64,6 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Drive-through train depots.
 * [Template-based train replacement](http://www.tt-forums.net/viewtopic.php?f=33&t=58904).
 * [Routing restrictions](http://www.tt-forums.net/viewtopic.php?f=33&t=73397).  
-  This also includes slots and counters.  
   See the [guide on the wiki](https://github.com/JGRennison/OpenTTD-patches/wiki/Signalling) for more information.
 * [Programmable pre-signals](http://www.tt-forums.net/viewtopic.php?f=33&t=47690).  
   These are not shown in the build signal window by default.  
@@ -89,6 +88,9 @@ See [installation.md](/installation.md) for instructions on how to install.
 * No-entry signals.  
   These are not shown in the build signal window by default.
 * Add client setting to show all signals using the default baseset sprites.
+* Remember the last-used signal type between games.
+* Add client setting to show the introduction year for train wagons.
+* Add setting for rail depot maximum speed.
 
 #### Roads and Road Vehicles
 
@@ -101,6 +103,8 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add setting for default road/tram types.
 * Add a setting to turn off road vehicles slowing in curves.
 * Add a setting to disable road vehicles from passing through each other when blocked for an extended period of time.
+* Allow road vehicle go to station/waypoint orders to have an associated required stop/bay/waypoint direction.
+* Allow changing road vehicle driving side when all road vehicles are in depots.
 
 #### Level Crossings
 
@@ -129,6 +133,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 #### Ships
 
 * [Ship collision avoidance](http://www.tt-forums.net/viewtopic.php?f=33&t=74365).
+* Allow NewGRF ships to carry more than one cargo.
 
 #### Vehicles in General
 
@@ -149,7 +154,11 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add setting to disable mass action buttons for top-level vehicle lists.
 * Add feature to create a new auto-named group when dragging and dropping a vehicle onto the new group button (ctrl includes shared order vehicles).
 * Add settings to reduce vehicle running costs when a vehicle is stationary or in a depot.
-* If a train or ship's next order is for the current station when leaving, start loading again without moving, instead of leaving.
+* If a vehicle's next order is for the current station when leaving, start loading again without moving, instead of leaving.
+* Slots and counters.  
+  See the [guide on the wiki](https://github.com/JGRennison/OpenTTD-patches/wiki/Signalling) for more information.
+* Add cargo capacity / running cost sort mode to the build vehicle window.
+* Add client settings to show the full group hierarchy in group and vehicle names.
 
 #### Orders and Timetabling
 
@@ -163,11 +172,13 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Order occupancy.  
   Add column to the orders GUI to show occupancy running average, show the average order occupancy, and add a vehicle sort mode.
 * [Timetabling waiting time in depots](http://www.tt-forums.net/viewtopic.php?f=33&t=70969).
-* [Scheduled dispatch](https://github.com/innocenat/OpenTTD-patches/tree/scheduled-dispatch-sx).
+* Scheduled dispatch.  
+  This allows dispatching vehicles from timing points using one or more repeating schedules. This is useful for clock-face timetabling.
 * [More conditional orders](http://www.tt-forums.net/viewtopic.php?f=33&t=38317).  
   Next station: is cargo waiting, is cargo accepted, number of free platforms, amount of cargo waiting.  
   Percent of times, per-cargo load percentage, current time/date, timetable lateness.  
-  Slots/counters: train in slot, slot occupancy, counter value.
+  Slots/counters: train in slot, slot occupancy, counter value.  
+  Scheduled dispatch departure slots.
 * Reverse at waypoint orders.
 * Add a menu item to the vehicle list to change order target, e.g. for moving depot orders to a different depot.
 * Add game setting to allow only non-stop orders for trains and road vehicles.
@@ -177,13 +188,18 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Timetabled wait times at waypoints.
 * Add warning/info messages to the timetable window.
 * Add features to reverse the order of an order list, and to append the reverse of an order list.  
-  (Use the ctrl key when the end of orders marker is selected).
+  (Use the ctrl key when the end of orders marker is selected, or enable the order management button).
+* Add features to duplicate an individual order and to change the jump target of conditional orders.
 * Add company setting for whether to advance the current order when cloning/copying/sharing (if current depot is in order list).
 * Add vehicle list menu item to mass cancel go to or service at depot orders.
+* Allow changing colour of orders in order list and timetable windows.
+* Add text label and departure board via order types.
 
 #### Stations
 
 * [Departure boards](https://www.tt-forums.net/viewtopic.php?f=33&t=49956).
+* Add road waypoints.
+* Add NewGRF road stops.
 * Add a setting to increase the station catchment radius.
 * Station rating: track "last visited vehicle type" separately per cargo.
 * Add setting to scale station cargo capacity and rating tolerance by size.
@@ -194,9 +210,13 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add setting to show a company-coloured mark next to vehicles in vehicle list windows, if their owner does not match the list owner.
 * Add a waiting cargo history graph for stations.
 * Add a tooltip to show station rating details (controlled by a setting).
-* [Allow NewGRFs to supply additional station name strings](https://github.com/JGRennison/OpenTTD-patches/wiki/GRF-features#extra-station-names).
 * Add sort by number of vehicles calling to the station list window.
 * Add setting to distribute cargo received at a station to all accepting industries equally, instead of just one of them.
+* Add setting to allow hiding viewport labels of individual waypoints.
+* Increase the distance a station can be from the town centre and still be assigned have the same name as the town (no suffix/prefix), for large towns.
+* [Allow NewGRFs to supply additional station name strings](https://github.com/JGRennison/OpenTTD-patches/wiki/GRF-features#extra-station-names).
+* Allow generating new default name for station (ctrl-click default button in rename station query window).
+* Allow exchanging a station's name with another station in the same town.
 
 #### Towns
 
@@ -208,10 +228,15 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add "indifferent" mode to the town council attitude to area restructuring setting.
 * Disallow converting town-owned roads to types with the no houses flag.
 * Add public roads (road network automatically built between towns) at map generation and in the scenario editor.
+* Add settings for if/when towns can build road bridges and tunnels.
+* Add setting to limit length of continuous inclined roads built by towns.
+* Allow overriding town road construction settings and whether town growth is enabled on a per-town basis, add setting to enable this for multiplayer clients.
+* Allow NewGRFs to set town zone radii.
 
 #### Industries
 
 * Industry cargo generation factor.
+* Allow linking only inputs or outputs to the smallmap and map mode viewports in the industry chain window.
 
 #### Map and Landscaping
 
@@ -219,7 +244,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 * [Adjusted arctic tree placement](http://www.tt-forums.net/viewtopic.php?f=33&t=72502).
 * Add a new tree placement mode (perfect).
 * [Minimum town distance](https://www.tt-forums.net/viewtopic.php?f=33&t=33625).
-* Add map generation settings to control river/lake and rocky patch generation.
+* Add map generation settings to control river/lake, rocky patch, and tropic zone generation.
 * Add generation of wide rivers.
 * Add settings to customise the size of town zones, and city zones.
 
@@ -232,6 +257,8 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add setting to control if and how land purchasing is permitted.
 * Add a company rate limit for land purchasing.
 * Add a company rate limit for object construction.
+* Add setting to disable object expiry after a given year.
+* Add setting to ignore object introduction dates.
 * Add setting for whether to confirm before demolishing industries and/or rail stations.
 
 #### Scenario Editor
@@ -257,6 +284,9 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Topography and industry screenshots.
 * Make smallmap refresh period variable with map mode/zoom and pause state.
 * Add display setting for income/cost text effects.
+* Make the company infrastructure window scrollable.
+* Add setting to disable water animation depending on zoom level.
+* Add zoom in support to the minimap window.
 
 #### Limits
 
@@ -285,7 +315,8 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Various changes to reduce the probability of desyncs and improve desync reporting/diagnostics.
 * Add support for zstd savegame compression for autosaves and network joins.
 * Increase the number of settings which can be changed in multiplayer.
-* Store company passwords in network server saves in an encrypted form such that they are automaticaly restored when loaded into the same network server.
+* Store company passwords in network server saves in an encrypted form such that they are automatically restored when loaded into the same network server.
+* Add client setting for whether to sync localisation settings (such as measurement units) with the server.
 
 #### Money
 
@@ -333,9 +364,9 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Various extensions to the NewGRF developer debug tools.
 * Various performance improvements.
 * Various minor fixes, see changelog.
-* [NewGRF specification additions](docs/newgrf-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions.html)).
-* [NML specification additions](docs/newgrf-additions-nml.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions-nml.html)).
-* [AI/GS script additions](docs/script-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/script-additions.html)).
+* [NewGRF specification additions](docs/newgrf-additions.html) ([online copy](https://jgrennison.github.io/OpenTTD-patches/newgrf-additions.html)).
+* [NML specification additions](docs/newgrf-additions-nml.html) ([online copy](https://jgrennison.github.io/OpenTTD-patches/newgrf-additions-nml.html)).
+* [AI/GS script additions](docs/script-additions.html) ([online copy](https://jgrennison.github.io/OpenTTD-patches/script-additions.html)).
 * [Low-level code/performance changes](docs/jgrpp-low-level-changes.md).
 
 #### Translations
@@ -507,35 +538,6 @@ Most types of add-on content can be downloaded within OpenTTD via the 'Check Onl
 
 Add-on content can also be installed manually, but that's more complicated; the [OpenTTD wiki](https://wiki.openttd.org/) may offer help with that, or the [OpenTTD directory structure guide](./docs/directory_structure.md).
 
-### 1.5.1) AI opponents
-
-OpenTTD comes without AI opponents, so if you want to play with AIs you have to download them.
-
-The easiest way is via the 'Check Online Content' button in the main menu.
-
-You can select some AIs that you think are compatible with your playing style.
-
-AI help and discussions may also be found in the [AI section of the forum](https://www.tt-forums.net/viewforum.php?f=65).
-
-### 1.5.2) Scenarios and height maps
-
-Scenarios and heightmaps can be added via the 'Check Online Content' button in the main menu.
-
-### 1.5.3) NewGRFs
-
-A wide range of add-content is available as NewGRFs, including vehicles, industries, stations, landscape objects, town names and more.
-
-NewGRFs can be added via the 'Check Online Content' button in the main menu.
-
-See also the wiki [guide to NewGRFs](https://wiki.openttd.org/en/Manual/NewGRF) and [the forum graphics development section](https://www.tt-forums.net/viewforum.php?f=66).
-
-### 1.5.4) Game scripts
-
-Game scripts can provide additional challenges or changes to the standard OpenTTD gameplay, for example setting transport goals, or changing town growth behaviour.
-
-Game scripts can be added via the 'Check Online Content' button in the main menu.
-
-See also the wiki [guide to game scripts](https://wiki.openttd.org/en/Manual/Game%20script) and [the forum graphics game script section](https://www.tt-forums.net/viewforum.php?f=65).
 
 ### 1.6) OpenTTD directories
 
@@ -553,6 +555,7 @@ If you want to compile OpenTTD from source, instructions can be found in [COMPIL
 'Official' channels
 
 - [OpenTTD website](https://www.openttd.org)
+- [OpenTTD official Discord](https://discord.gg/openttd)
 - IRC chat using #openttd on irc.oftc.net [more info about our irc channel](https://wiki.openttd.org/en/Development/IRC%20channel)
 - [OpenTTD on Github](https://github.com/OpenTTD/) for code repositories and for reporting issues
 - [forum.openttd.org](https://forum.openttd.org/) - the primary community forum site for discussing OpenTTD and related games

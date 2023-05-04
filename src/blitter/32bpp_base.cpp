@@ -23,6 +23,11 @@ void Blitter_32bppBase::SetPixel(void *video, int x, int y, uint8 colour)
 	*((Colour *)video + x + y * _screen.pitch) = LookupColourInPalette(colour);
 }
 
+void Blitter_32bppBase::SetPixel32(void *video, int x, int y, uint8 colour, uint32 colour32)
+{
+	*((Colour *)video + x + y * _screen.pitch) = colour32;
+}
+
 void Blitter_32bppBase::DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8 colour, int width, int dash)
 {
 	const Colour c = LookupColourInPalette(colour);
@@ -68,6 +73,11 @@ void Blitter_32bppBase::DrawRect(void *video, int width, int height, uint8 colou
 		}
 		video = (uint32 *)video + _screen.pitch;
 	} while (--height);
+}
+
+void Blitter_32bppBase::DrawRectAt(void *video, int x, int y, int width, int height, uint8 colour)
+{
+	this->Blitter_32bppBase::DrawRect((Colour *)video + x + y * _screen.pitch, width, height, colour);
 }
 
 void Blitter_32bppBase::CopyFromBuffer(void *video, const void *src, int width, int height)
@@ -165,9 +175,9 @@ void Blitter_32bppBase::ScrollBuffer(void *video, int left, int top, int width, 
 	}
 }
 
-int Blitter_32bppBase::BufferSize(int width, int height)
+size_t Blitter_32bppBase::BufferSize(uint width, uint height)
 {
-	return width * height * sizeof(uint32);
+	return sizeof(uint32) * width * height;
 }
 
 void Blitter_32bppBase::PaletteAnimate(const Palette &palette)

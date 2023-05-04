@@ -17,10 +17,15 @@
 #include "../safeguards.h"
 
 /** Save and load the mapping between a spec and the NewGRF it came from. */
-static const SaveLoad _newgrf_mapping_desc[] = {
+static const SaveLoad _newgrf_mapping_desc_old[] = {
 	SLE_VAR(EntityIDMapping, grfid,         SLE_UINT32),
-	SLE_VAR(EntityIDMapping, entity_id,     SLE_UINT8),
-	SLE_VAR(EntityIDMapping, substitute_id, SLE_UINT8),
+	SLE_VAR(EntityIDMapping, entity_id,     SLE_FILE_U8 | SLE_VAR_U16),
+	SLE_VAR(EntityIDMapping, substitute_id, SLE_FILE_U8 | SLE_VAR_U16),
+};
+static const SaveLoad _newgrf_mapping_desc_new[] = {
+	SLE_VAR(EntityIDMapping, grfid,         SLE_UINT32),
+	SLE_VAR(EntityIDMapping, entity_id,     SLE_UINT16),
+	SLE_VAR(EntityIDMapping, substitute_id, SLE_UINT16),
 };
 
 /**
@@ -30,11 +35,11 @@ static const SaveLoad _newgrf_mapping_desc[] = {
 void Save_NewGRFMapping(const OverrideManagerBase &mapping)
 {
 	for (uint i = 0; i < mapping.GetMaxMapping(); i++) {
-		if (mapping.mapping_ID[i].grfid == 0 &&
-		    mapping.mapping_ID[i].entity_id == 0) continue;
+		if (mapping.mappings[i].grfid == 0 &&
+		    mapping.mappings[i].entity_id == 0) continue;
 		SlSetArrayIndex(i);
-		SlSetLength(4 + 1 + 1);
-		SlObjectSaveFiltered(&mapping.mapping_ID[i], _newgrf_mapping_desc); // _newgrf_mapping_desc has no conditionals
+		SlSetLength(4 + 2 + 2);
+		SlObjectSaveFiltered(const_cast<EntityIDMapping *>(&mapping.mappings[i]), _newgrf_mapping_desc_new); // _newgrf_mapping_desc_new has no conditionals
 	}
 }
 
@@ -50,10 +55,12 @@ void Load_NewGRFMapping(OverrideManagerBase &mapping)
 
 	uint max_id = mapping.GetMaxMapping();
 
+	SaveLoadTable slt = SlXvIsFeaturePresent(XSLFI_NEWGRF_ENTITY_EXTRA) ? SaveLoadTable(_newgrf_mapping_desc_new) : SaveLoadTable(_newgrf_mapping_desc_old);
+
 	int index;
 	while ((index = SlIterateArray()) != -1) {
 		if (unlikely((uint)index >= max_id)) SlErrorCorrupt("Too many NewGRF entity mappings");
-		SlObjectLoadFiltered(&mapping.mapping_ID[index], _newgrf_mapping_desc); // _newgrf_mapping_desc has no conditionals
+		SlObjectLoadFiltered(&mapping.mappings[index], slt); // _newgrf_mapping_desc_old/_newgrf_mapping_desc_new has no conditionals
 	}
 }
 

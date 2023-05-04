@@ -17,7 +17,8 @@
 #include "../safeguards.h"
 
 static const SaveLoad _glog_action_desc[] = {
-	SLE_VAR(LoggedAction, tick,              SLE_UINT16),
+	SLE_CONDVAR_X(LoggedAction, tick,       SLE_FILE_U16 | SLE_VAR_U64,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_U64_TICK_COUNTER, 0, 0)),
+	SLE_CONDVAR_X(LoggedAction, tick,       SLE_UINT64,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_U64_TICK_COUNTER)),
 };
 
 static const SaveLoad _glog_mode_desc[] = {
@@ -144,7 +145,7 @@ static void Save_GLOG()
 			assert((uint)lc->ct < lengthof(_glog_desc));
 			length += SlCalcObjLength(lc, _glog_desc[lc->ct]) + 1;
 		}
-		length += 4;
+		length += 10;
 	}
 	length++;
 

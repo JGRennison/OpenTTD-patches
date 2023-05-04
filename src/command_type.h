@@ -13,35 +13,64 @@
 #include "economy_type.h"
 #include "strings_type.h"
 #include "tile_type.h"
+#include "core/span_type.hpp"
+#include "3rdparty/optional/ottd_optional.h"
 #include <string>
 
 struct GRFFile;
+
+enum CommandCostIntlFlags : uint8 {
+	CCIF_NONE                     = 0,
+	CCIF_SUCCESS                  = 1 << 0,
+	CCIF_INLINE_EXTRA_MSG         = 1 << 1,
+	CCIF_INLINE_TILE              = 1 << 2,
+	CCIF_INLINE_RESULT            = 1 << 3,
+};
+DECLARE_ENUM_AS_BIT_SET(CommandCostIntlFlags)
 
 /**
  * Common return value for all commands. Wraps the cost and
  * a possible error message/state together.
  */
 class CommandCost {
-	ExpensesType expense_type; ///< the type of expence as shown on the finances view
-	Money cost;       ///< The cost of this action
-	StringID message; ///< Warning message for when success is unset
-	bool success;     ///< Whether the comment went fine up to this moment
-	const GRFFile *textref_stack_grffile; ///< NewGRF providing the #TextRefStack content.
-	uint textref_stack_size;   ///< Number of uint32 values to put on the #TextRefStack for the error message.
-	StringID extra_message = INVALID_STRING_ID;    ///< Additional warning message for when success is unset
+	Money cost;                                 ///< The cost of this action
+	ExpensesType expense_type;                  ///< the type of expence as shown on the finances view
+	CommandCostIntlFlags flags;                 ///< Flags: see CommandCostIntlFlags
+	StringID message;                           ///< Warning message for when success is unset
+	union {
+		uint32 result = 0;
+		StringID extra_message;                 ///< Additional warning message for when success is unset
+		TileIndex tile;
+	} inl;
 
-	static uint32 textref_stack[16];
+	struct CommandCostAuxiliaryData {
+		uint32 textref_stack[16] = {};
+		const GRFFile *textref_stack_grffile = nullptr; ///< NewGRF providing the #TextRefStack content.
+		uint textref_stack_size = 0;                    ///< Number of uint32 values to put on the #TextRefStack for the error message.
+		StringID extra_message = INVALID_STRING_ID;     ///< Additional warning message for when success is unset
+		TileIndex tile = INVALID_TILE;
+		uint32 result = 0;
+	};
+	std::unique_ptr<CommandCostAuxiliaryData> aux_data;
+
+	void AllocAuxData();
+	bool AddInlineData(CommandCostIntlFlags inline_flag);
 
 public:
 	/**
 	 * Creates a command cost return with no cost and no error
 	 */
-	CommandCost() : expense_type(INVALID_EXPENSES), cost(0), message(INVALID_STRING_ID), success(true), textref_stack_grffile(nullptr), textref_stack_size(0) {}
+	CommandCost() : cost(0), expense_type(INVALID_EXPENSES), flags(CCIF_SUCCESS), message(INVALID_STRING_ID) {}
 
 	/**
 	 * Creates a command return value the is failed with the given message
 	 */
-	explicit CommandCost(StringID msg) : expense_type(INVALID_EXPENSES), cost(0), message(msg), success(false), textref_stack_grffile(nullptr), textref_stack_size(0) {}
+	explicit CommandCost(StringID msg) : cost(0), expense_type(INVALID_EXPENSES), flags(CCIF_NONE), message(msg) {}
+
+	CommandCost(const CommandCost &other);
+	CommandCost(CommandCost &&other) = default;
+	CommandCost &operator=(const CommandCost &other);
+	CommandCost &operator=(CommandCost &&other) = default;
 
 	/**
 	 * Creates a command return value the is failed with the given message
@@ -49,7 +78,8 @@ public:
 	static CommandCost DualErrorMessage(StringID msg, StringID extra_msg)
 	{
 		CommandCost cc(msg);
-		cc.extra_message = extra_msg;
+		cc.flags |= CCIF_INLINE_EXTRA_MSG;
+		cc.inl.extra_message = extra_msg;
 		return cc;
 	}
 
@@ -57,14 +87,14 @@ public:
 	 * Creates a command cost with given expense type and start cost of 0
 	 * @param ex_t the expense type
 	 */
-	explicit CommandCost(ExpensesType ex_t) : expense_type(ex_t), cost(0), message(INVALID_STRING_ID), success(true), textref_stack_grffile(nullptr), textref_stack_size(0) {}
+	explicit CommandCost(ExpensesType ex_t) : cost(0), expense_type(ex_t), flags(CCIF_SUCCESS), message(INVALID_STRING_ID) {}
 
 	/**
 	 * Creates a command return value with the given start cost and expense type
 	 * @param ex_t the expense type
 	 * @param cst the initial cost of this command
 	 */
-	CommandCost(ExpensesType ex_t, const Money &cst) : expense_type(ex_t), cost(cst), message(INVALID_STRING_ID), success(true), textref_stack_grffile(nullptr), textref_stack_size(0) {}
+	CommandCost(ExpensesType ex_t, const Money &cst) : cost(cst), expense_type(ex_t), flags(CCIF_SUCCESS), message(INVALID_STRING_ID) {}
 
 
 	/**
@@ -109,12 +139,12 @@ public:
 	 * Makes this #CommandCost behave like an error command.
 	 * @param message The error message.
 	 */
-	void MakeError(StringID message, StringID extra_message = INVALID_STRING_ID)
+	void MakeError(StringID message)
 	{
 		assert(message != INVALID_STRING_ID);
-		this->success = false;
+		this->flags &= ~(CCIF_SUCCESS | CCIF_INLINE_EXTRA_MSG);
 		this->message = message;
-		this->extra_message = extra_message;
+		if (this->aux_data) this->aux_data->extra_message = INVALID_STRING_ID;
 	}
 
 	void UseTextRefStack(const GRFFile *grffile, uint num_registers);
@@ -125,7 +155,7 @@ public:
 	 */
 	const GRFFile *GetTextRefStackGRF() const
 	{
-		return this->textref_stack_grffile;
+		return this->aux_data != nullptr ? this->aux_data->textref_stack_grffile : 0;
 	}
 
 	/**
@@ -134,7 +164,7 @@ public:
 	 */
 	uint GetTextRefStackSize() const
 	{
-		return this->textref_stack_size;
+		return this->aux_data != nullptr ? this->aux_data->textref_stack_size : 0;
 	}
 
 	/**
@@ -143,7 +173,7 @@ public:
 	 */
 	const uint32 *GetTextRefStack() const
 	{
-		return textref_stack;
+		return this->aux_data != nullptr ? this->aux_data->textref_stack : nullptr;
 	}
 
 	/**
@@ -152,7 +182,7 @@ public:
 	 */
 	StringID GetErrorMessage() const
 	{
-		if (this->success) return INVALID_STRING_ID;
+		if (this->Succeeded()) return INVALID_STRING_ID;
 		return this->message;
 	}
 
@@ -162,8 +192,9 @@ public:
 	 */
 	StringID GetExtraErrorMessage() const
 	{
-		if (this->success) return INVALID_STRING_ID;
-		return this->extra_message;
+		if (this->Succeeded()) return INVALID_STRING_ID;
+		if (this->flags & CCIF_INLINE_EXTRA_MSG) return this->inl.extra_message;
+		return this->aux_data != nullptr ? this->aux_data->extra_message : INVALID_STRING_ID;
 	}
 
 	/**
@@ -172,7 +203,7 @@ public:
 	 */
 	inline bool Succeeded() const
 	{
-		return this->success;
+		return (this->flags & CCIF_SUCCESS);
 	}
 
 	/**
@@ -181,7 +212,7 @@ public:
 	 */
 	inline bool Failed() const
 	{
-		return !this->success;
+		return !(this->flags & CCIF_SUCCESS);
 	}
 
 	/**
@@ -207,16 +238,32 @@ public:
 	void MakeSuccessWithMessage()
 	{
 		assert(this->message != INVALID_STRING_ID);
-		this->success = true;
+		this->flags |= CCIF_SUCCESS;
 	}
 
 	CommandCost UnwrapSuccessWithMessage() const
 	{
 		assert(this->IsSuccessWithMessage());
 		CommandCost res = *this;
-		res.success = false;
+		res.flags &= ~CCIF_SUCCESS;
 		return res;
 	}
+
+	TileIndex GetTile() const
+	{
+		if (this->flags & CCIF_INLINE_TILE) return this->inl.tile;
+		return this->aux_data != nullptr ? this->aux_data->tile : INVALID_TILE;
+	}
+
+	void SetTile(TileIndex tile);
+
+	uint32 GetResultData() const
+	{
+		if (this->flags & CCIF_INLINE_RESULT) return this->inl.result;
+		return this->aux_data != nullptr ? this->aux_data->result : 0;
+	}
+
+	void SetResultData(uint32 result);
 };
 
 /**
@@ -251,9 +298,11 @@ enum Commands
 	CMD_REMOVE_FROM_RAIL_STATION, ///< remove a (rectangle of) tiles from a rail station
 	CMD_CONVERT_RAIL,			  ///< convert a rail type
 
-	CMD_BUILD_RAIL_WAYPOINT,	   ///< build a waypoint
-	CMD_RENAME_WAYPOINT,		   ///< rename a waypoint
-	CMD_REMOVE_FROM_RAIL_WAYPOINT, ///< remove a (rectangle of) tiles from a rail waypoint
+	CMD_BUILD_RAIL_WAYPOINT,          ///< build a waypoint
+	CMD_BUILD_ROAD_WAYPOINT,          ///< build a road waypoint
+	CMD_RENAME_WAYPOINT,              ///< rename a waypoint
+	CMD_SET_WAYPOINT_LABEL_HIDDEN,    ///< set whether waypoint label is hidden
+	CMD_REMOVE_FROM_RAIL_WAYPOINT,    ///< remove a (rectangle of) tiles from a rail waypoint
 
 	CMD_BUILD_ROAD_STOP,  ///< build a road stop
 	CMD_REMOVE_ROAD_STOP, ///< remove a road stop
@@ -282,17 +331,20 @@ enum Commands
 	CMD_FORCE_TRAIN_PROCEED,	 ///< proceed a train to pass a red signal
 	CMD_REVERSE_TRAIN_DIRECTION, ///< turn a train around
 
-	CMD_CLEAR_ORDER_BACKUP, ///< clear the order backup of a given user/tile
-	CMD_MODIFY_ORDER,		///< modify an order (like set full-load)
-	CMD_SKIP_TO_ORDER,		///< skip an order to the next of specific one
-	CMD_DELETE_ORDER,		///< delete an order
-	CMD_INSERT_ORDER,		///< insert a new order
-	CMD_MASS_CHANGE_ORDER,	///< mass change the target of an order
+	CMD_CLEAR_ORDER_BACKUP,           ///< clear the order backup of a given user/tile
+	CMD_MODIFY_ORDER,                 ///< modify an order (like set full-load)
+	CMD_SKIP_TO_ORDER,                ///< skip an order to the next of specific one
+	CMD_DELETE_ORDER,                 ///< delete an order
+	CMD_INSERT_ORDER,                 ///< insert a new order
+	CMD_DUPLICATE_ORDER,              ///< duplicate an order
+	CMD_MASS_CHANGE_ORDER,            ///< mass change the target of an order
 
 	CMD_CHANGE_SERVICE_INT, ///< change the server interval of a vehicle
 
-	CMD_BUILD_INDUSTRY, ///< build a new industry
-	CMD_INDUSTRY_CTRL,	///< change industry properties
+	CMD_BUILD_INDUSTRY,               ///< build a new industry
+	CMD_INDUSTRY_SET_FLAGS,           ///< change industry control flags
+	CMD_INDUSTRY_SET_EXCLUSIVITY,     ///< change industry exclusive consumer/supplier
+	CMD_INDUSTRY_SET_TEXT,            ///< change additional text for the industry
 
 	CMD_SET_COMPANY_MANAGER_FACE, ///< set the manager's face of the company
 	CMD_SET_COMPANY_COLOUR,		  ///< set the colour of the company
@@ -311,6 +363,7 @@ enum Commands
 	CMD_RENAME_PRESIDENT,				  ///< change the president name
 	CMD_RENAME_STATION,					  ///< rename a station
 	CMD_RENAME_DEPOT,					  ///< rename a depot
+	CMD_EXCHANGE_STATION_NAMES,       ///< exchange station names
 	CMD_SET_STATION_CARGO_ALLOWED_SUPPLY, ///< set station cargo allowed supply
 
 	CMD_PLACE_SIGN,	 ///< place a sign
@@ -325,16 +378,18 @@ enum Commands
 	CMD_BUY_COMPANY,		   ///< buy a company which is bankrupt
 	CMD_DECLINE_BUY_COMPANY,   ///< decline to buy a company which is bankrupt
 
-	CMD_FOUND_TOWN,			   ///< found a town
-	CMD_RENAME_TOWN,		   ///< rename a town
-	CMD_RENAME_TOWN_NON_ADMIN, ///< rename a town, non-admin command
-	CMD_DO_TOWN_ACTION,		   ///< do a action from the town detail window (like advertises or bribe)
-	CMD_TOWN_CARGO_GOAL,	   ///< set the goal of a cargo for a town
-	CMD_TOWN_GROWTH_RATE,	   ///< set the town growth rate
-	CMD_TOWN_RATING,		   ///< set rating of a company in a town
-	CMD_TOWN_SET_TEXT,		   ///< set the custom text of a town
-	CMD_EXPAND_TOWN,		   ///< expand a town
-	CMD_DELETE_TOWN,		   ///< delete a town
+	CMD_FOUND_TOWN,                   ///< found a town
+	CMD_RENAME_TOWN,                  ///< rename a town
+	CMD_RENAME_TOWN_NON_ADMIN,        ///< rename a town, non-admin command
+	CMD_DO_TOWN_ACTION,               ///< do a action from the town detail window (like advertises or bribe)
+	CMD_TOWN_SETTING_OVERRIDE,        ///< override a town setting
+	CMD_TOWN_SETTING_OVERRIDE_NON_ADMIN, ///< override a town setting, non-admin command
+	CMD_TOWN_CARGO_GOAL,              ///< set the goal of a cargo for a town
+	CMD_TOWN_GROWTH_RATE,             ///< set the town growth rate
+	CMD_TOWN_RATING,                  ///< set rating of a company in a town
+	CMD_TOWN_SET_TEXT,                ///< set the custom text of a town
+	CMD_EXPAND_TOWN,                  ///< expand a town
+	CMD_DELETE_TOWN,                  ///< delete a town
 
 	CMD_ORDER_REFIT, ///< change the refit information of an order (for "goto depot" )
 	CMD_CLONE_ORDER, ///< clone (and share) an order
@@ -384,12 +439,15 @@ enum Commands
 	CMD_TOGGLE_KEEP_REMAINING_VEHICLES, ///< toggle 'keep remaining vehicles' on template
 	CMD_TOGGLE_REFIT_AS_TEMPLATE,		///< toggle 'refit as template' on template
 	CMD_TOGGLE_TMPL_REPLACE_OLD_ONLY,	///< toggle 'replace old vehicles only' on template
+	CMD_RENAME_TMPL_REPLACE,          ///< rename a template
 
 	CMD_VIRTUAL_TRAIN_FROM_TEMPLATE_VEHICLE, ///< Creates a virtual train from a template
 	CMD_VIRTUAL_TRAIN_FROM_TRAIN,			 ///< Creates a virtual train from a regular train
 	CMD_DELETE_VIRTUAL_TRAIN,				 ///< Delete a virtual train
 	CMD_BUILD_VIRTUAL_RAIL_VEHICLE,			 ///< Build a virtual train
 	CMD_REPLACE_TEMPLATE_VEHICLE,			 ///< Replace a template vehicle with another one based on a virtual train
+	CMD_MOVE_VIRTUAL_RAIL_VEHICLE,    ///< Move a virtual rail vehicle
+	CMD_SELL_VIRTUAL_VEHICLE,         ///< Sell a virtual vehicle
 
 	CMD_CLONE_TEMPLATE_VEHICLE_FROM_TRAIN, ///< clone a train and create a new template vehicle based on it
 	CMD_DELETE_TEMPLATE_VEHICLE,		   ///< delete a template vehicle
@@ -427,7 +485,6 @@ enum Commands
 	CMD_SET_TIMETABLE_START,   ///< set the date that a timetable should start
 
 	CMD_OPEN_CLOSE_AIRPORT, ///< open/close an airport to incoming aircraft
-
 	CMD_BUILD_TRAFFICLIGHTS,  ///< place traffic lights on a road crossing
 	CMD_REMOVE_TRAFFICLIGHTS, ///< remove traffic lights
 
@@ -435,12 +492,17 @@ enum Commands
 	CMD_REMOVE_YIELDSIGN, ///< remove yield sign
 	CMD_BUILD_STOPSIGN,	  ///< place stop sign on a road crossing
 	CMD_REMOVE_STOPSIGN,  ///< remove stop sign
+	CMD_CREATE_LEAGUE_TABLE,               ///< create a new league table
+	CMD_CREATE_LEAGUE_TABLE_ELEMENT,       ///< create a new element in a league table
+	CMD_UPDATE_LEAGUE_TABLE_ELEMENT_DATA,  ///< update the data fields of a league table element
+	CMD_UPDATE_LEAGUE_TABLE_ELEMENT_SCORE, ///< update the score of a league table element
+	CMD_REMOVE_LEAGUE_TABLE_ELEMENT,       ///< remove a league table element
 
-	CMD_PROGRAM_TRACERESTRICT_SIGNAL,	   ///< modify a signal tracerestrict program
-	CMD_CREATE_TRACERESTRICT_SLOT,		   ///< create a tracerestrict slot
-	CMD_ALTER_TRACERESTRICT_SLOT,		   ///< alter a tracerestrict slot
-	CMD_DELETE_TRACERESTRICT_SLOT,		   ///< delete a tracerestrict slot
-	CMD_ADD_VEHICLE_TRACERESTRICT_SLOT,	   ///< add a vehicle to a tracerestrict slot
+	CMD_PROGRAM_TRACERESTRICT_SIGNAL, ///< modify a signal tracerestrict program
+	CMD_CREATE_TRACERESTRICT_SLOT,    ///< create a tracerestrict slot
+	CMD_ALTER_TRACERESTRICT_SLOT,     ///< alter a tracerestrict slot
+	CMD_DELETE_TRACERESTRICT_SLOT,    ///< delete a tracerestrict slot
+	CMD_ADD_VEHICLE_TRACERESTRICT_SLOT,    ///< add a vehicle to a tracerestrict slot
 	CMD_REMOVE_VEHICLE_TRACERESTRICT_SLOT, ///< remove a vehicle from a tracerestrict slot
 	CMD_CREATE_TRACERESTRICT_COUNTER,	   ///< create a tracerestrict counter
 	CMD_ALTER_TRACERESTRICT_COUNTER,	   ///< alter a tracerestrict counter
@@ -461,6 +523,7 @@ enum Commands
 	CMD_SCHEDULED_DISPATCH_CLEAR,				///< scheduled dispatch clear schedule
 	CMD_SCHEDULED_DISPATCH_ADD_NEW_SCHEDULE,	///< scheduled dispatch add new schedule
 	CMD_SCHEDULED_DISPATCH_REMOVE_SCHEDULE,		///< scheduled dispatch remove schedule
+	CMD_SCHEDULED_DISPATCH_RENAME_SCHEDULE,     ///< scheduled dispatch rename schedule
 
 	CMD_ADD_PLAN,
 	CMD_ADD_PLAN_LINE,
@@ -517,9 +580,12 @@ DECLARE_ENUM_AS_BIT_SET(DoCommandFlag)
  */
 enum FlaggedCommands {
 	CMD_NETWORK_COMMAND       = 0x0100, ///< execute the command without sending it on the network
+	CMD_NO_SHIFT_ESTIMATE     = 0x0200, ///< do not check shift key state for whether to estimate command
 	CMD_FLAGS_MASK            = 0xFF00, ///< mask for all command flags
 	CMD_ID_MASK               = 0x00FF, ///< mask for the command ID
 };
+
+static_assert(CMD_END <= CMD_ID_MASK + 1);
 
 /**
  * Command flags for the command table _command_proc_table.
@@ -541,6 +607,7 @@ enum CommandFlags {
 	CMD_PROCEX    =  0x800, ///< the command proc function has extended parameters
 	CMD_SERVER_NS = 0x1000, ///< the command can only be initiated by the server (this is not executed in spectator mode)
 	CMD_LOG_AUX   = 0x2000, ///< the command should be logged in the auxiliary log instead of the main log
+	CMD_P1_TILE   = 0x4000, ///< use p1 for money text and error tile
 };
 DECLARE_ENUM_AS_BIT_SET(CommandFlags)
 
@@ -567,6 +634,8 @@ enum CommandPauseLevel {
 	CMDPL_ALL_ACTIONS,     ///< All actions may be executed.
 };
 
+struct CommandAuxiliaryBase;
+
 /**
  * Defines the callback type for all command handler functions.
  *
@@ -586,7 +655,7 @@ enum CommandPauseLevel {
  * @return The CommandCost of the command, which can be succeeded or failed.
  */
 typedef CommandCost CommandProc(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text);
-typedef CommandCost CommandProcEx(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length);
+typedef CommandCost CommandProcEx(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data);
 
 /**
  * Define a command with the flags which belongs to it.
@@ -608,9 +677,9 @@ struct Command {
 	Command(CommandProcEx *procex, const char *name, CommandFlags flags, CommandType type)
 			: procex(procex), name(name), flags(flags | CMD_PROCEX), type(type) {}
 
-	inline CommandCost Execute(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length) const {
+	inline CommandCost Execute(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data) const {
 		if (this->flags & CMD_PROCEX) {
-			return this->procex(tile, flags, p1, p2, p3, text, binary_length);
+			return this->procex(tile, flags, p1, p2, p3, text, aux_data);
 		} else {
 			return this->proc(tile, flags, p1, p2, text);
 		}
@@ -635,6 +704,40 @@ typedef void CommandCallback(const CommandCost &result, TileIndex tile, uint32 p
 
 #define MAX_CMD_TEXT_LENGTH 32000
 
+struct CommandSerialisationBuffer;
+
+struct CommandAuxiliaryBase {
+	virtual ~CommandAuxiliaryBase() {}
+
+	virtual CommandAuxiliaryBase *Clone() const = 0;
+
+	virtual opt::optional<span<const uint8>> GetDeserialisationSrc() const = 0;
+
+	virtual void Serialise(CommandSerialisationBuffer &buffer) const = 0;
+};
+
+struct CommandAuxiliaryPtr : public std::unique_ptr<CommandAuxiliaryBase>
+{
+	using std::unique_ptr<CommandAuxiliaryBase>::unique_ptr;
+
+	CommandAuxiliaryPtr() {};
+
+	CommandAuxiliaryPtr(const CommandAuxiliaryPtr &other) :
+			std::unique_ptr<CommandAuxiliaryBase>(CommandAuxiliaryPtr::Clone(other)) {}
+
+	CommandAuxiliaryPtr& operator=(const CommandAuxiliaryPtr &other)
+	{
+		this->reset(CommandAuxiliaryPtr::Clone(other));
+		return *this;
+	}
+
+private:
+	static CommandAuxiliaryBase *Clone(const CommandAuxiliaryPtr &other)
+	{
+		return other != nullptr ? other->Clone() : nullptr;
+	}
+};
+
 /**
  * Structure for buffering the build command when selecting a station to join.
  */
@@ -645,13 +748,13 @@ struct CommandContainer {
 	uint32 cmd;                      ///< command being executed.
 	uint64 p3;                       ///< parameter p3. (here for alignment)
 	CommandCallback *callback;       ///< any callback function executed upon successful completion of the command.
-	uint32 binary_length;            ///< in case text contains binary data, this describes its length.
 	std::string text;                ///< possible text sent for name changes etc.
+	CommandAuxiliaryPtr aux_data;    ///< Auxiliary command data
 };
 
 inline CommandContainer NewCommandContainerBasic(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallback *callback = nullptr)
 {
-	return { tile, p1, p2, cmd, 0, callback, 0, {} };
+	return { tile, p1, p2, cmd, 0, callback, {}, nullptr };
 }
 
 #endif /* COMMAND_TYPE_H */

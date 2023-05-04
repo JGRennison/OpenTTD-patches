@@ -83,7 +83,7 @@ int CDECL vseprintf(char *str, const char *last, const char *format, va_list ap)
  */
 char *strecat(char *dst, const char *src, const char *last)
 {
-	assert(dst <= last);
+	dbg_assert(dst <= last);
 	while (*dst != '\0') {
 		if (dst == last) return dst;
 		dst++;
@@ -111,7 +111,7 @@ char *strecat(char *dst, const char *src, const char *last)
  */
 char *strecpy(char *dst, const char *src, const char *last, bool quiet_mode)
 {
-	assert(dst <= last);
+	dbg_assert(dst <= last);
 	while (dst != last && *src != '\0') {
 		*dst++ = *src++;
 	}
@@ -260,6 +260,8 @@ static void StrMakeValidInPlace(T &dst, const char *str, const char *last, Strin
 				*dst++ = *str++;
 			} while (--len != 0);
 		} else if ((settings & SVS_ALLOW_NEWLINE) != 0 && c == '\n') {
+			*dst++ = *str++;
+		} else if ((settings & SVS_ALLOW_SEPARATOR_CODE) != 0 && c == 0x1F) {
 			*dst++ = *str++;
 		} else {
 			if ((settings & SVS_ALLOW_NEWLINE) != 0 && c == '\r' && str[1] == '\n') {
@@ -416,6 +418,21 @@ bool StrEndsWith(const std::string_view str, const std::string_view suffix)
 	return str.compare(str.size() - suffix_len, suffix_len, suffix, 0, suffix_len) == 0;
 }
 
+const char *StrConsumeToSeparator(std::string &result, const char *str)
+{
+	if (str == nullptr) {
+		result = "";
+		return nullptr;
+	}
+
+	const char *end = str;
+	while (*end != '\0' && *end != 0x1F) {
+		end++;
+	}
+	result.assign(str, end);
+	if (*end == 0x1F) return end + 1;
+	return nullptr;
+}
 
 /** Scans the string for colour codes and strips them */
 void str_strip_colours(char *str)
@@ -684,7 +701,7 @@ char *md5sumToString(char *buf, const char *last, const uint8 md5sum[16])
  */
 size_t Utf8Decode(WChar *c, const char *s)
 {
-	assert(c != nullptr);
+	dbg_assert(c != nullptr);
 
 	if (!HasBit(s[0], 7)) {
 		/* Single byte character: 0xxxxxxx */
@@ -710,7 +727,6 @@ size_t Utf8Decode(WChar *c, const char *s)
 		}
 	}
 
-	/* DEBUG(misc, 1, "[utf8] invalid UTF-8 sequence"); */
 	*c = '?';
 	return 1;
 }
@@ -746,7 +762,6 @@ inline size_t Utf8Encode(T buf, WChar c)
 		return 4;
 	}
 
-	/* DEBUG(misc, 1, "[utf8] can't UTF-8 encode value 0x%X", c); */
 	*buf = '?';
 	return 1;
 }
@@ -888,9 +903,9 @@ int strnatcmp(const char *s1, const char *s2, bool ignore_garbage_at_front)
 
 #ifdef WITH_UNISCRIBE
 
-/* static */ StringIterator *StringIterator::Create()
+/* static */ std::unique_ptr<StringIterator> StringIterator::Create()
 {
-	return new UniscribeStringIterator();
+	return std::make_unique<UniscribeStringIterator>();
 }
 
 #elif defined(WITH_ICU_I18N)
@@ -1044,9 +1059,9 @@ public:
 	}
 };
 
-/* static */ StringIterator *StringIterator::Create()
+/* static */ std::unique_ptr<StringIterator> StringIterator::Create()
 {
-	return new IcuStringIterator();
+	return std::make_unique<IcuStringIterator>();
 }
 
 #else
@@ -1072,7 +1087,7 @@ public:
 
 	virtual size_t SetCurPosition(size_t pos)
 	{
-		assert(this->string != nullptr && pos <= this->len);
+		dbg_assert(this->string != nullptr && pos <= this->len);
 		/* Sanitize in case we get a position inside an UTF-8 sequence. */
 		while (pos > 0 && IsUtf8Part(this->string[pos])) pos--;
 		return this->cur_pos = pos;
@@ -1080,7 +1095,7 @@ public:
 
 	virtual size_t Next(IterType what)
 	{
-		assert(this->string != nullptr);
+		dbg_assert(this->string != nullptr);
 
 		/* Already at the end? */
 		if (this->cur_pos >= this->len) return END;
@@ -1118,7 +1133,7 @@ public:
 
 	virtual size_t Prev(IterType what)
 	{
-		assert(this->string != nullptr);
+		dbg_assert(this->string != nullptr);
 
 		/* Already at the beginning? */
 		if (this->cur_pos == 0) return END;
@@ -1155,17 +1170,17 @@ public:
 };
 
 #if defined(WITH_COCOA) && !defined(STRGEN) && !defined(SETTINGSGEN)
-/* static */ StringIterator *StringIterator::Create()
+/* static */ std::unique_ptr<StringIterator> StringIterator::Create()
 {
-	StringIterator *i = OSXStringIterator::Create();
+	std::unique_ptr<StringIterator> i = OSXStringIterator::Create();
 	if (i != nullptr) return i;
 
-	return new DefaultStringIterator();
+	return std::make_unique<DefaultStringIterator>();
 }
 #else
-/* static */ StringIterator *StringIterator::Create()
+/* static */ std::unique_ptr<StringIterator> StringIterator::Create()
 {
-	return new DefaultStringIterator();
+	return std::make_unique<DefaultStringIterator>();
 }
 #endif /* defined(WITH_COCOA) && !defined(STRGEN) && !defined(SETTINGSGEN) */
 

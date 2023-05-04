@@ -21,7 +21,7 @@
 #include "newgrf_commons.h"
 
 /** Various object behaviours. */
-enum ObjectFlags {
+enum ObjectFlags : uint16 {
 	OBJECT_FLAG_NONE               =       0, ///< Just nothing.
 	OBJECT_FLAG_ONLY_IN_SCENEDIT   = 1 <<  0, ///< Object can only be constructed in the scenario editor.
 	OBJECT_FLAG_CANNOT_REMOVE      = 1 <<  1, ///< Object can not be removed.
@@ -45,6 +45,7 @@ enum ObjectCtrlFlags {
 	OBJECT_CTRL_FLAG_USE_LAND_GROUND    = 1 <<  0, ///< Use land for ground sprite.
 	OBJECT_CTRL_FLAG_EDGE_FOUNDATION    = 1 <<  1, ///< Use edge foundation mode.
 	OBJECT_CTRL_FLAG_FLOOD_RESISTANT    = 1 <<  2, ///< Object is flood-resistant.
+	OBJECT_CTRL_FLAG_VPORT_MAP_TYPE     = 1 <<  3, ///< Viewport map type is set.
 };
 DECLARE_ENUM_AS_BIT_SET(ObjectCtrlFlags)
 
@@ -52,19 +53,36 @@ enum ObjectEdgeFoundationFlags {
 	/* Bits 0 and 1 use for edge DiagDirection */
 	OBJECT_EF_FLAG_ADJUST_Z             = 1 <<  2, ///< Adjust sprite z position to z at edge.
 	OBJECT_EF_FLAG_FOUNDATION_LOWER     = 1 <<  3, ///< If edge is lower than tile max z, add foundation.
+	OBJECT_EF_FLAG_INCLINE_FOUNDATION   = 1 <<  4, ///< Use inclined foundations where possible when edge at tile max z.
 };
 DECLARE_ENUM_AS_BIT_SET(ObjectEdgeFoundationFlags)
+
+static const uint8 OBJECT_SIZE_1X1 = 0x11; ///< The value of a NewGRF's size property when the object is 1x1 tiles: low nibble for X, high nibble for Y.
 
 void ResetObjects();
 
 /** Class IDs for objects. */
-enum ObjectClassID {
+enum ObjectClassID : uint16 {
 	OBJECT_CLASS_BEGIN   =      0, ///< The lowest valid value
 	OBJECT_CLASS_MAX     = 0xFFFF, ///< Maximum number of classes.
 	INVALID_OBJECT_CLASS = 0xFFFF, ///< Class for the less fortunate.
 };
 /** Allow incrementing of ObjectClassID variables */
 DECLARE_POSTFIX_INCREMENT(ObjectClassID)
+
+enum ObjectViewportMapType {
+	OVMT_DEFAULT = 0,
+	OVMT_CLEAR,
+	OVMT_GRASS,
+	OVMT_ROUGH,
+	OVMT_ROCKS,
+	OVMT_FIELDS,
+	OVMT_SNOW,
+	OVMT_DESERT,
+	OVMT_TREES,
+	OVMT_HOUSE,
+	OVMT_WATER,
+};
 
 /** An object that isn't use for transport, industries or houses.
  * @note If you change this struct, adopt the initialization of
@@ -73,6 +91,7 @@ DECLARE_POSTFIX_INCREMENT(ObjectClassID)
 struct ObjectSpec {
 	/* 2 because of the "normal" and "buy" sprite stacks. */
 	GRFFilePropsBase<2> grf_prop; ///< Properties related the the grf file
+	AnimationInfo animation;      ///< Information about the animation.
 	ObjectClassID cls_id;         ///< The class to which this spec belongs.
 	StringID name;                ///< The name for this object.
 
@@ -85,12 +104,18 @@ struct ObjectSpec {
 	ObjectFlags flags;            ///< Flags/settings related to the object.
 	ObjectCtrlFlags ctrl_flags;   ///< Extra control flags.
 	uint8 edge_foundation[4];     ///< Edge foundation flags
-	AnimationInfo animation;      ///< Information about the animation.
 	uint16 callback_mask;         ///< Bitmask of requested/allowed callbacks.
 	uint8 height;                 ///< The height of this structure, in heightlevels; max MAX_TILE_HEIGHT.
 	uint8 views;                  ///< The number of views.
 	uint8 generate_amount;        ///< Number of objects which are attempted to be generated per 256^2 map during world generation.
-	bool enabled;                 ///< Is this spec enabled?
+	ObjectViewportMapType vport_map_type; ///< Viewport map type
+	uint16 vport_map_subtype;     ///< Viewport map subtype
+
+	/**
+	 * Test if this object is enabled.
+	 * @return True iif this object is enabled.
+	 */
+	bool IsEnabled() const { return this->views > 0; }
 
 	/**
 	 * Get the cost for building a structure of this type.
@@ -109,8 +134,12 @@ struct ObjectSpec {
 	bool IsAvailable() const;
 	uint Index() const;
 
+	static const std::vector<ObjectSpec> &Specs();
+	static size_t Count();
 	static const ObjectSpec *Get(ObjectType index);
 	static const ObjectSpec *GetByTile(TileIndex tile);
+
+	static void BindToClasses();
 };
 
 /** Object scope resolver. */
@@ -133,7 +162,7 @@ struct ObjectScopeResolver : public ScopeResolver {
 	}
 
 	uint32 GetRandomBits() const override;
-	uint32 GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const override;
+	uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const override;
 };
 
 /** A resolver object to be used with feature 0F spritegroups. */
@@ -145,7 +174,7 @@ struct ObjectResolverObject : public ResolverObject {
 			CallbackID callback = CBID_NO_CALLBACK, uint32 param1 = 0, uint32 param2 = 0);
 	~ObjectResolverObject();
 
-	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, byte relative = 0) override
+	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, VarSpriteGroupScopeOffset relative = 0) override
 	{
 		switch (scope) {
 			case VSG_SCOPE_SELF:

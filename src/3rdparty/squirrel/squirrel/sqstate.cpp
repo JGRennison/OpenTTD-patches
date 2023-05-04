@@ -246,9 +246,9 @@ void SQSharedState::DelayFinalFree(SQCollectable *collectable)
 	if (!this->_collectable_free_processing) {
 		this->_collectable_free_processing = true;
 		while (!this->_collectable_free_queue.empty()) {
-			SQCollectable *collectable = this->_collectable_free_queue.back();
+			SQCollectable *collectable_to_free = this->_collectable_free_queue.back();
 			this->_collectable_free_queue.pop_back();
-			collectable->FinalFree();
+			collectable_to_free->FinalFree();
 		}
 		this->_collectable_free_processing = false;
 	}
@@ -281,7 +281,7 @@ SQInteger SQSharedState::CollectGarbage(SQVM *vm)
 
 	SQGCMarkerQueue queue;
 	queue.Enqueue(vms);
-#ifdef WITH_ASSERT
+#ifdef WITH_FULL_ASSERTS
 	SQInteger x = _table(_thread(_root_vm)->_roottable)->CountUsed();
 #endif
 	_refs_table.EnqueueMarkObject(queue);
@@ -329,7 +329,7 @@ SQInteger SQSharedState::CollectGarbage(SQVM *vm)
 		t = t->_next;
 	}
 	_gc_chain = tchain;
-#ifdef WITH_ASSERT
+#ifdef WITH_FULL_ASSERTS
 	SQInteger z = _table(_thread(_root_vm)->_roottable)->CountUsed();
 	assert(z == x);
 #endif
@@ -450,10 +450,10 @@ void RefTable::Resize(SQUnsignedInteger size)
 	SQUnsignedInteger oldnumofslots = _numofslots;
 	AllocNodes(size);
 	//rehash
-	SQUnsignedInteger nfound = 0;
+	[[maybe_unused]] SQUnsignedInteger nfound = 0;
 	for(SQUnsignedInteger n = 0; n < oldnumofslots; n++) {
 		if(type(t->obj) != OT_NULL) {
-			//add back;
+			//add back
 			assert(t->refs != 0);
 			RefNode *nn = Add(::HashObj(t->obj)&(_numofslots-1),t->obj);
 			nn->refs = t->refs;
@@ -513,7 +513,7 @@ void RefTable::AllocNodes(SQUnsignedInteger size)
 		bucks[n] = nullptr;
 		temp->refs = 0;
 		new (&temp->obj) SQObjectPtr;
-		temp->next = temp+1;
+		temp->next = &temp[1];
 		temp++;
 	}
 	bucks[n] = nullptr;
@@ -564,8 +564,7 @@ SQString *SQStringTable::Add(const SQChar *news,SQInteger len)
 			return s; //found
 	}
 
-	SQString *t=(SQString *)SQ_MALLOC(len+sizeof(SQString));
-	new (t) SQString(news, len);
+	SQString *t = new (SQSizedAllocationTag(len + sizeof(SQString))) SQString(news, len);
 	t->_next = _strings[h];
 	_strings[h] = t;
 	_slotused++;
@@ -615,9 +614,7 @@ void SQStringTable::Remove(SQString *bs)
 			else
 				_strings[h] = s->_next;
 			_slotused--;
-			SQInteger slen = s->_len;
-			s->~SQString();
-			SQ_FREE(s,sizeof(SQString) + slen);
+			sq_delete_refcounted(s, SQString);
 			return;
 		}
 		prev = s;

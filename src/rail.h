@@ -327,7 +327,7 @@ public:
 static inline const RailtypeInfo *GetRailTypeInfo(RailType railtype)
 {
 	extern RailtypeInfo _railtypes[RAILTYPE_END];
-	assert_msg(railtype < RAILTYPE_END, "%u", railtype);
+	dbg_assert_msg(railtype < RAILTYPE_END, "%u", railtype);
 	return &_railtypes[railtype];
 }
 
@@ -409,7 +409,7 @@ static inline bool Rail90DegTurnDisallowedTilesFromTrackdir(TileIndex t1, TileIn
  */
 static inline Money RailBuildCost(RailType railtype)
 {
-	assert(railtype < RAILTYPE_END);
+	dbg_assert(railtype < RAILTYPE_END);
 	return (_price[PR_BUILD_RAIL] * GetRailTypeInfo(railtype)->cost_multiplier) >> 3;
 }
 
@@ -425,7 +425,7 @@ static inline Money RailClearCost(RailType railtype)
 	 * In this case we limit the removal earnings to 3/4s of the build
 	 * cost.
 	 */
-	assert(railtype < RAILTYPE_END);
+	dbg_assert(railtype < RAILTYPE_END);
 	return std::max(_price[PR_CLEAR_RAIL], -RailBuildCost(railtype) * 3 / 4);
 }
 
@@ -464,7 +464,7 @@ static inline Money RailConvertCost(RailType from, RailType to)
  */
 static inline Money RailMaintenanceCost(RailType railtype, uint32 num, uint32 total_num)
 {
-	assert(railtype < RAILTYPE_END);
+	dbg_assert(railtype < RAILTYPE_END);
 	return (_price[PR_INFRASTRUCTURE_RAIL] * GetRailTypeInfo(railtype)->maintenance_multiplier * num * (1 + IntSqrt(total_num))) >> 11; // 4 bits fraction for the multiplier and 7 bits scaling.
 }
 
@@ -479,7 +479,8 @@ static inline Money SignalMaintenanceCost(uint32 num)
 }
 
 void MarkSingleSignalDirty(TileIndex tile, Trackdir td);
-void MarkSingleSignalDirtyAtZ(TileIndex tile, Trackdir td, uint z);
+void MarkSingleSignalDirtyAtZ(TileIndex tile, Trackdir td, bool opposite_side, uint z);
+void GetSignalXYZByTrackdir(TileIndex tile, Trackdir td, bool opposite_side, uint &x, uint &y, uint &z);
 
 void DrawTrainDepotSprite(int x, int y, int image, RailType railtype);
 int TicksToLeaveDepot(const Train *v);

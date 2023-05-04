@@ -13,10 +13,15 @@
 #include "../../misc/countedptr.hpp"
 #include "../../road_type.h"
 #include "../../rail_type.h"
+#include "../../core/random_func.hpp"
 
 #include "script_types.hpp"
 #include "../script_suspend.hpp"
 #include "../squirrel.hpp"
+
+#include <utility>
+
+struct CommandAuxiliaryBase;
 
 /**
  * The callback function for Mode-classes.
@@ -65,15 +70,37 @@ public:
 	 */
 	static class ScriptInstance *GetActiveInstance();
 
+	/**
+	 * Get a reference of the randomizer that brings this script random values.
+	 * @param owner The owner/script to get the randomizer for. This defaults to ScriptObject::GetRootCompany()
+	 */
+	static Randomizer &GetRandomizer(Owner owner = ScriptObject::GetRootCompany());
+
+	/**
+	 * Initialize/reset the script random states. The state of the scripts are
+	 * based on the current _random seed, but _random does not get changed.
+	 */
+	static void InitializeRandomizers();
+
 protected:
 	/**
 	 * Executes a raw DoCommand for the script.
 	 */
-	static bool DoCommandEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint cmd, const char *text = nullptr, uint32 binary_length = 0, Script_SuspendCallbackProc *callback = nullptr);
+	static bool DoCommandEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint cmd, const char *text = nullptr, const CommandAuxiliaryBase *aux_data = nullptr, Script_SuspendCallbackProc *callback = nullptr);
+
+	static bool DoCommandEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint cmd, const std::string &text, const CommandAuxiliaryBase *aux_data = nullptr, Script_SuspendCallbackProc *callback = nullptr)
+	{
+		return ScriptObject::DoCommandEx(tile, p1, p2, p3, cmd, text.c_str(), aux_data, callback);
+	}
 
 	static bool DoCommand(TileIndex tile, uint32 p1, uint32 p2, uint cmd, const char *text = nullptr, Script_SuspendCallbackProc *callback = nullptr)
 	{
-		return ScriptObject::DoCommandEx(tile, p1, p2, 0, cmd, text, 0, callback);
+		return ScriptObject::DoCommandEx(tile, p1, p2, 0, cmd, text, nullptr, callback);
+	}
+
+	static bool DoCommand(TileIndex tile, uint32 p1, uint32 p2, uint cmd, const std::string &text, Script_SuspendCallbackProc *callback = nullptr)
+	{
+		return ScriptObject::DoCommandEx(tile, p1, p2, 0, cmd, text.c_str(), nullptr, callback);
 	}
 
 	/**
@@ -238,6 +265,16 @@ protected:
 	static Money GetLastCost();
 
 	/**
+	 * Set the result data of the last command.
+	 */
+	static void SetLastCommandResultData(uint32 last_result);
+
+	/**
+	 * Get the result data of the last command.
+	 */
+	static uint32 GetLastCommandResultData();
+
+	/**
 	 * Set a variable that can be used by callback functions to pass information.
 	 */
 	static void SetCallbackVariable(int index, int value);
@@ -266,6 +303,10 @@ protected:
 	 * Get an allocated string with all control codes stripped off.
 	 */
 	static char *GetString(StringID string);
+
+	static bool IsNewUniqueLogMessage(const std::string &msg);
+
+	static void RegisterUniqueLogMessage(std::string &&msg);
 
 private:
 	/**
@@ -303,6 +344,72 @@ private:
 	 * @param story_page_id The new StoryPageID.
 	 */
 	static void SetNewStoryPageElementID(StoryPageElementID story_page_element_id);
+
+	static Randomizer random_states[OWNER_END]; ///< Random states for each of the scripts (game script uses OWNER_DEITY)
+};
+
+/**
+ * Internally used class to automate the ScriptObject reference counting.
+ * @api -all
+ */
+template <typename T>
+class ScriptObjectRef {
+private:
+	T *data; ///< The reference counted object.
+public:
+	/**
+	 * Create the reference counter for the given ScriptObject instance.
+	 * @param data The underlying object.
+	 */
+	ScriptObjectRef(T *data) : data(data)
+	{
+		this->data->AddRef();
+	}
+
+	/* No copy constructor. */
+	ScriptObjectRef(const ScriptObjectRef<T> &ref) = delete;
+
+	/* Move constructor. */
+	ScriptObjectRef(ScriptObjectRef<T> &&ref) noexcept : data(std::exchange(ref.data, nullptr))
+	{
+	}
+
+	/* No copy assignment. */
+	ScriptObjectRef& operator=(const ScriptObjectRef<T> &other) = delete;
+
+	/* Move assignment. */
+	ScriptObjectRef& operator=(ScriptObjectRef<T> &&other) noexcept
+	{
+		std::swap(this->data, other.data);
+		return *this;
+	}
+
+	/**
+	 * Release the reference counted object.
+	 */
+	~ScriptObjectRef()
+	{
+		if (this->data != nullptr) this->data->Release();
+	}
+
+	/**
+	 * Dereferencing this reference returns a reference to the reference
+	 * counted object
+	 * @return Reference to the underlying object.
+	 */
+	T &operator*()
+	{
+		return *this->data;
+	}
+
+	/**
+	 * The arrow operator on this reference returns the reference counted object.
+	 * @return Pointer to the underlying object.
+	 */
+	T *operator->()
+	{
+		return this->data;
+	}
 };
 
 #endif /* SCRIPT_OBJECT_HPP */

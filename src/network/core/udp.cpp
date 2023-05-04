@@ -90,7 +90,7 @@ void NetworkUDPSocketHandler::SendPacket(Packet *p, NetworkAddress *recv, bool a
 
 		Packet frag(PACKET_UDP_EX_MULTI);
 		uint8 current_frag = 0;
-		uint16 offset = 0;
+		size_t offset = 0;
 		while (offset < packet_size) {
 			uint16 payload_size = (uint16)std::min<size_t>(PAYLOAD_MTU, packet_size - offset);
 			frag.Send_uint64(token);

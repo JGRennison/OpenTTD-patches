@@ -50,7 +50,7 @@ struct HouseScopeResolver : public CommonHouseScopeResolver {
 	}
 
 	uint32 GetRandomBits() const override;
-	uint32 GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const override;
+	uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const override;
 	uint32 GetTriggers() const override;
 };
 
@@ -70,7 +70,7 @@ struct FakeHouseScopeResolver : public CommonHouseScopeResolver {
 		: CommonHouseScopeResolver(ro, house_id)
 	{ }
 
-	/* virtual */ uint32 GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const;
+	/* virtual */ uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const;
 };
 
 /** Resolver object to be used for houses (feature 07 spritegroups). */
@@ -82,7 +82,7 @@ struct HouseResolverObject : public ResolverObject {
 			CallbackID callback = CBID_NO_CALLBACK, uint32 param1 = 0, uint32 param2 = 0,
 			bool not_yet_constructed = false, uint8 initial_random_bits = 0, CargoTypes watched_cargo_triggers = 0);
 
-	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, byte relative = 0) override
+	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, VarSpriteGroupScopeOffset relative = 0) override
 	{
 		switch (scope) {
 			case VSG_SCOPE_SELF:   return &this->house_scope;
@@ -103,7 +103,7 @@ struct FakeHouseResolverObject : public ResolverObject {
 	FakeHouseResolverObject(HouseID house_id,
 			CallbackID callback = CBID_NO_CALLBACK, uint32 param1 = 0, uint32 param2 = 0);
 
-	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, byte relative = 0) override
+	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, VarSpriteGroupScopeOffset relative = 0) override
 	{
 		switch (scope) {
 			case VSG_SCOPE_SELF:   return &this->house_scope;
@@ -165,5 +165,7 @@ enum HouseTrigger {
 	HOUSE_TRIGGER_TILE_LOOP_TOP = 0x02,
 };
 void TriggerHouse(TileIndex t, HouseTrigger trigger);
+
+void AnalyseHouseSpriteGroups();
 
 #endif /* NEWGRF_HOUSE_H */

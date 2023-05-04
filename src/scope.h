@@ -18,7 +18,7 @@ class scope_exit_obj {
 	bool shouldexec;
 
 
-	public:
+public:
 
 	scope_exit_obj(T &&func)
 		: f(std::move(func)), shouldexec(true) { }

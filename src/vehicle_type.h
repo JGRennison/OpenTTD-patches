@@ -108,6 +108,12 @@ enum TrainBrakingModel {
 	TBM_REALISTIC,
 };
 
+/** Train realistic braking aspect limited mode. */
+enum TrainRealisticBrakingAspectLimitedMode {
+	TRBALM_OFF,
+	TRBALM_ON,
+};
+
 /** Visualisation contexts of vehicles and engines. */
 enum EngineImageType {
 	EIT_ON_MAP     = 0x00,  ///< Vehicle drawn in viewport.
@@ -117,5 +123,7 @@ enum EngineImageType {
 	EIT_PURCHASE   = 0x20,  ///< Vehicle drawn in purchase list, autoreplace gui, ...
 	EIT_PREVIEW    = 0x21,  ///< Vehicle drawn in preview window, news, ...
 };
+
+static const uint32 VEHICLE_NAME_NO_GROUP = 0x80000000; ///< String constant to not include the vehicle's group name, if using the long name format
 
 #endif /* VEHICLE_TYPE_H */

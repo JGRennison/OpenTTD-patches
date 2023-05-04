@@ -68,7 +68,7 @@ static void Load_MAPT()
 
 static void Check_MAPH_common()
 {
-	if (_sl_maybe_chillpp && (SlGetFieldLength() == 0 || SlGetFieldLength() == _map_dim_x * _map_dim_y * 2)) {
+	if (_sl_maybe_chillpp && (SlGetFieldLength() == 0 || SlGetFieldLength() == (size_t)_map_dim_x * (size_t)_map_dim_y * 2)) {
 		_sl_maybe_chillpp = false;
 		extern void SlXvChillPPSpecialSavegameVersions();
 		SlXvChillPPSpecialSavegameVersions();
@@ -296,19 +296,125 @@ static void Save_WMAP()
 #endif
 }
 
+struct MAPT {
+	typedef uint8 FieldT;
+	static const FieldT &GetField(TileIndex t) { return _m[t].type; }
+};
+
+struct MAPH {
+	typedef uint8 FieldT;
+	static const FieldT &GetField(TileIndex t) { return _m[t].height; }
+};
+
+struct MAP1 {
+	typedef uint8 FieldT;
+	static const FieldT &GetField(TileIndex t) { return _m[t].m1; }
+};
+
+struct MAP2 {
+	typedef uint16 FieldT;
+	static const FieldT &GetField(TileIndex t) { return _m[t].m2; }
+};
+
+struct MAP3 {
+	typedef uint8 FieldT;
+	static const FieldT &GetField(TileIndex t) { return _m[t].m3; }
+};
+
+struct MAP4 {
+	typedef uint8 FieldT;
+	static const FieldT &GetField(TileIndex t) { return _m[t].m4; }
+};
+
+struct MAP5 {
+	typedef uint8 FieldT;
+	static const FieldT &GetField(TileIndex t) { return _m[t].m5; }
+};
+
+struct MAP6 {
+	typedef uint8 FieldT;
+	static const FieldT &GetField(TileIndex t) { return _me[t].m6; }
+};
+
+struct MAP7 {
+	typedef uint8 FieldT;
+	static const FieldT &GetField(TileIndex t) { return _me[t].m7; }
+};
+
+struct MAP8 {
+	typedef uint16 FieldT;
+	static const FieldT &GetField(TileIndex t) { return _me[t].m8; }
+};
+
+template <typename T>
+struct MAP_VarType {};
+
+template <>
+struct MAP_VarType<uint8>
+{
+	static const VarType var_type = SLE_UINT8;
+};
+
+template <>
+struct MAP_VarType<uint16>
+{
+	static const VarType var_type = SLE_UINT16;
+};
+
+template <typename T>
+static void Save_MAP()
+{
+	assert(_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 0);
+
+	std::array<typename T::FieldT, MAP_SL_BUF_SIZE> buf;
+	TileIndex size = MapSize();
+
+	SlSetLength(size * sizeof(typename T::FieldT));
+	for (TileIndex i = 0; i != size;) {
+		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) buf[j] = T::GetField(i++);
+		SlArray(buf.data(), MAP_SL_BUF_SIZE, MAP_VarType<typename T::FieldT>::var_type);
+	}
+}
+
+static ChunkSaveLoadSpecialOpResult Special_WMAP(uint32 chunk_id, ChunkSaveLoadSpecialOp op)
+{
+	switch (op) {
+		case CSLSO_SHOULD_SAVE_CHUNK:
+			if (_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 0) return CSLSOR_DONT_SAVE_CHUNK;
+			break;
+
+		default:
+			break;
+	}
+	return CSLSOR_NONE;
+}
+
+static ChunkSaveLoadSpecialOpResult Special_MAP_Chunks(uint32 chunk_id, ChunkSaveLoadSpecialOp op)
+{
+	switch (op) {
+		case CSLSO_SHOULD_SAVE_CHUNK:
+			if (_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] != 0) return CSLSOR_DONT_SAVE_CHUNK;
+			break;
+
+		default:
+			break;
+	}
+	return CSLSOR_NONE;
+}
+
 static const ChunkHandler map_chunk_handlers[] = {
-	{ 'MAPS', Save_MAPS, Load_MAPS, nullptr, Check_MAPS, CH_RIFF },
-	{ 'MAPT', nullptr,   Load_MAPT, nullptr, nullptr,    CH_RIFF },
-	{ 'MAPH', nullptr,   Load_MAPH, nullptr, Check_MAPH, CH_RIFF },
-	{ 'MAPO', nullptr,   Load_MAP1, nullptr, nullptr,    CH_RIFF },
-	{ 'MAP2', nullptr,   Load_MAP2, nullptr, nullptr,    CH_RIFF },
-	{ 'M3LO', nullptr,   Load_MAP3, nullptr, nullptr,    CH_RIFF },
-	{ 'M3HI', nullptr,   Load_MAP4, nullptr, nullptr,    CH_RIFF },
-	{ 'MAP5', nullptr,   Load_MAP5, nullptr, nullptr,    CH_RIFF },
-	{ 'MAPE', nullptr,   Load_MAP6, nullptr, nullptr,    CH_RIFF },
-	{ 'MAP7', nullptr,   Load_MAP7, nullptr, nullptr,    CH_RIFF },
-	{ 'MAP8', nullptr,   Load_MAP8, nullptr, nullptr,    CH_RIFF },
-	{ 'WMAP', Save_WMAP, Load_WMAP, nullptr, nullptr,    CH_RIFF },
+	{ 'MAPS', Save_MAPS,      Load_MAPS, nullptr, Check_MAPS, CH_RIFF },
+	{ 'MAPT', Save_MAP<MAPT>, Load_MAPT, nullptr, nullptr,    CH_RIFF, Special_MAP_Chunks },
+	{ 'MAPH', Save_MAP<MAPH>, Load_MAPH, nullptr, Check_MAPH, CH_RIFF, Special_MAP_Chunks },
+	{ 'MAPO', Save_MAP<MAP1>, Load_MAP1, nullptr, nullptr,    CH_RIFF, Special_MAP_Chunks },
+	{ 'MAP2', Save_MAP<MAP2>, Load_MAP2, nullptr, nullptr,    CH_RIFF, Special_MAP_Chunks },
+	{ 'M3LO', Save_MAP<MAP3>, Load_MAP3, nullptr, nullptr,    CH_RIFF, Special_MAP_Chunks },
+	{ 'M3HI', Save_MAP<MAP4>, Load_MAP4, nullptr, nullptr,    CH_RIFF, Special_MAP_Chunks },
+	{ 'MAP5', Save_MAP<MAP5>, Load_MAP5, nullptr, nullptr,    CH_RIFF, Special_MAP_Chunks },
+	{ 'MAPE', Save_MAP<MAP6>, Load_MAP6, nullptr, nullptr,    CH_RIFF, Special_MAP_Chunks },
+	{ 'MAP7', Save_MAP<MAP7>, Load_MAP7, nullptr, nullptr,    CH_RIFF, Special_MAP_Chunks },
+	{ 'MAP8', Save_MAP<MAP8>, Load_MAP8, nullptr, nullptr,    CH_RIFF, Special_MAP_Chunks },
+	{ 'WMAP', Save_WMAP,      Load_WMAP, nullptr, nullptr,    CH_RIFF, Special_WMAP },
 };
 
 extern const ChunkHandlerTable _map_chunk_handlers(map_chunk_handlers);

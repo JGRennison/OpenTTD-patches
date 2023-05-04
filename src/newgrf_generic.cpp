@@ -13,7 +13,10 @@
 #include "industrytype.h"
 #include "core/random_func.hpp"
 #include "newgrf_sound.h"
+#include "newgrf_town.h"
+#include "newgrf_extension.h"
 #include "water_map.h"
+#include "string_func.h"
 #include <list>
 
 #include "safeguards.h"
@@ -42,7 +45,7 @@ struct GenericScopeResolver : public ScopeResolver {
 	{
 	}
 
-	uint32 GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const override;
+	uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const override;
 
 private:
 	bool ai_callback; ///< Callback comes from the AI.
@@ -55,7 +58,7 @@ struct GenericResolverObject : public ResolverObject {
 
 	GenericResolverObject(bool ai_callback, CallbackID callback = CBID_NO_CALLBACK);
 
-	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, byte relative = 0) override
+	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, VarSpriteGroupScopeOffset relative = 0) override
 	{
 		switch (scope) {
 			case VSG_SCOPE_SELF: return &this->generic_scope;
@@ -84,7 +87,7 @@ struct GenericCallback {
 	{ }
 };
 
-typedef std::list<GenericCallback> GenericCallbackList;
+typedef std::vector<GenericCallback> GenericCallbackList;
 
 static GenericCallbackList _gcl[GSF_END];
 
@@ -106,20 +109,19 @@ void ResetGenericCallbacks()
  * @param file The GRF of the callback.
  * @param group The sprite group of the callback.
  */
-void AddGenericCallback(uint8 feature, const GRFFile *file, const SpriteGroup *group)
+void AddGenericCallback(GrfSpecFeature feature, const GRFFile *file, const SpriteGroup *group)
 {
 	if (feature >= lengthof(_gcl)) {
-		grfmsg(5, "AddGenericCallback: Unsupported feature 0x%02X", feature);
+		grfmsg(5, "AddGenericCallback: Unsupported feature %s", GetFeatureString(feature));
 		return;
 	}
 
 	/* Generic feature callbacks are evaluated in reverse (i.e. the last group
-	 * to be added is evaluated first, etc) thus we push the group to the
-	 * beginning of the list so a standard iterator will do the right thing. */
-	_gcl[feature].push_front(GenericCallback(file, group));
+	 * to be added is evaluated first, etc) thus reverse iterators must be used. */
+	_gcl[feature].push_back(GenericCallback(file, group));
 }
 
-/* virtual */ uint32 GenericScopeResolver::GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const
+/* virtual */ uint32 GenericScopeResolver::GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	if (this->ai_callback) {
 		switch (variable) {
@@ -170,7 +172,7 @@ static uint16 GetGenericCallbackResult(uint8 feature, ResolverObject &object, ui
 	assert(feature < lengthof(_gcl));
 
 	/* Test each feature callback sprite group. */
-	for (GenericCallbackList::const_iterator it = _gcl[feature].begin(); it != _gcl[feature].end(); ++it) {
+	for (GenericCallbackList::const_reverse_iterator it = _gcl[feature].rbegin(); it != _gcl[feature].rend(); ++it) {
 		object.grffile = it->file;
 		object.root_spritegroup = it->group;
 		/* Set callback param based on GRF version. */
@@ -204,7 +206,7 @@ static uint16 GetGenericCallbackResult(uint8 feature, ResolverObject &object, ui
  * @param[out] file Optionally returns the GRFFile which made the final decision for the callback result. May be nullptr if not required.
  * @return callback value if successful or CALLBACK_FAILED
  */
-uint16 GetAiPurchaseCallbackResult(uint8 feature, CargoID cargo_type, uint8 default_selection, IndustryType src_industry, IndustryType dst_industry, uint8 distance, AIConstructionEvent event, uint8 count, uint8 station_size, const GRFFile **file)
+uint16 GetAiPurchaseCallbackResult(GrfSpecFeature feature, CargoID cargo_type, uint8 default_selection, IndustryType src_industry, IndustryType dst_industry, uint8 distance, AIConstructionEvent event, uint8 count, uint8 station_size, const GRFFile **file)
 {
 	GenericResolverObject object(true, CBID_GENERIC_AI_PURCHASE_SELECTION);
 
@@ -260,4 +262,48 @@ void AmbientSoundEffectCallback(TileIndex tile)
 	uint16 callback = GetGenericCallbackResult(GSF_SOUNDFX, object, param1_v7, param1_v8, &grf_file);
 
 	if (callback != CALLBACK_FAILED) PlayTileSound(grf_file, callback, tile);
+}
+
+uint16 GetTownZonesCallback(Town *t)
+{
+	TownResolverObject object(nullptr, t, true);
+	object.callback = XCBID_TOWN_ZONES;
+
+	const uint16 MAX_RETURN_VERSION = 0;
+
+	for (GenericCallbackList::const_reverse_iterator it = _gcl[GSF_FAKE_TOWNS].rbegin(); it != _gcl[GSF_FAKE_TOWNS].rend(); ++it) {
+		if (!HasBit(it->file->observed_feature_tests, GFTOF_TOWN_ZONE_CALLBACK)) continue;
+		object.grffile = it->file;
+		object.root_spritegroup = it->group;
+		uint16 result = object.ResolveCallback();
+		if (result == CALLBACK_FAILED || result > MAX_RETURN_VERSION) continue;
+
+		return result;
+	}
+
+	return CALLBACK_FAILED;
+}
+
+bool IsGetTownZonesCallbackHandlerPresent()
+{
+	for (GenericCallbackList::const_reverse_iterator it = _gcl[GSF_FAKE_TOWNS].rbegin(); it != _gcl[GSF_FAKE_TOWNS].rend(); ++it) {
+		if (HasBit(it->file->observed_feature_tests, GFTOF_TOWN_ZONE_CALLBACK)) return true;
+	}
+
+	return false;
+}
+
+void DumpGenericCallbackSpriteGroups(GrfSpecFeature feature, DumpSpriteGroupPrinter print)
+{
+	SpriteGroupDumper dumper(print);
+	bool first = true;
+	for (GenericCallbackList::const_reverse_iterator it = _gcl[feature].rbegin(); it != _gcl[feature].rend(); ++it) {
+		if (!first) print(nullptr, DSGPO_PRINT, 0, "");
+		char buffer[64];
+		seprintf(buffer, lastof(buffer), "GRF: %08X, town zone cb enabled: %s",
+				BSWAP32(it->file->grfid), HasBit(it->file->observed_feature_tests, GFTOF_TOWN_ZONE_CALLBACK) ? "yes" : "no");
+		print(nullptr, DSGPO_PRINT, 0, buffer);
+		first = false;
+		dumper.DumpSpriteGroup(it->group, 0);
+	}
 }

@@ -14,6 +14,7 @@
 #include "map_func.h"
 #include "signal_type.h"
 #include "core/bitmath_func.hpp"
+#include "3rdparty/cpp-btree/btree_set.h"
 
 #include <vector>
 #include <unordered_map>
@@ -23,6 +24,8 @@ struct LongBridgeSignalStorage {
 };
 
 extern std::unordered_map<TileIndex, LongBridgeSignalStorage> _long_bridge_signal_sim_map;
+
+extern btree::btree_set<uint32> _bridge_signal_style_map;
 
 SignalState GetBridgeEntranceSimulatedSignalStateExtended(TileIndex t, uint16 signal);
 
@@ -78,6 +81,18 @@ static inline void ClearBridgeEntranceSimulatedSignals(TileIndex t)
 }
 
 void ClearBridgeSimulatedSignalMapping();
+
+void SetBridgeSignalStyle(TileIndex t, uint8 style);
+
+static inline uint8 GetBridgeSignalStyle(TileIndex t)
+{
+	if (likely(!HasBit(_m[t].m3, 7))) return 0;
+
+	extern uint8 GetBridgeSignalStyleExtended(TileIndex t);
+	return GetBridgeSignalStyleExtended(t);
+}
+
+void ClearBridgeSignalStyleMapping();
 
 void MarkSingleBridgeSignalDirty(TileIndex tile, TileIndex bridge_start_tile);
 
