@@ -93,6 +93,7 @@ enum TraceRestrictWindowWidgets {
 	TR_WIDGET_RESET,
 	TR_WIDGET_COPY,
 	TR_WIDGET_COPY_APPEND,
+	TR_WIDGET_DUPLICATE,
 	TR_WIDGET_SHARE,
 	TR_WIDGET_UNSHARE,
 };
@@ -133,6 +134,7 @@ enum PanelWidgets {
 	// Copy
 	DPC_COPY = 0,
 	DPC_APPEND,
+	DPC_DUPLICATE,
 };
 
 /**
@@ -1917,6 +1919,19 @@ public:
 				break;
 			}
 
+			case TR_WIDGET_DUPLICATE: {
+				TraceRestrictItem item = this->GetSelected();
+				if (this->GetOwner() != _local_company || item == 0) {
+					return;
+				}
+
+				uint32 offset = this->selected_instruction - 1;
+				this->expecting_inserted_item = item;
+				TraceRestrictDoCommandP(tile, track, TRDCT_DUPLICATE_ITEM,
+						offset, 0, STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM);
+				break;
+			}
+
 			case TR_WIDGET_CONDFLAGS: {
 				TraceRestrictItem item = this->GetSelected();
 				if (this->GetOwner() != _local_company || item == 0) {
@@ -2809,6 +2824,21 @@ private:
 		return false;
 	}
 
+	bool IsDuplicateBtnUsable() const {
+		const TraceRestrictProgram *prog = this->GetProgram();
+		if (!prog) return false;
+
+		TraceRestrictItem item = this->GetSelected();
+		if (GetTraceRestrictType(item) == TRIT_NULL) return false;
+
+		uint32 offset = this->selected_instruction - 1;
+		if (TraceRestrictProgramDuplicateItemAtDryRun(prog->items, offset)) {
+			return true;
+		}
+
+		return false;
+	}
+
 	/**
 	 * Update button states, text values, etc.
 	 */
@@ -2866,6 +2896,7 @@ private:
 
 		this->DisableWidget(TR_WIDGET_UP_BTN);
 		this->DisableWidget(TR_WIDGET_DOWN_BTN);
+		this->DisableWidget(TR_WIDGET_DUPLICATE);
 
 		this->EnableWidget(TR_WIDGET_COPY_APPEND);
 
@@ -2875,7 +2906,6 @@ private:
 		middle_sel->SetDisplayedPlane(DPM_BLANK);
 		right_sel->SetDisplayedPlane(DPR_BLANK);
 		share_sel->SetDisplayedPlane(DPS_SHARE);
-		copy_sel->SetDisplayedPlane(_ctrl_pressed ? DPC_APPEND : DPC_COPY);
 
 		const TraceRestrictProgram *prog = this->GetProgram();
 
@@ -2899,6 +2929,8 @@ private:
 			return;
 		}
 
+		int copy_panel = DPC_DUPLICATE;
+
 		if (prog && prog->refcount > 1) {
 			// program is shared, show and enable unshare button, and reset button
 			share_sel->SetDisplayedPlane(DPS_UNSHARE);
@@ -2911,7 +2943,11 @@ private:
 			// program is empty and not shared, show copy and share buttons
 			this->EnableWidget(TR_WIDGET_COPY);
 			this->EnableWidget(TR_WIDGET_SHARE);
+			copy_panel = DPC_COPY;
 		}
+
+		this->GetWidget<NWidgetCore>(TR_WIDGET_COPY_APPEND)->tool_tip = (copy_panel == DPC_DUPLICATE) ? STR_TRACE_RESTRICT_DUPLICATE_TOOLTIP : STR_TRACE_RESTRICT_COPY_TOOLTIP;
+		copy_sel->SetDisplayedPlane(_ctrl_pressed ? DPC_APPEND : copy_panel);
 
 		// haven't selected instruction
 		if (this->selected_instruction < 1) {
@@ -3266,6 +3302,7 @@ private:
 			}
 			if (this->IsUpDownBtnUsable(true)) this->EnableWidget(TR_WIDGET_UP_BTN);
 			if (this->IsUpDownBtnUsable(false)) this->EnableWidget(TR_WIDGET_DOWN_BTN);
+			if (this->IsDuplicateBtnUsable()) this->EnableWidget(TR_WIDGET_DUPLICATE);
 		}
 
 		this->SetDirty();
@@ -3460,6 +3497,8 @@ static const NWidgetPart _nested_program_widgets[] = {
 														SetDataTip(STR_TRACE_RESTRICT_COPY, STR_TRACE_RESTRICT_COPY_TOOLTIP), SetResize(1, 0),
 					NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_COPY_APPEND), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_TRACE_RESTRICT_APPEND, STR_TRACE_RESTRICT_COPY_TOOLTIP), SetResize(1, 0),
+					NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_DUPLICATE), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_TRACE_RESTRICT_DUPLICATE, STR_TRACE_RESTRICT_DUPLICATE_TOOLTIP), SetResize(1, 0),
 				EndContainer(),
 				NWidget(NWID_SELECTION, INVALID_COLOUR, TR_WIDGET_SEL_SHARE),
 					NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_SHARE), SetMinimalSize(124, 12), SetFill(1, 0),

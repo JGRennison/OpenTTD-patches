@@ -1010,6 +1010,7 @@ STR_TRACE_RESTRICT_REMOVE                                       :{BLACK}Remove
 STR_TRACE_RESTRICT_RESET                                        :{BLACK}Reset
 STR_TRACE_RESTRICT_COPY                                         :{BLACK}Copy
 STR_TRACE_RESTRICT_APPEND                                       :{BLACK}Append
+STR_TRACE_RESTRICT_DUPLICATE                                    :{BLACK}Duplicate
 STR_TRACE_RESTRICT_SHARE                                        :{BLACK}Share
 STR_TRACE_RESTRICT_UNSHARE                                      :{BLACK}Unshare
 STR_TRACE_RESTRICT_SELECT_TARGET                                :{BLACK}Select Target
@@ -1019,6 +1020,7 @@ STR_TRACE_RESTRICT_INSERT_TOOLTIP                               :{BLACK}Insert a
 STR_TRACE_RESTRICT_REMOVE_TOOLTIP                               :{BLACK}Remove the selected instruction{}Ctrl+Click to remove the selected conditional instruction but retain its contents
 STR_TRACE_RESTRICT_RESET_TOOLTIP                                :{BLACK}Reset the current signal (without affecting shared programs)
 STR_TRACE_RESTRICT_COPY_TOOLTIP                                 :{BLACK}Copy program from another signal{}Ctrl+click to append program from another signal
+STR_TRACE_RESTRICT_DUPLICATE_TOOLTIP                            :{BLACK}Duplicate the selected instruction{}Ctrl+click to append program from another signal
 STR_TRACE_RESTRICT_SHARE_TOOLTIP                                :{BLACK}Share program with another signal
 STR_TRACE_RESTRICT_UNSHARE_TOOLTIP                              :{BLACK}Stop sharing program with other signals, create a copy of the program
 STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP                           :{BLACK}Routefinding restriction
@@ -1031,6 +1033,7 @@ STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM                      :{WHITE}Can't in
 STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM                      :{WHITE}Can't modify instruction
 STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM                      :{WHITE}Can't remove instruction
 STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM                        :{WHITE}Can't move instruction
+STR_TRACE_RESTRICT_ERROR_CAN_T_DUPLICATE_ITEM                   :{WHITE}Can't duplicate instruction
 STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE                        :{WHITE}Value too large, maximum is {DECIMAL}
 STR_TRACE_RESTRICT_ERROR_NO_PROGRAM                             :No trace restrict program exists
 STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE                       :Offset too large
