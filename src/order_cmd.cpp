@@ -1314,7 +1314,8 @@ CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID s
 				case OLST_TEXT:
 					break;
 
-				case OLST_DEPARTURES_VIA: {
+				case OLST_DEPARTURES_VIA:
+				case OLST_DEPARTURES_REMOVE_VIA: {
 					const BaseStation *st = BaseStation::GetIfValid(new_order.GetDestination());
 					if (st == nullptr) return CMD_ERROR;
 
@@ -1872,6 +1873,8 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			case OT_LABEL:
 				if (order->GetLabelSubType() == OLST_TEXT) {
 					if (mof != MOF_LABEL_TEXT) return CMD_ERROR;
+				} else if (IsDeparturesOrderLabelSubType(order->GetLabelSubType())) {
+					if (mof != MOF_DEPARTURES_SUBTYPE) return CMD_ERROR;
 				} else {
 					return CMD_ERROR;
 				}
@@ -2084,6 +2087,12 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			break;
 
 		case MOF_LABEL_TEXT:
+			break;
+
+		case MOF_DEPARTURES_SUBTYPE:
+			if (!IsDeparturesOrderLabelSubType(static_cast<OrderLabelSubType>(data))) {
+				return CMD_ERROR;
+			}
 			break;
 	}
 
@@ -2332,6 +2341,10 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 			case MOF_LABEL_TEXT:
 				order->SetLabelText(text == nullptr ? "" : text);
+				break;
+
+			case MOF_DEPARTURES_SUBTYPE:
+				order->SetLabelSubType(static_cast<OrderLabelSubType>(data));
 				break;
 
 			default: NOT_REACHED();
@@ -2860,7 +2873,7 @@ void RemoveOrderFromAllVehicles(OrderType type, DestinationID destination, bool 
 			if (ot == OT_GOTO_DEPOT && (o->GetDepotActionType() & ODATFB_NEAREST_DEPOT) != 0) return false;
 			if (ot == OT_GOTO_DEPOT && hangar && v->type != VEH_AIRCRAFT) return false; // Not an aircraft? Can't have a hangar order.
 			if (ot == OT_IMPLICIT || (v->type == VEH_AIRCRAFT && ot == OT_GOTO_DEPOT && !hangar)) ot = OT_GOTO_STATION;
-			if (ot == OT_LABEL && o->GetLabelSubType() == OLST_DEPARTURES_VIA && (type == OT_GOTO_STATION || type == OT_GOTO_WAYPOINT) && o->GetDestination() == destination) return true;
+			if (ot == OT_LABEL && IsDestinationOrderLabelSubType(o->GetLabelSubType()) && (type == OT_GOTO_STATION || type == OT_GOTO_WAYPOINT) && o->GetDestination() == destination) return true;
 			return (ot == type && o->GetDestination() == destination);
 		});
 	}

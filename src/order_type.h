@@ -53,9 +53,20 @@ enum OrderType : byte {
 };
 
 enum OrderLabelSubType : byte {
-	OLST_TEXT             = 0,
-	OLST_DEPARTURES_VIA   = 1,
+	OLST_TEXT                  = 0,
+	OLST_DEPARTURES_VIA        = 1,
+	OLST_DEPARTURES_REMOVE_VIA = 2,
 };
+
+inline bool IsDestinationOrderLabelSubType(OrderLabelSubType subtype)
+{
+	return subtype == OLST_DEPARTURES_VIA || subtype == OLST_DEPARTURES_REMOVE_VIA;
+}
+
+inline bool IsDeparturesOrderLabelSubType(OrderLabelSubType subtype)
+{
+	return subtype == OLST_DEPARTURES_VIA || subtype == OLST_DEPARTURES_REMOVE_VIA;
+}
 
 /**
  * Flags related to the unloading order.
@@ -210,6 +221,7 @@ enum ModifyOrderFlags {
 	MOF_COUNTER_VALUE,   ///< Change the counter value
 	MOF_COLOUR,          ///< Change the colour value
 	MOF_LABEL_TEXT,      ///< Change the label text value
+	MOF_DEPARTURES_SUBTYPE, ///< Change the label departures subtype
 	MOF_END
 };
 template <> struct EnumPropsT<ModifyOrderFlags> : MakeEnumPropsT<ModifyOrderFlags, byte, MOF_NON_STOP, MOF_END, MOF_END, 8> {};

@@ -621,6 +621,11 @@ public:
 		return (OrderLabelSubType)GB(this->flags, 0, 8);
 	}
 
+	inline void SetLabelSubType(OrderLabelSubType subtype)
+	{
+		SB(this->flags, 0, 8, subtype);
+	}
+
 	const char *GetLabelText() const;
 	void SetLabelText(const char *text);
 

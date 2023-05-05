@@ -1567,7 +1567,11 @@ STR_ORDER_LABEL_TEXT_CAPTION                                    :{WHITE}Label
 STR_ORDER_LABEL_TEXT_BUTTON                                     :Label
 STR_ORDER_LABEL_TEXT_BUTTON_TOOLTIP                             :{BLACK}Change label text
 STR_ORDER_LABEL_DEPARTURES_VIA_BUTTON                           :Departure board via
-STR_ORDER_LABEL_DEPARTURES_VIA                                  :Departure board: Show as via: {STRING1}
+STR_ORDER_LABEL_DEPARTURES_VIA                                  :Departure board: {STRING}: {STRING1}
+STR_ORDER_LABEL_DEPARTURES_SHOW_AS_VIA                          :Show as via
+STR_ORDER_LABEL_DEPARTURES_REMOVE_VIA                           :Remove via for prior terminus
+STR_ORDER_LABEL_DEPARTURES_REMOVE_VIA_SHORT                     :Remove via
+STR_ORDER_LABEL_DEPARTURES_VIA_TYPE_TOOLTIP                     :{BLACK}Show as via: Show this station/waypoint as the via station in the departure board for departures from stations before this order to terminuses after this order.{}Use two in a row for a double via.{}{}Remove via for prior terminus: Do not show this station as a via station, when showing a calling point before this order as the terminus.
 
 STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}{STRING2}%
 STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}Show occupancy running averages{}The percentage shown is the overall average of the order occupancies
