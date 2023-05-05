@@ -3556,8 +3556,8 @@ static const NWidgetPart _nested_orders_train_widgets[] = {
 				EndContainer(),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
-				NWidget(WWT_PANEL, COLOUR_GREY), EndContainer(),
-				NWidget(WWT_PANEL, COLOUR_GREY), EndContainer(),
+				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
+				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_RELEASE_SLOT), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_NULL, STR_ORDER_RELEASE_SLOT_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
@@ -3570,8 +3570,8 @@ static const NWidgetPart _nested_orders_train_widgets[] = {
 														SetDataTip(STR_BLACK_COMMA, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
-				NWidget(WWT_PANEL, COLOUR_GREY), EndContainer(),
-				NWidget(WWT_PANEL, COLOUR_GREY), EndContainer(),
+				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
+				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_TEXT_LABEL), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_ORDER_LABEL_TEXT_BUTTON, STR_ORDER_LABEL_TEXT_BUTTON_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
@@ -3696,8 +3696,8 @@ static const NWidgetPart _nested_orders_widgets[] = {
 
 			/* Buttons for releasing a slot. */
 			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
-				NWidget(WWT_PANEL, COLOUR_GREY), EndContainer(),
-				NWidget(WWT_PANEL, COLOUR_GREY), EndContainer(),
+				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
+				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_RELEASE_SLOT), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_NULL, STR_ORDER_RELEASE_SLOT_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
@@ -3714,8 +3714,8 @@ static const NWidgetPart _nested_orders_widgets[] = {
 
 			/* Buttons for changing a text label */
 			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
-				NWidget(WWT_PANEL, COLOUR_GREY), EndContainer(),
-				NWidget(WWT_PANEL, COLOUR_GREY), EndContainer(),
+				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
+				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_TEXT_LABEL), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_ORDER_LABEL_TEXT_BUTTON, STR_ORDER_LABEL_TEXT_BUTTON_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
