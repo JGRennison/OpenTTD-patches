@@ -910,8 +910,7 @@ struct RefitWindow : public Window {
 			if (!FocusWindowById(WC_VEHICLE_VIEW, this->window_number)) {
 				if (this->window_number != INVALID_VEHICLE) {
 					const Vehicle *v = Vehicle::Get(this->window_number);
-					MarkAllRoutePathsDirty(v);
-					MarkAllRouteStepsDirty(v);
+					MarkDirtyFocusedRoutePaths(v);
 				}
 			}
 		}
@@ -922,8 +921,7 @@ struct RefitWindow : public Window {
 		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
 			if (this->window_number != INVALID_VEHICLE) {
 				const Vehicle *v = Vehicle::Get(this->window_number);
-				MarkAllRoutePathsDirty(v);
-				MarkAllRouteStepsDirty(v);
+				MarkDirtyFocusedRoutePaths(v);
 			}
 		}
 	}
@@ -933,8 +931,7 @@ struct RefitWindow : public Window {
 		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
 			if (this->window_number != INVALID_VEHICLE) {
 				const Vehicle *v = Vehicle::Get(this->window_number);
-				MarkAllRoutePathsDirty(v);
-				MarkAllRouteStepsDirty(v);
+				MarkDirtyFocusedRoutePaths(v);
 			}
 		}
 	}
@@ -2227,8 +2224,7 @@ private:
 	{
 		if (this->vli.type == VL_SHARED_ORDERS) {
 			const Vehicle *v = Vehicle::GetIfValid(this->vli.index);
-			MarkAllRoutePathsDirty(v);
-			MarkAllRouteStepsDirty(v);
+			MarkDirtyFocusedRoutePaths(v);
 		}
 	}
 
@@ -2893,8 +2889,7 @@ struct VehicleDetailsWindow : Window {
 			if (!FocusWindowById(WC_VEHICLE_VIEW, this->window_number)) {
 				if (this->window_number != INVALID_VEHICLE) {
 					const Vehicle *v = Vehicle::Get(this->window_number);
-					MarkAllRoutePathsDirty(v);
-					MarkAllRouteStepsDirty(v);
+					MarkDirtyFocusedRoutePaths(v);
 				}
 			}
 		}
@@ -3399,8 +3394,7 @@ struct VehicleDetailsWindow : Window {
 		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
 			if (this->window_number != INVALID_VEHICLE) {
 				const Vehicle *v = Vehicle::Get(this->window_number);
-				MarkAllRoutePathsDirty(v);
-				MarkAllRouteStepsDirty(v);
+				MarkDirtyFocusedRoutePaths(v);
 			}
 		}
 	}
@@ -3410,8 +3404,7 @@ struct VehicleDetailsWindow : Window {
 		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
 			if (this->window_number != INVALID_VEHICLE) {
 				const Vehicle *v = Vehicle::Get(this->window_number);
-				MarkAllRoutePathsDirty(v);
-				MarkAllRouteStepsDirty(v);
+				MarkDirtyFocusedRoutePaths(v);
 			}
 		}
 	}
@@ -3685,8 +3678,7 @@ public:
 	{
 		if (this->window_number != INVALID_VEHICLE) {
 			const Vehicle *v = Vehicle::Get(this->window_number);
-			MarkAllRoutePathsDirty(v);
-			MarkAllRouteStepsDirty(v);
+			MarkDirtyFocusedRoutePaths(v);
 		}
 		DeleteWindowById(WC_VEHICLE_ORDERS, this->window_number, false);
 		DeleteWindowById(WC_VEHICLE_REFIT, this->window_number, false);
@@ -3699,8 +3691,7 @@ public:
 		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
 			if (this->window_number != INVALID_VEHICLE) {
 				const Vehicle *v = Vehicle::Get(this->window_number);
-				MarkAllRoutePathsDirty(v);
-				MarkAllRouteStepsDirty(v);
+				MarkDirtyFocusedRoutePaths(v);
 			}
 		}
 	}
@@ -3710,8 +3701,7 @@ public:
 		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
 			if (this->window_number != INVALID_VEHICLE) {
 				const Vehicle *v = Vehicle::Get(this->window_number);
-				MarkAllRoutePathsDirty(v);
-				MarkAllRouteStepsDirty(v);
+				MarkDirtyFocusedRoutePaths(v);
 			}
 		}
 	}

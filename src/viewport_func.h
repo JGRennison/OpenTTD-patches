@@ -41,10 +41,9 @@ void MarkAllViewportMapsDirty(int left, int top, int right, int bottom);
 void MarkAllViewportMapLandscapesDirty();
 void MarkWholeNonMapViewportsDirty();
 void MarkAllViewportOverlayStationLinksDirty(const Station *st);
-void MarkAllRouteStepsDirty(const Vehicle *veh);
 void MarkViewportLineDirty(Viewport * const vp, const Point from_pt, const Point to_pt, const int block_radius, ViewportMarkDirtyFlags flags);
 void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile, ViewportMarkDirtyFlags flags);
-void MarkAllRoutePathsDirty(const Vehicle *veh);
+void MarkDirtyFocusedRoutePaths(const Vehicle *veh);
 void CheckMarkDirtyFocusedRoutePaths(const Vehicle *veh);
 void CheckMarkDirtyFocusedRoutePaths();
 
