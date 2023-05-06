@@ -132,7 +132,12 @@ void ViewportAddVehicles(DrawPixelInfo *dpi, bool update_vehicles);
 void ViewportMapDrawVehicles(DrawPixelInfo *dpi, Viewport *vp);
 
 void ShowNewGrfVehicleError(EngineID engine, StringID part1, StringID part2, GRFBugs bug_type, bool critical);
-CommandCost TunnelBridgeIsFree(TileIndex tile, TileIndex endtile, const Vehicle *ignore = nullptr, bool across_only = false);
+
+enum TunnelBridgeIsFreeMode {
+	TBIFM_ALL,
+	TBIFM_ACROSS_ONLY,
+};
+CommandCost TunnelBridgeIsFree(TileIndex tile, TileIndex endtile, const Vehicle *ignore = nullptr, TunnelBridgeIsFreeMode mode = TBIFM_ALL);
 Train *GetTrainClosestToTunnelBridgeEnd(TileIndex tile, TileIndex other_tile);
 int GetAvailableFreeTilesInSignalledTunnelBridge(TileIndex entrance, TileIndex exit, TileIndex tile);
 int GetAvailableFreeTilesInSignalledTunnelBridgeWithStartOffset(TileIndex entrance, TileIndex exit, int offset);

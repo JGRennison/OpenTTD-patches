@@ -619,7 +619,7 @@ bool IsTrainCollidableRoadVehicleOnGround(TileIndex tile)
 struct GetVehicleTunnelBridgeProcData {
 	const Vehicle *v;
 	TileIndex t;
-	bool across_only;
+	TunnelBridgeIsFreeMode mode;
 };
 
 /** Procedure called for every vehicle found in tunnel/bridge in the hash map */
@@ -628,9 +628,11 @@ static Vehicle *GetVehicleTunnelBridgeProc(Vehicle *v, void *data)
 	const GetVehicleTunnelBridgeProcData *info = (GetVehicleTunnelBridgeProcData*) data;
 	if (v == info->v) return nullptr;
 
-	if (v->type == VEH_TRAIN && info->across_only && IsBridge(info->t)) {
+	if (v->type == VEH_TRAIN && info->mode != TBIFM_ALL && IsBridge(info->t)) {
 		TrackBits vehicle_track = Train::From(v)->track;
-		if (!(vehicle_track & TRACK_BIT_WORMHOLE) && !(GetAcrossBridgePossibleTrackBits(info->t) & vehicle_track)) return nullptr;
+		if (!(vehicle_track & TRACK_BIT_WORMHOLE)) {
+			if (info->mode == TBIFM_ACROSS_ONLY && !(GetAcrossBridgePossibleTrackBits(info->t) & vehicle_track)) return nullptr;
+		}
 	}
 
 	return v;
@@ -641,10 +643,10 @@ static Vehicle *GetVehicleTunnelBridgeProc(Vehicle *v, void *data)
  * @param tile first end
  * @param endtile second end
  * @param ignore Ignore this vehicle when searching
- * @param across_only Only find vehicles which are passing across the bridge/tunnel or on connecting bridge head track pieces
+ * @param mode Whether to only find vehicles which are passing across the bridge/tunnel or on connecting bridge head track pieces
  * @return Succeeded command (if tunnel/bridge is free) or failed command (if a vehicle is using the tunnel/bridge).
  */
-CommandCost TunnelBridgeIsFree(TileIndex tile, TileIndex endtile, const Vehicle *ignore, bool across_only)
+CommandCost TunnelBridgeIsFree(TileIndex tile, TileIndex endtile, const Vehicle *ignore, TunnelBridgeIsFreeMode mode)
 {
 	/* Value v is not safe in MP games, however, it is used to generate a local
 	 * error message only (which may be different for different machines).
@@ -653,7 +655,7 @@ CommandCost TunnelBridgeIsFree(TileIndex tile, TileIndex endtile, const Vehicle 
 	GetVehicleTunnelBridgeProcData data;
 	data.v = ignore;
 	data.t = tile;
-	data.across_only = across_only;
+	data.mode = mode;
 	VehicleType type = static_cast<VehicleType>(GetTunnelBridgeTransportType(tile));
 	Vehicle *v = VehicleFromPos(tile, type, &data, &GetVehicleTunnelBridgeProc, true);
 	if (v == nullptr) {
