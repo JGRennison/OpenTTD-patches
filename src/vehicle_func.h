@@ -136,6 +136,7 @@ void ShowNewGrfVehicleError(EngineID engine, StringID part1, StringID part2, GRF
 enum TunnelBridgeIsFreeMode {
 	TBIFM_ALL,
 	TBIFM_ACROSS_ONLY,
+	TBIFM_PRIMARY_ONLY,
 };
 CommandCost TunnelBridgeIsFree(TileIndex tile, TileIndex endtile, const Vehicle *ignore = nullptr, TunnelBridgeIsFreeMode mode = TBIFM_ALL);
 Train *GetTrainClosestToTunnelBridgeEnd(TileIndex tile, TileIndex other_tile);

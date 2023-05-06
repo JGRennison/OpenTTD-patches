@@ -632,6 +632,7 @@ static Vehicle *GetVehicleTunnelBridgeProc(Vehicle *v, void *data)
 		TrackBits vehicle_track = Train::From(v)->track;
 		if (!(vehicle_track & TRACK_BIT_WORMHOLE)) {
 			if (info->mode == TBIFM_ACROSS_ONLY && !(GetAcrossBridgePossibleTrackBits(info->t) & vehicle_track)) return nullptr;
+			if (info->mode == TBIFM_PRIMARY_ONLY && !(GetPrimaryTunnelBridgeTrackBits(info->t) & vehicle_track)) return nullptr;
 		}
 	}
 
@@ -643,7 +644,7 @@ static Vehicle *GetVehicleTunnelBridgeProc(Vehicle *v, void *data)
  * @param tile first end
  * @param endtile second end
  * @param ignore Ignore this vehicle when searching
- * @param mode Whether to only find vehicles which are passing across the bridge/tunnel or on connecting bridge head track pieces
+ * @param mode Whether to only find vehicles which are passing across the bridge/tunnel or on connecting bridge head track pieces, or only on primary track type pieces
  * @return Succeeded command (if tunnel/bridge is free) or failed command (if a vehicle is using the tunnel/bridge).
  */
 CommandCost TunnelBridgeIsFree(TileIndex tile, TileIndex endtile, const Vehicle *ignore, TunnelBridgeIsFreeMode mode)

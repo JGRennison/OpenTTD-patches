@@ -2068,3 +2068,5 @@ STR_STATION_VIEW_RENAME_TOOLTIP_EXTRA                           :{BLACK}{STRING}
 STR_ERROR_CAN_T_EXCHANGE_STATION_NAMES                          :{WHITE}Can't exchange station names...
 STR_ERROR_STATIONS_NOT_IN_SAME_TOWN                             :{WHITE}... stations are not in the same town
 STR_ERROR_STATION_ATTACHED_TO_INDUSTRY                          :{WHITE}... station is attached to an industry
+
+STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_EXTRA                     :{STRING}{}{BLACK}Ctrl+Click to convert track pieces instead of whole tiles.

@@ -726,15 +726,25 @@ struct BuildRailToolbarWindow : Window {
 				BuildRailClick_Remove(this);
 				break;
 
-			case WID_RAT_CONVERT_RAIL:
-				HandlePlacePushButton(this, WID_RAT_CONVERT_RAIL, GetRailTypeInfo(_cur_railtype)->cursor.convert, HT_RECT | HT_DIAGONAL);
+			case WID_RAT_CONVERT_RAIL: {
+				bool active = HandlePlacePushButton(this, WID_RAT_CONVERT_RAIL, GetRailTypeInfo(_cur_railtype)->cursor.convert, _ctrl_pressed ? HT_RAIL : HT_RECT | HT_DIAGONAL);
+				if (active && _ctrl_pressed) _thd.square_palette = SPR_ZONING_INNER_HIGHLIGHT_GREEN;
 				this->last_user_action = widget;
 				break;
+			}
 
 			default: NOT_REACHED();
 		}
 		this->UpdateRemoveWidgetStatus(widget);
 		if (_ctrl_pressed) RailToolbar_CtrlChanged(this);
+	}
+
+	virtual void OnHover(Point pt, int widget) override
+	{
+		if (widget == WID_RAT_CONVERT_RAIL) {
+			uint64 args[] = { STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL };
+			GuiShowTooltips(this, STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_EXTRA, lengthof(args), args, TCC_HOVER);
+		}
 	}
 
 	EventState OnHotkey(int hotkey) override
@@ -806,7 +816,11 @@ struct BuildRailToolbarWindow : Window {
 				break;
 
 			case WID_RAT_CONVERT_RAIL:
-				VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_CONVERT_RAIL);
+				if (_thd.place_mode & HT_RAIL) {
+					VpStartPlaceSizing(tile, VPM_RAILDIRS, DDSP_CONVERT_RAIL_TRACK);
+				} else {
+					VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_CONVERT_RAIL);
+				}
 				break;
 
 			default: NOT_REACHED();
@@ -846,6 +860,14 @@ struct BuildRailToolbarWindow : Window {
 				case DDSP_CONVERT_RAIL:
 					DoCommandP(end_tile, start_tile, _cur_railtype | (_ctrl_pressed ? (1 << 6) : 0), CMD_CONVERT_RAIL | CMD_MSG(STR_ERROR_CAN_T_CONVERT_RAIL), CcPlaySound_CONSTRUCTION_RAIL);
 					break;
+
+				case DDSP_CONVERT_RAIL_TRACK: {
+					Track track = (Track)(_thd.drawstyle & HT_DIR_MASK); // 0..5
+					TileIndex start_tile = TileVirtXY(_thd.selstart.x, _thd.selstart.y);
+					TileIndex end_tile = TileVirtXY(_thd.selend.x, _thd.selend.y);
+					DoCommandP((_thd.drawstyle & HT_RAIL) ? end_tile : start_tile, end_tile, _cur_railtype | (track << 6), CMD_CONVERT_RAIL_TRACK | CMD_MSG(STR_ERROR_CAN_T_CONVERT_RAIL), CcPlaySound_CONSTRUCTION_RAIL);
+					break;
+				}
 
 				case DDSP_REMOVE_STATION:
 				case DDSP_BUILD_STATION:
@@ -986,7 +1008,7 @@ static const NWidgetPart _nested_build_rail_widgets[] = {
 		NWidget(WWT_IMGBTN, COLOUR_DARK_GREEN, WID_RAT_REMOVE),
 						SetFill(0, 1), SetMinimalSize(22, 22), SetDataTip(SPR_IMG_REMOVE, STR_RAIL_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR),
 		NWidget(WWT_IMGBTN, COLOUR_DARK_GREEN, WID_RAT_CONVERT_RAIL),
-						SetFill(0, 1), SetMinimalSize(22, 22), SetDataTip(SPR_IMG_CONVERT_RAIL, STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL),
+						SetFill(0, 1), SetMinimalSize(22, 22), SetDataTip(SPR_IMG_CONVERT_RAIL, 0),
 	EndContainer(),
 };
 

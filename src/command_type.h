@@ -296,6 +296,7 @@ enum Commands {
 
 	CMD_REMOVE_FROM_RAIL_STATION,     ///< remove a (rectangle of) tiles from a rail station
 	CMD_CONVERT_RAIL,                 ///< convert a rail type
+	CMD_CONVERT_RAIL_TRACK,           ///< convert a rail type (track)
 
 	CMD_BUILD_RAIL_WAYPOINT,          ///< build a waypoint
 	CMD_BUILD_ROAD_WAYPOINT,          ///< build a road waypoint
