@@ -2529,7 +2529,7 @@ CommandCost CmdConvertRail(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				SetRailType(tile, totype);
 				if (IsPlainRailTile(tile)) SetSecondaryRailType(tile, totype);
 
-				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+				MarkTileDirtyByTile(tile);
 				/* update power of train on this tile */
 				FindVehicleOnPos(tile, VEH_TRAIN, &affected_trains, &UpdateTrainPowerProc);
 			}
@@ -2621,10 +2621,10 @@ CommandCost CmdConvertRail(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 					yapf_notify_track_change(endtile, GetTunnelBridgeTrackBits(endtile));
 
 					if (IsBridge(tile)) {
-						MarkBridgeDirty(tile, VMDF_NOT_MAP_MODE);
+						MarkBridgeDirty(tile);
 					} else {
-						MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
-						MarkTileDirtyByTile(endtile, VMDF_NOT_MAP_MODE);
+						MarkTileDirtyByTile(tile);
+						MarkTileDirtyByTile(endtile);
 					}
 
 					AddRailTunnelBridgeInfrastructure(tile, endtile);
