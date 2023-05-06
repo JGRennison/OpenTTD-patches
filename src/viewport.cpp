@@ -1435,7 +1435,7 @@ static void DrawAutorailSelection(const TileInfo *ti, HighLightStyle autorail_ty
 
 	if (offset >= 0) {
 		image = SPR_AUTORAIL_BASE + offset;
-		if (pal == (PaletteID)-1) pal = _thd.make_square_red ? PALETTE_SEL_TILE_RED : PAL_NONE;
+		if (pal == (PaletteID)-1) pal = _thd.square_palette;
 	} else {
 		image = SPR_AUTORAIL_BASE - offset;
 		if (pal == (PaletteID)-1) pal = PALETTE_SEL_TILE_RED;
@@ -1573,7 +1573,7 @@ static void DrawTileSelection(const TileInfo *ti)
 		case HT_RECT:
 			if (!is_redsq) {
 				if (IsInsideSelectedRectangle(ti->x, ti->y)) {
-					DrawTileSelectionRect(ti, _thd.make_square_red ? PALETTE_SEL_TILE_RED : PAL_NONE);
+					DrawTileSelectionRect(ti, _thd.square_palette);
 				} else if (_thd.outersize.x > 0 && (tht == THT_NONE || tht == THT_RED) &&
 						/* Check if it's inside the outer area? */
 						IsInsideBS(ti->x, _thd.pos.x + _thd.offs.x, _thd.size.x + _thd.outersize.x) &&
@@ -4507,7 +4507,7 @@ static void SetSelectionTilesDirty()
 
 void SetSelectionRed(bool b)
 {
-	_thd.make_square_red = b;
+	_thd.square_palette = b ? PALETTE_SEL_TILE_RED : PAL_NONE;
 	SetSelectionTilesDirty();
 }
 
@@ -6197,7 +6197,7 @@ void SetObjectToPlace(CursorID icon, PaletteID pal, HighLightStyle mode, WindowC
 
 	SetTileSelectSize(1, 1);
 
-	_thd.make_square_red = false;
+	_thd.square_palette = PAL_NONE;
 
 	if (mode == HT_DRAG) { // HT_DRAG is for dragdropping trains in the depot window
 		mode = HT_NONE;
