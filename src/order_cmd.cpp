@@ -1345,7 +1345,7 @@ CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID s
 		Order *new_o = new Order();
 		new_o->AssignOrder(new_order);
 		InsertOrder(v, new_o, sel_ord);
-		CheckMarkDirtyFocusedRoutePaths(v);
+		CheckMarkDirtyViewportRoutePaths(v);
 	}
 
 	return CommandCost();
@@ -1444,7 +1444,7 @@ static CommandCost DecloneOrder(Vehicle *dst, DoCommandFlag flags)
 		InvalidateVehicleOrder(dst, VIWD_REMOVE_ALL_ORDERS);
 		InvalidateWindowClassesData(GetWindowClassForVehicleType(dst->type), 0);
 		InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
-		CheckMarkDirtyFocusedRoutePaths(dst);
+		CheckMarkDirtyViewportRoutePaths(dst);
 	}
 	return CommandCost();
 }
@@ -1489,7 +1489,7 @@ CommandCost CmdDeleteOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 	if (flags & DC_EXEC) {
 		DeleteOrder(v, sel_ord);
-		CheckMarkDirtyFocusedRoutePaths(v);
+		CheckMarkDirtyViewportRoutePaths(v);
 	}
 	return CommandCost();
 }
@@ -1728,7 +1728,7 @@ CommandCost CmdMoveOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 
 		/* Make sure to rebuild the whole list */
 		InvalidateWindowClassesData(GetWindowClassForVehicleType(v->type), 0);
-		CheckMarkDirtyFocusedRoutePaths(v);
+		CheckMarkDirtyViewportRoutePaths(v);
 	}
 
 	return CommandCost();
@@ -2402,7 +2402,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			}
 			InvalidateVehicleOrder(u, VIWD_MODIFY_ORDERS);
 		}
-		CheckMarkDirtyFocusedRoutePaths(v);
+		CheckMarkDirtyViewportRoutePaths(v);
 	}
 
 	return CommandCost();
@@ -2586,7 +2586,7 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 
 				InvalidateWindowClassesData(GetWindowClassForVehicleType(dst->type), 0);
 				InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
-				CheckMarkDirtyFocusedRoutePaths(dst);
+				CheckMarkDirtyViewportRoutePaths(dst);
 
 				CheckAdvanceVehicleOrdersAfterClone(dst, flags);
 			}
@@ -2685,7 +2685,7 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 
 				InvalidateWindowClassesData(GetWindowClassForVehicleType(dst->type), 0);
 				InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
-				CheckMarkDirtyFocusedRoutePaths(dst);
+				CheckMarkDirtyViewportRoutePaths(dst);
 
 				CheckAdvanceVehicleOrdersAfterClone(dst, flags);
 			}
@@ -2750,7 +2750,7 @@ CommandCost CmdOrderRefit(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 				u->current_order.SetRefit(cargo);
 			}
 		}
-		CheckMarkDirtyFocusedRoutePaths(v);
+		CheckMarkDirtyViewportRoutePaths(v);
 	}
 
 	return CommandCost();
@@ -3683,7 +3683,7 @@ CommandCost CmdMassChangeOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 					}
 					index++;
 				}
-				if (changed) CheckMarkDirtyFocusedRoutePaths(v);
+				if (changed) CheckMarkDirtyViewportRoutePaths(v);
 			}
 		}
 	}

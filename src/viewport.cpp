@@ -390,6 +390,12 @@ public:
 };
 static ViewportRouteOverlay _vp_focused_window_route_overlay;
 
+struct FixedVehicleViewportRouteOverlay : public ViewportRouteOverlay {
+	VehicleID veh;
+	bool enabled = false;
+};
+static std::vector<FixedVehicleViewportRouteOverlay> _vp_fixed_route_overlays;
+
 static void MarkRoutePathsDirty(const std::vector<DrawnPathRouteTileLine> &lines);
 
 TileHighlightData _thd;
@@ -2454,6 +2460,9 @@ void ViewportRouteOverlay::DrawVehicleRoutePath(const Viewport *vp, ViewportDraw
 static void ViewportDrawVehicleRoutePath(const Viewport *vp, ViewportDrawerDynamic *vdd)
 {
 	_vp_focused_window_route_overlay.DrawVehicleRoutePath(vp, vdd);
+	for (auto &it : _vp_fixed_route_overlays) {
+		if (it.enabled) it.DrawVehicleRoutePath(vp, vdd);
+	}
 }
 
 static inline void DrawRouteStep(const Viewport * const vp, const TileIndex tile, const RankOrderTypeList list)
@@ -2568,7 +2577,13 @@ void ViewportPrepareVehicleRoute()
 	if (_settings_client.gui.show_vehicle_route_mode == 0) return;
 	if (!_settings_client.gui.show_vehicle_route_steps && !_settings_client.gui.show_vehicle_route) return;
 
-	_vp_focused_window_route_overlay.PrepareVehicleRoute(GetVehicleFromWindow(_focused_window));
+	const Vehicle *focused_veh = GetVehicleFromWindow(_focused_window);
+	_vp_focused_window_route_overlay.PrepareVehicleRoute(focused_veh);
+	for (auto &it : _vp_fixed_route_overlays) {
+		const Vehicle *v = Vehicle::GetIfValid(it.veh);
+		it.PrepareVehicleRoute(v);
+		it.enabled = !(v != nullptr && focused_veh != nullptr && v->FirstShared() == focused_veh->FirstShared());
+	}
 }
 
 void ViewportRouteOverlay::PrepareVehicleRoute(const Vehicle *veh)
@@ -2617,13 +2632,16 @@ void ViewportRouteOverlay::DrawVehicleRouteSteps(const Viewport *vp)
 
 static bool ViewportDrawHasVehicleRouteSteps()
 {
-	return _vp_focused_window_route_overlay.HasVehicleRouteSteps();
+	return _vp_focused_window_route_overlay.HasVehicleRouteSteps() || !_vp_fixed_route_overlays.empty();
 }
 
 /** Draw the route steps of a vehicle. */
 static void ViewportDrawVehicleRouteSteps(const Viewport * const vp)
 {
 	_vp_focused_window_route_overlay.DrawVehicleRouteSteps(vp);
+	for (auto &it : _vp_fixed_route_overlays) {
+		if (it.enabled) it.DrawVehicleRouteSteps(vp);
+	}
 }
 
 void ViewportDrawPlans(const Viewport *vp)
@@ -4411,19 +4429,47 @@ void MarkDirtyFocusedRoutePaths(const Vehicle *veh)
 	_vp_focused_window_route_overlay.MarkAllDirty(veh);
 }
 
-void CheckMarkDirtyFocusedRoutePaths(const Vehicle *veh)
+void CheckMarkDirtyViewportRoutePaths(const Vehicle *veh)
 {
+	if (veh == nullptr) return;
+
 	const Vehicle *focused_veh = GetVehicleFromWindow(_focused_window);
 	if (focused_veh != nullptr && veh == focused_veh) {
 		MarkDirtyFocusedRoutePaths(veh);
 	}
+	for (auto &it : _vp_fixed_route_overlays) {
+		if (it.veh == veh->index) it.MarkAllDirty(veh);
+	}
 }
 
-void CheckMarkDirtyFocusedRoutePaths()
+void CheckMarkDirtyViewportRoutePaths()
 {
 	const Vehicle *focused_veh = GetVehicleFromWindow(_focused_window);
 	if (focused_veh != nullptr) {
 		MarkDirtyFocusedRoutePaths(focused_veh);
+	}
+	for (auto &it : _vp_fixed_route_overlays) {
+		it.MarkAllDirty(Vehicle::GetIfValid(it.veh));
+	}
+}
+
+void AddFixedViewportRoutePath(VehicleID veh)
+{
+	FixedVehicleViewportRouteOverlay &overlay = _vp_fixed_route_overlays.emplace_back();
+	overlay.veh = veh;
+}
+
+void RemoveFixedViewportRoutePath(VehicleID veh)
+{
+	container_unordered_remove_if(_vp_fixed_route_overlays, [&](const FixedVehicleViewportRouteOverlay &it) -> bool {
+		return it.veh == veh;
+	});
+}
+
+void ChangeFixedViewportRoutePath(VehicleID from, VehicleID to)
+{
+	for (auto &it : _vp_fixed_route_overlays) {
+		if (it.veh == from) it.veh = to;
 	}
 }
 
