@@ -739,12 +739,14 @@ struct BuildRailToolbarWindow : Window {
 		if (_ctrl_pressed) RailToolbar_CtrlChanged(this);
 	}
 
-	virtual void OnHover(Point pt, int widget) override
+	virtual bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
 	{
 		if (widget == WID_RAT_CONVERT_RAIL) {
 			uint64 args[] = { STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL };
-			GuiShowTooltips(this, STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_EXTRA, lengthof(args), args, TCC_HOVER);
+			GuiShowTooltips(this, STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_EXTRA, lengthof(args), args, close_cond);
+			return true;
 		}
+		return false;
 	}
 
 	EventState OnHotkey(int hotkey) override
