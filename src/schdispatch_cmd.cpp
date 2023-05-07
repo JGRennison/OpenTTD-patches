@@ -476,6 +476,7 @@ CommandCost CmdScheduledDispatchDuplicateSchedule(TileIndex tile, DoCommandFlag 
 	if (ret.Failed()) return ret;
 
 	if (v->orders == nullptr) return CMD_ERROR;
+	if (v->orders->GetScheduledDispatchScheduleCount() >= 4096) return CMD_ERROR;
 
 	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
 
@@ -484,6 +485,46 @@ CommandCost CmdScheduledDispatchDuplicateSchedule(TileIndex tile, DoCommandFlag 
 		ds.SetScheduledDispatchLastDispatch(0);
 		ds.UpdateScheduledDispatch(nullptr);
 		SetTimetableWindowsDirty(v, true);
+	}
+
+	return CommandCost();
+}
+
+/**
+ * Append scheduled dispatch schedules from another vehicle
+ *
+ * @param tile Not used.
+ * @param flags Operation to perform.
+ * @param p1 Vehicle index to append to
+ * @param p2 Vehicle index to copy from
+ * @param text name
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdScheduledDispatchAppendVehicleSchedules(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	VehicleID veh1 = GB(p1, 0, 20);
+	VehicleID veh2 = GB(p2, 0, 20);
+
+	Vehicle *v1 = Vehicle::GetIfValid(veh1);
+	if (v1 == nullptr || !v1->IsPrimaryVehicle()) return CMD_ERROR;
+
+	const Vehicle *v2 = Vehicle::GetIfValid(veh2);
+	if (v2 == nullptr || !v2->IsPrimaryVehicle()) return CMD_ERROR;
+
+	CommandCost ret = CheckOwnership(v1->owner);
+	if (ret.Failed()) return ret;
+
+	if (v1->orders == nullptr || v2->orders == nullptr || v1->orders == v2->orders) return CMD_ERROR;
+
+	if (v1->orders->GetScheduledDispatchScheduleCount() + v2->orders->GetScheduledDispatchScheduleCount() > 4096) return CMD_ERROR;
+
+	if (flags & DC_EXEC) {
+		for (uint i = 0; i < v2->orders->GetScheduledDispatchScheduleCount(); i++) {
+			DispatchSchedule &ds = v1->orders->GetScheduledDispatchScheduleSet().emplace_back(v2->orders->GetDispatchScheduleByIndex(i));
+			ds.SetScheduledDispatchLastDispatch(0);
+			ds.UpdateScheduledDispatch(nullptr);
+		}
+		SetTimetableWindowsDirty(v1, true);
 	}
 
 	return CommandCost();

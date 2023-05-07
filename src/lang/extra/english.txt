@@ -2010,7 +2010,7 @@ STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}Reset wh
 STR_SCHDISPATCH_CLEAR                                           :{BLACK}Clear Departure Slots
 STR_SCHDISPATCH_CLEAR_TOOLTIP                                   :{BLACK}Clear all departure slots from the schedule.
 STR_SCHDISPATCH_MANAGE                                          :{BLACK}Manage Schedule
-STR_SCHDISPATCH_MANAGE_TOOLTIP                                  :{STRING}{}{}{STRING}{}{}{STRING}{}{}{STRING}
+STR_SCHDISPATCH_MANAGE_TOOLTIP_SUFFIX                           :{}{}{STRING}
 STR_SCHDISPATCH_PREV_SCHEDULE                                   :{BLACK}Previous
 STR_SCHDISPATCH_PREV_SCHEDULE_TOOLTIP                           :{BLACK}Go to previous dispatch schedule
 STR_SCHDISPATCH_NEXT_SCHEDULE                                   :{BLACK}Next
@@ -2021,6 +2021,8 @@ STR_SCHDISPATCH_REMOVE_SCHEDULE                                 :{BLACK}Remove C
 STR_SCHDISPATCH_REMOVE_SCHEDULE_TOOLTIP                         :{BLACK}Remove this dispatch schedule entirely.
 STR_SCHDISPATCH_DUPLICATE_SCHEDULE                              :{BLACK}Duplicate Current Schedule
 STR_SCHDISPATCH_DUPLICATE_SCHEDULE_TOOLTIP                      :{BLACK}Create a copy of this dispatch schedule.
+STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES                        :{BLACK}Append Schedules From Vehicle
+STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES_TOOLTIP                :{BLACK}Append the dispatch schedules from another vehicle.
 STR_SCHDISPATCH_NO_SCHEDULES                                    :{BLACK}No Schedules
 STR_SCHDISPATCH_SCHEDULE_ID                                     :{BLACK}Schedule {NUM} of {NUM}
 STR_SCHDISPATCH_NAMED_SCHEDULE_ID                               :{BLACK}{RAW_STRING} ({NUM} of {NUM})

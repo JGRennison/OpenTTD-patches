@@ -1951,7 +1951,6 @@ STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}Restable
 STR_SCHDISPATCH_CLEAR                                           :{BLACK}Limpar slots de saídas
 STR_SCHDISPATCH_CLEAR_TOOLTIP                                   :{BLACK}Limpar todos os slots de saídas do programa
 STR_SCHDISPATCH_MANAGE                                          :{BLACK}Xestionar programa
-STR_SCHDISPATCH_MANAGE_TOOLTIP                                  :{STRING}{}{}{STRING}{}{}{STRING}{}{}{STRING}
 STR_SCHDISPATCH_PREV_SCHEDULE                                   :{BLACK}Anterior
 STR_SCHDISPATCH_PREV_SCHEDULE_TOOLTIP                           :{BLACK}Ir a saída programada anterior
 STR_SCHDISPATCH_NEXT_SCHEDULE                                   :{BLACK}Seguinte

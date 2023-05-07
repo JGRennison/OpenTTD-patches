@@ -1762,7 +1762,6 @@ STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}Setzt di
 STR_SCHDISPATCH_CLEAR                                           :{BLACK}Lösche Abfahrtszeiten
 STR_SCHDISPATCH_CLEAR_TOOLTIP                                   :{BLACK}Lösche alle Abfahrtszeiten aus dem Zeitplan.
 STR_SCHDISPATCH_MANAGE                                          :{BLACK}Bearbeite Zeitplan
-STR_SCHDISPATCH_MANAGE_TOOLTIP                                  :{STRING}{}{}{STRING}{}{}{STRING}{}{}{STRING}
 STR_SCHDISPATCH_PREV_SCHEDULE                                   :{BLACK}Vorheriger
 STR_SCHDISPATCH_PREV_SCHEDULE_TOOLTIP                           :{BLACK}Gehe zum vorherigen Zeitplan
 STR_SCHDISPATCH_NEXT_SCHEDULE                                   :{BLACK}Nächster
