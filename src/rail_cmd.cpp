@@ -2612,7 +2612,10 @@ CommandCost CmdConvertRail(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 				/* When not converting rail <-> el. rail, any vehicle cannot be in tunnel/bridge */
 				if (!IsCompatibleRail(type, totype) || !IsCompatibleRail(secondary_type, totype)) {
-					CommandCost ret = TunnelBridgeIsFree(tile, endtile);
+					CommandCost ret = EnsureNoIncompatibleRailtypeTrainOnTrackBits(tile, TRACK_BIT_MASK | TRACK_BIT_WORMHOLE, totype);
+					if (ret.Succeeded()) {
+						ret = EnsureNoIncompatibleRailtypeTrainOnTrackBits(endtile, TRACK_BIT_MASK | TRACK_BIT_WORMHOLE, totype);
+					}
 					if (ret.Failed()) {
 						error = ret;
 						continue;
@@ -2910,7 +2913,10 @@ CommandCost CmdConvertRailTrack(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 				if (!IsCompatibleRail(type, totype)) {
 					CommandCost ret;
 					if (across) {
-						ret = TunnelBridgeIsFree(tile, endtile, nullptr, TBIFM_PRIMARY_ONLY);
+						ret = EnsureNoIncompatibleRailtypeTrainOnTrackBits(tile, track_bits | TRACK_BIT_WORMHOLE, totype);
+						if (ret.Succeeded()) {
+							ret = EnsureNoIncompatibleRailtypeTrainOnTrackBits(endtile, GetPrimaryTunnelBridgeTrackBits(endtile) | TRACK_BIT_WORMHOLE, totype);
+						}
 					} else {
 						ret = EnsureNoIncompatibleRailtypeTrainOnTrackBits(tile, track_bits, totype);
 					}
