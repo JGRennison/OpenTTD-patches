@@ -403,8 +403,7 @@ public:
 				this->ToggleWidgetLoweredState(TRW_WIDGET_TMPL_BUTTONS_CLONE);
 
 				if (this->IsWidgetLowered(TRW_WIDGET_TMPL_BUTTONS_CLONE)) {
-					static const CursorID clone_icon =	SPR_CURSOR_CLONE_TRAIN;
-					SetObjectToPlaceWnd(clone_icon, PAL_NONE, HT_VEHICLE, this);
+					SetObjectToPlaceWnd(SPR_CURSOR_CLONE_TRAIN, PAL_NONE, HT_VEHICLE, this);
 				} else {
 					ResetObjectToPlace();
 				}
