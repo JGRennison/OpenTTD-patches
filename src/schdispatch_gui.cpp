@@ -224,6 +224,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		SCH_MD_RESET_LAST_DISPATCHED,
 		SCH_MD_CLEAR_SCHEDULE,
 		SCH_MD_REMOVE_SCHEDULE,
+		SCH_MD_DUPLICATE_SCHEDULE,
 	};
 
 	bool IsScheduleSelected() const
@@ -383,11 +384,12 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			}
 
 			case WID_SCHDISPATCH_MANAGEMENT: {
-				uint64 params[3];
+				uint64 params[4];
 				params[0] = STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP;
 				params[1] = STR_SCHDISPATCH_CLEAR_TOOLTIP;
 				params[2] = STR_SCHDISPATCH_REMOVE_SCHEDULE_TOOLTIP;
-				GuiShowTooltips(this, STR_SCHDISPATCH_MANAGE_TOOLTIP, 3, params, close_cond);
+				params[3] = STR_SCHDISPATCH_DUPLICATE_SCHEDULE_TOOLTIP;
+				GuiShowTooltips(this, STR_SCHDISPATCH_MANAGE_TOOLTIP, lengthof(params), params, close_cond);
 				return true;
 			}
 
@@ -728,6 +730,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				add_item(STR_SCHDISPATCH_RESET_LAST_DISPATCH, SCH_MD_RESET_LAST_DISPATCHED);
 				add_item(STR_SCHDISPATCH_CLEAR, SCH_MD_CLEAR_SCHEDULE);
 				add_item(STR_SCHDISPATCH_REMOVE_SCHEDULE, SCH_MD_REMOVE_SCHEDULE);
+				add_item(STR_SCHDISPATCH_DUPLICATE_SCHEDULE, SCH_MD_DUPLICATE_SCHEDULE);
 				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGEMENT);
 				break;
 			}
@@ -799,6 +802,10 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					case SCH_MD_REMOVE_SCHEDULE:
 						SetDParam(0, (uint)this->GetSelectedSchedule().GetScheduledDispatch().size());
 						ShowQuery(STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_CAPTION, STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_TEXT, this, RemoveScheduleCallback);
+						break;
+
+					case SCH_MD_DUPLICATE_SCHEDULE:
+						DoCommandP(0, this->vehicle->index | (this->schedule_index << 20), 0, CMD_SCHEDULED_DISPATCH_DUPLICATE_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 						break;
 				}
 			}

@@ -455,6 +455,41 @@ CommandCost CmdScheduledDispatchRenameSchedule(TileIndex tile, DoCommandFlag fla
 }
 
 /**
+ * Duplicate scheduled dispatch schedule
+ *
+ * @param tile Not used.
+ * @param flags Operation to perform.
+ * @param p1 Vehicle index
+ * @param p2 Not used
+ * @param text name
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdScheduledDispatchDuplicateSchedule(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	VehicleID veh = GB(p1, 0, 20);
+	uint schedule_index = GB(p1, 20, 12);
+
+	Vehicle *v = Vehicle::GetIfValid(veh);
+	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
+
+	CommandCost ret = CheckOwnership(v->owner);
+	if (ret.Failed()) return ret;
+
+	if (v->orders == nullptr) return CMD_ERROR;
+
+	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
+
+	if (flags & DC_EXEC) {
+		DispatchSchedule &ds = v->orders->GetScheduledDispatchScheduleSet().emplace_back(v->orders->GetDispatchScheduleByIndex(schedule_index));
+		ds.SetScheduledDispatchLastDispatch(0);
+		ds.UpdateScheduledDispatch(nullptr);
+		SetTimetableWindowsDirty(v, true);
+	}
+
+	return CommandCost();
+}
+
+/**
  * Set scheduled dispatch slot list.
  * @param dispatch_list The offset time list, must be correctly sorted.
  */
