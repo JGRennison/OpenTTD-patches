@@ -26,6 +26,7 @@
 #include "viewport_func.h"
 #include "zoom_func.h"
 #include "core/geometry_func.hpp"
+#include "tilehighlight_func.h"
 
 #include <vector>
 #include <algorithm>
@@ -211,7 +212,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 	~SchdispatchWindow()
 	{
 		if (!FocusWindowById(WC_VEHICLE_VIEW, this->window_number)) {
-			MarkAllRouteStepsDirty(this->vehicle);
+			MarkDirtyFocusedRoutePaths(this->vehicle);
 		}
 	}
 
@@ -224,6 +225,8 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		SCH_MD_RESET_LAST_DISPATCHED,
 		SCH_MD_CLEAR_SCHEDULE,
 		SCH_MD_REMOVE_SCHEDULE,
+		SCH_MD_DUPLICATE_SCHEDULE,
+		SCH_MD_APPEND_VEHICLE_SCHEDULES,
 	};
 
 	bool IsScheduleSelected() const
@@ -383,11 +386,16 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			}
 
 			case WID_SCHDISPATCH_MANAGEMENT: {
-				uint64 params[3];
-				params[0] = STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP;
-				params[1] = STR_SCHDISPATCH_CLEAR_TOOLTIP;
-				params[2] = STR_SCHDISPATCH_REMOVE_SCHEDULE_TOOLTIP;
-				GuiShowTooltips(this, STR_SCHDISPATCH_MANAGE_TOOLTIP, 3, params, close_cond);
+				_temp_special_strings[0] = GetString(STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP);
+				auto add_suffix = [&](StringID str) {
+					SetDParam(0, str);
+					_temp_special_strings[0] += GetString(STR_SCHDISPATCH_MANAGE_TOOLTIP_SUFFIX);
+				};
+				add_suffix(STR_SCHDISPATCH_CLEAR_TOOLTIP);
+				add_suffix(STR_SCHDISPATCH_REMOVE_SCHEDULE_TOOLTIP);
+				add_suffix(STR_SCHDISPATCH_DUPLICATE_SCHEDULE_TOOLTIP);
+				add_suffix(STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES_TOOLTIP);
+				GuiShowTooltips(this, SPECSTR_TEMP_START, 0, nullptr, close_cond);
 				return true;
 			}
 
@@ -728,6 +736,8 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				add_item(STR_SCHDISPATCH_RESET_LAST_DISPATCH, SCH_MD_RESET_LAST_DISPATCHED);
 				add_item(STR_SCHDISPATCH_CLEAR, SCH_MD_CLEAR_SCHEDULE);
 				add_item(STR_SCHDISPATCH_REMOVE_SCHEDULE, SCH_MD_REMOVE_SCHEDULE);
+				add_item(STR_SCHDISPATCH_DUPLICATE_SCHEDULE, SCH_MD_DUPLICATE_SCHEDULE);
+				add_item(STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES, SCH_MD_APPEND_VEHICLE_SCHEDULES);
 				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGEMENT);
 				break;
 			}
@@ -800,6 +810,19 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						SetDParam(0, (uint)this->GetSelectedSchedule().GetScheduledDispatch().size());
 						ShowQuery(STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_CAPTION, STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_TEXT, this, RemoveScheduleCallback);
 						break;
+
+					case SCH_MD_DUPLICATE_SCHEDULE:
+						DoCommandP(0, this->vehicle->index | (this->schedule_index << 20), 0, CMD_SCHEDULED_DISPATCH_DUPLICATE_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+						break;
+
+					case SCH_MD_APPEND_VEHICLE_SCHEDULES: {
+						static const CursorID clone_icons[] = {
+							SPR_CURSOR_CLONE_TRAIN, SPR_CURSOR_CLONE_ROADVEH,
+							SPR_CURSOR_CLONE_SHIP, SPR_CURSOR_CLONE_AIRPLANE
+						};
+						SetObjectToPlaceWnd(clone_icons[this->vehicle->type], PAL_NONE, HT_VEHICLE, this);
+						break;
+					}
 				}
 			}
 
@@ -900,9 +923,17 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 	virtual void OnFocus(Window *previously_focused_window) override
 	{
 		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
-			MarkAllRoutePathsDirty(this->vehicle);
-			MarkAllRouteStepsDirty(this->vehicle);
+			MarkDirtyFocusedRoutePaths(this->vehicle);
 		}
+	}
+
+	bool OnVehicleSelect(const Vehicle *v) override
+	{
+		if (v->orders == nullptr || v->orders->GetScheduledDispatchScheduleCount() == 0) return false;
+
+		DoCommandP(0, this->vehicle->index, v->index, CMD_SCHEDULED_DISPATCH_APPEND_VEHICLE_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+		ResetObjectToPlace();
+		return true;
 	}
 
 	const Vehicle *GetVehicle()
@@ -975,7 +1006,7 @@ static const NWidgetPart _nested_schdispatch_widgets[] = {
 			EndContainer(),
 			NWidget(NWID_VERTICAL, NC_EQUALSIZE),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_SET_DELAY), SetDataTip(STR_SCHDISPATCH_DELAY, STR_SCHDISPATCH_DELAY_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
-				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_SCHDISPATCH_MANAGEMENT), SetDataTip(STR_SCHDISPATCH_MANAGE, STR_SCHDISPATCH_MANAGE_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_SCHDISPATCH_MANAGEMENT), SetDataTip(STR_SCHDISPATCH_MANAGE, STR_NULL), SetFill(1, 1), SetResize(1, 0),
 			EndContainer(),
 			NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 		EndContainer(),

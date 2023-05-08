@@ -1314,7 +1314,8 @@ CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID s
 				case OLST_TEXT:
 					break;
 
-				case OLST_DEPARTURES_VIA: {
+				case OLST_DEPARTURES_VIA:
+				case OLST_DEPARTURES_REMOVE_VIA: {
 					const BaseStation *st = BaseStation::GetIfValid(new_order.GetDestination());
 					if (st == nullptr) return CMD_ERROR;
 
@@ -1344,7 +1345,7 @@ CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID s
 		Order *new_o = new Order();
 		new_o->AssignOrder(new_order);
 		InsertOrder(v, new_o, sel_ord);
-		CheckMarkDirtyFocusedRoutePaths(v);
+		CheckMarkDirtyViewportRoutePaths(v);
 	}
 
 	return CommandCost();
@@ -1443,7 +1444,7 @@ static CommandCost DecloneOrder(Vehicle *dst, DoCommandFlag flags)
 		InvalidateVehicleOrder(dst, VIWD_REMOVE_ALL_ORDERS);
 		InvalidateWindowClassesData(GetWindowClassForVehicleType(dst->type), 0);
 		InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
-		CheckMarkDirtyFocusedRoutePaths(dst);
+		CheckMarkDirtyViewportRoutePaths(dst);
 	}
 	return CommandCost();
 }
@@ -1488,7 +1489,7 @@ CommandCost CmdDeleteOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 	if (flags & DC_EXEC) {
 		DeleteOrder(v, sel_ord);
-		CheckMarkDirtyFocusedRoutePaths(v);
+		CheckMarkDirtyViewportRoutePaths(v);
 	}
 	return CommandCost();
 }
@@ -1727,7 +1728,7 @@ CommandCost CmdMoveOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 
 		/* Make sure to rebuild the whole list */
 		InvalidateWindowClassesData(GetWindowClassForVehicleType(v->type), 0);
-		CheckMarkDirtyFocusedRoutePaths(v);
+		CheckMarkDirtyViewportRoutePaths(v);
 	}
 
 	return CommandCost();
@@ -1872,6 +1873,8 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			case OT_LABEL:
 				if (order->GetLabelSubType() == OLST_TEXT) {
 					if (mof != MOF_LABEL_TEXT) return CMD_ERROR;
+				} else if (IsDeparturesOrderLabelSubType(order->GetLabelSubType())) {
+					if (mof != MOF_DEPARTURES_SUBTYPE) return CMD_ERROR;
 				} else {
 					return CMD_ERROR;
 				}
@@ -2084,6 +2087,12 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			break;
 
 		case MOF_LABEL_TEXT:
+			break;
+
+		case MOF_DEPARTURES_SUBTYPE:
+			if (!IsDeparturesOrderLabelSubType(static_cast<OrderLabelSubType>(data))) {
+				return CMD_ERROR;
+			}
 			break;
 	}
 
@@ -2334,6 +2343,10 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				order->SetLabelText(text == nullptr ? "" : text);
 				break;
 
+			case MOF_DEPARTURES_SUBTYPE:
+				order->SetLabelSubType(static_cast<OrderLabelSubType>(data));
+				break;
+
 			default: NOT_REACHED();
 		}
 
@@ -2389,7 +2402,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			}
 			InvalidateVehicleOrder(u, VIWD_MODIFY_ORDERS);
 		}
-		CheckMarkDirtyFocusedRoutePaths(v);
+		CheckMarkDirtyViewportRoutePaths(v);
 	}
 
 	return CommandCost();
@@ -2573,7 +2586,7 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 
 				InvalidateWindowClassesData(GetWindowClassForVehicleType(dst->type), 0);
 				InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
-				CheckMarkDirtyFocusedRoutePaths(dst);
+				CheckMarkDirtyViewportRoutePaths(dst);
 
 				CheckAdvanceVehicleOrdersAfterClone(dst, flags);
 			}
@@ -2672,7 +2685,7 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 
 				InvalidateWindowClassesData(GetWindowClassForVehicleType(dst->type), 0);
 				InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
-				CheckMarkDirtyFocusedRoutePaths(dst);
+				CheckMarkDirtyViewportRoutePaths(dst);
 
 				CheckAdvanceVehicleOrdersAfterClone(dst, flags);
 			}
@@ -2737,7 +2750,7 @@ CommandCost CmdOrderRefit(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 				u->current_order.SetRefit(cargo);
 			}
 		}
-		CheckMarkDirtyFocusedRoutePaths(v);
+		CheckMarkDirtyViewportRoutePaths(v);
 	}
 
 	return CommandCost();
@@ -2860,7 +2873,7 @@ void RemoveOrderFromAllVehicles(OrderType type, DestinationID destination, bool 
 			if (ot == OT_GOTO_DEPOT && (o->GetDepotActionType() & ODATFB_NEAREST_DEPOT) != 0) return false;
 			if (ot == OT_GOTO_DEPOT && hangar && v->type != VEH_AIRCRAFT) return false; // Not an aircraft? Can't have a hangar order.
 			if (ot == OT_IMPLICIT || (v->type == VEH_AIRCRAFT && ot == OT_GOTO_DEPOT && !hangar)) ot = OT_GOTO_STATION;
-			if (ot == OT_LABEL && o->GetLabelSubType() == OLST_DEPARTURES_VIA && (type == OT_GOTO_STATION || type == OT_GOTO_WAYPOINT) && o->GetDestination() == destination) return true;
+			if (ot == OT_LABEL && IsDestinationOrderLabelSubType(o->GetLabelSubType()) && (type == OT_GOTO_STATION || type == OT_GOTO_WAYPOINT) && o->GetDestination() == destination) return true;
 			return (ot == type && o->GetDestination() == destination);
 		});
 	}
@@ -3670,7 +3683,7 @@ CommandCost CmdMassChangeOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 					}
 					index++;
 				}
-				if (changed) CheckMarkDirtyFocusedRoutePaths(v);
+				if (changed) CheckMarkDirtyViewportRoutePaths(v);
 			}
 		}
 	}

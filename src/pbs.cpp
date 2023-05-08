@@ -478,7 +478,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 			if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && IsTunnelBridgeSignalSimulationEntrance(tile)) {
 				TileIndex end = GetOtherTunnelBridgeEnd(tile);
 				if (HasAcrossTunnelBridgeReservation(end) && GetTunnelBridgeExitSignalState(end) == SIGNAL_STATE_GREEN &&
-						((flags & FRF_TB_EXIT_FREE) || TunnelBridgeIsFree(tile, end, nullptr, true).Succeeded())) {
+						((flags & FRF_TB_EXIT_FREE) || TunnelBridgeIsFree(tile, end, nullptr, TBIFM_ACROSS_ONLY).Succeeded())) {
 					/* skip far end */
 					if (lookahead != nullptr) {
 						lookahead->reservation_end_position += (DistanceManhattan(tile, end) - 1) * TILE_SIZE;
@@ -501,7 +501,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 			if ((flags & FRF_IGNORE_ONEWAY) && _settings_game.vehicle.train_braking_model == TBM_REALISTIC && IsTunnelBridgeSignalSimulationExit(tile) &&
 					GetTunnelBridgeExitSignalState(tile) == SIGNAL_STATE_GREEN) {
 				TileIndex end = GetOtherTunnelBridgeEnd(tile);
-				if (HasAcrossTunnelBridgeReservation(end) && TunnelBridgeIsFree(tile, end, nullptr, true).Succeeded()) {
+				if (HasAcrossTunnelBridgeReservation(end) && TunnelBridgeIsFree(tile, end, nullptr, TBIFM_ACROSS_ONLY).Succeeded()) {
 					/* skip far end */
 					tile = end;
 					trackdir = GetTunnelBridgeExitTrackdir(tile);
@@ -729,7 +729,7 @@ static void FollowReservationEnumerate(Owner o, RailTypes rts, TileIndex tile, T
 			if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && IsTunnelBridgeSignalSimulationEntrance(tile)) {
 				TileIndex end = GetOtherTunnelBridgeEnd(tile);
 				if (HasAcrossTunnelBridgeReservation(end) && GetTunnelBridgeExitSignalState(end) == SIGNAL_STATE_GREEN &&
-						((flags & FRF_TB_EXIT_FREE) || TunnelBridgeIsFree(tile, end, nullptr, true).Succeeded())) {
+						((flags & FRF_TB_EXIT_FREE) || TunnelBridgeIsFree(tile, end, nullptr, TBIFM_ACROSS_ONLY).Succeeded())) {
 					/* skip far end */
 					Trackdir end_trackdir = GetTunnelBridgeExitTrackdir(end);
 					tile = end;
@@ -741,7 +741,7 @@ static void FollowReservationEnumerate(Owner o, RailTypes rts, TileIndex tile, T
 			if ((flags & FRF_IGNORE_ONEWAY) && _settings_game.vehicle.train_braking_model == TBM_REALISTIC && IsTunnelBridgeSignalSimulationExit(tile) &&
 					GetTunnelBridgeExitSignalState(tile) == SIGNAL_STATE_GREEN) {
 				TileIndex end = GetOtherTunnelBridgeEnd(tile);
-				if (HasAcrossTunnelBridgeReservation(end) && TunnelBridgeIsFree(tile, end, nullptr, true).Succeeded()) {
+				if (HasAcrossTunnelBridgeReservation(end) && TunnelBridgeIsFree(tile, end, nullptr, TBIFM_ACROSS_ONLY).Succeeded()) {
 					/* skip far end */
 					tile = end;
 					trackdir = GetTunnelBridgeExitTrackdir(tile);

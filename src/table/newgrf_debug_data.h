@@ -1540,6 +1540,15 @@ class NIHRailType : public NIHelper {
 			PrintTypeLabels(buffer, lastof(buffer), info->label, (const uint32*) info->alternate_labels.data(), info->alternate_labels.size(), output.print);
 			seprintf(buffer, lastof(buffer), "  Cost multiplier: %u/8, Maintenance multiplier: %u/8", info->cost_multiplier, info->maintenance_multiplier);
 			output.print(buffer);
+
+			YearMonthDay ymd;
+			ConvertDateToYMD(info->introduction_date, &ymd);
+			seprintf(buffer, lastof(buffer), "  Introduction date: %4i-%02i-%02i", ymd.year, ymd.month + 1, ymd.day);
+			output.print(buffer);
+			seprintf(buffer, lastof(buffer), "  Intro required railtypes: 0x" OTTD_PRINTFHEX64, info->introduction_required_railtypes);
+			output.print(buffer);
+			seprintf(buffer, lastof(buffer), "  Intro railtypes: 0x" OTTD_PRINTFHEX64, info->introduces_railtypes);
+			output.print(buffer);
 		};
 
 		output.print("Debug Info:");

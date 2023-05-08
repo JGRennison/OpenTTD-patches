@@ -1010,6 +1010,7 @@ STR_TRACE_RESTRICT_REMOVE                                       :{BLACK}Remove
 STR_TRACE_RESTRICT_RESET                                        :{BLACK}Reset
 STR_TRACE_RESTRICT_COPY                                         :{BLACK}Copy
 STR_TRACE_RESTRICT_APPEND                                       :{BLACK}Append
+STR_TRACE_RESTRICT_DUPLICATE                                    :{BLACK}Duplicate
 STR_TRACE_RESTRICT_SHARE                                        :{BLACK}Share
 STR_TRACE_RESTRICT_UNSHARE                                      :{BLACK}Unshare
 STR_TRACE_RESTRICT_SELECT_TARGET                                :{BLACK}Select Target
@@ -1019,6 +1020,7 @@ STR_TRACE_RESTRICT_INSERT_TOOLTIP                               :{BLACK}Insert a
 STR_TRACE_RESTRICT_REMOVE_TOOLTIP                               :{BLACK}Remove the selected instruction{}Ctrl+Click to remove the selected conditional instruction but retain its contents
 STR_TRACE_RESTRICT_RESET_TOOLTIP                                :{BLACK}Reset the current signal (without affecting shared programs)
 STR_TRACE_RESTRICT_COPY_TOOLTIP                                 :{BLACK}Copy program from another signal{}Ctrl+click to append program from another signal
+STR_TRACE_RESTRICT_DUPLICATE_TOOLTIP                            :{BLACK}Duplicate the selected instruction{}Ctrl+click to append program from another signal
 STR_TRACE_RESTRICT_SHARE_TOOLTIP                                :{BLACK}Share program with another signal
 STR_TRACE_RESTRICT_UNSHARE_TOOLTIP                              :{BLACK}Stop sharing program with other signals, create a copy of the program
 STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP                           :{BLACK}Routefinding restriction
@@ -1031,6 +1033,7 @@ STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM                      :{WHITE}Can't in
 STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM                      :{WHITE}Can't modify instruction
 STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM                      :{WHITE}Can't remove instruction
 STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM                        :{WHITE}Can't move instruction
+STR_TRACE_RESTRICT_ERROR_CAN_T_DUPLICATE_ITEM                   :{WHITE}Can't duplicate instruction
 STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE                        :{WHITE}Value too large, maximum is {DECIMAL}
 STR_TRACE_RESTRICT_ERROR_NO_PROGRAM                             :No trace restrict program exists
 STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE                       :Offset too large
@@ -1439,6 +1442,8 @@ STR_QUERY_RENAME_TRAIN_TYPE_WAGON_CAPTION                       :{WHITE}Rename w
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT                    :{STRING}. Shift+Click to select which
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU                             :{BLACK}Cancel send vehicle to depot/hangar. Ctrl+Click for menu. Shift+Click to select depot/hangar
 
+STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA                     :{STRING}{BLACK}{}Shift+Click to toggle showing route overlay even when window is not focused
+
 STR_VEHICLE_STATUS_LOADING_UNLOADING_ADVANCE                    :{STRING}, {VELOCITY}
 STR_VEHICLE_STATUS_BROKEN_DOWN_VEL                              :{RED}Broken down - {STRING2}, {LTBLUE} {VELOCITY}
 STR_VEHICLE_STATUS_BROKEN_DOWN_VEL_SHORT                        :{RED}Broken down - {STRING2}
@@ -1567,7 +1572,11 @@ STR_ORDER_LABEL_TEXT_CAPTION                                    :{WHITE}Label
 STR_ORDER_LABEL_TEXT_BUTTON                                     :Label
 STR_ORDER_LABEL_TEXT_BUTTON_TOOLTIP                             :{BLACK}Change label text
 STR_ORDER_LABEL_DEPARTURES_VIA_BUTTON                           :Departure board via
-STR_ORDER_LABEL_DEPARTURES_VIA                                  :Departure board: Show as via: {STRING1}
+STR_ORDER_LABEL_DEPARTURES_VIA                                  :Departure board: {STRING}: {STRING1}
+STR_ORDER_LABEL_DEPARTURES_SHOW_AS_VIA                          :Show as via
+STR_ORDER_LABEL_DEPARTURES_REMOVE_VIA                           :Remove via for prior terminus
+STR_ORDER_LABEL_DEPARTURES_REMOVE_VIA_SHORT                     :Remove via
+STR_ORDER_LABEL_DEPARTURES_VIA_TYPE_TOOLTIP                     :{BLACK}Show as via: Show this station/waypoint as the via station in the departure board for departures from stations before this order to terminuses after this order.{}Use two in a row for a double via.{}{}Remove via for prior terminus: Do not show this station as a via station, when showing a calling point before this order as the terminus.
 
 STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}{STRING2}%
 STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}Show occupancy running averages{}The percentage shown is the overall average of the order occupancies
@@ -2002,7 +2011,7 @@ STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}Reset wh
 STR_SCHDISPATCH_CLEAR                                           :{BLACK}Clear Departure Slots
 STR_SCHDISPATCH_CLEAR_TOOLTIP                                   :{BLACK}Clear all departure slots from the schedule.
 STR_SCHDISPATCH_MANAGE                                          :{BLACK}Manage Schedule
-STR_SCHDISPATCH_MANAGE_TOOLTIP                                  :{STRING}{}{}{STRING}{}{}{STRING}
+STR_SCHDISPATCH_MANAGE_TOOLTIP_SUFFIX                           :{}{}{STRING}
 STR_SCHDISPATCH_PREV_SCHEDULE                                   :{BLACK}Previous
 STR_SCHDISPATCH_PREV_SCHEDULE_TOOLTIP                           :{BLACK}Go to previous dispatch schedule
 STR_SCHDISPATCH_NEXT_SCHEDULE                                   :{BLACK}Next
@@ -2011,6 +2020,10 @@ STR_SCHDISPATCH_ADD_SCHEDULE                                    :{BLACK}Add
 STR_SCHDISPATCH_ADD_SCHEDULE_TOOLTIP                            :{BLACK}Add a new dispatch schedule
 STR_SCHDISPATCH_REMOVE_SCHEDULE                                 :{BLACK}Remove Current Schedule
 STR_SCHDISPATCH_REMOVE_SCHEDULE_TOOLTIP                         :{BLACK}Remove this dispatch schedule entirely.
+STR_SCHDISPATCH_DUPLICATE_SCHEDULE                              :{BLACK}Duplicate Current Schedule
+STR_SCHDISPATCH_DUPLICATE_SCHEDULE_TOOLTIP                      :{BLACK}Create a copy of this dispatch schedule.
+STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES                        :{BLACK}Append Schedules From Vehicle
+STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES_TOOLTIP                :{BLACK}Append the dispatch schedules from another vehicle.
 STR_SCHDISPATCH_NO_SCHEDULES                                    :{BLACK}No Schedules
 STR_SCHDISPATCH_SCHEDULE_ID                                     :{BLACK}Schedule {NUM} of {NUM}
 STR_SCHDISPATCH_NAMED_SCHEDULE_ID                               :{BLACK}{RAW_STRING} ({NUM} of {NUM})
@@ -2062,3 +2075,5 @@ STR_STATION_VIEW_RENAME_TOOLTIP_EXTRA                           :{BLACK}{STRING}
 STR_ERROR_CAN_T_EXCHANGE_STATION_NAMES                          :{WHITE}Can't exchange station names...
 STR_ERROR_STATIONS_NOT_IN_SAME_TOWN                             :{WHITE}... stations are not in the same town
 STR_ERROR_STATION_ATTACHED_TO_INDUSTRY                          :{WHITE}... station is attached to an industry
+
+STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_EXTRA                     :{STRING}{}{BLACK}Ctrl+Click to convert track pieces instead of whole tiles.

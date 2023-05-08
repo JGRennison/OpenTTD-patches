@@ -297,6 +297,7 @@ enum Commands
 
 	CMD_REMOVE_FROM_RAIL_STATION, ///< remove a (rectangle of) tiles from a rail station
 	CMD_CONVERT_RAIL,			  ///< convert a rail type
+	CMD_CONVERT_RAIL_TRACK,           ///< convert a rail type (track)
 
 	CMD_BUILD_RAIL_WAYPOINT,          ///< build a waypoint
 	CMD_BUILD_ROAD_WAYPOINT,          ///< build a road waypoint
@@ -484,7 +485,7 @@ enum Commands
 	CMD_TIMETABLE_SEPARATION,  ///< auto timetable separation
 	CMD_SET_TIMETABLE_START,   ///< set the date that a timetable should start
 
-	CMD_OPEN_CLOSE_AIRPORT, ///< open/close an airport to incoming aircraft
+	CMD_OPEN_CLOSE_AIRPORT,           ///< open/close an airport to incoming aircraft
 	CMD_BUILD_TRAFFICLIGHTS,  ///< place traffic lights on a road crossing
 	CMD_REMOVE_TRAFFICLIGHTS, ///< remove traffic lights
 
@@ -524,6 +525,8 @@ enum Commands
 	CMD_SCHEDULED_DISPATCH_ADD_NEW_SCHEDULE,	///< scheduled dispatch add new schedule
 	CMD_SCHEDULED_DISPATCH_REMOVE_SCHEDULE,		///< scheduled dispatch remove schedule
 	CMD_SCHEDULED_DISPATCH_RENAME_SCHEDULE,     ///< scheduled dispatch rename schedule
+	CMD_SCHEDULED_DISPATCH_DUPLICATE_SCHEDULE,  ///< scheduled dispatch duplicate schedule
+	CMD_SCHEDULED_DISPATCH_APPEND_VEHICLE_SCHEDULE, ///< scheduled dispatch append schedules from another vehicle
 
 	CMD_ADD_PLAN,
 	CMD_ADD_PLAN_LINE,

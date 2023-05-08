@@ -76,7 +76,7 @@ struct TileHighlightData {
 	WindowClass window_class;      ///< The \c WindowClass of the window that is responsible for the selection mode.
 	WindowNumber window_number;    ///< The \c WindowNumber of the window that is responsible for the selection mode.
 
-	bool make_square_red;          ///< Whether to give a tile a red selection.
+	PaletteID square_palette;      ///< Whether to give a tile a recoloured selection.
 	TileIndex redsq;               ///< The tile that has to get a red selection.
 
 	ViewportPlaceMethod select_method;            ///< The method which governs how tiles are selected.

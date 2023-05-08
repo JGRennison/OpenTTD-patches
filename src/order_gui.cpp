@@ -182,7 +182,7 @@ public:
 	~CargoTypeOrdersWindow()
 	{
 		if (!FocusWindowById(WC_VEHICLE_ORDERS, this->window_number)) {
-			MarkAllRouteStepsDirty(this->vehicle);
+			MarkDirtyFocusedRoutePaths(this->vehicle);
 		}
 	}
 
@@ -297,16 +297,14 @@ public:
 	virtual void OnFocus(Window *previously_focused_window) override
 	{
 		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
-			MarkAllRoutePathsDirty(this->vehicle);
-			MarkAllRouteStepsDirty(this->vehicle);
+			MarkDirtyFocusedRoutePaths(this->vehicle);
 		}
 	}
 
 	virtual void OnFocusLost(Window *newly_focused_window) override
 	{
 		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
-			MarkAllRoutePathsDirty(this->vehicle);
-			MarkAllRouteStepsDirty(this->vehicle);
+			MarkDirtyFocusedRoutePaths(this->vehicle);
 		}
 	}
 
@@ -1169,7 +1167,15 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 			SetDParam(3, order->GetXData());
 			break;
 
-		case OT_LABEL:
+		case OT_LABEL: {
+			auto show_destination_subtype = [&](uint offset) {
+				if (Waypoint::IsValidID(order->GetDestination())) {
+					SetDParam(offset, STR_WAYPOINT_NAME);
+				} else {
+					SetDParam(offset, STR_STATION_NAME);
+				}
+				SetDParam(offset + 1, order->GetDestination());
+			};
 			switch (order->GetLabelSubType()) {
 				case OLST_TEXT: {
 					SetDParam(0, STR_ORDER_LABEL_TEXT);
@@ -1180,12 +1186,14 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 
 				case OLST_DEPARTURES_VIA:
 					SetDParam(0, STR_ORDER_LABEL_DEPARTURES_VIA);
-					if (Waypoint::IsValidID(order->GetDestination())) {
-						SetDParam(1, STR_WAYPOINT_NAME);
-					} else {
-						SetDParam(1, STR_STATION_NAME);
-					}
-					SetDParam(2, order->GetDestination());
+					SetDParam(1, STR_ORDER_LABEL_DEPARTURES_SHOW_AS_VIA);
+					show_destination_subtype(2);
+					break;
+
+				case OLST_DEPARTURES_REMOVE_VIA:
+					SetDParam(0, STR_ORDER_LABEL_DEPARTURES_VIA);
+					SetDParam(1, STR_ORDER_LABEL_DEPARTURES_REMOVE_VIA);
+					show_destination_subtype(2);
 					break;
 
 				default:
@@ -1193,6 +1201,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 					break;
 			}
 			break;
+		}
 
 		default: NOT_REACHED();
 	}
@@ -1391,7 +1400,8 @@ private:
 		DP_GROUNDVEHICLE_ROW_SLOT        = 2, ///< Display the row for release slot orders in the top row of the train/rv order window.
 		DP_GROUNDVEHICLE_ROW_COUNTER     = 3, ///< Display the row for change counter orders in the top row of the train/rv order window.
 		DP_GROUNDVEHICLE_ROW_TEXT_LABEL  = 4, ///< Display the row for text label orders in the top row of the train/rv order window.
-		DP_GROUNDVEHICLE_ROW_EMPTY       = 5, ///< Display the row for no buttons in the top row of the train/rv order window.
+		DP_GROUNDVEHICLE_ROW_DEPARTURES  = 5, ///< Display the row for departure via label orders in the top row of the train/rv order window.
+		DP_GROUNDVEHICLE_ROW_EMPTY       = 6, ///< Display the row for no buttons in the top row of the train/rv order window.
 
 		/* WID_O_SEL_TOP_LEFT */
 		DP_LEFT_LOAD       = 0, ///< Display 'load' in the left button of the top row of the train/rv order window.
@@ -1413,7 +1423,8 @@ private:
 		DP_ROW_SLOT        = 3, ///< Display the release slot buttons in the top row of the ship/airplane order window.
 		DP_ROW_COUNTER     = 4, ///< Display the change counter buttons in the top row of the ship/airplane order window.
 		DP_ROW_TEXT_LABEL  = 5, ///< Display the text label buttons in the top row of the ship/airplane order window.
-		DP_ROW_EMPTY       = 6, ///< Display no buttons in the top row of the ship/airplane order window.
+		DP_ROW_DEPARTURES  = 6, ///< Display the row for departure via label orders in the top row of the ship/airplane order window.
+		DP_ROW_EMPTY       = 7, ///< Display no buttons in the top row of the ship/airplane order window.
 
 		/* WID_O_SEL_COND_VALUE */
 		DP_COND_VALUE_NUMBER = 0, ///< Display number widget
@@ -1846,7 +1857,7 @@ public:
 		DeleteWindowById(WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS, this->window_number, false);
 		DeleteWindowById(WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS, this->window_number, false);
 		if (!FocusWindowById(WC_VEHICLE_VIEW, this->window_number)) {
-			MarkAllRouteStepsDirty(this->vehicle);
+			MarkDirtyFocusedRoutePaths(this->vehicle);
 		}
 	}
 
@@ -2255,10 +2266,16 @@ public:
 				}
 
 				case OT_LABEL: {
+					std::pair<int, int> sections = { DP_ROW_EMPTY, DP_GROUNDVEHICLE_ROW_EMPTY };
+					if (order->GetLabelSubType() == OLST_TEXT) {
+						sections = { DP_ROW_TEXT_LABEL, DP_GROUNDVEHICLE_ROW_TEXT_LABEL };
+					} else if (IsDeparturesOrderLabelSubType(order->GetLabelSubType())) {
+						sections = { DP_ROW_DEPARTURES, DP_GROUNDVEHICLE_ROW_DEPARTURES };
+					}
 					if (row_sel != nullptr) {
-						row_sel->SetDisplayedPlane(order->GetLabelSubType() == OLST_TEXT ? DP_ROW_TEXT_LABEL : DP_ROW_EMPTY);
+						row_sel->SetDisplayedPlane(sections.first);
 					} else {
-						train_row_sel->SetDisplayedPlane(order->GetLabelSubType() == OLST_TEXT ? DP_GROUNDVEHICLE_ROW_TEXT_LABEL : DP_GROUNDVEHICLE_ROW_EMPTY);
+						train_row_sel->SetDisplayedPlane(sections.second);
 					}
 					break;
 				}
@@ -2569,6 +2586,30 @@ public:
 
 				if (order != nullptr && order->IsType(OT_COUNTER)) {
 					SetDParam(0, order->GetXData());
+				}
+				break;
+			}
+
+			case WID_O_DEPARTURE_VIA_TYPE: {
+				VehicleOrderID sel = this->OrderGetSel();
+				const Order *order = this->vehicle->GetOrder(sel);
+
+				if (order != nullptr && order->IsType(OT_LABEL) && IsDeparturesOrderLabelSubType(order->GetLabelSubType())) {
+					switch (order->GetLabelSubType()) {
+						case OLST_DEPARTURES_VIA:
+							SetDParam(0, STR_ORDER_LABEL_DEPARTURES_SHOW_AS_VIA);
+							break;
+
+						case OLST_DEPARTURES_REMOVE_VIA:
+							SetDParam(0, STR_ORDER_LABEL_DEPARTURES_REMOVE_VIA_SHORT);
+							break;
+
+						default:
+							SetDParam(0, STR_EMPTY);
+							break;
+					}
+				} else {
+					SetDParam(0, STR_EMPTY);
 				}
 				break;
 			}
@@ -3033,6 +3074,15 @@ public:
 				break;
 			}
 
+			case WID_O_DEPARTURE_VIA_TYPE: {
+				DropDownList list;
+				list.emplace_back(new DropDownListStringItem(STR_ORDER_LABEL_DEPARTURES_SHOW_AS_VIA, OLST_DEPARTURES_VIA, false));
+				list.emplace_back(new DropDownListStringItem(STR_ORDER_LABEL_DEPARTURES_REMOVE_VIA, OLST_DEPARTURES_REMOVE_VIA, false));
+				int selected = this->vehicle->GetOrder(this->OrderGetSel())->GetLabelSubType();
+				ShowDropDownList(this, std::move(list), selected, WID_O_DEPARTURE_VIA_TYPE, 0);
+				break;
+			}
+
 			case WID_O_TOGGLE_SIZE: {
 				_settings_client.gui.show_order_management_button = !_settings_client.gui.show_order_management_button;
 				InvalidateWindowClassesData(WC_VEHICLE_ORDERS);
@@ -3193,6 +3243,10 @@ public:
 
 			case WID_O_CHANGE_COUNTER:
 				this->ModifyOrder(this->OrderGetSel(), MOF_COUNTER_ID | index << 8);
+				break;
+
+			case WID_O_DEPARTURE_VIA_TYPE:
+				this->ModifyOrder(this->OrderGetSel(), MOF_DEPARTURES_SUBTYPE | index << 8);
 				break;
 
 			case WID_O_MANAGE_LIST:
@@ -3430,16 +3484,14 @@ public:
 	virtual void OnFocus(Window *previously_focused_window) override
 	{
 		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
-			MarkAllRoutePathsDirty(this->vehicle);
-			MarkAllRouteStepsDirty(this->vehicle);
+			MarkDirtyFocusedRoutePaths(this->vehicle);
 		}
 	}
 
 	virtual void OnFocusLost(Window *newly_focused_window) override
 	{
 		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
-			MarkAllRoutePathsDirty(this->vehicle);
-			MarkAllRouteStepsDirty(this->vehicle);
+			MarkDirtyFocusedRoutePaths(this->vehicle);
 		}
 	}
 
@@ -3556,8 +3608,8 @@ static const NWidgetPart _nested_orders_train_widgets[] = {
 				EndContainer(),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
-				NWidget(WWT_PANEL, COLOUR_GREY), EndContainer(),
-				NWidget(WWT_PANEL, COLOUR_GREY), EndContainer(),
+				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
+				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_RELEASE_SLOT), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_NULL, STR_ORDER_RELEASE_SLOT_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
@@ -3570,10 +3622,16 @@ static const NWidgetPart _nested_orders_train_widgets[] = {
 														SetDataTip(STR_BLACK_COMMA, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
-				NWidget(WWT_PANEL, COLOUR_GREY), EndContainer(),
-				NWidget(WWT_PANEL, COLOUR_GREY), EndContainer(),
+				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
+				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_TEXT_LABEL), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_ORDER_LABEL_TEXT_BUTTON, STR_ORDER_LABEL_TEXT_BUTTON_TOOLTIP), SetResize(1, 0),
+			EndContainer(),
+			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
+				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
+				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_DEPARTURE_VIA_TYPE), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_BLACK_STRING, STR_ORDER_LABEL_DEPARTURES_VIA_TYPE_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
 			NWidget(WWT_PANEL, COLOUR_GREY), SetFill(1, 0), SetResize(1, 0), EndContainer(),
 		EndContainer(),
@@ -3696,8 +3754,8 @@ static const NWidgetPart _nested_orders_widgets[] = {
 
 			/* Buttons for releasing a slot. */
 			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
-				NWidget(WWT_PANEL, COLOUR_GREY), EndContainer(),
-				NWidget(WWT_PANEL, COLOUR_GREY), EndContainer(),
+				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
+				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_RELEASE_SLOT), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_NULL, STR_ORDER_RELEASE_SLOT_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
@@ -3714,10 +3772,18 @@ static const NWidgetPart _nested_orders_widgets[] = {
 
 			/* Buttons for changing a text label */
 			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
-				NWidget(WWT_PANEL, COLOUR_GREY), EndContainer(),
-				NWidget(WWT_PANEL, COLOUR_GREY), EndContainer(),
+				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
+				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_TEXT_LABEL), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_ORDER_LABEL_TEXT_BUTTON, STR_ORDER_LABEL_TEXT_BUTTON_TOOLTIP), SetResize(1, 0),
+			EndContainer(),
+
+			/* Buttons for changing a departure board via order */
+			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
+				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
+				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_DEPARTURE_VIA_TYPE), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_BLACK_STRING, STR_ORDER_LABEL_DEPARTURES_VIA_TYPE_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
 
 			/* No buttons */

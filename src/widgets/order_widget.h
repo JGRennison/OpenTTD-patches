@@ -50,6 +50,7 @@ enum OrderWidgets {
 	WID_O_CHANGE_COUNTER,            ///< Choose counter to change.
 	WID_O_COUNTER_VALUE,             ///< Choose counter value.
 	WID_O_TEXT_LABEL,                ///< Choose text label.
+	WID_O_DEPARTURE_VIA_TYPE,        ///< Choose departure board via subtype.
 	WID_O_SEL_COND_VALUE,            ///< Widget for conditional value or conditional cargo type.
 	WID_O_SEL_COND_AUX,              ///< Widget for auxiliary conditional cargo type.
 	WID_O_SEL_COND_AUX2,             ///< Widget for auxiliary conditional via button.

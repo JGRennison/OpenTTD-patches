@@ -1494,6 +1494,12 @@ struct StationViewWindow : public Window {
 
 	bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
 	{
+		if (widget == WID_SV_RENAME) {
+			uint64 args[] = { STR_STATION_VIEW_RENAME_TOOLTIP, STR_BUTTON_DEFAULT };
+			GuiShowTooltips(this, STR_STATION_VIEW_RENAME_TOOLTIP_EXTRA, lengthof(args), args, close_cond);
+			return true;
+		}
+
 		if (widget != WID_SV_ACCEPT_RATING_LIST || this->GetWidget<NWidgetCore>(WID_SV_ACCEPTS_RATINGS)->widget_data == STR_STATION_VIEW_RATINGS_BUTTON ||
 				_settings_client.gui.station_rating_tooltip_mode == SRTM_OFF) {
 			return false;
@@ -1579,14 +1585,6 @@ struct StationViewWindow : public Window {
 			Rect waiting_rect = nwi->GetCurrentRect().Shrink(WidgetDimensions::scaled.framerect);
 			this->DrawEntries(&cargo, waiting_rect, pos, maxrows, 0);
 			scroll_to_row = INT_MAX;
-		}
-	}
-
-	virtual void OnHover(Point pt, int widget) override
-	{
-		if (widget == WID_SV_RENAME) {
-			uint64 args[] = { STR_STATION_VIEW_RENAME_TOOLTIP, STR_BUTTON_DEFAULT };
-			GuiShowTooltips(this, STR_STATION_VIEW_RENAME_TOOLTIP_EXTRA, lengthof(args), args, TCC_HOVER);
 		}
 	}
 

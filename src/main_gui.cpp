@@ -462,7 +462,7 @@ struct MainWindow : Window
 			case GHK_SWITCH_VIEWPORT_ROUTE_OVERLAY_MODE:
 				if (_settings_client.gui.show_vehicle_route_mode != 0) {
 					_settings_client.gui.show_vehicle_route_mode ^= 3;
-					CheckMarkDirtyFocusedRoutePaths();
+					CheckMarkDirtyViewportRoutePaths();
 					SetWindowDirty(WC_GAME_OPTIONS, WN_GAME_OPTIONS_GAME_SETTINGS);
 				}
 				break;

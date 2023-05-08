@@ -910,8 +910,7 @@ struct RefitWindow : public Window {
 			if (!FocusWindowById(WC_VEHICLE_VIEW, this->window_number)) {
 				if (this->window_number != INVALID_VEHICLE) {
 					const Vehicle *v = Vehicle::Get(this->window_number);
-					MarkAllRoutePathsDirty(v);
-					MarkAllRouteStepsDirty(v);
+					MarkDirtyFocusedRoutePaths(v);
 				}
 			}
 		}
@@ -922,8 +921,7 @@ struct RefitWindow : public Window {
 		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
 			if (this->window_number != INVALID_VEHICLE) {
 				const Vehicle *v = Vehicle::Get(this->window_number);
-				MarkAllRoutePathsDirty(v);
-				MarkAllRouteStepsDirty(v);
+				MarkDirtyFocusedRoutePaths(v);
 			}
 		}
 	}
@@ -933,8 +931,7 @@ struct RefitWindow : public Window {
 		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
 			if (this->window_number != INVALID_VEHICLE) {
 				const Vehicle *v = Vehicle::Get(this->window_number);
-				MarkAllRoutePathsDirty(v);
-				MarkAllRouteStepsDirty(v);
+				MarkDirtyFocusedRoutePaths(v);
 			}
 		}
 	}
@@ -1739,6 +1736,7 @@ void ChangeVehicleViewWindow(VehicleID from_index, VehicleID to_index)
 	ChangeVehicleWindow(WC_VEHICLE_REFIT,     from_index, to_index);
 	ChangeVehicleWindow(WC_VEHICLE_DETAILS,   from_index, to_index);
 	ChangeVehicleWindow(WC_VEHICLE_TIMETABLE, from_index, to_index);
+	ChangeFixedViewportRoutePath(from_index, to_index);
 }
 
 static const NWidgetPart _nested_vehicle_list[] = {
@@ -2227,8 +2225,7 @@ private:
 	{
 		if (this->vli.type == VL_SHARED_ORDERS) {
 			const Vehicle *v = Vehicle::GetIfValid(this->vli.index);
-			MarkAllRoutePathsDirty(v);
-			MarkAllRouteStepsDirty(v);
+			MarkDirtyFocusedRoutePaths(v);
 		}
 	}
 
@@ -2893,8 +2890,7 @@ struct VehicleDetailsWindow : Window {
 			if (!FocusWindowById(WC_VEHICLE_VIEW, this->window_number)) {
 				if (this->window_number != INVALID_VEHICLE) {
 					const Vehicle *v = Vehicle::Get(this->window_number);
-					MarkAllRoutePathsDirty(v);
-					MarkAllRouteStepsDirty(v);
+					MarkDirtyFocusedRoutePaths(v);
 				}
 			}
 		}
@@ -3399,8 +3395,7 @@ struct VehicleDetailsWindow : Window {
 		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
 			if (this->window_number != INVALID_VEHICLE) {
 				const Vehicle *v = Vehicle::Get(this->window_number);
-				MarkAllRoutePathsDirty(v);
-				MarkAllRouteStepsDirty(v);
+				MarkDirtyFocusedRoutePaths(v);
 			}
 		}
 	}
@@ -3410,8 +3405,7 @@ struct VehicleDetailsWindow : Window {
 		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
 			if (this->window_number != INVALID_VEHICLE) {
 				const Vehicle *v = Vehicle::Get(this->window_number);
-				MarkAllRoutePathsDirty(v);
-				MarkAllRouteStepsDirty(v);
+				MarkDirtyFocusedRoutePaths(v);
 			}
 		}
 	}
@@ -3450,7 +3444,7 @@ static const NWidgetPart _nested_vehicle_view_widgets[] = {
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_RENAME), SetMinimalSize(12, 14), SetDataTip(SPR_RENAME, STR_NULL /* filled in later */),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_VV_CAPTION), SetDataTip(STR_VEHICLE_VIEW_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_LOCATION), SetMinimalSize(12, 14), SetDataTip(SPR_GOTO_LOCATION, STR_NULL /* filled in later */),
+		NWidget(WWT_IMGBTN, COLOUR_GREY, WID_VV_LOCATION), SetMinimalSize(12, 14), SetDataTip(SPR_GOTO_LOCATION, STR_NULL /* filled in later */),
 		NWidget(WWT_DEBUGBOX, COLOUR_GREY),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
@@ -3590,6 +3584,7 @@ struct VehicleViewWindow : Window {
 private:
 	bool depot_select_active = false;
 	bool depot_select_ctrl_pressed = false;
+	bool fixed_route_overlay_active = false;
 
 	/** Display planes available in the vehicle view window. */
 	enum PlaneSelections {
@@ -3672,7 +3667,6 @@ public:
 
 		this->GetWidget<NWidgetCore>(WID_VV_START_STOP)->tool_tip       = STR_VEHICLE_VIEW_TRAIN_STATUS_START_STOP_TOOLTIP + v->type;
 		this->GetWidget<NWidgetCore>(WID_VV_RENAME)->tool_tip           = STR_VEHICLE_DETAILS_TRAIN_RENAME + v->type;
-		this->GetWidget<NWidgetCore>(WID_VV_LOCATION)->tool_tip         = STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP + v->type;
 		this->GetWidget<NWidgetCore>(WID_VV_REFIT)->tool_tip            = STR_VEHICLE_VIEW_TRAIN_REFIT_TOOLTIP + v->type;
 		this->GetWidget<NWidgetCore>(WID_VV_SHOW_ORDERS)->tool_tip      = STR_VEHICLE_VIEW_TRAIN_ORDERS_TOOLTIP + v->type;
 		this->GetWidget<NWidgetCore>(WID_VV_SHOW_DETAILS)->tool_tip     = STR_VEHICLE_VIEW_TRAIN_SHOW_DETAILS_TOOLTIP + v->type;
@@ -3685,13 +3679,16 @@ public:
 	{
 		if (this->window_number != INVALID_VEHICLE) {
 			const Vehicle *v = Vehicle::Get(this->window_number);
-			MarkAllRoutePathsDirty(v);
-			MarkAllRouteStepsDirty(v);
+			MarkDirtyFocusedRoutePaths(v);
 		}
 		DeleteWindowById(WC_VEHICLE_ORDERS, this->window_number, false);
 		DeleteWindowById(WC_VEHICLE_REFIT, this->window_number, false);
 		DeleteWindowById(WC_VEHICLE_DETAILS, this->window_number, false);
 		DeleteWindowById(WC_VEHICLE_TIMETABLE, this->window_number, false);
+
+		if (this->fixed_route_overlay_active) {
+			RemoveFixedViewportRoutePath(this->window_number);
+		}
 	}
 
 	virtual void OnFocus(Window *previously_focused_window) override
@@ -3699,8 +3696,7 @@ public:
 		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
 			if (this->window_number != INVALID_VEHICLE) {
 				const Vehicle *v = Vehicle::Get(this->window_number);
-				MarkAllRoutePathsDirty(v);
-				MarkAllRouteStepsDirty(v);
+				MarkDirtyFocusedRoutePaths(v);
 			}
 		}
 	}
@@ -3710,8 +3706,7 @@ public:
 		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
 			if (this->window_number != INVALID_VEHICLE) {
 				const Vehicle *v = Vehicle::Get(this->window_number);
-				MarkAllRoutePathsDirty(v);
-				MarkAllRouteStepsDirty(v);
+				MarkDirtyFocusedRoutePaths(v);
 			}
 		}
 	}
@@ -3968,6 +3963,16 @@ public:
 			case WID_VV_LOCATION: // center main view
 				if (_ctrl_pressed) {
 					ShowExtraViewportWindow(TileVirtXY(v->x_pos, v->y_pos));
+					this->HandleButtonClick(widget);
+				} else if (_shift_pressed) {
+					this->fixed_route_overlay_active = !this->fixed_route_overlay_active;
+					this->SetWidgetLoweredState(widget, this->fixed_route_overlay_active);
+					this->SetWidgetDirty(widget);
+					if (this->fixed_route_overlay_active) {
+						AddFixedViewportRoutePath(this->window_number);
+					} else {
+						RemoveFixedViewportRoutePath(this->window_number);
+					}
 				} else {
 					const Window *mainwindow = GetMainWindow();
 					if (click_count > 1 && mainwindow->viewport->zoom < ZOOM_LVL_DRAW_MAP) {
@@ -3976,6 +3981,7 @@ public:
 					} else {
 						ScrollMainWindowTo(v->x_pos, v->y_pos, v->z_pos);
 					}
+					this->HandleButtonClick(widget);
 				}
 				break;
 
@@ -4074,6 +4080,10 @@ public:
 			this->RaiseWidget(WID_VV_GOTO_DEPOT);
 			this->SetWidgetDirty(WID_VV_GOTO_DEPOT);
 		}
+		if (!this->fixed_route_overlay_active) {
+			this->RaiseWidget(WID_VV_LOCATION);
+			this->SetWidgetDirty(WID_VV_LOCATION);
+		}
 	}
 
 	virtual void OnPlaceObject(Point pt, TileIndex tile) override
@@ -4109,17 +4119,25 @@ public:
 		return false;
 	}
 
-	virtual void OnHover(Point pt, int widget) override
+	virtual bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
 	{
 		if (widget == WID_VV_GOTO_DEPOT) {
 			const Vehicle *v = Vehicle::Get(this->window_number);
 			if (_settings_client.gui.show_depot_sell_gui && v->current_order.IsType(OT_GOTO_DEPOT)) {
-				GuiShowTooltips(this, STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU, 0, nullptr, TCC_HOVER);
+				GuiShowTooltips(this, STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU, 0, nullptr, close_cond);
 			} else {
 				uint64 arg = STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP + v->type;
-				GuiShowTooltips(this, STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT, 1, &arg, TCC_HOVER);
+				GuiShowTooltips(this, STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT, 1, &arg, close_cond);
 			}
+			return true;
 		}
+		if (widget == WID_VV_LOCATION) {
+			const Vehicle *v = Vehicle::Get(this->window_number);
+			uint64 args[] = { STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP + v->type };
+			GuiShowTooltips(this, STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA, lengthof(args), args, close_cond);
+			return true;
+		}
+		return false;
 	}
 
 	void OnMouseOver(Point pt, int widget) override

@@ -3602,7 +3602,7 @@ static void ClearPathReservation(const Train *v, TileIndex tile, Trackdir track_
 				/* Are we just leaving a tunnel/bridge? */
 				if (TrackdirExitsTunnelBridge(tile, track_dir)) {
 					TileIndex end = GetOtherTunnelBridgeEnd(tile);
-					bool free = TunnelBridgeIsFree(tile, end, v, true).Succeeded();
+					bool free = TunnelBridgeIsFree(tile, end, v, TBIFM_ACROSS_ONLY).Succeeded();
 					HandleLastTunnelBridgeSignals(tile, end, ReverseDiagDir(GetTunnelBridgeDirection(tile)), free);
 				}
 			} else if (tunbridge_clear_unsignaled_other_end) {
@@ -3729,7 +3729,7 @@ void FreeTrainTrackReservation(Train *v, TileIndex origin, Trackdir orig_td)
 			}
 		} else if (IsTunnelBridgeWithSignalSimulation(tile) && TrackdirExitsTunnelBridge(tile, td)) {
 			TileIndex end = GetOtherTunnelBridgeEnd(tile);
-			bool free = TunnelBridgeIsFree(tile, end, v, true).Succeeded();
+			bool free = TunnelBridgeIsFree(tile, end, v, TBIFM_ACROSS_ONLY).Succeeded();
 			if (!free) break;
 		}
 
@@ -6116,7 +6116,7 @@ static Vehicle *CollectTrackbitsFromCrashedVehiclesEnum(Vehicle *v, void *data)
 
 static void SetSignalledBridgeTunnelGreenIfClear(TileIndex tile, TileIndex end)
 {
-	if (TunnelBridgeIsFree(tile, end, nullptr, true).Succeeded()) {
+	if (TunnelBridgeIsFree(tile, end, nullptr, TBIFM_ACROSS_ONLY).Succeeded()) {
 		auto process_tile = [](TileIndex t) {
 			if (IsTunnelBridgeSignalSimulationEntrance(t)) {
 				if (IsBridge(t)) {

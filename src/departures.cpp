@@ -541,6 +541,10 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 					}
 				}
 
+				if (order->GetType() == OT_LABEL && order->GetLabelSubType() == OLST_DEPARTURES_REMOVE_VIA && !d->calling_at.empty()) {
+					d->remove_vias.push_back({ (StationID)order->GetDestination(), (uint)(d->calling_at.size() - 1) });
+				}
+
 				if (c.scheduled_date != 0 && (order->GetTravelTime() != 0 || order->IsTravelTimetabled())) {
 					c.scheduled_date += order->GetTravelTime(); /* TODO smart terminal may not work correctly */
 				} else {
@@ -624,10 +628,18 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 
 								if (d_first->terminus >= c && d_first->calling_at.size() >= 2) {
 									d_first->terminus = CallAt(d_first->calling_at[k]);
-									if (d_first->via2 == d_first->terminus.station) d_first->via2 = INVALID_STATION;
-									if (d_first->via == d_first->terminus.station) {
-										d_first->via = d_first->via2;
-										d_first->via2 = INVALID_STATION;
+									auto remove_via = [&](StationID st) {
+										if (d_first->via2 == st) d_first->via2 = INVALID_STATION;
+										if (d_first->via == st) {
+											d_first->via = d_first->via2;
+											d_first->via2 = INVALID_STATION;
+										}
+									};
+									remove_via(d_first->terminus.station);
+									for (const RemoveVia &rv : d_first->remove_vias) {
+										if (rv.calling_at_offset == k) {
+											remove_via(rv.via);
+										}
 									}
 
 									if (k == 0) break;
