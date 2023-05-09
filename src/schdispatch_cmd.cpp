@@ -531,6 +531,45 @@ CommandCost CmdScheduledDispatchAppendVehicleSchedules(TileIndex tile, DoCommand
 }
 
 /**
+ * Adjust scheduled dispatch time offsets
+ *
+ * @param tile Not used.
+ * @param flags Operation to perform.
+ * @param p1 Vehicle index
+ * @param p2 Signed adjustment
+ * @param text name
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdScheduledDispatchAdjust(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	VehicleID veh = GB(p1, 0, 20);
+	uint schedule_index = GB(p1, 20, 12);
+	int32 adjustment = p2;
+
+	Vehicle *v = Vehicle::GetIfValid(veh);
+	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
+
+	CommandCost ret = CheckOwnership(v->owner);
+	if (ret.Failed()) return ret;
+
+	if (v->orders == nullptr) return CMD_ERROR;
+	if (v->orders->GetScheduledDispatchScheduleCount() >= 4096) return CMD_ERROR;
+
+	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
+
+	DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(schedule_index);
+	if (abs(adjustment) >= (int)ds.GetScheduledDispatchDuration()) return CommandCost(STR_ERROR_SCHDISPATCH_ADJUSTMENT_TOO_LARGE);
+
+	if (flags & DC_EXEC) {
+		ds.AdjustScheduledDispatch(adjustment);
+		ds.UpdateScheduledDispatch(nullptr);
+		SetTimetableWindowsDirty(v, true);
+	}
+
+	return CommandCost();
+}
+
+/**
  * Set scheduled dispatch slot list.
  * @param dispatch_list The offset time list, must be correctly sorted.
  */
@@ -568,6 +607,21 @@ void DispatchSchedule::RemoveScheduledDispatch(uint32 offset)
 		return;
 	}
 	this->scheduled_dispatch.erase(erase_position);
+}
+
+/**
+ * Adjust all scheduled dispatch slots by time adjustment.
+ * @param adjust The time adjustment to add to each time slot.
+ */
+void DispatchSchedule::AdjustScheduledDispatch(int32 adjust)
+{
+	for (uint32 &time : this->scheduled_dispatch) {
+		int32 t = (int32)time + adjust;
+		if (t < 0) t += GetScheduledDispatchDuration();
+		if (t >= (int32)GetScheduledDispatchDuration()) t -= (int32)GetScheduledDispatchDuration();
+		time = (uint32)t;
+	}
+	std::sort(this->scheduled_dispatch.begin(), this->scheduled_dispatch.end());
 }
 
 bool DispatchSchedule::UpdateScheduledDispatchToDate(DateTicksScaled now)

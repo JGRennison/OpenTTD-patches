@@ -723,6 +723,7 @@ public:
 	void SetScheduledDispatch(std::vector<uint32> dispatch_list);
 	void AddScheduledDispatch(uint32 offset);
 	void RemoveScheduledDispatch(uint32 offset);
+	void AdjustScheduledDispatch(int32 adjust);
 	void ClearScheduledDispatch() { this->scheduled_dispatch.clear(); }
 	bool UpdateScheduledDispatchToDate(DateTicksScaled now);
 	void UpdateScheduledDispatch(const Vehicle *v);

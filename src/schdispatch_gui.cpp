@@ -53,8 +53,9 @@ enum SchdispatchWidgets {
 	WID_SCHDISPATCH_ADD,             ///< Add Departure Time button
 	WID_SCHDISPATCH_SET_DURATION,    ///< Duration button
 	WID_SCHDISPATCH_SET_START_DATE,  ///< Start Date button
-	WID_SCHDISPATCH_SET_DELAY,       ///< Delat button
+	WID_SCHDISPATCH_SET_DELAY,       ///< Delay button
 	WID_SCHDISPATCH_MANAGEMENT,      ///< Management button
+	WID_SCHDISPATCH_ADJUST,          ///< Adjust departure times
 };
 
 /**
@@ -338,6 +339,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_SET_START_DATE, disabled);
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_SET_DELAY, disabled);
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_MANAGEMENT, disabled);
+		this->SetWidgetDisabledState(WID_SCHDISPATCH_ADJUST, disabled || this->GetSelectedSchedule().GetScheduledDispatch().empty());
 
 		this->vscroll->SetCount(CeilDiv(this->item_count, this->num_columns));
 
@@ -764,6 +766,12 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				ShowQueryString(STR_JUST_RAW_STRING, STR_SCHDISPATCH_RENAME_SCHEDULE_CAPTION,
 						MAX_LENGTH_VEHICLE_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
 				break;
+
+			case WID_SCHDISPATCH_ADJUST:
+				if (!this->IsScheduleSelected()) break;
+				SetDParam(0, 0);
+				ShowQueryString(STR_JUST_INT, STR_SCHDISPATCH_ADJUST_CAPTION_MINUTE + this->GetQueryStringCaptionOffset(), 31, this, CS_NUMERAL_SIGNED, QSF_NONE);
+				break;
 		}
 
 		this->SetDirty();
@@ -908,6 +916,18 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				DoCommandP(0, v->index | (this->schedule_index << 20), 0, CMD_SCHEDULED_DISPATCH_RENAME_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_RENAME_SCHEDULE), nullptr, str);
 				break;
 			}
+
+			case WID_SCHDISPATCH_ADJUST: {
+				if (!this->IsScheduleSelected()) break;
+				int32 val = StrEmpty(str) ? 0 : strtol(str, nullptr, 10);
+
+				if (val != 0) {
+					if (!_settings_client.gui.timetable_in_ticks) val *= DATE_UNIT_SIZE;
+
+					DoCommandP(0, v->index | (this->schedule_index << 20), val, CMD_SCHEDULED_DISPATCH_ADJUST | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+				}
+				break;
+			}
 		}
 
 		this->SetDirty();
@@ -998,10 +1018,10 @@ static const NWidgetPart _nested_schdispatch_widgets[] = {
 		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 			NWidget(NWID_VERTICAL, NC_EQUALSIZE),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_ADD), SetDataTip(STR_SCHDISPATCH_ADD, STR_SCHDISPATCH_ADD_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
-				NWidget(NWID_SPACER), SetFill(1, 1),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_ADJUST), SetDataTip(STR_SCHDISPATCH_ADJUST, STR_SCHDISPATCH_ADJUST_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
 			EndContainer(),
 			NWidget(NWID_VERTICAL, NC_EQUALSIZE),
-					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_SET_DURATION), SetDataTip(STR_SCHDISPATCH_DURATION, STR_SCHDISPATCH_DURATION_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_SET_DURATION), SetDataTip(STR_SCHDISPATCH_DURATION, STR_SCHDISPATCH_DURATION_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_SET_START_DATE), SetDataTip(STR_SCHDISPATCH_START, STR_SCHDISPATCH_START_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
 			EndContainer(),
 			NWidget(NWID_VERTICAL, NC_EQUALSIZE),

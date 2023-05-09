@@ -298,6 +298,7 @@ CommandProc CmdScheduledDispatchRemoveSchedule;
 CommandProc CmdScheduledDispatchRenameSchedule;
 CommandProc CmdScheduledDispatchDuplicateSchedule;
 CommandProc CmdScheduledDispatchAppendVehicleSchedules;
+CommandProc CmdScheduledDispatchAdjust;
 
 CommandProc CmdAddPlan;
 CommandProcEx CmdAddPlanLine;
@@ -557,6 +558,7 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdScheduledDispatchRenameSchedule,                0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SCHEDULED_DISPATCH_RENAME_SCHEDULE
 	DEF_CMD(CmdScheduledDispatchDuplicateSchedule,             0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SCHEDULED_DISPATCH_DUPLICATE_SCHEDULE
 	DEF_CMD(CmdScheduledDispatchAppendVehicleSchedules,        0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SCHEDULED_DISPATCH_APPEND_VEHICLE_SCHEDULE
+	DEF_CMD(CmdScheduledDispatchAdjust,                        0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SCHEDULED_DISPATCH_ADJUST
 
 	DEF_CMD(CmdAddPlan,                              CMD_NO_TEST, CMDT_OTHER_MANAGEMENT      ), // CMD_ADD_PLAN
 	DEF_CMD(CmdAddPlanLine,                          CMD_NO_TEST, CMDT_OTHER_MANAGEMENT      ), // CMD_ADD_PLAN_LINE
