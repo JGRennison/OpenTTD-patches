@@ -2,19 +2,7 @@
 STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Autorenew failed on {VEHICLE}{}{STRING1}
 STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}The NewGRF "{RAW_STRING}" has returned a fatal error: {}{STRING7}
 STR_NEWGRF_ERROR_POPUP                                          :{WHITE}The NewGRF "{RAW_STRING}" has returned an error: {}{STRING7}
-STR_ORDER_TEXT                                                  :{STRING6} {STRING4} {STRING}
-STR_TIMETABLE_TRAVEL_FOR                                        :Travel for {STRING3}
-STR_TIMETABLE_TRAVEL_FOR_SPEED                                  :Travel for {STRING3} with at most {VELOCITY}
-STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Travel (for {STRING3}, not timetabled)
-STR_TIMETABLE_TRAVEL_FOR_SPEED_ESTIMATED                        :Travel (for {STRING3}, not timetabled) with at most {VELOCITY}
-STR_TIMETABLE_STAY_FOR_ESTIMATED                                :(stay for {STRING3}, not timetabled)
-STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED                          :(travel for {STRING3}, not timetabled)
-STR_TIMETABLE_STAY_FOR                                          :and stay for {STRING3}
-STR_TIMETABLE_AND_TRAVEL_FOR                                    :and travel for {STRING3}
-STR_TIMETABLE_TOTAL_TIME                                        :{BLACK}This timetable will take {STRING3} to complete
-STR_TIMETABLE_TOTAL_TIME_INCOMPLETE                             :{BLACK}This timetable will take at least {STRING3} to complete (not all timetabled)
-STR_TIMETABLE_STATUS_LATE                                       :{BLACK}This vehicle is currently running {STRING3} late
-STR_TIMETABLE_STATUS_EARLY                                      :{BLACK}This vehicle is currently running {STRING3} early
+STR_ORDER_TEXT                                                  :{STRING6} {STRING2} {STRING}
 ##override off
 
 ##after STR_CONFIG_SETTING_TREE_PLACER_IMPROVED
@@ -1391,8 +1379,8 @@ STR_VEHICLE_LIST_LENGTH                                         :{STRING2}, Leng
 STR_VEHICLE_LIST_TIME_TO_LIVE                                   :{STRING2}, Lifetime: {COMMA} year{P "" s} remaining
 STR_VEHICLE_LIST_TIME_TO_LIVE_RED                               :{STRING2}, Lifetime: {RED}{COMMA} {BLACK}year{P "" s} remaining
 STR_VEHICLE_LIST_TIME_TO_LIVE_OVERDUE                           :{STRING2}, Lifetime: {RED}{COMMA} {BLACK}year{P "" s} overdue
-STR_VEHICLE_LIST_TIMETABLE_DELAY_LATE                           :{STRING2}, Timetable status: {RED}{STRING3} late
-STR_VEHICLE_LIST_TIMETABLE_DELAY_EARLY                          :{STRING2}, Timetable status: {STRING3} early
+STR_VEHICLE_LIST_TIMETABLE_DELAY_LATE                           :{STRING2}, Timetable status: {RED}{STRING1} late
+STR_VEHICLE_LIST_TIMETABLE_DELAY_EARLY                          :{STRING2}, Timetable status: {STRING1} early
 STR_VEHICLE_LIST_TIMETABLE_DELAY_ON_TIME                        :{STRING2}, Timetable status: On time
 STR_VEHICLE_LIST_ORDER_OCCUPANCY_AVERAGE                        :{STRING2}, Average order occupancy: {COMMA}%
 
@@ -1634,7 +1622,7 @@ STR_TIMETABLE_HOURS_MINUTES                                     :{COMMA}{NBSP}ho
 
 STR_TIMETABLE_LEFTOVER_TICKS                                    :{STRING1} + {COMMA} tick{P "" s}
 
-STR_TIMETABLE_MINUTES_LONG                                      :{COMMA}{NBSP}minute{P "" s} ({STRING2}){STRING3}
+STR_TIMETABLE_MINUTES_LONG                                      :{COMMA}{NBSP}minute{P "" s} ({STRING2})
 STR_TIMETABLE_AUTOMATE                                          :{BLACK}Automate
 STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}Manage the timetables automatically by updating the values for each journey
 
@@ -1817,6 +1805,9 @@ STR_JUST_STRING2                                                :{STRING2}
 STR_JUST_STRING3                                                :{STRING3}
 
 STR_JUST_VELOCITY                                               :{VELOCITY}
+
+STR_JUST_TT_TICKS                                               :{TT_TICKS}
+STR_JUST_TT_TICKS_LONG                                          :{TT_TICKS_LONG}
 
 STR_BLACK_DECIMAL                                               :{BLACK}{DECIMAL}
 STR_WHITE_DATE_WALLCLOCK_LONG                                   :{WHITE}{DATE_WALLCLOCK_LONG}
@@ -2038,9 +2029,9 @@ STR_ERROR_CAN_T_RENAME_SCHEDULE                                 :{WHITE}Can't na
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}Last departure at {DATE_WALLCLOCK_TINY}.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}Last departure has not left yet, it will depart at {DATE_WALLCLOCK_TINY}.
 STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}This schedule requires {COMMA} vehicle{P "" s}.
-STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}This schedule repeats every {STRING8}.
+STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}This schedule repeats every {STRING1}.
 STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}This schedule began at {DATE_WALLCLOCK_TINY}, and ends at {DATE_WALLCLOCK_TINY}.
-STR_SCHDISPATCH_SUMMARY_L4                                      :{BLACK}Maximum delay of {STRING3} is allowed before the slot is skipped.
+STR_SCHDISPATCH_SUMMARY_L4                                      :{BLACK}Maximum delay of {STRING1} is allowed before the slot is skipped.
 STR_SCHDISPATCH_SUMMARY_NOT_ENABLED                             :{BLACK}This schedule is not active.
 
 STR_SCHDISPATCH_SLOT_OUTSIDE_SCHEDULE                           :{BLACK}One or more departure slots are outside the schedule duration.

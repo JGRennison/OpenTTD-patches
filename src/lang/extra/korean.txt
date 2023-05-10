@@ -1583,7 +1583,7 @@ STR_TIMETABLE_HOURS_MINUTES                                     :{COMMA}시간 {
 
 STR_TIMETABLE_LEFTOVER_TICKS                                    :{STRING} + {COMMA} 틱
 
-STR_TIMETABLE_MINUTES_LONG                                      :{COMMA}분 ({STRING}){STRING}
+STR_TIMETABLE_MINUTES_LONG                                      :{COMMA}분 ({STRING})
 STR_TIMETABLE_AUTOMATE                                          :{BLACK}자동
 STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}각 운행마다 자동으로 값을 얻어 시간표를 만듭니다.
 

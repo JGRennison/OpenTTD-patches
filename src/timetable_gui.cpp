@@ -58,35 +58,8 @@ struct TimetableArrivalDeparture {
  */
 void SetTimetableParams(int first_param, Ticks ticks, bool long_mode)
 {
-	if (_settings_client.gui.timetable_in_ticks) {
-		SetDParam(first_param, STR_TIMETABLE_TICKS);
-		SetDParam(first_param + 1, ticks);
-	} else {
-		StringID str = _settings_time.time_in_minutes ? STR_TIMETABLE_MINUTES : STR_TIMETABLE_DAYS;
-		size_t ratio = DATE_UNIT_SIZE;
-		size_t units = ticks / ratio;
-		size_t leftover = ticks % ratio;
-		if (long_mode && _settings_time.time_in_minutes && units > 59) {
-			SetDParam(first_param, STR_TIMETABLE_MINUTES_LONG);
-			SetDParam(first_param + 1, units);
-			size_t hours = units / 60;
-			size_t minutes = units % 60;
-			SetDParam(first_param + 2, (minutes != 0) ? STR_TIMETABLE_HOURS_MINUTES : STR_TIMETABLE_HOURS);
-			SetDParam(first_param + 3, hours);
-			SetDParam(first_param + 4, minutes);
-			str = STR_EMPTY;
-			first_param += 5;
-		}
-		if (leftover && _settings_client.gui.timetable_leftover_ticks) {
-			SetDParam(first_param, STR_TIMETABLE_LEFTOVER_TICKS);
-			SetDParam(first_param + 1, str);
-			SetDParam(first_param + 2, units);
-			SetDParam(first_param + 3, leftover);
-		} else {
-			SetDParam(first_param, str);
-			SetDParam(first_param + 1, units);
-		}
-	}
+	SetDParam(first_param, long_mode ? STR_JUST_TT_TICKS_LONG : STR_JUST_TT_TICKS);
+	SetDParam(first_param + 1, ticks);
 }
 
 /**
@@ -720,7 +693,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 							string = order->GetMaxSpeed() != UINT16_MAX ?
 									STR_TIMETABLE_TRAVEL_FOR_SPEED : STR_TIMETABLE_TRAVEL_FOR;
 						}
-						SetDParam(string == STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED ? 2 : 4, PackVelocity(order->GetMaxSpeed(), v->type));
+						SetDParam(2, PackVelocity(order->GetMaxSpeed(), v->type));
 
 						int edge = DrawString(rtl ? tr.left : middle, rtl ? middle : tr.right, tr.top, string, colour);
 

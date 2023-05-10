@@ -1552,7 +1552,7 @@ STR_TIMETABLE_HOURS_MINUTES                                     :{COMMA}{NBSP}�
 
 STR_TIMETABLE_LEFTOVER_TICKS                                    :{STRING} + {COMMA} 刻
 
-STR_TIMETABLE_MINUTES_LONG                                      :{COMMA}{NBSP}分（{STRING}）{STRING}
+STR_TIMETABLE_MINUTES_LONG                                      :{COMMA}{NBSP}分（{STRING})
 STR_TIMETABLE_AUTOMATE                                          :{BLACK}自动
 STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}通过更新每次运行的值来自动管理时间表
 

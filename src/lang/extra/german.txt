@@ -1471,7 +1471,7 @@ STR_TIMETABLE_HOURS_MINUTES                                     :{COMMA}{NBSP}St
 
 STR_TIMETABLE_LEFTOVER_TICKS                                    :{STRING} + {COMMA} Tick{P "" s}
 
-STR_TIMETABLE_MINUTES_LONG                                      :{COMMA}{NBSP}Minute{P "" n} ({STRING}){STRING}
+STR_TIMETABLE_MINUTES_LONG                                      :{COMMA}{NBSP}Minute{P "" n} ({STRING})
 STR_TIMETABLE_AUTOMATE                                          :{BLACK}Automatisieren
 STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}Verwaltet den Fahrplan durch automatisches Erfassen der Werte jeder Fahrt
 

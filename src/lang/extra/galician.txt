@@ -1578,7 +1578,7 @@ STR_TIMETABLE_HOURS_MINUTES                                     :{COMMA}{NBSP}ho
 
 STR_TIMETABLE_LEFTOVER_TICKS                                    :{STRING} + {COMMA} tick{P "" s}
 
-STR_TIMETABLE_MINUTES_LONG                                      :{COMMA}{NBSP}minuto{P "" s} ({STRING}){STRING}
+STR_TIMETABLE_MINUTES_LONG                                      :{COMMA}{NBSP}minuto{P "" s} ({STRING})
 STR_TIMETABLE_AUTOMATE                                          :{BLACK}Automatizar
 STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}Xestiona os horarios automáticamente actualizando os valores para cada viaxe
 

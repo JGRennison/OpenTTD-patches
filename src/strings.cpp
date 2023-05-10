@@ -1573,18 +1573,33 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				buff = FormatTimeHHMMString(buff, args->GetInt64(SCC_TIME_HHMM), last, next_substr_case_index);
 				break;
 
-			case SCC_TT_TICKS: // {TT_TICKS}
+			case SCC_TT_TICKS:      // {TT_TICKS}
+			case SCC_TT_TICKS_LONG: // {TT_TICKS_LONG}
 				if (_settings_client.gui.timetable_in_ticks) {
-					int64 args_array[1] = { args->GetInt64(SCC_TT_TICKS) };
+					int64 args_array[1] = { args->GetInt64(b) };
 					StringParameters tmp_params(args_array);
 					buff = FormatString(buff, GetStringPtr(STR_TIMETABLE_TICKS), &tmp_params, last);
 				} else {
 					StringID str = _settings_time.time_in_minutes ? STR_TIMETABLE_MINUTES : STR_TIMETABLE_DAYS;
-					int64 ticks = args->GetInt64(SCC_TT_TICKS);
+					int64 ticks = args->GetInt64(b);
 					int64 ratio = DATE_UNIT_SIZE;
 					int64 units = ticks / ratio;
-					int64 leftover = ticks % ratio;
-					if (leftover) {
+					int64 leftover = _settings_client.gui.timetable_leftover_ticks ? ticks % ratio : 0;
+					if (b == SCC_TT_TICKS_LONG && _settings_time.time_in_minutes && units > 59) {
+						int64 hours = units / 60;
+						int64 minutes = units % 60;
+						int64 args_array[4] = {
+							units,
+							(minutes != 0) ? STR_TIMETABLE_HOURS_MINUTES : STR_TIMETABLE_HOURS,
+							hours,
+							minutes
+						};
+						StringParameters tmp_params(args_array);
+						buff = FormatString(buff, GetStringPtr(STR_TIMETABLE_MINUTES_LONG), &tmp_params, last);
+						if (leftover == 0) break;
+						str = STR_EMPTY;
+					}
+					if (leftover != 0) {
 						int64 args_array[3] = { str, units, leftover };
 						StringParameters tmp_params(args_array);
 						buff = FormatString(buff, GetStringPtr(STR_TIMETABLE_LEFTOVER_TICKS), &tmp_params, last);
