@@ -1596,17 +1596,15 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 						};
 						StringParameters tmp_params(args_array);
 						buff = FormatString(buff, GetStringPtr(STR_TIMETABLE_MINUTES_LONG), &tmp_params, last);
-						if (leftover == 0) break;
-						str = STR_EMPTY;
-					}
-					if (leftover != 0) {
-						int64 args_array[3] = { str, units, leftover };
-						StringParameters tmp_params(args_array);
-						buff = FormatString(buff, GetStringPtr(STR_TIMETABLE_LEFTOVER_TICKS), &tmp_params, last);
 					} else {
 						int64 args_array[1] = { units };
 						StringParameters tmp_params(args_array);
 						buff = FormatString(buff, GetStringPtr(str), &tmp_params, last);
+					}
+					if (leftover != 0) {
+						int64 args_array[1] = { leftover };
+						StringParameters tmp_params(args_array);
+						buff = FormatString(buff, GetStringPtr(STR_TIMETABLE_LEFTOVER_TICKS), &tmp_params, last);
 					}
 				}
 				break;

@@ -1576,7 +1576,7 @@ STR_TIMETABLE_MINUTES                                           :{COMMA}{NBSP}mi
 STR_TIMETABLE_HOURS                                             :{COMMA}{NBSP}hora{P "" s}
 STR_TIMETABLE_HOURS_MINUTES                                     :{COMMA}{NBSP}hora{P "" s} e {COMMA}{NBSP}minuto{P "" s}
 
-STR_TIMETABLE_LEFTOVER_TICKS                                    :{STRING} + {COMMA} tick{P "" s}
+STR_TIMETABLE_LEFTOVER_TICKS                                    : + {COMMA} tick{P "" s}
 
 STR_TIMETABLE_MINUTES_LONG                                      :{COMMA}{NBSP}minuto{P "" s} ({STRING})
 STR_TIMETABLE_AUTOMATE                                          :{BLACK}Automatizar

@@ -1550,7 +1550,7 @@ STR_TIMETABLE_MINUTES                                           :{COMMA}{NBSP}�
 STR_TIMETABLE_HOURS                                             :{COMMA}{NBSP}时
 STR_TIMETABLE_HOURS_MINUTES                                     :{COMMA}{NBSP}时{COMMA}{NBSP}分
 
-STR_TIMETABLE_LEFTOVER_TICKS                                    :{STRING} + {COMMA} 刻
+STR_TIMETABLE_LEFTOVER_TICKS                                    : + {COMMA} 刻
 
 STR_TIMETABLE_MINUTES_LONG                                      :{COMMA}{NBSP}分（{STRING})
 STR_TIMETABLE_AUTOMATE                                          :{BLACK}自动

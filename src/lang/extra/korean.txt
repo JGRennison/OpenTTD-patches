@@ -1581,7 +1581,7 @@ STR_TIMETABLE_MINUTES                                           :{COMMA}분
 STR_TIMETABLE_HOURS                                             :{COMMA}시간
 STR_TIMETABLE_HOURS_MINUTES                                     :{COMMA}시간 {COMMA}분
 
-STR_TIMETABLE_LEFTOVER_TICKS                                    :{STRING} + {COMMA} 틱
+STR_TIMETABLE_LEFTOVER_TICKS                                    : + {COMMA} 틱
 
 STR_TIMETABLE_MINUTES_LONG                                      :{COMMA}분 ({STRING})
 STR_TIMETABLE_AUTOMATE                                          :{BLACK}자동
