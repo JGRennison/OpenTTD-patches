@@ -2811,8 +2811,11 @@ struct GameSettingsWindow : Window {
 
 				this->valuewindow_entry = pe;
 				if (sd->flags & SF_DECIMAL1 || (sd->flags & SF_GUI_VELOCITY && _settings_game.locale.units_velocity == 3)) {
+					CharSetFilter charset_filter = CS_NUMERAL_DECIMAL; //default, only numeric input and decimal point allowed
+					if (sd->min < 0) charset_filter = CS_NUMERAL_DECIMAL_SIGNED; // special case, also allow '-' sign for negative input
+
 					SetDParam(0, value64);
-					ShowQueryString(STR_JUST_DECIMAL1, STR_CONFIG_SETTING_QUERY_CAPTION, 10, this, CS_NUMERAL_DECIMAL, QSF_ENABLE_DEFAULT);
+					ShowQueryString(STR_JUST_DECIMAL1, STR_CONFIG_SETTING_QUERY_CAPTION, 10, this, charset_filter, QSF_ENABLE_DEFAULT);
 				} else {
 					CharSetFilter charset_filter = CS_NUMERAL; //default, only numeric input allowed
 					if (sd->min < 0) charset_filter = CS_NUMERAL_SIGNED; // special case, also allow '-' sign for negative input
