@@ -1619,10 +1619,10 @@ STR_ORDER_RELEASE_SLOT                                          :Release slot: {
 STR_TIMETABLE_MINUTES                                           :{COMMA}{NBSP}minute{P "" s}
 STR_TIMETABLE_HOURS                                             :{COMMA}{NBSP}hour{P "" s}
 STR_TIMETABLE_HOURS_MINUTES                                     :{COMMA}{NBSP}hour{P "" s} and {COMMA}{NBSP}minute{P "" s}
+STR_TIMETABLE_MINUTES_SUFFIX                                    : ({STRING2})
 
 STR_TIMETABLE_LEFTOVER_TICKS                                    : + {COMMA} tick{P "" s}
 
-STR_TIMETABLE_MINUTES_LONG                                      :{COMMA}{NBSP}minute{P "" s} ({STRING2})
 STR_TIMETABLE_AUTOMATE                                          :{BLACK}Automate
 STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}Manage the timetables automatically by updating the values for each journey
 

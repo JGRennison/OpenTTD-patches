@@ -1585,21 +1585,19 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 					int64 ratio = DATE_UNIT_SIZE;
 					int64 units = ticks / ratio;
 					int64 leftover = _settings_client.gui.timetable_leftover_ticks ? ticks % ratio : 0;
+					int64 args_array[1] = { units };
+					StringParameters tmp_params(args_array);
+					buff = FormatString(buff, GetStringPtr(str), &tmp_params, last);
 					if (b == SCC_TT_TICKS_LONG && _settings_time.time_in_minutes && units > 59) {
 						int64 hours = units / 60;
 						int64 minutes = units % 60;
-						int64 args_array[4] = {
-							units,
+						int64 args_array[3] = {
 							(minutes != 0) ? STR_TIMETABLE_HOURS_MINUTES : STR_TIMETABLE_HOURS,
 							hours,
 							minutes
 						};
 						StringParameters tmp_params(args_array);
-						buff = FormatString(buff, GetStringPtr(STR_TIMETABLE_MINUTES_LONG), &tmp_params, last);
-					} else {
-						int64 args_array[1] = { units };
-						StringParameters tmp_params(args_array);
-						buff = FormatString(buff, GetStringPtr(str), &tmp_params, last);
+						buff = FormatString(buff, GetStringPtr(STR_TIMETABLE_MINUTES_SUFFIX), &tmp_params, last);
 					}
 					if (leftover != 0) {
 						int64 args_array[1] = { leftover };

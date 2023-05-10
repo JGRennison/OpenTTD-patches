@@ -1468,10 +1468,10 @@ STR_ORDER_RELEASE_SLOT                                          :Gib Slot {STRIN
 STR_TIMETABLE_MINUTES                                           :{COMMA}{NBSP}Minute{P "" n}
 STR_TIMETABLE_HOURS                                             :{COMMA}{NBSP}Stunde{P "" n}
 STR_TIMETABLE_HOURS_MINUTES                                     :{COMMA}{NBSP}Stunde{P "" n} und {COMMA}{NBSP}Minute{P "" n}
+STR_TIMETABLE_MINUTES_SUFFIX                                    : ({STRING})
 
 STR_TIMETABLE_LEFTOVER_TICKS                                    : + {COMMA} Tick{P "" s}
 
-STR_TIMETABLE_MINUTES_LONG                                      :{COMMA}{NBSP}Minute{P "" n} ({STRING})
 STR_TIMETABLE_AUTOMATE                                          :{BLACK}Automatisieren
 STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}Verwaltet den Fahrplan durch automatisches Erfassen der Werte jeder Fahrt
 
