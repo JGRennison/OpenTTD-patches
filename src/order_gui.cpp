@@ -2988,6 +2988,7 @@ public:
 			case WID_O_COND_VALUE: {
 				const Order *order = this->vehicle->GetOrder(this->OrderGetSel());
 				uint value;
+				CharSetFilter charset_filter = CS_NUMERAL;
 				switch (order->GetConditionVariable()) {
 					case OCV_CARGO_LOAD_PERCENTAGE:
 					case OCV_TIME_DATE:
@@ -2996,7 +2997,10 @@ public:
 
 					case OCV_TIMETABLE:
 						value = order->GetXData();
-						if (!_settings_client.gui.timetable_in_ticks) value /= DATE_UNIT_SIZE;
+						if (!_settings_client.gui.timetable_in_ticks) {
+							value /= DATE_UNIT_SIZE;
+							charset_filter = CS_NUMERAL_DECIMAL;
+						}
 						break;
 
 					case OCV_CARGO_WAITING_AMOUNT:
@@ -3012,7 +3016,7 @@ public:
 				if (order->GetConditionVariable() == OCV_CARGO_WAITING_AMOUNT) value = ConvertCargoQuantityToDisplayQuantity(order->GetConditionValue(), value);
 				this->query_text_widget = widget;
 				SetDParam(0, value);
-				ShowQueryString(STR_JUST_INT, STR_ORDER_CONDITIONAL_VALUE_CAPT, (order->GetConditionVariable() == OCV_CARGO_WAITING_AMOUNT) ? 12 : 6, this, CS_NUMERAL, QSF_NONE);
+				ShowQueryString(STR_JUST_INT, STR_ORDER_CONDITIONAL_VALUE_CAPT, (order->GetConditionVariable() == OCV_CARGO_WAITING_AMOUNT) ? 12 : 6, this, charset_filter, QSF_NONE);
 				break;
 			}
 
@@ -3118,10 +3122,10 @@ public:
 					value = Clamp(value, 0, 0xFFFF);
 					break;
 
-				case OCV_TIMETABLE:
-					if (!_settings_client.gui.timetable_in_ticks) value *= DATE_UNIT_SIZE;
-					value = Clamp(value, 0, 0xFFFF);
+				case OCV_TIMETABLE: {
+					value = Clamp(ParseTimetableDuration(str), 0, 0xFFFF);
 					break;
+				}
 
 				default:
 					value = Clamp(value, 0, 2047);

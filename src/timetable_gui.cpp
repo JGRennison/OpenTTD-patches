@@ -62,6 +62,20 @@ void SetTimetableParams(int first_param, Ticks ticks, bool long_mode)
 	SetDParam(first_param + 1, ticks);
 }
 
+Ticks ParseTimetableDuration(const char *str)
+{
+	if (StrEmpty(str)) return 0;
+
+	if (_settings_client.gui.timetable_in_ticks) {
+		return strtoul(str, nullptr, 10);
+	}
+
+	char tmp_buffer[64];
+	strecpy(tmp_buffer, str, lastof(tmp_buffer));
+	str_replace_wchar(tmp_buffer, lastof(tmp_buffer), GetDecimalSeparatorChar(), '.');
+	return atof(tmp_buffer) * DATE_UNIT_SIZE;
+}
+
 /**
  * Check whether it is possible to determine how long the order takes.
  * @param order the order to check.
@@ -392,8 +406,6 @@ struct TimetableWindow : GeneralVehicleWindow {
 	{
 		switch (widget) {
 			case WID_VT_ARRIVAL_DEPARTURE_PANEL:
-				SetDParamMaxValue(0, MAX_YEAR * DAYS_IN_YEAR, 0, FS_SMALL);
-				this->deparr_time_width = GetStringBoundingBox(STR_JUST_DATE_TINY).width;
 				SetDParamMaxValue(0, _settings_time.time_in_minutes ? 0 : MAX_YEAR * DAYS_IN_YEAR);
 				this->deparr_time_width = GetStringBoundingBox(STR_JUST_DATE_WALLCLOCK_TINY).width + 4;
 				this->deparr_abbr_width = std::max(GetStringBoundingBox(STR_TIMETABLE_ARRIVAL_ABBREVIATION).width, GetStringBoundingBox(STR_TIMETABLE_DEPARTURE_ABBREVIATION).width);
@@ -925,7 +937,8 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 				this->query_is_speed_query = false;
 				this->change_timetable_all = (order != nullptr) && (selected % 2 == 0) && _ctrl_pressed;
-				ShowQueryString(current, STR_TIMETABLE_CHANGE_TIME, 31, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
+				CharSetFilter charset_filter = _settings_client.gui.timetable_in_ticks ? CS_NUMERAL : CS_NUMERAL_DECIMAL;
+				ShowQueryString(current, STR_TIMETABLE_CHANGE_TIME, 31, this, charset_filter, QSF_ACCEPT_UNCHANGED);
 				break;
 			}
 
@@ -1089,14 +1102,13 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 			case WID_VT_CHANGE_SPEED:
 			case WID_VT_CHANGE_TIME: {
-				uint64 val = StrEmpty(str) ? 0 : strtoul(str, nullptr, 10);
 				uint32 p2;
 				if (this->query_is_speed_query) {
-					val = ConvertDisplaySpeedToKmhishSpeed(val, v->type);
+					uint64 display_speed = StrEmpty(str) ? 0 : strtoul(str, nullptr, 10);
+					uint64 val = ConvertDisplaySpeedToKmhishSpeed(display_speed, v->type);
 					p2 = std::min<uint>(val, UINT16_MAX);
 				} else {
-					if (!_settings_client.gui.timetable_in_ticks) val *= DATE_UNIT_SIZE;
-					p2 = val;
+					p2 = ParseTimetableDuration(str);
 				}
 
 				ExecuteTimetableCommand(v, this->change_timetable_all, this->sel_index, (this->sel_index % 2 == 1) ? (this->query_is_speed_query ? MTF_TRAVEL_SPEED : MTF_TRAVEL_TIME) : MTF_WAIT_TIME, p2, false);

@@ -699,8 +699,9 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 			case WID_SCHDISPATCH_SET_DURATION: {
 				if (!this->IsScheduleSelected()) break;
+				CharSetFilter charset_filter = _settings_client.gui.timetable_in_ticks ? CS_NUMERAL : CS_NUMERAL_DECIMAL;
 				SetDParam(0, ProcessDurationForQueryString(this->GetSelectedSchedule().GetScheduledDispatchDuration()));
-				ShowQueryString(STR_JUST_INT, STR_SCHDISPATCH_DURATION_CAPTION_MINUTE + this->GetQueryStringCaptionOffset(), 31, this, CS_NUMERAL, QSF_NONE);
+				ShowQueryString(STR_JUST_INT, STR_SCHDISPATCH_DURATION_CAPTION_MINUTE + this->GetQueryStringCaptionOffset(), 31, this, charset_filter, QSF_NONE);
 				break;
 			}
 
@@ -722,8 +723,9 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 			case WID_SCHDISPATCH_SET_DELAY: {
 				if (!this->IsScheduleSelected()) break;
+				CharSetFilter charset_filter = _settings_client.gui.timetable_in_ticks ? CS_NUMERAL : CS_NUMERAL_DECIMAL;
 				SetDParam(0, ProcessDurationForQueryString(this->GetSelectedSchedule().GetScheduledDispatchDelay()));
-				ShowQueryString(STR_JUST_INT, STR_SCHDISPATCH_DELAY_CAPTION_MINUTE + this->GetQueryStringCaptionOffset(), 31, this, CS_NUMERAL, QSF_NONE);
+				ShowQueryString(STR_JUST_INT, STR_SCHDISPATCH_DELAY_CAPTION_MINUTE + this->GetQueryStringCaptionOffset(), 31, this, charset_filter, QSF_NONE);
 				break;
 			}
 
@@ -769,8 +771,9 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 			case WID_SCHDISPATCH_ADJUST:
 				if (!this->IsScheduleSelected()) break;
+				CharSetFilter charset_filter = _settings_client.gui.timetable_in_ticks ? CS_NUMERAL_SIGNED : CS_NUMERAL_DECIMAL_SIGNED;
 				SetDParam(0, 0);
-				ShowQueryString(STR_JUST_INT, STR_SCHDISPATCH_ADJUST_CAPTION_MINUTE + this->GetQueryStringCaptionOffset(), 31, this, CS_NUMERAL_SIGNED, QSF_NONE);
+				ShowQueryString(STR_JUST_INT, STR_SCHDISPATCH_ADJUST_CAPTION_MINUTE + this->GetQueryStringCaptionOffset(), 31, this, charset_filter, QSF_NONE);
 				break;
 		}
 
@@ -885,11 +888,9 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 			case WID_SCHDISPATCH_SET_DURATION: {
 				if (!this->IsScheduleSelected()) break;
-				int32 val = StrEmpty(str) ? 0 : strtoul(str, nullptr, 10);
+				Ticks val = ParseTimetableDuration(str);
 
 				if (val > 0) {
-					if (!_settings_client.gui.timetable_in_ticks) val *= DATE_UNIT_SIZE;
-
 					DoCommandP(0, v->index | (this->schedule_index << 20), val, CMD_SCHEDULED_DISPATCH_SET_DURATION | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 				}
 				break;
@@ -900,13 +901,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 				if (StrEmpty(str)) break;
 
-				char *end;
-				int32 val = strtoul(str, &end, 10);
-				if (val >= 0 && end != nullptr && *end == 0) {
-					if (!_settings_client.gui.timetable_in_ticks) val *= DATE_UNIT_SIZE;
-
-					DoCommandP(0, v->index | (this->schedule_index << 20), val, CMD_SCHEDULED_DISPATCH_SET_DELAY | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
-				}
+				DoCommandP(0, v->index | (this->schedule_index << 20), ParseTimetableDuration(str), CMD_SCHEDULED_DISPATCH_SET_DELAY | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 				break;
 			}
 
@@ -919,11 +914,9 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 			case WID_SCHDISPATCH_ADJUST: {
 				if (!this->IsScheduleSelected()) break;
-				int32 val = StrEmpty(str) ? 0 : strtol(str, nullptr, 10);
+				Ticks val = ParseTimetableDuration(str);
 
 				if (val != 0) {
-					if (!_settings_client.gui.timetable_in_ticks) val *= DATE_UNIT_SIZE;
-
 					DoCommandP(0, v->index | (this->schedule_index << 20), val, CMD_SCHEDULED_DISPATCH_ADJUST | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 				}
 				break;

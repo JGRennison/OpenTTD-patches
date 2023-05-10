@@ -18,6 +18,7 @@
 void ShowTimetableWindow(const Vehicle *v);
 void UpdateVehicleTimetable(Vehicle *v, bool travelling);
 void SetTimetableParams(int first_param, Ticks ticks, bool long_mode = false);
+Ticks ParseTimetableDuration(const char *str);
 void SetTimetableWindowsDirty(const Vehicle *v, bool include_scheduled_dispatch = false);
 
 struct TimetableProgress {
