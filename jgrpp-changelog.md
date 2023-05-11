@@ -2,6 +2,26 @@
 
 * * *
 
+### v0.53.2 (2023-05-11)
+* Fix crash when clicking the goto dropdown in the order window when a departure board via order is selected.
+* Fix rail platforms being left partially reserved after removing a train (due to a crash or company bankruptcy).
+* Fix not being able to manually plant multiple trees on a tile in the artic climate when using the "perfect" tree placement algorithm.
+* Add setting to select the cargo payment algorithm.
+* Add routing restriction button to duplicate instruction or block.
+* Add vehicle window toggle to show vehicle route overlays even when the window is not focused.
+* Allow entering decimal day and minute values for timetable durations.
+* Rail types:
+  * Fix not being permitted to convert the rail type of tunnels/bridges occupied by trains compatible with the target rail type.
+  * Allow converting the rail type of tiles by individual track pieces/segments, instead of whole tiles (e.g. for diagonal track).
+  * Fix map mode viewports not being updated when converting the rail type of tiles changed the transport type colour.
+* Scheduled dispatch:
+  * Allow naming scheduled dispatch schedules.
+  * Allow duplicating dispatch schedules.
+  * Allow appending the dispatch schedules from another vehicle.
+  * Allow adjusting all departure slots in a dispatch schedule by a time offset.
+* Fix alignment of house sprites in the house placement window in the scenario editor when using UI scaling.
+* Add departure board via order sub-type to remove via for prior terminus, for use with smart terminus detection.
+
 ### v0.53.1 (2023-04-25)
 * Fix width of station cargo graph window.
 * Fix incorrect accounting of cargo time in transit values.
