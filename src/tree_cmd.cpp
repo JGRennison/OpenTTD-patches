@@ -564,23 +564,10 @@ CommandCost CmdPlantTree(TileIndex end_tile, DoCommandFlag flags, uint32 p1, uin
 		TileIndex tile = *iter;
 		switch (GetTileType(tile)) {
 			case MP_TREES: {
-				bool grow_existing_tree_instead = false;
-
 				/* no more space for trees? */
-				if (_settings_game.game_creation.tree_placer == TP_PERFECT) {
-					if (GetTreeCount(tile) >= 4 || ((GetTreeType(tile) != TREE_CACTUS) && ((int)GetTreeCount(tile) >= MaxTreeCount(tile)))) {
-						if (GetTreeGrowth(tile) < 3) {
-							grow_existing_tree_instead = true;
-						} else {
-							msg = STR_ERROR_TREE_ALREADY_HERE;
-							continue;
-						}
-					}
-				} else {
-					if (GetTreeCount(tile) == 4) {
-						msg = STR_ERROR_TREE_ALREADY_HERE;
-						continue;
-					}
+				if (GetTreeCount(tile) == 4) {
+					msg = STR_ERROR_TREE_ALREADY_HERE;
+					continue;
 				}
 
 				/* Test tree limit. */
@@ -590,11 +577,7 @@ CommandCost CmdPlantTree(TileIndex end_tile, DoCommandFlag flags, uint32 p1, uin
 				}
 
 				if (flags & DC_EXEC) {
-					if (grow_existing_tree_instead) {
-						SetTreeGrowth(tile, 3);
-					} else {
-						AddTreeCount(tile, 1);
-					}
+					AddTreeCount(tile, 1);
 					MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE_NON_VEG);
 					if (c != nullptr) c->tree_limit -= 1 << 16;
 				}
