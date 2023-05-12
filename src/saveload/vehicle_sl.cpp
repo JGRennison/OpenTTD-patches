@@ -956,8 +956,9 @@ SaveLoadTable GetVehicleDescription(VehicleType vt)
 		SLE_CONDNULL(5,                                                            SL_MIN_VERSION,  SLV_58),
 		     SLE_VAR(Vehicle, owner,                 SLE_UINT8),
 		     SLE_VAR(Vehicle, vehstatus,             SLE_UINT8),
-		 SLE_CONDVAR(Vehicle, current_order.dest,    SLE_FILE_U8 | SLE_VAR_U16,    SL_MIN_VERSION,   SLV_5),
-		 SLE_CONDVAR(Vehicle, current_order.dest,    SLE_UINT16,                   SLV_5, SL_MAX_VERSION),
+		SLE_CONDVAR_X(Vehicle, current_order.dest,    SLE_FILE_U8 | SLE_VAR_U16,    SL_MIN_VERSION,          SLV_5, SlXvFeatureTest(XSLFTO_AND, XSLFI_DISASTER_VEH_STATE, 0, 0)),
+		SLE_CONDVAR_X(Vehicle, current_order.dest,    SLE_UINT16,                            SLV_5, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_DISASTER_VEH_STATE, 0, 0)),
+		SLE_CONDVAR_X(Vehicle, state,                 SLE_UINT16,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_DISASTER_VEH_STATE, 1)),
 
 		     SLE_VAR(Vehicle, sprite_seq.seq[0].sprite, SLE_FILE_U16 | SLE_VAR_U32),
 		 SLE_CONDVAR(Vehicle, age,                   SLE_FILE_U16 | SLE_VAR_I32,   SL_MIN_VERSION,  SLV_31),
