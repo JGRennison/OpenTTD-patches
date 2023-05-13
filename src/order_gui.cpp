@@ -2516,15 +2516,18 @@ public:
 				VehicleOrderID sel = this->OrderGetSel();
 				const Order *order = this->vehicle->GetOrder(sel);
 
-				if (order != nullptr && order->IsType(OT_CONDITIONAL) && GB(order->GetXData(), 0, 16) != UINT16_MAX) {
-					const DispatchSchedule &ds = this->vehicle->orders->GetDispatchScheduleByIndex(GB(order->GetXData(), 0, 16));
-					if (ds.ScheduleName().empty()) {
-						SetDParam(0, STR_TIMETABLE_ASSIGN_SCHEDULE_ID);
-						SetDParam(1, GB(order->GetXData(), 0, 16) + 1);
-					} else {
-						SetDParam(0, STR_JUST_RAW_STRING);
-						SetDParamStr(1, ds.ScheduleName().c_str());
+				uint schedule_index = GB(order->GetXData(), 0, 16);
+				if (order != nullptr && order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() == OCV_DISPATCH_SLOT && schedule_index != UINT16_MAX) {
+					if (schedule_index < this->vehicle->orders->GetScheduledDispatchScheduleCount()) {
+						const DispatchSchedule &ds = this->vehicle->orders->GetDispatchScheduleByIndex(schedule_index);
+						if (!ds.ScheduleName().empty()) {
+							SetDParam(0, STR_JUST_RAW_STRING);
+							SetDParamStr(1, ds.ScheduleName().c_str());
+							break;
+						}
 					}
+					SetDParam(0, STR_TIMETABLE_ASSIGN_SCHEDULE_ID);
+					SetDParam(1, schedule_index + 1);
 				} else {
 					SetDParam(0, STR_TIMETABLE_ASSIGN_SCHEDULE_NONE);
 				}
