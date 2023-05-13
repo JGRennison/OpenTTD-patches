@@ -1250,11 +1250,13 @@ void ShowTimetableWindow(const Vehicle *v)
 	AllocateWindowDescFront<TimetableWindow>(&_timetable_desc, v->index);
 }
 
-void SetTimetableWindowsDirty(const Vehicle *v, bool include_scheduled_dispatch)
+void SetTimetableWindowsDirty(const Vehicle *v, SetTimetableWindowsDirtyFlags flags)
 {
 	v = v->FirstShared();
 	for (Window *w : Window::IterateFromBack()) {
-		if (w->window_class == WC_VEHICLE_TIMETABLE || (include_scheduled_dispatch && w->window_class == WC_SCHDISPATCH_SLOTS)) {
+		if (w->window_class == WC_VEHICLE_TIMETABLE ||
+				((flags & STWDF_SCHEDULED_DISPATCH) && w->window_class == WC_SCHDISPATCH_SLOTS) ||
+				((flags & STWDF_ORDERS) && w->window_class == WC_VEHICLE_ORDERS)) {
 			if (static_cast<GeneralVehicleWindow *>(w)->vehicle->FirstShared() == v) w->SetDirty();
 		}
 	}

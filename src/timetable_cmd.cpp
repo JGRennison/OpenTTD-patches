@@ -105,7 +105,7 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint32 val,
 	v->orders->UpdateTotalDuration(total_delta);
 	v->orders->UpdateTimetableDuration(timetable_delta);
 
-	SetTimetableWindowsDirty(v, mtf == MTF_ASSIGN_SCHEDULE);
+	SetTimetableWindowsDirty(v, (mtf == MTF_ASSIGN_SCHEDULE) ? STWDF_SCHEDULED_DISPATCH : STWDF_NONE);
 
 	for (v = v->FirstShared(); v != nullptr; v = v->NextShared()) {
 		if (v->cur_real_order_index == order_number && v->current_order.Equals(*order)) {
@@ -655,7 +655,7 @@ CommandCost CmdTimetableSeparation(TileIndex tile, DoCommandFlag flags, uint32 p
 			}
 			v2->ClearSeparation();
 		}
-		SetTimetableWindowsDirty(v, true);
+		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 	}
 
 	return CommandCost();

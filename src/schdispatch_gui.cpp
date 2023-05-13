@@ -1256,7 +1256,7 @@ void SchdispatchInvalidateWindows(const Vehicle *v)
 		if (w->window_class == WC_VEHICLE_TIMETABLE) {
 			if (static_cast<GeneralVehicleWindow *>(w)->vehicle->FirstShared() == v) w->SetDirty();
 		}
-		if (w->window_class == WC_SCHDISPATCH_SLOTS) {
+		if (w->window_class == WC_SCHDISPATCH_SLOTS || w->window_class == WC_VEHICLE_ORDERS) {
 			if (static_cast<GeneralVehicleWindow *>(w)->vehicle->FirstShared() == v) w->InvalidateData(VIWD_MODIFY_ORDERS, false);
 		}
 	}
