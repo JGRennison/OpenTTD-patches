@@ -3652,7 +3652,7 @@ private:
 	uint ComputeSlotInfoSize()
 	{
 		this->column_size[VGC_NAME] = GetStringBoundingBox(STR_GROUP_ALL_TRAINS);
-		this->column_size[VGC_NAME].width = std::max(170u, this->column_size[VGC_NAME].width);
+		this->column_size[VGC_NAME].width = std::max((170u * FONT_HEIGHT_NORMAL) / 10u, this->column_size[VGC_NAME].width);
 		this->tiny_step_height = this->column_size[VGC_NAME].height;
 
 		SetDParamMaxValue(0, 9999, 3, FS_SMALL);
