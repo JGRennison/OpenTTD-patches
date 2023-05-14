@@ -2724,7 +2724,7 @@ void UpdateLevelCrossing(TileIndex tile, bool sound, bool force_close)
 	}
 }
 
-void MarkDirtyAdjacentLevelCrossingTilesOnAddRemove(TileIndex tile, Axis road_axis)
+void MarkDirtyAdjacentLevelCrossingTilesOnAdd(TileIndex tile, Axis road_axis)
 {
 	if (!_settings_game.vehicle.adjacent_crossings) return;
 
@@ -2734,6 +2734,29 @@ void MarkDirtyAdjacentLevelCrossingTilesOnAddRemove(TileIndex tile, Axis road_ax
 		const TileIndex t = TileAddByDiagDir(tile, dir);
 		if (t < MapSize() && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == road_axis) {
 			MarkTileDirtyByTile(t, VMDF_NOT_MAP_MODE);
+		}
+	}
+}
+
+void UpdateAdjacentLevelCrossingTilesOnRemove(TileIndex tile, Axis road_axis)
+{
+	const DiagDirection dir1 = AxisToDiagDir(road_axis);
+	const DiagDirection dir2 = ReverseDiagDir(dir1);
+	for (DiagDirection dir : { dir1, dir2 }) {
+		const TileIndexDiff diff = TileOffsByDiagDir(dir);
+		bool occupied = false;
+		for (TileIndex t = tile + diff; IsValidTile(t) && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == road_axis; t += diff) {
+			occupied |= CheckLevelCrossing(t);
+		}
+		if (!occupied) {
+			for (TileIndex t = tile + diff; IsValidTile(t) && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == road_axis; t += diff) {
+				UpdateLevelCrossingTile(t, false, true, false);
+			}
+		} else {
+			const TileIndex t = tile + diff;
+			if (IsValidTile(t) && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == road_axis) {
+				MarkTileDirtyByTile(t, VMDF_NOT_MAP_MODE);
+			}
 		}
 	}
 }
