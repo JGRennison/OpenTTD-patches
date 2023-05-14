@@ -1200,14 +1200,31 @@ struct QueryWindow : public Window {
 	uint64 params[10];       ///< local copy of #_global_string_params
 	StringID message;        ///< message shown for query window
 	StringID caption;        ///< title of window
+	bool precomposed;
+	std::string caption_str;
+	mutable std::string message_str;
 
 	QueryWindow(WindowDesc *desc, StringID caption, StringID message, Window *parent, QueryCallbackProc *callback) : Window(desc)
 	{
 		/* Create a backup of the variadic arguments to strings because it will be
 		 * overridden pretty often. We will copy these back for drawing */
+		this->precomposed = false;
 		CopyOutDParam(this->params, 0, lengthof(this->params));
 		this->caption = caption;
 		this->message = message;
+		this->proc    = callback;
+		this->parent  = parent;
+
+		this->InitNested(WN_CONFIRM_POPUP_QUERY);
+	}
+
+	QueryWindow(WindowDesc *desc, std::string caption, std::string message, Window *parent, QueryCallbackProc *callback) : Window(desc)
+	{
+		this->precomposed = true;
+		this->caption = SPECSTR_TEMP_START;
+		this->message = STR_EMPTY;
+		this->caption_str = std::move(caption);
+		this->message_str = std::move(message);
 		this->proc    = callback;
 		this->parent  = parent;
 
@@ -1231,12 +1248,18 @@ struct QueryWindow : public Window {
 	{
 		switch (widget) {
 			case WID_Q_CAPTION:
-				CopyInDParam(1, this->params, lengthof(this->params));
+				if (this->precomposed) {
+					_temp_special_strings[0] = this->caption_str;
+				} else {
+					CopyInDParam(1, this->params, lengthof(this->params));
+				}
 				SetDParam(0, this->caption);
 				break;
 
 			case WID_Q_TEXT:
-				CopyInDParam(0, this->params, lengthof(this->params));
+				if (!this->precomposed) {
+					CopyInDParam(0, this->params, lengthof(this->params));
+				}
 				break;
 		}
 	}
@@ -1245,7 +1268,9 @@ struct QueryWindow : public Window {
 	{
 		if (widget != WID_Q_TEXT) return;
 
-		Dimension d = GetStringMultiLineBoundingBox(this->message, *size);
+		if (!this->precomposed) this->message_str = GetString(this->message);
+
+		Dimension d = GetStringMultiLineBoundingBox(this->message_str.c_str(), *size);
 		d.width += WidgetDimensions::scaled.frametext.Horizontal();
 		d.height += WidgetDimensions::scaled.framerect.Vertical();
 		*size = d;
@@ -1255,8 +1280,10 @@ struct QueryWindow : public Window {
 	{
 		if (widget != WID_Q_TEXT) return;
 
+		if (!this->precomposed) this->message_str = GetString(this->message);
+
 		DrawStringMultiLine(r.Shrink(WidgetDimensions::scaled.frametext, WidgetDimensions::scaled.framerect),
-				this->message, TC_FROMSTRING, SA_CENTER);
+				this->message_str, TC_FROMSTRING, SA_CENTER);
 	}
 
 	void OnClick(Point pt, int widget, int click_count) override
@@ -1325,6 +1352,19 @@ static WindowDesc _query_desc(
 	_nested_query_widgets, lengthof(_nested_query_widgets)
 );
 
+static void RemoveExistingQueryWindow(Window *parent, QueryCallbackProc *callback)
+{
+	for (const Window *w : Window::IterateFromBack()) {
+		if (w->window_class != WC_CONFIRM_POPUP_QUERY) continue;
+
+		const QueryWindow *qw = (const QueryWindow *)w;
+		if (qw->parent != parent || qw->proc != callback) continue;
+
+		delete qw;
+		break;
+	}
+}
+
 /**
  * Show a modal confirmation window with standard 'yes' and 'no' buttons
  * The window is aligned to the centre of its parent.
@@ -1338,17 +1378,27 @@ void ShowQuery(StringID caption, StringID message, Window *parent, QueryCallback
 {
 	if (parent == nullptr) parent = GetMainWindow();
 
-	for (const Window *w : Window::IterateFromBack()) {
-		if (w->window_class != WC_CONFIRM_POPUP_QUERY) continue;
-
-		const QueryWindow *qw = (const QueryWindow *)w;
-		if (qw->parent != parent || qw->proc != callback) continue;
-
-		delete qw;
-		break;
-	}
+	RemoveExistingQueryWindow(parent, callback);
 
 	new QueryWindow(&_query_desc, caption, message, parent, callback);
+}
+
+/**
+ * Show a modal confirmation window with standard 'yes' and 'no' buttons
+ * The window is aligned to the centre of its parent.
+ * @param caption string shown as window caption
+ * @param message string that will be shown for the window
+ * @param parent pointer to parent window, if this pointer is nullptr the parent becomes
+ * the main window WC_MAIN_WINDOW
+ * @param callback callback function pointer to set in the window descriptor
+ */
+void ShowQuery(std::string caption, std::string message, Window *parent, QueryCallbackProc *callback)
+{
+	if (parent == nullptr) parent = GetMainWindow();
+
+	RemoveExistingQueryWindow(parent, callback);
+
+	new QueryWindow(&_query_desc, std::move(caption), std::move(message), parent, callback);
 }
 
 static const NWidgetPart _modifier_key_toggle_widgets[] = {
