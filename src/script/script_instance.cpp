@@ -49,7 +49,7 @@ static void PrintFunc(bool error_msg, const SQChar *message)
 	ScriptController::Print(error_msg, message);
 }
 
-ScriptInstance::ScriptInstance(const char *APIName) :
+ScriptInstance::ScriptInstance(const char *APIName, ScriptType script_type) :
 	engine(nullptr),
 	versionAPI(nullptr),
 	controller(nullptr),
@@ -63,6 +63,7 @@ ScriptInstance::ScriptInstance(const char *APIName) :
 	in_shutdown(false),
 	callback(nullptr),
 	APIName(APIName),
+	script_type(script_type),
 	allow_text_param_mismatch(false)
 {
 	this->storage = new ScriptStorage();
@@ -91,7 +92,7 @@ void ScriptInstance::Initialize(const char *main_script, const char *instance_na
 			return;
 		}
 
-		if (strcmp(this->APIName, "GS") == 0) {
+		if (this->script_type == ST_GS) {
 			if (strcmp(instance_name, "BeeRewardClass") == 0) {
 				this->LoadCompatibilityScripts("brgs", GAME_DIR);
 			}

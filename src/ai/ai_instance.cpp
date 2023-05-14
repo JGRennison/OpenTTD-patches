@@ -33,7 +33,7 @@
 #include "../safeguards.h"
 
 AIInstance::AIInstance() :
-	ScriptInstance("AI")
+	ScriptInstance("AI", ST_AI)
 {}
 
 void AIInstance::Initialize(AIInfo *info)

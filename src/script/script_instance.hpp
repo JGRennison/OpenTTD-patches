@@ -13,6 +13,7 @@
 #include <variant>
 #include <list>
 #include <squirrel.h>
+#include "squirrel.hpp"
 #include "script_suspend.hpp"
 
 #include "../command_type.h"
@@ -45,7 +46,7 @@ public:
 	/**
 	 * Create a new script.
 	 */
-	ScriptInstance(const char *APIName);
+	ScriptInstance(const char *APIName, ScriptType script_type);
 	virtual ~ScriptInstance();
 
 	/**
@@ -296,6 +297,7 @@ private:
 	Script_SuspendCallbackProc *callback; ///< Callback that should be called in the next tick the script runs.
 	size_t last_allocated_memory;         ///< Last known allocated memory value (for display for crashed scripts)
 	const char *APIName;                  ///< Name of the API used for this squirrel.
+	ScriptType script_type;               ///< Script type.
 	bool allow_text_param_mismatch;       ///< Whether ScriptText parameter mismatches are allowed
 
 	/**
