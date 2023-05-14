@@ -809,3 +809,22 @@ void GamelogInfo(LoggedAction *gamelog_action, uint gamelog_actions, uint32 *las
 		}
 	}
 }
+
+const char *GamelogGetLastRevision(const LoggedAction *gamelog_action, uint gamelog_actions)
+{
+	for (uint i = gamelog_actions; i > 0; i--) {
+		const LoggedAction &la = gamelog_action[i - 1];
+		const LoggedChange *lcend = &(la.change[la.changes]);
+		for (const LoggedChange *lc = la.change; lc != lcend; lc++) {
+			switch (lc->ct) {
+				case GLCT_REVISION:
+					return lc->revision.text;
+					break;
+
+				default:
+					break;
+			}
+		}
+	}
+	return nullptr;
+}

@@ -51,6 +51,8 @@ struct LoadCheckData {
 	std::string debug_log_data;
 	std::string debug_config_data;
 
+	bool sl_is_ext_version = false;
+
 	LoadCheckData() : error_data(nullptr), grfconfig(nullptr),
 			grf_compatibility(GLC_NOT_FOUND), gamelog_action(nullptr), gamelog_actions(0)
 	{

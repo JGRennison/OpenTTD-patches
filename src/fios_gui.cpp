@@ -27,6 +27,7 @@
 #include "core/geometry_func.hpp"
 #include "gamelog.h"
 #include "stringfilter_type.h"
+#include "gamelog.h"
 
 #include "widgets/fios_widget.h"
 
@@ -68,6 +69,8 @@ void LoadCheckData::Clear()
 
 	this->debug_log_data.clear();
 	this->debug_config_data.clear();
+
+	this->sl_is_ext_version = false;
 }
 
 /** Load game/scenario with optional content download */
@@ -814,7 +817,21 @@ public:
 					/* Show a caption box asking whether the user is sure to overwrite the save */
 					ShowQuery(STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_ID, STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_ID, this, SaveLoadWindow::SaveGameConfirmationCallback);
 				} else if (_settings_client.gui.savegame_overwrite_confirm >= (known_id ? 3 : 2) && file_exists) {
-					ShowQuery(STR_SAVELOAD_OVERWRITE_TITLE, STR_SAVELOAD_OVERWRITE_WARNING, this, SaveLoadWindow::SaveGameConfirmationCallback);
+					if (!_load_check_data.sl_is_ext_version) {
+						const char *version = GamelogGetLastRevision(_load_check_data.gamelog_action, _load_check_data.gamelog_actions);
+
+						SetDParam(0, STR_SAVELOAD_OVERWRITE_TITLE);
+						std::string caption = GetString(STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_VERSION_SUFFIX);
+
+						SetDParam(0, STR_SAVELOAD_OVERWRITE_WARNING);
+						SetDParam(1, (version != nullptr) ? STR_SAVELOAD_OVERWRITE_WARNING_VERSION_NAME : STR_EMPTY);
+						SetDParamStr(2, version);
+						std::string message = GetString(STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_VERSION_SUFFIX);
+
+						ShowQuery(std::move(caption), std::move(message), this, SaveLoadWindow::SaveGameConfirmationCallback);
+					} else {
+						ShowQuery(STR_SAVELOAD_OVERWRITE_TITLE, STR_SAVELOAD_OVERWRITE_WARNING, this, SaveLoadWindow::SaveGameConfirmationCallback);
+					}
 				} else {
 					_switch_mode = SM_SAVE_GAME;
 				}

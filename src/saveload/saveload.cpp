@@ -3587,6 +3587,7 @@ static SaveOrLoadResult DoLoad(LoadFilter *reader, bool load_check)
 	if (load_check) {
 		/* The only part from AfterLoadGame() we need */
 		if (_load_check_data.want_grf_compatibility) _load_check_data.grf_compatibility = IsGoodGRFConfigList(_load_check_data.grfconfig);
+		_load_check_data.sl_is_ext_version = _sl_is_ext_version;
 	} else {
 		GamelogStartAction(GLAT_LOAD);
 

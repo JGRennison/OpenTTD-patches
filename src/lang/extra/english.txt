@@ -1198,7 +1198,10 @@ STR_LAI_BRIDGE_DESCRIPTION_RAILROAD_SIGNAL                      :Railway bridge 
 STR_SAVELOAD_UNKNOWN_ID                                         :{YELLOW}This file may be from a different game.
 STR_SAVELOAD_DIFFERENT_ID                                       :{YELLOW}This file is from a different game.
 STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_ID                       :{WHITE}Overwrite File (Different Game)
+STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_VERSION_SUFFIX           :{STRING} (Different Version)
 STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_ID                     :{YELLOW}Are you sure you want to overwrite the existing file?{}{}The file is from a different game.
+STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_VERSION_SUFFIX         :{STRING}{}{}The file is from a different version{STRING1}.{}If overwritten the file will no longer be readable by the original version.
+STR_SAVELOAD_OVERWRITE_WARNING_VERSION_NAME                     : ({RAW_STRING})
 
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Snow line height:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Move the snow line height one up
