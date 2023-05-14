@@ -23,6 +23,7 @@
 #include "../script_storage.hpp"
 #include "../script_instance.hpp"
 #include "../script_fatalerror.hpp"
+#include "script_controller.hpp"
 #include "script_error.hpp"
 #include "../../debug.h"
 
@@ -383,6 +384,12 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	} else if (_networking) {
 		/* Suspend the script till the command is really executed. */
 		throw Script_Suspend(-(int)GetDoCommandDelay(), callback);
+	} else if (GetActiveInstance()->GetScriptType() == ST_GS && (_pause_mode & PM_PAUSED_GAME_SCRIPT) != PM_UNPAUSED) {
+		/* Game is paused due to GS, just execute as fast as possible */
+		IncreaseDoCommandCosts(res.GetCost());
+		ScriptController::DecreaseOps(100);
+		callback(GetActiveInstance());
+		throw SQInteger(1);
 	} else {
 		IncreaseDoCommandCosts(res.GetCost());
 

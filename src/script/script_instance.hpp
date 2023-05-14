@@ -329,6 +329,8 @@ private:
 	static bool LoadObjects(HSQUIRRELVM vm, ScriptData *data);
 
 public:
+	inline ScriptType GetScriptType() const { return this->script_type; }
+
 	inline bool IsTextParamMismatchAllowed() const { return this->allow_text_param_mismatch; }
 };
 
