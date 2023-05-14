@@ -211,6 +211,8 @@ public:
 
 	void LimitOpsTillSuspend(SQInteger suspend);
 
+	uint32 GetMaxOpsTillSuspend() const;
+
 	/**
 	 * DoCommand callback function for all commands executed by scripts.
 	 * @param result The result of the command.

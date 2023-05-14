@@ -258,7 +258,7 @@ void ScriptInstance::GameLoop()
 			}
 			ScriptObject::SetAllowDoCommand(true);
 			/* Start the script by calling Start() */
-			if (!this->engine->CallMethod(*this->instance, "Start",  _settings_game.script.script_max_opcode_till_suspend) || !this->engine->IsSuspended()) this->Died();
+			if (!this->engine->CallMethod(*this->instance, "Start", this->GetMaxOpsTillSuspend()) || !this->engine->IsSuspended()) this->Died();
 		} catch (Script_Suspend &e) {
 			this->suspend  = e.GetSuspendTime();
 			this->callback = e.GetSuspendCallback();
@@ -279,7 +279,7 @@ void ScriptInstance::GameLoop()
 
 	/* Continue the VM */
 	try {
-		if (!this->engine->Resume(_settings_game.script.script_max_opcode_till_suspend)) this->Died();
+		if (!this->engine->Resume(this->GetMaxOpsTillSuspend())) this->Died();
 	} catch (Script_Suspend &e) {
 		this->suspend  = e.GetSuspendTime();
 		this->callback = e.GetSuspendCallback();
@@ -581,7 +581,7 @@ void ScriptInstance::Pause()
 {
 	/* Suspend script. */
 	HSQUIRRELVM vm = this->engine->GetVM();
-	Squirrel::DecreaseOps(vm, _settings_game.script.script_max_opcode_till_suspend);
+	Squirrel::DecreaseOps(vm, this->GetOpsTillSuspend());
 
 	this->is_paused = true;
 }
@@ -787,6 +787,15 @@ void ScriptInstance::LimitOpsTillSuspend(SQInteger suspend)
 		HSQUIRRELVM vm = this->engine->GetVM();
 		Squirrel::DecreaseOps(vm, current - suspend);
 	}
+}
+
+uint32 ScriptInstance::GetMaxOpsTillSuspend() const
+{
+	if (this->script_type == ST_GS && (_pause_mode & PM_PAUSED_GAME_SCRIPT) != PM_UNPAUSED) {
+		/* Boost opcodes till suspend when paused due to game script */
+		return std::min<uint32>(250000, _settings_game.script.script_max_opcode_till_suspend * 10);
+	}
+	return _settings_game.script.script_max_opcode_till_suspend;
 }
 
 bool ScriptInstance::DoCommandCallback(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
