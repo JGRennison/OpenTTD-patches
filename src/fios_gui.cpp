@@ -808,11 +808,12 @@ public:
 				_file_to_saveload.name = FiosMakeSavegameName(this->filename_editbox.text.buf);
 				const bool known_id = _load_check_data.settings.game_creation.generation_unique_id != 0;
 				const bool different_id = known_id && _load_check_data.settings.game_creation.generation_unique_id != _settings_game.game_creation.generation_unique_id;
-				if (_settings_client.gui.savegame_overwrite_confirm >= 1 && different_id) {
+				const bool file_exists = FioCheckFileExists(_file_to_saveload.name, Subdirectory::SAVE_DIR);
+				if (_settings_client.gui.savegame_overwrite_confirm >= 1 && different_id && file_exists) {
 					/* The save has a different id to the current game */
 					/* Show a caption box asking whether the user is sure to overwrite the save */
 					ShowQuery(STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_ID, STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_ID, this, SaveLoadWindow::SaveGameConfirmationCallback);
-				} else if (_settings_client.gui.savegame_overwrite_confirm >= (known_id ? 3 : 2) && FioCheckFileExists(_file_to_saveload.name, Subdirectory::SAVE_DIR)) {
+				} else if (_settings_client.gui.savegame_overwrite_confirm >= (known_id ? 3 : 2) && file_exists) {
 					ShowQuery(STR_SAVELOAD_OVERWRITE_TITLE, STR_SAVELOAD_OVERWRITE_WARNING, this, SaveLoadWindow::SaveGameConfirmationCallback);
 				} else {
 					_switch_mode = SM_SAVE_GAME;
