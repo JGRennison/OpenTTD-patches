@@ -61,6 +61,7 @@ uint32 _pause_countdown;
 Palette _cur_palette;
 std::mutex _cur_palette_mutex;
 std::string _switch_baseset;
+static bool _adjust_gui_zoom_startup_done = false;
 
 static byte _stringwidth_table[FS_END][224]; ///< Cache containing width of often used characters. @see GetCharacterWidth()
 DrawPixelInfo *_cur_dpi;
@@ -2380,6 +2381,12 @@ void UpdateGUIZoom()
  */
 bool AdjustGUIZoom(AdjustGUIZoomMode mode)
 {
+	if (mode == AGZM_STARTUP) {
+		_adjust_gui_zoom_startup_done = true;
+	} else if (!_adjust_gui_zoom_startup_done) {
+		return false;
+	}
+
 	ZoomLevel old_gui_zoom = _gui_zoom;
 	ZoomLevel old_font_zoom = _font_zoom;
 	int old_scale = _gui_scale;
