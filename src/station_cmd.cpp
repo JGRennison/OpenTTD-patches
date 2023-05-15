@@ -4119,7 +4119,9 @@ static void TruncateCargo(const CargoSpec *cs, GoodsEntry *ge, uint amount = UIN
 		if (source_station == nullptr) continue;
 
 		GoodsEntry &source_ge = source_station->goods[cs->Index()];
-		source_ge.max_waiting_cargo = std::max(source_ge.max_waiting_cargo, i->second);
+		if (i->second > source_ge.max_waiting_cargo) {
+			source_ge.max_waiting_cargo += (i->second - source_ge.max_waiting_cargo) / 4;
+		}
 	}
 }
 
