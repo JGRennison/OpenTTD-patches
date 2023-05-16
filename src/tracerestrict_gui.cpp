@@ -1758,6 +1758,7 @@ class TraceRestrictWindow: public Window {
 	TraceRestrictItem expecting_inserted_item;                                  ///< set to instruction when performing an instruction insertion, used to handle selection update on insertion
 	int current_placement_widget;                                               ///< which widget has a SetObjectToPlaceWnd, if any
 	int current_left_aux_plane;                                                 ///< current plane for TR_WIDGET_SEL_TOP_LEFT_AUX widget
+	int base_copy_plane;                                                        ///< base plane for TR_WIDGET_SEL_COPY widget
 
 public:
 	TraceRestrictWindow(WindowDesc *desc, TileIndex tile, Track track)
@@ -2341,7 +2342,7 @@ public:
 	virtual void OnPlaceObject(Point pt, TileIndex tile) override
 	{
 		int widget = this->current_placement_widget;
-		this->current_placement_widget = -1;
+		this->ResetObjectToPlaceAction();
 
 		this->RaiseButtons();
 		ResetObjectToPlace();
@@ -2536,7 +2537,7 @@ public:
 	virtual void OnPlaceObjectAbort() override
 	{
 		this->RaiseButtons();
-		this->current_placement_widget = -1;
+		this->ResetObjectToPlaceAction();
 	}
 
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
@@ -2839,6 +2840,16 @@ private:
 		return false;
 	}
 
+	void UpdateCopySelPlane()
+	{
+		int widget = this->current_placement_widget;
+		if (widget == TR_WIDGET_COPY || widget == TR_WIDGET_COPY_APPEND || widget == TR_WIDGET_COPY_APPEND) return;
+
+		NWidgetStacked *copy_sel = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_COPY);
+		copy_sel->SetDisplayedPlane(_ctrl_pressed ? DPC_APPEND : this->base_copy_plane);
+		this->SetDirty();
+	}
+
 	/**
 	 * Update button states, text values, etc.
 	 */
@@ -2866,7 +2877,6 @@ private:
 		NWidgetStacked *middle_sel = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_MIDDLE);
 		NWidgetStacked *right_sel  = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_RIGHT);
 		NWidgetStacked *share_sel  = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_SHARE);
-		NWidgetStacked *copy_sel  = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_COPY);
 
 		this->DisableWidget(TR_WIDGET_TYPE_COND);
 		this->DisableWidget(TR_WIDGET_TYPE_NONCOND);
@@ -2929,9 +2939,9 @@ private:
 			return;
 		}
 
-		int copy_panel = DPC_DUPLICATE;
+		this->base_copy_plane = DPC_DUPLICATE;
 
-		if (prog && prog->refcount > 1) {
+		if (prog != nullptr && prog->refcount > 1) {
 			// program is shared, show and enable unshare button, and reset button
 			share_sel->SetDisplayedPlane(DPS_UNSHARE);
 			this->EnableWidget(TR_WIDGET_UNSHARE);
@@ -2943,11 +2953,11 @@ private:
 			// program is empty and not shared, show copy and share buttons
 			this->EnableWidget(TR_WIDGET_COPY);
 			this->EnableWidget(TR_WIDGET_SHARE);
-			copy_panel = DPC_COPY;
+			this->base_copy_plane = DPC_COPY;
 		}
 
-		this->GetWidget<NWidgetCore>(TR_WIDGET_COPY_APPEND)->tool_tip = (copy_panel == DPC_DUPLICATE) ? STR_TRACE_RESTRICT_DUPLICATE_TOOLTIP : STR_TRACE_RESTRICT_COPY_TOOLTIP;
-		copy_sel->SetDisplayedPlane(_ctrl_pressed ? DPC_APPEND : copy_panel);
+		this->GetWidget<NWidgetCore>(TR_WIDGET_COPY_APPEND)->tool_tip = (this->base_copy_plane == DPC_DUPLICATE) ? STR_TRACE_RESTRICT_DUPLICATE_TOOLTIP : STR_TRACE_RESTRICT_COPY_TOOLTIP;
+		UpdateCopySelPlane();
 
 		// haven't selected instruction
 		if (this->selected_instruction < 1) {
@@ -3360,6 +3370,13 @@ private:
 			ResetObjectToPlace();
 			this->current_placement_widget = -1;
 		}
+		this->UpdateCopySelPlane();
+	}
+
+	void ResetObjectToPlaceAction()
+	{
+		this->current_placement_widget = -1;
+		this->UpdateCopySelPlane();
 	}
 
 	/**
