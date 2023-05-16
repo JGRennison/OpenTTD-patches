@@ -3004,6 +3004,9 @@ private:
 		this->EnableWidget(TR_WIDGET_COPY_APPEND);
 		this->EnableWidget(TR_WIDGET_SHARE_ONTO);
 
+		this->base_copy_plane = DPC_DUPLICATE;
+		this->base_share_plane = DPS_SHARE;
+
 		if (prog != nullptr && prog->refcount > 1) {
 			// program is shared, show and enable unshare button, and reset button
 			this->base_share_plane = DPS_UNSHARE;
