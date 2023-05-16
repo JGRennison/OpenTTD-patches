@@ -2238,16 +2238,20 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 		return ret;
 	}
 
-	if (type == TRDCT_PROG_SHARE || type == TRDCT_PROG_COPY) {
+	if (type == TRDCT_PROG_SHARE || type == TRDCT_PROG_SHARE_IF_UNMAPPED || type == TRDCT_PROG_COPY) {
 		if (self == source) {
 			return_cmd_error(STR_TRACE_RESTRICT_ERROR_SOURCE_SAME_AS_TARGET);
 		}
 	}
-	if (type == TRDCT_PROG_SHARE || type == TRDCT_PROG_COPY || type == TRDCT_PROG_COPY_APPEND) {
+	if (type == TRDCT_PROG_SHARE || type == TRDCT_PROG_SHARE_IF_UNMAPPED || type == TRDCT_PROG_COPY || type == TRDCT_PROG_COPY_APPEND) {
 		ret = TraceRestrictCheckTileIsUsable(source_tile, source_track);
 		if (ret.Failed()) {
 			return ret;
 		}
+	}
+
+	if (type == TRDCT_PROG_SHARE_IF_UNMAPPED && GetTraceRestrictProgram(self, false) != nullptr) {
+		return_cmd_error(STR_TRACE_RESTRICT_ERROR_TARGET_ALREADY_HAS_PROGRAM);
 	}
 
 	if (type != TRDCT_PROG_RESET && !TraceRestrictProgram::CanAllocateItem()) {
@@ -2298,7 +2302,8 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 			break;
 		}
 
-		case TRDCT_PROG_SHARE: {
+		case TRDCT_PROG_SHARE:
+		case TRDCT_PROG_SHARE_IF_UNMAPPED: {
 			TraceRestrictRemoveProgramMapping(self);
 			TraceRestrictProgram *source_prog = GetTraceRestrictProgram(source, true);
 			if (!source_prog) {

@@ -96,6 +96,7 @@ enum TraceRestrictWindowWidgets {
 	TR_WIDGET_DUPLICATE,
 	TR_WIDGET_SHARE,
 	TR_WIDGET_UNSHARE,
+	TR_WIDGET_SHARE_ONTO,
 };
 
 /** Selection mappings for NWID_SELECTION selectors */
@@ -130,6 +131,7 @@ enum PanelWidgets {
 	// Share
 	DPS_SHARE = 0,
 	DPS_UNSHARE,
+	DPS_SHARE_ONTO,
 
 	// Copy
 	DPC_COPY = 0,
@@ -1759,6 +1761,7 @@ class TraceRestrictWindow: public Window {
 	int current_placement_widget;                                               ///< which widget has a SetObjectToPlaceWnd, if any
 	int current_left_aux_plane;                                                 ///< current plane for TR_WIDGET_SEL_TOP_LEFT_AUX widget
 	int base_copy_plane;                                                        ///< base plane for TR_WIDGET_SEL_COPY widget
+	int base_share_plane;                                                       ///< base plane for TR_WIDGET_SEL_SHARE widget
 
 public:
 	TraceRestrictWindow(WindowDesc *desc, TileIndex tile, Track track)
@@ -2173,7 +2176,28 @@ public:
 			case TR_WIDGET_COPY:
 			case TR_WIDGET_COPY_APPEND:
 			case TR_WIDGET_SHARE:
+			case TR_WIDGET_SHARE_ONTO:
 				SetObjectToPlaceAction(widget, ANIMCURSOR_BUILDSIGNALS);
+				switch (this->current_placement_widget) {
+					case TR_WIDGET_COPY:
+						_thd.square_palette = SPR_ZONING_INNER_HIGHLIGHT_GREEN;
+						break;
+
+					case TR_WIDGET_COPY_APPEND:
+						_thd.square_palette = SPR_ZONING_INNER_HIGHLIGHT_LIGHT_BLUE;
+						break;
+
+					case TR_WIDGET_SHARE:
+						_thd.square_palette = SPR_ZONING_INNER_HIGHLIGHT_YELLOW;
+						break;
+
+					case TR_WIDGET_SHARE_ONTO:
+						_thd.square_palette = SPR_ZONING_INNER_HIGHLIGHT_ORANGE;
+						break;
+
+					default:
+						break;
+				}
 				break;
 
 			case TR_WIDGET_UNSHARE: {
@@ -2342,10 +2366,12 @@ public:
 	virtual void OnPlaceObject(Point pt, TileIndex tile) override
 	{
 		int widget = this->current_placement_widget;
-		this->ResetObjectToPlaceAction();
+		if (widget != TR_WIDGET_SHARE_ONTO) {
+			this->ResetObjectToPlaceAction();
 
-		this->RaiseButtons();
-		ResetObjectToPlace();
+			this->RaiseButtons();
+			ResetObjectToPlace();
+		}
 
 		if (widget < 0) {
 			return;
@@ -2361,6 +2387,7 @@ public:
 				break;
 
 			case TR_WIDGET_SHARE:
+			case TR_WIDGET_SHARE_ONTO:
 				OnPlaceObjectSignal(pt, tile, widget, STR_TRACE_RESTRICT_ERROR_CAN_T_SHARE_PROGRAM);
 				break;
 
@@ -2442,6 +2469,11 @@ public:
 			case TR_WIDGET_SHARE:
 				TraceRestrictProgMgmtWithSourceDoCommandP(this->tile, this->track, TRDCT_PROG_SHARE,
 						source_tile, source_track, STR_TRACE_RESTRICT_ERROR_CAN_T_SHARE_PROGRAM);
+				break;
+
+			case TR_WIDGET_SHARE_ONTO:
+				TraceRestrictProgMgmtWithSourceDoCommandP(source_tile, source_track, TRDCT_PROG_SHARE_IF_UNMAPPED,
+						this->tile, this->track, STR_TRACE_RESTRICT_ERROR_CAN_T_SHARE_PROGRAM);
 				break;
 
 			default:
@@ -2674,6 +2706,32 @@ public:
 		}
 	}
 
+	bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
+	{
+		switch (widget) {
+			case TR_WIDGET_SHARE: {
+				uint64 arg = STR_TRACE_RESTRICT_SHARE_TOOLTIP;
+				GuiShowTooltips(this, STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA, 1, &arg, close_cond);
+				return true;
+			}
+
+			case TR_WIDGET_UNSHARE: {
+				uint64 arg = STR_TRACE_RESTRICT_UNSHARE_TOOLTIP;
+				GuiShowTooltips(this, STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA, 1, &arg, close_cond);
+				return true;
+			}
+
+			case TR_WIDGET_SHARE_ONTO: {
+				uint64 arg = (this->base_share_plane == DPS_UNSHARE) ? STR_TRACE_RESTRICT_UNSHARE_TOOLTIP : STR_TRACE_RESTRICT_SHARE_TOOLTIP;
+				GuiShowTooltips(this, STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA, 1, &arg, close_cond);
+				return true;
+			}
+
+			default:
+				return false;
+		}
+	}
+
 	virtual EventState OnCTRLStateChange() override
 	{
 		this->UpdateButtonState();
@@ -2840,14 +2898,21 @@ private:
 		return false;
 	}
 
-	void UpdateCopySelPlane()
+	void UpdatePlaceObjectPlanes()
 	{
 		int widget = this->current_placement_widget;
-		if (widget == TR_WIDGET_COPY || widget == TR_WIDGET_COPY_APPEND || widget == TR_WIDGET_COPY_APPEND) return;
 
-		NWidgetStacked *copy_sel = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_COPY);
-		copy_sel->SetDisplayedPlane(_ctrl_pressed ? DPC_APPEND : this->base_copy_plane);
-		this->SetDirty();
+		if (!(widget == TR_WIDGET_COPY || widget == TR_WIDGET_COPY_APPEND)) {
+			NWidgetStacked *copy_sel = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_COPY);
+			copy_sel->SetDisplayedPlane(_ctrl_pressed ? DPC_APPEND : this->base_copy_plane);
+			this->SetDirty();
+		}
+
+		if (!(widget == TR_WIDGET_SHARE || widget == TR_WIDGET_SHARE_ONTO)) {
+			NWidgetStacked *share_sel  = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_SHARE);
+			share_sel->SetDisplayedPlane(_ctrl_pressed ? DPS_SHARE_ONTO : this->base_share_plane);
+			this->SetDirty();
+		}
 	}
 
 	/**
@@ -2876,7 +2941,6 @@ private:
 		NWidgetStacked *left_aux_sel = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_LEFT_AUX);
 		NWidgetStacked *middle_sel = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_MIDDLE);
 		NWidgetStacked *right_sel  = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_RIGHT);
-		NWidgetStacked *share_sel  = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_SHARE);
 
 		this->DisableWidget(TR_WIDGET_TYPE_COND);
 		this->DisableWidget(TR_WIDGET_TYPE_NONCOND);
@@ -2898,6 +2962,7 @@ private:
 		this->DisableWidget(TR_WIDGET_COPY);
 		this->DisableWidget(TR_WIDGET_SHARE);
 		this->DisableWidget(TR_WIDGET_UNSHARE);
+		this->DisableWidget(TR_WIDGET_SHARE_ONTO);
 
 		this->DisableWidget(TR_WIDGET_BLANK_L2);
 		this->DisableWidget(TR_WIDGET_BLANK_L);
@@ -2908,14 +2973,11 @@ private:
 		this->DisableWidget(TR_WIDGET_DOWN_BTN);
 		this->DisableWidget(TR_WIDGET_DUPLICATE);
 
-		this->EnableWidget(TR_WIDGET_COPY_APPEND);
-
 		left_2_sel->SetDisplayedPlane(DPL2_BLANK);
 		left_sel->SetDisplayedPlane(DPL_BLANK);
 		left_aux_sel->SetDisplayedPlane(SZSP_NONE);
 		middle_sel->SetDisplayedPlane(DPM_BLANK);
 		right_sel->SetDisplayedPlane(DPR_BLANK);
-		share_sel->SetDisplayedPlane(DPS_SHARE);
 
 		const TraceRestrictProgram *prog = this->GetProgram();
 
@@ -2939,11 +3001,12 @@ private:
 			return;
 		}
 
-		this->base_copy_plane = DPC_DUPLICATE;
+		this->EnableWidget(TR_WIDGET_COPY_APPEND);
+		this->EnableWidget(TR_WIDGET_SHARE_ONTO);
 
 		if (prog != nullptr && prog->refcount > 1) {
 			// program is shared, show and enable unshare button, and reset button
-			share_sel->SetDisplayedPlane(DPS_UNSHARE);
+			this->base_share_plane = DPS_UNSHARE;
 			this->EnableWidget(TR_WIDGET_UNSHARE);
 			this->EnableWidget(TR_WIDGET_RESET);
 		} else if (this->GetItemCount(prog) > 2) {
@@ -2957,7 +3020,7 @@ private:
 		}
 
 		this->GetWidget<NWidgetCore>(TR_WIDGET_COPY_APPEND)->tool_tip = (this->base_copy_plane == DPC_DUPLICATE) ? STR_TRACE_RESTRICT_DUPLICATE_TOOLTIP : STR_TRACE_RESTRICT_COPY_TOOLTIP;
-		UpdateCopySelPlane();
+		this->UpdatePlaceObjectPlanes();
 
 		// haven't selected instruction
 		if (this->selected_instruction < 1) {
@@ -3370,13 +3433,13 @@ private:
 			ResetObjectToPlace();
 			this->current_placement_widget = -1;
 		}
-		this->UpdateCopySelPlane();
+		this->UpdatePlaceObjectPlanes();
 	}
 
 	void ResetObjectToPlaceAction()
 	{
 		this->current_placement_widget = -1;
-		this->UpdateCopySelPlane();
+		this->UpdatePlaceObjectPlanes();
 	}
 
 	/**
@@ -3519,9 +3582,11 @@ static const NWidgetPart _nested_program_widgets[] = {
 				EndContainer(),
 				NWidget(NWID_SELECTION, INVALID_COLOUR, TR_WIDGET_SEL_SHARE),
 					NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_SHARE), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_TRACE_RESTRICT_SHARE, STR_TRACE_RESTRICT_SHARE_TOOLTIP), SetResize(1, 0),
+														SetDataTip(STR_TRACE_RESTRICT_SHARE, STR_NULL), SetResize(1, 0),
 					NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_UNSHARE), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_TRACE_RESTRICT_UNSHARE, STR_TRACE_RESTRICT_UNSHARE_TOOLTIP), SetResize(1, 0),
+														SetDataTip(STR_TRACE_RESTRICT_UNSHARE, STR_NULL), SetResize(1, 0),
+					NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_SHARE_ONTO), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_TRACE_RESTRICT_SHARE_ONTO, STR_NULL), SetResize(1, 0),
 				EndContainer(),
 		EndContainer(),
 		NWidget(WWT_RESIZEBOX, COLOUR_GREY),

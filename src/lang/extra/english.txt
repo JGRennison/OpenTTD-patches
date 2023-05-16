@@ -1001,6 +1001,7 @@ STR_TRACE_RESTRICT_APPEND                                       :{BLACK}Append
 STR_TRACE_RESTRICT_DUPLICATE                                    :{BLACK}Duplicate
 STR_TRACE_RESTRICT_SHARE                                        :{BLACK}Share
 STR_TRACE_RESTRICT_UNSHARE                                      :{BLACK}Unshare
+STR_TRACE_RESTRICT_SHARE_ONTO                                   :{BLACK}Share Onto
 STR_TRACE_RESTRICT_SELECT_TARGET                                :{BLACK}Select Target
 STR_TRACE_RESTRICT_SELECT_SIGNAL                                :{BLACK}Select Signal
 STR_TRACE_RESTRICT_SELECT_TILE                                  :{BLACK}Select Tile
@@ -1011,6 +1012,7 @@ STR_TRACE_RESTRICT_COPY_TOOLTIP                                 :{BLACK}Copy pro
 STR_TRACE_RESTRICT_DUPLICATE_TOOLTIP                            :{BLACK}Duplicate the selected instruction{}Ctrl+click to append program from another signal
 STR_TRACE_RESTRICT_SHARE_TOOLTIP                                :{BLACK}Share program with another signal
 STR_TRACE_RESTRICT_UNSHARE_TOOLTIP                              :{BLACK}Stop sharing program with other signals, create a copy of the program
+STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA                          :{STRING}{}{BLACK}Ctrl+click to set other signals to share with this program
 STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP                           :{BLACK}Routefinding restriction
 STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}Click an instruction to select it{}Ctrl+Click to scroll to the instruction's target (if any)
 STR_TRACE_RESTRICT_HIGHLIGHT_TOOLTIP                            :{BLACK}Toggle highlighting all signals sharing this program
@@ -1023,7 +1025,7 @@ STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM                      :{WHITE}Can't re
 STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM                        :{WHITE}Can't move instruction
 STR_TRACE_RESTRICT_ERROR_CAN_T_DUPLICATE_ITEM                   :{WHITE}Can't duplicate instruction
 STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE                        :{WHITE}Value too large, maximum is {DECIMAL}
-STR_TRACE_RESTRICT_ERROR_NO_PROGRAM                             :No trace restrict program exists
+STR_TRACE_RESTRICT_ERROR_NO_PROGRAM                             :No program exists
 STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE                       :Offset too large
 STR_TRACE_RESTRICT_ERROR_CAN_T_CHANGE_CONDITIONALITY            :Can't change conditionality
 STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ENDIF                     :Can't remove an 'end if'
@@ -1034,6 +1036,7 @@ STR_TRACE_RESTRICT_ERROR_VALIDATE_DUP_ELSE                      :Validation fail
 STR_TRACE_RESTRICT_ERROR_VALIDATE_ELIF_NO_IF                    :Validation failed: else if without opening if
 STR_TRACE_RESTRICT_ERROR_VALIDATE_UNKNOWN_INSTRUCTION           :Validation failed: unknown instruction
 STR_TRACE_RESTRICT_ERROR_SOURCE_SAME_AS_TARGET                  :Source and target signals are the same
+STR_TRACE_RESTRICT_ERROR_TARGET_ALREADY_HAS_PROGRAM             :Target signal already has a program
 STR_TRACE_RESTRICT_ERROR_CAN_T_RESET_SIGNAL                     :{WHITE}Can't reset signal
 STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_PROGRAM                     :{WHITE}Can't copy program
 STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_APPEND_PROGRAM              :{WHITE}Can't append program

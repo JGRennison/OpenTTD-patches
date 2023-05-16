@@ -1041,6 +1041,7 @@ enum TraceRestrictDoCommandType {
 	TRDCT_PROG_COPY,                         ///< copy program operation. Do not re-order this with respect to other values
 	TRDCT_PROG_COPY_APPEND,                  ///< copy and append program operation
 	TRDCT_PROG_SHARE,                        ///< share program operation
+	TRDCT_PROG_SHARE_IF_UNMAPPED,            ///< share program operation (if unmapped)
 	TRDCT_PROG_UNSHARE,                      ///< unshare program (copy as a new program)
 	TRDCT_PROG_RESET,                        ///< reset program state of signal
 };
