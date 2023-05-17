@@ -54,13 +54,21 @@ int FontCache::GetDefaultFontHeight(FontSize fs)
 	return _default_font_height[fs];
 }
 
-/* static */ FontCache *FontCache::caches[FS_END] = { new SpriteFontCache(FS_NORMAL), new SpriteFontCache(FS_SMALL), new SpriteFontCache(FS_LARGE), new SpriteFontCache(FS_MONO) };
 int font_height_cache[FS_END];
 
 void UpdateFontHeightCache()
 {
 	for (int i = 0; i < FS_END; i++) {
 		font_height_cache[i] = FontCache::Get((FontSize) i)->GetHeight();
+	}
+}
+
+/* static */ FontCache *FontCache::caches[FS_END];
+
+/* static */ void FontCache::InitializeFontCaches()
+{
+	for (FontSize fs = FS_BEGIN; fs != FS_END; fs++) {
+		if (FontCache::caches[fs] == nullptr) new SpriteFontCache(fs); /* FontCache inserts itself into to the cache. */
 	}
 }
 
@@ -131,6 +139,8 @@ extern void LoadCoreTextFont(FontSize fs);
  */
 void InitFontCache(bool monospace)
 {
+	FontCache::InitializeFontCaches();
+
 	for (FontSize fs = FS_BEGIN; fs < FS_END; fs++) {
 		if (monospace != (fs == FS_MONO)) continue;
 

@@ -37,6 +37,8 @@ public:
 	FontCache(FontSize fs);
 	virtual ~FontCache();
 
+	static void InitializeFontCaches();
+
 	static int GetDefaultFontHeight(FontSize fs);
 
 	/**
