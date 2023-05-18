@@ -6083,6 +6083,7 @@ reverse_train_direction:
 		v->track = old_trackbits;
 		v->direction = old_direction;
 		v->gv_flags = old_gv_flags;
+		if (!(v->track & TRACK_BIT_WORMHOLE)) v->z_pos = GetSlopePixelZ(v->x_pos, v->y_pos, true);
 	}
 	if (reverse) {
 		v->wait_counter = 0;
