@@ -2804,9 +2804,9 @@ CommandCost CmdBuildAirport(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 			ZoningMarkDirtyStationCoverageArea(st);
 
 			for (uint i = 0; i < st->airport.GetNumHangars(); ++i) {
-				DeleteWindowById(
-					WC_VEHICLE_DEPOT, st->airport.GetHangarTile(i)
-				);
+				TileIndex tile_cur = st->airport.GetHangarTile(i);
+				OrderBackup::Reset(tile_cur, false);
+				DeleteWindowById(WC_VEHICLE_DEPOT, tile_cur);
 			}
 
 			const AirportSpec *old_as = st->airport.GetSpec();
@@ -2822,7 +2822,6 @@ CommandCost CmdBuildAirport(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 			}
 
 			for (TileIndex tile_cur : st->airport) {
-				if (IsHangarTile(tile_cur)) OrderBackup::Reset(tile_cur, false);
 				DeleteAnimatedTile(tile_cur);
 				DoClearSquare(tile_cur);
 				DeleteNewGRFInspectWindow(GSF_AIRPORTTILES, tile_cur);
