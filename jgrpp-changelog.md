@@ -2,6 +2,22 @@
 
 * * *
 
+### v0.53.3 (2023-05-20)
+* Fix crash when selecting conditional orders in order window.
+* Fix crash which could occur on MacOS when using UI scaling.
+* Fix crash which could occur when upgrading airports when order backups are present.
+* Fix train disconnection which could occur when a train reverses at the top of a sloped bridge ramp because the bridge is signalled in the opposite direction.
+* Fix multi-track level crossings being left barred after removing the middle part.
+* Fix horizontal resizing and UI scaling issues in slots window.
+* Add routing restriction button to set other signals to be shared with the current signal.
+* Allow changing tree placement algorithm setting in game.
+* Reduce strength of the station rating penalty applied to cargo source stations on station cargo truncation.
+* Remove the command delay for game scripts in single player when the game is paused by the game script.
+* Avoid unnecessarily resetting the scrollbar in the vehicle refit window.
+* Save game window:
+  * Fix the "overwriting a different save file" warning being shown when the file name has been changed to not overwrite the file.
+  * Mention in warning if the save file being overwritten is a vanilla save.
+
 ### v0.53.2 (2023-05-11)
 * Fix crash when clicking the goto dropdown in the order window when a departure board via order is selected.
 * Fix rail platforms being left partially reserved after removing a train (due to a crash or company bankruptcy).
