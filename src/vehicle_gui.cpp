@@ -810,6 +810,7 @@ struct RefitWindow : public Window {
 	{
 		uint scroll_row = 0;
 		uint row = 0;
+		uint old_row = this->vscroll->GetCount();
 
 		for (uint i = 0; i < NUM_CARGO; i++) {
 			for (uint j = 0; j < this->list[i].size(); j++) {
@@ -825,7 +826,7 @@ struct RefitWindow : public Window {
 		}
 
 		this->vscroll->SetCount(row);
-		if (scroll_row < row) this->vscroll->ScrollTowards(scroll_row);
+		if (scroll_row < row && row != old_row) this->vscroll->ScrollTowards(scroll_row);
 	}
 
 	/**
