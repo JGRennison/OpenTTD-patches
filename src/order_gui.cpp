@@ -707,9 +707,9 @@ static const StringID _order_conditional_condition_accepts[] = {
 	INVALID_STRING_ID,
 };
 
-static const StringID _order_conditional_condition_is_fully_occupied[] = {
-	STR_NULL,
-	STR_NULL,
+static const StringID _order_conditional_condition_occupancy[] = {
+	STR_ORDER_CONDITIONAL_COMPARATOR_OCCUPANCY_EMPTY,
+	STR_ORDER_CONDITIONAL_COMPARATOR_OCCUPANCY_NOT_EMPTY,
 	STR_NULL,
 	STR_NULL,
 	STR_NULL,
@@ -1009,7 +1009,17 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 					SetDParam(0, STR_ORDER_CONDITIONAL_INVALID_SLOT);
 					SetDParam(2, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 				}
-				SetDParam(3, order->GetConditionComparator() == OCC_IS_TRUE ? STR_ORDER_CONDITIONAL_COMPARATOR_FULLY_OCCUPIED : STR_ORDER_CONDITIONAL_COMPARATOR_NOT_YET_FULLY_OCCUPIED);
+				switch (order->GetConditionComparator()) {
+					case OCC_IS_TRUE:
+					case OCC_IS_FALSE:
+					case OCC_EQUALS:
+					case OCC_NOT_EQUALS: {
+						SetDParam(3, _order_conditional_condition_occupancy[order->GetConditionComparator()]);
+						break;
+					}
+					default:
+						NOT_REACHED();
+				}
 			} else if (ocv == OCV_VEH_IN_SLOT) {
 				if (TraceRestrictSlot::IsValidID(order->GetXData())) {
 					SetDParam(0, STR_ORDER_CONDITIONAL_IN_SLOT);
@@ -1519,7 +1529,7 @@ private:
 				return _order_conditional_condition_accepts;
 
 			case OCV_SLOT_OCCUPANCY:
-				return _order_conditional_condition_is_fully_occupied;
+				return _order_conditional_condition_occupancy;
 
 			case OCV_VEH_IN_SLOT:
 				return v->type == VEH_TRAIN ? _order_conditional_condition_is_in_slot : _order_conditional_condition_is_in_slot_non_train;
@@ -2965,11 +2975,11 @@ public:
 					case OCV_REQUIRES_SERVICE:
 					case OCV_CARGO_ACCEPTANCE:
 					case OCV_CARGO_WAITING:
-					case OCV_SLOT_OCCUPANCY:
 						mask = 0x3F;
 						break;
 
 					case OCV_VEH_IN_SLOT:
+					case OCV_SLOT_OCCUPANCY:
 						mask = 0x3C;
 						break;
 

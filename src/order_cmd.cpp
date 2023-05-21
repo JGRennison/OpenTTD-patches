@@ -1233,11 +1233,8 @@ CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID s
 					switch (occ) {
 						case OCC_IS_TRUE:
 						case OCC_IS_FALSE:
-							break;
-
 						case OCC_EQUALS:
 						case OCC_NOT_EQUALS:
-							if (new_order.GetConditionVariable() != OCV_VEH_IN_SLOT) return CMD_ERROR;
 							break;
 
 						default:
@@ -1943,9 +1940,12 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				case OCV_REQUIRES_SERVICE:
 				case OCV_CARGO_ACCEPTANCE:
 				case OCV_CARGO_WAITING:
-				case OCV_SLOT_OCCUPANCY:
 				case OCV_DISPATCH_SLOT:
 					if (data != OCC_IS_TRUE && data != OCC_IS_FALSE) return CMD_ERROR;
+					break;
+
+				case OCV_SLOT_OCCUPANCY:
+					if (data != OCC_IS_TRUE && data != OCC_IS_FALSE && data != OCC_EQUALS && data != OCC_NOT_EQUALS) return CMD_ERROR;
 					break;
 
 				case OCV_VEH_IN_SLOT: {
@@ -2180,6 +2180,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 			case MOF_COND_VARIABLE: {
 				/* Check whether old conditional variable had a cargo as value */
+				OrderConditionVariable old_condition = order->GetConditionVariable();
 				bool old_var_was_cargo = (order->GetConditionVariable() == OCV_CARGO_ACCEPTANCE || order->GetConditionVariable() == OCV_CARGO_WAITING
 						|| order->GetConditionVariable() == OCV_CARGO_LOAD_PERCENTAGE || order->GetConditionVariable() == OCV_CARGO_WAITING_AMOUNT);
 				bool old_var_was_slot = (order->GetConditionVariable() == OCV_SLOT_OCCUPANCY || order->GetConditionVariable() == OCV_VEH_IN_SLOT);
@@ -2202,7 +2203,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 						} else if (order->GetConditionVariable() == OCV_VEH_IN_SLOT && order->GetXData() != INVALID_TRACE_RESTRICT_SLOT_ID && TraceRestrictSlot::Get(order->GetXData())->vehicle_type != v->type) {
 							order->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_ID;
 						}
-						if (occ != OCC_IS_TRUE && occ != OCC_IS_FALSE) order->SetConditionComparator(OCC_IS_TRUE);
+						if (old_condition != order->GetConditionVariable()) order->SetConditionComparator(OCC_IS_TRUE);
 						break;
 
 					case OCV_COUNTER_VALUE:
@@ -3126,7 +3127,14 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 						count++;
 					}
 				}
-				skip_order = OrderConditionCompare(occ, count >= slot->max_occupancy, value);
+				bool result;
+				if (occ == OCC_EQUALS || occ == OCC_NOT_EQUALS) {
+					occ = (occ == OCC_EQUALS) ? OCC_IS_TRUE : OCC_IS_FALSE;
+					result = (count == 0);
+				} else {
+					result = (count >= slot->max_occupancy);
+				}
+				skip_order = OrderConditionCompare(occ, result, value);
 			}
 			break;
 		}
