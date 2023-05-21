@@ -817,7 +817,7 @@ public:
 					/* Show a caption box asking whether the user is sure to overwrite the save */
 					ShowQuery(STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_ID, STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_ID, this, SaveLoadWindow::SaveGameConfirmationCallback);
 				} else if (_settings_client.gui.savegame_overwrite_confirm >= (known_id ? 3 : 2) && file_exists) {
-					if (!_load_check_data.sl_is_ext_version) {
+					if (this->selected != nullptr && !_load_check_data.sl_is_ext_version) {
 						const char *version = GamelogGetLastRevision(_load_check_data.gamelog_action, _load_check_data.gamelog_actions);
 
 						SetDParam(0, STR_SAVELOAD_OVERWRITE_TITLE);
