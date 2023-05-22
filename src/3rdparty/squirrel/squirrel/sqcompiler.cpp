@@ -142,7 +142,7 @@ public:
 			break;
 		}
 		Lex();
-		return std::move(ret);
+		return ret;
 	}
 	bool IsEndOfStatement() { return ((_lex._prevtoken == '\n') || (_token == SQUIRREL_EOB) || (_token == '}') || (_token == ';')); }
 	void OptionalSemicolon()
