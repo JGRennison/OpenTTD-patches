@@ -599,6 +599,11 @@ STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_HELPTEXT             :The algorithm t
 STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_TRADITIONAL          :Traditional
 STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_MODERN               :Modern
 
+STR_CONFIG_SETTING_TICK_RATE                                    :Game tick rate: {STRING2}
+STR_CONFIG_SETTING_TICK_RATE_HELPTEXT                           :Number of milliseconds per game tick.
+STR_CONFIG_SETTING_TICK_RATE_TRADITIONAL                        :30 ms/tick (traditional)
+STR_CONFIG_SETTING_TICK_RATE_MODERN                             :27 ms/tick (modern)
+
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Minimum distance between towns: {STRING2}
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Set the minimum distance in tiles between towns for map generation and random founding
 

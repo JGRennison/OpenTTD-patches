@@ -188,6 +188,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_MULTI_CARGO_SHIPS,                XSCF_NULL,                1,   1, "multi_cargo_ships",                nullptr, nullptr, nullptr          },
 	{ XSLFI_REMAIN_NEXT_ORDER_STATION,        XSCF_IGNORABLE_UNKNOWN,   1,   1, "remain_next_order_station",        nullptr, nullptr, nullptr          },
 	{ XSLFI_LABEL_ORDERS,                     XSCF_NULL,                2,   2, "label_orders",                     nullptr, nullptr, nullptr          },
+	{ XSLFI_VARIABLE_TICK_RATE,               XSCF_IGNORABLE_ALL,       1,   1, "variable_tick_rate",               nullptr, nullptr, nullptr          },
 	{ XSLFI_SCRIPT_INT64,                     XSCF_NULL,                1,   1, "script_int64",                     nullptr, nullptr, nullptr          },
 	{ XSLFI_U64_TICK_COUNTER,                 XSCF_NULL,                1,   1, "u64_tick_counter",                 nullptr, nullptr, nullptr          },
 	{ XSLFI_LINKGRAPH_TRAVEL_TIME,            XSCF_NULL,                1,   1, "linkgraph_travel_time",            nullptr, nullptr, nullptr          },

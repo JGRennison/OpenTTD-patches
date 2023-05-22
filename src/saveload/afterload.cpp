@@ -4191,6 +4191,10 @@ bool AfterLoadGame()
 		_settings_game.economy.payment_algorithm = IsSavegameVersionBefore(SLV_MORE_CARGO_AGE) ? CPA_TRADITIONAL : CPA_MODERN;
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_TICK_RATE)) {
+		_settings_game.economy.tick_rate = IsSavegameVersionUntil(SLV_MORE_CARGO_AGE) ? TRM_TRADITIONAL : TRM_MODERN;
+	}
+
 	InitializeRoadGUI();
 
 	/* This needs to be done after conversion. */
@@ -4206,6 +4210,8 @@ bool AfterLoadGame()
 	AfterLoadVehiclesRemoveAnyFoundInvalid();
 
 	GamelogPrintDebug(1);
+
+	SetupTickRate();
 
 	InitializeWindowsAndCaches();
 	/* Restore the signals */

@@ -2295,6 +2295,7 @@ static SettingsContainer &GetSettingsTree()
 			environment->Add(new SettingEntry("station.catchment_increase"));
 			environment->Add(new SettingEntry("station.cargo_class_rating_wait_time"));
 			environment->Add(new SettingEntry("station.station_size_rating_cargo_amount"));
+			environment->Add(new SettingEntry("economy.tick_rate"));
 		}
 
 		SettingsPage *ai = main->Add(new SettingsPage(STR_CONFIG_SETTING_AI));

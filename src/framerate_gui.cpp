@@ -183,16 +183,13 @@ namespace {
 		}
 	};
 
-	/** %Game loop rate, cycles per second */
-	static const double GL_RATE = 1000.0 / MILLISECONDS_PER_TICK;
-
 	/**
 	 * Storage for all performance element measurements.
 	 * Elements are initialized with the expected rate in recorded values per second.
 	 * @hideinitializer
 	 */
 	PerformanceData _pf_data[PFE_MAX] = {
-		PerformanceData(GL_RATE),               // PFE_GAMELOOP
+		PerformanceData(1),                     // PFE_GAMELOOP
 		PerformanceData(1),                     // PFE_ACC_GL_ECONOMY
 		PerformanceData(1),                     // PFE_ACC_GL_TRAINS
 		PerformanceData(1),                     // PFE_ACC_GL_ROADVEHS
@@ -479,6 +476,7 @@ struct FramerateWindow : Window {
 
 	void UpdateData()
 	{
+		_pf_data[PFE_GAMELOOP].expected_rate = _ticks_per_second;
 		double gl_rate = _pf_data[PFE_GAMELOOP].GetRate();
 		bool have_script = false;
 		this->rate_gameloop.SetRate(gl_rate, _pf_data[PFE_GAMELOOP].expected_rate);

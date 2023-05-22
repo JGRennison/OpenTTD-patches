@@ -139,6 +139,7 @@ enum SlXvFeatureIndex {
 	XSLFI_MULTI_CARGO_SHIPS,                      ///< Multi-cargo ships
 	XSLFI_REMAIN_NEXT_ORDER_STATION,              ///< Remain in station if next order is for same station
 	XSLFI_LABEL_ORDERS,                           ///< Label orders
+	XSLFI_VARIABLE_TICK_RATE,                     ///< Variable tick rate
 
 	XSLFI_SCRIPT_INT64,                           ///< See: SLV_SCRIPT_INT64
 	XSLFI_U64_TICK_COUNTER,                       ///< See: SLV_U64_TICK_COUNTER

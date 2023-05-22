@@ -56,6 +56,8 @@ extern bool _shift_pressed;  ///< Is Shift pressed?
 extern bool _invert_ctrl;
 extern bool _invert_shift;
 extern uint16 _game_speed;
+extern uint8 _milliseconds_per_tick;
+extern float _ticks_per_second;
 
 extern bool _left_button_down;
 extern bool _left_button_clicked;
@@ -79,6 +81,7 @@ void HandleShiftChanged();
 void HandleMouseEvents();
 void UpdateWindows();
 void ChangeGameSpeed(bool enable_fast_forward);
+void SetupTickRate();
 
 void DrawMouseCursor();
 void ScreenSizeChanged();
