@@ -4187,8 +4187,8 @@ bool AfterLoadGame()
 		}
 	}
 
-	if (SlXvIsFeatureMissing(XSLFI_MORE_CARGO_AGE) && IsSavegameVersionBefore(SLV_MORE_CARGO_AGE)) {
-		_settings_game.economy.payment_algorithm = CPA_TRADITIONAL;
+	if (SlXvIsFeatureMissing(XSLFI_MORE_CARGO_AGE)) {
+		_settings_game.economy.payment_algorithm = IsSavegameVersionBefore(SLV_MORE_CARGO_AGE) ? CPA_TRADITIONAL : CPA_MODERN;
 	}
 
 	InitializeRoadGUI();
