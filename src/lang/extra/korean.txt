@@ -971,8 +971,10 @@ STR_TRACE_RESTRICT_REMOVE                                       :{BLACK}제거
 STR_TRACE_RESTRICT_RESET                                        :{BLACK}비우기
 STR_TRACE_RESTRICT_COPY                                         :{BLACK}복사
 STR_TRACE_RESTRICT_APPEND                                       :{BLACK}덧붙이기
+STR_TRACE_RESTRICT_DUPLICATE                                    :{BLACK}복제
 STR_TRACE_RESTRICT_SHARE                                        :{BLACK}공유
 STR_TRACE_RESTRICT_UNSHARE                                      :{BLACK}공유 해제
+STR_TRACE_RESTRICT_SHARE_ONTO                                   :{BLACK}이 신호기 공유
 STR_TRACE_RESTRICT_SELECT_TARGET                                :{BLACK}선택
 STR_TRACE_RESTRICT_SELECT_SIGNAL                                :{BLACK}신호기 선택
 STR_TRACE_RESTRICT_SELECT_TILE                                  :{BLACK}칸 선택
@@ -980,18 +982,21 @@ STR_TRACE_RESTRICT_INSERT_TOOLTIP                               :{BLACK}구문�
 STR_TRACE_RESTRICT_REMOVE_TOOLTIP                               :{BLACK}선택된 구문을 제거합니다.
 STR_TRACE_RESTRICT_RESET_TOOLTIP                                :{BLACK}선택된 신호기의 구문을 모두 제거합니다. (공유된 신호기에는 영향을 주지 않음)
 STR_TRACE_RESTRICT_COPY_TOOLTIP                                 :{BLACK}다른 신호기에서 구문을 복사해 옵니다.
+STR_TRACE_RESTRICT_DUPLICATE_TOOLTIP                            :{BLACK}선택한 구문을 복제합니다.{}CTRL + 클릭하면 다른 신호기의 프로그램을 뒤에 덧붙입니다.
 STR_TRACE_RESTRICT_SHARE_TOOLTIP                                :{BLACK}다른 신호기와 구문을 공유합니다.
 STR_TRACE_RESTRICT_UNSHARE_TOOLTIP                              :{BLACK}다른 신호기와의 구문 공유를 해제합니다.
+STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA                          :{STRING}{}{BLACK}CTRL + 클릭하면 다른 신호기가 이 프로그램을 공유하도록 만듭니다
 STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP                           :{BLACK}경로 탐색 제한
 STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}선택하려면 구문을 클릭하십시오.{}구문에서 지정된 장소가 있다면, 지정된 장소로 가려면 구문을 Ctrl+클릭하십시오.
 STR_TRACE_RESTRICT_HIGHLIGHT_TOOLTIP                            :{BLACK}이 프로그램을 공유하는 모든 신호기를 선택하여 표시합니다.
 STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING           :{STRING} {PUSH_COLOUR}{RED}(현실적인 감속을 켜야 함){POP_COLOUR}
 STR_TRACE_RESTRICT_WARNING_SIGNAL_MODE_CONTROL_ONLY             :{STRING} {PUSH_COLOUR}{RED}(신호기 모드 조작 행동 전용){POP_COLOUR}
 STR_TRACE_RESTRICT_WARNING_NO_SIGNAL_MODE_CONTROL               :{STRING} {PUSH_COLOUR}{RED}(신호기 모드 조작 행동이 아님){POP_COLOUR}
-STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM                      :{WHITE}구문을 삽입할 수 없습니다.
-STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM                      :{WHITE}구문을 수정할 수 없습니다.
-STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM                      :{WHITE}구문을 제거할 수 없습니다.
+STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM                      :{WHITE}구문을 삽입할 수 없습니다
+STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM                      :{WHITE}구문을 수정할 수 없습니다
+STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM                      :{WHITE}구문을 제거할 수 없습니다
 STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM                        :{WHITE}구문을 옮길 수 없습니다
+STR_TRACE_RESTRICT_ERROR_CAN_T_DUPLICATE_ITEM                   :{WHITE}구문을 복제할 수 없습니다
 STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE                        :{WHITE}값이 너무 큽니다. {DECIMAL} 이하로 설정하십시오.
 STR_TRACE_RESTRICT_ERROR_NO_PROGRAM                             :프로그램이 존재하지 않습니다.
 STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE                       :오프셋이 너무 큽니다.
@@ -1004,6 +1009,7 @@ STR_TRACE_RESTRICT_ERROR_VALIDATE_DUP_ELSE                      :인증 실패: 
 STR_TRACE_RESTRICT_ERROR_VALIDATE_ELIF_NO_IF                    :인증 실패: 시작 '조건문' 없이 존재하는 '아니라면, 조건문'
 STR_TRACE_RESTRICT_ERROR_VALIDATE_UNKNOWN_INSTRUCTION           :인증 실패: 알 수 없는 구문
 STR_TRACE_RESTRICT_ERROR_SOURCE_SAME_AS_TARGET                  :자신을 참조할 수 없습니다.
+STR_TRACE_RESTRICT_ERROR_TARGET_ALREADY_HAS_PROGRAM             :대상 신호기에 이미 프로그램이 있습니다
 STR_TRACE_RESTRICT_ERROR_CAN_T_RESET_SIGNAL                     :{WHITE}구문을 모두 제거할 수 없습니다.
 STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_PROGRAM                     :{WHITE}구문을 복제할 수 없습니다.
 STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_APPEND_PROGRAM              :{WHITE}구문을 덧붙일 수 없습니다.
@@ -1168,7 +1174,10 @@ STR_LAI_BRIDGE_DESCRIPTION_RAILROAD_SIGNAL                      :신호기가 �
 STR_SAVELOAD_UNKNOWN_ID                                         :{YELLOW}이 파일은 다른 맵일 수 있습니다.
 STR_SAVELOAD_DIFFERENT_ID                                       :{YELLOW}이 파일은 다른 맵입니다.
 STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_ID                       :{WHITE}파일 덮어쓰기 (다른 맵)
+STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_VERSION_SUFFIX           :{STRING} (다른 버전)
 STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_ID                     :{YELLOW}이미 존재하는 파일에 정말로 덮어쓸까요?{}{}그 파일은 다른 맵입니다.
+STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_VERSION_SUFFIX         :{STRING}{}{}다른 버전({STRING})에서 저장한 파일입니다.{}덮어씌울 경우 원래 버전에서 다시 불러올 수 없게 됩니다.
+STR_SAVELOAD_OVERWRITE_WARNING_VERSION_NAME                     :({STRING})
 
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}설선 고도:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}설선 고도를 1칸 높입니다
@@ -1206,6 +1215,7 @@ STR_NEWGRF_TOO_MANY_STRINGS_DETAIL                              :{WHITE}몇몇 �
 
 STR_TOWN_VIEW_NOISE_IN_TOWN_NO_LIMIT                            :{BLACK}현재 소음 수준: {ORANGE}{COMMA}
 
+###length 6
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_ROADS                :도로 건설
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_LEVEL_CROSSINGS      :건널목 건설
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TUNNELS                    :터널 건설
@@ -1260,6 +1270,9 @@ STR_DEPARTURES_CALLING_AT_STATION                               :{STRING}, {STAT
 STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{STRING}, {STATION}
 STR_DEPARTURES_CALLING_AT_LIST                                  :{ORANGE}{STRING}
 STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{STRING} / {STATION} 반복
+STR_DEPARTURES_TINY                                             :{TINY_FONT}{STRING}
+STR_DEPARTURES_VIA_DESCRIPTOR                                   :{STRING}{STRING}
+STR_DEPARTURES_VIA_AND                                          :{STRING} and {STRING}
 
 STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
 STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}
@@ -1396,6 +1409,8 @@ STR_QUERY_RENAME_TRAIN_TYPE_WAGON_CAPTION                       :{WHITE}객화�
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT                    :{STRING} SHIFT+클릭해서 선택합니다.
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU                             :{BLACK}기지로 보내는 것을 취소합니다. Ctrl+클릭하면 메뉴를 엽니다. Shift+클릭해서 선택합니다.
 
+STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA                     :{STRING}{BLACK}{}SHIFT + 클릭하면 창에 포커스가 없어도 경로 오버레이를 보여줄지 여부를 전환할 수 있습니다
+
 STR_VEHICLE_STATUS_LOADING_UNLOADING_ADVANCE                    :{STRING}, {VELOCITY}
 STR_VEHICLE_STATUS_BROKEN_DOWN_VEL                              :{RED}고장 - {STRING}, {LTBLUE} {VELOCITY}
 STR_VEHICLE_STATUS_BROKEN_DOWN_VEL_SHORT                        :{RED}고장 - {STRING}
@@ -1489,6 +1504,8 @@ STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_THAN                  :보다 많을 �
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_EQUALS                :보다 많거나 같을 때
 STR_ORDER_CONDITIONAL_COMPARATOR_FULLY_OCCUPIED                 :모두 점유되었을 때
 STR_ORDER_CONDITIONAL_COMPARATOR_NOT_YET_FULLY_OCCUPIED         :모두 점유되지 않았을 때
+STR_ORDER_CONDITIONAL_COMPARATOR_OCCUPANCY_EMPTY                :비었을 때
+STR_ORDER_CONDITIONAL_COMPARATOR_OCCUPANCY_NOT_EMPTY            :비어있지 않을 때
 STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_SLOT                  :있을 때
 STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_SLOT              :없을 때
 STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_ACQUIRE_SLOT          :있거나 그 슬롯을 획득했을 때
@@ -1523,9 +1540,12 @@ STR_ORDER_LABEL_TEXT                                            :이름표: {STR
 STR_ORDER_LABEL_TEXT_CAPTION                                    :{WHITE}이름표
 STR_ORDER_LABEL_TEXT_BUTTON                                     :이름표
 STR_ORDER_LABEL_TEXT_BUTTON_TOOLTIP                             :{BLACK}이름표 내용 변경
-STR_ORDER_LABEL_DEPARTURES_VIA_BUTTON                           :발착전광판 경유
-STR_ORDER_LABEL_DEPARTURES_VIA                                  :발착전광판: {STRING}: {STRING}
+STR_ORDER_LABEL_DEPARTURES_VIA_BUTTON                           :출발/도착 정보 경유
+STR_ORDER_LABEL_DEPARTURES_VIA                                  :출발/도착 정보: {STRING}: {STRING}
 STR_ORDER_LABEL_DEPARTURES_SHOW_AS_VIA                          :경유로 표시
+STR_ORDER_LABEL_DEPARTURES_REMOVE_VIA                           :이전 종점 경유 제거
+STR_ORDER_LABEL_DEPARTURES_REMOVE_VIA_SHORT                     :경유 제거
+STR_ORDER_LABEL_DEPARTURES_VIA_TYPE_TOOLTIP                     :{BLACK}경유로 표시: 이 경로 이전의 역에서 출발하여 이 경로 이후의 종점으로 향하는 경우 이 역/경유지를 출발/도착 정보에서 경유 역으로 표시합니다.{}{}이전 종점 경유 제거: 이 경로 이전의 호출 지점을 종점으로 표시할 때, 이 역을 경유 역으로 표시하지 않습니다.
 
 STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}{STRING}%
 STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}평균 경로 사용률입니다.{}경로 사용률의 전체 평균을 보여줍니다.
@@ -1649,6 +1669,7 @@ STR_CARGO_TYPE_UNLOAD_ORDERS_DROP_TOOLTIP                       :{BLACK}이 화�
 STR_CARGO_TYPE_ORDERS_SET_TO_ALL_LABEL                          :{BLACK}모두 설정:
 STR_CARGO_TYPE_ORDERS_SET_TO_ALL_TOOLTIP                        :{BLACK}모든 화물의 승/하차 설정을 한 번에 변경합니다.
 
+##default-translation STR_SCREENSHOT_WORLD_SCREENSHOT
 STR_SCREENSHOT_WORLD_SCREENSHOT_DEFAULT_ZOOM                    :{BLACK}기본 확대 지도 전체 스크린 샷
 STR_SCREENSHOT_WORLD_SCREENSHOT_CURRENT_ZOOM                    :{BLACK}현재 확대 지도 전체 스크린 샷
 
@@ -1765,6 +1786,9 @@ STR_JUST_STRING2                                                :{STRING}
 STR_JUST_STRING3                                                :{STRING}
 
 STR_JUST_VELOCITY                                               :{VELOCITY}
+
+STR_JUST_TT_TICKS                                               :{TT_TICKS}
+STR_JUST_TT_TICKS_LONG                                          :{TT_TICKS_LONG}
 
 STR_BLACK_DECIMAL                                               :{BLACK}{DECIMAL}
 STR_WHITE_DATE_WALLCLOCK_LONG                                   :{WHITE}{DATE_WALLCLOCK_LONG}
@@ -1953,11 +1977,17 @@ STR_SCHDISPATCH_DELAY_TOOLTIP                                   :{BLACK}허용�
 STR_SCHDISPATCH_DELAY_CAPTION_MINUTE                            :{BLACK}지연 (분)
 STR_SCHDISPATCH_DELAY_CAPTION_DAY                               :{BLACK}지연 (일)
 STR_SCHDISPATCH_DELAY_CAPTION_TICKS                             :{BLACK}지연 (틱)
+STR_SCHDISPATCH_ADJUST                                          :{BLACK}출발 슬롯 조정
+STR_SCHDISPATCH_ADJUST_TOOLTIP                                  :{BLACK}이 일정에 있는 모든 출발 슬롯을 조정합니다
+STR_SCHDISPATCH_ADJUST_CAPTION_MINUTE                           :{BLACK}일괄 추가 (분)
+STR_SCHDISPATCH_ADJUST_CAPTION_DAY                              :{BLACK}일괄 추가 (일)
+STR_SCHDISPATCH_ADJUST_CAPTION_TICKS                            :{BLACK}일괄 추가 (틱)
 STR_SCHDISPATCH_RESET_LAST_DISPATCH                             :{BLACK}최근 일정 재설정
 STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}최근 배차 일정을 재설정합니다. 먼 미래의 차량에 대해 오작동할 때 사용하십시오.
 STR_SCHDISPATCH_CLEAR                                           :{BLACK}출발 슬롯 초기화
 STR_SCHDISPATCH_CLEAR_TOOLTIP                                   :{BLACK}일정에서 모든 출발 슬롯을 제거합니다.
 STR_SCHDISPATCH_MANAGE                                          :{BLACK}일정 관리
+STR_SCHDISPATCH_MANAGE_TOOLTIP_SUFFIX                           :{}{}{STRING}
 STR_SCHDISPATCH_PREV_SCHEDULE                                   :{BLACK}이전
 STR_SCHDISPATCH_PREV_SCHEDULE_TOOLTIP                           :{BLACK}이전 배차 일정으로 이동합니다
 STR_SCHDISPATCH_NEXT_SCHEDULE                                   :{BLACK}다음
@@ -1966,6 +1996,10 @@ STR_SCHDISPATCH_ADD_SCHEDULE                                    :{BLACK}추가
 STR_SCHDISPATCH_ADD_SCHEDULE_TOOLTIP                            :{BLACK}새 배차 일정 추가
 STR_SCHDISPATCH_REMOVE_SCHEDULE                                 :{BLACK}현재 일정 제거
 STR_SCHDISPATCH_REMOVE_SCHEDULE_TOOLTIP                         :{BLACK}이 배차 일정을 완전히 제거합니다
+STR_SCHDISPATCH_DUPLICATE_SCHEDULE                              :{BLACK}현재 일정 복제
+STR_SCHDISPATCH_DUPLICATE_SCHEDULE_TOOLTIP                      :{BLACK}이 배차 일정을 복제합니다.
+STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES                        :{BLACK}다른 차량 일정 덧붙이기
+STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES_TOOLTIP                :{BLACK}다른 차량의 배차 일정을 덧붙입니다.
 STR_SCHDISPATCH_NO_SCHEDULES                                    :{BLACK}일정 없음
 STR_SCHDISPATCH_SCHEDULE_ID                                     :{BLACK}일정 {NUM}/{NUM}
 STR_SCHDISPATCH_NAMED_SCHEDULE_ID                               :{BLACK}{STRING} ({NUM}/{NUM})
@@ -1997,6 +2031,7 @@ STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_CAPTION                   :{WHITE}일정 �
 STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_TEXT                      :{WHITE}정말로 이 일정을 삭제하시겠습니까? (출발 슬롯 {NUM}개 포함)
 
 STR_ERROR_SCHDISPATCH_TRIED_TO_ADD_TOO_MANY_SLOTS               :{WHITE}너무 많은 출발 슬롯을 한 번에 추가하려고 했습니다
+STR_ERROR_SCHDISPATCH_ADJUSTMENT_TOO_LARGE                      :{WHITE}출발 슬롯 조정값이 너무 큽니다
 
 # Modifier key toggle window
 STR_MODIFIER_KEY_TOGGLE_CAPTION                                 :{WHITE}보조 키
@@ -2017,3 +2052,5 @@ STR_STATION_VIEW_RENAME_TOOLTIP_EXTRA                           :{BLACK}{STRING}
 STR_ERROR_CAN_T_EXCHANGE_STATION_NAMES                          :{WHITE}역 이름을 바꿀 수 없습니다...
 STR_ERROR_STATIONS_NOT_IN_SAME_TOWN                             :{WHITE}... 역이 같은 도시 안에 있지 않습니다
 STR_ERROR_STATION_ATTACHED_TO_INDUSTRY                          :{WHITE}... 역이 산업시설과 연관되어 있습니다
+
+STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_EXTRA                     :{STRING}{}{BLACK}CTRL + 클릭하면 전체 칸 대신 선로 일부분만 변환할 수 있습니다.
