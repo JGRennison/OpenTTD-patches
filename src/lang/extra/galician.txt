@@ -566,6 +566,11 @@ STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED_HELPTEXT       :Porcentaxe da v
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION                   :Probabilidade de que as vilas arranxen as estradas aleatoriamente: {STRING}
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION_HELPTEXT          :A probabilidade de que as estradas das vilas sexa aleatoriamente reconstruídas (0 = desactivado, 1000 = máximo)
 
+STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM                      :Algoritmo de pago de mercadorías: {STRING2}
+STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_HELPTEXT             :O algoritmo que se utiliza para calcular canto diñeiro se paga por levar mercadorías o seu destino.
+STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_TRADITIONAL          :Tradicional
+STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_MODERN               :Moderno
+
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Distancia mínima entre vilas: {STRING}
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Fixa a distancia mínima en cadros entre cidades para a xeración do mapa e as fundacións aleatorias
 
@@ -965,8 +970,10 @@ STR_TRACE_RESTRICT_REMOVE                                       :{BLACK}Eliminar
 STR_TRACE_RESTRICT_RESET                                        :{BLACK}Restablecer
 STR_TRACE_RESTRICT_COPY                                         :{BLACK}Copiar
 STR_TRACE_RESTRICT_APPEND                                       :{BLACK}Engadir
+STR_TRACE_RESTRICT_DUPLICATE                                    :{BLACK}Duplicar
 STR_TRACE_RESTRICT_SHARE                                        :{BLACK}Compartir
 STR_TRACE_RESTRICT_UNSHARE                                      :{BLACK}Deixar de compartir
+STR_TRACE_RESTRICT_SHARE_ONTO                                   :{BLACK}Compartir en
 STR_TRACE_RESTRICT_SELECT_TARGET                                :{BLACK}Seleccionar obxectivo
 STR_TRACE_RESTRICT_SELECT_SIGNAL                                :{BLACK}Seleccionar sinal
 STR_TRACE_RESTRICT_SELECT_TILE                                  :{BLACK}Selecciona cadro
@@ -974,8 +981,10 @@ STR_TRACE_RESTRICT_INSERT_TOOLTIP                               :{BLACK}Insertar
 STR_TRACE_RESTRICT_REMOVE_TOOLTIP                               :{BLACK}Eliminar a instrución seleccionada{}Ctrl+Click para eliminar a instrución condicional seleccionada pero manter os seus contidos
 STR_TRACE_RESTRICT_RESET_TOOLTIP                                :{BLACK}Restablecer o sinal actual (sen afectar os programas compartidos)
 STR_TRACE_RESTRICT_COPY_TOOLTIP                                 :{BLACK}Copiar o programa dende outro sinal{}Ctrl+click para engadir a maiores o programa dende outro sinal
+STR_TRACE_RESTRICT_DUPLICATE_TOOLTIP                            :{BLACK}Duplica a instrución seleccionada{}Ctrl+click para engadir o programa douto sinal
 STR_TRACE_RESTRICT_SHARE_TOOLTIP                                :{BLACK}Compartir o programa con outro sinal
 STR_TRACE_RESTRICT_UNSHARE_TOOLTIP                              :{BLACK}Deixa de compartir o programa con outros sinais, crea unha copia do programa
+STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA                          :{STRING}{}{BLACK}Ctrl+click para fixar que outros sinais compartan este programa
 STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP                           :{BLACK}Restrición de busca de ruta
 STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}Fai click nunha instrución para seleccionala{}Ctrl+Click para desplazarte ata o obxectivo da instrución(se o hai)
 STR_TRACE_RESTRICT_HIGHLIGHT_TOOLTIP                            :{BLACK}Alterna destacar todos os sinais compartindo este programa
@@ -986,6 +995,7 @@ STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM                      :{WHITE}Non se p
 STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM                      :{WHITE}Non se pode modificar a instrución
 STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM                      :{WHITE}Non se pode eliminar a instrución
 STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM                        :{WHITE}Non se pode mover a instrución
+STR_TRACE_RESTRICT_ERROR_CAN_T_DUPLICATE_ITEM                   :{WHITE}Non se pode duplicar a instrución
 STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE                        :{WHITE}O valor é moi grande, o máximo é {DECIMAL}
 STR_TRACE_RESTRICT_ERROR_NO_PROGRAM                             :Non existe ningún programa de rastrexo
 STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE                       :Compensación demasiado grnade
@@ -998,6 +1008,7 @@ STR_TRACE_RESTRICT_ERROR_VALIDATE_DUP_ELSE                      :Fallou a valida
 STR_TRACE_RESTRICT_ERROR_VALIDATE_ELIF_NO_IF                    :Fallou a validación: 'else if' sen abrir 'if'
 STR_TRACE_RESTRICT_ERROR_VALIDATE_UNKNOWN_INSTRUCTION           :Fallou a validación: instrución descoñecida
 STR_TRACE_RESTRICT_ERROR_SOURCE_SAME_AS_TARGET                  :O sinal de orixe e destino son o mesmo
+STR_TRACE_RESTRICT_ERROR_TARGET_ALREADY_HAS_PROGRAM             :O Sinal obxectivo xa ten un programa
 STR_TRACE_RESTRICT_ERROR_CAN_T_RESET_SIGNAL                     :{WHITE}Non se pode restablecer o sinal
 STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_PROGRAM                     :{WHITE}Non se pode copiar o programa
 STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_APPEND_PROGRAM              :{WHITE}Non se pode engadir o programa
@@ -1162,7 +1173,10 @@ STR_LAI_BRIDGE_DESCRIPTION_RAILROAD_SIGNAL                      :Ponte de ferroc
 STR_SAVELOAD_UNKNOWN_ID                                         :{YELLOW}Este arquivo pode ser dunha partida distinta.
 STR_SAVELOAD_DIFFERENT_ID                                       :{YELLOW}Este arquivo é dunha partida distinta.
 STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_ID                       :{WHITE}Sobreescribir arquivo (Diferente partida)
+STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_VERSION_SUFFIX           :{STRING} (Diferente versión)
 STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_ID                     :{YELLOW}Estás seguro de que queres sobreescrivir o arquivo existente?{}{}Este arquivo é de outra partida.
+STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_VERSION_SUFFIX         :{STRING}{}{}O arquivo é dunha versión distinta{STRING1}.{}Se sobreescribe o ficheiro non será lexible pola versión orixinal
+STR_SAVELOAD_OVERWRITE_WARNING_VERSION_NAME                     : ({STRING})
 
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Cota de neve:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Subir a cota de neve unha altura
@@ -1393,6 +1407,8 @@ STR_QUERY_RENAME_TRAIN_TYPE_WAGON_CAPTION                       :{WHITE}Renomear
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT                    :{STRING}. Shift+Click para seleccionar cal
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU                             :{BLACK}Cancelar e envíar o vehículo ó depósito/hangar. Ctrl+Click para menu. Shift+Click para seleccionar depósito/hangar
 
+STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA                     :{STRING}{BLACK}{}Shift+Click para alternar amosar a sobreposición da ruta incluso cando a fiestra non está enfocada
+
 STR_VEHICLE_STATUS_LOADING_UNLOADING_ADVANCE                    :{STRING}, {VELOCITY}
 STR_VEHICLE_STATUS_BROKEN_DOWN_VEL                              :{RED}Avariado - {STRING}, {LTBLUE} {VELOCITY}
 STR_VEHICLE_STATUS_BROKEN_DOWN_VEL_SHORT                        :{RED}Avariado - {STRING}
@@ -1486,6 +1502,8 @@ STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_THAN                  :teña máis de
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_EQUALS                :teña exactamente ou máis de
 STR_ORDER_CONDITIONAL_COMPARATOR_FULLY_OCCUPIED                 :estea completamente ocupada
 STR_ORDER_CONDITIONAL_COMPARATOR_NOT_YET_FULLY_OCCUPIED         :non estea completamente ocupada
+STR_ORDER_CONDITIONAL_COMPARATOR_OCCUPANCY_EMPTY                :está baleiro
+STR_ORDER_CONDITIONAL_COMPARATOR_OCCUPANCY_NOT_EMPTY            :non está baleiro
 STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_SLOT                  :o tren estea en
 STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_SLOT              :o tren non estea en
 STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_ACQUIRE_SLOT          :o tren estea en/adquira
@@ -1521,6 +1539,10 @@ STR_ORDER_LABEL_TEXT_CAPTION                                    :{WHITE}Etiqueta
 STR_ORDER_LABEL_TEXT_BUTTON                                     :Etiqueta
 STR_ORDER_LABEL_TEXT_BUTTON_TOOLTIP                             :{BLACK}Cambiar o texto da etiqueta
 STR_ORDER_LABEL_DEPARTURES_VIA_BUTTON                           :Taboleiro de saída vía
+STR_ORDER_LABEL_DEPARTURES_SHOW_AS_VIA                          :Amosar como vía
+STR_ORDER_LABEL_DEPARTURES_REMOVE_VIA                           :Eliminar vía do anterior término
+STR_ORDER_LABEL_DEPARTURES_REMOVE_VIA_SHORT                     :Eliminar vía
+STR_ORDER_LABEL_DEPARTURES_VIA_TYPE_TOOLTIP                     :{BLACK}Amosar esta estación/punto de ruta como estación vía no taboleiro de saídas para saídas de estacións antes desta orde cara a terminais despois desta orde.{}Usar dúas veces seguidas para unha vía dobre.{}{}Eliminar vía do anterior término: Non amosar esta estación como estación vía cando se mostra un punto de chamada antes desta orde como terminal.
 
 STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}{STRING}%
 STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}Amosar a media de ocupacións{}A porcentaxe amosada é a media xeral de ocupación das ordes
@@ -1590,6 +1612,7 @@ STR_TIMETABLE_SCHEDULED_DISPATCH_TOOLTIP                        :{BLACK}Abrir fi
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER                          :{PUSH_COLOUR}{YELLOW}[{STRING}saída programada]{POP_COLOUR}
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME             :{PUSH_COLOUR}{RED}[{STRING}saída programadda - sen tempo de espera no horario]{POP_COLOUR}
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_SCHEDULE_INDEX           :{NUM}{NBSP}-{NBSP}
+STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NAMED_SCHEDULE           :{STRING}{NBSP}-{NBSP}
 
 STR_TIMETABLE_LOCK_ORDER_TIME_TOOLTIP                           :{BLACK}Bloquear/desbloquear a cantidade de tempo para a orde resaltada (Ctrl+Click fixa o estado de bloqueo para todas as ordes).{}Cando estea bloqueado, a hora non se modificará mediante o autocompletado ou automatización do horario.
 
@@ -1756,8 +1779,12 @@ STR_JUST_TIME_HHMM                                              :{TIME_HHMM}
 
 STR_JUST_STRING1                                                :{STRING}
 STR_JUST_STRING2                                                :{STRING}
+STR_JUST_STRING3                                                :{STRING}
 
 STR_JUST_VELOCITY                                               :{VELOCITY}
+
+STR_JUST_TT_TICKS                                               :{TT_TICKS}
+STR_JUST_TT_TICKS_LONG                                          :{TT_TICKS_LONG}
 
 STR_BLACK_DECIMAL                                               :{BLACK}{DECIMAL}
 STR_WHITE_DATE_WALLCLOCK_LONG                                   :{WHITE}{DATE_WALLCLOCK_LONG}
@@ -1946,11 +1973,17 @@ STR_SCHDISPATCH_DELAY_TOOLTIP                                   :{BLACK}Fixa o m
 STR_SCHDISPATCH_DELAY_CAPTION_MINUTE                            :{BLACK}Atraso (minutos)
 STR_SCHDISPATCH_DELAY_CAPTION_DAY                               :{BLACK}Atraso (días)
 STR_SCHDISPATCH_DELAY_CAPTION_TICKS                             :{BLACK}Atraso (ticks)
+STR_SCHDISPATCH_ADJUST                                          :{BLACK}Axustar slots de saída
+STR_SCHDISPATCH_ADJUST_TOOLTIP                                  :{BLACK}Axustar todos os slots de saída deste programa
+STR_SCHDISPATCH_ADJUST_CAPTION_MINUTE                           :{BLACK}Axuste a engadir (minutos)
+STR_SCHDISPATCH_ADJUST_CAPTION_DAY                              :{BLACK}Axuste a engadir (días)
+STR_SCHDISPATCH_ADJUST_CAPTION_TICKS                            :{BLACK}Axuste a engadir (ticks)
 STR_SCHDISPATCH_RESET_LAST_DISPATCH                             :{BLACK}Restablecer última saída
 STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}Restablecer cando un vehículo fora despachado por última vez dende o programa.
 STR_SCHDISPATCH_CLEAR                                           :{BLACK}Limpar slots de saídas
 STR_SCHDISPATCH_CLEAR_TOOLTIP                                   :{BLACK}Limpar todos os slots de saídas do programa
 STR_SCHDISPATCH_MANAGE                                          :{BLACK}Xestionar programa
+STR_SCHDISPATCH_MANAGE_TOOLTIP_SUFFIX                           :{}{}{STRING}
 STR_SCHDISPATCH_PREV_SCHEDULE                                   :{BLACK}Anterior
 STR_SCHDISPATCH_PREV_SCHEDULE_TOOLTIP                           :{BLACK}Ir a saída programada anterior
 STR_SCHDISPATCH_NEXT_SCHEDULE                                   :{BLACK}Seguinte
@@ -1959,8 +1992,16 @@ STR_SCHDISPATCH_ADD_SCHEDULE                                    :{BLACK}Engadir
 STR_SCHDISPATCH_ADD_SCHEDULE_TOOLTIP                            :{BLACK}Engadir unha nova saída programada
 STR_SCHDISPATCH_REMOVE_SCHEDULE                                 :{BLACK}Eliminar a programación actual
 STR_SCHDISPATCH_REMOVE_SCHEDULE_TOOLTIP                         :{BLACK}Eliminar por completeo esta saída programada.
+STR_SCHDISPATCH_DUPLICATE_SCHEDULE                              :{BLACK}Duplicar programación actual
+STR_SCHDISPATCH_DUPLICATE_SCHEDULE_TOOLTIP                      :{BLACK}Crear unha copia desta programación de saída.
+STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES                        :{BLACK}Engadir programacións dende vehículo
+STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES_TOOLTIP                :{BLACK}Engadir as programacións dende outro vehículo.
 STR_SCHDISPATCH_NO_SCHEDULES                                    :{BLACK}Sen programas
 STR_SCHDISPATCH_SCHEDULE_ID                                     :{BLACK}Programa {NUM} de {NUM}
+STR_SCHDISPATCH_NAMED_SCHEDULE_ID                               :{BLACK}{STRING} ({NUM} de {NUM})
+STR_SCHDISPATCH_RENAME_SCHEDULE_TOOLTIP                         :{BLACK}Nome do programa
+STR_SCHDISPATCH_RENAME_SCHEDULE_CAPTION                         :{WHITE}Nome do programa
+STR_ERROR_CAN_T_RENAME_SCHEDULE                                 :{WHITE}Non se pode renomear programa...
 
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}Última saída ás {DATE_WALLCLOCK_TINY}.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}A última saída aínda non saíu, sairá ás {DATE_WALLCLOCK_TINY}.
@@ -1986,6 +2027,7 @@ STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_CAPTION                   :{WHITE}Eliminar
 STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_TEXT                      :{WHITE}Seguro que queres eliminar este programa (contendo {NUM} slot{P "" s} de saída)?
 
 STR_ERROR_SCHDISPATCH_TRIED_TO_ADD_TOO_MANY_SLOTS               :{WHITE}Intentouse engadir demasiados slots de saída ó mesmo tempo
+STR_ERROR_SCHDISPATCH_ADJUSTMENT_TOO_LARGE                      :{WHITE}O axuste do slot de saída é demasiado grande
 
 # Modifier key toggle window
 STR_MODIFIER_KEY_TOGGLE_CAPTION                                 :{WHITE}Teclas modificadoras
@@ -2005,3 +2047,5 @@ STR_STATION_VIEW_RENAME_TOOLTIP_EXTRA                           :{BLACK}{STRING}
 STR_ERROR_CAN_T_EXCHANGE_STATION_NAMES                          :{WHITE}Non se poden intercambiar os nomes das estacións...
 STR_ERROR_STATIONS_NOT_IN_SAME_TOWN                             :{WHITE}... as estacións non están na mesma vila
 STR_ERROR_STATION_ATTACHED_TO_INDUSTRY                          :{WHITE}... a estación está conectada a unha industria
+
+STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_EXTRA                     :{STRING}{}{BLACK}Ctrl+Click para convertir pezas de raís en lugar do cadro enteiro.
