@@ -32,6 +32,8 @@ static const int DAYS_IN_YEAR      = 365; ///< days per year
 static const int DAYS_IN_LEAP_YEAR = 366; ///< sometimes, you need one day more...
 static const int MONTHS_IN_YEAR    =  12; ///< months per year
 
+static const int SECONDS_PER_DAY   = 2;   ///< approximate seconds per day, not for precise calculations
+
 #define DATE_UNIT_SIZE (_settings_time.time_in_minutes ? _settings_time.ticks_per_minute : (DAY_TICKS * _settings_game.economy.day_length_factor))
 
 static const int STATION_RATING_TICKS     = 185; ///< cycle duration for updating station rating

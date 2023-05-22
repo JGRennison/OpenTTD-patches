@@ -28,7 +28,7 @@ INSTANTIATE_POOL_METHODS(LinkGraphJob)
 
 static DateTicks GetLinkGraphJobJoinDateTicks(uint duration_multiplier)
 {
-	DateTicks ticks = (_settings_game.linkgraph.recalc_time * DAY_TICKS * duration_multiplier) / _settings_game.economy.day_length_factor;
+	DateTicks ticks = (_settings_game.linkgraph.recalc_time * DAY_TICKS * duration_multiplier) / (SECONDS_PER_DAY * _settings_game.economy.day_length_factor);
 	return ticks + (_date * DAY_TICKS) + _date_fract;
 }
 

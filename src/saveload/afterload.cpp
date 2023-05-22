@@ -904,6 +904,12 @@ bool AfterLoadGame()
 		_settings_game.game_creation.ending_year = DEF_END_YEAR;
 	}
 
+	/* Convert linkgraph update settings from days to seconds. */
+	if (IsSavegameVersionBefore(SLV_LINKGRAPH_SECONDS) && SlXvIsFeatureMissing(XSLFI_LINKGRAPH_DAY_SCALE, 3)) {
+		_settings_game.linkgraph.recalc_interval *= SECONDS_PER_DAY;
+		_settings_game.linkgraph.recalc_time     *= SECONDS_PER_DAY;
+	}
+
 	/* Load the sprites */
 	GfxLoadSprites();
 	LoadStringWidthTable();
