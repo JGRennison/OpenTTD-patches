@@ -2278,7 +2278,6 @@ static SettingsContainer &GetSettingsTree()
 				cdist->Add(new SettingEntry("linkgraph.demand_distance"));
 				cdist->Add(new SettingEntry("linkgraph.demand_size"));
 				cdist->Add(new SettingEntry("linkgraph.short_path_saturation"));
-				cdist->Add(new SettingEntry("linkgraph.recalc_not_scaled_by_daylength"));
 				cdist->Add(new SettingEntry("linkgraph.aircraft_link_scale"));
 			}
 			SettingsPage *treedist = environment->Add(new SettingsPage(STR_CONFIG_SETTING_ENVIRONMENT_TREES));

@@ -562,9 +562,6 @@ STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION_HELPTEXT          :随机城镇道
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :城镇间最小距离：{STRING}
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :设置在地图生成和随机建立城镇过程中城镇之间的在地图上的最小的以格子计的距离
 
-STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED               :不以日长因子对分配图重计算时间缩放：{STRING}
-STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED_HELPTEXT      :当启用时，分配图重计算间隔和时间将以未经缩放的单位运算。
-
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO                       :对此货物重载分配模式：{STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_PARAM                 :对{STRING}重载分配模式：{STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_HELPTEXT              :"（缺省）"意味着对此货物应用缺省分配模式。“对称的”意味着从甲车站运往乙车站的货物数量与从乙车站运往甲车站的大致相同。 “不对称”意味着任何一站前往另一个车站的货物的数量会被系统任意地决定。“手动”意味着对于此类货物系统不会自动分配其目的地。

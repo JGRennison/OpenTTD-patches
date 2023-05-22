@@ -569,9 +569,6 @@ STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION_HELPTEXT          :A probabilidade
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Distancia mínima entre vilas: {STRING}
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Fixa a distancia mínima en cadros entre cidades para a xeración do mapa e as fundacións aleatorias
 
-STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED               :Non escalar os días do gráfico de enlaces polo factor da lonxitude do día: {STRING}
-STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED_HELPTEXT      :Cando se habilita, o intervalo de recálculo do gráfico de enlaces están en unidades dos días orixinais, non escalados, en lugar do escalado da lonxitude dos días do calendario.
-
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO                       :Modo de distribución para esta carga: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_PARAM                 :Anulación do modo de distribución para {STRING}: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_HELPTEXT              :"(por defecto)" significa que o modo de distribución é o por defecto para a clase desta carga. "simétrica" significa que aproximadamente o mesmo número de carga irá da estación A a B como da B a A. "asimétrica" significa que cantidades arbitrarias de carga enviaranse en calquera direción. "manual" significa que non se fará unha distribución automática para esta carga.

@@ -108,6 +108,9 @@ static size_t ConvertLandscape(const char *value);
 #define SDT_NULL(length, from, to, extver)\
 	NSD(Null, SLE_CONDNULL_X(length, from, to, extver))
 
+#define SDT_NAMED_NULL(name, length, from, to, extver, patxname)\
+	NSD(Null, SLE_CONDNULL_X(length, from, to, extver), name, patxname)
+
 #define SDTC_VAR(var, type, flags, def, min, max, interval, str, strhelp, strval, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname)\
 	SDTG_VAR(#var, type, flags, _settings_client.var, def, min, max, interval, str, strhelp, strval, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname)
 

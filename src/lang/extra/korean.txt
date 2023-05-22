@@ -575,9 +575,6 @@ STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_MODERN               :개선
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :도시 사이의 최소 거리: {STRING}
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :지도를 생성하고 무작위로 도시를 배치할 때 도시 사이의 최소 거리를 설정합니다.
 
-STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED               :연결 상태를 계산할 때 사용되는 1일을 조정 변수로 조정하지 않기: {STRING}
-STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED_HELPTEXT      :활성화되면 조정된 달력 날짜 대신 기본 날짜 길이를 연결 상태 계산에 사용할 것입니다.
-
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO                       :이 화물에 대한 화물 분배 형식 덮어쓰기: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_PARAM                 :{STRING}에 대한 화물 분배 형식 덮어쓰기: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_HELPTEXT              :"(기본)"은 이 화물 종류에 대한 기본 화물 분배 형식을 따른다는 뜻입니다. "대칭"은 대체로 A역에서 B역으로 가려는 화물의 수가 B에서 A로 가려는 화물의 수와 대체로 같다는 뜻입니다. "비대칭"은 아무 방향이나 임의의 양만큼 가게 됨을 뜻합니다. "수동"은 자동적인 화물 분배가 일어나지 않고 기존 방식을 사용하겠음을 뜻합니다.

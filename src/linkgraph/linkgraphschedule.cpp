@@ -319,7 +319,7 @@ void StateGameLoop_LinkGraphPauseControl()
 			DoCommandP(0, PM_PAUSED_LINK_GRAPH, 0, CMD_PAUSE);
 		}
 	} else if (_pause_mode == PM_UNPAUSED && _tick_skip_counter == 0) {
-		if (!_settings_game.linkgraph.recalc_not_scaled_by_daylength || _settings_game.economy.day_length_factor == 1) {
+		if (_settings_game.economy.day_length_factor == 1) {
 			if (_date_fract != LinkGraphSchedule::SPAWN_JOIN_TICK - 2) return;
 			if (_date % _settings_game.linkgraph.recalc_interval != _settings_game.linkgraph.recalc_interval / 2) return;
 		} else {
@@ -355,7 +355,7 @@ void OnTick_LinkGraph()
 {
 	int offset;
 	int interval;
-	if (!_settings_game.linkgraph.recalc_not_scaled_by_daylength || _settings_game.economy.day_length_factor == 1) {
+	if (_settings_game.economy.day_length_factor == 1) {
 		if (_date_fract != LinkGraphSchedule::SPAWN_JOIN_TICK) return;
 		interval = _settings_game.linkgraph.recalc_interval;
 		offset = _date % interval;

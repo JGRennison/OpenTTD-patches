@@ -246,9 +246,6 @@ STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION_HELPTEXT          :Pravděpodobnos
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Minimální vzdálenost mezi městy: {STRING}
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Nastaví minimální počet políček mezi městy pro generování mapy a náhodně založené město
 
-STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED               :Neupravovat měřítko dnů distribučního grafu podle faktoru délky dne: {STRING}
-STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED_HELPTEXT      :Pokud je zapnuto, interval přepočtu distribučního grafu a čas jsou v jednotkách původních dnů, namísto kalendářních dnů naškálovaných podle délky dne.
-
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO                       :Přepsat mód distribuce pro tento náklad: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_PARAM                 :Přepsat mód distribuce pro {STRING}: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_HELPTEXT              :"výchozí" znamená, že režim distribuce je výchozí pro třídu tohoto nákladu. "symetrický" znamená, že zhruba ze stejného počtu nákladu půjde ze stanice A do stanice B jako z B do A. "asymetrický" znamená, že libovolné množství nákladu lze odeslat v obou směrech. "manuální" znamená, že u tohoto nákladu nedojde k žádné automatické distribuci.

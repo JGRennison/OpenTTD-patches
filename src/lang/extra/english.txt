@@ -607,9 +607,6 @@ STR_CONFIG_SETTING_TICK_RATE_MODERN                             :27 ms/tick (mod
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Minimum distance between towns: {STRING2}
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Set the minimum distance in tiles between towns for map generation and random founding
 
-STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED               :Do not scale the linkgraph days by the day length factor: {STRING2}
-STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED_HELPTEXT      :When enabled, the linkgraph recalculation interval and time are in units of unscaled, original days, instead of day-length scaled calendar days.
-
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO                       :Distribution mode override for this cargo: {STRING2}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_PARAM                 :Distribution mode override for {STRING}: {STRING2}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_HELPTEXT              :"(default)" means that the distribution mode is the default for the class of this cargo. "symmetric" means that roughly the same number of cargo will go from a station A to a station B as from B to A. "asymmetric" means that arbitrary amounts of cargo can be sent in either direction. "manual" means that no automatic distribution will take place for this cargo.

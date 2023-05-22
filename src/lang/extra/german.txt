@@ -520,9 +520,6 @@ STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION_HELPTEXT          :Setze den Wert 
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Minimaler Abstand zwischen Städten: {STRING}
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Stelle den Mindestabstand zwischen Städten in Kacheln für die Kartenerzeugung und zufällige Stadtgründungen ein.
 
-STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED               :Skaliere die Laufzeit für jede Neuberechnung der Warenverteilung nicht um den Faktor der Tageslänge: {STRING}
-STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED_HELPTEXT      :Wenn aktiviert, wird die Laufzeit das Intervall für jede Neuberechnung des Verteilungsgraphen in Tagen im Maßstab der originalen Tageslänge angegeben, anstelle der um den Tageslänge-Faktoren skalierten Kalendertage.
-
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO                       :Zu überschreibendes Verteilungsschema für folgede Frachtart: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_PARAM                 :Zu überschreibendes Verteilungsschema für {STRING}: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_HELPTEXT              :"(standard)" bedeutet, dass das Standard-Verteilungsschema der Frachtklasse dieser Frachtart verwendet wird. "Symmetrisch" bedeutet, dass etwa dieselbe Menge an Fracht von Station A nach Station B transportiert wird wie umgekehrt von B nach A. "Asymmetrisch" bedeutet, dass eine unterschiedliche Menge in die jeweiligen Richtungen gesendet wird. "Manuell" bedeutet, dass keine automatische Verteilung stattfindet.
