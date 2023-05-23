@@ -29,6 +29,7 @@
 		<li><a href="#road">Road: GSRoad and AIRoad</a></li>
 		<li><a href="#company">Company: GSCompany and AICompany</a></li>
 		<li><a href="#inflation">Inflation: GSInflation and AIInflation</a></li>
+		<li><a href="#asyncmode">Command Asynchronous Mode: GSAsyncMode</a></li>
 	</ul>
 
 	<h3 id="date">Date: <a href="https://docs.openttd.org/gs-api/classGSDate.html">GSDate Class</a> and <a href="https://docs.openttd.org/ai-api/classAIDate.html">AIDate Class</a></h3>
@@ -147,6 +148,25 @@
 			<div class="code">static bool SetPaymentFactor (int64 factor)</div>
 			<div class="methodtext">Set the inflation factor for payments (GS only).</div>
 			<div class="methodtext">The inflation factor is a fixed point value (16 bits).</div>
+		</div>
+	</div>
+
+	<h3 id="asyncmode">Command Asynchronous Mode: GSAsyncMode Class</h3>
+	<div class="indent">
+		<h4>Public Constructor:</h4>
+		<div class="indent">
+			<div class="code">GSAsyncMode (bool asynchronous)</div>
+			<div class="methodtext">Creating an instance of this class switches the asynchronous execution mode for commands.</div>
+			<div class="methodtext">
+				A value of true sets the mode to Asynchronous, the commands you execute are queued for later execution, and the script
+				is not delayed waiting for the command result. The estimated result is returned to the script.
+				The actual cost and whether the command succeeded when the command is eventually executed may differ from what was returned to the script.
+			</div>
+			<div class="methodtext">
+				A value of false sets the mode to Non-Asynchronous, this is the normal mode of executing commands.
+			</div>
+			<div class="methodtext">The original mode is stored and recovered from when ever the instance is destroyed.</div>
+			<div class="methodtext">Use in a similar way to the <a href="https://docs.openttd.org/gs-api/classGSTestMode.html">GSTestMode class</a>.</div>
 		</div>
 	</div>
 </body>

@@ -29,6 +29,11 @@ struct CommandAuxiliaryBase;
 typedef bool (ScriptModeProc)();
 
 /**
+ * The callback function for Async Mode-classes.
+ */
+typedef bool (ScriptAsyncModeProc)();
+
+/**
  * Uper-parent object of all API classes. You should never use this class in
  *   your script, as it doesn't publish any public functions. It is used
  *   internally to have a common place to handle general things, like internal
@@ -172,6 +177,21 @@ protected:
 	 * Get the instance of the current mode your script is currently under.
 	 */
 	static ScriptObject *GetDoCommandModeInstance();
+
+	/**
+	 * Set the current async mode of your script to this proc.
+	 */
+	static void SetDoCommandAsyncMode(ScriptAsyncModeProc *proc, ScriptObject *instance);
+
+	/**
+	 * Get the current async mode your script is currently under.
+	 */
+	static ScriptModeProc *GetDoCommandAsyncMode();
+
+	/**
+	 * Get the instance of the current async mode your script is currently under.
+	 */
+	static ScriptObject *GetDoCommandAsyncModeInstance();
 
 	/**
 	 * Set the delay of the DoCommand.

@@ -86,6 +86,22 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	return GetStorage()->mode_instance;
 }
 
+/* static */ void ScriptObject::SetDoCommandAsyncMode(ScriptAsyncModeProc *proc, ScriptObject *instance)
+{
+	GetStorage()->async_mode = proc;
+	GetStorage()->async_mode_instance = instance;
+}
+
+/* static */ ScriptAsyncModeProc *ScriptObject::GetDoCommandAsyncMode()
+{
+	return GetStorage()->async_mode;
+}
+
+/* static */ ScriptObject *ScriptObject::GetDoCommandAsyncModeInstance()
+{
+	return GetStorage()->async_mode_instance;
+}
+
 /* static */ void ScriptObject::SetLastCommand(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	ScriptStorage *s = GetStorage();
@@ -340,6 +356,9 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	/* Are we only interested in the estimate costs? */
 	bool estimate_only = GetDoCommandMode() != nullptr && !GetDoCommandMode()();
 
+	/* Are we only interested in the estimate costs? */
+	bool asynchronous = GetDoCommandAsyncMode() != nullptr && GetDoCommandAsyncMode()() && GetActiveInstance()->GetScriptType() == ST_GS;
+
 	/* Only set p2 when the command does not come from the network. */
 	if (GetCommandFlags(cmd) & CMD_CLIENT_ID && p2 == 0) p2 = UINT32_MAX;
 
@@ -350,7 +369,9 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	if (!estimate_only && _networking && !_generating_world) SetLastCommand(tile, p1, p2, p3, cmd);
 
 	/* Try to perform the command. */
-	CommandCost res = ::DoCommandPScript(tile, p1, p2, p3, cmd, (_networking && !_generating_world) ? ScriptObject::GetActiveInstance()->GetDoCommandCallback() : nullptr, text, false, estimate_only, aux_data);
+	CommandCost res = ::DoCommandPScript(tile, p1, p2, p3, cmd,
+			(_networking && !_generating_world && !asynchronous) ? ScriptObject::GetActiveInstance()->GetDoCommandCallback() : nullptr,
+			text, false, estimate_only, asynchronous, aux_data);
 
 	/* We failed; set the error and bail out */
 	if (res.Failed()) {
@@ -372,11 +393,12 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	SetLastCommandResultData(res.GetResultData());
 	SetLastCommandRes(true);
 
-	if (_generating_world) {
+	if (_generating_world || asynchronous) {
 		IncreaseDoCommandCosts(res.GetCost());
 		if (callback != nullptr) {
 			/* Insert return value into to stack and throw a control code that
 			 * the return value in the stack should be used. */
+			if (!_generating_world) ScriptController::DecreaseOps(100);
 			callback(GetActiveInstance());
 			throw SQInteger(1);
 		}

@@ -55,7 +55,7 @@ inline bool DoCommandP(const CommandContainer *container, bool my_cmd = true)
 	return DoCommandPEx(container->tile, container->p1, container->p2, container->p3, container->cmd, container->callback, container->text.c_str(), container->aux_data.get(), my_cmd);
 }
 
-CommandCost DoCommandPScript(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd, bool estimate_only, const CommandAuxiliaryBase *aux_data);
+CommandCost DoCommandPScript(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd, bool estimate_only, bool asynchronous, const CommandAuxiliaryBase *aux_data);
 CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd, bool estimate_only, const CommandAuxiliaryBase *aux_data);
 
 void NetworkSendCommand(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, CompanyID company, const CommandAuxiliaryBase *aux_data);
