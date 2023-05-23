@@ -644,24 +644,15 @@ void ClearCommandLog()
 	_command_log_aux.Reset();
 }
 
-static void DumpSubCommandLog(char *&buffer, const char *last, const CommandLog &cmd_log, const unsigned int count)
+static void DumpSubCommandLogEntry(char *&buffer, const char *last, const CommandLogEntry &entry)
 {
-	unsigned int log_index = cmd_log.next;
-	for (unsigned int i = 0 ; i < count; i++) {
-		if (log_index > 0) {
-			log_index--;
-		} else {
-			log_index = (uint)cmd_log.log.size() - 1;
-		}
-		const CommandLogEntry &entry = cmd_log.log[log_index];
-
 		auto fc = [&](CommandLogEntryFlag flag, char c) -> char {
 			return entry.log_flags & flag ? c : '-';
 		};
 
 		YearMonthDay ymd;
 		ConvertDateToYMD(entry.date, &ymd);
-		buffer += seprintf(buffer, last, " %3u | %4i-%02i-%02i, %2i, %3i", i, ymd.year, ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter);
+		buffer += seprintf(buffer, last, "%4i-%02i-%02i, %2i, %3i", ymd.year, ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter);
 		if (_networking) {
 			buffer += seprintf(buffer, last, ", %08X", entry.frame_counter);
 		}
@@ -686,6 +677,22 @@ static void DumpSubCommandLog(char *&buffer, const char *last, const CommandLog 
 				buffer += seprintf(buffer, last, " [%s]", entry.text.c_str());
 				break;
 		}
+}
+
+static void DumpSubCommandLog(char *&buffer, const char *last, const CommandLog &cmd_log, const unsigned int count)
+{
+	unsigned int log_index = cmd_log.next;
+	for (unsigned int i = 0 ; i < count; i++) {
+		if (log_index > 0) {
+			log_index--;
+		} else {
+			log_index = (uint)cmd_log.log.size() - 1;
+		}
+
+		buffer += seprintf(buffer, last, " %3u | ", i);
+
+		const CommandLogEntry &entry = cmd_log.log[log_index];
+		DumpSubCommandLogEntry(buffer, last, entry);
 
 		buffer += seprintf(buffer, last, "\n");
 	}
@@ -876,6 +883,16 @@ Money GetAvailableMoneyForCommand()
 	return Company::Get(company)->money;
 }
 
+static void DebugLogCommandLogEntry(const CommandLogEntry &entry)
+{
+	if (_debug_command_level <= 0) return;
+
+	char buffer[256];
+	char *b = buffer;
+	DumpSubCommandLogEntry(b, lastof(buffer), entry);
+	debug_print("command", buffer);
+}
+
 static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandLogEntryFlag log_flags, const char *text)
 {
 	if (res.Failed()) log_flags |= CLEF_CMD_FAILED;
@@ -892,6 +909,7 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32
 				current.current_company == _current_company && current.local_company == _local_company) {
 			current.log_flags |= log_flags | CLEF_TWICE;
 			current.log_flags &= ~CLEF_ONLY_SENDING;
+			DebugLogCommandLogEntry(current);
 			return;
 		}
 	}
@@ -905,6 +923,7 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32
 	}
 
 	cmd_log.log[cmd_log.next] = CommandLogEntry(tile, p1, p2, p3, cmd, log_flags, std::move(str));
+	DebugLogCommandLogEntry(cmd_log.log[cmd_log.next]);
 	cmd_log.next = (cmd_log.next + 1) % cmd_log.log.size();
 	cmd_log.count++;
 }

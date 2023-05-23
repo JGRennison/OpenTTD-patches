@@ -53,6 +53,7 @@ extern int _debug_yapfdesync_level;
 extern int _debug_console_level;
 extern int _debug_linkgraph_level;
 extern int _debug_sound_level;
+extern int _debug_command_level;
 #ifdef RANDOM_DEBUG
 extern int _debug_random_level;
 extern int _debug_statecsum_level;

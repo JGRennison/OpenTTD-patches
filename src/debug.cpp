@@ -65,6 +65,7 @@ int _debug_yapfdesync_level;
 int _debug_console_level;
 int _debug_linkgraph_level;
 int _debug_sound_level;
+int _debug_command_level;
 #ifdef RANDOM_DEBUG
 int _debug_random_level;
 int _debug_statecsum_level;
@@ -102,6 +103,7 @@ struct DebugLevel {
 	DEBUG_LEVEL(console),
 	DEBUG_LEVEL(linkgraph),
 	DEBUG_LEVEL(sound),
+	DEBUG_LEVEL(command),
 #ifdef RANDOM_DEBUG
 	DEBUG_LEVEL(random),
 	DEBUG_LEVEL(statecsum),
