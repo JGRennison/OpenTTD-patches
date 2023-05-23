@@ -356,7 +356,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	/* Are we only interested in the estimate costs? */
 	bool estimate_only = GetDoCommandMode() != nullptr && !GetDoCommandMode()();
 
-	/* Are we only interested in the estimate costs? */
+	/* Should the command be executed asynchronously? */
 	bool asynchronous = GetDoCommandAsyncMode() != nullptr && GetDoCommandAsyncMode()() && GetActiveInstance()->GetScriptType() == ST_GS;
 
 	/* Only set p2 when the command does not come from the network. */

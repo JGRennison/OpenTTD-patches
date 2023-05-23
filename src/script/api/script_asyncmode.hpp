@@ -40,11 +40,6 @@ public:
 	ScriptAsyncMode(HSQUIRRELVM vm);
 #else
 	/**
-	 * Generate a text from string. You can set parameters to the instance which
-	 *  can be required for the string.
-	 * @param string The string of the text.
-	 */
-	/**
 	 * Creating instance of this class switches the build mode to Asynchronous or Non-Asynchronous (normal).
 	 * @note When the instance is destroyed, it restores the mode that was
 	 *   current when the instance was created!
@@ -54,7 +49,7 @@ public:
 #endif /* DOXYGEN_API */
 
 	/**
-	 * Destroying this instance reset the building mode to the mode it was
+	 * Destroying this instance resets the asynchronous mode to the mode it was
 	 *   in when the instance was created.
 	 */
 	~ScriptAsyncMode();
