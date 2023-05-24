@@ -234,6 +234,7 @@ enum {
 	GHK_CHANGE_MAP_MODE_PREV,
 	GHK_CHANGE_MAP_MODE_NEXT,
 	GHK_SWITCH_VIEWPORT_ROUTE_OVERLAY_MODE,
+	GHK_SWITCH_VIEWPORT_MAP_SLOPE_MODE,
 };
 
 struct MainWindow : Window
@@ -466,6 +467,12 @@ struct MainWindow : Window
 					SetWindowDirty(WC_GAME_OPTIONS, WN_GAME_OPTIONS_GAME_SETTINGS);
 				}
 				break;
+			case GHK_SWITCH_VIEWPORT_MAP_SLOPE_MODE: {
+				_settings_client.gui.show_slopes_on_viewport_map = !_settings_client.gui.show_slopes_on_viewport_map;
+				extern void MarkAllViewportMapLandscapesDirty();
+				MarkAllViewportMapLandscapesDirty();
+				break;
+			}
 
 			default: return ES_NOT_HANDLED;
 		}
@@ -585,6 +592,7 @@ static Hotkey global_hotkeys[] = {
 	Hotkey(WKC_PAGEUP,   "previous_map_mode", GHK_CHANGE_MAP_MODE_PREV),
 	Hotkey(WKC_PAGEDOWN, "next_map_mode",     GHK_CHANGE_MAP_MODE_NEXT),
 	Hotkey((uint16)0,    "switch_viewport_route_overlay_mode", GHK_SWITCH_VIEWPORT_ROUTE_OVERLAY_MODE),
+	Hotkey((uint16)0,    "switch_viewport_map_slope_mode", GHK_SWITCH_VIEWPORT_MAP_SLOPE_MODE),
 	HOTKEY_LIST_END
 };
 HotkeyList MainWindow::hotkeys("global", global_hotkeys);
