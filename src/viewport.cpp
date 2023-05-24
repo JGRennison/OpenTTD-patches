@@ -3435,6 +3435,8 @@ static void ViewportMapDrawBridgeTunnel(Viewport * const vp, const TunnelBridgeT
 	if (vp->map_type == VPMT_OWNER && _settings_client.gui.use_owner_colour_for_tunnelbridge && o < MAX_COMPANIES) {
 		colour = _legend_land_owners[_company_to_list_pos[o]].colour;
 		colour = is_tunnel ? _darken_colour[colour] : _lighten_colour[colour];
+	} else if (vp->map_type == VPMT_ROUTES && IsRailTunnelBridgeTile(tile)) {
+		colour = GetRailTypeInfo(GetRailType(tile))->map_colour;
 	} else {
 		colour = is_tunnel ? PC_BLACK : PC_VERY_LIGHT_YELLOW;
 	}
