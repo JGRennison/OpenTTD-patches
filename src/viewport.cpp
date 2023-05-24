@@ -3533,7 +3533,7 @@ void ViewportMapDraw(Viewport * const vp)
 		});
 		for (; iter != storage.tunnels.end() && iter->y_intercept <= y_intercept_max; ++iter) {
 			const TunnelToMap &ttm = *iter;
-			const int tunnel_z = ttm.tunnel_z * TILE_HEIGHT;
+			const int tunnel_z = (ttm.tunnel_z - 1) * TILE_HEIGHT;
 			const Point pt_from = RemapCoords(TileX(ttm.tb.from_tile) * TILE_SIZE, TileY(ttm.tb.from_tile) * TILE_SIZE, tunnel_z);
 			const Point pt_to = RemapCoords(TileX(ttm.tb.to_tile) * TILE_SIZE, TileY(ttm.tb.to_tile) * TILE_SIZE, tunnel_z);
 
