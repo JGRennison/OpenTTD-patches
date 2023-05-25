@@ -379,6 +379,7 @@ struct BuildRoadToolbarWindow : Window {
 	~BuildRoadToolbarWindow()
 	{
 		if (_game_mode == GM_NORMAL && (this->IsWidgetLowered(WID_ROT_BUS_STATION) || this->IsWidgetLowered(WID_ROT_TRUCK_STATION))) SetViewportCatchmentStation(nullptr, true);
+		if (_game_mode == GM_NORMAL && this->IsWidgetLowered(WID_ROT_BUILD_WAYPOINT)) SetViewportCatchmentWaypoint(nullptr, true);
 		if (_settings_client.gui.link_terraform_toolbar) DeleteWindowById(WC_SCEN_LAND_GEN, 0, false);
 	}
 
@@ -690,6 +691,7 @@ struct BuildRoadToolbarWindow : Window {
 	void OnPlaceObjectAbort() override
 	{
 		if (_game_mode != GM_EDITOR && (this->IsWidgetLowered(WID_ROT_BUS_STATION) || this->IsWidgetLowered(WID_ROT_TRUCK_STATION))) SetViewportCatchmentStation(nullptr, true);
+		if (_game_mode != GM_EDITOR && this->IsWidgetLowered(WID_ROT_BUILD_WAYPOINT)) SetViewportCatchmentWaypoint(nullptr, true);
 
 		this->RaiseButtons();
 		this->SetWidgetDisabledState(WID_ROT_REMOVE, true);
@@ -2002,6 +2004,11 @@ struct BuildRoadWaypointWindow : PickerWindowBase {
 				break;
 			}
 		}
+	}
+
+	void OnRealtimeTick(uint delta_ms) override
+	{
+		CheckRedrawWaypointCoverage(this, true);
 	}
 };
 

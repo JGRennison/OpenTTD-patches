@@ -519,6 +519,7 @@ struct BuildRailToolbarWindow : Window {
 	~BuildRailToolbarWindow()
 	{
 		if (this->IsWidgetLowered(WID_RAT_BUILD_STATION)) SetViewportCatchmentStation(nullptr, true);
+		if (this->IsWidgetLowered(WID_RAT_BUILD_WAYPOINT)) SetViewportCatchmentWaypoint(nullptr, true);
 		if (_settings_client.gui.link_terraform_toolbar) DeleteWindowById(WC_SCEN_LAND_GEN, 0, false);
 	}
 
@@ -903,6 +904,7 @@ struct BuildRailToolbarWindow : Window {
 	void OnPlaceObjectAbort() override
 	{
 		if (this->IsWidgetLowered(WID_RAT_BUILD_STATION)) SetViewportCatchmentStation(nullptr, true);
+		if (this->IsWidgetLowered(WID_RAT_BUILD_WAYPOINT)) SetViewportCatchmentWaypoint(nullptr, true);
 
 		this->RaiseButtons();
 		this->DisableWidget(WID_RAT_REMOVE);
@@ -2466,6 +2468,11 @@ struct BuildRailWaypointWindow : PickerWindowBase {
 				break;
 			}
 		}
+	}
+
+	void OnRealtimeTick(uint delta_ms) override
+	{
+		CheckRedrawWaypointCoverage(this, false);
 	}
 };
 

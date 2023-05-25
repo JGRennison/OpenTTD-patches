@@ -1478,8 +1478,9 @@ enum TileHighlightType {
 	THT_LIGHT_BLUE,
 };
 
-const Station *_viewport_highlight_station; ///< Currently selected station for coverage area highlight
-const Town *_viewport_highlight_town;       ///< Currently selected town for coverage area highlight
+const Station *_viewport_highlight_station;   ///< Currently selected station for coverage area highlight
+const Waypoint *_viewport_highlight_waypoint; ///< Currently selected waypoint for coverage area highlight
+const Town *_viewport_highlight_town;         ///< Currently selected town for coverage area highlight
 const TraceRestrictProgram *_viewport_highlight_tracerestrict_program; ///< Currently selected tracerestrict program for highlight
 
 /**
@@ -1492,6 +1493,9 @@ static TileHighlightType GetTileHighlightType(TileIndex t)
 	if (_viewport_highlight_station != nullptr) {
 		if (IsTileType(t, MP_STATION) && GetStationIndex(t) == _viewport_highlight_station->index) return THT_LIGHT_BLUE;
 		if (_viewport_highlight_station->TileIsInCatchment(t)) return THT_BLUE;
+	}
+	if (_viewport_highlight_waypoint != nullptr) {
+		if (IsTileType(t, MP_STATION) && GetStationIndex(t) == _viewport_highlight_waypoint->index) return THT_LIGHT_BLUE;
 	}
 
 	if (_viewport_highlight_town != nullptr) {
@@ -6514,6 +6518,12 @@ static void MarkCatchmentTilesDirty()
 			}
 		}
 	}
+	if (_viewport_highlight_waypoint != nullptr) {
+		if (!_viewport_highlight_waypoint->IsInUse()) {
+			_viewport_highlight_waypoint = nullptr;
+		}
+		MarkWholeNonMapViewportsDirty();
+	}
 }
 
 bool CurrentlySnappingRailPlacement()
@@ -6566,6 +6576,7 @@ void ResetRailPlacementSnapping()
 static void SetWindowDirtyForViewportCatchment()
 {
 	if (_viewport_highlight_station != nullptr) SetWindowDirty(WC_STATION_VIEW, _viewport_highlight_station->index);
+	if (_viewport_highlight_waypoint != nullptr) SetWindowDirty(WC_WAYPOINT_VIEW, _viewport_highlight_waypoint->index);
 	if (_viewport_highlight_town != nullptr) SetWindowDirty(WC_TOWN_VIEW, _viewport_highlight_town->index);
 	if (_viewport_highlight_tracerestrict_program != nullptr) InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 }
@@ -6574,6 +6585,7 @@ static void ClearViewportCatchment()
 {
 	MarkCatchmentTilesDirty();
 	_viewport_highlight_station = nullptr;
+	_viewport_highlight_waypoint = nullptr;
 	_viewport_highlight_town = nullptr;
 	_viewport_highlight_tracerestrict_program = nullptr;
 }
@@ -6596,6 +6608,26 @@ void SetViewportCatchmentStation(const Station *st, bool sel)
 		_viewport_highlight_station = nullptr;
 	}
 	if (_viewport_highlight_station != nullptr) SetWindowDirty(WC_STATION_VIEW, _viewport_highlight_station->index);
+}
+
+/**
+ * Select or deselect waypoint for coverage area highlight.
+ * Selecting a waypoint will deselect a town.
+ * @param *wp Waypoint in question
+ * @param sel Select or deselect given waypoint
+ */
+void SetViewportCatchmentWaypoint(const Waypoint *wp, bool sel)
+{
+	SetWindowDirtyForViewportCatchment();
+	if (sel && _viewport_highlight_waypoint != wp) {
+		ClearViewportCatchment();
+		_viewport_highlight_waypoint = wp;
+		MarkCatchmentTilesDirty();
+	} else if (!sel && _viewport_highlight_waypoint == wp) {
+		MarkCatchmentTilesDirty();
+		_viewport_highlight_waypoint = nullptr;
+	}
+	if (_viewport_highlight_waypoint != nullptr) SetWindowDirty(WC_WAYPOINT_VIEW, _viewport_highlight_waypoint->index);
 }
 
 /**

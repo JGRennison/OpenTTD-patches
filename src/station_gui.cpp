@@ -56,6 +56,29 @@ enum StationRatingTooltipMode {
 	SRTM_DETAILED,
 };
 
+template <typename T>
+struct IsSpecializedStationRightType {
+	IsSpecializedStationRightType() {}
+
+	IsSpecializedStationRightType(const CommandContainer &cmd) {}
+
+	bool operator()(const T*) const { return true; }
+};
+
+template <>
+struct IsSpecializedStationRightType<Waypoint> {
+	bool road_waypoint_search;
+
+	IsSpecializedStationRightType(bool is_road) : road_waypoint_search(is_road) {}
+
+	IsSpecializedStationRightType(const CommandContainer &cmd)
+	{
+		this->road_waypoint_search = (cmd.cmd & CMD_ID_MASK) == CMD_BUILD_ROAD_WAYPOINT;
+	}
+
+	bool operator()(const Waypoint* wp) const { return HasBit(wp->waypoint_flags, WPF_ROAD) == this->road_waypoint_search; }
+};
+
 /**
  * Calculates and draws the accepted or supplied cargo around the selected tile(s)
  * @param left x position where the string is to be drawn
@@ -97,11 +120,12 @@ int DrawStationCoverageAreaText(int left, int right, int top, StationCoverageTyp
  * Find stations adjacent to the current tile highlight area, so that existing coverage
  * area can be drawn.
  */
-static void FindStationsAroundSelection()
+template <typename T>
+void FindStationsAroundSelection(IsSpecializedStationRightType<T> is_right_type)
 {
 	/* With distant join we don't know which station will be selected, so don't show any */
 	if (_ctrl_pressed) {
-		SetViewportCatchmentStation(nullptr, true);
+		SetViewportCatchmentSpecializedStation<T>(nullptr, true);
 		return;
 	}
 
@@ -115,13 +139,13 @@ static void FindStationsAroundSelection()
 	int max_c = 1;
 	TileArea ta(TileXY(std::max<int>(0, x - max_c), std::max<int>(0, y - max_c)), TileXY(std::min<int>(MapMaxX(), x + location.w + max_c), std::min<int>(MapMaxY(), y + location.h + max_c)));
 
-	Station *adjacent = nullptr;
+	T *adjacent = nullptr;
 
 	/* Direct loop instead of ForAllStationsAroundTiles as we are not interested in catchment area */
 	for (TileIndex tile : ta) {
 		if (IsTileType(tile, MP_STATION) && GetTileOwner(tile) == _local_company) {
-			Station *st = Station::GetByTile(tile);
-			if (st == nullptr) continue;
+			T *st = T::GetByTile(tile);
+			if (st == nullptr || !is_right_type(st)) continue;
 			if (adjacent != nullptr && st != adjacent) {
 				/* Multiple nearby, distant join is required. */
 				adjacent = nullptr;
@@ -130,7 +154,8 @@ static void FindStationsAroundSelection()
 			adjacent = st;
 		}
 	}
-	SetViewportCatchmentStation(adjacent, true);
+
+	SetViewportCatchmentSpecializedStation<T>(adjacent, true);
 }
 
 /**
@@ -152,7 +177,25 @@ void CheckRedrawStationCoverage(Window *w)
 		w->SetDirty();
 
 		if (_settings_client.gui.station_show_coverage && _thd.drawstyle == HT_RECT) {
-			FindStationsAroundSelection();
+			FindStationsAroundSelection<Station>(IsSpecializedStationRightType<Station>());
+		}
+	}
+}
+
+void CheckRedrawWaypointCoverage(Window *w, bool is_road)
+{
+	/* Test if ctrl state changed */
+	static bool _last_ctrl_pressed;
+	if (_ctrl_pressed != _last_ctrl_pressed) {
+		_thd.dirty = 0xff;
+		_last_ctrl_pressed = _ctrl_pressed;
+	}
+
+	if (_thd.dirty & 1) {
+		_thd.dirty &= ~1;
+
+		if (_thd.drawstyle == HT_RECT) {
+			FindStationsAroundSelection<Waypoint>(IsSpecializedStationRightType<Waypoint>(is_road));
 		}
 	}
 }
@@ -2344,10 +2387,12 @@ struct TileAndStation {
 
 static std::vector<TileAndStation> _deleted_stations_nearby;
 static std::vector<StationID> _stations_nearby_list;
-static bool _station_nearby_road_waypoint_search;
 
-static bool IsNearbyStationRightType(const Station *st) { return true; }
-static bool IsNearbyStationRightType(const Waypoint *wp) { return HasBit(wp->waypoint_flags, WPF_ROAD) == _station_nearby_road_waypoint_search; }
+template <class T>
+struct AddNearbyStationData {
+	TileArea ctx;
+	IsSpecializedStationRightType<T> is_right_type;
+};
 
 /**
  * Add station on this tile to _stations_nearby_list if it's fully within the
@@ -2359,7 +2404,8 @@ static bool IsNearbyStationRightType(const Waypoint *wp) { return HasBit(wp->way
 template <class T>
 static bool AddNearbyStation(TileIndex tile, void *user_data)
 {
-	TileArea *ctx = (TileArea *)user_data;
+	AddNearbyStationData<T> *data = (AddNearbyStationData<T> *)user_data;
+	TileArea *ctx = &(data->ctx);
 
 	/* First check if there were deleted stations here */
 	for (uint i = 0; i < _deleted_stations_nearby.size(); i++) {
@@ -2380,7 +2426,7 @@ static bool AddNearbyStation(TileIndex tile, void *user_data)
 	if (!T::IsValidID(sid)) return false;
 
 	T *st = T::Get(sid);
-	if (st->owner != _local_company || !IsNearbyStationRightType(st) || std::find(_stations_nearby_list.begin(), _stations_nearby_list.end(), sid) != _stations_nearby_list.end()) return false;
+	if (st->owner != _local_company || !data->is_right_type(st) || std::find(_stations_nearby_list.begin(), _stations_nearby_list.end(), sid) != _stations_nearby_list.end()) return false;
 
 	if (st->rect.BeforeAddRect(ctx->tile, ctx->w, ctx->h, StationRect::ADD_TEST).Succeeded()) {
 		_stations_nearby_list.push_back(sid);
@@ -2399,9 +2445,10 @@ static bool AddNearbyStation(TileIndex tile, void *user_data)
  * @tparam T the type of station to look for
  */
 template <class T>
-static const T *FindStationsNearby(TileArea ta, bool distant_join)
+static const T *FindStationsNearby(TileArea ta, bool distant_join, IsSpecializedStationRightType<T> is_right_type)
 {
-	TileArea ctx = ta;
+	AddNearbyStationData<T> data { ta, is_right_type };
+	TileArea &ctx = data.ctx;
 
 	_stations_nearby_list.clear();
 	_deleted_stations_nearby.clear();
@@ -2413,7 +2460,7 @@ static const T *FindStationsNearby(TileArea ta, bool distant_join)
 
 	/* Look for deleted stations */
 	for (const BaseStation *st : BaseStation::Iterate()) {
-		if (T::IsExpected(st) && !st->IsInUse() && st->owner == _local_company && IsNearbyStationRightType(T::From(st))) {
+		if (T::IsExpected(st) && !st->IsInUse() && st->owner == _local_company && is_right_type(T::From(st))) {
 			/* Include only within station spread (yes, it is strictly less than) */
 			if (std::max(DistanceMax(ta.tile, st->xy), DistanceMax(TILE_ADDXY(ta.tile, ta.w - 1, ta.h - 1), st->xy)) < _settings_game.station.station_spread) {
 				_deleted_stations_nearby.push_back({st->xy, st->index});
@@ -2421,7 +2468,7 @@ static const T *FindStationsNearby(TileArea ta, bool distant_join)
 				/* Add the station when it's within where we're going to build */
 				if (IsInsideBS(TileX(st->xy), TileX(ctx.tile), ctx.w) &&
 						IsInsideBS(TileY(st->xy), TileY(ctx.tile), ctx.h)) {
-					AddNearbyStation<T>(st->xy, &ctx);
+					AddNearbyStation<T>(st->xy, &data);
 				}
 			}
 		}
@@ -2434,7 +2481,7 @@ static const T *FindStationsNearby(TileArea ta, bool distant_join)
 	uint max_dist = distant_join ? _settings_game.station.station_spread - std::min(ta.w, ta.h) : 1;
 
 	TileIndex tile = TileAddByDir(ctx.tile, DIR_N);
-	CircularTileSearch(&tile, max_dist, ta.w, ta.h, AddNearbyStation<T>, &ctx);
+	CircularTileSearch(&tile, max_dist, ta.w, ta.h, AddNearbyStation<T>, &data);
 
 	return nullptr;
 }
@@ -2568,26 +2615,25 @@ struct SelectStationWindow : Window {
 	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
-		if (T::EXPECTED_FACIL == FACIL_WAYPOINT) _station_nearby_road_waypoint_search = (this->select_station_cmd.cmd & CMD_ID_MASK) == CMD_BUILD_ROAD_WAYPOINT;
-		FindStationsNearby<T>(this->area, true);
+		FindStationsNearby<T>(this->area, true, IsSpecializedStationRightType<T>(this->select_station_cmd));
 		this->vscroll->SetCount((uint)_stations_nearby_list.size() + 1);
 		this->SetDirty();
 	}
 
 	void OnMouseOver(Point pt, int widget) override
 	{
-		if (widget != WID_JS_PANEL || T::EXPECTED_FACIL == FACIL_WAYPOINT) {
-			SetViewportCatchmentStation(nullptr, true);
+		if (widget != WID_JS_PANEL) {
+			SetViewportCatchmentSpecializedStation<T>(nullptr, true);
 			return;
 		}
 
 		/* Show coverage area of station under cursor */
 		uint st_index = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_JS_PANEL, WidgetDimensions::scaled.framerect.top);
 		if (st_index == 0 || st_index > _stations_nearby_list.size()) {
-			SetViewportCatchmentStation(nullptr, true);
+			SetViewportCatchmentSpecializedStation<T>(nullptr, true);
 		} else {
 			st_index--;
-			SetViewportCatchmentStation(Station::Get(_stations_nearby_list[st_index]), true);
+			SetViewportCatchmentSpecializedStation<T>(T::Get(_stations_nearby_list[st_index]), true);
 		}
 	}
 };
@@ -2631,8 +2677,7 @@ static bool StationJoinerNeeded(const CommandContainer &cmd, TileArea ta)
 	/* Test for adjacent station or station below selection.
 	 * If adjacent-stations is disabled and we are building next to a station, do not show the selection window.
 	 * but join the other station immediately. */
-	if (T::EXPECTED_FACIL == FACIL_WAYPOINT) _station_nearby_road_waypoint_search = (cmd.cmd & CMD_ID_MASK) == CMD_BUILD_ROAD_WAYPOINT;
-	const T *st = FindStationsNearby<T>(ta, false);
+	const T *st = FindStationsNearby<T>(ta, false, IsSpecializedStationRightType<T>(cmd));
 	return st == nullptr && (_settings_game.station.adjacent_stations || _stations_nearby_list.size() == 0);
 }
 

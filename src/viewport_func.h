@@ -141,11 +141,28 @@ void ViewportMapBuildTunnelCache();
 void DrawTileSelectionRect(const TileInfo *ti, PaletteID pal);
 void DrawSelectionSprite(SpriteID image, PaletteID pal, const TileInfo *ti, int z_offset, FoundationPart foundation_part, int extra_offs_x = 0, int extra_offs_y = 0, const SubSprite *sub = nullptr);
 
+struct Waypoint;
 struct Town;
 struct TraceRestrictProgram;
 void SetViewportCatchmentStation(const Station *st, bool sel);
+void SetViewportCatchmentWaypoint(const Waypoint *wp, bool sel);
 void SetViewportCatchmentTown(const Town *t, bool sel);
 void SetViewportCatchmentTraceRestrictProgram(const TraceRestrictProgram *prog, bool sel);
+
+template<class T>
+void SetViewportCatchmentSpecializedStation(const T *st, bool sel);
+
+template<>
+inline void SetViewportCatchmentSpecializedStation(const Station *st, bool sel)
+{
+	SetViewportCatchmentStation(st, sel);
+}
+
+template<>
+inline void SetViewportCatchmentSpecializedStation(const Waypoint *st, bool sel)
+{
+	SetViewportCatchmentWaypoint(st, sel);
+}
 
 void MarkBridgeDirty(TileIndex begin, TileIndex end, DiagDirection direction, uint bridge_height, ViewportMarkDirtyFlags flags = VMDF_NONE);
 void MarkBridgeDirty(TileIndex tile, ViewportMarkDirtyFlags flags = VMDF_NONE);
