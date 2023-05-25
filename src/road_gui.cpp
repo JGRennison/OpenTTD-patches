@@ -381,6 +381,7 @@ struct BuildRoadToolbarWindow : Window {
 		if (_game_mode == GM_NORMAL && (this->IsWidgetLowered(WID_ROT_BUS_STATION) || this->IsWidgetLowered(WID_ROT_TRUCK_STATION))) SetViewportCatchmentStation(nullptr, true);
 		if (_game_mode == GM_NORMAL && this->IsWidgetLowered(WID_ROT_BUILD_WAYPOINT)) SetViewportCatchmentWaypoint(nullptr, true);
 		if (_settings_client.gui.link_terraform_toolbar) DeleteWindowById(WC_SCEN_LAND_GEN, 0, false);
+		DeleteWindowById(WC_SELECT_STATION, 0);
 	}
 
 	/**
@@ -1941,6 +1942,11 @@ struct BuildRoadWaypointWindow : PickerWindowBase {
 		matrix->SetCount(_waypoint_count);
 		if (_cur_waypoint_type >= _waypoint_count) _cur_waypoint_type = 0;
 		matrix->SetClicked(_cur_waypoint_type);
+	}
+
+	virtual ~BuildRoadWaypointWindow()
+	{
+		DeleteWindowById(WC_SELECT_STATION, 0);
 	}
 
 	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
