@@ -109,11 +109,22 @@ public:
 	~WaypointWindow()
 	{
 		DeleteWindowById(GetWindowClassForVehicleType(this->vt), VehicleListIdentifier(VL_STATION_LIST, this->vt, this->owner, this->window_number).Pack(), false);
+
+		SetViewportCatchmentWaypoint(Waypoint::Get(this->window_number), false);
 	}
 
 	void SetStringParameters(int widget) const override
 	{
 		if (widget == WID_W_CAPTION) SetDParam(0, this->wp->index);
+	}
+
+	void OnPaint() override
+	{
+		extern const Waypoint *_viewport_highlight_waypoint;
+		this->SetWidgetDisabledState(WID_W_CATCHMENT, !this->wp->IsInUse());
+		this->SetWidgetLoweredState(WID_W_CATCHMENT, _viewport_highlight_waypoint == this->wp);
+
+		this->DrawWidgets();
 	}
 
 	void OnClick(Point pt, int widget, int click_count) override
@@ -138,6 +149,10 @@ public:
 
 			case WID_W_DEPARTURES: // show departure times of vehicles
 				ShowWaypointDepartures((StationID)this->wp->index);
+				break;
+
+			case WID_W_CATCHMENT:
+				SetViewportCatchmentWaypoint(Waypoint::Get(this->window_number), !this->IsWidgetLowered(WID_W_CATCHMENT));
 				break;
 
 			case WID_W_TOGGLE_HIDDEN:
@@ -219,7 +234,8 @@ static const NWidgetPart _nested_waypoint_view_widgets[] = {
 		EndContainer(),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_W_DEPARTURES), SetMinimalSize(100, 12), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_STATION_VIEW_DEPARTURES_BUTTON, STR_STATION_VIEW_DEPARTURES_TOOLTIP),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_W_DEPARTURES), SetMinimalSize(50, 12), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_STATION_VIEW_DEPARTURES_BUTTON, STR_STATION_VIEW_DEPARTURES_TOOLTIP),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_W_CATCHMENT), SetMinimalSize(50, 12), SetResize(1, 0), SetFill(1, 1), SetDataTip(STR_BUTTON_CATCHMENT, STR_TOOLTIP_CATCHMENT),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_W_TOGGLE_HIDDEN_SEL),
 			NWidget(WWT_IMGBTN, COLOUR_GREY, WID_W_TOGGLE_HIDDEN), SetMinimalSize(15, 12), SetDataTip(SPR_MISC_GUI_BASE, STR_WAYPOINT_VIEW_HIDE_VIEWPORT_LABEL),
 		EndContainer(),
