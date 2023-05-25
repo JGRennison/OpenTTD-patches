@@ -3435,8 +3435,35 @@ static void ViewportMapDrawBridgeTunnel(Viewport * const vp, const TunnelBridgeT
 	if (vp->map_type == VPMT_OWNER && _settings_client.gui.use_owner_colour_for_tunnelbridge && o < MAX_COMPANIES) {
 		colour = _legend_land_owners[_company_to_list_pos[o]].colour;
 		colour = is_tunnel ? _darken_colour[colour] : _lighten_colour[colour];
-	} else if (vp->map_type == VPMT_ROUTES && IsRailTunnelBridgeTile(tile)) {
-		colour = GetRailTypeInfo(GetRailType(tile))->map_colour;
+	} else if (vp->map_type == VPMT_ROUTES && IsTileType(tile, MP_TUNNELBRIDGE)) {
+		switch (GetTunnelBridgeTransportType(tile)) {
+			case TRANSPORT_WATER:
+				colour = PC_WATER;
+				break;
+
+			case TRANSPORT_RAIL:
+				colour = GetRailTypeInfo(GetRailType(tile))->map_colour;
+				break;
+
+			case TRANSPORT_ROAD: {
+				const RoadTypeInfo *rti = nullptr;
+				if (GetRoadTypeRoad(tile) != INVALID_ROADTYPE) {
+					rti = GetRoadTypeInfo(GetRoadTypeRoad(tile));
+				} else {
+					rti = GetRoadTypeInfo(GetRoadTypeTram(tile));
+				}
+				if (rti != nullptr) {
+					colour = rti->map_colour;
+					break;
+				}
+				FALLTHROUGH;
+			}
+
+			default:
+				colour = PC_BLACK;
+				break;
+		}
+
 	} else {
 		colour = is_tunnel ? PC_BLACK : PC_VERY_LIGHT_YELLOW;
 	}
