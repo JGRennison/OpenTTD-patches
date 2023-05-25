@@ -1836,6 +1836,15 @@ static SettingsContainer &GetSettingsTree()
 				general->Add(new SettingEntry("gui.right_mouse_wnd_close"));
 			}
 
+			SettingsPage *save = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_SAVE));
+			{
+				save->Add(new SettingEntry("gui.autosave"));
+				save->Add(new ConditionallyHiddenSettingEntry("gui.autosave_custom_days", []() -> bool { return _settings_client.gui.autosave != 5; }));
+				save->Add(new ConditionallyHiddenSettingEntry("gui.autosave_custom_minutes", []() -> bool { return _settings_client.gui.autosave != 6; }));
+				save->Add(new SettingEntry("gui.autosave_on_network_disconnect"));
+				save->Add(new SettingEntry("gui.savegame_overwrite_confirm"));
+			}
+
 			SettingsPage *viewports = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_VIEWPORTS));
 			{
 				SettingsPage *viewport_map = viewports->Add(new SettingsPage(STR_CONFIG_SETTING_VIEWPORT_MAP_OPTIONS));
@@ -1880,6 +1889,7 @@ static SettingsContainer &GetSettingsTree()
 				viewports->Add(new SettingEntry("gui.measure_tooltip"));
 				viewports->Add(new SettingEntry("gui.loading_indicators"));
 				viewports->Add(new SettingEntry("gui.show_track_reservation"));
+				viewports->Add(new SettingEntry("gui.disable_water_animation"));
 			}
 
 			SettingsPage *construction = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION));
@@ -1890,6 +1900,32 @@ static SettingsContainer &GetSettingsTree()
 				construction->Add(new SettingEntry("gui.default_rail_type"));
 				construction->Add(new SettingEntry("gui.default_road_type"));
 				construction->Add(new SettingEntry("gui.demolish_confirm_mode"));
+			}
+
+			SettingsPage *vehicle_windows = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_VEHICLE_WINDOWS));
+			{
+				vehicle_windows->Add(new SettingEntry("gui.advanced_vehicle_list"));
+				vehicle_windows->Add(new SettingEntry("gui.show_newgrf_name"));
+				vehicle_windows->Add(new SettingEntry("gui.show_cargo_in_vehicle_lists"));
+				vehicle_windows->Add(new SettingEntry("gui.show_wagon_intro_year"));
+				vehicle_windows->Add(new SettingEntry("gui.show_train_length_in_details"));
+				vehicle_windows->Add(new SettingEntry("gui.show_train_weight_ratios_in_details"));
+				vehicle_windows->Add(new SettingEntry("gui.show_vehicle_group_in_details"));
+				vehicle_windows->Add(new SettingEntry("gui.show_vehicle_list_company_colour"));
+				vehicle_windows->Add(new SettingEntry("gui.show_veh_list_cargo_filter"));
+				vehicle_windows->Add(new SettingEntry("gui.show_adv_load_mode_features"));
+				vehicle_windows->Add(new SettingEntry("gui.disable_top_veh_list_mass_actions"));
+				vehicle_windows->Add(new SettingEntry("gui.show_depot_sell_gui"));
+				vehicle_windows->Add(new SettingEntry("gui.open_vehicle_gui_clone_share"));
+				vehicle_windows->Add(new SettingEntry("gui.vehicle_names"));
+				vehicle_windows->Add(new SettingEntry("gui.station_rating_tooltip_mode"));
+				vehicle_windows->Add(new SettingEntry("gui.dual_pane_train_purchase_window"));
+				vehicle_windows->Add(new ConditionallyHiddenSettingEntry("gui.dual_pane_train_purchase_window_dual_buttons", []() -> bool { return !_settings_client.gui.dual_pane_train_purchase_window; }));
+				vehicle_windows->Add(new SettingEntry("gui.show_order_occupancy_by_default"));
+				vehicle_windows->Add(new SettingEntry("gui.show_order_management_button"));
+				vehicle_windows->Add(new SettingEntry("gui.show_group_hierarchy_name"));
+				vehicle_windows->Add(new ConditionallyHiddenSettingEntry("gui.show_vehicle_group_hierarchy_name", []() -> bool { return !_settings_client.gui.show_group_hierarchy_name; }));
+				vehicle_windows->Add(new SettingEntry("gui.enable_single_veh_shared_order_gui"));
 			}
 
 			SettingsPage *departureboards = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_DEPARTUREBOARDS));
@@ -1950,42 +1986,15 @@ static SettingsContainer &GetSettingsTree()
 				advsig->Add(new SettingEntry("gui.show_progsig_ui"));
 				advsig->Add(new SettingEntry("gui.show_noentrysig_ui"));
 				advsig->Add(new SettingEntry("gui.show_adv_tracerestrict_features"));
+				advsig->Add(new SettingEntry("gui.adv_sig_bridge_tun_modes"));
 			}
 
 			interface->Add(new SettingEntry("gui.fast_forward_speed_limit"));
-			interface->Add(new SettingEntry("gui.autosave"));
-			interface->Add(new ConditionallyHiddenSettingEntry("gui.autosave_custom_days", []() -> bool { return _settings_client.gui.autosave != 5; }));
-			interface->Add(new ConditionallyHiddenSettingEntry("gui.autosave_custom_minutes", []() -> bool { return _settings_client.gui.autosave != 6; }));
-			interface->Add(new SettingEntry("gui.autosave_on_network_disconnect"));
-			interface->Add(new SettingEntry("gui.savegame_overwrite_confirm"));
 			interface->Add(new SettingEntry("gui.toolbar_pos"));
 			interface->Add(new SettingEntry("gui.statusbar_pos"));
 			interface->Add(new SettingEntry("gui.prefer_teamchat"));
-			interface->Add(new SettingEntry("gui.advanced_vehicle_list"));
-			interface->Add(new SettingEntry("gui.show_newgrf_name"));
-			interface->Add(new SettingEntry("gui.show_cargo_in_vehicle_lists"));
-			interface->Add(new SettingEntry("gui.show_wagon_intro_year"));
-			interface->Add(new SettingEntry("gui.show_train_length_in_details"));
-			interface->Add(new SettingEntry("gui.show_train_weight_ratios_in_details"));
-			interface->Add(new SettingEntry("gui.show_vehicle_group_in_details"));
-			interface->Add(new SettingEntry("gui.show_vehicle_list_company_colour"));
-			interface->Add(new SettingEntry("gui.show_veh_list_cargo_filter"));
-			interface->Add(new SettingEntry("gui.show_adv_load_mode_features"));
-			interface->Add(new SettingEntry("gui.disable_top_veh_list_mass_actions"));
-			interface->Add(new SettingEntry("gui.adv_sig_bridge_tun_modes"));
 			interface->Add(new SettingEntry("gui.sort_track_types_by_speed"));
-			interface->Add(new SettingEntry("gui.show_depot_sell_gui"));
-			interface->Add(new SettingEntry("gui.open_vehicle_gui_clone_share"));
-			interface->Add(new SettingEntry("gui.vehicle_names"));
-			interface->Add(new SettingEntry("gui.station_rating_tooltip_mode"));
-			interface->Add(new SettingEntry("gui.dual_pane_train_purchase_window"));
-			interface->Add(new ConditionallyHiddenSettingEntry("gui.dual_pane_train_purchase_window_dual_buttons", []() -> bool { return !_settings_client.gui.dual_pane_train_purchase_window; }));
 			interface->Add(new SettingEntry("gui.allow_hiding_waypoint_labels"));
-			interface->Add(new SettingEntry("gui.disable_water_animation"));
-			interface->Add(new SettingEntry("gui.show_order_occupancy_by_default"));
-			interface->Add(new SettingEntry("gui.show_order_management_button"));
-			interface->Add(new SettingEntry("gui.show_group_hierarchy_name"));
-			interface->Add(new ConditionallyHiddenSettingEntry("gui.show_vehicle_group_hierarchy_name", []() -> bool { return !_settings_client.gui.show_group_hierarchy_name; }));
 		}
 
 		SettingsPage *advisors = main->Add(new SettingsPage(STR_CONFIG_SETTING_ADVISORS));
