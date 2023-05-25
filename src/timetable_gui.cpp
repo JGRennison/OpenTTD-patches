@@ -641,6 +641,14 @@ struct TimetableWindow : GeneralVehicleWindow {
 				GuiShowTooltips(this, STR_TIMETABLE_CLEAR_SPEED_TOOLTIP, 0, nullptr, close_cond);
 				return true;
 			}
+			case WID_VT_SHARED_ORDER_LIST: {
+				if (this->vehicle->owner == _local_company) {
+					uint64 args[] = { STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP };
+					GuiShowTooltips(this, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP_EXTRA, lengthof(args), args, close_cond);
+					return true;
+				}
+				return false;
+			}
 			default:
 				return false;
 		}

@@ -3517,6 +3517,22 @@ public:
 		}
 	}
 
+	bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
+	{
+		switch (widget) {
+			case WID_O_SHARED_ORDER_LIST: {
+				if (this->vehicle->owner == _local_company) {
+					uint64 args[] = { STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP };
+					GuiShowTooltips(this, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP_EXTRA, lengthof(args), args, close_cond);
+					return true;
+				}
+				return false;
+			}
+			default:
+				return false;
+		}
+	}
+
 	const Vehicle *GetVehicle()
 	{
 		return this->vehicle;
