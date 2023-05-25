@@ -2748,14 +2748,24 @@ void UpdateAdjacentLevelCrossingTilesOnRemove(TileIndex tile, Axis road_axis)
 		for (TileIndex t = tile + diff; IsValidTile(t) && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == road_axis; t += diff) {
 			occupied |= CheckLevelCrossing(t);
 		}
-		if (!occupied) {
-			for (TileIndex t = tile + diff; IsValidTile(t) && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == road_axis; t += diff) {
-				UpdateLevelCrossingTile(t, false, true, false);
-			}
-		} else {
+		if (occupied) {
+			/* Mark the immediately adjacent tile dirty */
 			const TileIndex t = tile + diff;
 			if (IsValidTile(t) && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == road_axis) {
 				MarkTileDirtyByTile(t, VMDF_NOT_MAP_MODE);
+			}
+		} else {
+			/* Unbar the crossing tiles in this direction as necessary */
+			for (TileIndex t = tile + diff; IsValidTile(t) && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == road_axis; t += diff) {
+				if (IsCrossingBarred(t)) {
+					/* The crossing tile is barred, unbar it and continue to check the next tile */
+					SetCrossingBarred(t, false);
+					MarkTileDirtyByTile(t, VMDF_NOT_MAP_MODE);
+				} else {
+					/* The crossing tile is already unbarred, mark the tile dirty and stop checking */
+					MarkTileDirtyByTile(t, VMDF_NOT_MAP_MODE);
+					break;
+				}
 			}
 		}
 	}
