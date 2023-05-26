@@ -280,7 +280,7 @@ struct GRFLocation {
 };
 
 static btree::btree_map<GRFLocation, SpriteID> _grm_sprites;
-typedef btree::btree_map<GRFLocation, byte*> GRFLineToSpriteOverride;
+typedef btree::btree_map<GRFLocation, std::unique_ptr<byte[]>> GRFLineToSpriteOverride;
 static GRFLineToSpriteOverride _grf_line_to_action6_sprite_override;
 static bool _action6_override_active = false;
 
@@ -7577,12 +7577,12 @@ static void CfgApply(ByteReader *buf)
 	size_t pos = file.GetPos();
 	uint32 num = file.GetContainerVersion() >= 2 ? file.ReadDword() : file.ReadWord();
 	uint8 type = file.ReadByte();
-	byte *preload_sprite = nullptr;
+	std::unique_ptr<byte[]> preload_sprite;
 
 	/* Check if the sprite is a pseudo sprite. We can't operate on real sprites. */
 	if (type == 0xFF) {
-		preload_sprite = MallocT<byte>(num);
-		file.ReadBlock(preload_sprite, num);
+		preload_sprite = std::make_unique<byte[]>(num);
+		file.ReadBlock(preload_sprite.get(), num);
 	}
 
 	/* Reset the file position to the start of the next sprite */
@@ -7590,17 +7590,15 @@ static void CfgApply(ByteReader *buf)
 
 	if (type != 0xFF) {
 		grfmsg(2, "CfgApply: Ignoring (next sprite is real, unsupported)");
-		free(preload_sprite);
 		return;
 	}
 
 	GRFLocation location(_cur.grfconfig->ident.grfid, _cur.nfo_line + 1);
 	GRFLineToSpriteOverride::iterator it = _grf_line_to_action6_sprite_override.find(location);
 	if (it != _grf_line_to_action6_sprite_override.end()) {
-		free(preload_sprite);
-		preload_sprite = it->second;
+		preload_sprite = std::move(it->second);
 	} else {
-		_grf_line_to_action6_sprite_override[location] = preload_sprite;
+		_grf_line_to_action6_sprite_override[location] = std::move(preload_sprite);
 	}
 
 	/* Now perform the Action 0x06 on our data. */
@@ -11128,7 +11126,7 @@ static void DecodeSpecialSprite(byte *buf, uint num, GrfLoadingStage stage)
 		_cur.file->ReadBlock(buf, num);
 	} else {
 		/* Use the preloaded sprite data. */
-		buf = it->second;
+		buf = it->second.get();
 		grfmsg(7, "DecodeSpecialSprite: Using preloaded pseudo sprite data");
 
 		/* Skip the real (original) content of this action. */
@@ -11470,9 +11468,6 @@ static void AfterLoadGRFs()
 	_string_to_grf_mapping.clear();
 
 	/* Free the action 6 override sprites. */
-	for (GRFLineToSpriteOverride::iterator it = _grf_line_to_action6_sprite_override.begin(); it != _grf_line_to_action6_sprite_override.end(); it++) {
-		free((*it).second);
-	}
 	_grf_line_to_action6_sprite_override.clear();
 
 	/* Polish cargoes */
