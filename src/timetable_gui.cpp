@@ -919,7 +919,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 					SetDParam(0, time);
 					ShowQueryString(str, STR_TIMETABLE_STARTING_DATE, 31, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				} else {
-					ShowSetDateWindow(this, v->index | (v->orders->IsCompleteTimetable() && _ctrl_pressed ? 1U << 20 : 0),
+					ShowSetDateWindow(this, v->index | (_ctrl_pressed ? 1U << 20 : 0),
 							_scaled_date_ticks, _cur_year, _cur_year + 15, ChangeTimetableStartCallback);
 				}
 				break;

@@ -19,6 +19,8 @@
 #include "../road_type.h"
 #include "../core/checksum_func.hpp"
 #include "../event_logs.h"
+#include "../timer/timer.h"
+#include "../timer/timer_game_tick.h"
 
 #include "saveload.h"
 
@@ -72,6 +74,7 @@ void ResetViewportAfterLoadGame()
 }
 
 byte _age_cargo_skip_counter; ///< Skip aging of cargo? Used before savegame version 162.
+extern TimeoutTimer<TimerGameTick> _new_competitor_timeout;
 
 static const SaveLoad _date_desc[] = {
 	SLEG_CONDVAR(_date,                   SLE_FILE_U16 | SLE_VAR_I32,  SL_MIN_VERSION,  SLV_31),
@@ -95,8 +98,8 @@ static const SaveLoad _date_desc[] = {
 	SLE_CONDNULL(1,  SL_MIN_VERSION,  SLV_10),
 	SLE_CONDNULL(4, SLV_10, SLV_120),
 	    SLEG_VAR(_cur_company_tick_index, SLE_FILE_U8  | SLE_VAR_U32),
-	SLEG_CONDVAR(_next_competitor_start,  SLE_FILE_U16 | SLE_VAR_U32,  SL_MIN_VERSION, SLV_109),
-	SLEG_CONDVAR(_next_competitor_start,  SLE_UINT32,                SLV_109, SL_MAX_VERSION),
+	SLEG_CONDVAR(_new_competitor_timeout.period,  SLE_FILE_U16 | SLE_VAR_U32,  SL_MIN_VERSION, SLV_109),
+	SLEG_CONDVAR_X(_new_competitor_timeout.period,  SLE_UINT32,                SLV_109, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AI_START_DATE, 0, 0)),
 	    SLEG_VAR(_trees_tick_ctr,         SLE_UINT8),
 	SLEG_CONDVAR(_pause_mode,             SLE_UINT8,                   SLV_4, SL_MAX_VERSION),
 	SLEG_CONDVAR_X(_game_events_overall,  SLE_UINT32,         SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_GAME_EVENTS)),
@@ -105,6 +108,9 @@ static const SaveLoad _date_desc[] = {
 	SLEG_CONDVAR_X(_aspect_cfg_hash,      SLE_UINT64,         SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 7)),
 	SLEG_CONDVAR_X(_aux_tileloop_tile,    SLE_UINT32,         SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AUX_TILE_LOOP)),
 	SLE_CONDNULL(4, SLV_11, SLV_120),
+	SLEG_CONDVAR_X(_new_competitor_timeout.period,          SLE_UINT32,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AI_START_DATE)),
+	SLEG_CONDVAR_X(_new_competitor_timeout.storage.elapsed, SLE_UINT32,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AI_START_DATE)),
+	SLEG_CONDVAR_X(_new_competitor_timeout.fired,           SLE_BOOL,                    SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AI_START_DATE)),
 };
 
 static const SaveLoad _date_check_desc[] = {
@@ -129,8 +135,8 @@ static const SaveLoad _date_check_desc[] = {
 	SLE_CONDNULL(1,  SL_MIN_VERSION,  SLV_10),
 	SLE_CONDNULL(4, SLV_10, SLV_120),
 	    SLE_NULL(1),                       // _cur_company_tick_index
-	SLE_CONDNULL(2, SL_MIN_VERSION, SLV_109),               // _next_competitor_start
-	SLE_CONDNULL(4, SLV_109, SL_MAX_VERSION),  // _next_competitor_start
+	SLE_CONDNULL(2, SL_MIN_VERSION, SLV_109),                                                           // _new_competitor_timeout.period
+	SLE_CONDNULL_X(4, SLV_109, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AI_START_DATE, 0, 0)), // _new_competitor_timeout.period
 	    SLE_NULL(1),                       // _trees_tick_ctr
 	SLE_CONDNULL(1, SLV_4, SL_MAX_VERSION),    // _pause_mode
 	SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_GAME_EVENTS)), // _game_events_overall
@@ -139,6 +145,7 @@ static const SaveLoad _date_check_desc[] = {
 	SLE_CONDNULL_X(8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 7)), // _aspect_cfg_hash
 	SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AUX_TILE_LOOP)), // _aux_tileloop_tile
 	SLE_CONDNULL(4, SLV_11, SLV_120),
+	SLE_CONDNULL_X(9, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AI_START_DATE)), // _new_competitor_timeout
 };
 
 /* Save load date related variables as well as persistent tick counters

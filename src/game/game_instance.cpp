@@ -27,7 +27,7 @@
 
 
 GameInstance::GameInstance() :
-	ScriptInstance("GS", ST_GS)
+	ScriptInstance("GS", ScriptType::GS)
 {}
 
 void GameInstance::Initialize(GameInfo *info)

@@ -1062,7 +1062,7 @@ void OffsetGroundSprite(int x, int y)
 static void AddCombinedSprite(SpriteID image, PaletteID pal, int x, int y, int z, const SubSprite *sub)
 {
 	Point pt = RemapCoords(x, y, z);
-	const Sprite *spr = GetSprite(image & SPRITE_MASK, ST_NORMAL);
+	const Sprite *spr = GetSprite(image & SPRITE_MASK, SpriteType::Normal);
 
 	int left = pt.x + spr->x_offs;
 	int right = pt.x + spr->x_offs + spr->width;
@@ -1138,7 +1138,7 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 		tmp_width = right - left;
 		tmp_height = bottom - top;
 	} else {
-		const Sprite *spr = GetSprite(image & SPRITE_MASK, ST_NORMAL);
+		const Sprite *spr = GetSprite(image & SPRITE_MASK, SpriteType::Normal);
 		left = tmp_left = (pt.x += spr->x_offs);
 		right           = (pt.x +  spr->width );
 		top  = tmp_top  = (pt.y += spr->y_offs);
@@ -3743,7 +3743,7 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint
 			if (_settings_client.gui.show_slopes_on_viewport_map) ViewportMapDraw<true, true>(vp);
 			else ViewportMapDraw<true, false>(vp);
 		} else {
-			_pal2trsp_remap_ptr = IsTransparencySet(TO_TREES) ? GetNonSprite(GB(PALETTE_TO_TRANSPARENT, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1 : nullptr;
+			_pal2trsp_remap_ptr = IsTransparencySet(TO_TREES) ? GetNonSprite(GB(PALETTE_TO_TRANSPARENT, 0, PALETTE_WIDTH), SpriteType::Recolour) + 1 : nullptr;
 			if (_settings_client.gui.show_slopes_on_viewport_map) ViewportMapDraw<false, true>(vp);
 			else ViewportMapDraw<false, false>(vp);
 		}

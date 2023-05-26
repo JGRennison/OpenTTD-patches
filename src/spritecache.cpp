@@ -211,7 +211,7 @@ bool SpriteExists(SpriteID id)
  */
 SpriteType GetSpriteType(SpriteID sprite)
 {
-	if (!SpriteExists(sprite)) return ST_INVALID;
+	if (!SpriteExists(sprite)) return SpriteType::Invalid;
 	return GetSpriteCache(sprite)->GetType();
 }
 
@@ -491,6 +491,18 @@ static void *ReadRecolourSprite(SpriteFile &file, uint num)
 	return dest;
 }
 
+static const char *GetSpriteTypeName(SpriteType type)
+{
+	static const char * const sprite_types[] = {
+		"normal",        // SpriteType::Normal
+		"map generator", // SpriteType::MapGen
+		"character",     // SpriteType::Font
+		"recolour",      // SpriteType::Recolour
+	};
+
+	return sprite_types[static_cast<byte>(type)];
+}
+
 /**
  * Read a sprite from disk.
  * @param sc          Location of sprite.
@@ -508,10 +520,10 @@ static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_ty
 	SpriteFile &file = *sc->file;
 	size_t file_pos = sc->file_pos;
 
-	SCOPE_INFO_FMT([&], "ReadSprite: pos: " PRINTF_SIZE ", id: %u, file: (%s), type: %u", file_pos, id, file.GetSimplifiedFilename().c_str(), sprite_type);
+	SCOPE_INFO_FMT([&], "ReadSprite: pos: " PRINTF_SIZE ", id: %u, file: (%s), type: %s", file_pos, id, file.GetSimplifiedFilename().c_str(), GetSpriteTypeName(sprite_type));
 
-	assert(sprite_type != ST_RECOLOUR);
-	assert(IsMapgenSpriteID(id) == (sprite_type == ST_MAPGEN));
+	assert(sprite_type != SpriteType::Recolour);
+	assert(IsMapgenSpriteID(id) == (sprite_type == SpriteType::MapGen));
 	assert(sc->GetType() == sprite_type);
 
 	DEBUG(sprite, 9, "Load sprite %d", id);
@@ -521,7 +533,7 @@ static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_ty
 	sprite[ZOOM_LVL_NORMAL].type = sprite_type;
 
 	SpriteLoaderGrf sprite_loader(file.GetContainerVersion());
-	if (sprite_type != ST_MAPGEN && sc->GetHasNonPalette() && encoder->Is32BppSupported()) {
+	if (sprite_type != SpriteType::MapGen && sc->GetHasNonPalette() && encoder->Is32BppSupported()) {
 		/* Try for 32bpp sprites first. */
 		sprite_avail = sprite_loader.LoadSprite(sprite, file, file_pos, sprite_type, true, sc->count, sc->flags);
 	}
@@ -530,12 +542,12 @@ static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_ty
 	}
 
 	if (sprite_avail == 0) {
-		if (sprite_type == ST_MAPGEN) return nullptr;
+		if (sprite_type == SpriteType::MapGen) return nullptr;
 		if (id == SPR_IMG_QUERY) usererror("Okay... something went horribly wrong. I couldn't load the fallback sprite. What should I do?");
-		return (void*)GetRawSprite(SPR_IMG_QUERY, ST_NORMAL, allocator, encoder);
+		return (void*)GetRawSprite(SPR_IMG_QUERY, SpriteType::Normal, allocator, encoder);
 	}
 
-	if (sprite_type == ST_MAPGEN) {
+	if (sprite_type == SpriteType::MapGen) {
 		/* Ugly hack to work around the problem that the old landscape
 		 *  generator assumes that those sprites are stored uncompressed in
 		 *  the memory, and they are only read directly by the code, never
@@ -565,10 +577,10 @@ static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_ty
 
 	if (!ResizeSprites(sprite, sprite_avail, encoder)) {
 		if (id == SPR_IMG_QUERY) usererror("Okay... something went horribly wrong. I couldn't resize the fallback sprite. What should I do?");
-		return (void*)GetRawSprite(SPR_IMG_QUERY, ST_NORMAL, allocator, encoder);
+		return (void*)GetRawSprite(SPR_IMG_QUERY, SpriteType::Normal, allocator, encoder);
 	}
 
-	if (sprite->type == ST_FONT && _font_zoom != ZOOM_LVL_NORMAL) {
+	if (sprite->type == SpriteType::Font && _font_zoom != ZOOM_LVL_NORMAL) {
 		/* Make ZOOM_LVL_NORMAL be ZOOM_LVL_GUI */
 		sprite[ZOOM_LVL_NORMAL].width  = sprite[_font_zoom].width;
 		sprite[ZOOM_LVL_NORMAL].height = sprite[_font_zoom].height;
@@ -686,7 +698,7 @@ bool LoadNextSprite(int load_index, SpriteFile &file, uint file_sprite_id)
 			file.ReadByte();
 			return false;
 		}
-		type = ST_RECOLOUR;
+		type = SpriteType::Recolour;
 		data = ReadRecolourSprite(file, num);
 	} else if (file.GetContainerVersion() >= 2 && grf_type == 0xFD) {
 		if (num != 4) {
@@ -703,15 +715,15 @@ bool LoadNextSprite(int load_index, SpriteFile &file, uint file_sprite_id)
 		} else {
 			file_pos = SIZE_MAX;
 		}
-		type = ST_NORMAL;
+		type = SpriteType::Normal;
 	} else {
 		file.SkipBytes(7);
-		type = SkipSpriteData(file, grf_type, num - 8) ? ST_NORMAL : ST_INVALID;
+		type = SkipSpriteData(file, grf_type, num - 8) ? SpriteType::Normal : SpriteType::Invalid;
 		/* Inline sprites are not supported for container version >= 2. */
 		if (file.GetContainerVersion() >= 2) return false;
 	}
 
-	if (type == ST_INVALID) return false;
+	if (type == SpriteType::Invalid) return false;
 
 	if (load_index == -1) {
 		if (data != nullptr) _last_sprite_allocation.Clear();
@@ -725,8 +737,8 @@ bool LoadNextSprite(int load_index, SpriteFile &file, uint file_sprite_id)
 	bool is_mapgen = IsMapgenSpriteID(load_index);
 
 	if (is_mapgen) {
-		if (type != ST_NORMAL) usererror("Uhm, would you be so kind not to load a NewGRF that changes the type of the map generator sprites?");
-		type = ST_MAPGEN;
+		if (type != SpriteType::Normal) usererror("Uhm, would you be so kind not to load a NewGRF that changes the type of the map generator sprites?");
+		type = SpriteType::MapGen;
 	}
 
 	SpriteCache *sc = AllocateSpriteCache(load_index);
@@ -807,14 +819,14 @@ static void DeleteEntriesFromSpriteCache(size_t target)
 	SpriteID i = 0;
 	for (; i != _spritecache.size() && candidate_bytes < target; i++) {
 		SpriteCache *sc = GetSpriteCache(i);
-		if (sc->GetType() != ST_RECOLOUR && sc->GetPtr() != nullptr) {
+		if (sc->GetType() != SpriteType::Recolour && sc->GetPtr() != nullptr) {
 			push({ sc->lru, i, sc->buffer.GetSize() });
 			if (candidate_bytes >= target) break;
 		}
 	}
 	for (; i != _spritecache.size(); i++) {
 		SpriteCache *sc = GetSpriteCache(i);
-		if (sc->GetType() != ST_RECOLOUR && sc->GetPtr() != nullptr && sc->lru <= candidates.front().lru) {
+		if (sc->GetType() != SpriteType::Recolour && sc->GetPtr() != nullptr && sc->lru <= candidates.front().lru) {
 			push({ sc->lru, i, sc->buffer.GetSize() });
 			while (!candidates.empty() && candidate_bytes - candidates.front().size >= target) {
 				pop();
@@ -875,7 +887,7 @@ void *SimpleSpriteAlloc(size_t size)
 
 /**
  * Handles the case when a sprite of different type is requested than is present in the SpriteCache.
- * For ST_FONT sprites, it is normal. In other cases, default sprite is loaded instead.
+ * For SpriteType::Font sprites, it is normal. In other cases, default sprite is loaded instead.
  * @param sprite ID of loaded sprite
  * @param requested requested sprite type
  * @param sc the currently known sprite cache for the requested sprite
@@ -884,34 +896,27 @@ void *SimpleSpriteAlloc(size_t size)
  */
 static void *HandleInvalidSpriteRequest(SpriteID sprite, SpriteType requested, SpriteCache *sc, AllocatorProc *allocator)
 {
-	static const char * const sprite_types[] = {
-		"normal",        // ST_NORMAL
-		"map generator", // ST_MAPGEN
-		"character",     // ST_FONT
-		"recolour",      // ST_RECOLOUR
-	};
-
 	SpriteType available = sc->GetType();
-	if (requested == ST_FONT && available == ST_NORMAL) {
-		if (sc->GetPtr() == nullptr) sc->SetType(ST_FONT);
+	if (requested == SpriteType::Font && available == SpriteType::Normal) {
+		if (sc->GetPtr() == nullptr) sc->SetType(SpriteType::Font);
 		return GetRawSprite(sprite, sc->GetType(), allocator);
 	}
 
 	byte warning_level = sc->GetWarned() ? 6 : 0;
 	sc->SetWarned(true);
-	DEBUG(sprite, warning_level, "Tried to load %s sprite #%d as a %s sprite. Probable cause: NewGRF interference", sprite_types[available], sprite, sprite_types[requested]);
+	DEBUG(sprite, warning_level, "Tried to load %s sprite #%d as a %s sprite. Probable cause: NewGRF interference", GetSpriteTypeName(available), sprite, GetSpriteTypeName(requested));
 
 	switch (requested) {
-		case ST_NORMAL:
+		case SpriteType::Normal:
 			if (sprite == SPR_IMG_QUERY) usererror("Uhm, would you be so kind not to load a NewGRF that makes the 'query' sprite a non-normal sprite?");
 			FALLTHROUGH;
-		case ST_FONT:
-			return GetRawSprite(SPR_IMG_QUERY, ST_NORMAL, allocator);
-		case ST_RECOLOUR:
+		case SpriteType::Font:
+			return GetRawSprite(SPR_IMG_QUERY, SpriteType::Normal, allocator);
+		case SpriteType::Recolour:
 			if (sprite == PALETTE_TO_DARK_BLUE) usererror("Uhm, would you be so kind not to load a NewGRF that makes the 'PALETTE_TO_DARK_BLUE' sprite a non-remap sprite?");
-			return GetRawSprite(PALETTE_TO_DARK_BLUE, ST_RECOLOUR, allocator);
-		case ST_MAPGEN:
-			/* this shouldn't happen, overriding of ST_MAPGEN sprites is checked in LoadNextSprite()
+			return GetRawSprite(PALETTE_TO_DARK_BLUE, SpriteType::Recolour, allocator);
+		case SpriteType::MapGen:
+			/* this shouldn't happen, overriding of SpriteType::MapGen sprites is checked in LoadNextSprite()
 			 * (the only case the check fails is when these sprites weren't even loaded...) */
 		default:
 			NOT_REACHED();
@@ -929,8 +934,8 @@ static void *HandleInvalidSpriteRequest(SpriteID sprite, SpriteType requested, S
  */
 void *GetRawSprite(SpriteID sprite, SpriteType type, AllocatorProc *allocator, SpriteEncoder *encoder)
 {
-	assert(type != ST_MAPGEN || IsMapgenSpriteID(sprite));
-	assert(type < ST_INVALID);
+	assert(type != SpriteType::MapGen || IsMapgenSpriteID(sprite));
+	assert(type < SpriteType::Invalid);
 
 	if (!SpriteExists(sprite)) {
 		DEBUG(sprite, 1, "Tried to load non-existing sprite #%d. Probable cause: Wrong/missing NewGRFs", sprite);
@@ -974,22 +979,22 @@ uint32 GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id)
 	if (!SpriteExists(sprite_id)) return 0;
 
 	SpriteCache *sc = GetSpriteCache(sprite_id);
-	if (sc->GetType() != ST_NORMAL) return 0;
+	if (sc->GetType() != SpriteType::Normal) return 0;
 
-	const byte * const remap = (palette_id == PAL_NONE ? nullptr : GetNonSprite(GB(palette_id, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1);
+	const byte * const remap = (palette_id == PAL_NONE ? nullptr : GetNonSprite(GB(palette_id, 0, PALETTE_WIDTH), SpriteType::Recolour) + 1);
 
 	SpriteFile &file = *sc->file;
 	size_t file_pos = sc->file_pos;
 
 	SpriteLoader::Sprite sprites[ZOOM_LVL_COUNT];
-	sprites[ZOOM_LVL_NORMAL].type = ST_NORMAL;
+	sprites[ZOOM_LVL_NORMAL].type = SpriteType::Normal;
 	SpriteLoaderGrf sprite_loader(file.GetContainerVersion());
 	uint8 sprite_avail;
 	const uint8 screen_depth = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
 
 	/* Try to read the 32bpp sprite first. */
 	if (screen_depth == 32 && sc->GetHasNonPalette()) {
-		sprite_avail = sprite_loader.LoadSprite(sprites, file, file_pos, ST_NORMAL, true, sc->count, sc->flags);
+		sprite_avail = sprite_loader.LoadSprite(sprites, file, file_pos, SpriteType::Normal, true, sc->count, sc->flags);
 		if (sprite_avail != 0) {
 			SpriteLoader::Sprite *sprite = &sprites[FindFirstBit(sprite_avail)];
 			/* Return the average colour. */
@@ -1019,7 +1024,7 @@ uint32 GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id)
 	}
 
 	/* No 32bpp, try 8bpp. */
-	sprite_avail = sprite_loader.LoadSprite(sprites, file, file_pos, ST_NORMAL, false, sc->count, sc->flags);
+	sprite_avail = sprite_loader.LoadSprite(sprites, file, file_pos, SpriteType::Normal, false, sc->count, sc->flags);
 	if (sprite_avail != 0) {
 		SpriteLoader::Sprite *sprite = &sprites[FindFirstBit(sprite_avail)];
 		SpriteLoader::CommonPixel *pixel = sprite->data;
@@ -1078,7 +1083,7 @@ void GfxClearSpriteCache()
 	/* Clear sprite ptr for all cached items */
 	for (uint i = 0; i != _spritecache.size(); i++) {
 		SpriteCache *sc = GetSpriteCache(i);
-		if (sc->GetType() != ST_RECOLOUR && sc->GetPtr() != nullptr) DeleteEntryFromSpriteCache(i);
+		if (sc->GetType() != SpriteType::Recolour && sc->GetPtr() != nullptr) DeleteEntryFromSpriteCache(i);
 	}
 
 	VideoDriver::GetInstance()->ClearSystemSprites();
@@ -1093,7 +1098,7 @@ void GfxClearFontSpriteCache()
 	/* Clear sprite ptr for all cached font items */
 	for (uint i = 0; i != _spritecache.size(); i++) {
 		SpriteCache *sc = GetSpriteCache(i);
-		if (sc->GetType() == ST_FONT && sc->GetPtr() != nullptr) DeleteEntryFromSpriteCache(i);
+		if (sc->GetType() == SpriteType::Font && sc->GetPtr() != nullptr) DeleteEntryFromSpriteCache(i);
 	}
 }
 

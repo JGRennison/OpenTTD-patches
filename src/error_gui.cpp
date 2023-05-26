@@ -214,7 +214,7 @@ public:
 				break;
 			}
 			case WID_EM_FACE: {
-				Dimension face_size = GetSpriteSize(SPR_GRADIENT);
+				Dimension face_size = GetScaledSpriteSize(SPR_GRADIENT);
 				size->width = std::max(size->width, face_size.width);
 				size->height = std::max(size->height, face_size.height);
 				break;
@@ -274,7 +274,7 @@ public:
 		switch (widget) {
 			case WID_EM_FACE: {
 				const Company *c = Company::Get(this->face);
-				DrawCompanyManagerFace(c->face, c->colour, r.left, r.top);
+				DrawCompanyManagerFace(c->face, c->colour, r);
 				break;
 			}
 

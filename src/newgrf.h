@@ -314,14 +314,14 @@ struct GRFFile : ZeroedMemoryAllocator {
 	uint sound_offset;
 	uint16 num_sounds;
 
-	struct StationSpec **stations;
-	struct HouseSpec **housespec;
-	struct IndustrySpec **industryspec;
-	struct IndustryTileSpec **indtspec;
-	std::vector<struct ObjectSpec *> objectspec;
-	struct AirportSpec **airportspec;
-	struct AirportTileSpec **airtspec;
-	std::vector<struct RoadStopSpec *> roadstops;
+	std::vector<std::unique_ptr<struct StationSpec>> stations;
+	std::vector<std::unique_ptr<struct HouseSpec>> housespec;
+	std::vector<std::unique_ptr<struct IndustrySpec>> industryspec;
+	std::vector<std::unique_ptr<struct IndustryTileSpec>> indtspec;
+	std::vector<std::unique_ptr<struct ObjectSpec>> objectspec;
+	std::vector<std::unique_ptr<struct AirportSpec>> airportspec;
+	std::vector<std::unique_ptr<struct AirportTileSpec>> airtspec;
+	std::vector<std::unique_ptr<struct RoadStopSpec>> roadstops;
 
 	GRFFeatureMapRemapSet feature_id_remaps;
 	GRFFilePropertyRemapSet action0_property_remaps[GSF_END];

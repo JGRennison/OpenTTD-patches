@@ -117,7 +117,7 @@ Rect16 VehicleSpriteSeq::GetBounds() const
 	Rect16 bounds;
 	bounds.left = bounds.top = bounds.right = bounds.bottom = 0;
 	for (uint i = 0; i < this->count; ++i) {
-		const Sprite *spr = GetSprite(this->seq[i].sprite, ST_NORMAL);
+		const Sprite *spr = GetSprite(this->seq[i].sprite, SpriteType::Normal);
 		if (i == 0) {
 			bounds.left = spr->x_offs;
 			bounds.top  = spr->y_offs;

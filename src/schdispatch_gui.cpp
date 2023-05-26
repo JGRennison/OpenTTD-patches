@@ -259,7 +259,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 				SetDParamMaxValue(0, _settings_time.time_in_minutes ? 0 : MAX_YEAR * DAYS_IN_YEAR);
 				Dimension unumber = GetStringBoundingBox(STR_JUST_DATE_WALLCLOCK_TINY);
-				const Sprite *spr = GetSprite(SPR_FLAG_VEH_STOPPED, ST_NORMAL);
+				const Sprite *spr = GetSprite(SPR_FLAG_VEH_STOPPED, SpriteType::Normal);
 				this->flag_width  = UnScaleGUI(spr->width) + WidgetDimensions::scaled.framerect.right;
 				this->flag_height = UnScaleGUI(spr->height);
 

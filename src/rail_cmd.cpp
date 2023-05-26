@@ -3279,7 +3279,7 @@ void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, Sign
 	} else {
 		AddSortableSpriteToDraw(sprite, pal, x, y, 1, 1, BB_HEIGHT_UNDER_BRIDGE, z);
 	}
-	const Sprite *sp = GetSprite(sprite, ST_NORMAL);
+	const Sprite *sp = GetSprite(sprite, SpriteType::Normal);
 	if (sp->x_offs < -SIGNAL_DIRTY_LEFT || sp->x_offs + sp->width > SIGNAL_DIRTY_RIGHT || sp->y_offs < -SIGNAL_DIRTY_TOP || sp->y_offs + sp->height > SIGNAL_DIRTY_BOTTOM) {
 		_signal_sprite_oversized = true;
 	}

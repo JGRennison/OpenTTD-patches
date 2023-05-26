@@ -71,6 +71,8 @@
 #include "../event_logs.h"
 #include "../newgrf_object.h"
 #include "../newgrf_industrytiles.h"
+#include "../timer/timer.h"
+#include "../timer/timer_game_tick.h"
 
 
 #include "saveload_internal.h"
@@ -2617,19 +2619,19 @@ bool AfterLoadGame()
 					case TE_PASSENGERS:
 					case TE_MAIL:
 						/* Town -> Town */
-						s->src_type = s->dst_type = ST_TOWN;
+						s->src_type = s->dst_type = SourceType::Town;
 						if (Town::IsValidID(s->src) && Town::IsValidID(s->dst)) continue;
 						break;
 					case TE_GOODS:
 					case TE_FOOD:
 						/* Industry -> Town */
-						s->src_type = ST_INDUSTRY;
-						s->dst_type = ST_TOWN;
+						s->src_type = SourceType::Industry;
+						s->dst_type = SourceType::Town;
 						if (Industry::IsValidID(s->src) && Town::IsValidID(s->dst)) continue;
 						break;
 					default:
 						/* Industry -> Industry */
-						s->src_type = s->dst_type = ST_INDUSTRY;
+						s->src_type = s->dst_type = SourceType::Industry;
 						if (Industry::IsValidID(s->src) && Industry::IsValidID(s->dst)) continue;
 						break;
 				}
@@ -2647,7 +2649,7 @@ bool AfterLoadGame()
 						const Station *sd = Station::GetIfValid(s->dst);
 						if (ss != nullptr && sd != nullptr && ss->owner == sd->owner &&
 								Company::IsValidID(ss->owner)) {
-							s->src_type = s->dst_type = ST_TOWN;
+							s->src_type = s->dst_type = SourceType::Town;
 							s->src = ss->town->index;
 							s->dst = sd->town->index;
 							s->awarded = ss->owner;
@@ -4199,6 +4201,16 @@ bool AfterLoadGame()
 
 	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_TICK_RATE)) {
 		_settings_game.economy.tick_rate = IsSavegameVersionUntil(SLV_MORE_CARGO_AGE) ? TRM_TRADITIONAL : TRM_MODERN;
+	}
+
+	if (SlXvIsFeatureMissing(XSLFI_AI_START_DATE) && IsSavegameVersionBefore(SLV_AI_START_DATE)) {
+		/* For older savegames, we don't now the actual interval; so set it to the newgame value. */
+		_settings_game.difficulty.competitors_interval = _settings_newgame.difficulty.competitors_interval;
+
+		/* We did load the "period" of the timer, but not the fired/elapsed. We can deduce that here. */
+		extern TimeoutTimer<TimerGameTick> _new_competitor_timeout;
+		_new_competitor_timeout.storage.elapsed = 0;
+		_new_competitor_timeout.fired = _new_competitor_timeout.period == 0;
 	}
 
 	InitializeRoadGUI();

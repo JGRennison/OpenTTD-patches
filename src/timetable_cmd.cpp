@@ -478,7 +478,7 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (timetable_all && !v->orders->IsCompleteTimetable()) return CMD_ERROR;
+	if (timetable_all && !v->orders->IsCompleteTimetable()) return CommandCost(STR_ERROR_TIMETABLE_INCOMPLETE);
 
 	const DateTicksScaled now = _scaled_date_ticks;
 	DateTicksScaled start_date_scaled = DateTicksToScaledDateTicks(_date * DAY_TICKS + _date_fract + (int32)p2) + sub_ticks;

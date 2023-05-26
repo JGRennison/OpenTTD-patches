@@ -1235,12 +1235,16 @@ void ShowCompanyLiveryWindow(CompanyID company, GroupID group)
  * Draws the face of a company manager's face.
  * @param cmf   the company manager's face
  * @param colour the (background) colour of the gradient
- * @param x     x-position to draw the face
- * @param y     y-position to draw the face
+ * @param r      position to draw the face
  */
-void DrawCompanyManagerFace(CompanyManagerFace cmf, int colour, int x, int y)
+void DrawCompanyManagerFace(CompanyManagerFace cmf, int colour, const Rect &r)
 {
 	GenderEthnicity ge = (GenderEthnicity)GetCompanyManagerFaceBits(cmf, CMFV_GEN_ETHN, GE_WM);
+
+	/* Determine offset from centre of drawing rect. */
+	Dimension d = GetSpriteSize(SPR_GRADIENT);
+	int x = CenterBounds(r.left, r.right, d.width);
+	int y = CenterBounds(r.top, r.bottom, d.height);
 
 	bool has_moustache   = !HasBit(ge, GENDER_FEMALE) && GetCompanyManagerFaceBits(cmf, CMFV_HAS_MOUSTACHE,   ge) != 0;
 	bool has_tie_earring = !HasBit(ge, GENDER_FEMALE) || GetCompanyManagerFaceBits(cmf, CMFV_HAS_TIE_EARRING, ge) != 0;
@@ -1544,7 +1548,7 @@ public:
 				break;
 
 			case WID_SCMF_FACE: {
-				Dimension face_size = GetSpriteSize(SPR_GRADIENT);
+				Dimension face_size = GetScaledSpriteSize(SPR_GRADIENT);
 				size->width  = std::max(size->width,  face_size.width);
 				size->height = std::max(size->height, face_size.height);
 				break;
@@ -1696,7 +1700,7 @@ public:
 	{
 		switch (widget) {
 			case WID_SCMF_FACE:
-				DrawCompanyManagerFace(this->face, Company::Get((CompanyID)this->window_number)->colour, r.left, r.top);
+				DrawCompanyManagerFace(this->face, Company::Get((CompanyID)this->window_number)->colour, r);
 				break;
 		}
 	}
@@ -2481,7 +2485,7 @@ struct CompanyWindow : Window
 	{
 		switch (widget) {
 			case WID_C_FACE: {
-				Dimension face_size = GetSpriteSize(SPR_GRADIENT);
+				Dimension face_size = GetScaledSpriteSize(SPR_GRADIENT);
 				size->width  = std::max(size->width,  face_size.width);
 				size->height = std::max(size->height, face_size.height);
 				break;
@@ -2618,7 +2622,7 @@ struct CompanyWindow : Window
 		const Company *c = Company::Get((CompanyID)this->window_number);
 		switch (widget) {
 			case WID_C_FACE:
-				DrawCompanyManagerFace(c->face, c->colour, r.left, r.top);
+				DrawCompanyManagerFace(c->face, c->colour, r);
 				break;
 
 			case WID_C_FACE_TITLE:
@@ -2910,7 +2914,7 @@ struct BuyCompanyWindow : Window {
 	{
 		switch (widget) {
 			case WID_BC_FACE:
-				*size = GetSpriteSize(SPR_GRADIENT);
+				*size = GetScaledSpriteSize(SPR_GRADIENT);
 				break;
 
 			case WID_BC_QUESTION:
@@ -2937,7 +2941,7 @@ struct BuyCompanyWindow : Window {
 		switch (widget) {
 			case WID_BC_FACE: {
 				const Company *c = Company::Get((CompanyID)this->window_number);
-				DrawCompanyManagerFace(c->face, c->colour, r.left, r.top);
+				DrawCompanyManagerFace(c->face, c->colour, r);
 				break;
 			}
 

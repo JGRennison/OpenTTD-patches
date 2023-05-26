@@ -357,7 +357,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	bool estimate_only = GetDoCommandMode() != nullptr && !GetDoCommandMode()();
 
 	/* Should the command be executed asynchronously? */
-	bool asynchronous = GetDoCommandAsyncMode() != nullptr && GetDoCommandAsyncMode()() && GetActiveInstance()->GetScriptType() == ST_GS;
+	bool asynchronous = GetDoCommandAsyncMode() != nullptr && GetDoCommandAsyncMode()() && GetActiveInstance()->GetScriptType() == ScriptType::GS;
 
 	/* Only set p2 when the command does not come from the network. */
 	if (GetCommandFlags(cmd) & CMD_CLIENT_ID && p2 == 0) p2 = UINT32_MAX;
@@ -406,7 +406,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	} else if (_networking) {
 		/* Suspend the script till the command is really executed. */
 		throw Script_Suspend(-(int)GetDoCommandDelay(), callback);
-	} else if (GetActiveInstance()->GetScriptType() == ST_GS && (_pause_mode & PM_PAUSED_GAME_SCRIPT) != PM_UNPAUSED) {
+	} else if (GetActiveInstance()->GetScriptType() == ScriptType::GS && (_pause_mode & PM_PAUSED_GAME_SCRIPT) != PM_UNPAUSED) {
 		/* Game is paused due to GS, just execute as fast as possible */
 		IncreaseDoCommandCosts(res.GetCost());
 		ScriptController::DecreaseOps(100);

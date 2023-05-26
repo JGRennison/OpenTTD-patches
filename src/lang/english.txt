@@ -1712,7 +1712,7 @@ STR_CONFIG_SETTING_SCRIPT_MAX_MEMORY_HELPTEXT                   :How much memory
 STR_CONFIG_SETTING_SCRIPT_MAX_MEMORY_VALUE                      :{COMMA} MiB
 
 STR_CONFIG_SETTING_SERVINT_ISPERCENT                            :Service intervals are in percents: {STRING2}
-STR_CONFIG_SETTING_SERVINT_ISPERCENT_HELPTEXT                   :Choose whether servicing of vehicles is triggered by the time passed since last service or by reliability dropping by a certain percentage of the maximum reliability
+STR_CONFIG_SETTING_SERVINT_ISPERCENT_HELPTEXT                   :When enabled, vehicles try to service when their reliability drops by a given percentage of the maximum reliability.{}{}For example, if a vehicle's maximum reliability is 90% and the service interval is 20%, the vehicle will try to service when it reaches 72% reliability.
 
 STR_CONFIG_SETTING_SERVINT_TRAINS                               :Default service interval for trains: {STRING2}
 STR_CONFIG_SETTING_SERVINT_TRAINS_HELPTEXT                      :Set the default service interval for new rail vehicles, if no explicit service interval is set for the vehicle
@@ -4592,6 +4592,7 @@ STR_AI_CONFIG_RANDOM_AI                                         :Random AI
 STR_AI_CONFIG_NONE                                              :(none)
 STR_AI_CONFIG_NAME_VERSION                                      :{RAW_STRING} {YELLOW}v{NUM}
 STR_AI_CONFIG_MAX_COMPETITORS                                   :{LTBLUE}Maximum no. competitors: {ORANGE}{COMMA}
+STR_AI_CONFIG_COMPETITORS_INTERVAL                              :{LTBLUE}Interval between starting of competitors: {ORANGE}{COMMA} minute{P "" s}
 
 STR_AI_CONFIG_MOVE_UP                                           :{BLACK}Move Up
 STR_AI_CONFIG_MOVE_UP_TOOLTIP                                   :{BLACK}Move selected AI up in the list
@@ -4638,7 +4639,6 @@ STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Game Script
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Close
 STR_AI_SETTINGS_RESET                                           :{BLACK}Reset
 STR_AI_SETTINGS_SETTING                                         :{RAW_STRING}: {ORANGE}{STRING1}
-STR_AI_SETTINGS_START_DELAY                                     :Number of days to start this AI after the previous one (give or take): {ORANGE}{STRING1}
 
 
 # Textfile window
@@ -5110,6 +5110,7 @@ STR_ERROR_NO_BUOY                                               :{WHITE}There is
 STR_ERROR_CAN_T_TIMETABLE_VEHICLE                               :{WHITE}Can't timetable vehicle...
 STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS                       :{WHITE}Vehicles can only wait at stations
 STR_ERROR_TIMETABLE_NOT_STOPPING_HERE                           :{WHITE}This vehicle is not stopping at this station
+STR_ERROR_TIMETABLE_INCOMPLETE                                  :{WHITE}... timetable is incomplete
 
 # Sign related errors
 STR_ERROR_TOO_MANY_SIGNS                                        :{WHITE}... too many signs
@@ -5521,10 +5522,10 @@ STR_VEHICLE_NAME_AIRCRAFT_POWERNAUT_HELICOPTER                  :Powernaut Helic
 
 ##id 0x8800
 # Formatting of some strings
-STR_FORMAT_DATE_TINY                                            :{RAW_STRING}-{RAW_STRING}-{NUM}
+STR_FORMAT_DATE_TINY                                            :{ZEROFILL_NUM}-{ZEROFILL_NUM}-{NUM}
 STR_FORMAT_DATE_SHORT                                           :{STRING} {NUM}
 STR_FORMAT_DATE_LONG                                            :{STRING} {STRING} {NUM}
-STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:RAW_STRING}-{0:RAW_STRING}
+STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:ZEROFILL_NUM}-{0:ZEROFILL_NUM}
 
 STR_FORMAT_COMPANY_NUM                                          :(Company {COMMA})
 STR_FORMAT_GROUP_NAME                                           :Group {COMMA}

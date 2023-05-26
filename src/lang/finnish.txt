@@ -1926,6 +1926,10 @@ STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :Ei yhtään
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Kasvukerroin alussa: {STRING}
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Kaupunkien keskimääräinen koko suhteessa muihin kuntiin pelin alussa
 
+STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL                    :Päivitä yhteyskuvaaja {STRING}{NBSP}sekunnin välein
+STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL_HELPTEXT           :Yhteyskuvaajan uudelleenlaskentojen välinen aika. Jokainen uudelleenlaskenta laskee suunnitelmat kuvaajan yhdelle osalle. Tämän asetuksen arvo X ei siis tarkoita, että koko kuvaaja päivittyisi X sekunnin välein, vaan ainoastaan sen yksi osa. Mitä lyhyemmäksi asetat tämän ajan, sitä enemmän suoritinaikaa kuluu laskentaan. Mitä pitemmäksi asetat ajan, sitä pitempään kestää rahdin jakautumisen alkaminen uusille reiteille.
+STR_CONFIG_SETTING_LINKGRAPH_RECALC_TIME                        :Käytä {STRING}{NBSP}sekunti{P 0:2 "" a} yhteyskuvaajan uudelleenlaskentaan
+STR_CONFIG_SETTING_LINKGRAPH_RECALC_TIME_HELPTEXT               :Yhteyskuvaajan kunkin osan uudelleenlaskentaan käytettävä aika. Uudelleenlaskennan alkaessa käynnistetään säie, jonka annetaan toimia näin monta sekuntia. Mitä lyhyemmäksi asetat tämän ajan, sitä todennäköisemmin säie ei ehdi päättymään ajoissa, jolloin peli pysähtyy (”jumii”) säikeen valmistumiseen asti. Mitä pitemmäksi asetat ajan, sitä pitempään rahdin jakautumisen päivittyminen kestää reittien muuttuessa.
 
 STR_CONFIG_SETTING_DISTRIBUTION_PAX                             :Matkustajien jakautuminen: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PAX_HELPTEXT                    :”Symmetrinen” tarkoittaa, että suunnilleen sama määrä matkustajia kulkee asemalta A asemalle B kuin asemalta B asemalle A. ”Epäsymmetrinen” tarkoittaa, että matkustajia voi kulkea mielivaltainen määrä kumpaankin suuntaan. ”Manuaalinen” tarkoittaa, että automaattista jakautumista ei sovelleta matkustajiin.
@@ -4588,6 +4592,7 @@ STR_AI_CONFIG_RANDOM_AI                                         :Sattumanvaraine
 STR_AI_CONFIG_NONE                                              :(ei mitään)
 STR_AI_CONFIG_NAME_VERSION                                      :{STRING} {YELLOW}v{NUM}
 STR_AI_CONFIG_MAX_COMPETITORS                                   :{LTBLUE}Vastustajien enimmäismäärä: {ORANGE}{COMMA}
+STR_AI_CONFIG_COMPETITORS_INTERVAL                              :{LTBLUE}Kilpailijoiden käynnistämisen välinen aika: {ORANGE}{COMMA} minuutti{P "" a}
 
 STR_AI_CONFIG_MOVE_UP                                           :{BLACK}Siirrä ylöspäin
 STR_AI_CONFIG_MOVE_UP_TOOLTIP                                   :{BLACK}Siirrä valittua tekoälyä ylöspäin listalla
@@ -4634,7 +4639,6 @@ STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Peliskripti
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Sulje
 STR_AI_SETTINGS_RESET                                           :{BLACK}Palauta
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
-STR_AI_SETTINGS_START_DELAY                                     :Päiviä edellisen tekoälyn aloittamisesta tämän tekoälyn aloittamiseen (arvio): {ORANGE}{STRING}
 
 
 # Textfile window
@@ -5517,10 +5521,10 @@ STR_VEHICLE_NAME_AIRCRAFT_POWERNAUT_HELICOPTER                  :Powernaut-helik
 
 ##id 0x8800
 # Formatting of some strings
-STR_FORMAT_DATE_TINY                                            :{STRING}-{STRING}-{NUM}
+STR_FORMAT_DATE_TINY                                            :{ZEROFILL_NUM}-{ZEROFILL_NUM}-{NUM}
 STR_FORMAT_DATE_SHORT                                           :{STRING} {NUM}
 STR_FORMAT_DATE_LONG                                            :{STRING} {STRING} {NUM}
-STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:STRING}-{0:STRING}
+STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:ZEROFILL_NUM}-{0:ZEROFILL_NUM}
 
 STR_FORMAT_COMPANY_NUM                                          :(yhtiö {COMMA})
 STR_FORMAT_GROUP_NAME                                           :Ryhmä {COMMA}

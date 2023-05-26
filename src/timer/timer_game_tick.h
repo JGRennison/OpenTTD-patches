@@ -5,25 +5,30 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file script_grouplist.hpp List all the groups (you own). */
+/** @file timer_game_tick.h Definition of the tick-based game-timer */
 
-#ifndef SCRIPT_GROUPLIST_HPP
-#define SCRIPT_GROUPLIST_HPP
+#ifndef TIMER_GAME_TICK_H
+#define TIMER_GAME_TICK_H
 
-#include "script_list.hpp"
+#include "gfx_type.h"
+
+#include <chrono>
+
+/** Estimation of how many ticks fit in a single second. */
+static const uint TICKS_PER_SECOND = 1000 / 27 /*MILLISECONDS_PER_TICK*/;
 
 /**
- * Creates a list of groups of which you are the owner.
- * @note Neither ScriptGroup::GROUP_ALL nor ScriptGroup::GROUP_DEFAULT is in this list.
- * @api ai game
- * @ingroup ScriptList
+ * Timer that represents the game-ticks. It will pause when the game is paused.
+ *
+ * @note Callbacks are executed in the game-thread.
  */
-class ScriptGroupList : public ScriptList {
+class TimerGameTick {
 public:
-	/**
-	 * @game @pre ScriptCompanyMode::IsValid().
-	 */
-	ScriptGroupList();
+	using TPeriod = uint;
+	using TElapsed = uint;
+	struct TStorage {
+		uint elapsed;
+	};
 };
 
-#endif /* SCRIPT_GROUPLIST_HPP */
+#endif /* TIMER_GAME_TICK_H */

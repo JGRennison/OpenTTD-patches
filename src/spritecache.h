@@ -49,13 +49,13 @@ uint GetMaxSpriteID();
 
 static inline const Sprite *GetSprite(SpriteID sprite, SpriteType type)
 {
-	dbg_assert(type != ST_RECOLOUR);
+	dbg_assert(type != SpriteType::Recolour);
 	return (Sprite*)GetRawSprite(sprite, type);
 }
 
 static inline const byte *GetNonSprite(SpriteID sprite, SpriteType type)
 {
-	dbg_assert(type == ST_RECOLOUR);
+	dbg_assert(type == SpriteType::Recolour);
 	return (byte*)GetRawSprite(sprite, type);
 }
 
@@ -81,12 +81,12 @@ private:
 public:
 	inline const Sprite *GetSprite(SpriteID sprite, SpriteType type) const
 	{
-		return (const Sprite*)(this->cache.find(sprite | (type << 29))->second);
+		return (const Sprite*)(this->cache.find(sprite | (static_cast<uint32>(type) << 29))->second);
 	}
 
 	inline const byte *GetRecolourSprite(SpriteID sprite) const
 	{
-		return (const byte*)(this->cache.find(sprite | (ST_RECOLOUR << 29))->second);
+		return (const byte*)(this->cache.find(sprite | (static_cast<uint32>(SpriteType::Recolour) << 29))->second);
 	}
 
 	void Clear()
@@ -96,7 +96,7 @@ public:
 
 	inline void CacheSprite(SpriteID sprite, SpriteType type)
 	{
-		this->cache[sprite | (type << 29)] = GetRawSprite(sprite, type);
+		this->cache[sprite | (static_cast<uint32>(type) << 29)] = GetRawSprite(sprite, type);
 	}
 };
 

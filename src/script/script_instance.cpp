@@ -92,7 +92,7 @@ void ScriptInstance::Initialize(const char *main_script, const char *instance_na
 			return;
 		}
 
-		if (this->script_type == ST_GS) {
+		if (this->script_type == ScriptType::GS) {
 			if (strcmp(instance_name, "BeeRewardClass") == 0) {
 				this->LoadCompatibilityScripts("brgs", GAME_DIR);
 			}
@@ -791,7 +791,7 @@ void ScriptInstance::LimitOpsTillSuspend(SQInteger suspend)
 
 uint32 ScriptInstance::GetMaxOpsTillSuspend() const
 {
-	if (this->script_type == ST_GS && (_pause_mode & PM_PAUSED_GAME_SCRIPT) != PM_UNPAUSED) {
+	if (this->script_type == ScriptType::GS && (_pause_mode & PM_PAUSED_GAME_SCRIPT) != PM_UNPAUSED) {
 		/* Boost opcodes till suspend when paused due to game script */
 		return std::min<uint32>(250000, _settings_game.script.script_max_opcode_till_suspend * 10);
 	}

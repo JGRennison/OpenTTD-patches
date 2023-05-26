@@ -32,12 +32,12 @@ static bool CheckAPIVersion(const char *api_version)
 #if defined(_WIN32)
 #undef GetClassName
 #endif /* _WIN32 */
-template <> const char *GetClassName<AIInfo, ST_AI>() { return "AIInfo"; }
+template <> const char *GetClassName<AIInfo, ScriptType::AI>() { return "AIInfo"; }
 
 /* static */ void AIInfo::RegisterAPI(Squirrel *engine)
 {
 	/* Create the AIInfo class, and add the RegisterAI function */
-	DefSQClass<AIInfo, ST_AI> SQAIInfo("AIInfo");
+	DefSQClass<AIInfo, ScriptType::AI> SQAIInfo("AIInfo");
 	SQAIInfo.PreRegister(engine);
 	SQAIInfo.AddConstructor<void (AIInfo::*)(), 1>(engine, "x");
 	SQAIInfo.DefSQAdvancedMethod(engine, &AIInfo::AddSetting, "AddSetting");
@@ -68,11 +68,6 @@ template <> const char *GetClassName<AIInfo, ST_AI>() { return "AIInfo"; }
 
 	SQInteger res = ScriptInfo::Constructor(vm, info);
 	if (res != 0) return res;
-
-	ScriptConfigItem config = _start_date_config;
-	config.name = stredup(config.name);
-	config.description = stredup(config.description);
-	info->config_list.push_front(config);
 
 	if (info->engine->MethodExists(*info->SQ_instance, "MinVersionToLoad")) {
 		if (!info->engine->CallIntegerMethod(*info->SQ_instance, "MinVersionToLoad", &info->min_loadable_version, MAX_GET_OPS)) return SQ_ERROR;

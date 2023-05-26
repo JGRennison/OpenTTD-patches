@@ -74,21 +74,16 @@ IndustryBuildData _industry_builder; ///< In-game manager of industries.
  */
 void ResetIndustries()
 {
-	for (IndustryType i = 0; i < NUM_INDUSTRYTYPES; i++) {
-		/* Reset the spec to default */
-		if (i < lengthof(_origin_industry_specs)) {
-			_industry_specs[i] = _origin_industry_specs[i];
-		} else {
-			_industry_specs[i] = IndustrySpec{};
-		}
+	auto industry_insert = std::copy(std::begin(_origin_industry_specs), std::end(_origin_industry_specs), std::begin(_industry_specs));
+	std::fill(industry_insert, std::end(_industry_specs), IndustrySpec{});
 
+	for (IndustryType i = 0; i < lengthof(_origin_industry_specs); i++) {
 		/* Enable only the current climate industries */
-		_industry_specs[i].enabled = i < NEW_INDUSTRYOFFSET &&
-				HasBit(_origin_industry_specs[i].climate_availability, _settings_game.game_creation.landscape);
+		_industry_specs[i].enabled = HasBit(_industry_specs[i].climate_availability, _settings_game.game_creation.landscape);
 	}
 
-	memset(&_industry_tile_specs, 0, sizeof(_industry_tile_specs));
-	memcpy(&_industry_tile_specs, &_origin_industry_tile_specs, sizeof(_origin_industry_tile_specs));
+	auto industry_tile_insert = std::copy(std::begin(_origin_industry_tile_specs), std::end(_origin_industry_tile_specs), std::begin(_industry_tile_specs));
+	std::fill(industry_tile_insert, std::end(_industry_tile_specs), IndustryTileSpec{});
 
 	/* Reset any overrides that have been set. */
 	_industile_mngr.ResetOverride();
@@ -195,8 +190,8 @@ Industry::~Industry()
 	DeleteWindowById(WC_INDUSTRY_VIEW, this->index);
 	DeleteNewGRFInspectWindow(GSF_INDUSTRIES, this->index);
 
-	DeleteSubsidyWith(ST_INDUSTRY, this->index);
-	CargoPacket::InvalidateAllFrom(ST_INDUSTRY, this->index);
+	DeleteSubsidyWith(SourceType::Industry, this->index);
+	CargoPacket::InvalidateAllFrom(SourceType::Industry, this->index);
 
 	for (Station *st : this->stations_near) {
 		st->RemoveIndustryToDeliver(this);
@@ -546,7 +541,7 @@ static bool TransportIndustryGoods(TileIndex tile)
 
 			i->this_month_production[j] = std::min<uint>(i->this_month_production[j] + cw, 0xFFFF);
 
-			uint am = MoveGoodsToStation(i->produced_cargo[j], cw, ST_INDUSTRY, i->index, &i->stations_near, i->exclusive_consumer);
+			uint am = MoveGoodsToStation(i->produced_cargo[j], cw, SourceType::Industry, i->index, &i->stations_near, i->exclusive_consumer);
 			i->this_month_transported[j] += am;
 
 			moved_cargo |= (am != 0);
