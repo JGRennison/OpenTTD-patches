@@ -40,6 +40,9 @@ Changes include:
 - Adding key_comp
 - Adding move constructors/assignment.
 - No longer #define NDEBUG if unset, this can clash with other headers, test for BTREE_DEBUG being defined instead
+- Add noexcept to swap-based move constructors and copy/move assignment operator
+- Remove use of deprecated std::allocator::rebind type
+- Adding support for uncopyable/move-only map/multimap values (not keys).
 
 CMakeLists-pthreads-fix.txt is a modified copy of CMakeLists.txt which includes -lpthreads when building the tests/benchmarks.
 Using this instead fixes compilation on some platforms.

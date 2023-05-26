@@ -274,36 +274,64 @@ class safe_btree {
   }
 
   // Insertion routines.
-  template <typename ValuePointer>
-  std::pair<iterator, bool> insert_unique(const key_type &key, ValuePointer value) {
-    std::pair<tree_iterator, bool> p = tree_.insert_unique(key, value);
+  template <typename... Args>
+  std::pair<iterator,bool> insert_unique_args(const key_type &key, Args&&... args) {
+    std::pair<tree_iterator, bool> p = tree_.insert_unique_args(key, std::forward<Args>(args)...);
     generation_ += p.second;
     return std::make_pair(iterator(this, p.first), p.second);
   }
-  std::pair<iterator, bool> insert_unique(const value_type &v) {
-    std::pair<tree_iterator, bool> p = tree_.insert_unique(v);
-    generation_ += p.second;
-    return std::make_pair(iterator(this, p.first), p.second);
+  std::pair<iterator,bool> insert_unique(const value_type &v) {
+    return insert_unique_args(params_type::key(v), v);
   }
-  iterator insert_unique(iterator position, const value_type &v) {
+  std::pair<iterator,bool> insert_unique(value_type &&v) {
+    return insert_unique_args(params_type::key(v), std::move(v));
+  }
+
+  template <typename... Args>
+  iterator insert_unique_hint_args(iterator position, const key_type &key, Args&&... args) {
     tree_iterator tree_pos = position.iter();
     ++generation_;
-    return iterator(this, tree_.insert_unique(tree_pos, v));
+    return iterator(this, tree_.insert_unique_hint_args(tree_pos, key, std::forward<Args>(args)...));
   }
+  iterator insert_unique(iterator position, const value_type &v) {
+    return insert_unique_hint_args(position, params_type::key(v), v);
+  }
+  iterator insert_unique(iterator position, value_type &&v) {
+    return insert_unique_hint_args(position, params_type::key(v), std::move(v));
+  }
+
   template <typename InputIterator>
   void insert_unique(InputIterator b, InputIterator e) {
     for (; b != e; ++b) {
       insert_unique(*b);
     }
   }
-  iterator insert_multi(const value_type &v) {
+
+  template <typename... Args>
+  iterator insert_multi_args(const key_type &key,  Args&&... args) {
     ++generation_;
-    return iterator(this, tree_.insert_multi(v));
+    return iterator(this, tree_.insert_multi_args(key, std::forward<Args>(args)...));
   }
-  iterator insert_multi(iterator position, const value_type &v) {
+
+  iterator insert_multi(const value_type &v) {
+    return insert_multi_args(params_type::key(v), v);
+  }
+  iterator insert_multi(value_type &&v) {
+    return insert_multi_args(params_type::key(v), std::move(v));
+  }
+
+  template <typename... Args>
+  iterator insert_multi_hint_args(iterator position, const key_type &key, Args&&... args) {
     tree_iterator tree_pos = position.iter();
     ++generation_;
-    return iterator(this, tree_.insert_multi(tree_pos, v));
+    return iterator(this, tree_.insert_multi_hint_args(tree_pos, key, std::forward<Args>(args)...));
+  }
+
+  iterator insert_multi(iterator position, const value_type &v) {
+    return insert_multi_hint_args(position, params_type::key(v), v);
+  }
+  iterator insert_multi(iterator position, value_type &&v) {
+    return insert_multi_hint_args(position, params_type::key(v), std::move(v));
   }
   template <typename InputIterator>
   void insert_multi(InputIterator b, InputIterator e) {
