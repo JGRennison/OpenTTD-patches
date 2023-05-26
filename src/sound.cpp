@@ -23,7 +23,7 @@
 
 static SoundEntry _original_sounds[ORIGINAL_SAMPLE_COUNT];
 
-static void OpenBankFile(const char *filename)
+static void OpenBankFile(const std::string &filename)
 {
 	/**
 	 * The sound file for the original sounds, i.e. those not defined/overridden by a NewGRF.
@@ -34,7 +34,7 @@ static void OpenBankFile(const char *filename)
 	memset(_original_sounds, 0, sizeof(_original_sounds));
 
 	/* If there is no sound file (nosound set), don't load anything */
-	if (filename == nullptr) return;
+	if (filename.empty()) return;
 
 	original_sound_file.reset(new RandomAccessFile(filename, BASESET_DIR));
 	size_t pos = original_sound_file->GetPos();
@@ -50,7 +50,7 @@ static void OpenBankFile(const char *filename)
 		/* Corrupt sample data? Just leave the allocated memory as those tell
 		 * there is no sound to play (size = 0 due to calloc). Not allocating
 		 * the memory disables valid NewGRFs that replace sounds. */
-		DEBUG(sound, 6, "Incorrect number of sounds in '%s', ignoring.", filename);
+		DEBUG(sound, 6, "Incorrect number of sounds in '%s', ignoring.", filename.c_str());
 		return;
 	}
 

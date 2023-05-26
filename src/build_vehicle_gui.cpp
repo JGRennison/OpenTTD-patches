@@ -1217,7 +1217,7 @@ void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_li
 	if (show_count) {
 		replace_icon = GetSpriteSize(SPR_GROUP_REPLACE_ACTIVE);
 		SetDParamMaxDigits(0, 3, FS_SMALL);
-		count_width = GetStringBoundingBox(STR_TINY_BLACK_COMA).width;
+		count_width = GetStringBoundingBox(STR_TINY_BLACK_COMMA).width;
 	}
 
 	Rect tr = ir.Indent(circle_width + WidgetDimensions::scaled.hsep_normal + sprite_width + WidgetDimensions::scaled.hsep_wide, rtl); // Name position
@@ -1256,7 +1256,7 @@ void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_li
 		DrawVehicleEngine(r.left, r.right, sprite_x, y + sprite_y_offset, item.engine_id, (show_count && num_engines == 0) ? PALETTE_CRASH : GetEnginePalette(item.engine_id, _local_company), EIT_PURCHASE);
 		if (show_count) {
 			SetDParam(0, num_engines);
-			DrawString(cr.left, cr.right, y + small_text_y_offset, STR_TINY_BLACK_COMA, TC_FROMSTRING, SA_RIGHT | SA_FORCE);
+			DrawString(cr.left, cr.right, y + small_text_y_offset, STR_TINY_BLACK_COMMA, TC_FROMSTRING, SA_RIGHT | SA_FORCE);
 			if (EngineHasReplacementForCompany(Company::Get(_local_company), item.engine_id, selected_group)) DrawSprite(SPR_GROUP_REPLACE_ACTIVE, num_engines == 0 ? PALETTE_CRASH : PAL_NONE, rr.left, y + replace_icon_y_offset);
 		}
 		if (has_variants) {
@@ -1618,7 +1618,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		 * and if not, reset selection to INVALID_ENGINE. This could be the case
 		 * when engines become obsolete and are removed */
 		for (const Engine *e : Engine::IterateType(VEH_TRAIN)) {
-			if (!this->show_hidden_engines && e->IsHidden(_local_company)) continue;
+			if (!this->show_hidden_engines && e->IsVariantHidden(_local_company)) continue;
 			EngineID eid = e->index;
 			const RailVehicleInfo *rvi = &e->u.rail;
 
@@ -1669,7 +1669,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		this->eng_list.clear();
 
 		for (const Engine *e : Engine::IterateType(VEH_ROAD)) {
-			if (!this->show_hidden_engines && e->IsHidden(_local_company)) continue;
+			if (!this->show_hidden_engines && e->IsVariantHidden(_local_company)) continue;
 			EngineID eid = e->index;
 			if (!IsEngineBuildable(eid, VEH_ROAD, _local_company)) continue;
 			if (this->filter.roadtype != INVALID_ROADTYPE && !HasPowerOnRoad(e->u.road.roadtype, this->filter.roadtype)) continue;
@@ -1688,7 +1688,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		this->eng_list.clear();
 
 		for (const Engine *e : Engine::IterateType(VEH_SHIP)) {
-			if (!this->show_hidden_engines && e->IsHidden(_local_company)) continue;
+			if (!this->show_hidden_engines && e->IsVariantHidden(_local_company)) continue;
 			EngineID eid = e->index;
 			if (!IsEngineBuildable(eid, VEH_SHIP, _local_company)) continue;
 			this->eng_list.emplace_back(eid, e->info.variant_id, e->display_flags, 0);
@@ -1712,7 +1712,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		 * and if not, reset selection to INVALID_ENGINE. This could be the case
 		 * when planes become obsolete and are removed */
 		for (const Engine *e : Engine::IterateType(VEH_AIRCRAFT)) {
-			if (!this->show_hidden_engines && e->IsHidden(_local_company)) continue;
+			if (!this->show_hidden_engines && e->IsVariantHidden(_local_company)) continue;
 			EngineID eid = e->index;
 			if (!IsEngineBuildable(eid, VEH_AIRCRAFT, _local_company)) continue;
 			/* First VEH_END window_numbers are fake to allow a window open for all different types at once */
@@ -2481,7 +2481,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		 * and if not, reset selection to INVALID_ENGINE. This could be the case
 		 * when engines become obsolete and are removed */
 		for (const Engine *engine : Engine::IterateType(VEH_TRAIN)) {
-			if (!state.show_hidden && engine->IsHidden(_local_company)) continue;
+			if (!state.show_hidden && engine->IsVariantHidden(_local_company)) continue;
 			EngineID eid = engine->index;
 			const RailVehicleInfo *rvi = &engine->u.rail;
 

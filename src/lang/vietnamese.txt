@@ -5110,6 +5110,7 @@ STR_ERROR_NO_BUOY                                               :{WHITE}Không c
 STR_ERROR_CAN_T_TIMETABLE_VEHICLE                               :{WHITE}Không thể lập lịch trình cho phương tiện...
 STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS                       :{WHITE}Phương tiện chỉ có thể chờ ở nhà ga, bến, cảng.
 STR_ERROR_TIMETABLE_NOT_STOPPING_HERE                           :{WHITE}Phương tiện này không dừng lại tại ga, bến này theo lộ trình.
+STR_ERROR_TIMETABLE_INCOMPLETE                                  :{WHITE}... lịch trình chưa hoàn thiện
 
 # Sign related errors
 STR_ERROR_TOO_MANY_SIGNS                                        :{WHITE}... quá nhiều biển hiệu
@@ -5606,7 +5607,7 @@ STR_JUST_BIG_RAW_STRING                                         :{BIG_FONT}{STRI
 
 # Slightly 'raw' stringcodes with colour or size
 STR_BLACK_COMMA                                                 :{BLACK}{COMMA}
-STR_TINY_BLACK_COMA                                             :{TINY_FONT}{BLACK}{COMMA}
+STR_TINY_BLACK_COMMA                                            :{TINY_FONT}{BLACK}{COMMA}
 STR_TINY_COMMA                                                  :{TINY_FONT}{COMMA}
 STR_BLUE_COMMA                                                  :{BLUE}{COMMA}
 STR_RED_COMMA                                                   :{RED}{COMMA}
