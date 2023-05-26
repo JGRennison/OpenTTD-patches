@@ -847,6 +847,11 @@ struct BuildRoadToolbarWindow : Window {
 		return ES_NOT_HANDLED;
 	}
 
+	void OnRealtimeTick(uint delta_ms) override
+	{
+		if (this->IsWidgetLowered(WID_ROT_BUILD_WAYPOINT)) CheckRedrawWaypointCoverage(this, true);
+	}
+
 	static HotkeyList road_hotkeys;
 	static HotkeyList tram_hotkeys;
 };
