@@ -2383,25 +2383,29 @@ static ChangeInfoResult TownHouseChangeInfo(uint hid, int numinfo, int prop, con
 
 				/* Allocate space for this house. */
 				if (housespec == nullptr) {
+					/* Only the first property 08 setting copies properties; if you later change it, properties will stay. */
 					_cur.grffile->housespec[hid + i] = std::make_unique<HouseSpec>(*HouseSpec::Get(subs_id));
 					housespec = _cur.grffile->housespec[hid + i].get();
-				}
 
-				housespec->enabled = true;
-				housespec->grf_prop.local_id = hid + i;
-				housespec->grf_prop.subst_id = subs_id;
-				housespec->grf_prop.grffile = _cur.grffile;
-				housespec->random_colour[0] = 0x04;  // those 4 random colours are the base colour
-				housespec->random_colour[1] = 0x08;  // for all new houses
-				housespec->random_colour[2] = 0x0C;  // they stand for red, blue, orange and green
-				housespec->random_colour[3] = 0x06;
+					housespec->enabled = true;
+					housespec->grf_prop.local_id = hid + i;
+					housespec->grf_prop.subst_id = subs_id;
+					housespec->grf_prop.grffile = _cur.grffile;
+					housespec->random_colour[0] = 0x04;  // those 4 random colours are the base colour
+					housespec->random_colour[1] = 0x08;  // for all new houses
+					housespec->random_colour[2] = 0x0C;  // they stand for red, blue, orange and green
+					housespec->random_colour[3] = 0x06;
 
-				/* Make sure that the third cargo type is valid in this
-				 * climate. This can cause problems when copying the properties
-				 * of a house that accepts food, where the new house is valid
-				 * in the temperate climate. */
-				if (!CargoSpec::Get(housespec->accepts_cargo[2])->IsValid()) {
-					housespec->cargo_acceptance[2] = 0;
+					/* House flags 40 and 80 are exceptions; these flags are never set automatically. */
+					housespec->building_flags &= ~(BUILDING_IS_CHURCH | BUILDING_IS_STADIUM);
+
+					/* Make sure that the third cargo type is valid in this
+					 * climate. This can cause problems when copying the properties
+					 * of a house that accepts food, where the new house is valid
+					 * in the temperate climate. */
+					if (!CargoSpec::Get(housespec->accepts_cargo[2])->IsValid()) {
+						housespec->cargo_acceptance[2] = 0;
+					}
 				}
 				break;
 			}
@@ -7577,10 +7581,22 @@ static void CfgApply(ByteReader *buf)
 	size_t pos = file.GetPos();
 	uint32 num = file.GetContainerVersion() >= 2 ? file.ReadDword() : file.ReadWord();
 	uint8 type = file.ReadByte();
-	std::unique_ptr<byte[]> preload_sprite;
 
 	/* Check if the sprite is a pseudo sprite. We can't operate on real sprites. */
-	if (type == 0xFF) {
+	if (type != 0xFF) {
+		grfmsg(2, "CfgApply: Ignoring (next sprite is real, unsupported)");
+
+		/* Reset the file position to the start of the next sprite */
+		file.SeekTo(pos, SEEK_SET);
+		return;
+	}
+
+	/* Get (or create) the override for the next sprite. */
+	GRFLocation location(_cur.grfconfig->ident.grfid, _cur.nfo_line + 1);
+	std::unique_ptr<byte[]> &preload_sprite = _grf_line_to_action6_sprite_override[location];
+
+	/* Load new sprite data if it hasn't already been loaded. */
+	if (preload_sprite == nullptr) {
 		preload_sprite = std::make_unique<byte[]>(num);
 		file.ReadBlock(preload_sprite.get(), num);
 	}
@@ -7588,21 +7604,7 @@ static void CfgApply(ByteReader *buf)
 	/* Reset the file position to the start of the next sprite */
 	file.SeekTo(pos, SEEK_SET);
 
-	if (type != 0xFF) {
-		grfmsg(2, "CfgApply: Ignoring (next sprite is real, unsupported)");
-		return;
-	}
-
-	GRFLocation location(_cur.grfconfig->ident.grfid, _cur.nfo_line + 1);
-	GRFLineToSpriteOverride::iterator it = _grf_line_to_action6_sprite_override.find(location);
-	if (it != _grf_line_to_action6_sprite_override.end()) {
-		preload_sprite = std::move(it->second);
-	} else {
-		_grf_line_to_action6_sprite_override[location] = std::move(preload_sprite);
-	}
-
 	/* Now perform the Action 0x06 on our data. */
-
 	for (;;) {
 		uint i;
 		uint param_num;
@@ -11467,7 +11469,7 @@ static void AfterLoadGRFs()
 	}
 	_string_to_grf_mapping.clear();
 
-	/* Free the action 6 override sprites. */
+	/* Clear the action 6 override sprites. */
 	_grf_line_to_action6_sprite_override.clear();
 
 	/* Polish cargoes */
