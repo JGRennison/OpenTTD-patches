@@ -1,3 +1,8 @@
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH                :ทุกๆเดือน
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_3_MONTHS               :ทุก 3 เดือน
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_6_MONTHS               :ทุก 6 เดือน
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_12_MONTHS              :ทุก 12 เดือน
+
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :ไมล์/ชม.
 STR_UNIT_NAME_VELOCITY_METRIC                                   :กม./ชม.
 STR_UNIT_NAME_VELOCITY_SI                                       :ม./วิ.

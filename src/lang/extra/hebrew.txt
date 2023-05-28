@@ -1,3 +1,8 @@
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH                :מידי חודש
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_3_MONTHS               :כל 3 חודשים
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_6_MONTHS               :כל 6 חודשים
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_12_MONTHS              :כל 12 חודשים
+
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :מייל לשעה
 STR_UNIT_NAME_VELOCITY_METRIC                                   :קמ"ש
 STR_UNIT_NAME_VELOCITY_SI                                       :מטר\שניה

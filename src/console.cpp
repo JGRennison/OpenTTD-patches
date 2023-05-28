@@ -186,7 +186,7 @@ bool GetArgumentInteger(uint32 *value, const char *arg)
 		return true;
 	}
 
-	*value = strtoul(arg, &endptr, 0);
+	*value = std::strtoul(arg, &endptr, 0);
 	return arg != endptr;
 }
 

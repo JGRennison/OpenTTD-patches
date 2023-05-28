@@ -1,3 +1,8 @@
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH                :هر ماه
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_3_MONTHS               :هر ۳ ماه
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_6_MONTHS               :هر ۶ ماه
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_12_MONTHS              :هر ۱۲ ماه
+
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :مایل بر ساعت
 STR_UNIT_NAME_VELOCITY_METRIC                                   :کیلومتر بر ساعت
 STR_UNIT_NAME_VELOCITY_SI                                       :متر بر ثانیه

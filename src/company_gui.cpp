@@ -541,12 +541,12 @@ struct CompanyFinancesWindow : Window {
 
 		if (this->query_widget == WID_CF_INCREASE_LOAN) {
 			const Company *c = Company::Get((CompanyID)this->window_number);
-			Money amount = std::min<Money>(strtoull(str, nullptr, 10) / _currency->rate, _economy.max_loan - c->current_loan);
+			Money amount = std::min<Money>(std::strtoull(str, nullptr, 10) / _currency->rate, _economy.max_loan - c->current_loan);
 			amount = LOAN_INTERVAL * CeilDivT<Money>(amount, LOAN_INTERVAL);
 			DoCommandP(0, amount >> 32, (amount & 0xFFFFFFFC) | 2, CMD_INCREASE_LOAN | CMD_MSG(STR_ERROR_CAN_T_BORROW_ANY_MORE_MONEY));
 		} else if (this->query_widget == WID_CF_REPAY_LOAN) {
 			const Company *c = Company::Get((CompanyID)this->window_number);
-			Money amount = std::min<Money>(strtoull(str, nullptr, 10) / _currency->rate, c->current_loan);
+			Money amount = std::min<Money>(std::strtoull(str, nullptr, 10) / _currency->rate, c->current_loan);
 			amount = LOAN_INTERVAL * CeilDivT<Money>(amount, LOAN_INTERVAL);
 			DoCommandP(0, amount >> 32, (amount & 0xFFFFFFFC) | 2, CMD_DECREASE_LOAN | CMD_MSG(STR_ERROR_CAN_T_REPAY_LOAN));
 		}
@@ -1819,7 +1819,7 @@ public:
 		if (str == nullptr) return;
 		/* Set a new company manager face number */
 		if (!StrEmpty(str)) {
-			this->face = strtoul(str, nullptr, 10);
+			this->face = std::strtoul(str, nullptr, 10);
 			ScaleAllCompanyManagerFaceBits(this->face);
 			ShowErrorMessage(STR_FACE_FACECODE_SET, INVALID_STRING_ID, WL_INFO);
 			this->UpdateData();
@@ -2810,7 +2810,7 @@ struct CompanyWindow : Window
 			default: NOT_REACHED();
 
 			case WID_C_GIVE_MONEY:
-				DoCommandP(0, (strtoull(str, nullptr, 10) / _currency->rate), this->window_number, CMD_GIVE_MONEY | CMD_MSG(STR_ERROR_CAN_T_GIVE_MONEY), CcGiveMoney, str);
+				DoCommandP(0, (std::strtoull(str, nullptr, 10) / _currency->rate), this->window_number, CMD_GIVE_MONEY | CMD_MSG(STR_ERROR_CAN_T_GIVE_MONEY), CcGiveMoney, str);
 				break;
 
 			case WID_C_PRESIDENT_NAME:

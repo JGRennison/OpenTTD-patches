@@ -856,7 +856,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				if (StrEmpty(str)) break;
 
 				char *end;
-				int32 val = strtoul(str, &end, 10);
+				int32 val = std::strtoul(str, &end, 10);
 				if (val >= 0 && end != nullptr && *end == 0) {
 					uint minutes = (val % 100) % 60;
 					uint hours = (val / 100) % 24;
@@ -874,7 +874,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				if (StrEmpty(str)) break;
 
 				char *end;
-				int32 val = strtoul(str, &end, 10);
+				int32 val = std::strtoul(str, &end, 10);
 				if (val >= 0 && end != nullptr && *end == 0) {
 					uint minutes = (val % 100) % 60;
 					uint hours = (val / 100) % 24;

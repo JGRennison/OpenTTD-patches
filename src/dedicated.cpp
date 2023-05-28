@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "fileio_func.h"
+#include "debug.h"
 #include <string>
 
 std::string _log_file; ///< File to reroute output of a forked OpenTTD to
@@ -59,8 +60,8 @@ void DedicatedFork()
 
 		default:
 			/* We're the parent */
-			printf("Loading dedicated server...\n");
-			printf("  - Forked to background with pid " PRINTF_PID_T "\n", pid);
+			DEBUG(net, 0, "Loading dedicated server...\n");
+			DEBUG(net, 0, "  - Forked to background with pid " PRINTF_PID_T "\n", pid);
 			exit(0);
 	}
 }

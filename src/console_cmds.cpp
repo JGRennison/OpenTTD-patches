@@ -1257,7 +1257,7 @@ DEF_CONSOLE_CMD(ConNewGame)
 		return true;
 	}
 
-	StartNewGameWithoutGUI((argc == 2) ? strtoul(argv[1], nullptr, 10) : GENERATE_NEW_SEED);
+	StartNewGameWithoutGUI((argc == 2) ? std::strtoul(argv[1], nullptr, 10) : GENERATE_NEW_SEED);
 	return true;
 }
 
@@ -3127,7 +3127,7 @@ DEF_CONSOLE_CMD(ConViewportDebug)
 	if (argc == 1) {
 		IConsolePrintF(CC_DEFAULT, "Viewport debug flags: %X", _viewport_debug_flags);
 	} else {
-		_viewport_debug_flags = strtoul(argv[1], nullptr, 16);
+		_viewport_debug_flags = std::strtoul(argv[1], nullptr, 16);
 	}
 
 	return true;
@@ -3141,8 +3141,8 @@ DEF_CONSOLE_CMD(ConViewportMarkDirty)
 	}
 
 	Viewport *vp = FindWindowByClass(WC_MAIN_WINDOW)->viewport;
-	uint l = strtoul(argv[1], nullptr, 0);
-	uint t = strtoul(argv[2], nullptr, 0);
+	uint l = std::strtoul(argv[1], nullptr, 0);
+	uint t = std::strtoul(argv[2], nullptr, 0);
 	uint r = std::min<uint>(l + ((argc > 3) ? strtoul(argv[3], nullptr, 0) : 1), vp->dirty_blocks_per_row);
 	uint b = std::min<uint>(t + ((argc > 4) ? strtoul(argv[4], nullptr, 0) : 1), vp->dirty_blocks_per_column);
 	for (uint x = l; x < r; x++) {
@@ -3188,7 +3188,7 @@ DEF_CONSOLE_CMD(ConGfxDebug)
 	if (argc == 1) {
 		IConsolePrintF(CC_DEFAULT, "Gfx debug flags: %X", _gfx_debug_flags);
 	} else {
-		_gfx_debug_flags = strtoul(argv[1], nullptr, 16);
+		_gfx_debug_flags = std::strtoul(argv[1], nullptr, 16);
 	}
 
 	return true;
@@ -3235,7 +3235,7 @@ DEF_CONSOLE_CMD(ConMiscDebug)
 	if (argc == 1) {
 		IConsolePrintF(CC_DEFAULT, "Misc debug flags: %X", _misc_debug_flags);
 	} else {
-		_misc_debug_flags = strtoul(argv[1], nullptr, 16);
+		_misc_debug_flags = std::strtoul(argv[1], nullptr, 16);
 	}
 
 	return true;
@@ -3261,7 +3261,7 @@ DEF_CONSOLE_CMD(ConSetNewGRFOptimiserFlags)
 			return true;
 		}
 
-		uint value = strtoul(argv[1], nullptr, 16);
+		uint value = std::strtoul(argv[1], nullptr, 16);
 		if (_settings_game.debug.newgrf_optimiser_flags == value) return true;
 		_settings_game.debug.newgrf_optimiser_flags = value;
 

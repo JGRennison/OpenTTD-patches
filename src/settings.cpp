@@ -206,7 +206,7 @@ const SettingDesc *GetSettingDescription(uint index)
 size_t OneOfManySettingDesc::ParseSingleValue(const char *str, size_t len, const std::vector<std::string> &many)
 {
 	/* check if it's an integer */
-	if (isdigit(*str)) return strtoul(str, nullptr, 0);
+	if (isdigit(*str)) return std::strtoul(str, nullptr, 0);
 
 	size_t idx = 0;
 	for (auto one : many) {
@@ -277,7 +277,7 @@ static int ParseIntList(const char *p, T *items, int maxitems)
 			default: {
 				if (n == maxitems) return -1; // we don't accept that many numbers
 				char *end;
-				unsigned long v = strtoul(p, &end, 0);
+				unsigned long v = std::strtoul(p, &end, 0);
 				if (p == end) return -1; // invalid character (not a number)
 				if (sizeof(T) < sizeof(v)) v = Clamp<unsigned long>(v, std::numeric_limits<T>::min(), std::numeric_limits<T>::max());
 				items[n++] = v;
@@ -408,7 +408,7 @@ void ManyOfManySettingDesc::FormatIntValue(char *buf, const char *last, uint32 v
 size_t IntSettingDesc::ParseValue(const char *str) const
 {
 	char *end;
-	size_t val = strtoul(str, &end, 0);
+	size_t val = std::strtoul(str, &end, 0);
 	if (end == str) {
 		if (this->flags & SF_CONVERT_BOOL_TO_INT) {
 			if (strcmp(str, "true") == 0 || strcmp(str, "on") == 0) return 1;

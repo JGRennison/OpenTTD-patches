@@ -67,7 +67,7 @@ Ticks ParseTimetableDuration(const char *str)
 	if (StrEmpty(str)) return 0;
 
 	if (_settings_client.gui.timetable_in_ticks) {
-		return strtoul(str, nullptr, 10);
+		return std::strtoul(str, nullptr, 10);
 	}
 
 	char tmp_buffer[64];
@@ -1112,7 +1112,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 			case WID_VT_CHANGE_TIME: {
 				uint32 p2;
 				if (this->query_is_speed_query) {
-					uint64 display_speed = StrEmpty(str) ? 0 : strtoul(str, nullptr, 10);
+					uint64 display_speed = StrEmpty(str) ? 0 : std::strtoul(str, nullptr, 10);
 					uint64 val = ConvertDisplaySpeedToKmhishSpeed(display_speed, v->type);
 					p2 = std::min<uint>(val, UINT16_MAX);
 				} else {
@@ -1126,7 +1126,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 			case WID_VT_START_DATE: {
 				if (StrEmpty(str)) break;
 				char *end;
-				int32 val = strtol(str, &end, 10);
+				int32 val = std::strtol(str, &end, 10);
 				if (val >= 0 && end && *end == 0) {
 					uint minutes = (val % 100) % 60;
 					uint hours = (val / 100) % 24;
