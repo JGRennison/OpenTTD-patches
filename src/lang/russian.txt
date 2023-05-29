@@ -254,39 +254,39 @@ STR_QUANTITY_N_A                                                :отсутст�
 
 # Two letter abbreviation of cargo name
 STR_ABBREV_NOTHING                                              :
-STR_ABBREV_PASSENGERS                                           :{TINY_FONT}ПС
-STR_ABBREV_COAL                                                 :{TINY_FONT}УГ
-STR_ABBREV_MAIL                                                 :{TINY_FONT}ПЧ
-STR_ABBREV_OIL                                                  :{TINY_FONT}НФ
-STR_ABBREV_LIVESTOCK                                            :{TINY_FONT}СК
-STR_ABBREV_GOODS                                                :{TINY_FONT}ТВ
-STR_ABBREV_GRAIN                                                :{TINY_FONT}ЗР
-STR_ABBREV_WOOD                                                 :{TINY_FONT}ДВ
-STR_ABBREV_IRON_ORE                                             :{TINY_FONT}ЖР
-STR_ABBREV_STEEL                                                :{TINY_FONT}СТ
-STR_ABBREV_VALUABLES                                            :{TINY_FONT}ДР
-STR_ABBREV_COPPER_ORE                                           :{TINY_FONT}МР
-STR_ABBREV_MAIZE                                                :{TINY_FONT}КК
-STR_ABBREV_FRUIT                                                :{TINY_FONT}ФР
-STR_ABBREV_DIAMONDS                                             :{TINY_FONT}АЛ
-STR_ABBREV_FOOD                                                 :{TINY_FONT}ПР
-STR_ABBREV_PAPER                                                :{TINY_FONT}БМ
-STR_ABBREV_GOLD                                                 :{TINY_FONT}ЗЛ
-STR_ABBREV_WATER                                                :{TINY_FONT}ВД
-STR_ABBREV_WHEAT                                                :{TINY_FONT}ПШ
-STR_ABBREV_RUBBER                                               :{TINY_FONT}КЧ
-STR_ABBREV_SUGAR                                                :{TINY_FONT}СХ
-STR_ABBREV_TOYS                                                 :{TINY_FONT}ИГ
-STR_ABBREV_SWEETS                                               :{TINY_FONT}КФ
-STR_ABBREV_COLA                                                 :{TINY_FONT}КЛ
-STR_ABBREV_CANDYFLOSS                                           :{TINY_FONT}СВ
-STR_ABBREV_BUBBLES                                              :{TINY_FONT}ПЗ
-STR_ABBREV_TOFFEE                                               :{TINY_FONT}ИР
-STR_ABBREV_BATTERIES                                            :{TINY_FONT}БТ
-STR_ABBREV_PLASTIC                                              :{TINY_FONT}ПЛ
-STR_ABBREV_FIZZY_DRINKS                                         :{TINY_FONT}ГЗ
-STR_ABBREV_NONE                                                 :{TINY_FONT}НЕТ
-STR_ABBREV_ALL                                                  :{TINY_FONT}Все
+STR_ABBREV_PASSENGERS                                           :ПС
+STR_ABBREV_COAL                                                 :УГ
+STR_ABBREV_MAIL                                                 :ПЧ
+STR_ABBREV_OIL                                                  :НФ
+STR_ABBREV_LIVESTOCK                                            :СК
+STR_ABBREV_GOODS                                                :ТВ
+STR_ABBREV_GRAIN                                                :ЗР
+STR_ABBREV_WOOD                                                 :ДВ
+STR_ABBREV_IRON_ORE                                             :ЖР
+STR_ABBREV_STEEL                                                :СТ
+STR_ABBREV_VALUABLES                                            :ДР
+STR_ABBREV_COPPER_ORE                                           :МР
+STR_ABBREV_MAIZE                                                :КК
+STR_ABBREV_FRUIT                                                :ФР
+STR_ABBREV_DIAMONDS                                             :АЛ
+STR_ABBREV_FOOD                                                 :ПР
+STR_ABBREV_PAPER                                                :БМ
+STR_ABBREV_GOLD                                                 :ЗЛ
+STR_ABBREV_WATER                                                :ВД
+STR_ABBREV_WHEAT                                                :ПШ
+STR_ABBREV_RUBBER                                               :КЧ
+STR_ABBREV_SUGAR                                                :СХ
+STR_ABBREV_TOYS                                                 :ИГ
+STR_ABBREV_SWEETS                                               :КФ
+STR_ABBREV_COLA                                                 :КЛ
+STR_ABBREV_CANDYFLOSS                                           :СВ
+STR_ABBREV_BUBBLES                                              :ПЗ
+STR_ABBREV_TOFFEE                                               :ИР
+STR_ABBREV_BATTERIES                                            :БТ
+STR_ABBREV_PLASTIC                                              :ПЛ
+STR_ABBREV_FIZZY_DRINKS                                         :ГЗ
+STR_ABBREV_NONE                                                 :НЕТ
+STR_ABBREV_ALL                                                  :Все
 
 # 'Mode' of transport for cargoes
 STR_PASSENGERS                                                  :{COMMA}{NBSP}пассажир{P "" а ов}
@@ -1127,7 +1127,7 @@ STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Инте
 
 # Autosave dropdown
 ###length 5
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_OFF                          :Отключено
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_OFF                          :отключено
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_10_MINUTES             :каждые 10 минут
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_30_MINUTES             :каждые 30 минут
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_60_MINUTES             :каждые 60 минут
@@ -1954,15 +1954,6 @@ STR_CONFIG_SETTING_ECONOMY_TYPE_HELPTEXT                        :При плав
 STR_CONFIG_SETTING_ECONOMY_TYPE_ORIGINAL                        :классическая
 STR_CONFIG_SETTING_ECONOMY_TYPE_SMOOTH                          :плавная
 STR_CONFIG_SETTING_ECONOMY_TYPE_FROZEN                          :стабильная
-
-STR_CONFIG_SETTING_ALLOW_SHARES                                 :Разрешить торговлю акциями других компаний: {STRING}
-STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Разрешает торговлю акциями транспортных компаний. Акции выпускаются компаниями через некоторое время после основания.
-
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Мин. возраст компании для выпуска акций: {STRING}
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Минимальный возраст, которого должна достичь компания для начала выпуска акций, которые смогут покупать и продавать другие игроки.
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_VALUE                   :{COMMA} {P год года лет}
-###setting-zero-is-special
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_NO_MIN                  :без ограничений по возрасту
 
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :Процент дохода, начисляемый при частичной перевозке: {STRING}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :Процент прибыли, начисляемый транспорту за частичную перевозку груза.
@@ -3888,7 +3879,6 @@ STR_COMPANY_VIEW_AIRCRAFT                                       :{WHITE}{COMMA} 
 STR_COMPANY_VIEW_SHIPS                                          :{WHITE}{COMMA} суд{P но на ов}
 STR_COMPANY_VIEW_VEHICLES_NONE                                  :{WHITE}нет
 STR_COMPANY_VIEW_COMPANY_VALUE                                  :{GOLD}Стоимость компании: {WHITE}{CURRENCY_LONG}
-STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% владеет {COMPANY})
 STR_COMPANY_VIEW_INFRASTRUCTURE                                 :{GOLD}Инфраструктура:
 STR_COMPANY_VIEW_INFRASTRUCTURE_RAIL                            :{WHITE}{COMMA} ж/д участ{P ок ка ков}
 STR_COMPANY_VIEW_INFRASTRUCTURE_ROAD                            :{WHITE}{COMMA} дорожны{P й х х} участ{P ок ка ков}
@@ -3916,11 +3906,6 @@ STR_COMPANY_VIEW_COMPANY_NAME_BUTTON                            :{BLACK}Назв
 STR_COMPANY_VIEW_COMPANY_NAME_TOOLTIP                           :{BLACK}Изменить название компании
 STR_COMPANY_VIEW_PRESIDENT_NAME_BUTTON                          :{BLACK}Директор
 STR_COMPANY_VIEW_PRESIDENT_NAME_TOOLTIP                         :{BLACK}Изменить имя директора
-
-STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Купить 25% акций компании
-STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Продать 25% акций компании
-STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Купить 25% акций этой компании. Shift+щелчок - оценка стоимости акций.
-STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Продать 25% акций этой компании. Shift+щелчок - оценка стоимости акций.
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Компания
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Имя директора
@@ -4962,9 +4947,6 @@ STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}Нево
 STR_ERROR_CAN_T_GIVE_MONEY                                      :{WHITE}Невозможно передать деньги этой компании...
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Невозможно приобрести компанию...
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Невозможно построить штаб-квартиру компании...
-STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Невозможно купить 25% акций этой компании...
-STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Невозможно продать 25% акций этой компании...
-STR_ERROR_PROTECTED                                             :{WHITE}Эта компания ещё не выпускает акции...
 
 # Town related errors
 STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Невозможно построить города...

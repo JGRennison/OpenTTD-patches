@@ -129,39 +129,39 @@ STR_QUANTITY_N_A                                                :N/A
 
 # Two letter abbreviation of cargo name
 STR_ABBREV_NOTHING                                              :
-STR_ABBREV_PASSENGERS                                           :{TINY_FONT}PS
-STR_ABBREV_COAL                                                 :{TINY_FONT}CL
-STR_ABBREV_MAIL                                                 :{TINY_FONT}ML
-STR_ABBREV_OIL                                                  :{TINY_FONT}OL
-STR_ABBREV_LIVESTOCK                                            :{TINY_FONT}LV
-STR_ABBREV_GOODS                                                :{TINY_FONT}GD
-STR_ABBREV_GRAIN                                                :{TINY_FONT}KR
-STR_ABBREV_WOOD                                                 :{TINY_FONT}VI
-STR_ABBREV_IRON_ORE                                             :{TINY_FONT}OR
-STR_ABBREV_STEEL                                                :{TINY_FONT}ST
-STR_ABBREV_VALUABLES                                            :{TINY_FONT}VL
-STR_ABBREV_COPPER_ORE                                           :{TINY_FONT}CO
-STR_ABBREV_MAIZE                                                :{TINY_FONT}MZ
-STR_ABBREV_FRUIT                                                :{TINY_FONT}FT
-STR_ABBREV_DIAMONDS                                             :{TINY_FONT}DM
-STR_ABBREV_FOOD                                                 :{TINY_FONT}FD
-STR_ABBREV_PAPER                                                :{TINY_FONT}PR
-STR_ABBREV_GOLD                                                 :{TINY_FONT}GD
-STR_ABBREV_WATER                                                :{TINY_FONT}WR
-STR_ABBREV_WHEAT                                                :{TINY_FONT}WH
-STR_ABBREV_RUBBER                                               :{TINY_FONT}RB
-STR_ABBREV_SUGAR                                                :{TINY_FONT}SG
-STR_ABBREV_TOYS                                                 :{TINY_FONT}TY
-STR_ABBREV_SWEETS                                               :{TINY_FONT}SW
-STR_ABBREV_COLA                                                 :{TINY_FONT}CL
-STR_ABBREV_CANDYFLOSS                                           :{TINY_FONT}CF
-STR_ABBREV_BUBBLES                                              :{TINY_FONT}BU
-STR_ABBREV_TOFFEE                                               :{TINY_FONT}TF
-STR_ABBREV_BATTERIES                                            :{TINY_FONT}BA
-STR_ABBREV_PLASTIC                                              :{TINY_FONT}PL
-STR_ABBREV_FIZZY_DRINKS                                         :{TINY_FONT}FZ
-STR_ABBREV_NONE                                                 :{TINY_FONT}EKKERT
-STR_ABBREV_ALL                                                  :{TINY_FONT}ALLT
+STR_ABBREV_PASSENGERS                                           :PS
+STR_ABBREV_COAL                                                 :CL
+STR_ABBREV_MAIL                                                 :ML
+STR_ABBREV_OIL                                                  :OL
+STR_ABBREV_LIVESTOCK                                            :LV
+STR_ABBREV_GOODS                                                :GD
+STR_ABBREV_GRAIN                                                :KR
+STR_ABBREV_WOOD                                                 :VI
+STR_ABBREV_IRON_ORE                                             :OR
+STR_ABBREV_STEEL                                                :ST
+STR_ABBREV_VALUABLES                                            :VL
+STR_ABBREV_COPPER_ORE                                           :CO
+STR_ABBREV_MAIZE                                                :MZ
+STR_ABBREV_FRUIT                                                :FT
+STR_ABBREV_DIAMONDS                                             :DM
+STR_ABBREV_FOOD                                                 :FD
+STR_ABBREV_PAPER                                                :PR
+STR_ABBREV_GOLD                                                 :GD
+STR_ABBREV_WATER                                                :WR
+STR_ABBREV_WHEAT                                                :WH
+STR_ABBREV_RUBBER                                               :RB
+STR_ABBREV_SUGAR                                                :SG
+STR_ABBREV_TOYS                                                 :TY
+STR_ABBREV_SWEETS                                               :SW
+STR_ABBREV_COLA                                                 :CL
+STR_ABBREV_CANDYFLOSS                                           :CF
+STR_ABBREV_BUBBLES                                              :BU
+STR_ABBREV_TOFFEE                                               :TF
+STR_ABBREV_BATTERIES                                            :BA
+STR_ABBREV_PLASTIC                                              :PL
+STR_ABBREV_FIZZY_DRINKS                                         :FZ
+STR_ABBREV_NONE                                                 :EKKERT
+STR_ABBREV_ALL                                                  :ALLT
 
 # 'Mode' of transport for cargoes
 STR_PASSENGERS                                                  :{COMMA} farþeg{P i ar}
@@ -1594,11 +1594,6 @@ STR_CONFIG_SETTING_STARTING_YEAR                                :Upphafsár: {ST
 ###setting-zero-is-special
 
 ###length 3
-
-STR_CONFIG_SETTING_ALLOW_SHARES                                 :Leyfa hlutabréfakaup í öðrum fyrirtækjum: {STRING}
-STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Ef þessi stilling er virk er hægt að kaupa og selja hlutabréf í fyrirtækjum. Hlutabréf eru aðeins aðgengileg fyrir fyrirtæki sem hafa náð ákveðnum aldri
-
-###setting-zero-is-special
 
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :Hlutfall hagnaðar sem greiðist til tengiþjónustu: {STRING}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :Hlutfall hagnaðar sem greiðist til tengiþjónustu, farartækja sem eru milliliðir. Gefur meiri stjórn á tekjunum
@@ -3107,7 +3102,6 @@ STR_COMPANY_VIEW_AIRCRAFT                                       :{WHITE}{COMMA} 
 STR_COMPANY_VIEW_SHIPS                                          :{WHITE}{COMMA} skip
 STR_COMPANY_VIEW_VEHICLES_NONE                                  :{WHITE}Engin
 STR_COMPANY_VIEW_COMPANY_VALUE                                  :{GOLD}Heildarverðmæti fyrirtækis: {WHITE}{CURRENCY_LONG}
-STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% í eigu {COMPANY})
 STR_COMPANY_VIEW_INFRASTRUCTURE                                 :{GOLD}Innviðir:
 STR_COMPANY_VIEW_INFRASTRUCTURE_RAIL                            :{WHITE}{COMMA} járnbrautarspor
 STR_COMPANY_VIEW_INFRASTRUCTURE_ROAD                            :{WHITE}{COMMA} veg{P ur ir}
@@ -3133,11 +3127,6 @@ STR_COMPANY_VIEW_COMPANY_NAME_BUTTON                            :{BLACK}Nafn fyr
 STR_COMPANY_VIEW_COMPANY_NAME_TOOLTIP                           :{BLACK}Breyta nafni fyrirtækisins
 STR_COMPANY_VIEW_PRESIDENT_NAME_BUTTON                          :{BLACK}Nafn forstjóra
 STR_COMPANY_VIEW_PRESIDENT_NAME_TOOLTIP                         :{BLACK}Breyta nafni forstjóra
-
-STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Kaupa 25% hlut í fyrirtæki
-STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Selja 25% hlut í fyrirtæki
-STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Kaupa 25% hlut í þessu fyrirtæki. Shift+smella sýnir áætlaðan kostnað
-STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Selja 25% hlut í þessu fyrirtæki. Shift+smella sýnir áætlaðan kostnað
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Nafn Fyrirtækis
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Nafn forstjóra
@@ -4049,9 +4038,6 @@ STR_ERROR_CAN_T_REPAY_LOAN                                      :{WHITE}Getur ek
 STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}Það er ekki hægt að gefa peninga sem teknir eru að láni frá bankanum...
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Get ekki keypt fyrirtæki...
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Ekki hægt að byggja höfuðstöðvar...
-STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Get ekki keypt 25% hlut í þessu fyrirtæki...
-STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Get ekki selt 25% hlut í þessu fyrirtæki...
-STR_ERROR_PROTECTED                                             :{WHITE}Þetta fyrirtæki er ekki nógu gamalt til að versla með hluti ...
 
 # Town related errors
 STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Get ekki stofnað nýja borg

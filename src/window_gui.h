@@ -74,7 +74,7 @@ static inline void DrawFrameRect(const Rect &r, Colours colour, FrameFlags flags
 	DrawFrameRect(r.left, r.top, r.right, r.bottom, colour, flags);
 }
 
-void DrawCaption(const Rect &r, Colours colour, Owner owner, TextColour text_colour, StringID str, StringAlignment align);
+void DrawCaption(const Rect &r, Colours colour, Owner owner, TextColour text_colour, StringID str, StringAlignment align, FontSize fs);
 
 /* window.cpp */
 extern WindowBase *_z_front_window;

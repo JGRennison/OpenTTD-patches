@@ -674,7 +674,7 @@ static DropDownList GetGroupDropDownList(Owner owner, GroupID group_id, int &sel
 /** Sort slots by their name */
 static bool SlotNameSorter(const TraceRestrictSlot * const &a, const TraceRestrictSlot * const &b)
 {
-	int r = strnatcmp(a->name.c_str(), b->name.c_str()); // Sort by name (natural sorting).
+	int r = StrNaturalCompare(a->name, b->name); // Sort by name (natural sorting).
 	if (r == 0) return a->index < b->index;
 	return r < 0;
 }
@@ -734,7 +734,7 @@ DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &
 /** Sort counters by their name */
 static bool CounterNameSorter(const TraceRestrictCounter * const &a, const TraceRestrictCounter * const &b)
 {
-	int r = strnatcmp(a->name.c_str(), b->name.c_str()); // Sort by name (natural sorting).
+	int r = StrNaturalCompare(a->name, b->name); // Sort by name (natural sorting).
 	if (r == 0) return a->index < b->index;
 	return r < 0;
 }

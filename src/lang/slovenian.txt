@@ -281,39 +281,39 @@ STR_QUANTITY_N_A                                                :Ni na voljo
 
 # Two letter abbreviation of cargo name
 STR_ABBREV_NOTHING                                              :
-STR_ABBREV_PASSENGERS                                           :{TINY_FONT}PO
-STR_ABBREV_COAL                                                 :{TINY_FONT}PR
-STR_ABBREV_MAIL                                                 :{TINY_FONT}PŠ
-STR_ABBREV_OIL                                                  :{TINY_FONT}NF
-STR_ABBREV_LIVESTOCK                                            :{TINY_FONT}ŽV
-STR_ABBREV_GOODS                                                :{TINY_FONT}IZ
-STR_ABBREV_GRAIN                                                :{TINY_FONT}ŽT
-STR_ABBREV_WOOD                                                 :{TINY_FONT}LS
-STR_ABBREV_IRON_ORE                                             :{TINY_FONT}ŽR
-STR_ABBREV_STEEL                                                :{TINY_FONT}JK
-STR_ABBREV_VALUABLES                                            :{TINY_FONT}VR
-STR_ABBREV_COPPER_ORE                                           :{TINY_FONT}BK
-STR_ABBREV_MAIZE                                                :{TINY_FONT}KZ
-STR_ABBREV_FRUIT                                                :{TINY_FONT}SJ
-STR_ABBREV_DIAMONDS                                             :{TINY_FONT}DM
-STR_ABBREV_FOOD                                                 :{TINY_FONT}HR
-STR_ABBREV_PAPER                                                :{TINY_FONT}PA
-STR_ABBREV_GOLD                                                 :{TINY_FONT}ZL
-STR_ABBREV_WATER                                                :{TINY_FONT}VO
-STR_ABBREV_WHEAT                                                :{TINY_FONT}PN
-STR_ABBREV_RUBBER                                               :{TINY_FONT}KČ
-STR_ABBREV_SUGAR                                                :{TINY_FONT}SK
-STR_ABBREV_TOYS                                                 :{TINY_FONT}IG
-STR_ABBREV_SWEETS                                               :{TINY_FONT}SL
-STR_ABBREV_COLA                                                 :{TINY_FONT}CK
-STR_ABBREV_CANDYFLOSS                                           :{TINY_FONT}SP
-STR_ABBREV_BUBBLES                                              :{TINY_FONT}MH
-STR_ABBREV_TOFFEE                                               :{TINY_FONT}KR
-STR_ABBREV_BATTERIES                                            :{TINY_FONT}BA
-STR_ABBREV_PLASTIC                                              :{TINY_FONT}PL
-STR_ABBREV_FIZZY_DRINKS                                         :{TINY_FONT}GP
-STR_ABBREV_NONE                                                 :{TINY_FONT}NO
-STR_ABBREV_ALL                                                  :{TINY_FONT}VSE
+STR_ABBREV_PASSENGERS                                           :PO
+STR_ABBREV_COAL                                                 :PR
+STR_ABBREV_MAIL                                                 :PŠ
+STR_ABBREV_OIL                                                  :NF
+STR_ABBREV_LIVESTOCK                                            :ŽV
+STR_ABBREV_GOODS                                                :IZ
+STR_ABBREV_GRAIN                                                :ŽT
+STR_ABBREV_WOOD                                                 :LS
+STR_ABBREV_IRON_ORE                                             :ŽR
+STR_ABBREV_STEEL                                                :JK
+STR_ABBREV_VALUABLES                                            :VR
+STR_ABBREV_COPPER_ORE                                           :BK
+STR_ABBREV_MAIZE                                                :KZ
+STR_ABBREV_FRUIT                                                :SJ
+STR_ABBREV_DIAMONDS                                             :DM
+STR_ABBREV_FOOD                                                 :HR
+STR_ABBREV_PAPER                                                :PA
+STR_ABBREV_GOLD                                                 :ZL
+STR_ABBREV_WATER                                                :VO
+STR_ABBREV_WHEAT                                                :PN
+STR_ABBREV_RUBBER                                               :KČ
+STR_ABBREV_SUGAR                                                :SK
+STR_ABBREV_TOYS                                                 :IG
+STR_ABBREV_SWEETS                                               :SL
+STR_ABBREV_COLA                                                 :CK
+STR_ABBREV_CANDYFLOSS                                           :SP
+STR_ABBREV_BUBBLES                                              :MH
+STR_ABBREV_TOFFEE                                               :KR
+STR_ABBREV_BATTERIES                                            :BA
+STR_ABBREV_PLASTIC                                              :PL
+STR_ABBREV_FIZZY_DRINKS                                         :GP
+STR_ABBREV_NONE                                                 :NO
+STR_ABBREV_ALL                                                  :VSE
 
 # 'Mode' of transport for cargoes
 STR_PASSENGERS                                                  :{COMMA} potnik{P "" a i ov}
@@ -1813,11 +1813,6 @@ STR_CONFIG_SETTING_STARTING_YEAR                                :Začetno leto: 
 ###setting-zero-is-special
 
 ###length 3
-
-STR_CONFIG_SETTING_ALLOW_SHARES                                 :Dovoli kupovanje delnic od drugih podjetij: {STRING}
-STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Če je omogočeno, se lahko trguje z delnicami podjetij. Na voljo samo po določeni starosti podjetja.
-
-###setting-zero-is-special
 
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :Procent osnovnega dobička za plačilo v sklade: {STRING}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :Procent prihodkov vložen v srednje sklade, ki omogoča več kontrole nad prihodki.
@@ -3468,7 +3463,6 @@ STR_COMPANY_VIEW_AIRCRAFT                                       :{WHITE}{COMMA} 
 STR_COMPANY_VIEW_SHIPS                                          :{WHITE}{COMMA} lad{P ja ji je ij}
 STR_COMPANY_VIEW_VEHICLES_NONE                                  :{WHITE}Brez
 STR_COMPANY_VIEW_COMPANY_VALUE                                  :{GOLD}Vrednost podjetja: {WHITE}{CURRENCY_LONG}
-STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% v lasti podjetja {COMPANY})
 STR_COMPANY_VIEW_INFRASTRUCTURE                                 :{GOLD}Infrastruktura:
 STR_COMPANY_VIEW_INFRASTRUCTURE_RAIL                            :{WHITE}{COMMA} kos{P "" a i ov} tirov
 STR_COMPANY_VIEW_INFRASTRUCTURE_ROAD                            :{WHITE}{COMMA} odsek{P "" a i ov} ceste
@@ -3494,11 +3488,6 @@ STR_COMPANY_VIEW_COMPANY_NAME_BUTTON                            :{BLACK}Ime podj
 STR_COMPANY_VIEW_COMPANY_NAME_TOOLTIP                           :{BLACK}Spremeni ime podjetja
 STR_COMPANY_VIEW_PRESIDENT_NAME_BUTTON                          :{BLACK}Direktorjevo ime
 STR_COMPANY_VIEW_PRESIDENT_NAME_TOOLTIP                         :{BLACK}Spremeni direktorjevo ime
-
-STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Kupi 25% delnic podjetja
-STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Prodaj 25% delnic podjetja
-STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Kupi 25% delnic tega podjetja. Shift+Klik prikaže predviden strošek brez nakupa delnic
-STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Prodaj 25% delnic tega podjetja. Shift+Klik prikaže predviden dobiček brez prodaje delnic
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Ime podjetja
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Direktorjevo ime
@@ -4439,9 +4428,6 @@ STR_ERROR_CAN_T_REPAY_LOAN                                      :{WHITE}Ni mogo�
 STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}Ni mogoča oddaja denarja, ki je izposojen od banke...
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Ne moreš kupiti podjetja...
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Ni mogoče zgraditi sedeža podjetja...
-STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Ni mogoče kupiti 25% delnic tega podjetja...
-STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Ni mogoče prodati 25% delnic tega podjetja...
-STR_ERROR_PROTECTED                                             :{WHITE}Podjetje še ni dovolj staro, da bi lahko trgovalo z lastnimi delnicami...
 
 # Town related errors
 STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Ni mogoče zgraditi mest

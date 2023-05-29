@@ -128,39 +128,39 @@ STR_QUANTITY_N_A                                                :उपलब्
 
 # Two letter abbreviation of cargo name
 STR_ABBREV_NOTHING                                              :
-STR_ABBREV_PASSENGERS                                           :{TINY_FONT}प्र
-STR_ABBREV_COAL                                                 :{TINY_FONT}को
-STR_ABBREV_MAIL                                                 :{TINY_FONT}टपाल
-STR_ABBREV_OIL                                                  :{TINY_FONT}तेल
-STR_ABBREV_LIVESTOCK                                            :{TINY_FONT}पशु
-STR_ABBREV_GOODS                                                :{TINY_FONT}वस्तू
-STR_ABBREV_GRAIN                                                :{TINY_FONT}धान्य
-STR_ABBREV_WOOD                                                 :{TINY_FONT}ला
-STR_ABBREV_IRON_ORE                                             :{TINY_FONT}लोह
-STR_ABBREV_STEEL                                                :{TINY_FONT}पो
-STR_ABBREV_VALUABLES                                            :{TINY_FONT}मौल्य
-STR_ABBREV_COPPER_ORE                                           :{TINY_FONT}तांबे
-STR_ABBREV_MAIZE                                                :{TINY_FONT}मका
-STR_ABBREV_FRUIT                                                :{TINY_FONT}फळ
-STR_ABBREV_DIAMONDS                                             :{TINY_FONT}हिरे
-STR_ABBREV_FOOD                                                 :{TINY_FONT}अन्न
-STR_ABBREV_PAPER                                                :{TINY_FONT}का
-STR_ABBREV_GOLD                                                 :{TINY_FONT}सोनं
-STR_ABBREV_WATER                                                :{TINY_FONT}पाणी
-STR_ABBREV_WHEAT                                                :{TINY_FONT}गहू
-STR_ABBREV_RUBBER                                               :{TINY_FONT}रबर
-STR_ABBREV_SUGAR                                                :{TINY_FONT}सा
-STR_ABBREV_TOYS                                                 :{TINY_FONT}खे
-STR_ABBREV_SWEETS                                               :{TINY_FONT}गोड
-STR_ABBREV_COLA                                                 :{TINY_FONT}कोला
-STR_ABBREV_CANDYFLOSS                                           :{TINY_FONT}म्हाता
-STR_ABBREV_BUBBLES                                              :{TINY_FONT}बु
-STR_ABBREV_TOFFEE                                               :{TINY_FONT}टॉ
-STR_ABBREV_BATTERIES                                            :{TINY_FONT}बॅ
-STR_ABBREV_PLASTIC                                              :{TINY_FONT}प्लॅ
-STR_ABBREV_FIZZY_DRINKS                                         :{TINY_FONT}फस
-STR_ABBREV_NONE                                                 :{TINY_FONT}NO
-STR_ABBREV_ALL                                                  :{TINY_FONT}सर्व
+STR_ABBREV_PASSENGERS                                           :प्र
+STR_ABBREV_COAL                                                 :को
+STR_ABBREV_MAIL                                                 :टपाल
+STR_ABBREV_OIL                                                  :तेल
+STR_ABBREV_LIVESTOCK                                            :पशु
+STR_ABBREV_GOODS                                                :वस्तू
+STR_ABBREV_GRAIN                                                :धान्य
+STR_ABBREV_WOOD                                                 :ला
+STR_ABBREV_IRON_ORE                                             :लोह
+STR_ABBREV_STEEL                                                :पो
+STR_ABBREV_VALUABLES                                            :मौल्य
+STR_ABBREV_COPPER_ORE                                           :तांबे
+STR_ABBREV_MAIZE                                                :मका
+STR_ABBREV_FRUIT                                                :फळ
+STR_ABBREV_DIAMONDS                                             :हिरे
+STR_ABBREV_FOOD                                                 :अन्न
+STR_ABBREV_PAPER                                                :का
+STR_ABBREV_GOLD                                                 :सोनं
+STR_ABBREV_WATER                                                :पाणी
+STR_ABBREV_WHEAT                                                :गहू
+STR_ABBREV_RUBBER                                               :रबर
+STR_ABBREV_SUGAR                                                :सा
+STR_ABBREV_TOYS                                                 :खे
+STR_ABBREV_SWEETS                                               :गोड
+STR_ABBREV_COLA                                                 :कोला
+STR_ABBREV_CANDYFLOSS                                           :म्हाता
+STR_ABBREV_BUBBLES                                              :बु
+STR_ABBREV_TOFFEE                                               :टॉ
+STR_ABBREV_BATTERIES                                            :बॅ
+STR_ABBREV_PLASTIC                                              :प्लॅ
+STR_ABBREV_FIZZY_DRINKS                                         :फस
+STR_ABBREV_NONE                                                 :NO
+STR_ABBREV_ALL                                                  :सर्व
 
 # 'Mode' of transport for cargoes
 STR_PASSENGERS                                                  :{COMMA} प्रवासी
@@ -982,9 +982,6 @@ STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_ACTIONS              :सर्व �
 ###length 3
 
 
-###setting-zero-is-special
-
-
 
 
 ###length 2
@@ -1471,7 +1468,6 @@ STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}नव�
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}व्यवस्थापका साठी नवीन चेहरा निवडा
 STR_COMPANY_VIEW_PRESIDENT_NAME_BUTTON                          :{BLACK}व्यवस्थापकाचे नाव
 STR_COMPANY_VIEW_PRESIDENT_NAME_TOOLTIP                         :{BLACK}व्यवस्थापकाच नाव बदला
-
 
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :व्यवस्थापकाचे नाव
 

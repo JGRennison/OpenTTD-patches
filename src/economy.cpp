@@ -108,11 +108,9 @@ Prices _price;
 Money _additional_cash_required;
 static PriceMultipliers _price_base_multiplier;
 
-extern int GetAmountOwnedBy(const Company *c, Owner owner);
-
 /**
  * Calculate the value of the company. That is the value of all
- * assets (vehicles, stations, shares) and money minus the loan,
+ * assets (vehicles, stations) and money minus the loan,
  * except when including_loan is \c false which is useful when
  * we want to calculate the value for bankruptcy.
  * @param c the company to get the value of.
@@ -120,19 +118,6 @@ extern int GetAmountOwnedBy(const Company *c, Owner owner);
  * @return the value of the company.
  */
 Money CalculateCompanyValue(const Company *c, bool including_loan)
-{
-	Money owned_shares_value = 0;
-
-	for (const Company *co : Company::Iterate()) {
-		int shares_owned = GetAmountOwnedBy(co, c->index);
-
-		if (shares_owned > 0) owned_shares_value += (CalculateCompanyValueExcludingShares(co) / 4) * shares_owned;
-	}
-
-	return owned_shares_value + CalculateCompanyValueExcludingShares(c);
-}
-
-Money CalculateCompanyValueExcludingShares(const Company *c, bool including_loan)
 {
 	Owner owner = c->index;
 
@@ -330,43 +315,6 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 	ClearOrderDestinationRefcountMap();
 
 	assert(old_owner != new_owner);
-
-	{
-		uint i;
-
-		/* See if the old_owner had shares in other companies */
-		for (const Company *c : Company::Iterate()) {
-			for (i = 0; i < 4; i++) {
-				if (c->share_owners[i] == old_owner) {
-					/* Sell its shares */
-					CommandCost res = DoCommand(0, c->index, 0, DC_EXEC | DC_BANKRUPT, CMD_SELL_SHARE_IN_COMPANY);
-					/* Because we are in a DoCommand, we can't just execute another one and
-					 *  expect the money to be removed. We need to do it ourself! */
-					SubtractMoneyFromCompany(res);
-				}
-			}
-		}
-
-		/* Sell all the shares that people have on this company */
-		Backup<CompanyID> cur_company2(_current_company, FILE_LINE);
-		Company *c = Company::Get(old_owner);
-		for (i = 0; i < 4; i++) {
-			if (c->share_owners[i] == INVALID_OWNER) continue;
-
-			if (c->bankrupt_value == 0 && c->share_owners[i] == new_owner) {
-				/* You are the one buying the company; so don't sell the shares back to you. */
-				c->share_owners[i] = INVALID_OWNER;
-			} else {
-				cur_company2.Change(c->share_owners[i]);
-				/* Sell the shares */
-				CommandCost res = DoCommand(0, old_owner, 0, DC_EXEC | DC_BANKRUPT, CMD_SELL_SHARE_IN_COMPANY);
-				/* Because we are in a DoCommand, we can't just execute another one and
-				 *  expect the money to be removed. We need to do it ourself! */
-				SubtractMoneyFromCompany(res);
-			}
-		}
-		cur_company2.Restore();
-	}
 
 	/* Temporarily increase the company's money, to be sure that
 	 * removing their property doesn't fail because of lack of money.
@@ -2446,96 +2394,6 @@ static void DoAcquireCompany(Company *c)
 	delete c;
 
 	CheckCaches(true, nullptr, CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG);
-}
-
-/**
- * Acquire shares in an opposing company.
- * @param tile unused
- * @param flags type of operation
- * @param p1 company to buy the shares from
- * @param p2 unused
- * @param text unused
- * @return the cost of this operation or an error
- */
-CommandCost CmdBuyShareInCompany(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
-{
-	CommandCost cost(EXPENSES_OTHER);
-	CompanyID target_company = (CompanyID)p1;
-	Company *c = Company::GetIfValid(target_company);
-
-	/* Check if buying shares is allowed (protection against modified clients)
-	 * Cannot buy own shares */
-	if (c == nullptr || !_settings_game.economy.allow_shares || _current_company == target_company) return CMD_ERROR;
-
-	/* Protect new companies from hostile takeovers */
-	if (_cur_year - c->inaugurated_year < _settings_game.economy.min_years_for_shares) return_cmd_error(STR_ERROR_PROTECTED);
-
-	/* Those lines are here for network-protection (clients can be slow) */
-	if (GetAmountOwnedBy(c, COMPANY_SPECTATOR) == 0) return cost;
-
-	if (GetAmountOwnedBy(c, COMPANY_SPECTATOR) == 1) {
-		if (!c->is_ai) return cost; //  We can not buy out a real company (temporarily). TODO: well, enable it obviously.
-
-		if (GetAmountOwnedBy(c, _current_company) == 3 && !MayCompanyTakeOver(_current_company, target_company)) return_cmd_error(STR_ERROR_TOO_MANY_VEHICLES_IN_GAME);
-	}
-
-
-	cost.AddCost(CalculateCompanyValue(c) >> 2);
-	if (flags & DC_EXEC) {
-		Owner *b = c->share_owners;
-
-		while (*b != COMPANY_SPECTATOR) b++; // share owners is guaranteed to contain at least one COMPANY_SPECTATOR
-		*b = _current_company;
-
-		for (int i = 0; c->share_owners[i] == _current_company;) {
-			if (++i == 4) {
-				c->bankrupt_value = 0;
-				DoAcquireCompany(c);
-				break;
-			}
-		}
-		InvalidateWindowData(WC_COMPANY, target_company);
-		CompanyAdminUpdate(c);
-	}
-	return cost;
-}
-
-/**
- * Sell shares in an opposing company.
- * @param tile unused
- * @param flags type of operation
- * @param p1 company to sell the shares from
- * @param p2 unused
- * @param text unused
- * @return the cost of this operation or an error
- */
-CommandCost CmdSellShareInCompany(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
-{
-	CompanyID target_company = (CompanyID)p1;
-	Company *c = Company::GetIfValid(target_company);
-
-	/* Cannot sell own shares */
-	if (c == nullptr || _current_company == target_company) return CMD_ERROR;
-
-	/* Check if selling shares is allowed (protection against modified clients).
-	 * However, we must sell shares of companies being closed down. */
-	if (!_settings_game.economy.allow_shares && !(flags & DC_BANKRUPT)) return CMD_ERROR;
-
-	/* Those lines are here for network-protection (clients can be slow) */
-	if (GetAmountOwnedBy(c, _current_company) == 0) return CommandCost();
-
-	/* adjust it a little to make it less profitable to sell and buy */
-	Money cost = CalculateCompanyValue(c) >> 2;
-	cost = -(cost - (cost >> 7));
-
-	if (flags & DC_EXEC) {
-		Owner *b = c->share_owners;
-		while (*b != _current_company) b++; // share owners is guaranteed to contain company
-		*b = COMPANY_SPECTATOR;
-		InvalidateWindowData(WC_COMPANY, target_company);
-		CompanyAdminUpdate(c);
-	}
-	return CommandCost(EXPENSES_OTHER, cost);
 }
 
 /**

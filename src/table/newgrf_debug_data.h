@@ -1780,13 +1780,13 @@ class NIHStationStruct : public NIHelper {
 		const Station *st = Station::GetIfValid(index);
 		if (st) {
 			if (st->industry) {
-				seprintf(buffer, lastof(buffer), "  Neutral industry: %u: %s", st->industry->index, st->industry->GetCachedName());
+				seprintf(buffer, lastof(buffer), "  Neutral industry: %u: %s", st->industry->index, st->industry->GetCachedName().c_str());
 				output.print(buffer);
 			}
 			seprintf(buffer, lastof(buffer), "  Nearby industries: %u", (uint) st->industries_near.size());
 			output.print(buffer);
 			for (const auto &i : st->industries_near) {
-				seprintf(buffer, lastof(buffer), "    %u: %s, distance: %u", i.industry->index, i.industry->GetCachedName(), i.distance);
+				seprintf(buffer, lastof(buffer), "    %u: %s, distance: %u", i.industry->index, i.industry->GetCachedName().c_str(), i.distance);
 				output.print(buffer);
 			}
 			seprintf(buffer, lastof(buffer), "  Station tiles: %u", st->station_tiles);

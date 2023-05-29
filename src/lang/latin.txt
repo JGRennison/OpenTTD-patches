@@ -316,39 +316,39 @@ STR_QUANTITY_N_A                                                :N/A
 
 # Two letter abbreviation of cargo name
 STR_ABBREV_NOTHING                                              :
-STR_ABBREV_PASSENGERS                                           :{TINY_FONT}VC
-STR_ABBREV_COAL                                                 :{TINY_FONT}CA
-STR_ABBREV_MAIL                                                 :{TINY_FONT}EP
-STR_ABBREV_OIL                                                  :{TINY_FONT}OL
-STR_ABBREV_LIVESTOCK                                            :{TINY_FONT}PC
-STR_ABBREV_GOODS                                                :{TINY_FONT}ME
-STR_ABBREV_GRAIN                                                :{TINY_FONT}FR
-STR_ABBREV_WOOD                                                 :{TINY_FONT}LI
-STR_ABBREV_IRON_ORE                                             :{TINY_FONT}FE
-STR_ABBREV_STEEL                                                :{TINY_FONT}CH
-STR_ABBREV_VALUABLES                                            :{TINY_FONT}RP
-STR_ABBREV_COPPER_ORE                                           :{TINY_FONT}AE
-STR_ABBREV_MAIZE                                                :{TINY_FONT}MZ
-STR_ABBREV_FRUIT                                                :{TINY_FONT}FT
-STR_ABBREV_DIAMONDS                                             :{TINY_FONT}AD
-STR_ABBREV_FOOD                                                 :{TINY_FONT}AL
-STR_ABBREV_PAPER                                                :{TINY_FONT}CA
-STR_ABBREV_GOLD                                                 :{TINY_FONT}AU
-STR_ABBREV_WATER                                                :{TINY_FONT}AQ
-STR_ABBREV_WHEAT                                                :{TINY_FONT}TR
-STR_ABBREV_RUBBER                                               :{TINY_FONT}GU
-STR_ABBREV_SUGAR                                                :{TINY_FONT}SC
-STR_ABBREV_TOYS                                                 :{TINY_FONT}LD
-STR_ABBREV_SWEETS                                               :{TINY_FONT}BL
-STR_ABBREV_COLA                                                 :{TINY_FONT}CL
-STR_ABBREV_CANDYFLOSS                                           :{TINY_FONT}SX
-STR_ABBREV_BUBBLES                                              :{TINY_FONT}BU
-STR_ABBREV_TOFFEE                                               :{TINY_FONT}ST
-STR_ABBREV_BATTERIES                                            :{TINY_FONT}PE
-STR_ABBREV_PLASTIC                                              :{TINY_FONT}PL
-STR_ABBREV_FIZZY_DRINKS                                         :{TINY_FONT}PC
-STR_ABBREV_NONE                                                 :{TINY_FONT}NO
-STR_ABBREV_ALL                                                  :{TINY_FONT}OMN
+STR_ABBREV_PASSENGERS                                           :VC
+STR_ABBREV_COAL                                                 :CA
+STR_ABBREV_MAIL                                                 :EP
+STR_ABBREV_OIL                                                  :OL
+STR_ABBREV_LIVESTOCK                                            :PC
+STR_ABBREV_GOODS                                                :ME
+STR_ABBREV_GRAIN                                                :FR
+STR_ABBREV_WOOD                                                 :LI
+STR_ABBREV_IRON_ORE                                             :FE
+STR_ABBREV_STEEL                                                :CH
+STR_ABBREV_VALUABLES                                            :RP
+STR_ABBREV_COPPER_ORE                                           :AE
+STR_ABBREV_MAIZE                                                :MZ
+STR_ABBREV_FRUIT                                                :FT
+STR_ABBREV_DIAMONDS                                             :AD
+STR_ABBREV_FOOD                                                 :AL
+STR_ABBREV_PAPER                                                :CA
+STR_ABBREV_GOLD                                                 :AU
+STR_ABBREV_WATER                                                :AQ
+STR_ABBREV_WHEAT                                                :TR
+STR_ABBREV_RUBBER                                               :GU
+STR_ABBREV_SUGAR                                                :SC
+STR_ABBREV_TOYS                                                 :LD
+STR_ABBREV_SWEETS                                               :BL
+STR_ABBREV_COLA                                                 :CL
+STR_ABBREV_CANDYFLOSS                                           :SX
+STR_ABBREV_BUBBLES                                              :BU
+STR_ABBREV_TOFFEE                                               :ST
+STR_ABBREV_BATTERIES                                            :PE
+STR_ABBREV_PLASTIC                                              :PL
+STR_ABBREV_FIZZY_DRINKS                                         :PC
+STR_ABBREV_NONE                                                 :NO
+STR_ABBREV_ALL                                                  :OMN
 
 # 'Mode' of transport for cargoes
 STR_PASSENGERS                                                  :{G=mp}{COMMA}{NBSP}vector{P "" es}
@@ -1861,11 +1861,6 @@ STR_CONFIG_SETTING_STARTING_YEAR                                :Annus initii: {
 ###setting-zero-is-special
 
 ###length 3
-
-STR_CONFIG_SETTING_ALLOW_SHARES                                 :Sinere mercari sortes societatum: {STRING}
-STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Sinere mercari sortes a societatibus. Sortes societatum satis aetatis modo mercari licet
-
-###setting-zero-is-special
 
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :Centesimae partes lucri pendenda in translatione: {STRING}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :Centesimae lucri pars medietati data in systematibus transferendi, ut melius distribuatur lucrum vehiculorum
@@ -3547,7 +3542,6 @@ STR_COMPANY_VIEW_AIRCRAFT                                       :{WHITE}{COMMA} 
 STR_COMPANY_VIEW_SHIPS                                          :{WHITE}{COMMA} nav{P is es}
 STR_COMPANY_VIEW_VEHICLES_NONE                                  :{WHITE}Nulla
 STR_COMPANY_VIEW_COMPANY_VALUE                                  :{GOLD}Aestimatio societatis: {WHITE}{CURRENCY_LONG}
-STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% posessa a {COMPANY})
 STR_COMPANY_VIEW_INFRASTRUCTURE                                 :{GOLD}Infrastructura:
 STR_COMPANY_VIEW_INFRASTRUCTURE_RAIL                            :{WHITE}{COMMA} par{P s tes} ferriviae
 STR_COMPANY_VIEW_INFRASTRUCTURE_ROAD                            :{WHITE}{COMMA} par{P s tes} viae
@@ -3573,11 +3567,6 @@ STR_COMPANY_VIEW_COMPANY_NAME_BUTTON                            :{BLACK}Nomen So
 STR_COMPANY_VIEW_COMPANY_NAME_TOOLTIP                           :{BLACK}Mutare nomen societatis
 STR_COMPANY_VIEW_PRESIDENT_NAME_BUTTON                          :{BLACK}Nomen Praesidis
 STR_COMPANY_VIEW_PRESIDENT_NAME_TOOLTIP                         :{BLACK}Mutare nomen praesidis
-
-STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Quadrantem sortium huius societatis emere
-STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Quadrantem sortium huius societatis vendere
-STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Quadrantem sortium huius societatis emere. Shift+Preme ut pretium monstretur sine emptione
-STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Quadrantem sortium huius societatis vendere. Shift+Preme ut pretium monstretur sine emptione
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Nomen Societatis
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Nomen Praesidis
@@ -4550,9 +4539,6 @@ STR_ERROR_CAN_T_REPAY_LOAN                                      :{WHITE}Non lice
 STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}Non licet pecuniam mutuam largiri...
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Non licet societatem emere...
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Non licet sedem societatis struere...
-STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Non licet quadrantem sortium huius societatis emere...
-STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Non licet quadrantem sortium huius societatis vendere...
-STR_ERROR_PROTECTED                                             :{WHITE}Nondum licet sortes societatis mercari...
 
 # Town related errors
 STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Non licet oppida condi

@@ -20,27 +20,23 @@
 #include <ctype.h> /* required for tolower() */
 #include <sstream>
 
-#ifdef _MSC_VER
-#include <errno.h> // required by vsnprintf implementation for MSVC
-#endif
-
 #ifdef _WIN32
-#include "os/windows/win32.h"
+#	include "os/windows/win32.h"
 #endif
 
 #ifdef WITH_UNISCRIBE
-#include "os/windows/string_uniscribe.h"
+#	include "os/windows/string_uniscribe.h"
 #endif
 
 #ifdef WITH_ICU_I18N
-/* Required by strnatcmp. */
-#include <unicode/ustring.h>
-#include "language.h"
-#include "gfx_func.h"
+/* Required by StrNaturalCompare. */
+#	include <unicode/ustring.h>
+#	include "language.h"
+#	include "gfx_func.h"
 #endif /* WITH_ICU_I18N */
 
 #if defined(WITH_COCOA)
-#include "os/macosx/string_osx.h"
+#	include "os/macosx/string_osx.h"
 #endif
 
 /* The function vsnprintf is used internally to perform the required formatting
@@ -406,6 +402,18 @@ bool StrStartsWith(const std::string_view str, const std::string_view prefix)
 }
 
 /**
+ * Check whether the given string starts with the given prefix, ignoring case.
+ * @param str    The string to look at.
+ * @param prefix The prefix to look for.
+ * @return True iff the begin of the string is the same as the prefix, ignoring case.
+ */
+bool StrStartsWithIgnoreCase(std::string_view str, const std::string_view prefix)
+{
+	if (str.size() < prefix.size()) return false;
+	return StrEqualsIgnoreCase(str.substr(0, prefix.size()), prefix);
+}
+
+/**
  * Check whether the given string ends with the given suffix.
  * @param str    The string to look at.
  * @param suffix The suffix to look for.
@@ -432,6 +440,72 @@ const char *StrConsumeToSeparator(std::string &result, const char *str)
 	result.assign(str, end);
 	if (*end == 0x1F) return end + 1;
 	return nullptr;
+}
+
+/** Case insensitive implementation of the standard character type traits. */
+struct CaseInsensitiveCharTraits : public std::char_traits<char> {
+	static bool eq(char c1, char c2) { return toupper(c1) == toupper(c2); }
+	static bool ne(char c1, char c2) { return toupper(c1) != toupper(c2); }
+	static bool lt(char c1, char c2) { return toupper(c1) <  toupper(c2); }
+
+	static int compare(const char *s1, const char *s2, size_t n)
+	{
+		while (n-- != 0) {
+			if (toupper(*s1) < toupper(*s2)) return -1;
+			if (toupper(*s1) > toupper(*s2)) return 1;
+			++s1; ++s2;
+		}
+		return 0;
+	}
+
+	static const char *find(const char *s, int n, char a)
+	{
+		while (n-- > 0 && toupper(*s) != toupper(a)) {
+			++s;
+		}
+		return s;
+	}
+};
+
+/** Case insensitive string view. */
+typedef std::basic_string_view<char, CaseInsensitiveCharTraits> CaseInsensitiveStringView;
+
+/**
+ * Check whether the given string ends with the given suffix, ignoring case.
+ * @param str    The string to look at.
+ * @param suffix The suffix to look for.
+ * @return True iff the end of the string is the same as the suffix, ignoring case.
+ */
+bool StrEndsWithIgnoreCase(std::string_view str, const std::string_view suffix)
+{
+	if (str.size() < suffix.size()) return false;
+	return StrEqualsIgnoreCase(str.substr(str.size() - suffix.size()), suffix);
+}
+
+/**
+ * Compares two string( view)s, while ignoring the case of the characters.
+ * @param str1 The first string.
+ * @param str2 The second string.
+ * @return Less than zero if str1 < str2, zero if str1 == str2, greater than
+ *         zero if str1 > str2. All ignoring the case of the characters.
+ */
+int StrCompareIgnoreCase(const std::string_view str1, const std::string_view str2)
+{
+	CaseInsensitiveStringView ci_str1{ str1.data(), str1.size() };
+	CaseInsensitiveStringView ci_str2{ str2.data(), str2.size() };
+	return ci_str1.compare(ci_str2);
+}
+
+/**
+ * Compares two string( view)s for equality, while ignoring the case of the characters.
+ * @param str1 The first string.
+ * @param str2 The second string.
+ * @return True iff both strings are equal, barring the case of the characters.
+ */
+bool StrEqualsIgnoreCase(const std::string_view str1, const std::string_view str2)
+{
+	if (str1.size() != str2.size()) return false;
+	return StrCompareIgnoreCase(str1, str2) == 0;
 }
 
 /** Scans the string for colour codes and strips them */
@@ -829,9 +903,9 @@ char *strcasestr(const char *haystack, const char *needle)
  * @param str The string to skip the initial garbage of.
  * @return The string with the garbage skipped.
  */
-static const char *SkipGarbage(const char *str)
+static std::string_view SkipGarbage(std::string_view str)
 {
-	while (*str != '\0' && (*str < '0' || IsInsideMM(*str, ';', '@' + 1) || IsInsideMM(*str, '[', '`' + 1) || IsInsideMM(*str, '{', '~' + 1))) str++;
+	while (str.size() != 0 && (str[0] < '0' || IsInsideMM(str[0], ';', '@' + 1) || IsInsideMM(str[0], '[', '`' + 1) || IsInsideMM(str[0], '{', '~' + 1))) str.remove_prefix(1);
 	return str;
 }
 
@@ -874,7 +948,7 @@ static int _strnatcmpIntl(const char *s1, const char *s2) {
  * @param ignore_garbage_at_front Skip punctuation characters in the front
  * @return Less than zero if s1 < s2, zero if s1 == s2, greater than zero if s1 > s2.
  */
-int strnatcmp(const char *s1, const char *s2, bool ignore_garbage_at_front)
+int StrNaturalCompare(std::string_view s1, std::string_view s2, bool ignore_garbage_at_front)
 {
 	if (ignore_garbage_at_front) {
 		s1 = SkipGarbage(s1);
@@ -884,7 +958,7 @@ int strnatcmp(const char *s1, const char *s2, bool ignore_garbage_at_front)
 #ifdef WITH_ICU_I18N
 	if (_current_collator) {
 		UErrorCode status = U_ZERO_ERROR;
-		int result = _current_collator->compareUTF8(s1, s2, status);
+		int result = _current_collator->compareUTF8(icu::StringPiece(s1.data(), s1.size()), icu::StringPiece(s2.data(), s2.size()), status);
 		if (U_SUCCESS(status)) return result;
 	}
 #endif /* WITH_ICU_I18N */
@@ -900,7 +974,7 @@ int strnatcmp(const char *s1, const char *s2, bool ignore_garbage_at_front)
 #endif
 
 	/* Do a manual natural sort comparison if ICU is missing or if we cannot create a collator. */
-	return _strnatcmpIntl(s1, s2);
+	return _strnatcmpIntl(s1.data(), s2.data());
 }
 
 #ifdef WITH_UNISCRIBE

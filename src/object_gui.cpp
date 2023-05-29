@@ -140,11 +140,9 @@ public:
 	static bool TagNameFilter(ObjectClassID const *oc, StringFilter &filter)
 	{
 		ObjectClass *objclass = ObjectClass::Get(*oc);
-		char buffer[DRAW_STRING_BUFFER];
-		GetString(buffer, objclass->name, lastof(buffer));
 
 		filter.ResetState();
-		filter.AddLine(buffer);
+		filter.AddLine(GetString(objclass->name));
 		return filter.GetState();
 	}
 

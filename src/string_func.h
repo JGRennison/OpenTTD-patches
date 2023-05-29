@@ -53,11 +53,17 @@ char *str_replace_wchar(char *str, const char *last, WChar find, WChar replace);
 bool strtolower(char *str);
 bool strtolower(std::string &str, std::string::size_type offs = 0);
 
-bool StrValid(const char *str, const char *last) NOACCESS(2);
+[[nodiscard]] bool StrValid(const char *str, const char *last) NOACCESS(2);
 void StrTrimInPlace(std::string &str);
 
-bool StrStartsWith(const std::string_view str, const std::string_view prefix);
-bool StrEndsWith(const std::string_view str, const std::string_view suffix);
+[[nodiscard]] bool StrStartsWith(const std::string_view str, const std::string_view prefix);
+[[nodiscard]] bool StrStartsWithIgnoreCase(std::string_view str, const std::string_view prefix);
+[[nodiscard]] bool StrEndsWith(const std::string_view str, const std::string_view suffix);
+[[nodiscard]] bool StrEndsWithIgnoreCase(std::string_view str, const std::string_view suffix);
+
+[[nodiscard]] int StrCompareIgnoreCase(const std::string_view str1, const std::string_view str2);
+[[nodiscard]] bool StrEqualsIgnoreCase(const std::string_view str1, const std::string_view str2);
+[[nodiscard]] int StrNaturalCompare(std::string_view s1, std::string_view s2, bool ignore_garbage_at_front = false);
 
 const char *StrConsumeToSeparator(std::string &result, const char *str);
 
@@ -278,7 +284,5 @@ static inline bool IsWhitespace(WChar c)
 #	define DEFINE_STRCASESTR
 char *strcasestr(const char *haystack, const char *needle);
 #endif /* strcasestr is available */
-
-int strnatcmp(const char *s1, const char *s2, bool ignore_garbage_at_front = false);
 
 #endif /* STRING_FUNC_H */

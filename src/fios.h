@@ -31,7 +31,7 @@ typedef SmallMap<uint, CompanyProperties *> CompanyPropertiesMap;
 struct LoadCheckData {
 	bool checkable;     ///< True if the savegame could be checked by SL_LOAD_CHECK. (Old savegames are not checkable.)
 	StringID error;     ///< Error message from loading. INVALID_STRING_ID if no error.
-	char *error_data;   ///< Data to pass to SetDParamStr when displaying #error.
+	std::string error_msg; ///< Data to pass to SetDParamStr when displaying #error.
 
 	uint32 map_size_x, map_size_y;
 	Date current_date;
@@ -53,7 +53,7 @@ struct LoadCheckData {
 
 	bool sl_is_ext_version = false;
 
-	LoadCheckData() : error_data(nullptr), grfconfig(nullptr),
+	LoadCheckData() : grfconfig(nullptr),
 			grf_compatibility(GLC_NOT_FOUND), gamelog_action(nullptr), gamelog_actions(0)
 	{
 		this->Clear();
@@ -94,8 +94,8 @@ extern LoadCheckData _load_check_data;
 struct FiosItem {
 	FiosType type;
 	uint64 mtime;
-	char title[64];
-	char name[MAX_PATH];
+	std::string title;
+	std::string name;
 	bool operator< (const FiosItem &other) const;
 };
 
@@ -103,7 +103,7 @@ struct FiosItem {
 class FileList : public std::vector<FiosItem> {
 public:
 	void BuildFileList(AbstractFileType abstract_filetype, SaveLoadOperation fop);
-	const FiosItem *FindItem(const char *file);
+	const FiosItem *FindItem(const std::string_view file);
 };
 
 enum SortingBits {
@@ -123,7 +123,7 @@ void FiosGetSavegameList(SaveLoadOperation fop, FileList &file_list);
 void FiosGetScenarioList(SaveLoadOperation fop, FileList &file_list);
 void FiosGetHeightmapList(SaveLoadOperation fop, FileList &file_list);
 
-const char *FiosBrowseTo(const FiosItem *item);
+bool FiosBrowseTo(const FiosItem *item);
 
 StringID FiosGetDescText(const char **path, uint64 *total_free);
 bool FiosDelete(const char *name);

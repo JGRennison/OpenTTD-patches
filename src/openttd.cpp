@@ -780,7 +780,7 @@ int openttd_main(int argc, char *argv[])
 		case 'e': _switch_mode = (_switch_mode == SM_LOAD_GAME || _switch_mode == SM_LOAD_SCENARIO ? SM_LOAD_SCENARIO : SM_EDITOR); break;
 		case 'g':
 			if (mgo.opt != nullptr) {
-				_file_to_saveload.SetName(mgo.opt);
+				_file_to_saveload.name = mgo.opt;
 				bool is_scenario = _switch_mode == SM_EDITOR || _switch_mode == SM_LOAD_SCENARIO;
 				_switch_mode = is_scenario ? SM_LOAD_SCENARIO : SM_LOAD_GAME;
 				_file_to_saveload.SetMode(SLO_LOAD, is_scenario ? FT_SCENARIO : FT_SAVEGAME, DFT_GAME_FILE);
@@ -822,7 +822,7 @@ int openttd_main(int argc, char *argv[])
 				if (_load_check_data.HasErrors()) {
 					InitializeLanguagePacks(); // A language pack is needed for GetString()
 					char buf[256];
-					SetDParamStr(0, _load_check_data.error_data);
+					SetDParamStr(0, _load_check_data.error_msg);
 					GetString(buf, _load_check_data.error, lastof(buf));
 					fprintf(stderr, "%s\n", buf);
 				}

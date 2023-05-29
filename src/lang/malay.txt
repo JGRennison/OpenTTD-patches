@@ -128,39 +128,39 @@ STR_QUANTITY_N_A                                                :Tiada
 
 # Two letter abbreviation of cargo name
 STR_ABBREV_NOTHING                                              :
-STR_ABBREV_PASSENGERS                                           :{TINY_FONT}PEN
-STR_ABBREV_COAL                                                 :{TINY_FONT}BA
-STR_ABBREV_MAIL                                                 :{TINY_FONT}SR
-STR_ABBREV_OIL                                                  :{TINY_FONT}MI
-STR_ABBREV_LIVESTOCK                                            :{TINY_FONT}TR
-STR_ABBREV_GOODS                                                :{TINY_FONT}BR
-STR_ABBREV_GRAIN                                                :{TINY_FONT}BJ
-STR_ABBREV_WOOD                                                 :{TINY_FONT}KA
-STR_ABBREV_IRON_ORE                                             :{TINY_FONT}OR
-STR_ABBREV_STEEL                                                :{TINY_FONT}BS
-STR_ABBREV_VALUABLES                                            :{TINY_FONT}BB
-STR_ABBREV_COPPER_ORE                                           :{TINY_FONT}TB
-STR_ABBREV_MAIZE                                                :{TINY_FONT}JG
-STR_ABBREV_FRUIT                                                :{TINY_FONT}BU
-STR_ABBREV_DIAMONDS                                             :{TINY_FONT}BL
-STR_ABBREV_FOOD                                                 :{TINY_FONT}MK
-STR_ABBREV_PAPER                                                :{TINY_FONT}KR
-STR_ABBREV_GOLD                                                 :{TINY_FONT}EM
-STR_ABBREV_WATER                                                :{TINY_FONT}AR
-STR_ABBREV_WHEAT                                                :{TINY_FONT}GD
-STR_ABBREV_RUBBER                                               :{TINY_FONT}GT
-STR_ABBREV_SUGAR                                                :{TINY_FONT}GU
-STR_ABBREV_TOYS                                                 :{TINY_FONT}MA
-STR_ABBREV_SWEETS                                               :{TINY_FONT}GG
-STR_ABBREV_COLA                                                 :{TINY_FONT}KL
-STR_ABBREV_CANDYFLOSS                                           :{TINY_FONT}GK
-STR_ABBREV_BUBBLES                                              :{TINY_FONT}BU
-STR_ABBREV_TOFFEE                                               :{TINY_FONT}TF
-STR_ABBREV_BATTERIES                                            :{TINY_FONT}BT
-STR_ABBREV_PLASTIC                                              :{TINY_FONT}PL
-STR_ABBREV_FIZZY_DRINKS                                         :{TINY_FONT}FZ
-STR_ABBREV_NONE                                                 :{TINY_FONT}TIADA
-STR_ABBREV_ALL                                                  :{TINY_FONT}SEMUA
+STR_ABBREV_PASSENGERS                                           :PEN
+STR_ABBREV_COAL                                                 :BA
+STR_ABBREV_MAIL                                                 :SR
+STR_ABBREV_OIL                                                  :MI
+STR_ABBREV_LIVESTOCK                                            :TR
+STR_ABBREV_GOODS                                                :BR
+STR_ABBREV_GRAIN                                                :BJ
+STR_ABBREV_WOOD                                                 :KA
+STR_ABBREV_IRON_ORE                                             :OR
+STR_ABBREV_STEEL                                                :BS
+STR_ABBREV_VALUABLES                                            :BB
+STR_ABBREV_COPPER_ORE                                           :TB
+STR_ABBREV_MAIZE                                                :JG
+STR_ABBREV_FRUIT                                                :BU
+STR_ABBREV_DIAMONDS                                             :BL
+STR_ABBREV_FOOD                                                 :MK
+STR_ABBREV_PAPER                                                :KR
+STR_ABBREV_GOLD                                                 :EM
+STR_ABBREV_WATER                                                :AR
+STR_ABBREV_WHEAT                                                :GD
+STR_ABBREV_RUBBER                                               :GT
+STR_ABBREV_SUGAR                                                :GU
+STR_ABBREV_TOYS                                                 :MA
+STR_ABBREV_SWEETS                                               :GG
+STR_ABBREV_COLA                                                 :KL
+STR_ABBREV_CANDYFLOSS                                           :GK
+STR_ABBREV_BUBBLES                                              :BU
+STR_ABBREV_TOFFEE                                               :TF
+STR_ABBREV_BATTERIES                                            :BT
+STR_ABBREV_PLASTIC                                              :PL
+STR_ABBREV_FIZZY_DRINKS                                         :FZ
+STR_ABBREV_NONE                                                 :TIADA
+STR_ABBREV_ALL                                                  :SEMUA
 
 # 'Mode' of transport for cargoes
 STR_PASSENGERS                                                  :{COMMA} penumpang
@@ -1514,10 +1514,6 @@ STR_CONFIG_SETTING_STARTING_YEAR                                :Tahun permulaan
 ###setting-zero-is-special
 
 ###length 3
-
-STR_CONFIG_SETTING_ALLOW_SHARES                                 :Benarkan membeli saham syarikat lain: {STRING}
-
-###setting-zero-is-special
 
 
 
@@ -3009,7 +3005,6 @@ STR_COMPANY_VIEW_AIRCRAFT                                       :{WHITE}{COMMA} 
 STR_COMPANY_VIEW_SHIPS                                          :{WHITE}{COMMA} kapal-kapal
 STR_COMPANY_VIEW_VEHICLES_NONE                                  :{WHITE}Tiada
 STR_COMPANY_VIEW_COMPANY_VALUE                                  :{GOLD}Nilai syarikat: {WHITE}{CURRENCY_LONG}
-STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% dimiliki oleh {COMPANY})
 STR_COMPANY_VIEW_INFRASTRUCTURE                                 :{GOLD}Infrastruktur:
 STR_COMPANY_VIEW_INFRASTRUCTURE_RAIL                            :{WHITE}{COMMA} cebisan landasan
 STR_COMPANY_VIEW_INFRASTRUCTURE_ROAD                            :{WHITE}{COMMA} cebisan jalanraya
@@ -3035,11 +3030,6 @@ STR_COMPANY_VIEW_COMPANY_NAME_BUTTON                            :{BLACK}Nama Sya
 STR_COMPANY_VIEW_COMPANY_NAME_TOOLTIP                           :{BLACK}Tukar nama syarikat
 STR_COMPANY_VIEW_PRESIDENT_NAME_BUTTON                          :{BLACK}Nama Pengurus
 STR_COMPANY_VIEW_PRESIDENT_NAME_TOOLTIP                         :{BLACK}Tukar nama pengurus
-
-STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Beli 25% saham dalam syarikat ini
-STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Jual 25% saham dalam syarikat ini
-STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Beli 25% saham dalam syarikat ini. Shift+Klik menunjukkan anggaran kos tanpa membeli saham
-STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Jual 25% saham dalam syarikat ini. Shift+Klik menunjukkan anggaran kos tanpa menjual saham
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Nama Syarikat
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Nama Pengurus
@@ -3955,9 +3945,6 @@ STR_ERROR_CAN_T_REPAY_LOAN                                      :{WHITE}Tidak bo
 STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}Tidak boleh memberi wang yang dipinjamkan oleh bank...
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Tidak boleh beli syarikat ini...
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Ibu pejabat syarikat tidak dapat dibina...
-STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Tidak boleh beli 25% saham dalam syarikat ini...
-STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Tidak boleh jual 25% saham dalam syarikat ini...
-STR_ERROR_PROTECTED                                             :{WHITE}Syarikat ini tidak cukup berusia untuk berpasaran saham...
 
 # Town related errors
 STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Tidak boleh bina bandar

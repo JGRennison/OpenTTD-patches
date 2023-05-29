@@ -218,8 +218,9 @@ void FiosGetDrives(FileList &file_list)
 		FiosItem *fios = &file_list.emplace_back();
 		fios->type = FIOS_TYPE_DRIVE;
 		fios->mtime = 0;
-		seprintf(fios->name, lastof(fios->name),  "%c:", s[0] & 0xFF);
-		strecpy(fios->title, fios->name, lastof(fios->title));
+		fios->name += (char)(s[0] & 0xFF);
+		fios->name += ':';
+		fios->title = fios->name;
 		while (*s++ != '\0') { /* Nothing */ }
 	}
 }
@@ -503,7 +504,7 @@ void DetermineBasePaths(const char *exe)
 	} else {
 		/* Use the folder of the config file as working directory. */
 		wchar_t config_dir[MAX_PATH];
-		wcsncpy(path, convert_to_fs(_config_file.c_str(), path, lengthof(path)), lengthof(path));
+		wcsncpy(path, convert_to_fs(_config_file, path, lengthof(path)), lengthof(path));
 		if (!GetFullPathName(path, lengthof(config_dir), config_dir, nullptr)) {
 			DEBUG(misc, 0, "GetFullPathName failed (%lu)\n", GetLastError());
 			_searchpaths[SP_WORKING_DIR].clear();
@@ -628,10 +629,10 @@ char *convert_from_fs(const wchar_t *name, char *utf8_buf, size_t buflen)
  * @param console_cp convert to the console encoding instead of the normal system encoding.
  * @return pointer to system_buf. If conversion fails the string is of zero-length
  */
-wchar_t *convert_to_fs(const char *name, wchar_t *system_buf, size_t buflen)
+wchar_t *convert_to_fs(const std::string_view name, wchar_t *system_buf, size_t buflen)
 {
-	int len = MultiByteToWideChar(CP_UTF8, 0, name, -1, system_buf, (int)buflen);
-	if (len == 0) system_buf[0] = '\0';
+	int len = MultiByteToWideChar(CP_UTF8, 0, name.data(), (int)name.size(), system_buf, (int)buflen);
+	system_buf[len] = '\0';
 
 	return system_buf;
 }
@@ -675,7 +676,7 @@ void Win32SetCurrentLocaleName(const char *iso_code)
 	MultiByteToWideChar(CP_UTF8, 0, iso, -1, _cur_iso_locale, lengthof(_cur_iso_locale));
 }
 
-int OTTDStringCompare(const char *s1, const char *s2)
+int OTTDStringCompare(std::string_view s1, std::string_view s2)
 {
 	typedef int (WINAPI *PFNCOMPARESTRINGEX)(LPCWSTR, DWORD, LPCWCH, int, LPCWCH, int, LPVOID, LPVOID, LPARAM);
 	static PFNCOMPARESTRINGEX _CompareStringEx = nullptr;
@@ -695,15 +696,15 @@ int OTTDStringCompare(const char *s1, const char *s2)
 
 	if (_CompareStringEx != nullptr) {
 		/* CompareStringEx takes UTF-16 strings, even in ANSI-builds. */
-		int len_s1 = MultiByteToWideChar(CP_UTF8, 0, s1, -1, nullptr, 0);
-		int len_s2 = MultiByteToWideChar(CP_UTF8, 0, s2, -1, nullptr, 0);
+		int len_s1 = MultiByteToWideChar(CP_UTF8, 0, s1.data(), (int)s1.size(), nullptr, 0);
+		int len_s2 = MultiByteToWideChar(CP_UTF8, 0, s2.data(), (int)s2.size(), nullptr, 0);
 
 		if (len_s1 != 0 && len_s2 != 0) {
 			LPWSTR str_s1 = AllocaM(WCHAR, len_s1);
 			LPWSTR str_s2 = AllocaM(WCHAR, len_s2);
 
-			MultiByteToWideChar(CP_UTF8, 0, s1, -1, str_s1, len_s1);
-			MultiByteToWideChar(CP_UTF8, 0, s2, -1, str_s2, len_s2);
+			MultiByteToWideChar(CP_UTF8, 0, s1.data(), (int)s1.size(), str_s1, len_s1);
+			MultiByteToWideChar(CP_UTF8, 0, s2.data(), (int)s2.size(), str_s2, len_s2);
 
 			int result = _CompareStringEx(_cur_iso_locale, LINGUISTIC_IGNORECASE | SORT_DIGITSASNUMBERS, str_s1, -1, str_s2, -1, nullptr, nullptr, 0);
 			if (result != 0) return result;

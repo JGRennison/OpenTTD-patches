@@ -198,6 +198,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_CONSISTENT_PARTIAL_Z,             XSCF_NULL,                1,   1, "consistent_partial_z",             nullptr, nullptr, nullptr          },
 	{ XSLFI_MORE_CARGO_AGE,                   XSCF_NULL,                1,   1, "more_cargo_age",                   nullptr, nullptr, nullptr          },
 	{ XSLFI_AI_START_DATE,                    XSCF_NULL,                1,   1, "slv_ai_start_date",                nullptr, nullptr, nullptr          },
+	{ XSLFI_NO_COMPANY_SHARES,                XSCF_NULL,                1,   1, "no_company_shares",                nullptr, nullptr, nullptr          },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, nullptr, nullptr, nullptr, nullptr },// This is the end marker
 };
 
@@ -622,7 +623,7 @@ static void Load_SLXI()
 		int64 args_array[] = { _sl_xv_version_label.empty() ? STR_EMPTY : STR_GAME_SAVELOAD_FROM_VERSION, (int64)(size_t)_sl_xv_version_label.c_str(), (int64)(size_t)feature, p1, p2 };
 		StringParameters tmp_params(args_array);
 		GetStringWithArgs(buf, str, &tmp_params, lastof(buf));
-		SlError(STR_JUST_RAW_STRING, buf, false);
+		SlError(STR_JUST_RAW_STRING, buf);
 	};
 
 	uint32 item_count = SlReadUint32();

@@ -1224,11 +1224,8 @@ public:
 	/** Filter station classes by class name. */
 	static bool TagNameFilter(StationClassID const * sc, StringFilter &filter)
 	{
-		char buffer[DRAW_STRING_BUFFER];
-		GetString(buffer, StationClass::Get(*sc)->name, lastof(buffer));
-
 		filter.ResetState();
-		filter.AddLine(buffer);
+		filter.AddLine(GetString(StationClass::Get(*sc)->name));
 		return filter.GetState();
 	}
 

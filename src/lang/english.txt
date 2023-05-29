@@ -128,39 +128,39 @@ STR_QUANTITY_N_A                                                :N/A
 
 # Two letter abbreviation of cargo name
 STR_ABBREV_NOTHING                                              :
-STR_ABBREV_PASSENGERS                                           :{TINY_FONT}PS
-STR_ABBREV_COAL                                                 :{TINY_FONT}CL
-STR_ABBREV_MAIL                                                 :{TINY_FONT}ML
-STR_ABBREV_OIL                                                  :{TINY_FONT}OL
-STR_ABBREV_LIVESTOCK                                            :{TINY_FONT}LV
-STR_ABBREV_GOODS                                                :{TINY_FONT}GD
-STR_ABBREV_GRAIN                                                :{TINY_FONT}GR
-STR_ABBREV_WOOD                                                 :{TINY_FONT}WD
-STR_ABBREV_IRON_ORE                                             :{TINY_FONT}OR
-STR_ABBREV_STEEL                                                :{TINY_FONT}ST
-STR_ABBREV_VALUABLES                                            :{TINY_FONT}VL
-STR_ABBREV_COPPER_ORE                                           :{TINY_FONT}CO
-STR_ABBREV_MAIZE                                                :{TINY_FONT}MZ
-STR_ABBREV_FRUIT                                                :{TINY_FONT}FT
-STR_ABBREV_DIAMONDS                                             :{TINY_FONT}DM
-STR_ABBREV_FOOD                                                 :{TINY_FONT}FD
-STR_ABBREV_PAPER                                                :{TINY_FONT}PR
-STR_ABBREV_GOLD                                                 :{TINY_FONT}GD
-STR_ABBREV_WATER                                                :{TINY_FONT}WR
-STR_ABBREV_WHEAT                                                :{TINY_FONT}WH
-STR_ABBREV_RUBBER                                               :{TINY_FONT}RB
-STR_ABBREV_SUGAR                                                :{TINY_FONT}SG
-STR_ABBREV_TOYS                                                 :{TINY_FONT}TY
-STR_ABBREV_SWEETS                                               :{TINY_FONT}SW
-STR_ABBREV_COLA                                                 :{TINY_FONT}CL
-STR_ABBREV_CANDYFLOSS                                           :{TINY_FONT}CF
-STR_ABBREV_BUBBLES                                              :{TINY_FONT}BU
-STR_ABBREV_TOFFEE                                               :{TINY_FONT}TF
-STR_ABBREV_BATTERIES                                            :{TINY_FONT}BA
-STR_ABBREV_PLASTIC                                              :{TINY_FONT}PL
-STR_ABBREV_FIZZY_DRINKS                                         :{TINY_FONT}FZ
-STR_ABBREV_NONE                                                 :{TINY_FONT}NO
-STR_ABBREV_ALL                                                  :{TINY_FONT}ALL
+STR_ABBREV_PASSENGERS                                           :PS
+STR_ABBREV_COAL                                                 :CL
+STR_ABBREV_MAIL                                                 :ML
+STR_ABBREV_OIL                                                  :OL
+STR_ABBREV_LIVESTOCK                                            :LV
+STR_ABBREV_GOODS                                                :GD
+STR_ABBREV_GRAIN                                                :GR
+STR_ABBREV_WOOD                                                 :WD
+STR_ABBREV_IRON_ORE                                             :OR
+STR_ABBREV_STEEL                                                :ST
+STR_ABBREV_VALUABLES                                            :VL
+STR_ABBREV_COPPER_ORE                                           :CO
+STR_ABBREV_MAIZE                                                :MZ
+STR_ABBREV_FRUIT                                                :FT
+STR_ABBREV_DIAMONDS                                             :DM
+STR_ABBREV_FOOD                                                 :FD
+STR_ABBREV_PAPER                                                :PR
+STR_ABBREV_GOLD                                                 :GD
+STR_ABBREV_WATER                                                :WR
+STR_ABBREV_WHEAT                                                :WH
+STR_ABBREV_RUBBER                                               :RB
+STR_ABBREV_SUGAR                                                :SG
+STR_ABBREV_TOYS                                                 :TY
+STR_ABBREV_SWEETS                                               :SW
+STR_ABBREV_COLA                                                 :CL
+STR_ABBREV_CANDYFLOSS                                           :CF
+STR_ABBREV_BUBBLES                                              :BU
+STR_ABBREV_TOFFEE                                               :TF
+STR_ABBREV_BATTERIES                                            :BA
+STR_ABBREV_PLASTIC                                              :PL
+STR_ABBREV_FIZZY_DRINKS                                         :FZ
+STR_ABBREV_NONE                                                 :NO
+STR_ABBREV_ALL                                                  :ALL
 
 # 'Mode' of transport for cargoes
 STR_PASSENGERS                                                  :{COMMA}{NBSP}passenger{P "" s}
@@ -930,6 +930,24 @@ STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Copy the
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Game Options
+
+STR_GAME_OPTIONS_TAB_GENERAL                                    :General
+STR_GAME_OPTIONS_TAB_GENERAL_TT                                 :{BLACK}Choose general settings
+STR_GAME_OPTIONS_TAB_GRAPHICS                                   :Graphics
+STR_GAME_OPTIONS_TAB_GRAPHICS_TT                                :{BLACK}Choose graphics settings
+STR_GAME_OPTIONS_TAB_SOUND                                      :Sound
+STR_GAME_OPTIONS_TAB_SOUND_TT                                   :{BLACK}Choose sound and music settings
+
+STR_GAME_OPTIONS_VOLUME                                         :Volume
+STR_GAME_OPTIONS_SFX_VOLUME                                     :Sound effects
+STR_GAME_OPTIONS_MUSIC_VOLUME                                   :Music
+
+STR_GAME_OPTIONS_VOLUME_0                                       :0%
+STR_GAME_OPTIONS_VOLUME_25                                      :25%
+STR_GAME_OPTIONS_VOLUME_50                                      :50%
+STR_GAME_OPTIONS_VOLUME_75                                      :75%
+STR_GAME_OPTIONS_VOLUME_100                                     :100%
+
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Currency units
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Currency units selection
 
@@ -1803,15 +1821,6 @@ STR_CONFIG_SETTING_ECONOMY_TYPE_HELPTEXT                        :Smooth economy 
 STR_CONFIG_SETTING_ECONOMY_TYPE_ORIGINAL                        :Original
 STR_CONFIG_SETTING_ECONOMY_TYPE_SMOOTH                          :Smooth
 STR_CONFIG_SETTING_ECONOMY_TYPE_FROZEN                          :Frozen
-
-STR_CONFIG_SETTING_ALLOW_SHARES                                 :Allow buying shares from other companies: {STRING2}
-STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :When enabled, allow buying and selling of company shares. Shares will only be available for companies reaching a certain age
-
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Minimum company age to trade shares: {STRING2}
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Set the minimum age of a company for others to be able to buy and sell shares from them.
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_VALUE                   :{COMMA} year{P "" s}
-###setting-zero-is-special
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_NO_MIN                  :No minimum
 
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :Percentage of leg profit to pay in feeder systems: {STRING2}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :Percentage of income given to the intermediate legs in feeder systems, giving more control over the income
@@ -3713,7 +3722,6 @@ STR_COMPANY_VIEW_AIRCRAFT                                       :{WHITE}{COMMA} 
 STR_COMPANY_VIEW_SHIPS                                          :{WHITE}{COMMA} ship{P "" s}
 STR_COMPANY_VIEW_VEHICLES_NONE                                  :{WHITE}None
 STR_COMPANY_VIEW_COMPANY_VALUE                                  :{GOLD}Company value: {WHITE}{CURRENCY_LONG}
-STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% owned by {COMPANY})
 STR_COMPANY_VIEW_INFRASTRUCTURE                                 :{GOLD}Infrastructure:
 STR_COMPANY_VIEW_INFRASTRUCTURE_RAIL                            :{WHITE}{COMMA} rail piece{P "" s}
 STR_COMPANY_VIEW_INFRASTRUCTURE_ROAD                            :{WHITE}{COMMA} road piece{P "" s}
@@ -3741,11 +3749,6 @@ STR_COMPANY_VIEW_COMPANY_NAME_BUTTON                            :{BLACK}Company 
 STR_COMPANY_VIEW_COMPANY_NAME_TOOLTIP                           :{BLACK}Change the company name
 STR_COMPANY_VIEW_PRESIDENT_NAME_BUTTON                          :{BLACK}Manager Name
 STR_COMPANY_VIEW_PRESIDENT_NAME_TOOLTIP                         :{BLACK}Change the manager's name
-
-STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Buy 25% share in company
-STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Sell 25% share in company
-STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Buy 25% share in this company. Shift+Click shows estimated cost without purchasing any share
-STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Sell 25% share in this company. Shift+Click shows estimated income without selling any share
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Company Name
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Manager's Name
@@ -4775,9 +4778,6 @@ STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}Can't gi
 STR_ERROR_CAN_T_GIVE_MONEY                                      :{WHITE}Can't give away money to this company...
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Can't buy company...
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Can't build company headquarters...
-STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Can't buy 25% share in this company...
-STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Can't sell 25% share in this company...
-STR_ERROR_PROTECTED                                             :{WHITE}This company is not old enough to trade shares yet...
 
 # Town related errors
 STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Can't build any towns

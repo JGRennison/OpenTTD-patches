@@ -128,39 +128,39 @@ STR_QUANTITY_N_A                                                :N/A
 
 # Two letter abbreviation of cargo name
 STR_ABBREV_NOTHING                                              :
-STR_ABBREV_PASSENGERS                                           :{TINY_FONT}客
-STR_ABBREV_COAL                                                 :{TINY_FONT}煤
-STR_ABBREV_MAIL                                                 :{TINY_FONT}郵
-STR_ABBREV_OIL                                                  :{TINY_FONT}油
-STR_ABBREV_LIVESTOCK                                            :{TINY_FONT}畜
-STR_ABBREV_GOODS                                                :{TINY_FONT}商
-STR_ABBREV_GRAIN                                                :{TINY_FONT}穀
-STR_ABBREV_WOOD                                                 :{TINY_FONT}木
-STR_ABBREV_IRON_ORE                                             :{TINY_FONT}鐵
-STR_ABBREV_STEEL                                                :{TINY_FONT}鋼
-STR_ABBREV_VALUABLES                                            :{TINY_FONT}貴
-STR_ABBREV_COPPER_ORE                                           :{TINY_FONT}銅
-STR_ABBREV_MAIZE                                                :{TINY_FONT}玉
-STR_ABBREV_FRUIT                                                :{TINY_FONT}果
-STR_ABBREV_DIAMONDS                                             :{TINY_FONT}鑽
-STR_ABBREV_FOOD                                                 :{TINY_FONT}食
-STR_ABBREV_PAPER                                                :{TINY_FONT}紙
-STR_ABBREV_GOLD                                                 :{TINY_FONT}金
-STR_ABBREV_WATER                                                :{TINY_FONT}水
-STR_ABBREV_WHEAT                                                :{TINY_FONT}麥
-STR_ABBREV_RUBBER                                               :{TINY_FONT}橡
-STR_ABBREV_SUGAR                                                :{TINY_FONT}糖
-STR_ABBREV_TOYS                                                 :{TINY_FONT}玩
-STR_ABBREV_SWEETS                                               :{TINY_FONT}甜
-STR_ABBREV_COLA                                                 :{TINY_FONT}可
-STR_ABBREV_CANDYFLOSS                                           :{TINY_FONT}棉
-STR_ABBREV_BUBBLES                                              :{TINY_FONT}泡
-STR_ABBREV_TOFFEE                                               :{TINY_FONT}太
-STR_ABBREV_BATTERIES                                            :{TINY_FONT}電
-STR_ABBREV_PLASTIC                                              :{TINY_FONT}塑
-STR_ABBREV_FIZZY_DRINKS                                         :{TINY_FONT}汽
-STR_ABBREV_NONE                                                 :{TINY_FONT}無
-STR_ABBREV_ALL                                                  :{TINY_FONT}全
+STR_ABBREV_PASSENGERS                                           :客
+STR_ABBREV_COAL                                                 :煤
+STR_ABBREV_MAIL                                                 :郵
+STR_ABBREV_OIL                                                  :油
+STR_ABBREV_LIVESTOCK                                            :畜
+STR_ABBREV_GOODS                                                :商
+STR_ABBREV_GRAIN                                                :穀
+STR_ABBREV_WOOD                                                 :木
+STR_ABBREV_IRON_ORE                                             :鐵
+STR_ABBREV_STEEL                                                :鋼
+STR_ABBREV_VALUABLES                                            :貴
+STR_ABBREV_COPPER_ORE                                           :銅
+STR_ABBREV_MAIZE                                                :玉
+STR_ABBREV_FRUIT                                                :果
+STR_ABBREV_DIAMONDS                                             :鑽
+STR_ABBREV_FOOD                                                 :食
+STR_ABBREV_PAPER                                                :紙
+STR_ABBREV_GOLD                                                 :金
+STR_ABBREV_WATER                                                :水
+STR_ABBREV_WHEAT                                                :麥
+STR_ABBREV_RUBBER                                               :橡
+STR_ABBREV_SUGAR                                                :糖
+STR_ABBREV_TOYS                                                 :玩
+STR_ABBREV_SWEETS                                               :甜
+STR_ABBREV_COLA                                                 :可
+STR_ABBREV_CANDYFLOSS                                           :棉
+STR_ABBREV_BUBBLES                                              :泡
+STR_ABBREV_TOFFEE                                               :太
+STR_ABBREV_BATTERIES                                            :電
+STR_ABBREV_PLASTIC                                              :塑
+STR_ABBREV_FIZZY_DRINKS                                         :汽
+STR_ABBREV_NONE                                                 :無
+STR_ABBREV_ALL                                                  :全
 
 # 'Mode' of transport for cargoes
 STR_PASSENGERS                                                  :{COMMA}{NBSP}名乘客
@@ -1798,13 +1798,6 @@ STR_CONFIG_SETTING_ECONOMY_TYPE_HELPTEXT                        :平滑經濟使
 STR_CONFIG_SETTING_ECONOMY_TYPE_ORIGINAL                        :原版
 STR_CONFIG_SETTING_ECONOMY_TYPE_SMOOTH                          :平滑
 STR_CONFIG_SETTING_ECONOMY_TYPE_FROZEN                          :凍結
-
-STR_CONFIG_SETTING_ALLOW_SHARES                                 :允許購買其他公司的股票：{STRING}
-STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :啟用此選項以容許公司買賣股票。一所公司必須達到一定的年齡方能買賣股票。
-
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :容許公司買賣股票的最小年齡：{STRING}
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :設定容許公司買賣股票的最小年齡。
-###setting-zero-is-special
 
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :轉運服務所得的收入百分比：{STRING}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :設定進行轉運的車輛在卸載被轉運的貨物時，獲得的收入佔貨物總收入的百分比。此選項讓玩家更有效地控制收入分配方式。
@@ -3700,7 +3693,6 @@ STR_COMPANY_VIEW_AIRCRAFT                                       :{WHITE}飛機 {
 STR_COMPANY_VIEW_SHIPS                                          :{WHITE}船舶 {COMMA} 艘
 STR_COMPANY_VIEW_VEHICLES_NONE                                  :{WHITE}無
 STR_COMPANY_VIEW_COMPANY_VALUE                                  :{GOLD}公司價值：{WHITE}{CURRENCY_LONG}
-STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% 由 {COMPANY} 擁有)
 STR_COMPANY_VIEW_INFRASTRUCTURE                                 :{GOLD}基礎建設：
 STR_COMPANY_VIEW_INFRASTRUCTURE_RAIL                            :{WHITE}{COMMA} 鐵路區塊
 STR_COMPANY_VIEW_INFRASTRUCTURE_ROAD                            :{WHITE}{COMMA} 道路區塊
@@ -3728,11 +3720,6 @@ STR_COMPANY_VIEW_COMPANY_NAME_BUTTON                            :{BLACK}公司�
 STR_COMPANY_VIEW_COMPANY_NAME_TOOLTIP                           :{BLACK}修改公司名稱
 STR_COMPANY_VIEW_PRESIDENT_NAME_BUTTON                          :{BLACK}總經理姓名
 STR_COMPANY_VIEW_PRESIDENT_NAME_TOOLTIP                         :{BLACK}修改總經理姓名
-
-STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}購買 25% 公司股份
-STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}出售 25% 公司股份
-STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}購入這所公司的 25% 股份。按住 Shift 點選以顯示預估的購買費用而不作購入
-STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}出售這所公司的 25% 股份。按住 Shift 點選以顯示預估的出售所得而不賣出任何股份
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :公司名稱
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :總經理姓名
@@ -4760,9 +4747,6 @@ STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}無法�
 STR_ERROR_CAN_T_GIVE_MONEY                                      :{WHITE}無法將資金給予此公司...
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}無法購買公司...
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}無法興建公司總部...
-STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}無法購買這間公司的股份...
-STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}無法出售這間公司的股份...
-STR_ERROR_PROTECTED                                             :{WHITE}這間公司才剛成立，還不能交易股票...
 
 # Town related errors
 STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}無法建立市鎮

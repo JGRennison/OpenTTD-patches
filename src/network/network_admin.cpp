@@ -332,10 +332,6 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendCompanyInfo(const Company
 	p->Send_bool  (c->is_ai);
 	p->Send_uint8 (CeilDiv(c->months_of_bankruptcy, 3)); // send as quarters_of_bankruptcy
 
-	for (size_t i = 0; i < lengthof(c->share_owners); i++) {
-		p->Send_uint8(c->share_owners[i]);
-	}
-
 	this->SendPacket(p);
 
 	return NETWORK_RECV_STATUS_OKAY;
@@ -358,10 +354,6 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendCompanyUpdate(const Compa
 	p->Send_uint8 (c->colour);
 	p->Send_bool  (NetworkCompanyIsPassworded(c->index));
 	p->Send_uint8 (CeilDiv(c->months_of_bankruptcy, 3)); // send as quarters_of_bankruptcy
-
-	for (size_t i = 0; i < lengthof(c->share_owners); i++) {
-		p->Send_uint8(c->share_owners[i]);
-	}
 
 	this->SendPacket(p);
 
@@ -630,10 +622,16 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendCmdLogging(ClientID clien
 	p->Send_uint32(client_id);
 	p->Send_uint8 (cp->company);
 	p->Send_uint16(cp->cmd & CMD_ID_MASK);
-	p->Send_uint32(cp->p1);
-	p->Send_uint32(cp->p2);
-	p->Send_uint32(cp->tile);
-	p->Send_string(cp->text.c_str());
+
+	p->Send_uint16(4 + 4 + 8 + 4 + (uint16)cp->text.size() + 1);
+	{
+		p->Send_uint32(cp->p1);
+		p->Send_uint32(cp->p2);
+		p->Send_uint64(cp->p3);
+		p->Send_uint32(cp->tile);
+		p->Send_string(cp->text.c_str());
+	}
+
 	p->Send_uint32(cp->frame);
 
 	this->SendPacket(p);

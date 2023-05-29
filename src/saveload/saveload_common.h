@@ -405,8 +405,8 @@ void SlSkipBytes(size_t length);
 size_t SlGetBytesRead();
 size_t SlGetBytesWritten();
 
-void NORETURN SlError(StringID string, const char *extra_msg = nullptr, bool already_malloced = false);
-void NORETURN SlErrorCorrupt(const char *msg, bool already_malloced = false);
+void NORETURN SlError(StringID string, std::string extra_msg = {});
+void NORETURN SlErrorCorrupt(std::string msg);
 void NORETURN CDECL SlErrorCorruptFmt(const char *format, ...) WARN_FORMAT(1, 2);
 
 bool SaveLoadFileTypeIsScenario();

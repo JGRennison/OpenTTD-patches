@@ -128,39 +128,39 @@ STR_QUANTITY_N_A                                                :N/A
 
 # Two letter abbreviation of cargo name
 STR_ABBREV_NOTHING                                              :
-STR_ABBREV_PASSENGERS                                           :{TINY_FONT}PS
-STR_ABBREV_COAL                                                 :{TINY_FONT}KU
-STR_ABBREV_MAIL                                                 :{TINY_FONT}PO
-STR_ABBREV_OIL                                                  :{TINY_FONT}UL
-STR_ABBREV_LIVESTOCK                                            :{TINY_FONT}VE
-STR_ABBREV_GOODS                                                :{TINY_FONT}WU
-STR_ABBREV_GRAIN                                                :{TINY_FONT}KA
-STR_ABBREV_WOOD                                                 :{TINY_FONT}HO
-STR_ABBREV_IRON_ORE                                             :{TINY_FONT}EA
-STR_ABBREV_STEEL                                                :{TINY_FONT}ST
-STR_ABBREV_VALUABLES                                            :{TINY_FONT}WS
-STR_ABBREV_COPPER_ORE                                           :{TINY_FONT}KE
-STR_ABBREV_MAIZE                                                :{TINY_FONT}MA
-STR_ABBREV_FRUIT                                                :{TINY_FONT}FR
-STR_ABBREV_DIAMONDS                                             :{TINY_FONT}DM
-STR_ABBREV_FOOD                                                 :{TINY_FONT}IE
-STR_ABBREV_PAPER                                                :{TINY_FONT}PB
-STR_ABBREV_GOLD                                                 :{TINY_FONT}GD
-STR_ABBREV_WATER                                                :{TINY_FONT}WA
-STR_ABBREV_WHEAT                                                :{TINY_FONT}WE
-STR_ABBREV_RUBBER                                               :{TINY_FONT}KT
-STR_ABBREV_SUGAR                                                :{TINY_FONT}ZO
-STR_ABBREV_TOYS                                                 :{TINY_FONT}SP
-STR_ABBREV_SWEETS                                               :{TINY_FONT}SE
-STR_ABBREV_COLA                                                 :{TINY_FONT}CO
-STR_ABBREV_CANDYFLOSS                                           :{TINY_FONT}ZW
-STR_ABBREV_BUBBLES                                              :{TINY_FONT}BL
-STR_ABBREV_TOFFEE                                               :{TINY_FONT}KA
-STR_ABBREV_BATTERIES                                            :{TINY_FONT}BA
-STR_ABBREV_PLASTIC                                              :{TINY_FONT}PL
-STR_ABBREV_FIZZY_DRINKS                                         :{TINY_FONT}KG
-STR_ABBREV_NONE                                                 :{TINY_FONT}KG
-STR_ABBREV_ALL                                                  :{TINY_FONT}ALL
+STR_ABBREV_PASSENGERS                                           :PS
+STR_ABBREV_COAL                                                 :KU
+STR_ABBREV_MAIL                                                 :PO
+STR_ABBREV_OIL                                                  :UL
+STR_ABBREV_LIVESTOCK                                            :VE
+STR_ABBREV_GOODS                                                :WU
+STR_ABBREV_GRAIN                                                :KA
+STR_ABBREV_WOOD                                                 :HO
+STR_ABBREV_IRON_ORE                                             :EA
+STR_ABBREV_STEEL                                                :ST
+STR_ABBREV_VALUABLES                                            :WS
+STR_ABBREV_COPPER_ORE                                           :KE
+STR_ABBREV_MAIZE                                                :MA
+STR_ABBREV_FRUIT                                                :FR
+STR_ABBREV_DIAMONDS                                             :DM
+STR_ABBREV_FOOD                                                 :IE
+STR_ABBREV_PAPER                                                :PB
+STR_ABBREV_GOLD                                                 :GD
+STR_ABBREV_WATER                                                :WA
+STR_ABBREV_WHEAT                                                :WE
+STR_ABBREV_RUBBER                                               :KT
+STR_ABBREV_SUGAR                                                :ZO
+STR_ABBREV_TOYS                                                 :SP
+STR_ABBREV_SWEETS                                               :SE
+STR_ABBREV_COLA                                                 :CO
+STR_ABBREV_CANDYFLOSS                                           :ZW
+STR_ABBREV_BUBBLES                                              :BL
+STR_ABBREV_TOFFEE                                               :KA
+STR_ABBREV_BATTERIES                                            :BA
+STR_ABBREV_PLASTIC                                              :PL
+STR_ABBREV_FIZZY_DRINKS                                         :KG
+STR_ABBREV_NONE                                                 :KG
+STR_ABBREV_ALL                                                  :ALL
 
 # 'Mode' of transport for cargoes
 STR_PASSENGERS                                                  :{COMMA}{NBSP}Passagéier
@@ -1798,13 +1798,6 @@ STR_CONFIG_SETTING_ECONOMY_TYPE_HELPTEXT                        :"Glaat" suergt 
 STR_CONFIG_SETTING_ECONOMY_TYPE_ORIGINAL                        :Original
 STR_CONFIG_SETTING_ECONOMY_TYPE_SMOOTH                          :Glaat
 STR_CONFIG_SETTING_ECONOMY_TYPE_FROZEN                          :Agefruer
-
-STR_CONFIG_SETTING_ALLOW_SHARES                                 :Undeeler vun aaneren Firme kafen: {STRING}
-STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Wann ugeschalt, dierfen Aktien vu Firme kaf an verkaf ginn. Aktien si just fir Firme verfügbar, déi en gewëssen Alter erreecht hunn
-
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Minimalt Firmenalter fir Aktien ze handelen: {STRING}
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Definéiert d'minimalt Alter vun enger Firma, befier anerer kënnen Undeeler un Aktien vun hier kafen.
-###setting-zero-is-special
 
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :Prozentsaz vum Etappenprofit den am Feeder-System bezuelt gëtt: {STRING}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :Prozentsaz vum Akommes déi un d'Zwëschenetappen an engem Feeder-System gi ginn, wat méi Kontroll iwwert d'Akommes erméiglegt
@@ -3698,7 +3691,6 @@ STR_COMPANY_VIEW_AIRCRAFT                                       :{WHITE}{COMMA} 
 STR_COMPANY_VIEW_SHIPS                                          :{WHITE}{COMMA} Schëff{P "" er}
 STR_COMPANY_VIEW_VEHICLES_NONE                                  :{WHITE}Keng
 STR_COMPANY_VIEW_COMPANY_VALUE                                  :{GOLD}Firmewäert: {WHITE}{CURRENCY_LONG}
-STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% am Besëtz vun {COMPANY})
 STR_COMPANY_VIEW_INFRASTRUCTURE                                 :{GOLD}Infrastruktur:
 STR_COMPANY_VIEW_INFRASTRUCTURE_RAIL                            :{WHITE}{COMMA} Schinnendeel{P "" er}
 STR_COMPANY_VIEW_INFRASTRUCTURE_ROAD                            :{WHITE}{COMMA} Stroossendeel{P "" er}
@@ -3726,11 +3718,6 @@ STR_COMPANY_VIEW_COMPANY_NAME_BUTTON                            :{BLACK}Firmennu
 STR_COMPANY_VIEW_COMPANY_NAME_TOOLTIP                           :{BLACK}Ännert de Firmennumm
 STR_COMPANY_VIEW_PRESIDENT_NAME_BUTTON                          :{BLACK}Managernumm
 STR_COMPANY_VIEW_PRESIDENT_NAME_TOOLTIP                         :{BLACK}Ännert den Numm vum Manager
-
-STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Kaaft 25% Undeel vun der Firma
-STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Verkaaft 25% Undeel vun der Firma
-STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Kaaft 25% Undeel vun deser Firma. Shift+Klick weist ongeféier Käschten ouni Kaf vun Aktien
-STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Verkaaft 25% Undeel vun deser Firma. Shift+Klick weist ongeféier Käschten ouni Verkaf vun Aktien
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Firmennumm
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Numm vum Manager
@@ -4758,9 +4745,6 @@ STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}Kann ken
 STR_ERROR_CAN_T_GIVE_MONEY                                      :{WHITE}Kann dëser Firma kee Geld ginn...
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Kann d'Firma net kafen...
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Kann d'Firmenhaaptgebai net bauen...
-STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Kann keng 25% Undeeler vun dëser Firma kafen...
-STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Kann keng 25% Undeeler vun dëser Firma verkafen...
-STR_ERROR_PROTECTED                                             :{WHITE}Des Firma ass nach net al genuch fir Undeeler ze handelen...
 
 # Town related errors
 STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Ka keng Stied bauen

@@ -253,39 +253,39 @@ STR_QUANTITY_N_A                                                :немає
 
 # Two letter abbreviation of cargo name
 STR_ABBREV_NOTHING                                              :
-STR_ABBREV_PASSENGERS                                           :{TINY_FONT}ПС
-STR_ABBREV_COAL                                                 :{TINY_FONT}ВГ
-STR_ABBREV_MAIL                                                 :{TINY_FONT}ПШ
-STR_ABBREV_OIL                                                  :{TINY_FONT}НФ
-STR_ABBREV_LIVESTOCK                                            :{TINY_FONT}ХД
-STR_ABBREV_GOODS                                                :{TINY_FONT}ТВ
-STR_ABBREV_GRAIN                                                :{TINY_FONT}ЗЕ
-STR_ABBREV_WOOD                                                 :{TINY_FONT}ДР
-STR_ABBREV_IRON_ORE                                             :{TINY_FONT}ЗЛ
-STR_ABBREV_STEEL                                                :{TINY_FONT}СТ
-STR_ABBREV_VALUABLES                                            :{TINY_FONT}КШ
-STR_ABBREV_COPPER_ORE                                           :{TINY_FONT}МД
-STR_ABBREV_MAIZE                                                :{TINY_FONT}КУ
-STR_ABBREV_FRUIT                                                :{TINY_FONT}ФР
-STR_ABBREV_DIAMONDS                                             :{TINY_FONT}ДІ
-STR_ABBREV_FOOD                                                 :{TINY_FONT}ПР
-STR_ABBREV_PAPER                                                :{TINY_FONT}ПА
-STR_ABBREV_GOLD                                                 :{TINY_FONT}ЗО
-STR_ABBREV_WATER                                                :{TINY_FONT}ВО
-STR_ABBREV_WHEAT                                                :{TINY_FONT}ПШ
-STR_ABBREV_RUBBER                                               :{TINY_FONT}КА
-STR_ABBREV_SUGAR                                                :{TINY_FONT}ЦК
-STR_ABBREV_TOYS                                                 :{TINY_FONT}ІГ
-STR_ABBREV_SWEETS                                               :{TINY_FONT}СЛ
-STR_ABBREV_COLA                                                 :{TINY_FONT}КО
-STR_ABBREV_CANDYFLOSS                                           :{TINY_FONT}ВА
-STR_ABBREV_BUBBLES                                              :{TINY_FONT}БУ
-STR_ABBREV_TOFFEE                                               :{TINY_FONT}ІР
-STR_ABBREV_BATTERIES                                            :{TINY_FONT}БТ
-STR_ABBREV_PLASTIC                                              :{TINY_FONT}ПЛ
-STR_ABBREV_FIZZY_DRINKS                                         :{TINY_FONT}ГЗ
-STR_ABBREV_NONE                                                 :{TINY_FONT}НІ
-STR_ABBREV_ALL                                                  :{TINY_FONT}Все
+STR_ABBREV_PASSENGERS                                           :ПС
+STR_ABBREV_COAL                                                 :ВГ
+STR_ABBREV_MAIL                                                 :ПШ
+STR_ABBREV_OIL                                                  :НФ
+STR_ABBREV_LIVESTOCK                                            :ХД
+STR_ABBREV_GOODS                                                :ТВ
+STR_ABBREV_GRAIN                                                :ЗЕ
+STR_ABBREV_WOOD                                                 :ДР
+STR_ABBREV_IRON_ORE                                             :ЗЛ
+STR_ABBREV_STEEL                                                :СТ
+STR_ABBREV_VALUABLES                                            :КШ
+STR_ABBREV_COPPER_ORE                                           :МД
+STR_ABBREV_MAIZE                                                :КУ
+STR_ABBREV_FRUIT                                                :ФР
+STR_ABBREV_DIAMONDS                                             :ДІ
+STR_ABBREV_FOOD                                                 :ПР
+STR_ABBREV_PAPER                                                :ПА
+STR_ABBREV_GOLD                                                 :ЗО
+STR_ABBREV_WATER                                                :ВО
+STR_ABBREV_WHEAT                                                :ПШ
+STR_ABBREV_RUBBER                                               :КА
+STR_ABBREV_SUGAR                                                :ЦК
+STR_ABBREV_TOYS                                                 :ІГ
+STR_ABBREV_SWEETS                                               :СЛ
+STR_ABBREV_COLA                                                 :КО
+STR_ABBREV_CANDYFLOSS                                           :ВА
+STR_ABBREV_BUBBLES                                              :БУ
+STR_ABBREV_TOFFEE                                               :ІР
+STR_ABBREV_BATTERIES                                            :БТ
+STR_ABBREV_PLASTIC                                              :ПЛ
+STR_ABBREV_FIZZY_DRINKS                                         :ГЗ
+STR_ABBREV_NONE                                                 :НІ
+STR_ABBREV_ALL                                                  :Все
 
 # 'Mode' of transport for cargoes
 STR_PASSENGERS                                                  :{COMMA}{NBSP}пасажир{P "" и ів}
@@ -1924,13 +1924,6 @@ STR_CONFIG_SETTING_ECONOMY_TYPE_HELPTEXT                        :Плавна е
 STR_CONFIG_SETTING_ECONOMY_TYPE_ORIGINAL                        :Оригінальна
 STR_CONFIG_SETTING_ECONOMY_TYPE_SMOOTH                          :Плавно
 STR_CONFIG_SETTING_ECONOMY_TYPE_FROZEN                          :Заморожена
-
-STR_CONFIG_SETTING_ALLOW_SHARES                                 :Дозволити придбання акції інших компаній: {STRING}
-STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :При включенні дозволяє придбання та продаж акцій команій. Акції компанії стають доступними після досягнення деякого віку.
-
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Мінімальний вік компанії для торгівлі акціями: {STRING}
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Встановіть мінімальний вік компанії, щоб інші могли купувати та продавати акції у них.
-###setting-zero-is-special
 
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :Відсоток прибутку за часткове перевезення: {STRING}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :Налаштування проценту прибутку, що нараховується за часткове перевезення вантажу. За допомогою даної опції можна контролювати розподіл прибутків між учасниками багатоланкових перевезень.
@@ -3821,7 +3814,6 @@ STR_COMPANY_VIEW_AIRCRAFT                                       :{WHITE}{COMMA} 
 STR_COMPANY_VIEW_SHIPS                                          :{WHITE}{COMMA} кораб{P ель лі лів}
 STR_COMPANY_VIEW_VEHICLES_NONE                                  :{WHITE}Немає
 STR_COMPANY_VIEW_COMPANY_VALUE                                  :{GOLD}Вартість компанії: {WHITE}{CURRENCY_LONG}
-STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% у власності {COMPANY})
 STR_COMPANY_VIEW_INFRASTRUCTURE                                 :{GOLD}Інфраструктура:
 STR_COMPANY_VIEW_INFRASTRUCTURE_RAIL                            :{WHITE}{COMMA} клітин{P ка ки ок} з залізничними коліями
 STR_COMPANY_VIEW_INFRASTRUCTURE_ROAD                            :{WHITE}{COMMA} клітин{P ка ки ок} з дорогами
@@ -3849,11 +3841,6 @@ STR_COMPANY_VIEW_COMPANY_NAME_BUTTON                            :{BLACK}Назв
 STR_COMPANY_VIEW_COMPANY_NAME_TOOLTIP                           :{BLACK}Зміна назви компанії
 STR_COMPANY_VIEW_PRESIDENT_NAME_BUTTON                          :{BLACK}Ім'я керівника
 STR_COMPANY_VIEW_PRESIDENT_NAME_TOOLTIP                         :{BLACK}Перейменувати керівника
-
-STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Купити 25% акцій компанії
-STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Продати 25% акцій компанії
-STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Купити 25% акцій цієї компанії. Утримуйте Shift для показу вартості цих акцій
-STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Продати 25% акцій цієї компанії. Утримуйте Shift для показу вартості цих акцій
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Назва компанії
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Ім'я керівника
@@ -4881,9 +4868,6 @@ STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}Немо
 STR_ERROR_CAN_T_GIVE_MONEY                                      :{WHITE}Неможливо передати гроші цій компанії...
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Неможливо купити компанію...
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Неможливо збудувати Офіс...
-STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Неможливо купити 25% акцій цієї компанії...
-STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Неможливо продати 25% акцій цієї компанії...
-STR_ERROR_PROTECTED                                             :{WHITE}Ця компанія поки ще не продається...
 
 # Town related errors
 STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Не можна створити місто

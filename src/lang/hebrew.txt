@@ -142,39 +142,39 @@ STR_QUANTITY_N_A                                                :N/A
 
 # Two letter abbreviation of cargo name
 STR_ABBREV_NOTHING                                              :
-STR_ABBREV_PASSENGERS                                           :{TINY_FONT}נס
-STR_ABBREV_COAL                                                 :{TINY_FONT}פחם
-STR_ABBREV_MAIL                                                 :{TINY_FONT}דו
-STR_ABBREV_OIL                                                  :{TINY_FONT}נפ
-STR_ABBREV_LIVESTOCK                                            :{TINY_FONT}בק
-STR_ABBREV_GOODS                                                :{TINY_FONT}מצ
-STR_ABBREV_GRAIN                                                :{TINY_FONT}תב
-STR_ABBREV_WOOD                                                 :{TINY_FONT}עץ
-STR_ABBREV_IRON_ORE                                             :{TINY_FONT}עב
-STR_ABBREV_STEEL                                                :{TINY_FONT}בר
-STR_ABBREV_VALUABLES                                            :{TINY_FONT}מע
-STR_ABBREV_COPPER_ORE                                           :{TINY_FONT}ענ
-STR_ABBREV_MAIZE                                                :{TINY_FONT}תי
-STR_ABBREV_FRUIT                                                :{TINY_FONT}פר
-STR_ABBREV_DIAMONDS                                             :{TINY_FONT}יה
-STR_ABBREV_FOOD                                                 :{TINY_FONT}מז
-STR_ABBREV_PAPER                                                :{TINY_FONT}ני
-STR_ABBREV_GOLD                                                 :{TINY_FONT}זה
-STR_ABBREV_WATER                                                :{TINY_FONT}מים
-STR_ABBREV_WHEAT                                                :{TINY_FONT}חט
-STR_ABBREV_RUBBER                                               :{TINY_FONT}גמ
-STR_ABBREV_SUGAR                                                :{TINY_FONT}סכ
-STR_ABBREV_TOYS                                                 :{TINY_FONT}צע
-STR_ABBREV_SWEETS                                               :{TINY_FONT}מם
-STR_ABBREV_COLA                                                 :{TINY_FONT}קולה
-STR_ABBREV_CANDYFLOSS                                           :{TINY_FONT}סוכר על מקל
-STR_ABBREV_BUBBLES                                              :{TINY_FONT}בועות
-STR_ABBREV_TOFFEE                                               :{TINY_FONT}טפ
-STR_ABBREV_BATTERIES                                            :{TINY_FONT}בטריות
-STR_ABBREV_PLASTIC                                              :{TINY_FONT}פל
-STR_ABBREV_FIZZY_DRINKS                                         :{TINY_FONT}ממ
-STR_ABBREV_NONE                                                 :{TINY_FONT}כל
-STR_ABBREV_ALL                                                  :{TINY_FONT}הכל
+STR_ABBREV_PASSENGERS                                           :נס
+STR_ABBREV_COAL                                                 :פחם
+STR_ABBREV_MAIL                                                 :דו
+STR_ABBREV_OIL                                                  :נפ
+STR_ABBREV_LIVESTOCK                                            :בק
+STR_ABBREV_GOODS                                                :מצ
+STR_ABBREV_GRAIN                                                :תב
+STR_ABBREV_WOOD                                                 :עץ
+STR_ABBREV_IRON_ORE                                             :עב
+STR_ABBREV_STEEL                                                :בר
+STR_ABBREV_VALUABLES                                            :מע
+STR_ABBREV_COPPER_ORE                                           :ענ
+STR_ABBREV_MAIZE                                                :תי
+STR_ABBREV_FRUIT                                                :פר
+STR_ABBREV_DIAMONDS                                             :יה
+STR_ABBREV_FOOD                                                 :מז
+STR_ABBREV_PAPER                                                :ני
+STR_ABBREV_GOLD                                                 :זה
+STR_ABBREV_WATER                                                :מים
+STR_ABBREV_WHEAT                                                :חט
+STR_ABBREV_RUBBER                                               :גמ
+STR_ABBREV_SUGAR                                                :סכ
+STR_ABBREV_TOYS                                                 :צע
+STR_ABBREV_SWEETS                                               :מם
+STR_ABBREV_COLA                                                 :קולה
+STR_ABBREV_CANDYFLOSS                                           :סוכר על מקל
+STR_ABBREV_BUBBLES                                              :בועות
+STR_ABBREV_TOFFEE                                               :טפ
+STR_ABBREV_BATTERIES                                            :בטריות
+STR_ABBREV_PLASTIC                                              :פל
+STR_ABBREV_FIZZY_DRINKS                                         :ממ
+STR_ABBREV_NONE                                                 :כל
+STR_ABBREV_ALL                                                  :הכל
 
 # 'Mode' of transport for cargoes
 STR_PASSENGERS                                                  :{P 0 "נוסע " ""}{COMMA}{P "" " נוסעים"}
@@ -1706,12 +1706,6 @@ STR_CONFIG_SETTING_ENDING_YEAR_ZERO                             :לעולם לא
 STR_CONFIG_SETTING_ECONOMY_TYPE                                 :סוג כלכלה: {STRING}
 ###length 3
 STR_CONFIG_SETTING_ECONOMY_TYPE_ORIGINAL                        :מקורי
-
-STR_CONFIG_SETTING_ALLOW_SHARES                                 :אפשר קניית מניות מחברות אחרות: {STRING}
-STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :כאשר מאופשר, מתיר קנייה ומכירה של מניות של חברות. מניות יהיו זמינות רק עבור חברות המגיעות לגיל מסוים
-
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :גיל מינימלי לחברה לסחור במניותיה: {STRING}
-###setting-zero-is-special
 
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :אחוז הרווח מקטע נסיעה לתשלום במערכות הזנה: {STRING}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :אחוז הרווח הניתן לקטעי ביניים במערכות הזנה, דבר הנותן שליטה מוגברת על ההכנסות
@@ -3446,7 +3440,6 @@ STR_COMPANY_VIEW_AIRCRAFT                                       :{WHITE}מטוס
 STR_COMPANY_VIEW_SHIPS                                          :{WHITE}כלי שייט {COMMA}
 STR_COMPANY_VIEW_VEHICLES_NONE                                  :{WHITE}אין
 STR_COMPANY_VIEW_COMPANY_VALUE                                  :{GOLD}{CURRENCY_LONG}{WHITE}:שווי החברה
-STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({1:COMPANY} נמצאים בבעלות{NBSP} {0:COMMA}%)
 STR_COMPANY_VIEW_INFRASTRUCTURE                                 :{GOLD}תשתיות:
 STR_COMPANY_VIEW_INFRASTRUCTURE_RAIL                            :{WHITE}{P 0 "חלק מסילה " ""}{COMMA}{P "" " חלקי מסילה"}
 STR_COMPANY_VIEW_INFRASTRUCTURE_ROAD                            :{WHITE}{P 0 "חלק כביש " ""}{COMMA}{P "" " חלקי כביש"}
@@ -3473,11 +3466,6 @@ STR_COMPANY_VIEW_COMPANY_NAME_BUTTON                            :{BLACK}שם ה�
 STR_COMPANY_VIEW_COMPANY_NAME_TOOLTIP                           :{BLACK}שנה את שם החברה
 STR_COMPANY_VIEW_PRESIDENT_NAME_BUTTON                          :{BLACK}שם המנהל
 STR_COMPANY_VIEW_PRESIDENT_NAME_TOOLTIP                         :{BLACK}שנה את שם המנהל
-
-STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}קנה 25% ממניות החברה
-STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}מכור 25% ממניות החברה שברשותך
-STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}קנה 25% ממניות חברה זו. Shift+לחיצה מציג הערכת עלות ללא רכישת המניה
-STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}מכור 25% ממניות חברה זו. Shift+לחיצה מציג הערכת הכנסות ללא מכירת המניה
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :שם החברה
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :שם המנהל
@@ -4462,9 +4450,6 @@ STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}לא נ�
 STR_ERROR_CAN_T_GIVE_MONEY                                      :{WHITE}לא ניתן לתת כסף לחברה הזאת...
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}לא ניתן לקנות את החברה...
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}לא ניתן לבנות את מטה החברה באתר זה...
-STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}אין באפשרותך לקנות 25% ממניות חברה זו...
-STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}אין באפשרותך למכור 25% ממניות חברה זו...
-STR_ERROR_PROTECTED                                             :{WHITE}חברה זו צעירה מידי ואינה יכולה לסחור במניותיה...
 
 # Town related errors
 STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}לא ניתן לבנות ערים

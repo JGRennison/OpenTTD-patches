@@ -754,7 +754,7 @@ private:
 			GetString(last_name[1], STR_GROUP_NAME, lastof(last_name[1]));
 		}
 
-		int r = strnatcmp(last_name[0], last_name[1]); // Sort by name (natural sorting).
+		int r = StrNaturalCompare(last_name[0], last_name[1]); // Sort by name (natural sorting).
 		if (r == 0) return a->index < b->index;
 		return r < 0;
 	}
@@ -1333,81 +1333,81 @@ static const NWidgetPart _nested_select_company_manager_face_widgets[] = {
 						NWidget(NWID_SPACER), SetMinimalSize(0, 4),
 						NWidget(NWID_HORIZONTAL),
 							NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCMF_HAS_MOUSTACHE_EARRING_TEXT), SetFill(1, 0), SetPadding(WidgetDimensions::unscaled.framerect),
-								SetDataTip(STR_FACE_EYECOLOUR, STR_NULL), SetTextColour(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
+								SetDataTip(STR_FACE_EYECOLOUR, STR_NULL), SetTextStyle(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
 							NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_HAS_MOUSTACHE_EARRING), SetDataTip(STR_WHITE_STRING, STR_FACE_MOUSTACHE_EARRING_TOOLTIP),
 						EndContainer(),
 						NWidget(NWID_HORIZONTAL),
 							NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCMF_HAS_GLASSES_TEXT), SetFill(1, 0), SetPadding(WidgetDimensions::unscaled.framerect),
-								SetDataTip(STR_FACE_GLASSES, STR_NULL), SetTextColour(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
+								SetDataTip(STR_FACE_GLASSES, STR_NULL), SetTextStyle(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
 							NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_HAS_GLASSES), SetDataTip(STR_WHITE_STRING, STR_FACE_GLASSES_TOOLTIP),
 						EndContainer(),
 						NWidget(NWID_SPACER), SetMinimalSize(0, 2), SetFill(1, 0),
 						NWidget(NWID_HORIZONTAL),
 							NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCMF_HAIR_TEXT), SetFill(1, 0), SetPadding(WidgetDimensions::unscaled.framerect),
-								SetDataTip(STR_FACE_HAIR, STR_NULL), SetTextColour(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
+								SetDataTip(STR_FACE_HAIR, STR_NULL), SetTextStyle(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
 							NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_HAIR_L), SetDataTip(AWV_DECREASE, STR_FACE_HAIR_TOOLTIP),
 							NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_HAIR), SetDataTip(STR_WHITE_STRING, STR_FACE_HAIR_TOOLTIP),
 							NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_HAIR_R), SetDataTip(AWV_INCREASE, STR_FACE_HAIR_TOOLTIP),
 						EndContainer(),
 						NWidget(NWID_HORIZONTAL),
 							NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCMF_EYEBROWS_TEXT), SetFill(1, 0), SetPadding(WidgetDimensions::unscaled.framerect),
-								SetDataTip(STR_FACE_EYEBROWS, STR_NULL), SetTextColour(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
+								SetDataTip(STR_FACE_EYEBROWS, STR_NULL), SetTextStyle(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
 							NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_EYEBROWS_L), SetDataTip(AWV_DECREASE, STR_FACE_EYEBROWS_TOOLTIP),
 							NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_EYEBROWS), SetDataTip(STR_WHITE_STRING, STR_FACE_EYEBROWS_TOOLTIP),
 							NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_EYEBROWS_R), SetDataTip(AWV_INCREASE, STR_FACE_EYEBROWS_TOOLTIP),
 						EndContainer(),
 						NWidget(NWID_HORIZONTAL),
 							NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCMF_EYECOLOUR_TEXT), SetFill(1, 0), SetPadding(WidgetDimensions::unscaled.framerect),
-								SetDataTip(STR_FACE_EYECOLOUR, STR_NULL), SetTextColour(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
+								SetDataTip(STR_FACE_EYECOLOUR, STR_NULL), SetTextStyle(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
 							NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_EYECOLOUR_L), SetDataTip(AWV_DECREASE, STR_FACE_EYECOLOUR_TOOLTIP),
 							NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_EYECOLOUR), SetDataTip(STR_WHITE_STRING, STR_FACE_EYECOLOUR_TOOLTIP),
 							NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_EYECOLOUR_R), SetDataTip(AWV_INCREASE, STR_FACE_EYECOLOUR_TOOLTIP),
 						EndContainer(),
 						NWidget(NWID_HORIZONTAL),
 							NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCMF_GLASSES_TEXT), SetFill(1, 0), SetPadding(WidgetDimensions::unscaled.framerect),
-								SetDataTip(STR_FACE_GLASSES, STR_NULL), SetTextColour(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
+								SetDataTip(STR_FACE_GLASSES, STR_NULL), SetTextStyle(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
 							NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_GLASSES_L), SetDataTip(AWV_DECREASE, STR_FACE_GLASSES_TOOLTIP_2),
 							NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_GLASSES), SetDataTip(STR_WHITE_STRING, STR_FACE_GLASSES_TOOLTIP_2),
 							NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_GLASSES_R), SetDataTip(AWV_INCREASE, STR_FACE_GLASSES_TOOLTIP_2),
 						EndContainer(),
 						NWidget(NWID_HORIZONTAL),
 							NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCMF_NOSE_TEXT), SetFill(1, 0),  SetPadding(WidgetDimensions::unscaled.framerect),
-								SetDataTip(STR_FACE_NOSE, STR_NULL), SetTextColour(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
+								SetDataTip(STR_FACE_NOSE, STR_NULL), SetTextStyle(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
 							NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_NOSE_L), SetDataTip(AWV_DECREASE, STR_FACE_NOSE_TOOLTIP),
 							NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_NOSE), SetDataTip(STR_WHITE_STRING, STR_FACE_NOSE_TOOLTIP),
 							NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_NOSE_R), SetDataTip(AWV_INCREASE, STR_FACE_NOSE_TOOLTIP),
 						EndContainer(),
 						NWidget(NWID_HORIZONTAL),
 							NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCMF_LIPS_MOUSTACHE_TEXT), SetFill(1, 0), SetPadding(WidgetDimensions::unscaled.framerect),
-								SetDataTip(STR_FACE_MOUSTACHE, STR_NULL), SetTextColour(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
+								SetDataTip(STR_FACE_MOUSTACHE, STR_NULL), SetTextStyle(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
 							NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_LIPS_MOUSTACHE_L), SetDataTip(AWV_DECREASE, STR_FACE_LIPS_MOUSTACHE_TOOLTIP),
 							NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_LIPS_MOUSTACHE), SetDataTip(STR_WHITE_STRING, STR_FACE_LIPS_MOUSTACHE_TOOLTIP),
 							NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_LIPS_MOUSTACHE_R), SetDataTip(AWV_INCREASE, STR_FACE_LIPS_MOUSTACHE_TOOLTIP),
 						EndContainer(),
 						NWidget(NWID_HORIZONTAL),
 							NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCMF_CHIN_TEXT), SetFill(1, 0), SetPadding(WidgetDimensions::unscaled.framerect),
-								SetDataTip(STR_FACE_CHIN, STR_NULL), SetTextColour(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
+								SetDataTip(STR_FACE_CHIN, STR_NULL), SetTextStyle(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
 							NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_CHIN_L), SetDataTip(AWV_DECREASE, STR_FACE_CHIN_TOOLTIP),
 							NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_CHIN), SetDataTip(STR_WHITE_STRING, STR_FACE_CHIN_TOOLTIP),
 							NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_CHIN_R), SetDataTip(AWV_INCREASE, STR_FACE_CHIN_TOOLTIP),
 						EndContainer(),
 						NWidget(NWID_HORIZONTAL),
 							NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCMF_JACKET_TEXT), SetFill(1, 0), SetPadding(WidgetDimensions::unscaled.framerect),
-								SetDataTip(STR_FACE_JACKET, STR_NULL), SetTextColour(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
+								SetDataTip(STR_FACE_JACKET, STR_NULL), SetTextStyle(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
 							NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_JACKET_L), SetDataTip(AWV_DECREASE, STR_FACE_JACKET_TOOLTIP),
 							NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_JACKET), SetDataTip(STR_WHITE_STRING, STR_FACE_JACKET_TOOLTIP),
 							NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_JACKET_R), SetDataTip(AWV_INCREASE, STR_FACE_JACKET_TOOLTIP),
 						EndContainer(),
 						NWidget(NWID_HORIZONTAL),
 							NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCMF_COLLAR_TEXT), SetFill(1, 0), SetPadding(WidgetDimensions::unscaled.framerect),
-								SetDataTip(STR_FACE_COLLAR, STR_NULL), SetTextColour(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
+								SetDataTip(STR_FACE_COLLAR, STR_NULL), SetTextStyle(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
 							NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_COLLAR_L), SetDataTip(AWV_DECREASE, STR_FACE_COLLAR_TOOLTIP),
 							NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_COLLAR), SetDataTip(STR_WHITE_STRING, STR_FACE_COLLAR_TOOLTIP),
 							NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_COLLAR_R), SetDataTip(AWV_INCREASE, STR_FACE_COLLAR_TOOLTIP),
 						EndContainer(),
 						NWidget(NWID_HORIZONTAL),
 							NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCMF_TIE_EARRING_TEXT), SetFill(1, 0), SetPadding(WidgetDimensions::unscaled.framerect),
-								SetDataTip(STR_FACE_EARRING, STR_NULL), SetTextColour(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
+								SetDataTip(STR_FACE_EARRING, STR_NULL), SetTextStyle(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
 							NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_TIE_EARRING_L), SetDataTip(AWV_DECREASE, STR_FACE_TIE_EARRING_TOOLTIP),
 							NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_TIE_EARRING), SetDataTip(STR_WHITE_STRING, STR_FACE_TIE_EARRING_TOOLTIP),
 							NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_TIE_EARRING_R), SetDataTip(AWV_INCREASE, STR_FACE_TIE_EARRING_TOOLTIP),
@@ -2311,13 +2311,6 @@ static const NWidgetPart _nested_company_widgets[] = {
 					EndContainer(),
 				EndContainer(),
 				NWidget(NWID_HORIZONTAL),
-					NWidget(NWID_SELECTION, INVALID_COLOUR, WID_C_SELECT_DESC_OWNERS),
-						NWidget(NWID_VERTICAL), SetPIP(5, 5, 4),
-							NWidget(WWT_EMPTY, INVALID_COLOUR, WID_C_DESC_OWNERS), SetMinimalTextLines(MAX_COMPANY_SHARE_OWNERS, 0),
-							NWidget(NWID_SPACER), SetFill(0, 1),
-						EndContainer(),
-					EndContainer(),
-					NWidget(NWID_SPACER), SetFill(1, 0),
 					NWidget(NWID_SELECTION, INVALID_COLOUR, WID_C_SELECT_GIVE_MONEY),
 						NWidget(NWID_VERTICAL),
 							NWidget(NWID_SPACER), SetFill(0, 1), SetMinimalSize(90, 0),
@@ -2353,20 +2346,8 @@ static const NWidgetPart _nested_company_widgets[] = {
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_C_PRESIDENT_NAME), SetFill(1, 0), SetDataTip(STR_COMPANY_VIEW_PRESIDENT_NAME_BUTTON, STR_COMPANY_VIEW_PRESIDENT_NAME_TOOLTIP),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_C_COMPANY_NAME), SetFill(1, 0), SetDataTip(STR_COMPANY_VIEW_COMPANY_NAME_BUTTON, STR_COMPANY_VIEW_COMPANY_NAME_TOOLTIP),
 		EndContainer(),
-		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_C_BUY_SHARE), SetFill(1, 0), SetDataTip(STR_COMPANY_VIEW_BUY_SHARE_BUTTON, STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_C_SELL_SHARE), SetFill(1, 0), SetDataTip(STR_COMPANY_VIEW_SELL_SHARE_BUTTON, STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP),
-		EndContainer(),
 	EndContainer(),
 };
-
-int GetAmountOwnedBy(const Company *c, Owner owner)
-{
-	return (c->share_owners[0] == owner) +
-				 (c->share_owners[1] == owner) +
-				 (c->share_owners[2] == owner) +
-				 (c->share_owners[3] == owner);
-}
 
 /** Strings for the company vehicle counts */
 static const StringID _company_view_vehicle_count_strings[] = {
@@ -2393,10 +2374,6 @@ struct CompanyWindow : Window
 		/* Display planes of the #WID_C_SELECT_RELOCATE selection widget. */
 		CWP_RELOCATE_SHOW = 0, ///< Show the relocate HQ button.
 		CWP_RELOCATE_HIDE,     ///< Hide the relocate HQ button.
-
-		/* Display planes of the #WID_C_SELECT_BUTTONS selection widget. */
-		CWP_BUTTONS_LOCAL = 0, ///< Buttons of the local company.
-		CWP_BUTTONS_OTHER,     ///< Buttons of the other companies.
 	};
 
 	CompanyWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
@@ -2415,7 +2392,7 @@ struct CompanyWindow : Window
 			bool reinit = false;
 
 			/* Button bar selection. */
-			int plane = local ? CWP_BUTTONS_LOCAL : CWP_BUTTONS_OTHER;
+			int plane = local ? 0 : SZSP_NONE;
 			NWidgetStacked *wi = this->GetWidget<NWidgetStacked>(WID_C_SELECT_BUTTONS);
 			if (plane != wi->shown_plane) {
 				wi->SetDisplayedPlane(plane);
@@ -2436,20 +2413,6 @@ struct CompanyWindow : Window
 			/* Enable/disable 'Relocate HQ' button. */
 			plane = (!local || c->location_of_HQ == INVALID_TILE) ? CWP_RELOCATE_HIDE : CWP_RELOCATE_SHOW;
 			wi = this->GetWidget<NWidgetStacked>(WID_C_SELECT_RELOCATE);
-			if (plane != wi->shown_plane) {
-				wi->SetDisplayedPlane(plane);
-				reinit = true;
-			}
-
-			/* Owners of company */
-			plane = SZSP_HORIZONTAL;
-			for (uint i = 0; i < lengthof(c->share_owners); i++) {
-				if (c->share_owners[i] != INVALID_COMPANY) {
-					plane = 0;
-					break;
-				}
-			}
-			wi = this->GetWidget<NWidgetStacked>(WID_C_SELECT_DESC_OWNERS);
 			if (plane != wi->shown_plane) {
 				wi->SetDisplayedPlane(plane);
 				reinit = true;
@@ -2521,16 +2484,6 @@ struct CompanyWindow : Window
 				size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_VIEW_INFRASTRUCTURE_AIRPORT).width);
 				size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_VIEW_INFRASTRUCTURE_NONE).width);
 				break;
-
-			case WID_C_DESC_OWNERS: {
-				for (const Company *c2 : Company::Iterate()) {
-					SetDParamMaxValue(0, 75);
-					SetDParam(1, c2->index);
-
-					size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_VIEW_SHARES_OWNED_BY).width);
-				}
-				break;
-			}
 
 			case WID_C_VIEW_HQ:
 			case WID_C_BUILD_HQ:
@@ -2646,22 +2599,6 @@ struct CompanyWindow : Window
 				DrawInfrastructureCountsWidget(r, c);
 				break;
 
-			case WID_C_DESC_OWNERS: {
-				uint y = r.top;
-
-				for (const Company *c2 : Company::Iterate()) {
-					uint amt = GetAmountOwnedBy(c, c2->index);
-					if (amt != 0) {
-						SetDParam(0, amt * 25);
-						SetDParam(1, c2->index);
-
-						DrawString(r.left, r.right, y, STR_COMPANY_VIEW_SHARES_OWNED_BY);
-						y += FONT_HEIGHT_NORMAL;
-					}
-				}
-				break;
-			}
-
 			case WID_C_HAS_PASSWORD:
 				if (_networking && NetworkCompanyIsPassworded(c->index)) {
 					DrawSprite(SPR_LOCK, PAL_NONE, r.left, r.top);
@@ -2753,14 +2690,6 @@ struct CompanyWindow : Window
 				ShowQueryString(STR_EMPTY, STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION, 30, this, CS_NUMERAL, QSF_NONE);
 				break;
 
-			case WID_C_BUY_SHARE:
-				DoCommandP(0, this->window_number, 0, CMD_BUY_SHARE_IN_COMPANY | CMD_MSG(STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS));
-				break;
-
-			case WID_C_SELL_SHARE:
-				DoCommandP(0, this->window_number, 0, CMD_SELL_SHARE_IN_COMPANY | CMD_MSG(STR_ERROR_CAN_T_SELL_25_SHARE_IN));
-				break;
-
 			case WID_C_COMPANY_PASSWORD:
 				if (this->window_number == _local_company) ShowNetworkCompanyPasswordWindow(this);
 				break;
@@ -2824,36 +2753,6 @@ struct CompanyWindow : Window
 			case WID_C_COMPANY_JOIN:
 				NetworkClientRequestMove((CompanyID)this->window_number, str);
 				break;
-		}
-	}
-
-
-	/**
-	 * Some data on this window has become invalid.
-	 * @param data Information about the changed data.
-	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
-	 */
-	void OnInvalidateData(int data = 0, bool gui_scope = true) override
-	{
-		if (this->window_number == _local_company) return;
-
-		if (_settings_game.economy.allow_shares) { // Shares are allowed
-			const Company *c = Company::Get(this->window_number);
-
-			/* If all shares are owned by someone (none by nobody), disable buy button */
-			this->SetWidgetDisabledState(WID_C_BUY_SHARE, GetAmountOwnedBy(c, INVALID_OWNER) == 0 ||
-					/* Only 25% left to buy. If the company is human, disable buying it up.. TODO issues! */
-					(GetAmountOwnedBy(c, INVALID_OWNER) == 1 && !c->is_ai) ||
-					/* Spectators cannot do anything of course */
-					_local_company == COMPANY_SPECTATOR);
-
-			/* If the company doesn't own any shares, disable sell button */
-			this->SetWidgetDisabledState(WID_C_SELL_SHARE, (GetAmountOwnedBy(c, _local_company) == 0) ||
-					/* Spectators cannot do anything of course */
-					_local_company == COMPANY_SPECTATOR);
-		} else { // Shares are not allowed, disable buy/sell buttons
-			this->DisableWidget(WID_C_BUY_SHARE);
-			this->DisableWidget(WID_C_SELL_SHARE);
 		}
 	}
 };

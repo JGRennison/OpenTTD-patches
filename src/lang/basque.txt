@@ -128,39 +128,39 @@ STR_QUANTITY_N_A                                                :N/A
 
 # Two letter abbreviation of cargo name
 STR_ABBREV_NOTHING                                              :
-STR_ABBREV_PASSENGERS                                           :{TINY_FONT}BD
-STR_ABBREV_COAL                                                 :{TINY_FONT}ITZ
-STR_ABBREV_MAIL                                                 :{TINY_FONT}PT
-STR_ABBREV_OIL                                                  :{TINY_FONT}PR
-STR_ABBREV_LIVESTOCK                                            :{TINY_FONT}A
-STR_ABBREV_GOODS                                                :{TINY_FONT}MT
-STR_ABBREV_GRAIN                                                :{TINY_FONT}GA
-STR_ABBREV_WOOD                                                 :{TINY_FONT}EG
-STR_ABBREV_IRON_ORE                                             :{TINY_FONT}MA
-STR_ABBREV_STEEL                                                :{TINY_FONT}AT
-STR_ABBREV_VALUABLES                                            :{TINY_FONT}BO
-STR_ABBREV_COPPER_ORE                                           :{TINY_FONT}KM
-STR_ABBREV_MAIZE                                                :{TINY_FONT}AR
-STR_ABBREV_FRUIT                                                :{TINY_FONT}FT
-STR_ABBREV_DIAMONDS                                             :{TINY_FONT}DM
-STR_ABBREV_FOOD                                                 :{TINY_FONT}JN
-STR_ABBREV_PAPER                                                :{TINY_FONT}PR
-STR_ABBREV_GOLD                                                 :{TINY_FONT}UE
-STR_ABBREV_WATER                                                :{TINY_FONT}UR
-STR_ABBREV_WHEAT                                                :{TINY_FONT}GI
-STR_ABBREV_RUBBER                                               :{TINY_FONT}GM
-STR_ABBREV_SUGAR                                                :{TINY_FONT}AZ
-STR_ABBREV_TOYS                                                 :{TINY_FONT}JS
-STR_ABBREV_SWEETS                                               :{TINY_FONT}GZ
-STR_ABBREV_COLA                                                 :{TINY_FONT}KL
-STR_ABBREV_CANDYFLOSS                                           :{TINY_FONT}PL
-STR_ABBREV_BUBBLES                                              :{TINY_FONT}BR
-STR_ABBREV_TOFFEE                                               :{TINY_FONT}TF
-STR_ABBREV_BATTERIES                                            :{TINY_FONT}PI
-STR_ABBREV_PLASTIC                                              :{TINY_FONT}PL
-STR_ABBREV_FIZZY_DRINKS                                         :{TINY_FONT}EB
-STR_ABBREV_NONE                                                 :{TINY_FONT}EZ
-STR_ABBREV_ALL                                                  :{TINY_FONT}DEN
+STR_ABBREV_PASSENGERS                                           :BD
+STR_ABBREV_COAL                                                 :ITZ
+STR_ABBREV_MAIL                                                 :PT
+STR_ABBREV_OIL                                                  :PR
+STR_ABBREV_LIVESTOCK                                            :A
+STR_ABBREV_GOODS                                                :MT
+STR_ABBREV_GRAIN                                                :GA
+STR_ABBREV_WOOD                                                 :EG
+STR_ABBREV_IRON_ORE                                             :MA
+STR_ABBREV_STEEL                                                :AT
+STR_ABBREV_VALUABLES                                            :BO
+STR_ABBREV_COPPER_ORE                                           :KM
+STR_ABBREV_MAIZE                                                :AR
+STR_ABBREV_FRUIT                                                :FT
+STR_ABBREV_DIAMONDS                                             :DM
+STR_ABBREV_FOOD                                                 :JN
+STR_ABBREV_PAPER                                                :PR
+STR_ABBREV_GOLD                                                 :UE
+STR_ABBREV_WATER                                                :UR
+STR_ABBREV_WHEAT                                                :GI
+STR_ABBREV_RUBBER                                               :GM
+STR_ABBREV_SUGAR                                                :AZ
+STR_ABBREV_TOYS                                                 :JS
+STR_ABBREV_SWEETS                                               :GZ
+STR_ABBREV_COLA                                                 :KL
+STR_ABBREV_CANDYFLOSS                                           :PL
+STR_ABBREV_BUBBLES                                              :BR
+STR_ABBREV_TOFFEE                                               :TF
+STR_ABBREV_BATTERIES                                            :PI
+STR_ABBREV_PLASTIC                                              :PL
+STR_ABBREV_FIZZY_DRINKS                                         :EB
+STR_ABBREV_NONE                                                 :EZ
+STR_ABBREV_ALL                                                  :DEN
 
 # 'Mode' of transport for cargoes
 STR_PASSENGERS                                                  :{COMMA}{NBSP}bidaiari{P "" ak}
@@ -1602,11 +1602,6 @@ STR_CONFIG_SETTING_ENDING_YEAR_VALUE                            :{NUM}
 ###setting-zero-is-special
 
 ###length 3
-
-STR_CONFIG_SETTING_ALLOW_SHARES                                 :Beste konpainien akzioak erostea baimendu: {STRING}
-STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Gaitua dagoenean, konpainiaren akzioak erostea eta saltzea baimendu. Konpainiak akzioak izateko gutxiengo adin batera iritsi beharko dira
-
-###setting-zero-is-special
 
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :Elikadura sistemetan ordaindu beharreko irabazien ehunekoa: {STRING}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :Elikadura sistemetan eman beharreko irabazien ehunekoa, irabaziengain kontrol gehiago emanez
@@ -3209,7 +3204,6 @@ STR_COMPANY_VIEW_AIRCRAFT                                       :{WHITE}{COMMA} 
 STR_COMPANY_VIEW_SHIPS                                          :{WHITE}{COMMA} itsasontzi
 STR_COMPANY_VIEW_VEHICLES_NONE                                  :{WHITE}Ezer ez
 STR_COMPANY_VIEW_COMPANY_VALUE                                  :{GOLD}Konpainiaren balioa: {WHITE}{CURRENCY_LONG}
-STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}(%{COMMA} konpainia honek erosi du: {COMPANY})
 STR_COMPANY_VIEW_INFRASTRUCTURE                                 :{GOLD}Azpiegiturak:
 STR_COMPANY_VIEW_INFRASTRUCTURE_RAIL                            :{WHITE}{COMMA} trenbide kopuru
 STR_COMPANY_VIEW_INFRASTRUCTURE_ROAD                            :{WHITE}{COMMA} errepide sail kopuru
@@ -3235,11 +3229,6 @@ STR_COMPANY_VIEW_COMPANY_NAME_BUTTON                            :{BLACK}Konpaini
 STR_COMPANY_VIEW_COMPANY_NAME_TOOLTIP                           :{BLACK}Konpainiaren izena aldatu
 STR_COMPANY_VIEW_PRESIDENT_NAME_BUTTON                          :{BLACK}Lehendakariaren izena
 STR_COMPANY_VIEW_PRESIDENT_NAME_TOOLTIP                         :{BLACK}Lehendakariaren izena aldatu
-
-STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Konpainiaren akzioen %25a erosi
-STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Konpainiaren akzioen %25a saldu
-STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Konpainiaren akzioen %25a erosi. Shift+Klik gutxi gora beherako kostea erakutsi
-STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Konpainiaren akzioen %25a saldu. Shift+Klik gutxi gora beherako irabaziak erakutsi
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Konpainiaren izena
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Lehendakariaren izena
@@ -4163,9 +4152,6 @@ STR_ERROR_CAN_T_REPAY_LOAN                                      :{WHITE}Ezin da 
 STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}Ezin da mailegatutako dirua eman...
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Ezin da konpainia erosi...
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Ezin izan da konpainiaren egoitza eraiki...
-STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Ezin izan da konpainiaren akzioen %25a erosi...
-STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Ezin izan da konpainiaren akzioen %25a saldu...
-STR_ERROR_PROTECTED                                             :{WHITE}Konpainia gazteegia da akzioak izateko...
 
 # Town related errors
 STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Ezin izan da herririk sortu

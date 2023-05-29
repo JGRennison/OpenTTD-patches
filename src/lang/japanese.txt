@@ -128,39 +128,39 @@ STR_QUANTITY_N_A                                                :N/A
 
 # Two letter abbreviation of cargo name
 STR_ABBREV_NOTHING                                              :
-STR_ABBREV_PASSENGERS                                           :{TINY_FONT}客
-STR_ABBREV_COAL                                                 :{TINY_FONT}炭
-STR_ABBREV_MAIL                                                 :{TINY_FONT}郵
-STR_ABBREV_OIL                                                  :{TINY_FONT}油
-STR_ABBREV_LIVESTOCK                                            :{TINY_FONT}飼
-STR_ABBREV_GOODS                                                :{TINY_FONT}品
-STR_ABBREV_GRAIN                                                :{TINY_FONT}穀
-STR_ABBREV_WOOD                                                 :{TINY_FONT}木
-STR_ABBREV_IRON_ORE                                             :{TINY_FONT}鉄
-STR_ABBREV_STEEL                                                :{TINY_FONT}鋼
-STR_ABBREV_VALUABLES                                            :{TINY_FONT}貴
-STR_ABBREV_COPPER_ORE                                           :{TINY_FONT}銅
-STR_ABBREV_MAIZE                                                :{TINY_FONT}黍
-STR_ABBREV_FRUIT                                                :{TINY_FONT}果
-STR_ABBREV_DIAMONDS                                             :{TINY_FONT}宝
-STR_ABBREV_FOOD                                                 :{TINY_FONT}食
-STR_ABBREV_PAPER                                                :{TINY_FONT}紙
-STR_ABBREV_GOLD                                                 :{TINY_FONT}金
-STR_ABBREV_WATER                                                :{TINY_FONT}水
-STR_ABBREV_WHEAT                                                :{TINY_FONT}麦
-STR_ABBREV_RUBBER                                               :{TINY_FONT}ゴ
-STR_ABBREV_SUGAR                                                :{TINY_FONT}糖
-STR_ABBREV_TOYS                                                 :{TINY_FONT}玩
-STR_ABBREV_SWEETS                                               :{TINY_FONT}菓
-STR_ABBREV_COLA                                                 :{TINY_FONT}コ
-STR_ABBREV_CANDYFLOSS                                           :{TINY_FONT}わ
-STR_ABBREV_BUBBLES                                              :{TINY_FONT}泡
-STR_ABBREV_TOFFEE                                               :{TINY_FONT}タ
-STR_ABBREV_BATTERIES                                            :{TINY_FONT}電
-STR_ABBREV_PLASTIC                                              :{TINY_FONT}プ
-STR_ABBREV_FIZZY_DRINKS                                         :{TINY_FONT}ソ
-STR_ABBREV_NONE                                                 :{TINY_FONT}無
-STR_ABBREV_ALL                                                  :{TINY_FONT}全
+STR_ABBREV_PASSENGERS                                           :客
+STR_ABBREV_COAL                                                 :炭
+STR_ABBREV_MAIL                                                 :郵
+STR_ABBREV_OIL                                                  :油
+STR_ABBREV_LIVESTOCK                                            :飼
+STR_ABBREV_GOODS                                                :品
+STR_ABBREV_GRAIN                                                :穀
+STR_ABBREV_WOOD                                                 :木
+STR_ABBREV_IRON_ORE                                             :鉄
+STR_ABBREV_STEEL                                                :鋼
+STR_ABBREV_VALUABLES                                            :貴
+STR_ABBREV_COPPER_ORE                                           :銅
+STR_ABBREV_MAIZE                                                :黍
+STR_ABBREV_FRUIT                                                :果
+STR_ABBREV_DIAMONDS                                             :宝
+STR_ABBREV_FOOD                                                 :食
+STR_ABBREV_PAPER                                                :紙
+STR_ABBREV_GOLD                                                 :金
+STR_ABBREV_WATER                                                :水
+STR_ABBREV_WHEAT                                                :麦
+STR_ABBREV_RUBBER                                               :ゴ
+STR_ABBREV_SUGAR                                                :糖
+STR_ABBREV_TOYS                                                 :玩
+STR_ABBREV_SWEETS                                               :菓
+STR_ABBREV_COLA                                                 :コ
+STR_ABBREV_CANDYFLOSS                                           :わ
+STR_ABBREV_BUBBLES                                              :泡
+STR_ABBREV_TOFFEE                                               :タ
+STR_ABBREV_BATTERIES                                            :電
+STR_ABBREV_PLASTIC                                              :プ
+STR_ABBREV_FIZZY_DRINKS                                         :ソ
+STR_ABBREV_NONE                                                 :無
+STR_ABBREV_ALL                                                  :全
 
 # 'Mode' of transport for cargoes
 STR_PASSENGERS                                                  :{COMMA}人
@@ -1798,13 +1798,6 @@ STR_CONFIG_SETTING_ECONOMY_TYPE_HELPTEXT                        :なだらかな
 STR_CONFIG_SETTING_ECONOMY_TYPE_ORIGINAL                        :オリジナル
 STR_CONFIG_SETTING_ECONOMY_TYPE_SMOOTH                          :なだらか
 STR_CONFIG_SETTING_ECONOMY_TYPE_FROZEN                          :固定
-
-STR_CONFIG_SETTING_ALLOW_SHARES                                 :他社株の取引許容: {STRING}
-STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :有効にすると、ライバル会社の株式を取引できるようになります。この設定を有効にしても、目的の社が設立から丸5年経過していない場合は取引できません
-
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :株式を取引するための最低会社年齢：{STRING}
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :他の人が彼らから株式を売買できるように、会社の最低年齢を設定します。
-###setting-zero-is-special
 
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :区間払いの割合: {STRING}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :転送を行う輸送網(フィーダーシステム)を構築した場合、中継地点までの輸送で総輸送費の何%を受け取れるかを設定します(転送時に予想される最終輸送費から仮に部分払いし、最終的に貨物が目的地に到着した時点で清算します)。転送元の輸送機器が赤字になるのを防ぎます
@@ -3700,7 +3693,6 @@ STR_COMPANY_VIEW_AIRCRAFT                                       :{WHITE}　航�
 STR_COMPANY_VIEW_SHIPS                                          :{WHITE}　船舶 {COMMA}隻
 STR_COMPANY_VIEW_VEHICLES_NONE                                  :{WHITE}　なし
 STR_COMPANY_VIEW_COMPANY_VALUE                                  :{GOLD}総資産: {WHITE}{CURRENCY_LONG}
-STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({1:COMPANY}が株式の{0:COMMA}%を保有)
 STR_COMPANY_VIEW_INFRASTRUCTURE                                 :{GOLD}インフラ設備:
 STR_COMPANY_VIEW_INFRASTRUCTURE_RAIL                            :{WHITE}　線路 {COMMA}タイル
 STR_COMPANY_VIEW_INFRASTRUCTURE_ROAD                            :{WHITE}　道路 {COMMA}タイル
@@ -3728,11 +3720,6 @@ STR_COMPANY_VIEW_COMPANY_NAME_BUTTON                            :{BLACK}会社�
 STR_COMPANY_VIEW_COMPANY_NAME_TOOLTIP                           :{BLACK}会社名を変更します
 STR_COMPANY_VIEW_PRESIDENT_NAME_BUTTON                          :{BLACK}社長名
 STR_COMPANY_VIEW_PRESIDENT_NAME_TOOLTIP                         :{BLACK}社長の名前を変更します
-
-STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}会社株の25%を買収
-STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}会社株の25%を売却
-STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}この会社の株式の25%を購入します。Shift+クリックで費用を見積もります
-STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}この会社の株式の25%を売却します。Shift+クリックで売却価格の見積が出ます
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :会社名
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :社長名
@@ -4760,9 +4747,6 @@ STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}借入�
 STR_ERROR_CAN_T_GIVE_MONEY                                      :{WHITE}この会社にお金を渡すことはできません...
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}会社を買収できません
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}会社の本社ビルを建設できません
-STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}この会社の株を25%購入できません
-STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}この会社の株を25%売却できません
-STR_ERROR_PROTECTED                                             :{WHITE}この会社は開設から6年が経過していません
 
 # Town related errors
 STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}街を開設できません

@@ -257,7 +257,7 @@ static const NWidgetPart _nested_heightmap_load_widgets[] = {
 			EndContainer(),
 			/* All other columns. */
 			NWidget(NWID_VERTICAL), SetPIP(0, 4, 0),
-				NWidget(WWT_TEXT, COLOUR_ORANGE, WID_GL_HEIGHTMAP_NAME_TEXT), SetTextColour(TC_ORANGE), SetDataTip(STR_JUST_RAW_STRING, STR_EMPTY), SetFill(1, 0),
+				NWidget(WWT_TEXT, COLOUR_ORANGE, WID_GL_HEIGHTMAP_NAME_TEXT), SetTextStyle(TC_ORANGE), SetDataTip(STR_JUST_RAW_STRING, STR_EMPTY), SetFill(1, 0),
 				NWidget(NWID_HORIZONTAL), SetPIP(0, 5, 0),
 					/* Left half widgets (global column 2) */
 					NWidget(NWID_VERTICAL, NC_EQUALSIZE), SetPIP(0, 4, 0),
@@ -454,7 +454,7 @@ struct GenerateLandscapeWindow : public Window {
 	uint widget_id;
 	uint x;
 	uint y;
-	char name[64];
+	std::string name;
 	GenerateLandscapeWindowMode mode;
 
 	void SetDropDownColor()
@@ -1189,7 +1189,7 @@ static void _ShowGenerateLandscape(GenerateLandscapeWindowMode mode)
 	if (mode == GLWM_HEIGHTMAP) {
 		w->x = x;
 		w->y = y;
-		strecpy(w->name, _file_to_saveload.title, lastof(w->name));
+		w->name = _file_to_saveload.title;
 	}
 
 	SetWindowDirty(WC_GENERATE_LANDSCAPE, mode);

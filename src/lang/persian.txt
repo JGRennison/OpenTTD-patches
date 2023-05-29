@@ -128,39 +128,39 @@ STR_QUANTITY_N_A                                                :N/A
 
 # Two letter abbreviation of cargo name
 STR_ABBREV_NOTHING                                              :
-STR_ABBREV_PASSENGERS                                           :{TINY_FONT}PS
-STR_ABBREV_COAL                                                 :{TINY_FONT}زس
-STR_ABBREV_MAIL                                                 :{TINY_FONT}ML
-STR_ABBREV_OIL                                                  :{TINY_FONT}OL
-STR_ABBREV_LIVESTOCK                                            :{TINY_FONT}LV
-STR_ABBREV_GOODS                                                :{TINY_FONT}GD
-STR_ABBREV_GRAIN                                                :{TINY_FONT}GR
-STR_ABBREV_WOOD                                                 :{TINY_FONT}چوب
-STR_ABBREV_IRON_ORE                                             :{TINY_FONT}OR
-STR_ABBREV_STEEL                                                :{TINY_FONT}ST
-STR_ABBREV_VALUABLES                                            :{TINY_FONT}قیمتی ها
-STR_ABBREV_COPPER_ORE                                           :{TINY_FONT}CO
-STR_ABBREV_MAIZE                                                :{TINY_FONT}MZ
-STR_ABBREV_FRUIT                                                :{TINY_FONT}FT
-STR_ABBREV_DIAMONDS                                             :{TINY_FONT}DM
-STR_ABBREV_FOOD                                                 :{TINY_FONT}FD
-STR_ABBREV_PAPER                                                :{TINY_FONT}PR
-STR_ABBREV_GOLD                                                 :{TINY_FONT}GD
-STR_ABBREV_WATER                                                :{TINY_FONT}آب
-STR_ABBREV_WHEAT                                                :{TINY_FONT}گندم
-STR_ABBREV_RUBBER                                               :{TINY_FONT}RB
-STR_ABBREV_SUGAR                                                :{TINY_FONT}شکر
-STR_ABBREV_TOYS                                                 :{TINY_FONT}اسباب بازی
-STR_ABBREV_SWEETS                                               :{TINY_FONT}شیرینی
-STR_ABBREV_COLA                                                 :{TINY_FONT}CL
-STR_ABBREV_CANDYFLOSS                                           :{TINY_FONT}CF
-STR_ABBREV_BUBBLES                                              :{TINY_FONT}BU
-STR_ABBREV_TOFFEE                                               :{TINY_FONT}آبنبات
-STR_ABBREV_BATTERIES                                            :{TINY_FONT}BA
-STR_ABBREV_PLASTIC                                              :{TINY_FONT}PL
-STR_ABBREV_FIZZY_DRINKS                                         :{TINY_FONT}FZ
-STR_ABBREV_NONE                                                 :{TINY_FONT}NO
-STR_ABBREV_ALL                                                  :{TINY_FONT}همه
+STR_ABBREV_PASSENGERS                                           :PS
+STR_ABBREV_COAL                                                 :زس
+STR_ABBREV_MAIL                                                 :ML
+STR_ABBREV_OIL                                                  :OL
+STR_ABBREV_LIVESTOCK                                            :LV
+STR_ABBREV_GOODS                                                :GD
+STR_ABBREV_GRAIN                                                :GR
+STR_ABBREV_WOOD                                                 :چوب
+STR_ABBREV_IRON_ORE                                             :OR
+STR_ABBREV_STEEL                                                :ST
+STR_ABBREV_VALUABLES                                            :قیمتی ها
+STR_ABBREV_COPPER_ORE                                           :CO
+STR_ABBREV_MAIZE                                                :MZ
+STR_ABBREV_FRUIT                                                :FT
+STR_ABBREV_DIAMONDS                                             :DM
+STR_ABBREV_FOOD                                                 :FD
+STR_ABBREV_PAPER                                                :PR
+STR_ABBREV_GOLD                                                 :GD
+STR_ABBREV_WATER                                                :آب
+STR_ABBREV_WHEAT                                                :گندم
+STR_ABBREV_RUBBER                                               :RB
+STR_ABBREV_SUGAR                                                :شکر
+STR_ABBREV_TOYS                                                 :اسباب بازی
+STR_ABBREV_SWEETS                                               :شیرینی
+STR_ABBREV_COLA                                                 :CL
+STR_ABBREV_CANDYFLOSS                                           :CF
+STR_ABBREV_BUBBLES                                              :BU
+STR_ABBREV_TOFFEE                                               :آبنبات
+STR_ABBREV_BATTERIES                                            :BA
+STR_ABBREV_PLASTIC                                              :PL
+STR_ABBREV_FIZZY_DRINKS                                         :FZ
+STR_ABBREV_NONE                                                 :NO
+STR_ABBREV_ALL                                                  :همه
 
 # 'Mode' of transport for cargoes
 STR_PASSENGERS                                                  :{COMMA}{NBSP}مسافر{P "" s}
@@ -1471,10 +1471,6 @@ STR_CONFIG_SETTING_STARTING_YEAR                                :سال شروع
 ###setting-zero-is-special
 
 ###length 3
-
-STR_CONFIG_SETTING_ALLOW_SHARES                                 :قابلیت خرید سهام بقیه شرکت‌ها: {STRING}
-
-###setting-zero-is-special
 
 
 
@@ -2966,7 +2962,6 @@ STR_FINANCES_INFRASTRUCTURE_BUTTON                              :{BLACK}زیرس
 
 STR_COMPANY_VIEW_AIRCRAFT                                       :{WHITE}{COMMA} هواپیما
 STR_COMPANY_VIEW_COMPANY_VALUE                                  :{GOLD}ارزش شرکت: {WHITE}{CURRENCY_LONG}
-STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% توسط {COMPANY} خریداری شده)
 STR_COMPANY_VIEW_INFRASTRUCTURE                                 :{GOLD}زیرساخت:
 STR_COMPANY_VIEW_INFRASTRUCTURE_RAIL                            :{WHITE}{COMMA} قطعه {P ی های} ریل
 STR_COMPANY_VIEW_INFRASTRUCTURE_ROAD                            :{WHITE}{COMMA} قطعه{P ی های}راه
@@ -2981,11 +2976,6 @@ STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}جزیی
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}مشاهده جزییات تعداد زیرساخت ها
 
 STR_COMPANY_VIEW_COLOUR_SCHEME_BUTTON                           :{BLACK}پالت رنگی
-
-STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}25% سهام شرکت را بخر
-STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}25% سهام شرکت را بفروش
-STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}25% سهام این شرکت را بخر.Shift+Click برآورد قیمت سهام را بدون فروش سهام نشان می دهد.
-STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}25% سهام این شرکت را بفروش.دکمه Shift+Clickبرآورد قیمت را بدون فروش سهام نمایش می دهد
 
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :مدیر عامل
 
@@ -3551,8 +3541,6 @@ STR_ERROR_TOO_HIGH                                              :{WHITE}بیش �
 # Company related errors
 
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}ساختمان مرکزی را نمی شود اینجا ساخت ...
-STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}نمی شود 25% سهام این شرکت را خرید
-STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}نمی شود 25% سهام این شرکت را فروخت
 
 # Town related errors
 STR_ERROR_CAN_T_RENAME_TOWN                                     :{WHITE}نمی توان اسم شهر را تغییر داد

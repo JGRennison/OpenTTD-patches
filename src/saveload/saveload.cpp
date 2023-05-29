@@ -241,7 +241,7 @@ struct SaveLoadParams {
 	LoadFilter *lf;                      ///< Filter to read the savegame from.
 
 	StringID error_str;                  ///< the translatable error message to show
-	char *extra_msg;                     ///< the error message
+	std::string extra_msg;               ///< the error message
 
 	bool saveinprogress;                 ///< Whether there is currently a save in progress.
 	SaveModeFlags save_flags;            ///< Save mode flags
@@ -398,7 +398,7 @@ static void SlNullPointers()
 
 struct ThreadSlErrorException {
 	StringID string;
-	const char *extra_msg;
+	std::string extra_msg;
 };
 
 /**
@@ -409,26 +409,19 @@ struct ThreadSlErrorException {
  * @note This function does never return as it throws an exception to
  *       break out of all the saveload code.
  */
-void NORETURN SlError(StringID string, const char *extra_msg, bool already_malloced)
+void NORETURN SlError(StringID string, std::string extra_msg)
 {
-	char *str = nullptr;
-	if (extra_msg != nullptr) {
-		str = already_malloced ? const_cast<char *>(extra_msg) : stredup(extra_msg);
-	}
-
 	if (IsNonMainThread() && IsNonGameThread() && _sl.action != SLA_SAVE) {
-		throw ThreadSlErrorException{ string, extra_msg };
+		throw ThreadSlErrorException{ string, std::move(extra_msg) };
 	}
 
 	/* Distinguish between loading into _load_check_data vs. normal save/load. */
 	if (_sl.action == SLA_LOAD_CHECK) {
 		_load_check_data.error = string;
-		free(_load_check_data.error_data);
-		_load_check_data.error_data = str;
+		_load_check_data.error_msg = std::move(extra_msg);
 	} else {
 		_sl.error_str = string;
-		free(_sl.extra_msg);
-		_sl.extra_msg = str;
+		_sl.extra_msg = std::move(extra_msg);
 	}
 
 	/* We have to nullptr all pointers here; we might be in a state where
@@ -450,9 +443,9 @@ void NORETURN CDECL SlErrorFmt(StringID string, const char *msg, ...)
 {
 	va_list va;
 	va_start(va, msg);
-	char *str = str_vfmt(msg, va);
+	std::string str = stdstr_vfmt(msg, va);
 	va_end(va);
-	SlError(string, str, true);
+	SlError(string, std::move(str));
 }
 
 /**
@@ -462,9 +455,9 @@ void NORETURN CDECL SlErrorFmt(StringID string, const char *msg, ...)
  * @note This function does never return as it throws an exception to
  *       break out of all the saveload code.
  */
-void NORETURN SlErrorCorrupt(const char *msg, bool already_malloced)
+void NORETURN SlErrorCorrupt(std::string msg)
 {
-	SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME, msg, already_malloced);
+	SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME, std::move(msg));
 }
 
 /**
@@ -478,9 +471,9 @@ void NORETURN CDECL SlErrorCorruptFmt(const char *format, ...)
 {
 	va_list va;
 	va_start(va, format);
-	char *str = str_vfmt(format, va);
+	std::string str = stdstr_vfmt(format, va);
 	va_end(va);
-	SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME, str, true);
+	SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME, std::move(str));
 }
 
 typedef void (*AsyncSaveFinishProc)();                      ///< Callback for when the savegame loading is finished.
@@ -2267,7 +2260,7 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
 				if (ext_flags & SLCEHF_BIG_RIFF) {
 					uint64 full_len = len | (static_cast<uint64>(SlReadUint32()) << 28);
 					if (full_len >= (1LL << 32)) {
-						SlErrorCorrupt("Chunk size too large: " OTTD_PRINTFHEX64, full_len);
+						SlErrorCorruptFmt("Chunk size too large: " OTTD_PRINTFHEX64, full_len);
 					}
 					len = static_cast<size_t>(full_len);
 				}
@@ -3391,7 +3384,7 @@ struct ThreadedLoadFilter : LoadFilter {
 			}
 		} catch (const ThreadSlErrorException &ex) {
 			std::unique_lock<std::mutex> lk(self->mutex);
-			self->caught_exception = ex;
+			self->caught_exception = std::move(ex);
 			self->have_exception = true;
 			self->empty_cv.notify_one();
 		}
@@ -3816,21 +3809,14 @@ void FileToSaveLoad::SetMode(SaveLoadOperation fop, AbstractFileType aft, Detail
 }
 
 /**
- * Set the name of the file.
- * @param name Name of the file.
- */
-void FileToSaveLoad::SetName(const char *name)
-{
-	this->name = name;
-}
-
-/**
  * Set the title of the file.
  * @param title Title of the file.
  */
-void FileToSaveLoad::SetTitle(const char *title)
+void FileToSaveLoad::Set(const FiosItem &item)
 {
-	strecpy(this->title, title, lastof(this->title));
+	this->SetMode(item.type);
+	this->name = item.name;
+	this->title = item.title;
 }
 
 bool SaveLoadFileTypeIsScenario()

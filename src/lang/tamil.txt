@@ -128,39 +128,39 @@ STR_QUANTITY_N_A                                                :N/A
 
 # Two letter abbreviation of cargo name
 STR_ABBREV_NOTHING                                              :
-STR_ABBREV_PASSENGERS                                           :{TINY_FONT}PS
-STR_ABBREV_COAL                                                 :{TINY_FONT}CL
-STR_ABBREV_MAIL                                                 :{TINY_FONT}ML
-STR_ABBREV_OIL                                                  :{TINY_FONT}OL
-STR_ABBREV_LIVESTOCK                                            :{TINY_FONT}LV
-STR_ABBREV_GOODS                                                :{TINY_FONT}GD
-STR_ABBREV_GRAIN                                                :{TINY_FONT}GR
-STR_ABBREV_WOOD                                                 :{TINY_FONT}WD
-STR_ABBREV_IRON_ORE                                             :{TINY_FONT}OR
-STR_ABBREV_STEEL                                                :{TINY_FONT}ST
-STR_ABBREV_VALUABLES                                            :{TINY_FONT}VL
-STR_ABBREV_COPPER_ORE                                           :{TINY_FONT}CO
-STR_ABBREV_MAIZE                                                :{TINY_FONT}MZ
-STR_ABBREV_FRUIT                                                :{TINY_FONT}FT
-STR_ABBREV_DIAMONDS                                             :{TINY_FONT}DM
-STR_ABBREV_FOOD                                                 :{TINY_FONT}FD
-STR_ABBREV_PAPER                                                :{TINY_FONT}PR
-STR_ABBREV_GOLD                                                 :{TINY_FONT}GD
-STR_ABBREV_WATER                                                :{TINY_FONT}WR
-STR_ABBREV_WHEAT                                                :{TINY_FONT}WH
-STR_ABBREV_RUBBER                                               :{TINY_FONT}RB
-STR_ABBREV_SUGAR                                                :{TINY_FONT}SG
-STR_ABBREV_TOYS                                                 :{TINY_FONT}TY
-STR_ABBREV_SWEETS                                               :{TINY_FONT}SW
-STR_ABBREV_COLA                                                 :{TINY_FONT}CL
-STR_ABBREV_CANDYFLOSS                                           :{TINY_FONT}CF
-STR_ABBREV_BUBBLES                                              :{TINY_FONT}BU
-STR_ABBREV_TOFFEE                                               :{TINY_FONT}TF
-STR_ABBREV_BATTERIES                                            :{TINY_FONT}BA
-STR_ABBREV_PLASTIC                                              :{TINY_FONT}PL
-STR_ABBREV_FIZZY_DRINKS                                         :{TINY_FONT}FZ
-STR_ABBREV_NONE                                                 :{TINY_FONT}NO
-STR_ABBREV_ALL                                                  :{TINY_FONT}அனைத்தும்
+STR_ABBREV_PASSENGERS                                           :PS
+STR_ABBREV_COAL                                                 :CL
+STR_ABBREV_MAIL                                                 :ML
+STR_ABBREV_OIL                                                  :OL
+STR_ABBREV_LIVESTOCK                                            :LV
+STR_ABBREV_GOODS                                                :GD
+STR_ABBREV_GRAIN                                                :GR
+STR_ABBREV_WOOD                                                 :WD
+STR_ABBREV_IRON_ORE                                             :OR
+STR_ABBREV_STEEL                                                :ST
+STR_ABBREV_VALUABLES                                            :VL
+STR_ABBREV_COPPER_ORE                                           :CO
+STR_ABBREV_MAIZE                                                :MZ
+STR_ABBREV_FRUIT                                                :FT
+STR_ABBREV_DIAMONDS                                             :DM
+STR_ABBREV_FOOD                                                 :FD
+STR_ABBREV_PAPER                                                :PR
+STR_ABBREV_GOLD                                                 :GD
+STR_ABBREV_WATER                                                :WR
+STR_ABBREV_WHEAT                                                :WH
+STR_ABBREV_RUBBER                                               :RB
+STR_ABBREV_SUGAR                                                :SG
+STR_ABBREV_TOYS                                                 :TY
+STR_ABBREV_SWEETS                                               :SW
+STR_ABBREV_COLA                                                 :CL
+STR_ABBREV_CANDYFLOSS                                           :CF
+STR_ABBREV_BUBBLES                                              :BU
+STR_ABBREV_TOFFEE                                               :TF
+STR_ABBREV_BATTERIES                                            :BA
+STR_ABBREV_PLASTIC                                              :PL
+STR_ABBREV_FIZZY_DRINKS                                         :FZ
+STR_ABBREV_NONE                                                 :NO
+STR_ABBREV_ALL                                                  :அனைத்தும்
 
 # 'Mode' of transport for cargoes
 STR_PASSENGERS                                                  :{COMMA} பயணி{P "" கள்}
@@ -1624,11 +1624,6 @@ STR_CONFIG_SETTING_ENDING_YEAR_ZERO                             :என்று
 STR_CONFIG_SETTING_ECONOMY_TYPE                                 :பொருளாதார வகை: {STRING}
 ###length 3
 STR_CONFIG_SETTING_ECONOMY_TYPE_FROZEN                          :உறைந்த
-
-STR_CONFIG_SETTING_ALLOW_SHARES                                 :மற்ற நிறுவனங்களின் பங்குகளை வாங்குவதை அனுமதிக்கவும்: {STRING}
-
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :பங்குகள் பரிமாற்றத்திற்கு தேவையான குறைந்தபட்ச நிறுவன வயது: {STRING}
-###setting-zero-is-special
 
 
 STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY                         :இழுத்தால், சிக்னல்களை இடவும், ஒவ்வொறு: {STRING}
@@ -3273,7 +3268,6 @@ STR_COMPANY_VIEW_AIRCRAFT                                       :{WHITE}{COMMA} 
 STR_COMPANY_VIEW_SHIPS                                          :{WHITE}{COMMA} கப்பல்{P "" கள்}
 STR_COMPANY_VIEW_VEHICLES_NONE                                  :{WHITE}ஒன்றுமில்லை
 STR_COMPANY_VIEW_COMPANY_VALUE                                  :{GOLD}நிறுவனத்தின் மதிப்பு: {WHITE}{CURRENCY_LONG}
-STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% {COMPANY}) ஆல் இருப்பு வைக்கப்பட்டுள்ளது
 STR_COMPANY_VIEW_INFRASTRUCTURE                                 :{GOLD}கட்டுமானம்:
 STR_COMPANY_VIEW_INFRASTRUCTURE_RAIL                            :{WHITE}{COMMA} இரயில் பாகம்{P "" கள்}
 STR_COMPANY_VIEW_INFRASTRUCTURE_ROAD                            :{WHITE}{COMMA} சாலை பாகம்{P "" கள்}
@@ -3300,10 +3294,6 @@ STR_COMPANY_VIEW_COMPANY_NAME_BUTTON                            :{BLACK}நி�
 STR_COMPANY_VIEW_COMPANY_NAME_TOOLTIP                           :{BLACK}நிறுவனத்தின் பெயரை மாற்று
 STR_COMPANY_VIEW_PRESIDENT_NAME_BUTTON                          :{BLACK}மேலாளரின் பெயர்
 STR_COMPANY_VIEW_PRESIDENT_NAME_TOOLTIP                         :{BLACK}மேலாளரின் பெயரை மாற்று
-
-STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}நிறுவனத்தின் 25% பங்கினை வாங்கவும்
-STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}நிறுவனத்தின் 25% பங்கினை விற்கவும்
-STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}இந்த நிறுவனத்திலுள்ள 25% பங்கை விற்கவும் . Shift+Click செய்தால் எந்த பங்கையும் விற்காமல் மதிப்பிடப்பட்ட வருமானத்தைக் காட்டும்
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :நிறுவனத்தின் பெயர்
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :மேலாளரின் பெயர்
@@ -4257,9 +4247,6 @@ STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}வங�
 STR_ERROR_CAN_T_GIVE_MONEY                                      :{WHITE}இந்த நிறுவனத்திற்கு பணத்தை வாரி வழங்க இயலாது ...
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}நிறுவனத்தினை வாங்க இயலாது...
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}நிறுவன தலைமையிடத்தினை கட்ட இயலாது...
-STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}இந்த நிறுவனத்தின் 25 சதவிகித பங்குகளை வாங்க இயலாது...
-STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}இந்த நிறுவனத்தின் 25 சதவிகித பங்குகளை விற்க இயலாது...
-STR_ERROR_PROTECTED                                             :{WHITE}பங்குகளை பரிமாற்றம் செய்யும் அளவிற்கு இந்த நிறுவனம் இன்னும் வளரவில்லை...
 
 # Town related errors
 STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}எந்த நகரத்தினையும் கட்ட இயலாது

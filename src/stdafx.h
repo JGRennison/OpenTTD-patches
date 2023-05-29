@@ -37,10 +37,6 @@
 #	define _GNU_SOURCE
 #endif
 
-#if defined(__HAIKU__) || defined(__CYGWIN__)
-#	include <strings.h> /* strncasecmp */
-#endif
-
 /* It seems that we need to include stdint.h before anything else
  * We need INT64_MAX, which for most systems comes from stdint.h. However, MSVC
  * does not have stdint.h.
@@ -67,11 +63,6 @@
 
 #if defined(UNIX) || defined(__MINGW32__)
 #	include <sys/types.h>
-#endif
-
-#if defined(__OS2__)
-#	include <types.h>
-#	define strcasecmp stricmp
 #endif
 
 #if defined(SUNOS) || defined(HPUX) || defined(__CYGWIN__)
@@ -214,9 +205,6 @@
 #			define LZMA_API_STATIC
 #		endif
 #	endif
-
-#	define strcasecmp stricmp
-#	define strncasecmp strnicmp
 
 	/* MSVC doesn't have these :( */
 #	define S_ISDIR(mode) (mode & S_IFDIR)
@@ -488,11 +476,6 @@ const char *assert_tile_info(uint32 tile);
 #	define dbg_assert_msg(expression, ...)
 #	define dbg_assert_msg_tile(expression, tile, ...)
 #	define dbg_assert_tile(expression, tile)
-#endif
-
-#if defined(OPENBSD)
-	/* OpenBSD uses strcasecmp(3) */
-#	define _stricmp strcasecmp
 #endif
 
 #if defined(MAX_PATH)

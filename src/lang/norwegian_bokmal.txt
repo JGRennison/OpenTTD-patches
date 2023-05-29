@@ -130,39 +130,39 @@ STR_QUANTITY_N_A                                                :Ikke tilgjengel
 
 # Two letter abbreviation of cargo name
 STR_ABBREV_NOTHING                                              :
-STR_ABBREV_PASSENGERS                                           :{TINY_FONT}PS
-STR_ABBREV_COAL                                                 :{TINY_FONT}KL
-STR_ABBREV_MAIL                                                 :{TINY_FONT}PT
-STR_ABBREV_OIL                                                  :{TINY_FONT}OL
-STR_ABBREV_LIVESTOCK                                            :{TINY_FONT}BS
-STR_ABBREV_GOODS                                                :{TINY_FONT}GD
-STR_ABBREV_GRAIN                                                :{TINY_FONT}KN
-STR_ABBREV_WOOD                                                 :{TINY_FONT}TR
-STR_ABBREV_IRON_ORE                                             :{TINY_FONT}JM
-STR_ABBREV_STEEL                                                :{TINY_FONT}ST
-STR_ABBREV_VALUABLES                                            :{TINY_FONT}VS
-STR_ABBREV_COPPER_ORE                                           :{TINY_FONT}KM
-STR_ABBREV_MAIZE                                                :{TINY_FONT}MS
-STR_ABBREV_FRUIT                                                :{TINY_FONT}FT
-STR_ABBREV_DIAMONDS                                             :{TINY_FONT}DM
-STR_ABBREV_FOOD                                                 :{TINY_FONT}MT
-STR_ABBREV_PAPER                                                :{TINY_FONT}PR
-STR_ABBREV_GOLD                                                 :{TINY_FONT}GL
-STR_ABBREV_WATER                                                :{TINY_FONT}VN
-STR_ABBREV_WHEAT                                                :{TINY_FONT}HV
-STR_ABBREV_RUBBER                                               :{TINY_FONT}GM
-STR_ABBREV_SUGAR                                                :{TINY_FONT}SK
-STR_ABBREV_TOYS                                                 :{TINY_FONT}LT
-STR_ABBREV_SWEETS                                               :{TINY_FONT}GT
-STR_ABBREV_COLA                                                 :{TINY_FONT}CL
-STR_ABBREV_CANDYFLOSS                                           :{TINY_FONT}SP
-STR_ABBREV_BUBBLES                                              :{TINY_FONT}BO
-STR_ABBREV_TOFFEE                                               :{TINY_FONT}KM
-STR_ABBREV_BATTERIES                                            :{TINY_FONT}BA
-STR_ABBREV_PLASTIC                                              :{TINY_FONT}PL
-STR_ABBREV_FIZZY_DRINKS                                         :{TINY_FONT}MV
-STR_ABBREV_NONE                                                 :{TINY_FONT}IN
-STR_ABBREV_ALL                                                  :{TINY_FONT}ALLE
+STR_ABBREV_PASSENGERS                                           :PS
+STR_ABBREV_COAL                                                 :KL
+STR_ABBREV_MAIL                                                 :PT
+STR_ABBREV_OIL                                                  :OL
+STR_ABBREV_LIVESTOCK                                            :BS
+STR_ABBREV_GOODS                                                :GD
+STR_ABBREV_GRAIN                                                :KN
+STR_ABBREV_WOOD                                                 :TR
+STR_ABBREV_IRON_ORE                                             :JM
+STR_ABBREV_STEEL                                                :ST
+STR_ABBREV_VALUABLES                                            :VS
+STR_ABBREV_COPPER_ORE                                           :KM
+STR_ABBREV_MAIZE                                                :MS
+STR_ABBREV_FRUIT                                                :FT
+STR_ABBREV_DIAMONDS                                             :DM
+STR_ABBREV_FOOD                                                 :MT
+STR_ABBREV_PAPER                                                :PR
+STR_ABBREV_GOLD                                                 :GL
+STR_ABBREV_WATER                                                :VN
+STR_ABBREV_WHEAT                                                :HV
+STR_ABBREV_RUBBER                                               :GM
+STR_ABBREV_SUGAR                                                :SK
+STR_ABBREV_TOYS                                                 :LT
+STR_ABBREV_SWEETS                                               :GT
+STR_ABBREV_COLA                                                 :CL
+STR_ABBREV_CANDYFLOSS                                           :SP
+STR_ABBREV_BUBBLES                                              :BO
+STR_ABBREV_TOFFEE                                               :KM
+STR_ABBREV_BATTERIES                                            :BA
+STR_ABBREV_PLASTIC                                              :PL
+STR_ABBREV_FIZZY_DRINKS                                         :MV
+STR_ABBREV_NONE                                                 :IN
+STR_ABBREV_ALL                                                  :ALLE
 
 # 'Mode' of transport for cargoes
 STR_PASSENGERS                                                  :{COMMA}{NBSP}passasjer{P "" er}
@@ -1771,13 +1771,6 @@ STR_CONFIG_SETTING_ECONOMY_TYPE_HELPTEXT                        :Jevn økonomi m
 STR_CONFIG_SETTING_ECONOMY_TYPE_ORIGINAL                        :Original
 STR_CONFIG_SETTING_ECONOMY_TYPE_SMOOTH                          :Jevnt
 STR_CONFIG_SETTING_ECONOMY_TYPE_FROZEN                          :Frossen
-
-STR_CONFIG_SETTING_ALLOW_SHARES                                 :Tillat aksjekjøp i andre firmaer: {STRING}
-STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Når aktivert, tillates kjøp og salg av selskapers aksjer. Aksjer vil kun være tilgjengelig selskaper som når en viss alder
-
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Minimum alder på firmaet for å handle aksjer: {STRING}
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Sett minimum levetid for et selskap, før andre kan kjøpe og selge aksjer fra dem.
-###setting-zero-is-special
 
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :Prosentandel av etappe-overskudd som skal betales i innmatingssystem: {STRING}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :Andel av inntekten gitt til de mellomliggende etapper i et overføringssystem, noe som gir mer kontroll over inntektene
@@ -3637,7 +3630,6 @@ STR_COMPANY_VIEW_AIRCRAFT                                       :{WHITE}{COMMA} 
 STR_COMPANY_VIEW_SHIPS                                          :{WHITE}{COMMA} skip
 STR_COMPANY_VIEW_VEHICLES_NONE                                  :{WHITE}Ingen
 STR_COMPANY_VIEW_COMPANY_VALUE                                  :{GOLD}Firmaverdi: {WHITE}{CURRENCY_LONG}
-STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}{NBSP}% eies av {COMPANY})
 STR_COMPANY_VIEW_INFRASTRUCTURE                                 :{GOLD}Infrastruktur:
 STR_COMPANY_VIEW_INFRASTRUCTURE_RAIL                            :{WHITE}{COMMA} jernbanebit{P "" er}
 STR_COMPANY_VIEW_INFRASTRUCTURE_ROAD                            :{WHITE}{COMMA} veibit{P "" er}
@@ -3665,11 +3657,6 @@ STR_COMPANY_VIEW_COMPANY_NAME_BUTTON                            :{BLACK}Firmanav
 STR_COMPANY_VIEW_COMPANY_NAME_TOOLTIP                           :{BLACK}Endre firmanavn
 STR_COMPANY_VIEW_PRESIDENT_NAME_BUTTON                          :{BLACK}Sjefens navn
 STR_COMPANY_VIEW_PRESIDENT_NAME_TOOLTIP                         :{BLACK}Endre sjefens navn
-
-STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Kjøp 25{NBSP}% av aksjene i firmaet
-STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Selg 25{NBSP}% av aksjene i firmaet
-STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Kjøp 25{NBSP}% av aksjene i firmaet. Shift+klikk viser beregnet kostnad uten å kjøpe noen aksjer
-STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Selg 25{NBSP}% av aksjene i firmaet. Shift+klikk viser beregnet inntekt uten å selge noen aksjer
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Firmanavn
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Sjefens navn
@@ -4686,9 +4673,6 @@ STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}Kan ikke
 STR_ERROR_CAN_T_GIVE_MONEY                                      :{WHITE}Kan ikke gi bort penger til dette firmaet...
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Kan ikke kjøpe firma...
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Kan ikke bygge firmaets hovedkontor...
-STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Kan ikke kjøpe 25{NBSP}% av aksjene...
-STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Kan ikke selge 25{NBSP}% av aksjene...
-STR_ERROR_PROTECTED                                             :{WHITE}Dette firmaet selger ikke aksjer enda...
 
 # Town related errors
 STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Kan ikke grunnlegge noen byer

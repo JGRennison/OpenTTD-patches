@@ -128,39 +128,39 @@ STR_QUANTITY_N_A                                                :N/A
 
 # Two letter abbreviation of cargo name
 STR_ABBREV_NOTHING                                              :
-STR_ABBREV_PASSENGERS                                           :{TINY_FONT}PS
-STR_ABBREV_COAL                                                 :{TINY_FONT}KL
-STR_ABBREV_MAIL                                                 :{TINY_FONT}PO
-STR_ABBREV_OIL                                                  :{TINY_FONT}OL
-STR_ABBREV_LIVESTOCK                                            :{TINY_FONT}BO
-STR_ABBREV_GOODS                                                :{TINY_FONT}GD
-STR_ABBREV_GRAIN                                                :{TINY_FONT}SP
-STR_ABBREV_WOOD                                                 :{TINY_FONT}TI
-STR_ABBREV_IRON_ORE                                             :{TINY_FONT}JÄ
-STR_ABBREV_STEEL                                                :{TINY_FONT}ST
-STR_ABBREV_VALUABLES                                            :{TINY_FONT}VÄ
-STR_ABBREV_COPPER_ORE                                           :{TINY_FONT}KO
-STR_ABBREV_MAIZE                                                :{TINY_FONT}MA
-STR_ABBREV_FRUIT                                                :{TINY_FONT}FR
-STR_ABBREV_DIAMONDS                                             :{TINY_FONT}DI
-STR_ABBREV_FOOD                                                 :{TINY_FONT}MT
-STR_ABBREV_PAPER                                                :{TINY_FONT}PA
-STR_ABBREV_GOLD                                                 :{TINY_FONT}GL
-STR_ABBREV_WATER                                                :{TINY_FONT}VA
-STR_ABBREV_WHEAT                                                :{TINY_FONT}VE
-STR_ABBREV_RUBBER                                               :{TINY_FONT}GU
-STR_ABBREV_SUGAR                                                :{TINY_FONT}SO
-STR_ABBREV_TOYS                                                 :{TINY_FONT}LE
-STR_ABBREV_SWEETS                                               :{TINY_FONT}GO
-STR_ABBREV_COLA                                                 :{TINY_FONT}KA
-STR_ABBREV_CANDYFLOSS                                           :{TINY_FONT}SS
-STR_ABBREV_BUBBLES                                              :{TINY_FONT}BU
-STR_ABBREV_TOFFEE                                               :{TINY_FONT}KN
-STR_ABBREV_BATTERIES                                            :{TINY_FONT}BA
-STR_ABBREV_PLASTIC                                              :{TINY_FONT}PL
-STR_ABBREV_FIZZY_DRINKS                                         :{TINY_FONT}LÄ
-STR_ABBREV_NONE                                                 :{TINY_FONT}NEJ
-STR_ABBREV_ALL                                                  :{TINY_FONT}ALLA
+STR_ABBREV_PASSENGERS                                           :PS
+STR_ABBREV_COAL                                                 :KL
+STR_ABBREV_MAIL                                                 :PO
+STR_ABBREV_OIL                                                  :OL
+STR_ABBREV_LIVESTOCK                                            :BO
+STR_ABBREV_GOODS                                                :GD
+STR_ABBREV_GRAIN                                                :SP
+STR_ABBREV_WOOD                                                 :TI
+STR_ABBREV_IRON_ORE                                             :JÄ
+STR_ABBREV_STEEL                                                :ST
+STR_ABBREV_VALUABLES                                            :VÄ
+STR_ABBREV_COPPER_ORE                                           :KO
+STR_ABBREV_MAIZE                                                :MA
+STR_ABBREV_FRUIT                                                :FR
+STR_ABBREV_DIAMONDS                                             :DI
+STR_ABBREV_FOOD                                                 :MT
+STR_ABBREV_PAPER                                                :PA
+STR_ABBREV_GOLD                                                 :GL
+STR_ABBREV_WATER                                                :VA
+STR_ABBREV_WHEAT                                                :VE
+STR_ABBREV_RUBBER                                               :GU
+STR_ABBREV_SUGAR                                                :SO
+STR_ABBREV_TOYS                                                 :LE
+STR_ABBREV_SWEETS                                               :GO
+STR_ABBREV_COLA                                                 :KA
+STR_ABBREV_CANDYFLOSS                                           :SS
+STR_ABBREV_BUBBLES                                              :BU
+STR_ABBREV_TOFFEE                                               :KN
+STR_ABBREV_BATTERIES                                            :BA
+STR_ABBREV_PLASTIC                                              :PL
+STR_ABBREV_FIZZY_DRINKS                                         :LÄ
+STR_ABBREV_NONE                                                 :NEJ
+STR_ABBREV_ALL                                                  :ALLA
 
 # 'Mode' of transport for cargoes
 STR_PASSENGERS                                                  :{COMMA}{NBSP}passagerare
@@ -1798,13 +1798,6 @@ STR_CONFIG_SETTING_ECONOMY_TYPE_HELPTEXT                        :Jämn ekonomi g
 STR_CONFIG_SETTING_ECONOMY_TYPE_ORIGINAL                        :Original
 STR_CONFIG_SETTING_ECONOMY_TYPE_SMOOTH                          :Jämn
 STR_CONFIG_SETTING_ECONOMY_TYPE_FROZEN                          :Frusen
-
-STR_CONFIG_SETTING_ALLOW_SHARES                                 :Tillåt köp av aktier från andra företag: {STRING}
-STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :När det är aktiverat blir det tillåtet att köpa och sälja andelar i företag. För att dess andelar ska bli tillgängliga måste ett företag ha uppnått en viss ålder
-
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Lägsta företagsålder för aktiehandel: {STRING}
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Ställ in den lägsta ålder från vilken ett företags aktier kan köpas och säljas av andra företag.
-###setting-zero-is-special
 
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :Inkomstprocent per etapp i matarsystem: {STRING}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :Procentandel av inkomsten som ges till de mellanliggande etapperna i matarsystem. Ger mer kontroll över inkomsterna
@@ -3700,7 +3693,6 @@ STR_COMPANY_VIEW_AIRCRAFT                                       :{WHITE}{COMMA} 
 STR_COMPANY_VIEW_SHIPS                                          :{WHITE}{COMMA} skepp
 STR_COMPANY_VIEW_VEHICLES_NONE                                  :{WHITE}Inga
 STR_COMPANY_VIEW_COMPANY_VALUE                                  :{GOLD}Företagets värde: {WHITE}{CURRENCY_LONG}
-STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% ägs av {COMPANY})
 STR_COMPANY_VIEW_INFRASTRUCTURE                                 :{GOLD}Infrastruktur
 STR_COMPANY_VIEW_INFRASTRUCTURE_RAIL                            :{WHITE}{COMMA} järnvägsbit{P "" ar}
 STR_COMPANY_VIEW_INFRASTRUCTURE_ROAD                            :{WHITE}{COMMA} vägbit{P "" ar}
@@ -3728,11 +3720,6 @@ STR_COMPANY_VIEW_COMPANY_NAME_BUTTON                            :{BLACK}Företag
 STR_COMPANY_VIEW_COMPANY_NAME_TOOLTIP                           :{BLACK}Byt företagets namn
 STR_COMPANY_VIEW_PRESIDENT_NAME_BUTTON                          :{BLACK}Namn på VD
 STR_COMPANY_VIEW_PRESIDENT_NAME_TOOLTIP                         :{BLACK}Byt namn på VD:n
-
-STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Köp 25% andelar i företaget
-STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Sälj 25% andelar i företaget
-STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Köp 25% andelar i detta företag. Shift+klick visar kostnad utan att köpa
-STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Sälj 25% andelar i detta företag. Shift+klick visar inkomst utan att sälja
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Företagsnamn
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Namn på VD
@@ -4760,9 +4747,6 @@ STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}Kan inte
 STR_ERROR_CAN_T_GIVE_MONEY                                      :{WHITE}Kan ej ge pengar till detta företaget...
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Kan inte köpa företag...
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Kan inte bygga huvudkontor här...
-STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Kan inte köpa 25% andelar i detta företag...
-STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Kan inte sälja 25% andelar i detta företag...
-STR_ERROR_PROTECTED                                             :{WHITE}Det här företaget bedriver inte aktiehandel ännu...
 
 # Town related errors
 STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Kan inte bygga några städer

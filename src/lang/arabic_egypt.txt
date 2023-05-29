@@ -128,39 +128,39 @@ STR_QUANTITY_N_A                                                :غير متاح
 
 # Two letter abbreviation of cargo name
 STR_ABBREV_NOTHING                                              :
-STR_ABBREV_PASSENGERS                                           :{TINY_FONT}راكب
-STR_ABBREV_COAL                                                 :{TINY_FONT}فحم
-STR_ABBREV_MAIL                                                 :{TINY_FONT}بريد
-STR_ABBREV_OIL                                                  :{TINY_FONT}نفط
-STR_ABBREV_LIVESTOCK                                            :{TINY_FONT}ماشية
-STR_ABBREV_GOODS                                                :{TINY_FONT}بضائع
-STR_ABBREV_GRAIN                                                :{TINY_FONT}حبوب
-STR_ABBREV_WOOD                                                 :{TINY_FONT}خشب
-STR_ABBREV_IRON_ORE                                             :{TINY_FONT}خام حديد
-STR_ABBREV_STEEL                                                :{TINY_FONT}حديد
-STR_ABBREV_VALUABLES                                            :{TINY_FONT}ممتلكات ثمينة
-STR_ABBREV_COPPER_ORE                                           :{TINY_FONT}خام النحاس
-STR_ABBREV_MAIZE                                                :{TINY_FONT}ذرة
-STR_ABBREV_FRUIT                                                :{TINY_FONT}فواكة
-STR_ABBREV_DIAMONDS                                             :{TINY_FONT}جواهر
-STR_ABBREV_FOOD                                                 :{TINY_FONT}طعام
-STR_ABBREV_PAPER                                                :{TINY_FONT}ورق
-STR_ABBREV_GOLD                                                 :{TINY_FONT}ذهب
-STR_ABBREV_WATER                                                :{TINY_FONT}ماء
-STR_ABBREV_WHEAT                                                :{TINY_FONT}قمح
-STR_ABBREV_RUBBER                                               :{TINY_FONT}مطاط
-STR_ABBREV_SUGAR                                                :{TINY_FONT}سكر
-STR_ABBREV_TOYS                                                 :{TINY_FONT}العاب
-STR_ABBREV_SWEETS                                               :{TINY_FONT}حلويات
-STR_ABBREV_COLA                                                 :{TINY_FONT}كولا
-STR_ABBREV_CANDYFLOSS                                           :{TINY_FONT}سكر نبات
-STR_ABBREV_BUBBLES                                              :{TINY_FONT}فقاعات
-STR_ABBREV_TOFFEE                                               :{TINY_FONT}توفي
-STR_ABBREV_BATTERIES                                            :{TINY_FONT}بطاريات
-STR_ABBREV_PLASTIC                                              :{TINY_FONT}بلاستيك
-STR_ABBREV_FIZZY_DRINKS                                         :{TINY_FONT}شراب مخفوق
-STR_ABBREV_NONE                                                 :{TINY_FONT}لا شيء
-STR_ABBREV_ALL                                                  :{TINY_FONT}الكل
+STR_ABBREV_PASSENGERS                                           :راكب
+STR_ABBREV_COAL                                                 :فحم
+STR_ABBREV_MAIL                                                 :بريد
+STR_ABBREV_OIL                                                  :نفط
+STR_ABBREV_LIVESTOCK                                            :ماشية
+STR_ABBREV_GOODS                                                :بضائع
+STR_ABBREV_GRAIN                                                :حبوب
+STR_ABBREV_WOOD                                                 :خشب
+STR_ABBREV_IRON_ORE                                             :خام حديد
+STR_ABBREV_STEEL                                                :حديد
+STR_ABBREV_VALUABLES                                            :ممتلكات ثمينة
+STR_ABBREV_COPPER_ORE                                           :خام النحاس
+STR_ABBREV_MAIZE                                                :ذرة
+STR_ABBREV_FRUIT                                                :فواكة
+STR_ABBREV_DIAMONDS                                             :جواهر
+STR_ABBREV_FOOD                                                 :طعام
+STR_ABBREV_PAPER                                                :ورق
+STR_ABBREV_GOLD                                                 :ذهب
+STR_ABBREV_WATER                                                :ماء
+STR_ABBREV_WHEAT                                                :قمح
+STR_ABBREV_RUBBER                                               :مطاط
+STR_ABBREV_SUGAR                                                :سكر
+STR_ABBREV_TOYS                                                 :العاب
+STR_ABBREV_SWEETS                                               :حلويات
+STR_ABBREV_COLA                                                 :كولا
+STR_ABBREV_CANDYFLOSS                                           :سكر نبات
+STR_ABBREV_BUBBLES                                              :فقاعات
+STR_ABBREV_TOFFEE                                               :توفي
+STR_ABBREV_BATTERIES                                            :بطاريات
+STR_ABBREV_PLASTIC                                              :بلاستيك
+STR_ABBREV_FIZZY_DRINKS                                         :شراب مخفوق
+STR_ABBREV_NONE                                                 :لا شيء
+STR_ABBREV_ALL                                                  :الكل
 
 # 'Mode' of transport for cargoes
 STR_PASSENGERS                                                  :{COMMA}{NBSP} راكب
@@ -1556,11 +1556,6 @@ STR_CONFIG_SETTING_ENDING_YEAR_ZERO                             :لا تنتهي
 
 ###length 3
 STR_CONFIG_SETTING_ECONOMY_TYPE_FROZEN                          :مجمد
-
-STR_CONFIG_SETTING_ALLOW_SHARES                                 :السماح بشراء حصص من الشركات الاخرى: {STRING}
-STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :عند التمكين ، السماح بشراء وبيع أسهم الشركة. ستكون الأسهم متاحة فقط للشركات التي بلغت سنًا معينة
-
-###setting-zero-is-special
 
 
 STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY                         :عند السحب ، ضع الإشارات كل: {STRING}
@@ -3146,7 +3141,6 @@ STR_COMPANY_VIEW_AIRCRAFT                                       :{WHITE}{COMMA} 
 STR_COMPANY_VIEW_SHIPS                                          :{WHITE}{COMMA} سفينة
 STR_COMPANY_VIEW_VEHICLES_NONE                                  :{WHITE}بدون
 STR_COMPANY_VIEW_COMPANY_VALUE                                  :{GOLD}قيمة الشركة: {WHITE}{CURRENCY_LONG}
-STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}( {COMMA}% مملوكة بواسطة {COMPANY})
 STR_COMPANY_VIEW_INFRASTRUCTURE                                 :{GOLD}البنية تحتية:
 STR_COMPANY_VIEW_INFRASTRUCTURE_RAIL                            :{WHITE}{COMMA} قطعة السكك الحديدية
 STR_COMPANY_VIEW_INFRASTRUCTURE_ROAD                            :{WHITE}{COMMA} قطعة الطريق
@@ -3174,11 +3168,6 @@ STR_COMPANY_VIEW_COMPANY_NAME_BUTTON                            :{BLACK}اسم �
 STR_COMPANY_VIEW_COMPANY_NAME_TOOLTIP                           :{BLACK}غير اسم الشركة
 STR_COMPANY_VIEW_PRESIDENT_NAME_BUTTON                          :{BLACK}اسم صاحب الشركة
 STR_COMPANY_VIEW_PRESIDENT_NAME_TOOLTIP                         :{BLACK}غير اسم المدير
-
-STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}اشتري 25% من أسهم الشركة
-STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}بيع 25% من أسهم الشركة
-STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}اشتري 25% من اسهم هذه الشركة, + مفتاح الاعلى لاظهار التكلفه
-STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}بيع 25% من اسهم هذه الشركة
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :اسم الشركة
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :اسم صاحب الشركة
@@ -4121,9 +4110,6 @@ STR_ERROR_CAN_T_REPAY_LOAN                                      :{WHITE}لا ي�
 STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}لا يمكن التخلي عن النقود المعطاة من البنك على سبيل الاعارة ...
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}لا يمكن شراء الشركة ...
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}لا يمكن بناء مبنى الشركة الئيسي ...
-STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}لا يمكن شراء 25% من اسهم الشركة ...
-STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}لا يمكن بيع 25% من اسهم الشركة ...
-STR_ERROR_PROTECTED                                             :{WHITE}هذه الشركة ليست عريقة بقدر كافي لمشاركة الأسهم ...
 
 # Town related errors
 STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}لا يمكن انشاء اي مدينة

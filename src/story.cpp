@@ -49,16 +49,16 @@ INSTANTIATE_POOL_METHODS(StoryPage)
  * @param text The text parameter of the DoCommand proc
  * @return true, if and only if the given parameters are valid for the given page element type and page id.
  */
-static bool VerifyElementContentParameters(StoryPageID page_id, StoryPageElementType type, TileIndex tile, uint32 reference, const char *text)
+static bool VerifyElementContentParameters(StoryPageID page_id, StoryPageElementType type, TileIndex tile, uint32 reference, const std::string &text)
 {
 	StoryPageButtonData button_data{ reference };
 
 	switch (type) {
 		case SPET_TEXT:
-			if (StrEmpty(text)) return false;
+			if (text.empty()) return false;
 			break;
 		case SPET_LOCATION:
-			if (StrEmpty(text)) return false;
+			if (text.empty()) return false;
 			if (!IsValidTile(tile)) return false;
 			break;
 		case SPET_GOAL:
@@ -93,14 +93,14 @@ static bool VerifyElementContentParameters(StoryPageID page_id, StoryPageElement
  * @param reference The reference parameter of the DoCommand proc (p2)
  * @param text The text parameter of the DoCommand proc
  */
-static void UpdateElement(StoryPageElement &pe, TileIndex tile, uint32 reference, const char *text)
+static void UpdateElement(StoryPageElement &pe, TileIndex tile, uint32 reference, const std::string &text)
 {
 	switch (pe.type) {
 		case SPET_TEXT:
-			pe.text = stredup(text);
+			pe.text = text;
 			break;
 		case SPET_LOCATION:
-			pe.text = stredup(text);
+			pe.text = text;
 			pe.referenced_id = tile;
 			break;
 		case SPET_GOAL:
@@ -109,7 +109,7 @@ static void UpdateElement(StoryPageElement &pe, TileIndex tile, uint32 reference
 		case SPET_BUTTON_PUSH:
 		case SPET_BUTTON_TILE:
 		case SPET_BUTTON_VEHICLE:
-			pe.text = stredup(text);
+			pe.text = text;
 			pe.referenced_id = reference;
 			break;
 		default: NOT_REACHED();
@@ -224,9 +224,9 @@ CommandCost CmdCreateStoryPage(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 		s->date = _date;
 		s->company = company;
 		if (StrEmpty(text)) {
-			s->title = nullptr;
+			s->title.clear();
 		} else {
-			s->title = stredup(text);
+			s->title = text;
 		}
 
 		InvalidateWindowClassesData(WC_STORY_BOOK, -1);
@@ -338,11 +338,10 @@ CommandCost CmdSetStoryPageTitle(TileIndex tile, DoCommandFlag flags, uint32 p1,
 
 	if (flags & DC_EXEC) {
 		StoryPage *p = StoryPage::Get(page_id);
-		free(p->title);
 		if (StrEmpty(text)) {
-			p->title = nullptr;
+			p->title.clear();
 		} else {
-			p->title = stredup(text);
+			p->title = text;
 		}
 
 		InvalidateWindowClassesData(WC_STORY_BOOK, page_id);

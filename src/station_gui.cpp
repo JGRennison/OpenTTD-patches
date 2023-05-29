@@ -240,7 +240,7 @@ static void StationsWndShowStationRating(int left, int right, int y, CargoID typ
 		}
 	}
 
-	DrawString(left + padding, right, y, cs->abbrev, tc);
+	DrawString(left + padding, right, y, cs->abbrev, tc, SA_CENTER, false, FS_SMALL);
 
 	/* Draw green/red ratings bar (fits under the waiting bar) */
 	y += height + padding + 1;
@@ -317,7 +317,7 @@ protected:
 	/** Sort stations by their name */
 	static bool StationNameSorter(const Station * const &a, const Station * const &b)
 	{
-		int r = strnatcmp(a->GetCachedName(), b->GetCachedName()); // Sort by name (natural sorting).
+		int r = StrNaturalCompare(a->GetCachedName(), b->GetCachedName()); // Sort by name (natural sorting).
 		if (r == 0) return a->index < b->index;
 		return r < 0;
 	}
@@ -514,7 +514,7 @@ public:
 				/* Determine appropriate width for mini station rating graph */
 				this->rating_width = 0;
 				for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
-					this->rating_width = std::max(this->rating_width, GetStringBoundingBox(cs->abbrev).width);
+					this->rating_width = std::max(this->rating_width, GetStringBoundingBox(cs->abbrev, FS_SMALL).width);
 				}
 				/* Approximately match original 16 pixel wide rating bars by multiplying string width by 1.6 */
 				this->rating_width = this->rating_width * 16 / 10;
@@ -522,7 +522,7 @@ public:
 
 			default:
 				if (widget >= WID_STL_CARGOSTART) {
-					Dimension d = GetStringBoundingBox(_sorted_cargo_specs[widget - WID_STL_CARGOSTART]->abbrev);
+					Dimension d = GetStringBoundingBox(_sorted_cargo_specs[widget - WID_STL_CARGOSTART]->abbrev, FS_SMALL);
 					d.width  += padding.width + 2;
 					d.height += padding.height;
 					*size = maxdim(*size, d);
@@ -607,7 +607,7 @@ public:
 					br = br.Translate(cg_ofst, cg_ofst);
 					GfxFillRect(br, cs->rating_colour);
 					TextColour tc = GetContrastColour(cs->rating_colour);
-					DrawString(br.left, br.right, CenterBounds(br.top, br.bottom, FONT_HEIGHT_SMALL), cs->abbrev, tc, SA_HOR_CENTER);
+					DrawString(br.left, br.right, CenterBounds(br.top, br.bottom, FONT_HEIGHT_SMALL), cs->abbrev, tc, SA_HOR_CENTER, false, FS_SMALL);
 				}
 				break;
 		}
@@ -843,11 +843,11 @@ static const NWidgetPart _nested_company_stations_widgets[] = {
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_STL_BUS), SetMinimalSize(14, 0), SetMinimalTextLines(1, 0), SetDataTip(STR_BUS, STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE), SetFill(0, 1),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_STL_SHIP), SetMinimalSize(14, 0), SetMinimalTextLines(1, 0), SetDataTip(STR_SHIP, STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE), SetFill(0, 1),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_STL_AIRPLANE), SetMinimalSize(14, 0), SetMinimalTextLines(1, 0), SetDataTip(STR_PLANE, STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE), SetFill(0, 1),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_STL_FACILALL), SetMinimalSize(14, 0), SetMinimalTextLines(1, 0), SetDataTip(STR_ABBREV_ALL, STR_STATION_LIST_SELECT_ALL_FACILITIES), SetFill(0, 1),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_STL_FACILALL), SetMinimalSize(14, 0), SetMinimalTextLines(1, 0), SetDataTip(STR_ABBREV_ALL, STR_STATION_LIST_SELECT_ALL_FACILITIES), SetTextStyle(TC_BLACK, FS_SMALL), SetFill(0, 1),
 		NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(5, 0), SetFill(0, 1), EndContainer(),
 		NWidgetFunction(CargoWidgets),
-		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_STL_NOCARGOWAITING), SetMinimalSize(14, 0), SetMinimalTextLines(1, 0), SetDataTip(STR_ABBREV_NONE, STR_STATION_LIST_NO_WAITING_CARGO), SetFill(0, 1),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_STL_CARGOALL), SetMinimalSize(14, 0), SetMinimalTextLines(1, 0), SetDataTip(STR_ABBREV_ALL, STR_STATION_LIST_SELECT_ALL_TYPES), SetFill(0, 1),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_STL_NOCARGOWAITING), SetMinimalSize(14, 0), SetMinimalTextLines(1, 0), SetDataTip(STR_ABBREV_NONE, STR_STATION_LIST_NO_WAITING_CARGO), SetTextStyle(TC_BLACK, FS_SMALL), SetFill(0, 1),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_STL_CARGOALL), SetMinimalSize(14, 0), SetMinimalTextLines(1, 0), SetDataTip(STR_ABBREV_ALL, STR_STATION_LIST_SELECT_ALL_TYPES), SetTextStyle(TC_BLACK, FS_SMALL), SetFill(0, 1),
 		NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), SetFill(1, 1), EndContainer(),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
@@ -1311,7 +1311,7 @@ bool CargoSorter::SortStation(StationID st1, StationID st2) const
 		return order == SO_DESCENDING;
 	}
 
-	int res = strnatcmp(Station::Get(st1)->GetCachedName(), Station::Get(st2)->GetCachedName()); // Sort by name (natural sorting).
+	int res = StrNaturalCompare(Station::Get(st1)->GetCachedName(), Station::Get(st2)->GetCachedName()); // Sort by name (natural sorting).
 	if (res == 0) {
 		return this->SortId(st1, st2);
 	} else {

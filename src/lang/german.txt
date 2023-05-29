@@ -129,39 +129,39 @@ STR_QUANTITY_N_A                                                :k.A.
 
 # Two letter abbreviation of cargo name
 STR_ABBREV_NOTHING                                              :
-STR_ABBREV_PASSENGERS                                           :{TINY_FONT}PS
-STR_ABBREV_COAL                                                 :{TINY_FONT}KL
-STR_ABBREV_MAIL                                                 :{TINY_FONT}PO
-STR_ABBREV_OIL                                                  :{TINY_FONT}ÖL
-STR_ABBREV_LIVESTOCK                                            :{TINY_FONT}VI
-STR_ABBREV_GOODS                                                :{TINY_FONT}WK
-STR_ABBREV_GRAIN                                                :{TINY_FONT}GT
-STR_ABBREV_WOOD                                                 :{TINY_FONT}HO
-STR_ABBREV_IRON_ORE                                             :{TINY_FONT}EE
-STR_ABBREV_STEEL                                                :{TINY_FONT}ST
-STR_ABBREV_VALUABLES                                            :{TINY_FONT}WE
-STR_ABBREV_COPPER_ORE                                           :{TINY_FONT}KU
-STR_ABBREV_MAIZE                                                :{TINY_FONT}MA
-STR_ABBREV_FRUIT                                                :{TINY_FONT}FR
-STR_ABBREV_DIAMONDS                                             :{TINY_FONT}DI
-STR_ABBREV_FOOD                                                 :{TINY_FONT}NM
-STR_ABBREV_PAPER                                                :{TINY_FONT}PA
-STR_ABBREV_GOLD                                                 :{TINY_FONT}GD
-STR_ABBREV_WATER                                                :{TINY_FONT}WA
-STR_ABBREV_WHEAT                                                :{TINY_FONT}WZ
-STR_ABBREV_RUBBER                                               :{TINY_FONT}KA
-STR_ABBREV_SUGAR                                                :{TINY_FONT}ZU
-STR_ABBREV_TOYS                                                 :{TINY_FONT}SP
-STR_ABBREV_SWEETS                                               :{TINY_FONT}BO
-STR_ABBREV_COLA                                                 :{TINY_FONT}CO
-STR_ABBREV_CANDYFLOSS                                           :{TINY_FONT}ZW
-STR_ABBREV_BUBBLES                                              :{TINY_FONT}LB
-STR_ABBREV_TOFFEE                                               :{TINY_FONT}KM
-STR_ABBREV_BATTERIES                                            :{TINY_FONT}BA
-STR_ABBREV_PLASTIC                                              :{TINY_FONT}PL
-STR_ABBREV_FIZZY_DRINKS                                         :{TINY_FONT}LI
-STR_ABBREV_NONE                                                 :{TINY_FONT}KEINE
-STR_ABBREV_ALL                                                  :{TINY_FONT}ALLE
+STR_ABBREV_PASSENGERS                                           :PS
+STR_ABBREV_COAL                                                 :KL
+STR_ABBREV_MAIL                                                 :PO
+STR_ABBREV_OIL                                                  :ÖL
+STR_ABBREV_LIVESTOCK                                            :VI
+STR_ABBREV_GOODS                                                :WK
+STR_ABBREV_GRAIN                                                :GT
+STR_ABBREV_WOOD                                                 :HO
+STR_ABBREV_IRON_ORE                                             :EE
+STR_ABBREV_STEEL                                                :ST
+STR_ABBREV_VALUABLES                                            :WE
+STR_ABBREV_COPPER_ORE                                           :KU
+STR_ABBREV_MAIZE                                                :MA
+STR_ABBREV_FRUIT                                                :FR
+STR_ABBREV_DIAMONDS                                             :DI
+STR_ABBREV_FOOD                                                 :NM
+STR_ABBREV_PAPER                                                :PA
+STR_ABBREV_GOLD                                                 :GD
+STR_ABBREV_WATER                                                :WA
+STR_ABBREV_WHEAT                                                :WZ
+STR_ABBREV_RUBBER                                               :KA
+STR_ABBREV_SUGAR                                                :ZU
+STR_ABBREV_TOYS                                                 :SP
+STR_ABBREV_SWEETS                                               :BO
+STR_ABBREV_COLA                                                 :CO
+STR_ABBREV_CANDYFLOSS                                           :ZW
+STR_ABBREV_BUBBLES                                              :LB
+STR_ABBREV_TOFFEE                                               :KM
+STR_ABBREV_BATTERIES                                            :BA
+STR_ABBREV_PLASTIC                                              :PL
+STR_ABBREV_FIZZY_DRINKS                                         :LI
+STR_ABBREV_NONE                                                 :KEINE
+STR_ABBREV_ALL                                                  :ALLE
 
 # 'Mode' of transport for cargoes
 STR_PASSENGERS                                                  :{COMMA}{NBSP}Passagier{P "" e}
@@ -1799,13 +1799,6 @@ STR_CONFIG_SETTING_ECONOMY_TYPE_HELPTEXT                        :„Geglättet�
 STR_CONFIG_SETTING_ECONOMY_TYPE_ORIGINAL                        :Original
 STR_CONFIG_SETTING_ECONOMY_TYPE_SMOOTH                          :Geglättet
 STR_CONFIG_SETTING_ECONOMY_TYPE_FROZEN                          :Statisch
-
-STR_CONFIG_SETTING_ALLOW_SHARES                                 :Handel mit Firmenanteilen erlauben: {STRING}
-STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Erlaube das Kaufen und Verkaufen von Firmenanteilen. Firmenanteile sind nur verfügbar für Firmen, die hinreichend lange existieren
-
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Minimales Alter einer Firma, um an der Börse gehandelt zu werden: {STRING}
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Setze das minimale Alter einer Firma, ab dem Andere Firmenanteile dieser Firma kaufen und verkaufen können.
-###setting-zero-is-special
 
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :Prozentsatz des Profits für Teilstrecken: {STRING}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :Um das Einkommen der einzelnen Fahrzeuge einer Lieferkette ungefähr abschätzen zu können, wird vom Transporterlös bei Ablieferung einer Fracht der gewählte Prozentsatz den Zulieferfahrzeugen zugeschlagen
@@ -3701,7 +3694,6 @@ STR_COMPANY_VIEW_AIRCRAFT                                       :{WHITE}{COMMA} 
 STR_COMPANY_VIEW_SHIPS                                          :{WHITE}{COMMA} Schiff{P "" e}
 STR_COMPANY_VIEW_VEHICLES_NONE                                  :{WHITE}Keine
 STR_COMPANY_VIEW_COMPANY_VALUE                                  :{GOLD}Firmenwert: {WHITE}{CURRENCY_LONG}
-STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% Eigentum von {COMPANY})
 STR_COMPANY_VIEW_INFRASTRUCTURE                                 :{GOLD}Infrastruktur:
 STR_COMPANY_VIEW_INFRASTRUCTURE_RAIL                            :{WHITE}{COMMA} Schienenstück{P "" e}
 STR_COMPANY_VIEW_INFRASTRUCTURE_ROAD                            :{WHITE}{COMMA} Straßenfeld{P "" er}
@@ -3729,11 +3721,6 @@ STR_COMPANY_VIEW_COMPANY_NAME_BUTTON                            :{BLACK}Firmenna
 STR_COMPANY_VIEW_COMPANY_NAME_TOOLTIP                           :{BLACK}Firmenname ändern
 STR_COMPANY_VIEW_PRESIDENT_NAME_BUTTON                          :{BLACK}Managername
 STR_COMPANY_VIEW_PRESIDENT_NAME_TOOLTIP                         :{BLACK}Managername ändern
-
-STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}25% der Aktien der Firma kaufen
-STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}25% der Aktien der Firma verkaufen
-STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}25% der Aktien dieser Firma kaufen. Umschalt+Klick zeigt einen Kostenvoranschlag
-STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}25% der Aktien dieser Firma verkaufen. Umschalt+Klick zeigt eine Gewinnschätzung
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Firmenname
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Name des Managers
@@ -4762,9 +4749,6 @@ STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}Von der 
 STR_ERROR_CAN_T_GIVE_MONEY                                      :{WHITE}Geld kann nicht an diese Firma verschenkt werden ...
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Firmenkauf nicht möglich ...
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Firmensitz kann nicht gebaut werden ...
-STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Kauf von 25% der Aktien dieser Firma nicht möglich ...
-STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Verkauf von 25% der Aktien dieser Firma nicht möglich ...
-STR_ERROR_PROTECTED                                             :{WHITE}Diese Firma ist noch nicht alt genug, um an der Börse gehandelt zu werden...
 
 # Town related errors
 STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Bau von Städten unmöglich

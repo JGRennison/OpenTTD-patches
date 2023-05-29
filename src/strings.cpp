@@ -1822,7 +1822,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				static bool use_cache = true;
 				if (use_cache) { // Use cached version if first call
 					AutoRestoreBackup cache_backup(use_cache, false);
-					buff = strecpy(buff, i->GetCachedName(), last);
+					buff = strecpy(buff, i->GetCachedName().c_str(), last);
 				} else if (_scan_for_gender_data) {
 					/* Gender is defined by the industry type.
 					 * STR_FORMAT_INDUSTRY_NAME may have the town first, so it would result in the gender of the town name */
@@ -2361,12 +2361,12 @@ const char *GetCurrentLocale(const char *param);
 
 bool StringIDSorter(const StringID &a, const StringID &b)
 {
-	char stra[512];
-	char strb[512];
-	GetString(stra, a, lastof(stra));
-	GetString(strb, b, lastof(strb));
+	char stra[DRAW_STRING_BUFFER];
+	char strb[DRAW_STRING_BUFFER];
+	char *lasta = GetString(stra, a, lastof(stra));
+	char *lastb = GetString(strb, b, lastof(strb));
 
-	return strnatcmp(stra, strb) < 0;
+	return StrNaturalCompare({ stra, (size_t)(lasta - stra) }, { strb, (size_t)(lastb - strb) }) < 0;
 }
 
 /**
@@ -2625,8 +2625,8 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 			 * future, so for safety we just Utf8 Encode it into the string,
 			 * which takes exactly three characters, so it replaces the "XXX"
 			 * with the colour marker. */
-			static char *err_str = stredup("XXXThe current font is missing some of the characters used in the texts for this language. Using system fallback font instead.");
-			Utf8Encode(err_str, SCC_YELLOW);
+			static std::string err_str("XXXThe current font is missing some of the characters used in the texts for this language. Using system fallback font instead.");
+			Utf8Encode(err_str.data(), SCC_YELLOW);
 			SetDParamStr(0, err_str);
 			ShowErrorMessage(STR_JUST_RAW_STRING, INVALID_STRING_ID, WL_WARNING);
 		}
@@ -2646,8 +2646,8 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 		 * properly we have to set the colour of the string, otherwise we end up with a lot of artifacts.
 		 * The colour 'character' might change in the future, so for safety we just Utf8 Encode it into
 		 * the string, which takes exactly three characters, so it replaces the "XXX" with the colour marker. */
-		static char *err_str = stredup("XXXThe current font is missing some of the characters used in the texts for this language. Read the readme to see how to solve this.");
-		Utf8Encode(err_str, SCC_YELLOW);
+		static std::string err_str("XXXThe current font is missing some of the characters used in the texts for this language. Read the readme to see how to solve this.");
+		Utf8Encode(err_str.data(), SCC_YELLOW);
 		SetDParamStr(0, err_str);
 		ShowErrorMessage(STR_JUST_RAW_STRING, INVALID_STRING_ID, WL_WARNING);
 
@@ -2676,8 +2676,8 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 	 * the colour marker.
 	 */
 	if (_current_text_dir != TD_LTR) {
-		static char *err_str = stredup("XXXThis version of OpenTTD does not support right-to-left languages. Recompile with icu enabled.");
-		Utf8Encode(err_str, SCC_YELLOW);
+		static std::string err_str("XXXThis version of OpenTTD does not support right-to-left languages. Recompile with icu enabled.");
+		Utf8Encode(err_str.data(), SCC_YELLOW);
 		SetDParamStr(0, err_str);
 		ShowErrorMessage(STR_JUST_RAW_STRING, INVALID_STRING_ID, WL_ERROR);
 	}

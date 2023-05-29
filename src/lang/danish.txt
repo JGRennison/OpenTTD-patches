@@ -128,39 +128,39 @@ STR_QUANTITY_N_A                                                :N/A
 
 # Two letter abbreviation of cargo name
 STR_ABBREV_NOTHING                                              :
-STR_ABBREV_PASSENGERS                                           :{TINY_FONT}PS
-STR_ABBREV_COAL                                                 :{TINY_FONT}KU
-STR_ABBREV_MAIL                                                 :{TINY_FONT}PO
-STR_ABBREV_OIL                                                  :{TINY_FONT}OL
-STR_ABBREV_LIVESTOCK                                            :{TINY_FONT}KV
-STR_ABBREV_GOODS                                                :{TINY_FONT}SG
-STR_ABBREV_GRAIN                                                :{TINY_FONT}KN
-STR_ABBREV_WOOD                                                 :{TINY_FONT}TR
-STR_ABBREV_IRON_ORE                                             :{TINY_FONT}JM
-STR_ABBREV_STEEL                                                :{TINY_FONT}ST
-STR_ABBREV_VALUABLES                                            :{TINY_FONT}VÆ
-STR_ABBREV_COPPER_ORE                                           :{TINY_FONT}KO
-STR_ABBREV_MAIZE                                                :{TINY_FONT}MS
-STR_ABBREV_FRUIT                                                :{TINY_FONT}FR
-STR_ABBREV_DIAMONDS                                             :{TINY_FONT}DI
-STR_ABBREV_FOOD                                                 :{TINY_FONT}MD
-STR_ABBREV_PAPER                                                :{TINY_FONT}PR
-STR_ABBREV_GOLD                                                 :{TINY_FONT}GU
-STR_ABBREV_WATER                                                :{TINY_FONT}VA
-STR_ABBREV_WHEAT                                                :{TINY_FONT}HV
-STR_ABBREV_RUBBER                                               :{TINY_FONT}GM
-STR_ABBREV_SUGAR                                                :{TINY_FONT}SU
-STR_ABBREV_TOYS                                                 :{TINY_FONT}LT
-STR_ABBREV_SWEETS                                               :{TINY_FONT}SL
-STR_ABBREV_COLA                                                 :{TINY_FONT}CL
-STR_ABBREV_CANDYFLOSS                                           :{TINY_FONT}CF
-STR_ABBREV_BUBBLES                                              :{TINY_FONT}BO
-STR_ABBREV_TOFFEE                                               :{TINY_FONT}KA
-STR_ABBREV_BATTERIES                                            :{TINY_FONT}BA
-STR_ABBREV_PLASTIC                                              :{TINY_FONT}PL
-STR_ABBREV_FIZZY_DRINKS                                         :{TINY_FONT}SV
-STR_ABBREV_NONE                                                 :{TINY_FONT}INT
-STR_ABBREV_ALL                                                  :{TINY_FONT}ALT
+STR_ABBREV_PASSENGERS                                           :PS
+STR_ABBREV_COAL                                                 :KU
+STR_ABBREV_MAIL                                                 :PO
+STR_ABBREV_OIL                                                  :OL
+STR_ABBREV_LIVESTOCK                                            :KV
+STR_ABBREV_GOODS                                                :SG
+STR_ABBREV_GRAIN                                                :KN
+STR_ABBREV_WOOD                                                 :TR
+STR_ABBREV_IRON_ORE                                             :JM
+STR_ABBREV_STEEL                                                :ST
+STR_ABBREV_VALUABLES                                            :VÆ
+STR_ABBREV_COPPER_ORE                                           :KO
+STR_ABBREV_MAIZE                                                :MS
+STR_ABBREV_FRUIT                                                :FR
+STR_ABBREV_DIAMONDS                                             :DI
+STR_ABBREV_FOOD                                                 :MD
+STR_ABBREV_PAPER                                                :PR
+STR_ABBREV_GOLD                                                 :GU
+STR_ABBREV_WATER                                                :VA
+STR_ABBREV_WHEAT                                                :HV
+STR_ABBREV_RUBBER                                               :GM
+STR_ABBREV_SUGAR                                                :SU
+STR_ABBREV_TOYS                                                 :LT
+STR_ABBREV_SWEETS                                               :SL
+STR_ABBREV_COLA                                                 :CL
+STR_ABBREV_CANDYFLOSS                                           :CF
+STR_ABBREV_BUBBLES                                              :BO
+STR_ABBREV_TOFFEE                                               :KA
+STR_ABBREV_BATTERIES                                            :BA
+STR_ABBREV_PLASTIC                                              :PL
+STR_ABBREV_FIZZY_DRINKS                                         :SV
+STR_ABBREV_NONE                                                 :INT
+STR_ABBREV_ALL                                                  :ALT
 
 # 'Mode' of transport for cargoes
 STR_PASSENGERS                                                  :{COMMA} passagerer{P "" s}
@@ -1799,15 +1799,6 @@ STR_CONFIG_SETTING_ECONOMY_TYPE_HELPTEXT                        :Udjævnet økon
 STR_CONFIG_SETTING_ECONOMY_TYPE_ORIGINAL                        :Original
 STR_CONFIG_SETTING_ECONOMY_TYPE_SMOOTH                          :Udjævnet
 STR_CONFIG_SETTING_ECONOMY_TYPE_FROZEN                          :Frossen
-
-STR_CONFIG_SETTING_ALLOW_SHARES                                 :Tillad at købe aktier i andre selskaber: {STRING}
-STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Hvis aktiveret, tillades køb og salg af selskabsaktier. Aktier vil kun være tilgængelige for selskaber der er nået en hvis alder
-
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Mindste selskabsalder for aktiehandel: {STRING}
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Indstil mindste alder på selskaber, før andre kan købe og sælge aktier i dem.
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_VALUE                   :{COMMA} år{P "" s}
-###setting-zero-is-special
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_NO_MIN                  :Intet minimum
 
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :Procentdel af deloverskud som skal betales i hovedsystemer: {STRING}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :Procentdel af indkomst givet til de mellemliggende dele i hovedsystemer, giver mere kontrol over indkomst
@@ -3705,7 +3696,6 @@ STR_COMPANY_VIEW_AIRCRAFT                                       :{WHITE}{COMMA} 
 STR_COMPANY_VIEW_SHIPS                                          :{WHITE}{COMMA} skib{P "" e}
 STR_COMPANY_VIEW_VEHICLES_NONE                                  :{WHITE}Ingen
 STR_COMPANY_VIEW_COMPANY_VALUE                                  :{GOLD}Selskabsværdi: {WHITE}{CURRENCY_LONG}
-STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% ejes af {COMPANY})
 STR_COMPANY_VIEW_INFRASTRUCTURE                                 :{GOLD}Infrastruktur:
 STR_COMPANY_VIEW_INFRASTRUCTURE_RAIL                            :{WHITE}{COMMA} spor-stykke{P "" r}
 STR_COMPANY_VIEW_INFRASTRUCTURE_ROAD                            :{WHITE}{COMMA} vej-stykke{P "" r}
@@ -3733,11 +3723,6 @@ STR_COMPANY_VIEW_COMPANY_NAME_BUTTON                            :{BLACK}Selskabs
 STR_COMPANY_VIEW_COMPANY_NAME_TOOLTIP                           :{BLACK}Skift selskabets navn
 STR_COMPANY_VIEW_PRESIDENT_NAME_BUTTON                          :{BLACK}Direktørnavn
 STR_COMPANY_VIEW_PRESIDENT_NAME_TOOLTIP                         :{BLACK}Skift direktørens navn
-
-STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Køb 25% aktier i selskabet
-STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Sælg 25% aktier i selskabet
-STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Køb 25% aktier i dette selskab. Shift+Klik viser de anslåede omkostninger uden at købe nogle aktier
-STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Sælg 25% aktier i dette selskab. Shift+Klik viser de anslåede indtægter uden at sælge nogle aktier
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Selskabsnavn
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Direktørens navn
@@ -4766,9 +4751,6 @@ STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}Du kan i
 STR_ERROR_CAN_T_GIVE_MONEY                                      :{WHITE}Kan ikke give penge til dette selskab...
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Kan ikke købe selskab...
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Kan ikke bygge selskabets hovedkvarter...
-STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Kan ikke købe 25% aktier i dette selskab...
-STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Kan ikke sælge 25% aktier i dette selskab...
-STR_ERROR_PROTECTED                                             :{WHITE}Dette selskab sælger ikke aktier endnu...
 
 # Town related errors
 STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Kan ikke bygge nogen byer

@@ -128,39 +128,39 @@ STR_QUANTITY_N_A                                                :N/A
 
 # Two letter abbreviation of cargo name
 STR_ABBREV_NOTHING                                              :
-STR_ABBREV_PASSENGERS                                           :{TINY_FONT}คน
-STR_ABBREV_COAL                                                 :{TINY_FONT}ถ่าน
-STR_ABBREV_MAIL                                                 :{TINY_FONT}พัสดุ
-STR_ABBREV_OIL                                                  :{TINY_FONT}น้ำมัน
-STR_ABBREV_LIVESTOCK                                            :{TINY_FONT}สัตว์
-STR_ABBREV_GOODS                                                :{TINY_FONT}สินค้า
-STR_ABBREV_GRAIN                                                :{TINY_FONT}ข้าวเปลือก
-STR_ABBREV_WOOD                                                 :{TINY_FONT}ไม้
-STR_ABBREV_IRON_ORE                                             :{TINY_FONT}เหล็ก
-STR_ABBREV_STEEL                                                :{TINY_FONT}เหล็กกล้า
-STR_ABBREV_VALUABLES                                            :{TINY_FONT}มีค่า
-STR_ABBREV_COPPER_ORE                                           :{TINY_FONT}ทองแดง
-STR_ABBREV_MAIZE                                                :{TINY_FONT}ข้าวโพด
-STR_ABBREV_FRUIT                                                :{TINY_FONT}ผลไม้
-STR_ABBREV_DIAMONDS                                             :{TINY_FONT}เพชร
-STR_ABBREV_FOOD                                                 :{TINY_FONT}อาหาร
-STR_ABBREV_PAPER                                                :{TINY_FONT}กระดาษ
-STR_ABBREV_GOLD                                                 :{TINY_FONT}ทอง
-STR_ABBREV_WATER                                                :{TINY_FONT}น้ำ
-STR_ABBREV_WHEAT                                                :{TINY_FONT}ข้าวสาลี
-STR_ABBREV_RUBBER                                               :{TINY_FONT}ยาง
-STR_ABBREV_SUGAR                                                :{TINY_FONT}น้ำตาล
-STR_ABBREV_TOYS                                                 :{TINY_FONT}ของเล่น
-STR_ABBREV_SWEETS                                               :{TINY_FONT}ขนม
-STR_ABBREV_COLA                                                 :{TINY_FONT}โคล่า
-STR_ABBREV_CANDYFLOSS                                           :{TINY_FONT}สายไหม
-STR_ABBREV_BUBBLES                                              :{TINY_FONT}ฟอง
-STR_ABBREV_TOFFEE                                               :{TINY_FONT}ลูกอม
-STR_ABBREV_BATTERIES                                            :{TINY_FONT}ถ่าน
-STR_ABBREV_PLASTIC                                              :{TINY_FONT}พลาสติก
-STR_ABBREV_FIZZY_DRINKS                                         :{TINY_FONT}น้ำอัดลม
-STR_ABBREV_NONE                                                 :{TINY_FONT}ว่าง
-STR_ABBREV_ALL                                                  :{TINY_FONT}ทั้งหมด
+STR_ABBREV_PASSENGERS                                           :คน
+STR_ABBREV_COAL                                                 :ถ่าน
+STR_ABBREV_MAIL                                                 :พัสดุ
+STR_ABBREV_OIL                                                  :น้ำมัน
+STR_ABBREV_LIVESTOCK                                            :สัตว์
+STR_ABBREV_GOODS                                                :สินค้า
+STR_ABBREV_GRAIN                                                :ข้าวเปลือก
+STR_ABBREV_WOOD                                                 :ไม้
+STR_ABBREV_IRON_ORE                                             :เหล็ก
+STR_ABBREV_STEEL                                                :เหล็กกล้า
+STR_ABBREV_VALUABLES                                            :มีค่า
+STR_ABBREV_COPPER_ORE                                           :ทองแดง
+STR_ABBREV_MAIZE                                                :ข้าวโพด
+STR_ABBREV_FRUIT                                                :ผลไม้
+STR_ABBREV_DIAMONDS                                             :เพชร
+STR_ABBREV_FOOD                                                 :อาหาร
+STR_ABBREV_PAPER                                                :กระดาษ
+STR_ABBREV_GOLD                                                 :ทอง
+STR_ABBREV_WATER                                                :น้ำ
+STR_ABBREV_WHEAT                                                :ข้าวสาลี
+STR_ABBREV_RUBBER                                               :ยาง
+STR_ABBREV_SUGAR                                                :น้ำตาล
+STR_ABBREV_TOYS                                                 :ของเล่น
+STR_ABBREV_SWEETS                                               :ขนม
+STR_ABBREV_COLA                                                 :โคล่า
+STR_ABBREV_CANDYFLOSS                                           :สายไหม
+STR_ABBREV_BUBBLES                                              :ฟอง
+STR_ABBREV_TOFFEE                                               :ลูกอม
+STR_ABBREV_BATTERIES                                            :ถ่าน
+STR_ABBREV_PLASTIC                                              :พลาสติก
+STR_ABBREV_FIZZY_DRINKS                                         :น้ำอัดลม
+STR_ABBREV_NONE                                                 :ว่าง
+STR_ABBREV_ALL                                                  :ทั้งหมด
 
 # 'Mode' of transport for cargoes
 STR_PASSENGERS                                                  :{COMMA} คน
@@ -1678,11 +1678,6 @@ STR_CONFIG_SETTING_ENDING_YEAR_ZERO                             :ไม่เล
 STR_CONFIG_SETTING_ECONOMY_TYPE                                 :ประเภทของเศรษฐกิจ: {STRING}
 STR_CONFIG_SETTING_ECONOMY_TYPE_HELPTEXT                        :หากเศรษฐกิจราบรื่นจะทำให้การผลิตสินค้ามีการเปลี่ยนแปลงตลอด ในทางกลับกัน หากเศรษฐกิจไม่กระเตื้องเลย อุตสาหกรรมต่างๆจะไม่มีการเปลี่ยนแปลงผลผลิตและอาจจะปิดไปในที่สุดได้ ซึ่งการตั้งค่านี้อาจไม่ส่งผลหากใช้ NewGRF ประเภทอุตสาหกรรมบางอัน
 ###length 3
-
-STR_CONFIG_SETTING_ALLOW_SHARES                                 :อนุญาตให้ซื้อหุ้นจากบริษัทอื่นได้: {STRING}
-STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :เมื่อเปิดการใช้งาน จะสามารถซื้่อชขายหุ้นระหว่างบริษัท จะสามารถซื้อขายหุ้นได้ต่อเมื่อบริษัทเปิดตัวมานานแล้วเท่านั้น
-
-###setting-zero-is-special
 
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :เปอเซนต์ของผลกำไรที่จะส่งเข้าสู่ระบบกระจายรายได้: {STRING}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :เปอร์เซนต์ของรายได้ที่ส่งให้ฐานของระบบกระจายรายได้ ส่งผลต่อการควบคุมรายได้ทั้งหมด
@@ -3403,7 +3398,6 @@ STR_COMPANY_VIEW_AIRCRAFT                                       :{WHITE}{COMMA} 
 STR_COMPANY_VIEW_SHIPS                                          :{WHITE}{COMMA} พาหนะทางน้ำ
 STR_COMPANY_VIEW_VEHICLES_NONE                                  :{WHITE}ไม่มี
 STR_COMPANY_VIEW_COMPANY_VALUE                                  :{GOLD}ทรัพสินสุทธิ: {WHITE}{CURRENCY_LONG}
-STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}(หุ้น {COMMA}% เป็นของ {COMPANY})
 STR_COMPANY_VIEW_INFRASTRUCTURE                                 :{GOLD}โครงสร้างพื้นฐาน:
 STR_COMPANY_VIEW_INFRASTRUCTURE_RAIL                            :{WHITE}{COMMA} ทางรถไฟ
 STR_COMPANY_VIEW_INFRASTRUCTURE_ROAD                            :{WHITE}{COMMA} ถนน
@@ -3431,11 +3425,6 @@ STR_COMPANY_VIEW_COMPANY_NAME_BUTTON                            :{BLACK}ชื�
 STR_COMPANY_VIEW_COMPANY_NAME_TOOLTIP                           :{BLACK}เปลี่ยนชื่อบริษัท
 STR_COMPANY_VIEW_PRESIDENT_NAME_BUTTON                          :{BLACK}ชื่อประธานบริษัท
 STR_COMPANY_VIEW_PRESIDENT_NAME_TOOLTIP                         :{BLACK}เปลี่ยนชื่อประธานบริษัท
-
-STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}ซื้อหุ้น 25%
-STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}ขายหุ้น 25%
-STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}ซื้อหุ้น 25% จากบริษัทนี้
-STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}ขายหุ้น 25% คืนให้บริษัทนี้
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :ชื่อบริษัท
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :ชื่อประธานบริษัท
@@ -4401,9 +4390,6 @@ STR_ERROR_CAN_T_REPAY_LOAN                                      :{WHITE}ไม�
 STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}ไม่สามารถส่งเงินได้ นี่คือเงินกู้ที่มาจากธนาคาร...
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}ไม่สามารถซื้อกิจการได้...
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}ไม่สามารถสร้างสำนักงานได้...
-STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}ไม่สามารถซื้อหุ้น 25% จากบริษัทนี้ได้...
-STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}ไม่สามารถขายหุ้น 25% จากบริษัทนี้ได้...
-STR_ERROR_PROTECTED                                             :{WHITE}บริษัทนี้ยังไม่เก่าแก่พอที่จะซื้อหุ้นหรือซื้อกิจการได้...
 
 # Town related errors
 STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}ไม่สามารถสร้างเมืองใดได้อีก
