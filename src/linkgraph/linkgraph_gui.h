@@ -136,6 +136,7 @@ public:
 
 private:
 	LinkGraphOverlay *overlay;
+	size_t num_cargo;
 
 	void UpdateOverlayCompanies();
 	void UpdateOverlayCargoes();
