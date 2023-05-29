@@ -34,26 +34,23 @@ template <typename Tpf> void DumpState(Tpf &pf1, Tpf &pf2)
 #if defined(UNIX) && defined(__GLIBC__)
 	static unsigned int num = 0;
 	int pid = getpid();
-	const char *fn1 = nullptr;
-	const char *fn2 = nullptr;
+	std::string fn1;
+	std::string fn2;
 	FILE *f1 = nullptr;
 	FILE *f2 = nullptr;
 	for(;;) {
-		free(fn1);
-		fn1 = str_fmt("yapf-%d-%u-1.txt", pid, num);
-		f1 = fopen(fn1, "wx");
+		fn1 = stdstr_fmt("yapf-%d-%u-1.txt", pid, num);
+		f1 = fopen(fn1.c_str(), "wx");
 		if (f1 == nullptr && errno == EEXIST) {
 			num++;
 			continue;
 		}
-		fn2 = str_fmt("yapf-%d-%u-2.txt", pid, num);
-		f2 = fopen(fn2, "w");
+		fn2 = stdstr_fmt("yapf-%d-%u-2.txt", pid, num);
+		f2 = fopen(fn2.c_str(), "w");
 		num++;
 		break;
 	}
-	DEBUG(desync, 0, "Dumping YAPF state to %s and %s", fn1, fn2);
-	free(fn1);
-	free(fn2);
+	DEBUG(desync, 0, "Dumping YAPF state to %s and %s", fn1.c_str(), fn2.c_str());
 #else
 	FILE *f1 = fopen("yapf1.txt", "wt");
 	FILE *f2 = fopen("yapf2.txt", "wt");

@@ -173,18 +173,16 @@ void debug_print(const char *dbg, const char *buf)
 			have_inited = true;
 			unsigned int num = 0;
 			int pid = getpid();
-			const char *fn = nullptr;
 			for(;;) {
 				free(fn);
-				fn = str_fmt("random-out-%d-%u.log", pid, num);
-				f = FioFOpenFile(fn, "wx", AUTOSAVE_DIR);
+				std::string fn = stdstr_fmt("random-out-%d-%u.log", pid, num);
+				f = FioFOpenFile(fn.c_str(), "wx", AUTOSAVE_DIR);
 				if (f == nullptr && errno == EEXIST) {
 					num++;
 					continue;
 				}
 				break;
 			}
-			free(fn);
 		}
 #else
 		static FILE *f = FioFOpenFile("random-out.log", "wb", AUTOSAVE_DIR);
