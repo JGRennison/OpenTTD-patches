@@ -296,8 +296,8 @@ char *GetString(char *buffr, StringID string, const char *last)
 std::string GetString(StringID string)
 {
 	char buffer[DRAW_STRING_BUFFER];
-	GetString(buffer, string, lastof(buffer));
-	return buffer;
+	char *last = GetString(buffer, string, lastof(buffer));
+	return { buffer, last };
 }
 
 /**
