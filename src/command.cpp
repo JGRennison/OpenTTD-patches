@@ -566,6 +566,7 @@ static const Command _command_proc_table[] = {
 
 	DEF_CMD(CmdDesyncCheck,                           CMD_SERVER, CMDT_SERVER_SETTING        ), // CMD_DESYNC_CHECK
 };
+static_assert(lengthof(_command_proc_table) == CMD_END);
 
 ClientID _cmd_client_id = INVALID_CLIENT_ID;
 
