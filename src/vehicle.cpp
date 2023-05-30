@@ -1647,6 +1647,9 @@ void CallVehicleTicks()
 			const Company *c = Company::Get(_current_company);
 			SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, (Money)c->settings.engine_renew_money));
 			CommandCost res2 = DoCommand(0, t_new, 1, DC_EXEC, CMD_AUTOREPLACE_VEHICLE);
+			if (res2.HasResultData()) {
+				t = Train::Get(res2.GetResultData());
+			}
 			SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, -(Money)c->settings.engine_renew_money));
 			if (res2.Succeeded() || res.GetCost() == 0) res.AddCost(res2);
 		}
