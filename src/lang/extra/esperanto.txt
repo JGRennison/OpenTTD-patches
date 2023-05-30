@@ -47,3 +47,16 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Aviadilo {COMMA
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Permesu aĉetadon de dividaĵoj en aliaj kompanioj: {STRING}
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% posedataj de {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Aĉetu 25%-an dividaĵon
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Vendu 25%-an dividaĵon
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Aĉetu 25%-an dividaĵon en ĉi tiu kompanio. Tenu la maljuskliga klavo por (kosto)taksi sen aĉeti dividaĵojn
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Vendu 25%-an dividaĵon en ĉi tiu kompanio. Tenu la maljuskliga klavo por (enspezo)taksi sen vendi dividaĵojn
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Ne povas aĉeti 25%-an dividaĵon...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Ne povas vendi 25%-an dividaĵon...
+STR_ERROR_PROTECTED                                             :{WHITE}Ĉi tiu kompanio ne sufiĉe aĝas por jam komerci dividaĵojn...

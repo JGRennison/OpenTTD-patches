@@ -48,3 +48,17 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :طائرة {COM
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :السماح بشراء حصص من الشركات الاخرى: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :عند التمكين ، السماح بشراء وبيع أسهم الشركة. ستكون الأسهم متاحة فقط للشركات التي بلغت سنًا معينة
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}( {COMMA}% مملوكة بواسطة {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}اشتري 25% من أسهم الشركة
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}بيع 25% من أسهم الشركة
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}اشتري 25% من اسهم هذه الشركة, + مفتاح الاعلى لاظهار التكلفه
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}بيع 25% من اسهم هذه الشركة
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}لا يمكن شراء 25% من اسهم الشركة ...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}لا يمكن بيع 25% من اسهم الشركة ...
+STR_ERROR_PROTECTED                                             :{WHITE}هذه الشركة ليست عريقة بقدر كافي لمشاركة الأسهم ...

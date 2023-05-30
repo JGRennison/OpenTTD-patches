@@ -75,3 +75,22 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Aircraft {COMMA
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Allow buying shares from other companies: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :When enabled, allow buying and selling of company shares. Shares will only be available for companies reaching a certain age
+
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Minimum company age to trade shares: {STRING}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Set the minimum age of a company for others to be able to buy and sell shares from them.
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_VALUE                   :{COMMA} year{P "" s}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_NO_MIN                  :No minimum
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% owned by {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Buy 25% share in company
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Sell 25% share in company
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Buy 25% share in this company. Shift+Click shows shows estimated cost without purchasing any share
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Sell 25% share in this company. Shift+Click shows shows estimated cost without selling any share
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Can't buy 25% share in this company...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Can't sell 25% share in this company...
+STR_ERROR_PROTECTED                                             :{WHITE}This company is not old enough to trade shares yet...

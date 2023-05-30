@@ -151,6 +151,8 @@ CommandProc CmdTurnRoadVeh;
 
 CommandProc CmdPause;
 
+CommandProc CmdBuyShareInCompany;
+CommandProc CmdSellShareInCompany;
 CommandProc CmdBuyCompany;
 CommandProc CmdDeclineBuyCompany;
 
@@ -412,6 +414,8 @@ static const Command _command_proc_table[] = {
 
 	DEF_CMD(CmdPause,                    CMD_SERVER | CMD_NO_EST, CMDT_SERVER_SETTING        ), // CMD_PAUSE
 
+	DEF_CMD(CmdBuyShareInCompany,                              0, CMDT_MONEY_MANAGEMENT      ), // CMD_BUY_SHARE_IN_COMPANY
+	DEF_CMD(CmdSellShareInCompany,                             0, CMDT_MONEY_MANAGEMENT      ), // CMD_SELL_SHARE_IN_COMPANY
 	DEF_CMD(CmdBuyCompany,                                     0, CMDT_MONEY_MANAGEMENT      ), // CMD_BUY_COMPANY
 	DEF_CMD(CmdDeclineBuyCompany,                              0, CMDT_SERVER_SETTING        ), // CMD_DECLINE_BUY_COMPANY
 

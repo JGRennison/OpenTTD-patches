@@ -47,3 +47,16 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Pesawat {COMMA}
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Benarkan membeli saham syarikat lain: {STRING}
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% dimiliki oleh {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Beli 25% saham dalam syarikat ini
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Jual 25% saham dalam syarikat ini
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Beli 25% saham dalam syarikat ini. Shift+Klik menunjukkan anggaran kos tanpa membeli saham
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Jual 25% saham dalam syarikat ini. Shift+Klik menunjukkan anggaran kos tanpa menjual saham
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Tidak boleh beli 25% saham dalam syarikat ini...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Tidak boleh jual 25% saham dalam syarikat ini...
+STR_ERROR_PROTECTED                                             :{WHITE}Syarikat ini tidak cukup berusia untuk berpasaran saham...

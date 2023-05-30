@@ -51,3 +51,22 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Vliegtuig {COMM
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Kopen van aandelen in andere bedrijven toestaan: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Wanneer ingeschakeld is het toegestaan om bedrijfsaandelen te kopen en te verkopen. Aandelen zullen alleen beschikbaar zijn voor bedrijven die een bepaalde leeftijd hebben bereikt
+
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Minimale leeftijd van bedrijf om aandelen te kunnen verhandelen: {STRING}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Hiermee wordt de minimale leeftijd van een bedrijf ingesteld waarna anderen aandelen in dat bedrijf kunnen gaan kopen en verkopen.
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_VALUE                   :{COMMA} jaar
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_NO_MIN                  :Geen minimum
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% eigendom van {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Koop een aandeel van 25% in dit bedrijf
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Verkoop een aandeel van 25% in dit bedrijf
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Koop een aandeel van 25% in dit bedrijf. Shift+klik geeft de verwachte kosten zonder te kopen.
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Verkoop een aandeel van 25% in dit bedrijf. Shift+klik geeft de verwachte kosten zonder te kopen.
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Kan geen 25% aandeel in dit bedrijf kopen...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Kan geen 25% aandeel in dit bedrijf verkopen...
+STR_ERROR_PROTECTED                                             :{WHITE}Dit bedrijf verhandelt nog geen aandelen...

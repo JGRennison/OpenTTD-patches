@@ -626,3 +626,20 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :{G=n}Letadlo {C
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Povolit kupování podílu z ostatních společností: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Pokud je zapnuto, umožní kupovaní akcií ve společnostech. Akcie jsou k dispozici pouze u společností od určitého stáří
+
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Minimální stáří společnosti pro obchod s akciemi: {STRING}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Určuje stáří společnosti, od kterého mohou ostatní společnosti kupovat a prodávat její akcie.
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% vlastněno {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Koupit 25% podíl ve společnosti
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Prodat 25% podíl ve společnosti
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Koupit 25% podíl v této společnosti. Stisknutý Shift+Kliknutí pro zobrazení odhadované ceny
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Prodat 25% podíl v této společnosti. Stisknutý Shift+Kliknutí pro zobrazení odhadované ceny
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Nelze koupit podíl v této společnosti...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Nelze prodat podíl v této společnosti...
+STR_ERROR_PROTECTED                                             :{WHITE}Tato společnost zatím neobchoduje s akciemi...

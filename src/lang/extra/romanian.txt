@@ -48,3 +48,20 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Aeronava {COMMA
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Permite cumpărarea de acţiuni de la alte companii: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Dacă este activată, se permite cumpărarea și vânzarea de acțiuni ale companiilor. Acțiunile devin disponibile doar când compania depășește o anumită vârstă
+
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Vârsta minimă a companiilor pentru tranzacțiile cu acțiuni: {STRING}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Stabilește vechimea minimă a unei companii, ca alții să-i poată tranzacționa acțiunile.
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% deţinute de {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Cumpără 25% din acţiunile companiei
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Vinde 25% din acţiunile companiei
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Cumpără 25% din acțiunile acestei companii. Shift+clic arată costul estimat fără să cumpere acțiuni
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Vinde 25% din acțiunile acestei companii. Shift+clic arată costul estimat fără să efectueze vânzarea
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Nu se pot cumpăra 25% din acţiunile acestei companii...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Nu se pot vinde 25% din acţiunile acestei companii...
+STR_ERROR_PROTECTED                                             :{WHITE}Compania nu are vechimea necesară pentru tranzacționarea de acțiuni...

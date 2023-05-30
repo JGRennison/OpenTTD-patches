@@ -45,3 +45,17 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :விமான
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :மற்ற நிறுவனங்களின் பங்குகளை வாங்குவதை அனுமதிக்கவும்: {STRING}
+
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :பங்குகள் பரிமாற்றத்திற்கு தேவையான குறைந்தபட்ச நிறுவன வயது: {STRING}
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% {COMPANY}) ஆல் இருப்பு வைக்கப்பட்டுள்ளது
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}நிறுவனத்தின் 25% பங்கினை வாங்கவும்
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}நிறுவனத்தின் 25% பங்கினை விற்கவும்
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}இந்த நிறுவனத்திலுள்ள 25% பங்கை விற்கவும் . Shift+Click செய்தால் எந்த பங்கையும் விற்காமல் மதிப்பிடப்பட்ட வருமானத்தைக் காட்டும்
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}இந்த நிறுவனத்தின் 25 சதவிகித பங்குகளை வாங்க இயலாது...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}இந்த நிறுவனத்தின் 25 சதவிகித பங்குகளை விற்க இயலாது...
+STR_ERROR_PROTECTED                                             :{WHITE}பங்குகளை பரிமாற்றம் செய்யும் அளவிற்கு இந்த நிறுவனம் இன்னும் வளரவில்லை...

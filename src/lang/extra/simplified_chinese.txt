@@ -1693,7 +1693,6 @@ STR_ERROR_DEPOT_HAS_WRONG_RAIL_TYPE                             :{WHITE}车库�
 STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING                 :{WHITE}移动中的火车正在接近...
 
 STR_ERROR_NO_ROAD_WAYPOINT                                      :{WHITE}这里没有公路路点...
-STR_ERROR_NO_BUOY                                               :{WHITE}这里没有浮漂...
 
 # Plan related errors
 STR_ERROR_TOO_MANY_PLANS                                        :{WHITE}...太多计划
@@ -1961,3 +1960,20 @@ STR_SHIFT_KEY_NAME                                              :{BLACK}Shift
 STR_CTRL_KEY_NAME                                               :{BLACK}Ctrl
 STR_MODIFIER_TOGGLE_SHIFT_TOOLTIP                               :{BLACK}点击以反转当强Shift键的状态
 STR_MODIFIER_TOGGLE_CTRL_TOOLTIP                                :{BLACK}点击以反转当强Ctrl键的状态
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :允许购买其他公司的股份：{STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :“打开”时，允许买卖其它公司股份。被入股公司必须经营一定年限
+
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :公司可发售股份的最小已存续年份数：{STRING}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :设置公司可发售股份的最小已存续年份数。
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% 由 {COMPANY} 所有)
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}购买其 25% 的股份
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}出售其 25% 的股份
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}购买此公司 25% 的股份，按住 Shift 键单击可以显示所需资金
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}出售此公司 25% 的股份，按住 Shift 键单击可以显示预计收入
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}不能购买此公司的股份……
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}不能出售此公司的股份……
+STR_ERROR_PROTECTED                                             :{WHITE}这个公司刚刚开业，还不能进行股权交易……

@@ -82,3 +82,22 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Борт №{CO
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Разрешить торговлю акциями других компаний: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Разрешает торговлю акциями транспортных компаний. Акции выпускаются компаниями через некоторое время после основания.
+
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Мин. возраст компании для выпуска акций: {STRING}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Минимальный возраст, которого должна достичь компания для начала выпуска акций, которые смогут покупать и продавать другие игроки.
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_VALUE                   :{COMMA} {P год года лет}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_NO_MIN                  :без ограничений по возрасту
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% владеет {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Купить 25% акций компании
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Продать 25% акций компании
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Купить 25% акций этой компании. Shift+щелчок - оценка стоимости акций.
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Продать 25% акций этой компании. Shift+щелчок - оценка стоимости акций.
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Невозможно купить 25% акций этой компании...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Невозможно продать 25% акций этой компании...
+STR_ERROR_PROTECTED                                             :{WHITE}Эта компания ещё не выпускает акции...

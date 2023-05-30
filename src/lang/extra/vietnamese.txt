@@ -51,3 +51,22 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Máy bay {COMMA
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Cho phép mua cổ phần của các công ty khác: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Nếu bật, cho phép mua và bán cổ phần công ty. Cổ phần chỉ có thể mua bán nếu công ty đã tồn tại một thời gian nhất định nào đó
+
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Tuổi công ty tối thiểu để bán cổ phần: {STRING}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Đặt số tuổi tối thiểu của công ty để cho các bên khác có thể mua và bán cổ phần
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_VALUE                   :{COMMA} năm
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_NO_MIN                  :Không có tuổi tối thiểu
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% cổ phần sở hữu bởi {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Mua 25% cổ phần công ty
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Bán 25% cổ phần công ty
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Mua 25% cổ phần công ty này. Shift+Click để xem giá mua ước tính khi chưa mua
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Bán 25% cổ phần công ty này. Shift+Click để xem giá bán ước tính khi chưa bán
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Không thể mua 25% cổ phần của công ty này...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Không thể bán 25% cổ phần của công ty này...
+STR_ERROR_PROTECTED                                             :{WHITE}Công ty này chưa tồn tại đủ lâu để mua bán cổ phần...

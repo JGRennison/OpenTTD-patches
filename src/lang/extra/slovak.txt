@@ -51,3 +51,22 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :{G=s}Lietadlo {
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Povoliť kupovanie podielov v ostatných spoločnostiach: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Ak je zapnuté, povolí sa nákup a predaj podielov spoločností. Podiely budú prístupné len pre spoločnosti od urcitého veku.
+
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Minimálny vek spoločnosti na obchodovanie s podielmi: {STRING}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Určuje minimálny vek spoločnosti na to, aby od nej mohli ostatné spoločnosti kupovať a predavať podiely.
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_VALUE                   :{COMMA} rok{P "" "y" "ov"}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_NO_MIN                  :Žiadne minimum
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% vlastní {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Kúpiť 25% podiel v spoločnosti
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Predať 25% podiel v spoločnosti
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Kúpiť 25% podiel v tejto spoločnosti. Shift+klik zobrazí odhadovanú cenu bez zakúpenia podielu.
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Predať 25% podiel v tejto spoločnosti. Shift+klik zobrazí odhadovanú cenu bez predaja podielu.
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Nemôžete kúpiť 25% podiel v tejto spoločnosti...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}25% podiel v tejto spoločnosti sa nedá predať ...
+STR_ERROR_PROTECTED                                             :{WHITE}S akciami tejto spoločnosti nie je zatiaľ možné obchodovať...

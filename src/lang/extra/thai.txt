@@ -47,3 +47,17 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :อากาศ
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :อนุญาตให้ซื้อหุ้นจากบริษัทอื่นได้: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :เมื่อเปิดการใช้งาน จะสามารถซื้่อชขายหุ้นระหว่างบริษัท จะสามารถซื้อขายหุ้นได้ต่อเมื่อบริษัทเปิดตัวมานานแล้วเท่านั้น
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}(หุ้น {COMMA}% เป็นของ {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}ซื้อหุ้น 25%
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}ขายหุ้น 25%
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}ซื้อหุ้น 25% จากบริษัทนี้
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}ขายหุ้น 25% คืนให้บริษัทนี้
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}ไม่สามารถซื้อหุ้น 25% จากบริษัทนี้ได้...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}ไม่สามารถขายหุ้น 25% จากบริษัทนี้ได้...
+STR_ERROR_PROTECTED                                             :{WHITE}บริษัทนี้ยังไม่เก่าแก่พอที่จะซื้อหุ้นหรือซื้อกิจการได้...

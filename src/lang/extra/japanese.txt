@@ -146,3 +146,20 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :航空機{COMMA
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :他社株の取引許容: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :有効にすると、ライバル会社の株式を取引できるようになります。この設定を有効にしても、目的の社が設立から丸5年経過していない場合は取引できません
+
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :株式を取引するための最低会社年齢：{STRING}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :他の人が彼らから株式を売買できるように、会社の最低年齢を設定します。
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({1:COMPANY}が株式の{0:COMMA}%を保有)
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}会社株の25%を買収
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}会社株の25%を売却
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}この会社の株式の25%を購入します。Shift+クリックで費用を見積もります
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}この会社の株式の25%を売却します。Shift+クリックで売却価格の見積が出ます
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}この会社の株を25%購入できません
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}この会社の株を25%売却できません
+STR_ERROR_PROTECTED                                             :{WHITE}この会社は開設から6年が経過していません

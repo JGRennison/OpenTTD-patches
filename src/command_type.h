@@ -373,6 +373,8 @@ enum Commands {
 
 	CMD_PAUSE,                        ///< pause the game
 
+	CMD_BUY_SHARE_IN_COMPANY,         ///< buy a share from a company
+	CMD_SELL_SHARE_IN_COMPANY,        ///< sell a share from a company
 	CMD_BUY_COMPANY,                  ///< buy a company which is bankrupt
 	CMD_DECLINE_BUY_COMPANY,          ///< decline to buy a company which is bankrupt
 
@@ -610,7 +612,7 @@ DECLARE_ENUM_AS_BIT_SET(CommandFlags)
 enum CommandType {
 	CMDT_LANDSCAPE_CONSTRUCTION, ///< Construction and destruction of objects on the map.
 	CMDT_VEHICLE_CONSTRUCTION,   ///< Construction, modification (incl. refit) and destruction of vehicles.
-	CMDT_MONEY_MANAGEMENT,       ///< Management of money, i.e. loans.
+	CMDT_MONEY_MANAGEMENT,       ///< Management of money, i.e. loans and shares.
 	CMDT_VEHICLE_MANAGEMENT,     ///< Stopping, starting, sending to depot, turning around, replace orders etc.
 	CMDT_ROUTE_MANAGEMENT,       ///< Modifications to route management (orders, groups, etc).
 	CMDT_OTHER_MANAGEMENT,       ///< Renaming stuff, changing company colours, placing signs, etc.

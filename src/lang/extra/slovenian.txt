@@ -47,3 +47,17 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Letalo {COMMA}
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Dovoli kupovanje delnic od drugih podjetij: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Če je omogočeno, se lahko trguje z delnicami podjetij. Na voljo samo po določeni starosti podjetja.
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% v lasti podjetja {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Kupi 25% delnic podjetja
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Prodaj 25% delnic podjetja
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Kupi 25% delnic tega podjetja. Shift+Klik prikaže predviden strošek brez nakupa delnic
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Prodaj 25% delnic tega podjetja. Shift+Klik prikaže predviden dobiček brez prodaje delnic
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Ni mogoče kupiti 25% delnic tega podjetja...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Ni mogoče prodati 25% delnic tega podjetja...
+STR_ERROR_PROTECTED                                             :{WHITE}Podjetje še ni dovolj staro, da bi lahko trgovalo z lastnimi delnicami...

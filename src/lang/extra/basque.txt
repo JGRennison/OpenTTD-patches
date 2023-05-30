@@ -47,3 +47,17 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Hegazkina {COMM
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Beste konpainien akzioak erostea baimendu: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Gaitua dagoenean, konpainiaren akzioak erostea eta saltzea baimendu. Konpainiak akzioak izateko gutxiengo adin batera iritsi beharko dira
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}(%{COMMA} konpainia honek erosi du: {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Konpainiaren akzioen %25a erosi
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Konpainiaren akzioen %25a saldu
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Konpainiaren akzioen %25a erosi. Shift+Klik gutxi gora beherako kostea erakutsi
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Konpainiaren akzioen %25a saldu. Shift+Klik gutxi gora beherako irabaziak erakutsi
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Ezin izan da konpainiaren akzioen %25a erosi...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Ezin izan da konpainiaren akzioen %25a saldu...
+STR_ERROR_PROTECTED                                             :{WHITE}Konpainia gazteegia da akzioak izateko...

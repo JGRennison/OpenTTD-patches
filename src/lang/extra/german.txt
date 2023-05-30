@@ -1805,3 +1805,20 @@ STR_SHIFT_KEY_NAME                                              :{BLACK}Shift
 STR_CTRL_KEY_NAME                                               :{BLACK}Strg
 STR_MODIFIER_TOGGLE_SHIFT_TOOLTIP                               :{BLACK}Klicken, um den Zustand der Shift-Taste umzuschalten
 STR_MODIFIER_TOGGLE_CTRL_TOOLTIP                                :{BLACK}Klicken, um den Zustand der Strg-Taste umzuschalten
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Handel mit Firmenanteilen erlauben: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Erlaube das Kaufen und Verkaufen von Firmenanteilen. Firmenanteile sind nur verfügbar für Firmen, die hinreichend lange existieren
+
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Minimales Alter einer Firma, um an der Börse gehandelt zu werden: {STRING}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Setze das minimale Alter einer Firma, ab dem Andere Firmenanteile dieser Firma kaufen und verkaufen können.
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% Eigentum von {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}25% der Aktien der Firma kaufen
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}25% der Aktien der Firma verkaufen
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}25% der Aktien dieser Firma kaufen. Umschalt+Klick zeigt einen Kostenvoranschlag
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}25% der Aktien dieser Firma verkaufen. Umschalt+Klick zeigt eine Gewinnschätzung
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Kauf von 25% der Aktien dieser Firma nicht möglich ...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Verkauf von 25% der Aktien dieser Firma nicht möglich ...
+STR_ERROR_PROTECTED                                             :{WHITE}Diese Firma ist noch nicht alt genug, um an der Börse gehandelt zu werden...

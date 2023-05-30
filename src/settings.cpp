@@ -1383,6 +1383,16 @@ static void ScriptMaxMemoryChange(int32 new_value)
 	}
 }
 
+/**
+ * Invalidate the company details window after the shares setting changed.
+ * @param p1 Unused.
+ * @return Always true.
+ */
+static void InvalidateCompanyWindow(int32 new_value)
+{
+	InvalidateWindowClassesData(WC_COMPANY);
+}
+
 static void EnableSingleVehSharedOrderGuiChanged(int32 new_value)
 {
 	for (VehicleType type = VEH_BEGIN; type < VEH_COMPANY_END; type++) {

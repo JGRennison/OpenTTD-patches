@@ -51,3 +51,22 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Aeromobile {COM
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Permetti l'acquisto di azioni di altre compagnie: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Se abilitata, consente l'acquisto e la vendita di azioni delle compagnie. Le azioni sono disponibili solo per le compagnie che hanno raggiunto una certa età minima
+
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Età minima della compagnia per lo scambio delle sue azioni: {STRING}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Imposta l'età minima di una compagnia affinchè sia possibile acquistarne o venderne le azioni.
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_VALUE                   :{COMMA} {P "anno" anni}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_NO_MIN                  :Nessun minimo
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% posseduto dalla {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Compra il 25% delle azioni
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Vendi il 25% delle azioni
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Compra una quota del 25% di questa compagnia. MAIUSC+clic mostra il costo stimato senza comprare azioni
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Vende una quota pari al 25% di questa compagnia. MAIUSC+clic mostra il ricavo stimato senza vendere azioni
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Impossibile comprare il 25% delle azioni...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Impossibile vendere il 25% delle azioni...
+STR_ERROR_PROTECTED                                             :{WHITE}Questa compagnia non è abbastanza vecchia per scambiare azioni...

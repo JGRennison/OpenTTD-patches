@@ -47,3 +47,20 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Zrakoplov {COMM
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Dopusti kupovanje udjela u drugim tvrtkama: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Kada je uključeno, dopušta se kupnja i prodaja dionica tvrtki. Dionice će postati dostupne samo za tvrtke određene starosti
+
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Najmanja starost tvrtke za trgovanje udjelima: {STRING}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Odredite najmanju starost tvtke da bi drugi mogli kupovati i prodavati dionice.
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% u vlasništvu {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Kupi 25% udjela u tvrtci
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Prodaj 25% udjela u tvrtci
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Kupi 25% udjela u ovoj tvrtci. Shift+Klik prikazuje trošak bez kupnje udjela.
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Prodaj 25% udjela u ovoj tvrtci. Shift+Klik prikazuje trošak bez prodaje udjela.
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Nije moguće kupiti 25% udjela u ovoj tvrtci...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Nije moguće prodati 25% udjela u ovoj tvrtci...
+STR_ERROR_PROTECTED                                             :{WHITE}Ova tvrtka još nije dovoljno stara da bi trgovala udjelima...

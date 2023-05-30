@@ -51,3 +51,22 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Samolot {COMMA}
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Pozwól kupować udziały w innych firmach: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Kiedy włączone, pozwala na kupowanie i sprzedawanie udziałów w firmie. Udziały będą dostępne tylko dla firm z odpowiednim stażem
+
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Minimalny wiek firmy pozwalający na handel udziałami: {STRING}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Ustaw minimalny wiek firmy pozwalający innym kupować i sprzedawać jej akcje.
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_VALUE                   :{COMMA} {P "rok" "lata" "lat"}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_NO_MIN                  :Brak minimum
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% w posiadaniu przez {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Kup 25% udziałów w firmie
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Sprzedaj 25% udziałów w firmie
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Kup 25% udziałów w tej firmie. Shift+klik pokazuje szacunkowy koszt bez dokonania zakupu
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Sprzedaj 25% udziałów tej firmy. Shift+klik pokazuje szacunkowy koszt bez dokonania zakupu
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Nie można kupić 25% udziałów w tej firmie...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Nie można sprzedać 25% udziałów tej firmy...
+STR_ERROR_PROTECTED                                             :{WHITE}Ta firma jeszcze nie sprzedaje akcji...

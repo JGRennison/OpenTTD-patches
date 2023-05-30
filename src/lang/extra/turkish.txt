@@ -50,3 +50,22 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Uçak {COMMA}
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Diğer şirketlerin hisseleri alınabilsin: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Etkinleştirildiğinde, şirketlerin hisse senetlerinin alınıp satılması mümkün olur. Hisse senetleri sadece belli bir yaşa ulaşan şirketler için geçerlidir
+
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Hisse satmak için gerekli minimum şirket yaşı: {STRING}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Bir şirketin hisselerinin satılabileceği ve diğer şirketlerin alabileceği minimum şirket yaşını belirleyin.
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_VALUE                   :{COMMA} yıl{P ""}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_NO_MIN                  :Minimum yok
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}(%{COMMA} ortağı {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}%25'ini satın al
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}%25'ini geri ver
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Şirketin %25 hissesini al. Shift+tıklama hisse satın almadan tahmini maliyeti gösterir
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Şirketin %25 hissesini sat. Shift+tıklama hisse satmadan tahmini maliyeti gösterir
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Şirketin %25'i alınamıyor...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Şirketin %25'i satılamıyor...
+STR_ERROR_PROTECTED                                             :{WHITE}Bu şirket hisselerini satacak kadar eski değil...

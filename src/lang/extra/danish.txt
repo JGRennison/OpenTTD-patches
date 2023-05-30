@@ -49,3 +49,22 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Fly {COMMA}
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Tillad at købe aktier i andre selskaber: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Hvis aktiveret, tillades køb og salg af selskabsaktier. Aktier vil kun være tilgængelige for selskaber der er nået en hvis alder
+
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Mindste selskabsalder for aktiehandel: {STRING}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Indstil mindste alder på selskaber, før andre kan købe og sælge aktier i dem.
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_VALUE                   :{COMMA} år{P "" s}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_NO_MIN                  :Intet minimum
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% ejes af {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Køb 25% aktier i selskabet
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Sælg 25% aktier i selskabet
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Køb 25% aktier i dette selskab. Shift+Klik viser de anslåede omkostninger uden at købe nogle aktier
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Sælg 25% aktier i dette selskab. Shift+Klik viser de anslåede indtægter uden at sælge nogle aktier
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Kan ikke købe 25% aktier i dette selskab...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Kan ikke sælge 25% aktier i dette selskab...
+STR_ERROR_PROTECTED                                             :{WHITE}Dette selskab sælger ikke aktier endnu...

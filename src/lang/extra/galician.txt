@@ -2050,3 +2050,22 @@ STR_ERROR_STATIONS_NOT_IN_SAME_TOWN                             :{WHITE}... as e
 STR_ERROR_STATION_ATTACHED_TO_INDUSTRY                          :{WHITE}... a estación está conectada a unha industria
 
 STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_EXTRA                     :{STRING}{}{BLACK}Ctrl+Click para convertir pezas de raís en lugar do cadro enteiro.
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Permiti-la compra de accións de outras compañías: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Cando se activa, permite comprar ou vender accións da compañía. As accións só estarán dispoñíbeis para compañías que acaden certa idade
+
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Idade mínima da compañía para compraventa de accións: {STRING}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Establece a idade mínima dunha compañía para que outros poidan comprar e vender accións dela.
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_VALUE                   :{COMMA} ano{P "" s}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_NO_MIN                  :Sen mínimo
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% propiedade de {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Mercar un 25% das accións da compañía
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Vender un 25% das accións da compañía
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Mercar un 25% das accións desta compañía. Shift+Click mostra o custo estimado sen mercar ningunha acción
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Vender un 25% das accións desta compañía. Shift+Click mostra o custo estimado sen vender ningunha acción
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Non se pode comprar un 25% das accións desta compañía...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Non se pode vender un 25% das accións desta compañía...
+STR_ERROR_PROTECTED                                             :{WHITE}Esta compañía aínda non é suficientemente antiga para comerciar con accións...

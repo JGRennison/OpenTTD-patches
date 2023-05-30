@@ -47,3 +47,17 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Awyren {COMMA}
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Caniatáu prynu cyfranddaliadau mewn cwmnïau eraill: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Pan fo wedi'i alluogi, fe ganiateir prynnu a gwerthu cyfrandalaidau cwmni. Rhaid i gwmni gyrraedd oed penodol cyn y daw eu cyfrandaliadau ar gael
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% yn eiddo {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Prynu cyfran o 25% o'r cwmni
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Gwerthu cyfran o 25% o'r cwmni
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Prynu cyfran o 25% yn y cwmni yma. Mae Shift+Clic yn dangos amcangyfrif o'r gost heb brynnu cyfran
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Gwerthu cyfran o 25% yn y cwmni yma. Mae Shift+Clic yn dangos amcangyfrif o'r elw heb werthu cyfran
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Methu prynu cyfran o 25% o'r cwmni hwn...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Methu gwerthu cyfran o 25% o'r cwmni ...
+STR_ERROR_PROTECTED                                             :{WHITE}Nid yw'r cwmni hwn yn ddigon da ar gyfer cyfnewid cyfrandaliadau eto...

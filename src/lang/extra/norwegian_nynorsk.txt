@@ -47,3 +47,16 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Luftfartøy {CO
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Tillet kjøp av aksjar i andre firma: {STRING}
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}{NBSP}% eigast av {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Kjøp 25{NBSP}% av aksjane i firmaet
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Sel 25{NBSP}% av aksjane i firmaet
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Kjøp 25{NBSP}% av aksjane i firmaet. Skift-klikk viser prisoverslag utan å kjøpe aksjar
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Sel 25{NBSP}% av aksjane i firmaet. Skift-klikk viser prisoverslag utan å selje aksjar
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Kan ikkje kjøpa 25{NBSP}% av aksjane...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Kan ikkje selja 25{NBSP}% av aksjane...
+STR_ERROR_PROTECTED                                             :{WHITE}Det her firmaet sel ikkje aksjer enno...

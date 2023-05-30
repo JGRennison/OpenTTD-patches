@@ -48,3 +48,22 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Ilma-alus {COMM
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Salli toisten yhtiöiden osakkeiden ostaminen: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Mikäli käytössä, toisten yhtiöiden osakkeiden ostaminen ja myyminen on mahdollista. Osakkeet ovat saatavilla vain yhtiöille, jotka ovat saavuttaneet tietyn iän
+
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Yhtiön vähimmäisikä osakekaupoille: {STRING}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Aseta yhtiölle vähimmäisikä, jonka jälkeen muut voivat ostaa ja myydä yhtiön osakkeita.
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_VALUE                   :{COMMA} vuo{P 0 si tta}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_NO_MIN                  :Ei vähimmäisaikaa
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}{NBSP}%:n omistus: {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Osta 25{NBSP}%:n osuus yhtiöstä
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Myy 25{NBSP}%:n osuus yhtiöstä
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Osta 25{NBSP}%:n osuus tästä yhtiöstä. Vaihto+napsautus näyttää kustannusarvion ostamatta osuuksia.
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Myy 25{NBSP}%:n osuus tästä yhtiöstä. Vaihto+napsautus näyttää tuottoarvion myymättä osuuksia.
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Tästä yhtiöstä ei voi ostaa 25{NBSP}%:n osuutta...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Tästä yhtiöstä ei voi myydä 25{NBSP}%:n osuutta...
+STR_ERROR_PROTECTED                                             :{WHITE}Tällä yhtiöllä ei ole vielä osakkeita...

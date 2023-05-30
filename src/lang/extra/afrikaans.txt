@@ -47,3 +47,20 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Vliegtuig {COMM
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Laat die koop van aandeele van ander maatskappye toe: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :As dit geaktiveer is, kan aandele in maatskappye gekoop en verkoop word. Aandele is net in maatskappye beskikbaar na 'n sekere aantal jaar.
+
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Minimum maatskappyouderdom om aandele te verhandel: {STRING}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Stel die minimum ouderdom van 'n maatskappy in vir ander om aandele by hulle te kan koop en verkoop.
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% besit by {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Koop 25% aandeel in maatskappy
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Verkoop 25% aandeel in maatskappy
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Koop 'n 25% aandeel in maatskappy. Shift+klik vir kwotasie
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Verkoop 'n 25% aandeel in maatskappy. Shift+klik vir beraamde inkomste
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Kan nie 25% aandeel in die maatskappy koop nie...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Kan nie 25% aandeel in die maatskappy verkoop nie...
+STR_ERROR_PROTECTED                                             :{WHITE}Die maatskappy is nie oud genoeg om aandeele te handel nie...

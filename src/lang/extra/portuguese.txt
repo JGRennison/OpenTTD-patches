@@ -51,3 +51,22 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Aeronave {COMMA
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Permite comprar acções de outras empresas: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Quando ativo, permite a compra e venda de ações de companhias. As ações apenas estarão disponíveis quando a companhia atinge uma determinada idade.
+
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Idade mínima da empresa para negociar ações: {STRING}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Definir a idade mínima de uma companhia a partir da qual outros jogadores poderão comprar ou vender ações da mesma.
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_VALUE                   :{COMMA} ano{P "" s}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_NO_MIN                  :Sem mínimo
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% propriedade de {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Comprar 25% das acções
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Vender 25% das ações
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Comprar 25% das acções nesta empresa. Shift+Clique mostra valor estimado sem comprar nenhuma acção
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Vender 25% das ações nesta empresa. Shift+Clique mostra valor estimado sem vender nenhuma ação
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Não é possível comprar 25% das acções nesta empresa...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Não é possível vender 25% das acções nesta empresa...
+STR_ERROR_PROTECTED                                             :{WHITE}Esta empresa ainda não troca acções...

@@ -47,3 +47,17 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :{G=n}Flogfar {C
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Loyv keypi av partabrøvum frá øðrum fyritøkum: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Um gilda, er loyvt at keypa og selja fyritøku partabrøv. Partabrøv verða einans tøk hjá fyritøkum ið hava rokki ein ávísan aldur
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% ogn hjá {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Keyp 25% partabrøv í fyritøkuni
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Sel 25% partabrøv í fyritøkuni
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Keyp 25% partabrøv í hesi fyritøkuni. Shift+trýst vísir kostnaðar meting uttan at keypa nakað partabræv
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Sel 25% partabrøv í hesi fyritøkuni. Shift+trýst vísir inntøku meting uttan at selja nakað partabræv
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Kann ikki keypa 25% partabræv í hesi fyritøkuni...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Kann ikki selja 25% partabræv í hesari fyritøkuni...
+STR_ERROR_PROTECTED                                             :{WHITE}Hendan fyritøkan er ikki nóg gomul at býta partabrøv enn...

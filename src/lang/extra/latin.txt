@@ -47,3 +47,17 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Aeroplanum {COM
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Sinere mercari sortes societatum: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Sinere mercari sortes a societatibus. Sortes societatum satis aetatis modo mercari licet
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% posessa a {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Quadrantem sortium huius societatis emere
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Quadrantem sortium huius societatis vendere
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Quadrantem sortium huius societatis emere. Shift+Preme ut pretium monstretur sine emptione
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Quadrantem sortium huius societatis vendere. Shift+Preme ut pretium monstretur sine emptione
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Non licet quadrantem sortium huius societatis emere...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Non licet quadrantem sortium huius societatis vendere...
+STR_ERROR_PROTECTED                                             :{WHITE}Nondum licet sortes societatis mercari...

@@ -47,3 +47,17 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Flugvél {COMMA
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Leyfa hlutabréfakaup í öðrum fyrirtækjum: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Ef þessi stilling er virk er hægt að kaupa og selja hlutabréf í fyrirtækjum. Hlutabréf eru aðeins aðgengileg fyrir fyrirtæki sem hafa náð ákveðnum aldri
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% í eigu {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Kaupa 25% hlut í fyrirtæki
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Selja 25% hlut í fyrirtæki
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Kaupa 25% hlut í þessu fyrirtæki. Shift+smella sýnir áætlaðan kostnað
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Selja 25% hlut í þessu fyrirtæki. Shift+smella sýnir áætlaðan kostnað
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Get ekki keypt 25% hlut í þessu fyrirtæki...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Get ekki selt 25% hlut í þessu fyrirtæki...
+STR_ERROR_PROTECTED                                             :{WHITE}Þetta fyrirtæki er ekki nógu gamalt til að versla með hluti ...

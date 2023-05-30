@@ -198,7 +198,6 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_CONSISTENT_PARTIAL_Z,             XSCF_NULL,                1,   1, "consistent_partial_z",             nullptr, nullptr, nullptr          },
 	{ XSLFI_MORE_CARGO_AGE,                   XSCF_NULL,                1,   1, "more_cargo_age",                   nullptr, nullptr, nullptr          },
 	{ XSLFI_AI_START_DATE,                    XSCF_NULL,                1,   1, "slv_ai_start_date",                nullptr, nullptr, nullptr          },
-	{ XSLFI_NO_COMPANY_SHARES,                XSCF_NULL,                1,   1, "no_company_shares",                nullptr, nullptr, nullptr          },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, nullptr, nullptr, nullptr, nullptr },// This is the end marker
 };
 

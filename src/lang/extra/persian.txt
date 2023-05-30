@@ -45,3 +45,15 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :هواپیما 
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :قابلیت خرید سهام بقیه شرکت‌ها: {STRING}
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% توسط {COMPANY} خریداری شده)
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}25% سهام شرکت را بخر
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}25% سهام شرکت را بفروش
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}25% سهام این شرکت را بخر.Shift+Click برآورد قیمت سهام را بدون فروش سهام نشان می دهد.
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}25% سهام این شرکت را بفروش.دکمه Shift+Clickبرآورد قیمت را بدون فروش سهام نمایش می دهد
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}نمی شود 25% سهام این شرکت را خرید
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}نمی شود 25% سهام این شرکت را فروخت

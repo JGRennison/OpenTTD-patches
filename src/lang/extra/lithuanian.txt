@@ -48,3 +48,20 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Lėktuvas {COMM
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Leisti pirkti kitų kompanijų akcijas: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Leisti pirkti bei parduoti kitų kompanijų akcijas. Akcijos yra platinamos tik įmonei sulaukus tam tikro amžiaus
+
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Mažiausias kompanijos amžius metais, kuomet bus leista prekiauti jos akcijomis: {STRING}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Kompanijos akcijomis leidžiama prekiauti tik jai sulaukus tam tikro amžiaus
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% priklauso {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Pirkti 25% kompanijos akcijų
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Parduoti 25% kompanijos akcijų
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Pirkti 25% šios kompanijos akcijų. Spragtelėjus laikant nuspaustą Shift klavišą, bus parodytos numatomos išlaidos nieko realiai neperkant
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Parduoti 25% šios kompanijos akcijų. Spragtelėjus laikant nuspaustą Shift klavišą, bus parodytos numatomos pajamos nieko realiai neperkant
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Negalima nusipirkti 25% šios kompanijos akcijų...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Negalima parduoti 25% šios kompanijos akcijų...
+STR_ERROR_PROTECTED                                             :{WHITE}Ši kompanija dar pernelyg jauna, kad galetų pardavinėti savo akcijas...

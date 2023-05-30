@@ -48,3 +48,20 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Борт №{CO
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Дозволити придбання акції інших компаній: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :При включенні дозволяє придбання та продаж акцій команій. Акції компанії стають доступними після досягнення деякого віку.
+
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Мінімальний вік компанії для торгівлі акціями: {STRING}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Встановіть мінімальний вік компанії, щоб інші могли купувати та продавати акції у них.
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% у власності {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Купити 25% акцій компанії
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Продати 25% акцій компанії
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Купити 25% акцій цієї компанії. Утримуйте Shift для показу вартості цих акцій
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Продати 25% акцій цієї компанії. Утримуйте Shift для показу вартості цих акцій
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Неможливо купити 25% акцій цієї компанії...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Неможливо продати 25% акцій цієї компанії...
+STR_ERROR_PROTECTED                                             :{WHITE}Ця компанія поки ще не продається...

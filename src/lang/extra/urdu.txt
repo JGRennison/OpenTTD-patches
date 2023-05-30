@@ -35,3 +35,5 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :ہوایی جہ
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :دوسری کمپنیوں کے حصص خریدنے کی اجازت: {STRING}

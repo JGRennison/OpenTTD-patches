@@ -43,3 +43,17 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Самолет 
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Разреши купуване на акции от други компании: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Ако тази опция бъде активирана, ще можете да купувате и продавате дялове на компании. Това ще бъде възможно единствено когато дадената компания достигне определена възраст
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% е притежание на {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Купи 25% от акциите на компанията
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Продай 25% от акциите на компанията
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Купи 25% от акциите на тази компания. Shift показва цената на 25% от акциите
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Продай 25% от акциите на тази компания. Shift показва цената на 25% от акциите
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Не може да купиш 25% от акциите на тази компания...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Не може да продадеш 25% от акциите на тази компания...
+STR_ERROR_PROTECTED                                             :{WHITE}Тази компания все още не е достатъчно стара да предлага акции...

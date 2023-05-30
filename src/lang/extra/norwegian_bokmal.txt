@@ -48,3 +48,20 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Luftfartøy {CO
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :Tillat aksjekjøp i andre firmaer: {STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Når aktivert, tillates kjøp og salg av selskapers aksjer. Aksjer vil kun være tilgjengelig selskaper som når en viss alder
+
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Minimum alder på firmaet for å handle aksjer: {STRING}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Sett minimum levetid for et selskap, før andre kan kjøpe og selge aksjer fra dem.
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}{NBSP}% eies av {COMPANY})
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}Kjøp 25{NBSP}% av aksjene i firmaet
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}Selg 25{NBSP}% av aksjene i firmaet
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}Kjøp 25{NBSP}% av aksjene i firmaet. Shift+klikk viser beregnet kostnad uten å kjøpe noen aksjer
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Selg 25{NBSP}% av aksjene i firmaet. Shift+klikk viser beregnet inntekt uten å selge noen aksjer
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Kan ikke kjøpe 25{NBSP}% av aksjene...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Kan ikke selge 25{NBSP}% av aksjene...
+STR_ERROR_PROTECTED                                             :{WHITE}Dette firmaet selger ikke aksjer enda...

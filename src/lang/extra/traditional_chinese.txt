@@ -47,3 +47,20 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :飛機 {COMMA}
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+STR_CONFIG_SETTING_ALLOW_SHARES                                 :允許購買其他公司的股票：{STRING}
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :啟用此選項以容許公司買賣股票。一所公司必須達到一定的年齡方能買賣股票。
+
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :容許公司買賣股票的最小年齡：{STRING}
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :設定容許公司買賣股票的最小年齡。
+
+STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% 由 {COMPANY} 擁有)
+
+STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}購買 25% 公司股份
+STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}出售 25% 公司股份
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}購入這所公司的 25% 股份。按住 Shift 點選以顯示預估的購買費用而不作購入
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}出售這所公司的 25% 股份。按住 Shift 點選以顯示預估的出售所得而不賣出任何股份
+
+STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}無法購買這間公司的股份...
+STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}無法出售這間公司的股份...
+STR_ERROR_PROTECTED                                             :{WHITE}這間公司才剛成立，還不能交易股票...
