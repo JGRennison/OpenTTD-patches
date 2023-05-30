@@ -971,7 +971,7 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 
 		auto validation_error = [i](StringID str) -> CommandCost {
 			CommandCost result(str);
-			result.SetResultData((1 << 31) | (uint)i);
+			result.SetResultData((uint)i);
 			return result;
 		};
 

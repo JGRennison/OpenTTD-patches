@@ -25,6 +25,7 @@ enum CommandCostIntlFlags : uint8 {
 	CCIF_INLINE_EXTRA_MSG         = 1 << 1,
 	CCIF_INLINE_TILE              = 1 << 2,
 	CCIF_INLINE_RESULT            = 1 << 3,
+	CCIF_VALID_RESULT             = 1 << 4,
 };
 DECLARE_ENUM_AS_BIT_SET(CommandCostIntlFlags)
 
@@ -256,6 +257,11 @@ public:
 	}
 
 	void SetTile(TileIndex tile);
+
+	bool HasResultData() const
+	{
+		return (this->flags & CCIF_VALID_RESULT);
+	}
 
 	uint32 GetResultData() const
 	{

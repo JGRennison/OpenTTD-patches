@@ -1390,6 +1390,8 @@ void CommandCost::SetTile(TileIndex tile)
 
 void CommandCost::SetResultData(uint32 result)
 {
+	this->flags |= CCIF_VALID_RESULT;
+
 	if (result == this->GetResultData()) return;
 
 	if (this->AddInlineData(CCIF_INLINE_RESULT)) {

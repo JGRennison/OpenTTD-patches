@@ -77,7 +77,7 @@ static void Load_TRRP()
 			char str[4096];
 			char *strend = str + seprintf(str, lastof(str), "Trace restrict program %d: %s\nProgram dump:",
 					index, GetStringPtr(validation_result.GetErrorMessage()));
-			uint fail_offset = validation_result.GetResultData() ^ (1 << 31);
+			uint fail_offset = validation_result.HasResultData() ? validation_result.GetResultData() : UINT32_MAX;
 			for (uint i = 0; i < (uint)prog->items.size(); i++) {
 				if ((i % 3) == 0) {
 					strend += seprintf(strend, lastof(str), "\n%4u:", i);
