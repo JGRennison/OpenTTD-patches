@@ -1391,6 +1391,7 @@ static void ScriptMaxMemoryChange(int32 new_value)
 static void InvalidateCompanyWindow(int32 new_value)
 {
 	InvalidateWindowClassesData(WC_COMPANY);
+	InvalidateWindowClassesData(WC_GAME_OPTIONS);
 }
 
 static void EnableSingleVehSharedOrderGuiChanged(int32 new_value)
