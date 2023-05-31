@@ -293,7 +293,7 @@ public:
 					DrawTrainImage(virtual_train, r.Shrink(TRAIN_FRONT_SPACE, 2, 25, 0), this->sel, EIT_IN_DEPOT, this->hscroll->GetPosition(), this->vehicle_over);
 					SetDParam(0, CeilDiv(virtual_train->gcache.cached_total_length * 10, TILE_SIZE));
 					SetDParam(1, 1);
-					DrawString(r.left, r.right, r.top, STR_TINY_BLACK_DECIMAL, TC_BLACK, SA_RIGHT);
+					DrawString(r.left, r.right, r.top, STR_JUST_DECIMAL, TC_BLACK, SA_RIGHT, false, FS_SMALL);
 				}
 				break;
 			}

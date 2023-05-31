@@ -331,7 +331,7 @@ struct DepotWindow : Window {
 				SetDParam(0, CeilDiv(u->gcache.cached_total_length * 10, TILE_SIZE));
 				SetDParam(1, 1);
 				Rect count = text.WithWidth(this->count_width - WidgetDimensions::scaled.hsep_normal, !rtl);
-				DrawString(count.left, count.right, count.bottom - FONT_HEIGHT_SMALL + 1, STR_TINY_BLACK_DECIMAL, TC_FROMSTRING, SA_RIGHT); // Draw the counter
+				DrawString(count.left, count.right, count.bottom - FONT_HEIGHT_SMALL + 1, STR_JUST_DECIMAL, TC_BLACK, SA_RIGHT, false, FS_SMALL); // Draw the counter
 				break;
 			}
 
@@ -360,7 +360,7 @@ struct DepotWindow : Window {
 			DrawSpriteIgnorePadding((v->vehstatus & VS_STOPPED) ? SPR_FLAG_VEH_STOPPED : SPR_FLAG_VEH_RUNNING, PAL_NONE, flag, false, SA_CENTER);
 
 			SetDParam(0, v->unitnumber);
-			DrawString(text, (uint16)(v->max_age - DAYS_IN_LEAP_YEAR) >= v->age ? STR_BLACK_COMMA : STR_RED_COMMA);
+			DrawString(text, STR_JUST_COMMA, (uint16)(v->max_age - DAYS_IN_LEAP_YEAR) >= v->age ? TC_BLACK : TC_RED);
 		}
 	}
 
@@ -663,13 +663,13 @@ struct DepotWindow : Window {
 				if (this->type == VEH_TRAIN) {
 					SetDParamMaxValue(0, 1000, 0, FS_SMALL);
 					SetDParam(1, 1);
-					this->count_width = GetStringBoundingBox(STR_TINY_BLACK_DECIMAL).width + WidgetDimensions::scaled.hsep_normal;
+					this->count_width = GetStringBoundingBox(STR_JUST_DECIMAL, FS_SMALL).width + WidgetDimensions::scaled.hsep_normal;
 				} else {
 					this->count_width = 0;
 				}
 
 				SetDParamMaxDigits(0, this->unitnumber_digits);
-				Dimension unumber = GetStringBoundingBox(STR_BLACK_COMMA);
+				Dimension unumber = GetStringBoundingBox(STR_JUST_COMMA);
 
 				if (this->type == VEH_TRAIN || this->type == VEH_ROAD) {
 					min_height = std::max<uint>(unumber.height, this->flag_size.height);

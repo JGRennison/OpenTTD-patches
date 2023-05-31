@@ -307,7 +307,7 @@ struct NewSignalStyle;
 
 /** Dynamic data of a loaded NewGRF */
 struct GRFFile : ZeroedMemoryAllocator {
-	char *filename;
+	std::string filename;
 	uint32 grfid;
 	byte grf_version;
 

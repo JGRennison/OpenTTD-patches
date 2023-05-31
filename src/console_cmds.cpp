@@ -2772,7 +2772,7 @@ DEF_CONSOLE_CMD(ConDumpRoadTypes)
 		);
 	}
 	for (const auto &grf : grfs) {
-		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grf.first), grf.second->filename);
+		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grf.first), grf.second->filename.c_str());
 	}
 	return true;
 }
@@ -2830,7 +2830,7 @@ DEF_CONSOLE_CMD(ConDumpRailTypes)
 		);
 	}
 	for (const auto &grf : grfs) {
-		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grf.first), grf.second->filename);
+		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grf.first), grf.second->filename.c_str());
 	}
 	return true;
 }
@@ -2882,7 +2882,7 @@ DEF_CONSOLE_CMD(ConDumpBridgeTypes)
 	for (uint32 grfid : grfids) {
 		extern GRFFile *GetFileByGRFID(uint32 grfid);
 		const GRFFile *grffile = GetFileByGRFID(grfid);
-		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grfid), grffile ? grffile->filename : "????");
+		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grfid), grffile ? grffile->filename.c_str() : "????");
 	}
 	return true;
 }
@@ -2945,7 +2945,7 @@ DEF_CONSOLE_CMD(ConDumpCargoTypes)
 		);
 	}
 	for (const auto &grf : grfs) {
-		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grf.first), grf.second->filename);
+		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grf.first), grf.second->filename.c_str());
 	}
 	return true;
 }
@@ -3372,7 +3372,7 @@ DEF_CONSOLE_CMD(ConNewGRFProfile)
 			bool active = selected && profiler->active;
 			TextColour tc = active ? TC_LIGHT_BLUE : selected ? TC_GREEN : CC_INFO;
 			const char *statustext = active ? " (active)" : selected ? " (selected)" : "";
-			IConsolePrintF(tc, "%d: [%08X] %s%s", i, BSWAP32(grf->grfid), grf->filename, statustext);
+			IConsolePrintF(tc, "%d: [%08X] %s%s", i, BSWAP32(grf->grfid), grf->filename.c_str(), statustext);
 			i++;
 		}
 		return true;

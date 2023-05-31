@@ -8,6 +8,7 @@
 /** @file articulated_vehicles.cpp Implementation of articulated vehicles. */
 
 #include "stdafx.h"
+#include "core/random_func.hpp"
 #include "train.h"
 #include "roadveh.h"
 #include "ship.h"
@@ -467,7 +468,7 @@ void AddArticulatedParts(Vehicle *first)
 		v->max_age = 0;
 		v->engine_type = engine_type;
 		v->value = 0;
-		v->random_bits = VehicleRandomBits();
+		v->random_bits = Random();
 
 		if (type == VEH_SHIP) continue;
 

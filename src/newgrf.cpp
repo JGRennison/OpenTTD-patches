@@ -335,10 +335,10 @@ GRFFile *GetFileByGRFIDExpectCurrent(uint32 grfid)
  * @param filename The filename to obtain the file for.
  * @return The file.
  */
-static GRFFile *GetFileByFilename(const char *filename)
+static GRFFile *GetFileByFilename(const std::string &filename)
 {
 	for (GRFFile * const file : _grf_files) {
-		if (strcmp(file->filename, filename) == 0) return file;
+		if (file->filename == filename) return file;
 	}
 	return nullptr;
 }
@@ -370,12 +370,11 @@ static GRFError *DisableGrf(StringID message = STR_NULL, GRFConfig *config = nul
 	if (config == _cur.grfconfig) _cur.skip_sprites = -1;
 
 	if (message != STR_NULL) {
-		delete config->error;
-		config->error = new GRFError(STR_NEWGRF_ERROR_MSG_FATAL, message);
+		config->error = std::make_unique<GRFError>(STR_NEWGRF_ERROR_MSG_FATAL, message);
 		if (config == _cur.grfconfig) config->error->param_value[0] = _cur.nfo_line;
 	}
 
-	return config->error;
+	return config->error.get();
 }
 
 /**
@@ -8034,8 +8033,7 @@ static void GRFLoadError(ByteReader *buf)
 		DisableGrf();
 
 		/* Make sure we show fatal errors, instead of silly infos from before */
-		delete _cur.grfconfig->error;
-		_cur.grfconfig->error = nullptr;
+		_cur.grfconfig->error.reset();
 	}
 
 	if (message_id >= lengthof(msgstr) && message_id != 0xFF) {
@@ -8051,7 +8049,8 @@ static void GRFLoadError(ByteReader *buf)
 	/* For now we can only show one message per newgrf file. */
 	if (_cur.grfconfig->error != nullptr) return;
 
-	GRFError *error = new GRFError(sevstr[severity]);
+	_cur.grfconfig->error = std::make_unique<GRFError>(sevstr[severity]);
+	GRFError *error = _cur.grfconfig->error.get();
 
 	if (message_id == 0xFF) {
 		/* This is a custom error message. */
@@ -8081,8 +8080,6 @@ static void GRFLoadError(ByteReader *buf)
 		uint param_number = buf->ReadByte();
 		error->param_value[i] = _cur.grffile->GetParam(param_number);
 	}
-
-	_cur.grfconfig->error = error;
 }
 
 /* Action 0x0C */
@@ -10353,10 +10350,7 @@ static void ResetNewGRF()
 static void ResetNewGRFErrors()
 {
 	for (GRFConfig *c = _grfconfig; c != nullptr; c = c->next) {
-		if (!HasBit(c->flags, GCF_COPY) && c->error != nullptr) {
-			delete c->error;
-			c->error = nullptr;
-		}
+		c->error.reset();
 	}
 }
 
@@ -10522,7 +10516,7 @@ static void InitNewGRFFile(const GRFConfig *config)
  */
 GRFFile::GRFFile(const GRFConfig *config)
 {
-	this->filename = stredup(config->filename);
+	this->filename = config->filename;
 	this->grfid = config->ident.grfid;
 
 	/* Initialise local settings to defaults */
@@ -10571,7 +10565,6 @@ GRFFile::GRFFile(const GRFConfig *config)
 
 GRFFile::~GRFFile()
 {
-	free(this->filename);
 	delete[] this->language_map;
 }
 
@@ -10835,7 +10828,7 @@ static void FinaliseCargoArray()
  * @param filename The filename of the newgrf this house was defined in.
  * @return Whether the given housespec is valid.
  */
-static bool IsHouseSpecValid(HouseSpec *hs, const HouseSpec *next1, const HouseSpec *next2, const HouseSpec *next3, const char *filename)
+static bool IsHouseSpecValid(HouseSpec *hs, const HouseSpec *next1, const HouseSpec *next2, const HouseSpec *next3, const std::string &filename)
 {
 	if (((hs->building_flags & BUILDING_HAS_2_TILES) != 0 &&
 				(next1 == nullptr || !next1->enabled || (next1->building_flags & BUILDING_HAS_1_TILE) != 0)) ||
@@ -10843,7 +10836,7 @@ static bool IsHouseSpecValid(HouseSpec *hs, const HouseSpec *next1, const HouseS
 				(next2 == nullptr || !next2->enabled || (next2->building_flags & BUILDING_HAS_1_TILE) != 0 ||
 				next3 == nullptr || !next3->enabled || (next3->building_flags & BUILDING_HAS_1_TILE) != 0))) {
 		hs->enabled = false;
-		if (filename != nullptr) DEBUG(grf, 1, "FinaliseHouseArray: %s defines house %d as multitile, but no suitable tiles follow. Disabling house.", filename, hs->grf_prop.local_id);
+		if (!filename.empty()) DEBUG(grf, 1, "FinaliseHouseArray: %s defines house %d as multitile, but no suitable tiles follow. Disabling house.", filename.c_str(), hs->grf_prop.local_id);
 		return false;
 	}
 
@@ -10853,22 +10846,22 @@ static bool IsHouseSpecValid(HouseSpec *hs, const HouseSpec *next1, const HouseS
 	if (((hs->building_flags & BUILDING_HAS_2_TILES) != 0 && next1->population != 0) ||
 			((hs->building_flags & BUILDING_HAS_4_TILES) != 0 && (next2->population != 0 || next3->population != 0))) {
 		hs->enabled = false;
-		if (filename != nullptr) DEBUG(grf, 1, "FinaliseHouseArray: %s defines multitile house %d with non-zero population on additional tiles. Disabling house.", filename, hs->grf_prop.local_id);
+		if (!filename.empty()) DEBUG(grf, 1, "FinaliseHouseArray: %s defines multitile house %d with non-zero population on additional tiles. Disabling house.", filename.c_str(), hs->grf_prop.local_id);
 		return false;
 	}
 
 	/* Substitute type is also used for override, and having an override with a different size causes crashes.
 	 * This check should only be done for NewGRF houses because grf_prop.subst_id is not set for original houses.*/
-	if (filename != nullptr && (hs->building_flags & BUILDING_HAS_1_TILE) != (HouseSpec::Get(hs->grf_prop.subst_id)->building_flags & BUILDING_HAS_1_TILE)) {
+	if (!filename.empty() && (hs->building_flags & BUILDING_HAS_1_TILE) != (HouseSpec::Get(hs->grf_prop.subst_id)->building_flags & BUILDING_HAS_1_TILE)) {
 		hs->enabled = false;
-		DEBUG(grf, 1, "FinaliseHouseArray: %s defines house %d with different house size then it's substitute type. Disabling house.", filename, hs->grf_prop.local_id);
+		DEBUG(grf, 1, "FinaliseHouseArray: %s defines house %d with different house size then it's substitute type. Disabling house.", filename.c_str(), hs->grf_prop.local_id);
 		return false;
 	}
 
 	/* Make sure that additional parts of multitile houses are not available. */
 	if ((hs->building_flags & BUILDING_HAS_1_TILE) == 0 && (hs->building_availability & HZ_ZONALL) != 0 && (hs->building_availability & HZ_CLIMALL) != 0) {
 		hs->enabled = false;
-		if (filename != nullptr) DEBUG(grf, 1, "FinaliseHouseArray: %s defines house %d without a size but marked it as available. Disabling house.", filename, hs->grf_prop.local_id);
+		if (!filename.empty()) DEBUG(grf, 1, "FinaliseHouseArray: %s defines house %d without a size but marked it as available. Disabling house.", filename.c_str(), hs->grf_prop.local_id);
 		return false;
 	}
 
@@ -10946,7 +10939,7 @@ static void FinaliseHouseArray()
 
 		/* We need to check all houses again to we are sure that multitile houses
 		 * did get consecutive IDs and none of the parts are missing. */
-		if (!IsHouseSpecValid(hs, next1, next2, next3, nullptr)) {
+		if (!IsHouseSpecValid(hs, next1, next2, next3, std::string{})) {
 			/* GetHouseNorthPart checks 3 houses that are directly before
 			 * it in the house pool. If any of those houses have multi-tile
 			 * flags set it assumes it's part of a multitile house. Since
@@ -11256,7 +11249,7 @@ static void LoadNewGRFFileFromFile(GRFConfig *config, GrfLoadingStage stage, Spr
  */
 void LoadNewGRFFile(GRFConfig *config, GrfLoadingStage stage, Subdirectory subdir, bool temporary)
 {
-	const char *filename = config->filename;
+	const std::string &filename = config->filename;
 
 	/* A .grf file is activated only if it was active when the game was
 	 * started.  If a game is loaded, only its active .grfs will be
@@ -11269,7 +11262,7 @@ void LoadNewGRFFile(GRFConfig *config, GrfLoadingStage stage, Subdirectory subdi
 	 * processed once at initialization.  */
 	if (stage != GLS_FILESCAN && stage != GLS_SAFETYSCAN && stage != GLS_LABELSCAN) {
 		_cur.grffile = GetFileByFilename(filename);
-		if (_cur.grffile == nullptr) usererror("File '%s' lost in cache.\n", filename);
+		if (_cur.grffile == nullptr) usererror("File '%s' lost in cache.\n", filename.c_str());
 		if (stage == GLS_RESERVE && config->status != GCS_INITIALISED) return;
 		if (stage == GLS_ACTIVATION && !HasBit(config->flags, GCF_RESERVED)) return;
 	}
@@ -11381,7 +11374,7 @@ static void FinalisePriceBaseMultipliers()
 		for (Price p = PR_BEGIN; p < PR_END; p++) {
 			/* No price defined -> nothing to do */
 			if (!HasBit(features, _price_base_specs[p].grf_feature) || source->price_base_multipliers[p] == INVALID_PRICE_MODIFIER) continue;
-			DEBUG(grf, 3, "'%s' overrides price base multiplier %d of '%s'", source->filename, p, dest->filename);
+			DEBUG(grf, 3, "'%s' overrides price base multiplier %d of '%s'", source->filename.c_str(), p, dest->filename.c_str());
 			dest->price_base_multipliers[p] = source->price_base_multipliers[p];
 		}
 	}
@@ -11399,7 +11392,7 @@ static void FinalisePriceBaseMultipliers()
 		for (Price p = PR_BEGIN; p < PR_END; p++) {
 			/* Already a price defined -> nothing to do */
 			if (!HasBit(features, _price_base_specs[p].grf_feature) || dest->price_base_multipliers[p] != INVALID_PRICE_MODIFIER) continue;
-			DEBUG(grf, 3, "Price base multiplier %d from '%s' propagated to '%s'", p, source->filename, dest->filename);
+			DEBUG(grf, 3, "Price base multiplier %d from '%s' propagated to '%s'", p, source->filename.c_str(), dest->filename.c_str());
 			dest->price_base_multipliers[p] = source->price_base_multipliers[p];
 		}
 	}
@@ -11417,7 +11410,7 @@ static void FinalisePriceBaseMultipliers()
 		for (Price p = PR_BEGIN; p < PR_END; p++) {
 			if (!HasBit(features, _price_base_specs[p].grf_feature)) continue;
 			if (source->price_base_multipliers[p] != dest->price_base_multipliers[p]) {
-				DEBUG(grf, 3, "Price base multiplier %d from '%s' propagated to '%s'", p, dest->filename, source->filename);
+				DEBUG(grf, 3, "Price base multiplier %d from '%s' propagated to '%s'", p, dest->filename.c_str(), source->filename.c_str());
 			}
 			source->price_base_multipliers[p] = dest->price_base_multipliers[p];
 		}
@@ -11448,11 +11441,11 @@ static void FinalisePriceBaseMultipliers()
 				if (!HasBit(file->grf_features, _price_base_specs[p].grf_feature)) {
 					/* The grf does not define any objects of the feature,
 					 * so it must be a difficulty setting. Apply it globally */
-					DEBUG(grf, 3, "'%s' sets global price base multiplier %d to %d", file->filename, p, price_base_multipliers[p]);
+					DEBUG(grf, 3, "'%s' sets global price base multiplier %d to %d", file->filename.c_str(), p, price_base_multipliers[p]);
 					SetPriceBaseMultiplier(p, price_base_multipliers[p]);
 					price_base_multipliers[p] = 0;
 				} else {
-					DEBUG(grf, 3, "'%s' sets local price base multiplier %d to %d", file->filename, p, price_base_multipliers[p]);
+					DEBUG(grf, 3, "'%s' sets local price base multiplier %d to %d", file->filename.c_str(), p, price_base_multipliers[p]);
 				}
 			}
 		}
@@ -11661,7 +11654,7 @@ void LoadNewGRF(uint load_index, uint num_baseset)
 
 			Subdirectory subdir = num_grfs < num_baseset ? BASESET_DIR : NEWGRF_DIR;
 			if (!FioCheckFileExists(c->filename, subdir)) {
-				DEBUG(grf, 0, "NewGRF file is missing '%s'; disabling", c->filename);
+				DEBUG(grf, 0, "NewGRF file is missing '%s'; disabling", c->filename.c_str());
 				c->status = GCS_NOT_FOUND;
 				continue;
 			}
@@ -11670,9 +11663,9 @@ void LoadNewGRF(uint load_index, uint num_baseset)
 
 			if (!HasBit(c->flags, GCF_STATIC) && !HasBit(c->flags, GCF_SYSTEM)) {
 				if (num_non_static == MAX_NON_STATIC_GRF_COUNT) {
-					DEBUG(grf, 0, "'%s' is not loaded as the maximum number of non-static GRFs has been reached", c->filename);
+					DEBUG(grf, 0, "'%s' is not loaded as the maximum number of non-static GRFs has been reached", c->filename.c_str());
 					c->status = GCS_DISABLED;
-					c->error  = new GRFError(STR_NEWGRF_ERROR_MSG_FATAL, STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED);
+					c->error  = std::make_unique<GRFError>(STR_NEWGRF_ERROR_MSG_FATAL, STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED);
 					continue;
 				}
 				num_non_static++;

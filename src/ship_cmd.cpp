@@ -1164,7 +1164,7 @@ CommandCost CmdBuildShip(TileIndex tile, DoCommandFlag flags, const Engine *e, u
 		v->date_of_last_service = _date;
 		v->build_year = _cur_year;
 		v->sprite_seq.Set(SPR_IMG_QUERY);
-		v->random_bits = VehicleRandomBits();
+		v->random_bits = Random();
 
 		v->UpdateCache();
 

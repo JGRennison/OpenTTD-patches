@@ -1376,7 +1376,7 @@ int GetEngineProperty(EngineID engine, PropertyID property, int orig_value, cons
 }
 
 
-static void DoTriggerVehicle(Vehicle *v, VehicleTrigger trigger, byte base_random_bits, bool first)
+static void DoTriggerVehicle(Vehicle *v, VehicleTrigger trigger, uint16_t base_random_bits, bool first)
 {
 	/* We can't trigger a non-existent vehicle... */
 	assert(v != nullptr);

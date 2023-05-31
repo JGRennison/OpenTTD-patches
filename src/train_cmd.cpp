@@ -1484,7 +1484,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 		v->date_of_last_service = _date;
 		v->build_year = _cur_year;
 		v->sprite_seq.Set(SPR_IMG_QUERY);
-		v->random_bits = VehicleRandomBits();
+		v->random_bits = Random();
 
 		v->group_id = DEFAULT_GROUP;
 
@@ -1559,7 +1559,7 @@ static void AddRearEngineToMultiheadedTrain(Train *v)
 	u->date_of_last_service = v->date_of_last_service;
 	u->build_year = v->build_year;
 	u->sprite_seq.Set(SPR_IMG_QUERY);
-	u->random_bits = VehicleRandomBits();
+	u->random_bits = Random();
 	v->SetMultiheaded();
 	u->SetMultiheaded();
 	if (v->IsVirtual()) u->SetVirtual();
@@ -1629,7 +1629,7 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlag flags, const Engin
 		v->date_of_last_service = _date;
 		v->build_year = _cur_year;
 		v->sprite_seq.Set(SPR_IMG_QUERY);
-		v->random_bits = VehicleRandomBits();
+		v->random_bits = Random();
 
 		if (e->flags & ENGINE_EXCLUSIVE_PREVIEW) SetBit(v->vehicle_flags, VF_BUILT_AS_PROTOTYPE);
 		v->SetServiceIntervalIsPercent(Company::Get(_current_company)->settings.vehicle.servint_ispercent);
@@ -6959,7 +6959,7 @@ Train* CmdBuildVirtualRailWagon(const Engine *e, uint32 user, bool no_consist_ch
 
 	v->build_year = _cur_year;
 	v->sprite_seq.Set(SPR_IMG_QUERY);
-	v->random_bits = VehicleRandomBits();
+	v->random_bits = Random();
 
 	v->group_id = DEFAULT_GROUP;
 
@@ -7034,7 +7034,7 @@ Train* BuildVirtualRailVehicle(EngineID eid, StringID &error, uint32 user, bool 
 
 	v->build_year = _cur_year;
 	v->sprite_seq.Set(SPR_IMG_QUERY);
-	v->random_bits = VehicleRandomBits();
+	v->random_bits = Random();
 
 	v->group_id = DEFAULT_GROUP;
 

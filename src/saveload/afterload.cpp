@@ -456,12 +456,12 @@ static void CDECL HandleSavegameLoadCrash(int signum)
 				char replaced_md5[40];
 				md5sumToString(original_md5, lastof(original_md5), c->original_md5sum);
 				md5sumToString(replaced_md5, lastof(replaced_md5), replaced->md5sum);
-				p += seprintf(p, lastof(buffer), "NewGRF %08X (checksum %s) not found.\n  Loaded NewGRF \"%s\" (checksum %s) with same GRF ID instead.\n", BSWAP32(c->ident.grfid), original_md5, c->filename, replaced_md5);
+				p += seprintf(p, lastof(buffer), "NewGRF %08X (checksum %s) not found.\n  Loaded NewGRF \"%s\" (checksum %s) with same GRF ID instead.\n", BSWAP32(c->ident.grfid), original_md5, c->filename.c_str(), replaced_md5);
 			}
 			if (c->status == GCS_NOT_FOUND) {
 				char buf[40];
 				md5sumToString(buf, lastof(buf), c->ident.md5sum);
-				p += seprintf(p, lastof(buffer), "NewGRF %08X (%s) not found; checksum %s.\n", BSWAP32(c->ident.grfid), c->filename, buf);
+				p += seprintf(p, lastof(buffer), "NewGRF %08X (%s) not found; checksum %s.\n", BSWAP32(c->ident.grfid), c->filename.c_str(), buf);
 			}
 		}
 	} else {

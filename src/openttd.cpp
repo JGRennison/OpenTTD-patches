@@ -355,7 +355,7 @@ static void WriteSavegameInfo(const char *name)
 		for (GRFConfig *c = _load_check_data.grfconfig; c != nullptr; c = c->next) {
 			char md5sum[33];
 			md5sumToString(md5sum, lastof(md5sum), HasBit(c->flags, GCF_COMPATIBLE) ? c->original_md5sum : c->ident.md5sum);
-			p += seprintf(p, lastof(buf), "%08X %s %s\n", c->ident.grfid, md5sum, c->filename);
+			p += seprintf(p, lastof(buf), "%08X %s %s\n", c->ident.grfid, md5sum, c->filename.c_str());
 		}
 	}
 
@@ -1409,7 +1409,7 @@ void WriteVehicleInfo(char *&p, const char *last, const Vehicle *u, const Vehicl
 		p += seprintf(p, last, ", GRF: %08X", BSWAP32(grfid));
 		GRFConfig *grfconfig = GetGRFConfig(grfid);
 		if (grfconfig) {
-			p += seprintf(p, last, ", %s, %s", grfconfig->GetName(), grfconfig->filename);
+			p += seprintf(p, last, ", %s, %s", grfconfig->GetName(), grfconfig->filename.c_str());
 		}
 	}
 }

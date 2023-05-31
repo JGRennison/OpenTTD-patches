@@ -711,7 +711,7 @@ public:
 			/* Draw the template's length in tile-units */
 			SetDParam(0, v->GetRealLength());
 			SetDParam(1, 1);
-			DrawString(left, right - ScaleGUITrad(4), y + ScaleGUITrad(2), STR_TINY_BLACK_DECIMAL, TC_BLACK, SA_RIGHT);
+			DrawString(left, right - ScaleGUITrad(4), y + ScaleGUITrad(2), STR_JUST_DECIMAL, TC_BLACK, SA_RIGHT, false, FS_SMALL);
 
 			int bottom_edge = y + this->bottom_matrix_item_size - FONT_HEIGHT_NORMAL - WidgetDimensions::scaled.framerect.bottom;
 
@@ -728,7 +728,7 @@ public:
 
 			/* Index of current template vehicle in the list of all templates for its company */
 			SetDParam(0, i);
-			DrawString(left + ScaleGUITrad(5), left + ScaleGUITrad(25), y + ScaleGUITrad(2), STR_BLACK_INT, TC_BLACK, SA_RIGHT);
+			DrawString(left + ScaleGUITrad(5), left + ScaleGUITrad(25), y + ScaleGUITrad(2), STR_JUST_INT, TC_BLACK, SA_RIGHT);
 
 			/* Draw whether the current template is in use by any group */
 			if (v->NumGroupsUsingTemplate() > 0) {

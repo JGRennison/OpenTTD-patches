@@ -308,8 +308,7 @@ bool CheckSharingChangePossible(VehicleType type, bool new_value)
 	}
 
 	if (error_message != STR_NULL) {
-		SetDParam(0, error_message);
-		ShowErrorMessage(STR_WHITE_STRING, INVALID_STRING_ID, WL_ERROR);
+		ShowErrorMessage(error_message, INVALID_STRING_ID, WL_ERROR);
 		return false;
 	}
 

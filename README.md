@@ -570,6 +570,9 @@ The implementation of C++17 `std::optional` in `src/3rdparty/optional` is licens
 See `src/3rdparty/optional/LICENSE_1_0.txt` for the complete license text.
 
 
+The icu scriptrun implementation in `src/3rdparty/icu` is licensed under the Unicode license.
+See `src/3rdparty/icu/LICENSE` for the complete license text.
+
 ## 4.0 Credits
 
 See [CREDITS.md](./CREDITS.md)

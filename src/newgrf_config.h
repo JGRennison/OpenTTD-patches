@@ -155,7 +155,7 @@ struct GRFParameterInfo {
 
 /** Information about GRF, used in the game and (part of it) in savegames */
 struct GRFConfig : ZeroedMemoryAllocator {
-	GRFConfig(const char *filename = nullptr);
+	GRFConfig(const std::string &filename = std::string{});
 	GRFConfig(const GRFConfig &config);
 	~GRFConfig();
 
@@ -164,12 +164,12 @@ struct GRFConfig : ZeroedMemoryAllocator {
 
 	GRFIdentifier ident;                        ///< grfid and md5sum to uniquely identify newgrfs
 	uint8 original_md5sum[16];                  ///< MD5 checksum of original file if only a 'compatible' file was loaded
-	char *filename;                             ///< Filename - either with or without full path
+	std::string filename;                       ///< Filename - either with or without full path
 	std::string full_filename;                  ///< NOSAVE: Full filename
 	GRFTextWrapper name;                        ///< NOSAVE: GRF name (Action 0x08)
 	GRFTextWrapper info;                        ///< NOSAVE: GRF info (author, copyright, ...) (Action 0x08)
 	GRFTextWrapper url;                         ///< NOSAVE: URL belonging to this GRF.
-	GRFError *error;                            ///< NOSAVE: Error/Warning during GRF loading (Action 0x0B)
+	std::unique_ptr<GRFError> error;            ///< NOSAVE: Error/Warning during GRF loading (Action 0x0B)
 
 	uint32 version;                             ///< NOSAVE: Version a NewGRF can set so only the newest NewGRF is shown
 	uint32 min_loadable_version;                ///< NOSAVE: Minimum compatible version a NewGRF can define
@@ -194,7 +194,7 @@ struct GRFConfig : ZeroedMemoryAllocator {
 
 	const char *GetDisplayPath() const
 	{
-		return !this->full_filename.empty() ? this->full_filename.c_str() : this->filename;
+		return !this->full_filename.empty() ? this->full_filename.c_str() : this->filename.c_str();
 	}
 
 	void SetParameterDefaults();

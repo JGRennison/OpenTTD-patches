@@ -939,7 +939,7 @@ uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const 
 		if (grfid) {
 			extern GRFFile *GetFileByGRFID(uint32 grfid);
 			const GRFFile *grffile = GetFileByGRFID(grfid);
-			DEBUG(misc, 0, "Too many NewGRF string parameters (in %X, %s).", BSWAP32(grfid), grffile ? grffile->filename : "????");
+			DEBUG(misc, 0, "Too many NewGRF string parameters (in %X, %s).", BSWAP32(grfid), grffile ? grffile->filename.c_str() : "????");
 		} else {
 			DEBUG(misc, 0, "Too many NewGRF string parameters.");
 		}

@@ -122,7 +122,6 @@ uint8 CalcPercentVehicleFilledOfCargo(const Vehicle *v, CargoID cargo);
 
 void VehicleLengthChanged(const Vehicle *u);
 
-byte VehicleRandomBits();
 void ResetVehicleHash();
 void ResetVehicleColourMap();
 

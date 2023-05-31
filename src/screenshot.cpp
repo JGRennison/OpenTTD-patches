@@ -333,7 +333,7 @@ static bool MakePNGImage(const char *name, ScreenshotCallback *callb, void *user
 	for (const GRFConfig *c = _game_mode == GM_MENU ? nullptr : _grfconfig; c != nullptr; c = c->next) {
 		p += seprintf(p, lastof(buf), "%08X ", BSWAP32(c->ident.grfid));
 		p = md5sumToString(p, lastof(buf), c->ident.md5sum);
-		p += seprintf(p, lastof(buf), " %s\n", c->filename);
+		p += seprintf(p, lastof(buf), " %s\n", c->filename.c_str());
 	}
 	p = strecpy(p, "\nCompanies:\n", lastof(buf));
 	for (const Company *c : Company::Iterate()) {

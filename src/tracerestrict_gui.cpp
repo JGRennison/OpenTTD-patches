@@ -2644,7 +2644,7 @@ public:
 	{
 		switch (widget) {
 			case TR_WIDGET_VALUE_INT: {
-				SetDParam(0, STR_BLACK_COMMA);
+				SetDParam(0, STR_JUST_COMMA);
 				TraceRestrictItem item = this->GetSelected();
 				TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
 				if (type == TRVT_TIME_DATE_INT && GetTraceRestrictValue(item) == TRTDVF_HOUR_MINUTE) {
@@ -3163,7 +3163,7 @@ private:
 							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
 							if (GetTraceRestrictAuxField(item) == TRPPAF_VALUE) {
-								this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data = STR_BLACK_COMMA;
+								this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data = STR_JUST_COMMA;
 							} else {
 								this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
 										GetDropDownStringByValue(&_pf_penalty_dropdown, GetPathfinderPenaltyDropdownIndex(item));

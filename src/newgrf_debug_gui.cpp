@@ -636,7 +636,7 @@ struct NewGRFInspectWindow : Window {
 			GRFConfig *grfconfig = GetGRFConfig(grfid);
 			if (grfconfig) {
 				this->DrawString(r, i++, "  Name: %s", grfconfig->GetName());
-				this->DrawString(r, i++, "  File: %s", grfconfig->filename);
+				this->DrawString(r, i++, "  File: %s", grfconfig->filename.c_str());
 			}
 		}
 
@@ -1309,7 +1309,7 @@ struct SpriteAlignerWindow : Window {
 				break;
 			case WID_SA_LIST:
 				SetDParamMaxDigits(0, 6);
-				size->width = GetStringBoundingBox(STR_BLACK_COMMA).width + padding.width;
+				size->width = GetStringBoundingBox(STR_JUST_COMMA).width + padding.width;
 				resize->height = FONT_HEIGHT_NORMAL + padding.height;
 				resize->width  = 1;
 				fill->height = resize->height;
@@ -1358,7 +1358,7 @@ struct SpriteAlignerWindow : Window {
 				Rect ir = r.Shrink(WidgetDimensions::scaled.matrix);
 				for (int i = this->vscroll->GetPosition(); i < max; i++) {
 					SetDParam(0, list[i]);
-					DrawString(ir, STR_BLACK_COMMA, TC_FROMSTRING, SA_RIGHT | SA_FORCE);
+					DrawString(ir, STR_JUST_COMMA, TC_BLACK, SA_RIGHT | SA_FORCE);
 					ir.top += step_size;
 				}
 				break;

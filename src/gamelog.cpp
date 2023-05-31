@@ -120,11 +120,11 @@ static char *PrintGrfInfo(char *buf, const char *last, uint grfid, const uint8 *
 	}
 
 	if (gc != nullptr) {
-		buf += seprintf(buf, last, ", filename: %s (md5sum matches)", gc->filename);
+		buf += seprintf(buf, last, ", filename: %s (md5sum matches)", gc->filename.c_str());
 	} else {
 		gc = FindGRFConfig(grfid, FGCM_ANY);
 		if (gc != nullptr) {
-			buf += seprintf(buf, last, ", filename: %s (matches GRFID only)", gc->filename);
+			buf += seprintf(buf, last, ", filename: %s (matches GRFID only)", gc->filename.c_str());
 		} else {
 			buf += seprintf(buf, last, ", unknown GRF");
 		}
