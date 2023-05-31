@@ -1084,7 +1084,7 @@ STR_PROGSIG_COND_SLOT                                           :슬롯 사용�
 STR_PROGSIG_COND_SLOT_REMAINING                                 :남은 슬롯 사용량
 STR_PROGSIG_COND_COUNTER                                        :카운터 값
 STR_PROGSIG_CONDVAR_SIGNAL_STATE_SPECIFIED                      :{NUM} x {NUM} 에 위치한 신호기가 초록색
-STR_PROGSIG_CONDVAR_SIGNAL_STATE_UNSPECIFIED                    :{RED}정해지지 않은 신호기{STRING} 가 초록색
+STR_PROGSIG_CONDVAR_SIGNAL_STATE_UNSPECIFIED                    :{PUSH_COLOUR}{RED}정해지지 않은 신호기{POP_COLOUR} 가 초록색
 STR_PROGSIG_CONDVAR_NUM_RED                                     :빨간 신호
 STR_PROGSIG_CONDVAR_NUM_GREEN                                   :초록 신호
 
@@ -1787,15 +1787,8 @@ STR_JUST_VELOCITY                                               :{VELOCITY}
 STR_JUST_TT_TICKS                                               :{TT_TICKS}
 STR_JUST_TT_TICKS_LONG                                          :{TT_TICKS_LONG}
 
-STR_BLACK_DECIMAL                                               :{BLACK}{DECIMAL}
-STR_WHITE_DATE_WALLCLOCK_LONG                                   :{WHITE}{DATE_WALLCLOCK_LONG}
-STR_WHITE_DATE_WALLCLOCK_SHORT                                  :{WHITE}{DATE_WALLCLOCK_SHORT}
-STR_BLACK_TIME_HHMM                                             :{BLACK}{TIME_HHMM}
 STR_RED_INT                                                     :{RED}{NUM}
-STR_BLACK_STRING1                                               :{BLACK}{STRING}
 STR_BLACK_PLUS                                                  :{BLACK}+
-STR_WHITE                                                       :{WHITE}
-STR_BLACK                                                       :{BLACK}
 
 STR_DECIMAL1_WITH_SCALE                                         :{DECIMAL1} (x{DECIMAL})
 

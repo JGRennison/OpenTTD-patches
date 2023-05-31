@@ -1057,7 +1057,7 @@ STR_PROGSIG_COND_SLOT                                           :条目占用
 STR_PROGSIG_COND_SLOT_REMAINING                                 :条目占用剩余
 STR_PROGSIG_COND_COUNTER                                        :计数器值
 STR_PROGSIG_CONDVAR_SIGNAL_STATE_SPECIFIED                      :在{NUM} x {NUM}的信号是绿灯
-STR_PROGSIG_CONDVAR_SIGNAL_STATE_UNSPECIFIED                    :{RED}未特别指定的信号{STRING}是绿灯
+STR_PROGSIG_CONDVAR_SIGNAL_STATE_UNSPECIFIED                    :{PUSH_COLOUR}{RED}未特别指定的信号{POP_COLOUR}是绿灯
 STR_PROGSIG_CONDVAR_NUM_RED                                     :红灯
 STR_PROGSIG_CONDVAR_NUM_GREEN                                   :绿灯
 
@@ -1730,15 +1730,8 @@ STR_JUST_TIME_HHMM                                              :{TIME_HHMM}
 STR_JUST_STRING1                                                :{STRING}
 STR_JUST_STRING2                                                :{STRING}
 
-STR_BLACK_DECIMAL                                               :{BLACK}{DECIMAL}
-STR_WHITE_DATE_WALLCLOCK_LONG                                   :{WHITE}{DATE_WALLCLOCK_LONG}
-STR_WHITE_DATE_WALLCLOCK_SHORT                                  :{WHITE}{DATE_WALLCLOCK_SHORT}
-STR_BLACK_TIME_HHMM                                             :{BLACK}{TIME_HHMM}
 STR_RED_INT                                                     :{RED}{NUM}
-STR_BLACK_STRING1                                               :{BLACK}{STRING}
 STR_BLACK_PLUS                                                  :{BLACK}+
-STR_WHITE                                                       :{WHITE}
-STR_BLACK                                                       :{BLACK}
 
 STR_DECIMAL1_WITH_SCALE                                         :{DECIMAL1}（{DECIMAL}x）
 

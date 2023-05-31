@@ -1084,7 +1084,7 @@ STR_PROGSIG_COND_SLOT                                           :Ocupación do s
 STR_PROGSIG_COND_SLOT_REMAINING                                 :Ocupación do slot restante
 STR_PROGSIG_COND_COUNTER                                        :Valor do contador
 STR_PROGSIG_CONDVAR_SIGNAL_STATE_SPECIFIED                      :o sinal en {NUM} x {NUM} está en verde
-STR_PROGSIG_CONDVAR_SIGNAL_STATE_UNSPECIFIED                    :{RED}sinal non especificado{STRING} está en verde
+STR_PROGSIG_CONDVAR_SIGNAL_STATE_UNSPECIFIED                    :{PUSH_COLOUR}{RED}sinal non especificado{POP_COLOUR} está en verde
 STR_PROGSIG_CONDVAR_NUM_RED                                     :sinais vermellos
 STR_PROGSIG_CONDVAR_NUM_GREEN                                   :sinais verdes
 
@@ -1786,15 +1786,8 @@ STR_JUST_VELOCITY                                               :{VELOCITY}
 STR_JUST_TT_TICKS                                               :{TT_TICKS}
 STR_JUST_TT_TICKS_LONG                                          :{TT_TICKS_LONG}
 
-STR_BLACK_DECIMAL                                               :{BLACK}{DECIMAL}
-STR_WHITE_DATE_WALLCLOCK_LONG                                   :{WHITE}{DATE_WALLCLOCK_LONG}
-STR_WHITE_DATE_WALLCLOCK_SHORT                                  :{WHITE}{DATE_WALLCLOCK_SHORT}
-STR_BLACK_TIME_HHMM                                             :{BLACK}{TIME_HHMM}
 STR_RED_INT                                                     :{RED}{NUM}
-STR_BLACK_STRING1                                               :{BLACK}{STRING}
 STR_BLACK_PLUS                                                  :{BLACK}+
-STR_WHITE                                                       :{WHITE}
-STR_BLACK                                                       :{BLACK}
 
 STR_DECIMAL1_WITH_SCALE                                         :{DECIMAL1} ({DECIMAL}x)
 

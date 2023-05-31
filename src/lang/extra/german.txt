@@ -1008,7 +1008,7 @@ STR_PROGSIG_COND_SLOT                                           :Slotauslastung
 STR_PROGSIG_COND_SLOT_REMAINING                                 :Verfügbare Slotkapazität
 STR_PROGSIG_COND_COUNTER                                        :Zählerwert
 STR_PROGSIG_CONDVAR_SIGNAL_STATE_SPECIFIED                      :Signal auf {NUM} x {NUM} ist Grün
-STR_PROGSIG_CONDVAR_SIGNAL_STATE_UNSPECIFIED                    :{RED}undefiniertes Signal{STRING} ist Grün
+STR_PROGSIG_CONDVAR_SIGNAL_STATE_UNSPECIFIED                    :{PUSH_COLOUR}{RED}undefiniertes Signal{POP_COLOUR} ist Grün
 STR_PROGSIG_CONDVAR_NUM_RED                                     :rote Signale
 STR_PROGSIG_CONDVAR_NUM_GREEN                                   :grüne Signale
 
@@ -1645,14 +1645,8 @@ STR_JUST_TIME_HHMM                                              :{TIME_HHMM}
 STR_JUST_STRING1                                                :{STRING}
 STR_JUST_STRING2                                                :{STRING}
 
-STR_BLACK_DECIMAL                                               :{BLACK}{DECIMAL}
-STR_WHITE_DATE_WALLCLOCK_LONG                                   :{WHITE}{DATE_WALLCLOCK_LONG}
-STR_WHITE_DATE_WALLCLOCK_SHORT                                  :{WHITE}{DATE_WALLCLOCK_SHORT}
-STR_BLACK_TIME_HHMM                                             :{BLACK}{TIME_HHMM}
 STR_RED_INT                                                     :{RED}{NUM}
 STR_BLACK_PLUS                                                  :{BLACK}+
-STR_WHITE                                                       :{WHITE}
-STR_BLACK                                                       :{BLACK}
 
 STR_ZONING_TOOLBAR                                              :{WHITE}Bereiche anzeigen
 STR_ZONING_OUTER                                                :{BLACK}Außenkante der Kachel:

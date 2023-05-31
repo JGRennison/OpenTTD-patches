@@ -579,7 +579,7 @@ STR_PROGSIG_COND_NEVER                                          :nikdy
 STR_PROGSIG_COND_COMPARE                                        :{STRING} {STRING} {NUM}
 STR_PROGSIG_COND_SIGNAL_STATE                                   :stav návěstidla
 STR_PROGSIG_CONDVAR_SIGNAL_STATE_SPECIFIED                      :návěstidlo na {NUM} x {NUM} je zelený
-STR_PROGSIG_CONDVAR_SIGNAL_STATE_UNSPECIFIED                    :{RED}nespecifikované návěstidlo{STRING} je zelený
+STR_PROGSIG_CONDVAR_SIGNAL_STATE_UNSPECIFIED                    :{PUSH_COLOUR}{RED}nespecifikované návěstidlo{POP_COLOUR} je zelený
 STR_PROGSIG_CONDVAR_NUM_RED                                     :červených návěstidel
 STR_PROGSIG_CONDVAR_NUM_GREEN                                   :zelených návěstidel
 

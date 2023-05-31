@@ -2648,7 +2648,7 @@ public:
 				TraceRestrictItem item = this->GetSelected();
 				TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
 				if (type == TRVT_TIME_DATE_INT && GetTraceRestrictValue(item) == TRTDVF_HOUR_MINUTE) {
-					SetDParam(0, STR_BLACK_TIME_HHMM);
+					SetDParam(0, STR_JUST_TIME_HHMM);
 				}
 				SetDParam(1, 0);
 				if (IsIntegerValueType(type)) {
@@ -3550,7 +3550,7 @@ static const NWidgetPart _nested_program_widgets[] = {
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_VALUE_INT), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_JUST_STRING1, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_VALUE_DECIMAL), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_BLACK_DECIMAL, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
+														SetDataTip(STR_JUST_DECIMAL, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_VALUE_DROPDOWN), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_NULL, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_VALUE_DEST), SetMinimalSize(124, 12), SetFill(1, 0),

@@ -139,7 +139,7 @@ static const StringID _program_sigstate[] = {
 };
 
 /** Get the string for a condition */
-static char *GetConditionString(SignalCondition *cond, char *buf, char *buflast, bool selected)
+static char *GetConditionString(SignalCondition *cond, char *buf, char *buflast)
 {
 	StringID string = INVALID_STRING_ID;
 	if (cond->ConditionCode() == PSC_SLOT_OCC || cond->ConditionCode() == PSC_SLOT_OCC_REM) {
@@ -180,7 +180,6 @@ static char *GetConditionString(SignalCondition *cond, char *buf, char *buflast,
 				SetDParam(1, TileY(sig_cond->sig_tile));
 			} else {
 				string = STR_PROGSIG_CONDVAR_SIGNAL_STATE_UNSPECIFIED;
-				SetDParam(0, selected ? STR_WHITE : STR_BLACK);
 			}
 		}
 	}
@@ -213,7 +212,7 @@ static void DrawInstructionString(SignalInstruction *instruction, int y, bool se
 
 		case PSO_IF: {
 			SignalIf *if_ins = static_cast<SignalIf*>(instruction);
-			GetConditionString(if_ins->condition, condstr, lastof(condstr), selected);
+			GetConditionString(if_ins->condition, condstr, lastof(condstr));
 			SetDParamStr(0, condstr);
 			instruction_string = STR_PROGSIG_IF;
 			break;
