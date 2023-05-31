@@ -121,6 +121,7 @@ static const NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 						NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BV_SHOW_HIDDEN_LOCOS),
 						NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_CARGO_FILTER_DROPDOWN_LOCO), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_FILTER_CRITERIA),
 					EndContainer(),
+					NWidget(WWT_EDITBOX, COLOUR_GREY, WID_BV_FILTER_LOCO), SetMinimalSize(128, 0), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
 				EndContainer(),
 			EndContainer(),
 			/* Vehicle list for locomotives. */
@@ -159,6 +160,7 @@ static const NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 						NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BV_SHOW_HIDDEN_WAGONS),
 						NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_CARGO_FILTER_DROPDOWN_WAGON), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_FILTER_CRITERIA),
 					EndContainer(),
+					NWidget(WWT_EDITBOX, COLOUR_GREY, WID_BV_FILTER_WAGON), SetMinimalSize(128, 0), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
 				EndContainer(),
 			EndContainer(),
 			/* Vehicle list for wagons. */
@@ -2266,6 +2268,8 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		CargoID cargo_filter[NUM_CARGO + 2] {};        ///< Available cargo filters; CargoID or CF_ANY or CF_NONE
 		StringID cargo_filter_texts[NUM_CARGO + 3] {}; ///< Texts for filter_cargo, terminated by INVALID_STRING_ID
 		TestedEngineDetails te;                        ///< Tested cost and capacity after refit.
+		StringFilter string_filter;                    ///< Filter for vehicle name
+		QueryString vehicle_editbox { MAX_LENGTH_VEHICLE_NAME_CHARS * MAX_CHAR_LENGTH, MAX_LENGTH_VEHICLE_NAME_CHARS }; ///< Filter editbox
 	};
 
 	PanelState loco {};
@@ -2392,6 +2396,11 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		this->loco.details_height = this->wagon.details_height = 10 * FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.framerect.Vertical();
 
 		this->FinishInitNested(this->window_number);
+
+		this->querystrings[WID_BV_FILTER_LOCO] = &this->loco.vehicle_editbox;
+		this->querystrings[WID_BV_FILTER_WAGON] = &this->wagon.vehicle_editbox;
+		this->loco.vehicle_editbox.cancel_button = QueryString::ACTION_CLEAR;
+		this->wagon.vehicle_editbox.cancel_button = QueryString::ACTION_CLEAR;
 
 		this->owner = (tile != INVALID_TILE) ? GetTileOwner(tile) : _local_company;
 
@@ -2558,6 +2567,23 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		return (filter_type == CF_ANY || CargoAndEngineFilter(&item, filter_type));
 	}
 
+	/** Filter by name and NewGRF extra text */
+	bool FilterByText(PanelState &state, const Engine *e)
+	{
+		/* Do not filter if the filter text box is empty */
+		if (state.string_filter.IsEmpty()) return true;
+
+		/* Filter engine name */
+		state.string_filter.ResetState();
+		state.string_filter.AddLine(GetString(e->info.string_id));
+
+		/* Filter NewGRF extra text */
+		auto text = GetNewGRFAdditionalText(e->index);
+		if (text) state.string_filter.AddLine(*text);
+
+		return state.string_filter.GetState();
+	}
+
 	/* Figure out what train EngineIDs to put in the list */
 	void GenerateBuildTrainList(GUIEngineList &list, PanelState &state, const bool wagon, EngList_SortTypeFunction * const sorters[])
 	{
@@ -2581,6 +2607,9 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			if (!FilterSingleEngine(state, eid)) continue;
 
 			if ((rvi->railveh_type == RAILVEH_WAGON) != wagon) continue;
+
+			/* Filter by name or NewGRF extra text */
+			if (!FilterByText(state, engine)) continue;
 
 			list.emplace_back(eid, engine->info.variant_id, engine->display_flags, 0);
 			if (engine->info.variant_id != eid && engine->info.variant_id != INVALID_ENGINE) variants.push_back(engine->info.variant_id);
@@ -3134,6 +3163,35 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		this->loco.vscroll->SetCapacityFromWidget(this, WID_BV_LIST_LOCO);
 		this->wagon.vscroll->SetCapacityFromWidget(this, WID_BV_LIST_WAGON);
 	}
+
+	void OnEditboxChanged(int wid) override
+	{
+		if (wid == WID_BV_FILTER_LOCO) {
+			this->loco.string_filter.SetFilterTerm(this->loco.vehicle_editbox.text.buf);
+			this->loco.eng_list.ForceRebuild();
+			this->SetDirty();
+		}
+		if (wid == WID_BV_FILTER_WAGON) {
+			this->wagon.string_filter.SetFilterTerm(this->wagon.vehicle_editbox.text.buf);
+			this->wagon.eng_list.ForceRebuild();
+			this->SetDirty();
+		}
+	}
+
+	EventState OnHotkey(int hotkey) override
+	{
+		switch (hotkey) {
+			case BVHK_FOCUS_FILTER_BOX:
+				this->SetFocusedWidget(this->wagon_selected ? WID_BV_FILTER_WAGON : WID_BV_FILTER_LOCO);
+				SetFocusedWindow(this); // The user has asked to give focus to the text box, so make sure this window is focused.
+				return ES_HANDLED;
+
+			default:
+				return ES_NOT_HANDLED;
+		}
+
+		return ES_HANDLED;
+	}
 };
 
 void CcAddVirtualEngine(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
@@ -3179,14 +3237,15 @@ static WindowDesc _build_template_vehicle_desc(
 	WC_BUILD_VIRTUAL_TRAIN, WC_CREATE_TEMPLATE,
 	WDF_CONSTRUCTION,
 	_nested_build_vehicle_widgets, lengthof(_nested_build_vehicle_widgets),
-	nullptr, &_build_vehicle_desc
+	&BuildVehicleWindow::hotkeys, &_build_vehicle_desc
 );
 
 static WindowDesc _build_vehicle_desc_train_advanced(
 	WDP_AUTO, "build_vehicle_dual", 480, 268,
 	WC_BUILD_VEHICLE, WC_NONE,
 	WDF_CONSTRUCTION,
-	_nested_build_vehicle_widgets_train_advanced, lengthof(_nested_build_vehicle_widgets_train_advanced)
+	_nested_build_vehicle_widgets_train_advanced, lengthof(_nested_build_vehicle_widgets_train_advanced),
+	&BuildVehicleWindow::hotkeys
 );
 
 static WindowDesc _build_template_vehicle_desc_advanced(
@@ -3194,7 +3253,7 @@ static WindowDesc _build_template_vehicle_desc_advanced(
 	WC_BUILD_VIRTUAL_TRAIN, WC_CREATE_TEMPLATE,
 	WDF_CONSTRUCTION,
 	_nested_build_vehicle_widgets_train_advanced, lengthof(_nested_build_vehicle_widgets_train_advanced),
-	nullptr, &_build_vehicle_desc_train_advanced
+	&BuildVehicleWindow::hotkeys, &_build_vehicle_desc_train_advanced
 );
 
 

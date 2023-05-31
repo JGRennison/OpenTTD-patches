@@ -38,6 +38,7 @@ enum BuildVehicleWidgets {
 	WID_BV_BUILD_LOCO,                     ///< Build panel.
 	WID_BV_BUILD_SEL_LOCO,                 ///< Build button.
 	WID_BV_RENAME_LOCO,                    ///< Rename button.
+	WID_BV_FILTER_LOCO,                    ///< Filter by name.
 
 	WID_BV_CAPTION_WAGON,                   ///< Caption of wagon half of the window.
 	WID_BV_SORT_ASCENDING_DESCENDING_WAGON, ///< Sort direction.
@@ -51,6 +52,7 @@ enum BuildVehicleWidgets {
 	WID_BV_BUILD_WAGON,                     ///< Build panel.
 	WID_BV_BUILD_SEL_WAGON,                 ///< Build button.
 	WID_BV_RENAME_WAGON,                    ///< Rename button.
+	WID_BV_FILTER_WAGON,                    ///< Filter by name.
 
 	WID_BV_LOCO_BUTTONS_SEL,                ///< Locomotive buttons selector.
 	WID_BV_WAGON_BUTTONS_SEL,               ///< Wagon buttons selector.
