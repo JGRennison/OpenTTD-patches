@@ -341,7 +341,9 @@
 	<tr><th>Bits</th><th>Meaning</th></tr>
 	<tr><td>0 - 7</td><td>
 		If the tile is defined in the current GRF, this is the lower 8 bits of the setID used in the definition. Otherwise, the content is undefined.<br />
-		Note that if this GRF has any road stop setIDs greater than 255, bits 24 - 31 need to be used as well.
+		Note that if this GRF has any road stop setIDs greater than 255, bits 24 - 31 need to be used as well.<br />
+		<br />
+		If the <font face="monospace">road_stops</font> feature is not tested for, this is the entire setID, clamped to the range 0..255.
 	</td></tr>
 	<tr><td>8 - 9</td><td>
 		0 - The tile uses original TTD graphics<br />
@@ -367,7 +369,9 @@
 	<tr><td>24 - 31</td><td>
 		If the tile is defined in the current GRF, this is the upper 8 bits of the setID used in the definition. Otherwise, the content is undefined.<br />
 		This can be ignored if this GRF does not have any road stop setIDs greater than 255 (does not define more than 256 road stop types).<br />
-		This requires <font face="monospace">road_stops</font>, version 7.
+		This requires <font face="monospace">road_stops</font>, version 7.<br />
+		<br />
+		If the <font face="monospace">road_stops</font> feature is not tested for, this is set to 0.
 	</td></tr>
 	</table>
 	<br />

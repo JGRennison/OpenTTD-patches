@@ -102,7 +102,12 @@ struct RoadStopScopeResolver : public ScopeResolver {
 	uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const override;
 
 private:
-	uint32 GetNearbyRoadStopsInfo(uint32 parameter, bool v2) const;
+	enum class NearbyRoadStopInfoMode {
+		Standard,
+		Extended,
+		V2,
+	};
+	uint32 GetNearbyRoadStopsInfo(uint32 parameter, NearbyRoadStopInfoMode mode) const;
 };
 
 /** Road stop resolver. */

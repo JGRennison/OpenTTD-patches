@@ -67,7 +67,7 @@ uint32 RoadStopScopeResolver::GetTriggers() const
 	return this->st == nullptr ? 0 : this->st->waiting_triggers;
 }
 
-uint32 RoadStopScopeResolver::GetNearbyRoadStopsInfo(uint32 parameter, bool v2) const
+uint32 RoadStopScopeResolver::GetNearbyRoadStopsInfo(uint32 parameter, RoadStopScopeResolver::NearbyRoadStopInfoMode mode) const
 {
 	if (this->tile == INVALID_TILE) return 0xFFFFFFFF;
 	TileIndex nearby_tile = GetNearbyTile(parameter, this->tile);
@@ -93,10 +93,16 @@ uint32 RoadStopScopeResolver::GetNearbyRoadStopsInfo(uint32 parameter, bool v2) 
 		res |= (GetDriveThroughStopDisallowedRoadDirections(nearby_tile) << 21);
 	}
 
-	if (v2) {
-		return (res << 8) | localidx;
-	} else {
-		return res | (localidx & 0xFF) | ((localidx & 0xFF00) << 16);
+	switch (mode) {
+		case NearbyRoadStopInfoMode::Standard:
+		default:
+			return res | std::min<uint16>(localidx, 0xFF);
+
+		case NearbyRoadStopInfoMode::Extended:
+			return res | (localidx & 0xFF) | ((localidx & 0xFF00) << 16);
+
+		case NearbyRoadStopInfoMode::V2:
+			return (res << 8) | localidx;
 	}
 }
 
@@ -191,12 +197,17 @@ uint32 RoadStopScopeResolver::GetVariable(uint16 variable, uint32 parameter, Get
 
 		/* Road stop info of nearby tiles */
 		case 0x68: {
-			return this->GetNearbyRoadStopsInfo(parameter, false);
+			return this->GetNearbyRoadStopsInfo(parameter, NearbyRoadStopInfoMode::Standard);
+		}
+
+		/* Road stop info of nearby tiles: extended */
+		case A2VRI_ROADSTOP_INFO_NEARBY_TILES_EXT: {
+			return this->GetNearbyRoadStopsInfo(parameter,  NearbyRoadStopInfoMode::Extended);
 		}
 
 		/* Road stop info of nearby tiles: v2 */
 		case A2VRI_ROADSTOP_INFO_NEARBY_TILES_V2: {
-			return this->GetNearbyRoadStopsInfo(parameter, true);
+			return this->GetNearbyRoadStopsInfo(parameter,  NearbyRoadStopInfoMode::V2);
 		}
 
 		/* GRFID of nearby road stop tiles */
