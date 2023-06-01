@@ -92,6 +92,8 @@
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
 
+#include "3rdparty/cpp-btree/btree_set.h"
+
 #include <mutex>
 #if defined(__MINGW32__)
 #include "3rdparty/mingw-std-threads/mingw.mutex.h"
@@ -1874,10 +1876,10 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 
 			/* Check docking tiles */
 			TileArea ta;
-			std::map<TileIndex, bool> docking_tiles;
+			btree::btree_set<TileIndex> docking_tiles;
 			for (TileIndex tile : st->docking_station) {
 				ta.Add(tile);
-				docking_tiles[tile] = IsDockingTile(tile);
+				if (IsDockingTile(tile)) docking_tiles.insert(tile);
 			}
 			UpdateStationDockingTiles(st);
 			if (ta.tile != st->docking_station.tile || ta.w != st->docking_station.w || ta.h != st->docking_station.h) {
@@ -1885,7 +1887,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 						st->index, (int)st->owner, ta.tile, ta.w, ta.h, st->docking_station.tile, st->docking_station.w, st->docking_station.h);
 			}
 			for (TileIndex tile : ta) {
-				if (docking_tiles[tile] != IsDockingTile(tile)) {
+				if ((docking_tiles.find(tile) != docking_tiles.end()) != IsDockingTile(tile)) {
 					CCLOG("docking tile mismatch: tile %i", (int)tile);
 				}
 			}
