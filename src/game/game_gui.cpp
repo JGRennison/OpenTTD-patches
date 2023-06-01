@@ -113,6 +113,7 @@ struct GSConfigWindow : public Window {
 
 	~GSConfigWindow()
 	{
+		HideDropDownMenu(this);
 		DeleteWindowByClass(WC_SCRIPT_LIST);
 	}
 

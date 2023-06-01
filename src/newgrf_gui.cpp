@@ -183,6 +183,11 @@ struct NewGRFParametersWindow : public Window {
 		this->InvalidateData();
 	}
 
+	~NewGRFParametersWindow()
+	{
+		HideDropDownMenu(this);
+	}
+
 	/**
 	 * Get a dummy parameter-info object with default information.
 	 * @param nr The param number that should be changed.
