@@ -220,6 +220,7 @@ bool ToggleFullScreen(bool fs);
 byte GetCharacterWidth(FontSize size, WChar key);
 byte GetDigitWidth(FontSize size = FS_NORMAL);
 void GetBroadestDigit(uint *front, uint *next, FontSize size = FS_NORMAL);
+uint64 GetBroadestDigitsValue(uint count, FontSize size = FS_NORMAL);
 
 extern int font_height_cache[FS_END];
 

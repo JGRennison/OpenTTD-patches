@@ -1529,6 +1529,24 @@ byte GetDigitWidth(FontSize size)
 }
 
 /**
+ * Return some number that is suitable for string size computations.
+ * @param count Number of digits which shall be displayable.
+ * @param size  Font of the number
+ * @return The number.
+ */
+uint64 GetBroadestDigitsValue(uint count, FontSize size)
+{
+	uint front = 0;
+	uint next = 0;
+	GetBroadestDigit(&front, &next, size);
+	uint64 val = count > 1 ? front : next;
+	for (; count > 1; count--) {
+		val = 10 * val + next;
+	}
+	return val;
+}
+
+/**
  * Determine the broadest digits for guessing the maximum width of a n-digit number.
  * @param[out] front Broadest digit, which is not 0. (Use this digit as first digit for numbers with more than one digit.)
  * @param[out] next Broadest digit, including 0. (Use this digit for all digits, except the first one; or for numbers with only one digit.)
