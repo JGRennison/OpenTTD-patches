@@ -313,22 +313,13 @@ void SetDebugString(const char *s, void (*error_func)(const char *))
  * Just return a string with the values of all the debug categories.
  * @return string with debug-levels
  */
-const char *GetDebugString()
+std::string GetDebugString()
 {
-	const DebugLevel *i;
-	static char dbgstr[150];
-	char dbgval[20];
-
-	memset(dbgstr, 0, sizeof(dbgstr));
-	i = debug_level;
-	seprintf(dbgstr, lastof(dbgstr), "%s=%d", i->name, *i->level);
-
-	for (i++; i != endof(debug_level); i++) {
-		seprintf(dbgval, lastof(dbgval), ", %s=%d", i->name, *i->level);
-		strecat(dbgstr, dbgval, lastof(dbgstr));
+	std::string result;
+	for (size_t i = 0; i < lengthof(debug_level); i++) {
+		result += stdstr_fmt("%s%s=%d", i == 0 ? "" : ", ", debug_level[i].name, *(debug_level[i].level));
 	}
-
-	return dbgstr;
+	return result;
 }
 
 /**

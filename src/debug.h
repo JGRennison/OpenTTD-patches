@@ -69,7 +69,7 @@ void debug_print(const char *dbg, const char *buf);
 
 char *DumpDebugFacilityNames(char *buf, char *last);
 void SetDebugString(const char *s, void (*error_func)(const char *));
-const char *GetDebugString();
+std::string GetDebugString();
 
 /* Shorter form for passing filename and linenumber */
 #define FILE_LINE __FILE__, __LINE__

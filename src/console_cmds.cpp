@@ -1774,7 +1774,7 @@ DEF_CONSOLE_CMD(ConDebugLevel)
 	if (argc > 2) return false;
 
 	if (argc == 1) {
-		IConsolePrintF(CC_DEFAULT, "Current debug-level: '%s'", GetDebugString());
+		IConsolePrintF(CC_DEFAULT, "Current debug-level: '%s'", GetDebugString().c_str());
 	} else {
 		SetDebugString(argv[1], [](const char *err) { IConsolePrint(CC_ERROR, err); });
 	}
