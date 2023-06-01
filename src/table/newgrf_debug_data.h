@@ -35,8 +35,9 @@
 #define NIC_END() { nullptr, 0, 0, 0, 0 }
 
 /* Helper for filling variable tables */
-#define NIV(var, name) { name, var }
-#define NIV_END() { nullptr, 0 }
+#define NIV(var, name) { name, var, NIVF_NONE }
+#define NIVF(var, name, flags) { name, var, flags }
+#define NIV_END() { nullptr, 0, NIVF_NONE }
 
 
 /*** NewGRF Vehicles ***/
@@ -584,8 +585,8 @@ static const NIVariable _niv_stations[] = {
 	NIV(0x68, "station info of nearby tiles"),
 	NIV(0x69, "information about cargo accepted in the past"),
 	NIV(0x6A, "GRFID of nearby station tiles"),
-	NIV(A2VRI_STATION_INFO_NEARBY_TILES_EXT, "station info of nearby tiles ext"),
-	NIV(A2VRI_STATION_INFO_NEARBY_TILES_V2, "station info of nearby tiles v2"),
+	NIVF(A2VRI_STATION_INFO_NEARBY_TILES_EXT, "station info of nearby tiles ext", NIVF_SHOW_PARAMS),
+	NIVF(A2VRI_STATION_INFO_NEARBY_TILES_V2, "station info of nearby tiles v2", NIVF_SHOW_PARAMS),
 	NIV_END()
 };
 
@@ -1947,8 +1948,8 @@ static const NIVariable _nif_roadstops[] = {
 	NIV(0x69, "information about cargo accepted in the past"),
 	NIV(0x6A, "GRFID of nearby road stop tiles"),
 	NIV(0x6B, "Road info of nearby plain road tiles"),
-	NIV(A2VRI_ROADSTOP_INFO_NEARBY_TILES_EXT, "road stop info of nearby tiles ext"),
-	NIV(A2VRI_ROADSTOP_INFO_NEARBY_TILES_V2, "road stop info of nearby tiles v2"),
+	NIVF(A2VRI_ROADSTOP_INFO_NEARBY_TILES_EXT, "road stop info of nearby tiles ext", NIVF_SHOW_PARAMS),
+	NIVF(A2VRI_ROADSTOP_INFO_NEARBY_TILES_V2, "road stop info of nearby tiles v2", NIVF_SHOW_PARAMS),
 	NIV_END(),
 };
 

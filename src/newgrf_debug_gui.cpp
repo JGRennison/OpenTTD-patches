@@ -109,10 +109,17 @@ struct NICallback {
 /** Mask to show no bit needs to be enabled for the callback. */
 static const int CBM_NO_BIT = UINT8_MAX;
 
+enum NIVariableFlags : uint16 {
+	NIVF_NONE                  = 0,
+	NIVF_SHOW_PARAMS           = 1 << 0,
+};
+DECLARE_ENUM_AS_BIT_SET(NIVariableFlags)
+
 /** Representation on the NewGRF variables. */
 struct NIVariable {
 	const char *name;
 	uint16 var;
+	NIVariableFlags flags;
 };
 
 struct NIExtraInfoOutput {
@@ -295,7 +302,7 @@ static inline const NIHelper *GetFeatureHelper(uint window_number)
 /** Window used for inspecting NewGRFs. */
 struct NewGRFInspectWindow : Window {
 	/** The value for the variable 60 parameters. */
-	static uint32 var60params[GSF_FAKE_END][0x20];
+	btree::btree_map<uint16, uint32> var60params;
 
 	/** GRFID of the caller of this window, 0 if it has no caller. */
 	uint32 caller_grfid;
@@ -304,7 +311,7 @@ struct NewGRFInspectWindow : Window {
 	uint chain_index;
 
 	/** The currently edited parameter, to update the right one. */
-	byte current_edit_param;
+	uint16 current_edit_param;
 
 	Scrollbar *vscroll;
 
@@ -331,9 +338,9 @@ struct NewGRFInspectWindow : Window {
 	 * @param variable the variable to check.
 	 * @return true iff the variable has a parameter.
 	 */
-	static bool HasVariableParameter(uint variable)
+	static bool HasVariableParameter(const NIVariable *niv)
 	{
-		return IsInsideBS(variable, 0x60, 0x20);
+		return IsInsideBS(niv->var, 0x60, 0x20) || (niv->flags & NIVF_SHOW_PARAMS);
 	}
 
 	/**
@@ -646,46 +653,64 @@ struct NewGRFInspectWindow : Window {
 
 		if (nif->variables != nullptr) {
 			this->DrawString(r, i++, "Variables:");
-			uint prefix_width = 0;
+			int prefix_width = 0;
+			uint widest_num = 0;
 			for (const NIVariable *niv = nif->variables; niv->name != nullptr; niv++) {
 				if (niv->var >= 0x100) {
 					const char *name = GetExtendedVariableNameById(niv->var);
 					if (name != nullptr) {
 						char buf[512];
-						seprintf(buf, lastof(buf), "  %s: ", name);
-						prefix_width = std::max<uint>(prefix_width, GetStringBoundingBox(buf).width);
+						if (HasVariableParameter(niv)) {
+							if (widest_num == 0) widest_num = GetBroadestDigitsValue(2);
+							seprintf(buf, lastof(buf), "  %s [%u]: ", name, widest_num);
+						} else {
+							seprintf(buf, lastof(buf), "  %s: ", name);
+						}
+						prefix_width = std::max<int>(prefix_width, GetStringBoundingBox(buf).width);
 					}
 				}
 			}
 			for (const NIVariable *niv = nif->variables; niv->name != nullptr; niv++) {
 				GetVariableExtra extra;
-				uint param = HasVariableParameter(niv->var) ? NewGRFInspectWindow::var60params[GetFeatureNum(this->window_number)][niv->var - 0x60] : 0;
+				const bool has_param = HasVariableParameter(niv);
+				uint param = 0;
+				if (has_param) {
+					auto iter = this->var60params.find(niv->var);
+					if (iter != this->var60params.end()) param = iter->second;
+				}
 				uint value = nih->Resolve(index, niv->var, param, &extra);
 
 				if (!extra.available) continue;
 
-				if (HasVariableParameter(niv->var)) {
-					this->DrawString(r, i++, "  %02x[%02x]: %08x (%s)", niv->var, param, value, niv->name);
-				} else if (niv->var >= 0x100) {
+				if (niv->var >= 0x100) {
 					const char *name = GetExtendedVariableNameById(niv->var);
 					if (name != nullptr) {
-						if (_current_text_dir == TD_RTL) {
-							this->DrawString(r, i++, "  %s: %08x (%s)", name, value, niv->name);
+						char buf[512];
+						if (has_param) {
+							seprintf(buf, lastof(buf), "  %s [%02X]: ", name, param);
 						} else {
-							if (this->log_console) DEBUG(misc, 0, "    %s: %08x (%s)", name, value, niv->name);
+							seprintf(buf, lastof(buf), "  %s: ", name);
+						}
+						if (_current_text_dir == TD_RTL) {
+							this->DrawString(r, i++, "%s%08x (%s)", buf, value, niv->name);
+						} else {
+							if (this->log_console) DEBUG(misc, 0, "  %s%08x (%s)", buf, value, niv->name);
 
 							int offset = i - this->vscroll->GetPosition();
 							i++;
 							if (offset >= 0 && offset < this->vscroll->GetCapacity()) {
 								Rect sr = r.Shrink(WidgetDimensions::scaled.frametext).Shrink(0, offset * this->resize.step_height, 0, 0);
-								char buf[512];
-								seprintf(buf, lastof(buf), "  %s: ", name);
-								::DrawString(sr.left, sr.right, sr.top, buf, TC_BLACK);
+								int edge = ::DrawString(sr.left, sr.right, sr.top, buf, TC_BLACK);
 								seprintf(buf, lastof(buf), "%08x (%s)", value, niv->name);
-								::DrawString(sr.left + prefix_width, sr.right, sr.top, buf, TC_BLACK);
+								::DrawString(std::max(edge, sr.left + prefix_width), sr.right, sr.top, buf, TC_BLACK);
 							}
 						}
 					}
+					continue;
+				}
+
+				if (has_param) {
+					this->DrawString(r, i++, "  %02x[%02x]: %08x (%s)", niv->var, param, value, niv->name);
 				} else {
 					this->DrawString(r, i++, "  %02x: %08x (%s)", niv->var, value, niv->name);
 				}
@@ -889,7 +914,7 @@ struct NewGRFInspectWindow : Window {
 				for (const NIVariable *niv = nif->variables; niv->name != nullptr; niv++, line--) {
 					if (line != 1) continue; // 1 because of the "Variables:" line
 
-					if (!HasVariableParameter(niv->var)) break;
+					if (!HasVariableParameter(niv)) break;
 
 					this->current_edit_param = niv->var;
 					ShowQueryString(STR_EMPTY, STR_NEWGRF_INSPECT_QUERY_CAPTION, 9, this, CS_HEXADECIMAL, QSF_NONE);
@@ -974,7 +999,7 @@ struct NewGRFInspectWindow : Window {
 				this->SetWidgetDirty(WID_NGRFI_SCROLLBAR);
 			}
 		} else if (this->current_edit_param != 0 && !this->sprite_dump) {
-			NewGRFInspectWindow::var60params[GetFeatureNum(this->window_number)][this->current_edit_param - 0x60] = std::strtol(str, nullptr, 16);
+			this->var60params[this->current_edit_param] = std::strtol(str, nullptr, 16);
 			this->SetDirty();
 		}
 	}
@@ -1012,8 +1037,6 @@ struct NewGRFInspectWindow : Window {
 		this->redraw_scrollbar = false;
 	}
 };
-
-/* static */ uint32 NewGRFInspectWindow::var60params[GSF_FAKE_END][0x20] = { {0} }; // Use spec to have 0s in whole array
 
 static const NWidgetPart _nested_newgrf_inspect_chain_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
