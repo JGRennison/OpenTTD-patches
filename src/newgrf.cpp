@@ -11732,3 +11732,22 @@ uint CountSelectedGRFs(GRFConfig *grfconf)
 	}
 	return i;
 }
+
+const char *GetExtendedVariableNameById(int id)
+{
+	extern const GRFVariableMapDefinition _grf_action2_remappable_variables[];
+	for (const GRFVariableMapDefinition *info = _grf_action2_remappable_variables; info->name != nullptr; info++) {
+		if (id == info->id) {
+			return info->name;
+		}
+	}
+
+	extern const GRFNameOnlyVariableMapDefinition _grf_action2_internal_variable_names[];
+	for (const GRFNameOnlyVariableMapDefinition *info = _grf_action2_internal_variable_names; info->name != nullptr; info++) {
+		if (id == info->id) {
+			return info->name;
+		}
+	}
+
+	return nullptr;
+}

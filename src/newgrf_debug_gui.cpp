@@ -649,14 +649,11 @@ struct NewGRFInspectWindow : Window {
 			uint prefix_width = 0;
 			for (const NIVariable *niv = nif->variables; niv->name != nullptr; niv++) {
 				if (niv->var >= 0x100) {
-					extern const GRFVariableMapDefinition _grf_action2_remappable_variables[];
-					for (const GRFVariableMapDefinition *info = _grf_action2_remappable_variables; info->name != nullptr; info++) {
-						if (niv->var == info->id) {
-							char buf[512];
-							seprintf(buf, lastof(buf), "  %s: ", info->name);
-							prefix_width = std::max<uint>(prefix_width, GetStringBoundingBox(buf).width);
-							break;
-						}
+					const char *name = GetExtendedVariableNameById(niv->var);
+					if (name != nullptr) {
+						char buf[512];
+						seprintf(buf, lastof(buf), "  %s: ", name);
+						prefix_width = std::max<uint>(prefix_width, GetStringBoundingBox(buf).width);
 					}
 				}
 			}
@@ -670,26 +667,23 @@ struct NewGRFInspectWindow : Window {
 				if (HasVariableParameter(niv->var)) {
 					this->DrawString(r, i++, "  %02x[%02x]: %08x (%s)", niv->var, param, value, niv->name);
 				} else if (niv->var >= 0x100) {
-					extern const GRFVariableMapDefinition _grf_action2_remappable_variables[];
-					for (const GRFVariableMapDefinition *info = _grf_action2_remappable_variables; info->name != nullptr; info++) {
-						if (niv->var == info->id) {
-							if (_current_text_dir == TD_RTL) {
-								this->DrawString(r, i++, "  %s: %08x (%s)", info->name, value, niv->name);
-							} else {
-								if (this->log_console) DEBUG(misc, 0, "    %s: %08x (%s)", info->name, value, niv->name);
+					const char *name = GetExtendedVariableNameById(niv->var);
+					if (name != nullptr) {
+						if (_current_text_dir == TD_RTL) {
+							this->DrawString(r, i++, "  %s: %08x (%s)", name, value, niv->name);
+						} else {
+							if (this->log_console) DEBUG(misc, 0, "    %s: %08x (%s)", name, value, niv->name);
 
-								int offset = i - this->vscroll->GetPosition();
-								i++;
-								if (offset >= 0 && offset < this->vscroll->GetCapacity()) {
-									Rect sr = r.Shrink(WidgetDimensions::scaled.frametext).Shrink(0, offset * this->resize.step_height, 0, 0);
-									char buf[512];
-									seprintf(buf, lastof(buf), "  %s: ", info->name);
-									::DrawString(sr.left, sr.right, sr.top, buf, TC_BLACK);
-									seprintf(buf, lastof(buf), "%08x (%s)", value, niv->name);
-									::DrawString(sr.left + prefix_width, sr.right, sr.top, buf, TC_BLACK);
-								}
+							int offset = i - this->vscroll->GetPosition();
+							i++;
+							if (offset >= 0 && offset < this->vscroll->GetCapacity()) {
+								Rect sr = r.Shrink(WidgetDimensions::scaled.frametext).Shrink(0, offset * this->resize.step_height, 0, 0);
+								char buf[512];
+								seprintf(buf, lastof(buf), "  %s: ", name);
+								::DrawString(sr.left, sr.right, sr.top, buf, TC_BLACK);
+								seprintf(buf, lastof(buf), "%08x (%s)", value, niv->name);
+								::DrawString(sr.left + prefix_width, sr.right, sr.top, buf, TC_BLACK);
 							}
-							break;
 						}
 					}
 				} else {

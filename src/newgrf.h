@@ -209,6 +209,22 @@ struct GRFVariableMapDefinition {
 	{}
 };
 
+struct GRFNameOnlyVariableMapDefinition {
+	const char *name; // nullptr indicates the end of the list
+	int id;
+
+	/** Create empty object used to identify the end of a list. */
+	GRFNameOnlyVariableMapDefinition() :
+		name(nullptr),
+		id(0)
+	{}
+
+	GRFNameOnlyVariableMapDefinition(int id, const char *name) :
+		name(name),
+		id(id)
+	{}
+};
+
 struct GRFVariableMapEntry {
 	uint16 id = 0;
 	uint8 feature = 0;
@@ -449,5 +465,7 @@ const char *GetFeatureString(GrfSpecFeatureRef feature);
 const char *GetFeatureString(GrfSpecFeature feature);
 
 void InitGRFGlobalVars();
+
+const char *GetExtendedVariableNameById(int id);
 
 #endif /* NEWGRF_H */

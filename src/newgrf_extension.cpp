@@ -197,6 +197,13 @@ extern const GRFVariableMapDefinition _grf_action2_remappable_variables[] = {
 	GRFVariableMapDefinition(),
 };
 
+extern const GRFNameOnlyVariableMapDefinition _grf_action2_internal_variable_names[] = {
+	GRFNameOnlyVariableMapDefinition(A2VRI_VEHICLE_CURRENT_SPEED_SCALED, "current speed scaled"),
+	GRFNameOnlyVariableMapDefinition(A2VRI_STATION_INFO_NEARBY_TILES_EXT, "68 (extended)"),
+	GRFNameOnlyVariableMapDefinition(A2VRI_ROADSTOP_INFO_NEARBY_TILES_EXT, "68 (extended)"),
+	GRFNameOnlyVariableMapDefinition(),
+};
+
 /** Action14 Action5 remappable type list */
 extern const Action5TypeRemapDefinition _grf_action5_remappable_types[] = {
 	Action5TypeRemapDefinition("programmable_signals", A5BLOCK_ALLOW_OFFSET, SPR_PROGSIGNAL_BASE, 1, 32, "Programmable pre-signal graphics"),

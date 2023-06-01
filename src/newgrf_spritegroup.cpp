@@ -514,12 +514,9 @@ static char *DumpSpriteGroupAdjust(char *p, const char *last, const Deterministi
 	};
 
 	auto append_extended_var = [&](int var_id) {
-		extern const GRFVariableMapDefinition _grf_action2_remappable_variables[];
-		for (const GRFVariableMapDefinition *info = _grf_action2_remappable_variables; info->name != nullptr; info++) {
-			if (var_id == info->id) {
-				p += seprintf(p, last, " (%s)", info->name);
-				break;
-			}
+		const char *name = GetExtendedVariableNameById(var_id);
+		if (name != nullptr) {
+			p += seprintf(p, last, " (%s)", name);
 		}
 	};
 
@@ -560,9 +557,7 @@ static char *DumpSpriteGroupAdjust(char *p, const char *last, const Deterministi
 		highlight_tag = (2 << 16) | (adjust.and_mask & 0xFFFF);
 	}
 	p += seprintf(p, last, "var: %X", adjust.variable);
-	if (adjust.variable == A2VRI_VEHICLE_CURRENT_SPEED_SCALED) {
-		p += seprintf(p, last, " (current_speed_scaled)");
-	} else if (adjust.variable >= 0x100) {
+	if (adjust.variable >= 0x100) {
 		append_extended_var(adjust.variable);
 	}
 	if (adjust.variable == 0x7B && adjust.parameter >= 0x100) {
