@@ -47,6 +47,7 @@
 #include "infrastructure_func.h"
 #include "zoom_func.h"
 #include "core/span_type.hpp"
+#include "3rdparty/cpp-btree/btree_map.h"
 
 #include "safeguards.h"
 
@@ -1755,7 +1756,7 @@ class TraceRestrictWindow: public Window {
 	Track track;                                                                ///< track this window is for
 	int selected_instruction;                                                   ///< selected instruction index, this is offset by one due to the display of the "start" item
 	Scrollbar *vscroll;                                                         ///< scrollbar widget
-	std::map<int, const TraceRestrictDropDownListSet *> drop_down_list_mapping; ///< mapping of widget IDs to drop down list sets
+	btree::btree_map<int, const TraceRestrictDropDownListSet *> drop_down_list_mapping; ///< mapping of widget IDs to drop down list sets
 	bool value_drop_down_is_company;                                            ///< TR_WIDGET_VALUE_DROPDOWN is a company list
 	TraceRestrictItem expecting_inserted_item;                                  ///< set to instruction when performing an instruction insertion, used to handle selection update on insertion
 	int current_placement_widget;                                               ///< which widget has a SetObjectToPlaceWnd, if any
