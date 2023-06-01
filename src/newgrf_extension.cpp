@@ -24,6 +24,8 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action0_station_prop1B", 1),
 	GRFFeatureInfo("action0_station_disallowed_bridge_pillars", 1),
 	GRFFeatureInfo("varaction2_station_var42", 1),
+	GRFFeatureInfo("varaction2_station_var68_extended_localidx", 1, GFTOF_STATION_VAR68_EXT_LOCALIDX),
+	GRFFeatureInfo("varaction2_station_station_nearby_info_v2", 1),
 	GRFFeatureInfo("more_bridge_types", 1),
 	GRFFeatureInfo("action0_bridge_prop14", 1),
 	GRFFeatureInfo("action0_bridge_pillar_flags", 1),
@@ -149,6 +151,7 @@ extern const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 
 /** Action14 Action2 remappable variable list */
 extern const GRFVariableMapDefinition _grf_action2_remappable_variables[] = {
+	GRFVariableMapDefinition(GSF_STATIONS, A2VRI_STATION_INFO_NEARBY_TILES_V2, "station_station_info_nearby_tiles_v2"),
 	GRFVariableMapDefinition(GSF_OBJECTS, A2VRI_OBJECT_FOUNDATION_SLOPE, "object_foundation_tile_slope"),
 	GRFVariableMapDefinition(GSF_OBJECTS, A2VRI_OBJECT_FOUNDATION_SLOPE_CHANGE, "object_foundation_change_tile_slope"),
 	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x40, "roadstop_view"),

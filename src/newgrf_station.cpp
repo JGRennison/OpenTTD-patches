@@ -23,6 +23,7 @@
 #include "tunnelbridge_map.h"
 #include "newgrf_animation_base.h"
 #include "newgrf_class_func.h"
+#include "newgrf_extension.h"
 
 #include "safeguards.h"
 
@@ -268,6 +269,37 @@ TownScopeResolver *StationResolverObject::GetTown()
 	return this->town_scope;
 }
 
+uint32 StationScopeResolver::GetNearbyStationInfo(uint32 parameter, StationScopeResolver::NearbyStationInfoMode mode) const
+{
+	TileIndex nearby_tile = GetNearbyTile(parameter, this->tile);
+
+	if (!HasStationTileRail(nearby_tile)) return 0xFFFFFFFF;
+
+	uint32 grfid = this->st->speclist[GetCustomStationSpecIndex(this->tile)].grfid;
+	bool perpendicular = GetRailStationAxis(this->tile) != GetRailStationAxis(nearby_tile);
+	bool same_station = this->st->TileBelongsToRailStation(nearby_tile);
+	uint32 res = GB(GetStationGfx(nearby_tile), 1, 2) << 12 | !!perpendicular << 11 | !!same_station << 10;
+
+	uint16 localidx = 0;
+	if (IsCustomStationSpecIndex(nearby_tile)) {
+		const StationSpecList ssl = BaseStation::GetByTile(nearby_tile)->speclist[GetCustomStationSpecIndex(nearby_tile)];
+		localidx = ssl.localidx;
+		res |= 1 << (ssl.grfid != grfid ? 9 : 8);
+	}
+
+	switch (mode) {
+		case NearbyStationInfoMode::Standard:
+		default:
+			return res | std::min<uint16>(localidx, 0xFF);
+
+		case NearbyStationInfoMode::Extended:
+			return res | (localidx & 0xFF) | ((localidx & 0xFF00) << 16);
+
+		case NearbyStationInfoMode::V2:
+			return (res << 8) | localidx;
+	}
+}
+
 /* virtual */ uint32 StationScopeResolver::GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	if (this->st == nullptr) {
@@ -355,21 +387,19 @@ TownScopeResolver *StationResolverObject::GetTown()
 			return result;
 		}
 
-		case 0x68: { // Station info of nearby tiles
-			TileIndex nearby_tile = GetNearbyTile(parameter, this->tile);
+		/* Station info of nearby tiles */
+		case 0x68: {
+			return this->GetNearbyStationInfo(parameter, NearbyStationInfoMode::Standard);
+		}
 
-			if (!HasStationTileRail(nearby_tile)) return 0xFFFFFFFF;
+		/* Station info of nearby tiles: extended */
+		case A2VRI_STATION_INFO_NEARBY_TILES_EXT: {
+			return this->GetNearbyStationInfo(parameter, NearbyStationInfoMode::Extended);
+		}
 
-			uint32 grfid = this->st->speclist[GetCustomStationSpecIndex(this->tile)].grfid;
-			bool perpendicular = GetRailStationAxis(this->tile) != GetRailStationAxis(nearby_tile);
-			bool same_station = this->st->TileBelongsToRailStation(nearby_tile);
-			uint32 res = GB(GetStationGfx(nearby_tile), 1, 2) << 12 | !!perpendicular << 11 | !!same_station << 10;
-
-			if (IsCustomStationSpecIndex(nearby_tile)) {
-				const StationSpecList ssl = BaseStation::GetByTile(nearby_tile)->speclist[GetCustomStationSpecIndex(nearby_tile)];
-				res |= 1 << (ssl.grfid != grfid ? 9 : 8) | ssl.localidx;
-			}
-			return res;
+		/* Station info of nearby tiles: v2 */
+		case A2VRI_STATION_INFO_NEARBY_TILES_V2: {
+			return this->GetNearbyStationInfo(parameter, NearbyStationInfoMode::V2);
 		}
 
 		case 0x6A: { // GRFID of nearby station tiles

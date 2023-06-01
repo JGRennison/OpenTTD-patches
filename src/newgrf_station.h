@@ -46,6 +46,14 @@ struct StationScopeResolver : public ScopeResolver {
 	uint32 GetTriggers() const override;
 
 	uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const override;
+
+private:
+	enum class NearbyStationInfoMode {
+		Standard,
+		Extended,
+		V2,
+	};
+	uint32 GetNearbyStationInfo(uint32 parameter, NearbyStationInfoMode mode) const;
 };
 
 /** Station resolver. */

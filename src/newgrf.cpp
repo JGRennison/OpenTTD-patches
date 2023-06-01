@@ -5977,6 +5977,10 @@ static void NewSpriteGroup(ByteReader *buf)
 					if (adjust.variable == 0x68) adjust.variable = A2VRI_ROADSTOP_INFO_NEARBY_TILES_EXT;
 					if (adjust.variable == 0x7B && adjust.parameter == 0x68) adjust.parameter = A2VRI_ROADSTOP_INFO_NEARBY_TILES_EXT;
 				}
+				if (info.scope_feature == GSF_STATIONS && HasBit(_cur.grffile->observed_feature_tests, GFTOF_STATION_VAR68_EXT_LOCALIDX)) {
+					if (adjust.variable == 0x68) adjust.variable = A2VRI_STATION_INFO_NEARBY_TILES_EXT;
+					if (adjust.variable == 0x7B && adjust.parameter == 0x68) adjust.parameter = A2VRI_STATION_INFO_NEARBY_TILES_EXT;
+				}
 
 				if (adjust.type != DSGA_TYPE_NONE) {
 					adjust.add_val    = buf->ReadVarSize(varsize);

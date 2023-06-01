@@ -45,6 +45,8 @@ static bool IsExpensiveStationVariable(uint16 variable)
 		case 0x67:
 		case 0x68:
 		case 0x6A:
+		case A2VRI_STATION_INFO_NEARBY_TILES_EXT:
+		case A2VRI_STATION_INFO_NEARBY_TILES_V2:
 			return true;
 
 		default:
