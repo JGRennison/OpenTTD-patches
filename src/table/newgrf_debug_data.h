@@ -40,6 +40,12 @@
 #define NIV_END() { nullptr, 0, NIVF_NONE }
 
 
+static uint GetTownInspectWindowNumber(const Town *town)
+{
+	if (town == nullptr) return UINT32_MAX;
+	return GetInspectWindowNumber(GSF_FAKE_TOWNS, town->index);
+}
+
 /*** NewGRF Vehicles ***/
 
 #define NICV(cb_id, bit) NIC(cb_id, Engine, info.callback_mask, bit)
@@ -592,7 +598,7 @@ static const NIVariable _niv_stations[] = {
 
 class NIHStation : public NIHelper {
 	bool IsInspectable(uint index) const override        { return GetStationSpec(index) != nullptr; }
-	uint GetParent(uint index) const override            { return GetInspectWindowNumber(GSF_FAKE_TOWNS, Station::GetByTile(index)->town->index); }
+	uint GetParent(uint index) const override            { return GetTownInspectWindowNumber(Station::GetByTile(index)->town); }
 	bool ShowSpriteDumpButton(uint index) const override { return true; }
 	const void *GetInstance(uint index)const override    { return nullptr; }
 	const void *GetSpec(uint index) const override       { return GetStationSpec(index); }
@@ -971,7 +977,7 @@ static const NIVariable _niv_industries[] = {
 class NIHIndustry : public NIHelper {
 	bool IsInspectable(uint index) const override        { return true; }
 	bool ShowSpriteDumpButton(uint index) const override { return true; }
-	uint GetParent(uint index) const override            { return HasBit(index, 26) ? UINT32_MAX : GetInspectWindowNumber(GSF_FAKE_TOWNS, Industry::Get(index)->town->index); }
+	uint GetParent(uint index) const override            { return HasBit(index, 26) ? UINT32_MAX : GetTownInspectWindowNumber(Industry::Get(index)->town); }
 	const void *GetInstance(uint index)const override    { return HasBit(index, 26) ? nullptr : Industry::Get(index); }
 	uint32 GetGRFID(uint index) const override           { return (!this->ShowExtraInfoOnly(index)) ? ((const IndustrySpec *)this->GetSpec(index))->grf_prop.grffile->grfid : 0; }
 
@@ -1346,7 +1352,7 @@ class NIHObject : public NIHelper {
 	bool IsInspectable(uint index) const override        { return true; }
 	bool ShowExtraInfoOnly(uint index) const override    { return ObjectSpec::GetByTile(index)->grf_prop.grffile == nullptr; }
 	bool ShowSpriteDumpButton(uint index) const override { return true; }
-	uint GetParent(uint index) const override            { return GetInspectWindowNumber(GSF_FAKE_TOWNS, Object::GetByTile(index)->town->index); }
+	uint GetParent(uint index) const override            { return GetTownInspectWindowNumber(Object::GetByTile(index)->town); }
 	const void *GetInstance(uint index)const override    { return Object::GetByTile(index); }
 	const void *GetSpec(uint index) const override       { return ObjectSpec::GetByTile(index); }
 	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_OBJECT, INVALID_STRING_ID, index); }
@@ -1598,7 +1604,7 @@ static const NICallback _nic_airporttiles[] = {
 
 class NIHAirportTile : public NIHelper {
 	bool IsInspectable(uint index) const override        { return AirportTileSpec::Get(GetAirportGfx(index))->grf_prop.grffile != nullptr; }
-	uint GetParent(uint index) const override            { return GetInspectWindowNumber(GSF_FAKE_TOWNS, Station::GetByTile(index)->town->index); }
+	uint GetParent(uint index) const override            { return GetTownInspectWindowNumber(Station::GetByTile(index)->town); }
 	const void *GetInstance(uint index)const override    { return nullptr; }
 	const void *GetSpec(uint index) const override       { return AirportTileSpec::Get(GetAirportGfx(index)); }
 	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_STATION_NAME, GetStationIndex(index), index); }
@@ -1956,7 +1962,7 @@ static const NIVariable _nif_roadstops[] = {
 class NIHRoadStop : public NIHelper {
 	bool IsInspectable(uint index) const override        { return GetRoadStopSpec(index) != nullptr; }
 	bool ShowSpriteDumpButton(uint index) const override { return true; }
-	uint GetParent(uint index) const override            { return GetInspectWindowNumber(GSF_FAKE_TOWNS, BaseStation::GetByTile(index)->town->index); }
+	uint GetParent(uint index) const override            { return GetTownInspectWindowNumber(BaseStation::GetByTile(index)->town); }
 	const void *GetInstance(uint index)const override    { return nullptr; }
 	const void *GetSpec(uint index) const override       { return GetRoadStopSpec(index); }
 	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_STATION_NAME, GetStationIndex(index), index); }
