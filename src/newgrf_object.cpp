@@ -334,10 +334,10 @@ static uint32 GetCountAndDistanceOfClosestInstance(uint32 local_id, uint32 grfid
 		case 0x44: return GetTileOwner(this->tile);
 
 		/* Get town zone and Manhattan distance of closest town */
-		case 0x45: return GetTownRadiusGroup(t, this->tile) << 16 | std::min(DistanceManhattan(this->tile, t->xy), 0xFFFFu);
+		case 0x45: return (t == nullptr) ? 0 : (GetTownRadiusGroup(t, this->tile) << 16 | std::min(DistanceManhattan(this->tile, t->xy), 0xFFFFu));
 
 		/* Get square of Euclidian distance of closest town */
-		case 0x46: return DistanceSquare(this->tile, t->xy);
+		case 0x46: return (t == nullptr) ? 0 : DistanceSquare(this->tile, t->xy);
 
 		/* Object colour */
 		case 0x47: return this->obj->colour;
