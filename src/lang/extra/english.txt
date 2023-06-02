@@ -8,6 +8,9 @@ STR_ORDER_TEXT                                                  :{STRING6} {STRI
 ##after STR_CONFIG_SETTING_TREE_PLACER_IMPROVED
 STR_CONFIG_SETTING_TREE_PLACER_PERFECT                          :Perfect
 
+##after STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT
+STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT_EXTRA                   :{STRING}, 'Perfect' improves spreading and grouping
+
 ##after STR_FINANCES_SECTION_OTHER
 STR_FINANCES_SECTION_INFRASTRUCTURE_COSTS                       :{GOLD}Infrastructure Sharing
 STR_FINANCES_SECTION_INFRASTRUCTURE_INCOME                      :{GOLD}Infrastructure Sharing

@@ -1897,6 +1897,19 @@ static bool ZoomMaxCfgName(SettingOnGuiCtrlData &data)
 	}
 }
 
+static bool TreePlacerSettingGUI(SettingOnGuiCtrlData &data)
+{
+	switch (data.type) {
+		case SOGCT_DESCRIPTION_TEXT:
+			SetDParam(0, data.text);
+			data.text = STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT_EXTRA;
+			return true;
+
+		default:
+			return false;
+	}
+}
+
 /* End - GUI callbacks */
 
 /**
