@@ -872,7 +872,7 @@ static const NWidgetPart _nested_town_directory_widgets[] = {
 			NWidget(WWT_PANEL, COLOUR_BROWN, WID_TD_LIST), SetDataTip(0x0, STR_TOWN_DIRECTORY_LIST_TOOLTIP),
 							SetFill(1, 0), SetResize(1, 1), SetScrollbar(WID_TD_SCROLLBAR), EndContainer(),
 			NWidget(WWT_PANEL, COLOUR_BROWN),
-				NWidget(WWT_TEXT, COLOUR_BROWN, WID_TD_WORLD_POPULATION), SetPadding(2, 0, 2, 2), SetMinimalTextLines(1, 0), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_TOWN_POPULATION, STR_NULL),
+				NWidget(WWT_TEXT, COLOUR_BROWN, WID_TD_WORLD_POPULATION), SetPadding(2, 0, 2, 2), SetMinimalTextLines(1, 0), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_TOWN_DIRECTORY_INFO, STR_NULL),
 			EndContainer(),
 		EndContainer(),
 		NWidget(NWID_VERTICAL),
@@ -982,7 +982,9 @@ public:
 	{
 		switch (widget) {
 			case WID_TD_WORLD_POPULATION:
-				SetDParam(0, GetWorldPopulation());
+				SetDParam(0, STR_TOWN_POPULATION);
+				SetDParam(1, GetWorldPopulation());
+				SetDParam(2, Town::GetNumItems());
 				break;
 
 			case WID_TD_SORT_CRITERIA:
@@ -1090,8 +1092,10 @@ public:
 				break;
 			}
 			case WID_TD_WORLD_POPULATION: {
-				SetDParamMaxDigits(0, 10);
-				Dimension d = GetStringBoundingBox(STR_TOWN_POPULATION);
+				SetDParam(0, STR_TOWN_POPULATION);
+				SetDParamMaxDigits(1, 10);
+				SetDParamMaxDigits(2, 5);
+				Dimension d = GetStringBoundingBox(STR_TOWN_DIRECTORY_INFO);
 				d.width += padding.width;
 				d.height += padding.height;
 				*size = maxdim(*size, d);
