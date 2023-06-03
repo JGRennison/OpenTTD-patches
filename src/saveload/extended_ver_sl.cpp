@@ -183,7 +183,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_TOWN_SETTING_OVERRIDE,            XSCF_NULL,                1,   1, "town_setting_override",            nullptr, nullptr, nullptr          },
 	{ XSLFI_LINKGRAPH_SPARSE_EDGES,           XSCF_NULL,                1,   1, "linkgraph_sparse_edges",           nullptr, nullptr, nullptr          },
 	{ XSLFI_AUX_TILE_LOOP,                    XSCF_NULL,                1,   1, "aux_tile_loop",                    nullptr, nullptr, nullptr          },
-	{ XSLFI_NEWGRF_ENTITY_EXTRA,              XSCF_NULL,                1,   1, "newgrf_entity_extra",              nullptr, nullptr, nullptr          },
+	{ XSLFI_NEWGRF_ENTITY_EXTRA,              XSCF_NULL,                2,   2, "newgrf_entity_extra",              nullptr, nullptr, nullptr          },
 	{ XSLFI_TNNC_CHUNK,                       XSCF_IGNORABLE_ALL,       0,   1, "tnnc_chunk",                       nullptr, nullptr, "TNNC"           },
 	{ XSLFI_MULTI_CARGO_SHIPS,                XSCF_NULL,                1,   1, "multi_cargo_ships",                nullptr, nullptr, nullptr          },
 	{ XSLFI_REMAIN_NEXT_ORDER_STATION,        XSCF_IGNORABLE_UNKNOWN,   1,   1, "remain_next_order_station",        nullptr, nullptr, nullptr          },

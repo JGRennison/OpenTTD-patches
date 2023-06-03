@@ -21,6 +21,7 @@ static const ObjectType OBJECT_HQ           =   4;    ///< HeadQuarter of a play
 
 static const ObjectType NEW_OBJECT_OFFSET   =   5;    ///< Offset for new objects
 static const ObjectType NUM_OBJECTS         = 64000;  ///< Number of supported objects overall
+static const ObjectType NUM_OBJECTS_PER_GRF = NUM_OBJECTS; ///< Number of supported objects per NewGRF
 static const ObjectType INVALID_OBJECT_TYPE = 0xFFFF; ///< An invalid object
 
 /** Unique identifier for an object. */

@@ -215,7 +215,8 @@ public:
 
 typedef void (*SpecialSpriteHandler)(ByteReader *buf);
 
-static const uint NUM_STATIONS_PER_GRF = 255; ///< Number of StationSpecs per NewGRF; limited to 255 to allow extending Action3 with an extended byte later on.
+/** The maximum amount of stations a single GRF is allowed to add */
+static const uint NUM_STATIONS_PER_GRF = UINT16_MAX - 1;
 
 /** Temporary engine data used when loading only */
 struct GRFTempEngineData {
@@ -1940,7 +1941,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 			}
 
 			case 0x0A: { // Copy sprite layout
-				byte srcid = buf->ReadByte();
+				uint16 srcid = buf->ReadExtendedByte();
 				const StationSpec *srcstatspec = srcid >= _cur.grffile->stations.size() ? nullptr : _cur.grffile->stations[srcid].get();
 
 				if (srcstatspec == nullptr) {
@@ -1994,7 +1995,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 				break;
 
 			case 0x0F: { // Copy custom layout
-				byte srcid = buf->ReadByte();
+				uint16 srcid = buf->ReadExtendedByte();
 				const StationSpec *srcstatspec = srcid >= _cur.grffile->stations.size() ? nullptr : _cur.grffile->stations[srcid].get();
 
 				if (srcstatspec == nullptr) {
@@ -2047,6 +2048,8 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 				statspec->animation.triggers = buf->ReadWord();
 				break;
 
+			/* 0x19 road routing (not implemented) */
+
 			case 0x1A: { // Advanced sprite layout
 				uint16 tiles = buf->ReadExtendedByte();
 				statspec->renderdata.clear(); // delete earlier loaded stuff
@@ -2083,6 +2086,14 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 				for (uint i = 0; i < 8; i++) {
 					statspec->bridge_disallowed_pillars[i] = buf->ReadByte();
 				}
+				break;
+
+			case 0x1C: // Station Name
+				AddStringForMapping(buf->ReadWord(), &statspec->name);
+				break;
+
+			case 0x1D: // Station Class name
+				AddStringForMapping(buf->ReadWord(), &StationClass::Get(statspec->cls_id)->name);
 				break;
 
 			default:
@@ -6439,9 +6450,9 @@ static void VehicleMapSpriteGroup(ByteReader *buf, byte feature, uint8 idcount)
 
 static void CanalMapSpriteGroup(ByteReader *buf, uint8 idcount)
 {
-	CanalFeature *cfs = AllocaM(CanalFeature, idcount);
+	uint16 *cfs = AllocaM(uint16, idcount);
 	for (uint i = 0; i < idcount; i++) {
-		cfs[i] = (CanalFeature)buf->ReadByte();
+		cfs[i] = buf->ReadExtendedByte();
 	}
 
 	uint8 cidcount = buf->ReadByte();
@@ -6451,7 +6462,7 @@ static void CanalMapSpriteGroup(ByteReader *buf, uint8 idcount)
 	if (!IsValidGroupID(groupid, "CanalMapSpriteGroup")) return;
 
 	for (uint i = 0; i < idcount; i++) {
-		CanalFeature cf = cfs[i];
+		uint16 cf = cfs[i];
 
 		if (cf >= CF_END) {
 			grfmsg(1, "CanalMapSpriteGroup: Canal subset %d out of range, skipping", cf);
@@ -6471,9 +6482,9 @@ static void StationMapSpriteGroup(ByteReader *buf, uint8 idcount)
 		return;
 	}
 
-	uint8 *stations = AllocaM(uint8, idcount);
+	uint16 *stations = AllocaM(uint16, idcount);
 	for (uint i = 0; i < idcount; i++) {
-		stations[i] = buf->ReadByte();
+		stations[i] = buf->ReadExtendedByte();
 	}
 
 	uint8 cidcount = buf->ReadByte();
@@ -6489,7 +6500,7 @@ static void StationMapSpriteGroup(ByteReader *buf, uint8 idcount)
 			StationSpec *statspec = stations[i] >= _cur.grffile->stations.size() ? nullptr : _cur.grffile->stations[stations[i]].get();
 
 			if (statspec == nullptr) {
-				grfmsg(1, "StationMapSpriteGroup: Station with ID 0x%02X does not exist, skipping", stations[i]);
+				grfmsg(1, "StationMapSpriteGroup: Station with ID 0x%X undefined, skipping", stations[i]);
 				continue;
 			}
 
@@ -6504,12 +6515,12 @@ static void StationMapSpriteGroup(ByteReader *buf, uint8 idcount)
 		StationSpec *statspec = stations[i] >= _cur.grffile->stations.size() ? nullptr : _cur.grffile->stations[stations[i]].get();
 
 		if (statspec == nullptr) {
-			grfmsg(1, "StationMapSpriteGroup: Station with ID 0x%02X does not exist, skipping", stations[i]);
+			grfmsg(1, "StationMapSpriteGroup: Station with ID 0x%X undefined, skipping", stations[i]);
 			continue;
 		}
 
 		if (statspec->grf_prop.grffile != nullptr) {
-			grfmsg(1, "StationMapSpriteGroup: Station with ID 0x%02X mapped multiple times, skipping", stations[i]);
+			grfmsg(1, "StationMapSpriteGroup: Station with ID 0x%X mapped multiple times, skipping", stations[i]);
 			continue;
 		}
 
@@ -6528,9 +6539,9 @@ static void TownHouseMapSpriteGroup(ByteReader *buf, uint8 idcount)
 		return;
 	}
 
-	uint8 *houses = AllocaM(uint8, idcount);
+	uint16 *houses = AllocaM(uint16, idcount);
 	for (uint i = 0; i < idcount; i++) {
-		houses[i] = buf->ReadByte();
+		houses[i] = buf->ReadExtendedByte();
 	}
 
 	/* Skip the cargo type section, we only care about the default group */
@@ -6559,9 +6570,9 @@ static void IndustryMapSpriteGroup(ByteReader *buf, uint8 idcount)
 		return;
 	}
 
-	uint8 *industries = AllocaM(uint8, idcount);
+	uint16 *industries = AllocaM(uint16, idcount);
 	for (uint i = 0; i < idcount; i++) {
-		industries[i] = buf->ReadByte();
+		industries[i] = buf->ReadExtendedByte();
 	}
 
 	/* Skip the cargo type section, we only care about the default group */
@@ -6590,9 +6601,9 @@ static void IndustrytileMapSpriteGroup(ByteReader *buf, uint8 idcount)
 		return;
 	}
 
-	uint8 *indtiles = AllocaM(uint8, idcount);
+	uint16 *indtiles = AllocaM(uint16, idcount);
 	for (uint i = 0; i < idcount; i++) {
-		indtiles[i] = buf->ReadByte();
+		indtiles[i] = buf->ReadExtendedByte();
 	}
 
 	/* Skip the cargo type section, we only care about the default group */
@@ -6616,9 +6627,9 @@ static void IndustrytileMapSpriteGroup(ByteReader *buf, uint8 idcount)
 
 static void CargoMapSpriteGroup(ByteReader *buf, uint8 idcount)
 {
-	CargoID *cargoes = AllocaM(CargoID, idcount);
+	uint16 *cargoes = AllocaM(uint16, idcount);
 	for (uint i = 0; i < idcount; i++) {
-		cargoes[i] = buf->ReadByte();
+		cargoes[i] = buf->ReadExtendedByte();
 	}
 
 	/* Skip the cargo type section, we only care about the default group */
@@ -6629,7 +6640,7 @@ static void CargoMapSpriteGroup(ByteReader *buf, uint8 idcount)
 	if (!IsValidGroupID(groupid, "CargoMapSpriteGroup")) return;
 
 	for (uint i = 0; i < idcount; i++) {
-		CargoID cid = cargoes[i];
+		uint16 cid = cargoes[i];
 
 		if (cid >= NUM_CARGO) {
 			grfmsg(1, "CargoMapSpriteGroup: Cargo ID %d out of range, skipping", cid);
@@ -6644,9 +6655,9 @@ static void CargoMapSpriteGroup(ByteReader *buf, uint8 idcount)
 
 static void SignalsMapSpriteGroup(ByteReader *buf, uint8 idcount)
 {
-	uint8 *ids = AllocaM(uint8, idcount);
+	uint16 *ids = AllocaM(uint16, idcount);
 	for (uint i = 0; i < idcount; i++) {
-		ids[i] = buf->ReadByte();
+		ids[i] = buf->ReadExtendedByte();
 	}
 
 	/* Skip the cargo type section, we only care about the default group */
@@ -6657,7 +6668,7 @@ static void SignalsMapSpriteGroup(ByteReader *buf, uint8 idcount)
 	if (!IsValidGroupID(groupid, "SignalsMapSpriteGroup")) return;
 
 	for (uint i = 0; i < idcount; i++) {
-		uint8 id = ids[i];
+		uint16 id = ids[i];
 
 		switch (id) {
 			case NSA3ID_CUSTOM_SIGNALS:
@@ -6684,7 +6695,7 @@ static void ObjectMapSpriteGroup(ByteReader *buf, uint8 idcount)
 
 	uint16 *objects = AllocaM(uint16, idcount);
 	for (uint i = 0; i < idcount; i++) {
-		objects[i] = HasBit(_cur.grffile->observed_feature_tests, GFTOF_MORE_OBJECTS_PER_GRF) ? buf->ReadExtendedByte() : buf->ReadByte();
+		objects[i] = buf->ReadExtendedByte();
 	}
 
 	uint8 cidcount = buf->ReadByte();
@@ -6700,7 +6711,7 @@ static void ObjectMapSpriteGroup(ByteReader *buf, uint8 idcount)
 			ObjectSpec *spec = (objects[i] >= _cur.grffile->objectspec.size()) ? nullptr : _cur.grffile->objectspec[objects[i]].get();
 
 			if (spec == nullptr) {
-				grfmsg(1, "ObjectMapSpriteGroup: Object with ID 0x%02X undefined, skipping", objects[i]);
+				grfmsg(1, "ObjectMapSpriteGroup: Object with ID 0x%X undefined, skipping", objects[i]);
 				continue;
 			}
 
@@ -6715,12 +6726,12 @@ static void ObjectMapSpriteGroup(ByteReader *buf, uint8 idcount)
 		ObjectSpec *spec = (objects[i] >= _cur.grffile->objectspec.size()) ? nullptr : _cur.grffile->objectspec[objects[i]].get();
 
 		if (spec == nullptr) {
-			grfmsg(1, "ObjectMapSpriteGroup: Object with ID 0x%02X undefined, skipping", objects[i]);
+			grfmsg(1, "ObjectMapSpriteGroup: Object with ID 0x%X undefined, skipping", objects[i]);
 			continue;
 		}
 
 		if (spec->grf_prop.grffile != nullptr) {
-			grfmsg(1, "ObjectMapSpriteGroup: Object with ID 0x%02X mapped multiple times, skipping", objects[i]);
+			grfmsg(1, "ObjectMapSpriteGroup: Object with ID 0x%X mapped multiple times, skipping", objects[i]);
 			continue;
 		}
 
@@ -6734,7 +6745,7 @@ static void RailTypeMapSpriteGroup(ByteReader *buf, uint8 idcount)
 {
 	uint8 *railtypes = AllocaM(uint8, idcount);
 	for (uint i = 0; i < idcount; i++) {
-		uint8 id = buf->ReadByte();
+		uint16 id = buf->ReadExtendedByte();
 		railtypes[i] = id < RAILTYPE_END ? _cur.grffile->railtype_map[id] : INVALID_RAILTYPE;
 	}
 
@@ -6767,7 +6778,7 @@ static void RoadTypeMapSpriteGroup(ByteReader *buf, uint8 idcount, RoadTramType 
 
 	uint8 *roadtypes = AllocaM(uint8, idcount);
 	for (uint i = 0; i < idcount; i++) {
-		uint8 id = buf->ReadByte();
+		uint16 id = buf->ReadExtendedByte();
 		roadtypes[i] = id < ROADTYPE_END ? type_map[id] : INVALID_ROADTYPE;
 	}
 
@@ -6801,9 +6812,9 @@ static void AirportMapSpriteGroup(ByteReader *buf, uint8 idcount)
 		return;
 	}
 
-	uint8 *airports = AllocaM(uint8, idcount);
+	uint16 *airports = AllocaM(uint16, idcount);
 	for (uint i = 0; i < idcount; i++) {
-		airports[i] = buf->ReadByte();
+		airports[i] = buf->ReadExtendedByte();
 	}
 
 	/* Skip the cargo type section, we only care about the default group */
@@ -6832,9 +6843,9 @@ static void AirportTileMapSpriteGroup(ByteReader *buf, uint8 idcount)
 		return;
 	}
 
-	uint8 *airptiles = AllocaM(uint8, idcount);
+	uint16 *airptiles = AllocaM(uint16, idcount);
 	for (uint i = 0; i < idcount; i++) {
-		airptiles[i] = buf->ReadByte();
+		airptiles[i] = buf->ReadExtendedByte();
 	}
 
 	/* Skip the cargo type section, we only care about the default group */
@@ -6876,7 +6887,7 @@ static void RoadStopMapSpriteGroup(ByteReader *buf, uint8 idcount)
 			RoadStopSpec *roadstopspec = (roadstops[i] >= _cur.grffile->roadstops.size()) ? nullptr : _cur.grffile->roadstops[roadstops[i]].get();
 
 			if (roadstopspec == nullptr) {
-				grfmsg(1, "RoadStopMapSpriteGroup: Road stop with ID 0x%02X does not exist, skipping", roadstops[i]);
+				grfmsg(1, "RoadStopMapSpriteGroup: Road stop with ID 0x%X does not exist, skipping", roadstops[i]);
 				continue;
 			}
 
@@ -6896,12 +6907,12 @@ static void RoadStopMapSpriteGroup(ByteReader *buf, uint8 idcount)
 		RoadStopSpec *roadstopspec = (roadstops[i] >= _cur.grffile->roadstops.size()) ? nullptr : _cur.grffile->roadstops[roadstops[i]].get();
 
 		if (roadstopspec == nullptr) {
-			grfmsg(1, "RoadStopMapSpriteGroup: Road stop with ID 0x%02X does not exist, skipping.", roadstops[i]);
+			grfmsg(1, "RoadStopMapSpriteGroup: Road stop with ID 0x%X does not exist, skipping.", roadstops[i]);
 			continue;
 		}
 
 		if (roadstopspec->grf_prop.grffile != nullptr) {
-			grfmsg(1, "RoadStopMapSpriteGroup: Road stop with ID 0x%02X mapped multiple times, skipping", roadstops[i]);
+			grfmsg(1, "RoadStopMapSpriteGroup: Road stop with ID 0x%X mapped multiple times, skipping", roadstops[i]);
 			continue;
 		}
 
@@ -6914,9 +6925,9 @@ static void RoadStopMapSpriteGroup(ByteReader *buf, uint8 idcount)
 
 static void NewLandscapeMapSpriteGroup(ByteReader *buf, uint8 idcount)
 {
-	uint8 *ids = AllocaM(uint8, idcount);
+	uint16 *ids = AllocaM(uint16, idcount);
 	for (uint i = 0; i < idcount; i++) {
-		ids[i] = buf->ReadByte();
+		ids[i] = buf->ReadExtendedByte();
 	}
 
 	/* Skip the cargo type section, we only care about the default group */
@@ -6927,7 +6938,7 @@ static void NewLandscapeMapSpriteGroup(ByteReader *buf, uint8 idcount)
 	if (!IsValidGroupID(groupid, "NewLandscapeMapSpriteGroup")) return;
 
 	for (uint i = 0; i < idcount; i++) {
-		uint8 id = ids[i];
+		uint16 id = ids[i];
 
 		switch (id) {
 			case NLA3ID_CUSTOM_ROCKS:
@@ -6955,7 +6966,7 @@ static void FeatureMapSpriteGroup(ByteReader *buf)
 	 * B feature       see action 0
 	 * B n-id          bits 0-6: how many IDs this definition applies to
 	 *                 bit 7: if set, this is a wagon override definition (see below)
-	 * B ids           the IDs for which this definition applies
+	 * E ids           the IDs for which this definition applies
 	 * B num-cid       number of cargo IDs (sprite group IDs) in this definition
 	 *                 can be zero, in that case the def-cid is used always
 	 * B cargo-type    type of this cargo type (e.g. mail=2, wood=7, see below)

@@ -64,7 +64,7 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action0_object_viewport_map_tile_type", 1),
 	GRFFeatureInfo("road_stops", 9, GFTOF_ROAD_STOPS),
 	GRFFeatureInfo("new_landscape", 2),
-	GRFFeatureInfo("more_objects_per_grf", 1, GFTOF_MORE_OBJECTS_PER_GRF),
+	GRFFeatureInfo("more_objects_per_grf", 1),
 	GRFFeatureInfo("more_action2_ids", 1, GFTOF_MORE_ACTION2_IDS),
 	GRFFeatureInfo("town_feature", 1),
 	GRFFeatureInfo("town_uncapped_variables", 1),
