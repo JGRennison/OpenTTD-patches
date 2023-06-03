@@ -38,7 +38,7 @@ This document does not describe the player-visible changes/additions described i
 
 #### Logging
 
-* Add yapfdesync, linkgraph and sound log levels.
+* Add yapfdesync, linkgraph, sound, and command log levels.
 * Extend desync and random logging.
 
 ### Map
@@ -70,6 +70,7 @@ This document does not describe the player-visible changes/additions described i
 * Reduce unnecessary status bar and vehicle list window redraws.
 * Filter out tile parts which are entirely outside the drawing area, within DrawTileProc handlers.
 * Improve performance of drawing rail catenary.
+* Cache which window types are currently shown.
 
 ### Data structures
 
@@ -165,7 +166,6 @@ This document does not describe the player-visible changes/additions described i
 * Avoid redundant re-scans for AI and game script files.
 * Avoid iterating vehicle list to release disaster vehicles if there are none.
 * Avoid quadratic behaviour in updating station nearby lists in RecomputeCatchmentForAll.
-* Increase FIO buffer size.
 
 ### Command line
 
