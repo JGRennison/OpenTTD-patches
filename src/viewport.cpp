@@ -4494,8 +4494,12 @@ void AddFixedViewportRoutePath(VehicleID veh)
 
 void RemoveFixedViewportRoutePath(VehicleID veh)
 {
-	container_unordered_remove_if(_vp_fixed_route_overlays, [&](const FixedVehicleViewportRouteOverlay &it) -> bool {
-		return it.veh == veh;
+	container_unordered_remove_if(_vp_fixed_route_overlays, [&](FixedVehicleViewportRouteOverlay &it) -> bool {
+		if (it.veh == veh) {
+			it.MarkAllDirty(Vehicle::GetIfValid(it.veh));
+			return true;
+		}
+		return false;
 	});
 }
 
