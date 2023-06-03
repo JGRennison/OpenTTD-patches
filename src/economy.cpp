@@ -2395,12 +2395,12 @@ void LoadUnloadStation(Station *st)
  */
 void CompaniesMonthlyLoop()
 {
+	CompaniesPayInterest();
 	CompaniesGenStatistics();
 	if (_settings_game.economy.inflation) {
 		AddInflation();
 		RecomputePrices();
 	}
-	CompaniesPayInterest();
 	HandleEconomyFluctuations();
 }
 
