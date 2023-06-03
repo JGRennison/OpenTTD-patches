@@ -993,8 +993,10 @@
 	<br />
 	<br />
 	<h3 id="a3objects"><a href="https://newgrf-specs.tt-wiki.net/wiki/Action3">Action 3 - Objects</a></h3>
-	<p>If feature name <font face="monospace">more_objects_per_grf</font> is present and the feature is successfully tested for, the Action 3 ID field is an extended byte, and GRFs may define more than 255 object types.<br />
+	<p>Before JGRPP 0.54 and vanilla OpenTTD 14.0, if feature name <font face="monospace">more_objects_per_grf</font> is present and the feature is successfully tested for, the Action 3 ID field is an extended byte, and GRFs may define more than 255 object types.<br />
 	Otherwise, only 255 object types may be defined per GRF, and the extended byte format may not be used.</p>
+	<p>From JGRPP 0.54 and vanilla OpenTTD 14.0, the extended byte format may always be used.</p>
+	<p>NewGRFs may check whether either the <font face="monospace">more_objects_per_grf</font> feature is present, or if the NewGRF version indicates OpenTTD 14.0 or later.</p>
 	<br />
 	<br />
 	<h3 id="a3signals"><a href="https://newgrf-specs.tt-wiki.net/wiki/Action3">Action 3 - Signals (Feature 0E)</a></h3>
