@@ -41,6 +41,8 @@
 #include "news_func.h"
 #include "core/backup_type.hpp"
 
+#include <bitset>
+
 #include "safeguards.h"
 
 /** Values for _settings_client.gui.auto_scrolling */
@@ -85,6 +87,8 @@ Rect _scrolling_viewport_bound; ///< A viewport is being scrolled with the mouse
 bool _mouse_hovering;      ///< The mouse is hovering over the same point.
 
 SpecialMouseMode _special_mouse_mode; ///< Mode of the mouse.
+
+static std::bitset<WC_END> _present_window_types;
 
 /**
  * List of all WindowDescs.
@@ -1176,6 +1180,8 @@ Window::~Window()
  */
 Window *FindWindowById(WindowClass cls, WindowNumber number)
 {
+	if (cls < WC_END && !_present_window_types[cls]) return nullptr;
+
 	for (Window *w : Window::IterateFromBack()) {
 		if (w->window_class == cls && w->window_number == number) return w;
 	}
@@ -1191,6 +1197,8 @@ Window *FindWindowById(WindowClass cls, WindowNumber number)
  */
 Window *FindWindowByClass(WindowClass cls)
 {
+	if (cls < WC_END && !_present_window_types[cls]) return nullptr;
+
 	for (Window *w : Window::IterateFromBack()) {
 		if (w->window_class == cls) return w;
 	}
@@ -1232,6 +1240,8 @@ void DeleteWindowById(WindowClass cls, WindowNumber number, bool force)
  */
 void DeleteAllWindowsById(WindowClass cls, WindowNumber number, bool force)
 {
+	if (cls < WC_END && !_present_window_types[cls]) return;
+
 	/* Note: the container remains stable, even when deleting windows. */
 	for (Window *w : Window::IterateUnordered()) {
 		if (w->window_class == cls && w->window_number == number && (force || (w->flags & WF_STICKY) == 0)) {
@@ -1246,6 +1256,8 @@ void DeleteAllWindowsById(WindowClass cls, WindowNumber number, bool force)
  */
 void DeleteWindowByClass(WindowClass cls)
 {
+	if (cls < WC_END && !_present_window_types[cls]) return;
+
 	/* Note: the container remains stable, even when deleting windows. */
 	for (Window *w : Window::IterateUnordered()) {
 		if (w->window_class == cls) {
@@ -1558,6 +1570,7 @@ void Window::InitializeData(WindowNumber window_number)
 	AddWindowToZOrdering(this);
 	this->next_window = _first_window;
 	_first_window = this;
+	if (this->window_class < WC_END) _present_window_types.set(this->window_class);
 }
 
 /**
@@ -3214,10 +3227,14 @@ void InputLoop()
 
 	bool reset_window_nexts = false;
 
+	_present_window_types.reset();
+
 	/* Do the actual free of the deleted windows. */
 	for (WindowBase *v = _z_front_window; v != nullptr; /* nothing */) {
 		WindowBase *w = v;
 		v = v->z_back;
+
+		if (w->window_class < WC_END) _present_window_types.set(w->window_class);
 
 		if (w->window_class != WC_INVALID) continue;
 
@@ -3344,6 +3361,8 @@ void UpdateWindows()
  */
 void SetWindowDirty(WindowClass cls, WindowNumber number)
 {
+	if (cls < WC_END && !_present_window_types[cls]) return;
+
 	for (Window *w : Window::IterateFromBack()) {
 		if (w->window_class == cls && w->window_number == number) w->SetDirty();
 	}
@@ -3357,6 +3376,8 @@ void SetWindowDirty(WindowClass cls, WindowNumber number)
  */
 void SetWindowWidgetDirty(WindowClass cls, WindowNumber number, byte widget_index)
 {
+	if (cls < WC_END && !_present_window_types[cls]) return;
+
 	for (Window *w : Window::IterateFromBack()) {
 		if (w->window_class == cls && w->window_number == number) {
 			w->SetWidgetDirty(widget_index);
@@ -3370,6 +3391,8 @@ void SetWindowWidgetDirty(WindowClass cls, WindowNumber number, byte widget_inde
  */
 void SetWindowClassesDirty(WindowClass cls)
 {
+	if (cls < WC_END && !_present_window_types[cls]) return;
+
 	for (Window *w : Window::IterateFromBack()) {
 		if (w->window_class == cls) w->SetDirty();
 	}
@@ -3444,6 +3467,8 @@ void Window::ProcessHighlightedInvalidations()
  */
 void InvalidateWindowData(WindowClass cls, WindowNumber number, int data, bool gui_scope)
 {
+	if (cls < WC_END && !_present_window_types[cls]) return;
+
 	for (Window *w : Window::IterateFromBack()) {
 		if (w->window_class == cls && w->window_number == number) {
 			w->InvalidateData(data, gui_scope);
@@ -3461,6 +3486,8 @@ void InvalidateWindowData(WindowClass cls, WindowNumber number, int data, bool g
  */
 void InvalidateWindowClassesData(WindowClass cls, int data, bool gui_scope)
 {
+	if (cls < WC_END && !_present_window_types[cls]) return;
+
 	for (Window *w : Window::IterateFromBack()) {
 		if (w->window_class == cls) {
 			w->InvalidateData(data, gui_scope);
