@@ -180,7 +180,7 @@ public:
 		this->bridges->NeedResort();
 		this->SortBridgeList();
 
-		this->vscroll->SetCount((uint)bl->size());
+		this->vscroll->SetCount(bl->size());
 	}
 
 	~BuildBridgeWindow()

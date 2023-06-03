@@ -1015,7 +1015,7 @@ CommandCost IsRoadStopBridgeAboveOK(TileIndex tile, const RoadStopSpec *spec, bo
  * @param numtracks Number of platforms.
  * @return The cost in case of success, or an error code if it failed.
  */
-static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlag flags, Axis axis, StationID *station, RailType rt, std::vector<Train *> &affected_vehicles, StationClassID spec_class, byte spec_index, byte plat_len, byte numtracks)
+static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlag flags, Axis axis, StationID *station, RailType rt, std::vector<Train *> &affected_vehicles, StationClassID spec_class, uint16_t spec_index, byte plat_len, byte numtracks)
 {
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 	int allowed_z = -1;
@@ -1484,7 +1484,7 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 
 	bool adjacent  = HasBit(p1, 24);
 
 	StationClassID spec_class = Extract<StationClassID, 0, 8>(p2);
-	byte spec_index           = GB(p3, 0, 16);
+	uint16 spec_index         = GB(p3, 0, 16);
 	StationID station_to_join = GB(p2, 16, 16);
 
 	/* Does the authority allow this? */
@@ -4251,7 +4251,7 @@ int GetTargetRating(const Station *st, const CargoSpec *cs, const GoodsEntry *ge
 	rating += GetStatueRating(st);
 	rating += GetVehicleAgeRating(ge);
 
-	return Clamp(rating, 0, 255);
+	return ClampTo<uint8>(rating);
 }
 
 static void UpdateStationRating(Station *st)
@@ -4671,7 +4671,7 @@ void ModifyStationRatingAround(TileIndex tile, Owner owner, int amount, uint rad
 				GoodsEntry *ge = &st->goods[i];
 
 				if (ge->status != 0) {
-					ge->rating = Clamp(ge->rating + amount, 0, 255);
+					ge->rating = ClampTo<uint8_t>(ge->rating + amount);
 				}
 			}
 		}

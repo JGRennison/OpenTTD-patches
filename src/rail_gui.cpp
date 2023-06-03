@@ -72,8 +72,8 @@ struct RailStationGUISettings {
 
 	bool newstations;                 ///< Are custom station definitions available?
 	StationClassID station_class;     ///< Currently selected custom station class (if newstations is \c true )
-	uint16 station_type;                ///< %Station type within the currently selected custom station class (if newstations is \c true )
-	uint16 station_count;               ///< Number of custom stations (if newstations is \c true )
+	uint16 station_type;              ///< %Station type within the currently selected custom station class (if newstations is \c true )
+	uint16 station_count;             ///< Number of custom stations (if newstations is \c true )
 };
 static RailStationGUISettings _railstation; ///< Settings of the station builder GUI
 
@@ -1108,7 +1108,7 @@ private:
 			if (station_class == _railstation.station_class) break;
 			pos++;
 		}
-		this->vscroll->SetCount((int)this->station_classes.size());
+		this->vscroll->SetCount(this->station_classes.size());
 		this->vscroll->ScrollTowards(pos);
 	}
 
@@ -1253,7 +1253,7 @@ public:
 			this->station_classes.RebuildDone();
 			this->station_classes.Sort();
 
-			this->vscroll->SetCount((uint)this->station_classes.size());
+			this->vscroll->SetCount(this->station_classes.size());
 		}
 	}
 
@@ -1470,7 +1470,7 @@ public:
 			}
 
 			case WID_BRAS_IMAGE: {
-				byte type = GB(widget, 16, 16);
+				uint16_t type = GB(widget, 16, 16);
 				assert(type < _railstation.station_count);
 				/* Check station availability callback */
 				const StationSpec *statspec = StationClass::Get(_railstation.station_class)->GetSpec(type);
@@ -1658,7 +1658,7 @@ public:
 			}
 
 			case WID_BRAS_IMAGE: {
-				int y = GB(widget, 16, 16);
+				uint16_t y = GB(widget, 16, 16);
 				if (y >= _railstation.station_count) return;
 
 				/* Check station availability callback */

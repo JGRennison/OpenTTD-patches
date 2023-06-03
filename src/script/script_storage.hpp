@@ -18,6 +18,8 @@
 #include "../story_type.h"
 #include "../3rdparty/robin_hood/robin_hood.h"
 
+#include "script_log_types.hpp"
+
 #include "table/strings.h"
 #include <vector>
 
@@ -72,7 +74,7 @@ private:
 	RailType rail_type;              ///< The current railtype we build.
 
 	void *event_data;                ///< Pointer to the event data storage.
-	void *log_data;                  ///< Pointer to the log data storage.
+	ScriptLogTypes::LogData log_data;///< Log data storage.
 
 	robin_hood::unordered_node_set<std::string> seen_unique_log_messages; ///< Messages which have already been logged once and don't need to be logged again
 
@@ -105,8 +107,7 @@ public:
 		/* calback_value (can't be set) */
 		road_type         (INVALID_ROADTYPE),
 		rail_type         (INVALID_RAILTYPE),
-		event_data        (nullptr),
-		log_data          (nullptr)
+		event_data        (nullptr)
 	{ }
 
 	~ScriptStorage();

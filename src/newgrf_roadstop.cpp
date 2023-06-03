@@ -32,13 +32,10 @@ template <typename Tspec, typename Tid, Tid Tmax>
 void NewGRFClass<Tspec, Tid, Tmax>::InsertDefaults()
 {
 	/* Set up initial data */
-	classes[0].global_id = 'DFLT';
-	classes[0].name = STR_STATION_CLASS_DFLT;
-	classes[0].Insert(nullptr);
-
-	classes[1].global_id = 'WAYP';
-	classes[1].name = STR_STATION_CLASS_WAYP;
-	classes[1].Insert(nullptr);
+	RoadStopClass::Get(RoadStopClass::Allocate('DFLT'))->name = STR_STATION_CLASS_DFLT;
+	RoadStopClass::Get(RoadStopClass::Allocate('DFLT'))->Insert(nullptr);
+	RoadStopClass::Get(RoadStopClass::Allocate('WAYP'))->name = STR_STATION_CLASS_WAYP;
+	RoadStopClass::Get(RoadStopClass::Allocate('WAYP'))->Insert(nullptr);
 }
 
 template <typename Tspec, typename Tid, Tid Tmax>
@@ -96,7 +93,7 @@ uint32 RoadStopScopeResolver::GetNearbyRoadStopsInfo(uint32 parameter, RoadStopS
 	switch (mode) {
 		case NearbyRoadStopInfoMode::Standard:
 		default:
-			return res | std::min<uint16>(localidx, 0xFF);
+			return res | ClampTo<uint8>(localidx);
 
 		case NearbyRoadStopInfoMode::Extended:
 			return res | (localidx & 0xFF) | ((localidx & 0xFF00) << 16);
@@ -145,7 +142,7 @@ uint32 RoadStopScopeResolver::GetVariable(uint16 variable, uint32 parameter, Get
 		case 0x45: {
 			if (this->tile == INVALID_TILE) return HZB_TOWN_EDGE << 16;
 			const Town *t = (this->st == nullptr) ? ClosestTownFromTile(this->tile, UINT_MAX) : this->st->town;
-			return t != nullptr ? (GetTownRadiusGroup(t, this->tile) << 16 | std::min(DistanceManhattan(this->tile, t->xy), 0xFFFFu)) : HZB_TOWN_EDGE << 16;
+			return t != nullptr ? (GetTownRadiusGroup(t, this->tile) << 16 | ClampTo<uint16_t>(DistanceManhattan(this->tile, t->xy))) : HZB_TOWN_EDGE << 16;
 		}
 
 		/* Get square of Euclidian distance of closest town */
@@ -241,7 +238,7 @@ uint32 RoadStopScopeResolver::GetVariable(uint16 variable, uint32 parameter, Get
 
 		case 0xF0: return this->st == nullptr ? 0 : this->st->facilities; // facilities
 
-		case 0xFA: return Clamp((this->st == nullptr ? _date : this->st->build_date) - DAYS_TILL_ORIGINAL_BASE_YEAR, 0, 65535); // build date
+		case 0xFA: return ClampTo<uint16>((this->st == nullptr ? _date : this->st->build_date) - DAYS_TILL_ORIGINAL_BASE_YEAR); // build date
 	}
 
 	if (this->st != nullptr) return this->st->GetNewGRFVariable(this->ro, variable, parameter, &(extra->available));

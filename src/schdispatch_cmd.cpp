@@ -638,7 +638,7 @@ bool DispatchSchedule::UpdateScheduledDispatchToDate(DateTicksScaled now)
 			const int64 day = 24 * 60 * _settings_game.game_time.ticks_per_minute;
 			this->scheduled_dispatch_last_dispatch = last_dispatch + (CeilDivT<int64>(INT_MIN - last_dispatch, day) * day);
 		} else {
-			this->scheduled_dispatch_last_dispatch = ClampToI32(last_dispatch);
+			this->scheduled_dispatch_last_dispatch = ClampTo<int32>(last_dispatch);
 		}
 	}
 	/* Most of the time this loop does not runs. It makes sure start date in in past */

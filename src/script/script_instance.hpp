@@ -15,6 +15,7 @@
 #include <squirrel.h>
 #include "squirrel.hpp"
 #include "script_suspend.hpp"
+#include "script_log_types.hpp"
 
 #include "../command_type.h"
 #include "../company_type.h"
@@ -96,7 +97,7 @@ public:
 	/**
 	 * Get the log pointer of this script.
 	 */
-	void *GetLogPointer();
+	ScriptLogTypes::LogData &GetLogData();
 
 	/**
 	 * Return a true/false reply for a DoCommand.

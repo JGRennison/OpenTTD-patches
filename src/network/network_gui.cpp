@@ -295,7 +295,7 @@ protected:
 
 		this->servers.shrink_to_fit();
 		this->servers.RebuildDone();
-		this->vscroll->SetCount((int)this->servers.size());
+		this->vscroll->SetCount(this->servers.size());
 
 		/* Sort the list of network games as requested. */
 		this->servers.Sort();

@@ -269,13 +269,13 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 		/* Assume that every part of a train is braked, not just the engine.
 		 * Exceptionally heavy freight trains should still have a sensible braking distance.
 		 * The total braking force is generally larger than the total tractive force. */
-		braking_accel = ClampToI32((-braking_force - resistance - (Train::From(this)->tcache.cached_braking_length * (int64)RBC_BRAKE_FORCE_PER_LENGTH)) / (mass * 4));
+		braking_accel = ClampTo<int32>((-braking_force - resistance - (Train::From(this)->tcache.cached_braking_length * (int64)RBC_BRAKE_FORCE_PER_LENGTH)) / (mass * 4));
 
 		/* Defensive driving: prevent ridiculously fast deceleration.
 		 * -130 corresponds to a braking distance of about 6.2 tiles from 160 km/h. */
 		braking_accel = std::max(braking_accel, -(GetTrainRealisticBrakingTargetDecelerationLimit(acceleration_type) + 10));
 	} else {
-		braking_accel = ClampToI32(std::min<int64>(-braking_force - resistance, -10000) / mass);
+		braking_accel = ClampTo<int32>(std::min<int64>(-braking_force - resistance, -10000) / mass);
 	}
 
 	if (mode == AS_ACCEL) {
@@ -287,7 +287,7 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 		 * down hill will never slow down enough, and a vehicle that came up
 		 * a hill will never speed up enough to (eventually) get back to the
 		 * same (maximum) speed. */
-		int accel = ClampToI32((force - resistance) / (mass * 4));
+		int accel = ClampTo<int32>((force - resistance) / (mass * 4));
 		accel = force < resistance ? std::min(-1, accel) : std::max(1, accel);
 		if (this->type == VEH_TRAIN) {
 			if(_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL &&

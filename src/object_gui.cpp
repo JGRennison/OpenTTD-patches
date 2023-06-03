@@ -123,7 +123,7 @@ public:
 
 		ResetObjectToPlace();
 
-		this->vscroll->SetCount((int)this->object_classes.size());
+		this->vscroll->SetCount(this->object_classes.size());
 
 		EnsureSelectedObjectClassIsVisible();
 
@@ -164,7 +164,7 @@ public:
 		this->object_classes.RebuildDone();
 		this->object_classes.Sort();
 
-		this->vscroll->SetCount((uint)this->object_classes.size());
+		this->vscroll->SetCount(this->object_classes.size());
 	}
 
 	/**

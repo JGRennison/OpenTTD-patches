@@ -131,7 +131,7 @@ struct FileStringReader : StringReader {
 
 	char *ReadLine(char *buffer, const char *last) override
 	{
-		char *result = fgets(buffer, ClampToU16(last - buffer + 1), this->fh);
+		char *result = fgets(buffer, ClampTo<uint16>(last - buffer + 1), this->fh);
 		if (result == nullptr && this->fh2 != nullptr) {
 			fclose(this->fh);
 			this->fh = this->fh2;

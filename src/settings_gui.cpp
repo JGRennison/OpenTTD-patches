@@ -2947,7 +2947,7 @@ struct GameSettingsWindow : Window {
 			/* Save the correct currency-translated value */
 			if (sd->flags & SF_GUI_CURRENCY) llvalue /= _currency->rate;
 
-			value = (int32)ClampToI32(llvalue);
+			value = ClampTo<int32>(llvalue);
 
 			/* Save the correct velocity-translated value */
 			if (sd->flags & SF_GUI_VELOCITY) value = ConvertDisplaySpeedToKmhishSpeed(value, VEH_TRAIN);

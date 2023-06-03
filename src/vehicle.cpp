@@ -2134,7 +2134,7 @@ void CheckVehicleBreakdown(Vehicle *v)
 	/* increase chance of failure */
 	int chance = v->breakdown_chance + 1;
 	if (Chance16I(1, 25, r)) chance += 25;
-	chance = std::min(255, chance);
+	chance = ClampTo<uint8>(chance);
 	v->breakdown_chance = chance;
 
 	if (_settings_game.vehicle.improved_breakdowns) {

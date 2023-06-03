@@ -176,8 +176,8 @@ struct DropdownWindow : Window {
 		}
 
 		/* Capacity is the average number of items visible */
-		this->vscroll->SetCapacity(size.height * (uint16)this->list.size() / list_height);
-		this->vscroll->SetCount((uint16)this->list.size());
+		this->vscroll->SetCapacity(size.height * this->list.size() / list_height);
+		this->vscroll->SetCount(this->list.size());
 
 		this->parent_button    = button;
 		this->selected_index   = selected;
@@ -289,14 +289,9 @@ struct DropdownWindow : Window {
 		this->scrolling_timer.SetInterval(MILLISECONDS_PER_TICK);
 
 		if (this->scrolling != 0) {
-			int pos = this->vscroll->GetPosition();
+			if (this->vscroll->UpdatePosition(this->scrolling)) this->SetDirty();
 
-			this->vscroll->UpdatePosition(this->scrolling);
 			this->scrolling = 0;
-
-			if (pos != this->vscroll->GetPosition()) {
-				this->SetDirty();
-			}
 		}
 	}
 

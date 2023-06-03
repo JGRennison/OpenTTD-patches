@@ -32,13 +32,10 @@ template <typename Tspec, typename Tid, Tid Tmax>
 /* static */ void NewGRFClass<Tspec, Tid, Tmax>::InsertDefaults()
 {
 	/* Set up initial data */
-	classes[0].global_id = 'DFLT';
-	classes[0].name = STR_STATION_CLASS_DFLT;
-	classes[0].Insert(nullptr);
-
-	classes[1].global_id = 'WAYP';
-	classes[1].name = STR_STATION_CLASS_WAYP;
-	classes[1].Insert(nullptr);
+	StationClass::Get(StationClass::Allocate('DFLT'))->name = STR_STATION_CLASS_DFLT;
+	StationClass::Get(StationClass::Allocate('DFLT'))->Insert(nullptr);
+	StationClass::Get(StationClass::Allocate('WAYP'))->name = STR_STATION_CLASS_WAYP;
+	StationClass::Get(StationClass::Allocate('WAYP'))->Insert(nullptr);
 }
 
 template <typename Tspec, typename Tid, Tid Tmax>
@@ -290,7 +287,7 @@ uint32 StationScopeResolver::GetNearbyStationInfo(uint32 parameter, StationScope
 	switch (mode) {
 		case NearbyStationInfoMode::Standard:
 		default:
-			return res | std::min<uint16>(localidx, 0xFF);
+			return res | ClampTo<uint8>(localidx);
 
 		case NearbyStationInfoMode::Extended:
 			return res | (localidx & 0xFF) | ((localidx & 0xFF00) << 16);
@@ -327,7 +324,7 @@ uint32 StationScopeResolver::GetNearbyStationInfo(uint32 parameter, StationScope
 				}
 				break;
 
-			case 0xFA: return Clamp(_date - DAYS_TILL_ORIGINAL_BASE_YEAR, 0, 65535); // Build date, clamped to a 16 bit value
+			case 0xFA: return ClampTo<uint16>(_date - DAYS_TILL_ORIGINAL_BASE_YEAR); // Build date, clamped to a 16 bit value
 		}
 
 		extra->available = false;
@@ -417,7 +414,7 @@ uint32 StationScopeResolver::GetNearbyStationInfo(uint32 parameter, StationScope
 		case 0x84: return this->st->string_id;
 		case 0x86: return 0;
 		case 0xF0: return this->st->facilities;
-		case 0xFA: return Clamp(this->st->build_date - DAYS_TILL_ORIGINAL_BASE_YEAR, 0, 65535);
+		case 0xFA: return ClampTo<uint16_t>(this->st->build_date - DAYS_TILL_ORIGINAL_BASE_YEAR);
 	}
 
 	return this->st->GetNewGRFVariable(this->ro, variable, parameter, &(extra->available));

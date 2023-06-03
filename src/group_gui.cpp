@@ -438,7 +438,7 @@ public:
 		this->groups.ForceRebuild();
 		this->groups.NeedResort();
 		this->BuildGroupList(vli.company);
-		this->group_sb->SetCount((uint)this->groups.size());
+		this->group_sb->SetCount(this->groups.size());
 
 		this->RecalculateInfoTotals();
 
@@ -587,8 +587,8 @@ public:
 
 		this->BuildGroupList(this->owner);
 
-		this->group_sb->SetCount(static_cast<int>(this->groups.size()));
-		this->vscroll->SetCount(static_cast<int>(this->vehgroups.size()));
+		this->group_sb->SetCount(this->groups.size());
+		this->vscroll->SetCount(this->vehgroups.size());
 
 		/* The drop down menu is out, *but* it may not be used, retract it. */
 		if (!this->ShouldShowActionDropdownList() && this->IsWidgetLowered(WID_GL_MANAGE_VEHICLES_DROPDOWN)) {
@@ -675,13 +675,13 @@ public:
 
 			case WID_GL_LIST_GROUP: {
 				int y1 = r.top + WidgetDimensions::scaled.framerect.top;
-				int max = std::min<size_t>(this->group_sb->GetPosition() + this->group_sb->GetCapacity(), this->groups.size());
-				for (int i = this->group_sb->GetPosition(); i < max; ++i) {
+				size_t max = std::min<size_t>(this->group_sb->GetPosition() + this->group_sb->GetCapacity(), this->groups.size());
+				for (size_t i = this->group_sb->GetPosition(); i < max; ++i) {
 					const Group *g = this->groups[i];
 
 					assert(g->owner == this->owner);
 
-					DrawGroupInfo(y1, r.left, r.right, g->index, this->indents[i] * WidgetDimensions::scaled.hsep_indent, HasBit(g->flags, GroupFlags::GF_REPLACE_PROTECTION), g->folded || (i + 1 < (int)this->groups.size() && indents[i + 1] > this->indents[i]));
+					DrawGroupInfo(y1, r.left, r.right, g->index, this->indents[i] * WidgetDimensions::scaled.hsep_indent, HasBit(g->flags, GroupFlags::GF_REPLACE_PROTECTION), g->folded || (i + 1 < this->groups.size() && indents[i + 1] > this->indents[i]));
 
 					y1 += this->tiny_step_height;
 				}
@@ -699,8 +699,8 @@ public:
 				if (this->vli.index != ALL_GROUP && this->grouping == GB_NONE) {
 					/* Mark vehicles which are in sub-groups (only if we are not using shared order coalescing) */
 					Rect mr = r.WithHeight(this->resize.step_height);
-					uint max = static_cast<uint>(std::min<size_t>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->vehgroups.size()));
-					for (uint i = this->vscroll->GetPosition(); i < max; ++i) {
+					size_t max = std::min<size_t>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->vehgroups.size());
+					for (size_t i = this->vscroll->GetPosition(); i < max; ++i) {
 						const Vehicle *v = this->vehgroups[i].GetSingleVehicle();
 						if (v->group_id != this->vli.index) {
 							GfxFillRect(mr.Shrink(WidgetDimensions::scaled.bevel), _colour_gradient[COLOUR_GREY][3], FILLRECT_CHECKER);
@@ -1242,7 +1242,7 @@ public:
 				}
 				this->groups.ForceRebuild();
 				this->BuildGroupList(this->owner);
-				this->group_sb->SetCount((uint)this->groups.size());
+				this->group_sb->SetCount(this->groups.size());
 				id_g = find_index(this->groups, g);
 			}
 			this->group_sb->ScrollTowards(id_g);

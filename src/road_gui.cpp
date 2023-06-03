@@ -201,8 +201,10 @@ void CcRoadDepot(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2
  *           bit 2: Allow stations directly adjacent to other stations.
  *           bit 3..4: Entrance direction (#DiagDirection) for normal stops.
  *           bit 3: #Axis of the road for drive-through stops.
- *           bit 5..9: The roadtype.
+ *           bit 5..10: The roadtype.
  *           bit 16..31: Station ID to join (NEW_STATION if build new one).
+ * @param p3 bit 0..7: Roadstop class.
+ *           bit 16..31: Roadstopspec index.
  * @param cmd Unused.
  * @see CmdBuildRoadStop
  */
@@ -217,7 +219,7 @@ void CcRoadStop(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2,
 	bool connect_to_road = true;
 
 	RoadStopClassID spec_class = Extract<RoadStopClassID, 0, 8>(p3);
-	uint16 spec_index            = GB(p3, 16, 16);
+	uint16 spec_index          = GB(p3, 16, 16);
 	if ((uint)spec_class < RoadStopClass::GetClassCount() && spec_index < RoadStopClass::Get(spec_class)->GetSpecCount()) {
 		const RoadStopSpec *roadstopspec = RoadStopClass::Get(spec_class)->GetSpec(spec_index);
 		if (roadstopspec != nullptr && HasBit(roadstopspec->flags, RSF_NO_AUTO_ROAD_CONNECTION)) connect_to_road = false;
@@ -1251,7 +1253,7 @@ private:
 			if (rs_class == _roadstop_gui_settings.roadstop_class) break;
 			pos++;
 		}
-		this->vscrollList->SetCount((int)this->roadstop_classes.size());
+		this->vscrollList->SetCount(this->roadstop_classes.size());
 		this->vscrollList->ScrollTowards(pos);
 	}
 
@@ -1397,7 +1399,7 @@ public:
 			this->roadstop_classes.RebuildDone();
 			this->roadstop_classes.Sort();
 
-			this->vscrollList->SetCount((uint)this->roadstop_classes.size());
+			this->vscrollList->SetCount(this->roadstop_classes.size());
 		}
 	}
 
@@ -1601,7 +1603,7 @@ public:
 			}
 
 			case WID_BROS_IMAGE: {
-				byte type = GB(widget, 16, 16);
+				uint16_t type = GB(widget, 16, 16);
 				assert(type < _roadstop_gui_settings.roadstop_count);
 
 				const RoadStopSpec *spec = RoadStopClass::Get(_roadstop_gui_settings.roadstop_class)->GetSpec(type);
@@ -1698,7 +1700,7 @@ public:
 			}
 
 			case WID_BROS_IMAGE: {
-				int y = GB(widget, 16, 16);
+				uint16_t y = GB(widget, 16, 16);
 				if (y >= _roadstop_gui_settings.roadstop_count) return;
 
 				const RoadStopSpec *spec = RoadStopClass::Get(_roadstop_gui_settings.roadstop_class)->GetSpec(y);

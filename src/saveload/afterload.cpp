@@ -2301,7 +2301,7 @@ bool AfterLoadGame()
 
 			/* Replace "house construction year" with "house age" */
 			if (IsTileType(t, MP_HOUSE) && IsHouseCompleted(t)) {
-				_m[t].m5 = Clamp(_cur_year - (_m[t].m5 + ORIGINAL_BASE_YEAR), 0, 0xFF);
+				_m[t].m5 = ClampTo<uint8>(_cur_year - (_m[t].m5 + ORIGINAL_BASE_YEAR));
 			}
 		}
 	}

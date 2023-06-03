@@ -41,7 +41,7 @@ std::string CDECL stdstr_fmt(const char *str, ...) WARN_FORMAT(1, 2);
 std::string stdstr_vfmt(const char *str, va_list va) WARN_FORMAT(1, 0);
 
 char *StrMakeValidInPlace(char *str, const char *last, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK) NOACCESS(2);
-[[nodiscard]] std::string StrMakeValid(const std::string &str, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK);
+[[nodiscard]] std::string StrMakeValid(std::string_view str, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK);
 void StrMakeValidInPlace(char *str, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK);
 
 const char *str_fix_scc_encoded(char *str, const char *last) NOACCESS(2);

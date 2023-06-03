@@ -7447,7 +7447,7 @@ int GetTrainRealisticAccelerationAtSpeed(const int speed, const int mass, const 
 	/* Easy way out when there is no acceleration. */
 	if (force == resistance) return 0;
 
-	int acceleration = ClampToI32((force - resistance) / (mass * 4));
+	int acceleration = ClampTo<int32>((force - resistance) / (mass * 4));
 	acceleration = force < resistance ? std::min(-1, acceleration) : std::max(1, acceleration);
 
 	return acceleration;

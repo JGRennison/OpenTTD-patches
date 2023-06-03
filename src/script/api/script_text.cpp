@@ -174,7 +174,7 @@ const std::string ScriptText::GetEncodedText()
 void ScriptText::_TextParamError(std::string msg)
 {
 	if (this->GetActiveInstance()->IsTextParamMismatchAllowed()) {
-		ScriptLog::LogOnce(ScriptLog::LOG_ERROR, std::move(msg));
+		ScriptLog::LogOnce(ScriptLogTypes::LOG_ERROR, std::move(msg));
 	} else {
 		throw Script_FatalError(std::move(msg));
 	}

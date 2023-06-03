@@ -450,7 +450,7 @@ uint32 GetNearbyTileInformation(TileIndex tile, bool grf_version8, uint32 mask)
 		int z;
 		Slope tileh = GetTilePixelSlope(tile, &z);
 		if (grf_version8) z /= TILE_HEIGHT;
-		result |= Clamp(z, 0, 0xFF) << 16 | tileh;
+		result |= ClampTo<uint8>(z) << 16 | tileh;
 	}
 	return result;
 }

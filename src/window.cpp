@@ -438,15 +438,15 @@ void Window::UpdateQueryStringSize()
 /**
  * Get the character that is rendered at a position by the focused edit box.
  * @param pt The position to test.
- * @return Pointer to the character at the position or nullptr if no character is at the position.
+ * @return Index of the character position or -1 if no character is at the position.
  */
-/* virtual */ const char *Window::GetTextCharacterAtPosition(const Point &pt) const
+/* virtual */ ptrdiff_t Window::GetTextCharacterAtPosition(const Point &pt) const
 {
 	if (this->nested_focus != nullptr && this->nested_focus->type == WWT_EDITBOX) {
 		return this->GetQueryString(this->nested_focus->index)->GetCharAtPosition(this, this->nested_focus->index, pt);
 	}
 
-	return nullptr;
+	return -1;
 }
 
 /**
@@ -2504,13 +2504,10 @@ static void HandleScrollbarScrolling(Window *w)
 		return;
 	}
 
-	/* Find the item we want to move to and make sure it's inside bounds. */
-	int pos = std::min(RoundDivSU(std::max(0, i + _scrollbar_start_pos) * sb->GetCount(), _scrollbar_size), std::max(0, sb->GetCount() - sb->GetCapacity()));
-	if (rtl) pos = std::max(0, sb->GetCount() - sb->GetCapacity() - pos);
-	if (pos != sb->GetPosition()) {
-		sb->SetPosition(pos);
-		w->SetDirty();
-	}
+	/* Find the item we want to move to. SetPosition will make sure it's inside bounds. */
+	int pos = RoundDivSU((i + _scrollbar_start_pos) * sb->GetCount(), _scrollbar_size);
+	if (rtl) pos = sb->GetCount() - sb->GetCapacity() - pos;
+	if (sb->SetPosition(pos)) w->SetDirty();
 }
 
 /**

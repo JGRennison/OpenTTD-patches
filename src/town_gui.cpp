@@ -916,7 +916,7 @@ private:
 
 			this->towns.shrink_to_fit();
 			this->towns.RebuildDone();
-			this->vscroll->SetCount((uint)this->towns.size()); // Update scrollbar as well.
+			this->vscroll->SetCount(this->towns.size()); // Update scrollbar as well.
 		}
 		/* Always sort the towns. */
 		this->towns.Sort();

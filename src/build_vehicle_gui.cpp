@@ -62,17 +62,17 @@ static const NWidgetPart _nested_build_vehicle_widgets[] = {
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_GREY),
-		NWidget(NWID_VERTICAL),
-			NWidget(NWID_HORIZONTAL),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SORT_ASCENDING_DESCENDING), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
-				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_SORT_DROPDOWN), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_SORT_CRITERIA),
-			EndContainer(),
-			NWidget(NWID_HORIZONTAL),
-				NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BV_SHOW_HIDDEN_ENGINES),
-				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_CARGO_FILTER_DROPDOWN), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_FILTER_CRITERIA),
-			EndContainer(),
-			NWidget(WWT_EDITBOX, COLOUR_GREY, WID_BV_FILTER), SetMinimalSize(128, 0), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
+	NWidget(NWID_VERTICAL),
+		NWidget(NWID_HORIZONTAL),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SORT_ASCENDING_DESCENDING), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
+			NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_SORT_DROPDOWN), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_SORT_CRITERIA),
+		EndContainer(),
+		NWidget(NWID_HORIZONTAL),
+			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BV_SHOW_HIDDEN_ENGINES),
+			NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_CARGO_FILTER_DROPDOWN), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_FILTER_CRITERIA),
+		EndContainer(),
+		NWidget(WWT_PANEL, COLOUR_GREY),
+			NWidget(WWT_EDITBOX, COLOUR_GREY, WID_BV_FILTER), SetResize(1, 0), SetFill(1, 0), SetPadding(2), SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
 		EndContainer(),
 	EndContainer(),
 	/* Vehicle list. */
@@ -111,17 +111,17 @@ static const NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 					NWidget(WWT_LABEL, COLOUR_GREY, WID_BV_CAPTION_LOCO), SetDataTip(STR_JUST_STRING, STR_NULL), SetTextStyle(TC_WHITE), SetResize(1, 0), SetFill(1, 0),
 				EndContainer(),
 			EndContainer(),
-			NWidget(WWT_PANEL, COLOUR_GREY),
-				NWidget(NWID_VERTICAL),
-					NWidget(NWID_HORIZONTAL),
-						NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SORT_ASCENDING_DESCENDING_LOCO), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER), SetFill(1, 0),
-						NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_SORT_DROPDOWN_LOCO), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_SORT_CRITERIA),
-					EndContainer(),
-					NWidget(NWID_HORIZONTAL),
-						NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BV_SHOW_HIDDEN_LOCOS),
-						NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_CARGO_FILTER_DROPDOWN_LOCO), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_FILTER_CRITERIA),
-					EndContainer(),
-					NWidget(WWT_EDITBOX, COLOUR_GREY, WID_BV_FILTER_LOCO), SetMinimalSize(128, 0), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
+			NWidget(NWID_VERTICAL),
+				NWidget(NWID_HORIZONTAL),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SORT_ASCENDING_DESCENDING_LOCO), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER), SetFill(1, 0),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_SORT_DROPDOWN_LOCO), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_SORT_CRITERIA),
+				EndContainer(),
+				NWidget(NWID_HORIZONTAL),
+					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BV_SHOW_HIDDEN_LOCOS),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_CARGO_FILTER_DROPDOWN_LOCO), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_FILTER_CRITERIA),
+				EndContainer(),
+				NWidget(WWT_PANEL, COLOUR_GREY),
+					NWidget(WWT_EDITBOX, COLOUR_GREY, WID_BV_FILTER_LOCO), SetResize(1, 0), SetFill(1, 0), SetPadding(2), SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
 				EndContainer(),
 			EndContainer(),
 			/* Vehicle list for locomotives. */
@@ -150,17 +150,17 @@ static const NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 					NWidget(WWT_LABEL, COLOUR_GREY, WID_BV_CAPTION_WAGON), SetDataTip(STR_JUST_STRING, STR_NULL), SetTextStyle(TC_WHITE), SetResize(1, 0), SetFill(1, 0),
 				EndContainer(),
 			EndContainer(),
-			NWidget(WWT_PANEL, COLOUR_GREY),
-				NWidget(NWID_VERTICAL),
-					NWidget(NWID_HORIZONTAL),
-						NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SORT_ASCENDING_DESCENDING_WAGON), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER), SetFill(1, 0),
-						NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_SORT_DROPDOWN_WAGON), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_SORT_CRITERIA),
-					EndContainer(),
-					NWidget(NWID_HORIZONTAL),
-						NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BV_SHOW_HIDDEN_WAGONS),
-						NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_CARGO_FILTER_DROPDOWN_WAGON), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_FILTER_CRITERIA),
-					EndContainer(),
-					NWidget(WWT_EDITBOX, COLOUR_GREY, WID_BV_FILTER_WAGON), SetMinimalSize(128, 0), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
+			NWidget(NWID_VERTICAL),
+				NWidget(NWID_HORIZONTAL),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SORT_ASCENDING_DESCENDING_WAGON), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER), SetFill(1, 0),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_SORT_DROPDOWN_WAGON), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_SORT_CRITERIA),
+				EndContainer(),
+				NWidget(NWID_HORIZONTAL),
+					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BV_SHOW_HIDDEN_WAGONS),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_CARGO_FILTER_DROPDOWN_WAGON), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_FILTER_CRITERIA),
+				EndContainer(),
+				NWidget(WWT_PANEL, COLOUR_GREY),
+					NWidget(WWT_EDITBOX, COLOUR_GREY, WID_BV_FILTER_WAGON), SetResize(1, 0), SetFill(1, 0), SetPadding(2), SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
 				EndContainer(),
 			EndContainer(),
 			/* Vehicle list for wagons. */
@@ -322,7 +322,7 @@ static bool EngineCostSorter(const GUIEngineListItem &a, const GUIEngineListItem
 {
 	Money va = Engine::Get(a.engine_id)->GetCost();
 	Money vb = Engine::Get(b.engine_id)->GetCost();
-	int r = ClampToI32(va - vb);
+	int r = ClampTo<int32_t>(va - vb);
 
 	/* Use EngineID to sort instead since we want consistent sorting */
 	if (r == 0) return EngineNumberSorter(a, b);
@@ -390,7 +390,7 @@ static bool EngineRunningCostSorter(const GUIEngineListItem &a, const GUIEngineL
 {
 	Money va = Engine::Get(a.engine_id)->GetRunningCost();
 	Money vb = Engine::Get(b.engine_id)->GetRunningCost();
-	int r = ClampToI32(va - vb);
+	int r = ClampTo<int32_t>(va - vb);
 
 	/* Use EngineID to sort instead since we want consistent sorting */
 	if (r == 0) return EngineNumberSorter(a, b);
@@ -2066,7 +2066,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 	void OnPaint() override
 	{
 		this->GenerateBuildList();
-		this->vscroll->SetCount((uint)this->eng_list.size());
+		this->vscroll->SetCount(this->eng_list.size());
 
 		this->SetWidgetsDisabledState(this->sel_engine == INVALID_ENGINE, WID_BV_SHOW_HIDE, WID_BV_BUILD, WIDGET_LIST_END);
 
