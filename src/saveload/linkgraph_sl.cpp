@@ -71,9 +71,11 @@ SaveLoadTable GetLinkGraphJobDesc()
 		while (desc != nullptr) {
 			if (desc->name != nullptr && strncmp(desc->name, prefix, prefixlen) == 0) {
 				SaveLoad sl = desc->save;
-				char *&address = reinterpret_cast<char *&>(sl.address);
-				address -= offset_gamesettings;
-				address += offset_component;
+				if (GetVarMemType(sl.conv) != SLE_VAR_NULL) {
+					char *&address = reinterpret_cast<char *&>(sl.address);
+					address -= offset_gamesettings;
+					address += offset_component;
+				}
 				saveloads.push_back(sl);
 			}
 			desc = GetSettingDescription(++setting);
