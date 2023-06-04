@@ -1037,8 +1037,14 @@ void GeneratePublicRoads()
 	std::vector<std::unique_ptr<TownNetwork>> networks;
 	robin_hood::unordered_flat_map<TileIndex, TownNetwork *> town_to_network_map;
 
-	TileIndex main_town = *std::max_element(towns.begin(), towns.end(), [&](TileIndex a, TileIndex b) { return DistanceFromEdge(a) < DistanceFromEdge(b); });
-	towns.erase(towns.begin());
+	TileIndex main_town;
+	{
+		auto main_town_iter = std::max_element(towns.begin(), towns.end(), [&](TileIndex a, TileIndex b) { return DistanceFromEdge(a) < DistanceFromEdge(b); });
+		main_town = *main_town_iter;
+		/* Unordered remove item */
+		*main_town_iter = towns.back();
+		towns.pop_back();
+	}
 
 	_public_road_type = GetTownRoadType();
 	robin_hood::unordered_flat_set<TileIndex> checked_towns;
