@@ -72,10 +72,10 @@ const uint32 _send_to_depot_proc_table[] = {
 };
 
 
-CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlag flags, const Engine *e, uint16 data, Vehicle **v);
-CommandCost CmdBuildRoadVehicle(TileIndex tile, DoCommandFlag flags, const Engine *e, uint16 data, Vehicle **v);
-CommandCost CmdBuildShip       (TileIndex tile, DoCommandFlag flags, const Engine *e, uint16 data, Vehicle **v);
-CommandCost CmdBuildAircraft   (TileIndex tile, DoCommandFlag flags, const Engine *e, uint16 data, Vehicle **v);
+CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlag flags, const Engine *e, Vehicle **v);
+CommandCost CmdBuildRoadVehicle(TileIndex tile, DoCommandFlag flags, const Engine *e, Vehicle **v);
+CommandCost CmdBuildShip       (TileIndex tile, DoCommandFlag flags, const Engine *e, Vehicle **v);
+CommandCost CmdBuildAircraft   (TileIndex tile, DoCommandFlag flags, const Engine *e, Vehicle **v);
 static CommandCost GetRefitCost(const Vehicle *v, EngineID engine_type, CargoID new_cid, byte new_subtype, bool *auto_refit_allowed);
 
 /**
@@ -84,7 +84,9 @@ static CommandCost GetRefitCost(const Vehicle *v, EngineID engine_type, CargoID 
  * @param flags for command
  * @param p1 various bitstuffed data
  *  bits  0-15: vehicle type being built.
- *  bits 16-23: vehicle type specific bits passed on to the vehicle build functions.
+ *  bits 16-23: vehicle type specific bits.
+ *              Trains:
+ *              * bit 16: prevent any free cars from being added to the train.
  *  bits 24-31: refit cargo type.
  * @param p2 User
  * @param text unused
@@ -149,10 +151,10 @@ CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 
 	Vehicle *v = nullptr;
 	switch (type) {
-		case VEH_TRAIN:    value.AddCost(CmdBuildRailVehicle(tile, subflags, e, GB(p1, 16, 8), &v)); break;
-		case VEH_ROAD:     value.AddCost(CmdBuildRoadVehicle(tile, subflags, e, GB(p1, 16, 8), &v)); break;
-		case VEH_SHIP:     value.AddCost(CmdBuildShip       (tile, subflags, e, GB(p1, 16, 8), &v)); break;
-		case VEH_AIRCRAFT: value.AddCost(CmdBuildAircraft   (tile, subflags, e, GB(p1, 16, 8), &v)); break;
+		case VEH_TRAIN:    value.AddCost(CmdBuildRailVehicle(tile, subflags, e, &v)); break;
+		case VEH_ROAD:     value.AddCost(CmdBuildRoadVehicle(tile, subflags, e, &v)); break;
+		case VEH_SHIP:     value.AddCost(CmdBuildShip       (tile, subflags, e, &v)); break;
+		case VEH_AIRCRAFT: value.AddCost(CmdBuildAircraft   (tile, subflags, e, &v)); break;
 		default: NOT_REACHED(); // Safe due to IsDepotTile()
 	}
 
@@ -180,6 +182,11 @@ CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 		}
 
 		if (flags & DC_EXEC) {
+			if (type == VEH_TRAIN && !HasBit(p1, 16) && !(flags & DC_AUTOREPLACE)) {
+				/* Move any free wagons to the new vehicle. */
+				NormalizeTrainVehInDepot(Train::From(v));
+			}
+
 			InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
 			InvalidateWindowClassesData(GetWindowClassForVehicleType(type), 0);
 			InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);

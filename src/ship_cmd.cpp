@@ -1116,11 +1116,10 @@ void Ship::SetDestTile(TileIndex tile)
  * @param tile     tile of the depot where ship is built.
  * @param flags    type of operation.
  * @param e        the engine to build.
- * @param data     unused.
  * @param[out] ret the vehicle that has been built.
  * @return the cost of this operation or an error.
  */
-CommandCost CmdBuildShip(TileIndex tile, DoCommandFlag flags, const Engine *e, uint16 data, Vehicle **ret)
+CommandCost CmdBuildShip(TileIndex tile, DoCommandFlag flags, const Engine *e, Vehicle **ret)
 {
 	tile = GetShipDepotNorthTile(tile);
 	if (flags & DC_EXEC) {
