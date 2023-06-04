@@ -101,6 +101,8 @@ private:
 
 	static bool SelectDriverImpl(const std::string &name, Driver::Type type);
 
+	static void MarkVideoDriverOperational();
+
 protected:
 	DriverFactoryBase(Driver::Type type, int priority, const char *name, const char *description);
 
