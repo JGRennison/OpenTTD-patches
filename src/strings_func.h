@@ -15,6 +15,7 @@
 #include "gfx_type.h"
 #include "core/bitmath_func.hpp"
 #include "vehicle_type.h"
+#include "3rdparty/optional/ottd_optional.h"
 
 /**
  * Extract the StringTab from a StringID.
@@ -266,7 +267,7 @@ public:
 	 * Get the next string to search through.
 	 * @return The next string or nullopt if there is none.
 	 */
-	virtual std::optional<std::string_view> NextString() = 0;
+	virtual opt::optional<std::string_view> NextString() = 0;
 
 	/**
 	 * Get the default (font) size of the string.

@@ -2549,7 +2549,7 @@ class LanguagePackGlyphSearcher : public MissingGlyphSearcher {
 		return FS_NORMAL;
 	}
 
-	std::optional<std::string_view> NextString() override
+	opt::optional<std::string_view> NextString() override
 	{
 		if (this->i >= TEXT_TAB_END) return std::nullopt;
 
