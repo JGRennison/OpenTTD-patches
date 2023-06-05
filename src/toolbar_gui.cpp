@@ -1108,6 +1108,26 @@ static CallBackFunction MenuClickNewspaper(int index)
 
 /* --- Help button menu --- */
 
+/**
+ * Help button menu entries.
+ */
+enum HelpMenuEntries {
+	HME_LANDINFO = 0,
+	HME_CONSOLE = 2,
+	HME_SCRIPT_DEBUG,
+	HME_SCREENSHOT,
+	HME_FRAMERATE,
+	HME_MODIFIER_KEYS,
+	HME_ABOUT,
+
+	HME_SPRITE_ALIGNER,
+	HME_BOUNDING_BOXES,
+	HME_DIRTY_BLOCKS,
+
+	HME_LAST,
+	HME_LAST_NON_DEV = HME_SPRITE_ALIGNER,
+};
+
 static CallBackFunction PlaceLandBlockInfo()
 {
 	if (_last_started_action == CBF_PLACE_LANDINFO) {
@@ -1121,7 +1141,7 @@ static CallBackFunction PlaceLandBlockInfo()
 
 static CallBackFunction ToolbarHelpClick(Window *w)
 {
-	PopupMainToolbMenu(w, _game_mode == GM_EDITOR ? (int)WID_TE_HELP : (int)WID_TN_HELP, STR_ABOUT_MENU_LAND_BLOCK_INFO, _settings_client.gui.newgrf_developer_tools ? 11 : 8);
+	PopupMainToolbMenu(w, _game_mode == GM_EDITOR ? (int)WID_TE_HELP : (int)WID_TN_HELP, STR_ABOUT_MENU_LAND_BLOCK_INFO, _settings_client.gui.newgrf_developer_tools ? HME_LAST : HME_LAST_NON_DEV);
 	return CBF_NONE;
 }
 
@@ -1174,6 +1194,7 @@ void SetStartingYear(Year year)
 	SetDate(new_date, 0);
 }
 
+
 /**
  * Choose the proper callback function for the main toolbar's help menu.
  * @param index The menu index which was selected.
@@ -1182,16 +1203,16 @@ void SetStartingYear(Year year)
 static CallBackFunction MenuClickHelp(int index)
 {
 	switch (index) {
-		case  0: return PlaceLandBlockInfo();
-		case  2: IConsoleSwitch();                 break;
-		case  3: ShowScriptDebugWindow();          break;
-		case  4: ShowScreenshotWindow();           break;
-		case  5: ShowFramerateWindow();            break;
-		case  6: ShowModifierKeyToggleWindow();    break;
-		case  7: ShowAboutWindow();                break;
-		case  8: ShowSpriteAlignerWindow();        break;
-		case  9: ToggleBoundingBoxes();            break;
-		case 10: ToggleDirtyBlocks();              break;
+		case HME_LANDINFO:       return PlaceLandBlockInfo();
+		case HME_CONSOLE:        IConsoleSwitch();                 break;
+		case HME_SCRIPT_DEBUG:   ShowScriptDebugWindow();          break;
+		case HME_SCREENSHOT:     ShowScreenshotWindow();           break;
+		case HME_FRAMERATE:      ShowFramerateWindow();            break;
+		case HME_MODIFIER_KEYS:  ShowModifierKeyToggleWindow();    break;
+		case HME_ABOUT:          ShowAboutWindow();                break;
+		case HME_SPRITE_ALIGNER: ShowSpriteAlignerWindow();        break;
+		case HME_BOUNDING_BOXES: ToggleBoundingBoxes();            break;
+		case HME_DIRTY_BLOCKS:   ToggleDirtyBlocks();              break;
 	}
 	return CBF_NONE;
 }
