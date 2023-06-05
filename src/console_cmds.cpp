@@ -3363,7 +3363,7 @@ DEF_CONSOLE_CMD(ConNewGRFProfile)
 	const std::vector<GRFFile *> &files = GetAllGRFFiles();
 
 	/* "list" sub-command */
-	if (argc == 1 || strncasecmp(argv[1], "lis", 3) == 0) {
+	if (argc == 1 || StrStartsWithIgnoreCase(argv[1], "lis")) {
 		IConsolePrint(CC_INFO, "Loaded GRF files:");
 		int i = 1;
 		for (GRFFile *grf : files) {
