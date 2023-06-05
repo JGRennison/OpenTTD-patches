@@ -16,6 +16,7 @@
 #include "tile_type.h"
 #include "settings_type.h"
 #include "group.h"
+#include <array>
 #include <string>
 
 /** Statistics about the economy. */
