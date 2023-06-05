@@ -281,7 +281,7 @@ struct CheatWindow : Window {
 					/* Change inflation factors */
 
 					/* Draw [<][>] boxes for settings of an integer-type */
-					DrawArrowButtons(button_left, y + icon_y_offset, COLOUR_YELLOW, clicked - (i * 2), true, true);
+					DrawArrowButtons(button_left, y + button_y_offset, COLOUR_YELLOW, clicked - (i * 2), true, true);
 
 					uint64 val = (uint64)ReadValue(ce->variable, SLE_UINT64);
 					SetDParam(0, val * 1000 >> 16);
@@ -435,12 +435,22 @@ struct CheatWindow : Window {
 
 		if (!_networking) *ce->been_used = true;
 
+		auto get_arrow_button_value = [&]() -> int {
+			return (x >= WidgetDimensions::scaled.hsep_wide * 2 + this->box.width + SETTING_BUTTON_WIDTH / 2) ? 1 : -1;
+		};
+
+		auto register_arrow_button_clicked = [&]() {
+			this->clicked = btn * 2 + 1 + ((x >= WidgetDimensions::scaled.hsep_wide * 2 + this->box.width + SETTING_BUTTON_WIDTH / 2) != rtl ? 1 : 0);
+		};
+
 		switch (ce->type) {
 			case SLF_ALLOW_CONTROL: {
 				/* Change inflation factors */
-				uint64 value = (uint64)ReadValue(ce->variable, SLE_UINT64) + (((x >= 10 + this->box.width + SETTING_BUTTON_WIDTH / 2) ? 1 : -1) << 16);
+				uint64 oldvalue = (uint64)ReadValue(ce->variable, SLE_UINT64);
+				uint64 value = oldvalue + (uint64)(get_arrow_button_value() << 16);
 				value = Clamp<uint64>(value, 1 << 16, MAX_INFLATION);
 				DoCommandP(0, (uint32)btn, (uint32)value, CMD_CHEAT_SETTING);
+				if (value != oldvalue) register_arrow_button_clicked();
 				break;
 			}
 
@@ -451,10 +461,11 @@ struct CheatWindow : Window {
 
 			default:
 				/* Take whatever the function returns */
-				value = ce->proc(value + ((x >= WidgetDimensions::scaled.hsep_wide * 2 + this->box.width + SETTING_BUTTON_WIDTH / 2) ? 1 : -1), (x >= WidgetDimensions::scaled.hsep_wide * 2 + this->box.width + SETTING_BUTTON_WIDTH / 2) ? 1 : -1);
+				int offset = get_arrow_button_value();
+				value = ce->proc(value + offset, offset);
 
 				/* The first cheat (money), doesn't return a different value. */
-				if (value != oldvalue || btn == CHT_MONEY) this->clicked = btn * 2 + 1 + ((x >= WidgetDimensions::scaled.hsep_wide * 2 + this->box.width + SETTING_BUTTON_WIDTH / 2) != rtl ? 1 : 0);
+				if (value != oldvalue || btn == CHT_MONEY) register_arrow_button_clicked();
 				break;
 		}
 
