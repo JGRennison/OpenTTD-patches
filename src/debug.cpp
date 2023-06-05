@@ -174,7 +174,6 @@ void debug_print(const char *dbg, const char *buf)
 			unsigned int num = 0;
 			int pid = getpid();
 			for(;;) {
-				free(fn);
 				std::string fn = stdstr_fmt("random-out-%d-%u.log", pid, num);
 				f = FioFOpenFile(fn.c_str(), "wx", AUTOSAVE_DIR);
 				if (f == nullptr && errno == EEXIST) {
