@@ -15,7 +15,7 @@
 #include "../../fios.h"
 #include "../../strings_type.h"
 #include "../../core/span_type.hpp"
-#include "../../3rdparty/optional/ottd_optional.h"
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -89,7 +89,7 @@ using SaveLoadCompatTable = span<const struct SaveLoadCompat>;
 /** Handler for saving/loading an object to/from disk. */
 class SaveLoadHandler {
 public:
-	opt::optional<std::vector<SaveLoad>> load_description;
+	std::optional<std::vector<SaveLoad>> load_description;
 
 	virtual ~SaveLoadHandler() {}
 

@@ -14,7 +14,7 @@
 #include "strings_type.h"
 #include "tile_type.h"
 #include "core/span_type.hpp"
-#include "3rdparty/optional/ottd_optional.h"
+#include <optional>
 #include <string>
 
 struct GRFFile;
@@ -714,7 +714,7 @@ struct CommandAuxiliaryBase {
 
 	virtual CommandAuxiliaryBase *Clone() const = 0;
 
-	virtual opt::optional<span<const uint8>> GetDeserialisationSrc() const = 0;
+	virtual std::optional<span<const uint8>> GetDeserialisationSrc() const = 0;
 
 	virtual void Serialise(CommandSerialisationBuffer &buffer) const = 0;
 };

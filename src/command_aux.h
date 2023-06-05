@@ -14,7 +14,7 @@
 #include "command_func.h"
 #include "string_type.h"
 #include "core/serialisation.hpp"
-#include "3rdparty/optional/ottd_optional.h"
+#include <optional>
 
 struct CommandDeserialisationBuffer : public BufferDeserialisationHelper<CommandDeserialisationBuffer> {
 	const uint8 *buffer;
@@ -60,14 +60,14 @@ struct CommandAuxiliarySerialised : public CommandAuxiliaryBase {
 		return new CommandAuxiliarySerialised(*this);
 	}
 
-	virtual opt::optional<span<const uint8>> GetDeserialisationSrc() const override { return span<const uint8>(this->serialised_data.data(), this->serialised_data.size()); }
+	virtual std::optional<span<const uint8>> GetDeserialisationSrc() const override { return span<const uint8>(this->serialised_data.data(), this->serialised_data.size()); }
 
 	virtual void Serialise(CommandSerialisationBuffer &buffer) const override { buffer.Send_binary((const char *)this->serialised_data.data(), this->serialised_data.size()); }
 };
 
 template <typename T>
 struct CommandAuxiliarySerialisable : public CommandAuxiliaryBase {
-	virtual opt::optional<span<const uint8>> GetDeserialisationSrc() const override { return {}; }
+	virtual std::optional<span<const uint8>> GetDeserialisationSrc() const override { return {}; }
 
 	CommandAuxiliaryBase *Clone() const override
 	{
@@ -78,14 +78,14 @@ struct CommandAuxiliarySerialisable : public CommandAuxiliaryBase {
 template <typename T>
 struct CommandAuxData {
 private:
-	opt::optional<T> store;
+	std::optional<T> store;
 	const T *data = nullptr;
 
 public:
 	inline CommandCost Load(const CommandAuxiliaryBase *base)
 	{
 		if (base == nullptr) return CMD_ERROR;
-		opt::optional<span<const uint8>> deserialise_from = base->GetDeserialisationSrc();
+		std::optional<span<const uint8>> deserialise_from = base->GetDeserialisationSrc();
 		if (deserialise_from.has_value()) {
 			this->store = T();
 			CommandDeserialisationBuffer buffer(deserialise_from->begin(), deserialise_from->size());

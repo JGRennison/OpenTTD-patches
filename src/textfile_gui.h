@@ -14,7 +14,7 @@
 #include "strings_func.h"
 #include "textfile_type.h"
 #include "window_gui.h"
-#include "3rdparty/optional/ottd_optional.h"
+#include <optional>
 
 const char *GetTextfile(TextfileType type, Subdirectory dir, const char *filename);
 
@@ -37,7 +37,7 @@ struct TextfileWindow : public Window, MissingGlyphSearcher {
 
 	void Reset() override;
 	FontSize DefaultSize() override;
-	opt::optional<std::string_view> NextString() override;
+	std::optional<std::string_view> NextString() override;
 	bool Monospace() override;
 	void SetFontNames(FontCacheSettings *settings, const char *font_name, const void *os_data) override;
 

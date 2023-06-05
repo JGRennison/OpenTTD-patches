@@ -194,7 +194,7 @@ void TextfileWindow::SetupScrollbars(bool force_reflow)
 	return FS_MONO;
 }
 
-/* virtual */ opt::optional<std::string_view> TextfileWindow::NextString()
+/* virtual */ std::optional<std::string_view> TextfileWindow::NextString()
 {
 	if (this->search_iterator >= this->lines.size()) return std::nullopt;
 
