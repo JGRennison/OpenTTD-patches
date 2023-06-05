@@ -362,6 +362,8 @@ public:
 	void CreateNestedTree(bool fill_nested = true);
 	void FinishInitNested(WindowNumber window_number = 0);
 
+	void ChangeWindowClass(WindowClass cls);
+
 	/**
 	 * Set the timeout flag of the window and initiate the timer.
 	 */

@@ -1527,6 +1527,12 @@ static void BringWindowToFront(Window *w)
 	w->SetDirty();
 }
 
+void Window::ChangeWindowClass(WindowClass cls)
+{
+	this->window_class = cls;
+	if (this->window_class < WC_END) _present_window_types.set(this->window_class);
+}
+
 /**
  * Initializes the data (except the position and initial size) of a new Window.
  * @param window_number Number being assigned to the new window
@@ -1537,7 +1543,7 @@ static void BringWindowToFront(Window *w)
 void Window::InitializeData(WindowNumber window_number)
 {
 	/* Set up window properties; some of them are needed to set up smallest size below */
-	this->window_class = this->window_desc->cls;
+	this->ChangeWindowClass(this->window_desc->cls);
 	this->SetWhiteBorder();
 	if (this->window_desc->default_pos == WDP_CENTER) this->flags |= WF_CENTERED;
 	this->owner = INVALID_OWNER;
@@ -1570,7 +1576,6 @@ void Window::InitializeData(WindowNumber window_number)
 	AddWindowToZOrdering(this);
 	this->next_window = _first_window;
 	_first_window = this;
-	if (this->window_class < WC_END) _present_window_types.set(this->window_class);
 }
 
 /**

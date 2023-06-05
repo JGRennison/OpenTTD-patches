@@ -1320,7 +1320,8 @@ public:
 
 		this->FinishInitNested(TRANSPORT_ROAD);
 
-		this->window_class = (rs == ROADSTOP_BUS) ? WC_BUS_STATION : WC_TRUCK_STATION;
+		this->ChangeWindowClass((rs == ROADSTOP_BUS) ? WC_BUS_STATION : WC_TRUCK_STATION);
+
 		if (!newstops || _roadstop_gui_settings.roadstop_class >= (int)RoadStopClass::GetClassCount()) {
 			/* There's no new stops available or the list has reduced in size.
 			 * Now, set the default road stops as selected. */
