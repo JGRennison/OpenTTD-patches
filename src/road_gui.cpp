@@ -858,6 +858,25 @@ struct BuildRoadToolbarWindow : Window {
 	static HotkeyList tram_hotkeys;
 };
 
+Window *CreateRoadTramToolbarForRoadType(RoadType roadtype, RoadTramType rtt)
+{
+	Window* w = nullptr;
+	switch (_game_mode) {
+		case GM_NORMAL:
+			w = ShowBuildRoadToolbar(roadtype);
+			break;
+
+		case GM_EDITOR:
+			if ((GetRoadTypes(true) & ((rtt == RTT_ROAD) ? ~_roadtypes_type : _roadtypes_type)) == ROADTYPES_NONE) return nullptr;
+			w = ShowBuildRoadScenToolbar(roadtype);
+			break;
+
+		default:
+			break;
+	}
+	return w;
+}
+
 /**
  * Handler for global hotkeys of the BuildRoadToolbarWindow.
  * @param hotkey Hotkey
@@ -866,20 +885,7 @@ struct BuildRoadToolbarWindow : Window {
  */
 static EventState RoadTramToolbarGlobalHotkeys(int hotkey, RoadType last_build, RoadTramType rtt)
 {
-	Window* w = nullptr;
-	switch (_game_mode) {
-		case GM_NORMAL:
-			w = ShowBuildRoadToolbar(last_build);
-			break;
-
-		case GM_EDITOR:
-			if ((GetRoadTypes(true) & ((rtt == RTT_ROAD) ? ~_roadtypes_type : _roadtypes_type)) == ROADTYPES_NONE) return ES_NOT_HANDLED;
-			w = ShowBuildRoadScenToolbar(last_build);
-			break;
-
-		default:
-			break;
-	}
+	Window* w = CreateRoadTramToolbarForRoadType(last_build, rtt);
 
 	if (w == nullptr) return ES_NOT_HANDLED;
 	return w->OnHotkey(hotkey);
@@ -1227,7 +1233,7 @@ enum BuildRoadStopHotkeys {
 
 struct BuildRoadStationWindow : public PickerWindowBase {
 private:
-	RoadStopType roadStopType; ///< The RoadStopType for this Window.
+	RoadStopType road_stop_type; ///< The RoadStopType for this Window.
 	uint line_height; ///< Height of a single line in the newstation selection matrix.
 	uint coverage_height; ///< Height of the coverage texts.
 	Scrollbar *vscrollList; ///< Vertical scrollbar of the new station list.
@@ -1271,13 +1277,29 @@ private:
 		this->UpdateBuildingHeight(spec->height);
 	}
 
+	void SelectClass(RoadStopClassID class_id) {
+		if (_roadstop_gui_settings.roadstop_class != class_id && GetIfClassHasNewStopsByType(RoadStopClass::Get(class_id), this->road_stop_type, _cur_roadtype)) {
+			_roadstop_gui_settings.roadstop_class = class_id;
+			RoadStopClass *rsclass = RoadStopClass::Get(_roadstop_gui_settings.roadstop_class);
+			_roadstop_gui_settings.roadstop_count = rsclass->GetSpecCount();
+			_roadstop_gui_settings.roadstop_type = std::min((int)_roadstop_gui_settings.roadstop_type, std::max(0, (int)_roadstop_gui_settings.roadstop_count - 1));
+			this->SelectFirstAvailableTypeIfUnavailable();
+
+			NWidgetMatrix *matrix = this->GetWidget<NWidgetMatrix>(WID_BROS_MATRIX);
+			matrix->SetCount(_roadstop_gui_settings.roadstop_count);
+			matrix->SetClicked(_roadstop_gui_settings.roadstop_type);
+			this->CheckSelectedSpec();
+			this->SetDirty();
+		}
+	}
+
 public:
 	BuildRoadStationWindow(WindowDesc *desc, Window *parent, RoadStopType rs) : PickerWindowBase(desc, parent), filter_editbox(EDITBOX_MAX_SIZE * MAX_CHAR_LENGTH, EDITBOX_MAX_SIZE)
 	{
 		this->coverage_height = 2 * FONT_HEIGHT_NORMAL + 3 * WidgetDimensions::scaled.vsep_normal;
 		this->vscrollList = nullptr;
 		this->vscrollMatrix = nullptr;
-		this->roadStopType = rs;
+		this->road_stop_type = rs;
 		bool newstops = GetIfNewStopsByType(rs, _cur_roadtype);
 
 		this->CreateNestedTree();
@@ -1338,7 +1360,7 @@ public:
 			_roadstop_gui_settings.roadstop_type = std::min((int)_roadstop_gui_settings.roadstop_type, _roadstop_gui_settings.roadstop_count - 1);
 
 			/* Reset back to default class if the previously selected class is not available for this road stop type. */
-			if (!GetIfClassHasNewStopsByType(RoadStopClass::Get(_roadstop_gui_settings.roadstop_class), roadStopType, _cur_roadtype)) {
+			if (!GetIfClassHasNewStopsByType(RoadStopClass::Get(_roadstop_gui_settings.roadstop_class), this->road_stop_type, _cur_roadtype)) {
 				_roadstop_gui_settings.roadstop_class = ROADSTOP_CLASS_DFLT;
 			}
 
@@ -1391,7 +1413,7 @@ public:
 				continue;
 			}
 			RoadStopClass *rs_class = RoadStopClass::Get(rs_id);
-			if (GetIfClassHasNewStopsByType(rs_class, this->roadStopType, _cur_roadtype)) this->roadstop_classes.push_back(rs_id);
+			if (GetIfClassHasNewStopsByType(rs_class, this->road_stop_type, _cur_roadtype)) this->roadstop_classes.push_back(rs_id);
 		}
 
 		if (this->ShowNewStops()) {
@@ -1682,18 +1704,7 @@ public:
 				int y = this->vscrollList->GetScrolledRowFromWidget(pt.y, this, WID_BROS_NEWST_LIST);
 				if (y >= (int)this->roadstop_classes.size()) return;
 				RoadStopClassID class_id = this->roadstop_classes[y];
-				if (_roadstop_gui_settings.roadstop_class != class_id && GetIfClassHasNewStopsByType(RoadStopClass::Get(class_id), roadStopType, _cur_roadtype)) {
-					_roadstop_gui_settings.roadstop_class = class_id;
-					RoadStopClass *rsclass = RoadStopClass::Get(_roadstop_gui_settings.roadstop_class);
-					_roadstop_gui_settings.roadstop_count = rsclass->GetSpecCount();
-					_roadstop_gui_settings.roadstop_type = std::min((int)_roadstop_gui_settings.roadstop_type, std::max(0, (int)_roadstop_gui_settings.roadstop_count - 1));
-					this->SelectFirstAvailableTypeIfUnavailable();
-
-					NWidgetMatrix *matrix = this->GetWidget<NWidgetMatrix>(WID_BROS_MATRIX);
-					matrix->SetCount(_roadstop_gui_settings.roadstop_count);
-					matrix->SetClicked(_roadstop_gui_settings.roadstop_type);
-					this->CheckSelectedSpec();
-				}
+				this->SelectClass(class_id);
 				if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 				this->SetDirty();
 				DeleteWindowById(WC_SELECT_STATION, 0);
@@ -1729,6 +1740,18 @@ public:
 	void OnRealtimeTick(uint delta_ms) override
 	{
 		CheckRedrawStationCoverage(this);
+	}
+
+	void SelectClassAndSpec(RoadStopClassID class_id, int spec_id)
+	{
+		this->SelectClass(class_id);
+		this->EnsureSelectedClassIsVisible();
+
+		if (_roadstop_gui_settings.roadstop_class != class_id) {
+			/* could not select class*/
+			return;
+		}
+		this->OnClick({}, WID_BROS_IMAGE | (spec_id << 16), 1);
 	}
 
 	static HotkeyList hotkeys;
@@ -2021,6 +2044,11 @@ struct BuildRoadWaypointWindow : PickerWindowBase {
 	{
 		CheckRedrawWaypointCoverage(this, true);
 	}
+
+	void SelectWaypointSpec(int spec_id)
+	{
+		this->OnClick({}, WID_BROW_WAYPOINT | (spec_id << 16), 1);
+	}
 };
 
 /** Nested widget definition for the build NewGRF road waypoint window */
@@ -2246,4 +2274,65 @@ DropDownList GetScenRoadTypeDropDownList(RoadTramTypes rtts)
 	}
 
 	return list;
+}
+
+static BuildRoadToolbarWindow *GetRoadToolbarWindowForRoadStop(const RoadStopSpec *spec, RoadTramType rtt_preferred)
+{
+	extern RoadType _last_built_roadtype;
+	extern RoadType _last_built_tramtype;
+
+	BuildRoadToolbarWindow *w = dynamic_cast<BuildRoadToolbarWindow *>(FindWindowById(_game_mode == GM_EDITOR ? WC_SCEN_BUILD_TOOLBAR : WC_BUILD_TOOLBAR, TRANSPORT_ROAD));
+	if (w != nullptr) {
+		if (spec != nullptr && ((HasBit(spec->flags, RSF_BUILD_MENU_ROAD_ONLY) && !RoadTypeIsRoad(_cur_roadtype)) ||
+				(HasBit(spec->flags, RSF_BUILD_MENU_TRAM_ONLY) && !RoadTypeIsTram(_cur_roadtype)))) {
+			delete w;
+		} else {
+			return w;
+		}
+	}
+
+	return dynamic_cast<BuildRoadToolbarWindow *>(CreateRoadTramToolbarForRoadType(rtt_preferred == RTT_TRAM ? _last_built_tramtype : _last_built_roadtype, rtt_preferred));
+}
+
+void ShowBuildRoadStopPickerAndSelect(StationType station_type, const RoadStopSpec *spec, RoadTramType rtt_preferred)
+{
+	if (!IsRoadStopAvailable(spec, station_type)) return;
+
+	RoadStopClassID class_id;
+	if (spec != nullptr) {
+		if ((spec->cls_id == ROADSTOP_CLASS_WAYP) != (station_type == STATION_ROADWAYPOINT)) return;
+		class_id = spec->cls_id;
+	} else {
+		class_id = (station_type == STATION_ROADWAYPOINT) ? ROADSTOP_CLASS_WAYP : ROADSTOP_CLASS_DFLT;
+	}
+
+	int spec_id = -1;
+	const RoadStopClass *rsclass = RoadStopClass::Get(class_id);
+	for (int i = 0; i < (int)rsclass->GetSpecCount(); i++) {
+		if (rsclass->GetSpec(i) == spec) {
+			spec_id = i;
+		}
+	}
+	if (spec_id < 0) return;
+
+	BuildRoadToolbarWindow *w = GetRoadToolbarWindowForRoadStop(spec, rtt_preferred);
+	if (w == nullptr) return;
+
+	auto trigger_widget = [&](int widget) {
+		if (!w->IsWidgetLowered(widget)) {
+			w->OnHotkey(widget);
+		}
+	};
+
+	if (station_type == STATION_ROADWAYPOINT) {
+		trigger_widget(WID_ROT_BUILD_WAYPOINT);
+
+		BuildRoadWaypointWindow *waypoint_window = dynamic_cast<BuildRoadWaypointWindow *>(FindWindowById(WC_BUILD_WAYPOINT, TRANSPORT_ROAD));
+		if (waypoint_window != nullptr) waypoint_window->SelectWaypointSpec(spec_id);
+	} else {
+		trigger_widget((station_type == STATION_BUS) ? WID_ROT_BUS_STATION : WID_ROT_TRUCK_STATION);
+
+		BuildRoadStationWindow *roadstop_window = dynamic_cast<BuildRoadStationWindow *>(FindWindowById((station_type == STATION_BUS) ? WC_BUS_STATION : WC_TRUCK_STATION, TRANSPORT_ROAD));
+		if (roadstop_window != nullptr) roadstop_window->SelectClassAndSpec(class_id, spec_id);
+	}
 }

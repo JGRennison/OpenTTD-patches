@@ -17,6 +17,8 @@
 
 struct Window *ShowBuildRoadToolbar(RoadType roadtype);
 struct Window *ShowBuildRoadScenToolbar(RoadType roadtype);
+struct Window *CreateRoadTramToolbarForRoadType(RoadType roadtype, RoadTramType rtt);
+void ShowBuildRoadStopPickerAndSelect(StationType station_type, const RoadStopSpec *spec, RoadTramType rtt_preferred);
 void ConnectRoadToStructure(TileIndex tile, DiagDirection direction);
 DropDownList GetRoadTypeDropDownList(RoadTramTypes rtts, bool for_replacement = false, bool all_option = false);
 DropDownList GetScenRoadTypeDropDownList(RoadTramTypes rtts);

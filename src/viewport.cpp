@@ -4633,7 +4633,12 @@ static void SetSelectionTilesDirty()
 
 void SetSelectionRed(bool b)
 {
-	_thd.square_palette = b ? PALETTE_SEL_TILE_RED : PAL_NONE;
+	SetSelectionPalette(b ? PALETTE_SEL_TILE_RED : PAL_NONE);
+}
+
+void SetSelectionPalette(PaletteID pal)
+{
+	_thd.square_palette = pal;
 	SetSelectionTilesDirty();
 }
 

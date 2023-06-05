@@ -70,6 +70,9 @@ STR_VIEWPORT_TOWN_TINY_EXCELLENT_RATING                         :{TINY_FONT}{GRE
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :Extremely slow
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :Very slow
 
+##after STR_ABOUT_MENU_LAND_BLOCK_INFO
+STR_ABOUT_MENU_SHOW_PICKER_TOOL                                 :Picker tool
+
 ##after STR_ABOUT_MENU_SHOW_FRAMERATE
 STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Modifier key window
 

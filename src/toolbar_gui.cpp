@@ -55,6 +55,10 @@
 #include "screenshot_gui.h"
 #include "league_gui.h"
 #include "league_base.h"
+#include "object.h"
+#include "newgrf_object.h"
+#include "newgrf_roadstop.h"
+#include "newgrf_station.h"
 
 #include "widgets/toolbar_widget.h"
 
@@ -84,6 +88,7 @@ enum CallBackFunction {
 	CBF_NONE,
 	CBF_PLACE_SIGN,
 	CBF_PLACE_LANDINFO,
+	CBF_PLACE_PICKER,
 };
 
 static CallBackFunction _last_started_action = CBF_NONE; ///< Last started user action.
@@ -1113,7 +1118,8 @@ static CallBackFunction MenuClickNewspaper(int index)
  */
 enum HelpMenuEntries {
 	HME_LANDINFO = 0,
-	HME_CONSOLE = 2,
+	HME_PICKER,
+	HME_CONSOLE = 3,
 	HME_SCRIPT_DEBUG,
 	HME_SCREENSHOT,
 	HME_FRAMERATE,
@@ -1128,6 +1134,77 @@ enum HelpMenuEntries {
 	HME_LAST_NON_DEV = HME_SPRITE_ALIGNER,
 };
 
+static void ShowBuildRailToolbarFromTile(TileIndex tile)
+{
+	ShowBuildRailToolbar(GetRailType(tile));
+}
+
+static void ShowBuildRoadToolbarFromTile(TileIndex tile)
+{
+	if (HasRoadTypeRoad(tile)) {
+		CreateRoadTramToolbarForRoadType(GetRoadTypeRoad(tile), RTT_ROAD);
+	} else {
+		CreateRoadTramToolbarForRoadType(GetRoadTypeTram(tile), RTT_TRAM);
+	}
+}
+
+static void UsePickerTool(TileIndex tile)
+{
+	switch (GetTileType(tile)) {
+		case MP_RAILWAY:
+			ShowBuildRailToolbarFromTile(tile);
+			break;
+
+		case MP_ROAD: {
+			ShowBuildRoadToolbarFromTile(tile);
+			break;
+		}
+
+		case MP_STATION: {
+			StationType station_type = GetStationType(tile);
+			switch (station_type) {
+				case STATION_RAIL:
+				case STATION_WAYPOINT:
+					ShowBuildRailStationPickerAndSelect(station_type, GetStationSpec(tile));
+					break;
+
+				case STATION_TRUCK:
+				case STATION_BUS:
+				case STATION_ROADWAYPOINT:
+					ShowBuildRoadStopPickerAndSelect(station_type, GetRoadStopSpec(tile), HasRoadTypeRoad(tile) ? RTT_ROAD : RTT_TRAM);
+					break;
+
+				default:
+					break;
+			}
+			break;
+		}
+
+		case MP_TUNNELBRIDGE:
+			switch (GetTunnelBridgeTransportType(tile)) {
+				case TRANSPORT_RAIL:
+					ShowBuildRailToolbarFromTile(tile);
+					break;
+
+				case TRANSPORT_ROAD:
+					ShowBuildRoadToolbarFromTile(tile);
+					break;
+
+				default:
+					break;
+			}
+			break;
+
+		case MP_OBJECT: {
+			ShowBuildObjectPickerAndSelect(ObjectSpec::GetByTile(tile));
+			break;
+		}
+
+		default:
+			break;
+	}
+}
+
 static CallBackFunction PlaceLandBlockInfo()
 {
 	if (_last_started_action == CBF_PLACE_LANDINFO) {
@@ -1136,6 +1213,18 @@ static CallBackFunction PlaceLandBlockInfo()
 	} else {
 		SetObjectToPlace(SPR_CURSOR_QUERY, PAL_NONE, HT_RECT, WC_MAIN_TOOLBAR, 0);
 		return CBF_PLACE_LANDINFO;
+	}
+}
+
+static CallBackFunction PlacePickerTool()
+{
+	if (_last_started_action == CBF_PLACE_PICKER) {
+		ResetObjectToPlace();
+		return CBF_NONE;
+	} else {
+		SetObjectToPlace(SPR_CURSOR_QUERY, PAL_NONE, HT_RECT, WC_MAIN_TOOLBAR, 0);
+		SetSelectionPalette(SPR_ZONING_INNER_HIGHLIGHT_GREEN);
+		return CBF_PLACE_PICKER;
 	}
 }
 
@@ -1204,6 +1293,7 @@ static CallBackFunction MenuClickHelp(int index)
 {
 	switch (index) {
 		case HME_LANDINFO:       return PlaceLandBlockInfo();
+		case HME_PICKER:         return PlacePickerTool();
 		case HME_CONSOLE:        IConsoleSwitch();                 break;
 		case HME_SCRIPT_DEBUG:   ShowScriptDebugWindow();          break;
 		case HME_SCREENSHOT:     ShowScreenshotWindow();           break;
@@ -2148,6 +2238,7 @@ struct MainToolbarWindow : Window {
 			case MTHK_CLIENT_LIST: if (_networking) ShowClientList(); break;
 			case MTHK_SIGN_LIST: ShowSignList(); break;
 			case MTHK_LANDINFO: cbf = PlaceLandBlockInfo(); break;
+			case MTHK_PICKER: cbf = PlacePickerTool(); break;
 			case MTHK_PLAN_LIST: ShowPlansWindow(); break;
 			case MTHK_LINK_GRAPH_LEGEND: ShowLinkGraphLegend(); break;
 			case MTHK_MESSAGE_HISTORY: ShowMessageHistory(); break;
@@ -2169,6 +2260,10 @@ struct MainToolbarWindow : Window {
 
 			case CBF_PLACE_LANDINFO:
 				ShowLandInfo(tile);
+				break;
+
+			case CBF_PLACE_PICKER:
+				UsePickerTool(tile);
 				break;
 
 			default: NOT_REACHED();
@@ -2270,6 +2365,7 @@ static Hotkey maintoolbar_hotkeys[] = {
 	Hotkey((uint16)0, "client_list", MTHK_CLIENT_LIST),
 	Hotkey((uint16)0, "sign_list", MTHK_SIGN_LIST),
 	Hotkey((uint16)0, "land_info", MTHK_LANDINFO),
+	Hotkey((uint16)0, "picker_tool", MTHK_PICKER),
 	Hotkey('P', "plan_list", MTHK_PLAN_LIST),
 	Hotkey('Y', "link_graph_legend", MTHK_LINK_GRAPH_LEGEND),
 	Hotkey((uint16)0, "message_history", MTHK_MESSAGE_HISTORY),
@@ -2556,6 +2652,10 @@ struct ScenarioEditorToolbarWindow : Window {
 
 			case CBF_PLACE_LANDINFO:
 				ShowLandInfo(tile);
+				break;
+
+			case CBF_PLACE_PICKER:
+				UsePickerTool(tile);
 				break;
 
 			default: NOT_REACHED();

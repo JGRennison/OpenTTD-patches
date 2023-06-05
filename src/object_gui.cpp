@@ -755,6 +755,27 @@ Window *ShowBuildObjectPicker()
 	return nullptr;
 }
 
+/** Show our object picker, and select a particular spec.  */
+void ShowBuildObjectPickerAndSelect(const ObjectSpec *spec)
+{
+	if (spec == nullptr || !spec->IsAvailable() || !ObjectClass::HasUIClass()) return;
+
+	int spec_id = -1;
+	const ObjectClass *objclass = ObjectClass::Get(spec->cls_id);
+	for (int i = 0; i < (int)objclass->GetSpecCount(); i++) {
+		if (objclass->GetSpec(i) == spec) {
+			spec_id = i;
+		}
+	}
+	if (spec_id < 0) return;
+
+	BuildObjectWindow *w = AllocateWindowDescFront<BuildObjectWindow>(&_build_object_desc, 0, true);
+	if (w != nullptr) {
+		w->SelectOtherClass(spec->cls_id);
+		w->SelectOtherObject(spec_id);
+	}
+}
+
 /** Reset all data of the object GUI. */
 void InitializeObjectGui()
 {

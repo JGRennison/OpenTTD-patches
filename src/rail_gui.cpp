@@ -1145,6 +1145,22 @@ private:
 		}
 	}
 
+	void SelectClass(StationClassID station_class_id) {
+		if (_railstation.station_class != station_class_id) {
+			StationClass *station_class = StationClass::Get(station_class_id);
+			_railstation.station_class = station_class_id;
+			_railstation.station_count = station_class->GetSpecCount();
+			_railstation.station_type  = 0;
+
+			this->CheckSelectedSize(station_class->GetSpec(_railstation.station_type));
+
+			NWidgetMatrix *matrix = this->GetWidget<NWidgetMatrix>(WID_BRAS_MATRIX);
+			matrix->SetCount(_railstation.station_count);
+			matrix->SetClicked(_railstation.station_type);
+			this->SetDirty();
+		}
+	}
+
 public:
 	BuildRailStationWindow(WindowDesc *desc, Window *parent, bool newstation) : PickerWindowBase(desc, parent), filter_editbox(EDITBOX_MAX_SIZE * MAX_CHAR_LENGTH, EDITBOX_MAX_SIZE)
 	{
@@ -1639,18 +1655,7 @@ public:
 				int y = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_BRAS_NEWST_LIST);
 				if (y >= (int)this->station_classes.size()) return;
 				StationClassID station_class_id = this->station_classes[y];
-				if (_railstation.station_class != station_class_id) {
-					StationClass *station_class = StationClass::Get(station_class_id);
-					_railstation.station_class = station_class_id;
-					_railstation.station_count = station_class->GetSpecCount();
-					_railstation.station_type  = 0;
-
-					this->CheckSelectedSize(station_class->GetSpec(_railstation.station_type));
-
-					NWidgetMatrix *matrix = this->GetWidget<NWidgetMatrix>(WID_BRAS_MATRIX);
-					matrix->SetCount(_railstation.station_count);
-					matrix->SetClicked(_railstation.station_type);
-				}
+				this->SelectClass(station_class_id);
 				if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 				this->SetDirty();
 				DeleteWindowById(WC_SELECT_STATION, 0);
@@ -1681,6 +1686,13 @@ public:
 	void OnRealtimeTick(uint delta_ms) override
 	{
 		CheckRedrawStationCoverage(this);
+	}
+
+	void SelectClassAndSpec(StationClassID class_id, int spec_id)
+	{
+		this->SelectClass(class_id);
+		this->EnsureSelectedStationClassIsVisible();
+		this->OnClick({}, WID_BRAS_IMAGE | (spec_id << 16), 1);
 	}
 
 	static HotkeyList hotkeys;
@@ -2482,6 +2494,11 @@ struct BuildRailWaypointWindow : PickerWindowBase {
 	{
 		CheckRedrawWaypointCoverage(this, false);
 	}
+
+	void SelectWaypointSpec(int spec_id)
+	{
+		this->OnClick({}, WID_BRW_WAYPOINT | (spec_id << 16), 1);
+	}
 };
 
 /** Nested widget definition for the build NewGRF rail waypoint window */
@@ -2691,4 +2708,52 @@ DropDownList GetRailTypeDropDownList(bool for_replacement, bool all_option)
 	}
 
 	return list;
+}
+
+void ShowBuildRailStationPickerAndSelect(StationType station_type, const StationSpec *spec)
+{
+	if (!IsStationAvailable(spec)) return;
+
+	StationClassID class_id;
+	if (spec != nullptr) {
+		if ((spec->cls_id == STAT_CLASS_WAYP) != (station_type == STATION_WAYPOINT)) return;
+		class_id = spec->cls_id;
+	} else {
+		class_id = (station_type == STATION_ROADWAYPOINT) ? STAT_CLASS_WAYP : STAT_CLASS_DFLT;
+	}
+
+	int spec_id = -1;
+	const StationClass *stclass = StationClass::Get(class_id);
+	for (int i = 0; i < (int)stclass->GetSpecCount(); i++) {
+		if (stclass->GetSpec(i) == spec) {
+			spec_id = i;
+		}
+	}
+	if (spec_id < 0) return;
+
+
+	Window *w = FindWindowById(WC_BUILD_TOOLBAR, TRANSPORT_RAIL);
+	if (w == nullptr) {
+		extern RailType _last_built_railtype;
+		w = ShowBuildRailToolbar(_last_built_railtype);
+	}
+	if (w == nullptr) return;
+
+	auto trigger_widget = [&](int widget) {
+		if (!w->IsWidgetLowered(widget)) {
+			w->OnHotkey(widget);
+		}
+	};
+
+	if (station_type == STATION_WAYPOINT) {
+		trigger_widget(WID_RAT_BUILD_WAYPOINT);
+
+		BuildRailWaypointWindow *waypoint_window = dynamic_cast<BuildRailWaypointWindow *>(FindWindowById(WC_BUILD_WAYPOINT, TRANSPORT_RAIL));
+		if (waypoint_window != nullptr) waypoint_window->SelectWaypointSpec(spec_id);
+	} else {
+		trigger_widget(WID_RAT_BUILD_STATION);
+
+		BuildRailStationWindow *station_window = dynamic_cast<BuildRailStationWindow *>(FindWindowById(WC_BUILD_STATION, TRANSPORT_RAIL));
+		if (station_window != nullptr) station_window->SelectClassAndSpec(class_id, spec_id);
+	}
 }

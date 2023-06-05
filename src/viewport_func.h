@@ -23,6 +23,7 @@ struct ViewportDrawerDynamic;
 static const int TILE_HEIGHT_STEP = 50; ///< One Z unit tile height difference is displayed as 50m.
 
 void SetSelectionRed(bool);
+void SetSelectionPalette(PaletteID);
 
 void ClearViewportCache(Viewport *vp);
 void ClearViewportLandPixelCache(Viewport *vp);
