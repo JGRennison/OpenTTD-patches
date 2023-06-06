@@ -365,6 +365,8 @@ enum SaveLoadVersion : uint16 {
 	SLV_EXTEND_VEHICLE_RANDOM,              ///< 310  PR#10701 Extend vehicle random bits.
 	SLV_EXTEND_ENTITY_MAPPING,              ///< 311  PR#10672 Extend entity mapping range.
 	SLV_DISASTER_VEH_STATE,                 ///< 312  PR#10798 Explicit storage of disaster vehicle state.
+	SLV_SAVEGAME_ID,                        ///< 313  PR#10719 Add an unique ID to every savegame (used to deduplicate surveys).
+	SLV_STRING_GAMELOG,                     ///< 314  PR#10801 Use std::string in gamelog.
 
 	SL_MAX_VERSION,                         ///< Highest possible saveload version
 
