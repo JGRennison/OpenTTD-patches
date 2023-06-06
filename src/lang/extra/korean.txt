@@ -47,6 +47,8 @@ STR_VIEWPORT_TOWN_TINY_EXCELLENT_RATING                         :{TINY_FONT}{GRE
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :매우 느림
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :더 느림
 
+STR_ABOUT_MENU_SHOW_PICKER_TOOL                                 :선택 도구
+
 STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :보조 키 창
 
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH                :매달
