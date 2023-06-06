@@ -24,7 +24,6 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action0_station_prop1B", 1),
 	GRFFeatureInfo("action0_station_disallowed_bridge_pillars", 1),
 	GRFFeatureInfo("varaction2_station_var42", 1),
-	GRFFeatureInfo("varaction2_station_var68_extended_localidx", 1, GFTOF_STATION_VAR68_EXT_LOCALIDX),
 	GRFFeatureInfo("varaction2_station_station_nearby_info_v2", 1),
 	GRFFeatureInfo("more_bridge_types", 1),
 	GRFFeatureInfo("action0_bridge_prop14", 1),
@@ -199,7 +198,6 @@ extern const GRFVariableMapDefinition _grf_action2_remappable_variables[] = {
 
 extern const GRFNameOnlyVariableMapDefinition _grf_action2_internal_variable_names[] = {
 	GRFNameOnlyVariableMapDefinition(A2VRI_VEHICLE_CURRENT_SPEED_SCALED, "current speed scaled"),
-	GRFNameOnlyVariableMapDefinition(A2VRI_STATION_INFO_NEARBY_TILES_EXT, "68 (extended)"),
 	GRFNameOnlyVariableMapDefinition(A2VRI_ROADSTOP_INFO_NEARBY_TILES_EXT, "68 (extended)"),
 	GRFNameOnlyVariableMapDefinition(),
 };

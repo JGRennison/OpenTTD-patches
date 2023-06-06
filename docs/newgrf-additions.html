@@ -782,39 +782,8 @@
 	<h3 id="varaction2_station"><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Stations">Variational Action 2 - Stations</a></h3>
 	<h4 id="varaction2_station_var42">Track type in purchase list (42)</h4>
 	<p>This is indicated by the feature name: <font face="monospace">varaction2_station_var42</font>, version 1</p>
-	<h4 id="varaction2_station_var68">Station info of nearby tiles (68)</h4>
-	<p>If feature name <font face="monospace">varaction2_station_var68_extended_localidx</font> is present and the feature is successfully tested for,<br />
-	then the local setID field which would normally be in bits 0..7 (clamped to 0..255), is instead split such that the lower byte is in bits 0..7, and the upper byte is in bits 24..31, such that the variable overall has the format:
-	<table>
-	<tr><th>Bits</th><th>Meaning</th></tr>
-	<tr><td>0 - 7</td><td>
-		If the tile is defined in the current GRF, this is the lower 8 bits of the setID used in the definition. Otherwise, the content is undefined.<br />
-		Note that if this GRF has any station setIDs greater than 255, bits 24 - 31 need to be used as well.
-	</td></tr>
-	<tr><td>8 - 9</td><td>
-		0 - The tile uses original TTD graphics<br />
-		1 - The tile is defined in the current GRF<br />
-		2 - The tile is defined in another GRF
-	</td></tr>
-	<tr><td>10</td><td>Set if the selected tile belongs to the current station, clear otherwise</td></tr>
-	<tr><td>11</td><td>Clear if the selected tile is parallel with the current one, set if perpendicular to it </td></tr>
-	<tr><td>12 - 13</td><td>
-		0 - plain platform<br />
-		1 - platform with building<br />
-		2 - platform with roof, left side<br />
-		3 - platform with roof, right side
-	</td></tr>
-	<tr><td>24 - 31</td><td>
-		If the tile is defined in the current GRF, this is the upper 8 bits of the setID used in the definition. Otherwise, the content is undefined.<br />
-		This can be ignored if this GRF does not have any station setIDs greater than 255 (does not define more than 256 station types).
-	</td></tr>
-	</table>
-	<br />
-	The remaining bits are reserved for future use and should be masked.<br />
-	This format requires <font face="monospace">varaction2_station_var68_extended_localidx</font>, version 1.
-	</p>
 	<h4 id="station_station_info_nearby_tiles_v2">Station info of nearby tiles v2 (mappable variable: station_station_info_nearby_tiles_v2)</h4>
-	<p>This has a similar value to <a href="#varaction2_station_var68">68</a>/<a href="#varaction2_station_var68">Station info of nearby tiles</a>, above.<br />
+	<p>This has a similar value to <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Stations#Station_info_of_nearby_tiles_.2868.29">68/Station info of nearby tiles</a>.<br />
 	<table>
 	<tr><th>Bits</th><th>Meaning</th></tr>
 	<tr><td>0 - 15</td><td>If the tile is defined in the current GRF, this is the setID used in the definition. Otherwise, the content is undefined. </td></tr>

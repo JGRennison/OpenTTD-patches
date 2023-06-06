@@ -50,7 +50,6 @@ struct StationScopeResolver : public ScopeResolver {
 private:
 	enum class NearbyStationInfoMode {
 		Standard,
-		Extended,
 		V2,
 	};
 	uint32 GetNearbyStationInfo(uint32 parameter, NearbyStationInfoMode mode) const;

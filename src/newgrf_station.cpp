@@ -289,9 +289,6 @@ uint32 StationScopeResolver::GetNearbyStationInfo(uint32 parameter, StationScope
 		default:
 			return res | ClampTo<uint8>(localidx);
 
-		case NearbyStationInfoMode::Extended:
-			return res | (localidx & 0xFF) | ((localidx & 0xFF00) << 16);
-
 		case NearbyStationInfoMode::V2:
 			return (res << 8) | localidx;
 	}
@@ -387,11 +384,6 @@ uint32 StationScopeResolver::GetNearbyStationInfo(uint32 parameter, StationScope
 		/* Station info of nearby tiles */
 		case 0x68: {
 			return this->GetNearbyStationInfo(parameter, NearbyStationInfoMode::Standard);
-		}
-
-		/* Station info of nearby tiles: extended */
-		case A2VRI_STATION_INFO_NEARBY_TILES_EXT: {
-			return this->GetNearbyStationInfo(parameter, NearbyStationInfoMode::Extended);
 		}
 
 		/* Station info of nearby tiles: v2 */
