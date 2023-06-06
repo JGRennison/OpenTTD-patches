@@ -2807,7 +2807,7 @@ struct CompanyWindow : Window
 			default: NOT_REACHED();
 
 			case WID_C_GIVE_MONEY:
-				DoCommandP(0, (std::strtoull(str, nullptr, 10) / _currency->rate), this->window_number, CMD_GIVE_MONEY | CMD_MSG(STR_ERROR_CAN_T_GIVE_MONEY), CcGiveMoney, str);
+				DoCommandPEx(0, this->window_number, 0, (std::strtoull(str, nullptr, 10) / _currency->rate), CMD_GIVE_MONEY | CMD_MSG(STR_ERROR_CAN_T_GIVE_MONEY), CcGiveMoney);
 				break;
 
 			case WID_C_PRESIDENT_NAME:

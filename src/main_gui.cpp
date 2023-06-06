@@ -54,14 +54,14 @@ void CcGiveMoney(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2
 
 	/* Inform the company of the action of one of its clients (controllers). */
 	char msg[64];
-	SetDParam(0, p2);
+	SetDParam(0, p1);
 	GetString(msg, STR_COMPANY_NAME, lastof(msg));
 
 	/*
 	 * bits 31-16: source company
 	 * bits 15-0: target company
 	 */
-	uint64 auxdata = (p2 & 0xFFFF) | (((uint64) _local_company) << 16);
+	uint64 auxdata = (p1 & 0xFFFF) | (((uint64) _local_company) << 16);
 
 	if (!_network_server) {
 		NetworkClientSendChat(NETWORK_ACTION_GIVE_MONEY, DESTTYPE_BROADCAST_SS, p2, msg, NetworkTextMessageData(result.GetCost(), auxdata));

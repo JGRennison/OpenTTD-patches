@@ -256,7 +256,7 @@
 	EnforcePrecondition(false, company != COMPANY_INVALID);
 
 	/* Network commands only allow 0 to indicate invalid tiles, not INVALID_TILE */
-	return ScriptObject::DoCommand(tile == INVALID_TILE ? 0 : tile , (uint32)(delta), company | expenses_type << 8 , CMD_CHANGE_BANK_BALANCE);
+	return ScriptObject::DoCommandEx(tile == INVALID_TILE ? 0 : tile, company | expenses_type << 8, 0, (uint64)(delta), CMD_CHANGE_BANK_BALANCE);
 }
 
 /* static */ bool ScriptCompany::BuildCompanyHQ(TileIndex tile)

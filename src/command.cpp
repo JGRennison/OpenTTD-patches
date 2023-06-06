@@ -177,10 +177,10 @@ CommandProc CmdCloneOrder;
 
 CommandProc CmdClearArea;
 
-CommandProc CmdGiveMoney;
+CommandProcEx CmdGiveMoney;
 CommandProcEx CmdMoneyCheat;
 CommandProcEx CmdMoneyCheatAdmin;
-CommandProc CmdChangeBankBalance;
+CommandProcEx CmdChangeBankBalance;
 CommandProc CmdCheatSetting;
 CommandProc CmdBuildCanal;
 CommandProc CmdBuildLock;

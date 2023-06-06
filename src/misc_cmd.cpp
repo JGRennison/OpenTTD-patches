@@ -319,17 +319,18 @@ CommandCost CmdCheatSetting(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
  * Change the bank bank balance of a company by inserting or removing money without affecting the loan.
  * @param tile tile to show text effect on (if not 0)
  * @param flags operation to perform
- * @param p1 the amount of money to receive (if positive), or spend (if negative)
- * @param p2 (bit 0-7)  - the company ID.
+ * @param p1 (bit 0-7)  - the company ID.
  *           (bit 8-15) - the expenses type which should register the cost/income @see ExpensesType.
+ * @param p2 unused
+ * @param p3 the amount of money to receive (if positive), or spend (if negative)
  * @param text unused
  * @return zero cost or an error
  */
-CommandCost CmdChangeBankBalance(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdChangeBankBalance(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
-	int32 delta = (int32)p1;
-	CompanyID company = (CompanyID) GB(p2, 0, 8);
-	ExpensesType expenses_type = Extract<ExpensesType, 8, 8>(p2);
+	int64 delta = (int64)p3;
+	CompanyID company = (CompanyID) GB(p1, 0, 8);
+	ExpensesType expenses_type = Extract<ExpensesType, 8, 8>(p1);
 
 	if (!Company::IsValidID(company)) return CMD_ERROR;
 	if (expenses_type >= EXPENSES_END) return CMD_ERROR;
@@ -358,18 +359,19 @@ CommandCost CmdChangeBankBalance(TileIndex tile, DoCommandFlag flags, uint32 p1,
  * given the fact that you have more money than loan).
  * @param tile unused
  * @param flags operation to perform
- * @param p1 the amount of money to transfer; max 20.000.000
- * @param p2 the company to transfer the money to
+ * @param p1 the company to transfer the money to
+ * @param p2 unused
+ * @param p3 the amount of money to transfer; max 20.000.000
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdGiveMoney(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdGiveMoney(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	if (!_settings_game.economy.give_money) return CMD_ERROR;
 
 	const Company *c = Company::Get(_current_company);
-	CommandCost amount(EXPENSES_OTHER, std::min((Money)p1, (Money)20000000LL));
-	CompanyID dest_company = (CompanyID)p2;
+	CommandCost amount(EXPENSES_OTHER, std::min<Money>((int64)p3, 20000000LL));
+	CompanyID dest_company = (CompanyID)p1;
 
 	/* You can only transfer funds that is in excess of your loan */
 	if (c->money - c->current_loan < amount.GetCost() || amount.GetCost() < 0) return CMD_ERROR;
