@@ -19,6 +19,123 @@
 
 namespace upstream_sl {
 
+static const int THIS_MONTH = 0;
+static const int LAST_MONTH = 1;
+
+struct ProducedHistory {
+	uint16_t production; ///< Total produced
+	uint16_t transported; ///< Total transported
+
+	uint8_t PctTransported() const
+	{
+		if (this->production == 0) return 0;
+		return ClampTo<uint8_t>(this->transported * 256 / this->production);
+	}
+};
+
+struct ProducedCargo {
+	CargoID cargo; ///< Cargo type
+	uint16_t waiting; ///< Amount of cargo produced
+	uint8_t rate; ///< Production rate
+	std::array<ProducedHistory, 2> history; ///< History of cargo produced and transported
+};
+
+struct AcceptedCargo {
+	CargoID cargo; ///< Cargo type
+	uint16_t waiting; ///< Amount of cargo waiting to processed
+	Date last_accepted; ///< Last day cargo was accepted by this industry
+};
+
+class SlIndustryAccepted : public DefaultSaveLoadHandler<SlIndustryAccepted, Industry> {
+public:
+	inline static const SaveLoad description[] = {
+		 SLE_VAR(AcceptedCargo, cargo, SLE_UINT8),
+		 SLE_VAR(AcceptedCargo, waiting, SLE_UINT16),
+		 SLE_VAR(AcceptedCargo, last_accepted, SLE_INT32),
+	};
+	inline const static SaveLoadCompatTable compat_description = {};
+
+	void Save(Industry *i) const override
+	{
+		NOT_REACHED();
+	}
+
+	void Load(Industry *i) const override
+	{
+		size_t len = SlGetStructListLength(INDUSTRY_NUM_INPUTS);
+
+		for (size_t j = 0; j < len; j++) {
+			AcceptedCargo a = {};
+			SlObject(&a, this->GetDescription());
+			if (j < INDUSTRY_NUM_INPUTS) {
+				i->accepts_cargo[j] = a.cargo;
+				i->incoming_cargo_waiting[j] = a.waiting;
+				i->last_cargo_accepted_at[j] = a.last_accepted;
+			}
+		}
+	}
+};
+
+class SlIndustryProducedHistory : public DefaultSaveLoadHandler<SlIndustryProducedHistory, ProducedCargo> {
+public:
+	inline static const SaveLoad description[] = {
+		 SLE_VAR(ProducedHistory, production, SLE_UINT16),
+		 SLE_VAR(ProducedHistory, transported, SLE_UINT16),
+	};
+	inline const static SaveLoadCompatTable compat_description = {};
+
+	void Save(ProducedCargo *p) const override
+	{
+		NOT_REACHED();
+	}
+
+	void Load(ProducedCargo *p) const override
+	{
+		size_t len = SlGetStructListLength(p->history.size());
+
+		for (auto &h : p->history) {
+			if (--len > p->history.size()) break; // unsigned so wraps after hitting zero.
+			SlObject(&h, this->GetDescription());
+		}
+	}
+};
+
+class SlIndustryProduced : public DefaultSaveLoadHandler<SlIndustryProduced, Industry> {
+public:
+	inline static const SaveLoad description[] = {
+		 SLE_VAR(ProducedCargo, cargo, SLE_UINT8),
+		 SLE_VAR(ProducedCargo, waiting, SLE_UINT16),
+		 SLE_VAR(ProducedCargo, rate, SLE_UINT8),
+		SLEG_STRUCTLIST("history", SlIndustryProducedHistory),
+	};
+	inline const static SaveLoadCompatTable compat_description = {};
+
+	void Save(Industry *i) const override
+	{
+		NOT_REACHED();
+	}
+
+	void Load(Industry *i) const override
+	{
+		size_t len = SlGetStructListLength(INDUSTRY_NUM_OUTPUTS);
+
+		for (size_t j = 0; j < len; j++) {
+			ProducedCargo p = {};
+			SlObject(&p, this->GetDescription());
+			if (j < INDUSTRY_NUM_OUTPUTS) {
+				i->produced_cargo[j] = p.cargo;
+				i->produced_cargo_waiting[j] = p.waiting;
+				i->production_rate[j] = p.rate;
+				i->this_month_production[j]      = p.history[THIS_MONTH].production;
+				i->this_month_transported[j]     = p.history[THIS_MONTH].transported;
+				i->last_month_production[j]      = p.history[LAST_MONTH].production;
+				i->last_month_transported[j]     = p.history[LAST_MONTH].transported;
+				i->last_month_pct_transported[j] = p.history[LAST_MONTH].PctTransported();
+			}
+		}
+	}
+};
+
 static OldPersistentStorage _old_ind_persistent_storage;
 
 static const SaveLoad _industry_desc[] = {
@@ -29,26 +146,26 @@ static const SaveLoad _industry_desc[] = {
 	    SLE_REF(Industry, town,                       REF_TOWN),
 	SLE_CONDREF(Industry, neutral_station,            REF_STATION,                SLV_SERVE_NEUTRAL_INDUSTRIES, SL_MAX_VERSION),
 	SLE_CONDARR(Industry, produced_cargo,             SLE_UINT8,   2,              SLV_78, SLV_EXTEND_INDUSTRY_CARGO_SLOTS),
-	SLE_CONDARR(Industry, produced_cargo,             SLE_UINT8,  16,             SLV_EXTEND_INDUSTRY_CARGO_SLOTS, SL_MAX_VERSION),
+	SLE_CONDARR(Industry, produced_cargo,             SLE_UINT8,  16,             SLV_EXTEND_INDUSTRY_CARGO_SLOTS, SLV_INDUSTRY_CARGO_REORGANISE),
 	SLE_CONDARR(Industry, incoming_cargo_waiting,     SLE_UINT16,  3,              SLV_70, SLV_EXTEND_INDUSTRY_CARGO_SLOTS),
-	SLE_CONDARR(Industry, incoming_cargo_waiting,     SLE_UINT16, 16,             SLV_EXTEND_INDUSTRY_CARGO_SLOTS, SL_MAX_VERSION),
+	SLE_CONDARR(Industry, incoming_cargo_waiting,     SLE_UINT16, 16,             SLV_EXTEND_INDUSTRY_CARGO_SLOTS, SLV_INDUSTRY_CARGO_REORGANISE),
 	SLE_CONDARR(Industry, produced_cargo_waiting,     SLE_UINT16,  2,               SL_MIN_VERSION, SLV_EXTEND_INDUSTRY_CARGO_SLOTS),
-	SLE_CONDARR(Industry, produced_cargo_waiting,     SLE_UINT16, 16,             SLV_EXTEND_INDUSTRY_CARGO_SLOTS, SL_MAX_VERSION),
+	SLE_CONDARR(Industry, produced_cargo_waiting,     SLE_UINT16, 16,             SLV_EXTEND_INDUSTRY_CARGO_SLOTS, SLV_INDUSTRY_CARGO_REORGANISE),
 	SLE_CONDARR(Industry, production_rate,            SLE_UINT8,   2,               SL_MIN_VERSION, SLV_EXTEND_INDUSTRY_CARGO_SLOTS),
-	SLE_CONDARR(Industry, production_rate,            SLE_UINT8,  16,             SLV_EXTEND_INDUSTRY_CARGO_SLOTS, SL_MAX_VERSION),
+	SLE_CONDARR(Industry, production_rate,            SLE_UINT8,  16,             SLV_EXTEND_INDUSTRY_CARGO_SLOTS, SLV_INDUSTRY_CARGO_REORGANISE),
 	SLE_CONDARR(Industry, accepts_cargo,              SLE_UINT8,   3,              SLV_78, SLV_EXTEND_INDUSTRY_CARGO_SLOTS),
-	SLE_CONDARR(Industry, accepts_cargo,              SLE_UINT8,  16,             SLV_EXTEND_INDUSTRY_CARGO_SLOTS, SL_MAX_VERSION),
+	SLE_CONDARR(Industry, accepts_cargo,              SLE_UINT8,  16,             SLV_EXTEND_INDUSTRY_CARGO_SLOTS, SLV_INDUSTRY_CARGO_REORGANISE),
 	    SLE_VAR(Industry, prod_level,                 SLE_UINT8),
 	SLE_CONDARR(Industry, this_month_production,      SLE_UINT16,  2,               SL_MIN_VERSION, SLV_EXTEND_INDUSTRY_CARGO_SLOTS),
-	SLE_CONDARR(Industry, this_month_production,      SLE_UINT16, 16,             SLV_EXTEND_INDUSTRY_CARGO_SLOTS, SL_MAX_VERSION),
+	SLE_CONDARR(Industry, this_month_production,      SLE_UINT16, 16,             SLV_EXTEND_INDUSTRY_CARGO_SLOTS, SLV_INDUSTRY_CARGO_REORGANISE),
 	SLE_CONDARR(Industry, this_month_transported,     SLE_UINT16,  2,               SL_MIN_VERSION, SLV_EXTEND_INDUSTRY_CARGO_SLOTS),
-	SLE_CONDARR(Industry, this_month_transported,     SLE_UINT16, 16,             SLV_EXTEND_INDUSTRY_CARGO_SLOTS, SL_MAX_VERSION),
+	SLE_CONDARR(Industry, this_month_transported,     SLE_UINT16, 16,             SLV_EXTEND_INDUSTRY_CARGO_SLOTS, SLV_INDUSTRY_CARGO_REORGANISE),
 	SLE_CONDARR(Industry, last_month_pct_transported, SLE_UINT8,   2,               SL_MIN_VERSION, SLV_EXTEND_INDUSTRY_CARGO_SLOTS),
-	SLE_CONDARR(Industry, last_month_pct_transported, SLE_UINT8,  16,             SLV_EXTEND_INDUSTRY_CARGO_SLOTS, SL_MAX_VERSION),
+	SLE_CONDARR(Industry, last_month_pct_transported, SLE_UINT8,  16,             SLV_EXTEND_INDUSTRY_CARGO_SLOTS, SLV_INDUSTRY_CARGO_REORGANISE),
 	SLE_CONDARR(Industry, last_month_production,      SLE_UINT16,  2,               SL_MIN_VERSION, SLV_EXTEND_INDUSTRY_CARGO_SLOTS),
-	SLE_CONDARR(Industry, last_month_production,      SLE_UINT16, 16,             SLV_EXTEND_INDUSTRY_CARGO_SLOTS, SL_MAX_VERSION),
+	SLE_CONDARR(Industry, last_month_production,      SLE_UINT16, 16,             SLV_EXTEND_INDUSTRY_CARGO_SLOTS, SLV_INDUSTRY_CARGO_REORGANISE),
 	SLE_CONDARR(Industry, last_month_transported,     SLE_UINT16,  2,               SL_MIN_VERSION, SLV_EXTEND_INDUSTRY_CARGO_SLOTS),
-	SLE_CONDARR(Industry, last_month_transported,     SLE_UINT16, 16,             SLV_EXTEND_INDUSTRY_CARGO_SLOTS, SL_MAX_VERSION),
+	SLE_CONDARR(Industry, last_month_transported,     SLE_UINT16, 16,             SLV_EXTEND_INDUSTRY_CARGO_SLOTS, SLV_INDUSTRY_CARGO_REORGANISE),
 
 	    SLE_VAR(Industry, counter,                    SLE_UINT16),
 
@@ -64,7 +181,7 @@ static const SaveLoad _industry_desc[] = {
 	SLE_CONDVAR(Industry, construction_date,          SLE_INT32,                 SLV_70, SL_MAX_VERSION),
 	SLE_CONDVAR(Industry, construction_type,          SLE_UINT8,                 SLV_70, SL_MAX_VERSION),
 	SLE_CONDVAR(Industry, last_cargo_accepted_at[0],  SLE_INT32,                 SLV_70, SLV_EXTEND_INDUSTRY_CARGO_SLOTS),
-	SLE_CONDARR(Industry, last_cargo_accepted_at,     SLE_INT32, 16,            SLV_EXTEND_INDUSTRY_CARGO_SLOTS, SL_MAX_VERSION),
+	SLE_CONDARR(Industry, last_cargo_accepted_at,     SLE_INT32, 16,            SLV_EXTEND_INDUSTRY_CARGO_SLOTS, SLV_INDUSTRY_CARGO_REORGANISE),
 	SLE_CONDVAR(Industry, selected_layout,            SLE_UINT8,                 SLV_73, SL_MAX_VERSION),
 	SLE_CONDVAR(Industry, exclusive_supplier,         SLE_UINT8,                 SLV_GS_INDUSTRY_CONTROL, SL_MAX_VERSION),
 	SLE_CONDVAR(Industry, exclusive_consumer,         SLE_UINT8,                 SLV_GS_INDUSTRY_CONTROL, SL_MAX_VERSION),
@@ -74,6 +191,9 @@ static const SaveLoad _industry_desc[] = {
 
 	SLE_CONDVAR(Industry, random,                     SLE_UINT16,                SLV_82, SL_MAX_VERSION),
 	SLE_CONDSSTR(Industry, text,     SLE_STR | SLF_ALLOW_CONTROL,     SLV_INDUSTRY_TEXT, SL_MAX_VERSION),
+
+	SLEG_CONDSTRUCTLIST("accepted", SlIndustryAccepted,                          SLV_INDUSTRY_CARGO_REORGANISE, SL_MAX_VERSION),
+	SLEG_CONDSTRUCTLIST("produced", SlIndustryProduced,                          SLV_INDUSTRY_CARGO_REORGANISE, SL_MAX_VERSION),
 };
 
 struct INDYChunkHandler : ChunkHandler {
