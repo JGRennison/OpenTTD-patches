@@ -58,7 +58,7 @@ static int32 _money_cheat_amount = 10000000;
  */
 static int32 ClickMoneyCheat(int32 p1, int32 p2)
 {
-	DoCommandP(0, (uint32)(p2 * _money_cheat_amount), 0, _network_server || _network_settings_access ? CMD_MONEY_CHEAT_ADMIN : CMD_MONEY_CHEAT);
+	DoCommandPEx(0, 0, 0, (uint64)(p2 * _money_cheat_amount), _network_server || _network_settings_access ? CMD_MONEY_CHEAT_ADMIN : CMD_MONEY_CHEAT);
 	return _money_cheat_amount;
 }
 
@@ -504,7 +504,7 @@ struct CheatWindow : Window {
 		}
 		if (ce->mode == CNM_MONEY) {
 			if (!_networking) *ce->been_used = true;
-			DoCommandP(0, (strtoll(str, nullptr, 10) / _currency->rate), 0, _network_server || _network_settings_access ? CMD_MONEY_CHEAT_ADMIN : CMD_MONEY_CHEAT);
+			DoCommandPEx(0, 0, 0, (std::strtoll(str, nullptr, 10) / _currency->rate), _network_server || _network_settings_access ? CMD_MONEY_CHEAT_ADMIN : CMD_MONEY_CHEAT);
 			return;
 		}
 

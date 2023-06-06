@@ -201,37 +201,39 @@ CommandCost CmdPause(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, 
  * Change the financial flow of your company.
  * @param tile unused
  * @param flags operation to perform
- * @param p1 the amount of money to receive (if positive), or spend (if negative)
+ * @param p1 unused
  * @param p2 unused
+ * @param p3 the amount of money to receive (if positive), or spend (if negative)
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdMoneyCheat(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdMoneyCheat(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	if (_networking && !_settings_game.difficulty.money_cheat_in_multiplayer) return CMD_ERROR;
 	if (flags & DC_EXEC) {
 		_cheats.money.been_used = true;
 		SetWindowDirty(WC_CHEATS, 0);
 	}
-	return CommandCost(EXPENSES_OTHER, -(int32)p1);
+	return CommandCost(EXPENSES_OTHER, -(int64)p3);
 }
 
 /**
  * Change the financial flow of your company (admin).
  * @param tile unused
  * @param flags operation to perform
- * @param p1 the amount of money to receive (if positive), or spend (if negative)
+ * @param p1 unused
  * @param p2 unused
+ * @param p3 the amount of money to receive (if positive), or spend (if negative)
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdMoneyCheatAdmin(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdMoneyCheatAdmin(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	if (flags & DC_EXEC) {
 		_cheats.money.been_used = true;
 		SetWindowDirty(WC_CHEATS, 0);
 	}
-	return CommandCost(EXPENSES_OTHER, -(int32)p1);
+	return CommandCost(EXPENSES_OTHER, -(int64)p3);
 }
 
 /**
