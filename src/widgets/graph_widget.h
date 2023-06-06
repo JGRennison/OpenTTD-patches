@@ -29,6 +29,12 @@ enum CompanyValueWidgets {
 	WID_CV_RESIZE,     ///< Resize button.
 };
 
+/** Extra widgets of the #DeliveredCargoGraphWindow class. */
+enum DeliveredCargoGraphWindowWidgets {
+	WID_DCG_BY_COMPANY = 0x40, ///< By company button.
+	WID_DCG_BY_CARGO,          ///< By cargo button.
+};
+
 /** Widget of the #PerformanceHistoryGraphWindow class. */
 enum PerformanceHistoryGraphWidgets {
 	WID_PHG_KEY,                  ///< Key button.

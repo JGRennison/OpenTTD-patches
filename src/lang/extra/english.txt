@@ -127,6 +127,11 @@ STR_GRAPH_CARGO_SPEED_MODE                                      :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_TOOLTIP_DAYS_MODE                               :{BLACK}Display days in transit on the x-axis of the graph
 STR_GRAPH_CARGO_TOOLTIP_SPEED_MODE                              :{BLACK}Display average transit speed on the x-axis of the graph
 
+STR_GRAPH_DELIVERED_CARGO_BY_COMPANY_MODE                       :{TINY_FONT}{BLACK}Companies
+STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE                         :{TINY_FONT}{BLACK}Cargoes
+STR_GRAPH_DELIVERED_CARGO_BY_COMPANY_MODE_TOOLTIP               :{BLACK}Display one line for each selected company
+STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE_TOOLTIP                 :{BLACK}Display one line for each selected cargo
+
 STR_SMALLMAP_SCREENSHOT                                         :{BLACK}Screenshot
 
 STR_NEWS_VEHICLE_NO_DEPOT_ORDER                                 :{WHITE}{VEHICLE} does not have a depot order in its schedule

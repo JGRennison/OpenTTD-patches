@@ -852,12 +852,15 @@ struct ExcludingCargoBaseGraphWindow : BaseGraphWindow {
 };
 
 struct DeliveredCargoGraphWindow : ExcludingCargoBaseGraphWindow {
+	bool graph_by_cargo_mode = false;
+
 	DeliveredCargoGraphWindow(WindowDesc *desc, WindowNumber window_number) :
 			ExcludingCargoBaseGraphWindow(desc, WID_CV_GRAPH, STR_JUST_COMMA)
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_ECBG_MATRIX_SCROLLBAR);
 		this->vscroll->SetCount(_sorted_standard_cargo_specs.size());
+		this->LowerWidget(WID_DCG_BY_COMPANY);
 		this->UpdateStatistics(true);
 		this->FinishInitNested(window_number);
 	}
@@ -875,6 +878,115 @@ struct DeliveredCargoGraphWindow : ExcludingCargoBaseGraphWindow {
 		}
 		return total_delivered;
 	}
+
+	void SetGraphByCargoMode(bool cargo_mode)
+	{
+		this->graph_by_cargo_mode = cargo_mode;
+		this->SetWidgetLoweredState(WID_DCG_BY_COMPANY, !cargo_mode);
+		this->SetWidgetLoweredState(WID_DCG_BY_CARGO, cargo_mode);
+		this->OnInvalidateData();
+		this->SetDirty();
+	}
+
+	virtual void OnClick(Point pt, int widget, int click_count) override
+	{
+		switch (widget) {
+			case WID_DCG_BY_COMPANY:
+				this->SetGraphByCargoMode(false);
+				break;
+
+			case WID_DCG_BY_CARGO:
+				this->SetGraphByCargoMode(true);
+				break;
+
+			default: {
+				this->ExcludingCargoBaseGraphWindow::OnClick(pt, widget, click_count);
+				break;
+			}
+		}
+	}
+
+	void OnGameTick() override
+	{
+		if (this->graph_by_cargo_mode) {
+			this->UpdateStatisticsByCargoMode(false);
+		} else {
+			this->ExcludingCargoBaseGraphWindow::OnGameTick();
+		}
+	}
+
+	/**
+	* Some data on this window has become invalid.
+	* @param data Information about the changed data.
+	* @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
+	*/
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	{
+		if (this->graph_by_cargo_mode) {
+			if (!gui_scope) return;
+			this->UpdateStatisticsByCargoMode(true);
+		} else {
+			this->ExcludingCargoBaseGraphWindow::OnInvalidateData(data, gui_scope);
+		}
+	}
+
+	void UpdateStatisticsByCargoMode(bool initialize)
+	{
+		CompanyMask excluded_companies = _legend_excluded_companies;
+
+		/* Exclude the companies which aren't valid */
+		for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; c++) {
+			if (!Company::IsValidID(c)) SetBit(excluded_companies, c);
+		}
+
+		byte nums = 0;
+		for (const Company *c : Company::Iterate()) {
+			nums = std::min(this->num_vert_lines, std::max(nums, c->num_valid_stat_ent));
+		}
+
+		int mo = (_cur_date_ymd.month / 3 - nums) * 3;
+		int yr = _cur_year;
+		while (mo < 0) {
+			yr--;
+			mo += 12;
+		}
+
+		if (!initialize && this->excluded_data == excluded_companies && this->num_on_x_axis == nums &&
+				this->year == yr && this->month == mo) {
+			/* There's no reason to get new stats */
+			return;
+		}
+
+		this->excluded_data = UINT64_MAX;
+		this->num_on_x_axis = nums;
+		this->year = yr;
+		this->month = mo;
+
+		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
+			if (HasBit(_legend_excluded_cargo, cs->Index())) continue;
+			ClrBit(this->excluded_data, cs->Index());
+			this->colours[cs->Index()] = cs->legend_colour;
+
+			for (int j = this->num_on_x_axis, i = 0; --j >= 0;) {
+				bool is_valid = false;
+				OverflowSafeInt64 total_delivered = 0;
+				for (CompanyID k = COMPANY_FIRST; k < MAX_COMPANIES; k++) {
+					if (HasBit(excluded_companies, k)) continue;
+
+					/* Invalid companies are excluded by excluded_companies */
+					const Company *c = Company::Get(k);
+					if (j < c->num_valid_stat_ent) {
+						is_valid = true;
+						total_delivered += c->old_economy[j].delivered_cargo[cs->Index()];
+					}
+				}
+				this->cost[cs->Index()][i] = is_valid ? total_delivered : INVALID_DATAPOINT;
+				i++;
+			}
+		}
+
+		this->num_dataset = NUM_CARGO;
+	}
 };
 
 static const NWidgetPart _nested_delivered_cargo_graph_widgets[] = {
@@ -891,6 +1003,9 @@ static const NWidgetPart _nested_delivered_cargo_graph_widgets[] = {
 			NWidget(WWT_EMPTY, COLOUR_BROWN, WID_CV_GRAPH), SetMinimalSize(576, 128), SetFill(1, 1), SetResize(1, 1),
 			NWidget(NWID_VERTICAL),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 4), SetFill(0, 0),
+				NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_DCG_BY_COMPANY), SetDataTip(STR_GRAPH_DELIVERED_CARGO_BY_COMPANY_MODE, STR_GRAPH_DELIVERED_CARGO_BY_COMPANY_MODE_TOOLTIP), SetFill(1, 0),
+				NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_DCG_BY_CARGO), SetDataTip(STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE, STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE_TOOLTIP), SetFill(1, 0),
+				NWidget(NWID_SPACER), SetMinimalSize(0, 16),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_ECBG_ENABLE_CARGOES), SetDataTip(STR_GRAPH_CARGO_ENABLE_ALL, STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL), SetFill(1, 0),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_ECBG_DISABLE_CARGOES), SetDataTip(STR_GRAPH_CARGO_DISABLE_ALL, STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL), SetFill(1, 0),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 4),
