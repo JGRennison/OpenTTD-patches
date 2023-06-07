@@ -67,8 +67,7 @@ struct RoadStopGUISettings {
 };
 static RoadStopGUISettings _roadstop_gui_settings;
 
-static uint _waypoint_count = 1;             ///< Number of waypoint types
-static uint _cur_waypoint_type;              ///< Currently selected waypoint type
+static uint16_t _cur_waypoint_type;          ///< Currently selected waypoint type
 
 /**
  * Define the values of the RoadFlags
@@ -564,8 +563,7 @@ struct BuildRoadToolbarWindow : Window {
 			case WID_ROT_BUILD_WAYPOINT:
 				if (HandlePlacePushButton(this, WID_ROT_BUILD_WAYPOINT, SPR_CURSOR_WAYPOINT, HT_RECT)) {
 					this->last_started_action = widget;
-					_waypoint_count = RoadStopClass::Get(ROADSTOP_CLASS_WAYP)->GetSpecCount();
-					if (_waypoint_count > 1) {
+					if (RoadStopClass::Get(ROADSTOP_CLASS_WAYP)->GetSpecCount() > 1) {
 						ShowBuildWaypointPicker(this);
 					} else {
 						_cur_waypoint_type = 0;
@@ -1958,8 +1956,18 @@ static void ShowRVStationPicker(Window *parent, RoadStopType rs)
 }
 
 struct BuildRoadWaypointWindow : PickerWindowBase {
-	BuildRoadWaypointWindow(WindowDesc *desc, Window *parent) : PickerWindowBase(desc, parent)
+	using WaypointList = GUIList<uint>;
+	static const uint FILTER_LENGTH = 20;
+
+	const RoadStopClass *waypoints;
+	WaypointList list;
+	StringFilter string_filter; ///< Filter for waypoint name
+	QueryString editbox;        ///< Filter editbox
+
+	BuildRoadWaypointWindow(WindowDesc *desc, Window *parent) : PickerWindowBase(desc, parent), editbox(FILTER_LENGTH * MAX_CHAR_LENGTH, FILTER_LENGTH)
 	{
+		this->waypoints = RoadStopClass::Get(ROADSTOP_CLASS_WAYP);
+
 		this->CreateNestedTree();
 
 		NWidgetMatrix *matrix = this->GetWidget<NWidgetMatrix>(WID_BROW_WAYPOINT_MATRIX);
@@ -1967,9 +1975,61 @@ struct BuildRoadWaypointWindow : PickerWindowBase {
 
 		this->FinishInitNested(TRANSPORT_ROAD);
 
-		matrix->SetCount(_waypoint_count);
-		if (_cur_waypoint_type >= _waypoint_count) _cur_waypoint_type = 0;
-		matrix->SetClicked(_cur_waypoint_type);
+		this->querystrings[WID_BROW_FILTER] = &this->editbox;
+		this->editbox.cancel_button = QueryString::ACTION_CLEAR;
+
+		this->list.ForceRebuild();
+		this->BuildPickerList();
+	}
+
+	bool FilterByText(const RoadStopSpec *spec)
+	{
+		if (this->string_filter.IsEmpty()) return true;
+		this->string_filter.ResetState();
+		if (spec == nullptr) {
+			this->string_filter.AddLine(GetString(STR_STATION_CLASS_WAYP_WAYPOINT));
+		} else {
+			this->string_filter.AddLine(GetString(spec->name));
+			if (spec->grf_prop.grffile != nullptr) {
+				const GRFConfig *gc = GetGRFConfig(spec->grf_prop.grffile->grfid);
+				this->string_filter.AddLine(gc->GetName());
+			}
+		}
+		return this->string_filter.GetState();
+	}
+
+	void BuildPickerList()
+	{
+		if (!this->list.NeedRebuild()) return;
+
+		this->list.clear();
+		this->list.reserve(this->waypoints->GetSpecCount());
+		for (uint i = 0; i < this->waypoints->GetSpecCount(); i++) {
+			const RoadStopSpec *roadstopspec = this->waypoints->GetSpec(i);
+			if (!FilterByText(roadstopspec)) continue;
+
+			this->list.push_back(i);
+		}
+		this->list.RebuildDone();
+
+		NWidgetMatrix *matrix = this->GetWidget<NWidgetMatrix>(WID_BROW_WAYPOINT_MATRIX);
+		matrix->SetCount((int)this->list.size());
+		matrix->SetClicked(this->UpdateSelection(_cur_waypoint_type));
+	}
+
+	uint UpdateSelection(uint type)
+	{
+		auto found = std::find(std::begin(this->list), std::end(this->list), type);
+		if (found != std::end(this->list)) return found - std::begin(this->list);
+
+		/* Selection isn't in the list, default to first */
+		if (this->list.empty()) {
+			_cur_waypoint_type = 0;
+			return -1;
+		} else {
+			_cur_waypoint_type = this->list.front();
+			return 0;
+		}
 	}
 
 	virtual ~BuildRoadWaypointWindow()
@@ -1981,9 +2041,9 @@ struct BuildRoadWaypointWindow : PickerWindowBase {
 	{
 		switch (widget) {
 			case WID_BROW_WAYPOINT_MATRIX:
-				/* Three blobs high and wide. */
+				/* Two blobs high and three wide. */
 				size->width  += resize->width  * 2;
-				size->height += resize->height * 2;
+				size->height += resize->height * 1;
 
 				/* Resizing in X direction only at blob size, but at pixel level in Y. */
 				resize->height = 1;
@@ -1996,12 +2056,34 @@ struct BuildRoadWaypointWindow : PickerWindowBase {
 		}
 	}
 
+	void SetStringParameters(int widget) const override
+	{
+		if (widget == WID_BROW_NAME) {
+			if (!this->list.empty() && IsInsideBS(_cur_waypoint_type, 0, this->waypoints->GetSpecCount())) {
+				const RoadStopSpec *roadstopspec = this->waypoints->GetSpec(_cur_waypoint_type);
+				if (roadstopspec == nullptr) {
+					SetDParam(0, STR_STATION_CLASS_WAYP_WAYPOINT);
+				} else {
+					SetDParam(0, roadstopspec->name);
+				}
+			} else {
+				SetDParam(0, STR_EMPTY);
+			}
+		}
+	}
+
+	void OnPaint() override
+	{
+		this->BuildPickerList();
+		this->DrawWidgets();
+	}
+
 	void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (GB(widget, 0, 16)) {
 			case WID_BROW_WAYPOINT: {
-				uint type = GB(widget, 16, 16);
-				const RoadStopSpec *spec = RoadStopClass::Get(ROADSTOP_CLASS_WAYP)->GetSpec(type);
+				uint16_t type = this->list.at(GB(widget, 16, 16));
+				const RoadStopSpec *spec = this->waypoints->GetSpec(type);
 				DrawPixelInfo tmp_dpi;
 				if (FillDrawPixelInfo(&tmp_dpi, r.left, r.top, r.Width(), r.Height())) {
 					AutoRestoreBackup dpi_backup(_cur_dpi, &tmp_dpi);
@@ -2024,15 +2106,15 @@ struct BuildRoadWaypointWindow : PickerWindowBase {
 	{
 		switch (GB(widget, 0, 16)) {
 			case WID_BROW_WAYPOINT: {
-				uint type = GB(widget, 16, 16);
+				uint16_t sel = GB(widget, 16, 16);
+				assert(sel < this->list.size());
+				uint16_t type = this->list.at(sel);
 
-				const RoadStopSpec *spec = RoadStopClass::Get(ROADSTOP_CLASS_WAYP)->GetSpec(type);
+				const RoadStopSpec *spec = this->waypoints->GetSpec(type);
 				if (!IsRoadStopAvailable(spec, STATION_ROADWAYPOINT)) return;
 
-				this->GetWidget<NWidgetMatrix>(WID_BROW_WAYPOINT_MATRIX)->SetClicked(_cur_waypoint_type);
-
 				_cur_waypoint_type = type;
-				this->GetWidget<NWidgetMatrix>(WID_BROW_WAYPOINT_MATRIX)->SetClicked(_cur_waypoint_type);
+				this->GetWidget<NWidgetMatrix>(WID_BROW_WAYPOINT_MATRIX)->SetClicked(sel);
 				if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 				this->SetDirty();
 				break;
@@ -2045,9 +2127,28 @@ struct BuildRoadWaypointWindow : PickerWindowBase {
 		CheckRedrawWaypointCoverage(this, true);
 	}
 
-	void SelectWaypointSpec(int spec_id)
+	void SelectWaypointSpec(uint16 spec_id)
 	{
-		this->OnClick({}, WID_BROW_WAYPOINT | (spec_id << 16), 1);
+		for (uint i = 0; i < (uint)this->list.size(); i++) {
+			if (this->list[i] == spec_id) {
+				this->OnClick({}, WID_BROW_WAYPOINT | (i << 16), 1);
+				break;
+			}
+		}
+	}
+
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	{
+		if (!gui_scope) return;
+		this->list.ForceRebuild();
+	}
+
+	void OnEditboxChanged(int wid) override
+	{
+		if (wid == WID_BROW_FILTER) {
+			this->string_filter.SetFilterTerm(this->editbox.text.buf);
+			this->InvalidateData();
+		}
 	}
 };
 
@@ -2058,14 +2159,22 @@ static const NWidgetPart _nested_build_waypoint_widgets[] = {
 		NWidget(WWT_CAPTION, COLOUR_DARK_GREEN), SetDataTip(STR_WAYPOINT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_DARK_GREEN),
 	EndContainer(),
+	NWidget(WWT_PANEL, COLOUR_DARK_GREEN),
+		NWidget(WWT_EDITBOX, COLOUR_DARK_GREEN, WID_BROW_FILTER), SetPadding(2), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
+	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
-		NWidget(NWID_MATRIX, COLOUR_DARK_GREEN, WID_BROW_WAYPOINT_MATRIX), SetPIP(3, 2, 3), SetScrollbar(WID_BROW_SCROLL),
-			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BROW_WAYPOINT), SetMinimalSize(66, 60), SetDataTip(0x0, STR_WAYPOINT_GRAPHICS_TOOLTIP), SetScrollbar(WID_BROW_SCROLL), EndContainer(),
+		NWidget(WWT_PANEL, COLOUR_DARK_GREEN), SetScrollbar(WID_BROW_SCROLL),
+			NWidget(NWID_MATRIX, COLOUR_DARK_GREEN, WID_BROW_WAYPOINT_MATRIX), SetPIP(0, 2, 0),  SetPadding(3), SetScrollbar(WID_BROW_SCROLL),
+				NWidget(WWT_PANEL, COLOUR_GREY, WID_BROW_WAYPOINT), SetDataTip(0x0, STR_WAYPOINT_GRAPHICS_TOOLTIP), SetScrollbar(WID_BROW_SCROLL), EndContainer(),
+			EndContainer(),
 		EndContainer(),
-		NWidget(NWID_VERTICAL),
-			NWidget(NWID_VSCROLLBAR, COLOUR_DARK_GREEN, WID_BROW_SCROLL),
-			NWidget(WWT_RESIZEBOX, COLOUR_DARK_GREEN),
+		NWidget(NWID_VSCROLLBAR, COLOUR_DARK_GREEN, WID_BROW_SCROLL),
+	EndContainer(),
+	NWidget(NWID_HORIZONTAL),
+		NWidget(WWT_PANEL, COLOUR_DARK_GREEN),
+			NWidget(WWT_TEXT, COLOUR_DARK_GREEN, WID_BROW_NAME), SetPadding(2), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_NULL), SetTextStyle(TC_ORANGE), SetAlignment(SA_CENTER),
 		EndContainer(),
+		NWidget(WWT_RESIZEBOX, COLOUR_DARK_GREEN),
 	EndContainer(),
 };
 
@@ -2328,7 +2437,7 @@ void ShowBuildRoadStopPickerAndSelect(StationType station_type, const RoadStopSp
 		trigger_widget(WID_ROT_BUILD_WAYPOINT);
 
 		BuildRoadWaypointWindow *waypoint_window = dynamic_cast<BuildRoadWaypointWindow *>(FindWindowById(WC_BUILD_WAYPOINT, TRANSPORT_ROAD));
-		if (waypoint_window != nullptr) waypoint_window->SelectWaypointSpec(spec_id);
+		if (waypoint_window != nullptr) waypoint_window->SelectWaypointSpec((uint16)spec_id);
 	} else {
 		trigger_widget((station_type == STATION_BUS) ? WID_ROT_BUS_STATION : WID_ROT_TRUCK_STATION);
 

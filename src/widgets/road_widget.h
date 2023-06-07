@@ -73,9 +73,11 @@ enum BuildRoadStationWidgets {
 
 /** Widgets of the #BuildRoadWaypointWindow class. */
 enum BuildRoadWaypointWidgets {
+	WID_BROW_FILTER,          ///< Text filter.
 	WID_BROW_WAYPOINT_MATRIX, ///< Matrix with waypoints.
 	WID_BROW_WAYPOINT,        ///< A single waypoint.
 	WID_BROW_SCROLL,          ///< Scrollbar for the matrix.
+	WID_BROW_NAME,            ///< Name of selected waypoint.
 };
 
 #endif /* WIDGETS_ROAD_WIDGET_H */
