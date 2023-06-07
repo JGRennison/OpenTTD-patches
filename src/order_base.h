@@ -20,7 +20,7 @@
 #include "date_type.h"
 #include "schdispatch.h"
 #include "gfx_type.h"
-#include "saveload/saveload_common.h"
+#include "sl/saveload_common.h"
 
 #include <memory>
 #include <vector>

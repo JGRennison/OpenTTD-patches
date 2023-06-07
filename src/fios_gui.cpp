@@ -8,7 +8,7 @@
 /** @file fios_gui.cpp GUIs for loading/saving games, scenarios, heightmaps, ... */
 
 #include "stdafx.h"
-#include "saveload/saveload.h"
+#include "sl/saveload.h"
 #include "error.h"
 #include "gui.h"
 #include "gfx_func.h"

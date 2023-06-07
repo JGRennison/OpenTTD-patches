@@ -86,7 +86,7 @@
 #define HAS_TRUETYPE_FONT
 #endif
 
-#include "saveload/saveload.h"
+#include "sl/saveload.h"
 
 #include "table/strings.h"
 #include "table/settings.h"

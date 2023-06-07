@@ -7,12 +7,21 @@
 
 /** @file newgrf_sl.h Code handling saving and loading of NewGRF mappings. */
 
-#ifndef SAVELOAD_NEWGRF_SL_H
-#define SAVELOAD_NEWGRF_SL_H
+#ifndef SAVELOAD_UPSTREAM_NEWGRF_SL_H
+#define SAVELOAD_UPSTREAM_NEWGRF_SL_H
 
 #include "../newgrf_commons.h"
 
-void Save_NewGRFMapping(const OverrideManagerBase &mapping);
-void Load_NewGRFMapping(OverrideManagerBase &mapping);
+namespace upstream_sl {
 
-#endif /* SAVELOAD_NEWGRF_SL_H */
+struct NewGRFMappingChunkHandler : ChunkHandler {
+	OverrideManagerBase &mapping;
+
+	NewGRFMappingChunkHandler(uint32 id, OverrideManagerBase &mapping) : ChunkHandler(id, CH_TABLE), mapping(mapping) {}
+	void Save() const override;
+	void Load() const override;
+};
+
+}
+
+#endif /* SAVELOAD_UPSTREAM_NEWGRF_SL_H */

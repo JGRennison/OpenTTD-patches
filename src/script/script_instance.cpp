@@ -9,7 +9,7 @@
 
 #include "../stdafx.h"
 #include "../debug.h"
-#include "../saveload/saveload.h"
+#include "../sl/saveload.h"
 
 #include "../script/squirrel_class.hpp"
 #include "../script/squirrel_std.hpp"

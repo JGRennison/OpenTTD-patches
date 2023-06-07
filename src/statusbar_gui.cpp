@@ -20,7 +20,7 @@
 #include "news_gui.h"
 #include "company_gui.h"
 #include "window_gui.h"
-#include "saveload/saveload.h"
+#include "sl/saveload.h"
 #include "window_func.h"
 #include "statusbar_gui.h"
 #include "toolbar_gui.h"

@@ -12,7 +12,7 @@
 #include "../../crashlog_bfd.h"
 #include "../../string_func.h"
 #include "../../gamelog.h"
-#include "../../saveload/saveload.h"
+#include "../../sl/saveload.h"
 
 #include <errno.h>
 #include <signal.h>

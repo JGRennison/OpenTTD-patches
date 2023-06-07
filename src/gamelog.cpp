@@ -8,7 +8,7 @@
 /** @file gamelog.cpp Definition of functions used for logging of important changes in the game */
 
 #include "stdafx.h"
-#include "saveload/saveload.h"
+#include "sl/saveload.h"
 #include "string_func.h"
 #include "settings_type.h"
 #include "gamelog_internal.h"

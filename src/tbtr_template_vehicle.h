@@ -27,7 +27,7 @@
 
 #include "sortlist_type.h"
 
-#include "saveload/saveload_common.h"
+#include "sl/saveload_common.h"
 
 #include "zoom_func.h"
 

@@ -16,7 +16,7 @@
 #include "blitter/factory.hpp"
 #include "zoom_func.h"
 #include "core/endian_func.hpp"
-#include "saveload/saveload.h"
+#include "sl/saveload.h"
 #include "company_base.h"
 #include "company_func.h"
 #include "strings_func.h"

@@ -18,7 +18,7 @@
 #include "vehicle_type.h"
 #include "company_type.h"
 #include "core/multimap.hpp"
-#include "saveload/saveload_common.h"
+#include "sl/saveload_common.h"
 #include <deque>
 
 /** Unique identifier for a single cargo packet. */

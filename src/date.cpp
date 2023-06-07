@@ -17,7 +17,7 @@
 #include "vehicle_base.h"
 #include "rail_gui.h"
 #include "linkgraph/linkgraph.h"
-#include "saveload/saveload.h"
+#include "sl/saveload.h"
 #include "newgrf_profiling.h"
 #include "console_func.h"
 #include "debug.h"

@@ -16,7 +16,7 @@
 #include "../station_base.h"
 #include "../cargotype.h"
 #include "../date_func.h"
-#include "../saveload/saveload_common.h"
+#include "../sl/saveload_common.h"
 #include "linkgraph_type.h"
 #include "../3rdparty/cpp-btree/btree_map.h"
 #include <utility>

@@ -20,7 +20,7 @@
 #include "gui.h"
 
 #include "base_media_base.h"
-#include "saveload/saveload.h"
+#include "sl/saveload.h"
 #include "company_func.h"
 #include "command_func.h"
 #include "news_func.h"
