@@ -300,9 +300,9 @@ static void InitializeWindowsAndCaches()
 		}
 	}
 	for (Town *t : Town::Iterate()) {
-		for (std::list<PersistentStorage *>::iterator it = t->psa_list.begin(); it != t->psa_list.end(); ++it) {
-			(*it)->feature = GSF_FAKE_TOWNS;
-			(*it)->tile = t->xy;
+		for (auto &it : t->psa_list) {
+			it->feature = GSF_FAKE_TOWNS;
+			it->tile = t->xy;
 		}
 	}
 	for (RoadVehicle *rv : RoadVehicle::Iterate()) {

@@ -63,7 +63,10 @@ void StrTrimInPlace(std::string &str);
 [[nodiscard]] bool StrEqualsIgnoreCase(const std::string_view str1, const std::string_view str2);
 [[nodiscard]] int StrNaturalCompare(std::string_view s1, std::string_view s2, bool ignore_garbage_at_front = false);
 
-const char *StrConsumeToSeparator(std::string &result, const char *str);
+/** Case insensitive comparator for strings, for example for use in std::map. */
+struct CaseInsensitiveComparator {
+	bool operator()(const std::string_view s1, const std::string_view s2) const { return StrCompareIgnoreCase(s1, s2) < 0; }
+};
 
 /**
  * Check if a string buffer is empty.

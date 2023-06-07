@@ -2206,10 +2206,15 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 			DeleteNewGRFInspectWindow(GSF_TRAINS, src->index);
 			SetWindowDirty(WC_COMPANY, _current_company);
 
-			/* Delete orders, group stuff and the unit number as we're not the
-			 * front of any vehicle anymore. */
+			if (src_head != nullptr && src_head->IsFrontEngine()) {
+				/* Cases #?b: Transfer order, unit number and other stuff
+				 * to the new front engine. */
+				src_head->orders = src->orders;
+				if (src_head->orders != nullptr) src_head->AddToShared(src);
+				src_head->CopyVehicleConfigAndStatistics(src);
+			}
+			/* Remove stuff not valid anymore for non-front engines. */
 			DeleteVehicleOrders(src);
-			RemoveVehicleFromGroup(src);
 			src->unitnumber = 0;
 			if (HasBit(src->vehicle_flags, VF_HAVE_SLOT)) {
 				TraceRestrictRemoveVehicleFromAllSlots(src->index);

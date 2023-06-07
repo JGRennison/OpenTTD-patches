@@ -410,22 +410,6 @@ bool StrEndsWith(const std::string_view str, const std::string_view suffix)
 	return str.compare(str.size() - suffix_len, suffix_len, suffix, 0, suffix_len) == 0;
 }
 
-const char *StrConsumeToSeparator(std::string &result, const char *str)
-{
-	if (str == nullptr) {
-		result = "";
-		return nullptr;
-	}
-
-	const char *end = str;
-	while (*end != '\0' && *end != 0x1F) {
-		end++;
-	}
-	result.assign(str, end);
-	if (*end == 0x1F) return end + 1;
-	return nullptr;
-}
-
 /** Case insensitive implementation of the standard character type traits. */
 struct CaseInsensitiveCharTraits : public std::char_traits<char> {
 	static bool eq(char c1, char c2) { return toupper(c1) == toupper(c2); }

@@ -32,7 +32,6 @@ add_files(
     smallmap_type.hpp
     smallstack_type.hpp
     smallvec_type.hpp
-    string_compare_type.hpp
     tinystring_type.hpp
     y_combinator.hpp
 )

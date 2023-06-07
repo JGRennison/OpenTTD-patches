@@ -1003,8 +1003,8 @@ static uint ConvertIntegerValue(TraceRestrictValueType type, uint in, bool to_di
 
 		case TRVT_FORCE:
 			return to_display
-					? ConvertForceToDisplayForce(in)
-					: ConvertDisplayForceToForce(in);
+					? ConvertForceToDisplayForce(static_cast<int64>(in) * 1000)
+					: static_cast<uint>(ConvertDisplayForceToForce(in) / 1000);
 			break;
 
 		case TRVT_PF_PENALTY:
@@ -1031,7 +1031,7 @@ static void ConvertValueToDecimal(TraceRestrictValueType type, uint in, int64 &v
 			break;
 
 		case TRVT_FORCE_WEIGHT_RATIO:
-			ConvertForceWeightRatioToDisplay(in, value, decimal);
+			ConvertForceWeightRatioToDisplay(static_cast<int64>(in) * 1000, value, decimal);
 			break;
 
 		case TRVT_SPEED:
@@ -1054,7 +1054,7 @@ static uint ConvertDecimalToValue(TraceRestrictValueType type, double in)
 			return ConvertDisplayToPowerWeightRatio(in);
 
 		case TRVT_FORCE_WEIGHT_RATIO:
-			return ConvertDisplayToForceWeightRatio(in);
+			return ConvertDisplayToForceWeightRatio(in) / 1000;
 
 		case TRVT_SPEED:
 			return ConvertDisplaySpeedToKmhishSpeed(in * (_settings_game.locale.units_velocity == 3 ? 10 : 1), VEH_TRAIN);
@@ -1393,7 +1393,8 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 
 				case TRVT_FORCE:
 					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_FORCE;
-					DrawInstructionStringConditionalIntegerCommon(item, properties);
+					DrawInstructionStringConditionalCommon(item, properties);
+					SetDParam(3, GetTraceRestrictValue(item) * 1000);
 					break;
 
 				case TRVT_POWER_WEIGHT_RATIO:
@@ -1403,7 +1404,8 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 
 				case TRVT_FORCE_WEIGHT_RATIO:
 					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_FORCE_WEIGHT_RATIO;
-					DrawInstructionStringConditionalIntegerCommon(item, properties);
+					DrawInstructionStringConditionalCommon(item, properties);
+					SetDParam(3, GetTraceRestrictValue(item) * 1000);
 					break;
 
 				case TRVT_SLOT_INDEX:

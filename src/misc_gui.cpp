@@ -1052,7 +1052,7 @@ struct QueryStringWindow : public Window
 
 		this->editbox.text.UpdateSize();
 
-		if ((flags & QSF_ACCEPT_UNCHANGED) == 0) this->editbox.orig = stredup(this->editbox.text.buf);
+		if ((flags & QSF_ACCEPT_UNCHANGED) == 0) this->editbox.orig = this->editbox.text.buf;
 
 		this->querystrings[WID_QS_TEXT] = &this->editbox;
 		this->editbox.caption = caption;
@@ -1114,14 +1114,10 @@ struct QueryStringWindow : public Window
 
 	void OnOk()
 	{
-		if (this->editbox.orig == nullptr || strcmp(this->editbox.text.buf, this->editbox.orig) != 0) {
-			/* If the parent is nullptr, the editbox is handled by general function
-			 * HandleOnEditText */
-			if (this->parent != nullptr) {
-				this->parent->OnQueryTextFinished(this->editbox.text.buf);
-			} else {
-				NOT_REACHED();
-			}
+		if (!this->editbox.orig.has_value() || this->editbox.text.buf != this->editbox.orig) {
+			assert(this->parent != nullptr);
+
+			this->parent->OnQueryTextFinished(this->editbox.text.buf);
 			this->editbox.handled = true;
 		}
 	}

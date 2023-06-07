@@ -11,7 +11,7 @@
 #define SCRIPT_CONTROLLER_HPP
 
 #include "script_types.hpp"
-#include "../../core/string_compare_type.hpp"
+#include "../../string_func.h"
 #include <map>
 
 /**
@@ -54,11 +54,6 @@ public:
 	 * @param company The company this Script is normally serving.
 	 */
 	ScriptController(CompanyID company);
-
-	/**
-	 * Destructor of the ScriptController.
-	 */
-	~ScriptController();
 
 #else
 	/**
@@ -215,7 +210,7 @@ public:
 	static HSQOBJECT Import(const char *library, const char *class_name, int version);
 
 private:
-	typedef std::map<const char *, const char *, StringCompare> LoadedLibraryList; ///< The type for loaded libraries.
+	typedef std::map<std::string, std::string, CaseInsensitiveComparator> LoadedLibraryList; ///< The type for loaded libraries.
 
 	uint ticks;                       ///< The amount of ticks we're sleeping.
 	LoadedLibraryList loaded_library; ///< The libraries we loaded.

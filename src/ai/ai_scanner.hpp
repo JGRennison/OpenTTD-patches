@@ -27,12 +27,12 @@ public:
 
 	/**
 	 * Check if we have an AI by name and version available in our list.
-	 * @param nameParam The name of the AI.
-	 * @param versionParam The version of the AI, or -1 if you want the latest.
+	 * @param name The name of the AI.
+	 * @param version The version of the AI, or -1 if you want the latest.
 	 * @param force_exact_match Only match name+version, never latest.
 	 * @return nullptr if no match found, otherwise the AI that matched.
 	 */
-	class AIInfo *FindInfo(const char *nameParam, int versionParam, bool force_exact_match);
+	class AIInfo *FindInfo(const char *name, int version, bool force_exact_match);
 
 	/**
 	 * Set the Dummy AI.
@@ -40,7 +40,7 @@ public:
 	void SetDummyAI(class AIInfo *info);
 
 protected:
-	void GetScriptName(ScriptInfo *info, char *name, const char *last) override;
+	std::string GetScriptName(ScriptInfo *info) override;
 	const char *GetFileName() const override { return PATHSEP "info.nut"; }
 	Subdirectory GetDirectory() const override { return AI_DIR; }
 	const char *GetScannerName() const override { return "AIs"; }
@@ -63,7 +63,7 @@ public:
 	class AILibrary *FindLibrary(const char *library, int version);
 
 protected:
-	void GetScriptName(ScriptInfo *info, char *name, const char *last) override;
+	std::string GetScriptName(ScriptInfo *info) override;
 	const char *GetFileName() const override { return PATHSEP "library.nut"; }
 	Subdirectory GetDirectory() const override { return AI_LIBRARY_DIR; }
 	const char *GetScannerName() const override { return "AI Libraries"; }

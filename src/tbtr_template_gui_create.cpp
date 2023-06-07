@@ -340,7 +340,7 @@ public:
 					SetDParam(2, this->virtual_train->GetDisplayMaxSpeed());
 					SetDParam(1, gcache->cached_power);
 					SetDParam(0, gcache->cached_weight);
-					SetDParam(3, gcache->cached_max_te / 1000);
+					SetDParam(3, gcache->cached_max_te);
 					DrawString(8, r.right, y, original_acceleration ? STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED : STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE);
 					uint32 full_cargo_weight = 0;
 					for (Train *train = this->virtual_train; train != nullptr; train = train->Next()) {
@@ -355,7 +355,7 @@ public:
 							SetDParam(2, STR_VEHICLE_INFO_POWER_WEIGHT_RATIO);
 							SetDParam(3, (100 * this->virtual_train->gcache.cached_power) / std::max<uint>(1, full_weight));
 							SetDParam(4, this->virtual_train->GetAccelerationType() == 2 ? STR_EMPTY : STR_VEHICLE_INFO_TE_WEIGHT_RATIO);
-							SetDParam(5, (this->virtual_train->gcache.cached_max_te / 10) / std::max<uint>(1, full_weight));
+							SetDParam(5, (100 * this->virtual_train->gcache.cached_max_te) / std::max<uint>(1, full_weight));
 						} else {
 							SetDParam(1, STR_EMPTY);
 						}

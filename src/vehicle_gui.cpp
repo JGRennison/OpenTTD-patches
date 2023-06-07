@@ -3142,7 +3142,7 @@ struct VehicleDetailsWindow : Window {
 					SetDParam(2, PackVelocity(v->GetDisplayMaxSpeed(), v->type));
 					SetDParam(1, gcache->cached_power);
 					SetDParam(0, gcache->cached_weight);
-					SetDParam(3, gcache->cached_max_te / 1000);
+					SetDParam(3, gcache->cached_max_te);
 					if (v->type == VEH_TRAIN && (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL ||
 							GetRailTypeInfo(Train::From(v)->railtype)->acceleration_type == 2)) {
 						string = STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED;
@@ -3171,7 +3171,7 @@ struct VehicleDetailsWindow : Window {
 					SetDParam(0, STR_VEHICLE_INFO_POWER_WEIGHT_RATIO);
 					SetDParam(1, (100 * Train::From(v)->gcache.cached_power) / std::max<uint>(1, Train::From(v)->gcache.cached_weight));
 					SetDParam(2, Train::From(v)->GetAccelerationType() == 2 ? STR_EMPTY : STR_VEHICLE_INFO_TE_WEIGHT_RATIO);
-					SetDParam(3, (Train::From(v)->gcache.cached_max_te / 10) / std::max<uint>(1, Train::From(v)->gcache.cached_weight));
+					SetDParam(3, (100 * Train::From(v)->gcache.cached_max_te) / std::max<uint>(1, Train::From(v)->gcache.cached_weight));
 					DrawString(tr, STR_VEHICLE_INFO_WEIGHT_RATIOS);
 					tr.top += FONT_HEIGHT_NORMAL;
 				}

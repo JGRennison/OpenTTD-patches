@@ -54,8 +54,8 @@ void FlowMapper::Run(LinkGraphJob &job) const
 			 * division by 0 if spawn date == last compression date. This matches
 			 * LinkGraph::Monthly(). */
 			uint runtime = (job.StartDateTicks() / DAY_TICKS) - job.LastCompression() + 1;
-			for (FlowStatMap::iterator i = flows.begin(); i != flows.end(); ++i) {
-				i->ScaleToMonthly(runtime);
+			for (auto &it : flows) {
+				it.ScaleToMonthly(runtime);
 			}
 		}
 		/* Clear paths. */

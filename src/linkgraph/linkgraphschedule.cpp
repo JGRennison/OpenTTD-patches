@@ -177,8 +177,8 @@ void LinkGraphSchedule::JoinNext()
 void LinkGraphSchedule::SpawnAll()
 {
 	std::vector<LinkGraphJobGroup::JobInfo> jobs_to_execute;
-	for (JobList::iterator i = this->running.begin(); i != this->running.end(); ++i) {
-		jobs_to_execute.emplace_back(i->get());
+	for (auto &it : this->running) {
+		jobs_to_execute.emplace_back(it.get());
 	}
 	LinkGraphJobGroup::ExecuteJobSet(std::move(jobs_to_execute));
 }
@@ -188,8 +188,8 @@ void LinkGraphSchedule::SpawnAll()
  */
 /* static */ void LinkGraphSchedule::Clear()
 {
-	for (JobList::iterator i(instance.running.begin()); i != instance.running.end(); ++i) {
-		(*i)->AbortJob();
+	for (auto &it : instance.running) {
+		it->AbortJob();
 	}
 	instance.running.clear();
 	instance.schedule.clear();

@@ -176,9 +176,9 @@ struct ScriptListWindow : public Window {
 		if (this->selected == -1) {
 			GetConfig(slot)->Change(nullptr);
 		} else {
-			ScriptInfoList::const_iterator it = this->info_list->begin();
-			for (int i = 0; i < this->selected; i++) it++;
-			GetConfig(slot)->Change((*it).second->GetName(), (*it).second->GetVersion());
+			ScriptInfoList::const_iterator it = this->info_list->cbegin();
+			std::advance(it, this->selected);
+			GetConfig(slot)->Change(it->second->GetName(), it->second->GetVersion());
 			if (_game_mode == GM_NORMAL && slot == OWNER_DEITY) Game::StartNew();
 		}
 		InvalidateWindowData(WC_GAME_OPTIONS, slot == OWNER_DEITY ? WN_GAME_OPTIONS_GS : WN_GAME_OPTIONS_AI);
@@ -392,7 +392,7 @@ struct ScriptSettingsWindow : public Window {
 			StringID str;
 			TextColour colour;
 			uint idx = 0;
-			if (StrEmpty(config_item.description)) {
+			if (config_item.description.empty()) {
 				str = STR_JUST_STRING;
 				colour = TC_ORANGE;
 			} else {
@@ -410,9 +410,11 @@ struct ScriptSettingsWindow : public Window {
 				} else {
 					DrawArrowButtons(br.left, y + button_y_offset, COLOUR_YELLOW, (this->clicked_button == i) ? 1 + (this->clicked_increase != rtl) : 0, editable && current_value > config_item.min_value, editable && current_value < config_item.max_value);
 				}
-				if (config_item.labels != nullptr && config_item.labels->Contains(current_value)) {
+
+				auto config_iterator = config_item.labels.find(current_value);
+				if (config_iterator != config_item.labels.end()) {
 					SetDParam(idx++, STR_JUST_RAW_STRING);
-					SetDParamStr(idx++, config_item.labels->Find(current_value)->second);
+					SetDParamStr(idx++, config_iterator->second);
 				} else {
 					SetDParam(idx++, STR_JUST_INT);
 					SetDParam(idx++, current_value);
@@ -441,9 +443,7 @@ struct ScriptSettingsWindow : public Window {
 				int num = (pt.y - r.top) / this->line_height + this->vscroll->GetPosition();
 				if (num >= (int)this->visible_settings.size()) break;
 
-				VisibleSettingsList::const_iterator it = this->visible_settings.begin();
-				for (int i = 0; i < num; i++) it++;
-				const ScriptConfigItem config_item = **it;
+				const ScriptConfigItem &config_item = *this->visible_settings[num];
 				if (!this->IsEditableItem(config_item)) return;
 
 				if (this->clicked_row != num) {
@@ -482,7 +482,7 @@ struct ScriptSettingsWindow : public Window {
 
 							DropDownList list;
 							for (int i = config_item.min_value; i <= config_item.max_value; i++) {
-								list.emplace_back(new DropDownListCharStringItem(config_item.labels->Find(i)->second, i, false));
+								list.emplace_back(new DropDownListCharStringItem(config_item.labels.find(i)->second, i, false));
 							}
 
 							ShowDropDownListAt(this, std::move(list), old_val, -1, wi_rect, COLOUR_ORANGE);
@@ -591,9 +591,7 @@ private:
 
 	void SetValue(int value)
 	{
-		VisibleSettingsList::const_iterator it = this->visible_settings.begin();
-		for (int i = 0; i < this->clicked_row; i++) it++;
-		const ScriptConfigItem config_item = **it;
+		const ScriptConfigItem &config_item = *this->visible_settings[this->clicked_row];
 		if (_game_mode == GM_NORMAL && ((this->slot == OWNER_DEITY) || Company::IsValidID(this->slot)) && (config_item.flags & SCRIPTCONFIG_INGAME) == 0) return;
 		this->script_config->SetSetting(config_item.name, value);
 		this->SetDirty();

@@ -4388,9 +4388,9 @@ void RerouteCargo(Station *st, CargoID c, StationID avoid, StationID avoid2)
 
 	/* Reroute cargo staged to be transferred. */
 	for (Vehicle *v : st->loading_vehicles) {
-		for (; v != nullptr; v = v->Next()) {
-			if (v->cargo_type != c) continue;
-			v->cargo.Reroute(UINT_MAX, &v->cargo, avoid, avoid2, &ge);
+		for (Vehicle *u = v; u != nullptr; u = u->Next()) {
+			if (u->cargo_type != c) continue;
+			u->cargo.Reroute(UINT_MAX, &u->cargo, avoid, avoid2, &ge);
 		}
 	}
 }
@@ -5557,8 +5557,7 @@ void FlowStatMap::PassOnFlow(StationID origin, StationID via, uint flow)
  */
 void FlowStatMap::FinalizeLocalConsumption(StationID self)
 {
-	for (FlowStatMap::iterator i = this->begin(); i != this->end(); ++i) {
-		FlowStat &fs = *i;
+	for (FlowStat &fs : *this) {
 		uint local = fs.GetShare(INVALID_STATION);
 		if (local > INT_MAX) { // make sure it fits in an int
 			fs.ChangeShare(self, -INT_MAX);
@@ -5602,8 +5601,8 @@ StationIDStack FlowStatMap::DeleteFlows(StationID via)
  */
 void FlowStatMap::RestrictFlows(StationID via)
 {
-	for (FlowStatMap::iterator it = this->begin(); it != this->end(); ++it) {
-		it->RestrictShare(via);
+	for (FlowStat &it : *this) {
+		it.RestrictShare(via);
 	}
 }
 
@@ -5614,9 +5613,9 @@ void FlowStatMap::RestrictFlows(StationID via)
 uint FlowStatMap::GetFlow() const
 {
 	uint ret = 0;
-	for (FlowStatMap::const_iterator i = this->begin(); i != this->end(); ++i) {
-		if (i->IsInvalid()) continue;
-		ret += (i->end() - 1)->first;
+	for (const FlowStat &it : *this) {
+		if (it.IsInvalid()) continue;
+		ret += (it.end() - 1)->first;
 	}
 	return ret;
 }
@@ -5629,9 +5628,9 @@ uint FlowStatMap::GetFlow() const
 uint FlowStatMap::GetFlowVia(StationID via) const
 {
 	uint ret = 0;
-	for (FlowStatMap::const_iterator i = this->begin(); i != this->end(); ++i) {
-		if (i->IsInvalid()) continue;
-		ret += i->GetShare(via);
+	for (const FlowStat &it : *this) {
+		if (it.IsInvalid()) continue;
+		ret += it.GetShare(via);
 	}
 	return ret;
 }

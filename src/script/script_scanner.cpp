@@ -20,6 +20,7 @@
 #include "../network/network_content.h"
 #include "../3rdparty/md5/md5.h"
 #include "../tar_type.h"
+#include "../3rdparty/fmt/format.h"
 
 #include "../safeguards.h"
 
@@ -84,11 +85,7 @@ void ScriptScanner::RescanDir()
 void ScriptScanner::Reset()
 {
 	for (const auto &item : this->info_list) {
-		free(item.first);
 		delete item.second;
-	}
-	for (const auto &item : this->info_single_list) {
-		free(item.first);
 	}
 
 	this->info_list.clear();
@@ -97,12 +94,8 @@ void ScriptScanner::Reset()
 
 void ScriptScanner::RegisterScript(ScriptInfo *info)
 {
-	char script_original_name[1024];
-	this->GetScriptName(info, script_original_name, lastof(script_original_name));
-	strtolower(script_original_name);
-
-	char script_name[1024];
-	seprintf(script_name, lastof(script_name), "%s.%d", script_original_name, info->GetVersion());
+	std::string script_original_name = this->GetScriptName(info);
+	std::string script_name = fmt::format("{}.{}", script_original_name, info->GetVersion());
 
 	/* Check if GetShortName follows the rules */
 	if (strlen(info->GetShortName()) != 4) {
@@ -132,15 +125,16 @@ void ScriptScanner::RegisterScript(ScriptInfo *info)
 		return;
 	}
 
-	this->info_list[stredup(script_name)] = info;
+	this->info_list[script_name] = info;
 
 	if (!info->IsDeveloperOnly() || _settings_client.gui.ai_developer_tools) {
 		/* Add the script to the 'unique' script list, where only the highest version
 		 *  of the script is registered. */
-		if (this->info_single_list.find(script_original_name) == this->info_single_list.end()) {
-			this->info_single_list[stredup(script_original_name)] = info;
-		} else if (this->info_single_list[script_original_name]->GetVersion() < info->GetVersion()) {
+		auto it = this->info_single_list.find(script_original_name);
+		if (it == this->info_single_list.end()) {
 			this->info_single_list[script_original_name] = info;
+		} else if (it->second->GetVersion() < info->GetVersion()) {
+			it->second = info;
 		}
 	}
 }

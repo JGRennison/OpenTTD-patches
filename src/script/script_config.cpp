@@ -14,6 +14,7 @@
 #include "api/script_object.hpp"
 #include "../textfile_gui.h"
 #include "../string_func.h"
+#include "../3rdparty/fmt/format.h"
 
 #include "../safeguards.h"
 
@@ -24,8 +25,7 @@ void ScriptConfig::Change(const char *name, int version, bool force_exact_match,
 	this->info = (name == nullptr) ? nullptr : this->FindInfo(this->name, version, force_exact_match);
 	this->version = (info == nullptr) ? -1 : info->GetVersion();
 	this->is_random = is_random;
-	if (this->config_list != nullptr) delete this->config_list;
-	this->config_list = (info == nullptr) ? nullptr : new ScriptConfigItemList();
+	this->config_list.reset();
 	this->to_load_data.reset();
 
 	this->ClearConfigList();
@@ -48,12 +48,11 @@ ScriptConfig::ScriptConfig(const ScriptConfig *config)
 	this->name = (config->name == nullptr) ? nullptr : stredup(config->name);
 	this->info = config->info;
 	this->version = config->version;
-	this->config_list = nullptr;
 	this->is_random = config->is_random;
 	this->to_load_data.reset();
 
 	for (const auto &item : config->settings) {
-		this->settings[stredup(item.first)] = item.second;
+		this->settings[item.first] = item.second;
 	}
 
 	/* Virtual functions get called statically in constructors, so make it explicit to remove any confusion. */
@@ -64,7 +63,6 @@ ScriptConfig::~ScriptConfig()
 {
 	free(this->name);
 	this->ResetSettings();
-	if (this->config_list != nullptr) delete this->config_list;
 	this->to_load_data.reset();
 }
 
@@ -77,16 +75,13 @@ const ScriptConfigItemList *ScriptConfig::GetConfigList()
 {
 	if (this->info != nullptr) return this->info->GetConfigList();
 	if (this->config_list == nullptr) {
-		this->config_list = new ScriptConfigItemList();
+		this->config_list = std::make_unique<ScriptConfigItemList>();
 	}
-	return this->config_list;
+	return this->config_list.get();
 }
 
 void ScriptConfig::ClearConfigList()
 {
-	for (const auto &item : this->settings) {
-		free(item.first);
-	}
 	this->settings.clear();
 }
 
@@ -99,14 +94,14 @@ void ScriptConfig::AnchorUnchangeableSettings()
 	}
 }
 
-int ScriptConfig::GetSetting(const char *name) const
+int ScriptConfig::GetSetting(const std::string &name) const
 {
 	const auto it = this->settings.find(name);
 	if (it == this->settings.end()) return this->info->GetSettingDefaultValue(name);
 	return (*it).second;
 }
 
-void ScriptConfig::SetSetting(const char *name, int value)
+void ScriptConfig::SetSetting(const std::string &name, int value)
 {
 	/* You can only set Script specific settings if an Script is selected. */
 	if (this->info == nullptr) return;
@@ -116,19 +111,11 @@ void ScriptConfig::SetSetting(const char *name, int value)
 
 	value = Clamp(value, config_item->min_value, config_item->max_value);
 
-	const auto it = this->settings.find(name);
-	if (it != this->settings.end()) {
-		(*it).second = value;
-	} else {
-		this->settings[stredup(name)] = value;
-	}
+	this->settings[name] = value;
 }
 
 void ScriptConfig::ResetSettings()
 {
-	for (const auto &item : this->settings) {
-		free(item.first);
-	}
 	this->settings.clear();
 }
 
@@ -144,7 +131,6 @@ void ScriptConfig::ResetEditableSettings(bool yet_to_start)
 		bool visible = _settings_client.gui.ai_developer_tools || (config_item->flags & SCRIPTCONFIG_DEVELOPER) == 0;
 
 		if (editable && visible) {
-			free(it->first);
 			it = this->settings.erase(it);
 		} else {
 			it++;
@@ -209,29 +195,16 @@ void ScriptConfig::StringToSettings(const std::string &value)
 
 std::string ScriptConfig::SettingsToString() const
 {
-	char string[1024];
-	char *last = lastof(string);
-	char *s = string;
-	*s = '\0';
+	if (this->settings.empty()) return {};
+
+	std::string result;
 	for (const auto &item : this->settings) {
-		char no[INT32_DIGITS_WITH_SIGN_AND_TERMINATION];
-		seprintf(no, lastof(no), "%d", item.second);
-
-		/* Check if the string would fit in the destination */
-		size_t needed_size = strlen(item.first) + 1 + strlen(no);
-		/* If it doesn't fit, skip the next settings */
-		if (s + needed_size > last) break;
-
-		s = strecat(s, item.first, last);
-		s = strecat(s, "=", last);
-		s = strecat(s, no, last);
-		s = strecat(s, ",", last);
+		fmt::format_to(std::back_inserter(result), "{}={},", item.first, item.second);
 	}
 
-	/* Remove the last ',', but only if at least one setting was saved. */
-	if (s != string) s[-1] = '\0';
-
-	return string;
+	/* Remove the last ','. */
+	result.resize(result.size() - 1);
+	return result;
 }
 
 const char *ScriptConfig::GetTextfile(TextfileType type, CompanyID slot) const

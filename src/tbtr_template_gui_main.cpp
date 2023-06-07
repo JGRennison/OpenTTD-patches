@@ -795,7 +795,7 @@ public:
 				SetDParam(2, STR_VEHICLE_INFO_POWER_WEIGHT_RATIO);
 				SetDParam(3, (100 * tmp->power) / std::max<uint>(1, tmp->full_weight));
 				SetDParam(4, GetRailTypeInfo(tmp->railtype)->acceleration_type == 2 ? STR_EMPTY : STR_VEHICLE_INFO_TE_WEIGHT_RATIO);
-				SetDParam(5, (tmp->max_te / 10) / std::max<uint>(1, tmp->full_weight));
+				SetDParam(5, (100 * tmp->max_te) / std::max<uint>(1, tmp->full_weight));
 			} else {
 				SetDParam(1, STR_EMPTY);
 			}
