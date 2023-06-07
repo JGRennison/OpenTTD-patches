@@ -746,7 +746,7 @@ struct ExcludingCargoBaseGraphWindow : BaseGraphWindow {
 		this->legend_width = (FONT_HEIGHT_SMALL - ScaleGUITrad(1)) * 8 / 5;
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		if (widget != WID_ECBG_MATRIX) {
 			BaseGraphWindow::UpdateWidgetSize(widget, size, padding, fill, resize);
@@ -768,7 +768,7 @@ struct ExcludingCargoBaseGraphWindow : BaseGraphWindow {
 		resize->height = this->line_height;
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	virtual void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (widget != WID_ECBG_MATRIX) {
 			BaseGraphWindow::DrawWidget(r, widget);
@@ -805,7 +805,7 @@ struct ExcludingCargoBaseGraphWindow : BaseGraphWindow {
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	virtual void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_CV_KEY_BUTTON:
@@ -820,10 +820,8 @@ struct ExcludingCargoBaseGraphWindow : BaseGraphWindow {
 
 			case WID_ECBG_DISABLE_CARGOES: {
 				/* Add all cargoes to the excluded lists. */
-				int i = 0;
 				for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 					SetBit(_legend_excluded_cargo, cs->Index());
-					i++;
 				}
 				this->UpdateCargoExcludingGraphs();
 				break;
@@ -845,7 +843,7 @@ struct ExcludingCargoBaseGraphWindow : BaseGraphWindow {
 		}
 	}
 
-	virtual void OnResize()
+	virtual void OnResize() override
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_ECBG_MATRIX);
 	}
