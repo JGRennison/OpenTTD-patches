@@ -99,6 +99,11 @@ STR_GRAPH_CARGO_SPEED_MODE                                      :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_TOOLTIP_DAYS_MODE                               :{BLACK}그래프의 X축에 통과 시간을 표시합니다
 STR_GRAPH_CARGO_TOOLTIP_SPEED_MODE                              :{BLACK}그래프의 X축에 평균 수송 시간을 표시합니다
 
+STR_GRAPH_DELIVERED_CARGO_BY_COMPANY_MODE                       :{TINY_FONT}{BLACK}회사
+STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE                         :{TINY_FONT}{BLACK}화물
+STR_GRAPH_DELIVERED_CARGO_BY_COMPANY_MODE_TOOLTIP               :{BLACK}선택한 회사를 각각 하나의 선으로 표시합니다
+STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE_TOOLTIP                 :{BLACK}선택한 화물를 각각 하나의 선으로 표시합니다
+
 STR_SMALLMAP_SCREENSHOT                                         :{BLACK}스크린샷
 
 STR_NEWS_VEHICLE_NO_DEPOT_ORDER                                 :{WHITE}{VEHICLE}의 경로에는 기지가 존재하지 않습니다
