@@ -1347,6 +1347,8 @@ STR_CONFIG_MAX_DEPARTURES                                       :Show at most {S
 STR_CONFIG_MAX_DEPARTURES_HELPTEXT                              :The maximum number of entries to show on a departure board
 STR_CONFIG_MAX_DEPARTURE_TIME                                   :Show arrivals/departures at most {STRING2} days in advance
 STR_CONFIG_MAX_DEPARTURE_TIME_HELPTEXT                          :How far in advance to show arrivals and departures, in days
+STR_CONFIG_MAX_DEPARTURE_TIME_MINUTES                           :Show arrivals/departures at most {STRING2} minutes in advance
+STR_CONFIG_MAX_DEPARTURE_TIME_MINUTES_HELPTEXT                  :How far in advance to show arrivals and departures, in minutes
 STR_CONFIG_DEPARTURE_CALC_FREQUENCY                             :Calculate departure board entries every {STRING2} ticks
 STR_CONFIG_DEPARTURE_CALC_FREQUENCY_HELPTEXT                    :How frequently to refresh a list of arrivals/departures, in ticks
 STR_CONFIG_DEPARTURE_VEHICLE_NAME                               :Show vehicle name in entries: {STRING2}

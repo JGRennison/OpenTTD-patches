@@ -239,7 +239,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 	std::vector<OrderDate*> next_orders;
 
 	/* The maximum possible date for departures to be scheduled to occur. */
-	DateTicksScaled max_date = _settings_client.gui.max_departure_time * DAY_TICKS * _settings_game.economy.day_length_factor;
+	DateTicksScaled max_date = GetDeparturesMaxTicksAhead();
 
 	DateTicksScaled date_only_scaled = DateToScaledDateTicks(_date);
 	DateTicksScaled date_fract_scaled = ((DateTicksScaled)_date_fract * _settings_game.economy.day_length_factor) + _tick_skip_counter;
@@ -864,4 +864,13 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 
 	/* Done. Phew! */
 	return result;
+}
+
+DateTicksScaled GetDeparturesMaxTicksAhead()
+{
+	if (_settings_time.time_in_minutes) {
+		return _settings_client.gui.max_departure_time_minutes * _settings_time.ticks_per_minute;
+	} else {
+		return _settings_client.gui.max_departure_time * DAY_TICKS * _settings_game.economy.day_length_factor;
+	}
 }

@@ -174,7 +174,8 @@ struct GUISettings : public TimeSettings {
 	bool   use_owner_colour_for_tunnelbridge;///< bridges and tunnels are rendered with their owner's colour
 	bool   timetable_arrival_departure;      ///< show arrivals and departures in vehicle timetables
 	uint8  max_departures;                   ///< maximum number of departures to show per station
-	uint16 max_departure_time;               ///< maximum time in advance to show departures
+	uint16 max_departure_time;               ///< maximum time in advance to show departures (days)
+	uint16 max_departure_time_minutes;       ///< maximum time in advance to show departures (minutes)
 	uint16 departure_calc_frequency;         ///< how often to calculate departures (in ticks)
 	bool   departure_show_vehicle;           ///< whether to show vehicle names with departures
 	bool   departure_show_group;             ///< whether to show group names with departures

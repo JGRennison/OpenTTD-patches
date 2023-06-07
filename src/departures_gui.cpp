@@ -748,7 +748,7 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 	uint arrival = 0;
 
 	DateTicksScaled now_date = _scaled_date_ticks;
-	DateTicksScaled max_date = now_date + (_settings_client.gui.max_departure_time * DAY_TICKS * _settings_game.economy.day_length_factor);
+	DateTicksScaled max_date = now_date + GetDeparturesMaxTicksAhead();
 
 	/* Draw each departure. */
 	for (uint i = 0; i < max_departures; ++i) {

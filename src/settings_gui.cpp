@@ -2011,7 +2011,8 @@ static SettingsContainer &GetSettingsTree()
 			SettingsPage *departureboards = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_DEPARTUREBOARDS));
 			{
 				departureboards->Add(new SettingEntry("gui.max_departures"));
-				departureboards->Add(new SettingEntry("gui.max_departure_time"));
+				departureboards->Add(new ConditionallyHiddenSettingEntry("gui.max_departure_time", []() -> bool { return _settings_time.time_in_minutes; }));
+				departureboards->Add(new ConditionallyHiddenSettingEntry("gui.max_departure_time_minutes", []() -> bool { return !_settings_time.time_in_minutes; }));
 				departureboards->Add(new SettingEntry("gui.departure_calc_frequency"));
 				departureboards->Add(new SettingEntry("gui.departure_show_vehicle"));
 				departureboards->Add(new SettingEntry("gui.departure_show_group"));
