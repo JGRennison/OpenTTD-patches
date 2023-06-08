@@ -191,6 +191,7 @@ CommandProc CmdCompanyCtrl;
 CommandProc CmdCustomNewsItem;
 CommandProc CmdCreateGoal;
 CommandProc CmdRemoveGoal;
+CommandProcEx CmdSetGoalDestination;
 CommandProc CmdSetGoalText;
 CommandProc CmdSetGoalProgress;
 CommandProc CmdSetGoalCompleted;
@@ -448,6 +449,7 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdCustomNewsItem,          CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT      ), // CMD_CUSTOM_NEWS_ITEM
 	DEF_CMD(CmdCreateGoal,              CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT      ), // CMD_CREATE_GOAL
 	DEF_CMD(CmdRemoveGoal,                             CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT      ), // CMD_REMOVE_GOAL
+	DEF_CMD(CmdSetGoalDestination,                     CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT      ), // CMD_SET_GOAL_DESTINATION
 	DEF_CMD(CmdSetGoalText,             CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT      ), // CMD_SET_GOAL_TEXT
 	DEF_CMD(CmdSetGoalProgress,         CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT      ), // CMD_SET_GOAL_PROGRESS
 	DEF_CMD(CmdSetGoalCompleted,        CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT      ), // CMD_SET_GOAL_COMPLETED
