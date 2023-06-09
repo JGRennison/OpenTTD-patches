@@ -3618,7 +3618,10 @@ void ReInitAllWindows(bool zoom_changed)
 
 	/* When _gui_zoom has changed, we need to resize toolbar and statusbar first,
 	 * so EnsureVisibleCaption uses the updated size information. */
-	ReInitWindow(FindWindowById(WC_MAIN_TOOLBAR, 0), zoom_changed);
+	{
+		MainToolbarScaleAdjuster toolbar_scale_adjuster;
+		ReInitWindow(FindWindowById(WC_MAIN_TOOLBAR, 0), zoom_changed);
+	}
 	ReInitWindow(FindWindowById(WC_STATUS_BAR, 0), zoom_changed);
 	for (Window *w : Window::IterateFromBack()) {
 		if (w->window_class == WC_MAIN_TOOLBAR || w->window_class == WC_STATUS_BAR) continue;

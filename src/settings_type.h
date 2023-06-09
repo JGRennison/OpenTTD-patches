@@ -281,6 +281,7 @@ struct GUISettings : public TimeSettings {
 	bool   newgrf_disable_big_gui;           ///< whether to disable "big GUI" NewGRFs
 
 	bool   scale_bevels;                     ///< bevels are scaled with GUI scale.
+	bool   bigger_main_toolbar;              ///< bigger main toolbar.
 
 	/**
 	 * Returns true when the user has sufficient privileges to edit newgrfs on a running game

@@ -561,6 +561,16 @@ struct GameOptionsWindow : Window {
 				break;
 			}
 
+			case WID_GO_GUI_SCALE_MAIN_TOOLBAR: {
+				_settings_client.gui.bigger_main_toolbar = !_settings_client.gui.bigger_main_toolbar;
+
+				this->SetWidgetLoweredState(WID_GO_GUI_SCALE_MAIN_TOOLBAR, _settings_client.gui.bigger_main_toolbar);
+				this->SetDirty();
+
+				ReInitAllWindows(true);
+				break;
+			}
+
 			case WID_GO_GUI_SCALE:
 				if (ClickSliderWidget(this->GetWidget<NWidgetBase>(widget)->GetCurrentRect(), pt, MIN_INTERFACE_SCALE, MAX_INTERFACE_SCALE, this->gui_scale)) {
 					if (!_ctrl_pressed) this->gui_scale = ((this->gui_scale + 12) / 25) * 25;
@@ -766,6 +776,7 @@ struct GameOptionsWindow : Window {
 
 		this->SetWidgetLoweredState(WID_GO_GUI_SCALE_AUTO, _gui_scale_cfg == -1);
 		this->SetWidgetLoweredState(WID_GO_GUI_SCALE_BEVEL_BUTTON, _settings_client.gui.scale_bevels);
+		this->SetWidgetLoweredState(WID_GO_GUI_SCALE_MAIN_TOOLBAR, _settings_client.gui.bigger_main_toolbar);
 
 		bool missing_files = BaseGraphics::GetUsedSet()->GetNumMissing() == 0;
 		this->GetWidget<NWidgetCore>(WID_GO_BASE_GRF_STATUS)->SetDataTip(missing_files ? STR_EMPTY : STR_GAME_OPTIONS_BASE_GRF_STATUS, STR_NULL);
@@ -824,6 +835,11 @@ static const NWidgetPart _nested_game_options_widgets[] = {
 							NWidget(WWT_TEXT, COLOUR_GREY), SetMinimalSize(0, 12), SetDataTip(STR_GAME_OPTIONS_GUI_SCALE_BEVELS, STR_NULL),
 							NWidget(NWID_SPACER), SetMinimalSize(1, 0), SetFill(1, 0),
 							NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_GO_GUI_SCALE_BEVEL_BUTTON), SetMinimalSize(21, 9), SetDataTip(STR_EMPTY, STR_GAME_OPTIONS_GUI_SCALE_BEVELS_TOOLTIP),
+						EndContainer(),
+						NWidget(NWID_HORIZONTAL),
+							NWidget(WWT_TEXT, COLOUR_GREY), SetMinimalSize(0, 12), SetDataTip(STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR, STR_NULL),
+							NWidget(NWID_SPACER), SetMinimalSize(1, 0), SetFill(1, 0),
+							NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_GO_GUI_SCALE_MAIN_TOOLBAR), SetMinimalSize(21, 9), SetDataTip(STR_EMPTY, STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR_TOOLTIP),
 						EndContainer(),
 					EndContainer(),
 				EndContainer(),

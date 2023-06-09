@@ -59,6 +59,7 @@
 #include "newgrf_object.h"
 #include "newgrf_roadstop.h"
 #include "newgrf_station.h"
+#include "zoom_func.h"
 
 #include "widgets/toolbar_widget.h"
 
@@ -2145,6 +2146,8 @@ struct MainToolbarWindow : Window {
 
 	MainToolbarWindow(WindowDesc *desc) : Window(desc)
 	{
+		MainToolbarScaleAdjuster scale_adjust;
+
 		this->InitNested(0);
 
 		_last_started_action = CBF_NONE;
@@ -2158,11 +2161,15 @@ struct MainToolbarWindow : Window {
 
 	void FindWindowPlacementAndResize(int def_width, int def_height) override
 	{
+		MainToolbarScaleAdjuster scale_adjust;
+
 		Window::FindWindowPlacementAndResize(_toolbar_width, def_height);
 	}
 
 	void OnPaint() override
 	{
+		MainToolbarScaleAdjuster scale_adjust;
+
 		/* If spectator, disable all construction buttons
 		 * ie : Build road, rail, ships, airports and landscaping
 		 * Since enabled state is the default, just disable when needed */
@@ -2532,6 +2539,8 @@ struct ScenarioEditorToolbarWindow : Window {
 
 	ScenarioEditorToolbarWindow(WindowDesc *desc) : Window(desc)
 	{
+		MainToolbarScaleAdjuster scale_adjust;
+
 		this->InitNested(0);
 
 		_last_started_action = CBF_NONE;
@@ -2544,11 +2553,15 @@ struct ScenarioEditorToolbarWindow : Window {
 
 	void FindWindowPlacementAndResize(int def_width, int def_height) override
 	{
+		MainToolbarScaleAdjuster scale_adjust;
+
 		Window::FindWindowPlacementAndResize(_toolbar_width, def_height);
 	}
 
 	void OnPaint() override
 	{
+		MainToolbarScaleAdjuster scale_adjust;
+
 		this->SetWidgetDisabledState(WID_TE_DATE_BACKWARD, _settings_game.game_creation.starting_year <= MIN_YEAR);
 		this->SetWidgetDisabledState(WID_TE_DATE_FORWARD, _settings_game.game_creation.starting_year >= MAX_YEAR);
 		this->SetWidgetDisabledState(WID_TE_ROADS, (GetRoadTypes(true) & ~_roadtypes_type) == ROADTYPES_NONE);
@@ -2809,5 +2822,32 @@ void AllocateToolbar()
 		new ScenarioEditorToolbarWindow(&_toolb_scen_desc);
 	} else {
 		new MainToolbarWindow(&_toolb_normal_desc);
+	}
+}
+
+static uint _toolbar_scale_adjuster_depth = 0;
+MainToolbarScaleAdjuster::MainToolbarScaleAdjuster()
+{
+	_toolbar_scale_adjuster_depth++;
+	if (_settings_client.gui.bigger_main_toolbar && _toolbar_scale_adjuster_depth == 1) {
+		this->old_gui_zoom = _gui_zoom;
+		this->old_gui_scale = _gui_scale;
+
+		/* Bump scale to next integer multiple */
+		_gui_scale = Clamp(100 * ((_gui_scale / 100) + 1), MIN_INTERFACE_SCALE, MAX_INTERFACE_SCALE);
+
+		int8 new_zoom = ScaleGUITrad(1) <= 1 ? ZOOM_LVL_OUT_4X : ScaleGUITrad(1) >= 4 ? ZOOM_LVL_MIN : ZOOM_LVL_OUT_2X;
+		_gui_zoom = static_cast<ZoomLevel>(Clamp(new_zoom, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max));
+		SetupWidgetDimensions();
+	}
+}
+
+MainToolbarScaleAdjuster::~MainToolbarScaleAdjuster()
+{
+	_toolbar_scale_adjuster_depth--;
+	if (_settings_client.gui.bigger_main_toolbar && _toolbar_scale_adjuster_depth == 0) {
+		_gui_zoom = this->old_gui_zoom;
+		_gui_scale = this->old_gui_scale;
+		SetupWidgetDimensions();
 	}
 }

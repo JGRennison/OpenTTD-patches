@@ -2117,3 +2117,6 @@ STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Can't se
 STR_ERROR_PROTECTED                                             :{WHITE}This company is not old enough to trade shares yet...
 
 STR_TOWN_DIRECTORY_INFO                                         :{BLACK}{STRING1}, Towns: {COMMA}
+
+STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR                         :{BLACK}Bigger main toolbar
+STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR_TOOLTIP                 :{BLACK}Check this box to increase the scale of the main toolbar

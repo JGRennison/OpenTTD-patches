@@ -72,4 +72,12 @@ DropDownListItem *MakeCompanyDropDownListItem(CompanyID cid);
 
 extern uint _toolbar_width;
 
+struct MainToolbarScaleAdjuster {
+	ZoomLevel old_gui_zoom;
+	int old_gui_scale;
+
+	MainToolbarScaleAdjuster();
+	~MainToolbarScaleAdjuster();
+};
+
 #endif /* TOOLBAR_GUI_H */

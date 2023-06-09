@@ -25,6 +25,7 @@ enum GameOptionsWidgets {
 	WID_GO_GUI_SCALE,              ///< GUI Scale slider.
 	WID_GO_GUI_SCALE_AUTO,         ///< Autodetect GUI scale button.
 	WID_GO_GUI_SCALE_BEVEL_BUTTON, ///< Toggle for chunky bevels.
+	WID_GO_GUI_SCALE_MAIN_TOOLBAR, ///< Toggle for bigger main toolbar.
 	WID_GO_BASE_GRF_DROPDOWN,      ///< Use to select a base GRF.
 	WID_GO_BASE_GRF_STATUS,        ///< Info about missing files etc.
 	WID_GO_BASE_GRF_TEXTFILE,      ///< Open base GRF readme, changelog (+1) or license (+2).
