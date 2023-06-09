@@ -267,4 +267,6 @@ void CheckCargoCapacity(Vehicle *v);
 bool VehiclesHaveSameEngineList(const Vehicle *v1, const Vehicle *v2);
 bool VehiclesHaveSameOrderList(const Vehicle *v1, const Vehicle *v2);
 
+bool IsUniqueVehicleName(const char *name);
+
 #endif /* VEHICLE_FUNC_H */
