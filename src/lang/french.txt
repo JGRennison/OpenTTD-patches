@@ -1042,6 +1042,14 @@ STR_GAME_OPTIONS_GUI_SCALE_3X                                   :3x
 STR_GAME_OPTIONS_GUI_SCALE_4X                                   :4x
 STR_GAME_OPTIONS_GUI_SCALE_5X                                   :x5
 
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_FRAME                       :{BLACK}Données d'analyse
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY                             :{BLACK}Participer à l'envoi de données d'analyse
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_TOOLTIP                     :{BLACK}Si activé, OpenTTD transmettra les données d'analyse en quittant une partie
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK                        :{BLACK}À propos des données et de la confidentialité
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK_TOOLTIP                :{BLACK}Ouvre une fenêtre à propos de la confidentialité des données d'analyse envoyées
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW                     :{BLACK}Prévisualisation des données d'analyse
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW_TOOLTIP             :{BLACK}Voir les données d'analyse de la partie en cours
+
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK} Graphiques
 
 STR_GAME_OPTIONS_REFRESH_RATE                                   :{BLACK} Taux de rafraîchissement de l'affichage
@@ -1551,7 +1559,7 @@ STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREY_TO_RED                :Gris à rouge
 STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREYSCALE                  :Niveaux de gris
 
 STR_CONFIG_SETTING_SCROLLMODE                                   :Défilement de la vue{NBSP}: {STRING}
-STR_CONFIG_SETTING_SCROLLMODE_HELPTEXT                          :Comportement lors du défilement de la carte
+STR_CONFIG_SETTING_SCROLLMODE_HELPTEXT                          :Comportement lors du défilement de la carte. L'option "position de la souris verrouillée" ne fonctionne pas sur certains systèmes, comme les versions pour navigateurs, les écrans tactiles, Linux avec Wayland, et autres
 ###length 4
 STR_CONFIG_SETTING_SCROLLMODE_DEFAULT                           :Défilement de la vue par clic droit, position de la souris verrouillée
 STR_CONFIG_SETTING_SCROLLMODE_RMB_LOCKED                        :Défilement de la carte par clic droit, position de la souris verrouillée
@@ -2073,6 +2081,7 @@ STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}L'alloca
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE} Erreur avec les paramètres vidéo...
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE} ... aucun GPU compatible trouvé. l'accélération matérielle est désactivée
+STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... le pilote du GPU a fait planter le jeu. L'accélération matérielle est désactivée
 
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
@@ -2403,6 +2412,13 @@ STR_NETWORK_ASK_RELAY_NO                                        :{BLACK}Non
 STR_NETWORK_ASK_RELAY_YES_ONCE                                  :{BLACK}Oui, cette fois uniquement
 STR_NETWORK_ASK_RELAY_YES_ALWAYS                                :{BLACK}Oui, ne plus me demander
 
+STR_NETWORK_ASK_SURVEY_CAPTION                                  :Participer à l'envoi automatique de données d'analyse ?
+STR_NETWORK_ASK_SURVEY_TEXT                                     :Souhaitez-vous participer à l'envoi automatique de données d'analyse ?{}OpenTTD transmettra les données d'analyse lorsque vous quitterez une partie.{}Vous pouvez changer ceci à tout moment dans les options du jeu.
+STR_NETWORK_ASK_SURVEY_PREVIEW                                  :Prévisualiser les données d'analyse
+STR_NETWORK_ASK_SURVEY_LINK                                     :Données d'analyse et confidentialité
+STR_NETWORK_ASK_SURVEY_NO                                       :Non
+STR_NETWORK_ASK_SURVEY_YES                                      :Oui
+
 STR_NETWORK_SPECTATORS                                          :Spectateurs
 
 # Network set password
@@ -2692,8 +2708,11 @@ STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Construi
 STR_STATION_BUILD_STATION_CLASS_TOOLTIP                         :{BLACK}Choisir le type de station à afficher
 STR_STATION_BUILD_STATION_TYPE_TOOLTIP                          :{BLACK}Choisir le type de station à construire
 
-STR_STATION_CLASS_DFLT                                          :Station par défaut
+STR_STATION_CLASS_DFLT                                          :Par défaut
+STR_STATION_CLASS_DFLT_STATION                                  :Stations par défaut
+STR_STATION_CLASS_DFLT_ROADSTOP                                 :Arrêts routiers par défaut
 STR_STATION_CLASS_WAYP                                          :Points de contrôle
+STR_STATION_CLASS_WAYP_WAYPOINT                                 :Points de contrôle par défaut
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}Sélection des signaux
@@ -4652,10 +4671,11 @@ STR_TEXTFILE_WRAP_TEXT_TOOLTIP                                  :{BLACK}Insérer
 STR_TEXTFILE_VIEW_README                                        :{BLACK}Voir le Lisez-moi
 STR_TEXTFILE_VIEW_CHANGELOG                                     :{BLACK}Journal des modifications
 STR_TEXTFILE_VIEW_LICENCE                                       :{BLACK}Licence
-###length 3
+###length 4
 STR_TEXTFILE_README_CAPTION                                     :{WHITE}Lisez-moi du module {STRING} {STRING}
 STR_TEXTFILE_CHANGELOG_CAPTION                                  :{WHITE}Journal des modifications pour le module {STRING} {STRING}
 STR_TEXTFILE_LICENCE_CAPTION                                    :{WHITE}Licence du module {STRING} {STRING}
+STR_TEXTFILE_SURVEY_RESULT_CAPTION                              :{WHITE}Prévisualisation des données d'analyse
 
 
 # Vehicle loading indicators

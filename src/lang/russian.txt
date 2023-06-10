@@ -991,7 +991,7 @@ STR_NEWS_COMPANY_BANKRUPT_TITLE                                 :{BIG_FONT}{BLAC
 STR_NEWS_COMPANY_BANKRUPT_DESCRIPTION                           :{BIG_FONT}{BLACK}{STRING} была закрыта кредиторами! Все активы распроданы!
 STR_NEWS_COMPANY_LAUNCH_TITLE                                   :{BIG_FONT}{BLACK}Основана новая транспортная компания!
 STR_NEWS_COMPANY_LAUNCH_DESCRIPTION                             :{BIG_FONT}{BLACK}{STRING} начинает строительство около г.{NBSP}{TOWN}!
-STR_NEWS_MERGER_TAKEOVER_TITLE                                  :{BIG_FONT}{BLACK}{STRING} выкуплена {STRING}!
+STR_NEWS_MERGER_TAKEOVER_TITLE                                  :{BIG_FONT}{BLACK}{STRING} выкуплена {STRING}! Сумма сделки не раскрывается.
 STR_PRESIDENT_NAME_MANAGER                                      :{BLACK}{PRESIDENT_NAME}{}(Директор)
 
 STR_NEWS_NEW_TOWN                                               :{BLACK}{BIG_FONT}Компания «{STRING}» профинансировала основание города {TOWN}!
@@ -1185,6 +1185,14 @@ STR_GAME_OPTIONS_GUI_SCALE_2X                                   :2x
 STR_GAME_OPTIONS_GUI_SCALE_3X                                   :3x
 STR_GAME_OPTIONS_GUI_SCALE_4X                                   :4x
 STR_GAME_OPTIONS_GUI_SCALE_5X                                   :5x
+
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_FRAME                       :{BLACK}Автоматический сбор данных
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY                             :{BLACK}Разрешить сбор и отправку данных
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_TOOLTIP                     :{BLACK}Разрешить автоматический сбор данных о ваших настройках игры и используемых модулях. OpenTTD отправит эти данные при закрытии игры.
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK                        :{BLACK}О сборе данных и приватности
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK_TOOLTIP                :{BLACK}Открыть ссылку с информацией об автоматическом сборе данных
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW                     :{BLACK}Просмотр собранных данных
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW_TOOLTIP             :{BLACK}Показать данные, собранные в текущем сеансе и подготовленные к отправке
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Настройки графики
 
@@ -1701,7 +1709,7 @@ STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREY_TO_RED                :серый и �
 STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREYSCALE                  :оттенки серого
 
 STR_CONFIG_SETTING_SCROLLMODE                                   :Перемещение обзора: {STRING}
-STR_CONFIG_SETTING_SCROLLMODE_HELPTEXT                          :Способ перемещения по игровому полю
+STR_CONFIG_SETTING_SCROLLMODE_HELPTEXT                          :Способ перемещения по игровому полю. Варианты с зафиксированным курсором не работают на некоторых системах, например, в браузерах, на сенсорных экранах, на Linux с Wayland и т. д.
 ###length 4
 STR_CONFIG_SETTING_SCROLLMODE_DEFAULT                           :перемещать обзор с помощью ПКМ, зафиксировав курсор
 STR_CONFIG_SETTING_SCROLLMODE_RMB_LOCKED                        :перемещать карту с помощью ПКМ, зафиксировав курсор
@@ -2223,6 +2231,7 @@ STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Не у�
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Ошибка в настройках графики...
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... не найдено подходящего графического процессора. Аппаратное ускорение отключено.
+STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... драйвер видеокарты вызвал критическую ошибку. Аппаратное ускорение отключено.
 
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
@@ -2552,6 +2561,13 @@ STR_NETWORK_ASK_RELAY_TEXT                                      :{YELLOW}Не у
 STR_NETWORK_ASK_RELAY_NO                                        :{BLACK}Нет
 STR_NETWORK_ASK_RELAY_YES_ONCE                                  :{BLACK}Да, однократно
 STR_NETWORK_ASK_RELAY_YES_ALWAYS                                :{BLACK}Да, всегда
+
+STR_NETWORK_ASK_SURVEY_CAPTION                                  :Разрешить автоматический сбор данных?
+STR_NETWORK_ASK_SURVEY_TEXT                                     :Разрешаете ли вы автоматический сбор данных о ваших настройках игры и используемых модулях?{}OpenTTD отправит эти данные при закрытии игры.{}Вы можете в любой момент открыть настройки и изменить своё решение.
+STR_NETWORK_ASK_SURVEY_PREVIEW                                  :Просмотр собранных данных
+STR_NETWORK_ASK_SURVEY_LINK                                     :О сборе данных и приватности
+STR_NETWORK_ASK_SURVEY_NO                                       :Нет
+STR_NETWORK_ASK_SURVEY_YES                                      :Да
 
 STR_NETWORK_SPECTATORS                                          :Зрители
 
@@ -3919,6 +3935,8 @@ STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Подр
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Посмотреть подробный состав инфраструктуры
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Передать деньги
 STR_COMPANY_VIEW_GIVE_MONEY_TOOLTIP                             :{BLACK}Передать некоторую сумму денег этой компании
+STR_COMPANY_VIEW_HOSTILE_TAKEOVER_BUTTON                        :{BLACK}Поглощение
+STR_COMPANY_VIEW_HOSTILE_TAKEOVER_TOOLTIP                       :{BLACK}Осуществить поглощение компании
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Внешность
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Изменить внешность директора
@@ -3934,6 +3952,7 @@ STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Имя дире
 STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Введите сумму, которую собираетесь передать
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Мы ищем потенциального покупателя для нашей компании.{}{}Не желаете ли Вы приобрести {COMPANY} за {CURRENCY_LONG}?
+STR_BUY_COMPANY_HOSTILE_TAKEOVER                                :{WHITE}После поглощения компании {COMPANY} вы приобретёте все её активы. При этом вам придётся выплатить все её долги плюс сумму, эквивалентную её двойному годовому доходу.{}{}Сумма сделки оценивается в {CURRENCY_LONG}.{}{}Осуществить поглощение компании?
 
 # Company infrastructure window
 STR_COMPANY_INFRASTRUCTURE_VIEW_CAPTION                         :{WHITE}Инфраструктура «{COMPANY}»
@@ -4841,10 +4860,11 @@ STR_TEXTFILE_WRAP_TEXT_TOOLTIP                                  :{BLACK}Пере
 STR_TEXTFILE_VIEW_README                                        :{BLACK}Посмотреть инструкцию
 STR_TEXTFILE_VIEW_CHANGELOG                                     :{BLACK}Список изменений
 STR_TEXTFILE_VIEW_LICENCE                                       :{BLACK}Лицензия
-###length 3
+###length 4
 STR_TEXTFILE_README_CAPTION                                     :{WHITE}Инструкция к {STRING} {STRING}
 STR_TEXTFILE_CHANGELOG_CAPTION                                  :{WHITE}Список изменений к {STRING} {STRING}
 STR_TEXTFILE_LICENCE_CAPTION                                    :{WHITE}Лицензия к {STRING} {STRING}
+STR_TEXTFILE_SURVEY_RESULT_CAPTION                              :{WHITE}Собранные данные
 
 
 # Vehicle loading indicators

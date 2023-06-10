@@ -847,7 +847,7 @@ STR_NEWS_COMPANY_BANKRUPT_TITLE                                 :{BIG_FONT}{BLAC
 STR_NEWS_COMPANY_BANKRUPT_DESCRIPTION                           :{BIG_FONT}{BLACK}{STRING} foi fechada pelos credores e todos os seus bens foram vendidos!
 STR_NEWS_COMPANY_LAUNCH_TITLE                                   :{BIG_FONT}{BLACK}Nova empresa de transportes!
 STR_NEWS_COMPANY_LAUNCH_DESCRIPTION                             :{BIG_FONT}{BLACK}{STRING} inicia construção em {TOWN}!
-STR_NEWS_MERGER_TAKEOVER_TITLE                                  :{BIG_FONT}{BLACK}{STRING} foi comprada por {STRING}!
+STR_NEWS_MERGER_TAKEOVER_TITLE                                  :{BIG_FONT}{BLACK}{STRING} foi comprada por {STRING} por um valor não revelado!
 STR_PRESIDENT_NAME_MANAGER                                      :{BLACK}{PRESIDENT_NAME}{}(Presidente)
 
 STR_NEWS_NEW_TOWN                                               :{BLACK}{BIG_FONT}{STRING} subsidiou a construção da nova localidade de {TOWN}!
@@ -1041,6 +1041,14 @@ STR_GAME_OPTIONS_GUI_SCALE_2X                                   :2x
 STR_GAME_OPTIONS_GUI_SCALE_3X                                   :3x
 STR_GAME_OPTIONS_GUI_SCALE_4X                                   :4x
 STR_GAME_OPTIONS_GUI_SCALE_5X                                   :5x
+
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_FRAME                       :{BLACK}Sondagem automatizada
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY                             :{BLACK}Participar numa sondagem automatizada
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_TOOLTIP                     :{BLACK}Quando ativo, o OpenTTD transmitirá uma sondagem ao deixar um jogo
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK                        :{BLACK}Sobre sondagem e privacidade
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK_TOOLTIP                :{BLACK}Isto abre um navegador com mais informações sobre a pesquisa automatizada
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW                     :{BLACK}Pré-visualizar resultado da sondagem
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW_TOOLTIP             :{BLACK}Mostrar o resultado da sondagem do jogo atual a decorrer
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Gráficos
 
@@ -1551,7 +1559,7 @@ STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREY_TO_RED                :Cinza para verm
 STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREYSCALE                  :Escala de cinza
 
 STR_CONFIG_SETTING_SCROLLMODE                                   :Comportamento de deslocação da janela de exibição: {STRING}
-STR_CONFIG_SETTING_SCROLLMODE_HELPTEXT                          :Comportamento na deslocação do mapa
+STR_CONFIG_SETTING_SCROLLMODE_HELPTEXT                          :Comportamento na deslocação do mapa. As opções de "posição do rato bloqueada" não funcionam em todos os sistemas, tais como versões baseadas na web, ecrãs sensíveis ao toque, Linux com Wayland, e outros.
 ###length 4
 STR_CONFIG_SETTING_SCROLLMODE_DEFAULT                           :Mover janela de exibição com Botão Direito Rato, posição do rato bloqueada
 STR_CONFIG_SETTING_SCROLLMODE_RMB_LOCKED                        :Mover mapa com Botão Direito Rato, posição do rato bloqueada
@@ -2073,6 +2081,7 @@ STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Falha a 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Erro com as definições gráficas...
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... Não foi encontrado um GPU compatível. Aceleração por hardware desativada
+STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... O driver gráfico (GPU) interrompeu o jogo. Aceleração por hardware desativada
 
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
@@ -2402,6 +2411,13 @@ STR_NETWORK_ASK_RELAY_TEXT                                      :{YELLOW}Falha a
 STR_NETWORK_ASK_RELAY_NO                                        :{BLACK}Não
 STR_NETWORK_ASK_RELAY_YES_ONCE                                  :{BLACK}Sim, desta vez
 STR_NETWORK_ASK_RELAY_YES_ALWAYS                                :{BLACK}Sim, não perguntar novamente
+
+STR_NETWORK_ASK_SURVEY_CAPTION                                  :Participar na sondagem automatizada ?
+STR_NETWORK_ASK_SURVEY_TEXT                                     :Pretende participar numa sondagem automatizada?{}OpenTTD irá transmitir uma sondagem ao deixar um jogo.{}Pode alterar isto em qualquer altura nas "Opções de Jogo".
+STR_NETWORK_ASK_SURVEY_PREVIEW                                  :Pré-visualizar resultado da sondagem
+STR_NETWORK_ASK_SURVEY_LINK                                     :Sobre sondagem e privacidade
+STR_NETWORK_ASK_SURVEY_NO                                       :Não
+STR_NETWORK_ASK_SURVEY_YES                                      :Sim
 
 STR_NETWORK_SPECTATORS                                          :Espectadores
 
@@ -3745,6 +3761,8 @@ STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Detalhes
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Ver contagens de infraestrutura detalhadas
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Dar dinheiro
 STR_COMPANY_VIEW_GIVE_MONEY_TOOLTIP                             :{BLACK}Dá dinheiro a esta empresa
+STR_COMPANY_VIEW_HOSTILE_TAKEOVER_BUTTON                        :{BLACK}Aquisição hostil
+STR_COMPANY_VIEW_HOSTILE_TAKEOVER_TOOLTIP                       :{BLACK}Fazer a aquisição hostil desta empresa
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Nova cara
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Seleccione uma nova cara para o presidente
@@ -3760,6 +3778,7 @@ STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Nome do Preside
 STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Insira a quantidade de dinheiro que quer dar
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Estamos à procura de uma empresa de transportes para comprar a nossa empresa{}{}Deseja comprar {COMPANY} por {CURRENCY_LONG}?
+STR_BUY_COMPANY_HOSTILE_TAKEOVER                                :{WHITE}Na aquisição hostil de {COMPANY} irá adquirir todos os ativos, liquidar todos os empréstimos e pagar o valor de 2 anos de lucros.{}{}O total estimado é de {CURRENCY_LONG}.{}{}Quer continuar com esta aquisição hostil?
 
 # Company infrastructure window
 STR_COMPANY_INFRASTRUCTURE_VIEW_CAPTION                         :{WHITE}Infraestrutura de {COMPANY}
@@ -4051,9 +4070,9 @@ STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}Clonar A
 
 ###length VEHICLE_TYPES
 STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}Esta acção comprará uma cópia de um comboio, incluindo todas as carruagens. Clique neste botão e, de seguida, num comboio que se encontre dentro ou fora do depósito. Ctrl+Clique irá partilhar as ordens. Shift+Clique mostra estimativa de custo, sem comprar
-STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Esta acção comprará uma cópia de um veículo rodoviário. Clique neste botão e, de seguida, num veículo que se encontre dentro ou fora de um depósito. Ctrl+Clique irá partilhar as ordens. Shift+Clique mostra estimativa de custo, sem comprar
-STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Esta acção comprará uma cópia de um navio. Clique neste botão e, de seguida, num navio que se encontre dentro ou fora do depósito. Ctrl+Clique irá partilhar as ordens. Shift+Clique mostra estimativa de custo, sem comprar
-STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Esta acção comprará uma cópia de uma aeronave. Clique neste botão e, de seguida, numa aeronave que se encontre dentro ou fora do hangar. Ctrl+Clique ira partilhar as ordens. Shift+Clique mostra estimativa de custo, sem comprar
+STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Esta ação comprará uma cópia de um veículo rodoviário. Clique neste botão e de seguida, num veículo que se encontre dentro ou fora de um depósito. Ctrl+Clique irá partilhar as ordens. Shift+Clique mostra estimativa de custo, sem comprar
+STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Esta ação comprará uma cópia de um navio. Clique neste botão e de seguida, num navio que se encontre dentro ou fora do depósito. Ctrl+Clique irá partilhar as ordens. Shift+Clique mostra estimativa de custo, sem comprar
+STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Esta ação comprará uma cópia de uma aeronave. Clique neste botão e de seguida, numa aeronave que se encontre dentro ou fora do hangar. Ctrl+Clique ira partilhar as ordens. Shift+Clique mostra estimativa de custo, sem comprar
 
 ###length VEHICLE_TYPES
 STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}Centrar visualização na localização de um depósito ferroviário. Ctrl+Clique abre um novo visualizador na localização do depósito ferroviário
@@ -4655,10 +4674,11 @@ STR_TEXTFILE_WRAP_TEXT_TOOLTIP                                  :{BLACK}Envolve 
 STR_TEXTFILE_VIEW_README                                        :{BLACK}Ver leia-me
 STR_TEXTFILE_VIEW_CHANGELOG                                     :{BLACK}Lista de alterações
 STR_TEXTFILE_VIEW_LICENCE                                       :{BLACK}Licença
-###length 3
+###length 4
 STR_TEXTFILE_README_CAPTION                                     :{WHITE}Leiame {STRING} de {STRING}
 STR_TEXTFILE_CHANGELOG_CAPTION                                  :{WHITE}Lista de alterações {STRING} de {STRING}
 STR_TEXTFILE_LICENCE_CAPTION                                    :{WHITE}Licença {STRING} de {STRING}
+STR_TEXTFILE_SURVEY_RESULT_CAPTION                              :{WHITE}Pré-visualização do resultado da sondagem
 
 
 # Vehicle loading indicators

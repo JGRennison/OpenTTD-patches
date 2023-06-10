@@ -1041,6 +1041,14 @@ STR_GAME_OPTIONS_GUI_SCALE_3X                                   :3×
 STR_GAME_OPTIONS_GUI_SCALE_4X                                   :4×
 STR_GAME_OPTIONS_GUI_SCALE_5X                                   :5×
 
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_FRAME                       :{BLACK}Automatisoitu tutkimus
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY                             :{BLACK}Osallistu automatisoituun tutkimukseen
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_TOOLTIP                     :{BLACK}Mikäli käytössä, OpenTTD lähettää tilastointitietoja pelistä poistuttaessa
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK                        :{BLACK}Tutkimuksesta ja yksityisyydestä
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK_TOOLTIP                :{BLACK}Avaa selaimen, jossa lisätietoja automatisoidusta tutkimuksesta
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW                     :{BLACK}Esikatsele tutkimustulosta
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW_TOOLTIP             :{BLACK}Näytä meneillään olevan pelin tutkimustulos
+
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Grafiikka
 
 STR_GAME_OPTIONS_REFRESH_RATE                                   :{BLACK}Näytön virkistystaajuus
@@ -1550,7 +1558,7 @@ STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREY_TO_RED                :Harmaasta punai
 STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREYSCALE                  :Harmaasävy
 
 STR_CONFIG_SETTING_SCROLLMODE                                   :Näkymän vieritystapa: {STRING}
-STR_CONFIG_SETTING_SCROLLMODE_HELPTEXT                          :Toiminta karttaa vieritettäessä
+STR_CONFIG_SETTING_SCROLLMODE_HELPTEXT                          :Toiminta karttaa vieritettäessä. Hiiren sijainnin lukitus ei toimi kaikissa järjestelmissä, kuten selainpohjaisissa versioissa, kosketusnäytöillä, Linuxissa Waylandilla ym.
 ###length 4
 STR_CONFIG_SETTING_SCROLLMODE_DEFAULT                           :Siirrä näkymää hiiren oikealla painikkeella, hiiren sijainti lukiten
 STR_CONFIG_SETTING_SCROLLMODE_RMB_LOCKED                        :Siirrä karttaa hiiren oikealla painikkeella, hiiren sijainti lukiten
@@ -2072,6 +2080,7 @@ STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}{BYTES} 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Virhe näyttöasetuksissa…
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}… yhteensopivaa grafiikkasuoritinta ei löytynyt. Laitteistokiihdytystä ei käytetä.
+STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}… Näytönohjaimen ajuri kaatoi pelin. Laitteistokiihdytys on poistettu käytöstä
 
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
@@ -2402,6 +2411,13 @@ STR_NETWORK_ASK_RELAY_NO                                        :{BLACK}Ei
 STR_NETWORK_ASK_RELAY_YES_ONCE                                  :{BLACK}Kyllä, tämän kerran
 STR_NETWORK_ASK_RELAY_YES_ALWAYS                                :{BLACK}Kyllä, älä kysy uudestaan
 
+STR_NETWORK_ASK_SURVEY_CAPTION                                  :Osallistutko automatisoituun tutkimukseen?
+STR_NETWORK_ASK_SURVEY_TEXT                                     :Haluatko osallistua automatisoituun tutkimukseen?{}Tällöin OpenTTD lähettää tilastointitietoja aina pelistä poistuttaessa.{}Voit muuttaa tätä milloin tahansa kohdassa ”Pelin asetukset”.
+STR_NETWORK_ASK_SURVEY_PREVIEW                                  :Esikatsele tutkimustulosta
+STR_NETWORK_ASK_SURVEY_LINK                                     :Tutkimuksesta ja yksityisyydestä
+STR_NETWORK_ASK_SURVEY_NO                                       :En
+STR_NETWORK_ASK_SURVEY_YES                                      :Osallistun
+
 STR_NETWORK_SPECTATORS                                          :Katsojat
 
 # Network set password
@@ -2691,8 +2707,11 @@ STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Rakenna 
 STR_STATION_BUILD_STATION_CLASS_TOOLTIP                         :{BLACK}Valitse asemaluokka
 STR_STATION_BUILD_STATION_TYPE_TOOLTIP                          :{BLACK}Valitse asematyyppi
 
-STR_STATION_CLASS_DFLT                                          :Oletusasema
+STR_STATION_CLASS_DFLT                                          :Oletus
+STR_STATION_CLASS_DFLT_STATION                                  :Oletusasema
+STR_STATION_CLASS_DFLT_ROADSTOP                                 :Oletuspysäkki
 STR_STATION_CLASS_WAYP                                          :Reittipisteet
+STR_STATION_CLASS_WAYP_WAYPOINT                                 :Oletusreittipiste
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}Opastimien valinta
@@ -4651,10 +4670,11 @@ STR_TEXTFILE_WRAP_TEXT_TOOLTIP                                  :{BLACK}Rivitä 
 STR_TEXTFILE_VIEW_README                                        :{BLACK}Näytä readme-tiedosto
 STR_TEXTFILE_VIEW_CHANGELOG                                     :{BLACK}Muutosloki
 STR_TEXTFILE_VIEW_LICENCE                                       :{BLACK}Lisenssi
-###length 3
+###length 4
 STR_TEXTFILE_README_CAPTION                                     :{WHITE}{STRING}:n {STRING} readme-tiedosto
 STR_TEXTFILE_CHANGELOG_CAPTION                                  :{WHITE}{STRING}:n {STRING} muutosloki
 STR_TEXTFILE_LICENCE_CAPTION                                    :{WHITE}{STRING}:n {STRING} lisenssi
+STR_TEXTFILE_SURVEY_RESULT_CAPTION                              :{WHITE}Tutkimustuloksen esikatselu
 
 
 # Vehicle loading indicators

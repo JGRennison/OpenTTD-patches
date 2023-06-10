@@ -195,6 +195,7 @@ STR_UNITS_VELOCITY_IMPERIAL                                     :{DECIMAL} mph
 STR_UNITS_VELOCITY_METRIC                                       :{DECIMAL} km/h
 STR_UNITS_VELOCITY_SI                                           :{DECIMAL} m/s
 STR_UNITS_VELOCITY_GAMEUNITS                                    :{DECIMAL}{NBSP}dale/zi
+STR_UNITS_VELOCITY_KNOTS                                        :{DECIMAL}{NBSP}Noduri
 
 STR_UNITS_POWER_IMPERIAL                                        :{DECIMAL}cp
 STR_UNITS_POWER_METRIC                                          :{DECIMAL}cp
@@ -930,8 +931,14 @@ STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Copiază
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Opţiuni
 
+STR_GAME_OPTIONS_TAB_GENERAL                                    :General
+STR_GAME_OPTIONS_TAB_GRAPHICS                                   :Grafică
+STR_GAME_OPTIONS_TAB_SOUND_TT                                   :{BLACK}Alegeți setările de sunet și muzică
 
+STR_GAME_OPTIONS_VOLUME                                         :Volum
+STR_GAME_OPTIONS_MUSIC_VOLUME                                   :Muzică
 
+STR_GAME_OPTIONS_VOLUME_75                                      :75%
 
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Unitate monetară
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Alege unitatea monetară
@@ -986,6 +993,8 @@ STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Alege in
 # Autosave dropdown
 ###length 5
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_OFF                          :Dezactivată
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_30_MINUTES             :La fiecare 30 de minute
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_120_MINUTES            :La fiecare 120 de minute
 
 STR_GAME_OPTIONS_LANGUAGE                                       :{BLACK}Limba
 STR_GAME_OPTIONS_LANGUAGE_TOOLTIP                               :{BLACK}Alege limba în care doreşti afişată interfaţa
@@ -1021,6 +1030,7 @@ STR_GAME_OPTIONS_GUI_SCALE_2X                                   :2x
 STR_GAME_OPTIONS_GUI_SCALE_3X                                   :3x
 STR_GAME_OPTIONS_GUI_SCALE_4X                                   :4x
 STR_GAME_OPTIONS_GUI_SCALE_5X                                   :5x
+
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Grafică
 
@@ -1948,6 +1958,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_IMPERIAL         :Imperial (mph)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_METRIC           :Metric (km/h)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_SI               :SI (m/s)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_GAMEUNITS        :Unități de joc (dale/zi)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_KNOTS            :Noduri
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER                     :Unitate putere vehicule: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_HELPTEXT            :Afişează puterea vehiculelor în interfaţă folosind unităţile selectate
@@ -2374,6 +2385,7 @@ STR_NETWORK_ASK_RELAY_TEXT                                      :{YELLOW}Conexiu
 STR_NETWORK_ASK_RELAY_NO                                        :{BLACK}Nu
 STR_NETWORK_ASK_RELAY_YES_ONCE                                  :{BLACK}Da, de data asta
 STR_NETWORK_ASK_RELAY_YES_ALWAYS                                :{BLACK}Da, nu mă mai întreba
+
 
 STR_NETWORK_SPECTATORS                                          :Spectatori
 
@@ -4620,7 +4632,7 @@ STR_TEXTFILE_WRAP_TEXT_TOOLTIP                                  :{BLACK}Încadre
 STR_TEXTFILE_VIEW_README                                        :{BLACK}Vezi fișierul readme
 STR_TEXTFILE_VIEW_CHANGELOG                                     :{BLACK}Listă modificări
 STR_TEXTFILE_VIEW_LICENCE                                       :{BLACK}Licenţă
-###length 3
+###length 4
 STR_TEXTFILE_README_CAPTION                                     :{WHITE}{STRING}, fișier readme al {STRING}
 STR_TEXTFILE_CHANGELOG_CAPTION                                  :{WHITE}{STRING}, lista de modificări a {STRING}
 STR_TEXTFILE_LICENCE_CAPTION                                    :{WHITE}{STRING}, licența fișierului {STRING}
@@ -5080,6 +5092,7 @@ STR_ERROR_NO_BUOY                                               :{WHITE}Nu exist
 STR_ERROR_CAN_T_TIMETABLE_VEHICLE                               :{WHITE}Nu pot programa vehiculul...
 STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS                       :{WHITE}Vehiculele pot aştepta numai în staţii
 STR_ERROR_TIMETABLE_NOT_STOPPING_HERE                           :{WHITE}Acest vehicul nu are oprire în această staţie
+STR_ERROR_TIMETABLE_INCOMPLETE                                  :{WHITE}... orarul este incomplet
 
 # Sign related errors
 STR_ERROR_TOO_MANY_SIGNS                                        :{WHITE}... prea multe semne
