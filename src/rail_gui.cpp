@@ -753,14 +753,35 @@ struct BuildRailToolbarWindow : Window {
 	{
 		MarkTileDirtyByTile(TileVirtXY(_thd.pos.x, _thd.pos.y)); // redraw tile selection
 
-		if (hotkey == HOTKEY_POLYRAIL || hotkey == HOTKEY_NEW_POLYRAIL) {
-			/* Indicate to the OnClick that the action comes from a hotkey rather
-			 * then from a click and that the CTRL state should be ignored. */
-			this->last_user_action = hotkey;
-			hotkey = WID_RAT_POLYRAIL;
-		}
+		switch (hotkey) {
+			case HOTKEY_POLYRAIL:
+			case HOTKEY_NEW_POLYRAIL:
+				/* Indicate to the OnClick that the action comes from a hotkey rather
+				 * then from a click and that the CTRL state should be ignored. */
+				this->last_user_action = hotkey;
+				hotkey = WID_RAT_POLYRAIL;
+				return this->Window::OnHotkey(hotkey);
 
-		return this->Window::OnHotkey(hotkey);
+			case WID_RAT_CONVERT_RAIL: {
+				HandlePlacePushButton(this, WID_RAT_CONVERT_RAIL, GetRailTypeInfo(_cur_railtype)->cursor.convert, HT_RECT | HT_DIAGONAL);
+				this->last_user_action = WID_RAT_CONVERT_RAIL;
+				this->UpdateRemoveWidgetStatus(WID_RAT_CONVERT_RAIL);
+				if (_ctrl_pressed) RailToolbar_CtrlChanged(this);
+				return ES_HANDLED;
+			}
+
+			case WID_RAT_CONVERT_RAIL_TRACK: {
+				bool active = HandlePlacePushButton(this, WID_RAT_CONVERT_RAIL, GetRailTypeInfo(_cur_railtype)->cursor.convert, HT_RAIL);
+				if (active) _thd.square_palette = SPR_ZONING_INNER_HIGHLIGHT_GREEN;
+				this->last_user_action = WID_RAT_CONVERT_RAIL;
+				this->UpdateRemoveWidgetStatus(WID_RAT_CONVERT_RAIL);
+				if (_ctrl_pressed) RailToolbar_CtrlChanged(this);
+				return ES_HANDLED;
+			}
+
+			default:
+				return this->Window::OnHotkey(hotkey);
+		}
 	}
 
 	void OnPlaceObject(Point pt, TileIndex tile) override
@@ -973,6 +994,7 @@ static Hotkey railtoolbar_hotkeys[] = {
 	Hotkey('T', "tunnel", WID_RAT_BUILD_TUNNEL),
 	Hotkey('R', "remove", WID_RAT_REMOVE),
 	Hotkey('C', "convert", WID_RAT_CONVERT_RAIL),
+	Hotkey(WKC_CTRL | 'C', "convert_track", WID_RAT_CONVERT_RAIL_TRACK),
 	HOTKEY_LIST_END
 };
 HotkeyList BuildRailToolbarWindow::hotkeys("railtoolbar", railtoolbar_hotkeys, RailToolbarGlobalHotkeys);
