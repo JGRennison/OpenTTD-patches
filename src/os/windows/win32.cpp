@@ -703,10 +703,10 @@ int OTTDStringCompare(std::string_view s1, std::string_view s2)
 			LPWSTR str_s1 = AllocaM(WCHAR, len_s1);
 			LPWSTR str_s2 = AllocaM(WCHAR, len_s2);
 
-			MultiByteToWideChar(CP_UTF8, 0, s1.data(), (int)s1.size(), str_s1, len_s1);
-			MultiByteToWideChar(CP_UTF8, 0, s2.data(), (int)s2.size(), str_s2, len_s2);
+			len_s1 = MultiByteToWideChar(CP_UTF8, 0, s1.data(), (int)s1.size(), str_s1, len_s1);
+			len_s2 = MultiByteToWideChar(CP_UTF8, 0, s2.data(), (int)s2.size(), str_s2, len_s2);
 
-			int result = _CompareStringEx(_cur_iso_locale, LINGUISTIC_IGNORECASE | SORT_DIGITSASNUMBERS, str_s1, -1, str_s2, -1, nullptr, nullptr, 0);
+			int result = _CompareStringEx(_cur_iso_locale, LINGUISTIC_IGNORECASE | SORT_DIGITSASNUMBERS, str_s1, len_s1, str_s2, len_s2, nullptr, nullptr, 0);
 			if (result != 0) return result;
 		}
 	}
