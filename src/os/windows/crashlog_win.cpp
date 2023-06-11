@@ -752,6 +752,9 @@ static LONG WINAPI VectoredExceptionHandler(EXCEPTION_POINTERS *ep)
 	if (ep->ExceptionRecord->ExceptionCode == EXCEPTION_STACK_OVERFLOW) {
 		return ExceptionHandler(ep);
 	}
+	if (ep->ExceptionRecord->ExceptionCode == 0xE1212012) {
+		return ExceptionHandler(ep);
+	}
 	return EXCEPTION_CONTINUE_SEARCH;
 }
 
