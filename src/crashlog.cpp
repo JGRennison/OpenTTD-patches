@@ -223,16 +223,25 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 			pathfinder_name(_settings_game.pf.pathfinder_for_trains), pathfinder_name(_settings_game.pf.pathfinder_for_roadvehs), pathfinder_name(_settings_game.pf.pathfinder_for_ships)
 	);
 
+	auto log_font = [&](FontSize fs) -> const char * {
+		FontCache *fc = FontCache::Get(fs);
+		if (fc != nullptr) {
+			return fc->GetFontName();
+		} else {
+			return "[NULL]";
+		}
+	};
+
 	buffer += seprintf(buffer, last,
 			"Fonts:\n"
 			" Small:  %s\n"
 			" Medium: %s\n"
 			" Large:  %s\n"
 			" Mono:   %s\n\n",
-			FontCache::Get(FS_SMALL)->GetFontName(),
-			FontCache::Get(FS_NORMAL)->GetFontName(),
-			FontCache::Get(FS_LARGE)->GetFontName(),
-			FontCache::Get(FS_MONO)->GetFontName()
+			log_font(FS_SMALL),
+			log_font(FS_NORMAL),
+			log_font(FS_LARGE),
+			log_font(FS_MONO)
 	);
 
 	buffer += seprintf(buffer, last, "Map size: 0x%X (%u x %u)%s\n\n", MapSize(), MapSizeX(), MapSizeY(), (!_m || !_me) ? ", NO MAP ALLOCATED" : "");
