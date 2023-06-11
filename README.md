@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.53.3
+## JGR's Patchpack version 0.54.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -199,6 +199,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add setting to limit length of continuous inclined roads built by towns.
 * Allow overriding town road construction settings and whether town growth is enabled on a per-town basis, add setting to enable this for multiplayer clients.
 * Allow NewGRFs to set town zone radii.
+* Show town count in town directory window.
 
 #### Industries
 
@@ -227,6 +228,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add setting to disable object expiry after a given year.
 * Add setting to ignore object introduction dates.
 * Add setting for whether to confirm before demolishing industries and/or rail stations.
+* Add picker tool for objects, rail types, road types, rail stations/waypoints and road stops/waypoints, to the main toolbar help menu.
 
 #### Scenario Editor
 
@@ -254,6 +256,8 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Make the company infrastructure window scrollable.
 * Add setting to disable water animation depending on zoom level.
 * Add zoom in support to the minimap window.
+* Add setting to increase the size of the main toolbar.
+* Add cargo filtering and a show by cargo mode to the company delivered cargo graph.
 
 #### Limits
 
