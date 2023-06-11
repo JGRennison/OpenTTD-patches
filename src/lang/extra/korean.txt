@@ -1,4 +1,5 @@
 STR_CONFIG_SETTING_TREE_PLACER_PERFECT                          :완벽
+STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT_EXTRA                   :{STRING}, '완벽'은 나무의 퍼짐과 모여있는 정도를 개선해줍니다
 
 STR_FINANCES_SECTION_INFRASTRUCTURE_COSTS                       :{GOLD}타사 시설 사용비
 STR_FINANCES_SECTION_INFRASTRUCTURE_INCOME                      :{GOLD}시설 공유 수익
@@ -45,6 +46,8 @@ STR_VIEWPORT_TOWN_TINY_EXCELLENT_RATING                         :{TINY_FONT}{GRE
 
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :매우 느림
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :더 느림
+
+STR_ABOUT_MENU_SHOW_PICKER_TOOL                                 :선택 도구
 
 STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :보조 키 창
 
@@ -95,6 +98,11 @@ STR_GRAPH_CARGO_DAYS_MODE                                       :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_SPEED_MODE                                      :{TINY_FONT}{BLACK}평균 속력
 STR_GRAPH_CARGO_TOOLTIP_DAYS_MODE                               :{BLACK}그래프의 X축에 통과 시간을 표시합니다
 STR_GRAPH_CARGO_TOOLTIP_SPEED_MODE                              :{BLACK}그래프의 X축에 평균 수송 시간을 표시합니다
+
+STR_GRAPH_DELIVERED_CARGO_BY_COMPANY_MODE                       :{TINY_FONT}{BLACK}회사
+STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE                         :{TINY_FONT}{BLACK}화물
+STR_GRAPH_DELIVERED_CARGO_BY_COMPANY_MODE_TOOLTIP               :{BLACK}선택한 회사를 각각 하나의 선으로 표시합니다
+STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE_TOOLTIP                 :{BLACK}선택한 화물를 각각 하나의 선으로 표시합니다
 
 STR_SMALLMAP_SCREENSHOT                                         :{BLACK}스크린샷
 
@@ -575,6 +583,11 @@ STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_HELPTEXT             :화물을 목�
 STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_TRADITIONAL          :구식
 STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_MODERN               :개선
 
+STR_CONFIG_SETTING_TICK_RATE                                    :게임 틱 속도: {STRING}
+STR_CONFIG_SETTING_TICK_RATE_HELPTEXT                           :1 게임틱을 몇 밀리초(ms)로 계산할 것인지 설정합니다.
+STR_CONFIG_SETTING_TICK_RATE_TRADITIONAL                        :30 ms/틱 (구식)
+STR_CONFIG_SETTING_TICK_RATE_MODERN                             :27 ms/틱 (현대식)
+
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :도시 사이의 최소 거리: {STRING}
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :지도를 생성하고 무작위로 도시를 배치할 때 도시 사이의 최소 거리를 설정합니다.
 
@@ -596,6 +609,8 @@ STR_CONFIG_SETTING_INTERFACE_TIME_CLIENT                        :{ORANGE}클라�
 STR_CONFIG_SETTING_INTERFACE_TIME_SAVEGAME                      :{ORANGE}세이브파일 설정
 STR_CONFIG_SETTING_INTERFACE_TIMETABLE                          :{ORANGE}시간표
 STR_CONFIG_SETTING_INTERFACE_ADV_SIGNALS                        :{ORANGE}신호기 (고급)
+STR_CONFIG_SETTING_INTERFACE_SAVE                               :{ORANGE}저장 & 자동 저장
+STR_CONFIG_SETTING_INTERFACE_VEHICLE_WINDOWS                    :{ORANGE}차량 창
 STR_CONFIG_SETTING_GENWORLD_RIVERS_LAKES                        :{ORANGE}강 & 호수
 STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST_PER_CARGO_OVERRIDE     :{ORANGE}화물 분배 - 화물별
 STR_CONFIG_SETTING_ENVIRONMENT_TREES                            :{ORANGE}나무
@@ -974,7 +989,7 @@ STR_TRACE_RESTRICT_APPEND                                       :{BLACK}덧붙�
 STR_TRACE_RESTRICT_DUPLICATE                                    :{BLACK}복제
 STR_TRACE_RESTRICT_SHARE                                        :{BLACK}공유
 STR_TRACE_RESTRICT_UNSHARE                                      :{BLACK}공유 해제
-STR_TRACE_RESTRICT_SHARE_ONTO                                   :{BLACK}이 신호기 공유
+STR_TRACE_RESTRICT_SHARE_ONTO                                   :{BLACK}이 신호기와 공유
 STR_TRACE_RESTRICT_SELECT_TARGET                                :{BLACK}선택
 STR_TRACE_RESTRICT_SELECT_SIGNAL                                :{BLACK}신호기 선택
 STR_TRACE_RESTRICT_SELECT_TILE                                  :{BLACK}칸 선택
@@ -1300,6 +1315,8 @@ STR_CONFIG_MAX_DEPARTURES                                       :한 역마다 �
 STR_CONFIG_MAX_DEPARTURES_HELPTEXT                              :출발/도착 정보에 표시할 정보의 최대 개수를 지정합니다.
 STR_CONFIG_MAX_DEPARTURE_TIME                                   :{STRING} 일 후의 정보까지 보이기
 STR_CONFIG_MAX_DEPARTURE_TIME_HELPTEXT                          :몇 일 후의 정보까지 표시할지 지정합니다.
+STR_CONFIG_MAX_DEPARTURE_TIME_MINUTES                           :최대 {STRING}분 전에 도착/출발 표시
+STR_CONFIG_MAX_DEPARTURE_TIME_MINUTES_HELPTEXT                  :도착/출발을 몇 분 미리 표시할지 설정합니다
 STR_CONFIG_DEPARTURE_CALC_FREQUENCY                             :{STRING} 틱마다 정보를 갱신하기
 STR_CONFIG_DEPARTURE_CALC_FREQUENCY_HELPTEXT                    :정보를 얼마나 자주 갱신할지 틱으로 지정합니다.
 STR_CONFIG_DEPARTURE_VEHICLE_NAME                               :차량 이름을 함께 보이기: {STRING}
@@ -1552,6 +1569,7 @@ STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}경로 �
 STR_ORDERS_OCCUPANCY_PERCENT                                    :{NUM}%
 
 STR_ORDERS_NEW_GROUP_TOOLTIP                                    :{BLACK}한 차량으로 그룹 만들기
+STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP_EXTRA            :{STRING}{}{BLACK}CTRL+클릭하면 차량 하나로 그룹을 만들 수 있습니다
 
 STR_ORDER_GO_TO_WAYPOINT_REVERSE                                :완행 경유 {WAYPOINT} (회차)
 STR_ORDER_GO_NON_STOP_TO_WAYPOINT_REVERSE                       :직행 경유 {WAYPOINT} (회차)
@@ -2063,3 +2081,8 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}이 회�
 STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}이 회사 지분의 25%를 매입할 수 없습니다...
 STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}이 회사 지분의 25%를 매도할 수 없습니다...
 STR_ERROR_PROTECTED                                             :{WHITE}이 회사는 지분을 거래할 수 있을 만큼 오래되지 않았습니다...
+
+STR_TOWN_DIRECTORY_INFO                                         :{BLACK}{STRING}, 도시: {COMMA}
+
+STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR                         :{BLACK}큰 메인 메뉴
+STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR_TOOLTIP                 :{BLACK}메인 메뉴의 크기를 키우려면 이 항목에 체크하세요
