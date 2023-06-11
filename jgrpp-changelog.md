@@ -2,6 +2,9 @@
 
 * * *
 
+### v0.54.1 (2023-06-11)
+* Fix crash on Windows (Vista and later)
+
 ### v0.54.0 (2023-06-11)
 * Fix crash in template replacement failure news message if autorenew succeeds.
 * Fix crash when re-opening GRF/script settings windows with a dropdown open.
