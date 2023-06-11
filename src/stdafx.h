@@ -449,18 +449,16 @@ void NORETURN CDECL assert_msg_error(int line, const char *file, const char *exp
 const char *assert_tile_info(uint32 tile);
 #define NOT_REACHED() error("NOT_REACHED triggered at line %i of %s", __LINE__, __FILE__)
 
-/* For non-debug builds with assertions enabled use the special assertion handler. */
-#if defined(NDEBUG) && defined(WITH_ASSERT)
-#	undef assert
-#	define assert(expression) if (unlikely(!(expression))) error("Assertion failed at line %i of %s: %s", __LINE__, __FILE__, #expression);
-#endif
-
 /* Asserts are enabled if NDEBUG isn't defined or WITH_ASSERT is defined. */
 #if !defined(NDEBUG) || defined(WITH_ASSERT)
+#	undef assert
+#	define assert(expression) if (unlikely(!(expression))) error("Assertion failed at line %i of %s: %s", __LINE__, __FILE__, #expression);
 #	define assert_msg(expression, ...) if (unlikely(!(expression))) assert_msg_error(__LINE__, __FILE__, #expression, nullptr, __VA_ARGS__);
 #	define assert_msg_tile(expression, tile, ...) if (unlikely(!(expression))) assert_msg_error(__LINE__, __FILE__, #expression, assert_tile_info(tile), __VA_ARGS__);
 #	define assert_tile(expression, tile) if (unlikely(!(expression))) error("Assertion failed at line %i of %s: %s\n\t%s", __LINE__, __FILE__, #expression, assert_tile_info(tile));
 #else
+#	undef assert
+#	define assert(expression)
 #	define assert_msg(expression, ...)
 #	define assert_msg_tile(expression, tile, ...)
 #	define assert_tile(expression, tile)
