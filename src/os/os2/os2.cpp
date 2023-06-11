@@ -170,6 +170,11 @@ void ShowOSErrorBox(const char *buf, bool system)
 	WinTerminate(hab);
 }
 
+void DoOSAbort()
+{
+	abort();
+}
+
 int CDECL main(int argc, char *argv[])
 {
 	SetRandomSeed(time(nullptr));

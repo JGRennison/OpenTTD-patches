@@ -233,6 +233,11 @@ void ShowOSErrorBox(const char *buf, bool system)
 		fprintf(stderr, "Error: %s\n", buf);
 	}
 }
+
+void NORETURN DoOSAbort()
+{
+	abort();
+}
 #endif
 
 #ifdef WITH_COCOA

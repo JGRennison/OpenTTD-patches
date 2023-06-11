@@ -123,6 +123,7 @@ extern Company *DoStartupNewCompany(bool is_ai, CompanyID company = INVALID_COMP
 extern void OSOpenBrowser(const char *url);
 extern void RebuildTownCaches(bool cargo_update_required, bool old_map_position);
 extern void ShowOSErrorBox(const char *buf, bool system);
+extern void NORETURN DoOSAbort();
 extern std::string _config_file;
 
 bool _save_config = false;
@@ -180,7 +181,7 @@ void CDECL error(const char *s, ...)
 
 	/* Set the error message for the crash log and then invoke it. */
 	CrashLog::SetErrorMessage(buf);
-	abort();
+	DoOSAbort();
 }
 
 void CDECL assert_msg_error(int line, const char *file, const char *expr, const char *extra, const char *str, ...)
@@ -203,7 +204,7 @@ void CDECL assert_msg_error(int line, const char *file, const char *expr, const 
 
 	/* Set the error message for the crash log and then invoke it. */
 	CrashLog::SetErrorMessage(buf);
-	abort();
+	DoOSAbort();
 }
 
 const char *assert_tile_info(uint32 tile) {

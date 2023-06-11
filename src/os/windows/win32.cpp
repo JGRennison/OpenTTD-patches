@@ -86,6 +86,11 @@ void ShowOSErrorBox(const char *buf, bool system)
 	MessageBox(GetActiveWindow(), OTTD2FS(buf).c_str(), L"Error!", MB_ICONSTOP | MB_TASKMODAL);
 }
 
+void NORETURN DoOSAbort()
+{
+	RaiseException(0xE1212012, 0, 0, nullptr);
+}
+
 void OSOpenBrowser(const char *url)
 {
 	ShellExecute(GetActiveWindow(), L"open", OTTD2FS(url).c_str(), nullptr, nullptr, SW_SHOWNORMAL);

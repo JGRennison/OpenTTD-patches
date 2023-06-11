@@ -158,6 +158,11 @@ void ShowOSErrorBox(const char *buf, bool system)
 	}
 }
 
+void DoOSAbort()
+{
+	abort();
+}
+
 void OSOpenBrowser(const char *url)
 {
 	[ [ NSWorkspace sharedWorkspace ] openURL:[ NSURL URLWithString:[ NSString stringWithUTF8String:url ] ] ];
