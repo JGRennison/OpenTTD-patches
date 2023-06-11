@@ -31,6 +31,10 @@ My patches:
 
 7. Town limits zoning - allows to see where town limits are (different from the authority).
 
+8. Methods for infrastructure sharing to be used by AI.
+
+9. Setting to enable AI to share their depots for buying/renewing vehicles.
+
 ## JGR's Patchpack version 0.53.1
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)

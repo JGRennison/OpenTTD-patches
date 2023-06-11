@@ -746,7 +746,7 @@ bool IsValidCommand(uint32 cmd)
  */
 CommandFlags GetCommandFlags(uint32 cmd)
 {
-	assert(IsValidCommand(cmd));
+	if (unlikely(!(IsValidCommand(cmd)))) error("Assertion failed at line %i of %s: CMD: %i", __LINE__, __FILE__, cmd);
 
 	return _command_proc_table[cmd & CMD_ID_MASK].flags;
 }

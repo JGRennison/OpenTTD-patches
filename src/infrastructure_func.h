@@ -24,6 +24,14 @@ void HandleSharingCompanyDeletion(Owner owner);
 void UpdateAllBlockSignals(Owner owner = INVALID_OWNER);
 
 /**
+ * Sell a vehicle, no matter where it may be.
+ * @param v The vehicle to sell
+ * @param give_money Do we actually need to give money to the vehicle owner?
+ */
+void RemoveAndSellVehicle(Vehicle *v, bool give_money);
+
+
+/**
  * Check whether a vehicle of a given owner and type can use the infrastrucutre of a given company.
  * @param type        Type of vehicle we are talking about.
  * @param veh_owner   Owner of the vehicle in question.

@@ -123,6 +123,22 @@ public:
 	static SQInteger GetNumHangars(TileIndex tile);
 
 	/**
+	 * Get the number of terminals of the airport.
+	 * @param tile Any tile of the airport.
+	 * @pre ScriptMap::IsValidTile(tile).
+	 * @return The number of terminals of the airport.
+	 */
+	static SQInteger GetNumTerminals(TileIndex tile);
+
+	/**
+	 * Get the number of helipads of the airport.
+	 * @param tile Any tile of the airport.
+	 * @pre ScriptMap::IsValidTile(tile).
+	 * @return The number of helipads of the airport.
+	 */
+	static SQInteger GetNumHelipads(TileIndex tile);
+
+	/**
 	 * Get the first hangar tile of the airport.
 	 * @param tile Any tile of the airport.
 	 * @pre ScriptMap::IsValidTile(tile).
@@ -181,6 +197,24 @@ public:
 	 * @note The noise will be added to the town with TownID GetNearestTown(tile, type).
 	 */
 	static SQInteger GetNoiseLevelIncrease(TileIndex tile, AirportType type);
+
+	/**
+	 * Checks if airport has short strip.
+	 * @param tile Any tile of the airport.
+	 * @pre ScriptTile::IsStationTile(tile).
+	 * @pre ScriptStation::HasStationType(ScriptStation.GetStationID(tile), ScriptStation::STATION_AIRPORT).
+	 * @return If airport has short strip.
+	 */
+	static bool HasShortStrip(TileIndex tile);
+
+	/**
+	 * Checks if airport has only helipads.
+	 * @param tile Any tile of the airport.
+	 * @pre ScriptTile::IsStationTile(tile).
+	 * @pre ScriptStation::OnlyHelicopters(ScriptStation.GetStationID(tile), ScriptStation::STATION_AIRPORT).
+	 * @return If airport has only helipads.
+	 */
+	static bool OnlyHelicopters(TileIndex tile);
 
 	/**
 	 * Get the TownID of the town whose local authority will influence

@@ -24,6 +24,27 @@ ScriptStationList::ScriptStationList(ScriptStation::StationType station_type)
 	}
 }
 
+ScriptStationList::ScriptStationList()
+{
+
+}
+
+/* static */ ScriptStationList *ScriptStationList::GetAllStations(ScriptStation::StationType station_type)
+{
+	byte infrastructureIndex = ScriptStation::StationTypeToInfrastuctureSetting(station_type);
+	ScriptStationList *list = new ScriptStationList();
+	for (Station *st : Station::Iterate()) {
+		if ((st->facilities & station_type) != 0
+			&& ((st->owner == ScriptObject::GetCompany() || ScriptObject::GetCompany() == OWNER_DEITY)
+				|| (infrastructureIndex >= 0 && _settings_game.economy.infrastructure_sharing[infrastructureIndex] && st->owner >= OWNER_BEGIN && st->owner <= MAX_COMPANIES)
+				)) {
+			list->AddItem(st->index);
+		}
+	}
+
+	return list;
+}
+
 ScriptStationList_Vehicle::ScriptStationList_Vehicle(VehicleID vehicle_id)
 {
 	if (!ScriptVehicle::IsPrimaryVehicle(vehicle_id)) return;

@@ -2733,6 +2733,13 @@ void SetDefaultCompanySettings(CompanyID cid)
 			int_setting->MakeValueValidAndWrite(&c->settings, int_setting->def);
 		}
 	}
+
+	if (c->is_ai && _settings_game.ai.ai_enable_buy_in_depots) {
+		c->settings.infra_others_buy_in_depot[0] = true;
+		c->settings.infra_others_buy_in_depot[1] = true;
+		c->settings.infra_others_buy_in_depot[2] = true;
+		c->settings.infra_others_buy_in_depot[3] = true;
+	}
 }
 
 /**

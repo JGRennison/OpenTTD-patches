@@ -247,6 +247,15 @@ public:
 	static ScriptRoad::RoadType GetRoadType(EngineID engine_id);
 
 	/**
+	 * Get the RoadTramType of the engine.
+	 * @param engine_id The engine to get the RoadType of.
+	 * @pre IsValidEngine(engine_id).
+	 * @pre GetVehicleType(engine_id) == ScriptVehicle::VT_ROAD.
+	 * @return The RoadTramType the engine has.
+	 */
+	static ScriptRoad::RoadTramTypes GetRoadTramType(EngineID engine_id);
+
+	/**
 	 * Get the RailType of the engine.
 	 * @param engine_id The engine to get the RailType of.
 	 * @pre IsValidEngine(engine_id).
@@ -287,6 +296,15 @@ public:
 	 * @see ScriptOrder::GetOrderDistance
 	 */
 	static SQInteger GetMaximumOrderDistance(EngineID engine_id);
+
+	/**
+	 * Get the maximum range of the engine. Or 0 if it's unlimited
+	 * @param engine_id The engine to get the max distance for.
+	 * @pre IsValidEngine(engine_id).
+	 * @return The maximum distance between two orders for the engine
+	 *         or 0 if the distance is unlimited.
+	 */
+	static SQInteger GetRange(EngineID engine_id);
 
 	/**
 	 * Allows a company to use an engine before its intro date or after retirement.

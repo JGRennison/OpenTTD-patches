@@ -51,6 +51,7 @@
 #include "economy_func.h"
 #include "town.h"
 #include "industry.h"
+#include "infrastructure_func.h"
 #include "string_func_extra.h"
 #include "linkgraph/linkgraphjob.h"
 #include "base_media_base.h"
@@ -1919,6 +1920,30 @@ DEF_CONSOLE_CMD(ConCompanies)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConSellVehicles)
+{
+	if (argc == 0) {
+		IConsoleHelp("Sells all vehicles that have specified station in orders. Usage: sell_vehicles <station-index>");
+		return true;
+	}
+
+	if (argc != 2) return false;
+
+	for (Vehicle *veh : Vehicle::Iterate()) {
+		const Order *order = veh->GetFirstOrder();
+		while (order != nullptr) {
+			if (order->GetDestination() == atoi(argv[1]) && order->GetType() == OT_GOTO_STATION) {
+				RemoveAndSellVehicle(veh, true);
+			}
+
+			order = order->next;
+		}
+	}
+
+	return true;
+}
+
+
 DEF_CONSOLE_CMD(ConSay)
 {
 	if (argc == 0) {
@@ -3751,6 +3776,8 @@ void IConsoleStdLibRegister()
 
 	IConsole::CmdRegister("companies",               ConCompanies);
 	IConsole::AliasRegister("players",               "companies");
+
+	IConsole::CmdRegister("sell_vehicles",				ConSellVehicles);
 
 	/* networking functions */
 

@@ -10,6 +10,7 @@
 #include "../../stdafx.h"
 #include "script_airport.hpp"
 #include "script_station.hpp"
+#include "../../company_base.h"
 #include "../../station_base.h"
 #include "../../town.h"
 
@@ -99,11 +100,50 @@ extern uint8 GetAirportNoiseLevelForDistance(const struct AirportSpec *as, uint 
 	if (!::IsTileType(tile, MP_STATION)) return -1;
 
 	const Station *st = ::Station::GetByTile(tile);
-	if (st->owner != ScriptObject::GetCompany() && ScriptCompanyMode::IsValid()) return -1;
+	const Company *ownerCompany = ::Company::Get(st->owner);
+	if ((st->owner != ScriptObject::GetCompany() && ScriptObject::GetCompany() != OWNER_DEITY)
+		&& !(_settings_game.economy.infrastructure_sharing[VEH_AIRCRAFT]
+			&& ownerCompany->settings.infra_others_buy_in_depot[VEH_AIRCRAFT])) return -1;
 	if ((st->facilities & FACIL_AIRPORT) == 0) return -1;
 
 	return st->airport.GetNumHangars();
 }
+
+/* static */ SQInteger ScriptAirport::GetNumTerminals(TileIndex tile)
+{
+	if (!::IsValidTile(tile)) return -1;
+	if (!::IsTileType(tile, MP_STATION)) return -1;
+
+	const Station *st = ::Station::GetByTile(tile);
+	const Company *ownerCompany = ::Company::Get(st->owner);
+	if ((st->owner != ScriptObject::GetCompany() && ScriptObject::GetCompany() != OWNER_DEITY)
+		&& !(_settings_game.economy.infrastructure_sharing[VEH_AIRCRAFT]
+			&& ownerCompany->settings.infra_others_buy_in_depot[VEH_AIRCRAFT])) return -1;
+	if ((st->facilities & FACIL_AIRPORT) == 0) return -1;
+
+	uint num = 0;
+	if (st->airport.GetFTA()->terminals == nullptr) return 0;
+
+	for (uint i = st->airport.GetFTA()->terminals[0]; i > 0; i--) num += st->airport.GetFTA()->terminals[i];
+
+	return num;
+}
+
+/* static */ SQInteger ScriptAirport::GetNumHelipads(TileIndex tile)
+{
+	if (!::IsValidTile(tile)) return -1;
+	if (!::IsTileType(tile, MP_STATION)) return -1;
+
+	const Station *st = ::Station::GetByTile(tile);
+	const Company *ownerCompany = ::Company::Get(st->owner);
+	if ((st->owner != ScriptObject::GetCompany() && ScriptObject::GetCompany() != OWNER_DEITY)
+		&& !(_settings_game.economy.infrastructure_sharing[VEH_AIRCRAFT]
+			&& ownerCompany->settings.infra_others_buy_in_depot[VEH_AIRCRAFT])) return -1;
+	if ((st->facilities & FACIL_AIRPORT) == 0) return -1;
+
+	return st->airport.GetFTA()->num_helipads;
+}
+
 
 /* static */ TileIndex ScriptAirport::GetHangarOfAirport(TileIndex tile)
 {
@@ -113,7 +153,10 @@ extern uint8 GetAirportNoiseLevelForDistance(const struct AirportSpec *as, uint 
 	if (GetNumHangars(tile) < 1) return INVALID_TILE;
 
 	const Station *st = ::Station::GetByTile(tile);
-	if (st->owner != ScriptObject::GetCompany() && ScriptCompanyMode::IsValid()) return INVALID_TILE;
+	const Company *ownerCompany = ::Company::Get(st->owner);
+	if ((st->owner != ScriptObject::GetCompany() && ScriptObject::GetCompany() != OWNER_DEITY)
+		&& !(_settings_game.economy.infrastructure_sharing[VEH_AIRCRAFT]
+			&& ownerCompany->settings.infra_others_buy_in_depot[VEH_AIRCRAFT])) return INVALID_TILE;
 	if ((st->facilities & FACIL_AIRPORT) == 0) return INVALID_TILE;
 
 	return st->airport.GetHangarTile(0);
@@ -147,6 +190,28 @@ extern uint8 GetAirportNoiseLevelForDistance(const struct AirportSpec *as, uint 
 	}
 
 	return 1;
+}
+
+/* static */ bool ScriptAirport::HasShortStrip(TileIndex tile)
+{
+	if (!ScriptTile::IsStationTile(tile)) return AT_INVALID;
+
+	StationID station_id = ::GetStationIndex(tile);
+
+	if (!ScriptStation::HasStationType(station_id, ScriptStation::STATION_AIRPORT)) return AT_INVALID;
+
+	return (::Station::Get(station_id)->airport.GetFTA()->flags) & AirportFTAClass::SHORT_STRIP;
+}
+
+/* static */ bool ScriptAirport::OnlyHelicopters(TileIndex tile)
+{
+	if (!ScriptTile::IsStationTile(tile)) return AT_INVALID;
+
+	StationID station_id = ::GetStationIndex(tile);
+
+	if (!ScriptStation::HasStationType(station_id, ScriptStation::STATION_AIRPORT)) return AT_INVALID;
+
+	return !((::Station::Get(station_id)->airport.GetFTA()->flags) & AirportFTAClass::AIRPLANES);
 }
 
 /* static */ TownID ScriptAirport::GetNearestTown(TileIndex tile, AirportType type)

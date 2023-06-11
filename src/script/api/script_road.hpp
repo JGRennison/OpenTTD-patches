@@ -64,6 +64,8 @@ public:
 	enum RoadTramTypes : uint8 {
 		ROADTRAMTYPES_ROAD = ::RTTB_ROAD, ///< Road road types.
 		ROADTRAMTYPES_TRAM = ::RTTB_TRAM, ///< Tram road types.
+
+		ROADTRAMTYPES_INVALID = -1 // Invalid type
 	};
 
 	/**
@@ -111,6 +113,16 @@ public:
 	static bool IsRoadTile(TileIndex tile);
 
 	/**
+	 * Checks whether the given tile is actually a tile with road that can be
+	 *  used to traverse a tile. This excludes road depots and 'normal' road
+	 *  stations, but includes drive through stations.
+	 * @param tile The tile to check.
+	 * @pre ScriptMap::IsValidTile(tile).
+	 * @return True if and only if the tile has road.
+	 */
+	static bool IsRoadTileOfType(TileIndex tile, ScriptRoad::RoadTramTypes type);
+
+	/**
 	 * Checks whether the given tile is actually a tile with a road depot.
 	 * @param tile The tile to check.
 	 * @pre ScriptMap::IsValidTile(tile).
@@ -118,6 +130,15 @@ public:
 	 * @return True if and only if the tile has a road depot.
 	 */
 	static bool IsRoadDepotTile(TileIndex tile);
+
+	/**
+	 * Checks whether the given tile is actually a tile with a road depot.
+	 * @param tile The tile to check.
+	 * @pre ScriptMap::IsValidTile(tile).
+	 * @pre IsRoadTypeAvailable(GetCurrentRoadType()).
+	 * @return True if and only if the tile has a road depot.
+	 */
+	static bool IsRoadDepotTileOfType(TileIndex tile, ScriptRoad::RoadTramTypes type);
 
 	/**
 	 * Checks whether the given tile is actually a tile with a road station.
@@ -129,6 +150,27 @@ public:
 	static bool IsRoadStationTile(TileIndex tile);
 
 	/**
+	 * Checks whether the given tile is actually a tile with a road station.
+	 * @param tile The tile to check.
+	 * @param type Type of the road (tram or regular).
+	 * @pre ScriptMap::IsValidTile(tile).
+	 * @pre IsRoadTypeAvailable(GetCurrentRoadType()).
+	 * @return True if and only if the tile has a road station.
+	 */
+	static bool IsRoadStationTileOfType(TileIndex tile, ScriptRoad::RoadTramTypes type);
+
+	/**
+	 * Checks whether the given tile is actually a tile with a road station.
+	 * @param tile The tile to check for specific vehicle type.
+	 * @param roadType Type of the road (tram or regular).
+	 * @param vehicleType Type of the vehicle (bus or track).
+	 * @pre ScriptMap::IsValidTile(tile).
+	 * @pre IsRoadTypeAvailable(GetCurrentRoadType()).
+	 * @return True if and only if the tile has a road station for specific vehicle type.
+	 */
+	static bool IsRoadStationTileOfVehicleType(TileIndex tile, ScriptRoad::RoadTramTypes roadType, ScriptRoad::RoadVehicleType vehicleType);
+
+	/**
 	 * Checks whether the given tile is actually a tile with a drive through
 	 *  road station.
 	 * @param tile The tile to check.
@@ -137,6 +179,29 @@ public:
 	 * @return True if and only if the tile has a drive through road station.
 	 */
 	static bool IsDriveThroughRoadStationTile(TileIndex tile);
+
+	/**
+	 * Checks whether the given tile is actually a tile with a drive through
+	 *  road station.
+	 * @param tile The tile to check.
+	 * @param type Type of the road (tram or regular).
+	 * @pre ScriptMap::IsValidTile(tile).
+	 * @pre IsRoadTypeAvailable(GetCurrentRoadType()).
+	 * @return True if and only if the tile has a drive through road station.
+	 */
+	static bool IsDriveThroughRoadStationTileOfType(TileIndex tile, ScriptRoad::RoadTramTypes type);
+
+	/**
+	 * Checks whether the given tile is actually a tile with a drive through
+	 *  road station for specific vehicle type.
+	 * @param tile The tile to check.
+	 * @param roadType Type of the road (tram or regular).
+	 * @param vehicleType Type of the vehicle (bus or track).
+	 * @pre ScriptMap::IsValidTile(tile).
+	 * @pre IsRoadTypeAvailable(GetCurrentRoadType()).
+	 * @return True if and only if the tile has a drive through road station for specific vehicle type.
+	 */
+	static bool IsDriveThroughRoadStationTileOfVehicleType(TileIndex tile, ScriptRoad::RoadTramTypes roadType, ScriptRoad::RoadVehicleType vehicleType);
 
 	/**
 	 * Check if a given RoadType is available.
@@ -235,6 +300,20 @@ public:
 	 * @return True if and only if a road vehicle can go from tile_from to tile_to.
 	 */
 	static bool AreRoadTilesConnected(TileIndex tile_from, TileIndex tile_to);
+
+	/**
+	 * Checks whether the given tiles are directly connected, i.e. whether
+	 *  a road vehicle can travel from the center of the first tile to the
+	 * center of the second tile.
+	 * @param tile_from The source tile.
+	 * @param tile_to The destination tile.
+	 * @param type Road or tram.
+	 * @pre ScriptMap::IsValidTile(tile_from).
+	 * @pre ScriptMap::IsValidTile(tile_to).
+	 * @pre 'tile_from' and 'tile_to' are directly neighbouring tiles.
+	 * @return True if and only if a road vehicle can go from tile_from to tile_to.
+	 */
+	static bool AreRoadTilesConnectedByRoadTramType(TileIndex tile_from, TileIndex tile_to, RoadTramTypes type);
 
 	/**
 	 * Lookup function for building road parts independent of whether the
@@ -569,6 +648,20 @@ public:
 	 * @return RoadTramTypes of the road types.
 	 */
 	static RoadTramTypes GetRoadTramType(RoadType roadtype);
+
+	/**
+	 * Test if a tile has Road (any type, not tram)
+	 * @param tile  tile to search
+	 * @return true if tile has road .
+	 */
+	static bool HasAnyRoadTypeRoad(TileIndex tile);
+
+	/**
+	 * Test if a tile has tram tracks (any type)
+	 * @param tile  tile  to search
+	 * @return true if tile has tram tracks.
+	 */
+	static bool HasAnyRoadTypeTram(TileIndex tile);
 
 	/**
 	 * Get the maximum speed of road vehicles running on this roadtype.

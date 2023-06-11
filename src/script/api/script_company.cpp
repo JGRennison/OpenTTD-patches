@@ -352,3 +352,51 @@
 
 	return (ScriptCompany::Colours)c->livery[scheme].colour2;
 }
+
+/* static */ Money ScriptCompany::GetCompanyValue(ScriptCompany::CompanyID companyID)
+{
+	companyID = ResolveCompanyID(companyID);
+	if (companyID == COMPANY_INVALID) return -1;
+
+	return CalculateCompanyValue(::Company::Get(companyID));
+}
+
+/* static */ bool ScriptCompany::BuyShareInCompany(ScriptCompany::CompanyID companyID)
+{
+	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
+
+	companyID = ResolveCompanyID(companyID);
+	if (companyID == COMPANY_INVALID) return false;
+
+	return ScriptObject::DoCommand(0, companyID, 0, CMD_BUY_SHARE_IN_COMPANY);
+}
+
+/* static */ byte ScriptCompany::GetCompanyShare(ScriptCompany::CompanyID ownerCompanyID, ScriptCompany::CompanyID inCompanyID)
+{
+
+	ownerCompanyID = ResolveCompanyID(ownerCompanyID);
+	inCompanyID = ResolveCompanyID(inCompanyID);
+	if (ownerCompanyID == COMPANY_INVALID || inCompanyID == COMPANY_INVALID) return -1;
+
+	byte num = 0;
+	Company *c = ::Company::Get(inCompanyID);
+	for (byte i = 0; i < 4; i++) {
+		if (c->share_owners[i] == ownerCompanyID) {
+			num++;
+		}
+	}
+
+	return num;
+}
+
+/* static */ bool ScriptCompany::IsAICompany(ScriptCompany::CompanyID companyID)
+{
+	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
+
+	companyID = ResolveCompanyID(companyID);
+	if (companyID == COMPANY_INVALID) return false;
+
+	const Company *c = ::Company::GetIfValid(companyID);
+
+	return c->is_ai;
+}

@@ -589,6 +589,14 @@ public:
 	static bool HasSharedOrders(VehicleID vehicle_id);
 
 	/**
+	 * Check if the vehicle has ivalid orders.
+	 * @param vehicle_id The vehicle to check.
+	 * @pre IsPrimaryVehicle(vehicle_id).
+	 * @return True if the vehicle has ivalid orders.
+	 */
+	static bool HasInvalidOrders(VehicleID vehicle_id);
+
+	/**
 	 * Get the current reliability of a vehicle.
 	 * @param vehicle_id The vehicle to check.
 	 * @pre IsPrimaryVehicle(vehicle_id).

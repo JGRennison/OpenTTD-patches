@@ -43,6 +43,30 @@ ScriptVehicleList_Station::ScriptVehicleList_Station(StationID station_id)
 	}
 }
 
+/* static */ ScriptVehicleList_Station *ScriptVehicleList_Station::GetAllVehicles(StationID station_id)
+{
+	ScriptVehicleList_Station *list = new ScriptVehicleList_Station();
+	if (!ScriptBaseStation::IsValidBaseStation(station_id)) return list;
+
+	for (const Vehicle *v : Vehicle::Iterate()) {
+		if (v->IsPrimaryVehicle()) {
+			for (const Order *order : v->Orders()) {
+				{
+					if ((order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT)) && order->GetDestination() == station_id) {
+						list->AddItem(v->index);
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	return list;
+}
+
+ScriptVehicleList_Station::ScriptVehicleList_Station(){
+}
+
 ScriptVehicleList_Depot::ScriptVehicleList_Depot(TileIndex tile)
 {
 	EnforceDeityOrCompanyModeValid_Void();

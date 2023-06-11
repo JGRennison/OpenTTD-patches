@@ -208,7 +208,7 @@ void ClientNetworkContentSocketHandler::RequestContentList(ContentType type)
 	Packet *p = new Packet(PACKET_CONTENT_CLIENT_INFO_LIST);
 	p->Send_uint8 ((byte)type);
 	p->Send_uint32(0xffffffff);
-	p->Send_uint8 (2);
+	p->Send_uint8 (3);
 	p->Send_string("vanilla");
 	p->Send_string(_openttd_content_version);
 
@@ -219,6 +219,8 @@ void ClientNetworkContentSocketHandler::RequestContentList(ContentType type)
 	 */
 
 	p->Send_string("jgrpp");
+	p->Send_string(_openttd_release_version_jgrpp);
+	p->Send_string("dbpp");
 	p->Send_string(_openttd_release_version);
 
 	this->SendPacket(p);

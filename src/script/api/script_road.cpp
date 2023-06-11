@@ -36,6 +36,14 @@
 			IsDriveThroughRoadStationTile(tile);
 }
 
+/* static */ bool ScriptRoad::IsRoadTileOfType(TileIndex tile, ScriptRoad::RoadTramTypes type)
+{
+	if (!::IsValidTile(tile)) return false;
+
+	return (::IsTileType(tile, MP_ROAD) && ::GetRoadTileType(tile) != ROAD_TILE_DEPOT) ||
+		IsDriveThroughRoadStationTileOfType(tile, type);
+}
+
 /* static */ bool ScriptRoad::IsRoadDepotTile(TileIndex tile)
 {
 	if (!::IsValidTile(tile)) return false;
@@ -43,6 +51,14 @@
 
 	return ::IsTileType(tile, MP_ROAD) && ::GetRoadTileType(tile) == ROAD_TILE_DEPOT &&
 			HasBit(::GetPresentRoadTypes(tile), (::RoadType)GetCurrentRoadType());
+}
+
+/* static */ bool ScriptRoad::IsRoadDepotTileOfType(TileIndex tile, ScriptRoad::RoadTramTypes type)
+{
+	if (!::IsValidTile(tile)) return false;
+
+	return ::IsTileType(tile, MP_ROAD) && ::GetRoadTileType(tile) == ROAD_TILE_DEPOT &&
+		(type == ScriptRoad::ROADTRAMTYPES_TRAM ? ::HasRoadTypeTram(tile) : HasRoadTypeRoad(tile));
 }
 
 /* static */ bool ScriptRoad::IsRoadStationTile(TileIndex tile)
@@ -53,12 +69,44 @@
 	return ::IsStationRoadStopTile(tile) && HasBit(::GetPresentRoadTypes(tile), (::RoadType)GetCurrentRoadType());
 }
 
+/* static */ bool ScriptRoad::IsRoadStationTileOfType(TileIndex tile, ScriptRoad::RoadTramTypes type)
+{
+	if (!::IsValidTile(tile)) return false;
+
+	return ::IsAnyRoadStopTile(tile) && (type == ScriptRoad::ROADTRAMTYPES_TRAM ? ::HasRoadTypeTram(tile) : HasRoadTypeRoad(tile));
+}
+
+/* static */ bool ScriptRoad::IsRoadStationTileOfVehicleType(TileIndex tile, ScriptRoad::RoadTramTypes roadType, ScriptRoad::RoadVehicleType vehicleType)
+{
+	if (!::IsValidTile(tile)) return false;
+
+	return ::IsAnyRoadStopTile(tile)
+		&& (roadType == ScriptRoad::ROADTRAMTYPES_TRAM ? ::HasRoadTypeTram(tile) : HasRoadTypeRoad(tile))
+		&& GetStationType(tile) == (vehicleType == ScriptRoad::ROADVEHTYPE_BUS ? StationType::STATION_BUS : StationType::STATION_TRUCK);
+}
+
 /* static */ bool ScriptRoad::IsDriveThroughRoadStationTile(TileIndex tile)
 {
 	if (!::IsValidTile(tile)) return false;
 	if (!IsRoadTypeAvailable(GetCurrentRoadType())) return false;
 
 	return ::IsDriveThroughStopTile(tile) && HasBit(::GetPresentRoadTypes(tile), (::RoadType)GetCurrentRoadType());
+}
+
+/* static */ bool ScriptRoad::IsDriveThroughRoadStationTileOfType(TileIndex tile, ScriptRoad::RoadTramTypes type)
+{
+	if (!::IsValidTile(tile)) return false;
+
+	return ::IsDriveThroughStopTile(tile) && (type == ScriptRoad::ROADTRAMTYPES_TRAM ? ::HasRoadTypeTram(tile) : HasRoadTypeRoad(tile));
+}
+
+/* static */ bool ScriptRoad::IsDriveThroughRoadStationTileOfVehicleType(TileIndex tile, ScriptRoad::RoadTramTypes roadType, ScriptRoad::RoadVehicleType vehicleType)
+{
+	if (!::IsValidTile(tile)) return false;
+
+	return ::IsDriveThroughStopTile(tile)
+		&& (roadType == ScriptRoad::ROADTRAMTYPES_TRAM ? ::HasRoadTypeTram(tile) : HasRoadTypeRoad(tile))
+		&& GetStationType(tile) == (vehicleType == ScriptRoad::ROADVEHTYPE_BUS ? StationType::STATION_BUS : StationType::STATION_TRUCK);
 }
 
 /* static */ bool ScriptRoad::IsRoadTypeAvailable(RoadType road_type)
@@ -133,6 +181,26 @@
 
 	DisallowedRoadDirections drd2 = IsNormalRoadTile(t2) ? GetDisallowedRoadDirections(t2) : DRD_NONE;
 	if (IsDriveThroughStopTile(t2)) drd2 = GetDriveThroughStopDisallowedRoadDirections(t2);
+
+	return HasBit(r1, dir_1) && HasBit(r2, dir_2) && drd2 != DRD_BOTH && drd2 != (dir_1 > dir_2 ? DRD_SOUTHBOUND : DRD_NORTHBOUND);
+}
+
+/* static */ bool ScriptRoad::AreRoadTilesConnectedByRoadTramType(TileIndex t1, TileIndex t2, RoadTramTypes type)
+{
+	if (!::IsValidTile(t1)) return false;
+	if (!::IsValidTile(t2)) return false;
+
+	/* Tiles not neighbouring */
+	if ((abs((int)::TileX(t1) - (int)::TileX(t2)) + abs((int)::TileY(t1) - (int)::TileY(t2))) != 1) return false;
+
+	RoadTramType rtt = type == ROADTRAMTYPES_TRAM ? RTT_TRAM : RTT_ROAD;
+	RoadBits r1 = ::GetAnyRoadBits(t1, rtt); // TODO
+	RoadBits r2 = ::GetAnyRoadBits(t2, rtt); // TODO
+
+	uint dir_1 = (::TileX(t1) == ::TileX(t2)) ? (::TileY(t1) < ::TileY(t2) ? 2 : 0) : (::TileX(t1) < ::TileX(t2) ? 1 : 3);
+	uint dir_2 = 2 ^ dir_1;
+
+	DisallowedRoadDirections drd2 = IsNormalRoadTile(t2) ? GetDisallowedRoadDirections(t2) : DRD_NONE;
 
 	return HasBit(r1, dir_1) && HasBit(r2, dir_2) && drd2 != DRD_BOTH && drd2 != (dir_1 > dir_2 ? DRD_SOUTHBOUND : DRD_NORTHBOUND);
 }
@@ -648,6 +716,23 @@ static bool NeighbourHasReachableRoad(::RoadType rt, TileIndex start_tile, DiagD
 {
 	return (RoadTramTypes)(1 << ::GetRoadTramType((::RoadType)roadtype));
 }
+
+/* static */ bool ScriptRoad::HasAnyRoadTypeRoad(TileIndex tile)
+{
+	if (!::IsValidTile(tile)) return false;
+	if (!::IsTileType(tile, MP_ROAD)) return false;
+
+	return ::HasRoadTypeRoad(tile);
+}
+
+/* static */ bool ScriptRoad::HasAnyRoadTypeTram(TileIndex tile)
+{
+	if (!::IsValidTile(tile)) return false;
+	if (!::IsTileType(tile, MP_ROAD)) return false;
+
+	return ::HasRoadTypeTram(tile);
+}
+
 
 /* static */ SQInteger ScriptRoad::GetMaxSpeed(RoadType road_type)
 {

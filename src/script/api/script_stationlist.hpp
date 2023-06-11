@@ -24,6 +24,14 @@ public:
 	 * @param station_type The type of station to make a list of stations for.
 	 */
 	ScriptStationList(ScriptStation::StationType station_type);
+
+	/**
+	 * @param station_type The type of station to make a list of stations for.
+	 */
+	static ScriptStationList *GetAllStations(ScriptStation::StationType station_type);
+
+protected:
+	ScriptStationList();
 };
 
 /**

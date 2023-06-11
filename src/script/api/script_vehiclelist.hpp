@@ -35,6 +35,15 @@ public:
 	 * @pre ScriptBaseStation::IsValidBaseStation(station_id)
 	 */
 	ScriptVehicleList_Station(StationID station_id);
+
+	/**
+	 * @param station_id The station to get the list of vehicles from, which have orders to it, including competitors.
+	 * @pre ScriptBaseStation::IsValidBaseStation(station_id)
+	 */
+	static ScriptVehicleList_Station *GetAllVehicles(StationID station_id);
+
+protected:
+	ScriptVehicleList_Station();
 };
 
 /**

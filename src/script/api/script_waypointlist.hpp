@@ -24,6 +24,16 @@ public:
 	 * @param waypoint_type The type of waypoint to make a list of waypoints for.
 	 */
 	ScriptWaypointList(ScriptWaypoint::WaypointType waypoint_type);
+
+
+	/**
+	 * Gets all waypoints including competitors'
+	 * @param waypoint_type The type of waypoint to make a list of waypoints for.
+	 */
+	static ScriptWaypointList *GetAllWaypoints(ScriptWaypoint::WaypointType waypoint_type);
+
+protected:
+	ScriptWaypointList();
 };
 
 /**

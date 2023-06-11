@@ -24,6 +24,21 @@ ScriptWaypointList::ScriptWaypointList(ScriptWaypoint::WaypointType waypoint_typ
 	}
 }
 
+/** static **/ ScriptWaypointList *ScriptWaypointList::GetAllWaypoints(ScriptWaypoint::WaypointType waypoint_type)
+{
+	ScriptWaypointList *list = new ScriptWaypointList();
+	for (const Waypoint *wp : Waypoint::Iterate()) {
+		if (wp->facilities & waypoint_type) list->AddItem(wp->index);
+	}
+
+	return list;
+}
+
+ScriptWaypointList::ScriptWaypointList()
+{
+
+}
+
 ScriptWaypointList_Vehicle::ScriptWaypointList_Vehicle(VehicleID vehicle_id)
 {
 	if (!ScriptVehicle::IsPrimaryVehicle(vehicle_id)) return;

@@ -920,6 +920,8 @@ bool AfterLoadGame()
 		_settings_game.construction.allow_eye_candy_road_signs = false;
 		_settings_game.construction.towns_build_road_signs = false;
 
+		_settings_game.ai.ai_enable_buy_in_depots= false;
+
 		_settings_game.pf.npf.npf_road_trafficlight_penalty = 0;
 		_settings_game.pf.yapf.road_trafficlight_penalty = 0;
 

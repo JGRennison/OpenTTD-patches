@@ -2353,6 +2353,7 @@ static SettingsContainer &GetSettingsTree()
 				npc->Add(new SettingEntry("ai.ai_disable_veh_roadveh"));
 				npc->Add(new SettingEntry("ai.ai_disable_veh_aircraft"));
 				npc->Add(new SettingEntry("ai.ai_disable_veh_ship"));
+				npc->Add(new SettingEntry("ai.ai_enable_buy_in_depots"));
 			}
 
 			SettingsPage *sharing = ai->Add(new SettingsPage(STR_CONFIG_SETTING_SHARING));

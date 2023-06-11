@@ -504,6 +504,7 @@ struct AISettings {
 	bool   ai_disable_veh_roadveh;           ///< disable types for AI
 	bool   ai_disable_veh_aircraft;          ///< disable types for AI
 	bool   ai_disable_veh_ship;              ///< disable types for AI
+	bool   ai_enable_buy_in_depots;          ///< disable building and renewing in AI depots
 };
 
 /** Settings related to scripts. */

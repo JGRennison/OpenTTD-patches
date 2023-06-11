@@ -169,7 +169,7 @@ static bool OrderDestinationIsAllowed(const Order *order, const Vehicle *v, Owne
  * @param v The vehicle to sell
  * @param give_money Do we actually need to give money to the vehicle owner?
  */
-static void RemoveAndSellVehicle(Vehicle *v, bool give_money)
+void RemoveAndSellVehicle(Vehicle *v, bool give_money)
 {
 	assert(v->Previous() == nullptr);
 

@@ -39,6 +39,8 @@ const char _openttd_revision[] = "${REV_VERSION}";
 
 const char _openttd_release_version[] = "${REV_RELEASE}";
 
+const char _openttd_release_version_jgrpp[] = "${JGRPP_REV_RELEASE}";
+
 /**
  * The text version of OpenTTD's build date.
  * Updating the build date in this file is the safest as it generally gets

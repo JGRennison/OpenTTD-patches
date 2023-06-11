@@ -24,6 +24,20 @@ public:
 	 * @param transport_type The type of transport to make a list of depots for.
 	 */
 	ScriptDepotList(ScriptTile::TransportType transport_type);
+
+	/**
+	 * Gets all depots including competitors
+	 * @param transport_type The type of transport to make a list of depots for.
+	 */
+	static ScriptDepotList *GetAllDepots(ScriptTile::TransportType transport_type);
+
+	/*
+		Checks if script can built in the depot
+	*/
+	static bool CanBuiltInDepot(TileIndex depotTile);
+
+protected:
+	ScriptDepotList();
 };
 
 #endif /* SCRIPT_DEPOTLIST_HPP */

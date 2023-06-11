@@ -1695,6 +1695,9 @@ STR_CONFIG_SETTING_AI_BUILDS_AIRCRAFT_HELPTEXT                  :Enabling this s
 STR_CONFIG_SETTING_AI_BUILDS_SHIPS                              :Disable ships for computer: {STRING2}
 STR_CONFIG_SETTING_AI_BUILDS_SHIPS_HELPTEXT                     :Enabling this setting makes building ships impossible for a computer player
 
+STR_CONFIG_SETTING_AI_ENABLE_BUY_IN_DEPOTS                      :Enable building and renewing vehicles in computer companies depots: {STRING2}
+STR_CONFIG_SETTING_AI_ENABLE_BUY_IN_DEPOTS_HELPTEXT             :Enabling this setting will allow to build and renew vehicles in computer player's depots
+
 STR_CONFIG_SETTING_AI_PROFILE                                   :Default settings profile: {STRING2}
 STR_CONFIG_SETTING_AI_PROFILE_HELPTEXT                          :Choose which settings profile to use for random AIs or for initial values when adding a new AI or Game Script
 ###length 3

@@ -2484,6 +2484,8 @@ CommandCost CmdBuyShareInCompany(TileIndex tile, DoCommandFlag flags, uint32 p1,
 	if (flags & DC_EXEC) {
 		Owner *b = c->share_owners;
 
+		//c->money += cost.GetCost() * 7 / 10;
+
 		while (*b != COMPANY_SPECTATOR) b++; // share owners is guaranteed to contain at least one COMPANY_SPECTATOR
 		*b = _current_company;
 

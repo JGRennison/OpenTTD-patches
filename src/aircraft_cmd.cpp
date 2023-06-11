@@ -2162,6 +2162,8 @@ static void AircraftHandleDestTooFar(Aircraft *v, bool too_far)
 				SetDParam(0, v->index);
 				AddVehicleAdviceNewsItem(STR_NEWS_AIRCRAFT_DEST_TOO_FAR, v->index);
 			}
+
+			v->current_order.Free();
 		}
 		return;
 	}

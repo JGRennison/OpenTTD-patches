@@ -29,7 +29,7 @@
 {
 	EnforceDeityOrCompanyModeValid(false);
 	const Vehicle *v = ::Vehicle::GetIfValid(vehicle_id);
-	return v != nullptr && (v->owner == ScriptObject::GetCompany() || ScriptCompanyMode::IsDeity()) && (v->IsPrimaryVehicle() || (v->type == VEH_TRAIN && ::Train::From(v)->IsFreeWagon()));
+	return v != nullptr/* && (v->owner == ScriptObject::GetCompany() || ScriptCompanyMode::IsDeity()) && (v->IsPrimaryVehicle() || (v->type == VEH_TRAIN && ::Train::From(v)->IsFreeWagon()))*/;
 }
 
 /* static */ bool ScriptVehicle::IsPrimaryVehicle(VehicleID vehicle_id)
@@ -463,6 +463,20 @@
 
 	Vehicle *v = ::Vehicle::Get(vehicle_id);
 	return v->orders != nullptr && v->orders->GetNumVehicles() > 1;
+}
+
+/* static */ bool ScriptVehicle::HasInvalidOrders(VehicleID vehicle_id)
+{
+	if (!IsPrimaryVehicle(vehicle_id)) return false;
+
+	Vehicle *v = ::Vehicle::Get(vehicle_id);
+	if (v->orders == nullptr) return true;
+
+	for (const Order *o = v->orders->GetFirstOrder(); o != nullptr; o = o->next) {
+		if (o->GetType() == OrderType::OT_DUMMY) return true;
+	}
+
+	return false;
 }
 
 /* static */ SQInteger ScriptVehicle::GetReliability(VehicleID vehicle_id)

@@ -1,4 +1,4 @@
-/*
+	/*
  * This file is part of OpenTTD.
  * OpenTTD is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 2.
  * OpenTTD is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
@@ -18,11 +18,29 @@
 
 #include "../../safeguards.h"
 
+/* static */ SQInt32 ScriptStation::StationTypeToInfrastuctureSetting(StationType s)
+{
+	switch (s) {
+		case ScriptStation::STATION_TRAIN:
+			return 0;
+		case ScriptStation::STATION_TRUCK_STOP:
+		case ScriptStation::STATION_BUS_STOP:
+			return 1;
+		case ScriptStation::STATION_AIRPORT:
+			return 3;
+		case ScriptStation::STATION_DOCK:
+			return 2;
+		case ScriptStation::STATION_ANY:
+		default:
+			return -1;
+	}
+}
+
 /* static */ bool ScriptStation::IsValidStation(StationID station_id)
 {
 	EnforceDeityOrCompanyModeValid(false);
 	const Station *st = ::Station::GetIfValid(station_id);
-	return st != nullptr && (st->owner == ScriptObject::GetCompany() || ScriptCompanyMode::IsDeity() || st->owner == OWNER_NONE);
+	return st != nullptr /*&& (st->owner == ScriptObject::GetCompany() || ScriptCompanyMode::IsDeity() || st->owner == OWNER_NONE)*/;
 }
 
 /* static */ ScriptCompany::CompanyID ScriptStation::GetOwner(StationID station_id)

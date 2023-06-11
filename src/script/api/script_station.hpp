@@ -50,6 +50,8 @@ public:
 		STATION_ANY        = STATION_TRAIN | STATION_TRUCK_STOP | STATION_BUS_STOP | STATION_AIRPORT | STATION_DOCK, ///< All station types
 	};
 
+	static SQInt32 StationTypeToInfrastuctureSetting(StationType s);
+
 	/**
 	 * Checks whether the given station is valid and owned by you.
 	 * @param station_id The station to check.

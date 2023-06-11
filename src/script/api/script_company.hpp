@@ -430,6 +430,35 @@ public:
 	 * @return Secondary colour of livery.
 	 */
 	static ScriptCompany::Colours GetSecondaryLiveryColour(LiveryScheme scheme);
+
+	/**
+	 * Gets company's value
+	 * @param companyID ID of the company to check
+	 * @return Company value
+	*/
+	static Money GetCompanyValue(ScriptCompany::CompanyID companyID);
+
+	/**
+	 * Buys share in other company
+	 * @param companyID ID of the company to buy shares
+	 * @return If purchase was successful
+	*/
+	static bool BuyShareInCompany(ScriptCompany::CompanyID companyID);
+
+	/**
+	 * Gets number of quarters of one's company share in another company
+	 * @param ownerCompanyID ID of the company to check who owns share
+	 * @param inCompanyID ID of the company to check shares status
+	 * @return Company value
+	*/
+	static byte GetCompanyShare(ScriptCompany::CompanyID ownerCompanyID, ScriptCompany::CompanyID inCompanyID);
+
+	/**
+	 * Checks if other company is controlled by an AI
+	 * @param companyID ID of the company to check
+	 * @return If company is controlled by an AI
+	*/
+	static bool IsAICompany(ScriptCompany::CompanyID companyID);
 };
 
 DECLARE_POSTFIX_INCREMENT(ScriptCompany::CompanyID)

@@ -170,6 +170,7 @@ const SaveLoadCompat _settings_sl_compat[] = {
 	SLC_VAR("ai.ai_disable_veh_roadveh"),
 	SLC_VAR("ai.ai_disable_veh_aircraft"),
 	SLC_VAR("ai.ai_disable_veh_ship"),
+	SLC_VAR("ai.ai_enable_buy_in_depots"),
 	SLC_VAR("script.script_max_opcode_till_suspend"),
 	SLC_VAR("script.script_max_memory_megabytes"),
 	SLC_VAR("vehicle.extend_vehicle_life"),

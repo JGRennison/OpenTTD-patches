@@ -242,6 +242,15 @@
 	return (ScriptRoad::RoadType)(uint)::RoadVehInfo(engine_id)->roadtype;
 }
 
+/* static */ ScriptRoad::RoadTramTypes ScriptEngine::GetRoadTramType(EngineID engine_id)
+{
+	if (!IsValidEngine(engine_id)) return ScriptRoad::ROADTRAMTYPES_INVALID;
+	if (GetVehicleType(engine_id) != ScriptVehicle::VT_ROAD) return ScriptRoad::ROADTRAMTYPES_INVALID;
+
+	return RoadTypeIsTram(::RoadVehInfo(engine_id)->roadtype) ? ScriptRoad::ROADTRAMTYPES_TRAM : ScriptRoad::ROADTRAMTYPES_ROAD;
+}
+
+
 /* static */ ScriptRail::RailType ScriptEngine::GetRailType(EngineID engine_id)
 {
 	if (!IsValidEngine(engine_id)) return ScriptRail::RAILTYPE_INVALID;
@@ -272,6 +281,14 @@
 	if (GetVehicleType(engine_id) != ScriptVehicle::VT_AIR) return 0;
 
 	return (SQInteger)::Engine::Get(engine_id)->GetRange() * ::Engine::Get(engine_id)->GetRange();
+}
+
+/* static */ SQInteger ScriptEngine::GetRange(EngineID engine_id)
+{
+	if (!IsValidEngine(engine_id)) return 0;
+	if (GetVehicleType(engine_id) != ScriptVehicle::VT_AIR) return 0;
+
+	return (SQInteger)::Engine::Get(engine_id)->GetRange();
 }
 
 /* static */ bool ScriptEngine::EnableForCompany(EngineID engine_id, ScriptCompany::CompanyID company)
