@@ -89,6 +89,9 @@ void ShowOSErrorBox(const char *buf, bool system)
 void NORETURN DoOSAbort()
 {
 	RaiseException(0xE1212012, 0, 0, nullptr);
+
+	/* This fallback should not be reached */
+	abort();
 }
 
 void OSOpenBrowser(const char *url)
