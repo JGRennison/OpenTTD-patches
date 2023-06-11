@@ -13,6 +13,10 @@
 #include "timer_manager.h"
 
 
+//Added for train tram mod - for some reason it won't compile without this (even before I changed any code)
+#include <functional>
+
+
 /**
  * The base where every other type of timer is derived from.
  *

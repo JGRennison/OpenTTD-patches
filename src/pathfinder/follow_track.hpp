@@ -242,7 +242,7 @@ protected:
 		} else if (IsRoadTT()) {
 			m_new_td_bits = GetTrackdirBitsForRoad(m_new_tile, this->IsTram() ? RTT_TRAM : RTT_ROAD);
 		} else {
-			m_new_td_bits = GetTileTrackdirBits(m_new_tile, TT(), 0);
+			m_new_td_bits = GetTileTrackdirBits(m_new_tile, TT(), 0) | GetTrackdirBitsForRoad(m_new_tile, RTT_TRAM);
 		}
 		return (m_new_td_bits != TRACKDIR_BIT_NONE);
 	}
@@ -337,9 +337,12 @@ protected:
 		if (IsRailTT()) {
 			RailType rail_type = GetTileRailTypeByEntryDir(m_new_tile, m_exitdir);
 			if (!HasBit(m_railtypes, rail_type)) {
-				/* incompatible rail type */
-				m_err = EC_RAIL_ROAD_TYPE;
-				return false;
+				RoadType roadtype = GetRoadType(m_new_tile, RTT_TRAM);
+				if (!HasBit(ROADTYPES_TRAM, roadtype)) {
+					/* incompatible road type */
+					m_err = EC_RAIL_ROAD_TYPE;
+					return false;
+				}
 			}
 		}
 

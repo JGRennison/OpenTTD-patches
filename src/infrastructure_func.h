@@ -32,7 +32,7 @@ void UpdateAllBlockSignals(Owner owner = INVALID_OWNER);
  */
 static inline bool IsInfraUsageAllowed(VehicleType type, Owner veh_owner, Owner infra_owner)
 {
-	return infra_owner == veh_owner || infra_owner == OWNER_NONE || _settings_game.economy.infrastructure_sharing[type];
+	return infra_owner == veh_owner || infra_owner == OWNER_NONE || infra_owner == OWNER_TOWN || _settings_game.economy.infrastructure_sharing[type];
 }
 
 /**

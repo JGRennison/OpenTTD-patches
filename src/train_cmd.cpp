@@ -5520,7 +5520,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 
 				/* Get the status of the tracks in the new tile and mask
 				 * away the bits that aren't reachable. */
-				TrackStatus ts = GetTileTrackStatus(gp.new_tile, TRANSPORT_RAIL, 0, (v->track & TRACK_BIT_WORMHOLE) ? INVALID_DIAGDIR : ReverseDiagDir(enterdir));
+				TrackStatus ts = GetTileTrackStatus(gp.new_tile, TRANSPORT_RAIL, 0, (v->track & TRACK_BIT_WORMHOLE) ? INVALID_DIAGDIR : ReverseDiagDir(enterdir)) | GetTileTrackStatus(gp.new_tile, TRANSPORT_ROAD, (2 << 8) | 1, (v->track & TRACK_BIT_WORMHOLE) ? INVALID_DIAGDIR : ReverseDiagDir(enterdir));
 				TrackdirBits reachable_trackdirs = DiagdirReachesTrackdirs(enterdir);
 
 				TrackdirBits trackdirbits = TrackStatusToTrackdirBits(ts) & reachable_trackdirs;
@@ -6455,7 +6455,7 @@ static bool TrainCheckIfLineEnds(Train *v, bool reverse)
 	TileIndex tile = v->tile + TileOffsByDiagDir(dir);
 
 	/* Determine the track status on the next tile */
-	TrackStatus ts = GetTileTrackStatus(tile, TRANSPORT_RAIL, 0, ReverseDiagDir(dir));
+	TrackStatus ts = GetTileTrackStatus(tile, TRANSPORT_RAIL, 0, ReverseDiagDir(dir)) | GetTileTrackStatus(tile, TRANSPORT_ROAD, (2 << 8) | 1, ReverseDiagDir(dir));;
 	TrackdirBits reachable_trackdirs = DiagdirReachesTrackdirs(dir);
 
 	TrackdirBits trackdirbits = TrackStatusToTrackdirBits(ts) & reachable_trackdirs;
