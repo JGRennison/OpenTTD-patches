@@ -137,6 +137,22 @@ void BufferSend_binary(std::vector<byte> &buffer, size_t limit, const char *data
 	buffer.insert(buffer.end(), data, data + size);
 }
 
+/**
+ * Sends a binary buffer over the network.
+ * The data is length prefixed with a uint16.
+ * @param data The string to send
+ */
+void BufferSend_buffer(std::vector<byte> &buffer, size_t limit, const byte *data, const size_t size)
+{
+	assert(size <= UINT16_MAX);
+	assert(BufferCanWriteToPacket(buffer, limit, size + 2));
+	buffer.insert(buffer.end(), {
+		(uint8)GB(size,  0, 8),
+		(uint8)GB(size,  8, 8),
+	});
+	buffer.insert(buffer.end(), data, data + size);
+}
+
 void BufferRecvStringValidate(std::string &buffer, StringValidationSettings settings)
 {
 	StrMakeValidInPlace(buffer, settings);

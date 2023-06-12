@@ -25,6 +25,7 @@ void   BufferSend_uint64(std::vector<byte> &buffer, size_t limit, uint64 data);
 void   BufferSend_string(std::vector<byte> &buffer, size_t limit, const std::string_view data);
 size_t BufferSend_bytes (std::vector<byte> &buffer, size_t limit, const byte *begin, const byte *end);
 void   BufferSend_binary(std::vector<byte> &buffer, size_t limit, const char *data, const size_t size);
+void   BufferSend_buffer(std::vector<byte> &buffer, size_t limit, const byte *data, const size_t size);
 
 template <typename T>
 struct BufferSerialisationHelper {
@@ -74,6 +75,17 @@ struct BufferSerialisationHelper {
 	{
 		T *self = static_cast<T *>(this);
 		BufferSend_binary(self->GetSerialisationBuffer(), self->GetSerialisationLimit(), data, size);
+	}
+
+	void Send_buffer(const byte *data, const size_t size)
+	{
+		T *self = static_cast<T *>(this);
+		BufferSend_buffer(self->GetSerialisationBuffer(), self->GetSerialisationLimit(), data, size);
+	}
+
+	void Send_buffer(const std::vector<byte> &data)
+	{
+		this->Send_buffer(data.data(), data.size());
 	}
 };
 
@@ -258,6 +270,23 @@ public:
 
 		buffer.assign((const char *) &this->GetBuffer()[pos], size);
 		pos += (decltype(pos)) size;
+	}
+
+	/**
+	 * Reads a length-prefixed binary buffer from the packet.
+	 * @return The binary buffer.
+	 */
+	std::vector<uint8> Recv_buffer()
+	{
+		uint16 length = this->Recv_uint16();
+
+		if (!this->CanRecvBytes(length, true)) return {};
+
+		auto &pos = static_cast<T *>(this)->GetDeserialisationPosition();
+		std::vector<uint8> buffer { &this->GetBuffer()[pos], &this->GetBuffer()[pos + length] };
+		pos += length;
+
+		return buffer;
 	}
 };
 
