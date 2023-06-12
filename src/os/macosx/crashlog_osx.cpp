@@ -306,10 +306,16 @@ class CrashLogOSX : public CrashLog {
 	/**
 	 * Log LLDB information if available
 	 */
+	char *LogDebugExtra(char *buffer, const char *last) const override
+	{
+		return this->LogLldbInfo(buffer, last);
+	}
+
+	/**
+	 * Log registers if available
+	 */
 	char *LogRegisters(char *buffer, const char *last) const override
 	{
-		buffer = LogLldbInfo(buffer, last);
-
 #ifdef WITH_UCONTEXT
 		ucontext_t *ucontext = static_cast<ucontext_t *>(context);
 #if defined(__x86_64__)

@@ -100,6 +100,15 @@ protected:
 	virtual char *LogStacktrace(char *buffer, const char *last) const = 0;
 
 	/**
+	 * Writes information about extra debug info, if there is
+	 * information about it available.
+	 * @param buffer The begin where to write at.
+	 * @param last   The last position in the buffer to write to.
+	 * @return the position of the \c '\0' character after the buffer.
+	 */
+	virtual char *LogDebugExtra(char *buffer, const char *last) const;
+
+	/**
 	 * Writes information about the data in the registers, if there is
 	 * information about it available.
 	 * @param buffer The begin where to write at.

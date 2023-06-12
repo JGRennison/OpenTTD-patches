@@ -368,14 +368,18 @@ class CrashLogUnix : public CrashLog {
 #endif
 
 	/**
+	 * Log GDB information if available
+	 */
+	char *LogDebugExtra(char *buffer, const char *last) const override
+	{
+		return this->LogGdbInfo(buffer, last);
+	}
+
+	/**
 	 * Show registers if possible
-	 *
-	 * Also log GDB information if available
 	 */
 	char *LogRegisters(char *buffer, const char *last) const override
 	{
-		buffer = LogGdbInfo(buffer, last);
-
 #ifdef WITH_UCONTEXT
 		ucontext_t *ucontext = static_cast<ucontext_t *>(context);
 #if defined(__x86_64__)

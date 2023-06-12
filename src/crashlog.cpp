@@ -119,6 +119,12 @@ char *CrashLog::LogCompiler(char *buffer, const char *last) const
 	return buffer;
 }
 
+/* virtual */ char *CrashLog::LogDebugExtra(char *buffer, const char *last) const
+{
+	/* Stub implementation; not all OSes support this. */
+	return buffer;
+}
+
 /* virtual */ char *CrashLog::LogRegisters(char *buffer, const char *last) const
 {
 	/* Stub implementation; not all OSes support this. */
@@ -555,6 +561,9 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last)
 	});
 	buffer = this->TryCrashLogFaultSection(buffer, last, "stacktrace", [](CrashLog *self, char *buffer, const char *last) -> char * {
 		return self->LogStacktrace(buffer, last);
+	});
+	buffer = this->TryCrashLogFaultSection(buffer, last, "debug extra", [](CrashLog *self, char *buffer, const char *last) -> char * {
+		return self->LogDebugExtra(buffer, last);
 	});
 	buffer = this->TryCrashLogFaultSection(buffer, last, "registers", [](CrashLog *self, char *buffer, const char *last) -> char * {
 		return self->LogRegisters(buffer, last);
