@@ -24,6 +24,7 @@
 #include "../../settings_type.h"
 #include "../../thread.h"
 #include "../../walltime_func.h"
+#include "../../scope.h"
 #if defined(WITH_DEMANGLE)
 #include <cxxabi.h>
 #endif
@@ -515,6 +516,9 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 
 		/* Walk stack at most MAX_FRAMES deep in case the stack is corrupt. */
 		for (uint num = 0; num < MAX_FRAMES; num++) {
+			auto guard = scope_guard([&]() {
+				this->CrashLogFaultSectionCheckpoint(buffer);
+			});
 			if (!proc.pStackWalk64(
 #ifdef _M_AMD64
 				IMAGE_FILE_MACHINE_AMD64,

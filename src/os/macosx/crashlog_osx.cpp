@@ -16,6 +16,7 @@
 #include "../../screenshot.h"
 #include "../../debug.h"
 #include "../../video/video_driver.hpp"
+#include "../../scope.h"
 #include "macos.h"
 
 #include <errno.h>
@@ -235,6 +236,10 @@ class CrashLogOSX : public CrashLog {
 #endif
 
 		for (; frame != nullptr && i < MAX_STACK_FRAMES; i++) {
+			auto guard = scope_guard([&]() {
+				this->CrashLogFaultSectionCheckpoint(buffer);
+			});
+
 			/* Get IP for current stack frame. */
 #if defined(__ppc__) || defined(__ppc64__)
 			void *ip = frame[2];

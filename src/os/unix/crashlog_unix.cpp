@@ -13,6 +13,7 @@
 #include "../../string_func.h"
 #include "../../gamelog.h"
 #include "../../sl/saveload.h"
+#include "../../scope.h"
 
 #include <errno.h>
 #include <signal.h>
@@ -526,6 +527,9 @@ class CrashLogUnix : public CrashLog {
 #endif /* WITH_BFD */
 
 		for (int i = 0; i < trace_size; i++) {
+			auto guard = scope_guard([&]() {
+				this->CrashLogFaultSectionCheckpoint(buffer);
+			});
 #if defined(WITH_DL)
 			Dl_info info;
 #if defined(WITH_DL2)
