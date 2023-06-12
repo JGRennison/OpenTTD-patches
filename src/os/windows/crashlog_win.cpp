@@ -52,6 +52,13 @@
 #pragma GCC diagnostic ignored "-Wclobbered"
 #endif
 
+static void NORETURN ImmediateExitProcess(uint exit_code)
+{
+	/* TerminateProcess may fail in some special edge cases, fall back to ExitProcess in this case */
+	TerminateProcess(GetCurrentProcess(), exit_code);
+	ExitProcess(exit_code);
+}
+
 /**
  * Windows implementation for the crash logger.
  */
@@ -715,7 +722,7 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 		if (exception_num != 0) {
 			if (this->internal_fault_saved_buffer == nullptr) {
 				/* if we get here, things are unrecoverable */
-				ExitProcess(43);
+				ImmediateExitProcess(43);
 			}
 
 			buffer = this->internal_fault_saved_buffer;
@@ -763,7 +770,7 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 
 	if (CrashLogWindows::current != nullptr) {
 		CrashLog::AfterCrashLogCleanup();
-		ExitProcess(2);
+		ImmediateExitProcess(2);
 	}
 
 	const char *abort_reason = CrashLog::GetAbortCrashlogReason();
@@ -772,7 +779,7 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 		_snwprintf(_emergency_crash, lengthof(_emergency_crash),
 				L"A serious fault condition occurred in the game. The game will shut down. (%s)\n", OTTD2FS(abort_reason).c_str());
 		MessageBox(nullptr, _emergency_crash, L"Fatal Application Failure", MB_ICONERROR);
-		ExitProcess(3);
+		ImmediateExitProcess(3);
 	}
 
 	VideoDriver::EmergencyAcquireGameLock(1000, 5);
@@ -824,6 +831,7 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 	}
 
 	CrashLog::AfterCrashLogCleanup();
+	ImmediateExitProcess(1);
 	return EXCEPTION_EXECUTE_HANDLER;
 }
 
@@ -1007,7 +1015,7 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 			switch (wParam) {
 				case 12: // Close
 					CrashLog::AfterCrashLogCleanup();
-					ExitProcess(2);
+					ImmediateExitProcess(2);
 				case 13: // Emergency save
 					_savegame_DBGL_data = CrashLogWindows::current->crashlog;
 					_save_DBGC_data = true;
@@ -1033,7 +1041,7 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 			return TRUE;
 		case WM_CLOSE:
 			CrashLog::AfterCrashLogCleanup();
-			ExitProcess(2);
+			ImmediateExitProcess(2);
 	}
 
 	return FALSE;
