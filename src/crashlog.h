@@ -55,6 +55,9 @@ private:
 	/** Temporary 'local' location of the end of the buffer. */
 	static const char *gamelog_last;
 
+	/** Whether a crash has already occured */
+	static bool have_crashed;
+
 	static void GamelogFillCrashLog(const char *s);
 protected:
 	/**
@@ -208,6 +211,8 @@ public:
 	static void InconsistencyLog(const InconsistencyExtraInfo &info);
 	static void VersionInfoLog();
 
+	static void RegisterCrashed() { CrashLog::have_crashed = true; }
+	static bool HaveAlreadyCrashed() { return CrashLog::have_crashed; }
 	static void SetErrorMessage(const char *message);
 	static void AfterCrashLogCleanup();
 

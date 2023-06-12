@@ -762,6 +762,8 @@ thread_local void *_safe_esp = nullptr;
 
 static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 {
+	CrashLog::RegisterCrashed();
+
 	/* Restore system timer resolution. */
 	timeEndPeriod(1);
 

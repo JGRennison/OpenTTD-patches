@@ -486,6 +486,8 @@ static const int _signals_to_handle[] = { SIGSEGV, SIGABRT, SIGFPE, SIGBUS, SIGI
  */
 void CDECL HandleCrash(int signum, siginfo_t *si, void *context)
 {
+	CrashLog::RegisterCrashed();
+
 	/* Disable all handling of signals by us, so we don't go into infinite loops. */
 	for (const int *i = _signals_to_handle; i != endof(_signals_to_handle); i++) {
 		signal(*i, SIG_DFL);

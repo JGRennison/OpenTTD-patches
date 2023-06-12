@@ -86,6 +86,7 @@
 /* static */ const char *CrashLog::message = nullptr;
 /* static */ char *CrashLog::gamelog_buffer = nullptr;
 /* static */ const char *CrashLog::gamelog_last = nullptr;
+/* static */ bool CrashLog::have_crashed = false;
 
 char *CrashLog::LogCompiler(char *buffer, const char *last) const
 {
@@ -921,9 +922,8 @@ static bool CopyAutosave(const std::string &old_name, const std::string &new_nam
 bool CrashLog::MakeCrashLog(char *buffer, const char *last)
 {
 	/* Don't keep looping logging crashes. */
-	static bool crashlogged = false;
-	if (crashlogged) return false;
-	crashlogged = true;
+	if (CrashLog::HaveAlreadyCrashed()) return false;
+	CrashLog::RegisterCrashed();
 
 	char *name_buffer_date = this->name_buffer + seprintf(this->name_buffer, lastof(this->name_buffer), "crash-");
 	UTCTime::Format(name_buffer_date, lastof(this->name_buffer), "%Y%m%dT%H%M%SZ");
