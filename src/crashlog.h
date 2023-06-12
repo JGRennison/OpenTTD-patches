@@ -162,6 +162,7 @@ public:
 
 	char *FillCrashLog(char *buffer, const char *last);
 	void FlushCrashLogBuffer();
+	void CloseCrashLogFile();
 	char *FillDesyncCrashLog(char *buffer, const char *last, const DesyncExtraInfo &info) const;
 	char *FillInconsistencyLog(char *buffer, const char *last, const InconsistencyExtraInfo &info) const;
 	char *FillVersionInfoLog(char *buffer, const char *last) const;

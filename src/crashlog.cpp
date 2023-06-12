@@ -796,10 +796,21 @@ void CrashLog::FlushCrashLogBuffer()
 		fwrite(this->crash_buffer_write, 1, len, this->crash_file);
 		fflush(this->crash_file);
 	}
+#if !defined(_WIN32)
 	fwrite(this->crash_buffer_write, 1, len, stdout);
 	fflush(stdout);
+#endif
 
 	this->crash_buffer_write += len;
+}
+
+void CrashLog::CloseCrashLogFile()
+{
+	this->FlushCrashLogBuffer();
+	if (this->crash_file != nullptr) {
+		FioFCloseFile(this->crash_file);
+		this->crash_file = nullptr;
+	}
 }
 
 /* virtual */ int CrashLog::WriteCrashDump(char *filename, const char *filename_last) const
@@ -954,11 +965,7 @@ bool CrashLog::MakeCrashLog(char *buffer, const char *last)
 	this->crash_buffer_write = buffer;
 
 	this->FillCrashLog(buffer, last);
-	this->FlushCrashLogBuffer();
-	if (this->crash_file != nullptr) {
-		FioFCloseFile(this->crash_file);
-		this->crash_file = nullptr;
-	}
+	this->CloseCrashLogFile();
 	printf("Crash log generated.\n\n");
 
 

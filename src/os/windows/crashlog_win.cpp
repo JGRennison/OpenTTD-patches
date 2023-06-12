@@ -63,8 +63,7 @@ public:
 #endif /* _MSC_VER */
 #if defined(_MSC_VER) || defined(WITH_DBGHELP)
 	char *AppendDecodedStacktrace(char *buffer, const char *last) const;
-#else
-	char *AppendDecodedStacktrace(char *buffer, const char *last) const { return buffer; }
+	char *LogDebugExtra(char *buffer, const char *last) const override;
 #endif /* _MSC_VER || WITH_DBGHELP */
 
 
@@ -159,6 +158,7 @@ static const char *GetAccessViolationTypeString(uint type)
 			}
 		}
 	}
+	this->CrashLogFaultSectionCheckpoint(buffer);
 	buffer += seprintf(buffer, last, " Message:    %s\n\n",
 			message == nullptr ? "<none>" : message);
 
@@ -391,6 +391,8 @@ static char *PrintModuleInfo(char *output, const char *last, HMODULE mod)
 	);
 #endif
 
+	this->CrashLogFaultSectionCheckpoint(buffer);
+
 	buffer += seprintf(buffer, last, "\n Bytes at instruction pointer:\n");
 #ifdef _M_AMD64
 	byte *b = (byte*)ep->ContextRecord->Rip;
@@ -475,7 +477,7 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 		BOOL (WINAPI * pSymGetLineFromAddr64)(HANDLE, DWORD64, PDWORD, PIMAGEHLP_LINE64);
 	} proc;
 
-	buffer += seprintf(buffer, last, "\nDecoded stack trace:\n");
+	buffer += seprintf(buffer, last, "Decoded stack trace:\n");
 
 	/* Try to load the functions from the DLL, if that fails because of a too old dbghelp.dll, just skip it. */
 	if (LoadLibraryList((Function*)&proc, dbg_import)) {
@@ -619,8 +621,16 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 		proc.pSymCleanup(hCur);
 	}
 
-	return buffer + seprintf(buffer, last, "\n*** End of additional info ***\n");
+	return buffer + seprintf(buffer, last, "\n");;
 }
+
+	/**
+	 * Log decoded stack trace
+	 */
+	char *CrashLogWindows::LogDebugExtra(char *buffer, const char *last) const
+	{
+		return this->AppendDecodedStacktrace(buffer, last);
+	}
 #endif /* _MSC_VER  || WITH_DBGHELP */
 
 #if defined(_MSC_VER)
@@ -703,12 +713,15 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 
 	CrashLogWindows *log = new CrashLogWindows(ep);
 	CrashLogWindows::current = log;
-	char *buf = log->FillCrashLog(log->crashlog, lastof(log->crashlog));
 	char *name_buffer_date = log->name_buffer + seprintf(log->name_buffer, lastof(log->name_buffer), "crash-");
 	UTCTime::Format(name_buffer_date, lastof(log->name_buffer), "%Y%m%dT%H%M%SZ");
+
+	log->WriteCrashLog("", log->crashlog_filename, lastof(log->crashlog_filename), log->name_buffer, &(log->crash_file));
+	log->crash_buffer_write = log->crashlog;
+	log->FillCrashLog(log->crashlog, lastof(log->crashlog));
+	log->CloseCrashLogFile();
+
 	log->WriteCrashDump(log->crashdump_filename, lastof(log->crashdump_filename));
-	log->AppendDecodedStacktrace(buf, lastof(log->crashlog));
-	log->WriteCrashLog(log->crashlog, log->crashlog_filename, lastof(log->crashlog_filename), log->name_buffer);
 	SetScreenshotAuxiliaryText("Crash Log", log->crashlog);
 	log->WriteScreenshot(log->screenshot_filename, lastof(log->screenshot_filename), log->name_buffer);
 
