@@ -33,6 +33,9 @@
 #include <mmsystem.h>
 #include <signal.h>
 #include <psapi.h>
+#if !defined(_MSC_VER)
+#include <setjmp.h>
+#endif
 
 #include "../../safeguards.h"
 
@@ -43,6 +46,10 @@
 #else
 #define PRINTF_PTR "0x%08" PRINTF_SIZEX_SUFFIX
 #define PRINTF_LOC "%.8" PRINTF_SIZEX_SUFFIX
+#endif
+
+#if !defined(_MSC_VER) && defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3))
+#pragma GCC diagnostic ignored "-Wclobbered"
 #endif
 
 /**
@@ -57,6 +64,13 @@ class CrashLogWindows : public CrashLog {
 	char *LogStacktrace(char *buffer, const char *last) const override;
 	char *LogRegisters(char *buffer, const char *last) const override;
 	char *LogModules(char *buffer, const char *last) const override;
+
+protected:
+#if !defined(_MSC_VER)
+	char *TryCrashLogFaultSection(char *buffer, const char *last, const char *section_name, CrashLogSectionWriter writer) override;
+	void CrashLogFaultSectionCheckpoint(char *buffer) const override;
+#endif
+
 public:
 #if defined(_MSC_VER)
 	int WriteCrashDump(char *filename, const char *filename_last) const override;
@@ -94,6 +108,11 @@ public:
 	 * Points to the current crash log.
 	 */
 	static CrashLogWindows *current;
+
+#if !defined(_MSC_VER)
+	char *internal_fault_saved_buffer = nullptr;
+	jmp_buf internal_fault_jmp_buf;
+#endif
 };
 
 /* static */ CrashLogWindows *CrashLogWindows::current = nullptr;
@@ -678,6 +697,53 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 }
 #endif /* _MSC_VER  || WITH_DBGHELP */
 
+#if !defined(_MSC_VER)
+	/**
+	 * Set up a longjmp to be called from the vectored exception handler for the case where we trigger another exception
+	 * during the course of calling the given log section writer.
+	 *
+	 * If an exception does occur, restore the buffer pointer to either the original value, or
+	 * the value provided in any later checkpoint.
+	 * Insert a message describing the problem and give up on the section.
+	 */
+	/* virtual */ char *CrashLogWindows::TryCrashLogFaultSection(char *buffer, const char *last, const char *section_name, CrashLogSectionWriter writer)
+	{
+		this->FlushCrashLogBuffer();
+		this->internal_fault_saved_buffer = buffer;
+
+		int exception_num = setjmp(this->internal_fault_jmp_buf);
+		if (exception_num != 0) {
+			if (this->internal_fault_saved_buffer == nullptr) {
+				/* if we get here, things are unrecoverable */
+				ExitProcess(43);
+			}
+
+			buffer = this->internal_fault_saved_buffer;
+			this->internal_fault_saved_buffer = nullptr;
+
+			buffer += seprintf(buffer, last, "\nSomething went seriously wrong when attempting to fill the '%s' section of the crash log: exception: %.8X.\n", section_name, exception_num);
+			buffer += seprintf(buffer, last, "This is probably due to an invalid pointer or other corrupt data.\n\n");
+
+			return buffer;
+		}
+
+		buffer = writer(this, buffer, last);
+		this->internal_fault_saved_buffer = nullptr;
+		return buffer;
+	}
+
+	/* virtual */ void CrashLogWindows::CrashLogFaultSectionCheckpoint(char *buffer) const
+	{
+		CrashLogWindows *self = const_cast<CrashLogWindows *>(this);
+
+		if (self->internal_fault_saved_buffer != nullptr && buffer > self->internal_fault_saved_buffer) {
+			self->internal_fault_saved_buffer = buffer;
+		}
+
+		self->FlushCrashLogBuffer();
+	}
+#endif /* !_MSC_VER */
+
 extern bool CloseConsoleLogIfActive();
 static void ShowCrashlogWindow();
 
@@ -763,6 +829,12 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 
 static LONG WINAPI VectoredExceptionHandler(EXCEPTION_POINTERS *ep)
 {
+#if !defined(_MSC_VER)
+	if (CrashLogWindows::current != nullptr && CrashLogWindows::current->internal_fault_saved_buffer != nullptr) {
+		longjmp(CrashLogWindows::current->internal_fault_jmp_buf, ep->ExceptionRecord->ExceptionCode);
+	}
+#endif
+
 	if (ep->ExceptionRecord->ExceptionCode == 0xC0000374 /* heap corruption */) {
 		return ExceptionHandler(ep);
 	}
