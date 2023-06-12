@@ -22,6 +22,16 @@ extern NetworkClientSocketPool _networkclientsocket_pool;
 
 /** Class for handling the server side of the game connection. */
 class ServerNetworkGameSocketHandler : public NetworkClientSocketPool::PoolItem<&_networkclientsocket_pool>, public NetworkGameSocketHandler, public TCPListenHandler<ServerNetworkGameSocketHandler, PACKET_SERVER_FULL, PACKET_SERVER_BANNED> {
+	struct CachedPassword {
+		std::string source;
+		std::vector<byte> cached_hash;
+
+		const std::vector<byte> &GetHash(const std::string &password, uint64 password_game_seed);
+	};
+	CachedPassword game_password_hash_cache;
+	CachedPassword rcon_password_hash_cache;
+	CachedPassword settings_password_hash_cache;
+
 protected:
 	NetworkRecvStatus Receive_CLIENT_JOIN(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_GAME_INFO(Packet *p) override;
@@ -76,9 +86,9 @@ public:
 	ClientStatus status;         ///< Status of this client
 	CommandQueue outgoing_queue; ///< The command-queue awaiting delivery
 	size_t receive_limit;        ///< Amount of bytes that we can receive at this moment
-	uint32 server_hash_bits;     ///< Server password hash entropy bits
-	uint32 rcon_hash_bits;       ///< Rcon password hash entropy bits
-	uint32 settings_hash_bits;   ///< Settings password hash entropy bits
+	uint64 server_hash_bits;     ///< Server password hash entropy bits
+	uint64 rcon_hash_bits;       ///< Rcon password hash entropy bits
+	uint64 settings_hash_bits;   ///< Settings password hash entropy bits
 	bool settings_authed = false;///< Authorised to control all game settings
 	bool supports_zstd = false;  ///< Client supports zstd compression
 

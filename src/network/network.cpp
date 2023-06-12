@@ -37,7 +37,9 @@
 #include "../error.h"
 #include "../core/checksum_func.hpp"
 #include "../string_func_extra.h"
+#include "../core/serialisation.hpp"
 #include "../3rdparty/randombytes/randombytes.h"
+#include "../3rdparty/monocypher/monocypher.h"
 #include "../settings_internal.h"
 #include <sstream>
 #include <iomanip>
@@ -219,6 +221,44 @@ std::string GenerateCompanyPasswordHash(const std::string &password, const std::
 	for (int di = 0; di < 16; di++) hashed_password << std::setw(2) << (int)digest[di]; // Cast needed, otherwise interpreted as character to add
 
 	return hashed_password.str();
+}
+
+struct HashBuffer : public BufferSerialisationHelper<HashBuffer> {
+	std::vector<byte> &buffer;
+
+	HashBuffer(std::vector<byte> &buffer) : buffer(buffer) {}
+
+	std::vector<byte> &GetSerialisationBuffer() { return this->buffer; }
+	size_t GetSerialisationLimit() const { return UINT32_MAX; }
+};
+
+/**
+ * Hash the given password using server ID and game seed.
+ * @param password Password to hash.
+ * @param password_server_id Server ID.
+ * @param password_game_seed Game seed.
+ * @return The hashed password.
+ */
+std::vector<uint8> GenerateGeneralPasswordHash(const std::string &password, const std::string &password_server_id, uint64 password_game_seed)
+{
+	if (password.empty()) return {};
+
+	std::vector<byte> data;
+	data.reserve(password.size() + password_server_id.size() + 6);
+	HashBuffer buffer(data);
+
+	/* key field */
+	buffer.Send_uint64(password_game_seed);
+
+	/* message field */
+	buffer.Send_string(password_server_id);
+	buffer.Send_string(password);
+
+	std::vector<byte> output;
+	output.resize(64);
+	crypto_blake2b_general(output.data(), output.size(), data.data(), 8, data.data() + 8, data.size() - 8);
+
+	return output;
 }
 
 /**

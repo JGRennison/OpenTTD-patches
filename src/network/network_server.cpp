@@ -30,6 +30,7 @@
 #include "../core/random_func.hpp"
 #include "../rev.h"
 #include "../crashlog.h"
+#include "../3rdparty/randombytes/randombytes.h"
 #include <mutex>
 #include <condition_variable>
 #if defined(__MINGW32__)
@@ -192,6 +193,16 @@ struct PacketWriter : SaveFilter {
 };
 
 
+const std::vector<byte> &ServerNetworkGameSocketHandler::CachedPassword::GetHash(const std::string &password, uint64 password_game_seed)
+{
+	if (password != this->source) {
+		this->source = password;
+		this->cached_hash = GenerateGeneralPasswordHash(password, _settings_client.network.network_id, password_game_seed);
+	}
+
+	return this->cached_hash;
+}
+
 /**
  * Create a new socket for the server side of the game connection.
  * @param s The socket to connect with.
@@ -201,9 +212,17 @@ ServerNetworkGameSocketHandler::ServerNetworkGameSocketHandler(SOCKET s) : Netwo
 	this->status = STATUS_INACTIVE;
 	this->client_id = _network_client_id++;
 	this->receive_limit = _settings_client.network.bytes_per_frame_burst;
-	this->server_hash_bits = InteractiveRandom();
-	this->rcon_hash_bits = InteractiveRandom();
-	this->settings_hash_bits = InteractiveRandom();
+
+	uint64 seeds[3];
+	if (randombytes(&seeds, sizeof(uint64) * lengthof(seeds)) < 0) {
+		/* Can't get random data, use InteractiveRandom */
+		for (uint64 &seed : seeds) {
+			seed = (uint64)(InteractiveRandom()) | (((uint64)(InteractiveRandom())) << 32);
+		}
+	}
+	this->server_hash_bits = seeds[0];
+	this->rcon_hash_bits = seeds[1];
+	this->settings_hash_bits = seeds[2];
 
 	/* The Socket and Info pools need to be the same in size. After all,
 	 * each Socket will be associated with at most one Info object. As
@@ -472,7 +491,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendNeedGamePassword()
 	this->last_frame = this->last_frame_server = _frame_counter;
 
 	Packet *p = new Packet(PACKET_SERVER_NEED_GAME_PASSWORD, SHRT_MAX);
-	p->Send_uint32(_settings_game.game_creation.generation_seed ^ this->server_hash_bits);
+	p->Send_uint64(this->server_hash_bits);
 	p->Send_string(_settings_client.network.network_id);
 	this->SendPacket(p);
 	return NETWORK_RECV_STATUS_OKAY;
@@ -512,9 +531,9 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendWelcome()
 	p = new Packet(PACKET_SERVER_WELCOME, SHRT_MAX);
 	p->Send_uint32(this->client_id);
 	p->Send_uint32(_settings_game.game_creation.generation_seed);
-	p->Send_uint32(_settings_game.game_creation.generation_seed ^ this->server_hash_bits);
-	p->Send_uint32(_settings_game.game_creation.generation_seed ^ this->rcon_hash_bits);
-	p->Send_uint32(_settings_game.game_creation.generation_seed ^ this->settings_hash_bits);
+	p->Send_uint64(this->server_hash_bits);
+	p->Send_uint64(this->rcon_hash_bits);
+	p->Send_uint64(this->settings_hash_bits);
 	p->Send_string(_settings_client.network.network_id);
 	p->Send_string(_network_company_server_id);
 	this->SendPacket(p);
@@ -963,11 +982,11 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_GAME_PASSWORD(P
 		return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
 	}
 
-	std::string password = p->Recv_string(NETWORK_PASSWORD_LENGTH);
+	std::vector<byte> password = p->Recv_buffer();
 
 	/* Check game password. Allow joining if we cleared the password meanwhile */
 	if (!_settings_client.network.server_password.empty() &&
-			password != GenerateCompanyPasswordHash(_settings_client.network.server_password.c_str(), _settings_client.network.network_id.c_str(), _settings_game.game_creation.generation_seed ^ this->server_hash_bits)) {
+			password != this->game_password_hash_cache.GetHash(_settings_client.network.server_password, this->server_hash_bits)) {
 		/* Password is invalid */
 		return this->SendError(NETWORK_ERROR_WRONG_PASSWORD);
 	}
@@ -1009,14 +1028,14 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_SETTINGS_PASSWO
 		return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
 	}
 
-	std::string password = p->Recv_string(NETWORK_PASSWORD_LENGTH);
+	std::vector<byte> password = p->Recv_buffer();
 
 	/* Check settings password. Deny if no password is set */
 	if (password.empty()) {
 		if (this->settings_authed) DEBUG(net, 0, "[settings-ctrl] client-id %d deauthed", this->client_id);
 		this->settings_authed = false;
 	} else if (_settings_client.network.settings_password.empty() ||
-			password != GenerateCompanyPasswordHash(_settings_client.network.settings_password.c_str(), _settings_client.network.network_id.c_str(), _settings_game.game_creation.generation_seed ^ this->settings_hash_bits)) {
+			password != this->settings_password_hash_cache.GetHash(_settings_client.network.settings_password, this->settings_hash_bits)) {
 		DEBUG(net, 0, "[settings-ctrl] wrong password from client-id %d", this->client_id);
 		NetworkServerSendRcon(this->client_id, CC_ERROR, "Access Denied");
 		this->settings_authed = false;
@@ -1576,10 +1595,10 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_RCON(Packet *p)
 		return NETWORK_RECV_STATUS_OKAY;
 	}
 
-	std::string password = p->Recv_string(NETWORK_PASSWORD_LENGTH);
+	std::vector<byte> password = p->Recv_buffer();
 	std::string command = p->Recv_string(NETWORK_RCONCOMMAND_LENGTH);
 
-	if (password != GenerateCompanyPasswordHash(_settings_client.network.rcon_password.c_str(), _settings_client.network.network_id.c_str(), _settings_game.game_creation.generation_seed ^ this->rcon_hash_bits)) {
+	if (password != this->rcon_password_hash_cache.GetHash(_settings_client.network.rcon_password, this->rcon_hash_bits)) {
 		DEBUG(net, 0, "[rcon] wrong password from client-id %d", this->client_id);
 		NetworkServerSendRcon(this->client_id, CC_ERROR, "Access Denied");
 		return NETWORK_RECV_STATUS_OKAY;
