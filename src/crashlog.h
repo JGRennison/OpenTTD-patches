@@ -125,7 +125,7 @@ protected:
 	 * @param last   The last position in the buffer to write to.
 	 * @return the position of the \c '\0' character after the buffer.
 	 */
-	virtual char *LogScopeInfo(char *buffer, const char *last) const;
+	char *LogScopeInfo(char *buffer, const char *last) const;
 #endif
 
 	char *LogOpenTTDVersion(char *buffer, const char *last) const;
@@ -134,6 +134,13 @@ protected:
 	char *LogGamelog(char *buffer, const char *last) const;
 	char *LogRecentNews(char *buffer, const char *list) const;
 	char *LogCommandLog(char *buffer, const char *last) const;
+
+	virtual void StartCrashLogFaultHandler();
+	virtual void StopCrashLogFaultHandler();
+
+	using CrashLogSectionWriter = char *(*)(CrashLog *self, char *buffer, const char *last);
+	virtual char *TryCrashLogFaultSection(char *buffer, const char *last, const char *section_name, CrashLogSectionWriter writer);
+	virtual void CrashLogFaultSectionCheckpoint(char *buffer) const;
 
 public:
 	/** Buffer for the filename name prefix */
