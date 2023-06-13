@@ -849,7 +849,7 @@ struct BuildRoadToolbarWindow : Window {
 
 	void OnRealtimeTick(uint delta_ms) override
 	{
-		if (this->IsWidgetLowered(WID_ROT_BUILD_WAYPOINT)) CheckRedrawWaypointCoverage(this, true);
+		if (_game_mode == GM_NORMAL && this->IsWidgetLowered(WID_ROT_BUILD_WAYPOINT)) CheckRedrawWaypointCoverage(this, true);
 	}
 
 	static HotkeyList road_hotkeys;
