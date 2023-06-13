@@ -758,7 +758,7 @@ Window *ShowBuildObjectPicker()
 /** Show our object picker, and select a particular spec.  */
 void ShowBuildObjectPickerAndSelect(const ObjectSpec *spec)
 {
-	if (spec == nullptr || !spec->IsAvailable() || !ObjectClass::HasUIClass()) return;
+	if (spec == nullptr || !spec->IsAvailable() || !ObjectClass::HasUIClass() || spec->cls_id == INVALID_OBJECT_CLASS) return;
 
 	int spec_id = -1;
 	const ObjectClass *objclass = ObjectClass::Get(spec->cls_id);
