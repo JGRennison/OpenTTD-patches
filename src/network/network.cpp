@@ -235,19 +235,16 @@ std::vector<uint8> GenerateGeneralPasswordHash(const std::string &password, cons
 	if (password.empty()) return {};
 
 	std::vector<byte> data;
-	data.reserve(password.size() + password_server_id.size() + 6);
+	data.reserve(password_server_id.size() + password.size() + 10);
 	BufferSerialiser buffer(data);
 
-	/* key field */
 	buffer.Send_uint64(password_game_seed);
-
-	/* message field */
 	buffer.Send_string(password_server_id);
 	buffer.Send_string(password);
 
 	std::vector<byte> output;
 	output.resize(64);
-	crypto_blake2b_general(output.data(), output.size(), data.data(), 8, data.data() + 8, data.size() - 8);
+	crypto_blake2b(output.data(), output.size(), data.data(), data.size());
 
 	return output;
 }

@@ -11,9 +11,9 @@ to what file during which years.  See below for special notes.
 Licence 1 (2-clause BSD)
 ------------------------
 
-Copyright (c) 2017-2020, Loup Vaillant
+Copyright (c) 2017-2023, Loup Vaillant
 Copyright (c) 2017-2019, Michael Savage
-Copyright (c) 2017-2020, Fabio Scotoni
+Copyright (c) 2017-2023, Fabio Scotoni
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -165,9 +165,3 @@ rights.
    - Affirmer understands and acknowledges that Creative Commons is not
      a party to this document and has no duty or obligation with respect
      to this CC0 or use of the Work.
-
-Special notes
--------------
-
-The files in `tests/externals/` were placed in the public domain by
-their respective authors.  See the `AUTHORS.md` files in each directory.

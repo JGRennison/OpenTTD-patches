@@ -1,3 +1,27 @@
+4.0.1
+-----
+2023/03/06
+
+- Fixed Ed25519 secret key size in function prototype.
+- Fixed soname (should have been changed in 4.0.0)
+- Added convenience sub-targets to makefile.
+- Briefly specified wire format of Elligator and incremental AEAD.
+
+
+4.0.0
+-----
+2023/02/20
+
+- Fixed unsafe signature API.
+- Simpler, more flexible low-level signature API.
+- Fully specified, consensus-friendly signatures.
+- Added Argon2d and Argon2id, support multiple lanes.
+- Added safe and fast streaming AEAD.
+- Added HKDF-SHA-512 and documented BLAKE2b KDF.
+- More consistent and memorable function names.
+- POSIX makefile.
+
+
 3.1.3
 -----
 2022/04/25
@@ -151,6 +175,8 @@ boundaries.  The API changes increase consistency.
 - Rewrote the manual into proper man pages.
 - Added incremental interfaces for authenticated encryption and
   signatures.
+- Replaced `crypto_memcmp()` by 3 fixed size buffer comparisons (16, 32,
+  and 64 bytes), to make sure the generated code remains constant time.
 - A couple breaking API changes, easily fixed by renaming the affected
   functions.
 

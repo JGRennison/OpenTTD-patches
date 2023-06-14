@@ -605,7 +605,7 @@ static void Load_PLYP()
 	std::vector<uint8> buffer(size - 16 - 24 - 16);
 	ReadBuffer::GetCurrent()->CopyBytes(buffer.data(), buffer.size());
 
-	if (crypto_unlock(buffer.data(), _network_company_password_storage_key, nonce, mac, buffer.data(), buffer.size()) == 0) {
+	if (crypto_aead_unlock(buffer.data(), mac, _network_company_password_storage_key, nonce, nullptr, 0, buffer.data(), buffer.size()) == 0) {
 		SlLoadFromBuffer(buffer.data(), buffer.size(), [invalid_mask]() {
 			_network_company_server_id.resize(SlReadUint32());
 			ReadBuffer::GetCurrent()->CopyBytes((uint8 *)_network_company_server_id.data(), _network_company_server_id.size());
@@ -684,7 +684,7 @@ static void Save_PLYP()
 	uint8 mac[16];    /* Message authentication code */
 
 	/* Encrypt in place */
-	crypto_lock(mac, buffer.data(), _network_company_password_storage_key, nonce, buffer.data(), buffer.size());
+	crypto_aead_lock(buffer.data(), mac, _network_company_password_storage_key, nonce, nullptr, 0, buffer.data(), buffer.size());
 
 	SlSetLength(2 + 16 + 24 + 16 + buffer.size());
 	SlWriteUint16(0); // Invalid mask
