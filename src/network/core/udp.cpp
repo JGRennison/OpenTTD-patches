@@ -97,7 +97,7 @@ void NetworkUDPSocketHandler::SendPacket(Packet *p, NetworkAddress *recv, bool a
 			frag.Send_uint8 (current_frag);
 			frag.Send_uint8 (frag_count);
 			frag.Send_uint16 (payload_size);
-			frag.Send_binary((const char *) p->GetBufferData() + offset, payload_size);
+			frag.Send_binary(p->GetBufferData() + offset, payload_size);
 			current_frag++;
 			offset += payload_size;
 			this->SendPacket(&frag, recv, all, broadcast, short_mtu);
@@ -239,7 +239,7 @@ void NetworkUDPSocketHandler::Receive_EX_MULTI(Packet *p, NetworkAddress *client
 		Packet merged(this, SHRT_MAX, 0);
 		merged.ReserveBuffer(total_payload);
 		for (auto &frag : fs.fragments) {
-			merged.Send_binary(frag.data(), frag.size());
+			merged.Send_binary((const byte *)frag.data(), frag.size());
 		}
 		merged.ParsePacketSize();
 		merged.PrepareToRead();

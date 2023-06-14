@@ -223,15 +223,6 @@ std::string GenerateCompanyPasswordHash(const std::string &password, const std::
 	return hashed_password.str();
 }
 
-struct HashBuffer : public BufferSerialisationHelper<HashBuffer> {
-	std::vector<byte> &buffer;
-
-	HashBuffer(std::vector<byte> &buffer) : buffer(buffer) {}
-
-	std::vector<byte> &GetSerialisationBuffer() { return this->buffer; }
-	size_t GetSerialisationLimit() const { return UINT32_MAX; }
-};
-
 /**
  * Hash the given password using server ID and game seed.
  * @param password Password to hash.
@@ -245,7 +236,7 @@ std::vector<uint8> GenerateGeneralPasswordHash(const std::string &password, cons
 
 	std::vector<byte> data;
 	data.reserve(password.size() + password_server_id.size() + 6);
-	HashBuffer buffer(data);
+	BufferSerialiser buffer(data);
 
 	/* key field */
 	buffer.Send_uint64(password_game_seed);

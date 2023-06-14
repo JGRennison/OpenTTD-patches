@@ -557,7 +557,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncLog(const std::strin
 		Packet *p = new Packet(PACKET_CLIENT_DESYNC_LOG, SHRT_MAX);
 		size_t size = std::min<size_t>(log.size() - offset, SHRT_MAX - 2 - p->Size());
 		p->Send_uint16((uint16)size);
-		p->Send_binary(log.data() + offset, size);
+		p->Send_binary((const byte *)(log.data() + offset), size);
 		my_client->SendPacket(p);
 
 		offset += size;
@@ -1175,7 +1175,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_DESYNC_LOG(Pack
 {
 	uint size = p->Recv_uint16();
 	this->server_desync_log.resize(this->server_desync_log.size() + size);
-	p->Recv_binary(this->server_desync_log.data() + this->server_desync_log.size() - size, size);
+	p->Recv_binary((byte *)(this->server_desync_log.data() + this->server_desync_log.size() - size), size);
 	DEBUG(net, 2, "Received %u bytes of server desync log", size);
 	return NETWORK_RECV_STATUS_OKAY;
 }

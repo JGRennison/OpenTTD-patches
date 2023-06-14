@@ -160,7 +160,7 @@ struct PacketWriter : SaveFilter {
 
 		byte *bufe = buf + size;
 		while (buf != bufe) {
-			size_t written = this->current->Send_bytes(buf, bufe);
+			size_t written = this->current->Send_binary_until_full(buf, bufe);
 			buf += written;
 
 			if (!this->current->CanWriteToPacket(1)) {
@@ -452,7 +452,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendDesyncLog(const std::strin
 		Packet *p = new Packet(PACKET_SERVER_DESYNC_LOG, SHRT_MAX);
 		size_t size = std::min<size_t>(log.size() - offset, SHRT_MAX - 2 - p->Size());
 		p->Send_uint16(static_cast<uint16>(size));
-		p->Send_binary(log.data() + offset, size);
+		p->Send_binary((const byte *)(log.data() + offset), size);
 		this->SendPacket(p);
 
 		offset += size;
@@ -1246,7 +1246,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_DESYNC_LOG(Pack
 {
 	uint size = p->Recv_uint16();
 	this->desync_log.resize(this->desync_log.size() + size);
-	p->Recv_binary(this->desync_log.data() + this->desync_log.size() - size, size);
+	p->Recv_binary((byte *)(this->desync_log.data() + this->desync_log.size() - size), size);
 	DEBUG(net, 2, "Received %u bytes of client desync log", size);
 	this->receive_limit += p->Size();
 	return NETWORK_RECV_STATUS_OKAY;

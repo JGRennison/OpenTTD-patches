@@ -62,7 +62,7 @@ struct CommandAuxiliarySerialised : public CommandAuxiliaryBase {
 
 	virtual std::optional<span<const uint8>> GetDeserialisationSrc() const override { return span<const uint8>(this->serialised_data.data(), this->serialised_data.size()); }
 
-	virtual void Serialise(CommandSerialisationBuffer &buffer) const override { buffer.Send_binary((const char *)this->serialised_data.data(), this->serialised_data.size()); }
+	virtual void Serialise(CommandSerialisationBuffer &buffer) const override { buffer.Send_binary(this->serialised_data.data(), this->serialised_data.size()); }
 };
 
 template <typename T>

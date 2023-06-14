@@ -119,7 +119,7 @@ void BufferSend_string(std::vector<byte> &buffer, size_t limit, const std::strin
  * @param end   The end of the buffer to send.
  * @return The number of bytes that were added to this packet.
  */
-size_t BufferSend_bytes(std::vector<byte> &buffer, size_t limit, const byte *begin, const byte *end)
+size_t BufferSend_binary_until_full(std::vector<byte> &buffer, size_t limit, const byte *begin, const byte *end)
 {
 	size_t amount = std::min<size_t>(end - begin, limit - buffer.size());
 	buffer.insert(buffer.end(), begin, begin + amount);
@@ -130,7 +130,7 @@ size_t BufferSend_bytes(std::vector<byte> &buffer, size_t limit, const byte *beg
  * Sends a binary data over the network.
  * @param data The data to send
  */
-void BufferSend_binary(std::vector<byte> &buffer, size_t limit, const char *data, const size_t size)
+void BufferSend_binary(std::vector<byte> &buffer, size_t limit, const byte *data, const size_t size)
 {
 	assert(data != nullptr);
 	assert(BufferCanWriteToPacket(buffer, limit, size));

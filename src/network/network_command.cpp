@@ -343,7 +343,7 @@ const char *NetworkGameSocketHandler::ReceiveCommand(Packet *p, CommandPacket *c
 		CommandAuxiliarySerialised *aux_data = new CommandAuxiliarySerialised();
 		cp->aux_data.reset(aux_data);
 		aux_data->serialised_data.resize(aux_data_size);
-		p->Recv_binary((char *)(aux_data->serialised_data.data()), aux_data_size);
+		p->Recv_binary((aux_data->serialised_data.data()), aux_data_size);
 	}
 
 	return nullptr;
