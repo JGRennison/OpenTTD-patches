@@ -1315,15 +1315,9 @@ static void NetworkGenerateServerId()
 std::string NetworkGenerateRandomKeyString(uint bytes)
 {
 	uint8 *key = AllocaM(uint8, bytes);
-	char *hex_output = AllocaM(char, bytes * 2);
+	NetworkRandomBytesWithFallback(key, bytes);
 
-	if (randombytes(key, bytes) < 0) {
-		/* Fallback poor-quality random */
-		DEBUG(misc, 0, "High quality random source unavailable");
-		for (uint i = 0; i < bytes; i++) {
-			key[i] = (uint8)InteractiveRandom();
-		}
-	}
+	char *hex_output = AllocaM(char, bytes * 2);
 
 	char txt[3];
 	for (uint i = 0; i < bytes; ++i) {
@@ -1399,6 +1393,17 @@ void NetworkShutDown()
 	_network_available = false;
 
 	NetworkCoreShutdown();
+}
+
+void NetworkRandomBytesWithFallback(void *buf, size_t bytes)
+{
+	if (randombytes(buf, bytes) < 0) {
+		/* Fallback poor-quality random */
+		DEBUG(net, 0, "High quality random source unavailable");
+		for (uint i = 0; i < bytes; i++) {
+			reinterpret_cast<byte *>(buf)[i] = (byte)InteractiveRandom();
+		}
+	}
 }
 
 #ifdef __EMSCRIPTEN__

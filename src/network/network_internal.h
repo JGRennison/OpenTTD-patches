@@ -156,4 +156,6 @@ std::string NormalizeConnectionString(const std::string &connection_string, uint
 
 void ClientNetworkEmergencySave();
 
+void NetworkRandomBytesWithFallback(void *buf, size_t n);
+
 #endif /* NETWORK_INTERNAL_H */

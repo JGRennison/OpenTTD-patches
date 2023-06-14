@@ -214,12 +214,9 @@ ServerNetworkGameSocketHandler::ServerNetworkGameSocketHandler(SOCKET s) : Netwo
 	this->receive_limit = _settings_client.network.bytes_per_frame_burst;
 
 	uint64 seeds[3];
-	if (randombytes(&seeds, sizeof(uint64) * lengthof(seeds)) < 0) {
-		/* Can't get random data, use InteractiveRandom */
-		for (uint64 &seed : seeds) {
-			seed = (uint64)(InteractiveRandom()) | (((uint64)(InteractiveRandom())) << 32);
-		}
-	}
+	static_assert(sizeof(seeds) == 24);
+	NetworkRandomBytesWithFallback(seeds, sizeof(seeds));
+
 	this->server_hash_bits = seeds[0];
 	this->rcon_hash_bits = seeds[1];
 	this->settings_hash_bits = seeds[2];
