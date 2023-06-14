@@ -198,3 +198,12 @@ size_t Packet::RemainingBytesToTransfer() const
 	return this->Size() - this->pos;
 }
 
+bool SubPacketDeserialiser::CanDeserialiseBytes(size_t bytes_to_read, bool raise_error)
+{
+	if (this->pos + bytes_to_read > this->size) {
+		if (raise_error) this->cs->NetworkSocketHandler::MarkClosed();
+		return false;
+	}
+
+	return true;
+}
