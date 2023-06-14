@@ -1039,9 +1039,12 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_SETTINGS_PASSWO
 		DEBUG(net, 0, "[settings-ctrl] wrong password from client-id %d", this->client_id);
 		NetworkServerSendRcon(this->client_id, CC_ERROR, "Access Denied");
 		this->settings_authed = false;
+		NetworkRecvStatus status = this->HandleAuthFailure(this->settings_auth_failures);
+		if (status != NETWORK_RECV_STATUS_OKAY) return status;
 	} else {
 		DEBUG(net, 0, "[settings-ctrl] client-id %d", this->client_id);
 		this->settings_authed = true;
+		this->settings_auth_failures = 0;
 	}
 
 	return this->SendSettingsAccessUpdate(this->settings_authed);
@@ -1592,7 +1595,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_RCON(Packet *p)
 
 	if (_settings_client.network.rcon_password.empty()) {
 		NetworkServerSendRcon(this->client_id, CC_ERROR, "Access Denied");
-		return NETWORK_RECV_STATUS_OKAY;
+		return this->HandleAuthFailure(this->rcon_auth_failures);
 	}
 
 	std::vector<byte> password = p->Recv_buffer();
@@ -1601,7 +1604,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_RCON(Packet *p)
 	if (password != this->rcon_password_hash_cache.GetHash(_settings_client.network.rcon_password, this->rcon_hash_bits)) {
 		DEBUG(net, 0, "[rcon] wrong password from client-id %d", this->client_id);
 		NetworkServerSendRcon(this->client_id, CC_ERROR, "Access Denied");
-		return NETWORK_RECV_STATUS_OKAY;
+		return this->HandleAuthFailure(this->rcon_auth_failures);
 	}
 
 	DEBUG(net, 3, "[rcon] Client-id %d executed: %s", this->client_id, command.c_str());
@@ -1609,6 +1612,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_RCON(Packet *p)
 	_redirect_console_to_client = this->client_id;
 	IConsoleCmdExec(command.c_str());
 	_redirect_console_to_client = INVALID_CLIENT_ID;
+	this->rcon_auth_failures = 0;
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
@@ -1636,6 +1640,17 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_MOVE(Packet *p)
 	/* if we get here we can move the client */
 	NetworkServerDoMove(this->client_id, company_id);
 	return NETWORK_RECV_STATUS_OKAY;
+}
+
+NetworkRecvStatus ServerNetworkGameSocketHandler::HandleAuthFailure(uint &failure_count)
+{
+	failure_count++;
+	if (_settings_client.network.max_auth_failures != 0 && failure_count >= _settings_client.network.max_auth_failures) {
+		DEBUG(net, 0, "Kicked client-id #%d due to too many failed authentication attempts", this->client_id);
+		return this->SendError(NETWORK_ERROR_KICKED);
+	} else {
+		return NETWORK_RECV_STATUS_OKAY;
+	}
 }
 
 const char *ServerNetworkGameSocketHandler::GetClientStatusName(ClientStatus status)

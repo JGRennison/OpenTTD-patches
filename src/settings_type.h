@@ -383,6 +383,7 @@ struct NetworkSettings {
 	std::string network_id;                               ///< network ID for servers
 	std::string company_password_storage_token;           ///< company password storage token
 	std::string company_password_storage_secret;          ///< company password storage secret
+	uint8       max_auth_failures;                        ///< maximum auth failures before client is kicked
 	bool        autoclean_companies;                      ///< automatically remove companies that are not in use
 	uint8       autoclean_unprotected;                    ///< remove passwordless companies after this many months
 	uint8       autoclean_protected;                      ///< remove the password from passworded companies after this many months

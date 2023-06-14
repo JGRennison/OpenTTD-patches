@@ -100,6 +100,9 @@ public:
 	uint desync_frame_seed = 0;
 	uint desync_frame_state_checksum = 0;
 
+	uint rcon_auth_failures = 0;
+	uint settings_auth_failures = 0;
+
 	ServerNetworkGameSocketHandler(SOCKET s);
 	~ServerNetworkGameSocketHandler();
 
@@ -130,6 +133,8 @@ public:
 	NetworkRecvStatus SendCompanyUpdate();
 	NetworkRecvStatus SendConfigUpdate();
 	NetworkRecvStatus SendSettingsAccessUpdate(bool ok);
+
+	NetworkRecvStatus HandleAuthFailure(uint &failure_count);
 
 	std::string GetDebugInfo() const override;
 
