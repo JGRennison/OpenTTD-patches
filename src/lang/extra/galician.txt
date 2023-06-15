@@ -1,5 +1,7 @@
 STR_CONFIG_SETTING_TREE_PLACER_PERFECT                          :Perfecto
 
+STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT_EXTRA                   :{STRING}, 'Perfecto' melora a dispersión e agrupación
+
 STR_FINANCES_SECTION_INFRASTRUCTURE_COSTS                       :{GOLD}Custos da infraestrutura compartida
 STR_FINANCES_SECTION_INFRASTRUCTURE_INCOME                      :{GOLD}Ingresos da infraestrutura compartida
 
@@ -45,6 +47,8 @@ STR_VIEWPORT_TOWN_TINY_EXCELLENT_RATING                         :{TINY_FONT}{GRE
 
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :Extremadamente lento
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :Moi lento
+
+STR_ABOUT_MENU_SHOW_PICKER_TOOL                                 :Ferramenta de selección
 
 STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Fiestra da tecla modificadora
 
@@ -95,6 +99,11 @@ STR_GRAPH_CARGO_DAYS_MODE                                       :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_SPEED_MODE                                      :{TINY_FONT}{BLACK}Velocidade media
 STR_GRAPH_CARGO_TOOLTIP_DAYS_MODE                               :{BLACK}Amosar os días en tránsito no eixo-X da gráfica
 STR_GRAPH_CARGO_TOOLTIP_SPEED_MODE                              :{BLACK}Amosar a velocidade media de tránsito no eixo-X da gráfica
+
+STR_GRAPH_DELIVERED_CARGO_BY_COMPANY_MODE                       :{TINY_FONT}{BLACK}Empresas
+STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE                         :{TINY_FONT}{BLACK}Cargas
+STR_GRAPH_DELIVERED_CARGO_BY_COMPANY_MODE_TOOLTIP               :{BLACK}Amosar unha liña por cada empresa seleccionada
+STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE_TOOLTIP                 :{BLACK}Amosar unha liña por cada carga seleccionada
 
 STR_SMALLMAP_SCREENSHOT                                         :{BLACK}Captura de pantalla
 
@@ -575,6 +584,11 @@ STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_HELPTEXT             :O algoritmo que
 STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_TRADITIONAL          :Tradicional
 STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_MODERN               :Moderno
 
+STR_CONFIG_SETTING_TICK_RATE                                    :Ratio de ticks do xogo: {STRING}
+STR_CONFIG_SETTING_TICK_RATE_HELPTEXT                           :Número de milisegundos por cada tick do xogo.
+STR_CONFIG_SETTING_TICK_RATE_TRADITIONAL                        :30 ms/tick (tradicional)
+STR_CONFIG_SETTING_TICK_RATE_MODERN                             :27 ms/tick (moderno)
+
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Distancia mínima entre vilas: {STRING}
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Fixa a distancia mínima en cadros entre cidades para a xeración do mapa e as fundacións aleatorias
 
@@ -596,6 +610,8 @@ STR_CONFIG_SETTING_INTERFACE_TIME_CLIENT                        :{ORANGE}Opción
 STR_CONFIG_SETTING_INTERFACE_TIME_SAVEGAME                      :{ORANGE}Opcións da partida
 STR_CONFIG_SETTING_INTERFACE_TIMETABLE                          :{ORANGE}Horarios
 STR_CONFIG_SETTING_INTERFACE_ADV_SIGNALS                        :{ORANGE}Sinais (avanzado)
+STR_CONFIG_SETTING_INTERFACE_SAVE                               :{ORANGE}Gardado e autogardado
+STR_CONFIG_SETTING_INTERFACE_VEHICLE_WINDOWS                    :{ORANGE}Ventás dos vehículos
 STR_CONFIG_SETTING_GENWORLD_RIVERS_LAKES                        :{ORANGE}Ríos e lagoas
 STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST_PER_CARGO_OVERRIDE     :{ORANGE}Distribución de carga - por anulacións de carga
 STR_CONFIG_SETTING_ENVIRONMENT_TREES                            :{ORANGE}Árbores
@@ -1300,6 +1316,8 @@ STR_CONFIG_MAX_DEPARTURES                                       :Amosa como máx
 STR_CONFIG_MAX_DEPARTURES_HELPTEXT                              :O máximo número de saídas para amosar en cada estación
 STR_CONFIG_MAX_DEPARTURE_TIME                                   :Amosa as saídas como moito con {STRING} días de anteleación
 STR_CONFIG_MAX_DEPARTURE_TIME_HELPTEXT                          :Con canto adianto amosar as saídas, en días
+STR_CONFIG_MAX_DEPARTURE_TIME_MINUTES                           :Amosar chegadas/saídas ata {STRING} minutos antes
+STR_CONFIG_MAX_DEPARTURE_TIME_MINUTES_HELPTEXT                  :Con cantos minutos de antelación amosar chegadas e partidas
 STR_CONFIG_DEPARTURE_CALC_FREQUENCY                             :Calcular saídas cada {STRING} ticks
 STR_CONFIG_DEPARTURE_CALC_FREQUENCY_HELPTEXT                    :Con que frecuencia refrescar a lista de saídas, en ticks
 STR_CONFIG_DEPARTURE_VEHICLE_NAME                               :Amosar o nome do vehículo nas saídas: {STRING}
@@ -1551,6 +1569,7 @@ STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}Ocupaci�
 STR_ORDERS_OCCUPANCY_PERCENT                                    :{NUM}%
 
 STR_ORDERS_NEW_GROUP_TOOLTIP                                    :{BLACK}Crear grupo dende un vehículo individual
+STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP_EXTRA            :{STRING}{}{BLACK}Ctrl+Clic para crear un grupo a partir dun único vehículo
 
 STR_ORDER_GO_TO_WAYPOINT_REVERSE                                :Ir vía e cambiar o sentido en {WAYPOINT}
 STR_ORDER_GO_NON_STOP_TO_WAYPOINT_REVERSE                       :Ir sen parada vía e cambiar o sentido en {WAYPOINT}
@@ -2061,3 +2080,8 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Vender u
 STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Non se pode comprar un 25% das accións desta compañía...
 STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Non se pode vender un 25% das accións desta compañía...
 STR_ERROR_PROTECTED                                             :{WHITE}Esta compañía aínda non é suficientemente antiga para comerciar con accións...
+
+STR_TOWN_DIRECTORY_INFO                                         :{BLACK}{STRING}, Vilas: {COMMA}
+
+STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR                         :{BLACK}Barra de ferramentas principal máis grande
+STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR_TOOLTIP                 :{BLACK}Marca esta caixa para aumentar a escala da barra de ferramentas principal
