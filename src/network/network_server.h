@@ -22,15 +22,9 @@ extern NetworkClientSocketPool _networkclientsocket_pool;
 
 /** Class for handling the server side of the game connection. */
 class ServerNetworkGameSocketHandler : public NetworkClientSocketPool::PoolItem<&_networkclientsocket_pool>, public NetworkGameSocketHandler, public TCPListenHandler<ServerNetworkGameSocketHandler, PACKET_SERVER_FULL, PACKET_SERVER_BANNED> {
-	struct CachedPassword {
-		std::string source;
-		std::vector<byte> cached_hash;
-
-		const std::vector<byte> &GetHash(const std::string &password, uint64 password_game_seed);
-	};
-	CachedPassword game_password_hash_cache;
-	CachedPassword rcon_password_hash_cache;
-	CachedPassword settings_password_hash_cache;
+	NetworkGameKeys intl_keys;
+	uint64 min_key_message_id = 0;
+	byte *rcon_reply_key = nullptr;
 
 protected:
 	NetworkRecvStatus Receive_CLIENT_JOIN(Packet *p) override;
@@ -61,6 +55,8 @@ protected:
 	NetworkRecvStatus SendNeedGamePassword();
 	NetworkRecvStatus SendNeedCompanyPassword();
 
+	bool ParseKeyPasswordPacket(Packet *p, NetworkSharedSecrets &ss, const std::string &password, std::string *payload, size_t length);
+
 public:
 	/** Status of a client */
 	enum ClientStatus {
@@ -86,9 +82,6 @@ public:
 	ClientStatus status;         ///< Status of this client
 	CommandQueue outgoing_queue; ///< The command-queue awaiting delivery
 	size_t receive_limit;        ///< Amount of bytes that we can receive at this moment
-	uint64 server_hash_bits;     ///< Server password hash entropy bits
-	uint64 rcon_hash_bits;       ///< Rcon password hash entropy bits
-	uint64 settings_hash_bits;   ///< Settings password hash entropy bits
 	bool settings_authed = false;///< Authorised to control all game settings
 	bool supports_zstd = false;  ///< Client supports zstd compression
 
@@ -119,6 +112,7 @@ public:
 	NetworkRecvStatus SendShutdown();
 	NetworkRecvStatus SendNewGame();
 	NetworkRecvStatus SendRConResult(uint16 colour, const std::string &command);
+	NetworkRecvStatus SendRConDenied();
 	NetworkRecvStatus SendMove(ClientID client_id, CompanyID company_id);
 
 	NetworkRecvStatus SendClientInfo(NetworkClientInfo *ci);
@@ -137,6 +131,12 @@ public:
 	NetworkRecvStatus HandleAuthFailure(uint &failure_count);
 
 	std::string GetDebugInfo() const override;
+
+	const NetworkGameKeys &GetKeys()
+	{
+		if (!this->intl_keys.inited) this->intl_keys.Initialise();
+		return this->intl_keys;
+	}
 
 	static void Send();
 	static void AcceptConnection(SOCKET s, const NetworkAddress &address);

@@ -33,12 +33,15 @@
 #include "../core/checksum_func.hpp"
 #include "../fileio_func.h"
 #include "../debug_settings.h"
+#include "../3rdparty/monocypher/monocypher.h"
 
 #include "table/strings.h"
 
 #include "../safeguards.h"
 
 /* This file handles all the client-commands */
+
+static void ResetClientConnectionKeyStates();
 
 /** Read some packets, and when do use that data as initial load filter. */
 struct PacketReader : LoadFilter {
@@ -174,6 +177,8 @@ ClientNetworkGameSocketHandler::~ClientNetworkGameSocketHandler()
 		FioFCloseFile(this->desync_log_file);
 		this->desync_log_file = nullptr;
 	}
+
+	ResetClientConnectionKeyStates();
 }
 
 NetworkRecvStatus ClientNetworkGameSocketHandler::CloseConnection(NetworkRecvStatus status)
@@ -380,12 +385,10 @@ static uint32 last_ack_frame;
 
 /** One bit of 'entropy' used to generate a salt for the company passwords. */
 static uint32 _company_password_game_seed;
-/** One bit of 'entropy' used to generate a salt for the server passwords. */
-static uint64 _server_password_game_seed;
-/** One bit of 'entropy' used to generate a salt for the rcon passwords. */
-static uint64 _rcon_password_game_seed;
-/** One bit of 'entropy' used to generate a salt for the settings passwords. */
-static uint64 _settings_password_game_seed;
+/** Network server's x25519 public key, used for key derivation */
+static byte _server_x25519_pub_key[32];
+/** Key message ID counter */
+static uint64 _next_key_message_id;
 /** The other bit of 'entropy' used to generate a salt for the server, rcon, and settings passwords. */
 static std::string _password_server_id;
 /** The other bit of 'entropy' used to generate a salt for the company passwords. */
@@ -401,6 +404,60 @@ NetworkJoinInfo _network_join;
 
 /** Make sure the server ID length is the same as a md5 hash. */
 static_assert(NETWORK_SERVER_ID_LENGTH == 16 * 2 + 1);
+
+NetworkRecvStatus ClientNetworkGameSocketHandler::SendKeyPasswordPacket(PacketType packet_type, NetworkSharedSecrets &ss, const std::string &password, const std::string *payload)
+{
+	const NetworkGameKeys &keys = this->GetKeys();
+
+	byte shared_secret[32]; // Shared secret
+	crypto_x25519(shared_secret, keys.x25519_priv_key, _server_x25519_pub_key);
+	if (std::count(shared_secret, shared_secret + 32, 0) == 32) {
+		/* Secret is all 0 because public key is all 0, just give up at this point */
+		return NETWORK_RECV_STATUS_MALFORMED_PACKET;
+	}
+
+	crypto_blake2b_ctx ctx;
+	crypto_blake2b_init  (&ctx, 64);
+	crypto_blake2b_update(&ctx, shared_secret, 32);          // Shared secret
+	crypto_blake2b_update(&ctx, keys.x25519_pub_key, 32);    // Client pub key
+	crypto_blake2b_update(&ctx, _server_x25519_pub_key, 32); // Server pub key
+	crypto_blake2b_update(&ctx, (const byte *)password.data(), password.size()); // Password
+	crypto_blake2b_final (&ctx, ss.shared_data);
+
+	/* NetworkSharedSecrets::shared_data now contains 2 keys worth of hash, first key is used for up direction, second key for down direction (if any) */
+
+	crypto_wipe(shared_secret, 32);
+
+	std::vector<byte> message;
+	BufferSerialiser buffer(message);
+
+	/* Put monotonically increasing counter in message */
+	buffer.Send_uint64(_next_key_message_id);
+
+	/* Put actual payload in message, if there is one */
+	if (payload != nullptr) buffer.Send_string(*payload);
+
+	/* Message authentication code */
+	uint8 mac[16];
+
+	/* Use only once per key: random */
+	uint8 nonce[24];
+	NetworkRandomBytesWithFallback(nonce, 24);
+
+	/* Encrypt in place, use first half of hash as key */
+	crypto_aead_lock(message.data(), mac, ss.shared_data, nonce, keys.x25519_pub_key, 32, message.data(), message.size());
+
+	Packet *p = new Packet(packet_type, SHRT_MAX);
+	p->Send_binary(keys.x25519_pub_key, 32);
+	p->Send_binary(nonce, 24);
+	p->Send_binary(mac, 16);
+	p->Send_binary(message.data(), message.size());
+
+	_next_key_message_id++;
+
+	my_client->SendPacket(p);
+	return NETWORK_RECV_STATUS_OKAY;
+}
 
 /***********
  * Sending functions
@@ -438,10 +495,8 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendNewGRFsOk()
  */
 NetworkRecvStatus ClientNetworkGameSocketHandler::SendGamePassword(const std::string &password)
 {
-	Packet *p = new Packet(PACKET_CLIENT_GAME_PASSWORD, SHRT_MAX);
-	p->Send_buffer(GenerateGeneralPasswordHash(password, _password_server_id, _server_password_game_seed));
-	my_client->SendPacket(p);
-	return NETWORK_RECV_STATUS_OKAY;
+	NetworkSharedSecrets ss;
+	return my_client->SendKeyPasswordPacket(PACKET_CLIENT_GAME_PASSWORD, ss, password, nullptr);
 }
 
 /**
@@ -462,14 +517,14 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendCompanyPassword(const std:
  */
 NetworkRecvStatus ClientNetworkGameSocketHandler::SendSettingsPassword(const std::string &password)
 {
-	Packet *p = new Packet(PACKET_CLIENT_SETTINGS_PASSWORD, SHRT_MAX);
 	if (password.empty()) {
-		p->Send_buffer(nullptr, 0);
+		Packet *p = new Packet(PACKET_CLIENT_SETTINGS_PASSWORD, SHRT_MAX);
+		my_client->SendPacket(p);
+		return NETWORK_RECV_STATUS_OKAY;
 	} else {
-		p->Send_buffer(GenerateGeneralPasswordHash(password, _password_server_id, _settings_password_game_seed));
+		NetworkSharedSecrets ss;
+		return my_client->SendKeyPasswordPacket(PACKET_CLIENT_SETTINGS_PASSWORD, ss, password, nullptr);
 	}
-	my_client->SendPacket(p);
-	return NETWORK_RECV_STATUS_OKAY;
 }
 
 /** Request the map from the server. */
@@ -637,11 +692,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendQuit()
  */
 NetworkRecvStatus ClientNetworkGameSocketHandler::SendRCon(const std::string &pass, const std::string &command)
 {
-	Packet *p = new Packet(PACKET_CLIENT_RCON, SHRT_MAX);
-	p->Send_buffer(GenerateGeneralPasswordHash(pass, _password_server_id, _rcon_password_game_seed));
-	p->Send_string(command);
-	my_client->SendPacket(p);
-	return NETWORK_RECV_STATUS_OKAY;
+	return my_client->SendKeyPasswordPacket(PACKET_CLIENT_RCON, my_client->last_rcon_shared_secrets, pass, &command);
 }
 
 /**
@@ -836,7 +887,8 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_NEED_GAME_PASSW
 	if (this->status < STATUS_JOIN || this->status >= STATUS_AUTH_GAME) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 	this->status = STATUS_AUTH_GAME;
 
-	_server_password_game_seed = p->Recv_uint64();
+	static_assert(sizeof(_server_x25519_pub_key) == 32);
+	p->Recv_binary(_server_x25519_pub_key, sizeof(_server_x25519_pub_key));
 	_password_server_id = p->Recv_string(NETWORK_SERVER_ID_LENGTH);
 	if (this->HasClientQuit()) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 
@@ -876,9 +928,8 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_WELCOME(Packet 
 
 	/* Initialize the password hash salting variables, even if they were previously. */
 	_company_password_game_seed = p->Recv_uint32();
-	_server_password_game_seed = p->Recv_uint64();
-	_rcon_password_game_seed = p->Recv_uint64();
-	_settings_password_game_seed = p->Recv_uint64();
+	static_assert(sizeof(_server_x25519_pub_key) == 32);
+	p->Recv_binary(_server_x25519_pub_key, sizeof(_server_x25519_pub_key));
 	_password_server_id = p->Recv_string(NETWORK_SERVER_ID_LENGTH);
 	_company_password_server_id = p->Recv_string(NETWORK_SERVER_ID_LENGTH);
 
@@ -1250,12 +1301,26 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_RCON(Packet *p)
 {
 	if (this->status < STATUS_AUTHORIZED) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 
-	TextColour colour_code = (TextColour)p->Recv_uint16();
-	if (!IsValidConsoleColour(colour_code)) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
+	if (!p->CanReadFromPacket(1)) {
+		IConsolePrint(CC_ERROR, "Access Denied");
+		return NETWORK_RECV_STATUS_OKAY;
+	}
 
-	std::string rcon_out = p->Recv_string(NETWORK_RCONCOMMAND_LENGTH);
+	byte nonce[24];
+	byte mac[16];
+	p->Recv_binary(nonce, 24);
+	p->Recv_binary(mac, 16);
 
-	IConsolePrint(colour_code, rcon_out.c_str());
+	std::vector<byte> message = p->Recv_binary(p->RemainingBytesToTransfer());
+
+	if (crypto_aead_unlock(message.data(), mac, this->last_rcon_shared_secrets.shared_data + 32, nonce, nullptr, 0, message.data(), message.size()) == 0) {
+		SubPacketDeserialiser spd(p, message);
+		TextColour colour_code = (TextColour)spd.Recv_uint16();
+		if (!IsValidConsoleColour(colour_code)) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
+
+		std::string rcon_out = spd.Recv_string(NETWORK_RCONCOMMAND_LENGTH);
+		IConsolePrint(colour_code, rcon_out.c_str());
+	}
 
 	return NETWORK_RECV_STATUS_OKAY;
 }
@@ -1373,6 +1438,12 @@ std::string ClientNetworkGameSocketHandler::GetDebugInfo() const
 	return stdstr_fmt("status: %d (%s)", this->status, GetServerStatusName(this->status));
 }
 
+static void ResetClientConnectionKeyStates()
+{
+	_next_key_message_id = 0;
+	crypto_wipe(_server_x25519_pub_key, sizeof(_server_x25519_pub_key));
+}
+
 
 /** Is called after a client is connected to the server */
 void NetworkClient_Connected()
@@ -1381,6 +1452,7 @@ void NetworkClient_Connected()
 	_frame_counter = 0;
 	_frame_counter_server = 0;
 	last_ack_frame = 0;
+	ResetClientConnectionKeyStates();
 	/* Request the game-info */
 	MyClient::SendJoin();
 }

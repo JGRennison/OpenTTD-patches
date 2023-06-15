@@ -1412,6 +1412,23 @@ void NetworkRandomBytesWithFallback(void *buf, size_t bytes)
 	}
 }
 
+void NetworkGameKeys::Initialise()
+{
+	assert(!this->inited);
+
+	this->inited = true;
+
+	static_assert(sizeof(this->x25519_priv_key) == 32);
+	NetworkRandomBytesWithFallback(this->x25519_priv_key, sizeof(this->x25519_priv_key));
+	crypto_x25519_public_key(this->x25519_pub_key, this->x25519_priv_key);
+}
+
+NetworkSharedSecrets::~NetworkSharedSecrets()
+{
+	static_assert(sizeof(*this) == 64);
+	crypto_wipe(this, sizeof(*this));
+}
+
 #ifdef __EMSCRIPTEN__
 extern "C" {
 

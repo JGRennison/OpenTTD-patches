@@ -31,6 +31,7 @@
 #include "../rev.h"
 #include "../crashlog.h"
 #include "../3rdparty/randombytes/randombytes.h"
+#include "../3rdparty/monocypher/monocypher.h"
 #include <mutex>
 #include <condition_variable>
 #if defined(__MINGW32__)
@@ -193,16 +194,6 @@ struct PacketWriter : SaveFilter {
 };
 
 
-const std::vector<byte> &ServerNetworkGameSocketHandler::CachedPassword::GetHash(const std::string &password, uint64 password_game_seed)
-{
-	if (password != this->source) {
-		this->source = password;
-		this->cached_hash = GenerateGeneralPasswordHash(password, _settings_client.network.network_id, password_game_seed);
-	}
-
-	return this->cached_hash;
-}
-
 /**
  * Create a new socket for the server side of the game connection.
  * @param s The socket to connect with.
@@ -212,14 +203,6 @@ ServerNetworkGameSocketHandler::ServerNetworkGameSocketHandler(SOCKET s) : Netwo
 	this->status = STATUS_INACTIVE;
 	this->client_id = _network_client_id++;
 	this->receive_limit = _settings_client.network.bytes_per_frame_burst;
-
-	uint64 seeds[3];
-	static_assert(sizeof(seeds) == 24);
-	NetworkRandomBytesWithFallback(seeds, sizeof(seeds));
-
-	this->server_hash_bits = seeds[0];
-	this->rcon_hash_bits = seeds[1];
-	this->settings_hash_bits = seeds[2];
 
 	/* The Socket and Info pools need to be the same in size. After all,
 	 * each Socket will be associated with at most one Info object. As
@@ -242,6 +225,61 @@ ServerNetworkGameSocketHandler::~ServerNetworkGameSocketHandler()
 		this->savegame->Destroy();
 		this->savegame = nullptr;
 	}
+}
+
+bool ServerNetworkGameSocketHandler::ParseKeyPasswordPacket(Packet *p, NetworkSharedSecrets &ss, const std::string &password, std::string *payload, size_t length)
+{
+	byte client_pub_key[32];
+	byte nonce[24];
+	byte mac[16];
+	p->Recv_binary(client_pub_key, 32);
+	p->Recv_binary(nonce, 24);
+	p->Recv_binary(mac, 16);
+
+	const NetworkGameKeys &keys = this->GetKeys();
+
+	byte shared_secret[32]; // Shared secret
+	crypto_x25519(shared_secret, keys.x25519_priv_key, client_pub_key);
+	if (std::count(shared_secret, shared_secret + 32, 0) == 32) {
+		/* Secret is all 0 because public key is all 0, just reject it */
+		return false;
+	}
+
+	crypto_blake2b_ctx ctx;
+	crypto_blake2b_init  (&ctx, 64);
+	crypto_blake2b_update(&ctx, shared_secret, 32);       // Shared secret
+	crypto_blake2b_update(&ctx, client_pub_key, 32);      // Client pub key
+	crypto_blake2b_update(&ctx, keys.x25519_pub_key, 32); // Server pub key
+	crypto_blake2b_update(&ctx, (const byte *)password.data(), password.size()); // Password
+	crypto_blake2b_final (&ctx, ss.shared_data);
+
+	/* NetworkSharedSecrets::shared_data now contains 2 keys worth of hash, first key is used for up direction, second key for down direction (if any) */
+
+	crypto_wipe(shared_secret, 32);
+
+	std::vector<byte> message = p->Recv_binary(p->RemainingBytesToTransfer());
+	if (message.size() < 8) return false;
+	if ((message.size() == 8) != (payload == nullptr)) {
+		/* Payload expected but not present, or vice versa, just give up */
+		return false;
+	}
+
+	/* Decrypt in place, use first half of hash as key */
+	if (crypto_aead_unlock(message.data(), mac, ss.shared_data, nonce, client_pub_key, 32, message.data(), message.size()) == 0) {
+		SubPacketDeserialiser spd(p, message);
+		uint64 message_id = spd.Recv_uint64();
+		if (message_id < this->min_key_message_id) {
+			/* ID has not increased monotonically, reject the message */
+			return false;
+		}
+		this->min_key_message_id = message_id + 1;
+		if (payload != nullptr) {
+			*payload = spd.Recv_string(length);
+		}
+		return true;
+	}
+
+	return false;
 }
 
 std::unique_ptr<Packet> ServerNetworkGameSocketHandler::ReceivePacket()
@@ -487,8 +525,11 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendNeedGamePassword()
 	/* Reset 'lag' counters */
 	this->last_frame = this->last_frame_server = _frame_counter;
 
+	const NetworkGameKeys &keys = this->GetKeys();
+
 	Packet *p = new Packet(PACKET_SERVER_NEED_GAME_PASSWORD, SHRT_MAX);
-	p->Send_uint64(this->server_hash_bits);
+	static_assert(sizeof(keys.x25519_pub_key) == 32);
+	p->Send_binary(keys.x25519_pub_key, sizeof(keys.x25519_pub_key));
 	p->Send_string(_settings_client.network.network_id);
 	this->SendPacket(p);
 	return NETWORK_RECV_STATUS_OKAY;
@@ -525,12 +566,13 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendWelcome()
 
 	_network_game_info.clients_on++;
 
+	const NetworkGameKeys &keys = this->GetKeys();
+
 	p = new Packet(PACKET_SERVER_WELCOME, SHRT_MAX);
 	p->Send_uint32(this->client_id);
 	p->Send_uint32(_settings_game.game_creation.generation_seed);
-	p->Send_uint64(this->server_hash_bits);
-	p->Send_uint64(this->rcon_hash_bits);
-	p->Send_uint64(this->settings_hash_bits);
+	static_assert(sizeof(keys.x25519_pub_key) == 32);
+	p->Send_binary(keys.x25519_pub_key, sizeof(keys.x25519_pub_key));
 	p->Send_string(_settings_client.network.network_id);
 	p->Send_string(_network_company_server_id);
 	this->SendPacket(p);
@@ -804,10 +846,38 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendNewGame()
  */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendRConResult(uint16 colour, const std::string &command)
 {
-	Packet *p = new Packet(PACKET_SERVER_RCON, SHRT_MAX);
+	assert(this->rcon_reply_key != nullptr);
 
-	p->Send_uint16(colour);
-	p->Send_string(command);
+	std::vector<byte> message;
+	BufferSerialiser buffer(message);
+	buffer.Send_uint16(colour);
+	buffer.Send_string(command);
+
+	/* Message authentication code */
+	uint8 mac[16];
+
+	/* Use only once per key: random */
+	uint8 nonce[24];
+	NetworkRandomBytesWithFallback(nonce, 24);
+
+	/* Encrypt in place, use first half of hash as key */
+	crypto_aead_lock(message.data(), mac, this->rcon_reply_key, nonce, nullptr, 0, message.data(), message.size());
+
+	Packet *p = new Packet(PACKET_SERVER_RCON, SHRT_MAX);
+	p->Send_binary(nonce, 24);
+	p->Send_binary(mac, 16);
+	p->Send_binary(message.data(), message.size());
+
+	this->SendPacket(p);
+	return NETWORK_RECV_STATUS_OKAY;
+}
+
+/**
+ * Send a deny result of a console action.
+ */
+NetworkRecvStatus ServerNetworkGameSocketHandler::SendRConDenied()
+{
+	Packet *p = new Packet(PACKET_SERVER_RCON, SHRT_MAX);
 	this->SendPacket(p);
 	return NETWORK_RECV_STATUS_OKAY;
 }
@@ -979,13 +1049,13 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_GAME_PASSWORD(P
 		return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
 	}
 
-	std::vector<byte> password = p->Recv_buffer();
-
 	/* Check game password. Allow joining if we cleared the password meanwhile */
-	if (!_settings_client.network.server_password.empty() &&
-			password != this->game_password_hash_cache.GetHash(_settings_client.network.server_password, this->server_hash_bits)) {
-		/* Password is invalid */
-		return this->SendError(NETWORK_ERROR_WRONG_PASSWORD);
+	if (!_settings_client.network.server_password.empty()) {
+		NetworkSharedSecrets ss;
+		if (!this->ParseKeyPasswordPacket(p, ss, _settings_client.network.server_password, nullptr, 0)) {
+			/* Password is invalid */
+			return this->SendError(NETWORK_ERROR_WRONG_PASSWORD);
+		}
 	}
 
 	const NetworkClientInfo *ci = this->GetInfo();
@@ -1025,16 +1095,16 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_SETTINGS_PASSWO
 		return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
 	}
 
-	std::vector<byte> password = p->Recv_buffer();
+	NetworkSharedSecrets ss;
 
 	/* Check settings password. Deny if no password is set */
-	if (password.empty()) {
+	if (!p->CanReadFromPacket(1)) {
 		if (this->settings_authed) DEBUG(net, 0, "[settings-ctrl] client-id %d deauthed", this->client_id);
 		this->settings_authed = false;
 	} else if (_settings_client.network.settings_password.empty() ||
-			password != this->settings_password_hash_cache.GetHash(_settings_client.network.settings_password, this->settings_hash_bits)) {
+			!this->ParseKeyPasswordPacket(p, ss, _settings_client.network.settings_password, nullptr, 0)) {
 		DEBUG(net, 0, "[settings-ctrl] wrong password from client-id %d", this->client_id);
-		NetworkServerSendRcon(this->client_id, CC_ERROR, "Access Denied");
+		NetworkServerSendRconDenied(this->client_id);
 		this->settings_authed = false;
 		NetworkRecvStatus status = this->HandleAuthFailure(this->settings_auth_failures);
 		if (status != NETWORK_RECV_STATUS_OKAY) return status;
@@ -1591,25 +1661,26 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_RCON(Packet *p)
 	if (this->status != STATUS_ACTIVE) return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
 
 	if (_settings_client.network.rcon_password.empty()) {
-		NetworkServerSendRcon(this->client_id, CC_ERROR, "Access Denied");
+		NetworkServerSendRconDenied(this->client_id);
 		return this->HandleAuthFailure(this->rcon_auth_failures);
 	}
 
-	std::vector<byte> password = p->Recv_buffer();
-	std::string command = p->Recv_string(NETWORK_RCONCOMMAND_LENGTH);
-
-	if (password != this->rcon_password_hash_cache.GetHash(_settings_client.network.rcon_password, this->rcon_hash_bits)) {
+	std::string command;
+	NetworkSharedSecrets ss;
+	if (!this->ParseKeyPasswordPacket(p, ss, _settings_client.network.rcon_password, &command, NETWORK_RCONCOMMAND_LENGTH)) {
 		DEBUG(net, 0, "[rcon] wrong password from client-id %d", this->client_id);
-		NetworkServerSendRcon(this->client_id, CC_ERROR, "Access Denied");
+		NetworkServerSendRconDenied(this->client_id);
 		return this->HandleAuthFailure(this->rcon_auth_failures);
 	}
 
 	DEBUG(net, 3, "[rcon] Client-id %d executed: %s", this->client_id, command.c_str());
 
 	_redirect_console_to_client = this->client_id;
+	this->rcon_reply_key = ss.shared_data + 32; /* second key */
 	IConsoleCmdExec(command.c_str());
 	_redirect_console_to_client = INVALID_CLIENT_ID;
 	this->rcon_auth_failures = 0;
+	this->rcon_reply_key = nullptr;
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
@@ -2202,6 +2273,17 @@ void NetworkServerDoMove(ClientID client_id, CompanyID company_id)
 void NetworkServerSendRcon(ClientID client_id, TextColour colour_code, const std::string &string)
 {
 	NetworkClientSocket::GetByClientID(client_id)->SendRConResult(colour_code, string);
+}
+
+/**
+ * Send an rcon reply to the client.
+ * @param client_id The identifier of the client.
+ * @param colour_code The colour of the text.
+ * @param string The actual reply.
+ */
+void NetworkServerSendRconDenied(ClientID client_id)
+{
+	NetworkClientSocket::GetByClientID(client_id)->SendRConDenied();
 }
 
 /**

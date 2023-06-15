@@ -84,6 +84,7 @@ bool NetworkServerChangeClientName(ClientID client_id, const std::string &new_na
 
 void NetworkServerDoMove(ClientID client_id, CompanyID company_id);
 void NetworkServerSendRcon(ClientID client_id, TextColour colour_code, const std::string &string);
+void NetworkServerSendRconDenied(ClientID client_id);
 void NetworkServerSendChat(NetworkAction action, DestType type, int dest, const std::string &msg, ClientID from_id, NetworkTextMessageData data = NetworkTextMessageData(), bool from_admin = false);
 void NetworkServerSendExternalChat(const std::string &source, TextColour colour, const std::string &user, const std::string &msg);
 
