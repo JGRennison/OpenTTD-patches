@@ -1312,21 +1312,27 @@ static void NetworkGenerateServerId()
 	_settings_client.network.network_id = hex_output;
 }
 
+std::string BytesToHexString(const byte *data, uint length)
+{
+	std::string hex_output;
+	hex_output.resize(length * 2);
+
+	char txt[3];
+	for (uint i = 0; i < length; ++i) {
+		seprintf(txt, lastof(txt), "%02x", data[i]);
+		hex_output[i * 2] = txt[0];
+		hex_output[(i * 2) + 1] = txt[1];
+	}
+
+	return hex_output;
+}
+
 std::string NetworkGenerateRandomKeyString(uint bytes)
 {
 	uint8 *key = AllocaM(uint8, bytes);
 	NetworkRandomBytesWithFallback(key, bytes);
 
-	char *hex_output = AllocaM(char, bytes * 2);
-
-	char txt[3];
-	for (uint i = 0; i < bytes; ++i) {
-		seprintf(txt, lastof(txt), "%02x", key[i]);
-		hex_output[i * 2] = txt[0];
-		hex_output[i * 2 + 1] = txt[1];
-	}
-
-	return std::string(hex_output, hex_output + bytes * 2);
+	return BytesToHexString(key, bytes);
 }
 
 class TCPNetworkDebugConnecter : TCPConnecter {
