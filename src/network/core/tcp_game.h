@@ -168,7 +168,8 @@ public:
 class NetworkGameSocketHandler : public NetworkTCPSocketHandler {
 /* TODO: rewrite into a proper class */
 private:
-	NetworkClientInfo *info;  ///< Client info related to this socket
+	NetworkClientInfo *info;          ///< Client info related to this socket
+	bool is_pending_deletion = false; ///< Whether this socket is pending deletion
 
 protected:
 	bool ignore_close = false;
@@ -592,6 +593,11 @@ public:
 
 	virtual std::string GetDebugInfo() const;
 	virtual void LogSentPacket(const Packet &pkt) override;
+
+	bool IsPendingDeletion() const { return this->is_pending_deletion; }
+
+	void DeferDeletion();
+	static void ProcessDeferredDeletions();
 };
 
 #endif /* NETWORK_CORE_TCP_GAME_H */

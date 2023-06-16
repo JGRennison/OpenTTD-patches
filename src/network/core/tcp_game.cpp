@@ -21,6 +21,8 @@
 
 #include "../../safeguards.h"
 
+static std::vector<NetworkGameSocketHandler *> _deferred_deletions;
+
 static const char* _packet_game_type_names[] {
 	"SERVER_FULL",
 	"SERVER_BANNED",
@@ -289,4 +291,18 @@ void NetworkGameSocketHandler::LogSentPacket(const Packet &pkt)
 {
 	PacketGameType type = (PacketGameType)pkt.GetPacketType();
 	DEBUG(net, 5, "[tcp/game] sent packet type %d (%s) to client %d, %s", type, GetPacketGameTypeName(type), this->client_id, this->GetDebugInfo().c_str());
+}
+
+void NetworkGameSocketHandler::DeferDeletion()
+{
+	_deferred_deletions.push_back(this);
+	this->is_pending_deletion = true;
+}
+
+/* static */ void NetworkGameSocketHandler::ProcessDeferredDeletions()
+{
+	for (NetworkGameSocketHandler *cs : _deferred_deletions) {
+		delete cs;
+	}
+	_deferred_deletions.clear();
 }
