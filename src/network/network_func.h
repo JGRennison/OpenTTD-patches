@@ -94,7 +94,7 @@ uint NetworkServerKickOrBanIP(const std::string &ip, bool ban, const std::string
 
 void NetworkInitChatMessage();
 void NetworkReInitChatBoxSize();
-void CDECL NetworkAddChatMessage(TextColour colour, uint duration, const std::string &message);
+void NetworkAddChatMessage(TextColour colour, uint duration, const std::string_view message);
 void NetworkUndrawChatMessage();
 void NetworkChatMessageLoop();
 

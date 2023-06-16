@@ -88,8 +88,10 @@ static inline bool HaveChatMessages(bool show_all)
  * @param duration The duration of the chat message in seconds
  * @param message message itself in printf() style
  */
-void CDECL NetworkAddChatMessage(TextColour colour, uint duration, const std::string &message)
+void NetworkAddChatMessage(TextColour colour, uint duration, const std::string_view message)
 {
+	if (MAX_CHAT_MESSAGES == 0) return;
+
 	if (_chatmsg_list.size() == MAX_CHAT_MESSAGES) {
 		_chatmsg_list.pop_back();
 	}
