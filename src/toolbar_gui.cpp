@@ -213,11 +213,11 @@ static void PopupMainToolbMenu(Window *w, int widget, DropDownList &&list, int d
  * @param string String for the first item in the menu
  * @param count Number of items in the menu
  */
-static void PopupMainToolbMenu(Window *w, int widget, StringID string, int count)
+static void PopupMainToolbMenu(Window *w, int widget, StringID string, int count, uint32 disabled = 0)
 {
 	DropDownList list;
 	for (int i = 0; i < count; i++) {
-		list.emplace_back(new DropDownListStringItem(string + i, i, false));
+		list.emplace_back(new DropDownListStringItem(string + i, i, i < 32 && HasBit(disabled, i)));
 	}
 	PopupMainToolbMenu(w, widget, std::move(list), 0);
 }
@@ -1219,6 +1219,7 @@ static CallBackFunction PlaceLandBlockInfo()
 
 static CallBackFunction PlacePickerTool()
 {
+	if (_local_company == COMPANY_SPECTATOR) return CBF_NONE;
 	if (_last_started_action == CBF_PLACE_PICKER) {
 		ResetObjectToPlace();
 		return CBF_NONE;
@@ -1231,7 +1232,11 @@ static CallBackFunction PlacePickerTool()
 
 static CallBackFunction ToolbarHelpClick(Window *w)
 {
-	PopupMainToolbMenu(w, _game_mode == GM_EDITOR ? (int)WID_TE_HELP : (int)WID_TN_HELP, STR_ABOUT_MENU_LAND_BLOCK_INFO, _settings_client.gui.newgrf_developer_tools ? HME_LAST : HME_LAST_NON_DEV);
+	uint mask = 0;
+	if (_local_company == COMPANY_SPECTATOR) SetBit(mask, HME_PICKER);
+	int count = _settings_client.gui.newgrf_developer_tools ? HME_LAST : HME_LAST_NON_DEV;
+	int widget = (_game_mode == GM_EDITOR) ? (int)WID_TE_HELP : (int)WID_TN_HELP;
+	PopupMainToolbMenu(w, widget, STR_ABOUT_MENU_LAND_BLOCK_INFO, count, mask);
 	return CBF_NONE;
 }
 

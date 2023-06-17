@@ -41,6 +41,7 @@
 #include "debug_desync.h"
 #include "timer/timer.h"
 #include "timer/timer_game_tick.h"
+#include "tilehighlight_func.h"
 
 #include "table/strings.h"
 
@@ -132,6 +133,7 @@ void SetLocalCompany(CompanyID new_company)
 		InvalidateWindowClassesData(WC_COMPANY);
 		/* Delete any construction windows... */
 		DeleteConstructionWindows();
+		ResetObjectToPlace();
 	}
 
 	if (switching_company && Company::IsValidID(new_company)) {
