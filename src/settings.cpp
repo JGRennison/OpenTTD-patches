@@ -1743,6 +1743,8 @@ static void DayLengthChanged(int32 new_value)
 	extern void VehicleDayLengthChanged(DateTicksScaled old_scaled_date_ticks, DateTicksScaled old_scaled_date_ticks_offset, uint8 old_day_length_factor);
 	VehicleDayLengthChanged(old_scaled_date_ticks, old_scaled_date_ticks_offset, _pre_change_day_length_factor);
 
+	SetupTileLoopCounts();
+
 	MarkWholeScreenDirty();
 }
 

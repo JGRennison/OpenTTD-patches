@@ -166,7 +166,8 @@ bool HasFoundationNW(TileIndex tile, Slope slope_here, uint z_here);
 bool HasFoundationNE(TileIndex tile, Slope slope_here, uint z_here);
 
 void DoClearSquare(TileIndex tile);
-void RunTileLoop();
+void SetupTileLoopCounts();
+void RunTileLoop(bool apply_day_length = false);
 void RunAuxiliaryTileLoop();
 
 void InitializeLandscape();

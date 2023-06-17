@@ -818,17 +818,40 @@ static uint32 GetTileLoopFeedback()
 	return feedbacks[MapLogX() + MapLogY() - 2 * MIN_MAP_SIZE_BITS];
 }
 
+static std::vector<uint> _tile_loop_counts;
+
+void SetupTileLoopCounts()
+{
+	_tile_loop_counts.resize(_settings_game.economy.day_length_factor);
+	if (_settings_game.economy.day_length_factor == 0) return;
+
+	uint64 count_per_tick_fp16 = (static_cast<uint64>(1) << (MapLogX() + MapLogY() + 8)) / _settings_game.economy.day_length_factor;
+	uint64 accumulator = 0;
+	for (uint &count : _tile_loop_counts) {
+		accumulator += count_per_tick_fp16;
+		count = static_cast<uint32>(accumulator >> 16);
+		accumulator &= 0xFFFF;
+	}
+	if (accumulator > 0) _tile_loop_counts[0]++;
+}
+
 /**
  * Gradually iterate over all tiles on the map, calling their TileLoopProcs once every 256 ticks.
  */
-void RunTileLoop()
+void RunTileLoop(bool apply_day_length)
 {
+	/* We update every tile every 256 ticks, so divide the map size by 2^8 = 256 */
+	uint count;
+	if (apply_day_length && _settings_game.economy.day_length_factor > 1) {
+		count = _tile_loop_counts[_tick_skip_counter];
+		if (count == 0) return;
+	} else {
+		count = 1 << (MapLogX() + MapLogY() - 8);
+	}
+
 	PerformanceAccumulator framerate(PFE_GL_LANDSCAPE);
 
 	const uint32 feedback = GetTileLoopFeedback();
-
-	/* We update every tile every 256 ticks, so divide the map size by 2^8 = 256 */
-	uint count = 1 << (MapLogX() + MapLogY() - 8);
 
 	TileIndex tile = _cur_tileloop_tile;
 	/* The LFSR cannot have a zeroed state. */

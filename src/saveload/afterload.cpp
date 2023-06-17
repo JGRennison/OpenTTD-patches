@@ -859,6 +859,7 @@ bool AfterLoadGame()
 	/* Update current year
 	 * must be done before loading sprites as some newgrfs check it */
 	SetDate(_date, _date_fract, false);
+	SetupTileLoopCounts();
 
 	/*
 	 * Force the old behaviour for compatibility reasons with old savegames. As new

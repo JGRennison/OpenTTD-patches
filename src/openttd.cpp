@@ -2050,13 +2050,14 @@ void StateGameLoop()
 		RunAuxiliaryTileLoop();
 		if (_tick_skip_counter < _settings_game.economy.day_length_factor) {
 			AnimateAnimatedTiles();
+			RunTileLoop(true);
 			CallVehicleTicks();
 			OnTick_Companies(false);
 		} else {
 			_tick_skip_counter = 0;
 			IncreaseDate();
 			AnimateAnimatedTiles();
-			RunTileLoop();
+			RunTileLoop(true);
 			CallVehicleTicks();
 			CallLandscapeTick();
 			OnTick_Companies(true);
