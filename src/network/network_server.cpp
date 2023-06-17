@@ -242,7 +242,7 @@ bool ServerNetworkGameSocketHandler::ParseKeyPasswordPacket(Packet *p, NetworkSh
 
 	byte shared_secret[32]; // Shared secret
 	crypto_x25519(shared_secret, keys.x25519_priv_key, client_pub_key);
-	if (std::count(shared_secret, shared_secret + 32, 0) == 32) {
+	if (std::all_of(shared_secret, shared_secret + 32, [](auto v) { return v == 0; })) {
 		/* Secret is all 0 because public key is all 0, just reject it */
 		return false;
 	}

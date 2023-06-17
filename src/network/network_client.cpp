@@ -415,7 +415,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendKeyPasswordPacket(PacketTy
 
 	byte shared_secret[32]; // Shared secret
 	crypto_x25519(shared_secret, keys.x25519_priv_key, _server_x25519_pub_key);
-	if (std::count(shared_secret, shared_secret + 32, 0) == 32) {
+	if (std::all_of(shared_secret, shared_secret + 32, [](auto v) { return v == 0; })) {
 		/* Secret is all 0 because public key is all 0, just give up at this point */
 		return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 	}
