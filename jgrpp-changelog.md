@@ -2,6 +2,20 @@
 
 * * *
 
+### v0.54.2 (2023-06-18)
+* Picker tool:
+  * Fix crash when using picker tool on non-GRF objects.
+  * Disable picker tool in spectator mode.
+  * Add unset hotkey for picker tool in scenario editor.
+* Fix crash when opening road build toolbar in scenario editor.
+* Fix crash when changing AI interval setting.
+* Fix crash when failing to load a game into a dedicated server at startup.
+* Fix aircraft crash news messages being shown at wrong location in some cases.
+* Fix refit in station with articulated vehicles with no capacity in the leading part.
+* Cargo payment rate graph: Use the current time units in the x-axis (when graphing income against time).
+* Spread tile loop iterations over all ticks when using a day length greater than one.
+* Network: Auto-kick clients after too many failed rcon/settings attempts.
+
 ### v0.54.1 (2023-06-11)
 * Fix crash on Windows (Vista and later)
 
