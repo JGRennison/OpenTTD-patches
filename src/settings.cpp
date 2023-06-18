@@ -1275,6 +1275,7 @@ static void UpdateTimeSettings(int32 new_value)
 	InvalidateWindowData(WC_STATUS_BAR, 0, SBI_REINIT);
 	InvalidateWindowClassesData(WC_GAME_OPTIONS);
 	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 1);
+	InvalidateWindowClassesData(WC_PAYMENT_RATES);
 	MarkWholeScreenDirty();
 }
 
