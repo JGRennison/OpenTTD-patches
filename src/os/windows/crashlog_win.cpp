@@ -85,7 +85,6 @@ public:
 #endif /* _MSC_VER */
 #if defined(_MSC_VER) || defined(WITH_DBGHELP)
 	char *AppendDecodedStacktrace(char *buffer, const char *last) const;
-	char *LogDebugExtra(char *buffer, const char *last) const override;
 #endif /* _MSC_VER || WITH_DBGHELP */
 
 
@@ -441,6 +440,16 @@ static char *PrintModuleInfo(char *output, const char *last, HMODULE mod)
 
 /* virtual */ char *CrashLogWindows::LogStacktrace(char *buffer, const char *last) const
 {
+#if defined(_MSC_VER) || defined(WITH_DBGHELP)
+	char *stacktrace_end = this->AppendDecodedStacktrace(buffer, last);
+	if (stacktrace_end - buffer >= 32) {
+		/* If AppendDecodedStacktrace managed to write out anything more than just the section title,
+		 * consider that a success and don't bother writing out the raw stack trace values as well.
+		 * The raw values are useless in almost all cases. */
+		return stacktrace_end;
+	}
+#endif
+
 	buffer += seprintf(buffer, last, "Stack trace:\n");
 #ifdef _M_AMD64
 	uint32 *b = (uint32*)ep->ContextRecord->Rsp;
@@ -650,14 +659,6 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 
 	return buffer + seprintf(buffer, last, "\n");;
 }
-
-	/**
-	 * Log decoded stack trace
-	 */
-	char *CrashLogWindows::LogDebugExtra(char *buffer, const char *last) const
-	{
-		return this->AppendDecodedStacktrace(buffer, last);
-	}
 #endif /* _MSC_VER  || WITH_DBGHELP */
 
 #if defined(_MSC_VER)
