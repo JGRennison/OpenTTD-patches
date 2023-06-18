@@ -287,6 +287,18 @@ protected:
 		return max_width;
 	}
 
+	virtual StringID PrepareXAxisText(uint16 label) const
+	{
+		SetDParam(0, label);
+		return STR_JUST_COMMA;
+	}
+
+	virtual StringID PrepareXAxisMaxSizeText(uint16 label) const
+	{
+		SetDParamMaxValue(0, label, 0, FS_SMALL);
+		return STR_JUST_COMMA;
+	}
+
 	/**
 	 * Actually draw the graph.
 	 * @param r the rectangle of the data field of the graph
@@ -411,8 +423,8 @@ protected:
 			uint16 label = this->x_values_start;
 
 			for (int i = 0; i < this->num_on_x_axis; i++) {
-				SetDParam(0, label);
-				DrawString(x + 1, x + x_sep - 1, y, STR_GRAPH_Y_LABEL_NUMBER, GRAPH_AXIS_LABEL_COLOUR, SA_HOR_CENTER);
+				StringID str = this->PrepareXAxisText(label);
+				DrawString(x + 1, x + x_sep - 1, y, str, GRAPH_AXIS_LABEL_COLOUR, SA_HOR_CENTER, false, FS_SMALL);
 
 				label += this->x_values_increment;
 				x += x_sep;
@@ -525,8 +537,8 @@ public:
 			}
 		} else {
 			/* Draw x-axis labels for graphs not based on quarterly performance (cargo payment rates). */
-			SetDParamMaxValue(0, this->x_values_start + this->num_on_x_axis * this->x_values_increment, 0, FS_SMALL);
-			x_label_width = GetStringBoundingBox(STR_GRAPH_Y_LABEL_NUMBER).width;
+			StringID str = this->PrepareXAxisMaxSizeText(this->x_values_start + this->num_on_x_axis * this->x_values_increment);
+			x_label_width = GetStringBoundingBox(str, FS_SMALL).width;
 		}
 
 		SetDParam(0, this->format_str_y_axis);
@@ -1185,6 +1197,43 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 		}
 		this->x_values_start     = x_scale;
 		this->x_values_increment = x_scale;
+	}
+
+	uint GetXAxisDecimals() const
+	{
+		if (_cargo_payment_x_mode) return 0;
+		if ((10 % _settings_game.economy.day_length_factor) == 0) return 0;
+		if (_settings_game.economy.day_length_factor > 50) return 2;
+		return 1;
+	}
+
+	std::pair<uint, uint> ProcessXAxisValue(uint16 label) const
+	{
+		uint val = label;
+		uint decimals = this->GetXAxisDecimals();
+		for (uint i = 0; i < decimals; i++) {
+			val *= 10;
+		}
+		val /= _settings_game.economy.day_length_factor;
+		return { val, decimals };
+	}
+
+	StringID PrepareXAxisText(uint16 label) const override
+	{
+		auto val = this->ProcessXAxisValue(label);
+
+		SetDParam(0, val.first);
+		SetDParam(1, val.second);
+		return STR_JUST_DECIMAL;
+	}
+
+	StringID PrepareXAxisMaxSizeText(uint16 label) const override
+	{
+		auto val = this->ProcessXAxisValue(label);
+
+		SetDParamMaxValue(0, val.first, 0, FS_SMALL);
+		SetDParam(1, val.second);
+		return STR_JUST_DECIMAL;
 	}
 
 	void OnInit() override
