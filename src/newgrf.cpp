@@ -11632,7 +11632,7 @@ void LoadNewGRF(uint load_index, uint num_baseset)
 	 */
 	for (GRFConfig *c = _grfconfig; c != nullptr; c = c->next) {
 		if (c->status != GCS_NOT_FOUND) c->status = GCS_UNKNOWN;
-		if (_settings_client.gui.newgrf_disable_big_gui && c->ident.grfid == BSWAP32(0x52577801)) {
+		if (_settings_client.gui.newgrf_disable_big_gui && (c->ident.grfid == BSWAP32(0x52577801) || c->ident.grfid == BSWAP32(0x55464970))) {
 			c->status = GCS_DISABLED;
 		}
 	}
