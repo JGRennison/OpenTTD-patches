@@ -91,9 +91,9 @@ CommandCost CmdCreateGoal(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 		g->dst = p2;
 		g->company = company;
 		if (StrEmpty(text)) {
-			g->progress.clear();
+			g->text.clear();
 		} else {
-			g->progress = text;
+			g->text = text;
 		}
 		g->completed = false;
 
