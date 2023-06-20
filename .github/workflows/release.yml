@@ -6,13 +6,13 @@ on:
       ref:
         description: 'Ref to build (for Pull Requests, use refs/pull/NNN/head)'
         required: true
-  repository_dispatch:
-    # client_payload should be the same as the inputs for workflow_dispatch.
-    types:
-    - Build*
-  release:
-    types:
-    - published
+#  repository_dispatch:
+#    # client_payload should be the same as the inputs for workflow_dispatch.
+#    types:
+#    - Build*
+#  release:
+#    types:
+#    - published
 
 jobs:
   source:
@@ -36,6 +36,16 @@ jobs:
     needs: source
 
     uses: ./.github/workflows/release-linux.yml
+    secrets: inherit
+
+    with:
+      survey_key: ${{ needs.source.outputs.survey_key }}
+
+  linux_distros:
+    name: Linux (Distros)
+    needs: source
+
+    uses: ./.github/workflows/release-linux-distros.yml
     secrets: inherit
 
     with:

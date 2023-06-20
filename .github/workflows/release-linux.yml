@@ -87,6 +87,7 @@ jobs:
             nlohmann-json \
             sdl2 \
             zlib \
+            zstd \
             # EOF
         )
         echo "::endgroup::"
@@ -123,7 +124,9 @@ jobs:
         echo "::group::CMake"
         cmake ${GITHUB_WORKSPACE} \
           -DCMAKE_TOOLCHAIN_FILE=/vcpkg/scripts/buildsystems/vcpkg.cmake \
-          -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DOPTION_COMPRESS_DEBUG=ON \
+          -DOPTION_LTO=ON \
           -DOPTION_SURVEY_KEY=${{ inputs.survey_key }} \
           -DOPTION_PACKAGE_DEPENDENCIES=ON \
           # EOF

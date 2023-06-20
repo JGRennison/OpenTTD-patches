@@ -65,6 +65,8 @@ jobs:
           nlohmann-json:arm64-osx \
           zlib:x64-osx \
           zlib:arm64-osx \
+          zstd:x64-osx \
+          zstd:arm64-osx \
           # EOF
 
     - name: Install GCC problem matcher
@@ -88,6 +90,7 @@ jobs:
         echo "::endgroup::"
 
     - name: Import code signing certificates
+      if: ${{ false }} # disable for now
       uses: Apple-Actions/import-codesign-certs@v2
       with:
         # The certificates in a PKCS12 file encoded as a base64 string
@@ -108,7 +111,7 @@ jobs:
           -DVCPKG_TARGET_TRIPLET=arm64-osx \
           -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake \
           -DHOST_BINARY_DIR=${GITHUB_WORKSPACE}/build-host \
-          -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+          -DCMAKE_BUILD_TYPE=Release \
           -DOPTION_SURVEY_KEY=${{ inputs.survey_key }} \
           # EOF
         echo "::endgroup::"
@@ -129,7 +132,7 @@ jobs:
           -DVCPKG_TARGET_TRIPLET=x64-osx \
           -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake \
           -DHOST_BINARY_DIR=${GITHUB_WORKSPACE}/build-host \
-          -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+          -DCMAKE_BUILD_TYPE=Release \
           -DOPTION_SURVEY_KEY=${{ inputs.survey_key }} \
           -DCPACK_BUNDLE_APPLE_CERT_APP=${{ secrets.APPLE_DEVELOPER_CERTIFICATE_ID }} \
           "-DCPACK_BUNDLE_APPLE_CODESIGN_PARAMETER=--deep -f --options runtime" \
