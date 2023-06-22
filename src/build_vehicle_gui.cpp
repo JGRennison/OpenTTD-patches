@@ -1147,6 +1147,7 @@ int DrawVehiclePurchaseInfo(int left, int right, int y, EngineID engine_number, 
 
 		case VEH_SHIP:
 			y = DrawShipPurchaseInfo(left, right, y, engine_number, refittable, te);
+			if (IsArticulatedEngine(engine_number)) articulated_cargo = true;
 			break;
 
 		case VEH_AIRCRAFT:
