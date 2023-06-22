@@ -761,7 +761,7 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 
 		/* Variables which use the parameter */
 		case 0x60: // Count consist's engine ID occurrence
-			if (v->type != VEH_TRAIN) return v->GetEngine()->grf_prop.local_id == parameter ? 1 : 0;
+			if (v->type != VEH_TRAIN && v->type != VEH_SHIP) return v->GetEngine()->grf_prop.local_id == parameter ? 1 : 0;
 
 			{
 				uint count = 0;
