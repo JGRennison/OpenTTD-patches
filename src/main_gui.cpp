@@ -528,7 +528,8 @@ struct MainWindow : Window
 
 	virtual void OnMouseOver(Point pt, int widget) override
 	{
-		if (pt.x != -1 && _game_mode != GM_MENU && (_settings_client.gui.hover_delay_ms == 0 ? _right_button_down : _mouse_hovering)) {
+		if (pt.x != -1 && _game_mode != GM_MENU &&
+			(_settings_client.gui.hover_delay_ms == 0 && (_right_button_down || _settings_client.gui.instant_tile_tooltip) || _mouse_hovering)) {
 			/* Show tooltip with last month production or town name */
 			const Point p = GetTileBelowCursor();
 			const TileIndex tile = TileVirtXY(p.x, p.y);
