@@ -1137,15 +1137,18 @@ enum HelpMenuEntries {
 
 static void ShowBuildRailToolbarFromTile(TileIndex tile)
 {
-	ShowBuildRailToolbar(GetRailType(tile));
+	_last_built_railtype = GetRailType(tile);
+	ShowBuildRailToolbar(_last_built_railtype);
 }
 
 static void ShowBuildRoadToolbarFromTile(TileIndex tile)
 {
 	if (HasRoadTypeRoad(tile)) {
-		CreateRoadTramToolbarForRoadType(GetRoadTypeRoad(tile), RTT_ROAD);
+		_last_built_roadtype = GetRoadTypeRoad(tile);
+		CreateRoadTramToolbarForRoadType(_last_built_roadtype, RTT_ROAD);
 	} else {
-		CreateRoadTramToolbarForRoadType(GetRoadTypeTram(tile), RTT_TRAM);
+		_last_built_tramtype = GetRoadTypeTram(tile);
+		CreateRoadTramToolbarForRoadType(_last_built_tramtype, RTT_TRAM);
 	}
 }
 
