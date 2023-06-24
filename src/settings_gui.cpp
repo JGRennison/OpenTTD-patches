@@ -1924,7 +1924,7 @@ static SettingsContainer &GetSettingsTree()
 			{
 				general->Add(new SettingEntry("gui.osk_activation"));
 				general->Add(new SettingEntry("gui.hover_delay_ms"));
-				general->Add(new SettingEntry("gui.instant_tile_tooltip"));
+				general->Add(new ConditionallyHiddenSettingEntry("gui.instant_tile_tooltip", []() -> bool { return _settings_client.gui.hover_delay_ms != 0; }));
 				general->Add(new SettingEntry("gui.errmsg_duration"));
 				general->Add(new SettingEntry("gui.window_snap_radius"));
 				general->Add(new SettingEntry("gui.window_soft_limit"));

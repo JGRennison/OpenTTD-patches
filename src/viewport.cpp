@@ -6703,3 +6703,14 @@ int GetSlopeTreeBrightnessAdjust(Slope slope)
 			return 0;
 	}
 }
+
+bool IsViewportMouseHoverActive()
+{
+	if (_settings_client.gui.hover_delay_ms == 0) {
+		/* right click mode */
+		return _right_button_down || _settings_client.gui.instant_tile_tooltip;
+	} else {
+		/* normal mode */
+		return _mouse_hovering;
+	}
+}
