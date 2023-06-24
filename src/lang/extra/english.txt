@@ -2121,3 +2121,6 @@ STR_TOWN_DIRECTORY_INFO                                         :{BLACK}{STRING1
 
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR                         :{BLACK}Bigger main toolbar
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR_TOOLTIP                 :{BLACK}Check this box to increase the scale of the main toolbar
+
+STR_CONFIG_SETTING_INSTANT_TILE_TOOLTIP                         :Show tooltips for tiles without a right-click: {STRING2}
+STR_CONFIG_SETTING_INSTANT_TILE_TOOLTIP_HELPTEXT                :Allow tooltips for tiles, such as industries, to show without the need for a right-click, if latter is set to be necessary for all tooltips.
