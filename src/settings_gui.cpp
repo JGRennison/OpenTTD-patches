@@ -2013,7 +2013,6 @@ static SettingsContainer &GetSettingsTree()
 				vehicle_windows->Add(new SettingEntry("gui.show_depot_sell_gui"));
 				vehicle_windows->Add(new SettingEntry("gui.open_vehicle_gui_clone_share"));
 				vehicle_windows->Add(new SettingEntry("gui.vehicle_names"));
-				vehicle_windows->Add(new SettingEntry("gui.station_rating_tooltip_mode"));
 				vehicle_windows->Add(new SettingEntry("gui.dual_pane_train_purchase_window"));
 				vehicle_windows->Add(new ConditionallyHiddenSettingEntry("gui.dual_pane_train_purchase_window_dual_buttons", []() -> bool { return !_settings_client.gui.dual_pane_train_purchase_window; }));
 				vehicle_windows->Add(new SettingEntry("gui.show_order_occupancy_by_default"));
@@ -2091,6 +2090,7 @@ static SettingsContainer &GetSettingsTree()
 			interface->Add(new SettingEntry("gui.prefer_teamchat"));
 			interface->Add(new SettingEntry("gui.sort_track_types_by_speed"));
 			interface->Add(new SettingEntry("gui.allow_hiding_waypoint_labels"));
+			interface->Add(new SettingEntry("gui.station_rating_tooltip_mode"));
 		}
 
 		SettingsPage *advisors = main->Add(new SettingsPage(STR_CONFIG_SETTING_ADVISORS));
