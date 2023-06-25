@@ -772,7 +772,7 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 			}
 
 		case 0x61: // Get variable of n-th vehicle in chain [signed number relative to vehicle]
-			if (!v->IsGroundVehicle() || parameter == 0x61) {
+			if (!(v->IsGroundVehicle() || v->type == VEH_SHIP) || parameter == 0x61) {
 				/* Not available */
 				break;
 			}
