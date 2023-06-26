@@ -965,6 +965,11 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 				break;
 			}
 
+			/* Send new companies, before potentially setting the password. Otherwise,
+			 * the password update could be sent when the company is not yet known. */
+			NetworkAdminCompanyNew(c);
+			NetworkServerNewCompany(c, ci);
+
 			/* This is the client (or non-dedicated server) who wants a new company */
 			if (client_id == _network_own_client_id) {
 				assert(_local_company == COMPANY_SPECTATOR);
@@ -984,7 +989,6 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 				MarkWholeScreenDirty();
 			}
 
-			NetworkServerNewCompany(c, ci);
 			DEBUG(desync, 1, "new_company: %s, company_id: %u", debug_date_dumper().HexDate(), c->index);
 			break;
 		}
@@ -1002,6 +1006,7 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 
 			Company *c = DoStartupNewCompany(DSNC_AI, company_id);
 			if (c != nullptr) {
+				NetworkAdminCompanyNew(c);
 				NetworkServerNewCompany(c, nullptr);
 				DEBUG(desync, 1, "new_company_ai: %s, company_id: %u", debug_date_dumper().HexDate(), c->index);
 			}

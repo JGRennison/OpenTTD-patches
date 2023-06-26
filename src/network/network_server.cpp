@@ -2454,9 +2454,6 @@ void NetworkServerNewCompany(const Company *c, NetworkClientInfo *ci)
 		NetworkSendCommand(0, 0, 0, 0, CMD_RENAME_PRESIDENT, nullptr, ci->client_name.c_str(), c->index, nullptr);
 	}
 
-	/* Announce new company on network. */
-	NetworkAdminCompanyInfo(c, true);
-
 	if (ci != nullptr) {
 		/* ci is nullptr when replaying, or for AIs. In neither case there is a client.
 		   We need to send Admin port update here so that they first know about the new company
