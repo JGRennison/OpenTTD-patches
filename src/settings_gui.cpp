@@ -1933,6 +1933,7 @@ static SettingsContainer &GetSettingsTree()
 			{
 				tooltips->Add(new SettingEntry("gui.hover_delay_ms"));
 				tooltips->Add(new ConditionallyHiddenSettingEntry("gui.instant_tile_tooltip", []() -> bool { return _settings_client.gui.hover_delay_ms != 0; }));
+				tooltips->Add(new SettingEntry("gui.town_name_tooltip_mode"));
 				tooltips->Add(new SettingEntry("gui.station_rating_tooltip_mode"));
 			}
 

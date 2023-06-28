@@ -2121,6 +2121,12 @@ STR_CONFIG_SETTING_INTERFACE_TOOLTIPS                           :{ORANGE}Tooltip
 STR_CONFIG_SETTING_INSTANT_TILE_TOOLTIP                         :Show viewport tooltips for tiles without a right-click: {STRING2}
 STR_CONFIG_SETTING_INSTANT_TILE_TOOLTIP_HELPTEXT                :Show viewport tooltips for tile types such as industries without requiring a right-click, when the show tooltips setting is set to right-click.
 
+STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE                       :Show viewport tooltips with town names: {STRING2}
+STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE_HELPTEXT              :Show viewport tooltips for road and house tiles that belong to towns.
+STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE_OFF                   :Off
+STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE_ON_IF_HIDDEN          :On, if town names are hidden
+STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE_ALWAYS_ON             :Always on
+
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE                  :Station rating tooltips: {STRING2}
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_HELPTEXT         :Set whether station rating tooltips are shown and the level of information detail.
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_OFF              :Off

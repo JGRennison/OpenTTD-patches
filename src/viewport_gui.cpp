@@ -219,6 +219,20 @@ void ShowExtraViewportWindowForTileUnderCursor()
 	ShowExtraViewportWindow(pt.x != -1 ? TileVirtXY(pt.x, pt.y) : INVALID_TILE);
 }
 
+enum TownNameTooltipMode : uint8 {
+	TNTM_OFF,
+	TNTM_ON_IF_HIDDEN,
+	TNTM_ALWAYS_ON
+};
+
+void ShowTownNameTooltip(Window *w, const TileIndex tile)
+{
+	if (_settings_client.gui.town_name_tooltip_mode == TNTM_OFF) return;
+	if (HasBit(_display_opt, DO_SHOW_TOWN_NAMES) && _settings_client.gui.town_name_tooltip_mode == TNTM_ON_IF_HIDDEN) return; // No need for a town name tooltip when it is already displayed
+	SetDParam(0, GetTownIndex(tile));
+	GuiShowTooltips(w, STR_TOWN_NAME_TOOLTIP, 0, nullptr, TCC_HOVER_VIEWPORT);
+}
+
 void ShowTooltipForTile(Window *w, const TileIndex tile)
 {
 	switch (GetTileType(tile)) {
@@ -226,9 +240,7 @@ void ShowTooltipForTile(Window *w, const TileIndex tile)
 			if (IsRoadDepot(tile)) return;
 			/* FALL THROUGH */
 		case MP_HOUSE: {
-			if (HasBit(_display_opt, DO_SHOW_TOWN_NAMES)) return; // No need for a town name tooltip when it is already displayed
-			SetDParam(0, GetTownIndex(tile));
-			GuiShowTooltips(w, STR_TOWN_NAME_TOOLTIP, 0, nullptr, TCC_HOVER_VIEWPORT);
+			ShowTownNameTooltip(w, tile);
 			break;
 		}
 		case MP_INDUSTRY: {

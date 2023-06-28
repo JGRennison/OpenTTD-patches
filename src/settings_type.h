@@ -133,6 +133,7 @@ struct GUISettings : public TimeSettings {
 	byte   errmsg_duration;                  ///< duration of error message
 	uint16 hover_delay_ms;                   ///< time required to activate a hover event, in milliseconds
 	bool   instant_tile_tooltip;             ///< don't require a right click to activate a hover event to show a tooltip for an in-game tile (e.g. industry).
+	uint8  town_name_tooltip_mode;           ///< when to display town names when hovering over roads and houses. (0 = never, 1 = only if town names are hidden, 2 = always)
 	uint8  station_rating_tooltip_mode;      ///< Station rating tooltip mode
 	bool   link_terraform_toolbar;           ///< display terraform toolbar when displaying rail, road, water and airport toolbars
 	uint8  smallmap_land_colour;             ///< colour used for land and heightmap at the smallmap
