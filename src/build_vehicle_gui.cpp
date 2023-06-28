@@ -2607,7 +2607,12 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 			if (!FilterSingleEngine(state, eid)) continue;
 
-			if ((rvi->railveh_type == RAILVEH_WAGON) != wagon) continue;
+			const Engine *top_engine = engine;
+			for (int depth = 0; depth < 16; depth++) {
+				if (top_engine->info.variant_id == INVALID_ENGINE) break;
+				top_engine = Engine::Get(top_engine->info.variant_id);
+			}
+			if ((top_engine->u.rail.railveh_type == RAILVEH_WAGON) != wagon) continue;
 
 			/* Filter by name or NewGRF extra text */
 			if (!FilterByText(state, engine)) continue;
