@@ -419,6 +419,13 @@ void VehicleLengthChanged(const Vehicle *u)
 {
 	/* show a warning once for each engine in whole game and once for each GRF after each game load */
 	const Engine *engine = u->GetEngine();
+	if (engine->grf_prop.grffile == nullptr) {
+		// This can be reached if an engine is unexpectedly no longer attached to a GRF at all
+		if (GamelogGRFBugReverse(0, engine->grf_prop.local_id)) {
+			ShowNewGrfVehicleError(u->engine_type, STR_NEWGRF_BROKEN, STR_NEWGRF_BROKEN_VEHICLE_LENGTH, GBUG_VEH_LENGTH, true);
+		}
+		return;
+	}
 	uint32 grfid = engine->grf_prop.grffile->grfid;
 	GRFConfig *grfconfig = GetGRFConfig(grfid);
 	if (GamelogGRFBugReverse(grfid, engine->grf_prop.local_id) || !HasBit(grfconfig->grf_bugs, GBUG_VEH_LENGTH)) {
