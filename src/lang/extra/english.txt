@@ -292,12 +292,6 @@ STR_CONFIG_SETTING_VEHICLE_NAMES_LONG                           :Long
 STR_CONFIG_SETTING_SHADED_TREES_ON_SLOPES                       :Shade trees on slopes: {STRING2}
 STR_CONFIG_SETTING_SHADED_TREES_ON_SLOPES_HELPTEXT              :Change brightness of trees drawn on slopes. Improves the look of tree cover in mountainous areas.
 
-STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE                  :Station rating tooltips: {STRING2}
-STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_HELPTEXT         :Set whether station rating tooltips are shown and the level of information detail.
-STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_OFF              :Off
-STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_SIMPLE           :Simple
-STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :Detailed
-
 STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE                        :Ask before demolishing structures: {STRING2}
 STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_HELPTEXT               :Ask for confirmation before irreversibly demolishing structures.
 STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_OFF                    :Off
@@ -2122,5 +2116,13 @@ STR_TOWN_DIRECTORY_INFO                                         :{BLACK}{STRING1
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR                         :{BLACK}Bigger main toolbar
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR_TOOLTIP                 :{BLACK}Check this box to increase the scale of the main toolbar
 
+STR_CONFIG_SETTING_INTERFACE_TOOLTIPS                           :{ORANGE}Tooltips
+
 STR_CONFIG_SETTING_INSTANT_TILE_TOOLTIP                         :Show viewport tooltips for tiles without a right-click: {STRING2}
 STR_CONFIG_SETTING_INSTANT_TILE_TOOLTIP_HELPTEXT                :Show viewport tooltips for tile types such as industries without requiring a right-click, when the show tooltips setting is set to right-click.
+
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE                  :Station rating tooltips: {STRING2}
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_HELPTEXT         :Set whether station rating tooltips are shown and the level of information detail.
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_OFF              :Off
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_SIMPLE           :Simple
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :Detailed

@@ -133,6 +133,7 @@ struct GUISettings : public TimeSettings {
 	byte   errmsg_duration;                  ///< duration of error message
 	uint16 hover_delay_ms;                   ///< time required to activate a hover event, in milliseconds
 	bool   instant_tile_tooltip;             ///< don't require a right click to activate a hover event to show a tooltip for an in-game tile (e.g. industry).
+	uint8  station_rating_tooltip_mode;      ///< Station rating tooltip mode
 	bool   link_terraform_toolbar;           ///< display terraform toolbar when displaying rail, road, water and airport toolbars
 	uint8  smallmap_land_colour;             ///< colour used for land and heightmap at the smallmap
 	uint8  scroll_mode;                      ///< viewport scroll mode
@@ -249,7 +250,6 @@ struct GUISettings : public TimeSettings {
 	uint8  linkgraph_colours;                ///< linkgraph overlay colours
 	uint8  vehicle_names;                    ///< Vehicle naming scheme
 	bool   shade_trees_on_slopes;            ///< Shade trees on slopes
-	uint8  station_rating_tooltip_mode;      ///< Station rating tooltip mode
 	uint8  demolish_confirm_mode;            ///< Demolition confirmation mode
 	bool   dual_pane_train_purchase_window;  ///< Dual pane train purchase window
 	bool   dual_pane_train_purchase_window_dual_buttons;  ///< Dual pane train purchase window: dual buttons
