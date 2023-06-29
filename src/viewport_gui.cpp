@@ -233,8 +233,26 @@ void ShowTownNameTooltip(Window *w, const TileIndex tile)
 	GuiShowTooltips(w, STR_TOWN_NAME_TOOLTIP, 0, nullptr, TCC_HOVER_VIEWPORT);
 }
 
+bool GetIndustryTooltipString(TileIndex tile, char *buffer_position, const char *buffer_tail);
+
+void ShowIndustryTooltip(Window *w, const TileIndex tile, char *buffer_position, const char *buffer_tail)
+{
+	if (!_settings_client.gui.industry_tooltip_show ||
+		!(_settings_client.gui.industry_tooltip_show_name || _settings_client.gui.industry_tooltip_show_produced ||
+		_settings_client.gui.industry_tooltip_show_required || _settings_client.gui.industry_tooltip_show_stockpiled)) return;
+
+	if (!GetIndustryTooltipString(tile, buffer_position, buffer_tail)) return;
+
+	SetDParamStr(0, buffer_position);
+	GuiShowTooltips(w, STR_INDUSTRY_VIEW_INFO_TOOLTIP, 0, nullptr, TCC_HOVER_VIEWPORT);
+}
+
 void ShowTooltipForTile(Window *w, const TileIndex tile)
 {
+	static char buffer[1024];
+	char *buffer_start = buffer;
+	char *buffer_tail = lastof(buffer);
+
 	switch (GetTileType(tile)) {
 		case MP_ROAD:
 			if (IsRoadDepot(tile)) return;
@@ -244,24 +262,7 @@ void ShowTooltipForTile(Window *w, const TileIndex tile)
 			break;
 		}
 		case MP_INDUSTRY: {
-			static char buffer[1024];
-			const Industry *ind = Industry::GetByTile(tile);
-			const IndustrySpec *indsp = GetIndustrySpec(ind->type);
-
-			buffer[0] = 0;
-			char *buf_pos = buffer;
-
-			for (byte i = 0; i < lengthof(ind->produced_cargo); i++) {
-				if (ind->produced_cargo[i] != CT_INVALID) {
-					SetDParam(0, ind->produced_cargo[i]);
-					SetDParam(1, ind->last_month_production[i]);
-					SetDParam(2, ToPercent8(ind->last_month_pct_transported[i]));
-					buf_pos = GetString(buf_pos, STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_EXTENSION, lastof(buffer));
-				}
-			}
-			SetDParam(0, indsp->name);
-			SetDParamStr(1, buffer);
-			GuiShowTooltips(w, STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP, 0, nullptr, TCC_HOVER_VIEWPORT);
+			ShowIndustryTooltip(w, tile, buffer_start, buffer_tail);
 			break;
 		}
 		default:

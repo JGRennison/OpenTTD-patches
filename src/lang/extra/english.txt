@@ -1383,11 +1383,17 @@ STR_FINANCES_REPAY_TOOLTIP_EXTRA                                :{BLACK}{STRING}
 STR_FINANCES_BORROW_QUERY_CAPT                                  :{WHITE}Enter the amount of money to borrow
 STR_FINANCES_REPAY_QUERY_CAPT                                   :{WHITE}Enter the amount of money to repay
 
-STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP                           :{BLACK}{STRING}{RAW_STRING}
-STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_EXTENSION                 :{}{BLACK}{CARGO_LONG} ({COMMA}%)
+STR_NEW_LINE                                                    :{}
 
 # Town tooltip
 STR_TOWN_NAME_TOOLTIP                                           :{BLACK}{TOWN}
+
+STR_INDUSTRY_VIEW_NAME_TOOLTIP                                  :{STRING}
+STR_INDUSTRY_VIEW_REQUIRED_TOOLTIP_FIRST                        :{STRING}{RAW_STRING}
+STR_INDUSTRY_VIEW_REQUIRED_TOOLTIP_NEXT                         :, {STRING}{RAW_STRING}
+STR_INDUSTRY_VIEW_STOCKPILED_TOOLTIP                            :{CARGO_LONG} waiting{RAW_STRING}
+STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_EXTENSION                 :{CARGO_LONG}{RAW_STRING} ({COMMA}%)
+STR_INDUSTRY_VIEW_INFO_TOOLTIP                                  :{BLACK}{RAW_STRING}
 
 STR_VEHICLE_LIST_AGE                                            :{STRING2}, Age: {COMMA} year{P "" s} ({COMMA})
 STR_VEHICLE_LIST_AGE_RED                                        :{STRING2}, Age: {RED}{COMMA} {BLACK}year{P "" s} ({COMMA})
@@ -2126,6 +2132,19 @@ STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE_HELPTEXT              :Show viewport t
 STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE_OFF                   :Off
 STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE_ON_IF_HIDDEN          :On, if town names are hidden
 STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE_ALWAYS_ON             :Always on
+
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_SHOW                        :Show viewport tooltips for industries: {STRING2}
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_SHOW_HELPTEXT               :Show tooltips when hovering over industry tiles.
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_NAME                        :Show names in industry viewport tooltips: {STRING2}
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_NAME_HELPTEXT               :Show names of industries in viewport tooltips when hovering over industry tiles.
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_REQUIRED                    :Show required cargoes in industry viewport tooltips: {STRING2}
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_REQUIRED_HELPTEXT           :Show a list of cargoes required by industries in viewport tooltips when hovering over industry tiles.
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_STOCKPILED                  :Show stockpiled cargoes in industry viewport tooltips: {STRING2}
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_STOCKPILED_HELPTEXT         :Show a list of cargoes stockpiled by industries in viewport tooltips when hovering over industry tiles.
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_STOCKPILED_AS_REQUIRED      :Show stockpiled cargoes as required in viewport tooltips: {STRING2}
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_STOCKPILED_AS_REQUIRED_HELPTEXT:If normal display of stockpiled cargoes in viewport tooltips is disabled, then allow them to, at least, be displayed as required ones.
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_PRODUCED                    :Show produced cargoes in industry viewport tooltips: {STRING2}
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_PRODUCED_HELPTEXT           :Show a list of cargoes produced by industries in viewport tooltips when hovering over industry tiles.
 
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE                  :Station rating tooltips: {STRING2}
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_HELPTEXT         :Set whether station rating tooltips are shown and the level of information detail.

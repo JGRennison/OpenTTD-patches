@@ -134,6 +134,12 @@ struct GUISettings : public TimeSettings {
 	uint16 hover_delay_ms;                   ///< time required to activate a hover event, in milliseconds
 	bool   instant_tile_tooltip;             ///< don't require a right click to activate a hover event to show a tooltip for an in-game tile (e.g. industry).
 	uint8  town_name_tooltip_mode;           ///< when to display town names when hovering over roads and houses. (0 = never, 1 = only if town names are hidden, 2 = always)
+	bool   industry_tooltip_show;            ///< whether to display tooltips, when hovering over industry tiles.
+	bool   industry_tooltip_show_name;       ///< whether to display the name of the industry, when hovering over one of its tiles.
+	bool   industry_tooltip_show_required;   ///< whether to display cargoes required by the industry, when hovering over one of its tiles.
+	bool   industry_tooltip_show_stockpiled; ///< whether to display cargoes stockpiled by the industry, when hovering over one of its tiles.
+	bool   industry_tooltip_show_stockpiled_as_required; ///< whether to display cargoes stockpiled by the industry as ones required by the industry, when hovering over one of its tiles and normal display of stockpiled cargoes in viewport tooltips is turned off.
+	bool   industry_tooltip_show_produced;   ///< whether to display cargoes produced by the industry, when hovering over one of its tiles.
 	uint8  station_rating_tooltip_mode;      ///< Station rating tooltip mode
 	bool   link_terraform_toolbar;           ///< display terraform toolbar when displaying rail, road, water and airport toolbars
 	uint8  smallmap_land_colour;             ///< colour used for land and heightmap at the smallmap
