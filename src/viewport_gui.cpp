@@ -247,6 +247,16 @@ void ShowIndustryTooltip(Window *w, const TileIndex tile, char *buffer_position,
 	GuiShowTooltips(w, STR_INDUSTRY_VIEW_INFO_TOOLTIP, 0, nullptr, TCC_HOVER_VIEWPORT);
 }
 
+bool GetDepotTooltipString(TileIndex tile, char *buffer_position, const char *buffer_tail);
+
+void ShowDepotTooltip(Window *w, const TileIndex tile, char *buffer_position, const char *buffer_tail)
+{
+	if (!GetDepotTooltipString(tile, buffer_position, buffer_tail)) return;
+
+	SetDParamStr(0, buffer_position);
+	GuiShowTooltips(w, STR_DEPOT_VIEW_INFO_TOOLTIP, 0, nullptr, TCC_HOVER_VIEWPORT);
+}
+
 void ShowTooltipForTile(Window *w, const TileIndex tile)
 {
 	static char buffer[1024];
@@ -255,7 +265,10 @@ void ShowTooltipForTile(Window *w, const TileIndex tile)
 
 	switch (GetTileType(tile)) {
 		case MP_ROAD:
-			if (IsRoadDepot(tile)) return;
+			if (IsRoadDepot(tile)) {
+				ShowDepotTooltip(w, tile, buffer_start, buffer_tail);
+				return;
+			}
 			/* FALL THROUGH */
 		case MP_HOUSE: {
 			ShowTownNameTooltip(w, tile);
@@ -263,6 +276,22 @@ void ShowTooltipForTile(Window *w, const TileIndex tile)
 		}
 		case MP_INDUSTRY: {
 			ShowIndustryTooltip(w, tile, buffer_start, buffer_tail);
+			break;
+		}
+		case MP_RAILWAY: {
+			if (!IsRailDepot(tile)) return;
+			ShowDepotTooltip(w, tile, buffer_start, buffer_tail);
+			break;
+		}
+		case MP_WATER: {
+			if (!IsShipDepot(tile)) return;
+			ShowDepotTooltip(w, tile, buffer_start, buffer_tail);
+			break;
+		}
+		case MP_STATION: {
+			if (IsHangar(tile)) {
+				ShowDepotTooltip(w, tile, buffer_start, buffer_tail);
+			}
 			break;
 		}
 		default:

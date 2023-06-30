@@ -1940,6 +1940,7 @@ static SettingsContainer &GetSettingsTree()
 				tooltips->Add(new ConditionallyHiddenSettingEntry("gui.industry_tooltip_show_stockpiled", []() -> bool { return !_settings_client.gui.industry_tooltip_show; }));
 				tooltips->Add(new ConditionallyHiddenSettingEntry("gui.industry_tooltip_show_stockpiled_as_required", []() -> bool { return !_settings_client.gui.industry_tooltip_show || _settings_client.gui.industry_tooltip_show_stockpiled || !_settings_client.gui.industry_tooltip_show_required; }));
 				tooltips->Add(new ConditionallyHiddenSettingEntry("gui.industry_tooltip_show_produced", []() -> bool { return !_settings_client.gui.industry_tooltip_show; }));
+				tooltips->Add(new SettingEntry("gui.depot_tooltip_mode"));
 				tooltips->Add(new SettingEntry("gui.station_rating_tooltip_mode"));
 			}
 

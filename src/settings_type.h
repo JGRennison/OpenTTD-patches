@@ -140,6 +140,7 @@ struct GUISettings : public TimeSettings {
 	bool   industry_tooltip_show_stockpiled; ///< whether to display cargoes stockpiled by the industry, when hovering over one of its tiles.
 	bool   industry_tooltip_show_stockpiled_as_required; ///< whether to display cargoes stockpiled by the industry as ones required by the industry, when hovering over one of its tiles and normal display of stockpiled cargoes in viewport tooltips is turned off.
 	bool   industry_tooltip_show_produced;   ///< whether to display cargoes produced by the industry, when hovering over one of its tiles.
+	uint8  depot_tooltip_mode;               ///< Display mode for depot viewport tooltips. (0 = never, 1 = just a total number of vehicles, 2 = total number of vehicles in the depot along with a breakdown of numbers)
 	uint8  station_rating_tooltip_mode;      ///< Station rating tooltip mode
 	bool   link_terraform_toolbar;           ///< display terraform toolbar when displaying rail, road, water and airport toolbars
 	uint8  smallmap_land_colour;             ///< colour used for land and heightmap at the smallmap
