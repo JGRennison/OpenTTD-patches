@@ -1172,6 +1172,11 @@ Window::~Window()
 	const_cast<volatile WindowClass &>(this->window_class) = WC_INVALID;
 }
 
+void Window::Close()
+{
+	if (this->window_class != WC_INVALID) delete this;
+}
+
 /**
  * Find a window by its class and window number
  * @param cls Window class

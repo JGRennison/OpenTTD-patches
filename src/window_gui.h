@@ -289,6 +289,8 @@ public:
 
 	virtual ~Window();
 
+	virtual void Close();
+
 	/**
 	 * Helper allocation function to disallow something.
 	 * Don't allow arrays; arrays of Windows are pointless as you need
@@ -520,6 +522,7 @@ public:
 	static int SortButtonWidth();
 
 	void DeleteChildWindows(WindowClass wc = WC_INVALID) const;
+	inline void CloseChildWindows(WindowClass wc = WC_INVALID) const { this->DeleteChildWindows(wc); }
 
 	void SetDirty();
 	void SetDirtyAsBlocks();
