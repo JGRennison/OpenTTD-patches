@@ -68,8 +68,7 @@ OrderBackup::OrderBackup(const Vehicle *v, uint32 user)
 			tail = &copy->next;
 		}
 
-		if (v->orders != nullptr && HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
-			SetBit(this->vehicle_flags, VF_SCHEDULED_DISPATCH);
+		if (v->orders != nullptr) {
 			this->dispatch_schedules = v->orders->GetScheduledDispatchScheduleSet();
 		}
 	}
@@ -90,10 +89,7 @@ void OrderBackup::DoRestore(Vehicle *v)
 		v->orders = new OrderList(this->orders, v);
 		this->orders = nullptr;
 
-		if (HasBit(this->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
-			SetBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH);
-			v->orders->GetScheduledDispatchScheduleSet() = std::move(this->dispatch_schedules);
-		}
+		v->orders->GetScheduledDispatchScheduleSet() = std::move(this->dispatch_schedules);
 
 		/* Make sure buoys/oil rigs are updated in the station list. */
 		InvalidateWindowClassesData(WC_STATION_LIST, 0);
