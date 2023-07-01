@@ -13,6 +13,8 @@
 #include "script_text.hpp"
 #include "script_date.hpp"
 
+#include <optional>
+
 /**
  * Base class for stations and waypoints.
  * @api ai game
@@ -43,7 +45,7 @@ public:
 	 * @pre IsValidBaseStation(station_id).
 	 * @return The name of the station.
 	 */
-	static char *GetName(StationID station_id);
+	static std::optional<std::string> GetName(StationID station_id);
 
 	/**
 	 * Set the name this basestation.

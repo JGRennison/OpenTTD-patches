@@ -45,15 +45,13 @@
 	throw Script_Suspend(ticks, nullptr);
 }
 
-/* static */ void ScriptController::Break(const char* message)
+/* static */ void ScriptController::Break(const std::string &message)
 {
 	if (_network_dedicated || !_settings_client.gui.ai_developer_tools) return;
 
 	ScriptObject::GetActiveInstance()->Pause();
 
-	char log_message[1024];
-	seprintf(log_message, lastof(log_message), "Break: %s", message);
-	ScriptLog::Log(ScriptLogTypes::LOG_SQ_ERROR, log_message);
+	ScriptLog::Log(ScriptLogTypes::LOG_SQ_ERROR, fmt::format("Break: {}", message));
 
 	/* Inform script developer that their script has been paused and
 	 * needs manual action to continue. */
@@ -64,7 +62,7 @@
 	}
 }
 
-/* static */ void ScriptController::Print(bool error_msg, const char *message)
+/* static */ void ScriptController::Print(bool error_msg, const std::string &message)
 {
 	ScriptLog::Log(error_msg ? ScriptLogTypes::LOG_SQ_ERROR : ScriptLogTypes::LOG_SQ_INFO, message);
 }
@@ -91,7 +89,7 @@ ScriptController::ScriptController(CompanyID company) :
 	Squirrel::DecreaseOps(ScriptObject::GetActiveInstance()->engine->GetVM(), amount);
 }
 
-/* static */ int ScriptController::GetSetting(const char *name)
+/* static */ int ScriptController::GetSetting(const std::string &name)
 {
 	return ScriptObject::GetActiveInstance()->GetSetting(name);
 }
@@ -101,7 +99,7 @@ ScriptController::ScriptController(CompanyID company) :
 	return _openttd_newgrf_version;
 }
 
-/* static */ HSQOBJECT ScriptController::Import(const char *library, const char *class_name, int version)
+/* static */ HSQOBJECT ScriptController::Import(const std::string &library, const std::string &class_name, int version)
 {
 	ScriptController *controller = ScriptObject::GetActiveInstance()->GetController();
 	Squirrel *engine = ScriptObject::GetActiveInstance()->engine;
@@ -109,9 +107,7 @@ ScriptController::ScriptController(CompanyID company) :
 
 	ScriptInfo *lib = ScriptObject::GetActiveInstance()->FindLibrary(library, version);
 	if (lib == nullptr) {
-		char error[1024];
-		seprintf(error, lastof(error), "couldn't find library '%s' with version %d", library, version);
-		throw sq_throwerror(vm, error);
+		throw sq_throwerror(vm, fmt::format("couldn't find library '{}' with version {}", library, version));
 	}
 
 	/* Internally we store libraries as 'library.version' */
@@ -138,9 +134,7 @@ ScriptController::ScriptController(CompanyID company) :
 		sq_newclass(vm, SQFalse);
 		/* Load the library */
 		if (!engine->LoadScript(vm, lib->GetMainScript(), false)) {
-			char error[1024];
-			seprintf(error, lastof(error), "there was a compile error when importing '%s' version %d", library, version);
-			throw sq_throwerror(vm, error);
+			throw sq_throwerror(vm, fmt::format("there was a compile error when importing '{}' version {}", library, version));
 		}
 		/* Create the fake class */
 		sq_newslot(vm, -3, SQFalse);
@@ -157,15 +151,13 @@ ScriptController::ScriptController(CompanyID company) :
 	}
 	sq_pushstring(vm, lib->GetInstanceName(), -1);
 	if (SQ_FAILED(sq_get(vm, -2))) {
-		char error[1024];
-		seprintf(error, lastof(error), "unable to find class '%s' in the library '%s' version %d", lib->GetInstanceName(), library, version);
-		throw sq_throwerror(vm, error);
+		throw sq_throwerror(vm, fmt::format("unable to find class '{}' in the library '{}' version {}", lib->GetInstanceName(), library, version));
 	}
 	HSQOBJECT obj;
 	sq_getstackobj(vm, -1, &obj);
 	sq_pop(vm, 3);
 
-	if (StrEmpty(class_name)) return obj;
+	if (class_name.empty()) return obj;
 
 	/* Now link the name the user wanted to our 'fake' class */
 	sq_pushobject(vm, parent);

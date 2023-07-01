@@ -41,6 +41,7 @@
 #include "core/y_combinator.hpp"
 #include <stack>
 #include <cmath>
+#include <optional>
 
 #include "table/strings.h"
 #include "table/control_codes.h"

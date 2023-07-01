@@ -14,27 +14,14 @@
 
 #include "script_info.hpp"
 #include "script_scanner.hpp"
+#include "../3rdparty/fmt/format.h"
 
 #include "../safeguards.h"
 
-ScriptInfo::~ScriptInfo()
-{
-	free(this->author);
-	free(this->name);
-	free(this->short_name);
-	free(this->description);
-	free(this->date);
-	free(this->instance_name);
-	free(this->url);
-	free(this->SQ_instance);
-}
-
 bool ScriptInfo::CheckMethod(const char *name) const
 {
-	if (!this->engine->MethodExists(*this->SQ_instance, name)) {
-		char error[1024];
-		seprintf(error, lastof(error), "your info.nut/library.nut doesn't have the method '%s'", name);
-		this->engine->ThrowError(error);
+	if (!this->engine->MethodExists(this->SQ_instance, name)) {
+		this->engine->ThrowError(fmt::format("your info.nut/library.nut doesn't have the method '{}'", name));
 		return false;
 	}
 	return true;
@@ -43,10 +30,9 @@ bool ScriptInfo::CheckMethod(const char *name) const
 /* static */ SQInteger ScriptInfo::Constructor(HSQUIRRELVM vm, ScriptInfo *info)
 {
 	/* Set some basic info from the parent */
-	info->SQ_instance = MallocT<SQObject>(1);
-	Squirrel::GetInstance(vm, info->SQ_instance, 2);
+	Squirrel::GetInstance(vm, &info->SQ_instance, 2);
 	/* Make sure the instance stays alive over time */
-	sq_addref(vm, info->SQ_instance);
+	sq_addref(vm, &info->SQ_instance);
 
 	info->scanner = (ScriptScanner *)Squirrel::GetGlobalPointer(vm);
 	info->engine = info->scanner->GetEngine();
@@ -70,21 +56,21 @@ bool ScriptInfo::CheckMethod(const char *name) const
 	info->tar_file = info->scanner->GetTarFile();
 
 	/* Cache the data the info file gives us. */
-	if (!info->engine->CallStringMethodStrdup(*info->SQ_instance, "GetAuthor", &info->author, MAX_GET_OPS)) return SQ_ERROR;
-	if (!info->engine->CallStringMethodStrdup(*info->SQ_instance, "GetName", &info->name, MAX_GET_OPS)) return SQ_ERROR;
-	if (!info->engine->CallStringMethodStrdup(*info->SQ_instance, "GetShortName", &info->short_name, MAX_GET_OPS)) return SQ_ERROR;
-	if (!info->engine->CallStringMethodStrdup(*info->SQ_instance, "GetDescription", &info->description, MAX_GET_OPS)) return SQ_ERROR;
-	if (!info->engine->CallStringMethodStrdup(*info->SQ_instance, "GetDate", &info->date, MAX_GET_OPS)) return SQ_ERROR;
-	if (!info->engine->CallIntegerMethod(*info->SQ_instance, "GetVersion", &info->version, MAX_GET_OPS)) return SQ_ERROR;
-	if (!info->engine->CallStringMethodStrdup(*info->SQ_instance, "CreateInstance", &info->instance_name, MAX_CREATEINSTANCE_OPS)) return SQ_ERROR;
+	if (!info->engine->CallStringMethod(info->SQ_instance, "GetAuthor", &info->author, MAX_GET_OPS)) return SQ_ERROR;
+	if (!info->engine->CallStringMethod(info->SQ_instance, "GetName", &info->name, MAX_GET_OPS)) return SQ_ERROR;
+	if (!info->engine->CallStringMethod(info->SQ_instance, "GetShortName", &info->short_name, MAX_GET_OPS)) return SQ_ERROR;
+	if (!info->engine->CallStringMethod(info->SQ_instance, "GetDescription", &info->description, MAX_GET_OPS)) return SQ_ERROR;
+	if (!info->engine->CallStringMethod(info->SQ_instance, "GetDate", &info->date, MAX_GET_OPS)) return SQ_ERROR;
+	if (!info->engine->CallIntegerMethod(info->SQ_instance, "GetVersion", &info->version, MAX_GET_OPS)) return SQ_ERROR;
+	if (!info->engine->CallStringMethod(info->SQ_instance, "CreateInstance", &info->instance_name, MAX_CREATEINSTANCE_OPS)) return SQ_ERROR;
 
 	/* The GetURL function is optional. */
-	if (info->engine->MethodExists(*info->SQ_instance, "GetURL")) {
-		if (!info->engine->CallStringMethodStrdup(*info->SQ_instance, "GetURL", &info->url, MAX_GET_OPS)) return SQ_ERROR;
+	if (info->engine->MethodExists(info->SQ_instance, "GetURL")) {
+		if (!info->engine->CallStringMethod(info->SQ_instance, "GetURL", &info->url, MAX_GET_OPS)) return SQ_ERROR;
 	}
 
 	/* Check if we have settings */
-	if (info->engine->MethodExists(*info->SQ_instance, "GetSettings")) {
+	if (info->engine->MethodExists(info->SQ_instance, "GetSettings")) {
 		if (!info->GetSettings()) return SQ_ERROR;
 	}
 
@@ -93,7 +79,7 @@ bool ScriptInfo::CheckMethod(const char *name) const
 
 bool ScriptInfo::GetSettings()
 {
-	return this->engine->CallMethod(*this->SQ_instance, "GetSettings", nullptr, MAX_GET_SETTING_OPS);
+	return this->engine->CallMethod(this->SQ_instance, "GetSettings", nullptr, MAX_GET_SETTING_OPS);
 }
 
 SQInteger ScriptInfo::AddSetting(HSQUIRRELVM vm)
@@ -168,9 +154,7 @@ SQInteger ScriptInfo::AddSetting(HSQUIRRELVM vm)
 			config.flags = (ScriptConfigFlags)res;
 			items |= 0x100;
 		} else {
-			char error[1024];
-			seprintf(error, lastof(error), "unknown setting property '%s'", key);
-			this->engine->ThrowError(error);
+			this->engine->ThrowError(fmt::format("unknown setting property '{}'", key));
 			return SQ_ERROR;
 		}
 
@@ -181,9 +165,7 @@ SQInteger ScriptInfo::AddSetting(HSQUIRRELVM vm)
 	/* Don't allow both random_deviation and SCRIPTCONFIG_RANDOM to
 	 * be set for the same config item. */
 	if ((items & 0x200) != 0 && (config.flags & SCRIPTCONFIG_RANDOM) != 0) {
-		char error[1024];
-		seprintf(error, lastof(error), "Setting both random_deviation and SCRIPTCONFIG_RANDOM is not allowed");
-		this->engine->ThrowError(error);
+		this->engine->ThrowError("Setting both random_deviation and SCRIPTCONFIG_RANDOM is not allowed");
 		return SQ_ERROR;
 	}
 	/* Reset the bit for random_deviation as it's optional. */
@@ -192,9 +174,7 @@ SQInteger ScriptInfo::AddSetting(HSQUIRRELVM vm)
 	/* Make sure all properties are defined */
 	uint mask = (config.flags & SCRIPTCONFIG_BOOLEAN) ? 0x1F3 : 0x1FF;
 	if (items != mask) {
-		char error[1024];
-		seprintf(error, lastof(error), "please define all properties of a setting (min/max not allowed for booleans)");
-		this->engine->ThrowError(error);
+		this->engine->ThrowError("please define all properties of a setting (min/max not allowed for booleans)");
 		return SQ_ERROR;
 	}
 
@@ -214,9 +194,7 @@ SQInteger ScriptInfo::AddLabels(HSQUIRRELVM vm)
 	}
 
 	if (config == nullptr) {
-		char error[1024];
-		seprintf(error, lastof(error), "Trying to add labels for non-defined setting '%s'", setting_name);
-		this->engine->ThrowError(error);
+		this->engine->ThrowError(fmt::format("Trying to add labels for non-defined setting '{}'", setting_name));
 		return SQ_ERROR;
 	}
 	if (!config->labels.empty()) return SQ_ERROR;
@@ -263,7 +241,7 @@ const ScriptConfigItemList *ScriptInfo::GetConfigList() const
 	return &this->config_list;
 }
 
-const ScriptConfigItem *ScriptInfo::GetConfigItem(const std::string &name) const
+const ScriptConfigItem *ScriptInfo::GetConfigItem(const std::string_view name) const
 {
 	for (const auto &item : this->config_list) {
 		if (item.name == name) return &item;

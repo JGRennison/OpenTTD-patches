@@ -40,7 +40,7 @@ public:
 	/**
 	 * Virtual destructor has to be defined because of virtual Run().
 	 */
-	virtual ~DemandHandler() {}
+	virtual ~DemandHandler() = default;
 };
 
 #endif /* DEMANDS_H */

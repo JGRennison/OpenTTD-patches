@@ -29,7 +29,6 @@ add_files(
     random_func.hpp
     serialisation.cpp
     serialisation.hpp
-    smallmap_type.hpp
     smallstack_type.hpp
     smallvec_type.hpp
     tinystring_type.hpp

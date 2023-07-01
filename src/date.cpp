@@ -322,10 +322,6 @@ static void OnNewDay()
 		SetWindowDirty(WC_STATUS_BAR, 0);
 	}
 
-	if (!_newgrf_profilers.empty() && _newgrf_profile_end_date <= _date) {
-		NewGRFProfiler::FinishAll();
-	}
-
 	if (_network_server) NetworkServerDailyLoop();
 
 	DisasterDailyLoop();

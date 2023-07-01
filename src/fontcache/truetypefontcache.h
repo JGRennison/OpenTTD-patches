@@ -10,8 +10,8 @@
 #ifndef TRUETYPEFONTCACHE_H
 #define TRUETYPEFONTCACHE_H
 
-#include "../core/smallmap_type.hpp"
 #include "../fontcache.h"
+#include "../3rdparty/cpp-btree/btree_map.h"
 
 
 static const int MAX_FONT_SIZE = 72; ///< Maximum font size.
@@ -28,7 +28,7 @@ protected:
 	int req_size;  ///< Requested font size.
 	int used_size; ///< Used font size.
 
-	typedef SmallMap<uint32, std::pair<size_t, const void *> > FontTable; ///< Table with font table cache
+	using FontTable = btree::btree_map<uint32_t, std::pair<size_t, const void *>>; ///< Table with font table cache
 	FontTable font_tables; ///< Cached font tables.
 
 	/** Container for information about a glyph. */

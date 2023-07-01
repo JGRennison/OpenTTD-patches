@@ -445,6 +445,8 @@ struct DepotWindow : Window {
 	DepotGUIAction GetVehicleFromDepotWndPt(int x, int y, const Vehicle **veh, GetDepotVehiclePtData *d) const
 	{
 		const NWidgetCore *matrix_widget = this->GetWidget<NWidgetCore>(WID_D_MATRIX);
+		/* Make X relative to widget. Y is left alone for GetScrolledRowFromWidget(). */
+		x -= matrix_widget->pos_x;
 		/* In case of RTL the widgets are swapped as a whole */
 		if (_current_text_dir == TD_RTL) x = matrix_widget->current_x - x;
 
@@ -456,12 +458,12 @@ struct DepotWindow : Window {
 			xm = x % this->resize.step_width;
 			if (xt >= this->num_columns) return MODE_ERROR;
 		}
-		ym = y % this->resize.step_height;
+		ym = (y - matrix_widget->pos_y) % this->resize.step_height;
 
-		uint row = y / this->resize.step_height;
-		if (row >= this->vscroll->GetCapacity()) return MODE_ERROR;
+		int row = this->vscroll->GetScrolledRowFromWidget(y, this, WID_D_MATRIX);
+		if (row == INT_MAX) return MODE_ERROR;
 
-		uint pos = ((row + this->vscroll->GetPosition()) * this->num_columns) + xt;
+		uint pos = (row * this->num_columns) + xt;
 
 		if (this->vehicle_list.size() + this->wagon_list.size() <= pos) {
 			/* Clicking on 'line' / 'block' without a vehicle */
@@ -762,11 +764,9 @@ struct DepotWindow : Window {
 	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
-			case WID_D_MATRIX: { // List
-				NWidgetBase *nwi = this->GetWidget<NWidgetBase>(WID_D_MATRIX);
-				this->DepotClick(pt.x - nwi->pos_x, pt.y - nwi->pos_y);
+			case WID_D_MATRIX: // List
+				this->DepotClick(pt.x, pt.y);
 				break;
-			}
 
 			case WID_D_BUILD: // Build vehicle
 				ResetObjectToPlace();
@@ -849,8 +849,7 @@ struct DepotWindow : Window {
 
 		GetDepotVehiclePtData gdvp = { nullptr, nullptr };
 		const Vehicle *v = nullptr;
-		NWidgetBase *nwi = this->GetWidget<NWidgetBase>(WID_D_MATRIX);
-		DepotGUIAction mode = this->GetVehicleFromDepotWndPt(pt.x - nwi->pos_x, pt.y - nwi->pos_y, &v, &gdvp);
+		DepotGUIAction mode = this->GetVehicleFromDepotWndPt(pt.x, pt.y, &v, &gdvp);
 
 		if (this->type == VEH_TRAIN) v = gdvp.wagon;
 
@@ -1021,11 +1020,10 @@ struct DepotWindow : Window {
 			return;
 		}
 
-		NWidgetBase *matrix = this->GetWidget<NWidgetBase>(widget);
 		const Vehicle *v = nullptr;
 		GetDepotVehiclePtData gdvp = {nullptr, nullptr};
 
-		if (this->GetVehicleFromDepotWndPt(pt.x - matrix->pos_x, pt.y - matrix->pos_y, &v, &gdvp) != MODE_DRAG_VEHICLE) return;
+		if (this->GetVehicleFromDepotWndPt(pt.x, pt.y, &v, &gdvp) != MODE_DRAG_VEHICLE) return;
 
 		VehicleID new_vehicle_over = INVALID_VEHICLE;
 		if (gdvp.head != nullptr) {
@@ -1058,11 +1056,10 @@ struct DepotWindow : Window {
 				this->sel = INVALID_VEHICLE;
 				this->SetDirty();
 
-				NWidgetBase *nwi = this->GetWidget<NWidgetBase>(WID_D_MATRIX);
 				if (this->type == VEH_TRAIN) {
 					GetDepotVehiclePtData gdvp = { nullptr, nullptr };
 
-					if (this->GetVehicleFromDepotWndPt(pt.x - nwi->pos_x, pt.y - nwi->pos_y, &v, &gdvp) == MODE_DRAG_VEHICLE && sel != INVALID_VEHICLE) {
+					if (this->GetVehicleFromDepotWndPt(pt.x, pt.y, &v, &gdvp) == MODE_DRAG_VEHICLE && sel != INVALID_VEHICLE) {
 						if (gdvp.wagon != nullptr && gdvp.wagon->index == sel && _ctrl_pressed) {
 							DoCommandP(Vehicle::Get(sel)->tile, Vehicle::Get(sel)->index, true,
 									CMD_REVERSE_TRAIN_DIRECTION | CMD_MSG(STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE));
@@ -1073,7 +1070,7 @@ struct DepotWindow : Window {
 							ShowVehicleViewWindow(gdvp.head);
 						}
 					}
-				} else if (this->GetVehicleFromDepotWndPt(pt.x - nwi->pos_x, pt.y - nwi->pos_y, &v, nullptr) == MODE_DRAG_VEHICLE && v != nullptr && sel == v->index) {
+				} else if (this->GetVehicleFromDepotWndPt(pt.x, pt.y, &v, nullptr) == MODE_DRAG_VEHICLE && v != nullptr && sel == v->index) {
 					ShowVehicleViewWindow(v);
 				}
 				break;

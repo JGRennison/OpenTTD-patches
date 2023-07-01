@@ -565,7 +565,7 @@ public:
 	 * @param status The reason the connection got closed.
 	 */
 	virtual NetworkRecvStatus CloseConnection(NetworkRecvStatus status) = 0;
-	virtual ~NetworkGameSocketHandler() {}
+	virtual ~NetworkGameSocketHandler() = default;
 
 	/**
 	 * Sets the client info for this socket handler.

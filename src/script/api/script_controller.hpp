@@ -131,7 +131,7 @@ public:
 	 * @param name The name of the setting.
 	 * @return the value for the setting, or -1 if the setting is not known.
 	 */
-	static int GetSetting(const char *name);
+	static int GetSetting(const std::string &name);
 
 	/**
 	 * Get the OpenTTD version of this executable. The version is formatted
@@ -187,7 +187,7 @@ public:
 	 * @note gui.ai_developer_tools setting must be enabled or the break is
 	 * ignored.
 	 */
-	static void Break(const char* message);
+	static void Break(const std::string &message);
 
 	/**
 	 * When Squirrel triggers a print, this function is called.
@@ -196,7 +196,7 @@ public:
 	 * @param message The message Squirrel logged.
 	 * @note Use ScriptLog.Info/Warning/Error instead of 'print'.
 	 */
-	static void Print(bool error_msg, const char *message);
+	static void Print(bool error_msg, const std::string &message);
 
 	/**
 	 * Import a library.
@@ -207,7 +207,7 @@ public:
 	 * @return The loaded library object. If class_name is set, it is also available (under the scope of the import) under that name.
 	 * @note This command can be called from the global space, and does not need an instance.
 	 */
-	static HSQOBJECT Import(const char *library, const char *class_name, int version);
+	static HSQOBJECT Import(const std::string &library, const std::string &class_name, int version);
 
 private:
 	typedef std::map<std::string, std::string, CaseInsensitiveComparator> LoadedLibraryList; ///< The type for loaded libraries.

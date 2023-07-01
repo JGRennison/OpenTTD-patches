@@ -12,10 +12,10 @@
 
 #include <map>
 #include <list>
-#include "../core/smallmap_type.hpp"
 #include "../company_type.h"
 #include "../textfile_gui.h"
 #include "script_instance.hpp"
+#include <optional>
 
 /** Maximum of 10 digits for MIN / MAX_INT32, 1 for the sign and 1 for '\0'. */
 static const int INT32_DIGITS_WITH_SIGN_AND_TERMINATION = 10 + 1 + 1;
@@ -60,7 +60,6 @@ protected:
 
 public:
 	ScriptConfig() :
-		name(nullptr),
 		version(-1),
 		info(nullptr),
 		is_random(false),
@@ -84,7 +83,7 @@ public:
 	 *   as specified. If false any compatible version is ok.
 	 * @param is_random Is the Script chosen randomly?
 	 */
-	void Change(const char *name, int version = -1, bool force_exact_match = false, bool is_random = false);
+	void Change(std::optional<const std::string> name, int version = -1, bool force_exact_match = false, bool is_random = false);
 
 	/**
 	 * Get the ScriptInfo linked to this ScriptConfig.
@@ -128,7 +127,7 @@ public:
 	/**
 	 * Set the value of a setting for this config.
 	 */
-	void SetSetting(const std::string &name, int value);
+	void SetSetting(const std::string_view name, int value);
 
 	/**
 	 * Reset all settings to their default value.
@@ -159,7 +158,7 @@ public:
 	/**
 	 * Get the name of the Script.
 	 */
-	const char *GetName() const;
+	const std::string &GetName() const;
 
 	/**
 	 * Get the version of the Script.
@@ -190,7 +189,7 @@ public:
 	ScriptInstance::ScriptData *GetToLoadData();
 
 protected:
-	const char *name;                                         ///< Name of the Script
+	std::string name;                                         ///< Name of the Script
 	int version;                                              ///< Version of the Script
 	class ScriptInfo *info;                                   ///< ScriptInfo object for related to this Script version
 	SettingValueList settings;                                ///< List with all setting=>value pairs that are configure for this Script
@@ -207,7 +206,7 @@ protected:
 	 * This function should call back to the Scanner in charge of this Config,
 	 *  to find the ScriptInfo belonging to a name+version.
 	 */
-	virtual ScriptInfo *FindInfo(const char *name, int version, bool force_exact_match) = 0;
+	virtual ScriptInfo *FindInfo(const std::string &name, int version, bool force_exact_match) = 0;
 };
 
 #endif /* SCRIPT_CONFIG_HPP */

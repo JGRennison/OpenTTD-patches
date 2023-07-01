@@ -323,7 +323,7 @@ protected:
 	/**
 	 * Get an allocated string with all control codes stripped off.
 	 */
-	static char *GetString(StringID string);
+	static std::string GetString(StringID string);
 
 	static bool IsNewUniqueLogMessage(const std::string &msg);
 

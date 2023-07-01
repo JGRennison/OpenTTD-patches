@@ -23,7 +23,7 @@
 
 #include "../../safeguards.h"
 
-RawText::RawText(const char *text) : text(text)
+RawText::RawText(const std::string &text) : text(text)
 {
 }
 

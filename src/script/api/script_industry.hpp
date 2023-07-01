@@ -14,6 +14,7 @@
 #include "script_date.hpp"
 #include "script_object.hpp"
 #include "../../industry.h"
+#include <optional>
 
 /**
  * Class that handles all industry related functions.
@@ -79,7 +80,7 @@ public:
 	 * @pre IsValidIndustry(industry_id).
 	 * @return The name of the industry.
 	 */
-	static char *GetName(IndustryID industry_id);
+	static std::optional<std::string> GetName(IndustryID industry_id);
 
 	/**
 	 * Set the custom text of an industry, shown in the GUI.

@@ -11,7 +11,6 @@
 #define LINKGRAPH_H
 
 #include "../core/pool_type.hpp"
-#include "../core/smallmap_type.hpp"
 #include "../core/bitmath_func.hpp"
 #include "../station_base.h"
 #include "../cargotype.h"

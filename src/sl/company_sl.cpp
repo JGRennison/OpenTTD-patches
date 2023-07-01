@@ -516,8 +516,8 @@ static void Check_PLYR()
 {
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		CompanyProperties *cprops = new CompanyProperties();
-		SaveLoad_PLYR_common(nullptr, cprops);
+		std::unique_ptr<CompanyProperties> cprops = std::make_unique<CompanyProperties>();
+		SaveLoad_PLYR_common(nullptr, cprops.get());
 
 		/* We do not load old custom names */
 		if (IsSavegameVersionBefore(SLV_84)) {
@@ -537,7 +537,9 @@ static void Check_PLYR()
 			cprops->name_1 = STR_GAME_SAVELOAD_NOT_AVAILABLE;
 		}
 
-		if (!_load_check_data.companies.Insert(index, cprops)) delete cprops;
+		if (_load_check_data.companies.count(index) == 0) {
+			_load_check_data.companies[index] = std::move(cprops);
+		}
 	}
 }
 

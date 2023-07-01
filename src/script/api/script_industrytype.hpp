@@ -11,6 +11,7 @@
 #define SCRIPT_INDUSTRYTYPE_HPP
 
 #include "script_list.hpp"
+#include <optional>
 
 /**
  * Class that handles all industry-type related functions.
@@ -39,7 +40,7 @@ public:
 	 * @pre IsValidIndustryType(industry_type).
 	 * @return The name of an industry.
 	 */
-	static char *GetName(IndustryType industry_type);
+	static std::optional<std::string> GetName(IndustryType industry_type);
 
 	/**
 	 * Get a list of CargoID possible produced by this industry-type.

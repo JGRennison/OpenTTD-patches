@@ -13,6 +13,7 @@
 #include "script_tile.hpp"
 #include "../../signal_type.h"
 #include "../../track_type.h"
+#include <optional>
 
 /**
  * Class that handles all rail related functions.
@@ -101,7 +102,7 @@ public:
 	 *  means that the name could be something like "Maglev construction" instead
 	 *  of just "Maglev".
 	 */
-	static char *GetName(RailType rail_type);
+	static std::optional<std::string> GetName(RailType rail_type);
 
 	/**
 	 * Checks whether the given tile is actually a tile with rail that can be

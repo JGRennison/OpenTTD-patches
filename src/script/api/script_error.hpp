@@ -13,6 +13,7 @@
 #include "script_object.hpp"
 #include "script_companymode.hpp"
 #include <map>
+#include <optional>
 
 /**
  * Helper to write precondition enforcers for the script API in an abbreviated manner.
@@ -193,7 +194,7 @@ public:
 	 * Get the last error in string format (for human readability).
 	 * @return An ErrorMessage enum item, as string.
 	 */
-	static char *GetLastErrorString();
+	static std::optional<std::string> GetLastErrorString();
 
 	/**
 	 * Get the error based on the OpenTTD StringID.

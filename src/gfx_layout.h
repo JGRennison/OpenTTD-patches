@@ -12,7 +12,7 @@
 
 #include "fontcache.h"
 #include "gfx_func.h"
-#include "core/smallmap_type.hpp"
+#include "core/math_func.hpp"
 
 #include <map>
 #include <string>
@@ -84,20 +84,20 @@ public:
 	Font(FontSize size, TextColour colour);
 };
 
-/** Mapping from index to font. */
-typedef SmallMap<int, Font *> FontMap;
+/** Mapping from index to font. The pointer is owned by FontColourMap. */
+using FontMap = std::map<int, Font *>;
 
 /**
  * Interface to glue fallback and normal layouter into one.
  */
 class ParagraphLayouter {
 public:
-	virtual ~ParagraphLayouter() {}
+	virtual ~ParagraphLayouter() = default;
 
 	/** Visual run contains data about the bit of text with the same font. */
 	class VisualRun {
 	public:
-		virtual ~VisualRun() {}
+		virtual ~VisualRun() = default;
 		virtual const Font *GetFont() const = 0;
 		virtual int GetGlyphCount() const = 0;
 		virtual const GlyphID *GetGlyphs() const = 0;
@@ -109,7 +109,7 @@ public:
 	/** A single line worth of VisualRuns. */
 	class Line {
 	public:
-		virtual ~Line() {}
+		virtual ~Line() = default;
 		virtual int GetLeading() const = 0;
 		virtual int GetWidth() const = 0;
 		virtual int CountRuns() const = 0;
@@ -173,7 +173,7 @@ private:
 
 	static LineCacheItem &GetCachedParagraphLayout(std::string_view str, const FontState &state);
 
-	typedef SmallMap<TextColour, Font *> FontColourMap;
+	using FontColourMap = std::map<TextColour, std::unique_ptr<Font>>;
 	static FontColourMap fonts[FS_END];
 public:
 	static Font *GetFont(FontSize size, TextColour colour);

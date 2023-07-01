@@ -13,6 +13,7 @@
 #include "script_tile.hpp"
 #include "../squirrel_helper_type.hpp"
 #include "../../../road.h"
+#include <optional>
 
 /**
  * Class that handles all road related functions.
@@ -90,7 +91,7 @@ public:
 	 * @pre IsRoadTypeAvailable(road_type).
 	 * @return The name the road type has.
 	 */
-	static char *GetName(RoadType road_type);
+	static std::optional<std::string> GetName(RoadType road_type);
 
 	/**
 	 * Determines whether a busstop or a truckstop is needed to transport a certain cargo.
@@ -265,7 +266,7 @@ public:
 	 *         they are build or 2 when building the first part automatically
 	 *         builds the second part. -1 means the preconditions are not met.
 	 */
-	static SQInteger CanBuildConnectedRoadParts(ScriptTile::Slope slope, Array<> existing, TileIndex start, TileIndex end);
+	static SQInteger CanBuildConnectedRoadParts(ScriptTile::Slope slope, Array<> &&existing, TileIndex start, TileIndex end);
 
 	/**
 	 * Lookup function for building road parts independent of whether the

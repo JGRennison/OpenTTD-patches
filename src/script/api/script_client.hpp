@@ -14,6 +14,7 @@
 #include "script_date.hpp"
 #include "script_company.hpp"
 #include "../../network/network_type.h"
+#include <optional>
 
 /**
  * Class that handles all client related functions.
@@ -45,7 +46,7 @@ public:
 	 * @pre ResolveClientID(client) != CLIENT_INVALID.
 	 * @return The name of the given client.
 	 */
-	static char *GetName(ClientID client);
+	static std::optional<std::string> GetName(ClientID client);
 
 	/**
 	 * Get the company in which the given client is playing.

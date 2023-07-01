@@ -65,9 +65,9 @@
 	return ScriptObject::DoCommand(0, group_id, 0, CMD_ALTER_GROUP, text);
 }
 
-/* static */ char *ScriptGroup::GetName(GroupID group_id)
+/* static */ std::optional<std::string> ScriptGroup::GetName(GroupID group_id)
 {
-	if (!IsValidGroup(group_id)) return nullptr;
+	if (!IsValidGroup(group_id)) return std::nullopt;
 
 	::SetDParam(0, group_id);
 	return GetString(STR_GROUP_NAME);

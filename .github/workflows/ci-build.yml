@@ -81,24 +81,30 @@ jobs:
         echo "::endgroup::"
 
   linux:
-    name: Linux
 
     strategy:
       fail-fast: false
       matrix:
         include:
-        - compiler: clang
+        - name: Clang
+          compiler: clang
           cxxcompiler: clang++
-          libsdl: libsdl2-dev
-        - compiler: gcc
+          libraries: libsdl2-dev nlohmann-json3-dev
+        - name: GCC - SDL2
+          compiler: gcc
           cxxcompiler: g++
-          libsdl: libsdl2-dev
-        - compiler: gcc
+          libraries: libsdl2-dev nlohmann-json3-dev
+        - name: GCC - SDL1.2
+          compiler: gcc
           cxxcompiler: g++
-          libsdl: libsdl1.2-dev
-        - compiler: gcc
+          libraries: libsdl1.2-dev nlohmann-json3-dev
+        - name: GCC - Dedicated
+          compiler: gcc
           cxxcompiler: g++
           extra-cmake-parameters: -DOPTION_DEDICATED=ON -DCMAKE_CXX_FLAGS_INIT="-DRANDOM_DEBUG"
+          # Compile without SDL / SDL2 / nlohmann-json, as that should compile fine too.
+
+    name: Linux (${{ matrix.name }})
 
     runs-on: ubuntu-20.04
     env:
@@ -132,7 +138,7 @@ jobs:
           liblzma-dev \
           libzstd-dev \
           liblzo2-dev \
-          ${{ matrix.libsdl }} \
+          ${{ matrix.libraries }} \
           zlib1g-dev \
           # EOF
         echo "::endgroup::"
@@ -172,14 +178,14 @@ jobs:
         echo "::endgroup::"
 
   macos:
-    name: Mac OS
-
     strategy:
       fail-fast: false
       matrix:
         include:
         - arch: x64
           full_arch: x86_64
+
+    name: Mac OS (${{ matrix.arch }})
 
     runs-on: macos-latest
     env:
@@ -214,7 +220,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: /usr/local/share/vcpkg/installed
-        key: ${{ steps.key.outputs.image }}-vcpkg-${{ matrix.arch }}-0 # Increase the number whenever dependencies are modified
+        key: ${{ steps.key.outputs.image }}-vcpkg-${{ matrix.arch }}-1 # Increase the number whenever dependencies are modified
         restore-keys: |
           ${{ steps.key.outputs.image }}-vcpkg-${{ matrix.arch }}
 
@@ -225,6 +231,7 @@ jobs:
           liblzma \
           libpng \
           lzo \
+          nlohmann-json \
           zlib \
           zstd \
           # EOF
@@ -232,7 +239,7 @@ jobs:
     - name: Install OpenGFX
       run: |
         mkdir -p ~/Documents/OpenTTD/baseset
-        cd ~/Documents//OpenTTD/baseset
+        cd ~/Documents/OpenTTD/baseset
 
         echo "::group::Download OpenGFX"
         curl -L https://cdn.openttd.org/opengfx-releases/0.6.0/opengfx-0.6.0-all.zip -o opengfx-all.zip
@@ -253,7 +260,7 @@ jobs:
         cd build
 
         echo "::group::CMake"
-        cmake ${GITHUB_WORKSPACE} \
+        cmake .. \
           -DCMAKE_OSX_ARCHITECTURES=${{ matrix.full_arch }} \
           -DVCPKG_TARGET_TRIPLET=${{ matrix.arch }}-osx \
           -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake \
@@ -266,13 +273,13 @@ jobs:
         echo "::endgroup::"
 
   windows:
-    name: Windows
-
     strategy:
       fail-fast: false
       matrix:
         os: [windows-latest, windows-2019]
         arch: [x86, x64]
+
+    name: Windows (${{ matrix.os }} / ${{ matrix.arch }})
 
     runs-on: ${{ matrix.os }}
 
@@ -300,7 +307,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: vcpkg/installed
-        key: ${{ steps.key.outputs.image }}-vcpkg-${{ matrix.arch }}-0 # Increase the number whenever dependencies are modified
+        key: ${{ steps.key.outputs.image }}-vcpkg-${{ matrix.arch }}-1 # Increase the number whenever dependencies are modified
         restore-keys: |
           ${{ steps.key.outputs.image }}-vcpkg-${{ matrix.arch }}
 
@@ -311,6 +318,7 @@ jobs:
           liblzma \
           libpng \
           lzo \
+          nlohmann-json \
           zlib \
           zstd \
           # EOF
@@ -358,8 +366,6 @@ jobs:
         echo "::endgroup::"
 
   msys2:
-    name: msys2
-
     strategy:
       fail-fast: false
       matrix:
@@ -368,6 +374,8 @@ jobs:
             arch: x86_64
           - msystem: MINGW32
             arch: i686
+
+    name: MinGW (${{ matrix.arch }})
 
     runs-on: windows-latest
 
@@ -394,6 +402,7 @@ jobs:
           mingw-w64-${{ matrix.arch }}-gcc
           mingw-w64-${{ matrix.arch }}-lzo2
           mingw-w64-${{ matrix.arch }}-libpng
+          mingw-w64-${{ matrix.arch }}-nlohmann-json
 
     - name: Install OpenGFX
       shell: bash

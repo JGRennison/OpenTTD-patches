@@ -33,7 +33,7 @@ struct BaseConsist {
 
 	uint32 vehicle_flags;               ///< Used for gradual loading and other miscellaneous things (@see VehicleFlags enum)
 
-	virtual ~BaseConsist() {}
+	virtual ~BaseConsist() = default;
 
 	void CopyConsistPropertiesFrom(const BaseConsist *src);
 };

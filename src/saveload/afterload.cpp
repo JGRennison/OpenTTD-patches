@@ -4213,6 +4213,10 @@ bool AfterLoadGame()
 		_new_competitor_timeout.fired = _new_competitor_timeout.period == 0;
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_SAVEGAME_ID) && IsSavegameVersionBefore(SLV_SAVEGAME_ID)) {
+		GenerateSavegameId();
+	}
+
 	InitializeRoadGUI();
 
 	/* This needs to be done after conversion. */

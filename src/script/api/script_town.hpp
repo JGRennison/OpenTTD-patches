@@ -13,6 +13,7 @@
 #include "script_cargo.hpp"
 #include "script_company.hpp"
 #include "../../town_type.h"
+#include <optional>
 
 /**
  * Class that handles all town related functions.
@@ -142,7 +143,7 @@ public:
 	 * @pre IsValidTown(town_id).
 	 * @return The name of the town.
 	 */
-	static char *GetName(TownID town_id);
+	static std::optional<std::string> GetName(TownID town_id);
 
 	/**
 	 * Rename a town.

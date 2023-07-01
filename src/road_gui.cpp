@@ -1699,9 +1699,9 @@ public:
 				break;
 
 			case WID_BROS_NEWST_LIST: {
-				int y = this->vscrollList->GetScrolledRowFromWidget(pt.y, this, WID_BROS_NEWST_LIST);
-				if (y >= (int)this->roadstop_classes.size()) return;
-				RoadStopClassID class_id = this->roadstop_classes[y];
+				auto it = this->vscrollList->GetScrolledItemFromWidget(this->roadstop_classes, pt.y, this, WID_BROS_NEWST_LIST);
+				if (it == this->roadstop_classes.end()) return;
+				RoadStopClassID class_id = *it;
 				this->SelectClass(class_id);
 				if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 				this->SetDirty();

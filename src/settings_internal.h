@@ -12,6 +12,8 @@
 
 #include "sl/saveload_types.h"
 
+#include <functional>
+
 enum SettingFlag : uint32 {
 	SF_NONE = 0,
 	SF_GUI_0_IS_SPECIAL        = 1 <<  0, ///< A value of zero is possible and has a custom string (the one after "strval").
@@ -114,7 +116,7 @@ struct SettingDesc {
 		name(name), flags(flags), guiproc(guiproc), startup(startup), save(save), patx_name(patx_name) {}
 	SettingDesc(XrefContructorTag tag, SaveLoad save, SettingsXref xref) :
 		name(nullptr), flags(SF_NONE), guiproc(nullptr), startup(false), save(save), patx_name(nullptr), xref(xref) {}
-	virtual ~SettingDesc() {}
+	virtual ~SettingDesc() = default;
 
 	const char *name;       ///< Name of the setting. Used in configuration file and for console
 	SettingFlag flags;      ///< Handles how a setting would show up in the GUI (text/currency, etc.)
@@ -193,7 +195,6 @@ struct IntSettingDesc : SettingDesc {
 		SettingDesc(save, name, flags, guiproc, startup, patx_name), def(def), min(min), max(max), interval(interval),
 			str(str), str_help(str_help), str_val(str_val), cat(cat), pre_check(pre_check),
 			post_callback(post_callback), enumlist(enumlist) {}
-	virtual ~IntSettingDesc() {}
 
 	int32 def;              ///< default value given when none is present
 	int32 min;              ///< minimum values
@@ -236,7 +237,6 @@ struct BoolSettingDesc : IntSettingDesc {
 		StringID str, StringID str_help, StringID str_val, SettingCategory cat,
 		PreChangeCheck pre_check, PostChangeCallback post_callback) :
 		IntSettingDesc(save, name, flags, guiproc, startup, patx_name, def, 0, 1, 0, str, str_help, str_val, cat, pre_check, post_callback, nullptr) {}
-	virtual ~BoolSettingDesc() {}
 
 	bool IsBoolSetting() const override { return true; }
 	size_t ParseValue(const char *str) const override;
@@ -256,8 +256,6 @@ struct OneOfManySettingDesc : IntSettingDesc {
 		for (auto one : many) this->many.push_back(one);
 	}
 
-	virtual ~OneOfManySettingDesc() {}
-
 	std::vector<std::string> many; ///< possible values for this type
 	OnConvert *many_cnvt;          ///< callback procedure when loading value mechanism fails
 
@@ -276,7 +274,6 @@ struct ManyOfManySettingDesc : OneOfManySettingDesc {
 		std::initializer_list<const char *> many, OnConvert *many_cnvt) :
 		OneOfManySettingDesc(save, name, flags, guiproc, startup, patx_name, def, (1 << many.size()) - 1, str, str_help,
 			str_val, cat, pre_check, post_callback, many, many_cnvt) {}
-	virtual ~ManyOfManySettingDesc() {}
 
 	size_t ParseValue(const char *str) const override;
 	void FormatIntValue(char *buf, const char *last, uint32 value) const override;
@@ -303,7 +300,6 @@ struct StringSettingDesc : SettingDesc {
 			uint32 max_length, PreChangeCheck pre_check, PostChangeCallback post_callback) :
 		SettingDesc(save, name, flags, guiproc, startup, patx_name), def(def == nullptr ? "" : def), max_length(max_length),
 			pre_check(pre_check), post_callback(post_callback) {}
-	virtual ~StringSettingDesc() {}
 
 	std::string def;                   ///< Default value given when none is present
 	uint32 max_length;                 ///< Maximum length of the string, 0 means no maximum length
@@ -327,7 +323,6 @@ private:
 struct ListSettingDesc : SettingDesc {
 	ListSettingDesc(const SaveLoad &save, const char *name, SettingFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, const char *def) :
 		SettingDesc(save, name, flags, guiproc, startup, patx_name), def(def) {}
-	virtual ~ListSettingDesc() {}
 
 	const char *def;        ///< default value given when none is present
 
@@ -342,7 +337,6 @@ struct NullSettingDesc : SettingDesc {
 		SettingDesc(save, "", SF_NOT_IN_CONFIG, nullptr, false, nullptr) {}
 	NullSettingDesc(const SaveLoad &save, const char *name, const char *patx_name) :
 		SettingDesc(save, name, SF_NOT_IN_CONFIG, nullptr, false, patx_name) {}
-	virtual ~NullSettingDesc() {}
 
 	void FormatValue(char *buf, const char *last, const void *object) const override { NOT_REACHED(); }
 	void ParseValue(const IniItem *item, void *object) const override { NOT_REACHED(); }
@@ -353,7 +347,6 @@ struct NullSettingDesc : SettingDesc {
 struct XrefSettingDesc : SettingDesc {
 	XrefSettingDesc(const SaveLoad &save, SettingsXref xref) :
 		SettingDesc(SettingDesc::XrefContructorTag(), save, xref) {}
-	virtual ~XrefSettingDesc() {}
 
 	void FormatValue(char *buf, const char *last, const void *object) const override { NOT_REACHED(); }
 	void ParseValue(const IniItem *item, void *object) const override { NOT_REACHED(); }
@@ -363,7 +356,14 @@ struct XrefSettingDesc : SettingDesc {
 typedef std::initializer_list<std::unique_ptr<const SettingDesc>> SettingTable;
 
 const SettingDesc *GetSettingFromName(const char *name);
+inline const SettingDesc *GetSettingFromName(const std::string &name)
+{
+	return GetSettingFromName(name.c_str());
+}
+
 bool SetSettingValue(const IntSettingDesc *sd, int32 value, bool force_newgame = false);
 bool SetSettingValue(const StringSettingDesc *sd, const std::string value, bool force_newgame = false);
+
+void IterateSettingsTables(std::function<void(const SettingTable &, void *)> handler);
 
 #endif /* SETTINGS_INTERNAL_H */

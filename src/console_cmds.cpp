@@ -3351,8 +3351,8 @@ DEF_CONSOLE_CMD(ConNewGRFProfile)
 		IConsoleHelp("  Select one or more GRFs for profiling.");
 		IConsoleHelp("Usage: newgrf_profile unselect <grf-num>...");
 		IConsoleHelp("  Unselect one or more GRFs from profiling. Use the keyword \"all\" instead of a GRF number to unselect all. Removing an active profiler aborts data collection.");
-		IConsoleHelp("Usage: newgrf_profile start [<num-days>]");
-		IConsoleHelp("  Begin profiling all selected GRFs. If a number of days is provided, profiling stops after that many in-game days.");
+		IConsoleHelp("Usage: 'newgrf_profile start [<num-ticks>]':");
+		IConsoleHelp("  Begin profiling all selected GRFs. If a number of ticks is provided, profiling stops after that many game ticks. There are 74 ticks in a calendar day.");
 		IConsoleHelp("Usage: newgrf_profile stop");
 		IConsoleHelp("  End profiling and write the collected data to CSV files.");
 		IConsoleHelp("Usage: newgrf_profile abort");
@@ -3433,15 +3433,9 @@ DEF_CONSOLE_CMD(ConNewGRFProfile)
 		if (started > 0) {
 			IConsolePrintF(CC_DEBUG, "Started profiling for GRFID%s %s", (started > 1) ? "s" : "", grfids.c_str());
 			if (argc >= 3) {
-				int days = std::max(atoi(argv[2]), 1);
-				_newgrf_profile_end_date = _date + days;
-
-				char datestrbuf[32]{ 0 };
-				SetDParam(0, _newgrf_profile_end_date);
-				GetString(datestrbuf, STR_JUST_DATE_ISO, lastof(datestrbuf));
-				IConsolePrintF(CC_DEBUG, "Profiling will automatically stop on game date %s", datestrbuf);
-			} else {
-				_newgrf_profile_end_date = MAX_DAY;
+				uint64 ticks = std::max(atoi(argv[2]), 1);
+				NewGRFProfiler::StartTimer(ticks);
+				IConsolePrintF(CC_DEBUG, "Profiling will automatically stop after %u ticks.", (uint)ticks);
 			}
 		} else if (_newgrf_profilers.empty()) {
 			IConsolePrintF(CC_WARNING, "No GRFs selected for profiling, did not start.");
@@ -3462,7 +3456,7 @@ DEF_CONSOLE_CMD(ConNewGRFProfile)
 		for (NewGRFProfiler &pr : _newgrf_profilers) {
 			pr.Abort();
 		}
-		_newgrf_profile_end_date = MAX_DAY;
+		NewGRFProfiler::AbortTimer();
 		return true;
 	}
 

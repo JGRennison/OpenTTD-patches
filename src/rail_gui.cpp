@@ -1305,14 +1305,7 @@ public:
 		} else {
 			/* Check if the previously selected station class is not available anymore as a
 			 * result of starting a new game without the corresponding NewGRF. */
-			bool available = false;
-			for (uint i = 0; StationClass::IsClassIDValid((StationClassID)i); ++i) {
-				if ((StationClassID)i == _railstation.station_class) {
-					available = true;
-					break;
-				}
-			}
-
+			bool available = _railstation.station_class < StationClass::GetClassCount();
 			this->SelectOtherClass(available ? _railstation.station_class : StationClassID::STAT_CLASS_DFLT);
 		}
 	}
@@ -1672,9 +1665,9 @@ public:
 				break;
 
 			case WID_BRAS_NEWST_LIST: {
-				int y = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_BRAS_NEWST_LIST);
-				if (y >= (int)this->station_classes.size()) return;
-				StationClassID station_class_id = this->station_classes[y];
+				auto it = this->vscroll->GetScrolledItemFromWidget(this->station_classes, pt.y, this, WID_BRAS_NEWST_LIST);
+				if (it == this->station_classes.end()) return;
+				StationClassID station_class_id = *it;
 				this->SelectClass(station_class_id);
 				if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 				this->SetDirty();

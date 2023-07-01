@@ -409,6 +409,15 @@ void Textbuf::Assign(const char *text)
 }
 
 /**
+ * Copy a string into the textbuffer.
+ * @param text Source.
+ */
+void Textbuf::Assign(const std::string &text)
+{
+	this->Assign(text.c_str());
+}
+
+/**
  * Print a formatted string into the textbuffer.
  */
 void Textbuf::Print(const char *format, ...)

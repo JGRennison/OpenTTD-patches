@@ -31,6 +31,7 @@
 #include "../thread.h"
 #include "../crashlog.h"
 #include "../core/checksum_func.hpp"
+#include "../core/alloc_func.hpp"
 #include "../fileio_func.h"
 #include "../debug_settings.h"
 #include "../3rdparty/monocypher/monocypher.h"

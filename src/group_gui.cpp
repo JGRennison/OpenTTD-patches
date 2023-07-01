@@ -172,17 +172,15 @@ private:
 	Money money_last_year;
 	uint32 occupancy_ratio;
 
-	/** return true if group has children */
-	void AddChildren(GUIGroupList *source, GroupID parent, int indent)
+	void AddChildren(GUIGroupList &source, GroupID parent, int indent)
 	{
-		for (const Group *g : *source) {
+		for (const Group *g : source) {
 			if (g->parent != parent) continue;
 			this->groups.push_back(g);
 			this->indents.push_back(indent);
 			if (g->folded) {
 				/* Test if this group has children at all. If not, the folded flag should be cleared to avoid lingering unfold buttons in the list. */
-				auto child = std::find_if(source->begin(), source->end(), [g](const Group *child){ return child->parent == g->index; });
-				bool has_children = child != source->end();
+				bool has_children = std::any_of(source.begin(), source.end(), [g](const Group *child){ return child->parent == g->index; });
 				Group::Get(g->index)->folded = has_children;
 			} else {
 				AddChildren(source, g->index, indent + 1);
@@ -230,7 +228,7 @@ private:
 
 		list.Sort(&GroupNameSorter);
 
-		AddChildren(&list, INVALID_GROUP, 0);
+		AddChildren(list, INVALID_GROUP, 0);
 
 		this->groups.shrink_to_fit();
 		this->groups.RebuildDone();
@@ -761,10 +759,11 @@ public:
 				break;
 
 			case WID_GL_LIST_GROUP: { // Matrix Group
-				uint id_g = this->group_sb->GetScrolledRowFromWidget(pt.y, this, WID_GL_LIST_GROUP);
-				if (id_g >= this->groups.size()) return;
+				auto it = this->group_sb->GetScrolledItemFromWidget(this->groups, pt.y, this, WID_GL_LIST_GROUP);
+				if (it == this->groups.end()) return;
 
-				if (groups[id_g]->folded || (id_g + 1 < this->groups.size() && this->indents[id_g + 1] > this->indents[id_g])) {
+				size_t id_g = it - this->groups.begin();
+				if ((*it)->folded || (id_g + 1 < this->groups.size() && this->indents[id_g + 1] > this->indents[id_g])) {
 					/* The group has children, check if the user clicked the fold / unfold button. */
 					NWidgetCore *group_display = this->GetWidget<NWidgetCore>(widget);
 					int x = _current_text_dir == TD_RTL ?
@@ -801,10 +800,10 @@ public:
 			}
 
 			case WID_GL_LIST_VEHICLE: { // Matrix Vehicle
-				uint id_v = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_GL_LIST_VEHICLE);
-				if (id_v >= this->vehgroups.size()) return; // click out of list bound
+				auto it = this->vscroll->GetScrolledItemFromWidget(this->vehgroups, pt.y, this, WID_GL_LIST_VEHICLE);
+				if (it == this->vehgroups.end()) return; // click out of list bound
 
-				const GUIVehicleGroup &vehgroup = this->vehgroups[id_v];
+				const GUIVehicleGroup &vehgroup = *it;
 
 				const Vehicle *v = nullptr;
 
@@ -937,8 +936,8 @@ public:
 				break;
 
 			case WID_GL_LIST_GROUP: { // Matrix group
-				uint id_g = this->group_sb->GetScrolledRowFromWidget(pt.y, this, WID_GL_LIST_GROUP);
-				GroupID new_g = id_g >= this->groups.size() ? INVALID_GROUP : this->groups[id_g]->index;
+				auto it = this->group_sb->GetScrolledItemFromWidget(this->groups, pt.y, this, WID_GL_LIST_GROUP);
+				GroupID new_g = it == this->groups.end() ? INVALID_GROUP : (*it)->index;
 
 				if (this->group_sel != new_g && g->parent != new_g) {
 					DoCommandP(0, this->group_sel | (1 << 16), new_g, CMD_ALTER_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_SET_PARENT));
@@ -970,8 +969,8 @@ public:
 				this->group_over = INVALID_GROUP;
 				this->SetDirty();
 
-				uint id_g = this->group_sb->GetScrolledRowFromWidget(pt.y, this, WID_GL_LIST_GROUP);
-				GroupID new_g = id_g >= this->groups.size() ? NEW_GROUP : this->groups[id_g]->index;
+				auto it = this->group_sb->GetScrolledItemFromWidget(this->groups, pt.y, this, WID_GL_LIST_GROUP);
+				GroupID new_g = it == this->groups.end() ? NEW_GROUP : (*it)->index;
 
 				DoCommandP(0, new_g, vindex | (_ctrl_pressed || this->grouping == GB_SHARED_ORDERS ? 1 << 31 : 0), CMD_ADD_VEHICLE_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_ADD_VEHICLE), new_g == NEW_GROUP ? CcAddVehicleNewGroup : nullptr);
 				break;
@@ -983,10 +982,10 @@ public:
 				this->group_over = INVALID_GROUP;
 				this->SetDirty();
 
-				uint id_v = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_GL_LIST_VEHICLE);
-				if (id_v >= this->vehgroups.size()) return; // click out of list bound
+				auto it = this->vscroll->GetScrolledItemFromWidget(this->vehgroups, pt.y, this, WID_GL_LIST_VEHICLE);
+				if (it == this->vehgroups.end()) return; // click out of list bound
 
-				const GUIVehicleGroup &vehgroup = this->vehgroups[id_v];
+				const GUIVehicleGroup &vehgroup = *it;
 				switch (this->grouping) {
 					case GB_NONE: {
 						const Vehicle *v = vehgroup.GetSingleVehicle();
@@ -1171,8 +1170,8 @@ public:
 				break;
 
 			case WID_GL_LIST_GROUP: { // ... the list of custom groups.
-				uint id_g = this->group_sb->GetScrolledRowFromWidget(pt.y, this, WID_GL_LIST_GROUP);
-				new_group_over = id_g >= this->groups.size() ? NEW_GROUP : this->groups[id_g]->index;
+				auto it = this->group_sb->GetScrolledItemFromWidget(this->groups, pt.y, this, WID_GL_LIST_GROUP);
+				new_group_over = it == this->groups.end() ? NEW_GROUP : (*it)->index;
 				break;
 			}
 

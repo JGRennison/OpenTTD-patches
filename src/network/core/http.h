@@ -14,6 +14,8 @@
 
 #include "tcp.h"
 
+constexpr int HTTP_429_TOO_MANY_REQUESTS = 429;
+
 /** Callback for when the HTTP handler has something to tell us. */
 struct HTTPCallback {
 	/**
@@ -40,7 +42,7 @@ struct HTTPCallback {
 	virtual bool IsCancelled() const = 0;
 
 	/** Silentium */
-	virtual ~HTTPCallback() {}
+	virtual ~HTTPCallback() = default;
 };
 
 /** Base socket handler for HTTP traffic. */

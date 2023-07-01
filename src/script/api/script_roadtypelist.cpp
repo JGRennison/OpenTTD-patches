@@ -18,7 +18,7 @@ ScriptRoadTypeList::ScriptRoadTypeList(ScriptRoad::RoadTramTypes rtts)
 	EnforceDeityOrCompanyModeValid_Void();
 	for (RoadType rt = ROADTYPE_BEGIN; rt != ROADTYPE_END; rt++) {
 		if (!HasBit(rtts, GetRoadTramType(rt))) continue;
-		if ((ScriptCompanyMode::IsDeity() || ::HasRoadTypeAvail(ScriptObject::GetCompany(), rt)) &&
+		if (::HasRoadTypeAvail(ScriptObject::GetCompany(), rt) &&
 				!HasBit(GetRoadTypeInfo(rt)->extra_flags, RXTF_NOT_AVAILABLE_AI_GS)) {
 			this->AddItem(rt);
 		}

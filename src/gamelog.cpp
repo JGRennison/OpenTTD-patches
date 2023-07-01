@@ -16,6 +16,7 @@
 #include "debug.h"
 #include "date_func.h"
 #include "rev.h"
+#include "3rdparty/cpp-btree/btree_map.h"
 
 #include <stdarg.h>
 
@@ -160,7 +161,7 @@ struct GRFPresence{
 	GRFPresence(const GRFConfig *gc) : gc(gc), was_missing(false) {}
 	GRFPresence() = default;
 };
-typedef SmallMap<uint32, GRFPresence> GrfIDMapping;
+typedef btree::btree_map<uint32, GRFPresence> GrfIDMapping;
 
 /**
  * Prints active gamelog
@@ -249,25 +250,25 @@ void GamelogPrint(GamelogPrintProc *proc)
 					const GRFConfig *gc = FindGRFConfig(lc->grfadd.grfid, FGCM_EXACT, lc->grfadd.md5sum);
 					buf += seprintf(buf, lastof(buffer), "Added NewGRF: ");
 					buf = PrintGrfInfo(buf, lastof(buffer), lc->grfadd.grfid, lc->grfadd.md5sum, gc);
-					GrfIDMapping::Pair *gm = grf_names.Find(lc->grfrem.grfid);
-					if (gm != grf_names.End() && !gm->second.was_missing) buf += seprintf(buf, lastof(buffer), ". Gamelog inconsistency: GrfID was already added!");
+					auto gm = grf_names.find(lc->grfrem.grfid);
+					if (gm != grf_names.end() && !gm->second.was_missing) buf += seprintf(buf, lastof(buffer), ". Gamelog inconsistency: GrfID was already added!");
 					grf_names[lc->grfadd.grfid] = gc;
 					break;
 				}
 
 				case GLCT_GRFREM: {
 					/* A NewGRF got removed from the game, either manually or by it missing when loading the game. */
-					GrfIDMapping::Pair *gm = grf_names.Find(lc->grfrem.grfid);
+					auto gm = grf_names.find(lc->grfrem.grfid);
 					buf += seprintf(buf, lastof(buffer), la->at == GLAT_LOAD ? "Missing NewGRF: " : "Removed NewGRF: ");
-					buf = PrintGrfInfo(buf, lastof(buffer), lc->grfrem.grfid, nullptr, gm != grf_names.End() ? gm->second.gc : nullptr);
-					if (gm == grf_names.End()) {
+					buf = PrintGrfInfo(buf, lastof(buffer), lc->grfrem.grfid, nullptr, gm != grf_names.end() ? gm->second.gc : nullptr);
+					if (gm == grf_names.end()) {
 						buf += seprintf(buf, lastof(buffer), ". Gamelog inconsistency: GrfID was never added!");
 					} else {
 						if (la->at == GLAT_LOAD) {
 							/* Missing grfs on load are not removed from the configuration */
 							gm->second.was_missing = true;
 						} else {
-							grf_names.Erase(gm);
+							grf_names.erase(gm);
 						}
 					}
 					break;
@@ -278,38 +279,38 @@ void GamelogPrint(GamelogPrintProc *proc)
 					const GRFConfig *gc = FindGRFConfig(lc->grfadd.grfid, FGCM_EXACT, lc->grfadd.md5sum);
 					buf += seprintf(buf, lastof(buffer), "Compatible NewGRF loaded: ");
 					buf = PrintGrfInfo(buf, lastof(buffer), lc->grfcompat.grfid, lc->grfcompat.md5sum, gc);
-					if (!grf_names.Contains(lc->grfcompat.grfid)) buf += seprintf(buf, lastof(buffer), ". Gamelog inconsistency: GrfID was never added!");
+					if (grf_names.find(lc->grfcompat.grfid) == grf_names.end()) buf += seprintf(buf, lastof(buffer), ". Gamelog inconsistency: GrfID was never added!");
 					grf_names[lc->grfcompat.grfid] = gc;
 					break;
 				}
 
 				case GLCT_GRFPARAM: {
 					/* A parameter of a NewGRF got changed after the game was started. */
-					GrfIDMapping::Pair *gm = grf_names.Find(lc->grfrem.grfid);
+					auto gm = grf_names.find(lc->grfrem.grfid);
 					buf += seprintf(buf, lastof(buffer), "GRF parameter changed: ");
-					buf = PrintGrfInfo(buf, lastof(buffer), lc->grfparam.grfid, nullptr, gm != grf_names.End() ? gm->second.gc : nullptr);
-					if (gm == grf_names.End()) buf += seprintf(buf, lastof(buffer), ". Gamelog inconsistency: GrfID was never added!");
+					buf = PrintGrfInfo(buf, lastof(buffer), lc->grfparam.grfid, nullptr, gm != grf_names.end() ? gm->second.gc : nullptr);
+					if (gm == grf_names.end()) buf += seprintf(buf, lastof(buffer), ". Gamelog inconsistency: GrfID was never added!");
 					break;
 				}
 
 				case GLCT_GRFMOVE: {
 					/* The order of NewGRFs got changed, which might cause some other NewGRFs to behave differently. */
-					GrfIDMapping::Pair *gm = grf_names.Find(lc->grfrem.grfid);
+					auto gm = grf_names.find(lc->grfrem.grfid);
 					buf += seprintf(buf, lastof(buffer), "GRF order changed: %08X moved %d places %s",
 						BSWAP32(lc->grfmove.grfid), abs(lc->grfmove.offset), lc->grfmove.offset >= 0 ? "down" : "up" );
-					buf = PrintGrfInfo(buf, lastof(buffer), lc->grfmove.grfid, nullptr, gm != grf_names.End() ? gm->second.gc : nullptr);
-					if (gm == grf_names.End()) buf += seprintf(buf, lastof(buffer), ". Gamelog inconsistency: GrfID was never added!");
+					buf = PrintGrfInfo(buf, lastof(buffer), lc->grfmove.grfid, nullptr, gm != grf_names.end() ? gm->second.gc : nullptr);
+					if (gm == grf_names.end()) buf += seprintf(buf, lastof(buffer), ". Gamelog inconsistency: GrfID was never added!");
 					break;
 				}
 
 				case GLCT_GRFBUG: {
 					/* A specific bug in a NewGRF, that could cause wide spread problems, has been noted during the execution of the game. */
-					GrfIDMapping::Pair *gm = grf_names.Find(lc->grfrem.grfid);
+					auto gm = grf_names.find(lc->grfrem.grfid);
 					assert (lc->grfbug.bug == GBUG_VEH_LENGTH);
 
 					buf += seprintf(buf, lastof(buffer), "Rail vehicle changes length outside a depot: GRF ID %08X, internal ID 0x%X", BSWAP32(lc->grfbug.grfid), (uint)lc->grfbug.data);
-					buf = PrintGrfInfo(buf, lastof(buffer), lc->grfbug.grfid, nullptr, gm != grf_names.End() ? gm->second.gc : nullptr);
-					if (gm == grf_names.End()) buf += seprintf(buf, lastof(buffer), ". Gamelog inconsistency: GrfID was never added!");
+					buf = PrintGrfInfo(buf, lastof(buffer), lc->grfbug.grfid, nullptr, gm != grf_names.end() ? gm->second.gc : nullptr);
+					if (gm == grf_names.end()) buf += seprintf(buf, lastof(buffer), ". Gamelog inconsistency: GrfID was never added!");
 					break;
 				}
 

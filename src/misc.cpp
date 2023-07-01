@@ -39,9 +39,11 @@
 #include "cargopacket.h"
 #include "tbtr_template_vehicle_func.h"
 #include "event_logs.h"
+#include "3rdparty/monocypher/monocypher.h"
 
 #include "safeguards.h"
 
+std::string _savegame_id; ///< Unique ID of the current savegame.
 
 extern TileIndex _cur_tileloop_tile;
 extern TileIndex _aux_tileloop_tile;
@@ -65,6 +67,36 @@ void InitializeCompanies();
 void InitializeCheats();
 void InitializeNPF();
 void InitializeOldNames();
+
+/**
+ * Generate a unique ID.
+ */
+std::string GenerateUid(std::string_view subject)
+{
+	extern void NetworkRandomBytesWithFallback(void *buf, size_t n);
+	extern std::string BytesToHexString(const byte *data, uint length);
+
+	uint8 random_bytes[32];
+	NetworkRandomBytesWithFallback(random_bytes, lengthof(random_bytes));
+
+	uint8 digest[16];
+
+	crypto_blake2b_ctx ctx;
+	crypto_blake2b_init  (&ctx, lengthof(digest));
+	crypto_blake2b_update(&ctx, random_bytes, lengthof(random_bytes));
+	crypto_blake2b_update(&ctx, (const byte *)subject.data(), subject.size());
+	crypto_blake2b_final (&ctx, digest);
+
+	return BytesToHexString(digest, lengthof(digest));
+}
+
+/**
+ * Generate a unique savegame ID.
+ */
+void GenerateSavegameId()
+{
+	_savegame_id = GenerateUid("OpenTTD Savegame ID");
+}
 
 void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settings)
 {
