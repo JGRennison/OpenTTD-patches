@@ -777,6 +777,17 @@ inline void MakeRoadCrossing(TileIndex t, Owner road, Owner tram, Owner rail, Ax
 }
 
 /**
+ * Sets the exit direction of a road depot.
+ * @param tile Tile of the depot.
+ * @param dir  Direction of the depot exit.
+ */
+static inline void SetRoadDepotExitDirection(TileIndex tile, DiagDirection dir)
+{
+	assert(IsRoadDepotTile(tile));
+	SB(_m[tile].m5, 0, 2, to_underlying(dir));
+}
+
+/**
  * Make a road depot.
  * @param t     Tile to make a level crossing.
  * @param owner New owner of the depot.

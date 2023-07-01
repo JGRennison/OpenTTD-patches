@@ -1788,26 +1788,48 @@ CommandCost CmdBuildRoadDepot(DoCommandFlags flags, TileIndex tile, RoadType rt,
 		cost.AddCost(_price[Price::BuildFoundation]);
 	}
 
-	cost.AddCost(Command<Commands::LandscapeClear>::Do(flags, tile));
-	if (cost.Failed()) return cost;
+	/* Allow the user to rotate the depot instead of having to destroy it and build it again */
+	bool rotate_existing_depot = false;
+	if (IsRoadDepotTile(tile) && (HasRoadTypeTram(tile) ? rt == GetRoadTypeTram(tile) : rt == GetRoadTypeRoad(tile))) {
+		CommandCost ret = CheckTileOwnership(tile);
+		if (ret.Failed()) return ret;
+
+		if (dir == GetRoadDepotDirection(tile)) return CommandCost();
+
+		ret = EnsureNoVehicleOnGround(tile);
+		if (ret.Failed()) return ret;
+
+		rotate_existing_depot = true;
+		cost.AddCost(_price[Price::ClearDepotRoad]);
+	}
+
+	if (!rotate_existing_depot) {
+		cost.AddCost(Command<Commands::LandscapeClear>::Do(flags, tile));
+		if (cost.Failed()) return cost;
+	}
 
 	if (IsBridgeAbove(tile)) {
 		CommandCost ret = IsDepotBridgeAboveOK(tile, TRANSPORT_ROAD, dir, GetBridgeAboveInfo(tile));
 		if (ret.Failed()) return ret;
 	}
 
-	if (!Depot::CanAllocateItem()) return CMD_ERROR;
+	if (!rotate_existing_depot && !Depot::CanAllocateItem()) return CMD_ERROR;
 
 	if (flags.Test(DoCommandFlag::Execute)) {
-		Depot *dep = Depot::Create(tile);
+		if (rotate_existing_depot) {
+			SetRoadDepotExitDirection(tile, dir);
+			Depot::GetByTile(tile)->build_date = CalTime::CurDate();
+		} else {
+			Depot *dep = Depot::Create(tile);
 
-		/* A road depot has two road bits. */
-		UpdateCompanyRoadInfrastructure(rt, _current_company, ROAD_DEPOT_TRACKBIT_FACTOR);
+			/* A road depot has two road bits. */
+			UpdateCompanyRoadInfrastructure(rt, _current_company, ROAD_DEPOT_TRACKBIT_FACTOR);
 
-		MakeRoadDepot(tile, _current_company, dep->index, dir, rt);
+			MakeRoadDepot(tile, _current_company, dep->index, dir, rt);
+			MakeDefaultName(dep);
+		}
+
 		MarkTileDirtyByTile(tile);
-		MakeDefaultName(dep);
-
 		NotifyRoadLayoutChanged(true);
 	}
 	cost.AddCost(_price[Price::BuildDepotRoad]);

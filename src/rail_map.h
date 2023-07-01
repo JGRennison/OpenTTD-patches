@@ -787,6 +787,16 @@ inline void MakeRailNormal(TileIndex t, Owner o, TrackBits b, RailType r)
 	_me[t].m8 = r;
 }
 
+/**
+ * Sets the exit direction of a rail depot.
+ * @param tile Tile of the depot.
+ * @param dir  Direction of the depot exit.
+ */
+inline void SetRailDepotExitDirection(TileIndex tile, DiagDirection dir)
+{
+	assert(IsRailDepotTile(tile));
+	SB(_m[tile].m5, 0, 2, to_underlying(dir));
+}
 
 inline void MakeRailDepot(TileIndex t, Owner o, DepotID did, DiagDirection d, RailType r)
 {

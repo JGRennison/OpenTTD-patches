@@ -63,6 +63,8 @@ RailTypes _railtypes_hidden_mask;
 std::array<RailTypes, 3> _railtypes_acceleration_type_masks;
 RailTypes _railtypes_non_realistic_braking;
 
+static CommandCost RemoveTrainDepot(TileIndex tile, DoCommandFlags flags);
+
 /**
  * Reset all rail type information to its default values.
  */
@@ -1426,29 +1428,66 @@ CommandCost CmdBuildTrainDepot(DoCommandFlags flags, TileIndex tile, RailType ra
 		cost.AddCost(_price[Price::BuildFoundation]);
 	}
 
-	cost.AddCost(Command<Commands::LandscapeClear>::Do(flags, tile));
-	if (cost.Failed()) return cost;
+	/* Allow the user to rotate the depot instead of having to destroy it and build it again */
+	bool rotate_existing_depot = false;
+	Train *v = nullptr;
+	if (IsRailDepotTile(tile) && railtype == GetRailType(tile)) {
+		CommandCost ret = CheckTileOwnership(tile);
+		if (ret.Failed()) return ret;
+
+		DiagDirection old_dir = GetRailDepotDirection(tile);
+		if (dir == old_dir) return CommandCost();
+
+		ret = EnsureNoVehicleOnGround(tile);
+		if (ret.Failed()) return ret;
+
+		if (HasDepotReservation(tile)) {
+			v = GetTrainForReservation(tile, DiagDirToDiagTrack(old_dir));
+			if (v != nullptr) {
+				CommandCost ret = CheckTrainReservationPreventsTrackModification(v);
+				if (ret.Failed()) return ret;
+			}
+		}
+
+		rotate_existing_depot = true;
+		cost.AddCost(_price[Price::ClearDepotTrain]);
+	}
+
+	if (!rotate_existing_depot) {
+		cost.AddCost(Command<Commands::LandscapeClear>::Do(flags, tile));
+		if (cost.Failed()) return cost;
+	}
 
 	if (IsBridgeAbove(tile)) {
 		CommandCost ret = IsDepotBridgeAboveOK(tile, TRANSPORT_RAIL, dir, GetBridgeAboveInfo(tile));
 		if (ret.Failed()) return ret;
 	}
 
-	if (!Depot::CanAllocateItem()) return CMD_ERROR;
+	if (!rotate_existing_depot && !Depot::CanAllocateItem()) return CMD_ERROR;
 
 	if (flags.Test(DoCommandFlag::Execute)) {
-		Depot *d = Depot::Create(tile);
-		d->build_date = CalTime::CurDate();
+		if (v != nullptr) FreeTrainTrackReservation(v);
 
-		MakeRailDepot(tile, _current_company, d->index, dir, railtype);
+		if (rotate_existing_depot) {
+			SetDepotReservation(tile, false);
+			SetRailDepotExitDirection(tile, dir);
+			Depot::GetByTile(tile)->build_date = CalTime::CurDate();
+		} else {
+			Depot *d = Depot::Create(tile);
+			d->build_date = CalTime::CurDate();
+
+			MakeRailDepot(tile, _current_company, d->index, dir, railtype);
+			MakeDefaultName(d);
+
+			Company::Get(_current_company)->infrastructure.rail[railtype]++;
+			DirtyCompanyInfrastructureWindows(_current_company);
+		}
+
 		MarkTileDirtyByTile(tile);
-		MakeDefaultName(d);
-
-		Company::Get(_current_company)->infrastructure.rail[railtype]++;
-		DirtyCompanyInfrastructureWindows(_current_company);
-
 		AddSideToSignalBuffer(tile, DiagDirection::Invalid, _current_company);
 		YapfNotifyTrackLayoutChange(tile, DiagDirToDiagTrack(dir));
+
+		if (v != nullptr) ReReserveTrainPath(v);
 	}
 
 	cost.AddCost(_price[Price::BuildDepotTrain]);
