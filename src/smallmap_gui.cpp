@@ -1514,7 +1514,6 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 		case WID_SM_SHOW_HEIGHT: // Enable/disable showing of heightmap.
 			_smallmap_show_heightmap = !_smallmap_show_heightmap;
 			this->SetWidgetLoweredState(WID_SM_SHOW_HEIGHT, _smallmap_show_heightmap);
-			NotifyAllViewports(VPMT_INDUSTRY);
 			this->SetDirty();
 			break;
 
