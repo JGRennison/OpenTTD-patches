@@ -366,7 +366,6 @@ STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR_HELPTEXT    :Os vehículos n
 STR_CONFIG_SETTING_ENABLE_SINGLE_VEH_SHARED_ORDER_GUI           :Habilitar os vehículos individuos na fiestra de grupo de ordes compartidas: {STRING}
 STR_CONFIG_SETTING_ENABLE_SINGLE_VEH_SHARED_ORDER_GUI_HELPTEXT  :Permitir usar a fiestra de grupo de ordes compartidas con vehículos individuais, sen ordes compartidas.
 
-STR_CONFIG_SETTING_VIEWPORT_MAP_SCAN_SURROUNDINGS               :Escanear os arredores (mellor para niveis de zoom altos): {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SLOPES                     :Amosar ladeiras: {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_BRIDGES                    :Amosar pontes: {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_TUNNELS                    :Amosar túneis: {STRING}

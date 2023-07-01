@@ -1990,7 +1990,6 @@ static SettingsContainer &GetSettingsTree()
 				{
 					viewport_map->Add(new SettingEntry("gui.default_viewport_map_mode"));
 					viewport_map->Add(new SettingEntry("gui.action_when_viewport_map_is_dblclicked"));
-					viewport_map->Add(new SettingEntry("gui.viewport_map_scan_surroundings"));
 					viewport_map->Add(new SettingEntry("gui.show_scrolling_viewport_on_map"));
 					viewport_map->Add(new SettingEntry("gui.show_slopes_on_viewport_map"));
 					viewport_map->Add(new SettingEntry("gui.show_bridges_on_map"));

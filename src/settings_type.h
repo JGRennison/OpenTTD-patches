@@ -172,7 +172,6 @@ struct GUISettings : public TimeSettings {
 	uint8  right_mouse_btn_emulation;        ///< should we emulate right mouse clicking?
 	uint8  scrollwheel_scrolling;            ///< scrolling using the scroll wheel?
 	uint8  scrollwheel_multiplier;           ///< how much 'wheel' per incoming event from the OS?
-	bool   viewport_map_scan_surroundings;   ///< look for the most important tile in surroundings
 	bool   show_slopes_on_viewport_map;      ///< use slope orientation to render the ground
 	uint32 default_viewport_map_mode;        ///< the mode to use by default when a viewport is in map mode, 0=owner, 1=industry, 2=vegetation
 	uint32 action_when_viewport_map_is_dblclicked; ///< what to do when a doubleclick occurs on the viewport map
