@@ -1,0 +1,147 @@
+##grflangid 0x02
+##plural 0
+
+STR_GRF_NAME						:{TITLE} {VERSION}
+STR_GRF_DESC						:{ORANGE}Ein von Kuba inspiriertes Wirtschaftsmodel.{}{}{RED}Achtung! {BLACK}Diese Modifikation verändert Kernspielelemente und ist ziemlich schwierig. Bitte, besuchen Sie die Internetseite für weitere Informationen.{}{}{BLACK}Entwickelt by 2TallTyler.
+
+STR_WEBSITE							:https://github.com/2TallTyler/industries_of_the_caribbean/blob/main/README.md
+
+STR_PARAM_STATIC_PAYMENTS_NAME      :Gleichbleibende Frachtzahlungen
+STR_PARAM_STATIC_PAYMENTS_DESC      :{LTBLUE}Standardwert: {ORANGE}An{}{WHITE}Falls aktiviert, hängen Frachtlieferungsvergütungen  nicht von der Entfernung des Transports ab. Dies stellt ein Markt nach auf dem Güter gekauft und verkauft werden, anstatt von Lieferungszahlungen. Die Kalkulation richtet sich nach der Größe der Karte: je größer die Karte, desto größer die Leistungen.
+
+STR_PARAM_PRIMARY_ONLY_NAME         :Erschaffe nur Primärindustrien
+STR_PARAM_PRIMARY_ONLY_DESC         :{LTBLUE}Standardwert: {ORANGE}Aus{}{WHITE}Falls aktiviert, werden nur Betriebe des ersten Sektors erstellt (Kaffeepflanzung, Zuckerrohrpflanzung, Tabakpflanzung, Ölquellen, Nickelmine, Strand, Hotel). Industrien müssen vom Spieler finanziert werden.
+
+STR_PARAM_SECONDARY_POP_NAME        :Stadteinwohnerzahl pro Industrie
+STR_PARAM_SECONDARY_POP_DESC        :{LTBLUE}Standardwert: {ORANGE}500{}{WHITE}Die Bevölkerungszahl, die benötigt wird um jede einzelne Industrie zu versorgen (Zuckerfabrik, Tabakverarbeitung, Rumbrennerei, Ölraffinerie, Nickelschmelze).
+
+STR_ERROR_GAME_VERSION				:{TITLE} benötigt OpenTTD Version 1.10.0, JGR Version 0.34, oder besser.
+STR_ERROR_NO_ITL					:{TITLE} benötigt "Improved Town Layouts" Version 1.4.0 oder besser.
+STR_ERROR_INCOMPATIBLE_SET			:{YELLOW}{TITLE}{WHITE} ist nicht kompatibel {YELLOW}{STRING}{WHITE}.
+STR_ERROR_INFLATION					:{TITLE} funktioniert nicht mit aktivierter Inflation.
+STR_ERROR_CLIMATE					:{TITLE} ist bestimmt für das sub-tropische Klima.
+
+STR_NAME_OBJECT_MENU				:Industriekacheln
+
+STR_TOWN							:{STRING}
+STR_STATION							:{STRING} {STRING}
+
+STR_EMPTY							:
+
+STR_PRIMARY_HELPTEXT                :Monatliche Produktion braucht:{}* {WHITE}Einfache{BLACK}: Keine{}* {WHITE}Doppelte{BLACK}: + 24 Tonnen Dünger
+STR_NICKEL_MINE_HELPTEXT            :Monatliche Produktion braucht:{}* {WHITE}Einfache{BLACK}: 48 Einheiten Treibstoff{}* {WHITE}Verdoppelte{BLACK}: + 48 Einheiten Maschinen
+STR_OIL_WELLS_HELPTEXT              :Monatliche Produktion braucht:{}* {WHITE}Einfache{BLACK}: 48 Einheiten Rohre{}* {WHITE}Doppelte{BLACK}: + 48 Einheiten Maschinen
+STR_HOTEL_HELPTEXT                  :Monatliche Produktion braucht:{}* {WHITE}Einfache{BLACK}: 48 Einheiten Nahrung{}* {WHITE}Verdoppelte{BLACK}: + 48 Einheiten Rum
+STR_BEACH_HELPTEXT                  :Monatliche Produktion braucht:{}* {WHITE}Einfache{BLACK}: 24 Einheiten Nahrung{}* {WHITE}Verdoppelte{BLACK}: + 24 Einheiten Rum
+
+STR_SUGAR_MILL_HELPTEXT				:Produktion braucht {WHITE}pro Einheit{BLACK} Zuckerrohr:{}* 1 Arbeiter{}{}Produktion {WHITE}pro Einheit{BLACK} Zuckerrohr:{}* 1/2 Einheit Zucker{}* 1/8 Einheit Melasse
+STR_RUM_DISTILLERY_HELPTEXT			:Produktion braucht {WHITE}pro Einheit{BLACK} Melasse:{}* 1 Arbeiter{}{}Produktion {WHITE}pro Einheit{BLACK} Melasse:{}* 1 Einheit Rum
+STR_CIGAR_FACTORY_HELPTEXT			:Produktion braucht {WHITE}pro Einheit{BLACK} Tabak:{}* 1 Arbeiter{}{}Produktion {WHITE}pro Einheit{BLACK} Tabak:{}* 1 Zigarren
+STR_OIL_REFINERY_HELPTEXT			:Produktion braucht {WHITE}pro Einheit{BLACK} Öl:{}* 1 Arbeiter{}{}Produktion {WHITE}pro Einheit{BLACK} Öl:{}* 1 Einheit Treibstoff
+STR_NICKEL_SMELTER_HELPTEXT			:Produktion braucht {WHITE}pro Einheit{BLACK} Nickelerz:{}* 1 Arbeiter{}* 1/4 Einheiten Chemikalien{}{}Produktion {WHITE}pro Einheit{BLACK} Nickelerz:{}* 1 Einheit Nickel
+
+STR_IMPORT_EXPORT_HELPTEXT			:Handelsangebote:{} {YELLOW}Kaffee {BLACK}-> {YELLOW}Nahrung{} {YELLOW}Zucker {BLACK}-> {YELLOW}Öl{} {YELLOW}Nickel {BLACK}-> {YELLOW}Dünger{} {YELLOW}Kobalt {BLACK}-> {YELLOW}Rohre{} {YELLOW}Zigarren {BLACK}-> {YELLOW}Chemikalien{} {YELLOW}Touristen {BLACK}-> {YELLOW}Maschinen
+
+STR_CIGAR_FACTORY_FUNDTEXT			:{BLACK}{}Produktion braucht {WHITE}pro Einheit{BLACK} Tabak:{}* 1 Arbeiter{}{}Produktion {WHITE}pro Einheit{BLACK} Tabak:{}* 1 Zigarren
+STR_HOTEL_FUNDTEXT					:{BLACK}{}Monatliche Produktion braucht:{}* {WHITE}Einfache{BLACK}: 48 Arbeiter and 48 Einheiten Nahrung{}* {WHITE}Doppelte{BLACK}: + 48 Einheiten Rum{}{}Kann nur in einer Stadt mit 1200 Einwohner oder mehr, muss Häuser ersetzen.
+STR_IMPORT_EXPORT_FUNDTEXT			:{BLACK}{}Tausche Exporte für Importe{}{}Darf nur eine Kachel vom Kartenrand entfernt sein.
+STR_NICKEL_SMELTER_FUNDTEXT			:{BLACK}{}Produktion braucht {WHITE}pro Einheit{BLACK} Nickelerz:{}* 1 Arbeiter{}* 1/4 Einheiten Chemikalien{}{}Produktion {WHITE}pro Einheit{BLACK} Nickelerz:{}* 1 Einheit Nickel
+STR_OIL_REFINERY_FUNDTEXT			:{BLACK}{}Produktion braucht {WHITE}pro Einheit{BLACK} Öl:{}* 1 Arbeiter{}{}Produktion {WHITE}pro Einheit{BLACK} Öl:{}* 1 Einheit Treibstoff
+STR_RUM_DISTILLERY_FUNDTEXT			:{BLACK}{}Produktion braucht {WHITE}pro Einheit{BLACK} Melasse:{}* 1 Arbeiter{}{}Produktion {WHITE}pro Einheit{BLACK} Melasse:{}* 1 Einheit Rum
+STR_SUGAR_MILL_FUNDTEXT				:{BLACK}{}Produktion braucht {WHITE}pro Einheit{BLACK} Zuckerrohrs:{}* 1 Arbeiter{}{}Produktion {WHITE}pro Einheit{BLACK} Zuckerrohr:{}* 1/2 Einheiten Zucker{}* 1/8 Einheiten Melasse
+
+STR_ERR_COFFEE_LOCATION				:Kaffeepflanzungen müssen auf einer Höhe von  2 oder höher gebaut werden und dürfen nicht in der Wüste sein.
+STR_ERR_SUGARCANE_LOCATION			:Zuckerrohrpflanzungen müssen auf einer Höhe von 1 gebaut werden und dürfen nicht in der Wüste sein.
+STR_ERR_TOBACCO_LOCATION			:Tabakpflanzungen müssen auf einer Höhe von 1 gebaut werden und dürfen nicht in der Wüste sein.
+STR_ERR_NICKEL_MINE_LOCATION		:Nickel Mines müssen auf einer Höhe von  2 oder höher gebaut werden.
+STR_ERR_IMPORT_EXPORT_LOCATION		:Import/Export muss in der Nähe des Kartenrandes sein.
+STR_ERR_HOTEL_LOCATION				:Hotels müssen Häuser in einer Stadt von mindestens 1.200 Einwohner ersetzen, nur eine pro Stadt.
+
+STR_COFFEE_PLANTATION				:Kaffeepflanzung
+STR_SUGARCANE_PLANTATION			:Zuckerrohrpflanzung
+STR_TOBACCO_PLANTATION				:Tabakpflanzung
+STR_SUGAR_MILL						:Zuckerfabrik
+STR_CIGAR_FACTORY					:Tabakverarbeitung
+STR_RUM_DISTILLERY					:Rumbrennerei
+STR_OIL_REFINERY					:Ölraffinerie
+STR_OIL_WELLS						:Ölquellen
+STR_HOTEL							:Hotel
+STR_BEACH							:Strand
+STR_NICKEL_MINE						:Nickelmine
+STR_NICKEL_SMELTER					:Nickelschmelze
+
+STR_IMPORT_EXPORT					:Import/Export
+
+STR_CARGO_NAME_WORKERS				:Arbeiter
+STR_CARGO_SINGULAR_WORKERS			:Arbeiter
+STR_CARGO_ABBREV_WORKERS			:{TINYFONT}ArB
+STR_CARGO_QUANTITY_WORKERS			:{COMMA} Arbeiter
+
+STR_CARGO_NAME_TOURISTS				:Touristen
+STR_CARGO_SINGULAR_TOURISTS			:Tourist
+STR_CARGO_ABBREV_TOURISTS			:{TINYFONT}TR
+STR_CARGO_QUANTITY_TOURISTS			:{COMMA} Touristen
+
+STR_CARGO_NAME_COFFEE				:Kaffee
+STR_CARGO_ABBREV_COFFEE				:{TINYFONT}KF
+STR_CARGO_QUANTITY_COFFEE			:{WEIGHT} Kaffee
+
+STR_CARGO_NAME_SUGARCANE			:Zuckerrohr
+STR_CARGO_ABBREV_SUGARCANE			:{TINYFONT}ZR
+STR_CARGO_QUANTITY_SUGARCANE		:{WEIGHT} Zuckerrohr
+
+STR_CARGO_NAME_TOBACCO				:Tabak
+STR_CARGO_ABBREV_TOBACCO			:{TINYFONT}TB
+STR_CARGO_QUANTITY_TOBACCO			:{WEIGHT} Tabak
+
+STR_CARGO_NAME_MOLASSES				:Melasse
+STR_CARGO_ABBREV_MOLASSES			:{TINYFONT}ML
+STR_CARGO_QUANTITY_MOLASSES			:{WEIGHT} Melasse
+
+STR_CARGO_NAME_RUM					:Rum
+STR_CARGO_ABBREV_RUM				:{TINYFONT}RM
+STR_CARGO_QUANTITY_RUM				:{WEIGHT} Rum
+
+STR_CARGO_NAME_CIGARS				:Zigarren
+STR_CARGO_ABBREV_CIGARS				:{TINYFONT}ZG
+STR_CARGO_QUANTITY_CIGARS			:{WEIGHT} Zigarren
+
+STR_CARGO_NAME_PIPE					:Rohr
+STR_CARGO_ABBREV_PIPE				:{TINYFONT}RO
+STR_CARGO_QUANTITY_PIPE				:{WEIGHT} Rohre
+
+STR_CARGO_NAME_FUEL					:Treibstoff
+STR_CARGO_ABBREV_FUEL				:{TINYFONT}TS
+STR_CARGO_QUANTITY_FUEL				:{WEIGHT} Treibstoffe
+
+STR_CARGO_NAME_OIL_DOMESTIC			:Öl (heimisch)
+STR_CARGO_ABBREV_OIL_DOMESTIC		:{TINYFONT}ÖH
+STR_CARGO_QUANTITY_OIL_DOMESTIC		:{WEIGHT} des Öls (heimisch)
+
+STR_CARGO_NAME_OIL_IMPORTED			:Öl (eingeführt)
+STR_CARGO_ABBREV_OIL_IMPORTED		:{TINYFONT}ÖE
+STR_CARGO_QUANTITY_OIL_IMPORTED		:{WEIGHT} Öl (eingeführt)
+
+STR_CARGO_NAME_CHEMICALS			:Chemikalien
+STR_CARGO_ABBREV_CHEMICALS			:{TINYFONT}CH
+STR_CARGO_QUANTITY_CHEMICALS		:{WEIGHT} Chemikalien
+
+STR_CARGO_NAME_NICKEL_ORE			:Nickelerz
+STR_CARGO_ABBREV_NICKEL_ORE			:{TINYFONT}NE
+STR_CARGO_QUANTITY_NICKEL_ORE		:{WEIGHT} Nickelerz
+
+STR_CARGO_NAME_NICKEL				:Nickel
+STR_CARGO_ABBREV_NICKEL				:{TINYFONT}NI
+STR_CARGO_QUANTITY_NICKEL			:{WEIGHT} Nickel
+
+STR_CARGO_NAME_COBALT				:Kobalt
+STR_CARGO_ABBREV_COBALT				:{TINYFONT}KB
+STR_CARGO_QUANTITY_COBALT			:{WEIGHT} Kobalt
+
+STR_CARGO_NAME_FERTILIZER			:Dünger
+STR_CARGO_ABBREV_FERTILIZER			:{TINYFONT}DÜ
+STR_CARGO_QUANTITY_FERTILIZER		:{WEIGHT} Dünger
+
+STR_CARGO_NAME_MACHINERY			:Maschinen
+STR_CARGO_ABBREV_MACHINERY			:{TINYFONT}MS
+STR_CARGO_QUANTITY_MACHINERY		:{WEIGHT} Maschinen
