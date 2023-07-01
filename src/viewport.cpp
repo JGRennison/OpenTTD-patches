@@ -2993,7 +2993,6 @@ static inline uint32 ViewportMapGetColourIndustries(const TileIndex tile, const 
 {
 	extern LegendAndColour _legend_from_industries[NUM_INDUSTRYTYPES + 1];
 	extern uint _industry_to_list_pos[NUM_INDUSTRYTYPES];
-	extern bool _smallmap_show_heightmap;
 
 	TileType t2 = t;
 	if (t == MP_INDUSTRY) {
@@ -3044,7 +3043,7 @@ static inline uint32 ViewportMapGetColourIndustries(const TileIndex tile, const 
 
 	const int h = TileHeight(tile);
 	const SmallMapColourScheme * const cs = &_heightmap_schemes[_settings_client.gui.smallmap_land_colour];
-	const uint32 colours = ApplyMask(_smallmap_show_heightmap ? cs->height_colours[h] : cs->default_colour, &_smallmap_vehicles_andor[t2]);
+	const uint32 colours = ApplyMask(_settings_client.gui.show_height_on_viewport_map ? cs->height_colours[h] : cs->default_colour, &_smallmap_vehicles_andor[t2]);
 	uint32 colour = COLOUR_FROM_INDEX(colours);
 
 	if (show_slope) ASSIGN_SLOPIFIED_COLOUR(tile, nullptr, colour, _lighten_colour[colour], _darken_colour[colour], colour);
@@ -3078,8 +3077,8 @@ static inline uint32 ViewportMapGetColourOwner(const TileIndex tile, TileType t,
 			}
 		}
 
-		const int h = TileHeight(tile);
-		uint32 colour = COLOUR_FROM_INDEX(_heightmap_schemes[_settings_client.gui.smallmap_land_colour].height_colours[h]);
+		const SmallMapColourScheme * const cs = &_heightmap_schemes[_settings_client.gui.smallmap_land_colour];
+		uint32 colour = COLOUR_FROM_INDEX(_settings_client.gui.show_height_on_viewport_map ? cs->height_colours[TileHeight(tile)] : cs->default_colour);
 		if (show_slope) ASSIGN_SLOPIFIED_COLOUR(tile, nullptr, colour, _lighten_colour[colour], _darken_colour[colour], colour);
 		return IS32(colour);
 
@@ -3143,9 +3142,11 @@ static inline uint32 ViewportMapGetColourRoutes(const TileIndex tile, TileType t
 						return PC_WATER;
 					}
 
-				default:
-					colour = COLOUR_FROM_INDEX(_heightmap_schemes[_settings_client.gui.smallmap_land_colour].height_colours[TileHeight(tile)]);
+				default: {
+					const SmallMapColourScheme * const cs = &_heightmap_schemes[_settings_client.gui.smallmap_land_colour];
+					colour = COLOUR_FROM_INDEX(_settings_client.gui.show_height_on_viewport_map ? cs->height_colours[TileHeight(tile)] : cs->default_colour);
 					break;
+				}
 			}
 			break;
 		}
@@ -3179,9 +3180,11 @@ static inline uint32 ViewportMapGetColourRoutes(const TileIndex tile, TileType t
 			FALLTHROUGH;
 		}
 
-		default:
-			colour = COLOUR_FROM_INDEX(_heightmap_schemes[_settings_client.gui.smallmap_land_colour].height_colours[TileHeight(tile)]);
+		default: {
+			const SmallMapColourScheme * const cs = &_heightmap_schemes[_settings_client.gui.smallmap_land_colour];
+			colour = COLOUR_FROM_INDEX(_settings_client.gui.show_height_on_viewport_map ? cs->height_colours[TileHeight(tile)] : cs->default_colour);
 			break;
+		}
 	}
 
 	if (show_slope) ASSIGN_SLOPIFIED_COLOUR(tile, nullptr, colour, _lighten_colour[colour], _darken_colour[colour], colour);

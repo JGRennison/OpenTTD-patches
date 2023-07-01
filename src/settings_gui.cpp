@@ -1992,6 +1992,7 @@ static SettingsContainer &GetSettingsTree()
 					viewport_map->Add(new SettingEntry("gui.action_when_viewport_map_is_dblclicked"));
 					viewport_map->Add(new SettingEntry("gui.show_scrolling_viewport_on_map"));
 					viewport_map->Add(new SettingEntry("gui.show_slopes_on_viewport_map"));
+					viewport_map->Add(new SettingEntry("gui.show_height_on_viewport_map"));
 					viewport_map->Add(new SettingEntry("gui.show_bridges_on_map"));
 					viewport_map->Add(new SettingEntry("gui.show_tunnels_on_map"));
 					viewport_map->Add(new SettingEntry("gui.use_owner_colour_for_tunnelbridge"));

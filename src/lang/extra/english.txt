@@ -407,6 +407,9 @@ STR_CONFIG_SETTING_ENABLE_SINGLE_VEH_SHARED_ORDER_GUI_HELPTEXT  :Allow using the
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SLOPES                     :Show slopes: {STRING2}
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SLOPES_HELPTEXT            :Whether to shade slopes, when zoomed out into map mode.
 
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_HEIGHT                     :Show height: {STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_HEIGHT_HELPTEXT            :Whether to shade height levels, when zoomed out into map mode and not in vegetation mode.
+
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_BRIDGES                    :Show bridges: {STRING2}
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_BRIDGES_HELPTEXT           :Whether to show a dotted line for bridges, when zoomed out into map mode.
 
