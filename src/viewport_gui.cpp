@@ -257,6 +257,16 @@ void ShowDepotTooltip(Window *w, const TileIndex tile, char *buffer_position, co
 	GuiShowTooltips(w, STR_DEPOT_VIEW_INFO_TOOLTIP, 0, nullptr, TCC_HOVER_VIEWPORT);
 }
 
+bool GetStationViewportTooltipString(TileIndex tile, char *buffer_position, const char *buffer_tail);
+
+void ShowStationViewportTooltip(Window *w, const TileIndex tile, char *buffer_position, const char *buffer_tail)
+{
+	if (!GetStationViewportTooltipString(tile, buffer_position, buffer_tail)) return;
+
+	SetDParamStr(0, buffer_position);
+	GuiShowTooltips(w, STR_STATION_VIEW_INFO_TOOLTIP, 0, nullptr, TCC_HOVER_VIEWPORT);
+}
+
 void ShowTooltipForTile(Window *w, const TileIndex tile)
 {
 	static char buffer[1024];
@@ -291,6 +301,8 @@ void ShowTooltipForTile(Window *w, const TileIndex tile)
 		case MP_STATION: {
 			if (IsHangar(tile)) {
 				ShowDepotTooltip(w, tile, buffer_start, buffer_tail);
+			} else {
+				ShowStationViewportTooltip(w, tile, buffer_start, buffer_tail);
 			}
 			break;
 		}

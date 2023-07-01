@@ -2046,6 +2046,11 @@ static char *StationGetSpecialString(char *buff, int x, const char *last)
 	return buff;
 }
 
+char *StationGetSpecialStringExternal(char *buff, int x, const char *last)
+{
+	return StationGetSpecialString(buff, x, last);
+}
+
 static char *GetSpecialTownNameString(char *buff, int ind, uint32 seed, const char *last)
 {
 	return GenerateTownNameString(buff, last, ind, seed);
