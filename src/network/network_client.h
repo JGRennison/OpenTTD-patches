@@ -18,6 +18,7 @@ private:
 	std::string connection_string; ///< Address we are connected to.
 	struct PacketReader *savegame; ///< Packet reader for reading the savegame.
 	byte token;                    ///< The token we need to send back to the server to prove we're the right client.
+	NetworkSharedSecrets last_rcon_shared_secrets; ///< Keys for last rcon (and incoming replies)
 
 	/** Status of the connection with the server. */
 	enum ServerStatus {
@@ -39,6 +40,8 @@ private:
 	FILE *desync_log_file = nullptr;
 	std::string server_desync_log;
 	bool emergency_save_done = false;
+
+	NetworkGameKeys intl_keys;
 
 	static const char *GetServerStatusName(ServerStatus status);
 
@@ -81,6 +84,9 @@ protected:
 	static NetworkRecvStatus SendGetMap();
 	static NetworkRecvStatus SendMapOk();
 	void CheckConnection();
+
+	NetworkRecvStatus SendKeyPasswordPacket(PacketType packet_type, NetworkSharedSecrets &ss, const std::string &password, const std::string *payload);
+
 public:
 	ClientNetworkGameSocketHandler(SOCKET s, std::string connection_string);
 	~ClientNetworkGameSocketHandler();
@@ -89,6 +95,12 @@ public:
 	void ClientError(NetworkRecvStatus res);
 
 	std::string GetDebugInfo() const override;
+
+	const NetworkGameKeys &GetKeys()
+	{
+		if (!this->intl_keys.inited) this->intl_keys.Initialise();
+		return this->intl_keys;
+	}
 
 	static NetworkRecvStatus SendJoin();
 	static NetworkRecvStatus SendCommand(const CommandPacket *cp);

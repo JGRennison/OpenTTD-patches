@@ -14,6 +14,7 @@
 #include "script_rail.hpp"
 #include "script_airport.hpp"
 #include "script_date.hpp"
+#include <optional>
 
 /**
  * Class that handles all engine related functions.
@@ -44,7 +45,7 @@ public:
 	 * @pre IsValidEngine(engine_id).
 	 * @return The name the engine has.
 	 */
-	static char *GetName(EngineID engine_id);
+	static std::optional<std::string> GetName(EngineID engine_id);
 
 	/**
 	 * Get the cargo-type of an engine. In case it can transport multiple cargoes, it

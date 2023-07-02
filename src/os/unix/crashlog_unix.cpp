@@ -565,6 +565,7 @@ class CrashLogUnix : public CrashLog {
 				bool result = ExecReadStdout("addr2line", const_cast<char* const*>(args), buffer, last);
 				if (result && strstr(buffer_start, "??") == nullptr) {
 					while (buffer[-1] == '\n' && buffer[-2] == '\n') buffer--;
+					*buffer = 0;
 					continue;
 				}
 				buffer = saved_buffer;

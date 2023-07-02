@@ -287,6 +287,18 @@ protected:
 		return max_width;
 	}
 
+	virtual StringID PrepareXAxisText(uint16 label) const
+	{
+		SetDParam(0, label);
+		return STR_JUST_COMMA;
+	}
+
+	virtual StringID PrepareXAxisMaxSizeText(uint16 label) const
+	{
+		SetDParamMaxValue(0, label, 0, FS_SMALL);
+		return STR_JUST_COMMA;
+	}
+
 	/**
 	 * Actually draw the graph.
 	 * @param r the rectangle of the data field of the graph
@@ -411,8 +423,8 @@ protected:
 			uint16 label = this->x_values_start;
 
 			for (int i = 0; i < this->num_on_x_axis; i++) {
-				SetDParam(0, label);
-				DrawString(x + 1, x + x_sep - 1, y, STR_GRAPH_Y_LABEL_NUMBER, GRAPH_AXIS_LABEL_COLOUR, SA_HOR_CENTER);
+				StringID str = this->PrepareXAxisText(label);
+				DrawString(x + 1, x + x_sep - 1, y, str, GRAPH_AXIS_LABEL_COLOUR, SA_HOR_CENTER, false, FS_SMALL);
 
 				label += this->x_values_increment;
 				x += x_sep;
@@ -525,8 +537,8 @@ public:
 			}
 		} else {
 			/* Draw x-axis labels for graphs not based on quarterly performance (cargo payment rates). */
-			SetDParamMaxValue(0, this->x_values_start + this->num_on_x_axis * this->x_values_increment, 0, FS_SMALL);
-			x_label_width = GetStringBoundingBox(STR_GRAPH_Y_LABEL_NUMBER).width;
+			StringID str = this->PrepareXAxisMaxSizeText(this->x_values_start + this->num_on_x_axis * this->x_values_increment);
+			x_label_width = GetStringBoundingBox(str, FS_SMALL).width;
 		}
 
 		SetDParam(0, this->format_str_y_axis);
@@ -1187,6 +1199,57 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 		this->x_values_increment = x_scale;
 	}
 
+	std::pair<uint, uint> ProcessXAxisValue(uint16 label) const
+	{
+		uint val = label;
+		uint decimals;
+		if (_cargo_payment_x_mode) {
+			decimals = 0;
+		} else if (_settings_time.time_in_minutes) {
+			if (_settings_time.ticks_per_minute <= 350 || 740 % _settings_time.ticks_per_minute == 0) {
+				decimals = 0;
+			} else if (_settings_time.ticks_per_minute > 7400) {
+				val *= 100;
+				decimals = 2;
+			} else {
+				val *= 10;
+				decimals = 1;
+			}
+			val *= 74;
+			val /= _settings_time.ticks_per_minute;
+		} else {
+			if ((10 % _settings_game.economy.day_length_factor) == 0) {
+				decimals = 0;
+			} else if (_settings_game.economy.day_length_factor > 50) {
+				decimals = 2;
+				val *= 100;
+			} else {
+				decimals = 1;
+				val *= 10;
+			}
+			val /= _settings_game.economy.day_length_factor;
+		}
+		return { val, decimals };
+	}
+
+	StringID PrepareXAxisText(uint16 label) const override
+	{
+		auto val = this->ProcessXAxisValue(label);
+
+		SetDParam(0, val.first);
+		SetDParam(1, val.second);
+		return STR_JUST_DECIMAL;
+	}
+
+	StringID PrepareXAxisMaxSizeText(uint16 label) const override
+	{
+		auto val = this->ProcessXAxisValue(label);
+
+		SetDParamMaxValue(0, val.first, 0, FS_SMALL);
+		SetDParam(1, val.second);
+		return STR_JUST_DECIMAL;
+	}
+
 	void OnInit() override
 	{
 		/* Width of the legend blob. */
@@ -1286,13 +1349,9 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 			}
 
 			case WID_CPR_MATRIX: {
-				uint row = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_CPR_MATRIX);
-				if (row >= this->vscroll->GetCount()) return;
-
-				for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
-					if (row-- > 0) continue;
-
-					ToggleBit(_legend_excluded_cargo, cs->Index());
+				auto it = this->vscroll->GetScrolledItemFromWidget(_sorted_standard_cargo_specs, pt.y, this, WID_CPR_MATRIX);
+				if (it != _sorted_standard_cargo_specs.end()) {
+					ToggleBit(_legend_excluded_cargo, (*it)->Index());
 					this->UpdateExcludedData();
 					this->UpdateCargoExcludingGraphs();
 					break;
@@ -1360,7 +1419,11 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 					SetDParam(0, STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED);
 					SetDParam(1, STR_UNIT_NAME_VELOCITY_IMPERIAL + _settings_game.locale.units_velocity);
 				} else {
-					SetDParam(0, STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL);
+					if (_settings_time.time_in_minutes) {
+						SetDParam(0, STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_MINUTES);
+					} else {
+						SetDParam(0, STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL);
+					}
 				}
 				break;
 
@@ -1369,6 +1432,14 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 					SetDParam(0, STR_GRAPH_CARGO_PAYMENT_RATES_TITLE_AVG_SPEED);
 				} else {
 					SetDParam(0, STR_GRAPH_CARGO_PAYMENT_RATES_TITLE);
+				}
+				break;
+
+			case WID_CPR_DAYS:
+				if (_settings_time.time_in_minutes) {
+					SetDParam(0, STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_MINUTES);
+				} else {
+					SetDParam(0, STR_GRAPH_CARGO_DAYS_MODE);
 				}
 				break;
 		}
@@ -1391,7 +1462,7 @@ static const NWidgetPart _nested_cargo_payment_rates_widgets[] = {
 			NWidget(WWT_EMPTY, COLOUR_BROWN, WID_CPR_GRAPH), SetMinimalSize(495, 0), SetFill(1, 1), SetResize(1, 1),
 			NWidget(NWID_VERTICAL),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 4),
-				NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_CPR_DAYS), SetDataTip(STR_GRAPH_CARGO_DAYS_MODE, STR_GRAPH_CARGO_TOOLTIP_DAYS_MODE), SetFill(1, 0),
+				NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_CPR_DAYS), SetDataTip(STR_JUST_STRING, STR_GRAPH_CARGO_TOOLTIP_DAYS_MODE), SetFill(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_CPR_SPEED), SetDataTip(STR_GRAPH_CARGO_SPEED_MODE, STR_GRAPH_CARGO_TOOLTIP_SPEED_MODE), SetFill(1, 0),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 16), SetFill(0, 1),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_CPR_ENABLE_CARGOES), SetDataTip(STR_GRAPH_CARGO_ENABLE_ALL, STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL), SetFill(1, 0),

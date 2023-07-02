@@ -73,7 +73,7 @@ protected:
 	virtual const SpriteGroup *Resolve(ResolverObject &object) const { return this; };
 
 public:
-	virtual ~SpriteGroup() {}
+	virtual ~SpriteGroup() = default;
 
 	uint32 nfo_line;
 	SpriteGroupType type;
@@ -640,7 +640,7 @@ struct ScopeResolver {
 	ResolverObject &ro; ///< Surrounding resolver object.
 
 	ScopeResolver(ResolverObject &ro) : ro(ro) {}
-	virtual ~ScopeResolver() {}
+	virtual ~ScopeResolver() = default;
 
 	virtual uint32 GetRandomBits() const;
 	virtual uint32 GetTriggers() const;
@@ -669,7 +669,7 @@ struct ResolverObject {
 		this->ResetState();
 	}
 
-	virtual ~ResolverObject() {}
+	virtual ~ResolverObject() = default;
 
 	ScopeResolver default_scope; ///< Default implementation of the grf scope.
 

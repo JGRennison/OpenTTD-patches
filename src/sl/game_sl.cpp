@@ -55,7 +55,7 @@ static void SaveReal_GSDT(int *index_ptr)
 static void Load_GSDT()
 {
 	/* Free all current data */
-	GameConfig::GetConfig(GameConfig::SSS_FORCE_GAME)->Change(nullptr);
+	GameConfig::GetConfig(GameConfig::SSS_FORCE_GAME)->Change(std::nullopt);
 
 	if ((CompanyID)SlIterateArray() == (CompanyID)-1) return;
 
@@ -70,11 +70,11 @@ static void Load_GSDT()
 
 	GameConfig *config = GameConfig::GetConfig(GameConfig::SSS_FORCE_GAME);
 	if (!_game_saveload_name.empty()) {
-		config->Change(_game_saveload_name.c_str(), _game_saveload_version, false, _game_saveload_is_random);
+		config->Change(_game_saveload_name, _game_saveload_version, false, _game_saveload_is_random);
 		if (!config->HasScript()) {
 			/* No version of the GameScript available that can load the data. Try to load the
 			 * latest version of the GameScript instead. */
-			config->Change(_game_saveload_name.c_str(), -1, false, _game_saveload_is_random);
+			config->Change(_game_saveload_name, -1, false, _game_saveload_is_random);
 			if (!config->HasScript()) {
 				if (_game_saveload_name.compare("%_dummy") != 0) {
 					DEBUG(script, 0, "The savegame has an GameScript by the name '%s', version %d which is no longer available.", _game_saveload_name.c_str(), _game_saveload_version);

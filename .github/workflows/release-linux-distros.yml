@@ -1,0 +1,126 @@
+name: Release (Linux Distros)
+
+on:
+  workflow_call:
+    inputs:
+      survey_key:
+        required: false
+        type: string
+        default: ""
+
+jobs:
+  linux-distro:
+    name: Linux (Distros)
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - container_image: "ubuntu:18.04"
+          bundle_name: "bionic"
+          compiler: "g++-8"
+          c_compiler: "gcc-8"
+        - container_image: "ubuntu:20.04"
+          bundle_name: "focal"
+          compiler: "g++"
+          c_compiler: "gcc"
+        - container_image: "ubuntu:22.04"
+          bundle_name: "jammy"
+          compiler: "g++"
+          c_compiler: "gcc"
+        - container_image: "debian:buster"
+          bundle_name: "buster"
+          compiler: "g++"
+          c_compiler: "gcc"
+        - container_image: "debian:bullseye"
+          bundle_name: "bullseye"
+          compiler: "g++"
+          c_compiler: "gcc"
+
+    runs-on: ubuntu-20.04
+    container:
+      image: ${{ matrix.container_image }}
+
+    steps:
+    - name: Download source
+      uses: actions/download-artifact@v3
+      with:
+        name: internal-source
+
+    - name: Unpack source
+      run: |
+        tar -xf source.tar.gz --strip-components=1
+
+    - name: Install dependencies
+      run: |
+        echo "::group::Update apt"
+        apt-get update
+        echo "::endgroup::"
+
+        echo "::group::Install dependencies"
+        apt-get install -y --no-install-recommends \
+          cmake \
+          debhelper \
+          ${{ matrix.compiler }} \
+          ${{ matrix.c_compiler }} \
+          git \
+          make \
+          openssl \
+          libcurl4-openssl-dev \
+          libfontconfig-dev \
+          libfluidsynth-dev \
+          libicu-dev \
+          liblzma-dev \
+          libzstd-dev \
+          liblzo2-dev \
+          libsdl2-dev \
+          lsb-release \
+          zlib1g-dev \
+          libharfbuzz-dev \
+          # EOF
+        echo "::endgroup::"
+      env:
+        DEBIAN_FRONTEND: noninteractive
+
+    - name: Install GCC problem matcher
+      uses: ammaraskar/gcc-problem-matcher@master
+
+    - name: Build
+      run: |
+        mkdir -p build
+        cd build
+
+        echo "::group::CMake"
+        CXX=${{ matrix.compiler }} CC=${{ matrix.c_compiler }} cmake ${GITHUB_WORKSPACE} \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DOPTION_COMPRESS_DEBUG=ON \
+          -DOPTION_LTO=ON \
+          -DCMAKE_INSTALL_PREFIX=/usr \
+          # EOF
+        echo "::endgroup::"
+
+        echo "::group::Build"
+        echo "Running on $(nproc) cores"
+        # Ubuntu 18.04 cmake does not support -j so we pass the option to the native tool
+        cmake --build . -- -j $(nproc)
+        echo "::endgroup::"
+
+    - name: Create bundles
+      run: |
+        cd ${GITHUB_WORKSPACE}/build
+        echo "::group::Run CPack"
+        cpack
+        echo "::endgroup::"
+
+        echo "::group::Cleanup"
+        # Remove the sha256 files CPack generates; we will do this ourself at
+        # the end of this workflow.
+        rm -f bundles/*.sha256
+        echo "::endgroup::"
+
+    - name: Store bundles
+      uses: actions/upload-artifact@v3
+      with:
+        name: openttd-linux-${{ matrix.bundle_name }}
+        path: build/bundles
+        retention-days: 5

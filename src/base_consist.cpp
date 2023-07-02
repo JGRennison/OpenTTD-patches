@@ -56,4 +56,9 @@ void BaseConsist::CopyConsistPropertiesFrom(const BaseConsist *src)
 	} else {
 		ClrBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION);
 	}
+	if (HasBit(src->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
+		SetBit(this->vehicle_flags, VF_SCHEDULED_DISPATCH);
+	} else {
+		ClrBit(this->vehicle_flags, VF_SCHEDULED_DISPATCH);
+	}
 }

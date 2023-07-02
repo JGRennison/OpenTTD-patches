@@ -11,6 +11,7 @@
 #define SCRIPT_VEHICLE_HPP
 
 #include "script_road.hpp"
+#include <optional>
 
 /**
  * Class that handles all vehicle related functions.
@@ -137,7 +138,7 @@ public:
 	 * @pre IsPrimaryVehicle(vehicle_id).
 	 * @return The name the vehicle has.
 	 */
-	static char *GetName(VehicleID vehicle_id);
+	static std::optional<std::string> GetName(VehicleID vehicle_id);
 
 	/**
 	 * Get the owner of a vehicle.

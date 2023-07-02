@@ -235,6 +235,7 @@ enum {
 	GHK_CHANGE_MAP_MODE_NEXT,
 	GHK_SWITCH_VIEWPORT_ROUTE_OVERLAY_MODE,
 	GHK_SWITCH_VIEWPORT_MAP_SLOPE_MODE,
+	GHK_SWITCH_VIEWPORT_MAP_HEIGHT_MODE,
 };
 
 struct MainWindow : Window
@@ -473,6 +474,12 @@ struct MainWindow : Window
 				MarkAllViewportMapLandscapesDirty();
 				break;
 			}
+			case GHK_SWITCH_VIEWPORT_MAP_HEIGHT_MODE: {
+				_settings_client.gui.show_height_on_viewport_map = !_settings_client.gui.show_height_on_viewport_map;
+				extern void MarkAllViewportMapLandscapesDirty();
+				MarkAllViewportMapLandscapesDirty();
+				break;
+			}
 
 			default: return ES_NOT_HANDLED;
 		}
@@ -528,7 +535,7 @@ struct MainWindow : Window
 
 	virtual void OnMouseOver(Point pt, int widget) override
 	{
-		if (pt.x != -1 && _game_mode != GM_MENU && (_settings_client.gui.hover_delay_ms == 0 ? _right_button_down : _mouse_hovering)) {
+		if (pt.x != -1 && _game_mode != GM_MENU && IsViewportMouseHoverActive()) {
 			/* Show tooltip with last month production or town name */
 			const Point p = GetTileBelowCursor();
 			const TileIndex tile = TileVirtXY(p.x, p.y);
@@ -593,6 +600,7 @@ static Hotkey global_hotkeys[] = {
 	Hotkey(WKC_PAGEDOWN, "next_map_mode",     GHK_CHANGE_MAP_MODE_NEXT),
 	Hotkey((uint16)0,    "switch_viewport_route_overlay_mode", GHK_SWITCH_VIEWPORT_ROUTE_OVERLAY_MODE),
 	Hotkey((uint16)0,    "switch_viewport_map_slope_mode", GHK_SWITCH_VIEWPORT_MAP_SLOPE_MODE),
+	Hotkey((uint16)0,    "switch_viewport_map_height_mode", GHK_SWITCH_VIEWPORT_MAP_HEIGHT_MODE),
 	HOTKEY_LIST_END
 };
 HotkeyList MainWindow::hotkeys("global", global_hotkeys);

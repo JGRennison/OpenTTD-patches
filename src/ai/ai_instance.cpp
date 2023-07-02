@@ -69,7 +69,7 @@ void AIInstance::Died()
 	if (info != nullptr) {
 		ShowErrorMessage(STR_ERROR_AI_PLEASE_REPORT_CRASH, INVALID_STRING_ID, WL_WARNING);
 
-		if (info->GetURL() != nullptr) {
+		if (!info->GetURL().empty()) {
 			ScriptLog::Info("Please report the error to the following URL:");
 			ScriptLog::Info(info->GetURL());
 		}
@@ -82,12 +82,12 @@ void AIInstance::LoadDummyScript()
 	Script_CreateDummy(this->engine->GetVM(), STR_ERROR_AI_NO_AI_FOUND, "AI");
 }
 
-int AIInstance::GetSetting(const char *name)
+int AIInstance::GetSetting(const std::string &name)
 {
 	return AIConfig::GetConfig(_current_company)->GetSetting(name);
 }
 
-ScriptInfo *AIInstance::FindLibrary(const char *library, int version)
+ScriptInfo *AIInstance::FindLibrary(const std::string &library, int version)
 {
 	return (ScriptInfo *)AI::FindLibrary(library, version);
 }

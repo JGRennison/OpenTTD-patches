@@ -161,7 +161,7 @@ public:
 	const char *crash_buffer_write = nullptr;
 
 	/** Stub destructor to silence some compilers. */
-	virtual ~CrashLog() {}
+	virtual ~CrashLog() = default;
 
 	char *FillCrashLog(char *buffer, const char *last);
 	void FlushCrashLogBuffer();

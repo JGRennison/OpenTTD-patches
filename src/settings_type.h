@@ -64,11 +64,18 @@ enum IndustryDensity {
 	ID_END,       ///< Number of industry density settings.
 };
 
-/** Possible values for "userelayservice" setting. */
+/** Possible values for "use_relay_service" setting. */
 enum UseRelayService {
 	URS_NEVER = 0,
 	URS_ASK,
 	URS_ALLOW,
+};
+
+/** Possible values for "participate_survey" setting. */
+enum ParticipateSurvey {
+	PS_ASK = 0,
+	PS_NO,
+	PS_YES,
 };
 
 /** Settings related to the difficulty of the game */
@@ -132,6 +139,7 @@ struct GUISettings : public TimeSettings {
 	uint8  auto_scrolling;                   ///< scroll when moving mouse to the edge (see #ViewportAutoscrolling)
 	byte   errmsg_duration;                  ///< duration of error message
 	uint16 hover_delay_ms;                   ///< time required to activate a hover event, in milliseconds
+	bool   instant_tile_tooltip;             ///< don't require a right click to activate a hover event to show a tooltip for an in-game tile (e.g. industry).
 	bool   link_terraform_toolbar;           ///< display terraform toolbar when displaying rail, road, water and airport toolbars
 	uint8  smallmap_land_colour;             ///< colour used for land and heightmap at the smallmap
 	uint8  scroll_mode;                      ///< viewport scroll mode
@@ -164,8 +172,8 @@ struct GUISettings : public TimeSettings {
 	uint8  right_mouse_btn_emulation;        ///< should we emulate right mouse clicking?
 	uint8  scrollwheel_scrolling;            ///< scrolling using the scroll wheel?
 	uint8  scrollwheel_multiplier;           ///< how much 'wheel' per incoming event from the OS?
-	bool   viewport_map_scan_surroundings;   ///< look for the most important tile in surroundings
 	bool   show_slopes_on_viewport_map;      ///< use slope orientation to render the ground
+	bool   show_height_on_viewport_map;      ///< use height for shading when rendering the ground
 	uint32 default_viewport_map_mode;        ///< the mode to use by default when a viewport is in map mode, 0=owner, 1=industry, 2=vegetation
 	uint32 action_when_viewport_map_is_dblclicked; ///< what to do when a doubleclick occurs on the viewport map
 	uint32 show_scrolling_viewport_on_map;   ///< when a no map viewport is scrolled, its location is marked on the other map viewports
@@ -394,8 +402,9 @@ struct NetworkSettings {
 	uint8       min_active_clients;                       ///< minimum amount of active clients to unpause the game
 	bool        reload_cfg;                               ///< reload the config file before restarting
 	std::string last_joined;                              ///< Last joined server
-	bool        no_http_content_downloads;                     ///< do not do content downloads over HTTP
+	bool        no_http_content_downloads;                ///< do not do content downloads over HTTP
 	UseRelayService use_relay_service;                    ///< Use relay service?
+	ParticipateSurvey participate_survey;                 ///< Participate in the automated survey
 };
 
 /** Settings related to the creation of games. */

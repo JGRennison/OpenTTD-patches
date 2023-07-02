@@ -371,8 +371,21 @@ static void Xunzip(byte **bufp, size_t *sizep)
 	if (StrStartsWith(sv_buf, u8"\ufeff")) sv_buf.remove_prefix(3);
 
 	/* Replace any invalid characters with a question-mark. This copies the buf in the process. */
-	this->text = StrMakeValid(sv_buf, SVS_REPLACE_WITH_QUESTION_MARK | SVS_ALLOW_NEWLINE | SVS_REPLACE_TAB_CR_NL_WITH_SPACE);
+	this->LoadText(sv_buf);
 	free(buf);
+}
+
+/**
+ * Load a text into the textfile viewer.
+ *
+ * This will split the text into newlines and stores it for fast drawing.
+ *
+ * @param buf The text to load.
+ */
+void TextfileWindow::LoadText(std::string_view buf)
+{
+	this->text = StrMakeValid(buf, SVS_REPLACE_WITH_QUESTION_MARK | SVS_ALLOW_NEWLINE | SVS_REPLACE_TAB_CR_NL_WITH_SPACE);
+	this->lines.clear();
 
 	/* Split the string on newlines. */
 	std::string_view p(this->text);
@@ -411,7 +424,7 @@ const char *GetTextfile(TextfileType type, Subdirectory dir, const char *filenam
 		"changelog",
 		"license",
 	};
-	static_assert(lengthof(prefixes) == TFT_END);
+	static_assert(lengthof(prefixes) == TFT_CONTENT_END);
 
 	const char *prefix = prefixes[type];
 

@@ -213,11 +213,11 @@ static void PopupMainToolbMenu(Window *w, int widget, DropDownList &&list, int d
  * @param string String for the first item in the menu
  * @param count Number of items in the menu
  */
-static void PopupMainToolbMenu(Window *w, int widget, StringID string, int count)
+static void PopupMainToolbMenu(Window *w, int widget, StringID string, int count, uint32 disabled = 0)
 {
 	DropDownList list;
 	for (int i = 0; i < count; i++) {
-		list.emplace_back(new DropDownListStringItem(string + i, i, false));
+		list.emplace_back(new DropDownListStringItem(string + i, i, i < 32 && HasBit(disabled, i)));
 	}
 	PopupMainToolbMenu(w, widget, std::move(list), 0);
 }
@@ -1137,15 +1137,18 @@ enum HelpMenuEntries {
 
 static void ShowBuildRailToolbarFromTile(TileIndex tile)
 {
-	ShowBuildRailToolbar(GetRailType(tile));
+	_last_built_railtype = GetRailType(tile);
+	ShowBuildRailToolbar(_last_built_railtype);
 }
 
 static void ShowBuildRoadToolbarFromTile(TileIndex tile)
 {
 	if (HasRoadTypeRoad(tile)) {
-		CreateRoadTramToolbarForRoadType(GetRoadTypeRoad(tile), RTT_ROAD);
+		_last_built_roadtype = GetRoadTypeRoad(tile);
+		CreateRoadTramToolbarForRoadType(_last_built_roadtype, RTT_ROAD);
 	} else {
-		CreateRoadTramToolbarForRoadType(GetRoadTypeTram(tile), RTT_TRAM);
+		_last_built_tramtype = GetRoadTypeTram(tile);
+		CreateRoadTramToolbarForRoadType(_last_built_tramtype, RTT_TRAM);
 	}
 }
 
@@ -1219,6 +1222,7 @@ static CallBackFunction PlaceLandBlockInfo()
 
 static CallBackFunction PlacePickerTool()
 {
+	if (_local_company == COMPANY_SPECTATOR) return CBF_NONE;
 	if (_last_started_action == CBF_PLACE_PICKER) {
 		ResetObjectToPlace();
 		return CBF_NONE;
@@ -1231,7 +1235,11 @@ static CallBackFunction PlacePickerTool()
 
 static CallBackFunction ToolbarHelpClick(Window *w)
 {
-	PopupMainToolbMenu(w, _game_mode == GM_EDITOR ? (int)WID_TE_HELP : (int)WID_TN_HELP, STR_ABOUT_MENU_LAND_BLOCK_INFO, _settings_client.gui.newgrf_developer_tools ? HME_LAST : HME_LAST_NON_DEV);
+	uint mask = 0;
+	if (_local_company == COMPANY_SPECTATOR) SetBit(mask, HME_PICKER);
+	int count = _settings_client.gui.newgrf_developer_tools ? HME_LAST : HME_LAST_NON_DEV;
+	int widget = (_game_mode == GM_EDITOR) ? (int)WID_TE_HELP : (int)WID_TN_HELP;
+	PopupMainToolbMenu(w, widget, STR_ABOUT_MENU_LAND_BLOCK_INFO, count, mask);
 	return CBF_NONE;
 }
 
@@ -2523,6 +2531,7 @@ enum MainToolbarEditorHotkeys {
 	MTEHK_SIGN,
 	MTEHK_MUSIC,
 	MTEHK_LANDINFO,
+	MTEHK_PICKER,
 	MTEHK_SMALL_SCREENSHOT,
 	MTEHK_ZOOMEDIN_SCREENSHOT,
 	MTEHK_DEFAULTZOOM_SCREENSHOT,
@@ -2641,6 +2650,7 @@ struct ScenarioEditorToolbarWindow : Window {
 			case MTEHK_SIGN:                   cbf = ToolbarScenPlaceSign(this); break;
 			case MTEHK_MUSIC:                  ShowMusicWindow(); break;
 			case MTEHK_LANDINFO:               cbf = PlaceLandBlockInfo(); break;
+			case MTEHK_PICKER:                 cbf = PlacePickerTool(); break;
 			case MTEHK_SMALL_SCREENSHOT:       MakeScreenshotWithConfirm(SC_VIEWPORT); break;
 			case MTEHK_ZOOMEDIN_SCREENSHOT:    MakeScreenshotWithConfirm(SC_ZOOMEDIN); break;
 			case MTEHK_DEFAULTZOOM_SCREENSHOT: MakeScreenshotWithConfirm(SC_DEFAULTZOOM); break;
@@ -2750,6 +2760,7 @@ static Hotkey scenedit_maintoolbar_hotkeys[] = {
 	Hotkey(WKC_F10, "build_sign", MTEHK_SIGN),
 	Hotkey(WKC_F11, "music", MTEHK_MUSIC),
 	Hotkey(WKC_F12, "land_info", MTEHK_LANDINFO),
+	Hotkey((uint16)0, "picker_tool", MTEHK_PICKER),
 	Hotkey(WKC_CTRL  | 'S', "small_screenshot", MTEHK_SMALL_SCREENSHOT),
 	Hotkey(WKC_CTRL  | 'P', "zoomedin_screenshot", MTEHK_ZOOMEDIN_SCREENSHOT),
 	Hotkey(WKC_CTRL  | 'D', "defaultzoom_screenshot", MTEHK_DEFAULTZOOM_SCREENSHOT),

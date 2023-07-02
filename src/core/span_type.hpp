@@ -82,6 +82,7 @@ public:
 	template<class Container, typename std::enable_if<(std::is_const<element_type>::value && is_compatible_container<Container, element_type>::value), int>::type = 0>
 	constexpr span(const Container &list) noexcept : first(std::data(list)), last(std::data(list) + std::size(list)) {}
 
+	constexpr pointer data() const noexcept { return first; }
 	constexpr size_t size() const noexcept { return static_cast<size_t>( last - first ); }
 	constexpr std::ptrdiff_t ssize() const noexcept { return static_cast<std::ptrdiff_t>( last - first ); }
 	constexpr bool empty() const noexcept { return size() == 0; }

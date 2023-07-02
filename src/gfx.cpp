@@ -58,6 +58,7 @@ bool _check_special_modes;
 std::atomic<bool> _exit_game;
 GameMode _game_mode;
 SwitchMode _switch_mode;  ///< The next mainloop command.
+std::chrono::steady_clock::time_point _switch_mode_time; ///< The time when the switch mode was requested.
 PauseMode _pause_mode;
 uint32 _pause_countdown;
 Palette _cur_palette;
@@ -498,6 +499,7 @@ void GfxBlitterCtx::SetColourRemap(TextColour colour)
 	bool raw_colour = (colour & TC_IS_PALETTE_COLOUR) != 0;
 	colour &= ~(TC_NO_SHADE | TC_IS_PALETTE_COLOUR | TC_FORCED);
 
+	this->string_colourremap[0] = 0;
 	this->string_colourremap[1] = raw_colour ? (byte)colour : _string_colourmap[colour];
 	this->string_colourremap[2] = no_shade ? 0 : 1;
 	this->colour_remap_ptr = this->string_colourremap;

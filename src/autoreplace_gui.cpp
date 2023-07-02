@@ -193,10 +193,10 @@ class ReplaceVehicleWindow : public Window {
 
 		this->sel_engine[side] = selected_engine; // update which engine we selected (the same or none, if it's not in the list anymore)
 		if (draw_left) {
-			EngList_Sort(&list, &EngineNumberSorter);
+			EngList_Sort(list, &EngineNumberSorter);
 		} else {
 			_engine_sort_direction = this->descending_sort_order;
-			EngList_Sort(&list, _engine_sort_functions[this->window_number][this->sort_criteria]);
+			EngList_Sort(list, _engine_sort_functions[this->window_number][this->sort_criteria]);
 		}
 
 		this->engines[side].clear();
@@ -617,12 +617,11 @@ public:
 				} else {
 					click_side = 1;
 				}
-				uint i = this->vscroll[click_side]->GetScrolledRowFromWidget(pt.y, this, widget);
-				size_t engine_count = this->engines[click_side].size();
 
 				EngineID e = INVALID_ENGINE;
-				if (i < engine_count) {
-					const auto &item = this->engines[click_side][i];
+				const auto it = this->vscroll[click_side]->GetScrolledItemFromWidget(this->engines[click_side], pt.y, this, widget);
+				if (it != this->engines[click_side].end()) {
+					const auto &item = *it;
 					const Rect r = this->GetWidget<NWidgetBase>(widget)->GetCurrentRect().Shrink(WidgetDimensions::scaled.matrix).WithWidth(WidgetDimensions::scaled.hsep_indent * (item.indent + 1), _current_text_dir == TD_RTL);
 					if ((item.flags & EngineDisplayFlags::HasVariants) != EngineDisplayFlags::None && IsInsideMM(r.left, r.right, pt.x)) {
 						/* toggle folded flag on engine */

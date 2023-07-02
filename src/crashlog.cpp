@@ -24,6 +24,7 @@
 #include "screenshot.h"
 #include "gfx_func.h"
 #include "network/network.h"
+#include "network/network_survey.h"
 #include "language.h"
 #include "fontcache.h"
 #include "news_gui.h"
@@ -33,6 +34,7 @@
 #include "debug_desync.h"
 #include "event_logs.h"
 #include "scope.h"
+#include "progress.h"
 
 #include "ai/ai_info.hpp"
 #include "game/game.hpp"
@@ -226,6 +228,15 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 			default: return "-";
 		};
 	};
+	auto mode_name = []() -> const char * {
+		switch (_game_mode) {
+			case GM_MENU: return "MENU";
+			case GM_NORMAL: return "NORMAL";
+			case GM_EDITOR: return "EDITOR";
+			case GM_BOOTSTRAP:  return "BOOTSTRAP";
+			default: return "-";
+		};
+	};
 	buffer += seprintf(buffer, last,
 			"Configuration:\n"
 			" Blitter:      %s\n"
@@ -237,7 +248,7 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 			" Sound driver: %s\n"
 			" Sound set:    %s (%u)\n"
 			" Video driver: %s\n"
-			" Pathfinder:   %s %s %s\n\n",
+			" Pathfinder:   %s %s %s\n",
 			BlitterFactory::GetCurrentBlitter() == nullptr ? "none" : BlitterFactory::GetCurrentBlitter()->GetName(),
 			BaseGraphics::GetUsedSet() == nullptr ? "none" : BaseGraphics::GetUsedSet()->name.c_str(),
 			BaseGraphics::GetUsedSet() == nullptr ? UINT32_MAX : BaseGraphics::GetUsedSet()->version,
@@ -252,6 +263,10 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 			VideoDriver::GetInstance() == nullptr ? "none" : VideoDriver::GetInstance()->GetInfoString(),
 			pathfinder_name(_settings_game.pf.pathfinder_for_trains), pathfinder_name(_settings_game.pf.pathfinder_for_roadvehs), pathfinder_name(_settings_game.pf.pathfinder_for_ships)
 	);
+	buffer += seprintf(buffer, last, " Game mode:    %s", mode_name());
+	if (_switch_mode != SM_NONE) buffer += seprintf(buffer, last, ", SM: %u", _switch_mode);
+	if (HasModalProgress()) buffer += seprintf(buffer, last, ", HMP");
+	buffer += seprintf(buffer, last, "\n\n");
 
 	this->CrashLogFaultSectionCheckpoint(buffer);
 
@@ -294,12 +309,12 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 		if (c->ai_info == nullptr) {
 			buffer += seprintf(buffer, last, " %2i: Human\n", (int)c->index);
 		} else {
-			buffer += seprintf(buffer, last, " %2i: %s (v%d)\n", (int)c->index, c->ai_info->GetName(), c->ai_info->GetVersion());
+			buffer += seprintf(buffer, last, " %2i: %s (v%d)\n", (int)c->index, c->ai_info->GetName().c_str(), c->ai_info->GetVersion());
 		}
 	}
 
 	if (Game::GetInfo() != nullptr) {
-		buffer += seprintf(buffer, last, " GS: %s (v%d)\n", Game::GetInfo()->GetName(), Game::GetInfo()->GetVersion());
+		buffer += seprintf(buffer, last, " GS: %s (v%d)\n", Game::GetInfo()->GetName().c_str(), Game::GetInfo()->GetVersion());
 	}
 	buffer += seprintf(buffer, last, "\n");
 
@@ -1157,6 +1172,10 @@ bool CrashLog::MakeCrashSavegameAndScreenshot() const
 	} else {
 		ret = false;
 		printf("Writing crash screenshot failed.\n\n");
+	}
+
+	if (_game_mode == GM_NORMAL) {
+		_survey.Transmit(NetworkSurveyHandler::Reason::CRASH, true);
 	}
 
 	return ret;

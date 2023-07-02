@@ -127,22 +127,29 @@ STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR_HELPTEXT    :Vozidla vlastn�
 STR_CONFIG_SETTING_ENABLE_SINGLE_VEH_SHARED_ORDER_GUI           :Zapnout jedno vozidlo v okně sdílených příkazů: {STRING}
 STR_CONFIG_SETTING_ENABLE_SINGLE_VEH_SHARED_ORDER_GUI_HELPTEXT  :Umožní použití okna sdílených příkazů pro jednotlivá vozidla i bez sdílených příkazů.
 
-STR_CONFIG_SETTING_VIEWPORT_MAP_SCAN_SURROUNDINGS               :Prohledej okolí (vhodné pro vysoké úrovně přiblížení): {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SLOPES                     :Zobrazit sklon: {STRING}
+
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_BRIDGES                    :Zobrazit mosty: {STRING}
+
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_TUNNELS                    :Zobrazit tunely: {STRING}
+
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP               :Zobrazit posuvný pohled: {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_NOTHING       :Vypnuto
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_CONTOUR       :Obrys
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_BLEND         :Smíchat s bílou barvou (pouze 32bpp)
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_ALL           :Smíchat + obrys
+
 STR_CONFIG_SETTING_VIEWPORT_MAP_USE_OWNER_COLOUR_BRIDGE_TUNNEL  :Použít barvu vlastníka pro mosty a tunely: {STRING}
+
 STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE                    :Výchozí zobrazení: {STRING}
+
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK                 :Funkce dvojkliku: {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_DO_NOTHING      :Nic
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_ZOOM_MAIN       :Nastvit 1X zoom
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_NEW_EXTRA       :Otevřít další pohled
+
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE              :Zobrazit trasu vozidla: {STRING}
+
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :Styl vykreslení trasy vozidla: {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :přerušovaná čára široká {COMMA} pixel{P "" y ů}
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :plné čáry

@@ -859,6 +859,7 @@ bool AfterLoadGame()
 	/* Update current year
 	 * must be done before loading sprites as some newgrfs check it */
 	SetDate(_date, _date_fract, false);
+	SetupTileLoopCounts();
 
 	/*
 	 * Force the old behaviour for compatibility reasons with old savegames. As new
@@ -4210,6 +4211,10 @@ bool AfterLoadGame()
 		extern TimeoutTimer<TimerGameTick> _new_competitor_timeout;
 		_new_competitor_timeout.storage.elapsed = 0;
 		_new_competitor_timeout.fired = _new_competitor_timeout.period == 0;
+	}
+
+	if (SlXvIsFeatureMissing(XSLFI_SAVEGAME_ID) && IsSavegameVersionBefore(SLV_SAVEGAME_ID)) {
+		GenerateSavegameId();
 	}
 
 	InitializeRoadGUI();

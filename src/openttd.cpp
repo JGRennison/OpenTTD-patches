@@ -86,6 +86,7 @@
 #include "tunnelbridge.h"
 #include "worker_thread.h"
 #include "scope_info.h"
+#include "network/network_survey.h"
 #include "timer/timer.h"
 #include "timer/timer_game_tick.h"
 
@@ -571,7 +572,7 @@ void MakeNewgameSettingsLive()
 		if (_settings_newgame.ai_config[c] != nullptr) {
 			_settings_game.ai_config[c] = new AIConfig(_settings_newgame.ai_config[c]);
 			if (!AIConfig::GetConfig(c, AIConfig::SSS_FORCE_GAME)->HasScript()) {
-				AIConfig::GetConfig(c, AIConfig::SSS_FORCE_GAME)->Change(nullptr);
+				AIConfig::GetConfig(c, AIConfig::SSS_FORCE_GAME)->Change(std::nullopt);
 			}
 		}
 	}
@@ -1044,6 +1045,7 @@ void HandleExitGameRequest()
 		_exit_game = true;
 	} else if (_settings_client.gui.autosave_on_exit) {
 		DoExitSave();
+		_survey.Transmit(NetworkSurveyHandler::Reason::EXIT, true);
 		_exit_game = true;
 	} else {
 		AskExitGame();
@@ -1292,9 +1294,16 @@ void SwitchToMode(SwitchMode new_mode)
 	/* Make sure all AI controllers are gone at quitting game */
 	if (new_mode != SM_SAVE_GAME) AI::KillAll();
 
+	/* Transmit the survey if we were in normal-mode and not saving. It always means we leaving the current game. */
+	if (_game_mode == GM_NORMAL && new_mode != SM_SAVE_GAME) _survey.Transmit(NetworkSurveyHandler::Reason::LEAVE);
+
+	/* Keep track when we last switch mode. Used for survey, to know how long someone was in a game. */
+	if (new_mode != SM_SAVE_GAME) _switch_mode_time = std::chrono::steady_clock::now();
+
 	switch (new_mode) {
 		case SM_EDITOR: // Switch to scenario editor
 			MakeNewEditorWorld();
+			GenerateSavegameId();
 			break;
 
 		case SM_RELOADGAME: // Reload with what-ever started the game
@@ -1311,11 +1320,13 @@ void SwitchToMode(SwitchMode new_mode)
 			}
 
 			MakeNewGame(false, new_mode == SM_NEWGAME);
+			GenerateSavegameId();
 			break;
 
 		case SM_RESTARTGAME: // Restart --> 'Random game' with current settings
 		case SM_NEWGAME: // New Game --> 'Random game'
 			MakeNewGame(false, new_mode == SM_NEWGAME);
+			GenerateSavegameId();
 			break;
 
 		case SM_LOAD_GAME: { // Load game, Play Scenario
@@ -1339,6 +1350,7 @@ void SwitchToMode(SwitchMode new_mode)
 		case SM_RESTART_HEIGHTMAP: // Load a heightmap and start a new game from it with current settings
 		case SM_START_HEIGHTMAP: // Load a heightmap and start a new game from it
 			MakeNewGame(true, new_mode == SM_START_HEIGHTMAP);
+			GenerateSavegameId();
 			break;
 
 		case SM_LOAD_HEIGHTMAP: // Load heightmap from scenario editor
@@ -1346,12 +1358,14 @@ void SwitchToMode(SwitchMode new_mode)
 
 			FixConfigMapSize();
 			GenerateWorld(GWM_HEIGHTMAP, 1 << _settings_game.game_creation.map_x, 1 << _settings_game.game_creation.map_y);
+			GenerateSavegameId();
 			MarkWholeScreenDirty();
 			break;
 
 		case SM_LOAD_SCENARIO: { // Load scenario from scenario editor
 			if (SafeLoad(_file_to_saveload.name, _file_to_saveload.file_op, _file_to_saveload.detail_ftype, GM_EDITOR, NO_DIRECTORY)) {
 				SetLocalCompany(OWNER_NONE);
+				GenerateSavegameId();
 				_settings_newgame.game_creation.starting_year = _cur_year;
 				/* Cancel the saveload pausing */
 				DoCommandP(0, PM_PAUSED_SAVELOAD, 0, CMD_PAUSE);
@@ -1372,6 +1386,14 @@ void SwitchToMode(SwitchMode new_mode)
 			if (BaseSounds::ini_set.empty() && BaseSounds::GetUsedSet()->fallback && SoundDriver::GetInstance()->HasOutput()) {
 				ShowErrorMessage(STR_WARNING_FALLBACK_SOUNDSET, INVALID_STRING_ID, WL_CRITICAL);
 				BaseSounds::ini_set = BaseSounds::GetUsedSet()->name;
+			}
+			if (_settings_client.network.participate_survey == PS_ASK) {
+				/* No matter how often you go back to the main menu, only ask the first time. */
+				static bool asked_once = false;
+				if (!asked_once) {
+					asked_once = true;
+					ShowNetworkAskSurvey();
+				}
 			}
 			break;
 
@@ -2050,13 +2072,14 @@ void StateGameLoop()
 		RunAuxiliaryTileLoop();
 		if (_tick_skip_counter < _settings_game.economy.day_length_factor) {
 			AnimateAnimatedTiles();
+			RunTileLoop(true);
 			CallVehicleTicks();
 			OnTick_Companies(false);
 		} else {
 			_tick_skip_counter = 0;
 			IncreaseDate();
 			AnimateAnimatedTiles();
-			RunTileLoop();
+			RunTileLoop(true);
 			CallVehicleTicks();
 			CallLandscapeTick();
 			OnTick_Companies(true);
@@ -2189,6 +2212,7 @@ void GameLoop()
 	if (_switch_mode != SM_NONE && !HasModalProgress()) {
 		SwitchToMode(_switch_mode);
 		_switch_mode = SM_NONE;
+		if (_exit_game) return;
 	}
 
 	IncreaseSpriteLRU();

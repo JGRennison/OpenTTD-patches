@@ -12,6 +12,7 @@
 
 #include "script_vehicle.hpp"
 #include "../../group_type.h"
+#include <optional>
 
 /**
  * Class that handles all group related functions.
@@ -84,7 +85,7 @@ public:
 	 * @pre IsValidGroup(group_id).
 	 * @return The name the group has.
 	 */
-	static char *GetName(GroupID group_id);
+	static std::optional<std::string> GetName(GroupID group_id);
 
 	/**
 	 * Set parent group of a group.

@@ -81,7 +81,7 @@
 	Backup<CompanyID> cur_company(_current_company, FILE_LINE);
 	for (const Company *c : Company::Iterate()) {
 		if (c->is_ai) {
-			SCOPE_INFO_FMT([&], "AI::GameLoop: %i: %s (v%d)\n", (int)c->index, c->ai_info->GetName(), c->ai_info->GetVersion());
+			SCOPE_INFO_FMT([&], "AI::GameLoop: %i: %s (v%d)\n", (int)c->index, c->ai_info->GetName().c_str(), c->ai_info->GetVersion());
 			PerformanceMeasurer framerate((PerformanceElement)(PFE_AI0 + c->index));
 			cur_company.Change(c->index);
 			c->ai_instance->GameLoop();
@@ -205,8 +205,8 @@
 	for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; c++) {
 		if (_settings_game.ai_config[c] != nullptr && _settings_game.ai_config[c]->HasScript()) {
 			if (!_settings_game.ai_config[c]->ResetInfo(true)) {
-				DEBUG(script, 0, "After a reload, the AI by the name '%s' was no longer found, and removed from the list.", _settings_game.ai_config[c]->GetName());
-				_settings_game.ai_config[c]->Change(nullptr);
+				DEBUG(script, 0, "After a reload, the AI by the name '%s' was no longer found, and removed from the list.", _settings_game.ai_config[c]->GetName().c_str());
+				_settings_game.ai_config[c]->Change(std::nullopt);
 				if (Company::IsValidAiID(c)) {
 					/* The code belonging to an already running AI was deleted. We can only do
 					 * one thing here to keep everything sane and that is kill the AI. After
@@ -222,8 +222,8 @@
 		}
 		if (_settings_newgame.ai_config[c] != nullptr && _settings_newgame.ai_config[c]->HasScript()) {
 			if (!_settings_newgame.ai_config[c]->ResetInfo(false)) {
-				DEBUG(script, 0, "After a reload, the AI by the name '%s' was no longer found, and removed from the list.", _settings_newgame.ai_config[c]->GetName());
-				_settings_newgame.ai_config[c]->Change(nullptr);
+				DEBUG(script, 0, "After a reload, the AI by the name '%s' was no longer found, and removed from the list.", _settings_newgame.ai_config[c]->GetName().c_str());
+				_settings_newgame.ai_config[c]->Change(std::nullopt);
 			}
 		}
 	}
@@ -307,12 +307,12 @@
 	return AI::scanner_info->GetUniqueInfoList();
 }
 
-/* static */ AIInfo *AI::FindInfo(const char *name, int version, bool force_exact_match)
+/* static */ AIInfo *AI::FindInfo(const std::string &name, int version, bool force_exact_match)
 {
 	return AI::scanner_info->FindInfo(name, version, force_exact_match);
 }
 
-/* static */ AILibrary *AI::FindLibrary(const char *library, int version)
+/* static */ AILibrary *AI::FindLibrary(const std::string &library, int version)
 {
 	return AI::scanner_library->FindLibrary(library, version);
 }

@@ -188,7 +188,7 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 				if (no_offset) SetBit(table[i].flags, TADF_ARRIVAL_NO_OFFSET);
 			}
 
-			if (order->IsScheduledDispatchOrder(true) && !(i == start && !travelling)) {
+			if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && order->IsScheduledDispatchOrder(true) && !(i == start && !travelling)) {
 				if (!no_offset) sum -= v->lateness_counter;
 				extern DateTicksScaled GetScheduledDispatchTime(const DispatchSchedule &ds, DateTicksScaled leave_time);
 				DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(order->GetDispatchScheduleIndex());
@@ -428,13 +428,10 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 	int GetOrderFromTimetableWndPt(int y, const Vehicle *v)
 	{
-		int sel = (y - this->GetWidget<NWidgetBase>(WID_VT_TIMETABLE_PANEL)->pos_y - WidgetDimensions::scaled.framerect.top) / std::max<int>(FONT_HEIGHT_NORMAL, GetSpriteSize(SPR_LOCK).height);
-
-		if ((uint)sel >= this->vscroll->GetCapacity()) return INVALID_ORDER;
-
-		sel += this->vscroll->GetPosition();
-
-		return (sel < v->GetNumOrders() * 2 && sel >= 0) ? sel : INVALID_ORDER;
+		int sel = this->vscroll->GetScrolledRowFromWidget(y, this, WID_VT_TIMETABLE_PANEL, WidgetDimensions::scaled.framerect.top);
+		if (sel == INT_MAX) return INVALID_ORDER;
+		assert(IsInsideBS(sel, 0, v->GetNumOrders() * 2));
+		return sel;
 	}
 
 	/**

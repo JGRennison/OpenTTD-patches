@@ -126,6 +126,19 @@ static const SettingTable _generic_setting_tables[] = {
 	_network_settings,
 };
 
+void IterateSettingsTables(std::function<void(const SettingTable &, void *)> handler)
+{
+	handler(_misc_settings, nullptr);
+#if defined(_WIN32) && !defined(DEDICATED)
+	handler(_win32_settings, nullptr);
+#endif
+	for (auto &table : _generic_setting_tables) {
+		handler(table, &_settings_game);
+	}
+	handler(_currency_settings, &_custom_currency);
+	handler(_company_settings, &_settings_client.company);
+}
+
 /**
  * List of all the private setting tables.
  */
@@ -1275,6 +1288,7 @@ static void UpdateTimeSettings(int32 new_value)
 	InvalidateWindowData(WC_STATUS_BAR, 0, SBI_REINIT);
 	InvalidateWindowClassesData(WC_GAME_OPTIONS);
 	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 1);
+	InvalidateWindowClassesData(WC_PAYMENT_RATES);
 	MarkWholeScreenDirty();
 }
 
@@ -1743,6 +1757,8 @@ static void DayLengthChanged(int32 new_value)
 	extern void VehicleDayLengthChanged(DateTicksScaled old_scaled_date_ticks, DateTicksScaled old_scaled_date_ticks_offset, uint8 old_day_length_factor);
 	VehicleDayLengthChanged(old_scaled_date_ticks, old_scaled_date_ticks_offset, _pre_change_day_length_factor);
 
+	SetupTileLoopCounts();
+
 	MarkWholeScreenDirty();
 }
 
@@ -1971,7 +1987,7 @@ static void AILoadConfig(IniFile &ini, const char *grpname)
 
 	/* Clean any configured AI */
 	for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; c++) {
-		AIConfig::GetConfig(c, AIConfig::SSS_FORCE_NEWGAME)->Change(nullptr);
+		AIConfig::GetConfig(c, AIConfig::SSS_FORCE_NEWGAME)->Change(std::nullopt);
 	}
 
 	/* If no group exists, return */
@@ -1981,7 +1997,7 @@ static void AILoadConfig(IniFile &ini, const char *grpname)
 	for (item = group->item; c < MAX_COMPANIES && item != nullptr; c++, item = item->next) {
 		AIConfig *config = AIConfig::GetConfig(c, AIConfig::SSS_FORCE_NEWGAME);
 
-		config->Change(item->name.c_str());
+		config->Change(item->name);
 		if (!config->HasScript()) {
 			if (item->name != "none") {
 				DEBUG(script, 0, "The AI by the name '%s' was no longer found, and removed from the list.", item->name.c_str());
@@ -1998,7 +2014,7 @@ static void GameLoadConfig(IniFile &ini, const char *grpname)
 	IniItem *item;
 
 	/* Clean any configured GameScript */
-	GameConfig::GetConfig(GameConfig::SSS_FORCE_NEWGAME)->Change(nullptr);
+	GameConfig::GetConfig(GameConfig::SSS_FORCE_NEWGAME)->Change(std::nullopt);
 
 	/* If no group exists, return */
 	if (group == nullptr) return;
@@ -2008,7 +2024,7 @@ static void GameLoadConfig(IniFile &ini, const char *grpname)
 
 	GameConfig *config = GameConfig::GetConfig(AIConfig::SSS_FORCE_NEWGAME);
 
-	config->Change(item->name.c_str());
+	config->Change(item->name);
 	if (!config->HasScript()) {
 		if (item->name != "none") {
 			DEBUG(script, 0, "The GameScript by the name '%s' was no longer found, and removed from the list.", item->name.c_str());
@@ -2182,7 +2198,7 @@ static void AISaveConfig(IniFile &ini, const char *grpname)
 
 	for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; c++) {
 		AIConfig *config = AIConfig::GetConfig(c, AIConfig::SSS_FORCE_NEWGAME);
-		const char *name;
+		std::string name;
 		std::string value = config->SettingsToString();
 
 		if (config->HasScript()) {
@@ -2204,7 +2220,7 @@ static void GameSaveConfig(IniFile &ini, const char *grpname)
 	group->Clear();
 
 	GameConfig *config = GameConfig::GetConfig(AIConfig::SSS_FORCE_NEWGAME);
-	const char *name;
+	std::string name;
 	std::string value = config->SettingsToString();
 
 	if (config->HasScript()) {

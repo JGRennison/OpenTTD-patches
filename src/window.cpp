@@ -343,7 +343,7 @@ Scrollbar *Window::GetScrollbar(uint widnum)
  */
 const QueryString *Window::GetQueryString(uint widnum) const
 {
-	auto query = this->querystrings.Find(widnum);
+	auto query = this->querystrings.find(widnum);
 	return query != this->querystrings.end() ? query->second : nullptr;
 }
 
@@ -354,8 +354,8 @@ const QueryString *Window::GetQueryString(uint widnum) const
  */
 QueryString *Window::GetQueryString(uint widnum)
 {
-	SmallMap<int, QueryString*>::Pair *query = this->querystrings.Find(widnum);
-	return query != this->querystrings.End() ? query->second : nullptr;
+	auto query = this->querystrings.find(widnum);
+	return query != this->querystrings.end() ? query->second : nullptr;
 }
 
 /**
@@ -363,8 +363,7 @@ QueryString *Window::GetQueryString(uint widnum)
  */
 void Window::UpdateQueryStringSize()
 {
-	for (auto &qs : this->querystrings)
-	{
+	for (auto &qs : this->querystrings) {
 		qs.second->text.UpdateSize();
 	}
 }
@@ -1170,6 +1169,11 @@ Window::~Window()
 	 * DeleteChildWindows function.
 	 */
 	const_cast<volatile WindowClass &>(this->window_class) = WC_INVALID;
+}
+
+void Window::Close()
+{
+	if (this->window_class != WC_INVALID) delete this;
 }
 
 /**
@@ -2046,7 +2050,7 @@ static void DecreaseWindowCounters()
 		}
 
 		/* Handle editboxes */
-		for (SmallMap<int, QueryString*>::Pair &pair : w->querystrings) {
+		for (auto &pair : w->querystrings) {
 			pair.second->HandleEditBox(w, pair.first);
 		}
 

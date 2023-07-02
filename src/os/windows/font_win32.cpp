@@ -12,6 +12,7 @@
 #include "../../blitter/factory.hpp"
 #include "../../core/alloc_func.hpp"
 #include "../../core/math_func.hpp"
+#include "../../core/mem_func.hpp"
 #include "../../fileio_func.h"
 #include "../../fontdetection.h"
 #include "../../fontcache.h"

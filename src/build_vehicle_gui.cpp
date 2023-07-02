@@ -41,6 +41,8 @@
 
 #include "table/strings.h"
 
+#include <optional>
+
 #include "safeguards.h"
 
 /**
@@ -1147,6 +1149,7 @@ int DrawVehiclePurchaseInfo(int left, int right, int y, EngineID engine_number, 
 
 		case VEH_SHIP:
 			y = DrawShipPurchaseInfo(left, right, y, engine_number, refittable, te);
+			if (IsArticulatedEngine(engine_number)) articulated_cargo = true;
 			break;
 
 		case VEH_AIRCRAFT:
@@ -1701,14 +1704,14 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 
 		/* make engines first, and then wagons, sorted by selected sort_criteria */
 		_engine_sort_direction = false;
-		EngList_Sort(&list, TrainEnginesThenWagonsSorter);
+		EngList_Sort(list, TrainEnginesThenWagonsSorter);
 
 		/* and then sort engines */
 		_engine_sort_direction = this->descending_sort_order;
-		EngList_SortPartial(&list, _engine_sort_functions[0][this->sort_criteria], 0, num_engines);
+		EngList_SortPartial(list, _engine_sort_functions[0][this->sort_criteria], 0, num_engines);
 
 		/* and finally sort wagons */
-		EngList_SortPartial(&list, _engine_sort_functions[0][this->sort_criteria], num_engines, list.size() - num_engines);
+		EngList_SortPartial(list, _engine_sort_functions[0][this->sort_criteria], num_engines, list.size() - num_engines);
 	}
 
 	/* Figure out what road vehicle EngineIDs to put in the list */
@@ -1832,7 +1835,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		}
 
 		_engine_sort_direction = this->descending_sort_order;
-		EngList_Sort(&this->eng_list, _engine_sort_functions[this->vehicle_type][this->sort_criteria]);
+		EngList_Sort(this->eng_list, _engine_sort_functions[this->vehicle_type][this->sort_criteria]);
 
 		this->eng_list.swap(list);
 		AddChildren(this->eng_list, list, INVALID_ENGINE, 0);
@@ -1859,11 +1862,10 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 				break;
 
 			case WID_BV_LIST: {
-				uint i = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_BV_LIST);
-				size_t num_items = this->eng_list.size();
 				EngineID e = INVALID_ENGINE;
-				if (i < num_items) {
-					const auto &item = this->eng_list[i];
+				const auto it = this->vscroll->GetScrolledItemFromWidget(this->eng_list, pt.y, this, WID_BV_LIST);
+				if (it != this->eng_list.end()) {
+					const auto &item = *it;
 					const Rect r = this->GetWidget<NWidgetBase>(widget)->GetCurrentRect().Shrink(WidgetDimensions::scaled.matrix).WithWidth(WidgetDimensions::scaled.hsep_indent * (item.indent + 1), _current_text_dir == TD_RTL);
 					if ((item.flags & EngineDisplayFlags::HasVariants) != EngineDisplayFlags::None && IsInsideMM(r.left, r.right, pt.x)) {
 						/* toggle folded flag on engine */
@@ -2606,7 +2608,12 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 			if (!FilterSingleEngine(state, eid)) continue;
 
-			if ((rvi->railveh_type == RAILVEH_WAGON) != wagon) continue;
+			const Engine *top_engine = engine;
+			for (int depth = 0; depth < 16; depth++) {
+				if (top_engine->info.variant_id == INVALID_ENGINE) break;
+				top_engine = Engine::Get(top_engine->info.variant_id);
+			}
+			if ((top_engine->u.rail.railveh_type == RAILVEH_WAGON) != wagon) continue;
 
 			/* Filter by name or NewGRF extra text */
 			if (!FilterByText(state, engine)) continue;
@@ -2631,7 +2638,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 		/* Sort */
 		_engine_sort_direction = state.descending_sort_order;
-		EngList_Sort(&list, sorters[state.sort_criteria]);
+		EngList_Sort(list, sorters[state.sort_criteria]);
 	}
 
 	/* Generate the list of vehicles */

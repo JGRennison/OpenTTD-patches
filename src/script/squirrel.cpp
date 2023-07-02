@@ -459,13 +459,12 @@ bool Squirrel::CallMethod(HSQOBJECT instance, const char *method_name, HSQOBJECT
 	return true;
 }
 
-bool Squirrel::CallStringMethodStrdup(HSQOBJECT instance, const char *method_name, const char **res, int suspend)
+bool Squirrel::CallStringMethod(HSQOBJECT instance, const char *method_name, std::string *res, int suspend)
 {
 	HSQOBJECT ret;
 	if (!this->CallMethod(instance, method_name, &ret, suspend)) return false;
 	if (ret._type != OT_STRING) return false;
-	*res = stredup(ObjectToString(&ret));
-	StrMakeValidInPlace(const_cast<char *>(*res));
+	*res = StrMakeValid(ObjectToString(&ret));
 	return true;
 }
 
@@ -487,7 +486,7 @@ bool Squirrel::CallBoolMethod(HSQOBJECT instance, const char *method_name, bool 
 	return true;
 }
 
-/* static */ bool Squirrel::CreateClassInstanceVM(HSQUIRRELVM vm, const char *class_name, void *real_instance, HSQOBJECT *instance, SQRELEASEHOOK release_hook, bool prepend_API_name)
+/* static */ bool Squirrel::CreateClassInstanceVM(HSQUIRRELVM vm, const std::string &class_name, void *real_instance, HSQOBJECT *instance, SQRELEASEHOOK release_hook, bool prepend_API_name)
 {
 	Squirrel *engine = (Squirrel *)sq_getforeignptr(vm);
 
@@ -497,24 +496,22 @@ bool Squirrel::CallBoolMethod(HSQOBJECT instance, const char *method_name, bool 
 	sq_pushroottable(vm);
 
 	if (prepend_API_name) {
-		size_t len = strlen(class_name) + strlen(engine->GetAPIName()) + 1;
-		char *class_name2 = (char *)alloca(len);
-		seprintf(class_name2, class_name2 + len - 1, "%s%s", engine->GetAPIName(), class_name);
-
-		sq_pushstring(vm, class_name2, -1);
+		std::string prepended_class_name = engine->GetAPIName();
+		prepended_class_name += class_name;
+		sq_pushstring(vm, prepended_class_name, -1);
 	} else {
 		sq_pushstring(vm, class_name, -1);
 	}
 
 	if (SQ_FAILED(sq_get(vm, -2))) {
-		DEBUG(misc, 0, "[squirrel] Failed to find class by the name '%s%s'", prepend_API_name ? engine->GetAPIName() : "", class_name);
+		DEBUG(misc, 0, "[squirrel] Failed to find class by the name '%s%s'", prepend_API_name ? engine->GetAPIName() : "", class_name.c_str());
 		sq_settop(vm, oldtop);
 		return false;
 	}
 
 	/* Create the instance */
 	if (SQ_FAILED(sq_createinstance(vm, -1))) {
-		DEBUG(misc, 0, "[squirrel] Failed to create instance for class '%s%s'", prepend_API_name ? engine->GetAPIName() : "", class_name);
+		DEBUG(misc, 0, "[squirrel] Failed to create instance for class '%s%s'", prepend_API_name ? engine->GetAPIName() : "", class_name.c_str());
 		sq_settop(vm, oldtop);
 		return false;
 	}
@@ -537,7 +534,7 @@ bool Squirrel::CallBoolMethod(HSQOBJECT instance, const char *method_name, bool 
 	return true;
 }
 
-bool Squirrel::CreateClassInstance(const char *class_name, void *real_instance, HSQOBJECT *instance)
+bool Squirrel::CreateClassInstance(const std::string &class_name, void *real_instance, HSQOBJECT *instance)
 {
 	ScriptAllocatorScope alloc_scope(this);
 	return Squirrel::CreateClassInstanceVM(this->vm, class_name, real_instance, instance, nullptr);
@@ -651,7 +648,7 @@ static SQInteger _io_file_read(SQUserPointer file, SQUserPointer buf, SQInteger 
 	return ret;
 }
 
-SQRESULT Squirrel::LoadFile(HSQUIRRELVM vm, const char *filename, SQBool printerror)
+SQRESULT Squirrel::LoadFile(HSQUIRRELVM vm, const std::string &filename, SQBool printerror)
 {
 	ScriptAllocatorScope alloc_scope(this);
 
@@ -729,7 +726,7 @@ SQRESULT Squirrel::LoadFile(HSQUIRRELVM vm, const char *filename, SQBool printer
 	}
 
 	SQFile f(file, size);
-	if (SQ_SUCCEEDED(sq_compile(vm, func, &f, filename, printerror))) {
+	if (SQ_SUCCEEDED(sq_compile(vm, func, &f, filename.c_str(), printerror))) {
 		FioFCloseFile(file);
 		return SQ_OK;
 	}
@@ -737,7 +734,7 @@ SQRESULT Squirrel::LoadFile(HSQUIRRELVM vm, const char *filename, SQBool printer
 	return SQ_ERROR;
 }
 
-bool Squirrel::LoadScript(HSQUIRRELVM vm, const char *script, bool in_root)
+bool Squirrel::LoadScript(HSQUIRRELVM vm, const std::string &script, bool in_root)
 {
 	ScriptAllocatorScope alloc_scope(this);
 
@@ -757,11 +754,11 @@ bool Squirrel::LoadScript(HSQUIRRELVM vm, const char *script, bool in_root)
 	}
 
 	vm->_ops_till_suspend = ops_left;
-	DEBUG(misc, 0, "[squirrel] Failed to compile '%s'", script);
+	DEBUG(misc, 0, "[squirrel] Failed to compile '%s'", script.c_str());
 	return false;
 }
 
-bool Squirrel::LoadScript(const char *script)
+bool Squirrel::LoadScript(const std::string &script)
 {
 	return LoadScript(this->vm, script);
 }

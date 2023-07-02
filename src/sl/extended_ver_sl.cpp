@@ -200,6 +200,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_AI_START_DATE,                    XSCF_NULL,                1,   1, "slv_ai_start_date",                nullptr, nullptr, nullptr          },
 	{ XSLFI_EXTEND_VEHICLE_RANDOM,            XSCF_NULL,                1,   1, "slv_extend_vehicle_random",        nullptr, nullptr, nullptr          },
 	{ XSLFI_DISASTER_VEH_STATE,               XSCF_NULL,                1,   1, "slv_disaster_veh_state",           nullptr, nullptr, nullptr          },
+	{ XSLFI_SAVEGAME_ID,                      XSCF_NULL,                1,   1, "slv_savegame_id",                  nullptr, nullptr, nullptr          },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, nullptr, nullptr, nullptr, nullptr },// This is the end marker
 };
 

@@ -180,19 +180,8 @@ public:
 		} else {
 			/* Check if the previously selected object class is not available anymore as a
 			 * result of starting a new game without the corresponding NewGRF. */
-			bool available = false;
-			for (uint i = 0; ObjectClass::IsClassIDValid((ObjectClassID)i); ++i) {
-				if ((ObjectClassID)i == _selected_object_class) {
-					available = true;
-					break;
-				}
-			}
-
-			if (available) {
-				this->SelectOtherClass(_selected_object_class);
-			} else {
-				this->SelectOtherClass(this->object_classes[0]);
-			}
+			bool available = _selected_object_class < ObjectClass::GetClassCount();
+			this->SelectOtherClass(available ? _selected_object_class : this->object_classes[0]);
 		}
 
 		if (this->CanRestoreSelectedObject()) {
@@ -520,10 +509,10 @@ public:
 	{
 		switch (GB(widget, 0, 16)) {
 			case WID_BO_CLASS_LIST: {
-				int num_clicked = this->vscroll->GetPosition() + (pt.y - this->GetWidget<NWidgetBase>(widget)->pos_y) / this->line_height;
-				if (num_clicked >= (int)this->object_classes.size()) break;
+				auto it = this->vscroll->GetScrolledItemFromWidget(this->object_classes, widget, this, pt.y);
+				if (it == this->object_classes.end()) break;
 
-				this->SelectOtherClass(this->object_classes[num_clicked]);
+				this->SelectOtherClass(*it);
 				this->SelectFirstAvailableObject(false);
 				break;
 			}

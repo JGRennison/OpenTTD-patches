@@ -1719,9 +1719,8 @@ void SmallMapWindow::ScreenshotCallbackHandler(void *buf, uint y, uint pitch, ui
 	dpi.left = 0;
 	dpi.top = y;
 
-	int32 pos = (((int32)MapMaxX() + 1) * TILE_PIXELS) / 4;
-	this->scroll_x = pos;
-	this->scroll_y = -pos;
+	this->scroll_x = (dpi.width / 2) - ((16 * ((int)MapSizeY() - (int)MapSizeX())) / this->zoom);
+	this->scroll_y = 0;
 
 	/* make the screenshot */
 	this->DrawSmallMap(&dpi, false);

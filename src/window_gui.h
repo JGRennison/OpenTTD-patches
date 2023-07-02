@@ -16,8 +16,8 @@
 #include "tile_type.h"
 #include "widget_type.h"
 #include "core/smallvec_type.hpp"
-#include "core/smallmap_type.hpp"
 #include "string_type.h"
+#include "3rdparty/cpp-btree/btree_map.h"
 
 #include <algorithm>
 #include <functional>
@@ -289,6 +289,8 @@ public:
 
 	virtual ~Window();
 
+	virtual void Close();
+
 	/**
 	 * Helper allocation function to disallow something.
 	 * Don't allow arrays; arrays of Windows are pointless as you need
@@ -328,7 +330,7 @@ public:
 	ViewportData *viewport;          ///< Pointer to viewport data, if present.
 	NWidgetViewport *viewport_widget; ///< Pointer to viewport widget, if present.
 	NWidgetCore *nested_focus;       ///< Currently focused nested widget, or \c nullptr if no nested widget has focus.
-	SmallMap<int, QueryString*> querystrings; ///< QueryString associated to WWT_EDITBOX widgets.
+	btree::btree_map<int, QueryString*> querystrings; ///< QueryString associated to WWT_EDITBOX widgets.
 	NWidgetBase *nested_root;        ///< Root of the nested tree.
 	NWidgetBase **nested_array;      ///< Array of pointers into the tree. Do not access directly, use #Window::GetWidget() instead.
 	uint nested_array_size;          ///< Size of the nested array.
@@ -520,6 +522,7 @@ public:
 	static int SortButtonWidth();
 
 	void DeleteChildWindows(WindowClass wc = WC_INVALID) const;
+	inline void CloseChildWindows(WindowClass wc = WC_INVALID) const { this->DeleteChildWindows(wc); }
 
 	void SetDirty();
 	void SetDirtyAsBlocks();

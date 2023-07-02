@@ -9291,13 +9291,13 @@ static bool ChangeGRFParamValueNames(ByteReader *buf)
 		byte langid = buf->ReadByte();
 		const char *name_string = buf->ReadString();
 
-		std::pair<uint32, GRFTextList> *val_name = _cur_parameter->value_names.Find(id);
-		if (val_name != _cur_parameter->value_names.End()) {
+		auto val_name = _cur_parameter->value_names.find(id);
+		if (val_name != _cur_parameter->value_names.end()) {
 			AddGRFTextToList(val_name->second, langid, _cur.grfconfig->ident.grfid, false, name_string);
 		} else {
 			GRFTextList list;
 			AddGRFTextToList(list, langid, _cur.grfconfig->ident.grfid, false, name_string);
-			_cur_parameter->value_names.Insert(id, list);
+			_cur_parameter->value_names[id] = list;
 		}
 
 		type = buf->ReadByte();
@@ -11632,7 +11632,7 @@ void LoadNewGRF(uint load_index, uint num_baseset)
 	 */
 	for (GRFConfig *c = _grfconfig; c != nullptr; c = c->next) {
 		if (c->status != GCS_NOT_FOUND) c->status = GCS_UNKNOWN;
-		if (_settings_client.gui.newgrf_disable_big_gui && c->ident.grfid == BSWAP32(0x52577801)) {
+		if (_settings_client.gui.newgrf_disable_big_gui && (c->ident.grfid == BSWAP32(0x52577801) || c->ident.grfid == BSWAP32(0x55464970))) {
 			c->status = GCS_DISABLED;
 		}
 	}

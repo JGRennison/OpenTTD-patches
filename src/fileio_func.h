@@ -41,10 +41,10 @@ protected:
 	Subdirectory subdir; ///< The current sub directory we are searching through
 public:
 	/** Destruct the proper one... */
-	virtual ~FileScanner() {}
+	virtual ~FileScanner() = default;
 
 	uint Scan(const char *extension, Subdirectory sd, bool tars = true, bool recursive = true);
-	uint Scan(const char *extension, const char *directory, bool recursive = true);
+	uint Scan(const char *extension, const std::string &directory, bool recursive = true);
 
 	/**
 	 * Add a file with the given filename.

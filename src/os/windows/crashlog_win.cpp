@@ -33,7 +33,10 @@
 #include <mmsystem.h>
 #include <signal.h>
 #include <psapi.h>
-#if !defined(_MSC_VER)
+#include <memoryapi.h>
+#if defined(_MSC_VER)
+#include <excpt.h>
+#else
 #include <setjmp.h>
 #endif
 
@@ -73,10 +76,8 @@ class CrashLogWindows : public CrashLog {
 	char *LogModules(char *buffer, const char *last) const override;
 
 protected:
-#if !defined(_MSC_VER)
 	char *TryCrashLogFaultSection(char *buffer, const char *last, const char *section_name, CrashLogSectionWriter writer) override;
 	void CrashLogFaultSectionCheckpoint(char *buffer) const override;
-#endif
 
 public:
 #if defined(_MSC_VER)
@@ -84,7 +85,6 @@ public:
 #endif /* _MSC_VER */
 #if defined(_MSC_VER) || defined(WITH_DBGHELP)
 	char *AppendDecodedStacktrace(char *buffer, const char *last) const;
-	char *LogDebugExtra(char *buffer, const char *last) const override;
 #endif /* _MSC_VER || WITH_DBGHELP */
 
 
@@ -116,8 +116,8 @@ public:
 	 */
 	static CrashLogWindows *current;
 
-#if !defined(_MSC_VER)
 	char *internal_fault_saved_buffer = nullptr;
+#if !defined(_MSC_VER)
 	jmp_buf internal_fault_jmp_buf;
 #endif
 };
@@ -440,6 +440,16 @@ static char *PrintModuleInfo(char *output, const char *last, HMODULE mod)
 
 /* virtual */ char *CrashLogWindows::LogStacktrace(char *buffer, const char *last) const
 {
+#if defined(_MSC_VER) || defined(WITH_DBGHELP)
+	char *stacktrace_end = this->AppendDecodedStacktrace(buffer, last);
+	if (stacktrace_end - buffer >= 32) {
+		/* If AppendDecodedStacktrace managed to write out anything more than just the section title,
+		 * consider that a success and don't bother writing out the raw stack trace values as well.
+		 * The raw values are useless in almost all cases. */
+		return stacktrace_end;
+	}
+#endif
+
 	buffer += seprintf(buffer, last, "Stack trace:\n");
 #ifdef _M_AMD64
 	uint32 *b = (uint32*)ep->ContextRecord->Rsp;
@@ -649,14 +659,6 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 
 	return buffer + seprintf(buffer, last, "\n");;
 }
-
-	/**
-	 * Log decoded stack trace
-	 */
-	char *CrashLogWindows::LogDebugExtra(char *buffer, const char *last) const
-	{
-		return this->AppendDecodedStacktrace(buffer, last);
-	}
 #endif /* _MSC_VER  || WITH_DBGHELP */
 
 #if defined(_MSC_VER)
@@ -704,7 +706,39 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 }
 #endif /* _MSC_VER  || WITH_DBGHELP */
 
-#if !defined(_MSC_VER)
+#if defined(_MSC_VER)
+	/**
+	 * Call the handler from within an SEH try/except block for the case where we trigger another exception
+	 * during the course of calling the given log section writer.
+	 *
+	 * If an exception does occur, restore the buffer pointer to either the original value, or
+	 * the value provided in any later checkpoint.
+	 * Insert a message describing the problem and give up on the section.
+	 */
+	/* virtual */ char *CrashLogWindows::TryCrashLogFaultSection(char *buffer, const char *last, const char *section_name, CrashLogSectionWriter writer)
+	{
+		this->FlushCrashLogBuffer();
+		this->internal_fault_saved_buffer = buffer;
+
+		__try {
+			buffer = writer(this, buffer, last);
+		} __except (EXCEPTION_EXECUTE_HANDLER) {
+			if (this->internal_fault_saved_buffer == nullptr) {
+				/* if we get here, things are unrecoverable */
+				ImmediateExitProcess(43);
+			}
+
+			buffer = this->internal_fault_saved_buffer;
+			this->internal_fault_saved_buffer = nullptr;
+
+			buffer += seprintf(buffer, last, "\nSomething went seriously wrong when attempting to fill the '%s' section of the crash log: exception: %.8X.\n", section_name, GetExceptionCode());
+			buffer += seprintf(buffer, last, "This is probably due to an invalid pointer or other corrupt data.\n\n");
+		}
+
+		this->internal_fault_saved_buffer = nullptr;
+		return buffer;
+	}
+#else /* _MSC_VER */
 	/**
 	 * Set up a longjmp to be called from the vectored exception handler for the case where we trigger another exception
 	 * during the course of calling the given log section writer.
@@ -738,6 +772,7 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 		this->internal_fault_saved_buffer = nullptr;
 		return buffer;
 	}
+#endif /* _MSC_VER */
 
 	/* virtual */ void CrashLogWindows::CrashLogFaultSectionCheckpoint(char *buffer) const
 	{
@@ -749,7 +784,6 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 
 		self->FlushCrashLogBuffer();
 	}
-#endif /* !_MSC_VER */
 
 extern bool CloseConsoleLogIfActive();
 static void ShowCrashlogWindow();
@@ -839,11 +873,13 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 
 static LONG WINAPI VectoredExceptionHandler(EXCEPTION_POINTERS *ep)
 {
-#if !defined(_MSC_VER)
 	if (CrashLogWindows::current != nullptr && CrashLogWindows::current->internal_fault_saved_buffer != nullptr) {
+#if defined(_MSC_VER)
+		return EXCEPTION_CONTINUE_SEARCH;
+#else
 		longjmp(CrashLogWindows::current->internal_fault_jmp_buf, ep->ExceptionRecord->ExceptionCode);
-	}
 #endif
+	}
 
 	if (ep->ExceptionRecord->ExceptionCode == 0xC0000374 /* heap corruption */) {
 		return ExceptionHandler(ep);
@@ -937,8 +973,7 @@ static const TCHAR _crash_desc[] =
 	L"This will greatly help debugging. The correct place to do this is https://www.tt-forums.net/viewtopic.php?f=33&t=73469"
 	L" or https://github.com/JGRennison/OpenTTD-patches\n"
 	L"The information contained in the report is displayed below.\n"
-	L"Press \"Emergency save\" to attempt saving the game. Generated file(s):\n"
-	L"%s";
+	L"Press \"Emergency save\" to attempt saving the game. Generated file(s):\n";
 
 static const wchar_t _save_succeeded[] =
 	L"Emergency save succeeded.\nIts location is '%s'.\n"
@@ -972,44 +1007,68 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 {
 	switch (msg) {
 		case WM_INITDIALOG: {
+			uint crashlog_length = 0;
+			for (const char *p = CrashLogWindows::current->crashlog; *p != 0; p++) {
+				if (*p == '\n') {
+					/* Reserve extra space for LF to CRLF conversion */
+					crashlog_length++;
+				}
+				crashlog_length++;
+			}
+
 			/* We need to put the crash-log in a separate buffer because the default
-			 * buffer in MB_TO_WIDE is not large enough (512 chars) */
-			wchar_t filenamebuf[MAX_PATH * 2];
-			wchar_t crash_msgW[lengthof(CrashLogWindows::current->crashlog)];
+			 * buffer in MB_TO_WIDE is not large enough (512 chars).
+			 * Use VirtualAlloc to allocate pages for the buffer to avoid overflowing the stack,
+			 * due to the increased maximum size of the crash log.
+			 * Avoid the heap in case the crash is because the heap became corrupted. */
+			const size_t crash_desc_buf_length = lengthof(_crash_desc) + (MAX_PATH * 4); // Add an extra MAX_PATH for additional space
+			const size_t crash_msgW_length = ((crashlog_length + 16) * 3) / 2;
+			const size_t dos_nl_length = (crashlog_length + 16);
+			void *raw_buffer = VirtualAlloc(nullptr, (crash_desc_buf_length * sizeof(wchar_t)) + (crash_msgW_length * sizeof(wchar_t)) + dos_nl_length, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+
+			wchar_t *crash_desc_buf = reinterpret_cast<wchar_t *>(raw_buffer);
+			wchar_t *crash_msgW = crash_desc_buf + crash_desc_buf_length;
+			char *dos_nl = reinterpret_cast<char *>(crash_msgW + crash_msgW_length);
+
 			/* Convert unix -> dos newlines because the edit box only supports that properly :( */
 			const char *unix_nl = CrashLogWindows::current->crashlog;
-			char dos_nl[lengthof(CrashLogWindows::current->crashlog)];
 			char *p = dos_nl;
 			WChar c;
-			while ((c = Utf8Consume(&unix_nl)) && p < lastof(dos_nl) - 4) { // 4 is max number of bytes per character
+			while ((c = Utf8Consume(&unix_nl)) && p < (dos_nl + dos_nl_length - 1) - 4) { // 4 is max number of bytes per character
 				if (c == '\n') p += Utf8Encode(p, '\r');
 				p += Utf8Encode(p, c);
 			}
 			*p = '\0';
 
 			/* Add path to crash.log and crash.dmp (if any) to the crash window text */
-			size_t len = wcslen(_crash_desc) + 2;
-			len += wcslen(convert_to_fs(CrashLogWindows::current->crashlog_filename, filenamebuf, lengthof(filenamebuf))) + 2;
-			len += wcslen(convert_to_fs(CrashLogWindows::current->crashdump_filename, filenamebuf, lengthof(filenamebuf))) + 2;
-			len += wcslen(convert_to_fs(CrashLogWindows::current->screenshot_filename, filenamebuf, lengthof(filenamebuf))) + 1;
+			const wchar_t * const crash_desc_buf_last = crash_desc_buf + crash_desc_buf_length - 1;
+			wcsncpy_s(crash_desc_buf, crash_desc_buf_length, _crash_desc, _TRUNCATE);
+			wchar_t *desc = crash_desc_buf + wcslen(crash_desc_buf);
 
-			wchar_t *text = AllocaM(wchar_t, len);
-			int printed = _snwprintf(text, len, _crash_desc, convert_to_fs(CrashLogWindows::current->crashlog_filename, filenamebuf, lengthof(filenamebuf)));
-			if (printed < 0 || (size_t)printed > len) {
-				MessageBox(wnd, L"Catastrophic failure trying to display crash message. Could not perform text formatting.", L"OpenTTD", MB_ICONERROR);
-				return FALSE;
+			auto append_str = [&](std::string_view name) {
+				if (desc >= crash_desc_buf_last - 1) return;
+				desc += MultiByteToWideChar(CP_UTF8, 0, name.data(), (int)name.size(), desc, (int)(crash_desc_buf_last - desc));
+				*desc = L'\0';
+			};
+			auto append_newline = [&]() {
+				if (desc >= crash_desc_buf_last - 1) return;
+				*desc = L'\n';
+				desc++;
+				*desc = L'\0';
+			};
+
+			append_str(CrashLogWindows::current->crashlog_filename);
+			if (_settings_client.gui.developer > 0 && CrashLogWindows::current->crashdump_filename[0] != 0) {
+				append_newline();
+				append_str(CrashLogWindows::current->crashdump_filename);
 			}
-			if (_settings_client.gui.developer > 0 && convert_to_fs(CrashLogWindows::current->crashdump_filename, filenamebuf, lengthof(filenamebuf))[0] != L'\0') {
-				wcscat(text, L"\n");
-				wcscat(text, filenamebuf);
-			}
-			if (convert_to_fs(CrashLogWindows::current->screenshot_filename, filenamebuf, lengthof(filenamebuf))[0] != L'\0') {
-				wcscat(text, L"\n");
-				wcscat(text, filenamebuf);
+			if (CrashLogWindows::current->screenshot_filename[0] != 0) {
+				append_newline();
+				append_str(CrashLogWindows::current->crashdump_filename);
 			}
 
-			SetDlgItemText(wnd, 10, text);
-			SetDlgItemText(wnd, 11, convert_to_fs(dos_nl, crash_msgW, lengthof(crash_msgW)));
+			SetDlgItemText(wnd, 10, crash_desc_buf);
+			SetDlgItemText(wnd, 11, convert_to_fs(dos_nl, crash_msgW, crash_msgW_length));
 			SendDlgItemMessage(wnd, 11, WM_SETFONT, (WPARAM)GetStockObject(ANSI_FIXED_FONT), FALSE);
 			SetWndSize(wnd, -1);
 		} return TRUE;

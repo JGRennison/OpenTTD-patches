@@ -29,6 +29,8 @@
 #include "../fileio_func.h"
 #include "../league_type.h"
 
+#include "../3rdparty/fmt/format.h"
+
 #include "../safeguards.h"
 
 ScriptStorage::~ScriptStorage()
@@ -50,7 +52,6 @@ static void PrintFunc(bool error_msg, const SQChar *message)
 
 ScriptInstance::ScriptInstance(const char *APIName, ScriptType script_type) :
 	engine(nullptr),
-	versionAPI(nullptr),
 	controller(nullptr),
 	storage(nullptr),
 	instance(nullptr),
@@ -70,7 +71,7 @@ ScriptInstance::ScriptInstance(const char *APIName, ScriptType script_type) :
 	this->engine->SetPrintFunction(&PrintFunc);
 }
 
-void ScriptInstance::Initialize(const char *main_script, const char *instance_name, CompanyID company)
+void ScriptInstance::Initialize(const std::string &main_script, const std::string &instance_name, CompanyID company)
 {
 	ScriptObject::ActiveInstance active(this);
 
@@ -83,7 +84,7 @@ void ScriptInstance::Initialize(const char *main_script, const char *instance_na
 	try {
 		ScriptObject::SetAllowDoCommand(false);
 		/* Load and execute the script for this script */
-		if (strcmp(main_script, "%_dummy") == 0) {
+		if (main_script == "%_dummy") {
 			this->LoadDummyScript();
 		} else if (!this->engine->LoadScript(main_script) || this->engine->IsSuspended()) {
 			if (this->engine->IsSuspended()) ScriptLog::Error("This script took too long to load script. AI is not started.");
@@ -92,7 +93,7 @@ void ScriptInstance::Initialize(const char *main_script, const char *instance_na
 		}
 
 		if (this->script_type == ScriptType::GS) {
-			if (strcmp(instance_name, "BeeRewardClass") == 0) {
+			if (instance_name == "BeeRewardClass") {
 				this->LoadCompatibilityScripts("brgs", GAME_DIR);
 			}
 		}
@@ -110,7 +111,7 @@ void ScriptInstance::Initialize(const char *main_script, const char *instance_na
 		ScriptObject::SetAllowDoCommand(true);
 	} catch (Script_FatalError &e) {
 		this->is_dead = true;
-		this->engine->ThrowError(e.GetErrorMessage().c_str());
+		this->engine->ThrowError(e.GetErrorMessage());
 		this->engine->ResumeError();
 		this->Died();
 	}
@@ -121,12 +122,12 @@ void ScriptInstance::RegisterAPI()
 	squirrel_register_std(this->engine);
 }
 
-bool ScriptInstance::LoadCompatibilityScripts(const char *api_version, Subdirectory dir)
+bool ScriptInstance::LoadCompatibilityScripts(const std::string &api_version, Subdirectory dir)
 {
 	const char *api_vers[] = { "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "1.10", "1.11", "12", "13", "14" };
 	uint api_idx = 0;
 	for (; api_idx < lengthof(api_vers) ; api_idx++) {
-		if (strcmp(api_version, api_vers[api_idx]) == 0) break;
+		if (api_version == api_vers[api_idx]) break;
 	}
 	if (api_idx < 12) {
 		/* 13 and below */
@@ -134,13 +135,13 @@ bool ScriptInstance::LoadCompatibilityScripts(const char *api_version, Subdirect
 	}
 
 	char script_name[32];
-	seprintf(script_name, lastof(script_name), "compat_%s.nut", api_version);
+	seprintf(script_name, lastof(script_name), "compat_%s.nut", api_version.c_str());
 	for (Searchpath sp : _valid_searchpaths) {
 		std::string buf = FioGetDirectory(sp, dir);
 		buf += script_name;
 		if (!FileExists(buf)) continue;
 
-		if (this->engine->LoadScript(buf.c_str())) return true;
+		if (this->engine->LoadScript(buf)) return true;
 
 		ScriptLog::Error("Failed to load API compatibility script");
 		DEBUG(script, 0, "Error compiling / running API compatibility script: %s", buf.c_str());
@@ -263,7 +264,7 @@ void ScriptInstance::GameLoop()
 			this->callback = e.GetSuspendCallback();
 		} catch (Script_FatalError &e) {
 			this->is_dead = true;
-			this->engine->ThrowError(e.GetErrorMessage().c_str());
+			this->engine->ThrowError(e.GetErrorMessage());
 			this->engine->ResumeError();
 			this->Died();
 		}
@@ -284,7 +285,7 @@ void ScriptInstance::GameLoop()
 		this->callback = e.GetSuspendCallback();
 	} catch (Script_FatalError &e) {
 		this->is_dead = true;
-		this->engine->ThrowError(e.GetErrorMessage().c_str());
+		this->engine->ThrowError(e.GetErrorMessage());
 		this->engine->ResumeError();
 		this->Died();
 	}
@@ -542,7 +543,7 @@ void ScriptInstance::Save()
 			/* If we don't mark the script as dead here cleaning up the squirrel
 			 * stack could throw Script_FatalError again. */
 			this->is_dead = true;
-			this->engine->ThrowError(e.GetErrorMessage().c_str());
+			this->engine->ThrowError(e.GetErrorMessage());
 			this->engine->ResumeError();
 			SaveEmpty();
 			/* We can't kill the script here, so mark it as crashed (not dead) and
@@ -731,9 +732,16 @@ void ScriptInstance::LoadOnStack(ScriptData *data)
 
 	ScriptDataVariant version = data->front();
 	data->pop_front();
-	sq_pushinteger(vm, std::get<SQInteger>(version));
-	LoadObjects(vm, data);
-	this->is_save_data_on_stack = true;
+	SQInteger top = sq_gettop(vm);
+	try {
+		sq_pushinteger(vm, std::get<SQInteger>(version));
+		LoadObjects(vm, data);
+		this->is_save_data_on_stack = true;
+	} catch (Script_FatalError &e) {
+		ScriptLog::Warning(fmt::format("Loading failed: {}", e.GetErrorMessage()).c_str());
+		/* Discard partially loaded savegame data and version. */
+		sq_settop(vm, top);
+	}
 }
 
 bool ScriptInstance::CallLoad()

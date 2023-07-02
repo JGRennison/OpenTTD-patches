@@ -306,6 +306,19 @@ bool IsArticulatedVehicleCarryingDifferentCargoes(const Vehicle *v, CargoID *car
 }
 
 /**
+ * Returns the overall cargo of an articulated vehicle if all parts are refitted to the same cargo.
+ * Note: Vehicles not carrying anything are ignored
+ * @param v the first vehicle in the chain
+ * @return the common CargoID. (CT_INVALID if no part is carrying something or they are carrying different things)
+ */
+CargoID GetOverallCargoOfArticulatedVehicle(const Vehicle *v)
+{
+	CargoID cargo_id;
+	IsArticulatedVehicleCarryingDifferentCargoes(v, &cargo_id);
+	return cargo_id;
+}
+
+/**
  * Checks whether the specs of freshly build articulated vehicles are consistent with the information specified in the purchase list.
  * Only essential information is checked to leave room for magic tricks/workarounds to grfcoders.
  * It checks:

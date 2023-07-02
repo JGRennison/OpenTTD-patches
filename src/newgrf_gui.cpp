@@ -289,8 +289,9 @@ struct NewGRFParametersWindow : public Window {
 				}
 				SetDParam(2, STR_JUST_INT);
 				SetDParam(3, current_value);
-				if (par_info->value_names.Contains(current_value)) {
-					const char *label = GetGRFStringFromGRFText(par_info->value_names.Find(current_value)->second);
+				auto it = par_info->value_names.find(current_value);
+				if (it != par_info->value_names.end()) {
+					const char *label = GetGRFStringFromGRFText(it->second);
 					if (label != nullptr) {
 						SetDParam(2, STR_JUST_RAW_STRING);
 						SetDParamStr(3, label);
@@ -344,8 +345,10 @@ struct NewGRFParametersWindow : public Window {
 
 			case WID_NP_BACKGROUND: {
 				if (!this->editable) break;
-				uint num = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_NP_BACKGROUND);
-				if (num >= this->vscroll->GetCount()) break;
+				auto it = this->vscroll->GetScrolledItemFromWidget(this->grf_config->param_info, pt.y, this, WID_NP_BACKGROUND);
+				if (it == this->grf_config->param_info.end()) break;
+
+				uint num = it - this->grf_config->param_info.begin();
 				if (this->clicked_row != num) {
 					DeleteChildWindows(WC_QUERY_STRING);
 					HideDropDownMenu(this);
@@ -357,7 +360,7 @@ struct NewGRFParametersWindow : public Window {
 				int x = pt.x - r.left;
 				if (_current_text_dir == TD_RTL) x = r.Width() - 1 - x;
 
-				GRFParameterInfo *par_info = (num < this->grf_config->param_info.size()) ? this->grf_config->param_info[num] : nullptr;
+				GRFParameterInfo *par_info = *it;
 				if (par_info == nullptr) par_info = GetDummyParameterInfo(num);
 
 				/* One of the arrows is clicked */
@@ -384,7 +387,7 @@ struct NewGRFParametersWindow : public Window {
 
 							DropDownList list;
 							for (uint32 i = par_info->min_value; i <= par_info->max_value; i++) {
-								list.emplace_back(new DropDownListCharStringItem(GetGRFStringFromGRFText(par_info->value_names.Find(i)->second), i, false));
+								list.emplace_back(new DropDownListCharStringItem(GetGRFStringFromGRFText(par_info->value_names.find(i)->second), i, false));
 							}
 
 							ShowDropDownListAt(this, std::move(list), old_val, -1, wi_rect, COLOUR_ORANGE);
@@ -927,7 +930,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 
 	void OnClick(Point pt, int widget, int click_count) override
 	{
-		if (widget >= WID_NS_NEWGRF_TEXTFILE && widget < WID_NS_NEWGRF_TEXTFILE + TFT_END) {
+		if (widget >= WID_NS_NEWGRF_TEXTFILE && widget < WID_NS_NEWGRF_TEXTFILE + TFT_CONTENT_END) {
 			if (this->active_sel == nullptr && this->avail_sel == nullptr) return;
 
 			ShowNewGRFTextfileWindow((TextfileType)(widget - WID_NS_NEWGRF_TEXTFILE), this->active_sel != nullptr ? this->active_sel : this->avail_sel);
@@ -1081,13 +1084,13 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 			case WID_NS_AVAIL_LIST: { // Select a non-active GRF.
 				ResetObjectToPlace();
 
-				uint i = this->vscroll2->GetScrolledRowFromWidget(pt.y, this, WID_NS_AVAIL_LIST);
+				auto it = this->vscroll2->GetScrolledItemFromWidget(this->avails, pt.y, this, WID_NS_AVAIL_LIST);
 				this->active_sel = nullptr;
 				DeleteWindowByClass(WC_GRF_PARAMETERS);
-				if (i < this->avails.size()) {
-					if (this->avail_sel != this->avails[i]) DeleteWindowByClass(WC_TEXTFILE);
-					this->avail_sel = this->avails[i];
-					this->avail_pos = i;
+				if (it != this->avails.end()) {
+					if (this->avail_sel != *it) DeleteWindowByClass(WC_TEXTFILE);
+					this->avail_sel = *it;
+					this->avail_pos = it - this->avails.begin();
 				}
 				this->InvalidateData();
 				if (click_count == 1) {
@@ -1295,7 +1298,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		);
 
 		const GRFConfig *selected_config = (this->avail_sel == nullptr) ? this->active_sel : this->avail_sel;
-		for (TextfileType tft = TFT_BEGIN; tft < TFT_END; tft++) {
+		for (TextfileType tft = TFT_CONTENT_BEGIN; tft < TFT_CONTENT_END; tft++) {
 			this->SetWidgetDisabledState(WID_NS_NEWGRF_TEXTFILE + tft, selected_config == nullptr || selected_config->GetTextfile(tft) == nullptr);
 		}
 		this->SetWidgetDisabledState(WID_NS_OPEN_URL, selected_config == nullptr || StrEmpty(selected_config->GetURL()));
@@ -2152,10 +2155,10 @@ struct SavePresetWindow : public Window {
 	{
 		switch (widget) {
 			case WID_SVP_PRESET_LIST: {
-				uint row = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_SVP_PRESET_LIST);
-				if (row < this->presets.size()) {
-					this->selected = row;
-					this->presetname_editbox.text.Assign(this->presets[row].c_str());
+				auto it = this->vscroll->GetScrolledItemFromWidget(this->presets, pt.y, this, WID_SVP_PRESET_LIST);
+				if (it != this->presets.end()) {
+					this->selected = it - this->presets.begin();
+					this->presetname_editbox.text.Assign(it->c_str());
 					this->SetWidgetDirty(WID_SVP_PRESET_LIST);
 					this->SetWidgetDirty(WID_SVP_EDITBOX);
 				}

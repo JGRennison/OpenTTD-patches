@@ -21,9 +21,9 @@
 	return ScriptCargo::HasCargoClass(cargo_type, ScriptCargo::CC_PASSENGERS) ? ROADVEHTYPE_BUS : ROADVEHTYPE_TRUCK;
 }
 
-/* static */ char *ScriptRoad::GetName(RoadType road_type)
+/* static */ std::optional<std::string> ScriptRoad::GetName(RoadType road_type)
 {
-	if (!IsRoadTypeAvailable(road_type)) return nullptr;
+	if (!IsRoadTypeAvailable(road_type)) return std::nullopt;
 
 	return GetString(GetRoadTypeInfo((::RoadType)road_type)->strings.name);
 }
@@ -392,7 +392,7 @@ static bool NormaliseTileOffset(int32 *tile)
 		return false;
 }
 
-/* static */ SQInteger ScriptRoad::CanBuildConnectedRoadParts(ScriptTile::Slope slope_, Array<> existing, TileIndex start_, TileIndex end_)
+/* static */ SQInteger ScriptRoad::CanBuildConnectedRoadParts(ScriptTile::Slope slope_, Array<> &&existing, TileIndex start_, TileIndex end_)
 {
 	::Slope slope = (::Slope)slope_;
 	int32 start = start_;
@@ -433,7 +433,7 @@ static bool NormaliseTileOffset(int32 *tile)
 		if (HasBit(rb, i)) existing.emplace_back(neighbours[i]);
 	}
 
-	return ScriptRoad::CanBuildConnectedRoadParts(ScriptTile::GetSlope(tile), existing, start - tile, end - tile);
+	return ScriptRoad::CanBuildConnectedRoadParts(ScriptTile::GetSlope(tile), std::move(existing), start - tile, end - tile);
 }
 
 /**
