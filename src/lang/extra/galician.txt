@@ -379,7 +379,7 @@ STR_CONFIG_SETTING_ENABLE_SINGLE_VEH_SHARED_ORDER_GUI_HELPTEXT  :Permitir usar a
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SLOPES                     :Amosar ladeiras: {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SLOPES_HELPTEXT            :Se se deben sombrear as ladeiras ao facer zoom no modo de mapa.
 
-STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_HEIGHT                     :Show height: {STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_HEIGHT                     :Amosar altura: {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_HEIGHT_HELPTEXT            :Se se deben sombrear os niveis de altura ao facer zoom no modo de mapa e non no modo de vexetación.
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_BRIDGES                    :Amosar pontes: {STRING}
