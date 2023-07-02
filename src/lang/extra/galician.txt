@@ -91,6 +91,7 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Aeronaves
 
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED                     :{TINY_FONT}{BLACK}Velocidade media de tránsito({STRING})
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE_AVG_SPEED                   :{TINY_FONT}{BLACK}Pago pola entrega de 1 unidade (ou 1.000 litros) de carga nunha distancia de 200 cadros
+STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_MINUTES                   :{TINY_FONT}{BLACK}Minutos en tránsito
 STR_GRAPH_STATION_CARGO_CAPTION                                 :{WHITE}{STATION} - Historial de espera de carga
 STR_GRAPH_STATION_CARGO_X_LABEL                                 :{TINY_FONT}{BLACK}Desenvolvemento nos últimos {NUM} días
 STR_GRAPH_STATION_CARGO_TITLE                                   :{TINY_FONT}{BLACK}Unidades de carga agardando na estación
@@ -376,23 +377,32 @@ STR_CONFIG_SETTING_ENABLE_SINGLE_VEH_SHARED_ORDER_GUI           :Habilitar os ve
 STR_CONFIG_SETTING_ENABLE_SINGLE_VEH_SHARED_ORDER_GUI_HELPTEXT  :Permitir usar a fiestra de grupo de ordes compartidas con vehículos individuais, sen ordes compartidas.
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SLOPES                     :Amosar ladeiras: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SLOPES_HELPTEXT            :Se se deben sombrear as ladeiras ao facer zoom no modo de mapa.
+
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_HEIGHT                     :Show height: {STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_HEIGHT_HELPTEXT            :Se se deben sombrear os niveis de altura ao facer zoom no modo de mapa e non no modo de vexetación.
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_BRIDGES                    :Amosar pontes: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_BRIDGES_HELPTEXT           :Se se debe amosar unha liña punteada para as pontes ao facer zoom no modo de mapa.
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_TUNNELS                    :Amosar túneis: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_TUNNELS_HELPTEXT           :Se se debe amosar unha liña punteada para os túneis ao facer zoom no modo de mapa.
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP               :Amosar vista de desprazamento: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_HELPTEXT      :Ao desprazarse por unha vista que non está no modo de mapa, amosar unha indicación de onde se atopa a vista desprazada en calquera vista do modo de mapa.
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_NOTHING       :Non
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_CONTOUR       :Contorno
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_BLEND         :Mesturar con algo de branco (só con 32bpp)
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_ALL           :Mesturar + Contorno
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_USE_OWNER_COLOUR_BRIDGE_TUNNEL  :Usar a cor do dono para pontes e túneis: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_USE_OWNER_COLOUR_BRIDGE_TUNNEL_HELPTEXT :Se se debe usar a cor do propietario para as liñas punteadas de pontes e túneis ao facer zoom no modo de mapa no modo de visualización do propietario.
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE                    :Modo por defecto: {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE_HELPTEXT           :Modo de visualización por defecto para a xanela principal e calquera outra xanela, cando se fai zoom out ata o modo mapa.
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK                 :Función do doble-click: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_HELPTEXT        :Que acción realizar ao facer dobre clic nunha vista, cando se fai zoom no modo de mapa.
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_DO_NOTHING      :Non facer nada
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_ZOOM_MAIN       :Facer zoom directamente a 1X
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_NEW_EXTRA       :Abrir unha vista adicional
@@ -401,6 +411,7 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE              :Amosar a ruta d
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE_HELPTEXT     :Cando se habilita, e a fiestra do vehículo está focalizada, dibuxanse liñas entre as localizacións das ordes de cada vehículo. (As ramas de ordes condicionais amósanse como liñas amarelo).
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :Estilo de debuxo da ruta do vehículo: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_HELPTEXT        :Como debuxar as liñas entre as localizacións de cada unha das ordes do vehículo ao amosar unha superposición da ruta do vehículo.
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :liñas discontinuas de {COMMA} pixel{P "" es}
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :liñas planas
 
@@ -2092,3 +2103,6 @@ STR_TOWN_DIRECTORY_INFO                                         :{BLACK}{STRING}
 
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR                         :{BLACK}Barra de ferramentas principal máis grande
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR_TOOLTIP                 :{BLACK}Marca esta caixa para aumentar a escala da barra de ferramentas principal
+
+STR_CONFIG_SETTING_INSTANT_TILE_TOOLTIP                         :Amosar descricións rápidas de vista previa para os cadros sen necesidade de facer clic dereito: {STRING}
+STR_CONFIG_SETTING_INSTANT_TILE_TOOLTIP_HELPTEXT                :Amosar descricións rápidas de vista previa para tipos de cadros como industrias sen necesidade de facer clic dereito, cando a configuración de amosar descricións rápidas está establecida en facer clic dereito.
