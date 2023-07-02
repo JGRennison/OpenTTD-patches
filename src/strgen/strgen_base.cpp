@@ -9,6 +9,8 @@
 
 #include "../stdafx.h"
 #include "../core/endian_func.hpp"
+#include "../core/alloc_func.hpp"
+#include "../core/mem_func.hpp"
 #include "../string_func.h"
 #include "../table/control_codes.h"
 

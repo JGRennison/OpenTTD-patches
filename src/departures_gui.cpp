@@ -28,7 +28,6 @@
 #include "vehicle_gui.h"
 #include "order_base.h"
 #include "settings_type.h"
-#include "core/smallvec_type.hpp"
 #include "date_type.h"
 #include "company_type.h"
 #include "departures_func.h"

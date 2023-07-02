@@ -31,6 +31,7 @@
 #include "articulated_vehicles.h"
 #include "spritecache.h"
 #include "core/geometry_func.hpp"
+#include "core/container_func.hpp"
 #include "company_base.h"
 #include "engine_func.h"
 #include "station_base.h"
@@ -1595,7 +1596,7 @@ static bool VehicleProfitLifetimeSorter(const Vehicle * const &a, const Vehicle 
 static bool VehicleCargoSorter(const Vehicle * const &a, const Vehicle * const &b)
 {
 	const Vehicle *v;
-	CargoArray diff;
+	CargoArray diff{};
 
 	/* Append the cargo of the connected waggons */
 	for (v = a; v != nullptr; v = v->Next()) diff[v->cargo_type] += v->cargo_cap;

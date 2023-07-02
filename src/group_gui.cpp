@@ -22,6 +22,7 @@
 #include "tilehighlight_func.h"
 #include "vehicle_gui_base.h"
 #include "core/geometry_func.hpp"
+#include "core/container_func.hpp"
 #include "company_base.h"
 #include "company_gui.h"
 #include "gui.h"
@@ -30,7 +31,6 @@
 #include "newgrf_debug.h"
 
 #include "widgets/group_widget.h"
-#include "core/smallvec_type.hpp"
 
 #include "table/sprites.h"
 

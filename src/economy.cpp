@@ -42,6 +42,7 @@
 #include "economy_base.h"
 #include "core/pool_func.hpp"
 #include "core/backup_type.hpp"
+#include "core/container_func.hpp"
 #include "infrastructure_func.h"
 #include "cargo_type.h"
 #include "water.h"
@@ -1113,12 +1114,9 @@ void ForAcceptingIndustries(const Station *st, CargoID cargo_type, IndustryID so
 		Industry *ind = i.industry;
 		if (ind->index == source) continue;
 
-		uint cargo_index;
-		for (cargo_index = 0; cargo_index < lengthof(ind->accepts_cargo); cargo_index++) {
-			if (cargo_type == ind->accepts_cargo[cargo_index]) break;
-		}
+		int cargo_index = ind->GetCargoAcceptedIndex(cargo_type);
 		/* Check if matching cargo has been found */
-		if (cargo_index >= lengthof(ind->accepts_cargo)) continue;
+		if (cargo_index < 0) continue;
 
 		/* Check if industry temporarily refuses acceptance */
 		if (IndustryTemporarilyRefusesCargo(ind, cargo_type)) continue;
@@ -1932,7 +1930,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 	CargoStationIDStackSet next_station = front->GetNextStoppingStation();
 
 	bool use_autorefit = front->current_order.IsRefit() && front->current_order.GetRefitCargo() == CT_AUTO_REFIT;
-	CargoArray consist_capleft;
+	CargoArray consist_capleft{};
 	bool should_reserve_consist = false;
 	bool reserve_consist_cargo_type_loading = false;
 	if (_settings_game.order.improved_load && use_autorefit) {

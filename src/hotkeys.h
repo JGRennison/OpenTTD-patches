@@ -10,10 +10,10 @@
 #ifndef HOTKEYS_H
 #define HOTKEYS_H
 
-#include "core/smallvec_type.hpp"
 #include "gfx_type.h"
 #include "window_type.h"
 #include "string_type.h"
+#include "3rdparty/cpp-btree/btree_set.h"
 
 /**
  * All data for a single hotkey. The name (for saving/loading a configfile),
@@ -27,7 +27,7 @@ struct Hotkey {
 
 	const char *name;
 	int num;
-	std::vector<uint16> keycodes;
+	btree::btree_set<uint16> keycodes;
 };
 
 #define HOTKEY_LIST_END Hotkey((uint16)0, nullptr, -1)

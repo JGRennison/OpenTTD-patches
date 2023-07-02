@@ -12,7 +12,7 @@
 #include "../strings_type.h"
 #include "../misc/getoptdata.h"
 #include "../ini_type.h"
-#include "../core/smallvec_type.hpp"
+#include "../core/mem_func.hpp"
 
 #include <stdarg.h>
 
@@ -406,7 +406,6 @@ static bool CompareFiles(const char *n1, const char *n2)
 
 /** Options of settingsgen. */
 static const OptionData _opts[] = {
-	  GETOPT_NOVAL(     'v', "--version"),
 	  GETOPT_NOVAL(     'h', "--help"),
 	GETOPT_GENERAL('h', '?', nullptr, ODF_NO_VALUE),
 	  GETOPT_VALUE(     'o', "--output"),
@@ -461,15 +460,10 @@ int CDECL main(int argc, char *argv[])
 		if (i == -1) break;
 
 		switch (i) {
-			case 'v':
-				puts("$Revision$");
-				return 0;
-
 			case 'h':
-				puts("settingsgen - $Revision$\n"
+				puts("settingsgen\n"
 						"Usage: settingsgen [options] ini-file...\n"
 						"with options:\n"
-						"   -v, --version           Print version information and exit\n"
 						"   -h, -?, --help          Print this help message and exit\n"
 						"   -b FILE, --before FILE  Copy FILE before all settings\n"
 						"   -a FILE, --after FILE   Copy FILE after all settings\n"

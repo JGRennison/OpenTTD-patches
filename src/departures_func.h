@@ -13,7 +13,6 @@
 #define DEPARTURES_FUNC_H
 
 #include "station_base.h"
-#include "core/smallvec_type.hpp"
 #include "departures_type.h"
 
 #include <vector>

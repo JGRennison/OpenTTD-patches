@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "animated_tile.h"
 #include "core/alloc_func.hpp"
-#include "core/smallvec_type.hpp"
+#include "core/container_func.hpp"
 #include "tile_cmd.h"
 #include "viewport_func.h"
 #include "framerate_type.h"

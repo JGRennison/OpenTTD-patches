@@ -17,6 +17,7 @@
 #include "date_func.h"
 #include "vehicle_func.h"
 #include "core/random_func.hpp"
+#include "core/container_func.hpp"
 #include "aircraft.h"
 #include "station_base.h"
 #include "company_base.h"

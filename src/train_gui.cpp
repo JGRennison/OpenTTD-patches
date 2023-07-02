@@ -380,19 +380,12 @@ int GetTrainDetailsWndVScroll(VehicleID veh_id, TrainDetailsWindowTabs det_tab)
 	int num = 0;
 
 	if (det_tab == TDW_TAB_TOTALS) { // Total cargo tab
-		CargoArray act_cargo;
-		CargoArray max_cargo;
+		CargoArray max_cargo{};
 		for (const Vehicle *v = Vehicle::Get(veh_id); v != nullptr; v = v->Next()) {
-			act_cargo[v->cargo_type] += v->cargo.StoredCount();
 			max_cargo[v->cargo_type] += v->cargo_cap;
 		}
 
-		/* Set scroll-amount separately from counting, as to not compute num double
-		 * for more carriages of the same type
-		 */
-		for (CargoID i = 0; i < NUM_CARGO; i++) {
-			if (max_cargo[i] > 0) num++; // only count carriages that the train has
-		}
+		num = max_cargo.GetCount();
 
 		if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
 			num += 5; // needs five more because first line is description string and we have the weight and speed info and the feeder share
@@ -511,8 +504,8 @@ void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16 vsc
 		}
 	} else {
 		int y = r.top;
-		CargoArray act_cargo;
-		CargoArray max_cargo;
+		CargoArray act_cargo{};
+		CargoArray max_cargo{};
 		Money feeder_share = 0;
 		int empty_weight = 0;
 		int loaded_weight = 0;

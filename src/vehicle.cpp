@@ -40,6 +40,7 @@
 #include "roadstop_base.h"
 #include "core/random_func.hpp"
 #include "core/backup_type.hpp"
+#include "core/container_func.hpp"
 #include "infrastructure_func.h"
 #include "order_backup.h"
 #include "sound_func.h"

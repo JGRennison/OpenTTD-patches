@@ -23,6 +23,7 @@
 #include "sortlist_type.h"
 #include "stringfilter_type.h"
 #include "querystring_gui.h"
+#include "core/container_func.hpp"
 #include "core/geometry_func.hpp"
 #include "newgrf_text.h"
 #include "textfile_gui.h"
@@ -55,7 +56,7 @@ void ShowNewGRFError()
 		SetDParamStr(2, c->error->custom_message);
 		SetDParamStr(3, c->filename);
 		SetDParamStr(4, c->error->data);
-		for (uint i = 0; i < lengthof(c->error->param_value); i++) {
+		for (uint i = 0; i < c->error->param_value.size(); i++) {
 			SetDParam(5 + i, c->error->param_value[i]);
 		}
 		if (c->error->severity == STR_NEWGRF_ERROR_MSG_FATAL) {
@@ -75,7 +76,7 @@ static void ShowNewGRFInfo(const GRFConfig *c, const Rect &r, bool show_params)
 		SetDParamStr(0, c->error->custom_message); // is skipped by built-in messages
 		SetDParamStr(1, c->filename);
 		SetDParamStr(2, c->error->data);
-		for (uint i = 0; i < lengthof(c->error->param_value); i++) {
+		for (uint i = 0; i < c->error->param_value.size(); i++) {
 			SetDParam(3 + i, c->error->param_value[i]);
 		}
 		GetString(message, c->error->message != STR_NULL ? c->error->message : STR_JUST_RAW_STRING, lastof(message));
@@ -113,9 +114,9 @@ static void ShowNewGRFInfo(const GRFConfig *c, const Rect &r, bool show_params)
 	/* Show GRF parameter list */
 	if (show_params) {
 		if (c->num_params > 0) {
-			GRFBuildParamList(buff, c, lastof(buff));
+			std::string params = GRFBuildParamList(c);
 			SetDParam(0, STR_JUST_RAW_STRING);
-			SetDParamStr(1, buff);
+			SetDParamStr(1, params);
 		} else {
 			SetDParam(0, STR_NEWGRF_SETTINGS_PARAMETER_NONE);
 		}
@@ -170,7 +171,7 @@ struct NewGRFParametersWindow : public Window {
 		clicked_row(UINT_MAX),
 		editable(editable)
 	{
-		this->action14present = (c->num_valid_params != lengthof(c->param) || c->param_info.size() != 0);
+		this->action14present = (c->num_valid_params != c->param.size() || c->param_info.size() != 0);
 
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_NP_SCROLLBAR);
@@ -193,10 +194,31 @@ struct NewGRFParametersWindow : public Window {
 	 * @param nr The param number that should be changed.
 	 * @return GRFParameterInfo with dummy information about the given parameter.
 	 */
-	static GRFParameterInfo *GetDummyParameterInfo(uint nr)
+	static GRFParameterInfo &GetDummyParameterInfo(uint nr)
 	{
 		dummy_parameter_info.param_nr = nr;
-		return &dummy_parameter_info;
+		return dummy_parameter_info;
+	}
+
+	/**
+	 * Test if GRF Parameter Info exists for a given parameter index.
+	 * @param nr The param number that should be tested.
+	 * @return True iff the parameter info exists.
+	 */
+	bool HasParameterInfo(uint nr) const
+	{
+		return nr < this->grf_config->param_info.size() && this->grf_config->param_info[nr].has_value();
+	}
+
+	/**
+	 * Get GRF Parameter Info exists for a given parameter index.
+	 * If the parameter info does not exist, a dummy parameter-info is returned instead.
+	 * @param nr The param number that should be got.
+	 * @return Reference to the GRFParameterInfo.
+	 */
+	GRFParameterInfo &GetParameterInfo(uint nr) const
+	{
+		return this->HasParameterInfo(nr) ? this->grf_config->param_info[nr].value() : GetDummyParameterInfo(nr);
 	}
 
 	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
@@ -210,7 +232,7 @@ struct NewGRFParametersWindow : public Window {
 			}
 
 			case WID_NP_NUMPAR: {
-				SetDParamMaxValue(0, lengthof(this->grf_config->param));
+				SetDParamMaxValue(0, this->grf_config->param.size());
 				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->widget_data);
 				d.width += padding.width;
 				d.height += padding.height;
@@ -229,9 +251,8 @@ struct NewGRFParametersWindow : public Window {
 			case WID_NP_DESCRIPTION:
 				/* Minimum size of 4 lines. The 500 is the default size of the window. */
 				Dimension suggestion = {500U - WidgetDimensions::scaled.frametext.Horizontal(), (uint)FONT_HEIGHT_NORMAL * 4 + WidgetDimensions::scaled.frametext.Vertical()};
-				for (uint i = 0; i < this->grf_config->param_info.size(); i++) {
-					const GRFParameterInfo *par_info = this->grf_config->param_info[i];
-					if (par_info == nullptr) continue;
+				for (const auto &par_info : this->grf_config->param_info) {
+					if (!par_info.has_value()) continue;
 					const char *desc = GetGRFStringFromGRFText(par_info->desc);
 					if (desc == nullptr) continue;
 					Dimension d = GetStringMultiLineBoundingBox(desc, suggestion);
@@ -255,9 +276,9 @@ struct NewGRFParametersWindow : public Window {
 	void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (widget == WID_NP_DESCRIPTION) {
-			const GRFParameterInfo *par_info = (this->clicked_row < this->grf_config->param_info.size()) ? this->grf_config->param_info[this->clicked_row] : nullptr;
-			if (par_info == nullptr) return;
-			const char *desc = GetGRFStringFromGRFText(par_info->desc);
+			if (!this->HasParameterInfo(this->clicked_row)) return;
+			const GRFParameterInfo &par_info = this->GetParameterInfo(this->clicked_row);
+			const char *desc = GetGRFStringFromGRFText(par_info.desc);
 			if (desc == nullptr) return;
 			DrawStringMultiLine(r.Shrink(WidgetDimensions::scaled.framerect), desc, TC_BLACK);
 			return;
@@ -273,24 +294,23 @@ struct NewGRFParametersWindow : public Window {
 		int button_y_offset = (this->line_height - SETTING_BUTTON_HEIGHT) / 2;
 		int text_y_offset = (this->line_height - FONT_HEIGHT_NORMAL) / 2;
 		for (uint i = this->vscroll->GetPosition(); this->vscroll->IsVisible(i) && i < this->vscroll->GetCount(); i++) {
-			GRFParameterInfo *par_info = (i < this->grf_config->param_info.size()) ? this->grf_config->param_info[i] : nullptr;
-			if (par_info == nullptr) par_info = GetDummyParameterInfo(i);
-			uint32 current_value = par_info->GetValue(this->grf_config);
+			GRFParameterInfo &par_info = this->GetParameterInfo(i);
+			uint32 current_value = par_info.GetValue(this->grf_config);
 			bool selected = (i == this->clicked_row);
 
-			if (par_info->type == PTYPE_BOOL) {
+			if (par_info.type == PTYPE_BOOL) {
 				DrawBoolButton(buttons_left, ir.top + button_y_offset, current_value != 0, this->editable);
-				SetDParam(2, par_info->GetValue(this->grf_config) == 0 ? STR_CONFIG_SETTING_OFF : STR_CONFIG_SETTING_ON);
-			} else if (par_info->type == PTYPE_UINT_ENUM) {
-				if (par_info->complete_labels) {
+				SetDParam(2, par_info.GetValue(this->grf_config) == 0 ? STR_CONFIG_SETTING_OFF : STR_CONFIG_SETTING_ON);
+			} else if (par_info.type == PTYPE_UINT_ENUM) {
+				if (par_info.complete_labels) {
 					DrawDropDownButton(buttons_left, ir.top + button_y_offset, COLOUR_YELLOW, this->clicked_row == i && this->clicked_dropdown, this->editable);
 				} else {
-					DrawArrowButtons(buttons_left, ir.top + button_y_offset, COLOUR_YELLOW, (this->clicked_button == i) ? 1 + (this->clicked_increase != rtl) : 0, this->editable && current_value > par_info->min_value, this->editable && current_value < par_info->max_value);
+					DrawArrowButtons(buttons_left, ir.top + button_y_offset, COLOUR_YELLOW, (this->clicked_button == i) ? 1 + (this->clicked_increase != rtl) : 0, this->editable && current_value > par_info.min_value, this->editable && current_value < par_info.max_value);
 				}
 				SetDParam(2, STR_JUST_INT);
 				SetDParam(3, current_value);
-				auto it = par_info->value_names.find(current_value);
-				if (it != par_info->value_names.end()) {
+				auto it = par_info.value_names.find(current_value);
+				if (it != par_info.value_names.end()) {
 					const char *label = GetGRFStringFromGRFText(it->second);
 					if (label != nullptr) {
 						SetDParam(2, STR_JUST_RAW_STRING);
@@ -299,7 +319,7 @@ struct NewGRFParametersWindow : public Window {
 				}
 			}
 
-			const char *name = GetGRFStringFromGRFText(par_info->name);
+			const char *name = GetGRFStringFromGRFText(par_info.name);
 			if (name != nullptr) {
 				SetDParam(0, STR_JUST_RAW_STRING);
 				SetDParamStr(1, name);
@@ -360,12 +380,11 @@ struct NewGRFParametersWindow : public Window {
 				int x = pt.x - r.left;
 				if (_current_text_dir == TD_RTL) x = r.Width() - 1 - x;
 
-				GRFParameterInfo *par_info = *it;
-				if (par_info == nullptr) par_info = GetDummyParameterInfo(num);
+				GRFParameterInfo &par_info = it->has_value() ? it->value() : GetDummyParameterInfo(num);
 
 				/* One of the arrows is clicked */
-				uint32 old_val = par_info->GetValue(this->grf_config);
-				if (par_info->type != PTYPE_BOOL && IsInsideMM(x, 0, SETTING_BUTTON_WIDTH) && par_info->complete_labels) {
+				uint32 old_val = par_info.GetValue(this->grf_config);
+				if (par_info.type != PTYPE_BOOL && IsInsideMM(x, 0, SETTING_BUTTON_WIDTH) && par_info.complete_labels) {
 					if (this->clicked_dropdown) {
 						/* unclick the dropdown */
 						HideDropDownMenu(this);
@@ -386,8 +405,8 @@ struct NewGRFParametersWindow : public Window {
 							this->closing_dropdown = false;
 
 							DropDownList list;
-							for (uint32 i = par_info->min_value; i <= par_info->max_value; i++) {
-								list.emplace_back(new DropDownListCharStringItem(GetGRFStringFromGRFText(par_info->value_names.find(i)->second), i, false));
+							for (uint32 i = par_info.min_value; i <= par_info.max_value; i++) {
+								list.emplace_back(new DropDownListCharStringItem(GetGRFStringFromGRFText(par_info.value_names.find(i)->second), i, false));
 							}
 
 							ShowDropDownListAt(this, std::move(list), old_val, -1, wi_rect, COLOUR_ORANGE);
@@ -395,26 +414,26 @@ struct NewGRFParametersWindow : public Window {
 					}
 				} else if (IsInsideMM(x, 0, SETTING_BUTTON_WIDTH)) {
 					uint32 val = old_val;
-					if (par_info->type == PTYPE_BOOL) {
+					if (par_info.type == PTYPE_BOOL) {
 						val = !val;
 					} else {
 						if (x >= SETTING_BUTTON_WIDTH / 2) {
 							/* Increase button clicked */
-							if (val < par_info->max_value) val++;
+							if (val < par_info.max_value) val++;
 							this->clicked_increase = true;
 						} else {
 							/* Decrease button clicked */
-							if (val > par_info->min_value) val--;
+							if (val > par_info.min_value) val--;
 							this->clicked_increase = false;
 						}
 					}
 					if (val != old_val) {
-						par_info->SetValue(this->grf_config, val);
+						par_info.SetValue(this->grf_config, val);
 
 						this->clicked_button = num;
 						this->timeout.SetInterval(150);
 					}
-				} else if (par_info->type == PTYPE_UINT_ENUM && !par_info->complete_labels && click_count >= 2) {
+				} else if (par_info.type == PTYPE_UINT_ENUM && !par_info.complete_labels && click_count >= 2) {
 					/* Display a query box so users can enter a custom value. */
 					SetDParam(0, old_val);
 					ShowQueryString(STR_JUST_INT, STR_CONFIG_SETTING_QUERY_CAPTION, 10, this, CS_NUMERAL, QSF_NONE);
@@ -440,19 +459,17 @@ struct NewGRFParametersWindow : public Window {
 	{
 		if (StrEmpty(str)) return;
 		int32 value = atoi(str);
-		GRFParameterInfo *par_info = ((uint)this->clicked_row < this->grf_config->param_info.size()) ? this->grf_config->param_info[this->clicked_row] : nullptr;
-		if (par_info == nullptr) par_info = GetDummyParameterInfo(this->clicked_row);
-		uint32 val = Clamp<uint32>(value, par_info->min_value, par_info->max_value);
-		par_info->SetValue(this->grf_config, val);
+		GRFParameterInfo &par_info = this->GetParameterInfo(this->clicked_row);
+		uint32 val = Clamp<uint32>(value, par_info.min_value, par_info.max_value);
+		par_info.SetValue(this->grf_config, val);
 		this->SetDirty();
 	}
 
 	void OnDropdownSelect(int widget, int index) override
 	{
 		assert(this->clicked_dropdown);
-		GRFParameterInfo *par_info = ((uint)this->clicked_row < this->grf_config->param_info.size()) ? this->grf_config->param_info[this->clicked_row] : nullptr;
-		if (par_info == nullptr) par_info = GetDummyParameterInfo(this->clicked_row);
-		par_info->SetValue(this->grf_config, index);
+		GRFParameterInfo &par_info = this->GetParameterInfo(this->clicked_row);
+		par_info.SetValue(this->grf_config, index);
 		this->SetDirty();
 	}
 
@@ -1241,7 +1258,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 					bool compatible = HasBit(c->flags, GCF_COMPATIBLE);
 					if (c->status != GCS_NOT_FOUND && !compatible) continue;
 
-					const GRFConfig *f = FindGRFConfig(c->ident.grfid, FGCM_EXACT, compatible ? c->original_md5sum : c->ident.md5sum);
+					const GRFConfig *f = FindGRFConfig(c->ident.grfid, FGCM_EXACT, compatible ? &c->original_md5sum : &c->ident.md5sum);
 					if (f == nullptr || HasBit(f->flags, GCF_INVALID)) continue;
 
 					*l = new GRFConfig(*f);
@@ -1448,7 +1465,7 @@ private:
 		i = a->version - b->version;
 		if (i != 0) return i < 0;
 
-		return memcmp(a->ident.md5sum, b->ident.md5sum, lengthof(b->ident.md5sum)) < 0;
+		return a->ident.md5sum < b->ident.md5sum;
 	}
 
 	/** Filter grfs by tags/name */
@@ -1469,7 +1486,7 @@ private:
 
 		for (const GRFConfig *c = _all_grfs; c != nullptr; c = c->next) {
 			bool found = false;
-			for (const GRFConfig *grf = this->actives; grf != nullptr && !found; grf = grf->next) found = grf->ident.HasGrfIdentifier(c->ident.grfid, c->ident.md5sum);
+			for (const GRFConfig *grf = this->actives; grf != nullptr && !found; grf = grf->next) found = grf->ident.HasGrfIdentifier(c->ident.grfid, &c->ident.md5sum);
 			if (found) continue;
 
 			if (_settings_client.gui.newgrf_show_old_versions) {
@@ -1486,7 +1503,7 @@ private:
 				 * If we are the best version, then we definitely want to
 				 * show that NewGRF!.
 				 */
-				if (best->version == 0 || best->ident.HasGrfIdentifier(c->ident.grfid, c->ident.md5sum)) {
+				if (best->version == 0 || best->ident.HasGrfIdentifier(c->ident.grfid, &c->ident.md5sum)) {
 					this->avails.push_back(c);
 				}
 			}
@@ -1571,7 +1588,7 @@ void ShowMissingContentWindow(const GRFConfig *list)
 		ci->state = ContentInfo::DOES_NOT_EXIST;
 		ci->name = c->GetName();
 		ci->unique_id = BSWAP32(c->ident.grfid);
-		memcpy(ci->md5sum, HasBit(c->flags, GCF_COMPATIBLE) ? c->original_md5sum : c->ident.md5sum, sizeof(ci->md5sum));
+		ci->md5sum = HasBit(c->flags, GCF_COMPATIBLE) ? c->original_md5sum : c->ident.md5sum;
 		cv.push_back(ci);
 	}
 	ShowNetworkContentListWindow(cv.size() == 0 ? nullptr : &cv, CONTENT_TYPE_NEWGRF);

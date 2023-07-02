@@ -24,6 +24,7 @@
 #include "newgrf_cache_check.h"
 #include "landscape.h"
 #include "network/network.h"
+#include "core/mem_func.hpp"
 #include "sl/saveload_common.h"
 #include <list>
 #include <map>

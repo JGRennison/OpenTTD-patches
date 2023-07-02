@@ -12,6 +12,7 @@
 
 #include "core/tcp_content.h"
 #include "core/http.h"
+#include "../core/container_func.hpp"
 #include "../3rdparty/cpp-btree/btree_map.h"
 
 /** Vector with content info */

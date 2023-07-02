@@ -10,7 +10,6 @@
 #ifndef VEHICLE_GUI_BASE_H
 #define VEHICLE_GUI_BASE_H
 
-#include "core/smallvec_type.hpp"
 #include "date_type.h"
 #include "economy_type.h"
 #include "sortlist_type.h"

@@ -9,6 +9,7 @@
 
 #include "../stdafx.h"
 #include "../core/endian_func.hpp"
+#include "../core/mem_func.hpp"
 #include "../string_func.h"
 #include "../strings_type.h"
 #include "../misc/getoptdata.h"
@@ -504,7 +505,6 @@ static inline char *replace_pathsep(char *s) { return s; }
 
 /** Options of strgen. */
 static const OptionData _opts[] = {
-	  GETOPT_NOVAL(     'v',  "--version"),
 	GETOPT_GENERAL('C', '\0', "-export-commands", ODF_NO_VALUE),
 	GETOPT_GENERAL('L', '\0', "-export-plurals",  ODF_NO_VALUE),
 	GETOPT_GENERAL('P', '\0', "-export-pragmas",  ODF_NO_VALUE),
@@ -530,10 +530,6 @@ int CDECL main(int argc, char *argv[])
 		if (i == -1) break;
 
 		switch (i) {
-			case 'v':
-				puts("$Revision$");
-				return 0;
-
 			case 'C':
 				printf("args\tflags\tcommand\treplacement\n");
 				for (const CmdStruct *cs = _cmd_structs; cs < endof(_cmd_structs); cs++) {
@@ -576,8 +572,7 @@ int CDECL main(int argc, char *argv[])
 
 			case 'h':
 				puts(
-					"strgen - $Revision$\n"
-					" -v | --version    print version information and exit\n"
+					"strgen\n"
 					" -t | --todo       replace any untranslated strings with '<TODO>'\n"
 					" -w | --warning    print a warning for any untranslated strings\n"
 					" -h | -? | --help  print this help message and exit\n"

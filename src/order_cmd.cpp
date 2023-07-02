@@ -23,6 +23,7 @@
 #include "vehicle_func.h"
 #include "depot_base.h"
 #include "core/bitmath_func.hpp"
+#include "core/container_func.hpp"
 #include "core/pool_func.hpp"
 #include "core/random_func.hpp"
 #include "aircraft.h"

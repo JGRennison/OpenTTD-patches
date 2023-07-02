@@ -16,6 +16,7 @@
 #include "fileio_type.h"
 #include "textfile_type.h"
 #include "newgrf_text.h"
+#include "3rdparty/md5/md5.h"
 #include <map>
 
 static const uint MAX_NON_STATIC_GRF_COUNT = 256;
@@ -84,15 +85,12 @@ enum GRFPalette {
 /** Basic data to distinguish a GRF. Used in the server list window */
 struct GRFIdentifier {
 	uint32 grfid;     ///< GRF ID (defined by Action 0x08)
-	uint8 md5sum[16]; ///< MD5 checksum of file to distinguish files with the same GRF ID (eg. newer version of GRF)
+	MD5Hash md5sum;   ///< MD5 checksum of file to distinguish files with the same GRF ID (eg. newer version of GRF)
 
 	GRFIdentifier() = default;
 	GRFIdentifier(const GRFIdentifier &other) = default;
 	GRFIdentifier(GRFIdentifier &&other) = default;
-	GRFIdentifier(uint32 grfid, const uint8 *md5sum) : grfid(grfid)
-	{
-		MemCpyT(this->md5sum, md5sum, lengthof(this->md5sum));
-	}
+	GRFIdentifier(uint32 grfid, const MD5Hash &md5sum) : grfid(grfid), md5sum(md5sum) {}
 
 	GRFIdentifier& operator =(const GRFIdentifier &other) = default;
 
@@ -102,27 +100,23 @@ struct GRFIdentifier {
 	 * @param md5sum Expected md5sum, may be \c nullptr (in which case, do not check it).
 	 * @return the object has the provided grfid and md5sum.
 	 */
-	inline bool HasGrfIdentifier(uint32 grfid, const uint8 *md5sum) const
+	inline bool HasGrfIdentifier(uint32 grfid, const MD5Hash *md5sum) const
 	{
 		if (this->grfid != grfid) return false;
 		if (md5sum == nullptr) return true;
-		return memcmp(md5sum, this->md5sum, sizeof(this->md5sum)) == 0;
+		return *md5sum == this->md5sum;
 	}
 };
 
 /** Information about why GRF had problems during initialisation */
 struct GRFError {
 	GRFError(StringID severity, StringID message = 0);
-	GRFError(const GRFError &error);
-
-	/* Remove the copy assignment, as the default implementation will not do the right thing. */
-	GRFError &operator=(GRFError &rhs) = delete;
 
 	std::string custom_message; ///< Custom message (if present)
 	std::string data;           ///< Additional data for message and custom_message
 	StringID message;           ///< Default message
 	StringID severity;          ///< Info / Warning / Error / Fatal
-	uint64 param_value[4];      ///< Values of GRF parameters to show for message and custom_message
+	std::array<uint32_t, 4> param_value; ///< Values of GRF parameters to show for message and custom_message
 };
 
 /** The possible types of a newgrf parameter. */
@@ -135,7 +129,6 @@ enum GRFParameterType {
 /** Information about one grf parameter. */
 struct GRFParameterInfo {
 	GRFParameterInfo(uint nr);
-	GRFParameterInfo(GRFParameterInfo &info);
 	GRFTextList name;      ///< The name of this parameter
 	GRFTextList desc;      ///< The description of this parameter
 	GRFParameterType type; ///< The type of this parameter
@@ -157,13 +150,12 @@ struct GRFParameterInfo {
 struct GRFConfig : ZeroedMemoryAllocator {
 	GRFConfig(const std::string &filename = std::string{});
 	GRFConfig(const GRFConfig &config);
-	~GRFConfig();
 
 	/* Remove the copy assignment, as the default implementation will not do the right thing. */
 	GRFConfig &operator=(GRFConfig &rhs) = delete;
 
 	GRFIdentifier ident;                        ///< grfid and md5sum to uniquely identify newgrfs
-	uint8 original_md5sum[16];                  ///< MD5 checksum of original file if only a 'compatible' file was loaded
+	MD5Hash original_md5sum;                    ///< MD5 checksum of original file if only a 'compatible' file was loaded
 	std::string filename;                       ///< Filename - either with or without full path
 	std::string full_filename;                  ///< NOSAVE: Full filename
 	GRFTextWrapper name;                        ///< NOSAVE: GRF name (Action 0x08)
@@ -176,11 +168,11 @@ struct GRFConfig : ZeroedMemoryAllocator {
 	uint8 flags;                                ///< NOSAVE: GCF_Flags, bitset
 	GRFStatus status;                           ///< NOSAVE: GRFStatus, enum
 	uint32 grf_bugs;                            ///< NOSAVE: bugs in this GRF in this run, @see enum GRFBugs
-	uint32 param[0x80];                         ///< GRF parameters
+	std::array<uint32_t, 0x80> param;           ///< GRF parameters
 	uint8 num_params;                           ///< Number of used parameters
 	uint8 num_valid_params;                     ///< NOSAVE: Number of valid parameters (action 0x14)
 	uint8 palette;                              ///< GRFPalette, bitset
-	std::vector<GRFParameterInfo *> param_info; ///< NOSAVE: extra information about the parameters
+	std::vector<std::optional<GRFParameterInfo>> param_info; ///< NOSAVE: extra information about the parameters
 	bool has_param_defaults;                    ///< NOSAVE: did this newgrf specify any defaults for it's parameters
 
 	struct GRFConfig *next;                     ///< NOSAVE: Next item in the linked list
@@ -230,7 +222,7 @@ struct NewGRFScanCallback {
 size_t GRFGetSizeOfDataSection(FILE *f);
 
 void ScanNewGRFFiles(NewGRFScanCallback *callback);
-const GRFConfig *FindGRFConfig(uint32 grfid, FindGRFConfigMode mode, const uint8 *md5sum = nullptr, uint32 desired_version = 0);
+const GRFConfig *FindGRFConfig(uint32 grfid, FindGRFConfigMode mode, const MD5Hash *md5sum = nullptr, uint32 desired_version = 0);
 GRFConfig *GetGRFConfig(uint32 grfid, uint32 mask = 0xFFFFFFFF);
 GRFConfig **CopyGRFConfigList(GRFConfig **dst, const GRFConfig *src, bool init_only);
 void AppendStaticGRFConfigs(GRFConfig **dst);
@@ -239,7 +231,7 @@ void ClearGRFConfigList(GRFConfig **config);
 void ResetGRFConfig(bool defaults);
 GRFListCompatibility IsGoodGRFConfigList(GRFConfig *grfconfig);
 bool FillGRFDetails(GRFConfig *config, bool is_static, Subdirectory subdir = NEWGRF_DIR);
-char *GRFBuildParamList(char *dst, const GRFConfig *c, const char *last);
+std::string GRFBuildParamList(const GRFConfig *c);
 
 /* In newgrf_gui.cpp */
 void ShowNewGRFSettings(bool editable, bool show_params, bool exec_changes, GRFConfig **config);

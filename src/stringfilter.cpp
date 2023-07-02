@@ -12,6 +12,7 @@
 #include "strings_func.h"
 #include "stringfilter_type.h"
 #include "gfx_func.h"
+#include "core/alloc_func.hpp"
 
 #include "safeguards.h"
 

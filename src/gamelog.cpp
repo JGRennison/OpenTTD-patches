@@ -109,12 +109,12 @@ void GamelogReset()
  * @param gc GrfConfig, if known
  * @return The buffer location.
  */
-static char *PrintGrfInfo(char *buf, const char *last, uint grfid, const uint8 *md5sum, const GRFConfig *gc)
+static char *PrintGrfInfo(char *buf, const char *last, uint grfid, const MD5Hash *md5sum, const GRFConfig *gc)
 {
 	char txt[40];
 
 	if (md5sum != nullptr) {
-		md5sumToString(txt, lastof(txt), md5sum);
+		md5sumToString(txt, lastof(txt), *md5sum);
 		buf += seprintf(buf, last, "GRF ID %08X, checksum %s", BSWAP32(grfid), txt);
 	} else {
 		buf += seprintf(buf, last, "GRF ID %08X", BSWAP32(grfid));
@@ -247,9 +247,9 @@ void GamelogPrint(GamelogPrintProc *proc)
 
 				case GLCT_GRFADD: {
 					/* A NewGRF got added to the game, either at the start of the game (never an issue), or later on when it could be an issue. */
-					const GRFConfig *gc = FindGRFConfig(lc->grfadd.grfid, FGCM_EXACT, lc->grfadd.md5sum);
+					const GRFConfig *gc = FindGRFConfig(lc->grfadd.grfid, FGCM_EXACT, &lc->grfadd.md5sum);
 					buf += seprintf(buf, lastof(buffer), "Added NewGRF: ");
-					buf = PrintGrfInfo(buf, lastof(buffer), lc->grfadd.grfid, lc->grfadd.md5sum, gc);
+					buf = PrintGrfInfo(buf, lastof(buffer), lc->grfadd.grfid, &lc->grfadd.md5sum, gc);
 					auto gm = grf_names.find(lc->grfrem.grfid);
 					if (gm != grf_names.end() && !gm->second.was_missing) buf += seprintf(buf, lastof(buffer), ". Gamelog inconsistency: GrfID was already added!");
 					grf_names[lc->grfadd.grfid] = gc;
@@ -276,9 +276,9 @@ void GamelogPrint(GamelogPrintProc *proc)
 
 				case GLCT_GRFCOMPAT: {
 					/* Another version of the same NewGRF got loaded. */
-					const GRFConfig *gc = FindGRFConfig(lc->grfadd.grfid, FGCM_EXACT, lc->grfadd.md5sum);
+					const GRFConfig *gc = FindGRFConfig(lc->grfadd.grfid, FGCM_EXACT, &lc->grfadd.md5sum);
 					buf += seprintf(buf, lastof(buffer), "Compatible NewGRF loaded: ");
-					buf = PrintGrfInfo(buf, lastof(buffer), lc->grfcompat.grfid, lc->grfcompat.md5sum, gc);
+					buf = PrintGrfInfo(buf, lastof(buffer), lc->grfcompat.grfid, &lc->grfcompat.md5sum, gc);
 					if (grf_names.find(lc->grfcompat.grfid) == grf_names.end()) buf += seprintf(buf, lastof(buffer), ". Gamelog inconsistency: GrfID was never added!");
 					grf_names[lc->grfcompat.grfid] = gc;
 					break;
@@ -760,12 +760,12 @@ void GamelogGRFUpdate(const GRFConfig *oldc, const GRFConfig *newc)
 				GamelogGRFMove(nl->grf[n++]->ident.grfid, -(int)oi);
 			}
 		} else {
-			if (memcmp(og->ident.md5sum, ng->ident.md5sum, sizeof(og->ident.md5sum)) != 0) {
+			if (og->ident.md5sum != ng->ident.md5sum) {
 				/* md5sum changed, probably loading 'compatible' GRF */
 				GamelogGRFCompatible(&nl->grf[n]->ident);
 			}
 
-			if (og->num_params != ng->num_params || memcmp(og->param, ng->param, og->num_params * sizeof(og->param[0])) != 0) {
+			if (og->num_params != ng->num_params || og->param == ng->param) {
 				GamelogGRFParameters(ol->grf[o]->ident.grfid);
 			}
 

@@ -367,7 +367,7 @@ public:
 						DrawString(8, r.right, y, STR_VEHICLE_INFO_MAX_SPEED_LOADED);
 					}
 					/* Draw cargo summary */
-					CargoArray cargo_caps;
+					CargoArray cargo_caps{};
 					for (const Train *tmp = this->virtual_train; tmp != nullptr; tmp = tmp->Next()) {
 						cargo_caps[tmp->cargo_type] += tmp->cargo_cap;
 					}
@@ -400,7 +400,7 @@ public:
 
 		if (v == nullptr || mode != MODE_DRAG_VEHICLE) return false;
 
-		CargoArray capacity, loaded;
+		CargoArray capacity{}, loaded{};
 
 		/* Display info for single (articulated) vehicle, or for whole chain starting with selected vehicle */
 		bool whole_chain = _ctrl_pressed;
@@ -554,7 +554,7 @@ public:
 		uint min_width = 32;
 		uint width = 0;
 		uint height = ScaleGUITrad(8) + (3 * FONT_HEIGHT_NORMAL);
-		CargoArray cargo_caps;
+		CargoArray cargo_caps{};
 
 		if (virtual_train != nullptr) {
 			bool buildable = true;

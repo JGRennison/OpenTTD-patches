@@ -19,6 +19,7 @@
 #include "../sortlist_type.h"
 #include "../stringfilter_type.h"
 #include "../querystring_gui.h"
+#include "../core/container_func.hpp"
 #include "../core/geometry_func.hpp"
 #include "../textfile_gui.h"
 #include "../fios.h"

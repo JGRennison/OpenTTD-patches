@@ -70,48 +70,22 @@ enum CargoType {
 };
 
 /** Test whether cargo type is not CT_INVALID */
-inline bool IsCargoTypeValid(CargoType t) { return t != CT_INVALID; }
+inline bool IsValidCargoType(CargoType t) { return t != CT_INVALID; }
 /** Test whether cargo type is not CT_INVALID */
-inline bool IsCargoIDValid(CargoID t) { return t != CT_INVALID; }
+inline bool IsValidCargoID(CargoID t) { return t != CT_INVALID; }
 
 typedef uint64 CargoTypes;
 
 static const CargoTypes ALL_CARGOTYPES = (CargoTypes)UINT64_MAX;
 
 /** Class for storing amounts of cargo */
-struct CargoArray {
-private:
-	uint amount[NUM_CARGO]; ///< Amount of each type of cargo.
-
-public:
-	/** Default constructor. */
-	inline CargoArray()
-	{
-		this->Clear();
-	}
-
+struct CargoArray : std::array<uint, NUM_CARGO> {
 	/** Reset all entries. */
 	inline void Clear()
 	{
-		memset(this->amount, 0, sizeof(this->amount));
-	}
-
-	/**
-	 * Read/write access to an amount of a specific cargo type.
-	 * @param cargo Cargo type to access.
-	 */
-	inline uint &operator[](CargoID cargo)
-	{
-		return this->amount[cargo];
-	}
-
-	/**
-	 * Read-only access to an amount of a specific cargo type.
-	 * @param cargo Cargo type to access.
-	 */
-	inline const uint &operator[](CargoID cargo) const
-	{
-		return this->amount[cargo];
+		for (uint &it : *this) {
+			it = 0;
+		}
 	}
 
 	/**
@@ -121,24 +95,20 @@ public:
 	template <typename T>
 	inline const T GetSum() const
 	{
-		T ret = 0;
-		for (size_t i = 0; i < lengthof(this->amount); i++) {
-			ret += this->amount[i];
+		T result = 0;
+		for (const uint &it : *this) {
+			result += it;
 		}
-		return ret;
+		return result;
 	}
 
 	/**
 	 * Get the amount of cargos that have an amount.
 	 * @return The amount.
 	 */
-	inline byte GetCount() const
+	inline uint GetCount() const
 	{
-		byte count = 0;
-		for (size_t i = 0; i < lengthof(this->amount); i++) {
-			if (this->amount[i] != 0) count++;
-		}
-		return count;
+		return std::count_if(this->begin(), this->end(), [](uint amount) { return amount != 0; });
 	}
 };
 

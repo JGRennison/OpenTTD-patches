@@ -1277,14 +1277,11 @@ static bool CargoFilter(const Industry * const *industry, const std::pair<CargoI
 			break;
 
 		case CF_NONE:
-			accepted_cargo_matches = std::all_of(std::begin((*industry)->accepts_cargo), std::end((*industry)->accepts_cargo), [](CargoID cargo) {
-				return cargo == CT_INVALID;
-			});
+			accepted_cargo_matches = !(*industry)->IsCargoAccepted();
 			break;
 
 		default:
-			const auto &ac = (*industry)->accepts_cargo;
-			accepted_cargo_matches = std::find(std::begin(ac), std::end(ac), accepted_cargo) != std::end(ac);
+			accepted_cargo_matches = (*industry)->IsCargoAccepted(accepted_cargo);
 			break;
 	}
 
@@ -1296,14 +1293,11 @@ static bool CargoFilter(const Industry * const *industry, const std::pair<CargoI
 			break;
 
 		case CF_NONE:
-			produced_cargo_matches = std::all_of(std::begin((*industry)->produced_cargo), std::end((*industry)->produced_cargo), [](CargoID cargo) {
-				return cargo == CT_INVALID;
-			});
+			produced_cargo_matches = !(*industry)->IsCargoProduced();
 			break;
 
 		default:
-			const auto &pc = (*industry)->produced_cargo;
-			produced_cargo_matches = std::find(std::begin(pc), std::end(pc), produced_cargo) != std::end(pc);
+			produced_cargo_matches = (*industry)->IsCargoProduced(produced_cargo);
 			break;
 	}
 
@@ -2566,8 +2560,8 @@ struct IndustryCargoesWindow : public Window {
 			const IndustrySpec *indsp = GetIndustrySpec(it);
 			if (!indsp->enabled) continue;
 			this->ind_textsize = maxdim(this->ind_textsize, GetStringBoundingBox(indsp->name));
-			CargoesField::max_cargoes = std::max<uint>(CargoesField::max_cargoes, std::count_if(indsp->accepts_cargo, endof(indsp->accepts_cargo), IsCargoIDValid));
-			CargoesField::max_cargoes = std::max<uint>(CargoesField::max_cargoes, std::count_if(indsp->produced_cargo, endof(indsp->produced_cargo), IsCargoIDValid));
+			CargoesField::max_cargoes = std::max<uint>(CargoesField::max_cargoes, std::count_if(indsp->accepts_cargo, endof(indsp->accepts_cargo), IsValidCargoID));
+			CargoesField::max_cargoes = std::max<uint>(CargoesField::max_cargoes, std::count_if(indsp->produced_cargo, endof(indsp->produced_cargo), IsValidCargoID));
 		}
 		d.width = std::max(d.width, this->ind_textsize.width);
 		d.height = this->ind_textsize.height;

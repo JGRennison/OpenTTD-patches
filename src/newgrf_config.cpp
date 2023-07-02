@@ -43,7 +43,7 @@
  * @param filename Set the filename of this GRFConfig to filename.
  */
 GRFConfig::GRFConfig(const std::string &filename) :
-	filename(filename), num_valid_params(lengthof(param))
+	filename(filename), num_valid_params(ClampTo<uint8_t>(GRFConfig::param.size()))
 {
 }
 
@@ -54,6 +54,7 @@ GRFConfig::GRFConfig(const std::string &filename) :
 GRFConfig::GRFConfig(const GRFConfig &config) :
 	ZeroedMemoryAllocator(),
 	ident(config.ident),
+	original_md5sum(config.original_md5sum),
 	filename(config.filename),
 	name(config.name),
 	info(config.info),
@@ -63,27 +64,14 @@ GRFConfig::GRFConfig(const GRFConfig &config) :
 	flags(config.flags & ~(1 << GCF_COPY)),
 	status(config.status),
 	grf_bugs(config.grf_bugs),
+	param(config.param),
 	num_params(config.num_params),
 	num_valid_params(config.num_valid_params),
 	palette(config.palette),
+	param_info(config.param_info),
 	has_param_defaults(config.has_param_defaults)
 {
-	MemCpyT<uint8>(this->original_md5sum, config.original_md5sum, lengthof(this->original_md5sum));
-	MemCpyT<uint32>(this->param, config.param, lengthof(this->param));
 	if (config.error != nullptr) this->error = std::make_unique<GRFError>(*config.error);
-	for (uint i = 0; i < config.param_info.size(); i++) {
-		if (config.param_info[i] == nullptr) {
-			this->param_info.push_back(nullptr);
-		} else {
-			this->param_info.push_back(new GRFParameterInfo(*config.param_info[i]));
-		}
-	}
-}
-
-/** Cleanup a GRFConfig object. */
-GRFConfig::~GRFConfig()
-{
-	for (uint i = 0; i < this->param_info.size(); i++) delete this->param_info[i];
 }
 
 /**
@@ -94,7 +82,7 @@ void GRFConfig::CopyParams(const GRFConfig &src)
 {
 	this->num_params = src.num_params;
 	this->num_valid_params = src.num_valid_params;
-	MemCpyT<uint32>(this->param, src.param, lengthof(this->param));
+	this->param = src.param;
 }
 
 /**
@@ -130,12 +118,12 @@ const char *GRFConfig::GetURL() const
 void GRFConfig::SetParameterDefaults()
 {
 	this->num_params = 0;
-	MemSetT<uint32>(this->param, 0, lengthof(this->param));
+	this->param = {};
 
 	if (!this->has_param_defaults) return;
 
 	for (uint i = 0; i < this->param_info.size(); i++) {
-		if (this->param_info[i] == nullptr) continue;
+		if (!this->param_info[i]) continue;
 		this->param_info[i]->SetValue(this, this->param_info[i]->def_value);
 	}
 }
@@ -161,8 +149,8 @@ void GRFConfig::SetSuitablePalette()
  */
 void GRFConfig::FinalizeParameterInfo()
 {
-	for (GRFParameterInfo *info : this->param_info) {
-		if (info == nullptr) continue;
+	for (auto &info : this->param_info) {
+		if (!info.has_value()) continue;
 		info->Finalize();
 	}
 }
@@ -180,24 +168,8 @@ bool _grf_bug_too_many_strings = false;
  * @param severity The severity of this error.
  * @param message The actual error-string.
  */
-GRFError::GRFError(StringID severity, StringID message) :
-	message(message),
-	severity(severity),
-	param_value()
+GRFError::GRFError(StringID severity, StringID message) : message(message), severity(severity)
 {
-}
-
-/**
- * Create a new GRFError that is a deep copy of an existing error message.
- * @param error The GRFError object to make a copy of.
- */
-GRFError::GRFError(const GRFError &error) :
-	custom_message(error.custom_message),
-	data(error.data),
-	message(error.message),
-	severity(error.severity)
-{
-	memcpy(this->param_value, error.param_value, sizeof(this->param_value));
 }
 
 /**
@@ -217,26 +189,6 @@ GRFParameterInfo::GRFParameterInfo(uint nr) :
 	value_names(),
 	complete_labels(false)
 {}
-
-/**
- * Create a new GRFParameterInfo object that is a deep copy of an existing
- *   parameter info object.
- * @param info The GRFParameterInfo object to make a copy of.
- */
-GRFParameterInfo::GRFParameterInfo(GRFParameterInfo &info) :
-	name(info.name),
-	desc(info.desc),
-	type(info.type),
-	min_value(info.min_value),
-	max_value(info.max_value),
-	def_value(info.def_value),
-	param_nr(info.param_nr),
-	first_bit(info.first_bit),
-	num_bit(info.num_bit),
-	value_names(info.value_names),
-	complete_labels(info.complete_labels)
-{
-}
 
 /**
  * Get the value of this user-changeable parameter from the given config.
@@ -597,7 +549,7 @@ GRFListCompatibility IsGoodGRFConfigList(GRFConfig *grfconfig)
 	GRFListCompatibility res = GLC_ALL_GOOD;
 
 	for (GRFConfig *c = grfconfig; c != nullptr; c = c->next) {
-		const GRFConfig *f = FindGRFConfig(c->ident.grfid, FGCM_EXACT, c->ident.md5sum);
+		const GRFConfig *f = FindGRFConfig(c->ident.grfid, FGCM_EXACT, &c->ident.md5sum);
 		if (f == nullptr || HasBit(f->flags, GCF_INVALID)) {
 			char buf[256];
 
@@ -610,7 +562,7 @@ GRFListCompatibility IsGoodGRFConfigList(GRFConfig *grfconfig)
 				if (!HasBit(c->flags, GCF_COMPATIBLE)) {
 					/* Preserve original_md5sum after it has been assigned */
 					SetBit(c->flags, GCF_COMPATIBLE);
-					memcpy(c->original_md5sum, c->ident.md5sum, sizeof(c->original_md5sum));
+					c->original_md5sum = c->ident.md5sum;
 				}
 
 				/* Non-found has precedence over compatibility load */
@@ -634,21 +586,15 @@ compatible_grf:
 			 * already a local one, so there is no need to replace it. */
 			if (!HasBit(c->flags, GCF_COPY)) {
 				c->filename = f->filename;
-				memcpy(c->ident.md5sum, f->ident.md5sum, sizeof(c->ident.md5sum));
+				c->ident.md5sum = f->ident.md5sum;
 				c->name = f->name;
 				c->info = f->name;
 				c->error = nullptr;
 				c->version = f->version;
 				c->min_loadable_version = f->min_loadable_version;
 				c->num_valid_params = f->num_valid_params;
+				c->param_info = f->param_info;
 				c->has_param_defaults = f->has_param_defaults;
-				for (uint i = 0; i < f->param_info.size(); i++) {
-					if (f->param_info[i] == nullptr) {
-						c->param_info.push_back(nullptr);
-					} else {
-						c->param_info.push_back(new GRFParameterInfo(*f->param_info[i]));
-					}
-				}
 			}
 		}
 	}
@@ -698,7 +644,7 @@ public:
 				GRFConfig **pd, *d;
 				bool stop = false;
 				for (pd = &_all_grfs; (d = *pd) != nullptr; pd = &d->next) {
-					if (c->ident.grfid == d->ident.grfid && memcmp(c->ident.md5sum, d->ident.md5sum, sizeof(c->ident.md5sum)) == 0) added = false;
+					if (c->ident.grfid == d->ident.grfid && c->ident.md5sum == d->ident.md5sum) added = false;
 					/* Because there can be multiple grfs with the same name, make sure we checked all grfs with the same name,
 					 *  before inserting the entry. So insert a new grf at the end of all grfs with the same name, instead of
 					 *  just after the first with the same name. Avoids doubles in the list. */
@@ -834,7 +780,7 @@ void ScanNewGRFFiles(NewGRFScanCallback *callback)
  * @param desired_version Requested version
  * @return The matching grf, if it exists in #_all_grfs, else \c nullptr.
  */
-const GRFConfig *FindGRFConfig(uint32 grfid, FindGRFConfigMode mode, const uint8 *md5sum, uint32 desired_version)
+const GRFConfig *FindGRFConfig(uint32 grfid, FindGRFConfigMode mode, const MD5Hash *md5sum, uint32 desired_version)
 {
 	assert((mode == FGCM_EXACT) != (md5sum == nullptr));
 	const GRFConfig *best = nullptr;
@@ -873,18 +819,14 @@ GRFConfig *GetGRFConfig(uint32 grfid, uint32 mask)
 
 
 /** Build a string containing space separated parameter values, and terminate */
-char *GRFBuildParamList(char *dst, const GRFConfig *c, const char *last)
+std::string GRFBuildParamList(const GRFConfig *c)
 {
-	uint i;
-
-	/* Return an empty string if there are no parameters */
-	if (c->num_params == 0) return strecpy(dst, "", last);
-
-	for (i = 0; i < c->num_params; i++) {
-		if (i > 0) dst = strecpy(dst, " ", last);
-		dst += seprintf(dst, last, "%d", c->param[i]);
+	std::string result;
+	for (uint i = 0; i < c->num_params; i++) {
+		if (!result.empty()) result += ' ';
+		result += std::to_string(c->param[i]);
 	}
-	return dst;
+	return result;
 }
 
 /**

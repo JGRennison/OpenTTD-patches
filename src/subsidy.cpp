@@ -20,6 +20,7 @@
 #include "subsidy_func.h"
 #include "core/pool_func.hpp"
 #include "core/random_func.hpp"
+#include "core/container_func.hpp"
 #include "game/game.hpp"
 #include "command_func.h"
 #include "string_func.h"
@@ -329,7 +330,7 @@ bool FindSubsidyTownCargoRoute()
 	if (src_town->cache.population < SUBSIDY_CARGO_MIN_POPULATION) return false;
 
 	/* Calculate the produced cargo of houses around town center. */
-	CargoArray town_cargo_produced;
+	CargoArray town_cargo_produced{};
 	TileArea ta = TileArea(src_town->xy, 1, 1).Expand(SUBSIDY_TOWN_CARGO_RADIUS);
 	for (TileIndex tile : ta) {
 		if (IsTileType(tile, MP_HOUSE)) {
@@ -340,10 +341,7 @@ bool FindSubsidyTownCargoRoute()
 	/* Passenger subsidies are not handled here. */
 	town_cargo_produced[CT_PASSENGERS] = 0;
 
-	uint8 cargo_count = 0;
-	for (CargoID i = 0; i < NUM_CARGO; i++) {
-		if (town_cargo_produced[i] > 0) cargo_count++;
-	}
+	uint8 cargo_count = town_cargo_produced.GetCount();
 
 	/* No cargo produced at all? */
 	if (cargo_count == 0) return false;
@@ -440,7 +438,7 @@ bool FindSubsidyCargoDestination(CargoID cid, SourceType src_type, SourceID src)
 			const Town *dst_town = Town::GetRandom();
 
 			/* Calculate cargo acceptance of houses around town center. */
-			CargoArray town_cargo_accepted;
+			CargoArray town_cargo_accepted{};
 			TileArea ta = TileArea(dst_town->xy, 1, 1).Expand(SUBSIDY_TOWN_CARGO_RADIUS);
 			for (TileIndex tile : ta) {
 				if (IsTileType(tile, MP_HOUSE)) {
@@ -461,8 +459,7 @@ bool FindSubsidyCargoDestination(CargoID cid, SourceType src_type, SourceID src)
 			if (dst_ind == nullptr) return false;
 
 			/* The industry must accept the cargo */
-			bool valid = std::find(dst_ind->accepts_cargo, endof(dst_ind->accepts_cargo), cid) != endof(dst_ind->accepts_cargo);
-			if (!valid) return false;
+			if (!dst_ind->IsCargoAccepted(cid)) return false;
 
 			dst = dst_ind->index;
 			break;

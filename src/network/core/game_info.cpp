@@ -172,7 +172,7 @@ const NetworkServerGameInfo *GetCurrentNetworkServerGameInfo()
 static void HandleIncomingNetworkGameInfoGRFConfig(GRFConfig *config, std::string name)
 {
 	/* Find the matching GRF file */
-	const GRFConfig *f = FindGRFConfig(config->ident.grfid, FGCM_EXACT, config->ident.md5sum);
+	const GRFConfig *f = FindGRFConfig(config->ident.grfid, FGCM_EXACT, &config->ident.md5sum);
 	if (f == nullptr) {
 		AddGRFTextToList(config->name, name.empty() ? GetString(STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN) : name);
 		config->status = GCS_NOT_FOUND;
@@ -528,9 +528,8 @@ void DeserializeNetworkGameInfoExtended(Packet *p, NetworkGameInfo *info)
  */
 void SerializeGRFIdentifier(Packet *p, const GRFIdentifier *grf)
 {
-	uint j;
 	p->Send_uint32(grf->grfid);
-	for (j = 0; j < sizeof(grf->md5sum); j++) {
+	for (size_t j = 0; j < grf->md5sum.size(); j++) {
 		p->Send_uint8(grf->md5sum[j]);
 	}
 }
@@ -542,9 +541,8 @@ void SerializeGRFIdentifier(Packet *p, const GRFIdentifier *grf)
  */
 void DeserializeGRFIdentifier(Packet *p, GRFIdentifier *grf)
 {
-	uint j;
 	grf->grfid = p->Recv_uint32();
-	for (j = 0; j < sizeof(grf->md5sum); j++) {
+	for (size_t j = 0; j < grf->md5sum.size(); j++) {
 		grf->md5sum[j] = p->Recv_uint8();
 	}
 }

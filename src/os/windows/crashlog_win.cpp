@@ -833,6 +833,7 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 	log->WriteCrashDump(log->crashdump_filename, lastof(log->crashdump_filename));
 	SetScreenshotAuxiliaryText("Crash Log", log->crashlog);
 	log->WriteScreenshot(log->screenshot_filename, lastof(log->screenshot_filename), log->name_buffer);
+	log->SendSurvey();
 
 	/* Close any possible log files */
 	CloseConsoleLogIfActive();

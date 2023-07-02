@@ -316,7 +316,7 @@ public:
 		} else {
 			const TemplateVehicle *tmp = this->templates[this->selected_template_index];
 			uint height = ScaleGUITrad(8) + (3 * FONT_HEIGHT_NORMAL);
-			CargoArray cargo_caps;
+			CargoArray cargo_caps{};
 			uint count_columns = 0;
 			uint max_columns = 2;
 
@@ -812,7 +812,7 @@ public:
 		int count_columns = 0;
 		int max_columns = 2;
 
-		CargoArray cargo_caps;
+		CargoArray cargo_caps{};
 		for (; tmp != nullptr; tmp = tmp->Next()) {
 			cargo_caps[tmp->cargo_type] += tmp->cargo_cap;
 		}

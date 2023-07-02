@@ -10,8 +10,6 @@
 #ifndef SMALLSTACK_TYPE_HPP
 #define SMALLSTACK_TYPE_HPP
 
-#include "smallvec_type.hpp"
-
 /**
  * A simplified pool which stores values instead of pointers and doesn't
  * redefine operator new/delete. It also never zeroes memory and always reuses

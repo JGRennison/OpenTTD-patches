@@ -15,7 +15,6 @@
 #include "company_type.h"
 #include "tile_type.h"
 #include "widget_type.h"
-#include "core/smallvec_type.hpp"
 #include "string_type.h"
 #include "3rdparty/cpp-btree/btree_map.h"
 

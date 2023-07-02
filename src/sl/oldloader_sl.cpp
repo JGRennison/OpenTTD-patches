@@ -27,7 +27,7 @@
 #include "../company_base.h"
 #include "../disaster_vehicle.h"
 #include "../animated_tile.h"
-#include "../core/smallvec_type.hpp"
+#include "../core/container_func.hpp"
 #include "../timer/timer.h"
 #include "../timer/timer_game_tick.h"
 #include "saveload_internal.h"

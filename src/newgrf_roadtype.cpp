@@ -8,6 +8,7 @@
 /** @file newgrf_roadtype.cpp NewGRF handling of road types. */
 
 #include "stdafx.h"
+#include "core/container_func.hpp"
 #include "debug.h"
 #include "newgrf_roadtype.h"
 #include "date_func.h"

@@ -1811,7 +1811,7 @@ public:
 				case WID_HP_HOUSE_ACCEPTANCE: {
 					static char buff[DRAW_STRING_BUFFER] = "";
 					char *str = buff;
-					CargoArray cargo;
+					CargoArray cargo{};
 					CargoTypes dummy = 0;
 					AddAcceptedHouseCargo(this->display_house, INVALID_TILE, cargo, &dummy);
 					for (uint i = 0; i < NUM_CARGO; i++) {
@@ -1828,7 +1828,7 @@ public:
 				}
 
 				case WID_HP_HOUSE_SUPPLY: {
-					CargoArray cargo;
+					CargoArray cargo{};
 					AddProducedHouseCargo(this->display_house, INVALID_TILE, cargo);
 					uint32 cargo_mask = 0;
 					for (uint i = 0; i < NUM_CARGO; i++) if (cargo[i] != 0) SetBit(cargo_mask, i);

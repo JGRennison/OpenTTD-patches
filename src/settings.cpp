@@ -271,9 +271,9 @@ static size_t LookupManyOfMany(const std::vector<std::string> &many, const char 
  * @return returns the number of items found, or -1 on an error
  */
 template<typename T>
-static int ParseIntList(const char *p, T *items, int maxitems)
+static int ParseIntList(const char *p, T *items, size_t maxitems)
 {
-	int n = 0; // number of items read so far
+	size_t n = 0; // number of items read so far
 	bool comma = false; // do we accept comma?
 
 	while (*p != '\0') {
@@ -306,7 +306,7 @@ static int ParseIntList(const char *p, T *items, int maxitems)
 	 * We have read comma when (n != 0) and comma is not allowed */
 	if (n != 0 && !comma) return -1;
 
-	return n;
+	return ClampTo<int>(n);
 }
 
 /**
@@ -2087,7 +2087,8 @@ static GRFConfig *GRFLoadConfig(IniFile &ini, const char *grpname, bool is_stati
 	for (item = group->item; item != nullptr; item = item->next) {
 		GRFConfig *c = nullptr;
 
-		uint8 grfid_buf[4], md5sum[16];
+		uint8 grfid_buf[4];
+		MD5Hash md5sum;
 		const char *filename = item->name.c_str();
 		bool has_grfid = false;
 		bool has_md5sum = false;
@@ -2096,12 +2097,12 @@ static GRFConfig *GRFLoadConfig(IniFile &ini, const char *grpname, bool is_stati
 		has_grfid = DecodeHexText(filename, grfid_buf, lengthof(grfid_buf));
 		if (has_grfid) {
 			filename += 1 + 2 * lengthof(grfid_buf);
-			has_md5sum = DecodeHexText(filename, md5sum, lengthof(md5sum));
-			if (has_md5sum) filename += 1 + 2 * lengthof(md5sum);
+			has_md5sum = DecodeHexText(filename, md5sum.data(), md5sum.size());
+			if (has_md5sum) filename += 1 + 2 * md5sum.size();
 
 			uint32 grfid = grfid_buf[0] | (grfid_buf[1] << 8) | (grfid_buf[2] << 16) | (grfid_buf[3] << 24);
 			if (has_md5sum) {
-				const GRFConfig *s = FindGRFConfig(grfid, FGCM_EXACT, md5sum);
+				const GRFConfig *s = FindGRFConfig(grfid, FGCM_EXACT, &md5sum);
 				if (s != nullptr) c = new GRFConfig(*s);
 			}
 			if (c == nullptr && !FioCheckFileExists(filename, NEWGRF_DIR)) {
@@ -2113,7 +2114,7 @@ static GRFConfig *GRFLoadConfig(IniFile &ini, const char *grpname, bool is_stati
 
 		/* Parse parameters */
 		if (item->value.has_value() && !item->value->empty()) {
-			int count = ParseIntList(item->value->c_str(), c->param, lengthof(c->param));
+			int count = ParseIntList(item->value->c_str(), c->param.data(), c->param.size());
 			if (count < 0) {
 				SetDParamStr(0, filename);
 				ShowErrorMessage(STR_CONFIG_ERROR, STR_CONFIG_ERROR_ARRAY, WL_CRITICAL);
@@ -2255,13 +2256,10 @@ static void GRFSaveConfig(IniFile &ini, const char *grpname, const GRFConfig *li
 	for (c = list; c != nullptr; c = c->next) {
 		/* Hex grfid (4 bytes in nibbles), "|", hex md5sum (16 bytes in nibbles), "|", file system path. */
 		char key[4 * 2 + 1 + 16 * 2 + 1 + MAX_PATH];
-		char params[512];
-		GRFBuildParamList(params, c, lastof(params));
-
 		char *pos = key + seprintf(key, lastof(key), "%08X|", BSWAP32(c->ident.grfid));
 		pos = md5sumToString(pos, lastof(key), c->ident.md5sum);
 		seprintf(pos, lastof(key), "|%s", c->filename.c_str());
-		group->GetItem(key, true)->SetValue(params);
+		group->GetItem(key, true)->SetValue(GRFBuildParamList(c));
 	}
 }
 

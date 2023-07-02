@@ -69,7 +69,6 @@
 #include "table/tree_land.h"
 #include "blitter/32bpp_base.hpp"
 #include "core/math_func.hpp"
-#include "core/smallvec_type.hpp"
 #include "landscape.h"
 #include "viewport_func.h"
 #include "station_base.h"

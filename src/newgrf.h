@@ -17,7 +17,7 @@
 #include "debug.h"
 #include "core/bitmath_func.hpp"
 #include "core/alloc_type.hpp"
-#include "core/smallvec_type.hpp"
+#include "core/mem_func.hpp"
 #include "3rdparty/cpp-btree/btree_map.h"
 #include <bitset>
 
@@ -346,7 +346,7 @@ struct GRFFile : ZeroedMemoryAllocator {
 	std::vector<GRFVariableMapEntry> grf_variable_remaps;
 	std::vector<std::unique_ptr<const char, FreeDeleter>> remap_unknown_property_names;
 
-	uint32 param[0x80];
+	std::array<uint32_t, 0x80> param;
 	uint param_end;  ///< one more than the highest set parameter
 
 	std::vector<GRFLabel> labels;                   ///< List of labels
@@ -398,9 +398,9 @@ struct GRFFile : ZeroedMemoryAllocator {
 	/** Get GRF Parameter with range checking */
 	uint32 GetParam(uint number) const
 	{
-		/* Note: We implicitly test for number < lengthof(this->param) and return 0 for invalid parameters.
+		/* Note: We implicitly test for number < this->param.size() and return 0 for invalid parameters.
 		 *       In fact this is the more important test, as param is zeroed anyway. */
-		assert(this->param_end <= lengthof(this->param));
+		assert(this->param_end <= this->param.size());
 		return (number < this->param_end) ? this->param[number] : 0;
 	}
 };

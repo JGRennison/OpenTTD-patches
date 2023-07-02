@@ -11,6 +11,7 @@
 #include "tracerestrict.h"
 #include "train.h"
 #include "core/bitmath_func.hpp"
+#include "core/container_func.hpp"
 #include "core/pool_func.hpp"
 #include "command_func.h"
 #include "company_func.h"

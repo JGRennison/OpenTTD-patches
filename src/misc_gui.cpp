@@ -187,7 +187,7 @@ public:
 
 		td.grf = nullptr;
 
-		CargoArray acceptance;
+		CargoArray acceptance{};
 		AddAcceptedCargo(tile, acceptance, nullptr);
 		GetTileDesc(tile, &td);
 

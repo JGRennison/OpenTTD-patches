@@ -11,7 +11,6 @@
 #include "../animated_tile.h"
 #include "../tile_type.h"
 #include "../core/alloc_func.hpp"
-#include "../core/smallvec_type.hpp"
 
 #include "saveload.h"
 

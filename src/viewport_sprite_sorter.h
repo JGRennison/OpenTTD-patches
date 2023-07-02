@@ -8,7 +8,6 @@
 /** @file viewport_sprite_sorter.h Types related to sprite sorting. */
 
 #include "stdafx.h"
-#include "core/smallvec_type.hpp"
 #include "core/bitmath_func.hpp"
 #include "gfx_type.h"
 

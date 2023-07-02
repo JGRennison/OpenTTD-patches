@@ -72,7 +72,7 @@ void DrawShipDetails(const Vehicle *v, const Rect &r)
 	Money feeder_share = 0;
 
 	if (v->Next() != nullptr) {
-		CargoArray max_cargo;
+		CargoArray max_cargo{};
 		StringID subtype_text[NUM_CARGO];
 		char capacity[512];
 

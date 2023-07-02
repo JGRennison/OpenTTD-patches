@@ -23,7 +23,7 @@
 #include "../error.h"
 #include "../strings_func.h"
 #include "../3rdparty/cpp-btree/btree_map.h"
-#include "../3rdparty/fmt/format.h"
+#include "../core/format.hpp"
 
 #include "saveload.h"
 

@@ -194,6 +194,8 @@ public:
 	bool MakeVersionInfoLog() const;
 	bool MakeCrashSavegameAndScreenshot() const;
 
+	void SendSurvey() const;
+
 	/**
 	 * Initialiser for crash logs; do the appropriate things so crashes are
 	 * handled by our crash handler instead of returning straight to the OS.

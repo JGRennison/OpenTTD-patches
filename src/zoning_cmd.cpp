@@ -194,7 +194,7 @@ SpriteID TileZoneCheckUnservedBuildingsEvaluation(TileIndex tile, Owner owner)
 		return ZONING_INVALID_SPRITE_ID;
 	}
 
-	CargoArray dat;
+	CargoArray dat{};
 	dat.Clear();
 	AddAcceptedCargo(tile, dat, nullptr);
 	if (dat[CT_MAIL] + dat[CT_PASSENGERS] == 0) {

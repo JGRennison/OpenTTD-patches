@@ -12,6 +12,7 @@ add_files(
     endian_type.hpp
     enum_type.hpp
     hash_func.hpp
+    format.hpp
     geometry_func.cpp
     geometry_func.hpp
     geometry_type.hpp
@@ -30,7 +31,6 @@ add_files(
     serialisation.cpp
     serialisation.hpp
     smallstack_type.hpp
-    smallvec_type.hpp
     tinystring_type.hpp
     y_combinator.hpp
 )

@@ -329,7 +329,7 @@ public:
 				la->change = ReallocT(la->change, la->changes + 1);
 
 				LoggedChange *lc = &la->change[la->changes++];
-				memset(lc, 0, sizeof(*lc));
+				*lc = LoggedChange{};
 				lc->ct = ct;
 
 				SlObject(lc, this->GetLoadDescription());
@@ -343,7 +343,7 @@ public:
 
 		for (size_t i = 0; i < length; i++) {
 			LoggedChange *lc = &la->change[i];
-			memset(lc, 0, sizeof(*lc));
+			*lc = LoggedChange{};
 
 			lc->ct = (GamelogChangeType)SlReadByte();
 			SlObject(lc, this->GetLoadDescription());
@@ -377,7 +377,7 @@ struct GLOGChunkHandler : ChunkHandler {
 
 				gamelog_action = ReallocT(gamelog_action, gamelog_actions + 1);
 				LoggedAction *la = &gamelog_action[gamelog_actions++];
-				memset(la, 0, sizeof(*la));
+				*la = LoggedAction{};
 
 				la->at = (GamelogActionType)type;
 				SlObject(la, slt);
@@ -388,7 +388,7 @@ struct GLOGChunkHandler : ChunkHandler {
 		while (SlIterateArray() != -1) {
 			gamelog_action = ReallocT(gamelog_action, gamelog_actions + 1);
 			LoggedAction *la = &gamelog_action[gamelog_actions++];
-			memset(la, 0, sizeof(*la));
+			*la = LoggedAction{};
 
 			SlObject(la, slt);
 		}

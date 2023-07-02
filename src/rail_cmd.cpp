@@ -29,6 +29,7 @@
 #include "company_base.h"
 #include "core/backup_type.hpp"
 #include "date_func.h"
+#include "core/container_func.hpp"
 #include "strings_func.h"
 #include "company_gui.h"
 #include "object_map.h"
