@@ -913,6 +913,12 @@ bool AfterLoadGame()
 		_settings_game.linkgraph.recalc_time     *= SECONDS_PER_DAY;
 	}
 
+	/* Convert link graph last compression from date to scaled ticks. */
+	if (SlXvIsFeatureMissing(XSLFI_LINKGRAPH_DAY_SCALE, 4)) {
+		extern void LinkGraphFixupLastCompressionAfterLoad();
+		LinkGraphFixupLastCompressionAfterLoad();
+	}
+
 	/* Load the sprites */
 	GfxLoadSprites();
 	LoadStringWidthTable();

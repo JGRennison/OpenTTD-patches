@@ -289,7 +289,7 @@ public:
 	static const uint STALE_LINK_DEPOT_TIMEOUT = 1024;
 
 	/** Minimum number of days between subsequent compressions of a LG. */
-	static const uint COMPRESSION_INTERVAL = 256;
+	static const uint COMPRESSION_INTERVAL = 256 * DAY_TICKS;
 
 	/**
 	 * Scale a value from a link graph of age orig_age for usage in one of age
@@ -310,7 +310,7 @@ public:
 	 * Real constructor.
 	 * @param cargo Cargo the link graph is about.
 	 */
-	LinkGraph(CargoID cargo) : cargo(cargo), last_compression(_date) {}
+	LinkGraph(CargoID cargo) : cargo(cargo), last_compression(_scaled_date_ticks) {}
 
 	void Init(uint size);
 	void ShiftDates(int interval);
@@ -349,7 +349,7 @@ public:
 	 * Get date of last compression.
 	 * @return Date of last compression.
 	 */
-	inline Date LastCompression() const { return this->last_compression; }
+	inline DateTicksScaled LastCompression() const { return this->last_compression; }
 
 	/**
 	 * Get the cargo ID this component's link graph refers to.
@@ -364,7 +364,7 @@ public:
 	 */
 	inline uint Monthly(uint base) const
 	{
-		return base * 30 / (_date - this->last_compression + 1);
+		return (static_cast<uint64>(base) * 30 * DAY_TICKS * _settings_game.economy.day_length_factor) / std::max<uint64>(_scaled_date_ticks - this->last_compression, DAY_TICKS);
 	}
 
 	NodeID AddNode(const Station *st);
@@ -391,8 +391,11 @@ protected:
 	friend upstream_sl::SlLinkgraphNode;
 	friend upstream_sl::SlLinkgraphEdge;
 
+	friend void AdjustLinkGraphScaledTickBase(int64 delta);
+	friend void LinkGraphFixupLastCompressionAfterLoad();
+
 	CargoID cargo;         ///< Cargo of this component's link graph.
-	Date last_compression; ///< Last time the capacities and supplies were compressed.
+	DateTicksScaled last_compression; ///< Last time the capacities and supplies were compressed.
 	NodeVector nodes;      ///< Nodes in the component.
 	EdgeMatrix edges;      ///< Edges in the component.
 

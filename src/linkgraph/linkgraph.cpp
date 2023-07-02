@@ -39,7 +39,6 @@ inline void LinkGraph::BaseNode::Init(TileIndex xy, StationID st, uint demand)
  */
 void LinkGraph::ShiftDates(int interval)
 {
-	this->last_compression += interval;
 	for (NodeID node1 = 0; node1 < this->Size(); ++node1) {
 		BaseNode &source = this->nodes[node1];
 		if (source.last_update != INVALID_DATE) source.last_update += interval;
@@ -54,7 +53,7 @@ void LinkGraph::ShiftDates(int interval)
 
 void LinkGraph::Compress()
 {
-	this->last_compression = (_date + this->last_compression) / 2;
+	this->last_compression = (_scaled_date_ticks + this->last_compression) / 2;
 	for (NodeID node1 = 0; node1 < this->Size(); ++node1) {
 		this->nodes[node1].supply /= 2;
 	}
@@ -79,8 +78,8 @@ void LinkGraph::Compress()
  */
 void LinkGraph::Merge(LinkGraph *other)
 {
-	Date age = _date - this->last_compression + 1;
-	Date other_age = _date - other->last_compression + 1;
+	uint32 age = ClampTo<uint32>(CeilDivT<DateTicksScaled>(_scaled_date_ticks - this->last_compression + 1, DAY_TICKS));
+	uint32 other_age = ClampTo<uint32>(CeilDivT<DateTicksScaled>(_scaled_date_ticks - other->last_compression + 1, DAY_TICKS));
 	NodeID first = this->Size();
 	this->nodes.reserve(first + other->Size());
 	for (NodeID node1 = 0; node1 < other->Size(); ++node1) {
@@ -264,4 +263,15 @@ void LinkGraph::Init(uint size)
 {
 	assert(this->Size() == 0);
 	this->nodes.resize(size);
+}
+
+void AdjustLinkGraphScaledTickBase(int64 delta)
+{
+	for (LinkGraph *lg : LinkGraph::Iterate()) lg->last_compression += delta;
+}
+
+void LinkGraphFixupLastCompressionAfterLoad()
+{
+	/* last_compression was previously a Date, change it to a DateTicksScaled */
+	for (LinkGraph *lg : LinkGraph::Iterate()) lg->last_compression = DateToScaledDateTicks((Date)lg->last_compression);
 }

@@ -31,7 +31,8 @@ static uint16 _num_nodes;
 SaveLoadTable GetLinkGraphDesc()
 {
 	static const SaveLoad link_graph_desc[] = {
-		 SLE_VAR(LinkGraph, last_compression, SLE_INT32),
+	SLE_CONDVAR_X(LinkGraph, last_compression, SLE_VAR_I64 | SLE_FILE_I32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE, 0, 3)),
+	SLE_CONDVAR_X(LinkGraph, last_compression,                  SLE_INT64,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE, 4)),
 		SLEG_VAR(_num_nodes,                  SLE_UINT16),
 		 SLE_VAR(LinkGraph, cargo,            SLE_UINT8),
 	};
@@ -225,7 +226,7 @@ static void DoSave_LGRJ(LinkGraphJob *lgj)
 {
 	SlObjectSaveFiltered(lgj, _filtered_job_desc);
 	_num_nodes = lgj->Size();
-	SlObjectSaveFiltered(const_cast<LinkGraph *>(&lgj->Graph()), GetLinkGraphDesc()); // GetLinkGraphDesc has no conditionals
+	SlObject(const_cast<LinkGraph *>(&lgj->Graph()), GetLinkGraphDesc());
 	Save_LinkGraph(const_cast<LinkGraph &>(lgj->Graph()));
 }
 
@@ -236,7 +237,7 @@ static void DoSave_LGRJ(LinkGraphJob *lgj)
 static void DoSave_LGRP(LinkGraph *lg)
 {
 	_num_nodes = lg->Size();
-	SlObjectSaveFiltered(lg, GetLinkGraphDesc()); // GetLinkGraphDesc has no conditionals
+	SlObject(lg, GetLinkGraphDesc());
 	Save_LinkGraph(*lg);
 }
 
@@ -253,7 +254,7 @@ static void Load_LGRP()
 			NOT_REACHED();
 		}
 		LinkGraph *lg = new (index) LinkGraph();
-		SlObjectLoadFiltered(lg, GetLinkGraphDesc()); // GetLinkGraphDesc has no conditionals
+		SlObject(lg, GetLinkGraphDesc());
 		lg->Init(_num_nodes);
 		Load_LinkGraph(*lg);
 	}
@@ -278,7 +279,7 @@ static void Load_LGRJ()
 			GetLinkGraphJobDayLengthScaleAfterLoad(lgj);
 		}
 		LinkGraph &lg = const_cast<LinkGraph &>(lgj->Graph());
-		SlObjectLoadFiltered(&lg, GetLinkGraphDesc()); // GetLinkGraphDesc has no conditionals
+		SlObject(&lg, GetLinkGraphDesc());
 		lg.Init(_num_nodes);
 		Load_LinkGraph(lg);
 	}

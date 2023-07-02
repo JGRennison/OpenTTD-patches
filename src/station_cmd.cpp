@@ -4531,8 +4531,8 @@ void DeleteStaleLinks(Station *from)
 
 			return result;
 		});
-		assert(_date >= lg->LastCompression());
-		if ((uint)(_date - lg->LastCompression()) > std::max<uint>(LinkGraph::COMPRESSION_INTERVAL / _settings_game.economy.day_length_factor, 1)) {
+		assert(_scaled_date_ticks >= lg->LastCompression());
+		if ((_scaled_date_ticks - lg->LastCompression()) > LinkGraph::COMPRESSION_INTERVAL) {
 			lg->Compress();
 		}
 	}

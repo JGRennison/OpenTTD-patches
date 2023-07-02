@@ -65,6 +65,9 @@ void CheckScaledDateTicksWrap()
 
 	extern void AdjustVehicleScaledTickBase(int64 delta);
 	AdjustVehicleScaledTickBase(-tick_adjust);
+
+	extern void AdjustLinkGraphScaledTickBase(int64 delta);
+	AdjustLinkGraphScaledTickBase(-tick_adjust);
 }
 
 void RebaseScaledDateTicksBase()
