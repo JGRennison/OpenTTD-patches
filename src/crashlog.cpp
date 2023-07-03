@@ -273,7 +273,7 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 	auto log_font = [&](FontSize fs) -> const char * {
 		FontCache *fc = FontCache::Get(fs);
 		if (fc != nullptr) {
-			return fc->GetFontName();
+			return fc->GetFontName().c_str();
 		} else {
 			return "[NULL]";
 		}
