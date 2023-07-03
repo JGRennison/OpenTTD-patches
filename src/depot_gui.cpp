@@ -1194,3 +1194,67 @@ void DeleteDepotHighlightOfVehicle(const Vehicle *v)
 		if (w->sel == v->index) ResetObjectToPlace();
 	}
 }
+
+enum DepotTooltipMode : uint8 {
+	DTM_OFF,
+	DTM_SIMPLE,
+	DTM_DETAILED
+};
+
+bool GetDepotTooltipString(const TileIndex tile, char *buffer_position, const char *buffer_tail)
+{
+	if (_settings_client.gui.depot_tooltip_mode == DTM_OFF) {
+		return false;
+	}
+
+	size_t total_vehicle_count = 0;
+	size_t stopped_vehicle_count = 0;
+	size_t waiting_vehicle_count = 0;
+	size_t consist_count = 0;
+
+	for (const Vehicle *v : Vehicle::Iterate()) {
+		if (v->tile == tile && !HasBit(v->subtype, GVSF_VIRTUAL) && v->IsInDepot()) {
+			if (v->IsPrimaryVehicle()) {
+				++total_vehicle_count;
+				if (v->IsWaitingInDepot()) ++waiting_vehicle_count;
+				if (v->IsStoppedInDepot()) ++stopped_vehicle_count;
+			}
+			if (v->type == VEH_TRAIN) {
+				const Train *loco_or_wago = Train::From(v);
+				if (loco_or_wago->IsFreeWagon()) {
+					++consist_count;
+					++total_vehicle_count;
+				}
+			}
+		}
+	}
+
+	buffer_position[0] = '\0';
+
+	if (total_vehicle_count == 0) {
+		return false;
+	}
+
+	SetDParam(0, total_vehicle_count);
+
+	if (_settings_client.gui.depot_tooltip_mode == DTM_SIMPLE || stopped_vehicle_count == 0 && waiting_vehicle_count == 0 && consist_count == 0) {
+		GetString(buffer_position, STR_DEPOT_VIEW_COUNT_TOOLTIP, buffer_tail);
+	} else {
+		buffer_position = GetString(buffer_position, STR_DEPOT_VIEW_TOTAL_TOOLTIP, buffer_tail);
+		if (stopped_vehicle_count > 0) {
+			SetDParam(0, stopped_vehicle_count);
+			buffer_position = GetString(buffer_position, STR_DEPOT_VIEW_STOPPED_TOOLTIP, buffer_tail);
+		}
+		if (waiting_vehicle_count > 0) {
+			SetDParam(0, waiting_vehicle_count);
+			buffer_position = GetString(buffer_position, STR_DEPOT_VIEW_WAITING_TOOLTIP, buffer_tail);
+		}
+		if (consist_count > 0) {
+			SetDParam(0, consist_count);
+			GetString(buffer_position, STR_DEPOT_VIEW_CONSISTS_TOOLTIP, buffer_tail);
+		}
+		
+	}
+
+	return true;
+}

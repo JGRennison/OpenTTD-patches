@@ -18,6 +18,7 @@
 #include "window_func.h"
 #include "gfx_func.h"
 #include "industry.h"
+#include "town.h"
 #include "town_map.h"
 
 #include "widgets/viewport_widget.h"
@@ -219,37 +220,117 @@ void ShowExtraViewportWindowForTileUnderCursor()
 	ShowExtraViewportWindow(pt.x != -1 ? TileVirtXY(pt.x, pt.y) : INVALID_TILE);
 }
 
+enum TownNameTooltipMode : uint8 {
+	TNTM_OFF,
+	TNTM_ON_IF_HIDDEN,
+	TNTM_ALWAYS_ON
+};
+
+void ShowTownNameTooltip(Window *w, const TileIndex tile, char *buffer_position, const char *buffer_tail)
+{
+	if (_settings_client.gui.town_name_tooltip_mode == TNTM_OFF) return;
+	if (HasBit(_display_opt, DO_SHOW_TOWN_NAMES) && _settings_client.gui.town_name_tooltip_mode == TNTM_ON_IF_HIDDEN) return; // No need for a town name tooltip when it is already displayed
+
+	StringID tooltip_string = STR_TOWN_NAME_TOOLTIP;
+	TownID town_id = GetTownIndex(tile);
+	const Town *town = Town::Get(town_id);
+	*buffer_position = '\0';
+
+	if (_game_mode != GM_EDITOR && _local_company < MAX_COMPANIES && HasBit(town->have_ratings, _local_company)) {
+		int local_authority_rating_thresholds[] = { RATING_APPALLING, RATING_VERYPOOR, RATING_POOR, RATING_MEDIOCRE, RATING_GOOD, RATING_VERYGOOD,
+													RATING_EXCELLENT, RATING_OUTSTANDING };
+		constexpr size_t threshold_count = lengthof(local_authority_rating_thresholds);
+
+		auto local_rating = town->ratings[_local_company];
+		auto rating_string = STR_CARGO_RATING_APPALLING;
+		for (int i = 0; i < threshold_count && local_rating > local_authority_rating_thresholds[i]; ++i) ++rating_string;
+		SetDParam(0, rating_string);
+		GetString(buffer_position, STR_TOWN_NAME_RATING_TOOLTIP, buffer_tail);
+	}
+
+	uint rating_string_parameter_index = 1;
+
+	SetDParam(0, town_id);
+	if (_settings_client.gui.population_in_label) {
+		tooltip_string = STR_TOWN_NAME_POP_TOOLTIP;
+		SetDParam(1, town->cache.population);
+		rating_string_parameter_index = 2;
+	}
+	SetDParamStr(rating_string_parameter_index, buffer_position);
+	GuiShowTooltips(w, tooltip_string, 0, nullptr, TCC_HOVER_VIEWPORT);
+}
+
+bool GetIndustryTooltipString(TileIndex tile, char *buffer_position, const char *buffer_tail);
+
+void ShowIndustryTooltip(Window *w, const TileIndex tile, char *buffer_position, const char *buffer_tail)
+{
+	if (!_settings_client.gui.industry_tooltip_show ||
+		!(_settings_client.gui.industry_tooltip_show_name || _settings_client.gui.industry_tooltip_show_produced ||
+		_settings_client.gui.industry_tooltip_show_required || _settings_client.gui.industry_tooltip_show_stockpiled)) return;
+
+	if (!GetIndustryTooltipString(tile, buffer_position, buffer_tail)) return;
+
+	SetDParamStr(0, buffer_position);
+	GuiShowTooltips(w, STR_INDUSTRY_VIEW_INFO_TOOLTIP, 0, nullptr, TCC_HOVER_VIEWPORT);
+}
+
+bool GetDepotTooltipString(TileIndex tile, char *buffer_position, const char *buffer_tail);
+
+void ShowDepotTooltip(Window *w, const TileIndex tile, char *buffer_position, const char *buffer_tail)
+{
+	if (!GetDepotTooltipString(tile, buffer_position, buffer_tail)) return;
+
+	SetDParamStr(0, buffer_position);
+	GuiShowTooltips(w, STR_DEPOT_VIEW_INFO_TOOLTIP, 0, nullptr, TCC_HOVER_VIEWPORT);
+}
+
+bool GetStationViewportTooltipString(TileIndex tile, char *buffer_position, const char *buffer_tail);
+
+void ShowStationViewportTooltip(Window *w, const TileIndex tile, char *buffer_position, const char *buffer_tail)
+{
+	if (!GetStationViewportTooltipString(tile, buffer_position, buffer_tail)) return;
+
+	SetDParamStr(0, buffer_position);
+	GuiShowTooltips(w, STR_STATION_VIEW_INFO_TOOLTIP, 0, nullptr, TCC_HOVER_VIEWPORT);
+}
+
 void ShowTooltipForTile(Window *w, const TileIndex tile)
 {
+	static char buffer[1024];
+	char *buffer_start = buffer;
+	char *buffer_tail = lastof(buffer);
+
 	switch (GetTileType(tile)) {
 		case MP_ROAD:
-			if (IsRoadDepot(tile)) return;
+			if (IsRoadDepot(tile)) {
+				ShowDepotTooltip(w, tile, buffer_start, buffer_tail);
+				return;
+			}
 			/* FALL THROUGH */
 		case MP_HOUSE: {
-			if (HasBit(_display_opt, DO_SHOW_TOWN_NAMES)) return; // No need for a town name tooltip when it is already displayed
-			SetDParam(0, GetTownIndex(tile));
-			GuiShowTooltips(w, STR_TOWN_NAME_TOOLTIP, 0, nullptr, TCC_HOVER_VIEWPORT);
+			ShowTownNameTooltip(w, tile, buffer_start, buffer_tail);
 			break;
 		}
 		case MP_INDUSTRY: {
-			static char buffer[1024];
-			const Industry *ind = Industry::GetByTile(tile);
-			const IndustrySpec *indsp = GetIndustrySpec(ind->type);
-
-			buffer[0] = 0;
-			char *buf_pos = buffer;
-
-			for (byte i = 0; i < lengthof(ind->produced_cargo); i++) {
-				if (ind->produced_cargo[i] != CT_INVALID) {
-					SetDParam(0, ind->produced_cargo[i]);
-					SetDParam(1, ind->last_month_production[i]);
-					SetDParam(2, ToPercent8(ind->last_month_pct_transported[i]));
-					buf_pos = GetString(buf_pos, STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_EXTENSION, lastof(buffer));
-				}
+			ShowIndustryTooltip(w, tile, buffer_start, buffer_tail);
+			break;
+		}
+		case MP_RAILWAY: {
+			if (!IsRailDepot(tile)) return;
+			ShowDepotTooltip(w, tile, buffer_start, buffer_tail);
+			break;
+		}
+		case MP_WATER: {
+			if (!IsShipDepot(tile)) return;
+			ShowDepotTooltip(w, tile, buffer_start, buffer_tail);
+			break;
+		}
+		case MP_STATION: {
+			if (IsHangar(tile)) {
+				ShowDepotTooltip(w, tile, buffer_start, buffer_tail);
+			} else {
+				ShowStationViewportTooltip(w, tile, buffer_start, buffer_tail);
 			}
-			SetDParam(0, indsp->name);
-			SetDParamStr(1, buffer);
-			GuiShowTooltips(w, STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP, 0, nullptr, TCC_HOVER_VIEWPORT);
 			break;
 		}
 		default:
