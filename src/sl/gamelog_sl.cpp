@@ -10,6 +10,7 @@
 #include "../stdafx.h"
 #include "../gamelog_internal.h"
 #include "../fios.h"
+#include "../load_check.h"
 #include "../string_func.h"
 
 #include "saveload.h"
@@ -96,37 +97,31 @@ static const SaveLoadTable _glog_desc[] = {
 
 static_assert(lengthof(_glog_desc) == GLCT_END);
 
-static void Load_GLOG_common(LoggedAction *&gamelog_action, uint &gamelog_actions)
+static void Load_GLOG_common(std::vector<LoggedAction> &gamelog_actions)
 {
-	assert(gamelog_action == nullptr);
-	assert(gamelog_actions == 0);
+	assert(gamelog_actions.empty());
 
 	byte type;
 	while ((type = SlReadByte()) != GLAT_NONE) {
 		if (type >= GLAT_END) SlErrorCorrupt("Invalid gamelog action type");
 		GamelogActionType at = (GamelogActionType)type;
 
-		gamelog_action = ReallocT(gamelog_action, gamelog_actions + 1);
-		LoggedAction *la = &gamelog_action[gamelog_actions++];
+		LoggedAction &la = gamelog_actions.emplace_back();
 
-		la->at = at;
+		la.at = at;
 
-		SlObject(la, _glog_action_desc); // has to be saved after 'DATE'!
-		la->change = nullptr;
-		la->changes = 0;
+		SlObject(&la, _glog_action_desc); // has to be saved after 'DATE'!
 
 		while ((type = SlReadByte()) != GLCT_NONE) {
 			if (type >= GLCT_END) SlErrorCorrupt("Invalid gamelog change type");
 			GamelogChangeType ct = (GamelogChangeType)type;
 
-			la->change = ReallocT(la->change, la->changes + 1);
+			la.changes.push_back({});
+			LoggedChange *lc = &la.changes.back();
 
-			LoggedChange *lc = &la->change[la->changes++];
-			/* for SLE_STR, pointer has to be valid! so make it nullptr */
-			memset(lc, 0, sizeof(*lc));
 			lc->ct = ct;
-
 			SlObject(lc, _glog_desc[ct]);
+
 			if (ct == GLCT_REVISION && SlXvIsFeatureMissing(XSLFI_EXTENDED_GAMELOG)) {
 				lc->revision.text = stredup(old_revision_text, lastof(old_revision_text));
 			}
@@ -136,44 +131,30 @@ static void Load_GLOG_common(LoggedAction *&gamelog_action, uint &gamelog_action
 
 static void Save_GLOG()
 {
-	const LoggedAction *laend = &_gamelog_action[_gamelog_actions];
-	size_t length = 0;
+	SlAutolength([](void *) {
+		for (LoggedAction &la : _gamelog_actions) {
+			SlWriteByte(la.at);
+			SlObject(&la, _glog_action_desc);
 
-	for (const LoggedAction *la = _gamelog_action; la != laend; la++) {
-		const LoggedChange *lcend = &la->change[la->changes];
-		for (LoggedChange *lc = la->change; lc != lcend; lc++) {
-			assert((uint)lc->ct < lengthof(_glog_desc));
-			length += SlCalcObjLength(lc, _glog_desc[lc->ct]) + 1;
+			for (LoggedChange &lc : la.changes) {
+				SlWriteByte(lc.ct);
+				assert((uint)lc.ct < GLCT_END);
+				SlObject(&lc, _glog_desc[lc.ct]);
+			}
+			SlWriteByte(GLCT_NONE);
 		}
-		length += 10;
-	}
-	length++;
-
-	SlSetLength(length);
-
-	for (LoggedAction *la = _gamelog_action; la != laend; la++) {
-		SlWriteByte(la->at);
-		SlObject(la, _glog_action_desc);
-
-		const LoggedChange *lcend = &la->change[la->changes];
-		for (LoggedChange *lc = la->change; lc != lcend; lc++) {
-			SlWriteByte(lc->ct);
-			assert((uint)lc->ct < GLCT_END);
-			SlObject(lc, _glog_desc[lc->ct]);
-		}
-		SlWriteByte(GLCT_NONE);
-	}
-	SlWriteByte(GLAT_NONE);
+		SlWriteByte(GLAT_NONE);
+	}, nullptr);
 }
 
 static void Load_GLOG()
 {
-	Load_GLOG_common(_gamelog_action, _gamelog_actions);
+	Load_GLOG_common(_gamelog_actions);
 }
 
 static void Check_GLOG()
 {
-	Load_GLOG_common(_load_check_data.gamelog_action, _load_check_data.gamelog_actions);
+	Load_GLOG_common(_load_check_data.gamelog_actions);
 }
 
 static const ChunkHandler gamelog_chunk_handlers[] = {

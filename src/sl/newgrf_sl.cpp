@@ -9,6 +9,7 @@
 
 #include "../stdafx.h"
 #include "../fios.h"
+#include "../load_check.h"
 #include "../string_func.h"
 
 #include "saveload.h"

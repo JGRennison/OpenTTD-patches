@@ -12,6 +12,8 @@
 
 #include "gamelog.h"
 
+#include <vector>
+
 /** Type of logged change */
 enum GamelogChangeType {
 	GLCT_MODE,        ///< Scenario editor x Game, different landscape
@@ -78,13 +80,11 @@ struct LoggedChange {
 
 /** Contains information about one logged action that caused at least one logged change */
 struct LoggedAction {
-	LoggedChange *change; ///< First logged change in this action
-	uint32 changes;       ///< Number of changes in this action
+	std::vector<LoggedChange> changes; ///< Changes in this action
 	GamelogActionType at; ///< Type of action
 	uint64 tick;          ///< Tick when it happened
 };
 
-extern LoggedAction *_gamelog_action;
-extern uint _gamelog_actions;
+extern std::vector<LoggedAction> _gamelog_actions;
 
 #endif /* GAMELOG_INTERNAL_H */

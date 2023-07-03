@@ -13,6 +13,7 @@
 #include "../core/endian_func.hpp"
 #include "../core/endian_type.hpp"
 #include "../fios.h"
+#include "../load_check.h"
 #include <array>
 
 #include "saveload.h"

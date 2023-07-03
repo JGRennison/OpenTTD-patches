@@ -238,6 +238,7 @@ add_files(
     league_gui.cpp
     league_type.h
     livery.h
+    load_check.h
     main_gui.cpp
     map.cpp
     map_func.h

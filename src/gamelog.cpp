@@ -33,8 +33,7 @@ extern byte   _sl_minor_version;    ///< the minor savegame version, DO NOT USE!
 
 static GamelogActionType _gamelog_action_type = GLAT_NONE; ///< action to record if anything changes
 
-LoggedAction *_gamelog_action = nullptr;        ///< first logged action
-uint _gamelog_actions         = 0;           ///< number of actions
+std::vector<LoggedAction> _gamelog_actions;     ///< logged actions
 static LoggedAction *_current_action = nullptr; ///< current action we are logging, nullptr when there is no action active
 
 
@@ -72,19 +71,17 @@ void GamelogStopAnyAction()
 /**
  * Frees the memory allocated by a gamelog
  */
-void GamelogFree(LoggedAction *gamelog_action, uint gamelog_actions)
+void GamelogFree(std::vector<LoggedAction> &gamelog_actions)
 {
-	for (uint i = 0; i < gamelog_actions; i++) {
-		const LoggedAction *la = &gamelog_action[i];
-		for (uint j = 0; j < la->changes; j++) {
-			const LoggedChange *lc = &la->change[j];
-			if (lc->ct == GLCT_SETTING) free(lc->setting.name);
-			if (lc->ct == GLCT_REVISION) free(lc->revision.text);
+	for (LoggedAction &la : gamelog_actions) {
+		for (LoggedChange &lc : la.changes) {
+			if (lc.ct == GLCT_SETTING) free(lc.setting.name);
+			if (lc.ct == GLCT_REVISION) free(lc.revision.text);
+			lc.ct = GLCT_NONE;
 		}
-		free(la->change);
 	}
 
-	free(gamelog_action);
+	gamelog_actions.clear();
 }
 
 /**
@@ -93,10 +90,7 @@ void GamelogFree(LoggedAction *gamelog_action, uint gamelog_actions)
 void GamelogReset()
 {
 	assert(_gamelog_action_type == GLAT_NONE);
-	GamelogFree(_gamelog_action, _gamelog_actions);
-
-	_gamelog_action  = nullptr;
-	_gamelog_actions = 0;
+	GamelogFree(_gamelog_actions);
 	_current_action  = nullptr;
 }
 
@@ -174,17 +168,14 @@ void GamelogPrint(GamelogPrintProc *proc)
 
 	proc("---- gamelog start ----");
 
-	const LoggedAction *laend = &_gamelog_action[_gamelog_actions];
+	for (const LoggedAction &la : _gamelog_actions) {
+		assert((uint)la.at < GLAT_END);
 
-	for (const LoggedAction *la = _gamelog_action; la != laend; la++) {
-		assert((uint)la->at < GLAT_END);
-
-		seprintf(buffer, lastof(buffer), "Tick %u: %s", (uint)la->tick, la_text[(uint)la->at]);
+		seprintf(buffer, lastof(buffer), "Tick %u: %s", (uint)la.tick, la_text[(uint)la.at]);
 		proc(buffer);
 
-		const LoggedChange *lcend = &la->change[la->changes];
-
-		for (const LoggedChange *lc = la->change; lc != lcend; lc++) {
+		for (const LoggedChange &lchange : la.changes) {
+			const LoggedChange *lc = &lchange;
 			char *buf = buffer;
 
 			switch (lc->ct) {
@@ -259,12 +250,12 @@ void GamelogPrint(GamelogPrintProc *proc)
 				case GLCT_GRFREM: {
 					/* A NewGRF got removed from the game, either manually or by it missing when loading the game. */
 					auto gm = grf_names.find(lc->grfrem.grfid);
-					buf += seprintf(buf, lastof(buffer), la->at == GLAT_LOAD ? "Missing NewGRF: " : "Removed NewGRF: ");
+					buf += seprintf(buf, lastof(buffer), la.at == GLAT_LOAD ? "Missing NewGRF: " : "Removed NewGRF: ");
 					buf = PrintGrfInfo(buf, lastof(buffer), lc->grfrem.grfid, nullptr, gm != grf_names.end() ? gm->second.gc : nullptr);
 					if (gm == grf_names.end()) {
 						buf += seprintf(buf, lastof(buffer), ". Gamelog inconsistency: GrfID was never added!");
 					} else {
-						if (la->at == GLAT_LOAD) {
+						if (la.at == GLAT_LOAD) {
 							/* Missing grfs on load are not removed from the configuration */
 							gm->second.was_missing = true;
 						} else {
@@ -371,18 +362,14 @@ static LoggedChange *GamelogChange(GamelogChangeType ct)
 	if (_current_action == nullptr) {
 		if (_gamelog_action_type == GLAT_NONE) return nullptr;
 
-		_gamelog_action  = ReallocT(_gamelog_action, _gamelog_actions + 1);
-		_current_action  = &_gamelog_action[_gamelog_actions++];
+		_current_action  = &_gamelog_actions.emplace_back();
 
 		_current_action->at      = _gamelog_action_type;
 		_current_action->tick    = _tick_counter;
-		_current_action->change  = nullptr;
-		_current_action->changes = 0;
 	}
 
-	_current_action->change = ReallocT(_current_action->change, _current_action->changes + 1);
-
-	LoggedChange *lc = &_current_action->change[_current_action->changes++];
+	_current_action->changes.push_back({});
+	LoggedChange *lc = &_current_action->changes.back();
 	lc->ct = ct;
 
 	return lc;
@@ -406,17 +393,13 @@ void GamelogEmergency()
  */
 bool GamelogTestEmergency()
 {
-	const LoggedChange *emergency = nullptr;
-
-	const LoggedAction *laend = &_gamelog_action[_gamelog_actions];
-	for (const LoggedAction *la = _gamelog_action; la != laend; la++) {
-		const LoggedChange *lcend = &la->change[la->changes];
-		for (const LoggedChange *lc = la->change; lc != lcend; lc++) {
-			if (lc->ct == GLCT_EMERGENCY) emergency = lc;
+	for (LoggedAction &la : _gamelog_actions) {
+		for (LoggedChange &lc : la.changes) {
+			if (lc.ct == GLCT_EMERGENCY) return true;
 		}
 	}
 
-	return (emergency != nullptr);
+	return false;
 }
 
 /**
@@ -490,11 +473,9 @@ void GamelogTestRevision()
 {
 	const LoggedChange *rev = nullptr;
 
-	const LoggedAction *laend = &_gamelog_action[_gamelog_actions];
-	for (const LoggedAction *la = _gamelog_action; la != laend; la++) {
-		const LoggedChange *lcend = &la->change[la->changes];
-		for (const LoggedChange *lc = la->change; lc != lcend; lc++) {
-			if (lc->ct == GLCT_REVISION) rev = lc;
+	for (LoggedAction &la : _gamelog_actions) {
+		for (LoggedChange &lc : la.changes) {
+			if (lc.ct == GLCT_REVISION) rev = &lc;
 		}
 	}
 
@@ -513,11 +494,9 @@ void GamelogTestMode()
 {
 	const LoggedChange *mode = nullptr;
 
-	const LoggedAction *laend = &_gamelog_action[_gamelog_actions];
-	for (const LoggedAction *la = _gamelog_action; la != laend; la++) {
-		const LoggedChange *lcend = &la->change[la->changes];
-		for (const LoggedChange *lc = la->change; lc != lcend; lc++) {
-			if (lc->ct == GLCT_MODE) mode = lc;
+	for (LoggedAction &la : _gamelog_actions) {
+		for (LoggedChange &lc : la.changes) {
+			if (lc.ct == GLCT_MODE) mode = &lc;
 		}
 	}
 
@@ -554,12 +533,10 @@ static void GamelogGRFBug(uint32 grfid, byte bug, uint64 data)
  */
 bool GamelogGRFBugReverse(uint32 grfid, uint16 internal_id)
 {
-	const LoggedAction *laend = &_gamelog_action[_gamelog_actions];
-	for (const LoggedAction *la = _gamelog_action; la != laend; la++) {
-		const LoggedChange *lcend = &la->change[la->changes];
-		for (const LoggedChange *lc = la->change; lc != lcend; lc++) {
-			if (lc->ct == GLCT_GRFBUG && lc->grfbug.grfid == grfid &&
-					lc->grfbug.bug == GBUG_VEH_LENGTH && lc->grfbug.data == internal_id) {
+	for (LoggedAction &la : _gamelog_actions) {
+		for (LoggedChange &lc : la.changes) {
+			if (lc.ct == GLCT_GRFBUG && lc.grfbug.grfid == grfid &&
+					lc.grfbug.bug == GBUG_VEH_LENGTH && lc.grfbug.data == internal_id) {
 				return false;
 			}
 		}
@@ -789,18 +766,16 @@ void GamelogGRFUpdate(const GRFConfig *oldc, const GRFConfig *newc)
  * @param[out] ever_modified Max value of 'modified' from all binaries that ever saved this savegame.
  * @param[out] removed_newgrfs Set to true if any NewGRFs have been removed.
  */
-void GamelogInfo(LoggedAction *gamelog_action, uint gamelog_actions, uint32 *last_ottd_rev, byte *ever_modified, bool *removed_newgrfs)
+void GamelogInfo(const std::vector<LoggedAction> &gamelog_actions, uint32 *last_ottd_rev, byte *ever_modified, bool *removed_newgrfs)
 {
-	const LoggedAction *laend = &gamelog_action[gamelog_actions];
-	for (const LoggedAction *la = gamelog_action; la != laend; la++) {
-		const LoggedChange *lcend = &la->change[la->changes];
-		for (const LoggedChange *lc = la->change; lc != lcend; lc++) {
-			switch (lc->ct) {
+	for (const LoggedAction &la : gamelog_actions) {
+		for (const LoggedChange &lc : la.changes) {
+			switch (lc.ct) {
 				default: break;
 
 				case GLCT_REVISION:
-					*last_ottd_rev = lc->revision.newgrf;
-					*ever_modified = std::max(*ever_modified, lc->revision.modified);
+					*last_ottd_rev = lc.revision.newgrf;
+					*ever_modified = std::max(*ever_modified, lc.revision.modified);
 					break;
 
 				case GLCT_GRFREM:
@@ -811,15 +786,14 @@ void GamelogInfo(LoggedAction *gamelog_action, uint gamelog_actions, uint32 *las
 	}
 }
 
-const char *GamelogGetLastRevision(const LoggedAction *gamelog_action, uint gamelog_actions)
+const char *GamelogGetLastRevision(const std::vector<LoggedAction> &gamelog_actions)
 {
-	for (uint i = gamelog_actions; i > 0; i--) {
-		const LoggedAction &la = gamelog_action[i - 1];
-		const LoggedChange *lcend = &(la.change[la.changes]);
-		for (const LoggedChange *lc = la.change; lc != lcend; lc++) {
-			switch (lc->ct) {
+	for (size_t i = gamelog_actions.size(); i > 0; i--) {
+		const LoggedAction &la = gamelog_actions[i - 1];
+		for (const LoggedChange &lc : la.changes) {
+			switch (lc.ct) {
 				case GLCT_REVISION:
-					return lc->revision.text;
+					return lc.revision.text;
 					break;
 
 				default:

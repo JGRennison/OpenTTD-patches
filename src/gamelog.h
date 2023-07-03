@@ -12,6 +12,8 @@
 
 #include "newgrf_config.h"
 
+struct LoggedAction;
+
 /** The actions we log. */
 enum GamelogActionType : uint8 {
 	GLAT_START,        ///< Game created
@@ -29,7 +31,7 @@ void GamelogStartAction(GamelogActionType at);
 void GamelogStopAction();
 void GamelogStopAnyAction();
 
-void GamelogFree(struct LoggedAction *gamelog_action, uint gamelog_actions);
+void GamelogFree(std::vector<LoggedAction> &gamelog_actions);
 void GamelogReset();
 
 /**
@@ -61,7 +63,7 @@ void GamelogTestMode();
 
 bool GamelogGRFBugReverse(uint32 grfid, uint16 internal_id);
 
-void GamelogInfo(struct LoggedAction *gamelog_action, uint gamelog_actions, uint32 *last_ottd_rev, byte *ever_modified, bool *removed_newgrfs);
-const char *GamelogGetLastRevision(const struct LoggedAction *gamelog_action, uint gamelog_actions);
+void GamelogInfo(const std::vector<LoggedAction> &gamelog_actions, uint32 *last_ottd_rev, byte *ever_modified, bool *removed_newgrfs);
+const char *GamelogGetLastRevision(const std::vector<LoggedAction> &gamelog_actions);
 
 #endif /* GAMELOG_H */

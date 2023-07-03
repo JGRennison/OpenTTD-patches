@@ -15,6 +15,7 @@
 #include "../company_func.h"
 #include "../company_manager_face.h"
 #include "../fios.h"
+#include "../load_check.h"
 #include "../tunnelbridge_map.h"
 #include "../tunnelbridge.h"
 #include "../station_base.h"

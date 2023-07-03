@@ -13,6 +13,7 @@
 #include "saveload.h"
 #include "saveload_buffer.h"
 #include "../fios.h"
+#include "../load_check.h"
 
 #include "../safeguards.h"
 

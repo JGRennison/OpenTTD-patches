@@ -389,12 +389,11 @@ static void ResetSignalHandlers()
  */
 static const GRFIdentifier *GetOverriddenIdentifier(const GRFConfig *c)
 {
-	const LoggedAction *la = &_gamelog_action[_gamelog_actions - 1];
-	if (la->at != GLAT_LOAD) return &c->ident;
+	const LoggedAction &la = _gamelog_actions.back();
+	if (la.at != GLAT_LOAD) return &c->ident;
 
-	const LoggedChange *lcend = &la->change[la->changes];
-	for (const LoggedChange *lc = la->change; lc != lcend; lc++) {
-		if (lc->ct == GLCT_GRFCOMPAT && lc->grfcompat.grfid == c->ident.grfid) return &lc->grfcompat;
+	for (const LoggedChange &lc : la.changes) {
+		if (lc.ct == GLCT_GRFCOMPAT && lc.grfcompat.grfid == c->ident.grfid) return &lc.grfcompat;
 	}
 
 	return &c->ident;

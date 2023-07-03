@@ -66,6 +66,7 @@
 #include "smallmap_gui.h"
 #include "roadveh.h"
 #include "fios.h"
+#include "load_check.h"
 #include "strings_func.h"
 #include "string_func.h"
 #include "debug.h"

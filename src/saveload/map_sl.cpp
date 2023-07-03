@@ -15,6 +15,7 @@
 #include "../map_func.h"
 #include "../core/bitmath_func.hpp"
 #include "../fios.h"
+#include "../load_check.h"
 #include <array>
 
 #include "../safeguards.h"
