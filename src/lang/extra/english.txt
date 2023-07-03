@@ -1386,7 +1386,9 @@ STR_FINANCES_REPAY_QUERY_CAPT                                   :{WHITE}Enter th
 STR_NEW_LINE                                                    :{}
 
 # Town tooltip
-STR_TOWN_NAME_TOOLTIP                                           :{BLACK}{TOWN}
+STR_TOWN_NAME_TOOLTIP                                           :{BLACK}{TOWN}{RAW_STRING}
+STR_TOWN_NAME_POP_TOOLTIP                                       :{BLACK}{TOWN}: {COMMA}{RAW_STRING}
+STR_TOWN_NAME_RATING_TOOLTIP                                    :{}Your rating is {STRING}
 
 STR_INDUSTRY_VIEW_NAME_TOOLTIP                                  :{STRING}
 STR_INDUSTRY_VIEW_REQUIRED_TOOLTIP_FIRST                        :{STRING}{RAW_STRING}

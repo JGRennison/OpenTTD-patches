@@ -18,6 +18,7 @@
 #include "window_func.h"
 #include "gfx_func.h"
 #include "industry.h"
+#include "town.h"
 #include "town_map.h"
 
 #include "widgets/viewport_widget.h"
@@ -225,12 +226,38 @@ enum TownNameTooltipMode : uint8 {
 	TNTM_ALWAYS_ON
 };
 
-void ShowTownNameTooltip(Window *w, const TileIndex tile)
+void ShowTownNameTooltip(Window *w, const TileIndex tile, char *buffer_position, const char *buffer_tail)
 {
 	if (_settings_client.gui.town_name_tooltip_mode == TNTM_OFF) return;
 	if (HasBit(_display_opt, DO_SHOW_TOWN_NAMES) && _settings_client.gui.town_name_tooltip_mode == TNTM_ON_IF_HIDDEN) return; // No need for a town name tooltip when it is already displayed
-	SetDParam(0, GetTownIndex(tile));
-	GuiShowTooltips(w, STR_TOWN_NAME_TOOLTIP, 0, nullptr, TCC_HOVER_VIEWPORT);
+
+	StringID tooltip_string = STR_TOWN_NAME_TOOLTIP;
+	TownID town_id = GetTownIndex(tile);
+	const Town *town = Town::Get(town_id);
+	*buffer_position = '\0';
+
+	if (_game_mode != GM_EDITOR && _local_company < MAX_COMPANIES && HasBit(town->have_ratings, _local_company)) {
+		int local_authority_rating_thresholds[] = { RATING_APPALLING, RATING_VERYPOOR, RATING_POOR, RATING_MEDIOCRE, RATING_GOOD, RATING_VERYGOOD,
+													RATING_EXCELLENT, RATING_OUTSTANDING };
+		constexpr size_t threshold_count = lengthof(local_authority_rating_thresholds);
+
+		auto local_rating = town->ratings[_local_company];
+		auto rating_string = STR_CARGO_RATING_APPALLING;
+		for (int i = 0; i < threshold_count && local_rating > local_authority_rating_thresholds[i]; ++i) ++rating_string;
+		SetDParam(0, rating_string);
+		GetString(buffer_position, STR_TOWN_NAME_RATING_TOOLTIP, buffer_tail);
+	}
+
+	uint rating_string_parameter_index = 1;
+
+	SetDParam(0, town_id);
+	if (_settings_client.gui.population_in_label) {
+		tooltip_string = STR_TOWN_NAME_POP_TOOLTIP;
+		SetDParam(1, town->cache.population);
+		rating_string_parameter_index = 2;
+	}
+	SetDParamStr(rating_string_parameter_index, buffer_position);
+	GuiShowTooltips(w, tooltip_string, 0, nullptr, TCC_HOVER_VIEWPORT);
 }
 
 bool GetIndustryTooltipString(TileIndex tile, char *buffer_position, const char *buffer_tail);
@@ -281,7 +308,7 @@ void ShowTooltipForTile(Window *w, const TileIndex tile)
 			}
 			/* FALL THROUGH */
 		case MP_HOUSE: {
-			ShowTownNameTooltip(w, tile);
+			ShowTownNameTooltip(w, tile, buffer_start, buffer_tail);
 			break;
 		}
 		case MP_INDUSTRY: {
