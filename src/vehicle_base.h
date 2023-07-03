@@ -28,6 +28,7 @@
 #include "sl/saveload_common.h"
 #include <list>
 #include <map>
+#include <vector>
 
 CommandCost CmdRefitVehicle(TileIndex, DoCommandFlag, uint32, uint32, const char*);
 

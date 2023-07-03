@@ -13,6 +13,7 @@
 #include "tracerestrict.h"
 #include "core/container_func.hpp"
 #include <map>
+#include <vector>
 
 /** @defgroup progsigs Programmable Pre-Signals */
 ///@{

@@ -15,6 +15,7 @@
 #include "string_type.h"
 #include "core/serialisation.hpp"
 #include <optional>
+#include <vector>
 
 struct CommandDeserialisationBuffer : public BufferDeserialisationHelper<CommandDeserialisationBuffer> {
 	const uint8 *buffer;

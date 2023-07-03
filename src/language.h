@@ -14,6 +14,7 @@
 #include <unicode/coll.h>
 #endif /* WITH_ICU_I18N */
 #include "strings_type.h"
+#include <vector>
 
 static const uint8 CASE_GENDER_LEN = 16; ///< The (maximum) length of a case/gender string.
 static const uint8 MAX_NUM_GENDERS =  8; ///< Maximum number of supported genders.

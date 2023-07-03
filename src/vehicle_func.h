@@ -20,6 +20,7 @@
 #include "track_type.h"
 #include "livery.h"
 #include "cargo_type.h"
+#include <vector>
 
 #define is_custom_sprite(x) (x >= 0xFD)
 #define IS_CUSTOM_FIRSTHEAD_SPRITE(x) (x == 0xFD)

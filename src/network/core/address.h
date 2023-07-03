@@ -17,6 +17,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 class NetworkAddress;
 typedef std::vector<NetworkAddress> NetworkAddressList; ///< Type for a list of addresses.

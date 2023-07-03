@@ -20,6 +20,7 @@
 #include <deque>
 #include <map>
 #include <memory>
+#include <vector>
 #include <thread>
 #if defined(__MINGW32__)
 #include "3rdparty/mingw-std-threads/mingw.thread.h"

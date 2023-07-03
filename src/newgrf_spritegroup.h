@@ -23,6 +23,7 @@
 #include "3rdparty/cpp-btree/btree_set.h"
 
 #include <map>
+#include <vector>
 
 /**
  * Gets the value of a so-called newgrf "register".

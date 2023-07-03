@@ -18,6 +18,7 @@
 #include "linkgraph/linkgraph_gui.h"
 #include "widgets/smallmap_widget.h"
 #include "guitimer_func.h"
+#include <vector>
 
 static const int NUM_NO_COMPANY_ENTRIES = 4; ///< Number of entries in the owner legend that are not companies.
 

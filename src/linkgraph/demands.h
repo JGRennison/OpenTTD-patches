@@ -4,6 +4,7 @@
 #define DEMANDS_H
 
 #include "linkgraphjob_base.h"
+#include <vector>
 
 /**
  * Calculate the demands. This class has a state, but is recreated for each

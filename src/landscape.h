@@ -12,6 +12,7 @@
 
 #include "core/geometry_type.hpp"
 #include "tile_cmd.h"
+#include <vector>
 
 static const uint SNOW_LINE_MONTHS = 12; ///< Number of months in the snow line table.
 static const uint SNOW_LINE_DAYS   = 32; ///< Number of days in each month in the snow line table.

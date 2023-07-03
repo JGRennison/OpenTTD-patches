@@ -11,6 +11,7 @@
 #define GAMELOG_H
 
 #include "newgrf_config.h"
+#include <vector>
 
 struct LoggedAction;
 

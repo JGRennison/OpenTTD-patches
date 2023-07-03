@@ -13,6 +13,7 @@
 #include "newgrf.h"
 #include "tile_type.h"
 #include "vehicle_type.h"
+#include <vector>
 
 /** Current state of spritepicker */
 enum NewGrfDebugSpritePickerMode {

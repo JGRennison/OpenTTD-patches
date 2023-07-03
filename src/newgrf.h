@@ -20,6 +20,7 @@
 #include "core/mem_func.hpp"
 #include "3rdparty/cpp-btree/btree_map.h"
 #include <bitset>
+#include <vector>
 
 /**
  * List of different canal 'features'.

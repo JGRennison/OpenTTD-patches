@@ -19,6 +19,7 @@
 #include "linkgraph_type.h"
 #include "../3rdparty/cpp-btree/btree_map.h"
 #include <utility>
+#include <vector>
 
 class LinkGraph;
 

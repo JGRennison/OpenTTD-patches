@@ -13,6 +13,7 @@
 #include "sl/saveload_types.h"
 
 #include <functional>
+#include <vector>
 
 enum SettingFlag : uint32 {
 	SF_NONE = 0,

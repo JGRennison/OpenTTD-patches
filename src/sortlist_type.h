@@ -14,6 +14,7 @@
 #include "core/bitmath_func.hpp"
 #include "core/mem_func.hpp"
 #include "date_type.h"
+#include <vector>
 
 /** Flags of the sort list. */
 enum SortListFlags {

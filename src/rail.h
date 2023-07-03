@@ -21,6 +21,7 @@
 #include "signal_type.h"
 #include "rail_map.h"
 #include "settings_type.h"
+#include <vector>
 
 /** Railtype flags. */
 enum RailTypeFlags {

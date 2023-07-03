@@ -14,6 +14,7 @@
 #include "company_base.h"
 #include "newgrf_config.h"
 #include "network/core/tcp_content_type.h"
+#include <vector>
 
 
 /** Special values for save-load window for the data parameter of #InvalidateWindowData. */
