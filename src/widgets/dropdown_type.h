@@ -13,6 +13,7 @@
 #include "../window_type.h"
 #include "../gfx_func.h"
 #include "table/strings.h"
+#include <vector>
 
 enum DropDownSyncFocus {
 	DDSF_NONE = 0,

@@ -16,6 +16,7 @@
 #endif
 
 #include "video_driver.hpp"
+#include <vector>
 
 /** The SDL video driver. */
 class VideoDriver_SDL_Base : public VideoDriver {

@@ -14,6 +14,7 @@
 
 #include "newgrf_sl.h"
 #include "../fios.h"
+#include "../load_check.h"
 
 #include "../safeguards.h"
 

@@ -15,6 +15,7 @@
 #include "textfile_type.h"
 #include "window_gui.h"
 #include <optional>
+#include <vector>
 
 const char *GetTextfile(TextfileType type, Subdirectory dir, const char *filename);
 

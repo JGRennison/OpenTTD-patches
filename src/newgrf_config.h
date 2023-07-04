@@ -18,6 +18,8 @@
 #include "newgrf_text.h"
 #include "3rdparty/md5/md5.h"
 #include <map>
+#include <vector>
+#include <optional>
 
 static const uint MAX_NON_STATIC_GRF_COUNT = 256;
 

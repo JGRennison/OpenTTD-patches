@@ -64,8 +64,8 @@ static inline void GetLayouter(Layouter::LineCacheItem &line, std::string_view s
 {
 	if (line.buffer != nullptr) free(line.buffer);
 
-	typename T::CharType *buff_begin = MallocT<typename T::CharType>(DRAW_STRING_BUFFER);
-	const typename T::CharType *buffer_last = buff_begin + DRAW_STRING_BUFFER;
+	typename T::CharType *buff_begin = MallocT<typename T::CharType>(str.size() + 1);
+	const typename T::CharType *buffer_last = buff_begin + str.size() + 1;
 	typename T::CharType *buff = buff_begin;
 	FontMap &fontMapping = line.runs;
 	Font *f = Layouter::GetFont(state.fontsize, state.cur_colour);
@@ -207,6 +207,19 @@ Dimension Layouter::GetBounds()
 }
 
 /**
+ * Test whether a character is a non-printable formatting code
+ */
+static bool IsConsumedFormattingCode(WChar ch)
+{
+	if (ch >= SCC_BLUE && ch <= SCC_BLACK) return true;
+	if (ch == SCC_PUSH_COLOUR) return true;
+	if (ch == SCC_POP_COLOUR) return true;
+	if (ch >= SCC_FIRST_FONT && ch <= SCC_LAST_FONT) return true;
+	// All other characters defined in Unicode standard are assumed to be non-consumed.
+	return false;
+}
+
+/**
  * Get the position of a character in the layout.
  * @param ch Character to get the position of. Must be an iterator of the string passed to the constructor.
  * @return Upper left corner of the character relative to the start of the string.
@@ -228,7 +241,7 @@ Point Layouter::GetCharPosition(std::string_view::const_iterator ch) const
 	auto str = this->string.begin();
 	while (str < ch) {
 		WChar c = Utf8Consume(str);
-		index += line->GetInternalCharLength(c);
+		if (!IsConsumedFormattingCode(c)) index += line->GetInternalCharLength(c);
 	}
 
 	/* We couldn't find the code point index. */
@@ -255,9 +268,9 @@ Point Layouter::GetCharPosition(std::string_view::const_iterator ch) const
 }
 
 /**
- * Get the character that is at a position.
+ * Get the character that is at a pixel position in the first line of the layouted text.
  * @param x Position in the string.
- * @return Index of the position or -1 if no character is at the position.
+ * @return String offset of the position (bytes) or -1 if no character is at the position.
  */
 ptrdiff_t Layouter::GetCharAtPosition(int x) const
 {
@@ -278,12 +291,11 @@ ptrdiff_t Layouter::GetCharAtPosition(int x) const
 				size_t index = run.GetGlyphToCharMap()[i];
 
 				size_t cur_idx = 0;
-				int char_index = 0;
-				for (auto str = this->string.begin(); str != this->string.end(); char_index++) {
-					if (cur_idx == index) return char_index;
+				for (auto str = this->string.begin(); str != this->string.end();) {
+					if (cur_idx == index) return str - this->string.begin();
 
 					WChar c = Utf8Consume(str);
-					cur_idx += line->GetInternalCharLength(c);
+					if (!IsConsumedFormattingCode(c)) cur_idx += line->GetInternalCharLength(c);
 				}
 			}
 		}

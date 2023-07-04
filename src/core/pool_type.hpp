@@ -11,6 +11,7 @@
 #define POOL_TYPE_HPP
 
 #include "enum_type.hpp"
+#include <vector>
 
 /** Various types of a pool. */
 enum PoolType {

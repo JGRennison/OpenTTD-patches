@@ -15,6 +15,7 @@
 #include "station_base.h"
 #include "order_base.h"
 #include "vehicle_base.h"
+#include <vector>
 
 /** Whether or not a vehicle has arrived for a departure. */
 typedef enum {

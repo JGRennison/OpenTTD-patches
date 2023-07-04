@@ -13,6 +13,7 @@
 #include "../thread.h"
 #include "linkgraph.h"
 #include <memory>
+#include <vector>
 
 class LinkGraphJob;
 

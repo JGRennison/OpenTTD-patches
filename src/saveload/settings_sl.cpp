@@ -17,6 +17,7 @@
 #include "../settings_internal.h"
 #include "../network/network.h"
 #include "../fios.h"
+#include "../load_check.h"
 
 #include "../safeguards.h"
 

@@ -11,6 +11,7 @@
 #define TOWN_TYPE_H
 
 #include "core/enum_type.hpp"
+#include <vector>
 
 typedef uint16 TownID;
 struct Town;

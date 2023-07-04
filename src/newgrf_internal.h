@@ -19,6 +19,7 @@
 
 #include "3rdparty/cpp-btree/btree_map.h"
 #include <bitset>
+#include <vector>
 
 /** Base GRF ID for OpenTTD's base graphics GRFs. */
 static const uint32 OPENTTD_GRAPHICS_BASE_GRF_ID = BSWAP32(0xFF4F5400);

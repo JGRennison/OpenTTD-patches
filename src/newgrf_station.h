@@ -19,6 +19,7 @@
 #include "rail_type.h"
 #include "newgrf_spritegroup.h"
 #include "newgrf_town.h"
+#include <vector>
 
 /** Scope resolver for stations. */
 struct StationScopeResolver : public ScopeResolver {

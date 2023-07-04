@@ -8,6 +8,7 @@
 /** @file fios_gui.cpp GUIs for loading/saving games, scenarios, heightmaps, ... */
 
 #include "stdafx.h"
+#include "load_check.h"
 #include "sl/saveload.h"
 #include "error.h"
 #include "gui.h"
@@ -57,9 +58,7 @@ void LoadCheckData::Clear()
 
 	companies.clear();
 
-	GamelogFree(this->gamelog_action, this->gamelog_actions);
-	this->gamelog_action = nullptr;
-	this->gamelog_actions = 0;
+	GamelogFree(this->gamelog_actions);
 
 	ClearGRFConfigList(&this->grfconfig);
 
@@ -790,7 +789,7 @@ public:
 					ShowQuery(STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_ID, STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_ID, this, SaveLoadWindow::SaveGameConfirmationCallback);
 				} else if (_settings_client.gui.savegame_overwrite_confirm >= (known_id ? 3 : 2) && file_exists) {
 					if (this->selected != nullptr && !_load_check_data.sl_is_ext_version) {
-						const char *version = GamelogGetLastRevision(_load_check_data.gamelog_action, _load_check_data.gamelog_actions);
+						const char *version = GamelogGetLastRevision(_load_check_data.gamelog_actions);
 
 						SetDParam(0, STR_SAVELOAD_OVERWRITE_TITLE);
 						std::string caption = GetString(STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_VERSION_SUFFIX);

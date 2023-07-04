@@ -12,6 +12,9 @@
 
 #include "core/enum_type.hpp"
 
+#include <algorithm>
+#include <array>
+
 /**
  * Cargo slots to indicate a cargo type within a game.
  * Numbers are re-used between different climates.

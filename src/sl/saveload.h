@@ -19,7 +19,6 @@
 #include <stdarg.h>
 #include <vector>
 #include <string>
-#include <vector>
 
 /** Save or load result codes. */
 enum SaveOrLoadResult {

@@ -17,6 +17,7 @@
 #include "newgrf_commons.h"
 
 #include "3rdparty/cpp-btree/btree_map.h"
+#include <vector>
 
 struct WagonOverride {
 	std::vector<EngineID> engines;

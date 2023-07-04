@@ -14,6 +14,7 @@
 #include "company_type.h"
 #include "tile_type.h"
 #include "cargo_type.h"
+#include <vector>
 
 /** Vehicle List type flags */
 enum VehicleListType {

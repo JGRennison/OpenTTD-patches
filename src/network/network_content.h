@@ -14,6 +14,7 @@
 #include "core/http.h"
 #include "../core/container_func.hpp"
 #include "../3rdparty/cpp-btree/btree_map.h"
+#include <vector>
 
 /** Vector with content info */
 typedef std::vector<ContentInfo *> ContentVector;

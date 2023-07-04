@@ -13,6 +13,7 @@
 #define NETWORK_CORE_TCP_CONTENT_TYPE_H
 
 #include "../../3rdparty/md5/md5.h"
+#include <vector>
 
 /** The values in the enum are important; they are used as database 'keys' */
 enum ContentType {

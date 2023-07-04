@@ -18,6 +18,7 @@
 #include "command_type.h"
 #include "direction_type.h"
 #include "company_type.h"
+#include <vector>
 
 /** Context for tile accesses */
 enum TileContext : uint8 {

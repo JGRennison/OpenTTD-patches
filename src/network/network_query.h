@@ -11,6 +11,7 @@
 #define NETWORK_QUERY_H
 
 #include "network_internal.h"
+#include <vector>
 
 /** Class for handling the client side of quering a game server. */
 class QueryNetworkGameSocketHandler : public ZeroedMemoryAllocator, public NetworkGameSocketHandler {

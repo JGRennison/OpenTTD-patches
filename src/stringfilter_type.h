@@ -11,6 +11,7 @@
 #define STRINGFILTER_TYPE_H
 
 #include "strings_type.h"
+#include <vector>
 
 /**
  * String filter and state.

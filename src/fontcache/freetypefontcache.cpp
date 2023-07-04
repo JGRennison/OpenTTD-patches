@@ -15,6 +15,7 @@
 #include "../core/math_func.hpp"
 #include "../zoom_func.h"
 #include "../fileio_func.h"
+#include "../string_func.h"
 #include "truetypefontcache.h"
 
 #include "../table/control_codes.h"
@@ -41,7 +42,7 @@ public:
 	~FreeTypeFontCache();
 	void ClearFontCache() override;
 	GlyphID MapCharToGlyph(WChar key) override;
-	const char *GetFontName() override { return face->family_name; }
+	std::string GetFontName() override { return stdstr_fmt("%s, %s", face->family_name, face->style_name); }
 	bool IsBuiltInFont() override { return false; }
 	const void *GetOSHandle() override { return &face; }
 };

@@ -17,6 +17,7 @@
 #include "core/geometry_type.hpp"
 #include "core/tinystring_type.hpp"
 #include <memory>
+#include <vector>
 
 typedef Pool<BaseStation, StationID, 32, 64000> StationPool;
 extern StationPool _station_pool;

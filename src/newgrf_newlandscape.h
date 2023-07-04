@@ -12,6 +12,7 @@
 
 #include "newgrf_commons.h"
 #include "newgrf_spritegroup.h"
+#include <vector>
 
 extern std::vector<const GRFFile *> _new_landscape_rocks_grfs;
 

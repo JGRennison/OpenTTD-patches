@@ -7,12 +7,12 @@
 
 /** @file viewport_sprite_sorter.h Types related to sprite sorting. */
 
-#include "stdafx.h"
-#include "core/bitmath_func.hpp"
-#include "gfx_type.h"
-
 #ifndef VIEWPORT_SPRITE_SORTER_H
 #define VIEWPORT_SPRITE_SORTER_H
+
+#include "core/bitmath_func.hpp"
+#include "gfx_type.h"
+#include <vector>
 
 /** Parent sprite that should be drawn */
 #ifdef _MSC_VER

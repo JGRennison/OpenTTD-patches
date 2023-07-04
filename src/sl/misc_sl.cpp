@@ -16,6 +16,7 @@
 #include "../gfx_func.h"
 #include "../core/random_func.hpp"
 #include "../fios.h"
+#include "../load_check.h"
 #include "../road_type.h"
 #include "../core/checksum_func.hpp"
 #include "../event_logs.h"

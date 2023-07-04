@@ -19,6 +19,7 @@
 #include "newgrf_animation_type.h"
 #include "newgrf_class.h"
 #include "newgrf_commons.h"
+#include <vector>
 
 /** Various object behaviours. */
 enum ObjectFlags : uint16 {

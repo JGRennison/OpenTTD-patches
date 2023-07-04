@@ -25,6 +25,7 @@
 #include "command_func.h"
 #include "news_func.h"
 #include "fios.h"
+#include "load_check.h"
 #include "aircraft.h"
 #include "roadveh.h"
 #include "train.h"
@@ -328,7 +329,7 @@ static void WriteSavegameInfo(const char *name)
 	byte ever_modified = 0;
 	bool removed_newgrfs = false;
 
-	GamelogInfo(_load_check_data.gamelog_action, _load_check_data.gamelog_actions, &last_ottd_rev, &ever_modified, &removed_newgrfs);
+	GamelogInfo(_load_check_data.gamelog_actions, &last_ottd_rev, &ever_modified, &removed_newgrfs);
 
 	char buf[65536];
 	char *p = buf;

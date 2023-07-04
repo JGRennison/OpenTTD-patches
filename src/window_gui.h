@@ -20,6 +20,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <vector>
 
 /**
  * Flags to describe the look of the frame

@@ -17,6 +17,7 @@
 #include "../3rdparty/mingw-std-threads/mingw.mutex.h"
 #include "../3rdparty/mingw-std-threads/mingw.condition_variable.h"
 #endif
+#include <vector>
 
 /** Base class for Windows video drivers. */
 class VideoDriver_Win32Base : public VideoDriver {

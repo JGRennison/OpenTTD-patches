@@ -9,6 +9,7 @@
 
 #ifndef SMALLSTACK_TYPE_HPP
 #define SMALLSTACK_TYPE_HPP
+#include <vector>
 
 /**
  * A simplified pool which stores values instead of pointers and doesn't
