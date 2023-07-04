@@ -1967,12 +1967,26 @@ static SettingsContainer &GetSettingsTree()
 			SettingsPage *general = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_GENERAL));
 			{
 				general->Add(new SettingEntry("gui.osk_activation"));
-				general->Add(new SettingEntry("gui.hover_delay_ms"));
-				general->Add(new ConditionallyHiddenSettingEntry("gui.instant_tile_tooltip", []() -> bool { return _settings_client.gui.hover_delay_ms != 0; }));
 				general->Add(new SettingEntry("gui.errmsg_duration"));
 				general->Add(new SettingEntry("gui.window_snap_radius"));
 				general->Add(new SettingEntry("gui.window_soft_limit"));
 				general->Add(new SettingEntry("gui.right_mouse_wnd_close"));
+			}
+
+			SettingsPage *tooltips = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_TOOLTIPS));
+			{
+				tooltips->Add(new SettingEntry("gui.hover_delay_ms"));
+				tooltips->Add(new ConditionallyHiddenSettingEntry("gui.instant_tile_tooltip", []() -> bool { return _settings_client.gui.hover_delay_ms != 0; }));
+				tooltips->Add(new SettingEntry("gui.town_name_tooltip_mode"));
+				tooltips->Add(new SettingEntry("gui.industry_tooltip_show"));
+				tooltips->Add(new ConditionallyHiddenSettingEntry("gui.industry_tooltip_show_name", []() -> bool { return !_settings_client.gui.industry_tooltip_show; }));
+				tooltips->Add(new ConditionallyHiddenSettingEntry("gui.industry_tooltip_show_required", []() -> bool { return !_settings_client.gui.industry_tooltip_show; }));
+				tooltips->Add(new ConditionallyHiddenSettingEntry("gui.industry_tooltip_show_stockpiled", []() -> bool { return !_settings_client.gui.industry_tooltip_show; }));
+				tooltips->Add(new ConditionallyHiddenSettingEntry("gui.industry_tooltip_show_produced", []() -> bool { return !_settings_client.gui.industry_tooltip_show; }));
+				tooltips->Add(new SettingEntry("gui.depot_tooltip_mode"));
+				tooltips->Add(new SettingEntry("gui.station_viewport_tooltip_name"));
+				tooltips->Add(new SettingEntry("gui.station_viewport_tooltip_cargo"));
+				tooltips->Add(new SettingEntry("gui.station_rating_tooltip_mode"));
 			}
 
 			SettingsPage *save = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_SAVE));
@@ -2134,7 +2148,6 @@ static SettingsContainer &GetSettingsTree()
 			interface->Add(new SettingEntry("gui.prefer_teamchat"));
 			interface->Add(new SettingEntry("gui.sort_track_types_by_speed"));
 			interface->Add(new SettingEntry("gui.allow_hiding_waypoint_labels"));
-			interface->Add(new SettingEntry("gui.station_rating_tooltip_mode"));
 		}
 
 		SettingsPage *advisors = main->Add(new SettingsPage(STR_CONFIG_SETTING_ADVISORS));

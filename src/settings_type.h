@@ -140,6 +140,16 @@ struct GUISettings : public TimeSettings {
 	byte   errmsg_duration;                  ///< duration of error message
 	uint16 hover_delay_ms;                   ///< time required to activate a hover event, in milliseconds
 	bool   instant_tile_tooltip;             ///< don't require a right click to activate a hover event to show a tooltip for an in-game tile (e.g. industry).
+	uint8  town_name_tooltip_mode;           ///< when to display town names when hovering over roads and houses. (0 = never, 1 = only if town names are hidden, 2 = always)
+	bool   industry_tooltip_show;            ///< whether to display tooltips, when hovering over industry tiles.
+	bool   industry_tooltip_show_name;       ///< whether to display the name of the industry, when hovering over one of its tiles.
+	bool   industry_tooltip_show_required;   ///< whether to display cargoes required by the industry, when hovering over one of its tiles.
+	bool   industry_tooltip_show_stockpiled; ///< whether to display cargoes stockpiled by the industry, when hovering over one of its tiles.
+	bool   industry_tooltip_show_produced;   ///< whether to display cargoes produced by the industry, when hovering over one of its tiles.
+	uint8  depot_tooltip_mode;               ///< Display mode for depot viewport tooltips. (0 = never, 1 = just a total number of vehicles, 2 = total number of vehicles in the depot along with a breakdown of numbers)
+	uint8  station_viewport_tooltip_name;    ///< Show the name of the station in a viewport tooltip. (0 = never, 1 = only if station names are hidden, 2 = always)
+	bool   station_viewport_tooltip_cargo;   ///< Show a list of cargo details at the station in a viewport tooltip.
+	uint8  station_rating_tooltip_mode;      ///< Station rating tooltip mode
 	bool   link_terraform_toolbar;           ///< display terraform toolbar when displaying rail, road, water and airport toolbars
 	uint8  smallmap_land_colour;             ///< colour used for land and heightmap at the smallmap
 	uint8  scroll_mode;                      ///< viewport scroll mode
@@ -256,7 +266,6 @@ struct GUISettings : public TimeSettings {
 	uint8  linkgraph_colours;                ///< linkgraph overlay colours
 	uint8  vehicle_names;                    ///< Vehicle naming scheme
 	bool   shade_trees_on_slopes;            ///< Shade trees on slopes
-	uint8  station_rating_tooltip_mode;      ///< Station rating tooltip mode
 	uint8  demolish_confirm_mode;            ///< Demolition confirmation mode
 	bool   dual_pane_train_purchase_window;  ///< Dual pane train purchase window
 	bool   dual_pane_train_purchase_window_dual_buttons;  ///< Dual pane train purchase window: dual buttons

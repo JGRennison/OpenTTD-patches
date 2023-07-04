@@ -292,12 +292,6 @@ STR_CONFIG_SETTING_VEHICLE_NAMES_LONG                           :Long
 STR_CONFIG_SETTING_SHADED_TREES_ON_SLOPES                       :Shade trees on slopes: {STRING2}
 STR_CONFIG_SETTING_SHADED_TREES_ON_SLOPES_HELPTEXT              :Change brightness of trees drawn on slopes. Improves the look of tree cover in mountainous areas.
 
-STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE                  :Station rating tooltips: {STRING2}
-STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_HELPTEXT         :Set whether station rating tooltips are shown and the level of information detail.
-STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_OFF              :Off
-STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_SIMPLE           :Simple
-STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :Detailed
-
 STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE                        :Ask before demolishing structures: {STRING2}
 STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_HELPTEXT               :Ask for confirmation before irreversibly demolishing structures.
 STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_OFF                    :Off
@@ -1406,11 +1400,28 @@ STR_FINANCES_REPAY_TOOLTIP_EXTRA                                :{BLACK}{STRING}
 STR_FINANCES_BORROW_QUERY_CAPT                                  :{WHITE}Enter the amount of money to borrow
 STR_FINANCES_REPAY_QUERY_CAPT                                   :{WHITE}Enter the amount of money to repay
 
-STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP                           :{BLACK}{STRING}{RAW_STRING}
-STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_EXTENSION                 :{}{BLACK}{CARGO_LONG} ({COMMA}%)
-
 # Town tooltip
 STR_TOWN_NAME_TOOLTIP                                           :{BLACK}{TOWN}
+STR_TOWN_NAME_POP_TOOLTIP                                       :{BLACK}{TOWN}: {COMMA}
+STR_TOWN_NAME_RATING_TOOLTIP                                    :{STRING2}{}Your rating is {STRING}
+
+STR_INDUSTRY_VIEW_NAME_TOOLTIP                                  :{STRING}
+STR_INDUSTRY_VIEW_REQUIRED_TOOLTIP_FIRST                        :{STRING}{RAW_STRING}
+STR_INDUSTRY_VIEW_REQUIRED_TOOLTIP_NEXT                         :, {STRING}{RAW_STRING}
+STR_INDUSTRY_VIEW_STOCKPILED_TOOLTIP                            :{CARGO_LONG} waiting{RAW_STRING}
+STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_EXTENSION                 :{CARGO_LONG}{RAW_STRING} ({COMMA}%)
+
+STR_DEPOT_VIEW_COUNT_TOOLTIP                                    :{BLACK}{COMMA} vehicle{P "" s} inside
+STR_DEPOT_VIEW_COUNT_STOPPED_TOOLTIP                            :{BLACK}{COMMA} stopped vehicle{P "" s} inside
+STR_DEPOT_VIEW_COUNT_WAITING_TOOLTIP                            :{BLACK}{COMMA} waiting vehicle{P "" s} inside
+STR_DEPOT_VIEW_TOTAL_TOOLTIP                                    :{BLACK}{COMMA} vehicles inside:
+STR_DEPOT_VIEW_STOPPED_TOOLTIP                                  :{}{COMMA} {P is are} stopped
+STR_DEPOT_VIEW_WAITING_TOOLTIP                                  :{}{COMMA} {P is are} waiting
+STR_DEPOT_VIEW_FREE_WAGONS_TOOLTIP                              :{BLACK}{COMMA} wagon{P "" s} inside
+STR_DEPOT_VIEW_MIXED_CONTENTS_TOOLTIP                           :{BLACK}{STRING1}{}{STRING1}
+
+STR_STATION_VIEW_NAME_TOOLTIP                                   :{STATION}{NBSP}{STATION_FEATURES}
+STR_STATION_VIEW_CARGO_LINE_TOOLTIP                             :{STRING} ({COMMA}%): {CARGO_SHORT}
 
 STR_VEHICLE_LIST_AGE                                            :{STRING2}, Age: {COMMA} year{P "" s} ({COMMA})
 STR_VEHICLE_LIST_AGE_RED                                        :{STRING2}, Age: {RED}{COMMA} {BLACK}year{P "" s} ({COMMA})
@@ -2139,5 +2150,45 @@ STR_TOWN_DIRECTORY_INFO                                         :{BLACK}{STRING1
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR                         :{BLACK}Bigger main toolbar
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR_TOOLTIP                 :{BLACK}Check this box to increase the scale of the main toolbar
 
+STR_CONFIG_SETTING_INTERFACE_TOOLTIPS                           :{ORANGE}Tooltips
+
 STR_CONFIG_SETTING_INSTANT_TILE_TOOLTIP                         :Show viewport tooltips for tiles without a right-click: {STRING2}
 STR_CONFIG_SETTING_INSTANT_TILE_TOOLTIP_HELPTEXT                :Show viewport tooltips for tile types such as industries without requiring a right-click, when the show tooltips setting is set to right-click.
+
+STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE                       :Show viewport tooltips with town names: {STRING2}
+STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE_HELPTEXT              :Show viewport tooltips for road and house tiles that belong to towns.
+STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE_OFF                   :Off
+STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE_ON_IF_HIDDEN          :On, if town names are hidden
+STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE_ALWAYS_ON             :Always on
+
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_SHOW                        :Show viewport tooltips for industries: {STRING2}
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_SHOW_HELPTEXT               :Show tooltips when hovering over industry tiles.
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_NAME                        :Show names in industry viewport tooltips: {STRING2}
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_NAME_HELPTEXT               :Show names of industries in viewport tooltips when hovering over industry tiles.
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_REQUIRED                    :Show required cargoes in industry viewport tooltips: {STRING2}
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_REQUIRED_HELPTEXT           :Show a list of cargoes required by industries in viewport tooltips when hovering over industry tiles.
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_STOCKPILED                  :Show stockpiled cargoes in industry viewport tooltips: {STRING2}
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_STOCKPILED_HELPTEXT         :Show a list of cargoes stockpiled by industries in viewport tooltips when hovering over industry tiles.
+
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_PRODUCED                    :Show produced cargoes in industry viewport tooltips: {STRING2}
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_PRODUCED_HELPTEXT           :Show a list of cargoes produced by industries in viewport tooltips when hovering over industry tiles.
+
+STR_CONFIG_SETTING_DEPOT_TOOLTIP_MODE                           :Depot viewport tooltips: {STRING2}
+STR_CONFIG_SETTING_DEPOT_TOOLTIP_MODE_HELPTEXT                  :Set whether to show viewport tooltips when hovering over depot tiles and how much information to display.
+STR_CONFIG_SETTING_DEPOT_TOOLTIP_MODE_OFF                       :Off
+STR_CONFIG_SETTING_DEPOT_TOOLTIP_MODE_SIMPLE                    :Simple
+STR_CONFIG_SETTING_DEPOT_TOOLTIP_MODE_DETAILED                  :Detailed
+
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME                :Show names in station viewport tooltips: {STRING2}
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_HELPTEXT       :Show the name of the station in a viewport tooltip when hovering over it.
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_CARGO               :Show cargo details in station viewport tooltips: {STRING2}
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_CARGO_HELPTEXT      :Show the list of amounts and ratings of cargo that had ever been delivered to the station by industries, towns or by vehicles via unload/transfer order that doesn't result in the final delivery.
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_OFF            :Off
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_ON_IF_HIDDEN   :On, if station names are hidden
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_ALWAYS_ON      :Always on
+
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE                  :Station rating tooltips: {STRING2}
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_HELPTEXT         :Set whether station rating tooltips are shown and the level of information detail.
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_OFF              :Off
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_SIMPLE           :Simple
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :Detailed

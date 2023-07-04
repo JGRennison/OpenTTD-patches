@@ -1194,3 +1194,84 @@ void DeleteDepotHighlightOfVehicle(const Vehicle *v)
 		if (w->sel == v->index) ResetObjectToPlace();
 	}
 }
+
+enum DepotTooltipMode : uint8 {
+	DTM_OFF,
+	DTM_SIMPLE,
+	DTM_DETAILED
+};
+
+void ShowDepotTooltip(Window *w, const TileIndex tile)
+{
+	if (_settings_client.gui.depot_tooltip_mode == DTM_OFF) {
+		return;
+	}
+
+	struct depot_totals {
+		uint total_vehicle_count = 0;
+		uint stopped_vehicle_count = 0;
+		uint waiting_vehicle_count = 0;
+		uint free_wagon_count = 0;
+	};
+	depot_totals totals;
+
+	FindVehicleOnPos(tile, GetDepotVehicleType(tile), &totals, [](Vehicle *v, void *data) -> Vehicle * {
+		depot_totals *totals = static_cast<depot_totals *>(data);
+		if (v->IsInDepot()) {
+			if (v->IsPrimaryVehicle()) {
+				totals->total_vehicle_count++;
+				if (v->IsWaitingInDepot()) totals->waiting_vehicle_count++;
+				if (v->IsStoppedInDepot()) totals->stopped_vehicle_count++;
+			}
+			if (v->type == VEH_TRAIN) {
+				const Train *t = Train::From(v);
+				if (t->IsFreeWagon()) {
+					for (const Train *u = t; u != nullptr; u = u->GetNextUnit()) {
+						totals->free_wagon_count++;
+					}
+				}
+			}
+		}
+		return nullptr;
+	});
+
+	if (totals.total_vehicle_count == 0) {
+		if (totals.free_wagon_count > 0) {
+			SetDParam(0, totals.free_wagon_count);
+			GuiShowTooltips(w, STR_DEPOT_VIEW_FREE_WAGONS_TOOLTIP, 0, nullptr, TCC_HOVER_VIEWPORT);
+		}
+		return;
+	}
+
+	StringID str;
+
+	SetDParam(0, totals.total_vehicle_count);
+	if (_settings_client.gui.depot_tooltip_mode == DTM_SIMPLE || (totals.stopped_vehicle_count == 0 && totals.waiting_vehicle_count == 0)) {
+		str = STR_DEPOT_VIEW_COUNT_TOOLTIP;
+	} else if (totals.total_vehicle_count == totals.stopped_vehicle_count) {
+		str = STR_DEPOT_VIEW_COUNT_STOPPED_TOOLTIP;
+	} else if (totals.total_vehicle_count == totals.waiting_vehicle_count) {
+		str = STR_DEPOT_VIEW_COUNT_WAITING_TOOLTIP;
+	} else {
+		str = SPECSTR_TEMP_START;
+		_temp_special_strings[0] = GetString(STR_DEPOT_VIEW_TOTAL_TOOLTIP);
+		if (totals.stopped_vehicle_count > 0) {
+			SetDParam(0, totals.stopped_vehicle_count);
+			_temp_special_strings[0] += GetString(STR_DEPOT_VIEW_STOPPED_TOOLTIP);
+		}
+		if (totals.waiting_vehicle_count > 0) {
+			SetDParam(0, totals.waiting_vehicle_count);
+			_temp_special_strings[0] += GetString(STR_DEPOT_VIEW_WAITING_TOOLTIP);
+		}
+	}
+
+	if (totals.free_wagon_count > 0) {
+		SetDParam(0, str);
+		SetDParam(1, totals.total_vehicle_count);
+		SetDParam(2, STR_DEPOT_VIEW_FREE_WAGONS_TOOLTIP);
+		SetDParam(3, totals.free_wagon_count);
+		str = STR_DEPOT_VIEW_MIXED_CONTENTS_TOOLTIP;
+	}
+
+	GuiShowTooltips(w, str, 0, nullptr, TCC_HOVER_VIEWPORT);
+}
