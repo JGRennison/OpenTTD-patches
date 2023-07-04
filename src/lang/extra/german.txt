@@ -240,12 +240,6 @@ STR_CONFIG_SETTING_VEHICLE_NAMES_LONG                           :Lang
 STR_CONFIG_SETTING_SHADED_TREES_ON_SLOPES                       :Ändern des Farbtons der Bäume an Hängen: {STRING}
 STR_CONFIG_SETTING_SHADED_TREES_ON_SLOPES_HELPTEXT              :Ändert die Helligkeit der Bäume an Hängen. Dies verbessert das Aussehen in bergigem Gelände.
 
-STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE                  :Tooltips für Stationsbewertung: {STRING}
-STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_HELPTEXT         :Legt die Anzeige des Tooltips für die Stationsbewertung und den Detailgrad der angezeigten Informationen fest.
-STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_OFF              :Aus
-STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_SIMPLE           :Einfach
-STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :Detailliert
-
 STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE                        :Abreißen von Strukturen erfordert Bestätigung: {STRING}
 STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_HELPTEXT               :Frage vor dem endgültigen Abreißen von Strukturen nach einer Bestätigung.
 STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_OFF                    :Aus
@@ -1819,3 +1813,9 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}25% der 
 STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Kauf von 25% der Aktien dieser Firma nicht möglich ...
 STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Verkauf von 25% der Aktien dieser Firma nicht möglich ...
 STR_ERROR_PROTECTED                                             :{WHITE}Diese Firma ist noch nicht alt genug, um an der Börse gehandelt zu werden...
+
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE                  :Tooltips für Stationsbewertung: {STRING}
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_HELPTEXT         :Legt die Anzeige des Tooltips für die Stationsbewertung und den Detailgrad der angezeigten Informationen fest.
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_OFF              :Aus
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_SIMPLE           :Einfach
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :Detailliert
