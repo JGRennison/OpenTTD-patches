@@ -264,10 +264,6 @@ bool GetIndustryTooltipString(TileIndex tile, char *buffer_position, const char 
 
 void ShowIndustryTooltip(Window *w, const TileIndex tile, char *buffer_position, const char *buffer_tail)
 {
-	if (!_settings_client.gui.industry_tooltip_show ||
-		!(_settings_client.gui.industry_tooltip_show_name || _settings_client.gui.industry_tooltip_show_produced ||
-		_settings_client.gui.industry_tooltip_show_required || _settings_client.gui.industry_tooltip_show_stockpiled)) return;
-
 	if (!GetIndustryTooltipString(tile, buffer_position, buffer_tail)) return;
 
 	SetDParamStr(0, buffer_position);

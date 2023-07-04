@@ -3239,6 +3239,12 @@ void ShowIndustryCargoesWindow()
 	ShowIndustryCargoesWindow(NUM_INDUSTRYTYPES);
 }
 
+enum DisplayStockpiledCargoesMode : uint8 {
+	DSCM_OFF,
+	DSCM_REQUIRED,
+	DSCM_STOCKPILED
+};
+
 /**
  * Fills given data buffer with a string of characters that describe given industry, to be used to display a tooltip, when hovering over the industry tile.
  * @param tile            Index of the industry tile.
@@ -3248,6 +3254,10 @@ void ShowIndustryCargoesWindow()
  */
 bool GetIndustryTooltipString(const TileIndex tile, char *buffer_position, const char *buffer_tail)
 {
+	if (!_settings_client.gui.industry_tooltip_show ||
+		!(_settings_client.gui.industry_tooltip_show_name || _settings_client.gui.industry_tooltip_show_produced ||
+		_settings_client.gui.industry_tooltip_show_required || _settings_client.gui.industry_tooltip_show_stockpiled != DSCM_OFF)) return false;
+
 	const Industry *industry = Industry::GetByTile(tile);
 	const IndustrySpec *industry_spec = GetIndustrySpec(industry->type);
 
@@ -3291,7 +3301,7 @@ bool GetIndustryTooltipString(const TileIndex tile, char *buffer_position, const
 				bool isStockpileWithoutSuffix = suffix->display == CSD_CARGO_AMOUNT;
 				bool isProperStockpileWithoutSuffix = isStockpileWithoutSuffix && stockpiling; // If callback 37 fails, the result is interpreted as a stockpile, for some reason.
 				if (isStockpileWithSuffix || isProperStockpileWithoutSuffix) {
-					if (_settings_client.gui.industry_tooltip_show_stockpiled || !_settings_client.gui.industry_tooltip_show_stockpiled_as_required) continue;
+					if (_settings_client.gui.industry_tooltip_show_stockpiled != DSCM_REQUIRED) continue;
 				}
 
 				auto format = STR_INDUSTRY_VIEW_REQUIRED_TOOLTIP_NEXT;
@@ -3321,7 +3331,7 @@ bool GetIndustryTooltipString(const TileIndex tile, char *buffer_position, const
 
 		// Print out stockpiled cargo.
 
-		if (stockpiling && _settings_client.gui.industry_tooltip_show_stockpiled) {
+		if (stockpiling && _settings_client.gui.industry_tooltip_show_stockpiled == DSCM_STOCKPILED) {
 			for (byte i = 0; i < accepted_cargo_count; ++i) {
 				auto stockpiled_cargo = industry->accepts_cargo[i];
 				if (stockpiled_cargo == CT_INVALID) continue;
