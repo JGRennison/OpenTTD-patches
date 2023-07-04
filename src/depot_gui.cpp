@@ -1237,8 +1237,14 @@ bool GetDepotTooltipString(const TileIndex tile, char *buffer_position, const ch
 
 	SetDParam(0, total_vehicle_count);
 
-	if (_settings_client.gui.depot_tooltip_mode == DTM_SIMPLE || stopped_vehicle_count == 0 && waiting_vehicle_count == 0 && consist_count == 0) {
+	if (_settings_client.gui.depot_tooltip_mode == DTM_SIMPLE || (stopped_vehicle_count == 0 && waiting_vehicle_count == 0 && consist_count == 0)) {
 		GetString(buffer_position, STR_DEPOT_VIEW_COUNT_TOOLTIP, buffer_tail);
+	} else if (_settings_client.gui.depot_tooltip_mode == DTM_DETAILED && total_vehicle_count == stopped_vehicle_count) {
+		GetString(buffer_position, STR_DEPOT_VIEW_COUNT_STOPPED_TOOLTIP, buffer_tail);
+	} else if (_settings_client.gui.depot_tooltip_mode == DTM_DETAILED && total_vehicle_count == waiting_vehicle_count) {
+		GetString(buffer_position, STR_DEPOT_VIEW_COUNT_WAITING_TOOLTIP, buffer_tail);
+	} else if (_settings_client.gui.depot_tooltip_mode == DTM_DETAILED && total_vehicle_count == consist_count) {
+		GetString(buffer_position, STR_DEPOT_VIEW_COUNT_CONSISTS_TOOLTIP, buffer_tail);
 	} else {
 		buffer_position = GetString(buffer_position, STR_DEPOT_VIEW_TOTAL_TOOLTIP, buffer_tail);
 		if (stopped_vehicle_count > 0) {

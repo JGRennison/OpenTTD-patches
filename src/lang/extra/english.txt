@@ -1414,8 +1414,11 @@ STR_INDUSTRY_VIEW_STOCKPILED_TOOLTIP                            :{CARGO_LONG} wa
 STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_EXTENSION                 :{CARGO_LONG}{RAW_STRING} ({COMMA}%)
 STR_INDUSTRY_VIEW_INFO_TOOLTIP                                  :{BLACK}{RAW_STRING}
 
-STR_DEPOT_VIEW_COUNT_TOOLTIP                                    :{COMMA} indside
-STR_DEPOT_VIEW_TOTAL_TOOLTIP                                    :Of {COMMA} inside:
+STR_DEPOT_VIEW_COUNT_TOOLTIP                                    :{COMMA} vehicle{P "" s} {P is are} inside
+STR_DEPOT_VIEW_COUNT_STOPPED_TOOLTIP                            :{COMMA} stopped vehicle{P "" s} {P is are} inside
+STR_DEPOT_VIEW_COUNT_WAITING_TOOLTIP                            :{COMMA} waiting vehicle{P "" s} {P is are} inside
+STR_DEPOT_VIEW_COUNT_CONSISTS_TOOLTIP                           :{COMMA} consist{P "" s} {P is are} inside
+STR_DEPOT_VIEW_TOTAL_TOOLTIP                                    :Of {COMMA} vehicles inside:
 STR_DEPOT_VIEW_STOPPED_TOOLTIP                                  :{}{COMMA} {P is are} stopped
 STR_DEPOT_VIEW_WAITING_TOOLTIP                                  :{}{COMMA} {P is are} waiting
 STR_DEPOT_VIEW_CONSISTS_TOOLTIP                                 :{}{COMMA} {P is are} {P "a " ""}consist{P "" s}

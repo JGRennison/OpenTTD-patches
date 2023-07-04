@@ -3112,8 +3112,8 @@ bool GetStationViewportTooltipString(const TileIndex tile, char *buffer_position
 
 	bool next = false;
 
-	if (_settings_client.gui.station_viewport_tooltip_name == STNM_ALWAYS_ON ||
-		_settings_client.gui.station_viewport_tooltip_name == STNM_ON_IF_HIDDEN && !HasBit(_display_opt, DO_SHOW_STATION_NAMES)) {
+	if ( _settings_client.gui.station_viewport_tooltip_name == STNM_ALWAYS_ON ||
+		(_settings_client.gui.station_viewport_tooltip_name == STNM_ON_IF_HIDDEN && !HasBit(_display_opt, DO_SHOW_STATION_NAMES))) {
 		SetDParam(0, station_id);
 		buffer_position = GetString(buffer_position, STR_STATION_VIEW_NAME_TOOLTIP, buffer_tail);
 		buffer_position = StationGetSpecialStringExternal(buffer_position, station->facilities, buffer_tail);
