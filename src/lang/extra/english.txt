@@ -1411,14 +1411,14 @@ STR_INDUSTRY_VIEW_REQUIRED_TOOLTIP_NEXT                         :, {STRING}{RAW_
 STR_INDUSTRY_VIEW_STOCKPILED_TOOLTIP                            :{CARGO_LONG} waiting{RAW_STRING}
 STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_EXTENSION                 :{CARGO_LONG}{RAW_STRING} ({COMMA}%)
 
-STR_DEPOT_VIEW_COUNT_TOOLTIP                                    :{BLACK}{COMMA} vehicle{P "" s} {P is are} inside
-STR_DEPOT_VIEW_COUNT_STOPPED_TOOLTIP                            :{BLACK}{COMMA} stopped vehicle{P "" s} {P is are} inside
-STR_DEPOT_VIEW_COUNT_WAITING_TOOLTIP                            :{BLACK}{COMMA} waiting vehicle{P "" s} {P is are} inside
-STR_DEPOT_VIEW_COUNT_CONSISTS_TOOLTIP                           :{BLACK}{COMMA} consist{P "" s} {P is are} inside
-STR_DEPOT_VIEW_TOTAL_TOOLTIP                                    :{BLACK}Of {COMMA} vehicles inside:
+STR_DEPOT_VIEW_COUNT_TOOLTIP                                    :{BLACK}{COMMA} vehicle{P "" s} inside
+STR_DEPOT_VIEW_COUNT_STOPPED_TOOLTIP                            :{BLACK}{COMMA} stopped vehicle{P "" s} inside
+STR_DEPOT_VIEW_COUNT_WAITING_TOOLTIP                            :{BLACK}{COMMA} waiting vehicle{P "" s} inside
+STR_DEPOT_VIEW_TOTAL_TOOLTIP                                    :{BLACK}{COMMA} vehicles inside:
 STR_DEPOT_VIEW_STOPPED_TOOLTIP                                  :{}{COMMA} {P is are} stopped
 STR_DEPOT_VIEW_WAITING_TOOLTIP                                  :{}{COMMA} {P is are} waiting
-STR_DEPOT_VIEW_CONSISTS_TOOLTIP                                 :{}{COMMA} {P is are} {P "a " ""}consist{P "" s}
+STR_DEPOT_VIEW_FREE_WAGONS_TOOLTIP                              :{BLACK}{COMMA} wagon{P "" s} inside
+STR_DEPOT_VIEW_MIXED_CONTENTS_TOOLTIP                           :{BLACK}{STRING1}{}{STRING1}
 
 STR_STATION_VIEW_NAME_TOOLTIP                                   :{STATION}{NBSP}{STATION_FEATURES}
 STR_STATION_VIEW_CARGO_LINE_TOOLTIP                             :{STRING} ({COMMA}%): {CARGO_SHORT}
