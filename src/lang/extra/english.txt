@@ -1400,33 +1400,28 @@ STR_FINANCES_REPAY_TOOLTIP_EXTRA                                :{BLACK}{STRING}
 STR_FINANCES_BORROW_QUERY_CAPT                                  :{WHITE}Enter the amount of money to borrow
 STR_FINANCES_REPAY_QUERY_CAPT                                   :{WHITE}Enter the amount of money to repay
 
-STR_NEW_LINE                                                    :{}
-
 # Town tooltip
-STR_TOWN_NAME_TOOLTIP                                           :{BLACK}{TOWN}{RAW_STRING}
-STR_TOWN_NAME_POP_TOOLTIP                                       :{BLACK}{TOWN}: {COMMA}{RAW_STRING}
-STR_TOWN_NAME_RATING_TOOLTIP                                    :{}Your rating is {STRING}
+STR_TOWN_NAME_TOOLTIP                                           :{BLACK}{TOWN}
+STR_TOWN_NAME_POP_TOOLTIP                                       :{BLACK}{TOWN}: {COMMA}
+STR_TOWN_NAME_RATING_TOOLTIP                                    :{STRING2}{}Your rating is {STRING}
 
 STR_INDUSTRY_VIEW_NAME_TOOLTIP                                  :{STRING}
 STR_INDUSTRY_VIEW_REQUIRED_TOOLTIP_FIRST                        :{STRING}{RAW_STRING}
 STR_INDUSTRY_VIEW_REQUIRED_TOOLTIP_NEXT                         :, {STRING}{RAW_STRING}
 STR_INDUSTRY_VIEW_STOCKPILED_TOOLTIP                            :{CARGO_LONG} waiting{RAW_STRING}
 STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_EXTENSION                 :{CARGO_LONG}{RAW_STRING} ({COMMA}%)
-STR_INDUSTRY_VIEW_INFO_TOOLTIP                                  :{BLACK}{RAW_STRING}
 
-STR_DEPOT_VIEW_COUNT_TOOLTIP                                    :{COMMA} vehicle{P "" s} {P is are} inside
-STR_DEPOT_VIEW_COUNT_STOPPED_TOOLTIP                            :{COMMA} stopped vehicle{P "" s} {P is are} inside
-STR_DEPOT_VIEW_COUNT_WAITING_TOOLTIP                            :{COMMA} waiting vehicle{P "" s} {P is are} inside
-STR_DEPOT_VIEW_COUNT_CONSISTS_TOOLTIP                           :{COMMA} consist{P "" s} {P is are} inside
-STR_DEPOT_VIEW_TOTAL_TOOLTIP                                    :Of {COMMA} vehicles inside:
+STR_DEPOT_VIEW_COUNT_TOOLTIP                                    :{BLACK}{COMMA} vehicle{P "" s} {P is are} inside
+STR_DEPOT_VIEW_COUNT_STOPPED_TOOLTIP                            :{BLACK}{COMMA} stopped vehicle{P "" s} {P is are} inside
+STR_DEPOT_VIEW_COUNT_WAITING_TOOLTIP                            :{BLACK}{COMMA} waiting vehicle{P "" s} {P is are} inside
+STR_DEPOT_VIEW_COUNT_CONSISTS_TOOLTIP                           :{BLACK}{COMMA} consist{P "" s} {P is are} inside
+STR_DEPOT_VIEW_TOTAL_TOOLTIP                                    :{BLACK}Of {COMMA} vehicles inside:
 STR_DEPOT_VIEW_STOPPED_TOOLTIP                                  :{}{COMMA} {P is are} stopped
 STR_DEPOT_VIEW_WAITING_TOOLTIP                                  :{}{COMMA} {P is are} waiting
 STR_DEPOT_VIEW_CONSISTS_TOOLTIP                                 :{}{COMMA} {P is are} {P "a " ""}consist{P "" s}
-STR_DEPOT_VIEW_INFO_TOOLTIP                                     :{BLACK}{RAW_STRING}
 
-STR_STATION_VIEW_NAME_TOOLTIP                                   :{STATION}{NBSP}
+STR_STATION_VIEW_NAME_TOOLTIP                                   :{STATION}{NBSP}{STATION_FEATURES}
 STR_STATION_VIEW_CARGO_LINE_TOOLTIP                             :{STRING} ({COMMA}%): {CARGO_SHORT}
-STR_STATION_VIEW_INFO_TOOLTIP                                   :{BLACK}{RAW_STRING}
 
 STR_VEHICLE_LIST_AGE                                            :{STRING2}, Age: {COMMA} year{P "" s} ({COMMA})
 STR_VEHICLE_LIST_AGE_RED                                        :{STRING2}, Age: {RED}{COMMA} {BLACK}year{P "" s} ({COMMA})

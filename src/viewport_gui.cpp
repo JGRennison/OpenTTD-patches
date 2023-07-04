@@ -226,106 +226,116 @@ enum TownNameTooltipMode : uint8 {
 	TNTM_ALWAYS_ON
 };
 
-void ShowTownNameTooltip(Window *w, const TileIndex tile, char *buffer_position, const char *buffer_tail)
+enum StationTooltipNameMode : uint8 {
+	STNM_OFF,
+	STNM_ON_IF_HIDDEN,
+	STNM_ALWAYS_ON
+};
+
+void ShowTownNameTooltip(Window *w, const TileIndex tile)
 {
 	if (_settings_client.gui.town_name_tooltip_mode == TNTM_OFF) return;
 	if (HasBit(_display_opt, DO_SHOW_TOWN_NAMES) && _settings_client.gui.town_name_tooltip_mode == TNTM_ON_IF_HIDDEN) return; // No need for a town name tooltip when it is already displayed
 
-	StringID tooltip_string = STR_TOWN_NAME_TOOLTIP;
 	TownID town_id = GetTownIndex(tile);
 	const Town *town = Town::Get(town_id);
-	*buffer_position = '\0';
 
-	if (_game_mode != GM_EDITOR && _local_company < MAX_COMPANIES && HasBit(town->have_ratings, _local_company)) {
-		int local_authority_rating_thresholds[] = { RATING_APPALLING, RATING_VERYPOOR, RATING_POOR, RATING_MEDIOCRE, RATING_GOOD, RATING_VERYGOOD,
+	if (_settings_client.gui.population_in_label) {
+		SetDParam(0, STR_TOWN_NAME_POP_TOOLTIP);
+		SetDParam(1, town_id);
+		SetDParam(2, town->cache.population);
+	} else {
+		SetDParam(0, STR_TOWN_NAME_TOOLTIP);
+		SetDParam(1, town_id);
+	}
+
+	StringID tooltip_string;
+	if (_game_mode == GM_NORMAL && _local_company < MAX_COMPANIES && HasBit(town->have_ratings, _local_company)) {
+		const int local_authority_rating_thresholds[] = { RATING_APPALLING, RATING_VERYPOOR, RATING_POOR, RATING_MEDIOCRE, RATING_GOOD, RATING_VERYGOOD,
 													RATING_EXCELLENT, RATING_OUTSTANDING };
 		constexpr size_t threshold_count = lengthof(local_authority_rating_thresholds);
 
-		auto local_rating = town->ratings[_local_company];
-		auto rating_string = STR_CARGO_RATING_APPALLING;
-		for (int i = 0; i < threshold_count && local_rating > local_authority_rating_thresholds[i]; ++i) ++rating_string;
-		SetDParam(0, rating_string);
-		GetString(buffer_position, STR_TOWN_NAME_RATING_TOOLTIP, buffer_tail);
+		int local_rating = town->ratings[_local_company];
+		StringID rating_string = STR_CARGO_RATING_APPALLING;
+		for (size_t i = 0; i < threshold_count && local_rating > local_authority_rating_thresholds[i]; ++i) ++rating_string;
+		SetDParam(3, rating_string);
+		tooltip_string = STR_TOWN_NAME_RATING_TOOLTIP;
+	} else {
+		tooltip_string = STR_JUST_STRING2;
 	}
-
-	uint rating_string_parameter_index = 1;
-
-	SetDParam(0, town_id);
-	if (_settings_client.gui.population_in_label) {
-		tooltip_string = STR_TOWN_NAME_POP_TOOLTIP;
-		SetDParam(1, town->cache.population);
-		rating_string_parameter_index = 2;
-	}
-	SetDParamStr(rating_string_parameter_index, buffer_position);
 	GuiShowTooltips(w, tooltip_string, 0, nullptr, TCC_HOVER_VIEWPORT);
 }
 
-bool GetIndustryTooltipString(TileIndex tile, char *buffer_position, const char *buffer_tail);
-
-void ShowIndustryTooltip(Window *w, const TileIndex tile, char *buffer_position, const char *buffer_tail)
+void ShowStationViewportTooltip(Window *w, const TileIndex tile)
 {
-	if (!GetIndustryTooltipString(tile, buffer_position, buffer_tail)) return;
+	const StationID station_id = GetStationIndex(tile);
+	const Station *station = Station::Get(station_id);
 
-	SetDParamStr(0, buffer_position);
-	GuiShowTooltips(w, STR_INDUSTRY_VIEW_INFO_TOOLTIP, 0, nullptr, TCC_HOVER_VIEWPORT);
-}
+	std::string msg;
 
-bool GetDepotTooltipString(TileIndex tile, char *buffer_position, const char *buffer_tail);
+	if ( _settings_client.gui.station_viewport_tooltip_name == STNM_ALWAYS_ON ||
+			(_settings_client.gui.station_viewport_tooltip_name == STNM_ON_IF_HIDDEN && !HasBit(_display_opt, DO_SHOW_STATION_NAMES))) {
+		SetDParam(0, station_id);
+		SetDParam(1, station->facilities);
+		msg = GetString(STR_STATION_VIEW_NAME_TOOLTIP);
+	}
 
-void ShowDepotTooltip(Window *w, const TileIndex tile, char *buffer_position, const char *buffer_tail)
-{
-	if (!GetDepotTooltipString(tile, buffer_position, buffer_tail)) return;
+	if (_settings_client.gui.station_viewport_tooltip_cargo) {
+		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
+			const GoodsEntry *goods_entry = &station->goods[cs->Index()];
+			if (!goods_entry->HasRating()) continue;
 
-	SetDParamStr(0, buffer_position);
-	GuiShowTooltips(w, STR_DEPOT_VIEW_INFO_TOOLTIP, 0, nullptr, TCC_HOVER_VIEWPORT);
-}
+			if (!msg.empty()) msg += '\n';
 
-bool GetStationViewportTooltipString(TileIndex tile, char *buffer_position, const char *buffer_tail);
+			SetDParam(0, cs->name);
+			SetDParam(1, ToPercent8(goods_entry->rating));
+			SetDParam(2, cs->Index());
+			SetDParam(3, goods_entry->cargo.TotalCount());
+			msg += GetString(STR_STATION_VIEW_CARGO_LINE_TOOLTIP);
+		}
+	}
 
-void ShowStationViewportTooltip(Window *w, const TileIndex tile, char *buffer_position, const char *buffer_tail)
-{
-	if (!GetStationViewportTooltipString(tile, buffer_position, buffer_tail)) return;
-
-	SetDParamStr(0, buffer_position);
-	GuiShowTooltips(w, STR_STATION_VIEW_INFO_TOOLTIP, 0, nullptr, TCC_HOVER_VIEWPORT);
+	if (!msg.empty()) {
+		_temp_special_strings[0] = std::move(msg);
+		GuiShowTooltips(w, SPECSTR_TEMP_START, 0, nullptr, TCC_HOVER_VIEWPORT);
+	}
 }
 
 void ShowTooltipForTile(Window *w, const TileIndex tile)
 {
-	static char buffer[1024];
-	char *buffer_start = buffer;
-	char *buffer_tail = lastof(buffer);
+	extern void ShowDepotTooltip(Window *w, const TileIndex tile);
+	extern void ShowIndustryTooltip(Window *w, const TileIndex tile);
 
 	switch (GetTileType(tile)) {
 		case MP_ROAD:
 			if (IsRoadDepot(tile)) {
-				ShowDepotTooltip(w, tile, buffer_start, buffer_tail);
+				ShowDepotTooltip(w, tile);
 				return;
 			}
 			/* FALL THROUGH */
 		case MP_HOUSE: {
-			ShowTownNameTooltip(w, tile, buffer_start, buffer_tail);
+			ShowTownNameTooltip(w, tile);
 			break;
 		}
 		case MP_INDUSTRY: {
-			ShowIndustryTooltip(w, tile, buffer_start, buffer_tail);
+			ShowIndustryTooltip(w, tile);
 			break;
 		}
 		case MP_RAILWAY: {
 			if (!IsRailDepot(tile)) return;
-			ShowDepotTooltip(w, tile, buffer_start, buffer_tail);
+			ShowDepotTooltip(w, tile);
 			break;
 		}
 		case MP_WATER: {
 			if (!IsShipDepot(tile)) return;
-			ShowDepotTooltip(w, tile, buffer_start, buffer_tail);
+			ShowDepotTooltip(w, tile);
 			break;
 		}
 		case MP_STATION: {
 			if (IsHangar(tile)) {
-				ShowDepotTooltip(w, tile, buffer_start, buffer_tail);
+				ShowDepotTooltip(w, tile);
 			} else {
-				ShowStationViewportTooltip(w, tile, buffer_start, buffer_tail);
+				ShowStationViewportTooltip(w, tile);
 			}
 			break;
 		}

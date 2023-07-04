@@ -3245,142 +3245,117 @@ enum DisplayStockpiledCargoesMode : uint8 {
 	DSCM_STOCKPILED
 };
 
-/**
- * Fills given data buffer with a string of characters that describe given industry, to be used to display a tooltip, when hovering over the industry tile.
- * @param tile            Index of the industry tile.
- * @param buffer_position Pointer to the beginning of the data buffer to output the string into.
- * @param buffer_tail     Pointer to the last byte of the data buffer to output the string into.
- * @returns A boolean value that indicates whether to show the tooltip.
- */
-bool GetIndustryTooltipString(const TileIndex tile, char *buffer_position, const char *buffer_tail)
+void ShowIndustryTooltip(Window *w, const TileIndex tile)
 {
-	if (!_settings_client.gui.industry_tooltip_show ||
-		!(_settings_client.gui.industry_tooltip_show_name || _settings_client.gui.industry_tooltip_show_produced ||
-		_settings_client.gui.industry_tooltip_show_required || _settings_client.gui.industry_tooltip_show_stockpiled != DSCM_OFF)) return false;
+	if (!_settings_client.gui.industry_tooltip_show) return;
+	if (!(_settings_client.gui.industry_tooltip_show_name || _settings_client.gui.industry_tooltip_show_produced ||
+			_settings_client.gui.industry_tooltip_show_required || _settings_client.gui.industry_tooltip_show_stockpiled != DSCM_OFF)) return;
 
 	const Industry *industry = Industry::GetByTile(tile);
 	const IndustrySpec *industry_spec = GetIndustrySpec(industry->type);
 
-	buffer_position[0] = 0;
-	auto current_buffer_position = buffer_position;
-	auto next = false;
+	std::string msg;
 
 	if (_settings_client.gui.industry_tooltip_show_name) {
 		// Print out the name of the industry.
 		SetDParam(0, industry_spec->name);
-		current_buffer_position = GetString(current_buffer_position, STR_INDUSTRY_VIEW_NAME_TOOLTIP, buffer_tail);
-
-		next = true;
+		msg = GetString(STR_INDUSTRY_VIEW_NAME_TOOLTIP);
 	}
 
 	if (_settings_client.gui.industry_tooltip_show_required || _settings_client.gui.industry_tooltip_show_stockpiled) {
-		constexpr auto accepted_cargo_count = lengthof(industry->accepts_cargo);
+		const size_t accepted_cargo_count = lengthof(industry->accepts_cargo);
 
 		CargoSuffix suffixes[accepted_cargo_count];
 		GetAllCargoSuffixes(CARGOSUFFIX_IN, CST_VIEW, industry, industry->type, industry_spec, industry->accepts_cargo, suffixes);
 
 		// Have to query the stockpiling right now, in case callback 37 returns fail.
 		bool stockpiling = HasBit(industry_spec->callback_mask, CBM_IND_PRODUCTION_CARGO_ARRIVAL) ||
-			HasBit(industry_spec->callback_mask, CBM_IND_PRODUCTION_256_TICKS);
+				HasBit(industry_spec->callback_mask, CBM_IND_PRODUCTION_256_TICKS);
 
 		if (_settings_client.gui.industry_tooltip_show_required) {
 			// Print out required cargo.
 			bool first = true;
 			std::string required_cargo_list;
-			auto cargo_list_start_buffer_position = current_buffer_position;
 
-			for (byte i = 0; i < accepted_cargo_count; ++i) {
-				auto required_cargo = industry->accepts_cargo[i];
-				if (required_cargo == CT_INVALID ) {
+			for (size_t i = 0; i < accepted_cargo_count; ++i) {
+				CargoID required_cargo = industry->accepts_cargo[i];
+				if (required_cargo == CT_INVALID) {
 					continue;
 				}
 
-				auto suffix = &suffixes[i];
+				const CargoSuffix &suffix = suffixes[i];
 
-				bool isStockpileWithSuffix = suffix->display == CSD_CARGO_AMOUNT_TEXT;
-				bool isStockpileWithoutSuffix = suffix->display == CSD_CARGO_AMOUNT;
-				bool isProperStockpileWithoutSuffix = isStockpileWithoutSuffix && stockpiling; // If callback 37 fails, the result is interpreted as a stockpile, for some reason.
-				if (isStockpileWithSuffix || isProperStockpileWithoutSuffix) {
+				const bool is_stockpile_with_suffix = (suffix.display == CSD_CARGO_AMOUNT_TEXT);
+				const bool is_stockpile_without_suffix = (suffix.display == CSD_CARGO_AMOUNT);
+				const bool is_proper_stockpile_without_suffix = (is_stockpile_without_suffix && stockpiling); // If callback 37 fails, the result is interpreted as a stockpile, for some reason.
+				if (is_stockpile_with_suffix || is_proper_stockpile_without_suffix) {
 					if (_settings_client.gui.industry_tooltip_show_stockpiled != DSCM_REQUIRED) continue;
 				}
 
-				auto format = STR_INDUSTRY_VIEW_REQUIRED_TOOLTIP_NEXT;
+				StringID format = STR_INDUSTRY_VIEW_REQUIRED_TOOLTIP_NEXT;
 				if (first) {
 					format = STR_INDUSTRY_VIEW_REQUIRED_TOOLTIP_FIRST;
 					first = false;
 				}
 
 				SetDParam(0, CargoSpec::Get(required_cargo)->name);
-				SetDParamStr(1, suffix->text);
-				GetString(cargo_list_start_buffer_position, format, buffer_tail);
-				required_cargo_list += cargo_list_start_buffer_position;
+				SetDParamStr(1, suffix.text);
+				required_cargo_list += GetString(format);
 			}
-			
-			if (next && !required_cargo_list.empty()) {
-				current_buffer_position = GetString(current_buffer_position, STR_NEW_LINE, buffer_tail);
-			}
-
-			current_buffer_position += required_cargo_list.copy(current_buffer_position, required_cargo_list.size());
-			current_buffer_position[0] = '\0';
-			//++current_buffer_position;
 
 			if (!required_cargo_list.empty()) {
-				next = true;
+				if (!msg.empty()) msg += '\n';
+				msg += required_cargo_list;
 			}
 		}
 
 		// Print out stockpiled cargo.
 
 		if (stockpiling && _settings_client.gui.industry_tooltip_show_stockpiled == DSCM_STOCKPILED) {
-			for (byte i = 0; i < accepted_cargo_count; ++i) {
-				auto stockpiled_cargo = industry->accepts_cargo[i];
+			for (size_t i = 0; i < accepted_cargo_count; ++i) {
+				CargoID stockpiled_cargo = industry->accepts_cargo[i];
 				if (stockpiled_cargo == CT_INVALID) continue;
 
-				auto suffix = &suffixes[i];
+				const CargoSuffix &suffix = suffixes[i];
 
-				if (suffix->display == CSD_CARGO || suffix->display == CSD_CARGO_TEXT) {
+				if (suffix.display == CSD_CARGO || suffix.display == CSD_CARGO_TEXT) {
 					continue;
 				}
 
-				if (next) {
-					current_buffer_position = GetString(current_buffer_position, STR_NEW_LINE, buffer_tail);
-				}
-
-				next = true;
+				if (!msg.empty()) msg += '\n';
 
 				SetDParam(0, stockpiled_cargo);
 				SetDParam(1, industry->incoming_cargo_waiting[i]);
-				SetDParamStr(2, suffix->text);
-				current_buffer_position = GetString(current_buffer_position, STR_INDUSTRY_VIEW_STOCKPILED_TOOLTIP, buffer_tail);
+				SetDParamStr(2, suffix.text);
+				msg += GetString(STR_INDUSTRY_VIEW_STOCKPILED_TOOLTIP);
 			}
 		}
 	}
 
 	if (_settings_client.gui.industry_tooltip_show_produced) {
-		constexpr auto produced_cargo_count = lengthof(industry->produced_cargo);
+		const size_t produced_cargo_count = lengthof(industry->produced_cargo);
 
 		CargoSuffix suffixes[produced_cargo_count];
 		GetAllCargoSuffixes(CARGOSUFFIX_OUT, CST_VIEW, industry, industry->type, industry_spec, industry->produced_cargo, suffixes);
-		
+
 		// Print out amounts of produced cargo.
-		
-		for (byte i = 0; i < produced_cargo_count; i++) {
-			auto produced_cargo = industry->produced_cargo[i];
+
+		for (size_t i = 0; i < produced_cargo_count; i++) {
+			CargoID produced_cargo = industry->produced_cargo[i];
 			if (produced_cargo == CT_INVALID) continue;
 
-			if (next) {
-				current_buffer_position = GetString(current_buffer_position, STR_NEW_LINE, buffer_tail);
-			}
-
-			next = true;
+			if (!msg.empty()) msg += '\n';
 
 			SetDParam(0, produced_cargo);
 			SetDParam(1, industry->last_month_production[i]);
 			SetDParamStr(2, suffixes[i].text);
 			SetDParam(3, ToPercent8(industry->last_month_pct_transported[i]));
-			current_buffer_position = GetString(current_buffer_position, STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_EXTENSION, buffer_tail);
+			msg += GetString(STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_EXTENSION);
 		}
 	}
 
-	return next;
+	if (!msg.empty()) {
+		_temp_special_strings[0] = std::move(msg);
+		GuiShowTooltips(w, SPECSTR_TEMP_START, 0, nullptr, TCC_HOVER_VIEWPORT);
+	}
 }

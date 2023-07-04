@@ -1364,9 +1364,6 @@ STR_FINANCES_REPAY_TOOLTIP_EXTRA                                :{BLACK}{STRING}
 STR_FINANCES_BORROW_QUERY_CAPT                                  :{WHITE}빌릴 돈의 양을 입력하세요
 STR_FINANCES_REPAY_QUERY_CAPT                                   :{WHITE}갚을 돈의 양을 입력하세요
 
-STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP                           :{BLACK}{STRING}{STRING}
-STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_EXTENSION                 :{}{BLACK}{CARGO_LONG} ({COMMA}%)
-
 # Town tooltip
 STR_TOWN_NAME_TOOLTIP                                           :{BLACK}{TOWN}
 
