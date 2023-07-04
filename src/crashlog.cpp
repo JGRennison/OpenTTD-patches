@@ -270,10 +270,10 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 
 	this->CrashLogFaultSectionCheckpoint(buffer);
 
-	auto log_font = [&](FontSize fs) -> const char * {
+	auto log_font = [&](FontSize fs) -> std::string {
 		FontCache *fc = FontCache::Get(fs);
 		if (fc != nullptr) {
-			return fc->GetFontName().c_str();
+			return fc->GetFontName();
 		} else {
 			return "[NULL]";
 		}
@@ -285,10 +285,10 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 			" Medium: %s\n"
 			" Large:  %s\n"
 			" Mono:   %s\n\n",
-			log_font(FS_SMALL),
-			log_font(FS_NORMAL),
-			log_font(FS_LARGE),
-			log_font(FS_MONO)
+			log_font(FS_SMALL).c_str(),
+			log_font(FS_NORMAL).c_str(),
+			log_font(FS_LARGE).c_str(),
+			log_font(FS_MONO).c_str()
 	);
 
 	this->CrashLogFaultSectionCheckpoint(buffer);
