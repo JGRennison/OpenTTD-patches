@@ -3239,17 +3239,11 @@ void ShowIndustryCargoesWindow()
 	ShowIndustryCargoesWindow(NUM_INDUSTRYTYPES);
 }
 
-enum DisplayStockpiledCargoesMode : uint8 {
-	DSCM_OFF,
-	DSCM_REQUIRED,
-	DSCM_STOCKPILED
-};
-
 void ShowIndustryTooltip(Window *w, const TileIndex tile)
 {
 	if (!_settings_client.gui.industry_tooltip_show) return;
 	if (!(_settings_client.gui.industry_tooltip_show_name || _settings_client.gui.industry_tooltip_show_produced ||
-			_settings_client.gui.industry_tooltip_show_required || _settings_client.gui.industry_tooltip_show_stockpiled != DSCM_OFF)) return;
+			_settings_client.gui.industry_tooltip_show_required || _settings_client.gui.industry_tooltip_show_stockpiled)) return;
 
 	const Industry *industry = Industry::GetByTile(tile);
 	const IndustrySpec *industry_spec = GetIndustrySpec(industry->type);
@@ -3289,7 +3283,7 @@ void ShowIndustryTooltip(Window *w, const TileIndex tile)
 				const bool is_stockpile_without_suffix = (suffix.display == CSD_CARGO_AMOUNT);
 				const bool is_proper_stockpile_without_suffix = (is_stockpile_without_suffix && stockpiling); // If callback 37 fails, the result is interpreted as a stockpile, for some reason.
 				if (is_stockpile_with_suffix || is_proper_stockpile_without_suffix) {
-					if (_settings_client.gui.industry_tooltip_show_stockpiled != DSCM_REQUIRED) continue;
+					if (_settings_client.gui.industry_tooltip_show_stockpiled) continue;
 				}
 
 				StringID format = STR_INDUSTRY_VIEW_REQUIRED_TOOLTIP_NEXT;
@@ -3311,7 +3305,7 @@ void ShowIndustryTooltip(Window *w, const TileIndex tile)
 
 		// Print out stockpiled cargo.
 
-		if (stockpiling && _settings_client.gui.industry_tooltip_show_stockpiled == DSCM_STOCKPILED) {
+		if (stockpiling && _settings_client.gui.industry_tooltip_show_stockpiled) {
 			for (size_t i = 0; i < accepted_cargo_count; ++i) {
 				CargoID stockpiled_cargo = industry->accepts_cargo[i];
 				if (stockpiled_cargo == CT_INVALID) continue;

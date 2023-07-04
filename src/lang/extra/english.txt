@@ -2169,12 +2169,7 @@ STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_REQUIRED                    :Show required c
 STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_REQUIRED_HELPTEXT           :Show a list of cargoes required by industries in viewport tooltips when hovering over industry tiles.
 STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_STOCKPILED                  :Show stockpiled cargoes in industry viewport tooltips: {STRING2}
 STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_STOCKPILED_HELPTEXT         :Show a list of cargoes stockpiled by industries in viewport tooltips when hovering over industry tiles.
-STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_STOCKPILED_OFF              :Don't show
-STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_STOCKPILED_REQUIRED         :Show in the list of required cargoes, if the latter is shown
-STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_STOCKPILED_STOCKPILED       :Show as a list of amounts waiting to be processed
 
-STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_STOCKPILED_AS_REQUIRED      :Show stockpiled cargoes as required in viewport tooltips: {STRING2}
-STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_STOCKPILED_AS_REQUIRED_HELPTEXT:If normal display of stockpiled cargoes in viewport tooltips is disabled, then allow them to, at least, be displayed as required ones.
 STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_PRODUCED                    :Show produced cargoes in industry viewport tooltips: {STRING2}
 STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_PRODUCED_HELPTEXT           :Show a list of cargoes produced by industries in viewport tooltips when hovering over industry tiles.
 

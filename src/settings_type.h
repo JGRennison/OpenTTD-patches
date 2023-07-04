@@ -144,7 +144,7 @@ struct GUISettings : public TimeSettings {
 	bool   industry_tooltip_show;            ///< whether to display tooltips, when hovering over industry tiles.
 	bool   industry_tooltip_show_name;       ///< whether to display the name of the industry, when hovering over one of its tiles.
 	bool   industry_tooltip_show_required;   ///< whether to display cargoes required by the industry, when hovering over one of its tiles.
-	uint8  industry_tooltip_show_stockpiled; ///< whether and how to display cargoes stockpiled by the industry, when hovering over one of its tiles.
+	bool   industry_tooltip_show_stockpiled; ///< whether to display cargoes stockpiled by the industry, when hovering over one of its tiles.
 	bool   industry_tooltip_show_produced;   ///< whether to display cargoes produced by the industry, when hovering over one of its tiles.
 	uint8  depot_tooltip_mode;               ///< Display mode for depot viewport tooltips. (0 = never, 1 = just a total number of vehicles, 2 = total number of vehicles in the depot along with a breakdown of numbers)
 	uint8  station_viewport_tooltip_name;    ///< Show the name of the station in a viewport tooltip. (0 = never, 1 = only if station names are hidden, 2 = always)
