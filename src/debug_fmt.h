@@ -11,7 +11,7 @@
 #define DEBUG_FMT_H
 
 #include "debug.h"
-#include "3rdparty/fmt/format.h"
+#include "core/format.hpp"
 
 /**
  * Ouptut a line of debugging information.

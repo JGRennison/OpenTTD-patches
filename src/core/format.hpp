@@ -13,6 +13,8 @@
 #include "../3rdparty/fmt/format.h"
 //#include "strong_typedef_type.hpp"
 
+#include <type_traits>
+
 template <typename E, typename Char>
 struct fmt::formatter<E, Char, std::enable_if_t<std::is_enum<E>::value>> : fmt::formatter<typename std::underlying_type<E>::type> {
 	using underlying_type = typename std::underlying_type<E>::type;
