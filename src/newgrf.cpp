@@ -7352,7 +7352,8 @@ static void GraphicsNew(ByteReader *buf)
 		}
 	}
 
-	if (type == 0x04 && ((_cur.grfconfig->ident.grfid & 0x00FFFFFF) == OPENTTD_GRAPHICS_BASE_GRF_ID || _cur.grfconfig->ident.grfid == BSWAP32(0xFF4F4701))) {
+	if (type == 0x04 && ((_cur.grfconfig->ident.grfid & 0x00FFFFFF) == OPENTTD_GRAPHICS_BASE_GRF_ID ||
+			_cur.grfconfig->ident.grfid == BSWAP32(0xFF4F4701) || _cur.grfconfig->ident.grfid == BSWAP32(0xFFFFFFFE))) {
 		/* Signal graphics action 5: Fill duplicate signal sprite block if this is a baseset GRF or OpenGFX */
 		const SpriteID end = offset + num;
 		for (SpriteID i = offset; i < end; i++) {
