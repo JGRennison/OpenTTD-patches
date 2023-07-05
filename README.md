@@ -18,7 +18,7 @@ See [below](#openttd) for the original OpenTTD readme.
 
 The thread for this patchpack can be found [here](http://www.tt-forums.net/viewtopic.php?f=33&t=73469).
 
-See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
+See [jgrpp-changelog.md](jgrpp-changelog.md) for the changelog.
 
 See the [wiki](https://github.com/JGRennison/OpenTTD-patches/wiki) for guides on how to use some of the included features.
 
