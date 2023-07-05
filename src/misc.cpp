@@ -74,7 +74,7 @@ void InitializeOldNames();
 std::string GenerateUid(std::string_view subject)
 {
 	extern void NetworkRandomBytesWithFallback(void *buf, size_t n);
-	extern std::string BytesToHexString(const byte *data, uint length);
+	extern std::string BytesToHexString(const byte *data, size_t length);
 
 	uint8 random_bytes[32];
 	NetworkRandomBytesWithFallback(random_bytes, lengthof(random_bytes));

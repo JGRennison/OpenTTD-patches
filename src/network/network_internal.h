@@ -162,7 +162,7 @@ StringID GetNetworkErrorMsg(NetworkErrorCode err);
 bool NetworkMakeClientNameUnique(std::string &new_name);
 std::string GenerateCompanyPasswordHash(const std::string &password, const std::string &password_server_id, uint32 password_game_seed);
 std::vector<uint8> GenerateGeneralPasswordHash(const std::string &password, const std::string &password_server_id, uint64 password_game_seed);
-std::string BytesToHexString(const byte *data, uint length);
+std::string BytesToHexString(const byte *data, size_t length);
 std::string NetworkGenerateRandomKeyString(uint bytes);
 
 std::string_view ParseCompanyFromConnectionString(const std::string &connection_string, CompanyID *company_id);

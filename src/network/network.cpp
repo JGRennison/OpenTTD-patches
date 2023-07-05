@@ -1299,7 +1299,7 @@ static void NetworkGenerateServerId()
 	_settings_client.network.network_id = GenerateUid("OpenTTD Server ID");
 }
 
-std::string BytesToHexString(const byte *data, uint length)
+std::string BytesToHexString(const byte *data, size_t length)
 {
 	std::string hex_output;
 	hex_output.resize(length * 2);
