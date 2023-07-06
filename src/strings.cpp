@@ -1435,17 +1435,19 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				switch (cargo_str) {
 					case STR_TONS: {
 						assert(_settings_game.locale.units_weight < lengthof(_units_weight));
-						int64 args_array[] = {_units_weight[_settings_game.locale.units_weight].c.ToDisplay(args->GetInt64())};
+						const auto &x = _units_weight[_settings_game.locale.units_weight];
+						int64 args_array[] = {x.c.ToDisplay(args->GetInt64()), x.decimal_places};
 						StringParameters tmp_params(args_array);
-						buff = FormatString(buff, GetStringPtr(_units_weight[_settings_game.locale.units_weight].l), &tmp_params, last);
+						buff = FormatString(buff, GetStringPtr(x.l), &tmp_params, last);
 						break;
 					}
 
 					case STR_LITERS: {
 						assert(_settings_game.locale.units_volume < lengthof(_units_volume));
-						int64 args_array[] = {_units_volume[_settings_game.locale.units_volume].c.ToDisplay(args->GetInt64())};
+						const auto &x = _units_volume[_settings_game.locale.units_volume];
+						int64 args_array[] = {x.c.ToDisplay(args->GetInt64()), x.decimal_places};
 						StringParameters tmp_params(args_array);
-						buff = FormatString(buff, GetStringPtr(_units_volume[_settings_game.locale.units_volume].l), &tmp_params, last);
+						buff = FormatString(buff, GetStringPtr(x.l), &tmp_params, last);
 						break;
 					}
 
