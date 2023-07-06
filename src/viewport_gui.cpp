@@ -269,7 +269,9 @@ void ShowTownNameTooltip(Window *w, const TileIndex tile)
 void ShowStationViewportTooltip(Window *w, const TileIndex tile)
 {
 	const StationID station_id = GetStationIndex(tile);
-	const Station *station = Station::Get(station_id);
+	const Station *station = Station::GetIfValid(station_id);
+
+	if (station == nullptr) return;
 
 	std::string msg;
 
