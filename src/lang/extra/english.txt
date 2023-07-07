@@ -2179,6 +2179,12 @@ STR_CONFIG_SETTING_DEPOT_TOOLTIP_MODE_OFF                       :Off
 STR_CONFIG_SETTING_DEPOT_TOOLTIP_MODE_SIMPLE                    :Simple
 STR_CONFIG_SETTING_DEPOT_TOOLTIP_MODE_DETAILED                  :Detailed
 
+STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME               :Show viewport tooltips for waypoints and buoys: {STRING2}
+STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME_HELPTEXT      :Show the name of the waypoint or buoy in a viewport tooltip when hovering over it.
+STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME_OFF           :Off
+STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME_ON_IF_HIDDEN  :On, if waypoint names are hidden
+STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME_ALWAYS_ON     :Always on
+
 STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME                :Show names in station viewport tooltips: {STRING2}
 STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_HELPTEXT       :Show the name of the station in a viewport tooltip when hovering over it.
 STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_CARGO               :Show cargo details in station viewport tooltips: {STRING2}

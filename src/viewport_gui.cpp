@@ -226,6 +226,12 @@ enum TownNameTooltipMode : uint8 {
 	TNTM_ALWAYS_ON
 };
 
+enum WaypointTooltipNameMode : uint8 {
+	WTNM_OFF,
+	WTNM_ON_IF_HIDDEN,
+	WTNM_ALWAYS_ON
+};
+
 enum StationTooltipNameMode : uint8 {
 	STNM_OFF,
 	STNM_ON_IF_HIDDEN,
@@ -266,10 +272,21 @@ void ShowTownNameTooltip(Window *w, const TileIndex tile)
 	GuiShowTooltips(w, tooltip_string, 0, nullptr, TCC_HOVER_VIEWPORT);
 }
 
+void ShowWaypointViewportTooltip(Window *w, const TileIndex tile)
+{
+	if (_settings_client.gui.waypoint_viewport_tooltip_name == WTNM_OFF ||
+			(_settings_client.gui.waypoint_viewport_tooltip_name == WTNM_ON_IF_HIDDEN && HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES))) return;
+
+	SetDParam(0, GetStationIndex(tile));
+	GuiShowTooltips(w, STR_WAYPOINT_NAME, 0, nullptr, TCC_HOVER_VIEWPORT);
+}
+
 void ShowStationViewportTooltip(Window *w, const TileIndex tile)
 {
 	const StationID station_id = GetStationIndex(tile);
-	const Station *station = Station::Get(station_id);
+	const Station *station = Station::GetIfValid(station_id);
+
+	if (station == nullptr) return;
 
 	std::string msg;
 
@@ -334,6 +351,8 @@ void ShowTooltipForTile(Window *w, const TileIndex tile)
 		case MP_STATION: {
 			if (IsHangar(tile)) {
 				ShowDepotTooltip(w, tile);
+			} else if (IsBuoy(tile) || IsRailWaypoint(tile) || IsRoadWaypoint(tile)) {
+				ShowWaypointViewportTooltip(w, tile);
 			} else {
 				ShowStationViewportTooltip(w, tile);
 			}
