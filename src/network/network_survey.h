@@ -40,7 +40,7 @@ public:
 
 	constexpr static bool IsSurveyPossible()
 	{
-#ifndef WITH_NLOHMANN_JSON
+#if !(defined(WITH_NLOHMANN_JSON) && defined(SURVEY_KEY))
 		/* Without JSON library, we cannot send a payload; so we disable the survey. */
 		return false;
 #else
