@@ -3157,6 +3157,28 @@ static void GetSignalXY(TileIndex tile, uint pos, bool opposite, uint &x, uint &
 	y = TileY(tile) * TILE_SIZE + SignalPositions[side][pos].y;
 }
 
+void DrawRestrictedSignal(SignalType type, SpriteID sprite, int x, int y, int z, int dz, int bb_offset_z)
+{
+	SpriteFile *file = GetOriginFile(sprite);
+	if (file != nullptr && (file->flags & SFF_OPENTTDGRF)) {
+		static const SubSprite lower_part = { -50,  -8, 50,  50 };
+		static const SubSprite upper_part = { -50, -50, 50, -9 };
+		static const SubSprite lower_part_plain = { -50,  -5, 50,  50 };
+		static const SubSprite upper_part_plain = { -50, -50, 50, -6 };
+
+		AddSortableSpriteToDraw(sprite, SPR_TRACERESTRICT_BASE + 2, x, y, 1, 1, dz, z, false, 0, 0, bb_offset_z, (type == SIGTYPE_NORMAL) ? &lower_part_plain : &lower_part);
+		AddSortableSpriteToDraw(sprite,                   PAL_NONE, x, y, 1, 1, dz, z, false, 0, 0, bb_offset_z, (type == SIGTYPE_NORMAL) ? &upper_part_plain : &upper_part);
+	} else if (type == SIGTYPE_PBS || type == SIGTYPE_PBS_ONEWAY) {
+		static const SubSprite lower_part = { -50, -10, 50,  50 };
+		static const SubSprite upper_part = { -50, -50, 50, -11 };
+
+		AddSortableSpriteToDraw(sprite, SPR_TRACERESTRICT_BASE, x, y, 1, 1, dz, z, false, 0, 0, bb_offset_z, &lower_part);
+		AddSortableSpriteToDraw(sprite,               PAL_NONE, x, y, 1, 1, dz, z, false, 0, 0, bb_offset_z, &upper_part);
+	} else {
+		AddSortableSpriteToDraw(sprite, SPR_TRACERESTRICT_BASE + (type == SIGTYPE_NO_ENTRY ? 0 : 1), x, y, 1, 1, dz, z, false, 0, 0, bb_offset_z);
+	}
+}
+
 void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, SignalState condition, SignalOffsets image, uint pos, SignalType type,
 		SignalVariant variant, const TraceRestrictProgram *prog, CustomSignalSpriteContext context)
 {
@@ -3242,7 +3264,7 @@ void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, Sign
 		sprite += type * 16 + variant * 64 + image * 2 + condition + (IsSignalSpritePBS(type) ? 64 : 0);
 
 		SpriteFile *file = GetOriginFile(sprite);
-		is_custom_sprite = file != nullptr && (file->flags & SFF_USERGRF) && !(file->flags & SFF_OGFX);
+		is_custom_sprite = (file != nullptr) && (file->flags & SFF_USERGRF);
 	}
 
 	if ((_settings_client.gui.show_all_signal_default || (is_custom_sprite && show_restricted && _settings_client.gui.show_restricted_signal_default && !result.restricted_valid && variant == SIG_ELECTRIC)) && style == 0) {
@@ -3268,15 +3290,7 @@ void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, Sign
 	}
 
 	if (!is_custom_sprite && show_restricted && variant == SIG_ELECTRIC) {
-		if (type == SIGTYPE_PBS || type == SIGTYPE_PBS_ONEWAY) {
-			static const SubSprite lower_part = { -50, -10, 50, 50 };
-			static const SubSprite upper_part = { -50, -50, 50, -11 };
-
-			AddSortableSpriteToDraw(sprite, SPR_TRACERESTRICT_BASE, x, y, 1, 1, BB_HEIGHT_UNDER_BRIDGE, z, false, 0, 0, 0, &lower_part);
-			AddSortableSpriteToDraw(sprite,               PAL_NONE, x, y, 1, 1, BB_HEIGHT_UNDER_BRIDGE, z, false, 0, 0, 0, &upper_part);
-		} else {
-			AddSortableSpriteToDraw(sprite, SPR_TRACERESTRICT_BASE + (type == SIGTYPE_NO_ENTRY ? 0 : 1), x, y, 1, 1, BB_HEIGHT_UNDER_BRIDGE, z);
-		}
+		DrawRestrictedSignal(type, sprite, x, y, z, BB_HEIGHT_UNDER_BRIDGE, 0);
 	} else {
 		AddSortableSpriteToDraw(sprite, pal, x, y, 1, 1, BB_HEIGHT_UNDER_BRIDGE, z);
 	}

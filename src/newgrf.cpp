@@ -11287,8 +11287,8 @@ void LoadNewGRFFile(GRFConfig *config, GrfLoadingStage stage, Subdirectory subdi
 	} else {
 		SpriteFile &file = OpenCachedSpriteFile(filename, subdir, needs_palette_remap);
 		LoadNewGRFFileFromFile(config, stage, file);
-		file.flags |= SFF_USERGRF;
-		if (config->ident.grfid == BSWAP32(0xFF4F4701)) file.flags |= SFF_OGFX;
+		if (!HasBit(config->flags, GCF_SYSTEM)) file.flags |= SFF_USERGRF;
+		if (config->ident.grfid == BSWAP32(0xFFFFFFFE)) file.flags |= SFF_OPENTTDGRF;
 	}
 }
 

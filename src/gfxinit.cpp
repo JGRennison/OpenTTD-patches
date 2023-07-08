@@ -177,7 +177,10 @@ static void LoadSpriteTables()
 {
 	const GraphicsSet *used_set = BaseGraphics::GetUsedSet();
 
-	LoadGrfFile(used_set->files[GFT_BASE].filename, 0, PAL_DOS != used_set->palette);
+	SpriteFile &baseset_file = LoadGrfFile(used_set->files[GFT_BASE].filename, 0, PAL_DOS != used_set->palette);
+	if (StrStartsWith(used_set->name, "original_")) {
+		baseset_file.flags |= SFF_OPENTTDGRF;
+	}
 
 	/* Progsignal sprites. */
 	SpriteFile &progsig_file = LoadGrfFile("progsignals.grf", SPR_PROGSIGNAL_BASE, false);

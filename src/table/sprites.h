@@ -340,7 +340,7 @@ static const SpriteID ROUTE_STEP_SPRITE_COUNT = 4;
 
 /* Tracerestrict sprites */
 static const SpriteID SPR_TRACERESTRICT_BASE = SPR_ROUTE_STEP_BASE + ROUTE_STEP_SPRITE_COUNT;
-static const uint16 TRACERESTRICT_SPRITE_COUNT = 2;
+static const uint16 TRACERESTRICT_SPRITE_COUNT = 3;
 
 /* Misc GUI sprites */
 static const SpriteID SPR_MISC_GUI_BASE = SPR_TRACERESTRICT_BASE + TRACERESTRICT_SPRITE_COUNT;

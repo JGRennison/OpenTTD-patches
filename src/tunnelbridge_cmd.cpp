@@ -51,6 +51,7 @@
 #include "tracerestrict.h"
 #include "newgrf_roadstop.h"
 #include "newgrf_newsignals.h"
+#include "spritecache.h"
 
 #include "table/strings.h"
 #include "table/bridge_land.h"
@@ -1781,6 +1782,8 @@ static void DrawTunnelBridgeRampSingleSignal(const TileInfo *ti, bool is_green, 
 			sprite = { SPR_SIGNALS_BASE + ((type - 1) * 16 + variant * 64 + (position << 1) + is_green) + (IsSignalSpritePBS(type) ? 64 : 0), PAL_NONE };
 			if (_settings_client.gui.show_all_signal_default) sprite.sprite += SPR_DUP_SIGNALS_BASE - SPR_SIGNALS_BASE;
 		}
+		SpriteFile *file = GetOriginFile(sprite.sprite);
+		is_custom_sprite = (file != nullptr) && (file->flags & SFF_USERGRF);
 	}
 
 	if (is_custom_sprite && show_restricted && _settings_client.gui.show_restricted_signal_default && !result.restricted_valid && variant == SIG_ELECTRIC && style == 0) {
@@ -1791,15 +1794,8 @@ static void DrawTunnelBridgeRampSingleSignal(const TileInfo *ti, bool is_green, 
 	}
 
 	if (!is_custom_sprite && show_restricted && variant == SIG_ELECTRIC) {
-		if (type == SIGTYPE_PBS || type == SIGTYPE_PBS_ONEWAY) {
-			static const SubSprite lower_part = { -50, -10, 50, 50 };
-			static const SubSprite upper_part = { -50, -50, 50, -11 };
-
-			AddSortableSpriteToDraw(sprite.sprite, SPR_TRACERESTRICT_BASE, x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR, &lower_part);
-			AddSortableSpriteToDraw(sprite.sprite,               PAL_NONE, x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR, &upper_part);
-		} else {
-			AddSortableSpriteToDraw(sprite.sprite, SPR_TRACERESTRICT_BASE + (type == SIGTYPE_NO_ENTRY ? 0 : 1), x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR);
-		}
+		extern void DrawRestrictedSignal(SignalType type, SpriteID sprite, int x, int y, int z, int dz, int bb_offset_z);
+		DrawRestrictedSignal(type, sprite.sprite, x, y, z, TILE_HEIGHT, BB_Z_SEPARATOR);
 	} else {
 		AddSortableSpriteToDraw(sprite.sprite, sprite.pal, x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR);
 	}
