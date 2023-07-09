@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.54.2
+## JGR's Patchpack version 0.54.3
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -282,6 +282,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 * [Give money to company, instead of player](https://www.tt-forums.net/viewtopic.php?f=33&t=63899), broadcast money transfer notifications to all players.
 * Add setting to enable non-admin multiplayer clients to rename towns.
 * Add a password mechanism to change network game settings from a network client.
+* Auto-kick clients after too many failed rcon/settings attempts.
 * Various changes to reduce the probability of desyncs and improve desync reporting/diagnostics.
 * Add support for zstd savegame compression for autosaves and network joins.
 * Increase the number of settings which can be changed in multiplayer.

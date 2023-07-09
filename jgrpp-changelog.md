@@ -2,6 +2,25 @@
 
 * * *
 
+### v0.54.3 (2023-07-08)
+* Fix screenshots made from the small map window producing an all-black image.
+* Fix creating a goal from a gamescript putting the goal text into the goal progress field.
+* Fix requests to the online content service using an out of date vanilla version.
+* Fix sound output for linux-generic release builds.
+* Fix multi-cargo ships not showing all cargos in the build vehicle window.
+* Fix dual pane purchase window with mixed wagon/enginge variant trees.
+* Fix text rendering with 8bpp-simple blitter.
+* Fix crash which could due to order backups not correctly restoring dispatch schedules when it was not enabled.
+* Fix scheduled dispatch being used for predicted arrival/departure times in the timetable window when it was not enabled.
+* Fix using default graphics for all signals and recolouring of signal posts when using an original TTD baseset.
+* Add/extend viewport tooltips for stations, waypoints, industries, depots and town tiles.
+* Add setting for whether to shade height in viewport map mode.
+* Add "long-term" autosaves. A second set of autosaves which is updated whenever the primary set of autosaves wraps around to 0.
+* Change station naming to allow using the unsuffixed name at an increased distance from the town centre.
+* Remove upper limit from the give money command.
+* Improve accuracy of link graph capacity/usage estimation at high day lengths.
+* Bump trunk base from commit 3a03a12a9c460918e81af96cca55399b60064261 to commit 1ff0dc11d8d017dbbd8f9d1e94ff5087a21063b5.
+
 ### v0.54.2 (2023-06-18)
 * Picker tool:
   * Fix crash when using picker tool on non-GRF objects.
