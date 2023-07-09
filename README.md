@@ -339,12 +339,6 @@ See [installation.md](/installation.md) for instructions on how to install.
 * [AI/GS script additions](docs/script-additions.html) ([online copy](https://jgrennison.github.io/OpenTTD-patches/script-additions.html)).
 * [Low-level code/performance changes](docs/jgrpp-low-level-changes.md).
 
-#### Translations
-
-* German (by Auge and Kruemelchen)  
-* Korean (by kiwitreekor and TELK)  
-* Japanese (by Qwerty Asd)
-
 #### Save/load and savegame format changes  
 * Various changes to improve handling of savegames which use features not in trunk.  
 * Savegames from this patchpack are not loadable in trunk.  
