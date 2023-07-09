@@ -360,6 +360,15 @@ void FioCreateDirectory(const std::string &name)
 #endif
 }
 
+void FioRenameFile(const std::string &oldname, const std::string &newname)
+{
+#if defined(_WIN32)
+	_wrename(OTTD2FS(oldname).c_str(), OTTD2FS(newname).c_str());
+#else
+	rename(oldname.c_str(), newname.c_str());
+#endif
+}
+
 /**
  * Appends, if necessary, the path separator character to the end of the string.
  * It does not add the path separator to zero-sized strings.

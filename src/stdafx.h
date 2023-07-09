@@ -220,7 +220,6 @@
 
 #		define fopen(file, mode) _wfopen(OTTD2FS(file).c_str(), _T(mode))
 #		define unlink(file) _wunlink(OTTD2FS(file).c_str())
-#		define rename(oldname, newname) _wrename(OTTD2FS(oldname).c_str(), OTTD2FS(newname).c_str())
 
 		std::string FS2OTTD(const std::wstring &name);
 		std::wstring OTTD2FS(const std::string &name);

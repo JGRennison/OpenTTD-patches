@@ -3735,7 +3735,7 @@ void DoAutoOrNetsave(FiosNumberedSaveName &counter, bool threaded, FiosNumberedS
 			std::string lt_path = lt_counter->FilenameUsingMaxSaves(_settings_client.gui.max_num_lt_autosaves);
 			DEBUG(sl, 2, "Renaming autosave '%s' to long-term file '%s'", buf, lt_path.c_str());
 			std::string dir = FioFindDirectory(AUTOSAVE_DIR);
-			rename((dir + buf).c_str(), (dir + lt_path).c_str());
+			FioRenameFile(dir + buf, dir + lt_path);
 		}
 	}
 
