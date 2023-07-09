@@ -8,9 +8,9 @@
 * Fix requests to the online content service using an out of date vanilla version.
 * Fix sound output for linux-generic release builds.
 * Fix multi-cargo ships not showing all cargos in the build vehicle window.
-* Fix dual pane purchase window with mixed wagon/enginge variant trees.
+* Fix dual pane purchase window with mixed wagon/engine variant trees.
 * Fix text rendering with 8bpp-simple blitter.
-* Fix crash which could due to order backups not correctly restoring dispatch schedules when it was not enabled.
+* Fix crash which could be due to order backups not correctly restoring dispatch schedules when it was not enabled.
 * Fix scheduled dispatch being used for predicted arrival/departure times in the timetable window when it was not enabled.
 * Fix using default graphics for all signals and recolouring of signal posts when using an original TTD baseset.
 * Add/extend viewport tooltips for stations, waypoints, industries, depots and town tiles.
