@@ -15,7 +15,7 @@ This document does not describe the player-visible changes/additions described i
 * Support using sigaction and sigaltstack for more information and correct handling of stack overflow crashes (Unix).
 * Attempt to log stack overflow and heap corruption exceptions (Windows).
 * Demangle C++ symbols (Unix).
-* Attempt to handle segfaults which occur within the crashlog handler (Unix).
+* Attempt to handle crashes which occur within the crashlog handler, by skipping or only partially writing the faulting section.
 * Emit a "crash" log, savegame and screenshot on multiplayer desync.
 * Add crash/desync information to output screenshot and savegame files.
 * Multiplayer server and client exchange desync logs after a desync occurs.
@@ -100,6 +100,8 @@ This document does not describe the player-visible changes/additions described i
 * Paginate UDP packets longer than the MTU across multiple packets.
 * Use larger "packets" where useful in TCP connections.
 * Send vehicle caches from network server to clients to avoid desyncs caused by non-deterministic NewGRFs.
+* Change network protocol to send server/join and rcon passwords in an encrypted form (key exchange) instead of in clear text.
+* Encrypt the contents of rcon messages to the server and any responses.
 
 ### Sprites/blitter
 
