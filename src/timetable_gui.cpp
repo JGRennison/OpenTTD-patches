@@ -883,7 +883,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 		switch (widget) {
 			case WID_VT_ORDER_VIEW: // Order view button
 				ShowOrdersWindow(v);
-				break;
+				return;
 
 			case WID_VT_TIMETABLE_PANEL: { // Main panel.
 				int selected = GetOrderFromTimetableWndPt(pt.y, v);
