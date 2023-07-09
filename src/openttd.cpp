@@ -2143,13 +2143,23 @@ FiosNumberedSaveName &GetAutoSaveFiosNumberedSaveName()
 	return _autosave_ctr;
 }
 
+FiosNumberedSaveName &GetLongTermAutoSaveFiosNumberedSaveName()
+{
+	static FiosNumberedSaveName _autosave_lt_ctr("ltautosave");
+	return _autosave_lt_ctr;
+}
+
 /**
  * Create an autosave. The default name is "autosave#.sav". However with
  * the setting 'keep_all_autosave' the name defaults to company-name + date
  */
 static void DoAutosave()
 {
-	DoAutoOrNetsave(GetAutoSaveFiosNumberedSaveName(), true);
+	FiosNumberedSaveName *lt_counter = nullptr;
+	if (_settings_client.gui.max_num_autosaves > 0) {
+		lt_counter = &GetLongTermAutoSaveFiosNumberedSaveName();
+	}
+	DoAutoOrNetsave(GetAutoSaveFiosNumberedSaveName(), true, lt_counter);
 }
 
 /**

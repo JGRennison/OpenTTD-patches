@@ -68,7 +68,7 @@ void WaitTillSaved();
 void ProcessAsyncSaveFinish();
 void DoExitSave();
 
-void DoAutoOrNetsave(FiosNumberedSaveName &counter, bool threaded);
+void DoAutoOrNetsave(FiosNumberedSaveName &counter, bool threaded, FiosNumberedSaveName *lt_counter = nullptr);
 
 SaveOrLoadResult SaveWithFilter(struct SaveFilter *writer, bool threaded, SaveModeFlags flags);
 SaveOrLoadResult LoadWithFilter(struct LoadFilter *reader);

@@ -787,7 +787,16 @@ FiosNumberedSaveName::FiosNumberedSaveName(const std::string &prefix) : prefix(p
 */
 std::string FiosNumberedSaveName::Filename()
 {
-	if (++this->number >= _settings_client.gui.max_num_autosaves) this->number = 0;
+	return this->FilenameUsingMaxSaves(_settings_client.gui.max_num_autosaves);
+}
+
+/**
+ * Generate a savegame name and number according to max_saves.
+ * @return A filename in format "<prefix><number>.sav".
+*/
+std::string FiosNumberedSaveName::FilenameUsingMaxSaves(int max_saves)
+{
+	if (++this->number >= max_saves) this->number = 0;
 	return this->FilenameUsingNumber(this->number, "");
 }
 

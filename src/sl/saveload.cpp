@@ -3722,7 +3722,7 @@ SaveOrLoadResult SaveOrLoad(const std::string &filename, SaveLoadOperation fop, 
  * @param counter A reference to the counter variable to be used for rotating the file name.
  * @param netsave Indicates if this is a regular autosave or a netsave.
  */
-void DoAutoOrNetsave(FiosNumberedSaveName &counter, bool threaded)
+void DoAutoOrNetsave(FiosNumberedSaveName &counter, bool threaded, FiosNumberedSaveName *lt_counter)
 {
 	char buf[MAX_PATH];
 
@@ -3731,6 +3731,12 @@ void DoAutoOrNetsave(FiosNumberedSaveName &counter, bool threaded)
 		strecat(buf, counter.Extension().c_str(), lastof(buf));
 	} else {
 		strecpy(buf, counter.Filename().c_str(), lastof(buf));
+		if (lt_counter != nullptr && counter.GetLastNumber() == 0) {
+			std::string lt_path = lt_counter->FilenameUsingMaxSaves(_settings_client.gui.max_num_lt_autosaves);
+			DEBUG(sl, 2, "Renaming autosave '%s' to long-term file '%s'", buf, lt_path.c_str());
+			std::string dir = FioFindDirectory(AUTOSAVE_DIR);
+			rename((dir + buf).c_str(), (dir + lt_path).c_str());
+		}
 	}
 
 	DEBUG(sl, 2, "Autosaving to '%s'", buf);

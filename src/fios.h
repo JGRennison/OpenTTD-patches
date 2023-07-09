@@ -75,6 +75,7 @@ const char *FindScenario(const ContentInfo *ci, bool md5sum);
 struct FiosNumberedSaveName {
 	FiosNumberedSaveName(const std::string &prefix);
 	std::string Filename();
+	std::string FilenameUsingMaxSaves(int max_saves);
 	std::string FilenameUsingNumber(int num, const char *suffix) const;
 	std::string Extension();
 	int GetLastNumber() const { return this->number; }
