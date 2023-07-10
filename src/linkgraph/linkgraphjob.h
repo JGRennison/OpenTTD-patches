@@ -346,7 +346,7 @@ public:
 	 * Get the date when the underlying link graph was last compressed.
 	 * @return Compression date.
 	 */
-	inline Date LastCompression() const { return this->link_graph.LastCompression(); }
+	inline DateTicksScaled LastCompression() const { return this->link_graph.LastCompression(); }
 
 	/**
 	 * Get the ID of the underlying link graph.
