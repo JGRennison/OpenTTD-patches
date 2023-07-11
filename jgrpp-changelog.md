@@ -2,6 +2,10 @@
 
 * * *
 
+### v0.54.4 (2023-07-11)
+* Fix multiplayer desync which could occur when using cargo distribution.
+* Fix the build road/tram station stop windows not saving default window sizes.
+
 ### v0.54.3 (2023-07-08)
 * Fix screenshots made from the small map window producing an all-black image.
 * Fix creating a goal from a gamescript putting the goal text into the goal progress field.
