@@ -91,6 +91,7 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :항공기
 
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED                     :{TINY_FONT}{BLACK}평균 통과 속력 ({STRING})
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE_AVG_SPEED                   :{TINY_FONT}{BLACK}1 단위(1,000 리터)의 화물을 200칸 거리만큼 운송할 때의 운송비 지급량
+STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_MINUTES                   :{TINY_FONT}{BLACK}운송 시간(분)
 STR_GRAPH_STATION_CARGO_CAPTION                                 :{WHITE}{STATION} - 대기 화물량 이력
 STR_GRAPH_STATION_CARGO_X_LABEL                                 :{TINY_FONT}{BLACK}{NUM}일 동안의 변동 사항
 STR_GRAPH_STATION_CARGO_TITLE                                   :{TINY_FONT}{BLACK}역에서 있던 화물량
@@ -370,23 +371,32 @@ STR_CONFIG_SETTING_ENABLE_SINGLE_VEH_SHARED_ORDER_GUI           :경로를 공�
 STR_CONFIG_SETTING_ENABLE_SINGLE_VEH_SHARED_ORDER_GUI_HELPTEXT  :경로를 공유하는 모든 차량을 표시할 때 경로를 공유하는 차량이 한 대밖에 없어도 표시할지 설정합니다.
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SLOPES                     :경사 표시: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SLOPES_HELPTEXT            :지도 모드에서 화면을 축소했을 때, 경사를 표시할지 여부입니다.
+
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_HEIGHT                     :높이 표시: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_HEIGHT_HELPTEXT            :초목 모드가 아닌 지도 모드에서 화면을 축소했을 때, 높낮이를 표시할지 여부입니다.
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_BRIDGES                    :다리 표시: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_BRIDGES_HELPTEXT           :지도 모드에서 화면을 축소했을 때, 다리를 점선으로 표시할지 여부입니다.
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_TUNNELS                    :터널 표시: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_TUNNELS_HELPTEXT           :지도 모드에서 화면을 축소했을 때, 터널을 점선으로 표시할지 여부입니다.
 
-STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP               :이동하는 외부 화면 표시: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP               :이동 외부 화면 표시: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_HELPTEXT      :지도 모드가 아닐 때 화면을 이동하면, 모든 지도 모드 화면에서 이동 화면이 어디에 있는지 표시합니다.
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_NOTHING       :표시 안함
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_CONTOUR       :윤곽
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_BLEND         :반투명 흰색 (32bpp 전용)
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_ALL           :반투명 + 윤곽
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_USE_OWNER_COLOUR_BRIDGE_TUNNEL  :다리와 터널의 소유주 색 적용: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_USE_OWNER_COLOUR_BRIDGE_TUNNEL_HELPTEXT:소유주 지도 모드에서 화면을 축소했을 때, 다리와 터널을 소유주의 색으로 점선 표시할지 여부입니다.
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE                    :기본 모드: {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE_HELPTEXT           :지도 모드에서 축소했을 때, 주 화면과 다른 추가 외부 화면에서 사용할 기본 표시 모드입니다.
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK                 :더블 클릭을 하면 실행할 동작: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_HELPTEXT        :지도 모드에서 화면을 축소했을 때, 더블 클릭하면 실행할 동작을 선택합니다.
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_DO_NOTHING      :아무것도 하지 않기
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_ZOOM_MAIN       :확대/축소 배율 원래대로
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_NEW_EXTRA       :새 외부 화면 열기
@@ -395,6 +405,7 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE              :차량 경로 �
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE_HELPTEXT     :이 설정을 켜고 차량 창을 선택하면, 차량의 각 경로 위치 사이를 선으로 연결해서 보여줍니다. (조건부 경로 분기는 노란 선으로 나타납니다)
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :차량 경로 표시 방식: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_HELPTEXT        :차량 경로 오버레이를 보여줄 때, 그 차량의 경로 위치 사이를 어떤 선으로 그릴지를 결정합니다.
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :{COMMA} 픽셀 간격의 점선
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :실선
 
@@ -1360,6 +1371,26 @@ STR_FINANCES_REPAY_QUERY_CAPT                                   :{WHITE}갚을 �
 
 # Town tooltip
 STR_TOWN_NAME_TOOLTIP                                           :{BLACK}{TOWN}
+STR_TOWN_NAME_POP_TOOLTIP                                       :{BLACK}{TOWN}: {COMMA}
+STR_TOWN_NAME_RATING_TOOLTIP                                    :{STRING}{}내 회사의 등급은 {STRING}입니다
+
+STR_INDUSTRY_VIEW_NAME_TOOLTIP                                  :{STRING}
+STR_INDUSTRY_VIEW_REQUIRED_TOOLTIP_FIRST                        :{STRING}{STRING}
+STR_INDUSTRY_VIEW_REQUIRED_TOOLTIP_NEXT                         :, {STRING}{STRING}
+STR_INDUSTRY_VIEW_STOCKPILED_TOOLTIP                            :{CARGO_LONG} 대기 중{STRING}
+STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_EXTENSION                 :{CARGO_LONG}{STRING} ({COMMA}%)
+
+STR_DEPOT_VIEW_COUNT_TOOLTIP                                    :{BLACK}{COMMA}대가 있음
+STR_DEPOT_VIEW_COUNT_STOPPED_TOOLTIP                            :{BLACK}차량 {COMMA}대가 정지함
+STR_DEPOT_VIEW_COUNT_WAITING_TOOLTIP                            :{BLACK}차량 {COMMA}대가 대기 중
+STR_DEPOT_VIEW_TOTAL_TOOLTIP                                    :{COMMA}대가 있음:
+STR_DEPOT_VIEW_STOPPED_TOOLTIP                                  :{}{COMMA}대가 정지함
+STR_DEPOT_VIEW_WAITING_TOOLTIP                                  :{}{COMMA}대가 대기 중
+STR_DEPOT_VIEW_FREE_WAGONS_TOOLTIP                              :{BLACK}객화차 {COMMA}대가 있음
+STR_DEPOT_VIEW_MIXED_CONTENTS_TOOLTIP                           :{BLACK}{STRING}{}{STRING}
+
+STR_STATION_VIEW_NAME_TOOLTIP                                   :{STATION}{NBSP}{STATION_FEATURES}
+STR_STATION_VIEW_CARGO_LINE_TOOLTIP                             :{STRING} ({COMMA}%): {CARGO_SHORT}
 
 STR_VEHICLE_LIST_AGE                                            :{STRING}, 연령: {COMMA}년 ({COMMA})
 STR_VEHICLE_LIST_AGE_RED                                        :{STRING}, 연령: {RED}{COMMA} {BLACK}년 ({COMMA})
@@ -2085,6 +2116,49 @@ STR_TOWN_DIRECTORY_INFO                                         :{BLACK}{STRING}
 
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR                         :{BLACK}큰 메인 메뉴
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR_TOOLTIP                 :{BLACK}메인 메뉴의 크기를 키우려면 이 항목에 체크하세요
+
+STR_CONFIG_SETTING_INTERFACE_TOOLTIPS                           :{ORANGE}도움말
+
+STR_CONFIG_SETTING_INSTANT_TILE_TOOLTIP                         :지도 칸에 대한 도움말을 오른쪽 클릭 없이 보기: {STRING}
+STR_CONFIG_SETTING_INSTANT_TILE_TOOLTIP_HELPTEXT                :도움말 표시 설정을 오른쪽 클릭으로 설정한 경우, 산업 시설 등이 있는 지도 칸에 대한 도움말을 마우스 오른쪽 버튼을 클릭하지 않아도 표시되도록 합니다.
+
+STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE                       :도시 이름에 도움말 표시: {STRING}
+STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE_HELPTEXT              :도시에 속한 도로와 건물 칸에 대한 도움말을 보여줍니다.
+STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE_OFF                   :끄기
+STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE_ON_IF_HIDDEN          :도시 이름이 안 보일 때에만 켜기
+STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE_ALWAYS_ON             :항상 켜기
+
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_SHOW                        :산업 시설에 대한 도움말 표시: {STRING}
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_SHOW_HELPTEXT               :산업 시설 칸에 마우스를 올릴 때 도움말을 표시합니다.
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_NAME                        :산업 시설 도움말에 산업 시설의 이름 표시: {STRING}
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_NAME_HELPTEXT               :산업 시설 칸에 마우스를 올릴 때 나오는 도움말에 산업 시설의 이름을 표시합니다.
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_REQUIRED                    :산업 시설 도움말에 산업 시설에 필요한 화물 표시: {STRING}
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_REQUIRED_HELPTEXT           :산업 시설 칸에 마우스를 올릴 때 나오는 도움말에 산업 시설이 필요로 하는 화물 목록을 보여줍니다.
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_STOCKPILED                  :산업 시설 도움말에 비축된 화물 표시: {STRING}
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_STOCKPILED_HELPTEXT         :산업 시설 칸에 마우스를 올릴 때 나오는 도움말에 산업 시설에 의해 비축된 화물 목록을 보여줍니다
+
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_PRODUCED                    :산업 시설 도움말에 생산된 화물 표시: {STRING}
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_PRODUCED_HELPTEXT           :산업 시설 칸에 마우스를 올릴 때 나오는 도움말에 산업 시설이 생산한 화물 목록을 보여줍니다.
+
+STR_CONFIG_SETTING_DEPOT_TOOLTIP_MODE                           :기지 도움말: {STRING}
+STR_CONFIG_SETTING_DEPOT_TOOLTIP_MODE_HELPTEXT                  :기지 칸에 마우스를 올릴 때 나오는 도움말에 얼마나 많은 정보를 보여줄지를 설정합니다.
+STR_CONFIG_SETTING_DEPOT_TOOLTIP_MODE_OFF                       :끄기
+STR_CONFIG_SETTING_DEPOT_TOOLTIP_MODE_SIMPLE                    :간단히
+STR_CONFIG_SETTING_DEPOT_TOOLTIP_MODE_DETAILED                  :자세히
+
+STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME               :경유지와 부표에 대한 도움말 표시: {STRING}
+STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME_HELPTEXT      :경유지나 부표에 마우스를 올리면 이름을 도움말로 표시합니다.
+STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME_OFF           :끄기
+STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME_ON_IF_HIDDEN  :경유지 이름이 안 보일 때에만 켜기
+STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME_ALWAYS_ON     :항상 켜기
+
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME                :역 도움말에 이름 표시: {STRING}
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_HELPTEXT       :역에 마우스를 올릴 때 나오는 도움말에 역의 이름을 표시합니다.
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_CARGO               :역 도움말에 화물 상세 표시: {STRING}
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_CARGO_HELPTEXT      :산업 시설, 도시 또는 차량의 하차/환승 경로를 통해 적재된 (목적지에 도착하지 않은) 중간 화물의 양과 등급 목록을 보여줍니다.
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_OFF            :끄기
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_ON_IF_HIDDEN   :역 이름이 안 보일 때에만 켜기
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_ALWAYS_ON      :항상 켜기
 
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE                  :역 등급 도움말: {STRING}
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_HELPTEXT         :역 등급 도움말을 표시할지 여부와 표시할 정보의 수준을 설정합니다
