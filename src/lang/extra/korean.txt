@@ -387,7 +387,7 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_BLEND         :반투명 흰�
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_ALL           :반투명 + 윤곽
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_USE_OWNER_COLOUR_BRIDGE_TUNNEL  :다리와 터널의 소유주 색 적용: {STRING}
-STR_CONFIG_SETTING_VIEWPORT_MAP_USE_OWNER_COLOUR_BRIDGE_TUNNEL_HELPTEXT :소유주 지도 모드에서 화면을 축소했을 때, 다리와 터널을 소유주의 색으로 점선 표시할지 여부입니다.
+STR_CONFIG_SETTING_VIEWPORT_MAP_USE_OWNER_COLOUR_BRIDGE_TUNNEL_HELPTEXT:소유주 지도 모드에서 화면을 축소했을 때, 다리와 터널을 소유주의 색으로 점선 표시할지 여부입니다.
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE                    :기본 모드: {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE_HELPTEXT           :지도 모드에서 축소했을 때, 주 화면과 다른 추가 외부 화면에서 사용할 기본 표시 모드입니다.
@@ -1391,6 +1391,8 @@ STR_WAYPOINT_VIEW_NAME_TOOLTIP                                  :{WAYPOINT}
 
 STR_DEPOT_VIEW_INFO_TOOLTIP                                     :{BLACK}{STRING}
 STR_DEPOT_VIEW_TOTAL_TOOLTIP                                    :{COMMA}대가 있음:
+STR_DEPOT_VIEW_STOPPED_TOOLTIP                                  :{}{COMMA}대가 정지함
+STR_DEPOT_VIEW_WAITING_TOOLTIP                                  :{}{COMMA}대가 대기 중
 
 STR_STATION_VIEW_NAME_TOOLTIP                                   :{STATION}{NBSP}
 STR_STATION_VIEW_CARGO_LINE_TOOLTIP                             :{STRING} ({COMMA}%): {CARGO_SHORT}
@@ -1831,7 +1833,7 @@ STR_JUST_DATE_WALLCLOCK_ISO                                     :{DATE_WALLCLOCK
 STR_JUST_TIME_HHMM                                              :{TIME_HHMM}
 
 STR_JUST_STRING1                                                :{STRING}
-STR_JUST_STRING                                                :{STRING}
+STR_JUST_STRING2                                                :{STRING}
 STR_JUST_STRING3                                                :{STRING}
 
 STR_JUST_VELOCITY                                               :{VELOCITY}
