@@ -2116,14 +2116,15 @@ bool AfterLoadGame()
 		}
 	}
 
+	/* At version 78, industry cargo types can be changed, and are stored with the industry. For older save versions
+	 * copy the IndustrySpec's cargo types over to the Industry. */
 	if (IsSavegameVersionBefore(SLV_78)) {
-		uint j;
-		for (Industry * i : Industry::Iterate()) {
+		for (Industry *i : Industry::Iterate()) {
 			const IndustrySpec *indsp = GetIndustrySpec(i->type);
-			for (j = 0; j < lengthof(i->produced_cargo); j++) {
+			for (size_t j = 0; j < std::size(i->produced_cargo); j++) {
 				i->produced_cargo[j] = indsp->produced_cargo[j];
 			}
-			for (j = 0; j < lengthof(i->accepts_cargo); j++) {
+			for (size_t j = 0; j < std::size(i->accepts_cargo); j++) {
 				i->accepts_cargo[j] = indsp->accepts_cargo[j];
 			}
 		}
