@@ -767,6 +767,7 @@ STR_TRANSPARENT_TUNNELS_TOOLTIP                                 :{BLACK}Toggle t
 
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Average travel time: {STRING1}
 STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Capacity: {CARGO_LONG}
+STR_LINKGRAPH_STATS_TOOLTIP_DISTANCE                            :Manhattan Distance: {COMMA} tile{P 0 "" s}{}Bird Fly Distance: {COMMA} tile{P 1 "" s}
 
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_POLYRAIL                         :{BLACK}Build railway track using the Polyline mode. Ctrl toggles build/remove for railway construction. Shift toggles building/showing cost estimate
 

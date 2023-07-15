@@ -518,7 +518,7 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 				pt.y - 2 <= std::max(pta.y, ptb.y) &&
 				check_distance()) {
 
-			static char buf[1024];
+			static char buf[1024 + 512];
 			char *buf_end = buf;
 			buf[0] = 0;
 
@@ -566,6 +566,18 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 			if (!_ctrl_pressed) {
 				/* Add information about the travel time if known. */
 				add_travel_time(link.time ? (back_time ? ((link.time + back_time) / 2) : link.time) : back_time);
+			}
+
+			if (_ctrl_pressed) {
+				/* Add distance information */
+				buf_end = strecat(buf_end, "\n\n", lastof(buf));
+				TileIndex t0 = Station::Get(i->from_id)->xy;
+				TileIndex t1 = Station::Get(i->to_id)->xy;
+				uint dx = Delta(TileX(t0), TileX(t1));
+				uint dy = Delta(TileY(t0), TileY(t1));
+				SetDParam(0, DistanceManhattan(t0, t1));
+				SetDParam(1, IntSqrt64(((uint64)dx * (uint64)dx) + ((uint64)dy * (uint64)dy))); // Avoid overflow in DistanceSquare
+				buf_end = GetString(buf_end, STR_LINKGRAPH_STATS_TOOLTIP_DISTANCE, lastof(buf));
 			}
 
 			SetDParam(0, link.cargo);
