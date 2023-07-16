@@ -121,6 +121,7 @@ CommandProc CmdBuildIndustry;
 CommandProc CmdIndustrySetFlags;
 CommandProc CmdIndustrySetExclusivity;
 CommandProc CmdIndustrySetText;
+CommandProc CmdIndustrySetProduction;
 
 CommandProc CmdSetCompanyManagerFace;
 CommandProc CmdSetCompanyColour;
@@ -385,6 +386,7 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdIndustrySetFlags,        CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_INDUSTRY_SET_FLAGS
 	DEF_CMD(CmdIndustrySetExclusivity,  CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_INDUSTRY_SET_EXCLUSIVITY
 	DEF_CMD(CmdIndustrySetText,         CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_INDUSTRY_SET_TEXT
+	DEF_CMD(CmdIndustrySetProduction,                  CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_INDUSTRY_SET_PRODUCTION
 
 	DEF_CMD(CmdSetCompanyManagerFace,                          0, CMDT_OTHER_MANAGEMENT      ), // CMD_SET_COMPANY_MANAGER_FACE
 	DEF_CMD(CmdSetCompanyColour,                               0, CMDT_OTHER_MANAGEMENT      ), // CMD_SET_COMPANY_COLOUR

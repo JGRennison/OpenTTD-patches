@@ -292,3 +292,19 @@
 	::Owner owner = (company == ScriptCompany::COMPANY_INVALID ? ::INVALID_OWNER : (::Owner)company);
 	return ScriptObject::DoCommand(0, industry_id, ((uint8)owner), CMD_INDUSTRY_SET_EXCLUSIVITY);
 }
+
+/* static */ SQInteger ScriptIndustry::GetProductionLevel(IndustryID industry_id)
+{
+	Industry *i = Industry::GetIfValid(industry_id);
+	if (i == nullptr) return 0;
+	return i->prod_level;
+}
+
+/* static */ bool ScriptIndustry::SetProductionLevel(IndustryID industry_id, SQInteger prod_level, bool show_news)
+{
+	EnforceDeityMode(false);
+	EnforcePrecondition(false, IsValidIndustry(industry_id));
+	EnforcePrecondition(false, prod_level >= PRODLEVEL_MINIMUM && prod_level <= PRODLEVEL_MAXIMUM);
+
+	return ScriptObject::DoCommand(0, industry_id, ((uint8)prod_level) | (show_news ? (1 << 8) : 0), CMD_INDUSTRY_SET_PRODUCTION);
+}
