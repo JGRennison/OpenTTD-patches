@@ -978,10 +978,17 @@ static void TileLoop_Trees(TileIndex tile)
 							}
 						} else {
 							const TreeType tree_type = GetTreeType(tile);
+							const TileIndex old_tile = tile;
 
 							tile += TileOffsByDir((Direction)(Random() & 7));
 
 							if (!CanPlantTreesOnTile(tile, false)) return;
+
+							/* Don't spread temperate trees uphill if above lower snow line in arctic */
+							if (_settings_game.game_creation.landscape == LT_ARCTIC && IsInsideMM(tree_type, TREE_TEMPERATE, TREE_SUB_ARCTIC)) {
+								const int new_z = GetTileZ(tile);
+								if (new_z >= LowestTreePlacementSnowLine() && new_z > GetTileZ(old_tile)) return;
+							}
 
 							// Don't plant trees, if ground was freshly cleared
 							if (IsTileType(tile, MP_CLEAR) && GetClearGround(tile) == CLEAR_GRASS && GetClearDensity(tile) != 3) return;
