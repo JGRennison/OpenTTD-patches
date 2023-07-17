@@ -325,6 +325,9 @@ STR_CONFIG_SETTING_SHOW_GROUP_HIERARCHY_NAME_HELPTEXT           :When enabled, g
 STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_HIERARCHY_NAME            :Show group hierarchy in vehicle names: {STRING2}
 STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_HIERARCHY_NAME_HELPTEXT   :When enabled, and show group hierarchy in name is enabled, vehicle names which include a group name use the full group name with hierarchy
 
+STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW            :Show order number in vehicle view window: {STRING2}
+STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW_HELPTEXT   :When enabled, the current vehicle order is shown in the vehicle view window start/stop bar
+
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :Enable signals on bridges/tunnels advanced modes: {STRING2}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :Enables use of advanced modes of signal simulation on bridges and tunnels. When disabled, bridges/tunnels which are not already in an advanced mode cannot be changed to an advanced mode, however other players may choose to enable this setting and use an advanced mode.
 
@@ -1488,6 +1491,8 @@ STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT                    :{STRING}. Shift
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU                             :{BLACK}Cancel send vehicle to depot/hangar. Ctrl+Click for menu. Shift+Click to select depot/hangar
 
 STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA                     :{STRING}{BLACK}{}Shift+Click to toggle showing route overlay even when window is not focused
+
+STR_VEHICLE_VIEW_ORDER_NUMBER                                   :{COMMA}: {STRING}
 
 STR_VEHICLE_STATUS_LOADING_UNLOADING_ADVANCE                    :{STRING}, {VELOCITY}
 STR_VEHICLE_STATUS_BROKEN_DOWN_VEL                              :{RED}Broken down - {STRING2}, {LTBLUE} {VELOCITY}

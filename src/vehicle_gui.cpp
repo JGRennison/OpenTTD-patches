@@ -3774,6 +3774,7 @@ public:
 		if (widget != WID_VV_START_STOP) return;
 
 		const Vehicle *v = Vehicle::Get(this->window_number);
+		bool show_order_number = false;
 		StringID str;
 		TextColour text_colour = TC_FROMSTRING;
 		if (v->vehstatus & VS_CRASHED) {
@@ -3845,15 +3846,10 @@ public:
 		} else if (v->type == VEH_AIRCRAFT && HasBit(Aircraft::From(v)->flags, VAF_DEST_TOO_FAR) && !v->current_order.IsType(OT_LOADING)) {
 			str = STR_VEHICLE_STATUS_AIRCRAFT_TOO_FAR;
 		} else { // vehicle is in a "normal" state, show current order
-			if (mouse_over_start_stop) {
-				if (v->vehstatus & VS_STOPPED || (v->breakdown_ctr == 1 || (v->type == VEH_TRAIN && Train::From(v)->flags & VRF_IS_BROKEN))) {
-					text_colour = TC_RED | TC_FORCED;
-				} else if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_TRAIN_STUCK) && !v->current_order.IsType(OT_LOADING)) {
-					text_colour = TC_ORANGE | TC_FORCED;
-				}
-			}
 			switch (v->current_order.GetType()) {
 				case OT_GOTO_STATION: {
+					show_order_number = true;
+					text_colour = TC_LIGHT_BLUE;
 					SetDParam(0, v->current_order.GetDestination());
 					SetDParam(1, PackVelocity(v->GetDisplaySpeed(), v->type));
 					str = HasBit(v->vehicle_flags, VF_PATHFINDER_LOST) ? STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL : STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL;
@@ -3861,6 +3857,8 @@ public:
 				}
 
 				case OT_GOTO_DEPOT: {
+					show_order_number = true;
+					text_colour = TC_ORANGE;
 					SetDParam(0, v->type);
 					SetDParam(1, v->current_order.GetDestination());
 					SetDParam(2, PackVelocity(v->GetDisplaySpeed(), v->type));
@@ -3893,6 +3891,8 @@ public:
 					break;
 
 				case OT_GOTO_WAYPOINT: {
+					show_order_number = true;
+					text_colour = TC_LIGHT_BLUE;
 					assert(v->type == VEH_TRAIN || v->type == VEH_ROAD || v->type == VEH_SHIP);
 					SetDParam(0, v->current_order.GetDestination());
 					str = HasBit(v->vehicle_flags, VF_PATHFINDER_LOST) ? STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL : STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL;
@@ -3920,6 +3920,21 @@ public:
 					}
 					break;
 			}
+
+			if (mouse_over_start_stop) {
+				if (v->vehstatus & VS_STOPPED || (v->breakdown_ctr == 1 || (v->type == VEH_TRAIN && Train::From(v)->flags & VRF_IS_BROKEN))) {
+					text_colour = TC_RED | TC_FORCED;
+				} else if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_TRAIN_STUCK) && !v->current_order.IsType(OT_LOADING)) {
+					text_colour = TC_ORANGE | TC_FORCED;
+				}
+			}
+		}
+
+		if (_settings_client.gui.show_order_number_vehicle_view && show_order_number && v->cur_implicit_order_index < v->GetNumOrders()) {
+			_temp_special_strings[0] = GetString(str);
+			SetDParam(0, v->cur_implicit_order_index + 1);
+			SetDParam(1, SPECSTR_TEMP_START);
+			str = STR_VEHICLE_VIEW_ORDER_NUMBER;
 		}
 
 		/* Draw the flag plus orders. */
