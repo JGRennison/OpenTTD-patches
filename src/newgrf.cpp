@@ -11691,7 +11691,7 @@ void LoadNewGRF(uint load_index, uint num_baseset)
 				SetBit(c->flags, GCF_RESERVED);
 			} else if (stage == GLS_ACTIVATION) {
 				ClrBit(c->flags, GCF_RESERVED);
-				assert(GetFileByGRFID(c->ident.grfid) == _cur.grffile);
+				assert_msg(GetFileByGRFID(c->ident.grfid) == _cur.grffile, "%08X", BSWAP32(c->ident.grfid));
 				ClearTemporaryNewGRFData(_cur.grffile);
 				BuildCargoTranslationMap();
 				HandleVarAction2OptimisationPasses();
