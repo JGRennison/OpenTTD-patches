@@ -46,6 +46,74 @@ static uint GetTownInspectWindowNumber(const Town *town)
 	return GetInspectWindowNumber(GSF_FAKE_TOWNS, town->index);
 }
 
+static bool IsLabelPrintable(uint32 l)
+{
+	for (uint i = 0; i < 4; i++) {
+		if ((l & 0xFF) < 0x20 || (l & 0xFF) > 0x7F) return false;
+		l >>= 8;
+	}
+	return true;
+}
+
+struct dumper {
+	inline const char *Label(uint32 label)
+	{
+		if (IsLabelPrintable(label)) {
+			seprintf(this->buffer, lastof(this->buffer), "%c%c%c%c", label >> 24, label >> 16, label >> 8, label);
+		} else {
+			seprintf(this->buffer, lastof(this->buffer), "0x%08X", BSWAP32(label));
+		}
+		return this->buffer;
+	}
+
+	inline const char *RailTypeLabel(RailType rt)
+	{
+		return this->Label(GetRailTypeInfo(rt)->label);
+	}
+
+	inline const char *RoadTypeLabel(RoadType rt)
+	{
+		return this->Label(GetRoadTypeInfo(rt)->label);
+	}
+
+private:
+	char buffer[64];
+};
+
+static void DumpRailTypeList(NIExtraInfoOutput &output, const char *prefix, RailTypes rail_types, RailTypes mark = RAILTYPES_NONE)
+{
+	char buffer[256];
+	for (RailType rt = RAILTYPE_BEGIN; rt < RAILTYPE_END; rt++) {
+		if (!HasBit(rail_types, rt)) continue;
+		const RailtypeInfo *rti = GetRailTypeInfo(rt);
+		if (rti->label == 0) continue;
+
+		seprintf(buffer, lastof(buffer), "%s%02u %s%s",
+				prefix,
+				(uint) rt,
+				dumper().Label(rti->label),
+				HasBit(mark, rt) ? " !!!" : "");
+		output.print(buffer);
+	}
+}
+
+static void DumpRoadTypeList(NIExtraInfoOutput &output, const char *prefix, RoadTypes road_types)
+{
+	char buffer[256];
+	for (RoadType rt = ROADTYPE_BEGIN; rt < ROADTYPE_END; rt++) {
+		if (!HasBit(road_types, rt)) continue;
+		const RoadTypeInfo *rti = GetRoadTypeInfo(rt);
+		if (rti->label == 0) continue;
+
+		seprintf(buffer, lastof(buffer), "%s%02u %s %s",
+				prefix,
+				(uint) rt,
+				RoadTypeIsTram(rt) ? "Tram" : "Road",
+				dumper().Label(rti->label));
+		output.print(buffer);
+	}
+}
+
 /*** NewGRF Vehicles ***/
 
 #define NICV(cb_id, bit) NIC(cb_id, Engine, info.callback_mask, bit)
@@ -221,9 +289,15 @@ class NIHVehicle : public NIHelper {
 			seprintf(buffer, lastof(buffer), "  Speed restriction: %u, signal speed restriction (ATC): %u",
 					t->speed_restriction, t->signal_speed_restriction);
 			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  Railtype: %u, compatible_railtypes: 0x" OTTD_PRINTFHEX64 ", acceleration type: %u",
-					t->railtype, t->compatible_railtypes, t->GetAccelerationType());
+
+			output.register_next_line_click_flag_toggle(8 << flag_shift);
+			seprintf(buffer, lastof(buffer), "  [%c] Railtype: %u (%s), compatible_railtypes: 0x" OTTD_PRINTFHEX64 ", acceleration type: %u",
+					(output.flags & (8 << flag_shift)) ? '-' : '+', t->railtype, dumper().RailTypeLabel(t->railtype), t->compatible_railtypes, t->GetAccelerationType());
 			output.print(buffer);
+			if (output.flags & (8 << flag_shift)) {
+				DumpRailTypeList(output, "    ", t->compatible_railtypes);
+			}
+
 			if (t->vehstatus & VS_CRASHED) {
 				seprintf(buffer, lastof(buffer), "  CRASHED: anim pos: %u", t->crash_anim_pos);
 				output.print(buffer);
@@ -342,9 +416,13 @@ class NIHVehicle : public NIHelper {
 			seprintf(buffer, lastof(buffer), "  Speed: %u, path cache length: %u",
 					rv->cur_speed, (uint) rv->path.size());
 			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  Roadtype: %u (0x" OTTD_PRINTFHEX64 "), Compatible: 0x" OTTD_PRINTFHEX64,
-					rv->roadtype, (static_cast<RoadTypes>(1) << rv->roadtype), rv->compatible_roadtypes);
+			output.register_next_line_click_flag_toggle(8 << flag_shift);
+			seprintf(buffer, lastof(buffer), "  [%c] Roadtype: %u (%s), Compatible: 0x" OTTD_PRINTFHEX64,
+					(output.flags & (8 << flag_shift)) ? '-' : '+', rv->roadtype, dumper().RoadTypeLabel(rv->roadtype), rv->compatible_roadtypes);
 			output.print(buffer);
+			if (output.flags & (8 << flag_shift)) {
+				DumpRoadTypeList(output, "    ", rv->compatible_roadtypes);
+			}
 		}
 		if (v->type == VEH_SHIP) {
 			const Ship *s = Ship::From(v);
@@ -492,8 +570,8 @@ class NIHVehicle : public NIHelper {
 
 				if (e->type == VEH_TRAIN) {
 					const RailtypeInfo *rti = GetRailTypeInfo(e->u.rail.railtype);
-					seprintf(buffer, lastof(buffer), "    Railtype: %u (0x" OTTD_PRINTFHEX64 "), Compatible: 0x" OTTD_PRINTFHEX64 ", Powered: 0x" OTTD_PRINTFHEX64 ", All compatible: 0x" OTTD_PRINTFHEX64,
-							e->u.rail.railtype, (static_cast<RailTypes>(1) << e->u.rail.railtype), rti->compatible_railtypes, rti->powered_railtypes, rti->all_compatible_railtypes);
+					seprintf(buffer, lastof(buffer), "    Railtype: %u (%s), Compatible: 0x" OTTD_PRINTFHEX64 ", Powered: 0x" OTTD_PRINTFHEX64 ", All compatible: 0x" OTTD_PRINTFHEX64,
+							e->u.rail.railtype, dumper().RailTypeLabel(e->u.rail.railtype), rti->compatible_railtypes, rti->powered_railtypes, rti->all_compatible_railtypes);
 					output.print(buffer);
 					static const char *engine_types[] = {
 						"SINGLEHEAD",
@@ -504,10 +582,14 @@ class NIHVehicle : public NIHelper {
 					output.print(buffer);
 				}
 				if (e->type == VEH_ROAD) {
+					output.register_next_line_click_flag_toggle(16 << flag_shift);
 					const RoadTypeInfo* rti = GetRoadTypeInfo(e->u.road.roadtype);
-					seprintf(buffer, lastof(buffer), "    Roadtype: %u (0x" OTTD_PRINTFHEX64 "), Powered: 0x" OTTD_PRINTFHEX64,
-							e->u.road.roadtype, (static_cast<RoadTypes>(1) << e->u.road.roadtype), rti->powered_roadtypes);
+					seprintf(buffer, lastof(buffer), "    [%c] Roadtype: %u (%s), Powered: 0x" OTTD_PRINTFHEX64,
+							(output.flags & (16 << flag_shift)) ? '-' : '+', e->u.road.roadtype, dumper().RoadTypeLabel(e->u.road.roadtype), rti->powered_roadtypes);
 					output.print(buffer);
+					if (output.flags & (16 << flag_shift)) {
+						DumpRoadTypeList(output, "      ", rti->powered_roadtypes);
+					}
 					seprintf(buffer, lastof(buffer), "    Capacity: %u, Weight: %u, Power: %u, TE: %u, Air drag: %u, Shorten: %u",
 							e->u.road.capacity, e->u.road.weight, e->u.road.power, e->u.road.tractive_effort, e->u.road.air_drag, e->u.road.shorten_factor);
 					output.print(buffer);
@@ -1470,32 +1552,15 @@ static const NIVariable _niv_railtypes[] = {
 	NIV_END()
 };
 
-void PrintTypeLabels(char * buffer,  const char *last, uint32 label, const uint32 *alternate_labels, size_t alternate_labels_count, std::function<void(const char *)> print)
+static void PrintTypeLabels(char *buffer, const char *last, const char *prefix, uint32 label, const uint32 *alternate_labels, size_t alternate_labels_count, std::function<void(const char *)> &print)
 {
-	auto is_printable = [](uint32 l) -> bool {
-		for (uint i = 0; i < 4; i++) {
-			if ((l & 0xFF) < 0x20 || (l & 0xFF) > 0x7F) return false;
-			l >>= 8;
-		}
-		return true;
-	};
-	if (is_printable(label)) {
-		seprintf(buffer, last, "  Label: %c%c%c%c", label >> 24, label >> 16, label >> 8, label);
-	} else {
-		seprintf(buffer, last, "  Label: 0x%08X", BSWAP32(label));
-	}
-	print(buffer);
 	if (alternate_labels_count > 0) {
-		char * b = buffer;
-		b += seprintf(b, last, "  Alternate labels: ");
+		char *b = buffer;
+		b += seprintf(b, last, "%sAlternate labels: ", prefix);
 		for (size_t i = 0; i < alternate_labels_count; i++) {
 			if (i != 0) b += seprintf(b, last, ", ");
 			uint32 l = alternate_labels[i];
-			if (is_printable(l)) {
-				b += seprintf(b, last, "%c%c%c%c", l >> 24, l >> 16, l >> 8, l);
-			} else {
-				b += seprintf(b, last, "0x%08X", BSWAP32(l));
-			}
+			b += seprintf(b, last, "%s", dumper().Label(l));
 		}
 		print(buffer);
 	}
@@ -1527,7 +1592,7 @@ class NIHRailType : public NIHelper {
 
 		auto writeRailType = [&](RailType type) {
 			const RailtypeInfo *info = GetRailTypeInfo(type);
-			seprintf(buffer, lastof(buffer), "  Type: %u (0x" OTTD_PRINTFHEX64 ")", type, (static_cast<RailTypes>(1) << type));
+			seprintf(buffer, lastof(buffer), "  Type: %u (%s)", type, dumper().RailTypeLabel(type));
 			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "  Flags: %c%c%c%c%c%c",
 					HasBit(info->flags, RTF_CATENARY) ? 'c' : '-',
@@ -1543,13 +1608,23 @@ class NIHRailType : public NIHelper {
 					HasBit(info->ctrl_flags, RTCF_NOREALISTICBRAKING) ? 'b' : '-',
 					HasBit(info->ctrl_flags, RTCF_NOENTRYSIG) ? 'n' : '-');
 			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  Powered: 0x" OTTD_PRINTFHEX64, info->powered_railtypes);
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  Compatible: 0x" OTTD_PRINTFHEX64, info->compatible_railtypes);
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  All compatible: 0x" OTTD_PRINTFHEX64, info->all_compatible_railtypes);
-			output.print(buffer);
-			PrintTypeLabels(buffer, lastof(buffer), info->label, (const uint32*) info->alternate_labels.data(), info->alternate_labels.size(), output.print);
+
+			uint bit = 1;
+			auto dump_railtypes = [&](const char *name, RailTypes types, RailTypes mark) {
+				output.register_next_line_click_flag_toggle(bit);
+				seprintf(buffer, lastof(buffer), "  [%c] %s: 0x" OTTD_PRINTFHEX64, (output.flags & bit) ? '-' : '+', name, types);
+				output.print(buffer);
+				if (output.flags & bit) {
+					DumpRailTypeList(output, "    ", types, mark);
+				}
+
+				bit <<= 1;
+			};
+			dump_railtypes("Powered", info->powered_railtypes, RAILTYPES_NONE);
+			dump_railtypes("Compatible", info->compatible_railtypes, RAILTYPES_NONE);
+			dump_railtypes("All compatible", info->all_compatible_railtypes, ~info->compatible_railtypes);
+
+			PrintTypeLabels(buffer, lastof(buffer), "  ", info->label, (const uint32*) info->alternate_labels.data(), info->alternate_labels.size(), output.print);
 			seprintf(buffer, lastof(buffer), "  Cost multiplier: %u/8, Maintenance multiplier: %u/8", info->cost_multiplier, info->maintenance_multiplier);
 			output.print(buffer);
 
@@ -1877,7 +1952,7 @@ class NIHRoadType : public NIHelper {
 
 			char buffer[1024];
 			const RoadTypeInfo* rti = GetRoadTypeInfo(type);
-			seprintf(buffer, lastof(buffer), "  %s Type: %u (0x" OTTD_PRINTFHEX64 ")", rtt == RTT_TRAM ? "Tram" : "Road", type, (static_cast<RoadTypes>(1) << type));
+			seprintf(buffer, lastof(buffer), "  %s Type: %u (%s)", rtt == RTT_TRAM ? "Tram" : "Road", type, dumper().RoadTypeLabel(type));
 			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "    Flags: %c%c%c%c%c",
 					HasBit(rti->flags, ROTF_CATENARY) ? 'c' : '-',
@@ -1894,9 +1969,14 @@ class NIHRoadType : public NIHelper {
 			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "    Collision mode: %u", rti->collision_mode);
 			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "    Powered: 0x" OTTD_PRINTFHEX64, rti->powered_roadtypes);
+
+			output.register_next_line_click_flag_toggle((1 << rtt));
+			seprintf(buffer, lastof(buffer), "    [%c] Powered: 0x" OTTD_PRINTFHEX64, (output.flags & (1 << rtt)) ? '-' : '+', rti->powered_roadtypes);
 			output.print(buffer);
-			PrintTypeLabels(buffer, lastof(buffer), rti->label, (const uint32*) rti->alternate_labels.data(), rti->alternate_labels.size(), output.print);
+			if (output.flags & (1 << rtt)) {
+				DumpRoadTypeList(output, "      ", rti->powered_roadtypes);
+			}
+			PrintTypeLabels(buffer, lastof(buffer), "    ", rti->label, (const uint32*) rti->alternate_labels.data(), rti->alternate_labels.size(), output.print);
 			seprintf(buffer, lastof(buffer), "    Cost multiplier: %u/8, Maintenance multiplier: %u/8", rti->cost_multiplier, rti->maintenance_multiplier);
 			output.print(buffer);
 		};
