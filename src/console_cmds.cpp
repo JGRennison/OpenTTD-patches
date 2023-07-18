@@ -3019,6 +3019,39 @@ DEF_CONSOLE_CMD(ConDumpTile)
 	return false;
 }
 
+DEF_CONSOLE_CMD(ConDumpGrfCargoTables)
+{
+	if (argc == 0) {
+		IConsoleHelp("Dump GRF cargo translation tables.");
+		return true;
+	}
+
+	const std::vector<GRFFile *> &files = GetAllGRFFiles();
+
+	char buffer[256];
+
+	for (const GRFFile *grf : files) {
+		if (grf->cargo_list.empty()) continue;
+
+		IConsolePrintF(CC_DEFAULT, "[%08X] %s: %u cargoes", BSWAP32(grf->grfid), grf->filename.c_str(), uint(grf->cargo_list.size()));
+
+		uint i = 0;
+		for (const CargoLabel &cl : grf->cargo_list) {
+			buffer[0] = 0;
+			char *b = buffer;
+			for (const CargoSpec *cs : CargoSpec::Iterate()) {
+				if (grf->cargo_map[cs->Index()] == i) {
+					b += seprintf(b, lastof(buffer), "%s%02u[%c%c%c%c]", (b == buffer) ? ": " : ", ", cs->Index(), GB(cs->label, 24, 8), GB(cs->label, 16, 8), GB(cs->label, 8, 8), GB(cs->label, 0, 8));
+				}
+			}
+			IConsolePrintF(CC_DEFAULT, "  %c%c%c%c%s", GB(cl, 24, 8), GB(cl, 16, 8), GB(cl, 8, 8), GB(cl, 0, 8), buffer);
+			i++;
+		}
+	}
+
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConCheckCaches)
 {
 	if (argc == 0) {
@@ -3846,6 +3879,7 @@ void IConsoleStdLibRegister()
 	IConsole::CmdRegister("dump_cargo_types",        ConDumpCargoTypes,   nullptr, true);
 	IConsole::CmdRegister("dump_vehicle",            ConDumpVehicle,      nullptr, true);
 	IConsole::CmdRegister("dump_tile",               ConDumpTile,         nullptr, true);
+	IConsole::CmdRegister("dump_grf_cargo_tables",   ConDumpGrfCargoTables, nullptr, true);
 	IConsole::CmdRegister("check_caches",            ConCheckCaches,      nullptr, true);
 	IConsole::CmdRegister("show_town_window",        ConShowTownWindow,   nullptr, true);
 	IConsole::CmdRegister("show_station_window",     ConShowStationWindow, nullptr, true);
