@@ -732,6 +732,7 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 
 				case VEH_ROAD: {
 					RoadType rt = GetRoadType(v->tile, GetRoadTramType(RoadVehicle::From(v)->roadtype));
+					if (rt == INVALID_ROADTYPE) return 0xFF;
 					const RoadTypeInfo *rti = GetRoadTypeInfo(rt);
 					return ((rti->flags & ROTFB_CATENARY) ? 0x200 : 0) |
 						0x100 |
