@@ -1420,16 +1420,16 @@ STR_VEHICLE_LIST_MAX_SPEED                                      :{STRING}, max. 
 STR_VEHICLE_LIST_ENGINE_BUILT                                   :{STRING}, řada: {ENGINE}, rok výroby: {NUM}
 STR_VEHICLE_LIST_VALUE                                          :{STRING}, hodnota: {CURRENCY_LONG}
 STR_VEHICLE_LIST_LENGTH                                         :{STRING}, délka: {DECIMAL} políč{P ko ka ek}
-STR_VEHICLE_LIST_TIME_TO_LIVE                                   :{STRING}, životnost: {COMMA} {P rok roky let} zbývá
-STR_VEHICLE_LIST_TIME_TO_LIVE_RED                               :{STRING}, životnost: {RED}{COMMA} {BLACK}{P rok roky let} zbývá
-STR_VEHICLE_LIST_TIME_TO_LIVE_OVERDUE                           :{STRING}, životnost: {RED}{COMMA} {BLACK}year{P "" s} overdue
+STR_VEHICLE_LIST_TIME_TO_LIVE                                   :{STRING}, životnost: zbývá {COMMA} {P rok roky let}
+STR_VEHICLE_LIST_TIME_TO_LIVE_RED                               :{STRING}, životnost: zbývá {RED}{COMMA} {BLACK}{P rok roky let}
+STR_VEHICLE_LIST_TIME_TO_LIVE_OVERDUE                           :{STRING}, životnost: překročena o {RED}{COMMA} {BLACK}{P rok roky let}
 STR_VEHICLE_LIST_TIMETABLE_DELAY_LATE                           :{STRING}, plnění jízdního řádu: o {RED}{STRING} opožděn
 STR_VEHICLE_LIST_TIMETABLE_DELAY_EARLY                          :{STRING}, plnění jízdního řádu: o {STRING} dříve
 STR_VEHICLE_LIST_TIMETABLE_DELAY_ON_TIME                        :{STRING}, plnění jízdního řádu: včas
 STR_VEHICLE_LIST_ORDER_OCCUPANCY_AVERAGE                        :{STRING}, průměrná obsazenost dle příkazu: {COMMA}%
 
 STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING} (životnost: {CURRENCY_LONG})
-STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE                           :Cancel Servicing/Send to
+STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE                           :Zastavit provoz/poslat do
 STR_VEHICLE_LIST_SEND_TRAIN_TO_DEPOT_SELL                       :Poslat do depa a prodat
 STR_VEHICLE_LIST_SEND_ROAD_VEHICLE_TO_DEPOT_SELL                :Poslat do garáže/depa a prodat
 STR_VEHICLE_LIST_SEND_SHIP_TO_DEPOT_SELL                        :Poslat do doků a prodat
@@ -1495,10 +1495,12 @@ STR_BREAKDOWN_TYPE_LANDING                                      :Míří na {STA
 
 STR_ERROR_TRAIN_TOO_HEAVY                                       :{WHITE}Souprava {VEHICLE} je příliš těžká
 
-STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SELL_VEL                   :{CREAM}Míří na {PUSH_COLOUR}{RED}prodej{POP_COLOUR} do {DEPOT}, {VELOCITY}# Cargo type orders Window
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SELL_VEL                   :{CREAM}Míří na {PUSH_COLOUR}{RED}prodej{POP_COLOUR} do {DEPOT}, {VELOCITY}
 
-STR_VEHICLE_LOAD_THROUGH_ABORTED_INSUFFICIENT_TRACK             :{WHITE}{VEHICLE}: průjezdná nakládka v {STATION} přerušena pro nedostatečné kolejiště
-STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT                          :{WHITE}{VEHICLE}: průjezdná nakládka v {STATION} přerušena kvůli depu
+# Cargo type orders Window
+
+STR_VEHICLE_LOAD_THROUGH_ABORTED_INSUFFICIENT_TRACK             :{WHITE}{VEHICLE}: postupná nakládka v {STATION} přerušena pro nedostatečné kolejiště
+STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT                          :{WHITE}{VEHICLE}: postupná nakládka v {STATION} přerušena kvůli depu
 
 STR_RUNNING                                                     :{LTBLUE}V činnosti
 
