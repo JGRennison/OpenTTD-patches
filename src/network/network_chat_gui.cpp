@@ -21,7 +21,7 @@
 #include "network.h"
 #include "network_client.h"
 #include "network_base.h"
-#include "../3rdparty/fmt/format.h"
+#include "../core/format.hpp"
 
 #include "../widgets/network_chat_widget.h"
 

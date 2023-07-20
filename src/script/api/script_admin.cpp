@@ -13,7 +13,7 @@
 #include "../../network/network_admin.h"
 #include "../script_instance.hpp"
 #include "../../string_func.h"
-#include "../../3rdparty/fmt/format.h"
+#include "../../core/format.hpp"
 
 #include "../../safeguards.h"
 

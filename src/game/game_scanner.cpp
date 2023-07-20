@@ -12,8 +12,7 @@
 #include "../script/squirrel_class.hpp"
 #include "game_info.hpp"
 #include "game_scanner.hpp"
-
-#include "../3rdparty/fmt/format.h"
+#include "../core/format.hpp"
 
 #include "../safeguards.h"
 

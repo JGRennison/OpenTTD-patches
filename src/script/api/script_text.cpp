@@ -17,7 +17,7 @@
 #include "../script_instance.hpp"
 #include "script_log.hpp"
 #include "../../table/control_codes.h"
-#include "../../3rdparty/fmt/format.h"
+#include "../../core/format.hpp"
 
 #include "table/strings.h"
 

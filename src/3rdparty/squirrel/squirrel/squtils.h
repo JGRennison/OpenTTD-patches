@@ -2,7 +2,7 @@
 #ifndef _SQUTILS_H_
 #define _SQUTILS_H_
 
-#include "../../fmt/format.h"
+#include "../../../core/format.hpp"
 #include "../../../script/script_fatalerror.hpp"
 #include <type_traits>
 

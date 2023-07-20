@@ -14,7 +14,7 @@
 
 #include "script_info.hpp"
 #include "script_scanner.hpp"
-#include "../3rdparty/fmt/format.h"
+#include "../core/format.hpp"
 
 #include "../safeguards.h"
 

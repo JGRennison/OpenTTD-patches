@@ -14,7 +14,7 @@
 #include "api/script_object.hpp"
 #include "../textfile_gui.h"
 #include "../string_func.h"
-#include "../3rdparty/fmt/format.h"
+#include "../core/format.hpp"
 #include <charconv>
 
 #include "../safeguards.h"

@@ -20,7 +20,7 @@
 #include "../network/network_content.h"
 #include "../3rdparty/md5/md5.h"
 #include "../tar_type.h"
-#include "../3rdparty/fmt/format.h"
+#include "../core/format.hpp"
 
 #include "../safeguards.h"
 

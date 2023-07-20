@@ -21,7 +21,7 @@
 #include "../script_gui.h"
 #include "../../settings_type.h"
 #include "../../network/network.h"
-#include "../../3rdparty/fmt/format.h"
+#include "../../core/format.hpp"
 
 #include "../../safeguards.h"
 

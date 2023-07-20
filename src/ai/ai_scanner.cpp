@@ -17,7 +17,7 @@
 #include "../script/api/script_object.hpp"
 #include "ai_info.hpp"
 #include "ai_scanner.hpp"
-#include "../3rdparty/fmt/format.h"
+#include "../core/format.hpp"
 
 #include "../safeguards.h"
 

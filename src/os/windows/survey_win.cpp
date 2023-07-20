@@ -11,7 +11,7 @@
 
 #include "../../stdafx.h"
 
-#include "../../3rdparty/fmt/format.h"
+#include "../../core/format.hpp"
 
 #include <nlohmann/json.hpp>
 #include <windows.h>
