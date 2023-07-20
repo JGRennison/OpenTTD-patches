@@ -2756,6 +2756,22 @@ EventState Window::HandleEditBoxKey(int wid, WChar key, uint16 keycode)
 }
 
 /**
+ * Clear editbox widget.
+ * @param wid Editbox widget.
+ * @return if the Editbox was successfully cleared
+ */
+bool Window::ClearEditBox(int wid)
+{
+	QueryString *query = this->GetQueryString(wid);
+	if (query == nullptr) return false;
+
+	query->text.DeleteAll();
+	this->SetWidgetDirty(wid);
+	this->OnEditboxChanged(wid);
+	return true;
+}
+
+/**
  * Focus a window by its class and window number (if it is open).
  * @param cls Window class.
  * @param number Number of the window within the window class.

@@ -418,6 +418,24 @@ public:
 	}
 
 	/**
+	 * Clear class filter if the selected class is not included in the filter.
+	 * @param object_class Object class select.
+	 */
+	void ClearFilterIsClassNotIncluded(ObjectClassID object_class)
+	{
+		/* Filter is not enabled */
+		if (!this->object_classes.IsFilterEnabled()) return;
+
+		for (auto oc : this->object_classes) {
+			if (oc == object_class) {
+				return;
+			}
+		}
+
+		this->ClearEditBox(WID_BO_FILTER);
+	}
+
+	/**
 	 * Select the specified object class.
 	 * @param object_class Object class select.
 	 */
@@ -454,6 +472,22 @@ public:
 		}
 
 		this->UpdateButtons(_selected_object_class, _selected_object_index, _selected_object_view);
+	}
+
+	/**
+	 * Scrolls #WID_BO_SCROLLBAR so that the selected class is visible.
+	 */
+	void EnsureSelectedClassIsVisible()
+	{
+		uint pos = 0;
+		for (auto object_class : this->object_classes) {
+			if (object_class == _selected_object_class) {
+				this->vscroll->SetCount(this->object_classes.size());
+				this->vscroll->ScrollTowards(pos);
+				return;
+			}
+			pos++;
+		}
 	}
 
 	void UpdateSelectSize()
@@ -760,8 +794,10 @@ void ShowBuildObjectPickerAndSelect(const ObjectSpec *spec)
 
 	BuildObjectWindow *w = AllocateWindowDescFront<BuildObjectWindow>(&_build_object_desc, 0, true);
 	if (w != nullptr) {
+		w->ClearFilterIsClassNotIncluded(spec->cls_id);
 		w->SelectOtherClass(spec->cls_id);
 		w->SelectOtherObject(spec_id);
+		w->EnsureSelectedClassIsVisible();
 	}
 }
 
