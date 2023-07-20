@@ -10,7 +10,18 @@
 #ifndef FORMAT_HPP
 #define FORMAT_HPP
 
+#if defined(__GNUC__) && (__GNUC__ >= 12)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#pragma GCC diagnostic ignored "-Wstringop-overflow"
+#endif /* __GNUC__ */
+
 #include "../3rdparty/fmt/format.h"
+
+#if defined(__GNUC__) && (__GNUC__ >= 12)
+#pragma GCC diagnostic pop
+#endif /* __GNUC__ */
+
 //#include "strong_typedef_type.hpp"
 
 #include <type_traits>
