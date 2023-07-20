@@ -1123,6 +1123,9 @@ private:
 	 */
 	void EnsureSelectedStationClassIsVisible()
 	{
+		/* No additional station types present */
+		if (this->vscroll == nullptr) return;
+
 		uint pos = 0;
 		for (auto station_class : this->station_classes) {
 			if (station_class == _railstation.station_class) break;

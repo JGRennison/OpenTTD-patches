@@ -1252,6 +1252,9 @@ private:
 
 	void EnsureSelectedClassIsVisible()
 	{
+		/* No additional road stop types present */
+		if (this->vscrollList == nullptr) return;
+
 		uint pos = 0;
 		for (auto rs_class : this->roadstop_classes) {
 			if (rs_class == _roadstop_gui_settings.roadstop_class) break;
