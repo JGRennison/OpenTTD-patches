@@ -1099,14 +1099,13 @@ void TryCreateLookAheadForTrainInTunnelBridge(Train *t)
 	}
 }
 
-void SetTrainReservationLookaheadEnd(Train *v)
+int AdvanceTrainReservationLookaheadEnd(const Train *v, int lookahead_end_position)
 {
 	if (_settings_game.vehicle.realistic_braking_aspect_limited != TRBALM_ON || _extra_aspects == 0) {
-		v->lookahead->lookahead_end_position = v->lookahead->reservation_end_position + 1;
-		return;
+		return v->lookahead->reservation_end_position + 1;
 	}
 
-	if (v->lookahead->lookahead_end_position > v->lookahead->reservation_end_position) return;
+	if (lookahead_end_position > v->lookahead->reservation_end_position) return lookahead_end_position;
 
 	int32 threshold = v->lookahead->current_position + 24;
 	uint8 known_signals_ahead = 1;
@@ -1125,8 +1124,8 @@ void SetTrainReservationLookaheadEnd(Train *v)
 					known_signals_ahead = 1;
 					continue;
 				} else {
-					if (item.start > v->lookahead->lookahead_end_position) v->lookahead->lookahead_end_position = item.start;
-					return;
+					if (item.start > lookahead_end_position) lookahead_end_position = item.start;
+					return lookahead_end_position;
 				}
 			}
 
@@ -1141,18 +1140,24 @@ void SetTrainReservationLookaheadEnd(Train *v)
 			if (!HasBit(item.data_aux, TRSLAI_NO_ASPECT_INC) || !allow_skip_no_aspect_inc) {
 				known_signals_ahead--;
 				if (known_signals_ahead == 0) {
-					if (item.start > v->lookahead->lookahead_end_position) v->lookahead->lookahead_end_position = item.start;
-					return;
+					if (item.start > lookahead_end_position) lookahead_end_position = item.start;
+					return lookahead_end_position;
 				}
 			}
 		}
 	}
 
 	/* Didn't need to stop at a signal along the reservation */
-	if (v->lookahead->reservation_end_position >= v->lookahead->lookahead_end_position) {
-		v->lookahead->lookahead_end_position = v->lookahead->reservation_end_position;
-		if (known_signals_ahead > 1) v->lookahead->lookahead_end_position++;
+	if (v->lookahead->reservation_end_position >= lookahead_end_position) {
+		lookahead_end_position = v->lookahead->reservation_end_position;
+		if (known_signals_ahead > 1) lookahead_end_position++;
 	}
+	return lookahead_end_position;
+}
+
+void SetTrainReservationLookaheadEnd(Train *v)
+{
+	v->lookahead->lookahead_end_position = AdvanceTrainReservationLookaheadEnd(v, v->lookahead->lookahead_end_position);
 }
 
 void FillTrainReservationLookAhead(Train *v)

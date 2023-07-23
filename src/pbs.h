@@ -164,6 +164,7 @@ bool ValidateLookAhead(const Train *v);
 PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res = nullptr, FollowTrainReservationFlags flags = FTRF_NONE);
 void ApplyAvailableFreeTunnelBridgeTiles(TrainReservationLookAhead *lookahead, int free_tiles, TileIndex tile, TileIndex end);
 void TryCreateLookAheadForTrainInTunnelBridge(Train *t);
+int AdvanceTrainReservationLookaheadEnd(const Train *v, int lookahead_end_position);
 void SetTrainReservationLookaheadEnd(Train *v);
 void FillTrainReservationLookAhead(Train *v);
 bool TrainReservationPassesThroughTile(const Train *v, TileIndex search_tile);

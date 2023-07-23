@@ -4120,6 +4120,7 @@ static bool IsReservationLookAheadLongEnough(const Train *v, const ChooseTrainTr
 	int signal_speed = 0;
 	int signal_position = 0;
 	int signal_z = 0;
+	bool signal_limited_lookahead_check = false;
 
 	for (const TrainReservationLookAheadItem &item : v->lookahead->items) {
 		if (item.type == TRLIT_REVERSE) {
@@ -4138,6 +4139,21 @@ static bool IsReservationLookAheadLongEnough(const Train *v, const ChooseTrainTr
 			signal_position = item.start;
 			signal_z = item.z_pos;
 			found_signal = true;
+		}
+
+		if (item.type == TRLIT_SIGNAL && _settings_game.vehicle.realistic_braking_aspect_limited == TRBALM_ON && item.start <= v->lookahead->current_position + 24) {
+			if (HasBit(item.data_aux, TRSLAI_NO_ASPECT_INC) || HasBit(item.data_aux, TRSLAI_NEXT_ONLY) || HasBit(item.data_aux, TRSLAI_COMBINED_SHUNT)) {
+				signal_limited_lookahead_check = true;
+			}
+		}
+	}
+
+	if (signal_limited_lookahead_check) {
+		/* Do not unnecessarily extend the reservation when passing a signal within the reservation which could not display an aspect
+		 * beyond the current end of the reservation, e.g. banner repeaters and shunt signals */
+		if (AdvanceTrainReservationLookaheadEnd(v, v->lookahead->current_position + 24) <= v->lookahead->reservation_end_position &&
+				v->lookahead->reservation_end_position > v->lookahead->current_position + 24) {
+			return true;
 		}
 	}
 
