@@ -298,6 +298,9 @@ STR_CONFIG_SETTING_SHOW_GROUP_HIERARCHY_NAME_HELPTEXT           :Cando se habili
 STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_HIERARCHY_NAME            :Amosar a xerarquía de grupo no nome dos vehículos: {STRING}
 STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_HIERARCHY_NAME_HELPTEXT   :Cando se habilita, e amosar a xerarquía do grupo no nome está activo, os nomes de vehículos que teñen un nome de grupo inclúen toda a xerarquía superior
 
+STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW            :Amosar o número de orde na ventá de vista do vehículo: {STRING}
+STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW_HELPTEXT   :Cando está activado, a orde actual do vehículo amósase na barra de inicio/parada da ventá de vista do vehículo.
+
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :Habilitar modos de sinais avanzadas en pontes/túneis: {STRING}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :Habilita o uso de modos avanzados de simulación de sinais en pontes e túneis. Cando se desactiva, os pontes/túneis que non están xa en modo avanzado non se poden cambiar a modo avanzado, sen embargo outros xogadores poden escoller habilitar esta opción e usar o modo avanzado.
 
@@ -737,6 +740,7 @@ STR_TRANSPARENT_TUNNELS_TOOLTIP                                 :{BLACK}Alterna 
 
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Tempo de viaxe promedio: {STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Capacidade: {CARGO_LONG}
+STR_LINKGRAPH_STATS_TOOLTIP_DISTANCE                            :Distancia Manhattan: {COMMA} cadro{P 0 "" s}{}Distancia en liñaBird Fly Distance: {COMMA} tile{P 1 "" s}
 
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_POLYRAIL                         :{BLACK}Construír vías utilizando o modo poliliña. Ctrl alterna construír/borrar para a construción de ferrocarrís. Shift alterna construír/amosar a estimación de custos
 
@@ -1371,6 +1375,26 @@ STR_FINANCES_REPAY_QUERY_CAPT                                   :{WHITE}Introduc
 
 # Town tooltip
 STR_TOWN_NAME_TOOLTIP                                           :{BLACK}{TOWN}
+STR_TOWN_NAME_POP_TOOLTIP                                       :{BLACK}{TOWN}: {COMMA}
+STR_TOWN_NAME_RATING_TOOLTIP                                    :{STRING2}{}A túa valoración é {STRING}
+
+STR_INDUSTRY_VIEW_NAME_TOOLTIP                                  :{STRING}
+STR_INDUSTRY_VIEW_REQUIRED_TOOLTIP_FIRST                        :{STRING}{RAW_STRING}
+STR_INDUSTRY_VIEW_REQUIRED_TOOLTIP_NEXT                         :, {STRING}{RAW_STRING}
+STR_INDUSTRY_VIEW_STOCKPILED_TOOLTIP                            :{CARGO_LONG} waiting{RAW_STRING}
+STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_EXTENSION                 :{CARGO_LONG}{RAW_STRING} ({COMMA}%)
+
+STR_DEPOT_VIEW_COUNT_TOOLTIP                                    :{BLACK}{COMMA} vehículo{P "" s} dentro
+STR_DEPOT_VIEW_COUNT_STOPPED_TOOLTIP                            :{BLACK}{COMMA} vehiculo{P "" s} parado{P "" s} dentro
+STR_DEPOT_VIEW_COUNT_WAITING_TOOLTIP                            :{BLACK}{COMMA} vehículo{P "" s} esperando dentro
+STR_DEPOT_VIEW_TOTAL_TOOLTIP                                    :{BLACK}{COMMA} vehículo{P "" s} dentro:
+STR_DEPOT_VIEW_STOPPED_TOOLTIP                                  :{}{COMMA} está{P "" n} parado{P "" s}
+STR_DEPOT_VIEW_WAITING_TOOLTIP                                  :{}{COMMA} está{P "" n} esperando
+STR_DEPOT_VIEW_FREE_WAGONS_TOOLTIP                              :{BLACK}{COMMA} vagón{P "" s} dentro
+STR_DEPOT_VIEW_MIXED_CONTENTS_TOOLTIP                           :{BLACK}{STRING}{}{STRING}
+
+STR_STATION_VIEW_NAME_TOOLTIP                                   :{STATION}{NBSP}{STATION_FEATURES}
+STR_STATION_VIEW_CARGO_LINE_TOOLTIP                             :{STRING} ({COMMA}%): {CARGO_SHORT}
 
 STR_VEHICLE_LIST_AGE                                            :{STRING}, Idade: {COMMA} ano{P "" s} ({COMMA})
 STR_VEHICLE_LIST_AGE_RED                                        :{STRING}, Idade: {RED}{COMMA} {BLACK}ano{P "" s} ({COMMA})
@@ -1436,6 +1460,8 @@ STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT                    :{STRING}. Shift
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU                             :{BLACK}Cancelar e envíar o vehículo ó depósito/hangar. Ctrl+Click para menu. Shift+Click para seleccionar depósito/hangar
 
 STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA                     :{STRING}{BLACK}{}Shift+Click para alternar amosar a sobreposición da ruta incluso cando a fiestra non está enfocada
+
+STR_VEHICLE_VIEW_ORDER_NUMBER                                   :{COMMA}: {STRING}
 
 STR_VEHICLE_STATUS_LOADING_UNLOADING_ADVANCE                    :{STRING}, {VELOCITY}
 STR_VEHICLE_STATUS_BROKEN_DOWN_VEL                              :{RED}Avariado - {STRING}, {LTBLUE} {VELOCITY}
@@ -2095,8 +2121,48 @@ STR_TOWN_DIRECTORY_INFO                                         :{BLACK}{STRING}
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR                         :{BLACK}Barra de ferramentas principal máis grande
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR_TOOLTIP                 :{BLACK}Marca esta caixa para aumentar a escala da barra de ferramentas principal
 
+STR_CONFIG_SETTING_INTERFACE_TOOLTIPS                           :{ORANGE}Descripcións curtas
+
 STR_CONFIG_SETTING_INSTANT_TILE_TOOLTIP                         :Amosar descricións rápidas de vista previa para os cadros sen necesidade de facer clic dereito: {STRING}
 STR_CONFIG_SETTING_INSTANT_TILE_TOOLTIP_HELPTEXT                :Amosar descricións rápidas de vista previa para tipos de cadros como industrias sen necesidade de facer clic dereito, cando a configuración de amosar descricións rápidas está establecida en facer clic dereito.
+
+STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE                       :Amosar descripcións curtas das vistas con nomes das vilas: {STRING2}
+STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE_HELPTEXT              :Amosar descripcións curtas das vistas con cadros de estradas e casas que pertencen a vilas.
+STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE_OFF                   :Desactivar
+STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE_ON_IF_HIDDEN          :Activar, se os nomes das vilas están ocultos
+STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE_ALWAYS_ON             :Sempre activado
+
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_SHOW                        :Amosar descricións rápidas das vistas para as industrias: {STRING2}
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_SHOW_HELPTEXT               :Amosar descricións rápidas ao pasar o rato sobre os cadros das industrias.
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_NAME                        :Amosar nomes nas descricións rápidas das vistas para as industrias: {STRING2}
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_NAME_HELPTEXT               :Amosar os nomes das industrias nas descricións rápidas das vistas ao pasar o rato sobre os seus cadros.
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_REQUIRED                    :Amosar cargas requiridas nas descricións rápidas das vistas para as industrias: {STRING2}
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_REQUIRED_HELPTEXT           :Amosar unha lista de cargas requiridas polas industrias nas descricións rápidas das vistas ao pasar o rato sobre os seus cadros.
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_STOCKPILED                  :Amosar cargas almacenadas nas descricións rápidas das vistas para as industrias: {STRING2}
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_STOCKPILED_HELPTEXT         :Amosar unha lista de cargas almacenadas polas industrias nas descricións rápidas das vistas ao pasar o rato sobre os seus cadros.
+
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_PRODUCED                    :Amosar cargas producidas nas descricións rápidas das vistas para as industrias: {STRING2}
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_PRODUCED_HELPTEXT           :Amosar unha lista de cargas producidas polas industrias nas descricións rápidas das vistas ao pasar o rato sobre os seus cadros.
+
+STR_CONFIG_SETTING_DEPOT_TOOLTIP_MODE                           :Descricións rápidas das vistas para os depósitos: {STRING2}
+STR_CONFIG_SETTING_DEPOT_TOOLTIP_MODE_HELPTEXT                  :Determinar se amosar descricións rápidas das vistas ao pasar o rato sobre os cadros dos depósitos e cantos detalles mostrar.
+STR_CONFIG_SETTING_DEPOT_TOOLTIP_MODE_OFF                       :Desactivado
+STR_CONFIG_SETTING_DEPOT_TOOLTIP_MODE_SIMPLE                    :Simple
+STR_CONFIG_SETTING_DEPOT_TOOLTIP_MODE_DETAILED                  :Detallado
+
+STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME               :Amosar descricións rápidas das vistas para os puntos de referencia e boias: {STRING2}
+STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME_HELPTEXT      :Amosar o nome do punto de referencia ou boia nunha descrición rápida das vistas ao pasar o rato sobre ela.
+STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME_OFF           :Desactivado
+STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME_ON_IF_HIDDEN  :Activado, se os nomes dos puntos de referencia están ocultos
+STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME_ALWAYS_ON     :Sempre activado
+
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME                :Amosar nomes nas descricións rápidas das vistas para as estacións: {STRING2}
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_HELPTEXT       :Amosar o nome da estación nunha descrición rápida das vistas ao pasar o rato sobre ela.
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_CARGO               :Amosar detalles de carga nas descricións rápidas das vistas para as estacións: {STRING2}
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_CARGO_HELPTEXT      :Amosar unha lista de cantidades e valoracións de carga que foron entregadas á estación por industrias, vilas ou por vehículos mediante unha orde de descarga/transferencia que non dea lugar á entrega final.
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_OFF            :Desactivado
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_ON_IF_HIDDEN   :Activado, se os nomes das estacións están ocultos
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_ALWAYS_ON      :Sempre activado
 
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE                  :Consellos de valoración das estacións: {STRING}
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_HELPTEXT         :Escolle se se amosan os consellos de valoración das estacións e o nivel de detalle da información.
