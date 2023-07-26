@@ -112,8 +112,11 @@ for my $lang (@langs) {
 	my $suppress_whitespace = 1;
 	for (@lang_lines) {
 		if (/^(\w+)\s*:/) {
-			if ($strs{$1}) {
-				push @lines, $strs{$1} . "\n";
+			my $str = $strs{$1};
+			if ($str) {
+				$str =~ s/\{STRING\d\}/{STRING}/g;
+				$str =~ s/\{RAW_STRING\}/{STRING}/g;
+				push @lines, $str . "\n";
 				$suppress_whitespace = 0;
 			}
 		} else {
