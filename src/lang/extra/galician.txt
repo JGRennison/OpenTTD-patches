@@ -740,7 +740,7 @@ STR_TRANSPARENT_TUNNELS_TOOLTIP                                 :{BLACK}Alterna 
 
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Tempo de viaxe promedio: {STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Capacidade: {CARGO_LONG}
-STR_LINKGRAPH_STATS_TOOLTIP_DISTANCE                            :Distancia Manhattan: {COMMA} cadro{P 0 "" s}{}Distancia en liñaBird Fly Distance: {COMMA} tile{P 1 "" s}
+STR_LINKGRAPH_STATS_TOOLTIP_DISTANCE                            :Distancia Manhattan: {COMMA} cadro{P 0 "" s}{}Distancia en liña recta: {COMMA} cadro{P 1 "" s}
 
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_POLYRAIL                         :{BLACK}Construír vías utilizando o modo poliliña. Ctrl alterna construír/borrar para a construción de ferrocarrís. Shift alterna construír/amosar a estimación de custos
 
