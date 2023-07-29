@@ -653,14 +653,6 @@ void StartupCompanies()
 {
 	/* Ensure the timeout is aborted, so it doesn't fire based on information of the last game. */
 	_new_competitor_timeout.Abort();
-
-	/* If there is no delay till the start of the next competitor, start all competitors at the start of the game. */
-	if (_settings_game.difficulty.competitors_interval == 0 && _game_mode != GM_MENU && AI::CanStartNew()) {
-		for (auto i = 0; i < _settings_game.difficulty.max_no_competitors; i++) {
-			if (_networking && Company::GetNumItems() >= _settings_client.network.max_companies) break;
-			DoCommandP(0, CCA_NEW_AI | INVALID_COMPANY << 16, 0, CMD_COMPANY_CTRL);
-		}
-	}
 }
 
 static void ClearSavedPLYP()
@@ -803,9 +795,14 @@ void OnTick_Companies(bool main_tick)
 
 	if (_new_competitor_timeout.HasFired() && _game_mode != GM_MENU && AI::CanStartNew()) {
 		int32 timeout = _settings_game.difficulty.competitors_interval * 60 * TICKS_PER_SECOND;
-		/* If the interval is zero, check every ~10 minutes if a company went bankrupt and needs replacing. */
-		if (timeout == 0) timeout = 10 * 60 * TICKS_PER_SECOND;
-
+		/* If the interval is zero, start as many competitors as needed then check every ~10 minutes if a company went bankrupt and needs replacing. */
+		if (timeout == 0) {
+			for (auto i = 0; i < _settings_game.difficulty.max_no_competitors; i++) {
+				if (_networking && Company::GetNumItems() >= _settings_client.network.max_companies) break;
+				DoCommandP(0, CCA_NEW_AI | INVALID_COMPANY << 16, 0, CMD_COMPANY_CTRL);
+			}
+			timeout = 10 * 60 * TICKS_PER_SECOND;
+		}
 		/* Randomize a bit when the AI is actually going to start; ranges from 87.5% .. 112.5% of indicated value. */
 		timeout += ScriptObject::GetRandomizer(OWNER_NONE).Next(timeout / 4) - timeout / 8;
 
