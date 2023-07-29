@@ -2167,5 +2167,11 @@ STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_OFF              :Off
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_SIMPLE           :Simple
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :Detailed
 
+STR_CONFIG_SETTING_CITY_IN_LABEL                                :Show city in town name label: {STRING2}
+STR_CONFIG_SETTING_CITY_IN_LABEL_HELPTEXT                       :Display if a town is also a city in their label on the map
+
+###length 4
 STR_VIEWPORT_TOWN_COLOUR                                        :{1:SET_COLOUR}{0:TOWN}
 STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {SET_COLOUR}({COMMA})
+STR_VIEWPORT_TOWN_COLOUR_CITY                                   :{1:SET_COLOUR}{0:TOWN} (City)
+STR_VIEWPORT_TOWN_COLOUR_CITY_POP                               :{WHITE}{TOWN} {SET_COLOUR}(City, {COMMA})

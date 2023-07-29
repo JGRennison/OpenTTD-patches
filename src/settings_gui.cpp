@@ -2039,6 +2039,7 @@ static SettingsContainer &GetSettingsTree()
 				viewports->Add(new SettingEntry("gui.right_mouse_btn_emulation"));
 #endif
 				viewports->Add(new SettingEntry("gui.population_in_label"));
+				viewports->Add(new SettingEntry("gui.city_in_label"));
 				viewports->Add(new SettingEntry("gui.liveries"));
 				viewports->Add(new SettingEntry("gui.measure_tooltip"));
 				viewports->Add(new SettingEntry("gui.loading_indicators"));

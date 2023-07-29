@@ -181,6 +181,7 @@ struct GUISettings : public TimeSettings {
 	byte   max_num_lt_autosaves;             ///< controls how many long-term autosavegames are made before the game starts to overwrite (names them 0 to max_num_lt_autosaves - 1)
 	uint8  savegame_overwrite_confirm;       ///< Mode for when to warn about overwriting an existing savegame
 	bool   population_in_label;              ///< show the population of a town in its label?
+	bool   city_in_label;                    ///< show cities in label?
 	uint8  right_mouse_btn_emulation;        ///< should we emulate right mouse clicking?
 	uint8  scrollwheel_scrolling;            ///< scrolling using the scroll wheel?
 	uint8  scrollwheel_multiplier;           ///< how much 'wheel' per incoming event from the OS?

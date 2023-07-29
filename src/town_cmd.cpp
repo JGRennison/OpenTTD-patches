@@ -244,6 +244,7 @@ uint64 Town::LabelParam2() const
 		SB(value, 32, 8, TC_WHITE);
 	}
 	if (_settings_client.gui.population_in_label) SetBit(value, 40);
+	if (_settings_client.gui.city_in_label && this->larger_town) SetBit(value, 41);
 	return value;
 }
 

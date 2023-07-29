@@ -1938,9 +1938,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 
 				bool tiny = (b == SCC_VIEWPORT_TOWN_LABEL2);
 				StringID string_id = STR_VIEWPORT_TOWN_COLOUR;
-				if (!tiny && HasBit(data, 40)) {
-					string_id = STR_VIEWPORT_TOWN_COLOUR_POP;
-				}
+				if (!tiny) string_id += GB(data, 40, 2);
 				int64 args_array[] = {t, GB(data, 32, 8), GB(data, 0, 32)};
 				StringParameters tmp_params(args_array);
 				buff = GetStringWithArgs(buff, string_id, &tmp_params, last);
