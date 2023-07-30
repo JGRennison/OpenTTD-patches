@@ -120,8 +120,8 @@ for my $lang (@langs) {
 		if (/^(\w+)\s*:/) {
 			my $str = $strs{$1};
 			if ($str) {
-				$str =~ s/\{STRING\d\}/{STRING}/g;
-				$str =~ s/\{RAW_STRING\}/{STRING}/g;
+				$str =~ s/\{((?:\d:)?)STRING\d\}/{${1}STRING}/g;
+				$str =~ s/\{((?:\d:)?)RAW_STRING\}/{${1}STRING}/g;
 				push @lines, $str . "\n";
 				$suppress_whitespace = 0;
 			}
