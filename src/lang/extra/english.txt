@@ -20,6 +20,9 @@ STR_JUST_TT_TICKS                                               :{TT_TICKS}
 STR_JUST_TT_TICKS_LONG                                          :{TT_TICKS_LONG}
 
 STR_RED_INT                                                     :{RED}{NUM}
+
+STR_VIEWPORT_TOWN_LABEL                                         :{VP_TOWN_LABEL1}
+STR_VIEWPORT_TOWN_LABEL_TINY                                    :{TINY_FONT}{VP_TOWN_LABEL2}
 ##no-translate off
 
 ##after STR_CONFIG_SETTING_TREE_PLACER_IMPROVED
@@ -61,27 +64,6 @@ STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :Dispatch slot
 
 ##after STR_ORDER_STOP_LOCATION_FAR_END
 STR_ORDER_STOP_LOCATION_THROUGH                                 :[through load]
-
-##before STR_VIEWPORT_TOWN_POP
-STR_VIEWPORT_TOWN_POP_VERY_POOR_RATING                          :{WHITE}{TOWN} {RED}({COMMA})
-STR_VIEWPORT_TOWN_POP_MEDIOCRE_RATING                           :{WHITE}{TOWN} {ORANGE}({COMMA})
-STR_VIEWPORT_TOWN_POP_GOOD_RATING                               :{WHITE}{TOWN} {YELLOW}({COMMA})
-##after STR_VIEWPORT_TOWN_POP
-STR_VIEWPORT_TOWN_POP_EXCELLENT_RATING                          :{WHITE}{TOWN} {GREEN}({COMMA})
-
-##before STR_VIEWPORT_TOWN
-STR_VIEWPORT_TOWN_VERY_POOR_RATING                              :{RED}{TOWN}
-STR_VIEWPORT_TOWN_MEDIOCRE_RATING                               :{ORANGE}{TOWN}
-STR_VIEWPORT_TOWN_GOOD_RATING                                   :{YELLOW}{TOWN}
-##after STR_VIEWPORT_TOWN
-STR_VIEWPORT_TOWN_EXCELLENT_RATING                              :{GREEN}{TOWN}
-
-##before STR_VIEWPORT_TOWN_TINY_WHITE
-STR_VIEWPORT_TOWN_TINY_VERY_POOR_RATING                         :{TINY_FONT}{RED}{TOWN}
-STR_VIEWPORT_TOWN_TINY_MEDIOCRE_RATING                          :{TINY_FONT}{ORANGE}{TOWN}
-STR_VIEWPORT_TOWN_TINY_GOOD_RATING                              :{TINY_FONT}{YELLOW}{TOWN}
-##after STR_VIEWPORT_TOWN_TINY_WHITE
-STR_VIEWPORT_TOWN_TINY_EXCELLENT_RATING                         :{TINY_FONT}{GREEN}{TOWN}
 
 ##before STR_CONFIG_SETTING_TOWN_GROWTH_NONE
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :Extremely slow
@@ -2184,3 +2166,6 @@ STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_HELPTEXT         :Set whether sta
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_OFF              :Off
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_SIMPLE           :Simple
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :Detailed
+
+STR_VIEWPORT_TOWN_COLOUR                                        :{1:SET_COLOUR}{0:TOWN}
+STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {SET_COLOUR}({COMMA})

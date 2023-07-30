@@ -30,21 +30,6 @@ STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :Slot de despach
 
 STR_ORDER_STOP_LOCATION_THROUGH                                 :[a través da carga]
 
-STR_VIEWPORT_TOWN_POP_VERY_POOR_RATING                          :{WHITE}{TOWN} {RED}({COMMA})
-STR_VIEWPORT_TOWN_POP_MEDIOCRE_RATING                           :{WHITE}{TOWN} {ORANGE}({COMMA})
-STR_VIEWPORT_TOWN_POP_GOOD_RATING                               :{WHITE}{TOWN} {YELLOW}({COMMA})
-STR_VIEWPORT_TOWN_POP_EXCELLENT_RATING                          :{WHITE}{TOWN} {GREEN}({COMMA})
-
-STR_VIEWPORT_TOWN_VERY_POOR_RATING                              :{RED}{TOWN}
-STR_VIEWPORT_TOWN_MEDIOCRE_RATING                               :{ORANGE}{TOWN}
-STR_VIEWPORT_TOWN_GOOD_RATING                                   :{YELLOW}{TOWN}
-STR_VIEWPORT_TOWN_EXCELLENT_RATING                              :{GREEN}{TOWN}
-
-STR_VIEWPORT_TOWN_TINY_VERY_POOR_RATING                         :{TINY_FONT}{RED}{TOWN}
-STR_VIEWPORT_TOWN_TINY_MEDIOCRE_RATING                          :{TINY_FONT}{ORANGE}{TOWN}
-STR_VIEWPORT_TOWN_TINY_GOOD_RATING                              :{TINY_FONT}{YELLOW}{TOWN}
-STR_VIEWPORT_TOWN_TINY_EXCELLENT_RATING                         :{TINY_FONT}{GREEN}{TOWN}
-
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :Extremadamente lento
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :Moi lento
 
@@ -2132,3 +2117,6 @@ STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_HELPTEXT         :Escolle se se a
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_OFF              :Desactivado
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_SIMPLE           :Simple
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :Detallado
+
+STR_VIEWPORT_TOWN_COLOUR                                        :{1:SET_COLOUR}{0:TOWN}
+STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {SET_COLOUR}({COMMA})

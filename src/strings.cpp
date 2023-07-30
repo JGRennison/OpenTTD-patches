@@ -1931,6 +1931,22 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				break;
 			}
 
+			case SCC_VIEWPORT_TOWN_LABEL1:
+			case SCC_VIEWPORT_TOWN_LABEL2: { // {VIEWPORT_TOWN_LABEL1..2}
+				int32 t = args->GetInt32(b);
+				uint64 data = (uint64)args->GetInt64(b);
+
+				bool tiny = (b == SCC_VIEWPORT_TOWN_LABEL2);
+				StringID string_id = STR_VIEWPORT_TOWN_COLOUR;
+				if (!tiny && HasBit(data, 40)) {
+					string_id = STR_VIEWPORT_TOWN_COLOUR_POP;
+				}
+				int64 args_array[] = {t, GB(data, 32, 8), GB(data, 0, 32)};
+				StringParameters tmp_params(args_array);
+				buff = GetStringWithArgs(buff, string_id, &tmp_params, last);
+				break;
+			}
+
 			case SCC_WAYPOINT_NAME: { // {WAYPOINT}
 				Waypoint *wp = Waypoint::GetIfValid(args->GetInt32(SCC_WAYPOINT_NAME));
 				if (wp == nullptr) break;

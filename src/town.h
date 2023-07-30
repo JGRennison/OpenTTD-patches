@@ -102,7 +102,7 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	CompanyID exclusivity;         ///< which company has exclusivity
 	uint8 exclusive_counter;       ///< months till the exclusivity expires
 	int16 ratings[MAX_COMPANIES];  ///< ratings of each company for this town
-	StringID town_label;           ///< Label dependent on _local_company rating.
+	uint8 town_label_rating;       ///< Label dependent on _local_company rating.
 
 	TransportedCargoStat<uint32> supplied[NUM_CARGO]; ///< Cargo statistics about supplied cargo.
 	TransportedCargoStat<uint16> received[NUM_TE];    ///< Cargo statistics about received cargotypes.
@@ -141,28 +141,7 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	void InitializeLayout(TownLayout layout);
 
 	void UpdateLabel();
-
-	/**
-	 * Returns the correct town label, based on rating.
-	 */
-	inline StringID Label() const{
-		if (!(_game_mode == GM_EDITOR) && (_local_company < MAX_COMPANIES)) {
-			return (_settings_client.gui.population_in_label ? STR_VIEWPORT_TOWN_POP_VERY_POOR_RATING : STR_VIEWPORT_TOWN_VERY_POOR_RATING) + this->town_label;
-		} else {
-			return _settings_client.gui.population_in_label ? STR_VIEWPORT_TOWN_POP : STR_VIEWPORT_TOWN;
-		}
-	}
-
-	/**
-	 * Returns the correct town small label, based on rating.
-	 */
-	inline StringID SmallLabel() const{
-		if (!(_game_mode == GM_EDITOR) && (_local_company < MAX_COMPANIES)) {
-			return STR_VIEWPORT_TOWN_TINY_VERY_POOR_RATING + this->town_label;
-		} else {
-			return STR_VIEWPORT_TOWN_TINY_WHITE;
-		}
-	}
+	uint64 LabelParam2() const;
 
 	/**
 	 * Calculate the max town noise.

@@ -1909,8 +1909,8 @@ static void ViewportAddKdtreeSigns(ViewportDrawerDynamic *vdd, DrawPixelInfo *dp
 
 	for (const auto *t : towns) {
 		ViewportAddString(vdd, dpi, ZOOM_LVL_OUT_16X, &t->cache.sign,
-			t->Label(), t->SmallLabel(), STR_VIEWPORT_TOWN_TINY_BLACK,
-			t->index, t->cache.population);
+			STR_VIEWPORT_TOWN_LABEL, STR_VIEWPORT_TOWN_LABEL_TINY, STR_VIEWPORT_TOWN_TINY_BLACK,
+			t->index, t->LabelParam2());
 	}
 
 	for (const auto *si : signs) {

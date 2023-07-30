@@ -221,12 +221,30 @@ void Town::UpdateLabel()
 {
 	if (!(_game_mode == GM_EDITOR) && (_local_company < MAX_COMPANIES)) {
 		int r = this->ratings[_local_company];
-		this->town_label = 0;                         // Appalling and Very Poor
-		if (r > RATING_VERYPOOR)  this->town_label++; // Poor and Mediocre
-		if (r > RATING_MEDIOCRE)  this->town_label++; // Good
-		if (r > RATING_GOOD)      this->town_label++; // Very Good
-		if (r > RATING_VERYGOOD)  this->town_label++; // Excellent and Outstanding
+		int town_rating = 0;                     // Appalling and Very Poor
+		if (r > RATING_VERYPOOR)  town_rating++; // Poor and Mediocre
+		if (r > RATING_MEDIOCRE)  town_rating++; // Good
+		if (r > RATING_GOOD)      town_rating++; // Very Good
+		if (r > RATING_VERYGOOD)  town_rating++; // Excellent and Outstanding
+
+		static const uint8 tcs[] = { TC_RED, TC_ORANGE, TC_YELLOW, TC_WHITE, TC_GREEN };
+		this->town_label_rating = tcs[town_rating];
 	}
+}
+
+/**
+ * Get the second dparam value for town viewport labels
+ */
+uint64 Town::LabelParam2() const
+{
+	uint64 value = this->cache.population;
+	if (!(_game_mode == GM_EDITOR) && (_local_company < MAX_COMPANIES)) {
+		SB(value, 32, 8, this->town_label_rating);
+	} else {
+		SB(value, 32, 8, TC_WHITE);
+	}
+	if (_settings_client.gui.population_in_label) SetBit(value, 40);
+	return value;
 }
 
 void Town::FillCachedName() const
@@ -520,8 +538,8 @@ void Town::UpdateVirtCoord()
 	if (_viewport_sign_kdtree_valid && this->cache.sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeTown(this->index));
 
 	SetDParam(0, this->index);
-	SetDParam(1, this->cache.population);
-	this->cache.sign.UpdatePosition(HasBit(_display_opt, DO_SHOW_TOWN_NAMES) ? ZOOM_LVL_OUT_128X : ZOOM_LVL_END, pt.x, pt.y - 24 * ZOOM_LVL_BASE, this->Label(), STR_VIEWPORT_TOWN_TINY_WHITE);
+	SetDParam(1, this->LabelParam2());
+	this->cache.sign.UpdatePosition(HasBit(_display_opt, DO_SHOW_TOWN_NAMES) ? ZOOM_LVL_OUT_128X : ZOOM_LVL_END, pt.x, pt.y - 24 * ZOOM_LVL_BASE, STR_VIEWPORT_TOWN_LABEL, STR_VIEWPORT_TOWN_TINY_WHITE);
 
 	if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeTown(this->index));
 
