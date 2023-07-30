@@ -1304,6 +1304,14 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				break;
 			}
 
+			case SCC_SET_COLOUR: {// {SET_COLOUR}
+				int64 tc = args->GetInt64(SCC_SET_COLOUR);
+				if (tc >= 0 && tc < TC_END) {
+					buff += Utf8Encode(buff, SCC_BLUE + tc);
+				}
+				break;
+			}
+
 			case SCC_REVISION: // {REV}
 				buff = strecpy(buff, _openttd_revision, last);
 				break;
