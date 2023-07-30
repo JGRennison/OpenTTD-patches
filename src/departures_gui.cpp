@@ -876,7 +876,7 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 							}
 						}
 
-						char buf[256];
+						char buf[256] = "";
 						int64 args_array[] = { Waypoint::IsValidID(id) ? STR_WAYPOINT_NAME : STR_STATION_NAME, id, icon_via };
 						StringParameters tmp_params(args_array);
 						char *end = GetStringWithArgs(buf, STR_DEPARTURES_VIA_DESCRIPTOR, &tmp_params, lastof(buf));
@@ -887,7 +887,7 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 					if (via2 != INVALID_STATION) {
 						get_single_via_string(1, via2);
 
-						char buf[512];
+						char buf[512] = "";
 						int64 args_array[] = { SPECSTR_TEMP_START, SPECSTR_TEMP_START + 1 };
 						StringParameters tmp_params(args_array);
 						char *end = GetStringWithArgs(buf, STR_DEPARTURES_VIA_AND, &tmp_params, lastof(buf));
