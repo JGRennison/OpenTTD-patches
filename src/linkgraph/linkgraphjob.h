@@ -312,10 +312,14 @@ public:
 	inline DateTicks StartDateTicks() const { return start_date_ticks; }
 
 	/**
-	 * Change the join date on date cheating.
+	 * Change the start and join dates on date cheating.
 	 * @param interval Number of days to add.
 	 */
-	inline void ShiftJoinDate(int interval) { this->join_date_ticks += interval * DAY_TICKS; }
+	inline void ShiftJoinDate(int interval)
+	{
+		this->join_date_ticks += interval * DAY_TICKS;
+		this->start_date_ticks += interval * DAY_TICKS;
+	}
 
 	/**
 	 * Get the link graph settings for this component.
