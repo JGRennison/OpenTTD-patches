@@ -37,6 +37,7 @@ struct LangString {
 	Case *translated_case; ///< Cases of the translation.
 	std::unique_ptr<LangString> chain_before;
 	std::unique_ptr<LangString> chain_after;
+	bool no_translate_mode = false;
 	LangString *default_translation = nullptr;
 
 	LangString(const char *name, const char *english, int index, int line);
@@ -57,6 +58,7 @@ struct StringData {
 	LangString *insert_before = nullptr;
 	LangString *insert_after = nullptr;
 	bool override_mode = false;
+	bool no_translate_mode = false;
 	LangString *default_translation = nullptr;
 
 	StringData(size_t tabs);

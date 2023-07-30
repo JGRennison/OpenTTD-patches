@@ -770,6 +770,7 @@ void StringReader::HandleString(char *str)
 
 		/* Allocate a new LangString */
 		std::unique_ptr<LangString> ls(new LangString(str, s, this->data.next_string_id, _cur_line));
+		if (this->data.no_translate_mode) ls->no_translate_mode = true;
 		this->data.next_string_id = -1;
 		this->data.Add(str, ls.get());
 
@@ -793,6 +794,11 @@ void StringReader::HandleString(char *str)
 	} else {
 		if (ent == nullptr) {
 			strgen_warning("String name '%s' does not exist in master file", str);
+			return;
+		}
+
+		if (ent->no_translate_mode && _translation) {
+			strgen_error("String name '%s' is marked as no-translate", str);
 			return;
 		}
 
@@ -1024,7 +1030,7 @@ void LanguageWriter::WriteLang(const StringData &data)
 
 		for (uint j = 0; j != in_use[tab]; j++) {
 			const LangString *ls = data.strings[(tab * TAB_SIZE) + j];
-			if (ls != nullptr && ls->translated == nullptr && ls->default_translation == nullptr) {
+			if (ls != nullptr && ls->translated == nullptr && ls->default_translation == nullptr && !ls->no_translate_mode) {
 				_lang.missing++;
 			}
 		}

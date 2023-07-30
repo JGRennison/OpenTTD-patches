@@ -231,15 +231,6 @@ void FileStringReader::HandlePragma(char *str)
 		} else {
 			error("Invalid override mode %s", str + 9);
 		}
-	} else if (!memcmp(str, "override ", 9)) {
-		if (this->translation) error("Overrides are only allowed in the base translation.");
-		if (!memcmp(str + 9, "on", 2)) {
-			this->data.override_mode = true;
-		} else if (!memcmp(str + 9, "off", 3)) {
-			this->data.override_mode = false;
-		} else {
-			error("Invalid override mode %s", str + 9);
-		}
 	} else if (!memcmp(str, "after ", 6)) {
 		if (this->translation) error("Insert after is only allowed in the base translation.");
 		LangString *ent = this->data.Find(str + 6);
@@ -268,6 +259,15 @@ void FileStringReader::HandlePragma(char *str)
 			this->data.default_translation = ent;
 		} else {
 			error("Can't find string to use as default translation: '%s'", str + 20);
+		}
+	} else if (!memcmp(str, "no-translate ", 13)) {
+		if (this->translation) error("No-translate sections are only allowed in the base translation.");
+		if (!memcmp(str + 13, "on", 2)) {
+			this->data.no_translate_mode = true;
+		} else if (!memcmp(str + 13, "off", 3)) {
+			this->data.no_translate_mode = false;
+		} else {
+			error("Invalid no-translate mode %s", str + 13);
 		}
 	} else {
 		StringReader::HandlePragma(str);
