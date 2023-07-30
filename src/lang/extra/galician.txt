@@ -1863,34 +1863,15 @@ STR_STATION_RATING_MAX_PERCENTAGE                               : (máx {PLUS_NU
 STR_STATION_RATING_MAX_PERCENTAGE_COMMA                         :, máx {PLUS_NUM}%
 STR_STATION_RATING_PERCENTAGE_COMMA                             :, {PLUS_NUM}%
 
-STR_STATION_RATING_TOOLTIP_SPEED                                :Velocidade máxima do último vehículo{STRING}: {STRING} ({STRING})
-STR_STATION_RATING_TOOLTIP_SPEED_ZERO                           :{RED}{VELOCITY}{STRING}
-STR_STATION_RATING_TOOLTIP_SPEED_0                              :{ORANGE}{VELOCITY}{STRING}
-STR_STATION_RATING_TOOLTIP_SPEED_1                              :{GOLD}{VELOCITY}{STRING}
-STR_STATION_RATING_TOOLTIP_SPEED_2                              :{YELLOW}{VELOCITY}{STRING}
-STR_STATION_RATING_TOOLTIP_SPEED_3                              :{GREEN}{VELOCITY}{STRING}
+STR_STATION_RATING_TOOLTIP_SPEED                                :Velocidade máxima do último vehículo{STRING}: {SET_COLOUR}{VELOCITY}{STRING} ({STRING})
 
-STR_STATION_RATING_TOOLTIP_AGE                                  :Idade do último vehículo{STRING}: {STRING}
-STR_STATION_RATING_TOOLTIP_AGE_0                                :{ORANGE}{NUM} ano{P "" s}{STRING}
-STR_STATION_RATING_TOOLTIP_AGE_1                                :{GOLD}{NUM} ano{P "" s}{STRING}
-STR_STATION_RATING_TOOLTIP_AGE_2                                :{YELLOW}{NUM} ano{P "" s}{STRING}
-STR_STATION_RATING_TOOLTIP_AGE_3                                :{GREEN}{NUM} ano{P "" s}{STRING}
+STR_STATION_RATING_TOOLTIP_AGE                                  :Idade do último vehículo{STRING}: {SET_COLOUR}{NUM} ano{P "" s}{STRING}
 
 STR_STATION_RATING_TOOLTIP_WAITTIME                             :Tempo dende a última recollida{STRING}: {STRING}
 STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP                        :Tempo dende a última recollida{STRING}: {STRING} (por barco)
-STR_STATION_RATING_TOOLTIP_WAITTIME_0                           :{RED}{NUM} día{P "" s}{STRING}
-STR_STATION_RATING_TOOLTIP_WAITTIME_1                           :{ORANGE}{NUM} día{P "" s}{STRING}
-STR_STATION_RATING_TOOLTIP_WAITTIME_2                           :{GOLD}{NUM} día{P "" s}{STRING}
-STR_STATION_RATING_TOOLTIP_WAITTIME_3                           :{YELLOW}{NUM} día{P "" s}{STRING}
-STR_STATION_RATING_TOOLTIP_WAITTIME_4                           :{GREEN}{NUM} día{P "" s}{STRING}
+STR_STATION_RATING_TOOLTIP_WAITTIME_VALUE                       :{SET_COLOUR}{NUM} día{P "" s}{STRING}
 
-STR_STATION_RATING_TOOLTIP_WAITUNITS                            :Cargamento agardando (de media por próxima parada{STRING}): {STRING}
-STR_STATION_RATING_TOOLTIP_WAITUNITS_0                          :{RED}{NUM}{STRING}
-STR_STATION_RATING_TOOLTIP_WAITUNITS_1                          :{ORANGE}{NUM}{STRING}
-STR_STATION_RATING_TOOLTIP_WAITUNITS_2                          :{GOLD}{NUM}{STRING}
-STR_STATION_RATING_TOOLTIP_WAITUNITS_3                          :{YELLOW}{NUM}{STRING}
-STR_STATION_RATING_TOOLTIP_WAITUNITS_4                          :{YELLOW}{NUM}{STRING}
-STR_STATION_RATING_TOOLTIP_WAITUNITS_5                          :{GREEN}{NUM}{STRING}
+STR_STATION_RATING_TOOLTIP_WAITUNITS                            :Cargamento agardando (de media por próxima parada{STRING}): {SET_COLOUR}{NUM}{STRING}
 
 STR_STATION_RATING_TOOLTIP_STATUE                               :Estatua na localidade{STRING}: {STRING}
 STR_STATION_RATING_TOOLTIP_STATUE_NO                            :{GOLD}non{STRING}

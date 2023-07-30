@@ -1757,34 +1757,15 @@ STR_STATION_RATING_MAX_PERCENTAGE                               :（max {PLUS_NU
 STR_STATION_RATING_MAX_PERCENTAGE_COMMA                         :, max {PLUS_NUM}%
 STR_STATION_RATING_PERCENTAGE_COMMA                             :, {PLUS_NUM}%
 
-STR_STATION_RATING_TOOLTIP_SPEED                                :全部车辆的最高速度{STRING}：{STRING}（{STRING}）
-STR_STATION_RATING_TOOLTIP_SPEED_ZERO                           :{RED}{VELOCITY}{STRING}
-STR_STATION_RATING_TOOLTIP_SPEED_0                              :{ORANGE}{VELOCITY}{STRING}
-STR_STATION_RATING_TOOLTIP_SPEED_1                              :{GOLD}{VELOCITY}{STRING}
-STR_STATION_RATING_TOOLTIP_SPEED_2                              :{YELLOW}{VELOCITY}{STRING}
-STR_STATION_RATING_TOOLTIP_SPEED_3                              :{GREEN}{VELOCITY}{STRING}
+STR_STATION_RATING_TOOLTIP_SPEED                                :全部车辆的最高速度{STRING}：{SET_COLOUR}{VELOCITY}{STRING}（{STRING}）
 
-STR_STATION_RATING_TOOLTIP_AGE                                  :最大车辆年限{STRING}：{STRING}
-STR_STATION_RATING_TOOLTIP_AGE_0                                :{ORANGE}{NUM} 年{STRING}
-STR_STATION_RATING_TOOLTIP_AGE_1                                :{GOLD}{NUM} 年{STRING}
-STR_STATION_RATING_TOOLTIP_AGE_2                                :{YELLOW}{NUM} 年{STRING}
-STR_STATION_RATING_TOOLTIP_AGE_3                                :{GREEN}{NUM} 年{STRING}
+STR_STATION_RATING_TOOLTIP_AGE                                  :最大车辆年限{STRING}：{SET_COLOUR}{NUM} 年{STRING}
 
 STR_STATION_RATING_TOOLTIP_WAITTIME                             :上次结余时间距今{STRING}：{STRING}
 STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP                        :上次结余时间距今{STRING}：{STRING}（航运）
-STR_STATION_RATING_TOOLTIP_WAITTIME_0                           :{RED}{NUM} 天{STRING}
-STR_STATION_RATING_TOOLTIP_WAITTIME_1                           :{ORANGE}{NUM} 天{STRING}
-STR_STATION_RATING_TOOLTIP_WAITTIME_2                           :{GOLD}{NUM} 天{STRING}
-STR_STATION_RATING_TOOLTIP_WAITTIME_3                           :{YELLOW}{NUM} 天{STRING}
-STR_STATION_RATING_TOOLTIP_WAITTIME_4                           :{GREEN}{NUM} 天{STRING}
+STR_STATION_RATING_TOOLTIP_WAITTIME_VALUE                       :{SET_COLOUR}{NUM} 天{STRING}
 
-STR_STATION_RATING_TOOLTIP_WAITUNITS                            :货物等待（在平均每日等待时间{STRING}）：{STRING}
-STR_STATION_RATING_TOOLTIP_WAITUNITS_0                          :{RED}{NUM}{STRING}
-STR_STATION_RATING_TOOLTIP_WAITUNITS_1                          :{ORANGE}{NUM}{STRING}
-STR_STATION_RATING_TOOLTIP_WAITUNITS_2                          :{GOLD}{NUM}{STRING}
-STR_STATION_RATING_TOOLTIP_WAITUNITS_3                          :{YELLOW}{NUM}{STRING}
-STR_STATION_RATING_TOOLTIP_WAITUNITS_4                          :{YELLOW}{NUM}{STRING}
-STR_STATION_RATING_TOOLTIP_WAITUNITS_5                          :{GREEN}{NUM}{STRING}
+STR_STATION_RATING_TOOLTIP_WAITUNITS                            :货物等待（在平均每日等待时间{STRING}）：{SET_COLOUR}{NUM}{STRING}
 
 STR_STATION_RATING_TOOLTIP_STATUE                               :公司雕像{STRING}：{STRING}
 STR_STATION_RATING_TOOLTIP_STATUE_NO                            :{GOLD}否{STRING}

@@ -2736,6 +2736,8 @@ int GetWaitingCargoRating(const Station *st, const GoodsEntry *ge);
 int GetStatueRating(const Station *st);
 int GetVehicleAgeRating(const GoodsEntry *ge);
 
+static const TextColour _rate_colours[] = { TC_ORANGE, TC_GOLD, TC_YELLOW, TC_GREEN };
+
 struct StationRatingTooltipWindow : public Window
 {
 private:
@@ -2864,13 +2866,11 @@ public:
 				SetDParam(1, 17);
 
 				if (ge->last_speed == 255) {
-					SetDParam(2, STR_STATION_RATING_TOOLTIP_SPEED_3);
-				}
-				else if (rounded_speed_rating == 0) {
-					SetDParam(2, STR_STATION_RATING_TOOLTIP_SPEED_ZERO);
-				}
-				else {
-					SetDParam(2, STR_STATION_RATING_TOOLTIP_SPEED_0 + std::min(3, speed_rating / 42));
+					SetDParam(2, TC_GREEN);
+				} else if (rounded_speed_rating == 0) {
+					SetDParam(2, TC_RED);
+				} else {
+					SetDParam(2, _rate_colours[std::min(3, speed_rating / 42)]);
 				}
 
 				SetDParam(3, ge->last_speed);
@@ -2906,24 +2906,25 @@ public:
 			{
 				const auto wait_time_rating = GetWaitTimeRating(cs, ge);
 
-				int wait_time_stage = 0;
+				TextColour wait_time_stage = TC_RED;
 
 				if (wait_time_rating >= 130) {
-					wait_time_stage = 4;
+					wait_time_stage = TC_GREEN;
 				} else if (wait_time_rating >= 95) {
-					wait_time_stage = 3;
+					wait_time_stage = TC_YELLOW;
 				} else if (wait_time_rating >= 50) {
-					wait_time_stage = 2;
+					wait_time_stage = TC_GOLD;
 				} else if (wait_time_rating >= 25) {
-					wait_time_stage = 1;
+					wait_time_stage = TC_ORANGE;
 				}
 
 				SetDParam(0, detailed ? STR_STATION_RATING_MAX_PERCENTAGE : STR_EMPTY);
 				SetDParam(1, 51);
-				SetDParam(2, STR_STATION_RATING_TOOLTIP_WAITTIME_0 + wait_time_stage);
-				SetDParam(3, ge->time_since_pickup * STATION_RATING_TICKS / (DAY_TICKS * _settings_game.economy.day_length_factor));
-				SetDParam(4, detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY);
-				SetDParam(5, RoundRating(wait_time_rating));
+				SetDParam(2, STR_STATION_RATING_TOOLTIP_WAITTIME_VALUE);
+				SetDParam(3, wait_time_stage);
+				SetDParam(4, ge->time_since_pickup * STATION_RATING_TICKS / (DAY_TICKS * _settings_game.economy.day_length_factor));
+				SetDParam(5, detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY);
+				SetDParam(6, RoundRating(wait_time_rating));
 				GetString(this->data[line_nr],
 					(ge->last_vehicle_type == VEH_SHIP) ?
 						STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP :
@@ -2938,23 +2939,21 @@ public:
 			{
 				const auto cargo_rating = GetWaitingCargoRating(st, ge);
 
-				int wait_units_stage = 0;
+				TextColour wait_units_stage = TC_RED;
 
 				if (cargo_rating >= 40) {
-					wait_units_stage = 5;
+					wait_units_stage = TC_GREEN;
 				} else if (cargo_rating >= 30) {
-					wait_units_stage = 4;
-				} else if (cargo_rating >= 10) {
-					wait_units_stage = 3;
+					wait_units_stage = TC_YELLOW;
 				} else if (cargo_rating >= 0) {
-					wait_units_stage = 2;
+					wait_units_stage = TC_GOLD;
 				} else if (cargo_rating >= -35) {
-					wait_units_stage = 1;
+					wait_units_stage = TC_ORANGE;
 				}
 
 				SetDParam(0, detailed ? STR_STATION_RATING_MAX_PERCENTAGE_COMMA : STR_EMPTY);
 				SetDParam(1, 16);
-				SetDParam(2, STR_STATION_RATING_TOOLTIP_WAITUNITS_0 + wait_units_stage);
+				SetDParam(2, wait_units_stage);
 				SetDParam(3, ge->max_waiting_cargo);
 				SetDParam(4, detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY);
 				SetDParam(5, RoundRating(cargo_rating));
@@ -2986,19 +2985,19 @@ public:
 			{
 				const auto age_rating = GetVehicleAgeRating(ge);
 
-				int age_stage = 0;
+				TextColour age_stage = TC_ORANGE;
 
 				if (age_rating >= 33) {
-					age_stage = 3;
+					age_stage = TC_GREEN;
 				} else if (age_rating >= 20) {
-					age_stage = 2;
+					age_stage = TC_YELLOW;
 				} else if (age_rating >= 10) {
-					age_stage = 1;
+					age_stage = TC_GOLD;
 				}
 
 				SetDParam(0, detailed ? STR_STATION_RATING_MAX_PERCENTAGE : STR_EMPTY);
 				SetDParam(1, 13);
-				SetDParam(2, STR_STATION_RATING_TOOLTIP_AGE_0 + age_stage);
+				SetDParam(2, age_stage);
 				SetDParam(3, ge->last_age);
 				SetDParam(4, detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY);
 				SetDParam(5, RoundRating(age_rating));

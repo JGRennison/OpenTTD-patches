@@ -1857,34 +1857,15 @@ STR_STATION_RATING_MAX_PERCENTAGE                               : (max. {PLUS_NU
 STR_STATION_RATING_MAX_PERCENTAGE_COMMA                         :, max. {PLUS_NUM}%
 STR_STATION_RATING_PERCENTAGE_COMMA                             :, {PLUS_NUM}%
 
-STR_STATION_RATING_TOOLTIP_SPEED                                :Maximální rychlost posledního vozidla{STRING}: {STRING} ({STRING})
-STR_STATION_RATING_TOOLTIP_SPEED_ZERO                           :{RED}{VELOCITY}{STRING}
-STR_STATION_RATING_TOOLTIP_SPEED_0                              :{ORANGE}{VELOCITY}{STRING}
-STR_STATION_RATING_TOOLTIP_SPEED_1                              :{GOLD}{VELOCITY}{STRING}
-STR_STATION_RATING_TOOLTIP_SPEED_2                              :{YELLOW}{VELOCITY}{STRING}
-STR_STATION_RATING_TOOLTIP_SPEED_3                              :{GREEN}{VELOCITY}{STRING}
+STR_STATION_RATING_TOOLTIP_SPEED                                :Maximální rychlost posledního vozidla{STRING}: {SET_COLOUR}{VELOCITY}{STRING} ({STRING})
 
-STR_STATION_RATING_TOOLTIP_AGE                                  :Stáří posledního vozidla{STRING}: {STRING}
-STR_STATION_RATING_TOOLTIP_AGE_0                                :{ORANGE}{NUM} {P rok roky let}{STRING}
-STR_STATION_RATING_TOOLTIP_AGE_1                                :{GOLD}{NUM} {P rok roky let}{STRING}
-STR_STATION_RATING_TOOLTIP_AGE_2                                :{YELLOW}{NUM} {P rok roky let}{STRING}
-STR_STATION_RATING_TOOLTIP_AGE_3                                :{GREEN}{NUM} {P rok roky let}{STRING}
+STR_STATION_RATING_TOOLTIP_AGE                                  :Stáří posledního vozidla{STRING}: {SET_COLOUR}{NUM} {P rok roky let}{STRING}
 
 STR_STATION_RATING_TOOLTIP_WAITTIME                             :Čas od poslední obsluhy{STRING}: {STRING}
 STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP                        :Čas od poslední obsluhy{STRING}: {STRING} (lodí)
-STR_STATION_RATING_TOOLTIP_WAITTIME_0                           :{RED}{NUM} d{P en ny ní}{STRING}
-STR_STATION_RATING_TOOLTIP_WAITTIME_1                           :{ORANGE}{NUM} d{P en ny ní}{STRING}
-STR_STATION_RATING_TOOLTIP_WAITTIME_2                           :{GOLD}{NUM} d{P en ny ní}{STRING}
-STR_STATION_RATING_TOOLTIP_WAITTIME_3                           :{YELLOW}{NUM} d{P en ny ní}{STRING}
-STR_STATION_RATING_TOOLTIP_WAITTIME_4                           :{GREEN}{NUM} d{P en ny ní}{STRING}
+STR_STATION_RATING_TOOLTIP_WAITTIME_VALUE                       :{SET_COLOUR}{NUM} d{P en ny ní}{STRING}
 
-STR_STATION_RATING_TOOLTIP_WAITUNITS                            :Čekající náklad (v průměru na další stanici){STRING}): {STRING}
-STR_STATION_RATING_TOOLTIP_WAITUNITS_0                          :{RED}{NUM}{STRING}
-STR_STATION_RATING_TOOLTIP_WAITUNITS_1                          :{ORANGE}{NUM}{STRING}
-STR_STATION_RATING_TOOLTIP_WAITUNITS_2                          :{GOLD}{NUM}{STRING}
-STR_STATION_RATING_TOOLTIP_WAITUNITS_3                          :{YELLOW}{NUM}{STRING}
-STR_STATION_RATING_TOOLTIP_WAITUNITS_4                          :{YELLOW}{NUM}{STRING}
-STR_STATION_RATING_TOOLTIP_WAITUNITS_5                          :{GREEN}{NUM}{STRING}
+STR_STATION_RATING_TOOLTIP_WAITUNITS                            :Čekající náklad (v průměru na další stanici){STRING}): {SET_COLOUR}{NUM}{STRING}
 
 STR_STATION_RATING_TOOLTIP_STATUE                               :Socha ve městě{STRING}: {STRING}
 STR_STATION_RATING_TOOLTIP_STATUE_NO                            :{GOLD}ne{STRING}
