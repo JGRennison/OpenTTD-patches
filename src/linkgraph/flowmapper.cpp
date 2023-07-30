@@ -53,7 +53,7 @@ void FlowMapper::Run(LinkGraphJob &job) const
 			/* Scale by time the graph has been running without being compressed. Add 1 to avoid
 			 * division by 0 if spawn date == last compression date. This matches
 			 * LinkGraph::Monthly(). */
-			uint runtime = ClampTo<uint>(DateTicksToScaledDateTicks(job.StartDateTicks()) - job.LastCompression() + 1);
+			uint runtime = (uint)Clamp<DateTicksScaled>(DateTicksToScaledDateTicks(job.StartDateTicks()) - job.LastCompression() + 1, 1, UINT32_MAX);
 			for (auto &it : flows) {
 				it.ScaleToMonthly(runtime);
 			}
