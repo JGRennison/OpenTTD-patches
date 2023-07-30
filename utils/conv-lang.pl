@@ -82,11 +82,17 @@ welsh.txt
 
 my @lang_lines;
 
-my $start = 0;
+my $override = 0;
+my $no_translate = 0;
 my @lines = read_file("extra/english.txt") or die("Can't read english.txt");
 for (@lines) {
-	$start = 1 if /##override off/;
-	next unless $start;
+	$override = 0 if /##override off/;
+	$override = 1 if /##override on/;
+	$no_translate = 0 if /##no-translate off/;
+	$no_translate = 1 if /##no-translate on/;
+
+	next if $override;
+	next if $no_translate;
 
 	next if /^##/;
 
