@@ -11,7 +11,7 @@
 * Add setting to show the order number in vehicle view window.
 * Add setting to show whether towns are cities in town viewport labels.
 * Do not spread temperate trees uphill if above lower snow line in the arctic climate.
-* Do not unnecessarily extend train reservations when passing a signal with a maxmimum lookahead which is within the current reservation, when using realistic braking with aspect limited lookahead.
+* Do not unnecessarily extend train reservations when passing a signal with a maximum lookahead which is within the current reservation, when using realistic braking with aspect limited lookahead.
 * Show distance information in linkgraph tooltip when ctrl pressed.
 * Scroll to class when using picker tool on object.
 
