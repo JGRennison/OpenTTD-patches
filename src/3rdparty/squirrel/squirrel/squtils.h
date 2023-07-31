@@ -2,7 +2,7 @@
 #ifndef _SQUTILS_H_
 #define _SQUTILS_H_
 
-#include "../../../core/format.hpp"
+#include "../../../string_func.h"
 #include "../../../script/script_fatalerror.hpp"
 #include <type_traits>
 
@@ -108,8 +108,8 @@ private:
 	{
 		newsize = (newsize > 0)?newsize:4;
 		if (newsize > SIZE_MAX / sizeof(T)) {
-			std::string msg = fmt::format("cannot resize to {}", newsize);
-			throw Script_FatalError(msg);
+			std::string msg = stdstr_fmt("cannot resize to " PRINTF_SIZE, (size_t)newsize);
+			throw Script_FatalError(std::move(msg));
 		}
 		_vals = (T*)SQ_REALLOC(_vals, _allocated * sizeof(T), newsize * sizeof(T));
 		_allocated = (size_t)newsize;
