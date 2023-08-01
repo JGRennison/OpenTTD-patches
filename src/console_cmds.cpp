@@ -208,6 +208,14 @@ DEF_CONSOLE_HOOK(ConHookNewGRFDeveloperTool)
 	return CHR_HIDE;
 }
 
+DEF_CONSOLE_HOOK(ConHookSpecialCmd)
+{
+	if (HasBit(_misc_debug_flags, MDF_SPECIAL_CMDS)) {
+		return ConHookNoNetwork(echo);
+	}
+	return CHR_HIDE;
+}
+
 /**
  * Show help for the console.
  * @param str String to print in the console.
@@ -2484,6 +2492,23 @@ DEF_CONSOLE_CMD(ConMergeLinkgraphJobsAsap)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConDbgSpecial)
+{
+	if (argc == 0) {
+		IConsoleHelp("Debug special.");
+		return true;
+	}
+
+	if (argc == 2) {
+		if (strcmp(argv[1], "error") == 0) {
+			error("User triggered");
+			return true;
+		}
+	}
+
+	return false;
+}
+
 #ifdef _DEBUG
 DEF_CONSOLE_CMD(ConDeleteVehicleID)
 {
@@ -3259,6 +3284,7 @@ DEF_CONSOLE_CMD(ConMiscDebug)
 		IConsoleHelp("  8: MDF_ZONING_RS_ANIMATED_TILE");
 		IConsoleHelp(" 10: MDF_NEWGRF_SG_SAVE_RAW");
 		IConsoleHelp(" 20: MDF_NEWGRF_SG_DUMP_MORE_DETAIL");
+		IConsoleHelp(" 40: MDF_SPECIAL_CMDS");
 		return true;
 	}
 
@@ -3907,6 +3933,8 @@ void IConsoleStdLibRegister()
 	/* Bug workarounds */
 	IConsole::CmdRegister("jgrpp_bug_workaround_unblock_heliports", ConResetBlockedHeliports, ConHookNoNetwork, true);
 	IConsole::CmdRegister("merge_linkgraph_jobs_asap", ConMergeLinkgraphJobsAsap, ConHookNoNetwork, true);
+
+	IConsole::CmdRegister("dbgspecial",              ConDbgSpecial,       ConHookSpecialCmd, true);
 
 #ifdef _DEBUG
 	IConsole::CmdRegister("delete_vehicle_id",       ConDeleteVehicleID,  ConHookNoNetwork, true);
