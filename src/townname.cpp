@@ -83,7 +83,6 @@ bool VerifyTownName(uint32 r, const TownNameParams *par, TownNames *town_names)
 {
 	/* reserve space for extra unicode character and terminating '\0' */
 	char buf1[(MAX_LENGTH_TOWN_NAME_CHARS + 1) * MAX_CHAR_LENGTH];
-	char buf2[(MAX_LENGTH_TOWN_NAME_CHARS + 1) * MAX_CHAR_LENGTH];
 
 	GetTownName(buf1, par, r, lastof(buf1));
 
@@ -97,12 +96,7 @@ bool VerifyTownName(uint32 r, const TownNameParams *par, TownNames *town_names)
 		for (const Town *t : Town::Iterate()) {
 			/* We can't just compare the numbers since
 			 * several numbers may map to a single name. */
-			const char *buf = t->name.empty() ? nullptr : t->name.c_str();
-			if (buf == nullptr) {
-				GetTownName(buf2, t, lastof(buf2));
-				buf = buf2;
-			}
-			if (strcmp(buf1, buf) == 0) return false;
+			if (strcmp(buf1, t->GetCachedName()) == 0) return false;
 		}
 	}
 
