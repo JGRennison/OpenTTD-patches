@@ -63,7 +63,7 @@
 #include "object_base.h"
 #include <time.h>
 
-#include <set>
+#include "3rdparty/cpp-btree/btree_set.h"
 
 #include <sstream>
 
@@ -2410,7 +2410,7 @@ DEF_CONSOLE_CMD(ConListDirs)
 		return true;
 	}
 
-	std::set<std::string> seen_dirs;
+	btree::btree_set<std::string> seen_dirs;
 	for (const SubdirNameMap &sdn : subdir_name_map) {
 		if (!StrEqualsIgnoreCase(argv[1], sdn.name))  continue;
 		bool found = false;
