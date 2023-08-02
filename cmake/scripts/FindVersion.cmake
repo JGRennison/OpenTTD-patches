@@ -22,13 +22,13 @@ if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
     set(REV_MODIFIED 0)
 
     # Refresh the index to make sure file stat info is in sync, then look for modifications
-    execute_process(COMMAND ${GIT_EXECUTABLE} update-index --refresh
+    execute_process(COMMAND ${GIT_EXECUTABLE} -C "${CMAKE_SOURCE_DIR}" update-index --refresh
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                     OUTPUT_QUIET
     )
 
     # See if git tree is modified
-    execute_process(COMMAND ${GIT_EXECUTABLE} diff-index HEAD
+    execute_process(COMMAND ${GIT_EXECUTABLE} -C "${CMAKE_SOURCE_DIR}" diff-index HEAD
                     OUTPUT_VARIABLE IS_MODIFIED
                     OUTPUT_STRIP_TRAILING_WHITESPACE
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -38,7 +38,7 @@ if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
     endif()
 
     # Get last commit hash
-    execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --verify HEAD
+    execute_process(COMMAND ${GIT_EXECUTABLE} -C "${CMAKE_SOURCE_DIR}" rev-parse --verify HEAD
                     OUTPUT_VARIABLE FULLHASH
                     OUTPUT_STRIP_TRAILING_WHITESPACE
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -49,7 +49,7 @@ if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
     string(SUBSTRING "${FULLHASH}" 0 10 SHORTHASH)
 
     # Get the last commit date
-    execute_process(COMMAND ${GIT_EXECUTABLE} show -s --pretty=format:%ci HEAD
+    execute_process(COMMAND ${GIT_EXECUTABLE} -C "${CMAKE_SOURCE_DIR}" show -s --pretty=format:%ci HEAD
                     OUTPUT_VARIABLE COMMITDATE
                     OUTPUT_STRIP_TRAILING_WHITESPACE
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -59,7 +59,7 @@ if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
     string(SUBSTRING "${REV_ISODATE}" 0 4 REV_YEAR)
 
     # Get the branch
-    execute_process(COMMAND ${GIT_EXECUTABLE} symbolic-ref -q HEAD
+    execute_process(COMMAND ${GIT_EXECUTABLE} -C "${CMAKE_SOURCE_DIR}" symbolic-ref -q HEAD
                     OUTPUT_VARIABLE BRANCH
                     OUTPUT_STRIP_TRAILING_WHITESPACE
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -68,7 +68,7 @@ if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
     string(REGEX REPLACE ".*/" "" BRANCH "${BRANCH}")
 
     # Get the tag
-    execute_process(COMMAND ${GIT_EXECUTABLE} describe --tags --abbrev=9 --dirty=-m
+    execute_process(COMMAND ${GIT_EXECUTABLE} -C "${CMAKE_SOURCE_DIR}" describe --tags --abbrev=9 --dirty=-m
                     OUTPUT_VARIABLE TAG
                     OUTPUT_STRIP_TRAILING_WHITESPACE
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
