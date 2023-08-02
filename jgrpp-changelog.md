@@ -2,6 +2,20 @@
 
 * * *
 
+### v0.54.5 (2023-08-02)
+* Fix crash using picker tool on rail/road stations when no GRF classes defined.
+* Fix crash which could occur after using the date cheat, when using cargo distribution.
+* Fix duplication of capacity display in build window for multi-cargo ships.
+* Fix link graph tooltips with very long links when zoomed in.
+* Fix crash which could occur with some road/tram type GRFs.
+* Fix duplicate town names when using the many random towns function in the scenario editor.
+* Add setting to show the order number in vehicle view window.
+* Add setting to show whether towns are cities in town viewport labels.
+* Do not spread temperate trees uphill if above lower snow line in the arctic climate.
+* Do not unnecessarily extend train reservations when passing a signal with a maximum lookahead which is within the current reservation, when using realistic braking with aspect limited lookahead.
+* Show distance information in linkgraph tooltip when ctrl pressed.
+* Scroll to class when using picker tool on object.
+
 ### v0.54.4 (2023-07-11)
 * Fix multiplayer desync which could occur when using cargo distribution.
 * Fix the build road/tram station stop windows not saving default window sizes.
