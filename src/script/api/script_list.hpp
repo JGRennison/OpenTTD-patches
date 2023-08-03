@@ -12,8 +12,8 @@
 #define SCRIPT_LIST_HPP
 
 #include "script_object.hpp"
-#include <map>
-#include <set>
+#include "../../3rdparty/cpp-btree/safe_btree_set.h"
+#include "../../3rdparty/cpp-btree/safe_btree_map.h"
 
 class ScriptListSorter;
 
@@ -34,6 +34,13 @@ public:
 	/** Sort descending */
 	static const bool SORT_DESCENDING = false;
 
+	/**
+	 * The safe btree variants ars used because these automatically manage refreshing iterators
+	 * which have been invalidated by adding/removing items.
+	 */
+	typedef btree::safe_btree_map<SQInteger, SQInteger> ScriptListMap;                 ///< Key to value map
+	typedef btree::safe_btree_set<std::pair<SQInteger, SQInteger>> ScriptListValueSet; ///< [Value, Key] set
+
 private:
 	ScriptListSorter *sorter;     ///< Sorting algorithm
 	SorterType sorter_type;       ///< Sorting type
@@ -41,13 +48,13 @@ private:
 	bool initialized;             ///< Whether an iteration has been started
 	int modifications;            ///< Number of modification that has been done. To prevent changing data while valuating.
 
-public:
-	typedef std::set<SQInteger> ScriptItemList;                   ///< The list of items inside the bucket
-	typedef std::map<SQInteger, ScriptItemList> ScriptListBucket; ///< The bucket list per value
-	typedef std::map<SQInteger, SQInteger> ScriptListMap;         ///< List per item
+	void SetIterValue(ScriptListMap::iterator item_iter, SQInteger value);
+	ScriptListMap::iterator RemoveIter(ScriptListMap::iterator item_iter);
+	ScriptListValueSet::iterator RemoveValueIter(ScriptListValueSet::iterator value_iter);
 
-	ScriptListMap items;           ///< The items in the list
-	ScriptListBucket buckets;      ///< The items in the list, sorted by value
+public:
+	ScriptListMap items;       ///< The items in the list
+	ScriptListValueSet values; ///< The items in the list, sorted by value
 
 	ScriptList();
 	~ScriptList();
@@ -62,6 +69,16 @@ public:
 #else
 	void AddItem(SQInteger item, SQInteger value = 0);
 #endif /* DOXYGEN_API */
+
+	/**
+	 * @api -all
+	 */
+	void AddOrSetItem(SQInteger item, SQInteger value);
+
+	/**
+	 * @api -all
+	 */
+	void AddToItemValue(SQInteger item, SQInteger value_to_add);
 
 	/**
 	 * Remove a single item from the list.
