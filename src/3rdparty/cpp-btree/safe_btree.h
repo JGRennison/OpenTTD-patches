@@ -84,6 +84,14 @@ class safe_btree_iterator {
     update();
   }
 
+  safe_btree_iterator &operator=(const iterator &x) {
+    this->generation_ = x.generation();
+    this->key_ = x.key();
+    this->iter_ = x.iter();
+    this->tree_ = x.tree();
+    return *this;
+  }
+
   Tree* tree() const { return tree_; }
   int64_t generation() const { return generation_; }
 
