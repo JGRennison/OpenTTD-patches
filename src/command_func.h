@@ -83,7 +83,7 @@ static inline DoCommandFlag CommandFlagsToDCFlags(CommandFlags cmd_flags)
 }
 
 void ClearCommandLog();
-char *DumpCommandLog(char *buffer, const char *last);
+char *DumpCommandLog(char *buffer, const char *last, std::function<char *(char *)> flush);
 
 void ExecuteCommandQueue();
 void ClearCommandQueue();

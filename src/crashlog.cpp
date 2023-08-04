@@ -508,7 +508,7 @@ char *CrashLog::LogRecentNews(char *buffer, const char *last) const
  */
 char *CrashLog::LogCommandLog(char *buffer, const char *last) const
 {
-	buffer = DumpCommandLog(buffer, last);
+	buffer = DumpCommandLog(buffer, last, nullptr);
 	buffer += seprintf(buffer, last, "\n");
 	buffer = DumpSpecialEventsLog(buffer, last);
 	buffer += seprintf(buffer, last, "\n");

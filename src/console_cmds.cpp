@@ -2576,9 +2576,11 @@ DEF_CONSOLE_CMD(ConDumpCommandLog)
 		return true;
 	}
 
-	char buffer[32768];
-	DumpCommandLog(buffer, lastof(buffer));
-	PrintLineByLine(buffer);
+	char buffer[2048];
+	DumpCommandLog(buffer, lastof(buffer), [&](char *current) -> char * {
+		PrintLineByLine(buffer);
+		return buffer;
+	});
 	return true;
 }
 

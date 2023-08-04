@@ -686,7 +686,7 @@ static void DumpSubCommandLogEntry(char *&buffer, const char *last, const Comman
 		}
 }
 
-static void DumpSubCommandLog(char *&buffer, const char *last, const CommandLog &cmd_log, const unsigned int count)
+static void DumpSubCommandLog(char *&buffer, const char *last, const CommandLog &cmd_log, const unsigned int count, std::function<char *(char *)> &flush)
 {
 	unsigned int log_index = cmd_log.next;
 	for (unsigned int i = 0 ; i < count; i++) {
@@ -702,20 +702,22 @@ static void DumpSubCommandLog(char *&buffer, const char *last, const CommandLog 
 		DumpSubCommandLogEntry(buffer, last, entry);
 
 		buffer += seprintf(buffer, last, "\n");
+		if (flush) buffer = flush(buffer);
 	}
 }
 
-char *DumpCommandLog(char *buffer, const char *last)
+char *DumpCommandLog(char *buffer, const char *last, std::function<char *(char *)> flush)
 {
 	const unsigned int count = std::min<unsigned int>(_command_log.count, 256);
 	buffer += seprintf(buffer, last, "Command Log:\n Showing most recent %u of %u commands\n", count, _command_log.count);
-	DumpSubCommandLog(buffer, last, _command_log, count);
+	DumpSubCommandLog(buffer, last, _command_log, count, flush);
 
 	if (_command_log_aux.count > 0) {
 		const unsigned int aux_count = std::min<unsigned int>(_command_log_aux.count, 32);
 		buffer += seprintf(buffer, last, "\n Showing most recent %u of %u commands (aux log)\n", aux_count, _command_log_aux.count);
-		DumpSubCommandLog(buffer, last, _command_log_aux, aux_count);
+		DumpSubCommandLog(buffer, last, _command_log_aux, aux_count, flush);
 	}
+	if (flush) buffer = flush(buffer);
 	return buffer;
 }
 
