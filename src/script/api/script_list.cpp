@@ -476,10 +476,11 @@ public:
 ScriptList::ScriptList()
 {
 	/* Default sorter */
-	this->sorter         = new ScriptListSorterValueDescending(this);
+	this->sorter         = nullptr;
 	this->sorter_type    = SORT_BY_VALUE;
 	this->sort_ascending = false;
 	this->initialized    = false;
+	this->values_inited  = false;
 	this->modifications  = 0;
 }
 
@@ -499,7 +500,8 @@ void ScriptList::Clear()
 
 	this->items.clear();
 	this->values.clear();
-	this->sorter->End();
+	this->values_inited = false;
+	if (this->sorter != nullptr) this->sorter->End();
 }
 
 void ScriptList::AddOrSetItem(SQInteger item, SQInteger value)
@@ -512,7 +514,9 @@ void ScriptList::AddOrSetItem(SQInteger item, SQInteger value)
 	}
 
 	this->modifications++;
-	this->values.insert(std::make_pair(value, item));
+	if (this->values_inited) {
+		this->values.insert(std::make_pair(value, item));
+	}
 }
 
 void ScriptList::AddToItemValue(SQInteger item, SQInteger value)
@@ -525,7 +529,9 @@ void ScriptList::AddToItemValue(SQInteger item, SQInteger value)
 	}
 
 	this->modifications++;
-	this->values.insert(std::make_pair(value, item));
+	if (this->values_inited) {
+		this->values.insert(std::make_pair(value, item));
+	}
 }
 
 void ScriptList::AddItem(SQInteger item, SQInteger value)
@@ -538,7 +544,9 @@ void ScriptList::AddItem(SQInteger item, SQInteger value)
 		return;
 	}
 
-	this->values.insert(std::make_pair(value, item));
+	if (this->values_inited) {
+		this->values.insert(std::make_pair(value, item));
+	}
 }
 
 ScriptList::ScriptListMap::iterator ScriptList::RemoveIter(ScriptList::ScriptListMap::iterator item_iter)
@@ -546,12 +554,16 @@ ScriptList::ScriptListMap::iterator ScriptList::RemoveIter(ScriptList::ScriptLis
 	SQInteger item = item_iter->first;
 	SQInteger value = item_iter->second;
 
-	this->sorter->Remove(item);
+	if (this->initialized) this->sorter->Remove(item);
 
 	ScriptListMap::iterator new_item_iter = this->items.erase(item_iter);
-	ScriptListValueSet::iterator new_reverse_iter = this->values.erase(this->values.find(std::make_pair(value, item)));
+	if (this->values_inited) {
+		ScriptListValueSet::iterator new_reverse_iter = this->values.erase(this->values.find(std::make_pair(value, item)));
 
-	this->sorter->PostErase(item, new_item_iter, new_reverse_iter);
+		if (this->initialized) this->sorter->PostErase(item, new_item_iter, new_reverse_iter);
+	} else {
+		if (this->initialized) this->sorter->PostErase(item, new_item_iter, {});
+	}
 
 	return new_item_iter;
 }
@@ -560,12 +572,12 @@ ScriptList::ScriptListValueSet::iterator ScriptList::RemoveValueIter(ScriptList:
 {
 	SQInteger item = value_iter->second;
 
-	this->sorter->Remove(item);
+	if (this->initialized) this->sorter->Remove(item);
 
 	ScriptListMap::iterator new_item_iter = this->items.erase(this->items.find(item));
 	ScriptListValueSet::iterator new_value_iter = this->values.erase(value_iter);
 
-	this->sorter->PostErase(item, new_item_iter, new_value_iter);
+	if (this->initialized) this->sorter->PostErase(item, new_item_iter, new_value_iter);
 
 	return new_value_iter;
 }
@@ -580,9 +592,47 @@ void ScriptList::RemoveItem(SQInteger item)
 	this->RemoveIter(item_iter);
 }
 
+void ScriptList::InitValues()
+{
+	this->values.clear();
+	for (const auto &iter : this->items) {
+		this->values.insert(std::make_pair(iter.second, iter.first));
+	}
+	this->values_inited = true;
+}
+
+void ScriptList::InitSorter()
+{
+	if (this->sorter == nullptr) {
+		switch (this->sorter_type) {
+			case SORT_BY_ITEM:
+				if (this->sort_ascending) {
+					this->sorter = new ScriptListSorterItemAscending(this);
+				} else {
+					this->sorter = new ScriptListSorterItemDescending(this);
+				}
+				break;
+
+			case SORT_BY_VALUE:
+				if (this->sort_ascending) {
+					this->sorter = new ScriptListSorterValueAscending(this);
+				} else {
+					this->sorter = new ScriptListSorterValueDescending(this);
+				}
+				break;
+
+			default: NOT_REACHED();
+		}
+	}
+	if (!this->values_inited && this->sorter_type == SORT_BY_VALUE) {
+		this->InitValues();
+	}
+	this->initialized = true;
+}
+
 SQInteger ScriptList::Begin()
 {
-	this->initialized = true;
+	this->InitSorter();
 	return this->sorter->Begin();
 }
 
@@ -627,12 +677,14 @@ void ScriptList::SetIterValue(ScriptListMap::iterator item_iter, SQInteger value
 
 	SQInteger item = item_iter->first;
 
-	this->sorter->ValueChange(item);
-
-	this->values.erase(this->values.find(std::make_pair(value_old, item)));
+	if (this->initialized) this->sorter->ValueChange(item);
 
 	item_iter->second = value;
-	this->values.insert(std::make_pair(value, item));
+
+	if (this->values_inited) {
+		this->values.erase(this->values.find(std::make_pair(value_old, item)));
+		this->values.insert(std::make_pair(value, item));
+	}
 }
 
 bool ScriptList::SetValue(SQInteger item, SQInteger value)
@@ -655,25 +707,7 @@ void ScriptList::Sort(SorterType sorter, bool ascending)
 	if (sorter == this->sorter_type && ascending == this->sort_ascending) return;
 
 	delete this->sorter;
-	switch (sorter) {
-		case SORT_BY_ITEM:
-			if (ascending) {
-				this->sorter = new ScriptListSorterItemAscending(this);
-			} else {
-				this->sorter = new ScriptListSorterItemDescending(this);
-			}
-			break;
-
-		case SORT_BY_VALUE:
-			if (ascending) {
-				this->sorter = new ScriptListSorterValueAscending(this);
-			} else {
-				this->sorter = new ScriptListSorterValueDescending(this);
-			}
-			break;
-
-		default: NOT_REACHED();
-	}
+	this->sorter = nullptr;
 	this->sorter_type    = sorter;
 	this->sort_ascending = ascending;
 	this->initialized    = false;
@@ -687,6 +721,10 @@ void ScriptList::AddList(ScriptList *list)
 		/* If this is empty, we can just take the items of the other list as is. */
 		this->items = list->items;
 		this->values = list->values;
+		this->values_inited = list->values_inited;
+		if (!this->values_inited && this->initialized && this->sorter_type == SORT_BY_VALUE) {
+			this->InitValues();
+		}
 		this->modifications++;
 	} else {
 		ScriptListMap *list_items = &list->items;
@@ -707,9 +745,10 @@ void ScriptList::SwapList(ScriptList *list)
 	Swap(this->sorter_type, list->sorter_type);
 	Swap(this->sort_ascending, list->sort_ascending);
 	Swap(this->initialized, list->initialized);
+	Swap(this->values_inited, list->values_inited);
 	Swap(this->modifications, list->modifications);
-	this->sorter->Retarget(this);
-	list->sorter->Retarget(list);
+	if (this->sorter != nullptr) this->sorter->Retarget(this);
+	if (list->sorter != nullptr) list->sorter->Retarget(list);
 }
 
 void ScriptList::RemoveAboveValue(SQInteger value)
@@ -766,6 +805,7 @@ void ScriptList::RemoveTop(SQInteger count)
 	switch (this->sorter_type) {
 		default: NOT_REACHED();
 		case SORT_BY_VALUE:
+			if (!this->values_inited) this->InitValues();
 			for (ScriptListValueSet::iterator iter = this->values.begin(); iter != this->values.end(); iter = this->values.begin()) {
 				if (--count < 0) return;
 				this->RemoveValueIter(iter);
@@ -795,6 +835,7 @@ void ScriptList::RemoveBottom(SQInteger count)
 	switch (this->sorter_type) {
 		default: NOT_REACHED();
 		case SORT_BY_VALUE:
+			if (!this->values_inited) this->InitValues();
 			for (ScriptListValueSet::iterator iter = this->values.end(); iter != this->values.begin(); iter = this->values.end()) {
 				if (--count < 0) return;
 				--iter;

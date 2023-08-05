@@ -46,8 +46,11 @@ private:
 	SorterType sorter_type;       ///< Sorting type
 	bool sort_ascending;          ///< Whether to sort ascending or descending
 	bool initialized;             ///< Whether an iteration has been started
+	bool values_inited;           ///< Whether the 'values' field has been initialised
 	int modifications;            ///< Number of modification that has been done. To prevent changing data while valuating.
 
+	void InitValues();
+	void InitSorter();
 	void SetIterValue(ScriptListMap::iterator item_iter, SQInteger value);
 	ScriptListMap::iterator RemoveIter(ScriptListMap::iterator item_iter);
 	ScriptListValueSet::iterator RemoveValueIter(ScriptListValueSet::iterator value_iter);
