@@ -69,16 +69,31 @@ public:
 	virtual void ValueChange(SQInteger item) = 0;
 
 	/**
+	 * Safe btree iterators hold a pointer to the parent container's tree, so update those
+	 */
+	virtual void RetargetIterators() = 0;
+
+	/**
 	 * Attach the sorter to a new list. This assumes the content of the old list has been moved to
-	 * the new list, too, so that we don't have to invalidate any iterators. Note that std::swap
-	 * doesn't invalidate iterators on lists and maps, so that should be safe.
+	 * the new list, too, so that we don't have to invalidate any iterators.
 	 * @param target New list to attach to.
 	 */
 	virtual void Retarget(ScriptList *new_list)
 	{
 		this->list = new_list;
+		this->RetargetIterators();
 	}
 };
+
+template <typename T>
+void RetargetIterator(T &container, typename T::iterator &iter)
+{
+	if (iter.generation() > 0) {
+		iter = container.lower_bound(iter.key());
+	} else {
+		iter = container.end();
+	}
+}
 
 /**
  * Sort by value, ascending.
@@ -166,6 +181,11 @@ public:
 	void ValueChange(SQInteger item)
 	{
 		this->ScriptListSorterValueAscending::Remove(item);
+	}
+
+	void RetargetIterators()
+	{
+		RetargetIterator(this->list->values, this->value_iter);
 	}
 };
 
@@ -257,6 +277,11 @@ public:
 	{
 		this->ScriptListSorterValueDescending::Remove(item);
 	}
+
+	void RetargetIterators()
+	{
+		RetargetIterator(this->list->values, this->value_iter);
+	}
 };
 
 /**
@@ -344,6 +369,11 @@ public:
 	void ValueChange(SQInteger item)
 	{
 		/* do nothing */
+	}
+
+	void RetargetIterators()
+	{
+		RetargetIterator(this->list->items, this->item_iter);
 	}
 };
 
@@ -433,6 +463,11 @@ public:
 	void ValueChange(SQInteger item)
 	{
 		/* do nothing */
+	}
+
+	void RetargetIterators()
+	{
+		RetargetIterator(this->list->items, this->item_iter);
 	}
 };
 
