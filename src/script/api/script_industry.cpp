@@ -300,11 +300,13 @@
 	return i->prod_level;
 }
 
-/* static */ bool ScriptIndustry::SetProductionLevel(IndustryID industry_id, SQInteger prod_level, bool show_news)
+/* static */ bool ScriptIndustry::SetProductionLevel(IndustryID industry_id, SQInteger prod_level, bool show_news, Text *custom_news)
 {
+	CCountedPtr<Text> counter(custom_news);
+
 	EnforceDeityMode(false);
 	EnforcePrecondition(false, IsValidIndustry(industry_id));
 	EnforcePrecondition(false, prod_level >= PRODLEVEL_MINIMUM && prod_level <= PRODLEVEL_MAXIMUM);
 
-	return ScriptObject::DoCommand(0, industry_id, ((uint8)prod_level) | (show_news ? (1 << 8) : 0), CMD_INDUSTRY_SET_PRODUCTION);
+	return ScriptObject::DoCommand(0, industry_id, ((uint8)prod_level) | (show_news ? (1 << 8) : 0), CMD_INDUSTRY_SET_PRODUCTION, custom_news != nullptr ? custom_news->GetEncodedText() : std::string{});
 }

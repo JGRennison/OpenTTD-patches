@@ -2212,9 +2212,10 @@ CommandCost CmdIndustrySetFlags(TileIndex tile, DoCommandFlag flags, uint32 p1, 
  * @param ind_id IndustryID
  * @param prod_level Production level.
  * @param show_news Show a news message on production change.
+ * @param custom_news Custom news message text.
  * @return Empty cost or an error.
  */
-CommandCost CmdIndustrySetProduction(DoCommandFlag flags, IndustryID ind_id, byte prod_level, bool show_news)
+CommandCost CmdIndustrySetProduction(DoCommandFlag flags, IndustryID ind_id, byte prod_level, bool show_news, const std::string &custom_news)
 {
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
 	if (prod_level < PRODLEVEL_MINIMUM || prod_level > PRODLEVEL_MAXIMUM) return CMD_ERROR;
@@ -2229,6 +2230,7 @@ CommandCost CmdIndustrySetProduction(DoCommandFlag flags, IndustryID ind_id, byt
 		} else if (prod_level < ind->prod_level) {
 			str = GetIndustrySpec(ind->type)->production_down_text;
 		}
+		if (prod_level != ind->prod_level && !custom_news.empty()) str = STR_NEWS_CUSTOM_ITEM;
 
 		ind->ctlflags |= INDCTL_EXTERNAL_PROD_LEVEL;
 		ind->prod_level = prod_level;
@@ -2245,14 +2247,18 @@ CommandCost CmdIndustrySetProduction(DoCommandFlag flags, IndustryID ind_id, byt
 			}
 
 			/* Set parameters of news string */
-			if (str > STR_LAST_STRINGID) {
+			NewsAllocatedData *data = nullptr;
+			if (str == STR_NEWS_CUSTOM_ITEM) {
+				NewsStringData *news = new NewsStringData(custom_news);
+				SetDParamStr(0, news->string);
+			} else if (str > STR_LAST_STRINGID) {
 				SetDParam(0, STR_TOWN_NAME);
 				SetDParam(1, ind->town->index);
 				SetDParam(2, GetIndustrySpec(ind->type)->name);
 			} else {
 				SetDParam(0, ind->index);
 			}
-			AddIndustryNewsItem(str, nt, ind->index);
+			AddIndustryNewsItem(str, nt, ind->index, data);
 		}
 	}
 
@@ -2267,12 +2273,12 @@ CommandCost CmdIndustrySetProduction(DoCommandFlag flags, IndustryID ind_id, byt
  * @param p2 various bitstuffed elements
  * - p2 = (bit  0 -  7) - production level
  * - p2 = (bit  8)      - whether to show news
- * @param text unused.
+ * @param text custom news message.
  * @return the cost of this operation or an error
  */
 CommandCost CmdIndustrySetProduction(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
-	return CmdIndustrySetProduction(flags, (IndustryID)p1, GB(p2, 0, 8), HasBit(p2, 8));
+	return CmdIndustrySetProduction(flags, (IndustryID)p1, GB(p2, 0, 8), HasBit(p2, 8), text != nullptr ? std::string{ text } : std::string{});
 }
 
 /**
