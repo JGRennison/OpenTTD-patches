@@ -615,6 +615,8 @@ StringID AddGRFString(uint32 grfid, uint16 stringid, byte langid_to_add, bool ne
  */
 StringID GetGRFStringID(uint32 grfid, StringID stringid)
 {
+	if (stringid > UINT16_MAX) return STR_UNDEFINED;
+
 	extern GRFFile *GetFileByGRFIDExpectCurrent(uint32 grfid);
 	GRFFile *grf = GetFileByGRFIDExpectCurrent(grfid);
 	if (unlikely(grf == nullptr)) {
