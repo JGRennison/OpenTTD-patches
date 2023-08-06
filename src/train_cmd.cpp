@@ -1482,6 +1482,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 		v->railtype = rvi->railtype;
 
 		v->date_of_last_service = _date;
+		v->date_of_last_service_newgrf = _date;
 		v->build_year = _cur_year;
 		v->sprite_seq.Set(SPR_IMG_QUERY);
 		v->random_bits = Random();
@@ -1557,6 +1558,7 @@ static void AddRearEngineToMultiheadedTrain(Train *v)
 	u->reliability = v->reliability;
 	u->reliability_spd_dec = v->reliability_spd_dec;
 	u->date_of_last_service = v->date_of_last_service;
+	u->date_of_last_service_newgrf = v->date_of_last_service_newgrf;
 	u->build_year = v->build_year;
 	u->sprite_seq.Set(SPR_IMG_QUERY);
 	u->random_bits = Random();
@@ -1626,6 +1628,7 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlag flags, const Engin
 
 		v->SetServiceInterval(Company::Get(_current_company)->settings.vehicle.servint_trains);
 		v->date_of_last_service = _date;
+		v->date_of_last_service_newgrf = _date;
 		v->build_year = _cur_year;
 		v->sprite_seq.Set(SPR_IMG_QUERY);
 		v->random_bits = Random();

@@ -207,6 +207,7 @@ void VehicleServiceInDepot(Vehicle *v)
 
 	do {
 		v->date_of_last_service = _date;
+		v->date_of_last_service_newgrf = _date;
 		if (_settings_game.vehicle.pay_for_repair && v->breakdowns_since_last_service) {
 			_vehicles_to_pay_repair.insert(v->index);
 		} else {
@@ -4587,6 +4588,8 @@ void ShiftVehicleDates(int interval)
 	for (Vehicle *v : Vehicle::Iterate()) {
 		v->date_of_last_service = std::max(v->date_of_last_service + interval, 0);
 	}
+	/* date_of_last_service_newgrf is not updated here as it must stay stable
+	 * for vehicles outside of a depot. */
 }
 
 extern void VehicleDayLengthChanged(DateTicksScaled old_scaled_date_ticks, DateTicksScaled old_scaled_date_ticks_offset, uint8 old_day_length_factor)

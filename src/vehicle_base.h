@@ -320,6 +320,7 @@ public:
 	Date age;                           ///< Age in days
 	Date max_age;                       ///< Maximum age
 	Date date_of_last_service;          ///< Last date the vehicle had a service at a depot.
+	Date date_of_last_service_newgrf;   ///< Last date the vehicle had a service at a depot, unchanged by the date cheat to protect against unsafe NewGRF behavior.
 	uint16 reliability;                 ///< Reliability.
 	uint16 reliability_spd_dec;         ///< Reliability decrease speed.
 	byte breakdown_ctr;                 ///< Counter for managing breakdown events. @see Vehicle::HandleBreakdown

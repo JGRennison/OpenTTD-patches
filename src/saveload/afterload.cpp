@@ -4222,6 +4222,13 @@ bool AfterLoadGame()
 		GenerateSavegameId();
 	}
 
+	if (IsSavegameVersionBefore(SLV_NEWGRF_LAST_SERVICE) && SlXvIsFeatureMissing(XSLFI_NEWGRF_LAST_SERVICE)) {
+		/* Set service date provided to NewGRF. */
+		for (Vehicle *v : Vehicle::Iterate()) {
+			v->date_of_last_service_newgrf = v->date_of_last_service;
+		}
+	}
+
 	InitializeRoadGUI();
 
 	/* This needs to be done after conversion. */

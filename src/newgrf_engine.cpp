@@ -744,7 +744,7 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 			}
 
 		case 0x4B: // Long date of last service
-			return v->date_of_last_service;
+			return v->date_of_last_service_newgrf;
 
 		case 0x4C: // Current maximum speed in NewGRF units
 			if (!v->IsPrimaryVehicle()) return 0;
@@ -927,8 +927,8 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 			}
 			return (variable - 0x80) == 0x10 ? ticks : GB(ticks, 8, 8);
 		}
-		case 0x12: return ClampTo<uint16_t>(v->date_of_last_service - DAYS_TILL_ORIGINAL_BASE_YEAR);
-		case 0x13: return GB(ClampTo<uint16_t>(v->date_of_last_service - DAYS_TILL_ORIGINAL_BASE_YEAR), 8, 8);
+		case 0x12: return ClampTo<uint16_t>(v->date_of_last_service_newgrf - DAYS_TILL_ORIGINAL_BASE_YEAR);
+		case 0x13: return GB(ClampTo<uint16_t>(v->date_of_last_service_newgrf - DAYS_TILL_ORIGINAL_BASE_YEAR), 8, 8);
 		case 0x14: return v->GetServiceInterval();
 		case 0x15: return GB(v->GetServiceInterval(), 8, 8);
 		case 0x16: return v->last_station_visited;

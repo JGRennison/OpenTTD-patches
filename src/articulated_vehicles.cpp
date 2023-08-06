@@ -475,6 +475,7 @@ void AddArticulatedParts(Vehicle *first)
 		/* get common values from first engine */
 		v->owner = first->owner;
 		v->date_of_last_service = first->date_of_last_service;
+		v->date_of_last_service_newgrf = first->date_of_last_service_newgrf;
 		v->build_year = first->build_year;
 
 		v->cargo_subtype = 0;

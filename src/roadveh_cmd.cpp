@@ -311,6 +311,7 @@ CommandCost CmdBuildRoadVehicle(TileIndex tile, DoCommandFlag flags, const Engin
 		v->SetServiceInterval(Company::Get(v->owner)->settings.vehicle.servint_roadveh);
 
 		v->date_of_last_service = _date;
+		v->date_of_last_service_newgrf = _date;
 		v->build_year = _cur_year;
 
 		v->sprite_seq.Set(SPR_IMG_QUERY);
