@@ -307,6 +307,10 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 				extern std::vector<Train *> _tick_train_too_heavy_cache;
 				_tick_train_too_heavy_cache.push_back(Train::From(this));
 			}
+
+			if (Train::From(this)->UsingRealisticBraking() && _settings_game.vehicle.limit_train_acceleration) {
+				accel = std::min(accel, 250);
+			}
 		}
 
 		return { accel, braking_accel };

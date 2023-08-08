@@ -191,6 +191,9 @@ STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL_HELPTEXT                 :Select the phys
 STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED             :Realistic train braking is aspect limited: {STRING2}
 STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED_HELPTEXT    :In the realistic train braking model, limit the look-ahead of trains to the aspect of signals (i.e. do not allow reserving and looking ahead an unlimited number of signals).{}This requires a NewGRF which provides multi-aspect signals.{}{}This is an expert setting which will likely increase gameplay difficulty and will require additional thought about signal types and placement.
 
+STR_CONFIG_SETTING_LIMIT_TRAIN_ACCELERATION                     :Limit train acceleration: {STRING2}
+STR_CONFIG_SETTING_LIMIT_TRAIN_ACCELERATION_HELPTEXT            :When using the realistic train train braking model, also limit the maximum acceleration of trains. This is to prevent passengers from spilling their drinks due to some train types otherwise accelerating excessively quickly.
+
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT                     :Train through load maximum speed: {STRING2}
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_HELPTEXT            :The maximum permitted speed for trains when through loading at a station
 
