@@ -61,6 +61,7 @@
 #include "event_logs.h"
 #include "tile_cmd.h"
 #include "object_base.h"
+#include "newgrf_newsignals.h"
 #include <time.h>
 
 #include "3rdparty/cpp-btree/btree_set.h"
@@ -3079,6 +3080,54 @@ DEF_CONSOLE_CMD(ConDumpGrfCargoTables)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConDumpSignalStyles)
+{
+	if (argc == 0) {
+		IConsoleHelp("Dump custom signal styles.");
+		return true;
+	}
+
+	IConsolePrintF(CC_DEFAULT, "  Flags:");
+	IConsolePrintF(CC_DEFAULT, "    n = no aspect increment");
+	IConsolePrintF(CC_DEFAULT, "    a = always reserve through");
+	IConsolePrintF(CC_DEFAULT, "    l = lookahead aspects set");
+	IConsolePrintF(CC_DEFAULT, "    o = opposite side");
+	IConsolePrintF(CC_DEFAULT, "    s = lookahead single signal");
+	IConsolePrintF(CC_DEFAULT, "    c = combined normal and shunt");
+	IConsolePrintF(CC_DEFAULT, "    r = realistic braking only");
+	IConsolePrintF(CC_DEFAULT, "  Extra aspects: %u", _extra_aspects);
+
+	btree::btree_map<uint32, const GRFFile *> grfs;
+	for (uint8 i = 0; i < _num_new_signal_styles; i++) {
+		const NewSignalStyle &style = _new_signal_styles[i];
+
+		uint32 grfid = 0;
+		if (style.grffile != nullptr) {
+			grfid = style.grffile->grfid;
+			grfs.insert(std::pair<uint32, const GRFFile *>(grfid, style.grffile));
+		}
+		IConsolePrintF(CC_DEFAULT, "  %2u: GRF: %08X, Local: %2u, Extra aspects: %2u, Flags: %c%c%c%c%c%c%c, %s",
+				(uint) (i + 1),
+				BSWAP32(grfid),
+				style.grf_local_id,
+				style.lookahead_extra_aspects,
+				HasBit(style.style_flags, NSSF_NO_ASPECT_INC)           ? 'n' : '-',
+				HasBit(style.style_flags, NSSF_ALWAYS_RESERVE_THROUGH)  ? 'a' : '-',
+				HasBit(style.style_flags, NSSF_LOOKAHEAD_ASPECTS_SET)   ? 'l' : '-',
+				HasBit(style.style_flags, NSSF_OPPOSITE_SIDE)           ? 'o' : '-',
+				HasBit(style.style_flags, NSSF_LOOKAHEAD_SINGLE_SIGNAL) ? 's' : '-',
+				HasBit(style.style_flags, NSSF_COMBINED_NORMAL_SHUNT)   ? 'c' : '-',
+				HasBit(style.style_flags, NSSF_REALISTIC_BRAKING_ONLY)  ? 'r' : '-',
+				GetStringPtr(style.name)
+		);
+	}
+	for (const auto &grf : grfs) {
+		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grf.first), grf.second->filename.c_str());
+	}
+
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConCheckCaches)
 {
 	if (argc == 0) {
@@ -3908,6 +3957,7 @@ void IConsoleStdLibRegister()
 	IConsole::CmdRegister("dump_vehicle",            ConDumpVehicle,      nullptr, true);
 	IConsole::CmdRegister("dump_tile",               ConDumpTile,         nullptr, true);
 	IConsole::CmdRegister("dump_grf_cargo_tables",   ConDumpGrfCargoTables, nullptr, true);
+	IConsole::CmdRegister("dump_signal_styles",      ConDumpSignalStyles, nullptr, true);
 	IConsole::CmdRegister("check_caches",            ConCheckCaches,      nullptr, true);
 	IConsole::CmdRegister("show_town_window",        ConShowTownWindow,   nullptr, true);
 	IConsole::CmdRegister("show_station_window",     ConShowStationWindow, nullptr, true);
