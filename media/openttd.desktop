@@ -2,7 +2,7 @@
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=OpenTTD
+Name=OpenTTD+JGRPP
 Icon=${BINARY_NAME}
 Exec=${BINARY_NAME}
 Terminal=false
