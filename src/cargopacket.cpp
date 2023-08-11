@@ -745,7 +745,7 @@ void VehicleCargoList::InvalidateCache()
  * @return Amount of cargo actually reassigned.
  */
 template<VehicleCargoList::MoveToAction Tfrom, VehicleCargoList::MoveToAction Tto>
-uint VehicleCargoList::Reassign(uint max_move, TileOrStationID)
+uint VehicleCargoList::Reassign(uint max_move, StationID)
 {
 	static_assert(Tfrom != MTA_TRANSFER && Tto != MTA_TRANSFER);
 	static_assert(Tfrom - Tto == 1 || Tto - Tfrom == 1);
@@ -763,7 +763,7 @@ uint VehicleCargoList::Reassign(uint max_move, TileOrStationID)
  * @return Amount of cargo actually reassigned.
  */
 template<>
-uint VehicleCargoList::Reassign<VehicleCargoList::MTA_DELIVER, VehicleCargoList::MTA_TRANSFER>(uint max_move, TileOrStationID next_station)
+uint VehicleCargoList::Reassign<VehicleCargoList::MTA_DELIVER, VehicleCargoList::MTA_TRANSFER>(uint max_move, StationID next_station)
 {
 	max_move = std::min(this->action_counts[MTA_DELIVER], max_move);
 
@@ -1161,4 +1161,4 @@ uint StationCargoList::RerouteFromSource(uint max_move, StationCargoList *dest, 
  */
 template class CargoList<VehicleCargoList, CargoPacketList>;
 template class CargoList<StationCargoList, StationCargoPacketMap>;
-template uint VehicleCargoList::Reassign<VehicleCargoList::MTA_DELIVER, VehicleCargoList::MTA_KEEP>(uint, TileOrStationID);
+template uint VehicleCargoList::Reassign<VehicleCargoList::MTA_DELIVER, VehicleCargoList::MTA_KEEP>(uint, StationID);
