@@ -35,6 +35,7 @@
 #include "viewport_func.h"
 #include "bridge_signal_map.h"
 #include "command_func.h"
+#include "command_log.h"
 #include "zoning.h"
 #include "cargopacket.h"
 #include "tbtr_template_vehicle_func.h"

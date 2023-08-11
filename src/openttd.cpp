@@ -23,6 +23,7 @@
 #include "sl/saveload.h"
 #include "company_func.h"
 #include "command_func.h"
+#include "command_log.h"
 #include "news_func.h"
 #include "fios.h"
 #include "load_check.h"

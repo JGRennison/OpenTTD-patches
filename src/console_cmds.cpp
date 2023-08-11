@@ -21,6 +21,7 @@
 #include "network/network_client.h"
 #include "network/network_server.h"
 #include "command_func.h"
+#include "command_log.h"
 #include "settings_func.h"
 #include "fios.h"
 #include "fileio_func.h"

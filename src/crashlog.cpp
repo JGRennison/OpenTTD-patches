@@ -30,6 +30,7 @@
 #include "news_gui.h"
 #include "scope_info.h"
 #include "command_func.h"
+#include "command_log.h"
 #include "thread.h"
 #include "debug_desync.h"
 #include "event_logs.h"
