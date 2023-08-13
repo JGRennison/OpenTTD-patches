@@ -11,7 +11,7 @@ check_cxx_source_compiles("
         sigaltstack(&ss, nullptr);
         return 0;
     }"
-    SIGALTSTACK
+    SIGALTSTACK_FOUND
 )
 
 if (SIGALTSTACK_FOUND)

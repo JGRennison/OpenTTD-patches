@@ -820,9 +820,9 @@ static void CDECL HandleCrash(int signum)
 /* static */ void CrashLog::InitialiseCrashLog()
 {
 #ifdef WITH_SIGALTSTACK
-	const size_t stack_size = max<size_t>(SIGSTKSZ, 512*1024);
+	const size_t stack_size = std::max<size_t>(SIGSTKSZ, 512*1024);
 	stack_t ss;
-	ss.ss_sp = CallocT<byte>(stack_size);
+	ss.ss_sp = mmap(nullptr, stack_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 	ss.ss_size = stack_size;
 	ss.ss_flags = 0;
 	sigaltstack(&ss, nullptr);
