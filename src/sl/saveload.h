@@ -712,11 +712,40 @@ void SlSetArrayIndex(uint index);
 int SlIterateArray();
 
 void SlAutolength(AutolengthProc *proc, void *arg);
-std::vector<uint8> SlSaveToVector(AutolengthProc *proc, void *arg);
 size_t SlGetFieldLength();
 void SlSetLength(size_t length);
 size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld);
 size_t SlCalcObjLength(const void *object, const SaveLoadTable &slt);
+
+/**
+ * Run proc, saving result in the autolength temp buffer
+ * @param proc The callback procedure that is called
+ * @return Span of the saved data, in the autolength temp buffer
+ */
+template <typename F>
+span<byte> SlSaveToTempBuffer(F proc)
+{
+	extern uint8 SlSaveToTempBufferSetup();
+	extern std::pair<byte *, size_t> SlSaveToTempBufferRestore(uint8 state);
+
+	uint8 state = SlSaveToTempBufferSetup();
+	proc();
+	auto result = SlSaveToTempBufferRestore(state);
+	return span<byte>(result.first, result.second);
+}
+
+/**
+ * Run proc, saving result to a std::vector
+ * This is implemented in terms of SlSaveToTempBuffer
+ * @param proc The callback procedure that is called
+ * @return a vector containing the saved data
+ */
+template <typename F>
+std::vector<uint8> SlSaveToVector(F proc)
+{
+	span<byte> result = SlSaveToTempBuffer(proc);
+	return std::vector<uint8>(result.begin(), result.end());
+}
 
 struct SlLoadFromBufferState {
 	size_t old_obj_len;

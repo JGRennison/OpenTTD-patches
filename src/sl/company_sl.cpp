@@ -659,7 +659,7 @@ static void Save_PLYP()
 		return;
 	}
 
-	std::vector<byte> buffer = SlSaveToVector([](void *) {
+	std::vector<byte> buffer = SlSaveToVector([]() {
 		SlWriteUint32((uint32)_network_company_server_id.size());
 		MemoryDumper::GetCurrent()->CopyBytes((const uint8 *)_network_company_server_id.data(), _network_company_server_id.size());
 
@@ -681,7 +681,7 @@ static void Save_PLYP()
 		} else {
 			SlWriteByte(0);
 		}
-	}, nullptr);
+	});
 
 
 	uint8 mac[16];    /* Message authentication code */

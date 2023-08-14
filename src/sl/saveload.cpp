@@ -2052,23 +2052,25 @@ void SlAutolength(AutolengthProc *proc, void *arg)
 	_sl.dumper->CopyBytes(result.first, result.second);
 }
 
-/**
- * Run proc, saving result to a std::vector
- * @param proc The callback procedure that is called
- * @param arg The variable that will be used for the callback procedure
- */
-std::vector<byte> SlSaveToVector(AutolengthProc *proc, void *arg)
+uint8 SlSaveToTempBufferSetup()
 {
 	assert(_sl.action == SLA_SAVE);
 	NeedLength orig_need_length = _sl.need_length;
 
 	_sl.need_length = NL_NONE;
 	_sl.dumper->StartAutoLength();
-	proc(arg);
+
+	return (uint8) orig_need_length;
+}
+
+std::pair<byte *, size_t> SlSaveToTempBufferRestore(uint8 state)
+{
+	NeedLength orig_need_length = (NeedLength)state;
+
 	auto result = _sl.dumper->StopAutoLength();
 	/* Setup length */
 	_sl.need_length = orig_need_length;
-	return std::vector<uint8>(result.first, result.first + result.second);
+	return result;
 }
 
 SlLoadFromBufferState SlLoadFromBufferSetup(const byte *buffer, size_t length)
