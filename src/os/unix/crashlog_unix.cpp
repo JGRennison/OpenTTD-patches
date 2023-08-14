@@ -391,7 +391,7 @@ class CrashLogUnix : public CrashLog {
 			" rsi: %#16llx rdi: %#16llx rbp: %#16llx rsp: %#16llx\n"
 			" r8:  %#16llx r9:  %#16llx r10: %#16llx r11: %#16llx\n"
 			" r12: %#16llx r13: %#16llx r14: %#16llx r15: %#16llx\n"
-			" rip: %#16llx eflags: %#8llx\n\n",
+			" rip: %#16llx eflags: %#8llx, err: %#llx\n\n",
 			gregs[REG_RAX],
 			gregs[REG_RBX],
 			gregs[REG_RCX],
@@ -409,7 +409,8 @@ class CrashLogUnix : public CrashLog {
 			gregs[REG_R14],
 			gregs[REG_R15],
 			gregs[REG_RIP],
-			gregs[REG_EFL]
+			gregs[REG_EFL],
+			gregs[REG_ERR]
 		);
 #elif defined(__i386)
 		const gregset_t &gregs = ucontext->uc_mcontext.gregs;
@@ -417,7 +418,7 @@ class CrashLogUnix : public CrashLog {
 			"Registers:\n"
 			" eax: %#8x ebx: %#8x ecx: %#8x edx: %#8x\n"
 			" esi: %#8x edi: %#8x ebp: %#8x esp: %#8x\n"
-			" eip: %#8x eflags: %#8x\n\n",
+			" eip: %#8x eflags: %#8x, err: %#x\n\n",
 			gregs[REG_EAX],
 			gregs[REG_EBX],
 			gregs[REG_ECX],
@@ -427,7 +428,8 @@ class CrashLogUnix : public CrashLog {
 			gregs[REG_EBP],
 			gregs[REG_ESP],
 			gregs[REG_EIP],
-			gregs[REG_EFL]
+			gregs[REG_EFL],
+			gregs[REG_ERR]
 		);
 #endif
 #endif
