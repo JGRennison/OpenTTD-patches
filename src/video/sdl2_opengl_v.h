@@ -12,7 +12,7 @@
 /** The OpenGL video driver for windows. */
 class VideoDriver_SDL_OpenGL : public VideoDriver_SDL_Base {
 public:
-	VideoDriver_SDL_OpenGL() : gl_context(nullptr), anim_buffer(nullptr) {}
+	VideoDriver_SDL_OpenGL() : gl_context(nullptr) {}
 
 	const char *Start(const StringList &param) override;
 
@@ -27,7 +27,6 @@ public:
 	void PopulateSystemSprites() override;
 
 	bool HasAnimBuffer() override { return true; }
-	uint8 *GetAnimBuffer() override { return this->anim_buffer; }
 
 	void ToggleVsync(bool vsync) override;
 
@@ -42,7 +41,6 @@ protected:
 
 private:
 	void  *gl_context;  ///< OpenGL context.
-	uint8 *anim_buffer; ///< Animation buffer from OpenGL back-end.
 
 	const char *AllocateContext();
 	void DestroyContext();
