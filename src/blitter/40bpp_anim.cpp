@@ -22,9 +22,6 @@
 /** Instantiation of the 40bpp with animation blitter factory. */
 static FBlitter_40bppAnim iFBlitter_40bppAnim;
 
-/** Cached black value. */
-static const Colour _black_colour(0, 0, 0);
-
 
 void Blitter_40bppAnim::SetPixel(void *video, int x, int y, uint8 colour)
 {
@@ -58,7 +55,7 @@ void Blitter_40bppAnim::SetRect(void *video, int x, int y, const uint8 *colours,
 		Colour *dst = (Colour *)video + x + y * _screen.pitch;
 		uint8 *dstanim = ((uint32 *)dst - (uint32 *)_screen.dst_ptr) + VideoDriver::GetInstance()->GetAnimBuffer();
 		do {
-			memset((uint32 *)dst, _black_colour.data, width * sizeof(uint32));
+			memset_colour(dst, _black_colour, width);
 			memcpy(dstanim, colours, width * sizeof(uint8));
 			dst += _screen.pitch;
 			dstanim += _screen.pitch;
@@ -96,15 +93,9 @@ void Blitter_40bppAnim::DrawRect(void *video, int width, int height, uint8 colou
 	uint8 *anim_line = ((uint32 *)video - (uint32 *)_screen.dst_ptr) + VideoDriver::GetInstance()->GetAnimBuffer();
 
 	do {
-		Colour *dst = (Colour *)video;
-		uint8 *anim = anim_line;
+		memset_colour((Colour *)video, _black_colour, width);
+		memset(anim_line, colour, width);
 
-		for (int i = width; i > 0; i--) {
-			*dst = _black_colour;
-			*anim = colour;
-			dst++;
-			anim++;
-		}
 		video = (uint32 *)video + _screen.pitch;
 		anim_line += _screen.pitch;
 	} while (--height);

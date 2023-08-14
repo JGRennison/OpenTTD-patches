@@ -14,6 +14,14 @@
 #include "../core/math_func.hpp"
 
 #include <utility>
+#include <wchar.h>
+
+#ifdef __APPLE__
+#include <string.h>
+#endif
+
+/** Cached black value. */
+static const Colour _black_colour(0, 0, 0);
 
 template <typename SetPixelT>
 void Blitter::DrawLineGeneric(int x1, int y1, int x2, int y2, int screen_width, int screen_height, int width, int dash, SetPixelT set_pixel)
@@ -190,6 +198,27 @@ void Blitter::DrawLineGeneric(int x1, int y1, int x2, int y2, int screen_width, 
 			if (++dash_count >= dash + gap) dash_count = 0;
 		}
 	}
+}
+
+inline void memset_uint32(uint32 *s, uint32 c, size_t n)
+{
+#ifdef __APPLE__
+	memset_pattern4(static_cast<void *>(s), static_cast<const void *>(&c), n * sizeof(uint32));
+#else
+	if constexpr (sizeof(wchar_t) == sizeof(uint32)) {
+		wmemset((wchar_t *)s, (wchar_t)c, n);
+	} else {
+		for (; n > 0; n--) {
+			*s = c;
+			s++;
+		}
+	}
+#endif
+}
+
+inline void memset_colour(Colour *s, Colour c, size_t n)
+{
+	memset_uint32((uint32 *)s, c.data, n);
 }
 
 #endif /* BLITTER_COMMON_HPP */

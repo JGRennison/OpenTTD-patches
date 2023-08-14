@@ -11,6 +11,7 @@
 #include "../zoom_func.h"
 #include "../settings_type.h"
 #include "32bpp_optimized.hpp"
+#include "common.hpp"
 
 #include "../safeguards.h"
 
@@ -181,12 +182,9 @@ inline void Blitter_32bppOptimized::Draw(const Blitter::BlitterParams *bp, ZoomL
 					break;
 
 				case BM_BLACK_REMAP:
-					do {
-						*dst = Colour(0, 0, 0);
-						dst++;
-						src_px++;
-						src_n++;
-					} while (--n != 0);
+					memset_colour(dst, _black_colour, n);
+					src_px += n;
+					src_n += n;
 					break;
 
 				case BM_TRANSPARENT:
