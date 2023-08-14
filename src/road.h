@@ -53,13 +53,20 @@ enum RoadTypeFlags {
 DECLARE_ENUM_AS_BIT_SET(RoadTypeFlags)
 
 /** Roadtype extra flags. */
-enum RoadTypeExtraFlags {
+enum RoadTypeExtraFlag {
 	RXTF_NOT_AVAILABLE_AI_GS = 0,                                ///< Bit number for unavailable for AI/GS
 	RXTF_NO_TOWN_MODIFICATION,                                   ///< Bit number for no town modification
 	RXTF_NO_TUNNELS,                                             ///< Bit number for no tunnels
 	RXTF_NO_TRAIN_COLLISION,                                     ///< Bit number for no train collision
+};
 
+/** Roadtype extra flags. */
+enum RoadTypeExtraFlags : uint8 {
 	RXTFB_NONE = 0,                                              ///< All flags cleared.
+	RXTFB_NOT_AVAILABLE_AI_GS   = 1 << RXTF_NOT_AVAILABLE_AI_GS,
+	RXTFB_NO_TOWN_MODIFICATION  = 1 << RXTF_NO_TOWN_MODIFICATION,
+	RXTFB_NO_TUNNELS            = 1 << RXTF_NO_TUNNELS,
+	RXTFB_NO_TRAIN_COLLISION    = 1 << RXTF_NO_TRAIN_COLLISION,
 };
 DECLARE_ENUM_AS_BIT_SET(RoadTypeExtraFlags)
 
