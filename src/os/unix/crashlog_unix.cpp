@@ -312,8 +312,21 @@ class CrashLogUnix : public CrashLog {
 #ifdef WITH_SIGACTION
 		if (this->si) {
 			buffer += seprintf(buffer, last,
-					"          si_code: %d\n",
+					"          si_code: %d",
 					this->si->si_code);
+			if (this->signum == SIGSEGV) {
+				switch (this->si->si_code) {
+					case SEGV_MAPERR:
+						buffer += seprintf(buffer, last, " (SEGV_MAPERR)");
+						break;
+					case SEGV_ACCERR:
+						buffer += seprintf(buffer, last, " (SEGV_ACCERR)");
+						break;
+					default:
+						break;
+				}
+			}
+			buffer += seprintf(buffer, last, "\n");
 			if (this->signum != SIGABRT) {
 				buffer += seprintf(buffer, last,
 						"          Fault address: %p\n",
