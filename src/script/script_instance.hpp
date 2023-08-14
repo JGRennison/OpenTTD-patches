@@ -315,11 +315,9 @@ private:
 	 * @param index The index on the squirrel stack of the element to save.
 	 * @param max_depth The maximum depth recursive arrays / tables will be stored
 	 *   with before an error is returned.
-	 * @param test If true, don't really store the data but only check if it is
-	 *   valid.
 	 * @return True if the saving was successful.
 	 */
-	static bool SaveObject(HSQUIRRELVM vm, SQInteger index, int max_depth, bool test);
+	static bool SaveObject(HSQUIRRELVM vm, SQInteger index, int max_depth);
 
 	/**
 	 * Load all objects from a savegame.

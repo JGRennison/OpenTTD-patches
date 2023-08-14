@@ -378,7 +378,7 @@ ScriptLogTypes::LogData &ScriptInstance::GetLogData()
  *  - null:    No data.
  */
 
-/* static */ bool ScriptInstance::SaveObject(HSQUIRRELVM vm, SQInteger index, int max_depth, bool test)
+/* static */ bool ScriptInstance::SaveObject(HSQUIRRELVM vm, SQInteger index, int max_depth)
 {
 	if (max_depth == 0) {
 		ScriptLog::Error("Savedata can only be nested to 25 deep. No data saved."); // SQUIRREL_MAX_DEPTH = 25
@@ -387,22 +387,16 @@ ScriptLogTypes::LogData &ScriptInstance::GetLogData()
 
 	switch (sq_gettype(vm, index)) {
 		case OT_INTEGER: {
-			if (!test) {
-				SlWriteByte(SQSL_INT);
-			}
+			SlWriteByte(SQSL_INT);
 			SQInteger res;
 			sq_getinteger(vm, index, &res);
-			if (!test) {
-				int64 value = (int64)res;
-				SlArray(&value, 1, SLE_INT64);
-			}
+			int64 value = (int64)res;
+			SlArray(&value, 1, SLE_INT64);
 			return true;
 		}
 
 		case OT_STRING: {
-			if (!test) {
-				SlWriteByte(SQSL_STRING);
-			}
+			SlWriteByte(SQSL_STRING);
 			const SQChar *buf;
 			sq_getstring(vm, index, &buf);
 			size_t len = strlen(buf) + 1;
@@ -410,21 +404,17 @@ ScriptLogTypes::LogData &ScriptInstance::GetLogData()
 				ScriptLog::Error("Maximum string length is 254 chars. No data saved.");
 				return false;
 			}
-			if (!test) {
-				SlWriteByte((byte)len);
-				SlArray(const_cast<char *>(buf), len, SLE_CHAR);
-			}
+			SlWriteByte((byte)len);
+			SlArray(const_cast<char *>(buf), len, SLE_CHAR);
 			return true;
 		}
 
 		case OT_ARRAY: {
-			if (!test) {
-				SlWriteByte(SQSL_ARRAY);
-			}
+			SlWriteByte(SQSL_ARRAY);
 			sq_pushnull(vm);
 			while (SQ_SUCCEEDED(sq_next(vm, index - 1))) {
 				/* Store the value */
-				bool res = SaveObject(vm, -1, max_depth - 1, test);
+				bool res = SaveObject(vm, -1, max_depth - 1);
 				sq_pop(vm, 2);
 				if (!res) {
 					sq_pop(vm, 1);
@@ -432,20 +422,16 @@ ScriptLogTypes::LogData &ScriptInstance::GetLogData()
 				}
 			}
 			sq_pop(vm, 1);
-			if (!test) {
-				SlWriteByte(SQSL_ARRAY_TABLE_END);
-			}
+			SlWriteByte(SQSL_ARRAY_TABLE_END);
 			return true;
 		}
 
 		case OT_TABLE: {
-			if (!test) {
-				SlWriteByte(SQSL_TABLE);
-			}
+			SlWriteByte(SQSL_TABLE);
 			sq_pushnull(vm);
 			while (SQ_SUCCEEDED(sq_next(vm, index - 1))) {
 				/* Store the key + value */
-				bool res = SaveObject(vm, -2, max_depth - 1, test) && SaveObject(vm, -1, max_depth - 1, test);
+				bool res = SaveObject(vm, -2, max_depth - 1) && SaveObject(vm, -1, max_depth - 1);
 				sq_pop(vm, 2);
 				if (!res) {
 					sq_pop(vm, 1);
@@ -453,28 +439,20 @@ ScriptLogTypes::LogData &ScriptInstance::GetLogData()
 				}
 			}
 			sq_pop(vm, 1);
-			if (!test) {
-				SlWriteByte(SQSL_ARRAY_TABLE_END);
-			}
+			SlWriteByte(SQSL_ARRAY_TABLE_END);
 			return true;
 		}
 
 		case OT_BOOL: {
-			if (!test) {
-				SlWriteByte(SQSL_BOOL);
-			}
+			SlWriteByte(SQSL_BOOL);
 			SQBool res;
 			sq_getbool(vm, index, &res);
-			if (!test) {
-				SlWriteByte(res ? 1 : 0);
-			}
+			SlWriteByte(res ? 1 : 0);
 			return true;
 		}
 
 		case OT_NULL: {
-			if (!test) {
-				SlWriteByte(SQSL_NULL);
-			}
+			SlWriteByte(SQSL_NULL);
 			return true;
 		}
 
@@ -503,7 +481,7 @@ void ScriptInstance::Save()
 	if (this->is_save_data_on_stack) {
 		SlWriteByte(1);
 		/* Save the data that was just loaded. */
-		SaveObject(vm, -1, SQUIRREL_MAX_DEPTH, false);
+		SaveObject(vm, -1, SQUIRREL_MAX_DEPTH);
 	} else if (!this->is_started) {
 		SaveEmpty();
 		return;
@@ -542,9 +520,11 @@ void ScriptInstance::Save()
 			return;
 		}
 		sq_pushobject(vm, savedata);
-		if (SaveObject(vm, -1, SQUIRREL_MAX_DEPTH, true)) {
+		bool saved = SlConditionallySave([&]() {
 			SlWriteByte(1);
-			SaveObject(vm, -1, SQUIRREL_MAX_DEPTH, false);
+			return SaveObject(vm, -1, SQUIRREL_MAX_DEPTH);
+		});
+		if (saved) {
 			this->is_save_data_on_stack = true;
 		} else {
 			SaveEmpty();
