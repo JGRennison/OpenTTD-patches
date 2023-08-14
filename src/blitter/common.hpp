@@ -21,7 +21,7 @@
 #endif
 
 /** Cached black value. */
-static const Colour _black_colour(0, 0, 0);
+static const constexpr Colour _black_colour(0, 0, 0);
 
 template <typename SetPixelT>
 void Blitter::DrawLineGeneric(int x1, int y1, int x2, int y2, int screen_width, int screen_height, int width, int dash, SetPixelT set_pixel)
