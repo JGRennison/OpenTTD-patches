@@ -4158,7 +4158,7 @@ static ChangeInfoResult SignalsChangeInfo(uint id, int numinfo, int prop, const 
 
 			case A0RPI_SIGNALS_STYLE_LOOKAHEAD_EXTRA_ASPECTS: {
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				uint8 value = std::min<byte>(buf->ReadByte(), NEW_SIGNALS_MAX_EXTRA_ASPECT);
+				uint8 value = buf->ReadByte();
 				if (_cur.grffile->current_new_signal_style != nullptr) {
 					SetBit(_cur.grffile->current_new_signal_style->style_flags, NSSF_LOOKAHEAD_ASPECTS_SET);
 					_cur.grffile->current_new_signal_style->lookahead_extra_aspects = value;

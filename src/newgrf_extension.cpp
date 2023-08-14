@@ -52,7 +52,7 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action0_signals_restricted_signals", 2),
 	GRFFeatureInfo("action0_signals_recolour", 1),
 	GRFFeatureInfo("action0_signals_extra_aspects", 1),
-	GRFFeatureInfo("action0_signals_style", 1),
+	GRFFeatureInfo("action0_signals_style", 2),
 	GRFFeatureInfo("varaction2_signals_signal_context", 1),
 	GRFFeatureInfo("varaction2_signals_signal_side", 1),
 	GRFFeatureInfo("varaction2_signals_signal_vertical_clearance", 1),

@@ -3107,7 +3107,7 @@ DEF_CONSOLE_CMD(ConDumpSignalStyles)
 			grfid = style.grffile->grfid;
 			grfs.insert(std::pair<uint32, const GRFFile *>(grfid, style.grffile));
 		}
-		IConsolePrintF(CC_DEFAULT, "  %2u: GRF: %08X, Local: %2u, Extra aspects: %2u, Flags: %c%c%c%c%c%c%c, %s",
+		IConsolePrintF(CC_DEFAULT, "  %2u: GRF: %08X, Local: %2u, Extra aspects: %3u, Flags: %c%c%c%c%c%c%c, %s",
 				(uint) (i + 1),
 				BSWAP32(grfid),
 				style.grf_local_id,

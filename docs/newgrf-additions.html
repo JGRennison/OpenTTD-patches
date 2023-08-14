@@ -515,17 +515,21 @@
 	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
 	<h4 id="signals_style_lookahead_extra_aspects">Set custom signal style train look-ahead extra aspects (mappable property: signals_style_lookahead_extra_aspects)</h4>
 	<p>This applies to the most recent custom signal style defined using the <a href="#signals_define_style">signals_define_style</a> property.<br />
-	This property only makes a difference when the "limit train lookahead to signal aspect" game setting is enabled.<br />
+	This property only makes a difference when the "realistic train braking is aspect limited" game setting is enabled.<br />
 	This limits the signal aspect which the hypothetical train driver can "read" from the signal without affecting signal aspect propagation to other signals, or variable 0x18.<br />
 	Example values could include: 1 for traditional banner repeater signals.<br />
 	Shunt signals should use <a href="#signals_style_lookahead_single_signal_only#">signals_style_lookahead_single_signal_only</a> instead.</p>
 	<p>The property length is 1 byte. The value is clamped to be less than or equal to the value set in the <a href="#signals_extra_aspects">signals_extra_aspects</a> property.<br />
 	The Action 0 Id field is not used, the value is ignored.
 	</p>
-	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
+	<p>As a special case, a value of 255 (0xFF) disables the "realistic train braking is aspect limited" setting entirely for signals using this style.<br />
+	This should only be used for signal types which are intended to emulate in-cab signalling, instead of the "driver" visually reading a signal.<br />
+	This special case is indicated by the feature name <font face="monospace">action0_signals_style</font>, version 2.
+	</p>
+	<p>This property is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
 	<h4 id="signals_style_lookahead_single_signal_only">Set custom signal style train look-ahead to single signal only mode (mappable property: signals_style_lookahead_single_signal_only)</h4>
 	<p>This applies to the most recent custom signal style defined using the <a href="#signals_define_style">signals_define_style</a> property.<br />
-	This property only makes a difference when the "limit train lookahead to signal aspect" game setting is enabled, or when using a different signal
+	This property only makes a difference when the "realistic train braking is aspect limited" game setting is enabled, or when using a different signal
 	type which uses <a href="#signals_style_combined_normal_shunt">signals_style_combined_normal_shunt</a>.<br />
 	This is similar to <a href="#signals_style_lookahead_extra_aspects">signals_style_lookahead_extra_aspects</a> with a value of 0, except the lookahead always ends at the
 	next signal, even if that signal type sets <a href="#signals_style_no_aspect_increase">signals_style_no_aspect_increase</a>.<br />

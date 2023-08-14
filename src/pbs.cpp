@@ -1133,6 +1133,10 @@ int AdvanceTrainReservationLookaheadEnd(const Train *v, int lookahead_end_positi
 				/* Signal is within visual range */
 				uint8 style = item.data_aux >> 8;
 				uint8 max_aspect = (style == 0) ? _extra_aspects : _new_signal_styles[style - 1].lookahead_extra_aspects;
+				if (max_aspect == 0xFF) {
+					/* This signal has unlimited lookahead */
+					return v->lookahead->reservation_end_position + 1;
+				}
 				if (!HasBit(item.data_aux, TRSLAI_NEXT_ONLY)) allow_skip_no_aspect_inc = true;
 				max_aspect += ((HasBit(item.data_aux, TRSLAI_NO_ASPECT_INC) && allow_skip_no_aspect_inc) ? 1 : 2);
 				if (max_aspect > known_signals_ahead) known_signals_ahead = max_aspect;
