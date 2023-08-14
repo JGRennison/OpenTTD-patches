@@ -337,8 +337,23 @@ class CrashLogUnix : public CrashLog {
 							this->signal_instruction_ptr);
 				}
 			}
+
+#if defined(WITH_UCONTEXT) && (defined(__x86_64__) || defined(__i386))
+			if (this->signal_instruction_ptr_valid && this->signum == SIGSEGV) {
+				auto err = static_cast<ucontext_t *>(this->context)->uc_mcontext.gregs[REG_ERR];
+				buffer += seprintf(buffer, last,
+						"          REG_ERR: %s%s%s%s%s\n",
+							(err & 1) ? "protection fault" : "no page",
+							(err & 2) ? ", write" : ", read",
+							(err & 4) ? "" : ", kernel",
+							(err & 8) ? ", reserved bit" : "",
+							(err & 16) ? ", instruction fetch" : ""
+						);
+			}
+#endif /* defined(WITH_UCONTEXT) && (defined(__x86_64__) || defined(__i386)) */
+
 		}
-#endif
+#endif /* WITH_SIGACTION */
 		this->CrashLogFaultSectionCheckpoint(buffer);
 		buffer += seprintf(buffer, last,
 				" Message: %s\n\n",
