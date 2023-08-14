@@ -747,6 +747,29 @@ std::vector<uint8> SlSaveToVector(F proc)
 	return std::vector<uint8>(result.begin(), result.end());
 }
 
+struct SlConditionallySaveState {
+	size_t current_len;
+	uint8 need_length;
+	bool nested;
+};
+
+/**
+ * Run proc, saving as normal if proc returns true, otherwise the saved data is discarded
+ * @param proc The callback procedure that is called, this should return true to save, false to discard
+ * @return Whether the callback procedure returned true to save
+ */
+template <typename F>
+bool SlConditionallySave(F proc)
+{
+	extern SlConditionallySaveState SlConditionallySaveSetup();
+	extern void SlConditionallySaveCompletion(const SlConditionallySaveState &state, bool save);
+
+	SlConditionallySaveState state = SlConditionallySaveSetup();
+	bool save = proc();
+	SlConditionallySaveCompletion(state, save);
+	return save;
+}
+
 struct SlLoadFromBufferState {
 	size_t old_obj_len;
 	byte *old_bufp;

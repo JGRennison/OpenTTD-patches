@@ -259,6 +259,7 @@ struct MemoryDumper {
 	size_t GetSize() const;
 	void StartAutoLength();
 	std::pair<byte *, size_t> StopAutoLength();
+	bool IsAutoLengthActive() const { return this->saved_buf != nullptr; }
 };
 
 #endif /* SL_SAVELOAD_BUFFER_H */

@@ -2073,6 +2073,26 @@ std::pair<byte *, size_t> SlSaveToTempBufferRestore(uint8 state)
 	return result;
 }
 
+SlConditionallySaveState SlConditionallySaveSetup()
+{
+	assert(_sl.action == SLA_SAVE);
+	if (_sl.dumper->IsAutoLengthActive()) {
+		return { (size_t)(_sl.dumper->buf - _sl.dumper->autolen_buf), 0, true };
+	} else {
+		return { 0, SlSaveToTempBufferSetup(), false };
+	}
+}
+
+extern void SlConditionallySaveCompletion(const SlConditionallySaveState &state, bool save)
+{
+	if (state.nested) {
+		if (!save) _sl.dumper->buf = _sl.dumper->autolen_buf + state.current_len;
+	} else {
+		auto result = SlSaveToTempBufferRestore(state.need_length);
+		if (save) _sl.dumper->CopyBytes(result.first, result.second);
+	}
+}
+
 SlLoadFromBufferState SlLoadFromBufferSetup(const byte *buffer, size_t length)
 {
 	assert(_sl.action == SLA_LOAD || _sl.action == SLA_LOAD_CHECK);
