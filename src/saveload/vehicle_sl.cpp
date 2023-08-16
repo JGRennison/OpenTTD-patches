@@ -24,6 +24,7 @@
 #include "../disaster_vehicle.h"
 
 #include <map>
+#include <vector>
 
 #include "../safeguards.h"
 
@@ -31,6 +32,9 @@ void AfterLoadVehicles(bool part_of_load);
 bool TrainController(Train *v, Vehicle *nomove, bool reverse = true); // From train_cmd.cpp
 void ReverseTrainDirection(Train *v);
 void ReverseTrainSwapVeh(Train *v, int l, int r);
+
+static std::vector<Trackdir> _path_td;
+static std::vector<TileIndex> _path_tile;
 
 namespace upstream_sl {
 
@@ -247,8 +251,8 @@ public:
 		      SLE_VAR(RoadVehicle, overtaking_ctr,       SLE_UINT8),
 		      SLE_VAR(RoadVehicle, crashed_ctr,          SLE_UINT16),
 		      SLE_VAR(RoadVehicle, reverse_ctr,          SLE_UINT8),
-		SLE_CONDDEQUE(RoadVehicle, path.td,              SLE_UINT8,                  SLV_ROADVEH_PATH_CACHE, SL_MAX_VERSION),
-		SLE_CONDDEQUE(RoadVehicle, path.tile,            SLE_UINT32,                 SLV_ROADVEH_PATH_CACHE, SL_MAX_VERSION),
+		SLEG_CONDVECTOR("path.td", _path_td,             SLE_UINT8,                  SLV_SHIP_PATH_CACHE, SL_MAX_VERSION),
+		SLEG_CONDVECTOR("path.tile", _path_tile,         SLE_UINT32,                 SLV_SHIP_PATH_CACHE, SL_MAX_VERSION),
 		  SLE_CONDVAR(RoadVehicle, gv_flags,             SLE_UINT16,                 SLV_139, SL_MAX_VERSION),
 	};
 	inline const static SaveLoadCompatTable compat_description = _vehicle_roadveh_sl_compat;
@@ -263,6 +267,18 @@ public:
 	{
 		if (v->type != VEH_ROAD) return;
 		SlObject(v, this->GetLoadDescription());
+
+		if (!_path_td.empty() && _path_td.size() <= RV_PATH_CACHE_SEGMENTS && _path_td.size() == _path_tile.size()) {
+			RoadVehicle *rv = RoadVehicle::From(v);
+			rv->cached_path.reset(new RoadVehPathCache());
+			rv->cached_path->count = _path_td.size();
+			for (size_t i = 0; i < _path_td.size(); i++) {
+				rv->cached_path->td[i] = _path_td[i];
+				rv->cached_path->tile[i] = _path_tile[i];
+			}
+		}
+		_path_td.clear();
+		_path_tile.clear();
 	}
 
 	void FixPointers(Vehicle *v) const override

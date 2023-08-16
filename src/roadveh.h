@@ -17,7 +17,7 @@
 #include "road.h"
 #include "road_map.h"
 #include "newgrf_engine.h"
-#include <deque>
+#include <array>
 
 struct RoadVehicle;
 
@@ -79,26 +79,56 @@ static const uint RVC_DEPOT_STOP_FRAME                   = 11;
 /** The number of ticks a vehicle has for overtaking. */
 static const byte RV_OVERTAKE_TIMEOUT = 35;
 
+/** Maximum segments of road vehicle path cache */
+static const uint8 RV_PATH_CACHE_SEGMENTS = 16;
+static const uint8 RV_PATH_CACHE_SEGMENT_MASK = (RV_PATH_CACHE_SEGMENTS - 1);
+static_assert((RV_PATH_CACHE_SEGMENTS & RV_PATH_CACHE_SEGMENT_MASK) == 0, ""); // Must be a power of 2
+
 void RoadVehUpdateCache(RoadVehicle *v, bool same_length = false);
 void GetRoadVehSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, int &yoffs, EngineImageType image_type);
 
 struct RoadVehPathCache {
-	std::deque<Trackdir> td;
-	std::deque<TileIndex> tile;
-	uint32 layout_ctr;
+	std::array<TileIndex, RV_PATH_CACHE_SEGMENTS> tile;
+	std::array<Trackdir, RV_PATH_CACHE_SEGMENTS> td;
+	uint32 layout_ctr = 0;
+	uint8 start = 0;
+	uint8 count = 0;
 
-	inline bool empty() const { return this->td.empty(); }
-
-	inline size_t size() const
-	{
-		dbg_assert(this->td.size() == this->tile.size());
-		return this->td.size();
-	}
+	inline bool empty() const { return this->count == 0; }
+	inline uint8 size() const { return this->count; }
+	inline bool full() const { return this->count >= RV_PATH_CACHE_SEGMENTS; }
 
 	inline void clear()
 	{
-		this->td.clear();
-		this->tile.clear();
+		this->start = 0;
+		this->count = 0;
+	}
+
+	inline TileIndex front_tile() const { return this->tile[this->start]; }
+	inline Trackdir front_td() const { return this->td[this->start]; }
+
+	inline uint8 back_index() const { return (this->start + this->count - 1) & RV_PATH_CACHE_SEGMENT_MASK; }
+	inline TileIndex back_tile() const { return this->tile[this->back_index()]; }
+	inline Trackdir back_td() const { return this->td[this->back_index()]; }
+
+	/* push an item to the front of the ring, if the ring is already full, the back item is overwritten */
+	inline void push_front(TileIndex tile, Trackdir td)
+	{
+		this->start = (this->start - 1) & RV_PATH_CACHE_SEGMENT_MASK;
+		if (!this->full()) this->count++;
+		this->tile[this->start] = tile;
+		this->td[this->start] = td;
+	}
+
+	inline void pop_front()
+	{
+		this->start = (this->start + 1) & RV_PATH_CACHE_SEGMENT_MASK;
+		this->count--;
+	}
+
+	inline void pop_back()
+	{
+		this->count--;
 	}
 };
 
@@ -106,7 +136,7 @@ struct RoadVehPathCache {
  * Buses, trucks and trams belong to this class.
  */
 struct RoadVehicle FINAL : public GroundVehicle<RoadVehicle, VEH_ROAD> {
-	RoadVehPathCache path;  ///< Cached path.
+	std::unique_ptr<RoadVehPathCache> cached_path; ///< Cached path.
 	byte state;             ///< @see RoadVehicleStates
 	byte frame;
 	uint16 blocked_ctr;
@@ -174,6 +204,12 @@ struct RoadVehicle FINAL : public GroundVehicle<RoadVehicle, VEH_ROAD> {
 	}
 
 	void SetRoadVehicleOvertaking(byte overtaking);
+
+	inline RoadVehPathCache &GetOrCreatePathCache()
+	{
+		if (!this->cached_path) this->cached_path.reset(new RoadVehPathCache());
+		return *this->cached_path;
+	}
 
 protected: // These functions should not be called outside acceleration code.
 

@@ -924,8 +924,8 @@ static bool CheckRoadInfraUnsuitableForOvertaking(OvertakeData *od)
 	if (trackbits & ~TRACK_BIT_CROSS) {
 		RoadCachedOneWayState rcows = GetRoadCachedOneWayState(od->tile);
 		if (rcows == RCOWS_SIDE_JUNCTION) {
-			const RoadVehPathCache &pc = od->v->path;
-			if (!pc.empty() && pc.tile.front() == od->tile && !IsStraightRoadTrackdir(pc.td.front())) {
+			const RoadVehPathCache *pc = od->v->cached_path.get();
+			if (pc != nullptr && !pc->empty() && pc->front_tile() == od->tile && !IsStraightRoadTrackdir(pc->front_td())) {
 				/* cached path indicates that we are turning here, do not overtake */
 				return true;
 			}
@@ -1210,7 +1210,7 @@ static Trackdir RoadFindPathToDest(RoadVehicle *v, TileIndex tile, DiagDirection
 	trackdirs &= DiagdirReachesTrackdirs(enterdir);
 	if (trackdirs == TRACKDIR_BIT_NONE) {
 		/* If vehicle expected a path, it no longer exists, so invalidate it. */
-		if (!v->path.empty()) v->path.clear();
+		if (v->cached_path != nullptr) v->cached_path->clear();
 		/* No reachable tracks, so we'll reverse */
 		return_track(_road_reverse_table[enterdir]);
 	}
@@ -1241,40 +1241,39 @@ static Trackdir RoadFindPathToDest(RoadVehicle *v, TileIndex tile, DiagDirection
 
 	/* Only one track to choose between? */
 	if (KillFirstBit(trackdirs) == TRACKDIR_BIT_NONE) {
-		if (!v->path.empty() && v->path.tile.front() == tile) {
+		if (v->cached_path != nullptr && !v->cached_path->empty() && v->cached_path->front_tile() == tile) {
 			/* Vehicle expected a choice here, invalidate its path. */
-			v->path.clear();
+			v->cached_path->clear();
 		}
 		return_track(FindFirstBit2x64(trackdirs));
 	}
 
 	/* Path cache is out of date, clear it */
-	if (!v->path.empty() && v->path.layout_ctr != _road_layout_change_counter) {
-		v->path.clear();
+	if (v->cached_path != nullptr && !v->cached_path->empty() && v->cached_path->layout_ctr != _road_layout_change_counter) {
+		v->cached_path->clear();
 	}
 
 	/* Attempt to follow cached path. */
-	if (!v->path.empty()) {
-		if (v->path.tile.front() != tile) {
+	if (v->cached_path != nullptr && !v->cached_path->empty()) {
+		if (v->cached_path->front_tile() != tile) {
 			/* Vehicle didn't expect a choice here, invalidate its path. */
-			v->path.clear();
+			v->cached_path->clear();
 		} else {
-			Trackdir trackdir = v->path.td.front();
+			Trackdir trackdir = v->cached_path->front_td();
 
 			if (HasBit(trackdirs, trackdir)) {
-				v->path.td.pop_front();
-				v->path.tile.pop_front();
+				v->cached_path->pop_front();
 				return_track(trackdir);
 			}
 
 			/* Vehicle expected a choice which is no longer available. */
-			v->path.clear();
+			v->cached_path->clear();
 		}
 	}
 
 	switch (_settings_game.pf.pathfinder_for_roadvehs) {
 		case VPF_NPF:  best_track = NPFRoadVehicleChooseTrack(v, tile, enterdir, path_found); break;
-		case VPF_YAPF: best_track = YapfRoadVehicleChooseTrack(v, tile, enterdir, trackdirs, path_found, v->path); break;
+		case VPF_YAPF: best_track = YapfRoadVehicleChooseTrack(v, tile, enterdir, trackdirs, path_found, v->GetOrCreatePathCache()); break;
 
 		default: NOT_REACHED();
 	}
@@ -1814,8 +1813,7 @@ again:
 			if (u != nullptr) {
 				v->cur_speed = u->First()->cur_speed;
 				/* We might be blocked, prevent pathfinding rerun as we already know where we are heading to. */
-				v->path.tile.push_front(tile);
-				v->path.td.push_front(dir);
+				v->GetOrCreatePathCache().push_front(tile, dir);
 				return false;
 			}
 		}
@@ -1931,8 +1929,7 @@ again:
 			if (u != nullptr) {
 				v->cur_speed = u->First()->cur_speed;
 				/* We might be blocked, prevent pathfinding rerun as we already know where we are heading to. */
-				v->path.tile.push_front(v->tile);
-				v->path.td.push_front(dir);
+				v->GetOrCreatePathCache().push_front(v->tile, dir);
 				return false;
 			}
 		}
@@ -2226,7 +2223,7 @@ bool RoadVehicle::Tick()
 void RoadVehicle::SetDestTile(TileIndex tile)
 {
 	if (tile == this->dest_tile) return;
-	this->path.clear();
+	if (this->cached_path != nullptr) this->cached_path->clear();
 	this->dest_tile = tile;
 }
 

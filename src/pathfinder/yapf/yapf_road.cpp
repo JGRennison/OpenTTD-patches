@@ -495,16 +495,11 @@ public:
 		Trackdir next_trackdir = INVALID_TRACKDIR;
 		Node *pNode = Yapf().GetBestNode();
 		if (pNode != nullptr) {
-			uint steps = 0;
-			for (Node *n = pNode; n->m_parent != nullptr; n = n->m_parent) steps++;
-
 			/* path was found or at least suggested
 			 * walk through the path back to its origin */
 			while (pNode->m_parent != nullptr) {
-				steps--;
-				if (pNode->GetIsChoice() && steps < YAPF_ROADVEH_PATH_CACHE_SEGMENTS) {
-					path_cache.td.push_front(pNode->GetTrackdir());
-					path_cache.tile.push_front(pNode->GetTile());
+				if (pNode->GetIsChoice()) {
+					path_cache.push_front(pNode->GetTile(), pNode->GetTrackdir());
 				}
 				pNode = pNode->m_parent;
 			}
@@ -514,8 +509,7 @@ public:
 			next_trackdir = best_next_node.GetTrackdir();
 			/* remove last element for the special case when tile == dest_tile */
 			if (path_found && !path_cache.empty() && tile == v->dest_tile) {
-				path_cache.td.pop_back();
-				path_cache.tile.pop_back();
+				path_cache.pop_back();
 			}
 			path_cache.layout_ctr = _road_layout_change_counter;
 
@@ -523,9 +517,8 @@ public:
 			if (multiple_targets) {
 				/* Destination station has at least 2 usable road stops, or first is a drive-through stop,
 				 * trim end of path cache within a number of tiles of road stop tile area */
-				while (!path_cache.empty() && non_cached_area.Contains(path_cache.tile.back())) {
-					path_cache.td.pop_back();
-					path_cache.tile.pop_back();
+				while (!path_cache.empty() && non_cached_area.Contains(path_cache.back_tile())) {
+					path_cache.pop_back();
 				}
 			}
 		}

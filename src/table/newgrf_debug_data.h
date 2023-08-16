@@ -413,9 +413,31 @@ class NIHVehicle : public NIHelper {
 			seprintf(buffer, lastof(buffer), "  Overtaking: %u, overtaking_ctr: %u, overtaking threshold: %u",
 					rv->overtaking, rv->overtaking_ctr, rv->GetOvertakingCounterThreshold());
 			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  Speed: %u, path cache length: %u",
-					rv->cur_speed, (uint) rv->path.size());
+			seprintf(buffer, lastof(buffer), "  Speed: %u", rv->cur_speed);
 			output.print(buffer);
+
+			b = buffer + seprintf(buffer, lastof(buffer), "  Path cache: ");
+			if (rv->cached_path != nullptr) {
+				b += seprintf(b, lastof(buffer), "length: %u, layout ctr: %X (current: %X)", (uint)rv->cached_path->size(), rv->cached_path->layout_ctr, _road_layout_change_counter);
+				output.print(buffer);
+				b = buffer;
+				uint idx = rv->cached_path->start;
+				for (uint i = 0; i < rv->cached_path->size(); i++) {
+					if ((i & 3) == 0) {
+						if (b > buffer + 4) output.print(buffer);
+						b = buffer + seprintf(buffer, lastof(buffer), "    ");
+					} else {
+						b += seprintf(b, lastof(buffer), ", ");
+					}
+					b += seprintf(b, lastof(buffer), "(%ux%u, %X)", TileX(rv->cached_path->tile[idx]), TileY(rv->cached_path->tile[idx]), rv->cached_path->td[idx]);
+					idx = (idx + 1) & RV_PATH_CACHE_SEGMENT_MASK;
+				}
+				if (b > buffer + 4) output.print(buffer);
+			} else {
+				b += seprintf(b, lastof(buffer), "none");
+				output.print(buffer);
+			}
+
 			output.register_next_line_click_flag_toggle(8 << flag_shift);
 			seprintf(buffer, lastof(buffer), "  [%c] Roadtype: %u (%s), Compatible: 0x" OTTD_PRINTFHEX64,
 					(output.flags & (8 << flag_shift)) ? '-' : '+', rv->roadtype, dumper().RoadTypeLabel(rv->roadtype), rv->compatible_roadtypes);
