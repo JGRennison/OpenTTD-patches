@@ -299,7 +299,7 @@ public:
 				SB(p1, 0, 3, this->track);
 				SB(p1, 3, 16, ins->Id());
 
-				DoCommandP(this->tile, p1, 0, CMD_REMOVE_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_MODIFY_INSTRUCTION));
+				DoCommandP(this->tile, p1, 0, CMD_REMOVE_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_REMOVE_INSTRUCTION));
 				this->RebuildInstructionList();
 			} break;
 
