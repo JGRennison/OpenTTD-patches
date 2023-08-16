@@ -293,7 +293,7 @@ public:
 	inline static const SaveLoad description[] = {
 		  SLEG_STRUCT("common", SlVehicleCommon),
 		      SLE_VAR(Ship, state,                     SLE_UINT8),
-		SLE_CONDDEQUE(Ship, path,                      SLE_UINT8,                  SLV_SHIP_PATH_CACHE, SL_MAX_VERSION),
+		SLEG_CONDVECTOR("path", _path_td,              SLE_UINT8,                  SLV_SHIP_PATH_CACHE, SL_MAX_VERSION),
 		  SLE_CONDVAR(Ship, rotation,                  SLE_UINT8,                  SLV_SHIP_ROTATION, SL_MAX_VERSION),
 	};
 	inline const static SaveLoadCompatTable compat_description = _vehicle_ship_sl_compat;
@@ -308,6 +308,16 @@ public:
 	{
 		if (v->type != VEH_SHIP) return;
 		SlObject(v, this->GetLoadDescription());
+
+		if (!_path_td.empty() && _path_td.size() <= SHIP_PATH_CACHE_LENGTH) {
+			Ship *s = Ship::From(v);
+			s->cached_path.reset(new ShipPathCache());
+			s->cached_path->count = _path_td.size();
+			for (size_t i = 0; i < _path_td.size(); i++) {
+				s->cached_path->td[i] = _path_td[i];
+			}
+		}
+		_path_td.clear();
 	}
 
 	void FixPointers(Vehicle *v) const override

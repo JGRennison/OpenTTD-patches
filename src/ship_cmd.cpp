@@ -567,22 +567,22 @@ static Track ChooseShipTrack(Ship *v, TileIndex tile, DiagDirection enterdir, Tr
 		path_found = false;
 	} else {
 		/* Attempt to follow cached path. */
-		if (!v->path.empty()) {
-			track = TrackdirToTrack(v->path.front());
+		if (v->cached_path != nullptr && !v->cached_path->empty()) {
+			track = TrackdirToTrack(v->cached_path->front());
 
 			if (HasBit(tracks, track)) {
-				v->path.pop_front();
+				v->cached_path->pop_front();
 				/* HandlePathfindResult() is not called here because this is not a new pathfinder result. */
 				return track;
 			}
 
 			/* Cached path is invalid so continue with pathfinder. */
-			v->path.clear();
+			v->cached_path->clear();
 		}
 
 		switch (_settings_game.pf.pathfinder_for_ships) {
 			case VPF_NPF: track = NPFShipChooseTrack(v, path_found); break;
-			case VPF_YAPF: track = YapfShipChooseTrack(v, tile, enterdir, tracks, path_found, v->path); break;
+			case VPF_YAPF: track = YapfShipChooseTrack(v, tile, enterdir, tracks, path_found, v->GetOrCreatePathCache()); break;
 			default: NOT_REACHED();
 		}
 	}
@@ -882,7 +882,7 @@ static void ReverseShipIntoTrackdir(Ship *v, Trackdir trackdir)
 	v->rotation_x_pos = v->x_pos;
 	v->rotation_y_pos = v->y_pos;
 	UpdateShipSpeed(v, 0);
-	v->path.clear();
+	if (v->cached_path != nullptr) v->cached_path->clear();
 
 	v->UpdatePosition();
 	v->UpdateViewport(true, true);
@@ -896,7 +896,7 @@ static void ReverseShip(Ship *v)
 	v->rotation_x_pos = v->x_pos;
 	v->rotation_y_pos = v->y_pos;
 	UpdateShipSpeed(v, 0);
-	v->path.clear();
+	if (v->cached_path != nullptr) v->cached_path->clear();
 
 	v->UpdatePosition();
 	v->UpdateViewport(true, true);
@@ -1081,7 +1081,7 @@ static void ShipController(Ship *v)
 
 			/* Ship is back on the bridge head, we need to consume its path
 			 * cache entry here as we didn't have to choose a ship track. */
-			if (!v->path.empty()) v->path.pop_front();
+			 if (v->cached_path != nullptr && !v->cached_path->empty()) v->cached_path->pop_front();
 		}
 
 		/* update image of ship, as well as delta XY */
@@ -1107,7 +1107,7 @@ bool Ship::Tick()
 void Ship::SetDestTile(TileIndex tile)
 {
 	if (tile == this->dest_tile) return;
-	this->path.clear();
+	if (this->cached_path != nullptr) this->cached_path->clear();
 	this->dest_tile = tile;
 }
 

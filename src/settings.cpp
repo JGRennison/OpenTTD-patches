@@ -1709,7 +1709,7 @@ static void MaxVehiclesChanged(int32 new_value)
 static void InvalidateShipPathCache(int32 new_value)
 {
 	for (Ship *s : Ship::Iterate()) {
-		s->path.clear();
+		s->cached_path.reset();
 	}
 }
 

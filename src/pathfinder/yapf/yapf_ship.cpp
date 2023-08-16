@@ -173,7 +173,7 @@ public:
 			uint steps = 0;
 			for (Node *n = pNode; n->m_parent != nullptr; n = n->m_parent) steps++;
 			uint skip = 0;
-			if (path_found) skip = YAPF_SHIP_PATH_CACHE_LENGTH / 2;
+			if (path_found) skip = SHIP_PATH_CACHE_LENGTH / 2;
 
 			/* walk through the path back to the origin */
 			Node *pPrevNode = nullptr;
@@ -181,7 +181,7 @@ public:
 				steps--;
 				/* Skip tiles at end of path near destination. */
 				if (skip > 0) skip--;
-				if (skip == 0 && steps > 0 && steps < YAPF_SHIP_PATH_CACHE_LENGTH) {
+				if (skip == 0 && steps > 0 && steps < SHIP_PATH_CACHE_LENGTH) {
 					path_cache.push_front(pNode->GetTrackdir());
 				}
 				pPrevNode = pNode;
