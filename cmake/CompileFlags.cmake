@@ -92,6 +92,8 @@ macro(compile_flags)
             #  break anything. So disable strict-aliasing to make the
             #  compiler all happy.
             -fno-strict-aliasing
+
+            "-ffile-prefix-map=${CMAKE_SOURCE_DIR}/=/"
         )
 
         if(NOT CMAKE_BUILD_TYPE)
