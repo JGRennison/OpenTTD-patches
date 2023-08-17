@@ -97,6 +97,7 @@
 
 #include "3rdparty/cpp-btree/btree_set.h"
 
+#include <atomic>
 #include <mutex>
 #if defined(__MINGW32__)
 #include "3rdparty/mingw-std-threads/mingw.mutex.h"
@@ -134,6 +135,10 @@ bool _request_newgrf_scan = false;
 NewGRFScanCallback *_request_newgrf_scan_callback = nullptr;
 
 SimpleChecksum64 _state_checksum;
+
+std::mutex _music_driver_mutex;
+static std::string _music_driver_params;
+static std::atomic<bool> _music_inited;
 
 /**
  * Error handling for fatal user errors.
@@ -1010,7 +1015,13 @@ int openttd_main(int argc, char *argv[])
 	DriverFactoryBase::SelectDriver(sounddriver, Driver::DT_SOUND);
 
 	if (musicdriver.empty() && !_ini_musicdriver.empty()) musicdriver = _ini_musicdriver;
-	DriverFactoryBase::SelectDriver(musicdriver, Driver::DT_MUSIC);
+	_music_driver_params = std::move(musicdriver);
+	if (_music_driver_params.empty() && BaseMusic::GetUsedSet()->name == "NoMusic") {
+		DEBUG(driver, 1, "Deferring loading of music driver until a music set is loaded");
+		DriverFactoryBase::SelectDriver("null", Driver::DT_MUSIC);
+	} else {
+		InitMusicDriver(false);
+	}
 
 	GenerateWorld(GWM_EMPTY, 64, 64); // Make the viewport initialization happy
 	LoadIntroGame(false);
@@ -1039,6 +1050,22 @@ int openttd_main(int argc, char *argv[])
 	/* Reset windowing system, stop drivers, free used memory, ... */
 	ShutdownGame();
 	return ret;
+}
+
+void InitMusicDriver(bool init_volume)
+{
+	if (_music_inited.exchange(true)) return;
+
+	{
+		std::unique_lock<std::mutex> lock(_music_driver_mutex);
+
+		static std::unique_ptr<MusicDriver> old_driver;
+		old_driver = std::move(MusicDriver::ExtractDriver());
+
+		DriverFactoryBase::SelectDriver(_music_driver_params, Driver::DT_MUSIC);
+	}
+
+	if (init_volume) MusicDriver::GetInstance()->SetVolume(_settings_client.music.music_vol);
 }
 
 void HandleExitGameRequest()

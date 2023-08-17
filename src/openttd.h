@@ -91,6 +91,7 @@ void AskExitToGameMenu();
 int openttd_main(int argc, char *argv[]);
 void StateGameLoop();
 void HandleExitGameRequest();
+void InitMusicDriver(bool init_volume);
 
 void SwitchToMode(SwitchMode new_mode);
 

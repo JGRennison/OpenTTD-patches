@@ -12,6 +12,14 @@
 
 #include "../driver.h"
 
+#include <memory>
+#include <mutex>
+#if defined(__MINGW32__)
+#include "../3rdparty/mingw-std-threads/mingw.mutex.h"
+#endif
+
+extern std::mutex _music_driver_mutex;
+
 struct MusicSongInfo;
 
 /** Driver for all music playback. */
@@ -46,10 +54,20 @@ public:
 	 */
 	virtual bool IsInFailedState() { return false; }
 
+	static std::unique_ptr<MusicDriver> ExtractDriver()
+	{
+		Driver **dptr = DriverFactoryBase::GetActiveDriver(Driver::DT_MUSIC);
+		Driver *driver = *dptr;
+		*dptr = nullptr;
+		return std::unique_ptr<MusicDriver>(static_cast<MusicDriver*>(driver));
+	}
+
 	/**
 	 * Get the currently active instance of the music driver.
 	 */
 	static MusicDriver *GetInstance() {
+		std::unique_lock<std::mutex> lock(_music_driver_mutex);
+
 		return static_cast<MusicDriver*>(*DriverFactoryBase::GetActiveDriver(Driver::DT_MUSIC));
 	}
 };
