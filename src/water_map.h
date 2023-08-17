@@ -524,4 +524,14 @@ static inline bool IsNonFloodingWaterTile(TileIndex t)
 	return IsTileType(t, MP_WATER) && HasBit(_m[t].m3, 0);
 }
 
+/**
+ * Checks whether the tile type could have flooding behaviour
+ * @return true iff the tile type is one where GetFloodingBehaviour could return a value other than FLOOD_NONE.
+ */
+static inline bool IsFloodingTypeTile(TileIndex t)
+{
+	static const uint16 mask = (1 << MP_WATER) | (1 << MP_STATION) | (1 << MP_INDUSTRY) | (1 << MP_RAILWAY) | (1 << MP_TREES) | (1 << MP_OBJECT) | (1 << MP_VOID);
+	return HasBit(mask, GetTileType(t));
+}
+
 #endif /* WATER_MAP_H */

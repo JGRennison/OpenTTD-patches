@@ -887,7 +887,7 @@ void RunAuxiliaryTileLoop()
 	TileIndex tile = _aux_tileloop_tile;
 
 	while (count--) {
-		if (!IsNonFloodingWaterTile(tile)) {
+		if (IsFloodingTypeTile(tile) && !IsNonFloodingWaterTile(tile)) {
 			FloodingBehaviour fb = GetFloodingBehaviour(tile);
 			if (fb != FLOOD_NONE) TileLoopWaterFlooding(fb, tile);
 		}
