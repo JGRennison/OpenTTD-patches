@@ -43,6 +43,8 @@
 #include "table/strings.h"
 #include "table/sprites.h"
 
+#include INCLUDE_FOR_PREFETCH_NTA
+
 #include "safeguards.h"
 
 extern const TileTypeProcs
@@ -866,10 +868,13 @@ void RunTileLoop(bool apply_day_length)
 	}
 
 	while (count--) {
+		/* Get the next tile in sequence using a Galois LFSR. */
+		TileIndex next = (tile >> 1) ^ (-(int32)(tile & 1) & feedback);
+		if (count > 0) PREFETCH_NTA(&_m[next]);
+
 		_tile_type_procs[GetTileType(tile)]->tile_loop_proc(tile);
 
-		/* Get the next tile in sequence using a Galois LFSR. */
-		tile = (tile >> 1) ^ (-(int32)(tile & 1) & feedback);
+		tile = next;
 	}
 
 	_cur_tileloop_tile = tile;
@@ -887,13 +892,16 @@ void RunAuxiliaryTileLoop()
 	TileIndex tile = _aux_tileloop_tile;
 
 	while (count--) {
+		/* Get the next tile in sequence using a Galois LFSR. */
+		TileIndex next = (tile >> 1) ^ (-(int32)(tile & 1) & feedback);
+		if (count > 0) PREFETCH_NTA(&_m[next]);
+
 		if (IsFloodingTypeTile(tile) && !IsNonFloodingWaterTile(tile)) {
 			FloodingBehaviour fb = GetFloodingBehaviour(tile);
 			if (fb != FLOOD_NONE) TileLoopWaterFlooding(fb, tile);
 		}
 
-		/* Get the next tile in sequence using a Galois LFSR. */
-		tile = (tile >> 1) ^ (-(int32)(tile & 1) & feedback);
+		tile = next;
 	}
 
 	_aux_tileloop_tile = tile;
