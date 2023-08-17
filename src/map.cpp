@@ -17,6 +17,11 @@
 #include "3rdparty/cpp-btree/btree_map.h"
 #include <array>
 #include <deque>
+#include <memory>
+
+#if defined(__linux__)
+#include <sys/mman.h>
+#endif
 
 #include "safeguards.h"
 
@@ -34,6 +39,10 @@ uint _map_tile_mask; ///< _map_size - 1 (to mask the mapsize)
 
 Tile *_m = nullptr;          ///< Tiles of the map
 TileExtended *_me = nullptr; ///< Extended Tiles of the map
+
+#if defined(__linux__) && defined(MADV_HUGEPAGE)
+static size_t _munmap_size = 0;
+#endif
 
 /**
  * Validates whether a map with the given dimension is valid
@@ -76,11 +85,54 @@ void AllocateMap(uint size_x, uint size_y)
 	_map_size = size_x * size_y;
 	_map_tile_mask = _map_size - 1;
 
-	free(_m);
-	free(_me);
+#if defined(__linux__) && defined(MADV_HUGEPAGE)
+	if (_munmap_size != 0) {
+		munmap(_m, _munmap_size);
+		_munmap_size = 0;
+		_m = nullptr;
+	}
+#endif
 
-	_m = CallocT<Tile>(_map_size);
-	_me = CallocT<TileExtended>(_map_size);
+	free(_m);
+
+	const size_t total_size = (sizeof(Tile) + sizeof(TileExtended)) * _map_size;
+
+	byte *buf = nullptr;
+#if defined(__linux__) && defined(MADV_HUGEPAGE)
+	const size_t alignment = 2 * 1024 * 1024;
+	/* First try mmap with a 2MB alignment, if that fails, just use calloc */
+	if (total_size >= alignment) {
+		size_t allocated = total_size + alignment;
+		void * const ret = mmap(nullptr, allocated, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+		if (ret != MAP_FAILED) {
+			void *target = ret;
+			assert(std::align(alignment, total_size, target, allocated));
+
+			/* target is now aligned, allocated has been adjusted accordingly */
+
+			const size_t remove_front = static_cast<byte *>(target) - static_cast<byte *>(ret);
+			if (remove_front != 0) {
+				munmap(ret, remove_front);
+			}
+
+			const size_t remove_back = allocated - total_size;
+			if (remove_back != 0) {
+				munmap(static_cast<char *>(target) + total_size, remove_back);
+			}
+
+			madvise(target, total_size, MADV_HUGEPAGE);
+			DEBUG(map, 2, "Using mmap for map allocation");
+
+			buf = static_cast<byte *>(target);
+			_munmap_size = total_size;
+		}
+	}
+#endif
+
+	if (buf == nullptr) buf = CallocT<byte>(total_size);
+
+	_m = reinterpret_cast<Tile *>(buf);
+	_me = reinterpret_cast<TileExtended *>(buf + (_map_size * sizeof(Tile)));
 }
 
 
