@@ -1128,7 +1128,7 @@ void Load_VEHS()
 		if (vtype == VEH_ROAD && !_path_td.empty() && _path_td.size() <= RV_PATH_CACHE_SEGMENTS && _path_td.size() == _path_tile.size()) {
 			RoadVehicle *rv = RoadVehicle::From(v);
 			rv->cached_path.reset(new RoadVehPathCache());
-			rv->cached_path->count = _path_td.size();
+			rv->cached_path->count = (uint8)_path_td.size();
 			for (size_t i = 0; i < _path_td.size(); i++) {
 				rv->cached_path->td[i] = _path_td[i];
 				rv->cached_path->tile[i] = _path_tile[i];
@@ -1137,7 +1137,7 @@ void Load_VEHS()
 		} else if (vtype == VEH_SHIP && !_path_td.empty() && _path_td.size() <= SHIP_PATH_CACHE_LENGTH) {
 			Ship *s = Ship::From(v);
 			s->cached_path.reset(new ShipPathCache());
-			s->cached_path->count = _path_td.size();
+			s->cached_path->count = (uint8)_path_td.size();
 			for (size_t i = 0; i < _path_td.size(); i++) {
 				s->cached_path->td[i] = _path_td[i];
 			}
