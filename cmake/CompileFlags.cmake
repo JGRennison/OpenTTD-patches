@@ -93,8 +93,12 @@ macro(compile_flags)
             #  compiler all happy.
             -fno-strict-aliasing
 
-            "-ffile-prefix-map=${CMAKE_SOURCE_DIR}/=/"
+
         )
+
+        if(OPTION_TRIM_PATH_PREFIX)
+            add_compile_options("-ffile-prefix-map=${CMAKE_SOURCE_DIR}/=/")
+        endif(OPTION_TRIM_PATH_PREFIX)
 
         if(NOT CMAKE_BUILD_TYPE)
             # Sensible default if no build type specified

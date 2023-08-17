@@ -138,6 +138,7 @@ jobs:
           -DCMAKE_BUILD_TYPE=Release \
           -DOPTION_COMPRESS_DEBUG=ON \
           -DOPTION_LTO=ON \
+          -DOPTION_TRIM_PATH_PREFIX=ON \
           -DOPTION_SURVEY_KEY=${{ inputs.survey_key }} \
           -DOPTION_PACKAGE_DEPENDENCIES=ON \
           # EOF
