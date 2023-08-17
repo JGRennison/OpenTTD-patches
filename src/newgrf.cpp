@@ -6014,6 +6014,9 @@ static void NewSpriteGroup(ByteReader *buf)
 				/* Continue reading var adjusts while bit 5 is set. */
 			} while (HasBit(varadjust, 5));
 
+			/* shrink_to_fit will be called later */
+			group->adjusts.reserve(current_adjusts.size());
+
 			for (const DeterministicSpriteGroupAdjust &adjust : current_adjusts) {
 				group->adjusts.push_back(adjust);
 				OptimiseVarAction2Adjust(va2_opt_state, info, group, group->adjusts.back());
