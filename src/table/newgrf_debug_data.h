@@ -1905,6 +1905,54 @@ class NIHStationStruct : public NIHelper {
 			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "  Time since: load: %u, unload: %u", st->time_since_load, st->time_since_unload);
 			output.print(buffer);
+
+			for (const CargoSpec *cs : CargoSpec::Iterate()) {
+				const GoodsEntry *ge = &st->goods[cs->Index()];
+
+				const StationCargoPacketMap *pkts = ge->cargo.Packets();
+				if (pkts->empty() && ge->status == 0) {
+					/* Nothing of note to show */
+					continue;
+				}
+
+				seprintf(buffer, lastof(buffer), "  Goods entry: %u: %s", cs->Index(), GetStringPtr(cs->name));
+				output.print(buffer);
+				seprintf(buffer, lastof(buffer), "    Status: %c%c%c%c%c%c%c",
+						HasBit(ge->status, GoodsEntry::GES_ACCEPTANCE)       ? 'a' : '-',
+						HasBit(ge->status, GoodsEntry::GES_RATING)           ? 'r' : '-',
+						HasBit(ge->status, GoodsEntry::GES_EVER_ACCEPTED)    ? 'e' : '-',
+						HasBit(ge->status, GoodsEntry::GES_LAST_MONTH)       ? 'l' : '-',
+						HasBit(ge->status, GoodsEntry::GES_CURRENT_MONTH)    ? 'c' : '-',
+						HasBit(ge->status, GoodsEntry::GES_ACCEPTED_BIGTICK) ? 'b' : '-',
+						HasBit(ge->status, GoodsEntry::GES_NO_CARGO_SUPPLY)  ? 'n' : '-');
+				output.print(buffer);
+
+				if (ge->amount_fract > 0) {
+					seprintf(buffer, lastof(buffer), "    Amount fract: %u", ge->amount_fract);
+					output.print(buffer);
+				}
+				if (!pkts->empty()) {
+					seprintf(buffer, lastof(buffer), "    Cargo packets: %u, available: %u, reserved: %u",
+							(uint)pkts->size(), ge->cargo.AvailableCount(), ge->cargo.ReservedCount());
+					output.print(buffer);
+				}
+				if (ge->link_graph != INVALID_LINK_GRAPH) {
+					seprintf(buffer, lastof(buffer), "    Link graph: %u, node: %u", ge->link_graph, ge->node);
+					output.print(buffer);
+				}
+				if (ge->max_waiting_cargo > 0) {
+					seprintf(buffer, lastof(buffer), "    Max waiting cargo: %u", ge->max_waiting_cargo);
+					output.print(buffer);
+				}
+				if (ge->flows.size() > 0) {
+					size_t total_shares = 0;
+					for (const FlowStat &fs : ge->flows) {
+						total_shares += fs.size();
+					}
+					seprintf(buffer, lastof(buffer), "    Flows: %u, total shares: %u", (uint)ge->flows.size(), (uint)total_shares);
+					output.print(buffer);
+				}
+			}
 		}
 		const Waypoint *wp = Waypoint::GetIfValid(index);
 		if (wp) {
