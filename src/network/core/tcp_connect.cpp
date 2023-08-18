@@ -15,8 +15,7 @@
 #include "tcp.h"
 #include "../network_coordinator.h"
 #include "../network_internal.h"
-
-#include <deque>
+#include "../../core/ring_buffer.hpp"
 
 #include "../../safeguards.h"
 
@@ -154,7 +153,7 @@ bool TCPConnecter::TryNextAddress()
  */
 void TCPConnecter::OnResolved(addrinfo *ai)
 {
-	std::deque<addrinfo *> addresses_ipv4, addresses_ipv6;
+	ring_buffer<addrinfo *> addresses_ipv4, addresses_ipv6;
 
 	/* Apply "Happy Eyeballs" if it is likely IPv6 is functional. */
 
