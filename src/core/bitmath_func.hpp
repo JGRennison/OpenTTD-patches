@@ -240,7 +240,32 @@ static inline uint8 FindFirstBit(T value)
 #endif
 }
 
-uint8 FindLastBit(uint64 x);
+/**
+ * Search the last set bit in an integer variable.
+ *
+ * @param value The value to search
+ * @return The position of the last bit set, or 0 when value is 0
+ */
+template <typename T>
+static inline uint8 FindLastBit(T value)
+{
+	static_assert(sizeof(T) <= sizeof(unsigned long long));
+#ifdef WITH_BITMATH_BUILTINS
+	if (value == 0) return 0;
+	typename std::make_unsigned<T>::type unsigned_value = value;
+	if (sizeof(T) <= sizeof(unsigned int)) {
+		return __builtin_clz(1) - __builtin_clz(unsigned_value);
+	} else if (sizeof(T) == sizeof(unsigned long)) {
+		return __builtin_clzl(1) - __builtin_clzl(unsigned_value);
+	} else {
+		return __builtin_clzll(1) - __builtin_ctzll(unsigned_value);
+	}
+#else
+	extern uint8 FindLastBit64(uint64 x);
+	return FindLastBit64(value);
+#endif
+}
+
 
 /**
  * Finds the position of the first non-zero bit in an integer.

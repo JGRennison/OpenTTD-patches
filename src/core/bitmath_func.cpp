@@ -62,7 +62,7 @@ uint8 FindFirstBit64(uint64 x)
  * @param x The value to search
  * @return The position of the last bit set
  */
-uint8 FindLastBit(uint64 x)
+uint8 FindLastBit64(uint64 x)
 {
 	if (x == 0) return 0;
 

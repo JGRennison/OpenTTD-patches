@@ -459,7 +459,7 @@ protected:
 						 * integer, so at about 31 bits because of the sign bit, the
 						 * least significant bits are removed.
 						 */
-						int mult_range = FindLastBit(x_axis_offset) + FindLastBit(abs(datapoint));
+						int mult_range = FindLastBit<uint64>(x_axis_offset) + FindLastBit<uint64>(abs(datapoint));
 						int reduce_range = std::max(mult_range - 31, 0);
 
 						/* Handle negative values differently (don't shift sign) */
