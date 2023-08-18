@@ -35,10 +35,10 @@
 #include "town.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 #include "scope_info.h"
+#include "core/ring_buffer.hpp"
 #include <array>
 #include <list>
 #include <set>
-#include <deque>
 
 #include "table/strings.h"
 #include "table/sprites.h"
@@ -1359,7 +1359,7 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 	SET_MARK(begin);
 
 	/* Breadth first search for the closest tile we can flow down to. */
-	std::deque<TileIndex> queue;
+	ring_buffer<TileIndex> queue;
 	queue.push_back(begin);
 
 	bool found = false;

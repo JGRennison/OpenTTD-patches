@@ -15,8 +15,8 @@
 #include "rail_map.h"
 #include "tunnelbridge_map.h"
 #include "3rdparty/cpp-btree/btree_map.h"
+#include "core/ring_buffer.hpp"
 #include <array>
-#include <deque>
 #include <memory>
 
 #if defined(__linux__)
@@ -442,7 +442,7 @@ bool EnoughContiguousTilesMatchingCondition(TileIndex tile, uint threshold, Test
 	static_assert(MAX_MAP_TILES_BITS <= 30);
 
 	btree::btree_set<uint32> processed_tiles;
-	std::deque<uint32> candidates;
+	ring_buffer<uint32> candidates;
 	uint matching_count = 0;
 
 	auto process_tile = [&](TileIndex t, DiagDirection exclude_onward_dir) {
