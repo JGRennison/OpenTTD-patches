@@ -10,7 +10,7 @@
 #ifndef SCRIPT_LOG_TYPES_HPP
 #define SCRIPT_LOG_TYPES_HPP
 
-#include <deque>
+#include "../../core/ring_buffer.hpp"
 
 namespace ScriptLogTypes {
 	/**
@@ -41,7 +41,7 @@ namespace ScriptLogTypes {
 	 *  This has no use for you, as script writer.
 	 * @api -all
 	 */
-	using LogData = std::deque<LogLine>; ///< The log type
+	using LogData = ring_buffer<LogLine>; ///< The log type
 };
 
 #endif /* SCRIPT_LOG_TYPES_HPP */
