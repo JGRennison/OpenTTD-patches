@@ -21,7 +21,7 @@
 #include "console_func.h"
 #include "rev.h"
 #include "video/video_driver.hpp"
-#include <deque>
+#include "core/ring_buffer.hpp"
 #include <string>
 
 #include "widgets/console_widget.h"
@@ -65,7 +65,7 @@ struct IConsoleLine {
 };
 
 /** The console backlog buffer. Item index 0 is the newest line. */
-static std::deque<IConsoleLine> _iconsole_buffer;
+static ring_buffer<IConsoleLine> _iconsole_buffer;
 
 static bool TruncateBuffer();
 
