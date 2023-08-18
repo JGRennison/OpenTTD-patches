@@ -22,13 +22,13 @@
 #include "network_client.h"
 #include "network_base.h"
 #include "../core/format.hpp"
+#include "core/ring_buffer.hpp"
 
 #include "../widgets/network_chat_widget.h"
 
 #include "table/strings.h"
 
 #include <stdarg.h> /* va_list */
-#include <deque>
 #include <optional>
 
 #include "../safeguards.h"
@@ -48,7 +48,7 @@ struct ChatMessage {
 };
 
 /* used for chat window */
-static std::deque<ChatMessage> _chatmsg_list; ///< The actual chat message list.
+static ring_buffer<ChatMessage> _chatmsg_list; ///< The actual chat message list.
 static bool _chatmessage_dirty = false;   ///< Does the chat message need repainting?
 static bool _chatmessage_visible = false; ///< Is a chat message visible.
 static bool _chat_tab_completion_active;  ///< Whether tab completion is active.

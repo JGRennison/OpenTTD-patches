@@ -34,8 +34,8 @@
 #include "debug_settings.h"
 #include "debug_desync.h"
 #include "order_backup.h"
+#include "core/ring_buffer.hpp"
 #include <array>
-#include <deque>
 
 #include "table/strings.h"
 
@@ -638,7 +638,7 @@ struct CommandQueueItem {
 	CommandContainer cmd;
 	CompanyID company;
 };
-static std::deque<CommandQueueItem> _command_queue;
+static ring_buffer<CommandQueueItem> _command_queue;
 
 void ClearCommandLog()
 {
