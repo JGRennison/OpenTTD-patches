@@ -14,10 +14,10 @@
 
 #include "address.h"
 #include "packet.h"
+#include "../../core/ring_buffer.hpp"
 
 #include <atomic>
 #include <chrono>
-#include <deque>
 #include <map>
 #include <memory>
 #include <vector>
@@ -37,7 +37,7 @@ enum SendPacketsState {
 /** Base socket handler for all TCP sockets */
 class NetworkTCPSocketHandler : public NetworkSocketHandler {
 private:
-	std::deque<std::unique_ptr<Packet>> packet_queue; ///< Packets that are awaiting delivery
+	ring_buffer<std::unique_ptr<Packet>> packet_queue; ///< Packets that are awaiting delivery
 	std::unique_ptr<Packet> packet_recv;              ///< Partially received packet
 
 	void EmptyPacketQueue();
@@ -56,6 +56,7 @@ public:
 
 	void SendPacket(std::unique_ptr<Packet> packet);
 	void SendPrependPacket(std::unique_ptr<Packet> packet, int queue_after_packet_type);
+	void ShrinkToFitSendQueue();
 
 	void SendPacket(Packet *packet)
 	{

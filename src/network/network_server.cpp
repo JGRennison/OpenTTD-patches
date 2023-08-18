@@ -1179,7 +1179,11 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_MAP_OK(Packet *
 		this->SendConfigUpdate();
 
 		/* quickly update the syncing client with company details */
-		return this->SendCompanyUpdate();
+		NetworkRecvStatus status = this->SendCompanyUpdate();
+
+		this->ShrinkToFitSendQueue();
+
+		return status;
 	}
 
 	/* Wrong status for this packet, give a warning to client, and close connection */

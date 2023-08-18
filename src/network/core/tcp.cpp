@@ -115,6 +115,14 @@ void NetworkTCPSocketHandler::SendPrependPacket(std::unique_ptr<Packet> packet, 
 }
 
 /**
+ * Shrink the packet send queue to fit (e.g. after having sent the map to a network client)
+ */
+void NetworkTCPSocketHandler::ShrinkToFitSendQueue()
+{
+	this->packet_queue.shrink_to_fit();
+}
+
+/**
  * Sends all the buffered packets out for this client. It stops when:
  *   1) all packets are send (queue is empty)
  *   2) the OS reports back that it can not send any more
