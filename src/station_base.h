@@ -493,6 +493,11 @@ public:
 		return this->flows_index.begin()->first;
 	}
 
+	void reserve(size_t size)
+	{
+		this->flows_storage.reserve(size);
+	}
+
 	void SortStorage();
 };
 

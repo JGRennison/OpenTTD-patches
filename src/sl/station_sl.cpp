@@ -646,6 +646,7 @@ static void Load_STNN()
 				SlObjectLoadFiltered(&st->goods[i], _filtered_goods_desc);
 				StationID prev_source = INVALID_STATION;
 				if (SlXvIsFeaturePresent(XSLFI_FLOW_STAT_FLAGS)) {
+					st->goods[i].flows.reserve(_num_flows);
 					for (uint32 j = 0; j < _num_flows; ++j) {
 						FlowSaveLoad flow;
 						buffer->CheckBytes(2 + 4);
