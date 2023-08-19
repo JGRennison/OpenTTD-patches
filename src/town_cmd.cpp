@@ -53,6 +53,7 @@
 #include "zoom_func.h"
 #include "zoning.h"
 #include "scope.h"
+#include "3rdparty/cpp-btree/btree_map.h"
 
 #include "table/strings.h"
 #include "table/town_land.h"
@@ -4232,7 +4233,7 @@ Town *ClosestTownFromTile(TileIndex tile, uint threshold)
 }
 
 static bool _town_rating_test = false; ///< If \c true, town rating is in test-mode.
-static std::map<const Town *, int> _town_test_ratings; ///< Map of towns to modified ratings, while in town rating test-mode.
+static btree::btree_map<const Town *, int> _town_test_ratings; ///< Map of towns to modified ratings, while in town rating test-mode.
 
 /**
  * Switch the town rating to test-mode, to allow commands to be tested without affecting current ratings.
