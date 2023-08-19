@@ -59,7 +59,6 @@
 #include "table/build_industry.h"
 
 #include "3rdparty/cpp-btree/btree_map.h"
-#include <map>
 
 #include "safeguards.h"
 
@@ -499,7 +498,7 @@ StringID MapGRFStringID(uint32 grfid, StringID str)
 	}
 }
 
-static std::map<uint32, uint32> _grf_id_overrides;
+static btree::btree_map<uint32, uint32> _grf_id_overrides;
 
 /**
  * Set the override for a NewGRF
