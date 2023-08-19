@@ -20,6 +20,7 @@
 #include "core/multimap.hpp"
 #include "sl/saveload_common.h"
 #include "core/ring_buffer.hpp"
+#include "3rdparty/cpp-btree/btree_map.h"
 
 /** Unique identifier for a single cargo packet. */
 typedef uint32 CargoPacketID;
@@ -492,7 +493,7 @@ public:
 };
 
 typedef MultiMap<StationID, CargoPacket *, CargoPacketList> StationCargoPacketMap;
-typedef std::map<StationID, uint> StationCargoAmountMap;
+typedef btree::btree_map<StationID, uint> StationCargoAmountMap;
 
 /**
  * CargoList that is used for stations.
