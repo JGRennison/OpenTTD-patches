@@ -204,6 +204,7 @@ add_files(
     group_cmd.cpp
     group_gui.cpp
     group_gui.h
+    group_gui_list.h
     group_type.h
     gui.h
     guitimer_func.h

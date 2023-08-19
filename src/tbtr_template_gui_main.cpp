@@ -39,6 +39,7 @@
 #include "window_func.h"
 #include "window_gui.h"
 #include "zoom_func.h"
+#include "group_gui_list.h"
 
 #include "tbtr_template_gui_main.h"
 #include "tbtr_template_gui_create.h"
@@ -48,9 +49,6 @@
 #include <stdio.h>
 
 #include "safeguards.h"
-
-
-typedef GUIList<const Group*> GUIGroupList;
 
 enum TemplateReplaceWindowWidgets {
 	TRW_CAPTION,
@@ -582,8 +580,7 @@ public:
 		}
 
 		list.ForceResort();
-		extern bool GroupNameSorter(const Group * const &a, const Group * const &b);
-		list.Sort(&GroupNameSorter);
+		SortGUIGroupList(list);
 
 		AddParents(&list, INVALID_GROUP, 0);
 

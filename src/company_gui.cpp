@@ -37,6 +37,7 @@
 #include "station_func.h"
 #include "zoom_func.h"
 #include "sortlist_type.h"
+#include "group_gui_list.h"
 #include "core/backup_type.hpp"
 
 #include "widgets/company_widget.h"
@@ -671,11 +672,6 @@ public:
 	}
 };
 
-typedef GUIList<const Group*> GUIGroupList;
-
-/* cached values for GroupNameSorter to spare many GetString() calls */
-static const Group *_last_group[2] = { nullptr, nullptr };
-
 /** Company livery colour scheme window. */
 struct SelectCompanyLiveryWindow : public Window {
 private:
@@ -738,27 +734,6 @@ private:
 		ShowDropDownList(this, std::move(list), sel, widget);
 	}
 
-	static bool GroupNameSorter(const Group * const &a, const Group * const &b)
-	{
-		static char         last_name[2][64] = { "", "" };
-
-		if (a != _last_group[0]) {
-			_last_group[0] = a;
-			SetDParam(0, a->index);
-			GetString(last_name[0], STR_GROUP_NAME, lastof(last_name[0]));
-		}
-
-		if (b != _last_group[1]) {
-			_last_group[1] = b;
-			SetDParam(0, b->index);
-			GetString(last_name[1], STR_GROUP_NAME, lastof(last_name[1]));
-		}
-
-		int r = StrNaturalCompare(last_name[0], last_name[1]); // Sort by name (natural sorting).
-		if (r == 0) return a->index < b->index;
-		return r < 0;
-	}
-
 	void AddChildren(GUIGroupList &source, GroupID parent, int indent)
 	{
 		for (const Group *g : source) {
@@ -787,11 +762,7 @@ private:
 			}
 
 			list.ForceResort();
-
-			/* invalidate cached values for name sorter - group names could change */
-			_last_group[0] = _last_group[1] = nullptr;
-
-			list.Sort(&GroupNameSorter);
+			SortGUIGroupList(list);
 
 			AddChildren(list, INVALID_GROUP, 0);
 		}

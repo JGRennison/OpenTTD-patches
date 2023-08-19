@@ -46,6 +46,7 @@
 #include "core/geometry_func.hpp"
 #include "infrastructure_func.h"
 #include "zoom_func.h"
+#include "group_gui_list.h"
 #include "core/span_type.hpp"
 #include "3rdparty/cpp-btree/btree_map.h"
 
@@ -641,9 +642,6 @@ static const TraceRestrictDropDownListSet *GetSortedCargoTypeDropDownListSet()
  */
 static DropDownList GetGroupDropDownList(Owner owner, GroupID group_id, int &selected)
 {
-	typedef GUIList<const Group*> GUIGroupList;
-	extern bool GroupNameSorter(const Group * const &a, const Group * const &b);
-
 	GUIGroupList list;
 
 	for (const Group *g : Group::Iterate()) {
@@ -653,7 +651,7 @@ static DropDownList GetGroupDropDownList(Owner owner, GroupID group_id, int &sel
 	}
 
 	list.ForceResort();
-	list.Sort(&GroupNameSorter);
+	SortGUIGroupList(list);
 
 	DropDownList dlist;
 	selected = -1;

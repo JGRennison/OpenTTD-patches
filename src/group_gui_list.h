@@ -5,22 +5,15 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file tbtr_template_gui_main.h Template-based train replacement: main GUI header. */
+/** @file group_gui_list.h Group GUI lists. */
 
-#ifndef TEMPLATE_GUI_H
-#define TEMPLATE_GUI_H
+#ifndef GROUP_GUI_LIST_H
+#define GROUP_GUI_LIST_H
 
-#include "engine_type.h"
-#include "group_type.h"
-#include "vehicle_type.h"
-#include "string_func.h"
-#include "strings_func.h"
+#include "group.h"
+#include "sortlist_type.h"
 
-#include "tbtr_template_vehicle.h"
-#include "tbtr_template_vehicle_func.h"
+typedef GUIList<const Group*> GUIGroupList;
+void SortGUIGroupList(GUIGroupList &list);
 
-void ShowTemplateReplaceWindow();
-
-bool TemplateVehicleClicked(const TemplateVehicle *v);
-
-#endif
+#endif /* GROUP_GUI_LIST_H */

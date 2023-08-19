@@ -6306,15 +6306,6 @@ static void NewSpriteGroup(ByteReader *buf)
 
 static CargoID TranslateCargo(uint8 feature, uint8 ctype)
 {
-	if (feature == GSF_OBJECTS) {
-		switch (ctype) {
-			case 0:    return 0;
-			case 0xFF: return CT_PURCHASE_OBJECT;
-			default:
-				grfmsg(1, "TranslateCargo: Invalid cargo bitnum %d for objects, skipping.", ctype);
-				return CT_INVALID;
-		}
-	}
 	/* Special cargo types for purchase list and stations */
 	if ((feature == GSF_STATIONS || feature == GSF_ROADSTOPS) && ctype == 0xFE) return CT_DEFAULT_NA;
 	if (ctype == 0xFF) return CT_PURCHASE;
@@ -6710,8 +6701,11 @@ static void ObjectMapSpriteGroup(ByteReader *buf, uint8 idcount)
 		uint16 groupid = buf->ReadWord();
 		if (!IsValidGroupID(groupid, "ObjectMapSpriteGroup")) continue;
 
-		ctype = TranslateCargo(GSF_OBJECTS, ctype);
-		if (ctype == CT_INVALID) continue;
+		/* The only valid option here is purchase list sprite groups. */
+		if (ctype != 0xFF) {
+			grfmsg(1, "ObjectMapSpriteGroup: Invalid cargo bitnum %d for objects, skipping.", ctype);
+			continue;
+		}
 
 		for (uint i = 0; i < idcount; i++) {
 			ObjectSpec *spec = (objects[i] >= _cur.grffile->objectspec.size()) ? nullptr : _cur.grffile->objectspec[objects[i]].get();
@@ -6721,7 +6715,7 @@ static void ObjectMapSpriteGroup(ByteReader *buf, uint8 idcount)
 				continue;
 			}
 
-			spec->grf_prop.spritegroup[ctype] = GetGroupByID(groupid);
+			spec->grf_prop.spritegroup[OBJECT_SPRITE_GROUP_PURCHASE] = GetGroupByID(groupid);
 		}
 	}
 
@@ -6741,9 +6735,9 @@ static void ObjectMapSpriteGroup(ByteReader *buf, uint8 idcount)
 			continue;
 		}
 
-		spec->grf_prop.spritegroup[0] = GetGroupByID(groupid);
-		spec->grf_prop.grffile        = _cur.grffile;
-		spec->grf_prop.local_id       = objects[i];
+		spec->grf_prop.spritegroup[OBJECT_SPRITE_GROUP_DEFAULT] = GetGroupByID(groupid);
+		spec->grf_prop.grffile = _cur.grffile;
+		spec->grf_prop.local_id = objects[i];
 	}
 }
 
