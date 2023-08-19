@@ -19,7 +19,7 @@
 #include "company_type.h"
 #include "core/multimap.hpp"
 #include "sl/saveload_common.h"
-#include <deque>
+#include "core/ring_buffer.hpp"
 
 /** Unique identifier for a single cargo packet. */
 typedef uint32 CargoPacketID;
@@ -296,7 +296,7 @@ public:
 	void InvalidateCache();
 };
 
-typedef std::deque<CargoPacket *> CargoPacketList;
+typedef ring_buffer<CargoPacket *> CargoPacketList;
 
 /**
  * CargoList that is used for vehicles.

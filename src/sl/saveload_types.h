@@ -100,7 +100,7 @@ enum SaveLoadTypes {
 	SL_ARR         =  2, ///< Save/load a fixed-size array of #SL_VAR elements.
 	SL_STR         =  3, ///< Save/load a string.
 	SL_REFLIST     =  4, ///< Save/load a list of #SL_REF elements.
-	SL_DEQUE       =  5, ///< Save/load a deque of #SL_VAR elements.
+	SL_RING        =  5, ///< Save/load a ring of #SL_VAR elements.
 	SL_VEC         =  6, ///< Save/load a vector of #SL_REF elements.
 	SL_STDSTR      =  7, ///< Save/load a std::string.
 
@@ -109,7 +109,7 @@ enum SaveLoadTypes {
 	SL_VEH_INCLUDE =  9,
 	SL_ST_INCLUDE  = 10,
 
-	SL_PTRDEQ      = 13, ///< Save/load a deque of #SL_REF elements.
+	SL_PTRRING     = 13, ///< Save/load a ring of #SL_REF elements.
 	SL_VARVEC      = 14, ///< Save/load a primitive type vector.
 };
 

@@ -273,7 +273,7 @@ enum SaveLoadType : byte {
 	SL_STDSTR      =  4, ///< Save/load a \c std::string.
 
 	SL_ARR         =  5, ///< Save/load a fixed-size array of #SL_VAR elements.
-	SL_DEQUE       =  6, ///< Save/load a deque of #SL_VAR elements.
+	SL_RING        =  6, ///< Save/load a ring of #SL_VAR elements.
 	SL_VECTOR      =  7, ///< Save/load a vector of #SL_VAR elements.
 	SL_REFLIST     =  8, ///< Save/load a list of #SL_REF elements.
 	SL_STRUCTLIST  =  9, ///< Save/load a list of structs.
@@ -281,7 +281,7 @@ enum SaveLoadType : byte {
 	SL_SAVEBYTE    = 10, ///< Save (but not load) a byte.
 	SL_NULL        = 11, ///< Save null-bytes and load to nowhere.
 
-	SL_REFDEQUE,         ///< Save/load a deque of #SL_REF elements.
+	SL_REFRING,          ///< Save/load a ring of #SL_REF elements.
 	SL_REFVEC,           ///< Save/load a vector of #SL_REF elements.
 };
 
@@ -417,14 +417,14 @@ struct SaveLoadCompat {
 #define SLE_CONDREFLIST(base, variable, type, from, to) SLE_GENERAL(SL_REFLIST, base, variable, type, 0, from, to, 0)
 
 /**
- * Storage of a deque of #SL_REF elements in some savegame versions.
+ * Storage of a ring of #SL_REF elements in some savegame versions.
  * @param base     Name of the class or struct containing the list.
  * @param variable Name of the variable in the class or struct referenced by \a base.
  * @param type     Storage of the data in memory and in the savegame.
  * @param from     First savegame version that has the list.
  * @param to       Last savegame version that has the list.
  */
-#define SLE_CONDREFDEQUE(base, variable, type, from, to) SLE_GENERAL(SL_REFDEQUE, base, variable, type, 0, from, to, 0)
+#define SLE_CONDREFRING(base, variable, type, from, to) SLE_GENERAL(SL_REFRING, base, variable, type, 0, from, to, 0)
 
 /**
  * Storage of a vector of #SL_REF elements in some savegame versions.
@@ -437,14 +437,14 @@ struct SaveLoadCompat {
 #define SLE_CONDREFVEC(base, variable, type, from, to) SLE_GENERAL(SL_REFVEC, base, variable, type, 0, from, to, 0)
 
 /**
- * Storage of a deque of #SL_VAR elements in some savegame versions.
+ * Storage of a ring of #SL_VAR elements in some savegame versions.
  * @param base     Name of the class or struct containing the list.
  * @param variable Name of the variable in the class or struct referenced by \a base.
  * @param type     Storage of the data in memory and in the savegame.
  * @param from     First savegame version that has the list.
  * @param to       Last savegame version that has the list.
  */
-#define SLE_CONDDEQUE(base, variable, type, from, to) SLE_GENERAL(SL_DEQUE, base, variable, type, 0, from, to, 0)
+#define SLE_CONDRING(base, variable, type, from, to) SLE_GENERAL(SL_RING, base, variable, type, 0, from, to, 0)
 
 /**
  * Storage of a variable in every version of a savegame.
@@ -498,12 +498,12 @@ struct SaveLoadCompat {
 #define SLE_REFLIST(base, variable, type) SLE_CONDREFLIST(base, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
- * Storage of a deque of #SL_REF elements in every savegame version.
+ * Storage of a ring of #SL_REF elements in every savegame version.
  * @param base     Name of the class or struct containing the list.
  * @param variable Name of the variable in the class or struct referenced by \a base.
  * @param type     Storage of the data in memory and in the savegame.
  */
-#define SLE_REFDEQUE(base, variable, type) SLE_CONDREFDEQUE(base, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
+#define SLE_REFRING(base, variable, type) SLE_CONDREFRING(base, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
  * Storage of a vector of #SL_REF elements in every savegame version.
@@ -610,14 +610,14 @@ struct SaveLoadCompat {
 #define SLEG_CONDREFLIST(name, variable, type, from, to) SLEG_GENERAL(name, SL_REFLIST, variable, type, 0, from, to, 0)
 
 /**
- * Storage of a global reference deque in some savegame versions.
+ * Storage of a global reference ring in some savegame versions.
  * @param name     The name of the field.
  * @param variable Name of the global variable.
  * @param type     Storage of the data in memory and in the savegame.
  * @param from     First savegame version that has the list.
  * @param to       Last savegame version that has the list.
  */
-#define SLEG_CONDREFDEQUE(name, variable, type, from, to) SLEG_GENERAL(name, SL_REFDEQUE, variable, type, 0, from, to, 0)
+#define SLEG_CONDREFRING(name, variable, type, from, to) SLEG_GENERAL(name, SL_REFRING, variable, type, 0, from, to, 0)
 
 /**
  * Storage of a global reference vector in some savegame versions.
@@ -704,12 +704,12 @@ struct SaveLoadCompat {
 #define SLEG_REFLIST(name, variable, type) SLEG_CONDREFLIST(name, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
- * Storage of a global reference deque in every savegame version.
+ * Storage of a global reference ring in every savegame version.
  * @param name     The name of the field.
  * @param variable Name of the global variable.
  * @param type     Storage of the data in memory and in the savegame.
  */
-#define SLEG_REFDEQUE(name, variable, type) SLEG_CONDREFDEQUE(name, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
+#define SLEG_REFRING(name, variable, type) SLEG_CONDREFRING(name, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
  * Storage of a global vector of #SL_VAR elements in every savegame version.

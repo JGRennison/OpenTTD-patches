@@ -293,7 +293,7 @@ SaveLoadTable GetGoodsDesc()
 		SLEG_CONDVAR(            _cargo_feeder_share,  SLE_FILE_U32 | SLE_VAR_I64, SLV_14, SLV_65),
 		SLEG_CONDVAR(            _cargo_feeder_share,  SLE_INT64,                  SLV_65, SLV_68),
 		 SLE_CONDVAR(GoodsEntry, amount_fract,         SLE_UINT8,                 SLV_150, SL_MAX_VERSION),
-		SLEG_CONDPTRDEQ_X(       _packets,             REF_CARGO_PACKET,           SLV_68, SLV_183, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, 0, 0)),
+		SLEG_CONDPTRRING_X(      _packets,             REF_CARGO_PACKET,           SLV_68, SLV_183, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, 0, 0)),
 		SLEG_CONDVAR_X(          _num_dests,           SLE_UINT32,                SLV_183, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_OR, XSLFI_CHILLPP)),
 		 SLE_CONDVAR(GoodsEntry, cargo.reserved_count, SLE_UINT,                  SLV_181, SL_MAX_VERSION),
 		 SLE_CONDVAR(GoodsEntry, link_graph,           SLE_UINT16,                SLV_183, SL_MAX_VERSION),
@@ -311,7 +311,7 @@ typedef std::pair<const StationID, CargoPacketList> StationCargoPair;
 
 static const SaveLoad _cargo_list_desc[] = {
 	SLE_VAR(StationCargoPair, first,  SLE_UINT16),
-	SLE_PTRDEQ(StationCargoPair, second, REF_CARGO_PACKET),
+	SLE_PTRRING(StationCargoPair, second, REF_CARGO_PACKET),
 };
 
 /**

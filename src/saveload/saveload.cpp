@@ -34,9 +34,9 @@
 #include "../town.h"
 #include "../roadstop_base.h"
 #include "../autoreplace_base.h"
+#include "../core/ring_buffer.hpp"
 
 #include <atomic>
-#include <deque>
 #include <vector>
 #include <string>
 #include <map>
@@ -303,14 +303,14 @@ static uint8 GetSavegameFileType(const SaveLoad &sld)
 		case SL_STDSTR:
 		case SL_ARR:
 		case SL_VECTOR:
-		case SL_DEQUE:
+		case SL_RING:
 			return GetVarFileType(sld.conv) | SLE_FILE_HAS_LENGTH_FIELD; break;
 
 		case SL_REF:
 			return IsSavegameVersionBefore(SLV_69) ? SLE_FILE_U16 : SLE_FILE_U32;
 
 		case SL_REFLIST:
-		case SL_REFDEQUE:
+		case SL_REFRING:
 		case SL_REFVEC:
 			return (IsSavegameVersionBefore(SLV_69) ? SLE_FILE_U16 : SLE_FILE_U32) | SLE_FILE_HAS_LENGTH_FIELD;
 
@@ -1071,9 +1071,9 @@ void SlSaveLoadRef(void *ptr, VarType conv)
 /**
  * Template class to help with list-like types.
  */
-template <template<typename, typename> typename Tstorage, typename Tvar, typename Tallocator = std::allocator<Tvar>>
+template <template<typename> typename Tstorage, typename Tvar>
 class SlStorageHelper {
-	typedef Tstorage<Tvar, Tallocator> SlStorageT;
+	typedef Tstorage<Tvar> SlStorageT;
 public:
 	/**
 	 * Internal templated helper to return the size in bytes of a list-like type.
@@ -1166,18 +1166,18 @@ static inline size_t SlCalcRefListLen(const void *list, VarType conv)
 }
 
 /**
- * Return the size in bytes of a deque.
- * @param list The std::list to find the size of.
+ * Return the size in bytes of a ring buffer.
+ * @param list The ring buffer to find the size of.
  * @param conv VarType type of variable that is used for calculating the size.
  */
-static inline size_t SlCalcRefDequeLen(const void *list, VarType conv)
+static inline size_t SlCalcRefRingLen(const void *list, VarType conv)
 {
-	return SlStorageHelper<std::deque, void *>::SlCalcLen(list, conv, SL_REF);
+	return SlStorageHelper<ring_buffer, void *>::SlCalcLen(list, conv, SL_REF);
 }
 
 /**
  * Return the size in bytes of a vector.
- * @param list The std::list to find the size of.
+ * @param list The std::vector to find the size of.
  * @param conv VarType type of variable that is used for calculating the size.
  */
 static inline size_t SlCalcRefVectorLen(const void *list, VarType conv)
@@ -1203,24 +1203,24 @@ static void SlRefList(void *list, VarType conv)
 }
 
 /**
- * Save/Load a deque.
+ * Save/Load a ring buffer.
  * @param list The list being manipulated.
  * @param conv VarType type of variable that is used for calculating the size.
  */
-static void SlRefDeque(void *list, VarType conv)
+static void SlRefRing(void *list, VarType conv)
 {
 	/* Automatically calculate the length? */
 	if (_sl.need_length != NL_NONE) {
-		SlSetLength(SlCalcRefDequeLen(list, conv));
+		SlSetLength(SlCalcRefRingLen(list, conv));
 		/* Determine length only? */
 		if (_sl.need_length == NL_CALCLENGTH) return;
 	}
 
-	SlStorageHelper<std::deque, void *>::SlSaveLoad(list, conv, SL_REF);
+	SlStorageHelper<ring_buffer, void *>::SlSaveLoad(list, conv, SL_REF);
 }
 
 /**
- * Save/Load a deque.
+ * Save/Load a vector.
  * @param list The list being manipulated.
  * @param conv VarType type of variable that is used for calculating the size.
  */
@@ -1237,43 +1237,43 @@ static void SlRefVector(void *list, VarType conv)
 }
 
 /**
- * Return the size in bytes of a std::deque.
- * @param deque The std::deque to find the size of
+ * Return the size in bytes of a ring buffer.
+ * @param ring The ring buffer to find the size of
  * @param conv VarType type of variable that is used for calculating the size
  */
-static inline size_t SlCalcDequeLen(const void *deque, VarType conv)
+static inline size_t SlCalcRingLen(const void *ring, VarType conv)
 {
 	switch (GetVarMemType(conv)) {
-		case SLE_VAR_BL: return SlStorageHelper<std::deque, bool>::SlCalcLen(deque, conv);
-		case SLE_VAR_I8: return SlStorageHelper<std::deque, int8>::SlCalcLen(deque, conv);
-		case SLE_VAR_U8: return SlStorageHelper<std::deque, uint8>::SlCalcLen(deque, conv);
-		case SLE_VAR_I16: return SlStorageHelper<std::deque, int16>::SlCalcLen(deque, conv);
-		case SLE_VAR_U16: return SlStorageHelper<std::deque, uint16>::SlCalcLen(deque, conv);
-		case SLE_VAR_I32: return SlStorageHelper<std::deque, int32>::SlCalcLen(deque, conv);
-		case SLE_VAR_U32: return SlStorageHelper<std::deque, uint32>::SlCalcLen(deque, conv);
-		case SLE_VAR_I64: return SlStorageHelper<std::deque, int64>::SlCalcLen(deque, conv);
-		case SLE_VAR_U64: return SlStorageHelper<std::deque, uint64>::SlCalcLen(deque, conv);
+		case SLE_VAR_BL: return SlStorageHelper<ring_buffer, bool>::SlCalcLen(ring, conv);
+		case SLE_VAR_I8: return SlStorageHelper<ring_buffer, int8>::SlCalcLen(ring, conv);
+		case SLE_VAR_U8: return SlStorageHelper<ring_buffer, uint8>::SlCalcLen(ring, conv);
+		case SLE_VAR_I16: return SlStorageHelper<ring_buffer, int16>::SlCalcLen(ring, conv);
+		case SLE_VAR_U16: return SlStorageHelper<ring_buffer, uint16>::SlCalcLen(ring, conv);
+		case SLE_VAR_I32: return SlStorageHelper<ring_buffer, int32>::SlCalcLen(ring, conv);
+		case SLE_VAR_U32: return SlStorageHelper<ring_buffer, uint32>::SlCalcLen(ring, conv);
+		case SLE_VAR_I64: return SlStorageHelper<ring_buffer, int64>::SlCalcLen(ring, conv);
+		case SLE_VAR_U64: return SlStorageHelper<ring_buffer, uint64>::SlCalcLen(ring, conv);
 		default: NOT_REACHED();
 	}
 }
 
 /**
- * Save/load a std::deque.
- * @param deque The std::deque being manipulated
+ * Save/load a ring buffer.
+ * @param ring The ring buffer being manipulated
  * @param conv VarType type of variable that is used for calculating the size
  */
-static void SlDeque(void *deque, VarType conv)
+static void SlRing(void *ring, VarType conv)
 {
 	switch (GetVarMemType(conv)) {
-		case SLE_VAR_BL: SlStorageHelper<std::deque, bool>::SlSaveLoad(deque, conv); break;
-		case SLE_VAR_I8: SlStorageHelper<std::deque, int8>::SlSaveLoad(deque, conv); break;
-		case SLE_VAR_U8: SlStorageHelper<std::deque, uint8>::SlSaveLoad(deque, conv); break;
-		case SLE_VAR_I16: SlStorageHelper<std::deque, int16>::SlSaveLoad(deque, conv); break;
-		case SLE_VAR_U16: SlStorageHelper<std::deque, uint16>::SlSaveLoad(deque, conv); break;
-		case SLE_VAR_I32: SlStorageHelper<std::deque, int32>::SlSaveLoad(deque, conv); break;
-		case SLE_VAR_U32: SlStorageHelper<std::deque, uint32>::SlSaveLoad(deque, conv); break;
-		case SLE_VAR_I64: SlStorageHelper<std::deque, int64>::SlSaveLoad(deque, conv); break;
-		case SLE_VAR_U64: SlStorageHelper<std::deque, uint64>::SlSaveLoad(deque, conv); break;
+		case SLE_VAR_BL: SlStorageHelper<ring_buffer, bool>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_I8: SlStorageHelper<ring_buffer, int8>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_U8: SlStorageHelper<ring_buffer, uint8>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_I16: SlStorageHelper<ring_buffer, int16>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_U16: SlStorageHelper<ring_buffer, uint16>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_I32: SlStorageHelper<ring_buffer, int32>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_U32: SlStorageHelper<ring_buffer, uint32>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_I64: SlStorageHelper<ring_buffer, int64>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_U64: SlStorageHelper<ring_buffer, uint64>::SlSaveLoad(ring, conv); break;
 		default: NOT_REACHED();
 	}
 }
@@ -1383,9 +1383,9 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld)
 		case SL_ARR: return SlCalcArrayLen(sld.length, sld.conv);
 		case SL_STR: return SlCalcStringLen(GetVariableAddress(object, sld), sld.length, sld.conv);
 		case SL_REFLIST: return SlCalcRefListLen(GetVariableAddress(object, sld), sld.conv);
-		case SL_REFDEQUE: return SlCalcRefDequeLen(GetVariableAddress(object, sld), sld.conv);
+		case SL_REFRING: return SlCalcRefRingLen(GetVariableAddress(object, sld), sld.conv);
 		case SL_REFVEC: return SlCalcRefVectorLen(GetVariableAddress(object, sld), sld.conv);
-		case SL_DEQUE: return SlCalcDequeLen(GetVariableAddress(object, sld), sld.conv);
+		case SL_RING: return SlCalcRingLen(GetVariableAddress(object, sld), sld.conv);
 		case SL_VECTOR: return SlCalcVectorLen(GetVariableAddress(object, sld), sld.conv);
 		case SL_STDSTR: return SlCalcStdStringLen(GetVariableAddress(object, sld));
 		case SL_SAVEBYTE: return 1; // a byte is logically of size 1
@@ -1481,9 +1481,9 @@ static bool SlObjectMember(void *object, const SaveLoad &sld)
 		case SL_ARR:
 		case SL_STR:
 		case SL_REFLIST:
-		case SL_REFDEQUE:
+		case SL_REFRING:
 		case SL_REFVEC:
-		case SL_DEQUE:
+		case SL_RING:
 		case SL_VECTOR:
 		case SL_STDSTR: {
 			void *ptr = GetVariableAddress(object, sld);
@@ -1494,9 +1494,9 @@ static bool SlObjectMember(void *object, const SaveLoad &sld)
 				case SL_ARR: SlArray(ptr, sld.length, conv); break;
 				case SL_STR: SlString(ptr, sld.length, sld.conv); break;
 				case SL_REFLIST: SlRefList(ptr, conv); break;
-				case SL_REFDEQUE: SlRefDeque(ptr, conv); break;
+				case SL_REFRING: SlRefRing(ptr, conv); break;
 				case SL_REFVEC: SlRefVector(ptr, conv); break;
-				case SL_DEQUE: SlDeque(ptr, conv); break;
+				case SL_RING: SlRing(ptr, conv); break;
 				case SL_VECTOR: SlVector(ptr, conv); break;
 				case SL_STDSTR: SlStdString(ptr, sld.conv); break;
 				default: NOT_REACHED();
