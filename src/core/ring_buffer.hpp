@@ -102,27 +102,15 @@ public:
 		using difference_type = std::ptrdiff_t;
 		using value_type = T;
 		using reference = V &;
-		using const_reference = const V &;
 		using pointer = V *;
-		using const_pointer = const V *;
 		using iterator_category = std::bidirectional_iterator_tag;
 
-		reference operator *()
+		reference operator *() const
 		{
 			return *this->ring->ptr_at_pos(this->pos);
 		}
 
-		const_reference operator *() const
-		{
-			return *this->ring->ptr_at_pos(this->pos);
-		}
-
-		pointer operator ->()
-		{
-			return this->ring->ptr_at_pos(this->pos);
-		}
-
-		const_pointer operator ->() const
+		pointer operator ->() const
 		{
 			return this->ring->ptr_at_pos(this->pos);
 		}
