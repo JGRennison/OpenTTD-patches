@@ -652,6 +652,69 @@ public:
 		return this->insert(pos, values.begin(), values.end());
 	}
 
+private:
+	uint32 do_erase(uint32 pos, uint32 num)
+	{
+		if (pos == this->head) {
+			/* erase from beginning */
+			for (uint32 i = 0; i < num; i++) {
+				this->ptr_at_pos(pos + i)->~T();
+			}
+			this->head += num;
+			this->count -= num;
+			return this->head;
+		} else if (pos + num == this->head + this->count) {
+			/* erase from end */
+			for (uint32 i = 0; i < num; i++) {
+				this->ptr_at_pos(pos + i)->~T();
+			}
+			this->count -= num;
+			return pos;
+		} else if (pos - this->head < this->head + this->count - (pos + num)) {
+			/* closer to the beginning, shuffle beginning forwards to fill gap */
+			const uint32 new_head = this->head + num;
+			const uint32 erase_end = pos + num;
+			for (uint32 idx = erase_end - 1; idx != new_head - 1; idx--) {
+				*this->ptr_at_pos(idx) = std::move(*this->ptr_at_pos(idx - num));
+			}
+			for (uint32 idx = new_head - 1; idx != this->head - 1; idx--) {
+				this->ptr_at_pos(idx)->~T();
+			}
+			this->head = new_head;
+			this->count -= num;
+			return pos + num;
+		} else {
+			/* closer to the end, shuffle end backwards to fill gap */
+			const uint32 current_end = this->head + this->count;
+			const uint32 new_end = current_end - num;
+			for (uint32 idx = pos; idx != new_end; idx++) {
+				*this->ptr_at_pos(idx) = std::move(*this->ptr_at_pos(idx + num));
+			}
+			for (uint32 idx = new_end; idx != current_end; idx++) {
+				this->ptr_at_pos(idx)->~T();
+			}
+			this->count -= num;
+			return pos;
+		}
+	}
+
+public:
+	iterator erase(ring_buffer_iterator_base pos)
+	{
+		dbg_assert(pos.ring == this);
+
+		return iterator(this, this->do_erase(pos.pos, 1));
+	}
+
+	iterator erase(ring_buffer_iterator_base first, ring_buffer_iterator_base last)
+	{
+		if (first.ring == last.ring && first.pos == last.pos) return last;
+
+		dbg_assert(first.ring == this && last.ring == this);
+
+		return iterator(this, this->do_erase(first.pos, last.pos - first.pos));
+	}
+
 	void reserve(size_t new_cap)
 	{
 		if (new_cap <= this->capacity()) return;

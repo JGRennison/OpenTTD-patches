@@ -353,6 +353,100 @@ TEST_CASE("RingBuffer - insert multi in middle")
 	CHECK(iter == ring.begin() + 2);
 }
 
+TEST_CASE("RingBuffer - erase")
+{
+	ring_buffer<uint32> ring;
+	auto setup_ring = [&]() {
+		ring = ring_buffer<uint32>({ 3, 4, 5, 6, 7, 8 });
+		ring.push_front(2);
+		ring.push_front(1);
+		CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6, 7, 8 }));
+		CHECK(ring.capacity() == 8);
+	};
+
+	setup_ring();
+	uint32 *expect_front = &ring[1];
+	auto iter = ring.erase(ring.begin());
+	CHECK(Matches(ring, { 2, 3, 4, 5, 6, 7, 8 }));
+	CHECK(ring.capacity() == 8);
+	CHECK(iter == ring.begin());
+	CHECK(expect_front == &ring[0]);
+
+	setup_ring();
+	uint32 *expect_back = &ring[ring.size() - 2];
+	iter = ring.erase(ring.end() - 1);
+	CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6, 7 }));
+	CHECK(ring.capacity() == 8);
+	CHECK(iter == ring.end());
+	CHECK(expect_back == &ring[ring.size() - 1]);
+
+	setup_ring();
+	expect_front = &ring[1];
+	iter = ring.erase(ring.begin() + 2);
+	CHECK(Matches(ring, { 1, 2, 4, 5, 6, 7, 8 }));
+	CHECK(ring.capacity() == 8);
+	CHECK(iter == ring.begin() + 2);
+	CHECK(expect_front == &ring[0]);
+
+	setup_ring();
+	expect_back = &ring[ring.size() - 2];
+	iter = ring.erase(ring.end() - 3);
+	CHECK(Matches(ring, { 1, 2, 3, 4, 5, 7, 8 }));
+	CHECK(ring.capacity() == 8);
+	CHECK(iter == ring.end() - 2);
+	CHECK(expect_back == &ring[ring.size() - 1]);
+}
+
+TEST_CASE("RingBuffer - erase multi")
+{
+	ring_buffer<uint32> ring;
+	auto setup_ring = [&]() {
+		ring = ring_buffer<uint32>({ 3, 4, 5, 6, 7, 8 });
+		ring.push_front(2);
+		ring.push_front(1);
+		CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6, 7, 8 }));
+		CHECK(ring.capacity() == 8);
+	};
+
+	setup_ring();
+	uint32 *expect_front = &ring[2];
+	auto iter = ring.erase(ring.begin(), ring.begin() + 2);
+	CHECK(Matches(ring, { 3, 4, 5, 6, 7, 8 }));
+	CHECK(ring.capacity() == 8);
+	CHECK(iter == ring.begin());
+	CHECK(expect_front == &ring[0]);
+
+	setup_ring();
+	uint32 *expect_back = &ring[ring.size() - 3];
+	iter = ring.erase(ring.end() - 2, ring.end());
+	CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6 }));
+	CHECK(ring.capacity() == 8);
+	CHECK(iter == ring.end());
+	CHECK(expect_back == &ring[ring.size() - 1]);
+
+	setup_ring();
+	expect_front = &ring[2];
+	iter = ring.erase(ring.begin() + 2, ring.begin() + 4);
+	CHECK(Matches(ring, { 1, 2, 5, 6, 7, 8 }));
+	CHECK(ring.capacity() == 8);
+	CHECK(iter == ring.begin() + 2);
+	CHECK(expect_front == &ring[0]);
+
+	setup_ring();
+	expect_back = &ring[ring.size() - 3];
+	iter = ring.erase(ring.end() - 4, ring.end() - 2);
+	CHECK(Matches(ring, { 1, 2, 3, 4, 7, 8 }));
+	CHECK(ring.capacity() == 8);
+	CHECK(iter == ring.end() - 2);
+	CHECK(expect_back == &ring[ring.size() - 1]);
+
+	setup_ring();
+	iter = ring.erase(ring.begin() + 1, ring.end() - 1);
+	CHECK(Matches(ring, { 1, 8 }));
+	CHECK(ring.capacity() == 8);
+	CHECK(iter == ring.begin() + 1);
+}
+
 TEST_CASE("RingBuffer - shrink to fit")
 {
 	ring_buffer<uint32> ring({ 3, 4, 5, 6, 7, 8 });
