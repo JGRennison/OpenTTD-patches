@@ -192,6 +192,11 @@ public:
 		}
 	};
 
+	using difference_type = std::ptrdiff_t;
+	using size_type = size_t;
+	using value_type = T;
+	using reference = T &;
+	using const_reference = const T &;
 	typedef ring_buffer_iterator<T, false> iterator;
 	typedef ring_buffer_iterator<const T, false> const_iterator;
 	typedef ring_buffer_iterator<T, true> reverse_iterator;

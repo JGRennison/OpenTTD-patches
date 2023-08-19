@@ -29,6 +29,7 @@ add_files(
     random_func.cpp
     random_func.hpp
     ring_buffer.hpp
+    ring_buffer_queue.hpp
     serialisation.cpp
     serialisation.hpp
     smallstack_type.hpp

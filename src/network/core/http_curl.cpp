@@ -14,6 +14,7 @@
 #include "../../fileio_func.h"
 #include "../../rev.h"
 #include "../../thread.h"
+#include "../../core/ring_buffer_queue.hpp"
 #include "../network_internal.h"
 
 #include "http.h"
@@ -23,7 +24,6 @@
 #include <curl/curl.h>
 #include <memory>
 #include <mutex>
-#include <queue>
 
 #include "../../safeguards.h"
 
@@ -69,7 +69,7 @@ public:
 
 static std::thread _http_thread;
 static std::atomic<bool> _http_thread_exit = false;
-static std::queue<std::unique_ptr<NetworkHTTPRequest>> _http_requests;
+static ring_buffer_queue<std::unique_ptr<NetworkHTTPRequest>> _http_requests;
 static std::mutex _http_mutex;
 static std::condition_variable _http_cv;
 #if defined(UNIX)

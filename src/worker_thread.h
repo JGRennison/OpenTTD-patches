@@ -10,7 +10,7 @@
 #ifndef WORKER_THREAD_H
 #define WORKER_THREAD_H
 
-#include <queue>
+#include "core/ring_buffer_queue.hpp"
 #include <mutex>
 #include <condition_variable>
 #if defined(__MINGW32__)
@@ -33,7 +33,7 @@ private:
 	uint workers_waiting = 0;
 	bool exit = false;
 	std::mutex lock;
-	std::queue<WorkerJob> jobs;
+	ring_buffer_queue<WorkerJob> jobs;
 	std::condition_variable worker_wait_cv;
 	std::condition_variable done_cv;
 

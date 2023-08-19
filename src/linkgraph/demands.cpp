@@ -2,13 +2,13 @@
 
 #include "../stdafx.h"
 #include "demands.h"
-#include <queue>
+#include "../core/ring_buffer_queue.hpp"
 #include <algorithm>
 #include <tuple>
 
 #include "../safeguards.h"
 
-typedef std::queue<NodeID> NodeList;
+typedef ring_buffer_queue<NodeID> NodeList;
 
 /**
  * Scale various things according to symmetric/asymmetric distribution.
