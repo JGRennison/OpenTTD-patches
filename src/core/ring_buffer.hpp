@@ -46,6 +46,9 @@ class ring_buffer
 
 		ring_buffer_iterator_base(const ring_buffer *ring, uint32 pos)
 				: ring(ring), pos(pos) {}
+
+	public:
+		uint32 debug_raw_position() const { return this->pos; }
 	};
 
 public:
