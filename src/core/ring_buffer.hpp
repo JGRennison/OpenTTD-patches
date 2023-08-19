@@ -528,12 +528,11 @@ private:
 			/* front */
 			this->count += num;
 			this->head -= num;
-			return 0;
+			return this->head;
 		} else if (pos == this->head + this->count) {
 			/* back */
-			uint32 ret = this->count;
 			this->count += num;
-			return ret;
+			return pos;
 		} else {
 			/* middle, move data */
 			if (pos - this->head < (this->count / 2)) {
@@ -557,18 +556,18 @@ private:
 				return insert_start;
 			} else {
 				/* closer to the end, shuffle those forwards */
-				const uint32 after_insert = pos + num;
+				const uint32 last_inserted = pos + num - 1;
 				const uint32 last = this->head + this->count - 1;
 				const uint32 new_last = last + num;
 				for (uint32 idx = new_last; idx != last; idx--) {
 					/* Move construct to move forwards into uninitialised region */
 					new (this->raw_ptr_at_pos(idx)) T(std::move(*(this->ptr_at_pos(idx - num))));
 				}
-				for (uint32 idx = last; idx != after_insert; idx--) {
-					/* Move assign to move backwards in initialised region */
+				for (uint32 idx = last; idx != last_inserted; idx--) {
+					/* Move assign to move forwards in initialised region */
 					*this->ptr_at_pos(idx) = std::move(*this->ptr_at_pos(idx - num));
 				}
-				for (uint32 idx = after_insert; idx != pos; idx--) {
+				for (uint32 idx = last_inserted; idx != pos; idx--) {
 					/* Destruct to leave space for inserts */
 					this->ptr_at_pos(idx)->~T();
 				}
