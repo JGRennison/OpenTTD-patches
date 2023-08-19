@@ -13,7 +13,8 @@
 #include "game_info.hpp"
 #include "game_scanner.hpp"
 #include "../debug.h"
-#include <set>
+#include <algorithm>
+#include <initializer_list>
 
 #include "../safeguards.h"
 
@@ -23,8 +24,8 @@
  */
 static bool CheckAPIVersion(const std::string &api_version)
 {
-	static const std::set<std::string> versions = { "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "1.10", "1.11", "12", "13", "14" };
-	return versions.find(api_version) != versions.end();
+	static constexpr std::initializer_list<const char*> versions{ "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "1.10", "1.11", "12", "13", "14" };
+	return std::find_if(versions.begin(), versions.end(), [&](const char *v) { return api_version == v; }) != versions.end();
 }
 
 #if defined(_WIN32)
