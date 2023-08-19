@@ -296,6 +296,63 @@ TEST_CASE("RingBuffer - insert in middle (end) grow")
 	CHECK(iter == ring.begin() + 6);
 }
 
+TEST_CASE("RingBuffer - insert multi at start")
+{
+	ring_buffer<uint32> ring({ 3, 4, 5, 6, 7, 8 });
+	auto iter = ring.insert(ring.begin(), { 1, 2 });
+	CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6, 7, 8 }));
+	CHECK(ring.capacity() == 8);
+	CHECK(iter == ring.begin());
+
+	iter = ring.insert(ring.begin(), { 10, 11 });
+	CHECK(Matches(ring, { 10, 11, 1, 2, 3, 4, 5, 6, 7, 8 }));
+	CHECK(ring.capacity() == 16);
+	CHECK(iter == ring.begin());
+
+	iter = ring.insert(ring.begin(), 2, 24);
+	CHECK(Matches(ring, { 24, 24, 10, 11, 1, 2, 3, 4, 5, 6, 7, 8 }));
+	CHECK(ring.capacity() == 16);
+	CHECK(iter == ring.begin());
+}
+
+TEST_CASE("RingBuffer - insert multi at end")
+{
+	ring_buffer<uint32> ring({ 3, 4, 5, 6, 7, 8 });
+	auto iter = ring.insert(ring.end(), { 1, 2 });
+	CHECK(Matches(ring, { 3, 4, 5, 6, 7, 8, 1, 2 }));
+	CHECK(ring.capacity() == 8);
+	CHECK(iter == ring.end() - 2);
+
+	iter = ring.insert(ring.end(), { 10, 11 });
+	CHECK(Matches(ring, { 3, 4, 5, 6, 7, 8, 1, 2, 10, 11 }));
+	CHECK(ring.capacity() == 16);
+	CHECK(iter == ring.end() - 2);
+
+	iter = ring.insert(ring.end(), 2, 24);
+	CHECK(Matches(ring, { 3, 4, 5, 6, 7, 8, 1, 2, 10, 11, 24, 24 }));
+	CHECK(ring.capacity() == 16);
+	CHECK(iter == ring.end() - 2);
+}
+
+TEST_CASE("RingBuffer - insert multi in middle")
+{
+	ring_buffer<uint32> ring({ 3, 4, 5, 6, 7, 8 });
+	auto iter = ring.insert(ring.begin() + 3, { 1, 2 });
+	CHECK(Matches(ring, { 3, 4, 5, 1, 2, 6, 7, 8 }));
+	CHECK(ring.capacity() == 8);
+	CHECK(iter == ring.begin() + 3);
+
+	iter = ring.insert(ring.begin() + 7, { 10, 11 });
+	CHECK(Matches(ring, { 3, 4, 5, 1, 2, 6, 7, 10, 11, 8 }));
+	CHECK(ring.capacity() == 16);
+	CHECK(iter == ring.begin() + 7);
+
+	iter = ring.insert(ring.begin() + 2, 2, 24);
+	CHECK(Matches(ring, { 3, 4, 24, 24, 5, 1, 2, 6, 7, 10, 11, 8 }));
+	CHECK(ring.capacity() == 16);
+	CHECK(iter == ring.begin() + 2);
+}
+
 TEST_CASE("RingBuffer - shrink to fit")
 {
 	ring_buffer<uint32> ring({ 3, 4, 5, 6, 7, 8 });

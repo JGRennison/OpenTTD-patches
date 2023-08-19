@@ -13,6 +13,9 @@
 #include "alloc_type.hpp"
 #include "bitmath_func.hpp"
 
+#include <iterator>
+#include <type_traits>
+
 /**
  * Self-resizing ring-buffer
  *
@@ -611,6 +614,42 @@ public:
 	iterator insert(ring_buffer_iterator_base pos, T&& value)
 	{
 		return this->emplace(pos, std::move(value));
+	}
+
+	iterator insert(ring_buffer_iterator_base pos, size_t count, const T& value)
+	{
+		if (count == 0) return iterator(pos);
+
+		dbg_assert(pos.ring == this);
+
+		const uint32 new_pos_start = this->setup_insert(pos.pos, count);
+		uint32 new_pos = new_pos_start;
+		for (size_t i = 0; i != count; i++) {
+			new (this->raw_ptr_at_pos(new_pos)) T(value);
+			++new_pos;
+		}
+		return iterator(this, new_pos_start);
+	}
+
+	template <typename InputIt, typename = std::enable_if_t<std::is_convertible<typename std::iterator_traits<InputIt>::iterator_category, std::input_iterator_tag>::value>>
+	iterator insert(ring_buffer_iterator_base pos, InputIt first, InputIt last)
+	{
+		if (first == last) return iterator(pos);
+
+		dbg_assert(pos.ring == this);
+
+		const uint32 new_pos_start = this->setup_insert(pos.pos, (uint32)std::distance(first, last));
+		uint32 new_pos = new_pos_start;
+		for (auto iter = first; iter != last; ++iter) {
+			new (this->raw_ptr_at_pos(new_pos)) T(*iter);
+			++new_pos;
+		}
+		return iterator(this, new_pos_start);
+	}
+
+	iterator insert(ring_buffer_iterator_base pos, std::initializer_list<T> values)
+	{
+		return this->insert(pos, values.begin(), values.end());
 	}
 
 	void reserve(size_t new_cap)
