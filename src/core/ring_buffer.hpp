@@ -61,6 +61,9 @@ public:
 		ring_buffer_iterator()
 				: ring_buffer_iterator_base() {}
 
+		ring_buffer_iterator(const ring_buffer_iterator_base &other)
+				: ring_buffer_iterator_base(other.ring, other.pos) {}
+
 	private:
 		ring_buffer_iterator(const ring_buffer *ring, uint32 pos)
 				: ring_buffer_iterator_base(ring, pos) {}
@@ -151,12 +154,12 @@ public:
 			return *this;
 		}
 
-		bool operator ==(const ring_buffer_iterator &other) const
+		bool operator ==(const ring_buffer_iterator_base &other) const
 		{
 			return (this->ring == other.ring) && (this->pos == other.pos);
 		}
 
-		bool operator !=(const ring_buffer_iterator &other) const
+		bool operator !=(const ring_buffer_iterator_base &other) const
 		{
 			return !operator ==(other);
 		}
