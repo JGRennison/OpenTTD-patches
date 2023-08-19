@@ -57,13 +57,14 @@ public:
 	{
 		friend class ring_buffer;
 
+	public:
 		ring_buffer_iterator()
 				: ring_buffer_iterator_base() {}
 
+	private:
 		ring_buffer_iterator(const ring_buffer *ring, uint32 pos)
 				: ring_buffer_iterator_base(ring, pos) {}
 
-	private:
 		void next()
 		{
 			if (REVERSE) {
