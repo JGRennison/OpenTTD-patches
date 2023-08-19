@@ -160,7 +160,7 @@ public:
 		ring_buffer_iterator operator +(std::ptrdiff_t delta) const
 		{
 			ring_buffer_iterator tmp = *this;
-			this->move(delta);
+			tmp += delta;
 			return tmp;
 		}
 
@@ -173,7 +173,7 @@ public:
 		ring_buffer_iterator operator -(std::ptrdiff_t delta) const
 		{
 			ring_buffer_iterator tmp = *this;
-			this->move(-delta);
+			tmp -= delta;
 			return tmp;
 		}
 
