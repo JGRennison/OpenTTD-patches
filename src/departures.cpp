@@ -34,14 +34,13 @@
 #include "departures_type.h"
 #include "tracerestrict.h"
 #include "3rdparty/cpp-btree/btree_set.h"
+#include "3rdparty/cpp-btree/btree_map.h"
 
-#include <map>
-#include <set>
 #include <vector>
 #include <algorithm>
 
 /* A cache of used departure time for scheduled dispatch in departure time calculation */
-typedef std::map<const DispatchSchedule *, btree::btree_set<DateTicksScaled>> schdispatch_cache_t;
+typedef btree::btree_map<const DispatchSchedule *, btree::btree_set<DateTicksScaled>> schdispatch_cache_t;
 
 /** A scheduled order. */
 typedef struct OrderDate
@@ -167,7 +166,7 @@ static bool VehicleSetNextDepartureTime(DateTicks *previous_departure, uint *wai
 static void ScheduledDispatchDepartureLocalFix(DepartureList *departure_list)
 {
 	/* Seperate departure by each shared order group */
-	std::map<uint32, std::vector<Departure*>> separated_departure;
+	btree::btree_map<uint32, std::vector<Departure*>> separated_departure;
 	for (Departure* departure : *departure_list) {
 		separated_departure[departure->vehicle->orders->index].push_back(departure);
 	}
