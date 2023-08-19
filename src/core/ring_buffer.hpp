@@ -227,7 +227,7 @@ public:
 		}
 	}
 
-	ring_buffer(ring_buffer &&other)
+	ring_buffer(ring_buffer &&other) noexcept
 	{
 		std::swap(this->data, other.data);
 		std::swap(this->head, other.head);
@@ -264,7 +264,7 @@ public:
 		return *this;
 	}
 
-	ring_buffer& operator =(ring_buffer &&other)
+	ring_buffer& operator =(ring_buffer &&other) noexcept
 	{
 		if (&other != this) {
 			std::swap(this->data, other.data);
@@ -280,6 +280,14 @@ public:
 		for (T &item : *this) {
 			item.~T();
 		}
+	}
+
+	void swap(ring_buffer &other) noexcept
+	{
+		std::swap(this->data, other.data);
+		std::swap(this->head, other.head);
+		std::swap(this->count, other.count);
+		std::swap(this->mask, other.mask);
 	}
 
 	bool operator ==(const ring_buffer& other) const
