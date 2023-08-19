@@ -201,19 +201,25 @@ public:
 
 	ring_buffer() = default;
 
+	template <typename U>
+	void construct_from(const U &other)
+	{
+		uint32 cap = round_up_size((uint32)other.size());
+		this->data.reset(MallocT<byte>(cap * sizeof(T)));
+		this->mask = cap - 1;
+		this->head = 0;
+		this->count = (uint32)other.size();
+		byte *ptr = this->data.get();
+		for (const T &item : other) {
+			new (ptr) T(item);
+			ptr += sizeof(T);
+		}
+	}
+
 	ring_buffer(const ring_buffer &other)
 	{
 		if (!other.empty()) {
-			uint32 cap = round_up_size(other.count);
-			this->data.reset(MallocT<byte>(cap * sizeof(T)));
-			this->mask = cap - 1;
-			this->head = 0;
-			this->count = other.size();
-			byte *ptr = this->data.get();
-			for (const T &item : other) {
-				new (ptr) T(item);
-				ptr += sizeof(T);
-			}
+			this->construct_from(other);
 		}
 	}
 
@@ -223,6 +229,13 @@ public:
 		std::swap(this->head, other.head);
 		std::swap(this->count, other.count);
 		std::swap(this->mask, other.mask);
+	}
+
+	ring_buffer(std::initializer_list<T> init)
+	{
+		if (init.size() > 0) {
+			this->construct_from(init);
+		}
 	}
 
 	ring_buffer& operator =(const ring_buffer &other)
