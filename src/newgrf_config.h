@@ -17,7 +17,7 @@
 #include "textfile_type.h"
 #include "newgrf_text.h"
 #include "3rdparty/md5/md5.h"
-#include <map>
+#include "3rdparty/cpp-btree/btree_map.h"
 #include <vector>
 #include <optional>
 
@@ -140,7 +140,7 @@ struct GRFParameterInfo {
 	byte param_nr;         ///< GRF parameter to store content in
 	byte first_bit;        ///< First bit to use in the GRF parameter
 	byte num_bit;          ///< Number of bits to use for this parameter
-	std::map<uint32_t, GRFTextList> value_names; ///< Names for each value.
+	btree::btree_map<uint32_t, GRFTextList> value_names; ///< Names for each value.
 	bool complete_labels;  ///< True if all values have a label.
 
 	uint32 GetValue(struct GRFConfig *config) const;
