@@ -469,7 +469,7 @@ void Station::UpdateCargoHistory()
 	uint storage_offset = 0;
 	bool update_window = false;
 	for (const CargoSpec *cs : CargoSpec::Iterate()) {
-		uint amount = this->goods[cs->Index()].cargo.TotalCount();
+		uint amount = this->goods[cs->Index()].CargoTotalCount();
 		if (!HasBit(this->station_cargo_history_cargoes, cs->Index())) {
 			if (amount == 0) {
 				/* No cargo present, and no history stored for this cargo, no work to do */
@@ -4115,8 +4115,10 @@ static void TruncateCargo(const CargoSpec *cs, GoodsEntry *ge, uint amount = UIN
 	/* If truncating also punish the source stations' ratings to
 	 * decrease the flow of incoming cargo. */
 
+	if (ge->data == nullptr) return;
+
 	StationCargoAmountMap waiting_per_source;
-	ge->cargo.Truncate(amount, &waiting_per_source);
+	ge->data->cargo.Truncate(amount, &waiting_per_source);
 	for (StationCargoAmountMap::iterator i(waiting_per_source.begin()); i != waiting_per_source.end(); ++i) {
 		Station *source_station = Station::GetIfValid(i->first);
 		if (source_station == nullptr) continue;
@@ -4290,12 +4292,12 @@ static void UpdateStationRating(Station *st)
 			{
 				int rating = GetTargetRating(st, cs, ge);
 
-				uint waiting = ge->cargo.AvailableCount();
+				uint waiting = ge->CargoAvailableCount();
 
 				/* num_dests is at least 1 if there is any cargo as
 				 * INVALID_STATION is also a destination.
 				 */
-				const uint num_dests = (uint)ge->cargo.Packets()->MapSize();
+				const uint num_dests = ge->data != nullptr ? (uint)ge->data->cargo.Packets()->MapSize() : 0;
 
 				/* Average amount of cargo per next hop, but prefer solitary stations
 				 * with only one or two next hops. They are allowed to have more
@@ -4352,12 +4354,12 @@ static void UpdateStationRating(Station *st)
 
 				/* We can't truncate cargo that's already reserved for loading.
 				 * Thus StoredCount() here. */
-				if (waiting_changed && waiting < ge->cargo.AvailableCount()) {
+				if (waiting_changed && waiting < ge->CargoAvailableCount()) {
 					/* Feed back the exact own waiting cargo at this station for the
 					 * next rating calculation. */
 					ge->max_waiting_cargo = 0;
 
-					TruncateCargo(cs, ge, ge->cargo.AvailableCount() - waiting);
+					TruncateCargo(cs, ge, ge->CargoAvailableCount() - waiting);
 				} else {
 					/* If the average number per next hop is low, be more forgiving. */
 					ge->max_waiting_cargo = waiting_avg;
@@ -4388,7 +4390,7 @@ void RerouteCargo(Station *st, CargoID c, StationID avoid, StationID avoid2)
 	GoodsEntry &ge = st->goods[c];
 
 	/* Reroute cargo in station. */
-	ge.cargo.Reroute(UINT_MAX, &ge.cargo, avoid, avoid2, &ge);
+	if (ge.data != nullptr) ge.data->cargo.Reroute(UINT_MAX, &ge.data->cargo, avoid, avoid2, &ge);
 
 	/* Reroute cargo staged to be transferred. */
 	for (Vehicle *v : st->loading_vehicles) {
@@ -4413,7 +4415,7 @@ void RerouteCargoFromSource(Station *st, CargoID c, StationID source, StationID 
 	GoodsEntry &ge = st->goods[c];
 
 	/* Reroute cargo in station. */
-	ge.cargo.RerouteFromSource(UINT_MAX, &ge.cargo, source, avoid, avoid2, &ge);
+	if (ge.data != nullptr) ge.data->cargo.RerouteFromSource(UINT_MAX, &ge.data->cargo, source, avoid, avoid2, &ge);
 
 	/* Reroute cargo staged to be transferred. */
 	for (Vehicle *v : st->loading_vehicles) {
@@ -4520,12 +4522,12 @@ void DeleteStaleLinks(Station *from)
 				if (!updated) {
 					/* If it's still considered dead remove it. */
 					result = LinkGraph::EdgeIterationResult::EraseEdge;
-					ge.flows.DeleteFlows(to->index);
+					if (ge.data != nullptr) ge.data->flows.DeleteFlows(to->index);
 					RerouteCargo(from, c, to->index, from->index);
 				}
 			} else if (edge.LastUnrestrictedUpdate() != INVALID_DATE && (uint)(_date - edge.LastUnrestrictedUpdate()) > timeout) {
 				edge.Restrict();
-				ge.flows.RestrictFlows(to->index);
+				if (ge.data != nullptr) ge.data->flows.RestrictFlows(to->index);
 				RerouteCargo(from, c, to->index, from->index);
 			} else if (edge.LastRestrictedUpdate() != INVALID_DATE && (uint)(_date - edge.LastRestrictedUpdate()) > timeout) {
 				edge.Release();
@@ -4697,7 +4699,7 @@ static uint UpdateStationWaiting(Station *st, CargoID type, uint amount, SourceT
 	if (amount == 0) return 0;
 
 	StationID next = ge.GetVia(st->index);
-	ge.cargo.Append(new CargoPacket(st->index, st->xy, amount, source_type, source_id), next);
+	ge.CreateData().cargo.Append(new CargoPacket(st->index, st->xy, amount, source_type, source_id), next);
 	LinkGraph *lg = nullptr;
 	if (ge.link_graph == INVALID_LINK_GRAPH) {
 		if (LinkGraph::CanAllocateItem()) {
@@ -5686,7 +5688,8 @@ void DumpStationFlowStats(char *b, const char *last)
 	for (const Station *st : Station::Iterate()) {
 		for (CargoID i = 0; i < NUM_CARGO; i++) {
 			const GoodsEntry &ge = st->goods[i];
-			for (FlowStatMap::const_iterator it(ge.flows.begin()); it != ge.flows.end(); ++it) {
+			if (ge.data == nullptr) continue;
+			for (FlowStatMap::const_iterator it(ge.data->flows.begin()); it != ge.data->flows.end(); ++it) {
 				count_map[(uint32)it->size()]++;
 				invalid_map[it->GetRawFlags() & 0x1F]++;
 			}

@@ -1909,15 +1909,16 @@ class NIHStationStruct : public NIHelper {
 			for (const CargoSpec *cs : CargoSpec::Iterate()) {
 				const GoodsEntry *ge = &st->goods[cs->Index()];
 
-				const StationCargoPacketMap *pkts = ge->cargo.Packets();
-				if (pkts->empty() && ge->status == 0) {
+				if (ge->data == nullptr && ge->status == 0) {
 					/* Nothing of note to show */
 					continue;
 				}
 
+				const StationCargoPacketMap *pkts = ge->data != nullptr ? ge->data->cargo.Packets() : nullptr;
+
 				seprintf(buffer, lastof(buffer), "  Goods entry: %u: %s", cs->Index(), GetStringPtr(cs->name));
 				output.print(buffer);
-				seprintf(buffer, lastof(buffer), "    Status: %c%c%c%c%c%c%c",
+				char *b = buffer + seprintf(buffer, lastof(buffer), "    Status: %c%c%c%c%c%c%c",
 						HasBit(ge->status, GoodsEntry::GES_ACCEPTANCE)       ? 'a' : '-',
 						HasBit(ge->status, GoodsEntry::GES_RATING)           ? 'r' : '-',
 						HasBit(ge->status, GoodsEntry::GES_EVER_ACCEPTED)    ? 'e' : '-',
@@ -1925,15 +1926,17 @@ class NIHStationStruct : public NIHelper {
 						HasBit(ge->status, GoodsEntry::GES_CURRENT_MONTH)    ? 'c' : '-',
 						HasBit(ge->status, GoodsEntry::GES_ACCEPTED_BIGTICK) ? 'b' : '-',
 						HasBit(ge->status, GoodsEntry::GES_NO_CARGO_SUPPLY)  ? 'n' : '-');
+				if (ge->data != nullptr && ge->data->MayBeRemoved()) b += seprintf(b, lastof(buffer), ", (removable)");
+				if (ge->data == nullptr) b += seprintf(b, lastof(buffer), ", (no data)");
 				output.print(buffer);
 
 				if (ge->amount_fract > 0) {
 					seprintf(buffer, lastof(buffer), "    Amount fract: %u", ge->amount_fract);
 					output.print(buffer);
 				}
-				if (!pkts->empty()) {
-					seprintf(buffer, lastof(buffer), "    Cargo packets: %u, available: %u, reserved: %u",
-							(uint)pkts->size(), ge->cargo.AvailableCount(), ge->cargo.ReservedCount());
+				if (pkts != nullptr && pkts->MapSize() > 0) {
+					seprintf(buffer, lastof(buffer), "    Cargo packets: %u, cargo packet keys: %u, available: %u, reserved: %u",
+							(uint)pkts->size(), (uint)pkts->MapSize(), ge->CargoAvailableCount(), ge->CargoReservedCount());
 					output.print(buffer);
 				}
 				if (ge->link_graph != INVALID_LINK_GRAPH) {
@@ -1944,12 +1947,12 @@ class NIHStationStruct : public NIHelper {
 					seprintf(buffer, lastof(buffer), "    Max waiting cargo: %u", ge->max_waiting_cargo);
 					output.print(buffer);
 				}
-				if (ge->flows.size() > 0) {
+				if (ge->data != nullptr && ge->data->flows.size() > 0) {
 					size_t total_shares = 0;
-					for (const FlowStat &fs : ge->flows) {
+					for (const FlowStat &fs : ge->data->flows) {
 						total_shares += fs.size();
 					}
-					seprintf(buffer, lastof(buffer), "    Flows: %u, total shares: %u", (uint)ge->flows.size(), (uint)total_shares);
+					seprintf(buffer, lastof(buffer), "    Flows: %u, total shares: %u", (uint)ge->data->flows.size(), (uint)total_shares);
 					output.print(buffer);
 				}
 			}

@@ -42,6 +42,8 @@ std::array<ExtraStationNameInfo, MAX_EXTRA_STATION_NAMES> _extra_station_names;
 uint _extra_station_names_used;
 uint8 _extra_station_names_probability;
 
+const StationCargoList _empty_cargo_list{};
+const FlowStatMap _empty_flows{};
 
 StationKdtree _station_kdtree(Kdtree_StationXYFunc);
 
@@ -93,7 +95,7 @@ Station::~Station()
 {
 	if (CleaningPool()) {
 		for (CargoID c = 0; c < NUM_CARGO; c++) {
-			this->goods[c].cargo.OnCleanPool();
+			if (this->goods[c].data != nullptr) this->goods[c].data->cargo.OnCleanPool();
 		}
 		return;
 	}
@@ -113,9 +115,10 @@ Station::~Station()
 
 		for (NodeID node = 0; node < lg->Size(); ++node) {
 			Station *st = Station::Get((*lg)[node].Station());
-			st->goods[c].flows.erase(this->index);
+			GoodsEntryData *ged = st->goods[c].data.get();
+			if (ged != nullptr) ged->flows.erase(this->index);
 			if (lg->GetConstEdge(node, this->goods[c].node).LastUpdate() != INVALID_DATE) {
-				st->goods[c].flows.DeleteFlows(this->index);
+				if (ged != nullptr) ged->flows.DeleteFlows(this->index);
 				RerouteCargo(st, c, this->index, st->index);
 			}
 		}
@@ -161,7 +164,7 @@ Station::~Station()
 	DeleteStationNews(this->index);
 
 	for (CargoID c = 0; c < NUM_CARGO; c++) {
-		this->goods[c].cargo.Truncate();
+		if (this->goods[c].data != nullptr) this->goods[c].data->cargo.Truncate();
 	}
 
 	CargoPacket::InvalidateAllFrom(this->index);

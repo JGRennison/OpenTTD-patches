@@ -40,6 +40,7 @@ static Money  _cargo_feeder_share;
 
 CargoPacketList _packets;
 uint32 _old_num_dests;
+uint _cargo_reserved_count;
 
 struct FlowSaveLoad {
 	FlowSaveLoad() : source(0), via(0), share(0), restricted(false) {}
@@ -61,7 +62,7 @@ static byte _old_last_vehicle_type;
  */
 static void SwapPackets(GoodsEntry *ge)
 {
-	StationCargoPacketMap &ge_packets = const_cast<StationCargoPacketMap &>(*ge->cargo.Packets());
+	StationCargoPacketMap &ge_packets = const_cast<StationCargoPacketMap &>(*ge->data->cargo.Packets());
 
 	if (_packets.empty()) {
 		std::map<StationID, CargoPacketList>::iterator it(ge_packets.find(INVALID_STATION));
@@ -153,14 +154,15 @@ public:
 		StationCargoPair pair;
 		for (uint j = 0; j < num_dests; ++j) {
 			SlObject(&pair, this->GetLoadDescription());
-			const_cast<StationCargoPacketMap &>(*(ge->cargo.Packets()))[pair.first].swap(pair.second);
+			const_cast<StationCargoPacketMap &>(*(ge->data->cargo.Packets()))[pair.first].swap(pair.second);
 			assert(pair.second.empty());
 		}
 	}
 
 	void FixPointers(GoodsEntry *ge) const override
 	{
-		for (StationCargoPacketMap::ConstMapIterator it = ge->cargo.Packets()->begin(); it != ge->cargo.Packets()->end(); ++it) {
+		if (ge->data == nullptr) return;
+		for (StationCargoPacketMap::ConstMapIterator it = ge->data->cargo.Packets()->begin(); it != ge->data->cargo.Packets()->end(); ++it) {
 			SlObject(const_cast<StationCargoPair *>(&(*it)), this->GetDescription());
 		}
 	}
@@ -192,7 +194,7 @@ public:
 		for (uint32 j = 0; j < num_flows; ++j) {
 			SlObject(&flow, this->GetLoadDescription());
 			if (fs == nullptr || prev_source != flow.source) {
-				fs = &(*(ge->flows.insert(ge->flows.end(), FlowStat(flow.source, flow.via, flow.share, flow.restricted))));
+				fs = &(*(ge->data->flows.insert(ge->data->flows.end(), FlowStat(flow.source, flow.via, flow.share, flow.restricted))));
 			} else {
 				fs->AppendShare(flow.via, flow.share, flow.restricted);
 			}
@@ -229,7 +231,7 @@ public:
 		 SLE_CONDVAR(GoodsEntry, amount_fract,         SLE_UINT8,                 SLV_150, SL_MAX_VERSION),
 		SLEG_CONDREFRING("packets", _packets,          REF_CARGO_PACKET,           SLV_68, SLV_183),
 		SLEG_CONDVAR("old_num_dests", _old_num_dests,  SLE_UINT32,                SLV_183, SLV_SAVELOAD_LIST_LENGTH),
-		 SLE_CONDVAR(GoodsEntry, cargo.reserved_count, SLE_UINT,                  SLV_181, SL_MAX_VERSION),
+		SLEG_CONDVAR("cargo.reserved_count", _cargo_reserved_count, SLE_UINT,     SLV_181, SL_MAX_VERSION),
 		 SLE_CONDVAR(GoodsEntry, link_graph,           SLE_UINT16,                SLV_183, SL_MAX_VERSION),
 		 SLE_CONDVAR(GoodsEntry, node,                 SLE_UINT16,                SLV_183, SL_MAX_VERSION),
 		SLEG_CONDVAR("old_num_flows", _old_num_flows,  SLE_UINT32,                SLV_183, SLV_SAVELOAD_LIST_LENGTH),
@@ -258,18 +260,14 @@ public:
 
 	void Save(BaseStation *bst) const override
 	{
-		Station *st = Station::From(bst);
-
-		SlSetStructListLength(NUM_CARGO);
-
-		for (CargoID i = 0; i < NUM_CARGO; i++) {
-			SlObject(&st->goods[i], this->GetDescription());
-		}
+		NOT_REACHED();
 	}
 
 	void Load(BaseStation *bst) const override
 	{
 		Station *st = Station::From(bst);
+
+		std::unique_ptr<GoodsEntryData> spare_ged;
 
 		/* Before savegame version 161, persistent storages were not stored in a pool. */
 		if (IsSavegameVersionBefore(SLV_161) && !IsSavegameVersionBefore(SLV_145) && st->facilities & FACIL_AIRPORT) {
@@ -282,7 +280,15 @@ public:
 		size_t num_cargo = this->GetNumCargo();
 		for (size_t i = 0; i < num_cargo; i++) {
 			GoodsEntry *ge = &st->goods[i];
+			if (ge->data == nullptr) {
+				if (spare_ged != nullptr) {
+					ge->data = std::move(spare_ged);
+				} else {
+					ge->data.reset(new GoodsEntryData());
+				}
+			}
 			SlObject(ge, this->GetLoadDescription());
+			if (!IsSavegameVersionBefore(SLV_181)) ge->data->cargo.LoadSetReservedCount(_cargo_reserved_count);
 			if (IsSavegameVersionBefore(SLV_183)) {
 				SwapPackets(ge);
 			}
@@ -300,9 +306,12 @@ public:
 
 					/* Don't construct the packet with station here, because that'll fail with old savegames */
 					CargoPacket *cp = new CargoPacket(GB(_waiting_acceptance, 0, 12), _cargo_days, source, _cargo_source_xy, _cargo_source_xy, _cargo_feeder_share);
-					ge->cargo.Append(cp, INVALID_STATION);
+					ge->data->cargo.Append(cp, INVALID_STATION);
 					SB(ge->status, GoodsEntry::GES_RATING, 1, 1);
 				}
+			}
+			if (ge->data->MayBeRemoved()) {
+				spare_ged = std::move(ge->data);
 			}
 		}
 	}

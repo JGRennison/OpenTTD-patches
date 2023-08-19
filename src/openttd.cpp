@@ -1916,14 +1916,16 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 
 		for (Station *st : Station::Iterate()) {
 			for (CargoID c = 0; c < NUM_CARGO; c++) {
-				uint old_count = st->goods[c].cargo.TotalCount();
-				uint64 old_cargo_days_in_transit = st->goods[c].cargo.CargoDaysInTransit();
+				if (st->goods[c].data == nullptr) continue;
 
-				st->goods[c].cargo.InvalidateCache();
+				uint old_count = st->goods[c].data->cargo.TotalCount();
+				uint64 old_cargo_days_in_transit = st->goods[c].data->cargo.CargoDaysInTransit();
+
+				st->goods[c].data->cargo.InvalidateCache();
 
 				uint changed = 0;
-				if (st->goods[c].cargo.TotalCount() != old_count) SetBit(changed, 0);
-				if (st->goods[c].cargo.CargoDaysInTransit() != old_cargo_days_in_transit) SetBit(changed, 1);
+				if (st->goods[c].data->cargo.TotalCount() != old_count) SetBit(changed, 0);
+				if (st->goods[c].data->cargo.CargoDaysInTransit() != old_cargo_days_in_transit) SetBit(changed, 1);
 				if (changed != 0) {
 					CCLOG("station cargo cache mismatch: station %i, company %i, cargo %u: %c%c",
 							st->index, (int)st->owner, c,

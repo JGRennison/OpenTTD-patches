@@ -171,8 +171,11 @@ void ScriptStationList_CargoWaiting::Add(StationID station_id, CargoID cargo, St
 	CargoCollector collector(this, station_id, cargo, other_station);
 	if (collector.GE() == nullptr) return;
 
-	StationCargoList::ConstIterator iter = collector.GE()->cargo.Packets()->begin();
-	StationCargoList::ConstIterator end = collector.GE()->cargo.Packets()->end();
+	const GoodsEntry *ge = collector.GE();
+	if (ge->data == nullptr) return;
+
+	StationCargoList::ConstIterator iter = ge->data->cargo.Packets()->begin();
+	StationCargoList::ConstIterator end = ge->data->cargo.Packets()->end();
 	for (; iter != end; ++iter) {
 		collector.Update<Tselector>((*iter)->SourceStation(), iter.GetKey(), (*iter)->Count());
 	}
@@ -185,8 +188,11 @@ void ScriptStationList_CargoPlanned::Add(StationID station_id, CargoID cargo, St
 	CargoCollector collector(this, station_id, cargo, other_station);
 	if (collector.GE() == nullptr) return;
 
-	FlowStatMap::const_iterator iter = collector.GE()->flows.begin();
-	FlowStatMap::const_iterator end = collector.GE()->flows.end();
+	const GoodsEntry *ge = collector.GE();
+	if (ge->data == nullptr) return;
+
+	FlowStatMap::const_iterator iter = ge->data->flows.begin();
+	FlowStatMap::const_iterator end = ge->data->flows.end();
 	for (; iter != end; ++iter) {
 		uint prev = 0;
 		for (FlowStat::const_iterator flow_iter = iter->begin();
@@ -209,8 +215,11 @@ ScriptStationList_CargoWaitingViaByFrom::ScriptStationList_CargoWaitingViaByFrom
 	CargoCollector collector(this, station_id, cargo, via);
 	if (collector.GE() == nullptr) return;
 
+	const GoodsEntry *ge = collector.GE();
+	if (ge->data == nullptr) return;
+
 	std::pair<StationCargoList::ConstIterator, StationCargoList::ConstIterator> range =
-			collector.GE()->cargo.Packets()->equal_range(via);
+			ge->data->cargo.Packets()->equal_range(via);
 	for (StationCargoList::ConstIterator iter = range.first; iter != range.second; ++iter) {
 		collector.Update<CS_VIA_BY_FROM>((*iter)->SourceStation(), iter.GetKey(), (*iter)->Count());
 	}
@@ -255,8 +264,11 @@ ScriptStationList_CargoPlannedFromByVia::ScriptStationList_CargoPlannedFromByVia
 	CargoCollector collector(this, station_id, cargo, from);
 	if (collector.GE() == nullptr) return;
 
-	FlowStatMap::const_iterator iter = collector.GE()->flows.find(from);
-	if (iter == collector.GE()->flows.end()) return;
+	const GoodsEntry *ge = collector.GE();
+	if (ge->data == nullptr) return;
+
+	FlowStatMap::const_iterator iter = ge->data->flows.find(from);
+	if (iter == ge->data->flows.end()) return;
 	uint prev = 0;
 	for (FlowStat::const_iterator flow_iter = iter->begin();
 			flow_iter != iter->end(); ++flow_iter) {

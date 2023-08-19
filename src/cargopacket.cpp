@@ -638,6 +638,8 @@ bool VehicleCargoList::Stage(bool accepted, StationID current_station, StationID
 	CargoPacketList transfer_deliver;
 	std::vector<CargoPacket *> keep;
 
+	const FlowStatMap &flows = ge->CreateData().flows;
+
 	bool force_keep = (order_flags & OUFB_NO_UNLOAD) != 0;
 	bool force_unload = (order_flags & OUFB_UNLOAD) != 0;
 	bool force_transfer = (order_flags & (OUFB_TRANSFER | OUFB_UNLOAD)) != 0;
@@ -656,8 +658,8 @@ bool VehicleCargoList::Stage(bool accepted, StationID current_station, StationID
 			action = MTA_TRANSFER;
 			/* We cannot send the cargo to any of the possible next hops and
 			 * also not to the current station. */
-			FlowStatMap::const_iterator flow_it(ge->flows.find(cp->source));
-			if (flow_it == ge->flows.end()) {
+			FlowStatMap::const_iterator flow_it(flows.find(cp->source));
+			if (flow_it == flows.end()) {
 				cargo_next = INVALID_STATION;
 			} else {
 				FlowStat new_shares = *flow_it;
@@ -675,12 +677,12 @@ bool VehicleCargoList::Stage(bool accepted, StationID current_station, StationID
 		} else {
 			/* Rewrite an invalid source station to some random other one to
 			 * avoid keeping the cargo in the vehicle forever. */
-			if (cp->source == INVALID_STATION && !ge->flows.empty()) {
-				cp->source = ge->flows.FirstStationID();
+			if (cp->source == INVALID_STATION && !flows.empty()) {
+				cp->source = flows.FirstStationID();
 			}
 			bool restricted = false;
-			FlowStatMap::const_iterator flow_it(ge->flows.find(cp->source));
-			if (flow_it == ge->flows.end()) {
+			FlowStatMap::const_iterator flow_it(flows.find(cp->source));
+			if (flow_it == flows.end()) {
 				cargo_next = INVALID_STATION;
 			} else {
 				cargo_next = flow_it->GetViaWithRestricted(restricted);

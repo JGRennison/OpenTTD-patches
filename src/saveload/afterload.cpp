@@ -2051,7 +2051,7 @@ bool AfterLoadGame()
 		for (Station *st : Station::Iterate()) {
 			for (CargoID c = 0; c < NUM_CARGO; c++) {
 				st->goods[c].last_speed = 0;
-				if (st->goods[c].cargo.AvailableCount() != 0) SetBit(st->goods[c].status, GoodsEntry::GES_RATING);
+				if (st->goods[c].CargoAvailableCount() != 0) SetBit(st->goods[c].status, GoodsEntry::GES_RATING);
 			}
 		}
 	}

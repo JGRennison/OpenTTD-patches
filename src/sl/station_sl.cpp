@@ -237,6 +237,7 @@ static uint16 _cargo_source;
 static uint32 _cargo_source_xy;
 static uint8  _cargo_days;
 static Money  _cargo_feeder_share;
+static uint   _cargo_reserved_count;
 
 static const SaveLoad _station_speclist_desc[] = {
 	SLE_CONDVAR(StationSpecList, grfid,    SLE_UINT32, SLV_27, SL_MAX_VERSION),
@@ -295,7 +296,7 @@ SaveLoadTable GetGoodsDesc()
 		 SLE_CONDVAR(GoodsEntry, amount_fract,         SLE_UINT8,                 SLV_150, SL_MAX_VERSION),
 		SLEG_CONDPTRRING_X(      _packets,             REF_CARGO_PACKET,           SLV_68, SLV_183, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, 0, 0)),
 		SLEG_CONDVAR_X(          _num_dests,           SLE_UINT32,                SLV_183, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_OR, XSLFI_CHILLPP)),
-		 SLE_CONDVAR(GoodsEntry, cargo.reserved_count, SLE_UINT,                  SLV_181, SL_MAX_VERSION),
+		SLEG_CONDVAR(            _cargo_reserved_count,SLE_UINT,                  SLV_181, SL_MAX_VERSION),
 		 SLE_CONDVAR(GoodsEntry, link_graph,           SLE_UINT16,                SLV_183, SL_MAX_VERSION),
 		 SLE_CONDVAR(GoodsEntry, node,                 SLE_UINT16,                SLV_183, SL_MAX_VERSION),
 		SLEG_CONDVAR(            _num_flows,           SLE_UINT32,                SLV_183, SL_MAX_VERSION),
@@ -321,7 +322,9 @@ static const SaveLoad _cargo_list_desc[] = {
  */
 static void SwapPackets(GoodsEntry *ge)
 {
-	StationCargoPacketMap &ge_packets = const_cast<StationCargoPacketMap &>(*ge->cargo.Packets());
+	if (_packets.empty() && ge->data == nullptr) return;
+
+	StationCargoPacketMap &ge_packets = const_cast<StationCargoPacketMap &>(*ge->CreateData().cargo.Packets());
 
 	if (_packets.empty()) {
 		std::map<StationID, CargoPacketList>::iterator it(ge_packets.find(INVALID_STATION));
@@ -342,6 +345,7 @@ static void Load_STNS()
 	_cargo_days = 0;
 	_cargo_feeder_share = 0;
 	_num_specs = 0;
+	_cargo_reserved_count = 0;
 
 	uint num_cargo = IsSavegameVersionBefore(SLV_55) ? 12 : IsSavegameVersionBefore(SLV_EXTEND_CARGOTYPES) ? 32 : NUM_CARGO;
 	int index;
@@ -355,6 +359,7 @@ static void Load_STNS()
 		for (CargoID i = 0; i < num_cargo; i++) {
 			GoodsEntry *ge = &st->goods[i];
 			SlObject(ge, GetGoodsDesc());
+			if (_cargo_reserved_count) ge->CreateData().cargo.LoadSetReservedCount(_cargo_reserved_count);
 			SwapPackets(ge);
 			if (IsSavegameVersionBefore(SLV_68)) {
 				SB(ge->status, GoodsEntry::GES_ACCEPTANCE, 1, HasBit(_waiting_acceptance, 15));
@@ -370,7 +375,7 @@ static void Load_STNS()
 
 					/* Don't construct the packet with station here, because that'll fail with old savegames */
 					CargoPacket *cp = new CargoPacket(GB(_waiting_acceptance, 0, 12), _cargo_days, source, _cargo_source_xy, _cargo_source_xy, _cargo_feeder_share);
-					ge->cargo.Append(cp, INVALID_STATION);
+					ge->CreateData().cargo.Append(cp, INVALID_STATION);
 					SB(ge->status, GoodsEntry::GES_RATING, 1, 1);
 				}
 			}
@@ -544,10 +549,19 @@ static void RealSave_STNN(BaseStation *bst)
 	if (!waypoint) {
 		Station *st = Station::From(bst);
 		for (CargoID i = 0; i < NUM_CARGO; i++) {
-			_num_dests = (uint32)st->goods[i].cargo.Packets()->MapSize();
-			_num_flows = (uint32)st->goods[i].flows.size();
+			const GoodsEntryData *ged = st->goods[i].data.get();
+			if (ged != nullptr) {
+				_cargo_reserved_count = ged->cargo.ReservedCount();
+				_num_dests = (uint32)ged->cargo.Packets()->MapSize();
+				_num_flows = (uint32)ged->flows.size();
+			} else {
+				_cargo_reserved_count = 0;
+				_num_dests = 0;
+				_num_flows = 0;
+			}
 			SlObjectSaveFiltered(&st->goods[i], _filtered_goods_desc);
-			for (FlowStatMap::const_iterator outer_it(st->goods[i].flows.begin()); outer_it != st->goods[i].flows.end(); ++outer_it) {
+			if (ged == nullptr) continue;
+			for (FlowStatMap::const_iterator outer_it(ged->flows.begin()); outer_it != ged->flows.end(); ++outer_it) {
 				uint32 sum_shares = 0;
 				FlowSaveLoad flow;
 				flow.source = outer_it->GetOrigin();
@@ -571,7 +585,7 @@ static void RealSave_STNN(BaseStation *bst)
 				}
 				SlWriteUint16(outer_it->GetRawFlags());
 			}
-			for (StationCargoPacketMap::ConstMapIterator it(st->goods[i].cargo.Packets()->begin()); it != st->goods[i].cargo.Packets()->end(); ++it) {
+			for (StationCargoPacketMap::ConstMapIterator it(ged->cargo.Packets()->begin()); it != ged->cargo.Packets()->end(); ++it) {
 				SlObjectSaveFiltered(const_cast<StationCargoPacketMap::value_type *>(&(*it)), _cargo_list_desc); // _cargo_list_desc has no conditionals
 			}
 		}
@@ -620,6 +634,9 @@ static void Load_STNN()
 	_num_specs = 0;
 	_num_roadstop_specs = 0;
 	_num_roadstop_custom_tiles = 0;
+	_cargo_reserved_count = 0;
+
+	std::unique_ptr<GoodsEntryData> spare_ged;
 
 	const uint num_cargo = IsSavegameVersionBefore(SLV_EXTEND_CARGOTYPES) ? 32 : NUM_CARGO;
 	ReadBuffer *buffer = ReadBuffer::GetCurrent();
@@ -643,10 +660,19 @@ static void Load_STNN()
 			}
 
 			for (CargoID i = 0; i < num_cargo; i++) {
-				SlObjectLoadFiltered(&st->goods[i], _filtered_goods_desc);
+				GoodsEntry &ge = st->goods[i];
+				if (ge.data == nullptr) {
+					if (spare_ged != nullptr) {
+						ge.data = std::move(spare_ged);
+					} else {
+						ge.data.reset(new GoodsEntryData());
+					}
+				}
+				SlObjectLoadFiltered(&ge, _filtered_goods_desc);
+				ge.data->cargo.LoadSetReservedCount(_cargo_reserved_count);
 				StationID prev_source = INVALID_STATION;
 				if (SlXvIsFeaturePresent(XSLFI_FLOW_STAT_FLAGS)) {
-					st->goods[i].flows.reserve(_num_flows);
+					ge.data->flows.reserve(_num_flows);
 					for (uint32 j = 0; j < _num_flows; ++j) {
 						FlowSaveLoad flow;
 						buffer->CheckBytes(2 + 4);
@@ -657,7 +683,7 @@ static void Load_STNN()
 						flow.via = buffer->RawReadUint16();
 						flow.share = buffer->RawReadUint32();
 						flow.restricted = (buffer->RawReadByte() != 0);
-						FlowStat *fs = &(*(st->goods[i].flows.insert(st->goods[i].flows.end(), FlowStat(flow.source, flow.via, flow.share, flow.restricted))));
+						FlowStat *fs = &(*(ge.data->flows.insert(ge.data->flows.end(), FlowStat(flow.source, flow.via, flow.share, flow.restricted))));
 						for (uint32 k = 1; k < flow_count; ++k) {
 							buffer->CheckBytes(2 + 4 + 1);
 							flow.via = buffer->RawReadUint16();
@@ -679,7 +705,7 @@ static void Load_STNN()
 						if (!IsSavegameVersionBefore(SLV_187)) flow.restricted = (buffer->ReadByte() != 0);
 
 						if (fs == nullptr || prev_source != flow.source) {
-							fs = &(*(st->goods[i].flows.insert(st->goods[i].flows.end(), FlowStat(flow.source, flow.via, flow.share, flow.restricted))));
+							fs = &(*(ge.data->flows.insert(ge.data->flows.end(), FlowStat(flow.source, flow.via, flow.share, flow.restricted))));
 						} else {
 							fs->AppendShare(flow.via, flow.share, flow.restricted);
 						}
@@ -687,7 +713,7 @@ static void Load_STNN()
 					}
 				}
 				if (IsSavegameVersionBefore(SLV_183) && SlXvIsFeatureMissing(XSLFI_CHILLPP)) {
-					SwapPackets(&st->goods[i]);
+					SwapPackets(&ge);
 				} else {
 					if (SlXvIsFeaturePresent(XSLFI_CHILLPP)) {
 						SlSkipBytes(8);
@@ -701,11 +727,14 @@ static void Load_STNN()
 					StationCargoPair pair;
 					for (uint j = 0; j < _num_dests; ++j) {
 						SlObjectLoadFiltered(&pair, _cargo_list_desc); // _cargo_list_desc has no conditionals
-						const_cast<StationCargoPacketMap &>(*(st->goods[i].cargo.Packets()))[pair.first].swap(pair.second);
+						const_cast<StationCargoPacketMap &>(*(ge.data->cargo.Packets()))[pair.first].swap(pair.second);
 						assert(pair.second.empty());
 					}
 				}
-				if (SlXvIsFeatureMissing(XSLFI_ST_LAST_VEH_TYPE)) st->goods[i].last_vehicle_type = _old_last_vehicle_type;
+				if (SlXvIsFeatureMissing(XSLFI_ST_LAST_VEH_TYPE)) ge.last_vehicle_type = _old_last_vehicle_type;
+				if (ge.data->MayBeRemoved()) {
+					spare_ged = std::move(ge.data);
+				}
 			}
 
 			st->station_cargo_history.resize(CountBits(st->station_cargo_history_cargoes));
@@ -780,8 +809,10 @@ static void Ptrs_STNN()
 				SwapPackets(ge);
 			} else {
 				//SlObject(ge, GetGoodsDesc());
-				for (StationCargoPacketMap::ConstMapIterator it = ge->cargo.Packets()->begin(); it != ge->cargo.Packets()->end(); ++it) {
-					SlObjectPtrOrNullFiltered(const_cast<StationCargoPair *>(&(*it)), _cargo_list_desc); // _cargo_list_desc has no conditionals
+				if (ge->data != nullptr) {
+					for (StationCargoPacketMap::ConstMapIterator it = ge->data->cargo.Packets()->begin(); it != ge->data->cargo.Packets()->end(); ++it) {
+						SlObjectPtrOrNullFiltered(const_cast<StationCargoPair *>(&(*it)), _cargo_list_desc); // _cargo_list_desc has no conditionals
+					}
 				}
 			}
 		}

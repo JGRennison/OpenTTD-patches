@@ -605,6 +605,11 @@ public:
 		this->reserved_count += count;
 	}
 
+	void LoadSetReservedCount(uint count)
+	{
+		this->reserved_count = count;
+	}
+
 	/**
 	 * Are the two CargoPackets mergeable in the context of
 	 * a list of CargoPackets for a Station?

@@ -49,7 +49,8 @@ extern btree::btree_map<uint64, Money> _cargo_packet_deferred_payments;
 			for (CargoID c = 0; c < NUM_CARGO; c++) {
 				GoodsEntry *ge = &st->goods[c];
 
-				const StationCargoPacketMap *packets = ge->cargo.Packets();
+				if (ge->data == nullptr) continue;
+				const StationCargoPacketMap *packets = ge->data->cargo.Packets();
 				for (StationCargoList::ConstIterator it(packets->begin()); it != packets->end(); it++) {
 					CargoPacket *cp = *it;
 					cp->source_xy = Station::IsValidID(cp->source) ? Station::Get(cp->source)->xy : st->xy;
@@ -73,7 +74,9 @@ extern btree::btree_map<uint64, Money> _cargo_packet_deferred_payments;
 		for (Vehicle *v : Vehicle::Iterate()) v->cargo.InvalidateCache();
 
 		for (Station *st : Station::Iterate()) {
-			for (CargoID c = 0; c < NUM_CARGO; c++) st->goods[c].cargo.InvalidateCache();
+			for (CargoID c = 0; c < NUM_CARGO; c++) {
+				if (st->goods[c].data != nullptr) st->goods[c].data->cargo.InvalidateCache();
+			}
 		}
 	}
 
@@ -95,7 +98,7 @@ extern btree::btree_map<uint64, Money> _cargo_packet_deferred_payments;
 			Station *st = Station::Get(v->First()->last_station_visited);
 			assert_msg(st != nullptr, "%s", scope_dumper().VehicleInfo(v));
 			for (CargoPacket *cp : iter.second) {
-				st->goods[v->cargo_type].cargo.AfterLoadIncreaseReservationCount(cp->count);
+				st->goods[v->cargo_type].CreateData().cargo.AfterLoadIncreaseReservationCount(cp->count);
 				v->cargo.Append(cp, VehicleCargoList::MTA_LOAD);
 			}
 		}

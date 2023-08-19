@@ -307,7 +307,7 @@ void ShowStationViewportTooltip(Window *w, const TileIndex tile)
 			SetDParam(0, cs->name);
 			SetDParam(1, ToPercent8(goods_entry->rating));
 			SetDParam(2, cs->Index());
-			SetDParam(3, goods_entry->cargo.TotalCount());
+			SetDParam(3, goods_entry->CargoTotalCount());
 			msg += GetString(STR_STATION_VIEW_CARGO_LINE_TOOLTIP);
 		}
 	}

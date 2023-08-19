@@ -334,7 +334,7 @@ protected:
 		int diff = 0;
 
 		for (CargoID j : SetCargoBitIterator(cargo_filter)) {
-			diff += a->goods[j].cargo.TotalCount() - b->goods[j].cargo.TotalCount();
+			diff += a->goods[j].CargoTotalCount() - b->goods[j].CargoTotalCount();
 		}
 
 		return diff < 0;
@@ -346,7 +346,7 @@ protected:
 		int diff = 0;
 
 		for (CargoID j : SetCargoBitIterator(cargo_filter)) {
-			diff += a->goods[j].cargo.AvailableCount() - b->goods[j].cargo.AvailableCount();
+			diff += a->goods[j].CargoAvailableCount() - b->goods[j].CargoAvailableCount();
 		}
 
 		return diff < 0;
@@ -573,7 +573,7 @@ public:
 					/* show cargo waiting and station ratings */
 					for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 						CargoID cid = cs->Index();
-						if (st->goods[cid].cargo.TotalCount() > 0) {
+						if (st->goods[cid].CargoTotalCount() > 0) {
 							/* For RTL we work in exactly the opposite direction. So
 							 * decrement the space needed first, then draw to the left
 							 * instead of drawing to the left and then incrementing
@@ -582,7 +582,7 @@ public:
 								x -= rating_width + rating_spacing;
 								if (x < tr.left) break;
 							}
-							StationsWndShowStationRating(x, x + rating_width, tr.top, cid, st->goods[cid].cargo.TotalCount(), st->goods[cid].rating);
+							StationsWndShowStationRating(x, x + rating_width, tr.top, cid, st->goods[cid].CargoTotalCount(), st->goods[cid].rating);
 							if (!rtl) {
 								x += rating_width + rating_spacing;
 								if (x > tr.right) break;
@@ -1649,7 +1649,9 @@ struct StationViewWindow : public Window {
 		CargoDataEntry *cargo_entry = cached_destinations.InsertOrRetrieve(i);
 		cargo_entry->Clear();
 
-		const FlowStatMap &flows = st->goods[i].flows;
+		if (st->goods[i].data == nullptr) return;
+
+		const FlowStatMap &flows = st->goods[i].data->flows;
 		for (const auto &it : flows) {
 			StationID from = it.GetOrigin();
 			CargoDataEntry *source_entry = cargo_entry->InsertOrRetrieve(from);
@@ -1680,13 +1682,17 @@ struct StationViewWindow : public Window {
 	{
 		if (depth <= 128 && Station::IsValidID(next) && Station::IsValidID(source)) {
 			CargoDataEntry tmp;
-			const FlowStatMap &flowmap = Station::Get(next)->goods[cargo].flows;
-			FlowStatMap::const_iterator map_it = flowmap.find(source);
-			if (map_it != flowmap.end()) {
-				uint32 prev_count = 0;
-				for (FlowStat::const_iterator i = map_it->begin(); i != map_it->end(); ++i) {
-					tmp.InsertOrRetrieve(i->second)->Update(i->first - prev_count);
-					prev_count = i->first;
+			const GoodsEntry &ge = Station::Get(next)->goods[cargo];
+
+			if (ge.data != nullptr) {
+				const FlowStatMap &flowmap = ge.data->flows;
+				FlowStatMap::const_iterator map_it = flowmap.find(source);
+				if (map_it != flowmap.end()) {
+					uint32 prev_count = 0;
+					for (FlowStat::const_iterator i = map_it->begin(); i != map_it->end(); ++i) {
+						tmp.InsertOrRetrieve(i->second)->Update(i->first - prev_count);
+						prev_count = i->first;
+					}
 				}
 			}
 
@@ -1807,9 +1813,9 @@ struct StationViewWindow : public Window {
 			}
 
 			if (this->current_mode == MODE_WAITING) {
-				this->BuildCargoList(i, st->goods[i].cargo, cargo);
+				this->BuildCargoList(i, st->goods[i].ConstCargoList(), cargo);
 			} else {
-				this->BuildFlowList(i, st->goods[i].flows, cargo);
+				this->BuildFlowList(i, st->goods[i].ConstFlows(), cargo);
 			}
 		}
 	}
@@ -1971,8 +1977,8 @@ struct StationViewWindow : public Window {
 						sym = "+";
 					} else {
 						/* Only draw '+' if there is something to be shown. */
-						const StationCargoList &list = Station::Get(this->window_number)->goods[cargo].cargo;
-						if (grouping == GR_CARGO && (list.ReservedCount() > 0 || cd->HasTransfers())) {
+						const GoodsEntry &ge = Station::Get(this->window_number)->goods[cargo];
+						if (grouping == GR_CARGO && (ge.CargoReservedCount() > 0 || cd->HasTransfers())) {
 							sym = "+";
 						}
 					}

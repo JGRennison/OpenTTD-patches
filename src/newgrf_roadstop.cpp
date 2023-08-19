@@ -271,7 +271,7 @@ RoadStopResolverObject::RoadStopResolverObject(const RoadStopSpec *roadstopspec,
 		/* Pick the first cargo that we have waiting */
 		for (const CargoSpec *cs : CargoSpec::Iterate()) {
 			if (roadstopspec->grf_prop.spritegroup[cs->Index()] != nullptr &&
-					station->goods[cs->Index()].cargo.TotalCount() > 0) {
+					station->goods[cs->Index()].CargoTotalCount() > 0) {
 				ctype = cs->Index();
 				break;
 			}
@@ -474,7 +474,7 @@ void TriggerRoadStopRandomisation(Station *st, TileIndex tile, RoadStopRandomTri
 	if (trigger == RSRT_CARGO_TAKEN) {
 		/* Create a bitmask of completely empty cargo types to be matched */
 		for (CargoID i = 0; i < NUM_CARGO; i++) {
-			if (st->goods[i].cargo.TotalCount() == 0) {
+			if (st->goods[i].CargoTotalCount() == 0) {
 				SetBit(empty_mask, i);
 			}
 		}
@@ -699,7 +699,7 @@ void DumpRoadStopSpriteGroup(const BaseStation *st, const RoadStopSpec *spec, Du
 		/* Pick the first cargo that we have waiting */
 		for (const CargoSpec *cs : CargoSpec::Iterate()) {
 			if (spec->grf_prop.spritegroup[cs->Index()] != nullptr &&
-					station->goods[cs->Index()].cargo.TotalCount() > 0) {
+					station->goods[cs->Index()].CargoTotalCount() > 0) {
 				ctype = cs->Index();
 				break;
 			}
