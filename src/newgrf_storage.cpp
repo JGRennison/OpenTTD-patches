@@ -12,7 +12,7 @@
 #include "core/pool_func.hpp"
 #include "core/endian_func.hpp"
 #include "debug.h"
-#include <set>
+#include "3rdparty/cpp-btree/btree_set.h"
 
 #include "safeguards.h"
 
@@ -20,7 +20,7 @@ PersistentStoragePool _persistent_storage_pool("PersistentStorage");
 INSTANTIATE_POOL_METHODS(PersistentStorage)
 
 /** The changed storage arrays */
-static std::set<BasePersistentStorageArray*> *_changed_storage_arrays = new std::set<BasePersistentStorageArray*>;
+static btree::btree_set<BasePersistentStorageArray*> _changed_storage_arrays;
 
 bool BasePersistentStorageArray::gameloop;
 bool BasePersistentStorageArray::command;
@@ -31,7 +31,7 @@ bool BasePersistentStorageArray::testmode;
  */
 BasePersistentStorageArray::~BasePersistentStorageArray()
 {
-	_changed_storage_arrays->erase(this);
+	_changed_storage_arrays.erase(this);
 }
 
 /**
@@ -42,7 +42,7 @@ BasePersistentStorageArray::~BasePersistentStorageArray()
  */
 void AddChangedPersistentStorage(BasePersistentStorageArray *storage)
 {
-	_changed_storage_arrays->insert(storage);
+	_changed_storage_arrays.insert(storage);
 }
 
 /**
@@ -91,9 +91,9 @@ void AddChangedPersistentStorage(BasePersistentStorageArray *storage)
 	}
 
 	/* Discard all temporary changes */
-	for (auto &it : *_changed_storage_arrays) {
+	for (auto &it : _changed_storage_arrays) {
 		DEBUG(desync, 1, "Discarding persistent storage changes: Feature %d, GrfID %08X, Tile %d", it->feature, BSWAP32(it->grfid), it->tile);
 		it->ClearChanges();
 	}
-	_changed_storage_arrays->clear();
+	_changed_storage_arrays.clear();
 }
