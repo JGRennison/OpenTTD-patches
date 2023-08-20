@@ -344,6 +344,20 @@ CommandCost CmdRefitTrainFromTemplate(Train *t, TemplateVehicle *tv, DoCommandFl
 
 		cost.AddCost(DoCommand(t->tile, t->index, tv->cargo_type | tv->cargo_subtype << 8 | (1 << 16) | (1 << 31), flags, cb));
 
+		// next
+		t = t->GetNextUnit();
+		tv = tv->GetNextUnit();
+	}
+	return cost;
+}
+
+// set unit direction of each vehicle in t as is in tv, assume t and tv contain the same types of vehicles
+CommandCost CmdSetTrainUnitDirectionFromTemplate(Train *t, TemplateVehicle *tv, DoCommandFlag flags)
+{
+	CommandCost cost(t->GetExpenseType(false));
+
+	while (t && tv) {
+		// refit t as tv
 		if (HasBit(t->flags, VRF_REVERSE_DIRECTION) != HasBit(tv->ctrl_flags, TVCF_REVERSED)) {
 			cost.AddCost(DoCommand(t->tile, t->index, true, flags, CMD_REVERSE_TRAIN_DIRECTION | CMD_MSG(STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE)));
 		}

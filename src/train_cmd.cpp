@@ -7357,9 +7357,6 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 				} else {
 					DoCommand(tile, new_part->index, store_refit_ct | (store_refit_csubt << 8) | (1 << 16) | (1 << 31), flags, GetCmdRefitVeh(new_part));
 				}
-				if (HasBit(new_part->flags, VRF_REVERSE_DIRECTION) != HasBit(cur_tmpl->ctrl_flags, TVCF_REVERSED)) {
-					DoCommand(tile, new_part->index, true, flags, CMD_REVERSE_TRAIN_DIRECTION | CMD_MSG(STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE));
-				}
 			}
 
 		}
@@ -7377,6 +7374,8 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 	if (refit_to_template && (need_refit || need_replacement)) {
 		buy.AddCost(CmdRefitTrainFromTemplate(new_chain, tv, flags));
 	}
+
+	buy.AddCost(CmdSetTrainUnitDirectionFromTemplate(new_chain, tv, flags));
 
 	if (new_chain && remainder_chain) {
 		for (Train *ct = remainder_chain; ct != nullptr; ct = ct->Next()) {
