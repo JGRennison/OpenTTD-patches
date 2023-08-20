@@ -7221,6 +7221,11 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 
 	CommandCost buy(EXPENSES_NEW_VEHICLES);
 
+	auto refit_unit = [&](const Train *unit, CargoID cid, uint16 csubt) {
+		CommandCost refit_cost = DoCommand(unit->tile, unit->index, cid | csubt << 8 | (1 << 16), flags, GetCmdRefitVeh(unit));
+		if (refit_cost.Succeeded()) buy.AddCost(refit_cost);
+	};
+
 	if (need_replacement) {
 		// step 1: generate primary for newchain and generate remainder_chain
 		// 1. primary of incoming might already fit the template
@@ -7292,7 +7297,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 			// additionally, if we don't want to use the template refit, refit as incoming
 			// the template refit will be set further down, if we use it at all
 			if (!refit_to_template) {
-				buy.AddCost(DoCommand(new_chain->tile, new_chain->index, store_refit_ct | store_refit_csubt << 8 | (1 << 16) | (1 << 31), flags, GetCmdRefitVeh(new_chain)));
+				refit_unit(new_chain, store_refit_ct, store_refit_csubt);
 			}
 		}
 
@@ -7350,15 +7355,10 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 			if (new_part != nullptr) {
 				last_veh = new_part;
 			}
-			// TODO: is this enough ? might it be that we bought a new wagon here and it now has std refit ?
-			if (need_refit && new_part != nullptr) {
-				if (refit_to_template) {
-					DoCommand(tile, new_part->index, cur_tmpl->cargo_type | (cur_tmpl->cargo_subtype << 8) | (1 << 16) | (1 << 31), flags, GetCmdRefitVeh(new_part));
-				} else {
-					DoCommand(tile, new_part->index, store_refit_ct | (store_refit_csubt << 8) | (1 << 16) | (1 << 31), flags, GetCmdRefitVeh(new_part));
-				}
-			}
 
+			if (!refit_to_template && new_part != nullptr) {
+				refit_unit(new_part, store_refit_ct, store_refit_csubt);
+			}
 		}
 	} else {
 		/* no replacement done */
