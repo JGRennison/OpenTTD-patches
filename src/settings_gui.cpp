@@ -2296,6 +2296,7 @@ static SettingsContainer &GetSettingsTree()
 			limitations->Add(new SettingEntry("station.distant_join_stations"));
 			limitations->Add(new SettingEntry("construction.road_stop_on_town_road"));
 			limitations->Add(new SettingEntry("construction.road_stop_on_competitor_road"));
+			limitations->Add(new SettingEntry("construction.convert_town_road_no_houses"));
 			limitations->Add(new SettingEntry("vehicle.disable_elrails"));
 			limitations->Add(new SettingEntry("construction.maximum_signal_evaluations"));
 			limitations->Add(new SettingEntry("construction.enable_build_river"));
