@@ -218,9 +218,9 @@ public:
 
 	/**
 	 * @param cmd_msg optional failure string as passed to DoCommand
-	 * @return an allocated string summarising the command result
+	 * @return a string summarising the command result
 	 */
-	char *AllocSummaryMessage(StringID cmd_msg = 0) const;
+	std::string SummaryMessage(StringID cmd_msg = 0) const;
 
 	/**
 	 * Write a string summarising the command result

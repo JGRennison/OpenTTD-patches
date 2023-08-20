@@ -1233,7 +1233,7 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, 
 	if (!test_and_exec_can_differ) {
 		assert_msg(res.GetCost() == res2.GetCost() && res.Failed() == res2.Failed(),
 				"Command: cmd: 0x%X (%s), Test: %s, Exec: %s", cmd, GetCommandName(cmd),
-				res.AllocSummaryMessage(GB(cmd, 16, 16)), res2.AllocSummaryMessage(GB(cmd, 16, 16))); // sanity check
+				res.SummaryMessage(GB(cmd, 16, 16)).c_str(), res2.SummaryMessage(GB(cmd, 16, 16)).c_str()); // sanity check
 	} else if (res2.Failed()) {
 		return_dcpi(res2);
 	}
@@ -1318,11 +1318,11 @@ void CommandCost::UseTextRefStack(const GRFFile *grffile, uint num_registers)
 	}
 }
 
-char *CommandCost::AllocSummaryMessage(StringID cmd_msg) const
+std::string CommandCost::SummaryMessage(StringID cmd_msg) const
 {
 	char buf[DRAW_STRING_BUFFER];
 	this->WriteSummaryMessage(buf, lastof(buf), cmd_msg);
-	return stredup(buf, lastof(buf));
+	return buf;
 }
 
 int CommandCost::WriteSummaryMessage(char *buf, char *last, StringID cmd_msg) const
