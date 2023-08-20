@@ -7144,11 +7144,22 @@ void ClearVehicleWindows(const Train *v)
 }
 
 /**
+ * Issue a start/stop command
+ * @param v a vehicle
+ * @param evaluate_callback shall the start/stop callback be evaluated?
+ * @return success or error
+ */
+static inline CommandCost CmdStartStopVehicle(const Vehicle *v, bool evaluate_callback)
+{
+	return DoCommand(0, v->index, evaluate_callback ? 1 : 0, DC_EXEC | DC_AUTOREPLACE, CMD_START_STOP_VEHICLE);
+}
+
+/**
 * Replace a vehicle based on a template replacement order.
 * @param tile unused
 * @param flags type of operation
 * @param p1 the ID of the vehicle to replace.
-* @param p2 whether the vehicle should leave (1) or stay (0) in the depot.
+* @param p2 unused
 * @param text unused
 * @return the cost of this operation or an error
 */
@@ -7156,7 +7167,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 {
 	Train *incoming = Train::GetIfValid(p1);
 
-	if (incoming == nullptr) {
+	if (incoming == nullptr || !incoming->IsPrimaryVehicle() || !incoming->IsChainInDepot()) {
 		return CMD_ERROR;
 	}
 
@@ -7164,10 +7175,16 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 		return CommandCost();
 	}
 
-	const bool leave_depot = (p2 != 0);
+	CommandCost buy(EXPENSES_NEW_VEHICLES);
+
+	const bool was_stopped = (incoming->vehstatus & VS_STOPPED) != 0;
+	if (!was_stopped) {
+		CommandCost cost = CmdStartStopVehicle(incoming, true);
+		if (cost.Failed()) return cost;
+	}
 	auto guard = scope_guard([&]() {
 		_new_vehicle_id = incoming->index;
-		if (leave_depot) incoming->vehstatus &= ~VS_STOPPED;
+		if (!was_stopped) buy.AddCost(CmdStartStopVehicle(incoming, false));
 	});
 
 	Train *new_chain = nullptr;
@@ -7218,8 +7235,6 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 
 	TemplateDepotVehicles depot_vehicles;
 	if (tv->IsSetReuseDepotVehicles()) depot_vehicles.Init(tile);
-
-	CommandCost buy(EXPENSES_NEW_VEHICLES);
 
 	auto refit_unit = [&](const Train *unit, CargoID cid, uint16 csubt) {
 		CommandCost refit_cost = DoCommand(unit->tile, unit->index, cid | csubt << 8 | (1 << 16), flags, GetCmdRefitVeh(unit));

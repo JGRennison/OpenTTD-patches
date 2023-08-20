@@ -1626,7 +1626,7 @@ void CallVehicleTicks()
 
 		auto it = _vehicles_to_autoreplace.find(index);
 		assert(it != _vehicles_to_autoreplace.end());
-		bool leaveDepot = it->second;
+		if (it->second) t->vehstatus &= ~VS_STOPPED;
 		_vehicles_to_autoreplace.erase(it);
 
 		/* Store the position of the effect as the vehicle pointer will become invalid later */
@@ -1638,8 +1638,7 @@ void CallVehicleTicks()
 
 		_new_vehicle_id = INVALID_VEHICLE;
 
-		t->vehstatus |= VS_STOPPED;
-		CommandCost res = DoCommand(t->tile, t->index, leaveDepot ? 1 : 0, DC_EXEC, CMD_TEMPLATE_REPLACE_VEHICLE);
+		CommandCost res = DoCommand(t->tile, t->index, 0, DC_EXEC, CMD_TEMPLATE_REPLACE_VEHICLE);
 
 		if (_new_vehicle_id != INVALID_VEHICLE) {
 			VehicleID t_new = _new_vehicle_id;
