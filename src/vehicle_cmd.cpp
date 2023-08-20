@@ -813,6 +813,17 @@ CommandCost CmdDepotMassAutoReplace(TileIndex tile, DoCommandFlag flags, uint32 
 		/* Ensure that the vehicle completely in the depot */
 		if (!v->IsChainInDepot()) continue;
 
+		if (v->type == VEH_TRAIN) {
+			_new_vehicle_id = INVALID_VEHICLE;
+
+			CommandCost ret = DoCommand(v->tile, v->index, 0, flags, CMD_TEMPLATE_REPLACE_VEHICLE);
+			if (ret.Succeeded()) cost.AddCost(ret);
+
+			if (_new_vehicle_id != INVALID_VEHICLE) {
+				v = Vehicle::Get(_new_vehicle_id);
+			}
+		}
+
 		CommandCost ret = DoCommand(0, v->index, 0, flags, CMD_AUTOREPLACE_VEHICLE);
 
 		if (ret.Succeeded()) cost.AddCost(ret);
