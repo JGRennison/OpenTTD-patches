@@ -7185,13 +7185,17 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 	if (tv->IsReplaceOldOnly() && !incoming->NeedsAutorenewing(Company::Get(incoming->owner), false)) {
 		return CommandCost();
 	}
-	bool need_replacement = !TrainMatchesTemplate(incoming, tv);
-	bool need_refit = !TrainMatchesTemplateRefit(incoming, tv);
-	bool use_refit = tv->refit_as_template;
+	const TBTRDiffFlags diff = TrainTemplateDifference(incoming, tv);
+	if (diff == TBTRDF_NONE) return CommandCost();
+
+	const bool need_replacement = (diff & TBTRDF_CONSIST);
+	const bool need_refit = (diff & TBTRDF_REFIT);
+	const bool refit_to_template = tv->refit_as_template;
+
 	CargoID store_refit_ct = CT_INVALID;
 	uint16 store_refit_csubt = 0;
 	// if a train shall keep its old refit, store the refit setting of its first vehicle
-	if (!use_refit) {
+	if (!refit_to_template) {
 		for (Train *getc = incoming; getc != nullptr; getc = getc->GetNextUnit()) {
 			if (getc->cargo_type != CT_INVALID && getc->cargo_cap > 0) {
 				store_refit_ct = getc->cargo_type;
@@ -7200,11 +7204,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 		}
 	}
 
-	if (!need_replacement) {
-		if (!need_refit || !use_refit) {
-			return CommandCost();
-		}
-	} else {
+	if (need_replacement) {
 		CommandCost buy_cost = TestBuyAllTemplateVehiclesInChain(tv, tile);
 		if (buy_cost.Failed()) {
 			if (buy_cost.GetErrorMessage() == INVALID_STRING_ID) return CommandCost(STR_ERROR_CAN_T_BUY_TRAIN);
@@ -7214,7 +7214,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 		}
 	}
 
-	if (need_replacement || (need_refit && use_refit)) RegisterGameEvents(GEF_TBTR_REPLACEMENT);
+	RegisterGameEvents(GEF_TBTR_REPLACEMENT);
 
 	TemplateDepotVehicles depot_vehicles;
 	if (tv->IsSetReuseDepotVehicles()) depot_vehicles.Init(tile);
@@ -7291,7 +7291,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 
 			// additionally, if we don't want to use the template refit, refit as incoming
 			// the template refit will be set further down, if we use it at all
-			if (!use_refit) {
+			if (!refit_to_template) {
 				buy.AddCost(DoCommand(new_chain->tile, new_chain->index, store_refit_ct | store_refit_csubt << 8 | (1 << 16) | (1 << 31), flags, GetCmdRefitVeh(new_chain)));
 			}
 		}
@@ -7352,7 +7352,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 			}
 			// TODO: is this enough ? might it be that we bought a new wagon here and it now has std refit ?
 			if (need_refit && new_part != nullptr) {
-				if (use_refit) {
+				if (refit_to_template) {
 					DoCommand(tile, new_part->index, cur_tmpl->cargo_type | (cur_tmpl->cargo_subtype << 8) | (1 << 16) | (1 << 31), flags, GetCmdRefitVeh(new_part));
 				} else {
 					DoCommand(tile, new_part->index, store_refit_ct | (store_refit_csubt << 8) | (1 << 16) | (1 << 31), flags, GetCmdRefitVeh(new_part));
@@ -7374,7 +7374,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 	// neutralize each remaining engine's status
 
 	// refit, only if the template option is set so
-	if (use_refit && (need_refit || need_replacement)) {
+	if (refit_to_template && (need_refit || need_replacement)) {
 		buy.AddCost(CmdRefitTrainFromTemplate(new_chain, tv, flags));
 	}
 

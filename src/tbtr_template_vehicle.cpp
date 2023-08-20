@@ -158,8 +158,8 @@ bool ShouldServiceTrainForTemplateReplacement(const Train *t, const TemplateVehi
 	if (tv->IsReplaceOldOnly() && !t->NeedsAutorenewing(c, false)) return false;
 	Money needed_money = c->settings.engine_renew_money;
 	if (needed_money > c->money) return false;
-	bool need_replacement = !TrainMatchesTemplate(t, tv);
-	if (need_replacement) {
+	TBTRDiffFlags diff = TrainTemplateDifference(t, tv);
+	if (diff & TBTRDF_CONSIST) {
 		/* Check money.
 		 * We want 2*(the price of the whole template) without looking at the value of the vehicle(s) we are going to sell, or not need to buy. */
 		for (const TemplateVehicle *tv_unit = tv; tv_unit != nullptr; tv_unit = tv_unit->GetNextUnit()) {
@@ -167,10 +167,8 @@ bool ShouldServiceTrainForTemplateReplacement(const Train *t, const TemplateVehi
 			needed_money += 2 * Engine::Get(tv->engine_type)->GetCost();
 		}
 		return needed_money <= c->money;
-	} else if (!TrainMatchesTemplateRefit(t, tv) && tv->refit_as_template) {
-		return true;
 	} else {
-		return false;
+		return diff != TBTRDF_NONE;
 	}
 }
 

@@ -277,35 +277,25 @@ void NeutralizeStatus(Train *t)
 	DoCommand(0, t->index, 0, DC_EXEC, CMD_RENAME_VEHICLE, nullptr);
 }
 
-bool TrainMatchesTemplate(const Train *t, const TemplateVehicle *tv) {
-	while (t && tv) {
+TBTRDiffFlags TrainTemplateDifference(const Train *t, const TemplateVehicle *tv) {
+	TBTRDiffFlags diff = TBTRDF_NONE;
+	while (t != nullptr && tv != nullptr) {
 		if (t->engine_type != tv->engine_type) {
-			return false;
+			return TBTRDF_ALL;
+		}
+		if (tv->refit_as_template && (t->cargo_type != tv->cargo_type || t->cargo_subtype != tv->cargo_subtype)) {
+			diff |= TBTRDF_REFIT;
+		}
+		if (HasBit(t->flags, VRF_REVERSE_DIRECTION) != HasBit(tv->ctrl_flags, TVCF_REVERSED)) {
+			diff |= TBTRDF_DIR;
 		}
 		t = t->GetNextUnit();
 		tv = tv->GetNextUnit();
 	}
-	if ((t && !tv) || (!t && tv)) {
-		return false;
+	if ((t != nullptr) != (tv != nullptr)) {
+		return TBTRDF_ALL;
 	}
-	return true;
-}
-
-
-bool TrainMatchesTemplateRefit(const Train *t, const TemplateVehicle *tv)
-{
-	if (!tv->refit_as_template) {
-		return true;
-	}
-
-	while (t && tv) {
-		if (t->cargo_type != tv->cargo_type || t->cargo_subtype != tv->cargo_subtype || HasBit(t->flags, VRF_REVERSE_DIRECTION) != HasBit(tv->ctrl_flags, TVCF_REVERSED)) {
-			return false;
-		}
-		t = t->GetNextUnit();
-		tv = tv->GetNextUnit();
-	}
-	return true;
+	return diff;
 }
 
 void BreakUpRemainders(Train *t)
@@ -336,7 +326,7 @@ uint CountsTrainsNeedingTemplateReplacement(GroupID g_id, const TemplateVehicle 
 	if (!tv) return count;
 
 	for (Train *t : Train::Iterate()) {
-		if (t->IsPrimaryVehicle() && t->group_id == g_id && (!TrainMatchesTemplate(t, tv) || !TrainMatchesTemplateRefit(t, tv))) {
+		if (t->IsPrimaryVehicle() && t->group_id == g_id && TrainTemplateDifference(t, tv) != TBTRDF_NONE) {
 			count++;
 		}
 	}
