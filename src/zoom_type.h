@@ -50,6 +50,9 @@ enum ZoomLevel : byte {
 	ZOOM_LVL_MAX      = ZOOM_LVL_OUT_512X,     ///< Maximum zoom level.
 	ZOOM_LVL_DRAW_MAP = ZOOM_LVL_OUT_64X,      ///< All zoomlevels above or equal to this are rendered with map style
 	ZOOM_LVL_DRAW_SPR = ZOOM_LVL_DRAW_MAP - 1, ///< All zoomlevels below or equal to this are rendered with sprites
+
+	ZOOM_LVL_SPR_END  = ZOOM_LVL_DRAW_MAP,                  ///< End for iteration of zoom levels to draw with sprites.
+	ZOOM_LVL_SPR_COUNT = ZOOM_LVL_SPR_END - ZOOM_LVL_BEGIN, ///< Number of zoom levels to draw with sprites.
 };
 DECLARE_POSTFIX_INCREMENT(ZoomLevel)
 

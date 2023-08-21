@@ -386,7 +386,7 @@ static bool PadSprites(SpriteLoader::Sprite *sprite, unsigned int sprite_avail, 
 	/* Get minimum top left corner coordinates. */
 	int min_xoffs = INT32_MAX;
 	int min_yoffs = INT32_MAX;
-	for (ZoomLevel zoom = ZOOM_LVL_BEGIN; zoom != ZOOM_LVL_END; zoom++) {
+	for (ZoomLevel zoom = ZOOM_LVL_BEGIN; zoom != ZOOM_LVL_SPR_END; zoom++) {
 		if (HasBit(sprite_avail, zoom)) {
 			min_xoffs = std::min(min_xoffs, ScaleByZoom(sprite[zoom].x_offs, zoom));
 			min_yoffs = std::min(min_yoffs, ScaleByZoom(sprite[zoom].y_offs, zoom));
@@ -396,7 +396,7 @@ static bool PadSprites(SpriteLoader::Sprite *sprite, unsigned int sprite_avail, 
 	/* Get maximum dimensions taking necessary padding at the top left into account. */
 	int max_width  = INT32_MIN;
 	int max_height = INT32_MIN;
-	for (ZoomLevel zoom = ZOOM_LVL_BEGIN; zoom != ZOOM_LVL_END; zoom++) {
+	for (ZoomLevel zoom = ZOOM_LVL_BEGIN; zoom != ZOOM_LVL_SPR_END; zoom++) {
 		if (HasBit(sprite_avail, zoom)) {
 			max_width  = std::max(max_width, ScaleByZoom(sprite[zoom].width + sprite[zoom].x_offs - UnScaleByZoom(min_xoffs, zoom), zoom));
 			max_height = std::max(max_height, ScaleByZoom(sprite[zoom].height + sprite[zoom].y_offs - UnScaleByZoom(min_yoffs, zoom), zoom));
@@ -411,7 +411,7 @@ static bool PadSprites(SpriteLoader::Sprite *sprite, unsigned int sprite_avail, 
 	}
 
 	/* Pad sprites where needed. */
-	for (ZoomLevel zoom = ZOOM_LVL_BEGIN; zoom != ZOOM_LVL_END; zoom++) {
+	for (ZoomLevel zoom = ZOOM_LVL_BEGIN; zoom != ZOOM_LVL_SPR_END; zoom++) {
 		if (HasBit(sprite_avail, zoom)) {
 			/* Scaling the sprite dimensions in the blitter is done with rounding up,
 			 * so a negative padding here is not an error. */
@@ -442,7 +442,7 @@ static bool ResizeSprites(SpriteLoader::Sprite *sprite, unsigned int sprite_avai
 	if (!PadSprites(sprite, sprite_avail, encoder)) return false;
 
 	/* Create other missing zoom levels */
-	for (ZoomLevel zoom = ZOOM_LVL_OUT_2X; zoom != ZOOM_LVL_END; zoom++) {
+	for (ZoomLevel zoom = ZOOM_LVL_OUT_2X; zoom != ZOOM_LVL_SPR_END; zoom++) {
 		if (HasBit(sprite_avail, zoom)) {
 			/* Check that size and offsets match the fully zoomed image. */
 			assert(sprite[zoom].width  == UnScaleByZoom(sprite[ZOOM_LVL_NORMAL].width,  zoom));
@@ -528,7 +528,7 @@ static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_ty
 
 	DEBUG(sprite, 9, "Load sprite %d", id);
 
-	SpriteLoader::Sprite sprite[ZOOM_LVL_COUNT];
+	SpriteLoader::Sprite sprite[ZOOM_LVL_SPR_COUNT];
 	uint8 sprite_avail = 0;
 	sprite[ZOOM_LVL_NORMAL].type = sprite_type;
 
@@ -993,7 +993,7 @@ uint32 GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id)
 	SpriteFile &file = *sc->file;
 	size_t file_pos = sc->file_pos;
 
-	SpriteLoader::Sprite sprites[ZOOM_LVL_COUNT];
+	SpriteLoader::Sprite sprites[ZOOM_LVL_SPR_COUNT];
 	sprites[ZOOM_LVL_NORMAL].type = SpriteType::Normal;
 	SpriteLoaderGrf sprite_loader(file.GetContainerVersion());
 	uint8 sprite_avail;
@@ -1109,4 +1109,4 @@ void GfxClearFontSpriteCache()
 	}
 }
 
-/* static */ ReusableBuffer<SpriteLoader::CommonPixel> SpriteLoader::Sprite::buffer[ZOOM_LVL_COUNT];
+/* static */ ReusableBuffer<SpriteLoader::CommonPixel> SpriteLoader::Sprite::buffer[ZOOM_LVL_SPR_COUNT];

@@ -1272,10 +1272,10 @@ void OpenGLBackend::ReleaseAnimBuffer(const Rect &update_rect)
 	Sprite *dest_sprite = (Sprite *)allocator(sizeof(*dest_sprite) + sizeof(OpenGLSprite));
 
 	OpenGLSprite *gl_sprite = (OpenGLSprite *)dest_sprite->data;
-	new (gl_sprite) OpenGLSprite(sprite->width, sprite->height, sprite->type == SpriteType::Font ? 1 : ZOOM_LVL_COUNT, sprite->colours);
+	new (gl_sprite) OpenGLSprite(sprite->width, sprite->height, sprite->type == SpriteType::Font ? 1 : ZOOM_LVL_SPR_COUNT, sprite->colours);
 
 	/* Upload texture data. */
-	for (int i = 0; i < (sprite->type == SpriteType::Font ? 1 : ZOOM_LVL_COUNT); i++) {
+	for (int i = 0; i < (sprite->type == SpriteType::Font ? 1 : ZOOM_LVL_SPR_COUNT); i++) {
 		gl_sprite->Update(sprite[i].width, sprite[i].height, i, sprite[i].data);
 	}
 

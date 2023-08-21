@@ -60,7 +60,7 @@ public:
 	};
 	struct SpriteData {
 		BlitterSpriteFlags flags;
-		SpriteInfo infos[ZOOM_LVL_COUNT];
+		SpriteInfo infos[ZOOM_LVL_SPR_COUNT];
 		byte data[]; ///< Data, all zoomlevels.
 	};
 
