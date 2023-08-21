@@ -313,16 +313,29 @@ template <bool Tpal_to_rgb> Sprite *Blitter_32bppOptimized::EncodeInternal(const
 
 	BlitterSpriteFlags flags = BSF_NO_REMAP | BSF_NO_ANIM;
 
+	uint px_size = 0;
+	uint n_size = 0;
 	for (ZoomLevel z = zoom_min; z <= zoom_max; z++) {
 		const SpriteLoader::Sprite *src_orig = &sprite[z];
 
 		uint size = src_orig->height * src_orig->width;
 
-		dst_px_orig[z] = CallocT<Colour>(size + src_orig->height * 2);
-		dst_n_orig[z]  = CallocT<uint16>(size * 2 + src_orig->height * 4 * 2);
+		px_size += size + src_orig->height * 2;
+		n_size += size * 2 + src_orig->height * 4 * 2;
+	}
 
-		uint32 *dst_px_ln = (uint32 *)dst_px_orig[z];
-		uint32 *dst_n_ln  = (uint32 *)dst_n_orig[z];
+	Colour * const px_buffer = MallocT<Colour>(px_size);
+	uint16 * const n_buffer = MallocT<uint16>(n_size);
+	Colour *px_buffer_next = px_buffer;
+	uint16 *n_buffer_next = n_buffer;
+
+	for (ZoomLevel z = zoom_min; z <= zoom_max; z++) {
+		const SpriteLoader::Sprite *src_orig = &sprite[z];
+
+		dst_px_orig[z] = px_buffer_next;
+		dst_n_orig[z] = n_buffer_next;
+		uint32 *dst_px_ln = (uint32 *)px_buffer_next;
+		uint32 *dst_n_ln  = (uint32 *)n_buffer_next;
 
 		const SpriteLoader::CommonPixel *src = (const SpriteLoader::CommonPixel *)src_orig->data;
 
@@ -332,6 +345,7 @@ template <bool Tpal_to_rgb> Sprite *Blitter_32bppOptimized::EncodeInternal(const
 			uint16 *dst_n = (uint16 *)&dst_n_ln[1];
 
 			uint16 *dst_len = dst_n++;
+			*dst_len = 0;
 
 			uint last = 3;
 			int len = 0;
@@ -399,8 +413,9 @@ template <bool Tpal_to_rgb> Sprite *Blitter_32bppOptimized::EncodeInternal(const
 					dst_px++;
 					dst_n++;
 				} else if (len == 1) {
-					dst_px++;
+					*dst_px = 0;
 					*dst_n = src->m;
+					dst_px++;
 					dst_n++;
 				}
 
@@ -423,6 +438,9 @@ template <bool Tpal_to_rgb> Sprite *Blitter_32bppOptimized::EncodeInternal(const
 
 		lengths[z][0] = (byte *)dst_px_ln - (byte *)dst_px_orig[z]; // all are aligned to 4B boundary
 		lengths[z][1] = (byte *)dst_n_ln  - (byte *)dst_n_orig[z];
+
+		px_buffer_next = (Colour *)dst_px_ln;
+		n_buffer_next = (uint16 *)dst_n_ln;
 	}
 
 	uint len = 0; // total length of data
@@ -448,10 +466,10 @@ template <bool Tpal_to_rgb> Sprite *Blitter_32bppOptimized::EncodeInternal(const
 
 		memcpy(dst->data + dst->offset[z][0], dst_px_orig[z], lengths[z][0]);
 		memcpy(dst->data + dst->offset[z][1], dst_n_orig[z],  lengths[z][1]);
-
-		free(dst_px_orig[z]);
-		free(dst_n_orig[z]);
 	}
+
+	free(px_buffer);
+	free(n_buffer);
 
 	return dest_sprite;
 }
