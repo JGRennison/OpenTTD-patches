@@ -816,20 +816,27 @@ static void DeleteEntriesFromSpriteCache(size_t target)
 		candidates.pop_back();
 	};
 
+	size_t total_candidates = 0;
 	SpriteID i = 0;
 	for (; i != _spritecache.size() && candidate_bytes < target; i++) {
 		SpriteCache *sc = GetSpriteCache(i);
 		if (sc->GetType() != SpriteType::Recolour && sc->GetPtr() != nullptr) {
 			push({ sc->lru, i, sc->buffer.GetSize() });
+			total_candidates++;
 			if (candidate_bytes >= target) break;
 		}
 	}
 	for (; i != _spritecache.size(); i++) {
 		SpriteCache *sc = GetSpriteCache(i);
-		if (sc->GetType() != SpriteType::Recolour && sc->GetPtr() != nullptr && sc->lru <= candidates.front().lru) {
-			push({ sc->lru, i, sc->buffer.GetSize() });
-			while (!candidates.empty() && candidate_bytes - candidates.front().size >= target) {
-				pop();
+		if (sc->GetType() != SpriteType::Recolour && sc->GetPtr() != nullptr) {
+			total_candidates++;
+
+			/* Only add to candidates if LRU <= current highest */
+			if (sc->lru <= candidates.front().lru) {
+				push({ sc->lru, i, sc->buffer.GetSize() });
+				while (!candidates.empty() && candidate_bytes - candidates.front().size >= target) {
+					pop();
+				}
 			}
 		}
 	}
@@ -838,8 +845,8 @@ static void DeleteEntriesFromSpriteCache(size_t target)
 		DeleteEntryFromSpriteCache(it.id);
 	}
 
-	DEBUG(sprite, 3, "DeleteEntriesFromSpriteCache, deleted: " PRINTF_SIZE ", freed: " PRINTF_SIZE ", in use: " PRINTF_SIZE " --> " PRINTF_SIZE ", delta: " PRINTF_SIZE ", requested: " PRINTF_SIZE,
-			candidates.size(), candidate_bytes, initial_in_use, GetSpriteCacheUsage(), initial_in_use - GetSpriteCacheUsage(), target);
+	DEBUG(sprite, 3, "DeleteEntriesFromSpriteCache, deleted: " PRINTF_SIZE " of " PRINTF_SIZE ", freed: " PRINTF_SIZE ", in use: " PRINTF_SIZE " --> " PRINTF_SIZE ", delta: " PRINTF_SIZE ", requested: " PRINTF_SIZE,
+			candidates.size(), total_candidates, candidate_bytes, initial_in_use, GetSpriteCacheUsage(), initial_in_use - GetSpriteCacheUsage(), target);
 }
 
 void IncreaseSpriteLRU()
