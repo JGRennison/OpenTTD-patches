@@ -137,6 +137,8 @@ Sprite *Blitter_32bppSimple::Encode(const SpriteLoader::Sprite *sprite, Allocato
 	dest_sprite->width  = sprite->width;
 	dest_sprite->x_offs = sprite->x_offs;
 	dest_sprite->y_offs = sprite->y_offs;
+	dest_sprite->next = nullptr;
+	dest_sprite->missing_zoom_levels = 0;
 
 	dst = (Blitter_32bppSimple::Pixel *)dest_sprite->data;
 	SpriteLoader::CommonPixel *src = (SpriteLoader::CommonPixel *)sprite->data;

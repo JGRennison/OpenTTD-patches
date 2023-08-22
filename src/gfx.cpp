@@ -979,7 +979,7 @@ void DrawCharCentered(WChar c, const Rect &r, TextColour colour)
  */
 Dimension GetSpriteSize(SpriteID sprid, Point *offset, ZoomLevel zoom)
 {
-	const Sprite *sprite = GetSprite(sprid, SpriteType::Normal);
+	const Sprite *sprite = GetSprite(sprid, SpriteType::Normal, ZoomMask(zoom));
 
 	if (offset != nullptr) {
 		offset->x = UnScaleByZoom(sprite->x_offs, zoom);
@@ -1044,15 +1044,15 @@ void DrawSpriteViewport(const SpritePointerHolder &sprite_store, const DrawPixel
 	}
 }
 
-void PrepareDrawSpriteViewportSpriteStore(SpritePointerHolder &sprite_store, SpriteID img, PaletteID pal)
+void PrepareDrawSpriteViewportSpriteStore(SpritePointerHolder &sprite_store, const DrawPixelInfo *dpi, SpriteID img, PaletteID pal)
 {
 	SpriteID real_sprite = GB(img, 0, SPRITE_WIDTH);
-	sprite_store.CacheSprite(real_sprite, SpriteType::Normal);
+	sprite_store.CacheSprite(real_sprite, SpriteType::Normal, dpi->zoom);
 	if (HasBit(img, PALETTE_MODIFIER_TRANSPARENT)) {
-		sprite_store.CacheSprite(GB(pal, 0, PALETTE_WIDTH), SpriteType::Recolour);
+		sprite_store.CacheRecolourSprite(GB(pal, 0, PALETTE_WIDTH));
 	} else if (pal != PAL_NONE) {
 		if (!HasBit(pal, PALETTE_TEXT_RECOLOUR) && GB(pal, 0, PALETTE_WIDTH) != PAL_NONE) {
-			sprite_store.CacheSprite(GB(pal, 0, PALETTE_WIDTH), SpriteType::Recolour);
+			sprite_store.CacheRecolourSprite(GB(pal, 0, PALETTE_WIDTH));
 		}
 	}
 }
@@ -1072,16 +1072,16 @@ void DrawSprite(SpriteID img, PaletteID pal, int x, int y, const SubSprite *sub,
 	SpriteID real_sprite = GB(img, 0, SPRITE_WIDTH);
 	if (HasBit(img, PALETTE_MODIFIER_TRANSPARENT)) {
 		ctx.colour_remap_ptr = GetNonSprite(GB(pal, 0, PALETTE_WIDTH), SpriteType::Recolour) + 1;
-		GfxMainBlitter(ctx, GetSprite(real_sprite, SpriteType::Normal), x, y, BM_TRANSPARENT, sub, real_sprite, zoom);
+		GfxMainBlitter(ctx, GetSprite(real_sprite, SpriteType::Normal, ZoomMask(zoom)), x, y, BM_TRANSPARENT, sub, real_sprite, zoom);
 	} else if (pal != PAL_NONE) {
 		if (HasBit(pal, PALETTE_TEXT_RECOLOUR)) {
 			ctx.SetColourRemap((TextColour)GB(pal, 0, PALETTE_WIDTH));
 		} else {
 			ctx.colour_remap_ptr = GetNonSprite(GB(pal, 0, PALETTE_WIDTH), SpriteType::Recolour) + 1;
 		}
-		GfxMainBlitter(ctx, GetSprite(real_sprite, SpriteType::Normal), x, y, GetBlitterMode(pal), sub, real_sprite, zoom);
+		GfxMainBlitter(ctx, GetSprite(real_sprite, SpriteType::Normal, ZoomMask(zoom)), x, y, GetBlitterMode(pal), sub, real_sprite, zoom);
 	} else {
-		GfxMainBlitter(ctx, GetSprite(real_sprite, SpriteType::Normal), x, y, BM_NORMAL, sub, real_sprite, zoom);
+		GfxMainBlitter(ctx, GetSprite(real_sprite, SpriteType::Normal, ZoomMask(zoom)), x, y, BM_NORMAL, sub, real_sprite, zoom);
 	}
 }
 
@@ -1098,7 +1098,7 @@ void DrawSprite(SpriteID img, PaletteID pal, int x, int y, const SubSprite *sub,
  * @tparam SCALED_XY Whether the X and Y are scaled or unscaled.
  */
 template <int ZOOM_BASE, bool SCALED_XY>
-static void GfxBlitter(const GfxBlitterCtx &ctx, const Sprite * const sprite, int x, int y, BlitterMode mode, const SubSprite * const sub, SpriteID sprite_id, ZoomLevel zoom)
+static void GfxBlitter(const GfxBlitterCtx &ctx, const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite * const sub, SpriteID sprite_id, ZoomLevel zoom)
 {
 	const DrawPixelInfo *dpi = ctx.dpi;
 	Blitter::BlitterParams bp;
@@ -1137,6 +1137,14 @@ static void GfxBlitter(const GfxBlitterCtx &ctx, const Sprite * const sprite, in
 
 		x += ScaleByZoom(bp.skip_left, zoom);
 		y += ScaleByZoom(bp.skip_top, zoom);
+	}
+
+	while (sprite != nullptr && HasBit(sprite->missing_zoom_levels, zoom)) {
+		sprite = sprite->next;
+	}
+	if (sprite == nullptr) {
+		DEBUG(sprite, 0, "Failed to draw sprite %u at zoom level %u as required zoom level is missing", sprite_id, zoom);
+		return;
 	}
 
 	/* Copy the main data directly from the sprite */
@@ -1231,7 +1239,7 @@ std::unique_ptr<uint32[]> DrawSpriteToRgbaBuffer(SpriteID spriteId, ZoomLevel zo
 
 	/* Gather information about the sprite to write, reserve memory */
 	const SpriteID real_sprite = GB(spriteId, 0, SPRITE_WIDTH);
-	const Sprite *sprite = GetSprite(real_sprite, SpriteType::Normal);
+	const Sprite *sprite = GetSprite(real_sprite, SpriteType::Normal, ZoomMask(zoom));
 	Dimension dim = GetSpriteSize(real_sprite, nullptr, zoom);
 	size_t dim_size = static_cast<size_t>(dim.width) * dim.height;
 	std::unique_ptr<uint32[]> result(new uint32[dim_size]);
@@ -2121,7 +2129,7 @@ void UpdateCursorSize()
 	static_assert(lengthof(_cursor.sprite_seq) == lengthof(_cursor.sprite_pos));
 	assert(_cursor.sprite_count <= lengthof(_cursor.sprite_seq));
 	for (uint i = 0; i < _cursor.sprite_count; ++i) {
-		const Sprite *p = GetSprite(GB(_cursor.sprite_seq[i].sprite, 0, SPRITE_WIDTH), SpriteType::Normal);
+		const Sprite *p = GetSprite(GB(_cursor.sprite_seq[i].sprite, 0, SPRITE_WIDTH), SpriteType::Normal, 0);
 		Point offs, size;
 		offs.x = UnScaleGUI(p->x_offs) + _cursor.sprite_pos[i].x;
 		offs.y = UnScaleGUI(p->y_offs) + _cursor.sprite_pos[i].y;

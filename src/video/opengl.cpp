@@ -1114,7 +1114,7 @@ void OpenGLBackend::PopulateCursorCache()
 		SpriteID sprite = _cursor.sprite_seq[i].sprite;
 
 		if (!this->cursor_cache.Contains(sprite)) {
-			Sprite *old = this->cursor_cache.Insert(sprite, (Sprite *)GetRawSprite(sprite, SpriteType::Normal, &SimpleSpriteAlloc, this));
+			Sprite *old = this->cursor_cache.Insert(sprite, (Sprite *)GetRawSprite(sprite, SpriteType::Normal, UINT8_MAX, &SimpleSpriteAlloc, this));
 			if (old != nullptr) {
 				OpenGLSprite *gl_sprite = (OpenGLSprite *)old->data;
 				gl_sprite->~OpenGLSprite();
@@ -1283,6 +1283,8 @@ void OpenGLBackend::ReleaseAnimBuffer(const Rect &update_rect)
 	dest_sprite->width  = sprite->width;
 	dest_sprite->x_offs = sprite->x_offs;
 	dest_sprite->y_offs = sprite->y_offs;
+	dest_sprite->next = nullptr;
+	dest_sprite->missing_zoom_levels = 0;
 
 	return dest_sprite;
 }

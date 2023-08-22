@@ -38,76 +38,137 @@ uint _sprite_cache_size = 4;
 static size_t _spritecache_bytes_used = 0;
 static uint32 _sprite_lru_counter;
 
-PACK_N(class SpriteDataBuffer {
-	void *ptr = nullptr;
+struct SpriteCache;
+
+class SpriteDataBuffer {
+	friend SpriteCache;
+
+	std::unique_ptr<void, FreeDeleter> ptr;
 	uint32 size = 0;
 
 public:
-	void *GetPtr() { return this->ptr; }
+	void *GetPtr() { return this->ptr.get(); }
 	uint32 GetSize() { return this->size; }
 
 	void Allocate(uint32 size)
 	{
-		_spritecache_bytes_used -= this->size;
-		free(this->ptr);
-		this->ptr = MallocT<byte>(size);
+		this->ptr.reset(MallocT<byte>(size));
 		this->size = size;
-		_spritecache_bytes_used += this->size;
 	}
 
 	void Clear()
 	{
-		_spritecache_bytes_used -= this->size;
-		free(this->ptr);
-		this->ptr = nullptr;
+		this->ptr.reset();
 		this->size = 0;
 	}
+};
 
-	SpriteDataBuffer() {}
-
-	SpriteDataBuffer(uint32 size) { this->Allocate(size); }
-
-	SpriteDataBuffer(SpriteDataBuffer &&other) noexcept
-	{
-		*this = std::move(other);
-	}
-
-	~SpriteDataBuffer()
-	{
-		this->Clear();
-	}
-
-	SpriteDataBuffer& operator=(SpriteDataBuffer &&other) noexcept
-	{
-		this->Clear();
-		this->ptr = other.ptr;
-		this->size = other.size;
-		other.ptr = nullptr;
-		other.size = 0;
-		return *this;
-	}
-}, 4);
-
-PACK_N(struct SpriteCache {
+struct SpriteCache {
 	SpriteFile *file;    ///< The file the sprite in this entry can be found in.
 	size_t file_pos;
-	SpriteDataBuffer buffer;
+
+private:
+	std::unique_ptr<void, NoOpDeleter> ptr;
+	uint32 totalsize = 0;
+
+public:
 	uint32 id;
 	uint32 lru;
 	uint count;
 
 	SpriteType type;     ///< In some cases a single sprite is misused by two NewGRFs. Once as real sprite and once as recolour sprite. If the recolour sprite gets into the cache it might be drawn as real sprite which causes enormous trouble.
+	uint8 total_missing_zoom_levels = 0; ///< Zoom levels missing entirely
+	uint16 flags;        ///< Control flags, see SpriteCacheCtrlFlags
 
-	byte flags;          ///< Control flags, see SpriteCacheCtrlFlags
-
-	void *GetPtr() { return this->buffer.GetPtr(); }
+	void *GetPtr() { return this->ptr.get(); }
+	uint32 GetTotalSize() { return this->totalsize; }
 
 	SpriteType GetType() const { return this->type; }
 	void SetType(SpriteType type) { this->type = type; }
 	bool GetWarned() const { return HasBit(this->flags, SCCF_WARNED); }
 	void SetWarned(bool warned) { SB(this->flags, SCCF_WARNED, 1, warned ? 1 : 0); }
-	bool GetHasNonPalette() const { return HasBit(this->flags, SCCF_HAS_NON_PALETTE); }
-}, 4);
+	bool GetHasNonPalette() const { return GB(this->flags, SCC_32BPP_ZOOM_START, 6) != 0; }
+
+private:
+	void Deallocate()
+	{
+		if (!this->ptr) return;
+
+		_spritecache_bytes_used -= this->totalsize;
+
+		if (this->GetType() != SpriteType::Normal) {
+			free(this->ptr.release());
+			return;
+		}
+
+		Sprite *p = (Sprite *)this->ptr.release();
+		while (p != nullptr) {
+			Sprite *next = p->next;
+			free(p);
+			p = next;
+		}
+	}
+
+	Sprite *GetSpritePtr() { return (Sprite *)this->ptr.get(); }
+
+public:
+	void Clear()
+	{
+		this->Deallocate();
+		this->totalsize = 0;
+		this->total_missing_zoom_levels = 0;
+	}
+
+	void Assign(SpriteDataBuffer &&other)
+	{
+		this->Clear();
+		this->ptr.reset(other.ptr.release());
+		this->totalsize = other.size;
+		if (this->ptr && this->GetType() == SpriteType::Normal) {
+			this->GetSpritePtr()->size = other.size;
+			this->total_missing_zoom_levels = this->GetSpritePtr()->missing_zoom_levels;
+		}
+		_spritecache_bytes_used += other.size;
+		other.size = 0;
+	}
+
+	void Append(SpriteDataBuffer &&other)
+	{
+		assert(this->GetType() == SpriteType::Normal);
+
+		if (!this->ptr || this->total_missing_zoom_levels == UINT8_MAX) {
+			/* Top level has no data or no zoom levels at all, it's safe to replace it because it cannot be cached for a render job */
+			this->Assign(std::move(other));
+			return;
+		}
+
+		Sprite *sp = (Sprite *)other.ptr.release();
+		if (sp == nullptr) return;
+
+		sp->size = other.size;
+
+		Sprite *p = this->GetSpritePtr();
+		while (p->next != nullptr) {
+			p = p->next;
+		}
+		p->next = sp;
+		this->total_missing_zoom_levels &= sp->missing_zoom_levels;
+		this->totalsize += other.size;
+		_spritecache_bytes_used += other.size;
+		other.size = 0;
+	}
+
+	~SpriteCache()
+	{
+		this->Clear();
+	}
+
+	SpriteCache() = default;
+	SpriteCache(const SpriteCache &other) = delete;
+	SpriteCache(SpriteCache &&other) = default;
+	SpriteCache& operator=(const SpriteCache &other) = delete;
+	SpriteCache& operator=(SpriteCache &&other) = default;
+};
 
 static std::vector<SpriteCache> _spritecache;
 static SpriteDataBuffer _last_sprite_allocation;
@@ -271,7 +332,7 @@ uint GetMaxSpriteID()
 	return (uint)_spritecache.size();
 }
 
-static bool ResizeSpriteIn(SpriteLoader::Sprite *sprite, ZoomLevel src, ZoomLevel tgt)
+static bool ResizeSpriteIn(SpriteLoader::Sprite *sprite, ZoomLevel src, ZoomLevel tgt, bool dry_run)
 {
 	uint8 scaled_1 = ScaleByZoom(1, (ZoomLevel)(src - tgt));
 
@@ -283,6 +344,11 @@ static bool ResizeSpriteIn(SpriteLoader::Sprite *sprite, ZoomLevel src, ZoomLeve
 	sprite[tgt].x_offs = sprite[src].x_offs * scaled_1;
 	sprite[tgt].y_offs = sprite[src].y_offs * scaled_1;
 	sprite[tgt].colours = sprite[src].colours;
+
+	if (dry_run) {
+		sprite[tgt].data = nullptr;
+		return true;
+	}
 
 	sprite[tgt].AllocateData(tgt, static_cast<size_t>(sprite[tgt].width) * sprite[tgt].height);
 
@@ -298,7 +364,7 @@ static bool ResizeSpriteIn(SpriteLoader::Sprite *sprite, ZoomLevel src, ZoomLeve
 	return true;
 }
 
-static void ResizeSpriteOut(SpriteLoader::Sprite *sprite, ZoomLevel zoom)
+static void ResizeSpriteOut(SpriteLoader::Sprite *sprite, ZoomLevel zoom, bool dry_run)
 {
 	/* Algorithm based on 32bpp_Optimized::ResizeSprite() */
 	sprite[zoom].width  = UnScaleByZoom(sprite[ZOOM_LVL_NORMAL].width,  zoom);
@@ -306,6 +372,11 @@ static void ResizeSpriteOut(SpriteLoader::Sprite *sprite, ZoomLevel zoom)
 	sprite[zoom].x_offs = UnScaleByZoom(sprite[ZOOM_LVL_NORMAL].x_offs, zoom);
 	sprite[zoom].y_offs = UnScaleByZoom(sprite[ZOOM_LVL_NORMAL].y_offs, zoom);
 	sprite[zoom].colours = sprite[ZOOM_LVL_NORMAL].colours;
+
+	if (dry_run) {
+		sprite[zoom].data = nullptr;
+		return;
+	}
 
 	sprite[zoom].AllocateData(zoom, static_cast<size_t>(sprite[zoom].height) * sprite[zoom].width);
 
@@ -337,40 +408,42 @@ static bool PadSingleSprite(SpriteLoader::Sprite *sprite, ZoomLevel zoom, uint p
 
 	if (width > UINT16_MAX || height > UINT16_MAX) return false;
 
-	/* Copy source data and reallocate sprite memory. */
-	size_t sprite_size = static_cast<size_t>(sprite->width) * sprite->height;
-	SpriteLoader::CommonPixel *src_data = MallocT<SpriteLoader::CommonPixel>(sprite_size);
-	MemCpyT(src_data, sprite->data, sprite_size);
-	sprite->AllocateData(zoom, static_cast<size_t>(width) * height);
+	if (sprite->data != nullptr) {
+		/* Copy source data and reallocate sprite memory. */
+		size_t sprite_size = static_cast<size_t>(sprite->width) * sprite->height;
+		SpriteLoader::CommonPixel *src_data = MallocT<SpriteLoader::CommonPixel>(sprite_size);
+		MemCpyT(src_data, sprite->data, sprite_size);
+		sprite->AllocateData(zoom, static_cast<size_t>(width) * height);
 
-	/* Copy with padding to destination. */
-	SpriteLoader::CommonPixel *src = src_data;
-	SpriteLoader::CommonPixel *data = sprite->data;
-	for (uint y = 0; y < height; y++) {
-		if (y < pad_top || pad_bottom + y >= height) {
-			/* Top/bottom padding. */
-			MemSetT(data, 0, width);
-			data += width;
-		} else {
-			if (pad_left > 0) {
-				/* Pad left. */
-				MemSetT(data, 0, pad_left);
-				data += pad_left;
-			}
+		/* Copy with padding to destination. */
+		SpriteLoader::CommonPixel *src = src_data;
+		SpriteLoader::CommonPixel *data = sprite->data;
+		for (uint y = 0; y < height; y++) {
+			if (y < pad_top || pad_bottom + y >= height) {
+				/* Top/bottom padding. */
+				MemSetT(data, 0, width);
+				data += width;
+			} else {
+				if (pad_left > 0) {
+					/* Pad left. */
+					MemSetT(data, 0, pad_left);
+					data += pad_left;
+				}
 
-			/* Copy pixels. */
-			MemCpyT(data, src, sprite->width);
-			src += sprite->width;
-			data += sprite->width;
+				/* Copy pixels. */
+				MemCpyT(data, src, sprite->width);
+				src += sprite->width;
+				data += sprite->width;
 
-			if (pad_right > 0) {
-				/* Pad right. */
-				MemSetT(data, 0, pad_right);
-				data += pad_right;
+				if (pad_right > 0) {
+					/* Pad right. */
+					MemSetT(data, 0, pad_right);
+					data += pad_right;
+				}
 			}
 		}
+		free(src_data);
 	}
-	free(src_data);
 
 	/* Update sprite size. */
 	sprite->width   = width;
@@ -429,12 +502,23 @@ static bool PadSprites(SpriteLoader::Sprite *sprite, unsigned int sprite_avail, 
 	return true;
 }
 
-static bool ResizeSprites(SpriteLoader::Sprite *sprite, unsigned int sprite_avail, SpriteEncoder *encoder)
+static bool ResizeSprites(SpriteLoader::Sprite *sprite, unsigned int sprite_avail, SpriteEncoder *encoder, uint8 zoom_levels)
 {
+	bool needed = false;
+	for (ZoomLevel zoom = ZOOM_LVL_SPR_END; zoom-- > ZOOM_LVL_NORMAL; ) {
+		if (HasBit(sprite_avail, zoom) && sprite[zoom].data != nullptr) {
+			needed = false;
+		} else if (HasBit(zoom_levels, zoom)) {
+			needed = true;
+		} else if (needed) {
+			SetBit(zoom_levels, zoom);
+		}
+	}
+
 	/* Create a fully zoomed image if it does not exist */
 	ZoomLevel first_avail = static_cast<ZoomLevel>(FindFirstBit(sprite_avail));
 	if (first_avail != ZOOM_LVL_NORMAL) {
-		if (!ResizeSpriteIn(sprite, first_avail, ZOOM_LVL_NORMAL)) return false;
+		if (!ResizeSpriteIn(sprite, first_avail, ZOOM_LVL_NORMAL, !HasBit(zoom_levels, ZOOM_LVL_NORMAL))) return false;
 		SetBit(sprite_avail, ZOOM_LVL_NORMAL);
 	}
 
@@ -452,10 +536,10 @@ static bool ResizeSprites(SpriteLoader::Sprite *sprite, unsigned int sprite_avai
 		}
 
 		/* Zoom level is not available, or unusable, so create it */
-		if (!HasBit(sprite_avail, zoom)) ResizeSpriteOut(sprite, zoom);
+		if (!HasBit(sprite_avail, zoom)) ResizeSpriteOut(sprite, zoom, !HasBit(zoom_levels, zoom));
 	}
 
-	return  true;
+	return true;
 }
 
 /**
@@ -512,10 +596,15 @@ static const char *GetSpriteTypeName(SpriteType type)
  * @param encoder     Sprite encoder to use.
  * @return Read sprite data.
  */
-static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_type, AllocatorProc *allocator, SpriteEncoder *encoder)
+static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_type, AllocatorProc *allocator, SpriteEncoder *encoder, uint8 zoom_levels)
 {
 	/* Use current blitter if no other sprite encoder is given. */
-	if (encoder == nullptr) encoder = BlitterFactory::GetCurrentBlitter();
+	if (encoder == nullptr) {
+		encoder = BlitterFactory::GetCurrentBlitter();
+		if (!encoder->SupportsMissingZoomLevels()) zoom_levels = UINT8_MAX;
+	} else {
+		zoom_levels = UINT8_MAX;
+	}
 
 	SpriteFile &file = *sc->file;
 	size_t file_pos = sc->file_pos;
@@ -535,16 +624,16 @@ static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_ty
 	SpriteLoaderGrf sprite_loader(file.GetContainerVersion());
 	if (sprite_type != SpriteType::MapGen && sc->GetHasNonPalette() && encoder->Is32BppSupported()) {
 		/* Try for 32bpp sprites first. */
-		sprite_avail = sprite_loader.LoadSprite(sprite, file, file_pos, sprite_type, true, sc->count, sc->flags);
+		sprite_avail = sprite_loader.LoadSprite(sprite, file, file_pos, sprite_type, true, sc->count, sc->flags, zoom_levels);
 	}
 	if (sprite_avail == 0) {
-		sprite_avail = sprite_loader.LoadSprite(sprite, file, file_pos, sprite_type, false, sc->count, sc->flags);
+		sprite_avail = sprite_loader.LoadSprite(sprite, file, file_pos, sprite_type, false, sc->count, sc->flags, zoom_levels);
 	}
 
 	if (sprite_avail == 0) {
 		if (sprite_type == SpriteType::MapGen) return nullptr;
 		if (id == SPR_IMG_QUERY) usererror("Okay... something went horribly wrong. I couldn't load the fallback sprite. What should I do?");
-		return (void*)GetRawSprite(SPR_IMG_QUERY, SpriteType::Normal, allocator, encoder);
+		return (void*)GetRawSprite(SPR_IMG_QUERY, SpriteType::Normal, UINT8_MAX, allocator, encoder);
 	}
 
 	if (sprite_type == SpriteType::MapGen) {
@@ -564,6 +653,8 @@ static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_ty
 		s->height = sprite[ZOOM_LVL_NORMAL].height;
 		s->x_offs = sprite[ZOOM_LVL_NORMAL].x_offs;
 		s->y_offs = sprite[ZOOM_LVL_NORMAL].y_offs;
+		s->next = nullptr;
+		s->missing_zoom_levels = 0;
 
 		SpriteLoader::CommonPixel *src = sprite[ZOOM_LVL_NORMAL].data;
 		byte *dest = s->data;
@@ -575,9 +666,9 @@ static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_ty
 		return s;
 	}
 
-	if (!ResizeSprites(sprite, sprite_avail, encoder)) {
+	if (!ResizeSprites(sprite, sprite_avail, encoder, zoom_levels)) {
 		if (id == SPR_IMG_QUERY) usererror("Okay... something went horribly wrong. I couldn't resize the fallback sprite. What should I do?");
-		return (void*)GetRawSprite(SPR_IMG_QUERY, SpriteType::Normal, allocator, encoder);
+		return (void*)GetRawSprite(SPR_IMG_QUERY, SpriteType::Normal, UINT8_MAX, allocator, encoder);
 	}
 
 	if (sprite->type == SpriteType::Font && _font_zoom != ZOOM_LVL_NORMAL) {
@@ -590,13 +681,20 @@ static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_ty
 		sprite[ZOOM_LVL_NORMAL].colours = sprite[_font_zoom].colours;
 	}
 
+	if (sprite->type == SpriteType::Normal) {
+		/* Remove unwanted zoom levels before encoding */
+		for (ZoomLevel zoom = ZOOM_LVL_BEGIN; zoom != ZOOM_LVL_SPR_END; zoom++) {
+			if (!HasBit(zoom_levels, zoom)) sprite[zoom].data = nullptr;
+		}
+	}
+
 	return encoder->Encode(sprite, allocator);
 }
 
 struct GrfSpriteOffset {
 	size_t file_pos;
 	uint count;
-	byte control_flags;
+	uint16 control_flags;
 };
 
 /** Map from sprite numbers to position in the GRF file. */
@@ -644,17 +742,13 @@ void ReadGRFSpriteOffsets(SpriteFile &file)
 			uint length = file.ReadDword();
 			if (length > 0) {
 				byte colour = file.ReadByte() & SCC_MASK;
-				if (colour != SCC_PAL) SetBit(offset.control_flags, SCCF_HAS_NON_PALETTE);
 				length--;
 				if (length > 0) {
 					byte zoom = file.ReadByte();
 					length--;
-					if (colour != 0 && zoom == 0) { // ZOOM_LVL_OUT_4X (normal zoom)
-						SetBit(offset.control_flags, (colour != SCC_PAL) ? SCCF_ALLOW_ZOOM_MIN_1X_32BPP : SCCF_ALLOW_ZOOM_MIN_1X_PAL);
-						SetBit(offset.control_flags, (colour != SCC_PAL) ? SCCF_ALLOW_ZOOM_MIN_2X_32BPP : SCCF_ALLOW_ZOOM_MIN_2X_PAL);
-					}
-					if (colour != 0 && zoom == 2) { // ZOOM_LVL_OUT_2X (2x zoomed in)
-						SetBit(offset.control_flags, (colour != SCC_PAL) ? SCCF_ALLOW_ZOOM_MIN_2X_32BPP : SCCF_ALLOW_ZOOM_MIN_2X_PAL);
+					if (colour != 0) {
+						static const ZoomLevel zoom_lvl_map[6] = {ZOOM_LVL_OUT_4X, ZOOM_LVL_NORMAL, ZOOM_LVL_OUT_2X, ZOOM_LVL_OUT_8X, ZOOM_LVL_OUT_16X, ZOOM_LVL_OUT_32X};
+						if (zoom < 6) SetBit(offset.control_flags, zoom_lvl_map[zoom] + ((colour != SCC_PAL) ? SCC_32BPP_ZOOM_START : SCC_PAL_ZOOM_START));
 					}
 				}
 			}
@@ -690,7 +784,7 @@ bool LoadNextSprite(int load_index, SpriteFile &file, uint file_sprite_id)
 	SpriteType type;
 	void *data = nullptr;
 	uint count = 0;
-	byte control_flags = 0;
+	uint16 control_flags = 0;
 	if (grf_type == 0xFF) {
 		/* Some NewGRF files have "empty" pseudo-sprites which are 1
 		 * byte long. Catch these so the sprites won't be displayed. */
@@ -744,16 +838,16 @@ bool LoadNextSprite(int load_index, SpriteFile &file, uint file_sprite_id)
 	SpriteCache *sc = AllocateSpriteCache(load_index);
 	sc->file = &file;
 	sc->file_pos = file_pos;
+	sc->SetType(type);
 	if (data != nullptr) {
 		assert(data == _last_sprite_allocation.GetPtr());
-		sc->buffer = std::move(_last_sprite_allocation);
+		sc->Assign(std::move(_last_sprite_allocation));
 	} else {
-		sc->buffer.Clear();
+		sc->Clear();
 	}
 	sc->lru = 0;
 	sc->id = file_sprite_id;
 	sc->count = count;
-	sc->SetType(type);
 	sc->flags = control_flags;
 
 	return true;
@@ -784,7 +878,7 @@ static size_t GetSpriteCacheUsage()
  */
 static void DeleteEntryFromSpriteCache(uint item)
 {
-	GetSpriteCache(item)->buffer.Clear();
+	GetSpriteCache(item)->Clear();
 }
 
 static void DeleteEntriesFromSpriteCache(size_t target)
@@ -821,7 +915,7 @@ static void DeleteEntriesFromSpriteCache(size_t target)
 	for (; i != _spritecache.size() && candidate_bytes < target; i++) {
 		SpriteCache *sc = GetSpriteCache(i);
 		if (sc->GetType() != SpriteType::Recolour && sc->GetPtr() != nullptr) {
-			push({ sc->lru, i, sc->buffer.GetSize() });
+			push({ sc->lru, i, sc->GetTotalSize() });
 			total_candidates++;
 			if (candidate_bytes >= target) break;
 		}
@@ -833,7 +927,7 @@ static void DeleteEntriesFromSpriteCache(size_t target)
 
 			/* Only add to candidates if LRU <= current highest */
 			if (sc->lru <= candidates.front().lru) {
-				push({ sc->lru, i, sc->buffer.GetSize() });
+				push({ sc->lru, i, sc->GetTotalSize() });
 				while (!candidates.empty() && candidate_bytes - candidates.front().size >= target) {
 					pop();
 				}
@@ -906,7 +1000,7 @@ static void *HandleInvalidSpriteRequest(SpriteID sprite, SpriteType requested, S
 	SpriteType available = sc->GetType();
 	if (requested == SpriteType::Font && available == SpriteType::Normal) {
 		if (sc->GetPtr() == nullptr) sc->SetType(SpriteType::Font);
-		return GetRawSprite(sprite, sc->GetType(), allocator);
+		return GetRawSprite(sprite, sc->GetType(), UINT8_MAX, allocator);
 	}
 
 	byte warning_level = sc->GetWarned() ? 6 : 0;
@@ -918,10 +1012,10 @@ static void *HandleInvalidSpriteRequest(SpriteID sprite, SpriteType requested, S
 			if (sprite == SPR_IMG_QUERY) usererror("Uhm, would you be so kind not to load a NewGRF that makes the 'query' sprite a non-normal sprite?");
 			FALLTHROUGH;
 		case SpriteType::Font:
-			return GetRawSprite(SPR_IMG_QUERY, SpriteType::Normal, allocator);
+			return GetRawSprite(SPR_IMG_QUERY, SpriteType::Normal, UINT8_MAX, allocator);
 		case SpriteType::Recolour:
 			if (sprite == PALETTE_TO_DARK_BLUE) usererror("Uhm, would you be so kind not to load a NewGRF that makes the 'PALETTE_TO_DARK_BLUE' sprite a non-remap sprite?");
-			return GetRawSprite(PALETTE_TO_DARK_BLUE, SpriteType::Recolour, allocator);
+			return GetRawSprite(PALETTE_TO_DARK_BLUE, SpriteType::Recolour, UINT8_MAX, allocator);
 		case SpriteType::MapGen:
 			/* this shouldn't happen, overriding of SpriteType::MapGen sprites is checked in LoadNextSprite()
 			 * (the only case the check fails is when these sprites weren't even loaded...) */
@@ -939,7 +1033,7 @@ static void *HandleInvalidSpriteRequest(SpriteID sprite, SpriteType requested, S
  * @param encoder Sprite encoder to use. Set to nullptr to use the currently active blitter.
  * @return Sprite raw data
  */
-void *GetRawSprite(SpriteID sprite, SpriteType type, AllocatorProc *allocator, SpriteEncoder *encoder)
+void *GetRawSprite(SpriteID sprite, SpriteType type, uint8 zoom_levels, AllocatorProc *allocator, SpriteEncoder *encoder)
 {
 	assert(type != SpriteType::MapGen || IsMapgenSpriteID(sprite));
 	assert(type < SpriteType::Invalid);
@@ -961,17 +1055,23 @@ void *GetRawSprite(SpriteID sprite, SpriteType type, AllocatorProc *allocator, S
 		/* Update LRU */
 		sc->lru = ++_sprite_lru_counter;
 
+		if (type != SpriteType::Normal) zoom_levels = UINT8_MAX;
+
 		/* Load the sprite, if it is not loaded, yet */
 		if (sc->GetPtr() == nullptr) {
-			void *ptr = ReadSprite(sc, sprite, type, AllocSprite, nullptr);
+			void *ptr = ReadSprite(sc, sprite, type, AllocSprite, nullptr, zoom_levels);
 			assert(ptr == _last_sprite_allocation.GetPtr());
-			sc->buffer = std::move(_last_sprite_allocation);
+			sc->Assign(std::move(_last_sprite_allocation));
+		} else if ((sc->total_missing_zoom_levels & zoom_levels) != 0) {
+			void *ptr = ReadSprite(sc, sprite, type, AllocSprite, nullptr, sc->total_missing_zoom_levels & zoom_levels);
+			assert(ptr == _last_sprite_allocation.GetPtr());
+			sc->Append(std::move(_last_sprite_allocation));
 		}
 
 		return sc->GetPtr();
 	} else {
 		/* Do not use the spritecache, but a different allocator. */
-		return ReadSprite(sc, sprite, type, allocator, encoder);
+		return ReadSprite(sc, sprite, type, allocator, encoder, UINT8_MAX);
 	}
 }
 
@@ -999,9 +1099,13 @@ uint32 GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id)
 	uint8 sprite_avail;
 	const uint8 screen_depth = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
 
+	auto zoom_mask = [&](bool is32bpp) -> uint8 {
+		return 1 << FindFirstBit(GB(sc->flags, is32bpp ? SCC_32BPP_ZOOM_START : SCC_PAL_ZOOM_START, 6));
+	};
+
 	/* Try to read the 32bpp sprite first. */
 	if (screen_depth == 32 && sc->GetHasNonPalette()) {
-		sprite_avail = sprite_loader.LoadSprite(sprites, file, file_pos, SpriteType::Normal, true, sc->count, sc->flags);
+		sprite_avail = sprite_loader.LoadSprite(sprites, file, file_pos, SpriteType::Normal, true, sc->count, sc->flags, zoom_mask(true));
 		if (sprite_avail != 0) {
 			SpriteLoader::Sprite *sprite = &sprites[FindFirstBit(sprite_avail)];
 			/* Return the average colour. */
@@ -1031,7 +1135,7 @@ uint32 GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id)
 	}
 
 	/* No 32bpp, try 8bpp. */
-	sprite_avail = sprite_loader.LoadSprite(sprites, file, file_pos, SpriteType::Normal, false, sc->count, sc->flags);
+	sprite_avail = sprite_loader.LoadSprite(sprites, file, file_pos, SpriteType::Normal, false, sc->count, sc->flags, zoom_mask(false));
 	if (sprite_avail != 0) {
 		SpriteLoader::Sprite *sprite = &sprites[FindFirstBit(sprite_avail)];
 		SpriteLoader::CommonPixel *pixel = sprite->data;

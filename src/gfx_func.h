@@ -105,7 +105,7 @@ Dimension GetSpriteSize(SpriteID sprid, Point *offset = nullptr, ZoomLevel zoom 
 Dimension GetScaledSpriteSize(SpriteID sprid); /* widget.cpp */
 struct SpritePointerHolder;
 void DrawSpriteViewport(const SpritePointerHolder &sprite_store, const DrawPixelInfo *dpi, SpriteID img, PaletteID pal, int x, int y, const SubSprite *sub = nullptr);
-void PrepareDrawSpriteViewportSpriteStore(SpritePointerHolder &sprite_store, SpriteID img, PaletteID pal);
+void PrepareDrawSpriteViewportSpriteStore(SpritePointerHolder &sprite_store, const DrawPixelInfo *dpi, SpriteID img, PaletteID pal);
 void DrawSprite(SpriteID img, PaletteID pal, int x, int y, const SubSprite *sub = nullptr, ZoomLevel zoom = ZOOM_LVL_GUI);
 void DrawSpriteIgnorePadding(SpriteID img, PaletteID pal, const Rect &r, bool clicked, StringAlignment align); /* widget.cpp */
 std::unique_ptr<uint32[]> DrawSpriteToRgbaBuffer(SpriteID spriteId, ZoomLevel zoom = ZOOM_LVL_GUI);

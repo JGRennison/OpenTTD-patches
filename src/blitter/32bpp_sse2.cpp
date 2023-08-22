@@ -28,6 +28,7 @@ Sprite *Blitter_32bppSSE_Base::Encode(const SpriteLoader::Sprite *sprite, Alloca
 	 */
 	ZoomLevel zoom_min = ZOOM_LVL_NORMAL;
 	ZoomLevel zoom_max = ZOOM_LVL_NORMAL;
+	uint8 missing_zoom_levels = 0;
 	if (sprite->type != SpriteType::Font) {
 		zoom_min = _settings_client.gui.zoom_min;
 		zoom_max =  (ZoomLevel) std::min(_settings_client.gui.zoom_max, ZOOM_LVL_DRAW_SPR);
@@ -40,6 +41,15 @@ Sprite *Blitter_32bppSSE_Base::Encode(const SpriteLoader::Sprite *sprite, Alloca
 	uint all_sprites_size = 0;
 	for (ZoomLevel z = zoom_min; z <= zoom_max; z++) {
 		const SpriteLoader::Sprite *src_sprite = &sprite[z];
+		if (src_sprite->data == nullptr) {
+			sd.infos[z].sprite_offset = 0;
+			sd.infos[z].mv_offset = 0;
+			sd.infos[z].sprite_line_size = 0;
+			sd.infos[z].sprite_width = 0;
+			SetBit(missing_zoom_levels, z);
+			continue;
+		}
+
 		sd.infos[z].sprite_width = src_sprite->width;
 		sd.infos[z].sprite_offset = all_sprites_size;
 		sd.infos[z].sprite_line_size = sizeof(Colour) * src_sprite->width + sizeof(uint32) * META_LENGTH;
@@ -56,6 +66,8 @@ Sprite *Blitter_32bppSSE_Base::Encode(const SpriteLoader::Sprite *sprite, Alloca
 	dst_sprite->width  = sprite->width;
 	dst_sprite->x_offs = sprite->x_offs;
 	dst_sprite->y_offs = sprite->y_offs;
+	dst_sprite->next = nullptr;
+	dst_sprite->missing_zoom_levels = missing_zoom_levels;
 	memcpy(dst_sprite->data, &sd, sizeof(SpriteData));
 
 	/* Copy colours and determine flags. */
@@ -64,6 +76,9 @@ Sprite *Blitter_32bppSSE_Base::Encode(const SpriteLoader::Sprite *sprite, Alloca
 	bool has_translucency = false;
 	for (ZoomLevel z = zoom_min; z <= zoom_max; z++) {
 		const SpriteLoader::Sprite *src_sprite = &sprite[z];
+		if (src_sprite->data == nullptr) {
+			continue;
+		}
 		const SpriteLoader::CommonPixel *src = (const SpriteLoader::CommonPixel *) src_sprite->data;
 		Colour *dst_rgba_line = (Colour *) &dst_sprite->data[sizeof(SpriteData) + sd.infos[z].sprite_offset];
 		MapValue *dst_mv = (MapValue *) &dst_sprite->data[sizeof(SpriteData) + sd.infos[z].mv_offset];

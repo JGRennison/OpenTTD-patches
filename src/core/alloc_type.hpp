@@ -120,4 +120,9 @@ struct FreeDeleter
 	void operator()(const void* ptr) { free(ptr); }
 };
 
+struct NoOpDeleter
+{
+	void operator()(const void* ptr) {}
+};
+
 #endif /* ALLOC_TYPE_HPP */

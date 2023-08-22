@@ -838,7 +838,7 @@ static void GenerateTerrain(int type, uint flag)
 	uint32 r = Random();
 
 	/* Choose one of the templates from the graphics file. */
-	const Sprite *templ = GetSprite((((r >> 24) * _genterrain_tbl_1[type]) >> 8) + _genterrain_tbl_2[type] + SPR_MAPGEN_BEGIN, SpriteType::MapGen);
+	const Sprite *templ = GetSprite((((r >> 24) * _genterrain_tbl_1[type]) >> 8) + _genterrain_tbl_2[type] + SPR_MAPGEN_BEGIN, SpriteType::MapGen, 0);
 	if (templ == nullptr) usererror("Map generator sprites could not be loaded");
 
 	/* Chose a random location to apply the template to. */

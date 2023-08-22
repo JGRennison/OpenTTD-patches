@@ -301,6 +301,7 @@ template <bool Tpal_to_rgb> Sprite *Blitter_32bppOptimized::EncodeInternal(const
 
 	ZoomLevel zoom_min;
 	ZoomLevel zoom_max;
+	uint8 missing_zoom_levels = 0;
 
 	if (sprite->type == SpriteType::Font) {
 		zoom_min = ZOOM_LVL_NORMAL;
@@ -317,6 +318,7 @@ template <bool Tpal_to_rgb> Sprite *Blitter_32bppOptimized::EncodeInternal(const
 	uint n_size = 0;
 	for (ZoomLevel z = zoom_min; z <= zoom_max; z++) {
 		const SpriteLoader::Sprite *src_orig = &sprite[z];
+		if (src_orig->data == nullptr) continue;
 
 		uint size = src_orig->height * src_orig->width;
 
@@ -338,6 +340,13 @@ template <bool Tpal_to_rgb> Sprite *Blitter_32bppOptimized::EncodeInternal(const
 		uint32 *dst_n_ln  = (uint32 *)n_buffer_next;
 
 		const SpriteLoader::CommonPixel *src = (const SpriteLoader::CommonPixel *)src_orig->data;
+
+		if (src == nullptr) {
+			lengths[z][0] = 0;
+			lengths[z][1] = 0;
+			SetBit(missing_zoom_levels, z);
+			continue;
+		}
 
 		for (uint y = src_orig->height; y > 0; y--) {
 			/* Index 0 of dst_px and dst_n is left as space to save the length of the row to be filled later. */
@@ -448,24 +457,34 @@ template <bool Tpal_to_rgb> Sprite *Blitter_32bppOptimized::EncodeInternal(const
 		len += lengths[z][0] + lengths[z][1];
 	}
 
-	Sprite *dest_sprite = (Sprite *)allocator(sizeof(*dest_sprite) + sizeof(SpriteData) + len);
+	Sprite *dest_sprite = (Sprite *)allocator(sizeof(Sprite) + sizeof(SpriteData) + len);
+
+	if (len == 0) {
+		/* Mark sprite as having no levels at all, and therefore replaceable */
+		missing_zoom_levels = UINT8_MAX;
+	}
 
 	dest_sprite->height = sprite->height;
 	dest_sprite->width  = sprite->width;
 	dest_sprite->x_offs = sprite->x_offs;
 	dest_sprite->y_offs = sprite->y_offs;
+	dest_sprite->next = nullptr;
+	dest_sprite->missing_zoom_levels = missing_zoom_levels;
 
 	SpriteData *dst = (SpriteData *)dest_sprite->data;
 	memset(dst, 0, sizeof(*dst));
 	/* Store sprite flags. */
 	dst->flags = flags;
 
+	uint32 next_offset = 0;
 	for (ZoomLevel z = zoom_min; z <= zoom_max; z++) {
-		dst->offset[z][0] = z == zoom_min ? 0 : lengths[z - 1][1] + dst->offset[z - 1][1];
-		dst->offset[z][1] = lengths[z][0] + dst->offset[z][0];
+		dst->offset[z][0] = next_offset;
+		dst->offset[z][1] = lengths[z][0] + next_offset;
 
-		memcpy(dst->data + dst->offset[z][0], dst_px_orig[z], lengths[z][0]);
-		memcpy(dst->data + dst->offset[z][1], dst_n_orig[z],  lengths[z][1]);
+		next_offset += lengths[z][0] + lengths[z][1];
+
+		if (lengths[z][0] != 0) memcpy(dst->data + dst->offset[z][0], dst_px_orig[z], lengths[z][0]);
+		if (lengths[z][1] != 0) memcpy(dst->data + dst->offset[z][1], dst_n_orig[z],  lengths[z][1]);
 	}
 
 	free(px_buffer);

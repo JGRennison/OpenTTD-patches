@@ -70,6 +70,8 @@ Sprite *Blitter_8bppSimple::Encode(const SpriteLoader::Sprite *sprite, Allocator
 	dest_sprite->width  = sprite->width;
 	dest_sprite->x_offs = sprite->x_offs;
 	dest_sprite->y_offs = sprite->y_offs;
+	dest_sprite->next = nullptr;
+	dest_sprite->missing_zoom_levels = 0;
 
 	/* Copy over only the 'remap' channel, as that is what we care about in 8bpp */
 	for (int i = 0; i < sprite->height * sprite->width; i++) {

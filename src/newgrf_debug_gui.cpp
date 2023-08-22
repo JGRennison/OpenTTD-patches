@@ -1286,7 +1286,7 @@ struct SpriteAlignerWindow : Window {
 
 	void SetStringParameters(int widget) const override
 	{
-		const Sprite *spr = GetSprite(this->current_sprite, SpriteType::Normal);
+		const Sprite *spr = GetSprite(this->current_sprite, SpriteType::Normal, ZoomMask(ZOOM_LVL_GUI));
 		switch (widget) {
 			case WID_SA_CAPTION:
 				SetDParam(0, this->current_sprite);
@@ -1341,7 +1341,7 @@ struct SpriteAlignerWindow : Window {
 		switch (widget) {
 			case WID_SA_SPRITE: {
 				/* Center the sprite ourselves */
-				const Sprite *spr = GetSprite(this->current_sprite, SpriteType::Normal);
+				const Sprite *spr = GetSprite(this->current_sprite, SpriteType::Normal, ZoomMask(ZOOM_LVL_GUI));
 				Rect ir = r.Shrink(WidgetDimensions::scaled.bevel);
 				int x;
 				int y;
@@ -1437,7 +1437,7 @@ struct SpriteAlignerWindow : Window {
 				 * used by someone and the sprite cache isn't big enough for that
 				 * particular NewGRF developer.
 				 */
-				Sprite *spr = const_cast<Sprite *>(GetSprite(this->current_sprite, SpriteType::Normal));
+				Sprite *spr = const_cast<Sprite *>(GetSprite(this->current_sprite, SpriteType::Normal, 0));
 
 				/* Remember the original offsets of the current sprite, if not already in mapping. */
 				if (this->offs_start_map.count(this->current_sprite) == 0) {

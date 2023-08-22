@@ -1061,7 +1061,7 @@ void OffsetGroundSprite(int x, int y)
 static void AddCombinedSprite(SpriteID image, PaletteID pal, int x, int y, int z, const SubSprite *sub)
 {
 	Point pt = RemapCoords(x, y, z);
-	const Sprite *spr = GetSprite(image & SPRITE_MASK, SpriteType::Normal);
+	const Sprite *spr = GetSprite(image & SPRITE_MASK, SpriteType::Normal, ZoomMask(_vdd->dpi.zoom));
 
 	int left = pt.x + spr->x_offs;
 	int right = pt.x + spr->x_offs + spr->width;
@@ -1137,7 +1137,7 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 		tmp_width = right - left;
 		tmp_height = bottom - top;
 	} else {
-		const Sprite *spr = GetSprite(image & SPRITE_MASK, SpriteType::Normal);
+		const Sprite *spr = GetSprite(image & SPRITE_MASK, SpriteType::Normal, ZoomMask(_vdd->dpi.zoom));
 		left = tmp_left = (pt.x += spr->x_offs);
 		right           = (pt.x +  spr->width );
 		top  = tmp_top  = (pt.y += spr->y_offs);
@@ -3762,13 +3762,13 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint
 		ViewportAddVehicles(&_vdd->dpi, vp->update_vehicles);
 
 		for (const TileSpriteToDraw &ts : _vdd->tile_sprites_to_draw) {
-			PrepareDrawSpriteViewportSpriteStore(_vdd->sprite_data, ts.image, ts.pal);
+			PrepareDrawSpriteViewportSpriteStore(_vdd->sprite_data, &_vdd->dpi, ts.image, ts.pal);
 		}
 		for (const ParentSpriteToDraw &ps : _vdd->parent_sprites_to_draw) {
-			if (ps.image != SPR_EMPTY_BOUNDING_BOX) PrepareDrawSpriteViewportSpriteStore(_vdd->sprite_data, ps.image, ps.pal);
+			if (ps.image != SPR_EMPTY_BOUNDING_BOX) PrepareDrawSpriteViewportSpriteStore(_vdd->sprite_data, &_vdd->dpi, ps.image, ps.pal);
 		}
 		for (const ChildScreenSpriteToDraw &cs : _vdd->child_screen_sprites_to_draw) {
-			PrepareDrawSpriteViewportSpriteStore(_vdd->sprite_data, cs.image, cs.pal);
+			PrepareDrawSpriteViewportSpriteStore(_vdd->sprite_data, &_vdd->dpi, cs.image, cs.pal);
 		}
 
 		_viewport_drawer_jobs++;

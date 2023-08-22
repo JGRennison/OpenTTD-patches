@@ -36,6 +36,12 @@ class Blitter_32bppSSE4_Anim FINAL : public Blitter_32bppSSE2_Anim, public Blitt
 private:
 
 public:
+	Blitter_32bppSSE4_Anim()
+	{
+		this->Blitter_32bppSSE2_Anim::SetSupportsMissingZoomLevels(true);
+		this->Blitter_32bppSSE4::SetSupportsMissingZoomLevels(true);
+	}
+
 	template <BlitterMode mode, Blitter_32bppSSE_Base::ReadMode read_mode, Blitter_32bppSSE_Base::BlockType bt_last, bool translucent, bool animated>
 	void Draw(const Blitter::BlitterParams *bp, ZoomLevel zoom);
 	void Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom) override;

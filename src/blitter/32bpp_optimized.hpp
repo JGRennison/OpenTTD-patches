@@ -22,6 +22,11 @@ public:
 		byte data[];                      ///< Data, all zoomlevels.
 	};
 
+	Blitter_32bppOptimized()
+	{
+		this->SetSupportsMissingZoomLevels(true);
+	}
+
 	void Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom) override;
 	Sprite *Encode(const SpriteLoader::Sprite *sprite, AllocatorProc *allocator) override;
 
