@@ -37,6 +37,9 @@ uint _sprite_cache_size = 4;
 
 static size_t _spritecache_bytes_used = 0;
 static uint32 _sprite_lru_counter;
+static uint32 _spritecache_prune_events = 0;
+static size_t _spritecache_prune_entries = 0;
+static size_t _spritecache_prune_total = 0;
 
 struct SpriteCache;
 
@@ -81,12 +84,14 @@ public:
 	uint16 flags;        ///< Control flags, see SpriteCacheCtrlFlags
 
 	void *GetPtr() { return this->ptr.get(); }
-	uint32 GetTotalSize() { return this->totalsize; }
+	const void *GetPtr() const { return this->ptr.get(); }
+	uint32 GetTotalSize() const { return this->totalsize; }
 
 	SpriteType GetType() const { return this->type; }
 	void SetType(SpriteType type) { this->type = type; }
 	bool GetWarned() const { return HasBit(this->flags, SCCF_WARNED); }
 	void SetWarned(bool warned) { SB(this->flags, SCCF_WARNED, 1, warned ? 1 : 0); }
+	bool GetHasPalette() const { return GB(this->flags, SCC_PAL_ZOOM_START, 6) != 0; }
 	bool GetHasNonPalette() const { return GB(this->flags, SCC_32BPP_ZOOM_START, 6) != 0; }
 
 private:
@@ -942,12 +947,21 @@ static void DeleteEntriesFromSpriteCache(size_t target)
 
 	DEBUG(sprite, 3, "DeleteEntriesFromSpriteCache, deleted: " PRINTF_SIZE " of " PRINTF_SIZE ", freed: " PRINTF_SIZE ", in use: " PRINTF_SIZE " --> " PRINTF_SIZE ", delta: " PRINTF_SIZE ", requested: " PRINTF_SIZE,
 			candidates.size(), total_candidates, candidate_bytes, initial_in_use, GetSpriteCacheUsage(), initial_in_use - GetSpriteCacheUsage(), target);
+
+	_spritecache_prune_events++;
+	_spritecache_prune_entries += candidates.size();
+	_spritecache_prune_total += (initial_in_use - GetSpriteCacheUsage());
+}
+
+uint GetTargetSpriteSize()
+{
+	int bpp = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
+	return (bpp > 0 ? _sprite_cache_size * bpp / 8 : 1) * 1024 * 1024;
 }
 
 void IncreaseSpriteLRU()
 {
-	int bpp = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
-	uint target_size = (bpp > 0 ? _sprite_cache_size * bpp / 8 : 1) * 1024 * 1024;
+	uint target_size = GetTargetSpriteSize();
 	if (_spritecache_bytes_used > target_size) {
 		DeleteEntriesFromSpriteCache(_spritecache_bytes_used - target_size + 512 * 1024);
 	}
@@ -1184,6 +1198,9 @@ void GfxInitSpriteMem()
 	_spritecache.clear();
 	_sprite_files.clear();
 	assert(_spritecache_bytes_used == 0);
+	_spritecache_prune_events = 0;
+	_spritecache_prune_entries = 0;
+	_spritecache_prune_total = 0;
 }
 
 /**
@@ -1211,6 +1228,51 @@ void GfxClearFontSpriteCache()
 	for (uint i = 0; i != _spritecache.size(); i++) {
 		SpriteCache *sc = GetSpriteCache(i);
 		if (sc->GetType() == SpriteType::Font && sc->GetPtr() != nullptr) DeleteEntryFromSpriteCache(i);
+	}
+}
+
+void DumpSpriteCacheStats(char *buffer, const char *last)
+{
+	uint target_size = GetTargetSpriteSize();
+	buffer += seprintf(buffer, last, "Sprite cache: entries: %u, size: %u, target: %u, percent used: %.1f%%\n",
+			(uint)_spritecache.size(), (uint)_spritecache_bytes_used, target_size, (100.0f * _spritecache_bytes_used) / target_size);
+
+	uint types[(uint)SpriteType::Invalid] = {};
+	uint have_data = 0;
+	uint have_warned = 0;
+	uint have_8bpp = 0;
+	uint have_32bpp = 0;
+
+	uint depths[16] = {};
+	uint have_partial_zoom = 0;
+	for (const SpriteCache &entry : _spritecache) {
+		if ((uint)entry.GetType() >= (uint)SpriteType::Invalid) continue;
+		types[(uint)entry.GetType()]++;
+		if (entry.GetPtr() != nullptr) have_data++;
+		if (entry.GetHasPalette()) have_8bpp++;
+		if (entry.GetHasNonPalette()) have_32bpp++;
+
+		if (entry.GetType() == SpriteType::Normal) {
+			if (entry.total_missing_zoom_levels != 0) have_partial_zoom++;
+			uint depth = 0;
+			const Sprite *p = (const Sprite *)entry.GetPtr();
+			while (p != nullptr) {
+				depth++;
+				p = p->next;
+			}
+			if (depth < lengthof(depths)) depths[depth]++;
+		}
+	}
+	buffer += seprintf(buffer, last, "  Normal: %u, MapGen: %u, Font: %u, Recolour: %u\n",
+			types[(uint)SpriteType::Normal], types[(uint)SpriteType::MapGen], types[(uint)SpriteType::Font], types[(uint)SpriteType::Recolour]);
+	buffer += seprintf(buffer, last, "  Data loaded: %u, Warned: %u, 8bpp: %u, 32bpp: %u\n",
+			have_data, have_warned, have_8bpp, have_32bpp);
+	buffer += seprintf(buffer, last, "  Cache prune events: %u, pruned entry total: " PRINTF_SIZE ", pruned data total: " PRINTF_SIZE "\n",
+			_spritecache_prune_events, _spritecache_prune_entries, _spritecache_prune_total);
+	buffer += seprintf(buffer, last, "  Normal:\n");
+	buffer += seprintf(buffer, last, "    Partial zoom: %u\n", have_partial_zoom);
+	for (uint i = 0; i < lengthof(depths); i++) {
+		if (depths[i] > 0) buffer += seprintf(buffer, last, "    Data depth %u: %u\n", i, depths[i]);
 	}
 }
 

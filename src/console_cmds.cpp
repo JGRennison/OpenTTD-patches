@@ -3126,6 +3126,20 @@ DEF_CONSOLE_CMD(ConDumpSignalStyles)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConSpriteCacheStats)
+{
+	if (argc == 0) {
+		IConsoleHelp("Dump sprite cache stats.");
+		return true;
+	}
+
+	extern void DumpSpriteCacheStats(char *buffer, const char *last);
+	char buffer[8192];
+	DumpSpriteCacheStats(buffer, lastof(buffer));
+	PrintLineByLine(buffer);
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConCheckCaches)
 {
 	if (argc == 0) {
@@ -3956,6 +3970,7 @@ void IConsoleStdLibRegister()
 	IConsole::CmdRegister("dump_tile",               ConDumpTile,         nullptr, true);
 	IConsole::CmdRegister("dump_grf_cargo_tables",   ConDumpGrfCargoTables, nullptr, true);
 	IConsole::CmdRegister("dump_signal_styles",      ConDumpSignalStyles, nullptr, true);
+	IConsole::CmdRegister("dump_sprite_cache_stats", ConSpriteCacheStats, nullptr, true);
 	IConsole::CmdRegister("check_caches",            ConCheckCaches,      nullptr, true);
 	IConsole::CmdRegister("show_town_window",        ConShowTownWindow,   nullptr, true);
 	IConsole::CmdRegister("show_station_window",     ConShowStationWindow, nullptr, true);
