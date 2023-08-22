@@ -18,7 +18,11 @@
 /** Base for all 32bpp blitters. */
 class Blitter_32bppBase : public Blitter {
 public:
-	uint8 GetScreenDepth() override { return 32; }
+	Blitter_32bppBase()
+	{
+		this->SetScreenDepth(32);
+	}
+
 	void *MoveTo(void *video, int x, int y) override;
 	void SetPixel(void *video, int x, int y, uint8 colour) override;
 	void SetPixel32(void *video, int x, int y, uint8 colour, uint32 colour32) override;

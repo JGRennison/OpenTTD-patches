@@ -83,11 +83,17 @@ public:
 /** Interface for something that can encode a sprite. */
 class SpriteEncoder {
 	bool supports_missing_zoom_levels = false;
+	bool supports_32bpp = false;
 
 protected:
 	inline void SetSupportsMissingZoomLevels(bool supported)
 	{
 		this->supports_missing_zoom_levels = supported;
+	}
+
+	inline void SetIs32BppSupported(bool supported)
+	{
+		this->supports_32bpp = supported;
 	}
 
 public:
@@ -102,7 +108,10 @@ public:
 	/**
 	 * Can the sprite encoder make use of RGBA sprites?
 	 */
-	virtual bool Is32BppSupported() = 0;
+	inline bool Is32BppSupported() const
+	{
+		return this->supports_32bpp;
+	}
 
 	/**
 	 * Convert a sprite from the loader to our own format.

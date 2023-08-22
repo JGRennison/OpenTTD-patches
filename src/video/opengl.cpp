@@ -490,6 +490,7 @@ void SetupDebugOutput()
  */
 OpenGLBackend::OpenGLBackend() : cursor_cache(MAX_CACHED_CURSORS)
 {
+	this->SetIs32BppSupported(true);
 }
 
 /**

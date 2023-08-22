@@ -15,7 +15,11 @@
 /** Base for all 8bpp blitters. */
 class Blitter_8bppBase : public Blitter {
 public:
-	uint8 GetScreenDepth() override { return 8; }
+	Blitter_8bppBase()
+	{
+		this->SetScreenDepth(8);
+	}
+
 	void DrawColourMappingRect(void *dst, int width, int height, PaletteID pal) override;
 	void *MoveTo(void *video, int x, int y) override;
 	void SetPixel(void *video, int x, int y, uint8 colour) override;

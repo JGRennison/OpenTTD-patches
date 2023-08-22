@@ -44,6 +44,15 @@ DECLARE_ENUM_AS_BIT_SET(BlitterSpriteFlags);
  * How all blitters should look like. Extend this class to make your own.
  */
 class Blitter : public SpriteEncoder {
+	uint8 screen_depth = 0;
+
+protected:
+	void SetScreenDepth(uint8 depth)
+	{
+		this->screen_depth = depth;
+		this->SetIs32BppSupported(depth > 8);
+	}
+
 public:
 	/** Parameters related to blitting. */
 	struct BlitterParams {
@@ -75,11 +84,9 @@ public:
 	 * Get the screen depth this blitter works for.
 	 *  This is either: 8, 16, 24 or 32.
 	 */
-	virtual uint8 GetScreenDepth() = 0;
-
-	bool Is32BppSupported() override
+	inline uint8 GetScreenDepth() const
 	{
-		return this->GetScreenDepth() > 8;
+		return this->screen_depth;
 	}
 
 	/**

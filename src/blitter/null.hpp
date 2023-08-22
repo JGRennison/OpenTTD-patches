@@ -15,7 +15,11 @@
 /** Blitter that does nothing. */
 class Blitter_Null : public Blitter {
 public:
-	uint8 GetScreenDepth() override { return 0; }
+	Blitter_Null()
+	{
+		this->SetScreenDepth(0);
+	}
+
 	void Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom) override {};
 	void DrawColourMappingRect(void *dst, int width, int height, PaletteID pal) override {};
 	Sprite *Encode(const SpriteLoader::Sprite *sprite, AllocatorProc *allocator) override;

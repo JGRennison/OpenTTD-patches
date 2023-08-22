@@ -107,7 +107,6 @@ public:
 
 	/* SpriteEncoder */
 
-	bool Is32BppSupported() override { return true; }
 	uint GetSpriteAlignment() override { return 1u << (ZOOM_LVL_SPR_COUNT - 1); }
 	Sprite *Encode(const SpriteLoader::Sprite *sprite, AllocatorProc *allocator) override;
 };
