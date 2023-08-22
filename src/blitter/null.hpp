@@ -18,6 +18,7 @@ public:
 	Blitter_Null()
 	{
 		this->SetScreenDepth(0);
+		this->SetNoSpriteDataRequired(true);
 	}
 
 	void Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom) override {};

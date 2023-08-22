@@ -605,6 +605,7 @@ static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_ty
 	} else {
 		zoom_levels = UINT8_MAX;
 	}
+	if (encoder->NoSpriteDataRequired()) zoom_levels = 0;
 
 	SpriteFile &file = *sc->file;
 	size_t file_pos = sc->file_pos;

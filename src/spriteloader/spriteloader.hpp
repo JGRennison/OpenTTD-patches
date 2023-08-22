@@ -84,6 +84,7 @@ public:
 class SpriteEncoder {
 	bool supports_missing_zoom_levels = false;
 	bool supports_32bpp = false;
+	bool no_data_required = false;
 
 protected:
 	inline void SetSupportsMissingZoomLevels(bool supported)
@@ -96,6 +97,11 @@ protected:
 		this->supports_32bpp = supported;
 	}
 
+	inline void SetNoSpriteDataRequired(bool not_required)
+	{
+		this->no_data_required = not_required;
+	}
+
 public:
 
 	virtual ~SpriteEncoder() = default;
@@ -103,6 +109,11 @@ public:
 	inline bool SupportsMissingZoomLevels() const
 	{
 		return this->supports_missing_zoom_levels;
+	}
+
+	inline bool NoSpriteDataRequired() const
+	{
+		return this->no_data_required;
 	}
 
 	/**
