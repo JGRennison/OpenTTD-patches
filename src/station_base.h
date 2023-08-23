@@ -20,6 +20,7 @@
 #include "3rdparty/cpp-btree/btree_map.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 #include "bitmap_type.h"
+#include "core/alloc_type.hpp"
 #include "core/endian_type.hpp"
 #include "strings_type.h"
 #include <map>
@@ -504,7 +505,7 @@ public:
 	void SortStorage();
 };
 
-struct GoodsEntryData {
+struct GoodsEntryData : ZeroedMemoryAllocator {
 	StationCargoList cargo; ///< The cargo packets of cargo waiting in this station
 	FlowStatMap flows;      ///< Planned flows through this station.
 
