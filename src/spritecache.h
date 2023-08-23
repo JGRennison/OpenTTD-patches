@@ -22,6 +22,7 @@ struct Sprite {
 	uint16 width;  ///< Width of the sprite.
 	int16 x_offs;  ///< Number of pixels to shift the sprite to the right.
 	int16 y_offs;  ///< Number of pixels to shift the sprite downwards.
+	uint32 lru;    ///< Sprite cache LRU of this sprite structure.
 	uint8 missing_zoom_levels; ///< Bitmask of zoom levels missing in data
 	Sprite *next = nullptr;    ///< Next sprite structure, this is the only member which may be changed after the sprite has been inserted in the sprite cache
 	byte data[];   ///< Sprite data.

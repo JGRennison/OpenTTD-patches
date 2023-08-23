@@ -32,6 +32,8 @@
 
 #include "safeguards.h"
 
+static const uint RECOLOUR_SPRITE_SIZE = 257;
+
 /* Default of 4MB spritecache */
 uint _sprite_cache_size = 4;
 
@@ -72,11 +74,9 @@ struct SpriteCache {
 
 private:
 	std::unique_ptr<void, NoOpDeleter> ptr;
-	uint32 totalsize = 0;
 
 public:
 	uint32 id;
-	uint32 lru;
 	uint count;
 
 	SpriteType type;     ///< In some cases a single sprite is misused by two NewGRFs. Once as real sprite and once as recolour sprite. If the recolour sprite gets into the cache it might be drawn as real sprite which causes enormous trouble.
@@ -85,7 +85,6 @@ public:
 
 	void *GetPtr() { return this->ptr.get(); }
 	const void *GetPtr() const { return this->ptr.get(); }
-	uint32 GetTotalSize() const { return this->totalsize; }
 
 	SpriteType GetType() const { return this->type; }
 	void SetType(SpriteType type) { this->type = type; }
@@ -99,9 +98,8 @@ private:
 	{
 		if (!this->ptr) return;
 
-		_spritecache_bytes_used -= this->totalsize;
-
-		if (this->GetType() != SpriteType::Normal) {
+		if (this->GetType() == SpriteType::Recolour) {
+			_spritecache_bytes_used -= RECOLOUR_SPRITE_SIZE;
 			free(this->ptr.release());
 			return;
 		}
@@ -109,6 +107,7 @@ private:
 		Sprite *p = (Sprite *)this->ptr.release();
 		while (p != nullptr) {
 			Sprite *next = p->next;
+			_spritecache_bytes_used -= p->size;
 			free(p);
 			p = next;
 		}
@@ -120,20 +119,55 @@ public:
 	void Clear()
 	{
 		this->Deallocate();
-		this->totalsize = 0;
 		this->total_missing_zoom_levels = 0;
+	}
+
+	void RemoveByMissingZoomLevels(uint8 lvls)
+	{
+		Sprite *base = this->GetSpritePtr();
+		if (base->missing_zoom_levels == lvls) {
+			/* erase top level entry */
+			this->ptr.reset(base->next);
+			_spritecache_bytes_used -= base->size;
+			free(base);
+			base = this->GetSpritePtr();
+		}
+		if (base == nullptr) {
+			this->total_missing_zoom_levels = 0;
+			return;
+		}
+		this->total_missing_zoom_levels = base->missing_zoom_levels;
+		Sprite *sp = base;
+		while (sp != nullptr) {
+			this->total_missing_zoom_levels &= sp->missing_zoom_levels;
+
+			if (sp->next != nullptr && sp->next->missing_zoom_levels == lvls) {
+				/* found entry to erase */
+				_spritecache_bytes_used -= sp->next->size;
+				Sprite *new_next = sp->next->next;
+				free(sp->next);
+				sp->next = new_next;
+			}
+
+			sp = sp->next;
+		}
 	}
 
 	void Assign(SpriteDataBuffer &&other)
 	{
 		this->Clear();
+		if (!other.ptr) return;
+
 		this->ptr.reset(other.ptr.release());
-		this->totalsize = other.size;
-		if (this->ptr && this->GetType() == SpriteType::Normal) {
+		if (this->GetType() == SpriteType::Recolour) {
+			_spritecache_bytes_used += RECOLOUR_SPRITE_SIZE;
+		} else {
 			this->GetSpritePtr()->size = other.size;
-			this->total_missing_zoom_levels = this->GetSpritePtr()->missing_zoom_levels;
+			_spritecache_bytes_used += other.size;
+			if (this->GetType() == SpriteType::Normal) {
+				this->total_missing_zoom_levels = this->GetSpritePtr()->missing_zoom_levels;
+			}
 		}
-		_spritecache_bytes_used += other.size;
 		other.size = 0;
 	}
 
@@ -158,7 +192,6 @@ public:
 		}
 		p->next = sp;
 		this->total_missing_zoom_levels &= sp->missing_zoom_levels;
-		this->totalsize += other.size;
 		_spritecache_bytes_used += other.size;
 		other.size = 0;
 	}
@@ -559,7 +592,6 @@ static void *ReadRecolourSprite(SpriteFile &file, uint num)
 	 * number of recolour sprites that are 17 bytes that only exist in DOS
 	 * GRFs which are the same as 257 byte recolour sprites, but with the last
 	 * 240 bytes zeroed.  */
-	static const uint RECOLOUR_SPRITE_SIZE = 257;
 	byte *dest = (byte *)AllocSprite(RECOLOUR_SPRITE_SIZE);
 
 	auto read_data = [&](byte *targ) {
@@ -858,7 +890,6 @@ bool LoadNextSprite(int load_index, SpriteFile &file, uint file_sprite_id)
 	} else {
 		sc->Clear();
 	}
-	sc->lru = 0;
 	sc->id = file_sprite_id;
 	sc->count = count;
 	sc->flags = control_flags;
@@ -902,6 +933,7 @@ static void DeleteEntriesFromSpriteCache(size_t target)
 		uint32 lru;
 		SpriteID id;
 		uint32 size;
+		uint8 missing_zoom_levels;
 
 		bool operator<(const SpriteInfo &other) const
 		{
@@ -927,29 +959,37 @@ static void DeleteEntriesFromSpriteCache(size_t target)
 	SpriteID i = 0;
 	for (; i != _spritecache.size() && candidate_bytes < target; i++) {
 		SpriteCache *sc = GetSpriteCache(i);
-		if (sc->GetType() != SpriteType::Recolour && sc->GetPtr() != nullptr) {
-			push({ sc->lru, i, sc->GetTotalSize() });
-			total_candidates++;
+		if (sc->GetType() != SpriteType::Recolour) {
+			Sprite *sp = (Sprite *)sc->GetPtr();
+			while (sp != nullptr) {
+				push({ sp->lru, i, sp->size, sp->missing_zoom_levels });
+				total_candidates++;
+				sp = sp->next;
+			}
 			if (candidate_bytes >= target) break;
 		}
 	}
 	for (; i != _spritecache.size(); i++) {
 		SpriteCache *sc = GetSpriteCache(i);
-		if (sc->GetType() != SpriteType::Recolour && sc->GetPtr() != nullptr) {
-			total_candidates++;
+		if (sc->GetType() != SpriteType::Recolour) {
+			Sprite *sp = (Sprite *)sc->GetPtr();
+			while (sp != nullptr) {
+				total_candidates++;
 
-			/* Only add to candidates if LRU <= current highest */
-			if (sc->lru <= candidates.front().lru) {
-				push({ sc->lru, i, sc->GetTotalSize() });
-				while (!candidates.empty() && candidate_bytes - candidates.front().size >= target) {
-					pop();
+				/* Only add to candidates if LRU <= current highest */
+				if (sp->lru <= candidates.front().lru) {
+					push({ sp->lru, i, sp->size, sp->missing_zoom_levels });
+					while (!candidates.empty() && candidate_bytes - candidates.front().size >= target) {
+						pop();
+					}
 				}
+				sp = sp->next;
 			}
 		}
 	}
 
 	for (auto &it : candidates) {
-		DeleteEntryFromSpriteCache(it.id);
+		GetSpriteCache(it.id)->RemoveByMissingZoomLevels(it.missing_zoom_levels);
 	}
 
 	DEBUG(sprite, 3, "DeleteEntriesFromSpriteCache, deleted: " PRINTF_SIZE " of " PRINTF_SIZE ", freed: " PRINTF_SIZE ", in use: " PRINTF_SIZE " --> " PRINTF_SIZE ", delta: " PRINTF_SIZE ", requested: " PRINTF_SIZE,
@@ -973,19 +1013,21 @@ void IncreaseSpriteLRU()
 		DeleteEntriesFromSpriteCache(_spritecache_bytes_used - target_size + 512 * 1024);
 	}
 
-	/* Increase all LRU values */
+	/* Adjust all LRU values */
 	if (_sprite_lru_counter >= 0xC0000000) {
-		SpriteID i;
-
 		DEBUG(sprite, 3, "Fixing lru %u, inuse=" PRINTF_SIZE, _sprite_lru_counter, GetSpriteCacheUsage());
 
-		for (i = 0; i != _spritecache.size(); i++) {
+		for (SpriteID i = 0; i != _spritecache.size(); i++) {
 			SpriteCache *sc = GetSpriteCache(i);
-			if (sc->GetPtr() != nullptr) {
-				if (sc->lru > 0x80000000) {
-					sc->lru -= 0x80000000;
-				} else {
-					sc->lru = 0;
+			if (sc->GetType() != SpriteType::Recolour) {
+				Sprite *sp = (Sprite *)sc->GetPtr();
+				while (sp != nullptr) {
+					if (sp->lru > 0x80000000) {
+						sp->lru -= 0x80000000;
+					} else {
+						sp->lru = 0;
+					}
+					sp = sp->next;
 				}
 			}
 		}
@@ -1074,9 +1116,6 @@ void *GetRawSprite(SpriteID sprite, SpriteType type, uint8 zoom_levels, Allocato
 	if (allocator == nullptr && encoder == nullptr) {
 		/* Load sprite into/from spritecache */
 
-		/* Update LRU */
-		sc->lru = ++_sprite_lru_counter;
-
 		if (type != SpriteType::Normal) zoom_levels = UINT8_MAX;
 
 		/* Load the sprite, if it is not loaded, yet */
@@ -1088,6 +1127,20 @@ void *GetRawSprite(SpriteID sprite, SpriteType type, uint8 zoom_levels, Allocato
 			void *ptr = ReadSprite(sc, sprite, type, AllocSprite, nullptr, sc->total_missing_zoom_levels & zoom_levels);
 			assert(ptr == _last_sprite_allocation.GetPtr());
 			sc->Append(std::move(_last_sprite_allocation));
+		}
+
+		if (type != SpriteType::Recolour) {
+			uint8 lvls = zoom_levels;
+			Sprite *sp = (Sprite *)sc->GetPtr();
+			while (lvls != 0 && sp != nullptr) {
+				uint8 usable = ~sp->missing_zoom_levels;
+				if (usable & lvls) {
+					/* Update LRU */
+					sp->lru = ++_sprite_lru_counter;
+					lvls &= ~usable;
+				}
+				sp = sp->next;
+			}
 		}
 
 		return sc->GetPtr();
