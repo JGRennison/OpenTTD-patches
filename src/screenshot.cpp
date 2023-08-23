@@ -326,26 +326,32 @@ static bool MakePNGImage(const char *name, ScreenshotCallback *callb, void *user
 	text[0].text_length = strlen(_openttd_revision);
 	text[0].compression = PNG_TEXT_COMPRESSION_NONE;
 
-	char buf[8192];
-	char *p = buf;
-	p += seprintf(p, lastof(buf), "Graphics set: %s (%u)\n", BaseGraphics::GetUsedSet()->name.c_str(), BaseGraphics::GetUsedSet()->version);
-	p = strecpy(p, "NewGRFs:\n", lastof(buf));
+	const uint32 text_buf_length = 65536;
+	char * const text_buf = MallocT<char>(text_buf_length);
+	auto guard = scope_guard([=]() {
+		free(text_buf);
+	});
+	const char * const text_buf_last = text_buf + text_buf_length - 1;
+
+	char *p = text_buf;
+	p += seprintf(p, text_buf_last, "Graphics set: %s (%u)\n", BaseGraphics::GetUsedSet()->name.c_str(), BaseGraphics::GetUsedSet()->version);
+	p = strecpy(p, "NewGRFs:\n", text_buf_last);
 	for (const GRFConfig *c = _game_mode == GM_MENU ? nullptr : _grfconfig; c != nullptr; c = c->next) {
-		p += seprintf(p, lastof(buf), "%08X ", BSWAP32(c->ident.grfid));
-		p = md5sumToString(p, lastof(buf), c->ident.md5sum);
-		p += seprintf(p, lastof(buf), " %s\n", c->filename.c_str());
+		p += seprintf(p, text_buf_last, "%08X ", BSWAP32(c->ident.grfid));
+		p = md5sumToString(p, text_buf_last, c->ident.md5sum);
+		p += seprintf(p, text_buf_last, " %s\n", c->filename.c_str());
 	}
-	p = strecpy(p, "\nCompanies:\n", lastof(buf));
+	p = strecpy(p, "\nCompanies:\n", text_buf_last);
 	for (const Company *c : Company::Iterate()) {
 		if (c->ai_info == nullptr) {
-			p += seprintf(p, lastof(buf), "%2i: Human\n", (int)c->index);
+			p += seprintf(p, text_buf_last, "%2i: Human\n", (int)c->index);
 		} else {
-			p += seprintf(p, lastof(buf), "%2i: %s (v%d)\n", (int)c->index, c->ai_info->GetName().c_str(), c->ai_info->GetVersion());
+			p += seprintf(p, text_buf_last, "%2i: %s (v%d)\n", (int)c->index, c->ai_info->GetName().c_str(), c->ai_info->GetVersion());
 		}
 	}
 	text[1].key = const_cast<char *>("Description");
-	text[1].text = buf;
-	text[1].text_length = p - buf;
+	text[1].text = text_buf;
+	text[1].text_length = p - text_buf;
 	text[1].compression = PNG_TEXT_COMPRESSION_zTXt;
 	if (_screenshot_aux_text_key && _screenshot_aux_text_value) {
 		text[2].key = const_cast<char *>(_screenshot_aux_text_key);
