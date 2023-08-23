@@ -1934,7 +1934,7 @@ class NIHStationStruct : public NIHelper {
 					seprintf(buffer, lastof(buffer), "    Amount fract: %u", ge->amount_fract);
 					output.print(buffer);
 				}
-				if (pkts != nullptr && pkts->MapSize() > 0) {
+				if (pkts != nullptr && (pkts->MapSize() > 0 || ge->CargoTotalCount() > 0)) {
 					seprintf(buffer, lastof(buffer), "    Cargo packets: %u, cargo packet keys: %u, available: %u, reserved: %u",
 							(uint)pkts->size(), (uint)pkts->MapSize(), ge->CargoAvailableCount(), ge->CargoReservedCount());
 					output.print(buffer);
