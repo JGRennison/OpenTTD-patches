@@ -54,6 +54,9 @@ extern uint8 _extra_station_names_probability;
 
 class FlowStatMap;
 
+extern const StationCargoList _empty_cargo_list;
+extern const FlowStatMap _empty_flows;
+
 /**
  * Flow statistics telling how much flow should be sent along a link. This is
  * done by creating "flow shares" and using std::map's upper_bound() method to
@@ -699,13 +702,11 @@ struct GoodsEntry {
 
 	const StationCargoList &ConstCargoList() const
 	{
-		extern const StationCargoList _empty_cargo_list;
 		return this->data != nullptr ? this->data->cargo : _empty_cargo_list;
 	}
 
 	const FlowStatMap &ConstFlows() const
 	{
-		extern const FlowStatMap _empty_flows;
 		return this->data != nullptr ? this->data->flows : _empty_flows;
 	}
 };
