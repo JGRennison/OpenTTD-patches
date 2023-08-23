@@ -542,8 +542,12 @@ static bool PadSprites(SpriteLoader::Sprite *sprite, unsigned int sprite_avail, 
 
 static bool ResizeSprites(SpriteLoader::Sprite *sprite, unsigned int sprite_avail, SpriteEncoder *encoder, uint8 zoom_levels)
 {
+	ZoomLevel first_avail = static_cast<ZoomLevel>(FindFirstBit(sprite_avail));
+	ZoomLevel first_needed = static_cast<ZoomLevel>(FindFirstBit(zoom_levels));
+	ZoomLevel start = std::min(first_avail, first_needed);
+
 	bool needed = false;
-	for (ZoomLevel zoom = ZOOM_LVL_SPR_END; zoom-- > ZOOM_LVL_NORMAL; ) {
+	for (ZoomLevel zoom = ZOOM_LVL_SPR_END; zoom-- > start; ) {
 		if (HasBit(sprite_avail, zoom) && sprite[zoom].data != nullptr) {
 			needed = false;
 		} else if (HasBit(zoom_levels, zoom)) {
@@ -554,10 +558,15 @@ static bool ResizeSprites(SpriteLoader::Sprite *sprite, unsigned int sprite_avai
 	}
 
 	/* Create a fully zoomed image if it does not exist */
-	ZoomLevel first_avail = static_cast<ZoomLevel>(FindFirstBit(sprite_avail));
 	if (first_avail != ZOOM_LVL_NORMAL) {
 		if (!ResizeSpriteIn(sprite, first_avail, ZOOM_LVL_NORMAL, !HasBit(zoom_levels, ZOOM_LVL_NORMAL))) return false;
 		SetBit(sprite_avail, ZOOM_LVL_NORMAL);
+	}
+
+	/* Create a zoomed image of the first required zoom if there any no sources which are equally or more zoomed in */
+	if (zoom_levels != 0 && start > ZOOM_LVL_NORMAL && start < first_avail && HasBit(zoom_levels, start)) {
+		if (!ResizeSpriteIn(sprite, first_avail, start, false)) return false;
+		SetBit(sprite_avail, start);
 	}
 
 	/* Pad sprites to make sizes match. */
