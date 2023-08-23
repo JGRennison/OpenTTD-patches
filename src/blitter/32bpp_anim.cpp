@@ -213,6 +213,8 @@ inline void Blitter_32bppAnim::Draw(const Blitter::BlitterParams *bp, ZoomLevel 
 				case BM_BLACK_REMAP:
 					memset_colour(dst, _black_colour, n);
 					memset(anim, 0, n * sizeof(*anim));
+					dst += n;
+					anim += n;
 					src_px += n;
 					src_n += n;
 					break;
