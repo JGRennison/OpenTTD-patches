@@ -1060,7 +1060,7 @@ void InitMusicDriver(bool init_volume)
 		std::unique_lock<std::mutex> lock(_music_driver_mutex);
 
 		static std::unique_ptr<MusicDriver> old_driver;
-		old_driver = std::move(MusicDriver::ExtractDriver());
+		old_driver = MusicDriver::ExtractDriver();
 
 		DriverFactoryBase::SelectDriver(_music_driver_params, Driver::DT_MUSIC);
 	}
