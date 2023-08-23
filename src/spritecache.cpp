@@ -560,21 +560,28 @@ static void *ReadRecolourSprite(SpriteFile &file, uint num)
 	 * GRFs which are the same as 257 byte recolour sprites, but with the last
 	 * 240 bytes zeroed.  */
 	static const uint RECOLOUR_SPRITE_SIZE = 257;
-	byte *dest = (byte *)AllocSprite(std::max(RECOLOUR_SPRITE_SIZE, num));
+	byte *dest = (byte *)AllocSprite(RECOLOUR_SPRITE_SIZE);
+
+	auto read_data = [&](byte *targ) {
+		file.ReadBlock(targ, std::min(num, RECOLOUR_SPRITE_SIZE));
+		if (num > RECOLOUR_SPRITE_SIZE) {
+			file.SkipBytes(num - RECOLOUR_SPRITE_SIZE);
+		}
+	};
 
 	if (file.NeedsPaletteRemap()) {
-		byte *dest_tmp = AllocaM(byte, std::max(RECOLOUR_SPRITE_SIZE, num));
+		byte *dest_tmp = AllocaM(byte, RECOLOUR_SPRITE_SIZE);
 
 		/* Only a few recolour sprites are less than 257 bytes */
 		if (num < RECOLOUR_SPRITE_SIZE) memset(dest_tmp, 0, RECOLOUR_SPRITE_SIZE);
-		file.ReadBlock(dest_tmp, num);
+		read_data(dest_tmp);
 
 		/* The data of index 0 is never used; "literal 00" according to the (New)GRF specs. */
 		for (uint i = 1; i < RECOLOUR_SPRITE_SIZE; i++) {
 			dest[i] = _palmap_w2d[dest_tmp[_palmap_d2w[i - 1] + 1]];
 		}
 	} else {
-		file.ReadBlock(dest, num);
+		read_data(dest);
 	}
 
 	return dest;
