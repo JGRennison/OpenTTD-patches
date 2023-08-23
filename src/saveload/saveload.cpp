@@ -1068,12 +1068,15 @@ void SlSaveLoadRef(void *ptr, VarType conv)
 	}
 }
 
+template <typename T, typename U>
+using ring_buffer_sl = ring_buffer<T>;
+
 /**
  * Template class to help with list-like types.
  */
-template <template<typename> typename Tstorage, typename Tvar>
+template <template<typename, typename> typename Tstorage, typename Tvar, typename Tallocator = std::allocator<Tvar>>
 class SlStorageHelper {
-	typedef Tstorage<Tvar> SlStorageT;
+	typedef Tstorage<Tvar, Tallocator> SlStorageT;
 public:
 	/**
 	 * Internal templated helper to return the size in bytes of a list-like type.
@@ -1172,7 +1175,7 @@ static inline size_t SlCalcRefListLen(const void *list, VarType conv)
  */
 static inline size_t SlCalcRefRingLen(const void *list, VarType conv)
 {
-	return SlStorageHelper<ring_buffer, void *>::SlCalcLen(list, conv, SL_REF);
+	return SlStorageHelper<ring_buffer_sl, void *>::SlCalcLen(list, conv, SL_REF);
 }
 
 /**
@@ -1216,7 +1219,7 @@ static void SlRefRing(void *list, VarType conv)
 		if (_sl.need_length == NL_CALCLENGTH) return;
 	}
 
-	SlStorageHelper<ring_buffer, void *>::SlSaveLoad(list, conv, SL_REF);
+	SlStorageHelper<ring_buffer_sl, void *>::SlSaveLoad(list, conv, SL_REF);
 }
 
 /**
@@ -1244,15 +1247,15 @@ static void SlRefVector(void *list, VarType conv)
 static inline size_t SlCalcRingLen(const void *ring, VarType conv)
 {
 	switch (GetVarMemType(conv)) {
-		case SLE_VAR_BL: return SlStorageHelper<ring_buffer, bool>::SlCalcLen(ring, conv);
-		case SLE_VAR_I8: return SlStorageHelper<ring_buffer, int8>::SlCalcLen(ring, conv);
-		case SLE_VAR_U8: return SlStorageHelper<ring_buffer, uint8>::SlCalcLen(ring, conv);
-		case SLE_VAR_I16: return SlStorageHelper<ring_buffer, int16>::SlCalcLen(ring, conv);
-		case SLE_VAR_U16: return SlStorageHelper<ring_buffer, uint16>::SlCalcLen(ring, conv);
-		case SLE_VAR_I32: return SlStorageHelper<ring_buffer, int32>::SlCalcLen(ring, conv);
-		case SLE_VAR_U32: return SlStorageHelper<ring_buffer, uint32>::SlCalcLen(ring, conv);
-		case SLE_VAR_I64: return SlStorageHelper<ring_buffer, int64>::SlCalcLen(ring, conv);
-		case SLE_VAR_U64: return SlStorageHelper<ring_buffer, uint64>::SlCalcLen(ring, conv);
+		case SLE_VAR_BL: return SlStorageHelper<ring_buffer_sl, bool>::SlCalcLen(ring, conv);
+		case SLE_VAR_I8: return SlStorageHelper<ring_buffer_sl, int8>::SlCalcLen(ring, conv);
+		case SLE_VAR_U8: return SlStorageHelper<ring_buffer_sl, uint8>::SlCalcLen(ring, conv);
+		case SLE_VAR_I16: return SlStorageHelper<ring_buffer_sl, int16>::SlCalcLen(ring, conv);
+		case SLE_VAR_U16: return SlStorageHelper<ring_buffer_sl, uint16>::SlCalcLen(ring, conv);
+		case SLE_VAR_I32: return SlStorageHelper<ring_buffer_sl, int32>::SlCalcLen(ring, conv);
+		case SLE_VAR_U32: return SlStorageHelper<ring_buffer_sl, uint32>::SlCalcLen(ring, conv);
+		case SLE_VAR_I64: return SlStorageHelper<ring_buffer_sl, int64>::SlCalcLen(ring, conv);
+		case SLE_VAR_U64: return SlStorageHelper<ring_buffer_sl, uint64>::SlCalcLen(ring, conv);
 		default: NOT_REACHED();
 	}
 }
@@ -1265,15 +1268,15 @@ static inline size_t SlCalcRingLen(const void *ring, VarType conv)
 static void SlRing(void *ring, VarType conv)
 {
 	switch (GetVarMemType(conv)) {
-		case SLE_VAR_BL: SlStorageHelper<ring_buffer, bool>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_I8: SlStorageHelper<ring_buffer, int8>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_U8: SlStorageHelper<ring_buffer, uint8>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_I16: SlStorageHelper<ring_buffer, int16>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_U16: SlStorageHelper<ring_buffer, uint16>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_I32: SlStorageHelper<ring_buffer, int32>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_U32: SlStorageHelper<ring_buffer, uint32>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_I64: SlStorageHelper<ring_buffer, int64>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_U64: SlStorageHelper<ring_buffer, uint64>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_BL: SlStorageHelper<ring_buffer_sl, bool>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_I8: SlStorageHelper<ring_buffer_sl, int8>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_U8: SlStorageHelper<ring_buffer_sl, uint8>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_I16: SlStorageHelper<ring_buffer_sl, int16>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_U16: SlStorageHelper<ring_buffer_sl, uint16>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_I32: SlStorageHelper<ring_buffer_sl, int32>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_U32: SlStorageHelper<ring_buffer_sl, uint32>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_I64: SlStorageHelper<ring_buffer_sl, int64>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_U64: SlStorageHelper<ring_buffer_sl, uint64>::SlSaveLoad(ring, conv); break;
 		default: NOT_REACHED();
 	}
 }
