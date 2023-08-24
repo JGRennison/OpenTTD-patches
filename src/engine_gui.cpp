@@ -166,6 +166,45 @@ uint GetTotalCapacityOfArticulatedParts(EngineID engine)
 	return cap.GetSum<uint>();
 }
 
+static StringID GetEngineInfoCapacityString(EngineID engine)
+{
+	char buffer[1024];
+
+	CargoArray cap = GetCapacityOfArticulatedParts(engine);
+	if (cap.GetSum<uint>() == 0) {
+		/* no cargo at all */
+		int64 args_array[] = { CT_INVALID, 0 };
+		StringParameters tmp_params(args_array);
+		GetStringWithArgs(buffer, STR_JUST_CARGO, &tmp_params, lastof(buffer));
+	} else {
+		char *b = buffer;
+		for (uint i = 0; i < NUM_CARGO; i++) {
+			if (cap[i] == 0) continue;
+
+			if (b != buffer) {
+				StringParameters tmp_params(nullptr, 0, nullptr);
+				b = GetStringWithArgs(b, STR_COMMA_SEPARATOR, &tmp_params, lastof(buffer));
+			}
+
+			int64 args_array[] = { i, cap[i] };
+			StringParameters tmp_params(args_array);
+			b = GetStringWithArgs(b, STR_JUST_CARGO, &tmp_params, lastof(buffer));
+		}
+	}
+
+	_temp_special_strings[1].assign(buffer);
+	return SPECSTR_TEMP_START + 1;
+}
+
+static StringID ProcessEngineInfoString(StringID str)
+{
+	char str_buffer[1024];
+	strecpy(str_buffer, GetStringPtr(str), lastof(str_buffer));
+	str_replace_wchar(str_buffer, lastof(str_buffer), SCC_CARGO_LONG, SCC_STRING1);
+	_temp_special_strings[0].assign(str_buffer);
+	return SPECSTR_TEMP_START;
+}
+
 static StringID GetTrainEngineInfoString(const Engine *e)
 {
 	SetDParam(0, e->GetCost());
@@ -176,13 +215,8 @@ static StringID GetTrainEngineInfoString(const Engine *e)
 
 	SetDParam(4, e->GetDisplayRunningCost());
 
-	uint capacity = GetTotalCapacityOfArticulatedParts(e->index);
-	if (capacity != 0) {
-		SetDParam(5, e->GetDefaultCargoType());
-		SetDParam(6, capacity);
-	} else {
-		SetDParam(5, CT_INVALID);
-	}
+	SetDParam(5, GetEngineInfoCapacityString(e->index));
+
 	return (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL && GetRailTypeInfo(e->u.rail.railtype)->acceleration_type != 2) ? STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE : STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER;
 }
 
@@ -217,13 +251,7 @@ static StringID GetRoadVehEngineInfoString(const Engine *e)
 	if (_settings_game.vehicle.roadveh_acceleration_model == AM_ORIGINAL) {
 		SetDParam(0, e->GetCost());
 		SetDParam(1, PackVelocity(e->GetDisplayMaxSpeed(), e->type));
-		uint capacity = GetTotalCapacityOfArticulatedParts(e->index);
-		if (capacity != 0) {
-			SetDParam(2, e->GetDefaultCargoType());
-			SetDParam(3, capacity);
-		} else {
-			SetDParam(2, CT_INVALID);
-		}
+		SetDParam(2, GetEngineInfoCapacityString(e->index));
 		SetDParam(4, e->GetDisplayRunningCost());
 		return STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST;
 	} else {
@@ -235,13 +263,7 @@ static StringID GetRoadVehEngineInfoString(const Engine *e)
 
 		SetDParam(4, e->GetDisplayRunningCost());
 
-		uint capacity = GetTotalCapacityOfArticulatedParts(e->index);
-		if (capacity != 0) {
-			SetDParam(5, e->GetDefaultCargoType());
-			SetDParam(6, capacity);
-		} else {
-			SetDParam(5, CT_INVALID);
-		}
+		SetDParam(5, GetEngineInfoCapacityString(e->index));
 		return STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE;
 	}
 }
@@ -250,8 +272,7 @@ static StringID GetShipEngineInfoString(const Engine *e)
 {
 	SetDParam(0, e->GetCost());
 	SetDParam(1, PackVelocity(e->GetDisplayMaxSpeed(), e->type));
-	SetDParam(2, e->GetDefaultCargoType());
-	SetDParam(3, e->GetDisplayDefaultCapacity());
+	SetDParam(2, GetEngineInfoCapacityString(e->index));
 	SetDParam(4, e->GetDisplayRunningCost());
 	return STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST;
 }
@@ -269,13 +290,13 @@ StringID GetEngineInfoString(EngineID engine)
 
 	switch (e->type) {
 		case VEH_TRAIN:
-			return GetTrainEngineInfoString(e);
+			return ProcessEngineInfoString(GetTrainEngineInfoString(e));
 
 		case VEH_ROAD:
-			return GetRoadVehEngineInfoString(e);
+			return ProcessEngineInfoString(GetRoadVehEngineInfoString(e));
 
 		case VEH_SHIP:
-			return GetShipEngineInfoString(e);
+			return ProcessEngineInfoString(GetShipEngineInfoString(e));
 
 		case VEH_AIRCRAFT:
 			return GetAircraftEngineInfoString(e);
