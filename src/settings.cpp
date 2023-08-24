@@ -2265,7 +2265,7 @@ static void GRFSaveConfig(IniFile &ini, const char *grpname, const GRFConfig *li
 }
 
 /* Common handler for saving/loading variables to the configuration file */
-static void HandleSettingDescs(IniFile &generic_ini, IniFile &private_ini, IniFile &secrets_ini, SettingDescProc *proc, SettingDescProcList *proc_list, bool only_startup = false)
+static void HandleSettingDescs(IniFile &generic_ini, SettingDescProc *proc, SettingDescProcList *proc_list, bool only_startup = false)
 {
 	proc(generic_ini, _misc_settings, "misc", nullptr, only_startup);
 #if defined(_WIN32) && !defined(DEDICATED)
@@ -2277,20 +2277,29 @@ static void HandleSettingDescs(IniFile &generic_ini, IniFile &private_ini, IniFi
 	for (auto &table : _generic_setting_tables) {
 		proc(generic_ini, table, "patches", &_settings_newgame, only_startup);
 	}
-	for (auto &table : _private_setting_tables) {
-		proc(private_ini, table, "patches", &_settings_newgame, only_startup);
-	}
-	for (auto &table : _secrets_setting_tables) {
-		proc(secrets_ini, table, "patches", &_settings_newgame, only_startup);
-	}
 
 	proc(generic_ini, _currency_settings, "currency", &_custom_currency, only_startup);
 	proc(generic_ini, _company_settings, "company", &_settings_client.company, only_startup);
+
+}
+
+static void HandlePrivateSettingDescs(IniFile &private_ini, SettingDescProc *proc, SettingDescProcList *proc_list, bool only_startup = false)
+{
+	for (auto &table : _private_setting_tables) {
+		proc(private_ini, table, "patches", &_settings_newgame, only_startup);
+	}
 
 	if (!only_startup) {
 		proc_list(private_ini, "server_bind_addresses", _network_bind_list);
 		proc_list(private_ini, "servers", _network_host_list);
 		proc_list(private_ini, "bans", _network_ban_list);
+	}
+}
+
+static void HandleSecretsSettingDescs(IniFile &secrets_ini, SettingDescProc *proc, SettingDescProcList *proc_list, bool only_startup = false)
+{
+	for (auto &table : _secrets_setting_tables) {
+		proc(secrets_ini, table, "patches", &_settings_newgame, only_startup);
 	}
 }
 
@@ -2334,11 +2343,15 @@ void LoadFromConfig(bool startup)
 
 	IniFileVersion generic_version = LoadVersionFromConfig(generic_ini);
 
+	HandleSettingDescs(generic_ini, IniLoadSettings, IniLoadSettingList, startup);
+
 	/* Before the split of private/secrets, we have to look in the generic for these settings. */
 	if (generic_version < IFV_PRIVATE_SECRETS) {
-		HandleSettingDescs(generic_ini, generic_ini, generic_ini, IniLoadSettings, IniLoadSettingList, startup);
+		HandlePrivateSettingDescs(generic_ini, IniLoadSettings, IniLoadSettingList, startup);
+		HandleSecretsSettingDescs(generic_ini, IniLoadSettings, IniLoadSettingList, startup);
 	} else {
-		HandleSettingDescs(generic_ini, private_ini, secrets_ini, IniLoadSettings, IniLoadSettingList, startup);
+		HandlePrivateSettingDescs(private_ini, IniLoadSettings, IniLoadSettingList, startup);
+		HandleSecretsSettingDescs(secrets_ini, IniLoadSettings, IniLoadSettingList, startup);
 	}
 
 	/* Load basic settings only during bootstrap, load other settings not during bootstrap */
@@ -2464,7 +2477,9 @@ void SaveToConfig()
 		}
 	}
 
-	HandleSettingDescs(generic_ini, private_ini, secrets_ini, IniSaveSettings, IniSaveSettingList);
+	HandleSettingDescs(generic_ini, IniSaveSettings, IniSaveSettingList);
+	HandlePrivateSettingDescs(private_ini, IniSaveSettings, IniSaveSettingList);
+	HandleSecretsSettingDescs(secrets_ini, IniSaveSettings, IniSaveSettingList);
 	GRFSaveConfig(generic_ini, "newgrf", _grfconfig_newgame);
 	GRFSaveConfig(generic_ini, "newgrf-static", _grfconfig_static);
 	AISaveConfig(generic_ini, "ai_players");
