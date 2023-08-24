@@ -495,7 +495,7 @@ DEF_CONSOLE_CMD(ConSaveConfig)
 		return true;
 	}
 
-	SaveToConfig();
+	SaveToConfig(STCF_ALL);
 	IConsolePrint(CC_DEFAULT, "Saved config.");
 	return true;
 }

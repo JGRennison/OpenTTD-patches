@@ -21,7 +21,17 @@ void IConsoleGetSetting(const char *name, bool force_newgame = false);
 void IConsoleListSettings(const char *prefilter, bool show_defaults);
 
 void LoadFromConfig(bool minimal = false);
-void SaveToConfig();
+
+enum SaveToConfigFlags : uint32 {
+	STCF_NONE = 0,
+	STCF_GENERIC = 1 << 0,
+	STCF_PRIVATE = 1 << 1,
+	STCF_SECRETS = 1 << 2,
+	STCF_ALL     = STCF_GENERIC | STCF_PRIVATE | STCF_SECRETS,
+};
+DECLARE_ENUM_AS_BIT_SET(SaveToConfigFlags)
+
+void SaveToConfig(SaveToConfigFlags flags);
 
 void IniLoadWindowSettings(IniFile &ini, const char *grpname, void *desc);
 void IniSaveWindowSettings(IniFile &ini, const char *grpname, void *desc);

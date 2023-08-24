@@ -121,7 +121,7 @@ void SetFont(FontSize fontsize, const std::string& font, uint size, bool aa)
 	UpdateAllVirtCoords();
 	ReInitAllWindows(true);
 
-	if (_save_config) SaveToConfig();
+	if (_save_config) SaveToConfig(STCF_GENERIC);
 }
 
 #ifdef WITH_FREETYPE

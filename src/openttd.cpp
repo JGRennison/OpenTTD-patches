@@ -1041,7 +1041,7 @@ int openttd_main(int argc, char *argv[])
 
 	/* only save config if we have to */
 	if (_save_config) {
-		SaveToConfig();
+		SaveToConfig(STCF_ALL);
 		SaveHotkeysToConfig();
 		WindowDesc::SaveToConfig();
 		SaveToHighScore();

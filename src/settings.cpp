@@ -2425,22 +2425,43 @@ void LoadFromConfig(bool startup)
 }
 
 /** Save the values to the configuration file */
-void SaveToConfig()
+void SaveToConfig(SaveToConfigFlags flags)
 {
+	if (flags & STCF_PRIVATE) {
+		ConfigIniFile private_ini(_private_file);
+
+		/* If we newly create the private/secrets file, add a dummy group on top
+		 * just so we can add a comment before it (that is how IniFile works).
+		 * This to explain what the file is about. After doing it once, never touch
+		 * it again, as otherwise we might be reverting user changes. */
+		if (!private_ini.GetGroup("private", false)) private_ini.GetGroup("private")->comment = "; This file possibly contains private information which can identify you as person.\n";
+
+		HandlePrivateSettingDescs(private_ini, IniSaveSettings, IniSaveSettingList);
+		SaveVersionInConfig(private_ini);
+		private_ini.SaveToDisk(_private_file);
+	}
+
+	if (flags & STCF_SECRETS) {
+		ConfigIniFile secrets_ini(_secrets_file);
+
+		/* If we newly create the private/secrets file, add a dummy group on top
+		 * just so we can add a comment before it (that is how IniFile works).
+		 * This to explain what the file is about. After doing it once, never touch
+		 * it again, as otherwise we might be reverting user changes. */
+		if (!secrets_ini.GetGroup("secrets", false)) secrets_ini.GetGroup("secrets")->comment = "; Do not share this file with others, not even if they claim to be technical support.\n; This file contains saved passwords and other secrets that should remain private to you!\n";
+
+		HandleSecretsSettingDescs(secrets_ini, IniSaveSettings, IniSaveSettingList);
+		SaveVersionInConfig(secrets_ini);
+		secrets_ini.SaveToDisk(_secrets_file);
+	}
+
+	if ((flags & STCF_GENERIC) == 0) return;
+
 	PreTransparencyOptionSave();
 
 	ConfigIniFile generic_ini(_config_file);
-	ConfigIniFile private_ini(_private_file);
-	ConfigIniFile secrets_ini(_secrets_file);
 
 	IniFileVersion generic_version = LoadVersionFromConfig(generic_ini);
-
-	/* If we newly create the private/secrets file, add a dummy group on top
-	 * just so we can add a comment before it (that is how IniFile works).
-	 * This to explain what the file is about. After doing it once, never touch
-	 * it again, as otherwise we might be reverting user changes. */
-	if (!private_ini.GetGroup("private", false)) private_ini.GetGroup("private")->comment = "; This file possibly contains private information which can identify you as person.\n";
-	if (!secrets_ini.GetGroup("secrets", false)) secrets_ini.GetGroup("secrets")->comment = "; Do not share this file with others, not even if they claim to be technical support.\n; This file contains saved passwords and other secrets that should remain private to you!\n";
 
 	if (generic_version == IFV_0) {
 		/* Remove some obsolete groups. These have all been loaded into other groups. */
@@ -2478,20 +2499,14 @@ void SaveToConfig()
 	}
 
 	HandleSettingDescs(generic_ini, IniSaveSettings, IniSaveSettingList);
-	HandlePrivateSettingDescs(private_ini, IniSaveSettings, IniSaveSettingList);
-	HandleSecretsSettingDescs(secrets_ini, IniSaveSettings, IniSaveSettingList);
+
 	GRFSaveConfig(generic_ini, "newgrf", _grfconfig_newgame);
 	GRFSaveConfig(generic_ini, "newgrf-static", _grfconfig_static);
 	AISaveConfig(generic_ini, "ai_players");
 	GameSaveConfig(generic_ini, "game_scripts");
 
 	SaveVersionInConfig(generic_ini);
-	SaveVersionInConfig(private_ini);
-	SaveVersionInConfig(secrets_ini);
-
 	generic_ini.SaveToDisk(_config_file);
-	private_ini.SaveToDisk(_private_file);
-	secrets_ini.SaveToDisk(_secrets_file);
 }
 
 /**
@@ -2568,7 +2583,7 @@ void DeleteGRFPresetFromConfig(const char *config_name)
  * @param object The object the setting is in.
  * @param newval The new value for the setting.
  */
-void IntSettingDesc::ChangeValue(const void *object, int32 newval) const
+void IntSettingDesc::ChangeValue(const void *object, int32 newval, SaveToConfigFlags ini_save_flags) const
 {
 	int32 oldval = this->Read(object);
 	this->MakeValueValid(newval);
@@ -2586,7 +2601,7 @@ void IntSettingDesc::ChangeValue(const void *object, int32 newval) const
 
 	SetWindowClassesDirty(WC_GAME_OPTIONS);
 
-	if (_save_config) SaveToConfig();
+	if (_save_config) SaveToConfig(ini_save_flags);
 }
 
 /**
@@ -2653,6 +2668,20 @@ const SettingDesc *GetSettingFromName(const char *name)
 	return GetCompanySettingFromName(name);
 }
 
+SaveToConfigFlags ConfigSaveFlagsFor(const SettingDesc *sd)
+{
+	if (sd->flags & SF_PRIVATE) return STCF_PRIVATE;
+	if (sd->flags & SF_SECRET) return STCF_SECRETS;
+	return STCF_GENERIC;
+}
+
+SaveToConfigFlags ConfigSaveFlagsUsingGameSettingsFor(const SettingDesc *sd)
+{
+	SaveToConfigFlags flags = ConfigSaveFlagsFor(sd);
+	if (_game_mode != GM_MENU && !sd->save.global) flags &= ~STCF_GENERIC;
+	return flags;
+}
+
 /**
  * Network-safe changing of settings (server-only).
  * @param tile unused
@@ -2678,7 +2707,7 @@ CommandCost CmdChangeSetting(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 	if (flags & DC_EXEC) {
 		SCOPE_INFO_FMT([=], "CmdChangeSetting: %s -> %d", sd->name, p2);
 
-		sd->AsIntSetting()->ChangeValue(&GetGameSettings(), p2);
+		sd->AsIntSetting()->ChangeValue(&GetGameSettings(), p2, ConfigSaveFlagsUsingGameSettingsFor(sd));
 	}
 
 	return CommandCost();
@@ -2713,7 +2742,7 @@ CommandCost CmdChangeCompanySetting(TileIndex tile, DoCommandFlag flags, uint32 
 	if (flags & DC_EXEC) {
 		SCOPE_INFO_FMT([=], "CmdChangeCompanySetting: %s -> %d", sd->name, p2);
 
-		sd->AsIntSetting()->ChangeValue(&Company::Get(_current_company)->settings, p2);
+		sd->AsIntSetting()->ChangeValue(&Company::Get(_current_company)->settings, p2, STCF_NONE);
 	}
 
 	return CommandCost();
@@ -2743,7 +2772,7 @@ bool SetSettingValue(const IntSettingDesc *sd, int32 value, bool force_newgame)
 			return false;
 		}
 
-		setting->ChangeValue(&_settings_client.company, value);
+		setting->ChangeValue(&_settings_client.company, value, ConfigSaveFlagsFor(setting));
 		return true;
 	}
 
@@ -2755,14 +2784,14 @@ bool SetSettingValue(const IntSettingDesc *sd, int32 value, bool force_newgame)
 	if (no_newgame && _game_mode == GM_MENU) return false;
 	if (setting->flags & SF_NO_NETWORK_SYNC) {
 		if (_game_mode != GM_MENU && !no_newgame) {
-			setting->ChangeValue(&_settings_newgame, value);
+			setting->ChangeValue(&_settings_newgame, value, ConfigSaveFlagsFor(setting));
 		}
-		setting->ChangeValue(&GetGameSettings(), value);
+		setting->ChangeValue(&GetGameSettings(), value, ConfigSaveFlagsUsingGameSettingsFor(setting));
 		return true;
 	}
 
 	if (force_newgame && !no_newgame) {
-		setting->ChangeValue(&_settings_newgame, value);
+		setting->ChangeValue(&_settings_newgame, value, ConfigSaveFlagsFor(setting));
 		return true;
 	}
 
@@ -2819,7 +2848,7 @@ bool SetSettingValue(const StringSettingDesc *sd, std::string value, bool force_
 	}
 
 	const void *object = (_game_mode == GM_MENU || force_newgame) ? &_settings_newgame : &_settings_game;
-	sd->AsStringSetting()->ChangeValue(object, value);
+	sd->AsStringSetting()->ChangeValue(object, value, object == &_settings_newgame ? ConfigSaveFlagsFor(sd) : STCF_NONE);
 	return true;
 }
 
@@ -2829,7 +2858,7 @@ bool SetSettingValue(const StringSettingDesc *sd, std::string value, bool force_
  * @param object The object the setting is in.
  * @param newval The new value for the setting.
  */
-void StringSettingDesc::ChangeValue(const void *object, std::string &newval) const
+void StringSettingDesc::ChangeValue(const void *object, std::string &newval, SaveToConfigFlags ini_save_flags) const
 {
 	this->MakeValueValid(newval);
 	if (this->pre_check != nullptr && !this->pre_check(newval)) return;
@@ -2837,7 +2866,7 @@ void StringSettingDesc::ChangeValue(const void *object, std::string &newval) con
 	this->Write(object, newval);
 	if (this->post_callback != nullptr) this->post_callback(newval);
 
-	if (_save_config) SaveToConfig();
+	if (_save_config) SaveToConfig(ini_save_flags);
 }
 
 uint GetSettingIndexByFullName(const char *name)
