@@ -16,10 +16,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - container_image: "ubuntu:18.04"
-          bundle_name: "bionic"
-          compiler: "g++-8"
-          c_compiler: "gcc-8"
         - container_image: "ubuntu:20.04"
           bundle_name: "focal"
           compiler: "g++"
@@ -28,12 +24,12 @@ jobs:
           bundle_name: "jammy"
           compiler: "g++"
           c_compiler: "gcc"
-        - container_image: "debian:buster"
-          bundle_name: "buster"
-          compiler: "g++"
-          c_compiler: "gcc"
         - container_image: "debian:bullseye"
           bundle_name: "bullseye"
+          compiler: "g++"
+          c_compiler: "gcc"
+        - container_image: "debian:bookworm"
+          bundle_name: "bookworm"
           compiler: "g++"
           c_compiler: "gcc"
 
