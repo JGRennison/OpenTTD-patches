@@ -1919,6 +1919,11 @@ public:
 				*size = maxdim(*size, d);
 				break;
 			}
+
+			case WID_O_SHARED_ORDER_LIST:
+			case WID_O_ADD_VEH_GROUP:
+				size->width = std::max(size->width, NWidgetLeaf::GetResizeBoxDimension().width);
+				break;
 		}
 	}
 
