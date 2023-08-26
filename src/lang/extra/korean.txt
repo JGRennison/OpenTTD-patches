@@ -44,6 +44,8 @@ STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_12_MONTHS              :12개월마다
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_LABEL      :사용자 설정 (게임 일)
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :사용자 설정 (현실 분)
 
+STR_COMMA_SEPARATOR                                             :,{SP}
+
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
@@ -149,6 +151,9 @@ STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL_HELPTEXT                 :열차 감속�
 
 STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED             :현실적 열차 감속을 신호기 신호 기준으로 제한: {STRING}
 STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED_HELPTEXT    :현실적 감속 모델에서, 속력을 신호기를 기준으로 제한합니다. (즉, 신호기를 무제한으로 예약하고 선로를 예약하는 것을 허용하지 않습니다.){}이 설정을 사용하려면 다현시 신호기 NewGRF가 필요합니다.{}이 설정은 게임 플레이의 어려움을 증가시킬 수도 있는 전문가용 설정으로, 신호기 유형 및 배치에 대한 추가적인 고려가 필요할 수 있습니다.
+
+STR_CONFIG_SETTING_LIMIT_TRAIN_ACCELERATION                     :열차 가속 제한: {STRING}
+STR_CONFIG_SETTING_LIMIT_TRAIN_ACCELERATION_HELPTEXT            :현실적 열차 감속 모델을 사용할 경우, 열차의 최대 가속 또한 제한합니다. 이 설정은 일부 열차에서 지나치게 빠른 가속으로 인해 승객들이 음료수를 흘리는 것을 방지하기 위함입니다.
 
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT                     :차례로 나눠 실을 때 열차 속력: {STRING}
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_HELPTEXT            :역에서 열차가 화물을 차례로 나눠 실으며 움직일 때 열차의 최대 허용 속력입니다.
@@ -468,7 +473,7 @@ STR_CONFIG_SETTING_SHARING_RAIL                                 :철도 공유: 
 STR_CONFIG_SETTING_SHARING_ROAD                                 :도로 시설 공유: {STRING}
 STR_CONFIG_SETTING_SHARING_WATER                                :항구/정박소 공유: {STRING}
 STR_CONFIG_SETTING_SHARING_AIR                                  :공항 공유: {STRING}
-STR_CONFIG_SETTING_SHARING_FEE_RAIL                             :일 선로 사용료: 1000톤당 {STRING}
+STR_CONFIG_SETTING_SHARING_FEE_RAIL                             :선로 시설 사용료: 1일당 {STRING}/1000톤
 STR_CONFIG_SETTING_SHARING_FEE_ROAD                             :도로 시설 사용료: 1일당 {STRING}
 STR_CONFIG_SETTING_SHARING_FEE_WATER                            :항만 시설 사용료: 1일당 {STRING}
 STR_CONFIG_SETTING_SHARING_FEE_AIR                              :공항 시설 사용료: 1일당 {STRING}
@@ -658,6 +663,9 @@ STR_CONFIG_SETTING_NO_EXPIRE_OBJECTS_AFTER_ZERO                 :항상 사라�
 
 STR_CONFIG_SETTING_IGNORE_OBJECT_INTRO_DATES                    :오브젝트 등장 날짜 무시: {STRING}
 STR_CONFIG_SETTING_IGNORE_OBJECT_INTRO_DATES_HELPTEXT           :플레이어가 오브젝트의 등장 날짜 이전에 그 오브젝트를 지을 수 있도록 허용할지 여부를 설정합니다.{}지도 생성 도중 만들어진 오브젝트에는 적용되지 않습니다.
+
+STR_CONFIG_SETTING_ALLOW_CONVERT_TOWN_ROAD_NO_HOUSES            :도시 소유의 도로를 집 건설 불가 도로로 바꾸는 것을 허용: {STRING}
+STR_CONFIG_SETTING_ALLOW_CONVERT_TOWN_ROAD_NO_HOUSES_HELPTEXT   :플레이어가 도시 소유의 도로를 집 건설 불가 도로 유형으로 변경할 수 있도록 허용합니다.{}이 설정을 켜면 도시가 집을 짓지 못하게 되어 결과적으로 도시의 규모가 줄어들 수 있기 때문에, 이 설정은 기본적으로 꺼져있습니다.
 
 STR_PURCHASE_LAND_PERMITTED_NO                                  :허용하지 않음
 STR_PURCHASE_LAND_PERMITTED_SINGLE                              :허용, 한 타일씩
@@ -1523,6 +1531,8 @@ STR_ORDER_CONDITIONAL_SCHED_SELECT_TOOLTIP                      :{BLACK}사용�
 STR_ORDER_CONDITIONAL_SCHED_TEST_TOOLTIP                        :{BLACK}테스트할 배차 일정 조건을 선택하세요
 STR_ORDER_CONDITIONAL_VIA                                       :{BLACK}경유
 STR_ORDER_CONDITIONAL_VIA_TOOLTIP                               :{BLACK}대기 화물량을 확인할 경유 역을 선택하세요
+STR_ORDER_CONDITIONAL_STATION                                   :{BLACK}역
+STR_ORDER_CONDITIONAL_STATION_TOOLTIP                           :{BLACK}확인할 역을 선택하세요
 
 STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS                        :받을 때
 STR_ORDER_CONDITIONAL_COMPARATOR_DOES_NOT_ACCEPT                :받지 않을 때
@@ -1905,16 +1915,26 @@ STR_TMPL_ADD_VEHICLE_REFIT                                      :{BLACK}차량 �
 STR_TMPL_ADD_TOOLTIP                                            :{BLACK}선택한 차량을 템플릿에 추가합니다.
 STR_TMPL_ADD_REFIT_TOOLTIP                                      :{BLACK}선택한 차량을 템플릿에 추가하고 개조합니다.
 
-STR_TMPL_SET_USEDEPOT                                           :{BLACK}차량을 기지에서 사용
-STR_TMPL_SET_USEDEPOT_TIP                                       :{BLACK}구입 비용을 줄이기 위해 차량을 기지 안에 놔 둡니다.
+STR_TMPL_SET_USEDEPOT                                           :{BLACK}기지의 차량 사용
+STR_TMPL_SET_USEDEPOT_TIP                                       :{BLACK}템플릿 교체시 구입 비용을 줄이기 위해 기지 내에 있는 사용 가능한 차량을 이용합니다.{}사용 가능한 차량은 반드시 기지 내에 멈춰있어야 합니다. 기관차는 경로가 없어야 하고, 그룹에 속해있지 않아야 하며 다른 차량과 경로를 공유하고 있지 않아야 합니다.
 STR_TMPL_SET_KEEPREMAINDERS                                     :{BLACK}재고로 놔두기
-STR_TMPL_SET_KEEPREMAINDERS_TIP                                 :{BLACK}템플릿 교체가 끝난 후 오래된 열차로부터 남은 차량을 나중을 위해 놔 둡니다.
+STR_TMPL_SET_KEEPREMAINDERS_TIP                                 :{BLACK}템플릿 교체가 끝난 후, 기존 차량에서 교체되고 남은 차량을 나중을 위해 판매하지 않고 놔 둡니다.
+STR_TMPL_SET_REFIT_AS_TEMPLATE                                  :{BLACK}템플릿대로
+STR_TMPL_SET_REFIT_AS_TEMPLATE_TIP                              :{BLACK}탬플릿과 정확히 일치하도록 열차가 개조됩니다
+STR_TMPL_SET_REFIT_AS_INCOMING                                  :{BLACK}실은 화물대로
+STR_TMPL_SET_REFIT_AS_INCOMING_TIP                              :{BLACK}새 열차의 각 부분은 기존 차량에 있던 첫 번째 화물대로 개조될 것입니다. 불가능할 경우 표준 개조를 사용합니다.
 STR_TMPL_SET_OLD_ONLY                                           :{BLACK}낡은 차량만
 STR_TMPL_SET_OLD_ONLY_TIP                                       :{BLACK}설정되면 낡은 차량과 자동 교체에 의해 교체되는 차량만이 교체됩니다.
 
+STR_TMPL_CONFIG_REFIT_AS_TEMPLATE                               :{GREEN}개조: 템플릿
+STR_TMPL_CONFIG_REFIT_AS_INCOMING                               :{GOLD}개조: 실은 화물
 STR_TMPL_CONFIG_USEDEPOT                                        :기지 사용
 STR_TMPL_CONFIG_KEEPREMAINDERS                                  :놔두기
 STR_TMPL_CONFIG_OLD_ONLY                                        :낡은 차량만
+
+STR_TMPL_SECTION_REFIT                                          :{BLACK}개조
+STR_TMPL_SECTION_DEPOT_VEHICLES                                 :{BLACK}기지 차량
+STR_TMPL_SECTION_WHEN                                           :{BLACK}시기
 
 STR_TMPL_NUM_TRAINS_NEED_RPL                                    :교체할 열차 수: {SET_COLOUR}{COMMA}
 
@@ -2107,5 +2127,10 @@ STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_OFF              :끄기
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_SIMPLE           :간단히
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :자세히
 
+STR_CONFIG_SETTING_CITY_IN_LABEL                                :도시 이름에 대도시 여부 표시: {STRING}
+STR_CONFIG_SETTING_CITY_IN_LABEL_HELPTEXT                       :지도 상에 표시되는 도시 이름에 대도시인지 여부를 표시합니다
+
 STR_VIEWPORT_TOWN_COLOUR                                        :{1:SET_COLOUR}{0:TOWN}
 STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {SET_COLOUR}({COMMA})
+STR_VIEWPORT_TOWN_COLOUR_CITY                                   :{1:SET_COLOUR}{0:TOWN} (대도시)
+STR_VIEWPORT_TOWN_COLOUR_CITY_POP                               :{WHITE}{TOWN} {SET_COLOUR}(대도시, {COMMA})
