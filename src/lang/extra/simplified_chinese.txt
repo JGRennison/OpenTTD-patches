@@ -1815,7 +1815,7 @@ STR_TMPL_CONFIG_USEDEPOT                                        :使用闲置
 STR_TMPL_CONFIG_KEEPREMAINDERS                                  :保持原样
 STR_TMPL_CONFIG_OLD_ONLY                                        :只换老的
 
-STR_TMPL_NUM_TRAINS_NEED_RPL                                    :# 要被替换的火车:
+STR_TMPL_NUM_TRAINS_NEED_RPL                                    :要被替换的火车: {SET_COLOUR}{COMMA}
 
 STR_TMPL_CARGO_SUMMARY                                          :{CARGO_LONG}
 STR_TMPL_CARGO_SUMMARY_MULTI                                    :{CARGO_LONG}（x{NUM}）

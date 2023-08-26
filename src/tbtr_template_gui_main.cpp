@@ -639,6 +639,8 @@ public:
 		int y = r.top;
 		int max = std::min<int>(this->vscroll[0]->GetPosition() + this->vscroll[0]->GetCapacity(), (int)this->groups.size());
 
+		bool rtl = _current_text_dir == TD_RTL;
+
 		/* Then treat all groups defined by/for the current company */
 		for (int i = this->vscroll[0]->GetPosition(); i < max; ++i) {
 			const Group *g = (this->groups)[i];
@@ -651,12 +653,20 @@ public:
 
 			int text_y = y + WidgetDimensions::scaled.matrix.top;
 
+			auto draw_text = [&](int left, int right, StringID str, TextColour colour, StringAlignment align) {
+				if (rtl) {
+					DrawString(r.left + (r.right - right), r.right - (left - r.left), text_y, str, colour, align);
+				} else {
+					DrawString(left, right, text_y, str, colour, align);
+				}
+			};
+
 			int col1 = left + (2 * left + right) / 3;
 			int col2 = left + (left + 2 * right) / 3;
 
 			SetDParam(0, g_id);
 			StringID str = STR_GROUP_NAME;
-			DrawString(left + ScaleGUITrad(4 + this->indents[i] * 10), col1 - ScaleGUITrad(4), text_y, str, TC_BLACK);
+			draw_text(left + ScaleGUITrad(4 + this->indents[i] * 10), col1 - ScaleGUITrad(4), str, TC_BLACK, SA_LEFT);
 
 			const TemplateID tid = GetTemplateIDByGroupIDRecursive(g_id);
 			const TemplateID tid_self = GetTemplateIDByGroupID(g_id);
@@ -664,7 +674,7 @@ public:
 			/* Draw the template in use for this group, if there is one */
 			int template_in_use = FindTemplateIndex(tid);
 			if (tid != INVALID_TEMPLATE && tid_self == INVALID_TEMPLATE) {
-				DrawString (col1 + ScaleGUITrad(4), col2 - ScaleGUITrad(4), text_y, STR_TMP_TEMPLATE_FROM_PARENT_GROUP, TC_SILVER, SA_HOR_CENTER);
+				draw_text(col1 + ScaleGUITrad(4), col2 - ScaleGUITrad(4), STR_TMP_TEMPLATE_FROM_PARENT_GROUP, TC_SILVER, SA_HOR_CENTER);
 			} else if (template_in_use >= 0) {
 				const TemplateVehicle *tv = TemplateVehicle::Get(tid);
 				SetDParam(1, template_in_use);
@@ -674,20 +684,18 @@ public:
 					SetDParam(0, STR_TMPL_NAME);
 					SetDParamStr(2, tv->name);
 				}
-				DrawString (col1 + ScaleGUITrad(4), col2 - ScaleGUITrad(4), text_y, STR_TMPL_GROUP_USES_TEMPLATE, TC_BLACK, SA_HOR_CENTER);
+				draw_text(col1 + ScaleGUITrad(4), col2 - ScaleGUITrad(4), STR_TMPL_GROUP_USES_TEMPLATE, TC_BLACK, SA_HOR_CENTER);
 			} else if (tid != INVALID_TEMPLATE) { /* If there isn't a template applied from the current group, check if there is one for another rail type */
-				DrawString (col1 + ScaleGUITrad(4), col2 - ScaleGUITrad(4), text_y, STR_TMPL_TMPLRPL_EX_DIFF_RAILTYPE, TC_SILVER, SA_HOR_CENTER);
+				draw_text(col1 + ScaleGUITrad(4), col2 - ScaleGUITrad(4), STR_TMPL_TMPLRPL_EX_DIFF_RAILTYPE, TC_SILVER, SA_HOR_CENTER);
 			}
 
 			/* Draw the number of trains that still need to be treated by the currently selected template replacement */
 			if (tid != INVALID_TEMPLATE) {
 				const TemplateVehicle *tv = TemplateVehicle::Get(tid);
 				const uint num_trains = CountsTrainsNeedingTemplateReplacement(g_id, tv);
-				// Draw number
-				SetDParam(0, num_trains);
-				int inner_right = DrawString(col2 + ScaleGUITrad(4), right - ScaleGUITrad(4), text_y, STR_JUST_INT, num_trains ? TC_ORANGE : TC_GREY, SA_RIGHT);
-				// Draw text
-				DrawString(col2 + ScaleGUITrad(4), inner_right - ScaleGUITrad(4), text_y, STR_TMPL_NUM_TRAINS_NEED_RPL, num_trains ? TC_BLACK : TC_GREY, SA_RIGHT);
+				SetDParam(0, num_trains > 0 ? TC_ORANGE : TC_GREY);
+				SetDParam(1, num_trains);
+				draw_text(col2 + ScaleGUITrad(4), right - ScaleGUITrad(4), STR_TMPL_NUM_TRAINS_NEED_RPL, num_trains > 0 ? TC_BLACK : TC_GREY, SA_RIGHT);
 			}
 
 			y += FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.matrix.Vertical();

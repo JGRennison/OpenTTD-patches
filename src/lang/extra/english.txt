@@ -1990,7 +1990,7 @@ STR_TMPL_SECTION_REFIT                                          :{BLACK}Refit
 STR_TMPL_SECTION_DEPOT_VEHICLES                                 :{BLACK}Depot vehicles
 STR_TMPL_SECTION_WHEN                                           :{BLACK}When
 
-STR_TMPL_NUM_TRAINS_NEED_RPL                                    :# trains to replace:
+STR_TMPL_NUM_TRAINS_NEED_RPL                                    :Trains to replace: {SET_COLOUR}{COMMA}
 
 STR_TMPL_CARGO_SUMMARY                                          :{CARGO_LONG}
 STR_TMPL_CARGO_SUMMARY_MULTI                                    :{CARGO_LONG} (x{NUM})

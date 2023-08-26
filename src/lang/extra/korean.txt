@@ -1926,7 +1926,7 @@ STR_TMPL_CONFIG_USEDEPOT                                        :기지 사용
 STR_TMPL_CONFIG_KEEPREMAINDERS                                  :놔두기
 STR_TMPL_CONFIG_OLD_ONLY                                        :낡은 차량만
 
-STR_TMPL_NUM_TRAINS_NEED_RPL                                    :교체할 열차 수:
+STR_TMPL_NUM_TRAINS_NEED_RPL                                    :교체할 열차 수: {SET_COLOUR}{COMMA}
 
 STR_TMPL_CARGO_SUMMARY                                          :{CARGO_LONG}
 STR_TMPL_CARGO_SUMMARY_MULTI                                    :{CARGO_LONG} (x{NUM})

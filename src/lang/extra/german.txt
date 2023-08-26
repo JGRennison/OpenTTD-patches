@@ -1680,7 +1680,7 @@ STR_TMPL_CONFIG_USEDEPOT                                        :Depotnutzung
 STR_TMPL_CONFIG_KEEPREMAINDERS                                  :Bereithaltung
 STR_TMPL_CONFIG_OLD_ONLY                                        :Nur alte
 
-STR_TMPL_NUM_TRAINS_NEED_RPL                                    :# Züge zu ersetzen:
+STR_TMPL_NUM_TRAINS_NEED_RPL                                    :Züge zu ersetzen: {SET_COLOUR}{COMMA}
 
 STR_TMPL_CARGO_SUMMARY                                          :{CARGO_LONG}
 STR_TMPL_CARGO_SUMMARY_MULTI                                    :{CARGO_LONG} (x{NUM})

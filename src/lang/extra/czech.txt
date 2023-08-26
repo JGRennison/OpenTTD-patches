@@ -1919,7 +1919,7 @@ STR_TMPL_CONFIG_USEDEPOT                                        :užij depo
 STR_TMPL_CONFIG_KEEPREMAINDERS                                  :nech zbyt
 STR_TMPL_CONFIG_OLD_ONLY                                        :jen staré
 
-STR_TMPL_NUM_TRAINS_NEED_RPL                                    :# vlaků k nahrazení:
+STR_TMPL_NUM_TRAINS_NEED_RPL                                    :vlaků k nahrazení: {SET_COLOUR}{COMMA}
 
 STR_TMPL_CARGO_SUMMARY                                          :{CARGO_LONG}
 STR_TMPL_CARGO_SUMMARY_MULTI                                    :{CARGO_LONG} (x{NUM})
