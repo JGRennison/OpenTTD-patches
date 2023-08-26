@@ -970,7 +970,7 @@ static char *FormatUnitWeightRatio(char *buff, const char *last, const Units &un
 	const char *unit_str = GetStringPtr(unit.s);
 	const char *weight_str = GetStringPtr(_units_weight[_settings_game.locale.units_weight].s);
 
-	char tmp_buffer[32];
+	char tmp_buffer[128];
 	char *insert_pt = strecpy(tmp_buffer, unit_str, lastof(tmp_buffer));
 	strecpy(insert_pt, weight_str, lastof(tmp_buffer));
 	str_replace_wchar(insert_pt, lastof(tmp_buffer), SCC_DECIMAL, '/');
