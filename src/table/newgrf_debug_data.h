@@ -1906,6 +1906,12 @@ class NIHStationStruct : public NIHelper {
 			seprintf(buffer, lastof(buffer), "  Time since: load: %u, unload: %u", st->time_since_load, st->time_since_unload);
 			output.print(buffer);
 
+			if (st->airport.tile != INVALID_TILE) {
+				seprintf(buffer, lastof(buffer), "  Airport: type: %u (local: %u), layout: %u, rotation: %u",
+						st->airport.type, st->airport.GetSpec()->grf_prop.local_id, st->airport.layout, st->airport.rotation);
+				output.print(buffer);
+			}
+
 			for (const CargoSpec *cs : CargoSpec::Iterate()) {
 				const GoodsEntry *ge = &st->goods[cs->Index()];
 
