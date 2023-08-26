@@ -52,6 +52,7 @@
 	<li><a href="#varaction2_station">Variational Action 2 - Stations</a></li>
 	<li><a href="#varaction2_railtypes">Variational Action 2 - Railtypes</a></li>
 	<li><a href="#varaction2_object">Variational Action 2 - Objects</a></li>
+	<li><a href="#varaction2_airporttiles">Variational Action 2 - Airport tiles</a></li>
 	<li><a href="#varaction2_signals">Variational Action 2 - Signals (Feature 0E)</a></li>
 	<li><a href="#callbacks_ships">Callbacks - Ships</a></li>
 	<li><a href="#a3objects">Action 3 - Objects</a></li>
@@ -881,6 +882,14 @@
 	If this variable is non-zero a foundation is present.<br />
 	This is useful for xoring with bits 8-12 of variable 41, because if this variable is unavailable then the result is still the underlying tile slope.</p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_object_edge_foundation_mode</font>, version 2</p>
+	<br />
+	<h3 id="varaction2_airporttiles"><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Airport_Tiles">Variational Action 2 - Airport Tiles</a></h3>
+	<h4 id="airporttiles_airport_id">Airport ID (mappable variable: airporttiles_airport_id)</h4>
+	<p>This is the local GRF ID of the airport type.</p>
+	<p>This is indicated by the feature name: <font face="monospace">varaction2_airporttiles_airport_info</font>, version 1</p>
+	<h4 id="airporttiles_airport_layout">Airport layout number (mappable variable: airporttiles_airport_layout)</h4>
+	<p>This is the airport layout number (as defined in <a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Airports#Set_airportlayout.28s.29_.280A.29">airport property 0A</a>).</p>
+	<p>This is indicated by the feature name: <font face="monospace">varaction2_airporttiles_airport_info</font>, version 1</p>
 	<br />
 	<h3 id="varaction2_signals"><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2">Variational Action 2 - Signals (Feature 0E)</a></h3>
 	<h4 id="signals_signal_restriction_info">Signal routing restriction information (mappable variable: signals_signal_restriction_info)</h4>

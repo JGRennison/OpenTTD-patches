@@ -10,6 +10,7 @@
 #include "stdafx.h"
 #include "debug.h"
 #include "newgrf_airporttiles.h"
+#include "newgrf_extension.h"
 #include "newgrf_spritegroup.h"
 #include "newgrf_sound.h"
 #include "station_base.h"
@@ -192,6 +193,12 @@ static uint32 GetAirportTileIDAtOffset(TileIndex tile, const Station *st, uint32
 
 		/* Get airport tile ID at offset */
 		case 0x62: return GetAirportTileIDAtOffset(GetNearbyTile(parameter, this->tile), this->st, this->ro.grffile->grfid);
+
+		case A2VRI_AIRPORTTILES_AIRPORT_LAYOUT:
+			return this->st->airport.layout;
+
+		case A2VRI_AIRPORTTILES_AIRPORT_ID:
+			return this->st->airport.GetSpec()->grf_prop.local_id;
 	}
 
 	DEBUG(grf, 1, "Unhandled airport tile variable 0x%X", variable);

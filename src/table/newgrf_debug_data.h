@@ -1702,6 +1702,19 @@ static const NICallback _nic_airporttiles[] = {
 	NIC_END()
 };
 
+static const NIVariable _niv_airporttiles[] = {
+	NIV(0x41, "ground type"),
+	NIV(0x42, "current town zone in nearest town"),
+	NIV(0x43, "relative position"),
+	NIV(0x44, "animation frame"),
+	NIV(0x60, "land info of nearby tiles"),
+	NIV(0x61, "animation stage of nearby tiles"),
+	NIV(0x62, "get industry or airport tile ID at offset"),
+	NIV(A2VRI_AIRPORTTILES_AIRPORT_LAYOUT, "airport layout"),
+	NIV(A2VRI_AIRPORTTILES_AIRPORT_ID, "airport local ID"),
+	NIV_END()
+};
+
 class NIHAirportTile : public NIHelper {
 	bool IsInspectable(uint index) const override        { return AirportTileSpec::Get(GetAirportGfx(index))->grf_prop.grffile != nullptr; }
 	uint GetParent(uint index) const override            { return GetTownInspectWindowNumber(Station::GetByTile(index)->town); }
@@ -1733,7 +1746,7 @@ class NIHAirportTile : public NIHelper {
 static const NIFeature _nif_airporttile = {
 	nullptr,
 	_nic_airporttiles,
-	_niv_industrytiles, // Yes, they share this (at least now)
+	_niv_airporttiles,
 	new NIHAirportTile(),
 };
 

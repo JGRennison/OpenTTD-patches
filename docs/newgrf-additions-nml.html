@@ -45,6 +45,7 @@
 	<li><a href="#object-ids">Object IDs</a></li>
 	<li><a href="#object-properties">Object properties</a></li>
 	<li><a href="#object-variables">Object variables</a></li>
+	<li><a href="#airport-tile-variables">Airport tile variables</a></li>
 	<li><a href="#global-variable-properties">Global variables properties</a></li>
 	<li><a href="#replace-new-sprites">Replace new sprites</a></li>
 	<li><a href="#signal-graphics">Signal graphics using switches</a></li>
@@ -380,6 +381,17 @@
 		Slope of the tile after any foundation has been applied xor the slope of the underlying tile.<br />
 		If this variable is non-zero a foundation is present.<br />
 		This is useful for xoring with the tile_slope variable, because if this variable is unavailable then the result is still the underlying tile slope.
+	</td></tr>
+	</table>
+	<h3 id="airport-tile-variables"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Airports#Airport_tile_variables">Airport tile variables</a></h3>
+	<p>Variables in the table below which are not supported by the version of OpenTTD being used return a value of 0.</p>
+	<table>
+	<tr><th>Variable</th><th>Value range</th><th>Comment</th></tr>
+	<tr><td>airport_id</td><td>0..255</td><td>
+		Local GRF ID of the airport type.
+	</td></tr>
+	<tr><td>airport_layout</td><td>0..255</td><td>
+		Airport layout number (as defined in layouts).
 	</td></tr>
 	</table>
 	<h3 id="global-variable-properties">Global variables properties</h3>
