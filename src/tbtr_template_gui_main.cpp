@@ -143,10 +143,10 @@ static const NWidgetPart _widgets[] = {
 		NWidget(WWT_INSET, COLOUR_GREY, TRW_WIDGET_TMPL_PRE_BUTTON_FLUFF), SetMinimalSize(139, 12), SetResize(1,0), EndContainer(),
 		// Config buttons
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REUSE), SetMinimalSize(150,12), SetResize(0,0), SetDataTip(STR_TMPL_SET_USEDEPOT, STR_TMPL_SET_USEDEPOT_TIP),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_KEEP), SetMinimalSize(150,12), SetResize(0,0), SetDataTip(STR_TMPL_SET_KEEPREMAINDERS, STR_TMPL_SET_KEEPREMAINDERS_TIP),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT), SetMinimalSize(150,12), SetResize(0,0), SetDataTip(STR_TMPL_SET_REFIT, STR_TMPL_SET_REFIT_TIP),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_OLD_ONLY), SetMinimalSize(150,12), SetResize(0,0), SetDataTip(STR_TMPL_SET_OLD_ONLY, STR_TMPL_SET_OLD_ONLY_TIP),
+			NWidget(WWT_TEXTBTN, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REUSE), SetMinimalSize(150,12), SetResize(0,0), SetDataTip(STR_TMPL_SET_USEDEPOT, STR_TMPL_SET_USEDEPOT_TIP),
+			NWidget(WWT_TEXTBTN, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_KEEP), SetMinimalSize(150,12), SetResize(0,0), SetDataTip(STR_TMPL_SET_KEEPREMAINDERS, STR_TMPL_SET_KEEPREMAINDERS_TIP),
+			NWidget(WWT_TEXTBTN, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT), SetMinimalSize(150,12), SetResize(0,0), SetDataTip(STR_TMPL_SET_REFIT, STR_TMPL_SET_REFIT_TIP),
+			NWidget(WWT_TEXTBTN, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_OLD_ONLY), SetMinimalSize(150,12), SetResize(0,0), SetDataTip(STR_TMPL_SET_OLD_ONLY, STR_TMPL_SET_OLD_ONLY_TIP),
 			NWidget(WWT_PANEL, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_CONFIG_RIGHTPANEL), SetMinimalSize(12,12), SetResize(1,0), EndContainer(),
 		EndContainer(),
 		// Edit buttons
@@ -311,6 +311,9 @@ public:
 
 		if ((this->selected_template_index < 0) || (this->selected_template_index >= (int)this->templates.size())) {
 			this->vscroll[2]->SetCount(24);
+			this->SetWidgetsLoweredState(false,
+					TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REUSE, TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_KEEP,
+					TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT, TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_OLD_ONLY, WIDGET_LIST_END);
 		} else {
 			const TemplateVehicle *tmp = this->templates[this->selected_template_index];
 			uint height = ScaleGUITrad(8) + (3 * FONT_HEIGHT_NORMAL);
@@ -321,8 +324,8 @@ public:
 			if (tmp->full_weight > tmp->empty_weight || _settings_client.gui.show_train_weight_ratios_in_details) height += FONT_HEIGHT_NORMAL;
 			if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) height += FONT_HEIGHT_NORMAL;
 
-			for (; tmp != nullptr; tmp = tmp->Next()) {
-				cargo_caps[tmp->cargo_type] += tmp->cargo_cap;
+			for (const TemplateVehicle *u = tmp; u != nullptr; u = u->Next()) {
+				cargo_caps[u->cargo_type] += u->cargo_cap;
 			}
 
 			for (CargoID i = 0; i < NUM_CARGO; ++i) {
@@ -336,6 +339,11 @@ public:
 			}
 
 			this->vscroll[2]->SetCount(height);
+
+			this->SetWidgetLoweredState(TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REUSE, tmp->IsSetReuseDepotVehicles());
+			this->SetWidgetLoweredState(TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_KEEP, tmp->IsSetKeepRemainingVehicles());
+			this->SetWidgetLoweredState(TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT, tmp->IsSetRefitAsTemplate());
+			this->SetWidgetLoweredState(TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_OLD_ONLY, tmp->IsReplaceOldOnly());
 		}
 
 		this->DrawWidgets();
@@ -845,13 +853,14 @@ public:
 		}
 
 		const TemplateID tid = GetTemplateIDByGroupID(g_id);
+		const bool disable_selection_buttons = this->editInProgress || !selected_ok;
 
-		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_EDIT, this->editInProgress || !selected_ok);
-		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_DELETE, this->editInProgress || !selected_ok);
-		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REUSE, this->editInProgress || !selected_ok);
-		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_KEEP, this->editInProgress ||!selected_ok);
-		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT, this->editInProgress ||!selected_ok);
-		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_OLD_ONLY, this->editInProgress ||!selected_ok);
+		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_EDIT, disable_selection_buttons);
+		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_DELETE, disable_selection_buttons);
+		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REUSE, disable_selection_buttons);
+		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_KEEP, disable_selection_buttons);
+		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT, disable_selection_buttons);
+		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_OLD_ONLY, disable_selection_buttons);
 
 		this->SetWidgetDisabledState(TRW_WIDGET_START, this->editInProgress || !(selected_ok && group_ok && FindTemplateIndex(tid) != this->selected_template_index));
 		this->SetWidgetDisabledState(TRW_WIDGET_STOP, this->editInProgress || !(group_ok && tid != INVALID_TEMPLATE));
