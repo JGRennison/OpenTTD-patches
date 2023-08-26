@@ -160,7 +160,7 @@ public:
 	bool IsReplaceOldOnly() const { return this->replace_old_only; }
 	void ToggleReuseDepotVehicles() { this->reuse_depot_vehicles = !this->reuse_depot_vehicles; }
 	void ToggleKeepRemainingVehicles() { this->keep_remaining_vehicles = !this->keep_remaining_vehicles; }
-	void ToggleRefitAsTemplate() { this->refit_as_template = !this->refit_as_template; }
+	void SetRefitAsTemplate(bool as_template) { this->refit_as_template = as_template; }
 	void ToggleReplaceOldOnly() { this->replace_old_only = !this->replace_old_only; }
 
 	bool IsPrimaryVehicle() const { return this->IsFrontEngine(); }

@@ -942,15 +942,15 @@ CommandCost CmdToggleKeepRemainingVehicles(TileIndex tile, DoCommandFlag flags, 
 }
 
 /**
- * Toggles 'refit as template' on a template vehicle.
+ * Set/unset 'refit as template' on a template vehicle.
  * @param tile unused
  * @param flags type of operation
  * @param p1 the template vehicle's index
- * @param p2 unused
+ * @param p2 whether 'refit as template' should be set
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdToggleRefitAsTemplate(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdSetRefitAsTemplate(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	// Identify template to toggle
 	TemplateVehicle *template_vehicle = TemplateVehicle::GetIfValid(p1);
@@ -962,7 +962,7 @@ CommandCost CmdToggleRefitAsTemplate(TileIndex tile, DoCommandFlag flags, uint32
 	bool should_execute = (flags & DC_EXEC) != 0;
 
 	if (should_execute) {
-		template_vehicle->ToggleRefitAsTemplate();
+		template_vehicle->SetRefitAsTemplate(p2 != 0);
 		MarkTrainsUsingTemplateAsPendingTemplateReplacement(template_vehicle);
 
 		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN, 0);

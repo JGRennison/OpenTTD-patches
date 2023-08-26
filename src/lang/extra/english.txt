@@ -1969,19 +1969,26 @@ STR_TMPL_ADD_VEHICLE_REFIT                                      :{BLACK}Add and 
 STR_TMPL_ADD_TOOLTIP                                            :{BLACK}Add the highlighted vehicle to the template.
 STR_TMPL_ADD_REFIT_TOOLTIP                                      :{BLACK}Add and refit the highlighted vehicle to the template.
 
-STR_TMPL_SET_USEDEPOT                                           :{BLACK}Use vehicles in depot
-STR_TMPL_SET_USEDEPOT_TIP                                       :{BLACK}Use vehicles inside the depot that are in a neutral and idle state to compose trains on template replacement in order to reduce buying costs
+STR_TMPL_SET_USEDEPOT                                           :{BLACK}Use depot vehicles
+STR_TMPL_SET_USEDEPOT_TIP                                       :{BLACK}Use available vehicles in the depot during template replacement in order to reduce buying costs.{}Available vehicles must be stopped in the depot. Locomotives must have no orders, no group and not share orders with another vehicle.
 STR_TMPL_SET_KEEPREMAINDERS                                     :{BLACK}Keep remainders
-STR_TMPL_SET_KEEPREMAINDERS_TIP                                 :{BLACK}After finishing template replacement keep all remaining vehicles from the old train in a neutral and idle state for later use
-STR_TMPL_SET_REFIT                                              :{BLACK}Use Refit
-STR_TMPL_SET_REFIT_TIP                                          :{BLACK}If set, the train will use exactly the cargo refit specified by the template. If not every wagon that is to be newly bought or retrieved from the depot, will *attempt* to be refitted as the old one was. Standard refit if this is impossible.
+STR_TMPL_SET_KEEPREMAINDERS_TIP                                 :{BLACK}After finishing template replacement, leave any remaining vehicles from the old train in the depot for later use
+STR_TMPL_SET_REFIT_AS_TEMPLATE                                  :{BLACK}As template
+STR_TMPL_SET_REFIT_AS_TEMPLATE_TIP                              :{BLACK}The train will be refitted to exactly match the template
+STR_TMPL_SET_REFIT_AS_INCOMING                                  :{BLACK}As incoming
+STR_TMPL_SET_REFIT_AS_INCOMING_TIP                              :{BLACK}Each part of the new train will be refitted to the first cargo in the old train. Standard refit if this is not possible.
 STR_TMPL_SET_OLD_ONLY                                           :{BLACK}Old Only
 STR_TMPL_SET_OLD_ONLY_TIP                                       :{BLACK}If set, only vehicles which are old and due for automatic replacement will be replaced
 
+STR_TMPL_CONFIG_REFIT_AS_TEMPLATE                               :{GREEN}refit: template
+STR_TMPL_CONFIG_REFIT_AS_INCOMING                               :{GOLD}refit: incoming
 STR_TMPL_CONFIG_USEDEPOT                                        :use depot
 STR_TMPL_CONFIG_KEEPREMAINDERS                                  :keep rem
-STR_TMPL_CONFIG_REFIT                                           :refit
 STR_TMPL_CONFIG_OLD_ONLY                                        :old only
+
+STR_TMPL_SECTION_REFIT                                          :{BLACK}Refit
+STR_TMPL_SECTION_DEPOT_VEHICLES                                 :{BLACK}Depot vehicles
+STR_TMPL_SECTION_WHEN                                           :{BLACK}When
 
 STR_TMPL_NUM_TRAINS_NEED_RPL                                    :# trains to replace:
 

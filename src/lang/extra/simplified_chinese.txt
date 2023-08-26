@@ -1808,14 +1808,11 @@ STR_TMPL_SET_USEDEPOT                                           :{BLACK}使用�
 STR_TMPL_SET_USEDEPOT_TIP                                       :{BLACK}使用库内闲置车辆构成模板替换用列车，这能降低购买成本
 STR_TMPL_SET_KEEPREMAINDERS                                     :{BLACK}保持原样
 STR_TMPL_SET_KEEPREMAINDERS_TIP                                 :{BLACK}在完成模板更新之后保留所有剩下来的从老火车上卸下来的车厢并把它们设置成闲置状态以供之后的使用
-STR_TMPL_SET_REFIT                                              :{BLACK}使用改装
-STR_TMPL_SET_REFIT_TIP                                          :{BLACK}如果设置了，火车将完全使用模板所指定的货物改装。如果没设置，每辆新买的或从仓库取回的车厢，都将*尝试*按照旧的车厢进行改装。如果不能改装，则采用标准改装。
 STR_TMPL_SET_OLD_ONLY                                           :{BLACK}只换老的
 STR_TMPL_SET_OLD_ONLY_TIP                                       :{BLACK}如果设置了的话，只有那些老旧的、应被更换的的车厢才会被更换。
 
 STR_TMPL_CONFIG_USEDEPOT                                        :使用闲置
 STR_TMPL_CONFIG_KEEPREMAINDERS                                  :保持原样
-STR_TMPL_CONFIG_REFIT                                           :改装车厢
 STR_TMPL_CONFIG_OLD_ONLY                                        :只换老的
 
 STR_TMPL_NUM_TRAINS_NEED_RPL                                    :# 要被替换的火车:

@@ -1912,14 +1912,11 @@ STR_TMPL_SET_USEDEPOT                                           :{BLACK}Použít
 STR_TMPL_SET_USEDEPOT_TIP                                       :{BLACK}Použije vozila, která stojí v nečinném stavu bez příkazů v depu, na sestavení souprav při nahrazování podle šablon, aby byly sníženy pořizovací náklady
 STR_TMPL_SET_KEEPREMAINDERS                                     :{BLACK}Zachovat zbytky
 STR_TMPL_SET_KEEPREMAINDERS_TIP                                 :{BLACK}Po dokončení šablonového nahrazování zachová všechna zbvýající vozidla z původní soupravy v nečinném stavu bez příkazů pro pozdější využití
-STR_TMPL_SET_REFIT                                              :{BLACK}Přestavět
-STR_TMPL_SET_REFIT_TIP                                          :{BLACK}Je-li nastaveno, vlak bude přestavěn přesně na náklad stanovený šablonou. Není-li nastaveno, každé vozidlo, které má být nově zakoupeno nebo vyňato z depa, se *pokusí* přestavět tak, aby odpovídalo původnímu. Pokud to nebude možné, vozidlo se přestaví na výchozí náklad.
 STR_TMPL_SET_OLD_ONLY                                           :{BLACK}Pouze zastaralé
 STR_TMPL_SET_OLD_ONLY_TIP                                       :{BLACK}Je-li nastaveno, budou se nahrazovat pouze zastaralá a na automatické nahrazení zralá vozidla
 
 STR_TMPL_CONFIG_USEDEPOT                                        :užij depo
 STR_TMPL_CONFIG_KEEPREMAINDERS                                  :nech zbyt
-STR_TMPL_CONFIG_REFIT                                           :přestav
 STR_TMPL_CONFIG_OLD_ONLY                                        :jen staré
 
 STR_TMPL_NUM_TRAINS_NEED_RPL                                    :# vlaků k nahrazení:

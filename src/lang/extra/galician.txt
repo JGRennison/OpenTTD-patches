@@ -1918,14 +1918,11 @@ STR_TMPL_SET_USEDEPOT                                           :{BLACK}Usar veh
 STR_TMPL_SET_USEDEPOT_TIP                                       :{BLACK}Usar vehículos no interior do depósito que están nun estado neutral e inactivos para compoñer trens no reemprazo do modelo para reducir os costes de compra.
 STR_TMPL_SET_KEEPREMAINDERS                                     :{BLACK}Conservar os restos
 STR_TMPL_SET_KEEPREMAINDERS_TIP                                 :{BLACK}Despois de rematar a substitución de modelos manter todos os vehículos restantes do anitog tren nun estado neutral e inactivo para un posterior uso
-STR_TMPL_SET_REFIT                                              :{BLACK}Usar reaxuste
-STR_TMPL_SET_REFIT_TIP                                          :{BLACK}Se se establece, o tren utilizará exactamente o reaxuste de cargamento especificado polo modelo. Se non cada vagón que se compre novo ou se obterá do depósito, intentará reaxustarse ao antigo. Reaxuste estándar se isto non é posible.
 STR_TMPL_SET_OLD_ONLY                                           :{BLACK}Só o vello
 STR_TMPL_SET_OLD_ONLY_TIP                                       :{BLACK}Se se establece, só os vehículos que son vellos e debido a substitución automática serán reemplazados.
 
 STR_TMPL_CONFIG_USEDEPOT                                        :usar depósito
 STR_TMPL_CONFIG_KEEPREMAINDERS                                  :conservar restos
-STR_TMPL_CONFIG_REFIT                                           :reaxustar
 STR_TMPL_CONFIG_OLD_ONLY                                        :só o vello
 
 STR_TMPL_NUM_TRAINS_NEED_RPL                                    :# trenes a reemplazar:

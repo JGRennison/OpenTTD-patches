@@ -1919,14 +1919,11 @@ STR_TMPL_SET_USEDEPOT                                           :{BLACK}차량�
 STR_TMPL_SET_USEDEPOT_TIP                                       :{BLACK}구입 비용을 줄이기 위해 차량을 기지 안에 놔 둡니다.
 STR_TMPL_SET_KEEPREMAINDERS                                     :{BLACK}재고로 놔두기
 STR_TMPL_SET_KEEPREMAINDERS_TIP                                 :{BLACK}템플릿 교체가 끝난 후 오래된 열차로부터 남은 차량을 나중을 위해 놔 둡니다.
-STR_TMPL_SET_REFIT                                              :{BLACK}개조하기
-STR_TMPL_SET_REFIT_TIP                                          :{BLACK}설정되면 열차는 템플릿에 지정된 화물을 실을 수 있도록 개조될 것입니다. 만약 모든 객차/화물차가 새로 구입됐거나 기지에 있는 것을 되찾아 온 것이 아닐 경우, 오래된 것을 교체하려고 "시도"할 것입니다. 만약 불가능하면 일반 상태로 개조합니다.
 STR_TMPL_SET_OLD_ONLY                                           :{BLACK}낡은 차량만
 STR_TMPL_SET_OLD_ONLY_TIP                                       :{BLACK}설정되면 낡은 차량과 자동 교체에 의해 교체되는 차량만이 교체됩니다.
 
 STR_TMPL_CONFIG_USEDEPOT                                        :기지 사용
 STR_TMPL_CONFIG_KEEPREMAINDERS                                  :놔두기
-STR_TMPL_CONFIG_REFIT                                           :개조
 STR_TMPL_CONFIG_OLD_ONLY                                        :낡은 차량만
 
 STR_TMPL_NUM_TRAINS_NEED_RPL                                    :교체할 열차 수:

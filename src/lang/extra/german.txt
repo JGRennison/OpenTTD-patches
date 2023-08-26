@@ -1673,14 +1673,11 @@ STR_TMPL_SET_USEDEPOT                                           :{BLACK}Benutze 
 STR_TMPL_SET_USEDEPOT_TIP                                       :{BLACK}Benutze zur Zusammenstellung Fahrzeuge, welche innerhalb des Depots in einem neutralen und unbenutzten Zustand zur Verfügung stehen, um die Anschaffungskosten zu reduzieren.
 STR_TMPL_SET_KEEPREMAINDERS                                     :{BLACK}Bereithaltung verbleibender Fahrzeuge
 STR_TMPL_SET_KEEPREMAINDERS_TIP                                 :{BLACK}Behalte nach erfolgreicher Ersetzung alle verbleibenden Fahrzeuge des alten Zugs in einem neutralen und unbenutzen Zustand für spätere eine Benutzung bereit.
-STR_TMPL_SET_REFIT                                              :{BLACK}Benutze Umrüstungen
-STR_TMPL_SET_REFIT_TIP                                          :{BLACK}Benutze die exakten Umrüstungen, die in der Vorlage angegeben sind. Wenn nicht jedes Fahrzeug, das neu angeschafft oder aus dem Depot geholt wurde, umgerüstet werden kann, wird für jedes Fahrzeug zumindest *versucht* die Umrüstung durchzuführen. Bei nicht möglicher Umrüstung eines Fahrzeugs wird dessen Standardfracht benutzt.
 STR_TMPL_SET_OLD_ONLY                                           :{BLACK}Nur alte Fahrzeuge
 STR_TMPL_SET_OLD_ONLY_TIP                                       :{BLACK}Ersetze nur Fahrzeuge, welche alt und fällig für die automatische Erneuerung sind
 
 STR_TMPL_CONFIG_USEDEPOT                                        :Depotnutzung
 STR_TMPL_CONFIG_KEEPREMAINDERS                                  :Bereithaltung
-STR_TMPL_CONFIG_REFIT                                           :Umrüstungen
 STR_TMPL_CONFIG_OLD_ONLY                                        :Nur alte
 
 STR_TMPL_NUM_TRAINS_NEED_RPL                                    :# Züge zu ersetzen:

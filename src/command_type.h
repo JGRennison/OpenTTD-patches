@@ -443,7 +443,7 @@ enum Commands {
 
 	CMD_TOGGLE_REUSE_DEPOT_VEHICLES,  ///< toggle 'reuse depot vehicles' on template
 	CMD_TOGGLE_KEEP_REMAINING_VEHICLES, ///< toggle 'keep remaining vehicles' on template
-	CMD_TOGGLE_REFIT_AS_TEMPLATE,     ///< toggle 'refit as template' on template
+	CMD_SET_REFIT_AS_TEMPLATE,        ///< set/unset 'refit as template' on template
 	CMD_TOGGLE_TMPL_REPLACE_OLD_ONLY, ///< toggle 'replace old vehicles only' on template
 	CMD_RENAME_TMPL_REPLACE,          ///< rename a template
 
