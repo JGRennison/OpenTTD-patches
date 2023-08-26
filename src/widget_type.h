@@ -877,10 +877,32 @@ public:
 
 	static void InvalidateDimensionCache();
 
+	static const Dimension &GetDropdownBoxDimension()
+	{
+		if (dropdown_dimension.width == 0) UpdateDropdownBoxDimension();
+		return dropdown_dimension;
+	}
+
+	static const Dimension &GetResizeBoxDimension()
+	{
+		if (resizebox_dimension.width == 0) UpdateResizeBoxDimension();
+		return resizebox_dimension;
+	}
+
+	static const Dimension &GetCloseBoxDimension()
+	{
+		if (closebox_dimension.width == 0) UpdateCloseBoxDimension();
+		return closebox_dimension;
+	}
+
+private:
+	static void UpdateDropdownBoxDimension();
+	static void UpdateResizeBoxDimension();
+	static void UpdateCloseBoxDimension();
+
 	static Dimension dropdown_dimension;  ///< Cached size of a dropdown widget.
 	static Dimension resizebox_dimension; ///< Cached size of a resizebox widget.
 	static Dimension closebox_dimension;  ///< Cached size of a closebox widget.
-private:
 	static Dimension shadebox_dimension;  ///< Cached size of a shadebox widget.
 	static Dimension debugbox_dimension;  ///< Cached size of a debugbox widget.
 	static Dimension defsizebox_dimension; ///< Cached size of a defsizebox widget.

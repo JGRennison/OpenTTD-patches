@@ -839,7 +839,7 @@ void DrawCaption(const Rect &r, Colours colour, Owner owner, TextColour text_col
  */
 static inline void DrawButtonDropdown(const Rect &r, Colours colour, bool clicked_button, bool clicked_dropdown, StringID str, StringAlignment align)
 {
-	int dd_width  = NWidgetLeaf::dropdown_dimension.width;
+	int dd_width  = NWidgetLeaf::GetDropdownBoxDimension().width;
 
 	if (_current_text_dir == TD_LTR) {
 		DrawFrameRect(r.left, r.top, r.right - dd_width, r.bottom, colour, clicked_button ? FR_LOWERED : FR_NONE);
@@ -2739,6 +2739,27 @@ NWidgetLeaf::NWidgetLeaf(WidgetType tp, Colours colour, int index, uint32 data, 
 	}
 }
 
+/* static */ void NWidgetLeaf::UpdateDropdownBoxDimension()
+{
+	NWidgetLeaf::dropdown_dimension = GetScaledSpriteSize(SPR_ARROW_DOWN);
+	NWidgetLeaf::dropdown_dimension.width += WidgetDimensions::scaled.vscrollbar.Horizontal();
+	NWidgetLeaf::dropdown_dimension.height += WidgetDimensions::scaled.vscrollbar.Vertical();
+}
+
+/* static */ void NWidgetLeaf::UpdateResizeBoxDimension()
+{
+	NWidgetLeaf::resizebox_dimension = maxdim(GetScaledSpriteSize(SPR_WINDOW_RESIZE_LEFT), GetScaledSpriteSize(SPR_WINDOW_RESIZE_RIGHT));
+	NWidgetLeaf::resizebox_dimension.width += WidgetDimensions::scaled.resizebox.Horizontal();
+	NWidgetLeaf::resizebox_dimension.height += WidgetDimensions::scaled.resizebox.Vertical();
+}
+
+/* static */ void NWidgetLeaf::UpdateCloseBoxDimension()
+{
+	NWidgetLeaf::closebox_dimension = GetScaledSpriteSize(SPR_CLOSEBOX);
+	NWidgetLeaf::closebox_dimension.width += WidgetDimensions::scaled.closebox.Horizontal();
+	NWidgetLeaf::closebox_dimension.height += WidgetDimensions::scaled.closebox.Vertical();
+}
+
 void NWidgetLeaf::SetupSmallestSize(Window *w, bool init_array)
 {
 	if (this->index >= 0 && init_array) { // Fill w->nested_array[]
@@ -2809,12 +2830,7 @@ void NWidgetLeaf::SetupSmallestSize(Window *w, bool init_array)
 
 		case WWT_RESIZEBOX: {
 			padding = {WidgetDimensions::scaled.resizebox.Horizontal(), WidgetDimensions::scaled.resizebox.Vertical()};
-			if (NWidgetLeaf::resizebox_dimension.width == 0) {
-				NWidgetLeaf::resizebox_dimension = maxdim(GetScaledSpriteSize(SPR_WINDOW_RESIZE_LEFT), GetScaledSpriteSize(SPR_WINDOW_RESIZE_RIGHT));
-				NWidgetLeaf::resizebox_dimension.width += padding.width;
-				NWidgetLeaf::resizebox_dimension.height += padding.height;
-			}
-			size = maxdim(size, NWidgetLeaf::resizebox_dimension);
+			size = maxdim(size, NWidgetLeaf::GetResizeBoxDimension());
 			break;
 		}
 		case WWT_EDITBOX: {
@@ -2850,12 +2866,7 @@ void NWidgetLeaf::SetupSmallestSize(Window *w, bool init_array)
 
 		case WWT_CLOSEBOX: {
 			padding = {WidgetDimensions::scaled.closebox.Horizontal(), WidgetDimensions::scaled.closebox.Vertical()};
-			if (NWidgetLeaf::closebox_dimension.width == 0) {
-				NWidgetLeaf::closebox_dimension = GetScaledSpriteSize(SPR_CLOSEBOX);
-				NWidgetLeaf::closebox_dimension.width += padding.width;
-				NWidgetLeaf::closebox_dimension.height += padding.height;
-			}
-			size = maxdim(size, NWidgetLeaf::closebox_dimension);
+			size = maxdim(size, NWidgetLeaf::GetCloseBoxDimension());
 			break;
 		}
 		case WWT_TEXTBTN:
@@ -2887,16 +2898,12 @@ void NWidgetLeaf::SetupSmallestSize(Window *w, bool init_array)
 		case WWT_DROPDOWN:
 		case NWID_BUTTON_DROPDOWN:
 		case NWID_PUSHBUTTON_DROPDOWN: {
-			if (NWidgetLeaf::dropdown_dimension.width == 0) {
-				NWidgetLeaf::dropdown_dimension = GetScaledSpriteSize(SPR_ARROW_DOWN);
-				NWidgetLeaf::dropdown_dimension.width += WidgetDimensions::scaled.vscrollbar.Horizontal();
-				NWidgetLeaf::dropdown_dimension.height += WidgetDimensions::scaled.vscrollbar.Vertical();
-			}
-			padding = {WidgetDimensions::scaled.dropdowntext.Horizontal() + NWidgetLeaf::dropdown_dimension.width + WidgetDimensions::scaled.fullbevel.Horizontal(), WidgetDimensions::scaled.dropdowntext.Vertical()};
+			const Dimension &dropdown_dim = NWidgetLeaf::GetDropdownBoxDimension();
+			padding = {WidgetDimensions::scaled.dropdowntext.Horizontal() + dropdown_dim.width + WidgetDimensions::scaled.fullbevel.Horizontal(), WidgetDimensions::scaled.dropdowntext.Vertical()};
 			if (this->index >= 0) w->SetStringParameters(this->index);
 			Dimension d2 = GetStringBoundingBox(this->widget_data, this->text_size);
 			d2.width += padding.width;
-			d2.height = std::max(d2.height + padding.height, NWidgetLeaf::dropdown_dimension.height);
+			d2.height = std::max(d2.height + padding.height, dropdown_dim.height);
 			size = maxdim(size, d2);
 			break;
 		}
@@ -3054,11 +3061,12 @@ void NWidgetLeaf::Draw(const Window *w)
  */
 bool NWidgetLeaf::ButtonHit(const Point &pt)
 {
+	const Dimension &dimension = NWidgetLeaf::GetDropdownBoxDimension();
 	if (_current_text_dir == TD_LTR) {
-		int button_width = this->pos_x + this->current_x - NWidgetLeaf::dropdown_dimension.width;
+		int button_width = this->pos_x + this->current_x - dimension.width;
 		return pt.x < button_width;
 	} else {
-		int button_left = this->pos_x + NWidgetLeaf::dropdown_dimension.width;
+		int button_left = this->pos_x + dimension.width;
 		return pt.x >= button_left;
 	}
 }

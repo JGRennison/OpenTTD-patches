@@ -3019,7 +3019,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			}
 
 			case WID_BV_RENAME_LOCO: {
-				*size = maxdim(*size, NWidgetLeaf::resizebox_dimension);
+				*size = maxdim(*size, NWidgetLeaf::GetResizeBoxDimension());
 				break;
 			}
 		}
