@@ -2874,6 +2874,12 @@ void RemoveOrderFromAllVehicles(OrderType type, DestinationID destination, bool 
 
 		RemoveVehicleOrdersIf(v, [&](const Order *o) {
 			OrderType ot = o->GetType();
+			if (ot == OT_CONDITIONAL) {
+				if (type == OT_GOTO_STATION && o->GetConditionVariable() == OCV_CARGO_WAITING_AMOUNT) {
+					if (GB(order->GetXData(), 16, 16) - 2 == destination) SB(order->GetXDataRef(), 16, 16, INVALID_STATION + 2);
+				}
+				return false;
+			}
 			if (ot == OT_GOTO_DEPOT && (o->GetDepotActionType() & ODATFB_NEAREST_DEPOT) != 0) return false;
 			if (ot == OT_GOTO_DEPOT && hangar && v->type != VEH_AIRCRAFT) return false; // Not an aircraft? Can't have a hangar order.
 			if (ot == OT_IMPLICIT || (v->type == VEH_AIRCRAFT && ot == OT_GOTO_DEPOT && !hangar)) ot = OT_GOTO_STATION;
