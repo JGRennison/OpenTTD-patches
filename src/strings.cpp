@@ -37,6 +37,7 @@
 #include "game/game_text.hpp"
 #include "network/network_content_gui.h"
 #include "newgrf_engine.h"
+#include "tbtr_template_vehicle_func.h"
 #include "core/backup_type.hpp"
 #include "core/y_combinator.hpp"
 #include <stack>
@@ -52,7 +53,7 @@ std::string _config_language_file;                ///< The file (name) stored in
 LanguageList _languages;                          ///< The actual list of language meta data.
 const LanguageMetadata *_current_language = nullptr; ///< The currently loaded language.
 
-TextDirection _current_text_dir; ///< Text direction of the currently selected language.
+TextDirection _current_text_dir = TD_LTR; ///< Text direction of the currently selected language.
 
 #ifdef WITH_ICU_I18N
 std::unique_ptr<icu::Collator> _current_collator;    ///< Collator for the language currently in use.
@@ -2307,6 +2308,7 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 	_langpack.langtab_start = tab_start;
 
 	_current_language = lang;
+	const TextDirection old_text_dir = _current_text_dir;
 	_current_text_dir = (TextDirection)_current_language->text_dir;
 	const char *c_file = strrchr(_current_language->file, PATHSEPCHAR) + 1;
 	_config_language_file = c_file;
@@ -2349,6 +2351,10 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 	InvalidateWindowClassesData(WC_AIRCRAFT_LIST);      // Aircraft group window.
 	InvalidateWindowClassesData(WC_INDUSTRY_DIRECTORY); // Industry directory window.
 	InvalidateWindowClassesData(WC_STATION_LIST);       // Station list window.
+
+	if (old_text_dir != _current_text_dir) {
+		InvalidateTemplateReplacementImages();
+	}
 
 	return true;
 }

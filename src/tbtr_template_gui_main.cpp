@@ -187,6 +187,12 @@ static WindowDesc _replace_rail_vehicle_desc(
 	_widgets, lengthof(_widgets)
 );
 
+enum {
+	TRW_LEFT_OFFSET = 36,
+	TRW_RIGHT_OFFSET = 30,
+	TRW_GAP = 10,
+};
+
 class TemplateReplaceWindow : public Window {
 private:
 
@@ -207,6 +213,13 @@ private:
 	int selected_group_index;
 
 	bool editInProgress;
+
+	uint buy_cost_width = 0;
+	uint refit_text_width = 0;
+	uint depot_text_width = 0;
+	uint remainder_text_width = 0;
+	uint old_text_width = 0;
+	uint toggle_text_width = 0;
 
 public:
 	TemplateReplaceWindow(WindowDesc *wdesc) : Window(wdesc)
@@ -259,6 +272,21 @@ public:
 				int target_resize = WidgetDimensions::scaled.matrix.top + FONT_HEIGHT_NORMAL + ScaleGUITrad(GetVehicleHeight(VEH_TRAIN));
 				this->bottom_matrix_item_size = resize->height = CeilT<int>(target_resize, base_resize);
 				size->height = 4 * resize->height;
+
+				int gap = ScaleGUITrad(TRW_GAP);
+
+				SetDParamMaxDigits(0, 8);
+				this->buy_cost_width = GetStringBoundingBox(STR_TMPL_TEMPLATE_OVR_VALUE).width + gap;
+
+				this->refit_text_width = maxdim(GetStringBoundingBox(STR_TMPL_CONFIG_REFIT_AS_TEMPLATE), GetStringBoundingBox(STR_TMPL_CONFIG_REFIT_AS_INCOMING)).width;
+				this->depot_text_width = GetStringBoundingBox(STR_TMPL_CONFIG_USEDEPOT).width + gap;
+				this->remainder_text_width = GetStringBoundingBox(STR_TMPL_CONFIG_KEEPREMAINDERS).width + gap;
+				this->old_text_width = GetStringBoundingBox(STR_TMPL_CONFIG_OLD_ONLY).width + gap;
+
+				/* use buy cost width as nominal width for name field */
+				uint left_side = ScaleGUITrad(TRW_LEFT_OFFSET) + this->buy_cost_width * 2;
+				uint right_side = this->refit_text_width + this->depot_text_width + this->remainder_text_width + this->old_text_width + ScaleGUITrad(TRW_RIGHT_OFFSET);
+				size->width = std::max(size->width, left_side + gap + right_side);
 				break;
 			}
 			case TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN: {
@@ -708,12 +736,12 @@ public:
 
 		const_cast<TemplateReplaceWindow *>(this)->BuildTemplateGuiList();
 
-		int left = r.left;
-		int right = r.right;
 		int y = r.top;
 
 		Scrollbar *draw_vscroll = vscroll[1];
 		uint max = std::min<uint>(draw_vscroll->GetPosition() + draw_vscroll->GetCapacity(), (uint)this->templates.size());
+
+		bool rtl = _current_text_dir == TD_RTL;
 
 		const TemplateVehicle *v;
 		for (uint i = draw_vscroll->GetPosition(); i < max; ++i) {
@@ -721,15 +749,29 @@ public:
 
 			/* Fill the background of the current cell in a darker tone for the currently selected template */
 			if (this->selected_template_index == (int32) i) {
-				GfxFillRect(left + 1, y, right, y + this->bottom_matrix_item_size, _colour_gradient[COLOUR_GREY][3]);
+				GfxFillRect(r.left + 1, y, r.right, y + this->bottom_matrix_item_size, _colour_gradient[COLOUR_GREY][3]);
 			}
 
 			/* Draw the template */
-			DrawTemplate(v, left + ScaleGUITrad(36), right - ScaleGUITrad(24), y, ScaleGUITrad(15));
+			DrawTemplate(v, r.left + ScaleGUITrad(rtl ? TRW_RIGHT_OFFSET : TRW_LEFT_OFFSET), r.right - ScaleGUITrad(rtl ? TRW_LEFT_OFFSET : TRW_RIGHT_OFFSET), y, ScaleGUITrad(15));
+
+			auto draw_text_across = [&](int left_offset, int right_offset, int y_offset, StringID str, TextColour colour, StringAlignment align, FontSize fontsize = FS_NORMAL) {
+				DrawString(r.left + (rtl ? right_offset : left_offset), r.right - (rtl ? left_offset : right_offset), y + y_offset, str, colour, align, false, fontsize);
+			};
+
+			auto draw_text_left = [&](int left_offset, int left_offset_end, int y_offset, StringID str, TextColour colour, StringAlignment align, FontSize fontsize = FS_NORMAL) {
+				int left = (rtl ? (r.right - left_offset_end) : (r.left + left_offset));
+				DrawString(left, left + (left_offset_end - left_offset), y + y_offset, str, colour, align, false, fontsize);
+			};
+
+			auto draw_text_right = [&](int right_offset, int right_offset_end, int y_offset, StringID str, TextColour colour, StringAlignment align, FontSize fontsize = FS_NORMAL) {
+				int left = (rtl ? (r.left + right_offset_end) : (r.right - right_offset));
+				DrawString(left, left + (right_offset - right_offset_end), y + y_offset, str, colour, align, false, fontsize);
+			};
 
 			/* Draw a notification string for chains that are not runnable */
 			if (v->IsFreeWagonChain()) {
-				DrawString(left, right - ScaleGUITrad(24), y + ScaleGUITrad(2), STR_TMPL_WARNING_FREE_WAGON, TC_RED, SA_RIGHT);
+				draw_text_across(0, ScaleGUITrad(TRW_RIGHT_OFFSET), ScaleGUITrad(2), STR_TMPL_WARNING_FREE_WAGON, TC_RED, SA_RIGHT);
 			}
 
 			bool buildable = true;
@@ -744,52 +786,55 @@ public:
 			}
 			/* Draw a notification string for chains that are not buildable */
 			if (!buildable) {
-				DrawString(left, right - ScaleGUITrad(24), y + ScaleGUITrad(2), STR_TMPL_WARNING_VEH_UNAVAILABLE, TC_RED, SA_CENTER);
+				draw_text_across(0, ScaleGUITrad(TRW_RIGHT_OFFSET), ScaleGUITrad(2), STR_TMPL_WARNING_VEH_UNAVAILABLE, TC_RED, SA_CENTER);
 			} else if (types == RAILTYPES_NONE) {
-				DrawString(left, right - ScaleGUITrad(24), y + ScaleGUITrad(2), STR_TMPL_WARNING_VEH_NO_COMPATIBLE_RAIL_TYPE, TC_RED, SA_CENTER);
+				draw_text_across(0, ScaleGUITrad(TRW_RIGHT_OFFSET), ScaleGUITrad(2), STR_TMPL_WARNING_VEH_NO_COMPATIBLE_RAIL_TYPE, TC_RED, SA_CENTER);
 			}
 
 			/* Draw the template's length in tile-units */
 			SetDParam(0, v->GetRealLength());
 			SetDParam(1, 1);
-			DrawString(left, right - ScaleGUITrad(4), y + ScaleGUITrad(2), STR_JUST_DECIMAL, TC_BLACK, SA_RIGHT, false, FS_SMALL);
+			draw_text_across(0, ScaleGUITrad(4), ScaleGUITrad(2), STR_JUST_DECIMAL, TC_BLACK, SA_RIGHT, FS_SMALL);
 
-			int bottom_edge = y + this->bottom_matrix_item_size - FONT_HEIGHT_NORMAL - WidgetDimensions::scaled.framerect.bottom;
-
-			bool have_name = !v->name.empty();
+			int bottom_edge = this->bottom_matrix_item_size - FONT_HEIGHT_NORMAL - WidgetDimensions::scaled.framerect.bottom;
 
 			/* Buying cost */
 			SetDParam(0, CalculateOverallTemplateCost(v));
-			DrawString(left + ScaleGUITrad(35), have_name ? left + ScaleGUITrad(195) : right - ScaleGUITrad(310), bottom_edge, STR_TMPL_TEMPLATE_OVR_VALUE, TC_BLUE, SA_LEFT);
-
-			if (have_name) {
-				SetDParamStr(0, v->name);
-				DrawString(left + ScaleGUITrad(200), right - ScaleGUITrad(310), bottom_edge, STR_JUST_RAW_STRING, TC_BLACK, SA_LEFT);
-			}
+			draw_text_left(ScaleGUITrad(TRW_LEFT_OFFSET), ScaleGUITrad(TRW_LEFT_OFFSET) + this->buy_cost_width, bottom_edge, STR_TMPL_TEMPLATE_OVR_VALUE, TC_BLUE, SA_LEFT);
 
 			/* Index of current template vehicle in the list of all templates for its company */
 			SetDParam(0, i);
-			DrawString(left + ScaleGUITrad(5), left + ScaleGUITrad(25), y + ScaleGUITrad(2), STR_JUST_INT, TC_BLACK, SA_RIGHT);
+			draw_text_left(ScaleGUITrad(5), ScaleGUITrad(25), ScaleGUITrad(2), STR_JUST_INT, TC_BLACK, SA_RIGHT);
 
 			/* Draw whether the current template is in use by any group */
 			if (v->NumGroupsUsingTemplate() > 0) {
-				DrawString(left + ScaleGUITrad(35), right, bottom_edge - FONT_HEIGHT_NORMAL - WidgetDimensions::scaled.framerect.bottom,
-						STR_TMP_TEMPLATE_IN_USE, TC_GREEN, SA_LEFT);
+				draw_text_across(ScaleGUITrad(TRW_LEFT_OFFSET), 0, ScaleGUITrad(2), STR_TMP_TEMPLATE_IN_USE, TC_GREEN, SA_LEFT);
 			}
 
 			/* Draw information about template configuration settings */
 
-			DrawString(right - ScaleGUITrad(300), right, bottom_edge, v->IsSetRefitAsTemplate() ? STR_TMPL_CONFIG_REFIT_AS_TEMPLATE : STR_TMPL_CONFIG_REFIT_AS_INCOMING, TC_FROMSTRING, SA_LEFT);
+			int r_offset = ScaleGUITrad(TRW_LEFT_OFFSET);
 
 			TextColour color;
-			color = v->IsSetReuseDepotVehicles() ? TC_LIGHT_BLUE : TC_GREY;
-			DrawString(right - ScaleGUITrad(210), right, bottom_edge, STR_TMPL_CONFIG_USEDEPOT, color, SA_LEFT);
+			color = v->IsReplaceOldOnly() ? TC_LIGHT_BLUE : TC_GREY;
+			draw_text_right(r_offset + this->old_text_width, r_offset, bottom_edge, STR_TMPL_CONFIG_OLD_ONLY, color, SA_RIGHT);
+			r_offset += this->old_text_width;
 
 			color = v->IsSetKeepRemainingVehicles() ? TC_LIGHT_BLUE : TC_GREY;
-			DrawString(right - ScaleGUITrad(140), right, bottom_edge, STR_TMPL_CONFIG_KEEPREMAINDERS, color, SA_LEFT);
+			draw_text_right(r_offset + this->remainder_text_width, r_offset, bottom_edge, STR_TMPL_CONFIG_KEEPREMAINDERS, color, SA_RIGHT);
+			r_offset += this->remainder_text_width;
 
-			color = v->IsReplaceOldOnly() ? TC_LIGHT_BLUE : TC_GREY;
-			DrawString(right - ScaleGUITrad(70), right, bottom_edge, STR_TMPL_CONFIG_OLD_ONLY, color, SA_LEFT);
+			color = v->IsSetReuseDepotVehicles() ? TC_LIGHT_BLUE : TC_GREY;
+			draw_text_right(r_offset + this->depot_text_width, r_offset, bottom_edge, STR_TMPL_CONFIG_USEDEPOT, color, SA_RIGHT);
+			r_offset += this->depot_text_width;
+
+			draw_text_right(r_offset + this->refit_text_width, r_offset, bottom_edge, v->IsSetRefitAsTemplate() ? STR_TMPL_CONFIG_REFIT_AS_TEMPLATE : STR_TMPL_CONFIG_REFIT_AS_INCOMING, TC_FROMSTRING, SA_LEFT);
+			r_offset += this->refit_text_width;
+
+			if (!v->name.empty()) {
+				SetDParamStr(0, v->name);
+				draw_text_across(ScaleGUITrad(TRW_LEFT_OFFSET) + this->buy_cost_width, r_offset + ScaleGUITrad(TRW_GAP), bottom_edge, STR_JUST_RAW_STRING, TC_BLACK, SA_LEFT);
+			}
 
 			y += this->bottom_matrix_item_size;
 		}

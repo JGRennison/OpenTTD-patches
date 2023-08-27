@@ -78,6 +78,8 @@ void DrawTemplate(const TemplateVehicle *tv, int left, int right, int y, int hei
 {
 	if (!tv) return;
 
+	bool rtl = _current_text_dir == TD_RTL;
+
 	DrawPixelInfo tmp_dpi;
 	int max_width = right - left + 1;
 	int veh_height = ScaleSpriteTrad(14);
@@ -87,12 +89,12 @@ void DrawTemplate(const TemplateVehicle *tv, int left, int right, int y, int hei
 	AutoRestoreBackup dpi_backup(_cur_dpi, &tmp_dpi);
 
 	const TemplateVehicle *t = tv;
-	int offset = 0;
+	int offset = rtl ? max_width : 0;
 
 	while (t) {
-		t->sprite_seq.Draw(offset + t->image_dimensions.GetOffsetX(), t->image_dimensions.GetOffsetY() + ScaleSpriteTrad(10), t->colourmap, false);
+		t->sprite_seq.Draw(offset + ((rtl ? -1 : 1) * t->image_dimensions.GetOffsetX()), t->image_dimensions.GetOffsetY() + ScaleSpriteTrad(10), t->colourmap, false);
 
-		offset += t->image_dimensions.GetDisplayImageWidth();
+		offset += (rtl ? -1 : 1) * t->image_dimensions.GetDisplayImageWidth();
 		t = t->Next();
 	}
 }
@@ -133,7 +135,7 @@ void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicle *prev
 		tmp->air_drag = gcache->cached_air_drag;
 	}
 
-	virt->GetImage(DIR_W, EIT_IN_DEPOT, &tmp->sprite_seq);
+	virt->GetImage(_current_text_dir == TD_RTL ? DIR_E : DIR_W, EIT_IN_DEPOT, &tmp->sprite_seq);
 	tmp->image_dimensions.SetFromTrain(virt);
 	tmp->colourmap = GetUncachedTrainPaletteIgnoringGroup(virt);
 }
@@ -441,7 +443,7 @@ void UpdateAllTemplateVehicleImages()
 				if (t_len == tv_len) {
 					Train *v = t;
 					for (TemplateVehicle *u = tv; u != nullptr; u = u->Next(), v = v->Next()) {
-						v->GetImage(DIR_W, EIT_IN_DEPOT, &u->sprite_seq);
+						v->GetImage(_current_text_dir == TD_RTL ? DIR_E : DIR_W, EIT_IN_DEPOT, &u->sprite_seq);
 						u->image_dimensions.SetFromTrain(v);
 						u->colourmap = GetVehiclePalette(v);
 					}
