@@ -1747,7 +1747,8 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 		}
 	}
 
-	DrawString(left + indent * 16, right, y, instruction_string, selected ? TC_WHITE : TC_BLACK);
+	bool rtl = _current_text_dir == TD_RTL;
+	DrawString(left + (rtl ? 0 : ScaleGUITrad(indent * 16)), right - (rtl ? ScaleGUITrad(indent * 16) : 0), y, instruction_string, selected ? TC_WHITE : TC_BLACK);
 }
 
 /** Main GUI window class */
@@ -2611,7 +2612,7 @@ public:
 
 		int count = this->GetItemCount(prog);
 		uint indent = 1;
-		for(int i = 0; i < count; i++) {
+		for (int i = 0; i < count; i++) {
 			TraceRestrictItem item = this->GetItem(prog, i);
 			uint this_indent = indent;
 			if (IsTraceRestrictConditional(item)) {
