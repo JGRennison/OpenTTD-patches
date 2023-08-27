@@ -1513,13 +1513,6 @@ STR_ORDER_DROP_SELL_DEPOT                                       :Vender vehícul
 
 STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :Vehículo en slot
 
-STR_ORDER_CONDITIONAL_REQUIRES_SERVICE_ORDER                    :Precisa servizo {STRING}
-STR_ORDER_CONDITIONAL_CARGO_WAITING_ORDER                       :Próxima estación {STRING} {STRING} agardando
-STR_ORDER_CONDITIONAL_ACCEPTANCE                                :Próxima estación {STRING} {STRING}
-
-STR_CONDITIONAL_FREE_PLATFORMS                                  :Saltar á orde {COMMA} cando a próxima estación {STRING} {COMMA} plataforma{P "" s} libre{P "" s}
-STR_CONDITIONAL_PERCENT                                         :Saltar á orde {COMMA} {COMMA} porcentaxe das veces
-
 STR_ORDER_CONDITIONAL_NEXT_STATION                              :Próxima estación
 STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}A carga contra a que comparar os datos da estación
 STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}O Slot de tren no que comprobar a ocupación
@@ -1617,15 +1610,16 @@ STR_ORDER_RV_DIR_SE                                             :[dirección sue
 STR_ORDER_RV_DIR_SW                                             :[dirección suroeste]
 STR_ORDER_RV_DIR_NW                                             :[dirección noroeste]
 
-STR_ORDER_CONDITIONAL_CARGO_ACCEPTANCE                          :Saltar á orde {COMMA} cando a próxima estación {STRING} {STRING}
-STR_ORDER_CONDITIONAL_CARGO_WAITING_DISPLAY                     :Saltar á orde {COMMA} cando a pŕoxima estación {STRING} {STRING}
+STR_ORDER_CONDITIONAL_PERCENT_DISPLAY                           :Saltar á orde {COMMA} {COMMA} porcentaxe das veces
+STR_ORDER_CONDITIONAL_CARGO_ACCEPTANCE                          :Saltar á orde {COMMA} cando a {STRING} {STRING} {STRING}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_DISPLAY                     :Saltar á orde {COMMA} cando a {STRING} {STRING} {STRING}
 STR_ORDER_CONDITIONAL_SLOT                                      :Saltar á orde {COMMA} cando {TRSLOT} {STRING}
 STR_ORDER_CONDITIONAL_INVALID_SLOT                              :Saltar á orde {COMMA} cando {PUSH_COLOUR}{RED}{STRING} {POP_COLOUR}{STRING}
 STR_ORDER_CONDITIONAL_IN_SLOT                                   :Saltar á orde {COMMA} cando {STRING} no slot: {TRSLOT}
 STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :Saltar á orde {COMMA} cando {STRING} {PUSH_COLOUR}{RED}{STRING} {POP_COLOUR}
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :Saltar á orde {COMMA} cando o porcentaxe de carga de {STRING} {STRING} {COMMA}
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :Saltar á orde {COMMA} cando {STRING} na próxima estación {STRING} {CARGO_SHORT}
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :Saltar á orde {COMMA} cando {STRING} na próxima estación vía {STATION} {STRING} {CARGO_SHORT}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :Saltar á orde {COMMA} cando {STRING} na {STRING} {STRING} {CARGO_SHORT}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :Saltar á orde {COMMA} cando {STRING} na {STRING} vía {STRING} {STRING} {CARGO_SHORT}
 STR_ORDER_CONDITIONAL_COUNTER                                   :Saltar á orde {COMMA} cando o valor de {TRCOUNTER} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_INVALID_COUNTER                           :Saltar á orde {COMMA} cando o valor de {PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_TIME_HHMM                                 :Saltar á orde {COMMA} cando {STRING} {STRING} {TIME_HHMM}

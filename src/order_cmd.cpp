@@ -1859,7 +1859,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				break;
 
 			case OT_CONDITIONAL:
-				if (mof != MOF_COND_VARIABLE && mof != MOF_COND_COMPARATOR && mof != MOF_COND_VALUE && mof != MOF_COND_VALUE_2 && mof != MOF_COND_VALUE_3 && mof != MOF_COND_DESTINATION) return CMD_ERROR;
+				if (mof != MOF_COND_VARIABLE && mof != MOF_COND_COMPARATOR && mof != MOF_COND_VALUE && mof != MOF_COND_VALUE_2 && mof != MOF_COND_VALUE_3 && mof != MOF_COND_DESTINATION && mof != MOF_COND_STATION_ID) return CMD_ERROR;
 				break;
 
 			case OT_RELEASE_SLOT:
@@ -2040,10 +2040,19 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			switch (order->GetConditionVariable()) {
 				case OCV_CARGO_WAITING_AMOUNT:
 					if (!(data == NEW_STATION || Station::GetIfValid(data) != nullptr)) return CMD_ERROR;
+					if (GB(order->GetXData2(), 0, 16) - 1 == data) return CMD_ERROR;
 					break;
 
 				default:
 					return CMD_ERROR;
+			}
+			break;
+
+		case MOF_COND_STATION_ID:
+			if (ConditionVariableHasStationID(order->GetConditionVariable())) {
+				if (Station::GetIfValid(data) == nullptr) return CMD_ERROR;
+			} else {
+				return CMD_ERROR;
 			}
 			break;
 
@@ -2312,6 +2321,14 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 			case MOF_COND_VALUE_3:
 				SB(order->GetXDataRef(), 16, 16, data + 2);
+				break;
+
+			case MOF_COND_STATION_ID:
+				SB(order->GetXData2Ref(), 0, 16, data + 1);
+				if (order->GetConditionVariable() == OCV_CARGO_WAITING_AMOUNT && data == GB(order->GetXData(), 16, 16) - 2) {
+					/* Clear via if station is set to the same ID */
+					SB(order->GetXDataRef(), 16, 16, 0);
+				}
 				break;
 
 			case MOF_COND_DESTINATION:
@@ -2878,6 +2895,9 @@ void RemoveOrderFromAllVehicles(OrderType type, DestinationID destination, bool 
 				if (type == OT_GOTO_STATION && o->GetConditionVariable() == OCV_CARGO_WAITING_AMOUNT) {
 					if (GB(order->GetXData(), 16, 16) - 2 == destination) SB(order->GetXDataRef(), 16, 16, INVALID_STATION + 2);
 				}
+				if (type == OT_GOTO_STATION && ConditionVariableHasStationID(o->GetConditionVariable())) {
+					if (GB(order->GetXData2(), 0, 16) - 1 == destination) SB(order->GetXData2Ref(), 0, 16, INVALID_STATION + 1);
+				}
 				return false;
 			}
 			if (ot == OT_GOTO_DEPOT && (o->GetDepotActionType() & ODATFB_NEAREST_DEPOT) != 0) return false;
@@ -3057,22 +3077,6 @@ bool EvaluateDispatchSlotConditionalOrder(const Order *order, const Vehicle *v, 
 	return OrderConditionCompare(order->GetConditionComparator(), value, 0);
 }
 
-/** Gets the next 'real' station in the order list
- * @param v the vehicle in question
- * @param order the current (conditional) order
- * @return the StationID of the next valid station in the order list, or INVALID_STATION if there is none.
- */
-static StationID GetNextRealStation(const Vehicle *v, const Order *order)
-{
-	const uint max = std::min<uint>(64, v->GetNumOrders());
-	for (uint i = 0; i < max; i++) {
-		if (order->IsType(OT_GOTO_STATION) && Station::IsValidID(order->GetDestination())) return order->GetDestination();
-
-		order = (order->next != nullptr) ? order->next : v->GetFirstOrder();
-	}
-	return INVALID_STATION;
-}
-
 static std::vector<TraceRestrictSlotID> _pco_deferred_slot_acquires;
 static std::vector<TraceRestrictSlotID> _pco_deferred_slot_releases;
 static btree::btree_map<TraceRestrictCounterID, int32> _pco_deferred_counter_values;
@@ -3104,12 +3108,12 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 		case OCV_REQUIRES_SERVICE:   skip_order = OrderConditionCompare(occ, v->NeedsServicing(),               value); break;
 		case OCV_UNCONDITIONALLY:    skip_order = true; break;
 		case OCV_CARGO_WAITING: {
-			StationID next_station = GetNextRealStation(v, order);
+			StationID next_station = GB(order->GetXData2(), 0, 16) - 1;
 			if (Station::IsValidID(next_station)) skip_order = OrderConditionCompare(occ, (Station::Get(next_station)->goods[value].CargoAvailableCount() > 0), value);
 			break;
 		}
 		case OCV_CARGO_WAITING_AMOUNT: {
-			StationID next_station = GetNextRealStation(v, order);
+			StationID next_station = GB(order->GetXData2(), 0, 16) - 1;
 			if (Station::IsValidID(next_station)) {
 				if (GB(order->GetXData(), 16, 16) == 0) {
 					skip_order = OrderConditionCompare(occ, Station::Get(next_station)->goods[value].CargoAvailableCount(), GB(order->GetXData(), 0, 16));
@@ -3120,7 +3124,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 			break;
 		}
 		case OCV_CARGO_ACCEPTANCE: {
-			StationID next_station = GetNextRealStation(v, order);
+			StationID next_station = GB(order->GetXData2(), 0, 16) - 1;
 			if (Station::IsValidID(next_station)) skip_order = OrderConditionCompare(occ, HasBit(Station::Get(next_station)->goods[value].status, GoodsEntry::GES_ACCEPTANCE), value);
 			break;
 		}
@@ -3177,7 +3181,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 			break;
 		}
 		case OCV_FREE_PLATFORMS: {
-			StationID next_station = GetNextRealStation(v, order);
+			StationID next_station = GB(order->GetXData2(), 0, 16) - 1;
 			if (Station::IsValidID(next_station)) skip_order = OrderConditionCompare(occ, GetFreeStationPlatforms(next_station), value);
 			break;
 		}
@@ -3673,7 +3677,7 @@ CommandCost CmdMassChangeOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 				int index = 0;
 				bool changed = false;
 
-				for(Order *order : v->Orders()) {
+				for (Order *order : v->Orders()) {
 					if (order->GetDestination() == from_dest && order->IsType(order_type) &&
 							!(order_type == OT_GOTO_DEPOT && order->GetDepotActionType() & ODATFB_NEAREST_DEPOT)) {
 						Order new_order;

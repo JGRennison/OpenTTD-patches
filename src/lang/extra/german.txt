@@ -1353,13 +1353,6 @@ STR_ORDER_DROP_SELL_DEPOT                                       :Fahrzeug verkau
 
 STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :Fahrzeug im Zeitfenster
 
-STR_ORDER_CONDITIONAL_REQUIRES_SERVICE_ORDER                    :Wartung erforderlich {STRING}
-STR_ORDER_CONDITIONAL_CARGO_WAITING_ORDER                       :nächste Station {STRING} wartende{G 1 n "" s ""} {STRING}
-STR_ORDER_CONDITIONAL_ACCEPTANCE                                :nächste Station {STRING} {STRING}
-
-STR_CONDITIONAL_FREE_PLATFORMS                                  :Springe zu Auftrag {COMMA} wenn die nächste Station {STRING} {COMMA} freie{P n ""} Bahnsteig{P "" e}
-STR_CONDITIONAL_PERCENT                                         :Springe zu Auftrag {COMMA} in {COMMA} Prozent der Fälle
-
 STR_ORDER_CONDITIONAL_NEXT_STATION                              :nächste Station
 STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}Frachtart, die mit der Stationsinformation verglichen wird
 STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}Zugslot, dessen Auslastung geprüft wird
@@ -1432,15 +1425,16 @@ STR_ORDER_RV_DIR_SE                                             :[Südost-Richtu
 STR_ORDER_RV_DIR_SW                                             :[Südwest-Richtung]
 STR_ORDER_RV_DIR_NW                                             :[Nordwest-Richtung]
 
-STR_ORDER_CONDITIONAL_CARGO_ACCEPTANCE                          :Springe zu Auftrag {COMMA}, wenn nächste Station {STRING} {STRING}
-STR_ORDER_CONDITIONAL_CARGO_WAITING_DISPLAY                     :Springe zu Auftrag {COMMA}, wenn nächste Station {STRING} {STRING}
+STR_ORDER_CONDITIONAL_PERCENT_DISPLAY                           :Springe zu Auftrag {COMMA} in {COMMA} Prozent der Fälle
+STR_ORDER_CONDITIONAL_CARGO_ACCEPTANCE                          :Springe zu Auftrag {COMMA}, wenn {STRING} {STRING} {STRING}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_DISPLAY                     :Springe zu Auftrag {COMMA}, wenn {STRING} {STRING} {STRING}
 STR_ORDER_CONDITIONAL_SLOT                                      :Springe zu Auftrag {COMMA}, wenn {TRSLOT} {STRING}
 STR_ORDER_CONDITIONAL_INVALID_SLOT                              :Springe zu Auftrag {COMMA}, wenn {PUSH_COLOUR}{RED}{STRING} {POP_COLOUR}{STRING}
 STR_ORDER_CONDITIONAL_IN_SLOT                                   :Springe zu Auftrag {COMMA}, wenn {STRING} Slot: {TRSLOT}
 STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :Springe zu Auftrag {COMMA}, wenn {STRING} {PUSH_COLOUR}{RED}{STRING} {POP_COLOUR}
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :Springe zu Auftrag {COMMA}, wenn Ladezustand (Prozent) gleich {STRING} {STRING} {COMMA} ist
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :Springe zu Auftrag {COMMA}, wenn {STRING} bei nächster Station {STRING} {CARGO_SHORT}
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :Springe zu Auftrag {COMMA}, wenn {STRING} bei nächster Station über {STATION} {STRING} {CARGO_SHORT}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :Springe zu Auftrag {COMMA}, wenn {STRING} bei {STRING} {STRING} {CARGO_SHORT}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :Springe zu Auftrag {COMMA}, wenn {STRING} bei {STRING} über {STRING} {STRING} {CARGO_SHORT}
 STR_ORDER_CONDITIONAL_COUNTER                                   :Springe zu Auftrag {COMMA}, wenn Wert von {TRCOUNTER} {STRING} {COMMA} ist
 STR_ORDER_CONDITIONAL_INVALID_COUNTER                           :Springe zu Auftrag {COMMA}, wenn Wert von {PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {COMMA} ist
 STR_ORDER_CONDITIONAL_TIME_HHMM                                 :Springe zu Auftrag {COMMA}, wenn {STRING} {STRING} {TIME_HHMM}

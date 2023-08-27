@@ -165,20 +165,25 @@ enum OrderConditionVariable {
 	OCV_UNCONDITIONALLY,    ///< Always skip
 	OCV_REMAINING_LIFETIME, ///< Skip based on the remaining lifetime
 	OCV_MAX_RELIABILITY,    ///< Skip based on the maximum reliability
-	OCV_CARGO_WAITING,      ///< Skip if specified cargo is waiting at next station
-	OCV_CARGO_ACCEPTANCE,   ///< Skip if specified cargo is accepted at next station
-	OCV_FREE_PLATFORMS,     ///< Skip based on free platforms at next station
+	OCV_CARGO_WAITING,      ///< Skip if specified cargo is waiting at station
+	OCV_CARGO_ACCEPTANCE,   ///< Skip if specified cargo is accepted at station
+	OCV_FREE_PLATFORMS,     ///< Skip based on free platforms at station
 	OCV_PERCENT,            ///< Skip xx percent of times
 	OCV_SLOT_OCCUPANCY,     ///< Test if vehicle slot is fully occupied, or empty
 	OCV_VEH_IN_SLOT,        ///< Test if vehicle is in slot
 	OCV_CARGO_LOAD_PERCENTAGE, ///< Skip based on the amount of load of a specific cargo
-	OCV_CARGO_WAITING_AMOUNT,  ///< Skip based on the amount of a specific cargo waiting at next station
+	OCV_CARGO_WAITING_AMOUNT,  ///< Skip based on the amount of a specific cargo waiting at station
 	OCV_COUNTER_VALUE,      ///< Skip based on counter value
 	OCV_TIME_DATE,          ///< Skip based on current time/date
 	OCV_TIMETABLE,          ///< Skip based on timetable state
 	OCV_DISPATCH_SLOT,      ///< Skip based on scheduled dispatch slot state
 	OCV_END
 };
+
+inline bool ConditionVariableHasStationID(OrderConditionVariable ocv)
+{
+	return ocv == OCV_CARGO_WAITING || ocv == OCV_CARGO_ACCEPTANCE || ocv == OCV_FREE_PLATFORMS || ocv == OCV_CARGO_WAITING_AMOUNT;
+}
 
 /**
  * Comparator for the skip reasoning.
@@ -210,6 +215,7 @@ enum ModifyOrderFlags {
 	MOF_COND_VALUE,      ///< The value to set the condition to.
 	MOF_COND_VALUE_2,    ///< The secondary value to set the condition to.
 	MOF_COND_VALUE_3,    ///< The tertiary value to set the condition to.
+	MOF_COND_STATION_ID, ///< The station ID to set the condition to.
 	MOF_COND_DESTINATION,///< Change the destination of a conditional order.
 	MOF_WAYPOINT_FLAGS,  ///< Change the waypoint flags
 	MOF_CARGO_TYPE_UNLOAD, ///< Passes an OrderUnloadType and a CargoID.

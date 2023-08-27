@@ -71,6 +71,13 @@ void ClearOrderDestinationRefcountMap();
  * OCV_DISPATCH_SLOT: Bits 0-15: Dispatch schedule ID
  * OCV_PERCENT: Bits 0-7: Jump counter
  */
+/*
+ * xdata2 users:
+ * OCV_CARGO_WAITING: Bits 0-15: Station ID to test + 1
+ * OCV_CARGO_ACCEPTANCE: Bits 0-15: Station ID to test + 1
+ * OCV_FREE_PLATFORMS: Bits 0-15: Station ID to test + 1
+ * OCV_CARGO_WAITING_AMOUNT: Bits 0-15: Station ID to test + 1
+ */
 
 struct OrderExtraInfo {
 	uint8 cargo_type_flags[NUM_CARGO] = {}; ///< Load/unload types for each cargo type.

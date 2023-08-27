@@ -54,9 +54,6 @@ STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Разр
 STR_BUY_REFIT_VEHICLE_BUY_VEHICLE_BUTTON                        :{BLACK}Переоборудовать
 STR_BUY_REFIT_VEHICLE_BUY_VEHICLE_TOOLTIP                       :{BLACK}Переоборудовать купленное транспортное средство сразу после покупки для выделенного вида груза
 
-STR_CONDITIONAL_FREE_PLATFORMS                                  :Перейти к заданию {COMMA} когда след. станция {STRING} {COMMA} свободн{P ая ые ых} платформ{P а ы ""}
-STR_CONDITIONAL_PERCENT                                         :Перейти к заданию {COMMA} {COMMA} процентов времени
-
 STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS                        :принимает
 STR_ORDER_CONDITIONAL_COMPARATOR_DOES_NOT_ACCEPT                :не принимает
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS                            :имеет
@@ -65,6 +62,8 @@ STR_ORDER_CONDITIONAL_COMPARATOR_HAS_LESS_THAN                  :имеет ме
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS_LESS_EQUALS                :имеет меньше или равно
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_THAN                  :имеет больше чем
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_EQUALS                :имеет больше или равно
+
+STR_ORDER_CONDITIONAL_PERCENT_DISPLAY                           :Перейти к заданию {COMMA} {COMMA} процентов времени
 
 # Cargo type orders Window
 

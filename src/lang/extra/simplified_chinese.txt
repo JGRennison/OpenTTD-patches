@@ -1422,13 +1422,6 @@ STR_ORDER_DROP_SELL_DEPOT                                       :卖出车辆
 
 STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :条目内车辆
 
-STR_ORDER_CONDITIONAL_REQUIRES_SERVICE_ORDER                    :服务需求 {STRING}
-STR_ORDER_CONDITIONAL_CARGO_WAITING_ORDER                       :下一站 {STRING} {STRING} 等待中
-STR_ORDER_CONDITIONAL_ACCEPTANCE                                :下一站 {STRING} {STRING}
-
-STR_CONDITIONAL_FREE_PLATFORMS                                  :跳转至调度计划 {COMMA} 当下一站 {STRING} {COMMA} 拥有自由站台
-STR_CONDITIONAL_PERCENT                                         :跳转至调度计划 {COMMA} {COMMA} 次数百分比
-
 STR_ORDER_CONDITIONAL_NEXT_STATION                              :下一站
 STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}货物对比车站数据
 STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}火车槽位检查占用率：
@@ -1513,15 +1506,14 @@ STR_ORDER_RV_DIR_SE                                             :[东南方]
 STR_ORDER_RV_DIR_SW                                             :[西南方]
 STR_ORDER_RV_DIR_NW                                             :[西北方]
 
-STR_ORDER_CONDITIONAL_CARGO_ACCEPTANCE                          :跳至 {COMMA} [ 当 下一站 {STRING} {STRING}
-STR_ORDER_CONDITIONAL_CARGO_WAITING_DISPLAY                     :跳至 {COMMA} [ 当 下一站 {STRING} {STRING}
+STR_ORDER_CONDITIONAL_PERCENT_DISPLAY                           :跳转至调度计划 {COMMA} {COMMA} 次数百分比
+STR_ORDER_CONDITIONAL_CARGO_ACCEPTANCE                          :跳至 {COMMA} [ 当 {STRING} {STRING} {STRING}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_DISPLAY                     :跳至 {COMMA} [ 当 {STRING} {STRING} {STRING}
 STR_ORDER_CONDITIONAL_SLOT                                      :跳至 {COMMA} [ 当 {TRSLOT} {STRING}
 STR_ORDER_CONDITIONAL_INVALID_SLOT                              :跳至 {COMMA} [ 当 {PUSH_COLOUR}{RED}{STRING} {POP_COLOUR}{STRING}
 STR_ORDER_CONDITIONAL_IN_SLOT                                   :跳至 {COMMA} [ 当 {STRING} 条目：{TRSLOT}
 STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :跳至 {COMMA} [ 当 {STRING} {PUSH_COLOUR}{RED}{STRING} {POP_COLOUR}
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :跳至 {COMMA} [ 当 Load percentage of {STRING} {STRING} {COMMA}
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :跳至 {COMMA} [ 当 {STRING} 在下一站 {STRING} {CARGO_SHORT}
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :跳至 {COMMA} [ 当 {STRING} 在下一站 经由 {STATION} {STRING} {CARGO_SHORT}
 STR_ORDER_CONDITIONAL_COUNTER                                   :跳至 {COMMA} [ 当 值：{TRCOUNTER} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_INVALID_COUNTER                           :跳至 {COMMA} [ 当 值：{PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_TIME_HHMM                                 :跳至 {COMMA} [ 当 {STRING} {STRING} {TIME_HHMM}

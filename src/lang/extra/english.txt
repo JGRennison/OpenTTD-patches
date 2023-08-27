@@ -18,6 +18,7 @@ STR_JUST_STRING3                                                :{STRING3}
 STR_JUST_VELOCITY                                               :{VELOCITY}
 STR_JUST_TT_TICKS                                               :{TT_TICKS}
 STR_JUST_TT_TICKS_LONG                                          :{TT_TICKS_LONG}
+STR_JUST_STATION                                                :{STATION}
 
 STR_RED_INT                                                     :{RED}{NUM}
 
@@ -1566,13 +1567,6 @@ STR_ORDER_DROP_SELL_DEPOT                                       :Sell vehicle
 
 STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :Vehicle in slot
 
-STR_ORDER_CONDITIONAL_REQUIRES_SERVICE_ORDER                    :Requires service {STRING}
-STR_ORDER_CONDITIONAL_CARGO_WAITING_ORDER                       :Next station {STRING} {STRING} waiting
-STR_ORDER_CONDITIONAL_ACCEPTANCE                                :Next station {STRING} {STRING}
-
-STR_CONDITIONAL_FREE_PLATFORMS                                  :Jump to order {COMMA} when Next station {STRING} {COMMA} free platform{P "" s}
-STR_CONDITIONAL_PERCENT                                         :Jump to order {COMMA} {COMMA} percent of times
-
 STR_ORDER_CONDITIONAL_NEXT_STATION                              :Next station
 STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}The cargo to compare the station data against
 STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}The train slot to check the occupancy of
@@ -1583,6 +1577,8 @@ STR_ORDER_CONDITIONAL_SCHED_SELECT_TOOLTIP                      :{BLACK}The disp
 STR_ORDER_CONDITIONAL_SCHED_TEST_TOOLTIP                        :{BLACK}The dispatch schedule condition to test
 STR_ORDER_CONDITIONAL_VIA                                       :{BLACK}Via
 STR_ORDER_CONDITIONAL_VIA_TOOLTIP                               :{BLACK}The via station to check the waiting cargo amount for
+STR_ORDER_CONDITIONAL_STATION                                   :{BLACK}Station
+STR_ORDER_CONDITIONAL_STATION_TOOLTIP                           :{BLACK}The station to check
 
 STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS                        :accepts
 STR_ORDER_CONDITIONAL_COMPARATOR_DOES_NOT_ACCEPT                :does not accept
@@ -1671,15 +1667,19 @@ STR_ORDER_RV_DIR_SE                                             :[south-east dir
 STR_ORDER_RV_DIR_SW                                             :[south-west direction]
 STR_ORDER_RV_DIR_NW                                             :[north-west direction]
 
-STR_ORDER_CONDITIONAL_CARGO_ACCEPTANCE                          :Jump to order {COMMA} when Next station {STRING} {STRING}
-STR_ORDER_CONDITIONAL_CARGO_WAITING_DISPLAY                     :Jump to order {COMMA} when Next station {STRING} {STRING}
+STR_ORDER_CONDITIONAL_UNDEFINED_STATION                         :{PUSH_COLOUR}{RED}undefined station{POP_COLOUR}
+
+STR_ORDER_CONDITIONAL_FREE_PLATFORMS_DISPLAY                    :Jump to order {COMMA} when {STRING1} {STRING} {COMMA} free platform{P "" s}
+STR_ORDER_CONDITIONAL_PERCENT_DISPLAY                           :Jump to order {COMMA} {COMMA} percent of times
+STR_ORDER_CONDITIONAL_CARGO_ACCEPTANCE                          :Jump to order {COMMA} when {STRING1} {STRING} {STRING}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_DISPLAY                     :Jump to order {COMMA} when {STRING1} {STRING} {STRING}
 STR_ORDER_CONDITIONAL_SLOT                                      :Jump to order {COMMA} when {TRSLOT} {STRING}
 STR_ORDER_CONDITIONAL_INVALID_SLOT                              :Jump to order {COMMA} when {PUSH_COLOUR}{RED}{STRING} {POP_COLOUR}{STRING}
 STR_ORDER_CONDITIONAL_IN_SLOT                                   :Jump to order {COMMA} when {STRING} slot: {TRSLOT}
 STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :Jump to order {COMMA} when {STRING} {PUSH_COLOUR}{RED}{STRING} {POP_COLOUR}
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :Jump to order {COMMA} when Load percentage of {STRING} {STRING} {COMMA}
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :Jump to order {COMMA} when {STRING} at next station {STRING} {CARGO_SHORT}
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :Jump to order {COMMA} when {STRING} at next station via {STATION} {STRING} {CARGO_SHORT}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :Jump to order {COMMA} when {STRING} at {STRING1} {STRING} {CARGO_SHORT}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :Jump to order {COMMA} when {STRING} at {STRING1} via {STRING1} {STRING} {CARGO_SHORT}
 STR_ORDER_CONDITIONAL_COUNTER                                   :Jump to order {COMMA} when value of {TRCOUNTER} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_INVALID_COUNTER                           :Jump to order {COMMA} when value of {PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_TIME_HHMM                                 :Jump to order {COMMA} when {STRING} {STRING} {TIME_HHMM}

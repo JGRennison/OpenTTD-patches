@@ -3982,9 +3982,38 @@ bool AfterLoadGame()
 
 	if (SlXvIsFeaturePresent(XSLFI_MORE_COND_ORDERS, 1, 1)) {
 		for (Order *order : Order::Iterate()) {
-			// Insertion of OCV_MAX_RELIABILITY between OCV_REMAINING_LIFETIME and OCV_CARGO_WAITING
+			/* Insertion of OCV_MAX_RELIABILITY between OCV_REMAINING_LIFETIME and OCV_CARGO_WAITING */
 			if (order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() > OCV_REMAINING_LIFETIME) {
 				order->SetConditionVariable(static_cast<OrderConditionVariable>((uint)order->GetConditionVariable() + 1));
+			}
+		}
+	}
+	if (SlXvIsFeaturePresent(XSLFI_MORE_COND_ORDERS, 1, 14)) {
+		for (OrderList *order_list : OrderList::Iterate()) {
+			auto get_real_station = [&order_list](const Order *order) -> StationID {
+				const uint max = std::min<uint>(64, order_list->GetNumOrders());
+				for (uint i = 0; i < max; i++) {
+					if (order->IsType(OT_GOTO_STATION) && Station::IsValidID(order->GetDestination())) return order->GetDestination();
+
+					order = (order->next != nullptr) ? order->next : order_list->GetFirstOrder();
+				}
+				return INVALID_STATION;
+			};
+
+			for (Order *order = order_list->GetFirstOrder(); order != nullptr; order = order->next) {
+				/* Fixup station ID for OCV_CARGO_WAITING, OCV_CARGO_ACCEPTANCE, OCV_FREE_PLATFORMS, OCV_CARGO_WAITING_AMOUNT */
+				if (order->IsType(OT_CONDITIONAL) && ConditionVariableHasStationID(order->GetConditionVariable())) {
+					StationID next_id =  get_real_station(order);
+					SB(order->GetXData2Ref(), 0, 16, next_id + 1);
+					if (next_id != INVALID_STATION && GB(order->GetXData(), 16, 16) - 2 == next_id) {
+						/* Duplicate next and via, remove via */
+						SB(order->GetXDataRef(), 16, 16, 0);
+					}
+					if (GB(order->GetXData(), 16, 16) != 0 && !Station::IsValidID(GB(order->GetXData(), 16, 16) - 2)) {
+						/* Via station is invalid */
+						SB(order->GetXDataRef(), 16, 16, INVALID_STATION + 2);
+					}
+				}
 			}
 		}
 	}

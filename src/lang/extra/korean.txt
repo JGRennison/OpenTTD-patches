@@ -1513,13 +1513,6 @@ STR_ORDER_DROP_SELL_DEPOT                                       :판매
 
 STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :{G=m}슬롯에 있는 차량
 
-STR_ORDER_CONDITIONAL_REQUIRES_SERVICE_ORDER                    :서비스 {STRING}가 필요함
-STR_ORDER_CONDITIONAL_CARGO_WAITING_ORDER                       :다음 역 {STRING} {STRING} 대기 중
-STR_ORDER_CONDITIONAL_ACCEPTANCE                                :다음 역 {STRING} {STRING}
-
-STR_CONDITIONAL_FREE_PLATFORMS                                  :[조건 경로] {COMMA}번 경로로 건너뛰기 (다음 역에 빈 승강장이 {2:COMMA}개 {1:STRING})
-STR_CONDITIONAL_PERCENT                                         :[조건 경로] {COMMA}번 경로로 건너뛰기 ({COMMA}%의 확률로)
-
 STR_ORDER_CONDITIONAL_NEXT_STATION                              :다음 역:
 STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}비교할 화물을 선택하세요
 STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}점유되었는지 확인할 슬롯을 선택하세요
@@ -1618,15 +1611,12 @@ STR_ORDER_RV_DIR_SE                                             :[남동쪽 방�
 STR_ORDER_RV_DIR_SW                                             :[남서쪽 방향]
 STR_ORDER_RV_DIR_NW                                             :[북서쪽 방향]
 
-STR_ORDER_CONDITIONAL_CARGO_ACCEPTANCE                          :[조건 경로] {COMMA}번 경로로 건너뛰기 (다음 역이 {2:STRING}{G 2 "을" "를"} {1:STRING})
-STR_ORDER_CONDITIONAL_CARGO_WAITING_DISPLAY                     :[조건 경로] {COMMA}번 경로로 건너뛰기 (다음 역에 {2:STRING}{G 2 "이" "가"} {1:STRING})
+STR_ORDER_CONDITIONAL_PERCENT_DISPLAY                           :[조건 경로] {COMMA}번 경로로 건너뛰기 ({COMMA}%의 확률로)
 STR_ORDER_CONDITIONAL_SLOT                                      :[조건 경로] {COMMA}번 경로로 건너뛰기 ({TRSLOT} 슬롯이 {STRING})
 STR_ORDER_CONDITIONAL_INVALID_SLOT                              :[조건 경로] {COMMA}번 경로로 건너뛰기 ({PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} 슬롯이 {STRING})
 STR_ORDER_CONDITIONAL_IN_SLOT                                   :[조건 경로] {COMMA}번 경로로 건너뛰기 (열차가 {2:TRSLOT} 슬롯에 {1:STRING})
 STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :[조건 경로] {COMMA}번 경로로 건너뛰기 (열차가 {PUSH_COLOUR}{RED}{2:STRING}{POP_COLOUR}{1:STRING})
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :[조건 경로] {COMMA}번 경로로 건너뛰기 ({STRING}의 적재율 {STRING} {COMMA}일 때)
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :[조건 경로] {COMMA}번 경로로 건너뛰기 (다음 역의 {STRING} 대기량 {STRING} {CARGO_SHORT}일 때)
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :[조건 경로] {COMMA}번 경로로 건너뛰기 (다음 역에 있는 {2:STATION} 경유 {1:STRING} {3:STRING} {4:CARGO_SHORT}일 때)
 STR_ORDER_CONDITIONAL_COUNTER                                   :[조건 경로] {COMMA}번 경로로 건너뛰기 ({TRCOUNTER}의 값 {STRING} {COMMA}일 때)
 STR_ORDER_CONDITIONAL_INVALID_COUNTER                           :[조건 경로] {COMMA}번 경로로 건너뛰기 ({PUSH_COLOUR}{RED}{STRING}{POP_COLOUR}의 값 {STRING} {COMMA}일 때)
 STR_ORDER_CONDITIONAL_TIME_HHMM                                 :[조건 경로] {COMMA}번 경로로 건너뛰기 ({STRING} {STRING} {TIME_HHMM}일 때)

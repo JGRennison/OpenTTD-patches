@@ -1506,13 +1506,6 @@ STR_ORDER_DROP_SELL_DEPOT                                       :Prodat vozidlo
 
 STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :Vozidlo ve slotu
 
-STR_ORDER_CONDITIONAL_REQUIRES_SERVICE_ORDER                    :{STRING}, že vyžaduje údržbu
-STR_ORDER_CONDITIONAL_CARGO_WAITING_ORDER                       :další stanice {STRING} čekající {STRING}
-STR_ORDER_CONDITIONAL_ACCEPTANCE                                :další stanice {STRING} {STRING}
-
-STR_CONDITIONAL_FREE_PLATFORMS                                  :Skočit na příkaz {COMMA}, když další stanice {STRING} {COMMA} {P "volné nástupiště" "volná nástupiště" "volných nástupišť"}
-STR_CONDITIONAL_PERCENT                                         :Skočit na příkaz {COMMA} v {COMMA} procentech případů
-
 STR_ORDER_CONDITIONAL_NEXT_STATION                              :Další stanice
 STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}Náklad, s nímž mají být porovnávány údaje ze stanice
 STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}Vlakový slot, jehož obsazenost má být ověřena
@@ -1611,15 +1604,16 @@ STR_ORDER_RV_DIR_SE                                             :[jihovýchodní
 STR_ORDER_RV_DIR_SW                                             :[jihozápadní směr]
 STR_ORDER_RV_DIR_NW                                             :[severozápadní směr]
 
-STR_ORDER_CONDITIONAL_CARGO_ACCEPTANCE                          :Skočit na příkaz {COMMA}, když další stanice {STRING} {STRING}
-STR_ORDER_CONDITIONAL_CARGO_WAITING_DISPLAY                     :Skočit na příkaz {COMMA}, když další stanice {STRING} čekající {STRING}
+STR_ORDER_CONDITIONAL_PERCENT_DISPLAY                           :Skočit na příkaz {COMMA} v {COMMA} procentech případů
+STR_ORDER_CONDITIONAL_CARGO_ACCEPTANCE                          :Skočit na příkaz {COMMA}, když {STRING} {STRING} {STRING}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_DISPLAY                     :Skočit na příkaz {COMMA}, když {STRING} {STRING} čekající {STRING}
 STR_ORDER_CONDITIONAL_SLOT                                      :Skočit na příkaz {COMMA}, když {TRSLOT} {STRING}
 STR_ORDER_CONDITIONAL_INVALID_SLOT                              :Skočit na příkaz {COMMA}, když {PUSH_COLOUR}{RED}{STRING} {POP_COLOUR}{STRING}
 STR_ORDER_CONDITIONAL_IN_SLOT                                   :Skočit na příkaz {COMMA}, když {STRING} slotu: {TRSLOT}
 STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :Skočit na příkaz {COMMA}, když {STRING} {PUSH_COLOUR}{RED}{STRING} {POP_COLOUR}
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :Skočit na příkaz {COMMA}, když procento naložení {STRING} {STRING} {COMMA}
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :Skočit na příkaz {COMMA}, když množství {STRING} v další stanici {STRING} {CARGO_SHORT}
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :Skočit na příkaz {COMMA}, když množství {STRING} v další stanici přes {STATION} {STRING} {CARGO_SHORT}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :Skočit na příkaz {COMMA}, když množství {STRING} v {STRING} {STRING} {CARGO_SHORT}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :Skočit na příkaz {COMMA}, když množství {STRING} v {STRING} přes {STRING} {STRING} {CARGO_SHORT}
 STR_ORDER_CONDITIONAL_COUNTER                                   :Skočit na příkaz {COMMA}, když hodnota {TRCOUNTER} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_INVALID_COUNTER                           :Skočit na příkaz {COMMA}, když hodnota {PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_TIME_HHMM                                 :Skočit na příkaz {COMMA}, když {STRING} {STRING} {TIME_HHMM}
