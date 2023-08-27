@@ -1065,7 +1065,7 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 			}
 			if (CrashLogWindows::current->screenshot_filename[0] != 0) {
 				append_newline();
-				append_str(CrashLogWindows::current->crashdump_filename);
+				append_str(CrashLogWindows::current->screenshot_filename);
 			}
 
 			SetDlgItemText(wnd, 10, crash_desc_buf);
