@@ -813,9 +813,10 @@ public:
 
 		int top = ScaleGUITrad(4) - this->vscroll[2]->GetPosition();
 		int left = ScaleGUITrad(8);
+		int right = (r.right - r.left) - left;
 
 		SetDParam(0, CalculateOverallTemplateDisplayRunningCost(tmp));
-		DrawString(left, r.right, top, STR_TMPL_TEMPLATE_OVR_RUNNING_COST);
+		DrawString(left, right, top, STR_TMPL_TEMPLATE_OVR_RUNNING_COST);
 		top += FONT_HEIGHT_NORMAL;
 
 		/* Draw vehicle performance info */
@@ -825,7 +826,7 @@ public:
 		SetDParam(1, tmp->power);
 		SetDParam(0, tmp->empty_weight);
 		SetDParam(3, tmp->max_te / 1000);
-		DrawString(left, r.right, top, original_acceleration ? STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED : STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE);
+		DrawString(left, right, top, original_acceleration ? STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED : STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE);
 
 		if (tmp->full_weight > tmp->empty_weight || _settings_client.gui.show_train_weight_ratios_in_details) {
 			top += FONT_HEIGHT_NORMAL;
@@ -839,12 +840,12 @@ public:
 			} else {
 				SetDParam(1, STR_EMPTY);
 			}
-			DrawString(8, r.right, top, STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS);
+			DrawString(8, right, top, STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS);
 		}
 		if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
 			top += FONT_HEIGHT_NORMAL;
 			SetDParam(0, GetTemplateVehicleEstimatedMaxAchievableSpeed(tmp, tmp->full_weight, tmp->max_speed));
-			DrawString(8, r.right, top, STR_VEHICLE_INFO_MAX_SPEED_LOADED);
+			DrawString(8, right, top, STR_VEHICLE_INFO_MAX_SPEED_LOADED);
 		}
 
 		/* Draw cargo summary */
@@ -856,17 +857,20 @@ public:
 		for (; tmp != nullptr; tmp = tmp->Next()) {
 			cargo_caps[tmp->cargo_type] += tmp->cargo_cap;
 		}
-		int x = left;
+		int x = 0;
+		int step = ScaleGUITrad(250);
+		bool rtl = _current_text_dir == TD_RTL;
 		for (CargoID i = 0; i < NUM_CARGO; ++i) {
 			if (cargo_caps[i] > 0) {
 				count_columns++;
 				SetDParam(0, i);
 				SetDParam(1, cargo_caps[i]);
 				SetDParam(2, _settings_game.vehicle.freight_trains);
-				DrawString(x, r.right, top, FreightWagonMult(i) > 1 ? STR_TMPL_CARGO_SUMMARY_MULTI : STR_TMPL_CARGO_SUMMARY, TC_LIGHT_BLUE, SA_LEFT);
-				x += ScaleGUITrad(250);
+				int pos = rtl ? right - step - x : left + x;
+				DrawString(pos, pos + step, top, FreightWagonMult(i) > 1 ? STR_TMPL_CARGO_SUMMARY_MULTI : STR_TMPL_CARGO_SUMMARY, TC_LIGHT_BLUE, SA_LEFT);
+				x += step;
 				if (count_columns % max_columns == 0) {
-					x = left;
+					x = 0;
 					top += FONT_HEIGHT_NORMAL;
 				}
 			}
