@@ -412,6 +412,7 @@ struct PlansWindow : Window {
 	void RebuildList()
 	{
 		int old_focused_plan_id = this->selected == INT_MAX ? INT_MAX : this->list[this->selected].plan_id;
+		this->selected = INT_MAX;
 
 		int sbcnt = 0;
 		this->list.clear();
