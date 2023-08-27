@@ -481,6 +481,7 @@ public:
 
 	int shown_plane; ///< Plane being displayed (for #NWID_SELECTION only).
 	int index;       ///< If non-negative, index in the #Window::nested_array.
+	bool independent_planes = false; ///< If true, treat planes as independent for layout purposes.
 };
 
 /** Nested widget container flags, */

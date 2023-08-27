@@ -1360,7 +1360,10 @@ void NWidgetStacked::SetupSmallestSize(Window *w, bool init_array)
 	this->fill_y = (this->head != nullptr) ? 1 : 0;
 	this->resize_x = (this->head != nullptr) ? 1 : 0;
 	this->resize_y = (this->head != nullptr) ? 1 : 0;
-	for (NWidgetBase *child_wid = this->head; child_wid != nullptr; child_wid = child_wid->next) {
+	int plane = 0;
+	for (NWidgetBase *child_wid = this->head; child_wid != nullptr; plane++, child_wid = child_wid->next) {
+		if (this->independent_planes && plane != this->shown_plane) continue;
+
 		child_wid->SetupSmallestSize(w, init_array);
 
 		this->smallest_x = std::max(this->smallest_x, child_wid->smallest_x + child_wid->padding.Horizontal());
@@ -1379,7 +1382,10 @@ void NWidgetStacked::AssignSizePosition(SizingType sizing, uint x, uint y, uint 
 
 	if (this->shown_plane >= SZSP_BEGIN) return;
 
-	for (NWidgetBase *child_wid = this->head; child_wid != nullptr; child_wid = child_wid->next) {
+	int plane = 0;
+	for (NWidgetBase *child_wid = this->head; child_wid != nullptr; plane++, child_wid = child_wid->next) {
+		if (this->independent_planes && plane != this->shown_plane) continue;
+
 		uint hor_step = (sizing == ST_SMALLEST) ? 1 : child_wid->GetHorizontalStepSize(sizing);
 		uint child_width = ComputeMaxSize(child_wid->smallest_x, given_width - child_wid->padding.Horizontal(), hor_step);
 		uint child_pos_x = (rtl ? child_wid->padding.right : child_wid->padding.left);
