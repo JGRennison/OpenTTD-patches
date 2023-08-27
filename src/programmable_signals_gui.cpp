@@ -24,6 +24,7 @@
 #include "tile_cmd.h"
 #include "error.h"
 #include "scope.h"
+#include "zoom_func.h"
 
 #include "table/sprites.h"
 #include "table/strings.h"
@@ -236,7 +237,8 @@ static void DrawInstructionString(SignalInstruction *instruction, int y, bool se
 		default: NOT_REACHED();
 	}
 
-	DrawString(left + indent * 16, right, y, instruction_string, selected ? TC_WHITE : TC_BLACK);
+	bool rtl = _current_text_dir == TD_RTL;
+	DrawString(left + (rtl ? 0 : ScaleGUITrad(indent * 16)), right - (rtl ? ScaleGUITrad(indent * 16) : 0), y, instruction_string, selected ? TC_WHITE : TC_BLACK);
 }
 
 struct GuiInstruction {
