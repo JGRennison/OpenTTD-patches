@@ -103,6 +103,8 @@ void VideoDriver::StartGameThread()
 		this->is_game_threaded = StartNewThread(&this->game_thread, "ottd:game", &VideoDriver::GameThreadThunk, this);
 	}
 
+	if (!this->is_game_threaded) SetSelfAsGameThread();
+
 	DEBUG(driver, 1, "using %sthread for game-loop", this->is_game_threaded ? "" : "no ");
 }
 
