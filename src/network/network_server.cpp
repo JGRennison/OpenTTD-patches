@@ -1021,6 +1021,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_JOIN(Packet *p)
 	ci->join_date = _date;
 	ci->join_date_fract = _date_fract;
 	ci->join_tick_skip_counter = _tick_skip_counter;
+	ci->join_frame = _frame_counter;
 	ci->client_name = client_name;
 	ci->client_playas = playas;
 	DEBUG(desync, 1, "client: date{%08x; %02x; %02x}; client: %02x; company: %02x", _date, _date_fract, _tick_skip_counter, (int)ci->index, (int)ci->client_playas);
@@ -2467,8 +2468,8 @@ char *NetworkServerDumpClients(char *buffer, const char *last)
 		if (ci->join_date != 0) {
 			YearMonthDay ymd;
 			ConvertDateToYMD(ci->join_date, &ymd);
-			buffer += seprintf(buffer, last, ", joined: %4i-%02i-%02i, %2i, %3i",
-					ymd.year, ymd.month + 1, ymd.day, ci->join_date_fract, ci->join_tick_skip_counter);
+			buffer += seprintf(buffer, last, ", joined: %4i-%02i-%02i, %i, %i, frame: %08X",
+					ymd.year, ymd.month + 1, ymd.day, ci->join_date_fract, ci->join_tick_skip_counter, ci->join_frame);
 		}
 		buffer += seprintf(buffer, last, "\n");
 	}

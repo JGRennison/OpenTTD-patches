@@ -28,6 +28,7 @@ struct NetworkClientInfo : NetworkClientInfoPool::PoolItem<&_networkclientinfo_p
 	Date join_date;          ///< Gamedate the client has joined
 	DateFract join_date_fract;
 	uint8 join_tick_skip_counter;
+	uint32 join_frame;
 
 	/**
 	 * Create a new client.
