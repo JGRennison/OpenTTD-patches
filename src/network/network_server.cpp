@@ -701,9 +701,6 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendFrame()
 	p->Send_uint32(_frame_counter_max);
 #ifdef ENABLE_NETWORK_SYNC_EVERY_FRAME
 	p->Send_uint32(_sync_seed_1);
-#ifdef NETWORK_SEND_DOUBLE_SEED
-	p->Send_uint32(_sync_seed_2);
-#endif
 	p->Send_uint64(_sync_state_checksum);
 #endif
 
@@ -724,9 +721,6 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendSync()
 	p->Send_uint32(_frame_counter);
 	p->Send_uint32(_sync_seed_1);
 
-#ifdef NETWORK_SEND_DOUBLE_SEED
-	p->Send_uint32(_sync_seed_2);
-#endif
 	p->Send_uint64(_sync_state_checksum);
 	this->SendPacket(p);
 	return NETWORK_RECV_STATUS_OKAY;

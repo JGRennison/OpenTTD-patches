@@ -634,11 +634,9 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 		auto flag_check = [&](DesyncExtraInfo::Flags flag, const char *str) {
 			return info.flags & flag ? str : "";
 		};
-		buffer += seprintf(buffer, last, "Flags: %s%s%s%s\n",
-				flag_check(DesyncExtraInfo::DEIF_RAND1, "R"),
-				flag_check(DesyncExtraInfo::DEIF_RAND2, "Z"),
-				flag_check(DesyncExtraInfo::DEIF_STATE, "S"),
-				flag_check(DesyncExtraInfo::DEIF_DBL_RAND, "D"));
+		buffer += seprintf(buffer, last, "Flags: %s%s\n",
+				flag_check(DesyncExtraInfo::DEIF_RAND, "R"),
+				flag_check(DesyncExtraInfo::DEIF_STATE, "S"));
 	}
 	if (_network_server && (info.desync_frame_seed || info.desync_frame_state_checksum)) {
 		buffer += seprintf(buffer, last, "Desync frame: %08X (seed), %08X (state checksum)\n", info.desync_frame_seed, info.desync_frame_state_checksum);

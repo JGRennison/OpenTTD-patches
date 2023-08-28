@@ -34,12 +34,6 @@ static const uint32 FIND_SERVER_EXTENDED_TOKEN = 0x2A49582A;
  *  nothing will happen.
  */
 #define ENABLE_NETWORK_SYNC_EVERY_FRAME
-
-/**
- * In theory sending 1 of the 2 seeds is enough to check for desyncs
- *   so in theory, this next define can be left off.
- */
-#define NETWORK_SEND_DOUBLE_SEED
 #endif /* RANDOM_DEBUG */
 
 /**
@@ -80,9 +74,6 @@ extern uint32 _last_sync_frame; // Used in the server to store the last time a s
 extern NetworkAddressList _broadcast_list;
 
 extern uint32 _sync_seed_1;
-#ifdef NETWORK_SEND_DOUBLE_SEED
-extern uint32 _sync_seed_2;
-#endif
 extern uint64 _sync_state_checksum;
 extern uint32 _sync_frame;
 extern Date   _last_sync_date;

@@ -316,17 +316,9 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 	/* Check if we are in sync! */
 	if (_sync_frame != 0) {
 		if (_sync_frame == _frame_counter) {
-#ifdef NETWORK_SEND_DOUBLE_SEED
-			if (_sync_seed_1 != _random.state[0] || _sync_seed_2 != _random.state[1] || (_sync_state_checksum != _state_checksum.state && !HasChickenBit(DCBF_MP_NO_STATE_CSUM_CHECK))) {
-#else
 			if (_sync_seed_1 != _random.state[0] || (_sync_state_checksum != _state_checksum.state && !HasChickenBit(DCBF_MP_NO_STATE_CSUM_CHECK))) {
-#endif
 				DesyncExtraInfo info;
-				if (_sync_seed_1 != _random.state[0]) info.flags |= DesyncExtraInfo::DEIF_RAND1;
-#ifdef NETWORK_SEND_DOUBLE_SEED
-				if (_sync_seed_2 != _random.state[1]) info.flags |= DesyncExtraInfo::DEIF_RAND2;
-				info.flags |= DesyncExtraInfo::DEIF_DBL_RAND;
-#endif
+				if (_sync_seed_1 != _random.state[0]) info.flags |= DesyncExtraInfo::DEIF_RAND;
 				if (_sync_state_checksum != _state_checksum.state) info.flags |= DesyncExtraInfo::DEIF_STATE;
 
 				ShowNetworkError(STR_NETWORK_ERROR_DESYNC);
@@ -1074,16 +1066,9 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_FRAME(Packet *p
 #ifdef ENABLE_NETWORK_SYNC_EVERY_FRAME
 	/* Test if the server supports this option
 	 *  and if we are at the frame the server is */
-#ifdef NETWORK_SEND_DOUBLE_SEED
-	if (p->CanReadFromPacket(4 + 4 + 8)) {
-#else
 	if (p->CanReadFromPacket(4 + 8)) {
-#endif
 		_sync_frame = _frame_counter_server;
 		_sync_seed_1 = p->Recv_uint32();
-#ifdef NETWORK_SEND_DOUBLE_SEED
-		_sync_seed_2 = p->Recv_uint32();
-#endif
 		_sync_state_checksum = p->Recv_uint64();
 	}
 #endif
@@ -1110,9 +1095,6 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_SYNC(Packet *p)
 
 	_sync_frame = p->Recv_uint32();
 	_sync_seed_1 = p->Recv_uint32();
-#ifdef NETWORK_SEND_DOUBLE_SEED
-	_sync_seed_2 = p->Recv_uint32();
-#endif
 	_sync_state_checksum = p->Recv_uint64();
 
 	return NETWORK_RECV_STATUS_OKAY;

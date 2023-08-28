@@ -81,9 +81,6 @@ uint32 _frame_counter;                ///< The current frame.
 uint32 _last_sync_frame;              ///< Used in the server to store the last time a sync packet was sent to clients.
 NetworkAddressList _broadcast_list;   ///< List of broadcast addresses.
 uint32 _sync_seed_1;                  ///< Seed to compare during sync checks.
-#ifdef NETWORK_SEND_DOUBLE_SEED
-uint32 _sync_seed_2;                  ///< Second part of the seed.
-#endif
 uint64 _sync_state_checksum;          ///< State checksum to compare during sync checks.
 uint32 _sync_frame;                   ///< The frame to perform the sync check.
 Date   _last_sync_date;               ///< The game date of the last successfully received sync frame
@@ -1264,9 +1261,6 @@ void NetworkGameLoop()
 		StateGameLoop();
 
 		_sync_seed_1 = _random.state[0];
-#ifdef NETWORK_SEND_DOUBLE_SEED
-		_sync_seed_2 = _random.state[1];
-#endif
 		_sync_state_checksum = _state_checksum.state;
 
 		(*_network_server_sync_records)[_network_server_sync_records_next] = { _frame_counter, _random.state[0], _state_checksum.state };

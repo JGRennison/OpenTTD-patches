@@ -21,10 +21,8 @@ struct DesyncDeferredSaveInfo {
 struct DesyncExtraInfo {
 	enum Flags {
 		DEIF_NONE       = 0,      ///< no flags
-		DEIF_RAND1      = 1 << 0, ///< random 1 mismatch
-		DEIF_RAND2      = 1 << 1, ///< random 2 mismatch
-		DEIF_STATE      = 1 << 2, ///< state mismatch
-		DEIF_DBL_RAND   = 1 << 3, ///< double-seed sent
+		DEIF_RAND       = 1 << 0, ///< random mismatch
+		DEIF_STATE      = 1 << 1, ///< state mismatch
 	};
 
 	Flags flags = DEIF_NONE;
