@@ -557,7 +557,7 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last)
 
 #ifdef USE_SCOPE_INFO
 	buffer = this->TryCrashLogFaultSection(buffer, last, "scope", [](CrashLog *self, char *buffer, const char *last) -> char * {
-		if (IsMainThread() || IsGameThread()) {
+		if (IsGameThread()) {
 			buffer += WriteScopeLog(buffer, last);
 		}
 		return buffer;
