@@ -35,6 +35,7 @@
 #include "debug_desync.h"
 #include "order_backup.h"
 #include "core/ring_buffer.hpp"
+#include "core/checksum_func.hpp"
 #include <array>
 
 #include "table/strings.h"
@@ -1256,6 +1257,7 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, 
 	}
 
 	SubtractMoneyFromCompany(res2);
+	if (_networking) UpdateStateChecksum(res2.GetCost());
 
 	/* update signals if needed */
 	UpdateSignalsInBuffer();
