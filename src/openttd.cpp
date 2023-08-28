@@ -91,6 +91,7 @@
 #include "network/network_survey.h"
 #include "timer/timer.h"
 #include "timer/timer_game_tick.h"
+#include "network/network_sync.h"
 
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
@@ -2133,6 +2134,7 @@ void StateGameLoop()
 		NewsLoop();
 
 		if (_networking) {
+			RecordSyncEvent(NSRE_PRE_COMPANY_STATE);
 			for (Company *c : Company::Iterate()) {
 				DEBUG_UPDATESTATECHECKSUM("Company: %u, Money: " OTTD_PRINTF64, c->index, (int64)c->money);
 				UpdateStateChecksum(c->money);

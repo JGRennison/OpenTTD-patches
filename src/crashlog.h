@@ -28,8 +28,7 @@ struct DesyncExtraInfo {
 	Flags flags = DEIF_NONE;
 	const char *client_name = nullptr;
 	int client_id = -1;
-	uint32 desync_frame_seed = 0;
-	uint32 desync_frame_state_checksum = 0;
+	std::string desync_frame_info;
 	FILE **log_file = nullptr; ///< save unclosed log file handle here
 	DesyncDeferredSaveInfo *defer_savegame_write = nullptr;
 };

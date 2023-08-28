@@ -30,6 +30,7 @@ add_files(
     network_stun.h
     network_survey.cpp
     network_survey.h
+    network_sync.h
     network_turn.cpp
     network_turn.h
     network_type.h

@@ -214,6 +214,7 @@ void NetworkExecuteLocalCommandQueue()
 
 	CommandQueue &queue = (_network_server ? _local_execution_queue : ClientNetworkGameSocketHandler::my_client->incoming_queue);
 
+	bool record_sync_event = false;
 	CommandPacket *cp;
 	while ((cp = queue.Peek()) != nullptr) {
 		/* The queue is always in order, which means
@@ -233,11 +234,15 @@ void NetworkExecuteLocalCommandQueue()
 		DoCommandP(cp, cp->my_cmd);
 
 		queue.Pop();
+
+		record_sync_event = true;
 	}
 
 	/* Local company may have changed, so we should not restore the old value */
 	_current_company = _local_company;
 	_cmd_client_id = INVALID_CLIENT_ID;
+
+	if (record_sync_event) RecordSyncEvent(NSRE_CMD);
 }
 
 /**

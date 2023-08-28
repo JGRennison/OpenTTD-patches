@@ -11,6 +11,7 @@
 #define NETWORK_INTERNAL_H
 
 #include "network_func.h"
+#include "network_sync.h"
 #include "core/tcp_coordinator.h"
 #include "core/tcp_game.h"
 
@@ -18,8 +19,6 @@
 #include "../date_type.h"
 
 #include <vector>
-#include <array>
-#include <memory>
 
 static const uint32 FIND_SERVER_EXTENDED_TOKEN = 0x2A49582A;
 
@@ -95,16 +94,6 @@ extern std::string _network_server_name;
 extern uint8 _network_reconnect;
 
 extern CompanyMask _network_company_passworded;
-
-/* Sync debugging */
-struct NetworkSyncRecord {
-	uint32 frame;
-	uint32 seed_1;
-	uint64 state_checksum;
-};
-extern std::vector<NetworkSyncRecord> _network_client_sync_records;
-extern std::unique_ptr<std::array<NetworkSyncRecord, 1024>> _network_server_sync_records;
-extern uint32 _network_server_sync_records_next;
 
 void NetworkQueryServer(const std::string &connection_string);
 

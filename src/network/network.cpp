@@ -90,9 +90,9 @@ uint32 _last_sync_frame_counter;      ///< "
 bool _network_first_time;             ///< Whether we have finished joining or not.
 CompanyMask _network_company_passworded; ///< Bitmask of the password status of all companies.
 
-std::vector<NetworkSyncRecord> _network_client_sync_records;
-std::unique_ptr<std::array<NetworkSyncRecord, 1024>> _network_server_sync_records;
-uint32 _network_server_sync_records_next;
+ring_buffer<NetworkSyncRecord> _network_sync_records;
+ring_buffer<uint> _network_sync_record_counts;
+bool _record_sync_records = false;
 
 static_assert((int)NETWORK_COMPANY_NAME_LENGTH == MAX_LENGTH_COMPANY_NAME_CHARS * MAX_CHAR_LENGTH);
 
@@ -674,9 +674,10 @@ void NetworkClose(bool close_admins)
 
 	InitializeNetworkPools(close_admins);
 
-	_network_client_sync_records.clear();
-	_network_client_sync_records.shrink_to_fit();
-	_network_server_sync_records.reset();
+	_network_sync_records.clear();
+	_network_sync_records.shrink_to_fit();
+	_network_sync_record_counts.clear();
+	_network_sync_record_counts.shrink_to_fit();
 }
 
 /* Initializes the network (cleans sockets and stuff) */
@@ -968,9 +969,9 @@ bool NetworkServerStart()
 	_last_sync_frame = 0;
 	_network_own_client_id = CLIENT_ID_SERVER;
 
-	_network_server_sync_records.reset(new std::array<NetworkSyncRecord, 1024>());
-	_network_server_sync_records->fill({ 0, 0, 0 });
-	_network_server_sync_records_next = 0;
+	_network_sync_records.clear();
+	_network_sync_record_counts.clear();
+	_record_sync_records = false;
 
 	_network_clients_connected = 0;
 	_network_company_passworded = 0;
@@ -1109,6 +1110,42 @@ void NetworkBackgroundLoop()
 	NetworkGameSocketHandler::ProcessDeferredDeletions();
 
 	NetworkBackgroundUDPLoop();
+}
+
+void RecordSyncEventData(NetworkSyncRecordEvents event)
+{
+	_network_sync_records.push_back({ event, _random.state[0], _state_checksum.state });
+}
+
+const char *GetSyncRecordEventName(NetworkSyncRecordEvents event)
+{
+	static const char *names[] = {
+		"BEGIN",
+		"CMD",
+		"AUX_TILE",
+		"TILE",
+		"TOWN",
+		"TREE",
+		"STATION",
+		"INDUSTRY",
+		"PRE_COMPANY_STATE",
+		"VEH_PERIODIC",
+		"VEH_LOAD_UNLOAD",
+		"VEH_EFFECT",
+		"VEH_TRAIN",
+		"VEH_ROAD",
+		"VEH_AIR",
+		"VEH_SHIP",
+		"VEH_OTHER",
+		"VEH_SELL",
+		"VEH_TBTR",
+		"VEH_AUTOREPLACE",
+		"VEH_REPAIR",
+		"FRAME_DONE"
+	};
+	static_assert(lengthof(names) == NSRE_LAST);
+	if (event < NSRE_LAST) return names[event];
+	return "???";
 }
 
 /* The main loop called from ttd.c
@@ -1254,6 +1291,10 @@ void NetworkGameLoop()
 			send_frame = true;
 		}
 
+		const size_t total_sync_records = _network_sync_records.size();
+		_network_sync_records.push_back({ _frame_counter, _random.state[0], _state_checksum.state });
+		_record_sync_records = true;
+
 		NetworkExecuteLocalCommandQueue();
 		if (_pause_countdown > 0 && --_pause_countdown == 0) DoCommandP(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
 
@@ -1263,8 +1304,14 @@ void NetworkGameLoop()
 		_sync_seed_1 = _random.state[0];
 		_sync_state_checksum = _state_checksum.state;
 
-		(*_network_server_sync_records)[_network_server_sync_records_next] = { _frame_counter, _random.state[0], _state_checksum.state };
-		_network_server_sync_records_next = (_network_server_sync_records_next + 1) % _network_server_sync_records->size();
+		_network_sync_records.push_back({ NSRE_FRAME_DONE, _random.state[0], _state_checksum.state });
+		_network_sync_record_counts.push_back((uint)(_network_sync_records.size() - total_sync_records));
+		_record_sync_records = false;
+		if (_network_sync_record_counts.size() >= 256) {
+			/* Remove records from start of queue */
+			_network_sync_records.erase(_network_sync_records.begin(), _network_sync_records.begin() + _network_sync_record_counts[0]);
+			_network_sync_record_counts.pop_front();
+		}
 
 		NetworkServer_Tick(send_frame);
 	} else {

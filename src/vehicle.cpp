@@ -60,6 +60,7 @@
 #include "string_func.h"
 #include "scope_info.h"
 #include "debug_settings.h"
+#include "network/network_sync.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 #include "3rdparty/cpp-btree/btree_map.h"
 
@@ -1498,6 +1499,8 @@ void CallVehicleTicks()
 		}
 	}
 
+	RecordSyncEvent(NSRE_VEH_PERIODIC);
+
 	{
 		PerformanceMeasurer framerate(PFE_GL_ECONOMY);
 		Station *si_st = nullptr;
@@ -1507,6 +1510,8 @@ void CallVehicleTicks()
 			LoadUnloadStation(st);
 		}
 	}
+
+	RecordSyncEvent(NSRE_VEH_LOAD_UNLOAD);
 
 	if (!_tick_caches_valid || HasChickenBit(DCBF_VEH_TICK_CACHE)) RebuildVehicleTickCaches();
 
@@ -1523,9 +1528,10 @@ void CallVehicleTicks()
 			u->EffectVehicle::Tick();
 		}
 	}
+	if (!_tick_effect_veh_cache.empty()) RecordSyncEvent(NSRE_VEH_EFFECT);
 	{
 		PerformanceMeasurer framerate(PFE_GL_TRAINS);
-		for (Train *t :  _tick_train_too_heavy_cache) {
+		for (Train *t : _tick_train_too_heavy_cache) {
 			if (HasBit(t->flags, VRF_TOO_HEAVY)) {
 				if (t->owner == _local_company) {
 					SetDParam(0, t->index);
@@ -1546,6 +1552,7 @@ void CallVehicleTicks()
 			}
 		}
 	}
+	RecordSyncEvent(NSRE_VEH_TRAIN);
 	{
 		PerformanceMeasurer framerate(PFE_GL_ROADVEHS);
 		for (RoadVehicle *front : _tick_road_veh_front_cache) {
@@ -1558,6 +1565,7 @@ void CallVehicleTicks()
 			if (!(front->vehstatus & VS_STOPPED)) VehicleTickMotion(front, front);
 		}
 	}
+	if (!_tick_road_veh_front_cache.empty()) RecordSyncEvent(NSRE_VEH_ROAD);
 	{
 		PerformanceMeasurer framerate(PFE_GL_AIRCRAFT);
 		for (Aircraft *front : _tick_aircraft_front_cache) {
@@ -1569,6 +1577,7 @@ void CallVehicleTicks()
 			if (!(front->vehstatus & VS_STOPPED)) VehicleTickMotion(front, front);
 		}
 	}
+	if (!_tick_aircraft_front_cache.empty()) RecordSyncEvent(NSRE_VEH_AIR);
 	{
 		PerformanceMeasurer framerate(PFE_GL_SHIPS);
 		for (Ship *s : _tick_ship_cache) {
@@ -1580,6 +1589,7 @@ void CallVehicleTicks()
 			if (!(s->vehstatus & VS_STOPPED)) VehicleTickMotion(s, s);
 		}
 	}
+	if (!_tick_ship_cache.empty()) RecordSyncEvent(NSRE_VEH_SHIP);
 	{
 		for (Vehicle *u : _tick_other_veh_cache) {
 			if (!u) continue;
@@ -1588,6 +1598,7 @@ void CallVehicleTicks()
 		}
 	}
 	v = nullptr;
+	if (!_tick_other_veh_cache.empty()) RecordSyncEvent(NSRE_VEH_OTHER);
 
 	/* Handle vehicles marked for immediate sale */
 	Backup<CompanyID> sell_cur_company(_current_company, FILE_LINE);
@@ -1616,6 +1627,7 @@ void CallVehicleTicks()
 		_vehicles_to_autoreplace.erase(index);
 	}
 	sell_cur_company.Restore();
+	if (!_vehicles_to_sell.empty()) RecordSyncEvent(NSRE_VEH_SELL);
 
 	/* do Template Replacement */
 	Backup<CompanyID> tmpl_cur_company(_current_company, FILE_LINE);
@@ -1664,6 +1676,7 @@ void CallVehicleTicks()
 		}
 	}
 	tmpl_cur_company.Restore();
+	if (!_vehicles_to_templatereplace.empty()) RecordSyncEvent(NSRE_VEH_TBTR);
 
 	/* do Auto Replacement */
 	Backup<CompanyID> cur_company(_current_company, FILE_LINE);
@@ -1701,6 +1714,7 @@ void CallVehicleTicks()
 		ShowAutoReplaceAdviceMessage(res, v);
 	}
 	cur_company.Restore();
+	if (!_vehicles_to_autoreplace.empty()) RecordSyncEvent(NSRE_VEH_AUTOREPLACE);
 
 	Backup<CompanyID> repair_cur_company(_current_company, FILE_LINE);
 	for (VehicleID index : _vehicles_to_pay_repair) {
@@ -1743,6 +1757,7 @@ void CallVehicleTicks()
 		v->breakdowns_since_last_service = 0;
 	}
 	repair_cur_company.Restore();
+	if (!_vehicles_to_pay_repair.empty()) RecordSyncEvent(NSRE_VEH_REPAIR);
 	_vehicles_to_pay_repair.clear();
 }
 

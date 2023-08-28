@@ -89,9 +89,7 @@ public:
 	NetworkAddress client_address; ///< IP-address of the client (so they can be banned)
 
 	std::string desync_log;
-
-	uint desync_frame_seed = 0;
-	uint desync_frame_state_checksum = 0;
+	std::string desync_frame_info;
 
 	uint rcon_auth_failures = 0;
 	uint settings_auth_failures = 0;

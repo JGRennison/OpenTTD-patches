@@ -36,6 +36,7 @@
 #include "3rdparty/cpp-btree/btree_set.h"
 #include "scope_info.h"
 #include "core/ring_buffer.hpp"
+#include "network/network_sync.h"
 #include <array>
 #include <list>
 #include <set>
@@ -786,6 +787,7 @@ void RunTileLoop(bool apply_day_length)
 	}
 
 	_cur_tileloop_tile = tile;
+	RecordSyncEvent(NSRE_TILE);
 }
 
 void RunAuxiliaryTileLoop()
@@ -813,6 +815,7 @@ void RunAuxiliaryTileLoop()
 	}
 
 	_aux_tileloop_tile = tile;
+	RecordSyncEvent(NSRE_AUX_TILE);
 }
 
 void InitializeLandscape()
@@ -1627,9 +1630,13 @@ void CallLandscapeTick()
 		PerformanceAccumulator framerate(PFE_GL_LANDSCAPE);
 
 		OnTick_Town();
+		RecordSyncEvent(NSRE_TOWN);
 		OnTick_Trees();
+		RecordSyncEvent(NSRE_TREE);
 		OnTick_Station();
+		RecordSyncEvent(NSRE_STATION);
 		OnTick_Industry();
+		RecordSyncEvent(NSRE_INDUSTRY);
 	}
 
 	OnTick_LinkGraph();
