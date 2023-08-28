@@ -25,6 +25,7 @@
 #include "gfx_func.h"
 #include "network/network.h"
 #include "network/network_survey.h"
+#include "network/network_sync.h"
 #include "language.h"
 #include "fontcache.h"
 #include "news_gui.h"
@@ -563,6 +564,23 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last)
 		return buffer;
 	});
 #endif
+
+	if (_networking) {
+		buffer = this->TryCrashLogFaultSection(buffer, last, "network sync", [](CrashLog *self, char *buffer, const char *last) -> char * {
+			if (IsGameThread() && _record_sync_records && !_network_sync_records.empty()) {
+				uint total = 0;
+				for (uint32 count : _network_sync_record_counts) {
+					total += count;
+				}
+				NetworkSyncRecordEvents event = NSRE_BEGIN;
+				if (_network_sync_records.size() > total + 1) {
+					event = (NetworkSyncRecordEvents)(_network_sync_records.back().frame);
+				}
+				buffer += seprintf(buffer, last, "Last sync record type: %s\n\n", GetSyncRecordEventName(event));
+			}
+			return buffer;
+		});
+	}
 
 	buffer = this->TryCrashLogFaultSection(buffer, last, "thread", [](CrashLog *self, char *buffer, const char *last) -> char * {
 		if (IsNonMainThread()) {
