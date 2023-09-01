@@ -288,6 +288,22 @@ bool Vehicle::NeedsServicing() const
 		/* Check refittability */
 		CargoTypes available_cargo_types, union_mask;
 		GetArticulatedRefitMasks(new_engine, true, &union_mask, &available_cargo_types);
+
+		/* Is this a multi-cargo ship? */
+		if (union_mask != 0 && v->type == VEH_SHIP && v->Next() != nullptr) {
+			CargoTypes cargoes = 0;
+			for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
+				if (u->cargo_type != CT_INVALID && u->GetEngine()->CanCarryCargo()) {
+					SetBit(cargoes, u->cargo_type);
+				}
+			}
+			if (!HasAtMostOneBit(cargoes)) {
+				/* Ship has more than one cargo, special handling */
+				if (!AutoreplaceMultiPartShipWouldSucceed(new_engine, v, cargoes)) continue;
+				union_mask = 0;
+			}
+		}
+
 		/* Is there anything to refit? */
 		if (union_mask != 0) {
 			CargoID cargo_type;

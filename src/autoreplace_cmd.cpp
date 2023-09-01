@@ -225,7 +225,7 @@ static int GetIncompatibleRefitOrderIdForAutoreplace(const Vehicle *v, EngineID 
  *    CT_NO_REFIT is returned if no refit is needed
  *    CT_INVALID is returned when both old and new vehicle got cargo capacity and refitting the new one to the old one's cargo type isn't possible
  */
-static CargoID GetNewCargoTypeForReplace(Vehicle *v, EngineID engine_type, bool part_of_chain)
+static CargoID GetNewCargoTypeForReplace(const Vehicle *v, EngineID engine_type, bool part_of_chain)
 {
 	CargoTypes available_cargo_types, union_mask;
 	GetArticulatedRefitMasks(engine_type, true, &union_mask, &available_cargo_types);
@@ -308,6 +308,163 @@ static CommandCost GetNewEngineType(const Vehicle *v, const Company *c, bool alw
 	return CommandCost(STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE + v->type);
 }
 
+static CommandCost BuildReplacementVehicleRefitFailure(EngineID e, const Vehicle *old_veh)
+{
+	if (!IsLocalCompany()) return CommandCost();
+
+	SetDParam(0, old_veh->index);
+
+	int order_id = GetIncompatibleRefitOrderIdForAutoreplace(old_veh, e);
+	if (order_id != -1) {
+		/* Orders contained a refit order that is incompatible with the new vehicle. */
+		SetDParam(1, STR_ERROR_AUTOREPLACE_INCOMPATIBLE_REFIT);
+		SetDParam(2, order_id + 1); // 1-based indexing for display
+	} else {
+		/* Current cargo is incompatible with the new vehicle. */
+		SetDParam(1, STR_ERROR_AUTOREPLACE_INCOMPATIBLE_CARGO);
+		SetDParam(2, CargoSpec::Get(old_veh->cargo_type)->name);
+	}
+
+	AddVehicleAdviceNewsItem(STR_NEWS_VEHICLE_AUTORENEW_FAILED, old_veh->index);
+	return CommandCost();
+}
+
+static CommandCost BuildReplacementMultiPartShipSimple(EngineID e, const Vehicle *old_veh, Vehicle **new_vehicle)
+{
+	/* Build the new vehicle */
+	CommandCost cost = DoCommand(old_veh->tile, e | (CT_INVALID << 24), 0, DC_EXEC | DC_AUTOREPLACE, GetCmdBuildVeh(old_veh));
+	if (cost.Failed()) return cost;
+
+	Vehicle *new_veh = Vehicle::Get(_new_vehicle_id);
+	*new_vehicle = new_veh;
+
+	Vehicle *v = new_veh;
+	const Vehicle *old = old_veh;
+	for (; v != nullptr && old != nullptr; v = v->Next(), old = old->Next()) {
+		if (old->cargo_type == CT_INVALID) continue;
+
+		byte subtype = GetBestFittingSubType(old, v, old->cargo_type);
+		CommandCost refit_cost = DoCommand(0, v->index, old->cargo_type | (subtype << 8) | (1 << 16), DC_EXEC, GetCmdRefitVeh(v));
+		if (refit_cost.Succeeded()) cost.AddCost(refit_cost);
+	}
+
+	return CommandCost();
+}
+
+/**
+ * Builds and refits a replacement multi-part ship
+ * @param old_veh A ship that shall be replaced.
+ * @param new_vehicle Returns the newly build and refitted ship, if this is nullptr the function operates in dry-run mode
+ * @param all_cargoes Mask of all cargoes in old_veh
+ * @return cost or error
+ */
+static CommandCost BuildReplacementMultiPartShip(EngineID e, const Vehicle *old_veh, Vehicle **new_vehicle, CargoTypes all_cargoes)
+{
+	if (old_veh->engine_type == e) {
+		/* Easy mode, autoreplacing with same engine */
+		if (new_vehicle == nullptr) return CommandCost(); // dry-run: success
+		return BuildReplacementMultiPartShipSimple(e, old_veh, new_vehicle);
+	}
+
+	std::vector<CargoTypes> refit_mask_list = GetArticulatedRefitMaskVector(e, true);
+
+	std::array<const Vehicle *, NUM_CARGO> old_cargo_vehs = {};
+	bool easy_mode = true;
+	size_t refit_idx = 0;
+	for (const Vehicle *old = old_veh; old != nullptr; old = old->Next(), refit_idx++) {
+		if (refit_idx == refit_mask_list.size()) {
+			easy_mode = false;
+		}
+		if (old->cargo_type == CT_INVALID) continue;
+
+		old_cargo_vehs[old->cargo_type] = old;
+
+		if (easy_mode && !HasBit(refit_mask_list[refit_idx], old->cargo_type)) {
+			easy_mode = false;
+		}
+	}
+	if (easy_mode) {
+		if (new_vehicle == nullptr) return CommandCost(); // dry-run: success
+
+		CommandCost cost = BuildReplacementMultiPartShipSimple(e, old_veh, new_vehicle);
+		if (*new_vehicle != nullptr && refit_idx < refit_mask_list.size()) {
+			for (Vehicle *v = (*new_vehicle)->Move(refit_idx); v != nullptr; v = v->Next(), refit_idx++) {
+				if (refit_idx == refit_mask_list.size()) break;
+
+				CargoTypes available = all_cargoes & refit_mask_list[refit_idx];
+				if (available == 0) continue;
+				CargoID c = FindFirstBit(available);
+				assert(old_cargo_vehs[c] != nullptr);
+
+				byte subtype = GetBestFittingSubType(old_cargo_vehs[c], v, c);
+				CommandCost refit_cost = DoCommand(0, v->index, c | (subtype << 8) | (1 << 16), DC_EXEC, GetCmdRefitVeh(v));
+				if (refit_cost.Succeeded()) cost.AddCost(refit_cost);
+			}
+		}
+		return cost;
+	}
+
+	if (!VerifyAutoreplaceRefitForOrders(old_veh, e)) {
+		if (new_vehicle == nullptr) return CMD_ERROR; // dry-run: failure
+		return BuildReplacementVehicleRefitFailure(e, old_veh);
+	}
+
+	std::vector <CargoID> output_cargoes;
+	CargoTypes remaining = all_cargoes;
+	CargoTypes todo = all_cargoes;
+	for (size_t i = 0; i < refit_mask_list.size(); i++) {
+		CargoTypes available = todo & refit_mask_list[i];
+		if (available == 0) available = all_cargoes & refit_mask_list[i];
+		if (available == 0) {
+			output_cargoes.push_back(CT_INVALID);
+			continue;
+		}
+
+		CargoID c = FindFirstBit(available);
+		output_cargoes.push_back(c);
+		ClrBit(remaining, c);
+		ClrBit(todo, c);
+		if (todo == 0) todo = all_cargoes;
+	}
+
+	if (remaining != 0) {
+		if (new_vehicle == nullptr) return CMD_ERROR; // dry-run: failure
+		if (IsLocalCompany()) {
+			SetDParam(0, old_veh->index);
+			SetDParam(1, STR_ERROR_AUTOREPLACE_INCOMPATIBLE_CARGO);
+			SetDParam(2, CargoSpec::Get(FindFirstBit(remaining))->name);
+			AddVehicleAdviceNewsItem(STR_NEWS_VEHICLE_AUTORENEW_FAILED, old_veh->index);
+		}
+		return CommandCost();
+	}
+
+	if (new_vehicle == nullptr) return CommandCost(); // dry-run: success
+
+	/* Build the new vehicle */
+	CommandCost cost = DoCommand(old_veh->tile, e | (CT_INVALID << 24), 0, DC_EXEC | DC_AUTOREPLACE, GetCmdBuildVeh(old_veh));
+	if (cost.Failed()) return cost;
+
+	Vehicle *new_veh = Vehicle::Get(_new_vehicle_id);
+	*new_vehicle = new_veh;
+
+	size_t i = 0;
+	for (Vehicle *v = new_veh; v != nullptr && i < output_cargoes.size(); v = v->Next(), i++) {
+		CargoID c = output_cargoes[i];
+		if (c == CT_INVALID) continue;
+
+		assert(old_cargo_vehs[c] != nullptr);
+		byte subtype = GetBestFittingSubType(old_cargo_vehs[c], v, c);
+		CommandCost refit_cost = DoCommand(0, v->index, c | (subtype << 8) | (1 << 16), DC_EXEC, GetCmdRefitVeh(v));
+		if (refit_cost.Succeeded()) cost.AddCost(refit_cost);
+	}
+	return cost;
+}
+
+bool AutoreplaceMultiPartShipWouldSucceed(EngineID e, const Vehicle *old_veh, CargoTypes all_cargoes)
+{
+	return BuildReplacementMultiPartShip(e, old_veh, nullptr, all_cargoes).Succeeded(); // dry-run mode
+}
+
 /**
  * Builds and refits a replacement vehicle
  * Important: The old vehicle is still in the original vehicle chain (used for determining the cargo when the old vehicle did not carry anything, but the new one does)
@@ -317,7 +474,7 @@ static CommandCost GetNewEngineType(const Vehicle *v, const Company *c, bool alw
  * @param same_type_only Only replace with same engine type.
  * @return cost or error
  */
-static CommandCost BuildReplacementVehicle(Vehicle *old_veh, Vehicle **new_vehicle, bool part_of_chain, bool same_type_only)
+static CommandCost BuildReplacementVehicle(const Vehicle *old_veh, Vehicle **new_vehicle, bool part_of_chain, bool same_type_only)
 {
 	*new_vehicle = nullptr;
 
@@ -328,26 +485,23 @@ static CommandCost BuildReplacementVehicle(Vehicle *old_veh, Vehicle **new_vehic
 	if (cost.Failed()) return cost;
 	if (e == INVALID_ENGINE) return CommandCost(); // neither autoreplace is set, nor autorenew is triggered
 
+	if (old_veh->type == VEH_SHIP && old_veh->Next() != nullptr) {
+		CargoTypes cargoes = 0;
+		for (const Vehicle *u = old_veh; u != nullptr; u = u->Next()) {
+			if (u->cargo_type != CT_INVALID && u->GetEngine()->CanCarryCargo()) {
+				SetBit(cargoes, u->cargo_type);
+			}
+		}
+		if (!HasAtMostOneBit(cargoes)) {
+			/* Old ship has more than one cargo, special handling */
+			return BuildReplacementMultiPartShip(e, old_veh, new_vehicle, cargoes);
+		}
+	}
+
 	/* Does it need to be refitted */
 	CargoID refit_cargo = GetNewCargoTypeForReplace(old_veh, e, part_of_chain);
 	if (refit_cargo == CT_INVALID) {
-		if (!IsLocalCompany()) return CommandCost();
-
-		SetDParam(0, old_veh->index);
-
-		int order_id = GetIncompatibleRefitOrderIdForAutoreplace(old_veh, e);
-		if (order_id != -1) {
-			/* Orders contained a refit order that is incompatible with the new vehicle. */
-			SetDParam(1, STR_ERROR_AUTOREPLACE_INCOMPATIBLE_REFIT);
-			SetDParam(2, order_id + 1); // 1-based indexing for display
-		} else {
-			/* Current cargo is incompatible with the new vehicle. */
-			SetDParam(1, STR_ERROR_AUTOREPLACE_INCOMPATIBLE_CARGO);
-			SetDParam(2, CargoSpec::Get(old_veh->cargo_type)->name);
-		}
-
-		AddVehicleAdviceNewsItem(STR_NEWS_VEHICLE_AUTORENEW_FAILED, old_veh->index);
-		return CommandCost();
+		return BuildReplacementVehicleRefitFailure(e, old_veh);
 	}
 
 	/* Build the new vehicle */

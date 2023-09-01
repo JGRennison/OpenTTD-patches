@@ -99,4 +99,6 @@ bool CheckAutoreplaceValidity(EngineID from, EngineID to, CompanyID company);
 
 CommandCost CopyHeadSpecificThings(Vehicle*, Vehicle*, DoCommandFlag);
 
+bool AutoreplaceMultiPartShipWouldSucceed(EngineID e, const Vehicle *old_veh, CargoTypes all_cargoes);
+
 #endif /* AUTOREPLACE_FUNC_H */

@@ -280,6 +280,30 @@ void GetArticulatedRefitMasks(EngineID engine, bool include_initial_cargo_type, 
 		if (veh_cargoes != 0) *intersection_mask &= veh_cargoes;
 	}
 }
+/**
+ * Gets the individual refit_masks of each articulated part.
+ * @param engine the first part
+ * @return vector of cargo types
+ */
+std::vector<CargoTypes> GetArticulatedRefitMaskVector(EngineID engine, bool include_initial_cargo_type)
+{
+	std::vector<CargoTypes> output;
+
+	const Engine *e = Engine::Get(engine);
+	output.push_back(GetAvailableVehicleCargoTypes(engine, include_initial_cargo_type));
+
+	if (!e->IsArticulatedCallbackVehicleType()) return output;
+	if (!HasBit(e->info.callback_mask, CBM_VEHICLE_ARTIC_ENGINE)) return output;
+
+	for (uint i = 1; i < MAX_ARTICULATED_PARTS; i++) {
+		EngineID artic_engine = GetNextArticulatedPart(i, engine);
+		if (artic_engine == INVALID_ENGINE) break;
+
+		output.push_back(GetAvailableVehicleCargoTypes(artic_engine, include_initial_cargo_type));
+	}
+
+	return output;
+}
 
 /**
  * Ors the refit_masks of all articulated parts.

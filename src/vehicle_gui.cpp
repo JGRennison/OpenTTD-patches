@@ -495,7 +495,7 @@ static const uint MAX_REFIT_CYCLE = 256;
  * @param dest_cargo_type Destination cargo type.
  * @return the best sub type
  */
-byte GetBestFittingSubType(Vehicle *v_from, Vehicle *v_for, CargoID dest_cargo_type)
+byte GetBestFittingSubType(const Vehicle *v_from, Vehicle *v_for, CargoID dest_cargo_type)
 {
 	v_from = v_from->GetFirstEnginePart();
 	v_for = v_for->GetFirstEnginePart();

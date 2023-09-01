@@ -20,6 +20,7 @@ CargoArray GetCapacityOfArticulatedParts(EngineID engine);
 CargoTypes GetCargoTypesOfArticulatedParts(EngineID engine);
 void AddArticulatedParts(Vehicle *first);
 void GetArticulatedRefitMasks(EngineID engine, bool include_initial_cargo_type, CargoTypes *union_mask, CargoTypes *intersection_mask);
+std::vector<CargoTypes> GetArticulatedRefitMaskVector(EngineID engine, bool include_initial_cargo_type);
 CargoTypes GetUnionOfArticulatedRefitMasks(EngineID engine, bool include_initial_cargo_type);
 CargoTypes GetIntersectionOfArticulatedRefitMasks(EngineID engine, bool include_initial_cargo_type);
 CargoTypes GetCargoTypesOfArticulatedVehicle(const Vehicle *v, CargoID *cargo_type);

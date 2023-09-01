@@ -126,7 +126,7 @@ void VehicleLengthChanged(const Vehicle *u);
 void ResetVehicleHash();
 void ResetVehicleColourMap();
 
-byte GetBestFittingSubType(Vehicle *v_from, Vehicle *v_for, CargoID dest_cargo_type);
+byte GetBestFittingSubType(const Vehicle *v_from, Vehicle *v_for, CargoID dest_cargo_type);
 
 void ViewportAddVehicles(DrawPixelInfo *dpi, bool update_vehicles);
 void ViewportMapDrawVehicles(DrawPixelInfo *dpi, Viewport *vp);
