@@ -8,6 +8,7 @@
 /** @file articulated_vehicles.cpp Implementation of articulated vehicles. */
 
 #include "stdafx.h"
+#include "core/bitmath_func.hpp"
 #include "core/random_func.hpp"
 #include "train.h"
 #include "roadveh.h"
@@ -201,6 +202,35 @@ CargoArray GetCapacityOfArticulatedParts(EngineID engine)
 }
 
 /**
+ * Get the cargo mask of the parts of a given engine.
+ * @param engine The engine to get the capacities from.
+ * @return The cargo mask.
+ */
+CargoTypes GetCargoTypesOfArticulatedParts(EngineID engine)
+{
+	CargoTypes cargoes = 0;
+	const Engine *e = Engine::Get(engine);
+
+	CargoID cargo_type;
+	uint16 cargo_capacity = GetVehicleDefaultCapacity(engine, &cargo_type);
+	if (cargo_type < NUM_CARGO && cargo_capacity > 0) SetBit(cargoes, cargo_type);
+
+	if (!e->IsArticulatedCallbackVehicleType()) return cargoes;
+
+	if (!HasBit(e->info.callback_mask, CBM_VEHICLE_ARTIC_ENGINE)) return cargoes;
+
+	for (uint i = 1; i < MAX_ARTICULATED_PARTS; i++) {
+		EngineID artic_engine = GetNextArticulatedPart(i, engine);
+		if (artic_engine == INVALID_ENGINE) break;
+
+		cargo_capacity = GetVehicleDefaultCapacity(artic_engine, &cargo_type);
+		if (cargo_type < NUM_CARGO && cargo_capacity > 0) SetBit(cargoes, cargo_type);
+	}
+
+	return cargoes;
+}
+
+/**
  * Checks whether any of the articulated parts is refittable
  * @param engine the first part
  * @return true if refittable
@@ -277,24 +307,27 @@ CargoTypes GetIntersectionOfArticulatedRefitMasks(EngineID engine, bool include_
 	return intersection_mask;
 }
 
-
 /**
- * Tests if all parts of an articulated vehicle are refitted to the same cargo.
+ * Get cargo mask of all cargoes carried by an articulated vehicle.
  * Note: Vehicles not carrying anything are ignored
  * @param v the first vehicle in the chain
  * @param cargo_type returns the common CargoID if needed. (CT_INVALID if no part is carrying something or they are carrying different things)
- * @return true if some parts are carrying different cargoes, false if all parts are carrying the same (nothing is also the same)
+ * @return cargo mask, may be 0 if the no vehicle parts have cargo capacity
  */
-bool IsArticulatedVehicleCarryingDifferentCargoes(const Vehicle *v, CargoID *cargo_type)
+CargoTypes GetCargoTypesOfArticulatedVehicle(const Vehicle *v, CargoID *cargo_type)
 {
+	CargoTypes cargoes = 0;
 	CargoID first_cargo = CT_INVALID;
 
 	do {
 		if (v->cargo_type != CT_INVALID && v->GetEngine()->CanCarryCargo()) {
+			SetBit(cargoes, v->cargo_type);
 			if (first_cargo == CT_INVALID) first_cargo = v->cargo_type;
 			if (first_cargo != v->cargo_type) {
-				if (cargo_type != nullptr) *cargo_type = CT_INVALID;
-				return true;
+				if (cargo_type != nullptr) {
+					*cargo_type = CT_INVALID;
+					cargo_type = nullptr;
+				}
 			}
 		}
 
@@ -302,7 +335,7 @@ bool IsArticulatedVehicleCarryingDifferentCargoes(const Vehicle *v, CargoID *car
 	} while (v != nullptr);
 
 	if (cargo_type != nullptr) *cargo_type = first_cargo;
-	return false;
+	return cargoes;
 }
 
 /**
@@ -314,7 +347,7 @@ bool IsArticulatedVehicleCarryingDifferentCargoes(const Vehicle *v, CargoID *car
 CargoID GetOverallCargoOfArticulatedVehicle(const Vehicle *v)
 {
 	CargoID cargo_id;
-	IsArticulatedVehicleCarryingDifferentCargoes(v, &cargo_id);
+	GetCargoTypesOfArticulatedVehicle(v, &cargo_id);
 	return cargo_id;
 }
 
