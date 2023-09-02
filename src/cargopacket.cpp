@@ -117,16 +117,16 @@ CargoPacket::CargoPacket()
  * that, in contrary to all other pools, does not memset to 0.
  */
 CargoPacket::CargoPacket(StationID source, TileIndex source_xy, uint16 count, SourceType source_type, SourceID source_id) :
-	feeder_share(0),
 	count(count),
 	days_in_transit(0),
+	feeder_share(0),
 	source_id(source_id),
-	source(source),
 	source_xy(source_xy),
-	loaded_at_xy(0)
+	loaded_at_xy(0),
+	source(source),
+	source_type(source_type)
 {
 	dbg_assert(count != 0);
-	this->source_type  = source_type;
 }
 
 /**
@@ -144,16 +144,16 @@ CargoPacket::CargoPacket(StationID source, TileIndex source_xy, uint16 count, So
  * that, in contrary to all other pools, does not memset to 0.
  */
 CargoPacket::CargoPacket(uint16 count, uint16 days_in_transit, StationID source, TileIndex source_xy, TileIndex loaded_at_xy, Money feeder_share, SourceType source_type, SourceID source_id) :
-		feeder_share(feeder_share),
 		count(count),
 		days_in_transit(days_in_transit),
+		feeder_share(feeder_share),
 		source_id(source_id),
-		source(source),
 		source_xy(source_xy),
-		loaded_at_xy(loaded_at_xy)
+		loaded_at_xy(loaded_at_xy),
+		source(source),
+		source_type(source_type)
 {
 	dbg_assert(count != 0);
-	this->source_type = source_type;
 }
 
 /** Destroy the packet. */
