@@ -15,6 +15,7 @@
 #include "widgets/dropdown_type.h"
 
 struct Window *ShowBuildRailToolbar(RailType railtype);
+void ShowBuildRailToolbarWithPickTile(RailType railtype, TileIndex tile);
 void ShowBuildRailStationPickerAndSelect(StationType station_type, const StationSpec *spec);
 void ReinitGuiAfterToggleElrail(bool disable);
 void ResetSignalVariant(int32 = 0);

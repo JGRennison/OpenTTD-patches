@@ -2064,9 +2064,9 @@ public:
 		}
 	}
 
-	inline SignalType TypeForClick(uint id) const
+	static SignalType TypeForClick(uint id)
 	{
-		switch(id) {
+		switch (id) {
 			case 0: return SIGTYPE_NORMAL;
 			case 1: return SIGTYPE_ENTRY;
 			case 2: return SIGTYPE_EXIT;
@@ -2078,6 +2078,23 @@ public:
 			default:
 				assert(!"Bad signal type button ID");
 				return SIGTYPE_NORMAL;
+		}
+	}
+
+	static uint ClickForType(SignalType type)
+	{
+		switch (type) {
+			case SIGTYPE_NORMAL:     return 0;
+			case SIGTYPE_ENTRY:      return 1;
+			case SIGTYPE_EXIT:       return 2;
+			case SIGTYPE_COMBO:      return 3;
+			case SIGTYPE_PROG:       return 4;
+			case SIGTYPE_PBS:        return 5;
+			case SIGTYPE_PBS_ONEWAY: return 6;
+			case SIGTYPE_NO_ENTRY:   return 7;
+			default:
+				assert(!"Bad signal type");
+				return 0;
 		}
 	}
 
@@ -2884,5 +2901,51 @@ void ShowBuildRailStationPickerAndSelect(StationType station_type, const Station
 
 		BuildRailStationWindow *station_window = dynamic_cast<BuildRailStationWindow *>(FindWindowById(WC_BUILD_STATION, TRANSPORT_RAIL));
 		if (station_window != nullptr) station_window->SelectClassAndSpec(class_id, spec_id);
+	}
+}
+
+static void OpenBuildSignalWindow(BuildRailToolbarWindow *w, SignalVariant variant, SignalType type, uint8 style)
+{
+	if (!w->IsWidgetLowered(WID_RAT_BUILD_SIGNALS)) {
+		w->OnHotkey(WID_RAT_BUILD_SIGNALS);
+	}
+
+	BuildSignalWindow *signal_window = dynamic_cast<BuildSignalWindow *>(FindWindowById(WC_BUILD_SIGNAL, TRANSPORT_RAIL));
+	if (signal_window == nullptr) return;
+
+	signal_window->OnDropdownSelect(WID_BS_STYLE, style);
+
+	if (_settings_client.gui.signal_gui_mode == SIGNAL_GUI_PATH && _settings_game.vehicle.train_braking_model != TBM_REALISTIC && !IsPbsSignalNonExtended(type) && !IsNoEntrySignal(type)) {
+		signal_window->OnClick(Point(), WID_BS_TOGGLE_SIZE, 1);
+	}
+
+	signal_window->OnClick(Point(), ((variant == SIG_SEMAPHORE) ? WID_BS_SEMAPHORE_NORM : WID_BS_ELECTRIC_NORM) + BuildSignalWindow::ClickForType(type), 1);
+}
+
+void ShowBuildRailToolbarWithPickTile(RailType railtype, TileIndex tile)
+{
+	BuildRailToolbarWindow *w = static_cast<BuildRailToolbarWindow *>(ShowBuildRailToolbar(railtype));
+	if (w == nullptr) return;
+
+	if (IsPlainRailTile(tile) || IsRailTunnelBridgeTile(tile)) {
+		TrackBits trackbits = TrackdirBitsToTrackBits(GetTileTrackdirBits(tile, TRANSPORT_RAIL, 0));
+		if (trackbits & TRACK_BIT_VERT) { // N-S direction
+			trackbits = (_tile_fract_coords.x <= _tile_fract_coords.y) ? TRACK_BIT_RIGHT : TRACK_BIT_LEFT;
+		}
+
+		if (trackbits & TRACK_BIT_HORZ) { // E-W direction
+			trackbits = (_tile_fract_coords.x + _tile_fract_coords.y <= 15) ? TRACK_BIT_UPPER : TRACK_BIT_LOWER;
+		}
+
+		Track track = FindFirstTrack(trackbits);
+		if (track != INVALID_TRACK) {
+			if (IsTileType(tile, MP_RAILWAY) && HasTrack(tile, track) && HasSignalOnTrack(tile, track)) {
+				OpenBuildSignalWindow(w, GetSignalVariant(tile, track), GetSignalType(tile, track), GetSignalStyle(tile, track));
+			}
+			if (IsRailTunnelBridgeTile(tile) && IsTunnelBridgeWithSignalSimulation(tile) && HasTrack(GetTunnelBridgeTrackBits(tile), track)) {
+				OpenBuildSignalWindow(w, IsTunnelBridgeSemaphore(tile) ? SIG_SEMAPHORE : SIG_ELECTRIC,
+						IsTunnelBridgePBS(tile) ? SIGTYPE_PBS_ONEWAY : SIGTYPE_NORMAL, GetTunnelBridgeSignalStyle(tile));
+			}
+		}
 	}
 }

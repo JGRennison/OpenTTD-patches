@@ -1140,7 +1140,7 @@ enum HelpMenuEntries {
 static void ShowBuildRailToolbarFromTile(TileIndex tile)
 {
 	_last_built_railtype = GetRailType(tile);
-	ShowBuildRailToolbar(_last_built_railtype);
+	ShowBuildRailToolbarWithPickTile(_last_built_railtype, tile);
 }
 
 static void ShowBuildRoadToolbarFromTile(TileIndex tile)
