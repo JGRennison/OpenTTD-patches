@@ -61,12 +61,12 @@ private:
 	uint16 count;           ///< The amount of cargo in this packet.
 	uint16 days_in_transit; ///< Amount of days this packet has been in transit.
 	Money feeder_share;     ///< Value of feeder pickup to be paid for on delivery of cargo.
-	SourceID source_id;     ///< Index of source, INVALID_SOURCE if unknown/invalid.
 	TileIndex source_xy;    ///< The origin of the cargo (first station in feeder chain).
 	union {
 		TileIndex loaded_at_xy;       ///< Location where this cargo has been loaded into the vehicle.
 		StationID_32bit next_station; ///< Station where the cargo wants to go next.
 	};
+	SourceID source_id;     ///< Index of source, INVALID_SOURCE if unknown/invalid.
 	StationID source;       ///< The station where the cargo came from first.
 	SourceType source_type; ///< Type of \c source_id.
 	uint8 flags = 0;        ///< NOSAVE: temporary flags
