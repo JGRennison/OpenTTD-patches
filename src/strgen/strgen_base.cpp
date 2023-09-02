@@ -37,18 +37,10 @@ static const CmdStruct *ParseCommandString(const char **str, char *param, int *a
  * Create a new case.
  * @param caseidx The index of the case.
  * @param string  The translation of the case.
- * @param next    The next chained case.
  */
-Case::Case(int caseidx, const char *string, Case *next) :
-		caseidx(caseidx), string(stredup(string)), next(next)
+Case::Case(int caseidx, std::string string) :
+		caseidx(caseidx), string(std::move(string))
 {
-}
-
-/** Free everything we allocated. */
-Case::~Case()
-{
-	free(this->string);
-	delete this->next;
 }
 
 /**
@@ -58,38 +50,22 @@ Case::~Case()
  * @param index   The index in the string table.
  * @param line    The line this string was found on.
  */
-LangString::LangString(const char *name, const char *english, int index, int line) :
-		name(stredup(name)), english(stredup(english)), translated(nullptr),
-		hash_next(0), index(index), line(line), translated_case(nullptr)
+LangString::LangString(std::string name, std::string english, size_t index, int line) :
+		name(std::move(name)), english(std::move(english)), index(index), line(line)
 {
 }
 
-/** Free everything we allocated. */
-LangString::~LangString()
+void LangString::ReplaceDefinition(std::string english, int line)
 {
-	free(this->name);
-	free(this->english);
-	free(this->translated);
-	delete this->translated_case;
-}
-
-void LangString::ReplaceDefinition(const char *name, const char *english, int line)
-{
-	free(this->name);
-	free(this->english);
-	this->name = stredup(name);
-	this->english = stredup(english);
+	this->english = std::move(english);
 	this->line = line;
 }
 
 /** Free all data related to the translation. */
 void LangString::FreeTranslation()
 {
-	free(this->translated);
-	this->translated = nullptr;
-
-	delete this->translated_case;
-	this->translated_case = nullptr;
+	this->translated.clear();
+	this->translated_cases.clear();
 }
 
 /**
@@ -98,16 +74,8 @@ void LangString::FreeTranslation()
  */
 StringData::StringData(size_t tabs) : tabs(tabs), max_strings(tabs * TAB_SIZE)
 {
-	this->strings = CallocT<LangString *>(max_strings);
-	this->hash_heads = CallocT<LangString *>(max_strings);
+	this->strings.resize(max_strings);
 	this->next_string_id = 0;
-}
-
-/** Free everything we allocated. */
-StringData::~StringData()
-{
-	free(this->strings);
-	free(this->hash_heads);
 }
 
 /** Free all data related to the translation. */
@@ -120,44 +88,16 @@ void StringData::FreeTranslation()
 }
 
 /**
- * Create a hash of the string for finding them back quickly.
- * @param s The string to hash.
- * @return The hashed string.
- */
-uint StringData::HashStr(const char *s) const
-{
-	uint hash = 0;
-	for (; *s != '\0'; s++) hash = ROL(hash, 3) ^ *s;
-	return hash % this->max_strings;
-}
-
-/**
- * Add a newly created LangString.
- * @param s  The name of the string.
- * @param ls The string to add.
- */
-void StringData::Add(const char *s, LangString *ls)
-{
-	uint hash = this->HashStr(s);
-	ls->hash_next = this->hash_heads[hash];
-	/* Off-by-one for hash find. */
-	this->hash_heads[hash] = ls;
-}
-
-/**
  * Find a LangString based on the string name.
  * @param s The string name to search on.
  * @return The LangString or nullptr if it is not known.
  */
-LangString *StringData::Find(const char *s)
+LangString *StringData::Find(const std::string_view s)
 {
-	LangString *ls = this->hash_heads[this->HashStr(s)];
+	auto it = this->name_to_string.find(s);
+	if (it == this->name_to_string.end()) return nullptr;
 
-	while (ls != nullptr) {
-		if (strcmp(ls->name, s) == 0) return ls;
-		ls = ls->hash_next;
-	}
-	return nullptr;
+	return it->second;
 }
 
 /**
@@ -193,12 +133,12 @@ uint StringData::Version() const
 			int argno;
 			int casei;
 
-			s = ls->name;
+			s = ls->name.c_str();
 			hash ^= i * 0x717239;
 			hash = (hash & 1 ? hash >> 1 ^ 0xDEADBEEF : hash >> 1);
 			hash = this->VersionHashStr(hash, s + 1);
 
-			s = ls->english;
+			s = ls->english.c_str();
 			while ((cs = ParseCommandString(&s, buf, &argno, &casei)) != nullptr) {
 				if (cs->flags & C_DONTCOUNT) continue;
 
@@ -390,7 +330,7 @@ void EmitPlural(Buffer *buffer, char *buf, int value)
 	/* Parse out the number, if one exists. Otherwise default to prev arg. */
 	if (!ParseRelNum(&buf, &argidx, &offset)) argidx--;
 
-	const CmdStruct *cmd = _cur_pcs.cmd[argidx];
+	const CmdStruct *cmd = _cur_pcs.consuming_commands[argidx];
 	if (offset == -1) {
 		/* Use default offset */
 		if (cmd == nullptr || cmd->default_plural_offset < 0) {
@@ -455,7 +395,7 @@ void EmitGender(Buffer *buffer, char *buf, int value)
 		 * If no relative number exists, default to +0 */
 		ParseRelNum(&buf, &argidx, &offset);
 
-		const CmdStruct *cmd = _cur_pcs.cmd[argidx];
+		const CmdStruct *cmd = _cur_pcs.consuming_commands[argidx];
 		if (cmd == nullptr || (cmd->flags & C_GENDER) == 0) {
 			strgen_fatal("Command '%s' can't have a gender", cmd == nullptr ? "<empty>" : cmd->cmd);
 		}
@@ -579,24 +519,19 @@ static const CmdStruct *ParseCommandString(const char **str, char *param, int *a
  * @param master      Are we reading the master file?
  * @param translation Are we reading a translation?
  */
-StringReader::StringReader(StringData &data, const char *file, bool master, bool translation) :
-		data(data), file(file), master(master), translation(translation)
+StringReader::StringReader(StringData &data, std::string file, bool master, bool translation) :
+		data(data), file(std::move(file)), master(master), translation(translation)
 {
 }
 
-/** Make sure the right reader gets freed. */
-StringReader::~StringReader()
-{
-}
-
-void ExtractCommandString(ParsedCommandStruct *p, const char *s, bool warnings)
+ParsedCommandStruct ExtractCommandString(const char *s, bool warnings)
 {
 	char param[MAX_COMMAND_PARAM_SIZE];
 	int argno;
 	int argidx = 0;
 	int casei;
 
-	memset(p, 0, sizeof(*p));
+	ParsedCommandStruct p;
 
 	for (;;) {
 		/* read until next command from a. */
@@ -609,17 +544,16 @@ void ExtractCommandString(ParsedCommandStruct *p, const char *s, bool warnings)
 
 		if (ar->consumes) {
 			if (argno != -1) argidx = argno;
-			if (argidx < 0 || (uint)argidx >= lengthof(p->cmd)) strgen_fatal("invalid param idx %d", argidx);
-			if (p->cmd[argidx] != nullptr && p->cmd[argidx] != ar) strgen_fatal("duplicate param idx %d", argidx);
+			if (argidx < 0 || (uint)argidx >= p.consuming_commands.max_size()) strgen_fatal("invalid param idx %d", argidx);
+			if (p.consuming_commands[argidx] != nullptr && p.consuming_commands[argidx] != ar) strgen_fatal("duplicate param idx %d", argidx);
 
-			p->cmd[argidx++] = ar;
+			p.consuming_commands[argidx++] = ar;
 		} else if (!(ar->flags & C_DONTCOUNT)) { // Ignore some of them
-			if (p->np >= lengthof(p->pairs)) strgen_fatal("too many commands in string, max " PRINTF_SIZE, lengthof(p->pairs));
-			p->pairs[p->np].a = ar;
-			p->pairs[p->np].v = param[0] != '\0' ? stredup(param) : "";
-			p->np++;
+			p.non_consuming_commands.emplace_back(CmdPair{ar, param});
 		}
 	}
+
+	return p;
 }
 
 
@@ -643,7 +577,7 @@ const CmdStruct *TranslateCmdForCompare(const CmdStruct *a)
 }
 
 
-static bool CheckCommandsMatch(char *a, char *b, const char *name)
+static bool CheckCommandsMatch(const char *a, const char *b, const char *name)
 {
 	/* If we're not translating, i.e. we're compiling the base language,
 	 * it is pointless to do all these checks as it'll always be correct.
@@ -651,45 +585,42 @@ static bool CheckCommandsMatch(char *a, char *b, const char *name)
 	 */
 	if (!_translation) return true;
 
-	ParsedCommandStruct templ;
-	ParsedCommandStruct lang;
 	bool result = true;
 
-	ExtractCommandString(&templ, b, true);
-	ExtractCommandString(&lang, a, true);
+	ParsedCommandStruct templ = ExtractCommandString(b, true);
+	ParsedCommandStruct lang = ExtractCommandString(a, true);
 
 	/* For each string in templ, see if we find it in lang */
-	if (templ.np != lang.np) {
+	if (templ.non_consuming_commands.max_size() != lang.non_consuming_commands.max_size()) {
 		strgen_warning("%s: template string and language string have a different # of commands", name);
 		result = false;
 	}
 
-	for (uint i = 0; i < templ.np; i++) {
+	for (auto &templ_nc : templ.non_consuming_commands) {
 		/* see if we find it in lang, and zero it out */
 		bool found = false;
-		for (uint j = 0; j < lang.np; j++) {
-			if (templ.pairs[i].a == lang.pairs[j].a &&
-					strcmp(templ.pairs[i].v, lang.pairs[j].v) == 0) {
+		for (auto &lang_nc : lang.non_consuming_commands) {
+			if (templ_nc.cmd == lang_nc.cmd && templ_nc.param == lang_nc.param) {
 				/* it was found in both. zero it out from lang so we don't find it again */
-				lang.pairs[j].a = nullptr;
+				lang_nc.cmd = nullptr;
 				found = true;
 				break;
 			}
 		}
 
 		if (!found) {
-			strgen_warning("%s: command '%s' exists in template file but not in language file", name, templ.pairs[i].a->cmd);
+			strgen_warning("%s: command '%s' exists in template file but not in language file", name, templ_nc.cmd->cmd);
 			result = false;
 		}
 	}
 
 	/* if we reach here, all non consumer commands match up.
 	 * Check if the non consumer commands match up also. */
-	for (uint i = 0; i < lengthof(templ.cmd); i++) {
-		if (TranslateCmdForCompare(templ.cmd[i]) != lang.cmd[i]) {
+	for (uint i = 0; i < templ.consuming_commands.max_size(); i++) {
+		if (TranslateCmdForCompare(templ.consuming_commands[i]) != lang.consuming_commands[i]) {
 			strgen_warning("%s: Param idx #%d '%s' doesn't match with template command '%s'", name, i,
-				lang.cmd[i]  == nullptr ? "<empty>" : TranslateCmdForCompare(lang.cmd[i])->cmd,
-				templ.cmd[i] == nullptr ? "<empty>" : templ.cmd[i]->cmd);
+				lang.consuming_commands[i]  == nullptr ? "<empty>" : TranslateCmdForCompare(lang.consuming_commands[i])->cmd,
+				templ.consuming_commands[i] == nullptr ? "<empty>" : templ.consuming_commands[i]->cmd);
 			result = false;
 		}
 	}
@@ -754,7 +685,7 @@ void StringReader::HandleString(char *str)
 
 		if (ent != nullptr) {
 			if (this->data.override_mode) {
-				ent->ReplaceDefinition(str, s, _cur_line);
+				ent->ReplaceDefinition(s, _cur_line);
 				return;
 			}
 			strgen_error("String name '%s' is used multiple times", str);
@@ -772,7 +703,7 @@ void StringReader::HandleString(char *str)
 		std::unique_ptr<LangString> ls(new LangString(str, s, this->data.next_string_id, _cur_line));
 		if (this->data.no_translate_mode) ls->no_translate_mode = true;
 		this->data.next_string_id = -1;
-		this->data.Add(str, ls.get());
+		this->data.name_to_string[ls->name] = ls.get();
 
 		if (this->data.default_translation != nullptr) {
 			ls->default_translation = this->data.default_translation;
@@ -802,10 +733,9 @@ void StringReader::HandleString(char *str)
 			return;
 		}
 
-		if (ent->translated && casep == nullptr) {
+		if (!ent->translated.empty() && casep == nullptr) {
 			if (this->data.override_mode) {
-				free(ent->translated);
-				ent->translated = nullptr;
+				ent->translated.clear();
 			} else {
 				strgen_error("String name '%s' is used multiple times", str);
 				return;
@@ -813,12 +743,12 @@ void StringReader::HandleString(char *str)
 		}
 
 		/* make sure that the commands match */
-		if (!CheckCommandsMatch(s, ent->english, str)) return;
+		if (!CheckCommandsMatch(s, ent->english.c_str(), str)) return;
 
 		if (casep != nullptr) {
-			ent->translated_case = new Case(ResolveCaseName(casep, strlen(casep)), s, ent->translated_case);
+			ent->translated_cases.emplace_back(ResolveCaseName(casep, strlen(casep)), s);
 		} else {
-			ent->translated = stredup(s);
+			ent->translated = s;
 			/* If the string was translated, use the line from the
 			 * translated language so errors in the translated file
 			 * are properly referenced to. */
@@ -895,7 +825,7 @@ void StringReader::AssignIDs(size_t &next_id, LangString *ls)
 			strgen_error("Too many strings, maximum allowed is " PRINTF_SIZE, this->data.max_strings);
 			return;
 		} else if (this->data.strings[ls->index] != nullptr) {
-			strgen_error("String ID 0x%X for '%s' already in use by '%s'", (uint)ls->index, ls->name, this->data.strings[ls->index]->name);
+			strgen_error("String ID 0x%X for '%s' already in use by '%s'", (uint)ls->index, ls->name.c_str(), this->data.strings[ls->index]->name.c_str());
 			return;
 		} else {
 			this->data.strings[ls->index] = ls;
@@ -915,7 +845,7 @@ void HeaderWriter::WriteHeader(const StringData &data)
 	int last = 0;
 	for (size_t i = 0; i < data.max_strings; i++) {
 		if (data.strings[i] != nullptr) {
-			this->WriteStringID(data.strings[i]->name, (int)i);
+			this->WriteStringID(data.strings[i]->name.c_str(), (int)i);
 			last = (int)i;
 		}
 	}
@@ -927,20 +857,20 @@ static int TranslateArgumentIdx(int argidx, int offset)
 {
 	int sum;
 
-	if (argidx < 0 || (uint)argidx >= lengthof(_cur_pcs.cmd)) {
+	if (argidx < 0 || (uint)argidx >= _cur_pcs.consuming_commands.max_size()) {
 		strgen_fatal("invalid argidx %d", argidx);
 	}
-	const CmdStruct *cs = _cur_pcs.cmd[argidx];
+	const CmdStruct *cs = _cur_pcs.consuming_commands[argidx];
 	if (cs != nullptr && cs->consumes <= offset) {
 		strgen_fatal("invalid argidx offset %d:%d", argidx, offset);
 	}
 
-	if (_cur_pcs.cmd[argidx] == nullptr) {
+	if (_cur_pcs.consuming_commands[argidx] == nullptr) {
 		strgen_fatal("no command for this argidx %d", argidx);
 	}
 
 	for (int i = sum = 0; i < argidx; i++) {
-		cs = _cur_pcs.cmd[i];
+		cs = _cur_pcs.consuming_commands[i];
 
 		sum += (cs != nullptr) ? cs->consumes : 1;
 	}
@@ -986,7 +916,7 @@ static void PutCommandString(Buffer *buffer, const char *str)
 			}
 
 			/* Output the one from the master string... it's always accurate. */
-			cs = _cur_pcs.cmd[_cur_argidx++];
+			cs = _cur_pcs.consuming_commands[_cur_argidx++];
 			if (cs == nullptr) {
 				strgen_fatal("%s: No argument exists at position %d", _cur_ident, _cur_argidx - 1);
 			}
@@ -1030,7 +960,7 @@ void LanguageWriter::WriteLang(const StringData &data)
 
 		for (uint j = 0; j != in_use[tab]; j++) {
 			const LangString *ls = data.strings[(tab * TAB_SIZE) + j];
-			if (ls != nullptr && ls->translated == nullptr && ls->default_translation == nullptr && !ls->no_translate_mode) {
+			if (ls != nullptr && ls->translated.empty() && ls->default_translation == nullptr && !ls->no_translate_mode) {
 				_lang.missing++;
 			}
 		}
@@ -1047,8 +977,7 @@ void LanguageWriter::WriteLang(const StringData &data)
 	for (size_t tab = 0; tab < data.tabs; tab++) {
 		for (uint j = 0; j != in_use[tab]; j++) {
 			const LangString *ls = data.strings[(tab * TAB_SIZE) + j];
-			const Case *casep;
-			const char *cmdp;
+			const std::string *cmdp;
 
 			/* For undefined strings, just set that it's an empty string */
 			if (ls == nullptr) {
@@ -1056,13 +985,13 @@ void LanguageWriter::WriteLang(const StringData &data)
 				continue;
 			}
 
-			_cur_ident = ls->name;
+			_cur_ident = ls->name.c_str();
 			_cur_line = ls->line;
 
 			/* Produce a message if a string doesn't have a translation. */
-			if (_show_todo > 0 && ls->translated == nullptr) {
+			if (_show_todo > 0 && ls->translated.empty()) {
 				if ((_show_todo & 2) != 0) {
-					strgen_warning("'%s' is untranslated", ls->name);
+					strgen_warning("'%s' is untranslated", ls->name.c_str());
 				}
 				if ((_show_todo & 1) != 0) {
 					const char *s = "<TODO> ";
@@ -1071,43 +1000,36 @@ void LanguageWriter::WriteLang(const StringData &data)
 			}
 
 			/* Extract the strings and stuff from the english command string */
-			ExtractCommandString(&_cur_pcs, ls->english, false);
+			_cur_pcs = ExtractCommandString(ls->english.c_str(), false);
 
-			if (ls->translated_case != nullptr || ls->translated != nullptr) {
-				casep = ls->translated_case;
-				cmdp = ls->translated;
+			if (!ls->translated_cases.empty() || !ls->translated.empty()) {
+				cmdp = &ls->translated;
 			} else {
-				casep = nullptr;
-				cmdp = ls->english;
-				if (ls->default_translation != nullptr && ls->default_translation->translated != nullptr) {
-					cmdp = ls->default_translation->translated;
+				cmdp = &ls->english;
+				if (ls->default_translation != nullptr && !ls->default_translation->translated.empty()) {
+					cmdp = &ls->default_translation->translated;
 				}
 			}
 
-			_translated = cmdp != ls->english;
+			_translated = cmdp != &ls->english;
 
-			if (casep != nullptr) {
-				const Case *c;
-				uint num;
-
+			if (!ls->translated_cases.empty()) {
 				/* Need to output a case-switch.
 				 * It has this format
 				 * <0x9E> <NUM CASES> <CASE1> <LEN1> <STRING1> <CASE2> <LEN2> <STRING2> <CASE3> <LEN3> <STRING3> <STRINGDEFAULT>
 				 * Each LEN is printed using 2 bytes in big endian order. */
 				buffer.AppendUtf8(SCC_SWITCH_CASE);
-				/* Count the number of cases */
-				for (num = 0, c = casep; c; c = c->next) num++;
-				buffer.AppendByte(num);
+				buffer.AppendByte((byte)ls->translated_cases.size());
 
 				/* Write each case */
-				for (c = casep; c != nullptr; c = c->next) {
-					buffer.AppendByte(c->caseidx);
+				for (const Case &c : ls->translated_cases) {
+					buffer.AppendByte(c.caseidx);
 					/* Make some space for the 16-bit length */
 					uint pos = (uint)buffer.size();
 					buffer.AppendByte(0);
 					buffer.AppendByte(0);
 					/* Write string */
-					PutCommandString(&buffer, c->string);
+					PutCommandString(&buffer, c.string.c_str());
 					buffer.AppendByte(0); // terminate with a zero
 					/* Fill in the length */
 					uint size = (uint)buffer.size() - (pos + 2);
@@ -1116,7 +1038,7 @@ void LanguageWriter::WriteLang(const StringData &data)
 				}
 			}
 
-			if (cmdp != nullptr) PutCommandString(&buffer, cmdp);
+			if (!cmdp->empty()) PutCommandString(&buffer, cmdp->c_str());
 
 			this->WriteLength((uint)buffer.size());
 			this->Write(buffer.data(), buffer.size());

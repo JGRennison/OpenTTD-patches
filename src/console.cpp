@@ -255,8 +255,7 @@ std::string RemoveUnderscores(std::string name)
  */
 static void IConsoleAliasExec(const IConsoleAlias *alias, byte tokencount, char *tokens[ICON_TOKEN_COUNT], const uint recurse_count)
 {
-	char  alias_buffer[ICON_MAX_STREAMSIZE] = { '\0' };
-	char *alias_stream = alias_buffer;
+	std::string alias_buffer;
 
 	DEBUG(console, 6, "Requested command is an alias; parsing...");
 
@@ -268,14 +267,13 @@ static void IConsoleAliasExec(const IConsoleAlias *alias, byte tokencount, char 
 	for (const char *cmdptr = alias->cmdline.c_str(); *cmdptr != '\0'; cmdptr++) {
 		switch (*cmdptr) {
 			case '\'': // ' will double for ""
-				alias_stream = strecpy(alias_stream, "\"", lastof(alias_buffer));
+				alias_buffer += '\"';
 				break;
 
 			case ';': // Cmd separator; execute previous and start new command
-				IConsoleCmdExec(alias_buffer, recurse_count);
+				IConsoleCmdExec(alias_buffer.c_str(), recurse_count);
 
-				alias_stream = alias_buffer;
-				*alias_stream = '\0'; // Make sure the new command is terminated.
+				alias_buffer.clear();
 
 				cmdptr++;
 				break;
@@ -285,21 +283,21 @@ static void IConsoleAliasExec(const IConsoleAlias *alias, byte tokencount, char 
 				switch (*cmdptr) {
 					case '+': { // All parameters separated: "[param 1]" "[param 2]"
 						for (uint i = 0; i != tokencount; i++) {
-							if (i != 0) alias_stream = strecpy(alias_stream, " ", lastof(alias_buffer));
-							alias_stream = strecpy(alias_stream, "\"", lastof(alias_buffer));
-							alias_stream = strecpy(alias_stream, tokens[i], lastof(alias_buffer));
-							alias_stream = strecpy(alias_stream, "\"", lastof(alias_buffer));
+							if (i != 0) alias_buffer += ' ';
+							alias_buffer += '\"';
+							alias_buffer += tokens[i];
+							alias_buffer += '\"';
 						}
 						break;
 					}
 
 					case '!': { // Merge the parameters to one: "[param 1] [param 2] [param 3...]"
-						alias_stream = strecpy(alias_stream, "\"", lastof(alias_buffer));
+						alias_buffer += '\"';
 						for (uint i = 0; i != tokencount; i++) {
-							if (i != 0) alias_stream = strecpy(alias_stream, " ", lastof(alias_buffer));
-							alias_stream = strecpy(alias_stream, tokens[i], lastof(alias_buffer));
+							if (i != 0) alias_buffer += " ";
+							alias_buffer += tokens[i];
 						}
-						alias_stream = strecpy(alias_stream, "\"", lastof(alias_buffer));
+						alias_buffer += '\"';
 						break;
 					}
 
@@ -312,27 +310,26 @@ static void IConsoleAliasExec(const IConsoleAlias *alias, byte tokencount, char 
 							return;
 						}
 
-						alias_stream = strecpy(alias_stream, "\"", lastof(alias_buffer));
-						alias_stream = strecpy(alias_stream, tokens[param], lastof(alias_buffer));
-						alias_stream = strecpy(alias_stream, "\"", lastof(alias_buffer));
+						alias_buffer += '\"';
+						alias_buffer += tokens[param];
+						alias_buffer += '\"';
 						break;
 					}
 				}
 				break;
 
 			default:
-				*alias_stream++ = *cmdptr;
-				*alias_stream = '\0';
+				alias_buffer += *cmdptr;
 				break;
 		}
 
-		if (alias_stream >= lastof(alias_buffer) - 1) {
+		if (alias_buffer.size() >= ICON_MAX_STREAMSIZE - 1) {
 			IConsoleError("Requested alias execution would overflow execution buffer");
 			return;
 		}
 	}
 
-	IConsoleCmdExec(alias_buffer, recurse_count);
+	IConsoleCmdExec(alias_buffer.c_str(), recurse_count);
 }
 
 /**
