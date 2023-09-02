@@ -251,8 +251,8 @@ public:
 		      SLE_VAR(RoadVehicle, overtaking_ctr,       SLE_UINT8),
 		      SLE_VAR(RoadVehicle, crashed_ctr,          SLE_UINT16),
 		      SLE_VAR(RoadVehicle, reverse_ctr,          SLE_UINT8),
-		SLEG_CONDVECTOR("path.td", _path_td,             SLE_UINT8,                  SLV_SHIP_PATH_CACHE, SL_MAX_VERSION),
-		SLEG_CONDVECTOR("path.tile", _path_tile,         SLE_UINT32,                 SLV_SHIP_PATH_CACHE, SL_MAX_VERSION),
+		SLEG_CONDVECTOR("path.td", _path_td,             SLE_UINT8,                  SLV_ROADVEH_PATH_CACHE, SL_MAX_VERSION),
+		SLEG_CONDVECTOR("path.tile", _path_tile,         SLE_UINT32,                 SLV_ROADVEH_PATH_CACHE, SL_MAX_VERSION),
 		  SLE_CONDVAR(RoadVehicle, gv_flags,             SLE_UINT16,                 SLV_139, SL_MAX_VERSION),
 	};
 	inline const static SaveLoadCompatTable compat_description = _vehicle_roadveh_sl_compat;
