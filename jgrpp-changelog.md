@@ -2,6 +2,29 @@
 
 * * *
 
+### v0.55.0 (2023-09-04)
+* Fix incorrect NewGRF industry texts in some cases.
+* Fix inaccurate waiting cargo total in station window when using cargodist.
+* Fix autorenew/autoreplace of multi-cargo articulated vehicles and multi-cargo ships.
+* Fix engine news messages with multi-cargo articulated vehicles and multi-cargo ships.
+* Fix crash which could occur on Linux when using ICU and mixed script texts.
+* Fix train-only texts and sorts modes being shown in non-train slots windows.
+* Template-based train replacement:
+  * Fix various refit issues in refit as incoming vehicle mode.
+  * The autoreplace button in depot windows now also does template replacements.
+* Add signal support to picker tool.
+* Add setting for whether to allow converting town road to non-house types.
+* Add setting to also limit acceleration when using realistic braking.
+* Change cargo at next station conditional orders to use a manually specified station.
+* Allow custom signal styles to disable aspect-limited mode.
+* Right to left languages:
+  * Fix layout in template replacement windows.
+  * Fix block indent in routing restriction and programmable pre-signals windows.
+* Do not unnecessarily re-write configuration files for in-game only setting changes.
+* Various minor performance improvements.
+* Linux release builds: Remove Ubuntu 18.04, add Debian bookworm.
+* Bump trunk base from commit 1ff0dc11d8d017dbbd8f9d1e94ff5087a21063b5 to commit 3effb8931c36b8bbacae8fe77ad5b85406767d9f.
+
 ### v0.54.5 (2023-08-02)
 * Fix crash using picker tool on rail/road stations when no GRF classes defined.
 * Fix crash which could occur after using the date cheat, when using cargo distribution.
