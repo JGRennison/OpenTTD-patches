@@ -113,7 +113,9 @@ void AnimateAnimatedTiles()
 
 		auto next = iter;
 		++next;
-		if (next != _animated_tiles.end()) PREFETCH_NTA(&(next->second));
+		if (next != _animated_tiles.end()) {
+			PREFETCH_NTA(&(next->second));
+		}
 
 		if (iter->second.speed <= max_speed) {
 			const TileIndex curr = iter->first;
