@@ -74,13 +74,16 @@ This document does not describe the player-visible changes/additions described i
 
 ### Data structures
 
-* Various data structures have been replaced with B-tree maps/sets (cpp-btree library).
-* Various lists have been replaced with vectors or deques, etc.
+* Various data structures have been replaced with B-tree maps/sets (cpp-btree library), or robin-hood hash maps.
+* Various lists have been replaced with vectors, or other data structures.
+* Various deques and queues have been replaced with ring buffers.
 * Remove mutexes from SmallStack, only used from the main thread.
 * Add a third parameter p3, and an auxiliary data mechanism to DoCommand/CommandContainer.
 * Add a free bitmap for pool slots.
 * Maintain free list for text effect entries.
 * Many fields have been widened.
+* Change underlying data structures for ScriptList, create reverse mapping on demand instead of unconditionally.
+* Split GoodsEntry structure.
 
 ### Vehicles
 
@@ -107,6 +110,7 @@ This document does not describe the player-visible changes/additions described i
 
 * Add a fast path to Blitter_32bppAnim::Draw.
 * Replace sprite cache implementation.
+* Only cache sprites at the currently required zoom levels instead of all of them.
 * Add brightness adjusting modes to non-8bpp blitters.
 
 ### Link graph
