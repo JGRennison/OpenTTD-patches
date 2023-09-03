@@ -40,7 +40,7 @@ struct LangString {
 	bool no_translate_mode = false;
 	LangString *default_translation = nullptr;
 
-	LangString(std::string name, std::string english, size_t index, int line);
+	LangString(std::string name, std::string english, int index, int line);
 	void ReplaceDefinition(std::string english, int line);
 	void FreeTranslation();
 };

@@ -50,7 +50,7 @@ Case::Case(int caseidx, std::string string) :
  * @param index   The index in the string table.
  * @param line    The line this string was found on.
  */
-LangString::LangString(std::string name, std::string english, size_t index, int line) :
+LangString::LangString(std::string name, std::string english, int index, int line) :
 		name(std::move(name)), english(std::move(english)), index(index), line(line)
 {
 }
