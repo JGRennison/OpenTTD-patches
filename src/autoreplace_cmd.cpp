@@ -388,7 +388,7 @@ static CommandCost BuildReplacementMultiPartShip(EngineID e, const Vehicle *old_
 
 		CommandCost cost = BuildReplacementMultiPartShipSimple(e, old_veh, new_vehicle);
 		if (*new_vehicle != nullptr && refit_idx < refit_mask_list.size()) {
-			for (Vehicle *v = (*new_vehicle)->Move(refit_idx); v != nullptr; v = v->Next(), refit_idx++) {
+			for (Vehicle *v = (*new_vehicle)->Move((int)refit_idx); v != nullptr; v = v->Next(), refit_idx++) {
 				if (refit_idx == refit_mask_list.size()) break;
 
 				CargoTypes available = all_cargoes & refit_mask_list[refit_idx];
