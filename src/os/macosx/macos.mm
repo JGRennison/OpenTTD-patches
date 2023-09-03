@@ -15,6 +15,7 @@
 #include "../../fileio_func.h"
 #include <pthread.h>
 #include <array>
+#include <optional>
 
 #define Rect  OTTDRect
 #define Point OTTDPoint
