@@ -17,6 +17,10 @@
 #include <thread>
 #include <windows.h>
 
+#if defined(__MINGW32__)
+#include "../../3rdparty/mingw-std-threads/mingw.thread.h"
+#endif
+
 #include "../../safeguards.h"
 
 extern std::string SurveyMemoryToText(uint64_t memory);
