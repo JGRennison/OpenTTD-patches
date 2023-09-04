@@ -670,7 +670,7 @@ const char *GetDefaultLangGRFStringFromGRFText(const GRFTextList &text_list)
 	return default_text;
 }
 
-static std::array<std::pair<uint16, const char *>, 16> _grf_string_ptr_log;
+static std::array<std::pair<uint32, const char *>, 16> _grf_string_ptr_log;
 static unsigned int _grf_string_ptr_log_next = 0;
 
 /**
@@ -693,7 +693,7 @@ const char *GetDefaultLangGRFStringFromGRFText(const GRFTextWrapper &text)
 /**
  * Get a C-string from a stringid set by a newgrf.
  */
-const char *GetGRFStringPtr(uint16 stringid)
+const char *GetGRFStringPtr(uint32 stringid)
 {
 #if 0
 	assert_msg(stringid < _grf_text.size(), "stringid: %u, size: %u", stringid, (uint)_grf_text.size());
@@ -711,7 +711,7 @@ const char *GetGRFStringPtr(uint16 stringid)
 		str = GetStringPtr(_grf_text[stringid].def_string);
 	}
 
-	_grf_string_ptr_log[_grf_string_ptr_log_next] = std::pair<uint16, const char *>(stringid, str);
+	_grf_string_ptr_log[_grf_string_ptr_log_next] = std::pair<uint32, const char *>(stringid, str);
 	_grf_string_ptr_log_next = (_grf_string_ptr_log_next + 1) % _grf_string_ptr_log.size();
 
 	return str;
@@ -917,7 +917,7 @@ uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const 
 		uint32 grfid = 0;
 		for (uint entry = 0; entry < _grf_string_ptr_log.size(); entry++) {
 			const char *txt = _grf_string_ptr_log[entry].second;
-			uint16 stringid = _grf_string_ptr_log[entry].first;
+			uint32 stringid = _grf_string_ptr_log[entry].first;
 			if (txt != nullptr &&
 					buffer >= txt && buffer < txt + 8192 &&
 					buffer < txt + strlen(txt) &&

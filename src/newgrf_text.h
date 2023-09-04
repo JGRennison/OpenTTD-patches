@@ -37,7 +37,7 @@ const char *GetGRFStringFromGRFText(const GRFTextList &text_list);
 const char *GetGRFStringFromGRFText(const GRFTextWrapper &text);
 const char *GetDefaultLangGRFStringFromGRFText(const GRFTextList &text_list);
 const char *GetDefaultLangGRFStringFromGRFText(const GRFTextWrapper &text);
-const char *GetGRFStringPtr(uint16 stringid);
+const char *GetGRFStringPtr(uint32 stringid);
 void CleanUpStrings();
 void SetCurrentGrfLangID(byte language_id);
 std::string TranslateTTDPatchCodes(uint32 grfid, uint8 language_id, bool allow_newlines, const std::string &str, StringControlCode byte80 = SCC_NEWGRF_PRINT_WORD_STRING_ID);
