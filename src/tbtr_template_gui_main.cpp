@@ -219,7 +219,6 @@ private:
 	uint depot_text_width = 0;
 	uint remainder_text_width = 0;
 	uint old_text_width = 0;
-	uint toggle_text_width = 0;
 
 public:
 	TemplateReplaceWindow(WindowDesc *wdesc) : Window(wdesc)
