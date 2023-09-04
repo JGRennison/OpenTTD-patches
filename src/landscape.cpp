@@ -779,7 +779,9 @@ void RunTileLoop(bool apply_day_length)
 	while (count--) {
 		/* Get the next tile in sequence using a Galois LFSR. */
 		TileIndex next = (tile >> 1) ^ (-(int32)(tile & 1) & feedback);
-		if (count > 0) PREFETCH_NTA(&_m[next]);
+		if (count > 0) {
+			PREFETCH_NTA(&_m[next]);
+		}
 
 		_tile_type_procs[GetTileType(tile)]->tile_loop_proc(tile);
 
@@ -804,7 +806,9 @@ void RunAuxiliaryTileLoop()
 	while (count--) {
 		/* Get the next tile in sequence using a Galois LFSR. */
 		TileIndex next = (tile >> 1) ^ (-(int32)(tile & 1) & feedback);
-		if (count > 0) PREFETCH_NTA(&_m[next]);
+		if (count > 0) {
+			PREFETCH_NTA(&_m[next]);
+		}
 
 		if (IsFloodingTypeTile(tile) && !IsNonFloodingWaterTile(tile)) {
 			FloodingBehaviour fb = GetFloodingBehaviour(tile);
