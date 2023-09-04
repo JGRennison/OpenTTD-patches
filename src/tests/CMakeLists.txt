@@ -1,9 +1,11 @@
 add_test_files(
+    bitmath_func.cpp
     landscape_partial_pixel_z.cpp
     math_func.cpp
     ring_buffer.cpp
     test_main.cpp
     ../landscape_ppz.cpp
     ../core/alloc_func.cpp
+    ../core/bitmath_func.cpp
     ../core/math_func.cpp
 )
