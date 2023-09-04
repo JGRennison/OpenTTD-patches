@@ -258,7 +258,7 @@ static inline uint8 FindLastBit(T value)
 	} else if (sizeof(T) == sizeof(unsigned long)) {
 		return __builtin_clzl(1) - __builtin_clzl(unsigned_value);
 	} else {
-		return __builtin_clzll(1) - __builtin_ctzll(unsigned_value);
+		return __builtin_clzll(1) - __builtin_clzll(unsigned_value);
 	}
 #else
 	extern uint8 FindLastBit64(uint64 x);
