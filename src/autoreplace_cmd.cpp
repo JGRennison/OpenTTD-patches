@@ -348,7 +348,7 @@ static CommandCost BuildReplacementMultiPartShipSimple(EngineID e, const Vehicle
 		if (refit_cost.Succeeded()) cost.AddCost(refit_cost);
 	}
 
-	return CommandCost();
+	return cost;
 }
 
 /**
