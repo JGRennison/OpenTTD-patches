@@ -2,6 +2,10 @@
 
 * * *
 
+### v0.55.1 (2023-09-05)
+* Fix various failures which could occur when running on Windows.
+* Fix autorenew/autoreplace not charging for the cost of a new ship, when replacing a multi-cargo ship.
+
 ### v0.55.0 (2023-09-04)
 * Fix incorrect NewGRF industry texts in some cases.
 * Fix inaccurate waiting cargo total in station window when using cargodist.
