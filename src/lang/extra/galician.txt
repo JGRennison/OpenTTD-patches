@@ -44,6 +44,8 @@ STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_12_MONTHS              :Cada 12 meses
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_LABEL      :Intervalo personalizado (días)
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :Intervalo personalizado (minutos reais)
 
+STR_COMMA_SEPARATOR                                             :,{SP}
+
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
@@ -149,6 +151,9 @@ STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL_HELPTEXT                 :Selecciona o mo
 
 STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED             :Limitación da reserva no freado realista dos trens: {STRING}
 STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED_HELPTEXT    :No modelo de freado realista, limita a anticipación dos trens o aspecto das sinais (é dicir, non permitir reservar un número ilimitado de sinais).{} Isto require dun NewGRF que permite sinais multi-aspecto.{}{}Esta é unha configuración experta que probablemente aumentará a dificultade de xogo e require darlle outra volta a hora de poñer os sinais (tipo e lugar).
+
+STR_CONFIG_SETTING_LIMIT_TRAIN_ACCELERATION                     :Limitar a aceleración dos trens: {STRING}
+STR_CONFIG_SETTING_LIMIT_TRAIN_ACCELERATION_HELPTEXT            :Ao usar o modelo realista de frenado de trens, tamén limitar a aceleración máxima dos trens. Isto é para evitar que os pasaxeiros derramen as súas bebidas debido a que algúns tipos de trens aceleran excesivamente rápido..
 
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT                     :Velocidade máxima de carga en movemento do tren: {STRING}
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_HELPTEXT            :A velocidade máxima permitida os trens cando están cargando en movemento
@@ -658,6 +663,9 @@ STR_CONFIG_SETTING_NO_EXPIRE_OBJECTS_AFTER_ZERO                 :Deshabilitado
 
 STR_CONFIG_SETTING_IGNORE_OBJECT_INTRO_DATES                    :Ignorar a data de introdución dos obxectos: {STRING}
 STR_CONFIG_SETTING_IGNORE_OBJECT_INTRO_DATES_HELPTEXT           :Establece se os xogadores poden construír obxectos antes da súa data de introdución.{}Non aplica ao bxectos construídos durante a xeración do mapa.
+
+STR_CONFIG_SETTING_ALLOW_CONVERT_TOWN_ROAD_NO_HOUSES            :Permitir a conversión das estradas da vila a un tipo sen casas: {STRING}
+STR_CONFIG_SETTING_ALLOW_CONVERT_TOWN_ROAD_NO_HOUSES_HELPTEXT   :Se se permite aos xogadores converter as estradas pertencentes á vila nun tipo de estrada que non permita casas.{}Isto está desactivado por defecto porque facelo pode evitar que as vilas constrúan casas, o que fai que diminúan.
 
 STR_PURCHASE_LAND_PERMITTED_NO                                  :No
 STR_PURCHASE_LAND_PERMITTED_SINGLE                              :Si, un cadro por vez
@@ -1523,6 +1531,8 @@ STR_ORDER_CONDITIONAL_SCHED_SELECT_TOOLTIP                      :{BLACK}O progra
 STR_ORDER_CONDITIONAL_SCHED_TEST_TOOLTIP                        :{BLACK}A condición do programa de despachos a probar
 STR_ORDER_CONDITIONAL_VIA                                       :{BLACK}Vía
 STR_ORDER_CONDITIONAL_VIA_TOOLTIP                               :{BLACK}A vía estación na que comprobar a cantidade de carga agardando por
+STR_ORDER_CONDITIONAL_STATION                                   :{BLACK}Estación
+STR_ORDER_CONDITIONAL_STATION_TOOLTIP                           :{BLACK}A estación a comprobar
 
 STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS                        :acepta
 STR_ORDER_CONDITIONAL_COMPARATOR_DOES_NOT_ACCEPT                :non acepta
@@ -1610,6 +1620,9 @@ STR_ORDER_RV_DIR_SE                                             :[dirección sue
 STR_ORDER_RV_DIR_SW                                             :[dirección suroeste]
 STR_ORDER_RV_DIR_NW                                             :[dirección noroeste]
 
+STR_ORDER_CONDITIONAL_UNDEFINED_STATION                         :{PUSH_COLOUR}{RED}estación sen definir{POP_COLOUR}
+
+STR_ORDER_CONDITIONAL_FREE_PLATFORMS_DISPLAY                    :Saltar á orde {COMMA} cando {STRING} {STRING} {COMMA} libere a{P "" s} plataforma{P "" s}
 STR_ORDER_CONDITIONAL_PERCENT_DISPLAY                           :Saltar á orde {COMMA} {COMMA} porcentaxe das veces
 STR_ORDER_CONDITIONAL_CARGO_ACCEPTANCE                          :Saltar á orde {COMMA} cando a {STRING} {STRING} {STRING}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_DISPLAY                     :Saltar á orde {COMMA} cando a {STRING} {STRING} {STRING}
@@ -1912,12 +1925,22 @@ STR_TMPL_SET_USEDEPOT                                           :{BLACK}Usar veh
 STR_TMPL_SET_USEDEPOT_TIP                                       :{BLACK}Usar vehículos no interior do depósito que están nun estado neutral e inactivos para compoñer trens no reemprazo do modelo para reducir os costes de compra.
 STR_TMPL_SET_KEEPREMAINDERS                                     :{BLACK}Conservar os restos
 STR_TMPL_SET_KEEPREMAINDERS_TIP                                 :{BLACK}Despois de rematar a substitución de modelos manter todos os vehículos restantes do anitog tren nun estado neutral e inactivo para un posterior uso
+STR_TMPL_SET_REFIT_AS_TEMPLATE                                  :{BLACK}Como modelo
+STR_TMPL_SET_REFIT_AS_TEMPLATE_TIP                              :{BLACK}O tren se reaxustará para ser exactamente o modelo
+STR_TMPL_SET_REFIT_AS_INCOMING                                  :{BLACK}Como entrante
+STR_TMPL_SET_REFIT_AS_INCOMING_TIP                              :{BLACK}Cada parte do novo tren se reaxustará o primeiro tipo de carga do tren vello. Adaptación estándar se isto non é posible.
 STR_TMPL_SET_OLD_ONLY                                           :{BLACK}Só o vello
 STR_TMPL_SET_OLD_ONLY_TIP                                       :{BLACK}Se se establece, só os vehículos que son vellos e debido a substitución automática serán reemplazados.
 
+STR_TMPL_CONFIG_REFIT_AS_TEMPLATE                               :{GREEN}reaxuste: modelo
+STR_TMPL_CONFIG_REFIT_AS_INCOMING                               :{GOLD}reaxuste: entrante
 STR_TMPL_CONFIG_USEDEPOT                                        :usar depósito
 STR_TMPL_CONFIG_KEEPREMAINDERS                                  :conservar restos
 STR_TMPL_CONFIG_OLD_ONLY                                        :só o vello
+
+STR_TMPL_SECTION_REFIT                                          :{BLACK}Reaxustar
+STR_TMPL_SECTION_DEPOT_VEHICLES                                 :{BLACK}Depósito de vehículos
+STR_TMPL_SECTION_WHEN                                           :{BLACK}Cando
 
 STR_TMPL_NUM_TRAINS_NEED_RPL                                    :trenes a reemplazar: {SET_COLOUR}{COMMA}
 
@@ -2109,5 +2132,10 @@ STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_OFF              :Desactivado
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_SIMPLE           :Simple
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :Detallado
 
+STR_CONFIG_SETTING_CITY_IN_LABEL                                :Amosar se é cidade na etiqueta do nome da vila: {STRING}
+STR_CONFIG_SETTING_CITY_IN_LABEL_HELPTEXT                       :Amosar se unha vila tamén é unha cidade na súa etiqueta no mapa
+
 STR_VIEWPORT_TOWN_COLOUR                                        :{1:SET_COLOUR}{0:TOWN}
 STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {SET_COLOUR}({COMMA})
+STR_VIEWPORT_TOWN_COLOUR_CITY                                   :{1:SET_COLOUR}{0:TOWN} (Cidade)
+STR_VIEWPORT_TOWN_COLOUR_CITY_POP                               :{WHITE}{TOWN} {SET_COLOUR}(Cidade, {COMMA})
