@@ -183,6 +183,7 @@ inline void Blitter_32bppOptimized::Draw(const Blitter::BlitterParams *bp, ZoomL
 
 				case BM_BLACK_REMAP:
 					memset_colour(dst, _black_colour, n);
+					dst += n;
 					src_px += n;
 					src_n += n;
 					break;
