@@ -456,6 +456,15 @@ struct SaveLoadCompat {
 #define SLE_VAR2(base, name, variable, type) SLE_CONDVARNAME(base, variable, name, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
+ * Storage of a variable in every version of a savegame.
+ * @param base     Name of the class or struct containing the variable.
+ * @param variable Name of the variable in the class or struct referenced by \a base.
+ * @param name     Field name for table chunks.
+ * @param type     Storage of the data in memory and in the savegame.
+ */
+#define SLE_VARNAME(base, variable, name, type) SLE_CONDVARNAME(base, variable, name, type, SL_MIN_VERSION, SL_MAX_VERSION)
+
+/**
  * Storage of a reference in every version of a savegame.
  * @param base     Name of the class or struct containing the variable.
  * @param variable Name of the variable in the class or struct referenced by \a base.

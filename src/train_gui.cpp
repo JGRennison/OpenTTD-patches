@@ -349,7 +349,7 @@ static void GetCargoSummaryOfArticulatedVehicle(const Train *v, CargoSummary *su
 
 		item->capacity += v->cargo_cap;
 		item->amount += v->cargo.StoredCount();
-		if (item->source == INVALID_STATION) item->source = v->cargo.Source();
+		if (item->source == INVALID_STATION) item->source = v->cargo.GetFirstStation();
 	} while ((v = v->Next()) != nullptr && v->IsArticulatedPart());
 }
 
@@ -515,7 +515,7 @@ void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16 vsc
 			const auto weight_without_cargo = train->GetWeightWithoutCargo();
 			act_cargo[u->cargo_type] += u->cargo.StoredCount();
 			max_cargo[u->cargo_type] += u->cargo_cap;
-			feeder_share             += u->cargo.FeederShare();
+			feeder_share             += u->cargo.GetFeederShare();
 			empty_weight             += weight_without_cargo;
 			loaded_weight            += weight_without_cargo + train->GetCargoWeight(train->cargo_cap);
 		}
@@ -565,7 +565,7 @@ void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16 vsc
 		for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
 			act_cargo[u->cargo_type] += u->cargo.StoredCount();
 			max_cargo[u->cargo_type] += u->cargo_cap;
-			feeder_share             += u->cargo.FeederShare();
+			feeder_share             += u->cargo.GetFeederShare();
 		}
 
 		if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {

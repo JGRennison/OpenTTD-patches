@@ -1898,21 +1898,21 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 
 		/* Check whether the caches are still valid */
 		for (Vehicle *v : Vehicle::Iterate()) {
-			Money old_feeder_share = v->cargo.FeederShare();
+			Money old_feeder_share = v->cargo.GetFeederShare();
 			uint old_count = v->cargo.TotalCount();
-			uint64 old_cargo_days_in_transit = v->cargo.CargoDaysInTransit();
+			uint64 old_cargo_periods_in_transit = v->cargo.CargoPeriodsInTransit();
 
 			v->cargo.InvalidateCache();
 
 			uint changed = 0;
-			if (v->cargo.FeederShare() != old_feeder_share) SetBit(changed, 0);
+			if (v->cargo.GetFeederShare() != old_feeder_share) SetBit(changed, 0);
 			if (v->cargo.TotalCount() != old_count) SetBit(changed, 1);
-			if (v->cargo.CargoDaysInTransit() != old_cargo_days_in_transit) SetBit(changed, 2);
+			if (v->cargo.CargoPeriodsInTransit() != old_cargo_periods_in_transit) SetBit(changed, 2);
 			if (changed != 0) {
 				CCLOGV1("vehicle cargo cache mismatch: %c%c%c",
 						HasBit(changed, 0) ? 'f' : '-',
 						HasBit(changed, 1) ? 't' : '-',
-						HasBit(changed, 2) ? 'd' : '-');
+						HasBit(changed, 2) ? 'p' : '-');
 			}
 		}
 
@@ -1921,13 +1921,13 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 				if (st->goods[c].data == nullptr) continue;
 
 				uint old_count = st->goods[c].data->cargo.TotalCount();
-				uint64 old_cargo_days_in_transit = st->goods[c].data->cargo.CargoDaysInTransit();
+				uint64 old_cargo_periods_in_transit = st->goods[c].data->cargo.CargoPeriodsInTransit();
 
 				st->goods[c].data->cargo.InvalidateCache();
 
 				uint changed = 0;
 				if (st->goods[c].data->cargo.TotalCount() != old_count) SetBit(changed, 0);
-				if (st->goods[c].data->cargo.CargoDaysInTransit() != old_cargo_days_in_transit) SetBit(changed, 1);
+				if (st->goods[c].data->cargo.CargoPeriodsInTransit() != old_cargo_periods_in_transit) SetBit(changed, 1);
 				if (changed != 0) {
 					CCLOG("station cargo cache mismatch: station %i, company %i, cargo %u: %c%c",
 							st->index, (int)st->owner, c,

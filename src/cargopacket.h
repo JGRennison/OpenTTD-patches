@@ -51,15 +51,15 @@ void ChangeOwnershipOfCargoPacketDeferredPayments(Owner old_owner, Owner new_own
  */
 struct CargoPacket : CargoPacketPool::PoolItem<&_cargopacket_pool> {
 private:
-	uint16 count;           ///< The amount of cargo in this packet.
-	uint16 days_in_transit; ///< Amount of days this packet has been in transit.
-	Money feeder_share;     ///< Value of feeder pickup to be paid for on delivery of cargo.
-	TileIndex source_xy;    ///< The origin of the cargo (first station in feeder chain).
-	StationID next_station; ///< Station where the cargo wants to go next.
-	SourceID source_id;     ///< Index of source, INVALID_SOURCE if unknown/invalid.
-	StationID source;       ///< The station where the cargo came from first.
-	SourceType source_type; ///< Type of \c source_id.
-	uint8 flags = 0;        ///< NOSAVE: temporary flags
+	uint16 count = 0;                              ///< The amount of cargo in this packet.
+	uint16 periods_in_transit = 0;                 ///< Amount of cargo aging periods this packet has been in transit.
+	Money feeder_share = 0;                        ///< Value of feeder pickup to be paid for on delivery of cargo.
+	TileIndex source_xy = 0;                       ///< The origin of the cargo.
+	SourceID source_id = INVALID_SOURCE;           ///< Index of industry/town/HQ, INVALID_SOURCE if unknown/invalid.
+	SourceType source_type = SourceType::Industry; ///< Type of \c source_id.
+	uint8 flags = 0;                               ///< NOSAVE: temporary flags
+	StationID first_station = INVALID_STATION;     ///< The station where the cargo came from first.
+	StationID next_station = INVALID_STATION;      ///< Station where the cargo wants to go next.
 
 	/** Cargo packet flag bits in CargoPacket::flags. */
 	enum CargoPacketFlags {
@@ -79,8 +79,8 @@ public:
 	static const uint16 MAX_COUNT = UINT16_MAX;
 
 	CargoPacket();
-	CargoPacket(StationID source, TileIndex source_xy, uint16 count, SourceType source_type, SourceID source_id);
-	CargoPacket(uint16 count, uint16 days_in_transit, StationID source, TileIndex source_xy, Money feeder_share = 0, SourceType source_type = SourceType::Industry, SourceID source_id = INVALID_SOURCE);
+	CargoPacket(StationID first_station, TileIndex source_xy, uint16 count, SourceType source_type, SourceID source_id);
+	CargoPacket(uint16 count, uint16 periods_in_transit, StationID source, TileIndex source_xy, Money feeder_share = 0, SourceType source_type = SourceType::Industry, SourceID source_id = INVALID_SOURCE);
 	~CargoPacket();
 
 	CargoPacket *Split(uint new_size);
@@ -91,13 +91,19 @@ public:
 	 * Sets the station where the packet is supposed to go next.
 	 * @param next_station Next station the packet should go to.
 	 */
-	void SetNextStation(StationID next_station) { this->next_station = next_station; }
+	void SetNextStation(StationID next_station)
+	{
+		this->next_station = next_station;
+	}
 
 	/**
 	 * Adds some feeder share to the packet.
 	 * @param new_share Feeder share to be added.
 	 */
-	void AddFeederShare(Money new_share) { this->feeder_share += new_share; }
+	void AddFeederShare(Money new_share)
+	{
+		this->feeder_share += new_share;
+	}
 
 	/**
 	 * Gets the number of 'items' in this packet.
@@ -113,7 +119,7 @@ public:
 	 * the feeder chain.
 	 * @return Feeder share.
 	 */
-	inline Money FeederShare() const
+	inline Money GetFeederShare() const
 	{
 		return this->feeder_share;
 	}
@@ -124,7 +130,7 @@ public:
 	 * @param part Amount of cargo to get the share for.
 	 * @return Feeder share for the given amount of cargo.
 	 */
-	inline Money FeederShare(uint part) const
+	inline Money GetFeederShare(uint part) const
 	{
 		return this->feeder_share * part / static_cast<uint>(this->count);
 	}
@@ -138,16 +144,16 @@ public:
 	 * it is capped at UINT16_MAX.
 	 * @return Length this cargo has been in transit.
 	 */
-	inline uint16 DaysInTransit() const
+	inline uint16 GetPeriodsInTransit() const
 	{
-		return this->days_in_transit;
+		return this->periods_in_transit;
 	}
 
 	/**
 	 * Gets the type of the cargo's source. industry, town or head quarter.
 	 * @return Source type.
 	 */
-	inline SourceType SourceSubsidyType() const
+	inline SourceType GetSourceType() const
 	{
 		return this->source_type;
 	}
@@ -156,7 +162,7 @@ public:
 	 * Gets the ID of the cargo's source. An IndustryID, TownID or CompanyID.
 	 * @return Source ID.
 	 */
-	inline SourceID SourceSubsidyID() const
+	inline SourceID GetSourceID() const
 	{
 		return this->source_id;
 	}
@@ -165,16 +171,16 @@ public:
 	 * Gets the ID of the station where the cargo was loaded for the first time.
 	 * @return StationID.
 	 */
-	inline StationID SourceStation() const
+	inline StationID GetFirstStation() const
 	{
-		return this->source;
+		return this->first_station;
 	}
 
 	/**
-	 * Gets the coordinates of the cargo's source station.
-	 * @return Source station's coordinates.
+	 * Gets the coordinates of the cargo's source.
+	 * @return Source coordinates of cargo.
 	 */
-	inline TileIndex SourceStationXY() const
+	inline TileIndex GetSourceXY() const
 	{
 		return this->source_xy;
 	}
@@ -183,7 +189,7 @@ public:
 	 * Gets the ID of station the cargo wants to go next.
 	 * @return Next station for this packets.
 	 */
-	inline StationID NextStation() const
+	inline StationID GetNextStation() const
 	{
 		return this->next_station;
 	}
@@ -223,10 +229,10 @@ public:
 	};
 
 protected:
-	uint count;                   ///< Cache for the number of cargo entities.
-	uint64 cargo_days_in_transit; ///< Cache for the sum of number of days in transit of each entity; comparable to man-hours.
+	uint count;                      ///< Cache for the number of cargo entities.
+	uint64 cargo_periods_in_transit; ///< Cache for the sum of number of cargo aging periods in transit of each entity; comparable to man-hours.
 
-	Tcont packets;              ///< The cargo packets in this list.
+	Tcont packets;                   ///< The cargo packets in this list.
 
 	void AddToCache(const CargoPacket *cp);
 
@@ -252,12 +258,12 @@ public:
 	}
 
 	/**
-	 * Returns average number of days in transit for a cargo entity.
+	 * Returns average number of cargo aging periods in transit for a cargo entity.
 	 * @return The before mentioned number.
 	 */
-	inline uint DaysInTransit() const
+	inline uint PeriodsInTransit() const
 	{
-		return this->count == 0 ? 0 : this->cargo_days_in_transit / this->count;
+		return this->count == 0 ? 0 : this->cargo_periods_in_transit / this->count;
 	}
 
 	/**
@@ -269,9 +275,9 @@ public:
 		return this->count;
 	}
 
-	inline uint64 CargoDaysInTransit() const
+	inline uint64 CargoPeriodsInTransit() const
 	{
-		return this->cargo_days_in_transit;
+		return this->cargo_periods_in_transit;
 	}
 
 	void InvalidateCache();
@@ -357,19 +363,19 @@ public:
 	friend class VehicleCargoReroute;
 
 	/**
-	 * Returns source of the first cargo packet in this list.
-	 * @return The before mentioned source.
+	 * Returns the first station of the first cargo packet in this list.
+	 * @return The before mentioned station.
 	 */
-	inline StationID Source() const
+	inline StationID GetFirstStation() const
 	{
-		return this->count == 0 ? INVALID_STATION : this->packets.front()->source;
+		return this->count == 0 ? INVALID_STATION : this->packets.front()->first_station;
 	}
 
 	/**
 	 * Returns total sum of the feeder share for all packets.
 	 * @return The before mentioned number.
 	 */
-	inline Money FeederShare() const
+	inline Money GetFeederShare() const
 	{
 		return this->feeder_share;
 	}
@@ -462,10 +468,10 @@ public:
 	 */
 	static bool AreMergable(const CargoPacket *cp1, const CargoPacket *cp2)
 	{
-		return cp1->source_xy        == cp2->source_xy &&
-				cp1->days_in_transit == cp2->days_in_transit &&
-				cp1->source_type     == cp2->source_type &&
-				cp1->source_id       == cp2->source_id;
+		return cp1->source_xy           == cp2->source_xy &&
+				cp1->periods_in_transit == cp2->periods_in_transit &&
+				cp1->source_type        == cp2->source_type &&
+				cp1->source_id          == cp2->source_id;
 	}
 };
 
@@ -528,12 +534,12 @@ public:
 	}
 
 	/**
-	 * Returns source of the first cargo packet in this list.
-	 * @return The before mentioned source.
+	 * Returns first station of the first cargo packet in this list.
+	 * @return The before mentioned station.
 	 */
-	inline StationID Source() const
+	inline StationID GetFirstStation() const
 	{
-		return this->count == 0 ? INVALID_STATION : this->packets.begin()->second.front()->source;
+		return this->count == 0 ? INVALID_STATION : this->packets.begin()->second.front()->first_station;
 	}
 
 	/**
@@ -596,10 +602,10 @@ public:
 	 */
 	static bool AreMergable(const CargoPacket *cp1, const CargoPacket *cp2)
 	{
-		return cp1->source_xy    == cp2->source_xy &&
-				cp1->days_in_transit == cp2->days_in_transit &&
-				cp1->source_type     == cp2->source_type &&
-				cp1->source_id       == cp2->source_id;
+		return cp1->source_xy           == cp2->source_xy &&
+				cp1->periods_in_transit == cp2->periods_in_transit &&
+				cp1->source_type        == cp2->source_type &&
+				cp1->source_id          == cp2->source_id;
 	}
 };
 

@@ -3062,11 +3062,11 @@ static ChangeInfoResult CargoChangeInfo(uint cid, int numinfo, int prop, const G
 				break;
 
 			case 0x10: // Used for payment calculation
-				cs->transit_days[0] = buf->ReadByte();
+				cs->transit_periods[0] = buf->ReadByte();
 				break;
 
 			case 0x11: // Used for payment calculation
-				cs->transit_days[1] = buf->ReadByte();
+				cs->transit_periods[1] = buf->ReadByte();
 				break;
 
 			case 0x12: // Base cargo price

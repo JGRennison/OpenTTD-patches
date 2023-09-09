@@ -452,7 +452,7 @@ uint32 Station::GetNewGRFVariable(const ResolverObject &object, uint16 variable,
 			case 0x60: return std::min<uint32>(ge->CargoTotalCount(), 4095);
 			case 0x61: return ge->HasVehicleEverTriedLoading() && ge->IsSupplyAllowed() ? ge->time_since_pickup : 0;
 			case 0x62: return ge->HasRating() ? ge->rating : 0xFFFFFFFF;
-			case 0x63: return ge->data != nullptr ? ge->data->cargo.DaysInTransit() : 0;
+			case 0x63: return ge->data != nullptr ? ge->data->cargo.PeriodsInTransit() : 0;
 			case 0x64: return ge->HasVehicleEverTriedLoading() && ge->IsSupplyAllowed() ? ge->last_speed | (ge->last_age << 8) : 0xFF00;
 			case 0x65: return GB(ge->status, GoodsEntry::GES_ACCEPTANCE, 1) << 3;
 			case 0x69: {
@@ -472,8 +472,8 @@ uint32 Station::GetNewGRFVariable(const ResolverObject &object, uint16 variable,
 			case 1: return GB(std::min(g->CargoTotalCount(), 4095u), 0, 4) | (GB(g->status, GoodsEntry::GES_ACCEPTANCE, 1) << 7);
 			case 2: return g->time_since_pickup;
 			case 3: return g->rating;
-			case 4: return g->data != nullptr ? g->data->cargo.Source() : INVALID_STATION;
-			case 5: return g->data != nullptr ? g->data->cargo.DaysInTransit() : 0;
+			case 4: return g->data != nullptr ? g->data->cargo.GetFirstStation() : INVALID_STATION;
+			case 5: return g->data != nullptr ? g->data->cargo.PeriodsInTransit() : 0;
 			case 6: return g->last_speed;
 			case 7: return g->last_age;
 		}

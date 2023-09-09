@@ -635,7 +635,7 @@ void FixupTrainLengths()
 	}
 }
 
-static uint8  _cargo_days;
+static uint8  _cargo_periods;
 static uint16 _cargo_source;
 static uint32 _cargo_source_xy;
 static uint16 _cargo_count;
@@ -698,7 +698,7 @@ SaveLoadTable GetVehicleDescription(VehicleType vt)
 
 		     SLE_VAR(Vehicle, cargo_type,            SLE_UINT8),
 		 SLE_CONDVAR(Vehicle, cargo_subtype,         SLE_UINT8,                   SLV_35, SL_MAX_VERSION),
-		SLEG_CONDVAR(         _cargo_days,           SLE_UINT8,                    SL_MIN_VERSION,  SLV_68),
+		SLEG_CONDVAR(         _cargo_periods,        SLE_UINT8,                    SL_MIN_VERSION,  SLV_68),
 		SLEG_CONDVAR(         _cargo_source,         SLE_FILE_U8  | SLE_VAR_U16,   SL_MIN_VERSION,   SLV_7),
 		SLEG_CONDVAR(         _cargo_source,         SLE_UINT16,                   SLV_7,  SLV_68),
 		SLEG_CONDVAR(         _cargo_source_xy,      SLE_UINT32,                  SLV_44,  SLV_68),
@@ -1095,7 +1095,7 @@ void Load_VEHS()
 
 		if (_cargo_count != 0 && IsCompanyBuildableVehicleType(v) && CargoPacket::CanAllocateItem()) {
 			/* Don't construct the packet with station here, because that'll fail with old savegames */
-			CargoPacket *cp = new CargoPacket(_cargo_count, _cargo_days, _cargo_source, _cargo_source_xy, _cargo_feeder_share);
+			CargoPacket *cp = new CargoPacket(_cargo_count, _cargo_periods, _cargo_source, _cargo_source_xy, _cargo_feeder_share);
 			v->cargo.Append(cp);
 		}
 

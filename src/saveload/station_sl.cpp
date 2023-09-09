@@ -35,7 +35,7 @@ static uint16 _waiting_acceptance;
 static uint32 _old_num_flows;
 static uint16 _cargo_source;
 static uint32 _cargo_source_xy;
-static uint8  _cargo_days;
+static uint8  _cargo_periods;
 static Money  _cargo_feeder_share;
 
 CargoPacketList _packets;
@@ -223,7 +223,7 @@ public:
 		SLEG_CONDVAR("cargo_source", _cargo_source,    SLE_FILE_U8 | SLE_VAR_U16,   SL_MIN_VERSION, SLV_7),
 		SLEG_CONDVAR("cargo_source", _cargo_source,    SLE_UINT16,                  SLV_7, SLV_68),
 		SLEG_CONDVAR("cargo_source_xy", _cargo_source_xy, SLE_UINT32,               SLV_44, SLV_68),
-		SLEG_CONDVAR("cargo_days", _cargo_days,        SLE_UINT8,                   SL_MIN_VERSION, SLV_68),
+		SLEG_CONDVAR("cargo_days", _cargo_periods,     SLE_UINT8,                   SL_MIN_VERSION, SLV_68),
 		     SLE_VAR(GoodsEntry, last_speed,           SLE_UINT8),
 		     SLE_VAR(GoodsEntry, last_age,             SLE_UINT8),
 		SLEG_CONDVAR("cargo_feeder_share", _cargo_feeder_share,  SLE_FILE_U32 | SLE_VAR_I64, SLV_14, SLV_65),
@@ -305,7 +305,7 @@ public:
 					assert(CargoPacket::CanAllocateItem());
 
 					/* Don't construct the packet with station here, because that'll fail with old savegames */
-					CargoPacket *cp = new CargoPacket(GB(_waiting_acceptance, 0, 12), _cargo_days, source, _cargo_source_xy, _cargo_feeder_share);
+					CargoPacket *cp = new CargoPacket(GB(_waiting_acceptance, 0, 12), _cargo_periods, source, _cargo_source_xy, _cargo_feeder_share);
 					ge->data->cargo.Append(cp, INVALID_STATION);
 					SB(ge->status, GoodsEntry::GES_RATING, 1, 1);
 				}
