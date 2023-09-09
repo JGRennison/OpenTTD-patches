@@ -29,7 +29,6 @@ SaveLoadTable GetCargoPacketDesc()
 	static const SaveLoad _cargopacket_desc[] = {
 		SLE_VAR(CargoPacket, source,          SLE_UINT16),
 		SLE_VAR(CargoPacket, source_xy,       SLE_UINT32),
-		SLE_VAR(CargoPacket, loaded_at_xy,    SLE_UINT32),
 		SLE_VAR(CargoPacket, count,           SLE_UINT16),
 		SLE_CONDVAR(CargoPacket, days_in_transit, SLE_FILE_U8 | SLE_VAR_U16, SL_MIN_VERSION, SLV_MORE_CARGO_AGE),
 		SLE_CONDVAR(CargoPacket, days_in_transit, SLE_UINT16, SLV_MORE_CARGO_AGE, SLV_PERIODS_IN_TRANSIT_RENAME),

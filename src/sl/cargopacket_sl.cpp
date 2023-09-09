@@ -36,7 +36,6 @@ extern btree::btree_map<uint64, Money> _cargo_packet_deferred_payments;
 			for (VehicleCargoList::ConstIterator it(packets->begin()); it != packets->end(); it++) {
 				CargoPacket *cp = *it;
 				cp->source_xy = Station::IsValidID(cp->source) ? Station::Get(cp->source)->xy : v->tile;
-				cp->loaded_at_xy = cp->source_xy;
 			}
 		}
 
@@ -54,7 +53,6 @@ extern btree::btree_map<uint64, Money> _cargo_packet_deferred_payments;
 				for (StationCargoList::ConstIterator it(packets->begin()); it != packets->end(); it++) {
 					CargoPacket *cp = *it;
 					cp->source_xy = Station::IsValidID(cp->source) ? Station::Get(cp->source)->xy : st->xy;
-					cp->loaded_at_xy = cp->source_xy;
 				}
 			}
 		}
@@ -116,7 +114,7 @@ SaveLoadTable GetCargoPacketDesc()
 	static const SaveLoad _cargopacket_desc[] = {
 		     SLE_VAR(CargoPacket, source,          SLE_UINT16),
 		     SLE_VAR(CargoPacket, source_xy,       SLE_UINT32),
-		     SLE_VAR(CargoPacket, loaded_at_xy,    SLE_UINT32),
+		     SLE_VAR(CargoPacket, next_station,    SLE_FILE_U32 | SLE_VAR_U16),
 		     SLE_VAR(CargoPacket, count,           SLE_UINT16),
 		SLE_CONDVAR_X(CargoPacket, days_in_transit, SLE_FILE_U8 | SLE_VAR_U16, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_MORE_CARGO_AGE, 0, 0)),
 		SLE_CONDVAR_X(CargoPacket, days_in_transit, SLE_UINT16, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_MORE_CARGO_AGE)),

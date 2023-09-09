@@ -374,7 +374,7 @@ static void Load_STNS()
 					assert(CargoPacket::CanAllocateItem());
 
 					/* Don't construct the packet with station here, because that'll fail with old savegames */
-					CargoPacket *cp = new CargoPacket(GB(_waiting_acceptance, 0, 12), _cargo_days, source, _cargo_source_xy, _cargo_source_xy, _cargo_feeder_share);
+					CargoPacket *cp = new CargoPacket(GB(_waiting_acceptance, 0, 12), _cargo_days, source, _cargo_source_xy, _cargo_feeder_share);
 					ge->CreateData().cargo.Append(cp, INVALID_STATION);
 					SB(ge->status, GoodsEntry::GES_RATING, 1, 1);
 				}

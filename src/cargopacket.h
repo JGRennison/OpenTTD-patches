@@ -47,13 +47,6 @@ void ClearCargoPacketDeferredPayments();
 void ChangeOwnershipOfCargoPacketDeferredPayments(Owner old_owner, Owner new_owner);
 
 /**
- * To make alignment in the union in CargoPacket a bit easier, create a new type
- * that is a StationID, but stored as 32bit.
- */
-typedef uint32_t StationID_32bit;
-static_assert(sizeof(TileIndex) == sizeof(StationID_32bit));
-
-/**
  * Container for cargo from the same location and time.
  */
 struct CargoPacket : CargoPacketPool::PoolItem<&_cargopacket_pool> {
@@ -62,10 +55,7 @@ private:
 	uint16 days_in_transit; ///< Amount of days this packet has been in transit.
 	Money feeder_share;     ///< Value of feeder pickup to be paid for on delivery of cargo.
 	TileIndex source_xy;    ///< The origin of the cargo (first station in feeder chain).
-	union {
-		TileIndex loaded_at_xy;       ///< Location where this cargo has been loaded into the vehicle.
-		StationID_32bit next_station; ///< Station where the cargo wants to go next.
-	};
+	StationID next_station; ///< Station where the cargo wants to go next.
 	SourceID source_id;     ///< Index of source, INVALID_SOURCE if unknown/invalid.
 	StationID source;       ///< The station where the cargo came from first.
 	SourceType source_type; ///< Type of \c source_id.
@@ -90,18 +80,12 @@ public:
 
 	CargoPacket();
 	CargoPacket(StationID source, TileIndex source_xy, uint16 count, SourceType source_type, SourceID source_id);
-	CargoPacket(uint16 count, uint16 days_in_transit, StationID source, TileIndex source_xy, TileIndex loaded_at_xy, Money feeder_share = 0, SourceType source_type = SourceType::Industry, SourceID source_id = INVALID_SOURCE);
+	CargoPacket(uint16 count, uint16 days_in_transit, StationID source, TileIndex source_xy, Money feeder_share = 0, SourceType source_type = SourceType::Industry, SourceID source_id = INVALID_SOURCE);
 	~CargoPacket();
 
 	CargoPacket *Split(uint new_size);
 	void Merge(CargoPacket *cp);
 	void Reduce(uint count);
-
-	/**
-	 * Sets the tile where the packet was loaded last.
-	 * @param load_place Tile where the packet was loaded last.
-	 */
-	void SetLoadPlace(TileIndex load_place) { this->loaded_at_xy = load_place; }
 
 	/**
 	 * Sets the station where the packet is supposed to go next.
@@ -193,15 +177,6 @@ public:
 	inline TileIndex SourceStationXY() const
 	{
 		return this->source_xy;
-	}
-
-	/**
-	 * Gets the coordinates of the cargo's last loading station.
-	 * @return Last loading station's coordinates.
-	 */
-	inline TileIndex LoadedAtXY() const
-	{
-		return this->loaded_at_xy;
 	}
 
 	/**
@@ -452,8 +427,6 @@ public:
 
 	void InvalidateCache();
 
-	void SetTransferLoadPlace(TileIndex xy);
-
 	bool Stage(bool accepted, StationID current_station, StationIDStack next_station, uint8 order_flags, const GoodsEntry *ge, CargoPayment *payment);
 
 	/**
@@ -489,11 +462,10 @@ public:
 	 */
 	static bool AreMergable(const CargoPacket *cp1, const CargoPacket *cp2)
 	{
-		return cp1->source_xy    == cp2->source_xy &&
+		return cp1->source_xy        == cp2->source_xy &&
 				cp1->days_in_transit == cp2->days_in_transit &&
 				cp1->source_type     == cp2->source_type &&
-				cp1->source_id       == cp2->source_id &&
-				cp1->loaded_at_xy    == cp2->loaded_at_xy;
+				cp1->source_id       == cp2->source_id;
 	}
 };
 
@@ -599,8 +571,8 @@ public:
 	 * amount of cargo to be moved. Second parameter is destination (if
 	 * applicable), return value is amount of cargo actually moved. */
 
-	uint Reserve(uint max_move, VehicleCargoList *dest, TileIndex load_place, StationIDStack next);
-	uint Load(uint max_move, VehicleCargoList *dest, TileIndex load_place, StationIDStack next);
+	uint Reserve(uint max_move, VehicleCargoList *dest, StationIDStack next);
+	uint Load(uint max_move, VehicleCargoList *dest, StationIDStack next);
 	uint Truncate(uint max_move = UINT_MAX, StationCargoAmountMap *cargo_per_source = nullptr);
 	uint Reroute(uint max_move, StationCargoList *dest, StationID avoid, StationID avoid2, const GoodsEntry *ge);
 	uint RerouteFromSource(uint max_move, StationCargoList *dest, StationID source, StationID avoid, StationID avoid2, const GoodsEntry *ge);
