@@ -4279,6 +4279,11 @@ void DumpVehicleFlagsGeneric(const Vehicle *v, T dump, U dump_header)
 		dump('X', "VRF_PENDING_SPEED_RESTRICTION",     HasBit(t->flags, VRF_PENDING_SPEED_RESTRICTION));
 		dump('c', "VRF_SPEED_ADAPTATION_EXEMPT",       HasBit(t->flags, VRF_SPEED_ADAPTATION_EXEMPT));
 	}
+	if (v->type == VEH_ROAD) {
+		const RoadVehicle *rv = RoadVehicle::From(v);
+		dump_header("rvf:", "road vehicle flags:");
+		dump('L', "RVF_ON_LEVEL_CROSSING",             HasBit(rv->rvflags, RVF_ON_LEVEL_CROSSING));
+	}
 }
 
 char *Vehicle::DumpVehicleFlags(char *b, const char *last, bool include_tile) const

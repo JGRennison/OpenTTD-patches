@@ -2878,6 +2878,7 @@ static VehicleEnterTileStatus VehicleEnter_Road(Vehicle *v, TileIndex tile, int 
 		case ROAD_TILE_CROSSING: {
 			if (v->type != VEH_ROAD) break;
 			SetCrossingOccupiedByRoadVehicle(tile, true);
+			SetBit(RoadVehicle::From(v->First())->rvflags, RVF_ON_LEVEL_CROSSING);
 			break;
 		}
 

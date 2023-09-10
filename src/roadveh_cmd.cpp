@@ -631,7 +631,10 @@ static void RoadVehCrash(RoadVehicle *v)
 
 static bool RoadVehCheckTrainCrash(RoadVehicle *v)
 {
+	if (!HasBit(v->rvflags, RVF_ON_LEVEL_CROSSING)) return false;
 	if (HasBit(_roadtypes_non_train_colliding, v->roadtype)) return false;
+
+	bool still_on_level_crossing = false;
 
 	for (RoadVehicle *u = v; u != nullptr; u = u->Next()) {
 		if (u->state == RVSB_WORMHOLE) continue;
@@ -640,12 +643,18 @@ static bool RoadVehCheckTrainCrash(RoadVehicle *v)
 
 		if (!IsLevelCrossingTile(tile)) continue;
 
+		still_on_level_crossing = true;
+
 		CheckRoadVehCrashTrainInfo info(u);
 		FindVehicleOnPosXY(v->x_pos, v->y_pos, VEH_TRAIN, &info, EnumCheckRoadVehCrashTrain);
 		if (info.found) {
 			RoadVehCrash(v);
 			return true;
 		}
+	}
+
+	if (!still_on_level_crossing) {
+		ClrBit(v->rvflags, RVF_ON_LEVEL_CROSSING);
 	}
 
 	return false;

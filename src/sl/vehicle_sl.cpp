@@ -871,6 +871,7 @@ SaveLoadTable GetVehicleDescription(VehicleType vt)
 		 SLE_CONDNULL(2,                                                               SLV_6, SLV_131),
 		 SLE_CONDNULL(16,                                                              SLV_2, SLV_144), // old reserved space
 		SLE_CONDVAR_X(RoadVehicle, critical_breakdown_count, SLE_UINT8,       SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_IMPROVED_BREAKDOWNS, 6)),
+		SLE_CONDVAR_X(RoadVehicle, rvflags,                  SLE_UINT8,       SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ROAD_VEH_FLAGS)),
 	};
 
 	static const SaveLoad _ship_desc[] = {

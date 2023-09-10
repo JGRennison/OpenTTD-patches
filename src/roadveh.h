@@ -132,6 +132,10 @@ struct RoadVehPathCache {
 	}
 };
 
+enum RoadVehicleFlags {
+	RVF_ON_LEVEL_CROSSING             = 0, ///< One or more parts of this road vehicle are on a level crossing
+};
+
 /**
  * Buses, trucks and trams belong to this class.
  */
@@ -149,6 +153,8 @@ struct RoadVehicle FINAL : public GroundVehicle<RoadVehicle, VEH_ROAD> {
 	RoadTypes compatible_roadtypes; //!< Roadtypes this consist is powered on.
 
 	byte critical_breakdown_count; ///< Counter for the number of critical breakdowns since last service
+
+	uint8 rvflags;                 ///< Road vehicle flags
 
 	/** We don't want GCC to zero our struct! It already is zeroed and has an index! */
 	RoadVehicle() : GroundVehicleBase() {}

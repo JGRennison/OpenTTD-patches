@@ -4237,6 +4237,14 @@ bool AfterLoadGame()
 		_settings_game.economy.tick_rate = IsSavegameVersionUntil(SLV_MORE_CARGO_AGE) ? TRM_TRADITIONAL : TRM_MODERN;
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_ROAD_VEH_FLAGS)) {
+		for (RoadVehicle *rv : RoadVehicle::Iterate()) {
+			if (IsLevelCrossingTile(rv->tile)) {
+				SetBit(rv->First()->rvflags, RVF_ON_LEVEL_CROSSING);
+			}
+		}
+	}
+
 	if (SlXvIsFeatureMissing(XSLFI_AI_START_DATE) && IsSavegameVersionBefore(SLV_AI_START_DATE)) {
 		/* For older savegames, we don't now the actual interval; so set it to the newgame value. */
 		_settings_game.difficulty.competitors_interval = _settings_newgame.difficulty.competitors_interval;
