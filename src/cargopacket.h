@@ -470,7 +470,6 @@ public:
 	{
 		return cp1->source_xy           == cp2->source_xy &&
 				cp1->periods_in_transit == cp2->periods_in_transit &&
-				cp1->next_station       == cp2->next_station &&
 				cp1->source_type        == cp2->source_type &&
 				cp1->source_id          == cp2->source_id;
 	}
@@ -605,7 +604,6 @@ public:
 	{
 		return cp1->source_xy           == cp2->source_xy &&
 				cp1->periods_in_transit == cp2->periods_in_transit &&
-				cp1->next_station       == cp2->next_station &&
 				cp1->source_type        == cp2->source_type &&
 				cp1->source_id          == cp2->source_id;
 	}
