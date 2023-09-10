@@ -29,7 +29,7 @@
 #include "table/strings.h"
 
 static BuildingCounts<uint32> _building_counts;
-static HouseClassMapping _class_mapping[HOUSE_CLASS_MAX];
+static std::array<HouseClassMapping, HOUSE_CLASS_MAX> _class_mapping;
 
 HouseOverrideManager _house_mngr(NEW_HOUSE_OFFSET, NUM_HOUSES, INVALID_HOUSE_ID);
 
@@ -103,6 +103,11 @@ GrfSpecFeature FakeHouseResolverObject::GetFeature() const
 uint32 FakeHouseResolverObject::GetDebugID() const
 {
 	return HouseSpec::Get(this->house_scope.house_id)->grf_prop.local_id;
+}
+
+void ResetHouseClassIDs()
+{
+	_class_mapping = {};
 }
 
 HouseClassID AllocateHouseClassID(byte grf_class_id, uint32 grfid)
