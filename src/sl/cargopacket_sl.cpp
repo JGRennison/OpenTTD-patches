@@ -114,7 +114,7 @@ SaveLoadTable GetCargoPacketDesc()
 	static const SaveLoad _cargopacket_desc[] = {
 		     SLE_VAR(CargoPacket, first_station,   SLE_UINT16),
 		     SLE_VAR(CargoPacket, source_xy,       SLE_UINT32),
-		     SLE_VAR(CargoPacket, next_station,    SLE_FILE_U32 | SLE_VAR_U16),
+		     SLE_VAR(CargoPacket, next_hop,        SLE_FILE_U32 | SLE_VAR_U16),
 		     SLE_VAR(CargoPacket, count,           SLE_UINT16),
 		SLE_CONDVAR_X(CargoPacket, periods_in_transit, SLE_FILE_U8 | SLE_VAR_U16, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_MORE_CARGO_AGE, 0, 0)),
 		SLE_CONDVAR_X(CargoPacket, periods_in_transit, SLE_UINT16, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_MORE_CARGO_AGE)),

@@ -59,7 +59,7 @@ private:
 	SourceType source_type = SourceType::Industry; ///< Type of \c source_id.
 	uint8 flags = 0;                               ///< NOSAVE: temporary flags
 	StationID first_station = INVALID_STATION;     ///< The station where the cargo came from first.
-	StationID next_station = INVALID_STATION;      ///< Station where the cargo wants to go next.
+	StationID next_hop = INVALID_STATION;          ///< Station where the cargo wants to go next.
 
 	/** Cargo packet flag bits in CargoPacket::flags. */
 	enum CargoPacketFlags {
@@ -89,11 +89,11 @@ public:
 
 	/**
 	 * Sets the station where the packet is supposed to go next.
-	 * @param next_station Next station the packet should go to.
+	 * @param next_hop Next station the packet should go to.
 	 */
-	void SetNextStation(StationID next_station)
+	void SetNextHop(StationID next_hop)
 	{
-		this->next_station = next_station;
+		this->next_hop = next_hop;
 	}
 
 	/**
@@ -189,9 +189,9 @@ public:
 	 * Gets the ID of station the cargo wants to go next.
 	 * @return Next station for this packets.
 	 */
-	inline StationID GetNextStation() const
+	inline StationID GetNextHop() const
 	{
-		return this->next_station;
+		return this->next_hop;
 	}
 
 	static void InvalidateAllFrom(SourceType src_type, SourceID src);
