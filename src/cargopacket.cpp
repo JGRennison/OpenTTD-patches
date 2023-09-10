@@ -94,6 +94,7 @@ void DumpCargoPacketDeferredPaymentStats(char *buffer, const char *last)
 		}
 	}
 	buffer += seprintf(buffer, last, "Deferred payment count: %u\n", (uint) _cargo_packet_deferred_payments.size());
+	buffer += seprintf(buffer, last, "Total cargo packets: %u\n", (uint)CargoPacket::GetNumItems());
 }
 
 /**
