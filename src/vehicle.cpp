@@ -63,6 +63,7 @@
 #include "network/network_sync.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 #include "3rdparty/cpp-btree/btree_map.h"
+#include "3rdparty/robin_hood/robin_hood.h"
 
 #include "table/strings.h"
 
@@ -479,28 +480,24 @@ Vehicle::Vehicle(VehicleType type)
 	this->vcache.cached_veh_flags = 0;
 }
 
-/* Size of the hash, 6 = 64 x 64, 7 = 128 x 128. Larger sizes will (in theory) reduce hash
- * lookup times at the expense of memory usage. */
-const int HASH_BITS = 7;
-const int HASH_SIZE = 1 << HASH_BITS;
-const int HASH_MASK = HASH_SIZE - 1;
-const int TOTAL_HASH_SIZE = 1 << (HASH_BITS * 2);
-const int TOTAL_HASH_MASK = TOTAL_HASH_SIZE - 1;
-
-/* Resolution of the hash, 0 = 1*1 tile, 1 = 2*2 tiles, 2 = 4*4 tiles, etc.
- * Profiling results show that 0 is fastest. */
-const int HASH_RES = 0;
-
-static Vehicle *_vehicle_tile_hash[TOTAL_HASH_SIZE * 4];
+using VehicleTypeTileHash = robin_hood::unordered_map<TileIndex, VehicleID>;
+static std::array<VehicleTypeTileHash, 4> _vehicle_tile_hashes;
 
 static Vehicle *VehicleFromTileHash(int xl, int yl, int xu, int yu, VehicleType type, void *data, VehicleFromPosProc *proc, bool find_first)
 {
-	for (int y = yl; ; y = (y + (1 << HASH_BITS)) & (HASH_MASK << HASH_BITS)) {
-		for (int x = xl; ; x = (x + 1) & HASH_MASK) {
-			Vehicle *v = _vehicle_tile_hash[((x + y) & TOTAL_HASH_MASK) + (TOTAL_HASH_SIZE * type)];
-			for (; v != nullptr; v = v->hash_tile_next) {
-				Vehicle *a = proc(v, data);
-				if (find_first && a != nullptr) return a;
+	VehicleTypeTileHash &vhash = _vehicle_tile_hashes[type];
+
+	for (int y = yl; ; y++) {
+		for (int x = xl; ; x++) {
+			auto iter = vhash.find(TileXY(x, y));
+			if (iter != vhash.end()) {
+				Vehicle *v = Vehicle::Get(iter->second);
+				do {
+					Vehicle *a = proc(v, data);
+					if (find_first && a != nullptr) return a;
+
+					v = v->hash_tile_next;
+				} while (v != nullptr);
 			}
 			if (x == xu) break;
 		}
@@ -527,10 +524,10 @@ Vehicle *VehicleFromPosXY(int x, int y, VehicleType type, void *data, VehicleFro
 	const int COLL_DIST = 6;
 
 	/* Hash area to scan is from xl,yl to xu,yu */
-	int xl = GB((x - COLL_DIST) / TILE_SIZE, HASH_RES, HASH_BITS);
-	int xu = GB((x + COLL_DIST) / TILE_SIZE, HASH_RES, HASH_BITS);
-	int yl = GB((y - COLL_DIST) / TILE_SIZE, HASH_RES, HASH_BITS) << HASH_BITS;
-	int yu = GB((y + COLL_DIST) / TILE_SIZE, HASH_RES, HASH_BITS) << HASH_BITS;
+	int xl = (x - COLL_DIST) / TILE_SIZE;
+	int xu = (x + COLL_DIST) / TILE_SIZE;
+	int yl = (y - COLL_DIST) / TILE_SIZE;
+	int yu = (y + COLL_DIST) / TILE_SIZE;
 
 	return VehicleFromTileHash(xl, yl, xu, yu, type, data, proc, find_first);
 }
@@ -547,15 +544,17 @@ Vehicle *VehicleFromPosXY(int x, int y, VehicleType type, void *data, VehicleFro
  */
 Vehicle *VehicleFromPos(TileIndex tile, VehicleType type, void *data, VehicleFromPosProc *proc, bool find_first)
 {
-	int x = GB(TileX(tile), HASH_RES, HASH_BITS);
-	int y = GB(TileY(tile), HASH_RES, HASH_BITS) << HASH_BITS;
+	VehicleTypeTileHash &vhash = _vehicle_tile_hashes[type];
 
-	Vehicle *v = _vehicle_tile_hash[((x + y) & TOTAL_HASH_MASK) + (TOTAL_HASH_SIZE * type)];
-	for (; v != nullptr; v = v->hash_tile_next) {
-		if (v->tile != tile) continue;
+	auto iter = vhash.find(tile);
+	if (iter != vhash.end()) {
+		Vehicle *v = Vehicle::Get(iter->second);
+		do {
+			Vehicle *a = proc(v, data);
+			if (find_first && a != nullptr) return a;
 
-		Vehicle *a = proc(v, data);
-		if (find_first && a != nullptr) return a;
+			v = v->hash_tile_next;
+		} while (v != nullptr);
 	}
 
 	return nullptr;
@@ -848,35 +847,53 @@ CommandCost EnsureNoTrainOnTrackBits(TileIndex tile, TrackBits track_bits)
 
 void UpdateVehicleTileHash(Vehicle *v, bool remove)
 {
-	Vehicle **old_hash = v->hash_tile_current;
-	Vehicle **new_hash;
+	TileIndex old_hash_tile = v->hash_tile_current;
+	TileIndex new_hash_tile;
 
 	if (remove || HasBit(v->subtype, GVSF_VIRTUAL) || (v->tile == 0 && _settings_game.construction.freeform_edges)) {
-		new_hash = nullptr;
+		new_hash_tile = INVALID_TILE;
 	} else {
-		int x = GB(TileX(v->tile), HASH_RES, HASH_BITS);
-		int y = GB(TileY(v->tile), HASH_RES, HASH_BITS) << HASH_BITS;
-		new_hash = &_vehicle_tile_hash[((x + y) & TOTAL_HASH_MASK) + (TOTAL_HASH_SIZE * v->type)];
+		new_hash_tile = v->tile;
 	}
 
-	if (old_hash == new_hash) return;
+	if (old_hash_tile == new_hash_tile) return;
+
+	VehicleTypeTileHash &vhash = _vehicle_tile_hashes[v->type];
 
 	/* Remove from the old position in the hash table */
-	if (old_hash != nullptr) {
+	if (old_hash_tile != INVALID_TILE) {
 		if (v->hash_tile_next != nullptr) v->hash_tile_next->hash_tile_prev = v->hash_tile_prev;
-		*v->hash_tile_prev = v->hash_tile_next;
+		if (v->hash_tile_prev != nullptr) {
+			v->hash_tile_prev->hash_tile_next = v->hash_tile_next;
+		} else {
+			/* This was the first vehicle in the chain */
+			if (v->hash_tile_next != nullptr) {
+				vhash[old_hash_tile] = v->hash_tile_next->index;
+			} else {
+				vhash.erase(old_hash_tile);
+			}
+		}
 	}
 
 	/* Insert vehicle at beginning of the new position in the hash table */
-	if (new_hash != nullptr) {
-		v->hash_tile_next = *new_hash;
-		if (v->hash_tile_next != nullptr) v->hash_tile_next->hash_tile_prev = &v->hash_tile_next;
-		v->hash_tile_prev = new_hash;
-		*new_hash = v;
+	if (new_hash_tile != INVALID_TILE) {
+		auto res = vhash.insert({ new_hash_tile, v->index });
+		if (res.second) {
+			/* Insert took place */
+			v->hash_tile_next = nullptr;
+			v->hash_tile_prev = nullptr;
+		} else {
+			/* Key already existed */
+			Vehicle *next = Vehicle::Get(res.first->second);
+			next->hash_tile_prev = v;
+			v->hash_tile_next = next;
+			v->hash_tile_prev = nullptr;
+			res.first->second = v->index;
+		}
 	}
 
-	/* Remember current hash position */
-	v->hash_tile_current = new_hash;
+	/* Remember current hash tile */
+	v->hash_tile_current = new_hash_tile;
 }
 
 bool ValidateVehicleTileHash(const Vehicle *v)
@@ -885,12 +902,19 @@ bool ValidateVehicleTileHash(const Vehicle *v)
 			|| (v->type == VEH_SHIP && HasBit(v->subtype, GVSF_VIRTUAL))
 			|| (v->type == VEH_AIRCRAFT && v->tile == 0 && _settings_game.construction.freeform_edges)
 			|| v->type >= VEH_COMPANY_END) {
-		return v->hash_tile_current == nullptr;
+		return v->hash_tile_current == INVALID_TILE;
 	}
 
-	int x = GB(TileX(v->tile), HASH_RES, HASH_BITS);
-	int y = GB(TileY(v->tile), HASH_RES, HASH_BITS) << HASH_BITS;
-	return v->hash_tile_current == &_vehicle_tile_hash[((x + y) & TOTAL_HASH_MASK) + (TOTAL_HASH_SIZE * v->type)];
+	if (v->hash_tile_current != v->tile) return false;
+
+	auto iter = _vehicle_tile_hashes[v->type].find(v->hash_tile_current);
+	if (iter == _vehicle_tile_hashes[v->type].end()) return false;
+
+	for (const Vehicle *u = Vehicle::GetIfValid(iter->second); u != nullptr; u = u->hash_tile_next) {
+		if (u == v) return true;
+	}
+
+	return false;
 }
 
 static Vehicle *_vehicle_viewport_hash[1 << (GEN_HASHX_BITS + GEN_HASHY_BITS)];
@@ -966,9 +990,15 @@ static void ProcessDeferredUpdateVehicleViewportHashes()
 
 void ResetVehicleHash()
 {
-	for (Vehicle *v : Vehicle::Iterate()) { v->hash_tile_current = nullptr; }
+	for (Vehicle *v : Vehicle::Iterate()) {
+		v->hash_tile_next = nullptr;
+		v->hash_tile_prev = nullptr;
+		v->hash_tile_current = INVALID_TILE;
+	}
 	memset(_vehicle_viewport_hash, 0, sizeof(_vehicle_viewport_hash));
-	memset(_vehicle_tile_hash, 0, sizeof(_vehicle_tile_hash));
+	for (VehicleTypeTileHash &vhash : _vehicle_tile_hashes) {
+		vhash.clear();
+	}
 }
 
 void ResetVehicleColourMap()

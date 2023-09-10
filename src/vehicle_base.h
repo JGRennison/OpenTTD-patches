@@ -307,8 +307,8 @@ public:
 	Vehicle **hash_viewport_prev;       ///< NOSAVE: Previous vehicle in the visual location hash.
 
 	Vehicle *hash_tile_next;            ///< NOSAVE: Next vehicle in the tile location hash.
-	Vehicle **hash_tile_prev;           ///< NOSAVE: Previous vehicle in the tile location hash.
-	Vehicle **hash_tile_current;        ///< NOSAVE: Cache of the current hash chain.
+	Vehicle *hash_tile_prev;            ///< NOSAVE: Previous vehicle in the tile location hash.
+	TileIndex hash_tile_current = INVALID_TILE; ///< NOSAVE: current tile used for tile location hash.
 
 	byte breakdown_severity;            ///< severity of the breakdown. Note that lower means more severe
 	byte breakdown_type;                ///< Type of breakdown
