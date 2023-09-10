@@ -679,19 +679,20 @@ static void StartRoadVehSound(const RoadVehicle *v)
 struct RoadVehFindData {
 	int x;
 	int y;
-	const Vehicle *veh;
-	Vehicle *best;
+	const RoadVehicle *veh;
+	RoadVehicle *best;
 	uint best_diff;
 	Direction dir;
 	RoadTypeCollisionMode collision_mode;
 };
 
-static Vehicle *EnumCheckRoadVehClose(Vehicle *v, void *data)
+static Vehicle *EnumCheckRoadVehClose(Vehicle *veh, void *data)
 {
 	static const int8 dist_x[] = { -4, -8, -4, -1, 4, 8, 4, 1 };
 	static const int8 dist_y[] = { -4, -1, 4, 8, 4, 1, -4, -8 };
 
 	RoadVehFindData *rvf = (RoadVehFindData*)data;
+	RoadVehicle *v = RoadVehicle::From(veh);
 
 	short x_diff = v->x_pos - rvf->x;
 	short y_diff = v->y_pos - rvf->y;
@@ -700,7 +701,7 @@ static Vehicle *EnumCheckRoadVehClose(Vehicle *v, void *data)
 			abs(v->z_pos - rvf->veh->z_pos) < 6 &&
 			v->direction == rvf->dir &&
 			rvf->veh->First() != v->First() &&
-			HasBit(_collision_mode_roadtypes[rvf->collision_mode], RoadVehicle::From(v)->roadtype) &&
+			HasBit(_collision_mode_roadtypes[rvf->collision_mode], v->roadtype) &&
 			(dist_x[v->direction] >= 0 || (x_diff > dist_x[v->direction] && x_diff <= 0)) &&
 			(dist_x[v->direction] <= 0 || (x_diff < dist_x[v->direction] && x_diff >= 0)) &&
 			(dist_y[v->direction] >= 0 || (y_diff > dist_y[v->direction] && y_diff <= 0)) &&
@@ -750,7 +751,7 @@ static RoadVehicle *RoadVehFindCloseTo(RoadVehicle *v, int x, int y, Direction d
 
 	if (update_blocked_ctr && ++front->blocked_ctr > 1480 && (!_settings_game.vehicle.roadveh_cant_quantum_tunnel)) return nullptr;
 
-	RoadVehicle *rv = RoadVehicle::From(rvf.best);
+	RoadVehicle *rv = rvf.best;
 	if (rv != nullptr && front->IsRoadVehicleOnLevelCrossing() && (rv->First()->cur_speed == 0 || rv->First()->IsRoadVehicleStopped())) return nullptr;
 
 	return rv;
