@@ -223,7 +223,9 @@ static uint32 GetAirportTileIDAtOffset(TileIndex tile, const Station *st, uint32
  */
 AirportTileResolverObject::AirportTileResolverObject(const AirportTileSpec *ats, TileIndex tile, Station *st,
 		CallbackID callback, uint32 callback_param1, uint32 callback_param2)
-	: ResolverObject(ats->grf_prop.grffile, callback, callback_param1, callback_param2), tiles_scope(*this, ats, tile, st)
+	: ResolverObject(ats->grf_prop.grffile, callback, callback_param1, callback_param2),
+		tiles_scope(*this, ats, tile, st),
+		airport_scope(*this, tile, st, st != nullptr ? st->airport.type : (byte)AT_DUMMY, st != nullptr ? st->airport.layout : 0)
 {
 	this->root_spritegroup = ats->grf_prop.spritegroup[0];
 }
