@@ -656,6 +656,8 @@ static inline bool ValParamTrackOrientation(Track track)
  * @param p2 various bitstuffed elements
  *           - (bit  0- 2) - track-orientation, valid values: 0-5 (@see Track)
  *           - (bit  3)    - 0 = error on signal in the way, 1 = auto remove signals when in the way
+ *           - (bit  4)    - No custom bridge heads
+ *           - (bit  5)    - No dual rail type
  * @param text unused
  * @return the cost of this operation or an error
  */
@@ -1264,6 +1266,8 @@ static CommandCost ValidateAutoDrag(Trackdir *trackdir, TileIndex start, TileInd
  * - p2 = (bit 6-8) - track-orientation, valid values: 0-5 (Track enum)
  * - p2 = (bit 9)   - 0 = build, 1 = remove tracks
  * - p2 = (bit 10)  - 0 = build up to an obstacle, 1 = fail if an obstacle is found (used for AIs).
+ * - p2 = (bit 11)  - No custom bridge heads
+ * - p2 = (bit 12)  - No dual rail type
  * - p2 = (bit 13)  - 0 = error on signal in the way, 1 = auto remove signals when in the way
  * @param text unused
  * @return the cost of this operation or an error
@@ -1332,6 +1336,10 @@ static CommandCost CmdRailTrackHelper(TileIndex tile, DoCommandFlag flags, uint3
  * - p2 = (bit 0-5) - railroad type normal/maglev (0 = normal, 1 = mono, 2 = maglev)
  * - p2 = (bit 6-8) - track-orientation, valid values: 0-5 (Track enum)
  * - p2 = (bit 9)   - 0 = build, 1 = remove tracks
+ * - p2 = (bit 10)  - 0 = build up to an obstacle, 1 = fail if an obstacle is found (used for AIs).
+ * - p2 = (bit 11)  - No custom bridge heads
+ * - p2 = (bit 12)  - No dual rail type
+ * - p2 = (bit 13)  - 0 = error on signal in the way, 1 = auto remove signals when in the way
  * @param text unused
  * @return the cost of this operation or an error
  * @see CmdRailTrackHelper
@@ -1351,6 +1359,10 @@ CommandCost CmdBuildRailroadTrack(TileIndex tile, DoCommandFlag flags, uint32 p1
  * - p2 = (bit 0-5) - railroad type normal/maglev (0 = normal, 1 = mono, 2 = maglev), only used for building
  * - p2 = (bit 6-8) - track-orientation, valid values: 0-5 (Track enum)
  * - p2 = (bit 9)   - 0 = build, 1 = remove tracks
+ * - p2 = (bit 10)  - 0 = build up to an obstacle, 1 = fail if an obstacle is found (used for AIs).
+ * - p2 = (bit 11)  - No custom bridge heads
+ * - p2 = (bit 12)  - No dual rail type
+ * - p2 = (bit 13)  - 0 = error on signal in the way, 1 = auto remove signals when in the way
  * @param text unused
  * @return the cost of this operation or an error
  * @see CmdRailTrackHelper
