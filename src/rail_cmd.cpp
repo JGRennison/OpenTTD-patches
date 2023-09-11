@@ -357,6 +357,12 @@ static CommandCost EnsureNoTrainOnTrack(TileIndex tile, Track track)
 	return EnsureNoTrainOnTrackBits(tile, rail_bits);
 }
 
+struct CheckTrackCombinationRailTypeChanges {
+	RailType convert_to = INVALID_RAILTYPE;
+	RailType primary = INVALID_RAILTYPE;
+	RailType secondary = INVALID_RAILTYPE;
+};
+
 /**
  * Check that the new track bits may be built.
  * @param tile %Tile to build on.
@@ -366,7 +372,8 @@ static CommandCost EnsureNoTrainOnTrack(TileIndex tile, Track track)
  * @param flags    Flags of the operation.
  * @return Succeeded or failed command.
  */
-static CommandCost CheckTrackCombination(TileIndex tile, TrackBits to_build, RailType railtype, bool disable_dual_rail_type, DoCommandFlag flags, bool auto_remove_signals)
+static CommandCost CheckTrackCombination(TileIndex tile, TrackBits to_build, RailType railtype, bool disable_dual_rail_type,
+		DoCommandFlag flags, bool auto_remove_signals, CheckTrackCombinationRailTypeChanges &changes)
 {
 	if (!IsPlainRail(tile)) return_cmd_error(STR_ERROR_IMPOSSIBLE_TRACK_COMBINATION);
 
@@ -390,10 +397,10 @@ static CommandCost CheckTrackCombination(TileIndex tile, TrackBits to_build, Rai
 		if (flags & DC_EXEC) {
 			if (to_build & TRACK_BIT_RT_1) {
 				RailType current_rt = GetRailType(tile);
-				SetRailType(tile, railtype);
-				SetSecondaryRailType(tile, current_rt);
+				changes.primary = railtype;
+				changes.secondary = current_rt;
 			} else {
-				SetSecondaryRailType(tile, railtype);
+				changes.secondary = railtype;
 			}
 		}
 		return CommandCost();
@@ -460,13 +467,14 @@ static CommandCost CheckTrackCombination(TileIndex tile, TrackBits to_build, Rai
 
 	CommandCost ret;
 	if (rt != INVALID_RAILTYPE) {
-		ret = DoCommand(tile, tile, rt, flags, CMD_CONVERT_RAIL);
+		ret = DoCommand(tile, tile, rt, flags & ~DC_EXEC, CMD_CONVERT_RAIL);
 		if (ret.Failed()) return ret;
+		changes.convert_to = rt;
 	}
 
 	if (flags & DC_EXEC) {
-		SetRailType(tile, railtype);
-		SetSecondaryRailType(tile, railtype);
+		changes.primary = railtype;
+		changes.secondary = railtype;
 	}
 
 	return ret;
@@ -684,16 +692,8 @@ CommandCost CmdBuildSingleRail(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 
 			if (!IsPlainRail(tile)) return DoCommand(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR); // just get appropriate error message
 
-			const RailType old_rt = GetRailType(tile);
-			const RailType old_secondary_rt = GetSecondaryRailType(tile);
-			auto rt_guard = scope_guard([&]() {
-				if (flags & DC_EXEC) {
-					SetRailType(tile, old_rt);
-					SetSecondaryRailType(tile, old_secondary_rt);
-				}
-			});
-
-			ret = CheckTrackCombination(tile, trackbit, railtype, disable_dual_rail_type, flags, auto_remove_signals);
+			CheckTrackCombinationRailTypeChanges changes;
+			ret = CheckTrackCombination(tile, trackbit, railtype, disable_dual_rail_type, flags, auto_remove_signals, changes);
 			if (ret.Succeeded()) {
 				cost.AddCost(ret);
 				ret = EnsureNoTrainOnTrack(tile, track);
@@ -720,9 +720,15 @@ CommandCost CmdBuildSingleRail(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 				}
 			}
 
-			rt_guard.cancel();
-
 			if (flags & DC_EXEC) {
+				if (changes.convert_to != INVALID_RAILTYPE) {
+					/* The cost is already accounted for and a test already done in CheckTrackCombination */
+					CommandCost ret = DoCommand(tile, tile, changes.convert_to, flags, CMD_CONVERT_RAIL);
+					assert(ret.Succeeded());
+				}
+				if (changes.primary != INVALID_RAILTYPE) SetRailType(tile, changes.primary);
+				if (changes.secondary != INVALID_RAILTYPE) SetSecondaryRailType(tile, changes.secondary);
+
 				SetRailGroundType(tile, RAIL_GROUND_BARREN);
 				TrackBits bits = GetTrackBits(tile);
 				TrackBits newbits = bits | trackbit;
