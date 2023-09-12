@@ -1281,7 +1281,8 @@ class btree : public Params::key_compare {
   }
   node_type* new_leaf_node(node_type *parent) {
     leaf_fields *p = reinterpret_cast<leaf_fields*>(
-        mutable_internal_allocator()->allocate(sizeof(leaf_fields)));
+        mutable_internal_allocator()->allocate(
+            sizeof(base_fields) + kNodeValues * sizeof(value_type)));
     return node_type::init_leaf(p, parent, kNodeValues);
   }
   node_type* new_leaf_root_node(int max_count) {
