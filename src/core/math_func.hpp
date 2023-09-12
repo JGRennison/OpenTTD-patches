@@ -93,7 +93,7 @@ static inline T Clamp(const T a, const T min, const T max)
  * is returned otherwise the border of the interval is returned, according
  * which side of the interval was 'left'.
  *
- * @note If the min value is greater than the return value is the average of the min and max.
+ * @note If the min value is greater than the max, return value is the average of the min and max.
  * @param a The value to clamp/truncate.
  * @param min The minimum of the interval.
  * @param max the maximum of the interval.
@@ -102,7 +102,10 @@ static inline T Clamp(const T a, const T min, const T max)
 template <typename T>
 static inline T SoftClamp(const T a, const T min, const T max)
 {
-	if (min > max) return (min + max) / 2;
+	if (min > max) {
+		using U = std::make_unsigned_t<T>;
+		return min - (U(min) - max) / 2;
+	}
 	if (a <= min) return min;
 	if (a >= max) return max;
 	return a;
