@@ -1325,8 +1325,6 @@ STR_VEHICLE_LIST_CHANGE_ORDER_ROAD_VEHICLE_DEPOT                :转移调度任
 STR_VEHICLE_LIST_CHANGE_ORDER_SHIP_DEPOT                        :转移调度任务去另一个船坞
 STR_VEHICLE_LIST_CHANGE_ORDER_AIRCRAFT_HANGAR                   :转移调度任务去另一个机库
 
-STR_VEHICLE_LIST_CREATE_GROUP                                   :
-
 STR_GROUP_EXPAND_ALL                                            :{BLACK}展开全部
 STR_GROUP_COLLAPSE_ALL                                          :{BLACK}折叠全部
 
@@ -1575,6 +1573,9 @@ STR_TIMETABLE_FILL_TIMETABLE_SUGGESTION_2                       :{BLACK}（可�
 
 STR_TIMETABLE_WARNINGS_OMITTED                                  :{BLACK}省略了{NUM}条警告
 
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:
+
 STR_DATE_MINUTES_MINUTE_TOOLTIP                                 :{BLACK}选择分
 STR_DATE_MINUTES_HOUR_TOOLTIP                                   :{BLACK}选择小时
 
@@ -1734,15 +1735,15 @@ STR_STATION_RATING_MAX_PERCENTAGE                               :（max {PLUS_NU
 STR_STATION_RATING_MAX_PERCENTAGE_COMMA                         :, max {PLUS_NUM}%
 STR_STATION_RATING_PERCENTAGE_COMMA                             :, {PLUS_NUM}%
 
-STR_STATION_RATING_TOOLTIP_SPEED                                :全部车辆的最高速度{STRING}：{SET_COLOUR}{VELOCITY}{STRING}（{STRING}）
+STR_STATION_RATING_TOOLTIP_SPEED                                :全部车辆的最高速度{STRING}：{COLOUR}{VELOCITY}{STRING}（{STRING}）
 
-STR_STATION_RATING_TOOLTIP_AGE                                  :最大车辆年限{STRING}：{SET_COLOUR}{NUM} 年{STRING}
+STR_STATION_RATING_TOOLTIP_AGE                                  :最大车辆年限{STRING}：{COLOUR}{NUM} 年{STRING}
 
 STR_STATION_RATING_TOOLTIP_WAITTIME                             :上次结余时间距今{STRING}：{STRING}
 STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP                        :上次结余时间距今{STRING}：{STRING}（航运）
-STR_STATION_RATING_TOOLTIP_WAITTIME_VALUE                       :{SET_COLOUR}{NUM} 天{STRING}
+STR_STATION_RATING_TOOLTIP_WAITTIME_VALUE                       :{COLOUR}{NUM} 天{STRING}
 
-STR_STATION_RATING_TOOLTIP_WAITUNITS                            :货物等待（在平均每日等待时间{STRING}）：{SET_COLOUR}{NUM}{STRING}
+STR_STATION_RATING_TOOLTIP_WAITUNITS                            :货物等待（在平均每日等待时间{STRING}）：{COLOUR}{NUM}{STRING}
 
 STR_STATION_RATING_TOOLTIP_STATUE                               :公司雕像{STRING}：{STRING}
 STR_STATION_RATING_TOOLTIP_STATUE_NO                            :{GOLD}否{STRING}
@@ -1807,7 +1808,7 @@ STR_TMPL_CONFIG_USEDEPOT                                        :使用闲置
 STR_TMPL_CONFIG_KEEPREMAINDERS                                  :保持原样
 STR_TMPL_CONFIG_OLD_ONLY                                        :只换老的
 
-STR_TMPL_NUM_TRAINS_NEED_RPL                                    :要被替换的火车: {SET_COLOUR}{COMMA}
+STR_TMPL_NUM_TRAINS_NEED_RPL                                    :要被替换的火车: {COLOUR}{COMMA}
 
 STR_TMPL_CARGO_SUMMARY                                          :{CARGO_LONG}
 STR_TMPL_CARGO_SUMMARY_MULTI                                    :{CARGO_LONG}（x{NUM}）
@@ -1917,5 +1918,5 @@ STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_OFF              :关闭
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_SIMPLE           :简单
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :详细
 
-STR_VIEWPORT_TOWN_COLOUR                                        :{1:SET_COLOUR}{0:TOWN}
-STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {SET_COLOUR}（{COMMA}）
+STR_VIEWPORT_TOWN_COLOUR                                        :{1:COLOUR}{0:TOWN}
+STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {COLOUR}（{COMMA}）

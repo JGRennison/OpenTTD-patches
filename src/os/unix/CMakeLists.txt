@@ -1,12 +1,12 @@
 add_files(
     crashlog_unix.cpp
     survey_unix.cpp
-    CONDITION UNIX AND NOT APPLE AND NOT OPTION_OS2
+    CONDITION UNIX AND NOT APPLE
 )
 
 add_files(
     unix.cpp
-    CONDITION UNIX AND NOT OPTION_OS2
+    CONDITION UNIX
 )
 
 add_files(

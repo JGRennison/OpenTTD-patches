@@ -32,6 +32,9 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Muuda lu
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Kujundatud: {GOLD}{NUM}
 
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :S:
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :V:
+
 # Cargo type orders Window
 
 # Plans window

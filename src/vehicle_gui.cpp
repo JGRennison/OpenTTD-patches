@@ -1369,8 +1369,7 @@ struct RefitWindow : public Window {
 				int offset = 1;
 				for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
 					if (u->index == this->selected_vehicle && this->num_vehicles == 1) selected = offset;
-					DropDownListCharStringItem *item = new DropDownListCharStringItem(this->GetShipPartName(u), offset, false);
-					dlist.emplace_back(item);
+					dlist.emplace_back(new DropDownListStringItem(this->GetShipPartName(u), offset, false));
 					offset++;
 				}
 

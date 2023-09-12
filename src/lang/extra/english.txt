@@ -12,8 +12,6 @@ STR_JUST_DATE_WALLCLOCK_SHORT                                   :{DATE_WALLCLOCK
 STR_JUST_DATE_WALLCLOCK_LONG                                    :{DATE_WALLCLOCK_LONG}
 STR_JUST_DATE_WALLCLOCK_ISO                                     :{DATE_WALLCLOCK_ISO}
 STR_JUST_TIME_HHMM                                              :{TIME_HHMM}
-STR_JUST_STRING1                                                :{STRING1}
-STR_JUST_STRING2                                                :{STRING2}
 STR_JUST_STRING3                                                :{STRING3}
 STR_JUST_VELOCITY                                               :{VELOCITY}
 STR_JUST_TT_TICKS                                               :{TT_TICKS}
@@ -1466,8 +1464,6 @@ STR_VEHICLE_LIST_CHANGE_ORDER_ROAD_VEHICLE_DEPOT                :Move order to a
 STR_VEHICLE_LIST_CHANGE_ORDER_SHIP_DEPOT                        :Move order to another depot
 STR_VEHICLE_LIST_CHANGE_ORDER_AIRCRAFT_HANGAR                   :Move order to another hangar
 
-STR_VEHICLE_LIST_CREATE_GROUP                                   :Create group from list
-
 STR_GROUP_EXPAND_ALL                                            :{BLACK}Expand all
 STR_GROUP_COLLAPSE_ALL                                          :{BLACK}Collapse all
 
@@ -1742,6 +1738,9 @@ STR_TIMETABLE_FILL_TIMETABLE_SUGGESTION_2                       :{BLACK}(Alterna
 
 STR_TIMETABLE_WARNINGS_OMITTED                                  :{BLACK}{NUM} further warnings omitted...
 
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:
+
 STR_DATE_MINUTES_MINUTE_TOOLTIP                                 :{BLACK}Select minute
 STR_DATE_MINUTES_HOUR_TOOLTIP                                   :{BLACK}Select hour
 
@@ -1903,15 +1902,15 @@ STR_STATION_RATING_MAX_PERCENTAGE                               : (max {PLUS_NUM
 STR_STATION_RATING_MAX_PERCENTAGE_COMMA                         :, max {PLUS_NUM}%
 STR_STATION_RATING_PERCENTAGE_COMMA                             :, {PLUS_NUM}%
 
-STR_STATION_RATING_TOOLTIP_SPEED                                :Max speed of last vehicle{STRING1}: {SET_COLOUR}{VELOCITY}{STRING1} ({STRING})
+STR_STATION_RATING_TOOLTIP_SPEED                                :Max speed of last vehicle{STRING1}: {COLOUR}{VELOCITY}{STRING1} ({STRING})
 
-STR_STATION_RATING_TOOLTIP_AGE                                  :Age of last vehicle{STRING1}: {SET_COLOUR}{NUM} year{P "" s}{STRING1}
+STR_STATION_RATING_TOOLTIP_AGE                                  :Age of last vehicle{STRING1}: {COLOUR}{NUM} year{P "" s}{STRING1}
 
 STR_STATION_RATING_TOOLTIP_WAITTIME                             :Time since last pickup{STRING1}: {STRING4}
 STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP                        :Time since last pickup{STRING1}: {STRING4} (by ship)
-STR_STATION_RATING_TOOLTIP_WAITTIME_VALUE                       :{SET_COLOUR}{NUM} day{P "" s}{STRING1}
+STR_STATION_RATING_TOOLTIP_WAITTIME_VALUE                       :{COLOUR}{NUM} day{P "" s}{STRING1}
 
-STR_STATION_RATING_TOOLTIP_WAITUNITS                            :Cargo waiting (on average per next stop{STRING1}): {SET_COLOUR}{NUM}{STRING1}
+STR_STATION_RATING_TOOLTIP_WAITUNITS                            :Cargo waiting (on average per next stop{STRING1}): {COLOUR}{NUM}{STRING1}
 
 STR_STATION_RATING_TOOLTIP_STATUE                               :Statue in town{STRING1}: {STRING2}
 STR_STATION_RATING_TOOLTIP_STATUE_NO                            :{GOLD}no{STRING1}
@@ -1990,7 +1989,7 @@ STR_TMPL_SECTION_REFIT                                          :{BLACK}Refit
 STR_TMPL_SECTION_DEPOT_VEHICLES                                 :{BLACK}Depot vehicles
 STR_TMPL_SECTION_WHEN                                           :{BLACK}When
 
-STR_TMPL_NUM_TRAINS_NEED_RPL                                    :Trains to replace: {SET_COLOUR}{COMMA}
+STR_TMPL_NUM_TRAINS_NEED_RPL                                    :Trains to replace: {COLOUR}{COMMA}
 
 STR_TMPL_CARGO_SUMMARY                                          :{CARGO_LONG}
 STR_TMPL_CARGO_SUMMARY_MULTI                                    :{CARGO_LONG} (x{NUM})
@@ -2186,7 +2185,7 @@ STR_CONFIG_SETTING_CITY_IN_LABEL                                :Show city in to
 STR_CONFIG_SETTING_CITY_IN_LABEL_HELPTEXT                       :Display if a town is also a city in their label on the map
 
 ###length 4
-STR_VIEWPORT_TOWN_COLOUR                                        :{1:SET_COLOUR}{0:TOWN}
-STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {SET_COLOUR}({COMMA})
-STR_VIEWPORT_TOWN_COLOUR_CITY                                   :{1:SET_COLOUR}{0:TOWN} (City)
-STR_VIEWPORT_TOWN_COLOUR_CITY_POP                               :{WHITE}{TOWN} {SET_COLOUR}(City, {COMMA})
+STR_VIEWPORT_TOWN_COLOUR                                        :{1:COLOUR}{0:TOWN}
+STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {COLOUR}({COMMA})
+STR_VIEWPORT_TOWN_COLOUR_CITY                                   :{1:COLOUR}{0:TOWN} (City)
+STR_VIEWPORT_TOWN_COLOUR_CITY_POP                               :{WHITE}{TOWN} {COLOUR}(City, {COMMA})

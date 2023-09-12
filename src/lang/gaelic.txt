@@ -1097,41 +1097,42 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Roghainn
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Aonadan airgeadra
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Tagh aonadan airgeadra
 
+
 ###length 42
-STR_GAME_OPTIONS_CURRENCY_GBP                                   :Not Breatannach (GBP)
-STR_GAME_OPTIONS_CURRENCY_USD                                   :Dolar Aimeireaganach (USD)
-STR_GAME_OPTIONS_CURRENCY_EUR                                   :Eòro (EUR)
-STR_GAME_OPTIONS_CURRENCY_JPY                                   :Yen Seapanach (JPY)
-STR_GAME_OPTIONS_CURRENCY_ATS                                   :Sgillin Ostaireach (ATS)
-STR_GAME_OPTIONS_CURRENCY_BEF                                   :Franc Beilgeach (BEF)
-STR_GAME_OPTIONS_CURRENCY_CHF                                   :Franc Eilbheiseach (CHF)
-STR_GAME_OPTIONS_CURRENCY_CZK                                   :Koruna Seiceach (CZK)
-STR_GAME_OPTIONS_CURRENCY_DEM                                   :Mark Gearmailteach (DEM)
-STR_GAME_OPTIONS_CURRENCY_DKK                                   :Crùn Danmhairgeach (DKK)
-STR_GAME_OPTIONS_CURRENCY_ESP                                   :Peseta Spàinnteach (ESP)
-STR_GAME_OPTIONS_CURRENCY_FIM                                   :Markka Fionnlannach (FIM)
-STR_GAME_OPTIONS_CURRENCY_FRF                                   :Franc Frangach (FRF)
-STR_GAME_OPTIONS_CURRENCY_GRD                                   :Drachma Greugach (GRD)
-STR_GAME_OPTIONS_CURRENCY_HUF                                   :Forint Ungaireach (HUF)
-STR_GAME_OPTIONS_CURRENCY_ISK                                   :Krona Tìleach (ISK)
-STR_GAME_OPTIONS_CURRENCY_ITL                                   :Lira Eadailteach (ITL)
-STR_GAME_OPTIONS_CURRENCY_NLG                                   :Guilder Duitseach (NLG)
-STR_GAME_OPTIONS_CURRENCY_NOK                                   :Krone Nirribheach (NOK)
-STR_GAME_OPTIONS_CURRENCY_PLN                                   :Złoty Pòlainneach (PLN)
-STR_GAME_OPTIONS_CURRENCY_RON                                   :Leu Romàineach (RON)
-STR_GAME_OPTIONS_CURRENCY_RUR                                   :Rùbal Ruiseach (RUR)
-STR_GAME_OPTIONS_CURRENCY_SIT                                   :Tolar Slòbhaineach (SIT)
-STR_GAME_OPTIONS_CURRENCY_SEK                                   :Krona Suaineach (SEK)
-STR_GAME_OPTIONS_CURRENCY_TRY                                   :Lira Turcach (TRY)
-STR_GAME_OPTIONS_CURRENCY_SKK                                   :Koruna Slòbhacach (SKK)
-STR_GAME_OPTIONS_CURRENCY_BRL                                   :Real Braisileach (BRL)
-STR_GAME_OPTIONS_CURRENCY_EEK                                   :Krooni Eastoineach (EEK)
-STR_GAME_OPTIONS_CURRENCY_LTL                                   :Litas Liotuaineach (LTL)
-STR_GAME_OPTIONS_CURRENCY_KRW                                   :Won Choirèa a Deas (KRW)
-STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Rand Afraga a Deas (ZAR)
+STR_GAME_OPTIONS_CURRENCY_GBP                                   :Not Breatannach
+STR_GAME_OPTIONS_CURRENCY_USD                                   :Dolar Aimeireaganach
+STR_GAME_OPTIONS_CURRENCY_EUR                                   :Eòro
+STR_GAME_OPTIONS_CURRENCY_JPY                                   :Yen Seapanach
+STR_GAME_OPTIONS_CURRENCY_ATS                                   :Sgillin Ostaireach
+STR_GAME_OPTIONS_CURRENCY_BEF                                   :Franc Beilgeach
+STR_GAME_OPTIONS_CURRENCY_CHF                                   :Franc Eilbheiseach
+STR_GAME_OPTIONS_CURRENCY_CZK                                   :Koruna Seiceach
+STR_GAME_OPTIONS_CURRENCY_DEM                                   :Mark Gearmailteach
+STR_GAME_OPTIONS_CURRENCY_DKK                                   :Crùn Danmhairgeach
+STR_GAME_OPTIONS_CURRENCY_ESP                                   :Peseta Spàinnteach
+STR_GAME_OPTIONS_CURRENCY_FIM                                   :Markka Fionnlannach
+STR_GAME_OPTIONS_CURRENCY_FRF                                   :Franc Frangach
+STR_GAME_OPTIONS_CURRENCY_GRD                                   :Drachma Greugach
+STR_GAME_OPTIONS_CURRENCY_HUF                                   :Forint Ungaireach
+STR_GAME_OPTIONS_CURRENCY_ISK                                   :Krona Tìleach
+STR_GAME_OPTIONS_CURRENCY_ITL                                   :Lira Eadailteach
+STR_GAME_OPTIONS_CURRENCY_NLG                                   :Guilder Duitseach
+STR_GAME_OPTIONS_CURRENCY_NOK                                   :Krone Nirribheach
+STR_GAME_OPTIONS_CURRENCY_PLN                                   :Złoty Pòlainneach
+STR_GAME_OPTIONS_CURRENCY_RON                                   :Leu Romàineach
+STR_GAME_OPTIONS_CURRENCY_RUR                                   :Rùbal Ruiseach
+STR_GAME_OPTIONS_CURRENCY_SIT                                   :Tolar Slòbhaineach
+STR_GAME_OPTIONS_CURRENCY_SEK                                   :Krona Suaineach
+STR_GAME_OPTIONS_CURRENCY_TRY                                   :Lira Turcach
+STR_GAME_OPTIONS_CURRENCY_SKK                                   :Koruna Slòbhacach
+STR_GAME_OPTIONS_CURRENCY_BRL                                   :Real Braisileach
+STR_GAME_OPTIONS_CURRENCY_EEK                                   :Krooni Eastoineach
+STR_GAME_OPTIONS_CURRENCY_LTL                                   :Litas Liotuaineach
+STR_GAME_OPTIONS_CURRENCY_KRW                                   :Won Choirèa a Deas
+STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Rand Afraga a Deas
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Gnàthaichte...
-STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari Cairtbheileach (GEL)
-STR_GAME_OPTIONS_CURRENCY_IRR                                   :Rial Iorànach (IRR)
+STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari Cairtbheileach
+STR_GAME_OPTIONS_CURRENCY_IRR                                   :Rial Iorànach
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Fèin-shàbhaladh
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Tagh dè cho tric ’s a thèid an geama fèin-shàbhaladh
@@ -2032,29 +2033,29 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Impireil (ft)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Meatrach (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
 
-STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}Ionadaileadh
-STR_CONFIG_SETTING_GRAPHICS                                     :{ORANGE}Grafaigeachd
-STR_CONFIG_SETTING_SOUND                                        :{ORANGE}Fuaim
-STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Eadar-aghaidh
-STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}Coitcheann
-STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}Puirt-sheallaidh
-STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}Togail
-STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}Comhairlean / Fiosrachadh
-STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}Companaidh
-STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}Cunntasachd
-STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}Carbadan
-STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :{ORANGE}Fiosaigeachd
-STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}Lorg shlighean
-STR_CONFIG_SETTING_LIMITATIONS                                  :{ORANGE}Cuingeachaidhean
-STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE}Dunaidh / Tubaistean
-STR_CONFIG_SETTING_GENWORLD                                     :{ORANGE}Gintinn saoghail
-STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}Àrainneachd
-STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}Ùghdarrasan
-STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Bailtean
-STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Gnìomhachasan
-STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Sgaoileadh carago
-STR_CONFIG_SETTING_AI                                           :{ORANGE}Co-farpaisichean
-STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Cluicheadairean coimpiutair
+STR_CONFIG_SETTING_LOCALISATION                                 :Ionadaileadh
+STR_CONFIG_SETTING_GRAPHICS                                     :Grafaigeachd
+STR_CONFIG_SETTING_SOUND                                        :Fuaim
+STR_CONFIG_SETTING_INTERFACE                                    :Eadar-aghaidh
+STR_CONFIG_SETTING_INTERFACE_GENERAL                            :Coitcheann
+STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :Puirt-sheallaidh
+STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :Togail
+STR_CONFIG_SETTING_ADVISORS                                     :Comhairlean / Fiosrachadh
+STR_CONFIG_SETTING_COMPANY                                      :Companaidh
+STR_CONFIG_SETTING_ACCOUNTING                                   :Cunntasachd
+STR_CONFIG_SETTING_VEHICLES                                     :Carbadan
+STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :Fiosaigeachd
+STR_CONFIG_SETTING_VEHICLES_ROUTING                             :Lorg shlighean
+STR_CONFIG_SETTING_LIMITATIONS                                  :Cuingeachaidhean
+STR_CONFIG_SETTING_ACCIDENTS                                    :Dunaidh / Tubaistean
+STR_CONFIG_SETTING_GENWORLD                                     :Gintinn saoghail
+STR_CONFIG_SETTING_ENVIRONMENT                                  :Àrainneachd
+STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :Ùghdarrasan
+STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :Bailtean
+STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :Gnìomhachasan
+STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :Sgaoileadh carago
+STR_CONFIG_SETTING_AI                                           :Co-farpaisichean
+STR_CONFIG_SETTING_AI_NPC                                       :Cluicheadairean coimpiutair
 
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS                        :Lorg shlighean aig trèanaichean: {STRING}
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT               :An dòigh a lorgas trèanaichean an slighe
@@ -4339,8 +4340,6 @@ STR_TIMETABLE_EXPECTED                                          :{BLACK}Dùil ai
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Clàraichte
 STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}Gearr leum eadar dùil air is clàraichte
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :R:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :F:
 
 
 # Date window (for timetable)

@@ -37,6 +37,7 @@
 #include "date_func.h"
 #include "core/random_func.hpp"
 #include "town_kdtree.h"
+#include "zoom_func.h"
 
 #include "widgets/town_widget.h"
 #include "table/strings.h"
@@ -44,7 +45,6 @@
 #include <algorithm>
 
 #include "safeguards.h"
-#include "zoom_func.h"
 
 TownKdtree _town_local_authority_kdtree(&Kdtree_TownXYFunc);
 
@@ -449,9 +449,8 @@ public:
 						dlist.emplace_back(new DropDownListStringItem(STR_COLOUR_DEFAULT, 0, false));
 						dlist.emplace_back(new DropDownListStringItem(STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_ZERO, 1, false));
 						for (int i = 1; i <= 8; i++) {
-							DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_VALUE, i + 1, false);
-							item->SetParam(0, i);
-							dlist.emplace_back(item);
+							SetDParam(0, i);
+							dlist.emplace_back(new DropDownListStringItem(STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_VALUE, i + 1, false));
 						}
 						ShowDropDownList(this, std::move(dlist), HasBit(this->town->override_flags, idx) ? this->town->max_road_slope + 1 : 0, WID_TA_SETTING);
 						break;

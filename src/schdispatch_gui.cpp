@@ -1132,9 +1132,8 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 		auto handle_hours_dropdown = [&](uint current) {
 			DropDownList list;
 			for (uint i = 0; i < 24; i++) {
-				DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_JUST_INT, i, false);
-				item->SetParam(0, i);
-				list.emplace_back(item);
+				SetDParam(0, i);
+				list.emplace_back(new DropDownListStringItem(STR_JUST_INT, i, false));
 			}
 			ShowDropDownList(this, std::move(list), MINUTES_HOUR(current), widget);
 		};
@@ -1142,9 +1141,8 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 		auto handle_minutes_dropdown = [&](uint current) {
 			DropDownList list;
 			for (uint i = 0; i < 60; i++) {
-				DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_JUST_INT, i, false);
-				item->SetParam(0, i);
-				list.emplace_back(item);
+				SetDParam(0, i);
+				list.emplace_back(new DropDownListStringItem(STR_JUST_INT, i, false));
 			}
 			ShowDropDownList(this, std::move(list), MINUTES_MINUTE(current), widget);
 		};

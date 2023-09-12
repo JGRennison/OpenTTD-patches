@@ -846,7 +846,7 @@ STR_NEWS_COMPANY_BANKRUPT_TITLE                                 :{BIG_FONT}{BLAC
 STR_NEWS_COMPANY_BANKRUPT_DESCRIPTION                           :{BIG_FONT}{BLACK}{STRING} is gesloten door schuldeisers en alle eigendommen zijn verkocht!
 STR_NEWS_COMPANY_LAUNCH_TITLE                                   :{BIG_FONT}{BLACK}Nieuw transportbedrijf gestart!
 STR_NEWS_COMPANY_LAUNCH_DESCRIPTION                             :{BIG_FONT}{BLACK}{STRING} begint werkzaamheden bij {TOWN}!
-STR_NEWS_MERGER_TAKEOVER_TITLE                                  :{BIG_FONT}{BLACK}{STRING} is overgenomen door {STRING}!
+STR_NEWS_MERGER_TAKEOVER_TITLE                                  :{BIG_FONT}{BLACK}{STRING} is overgenomen door {STRING} voor een niet nader bekend gemaakt bedrag!
 STR_PRESIDENT_NAME_MANAGER                                      :{BLACK}{PRESIDENT_NAME}{}(Directeur)
 
 STR_NEWS_NEW_TOWN                                               :{BLACK}{BIG_FONT}{STRING} betaalt bouw van nieuwe stad {TOWN}!
@@ -951,49 +951,50 @@ STR_GAME_OPTIONS_VOLUME_100                                     :100%
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Valuta
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Valuta kiezen
 
+
 ###length 42
-STR_GAME_OPTIONS_CURRENCY_GBP                                   :Britse Pond (GBP)
-STR_GAME_OPTIONS_CURRENCY_USD                                   :Dollar (USD)
-STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro (EUR)
-STR_GAME_OPTIONS_CURRENCY_JPY                                   :Japanse Yen (JPY)
-STR_GAME_OPTIONS_CURRENCY_ATS                                   :Oostenrijkse Shilling (ATS)
-STR_GAME_OPTIONS_CURRENCY_BEF                                   :Belgische Frank (BEF)
-STR_GAME_OPTIONS_CURRENCY_CHF                                   :Zwitserse Frank (CHF)
-STR_GAME_OPTIONS_CURRENCY_CZK                                   :Tsjechische Kroon (CZK)
-STR_GAME_OPTIONS_CURRENCY_DEM                                   :Duitse Mark (DEM)
-STR_GAME_OPTIONS_CURRENCY_DKK                                   :Deense Kroon (DKK)
-STR_GAME_OPTIONS_CURRENCY_ESP                                   :Spaanse Peseta (ESP)
-STR_GAME_OPTIONS_CURRENCY_FIM                                   :Finse Mark (FIM)
-STR_GAME_OPTIONS_CURRENCY_FRF                                   :Franse Frank (FRF)
-STR_GAME_OPTIONS_CURRENCY_GRD                                   :Griekse Drachme (GRD)
-STR_GAME_OPTIONS_CURRENCY_HUF                                   :Hongaarse Forint (HUF)
-STR_GAME_OPTIONS_CURRENCY_ISK                                   :IJslandse Kroon (ISK)
-STR_GAME_OPTIONS_CURRENCY_ITL                                   :Italiaanse Lire (ITL)
-STR_GAME_OPTIONS_CURRENCY_NLG                                   :Nederlandse Gulden (NLG)
-STR_GAME_OPTIONS_CURRENCY_NOK                                   :Noorse Kroon (NOK)
-STR_GAME_OPTIONS_CURRENCY_PLN                                   :Poolse Zloty (PLN)
-STR_GAME_OPTIONS_CURRENCY_RON                                   :Roemeense Leu (RON)
-STR_GAME_OPTIONS_CURRENCY_RUR                                   :Russische Roebel (RUR)
-STR_GAME_OPTIONS_CURRENCY_SIT                                   :Sloveense Tolar (SIT)
-STR_GAME_OPTIONS_CURRENCY_SEK                                   :Zweedse Kroon (SEK)
-STR_GAME_OPTIONS_CURRENCY_TRY                                   :Turkse Lira (TRY)
-STR_GAME_OPTIONS_CURRENCY_SKK                                   :Slowaakse Kroon (SKK)
-STR_GAME_OPTIONS_CURRENCY_BRL                                   :Braziliaanse Real (BRL)
-STR_GAME_OPTIONS_CURRENCY_EEK                                   :Estse Kroon (EEK)
-STR_GAME_OPTIONS_CURRENCY_LTL                                   :Litouwse Litas (LTL)
-STR_GAME_OPTIONS_CURRENCY_KRW                                   :Zuid-Koreaanse Won (KRW)
-STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Zuid-Afrikaanse Rand (ZAR)
+STR_GAME_OPTIONS_CURRENCY_GBP                                   :Britse Pond
+STR_GAME_OPTIONS_CURRENCY_USD                                   :Dollar
+STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
+STR_GAME_OPTIONS_CURRENCY_JPY                                   :Japanse Yen
+STR_GAME_OPTIONS_CURRENCY_ATS                                   :Oostenrijkse Shilling
+STR_GAME_OPTIONS_CURRENCY_BEF                                   :Belgische Frank
+STR_GAME_OPTIONS_CURRENCY_CHF                                   :Zwitserse Frank
+STR_GAME_OPTIONS_CURRENCY_CZK                                   :Tsjechische Kroon
+STR_GAME_OPTIONS_CURRENCY_DEM                                   :Duitse Mark
+STR_GAME_OPTIONS_CURRENCY_DKK                                   :Deense Kroon
+STR_GAME_OPTIONS_CURRENCY_ESP                                   :Spaanse Peseta
+STR_GAME_OPTIONS_CURRENCY_FIM                                   :Finse Mark
+STR_GAME_OPTIONS_CURRENCY_FRF                                   :Franse Frank
+STR_GAME_OPTIONS_CURRENCY_GRD                                   :Griekse Drachme
+STR_GAME_OPTIONS_CURRENCY_HUF                                   :Hongaarse Forint
+STR_GAME_OPTIONS_CURRENCY_ISK                                   :IJslandse Kroon
+STR_GAME_OPTIONS_CURRENCY_ITL                                   :Italiaanse Lire
+STR_GAME_OPTIONS_CURRENCY_NLG                                   :Nederlandse Gulden
+STR_GAME_OPTIONS_CURRENCY_NOK                                   :Noorse Kroon
+STR_GAME_OPTIONS_CURRENCY_PLN                                   :Poolse Zloty
+STR_GAME_OPTIONS_CURRENCY_RON                                   :Roemeense Leu
+STR_GAME_OPTIONS_CURRENCY_RUR                                   :Russische Roebel
+STR_GAME_OPTIONS_CURRENCY_SIT                                   :Sloveense Tolar
+STR_GAME_OPTIONS_CURRENCY_SEK                                   :Zweedse Kroon
+STR_GAME_OPTIONS_CURRENCY_TRY                                   :Turkse Lira
+STR_GAME_OPTIONS_CURRENCY_SKK                                   :Slowaakse Kroon
+STR_GAME_OPTIONS_CURRENCY_BRL                                   :Braziliaanse Real
+STR_GAME_OPTIONS_CURRENCY_EEK                                   :Estse Kroon
+STR_GAME_OPTIONS_CURRENCY_LTL                                   :Litouwse Litas
+STR_GAME_OPTIONS_CURRENCY_KRW                                   :Zuid-Koreaanse Won
+STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Zuid-Afrikaanse Rand
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Aangepast...
-STR_GAME_OPTIONS_CURRENCY_GEL                                   :Georgische Lari (GEL)
-STR_GAME_OPTIONS_CURRENCY_IRR                                   :Iraanse Rial (IRR)
-STR_GAME_OPTIONS_CURRENCY_RUB                                   :Nieuwe Russische Roebel (RUB)
-STR_GAME_OPTIONS_CURRENCY_MXN                                   :Mexicaanse peso (MXN)
-STR_GAME_OPTIONS_CURRENCY_NTD                                   :Nieuwe Taiwanse dollar (NTD)
-STR_GAME_OPTIONS_CURRENCY_CNY                                   :Chinese Renminbi (CNY)
-STR_GAME_OPTIONS_CURRENCY_HKD                                   :Hong Kong Dollar (HKD)
-STR_GAME_OPTIONS_CURRENCY_INR                                   :Indiase rupee (INR)
-STR_GAME_OPTIONS_CURRENCY_IDR                                   :Indonesische roepia (IDR)
-STR_GAME_OPTIONS_CURRENCY_MYR                                   :Maleisische Ringgit (MYR)
+STR_GAME_OPTIONS_CURRENCY_GEL                                   :Georgische Lari
+STR_GAME_OPTIONS_CURRENCY_IRR                                   :Iraanse Rial
+STR_GAME_OPTIONS_CURRENCY_RUB                                   :Nieuwe Russische Roebel
+STR_GAME_OPTIONS_CURRENCY_MXN                                   :Mexicaanse peso
+STR_GAME_OPTIONS_CURRENCY_NTD                                   :Nieuwe Taiwanse dollar
+STR_GAME_OPTIONS_CURRENCY_CNY                                   :Chinese Renminbi
+STR_GAME_OPTIONS_CURRENCY_HKD                                   :Hong Kong Dollar
+STR_GAME_OPTIONS_CURRENCY_INR                                   :Indiase rupee
+STR_GAME_OPTIONS_CURRENCY_IDR                                   :Indonesische roepia
+STR_GAME_OPTIONS_CURRENCY_MYR                                   :Maleisische Ringgit
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Automatisch opslaan
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Tijdsduur kiezen tussen automatisch opgeslagen spellen
@@ -1558,7 +1559,7 @@ STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREY_TO_RED                :Grijs naar rood
 STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREYSCALE                  :Grijstinten
 
 STR_CONFIG_SETTING_SCROLLMODE                                   :Verplaatsingsgedrag voor kijkvensters: {STRING}
-STR_CONFIG_SETTING_SCROLLMODE_HELPTEXT                          :Gedrag tijdens het verplaatsen van de kaart
+STR_CONFIG_SETTING_SCROLLMODE_HELPTEXT                          :Gedrag tijdens het verplaatsen van de kaart. De opties over vergrendeling van de muis werken niet op alle systemen, bijv. webversies, aanraakschermen, Linux met Wayland en andere
 ###length 4
 STR_CONFIG_SETTING_SCROLLMODE_DEFAULT                           :Kijkvenster verplaatsen met rechtermuisknop, muispositie vergrendeld
 STR_CONFIG_SETTING_SCROLLMODE_RMB_LOCKED                        :Kaart verplaatsen met rechtermuisknop, muispositie vergrendeld
@@ -2018,30 +2019,30 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Imperiaal (ft)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metrisch (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
 
-STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}Lokalisatie
-STR_CONFIG_SETTING_GRAPHICS                                     :{ORANGE}Grafische elementen
-STR_CONFIG_SETTING_SOUND                                        :{ORANGE}Geluid
-STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Gebruikersscherm
-STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}Algemeen
-STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}Kijkvensters
-STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}Constructie
-STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}Nieuws/adviseurs
-STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}Bedrijf
-STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}Boekhouding
-STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}Voertuigen
-STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :{ORANGE}Natuurkundige eigenschappen
-STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}Routebepaling
-STR_CONFIG_SETTING_LIMITATIONS                                  :{ORANGE}Beperkingen
-STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE}Rampen/ongelukken
-STR_CONFIG_SETTING_GENWORLD                                     :{ORANGE}Wereldontwikkeling
-STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}Omgeving
-STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}Autoriteiten
-STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Steden
-STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Industrieën
-STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Vrachtdistributie
-STR_CONFIG_SETTING_AI                                           :{ORANGE}Tegenstanders
-STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Computerspelers
-STR_CONFIG_SETTING_NETWORK                                      :{ORANGE}Netwerk
+STR_CONFIG_SETTING_LOCALISATION                                 :Lokalisatie
+STR_CONFIG_SETTING_GRAPHICS                                     :Grafische elementen
+STR_CONFIG_SETTING_SOUND                                        :Geluid
+STR_CONFIG_SETTING_INTERFACE                                    :Gebruikersscherm
+STR_CONFIG_SETTING_INTERFACE_GENERAL                            :Algemeen
+STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :Kijkvensters
+STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :Constructie
+STR_CONFIG_SETTING_ADVISORS                                     :Nieuws/adviseurs
+STR_CONFIG_SETTING_COMPANY                                      :Bedrijf
+STR_CONFIG_SETTING_ACCOUNTING                                   :Boekhouding
+STR_CONFIG_SETTING_VEHICLES                                     :Voertuigen
+STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :Natuurkundige eigenschappen
+STR_CONFIG_SETTING_VEHICLES_ROUTING                             :Routebepaling
+STR_CONFIG_SETTING_LIMITATIONS                                  :Beperkingen
+STR_CONFIG_SETTING_ACCIDENTS                                    :Rampen/ongelukken
+STR_CONFIG_SETTING_GENWORLD                                     :Wereldontwikkeling
+STR_CONFIG_SETTING_ENVIRONMENT                                  :Omgeving
+STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :Autoriteiten
+STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :Steden
+STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :Industrieën
+STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :Vrachtdistributie
+STR_CONFIG_SETTING_AI                                           :Tegenstanders
+STR_CONFIG_SETTING_AI_NPC                                       :Computerspelers
+STR_CONFIG_SETTING_NETWORK                                      :Netwerk
 
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS                        :Routezoeker voor treinen: {STRING}
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT               :Routezoeker voor treinen.
@@ -2080,6 +2081,7 @@ STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Toewijze
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Fout met video-instellingen...
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... geen compatibele GPU gevonden. Hardwareversnelling is uitgeschakeld
+STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... Spel is vastgelopen door het GPU-stuurprogramma. Hardwareversnelling wordt uitgeschakeld
 
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
@@ -3759,6 +3761,8 @@ STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Details
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Gedetailleerde aantallen infrastructuur bekijken
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Geld geven
 STR_COMPANY_VIEW_GIVE_MONEY_TOOLTIP                             :{BLACK}Geld geven aan dit bedrijf
+STR_COMPANY_VIEW_HOSTILE_TAKEOVER_BUTTON                        :{BLACK}Vijandige overname
+STR_COMPANY_VIEW_HOSTILE_TAKEOVER_TOOLTIP                       :{BLACK}Een vijandige overname van dit bedrijf uitvoeren
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Nieuw gezicht
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Nieuw gezicht voor directeur kiezen
@@ -3774,6 +3778,7 @@ STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Naam van direct
 STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Voer het bedrag in om weg te geven
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}We zoeken een transportbedrijf dat ons bedrijf over kan nemen.{}{}Wil je {COMPANY} kopen voor {CURRENCY_LONG}?
+STR_BUY_COMPANY_HOSTILE_TAKEOVER                                :{WHITE}Bij een vijandige overname van {COMPANY} neem je alle bezittingen over, betaal je alle leningen terug en betaal je twee jaar winst.{}{}Het totaal wordt geschat op {CURRENCY_LONG}.{}{}Wil je doorgaan met de vijandige overname?
 
 # Company infrastructure window
 STR_COMPANY_INFRASTRUCTURE_VIEW_CAPTION                         :{WHITE}Infrastructuur van {COMPANY}
@@ -3845,6 +3850,7 @@ STR_VEHICLE_LIST_MANAGE_LIST                                    :{BLACK}Lijst be
 STR_VEHICLE_LIST_MANAGE_LIST_TOOLTIP                            :{BLACK}Stuur instructies naar alle voertuigen in de lijst
 STR_VEHICLE_LIST_REPLACE_VEHICLES                               :Vervang voertuigen
 STR_VEHICLE_LIST_SEND_FOR_SERVICING                             :Stuur voor onderhoud
+STR_VEHICLE_LIST_CREATE_GROUP                                   :Groep maken
 STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR                     :{TINY_FONT}{BLACK}Winst dit jaar: {CURRENCY_LONG} (vorig jaar: {CURRENCY_LONG})
 STR_VEHICLE_LIST_CARGO                                          :[{CARGO_LIST}]
 STR_VEHICLE_LIST_NAME_AND_CARGO                                 :{STRING} {STRING}
@@ -4567,8 +4573,8 @@ STR_TIMETABLE_EXPECTED                                          :{BLACK}Verwacht
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Volgens dienstregeling
 STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}Wissel tussen verwacht en volgens dienstregeling
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :V:
+STR_TIMETABLE_ARRIVAL                                           :A: {COLOUR}{DATE_TINY}
+STR_TIMETABLE_DEPARTURE                                         :D: {COLOUR}{DATE_TINY}
 
 
 # Date window (for timetable)
@@ -5623,6 +5629,8 @@ STR_JUST_DATE_SHORT                                             :{DATE_SHORT}
 STR_JUST_DATE_LONG                                              :{DATE_LONG}
 STR_JUST_DATE_ISO                                               :{DATE_ISO}
 STR_JUST_STRING                                                 :{STRING}
+STR_JUST_STRING1                                                :{STRING}
+STR_JUST_STRING2                                                :{STRING}
 STR_JUST_STRING_STRING                                          :{STRING}{STRING}
 STR_JUST_RAW_STRING                                             :{STRING}
 STR_JUST_BIG_RAW_STRING                                         :{BIG_FONT}{STRING}

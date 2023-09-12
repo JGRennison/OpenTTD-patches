@@ -95,9 +95,8 @@ struct SetDateWindow : Window {
 
 			case WID_SD_YEAR:
 				for (Year i = this->min_year; i <= this->max_year; i++) {
-					DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_JUST_INT, i, false);
-					item->SetParam(0, i);
-					list.emplace_back(item);
+					SetDParam(0, i);
+					list.emplace_back(new DropDownListStringItem(STR_JUST_INT, i, false));
 				}
 				selected = this->date.year;
 				break;
@@ -206,18 +205,16 @@ struct SetMinutesWindow : SetDateWindow
 
 			case WID_SD_DAY:
 				for (uint i = 0; i < 60; i++) {
-					DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_JUST_INT, i, false);
-					item->SetParam(0, i);
-					list.emplace_back(item);
+					SetDParam(0, i);
+					list.emplace_back(new DropDownListStringItem(STR_JUST_INT, i, false));
 				}
 				selected = MINUTES_MINUTE(minutes);
 				break;
 
 			case WID_SD_MONTH:
 				for (uint i = 0; i < 24; i++) {
-					DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_JUST_INT, i, false);
-					item->SetParam(0, i);
-					list.emplace_back(item);
+					SetDParam(0, i);
+					list.emplace_back(new DropDownListStringItem(STR_JUST_INT, i, false));
 				}
 				selected = MINUTES_HOUR(minutes);
 

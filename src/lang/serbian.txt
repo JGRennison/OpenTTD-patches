@@ -1131,49 +1131,50 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Opcije
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Valuta
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Izbor valute
 
+
 ###length 42
-STR_GAME_OPTIONS_CURRENCY_GBP                                   :Britanska funta (GBP)
-STR_GAME_OPTIONS_CURRENCY_USD                                   :Dolar (USD)
-STR_GAME_OPTIONS_CURRENCY_EUR                                   :Evro (EUR)
-STR_GAME_OPTIONS_CURRENCY_JPY                                   :Japanski jen (JPY)
-STR_GAME_OPTIONS_CURRENCY_ATS                                   :Austrijski šiling (ATS)
-STR_GAME_OPTIONS_CURRENCY_BEF                                   :Belgijski franak (BEF)
-STR_GAME_OPTIONS_CURRENCY_CHF                                   :Švajcarski franak (CHF)
-STR_GAME_OPTIONS_CURRENCY_CZK                                   :Češka kruna (CZK)
-STR_GAME_OPTIONS_CURRENCY_DEM                                   :Nemačka marka (DEM)
-STR_GAME_OPTIONS_CURRENCY_DKK                                   :Danska kruna (DKK)
-STR_GAME_OPTIONS_CURRENCY_ESP                                   :Španska pezeta (ESP)
-STR_GAME_OPTIONS_CURRENCY_FIM                                   :Finska marka (FIM)
-STR_GAME_OPTIONS_CURRENCY_FRF                                   :Francuski franak (FRF)
-STR_GAME_OPTIONS_CURRENCY_GRD                                   :Grčka drahma (GRD)
-STR_GAME_OPTIONS_CURRENCY_HUF                                   :Mađarska forinta (HUF)
-STR_GAME_OPTIONS_CURRENCY_ISK                                   :Islandska kruna (ISK)
-STR_GAME_OPTIONS_CURRENCY_ITL                                   :Italijanska lira (ITL)
-STR_GAME_OPTIONS_CURRENCY_NLG                                   :Holandski gulden (NLG)
-STR_GAME_OPTIONS_CURRENCY_NOK                                   :Norveška kruna (NOK)
-STR_GAME_OPTIONS_CURRENCY_PLN                                   :Poljski zlot (PLN)
-STR_GAME_OPTIONS_CURRENCY_RON                                   :Rumunski lej (RON)
-STR_GAME_OPTIONS_CURRENCY_RUR                                   :Ruska rublja (RUR)
-STR_GAME_OPTIONS_CURRENCY_SIT                                   :Slovenački tolar (SIT)
-STR_GAME_OPTIONS_CURRENCY_SEK                                   :Švedska kruna (SEK)
-STR_GAME_OPTIONS_CURRENCY_TRY                                   :Turska lira (TRY)
-STR_GAME_OPTIONS_CURRENCY_SKK                                   :Slovačka kruna (SKK)
-STR_GAME_OPTIONS_CURRENCY_BRL                                   :Brazilski real (BRL)
-STR_GAME_OPTIONS_CURRENCY_EEK                                   :Estonska kruna (EEK)
-STR_GAME_OPTIONS_CURRENCY_LTL                                   :Litvanski litas (LTL)
-STR_GAME_OPTIONS_CURRENCY_KRW                                   :Južnokorejski von (KRW)
-STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Južnoafrički rand (ZAR)
+STR_GAME_OPTIONS_CURRENCY_GBP                                   :Britanska funta
+STR_GAME_OPTIONS_CURRENCY_USD                                   :Dolar
+STR_GAME_OPTIONS_CURRENCY_EUR                                   :Evro
+STR_GAME_OPTIONS_CURRENCY_JPY                                   :Japanski jen
+STR_GAME_OPTIONS_CURRENCY_ATS                                   :Austrijski šiling
+STR_GAME_OPTIONS_CURRENCY_BEF                                   :Belgijski franak
+STR_GAME_OPTIONS_CURRENCY_CHF                                   :Švajcarski franak
+STR_GAME_OPTIONS_CURRENCY_CZK                                   :Češka kruna
+STR_GAME_OPTIONS_CURRENCY_DEM                                   :Nemačka marka
+STR_GAME_OPTIONS_CURRENCY_DKK                                   :Danska kruna
+STR_GAME_OPTIONS_CURRENCY_ESP                                   :Španska pezeta
+STR_GAME_OPTIONS_CURRENCY_FIM                                   :Finska marka
+STR_GAME_OPTIONS_CURRENCY_FRF                                   :Francuski franak
+STR_GAME_OPTIONS_CURRENCY_GRD                                   :Grčka drahma
+STR_GAME_OPTIONS_CURRENCY_HUF                                   :Mađarska forinta
+STR_GAME_OPTIONS_CURRENCY_ISK                                   :Islandska kruna
+STR_GAME_OPTIONS_CURRENCY_ITL                                   :Italijanska lira
+STR_GAME_OPTIONS_CURRENCY_NLG                                   :Holandski gulden
+STR_GAME_OPTIONS_CURRENCY_NOK                                   :Norveška kruna
+STR_GAME_OPTIONS_CURRENCY_PLN                                   :Poljski zlot
+STR_GAME_OPTIONS_CURRENCY_RON                                   :Rumunski lej
+STR_GAME_OPTIONS_CURRENCY_RUR                                   :Ruska rublja
+STR_GAME_OPTIONS_CURRENCY_SIT                                   :Slovenački tolar
+STR_GAME_OPTIONS_CURRENCY_SEK                                   :Švedska kruna
+STR_GAME_OPTIONS_CURRENCY_TRY                                   :Turska lira
+STR_GAME_OPTIONS_CURRENCY_SKK                                   :Slovačka kruna
+STR_GAME_OPTIONS_CURRENCY_BRL                                   :Brazilski real
+STR_GAME_OPTIONS_CURRENCY_EEK                                   :Estonska kruna
+STR_GAME_OPTIONS_CURRENCY_LTL                                   :Litvanski litas
+STR_GAME_OPTIONS_CURRENCY_KRW                                   :Južnokorejski von
+STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Južnoafrički rand
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Sopstvena...
-STR_GAME_OPTIONS_CURRENCY_GEL                                   :Gruzijski lari (GEL)
-STR_GAME_OPTIONS_CURRENCY_IRR                                   :Iranski rijal (IRR)
-STR_GAME_OPTIONS_CURRENCY_RUB                                   :Nova ruska rublja (RUB)
-STR_GAME_OPTIONS_CURRENCY_MXN                                   :Meksički pezos (MXN)
-STR_GAME_OPTIONS_CURRENCY_NTD                                   :Novi tajvanski dolar (NTD)
-STR_GAME_OPTIONS_CURRENCY_CNY                                   :Kineski renminbi (CNY)
-STR_GAME_OPTIONS_CURRENCY_HKD                                   :Hongkonški dolar (HKD)
-STR_GAME_OPTIONS_CURRENCY_INR                                   :Indijska rupija (INR)
-STR_GAME_OPTIONS_CURRENCY_IDR                                   :Indonezijska rupija (IDR)
-STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malezijski ringit (MYR)
+STR_GAME_OPTIONS_CURRENCY_GEL                                   :Gruzijski lari
+STR_GAME_OPTIONS_CURRENCY_IRR                                   :Iranski rijal
+STR_GAME_OPTIONS_CURRENCY_RUB                                   :Nova ruska rublja
+STR_GAME_OPTIONS_CURRENCY_MXN                                   :Meksički pezos
+STR_GAME_OPTIONS_CURRENCY_NTD                                   :Novi tajvanski dolar
+STR_GAME_OPTIONS_CURRENCY_CNY                                   :Kineski renminbi
+STR_GAME_OPTIONS_CURRENCY_HKD                                   :Hongkonški dolar
+STR_GAME_OPTIONS_CURRENCY_INR                                   :Indijska rupija
+STR_GAME_OPTIONS_CURRENCY_IDR                                   :Indonezijska rupija
+STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malezijski ringit
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Auto čuvanje pozicije
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Izbor vremenskog intervala između dve automatski sačuvane pozicije
@@ -2178,30 +2179,30 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Imperijalne mer
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metričke mere (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
 
-STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}Prevod
-STR_CONFIG_SETTING_GRAPHICS                                     :{ORANGE}Grafika
-STR_CONFIG_SETTING_SOUND                                        :{ORANGE}Zvučni efekti
-STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Okruženje
-STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}Opšte
-STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}Prikazi
-STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}Izgradnja
-STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}Vesti / Savetnici
-STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}Preduzeće
-STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}Računovodstvo
-STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}Vozila
-STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :{ORANGE}Fizika
-STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}Rutiranje
-STR_CONFIG_SETTING_LIMITATIONS                                  :{ORANGE}Ograničenja
-STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE}Katastrofe / Nezgode
-STR_CONFIG_SETTING_GENWORLD                                     :{ORANGE}Stvaranje sveta
-STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}Okoliš
-STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}Vlasti
-STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Naselja
-STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Fabrike
-STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Distribucija tereta
-STR_CONFIG_SETTING_AI                                           :{ORANGE}Suparnici
-STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Računar
-STR_CONFIG_SETTING_NETWORK                                      :{ORANGE}Mreža
+STR_CONFIG_SETTING_LOCALISATION                                 :Prevod
+STR_CONFIG_SETTING_GRAPHICS                                     :Grafika
+STR_CONFIG_SETTING_SOUND                                        :Zvučni efekti
+STR_CONFIG_SETTING_INTERFACE                                    :Okruženje
+STR_CONFIG_SETTING_INTERFACE_GENERAL                            :Opšte
+STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :Prikazi
+STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :Izgradnja
+STR_CONFIG_SETTING_ADVISORS                                     :Vesti / Savetnici
+STR_CONFIG_SETTING_COMPANY                                      :Preduzeće
+STR_CONFIG_SETTING_ACCOUNTING                                   :Računovodstvo
+STR_CONFIG_SETTING_VEHICLES                                     :Vozila
+STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :Fizika
+STR_CONFIG_SETTING_VEHICLES_ROUTING                             :Rutiranje
+STR_CONFIG_SETTING_LIMITATIONS                                  :Ograničenja
+STR_CONFIG_SETTING_ACCIDENTS                                    :Katastrofe / Nezgode
+STR_CONFIG_SETTING_GENWORLD                                     :Stvaranje sveta
+STR_CONFIG_SETTING_ENVIRONMENT                                  :Okoliš
+STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :Vlasti
+STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :Naselja
+STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :Fabrike
+STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :Distribucija tereta
+STR_CONFIG_SETTING_AI                                           :Suparnici
+STR_CONFIG_SETTING_AI_NPC                                       :Računar
+STR_CONFIG_SETTING_NETWORK                                      :Mreža
 
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS                        :Pretraživanje putanja vozova: {STRING}
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT               :Algoritam pronalaženja puta za vozove
@@ -4724,8 +4725,6 @@ STR_TIMETABLE_EXPECTED                                          :{BLACK}Očekiva
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Po planu
 STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}Prebacivanje između prikaza očekivanog i po planu
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :D:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :P:
 
 
 # Date window (for timetable)

@@ -34,6 +34,9 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Kar yük
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Yapım yılı: {GOLD}{NUM}
 
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :V:
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :Ç:
+
 # Cargo type orders Window
 
 # Plans window

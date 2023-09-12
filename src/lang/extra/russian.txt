@@ -65,6 +65,9 @@ STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_EQUALS                :имеет бо
 
 STR_ORDER_CONDITIONAL_PERCENT_DISPLAY                           :Перейти к заданию {COMMA} {COMMA} процентов времени
 
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :П:
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :О:
+
 # Cargo type orders Window
 
 # Plans window

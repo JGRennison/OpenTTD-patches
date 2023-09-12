@@ -1002,7 +1002,7 @@ HotkeyList BuildRailToolbarWindow::hotkeys("railtoolbar", railtoolbar_hotkeys, R
 static const NWidgetPart _nested_build_rail_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_DARK_GREEN),
-		NWidget(WWT_CAPTION, COLOUR_DARK_GREEN, WID_RAT_CAPTION), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS), SetTextStyle(TC_WHITE),
+		NWidget(WWT_CAPTION, COLOUR_DARK_GREEN, WID_RAT_CAPTION), SetDataTip(STR_JUST_STRING2, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS), SetTextStyle(TC_WHITE),
 		NWidget(WWT_STICKYBOX, COLOUR_DARK_GREEN),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
@@ -2830,18 +2830,16 @@ DropDownList GetRailTypeDropDownList(bool for_replacement, bool all_option)
 
 		const RailtypeInfo *rti = GetRailTypeInfo(rt);
 
-		StringID str = for_replacement ? rti->strings.replace_text : (rti->max_speed > 0 ? STR_TOOLBAR_RAILTYPE_VELOCITY : STR_JUST_STRING);
-		DropDownListParamStringItem *item;
+		SetDParam(0, rti->strings.menu_text);
+		SetDParam(1, rti->max_speed);
 		if (for_replacement) {
-			item = new DropDownListParamStringItem(str, rt, !HasBit(avail_railtypes, rt));
+			list.emplace_back(new DropDownListStringItem(rti->strings.replace_text, rt, !HasBit(avail_railtypes, rt)));
 		} else {
+			StringID str = rti->max_speed > 0 ? STR_TOOLBAR_RAILTYPE_VELOCITY : STR_JUST_STRING;
 			DropDownListIconItem *iconitem = new DropDownListIconItem(rti->gui_sprites.build_x_rail, PAL_NONE, str, rt, !HasBit(avail_railtypes, rt));
 			iconitem->SetDimension(d);
-			item = iconitem;
+			list.emplace_back(iconitem);
 		}
-		item->SetParam(0, rti->strings.menu_text);
-		item->SetParam(1, rti->max_speed);
-		list.emplace_back(item);
 	}
 
 	if (list.size() == 0) {

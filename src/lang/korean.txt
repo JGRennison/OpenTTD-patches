@@ -847,7 +847,7 @@ STR_NEWS_COMPANY_BANKRUPT_TITLE                                 :{BIG_FONT}{BLAC
 STR_NEWS_COMPANY_BANKRUPT_DESCRIPTION                           :{BIG_FONT}{BLACK}{STRING} 회사가 채권자에 의해 모든 자산이 팔려 파산하였습니다!
 STR_NEWS_COMPANY_LAUNCH_TITLE                                   :{BIG_FONT}{BLACK}새로운 운송회사 등장!
 STR_NEWS_COMPANY_LAUNCH_DESCRIPTION                             :{BIG_FONT}{BLACK}{STRING}{G 0 "이" "가"} {TOWN}에서 공사를 시작했습니다!
-STR_NEWS_MERGER_TAKEOVER_TITLE                                  :{BIG_FONT}{BLACK}{STRING}의 관리권이 {STRING}(으)로 넘어갔습니다!
+STR_NEWS_MERGER_TAKEOVER_TITLE                                  :{BIG_FONT}{BLACK}{STRING} 회사가 비공개 금액에 {STRING} 회사로 인수되었습니다!
 STR_PRESIDENT_NAME_MANAGER                                      :{BLACK}{PRESIDENT_NAME}{}(사장)
 
 STR_NEWS_NEW_TOWN                                               :{BLACK}{BIG_FONT}{STRING}은(는) 새로운 도시 {TOWN}을(를) 건설했습니다!
@@ -952,49 +952,50 @@ STR_GAME_OPTIONS_VOLUME_100                                     :100%
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}화폐 단위
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}화폐 단위 선택
 
+
 ###length 42
-STR_GAME_OPTIONS_CURRENCY_GBP                                   :영국 파운드 (GBP)
-STR_GAME_OPTIONS_CURRENCY_USD                                   :미국 달러 (USD)
-STR_GAME_OPTIONS_CURRENCY_EUR                                   :유로 (EUR)
-STR_GAME_OPTIONS_CURRENCY_JPY                                   :일본 엔 (JPY)
-STR_GAME_OPTIONS_CURRENCY_ATS                                   :오스트리아 실링 (ATS)
-STR_GAME_OPTIONS_CURRENCY_BEF                                   :벨기에 프랑크 (BEF)
-STR_GAME_OPTIONS_CURRENCY_CHF                                   :스위스 프랑크 (CHF)
-STR_GAME_OPTIONS_CURRENCY_CZK                                   :체코 코루나 (CZK)
-STR_GAME_OPTIONS_CURRENCY_DEM                                   :독일 마르크 (DEM)
-STR_GAME_OPTIONS_CURRENCY_DKK                                   :덴마크 크로네 (DKK)
-STR_GAME_OPTIONS_CURRENCY_ESP                                   :스페인 페세타 (ESP)
-STR_GAME_OPTIONS_CURRENCY_FIM                                   :핀란드 마르카 (FIM)
-STR_GAME_OPTIONS_CURRENCY_FRF                                   :프랑스 프랑크 (FRF)
-STR_GAME_OPTIONS_CURRENCY_GRD                                   :그리스 드라크마 (GRD)
-STR_GAME_OPTIONS_CURRENCY_HUF                                   :헝가리 프로인트 (HUF)
-STR_GAME_OPTIONS_CURRENCY_ISK                                   :아이슬란드 크로나 (ISK)
-STR_GAME_OPTIONS_CURRENCY_ITL                                   :이탈리아 리라 (ITL)
-STR_GAME_OPTIONS_CURRENCY_NLG                                   :네덜란드 길더 (NLG)
-STR_GAME_OPTIONS_CURRENCY_NOK                                   :노르웨이 크로네 (NOK)
-STR_GAME_OPTIONS_CURRENCY_PLN                                   :폴란드 즈워티 (PLN)
-STR_GAME_OPTIONS_CURRENCY_RON                                   :루마니아 레우 (RON)
-STR_GAME_OPTIONS_CURRENCY_RUR                                   :러시아 루블 (RUR)
-STR_GAME_OPTIONS_CURRENCY_SIT                                   :슬로바키아 톨라 (SIT)
-STR_GAME_OPTIONS_CURRENCY_SEK                                   :스웨덴 크로나 (SEK)
-STR_GAME_OPTIONS_CURRENCY_TRY                                   :터키 리라 (TRY)
-STR_GAME_OPTIONS_CURRENCY_SKK                                   :슬로바키아 코루나 (SKK)
-STR_GAME_OPTIONS_CURRENCY_BRL                                   :브라질 레알 (BRL)
-STR_GAME_OPTIONS_CURRENCY_EEK                                   :에스토니아 크룬 (EEK)
-STR_GAME_OPTIONS_CURRENCY_LTL                                   :리투아니아 리타스 (LTL)
-STR_GAME_OPTIONS_CURRENCY_KRW                                   :대한민국 원 (KRW)
-STR_GAME_OPTIONS_CURRENCY_ZAR                                   :남아프리카공화국 자르 (ZAR)
+STR_GAME_OPTIONS_CURRENCY_GBP                                   :영국 파운드
+STR_GAME_OPTIONS_CURRENCY_USD                                   :미국 달러
+STR_GAME_OPTIONS_CURRENCY_EUR                                   :유로
+STR_GAME_OPTIONS_CURRENCY_JPY                                   :일본 엔
+STR_GAME_OPTIONS_CURRENCY_ATS                                   :오스트리아 실링
+STR_GAME_OPTIONS_CURRENCY_BEF                                   :벨기에 프랑크
+STR_GAME_OPTIONS_CURRENCY_CHF                                   :스위스 프랑크
+STR_GAME_OPTIONS_CURRENCY_CZK                                   :체코 코루나
+STR_GAME_OPTIONS_CURRENCY_DEM                                   :독일 마르크
+STR_GAME_OPTIONS_CURRENCY_DKK                                   :덴마크 크로네
+STR_GAME_OPTIONS_CURRENCY_ESP                                   :스페인 페세타
+STR_GAME_OPTIONS_CURRENCY_FIM                                   :핀란드 마르카
+STR_GAME_OPTIONS_CURRENCY_FRF                                   :프랑스 프랑크
+STR_GAME_OPTIONS_CURRENCY_GRD                                   :그리스 드라크마
+STR_GAME_OPTIONS_CURRENCY_HUF                                   :헝가리 프로인트
+STR_GAME_OPTIONS_CURRENCY_ISK                                   :아이슬란드 크로나
+STR_GAME_OPTIONS_CURRENCY_ITL                                   :이탈리아 리라
+STR_GAME_OPTIONS_CURRENCY_NLG                                   :네덜란드 길더
+STR_GAME_OPTIONS_CURRENCY_NOK                                   :노르웨이 크로네
+STR_GAME_OPTIONS_CURRENCY_PLN                                   :폴란드 즈워티
+STR_GAME_OPTIONS_CURRENCY_RON                                   :루마니아 레우
+STR_GAME_OPTIONS_CURRENCY_RUR                                   :러시아 루블
+STR_GAME_OPTIONS_CURRENCY_SIT                                   :슬로바키아 톨라
+STR_GAME_OPTIONS_CURRENCY_SEK                                   :스웨덴 크로나
+STR_GAME_OPTIONS_CURRENCY_TRY                                   :터키 리라
+STR_GAME_OPTIONS_CURRENCY_SKK                                   :슬로바키아 코루나
+STR_GAME_OPTIONS_CURRENCY_BRL                                   :브라질 레알
+STR_GAME_OPTIONS_CURRENCY_EEK                                   :에스토니아 크룬
+STR_GAME_OPTIONS_CURRENCY_LTL                                   :리투아니아 리타스
+STR_GAME_OPTIONS_CURRENCY_KRW                                   :대한민국 원
+STR_GAME_OPTIONS_CURRENCY_ZAR                                   :남아프리카공화국 자르
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :사용자 설정...
-STR_GAME_OPTIONS_CURRENCY_GEL                                   :그루지야 라리 (GEL)
-STR_GAME_OPTIONS_CURRENCY_IRR                                   :이란 리알 (IRR)
-STR_GAME_OPTIONS_CURRENCY_RUB                                   :신 러시아 루블 (RUB)
-STR_GAME_OPTIONS_CURRENCY_MXN                                   :멕시코 페소 (MXN)
-STR_GAME_OPTIONS_CURRENCY_NTD                                   :신 타이완 달러 (NTD)
-STR_GAME_OPTIONS_CURRENCY_CNY                                   :중국 위안 (CNY)
-STR_GAME_OPTIONS_CURRENCY_HKD                                   :홍콩 달러 (HKD)
-STR_GAME_OPTIONS_CURRENCY_INR                                   :인도 루피 (INR)
-STR_GAME_OPTIONS_CURRENCY_IDR                                   :인도네시아 루피아 (IDR)
-STR_GAME_OPTIONS_CURRENCY_MYR                                   :말레이시아 링깃 (MYR)
+STR_GAME_OPTIONS_CURRENCY_GEL                                   :그루지야 라리
+STR_GAME_OPTIONS_CURRENCY_IRR                                   :이란 리알
+STR_GAME_OPTIONS_CURRENCY_RUB                                   :신 러시아 루블
+STR_GAME_OPTIONS_CURRENCY_MXN                                   :멕시코 페소
+STR_GAME_OPTIONS_CURRENCY_NTD                                   :신 타이완 달러
+STR_GAME_OPTIONS_CURRENCY_CNY                                   :중국 위안
+STR_GAME_OPTIONS_CURRENCY_HKD                                   :홍콩 달러
+STR_GAME_OPTIONS_CURRENCY_INR                                   :인도 루피
+STR_GAME_OPTIONS_CURRENCY_IDR                                   :인도네시아 루피아
+STR_GAME_OPTIONS_CURRENCY_MYR                                   :말레이시아 링깃
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}자동 저장
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}게임 자동 저장 간격을 선택
@@ -2019,30 +2020,30 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :야드파운드
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :미터법 (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :국제표준규격 (m)
 
-STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}단위 설정
-STR_CONFIG_SETTING_GRAPHICS                                     :{ORANGE}그래픽
-STR_CONFIG_SETTING_SOUND                                        :{ORANGE}효과음
-STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}인터페이스
-STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}일반
-STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}게임 화면
-STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}건설
-STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}뉴스 / 정보
-STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}회사
-STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}회계
-STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}차량
-STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :{ORANGE}물리
-STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}경로
-STR_CONFIG_SETTING_LIMITATIONS                                  :{ORANGE}제한
-STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE}재앙 / 사고
-STR_CONFIG_SETTING_GENWORLD                                     :{ORANGE}세계 제작
-STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}환경
-STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}지역 당국
-STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}도시
-STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}산업시설
-STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}화물 분배
-STR_CONFIG_SETTING_AI                                           :{ORANGE}경쟁자
-STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}컴퓨터 플레이어
-STR_CONFIG_SETTING_NETWORK                                      :{ORANGE}네트워크
+STR_CONFIG_SETTING_LOCALISATION                                 :단위 설정
+STR_CONFIG_SETTING_GRAPHICS                                     :그래픽
+STR_CONFIG_SETTING_SOUND                                        :효과음
+STR_CONFIG_SETTING_INTERFACE                                    :인터페이스
+STR_CONFIG_SETTING_INTERFACE_GENERAL                            :일반
+STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :게임 화면
+STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :건설
+STR_CONFIG_SETTING_ADVISORS                                     :뉴스 / 정보
+STR_CONFIG_SETTING_COMPANY                                      :회사
+STR_CONFIG_SETTING_ACCOUNTING                                   :회계
+STR_CONFIG_SETTING_VEHICLES                                     :차량
+STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :물리
+STR_CONFIG_SETTING_VEHICLES_ROUTING                             :경로
+STR_CONFIG_SETTING_LIMITATIONS                                  :제한
+STR_CONFIG_SETTING_ACCIDENTS                                    :재앙 / 사고
+STR_CONFIG_SETTING_GENWORLD                                     :세계 제작
+STR_CONFIG_SETTING_ENVIRONMENT                                  :환경
+STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :지역 당국
+STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :도시
+STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :산업시설
+STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :화물 분배
+STR_CONFIG_SETTING_AI                                           :경쟁자
+STR_CONFIG_SETTING_AI_NPC                                       :컴퓨터 플레이어
+STR_CONFIG_SETTING_NETWORK                                      :네트워크
 
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS                        :열차에 사용할 경로 탐색법: {STRING}
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT               :열차에 사용할 경로 탐색 방법을 선택합니다.
@@ -3761,6 +3762,8 @@ STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}상세�
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}기반시설 상세정보 창을 엽니다
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}돈 보내기
 STR_COMPANY_VIEW_GIVE_MONEY_TOOLTIP                             :{BLACK}이 회사에 돈을 보냅니다
+STR_COMPANY_VIEW_HOSTILE_TAKEOVER_BUTTON                        :{BLACK}강제 인수
+STR_COMPANY_VIEW_HOSTILE_TAKEOVER_TOOLTIP                       :{BLACK}이 회사를 강제 인수
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}새 얼굴
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}사장의 얼굴을 선택합니다
@@ -3776,6 +3779,7 @@ STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :사장 이름
 STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :보내고자 하는 돈의 액수를 입력하세요
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}저희 회사를 거두어주실 운송 회사를 찾고있습니다.{}{}저희 {COMPANY} 회사를 {CURRENCY_LONG}의 가격으로 인수합병하시겠습니까?
+STR_BUY_COMPANY_HOSTILE_TAKEOVER                                :{WHITE}{COMPANY} 회사를 강제 인수하려면 해당 회사의 모든 자산을 구매하고, 모든 대출을 상환하며 2년치 이익을 지불하게 됩니다.{}{}총 금액은 {CURRENCY_LONG} 가 될 것입니다.{}{}정말 강제 인수를 진행하시겠습니까?
 
 # Company infrastructure window
 STR_COMPANY_INFRASTRUCTURE_VIEW_CAPTION                         :{WHITE}{COMPANY}의 기반시설
@@ -3847,6 +3851,7 @@ STR_VEHICLE_LIST_MANAGE_LIST                                    :{BLACK}관리
 STR_VEHICLE_LIST_MANAGE_LIST_TOOLTIP                            :{BLACK}이 목록에 있는 모든 열차에 지시를 내려 관리합니다
 STR_VEHICLE_LIST_REPLACE_VEHICLES                               :차량 교체
 STR_VEHICLE_LIST_SEND_FOR_SERVICING                             :점검하러 보내기
+STR_VEHICLE_LIST_CREATE_GROUP                                   :그룹 생성
 STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR                     :{TINY_FONT}{BLACK}올해 이익: {CURRENCY_LONG} (작년: {CURRENCY_LONG})
 STR_VEHICLE_LIST_CARGO                                          :[{CARGO_LIST}]
 STR_VEHICLE_LIST_NAME_AND_CARGO                                 :{STRING} {STRING}
@@ -4569,8 +4574,6 @@ STR_TIMETABLE_EXPECTED                                          :{BLACK}예정�
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}예정 소요시간 기준
 STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}시간표 검사 기준을 도착 예정일과 도착 예정 시간 기준 중에서 선택합니다
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :도착:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :출발:
 
 
 # Date window (for timetable)
@@ -5625,6 +5628,8 @@ STR_JUST_DATE_SHORT                                             :{DATE_SHORT}
 STR_JUST_DATE_LONG                                              :{DATE_LONG}
 STR_JUST_DATE_ISO                                               :{DATE_ISO}
 STR_JUST_STRING                                                 :{STRING}
+STR_JUST_STRING1                                                :{STRING}
+STR_JUST_STRING2                                                :{STRING}
 STR_JUST_STRING_STRING                                          :{STRING}{STRING}
 STR_JUST_RAW_STRING                                             :{STRING}
 STR_JUST_BIG_RAW_STRING                                         :{BIG_FONT}{STRING}

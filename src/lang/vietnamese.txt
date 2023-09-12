@@ -846,7 +846,7 @@ STR_NEWS_COMPANY_BANKRUPT_TITLE                                 :{BIG_FONT}{BLAC
 STR_NEWS_COMPANY_BANKRUPT_DESCRIPTION                           :{BIG_FONT}{BLACK}{STRING} đã bị đóng cửa bởi chủ nợ và tất cả tài sản đã bị bán đi!
 STR_NEWS_COMPANY_LAUNCH_TITLE                                   :{BIG_FONT}{BLACK}Công ty vận tải mới thành lập!
 STR_NEWS_COMPANY_LAUNCH_DESCRIPTION                             :{BIG_FONT}{BLACK}{STRING} đang được xây dựng gần thị trấn {TOWN}!
-STR_NEWS_MERGER_TAKEOVER_TITLE                                  :{BIG_FONT}{BLACK}{STRING} đã bị kiểm soát bởi {STRING}!
+STR_NEWS_MERGER_TAKEOVER_TITLE                                  :{BIG_FONT}{BLACK}{STRING} đã bị kiểm soát bởi {STRING} với số tiền không được tiết lộ!
 STR_PRESIDENT_NAME_MANAGER                                      :{BLACK}{PRESIDENT_NAME}{}(Giám Đốc)
 
 STR_NEWS_NEW_TOWN                                               :{BLACK}{BIG_FONT}{STRING} Tài trợ xây dựng Thị Xã mới {TOWN}!
@@ -951,49 +951,51 @@ STR_GAME_OPTIONS_VOLUME_100                                     :100%
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Đơn vị tiền tệ
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Lựa chọn đơn vị tiền tệ
 
+STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
+
 ###length 42
-STR_GAME_OPTIONS_CURRENCY_GBP                                   :Bảng Anh (GBP)
-STR_GAME_OPTIONS_CURRENCY_USD                                   :Đô-la Mỹ (USD)
-STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro (EUR)
-STR_GAME_OPTIONS_CURRENCY_JPY                                   :Yên Nhật (JPY)
-STR_GAME_OPTIONS_CURRENCY_ATS                                   :Shilling Úc (ATS)
-STR_GAME_OPTIONS_CURRENCY_BEF                                   :Phơ-răng Bỉ (BEF)
-STR_GAME_OPTIONS_CURRENCY_CHF                                   :Phơ-răng Thụy Sỹ (CHF)
-STR_GAME_OPTIONS_CURRENCY_CZK                                   :Koruna Séc (CZK)
-STR_GAME_OPTIONS_CURRENCY_DEM                                   :Mác Đức (DEM)
-STR_GAME_OPTIONS_CURRENCY_DKK                                   :Krone Đan Mạch (DKK)
-STR_GAME_OPTIONS_CURRENCY_ESP                                   :Peseta Tây Ban Nha(ESP)
-STR_GAME_OPTIONS_CURRENCY_FIM                                   :Markka Phần Lan (FIM)
-STR_GAME_OPTIONS_CURRENCY_FRF                                   :Franc Pháp (FRF)
-STR_GAME_OPTIONS_CURRENCY_GRD                                   :Drachma Hy Lạp (GRD)
-STR_GAME_OPTIONS_CURRENCY_HUF                                   :Forint Hungary (HUF)
-STR_GAME_OPTIONS_CURRENCY_ISK                                   :Đồng Króna (ISK)
-STR_GAME_OPTIONS_CURRENCY_ITL                                   :Lira Ý (ITL)
-STR_GAME_OPTIONS_CURRENCY_NLG                                   :Guilder Hà Lan (NLG)
-STR_GAME_OPTIONS_CURRENCY_NOK                                   :Krone Na Uy (NOK)
-STR_GAME_OPTIONS_CURRENCY_PLN                                   :Zloty Phần Lan (PLN)
-STR_GAME_OPTIONS_CURRENCY_RON                                   :Leu Ru-ma-ni (RON)
-STR_GAME_OPTIONS_CURRENCY_RUR                                   :Rúp Nga (RUR)
-STR_GAME_OPTIONS_CURRENCY_SIT                                   :Slovenian Tolar (SIT)
-STR_GAME_OPTIONS_CURRENCY_SEK                                   :Krona Thụy Điển (SEK)
-STR_GAME_OPTIONS_CURRENCY_TRY                                   :Lira Thổ Nhĩ Kỳ (TRY)
-STR_GAME_OPTIONS_CURRENCY_SKK                                   :Koruna Slovakia (SKK)
-STR_GAME_OPTIONS_CURRENCY_BRL                                   :Đồng Real Brasil (BRL)
-STR_GAME_OPTIONS_CURRENCY_EEK                                   :Kroon Estonia (EEK)
-STR_GAME_OPTIONS_CURRENCY_LTL                                   :Đồng Litas Lát-vi (LTL)
-STR_GAME_OPTIONS_CURRENCY_KRW                                   :Won Hàn Quốc (KRW)
-STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Rand Nam Phi (ZAR)
+STR_GAME_OPTIONS_CURRENCY_GBP                                   :Bảng Anh
+STR_GAME_OPTIONS_CURRENCY_USD                                   :Đô-la Mỹ
+STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
+STR_GAME_OPTIONS_CURRENCY_JPY                                   :Yên Nhật
+STR_GAME_OPTIONS_CURRENCY_ATS                                   :Shilling Úc
+STR_GAME_OPTIONS_CURRENCY_BEF                                   :Phơ-răng Bỉ
+STR_GAME_OPTIONS_CURRENCY_CHF                                   :Phơ-răng Thụy Sỹ
+STR_GAME_OPTIONS_CURRENCY_CZK                                   :Koruna Séc
+STR_GAME_OPTIONS_CURRENCY_DEM                                   :Mác Đức
+STR_GAME_OPTIONS_CURRENCY_DKK                                   :Krone Đan Mạch
+STR_GAME_OPTIONS_CURRENCY_ESP                                   :Peseta Tây Ban Nha
+STR_GAME_OPTIONS_CURRENCY_FIM                                   :Markka Phần Lan
+STR_GAME_OPTIONS_CURRENCY_FRF                                   :Franc Pháp
+STR_GAME_OPTIONS_CURRENCY_GRD                                   :Drachma Hy Lạp
+STR_GAME_OPTIONS_CURRENCY_HUF                                   :Forint Hungary
+STR_GAME_OPTIONS_CURRENCY_ISK                                   :Đồng Króna
+STR_GAME_OPTIONS_CURRENCY_ITL                                   :Lira Ý
+STR_GAME_OPTIONS_CURRENCY_NLG                                   :Guilder Hà Lan
+STR_GAME_OPTIONS_CURRENCY_NOK                                   :Krone Na Uy
+STR_GAME_OPTIONS_CURRENCY_PLN                                   :Zloty Phần Lan
+STR_GAME_OPTIONS_CURRENCY_RON                                   :Leu Ru-ma-ni
+STR_GAME_OPTIONS_CURRENCY_RUR                                   :Rúp Nga
+STR_GAME_OPTIONS_CURRENCY_SIT                                   :Slovenian Tolar
+STR_GAME_OPTIONS_CURRENCY_SEK                                   :Krona Thụy Điển
+STR_GAME_OPTIONS_CURRENCY_TRY                                   :Lira Thổ Nhĩ Kỳ
+STR_GAME_OPTIONS_CURRENCY_SKK                                   :Koruna Slovakia
+STR_GAME_OPTIONS_CURRENCY_BRL                                   :Đồng Real Brasil
+STR_GAME_OPTIONS_CURRENCY_EEK                                   :Kroon Estonia
+STR_GAME_OPTIONS_CURRENCY_LTL                                   :Đồng Litas Lát-vi
+STR_GAME_OPTIONS_CURRENCY_KRW                                   :Won Hàn Quốc
+STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Rand Nam Phi
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Tùy chọn...
-STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari Georgia (GEL)
-STR_GAME_OPTIONS_CURRENCY_IRR                                   :Rial Iran (IRR)
-STR_GAME_OPTIONS_CURRENCY_RUB                                   :Đồng Rúp Nga mới (RUB)
-STR_GAME_OPTIONS_CURRENCY_MXN                                   :Peso México (MXN)
-STR_GAME_OPTIONS_CURRENCY_NTD                                   :Tân Đài tệ (NTD)
-STR_GAME_OPTIONS_CURRENCY_CNY                                   :Nhân dân tệ TQ (CNY)
-STR_GAME_OPTIONS_CURRENCY_HKD                                   :Đô-la Hồng Kông (HKD)
-STR_GAME_OPTIONS_CURRENCY_INR                                   :Rupee Ấn Độ (INR)
-STR_GAME_OPTIONS_CURRENCY_IDR                                   :Rupiah Indonesia (IDR)
-STR_GAME_OPTIONS_CURRENCY_MYR                                   :Ringgit Malaysia (MYR)
+STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari Georgia
+STR_GAME_OPTIONS_CURRENCY_IRR                                   :Rial Iran
+STR_GAME_OPTIONS_CURRENCY_RUB                                   :Đồng Rúp Nga mới
+STR_GAME_OPTIONS_CURRENCY_MXN                                   :Peso México
+STR_GAME_OPTIONS_CURRENCY_NTD                                   :Tân Đài tệ
+STR_GAME_OPTIONS_CURRENCY_CNY                                   :Nhân dân tệ TQ
+STR_GAME_OPTIONS_CURRENCY_HKD                                   :Đô-la Hồng Kông
+STR_GAME_OPTIONS_CURRENCY_INR                                   :Rupee Ấn Độ
+STR_GAME_OPTIONS_CURRENCY_IDR                                   :Rupiah Indonesia
+STR_GAME_OPTIONS_CURRENCY_MYR                                   :Ringgit Malaysia
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Lưu tự động
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Lựa chọn khoảng thời gian tự động lưu
@@ -1558,7 +1560,7 @@ STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREY_TO_RED                :Xám tới đ�
 STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREYSCALE                  :Thang màu xám
 
 STR_CONFIG_SETTING_SCROLLMODE                                   :Kiểu cuộn khung nhìn: {STRING}
-STR_CONFIG_SETTING_SCROLLMODE_HELPTEXT                          :Hành xử khi kéo, cuộn bản đồ
+STR_CONFIG_SETTING_SCROLLMODE_HELPTEXT                          :Hành xử khi kéo, cuộn bản đồ. Tùy chọn "khóa vị trí chuột" không hoạt động ở một số phiên bản, như phiên bản web, phiên bản cảm ứng, Linux với Wayland, và một số phiên bản khác
 ###length 4
 STR_CONFIG_SETTING_SCROLLMODE_DEFAULT                           :Kéo cuộn khung nhìn kiểu RMB, khoá vị trí con trỏ chuột
 STR_CONFIG_SETTING_SCROLLMODE_RMB_LOCKED                        :Kéo cuộn kiểu RMB, khoá vị trí con trỏ chuột
@@ -2018,30 +2020,30 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Hoàng Gia (ft)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metric (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
 
-STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}Tiêu Chuẩn Đo Lường
-STR_CONFIG_SETTING_GRAPHICS                                     :{ORANGE}Đồ họa
-STR_CONFIG_SETTING_SOUND                                        :{ORANGE}Âm thanh
-STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Giao Diện
-STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}Tổng quát
-STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}Vùng nhìn
-STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}Xây Dựng
-STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}Tin tức / Cố vấn
-STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}Công ty
-STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}Kế toán
-STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}Phương Tiện
-STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :{ORANGE}Vật lý
-STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}Tìm đường
-STR_CONFIG_SETTING_LIMITATIONS                                  :{ORANGE}Giới hạn
-STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE}Thiên tai / Tai nạn
-STR_CONFIG_SETTING_GENWORLD                                     :{ORANGE}Khởi tạo bản đồ
-STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}Môi trường
-STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}Chính quyền
-STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Đô thị
-STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Nhà máy
-STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Phân bổ hàng hóa
-STR_CONFIG_SETTING_AI                                           :{ORANGE}Đối Thủ
-STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Nhân vật máy
-STR_CONFIG_SETTING_NETWORK                                      :{ORANGE}Kết nối
+STR_CONFIG_SETTING_LOCALISATION                                 :Tiêu Chuẩn Đo Lường
+STR_CONFIG_SETTING_GRAPHICS                                     :Đồ họa
+STR_CONFIG_SETTING_SOUND                                        :Âm thanh
+STR_CONFIG_SETTING_INTERFACE                                    :Giao Diện
+STR_CONFIG_SETTING_INTERFACE_GENERAL                            :Tổng quát
+STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :Vùng nhìn
+STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :Xây Dựng
+STR_CONFIG_SETTING_ADVISORS                                     :Tin tức / Cố vấn
+STR_CONFIG_SETTING_COMPANY                                      :Công ty
+STR_CONFIG_SETTING_ACCOUNTING                                   :Kế toán
+STR_CONFIG_SETTING_VEHICLES                                     :Phương Tiện
+STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :Vật lý
+STR_CONFIG_SETTING_VEHICLES_ROUTING                             :Tìm đường
+STR_CONFIG_SETTING_LIMITATIONS                                  :Giới hạn
+STR_CONFIG_SETTING_ACCIDENTS                                    :Thiên tai / Tai nạn
+STR_CONFIG_SETTING_GENWORLD                                     :Khởi tạo bản đồ
+STR_CONFIG_SETTING_ENVIRONMENT                                  :Môi trường
+STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :Chính quyền
+STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :Đô thị
+STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :Nhà máy
+STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :Phân bổ hàng hóa
+STR_CONFIG_SETTING_AI                                           :Đối Thủ
+STR_CONFIG_SETTING_AI_NPC                                       :Nhân vật máy
+STR_CONFIG_SETTING_NETWORK                                      :Kết nối
 
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS                        :Cơ chế tìm đường cho tàu hoả: {STRING}
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT               :Cơ chế tìm đường cho tàu hỏa
@@ -2080,6 +2082,7 @@ STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Phân b�
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Lỗi ở thiết lập hình ảnh...
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... không tìm thấy GPU tương thích. Tăng tốc phần cứng đã được tắt
+STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... trình điều khiển GPU đã làm trò chơi bị lỗi. Tăng tốc phần cứng đã được tắt
 
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
@@ -3759,6 +3762,8 @@ STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Chi ti�
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Xem chi tiết thống kê hạ tầng
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Tặng tiền
 STR_COMPANY_VIEW_GIVE_MONEY_TOOLTIP                             :{BLACK}Tặng tiền cho công ty này
+STR_COMPANY_VIEW_HOSTILE_TAKEOVER_BUTTON                        :{BLACK}Thâu tóm thù địch
+STR_COMPANY_VIEW_HOSTILE_TAKEOVER_TOOLTIP                       :{BLACK}Thực hiện việc thâu tóm thù địch với công ty này
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Chọn khuôn mặt khác
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Chọn khuôn mặt của người điều hành
@@ -3774,6 +3779,7 @@ STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Tên Giám Đ�
 STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Nhập số tiền bạn muốn tặng
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Chúng tôi tìm một công ty để chuyển nhượng công việc kinh doanh và tài sản công ty chúng tôi.{}{}Bạn có muốn mua công ty {COMPANY} của chúng tôi với giá {CURRENCY_LONG}?
+STR_BUY_COMPANY_HOSTILE_TAKEOVER                                :{WHITE}Khi thâu tóm thù địch công ty {COMPANY}, bạn sẽ mua hết tài sản, trả hết nợ, và trả một số tiền tương ứng với lợi nhuận trong hai năm.{}{}Tổng số tiền dự tính là {CURRENCY_LONG}.{}{}Bạn có muốn tiếp tục việc thâu tóm thù địch này?
 
 # Company infrastructure window
 STR_COMPANY_INFRASTRUCTURE_VIEW_CAPTION                         :{WHITE}Cơ sở hạ tầng của công ty {COMPANY}
@@ -3845,6 +3851,7 @@ STR_VEHICLE_LIST_MANAGE_LIST                                    :{BLACK}Quản l
 STR_VEHICLE_LIST_MANAGE_LIST_TOOLTIP                            :{BLACK}Gửi chỉ dẫn tới toàn bộ phương tiện trong danh sách
 STR_VEHICLE_LIST_REPLACE_VEHICLES                               :Thay phương tiện
 STR_VEHICLE_LIST_SEND_FOR_SERVICING                             :Gửi về bảo trì
+STR_VEHICLE_LIST_CREATE_GROUP                                   :Tạo nhóm
 STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR                     :{TINY_FONT}{BLACK}Lợi nhuận năm nay: {CURRENCY_LONG} (năm ngoái: {CURRENCY_LONG})
 STR_VEHICLE_LIST_CARGO                                          :[{CARGO_LIST}]
 STR_VEHICLE_LIST_NAME_AND_CARGO                                 :{STRING} {STRING}
@@ -4567,8 +4574,8 @@ STR_TIMETABLE_EXPECTED                                          :{BLACK}Mong mu�
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Chốt lịch
 STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}Chuyển giữa lịch mong muốn và lịch được chốt
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :Đến:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :Đi:
+STR_TIMETABLE_ARRIVAL                                           :ĐN: {COLOUR}{DATE_TINY}
+STR_TIMETABLE_DEPARTURE                                         :KH: {COLOUR}{DATE_TINY}
 
 
 # Date window (for timetable)
@@ -5623,6 +5630,8 @@ STR_JUST_DATE_SHORT                                             :{DATE_SHORT}
 STR_JUST_DATE_LONG                                              :{DATE_LONG}
 STR_JUST_DATE_ISO                                               :{DATE_ISO}
 STR_JUST_STRING                                                 :{STRING}
+STR_JUST_STRING1                                                :{STRING}
+STR_JUST_STRING2                                                :{STRING}
 STR_JUST_STRING_STRING                                          :{STRING}{STRING}
 STR_JUST_RAW_STRING                                             :{STRING}
 STR_JUST_BIG_RAW_STRING                                         :{BIG_FONT}{STRING}

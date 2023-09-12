@@ -49,7 +49,7 @@ void ShowNewGRFError()
 
 	for (const GRFConfig *c = _grfconfig; c != nullptr; c = c->next) {
 		/* Only show Fatal and Error level messages */
-		if (c->error == nullptr || (c->error->severity != STR_NEWGRF_ERROR_MSG_FATAL && c->error->severity != STR_NEWGRF_ERROR_MSG_ERROR)) continue;
+		if (!c->error.has_value() || (c->error->severity != STR_NEWGRF_ERROR_MSG_FATAL && c->error->severity != STR_NEWGRF_ERROR_MSG_ERROR)) continue;
 
 		SetDParamStr(0, c->GetName());
 		SetDParam   (1, c->error->message != STR_NULL ? c->error->message : STR_JUST_RAW_STRING);
@@ -71,7 +71,7 @@ void ShowNewGRFError()
 static void ShowNewGRFInfo(const GRFConfig *c, const Rect &r, bool show_params)
 {
 	Rect tr = r.Shrink(WidgetDimensions::scaled.frametext);
-	if (c->error != nullptr) {
+	if (c->error.has_value()) {
 		SetDParamStr(0, c->error->custom_message); // is skipped by built-in messages
 		SetDParamStr(1, c->filename);
 		SetDParamStr(2, c->error->data);
@@ -405,7 +405,7 @@ struct NewGRFParametersWindow : public Window {
 
 							DropDownList list;
 							for (uint32 i = par_info.min_value; i <= par_info.max_value; i++) {
-								list.emplace_back(new DropDownListCharStringItem(GetGRFStringFromGRFText(par_info.value_names.find(i)->second), i, false));
+								list.emplace_back(new DropDownListStringItem(GetGRFStringFromGRFText(par_info.value_names.find(i)->second), i, false));
 							}
 
 							ShowDropDownListAt(this, std::move(list), old_val, -1, wi_rect, COLOUR_ORANGE);
@@ -892,8 +892,8 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 							}
 						}
 						DrawSprite(SPR_SQUARE, pal, square_left, tr.top + square_offset_y);
-						if (c->error != nullptr) DrawSprite(SPR_WARNING_SIGN, 0, warning_left, tr.top + warning_offset_y);
-						uint txtoffset = c->error == nullptr ? 0 : warning.width;
+						if (c->error.has_value()) DrawSprite(SPR_WARNING_SIGN, 0, warning_left, tr.top + warning_offset_y);
+						uint txtoffset = !c->error.has_value() ? 0 : warning.width;
 						DrawString(text_left + (rtl ? 0 : txtoffset), text_right - (rtl ? txtoffset : 0), tr.top + offset_y, text, h ? TC_WHITE : TC_ORANGE);
 						tr.top += step_height;
 					}
@@ -961,7 +961,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 				list.emplace_back(new DropDownListStringItem(STR_NONE, -1, false));
 
 				for (uint i = 0; i < this->grf_presets.size(); i++) {
-					list.emplace_back(new DropDownListCharStringItem(this->grf_presets[i], i, false));
+					list.emplace_back(new DropDownListStringItem(this->grf_presets[i], i, false));
 				}
 
 				this->DeleteChildWindows(WC_QUERY_STRING); // Remove the parameter query window
@@ -1472,7 +1472,7 @@ private:
 	{
 		filter.ResetState();
 		filter.AddLine((*a)->GetName());
-		filter.AddLine((*a)->filename.c_str());
+		filter.AddLine((*a)->filename);
 		filter.AddLine((*a)->GetDescription());
 		return filter.GetState();;
 	}
@@ -1837,7 +1837,7 @@ static const NWidgetPart _nested_newgrf_actives_widgets[] = {
 		NWidget(WWT_TEXT, COLOUR_MAUVE), SetDataTip(STR_NEWGRF_SETTINGS_SELECT_PRESET, STR_NULL),
 				SetPadding(0, WidgetDimensions::unscaled.frametext.right, 0, 0),
 		NWidget(WWT_DROPDOWN, COLOUR_YELLOW, WID_NS_PRESET_LIST), SetFill(1, 0), SetResize(1, 0),
-				SetDataTip(STR_JUST_STRING, STR_NEWGRF_SETTINGS_PRESET_LIST_TOOLTIP),
+				SetDataTip(STR_JUST_STRING1, STR_NEWGRF_SETTINGS_PRESET_LIST_TOOLTIP),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_NS_PRESET_SAVE), SetFill(1, 0), SetResize(1, 0),
@@ -2132,7 +2132,7 @@ struct SavePresetWindow : public Window {
 				resize->height = FONT_HEIGHT_NORMAL;
 				size->height = 0;
 				for (uint i = 0; i < this->presets.size(); i++) {
-					Dimension d = GetStringBoundingBox(this->presets[i].c_str());
+					Dimension d = GetStringBoundingBox(this->presets[i]);
 					size->width = std::max(size->width, d.width + padding.width);
 					resize->height = std::max(resize->height, d.height);
 				}
@@ -2158,8 +2158,7 @@ struct SavePresetWindow : public Window {
 				for (uint i = min_index; i < max_index; i++) {
 					if ((int)i == this->selected) GfxFillRect(br.left, tr.top, br.right, tr.top + step_height - 1, PC_DARK_BLUE);
 
-					const char *text = this->presets[i].c_str();
-					DrawString(tr.left, tr.right, tr.top + offset_y, text, ((int)i == this->selected) ? TC_WHITE : TC_SILVER);
+					DrawString(tr.left, tr.right, tr.top + offset_y, this->presets[i], ((int)i == this->selected) ? TC_WHITE : TC_SILVER);
 					tr.top += step_height;
 				}
 				break;
@@ -2174,7 +2173,7 @@ struct SavePresetWindow : public Window {
 				auto it = this->vscroll->GetScrolledItemFromWidget(this->presets, pt.y, this, WID_SVP_PRESET_LIST);
 				if (it != this->presets.end()) {
 					this->selected = it - this->presets.begin();
-					this->presetname_editbox.text.Assign(it->c_str());
+					this->presetname_editbox.text.Assign(*it);
 					this->SetWidgetDirty(WID_SVP_PRESET_LIST);
 					this->SetWidgetDirty(WID_SVP_EDITBOX);
 				}

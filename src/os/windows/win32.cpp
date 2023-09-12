@@ -429,10 +429,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	PerThreadSetupInit();
 	CrashLog::InitialiseCrashLog();
 
-	/* Convert the command line to UTF-8. We need a dedicated buffer
-	 * for this because argv[] points into this buffer and this needs to
-	 * be available between subsequent calls to FS2OTTD(). */
-	char *cmdline = stredup(FS2OTTD(GetCommandLine()).c_str());
+	/* Convert the command line to UTF-8. */
+	std::string cmdline = FS2OTTD(GetCommandLine());
 
 	/* Set the console codepage to UTF-8. */
 	SetConsoleOutputCP(CP_UTF8);
@@ -446,7 +444,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	/* setup random seed to something quite random */
 	SetRandomSeed(GetTickCount());
 
-	argc = ParseCommandLine(cmdline, argv, lengthof(argv));
+	argc = ParseCommandLine(cmdline.data(), argv, lengthof(argv));
 
 	/* Make sure our arguments contain only valid UTF-8 characters. */
 	for (int i = 0; i < argc; i++) StrMakeValidInPlace(argv[i]);
@@ -456,7 +454,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	/* Restore system timer resolution. */
 	timeEndPeriod(1);
 
-	free(cmdline);
 	return 0;
 }
 
@@ -659,23 +656,21 @@ const char *GetCurrentLocale(const char *)
 
 static WCHAR _cur_iso_locale[16] = L"";
 
-void Win32SetCurrentLocaleName(const char *iso_code)
+void Win32SetCurrentLocaleName(std::string iso_code)
 {
 	/* Convert the iso code into the format that windows expects. */
-	char iso[16];
-	if (strcmp(iso_code, "zh_TW") == 0) {
-		strecpy(iso, "zh-Hant", lastof(iso));
-	} else if (strcmp(iso_code, "zh_CN") == 0) {
-		strecpy(iso, "zh-Hans", lastof(iso));
+	if (iso_code == "zh_TW") {
+		iso_code = "zh-Hant";
+	} else if (iso_code == "zh_CN") {
+		iso_code = "zh-Hans";
 	} else {
 		/* Windows expects a '-' between language and country code, but we use a '_'. */
-		strecpy(iso, iso_code, lastof(iso));
-		for (char *c = iso; *c != '\0'; c++) {
-			if (*c == '_') *c = '-';
+		for (char &c : iso_code) {
+			if (c == '_') c = '-';
 		}
 	}
 
-	MultiByteToWideChar(CP_UTF8, 0, iso, -1, _cur_iso_locale, lengthof(_cur_iso_locale));
+	MultiByteToWideChar(CP_UTF8, 0, iso_code.c_str(), -1, _cur_iso_locale, lengthof(_cur_iso_locale));
 }
 
 int OTTDStringCompare(std::string_view s1, std::string_view s2)

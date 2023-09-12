@@ -200,7 +200,7 @@ struct GSConfigWindow : public Window {
 					TextColour colour;
 					uint idx = 0;
 					if (config_item.description.empty()) {
-						str = STR_JUST_STRING;
+						str = STR_JUST_STRING1;
 						colour = TC_ORANGE;
 					} else {
 						str = STR_AI_SETTINGS_SETTING;
@@ -317,7 +317,7 @@ struct GSConfigWindow : public Window {
 
 							DropDownList list;
 							for (int i = config_item.min_value; i <= config_item.max_value; i++) {
-								list.emplace_back(new DropDownListCharStringItem(config_item.labels.find(i)->second, i, false));
+								list.emplace_back(new DropDownListStringItem(config_item.labels.find(i)->second, i, false));
 							}
 
 							ShowDropDownListAt(this, std::move(list), old_val, -1, wi_rect, COLOUR_ORANGE);

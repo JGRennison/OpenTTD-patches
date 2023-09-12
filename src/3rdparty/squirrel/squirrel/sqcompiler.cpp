@@ -194,6 +194,14 @@ public:
 			_vm->_lasterror = SQString::Create(_ss(_vm), compilererror, -1);
 			return false;
 		}
+		catch (const std::string &compilererror) {
+			if(_raiseerror && _ss(_vm)->_compilererrorhandler) {
+				_ss(_vm)->_compilererrorhandler(_vm, compilererror.c_str(), type(_sourcename) == OT_STRING ? _stringval(_sourcename) : "unknown",
+					_lex._currentline, _lex._currentcolumn);
+			}
+			_vm->_lasterror = SQString::Create(_ss(_vm), compilererror);
+			return false;
+		}
 	}
 	void Statements()
 	{

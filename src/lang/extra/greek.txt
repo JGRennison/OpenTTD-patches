@@ -31,6 +31,9 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Άλλα
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Έτος σχεδίασης: {GOLD}{NUM}
 
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :ΑΦ:
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :ΑΝ:
+
 # Cargo type orders Window
 
 # Plans window

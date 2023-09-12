@@ -107,7 +107,7 @@ void IConsolePrint(TextColour colour_code, const char *string)
 		return;
 	}
 
-	/* Create a copy of the string, strip if of colours and invalid
+	/* Create a copy of the string, strip it of colours and invalid
 	 * characters and (when applicable) assign it to the console buffer */
 	str = stredup(string);
 	str_strip_colours(str);

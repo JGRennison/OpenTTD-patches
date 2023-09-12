@@ -35,6 +35,9 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Thay đ�
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Thiết kế: {GOLD}{NUM}
 
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :Đến:
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :Đi:
+
 # Cargo type orders Window
 
 # Plans window

@@ -951,49 +951,50 @@ STR_GAME_OPTIONS_VOLUME_100                                     :100%
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}通貨単位
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}通貨単位の選択
 
+
 ###length 42
-STR_GAME_OPTIONS_CURRENCY_GBP                                   :英ポンド(£)
-STR_GAME_OPTIONS_CURRENCY_USD                                   :米ドル($)
-STR_GAME_OPTIONS_CURRENCY_EUR                                   :欧州連合・ユーロ(€)
-STR_GAME_OPTIONS_CURRENCY_JPY                                   :日本円(¥)
-STR_GAME_OPTIONS_CURRENCY_ATS                                   :オーストリア・シリング(ATS)
-STR_GAME_OPTIONS_CURRENCY_BEF                                   :ベルギー・フラン(BEF)
-STR_GAME_OPTIONS_CURRENCY_CHF                                   :スイス・フラン(CHF)
-STR_GAME_OPTIONS_CURRENCY_CZK                                   :チェコ・コルナ(CZK)
-STR_GAME_OPTIONS_CURRENCY_DEM                                   :ドイツ・マルク(DEM)
-STR_GAME_OPTIONS_CURRENCY_DKK                                   :デンマーク・クローネ(DKK)
-STR_GAME_OPTIONS_CURRENCY_ESP                                   :スペイン・ペセタ(₧)
-STR_GAME_OPTIONS_CURRENCY_FIM                                   :フィンランド・マーカ(FIM)
-STR_GAME_OPTIONS_CURRENCY_FRF                                   :フランス・フラン(₣)
-STR_GAME_OPTIONS_CURRENCY_GRD                                   :ギリシャ・ドラクマ(₯)
-STR_GAME_OPTIONS_CURRENCY_HUF                                   :ハンガリー・フォリント(HUF)
-STR_GAME_OPTIONS_CURRENCY_ISK                                   :アイスランド・クローナ(ISK)
-STR_GAME_OPTIONS_CURRENCY_ITL                                   :イタリア・リラ(ITL)
-STR_GAME_OPTIONS_CURRENCY_NLG                                   :オランダ・ギルダー(ƒ)
-STR_GAME_OPTIONS_CURRENCY_NOK                                   :ノルウェー・クローネ(NOK)
-STR_GAME_OPTIONS_CURRENCY_PLN                                   :ポーランド・ズウォティ(PLN)
-STR_GAME_OPTIONS_CURRENCY_RON                                   :ルーマニア・レウ(RON)
-STR_GAME_OPTIONS_CURRENCY_RUR                                   :ロシア・ルーブル(₽)
-STR_GAME_OPTIONS_CURRENCY_SIT                                   :スロベニア・トラール(SIT)
-STR_GAME_OPTIONS_CURRENCY_SEK                                   :スウェーデン・クローナ(SEK)
-STR_GAME_OPTIONS_CURRENCY_TRY                                   :トルコ・リラ(₺)
-STR_GAME_OPTIONS_CURRENCY_SKK                                   :スロバキア・コルナ(SKK)
-STR_GAME_OPTIONS_CURRENCY_BRL                                   :ブラジル・レアル(R$)
-STR_GAME_OPTIONS_CURRENCY_EEK                                   :エストニア・クローン(EEK)
-STR_GAME_OPTIONS_CURRENCY_LTL                                   :リトアニア・リタス(LTL)
-STR_GAME_OPTIONS_CURRENCY_KRW                                   :韓国・ウォン(₩)
-STR_GAME_OPTIONS_CURRENCY_ZAR                                   :南アフリカランド (ZAR)
+STR_GAME_OPTIONS_CURRENCY_GBP                                   :英ポンド
+STR_GAME_OPTIONS_CURRENCY_USD                                   :米ドル
+STR_GAME_OPTIONS_CURRENCY_EUR                                   :欧州連合・ユーロ
+STR_GAME_OPTIONS_CURRENCY_JPY                                   :日本円
+STR_GAME_OPTIONS_CURRENCY_ATS                                   :オーストリア・シリング
+STR_GAME_OPTIONS_CURRENCY_BEF                                   :ベルギー・フラン
+STR_GAME_OPTIONS_CURRENCY_CHF                                   :スイス・フラン
+STR_GAME_OPTIONS_CURRENCY_CZK                                   :チェコ・コルナ
+STR_GAME_OPTIONS_CURRENCY_DEM                                   :ドイツ・マルク
+STR_GAME_OPTIONS_CURRENCY_DKK                                   :デンマーク・クローネ
+STR_GAME_OPTIONS_CURRENCY_ESP                                   :スペイン・ペセタ
+STR_GAME_OPTIONS_CURRENCY_FIM                                   :フィンランド・マーカ
+STR_GAME_OPTIONS_CURRENCY_FRF                                   :フランス・フラン
+STR_GAME_OPTIONS_CURRENCY_GRD                                   :ギリシャ・ドラクマ
+STR_GAME_OPTIONS_CURRENCY_HUF                                   :ハンガリー・フォリント
+STR_GAME_OPTIONS_CURRENCY_ISK                                   :アイスランド・クローナ
+STR_GAME_OPTIONS_CURRENCY_ITL                                   :イタリア・リラ
+STR_GAME_OPTIONS_CURRENCY_NLG                                   :オランダ・ギルダー
+STR_GAME_OPTIONS_CURRENCY_NOK                                   :ノルウェー・クローネ
+STR_GAME_OPTIONS_CURRENCY_PLN                                   :ポーランド・ズウォティ
+STR_GAME_OPTIONS_CURRENCY_RON                                   :ルーマニア・レウ
+STR_GAME_OPTIONS_CURRENCY_RUR                                   :ロシア・ルーブル
+STR_GAME_OPTIONS_CURRENCY_SIT                                   :スロベニア・トラール
+STR_GAME_OPTIONS_CURRENCY_SEK                                   :スウェーデン・クローナ
+STR_GAME_OPTIONS_CURRENCY_TRY                                   :トルコ・リラ
+STR_GAME_OPTIONS_CURRENCY_SKK                                   :スロバキア・コルナ
+STR_GAME_OPTIONS_CURRENCY_BRL                                   :ブラジル・レアル
+STR_GAME_OPTIONS_CURRENCY_EEK                                   :エストニア・クローン
+STR_GAME_OPTIONS_CURRENCY_LTL                                   :リトアニア・リタス
+STR_GAME_OPTIONS_CURRENCY_KRW                                   :韓国・ウォン
+STR_GAME_OPTIONS_CURRENCY_ZAR                                   :南アフリカランド
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :カスタム…
-STR_GAME_OPTIONS_CURRENCY_GEL                                   :グルジア・ラリー(GEL)
-STR_GAME_OPTIONS_CURRENCY_IRR                                   :イラン・リアル(IRR)
-STR_GAME_OPTIONS_CURRENCY_RUB                                   :新ロシア・ルーブル(₽)
-STR_GAME_OPTIONS_CURRENCY_MXN                                   :メキシコ・ペソ(MXN)
-STR_GAME_OPTIONS_CURRENCY_NTD                                   :新台湾ドル(NT$)
-STR_GAME_OPTIONS_CURRENCY_CNY                                   :中国・人民元(CNY)
-STR_GAME_OPTIONS_CURRENCY_HKD                                   :香港ドル(HK$)
-STR_GAME_OPTIONS_CURRENCY_INR                                   :インド・ルピー(₹)
-STR_GAME_OPTIONS_CURRENCY_IDR                                   :インドネシア・ルピア(IDR)
-STR_GAME_OPTIONS_CURRENCY_MYR                                   :マレーシア・リンギット(MYR)
+STR_GAME_OPTIONS_CURRENCY_GEL                                   :グルジア・ラリー
+STR_GAME_OPTIONS_CURRENCY_IRR                                   :イラン・リアル
+STR_GAME_OPTIONS_CURRENCY_RUB                                   :新ロシア・ルーブル
+STR_GAME_OPTIONS_CURRENCY_MXN                                   :メキシコ・ペソ
+STR_GAME_OPTIONS_CURRENCY_NTD                                   :新台湾ドル
+STR_GAME_OPTIONS_CURRENCY_CNY                                   :中国・人民元
+STR_GAME_OPTIONS_CURRENCY_HKD                                   :香港ドル
+STR_GAME_OPTIONS_CURRENCY_INR                                   :インド・ルピー
+STR_GAME_OPTIONS_CURRENCY_IDR                                   :インドネシア・ルピア
+STR_GAME_OPTIONS_CURRENCY_MYR                                   :マレーシア・リンギット
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}オートセーブ
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}自動保存の間隔を選択します
@@ -2010,30 +2011,30 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :ヤード・ポ
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :メートル法 (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :国際単位系 (m)
 
-STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}多国籍対応
-STR_CONFIG_SETTING_GRAPHICS                                     :{ORANGE}グラフィック
-STR_CONFIG_SETTING_SOUND                                        :{ORANGE}効果音
-STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}インターフェース
-STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}一般
-STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}画面表示
-STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}建設
-STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}ニュース/アドバイス
-STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}会社
-STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}会計
-STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}輸送機器
-STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :{ORANGE}物理モデル
-STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}経路構築
-STR_CONFIG_SETTING_LIMITATIONS                                  :{ORANGE}制限
-STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE}災害/事故
-STR_CONFIG_SETTING_GENWORLD                                     :{ORANGE}マップ生成
-STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}環境
-STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}地方自治体
-STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}街
-STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}産業
-STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}貨物配送先
-STR_CONFIG_SETTING_AI                                           :{ORANGE}競争会社
-STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}コンピュータプレイヤー
-STR_CONFIG_SETTING_NETWORK                                      :{ORANGE}ネットワーク
+STR_CONFIG_SETTING_LOCALISATION                                 :多国籍対応
+STR_CONFIG_SETTING_GRAPHICS                                     :グラフィック
+STR_CONFIG_SETTING_SOUND                                        :効果音
+STR_CONFIG_SETTING_INTERFACE                                    :インターフェース
+STR_CONFIG_SETTING_INTERFACE_GENERAL                            :一般
+STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :画面表示
+STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :建設
+STR_CONFIG_SETTING_ADVISORS                                     :ニュース/アドバイス
+STR_CONFIG_SETTING_COMPANY                                      :会社
+STR_CONFIG_SETTING_ACCOUNTING                                   :会計
+STR_CONFIG_SETTING_VEHICLES                                     :輸送機器
+STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :物理モデル
+STR_CONFIG_SETTING_VEHICLES_ROUTING                             :経路構築
+STR_CONFIG_SETTING_LIMITATIONS                                  :制限
+STR_CONFIG_SETTING_ACCIDENTS                                    :災害/事故
+STR_CONFIG_SETTING_GENWORLD                                     :マップ生成
+STR_CONFIG_SETTING_ENVIRONMENT                                  :環境
+STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :地方自治体
+STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :街
+STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :産業
+STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :貨物配送先
+STR_CONFIG_SETTING_AI                                           :競争会社
+STR_CONFIG_SETTING_AI_NPC                                       :コンピュータプレイヤー
+STR_CONFIG_SETTING_NETWORK                                      :ネットワーク
 
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS                        :列車の経路探索アルゴリズム: {STRING}
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT               :列車の経路探索アルゴリズムを決めます
@@ -4548,8 +4549,6 @@ STR_TIMETABLE_EXPECTED                                          :{BLACK}予想�
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}定刻日時
 STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}予想日時(現状の運転時刻から推定される今後の発着日時)と定刻日時(ダイヤから割り出される定刻の発着日時)の表示を切り返えます
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :着:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :発:
 
 
 # Date window (for timetable)

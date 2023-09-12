@@ -662,9 +662,8 @@ static DropDownList GetGroupDropDownList(Owner owner, GroupID group_id, int &sel
 	for (size_t i = 0; i < list.size(); ++i) {
 		const Group *g = list[i];
 		if (group_id == g->index) selected = group_id;
-		DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_GROUP_NAME, g->index, false);
-		item->SetParam(0, g->index | GROUP_NAME_HIERARCHY);
-		dlist.emplace_back(item);
+		SetDParam(0, g->index | GROUP_NAME_HIERARCHY);
+		dlist.emplace_back(new DropDownListStringItem(STR_GROUP_NAME, g->index, false));
 	}
 
 	return dlist;
@@ -716,14 +715,12 @@ DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &
 		const TraceRestrictSlot *s = list[i];
 		if (slot_id == s->index) selected = slot_id;
 		if (s->vehicle_type == vehtype) {
-			DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_TRACE_RESTRICT_SLOT_NAME, s->index, false);
-			item->SetParam(0, s->index);
-			dlist.emplace_back(item);
+			SetDParam(0, s->index);
+			dlist.emplace_back(new DropDownListStringItem(STR_TRACE_RESTRICT_SLOT_NAME, s->index, false));
 		} else {
-			DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED, s->index, false);
-			item->SetParam(0, STR_REPLACE_VEHICLE_TRAIN + s->vehicle_type);
-			item->SetParam(1, s->index);
-			dlist.emplace_back(item);
+			SetDParam(0, STR_REPLACE_VEHICLE_TRAIN + s->vehicle_type);
+			SetDParam(1, s->index);
+			dlist.emplace_back(new DropDownListStringItem(STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED, s->index, false));
 		}
 	}
 
@@ -762,9 +759,8 @@ DropDownList GetCounterDropDownList(Owner owner, TraceRestrictCounterID ctr_id, 
 	for (size_t i = 0; i < list.size(); ++i) {
 		const TraceRestrictCounter *s = list[i];
 		if (ctr_id == s->index) selected = ctr_id;
-		DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_TRACE_RESTRICT_COUNTER_NAME, s->index, false);
-		item->SetParam(0, s->index);
-		dlist.emplace_back(item);
+		SetDParam(0, s->index);
+		dlist.emplace_back(new DropDownListStringItem(STR_TRACE_RESTRICT_COUNTER_NAME, s->index, false));
 	}
 
 	return dlist;

@@ -2946,12 +2946,10 @@ public:
 				for (uint i = 0; i < count; ++i) {
 					const DispatchSchedule &ds = this->vehicle->orders->GetDispatchScheduleByIndex(i);
 					if (ds.ScheduleName().empty()) {
-						DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_TIMETABLE_ASSIGN_SCHEDULE_ID, i, false);
-						item->SetParam(0, i + 1);
-						list.emplace_back(item);
+						SetDParam(0, i + 1);
+						list.emplace_back(new DropDownListStringItem(STR_TIMETABLE_ASSIGN_SCHEDULE_ID, i, false));
 					} else {
-						DropDownListCharStringItem *item = new DropDownListCharStringItem(ds.ScheduleName(), i, false);
-						list.emplace_back(item);
+						list.emplace_back(new DropDownListStringItem(ds.ScheduleName(), i, false));
 					}
 				}
 				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_COND_SCHED_SELECT, 0);

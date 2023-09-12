@@ -868,40 +868,41 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Pilihan 
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Unit kewangan
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Pilihan unit kewangan
 
+
 ###length 42
-STR_GAME_OPTIONS_CURRENCY_GBP                                   :Paun British (GBP)
-STR_GAME_OPTIONS_CURRENCY_USD                                   :Dolar Amerika (USD)
-STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro (EUR)
-STR_GAME_OPTIONS_CURRENCY_JPY                                   :Yen Jepun (JPY)
-STR_GAME_OPTIONS_CURRENCY_ATS                                   :Syiling Austria (ATS)
-STR_GAME_OPTIONS_CURRENCY_BEF                                   :Frank Belgium (BEF)
-STR_GAME_OPTIONS_CURRENCY_CHF                                   :Frank Swiss (CHF)
-STR_GAME_OPTIONS_CURRENCY_CZK                                   :Koruna Czech (CZK)
-STR_GAME_OPTIONS_CURRENCY_DEM                                   :Mark Jerman (DEM)
-STR_GAME_OPTIONS_CURRENCY_DKK                                   :Krone Denmark (DKK)
-STR_GAME_OPTIONS_CURRENCY_ESP                                   :Peseta Sepanyol (ESP)
-STR_GAME_OPTIONS_CURRENCY_FIM                                   :Markka Finland (FIM)
-STR_GAME_OPTIONS_CURRENCY_FRF                                   :Franc Perancis (FRF)
-STR_GAME_OPTIONS_CURRENCY_GRD                                   :Drachma Yunani (GRD)
-STR_GAME_OPTIONS_CURRENCY_HUF                                   :Forint Hungary (HUF)
-STR_GAME_OPTIONS_CURRENCY_ISK                                   :Krona Iceland (ISK)
-STR_GAME_OPTIONS_CURRENCY_ITL                                   :Lira Itali (ITL)
-STR_GAME_OPTIONS_CURRENCY_NLG                                   :Guilder Belanda (NLG)
-STR_GAME_OPTIONS_CURRENCY_NOK                                   :Krone Norway (NOK)
-STR_GAME_OPTIONS_CURRENCY_PLN                                   :Złoty Poland (PLN)
-STR_GAME_OPTIONS_CURRENCY_RON                                   :Leu Romania (RON)
-STR_GAME_OPTIONS_CURRENCY_RUR                                   :Ruble Rusia (RUR)
-STR_GAME_OPTIONS_CURRENCY_SIT                                   :Tolar Slovenia (SIT)
-STR_GAME_OPTIONS_CURRENCY_SEK                                   :Krona Sweden (SEK)
-STR_GAME_OPTIONS_CURRENCY_TRY                                   :Lira Turki (TRY)
-STR_GAME_OPTIONS_CURRENCY_SKK                                   :Koruna Slovak (SKK)
-STR_GAME_OPTIONS_CURRENCY_BRL                                   :Real Brazil (BRL)
-STR_GAME_OPTIONS_CURRENCY_EEK                                   :Krooni Estonia (EEK)
-STR_GAME_OPTIONS_CURRENCY_LTL                                   :Lithuanian Litas (LTL)
-STR_GAME_OPTIONS_CURRENCY_KRW                                   :South Korean Won (KRW)
-STR_GAME_OPTIONS_CURRENCY_ZAR                                   :South African Rand (ZAR)
+STR_GAME_OPTIONS_CURRENCY_GBP                                   :Paun British
+STR_GAME_OPTIONS_CURRENCY_USD                                   :Dolar Amerika
+STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
+STR_GAME_OPTIONS_CURRENCY_JPY                                   :Yen Jepun
+STR_GAME_OPTIONS_CURRENCY_ATS                                   :Syiling Austria
+STR_GAME_OPTIONS_CURRENCY_BEF                                   :Frank Belgium
+STR_GAME_OPTIONS_CURRENCY_CHF                                   :Frank Swiss
+STR_GAME_OPTIONS_CURRENCY_CZK                                   :Koruna Czech
+STR_GAME_OPTIONS_CURRENCY_DEM                                   :Mark Jerman
+STR_GAME_OPTIONS_CURRENCY_DKK                                   :Krone Denmark
+STR_GAME_OPTIONS_CURRENCY_ESP                                   :Peseta Sepanyol
+STR_GAME_OPTIONS_CURRENCY_FIM                                   :Markka Finland
+STR_GAME_OPTIONS_CURRENCY_FRF                                   :Franc Perancis
+STR_GAME_OPTIONS_CURRENCY_GRD                                   :Drachma Yunani
+STR_GAME_OPTIONS_CURRENCY_HUF                                   :Forint Hungary
+STR_GAME_OPTIONS_CURRENCY_ISK                                   :Krona Iceland
+STR_GAME_OPTIONS_CURRENCY_ITL                                   :Lira Itali
+STR_GAME_OPTIONS_CURRENCY_NLG                                   :Guilder Belanda
+STR_GAME_OPTIONS_CURRENCY_NOK                                   :Krone Norway
+STR_GAME_OPTIONS_CURRENCY_PLN                                   :Złoty Poland
+STR_GAME_OPTIONS_CURRENCY_RON                                   :Leu Romania
+STR_GAME_OPTIONS_CURRENCY_RUR                                   :Ruble Rusia
+STR_GAME_OPTIONS_CURRENCY_SIT                                   :Tolar Slovenia
+STR_GAME_OPTIONS_CURRENCY_SEK                                   :Krona Sweden
+STR_GAME_OPTIONS_CURRENCY_TRY                                   :Lira Turki
+STR_GAME_OPTIONS_CURRENCY_SKK                                   :Koruna Slovak
+STR_GAME_OPTIONS_CURRENCY_BRL                                   :Real Brazil
+STR_GAME_OPTIONS_CURRENCY_EEK                                   :Krooni Estonia
+STR_GAME_OPTIONS_CURRENCY_LTL                                   :Lithuanian Litas
+STR_GAME_OPTIONS_CURRENCY_KRW                                   :South Korean Won
+STR_GAME_OPTIONS_CURRENCY_ZAR                                   :South African Rand
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Sesuaikan...
-STR_GAME_OPTIONS_CURRENCY_GEL                                   :Georgian Lari (GEL)
+STR_GAME_OPTIONS_CURRENCY_GEL                                   :Georgian Lari
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Simpanan automatik
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Pilih tempoh untuk simpanan permainan automatik
@@ -1609,18 +1610,18 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_VOLUME_SI                 :Unit SI (m³)
 
 ###length 3
 
-STR_CONFIG_SETTING_SOUND                                        :{ORANGE}Bunyi
-STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Antaramuka (Interface)
-STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}Pembinaan
-STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}Berita / Penasihat
-STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}Syarikat
-STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}Kenderaan
-STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}Laluan
-STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE}Kecelakaan / Kemalangan
-STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Bandar-bandar
-STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Industri-industri
-STR_CONFIG_SETTING_AI                                           :{ORANGE}Pesaing
-STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Pemain komputer
+STR_CONFIG_SETTING_SOUND                                        :Bunyi
+STR_CONFIG_SETTING_INTERFACE                                    :Antaramuka (Interface)
+STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :Pembinaan
+STR_CONFIG_SETTING_ADVISORS                                     :Berita / Penasihat
+STR_CONFIG_SETTING_COMPANY                                      :Syarikat
+STR_CONFIG_SETTING_VEHICLES                                     :Kenderaan
+STR_CONFIG_SETTING_VEHICLES_ROUTING                             :Laluan
+STR_CONFIG_SETTING_ACCIDENTS                                    :Kecelakaan / Kemalangan
+STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :Bandar-bandar
+STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :Industri-industri
+STR_CONFIG_SETTING_AI                                           :Pesaing
+STR_CONFIG_SETTING_AI_NPC                                       :Pemain komputer
 
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS                        :Pencari laluan untuk keretapi: {STRING}
 STR_CONFIG_SETTING_PATHFINDER_FOR_ROAD_VEHICLES                 :Pencari laluan untuk kenderaan jalanraya: {STRING}
@@ -3745,8 +3746,6 @@ STR_TIMETABLE_EXPECTED                                          :{BLACK}Dijangka
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Dijadualkan
 STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}Tukar di antara dijangkakan dan dijadualkan
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :T:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :B:
 
 
 # Date window (for timetable)

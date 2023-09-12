@@ -1407,8 +1407,6 @@ STR_VEHICLE_LIST_CHANGE_ORDER_ROAD_VEHICLE_DEPOT                :Přenést pří
 STR_VEHICLE_LIST_CHANGE_ORDER_SHIP_DEPOT                        :Přenést příkaz na jiný dok
 STR_VEHICLE_LIST_CHANGE_ORDER_AIRCRAFT_HANGAR                   :Přenést příkaz na jiný hangár
 
-STR_VEHICLE_LIST_CREATE_GROUP                                   :Vytvořit skupinu ze seznamu
-
 STR_GROUP_EXPAND_ALL                                            :{BLACK}Rozbalit vše
 STR_GROUP_COLLAPSE_ALL                                          :{BLACK}Sbalit vše
 
@@ -1676,6 +1674,9 @@ STR_TIMETABLE_FILL_TIMETABLE_SUGGESTION_2                       :{BLACK}(Alterna
 
 STR_TIMETABLE_WARNINGS_OMITTED                                  :{BLACK}{NUM} další varování vynechána...
 
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :P:
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :O:
+
 STR_DATE_MINUTES_MINUTE_TOOLTIP                                 :{BLACK}Nastavit minutu
 STR_DATE_MINUTES_HOUR_TOOLTIP                                   :{BLACK}Nastavit hodinu
 
@@ -1836,15 +1837,15 @@ STR_STATION_RATING_MAX_PERCENTAGE                               : (max. {PLUS_NU
 STR_STATION_RATING_MAX_PERCENTAGE_COMMA                         :, max. {PLUS_NUM}%
 STR_STATION_RATING_PERCENTAGE_COMMA                             :, {PLUS_NUM}%
 
-STR_STATION_RATING_TOOLTIP_SPEED                                :Maximální rychlost posledního vozidla{STRING}: {SET_COLOUR}{VELOCITY}{STRING} ({STRING})
+STR_STATION_RATING_TOOLTIP_SPEED                                :Maximální rychlost posledního vozidla{STRING}: {COLOUR}{VELOCITY}{STRING} ({STRING})
 
-STR_STATION_RATING_TOOLTIP_AGE                                  :Stáří posledního vozidla{STRING}: {SET_COLOUR}{NUM} {P rok roky let}{STRING}
+STR_STATION_RATING_TOOLTIP_AGE                                  :Stáří posledního vozidla{STRING}: {COLOUR}{NUM} {P rok roky let}{STRING}
 
 STR_STATION_RATING_TOOLTIP_WAITTIME                             :Čas od poslední obsluhy{STRING}: {STRING}
 STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP                        :Čas od poslední obsluhy{STRING}: {STRING} (lodí)
-STR_STATION_RATING_TOOLTIP_WAITTIME_VALUE                       :{SET_COLOUR}{NUM} d{P en ny ní}{STRING}
+STR_STATION_RATING_TOOLTIP_WAITTIME_VALUE                       :{COLOUR}{NUM} d{P en ny ní}{STRING}
 
-STR_STATION_RATING_TOOLTIP_WAITUNITS                            :Čekající náklad (v průměru na další stanici){STRING}): {SET_COLOUR}{NUM}{STRING}
+STR_STATION_RATING_TOOLTIP_WAITUNITS                            :Čekající náklad (v průměru na další stanici){STRING}): {COLOUR}{NUM}{STRING}
 
 STR_STATION_RATING_TOOLTIP_STATUE                               :Socha ve městě{STRING}: {STRING}
 STR_STATION_RATING_TOOLTIP_STATUE_NO                            :{GOLD}ne{STRING}
@@ -1913,7 +1914,7 @@ STR_TMPL_CONFIG_USEDEPOT                                        :užij depo
 STR_TMPL_CONFIG_KEEPREMAINDERS                                  :nech zbyt
 STR_TMPL_CONFIG_OLD_ONLY                                        :jen staré
 
-STR_TMPL_NUM_TRAINS_NEED_RPL                                    :vlaků k nahrazení: {SET_COLOUR}{COMMA}
+STR_TMPL_NUM_TRAINS_NEED_RPL                                    :vlaků k nahrazení: {COLOUR}{COMMA}
 
 STR_TMPL_CARGO_SUMMARY                                          :{CARGO_LONG}
 STR_TMPL_CARGO_SUMMARY_MULTI                                    :{CARGO_LONG} (x{NUM})
@@ -2104,5 +2105,5 @@ STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_OFF              :vypnutá
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_SIMPLE           :stručná
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :podrobná
 
-STR_VIEWPORT_TOWN_COLOUR                                        :{1:SET_COLOUR}{0:TOWN}
-STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {SET_COLOUR}({COMMA})
+STR_VIEWPORT_TOWN_COLOUR                                        :{1:COLOUR}{0:TOWN}
+STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {COLOUR}({COMMA})

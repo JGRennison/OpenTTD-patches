@@ -274,6 +274,7 @@ STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLAC
 
 
 
+
 ###length 42
 STR_GAME_OPTIONS_CURRENCY_FIM                                   :फिनलैंड मार्का (FIM)
 STR_GAME_OPTIONS_CURRENCY_ISK                                   :आइसलैंडिक क्रोना (ISK)
@@ -600,7 +601,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_SI               :अंतर्
 
 ###length 3
 
-STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}सामान्य
+STR_CONFIG_SETTING_INTERFACE_GENERAL                            :सामान्य
 
 STR_CONFIG_SETTING_PATHFINDER_FOR_SHIPS_HELPTEXT                :नौकाओं द्वारा उपयोग किया जाने वाला पथान्वेषी
 ###length 2

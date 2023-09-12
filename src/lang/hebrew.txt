@@ -913,43 +913,44 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}אפשר
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}מטבע
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}בחירת מטבע
 
+
 ###length 42
-STR_GAME_OPTIONS_CURRENCY_GBP                                   :(GBP) לירה שטרלינג
-STR_GAME_OPTIONS_CURRENCY_USD                                   :(USD) דולר אמריקאי
-STR_GAME_OPTIONS_CURRENCY_EUR                                   :(EUR) יורו
-STR_GAME_OPTIONS_CURRENCY_JPY                                   :(JPY) ין יפני
-STR_GAME_OPTIONS_CURRENCY_ATS                                   :(ATS) שילינג אוסטרלי
-STR_GAME_OPTIONS_CURRENCY_BEF                                   :(BEF) פרנק בולגרי
-STR_GAME_OPTIONS_CURRENCY_CHF                                   :(CHF) פרנק שוודי
-STR_GAME_OPTIONS_CURRENCY_CZK                                   :(CZK) קרונה צ'כית
-STR_GAME_OPTIONS_CURRENCY_DEM                                   :(DEM) מרק גרמני
-STR_GAME_OPTIONS_CURRENCY_DKK                                   :(DKK) קרונה דנית
-STR_GAME_OPTIONS_CURRENCY_ESP                                   :(ESP) פזטה ספרדית
-STR_GAME_OPTIONS_CURRENCY_FIM                                   :(FIM) מרק פיני
-STR_GAME_OPTIONS_CURRENCY_FRF                                   :(FRF) פרנק צרפתי
-STR_GAME_OPTIONS_CURRENCY_GRD                                   :(GRD) דרכמה יוונית
-STR_GAME_OPTIONS_CURRENCY_HUF                                   :(HUF) פורינט הונגרי
-STR_GAME_OPTIONS_CURRENCY_ISK                                   :(ISK) קרונה איסלנדית
-STR_GAME_OPTIONS_CURRENCY_ITL                                   :(ITL) לירה איטלקית
-STR_GAME_OPTIONS_CURRENCY_NLG                                   :(NLG) גילדן הולנדי
-STR_GAME_OPTIONS_CURRENCY_NOK                                   :(NOK) קרונה נורווגית
-STR_GAME_OPTIONS_CURRENCY_PLN                                   :(PLN) זלוטי פולני
-STR_GAME_OPTIONS_CURRENCY_RON                                   :(RON) ליו רומני
-STR_GAME_OPTIONS_CURRENCY_RUR                                   :(RUR) רובל רוסי
-STR_GAME_OPTIONS_CURRENCY_SIT                                   :(SIT) טולר סלובני
-STR_GAME_OPTIONS_CURRENCY_SEK                                   :(SEK) קרונה שוודית
-STR_GAME_OPTIONS_CURRENCY_TRY                                   :(TRY) לירה טורקית
-STR_GAME_OPTIONS_CURRENCY_SKK                                   :(SKK) קורונה סלובקית
-STR_GAME_OPTIONS_CURRENCY_BRL                                   :(BRL) ריל ברזילאי
-STR_GAME_OPTIONS_CURRENCY_EEK                                   :(EEK) קרוני אסטוני
-STR_GAME_OPTIONS_CURRENCY_LTL                                   :(LTL) ליטאס ליטאי
-STR_GAME_OPTIONS_CURRENCY_KRW                                   :(KRW) וון דרום קוריאני
-STR_GAME_OPTIONS_CURRENCY_ZAR                                   :(ZAR) ראנד דרום אפריקאי
+STR_GAME_OPTIONS_CURRENCY_GBP                                   :לירה שטרלינג
+STR_GAME_OPTIONS_CURRENCY_USD                                   :דולר אמריקאי
+STR_GAME_OPTIONS_CURRENCY_EUR                                   :יורו
+STR_GAME_OPTIONS_CURRENCY_JPY                                   :ין יפני
+STR_GAME_OPTIONS_CURRENCY_ATS                                   :שילינג אוסטרלי
+STR_GAME_OPTIONS_CURRENCY_BEF                                   :פרנק בולגרי
+STR_GAME_OPTIONS_CURRENCY_CHF                                   :פרנק שוודי
+STR_GAME_OPTIONS_CURRENCY_CZK                                   :קרונה צ'כית
+STR_GAME_OPTIONS_CURRENCY_DEM                                   :מרק גרמני
+STR_GAME_OPTIONS_CURRENCY_DKK                                   :קרונה דנית
+STR_GAME_OPTIONS_CURRENCY_ESP                                   :פזטה ספרדית
+STR_GAME_OPTIONS_CURRENCY_FIM                                   :מרק פיני
+STR_GAME_OPTIONS_CURRENCY_FRF                                   :פרנק צרפתי
+STR_GAME_OPTIONS_CURRENCY_GRD                                   :דרכמה יוונית
+STR_GAME_OPTIONS_CURRENCY_HUF                                   :פורינט הונגרי
+STR_GAME_OPTIONS_CURRENCY_ISK                                   :קרונה איסלנדית
+STR_GAME_OPTIONS_CURRENCY_ITL                                   :לירה איטלקית
+STR_GAME_OPTIONS_CURRENCY_NLG                                   :גילדן הולנדי
+STR_GAME_OPTIONS_CURRENCY_NOK                                   :קרונה נורווגית
+STR_GAME_OPTIONS_CURRENCY_PLN                                   :זלוטי פולני
+STR_GAME_OPTIONS_CURRENCY_RON                                   :ליו רומני
+STR_GAME_OPTIONS_CURRENCY_RUR                                   :רובל רוסי
+STR_GAME_OPTIONS_CURRENCY_SIT                                   :טולר סלובני
+STR_GAME_OPTIONS_CURRENCY_SEK                                   :קרונה שוודית
+STR_GAME_OPTIONS_CURRENCY_TRY                                   :לירה טורקית
+STR_GAME_OPTIONS_CURRENCY_SKK                                   :קורונה סלובקית
+STR_GAME_OPTIONS_CURRENCY_BRL                                   :ריל ברזילאי
+STR_GAME_OPTIONS_CURRENCY_EEK                                   :קרוני אסטוני
+STR_GAME_OPTIONS_CURRENCY_LTL                                   :ליטאס ליטאי
+STR_GAME_OPTIONS_CURRENCY_KRW                                   :וון דרום קוריאני
+STR_GAME_OPTIONS_CURRENCY_ZAR                                   :ראנד דרום אפריקאי
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :אחר...
-STR_GAME_OPTIONS_CURRENCY_GEL                                   :לארי גאורגי (GEL)
-STR_GAME_OPTIONS_CURRENCY_IRR                                   :ריאל איראני (IRR)
-STR_GAME_OPTIONS_CURRENCY_RUB                                   :רובל רוסי (RUB)
-STR_GAME_OPTIONS_CURRENCY_INR                                   :רופי הודי (INR)
+STR_GAME_OPTIONS_CURRENCY_GEL                                   :לארי גאורגי
+STR_GAME_OPTIONS_CURRENCY_IRR                                   :ריאל איראני
+STR_GAME_OPTIONS_CURRENCY_RUB                                   :רובל רוסי
+STR_GAME_OPTIONS_CURRENCY_INR                                   :רופי הודי
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}שמירה אוטומטית
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}בחר פרק זמן בין שמירות אוטומטיות
@@ -1880,29 +1881,29 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :בריטית (�
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :מטרי (מטר)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (מטר)
 
-STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}הגדרות מיקום
-STR_CONFIG_SETTING_GRAPHICS                                     :{ORANGE}גרפיקה
-STR_CONFIG_SETTING_SOUND                                        :{ORANGE}צלילים
-STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}ממשק חזותי
-STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}כללי
-STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}נקודות מבט
-STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}בנייה
-STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}חדשות / יועצים
-STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}חברה
-STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}חשבונאות
-STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}כלי תחבורה
-STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :{ORANGE}פיזיקה
-STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}ניתוב
-STR_CONFIG_SETTING_LIMITATIONS                                  :{ORANGE}מגבלות
-STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE}אסונות / תאונות
-STR_CONFIG_SETTING_GENWORLD                                     :{ORANGE}יצירת עולם
-STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}סביבה
-STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}רשויות
-STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}ערים
-STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}תעשיות
-STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}התפלגות המטען
-STR_CONFIG_SETTING_AI                                           :{ORANGE}מתחרים
-STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}שחקני מחשב
+STR_CONFIG_SETTING_LOCALISATION                                 :הגדרות מיקום
+STR_CONFIG_SETTING_GRAPHICS                                     :גרפיקה
+STR_CONFIG_SETTING_SOUND                                        :צלילים
+STR_CONFIG_SETTING_INTERFACE                                    :ממשק חזותי
+STR_CONFIG_SETTING_INTERFACE_GENERAL                            :כללי
+STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :נקודות מבט
+STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :בנייה
+STR_CONFIG_SETTING_ADVISORS                                     :חדשות / יועצים
+STR_CONFIG_SETTING_COMPANY                                      :חברה
+STR_CONFIG_SETTING_ACCOUNTING                                   :חשבונאות
+STR_CONFIG_SETTING_VEHICLES                                     :כלי תחבורה
+STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :פיזיקה
+STR_CONFIG_SETTING_VEHICLES_ROUTING                             :ניתוב
+STR_CONFIG_SETTING_LIMITATIONS                                  :מגבלות
+STR_CONFIG_SETTING_ACCIDENTS                                    :אסונות / תאונות
+STR_CONFIG_SETTING_GENWORLD                                     :יצירת עולם
+STR_CONFIG_SETTING_ENVIRONMENT                                  :סביבה
+STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :רשויות
+STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :ערים
+STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :תעשיות
+STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :התפלגות המטען
+STR_CONFIG_SETTING_AI                                           :מתחרים
+STR_CONFIG_SETTING_AI_NPC                                       :שחקני מחשב
 
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS                        :{STRING} :אלגוריתם איתור נתיב עבור רכבות
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT               :אלגוריתם איתור נתיב עבור רכבות
@@ -4235,8 +4236,6 @@ STR_TIMETABLE_EXPECTED                                          :{BLACK}צפוי
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}מתוכנן
 STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}החלף בין מתוכנן וצפוי
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:
 
 
 # Date window (for timetable)

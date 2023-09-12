@@ -847,7 +847,7 @@ STR_NEWS_COMPANY_BANKRUPT_TITLE                                 :{BIG_FONT}{BLAC
 STR_NEWS_COMPANY_BANKRUPT_DESCRIPTION                           :{BIG_FONT}{BLACK}{STRING} iflas etti ve kapatıldı!
 STR_NEWS_COMPANY_LAUNCH_TITLE                                   :{BIG_FONT}{BLACK}Yeni şirket kuruldu!
 STR_NEWS_COMPANY_LAUNCH_DESCRIPTION                             :{BIG_FONT}{BLACK}{STRING}, {TOWN} yakınlarında inşaata başladı!
-STR_NEWS_MERGER_TAKEOVER_TITLE                                  :{BIG_FONT}{BLACK}{STRING}, {STRING} tarafından alındı!
+STR_NEWS_MERGER_TAKEOVER_TITLE                                  :{BIG_FONT}{BLACK}{STRING},açıklanmayan bir miktar karşılığında {STRING} tarafından alındı!
 STR_PRESIDENT_NAME_MANAGER                                      :{BLACK}{PRESIDENT_NAME}{}(Yönetici)
 
 STR_NEWS_NEW_TOWN                                               :{BLACK}{BIG_FONT}{STRING} {TOWN} adlı yeni kasabanın inşaasını finanse etti!
@@ -952,49 +952,51 @@ STR_GAME_OPTIONS_VOLUME_100                                     :100%
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Para birimleri
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Para birimi seçimi
 
+STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
+
 ###length 42
-STR_GAME_OPTIONS_CURRENCY_GBP                                   :Sterlin (£)
-STR_GAME_OPTIONS_CURRENCY_USD                                   :Amerikan Doları ($)
-STR_GAME_OPTIONS_CURRENCY_EUR                                   :Avro (€)
-STR_GAME_OPTIONS_CURRENCY_JPY                                   :Japon Yeni (¥)
-STR_GAME_OPTIONS_CURRENCY_ATS                                   :Avusturya Şilini (ATS)
-STR_GAME_OPTIONS_CURRENCY_BEF                                   :Belçika Frankı (BEF)
-STR_GAME_OPTIONS_CURRENCY_CHF                                   :İsviçre Frankı (CHF)
-STR_GAME_OPTIONS_CURRENCY_CZK                                   :Çek Korunası (CZK)
-STR_GAME_OPTIONS_CURRENCY_DEM                                   :Alman markı (DEM)
-STR_GAME_OPTIONS_CURRENCY_DKK                                   :Danimarka Kronu (DKK)
-STR_GAME_OPTIONS_CURRENCY_ESP                                   :Pezeta (ESP)
-STR_GAME_OPTIONS_CURRENCY_FIM                                   :Fin Markkası (FIM)
-STR_GAME_OPTIONS_CURRENCY_FRF                                   :Fransız Frankı (FRF)
-STR_GAME_OPTIONS_CURRENCY_GRD                                   :Yunan Drahmisi (GRD)
-STR_GAME_OPTIONS_CURRENCY_HUF                                   :Macar Forinti (HUF)
-STR_GAME_OPTIONS_CURRENCY_ISK                                   :İzlanda Kronası (ISK)
-STR_GAME_OPTIONS_CURRENCY_ITL                                   :İtalyan Lirası (ITL)
-STR_GAME_OPTIONS_CURRENCY_NLG                                   :Hollanda Guilderi (NLG)
-STR_GAME_OPTIONS_CURRENCY_NOK                                   :Norveç Kronu (NOK)
-STR_GAME_OPTIONS_CURRENCY_PLN                                   :Polonya Zilotisi (PLN)
-STR_GAME_OPTIONS_CURRENCY_RON                                   :Romanya Leusu (RON)
-STR_GAME_OPTIONS_CURRENCY_RUR                                   :Rus Rublesi (RUR)
-STR_GAME_OPTIONS_CURRENCY_SIT                                   :Slovenya Toları (SIT)
-STR_GAME_OPTIONS_CURRENCY_SEK                                   :İsveç Kronası (SEK)
-STR_GAME_OPTIONS_CURRENCY_TRY                                   :Türk Lirası (TRY)
-STR_GAME_OPTIONS_CURRENCY_SKK                                   :Slovak Korunası (SKK)
-STR_GAME_OPTIONS_CURRENCY_BRL                                   :Brezilya Reali (BRL)
-STR_GAME_OPTIONS_CURRENCY_EEK                                   :Estonya Kronu (EEK)
-STR_GAME_OPTIONS_CURRENCY_LTL                                   :Litvanya Litası (LTL)
-STR_GAME_OPTIONS_CURRENCY_KRW                                   :Güney Kore Vonu (KRW)
-STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Güney Afrika Randı (ZAR)
+STR_GAME_OPTIONS_CURRENCY_GBP                                   :Sterlin
+STR_GAME_OPTIONS_CURRENCY_USD                                   :Amerikan Doları
+STR_GAME_OPTIONS_CURRENCY_EUR                                   :Avro
+STR_GAME_OPTIONS_CURRENCY_JPY                                   :Japon Yeni
+STR_GAME_OPTIONS_CURRENCY_ATS                                   :Avusturya Şilini
+STR_GAME_OPTIONS_CURRENCY_BEF                                   :Belçika Frankı
+STR_GAME_OPTIONS_CURRENCY_CHF                                   :İsviçre Frankı
+STR_GAME_OPTIONS_CURRENCY_CZK                                   :Çek Korunası
+STR_GAME_OPTIONS_CURRENCY_DEM                                   :Alman markı
+STR_GAME_OPTIONS_CURRENCY_DKK                                   :Danimarka Kronu
+STR_GAME_OPTIONS_CURRENCY_ESP                                   :Pezeta
+STR_GAME_OPTIONS_CURRENCY_FIM                                   :Fin Markkası
+STR_GAME_OPTIONS_CURRENCY_FRF                                   :Fransız Frankı
+STR_GAME_OPTIONS_CURRENCY_GRD                                   :Yunan Drahmisi
+STR_GAME_OPTIONS_CURRENCY_HUF                                   :Macar Forinti
+STR_GAME_OPTIONS_CURRENCY_ISK                                   :İzlanda Kronası
+STR_GAME_OPTIONS_CURRENCY_ITL                                   :İtalyan Lirası
+STR_GAME_OPTIONS_CURRENCY_NLG                                   :Hollanda Guilderi
+STR_GAME_OPTIONS_CURRENCY_NOK                                   :Norveç Kronu
+STR_GAME_OPTIONS_CURRENCY_PLN                                   :Polonya Zilotisi
+STR_GAME_OPTIONS_CURRENCY_RON                                   :Romanya Leusu
+STR_GAME_OPTIONS_CURRENCY_RUR                                   :Rus Rublesi
+STR_GAME_OPTIONS_CURRENCY_SIT                                   :Slovenya Toları
+STR_GAME_OPTIONS_CURRENCY_SEK                                   :İsveç Kronası
+STR_GAME_OPTIONS_CURRENCY_TRY                                   :Türk Lirası
+STR_GAME_OPTIONS_CURRENCY_SKK                                   :Slovak Korunası
+STR_GAME_OPTIONS_CURRENCY_BRL                                   :Brezilya Reali
+STR_GAME_OPTIONS_CURRENCY_EEK                                   :Estonya Kronu
+STR_GAME_OPTIONS_CURRENCY_LTL                                   :Litvanya Litası
+STR_GAME_OPTIONS_CURRENCY_KRW                                   :Güney Kore Vonu
+STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Güney Afrika Randı
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Özel...
-STR_GAME_OPTIONS_CURRENCY_GEL                                   :Gürcistan Larisi (GEL)
-STR_GAME_OPTIONS_CURRENCY_IRR                                   :İran Riyali (IRR)
-STR_GAME_OPTIONS_CURRENCY_RUB                                   :Yeni Rus Rublesi (RUB)
-STR_GAME_OPTIONS_CURRENCY_MXN                                   :Meksika Pezosu (MXN)
-STR_GAME_OPTIONS_CURRENCY_NTD                                   :Yeni Tayvan Doları (NTD)
-STR_GAME_OPTIONS_CURRENCY_CNY                                   :Çin Yuanı (CNY)
-STR_GAME_OPTIONS_CURRENCY_HKD                                   :Hong Kong Doları (HKD)
-STR_GAME_OPTIONS_CURRENCY_INR                                   :Hindistan Rupisi (INR)
-STR_GAME_OPTIONS_CURRENCY_IDR                                   :Endonezya Rupiahı (IDR)
-STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malezya Ringgiti (MYR)
+STR_GAME_OPTIONS_CURRENCY_GEL                                   :Gürcistan Larisi
+STR_GAME_OPTIONS_CURRENCY_IRR                                   :İran Riyali
+STR_GAME_OPTIONS_CURRENCY_RUB                                   :Yeni Rus Rublesi
+STR_GAME_OPTIONS_CURRENCY_MXN                                   :Meksika Pezosu
+STR_GAME_OPTIONS_CURRENCY_NTD                                   :Yeni Tayvan Doları
+STR_GAME_OPTIONS_CURRENCY_CNY                                   :Çin Yuanı
+STR_GAME_OPTIONS_CURRENCY_HKD                                   :Hong Kong Doları
+STR_GAME_OPTIONS_CURRENCY_INR                                   :Hindistan Rupisi
+STR_GAME_OPTIONS_CURRENCY_IDR                                   :Endonezya Rupiahı
+STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malezya Ringgiti
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Otomatik Kaydet
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Otomatik kaydetme sıklığını seçin
@@ -2019,30 +2021,30 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Imperial (Ingil
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metrik (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (Uluslararası Ölçüm Sistemi) (m)
 
-STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}Yerelleştirme
-STR_CONFIG_SETTING_GRAPHICS                                     :{ORANGE}Grafikler
-STR_CONFIG_SETTING_SOUND                                        :{ORANGE}Ses
-STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Arayüz
-STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}Genel
-STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}Görüş alanları
-STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}İnşaat
-STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}Haberler / Danışmanlar
-STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}Şirket
-STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}Muhasebe
-STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}Araçlar
-STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :{ORANGE}Fizik
-STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}Yönlenme
-STR_CONFIG_SETTING_LIMITATIONS                                  :{ORANGE}Sınırlamalar
-STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE}Felaketler / Kazalar
-STR_CONFIG_SETTING_GENWORLD                                     :{ORANGE}Harita üretimi
-STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}Ortam
-STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}Yetkililer
-STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Şehirler
-STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Endüstri
-STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Kargo dağılımı
-STR_CONFIG_SETTING_AI                                           :{ORANGE}Rakipler
-STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Bilgisayar oyuncuları
-STR_CONFIG_SETTING_NETWORK                                      :{ORANGE}Ağ
+STR_CONFIG_SETTING_LOCALISATION                                 :Yerelleştirme
+STR_CONFIG_SETTING_GRAPHICS                                     :Grafikler
+STR_CONFIG_SETTING_SOUND                                        :Ses
+STR_CONFIG_SETTING_INTERFACE                                    :Arayüz
+STR_CONFIG_SETTING_INTERFACE_GENERAL                            :Genel
+STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :Görüş alanları
+STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :İnşaat
+STR_CONFIG_SETTING_ADVISORS                                     :Haberler / Danışmanlar
+STR_CONFIG_SETTING_COMPANY                                      :Şirket
+STR_CONFIG_SETTING_ACCOUNTING                                   :Muhasebe
+STR_CONFIG_SETTING_VEHICLES                                     :Araçlar
+STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :Fizik
+STR_CONFIG_SETTING_VEHICLES_ROUTING                             :Yönlenme
+STR_CONFIG_SETTING_LIMITATIONS                                  :Sınırlamalar
+STR_CONFIG_SETTING_ACCIDENTS                                    :Felaketler / Kazalar
+STR_CONFIG_SETTING_GENWORLD                                     :Harita üretimi
+STR_CONFIG_SETTING_ENVIRONMENT                                  :Ortam
+STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :Yetkililer
+STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :Şehirler
+STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :Endüstri
+STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :Kargo dağılımı
+STR_CONFIG_SETTING_AI                                           :Rakipler
+STR_CONFIG_SETTING_AI_NPC                                       :Bilgisayar oyuncuları
+STR_CONFIG_SETTING_NETWORK                                      :Ağ
 
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS                        :Trenler için yol bulucu: {STRING}
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT               :Trenler için kullanılacak "yol bulucu" algoritma
@@ -3761,6 +3763,8 @@ STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Ayrınt�
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Ayrıntılı altyapı sayılarını göster
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Para ver
 STR_COMPANY_VIEW_GIVE_MONEY_TOOLTIP                             :{BLACK}Bu şirkete para ver
+STR_COMPANY_VIEW_HOSTILE_TAKEOVER_BUTTON                        :{BLACK}Şirketi Devralmaya Zorla
+STR_COMPANY_VIEW_HOSTILE_TAKEOVER_TOOLTIP                       :{BLACK}Bu şirketi devralmaya zorlayın
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Yeni Surat
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Müdür için yeni surat seç
@@ -3776,6 +3780,7 @@ STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Yöneticinin is
 STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Vermek istediğin para miktarını gir
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Şirketimizi satın alacak birilerini arıyoruz.{}{} {COMPANY} şirketini şu fiyata almak ister misiniz: {CURRENCY_LONG}?
+STR_BUY_COMPANY_HOSTILE_TAKEOVER                                :{WHITE}{COMPANY} şirketini devralmaya zorlamak için şirketin tüm varlıklarını satın alacak, tüm kredileri geri ödeyecek ve 2 yıllık karı ödeyeceksiniz.{}{}Toplam tutar {CURRENCY_LONG} olacak.{}{}Zorunlu devralma işlemine devam etmek istediğinizden emin misiniz?
 
 # Company infrastructure window
 STR_COMPANY_INFRASTRUCTURE_VIEW_CAPTION                         :{WHITE}{COMPANY} şirketinin altyapısı
@@ -3847,6 +3852,7 @@ STR_VEHICLE_LIST_MANAGE_LIST                                    :{BLACK}Listeyi 
 STR_VEHICLE_LIST_MANAGE_LIST_TOOLTIP                            :{BLACK}Listedeki tüm araçlara talimat ver
 STR_VEHICLE_LIST_REPLACE_VEHICLES                               :Araçları Değiştir
 STR_VEHICLE_LIST_SEND_FOR_SERVICING                             :Bakıma Gönder
+STR_VEHICLE_LIST_CREATE_GROUP                                   :Grup kur
 STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR                     :{TINY_FONT}{BLACK}Bu seneki kar: {CURRENCY_LONG} (geçen sene: {CURRENCY_LONG})
 STR_VEHICLE_LIST_CARGO                                          :[{CARGO_LIST}]
 STR_VEHICLE_LIST_NAME_AND_CARGO                                 :{STRING} {STRING}
@@ -4569,8 +4575,8 @@ STR_TIMETABLE_EXPECTED                                          :{BLACK}Beklenen
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Programlanan
 STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}Beklenen ile programlanan arasında geçiş yap
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :V:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :Ç:
+STR_TIMETABLE_ARRIVAL                                           :A: {COLOUR}{DATE_TINY}
+STR_TIMETABLE_DEPARTURE                                         :D: {COLOUR}{DATE_TINY}
 
 
 # Date window (for timetable)
@@ -5635,6 +5641,8 @@ STR_JUST_DATE_SHORT                                             :{DATE_SHORT}
 STR_JUST_DATE_LONG                                              :{DATE_LONG}
 STR_JUST_DATE_ISO                                               :{DATE_ISO}
 STR_JUST_STRING                                                 :{STRING}
+STR_JUST_STRING1                                                :{STRING}
+STR_JUST_STRING2                                                :{STRING}
 STR_JUST_STRING_STRING                                          :{STRING}{STRING}
 STR_JUST_RAW_STRING                                             :{STRING}
 STR_JUST_BIG_RAW_STRING                                         :{BIG_FONT}{STRING}

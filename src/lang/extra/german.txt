@@ -1258,8 +1258,6 @@ STR_VEHICLE_LIST_CHANGE_ORDER_ROAD_VEHICLE_DEPOT                :Verschiebe Auft
 STR_VEHICLE_LIST_CHANGE_ORDER_SHIP_DEPOT                        :Verschiebe Auftrag zu einer anderen Werft
 STR_VEHICLE_LIST_CHANGE_ORDER_AIRCRAFT_HANGAR                   :Verschiebe Auftrag zu einem anderen Hangar
 
-STR_VEHICLE_LIST_CREATE_GROUP                                   :Erstelle Gruppe aus Liste
-
 STR_GROUP_EXPAND_ALL                                            :{BLACK}Alles ausklappen
 STR_GROUP_COLLAPSE_ALL                                          :{BLACK}Alles einklappen
 
@@ -1494,6 +1492,9 @@ STR_TIMETABLE_WARNING_SCHEDULE_ID                               :{BLACK}Zeitplan
 
 STR_TIMETABLE_WARNINGS_OMITTED                                  :{BLACK}{NUM} keine weiteren Warnungen ...
 
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :an
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :ab
+
 STR_DATE_MINUTES_MINUTE_TOOLTIP                                 :{BLACK}Minute auswählen
 STR_DATE_MINUTES_HOUR_TOOLTIP                                   :{BLACK}Stunde auswählen
 
@@ -1674,7 +1675,7 @@ STR_TMPL_CONFIG_USEDEPOT                                        :Depotnutzung
 STR_TMPL_CONFIG_KEEPREMAINDERS                                  :Bereithaltung
 STR_TMPL_CONFIG_OLD_ONLY                                        :Nur alte
 
-STR_TMPL_NUM_TRAINS_NEED_RPL                                    :Züge zu ersetzen: {SET_COLOUR}{COMMA}
+STR_TMPL_NUM_TRAINS_NEED_RPL                                    :Züge zu ersetzen: {COLOUR}{COMMA}
 
 STR_TMPL_CARGO_SUMMARY                                          :{CARGO_LONG}
 STR_TMPL_CARGO_SUMMARY_MULTI                                    :{CARGO_LONG} (x{NUM})
@@ -1784,5 +1785,5 @@ STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_OFF              :Aus
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_SIMPLE           :Einfach
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :Detailliert
 
-STR_VIEWPORT_TOWN_COLOUR                                        :{1:SET_COLOUR}{0:TOWN}
-STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {SET_COLOUR}({COMMA})
+STR_VIEWPORT_TOWN_COLOUR                                        :{1:COLOUR}{0:TOWN}
+STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {COLOUR}({COMMA})

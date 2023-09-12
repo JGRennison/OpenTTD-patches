@@ -27,6 +27,9 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Висо
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Модел: {GOLD}{NUM}
 
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :П:
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :З:
+
 # Cargo type orders Window
 
 # Plans window

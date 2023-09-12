@@ -1305,21 +1305,15 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				break;
 			}
 
-			case SCC_SET_COLOUR: {// {SET_COLOUR}
-				int64 tc = args->GetInt64(SCC_SET_COLOUR);
-				if (tc >= 0 && tc < TC_END) {
-					buff += Utf8Encode(buff, SCC_BLUE + tc);
-				}
-				break;
-			}
-
 			case SCC_REVISION: // {REV}
 				buff = strecpy(buff, _openttd_revision, last);
 				break;
 
 			case SCC_RAW_STRING_POINTER: { // {RAW_STRING}
 				const char *raw_string = (const char *)(size_t)args->GetInt64(SCC_RAW_STRING_POINTER);
-				if (game_script && std::find(_game_script_raw_strings.begin(), _game_script_raw_strings.end(), raw_string) == _game_script_raw_strings.end()) {
+				/* raw_string can be(come) nullptr when the parameter is out of range and 0 is returned instead. */
+				if (raw_string == nullptr ||
+						(game_script && std::find(_game_script_raw_strings.begin(), _game_script_raw_strings.end(), raw_string) == _game_script_raw_strings.end())) {
 					buff = strecat(buff, "(invalid RAW_STRING parameter)", last);
 					break;
 				}
@@ -2047,6 +2041,14 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				break;
 			}
 
+			case SCC_COLOUR: {// {COLOUR}
+				int64 tc = args->GetInt64(SCC_COLOUR);
+				if (tc >= 0 && tc < TC_END) {
+					buff += Utf8Encode(buff, SCC_BLUE + tc);
+				}
+				break;
+			}
+
 			case SCC_CONSUME_ARG:
 				// do nothing
 				break;
@@ -2315,7 +2317,7 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 	SetCurrentGrfLangID(_current_language->newgrflangid);
 
 #ifdef _WIN32
-	extern void Win32SetCurrentLocaleName(const char *iso_code);
+	extern void Win32SetCurrentLocaleName(std::string iso_code);
 	Win32SetCurrentLocaleName(_current_language->isocode);
 #endif
 

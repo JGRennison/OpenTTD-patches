@@ -11,7 +11,6 @@
 #include "../openttd.h"
 #include "../gfx_func.h"
 #include "../os/windows/win32.h"
-#include "../rev.h"
 #include "../blitter/factory.hpp"
 #include "../core/geometry_func.hpp"
 #include "../core/math_func.hpp"
@@ -214,16 +213,20 @@ bool VideoDriver_Win32Base::MakeWindow(bool full_screen, bool resize)
 		if (this->main_wnd != nullptr) {
 			if (!_window_maximize && resize) SetWindowPos(this->main_wnd, 0, 0, 0, w, h, SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_NOMOVE);
 		} else {
-			/* Center on the workspace of the primary display. */
-			MONITORINFO mi;
-			mi.cbSize = sizeof(mi);
-			GetMonitorInfo(MonitorFromWindow(0, MONITOR_DEFAULTTOPRIMARY), &mi);
+			int x = 0;
+			int y = 0;
 
-			int x = (mi.rcWork.right - mi.rcWork.left - w) / 2;
-			int y = (mi.rcWork.bottom - mi.rcWork.top - h) / 2;
+			/* For windowed mode, center on the workspace of the primary display. */
+			if (!this->fullscreen) {
+				MONITORINFO mi;
+				mi.cbSize = sizeof(mi);
+				GetMonitorInfo(MonitorFromWindow(0, MONITOR_DEFAULTTOPRIMARY), &mi);
 
-			char window_title[64];
-			seprintf(window_title, lastof(window_title), "OpenTTD %s", _openttd_revision);
+				x = (mi.rcWork.right - mi.rcWork.left - w) / 2;
+				y = (mi.rcWork.bottom - mi.rcWork.top - h) / 2;
+			}
+
+			std::string window_title = VideoDriver::GetCaption();
 
 			this->main_wnd = CreateWindow(L"OTTD", OTTD2FS(window_title).c_str(), style, x, y, w, h, 0, 0, GetModuleHandle(nullptr), this);
 			if (this->main_wnd == nullptr) usererror("CreateWindow failed");

@@ -13,10 +13,10 @@
 #include <atomic>
 #include "core/math_func.hpp"
 #include "framerate_type.h"
+#include "mixer.h"
 #include "settings_type.h"
 
 #include "safeguards.h"
-#include "mixer.h"
 
 #include <mutex>
 #if defined(__MINGW32__)

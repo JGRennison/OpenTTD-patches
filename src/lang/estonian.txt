@@ -993,49 +993,50 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Liidese 
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Valuuta
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Valuuta valimine
 
+
 ###length 42
-STR_GAME_OPTIONS_CURRENCY_GBP                                   :Suurbritannia nael (GBP)
-STR_GAME_OPTIONS_CURRENCY_USD                                   :USA dollar (USD)
-STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro (EUR)
-STR_GAME_OPTIONS_CURRENCY_JPY                                   :Jaapani jeen (¥)
-STR_GAME_OPTIONS_CURRENCY_ATS                                   :Austria ðilling (ATS)
-STR_GAME_OPTIONS_CURRENCY_BEF                                   :Belgia frank (BEF)
-STR_GAME_OPTIONS_CURRENCY_CHF                                   :Sveitði frank (CHF)
-STR_GAME_OPTIONS_CURRENCY_CZK                                   :Tðehhi kroon (CZK)
-STR_GAME_OPTIONS_CURRENCY_DEM                                   :Saksamargad (DEM)
-STR_GAME_OPTIONS_CURRENCY_DKK                                   :Taani kroon (DKK)
-STR_GAME_OPTIONS_CURRENCY_ESP                                   :Hispaania peseeta (ESP)
-STR_GAME_OPTIONS_CURRENCY_FIM                                   :Soome mark (FIM)
-STR_GAME_OPTIONS_CURRENCY_FRF                                   :Prantsuse frank (FRF)
-STR_GAME_OPTIONS_CURRENCY_GRD                                   :Kreeka drahm (GRD)
-STR_GAME_OPTIONS_CURRENCY_HUF                                   :Ungari Forint (HUF)
-STR_GAME_OPTIONS_CURRENCY_ISK                                   :Islandi kroon (ISK)
-STR_GAME_OPTIONS_CURRENCY_ITL                                   :Itaalia liir (ITL)
-STR_GAME_OPTIONS_CURRENCY_NLG                                   :Hollandi kulden (NLG)
-STR_GAME_OPTIONS_CURRENCY_NOK                                   :Norra kroon (NOK)
-STR_GAME_OPTIONS_CURRENCY_PLN                                   :Poola Zlott (PLN)
-STR_GAME_OPTIONS_CURRENCY_RON                                   :Rumeenia Leu (RON)
-STR_GAME_OPTIONS_CURRENCY_RUR                                   :Vene rubla (RUR)
-STR_GAME_OPTIONS_CURRENCY_SIT                                   :Sloveenia Talaar (SIT)
-STR_GAME_OPTIONS_CURRENCY_SEK                                   :Rootsi kroon (SEK)
-STR_GAME_OPTIONS_CURRENCY_TRY                                   :Türgi Liir (TRY)
-STR_GAME_OPTIONS_CURRENCY_SKK                                   :Slovakkia Kroon (SKK)
-STR_GAME_OPTIONS_CURRENCY_BRL                                   :Brasiilia Reaal (BRL
-STR_GAME_OPTIONS_CURRENCY_EEK                                   :Eesti Kroon (EEK)
-STR_GAME_OPTIONS_CURRENCY_LTL                                   :Leedu litt (LTL)
-STR_GAME_OPTIONS_CURRENCY_KRW                                   :Lõuna-Korea vonn (KRW)
-STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Lõuna-Aafrika rand (ZAR)
+STR_GAME_OPTIONS_CURRENCY_GBP                                   :Suurbritannia nael
+STR_GAME_OPTIONS_CURRENCY_USD                                   :USA dollar
+STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
+STR_GAME_OPTIONS_CURRENCY_JPY                                   :Jaapani jeen
+STR_GAME_OPTIONS_CURRENCY_ATS                                   :Austria ðilling
+STR_GAME_OPTIONS_CURRENCY_BEF                                   :Belgia frank
+STR_GAME_OPTIONS_CURRENCY_CHF                                   :Sveitði frank
+STR_GAME_OPTIONS_CURRENCY_CZK                                   :Tðehhi kroon
+STR_GAME_OPTIONS_CURRENCY_DEM                                   :Saksamargad
+STR_GAME_OPTIONS_CURRENCY_DKK                                   :Taani kroon
+STR_GAME_OPTIONS_CURRENCY_ESP                                   :Hispaania peseeta
+STR_GAME_OPTIONS_CURRENCY_FIM                                   :Soome mark
+STR_GAME_OPTIONS_CURRENCY_FRF                                   :Prantsuse frank
+STR_GAME_OPTIONS_CURRENCY_GRD                                   :Kreeka drahm
+STR_GAME_OPTIONS_CURRENCY_HUF                                   :Ungari Forint
+STR_GAME_OPTIONS_CURRENCY_ISK                                   :Islandi kroon
+STR_GAME_OPTIONS_CURRENCY_ITL                                   :Itaalia liir
+STR_GAME_OPTIONS_CURRENCY_NLG                                   :Hollandi kulden
+STR_GAME_OPTIONS_CURRENCY_NOK                                   :Norra kroon
+STR_GAME_OPTIONS_CURRENCY_PLN                                   :Poola Zlott
+STR_GAME_OPTIONS_CURRENCY_RON                                   :Rumeenia Leu
+STR_GAME_OPTIONS_CURRENCY_RUR                                   :Vene rubla
+STR_GAME_OPTIONS_CURRENCY_SIT                                   :Sloveenia Talaar
+STR_GAME_OPTIONS_CURRENCY_SEK                                   :Rootsi kroon
+STR_GAME_OPTIONS_CURRENCY_TRY                                   :Türgi Liir
+STR_GAME_OPTIONS_CURRENCY_SKK                                   :Slovakkia Kroon
+STR_GAME_OPTIONS_CURRENCY_BRL                                   :Brasiilia Reaal
+STR_GAME_OPTIONS_CURRENCY_EEK                                   :Eesti Kroon
+STR_GAME_OPTIONS_CURRENCY_LTL                                   :Leedu litt
+STR_GAME_OPTIONS_CURRENCY_KRW                                   :Lõuna-Korea vonn
+STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Lõuna-Aafrika rand
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Omatehtud...
-STR_GAME_OPTIONS_CURRENCY_GEL                                   :Gruusia lari (GEL)
-STR_GAME_OPTIONS_CURRENCY_IRR                                   :Iraani rial (IRR)
-STR_GAME_OPTIONS_CURRENCY_RUB                                   :Uus Vene rubla (RUB)
-STR_GAME_OPTIONS_CURRENCY_MXN                                   :Mehhiko Peeso (MXN)
-STR_GAME_OPTIONS_CURRENCY_NTD                                   :Uus Taiwani dollar (NTD)
-STR_GAME_OPTIONS_CURRENCY_CNY                                   :Hiina renminbi (CNY)
-STR_GAME_OPTIONS_CURRENCY_HKD                                   :Hong Kongi dollar (HKD)
-STR_GAME_OPTIONS_CURRENCY_INR                                   :India ruupia (INR)
-STR_GAME_OPTIONS_CURRENCY_IDR                                   :Indoneesia ruupia (IDR)
-STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malaisia ringit (MYR)
+STR_GAME_OPTIONS_CURRENCY_GEL                                   :Gruusia lari
+STR_GAME_OPTIONS_CURRENCY_IRR                                   :Iraani rial
+STR_GAME_OPTIONS_CURRENCY_RUB                                   :Uus Vene rubla
+STR_GAME_OPTIONS_CURRENCY_MXN                                   :Mehhiko Peeso
+STR_GAME_OPTIONS_CURRENCY_NTD                                   :Uus Taiwani dollar
+STR_GAME_OPTIONS_CURRENCY_CNY                                   :Hiina renminbi
+STR_GAME_OPTIONS_CURRENCY_HKD                                   :Hong Kongi dollar
+STR_GAME_OPTIONS_CURRENCY_INR                                   :India ruupia
+STR_GAME_OPTIONS_CURRENCY_IDR                                   :Indoneesia ruupia
+STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malaisia ringit
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Salvestusvälp
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Vali salvestamise välp
@@ -2041,30 +2042,30 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Inglise mõõdu
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Meetermõõdustik (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI-süsteem (m)
 
-STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}Kohandused
-STR_CONFIG_SETTING_GRAPHICS                                     :{ORANGE}Graafika
-STR_CONFIG_SETTING_SOUND                                        :{ORANGE}Heliefektid
-STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Liides
-STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}Üldine
-STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}Vaated
-STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}Ehitus
-STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}Uudised / Nõunikud
-STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}Ettevõte
-STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}Arveldamine
-STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}Sõidukid
-STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :{ORANGE}Füüsika
-STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}Marsruutimine
-STR_CONFIG_SETTING_LIMITATIONS                                  :{ORANGE}Piirangud
-STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE}Katastroofid / Õnnetused
-STR_CONFIG_SETTING_GENWORLD                                     :{ORANGE}Maailma tekitamine
-STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}Keskkond
-STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}Omavalitsus
-STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Asulad
-STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Tööstused
-STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Kaubajaotus
-STR_CONFIG_SETTING_AI                                           :{ORANGE}Konkurendid
-STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Arvuti
-STR_CONFIG_SETTING_NETWORK                                      :{ORANGE}Võrk
+STR_CONFIG_SETTING_LOCALISATION                                 :Kohandused
+STR_CONFIG_SETTING_GRAPHICS                                     :Graafika
+STR_CONFIG_SETTING_SOUND                                        :Heliefektid
+STR_CONFIG_SETTING_INTERFACE                                    :Liides
+STR_CONFIG_SETTING_INTERFACE_GENERAL                            :Üldine
+STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :Vaated
+STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :Ehitus
+STR_CONFIG_SETTING_ADVISORS                                     :Uudised / Nõunikud
+STR_CONFIG_SETTING_COMPANY                                      :Ettevõte
+STR_CONFIG_SETTING_ACCOUNTING                                   :Arveldamine
+STR_CONFIG_SETTING_VEHICLES                                     :Sõidukid
+STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :Füüsika
+STR_CONFIG_SETTING_VEHICLES_ROUTING                             :Marsruutimine
+STR_CONFIG_SETTING_LIMITATIONS                                  :Piirangud
+STR_CONFIG_SETTING_ACCIDENTS                                    :Katastroofid / Õnnetused
+STR_CONFIG_SETTING_GENWORLD                                     :Maailma tekitamine
+STR_CONFIG_SETTING_ENVIRONMENT                                  :Keskkond
+STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :Omavalitsus
+STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :Asulad
+STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :Tööstused
+STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :Kaubajaotus
+STR_CONFIG_SETTING_AI                                           :Konkurendid
+STR_CONFIG_SETTING_AI_NPC                                       :Arvuti
+STR_CONFIG_SETTING_NETWORK                                      :Võrk
 
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS                        :Rongide marsruudileidja: {STRING}
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT               :Marsruudileidja rongide jaoks
@@ -4578,8 +4579,6 @@ STR_TIMETABLE_EXPECTED                                          :{BLACK}Eeldatav
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Plaanis
 STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}Vaheta eeldatava ja graafiku vahel
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :S:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :V:
 
 
 # Date window (for timetable)

@@ -118,7 +118,6 @@ void CallLandscapeTick();
 void IncreaseDate();
 void DoPaletteAnimations();
 void MusicLoop();
-void ResetMusic();
 void CallWindowGameTickEvent();
 bool HandleBootstrap();
 void OnTick_Companies(bool main_tick);

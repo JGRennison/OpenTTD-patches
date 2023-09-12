@@ -847,7 +847,7 @@ STR_NEWS_COMPANY_BANKRUPT_TITLE                                 :{BIG_FONT}{BLAC
 STR_NEWS_COMPANY_BANKRUPT_DESCRIPTION                           :{BIG_FONT}{BLACK}{STRING} a été dissolue par ses créanciers et tous ses actifs vendus{NBSP}!
 STR_NEWS_COMPANY_LAUNCH_TITLE                                   :{BIG_FONT}{BLACK}Nouvelle compagnie de transport{NBSP}!
 STR_NEWS_COMPANY_LAUNCH_DESCRIPTION                             :{BIG_FONT}{BLACK}{STRING} commence à construire près de {TOWN}{NBSP}!
-STR_NEWS_MERGER_TAKEOVER_TITLE                                  :{BIG_FONT}{BLACK}{STRING} a été rachetée par {STRING}{NBSP}!
+STR_NEWS_MERGER_TAKEOVER_TITLE                                  :{BIG_FONT}{BLACK}{STRING} a été rachetée par {STRING} pour un montant iconnu !
 STR_PRESIDENT_NAME_MANAGER                                      :{BLACK}{PRESIDENT_NAME}{}(Président)
 
 STR_NEWS_NEW_TOWN                                               :{BLACK}{BIG_FONT}{STRING} a sponsorisé la construction de la nouvelle ville {TOWN}{NBSP}!
@@ -952,49 +952,51 @@ STR_GAME_OPTIONS_VOLUME_100                                     :100%
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Devise
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Sélectionner l'unité monétaire
 
+STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
+
 ###length 42
-STR_GAME_OPTIONS_CURRENCY_GBP                                   :Livre (£)
-STR_GAME_OPTIONS_CURRENCY_USD                                   :Dollar ($)
-STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro (€)
-STR_GAME_OPTIONS_CURRENCY_JPY                                   :Yen (¥)
-STR_GAME_OPTIONS_CURRENCY_ATS                                   :Shiling australien (ATS)
-STR_GAME_OPTIONS_CURRENCY_BEF                                   :Franc belge (BEF)
-STR_GAME_OPTIONS_CURRENCY_CHF                                   :Franc suisse (CHF)
-STR_GAME_OPTIONS_CURRENCY_CZK                                   :Couronne tchèque (CZK)
-STR_GAME_OPTIONS_CURRENCY_DEM                                   :Mark allemand (DEM)
-STR_GAME_OPTIONS_CURRENCY_DKK                                   :Couronne danoise (DKK)
-STR_GAME_OPTIONS_CURRENCY_ESP                                   :Peseta (ESP)
-STR_GAME_OPTIONS_CURRENCY_FIM                                   :Mark finlandais (FIM)
-STR_GAME_OPTIONS_CURRENCY_FRF                                   :Franc français (FRF)
-STR_GAME_OPTIONS_CURRENCY_GRD                                   :Drachme grecque (GRD)
-STR_GAME_OPTIONS_CURRENCY_HUF                                   :Florin hongrois (HUF)
-STR_GAME_OPTIONS_CURRENCY_ISK                                   :Couronne islandaise (ISK)
-STR_GAME_OPTIONS_CURRENCY_ITL                                   :Lire italienne (ITL)
-STR_GAME_OPTIONS_CURRENCY_NLG                                   :Florin hollandais (NLG)
-STR_GAME_OPTIONS_CURRENCY_NOK                                   :Couronne norvégienne (NOK)
-STR_GAME_OPTIONS_CURRENCY_PLN                                   :Nouv. Zloty polonais (PLN)
-STR_GAME_OPTIONS_CURRENCY_RON                                   :Leu roumain (RON)
-STR_GAME_OPTIONS_CURRENCY_RUR                                   :Rouble russe (RUR)
-STR_GAME_OPTIONS_CURRENCY_SIT                                   :Tolar slovénien (SIT)
-STR_GAME_OPTIONS_CURRENCY_SEK                                   :Couronne suédoise (SEK)
-STR_GAME_OPTIONS_CURRENCY_TRY                                   :Lire turque (TRY)
-STR_GAME_OPTIONS_CURRENCY_SKK                                   :Couronne slovaque (SKK)
-STR_GAME_OPTIONS_CURRENCY_BRL                                   :Réal brésilien (BRL)
-STR_GAME_OPTIONS_CURRENCY_EEK                                   :Couronne estonienne (EEK)
-STR_GAME_OPTIONS_CURRENCY_LTL                                   :Litas lituanien (LTL)
-STR_GAME_OPTIONS_CURRENCY_KRW                                   :Won sud-coréen (KRW)
-STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Rand sud-africain (ZAR)
+STR_GAME_OPTIONS_CURRENCY_GBP                                   :Livre
+STR_GAME_OPTIONS_CURRENCY_USD                                   :Dollar
+STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
+STR_GAME_OPTIONS_CURRENCY_JPY                                   :Yen
+STR_GAME_OPTIONS_CURRENCY_ATS                                   :Shiling australien
+STR_GAME_OPTIONS_CURRENCY_BEF                                   :Franc belge
+STR_GAME_OPTIONS_CURRENCY_CHF                                   :Franc suisse
+STR_GAME_OPTIONS_CURRENCY_CZK                                   :Couronne tchèque
+STR_GAME_OPTIONS_CURRENCY_DEM                                   :Mark allemand
+STR_GAME_OPTIONS_CURRENCY_DKK                                   :Couronne danoise
+STR_GAME_OPTIONS_CURRENCY_ESP                                   :Peseta
+STR_GAME_OPTIONS_CURRENCY_FIM                                   :Mark finlandais
+STR_GAME_OPTIONS_CURRENCY_FRF                                   :Franc français
+STR_GAME_OPTIONS_CURRENCY_GRD                                   :Drachme grecque
+STR_GAME_OPTIONS_CURRENCY_HUF                                   :Florin hongrois
+STR_GAME_OPTIONS_CURRENCY_ISK                                   :Couronne islandaise
+STR_GAME_OPTIONS_CURRENCY_ITL                                   :Lire italienne
+STR_GAME_OPTIONS_CURRENCY_NLG                                   :Florin hollandais
+STR_GAME_OPTIONS_CURRENCY_NOK                                   :Couronne norvégienne
+STR_GAME_OPTIONS_CURRENCY_PLN                                   :Nouv. Zloty polonais
+STR_GAME_OPTIONS_CURRENCY_RON                                   :Leu roumain
+STR_GAME_OPTIONS_CURRENCY_RUR                                   :Rouble russe
+STR_GAME_OPTIONS_CURRENCY_SIT                                   :Tolar slovénien
+STR_GAME_OPTIONS_CURRENCY_SEK                                   :Couronne suédoise
+STR_GAME_OPTIONS_CURRENCY_TRY                                   :Lire turque
+STR_GAME_OPTIONS_CURRENCY_SKK                                   :Couronne slovaque
+STR_GAME_OPTIONS_CURRENCY_BRL                                   :Réal brésilien
+STR_GAME_OPTIONS_CURRENCY_EEK                                   :Couronne estonienne
+STR_GAME_OPTIONS_CURRENCY_LTL                                   :Litas lituanien
+STR_GAME_OPTIONS_CURRENCY_KRW                                   :Won sud-coréen
+STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Rand sud-africain
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Personnalisée...
-STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari Géorgien (GEL)
-STR_GAME_OPTIONS_CURRENCY_IRR                                   :Rial Iranien (IRR)
-STR_GAME_OPTIONS_CURRENCY_RUB                                   :Nouveau rouble russe (RUB)
-STR_GAME_OPTIONS_CURRENCY_MXN                                   :Peso méxicain (MXN)
-STR_GAME_OPTIONS_CURRENCY_NTD                                   :Nouveau Dollar de Taïwan (TWD)
-STR_GAME_OPTIONS_CURRENCY_CNY                                   :Renminbi Chinois (CNY)
-STR_GAME_OPTIONS_CURRENCY_HKD                                   :Dollar de Hong Kong (HKD)
-STR_GAME_OPTIONS_CURRENCY_INR                                   :Roupie indienne (INR)
-STR_GAME_OPTIONS_CURRENCY_IDR                                   :Roupie indonésienne (IDR)
-STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malaysian Ringgit (MYR)
+STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari Géorgien
+STR_GAME_OPTIONS_CURRENCY_IRR                                   :Rial Iranien
+STR_GAME_OPTIONS_CURRENCY_RUB                                   :Nouveau rouble russe
+STR_GAME_OPTIONS_CURRENCY_MXN                                   :Peso méxicain
+STR_GAME_OPTIONS_CURRENCY_NTD                                   :Nouveau Dollar de Taïwan
+STR_GAME_OPTIONS_CURRENCY_CNY                                   :Renminbi Chinois
+STR_GAME_OPTIONS_CURRENCY_HKD                                   :Dollar de Hong Kong
+STR_GAME_OPTIONS_CURRENCY_INR                                   :Roupie indienne
+STR_GAME_OPTIONS_CURRENCY_IDR                                   :Roupie indonésienne
+STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malaysian Ringgit
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Sauvegarde automatique
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Sélectionner l'intervalle de temps entre les sauvegardes automatiques
@@ -1016,21 +1018,21 @@ STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}Cocher c
 
 STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Résolution
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Sélectionner la résolution d'écran à utiliser
-STR_GAME_OPTIONS_RESOLUTION_OTHER                               :autre
+STR_GAME_OPTIONS_RESOLUTION_OTHER                               :Autre
 STR_GAME_OPTIONS_RESOLUTION_ITEM                                :{NUM}x{NUM}
 
-STR_GAME_OPTIONS_VIDEO_ACCELERATION                             :{BLACK} Accélération matérielle
+STR_GAME_OPTIONS_VIDEO_ACCELERATION                             :{BLACK}Accélération matérielle
 STR_GAME_OPTIONS_VIDEO_ACCELERATION_TOOLTIP                     :{BLACK}Cochez cette case permet à OpenTTD d'utiliser l'accélération matérielle, si possible. Un paramètre modifié ne sera pris en compte qu'au redémarrage du jeu
 STR_GAME_OPTIONS_VIDEO_ACCELERATION_RESTART                     :{WHITE}Les paramètres ne prendront effet qu'après le redémarrage du jeu
 
 STR_GAME_OPTIONS_VIDEO_VSYNC                                    :{BLACK}VSync
-STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Cochez cette case pour activer la synchronisation verticale de l'écran. La modification de ce paramètres ne sera effective qu'après le redémarrage du jeu. Fonctionne uniquement si l’accélération matérielle est active
+STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Cochez cette case pour activer la synchronisation verticale de l'écran. La modification de ce paramètre ne sera effective qu'après le redémarrage du jeu. Fonctionne uniquement si l’accélération matérielle est active.
 
 STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}Pilote actif{NBSP}: {STRING}
 
 STR_GAME_OPTIONS_GUI_SCALE_FRAME                                :Taille de l'interface
 STR_GAME_OPTIONS_GUI_SCALE_TOOLTIP                              :{BLACK}Faites glisser la souris pour définir la taille de l'interface. Maintenir Ctrl pour un réglage en continu
-STR_GAME_OPTIONS_GUI_SCALE_AUTO                                 :détection automatique de la taille
+STR_GAME_OPTIONS_GUI_SCALE_AUTO                                 :Détection automatique de la taille
 STR_GAME_OPTIONS_GUI_SCALE_AUTO_TOOLTIP                         :{BLACK}Cochez cette case pour détecter automatiquement la taille de l'interface
 
 STR_GAME_OPTIONS_GUI_SCALE_BEVELS                               :{BLACK}Mettre à l’échelle les bordures
@@ -1052,7 +1054,7 @@ STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW_TOOLTIP             :{BLACK}Voir les
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK} Graphiques
 
-STR_GAME_OPTIONS_REFRESH_RATE                                   :{BLACK} Taux de rafraîchissement de l'affichage
+STR_GAME_OPTIONS_REFRESH_RATE                                   :{BLACK}Taux de rafraîchissement de l'affichage
 STR_GAME_OPTIONS_REFRESH_RATE_TOOLTIP                           :{BLACK} Sélectionnez la fréquence de rafraîchissement à utiliser
 STR_GAME_OPTIONS_REFRESH_RATE_ITEM                              :{NUM}Hz
 STR_GAME_OPTIONS_REFRESH_RATE_WARNING                           :{WHITE} Les taux de rafraîchissement supérieurs à 60Hz peuvent avoir un impact sur les performances.
@@ -2019,30 +2021,30 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Impérial (ft)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Métrique (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
 
-STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}Localisation
-STR_CONFIG_SETTING_GRAPHICS                                     :{ORANGE}Graphiques
-STR_CONFIG_SETTING_SOUND                                        :{ORANGE}Son
-STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Interface
-STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}Général
-STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}Vues
-STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}Construction
-STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}Informations / Annonces
-STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}Compagnie
-STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}Comptabilité
-STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}Véhicules
-STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :{ORANGE}Physique
-STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}Routage
-STR_CONFIG_SETTING_LIMITATIONS                                  :{ORANGE}Limitations
-STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE}Catastrophes / Accidents
-STR_CONFIG_SETTING_GENWORLD                                     :{ORANGE}Création du terrain
-STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}Environnement
-STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}Autorités
-STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Villes
-STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Industries
-STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Distribution des marchandises
-STR_CONFIG_SETTING_AI                                           :{ORANGE}Compétiteurs
-STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Intelligence artificielle
-STR_CONFIG_SETTING_NETWORK                                      :{ORANGE}Réseau
+STR_CONFIG_SETTING_LOCALISATION                                 :Localisation
+STR_CONFIG_SETTING_GRAPHICS                                     :Graphiques
+STR_CONFIG_SETTING_SOUND                                        :Son
+STR_CONFIG_SETTING_INTERFACE                                    :Interface
+STR_CONFIG_SETTING_INTERFACE_GENERAL                            :Général
+STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :Vues
+STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :Construction
+STR_CONFIG_SETTING_ADVISORS                                     :Informations / Annonces
+STR_CONFIG_SETTING_COMPANY                                      :Compagnie
+STR_CONFIG_SETTING_ACCOUNTING                                   :Comptabilité
+STR_CONFIG_SETTING_VEHICLES                                     :Véhicules
+STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :Physique
+STR_CONFIG_SETTING_VEHICLES_ROUTING                             :Routage
+STR_CONFIG_SETTING_LIMITATIONS                                  :Limitations
+STR_CONFIG_SETTING_ACCIDENTS                                    :Catastrophes / Accidents
+STR_CONFIG_SETTING_GENWORLD                                     :Création du terrain
+STR_CONFIG_SETTING_ENVIRONMENT                                  :Environnement
+STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :Autorités
+STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :Villes
+STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :Industries
+STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :Distribution des marchandises
+STR_CONFIG_SETTING_AI                                           :Compétiteurs
+STR_CONFIG_SETTING_AI_NPC                                       :Intelligence artificielle
+STR_CONFIG_SETTING_NETWORK                                      :Réseau
 
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS                        :Recherche de chemin des trains{NBSP}: {STRING}
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT               :Recherche de chemin à utiliser pour les trains
@@ -2097,7 +2099,7 @@ STR_INTRO_GAME_OPTIONS                                          :{BLACK}Options 
 STR_INTRO_HIGHSCORE                                             :{BLACK}Meilleurs scores
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Paramètres de jeu
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Paramètres NewGRF
-STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Contenue additionnel en ligne
+STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Contenu additionnel en ligne
 STR_INTRO_AI_SETTINGS                                           :{BLACK}Configuration des IAs
 STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Configuration du script de jeu
 STR_INTRO_QUIT                                                  :{BLACK}Quitter
@@ -3761,6 +3763,8 @@ STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Détails
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Afficher le détail des calculs d'infrastructure
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Donner de l’argent
 STR_COMPANY_VIEW_GIVE_MONEY_TOOLTIP                             :{BLACK}Donner de l’argent à cette compagnie
+STR_COMPANY_VIEW_HOSTILE_TAKEOVER_BUTTON                        :{BLACK}Rachat de force
+STR_COMPANY_VIEW_HOSTILE_TAKEOVER_TOOLTIP                       :{BLACK}Racheter de force cette compagnie
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Nouveau visage
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Choix d'un nouveau visage pour le P.D.G.
@@ -3776,6 +3780,7 @@ STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Nom du P.D.G.
 STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Entrer le montant que vous souhaiter donner
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Nous sommes à la recherche d'un repreneur pour notre compagnie{}{}Voulez-vous acheter {COMPANY} pour {CURRENCY_LONG}{NBSP}?
+STR_BUY_COMPANY_HOSTILE_TAKEOVER                                :{WHITE}Si vous rachetez de force la compagnie {COMPANY} vous acquérirez tout ce qu'elle possède, rembourserez les prêts et payerez pendant deux ans une partie des profits.{}{} Le total est estimé à {CURRENCY_LONG}.{}{} Souhaitez-vous tout de même racheter de force cette compagnie ?
 
 # Company infrastructure window
 STR_COMPANY_INFRASTRUCTURE_VIEW_CAPTION                         :{WHITE}Infrastructure de {COMPANY}
@@ -3847,6 +3852,7 @@ STR_VEHICLE_LIST_MANAGE_LIST                                    :{BLACK}Gérer l
 STR_VEHICLE_LIST_MANAGE_LIST_TOOLTIP                            :{BLACK}Envoyer des instructions à tous les véhicules de cette liste
 STR_VEHICLE_LIST_REPLACE_VEHICLES                               :Remplacer des véhicules
 STR_VEHICLE_LIST_SEND_FOR_SERVICING                             :Envoyer à l'entretien
+STR_VEHICLE_LIST_CREATE_GROUP                                   :Créer un groupe
 STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR                     :{TINY_FONT}{BLACK}Profit cette année{NBSP}: {CURRENCY_LONG} (année précédente{NBSP}: {CURRENCY_LONG})
 STR_VEHICLE_LIST_CARGO                                          :[{CARGO_LIST}]
 STR_VEHICLE_LIST_NAME_AND_CARGO                                 :{STRING} {STRING}
@@ -4569,8 +4575,8 @@ STR_TIMETABLE_EXPECTED                                          :{BLACK}Attendu
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Planifié
 STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}Alterner entre attendu et planifié
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:
+STR_TIMETABLE_ARRIVAL                                           :A: {COLOUR}{DATE_TINY}
+STR_TIMETABLE_DEPARTURE                                         :D: {COLOUR}{DATE_TINY}
 
 
 # Date window (for timetable)
@@ -5625,6 +5631,8 @@ STR_JUST_DATE_SHORT                                             :{DATE_SHORT}
 STR_JUST_DATE_LONG                                              :{DATE_LONG}
 STR_JUST_DATE_ISO                                               :{DATE_ISO}
 STR_JUST_STRING                                                 :{STRING}
+STR_JUST_STRING1                                                :{STRING}
+STR_JUST_STRING2                                                :{STRING}
 STR_JUST_STRING_STRING                                          :{STRING}{STRING}
 STR_JUST_RAW_STRING                                             :{STRING}
 STR_JUST_BIG_RAW_STRING                                         :{BIG_FONT}{STRING}

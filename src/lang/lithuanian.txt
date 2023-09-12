@@ -1136,49 +1136,50 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Pagrindi
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Valiuta
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Valiutos pasirinkimas
 
+
 ###length 42
-STR_GAME_OPTIONS_CURRENCY_GBP                                   :Svarai sterlingų (£)
-STR_GAME_OPTIONS_CURRENCY_USD                                   :Amerikos Doleris ($)
-STR_GAME_OPTIONS_CURRENCY_EUR                                   :Eurai (€)
-STR_GAME_OPTIONS_CURRENCY_JPY                                   :Japonijos jenos (¥)
-STR_GAME_OPTIONS_CURRENCY_ATS                                   :Austrijos šilingai (ATS)
-STR_GAME_OPTIONS_CURRENCY_BEF                                   :Belgijos frankai (BEF)
-STR_GAME_OPTIONS_CURRENCY_CHF                                   :Šveicarijos frankai (CHF)
-STR_GAME_OPTIONS_CURRENCY_CZK                                   :Čekijos kronos (CZK)
-STR_GAME_OPTIONS_CURRENCY_DEM                                   :Vokietijos markės (DEM)
-STR_GAME_OPTIONS_CURRENCY_DKK                                   :Danijos kronos (DKK)
-STR_GAME_OPTIONS_CURRENCY_ESP                                   :Ispanijos pesetos (ESP)
-STR_GAME_OPTIONS_CURRENCY_FIM                                   :Suomijos markės (FIM)
-STR_GAME_OPTIONS_CURRENCY_FRF                                   :Prancūzijos frankai (FRF)
-STR_GAME_OPTIONS_CURRENCY_GRD                                   :Graikijos drachmos (GRD)
-STR_GAME_OPTIONS_CURRENCY_HUF                                   :Vengrijos forintai (HUF)
-STR_GAME_OPTIONS_CURRENCY_ISK                                   :Islandijos kronos (ISK)
-STR_GAME_OPTIONS_CURRENCY_ITL                                   :Italijos liros (ITL)
-STR_GAME_OPTIONS_CURRENCY_NLG                                   :Olandijos guldenai (NLG)
-STR_GAME_OPTIONS_CURRENCY_NOK                                   :Norvegijos kronos (NOK)
-STR_GAME_OPTIONS_CURRENCY_PLN                                   :Lenkijos zlotai (PLN)
-STR_GAME_OPTIONS_CURRENCY_RON                                   :Rumunijos lėjos (RON)
-STR_GAME_OPTIONS_CURRENCY_RUR                                   :Rusijos rubliai (RUR)
-STR_GAME_OPTIONS_CURRENCY_SIT                                   :Slovėnijos tolarai (SIT)
-STR_GAME_OPTIONS_CURRENCY_SEK                                   :Švedijos kronos (SEK)
-STR_GAME_OPTIONS_CURRENCY_TRY                                   :Turkijos liros (TRY)
-STR_GAME_OPTIONS_CURRENCY_SKK                                   :Slovakijos kronos (SKK)
-STR_GAME_OPTIONS_CURRENCY_BRL                                   :Brazilijos realai (BRL)
-STR_GAME_OPTIONS_CURRENCY_EEK                                   :Estijos kronos (EEK)
-STR_GAME_OPTIONS_CURRENCY_LTL                                   :Lietuvos Respublikos litai (LTL)
-STR_GAME_OPTIONS_CURRENCY_KRW                                   :Pietų Korėjos vonai (KRW)
-STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Pietų Afrikos Respublikos randas (ZAR)
+STR_GAME_OPTIONS_CURRENCY_GBP                                   :Svarai sterlingų
+STR_GAME_OPTIONS_CURRENCY_USD                                   :Amerikos Doleris
+STR_GAME_OPTIONS_CURRENCY_EUR                                   :Eurai
+STR_GAME_OPTIONS_CURRENCY_JPY                                   :Japonijos jenos
+STR_GAME_OPTIONS_CURRENCY_ATS                                   :Austrijos šilingai
+STR_GAME_OPTIONS_CURRENCY_BEF                                   :Belgijos frankai
+STR_GAME_OPTIONS_CURRENCY_CHF                                   :Šveicarijos frankai
+STR_GAME_OPTIONS_CURRENCY_CZK                                   :Čekijos kronos
+STR_GAME_OPTIONS_CURRENCY_DEM                                   :Vokietijos markės
+STR_GAME_OPTIONS_CURRENCY_DKK                                   :Danijos kronos
+STR_GAME_OPTIONS_CURRENCY_ESP                                   :Ispanijos pesetos
+STR_GAME_OPTIONS_CURRENCY_FIM                                   :Suomijos markės
+STR_GAME_OPTIONS_CURRENCY_FRF                                   :Prancūzijos frankai
+STR_GAME_OPTIONS_CURRENCY_GRD                                   :Graikijos drachmos
+STR_GAME_OPTIONS_CURRENCY_HUF                                   :Vengrijos forintai
+STR_GAME_OPTIONS_CURRENCY_ISK                                   :Islandijos kronos
+STR_GAME_OPTIONS_CURRENCY_ITL                                   :Italijos liros
+STR_GAME_OPTIONS_CURRENCY_NLG                                   :Olandijos guldenai
+STR_GAME_OPTIONS_CURRENCY_NOK                                   :Norvegijos kronos
+STR_GAME_OPTIONS_CURRENCY_PLN                                   :Lenkijos zlotai
+STR_GAME_OPTIONS_CURRENCY_RON                                   :Rumunijos lėjos
+STR_GAME_OPTIONS_CURRENCY_RUR                                   :Rusijos rubliai
+STR_GAME_OPTIONS_CURRENCY_SIT                                   :Slovėnijos tolarai
+STR_GAME_OPTIONS_CURRENCY_SEK                                   :Švedijos kronos
+STR_GAME_OPTIONS_CURRENCY_TRY                                   :Turkijos liros
+STR_GAME_OPTIONS_CURRENCY_SKK                                   :Slovakijos kronos
+STR_GAME_OPTIONS_CURRENCY_BRL                                   :Brazilijos realai
+STR_GAME_OPTIONS_CURRENCY_EEK                                   :Estijos kronos
+STR_GAME_OPTIONS_CURRENCY_LTL                                   :Lietuvos Respublikos litai
+STR_GAME_OPTIONS_CURRENCY_KRW                                   :Pietų Korėjos vonai
+STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Pietų Afrikos Respublikos randas
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Kita...
-STR_GAME_OPTIONS_CURRENCY_GEL                                   :Gruzijos lariai (GEL)
-STR_GAME_OPTIONS_CURRENCY_IRR                                   :Irano rialai (IRR)
+STR_GAME_OPTIONS_CURRENCY_GEL                                   :Gruzijos lariai
+STR_GAME_OPTIONS_CURRENCY_IRR                                   :Irano rialai
 STR_GAME_OPTIONS_CURRENCY_RUB                                   :Naujieji Rusijos rubliai (RUB)
-STR_GAME_OPTIONS_CURRENCY_MXN                                   :Meksikos pesai (MXN)
-STR_GAME_OPTIONS_CURRENCY_NTD                                   :Naujieji Taivano doleriai (NTD)
-STR_GAME_OPTIONS_CURRENCY_CNY                                   :Kinijos ženminbi juaniai (CNY)
-STR_GAME_OPTIONS_CURRENCY_HKD                                   :Honkongo doleriai (HKD)
-STR_GAME_OPTIONS_CURRENCY_INR                                   :Indijos rupijos (INR)
-STR_GAME_OPTIONS_CURRENCY_IDR                                   :Indonezijos rupijos (IDR)
-STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malaizijos ringitai (MYR)
+STR_GAME_OPTIONS_CURRENCY_MXN                                   :Meksikos pesai
+STR_GAME_OPTIONS_CURRENCY_NTD                                   :Naujieji Taivano doleriai
+STR_GAME_OPTIONS_CURRENCY_CNY                                   :Kinijos ženminbi juaniai
+STR_GAME_OPTIONS_CURRENCY_HKD                                   :Honkongo doleriai
+STR_GAME_OPTIONS_CURRENCY_INR                                   :Indijos rupijos
+STR_GAME_OPTIONS_CURRENCY_IDR                                   :Indonezijos rupijos
+STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malaizijos ringitai
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Automatinis išsaugojimas
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Pasirink, kaip dažnai išsaugoti žaidimą
@@ -2185,30 +2186,30 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :imperiniai (ft)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :metriniai (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
 
-STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}Lokalizavimas
-STR_CONFIG_SETTING_GRAPHICS                                     :{ORANGE}Grafika
-STR_CONFIG_SETTING_SOUND                                        :{ORANGE}Garsai
-STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Vaizdas
-STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}Bendros nuostatos
-STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}Papildomi peržiūros langai
-STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}Konstrukcijos
-STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}Žinios ir patarėjai
-STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}Kompanija
-STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}Apskaita
-STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}Transporto priemonės
-STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :{ORANGE}Fizika
-STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}Maršrutas
-STR_CONFIG_SETTING_LIMITATIONS                                  :{ORANGE}Ribos
-STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE}Katastrofos ir incidentai
-STR_CONFIG_SETTING_GENWORLD                                     :{ORANGE}Žemėlapio kūrimas
-STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}Aplinka
-STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}Valdžia
-STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Miestai
-STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Gamyklos
-STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Krovinių pasiskirstymas
-STR_CONFIG_SETTING_AI                                           :{ORANGE}Konkurentai
-STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Kompiuterio žaidėjai
-STR_CONFIG_SETTING_NETWORK                                      :{ORANGE}Žaidimas tinkle
+STR_CONFIG_SETTING_LOCALISATION                                 :Lokalizavimas
+STR_CONFIG_SETTING_GRAPHICS                                     :Grafika
+STR_CONFIG_SETTING_SOUND                                        :Garsai
+STR_CONFIG_SETTING_INTERFACE                                    :Vaizdas
+STR_CONFIG_SETTING_INTERFACE_GENERAL                            :Bendros nuostatos
+STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :Papildomi peržiūros langai
+STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :Konstrukcijos
+STR_CONFIG_SETTING_ADVISORS                                     :Žinios ir patarėjai
+STR_CONFIG_SETTING_COMPANY                                      :Kompanija
+STR_CONFIG_SETTING_ACCOUNTING                                   :Apskaita
+STR_CONFIG_SETTING_VEHICLES                                     :Transporto priemonės
+STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :Fizika
+STR_CONFIG_SETTING_VEHICLES_ROUTING                             :Maršrutas
+STR_CONFIG_SETTING_LIMITATIONS                                  :Ribos
+STR_CONFIG_SETTING_ACCIDENTS                                    :Katastrofos ir incidentai
+STR_CONFIG_SETTING_GENWORLD                                     :Žemėlapio kūrimas
+STR_CONFIG_SETTING_ENVIRONMENT                                  :Aplinka
+STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :Valdžia
+STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :Miestai
+STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :Gamyklos
+STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :Krovinių pasiskirstymas
+STR_CONFIG_SETTING_AI                                           :Konkurentai
+STR_CONFIG_SETTING_AI_NPC                                       :Kompiuterio žaidėjai
+STR_CONFIG_SETTING_NETWORK                                      :Žaidimas tinkle
 
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS                        :Traukinių maršrutų paieškos algoritmas: {STRING}
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT               :Maršruto naudojamas ieškotojas traukiniams
@@ -4727,8 +4728,6 @@ STR_TIMETABLE_EXPECTED                                          :{BLACK}Tikėtin
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Planuoti laikai
 STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}Rodyti arba suplanuotus atvykimo laikus, arba tikėtinus atvykimo laikus (pastarieji gali keistis atsižvelgiant į tai, ar transporto priemonė laikosi tvarkaraščio)
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :Atv.:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :Išv.:
 
 
 # Date window (for timetable)

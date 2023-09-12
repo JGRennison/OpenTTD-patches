@@ -863,41 +863,42 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Stilling
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Gjaldmiðill
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Val á gjaldmiðli
 
+
 ###length 42
-STR_GAME_OPTIONS_CURRENCY_GBP                                   :Sterlingspund (GBP)
-STR_GAME_OPTIONS_CURRENCY_USD                                   :Bandaríkjadalur (USD)
-STR_GAME_OPTIONS_CURRENCY_EUR                                   :Evra (EUR)
-STR_GAME_OPTIONS_CURRENCY_JPY                                   :Japanskt jen (JPY)
-STR_GAME_OPTIONS_CURRENCY_ATS                                   :Austurrískur skildingur (ATS)
-STR_GAME_OPTIONS_CURRENCY_BEF                                   :Belgískur franki (BEF)
-STR_GAME_OPTIONS_CURRENCY_CHF                                   :Svissneskur franki (CHF)
-STR_GAME_OPTIONS_CURRENCY_CZK                                   :Tékknesk kóróna (CZK)
-STR_GAME_OPTIONS_CURRENCY_DEM                                   :Þýskt mark (DEM)
-STR_GAME_OPTIONS_CURRENCY_DKK                                   :Dönsk króna (DKK)
-STR_GAME_OPTIONS_CURRENCY_ESP                                   :Spænskir pesetar (ESP)
-STR_GAME_OPTIONS_CURRENCY_FIM                                   :Finnskt mark (FIM)
-STR_GAME_OPTIONS_CURRENCY_FRF                                   :Franskur franki (FRF)
-STR_GAME_OPTIONS_CURRENCY_GRD                                   :Grísk drakma (GRD)
-STR_GAME_OPTIONS_CURRENCY_HUF                                   :Ungversk forinta (HUF)
-STR_GAME_OPTIONS_CURRENCY_ISK                                   :Íslensk króna (ISK)
-STR_GAME_OPTIONS_CURRENCY_ITL                                   :Ítölsk líra (ITL)
-STR_GAME_OPTIONS_CURRENCY_NLG                                   :Hollensk gyllini (NLG)
-STR_GAME_OPTIONS_CURRENCY_NOK                                   :Norsk króna (NOK)
-STR_GAME_OPTIONS_CURRENCY_PLN                                   :Pólskt slot (PLN)
-STR_GAME_OPTIONS_CURRENCY_RON                                   :Rúmensk leu (RON)
-STR_GAME_OPTIONS_CURRENCY_RUR                                   :Rússnesk rúbla (RUR)
-STR_GAME_OPTIONS_CURRENCY_SIT                                   :Slóvensk tolar (SIT)
-STR_GAME_OPTIONS_CURRENCY_SEK                                   :Sænsk króna (SEK)
-STR_GAME_OPTIONS_CURRENCY_TRY                                   :Tyrknesk líra (TRY)
-STR_GAME_OPTIONS_CURRENCY_SKK                                   :Slóvakísk kórúna (SKK)
-STR_GAME_OPTIONS_CURRENCY_BRL                                   :Brasilísk ríla (BRL)
-STR_GAME_OPTIONS_CURRENCY_EEK                                   :Eistnesk Króna (EEK)
-STR_GAME_OPTIONS_CURRENCY_LTL                                   :Litháenskt litas (LTL)
-STR_GAME_OPTIONS_CURRENCY_KRW                                   :Suðurkóreskt vonn (KRW)
-STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Suður-Afrískt rand (ZAR)
+STR_GAME_OPTIONS_CURRENCY_GBP                                   :Sterlingspund
+STR_GAME_OPTIONS_CURRENCY_USD                                   :Bandaríkjadalur
+STR_GAME_OPTIONS_CURRENCY_EUR                                   :Evra
+STR_GAME_OPTIONS_CURRENCY_JPY                                   :Japanskt jen
+STR_GAME_OPTIONS_CURRENCY_ATS                                   :Austurrískur skildingur
+STR_GAME_OPTIONS_CURRENCY_BEF                                   :Belgískur franki
+STR_GAME_OPTIONS_CURRENCY_CHF                                   :Svissneskur franki
+STR_GAME_OPTIONS_CURRENCY_CZK                                   :Tékknesk kóróna
+STR_GAME_OPTIONS_CURRENCY_DEM                                   :Þýskt mark
+STR_GAME_OPTIONS_CURRENCY_DKK                                   :Dönsk króna
+STR_GAME_OPTIONS_CURRENCY_ESP                                   :Spænskir pesetar
+STR_GAME_OPTIONS_CURRENCY_FIM                                   :Finnskt mark
+STR_GAME_OPTIONS_CURRENCY_FRF                                   :Franskur franki
+STR_GAME_OPTIONS_CURRENCY_GRD                                   :Grísk drakma
+STR_GAME_OPTIONS_CURRENCY_HUF                                   :Ungversk forinta
+STR_GAME_OPTIONS_CURRENCY_ISK                                   :Íslensk króna
+STR_GAME_OPTIONS_CURRENCY_ITL                                   :Ítölsk líra
+STR_GAME_OPTIONS_CURRENCY_NLG                                   :Hollensk gyllini
+STR_GAME_OPTIONS_CURRENCY_NOK                                   :Norsk króna
+STR_GAME_OPTIONS_CURRENCY_PLN                                   :Pólskt slot
+STR_GAME_OPTIONS_CURRENCY_RON                                   :Rúmensk leu
+STR_GAME_OPTIONS_CURRENCY_RUR                                   :Rússnesk rúbla
+STR_GAME_OPTIONS_CURRENCY_SIT                                   :Slóvensk tolar
+STR_GAME_OPTIONS_CURRENCY_SEK                                   :Sænsk króna
+STR_GAME_OPTIONS_CURRENCY_TRY                                   :Tyrknesk líra
+STR_GAME_OPTIONS_CURRENCY_SKK                                   :Slóvakísk kórúna
+STR_GAME_OPTIONS_CURRENCY_BRL                                   :Brasilísk ríla
+STR_GAME_OPTIONS_CURRENCY_EEK                                   :Eistnesk Króna
+STR_GAME_OPTIONS_CURRENCY_LTL                                   :Litháenskt litas
+STR_GAME_OPTIONS_CURRENCY_KRW                                   :Suðurkóreskt vonn
+STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Suður-Afrískt rand
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Sérsniðinn...
 STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari (Gel)
-STR_GAME_OPTIONS_CURRENCY_IRR                                   :Íranskt ríal (IRR)
+STR_GAME_OPTIONS_CURRENCY_IRR                                   :Íranskt ríal
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Sjálfvirk vistun
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Tíðni sjálfvirkra vistana
@@ -1714,15 +1715,15 @@ STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Meðalstærð b
 
 ###length 3
 
-STR_CONFIG_SETTING_SOUND                                        :{ORANGE}Hljóð
-STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Viðmót
-STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}Bygging
-STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}Farartæki
-STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}Leiðarvísun farartækja
-STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Bæir
-STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Iðnaður
-STR_CONFIG_SETTING_AI                                           :{ORANGE}Mótherji
-STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Gervigreind
+STR_CONFIG_SETTING_SOUND                                        :Hljóð
+STR_CONFIG_SETTING_INTERFACE                                    :Viðmót
+STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :Bygging
+STR_CONFIG_SETTING_VEHICLES                                     :Farartæki
+STR_CONFIG_SETTING_VEHICLES_ROUTING                             :Leiðarvísun farartækja
+STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :Bæir
+STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :Iðnaður
+STR_CONFIG_SETTING_AI                                           :Mótherji
+STR_CONFIG_SETTING_AI_NPC                                       :Gervigreind
 
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS                        :Leiðsögukerfi lesta: {STRING}
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT               :Leiðsögukerfi sem nota á fyrir lestir
@@ -3834,8 +3835,6 @@ STR_TIMETABLE_EXPECTED                                          :{BLACK}Væntanl
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Áætluð
 STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}Skifta á milli væntanlegs og áætlaðs
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :K:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :F:
 
 
 # Date window (for timetable)

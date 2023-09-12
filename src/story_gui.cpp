@@ -255,18 +255,13 @@ protected:
 		uint16 page_num = 1;
 		for (const StoryPage *p : this->story_pages) {
 			bool current_page = p->index == this->selected_page_id;
-			DropDownListStringItem *item = nullptr;
 			if (!p->title.empty()) {
-				item = new DropDownListCharStringItem(p->title, p->index, current_page);
+				list.emplace_back(new DropDownListStringItem(p->title, p->index, current_page));
 			} else {
 				/* No custom title => use a generic page title with page number. */
-				DropDownListParamStringItem *str_item =
-						new DropDownListParamStringItem(STR_STORY_BOOK_GENERIC_PAGE_ITEM, p->index, current_page);
-				str_item->SetParam(0, page_num);
-				item = str_item;
+				SetDParam(0, page_num);
+				list.emplace_back(new DropDownListStringItem(STR_STORY_BOOK_GENERIC_PAGE_ITEM, p->index, current_page));
 			}
-
-			list.emplace_back(item);
 			page_num++;
 		}
 
@@ -958,7 +953,7 @@ GUIStoryPageElementList::SortFunction * const StoryBookWindow::page_element_sort
 static const NWidgetPart _nested_story_book_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
-		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_SB_CAPTION), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_SB_CAPTION), SetDataTip(STR_JUST_STRING1, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
 		NWidget(WWT_STICKYBOX, COLOUR_BROWN),

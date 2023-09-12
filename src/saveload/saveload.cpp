@@ -25,6 +25,7 @@
 #include "saveload.h"
 #include "../debug.h"
 #include "../string_func.h"
+#include "../string_func_extra.h"
 #include "../strings_func.h"
 #include "../core/bitmath_func.hpp"
 #include "../vehicle_base.h"
@@ -779,25 +780,22 @@ static void SlStdString(void *ptr, VarType conv)
 				return;
 			}
 
-			char *buf = AllocaM(char, len + 1);
-			SlCopyBytes(buf, len);
-			buf[len] = '\0'; // properly terminate the string
+			str->resize(len);
+			SlCopyBytes(str->data(), len);
 
 			StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK;
 			if ((conv & SLF_ALLOW_CONTROL) != 0) {
 				settings = settings | SVS_ALLOW_CONTROL_CODE;
 				if (IsSavegameVersionBefore(SLV_169)) {
-					str_fix_scc_encoded(buf, buf + len);
+					char *buf = str->data();
+					str->resize(str_fix_scc_encoded(buf, buf + str->size()) - buf);
 				}
 			}
 			if ((conv & SLF_ALLOW_NEWLINE) != 0) {
 				settings = settings | SVS_ALLOW_NEWLINE;
 			}
 
-			StrMakeValidInPlace(buf, buf + len, settings);
-
-			// Store sanitized string.
-			str->assign(buf);
+			StrMakeValidInPlace(*str, settings);
 		}
 
 		case SLA_PTRS: break;

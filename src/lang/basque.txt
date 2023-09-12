@@ -884,41 +884,42 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Jokoaren
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Diru unitateak
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Diru unitatearen aukeraketa
 
+
 ###length 42
-STR_GAME_OPTIONS_CURRENCY_GBP                                   :Libra (£)
-STR_GAME_OPTIONS_CURRENCY_USD                                   :Dolar Amerikarrak (USD)
-STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euroa (EUR)
-STR_GAME_OPTIONS_CURRENCY_JPY                                   :Yena (JPY)
-STR_GAME_OPTIONS_CURRENCY_ATS                                   :Txelin Austriarra (ATS)
-STR_GAME_OPTIONS_CURRENCY_BEF                                   :Franko Belgikarra (BEF)
-STR_GAME_OPTIONS_CURRENCY_CHF                                   :Suitzar Frankoa (CHF)
-STR_GAME_OPTIONS_CURRENCY_CZK                                   :Koroa Txekoa (CZK)
-STR_GAME_OPTIONS_CURRENCY_DEM                                   :Marko Alemaniarra (DEM)
-STR_GAME_OPTIONS_CURRENCY_DKK                                   :Danierar Koroa (DKK)
-STR_GAME_OPTIONS_CURRENCY_ESP                                   :Pezeta (ESP)
-STR_GAME_OPTIONS_CURRENCY_FIM                                   :Marko Finlandiarra (FIM)
-STR_GAME_OPTIONS_CURRENCY_FRF                                   :Frankoa (FRF)
-STR_GAME_OPTIONS_CURRENCY_GRD                                   :Drachma Grekoa (GRD)
-STR_GAME_OPTIONS_CURRENCY_HUF                                   :Florin Hungariarra (HUF)
-STR_GAME_OPTIONS_CURRENCY_ISK                                   :Koro Islandiarra (ISK)
-STR_GAME_OPTIONS_CURRENCY_ITL                                   :Lira Italiarra (ITL)
-STR_GAME_OPTIONS_CURRENCY_NLG                                   :Herbeheretako Florina (NLG)
-STR_GAME_OPTIONS_CURRENCY_NOK                                   :Norvegiar Koroa (NOK)
-STR_GAME_OPTIONS_CURRENCY_PLN                                   :Zloty Poloniarra (PLN)
-STR_GAME_OPTIONS_CURRENCY_RON                                   :Leu Errumaniarra (RON)
-STR_GAME_OPTIONS_CURRENCY_RUR                                   :Errusiar Rubloa (RUR)
-STR_GAME_OPTIONS_CURRENCY_SIT                                   :Tolar Esloveniarra (SIT)
-STR_GAME_OPTIONS_CURRENCY_SEK                                   :Suediar Koroa (SEK)
-STR_GAME_OPTIONS_CURRENCY_TRY                                   :Lira Turkiarra (TRY)
-STR_GAME_OPTIONS_CURRENCY_SKK                                   :Eslovakiar Koroa (SKK)
-STR_GAME_OPTIONS_CURRENCY_BRL                                   :Erreal Brasildarra (BRL)
-STR_GAME_OPTIONS_CURRENCY_EEK                                   :Estoniar Koroa (EEK)
-STR_GAME_OPTIONS_CURRENCY_LTL                                   :Lituaniako Litas-ak (LTL)
-STR_GAME_OPTIONS_CURRENCY_KRW                                   :Hego koreako Won-a (KRW)
-STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Hego Afrikako Rand-a (ZAR)
+STR_GAME_OPTIONS_CURRENCY_GBP                                   :Libra
+STR_GAME_OPTIONS_CURRENCY_USD                                   :Dolar Amerikarrak
+STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euroa
+STR_GAME_OPTIONS_CURRENCY_JPY                                   :Yena
+STR_GAME_OPTIONS_CURRENCY_ATS                                   :Txelin Austriarra
+STR_GAME_OPTIONS_CURRENCY_BEF                                   :Franko Belgikarra
+STR_GAME_OPTIONS_CURRENCY_CHF                                   :Suitzar Frankoa
+STR_GAME_OPTIONS_CURRENCY_CZK                                   :Koroa Txekoa
+STR_GAME_OPTIONS_CURRENCY_DEM                                   :Marko Alemaniarra
+STR_GAME_OPTIONS_CURRENCY_DKK                                   :Danierar Koroa
+STR_GAME_OPTIONS_CURRENCY_ESP                                   :Pezeta
+STR_GAME_OPTIONS_CURRENCY_FIM                                   :Marko Finlandiarra
+STR_GAME_OPTIONS_CURRENCY_FRF                                   :Frankoa
+STR_GAME_OPTIONS_CURRENCY_GRD                                   :Drachma Grekoa
+STR_GAME_OPTIONS_CURRENCY_HUF                                   :Florin Hungariarra
+STR_GAME_OPTIONS_CURRENCY_ISK                                   :Koro Islandiarra
+STR_GAME_OPTIONS_CURRENCY_ITL                                   :Lira Italiarra
+STR_GAME_OPTIONS_CURRENCY_NLG                                   :Herbeheretako Florina
+STR_GAME_OPTIONS_CURRENCY_NOK                                   :Norvegiar Koroa
+STR_GAME_OPTIONS_CURRENCY_PLN                                   :Zloty Poloniarra
+STR_GAME_OPTIONS_CURRENCY_RON                                   :Leu Errumaniarra
+STR_GAME_OPTIONS_CURRENCY_RUR                                   :Errusiar Rubloa
+STR_GAME_OPTIONS_CURRENCY_SIT                                   :Tolar Esloveniarra
+STR_GAME_OPTIONS_CURRENCY_SEK                                   :Suediar Koroa
+STR_GAME_OPTIONS_CURRENCY_TRY                                   :Lira Turkiarra
+STR_GAME_OPTIONS_CURRENCY_SKK                                   :Eslovakiar Koroa
+STR_GAME_OPTIONS_CURRENCY_BRL                                   :Erreal Brasildarra
+STR_GAME_OPTIONS_CURRENCY_EEK                                   :Estoniar Koroa
+STR_GAME_OPTIONS_CURRENCY_LTL                                   :Lituaniako Litas-ak
+STR_GAME_OPTIONS_CURRENCY_KRW                                   :Hego koreako Won-a
+STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Hego Afrikako Rand-a
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Pertsonalizatua...
-STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari Georgiarra (GEL)
-STR_GAME_OPTIONS_CURRENCY_IRR                                   :Rial Iraniarra (IRR)
+STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari Georgiarra
+STR_GAME_OPTIONS_CURRENCY_IRR                                   :Rial Iraniarra
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Auto-gordea
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Aukeratu jokoa automatikoki gordetzeko denbora
@@ -1752,28 +1753,28 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Inperiala (oin)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metrikoa (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
 
-STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}Kokapena
-STR_CONFIG_SETTING_GRAPHICS                                     :{ORANGE}Grafikoak
-STR_CONFIG_SETTING_SOUND                                        :{ORANGE}Soinua
-STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Interfazea
-STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}Orokorra
-STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}Leihoak
-STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}Eraikuntza
-STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}Albisteak / Aholkulariak
-STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}Konpainia
-STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}Ibilgailuak
-STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :{ORANGE}Fisika
-STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}Ibilbideak
-STR_CONFIG_SETTING_LIMITATIONS                                  :{ORANGE}Mugak
-STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE}Hondamendiak / Istripuak
-STR_CONFIG_SETTING_GENWORLD                                     :{ORANGE}Mundua sortu
-STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}Ingurugiroa
-STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}Agintariak
-STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Herriak
-STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Industriak
-STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Zama banaketa
-STR_CONFIG_SETTING_AI                                           :{ORANGE}Lehiakideak
-STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Ordenagailu jokalariak
+STR_CONFIG_SETTING_LOCALISATION                                 :Kokapena
+STR_CONFIG_SETTING_GRAPHICS                                     :Grafikoak
+STR_CONFIG_SETTING_SOUND                                        :Soinua
+STR_CONFIG_SETTING_INTERFACE                                    :Interfazea
+STR_CONFIG_SETTING_INTERFACE_GENERAL                            :Orokorra
+STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :Leihoak
+STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :Eraikuntza
+STR_CONFIG_SETTING_ADVISORS                                     :Albisteak / Aholkulariak
+STR_CONFIG_SETTING_COMPANY                                      :Konpainia
+STR_CONFIG_SETTING_VEHICLES                                     :Ibilgailuak
+STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :Fisika
+STR_CONFIG_SETTING_VEHICLES_ROUTING                             :Ibilbideak
+STR_CONFIG_SETTING_LIMITATIONS                                  :Mugak
+STR_CONFIG_SETTING_ACCIDENTS                                    :Hondamendiak / Istripuak
+STR_CONFIG_SETTING_GENWORLD                                     :Mundua sortu
+STR_CONFIG_SETTING_ENVIRONMENT                                  :Ingurugiroa
+STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :Agintariak
+STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :Herriak
+STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :Industriak
+STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :Zama banaketa
+STR_CONFIG_SETTING_AI                                           :Lehiakideak
+STR_CONFIG_SETTING_AI_NPC                                       :Ordenagailu jokalariak
 
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS                        :Trenen ibilbide bilatzailea: {STRING}
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT               :Trenek erabiliko duten ibilbide bilatzailea
@@ -3947,8 +3948,6 @@ STR_TIMETABLE_EXPECTED                                          :{BLACK}Espero z
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Programatuta
 STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}Espero zena eta programatutakoaren artean aukeratu
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:
 
 
 # Date window (for timetable)

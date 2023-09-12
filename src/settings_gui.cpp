@@ -45,6 +45,7 @@
 #include "network/core/config.h"
 #include "network/network_gui.h"
 #include "network/network_survey.h"
+#include "video/video_driver.hpp"
 
 #include <vector>
 #include <functional>
@@ -53,7 +54,6 @@
 #include <cmath>
 
 #include "safeguards.h"
-#include "video/video_driver.hpp"
 
 uint GetSettingIndexByFullName(const char *name);
 const SettingDesc *GetSettingDescription(uint index);
@@ -95,7 +95,7 @@ static DropDownList BuildSetDropDownList(int *selected_index, bool allow_selecti
 
 	DropDownList list;
 	for (int i = 0; i < n; i++) {
-		list.emplace_back(new DropDownListCharStringItem(T::GetSet(i)->name, i, !allow_selection && (*selected_index != i)));
+		list.emplace_back(new DropDownListStringItem(T::GetSet(i)->name, i, !allow_selection && (*selected_index != i)));
 	}
 
 	return list;
@@ -235,13 +235,19 @@ struct GameOptionsWindow : Window {
 		switch (widget) {
 			case WID_GO_CURRENCY_DROPDOWN: { // Setup currencies dropdown
 				*selected_index = this->opt->locale.currency;
-				StringID *items = BuildCurrencyDropdown();
 				uint64 disabled = _game_mode == GM_MENU ? 0LL : ~GetMaskOfAllowedCurrencies();
 
 				/* Add non-custom currencies; sorted naturally */
-				for (uint i = 0; i < CURRENCY_END; items++, i++) {
+				for (const CurrencySpec &currency : _currency_specs) {
+					int i = &currency - _currency_specs;
 					if (i == CURRENCY_CUSTOM) continue;
-					list.emplace_back(new DropDownListStringItem(*items, i, HasBit(disabled, i)));
+					if (currency.code.empty()) {
+						list.emplace_back(new DropDownListStringItem(currency.name, i, HasBit(disabled, i)));
+					} else {
+						SetDParam(0, currency.name);
+						SetDParamStr(1, currency.code);
+						list.emplace_back(new DropDownListStringItem(STR_GAME_OPTIONS_CURRENCY_CODE, i, HasBit(disabled, i)));
+					}
 				}
 				std::sort(list.begin(), list.end(), DropDownListStringItem::NatSortFunc);
 
@@ -265,20 +271,19 @@ struct GameOptionsWindow : Window {
 					bool hide_language = IsReleasedVersion() && !_languages[i].IsReasonablyFinished();
 					if (hide_language) continue;
 					bool hide_percentage = IsReleasedVersion() || _languages[i].missing < _settings_client.gui.missing_strings_threshold;
-					auto item = new DropDownListParamStringItem(hide_percentage ? STR_JUST_RAW_STRING : STR_GAME_OPTIONS_LANGUAGE_PERCENTAGE, i, false);
 					if (&_languages[i] == _current_language) {
 						*selected_index = i;
-						item->SetParamStr(0, _languages[i].own_name);
+						SetDParamStr(0, _languages[i].own_name);
 					} else {
 						/* Especially with sprite-fonts, not all localized
 						 * names can be rendered. So instead, we use the
 						 * international names for anything but the current
 						 * selected language. This avoids showing a few ????
 						 * entries in the dropdown list. */
-						item->SetParamStr(0, _languages[i].name);
+						SetDParamStr(0, _languages[i].name);
 					}
-					item->SetParam(1, (LANGUAGE_TOTAL_STRINGS - _languages[i].missing) * 100 / LANGUAGE_TOTAL_STRINGS);
-					list.emplace_back(item);
+					SetDParam(1, (LANGUAGE_TOTAL_STRINGS - _languages[i].missing) * 100 / LANGUAGE_TOTAL_STRINGS);
+					list.emplace_back(new DropDownListStringItem(hide_percentage ? STR_JUST_RAW_STRING : STR_GAME_OPTIONS_LANGUAGE_PERCENTAGE, i, false));
 				}
 				std::sort(list.begin(), list.end(), DropDownListStringItem::NatSortFunc);
 				break;
@@ -289,10 +294,9 @@ struct GameOptionsWindow : Window {
 
 				*selected_index = GetCurrentResolutionIndex();
 				for (uint i = 0; i < _resolutions.size(); i++) {
-					auto item = new DropDownListParamStringItem(STR_GAME_OPTIONS_RESOLUTION_ITEM, i, false);
-					item->SetParam(0, _resolutions[i].width);
-					item->SetParam(1, _resolutions[i].height);
-					list.emplace_back(item);
+					SetDParam(0, _resolutions[i].width);
+					SetDParam(1, _resolutions[i].height);
+					list.emplace_back(new DropDownListStringItem(STR_GAME_OPTIONS_RESOLUTION_ITEM, i, false));
 				}
 				break;
 
@@ -300,9 +304,8 @@ struct GameOptionsWindow : Window {
 				for (auto it = _refresh_rates.begin(); it != _refresh_rates.end(); it++) {
 					auto i = std::distance(_refresh_rates.begin(), it);
 					if (*it == _settings_client.gui.refresh_rate) *selected_index = i;
-					auto item = new DropDownListParamStringItem(STR_GAME_OPTIONS_REFRESH_RATE_ITEM, i, false);
-					item->SetParam(0, *it);
-					list.emplace_back(item);
+					SetDParam(0, *it);
+					list.emplace_back(new DropDownListStringItem(STR_GAME_OPTIONS_REFRESH_RATE_ITEM, i, false));
 				}
 				break;
 
@@ -325,7 +328,17 @@ struct GameOptionsWindow : Window {
 	void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
-			case WID_GO_CURRENCY_DROPDOWN:     SetDParam(0, _currency_specs[this->opt->locale.currency].name); break;
+			case WID_GO_CURRENCY_DROPDOWN: {
+				const CurrencySpec &currency = _currency_specs[this->opt->locale.currency];
+				if (currency.code.empty()) {
+					SetDParam(0, currency.name);
+				} else {
+					SetDParam(0, STR_GAME_OPTIONS_CURRENCY_CODE);
+					SetDParam(1, currency.name);
+					SetDParamStr(2, currency.code);
+				}
+				break;
+			}
 			case WID_GO_AUTOSAVE_DROPDOWN: {
 				if (_settings_client.gui.autosave == 5) {
 					SetDParam(0, _settings_client.gui.autosave_custom_days == 1 ? STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_SINGULAR : STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM);
@@ -847,7 +860,7 @@ static const NWidgetPart _nested_game_options_widgets[] = {
 				EndContainer(),
 
 				NWidget(WWT_FRAME, COLOUR_GREY), SetDataTip(STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME, STR_NULL),
-					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_GO_CURRENCY_DROPDOWN), SetMinimalSize(100, 12), SetDataTip(STR_JUST_STRING, STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP), SetFill(1, 0),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_GO_CURRENCY_DROPDOWN), SetMinimalSize(100, 12), SetDataTip(STR_JUST_STRING2, STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP), SetFill(1, 0),
 				EndContainer(),
 
 				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_GO_SURVEY_SEL),
@@ -893,7 +906,7 @@ static const NWidgetPart _nested_game_options_widgets[] = {
 						NWidget(NWID_HORIZONTAL),
 							NWidget(WWT_TEXT, COLOUR_GREY), SetMinimalSize(0, 12),SetDataTip(STR_GAME_OPTIONS_RESOLUTION, STR_NULL),
 							NWidget(NWID_SPACER), SetMinimalSize(1, 0), SetFill(1, 0),
-							NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_GO_RESOLUTION_DROPDOWN), SetMinimalSize(100, 12), SetDataTip(STR_JUST_STRING, STR_GAME_OPTIONS_RESOLUTION_TOOLTIP),
+							NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_GO_RESOLUTION_DROPDOWN), SetMinimalSize(100, 12), SetDataTip(STR_JUST_STRING2, STR_GAME_OPTIONS_RESOLUTION_TOOLTIP),
 						EndContainer(),
 						NWidget(NWID_HORIZONTAL),
 							NWidget(WWT_TEXT, COLOUR_GREY), SetMinimalSize(0, 12), SetDataTip(STR_GAME_OPTIONS_REFRESH_RATE, STR_NULL),
@@ -1273,7 +1286,7 @@ uint BaseSettingEntry::Draw(GameSettings *settings_ptr, int left, int right, int
 	if (cur_row >= max_row) return cur_row;
 
 	bool rtl = _current_text_dir == TD_RTL;
-	int offset = (rtl ? -(int)_circle_size.width : _circle_size.width) / 2;
+	int offset = (rtl ? -(int)_circle_size.width : (int)_circle_size.width) / 2;
 	int level_width = rtl ? -WidgetDimensions::scaled.hsep_indent : WidgetDimensions::scaled.hsep_indent;
 
 	int x = rtl ? right : left;
@@ -1291,7 +1304,7 @@ uint BaseSettingEntry::Draw(GameSettings *settings_ptr, int left, int right, int
 		int bottom_y = (flags & SEF_LAST_FIELD) ? halfway_y : y + SETTING_HEIGHT - 1;
 		GfxDrawLine(x + offset, y, x + offset, bottom_y, colour);
 		/* Small horizontal line from the last vertical line */
-		GfxDrawLine(x + offset, halfway_y, x + level_width - WidgetDimensions::scaled.hsep_normal, halfway_y, colour);
+		GfxDrawLine(x + offset, halfway_y, x + level_width - (rtl ? -WidgetDimensions::scaled.hsep_normal : WidgetDimensions::scaled.hsep_normal), halfway_y, colour);
 		x += level_width;
 
 		this->DrawSetting(settings_ptr, rtl ? left : x, rtl ? x : right, y, this == selected);
@@ -1913,7 +1926,7 @@ void SettingsPage::DrawSetting(GameSettings *settings_ptr, int left, int right, 
 {
 	bool rtl = _current_text_dir == TD_RTL;
 	DrawSprite((this->folded ? SPR_CIRCLE_FOLDED : SPR_CIRCLE_UNFOLDED), PAL_NONE, rtl ? right - _circle_size.width : left, y + (SETTING_HEIGHT - _circle_size.height) / 2);
-	DrawString(rtl ? left : left + _circle_size.width + WidgetDimensions::scaled.hsep_normal, rtl ? right - _circle_size.width - WidgetDimensions::scaled.hsep_normal : right, y + (SETTING_HEIGHT - FONT_HEIGHT_NORMAL) / 2, this->title);
+	DrawString(rtl ? left : left + _circle_size.width + WidgetDimensions::scaled.hsep_normal, rtl ? right - _circle_size.width - WidgetDimensions::scaled.hsep_normal : right, y + (SETTING_HEIGHT - FONT_HEIGHT_NORMAL) / 2, this->title, TC_ORANGE);
 }
 
 /** Construct settings tree */
@@ -3477,7 +3490,7 @@ static const NWidgetPart _nested_cust_currency_widgets[] = {
 				NWidget(WWT_PUSHARROWBTN, COLOUR_YELLOW, WID_CC_YEAR_DOWN), SetDataTip(AWV_DECREASE, STR_CURRENCY_DECREASE_CUSTOM_CURRENCY_TO_EURO_TOOLTIP),
 				NWidget(WWT_PUSHARROWBTN, COLOUR_YELLOW, WID_CC_YEAR_UP), SetDataTip(AWV_INCREASE, STR_CURRENCY_INCREASE_CUSTOM_CURRENCY_TO_EURO_TOOLTIP),
 				NWidget(NWID_SPACER), SetMinimalSize(5, 0),
-				NWidget(WWT_TEXT, COLOUR_BLUE, WID_CC_YEAR), SetDataTip(STR_JUST_STRING, STR_CURRENCY_SET_CUSTOM_CURRENCY_TO_EURO_TOOLTIP), SetFill(1, 0),
+				NWidget(WWT_TEXT, COLOUR_BLUE, WID_CC_YEAR), SetDataTip(STR_JUST_STRING1, STR_CURRENCY_SET_CUSTOM_CURRENCY_TO_EURO_TOOLTIP), SetFill(1, 0),
 			EndContainer(),
 		EndContainer(),
 		NWidget(WWT_LABEL, COLOUR_BLUE, WID_CC_PREVIEW),

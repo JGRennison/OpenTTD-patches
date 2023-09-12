@@ -1420,8 +1420,6 @@ STR_VEHICLE_LIST_CHANGE_ORDER_ROAD_VEHICLE_DEPOT                :다른 차고�
 STR_VEHICLE_LIST_CHANGE_ORDER_SHIP_DEPOT                        :다른 정박소로 경로 이동
 STR_VEHICLE_LIST_CHANGE_ORDER_AIRCRAFT_HANGAR                   :다른 격납고로 경로 이동
 
-STR_VEHICLE_LIST_CREATE_GROUP                                   :목록에서 그룹 만들기
-
 STR_GROUP_EXPAND_ALL                                            :{BLACK}모두 펼치기
 STR_GROUP_COLLAPSE_ALL                                          :{BLACK}모두 접기
 
@@ -1689,6 +1687,9 @@ STR_TIMETABLE_FILL_TIMETABLE_SUGGESTION_2                       :{BLACK}(또는,
 
 STR_TIMETABLE_WARNINGS_OMITTED                                  :{BLACK}{NUM}개의 추가 경고가 생략되었습니다...
 
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :도착:
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :출발:
+
 STR_DATE_MINUTES_MINUTE_TOOLTIP                                 :{BLACK}분(分) 선택
 STR_DATE_MINUTES_HOUR_TOOLTIP                                   :{BLACK}시(時) 선택
 
@@ -1849,15 +1850,15 @@ STR_STATION_RATING_MAX_PERCENTAGE                               : (최대 {PLUS_
 STR_STATION_RATING_MAX_PERCENTAGE_COMMA                         :, 최대 {PLUS_NUM}%
 STR_STATION_RATING_PERCENTAGE_COMMA                             :, {PLUS_NUM}%
 
-STR_STATION_RATING_TOOLTIP_SPEED                                :마지막으로 도착한 열차의 최대 속력{STRING}: {SET_COLOUR}{VELOCITY}{STRING} ({STRING})
+STR_STATION_RATING_TOOLTIP_SPEED                                :마지막으로 도착한 열차의 최대 속력{STRING}: {COLOUR}{VELOCITY}{STRING} ({STRING})
 
-STR_STATION_RATING_TOOLTIP_AGE                                  :지난 열차의 연식{STRING}: {SET_COLOUR}{NUM}년{STRING}
+STR_STATION_RATING_TOOLTIP_AGE                                  :지난 열차의 연식{STRING}: {COLOUR}{NUM}년{STRING}
 
 STR_STATION_RATING_TOOLTIP_WAITTIME                             :지난 화물 적재 이후 지난 시간{STRING}: {STRING}
 STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP                        :지난 화물 적재 이후 지난 시간{STRING}: {STRING} (선박)
-STR_STATION_RATING_TOOLTIP_WAITTIME_VALUE                       :{SET_COLOUR}{NUM}일{STRING}
+STR_STATION_RATING_TOOLTIP_WAITTIME_VALUE                       :{COLOUR}{NUM}일{STRING}
 
-STR_STATION_RATING_TOOLTIP_WAITUNITS                            :대기 화물량 (각 목적지별 평균치{STRING}): {SET_COLOUR}{NUM}{STRING}
+STR_STATION_RATING_TOOLTIP_WAITUNITS                            :대기 화물량 (각 목적지별 평균치{STRING}): {COLOUR}{NUM}{STRING}
 
 STR_STATION_RATING_TOOLTIP_STATUE                               :도시에 회사 소유주 동상{STRING}: {STRING}
 STR_STATION_RATING_TOOLTIP_STATUE_NO                            :{GOLD}없음{STRING}
@@ -1936,7 +1937,7 @@ STR_TMPL_SECTION_REFIT                                          :{BLACK}개조
 STR_TMPL_SECTION_DEPOT_VEHICLES                                 :{BLACK}기지 차량
 STR_TMPL_SECTION_WHEN                                           :{BLACK}시기
 
-STR_TMPL_NUM_TRAINS_NEED_RPL                                    :교체할 열차 수: {SET_COLOUR}{COMMA}
+STR_TMPL_NUM_TRAINS_NEED_RPL                                    :교체할 열차 수: {COLOUR}{COMMA}
 
 STR_TMPL_CARGO_SUMMARY                                          :{CARGO_LONG}
 STR_TMPL_CARGO_SUMMARY_MULTI                                    :{CARGO_LONG} (x{NUM})
@@ -2130,7 +2131,7 @@ STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :자세히
 STR_CONFIG_SETTING_CITY_IN_LABEL                                :도시 이름에 대도시 여부 표시: {STRING}
 STR_CONFIG_SETTING_CITY_IN_LABEL_HELPTEXT                       :지도 상에 표시되는 도시 이름에 대도시인지 여부를 표시합니다
 
-STR_VIEWPORT_TOWN_COLOUR                                        :{1:SET_COLOUR}{0:TOWN}
-STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {SET_COLOUR}({COMMA})
-STR_VIEWPORT_TOWN_COLOUR_CITY                                   :{1:SET_COLOUR}{0:TOWN} (대도시)
-STR_VIEWPORT_TOWN_COLOUR_CITY_POP                               :{WHITE}{TOWN} {SET_COLOUR}(대도시, {COMMA})
+STR_VIEWPORT_TOWN_COLOUR                                        :{1:COLOUR}{0:TOWN}
+STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {COLOUR}({COMMA})
+STR_VIEWPORT_TOWN_COLOUR_CITY                                   :{1:COLOUR}{0:TOWN} (대도시)
+STR_VIEWPORT_TOWN_COLOUR_CITY_POP                               :{WHITE}{TOWN} {COLOUR}(대도시, {COMMA})

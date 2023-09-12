@@ -1023,49 +1023,50 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Možnost
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Měna
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Výběr jednotek měny
 
+
 ###length 42
-STR_GAME_OPTIONS_CURRENCY_GBP                                   :Libra (GBP)
-STR_GAME_OPTIONS_CURRENCY_USD                                   :Dolar (USD)
-STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro (EUR)
-STR_GAME_OPTIONS_CURRENCY_JPY                                   :Japonský jen (JPY)
-STR_GAME_OPTIONS_CURRENCY_ATS                                   :Rakouský šilink (ATS)
-STR_GAME_OPTIONS_CURRENCY_BEF                                   :Belgický frank (BEF)
-STR_GAME_OPTIONS_CURRENCY_CHF                                   :Švýcarský frank (CHF)
-STR_GAME_OPTIONS_CURRENCY_CZK                                   :Česká koruna (CZK)
-STR_GAME_OPTIONS_CURRENCY_DEM                                   :Německá marka (DEM)
-STR_GAME_OPTIONS_CURRENCY_DKK                                   :Dánská koruna (DKK)
-STR_GAME_OPTIONS_CURRENCY_ESP                                   :Španělská peseta (ESP)
-STR_GAME_OPTIONS_CURRENCY_FIM                                   :Finská marka (FIM)
-STR_GAME_OPTIONS_CURRENCY_FRF                                   :Francouzský frank (FRF)
-STR_GAME_OPTIONS_CURRENCY_GRD                                   :Řecká drachma (GRD)
-STR_GAME_OPTIONS_CURRENCY_HUF                                   :Maďarský forint (HUF)
-STR_GAME_OPTIONS_CURRENCY_ISK                                   :Islandská koruna (ISK)
-STR_GAME_OPTIONS_CURRENCY_ITL                                   :Italská lira (ITL)
-STR_GAME_OPTIONS_CURRENCY_NLG                                   :Holandský gulden (NLG)
-STR_GAME_OPTIONS_CURRENCY_NOK                                   :Norská koruna (NOK)
-STR_GAME_OPTIONS_CURRENCY_PLN                                   :Polský zlotý (PLN)
-STR_GAME_OPTIONS_CURRENCY_RON                                   :Rumunský lei (RON)
-STR_GAME_OPTIONS_CURRENCY_RUR                                   :Ruský rubl (RUR)
-STR_GAME_OPTIONS_CURRENCY_SIT                                   :Slovinský tolar (SIT)
-STR_GAME_OPTIONS_CURRENCY_SEK                                   :Švédská koruna (SEK)
-STR_GAME_OPTIONS_CURRENCY_TRY                                   :Turecká lira (TRY)
-STR_GAME_OPTIONS_CURRENCY_SKK                                   :Slovenská koruna (SKK)
-STR_GAME_OPTIONS_CURRENCY_BRL                                   :Brazilský real (BRL)
-STR_GAME_OPTIONS_CURRENCY_EEK                                   :Estonská koruna (EEK)
-STR_GAME_OPTIONS_CURRENCY_LTL                                   :Litevský litas (LTL)
-STR_GAME_OPTIONS_CURRENCY_KRW                                   :Jihokorejský won (KRW)
-STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Jihoafrický rand (ZAR)
+STR_GAME_OPTIONS_CURRENCY_GBP                                   :Libra
+STR_GAME_OPTIONS_CURRENCY_USD                                   :Dolar
+STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
+STR_GAME_OPTIONS_CURRENCY_JPY                                   :Japonský jen
+STR_GAME_OPTIONS_CURRENCY_ATS                                   :Rakouský šilink
+STR_GAME_OPTIONS_CURRENCY_BEF                                   :Belgický frank
+STR_GAME_OPTIONS_CURRENCY_CHF                                   :Švýcarský frank
+STR_GAME_OPTIONS_CURRENCY_CZK                                   :Česká koruna
+STR_GAME_OPTIONS_CURRENCY_DEM                                   :Německá marka
+STR_GAME_OPTIONS_CURRENCY_DKK                                   :Dánská koruna
+STR_GAME_OPTIONS_CURRENCY_ESP                                   :Španělská peseta
+STR_GAME_OPTIONS_CURRENCY_FIM                                   :Finská marka
+STR_GAME_OPTIONS_CURRENCY_FRF                                   :Francouzský frank
+STR_GAME_OPTIONS_CURRENCY_GRD                                   :Řecká drachma
+STR_GAME_OPTIONS_CURRENCY_HUF                                   :Maďarský forint
+STR_GAME_OPTIONS_CURRENCY_ISK                                   :Islandská koruna
+STR_GAME_OPTIONS_CURRENCY_ITL                                   :Italská lira
+STR_GAME_OPTIONS_CURRENCY_NLG                                   :Holandský gulden
+STR_GAME_OPTIONS_CURRENCY_NOK                                   :Norská koruna
+STR_GAME_OPTIONS_CURRENCY_PLN                                   :Polský zlotý
+STR_GAME_OPTIONS_CURRENCY_RON                                   :Rumunský lei
+STR_GAME_OPTIONS_CURRENCY_RUR                                   :Ruský rubl
+STR_GAME_OPTIONS_CURRENCY_SIT                                   :Slovinský tolar
+STR_GAME_OPTIONS_CURRENCY_SEK                                   :Švédská koruna
+STR_GAME_OPTIONS_CURRENCY_TRY                                   :Turecká lira
+STR_GAME_OPTIONS_CURRENCY_SKK                                   :Slovenská koruna
+STR_GAME_OPTIONS_CURRENCY_BRL                                   :Brazilský real
+STR_GAME_OPTIONS_CURRENCY_EEK                                   :Estonská koruna
+STR_GAME_OPTIONS_CURRENCY_LTL                                   :Litevský litas
+STR_GAME_OPTIONS_CURRENCY_KRW                                   :Jihokorejský won
+STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Jihoafrický rand
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Vlastní...
-STR_GAME_OPTIONS_CURRENCY_GEL                                   :Georgijské Lari (GEL)
-STR_GAME_OPTIONS_CURRENCY_IRR                                   :Íránský Riál (IRR)
-STR_GAME_OPTIONS_CURRENCY_RUB                                   :Ruský rubl (RUB)
-STR_GAME_OPTIONS_CURRENCY_MXN                                   :Mexické peso (MXN)
-STR_GAME_OPTIONS_CURRENCY_NTD                                   :Nový taiwanský dolar (NTD)
-STR_GAME_OPTIONS_CURRENCY_CNY                                   :Čínský renminbi (CNY)
-STR_GAME_OPTIONS_CURRENCY_HKD                                   :Hongkongský dolar (HKD)
-STR_GAME_OPTIONS_CURRENCY_INR                                   :Indická rupie (INR)
-STR_GAME_OPTIONS_CURRENCY_IDR                                   :Indonéská rupie (IDR)
-STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malajsijský Ringgit (MYR)
+STR_GAME_OPTIONS_CURRENCY_GEL                                   :Georgijské Lari
+STR_GAME_OPTIONS_CURRENCY_IRR                                   :Íránský Riál
+STR_GAME_OPTIONS_CURRENCY_RUB                                   :Ruský rubl
+STR_GAME_OPTIONS_CURRENCY_MXN                                   :Mexické peso
+STR_GAME_OPTIONS_CURRENCY_NTD                                   :Nový taiwanský dolar
+STR_GAME_OPTIONS_CURRENCY_CNY                                   :Čínský renminbi
+STR_GAME_OPTIONS_CURRENCY_HKD                                   :Hongkongský dolar
+STR_GAME_OPTIONS_CURRENCY_INR                                   :Indická rupie
+STR_GAME_OPTIONS_CURRENCY_IDR                                   :Indonéská rupie
+STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malajsijský Ringgit
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Automatické ukládání
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Volba intervalu mezi automatickým ukládáním hry
@@ -2072,30 +2073,30 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Imperiální (f
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metrické (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
 
-STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}Překlad
-STR_CONFIG_SETTING_GRAPHICS                                     :{ORANGE}Grafika
-STR_CONFIG_SETTING_SOUND                                        :{ORANGE}Zvuk
-STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Ovládaní
-STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}Obecné
-STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}Pohledy
-STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}Výstavba
-STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}Novinky / Poradci
-STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}Společnost
-STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}Účetnictví
-STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}Dopravní prostředky
-STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :{ORANGE}Fyzika
-STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}Směrování
-STR_CONFIG_SETTING_LIMITATIONS                                  :{ORANGE}Omezení
-STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE}Katastrofy / Nehody
-STR_CONFIG_SETTING_GENWORLD                                     :{ORANGE}Generování krajiny
-STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}Prostředí
-STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}Městská správa
-STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Města
-STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Průmysl
-STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Distribuce nákladu
-STR_CONFIG_SETTING_AI                                           :{ORANGE}Konkurenti
-STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Umělá inteligence
-STR_CONFIG_SETTING_NETWORK                                      :{ORANGE}Síť
+STR_CONFIG_SETTING_LOCALISATION                                 :Překlad
+STR_CONFIG_SETTING_GRAPHICS                                     :Grafika
+STR_CONFIG_SETTING_SOUND                                        :Zvuk
+STR_CONFIG_SETTING_INTERFACE                                    :Ovládaní
+STR_CONFIG_SETTING_INTERFACE_GENERAL                            :Obecné
+STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :Pohledy
+STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :Výstavba
+STR_CONFIG_SETTING_ADVISORS                                     :Novinky / Poradci
+STR_CONFIG_SETTING_COMPANY                                      :Společnost
+STR_CONFIG_SETTING_ACCOUNTING                                   :Účetnictví
+STR_CONFIG_SETTING_VEHICLES                                     :Dopravní prostředky
+STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :Fyzika
+STR_CONFIG_SETTING_VEHICLES_ROUTING                             :Směrování
+STR_CONFIG_SETTING_LIMITATIONS                                  :Omezení
+STR_CONFIG_SETTING_ACCIDENTS                                    :Katastrofy / Nehody
+STR_CONFIG_SETTING_GENWORLD                                     :Generování krajiny
+STR_CONFIG_SETTING_ENVIRONMENT                                  :Prostředí
+STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :Městská správa
+STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :Města
+STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :Průmysl
+STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :Distribuce nákladu
+STR_CONFIG_SETTING_AI                                           :Konkurenti
+STR_CONFIG_SETTING_AI_NPC                                       :Umělá inteligence
+STR_CONFIG_SETTING_NETWORK                                      :Síť
 
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS                        :Hledač cesty pro vlaky: {STRING}
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT               :Hledač cesty pro vlaky
@@ -4619,8 +4620,6 @@ STR_TIMETABLE_EXPECTED                                          :{BLACK}Očekáv
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Plánovaný
 STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}Přepnout mezi očekávaným a plánovaným
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :P:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :O:
 
 
 # Date window (for timetable)

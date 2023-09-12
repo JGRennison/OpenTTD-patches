@@ -32,6 +32,9 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Promena 
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Projektovan: {GOLD}{NUM}
 
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :D:
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :P:
+
 # Cargo type orders Window
 
 # Plans window

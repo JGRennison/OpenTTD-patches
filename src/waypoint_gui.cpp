@@ -22,13 +22,13 @@
 #include "waypoint_base.h"
 #include "departures_gui.h"
 #include "newgrf_debug.h"
+#include "zoom_func.h"
 
 #include "widgets/waypoint_widget.h"
 
 #include "table/strings.h"
 
 #include "safeguards.h"
-#include "zoom_func.h"
 
 /** GUI for accessing waypoints and buoys. */
 struct WaypointWindow : Window {

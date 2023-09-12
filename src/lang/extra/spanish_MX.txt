@@ -35,6 +35,9 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Cambiar 
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Diseñado: {GOLD}{NUM}
 
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :Lleg:
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :Sal:
+
 # Cargo type orders Window
 
 # Plans window

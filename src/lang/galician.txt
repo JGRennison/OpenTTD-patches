@@ -952,49 +952,50 @@ STR_GAME_OPTIONS_VOLUME_100                                     :100%
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Unidades monetarias
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Selección de unidades monetarias
 
+
 ###length 42
-STR_GAME_OPTIONS_CURRENCY_GBP                                   :Libra esterlina (£)
-STR_GAME_OPTIONS_CURRENCY_USD                                   :Dólar americano ($)
-STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro (€)
-STR_GAME_OPTIONS_CURRENCY_JPY                                   :Ien xaponés (¥)
-STR_GAME_OPTIONS_CURRENCY_ATS                                   :Chelín austríaco (ATS)
-STR_GAME_OPTIONS_CURRENCY_BEF                                   :Franco belga (BEF)
-STR_GAME_OPTIONS_CURRENCY_CHF                                   :Franco suízo (CHF)
-STR_GAME_OPTIONS_CURRENCY_CZK                                   :Coroa checa (CZK)
-STR_GAME_OPTIONS_CURRENCY_DEM                                   :Marco alemán (DEM)
-STR_GAME_OPTIONS_CURRENCY_DKK                                   :Coroa danesa (DKK)
-STR_GAME_OPTIONS_CURRENCY_ESP                                   :Peseta española (ESP)
-STR_GAME_OPTIONS_CURRENCY_FIM                                   :Marco finés (FIM)
-STR_GAME_OPTIONS_CURRENCY_FRF                                   :Franco francés (FRF)
-STR_GAME_OPTIONS_CURRENCY_GRD                                   :Dracma grego (GRD)
-STR_GAME_OPTIONS_CURRENCY_HUF                                   :Florín húngaro (HUF)
-STR_GAME_OPTIONS_CURRENCY_ISK                                   :Coroa islandesa (ISK)
-STR_GAME_OPTIONS_CURRENCY_ITL                                   :Lira italiana (ITL)
-STR_GAME_OPTIONS_CURRENCY_NLG                                   :Florín neerlandés (NLG)
-STR_GAME_OPTIONS_CURRENCY_NOK                                   :Coroa norueguesa (NOK)
-STR_GAME_OPTIONS_CURRENCY_PLN                                   :Złoty polaco (PLN)
-STR_GAME_OPTIONS_CURRENCY_RON                                   :Leu rumano (RON)
-STR_GAME_OPTIONS_CURRENCY_RUR                                   :Rublo ruso (RUR)
-STR_GAME_OPTIONS_CURRENCY_SIT                                   :Tolar esloveno (SIT)
-STR_GAME_OPTIONS_CURRENCY_SEK                                   :Coroa sueca (SEK)
-STR_GAME_OPTIONS_CURRENCY_TRY                                   :Lira turca (TRY)
-STR_GAME_OPTIONS_CURRENCY_SKK                                   :Coroa eslovaca (SKK)
-STR_GAME_OPTIONS_CURRENCY_BRL                                   :Real brasileiro (BRL)
-STR_GAME_OPTIONS_CURRENCY_EEK                                   :Coroa estona (EEK)
-STR_GAME_OPTIONS_CURRENCY_LTL                                   :Litas lituana (LTL)
-STR_GAME_OPTIONS_CURRENCY_KRW                                   :Wŏn surcoreano (KRW)
-STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Rand sudafricano (ZAR)
+STR_GAME_OPTIONS_CURRENCY_GBP                                   :Libra esterlina
+STR_GAME_OPTIONS_CURRENCY_USD                                   :Dólar americano
+STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
+STR_GAME_OPTIONS_CURRENCY_JPY                                   :Ien xaponés
+STR_GAME_OPTIONS_CURRENCY_ATS                                   :Chelín austríaco
+STR_GAME_OPTIONS_CURRENCY_BEF                                   :Franco belga
+STR_GAME_OPTIONS_CURRENCY_CHF                                   :Franco suízo
+STR_GAME_OPTIONS_CURRENCY_CZK                                   :Coroa checa
+STR_GAME_OPTIONS_CURRENCY_DEM                                   :Marco alemán
+STR_GAME_OPTIONS_CURRENCY_DKK                                   :Coroa danesa
+STR_GAME_OPTIONS_CURRENCY_ESP                                   :Peseta española
+STR_GAME_OPTIONS_CURRENCY_FIM                                   :Marco finés
+STR_GAME_OPTIONS_CURRENCY_FRF                                   :Franco francés
+STR_GAME_OPTIONS_CURRENCY_GRD                                   :Dracma grego
+STR_GAME_OPTIONS_CURRENCY_HUF                                   :Florín húngaro
+STR_GAME_OPTIONS_CURRENCY_ISK                                   :Coroa islandesa
+STR_GAME_OPTIONS_CURRENCY_ITL                                   :Lira italiana
+STR_GAME_OPTIONS_CURRENCY_NLG                                   :Florín neerlandés
+STR_GAME_OPTIONS_CURRENCY_NOK                                   :Coroa norueguesa
+STR_GAME_OPTIONS_CURRENCY_PLN                                   :Złoty polaco
+STR_GAME_OPTIONS_CURRENCY_RON                                   :Leu rumano
+STR_GAME_OPTIONS_CURRENCY_RUR                                   :Rublo ruso
+STR_GAME_OPTIONS_CURRENCY_SIT                                   :Tolar esloveno
+STR_GAME_OPTIONS_CURRENCY_SEK                                   :Coroa sueca
+STR_GAME_OPTIONS_CURRENCY_TRY                                   :Lira turca
+STR_GAME_OPTIONS_CURRENCY_SKK                                   :Coroa eslovaca
+STR_GAME_OPTIONS_CURRENCY_BRL                                   :Real brasileiro
+STR_GAME_OPTIONS_CURRENCY_EEK                                   :Coroa estona
+STR_GAME_OPTIONS_CURRENCY_LTL                                   :Litas lituana
+STR_GAME_OPTIONS_CURRENCY_KRW                                   :Wŏn surcoreano
+STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Rand sudafricano
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Persoal...
-STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari xeorxiano (GEL)
-STR_GAME_OPTIONS_CURRENCY_IRR                                   :Real iraniano (IRR)
-STR_GAME_OPTIONS_CURRENCY_RUB                                   :Novo rublo ruso (RUB)
-STR_GAME_OPTIONS_CURRENCY_MXN                                   :Peso mexicano (MXN)
-STR_GAME_OPTIONS_CURRENCY_NTD                                   :Novo dólar taiwanés (NTD)
-STR_GAME_OPTIONS_CURRENCY_CNY                                   :Renminbi chinés (CNY)
-STR_GAME_OPTIONS_CURRENCY_HKD                                   :Dólar de Hong Kong (HKD)
-STR_GAME_OPTIONS_CURRENCY_INR                                   :Rupia India (INR)
-STR_GAME_OPTIONS_CURRENCY_IDR                                   :Rupia Indonesia (IDR)
-STR_GAME_OPTIONS_CURRENCY_MYR                                   :Ringgit malaio(MYR)
+STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari xeorxiano
+STR_GAME_OPTIONS_CURRENCY_IRR                                   :Real iraniano
+STR_GAME_OPTIONS_CURRENCY_RUB                                   :Novo rublo ruso
+STR_GAME_OPTIONS_CURRENCY_MXN                                   :Peso mexicano
+STR_GAME_OPTIONS_CURRENCY_NTD                                   :Novo dólar taiwanés
+STR_GAME_OPTIONS_CURRENCY_CNY                                   :Renminbi chinés
+STR_GAME_OPTIONS_CURRENCY_HKD                                   :Dólar de Hong Kong
+STR_GAME_OPTIONS_CURRENCY_INR                                   :Rupia India
+STR_GAME_OPTIONS_CURRENCY_IDR                                   :Rupia Indonesia
+STR_GAME_OPTIONS_CURRENCY_MYR                                   :Ringgit malaio
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Autogravado
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Selecciona o intervalo entre autogravados
@@ -2019,30 +2020,30 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Imperial (ft)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Métrico (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
 
-STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}Localización
-STR_CONFIG_SETTING_GRAPHICS                                     :{ORANGE}Gráficos
-STR_CONFIG_SETTING_SOUND                                        :{ORANGE}Efectos de son
-STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Interface
-STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}Xeral
-STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}Fiestras de visualización
-STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}Construción
-STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}Novas / Conselleiros
-STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}Compañía
-STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}Contabilidade
-STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}Vehículos
-STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :{ORANGE}Física
-STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}Encamiñamento
-STR_CONFIG_SETTING_LIMITATIONS                                  :{ORANGE}Limitacións
-STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE}Desastres / Accidentes
-STR_CONFIG_SETTING_GENWORLD                                     :{ORANGE}Xeración do mundo
-STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}Contorno
-STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}Autoridades
-STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Cidades
-STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Industrias
-STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Distribución da carga
-STR_CONFIG_SETTING_AI                                           :{ORANGE}Competidores
-STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Xogadores da computadora
-STR_CONFIG_SETTING_NETWORK                                      :{ORANGE}Rede
+STR_CONFIG_SETTING_LOCALISATION                                 :Localización
+STR_CONFIG_SETTING_GRAPHICS                                     :Gráficos
+STR_CONFIG_SETTING_SOUND                                        :Efectos de son
+STR_CONFIG_SETTING_INTERFACE                                    :Interface
+STR_CONFIG_SETTING_INTERFACE_GENERAL                            :Xeral
+STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :Fiestras de visualización
+STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :Construción
+STR_CONFIG_SETTING_ADVISORS                                     :Novas / Conselleiros
+STR_CONFIG_SETTING_COMPANY                                      :Compañía
+STR_CONFIG_SETTING_ACCOUNTING                                   :Contabilidade
+STR_CONFIG_SETTING_VEHICLES                                     :Vehículos
+STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :Física
+STR_CONFIG_SETTING_VEHICLES_ROUTING                             :Encamiñamento
+STR_CONFIG_SETTING_LIMITATIONS                                  :Limitacións
+STR_CONFIG_SETTING_ACCIDENTS                                    :Desastres / Accidentes
+STR_CONFIG_SETTING_GENWORLD                                     :Xeración do mundo
+STR_CONFIG_SETTING_ENVIRONMENT                                  :Contorno
+STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :Autoridades
+STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :Cidades
+STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :Industrias
+STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :Distribución da carga
+STR_CONFIG_SETTING_AI                                           :Competidores
+STR_CONFIG_SETTING_AI_NPC                                       :Xogadores da computadora
+STR_CONFIG_SETTING_NETWORK                                      :Rede
 
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS                        :Buscador de ruta para trens: {STRING}
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT               :Buscador de ruta empregado polos trens
@@ -4568,8 +4569,6 @@ STR_TIMETABLE_EXPECTED                                          :{BLACK}Esperado
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Programado
 STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}Alternar entre o esperado e o programado
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :Ch:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :S:
 
 
 # Date window (for timetable)

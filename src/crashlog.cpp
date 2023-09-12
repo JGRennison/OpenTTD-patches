@@ -105,8 +105,6 @@ char *CrashLog::LogCompiler(char *buffer, const char *last) const
 			"ICC %d", __ICC
 #elif defined(__GNUC__)
 			"GCC %d.%d.%d", __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__
-#elif defined(__WATCOMC__)
-			"WatcomC %d", __WATCOMC__
 #else
 			"<unknown>"
 #endif

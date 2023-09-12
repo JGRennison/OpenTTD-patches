@@ -890,43 +890,44 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Наст
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Парична единица
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Избор на парична единица
 
+
 ###length 42
-STR_GAME_OPTIONS_CURRENCY_GBP                                   :Британска лира (£)
-STR_GAME_OPTIONS_CURRENCY_USD                                   :Американски долар ($)
-STR_GAME_OPTIONS_CURRENCY_EUR                                   :Евро (€)
-STR_GAME_OPTIONS_CURRENCY_JPY                                   :Японска йена (¥)
-STR_GAME_OPTIONS_CURRENCY_ATS                                   :австрийски шилинг (ATS)
-STR_GAME_OPTIONS_CURRENCY_BEF                                   :белгийски франк (BEF)
-STR_GAME_OPTIONS_CURRENCY_CHF                                   :швейцарски франк (CHF)
-STR_GAME_OPTIONS_CURRENCY_CZK                                   :чешка крона (CZK)
-STR_GAME_OPTIONS_CURRENCY_DEM                                   :германска марка (DEM)
-STR_GAME_OPTIONS_CURRENCY_DKK                                   :датска крона (DKK)
-STR_GAME_OPTIONS_CURRENCY_ESP                                   :Испанска песета (ESP)
-STR_GAME_OPTIONS_CURRENCY_FIM                                   :финландска марка (FIM)
-STR_GAME_OPTIONS_CURRENCY_FRF                                   :Френски франк (FRF)
-STR_GAME_OPTIONS_CURRENCY_GRD                                   :гръцка драхма (GRD)
-STR_GAME_OPTIONS_CURRENCY_HUF                                   :унгарски форинт (HUF)
-STR_GAME_OPTIONS_CURRENCY_ISK                                   :исландска крона (ISK)
-STR_GAME_OPTIONS_CURRENCY_ITL                                   :италианска лира (ITL)
-STR_GAME_OPTIONS_CURRENCY_NLG                                   :холандски гулден (NLG)
-STR_GAME_OPTIONS_CURRENCY_NOK                                   :норвежка крона (NOK)
-STR_GAME_OPTIONS_CURRENCY_PLN                                   :Полска злота (PLN)
-STR_GAME_OPTIONS_CURRENCY_RON                                   :румънска лея (RON)
-STR_GAME_OPTIONS_CURRENCY_RUR                                   :руска рубла (RUR)
-STR_GAME_OPTIONS_CURRENCY_SIT                                   :словенски толар (SIT)
-STR_GAME_OPTIONS_CURRENCY_SEK                                   :шведска крона (SEK)
-STR_GAME_OPTIONS_CURRENCY_TRY                                   :турска лира (TRY)
-STR_GAME_OPTIONS_CURRENCY_SKK                                   :словашка крона (SKK)
-STR_GAME_OPTIONS_CURRENCY_BRL                                   :бразилски реал (BRL)
-STR_GAME_OPTIONS_CURRENCY_EEK                                   :Естонски крони (EEK)
-STR_GAME_OPTIONS_CURRENCY_LTL                                   :Литовски Литас (LTL)
-STR_GAME_OPTIONS_CURRENCY_KRW                                   :Южнокорейски Вон (KRW)
-STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Южноафрикански Ранд (ZAR)
+STR_GAME_OPTIONS_CURRENCY_GBP                                   :Британска лира
+STR_GAME_OPTIONS_CURRENCY_USD                                   :Американски долар
+STR_GAME_OPTIONS_CURRENCY_EUR                                   :Евро
+STR_GAME_OPTIONS_CURRENCY_JPY                                   :Японска йена
+STR_GAME_OPTIONS_CURRENCY_ATS                                   :австрийски шилинг
+STR_GAME_OPTIONS_CURRENCY_BEF                                   :белгийски франк
+STR_GAME_OPTIONS_CURRENCY_CHF                                   :швейцарски франк
+STR_GAME_OPTIONS_CURRENCY_CZK                                   :чешка крона
+STR_GAME_OPTIONS_CURRENCY_DEM                                   :германска марка
+STR_GAME_OPTIONS_CURRENCY_DKK                                   :датска крона
+STR_GAME_OPTIONS_CURRENCY_ESP                                   :Испанска песета
+STR_GAME_OPTIONS_CURRENCY_FIM                                   :финландска марка
+STR_GAME_OPTIONS_CURRENCY_FRF                                   :Френски франк
+STR_GAME_OPTIONS_CURRENCY_GRD                                   :гръцка драхма
+STR_GAME_OPTIONS_CURRENCY_HUF                                   :унгарски форинт
+STR_GAME_OPTIONS_CURRENCY_ISK                                   :исландска крона
+STR_GAME_OPTIONS_CURRENCY_ITL                                   :италианска лира
+STR_GAME_OPTIONS_CURRENCY_NLG                                   :холандски гулден
+STR_GAME_OPTIONS_CURRENCY_NOK                                   :норвежка крона
+STR_GAME_OPTIONS_CURRENCY_PLN                                   :Полска злота
+STR_GAME_OPTIONS_CURRENCY_RON                                   :румънска лея
+STR_GAME_OPTIONS_CURRENCY_RUR                                   :руска рубла
+STR_GAME_OPTIONS_CURRENCY_SIT                                   :словенски толар
+STR_GAME_OPTIONS_CURRENCY_SEK                                   :шведска крона
+STR_GAME_OPTIONS_CURRENCY_TRY                                   :турска лира
+STR_GAME_OPTIONS_CURRENCY_SKK                                   :словашка крона
+STR_GAME_OPTIONS_CURRENCY_BRL                                   :бразилски реал
+STR_GAME_OPTIONS_CURRENCY_EEK                                   :Естонски крони
+STR_GAME_OPTIONS_CURRENCY_LTL                                   :Литовски Литас
+STR_GAME_OPTIONS_CURRENCY_KRW                                   :Южнокорейски Вон
+STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Южноафрикански Ранд
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :друга...
-STR_GAME_OPTIONS_CURRENCY_GEL                                   :Грузинско лари (ГЕЛ)
-STR_GAME_OPTIONS_CURRENCY_IRR                                   :Ирански Риал (ИРР)
+STR_GAME_OPTIONS_CURRENCY_GEL                                   :Грузинско лари
+STR_GAME_OPTIONS_CURRENCY_IRR                                   :Ирански Риал
 STR_GAME_OPTIONS_CURRENCY_NTD                                   :Нов тайвански долар
-STR_GAME_OPTIONS_CURRENCY_HKD                                   :Хонгконгски долар (HKD)
+STR_GAME_OPTIONS_CURRENCY_HKD                                   :Хонгконгски долар
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Автозаписване
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Интервала между две автозаписваня
@@ -1803,19 +1804,19 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Imperial (ft)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metric (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
 
-STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}Позициониране
-STR_CONFIG_SETTING_SOUND                                        :{ORANGE}Звукови ефекти
-STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Интерфейс
-STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}Основни
-STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}Строене
-STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}Автомобили
-STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}Маршрутизация
-STR_CONFIG_SETTING_LIMITATIONS                                  :{ORANGE}Ограничения
-STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}Права
-STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Градове
-STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Индустрии
-STR_CONFIG_SETTING_AI                                           :{ORANGE}Съперници
-STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Компютърни играчи
+STR_CONFIG_SETTING_LOCALISATION                                 :Позициониране
+STR_CONFIG_SETTING_SOUND                                        :Звукови ефекти
+STR_CONFIG_SETTING_INTERFACE                                    :Интерфейс
+STR_CONFIG_SETTING_INTERFACE_GENERAL                            :Основни
+STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :Строене
+STR_CONFIG_SETTING_VEHICLES                                     :Автомобили
+STR_CONFIG_SETTING_VEHICLES_ROUTING                             :Маршрутизация
+STR_CONFIG_SETTING_LIMITATIONS                                  :Ограничения
+STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :Права
+STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :Градове
+STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :Индустрии
+STR_CONFIG_SETTING_AI                                           :Съперници
+STR_CONFIG_SETTING_AI_NPC                                       :Компютърни играчи
 
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS                        :Пътенамирач за влакове: {STRING}
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT               :Маршрутизатор използван за влакове
@@ -4025,8 +4026,6 @@ STR_TIMETABLE_EXPECTED                                          :{BLACK}В оч�
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Насрочен
 STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}Промени между очакване и разписание
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :П:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :З:
 
 
 # Date window (for timetable)

@@ -24,72 +24,26 @@
 
 #include "safeguards.h"
 
-
-#ifdef WITH_FREETYPE
-
-#include <ft2build.h>
-#include FT_FREETYPE_H
-
-extern FT_Library _library;
-
-
-FT_Error GetFontByFaceName(const char *font_name, FT_Face *face)
-{
-	FT_Error err = FT_Err_Cannot_Open_Resource;
-
-	/* Get font reference from name. */
-	UInt8 file_path[PATH_MAX];
-	OSStatus os_err = -1;
-	CFAutoRelease<CFStringRef> name(CFStringCreateWithCString(kCFAllocatorDefault, font_name, kCFStringEncodingUTF8));
-
-	/* Simply creating the font using CTFontCreateWithNameAndSize will *always* return
-	 * something, no matter the name. As such, we can't use it to check for existence.
-	 * We instead query the list of all font descriptors that match the given name which
-	 * does not do this stupid name fallback. */
-	CFAutoRelease<CTFontDescriptorRef> name_desc(CTFontDescriptorCreateWithNameAndSize(name.get(), 0.0));
-	CFAutoRelease<CFSetRef> mandatory_attribs(CFSetCreate(kCFAllocatorDefault, const_cast<const void **>(reinterpret_cast<const void *const *>(&kCTFontNameAttribute)), 1, &kCFTypeSetCallBacks));
-	CFAutoRelease<CFArrayRef> descs(CTFontDescriptorCreateMatchingFontDescriptors(name_desc.get(), mandatory_attribs.get()));
-
-	/* Loop over all matches until we can get a path for one of them. */
-	for (CFIndex i = 0; descs.get() != nullptr && i < CFArrayGetCount(descs.get()) && os_err != noErr; i++) {
-		CFAutoRelease<CTFontRef> font(CTFontCreateWithFontDescriptor((CTFontDescriptorRef)CFArrayGetValueAtIndex(descs.get(), i), 0.0, nullptr));
-		CFAutoRelease<CFURLRef> fontURL((CFURLRef)CTFontCopyAttribute(font.get(), kCTFontURLAttribute));
-		if (CFURLGetFileSystemRepresentation(fontURL.get(), true, file_path, lengthof(file_path))) os_err = noErr;
-	}
-
-	if (os_err == noErr) {
-		DEBUG(fontcache, 3, "Font path for %s: %s", font_name, file_path);
-		err = FT_New_Face(_library, (const char *)file_path, 0, face);
-	}
-
-	return err;
-}
-
-#endif /* WITH_FREETYPE */
-
-
-bool SetFallbackFont(FontCacheSettings *settings, const char *language_isocode, int winlangid, MissingGlyphSearcher *callback)
+bool SetFallbackFont(FontCacheSettings *settings, const std::string &language_isocode, int winlangid, MissingGlyphSearcher *callback)
 {
 	/* Determine fallback font using CoreText. This uses the language isocode
 	 * to find a suitable font. CoreText is available from 10.5 onwards. */
-	char lang[16];
-	if (strcmp(language_isocode, "zh_TW") == 0) {
+	std::string lang;
+	if (language_isocode == "zh_TW") {
 		/* Traditional Chinese */
-		strecpy(lang, "zh-Hant", lastof(lang));
-	} else if (strcmp(language_isocode, "zh_CN") == 0) {
+		lang = "zh-Hant";
+	} else if (language_isocode == "zh_CN") {
 		/* Simplified Chinese */
-		strecpy(lang, "zh-Hans", lastof(lang));
+		lang = "zh-Hans";
 	} else {
 		/* Just copy the first part of the isocode. */
-		strecpy(lang, language_isocode, lastof(lang));
-		char *sep = strchr(lang, '_');
-		if (sep != nullptr) *sep = '\0';
+		lang = language_isocode.substr(0, language_isocode.find('_'));
 	}
 
 	/* Create a font descriptor matching the wanted language and latin (english) glyphs.
 	 * Can't use CFAutoRelease here for everything due to the way the dictionary has to be created. */
 	CFStringRef lang_codes[2];
-	lang_codes[0] = CFStringCreateWithCString(kCFAllocatorDefault, lang, kCFStringEncodingUTF8);
+	lang_codes[0] = CFStringCreateWithCString(kCFAllocatorDefault, lang.c_str(), kCFStringEncodingUTF8);
 	lang_codes[1] = CFSTR("en");
 	CFArrayRef lang_arr = CFArrayCreate(kCFAllocatorDefault, (const void **)lang_codes, lengthof(lang_codes), &kCFTypeArrayCallBacks);
 	CFAutoRelease<CFDictionaryRef> lang_attribs(CFDictionaryCreate(kCFAllocatorDefault, const_cast<const void **>(reinterpret_cast<const void *const *>(&kCTFontLanguagesAttribute)), (const void **)&lang_arr, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));

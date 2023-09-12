@@ -861,38 +861,39 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}کھیل
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}کرنسی کی اکائیاں
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}کرنسی کی اکائی اختیار کریں
 
+
 ###length 42
-STR_GAME_OPTIONS_CURRENCY_GBP                                   :برطانوی پاونڈ (GBP)
-STR_GAME_OPTIONS_CURRENCY_USD                                   :امریکی ڈالر (USD)
-STR_GAME_OPTIONS_CURRENCY_EUR                                   :یورو (EUR)
-STR_GAME_OPTIONS_CURRENCY_JPY                                   :جاپانی ین (JPY)
-STR_GAME_OPTIONS_CURRENCY_ATS                                   :آسٹرین شِلنگ (ATS)
-STR_GAME_OPTIONS_CURRENCY_BEF                                   :بیلجیم کا فرانک (BEF)
-STR_GAME_OPTIONS_CURRENCY_CHF                                   :سوئس فرانک (CHF)
-STR_GAME_OPTIONS_CURRENCY_CZK                                   :چیک کرونا (CZK)
-STR_GAME_OPTIONS_CURRENCY_DEM                                   :ڈچ مارک (DEM)
-STR_GAME_OPTIONS_CURRENCY_DKK                                   :ڈینش کرونے (DKK)
-STR_GAME_OPTIONS_CURRENCY_ESP                                   :اسپینی پیسیتا (ESP)
-STR_GAME_OPTIONS_CURRENCY_FIM                                   :فِنش مارکہ (FIM)
-STR_GAME_OPTIONS_CURRENCY_FRF                                   :فرنچ فرانک (FRF)
-STR_GAME_OPTIONS_CURRENCY_GRD                                   :یونانی دراچما (GRD)
-STR_GAME_OPTIONS_CURRENCY_HUF                                   :ہینگرین فورِنٹ (HUF)
-STR_GAME_OPTIONS_CURRENCY_ISK                                   :آئس لینڈ کا کرونا (ISK)
-STR_GAME_OPTIONS_CURRENCY_ITL                                   :اِٹالین لیرا (ITL)
-STR_GAME_OPTIONS_CURRENCY_NLG                                   :ڈچ گِلڈر (NLG)
-STR_GAME_OPTIONS_CURRENCY_NOK                                   :ناروئیجین کرونے (NOK)
-STR_GAME_OPTIONS_CURRENCY_PLN                                   :پولش زلوٹے (PLN)
-STR_GAME_OPTIONS_CURRENCY_RON                                   :رومانین لیو (RON)
-STR_GAME_OPTIONS_CURRENCY_RUR                                   :رشین روبل (RUR)
-STR_GAME_OPTIONS_CURRENCY_SIT                                   :سلوئینین تولار (SIT)
-STR_GAME_OPTIONS_CURRENCY_SEK                                   :سوئیڈش کرونا (SEK)
-STR_GAME_OPTIONS_CURRENCY_TRY                                   :ٹرکش لیرا (TRY)
-STR_GAME_OPTIONS_CURRENCY_SKK                                   :سلواک کرونا (SKK)
-STR_GAME_OPTIONS_CURRENCY_BRL                                   :برازیلین رئیل (BRL)
-STR_GAME_OPTIONS_CURRENCY_EEK                                   :اِسٹونین کرونی (EEK)
+STR_GAME_OPTIONS_CURRENCY_GBP                                   :برطانوی پاونڈ
+STR_GAME_OPTIONS_CURRENCY_USD                                   :امریکی ڈالر
+STR_GAME_OPTIONS_CURRENCY_EUR                                   :یورو
+STR_GAME_OPTIONS_CURRENCY_JPY                                   :جاپانی ین
+STR_GAME_OPTIONS_CURRENCY_ATS                                   :آسٹرین شِلنگ
+STR_GAME_OPTIONS_CURRENCY_BEF                                   :بیلجیم کا فرانک
+STR_GAME_OPTIONS_CURRENCY_CHF                                   :سوئس فرانک
+STR_GAME_OPTIONS_CURRENCY_CZK                                   :چیک کرونا
+STR_GAME_OPTIONS_CURRENCY_DEM                                   :ڈچ مارک
+STR_GAME_OPTIONS_CURRENCY_DKK                                   :ڈینش کرونے
+STR_GAME_OPTIONS_CURRENCY_ESP                                   :اسپینی پیسیتا
+STR_GAME_OPTIONS_CURRENCY_FIM                                   :فِنش مارکہ
+STR_GAME_OPTIONS_CURRENCY_FRF                                   :فرنچ فرانک
+STR_GAME_OPTIONS_CURRENCY_GRD                                   :یونانی دراچما
+STR_GAME_OPTIONS_CURRENCY_HUF                                   :ہینگرین فورِنٹ
+STR_GAME_OPTIONS_CURRENCY_ISK                                   :آئس لینڈ کا کرونا
+STR_GAME_OPTIONS_CURRENCY_ITL                                   :اِٹالین لیرا
+STR_GAME_OPTIONS_CURRENCY_NLG                                   :ڈچ گِلڈر
+STR_GAME_OPTIONS_CURRENCY_NOK                                   :ناروئیجین کرونے
+STR_GAME_OPTIONS_CURRENCY_PLN                                   :پولش زلوٹے
+STR_GAME_OPTIONS_CURRENCY_RON                                   :رومانین لیو
+STR_GAME_OPTIONS_CURRENCY_RUR                                   :رشین روبل
+STR_GAME_OPTIONS_CURRENCY_SIT                                   :سلوئینین تولار
+STR_GAME_OPTIONS_CURRENCY_SEK                                   :سوئیڈش کرونا
+STR_GAME_OPTIONS_CURRENCY_TRY                                   :ٹرکش لیرا
+STR_GAME_OPTIONS_CURRENCY_SKK                                   :سلواک کرونا
+STR_GAME_OPTIONS_CURRENCY_BRL                                   :برازیلین رئیل
+STR_GAME_OPTIONS_CURRENCY_EEK                                   :اِسٹونین کرونی
 STR_GAME_OPTIONS_CURRENCY_LTL                                   :لتھوینیا کے لٹاس (لٹل)
-STR_GAME_OPTIONS_CURRENCY_KRW                                   :جنوبی کوریا کے ون(KRW)
-STR_GAME_OPTIONS_CURRENCY_ZAR                                   :جنوبی افریقہ کے رنڈ (ZAR)
+STR_GAME_OPTIONS_CURRENCY_KRW                                   :جنوبی کوریا کے ون
+STR_GAME_OPTIONS_CURRENCY_ZAR                                   :جنوبی افریقہ کے رنڈ
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :اپنی مرضی کی ۔۔۔
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}خود مختار بچاو
@@ -1481,14 +1482,14 @@ STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :شہر کا ش�
 
 ###length 3
 
-STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}انٹرفیس
-STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}تعمیرات
-STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}گاڑیاں
-STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}روٹنگ
-STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}شہر
-STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}صنعتیں
-STR_CONFIG_SETTING_AI                                           :{ORANGE}مد مقابل
-STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}کمپیوٹر کے کھلاڑی
+STR_CONFIG_SETTING_INTERFACE                                    :انٹرفیس
+STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :تعمیرات
+STR_CONFIG_SETTING_VEHICLES                                     :گاڑیاں
+STR_CONFIG_SETTING_VEHICLES_ROUTING                             :روٹنگ
+STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :شہر
+STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :صنعتیں
+STR_CONFIG_SETTING_AI                                           :مد مقابل
+STR_CONFIG_SETTING_AI_NPC                                       :کمپیوٹر کے کھلاڑی
 
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS                        :ریل گاڑیوں کے لئے راستہ ڈھونڈنے والا: {STRING}
 STR_CONFIG_SETTING_PATHFINDER_FOR_ROAD_VEHICLES                 :گاڑیوں کا راستہ تلاش کرنے والا: {STRING}

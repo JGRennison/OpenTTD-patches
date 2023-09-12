@@ -58,9 +58,9 @@ static const CmdStruct _cmd_structs[] = {
 	{"GRAY",              EmitSingleChar, SCC_GRAY,               0, -1, C_DONTCOUNT},
 	{"DKBLUE",            EmitSingleChar, SCC_DKBLUE,             0, -1, C_DONTCOUNT},
 	{"BLACK",             EmitSingleChar, SCC_BLACK,              0, -1, C_DONTCOUNT},
+	{"COLOUR",            EmitSingleChar, SCC_COLOUR,             1, -1, C_NONE},
 	{"PUSH_COLOUR",       EmitSingleChar, SCC_PUSH_COLOUR,        0, -1, C_DONTCOUNT},
 	{"POP_COLOUR",        EmitSingleChar, SCC_POP_COLOUR,         0, -1, C_DONTCOUNT},
-	{"SET_COLOUR",        EmitSingleChar, SCC_SET_COLOUR,         1, -1, C_NONE},
 
 	{"REV",               EmitSingleChar, SCC_REVISION,           0, -1, C_NONE}, // openttd revision string
 

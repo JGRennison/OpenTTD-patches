@@ -93,6 +93,14 @@ public:
 	constexpr const_iterator cbegin() const noexcept { return const_iterator(first); }
 	constexpr const_iterator cend() const noexcept { return const_iterator(last); }
 
+	constexpr reference operator[](size_type idx) const { return first[idx]; }
+
+	constexpr span<element_type> subspan(size_t offset, size_t count)
+	{
+		assert(offset + count <= size());
+		return span(this->data() + offset, count);
+	}
+
 private:
 	pointer first;
 	pointer last;

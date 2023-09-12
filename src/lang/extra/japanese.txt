@@ -111,6 +111,9 @@ STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS_HELPTEXT                    :発車標に表
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}設計年: {GOLD}{NUM}
 
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :着:
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :発:
+
 # Cargo type orders Window
 
 # Plans window
