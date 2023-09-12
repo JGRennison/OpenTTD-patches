@@ -112,15 +112,12 @@ static PriceMultipliers _price_base_multiplier;
 extern int GetAmountOwnedBy(const Company *c, Owner owner);
 
 /**
- * Calculate the value of the company. That is the value of all
- * assets (vehicles, stations, shares) and money minus the loan,
- * except when including_loan is \c false which is useful when
- * we want to calculate the value for bankruptcy.
- * @param c the company to get the value of.
- * @param including_loan include the loan in the company value.
- * @return the value of the company.
+ * Calculate the value of the assets of a company.
+ *
+ * @param c The company to calculate the value of.
+ * @return The value of the assets of the company.
  */
-Money CalculateCompanyValue(const Company *c, bool including_loan)
+static Money CalculateCompanyAssetValue(const Company *c)
 {
 	Money owned_shares_value = 0;
 
@@ -157,9 +154,58 @@ Money CalculateCompanyValueExcludingShares(const Company *c, bool including_loan
 		}
 	}
 
+	return value;
+}
+
+/**
+ * Calculate the value of the company. That is the value of all
+ * assets (vehicles, stations) and money (including loan),
+ * except when including_loan is \c false which is useful when
+ * we want to calculate the value for bankruptcy.
+ * @param c the company to get the value of.
+ * @param including_loan include the loan in the company value.
+ * @return the value of the company.
+ */
+Money CalculateCompanyValue(const Company *c, bool including_loan)
+{
+	Money value = CalculateCompanyAssetValue(c);
+
 	/* Add real money value */
 	if (including_loan) value -= c->current_loan;
 	value += c->money;
+
+	return std::max<Money>(value, 1);
+}
+
+/**
+ * Calculate what you have to pay to take over a company.
+ *
+ * This is different from bankruptcy and company value, and involves a few
+ * more parameters to make it more realistic.
+ *
+ * You have to pay for:
+ * - The value of all the assets in the company.
+ * - The loan the company has (the investors really want their money back).
+ * - The profit for the next two years (if positive) based on the last four quarters.
+ *
+ * And on top of that, they walk away with all the money they have in the bank.
+ *
+ * @param c the company to get the value of.
+ * @return The value of the company.
+ */
+Money CalculateHostileTakeoverValue(const Company *c)
+{
+	Money value = CalculateCompanyAssetValue(c);
+
+	value += c->current_loan;
+	/* Negative balance is basically a loan. */
+	if (c->money < 0) {
+		value += -c->money;
+	}
+
+	for (int quarter = 0; quarter < 4; quarter++) {
+		value += std::max<Money>(c->old_economy[quarter].income - c->old_economy[quarter].expenses, 0) * 2;
+	}
 
 	return std::max<Money>(value, 1);
 }
@@ -2405,7 +2451,7 @@ void CompaniesMonthlyLoop()
 	HandleEconomyFluctuations();
 }
 
-static void DoAcquireCompany(Company *c)
+static void DoAcquireCompany(Company *c, bool hostile_takeover)
 {
 	CompanyID ci = c->index;
 
@@ -2414,7 +2460,7 @@ static void DoAcquireCompany(Company *c)
 	CompanyNewsInformation *cni = new CompanyNewsInformation(c, Company::Get(_current_company));
 
 	SetDParam(0, STR_NEWS_COMPANY_MERGER_TITLE);
-	SetDParam(1, c->bankrupt_value == 0 ? STR_NEWS_MERGER_TAKEOVER_TITLE : STR_NEWS_COMPANY_MERGER_DESCRIPTION);
+	SetDParam(1, hostile_takeover ? STR_NEWS_MERGER_TAKEOVER_TITLE : STR_NEWS_COMPANY_MERGER_DESCRIPTION);
 	SetDParamStr(2, cni->company_name);
 	SetDParamStr(3, cni->other_company_name);
 	SetDParam(4, c->bankrupt_value);
@@ -2423,14 +2469,6 @@ static void DoAcquireCompany(Company *c)
 	Game::NewEvent(new ScriptEventCompanyMerger(ci, _current_company));
 
 	ChangeOwnershipOfCompanyItems(ci, _current_company);
-
-	if (c->bankrupt_value == 0) {
-		Company *owner = Company::Get(_current_company);
-
-		/* Get both the balance and the loan of the company you just bought. */
-		SubtractMoneyFromCompany(CommandCost(EXPENSES_OTHER, -c->money));
-		owner->current_loan += c->current_loan;
-	}
 
 	if (c->is_ai) AI::Stop(c->index);
 
@@ -2490,7 +2528,7 @@ CommandCost CmdBuyShareInCompany(TileIndex tile, DoCommandFlag flags, uint32 p1,
 		auto current_company_owns_share = [](auto share_owner) { return share_owner == _current_company; };
 		if (std::all_of(c->share_owners.begin(), c->share_owners.end(), current_company_owns_share)) {
 			c->bankrupt_value = 0;
-			DoAcquireCompany(c);
+			DoAcquireCompany(c, false);
 		}
 		InvalidateWindowData(WC_COMPANY, target_company);
 		CompanyAdminUpdate(c);
@@ -2544,7 +2582,8 @@ CommandCost CmdSellShareInCompany(TileIndex tile, DoCommandFlag flags, uint32 p1
  * @param tile unused
  * @param flags type of operation
  * @param p1 company to buy up
- * @param p2 unused
+ * @param p2 various bitstuffed elements
+ * - p2 = (bit 0) - hostile_takeover whether to buy up the company even if it is not bankrupt
  * @param text unused
  * @return the cost of this operation or an error
  */
@@ -2554,8 +2593,18 @@ CommandCost CmdBuyCompany(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 	Company *c = Company::GetIfValid(target_company);
 	if (c == nullptr) return CMD_ERROR;
 
+	bool hostile_takeover = HasBit(p2, 0);
+	if (hostile_takeover && _settings_game.economy.allow_shares) return CMD_ERROR;
+
+	/* If you do a hostile takeover but the company went bankrupt, buy it via bankruptcy rules. */
+	if (hostile_takeover && HasBit(c->bankrupt_asked, _current_company)) hostile_takeover = false;
+
 	/* Disable takeovers when not asked */
-	if (!HasBit(c->bankrupt_asked, _current_company)) return CMD_ERROR;
+	if (!hostile_takeover && !HasBit(c->bankrupt_asked, _current_company)) return CMD_ERROR;
+
+	/* Only allow hostile takeover of AI companies and when in single player */
+	if (hostile_takeover && !c->is_ai) return CMD_ERROR;
+	if (hostile_takeover && _networking) return CMD_ERROR;
 
 	/* Disable taking over the local company in singleplayer mode */
 	if (!_networking && _local_company == c->index) return CMD_ERROR;
@@ -2566,11 +2615,13 @@ CommandCost CmdBuyCompany(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 	/* Disable taking over when not allowed. */
 	if (!MayCompanyTakeOver(_current_company, target_company)) return CMD_ERROR;
 
-	/* Get the cost here as the company is deleted in DoAcquireCompany. */
-	CommandCost cost(EXPENSES_OTHER, c->bankrupt_value);
+	/* Get the cost here as the company is deleted in DoAcquireCompany.
+	 * For bankruptcy this amount is calculated when the offer was made;
+	 * for hostile takeover you pay the current price. */
+	CommandCost cost(EXPENSES_OTHER, hostile_takeover ? CalculateHostileTakeoverValue(c) : c->bankrupt_value);
 
 	if (flags & DC_EXEC) {
-		DoAcquireCompany(c);
+		DoAcquireCompany(c, hostile_takeover);
 	}
 	return cost;
 }

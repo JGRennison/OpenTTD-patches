@@ -2288,6 +2288,13 @@ static const NWidgetPart _nested_company_widgets[] = {
 						EndContainer(),
 					EndContainer(),
 					NWidget(NWID_SPACER), SetFill(1, 0),
+					NWidget(NWID_SELECTION, INVALID_COLOUR, WID_C_SELECT_HOSTILE_TAKEOVER),
+						NWidget(NWID_VERTICAL),
+							NWidget(NWID_SPACER), SetFill(0, 1), SetMinimalSize(90, 0),
+							NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_C_HOSTILE_TAKEOVER), SetDataTip(STR_COMPANY_VIEW_HOSTILE_TAKEOVER_BUTTON, STR_COMPANY_VIEW_HOSTILE_TAKEOVER_TOOLTIP),
+						EndContainer(),
+					EndContainer(),
+					NWidget(NWID_SPACER), SetFill(1, 0),
 					NWidget(NWID_SELECTION, INVALID_COLOUR, WID_C_SELECT_GIVE_MONEY),
 						NWidget(NWID_VERTICAL),
 							NWidget(NWID_SPACER), SetFill(0, 1), SetMinimalSize(90, 0),
@@ -2432,6 +2439,13 @@ struct CompanyWindow : Window
 				wi->SetDisplayedPlane(plane);
 				reinit = true;
 			}
+			/* Enable/disable 'Hostile Takeover' button. */
+			plane = ((local || _local_company == COMPANY_SPECTATOR || !c->is_ai || _networking || _settings_game.economy.allow_shares) ? SZSP_NONE : 0);
+			wi = this->GetWidget<NWidgetStacked>(WID_C_SELECT_HOSTILE_TAKEOVER);
+			if (plane != wi->shown_plane) {
+				wi->SetDisplayedPlane(plane);
+				reinit = true;
+			}
 
 			/* Multiplayer buttons. */
 			plane = ((!_networking) ? (int)SZSP_NONE : (int)(local ? CWP_MP_C_PWD : CWP_MP_C_JOIN));
@@ -2507,12 +2521,16 @@ struct CompanyWindow : Window
 			case WID_C_BUILD_HQ:
 			case WID_C_RELOCATE_HQ:
 			case WID_C_VIEW_INFRASTRUCTURE:
+			case WID_C_GIVE_MONEY:
+			case WID_C_HOSTILE_TAKEOVER:
 			case WID_C_COMPANY_PASSWORD:
 			case WID_C_COMPANY_JOIN:
 				size->width = GetStringBoundingBox(STR_COMPANY_VIEW_VIEW_HQ_BUTTON).width;
 				size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_VIEW_BUILD_HQ_BUTTON).width);
 				size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_VIEW_RELOCATE_HQ).width);
 				size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON).width);
+				size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_VIEW_GIVE_MONEY_BUTTON).width);
+				size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_VIEW_HOSTILE_TAKEOVER_BUTTON).width);
 				size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_VIEW_PASSWORD).width);
 				size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_VIEW_JOIN).width);
 				size->width += padding.width;
@@ -2733,6 +2751,10 @@ struct CompanyWindow : Window
 				DoCommandP(0, this->window_number, 0, CMD_SELL_SHARE_IN_COMPANY | CMD_MSG(STR_ERROR_CAN_T_SELL_25_SHARE_IN));
 				break;
 
+			case WID_C_HOSTILE_TAKEOVER:
+				ShowBuyCompanyDialog((CompanyID)this->window_number, true);
+				break;
+
 			case WID_C_COMPANY_PASSWORD:
 				if (this->window_number == _local_company) ShowNetworkCompanyPasswordWindow(this);
 				break;
@@ -2868,16 +2890,18 @@ void DirtyAllCompanyInfrastructureWindows()
 }
 
 struct BuyCompanyWindow : Window {
-	BuyCompanyWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
+	BuyCompanyWindow(WindowDesc *desc, WindowNumber window_number, bool hostile_takeover) : Window(desc), hostile_takeover(hostile_takeover)
 	{
 		this->InitNested(window_number);
 		this->owner = _local_company;
+		const Company *c = Company::Get((CompanyID)this->window_number);
+		this->company_value = hostile_takeover ? CalculateHostileTakeoverValue(c) : c->bankrupt_value;
 	}
 
 	~BuyCompanyWindow()
 	{
 		const Company *c = Company::GetIfValid((CompanyID)this->window_number);
-		if (c != nullptr && HasBit(c->bankrupt_asked, this->owner) && _current_company == this->owner) {
+		if (!this->hostile_takeover && c != nullptr && HasBit(c->bankrupt_asked, this->owner) && _current_company == this->owner) {
 			EnqueueDoCommandP(NewCommandContainerBasic(0, this->window_number, 0, CMD_DECLINE_BUY_COMPANY | CMD_NO_SHIFT_ESTIMATE));
 		}
 	}
@@ -2892,8 +2916,8 @@ struct BuyCompanyWindow : Window {
 			case WID_BC_QUESTION:
 				const Company *c = Company::Get((CompanyID)this->window_number);
 				SetDParam(0, c->index);
-				SetDParam(1, c->bankrupt_value);
-				size->height = GetStringHeight(STR_BUY_COMPANY_MESSAGE, size->width);
+				SetDParam(1, this->company_value);
+				size->height = GetStringHeight(this->hostile_takeover ? STR_BUY_COMPANY_HOSTILE_TAKEOVER : STR_BUY_COMPANY_MESSAGE, size->width);
 				break;
 		}
 	}
@@ -2920,8 +2944,8 @@ struct BuyCompanyWindow : Window {
 			case WID_BC_QUESTION: {
 				const Company *c = Company::Get((CompanyID)this->window_number);
 				SetDParam(0, c->index);
-				SetDParam(1, c->bankrupt_value);
-				DrawStringMultiLine(r.left, r.right, r.top, r.bottom, STR_BUY_COMPANY_MESSAGE, TC_FROMSTRING, SA_CENTER);
+				SetDParam(1, this->company_value);
+				DrawStringMultiLine(r.left, r.right, r.top, r.bottom, this->hostile_takeover ? STR_BUY_COMPANY_HOSTILE_TAKEOVER : STR_BUY_COMPANY_MESSAGE, TC_FROMSTRING, SA_CENTER);
 				break;
 			}
 		}
@@ -2935,10 +2959,30 @@ struct BuyCompanyWindow : Window {
 				break;
 
 			case WID_BC_YES:
-				DoCommandP(0, this->window_number, 0, CMD_BUY_COMPANY | CMD_MSG(STR_ERROR_CAN_T_BUY_COMPANY));
+				DoCommandP(0, this->window_number, (this->hostile_takeover ? 1 : 0), CMD_BUY_COMPANY | CMD_MSG(STR_ERROR_CAN_T_BUY_COMPANY));
 				break;
 		}
 	}
+
+	/**
+	 * Check on a regular interval if the company value has changed.
+	 */
+	void OnHundredthTick() override
+	{
+		/* Value can't change when in bankruptcy. */
+		if (!this->hostile_takeover) return;
+
+		const Company *c = Company::Get((CompanyID)this->window_number);
+		auto new_value = CalculateHostileTakeoverValue(c);
+		if (new_value != this->company_value) {
+			this->company_value = new_value;
+			this->ReInit();
+		}
+	}
+
+private:
+	bool hostile_takeover; ///< Whether the window is showing a hostile takeover.
+	Money company_value; ///< The value of the company for which the user can buy it.
 };
 
 static const NWidgetPart _nested_buy_company_widgets[] = {
@@ -2970,8 +3014,12 @@ static WindowDesc _buy_company_desc(
 /**
  * Show the query to buy another company.
  * @param company The company to buy.
+ * @param hostile_takeover Whether this is a hostile takeover.
  */
-void ShowBuyCompanyDialog(CompanyID company)
+void ShowBuyCompanyDialog(CompanyID company, bool hostile_takeover)
 {
-	AllocateWindowDescFront<BuyCompanyWindow>(&_buy_company_desc, company);
+	auto window = BringWindowToFrontById(WC_BUY_COMPANY, company);
+	if (window == nullptr) {
+		new BuyCompanyWindow(&_buy_company_desc, company, hostile_takeover);
+	}
 }

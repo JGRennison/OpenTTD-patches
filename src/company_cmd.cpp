@@ -767,7 +767,7 @@ static void HandleBankruptcyTakeover(Company *c)
 
 	AI::NewEvent(best->index, new ScriptEventCompanyAskMerger(c->index, c->bankrupt_value));
 	if (IsInteractiveCompany(best->index)) {
-		ShowBuyCompanyDialog(c->index);
+		ShowBuyCompanyDialog(c->index, false);
 	} else if ((!_networking || (_network_server && !NetworkCompanyHasClients(best->index))) && !best->is_ai) {
 		/* This company can never accept the offer as there are no clients connected, decline the offer on the company's behalf */
 		Backup<CompanyID> cur_company(_current_company, best->index, FILE_LINE);

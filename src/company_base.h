@@ -181,6 +181,7 @@ struct Company : CompanyPool::PoolItem<&_company_pool>, CompanyProperties {
 
 Money CalculateCompanyValue(const Company *c, bool including_loan = true);
 Money CalculateCompanyValueExcludingShares(const Company *c, bool including_loan = true);
+Money CalculateHostileTakeoverValue(const Company *c);
 
 extern uint _cur_company_tick_index;
 
