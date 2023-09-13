@@ -37,8 +37,8 @@ struct CargoPayment : CargoPaymentPool::PoolItem<&_cargo_payment_pool> {
 	CargoPayment(Vehicle *front);
 	~CargoPayment();
 
-	Money PayTransfer(CargoPacket *cp, uint count);
-	void PayFinalDelivery(CargoPacket *cp, uint count);
+	Money PayTransfer(CargoPacket *cp, uint count, TileIndex current_tile);
+	void PayFinalDelivery(CargoPacket *cp, uint count, TileIndex current_tile);
 
 	/**
 	 * Sets the currently handled cargo type.

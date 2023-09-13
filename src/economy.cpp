@@ -1322,15 +1322,15 @@ static uint DeliverGoodsToIndustry(const Station *st, CargoID cargo_type, uint n
  * @param num_pieces amount of cargo delivered
  * @param cargo_type the type of cargo that is delivered
  * @param dest Station the cargo has been unloaded
- * @param source_tile The origin of the cargo for distance calculation
- * @param periods_in_transit ravel time in cargo aging periods
+ * @param distance The distance the cargo has traveled.
+ * @param periods_in_transit Travel time in cargo aging periods
  * @param company The company delivering the cargo
  * @param src_type Type of source of cargo (industry, town, headquarters)
  * @param src Index of source of cargo
  * @return Revenue for delivering cargo
  * @note The cargo is just added to the stockpile of the industry. It is due to the caller to trigger the industry's production machinery
  */
-static Money DeliverGoods(int num_pieces, CargoID cargo_type, StationID dest, TileIndex source_tile, uint16 periods_in_transit, Company *company, SourceType src_type, SourceID src)
+static Money DeliverGoods(int num_pieces, CargoID cargo_type, StationID dest, uint distance, uint16_t periods_in_transit, Company *company, SourceType src_type, SourceID src)
 {
 	assert(num_pieces > 0);
 
@@ -1357,7 +1357,7 @@ static Money DeliverGoods(int num_pieces, CargoID cargo_type, StationID dest, Ti
 	st->town->received[cs->town_effect].new_act += accepted_total;
 
 	/* Determine profit */
-	Money profit = GetTransportedGoodsIncome(accepted_total, DistanceManhattan(source_tile, st->xy), periods_in_transit, cargo_type);
+	Money profit = GetTransportedGoodsIncome(accepted_total, distance, periods_in_transit, cargo_type);
 
 	/* Update the cargo monitor. */
 	AddCargoDelivery(cargo_type, company->index, accepted_total - accepted_ind, src_type, src, st);
@@ -1454,15 +1454,16 @@ CargoPayment::~CargoPayment()
  * Handle payment for final delivery of the given cargo packet.
  * @param cp The cargo packet to pay for.
  * @param count The number of packets to pay for.
+ * @param current_tile Current tile the payment is happening on.
  */
-void CargoPayment::PayFinalDelivery(CargoPacket *cp, uint count)
+void CargoPayment::PayFinalDelivery(CargoPacket *cp, uint count, TileIndex current_tile)
 {
 	if (this->owner == nullptr) {
 		this->owner = Company::Get(this->front->owner);
 	}
 
 	/* Handle end of route payment */
-	Money profit = DeliverGoods(count, this->ct, this->current_station, cp->GetSourceXY(), cp->GetPeriodsInTransit(), this->owner, cp->GetSourceType(), cp->GetSourceID());
+	Money profit = DeliverGoods(count, this->ct, this->current_station, cp->GetDistance(current_tile), cp->GetPeriodsInTransit(), this->owner, cp->GetSourceType(), cp->GetSourceID());
 
 	profit -= cp->GetFeederShare(count);
 
@@ -1478,15 +1479,16 @@ void CargoPayment::PayFinalDelivery(CargoPacket *cp, uint count)
  * Handle payment for transfer of the given cargo packet.
  * @param cp The cargo packet to pay for; actual payment won't be made!.
  * @param count The number of packets to pay for.
+ * @param current_tile Current tile the payment is happening on.
  * @return The amount of money paid for the transfer.
  */
-Money CargoPayment::PayTransfer(CargoPacket *cp, uint count)
+Money CargoPayment::PayTransfer(CargoPacket *cp, uint count, TileIndex current_tile)
 {
+	/* Pay transfer vehicle the difference between the payment for the journey from
+	 * the source to the current point, and the sum of the previous transfer payments */
 	Money profit = -cp->GetFeederShare(count) + GetTransportedGoodsIncome(
 			count,
-			/* pay transfer vehicle the difference between the payment for the journey from
-			 * the source to the current point, and the sum of the previous transfer payments */
-			DistanceManhattan(cp->GetSourceXY(), Station::Get(this->current_station)->xy),
+			cp->GetDistance(current_tile),
 			cp->GetPeriodsInTransit(),
 			this->ct);
 
@@ -1556,7 +1558,8 @@ void PrepareUnload(Vehicle *front_v)
 						HasBit(ge->status, GoodsEntry::GES_ACCEPTANCE),
 						front_v->last_station_visited, next_station.Get(v->cargo_type),
 						GetUnloadType(v), ge,
-						front_v->cargo_payment);
+						front_v->cargo_payment,
+						v->tile);
 				if (v->cargo.UnloadCount() > 0) SetBit(v->vehicle_flags, VF_CARGO_UNLOADING);
 			}
 		}
@@ -1751,7 +1754,7 @@ struct FinalizeRefitAction
 	{
 		if (this->do_reserve || (cargo_type_loading == nullptr || (cargo_type_loading->current_order.GetCargoLoadTypeRaw(v->cargo_type) & OLFB_FULL_LOAD))) {
 			this->st->goods[v->cargo_type].CreateData().cargo.Reserve(v->cargo_cap - v->cargo.RemainingCount(),
-					&v->cargo, this->next_station.Get(v->cargo_type));
+					&v->cargo, this->next_station.Get(v->cargo_type), v->tile);
 		}
 		this->consist_capleft[v->cargo_type] += v->cargo_cap - v->cargo.RemainingCount();
 		return true;
@@ -1856,7 +1859,7 @@ struct ReserveCargoAction {
 		}
 		if (v->cargo_cap > v->cargo.RemainingCount() && MayLoadUnderExclusiveRights(st, v)) {
 			st->goods[v->cargo_type].CreateData().cargo.Reserve(v->cargo_cap - v->cargo.RemainingCount(),
-					&v->cargo, next_station.Get(v->cargo_type));
+					&v->cargo, next_station.Get(v->cargo_type), v->tile);
 		}
 
 		return true;
@@ -2121,7 +2124,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 				}
 			}
 
-			amount_unloaded = v->cargo.Unload(amount_unloaded, &ged->cargo, payment);
+			amount_unloaded = v->cargo.Unload(amount_unloaded, &ged->cargo, payment, v->tile);
 			remaining = v->cargo.UnloadCount() > 0;
 			if (amount_unloaded > 0) {
 				dirty_vehicle = true;
@@ -2196,7 +2199,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 				if (v->cargo.StoredCount() == 0) TriggerVehicle(v, VEHICLE_TRIGGER_NEW_CARGO);
 				if (_settings_game.order.gradual_loading) cap_left = std::min(cap_left, GetLoadAmount(v));
 
-				uint loaded = ged->cargo.Load(cap_left, &v->cargo, next_station.Get(v->cargo_type));
+				uint loaded = ged->cargo.Load(cap_left, &v->cargo, next_station.Get(v->cargo_type), v->tile);
 				if (v->cargo.ActionCount(VehicleCargoList::MTA_LOAD) > 0) {
 					/* Remember if there are reservations left so that we don't stop
 					 * loading before they're loaded. */
