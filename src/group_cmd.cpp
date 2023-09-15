@@ -447,7 +447,7 @@ CommandCost CmdDeleteGroup(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 		TraceRestrictRemoveGroupID(g->index);
 
 		/* Delete the Replace Vehicle Windows */
-		DeleteWindowById(WC_REPLACE_VEHICLE, g->vehicle_type);
+		CloseWindowById(WC_REPLACE_VEHICLE, g->vehicle_type);
 		delete g;
 
 		InvalidateWindowData(GetWindowClassForVehicleType(vt), VehicleListIdentifier(VL_GROUP_LIST, vt, _current_company).Pack());

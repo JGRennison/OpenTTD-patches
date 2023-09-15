@@ -256,7 +256,7 @@ public:
 	}
 
 	~TemplateReplaceWindow() {
-		DeleteWindowById(WC_CREATE_TEMPLATE, this->window_number);
+		CloseWindowById(WC_CREATE_TEMPLATE, this->window_number);
 	}
 
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override

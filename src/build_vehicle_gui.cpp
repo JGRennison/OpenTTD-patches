@@ -3276,7 +3276,7 @@ void ShowBuildVehicleWindow(const TileIndex tile, const VehicleType type)
 
 	assert(IsCompanyBuildableVehicleType(type));
 
-	DeleteWindowById(WC_BUILD_VEHICLE, num);
+	CloseWindowById(WC_BUILD_VEHICLE, num);
 
 	if (type == VEH_TRAIN && _settings_client.gui.dual_pane_train_purchase_window) {
 		new BuildVehicleWindowTrainAdvanced(&_build_vehicle_desc_train_advanced, tile, nullptr);
@@ -3289,7 +3289,7 @@ void ShowTemplateTrainBuildVehicleWindow(Train **virtual_train)
 {
 	assert(IsCompanyBuildableVehicleType(VEH_TRAIN));
 
-	DeleteWindowById(WC_BUILD_VIRTUAL_TRAIN, 0);
+	CloseWindowById(WC_BUILD_VIRTUAL_TRAIN, 0);
 
 	if (_settings_client.gui.dual_pane_train_purchase_window) {
 		new BuildVehicleWindowTrainAdvanced(&_build_template_vehicle_desc_advanced, INVALID_TILE, virtual_train);

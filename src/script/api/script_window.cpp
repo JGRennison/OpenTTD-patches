@@ -20,13 +20,13 @@
 	if (ScriptGame::IsMultiplayer()) return;
 
 	if (number == NUMBER_ALL) {
-		DeleteWindowByClass((::WindowClass)window);
+		CloseWindowByClass((::WindowClass)window);
 		return;
 	}
 
 	number = Clamp<SQInteger>(number, 0, INT32_MAX);
 
-	DeleteWindowById((::WindowClass)window, number);
+	CloseWindowById((::WindowClass)window, number);
 }
 
 /* static */ bool ScriptWindow::IsOpen(WindowClass window, SQInteger number)

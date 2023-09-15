@@ -175,7 +175,7 @@ public:
 
 		/* more cleanup */
 		*create_window_open = false;
-		DeleteWindowById(WC_BUILD_VIRTUAL_TRAIN, this->window_number);
+		CloseWindowById(WC_BUILD_VIRTUAL_TRAIN, this->window_number);
 		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
 	}
 

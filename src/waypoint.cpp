@@ -58,7 +58,7 @@ void Waypoint::GetTileArea(TileArea *ta, StationType type) const
 Waypoint::~Waypoint()
 {
 	if (CleaningPool()) return;
-	DeleteWindowById(WC_WAYPOINT_VIEW, this->index);
+	CloseWindowById(WC_WAYPOINT_VIEW, this->index);
 	DeleteNewGRFInspectWindow(GSF_FAKE_STATION_STRUCT, this->index);
 	RemoveOrderFromAllVehicles(OT_GOTO_WAYPOINT, this->index);
 	if (_viewport_sign_kdtree_valid && this->sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeWaypoint(this->index));

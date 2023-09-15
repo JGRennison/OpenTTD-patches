@@ -273,7 +273,7 @@ public:
 			case PROGRAM_WIDGET_INSTRUCTION_LIST: {
 				int sel = this->GetInstructionFromPt(pt.y);
 
-				this->DeleteChildWindows();
+				this->CloseChildWindows();
 				HideDropDownMenu(this);
 
 				if (sel == -1 || this->GetOwner() != _local_company) {

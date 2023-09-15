@@ -100,8 +100,8 @@ struct AIConfigWindow : public Window {
 
 	~AIConfigWindow()
 	{
-		DeleteWindowByClass(WC_SCRIPT_LIST);
-		DeleteWindowByClass(WC_SCRIPT_SETTINGS);
+		CloseWindowByClass(WC_SCRIPT_LIST);
+		CloseWindowByClass(WC_SCRIPT_SETTINGS);
 	}
 
 	void SetStringParameters(int widget) const override
@@ -291,6 +291,6 @@ struct AIConfigWindow : public Window {
 /** Open the AI config window. */
 void ShowAIConfigWindow()
 {
-	DeleteWindowByClass(WC_GAME_OPTIONS);
+	CloseWindowByClass(WC_GAME_OPTIONS);
 	new AIConfigWindow();
 }

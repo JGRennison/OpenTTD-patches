@@ -114,7 +114,7 @@ struct GSConfigWindow : public Window {
 	~GSConfigWindow()
 	{
 		HideDropDownMenu(this);
-		DeleteWindowByClass(WC_SCRIPT_LIST);
+		CloseWindowByClass(WC_SCRIPT_LIST);
 	}
 
 	/**
@@ -281,7 +281,7 @@ struct GSConfigWindow : public Window {
 
 				int num = it - this->visible_settings.begin();
 				if (this->clicked_row != num) {
-					this->DeleteChildWindows(WC_QUERY_STRING);
+					this->CloseChildWindows(WC_QUERY_STRING);
 					HideDropDownMenu(this);
 					this->clicked_row = num;
 					this->clicked_dropdown = false;
@@ -419,7 +419,7 @@ struct GSConfigWindow : public Window {
 		}
 		this->RebuildVisibleSettings();
 		HideDropDownMenu(this);
-		this->DeleteChildWindows(WC_QUERY_STRING);
+		this->CloseChildWindows(WC_QUERY_STRING);
 	}
 private:
 	bool IsEditableItem(const ScriptConfigItem &config_item) const
@@ -442,6 +442,6 @@ private:
 /** Open the GS config window. */
 void ShowGSConfigWindow()
 {
-	DeleteWindowByClass(WC_GAME_OPTIONS);
+	CloseWindowByClass(WC_GAME_OPTIONS);
 	new GSConfigWindow();
 }

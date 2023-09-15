@@ -1832,7 +1832,7 @@ public:
 					return;
 				}
 
-				this->DeleteChildWindows();
+				this->CloseChildWindows();
 				HideDropDownMenu(this);
 
 				if (sel == -1 || this->GetOwner() != _local_company) {
@@ -3910,7 +3910,7 @@ public:
 		/* Process ID-invalidation in command-scope as well */
 		if (this->slot_rename != INVALID_TRACE_RESTRICT_SLOT_ID && this->slot_rename != NEW_TRACE_RESTRICT_SLOT_ID &&
 				!TraceRestrictSlot::IsValidID(this->slot_rename)) {
-			DeleteWindowByClass(WC_QUERY_STRING);
+			CloseWindowByClass(WC_QUERY_STRING);
 			this->slot_rename = INVALID_TRACE_RESTRICT_SLOT_ID;
 		}
 
@@ -4472,7 +4472,7 @@ public:
 
 		if (this->ctr_qt_op != INVALID_TRACE_RESTRICT_COUNTER_ID && this->ctr_qt_op != NEW_TRACE_RESTRICT_COUNTER_ID &&
 				!TraceRestrictCounter::IsValidID(this->ctr_qt_op)) {
-			DeleteWindowByClass(WC_QUERY_STRING);
+			CloseWindowByClass(WC_QUERY_STRING);
 			this->ctr_qt_op = INVALID_TRACE_RESTRICT_COUNTER_ID;
 		}
 

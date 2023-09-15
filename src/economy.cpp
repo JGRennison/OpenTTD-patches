@@ -679,7 +679,7 @@ static void CompanyCheckBankrupt(Company *c)
 		int previous_months_of_bankruptcy = CeilDiv(c->months_of_bankruptcy, 3);
 		c->months_of_bankruptcy = 0;
 		c->bankrupt_asked = 0;
-		DeleteWindowById(WC_BUY_COMPANY, c->index);
+		CloseWindowById(WC_BUY_COMPANY, c->index);
 		if (previous_months_of_bankruptcy != 0) CompanyAdminUpdate(c);
 		return;
 	}

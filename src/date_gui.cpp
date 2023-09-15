@@ -365,7 +365,7 @@ static WindowDesc _set_minutes_desc(
 void ShowSetDateWindow(Window *parent, int window_number, DateTicksScaled initial_date, Year min_year, Year max_year,
 		SetDateCallback *callback, StringID button_text, StringID button_tooltip)
 {
-	DeleteWindowByClass(WC_SET_DATE);
+	CloseWindowByClass(WC_SET_DATE);
 
 	if (!_settings_time.time_in_minutes) {
 		new SetDateWindow(&_set_date_desc, window_number, parent, ScaledDateTicksToDate(initial_date), min_year, max_year, callback, button_text, button_tooltip);

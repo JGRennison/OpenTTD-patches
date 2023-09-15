@@ -189,7 +189,7 @@ Industry::~Industry()
 	DecIndustryTypeCount(this->type);
 
 	DeleteIndustryNews(this->index);
-	DeleteWindowById(WC_INDUSTRY_VIEW, this->index);
+	CloseWindowById(WC_INDUSTRY_VIEW, this->index);
 	DeleteNewGRFInspectWindow(GSF_INDUSTRIES, this->index);
 
 	DeleteSubsidyWith(SourceType::Industry, this->index);

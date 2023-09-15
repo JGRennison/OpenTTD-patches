@@ -408,7 +408,7 @@ public:
  */
 void ShowLandInfo(TileIndex tile)
 {
-	DeleteWindowById(WC_LAND_INFO, 0);
+	CloseWindowById(WC_LAND_INFO, 0);
 	new LandInfoWindow(tile);
 }
 
@@ -581,7 +581,7 @@ struct AboutWindow : public Window {
 
 void ShowAboutWindow()
 {
-	DeleteWindowByClass(WC_GAME_OPTIONS);
+	CloseWindowByClass(WC_GAME_OPTIONS);
 	new AboutWindow();
 }
 
@@ -843,7 +843,7 @@ struct TooltipsWindow : public Window
  */
 void GuiShowTooltips(Window *parent, StringID str, uint paramcount, const uint64 params[], TooltipCloseCondition close_tooltip)
 {
-	DeleteWindowById(WC_TOOLTIPS, 0);
+	CloseWindowById(WC_TOOLTIPS, 0);
 
 	if (str == STR_NULL || !_cursor.in_window) return;
 
@@ -1184,7 +1184,7 @@ static WindowDesc _query_string_desc(
  */
 void ShowQueryString(StringID str, StringID caption, uint maxsize, Window *parent, CharSetFilter afilter, QueryStringFlags flags)
 {
-	DeleteWindowByClass(WC_QUERY_STRING);
+	CloseWindowByClass(WC_QUERY_STRING);
 	new QueryStringWindow(str, caption, ((flags & QSF_LEN_IN_CHARS) ? MAX_CHAR_LENGTH : 1) * maxsize, maxsize, &_query_string_desc, parent, afilter, flags);
 }
 
@@ -1287,7 +1287,7 @@ struct QueryWindow : public Window {
 		switch (widget) {
 			case WID_Q_YES: {
 				/* in the Generate New World window, clicking 'Yes' causes
-				 * DeleteNonVitalWindows() to be called - we shouldn't be in a window then */
+				 * CloseNonVitalWindows() to be called - we shouldn't be in a window then */
 				QueryCallbackProc *proc = this->proc;
 				Window *parent = this->parent;
 				/* Prevent the destructor calling the callback function */

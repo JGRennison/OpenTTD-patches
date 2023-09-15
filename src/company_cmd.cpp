@@ -131,8 +131,8 @@ void SetLocalCompany(CompanyID new_company)
 
 	if (switching_company) {
 		InvalidateWindowClassesData(WC_COMPANY);
-		/* Delete any construction windows... */
-		DeleteConstructionWindows();
+		/* Close any construction windows... */
+		CloseConstructionWindows();
 		ResetObjectToPlace();
 	}
 
@@ -752,7 +752,7 @@ static void HandleBankruptcyTakeover(Company *c)
 	if (best_performance == -1) {
 		if (c->bankrupt_flags & CBRF_SALE_ONLY) {
 			c->bankrupt_asked = 0;
-			DeleteWindowById(WC_BUY_COMPANY, c->index);
+			CloseWindowById(WC_BUY_COMPANY, c->index);
 		} else {
 			c->bankrupt_asked = MAX_UVALUE(CompanyMask);
 		}
@@ -913,7 +913,7 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			NetworkClientInfo *ci = NetworkClientInfo::GetByClientID(client_id);
 
 			/* Delete multiplayer progress bar */
-			DeleteWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
+			CloseWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
 
 			Company *c = DoStartupNewCompany(DSNC_NONE);
 
@@ -1023,7 +1023,7 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			c->bankrupt_value = CalculateCompanyValue(c, false);
 			c->bankrupt_asked = 1 << c->index; // Don't ask the owner
 			c->bankrupt_timeout = 0;
-			DeleteWindowById(WC_BUY_COMPANY, c->index);
+			CloseWindowById(WC_BUY_COMPANY, c->index);
 			break;
 		}
 

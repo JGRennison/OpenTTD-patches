@@ -2200,12 +2200,12 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 		 */
 		if (src == original_src_head && src->IsEngine() && (!src->IsFrontEngine() || new_head)) {
 			/* Cases #2 and #3: the front engine gets trashed. */
-			DeleteWindowById(WC_VEHICLE_VIEW, src->index);
-			DeleteWindowById(WC_VEHICLE_ORDERS, src->index);
-			DeleteWindowById(WC_VEHICLE_REFIT, src->index);
-			DeleteWindowById(WC_VEHICLE_DETAILS, src->index);
-			DeleteWindowById(WC_VEHICLE_TIMETABLE, src->index);
-			DeleteWindowById(WC_SCHDISPATCH_SLOTS, src->index);
+			CloseWindowById(WC_VEHICLE_VIEW, src->index);
+			CloseWindowById(WC_VEHICLE_ORDERS, src->index);
+			CloseWindowById(WC_VEHICLE_REFIT, src->index);
+			CloseWindowById(WC_VEHICLE_DETAILS, src->index);
+			CloseWindowById(WC_VEHICLE_TIMETABLE, src->index);
+			CloseWindowById(WC_SCHDISPATCH_SLOTS, src->index);
 			DeleteNewGRFInspectWindow(GSF_TRAINS, src->index);
 			SetWindowDirty(WC_COMPANY, _current_company);
 
@@ -7132,14 +7132,14 @@ CommandCost CmdBuildVirtualRailVehicle(TileIndex tile, DoCommandFlag flags, uint
 void ClearVehicleWindows(const Train *v)
 {
 	if (v->IsPrimaryVehicle()) {
-		DeleteWindowById(WC_VEHICLE_VIEW, v->index);
-		DeleteWindowById(WC_VEHICLE_ORDERS, v->index);
-		DeleteWindowById(WC_VEHICLE_REFIT, v->index);
-		DeleteWindowById(WC_VEHICLE_DETAILS, v->index);
-		DeleteWindowById(WC_VEHICLE_TIMETABLE, v->index);
-		DeleteWindowById(WC_SCHDISPATCH_SLOTS, v->index);
-		DeleteWindowById(WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS, v->index);
-		DeleteWindowById(WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS, v->index);
+		CloseWindowById(WC_VEHICLE_VIEW, v->index);
+		CloseWindowById(WC_VEHICLE_ORDERS, v->index);
+		CloseWindowById(WC_VEHICLE_REFIT, v->index);
+		CloseWindowById(WC_VEHICLE_DETAILS, v->index);
+		CloseWindowById(WC_VEHICLE_TIMETABLE, v->index);
+		CloseWindowById(WC_SCHDISPATCH_SLOTS, v->index);
+		CloseWindowById(WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS, v->index);
+		CloseWindowById(WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS, v->index);
 	}
 }
 

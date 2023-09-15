@@ -113,7 +113,7 @@ Town::~Town()
 
 	/* Delete town authority window
 	 * and remove from list of sorted towns */
-	DeleteWindowById(WC_TOWN_VIEW, this->index);
+	CloseWindowById(WC_TOWN_VIEW, this->index);
 
 #ifdef WITH_ASSERT
 	/* Check no industry is related to us. */

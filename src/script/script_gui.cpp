@@ -183,7 +183,7 @@ struct ScriptListWindow : public Window {
 		}
 		InvalidateWindowData(WC_GAME_OPTIONS, slot == OWNER_DEITY ? WN_GAME_OPTIONS_GS : WN_GAME_OPTIONS_AI);
 		InvalidateWindowClassesData(WC_SCRIPT_SETTINGS);
-		DeleteWindowByClass(WC_QUERY_STRING);
+		CloseWindowByClass(WC_QUERY_STRING);
 		InvalidateWindowClassesData(WC_TEXTFILE);
 		if (_game_mode == GM_NORMAL && slot == OWNER_DEITY) {
 			InvalidateWindowData(WC_SCRIPT_DEBUG, 0, -1);
@@ -282,7 +282,7 @@ static WindowDesc _script_list_desc(
  */
 void ShowScriptListWindow(CompanyID slot, bool show_all)
 {
-	DeleteWindowByClass(WC_SCRIPT_LIST);
+	CloseWindowByClass(WC_SCRIPT_LIST);
 	new ScriptListWindow(&_script_list_desc, slot, show_all);
 }
 
@@ -447,7 +447,7 @@ struct ScriptSettingsWindow : public Window {
 
 				int num = it - this->visible_settings.begin();
 				if (this->clicked_row != num) {
-					this->DeleteChildWindows(WC_QUERY_STRING);
+					this->CloseChildWindows(WC_QUERY_STRING);
 					HideDropDownMenu(this);
 					this->clicked_row = num;
 					this->clicked_dropdown = false;
@@ -577,7 +577,7 @@ struct ScriptSettingsWindow : public Window {
 	{
 		this->RebuildVisibleSettings();
 		HideDropDownMenu(this);
-		this->DeleteChildWindows(WC_QUERY_STRING);
+		this->CloseChildWindows(WC_QUERY_STRING);
 	}
 
 private:
@@ -633,8 +633,8 @@ static WindowDesc _script_settings_desc(
  */
 void ShowScriptSettingsWindow(CompanyID slot)
 {
-	DeleteWindowByClass(WC_SCRIPT_LIST);
-	DeleteWindowByClass(WC_SCRIPT_SETTINGS);
+	CloseWindowByClass(WC_SCRIPT_LIST);
+	CloseWindowByClass(WC_SCRIPT_SETTINGS);
 	new ScriptSettingsWindow(&_script_settings_desc, slot);
 }
 
@@ -674,7 +674,7 @@ struct ScriptTextfileWindow : public TextfileWindow {
  */
 void ShowScriptTextfileWindow(TextfileType file_type, CompanyID slot)
 {
-	DeleteWindowById(WC_TEXTFILE, file_type);
+	CloseWindowById(WC_TEXTFILE, file_type);
 	new ScriptTextfileWindow(file_type, slot);
 }
 
@@ -956,7 +956,7 @@ struct ScriptDebugWindow : public Window {
 		this->highlight_row = -1; // The highlight of one Script make little sense for another Script.
 
 		/* Close AI settings window to prevent confusion */
-		DeleteWindowByClass(WC_SCRIPT_SETTINGS);
+		CloseWindowByClass(WC_SCRIPT_SETTINGS);
 
 		this->InvalidateData(-1);
 

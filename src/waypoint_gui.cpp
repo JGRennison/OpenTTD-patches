@@ -108,7 +108,7 @@ public:
 
 	~WaypointWindow()
 	{
-		DeleteWindowById(GetWindowClassForVehicleType(this->vt), VehicleListIdentifier(VL_STATION_LIST, this->vt, this->owner, this->window_number).Pack(), false);
+		CloseWindowById(GetWindowClassForVehicleType(this->vt), VehicleListIdentifier(VL_STATION_LIST, this->vt, this->owner, this->window_number).Pack(), false);
 
 		SetViewportCatchmentWaypoint(Waypoint::Get(this->window_number), false);
 	}

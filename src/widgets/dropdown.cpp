@@ -367,7 +367,7 @@ struct DropdownWindow : Window {
  */
 void ShowDropDownListAt(Window *w, DropDownList &&list, int selected, int button, Rect wi_rect, Colours wi_colour, bool instant_close, DropDownSyncFocus sync_parent_focus)
 {
-	DeleteWindowById(WC_DROPDOWN_MENU, 0);
+	CloseWindowById(WC_DROPDOWN_MENU, 0);
 
 	/* The preferred position is just below the dropdown calling widget */
 	int top = w->top + wi_rect.bottom + 1;

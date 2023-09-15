@@ -1263,7 +1263,7 @@ static void VehListCargoFilterShownChanged(int32 new_value)
 static void TownFoundingChanged(int32 new_value)
 {
 	if (_game_mode != GM_EDITOR && _settings_game.economy.found_town == TF_FORBIDDEN) {
-		DeleteWindowById(WC_FOUND_TOWN, 0);
+		CloseWindowById(WC_FOUND_TOWN, 0);
 	} else {
 		InvalidateWindowData(WC_FOUND_TOWN, 0);
 	}
@@ -1336,7 +1336,7 @@ static void DeveloperModeChanged(int32 new_value)
 static void InvalidateNewGRFChangeWindows(int32 new_value)
 {
 	InvalidateWindowClassesData(WC_SAVELOAD);
-	DeleteWindowByClass(WC_GAME_OPTIONS);
+	CloseWindowByClass(WC_GAME_OPTIONS);
 	ReInitAllWindows(false);
 }
 
@@ -1510,7 +1510,7 @@ static void DifficultyNoiseChange(int32 new_value)
 
 static void DifficultyMoneyCheatMultiplayerChange(int32 new_value)
 {
-	DeleteWindowById(WC_CHEATS, 0);
+	CloseWindowById(WC_CHEATS, 0);
 }
 
 static void DifficultyRenameTownsMultiplayerChange(int32 new_value)

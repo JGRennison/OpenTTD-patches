@@ -2149,7 +2149,7 @@ static WindowDesc _select_town_desc(
 
 static void ShowSelectTownWindow(const TownList &towns, const CommandContainer &cmd)
 {
-	DeleteWindowByClass(WC_SELECT_TOWN);
+	CloseWindowByClass(WC_SELECT_TOWN);
 	new SelectTownWindow(&_select_town_desc, towns, cmd);
 }
 
@@ -2160,7 +2160,7 @@ static void PlaceProc_House(TileIndex tile)
 		return;
 	}
 
-	DeleteWindowById(WC_SELECT_TOWN, 0);
+	CloseWindowById(WC_SELECT_TOWN, 0);
 
 	if (_cur_house == INVALID_HOUSE_ID) return;
 
@@ -2210,7 +2210,7 @@ static void PlaceProc_House(TileIndex tile)
 		SB(cmd.p1, 16, 16, towns[0]); // set the town, it's alone on the list
 		DoCommandP(&cmd);
 	} else {
-		if (!_settings_client.gui.persistent_buildingtools) DeleteWindowById(WC_BUILD_HOUSE, 0);
+		if (!_settings_client.gui.persistent_buildingtools) CloseWindowById(WC_BUILD_HOUSE, 0);
 		ShowSelectTownWindow(towns, cmd);
 	}
 }

@@ -664,7 +664,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		const Vehicle *v = this->vehicle;
 
 		this->clicked_widget = widget;
-		this->DeleteChildWindows(WC_QUERY_STRING);
+		this->CloseChildWindows(WC_QUERY_STRING);
 
 		switch (widget) {
 			case WID_SCHDISPATCH_MATRIX: { /* List */
@@ -1242,7 +1242,7 @@ static WindowDesc _scheduled_dispatch_add_desc(
 
 void ShowScheduledDispatchAddSlotsWindow(SchdispatchWindow *parent, int window_number)
 {
-	DeleteWindowByClass(WC_SET_DATE);
+	CloseWindowByClass(WC_SET_DATE);
 
 	new ScheduledDispatchAddSlotsWindow(&_scheduled_dispatch_add_desc, window_number, parent);
 }

@@ -538,7 +538,7 @@ SignalProgram *GetSignalProgram(SignalReference ref)
 
 void FreeSignalProgram(SignalReference ref)
 {
-	DeleteWindowById(WC_SIGNAL_PROGRAM, (ref.tile << 3) | ref.track);
+	CloseWindowById(WC_SIGNAL_PROGRAM, (ref.tile << 3) | ref.track);
 	ProgramList::iterator i = _signal_programs.find(ref);
 	if (i != _signal_programs.end()) {
 		delete i->second;

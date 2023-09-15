@@ -1786,7 +1786,7 @@ void TraceRestrictNotifySignalRemoval(TileIndex tile, Track track)
 {
 	TraceRestrictRefId ref = MakeTraceRestrictRefId(tile, track);
 	bool removed = TraceRestrictRemoveProgramMapping(ref);
-	DeleteWindowById(WC_TRACE_RESTRICT, ref);
+	CloseWindowById(WC_TRACE_RESTRICT, ref);
 	if (removed) InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 }
 

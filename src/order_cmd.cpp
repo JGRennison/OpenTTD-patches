@@ -2943,7 +2943,7 @@ void DeleteVehicleOrders(Vehicle *v, bool keep_orderlist, bool reset_order_indic
 		v->RemoveFromShared();
 		v->orders = nullptr;
 	} else {
-		DeleteWindowById(GetWindowClassForVehicleType(v->type), VehicleListIdentifier(VL_SHARED_ORDERS, v->type, v->owner, v->index).Pack());
+		CloseWindowById(GetWindowClassForVehicleType(v->type), VehicleListIdentifier(VL_SHARED_ORDERS, v->type, v->owner, v->index).Pack());
 		if (v->orders != nullptr) {
 			/* Remove the orders */
 			v->orders->FreeChain(keep_orderlist);

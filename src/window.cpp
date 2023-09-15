@@ -1116,7 +1116,7 @@ static Window *FindChildWindow(const Window *w, WindowClass wc)
  * Delete all children a window might have in a head-recursive manner
  * @param wc Window class of the window to remove; #WC_INVALID if class does not matter
  */
-void Window::DeleteChildWindows(WindowClass wc) const
+void Window::CloseChildWindows(WindowClass wc) const
 {
 	Window *child = FindChildWindow(this, wc);
 	while (child != nullptr) {
@@ -1150,7 +1150,7 @@ Window::~Window()
 		this->OnFocusLost(nullptr);
 	}
 
-	this->DeleteChildWindows();
+	this->CloseChildWindows();
 
 	if (this->viewport != nullptr) DeleteWindowViewport(this);
 
@@ -1166,7 +1166,7 @@ Window::~Window()
 	 * removed from the list of windows to prevent issues with items
 	 * being removed during the iteration as not one but more windows
 	 * may be removed by a single call to ~Window by means of the
-	 * DeleteChildWindows function.
+	 * CloseChildWindows function.
 	 */
 	const_cast<volatile WindowClass &>(this->window_class) = WC_INVALID;
 }
@@ -1228,7 +1228,7 @@ Window *GetMainWindow()
  * @param number Number of the window within the window class
  * @param force force deletion; if false don't delete when stickied
  */
-void DeleteWindowById(WindowClass cls, WindowNumber number, bool force)
+void CloseWindowById(WindowClass cls, WindowNumber number, bool force)
 {
 	Window *w = FindWindowById(cls, number);
 	if (w != nullptr && (force || (w->flags & WF_STICKY) == 0)) {
@@ -1242,7 +1242,7 @@ void DeleteWindowById(WindowClass cls, WindowNumber number, bool force)
  * @param number Number of the window within the window class
  * @param force force deletion; if false don't delete when stickied
  */
-void DeleteAllWindowsById(WindowClass cls, WindowNumber number, bool force)
+void CloseAllWindowsById(WindowClass cls, WindowNumber number, bool force)
 {
 	if (cls < WC_END && !_present_window_types[cls]) return;
 
@@ -1258,7 +1258,7 @@ void DeleteAllWindowsById(WindowClass cls, WindowNumber number, bool force)
  * Delete all windows of a given class
  * @param cls Window class of windows to delete
  */
-void DeleteWindowByClass(WindowClass cls)
+void CloseWindowByClass(WindowClass cls)
 {
 	if (cls < WC_END && !_present_window_types[cls]) return;
 
@@ -1286,7 +1286,7 @@ void DeleteCompanyWindows(CompanyID id)
 	}
 
 	/* Also delete the company specific windows that don't have a company-colour. */
-	DeleteWindowById(WC_BUY_COMPANY, id);
+	CloseWindowById(WC_BUY_COMPANY, id);
 }
 
 /**
@@ -2481,7 +2481,7 @@ static void StartWindowDrag(Window *w)
 	_drag_delta.x = w->left - _cursor.pos.x;
 	_drag_delta.y = w->top  - _cursor.pos.y;
 
-	DeleteWindowById(WC_DROPDOWN_MENU, 0);
+	CloseWindowById(WC_DROPDOWN_MENU, 0);
 	BringWindowToFront(w);
 }
 
@@ -2499,7 +2499,7 @@ static void StartWindowSizing(Window *w, bool to_left)
 	_drag_delta.x = _cursor.pos.x;
 	_drag_delta.y = _cursor.pos.y;
 
-	DeleteWindowById(WC_DROPDOWN_MENU, 0);
+	CloseWindowById(WC_DROPDOWN_MENU, 0);
 	BringWindowToFront(w);
 }
 
@@ -3533,12 +3533,12 @@ void CallWindowGameTickEvent()
 }
 
 /**
- * Try to delete a non-vital window.
+ * Try to close a non-vital window.
  * Non-vital windows are windows other than the game selection, main toolbar,
  * status bar, toolbar menu, and tooltip windows. Stickied windows are also
  * considered vital.
  */
-void DeleteNonVitalWindows()
+void CloseNonVitalWindows()
 {
 	/* Note: the container remains stable, even when deleting windows. */
 	for (Window *w : Window::IterateUnordered()) {
@@ -3557,7 +3557,7 @@ void DeleteNonVitalWindows()
  * then, does a little hacked loop of closing all stickied windows. Note
  * that standard windows (status bar, etc.) are not stickied, so these aren't affected
  */
-void DeleteAllNonVitalWindows()
+void CloseAllNonVitalWindows()
 {
 	/* Note: the container remains stable, even when closing windows. */
 	for (Window *w : Window::IterateUnordered()) {
@@ -3575,14 +3575,14 @@ void DeleteAllMessages()
 	InitNewsItemStructs();
 	InvalidateWindowData(WC_STATUS_BAR, 0, SBI_NEWS_DELETED); // invalidate the statusbar
 	InvalidateWindowData(WC_MESSAGE_HISTORY, 0); // invalidate the message history
-	DeleteWindowById(WC_NEWS_WINDOW, 0); // close newspaper or general message window if shown
+	CloseWindowById(WC_NEWS_WINDOW, 0); // close newspaper or general message window if shown
 }
 
 /**
- * Delete all windows that are used for construction of vehicle etc.
+ * Close all windows that are used for construction of vehicle etc.
  * Once done with that invalidate the others to ensure they get refreshed too.
  */
-void DeleteConstructionWindows()
+void CloseConstructionWindows()
 {
 	/* Note: the container remains stable, even when deleting windows. */
 	for (const Window *w : Window::IterateUnordered()) {
@@ -3593,9 +3593,9 @@ void DeleteConstructionWindows()
 }
 
 /**
- * Delete all windows that use network client functionality.
+ * Close all windows that use network client functionality.
  */
-void DeleteNetworkClientWindows()
+void CloseNetworkClientWindows()
 {
 	/* Note: the container remains stable, even when deleting windows. */
 	for (const Window *w : Window::IterateUnordered()) {
@@ -3608,8 +3608,8 @@ void DeleteNetworkClientWindows()
 /** Delete all always on-top windows to get an empty screen */
 void HideVitalWindows()
 {
-	DeleteWindowById(WC_MAIN_TOOLBAR, 0);
-	DeleteWindowById(WC_STATUS_BAR, 0);
+	CloseWindowById(WC_MAIN_TOOLBAR, 0);
+	CloseWindowById(WC_STATUS_BAR, 0);
 }
 
 void ReInitWindow(Window *w, bool zoom_changed)
@@ -3743,7 +3743,7 @@ void ChangeVehicleViewports(VehicleID from_index, VehicleID to_index)
  */
 void RelocateAllWindows(int neww, int newh)
 {
-	DeleteWindowById(WC_DROPDOWN_MENU, 0);
+	CloseWindowById(WC_DROPDOWN_MENU, 0);
 
 	for (Window *w : Window::IterateFromBack()) {
 		int left, top;
