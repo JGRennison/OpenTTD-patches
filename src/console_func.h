@@ -27,7 +27,7 @@ void IConsoleWarning(const char *string);
 void IConsoleError(const char *string);
 
 /* Parser */
-void IConsoleCmdExec(const char *cmdstr, const uint recurse_count = 0);
+void IConsoleCmdExec(const std::string &command_string, const uint recurse_count = 0);
 void IConsoleCmdExecTokens(uint token_count, char *tokens[], const uint recurse_count = 0);
 
 bool IsValidConsoleColour(TextColour c);

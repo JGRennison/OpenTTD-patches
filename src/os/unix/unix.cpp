@@ -23,6 +23,7 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <signal.h>
+#include <pthread.h>
 
 #ifdef WITH_SDL2
 #include <SDL.h>
@@ -48,10 +49,6 @@
 
 #ifdef HAS_SYSCTL
 #include <sys/sysctl.h>
-#endif
-
-#ifndef NO_THREADS
-#include <pthread.h>
 #endif
 
 #if defined(__APPLE__)
@@ -141,29 +138,30 @@ static const char *GetLocalCode()
  * Convert between locales, which from and which to is set in the calling
  * functions OTTD2FS() and FS2OTTD().
  */
-static const char *convert_tofrom_fs(iconv_t convd, const char *name, char *outbuf, size_t outlen)
+static std::string convert_tofrom_fs(iconv_t convd, const std::string &name)
 {
 	/* There are different implementations of iconv. The older ones,
 	 * e.g. SUSv2, pass a const pointer, whereas the newer ones, e.g.
 	 * IEEE 1003.1 (2004), pass a non-const pointer. */
 #ifdef HAVE_NON_CONST_ICONV
-	char *inbuf = const_cast<char*>(name);
+	char *inbuf = const_cast<char*>(name.data());
 #else
-	const char *inbuf = name;
+	const char *inbuf = name.data();
 #endif
 
-	size_t inlen  = strlen(name);
-	char *buf = outbuf;
+	/* If the output is UTF-32, then 1 ASCII character becomes 4 bytes. */
+	size_t inlen = name.size();
+	std::string buf(inlen * 4, '\0');
 
-	strecpy(outbuf, name, outbuf + outlen);
-
+	size_t outlen = buf.size();
+	char *outbuf = buf.data();
 	iconv(convd, nullptr, nullptr, nullptr, nullptr);
 	if (iconv(convd, &inbuf, &inlen, &outbuf, &outlen) == (size_t)(-1)) {
-		DEBUG(misc, 0, "[iconv] error converting '%s'. Errno %d", name, errno);
+		DEBUG(misc, 0, "[iconv] error converting '%s'. Errno %d", name.c_str(), errno);
+		return name;
 	}
 
-	*outbuf = '\0';
-	/* FIX: invalid characters will abort conversion, but they shouldn't occur? */
+	buf.resize(outbuf - buf.data());
 	return buf;
 }
 
@@ -175,8 +173,6 @@ static const char *convert_tofrom_fs(iconv_t convd, const char *name, char *outb
 std::string OTTD2FS(const std::string &name)
 {
 	static iconv_t convd = (iconv_t)(-1);
-	char buf[1024] = {};
-
 	if (convd == (iconv_t)(-1)) {
 		const char *env = GetLocalCode();
 		convd = iconv_open(env, INTERNALCODE);
@@ -186,7 +182,7 @@ std::string OTTD2FS(const std::string &name)
 		}
 	}
 
-	return convert_tofrom_fs(convd, name.c_str(), buf, lengthof(buf));
+	return convert_tofrom_fs(convd, name);
 }
 
 /**
@@ -197,8 +193,6 @@ std::string OTTD2FS(const std::string &name)
 std::string FS2OTTD(const std::string &name)
 {
 	static iconv_t convd = (iconv_t)(-1);
-	char buf[1024] = {};
-
 	if (convd == (iconv_t)(-1)) {
 		const char *env = GetLocalCode();
 		convd = iconv_open(INTERNALCODE, env);
@@ -208,7 +202,7 @@ std::string FS2OTTD(const std::string &name)
 		}
 	}
 
-	return convert_tofrom_fs(convd, name.c_str(), buf, lengthof(buf));
+	return convert_tofrom_fs(convd, name);
 }
 
 #endif /* WITH_ICONV */
@@ -311,11 +305,9 @@ void OSOpenBrowser(const char *url)
 #endif /* __APPLE__ */
 
 void SetCurrentThreadName(const char *threadName) {
-#if !defined(NO_THREADS) && defined(__GLIBC__)
-#if __GLIBC_PREREQ(2, 12)
+#if defined(__GLIBC__)
 	if (threadName) pthread_setname_np(pthread_self(), threadName);
-#endif /* __GLIBC_PREREQ(2, 12) */
-#endif /* !defined(NO_THREADS) && defined(__GLIBC__) */
+#endif /* defined(__GLIBC__) */
 #if defined(__APPLE__)
 	MacOSSetThreadName(threadName);
 #endif /* defined(__APPLE__) */

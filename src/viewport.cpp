@@ -1626,7 +1626,7 @@ static void DrawTileSelection(const TileInfo *ti)
 						if (IsSteepSlope(ti->tileh)) z -= TILE_HEIGHT;
 					}
 				}
-				DrawSelectionSprite(_cur_dpi->zoom <= ZOOM_LVL_DETAIL ? SPR_DOT : SPR_DOT_SMALL, PAL_NONE, ti, z, foundation_part);
+				DrawSelectionSprite(SPR_DOT, PAL_NONE, ti, z, foundation_part);
 			}
 			break;
 

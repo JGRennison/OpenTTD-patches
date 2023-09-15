@@ -500,7 +500,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_RCON(Packet *p)
 	DEBUG(net, 3, "[admin] Rcon command from '%s' (%s): %s", this->admin_name.c_str(), this->admin_version.c_str(), command.c_str());
 
 	_redirect_console_to_admin = this->index;
-	IConsoleCmdExec(command.c_str());
+	IConsoleCmdExec(command);
 	_redirect_console_to_admin = INVALID_ADMIN_ID;
 	return this->SendRconEnd(command);
 }

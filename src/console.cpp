@@ -271,7 +271,7 @@ static void IConsoleAliasExec(const IConsoleAlias *alias, byte tokencount, char 
 				break;
 
 			case ';': // Cmd separator; execute previous and start new command
-				IConsoleCmdExec(alias_buffer.c_str(), recurse_count);
+				IConsoleCmdExec(alias_buffer, recurse_count);
 
 				alias_buffer.clear();
 
@@ -329,15 +329,15 @@ static void IConsoleAliasExec(const IConsoleAlias *alias, byte tokencount, char 
 		}
 	}
 
-	IConsoleCmdExec(alias_buffer.c_str(), recurse_count);
+	IConsoleCmdExec(alias_buffer, recurse_count);
 }
 
 /**
  * Execute a given command passed to us. First chop it up into
  * individual tokens (separated by spaces), then execute it if possible
- * @param cmdstr string to be parsed and executed
+ * @param command_string string to be parsed and executed
  */
-void IConsoleCmdExec(const char *cmdstr, const uint recurse_count)
+void IConsoleCmdExec(const std::string &command_string, const uint recurse_count)
 {
 	const char *cmdptr;
 	char *tokens[ICON_TOKEN_COUNT], tokenstream[ICON_MAX_STREAMSIZE];
@@ -346,17 +346,16 @@ void IConsoleCmdExec(const char *cmdstr, const uint recurse_count)
 	bool longtoken = false;
 	bool foundtoken = false;
 
-	if (cmdstr[0] == '#') return; // comments
+	if (command_string[0] == '#') return; // comments
 
-	for (cmdptr = cmdstr; *cmdptr != '\0'; cmdptr++) {
+	for (cmdptr = command_string.c_str(); *cmdptr != '\0'; cmdptr++) {
 		if (!IsValidChar(*cmdptr, CS_ALPHANUMERAL)) {
-			IConsoleError("command contains malformed characters, aborting");
-			IConsolePrintF(CC_ERROR, "ERROR: command was: '%s'", cmdstr);
+			IConsolePrintF(CC_ERROR, "Command '%s' contains malformed characters.", command_string.c_str());
 			return;
 		}
 	}
 
-	DEBUG(console, 4, "Executing cmdline: '%s'", cmdstr);
+	DEBUG(console, 4, "Executing cmdline: '%s'", command_string.c_str());
 
 	memset(&tokens, 0, sizeof(tokens));
 	memset(&tokenstream, 0, sizeof(tokenstream));
@@ -364,7 +363,7 @@ void IConsoleCmdExec(const char *cmdstr, const uint recurse_count)
 	/* 1. Split up commandline into tokens, separated by spaces, commands
 	 * enclosed in "" are taken as one token. We can only go as far as the amount
 	 * of characters in our stream or the max amount of tokens we can handle */
-	for (cmdptr = cmdstr, t_index = 0, tstream_i = 0; *cmdptr != '\0'; cmdptr++) {
+	for (cmdptr = command_string.c_str(), t_index = 0, tstream_i = 0; *cmdptr != '\0'; cmdptr++) {
 		if (tstream_i >= lengthof(tokenstream)) {
 			IConsoleError("command line too long");
 			return;

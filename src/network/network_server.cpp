@@ -1702,7 +1702,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_RCON(Packet *p)
 
 	_redirect_console_to_client = this->client_id;
 	this->rcon_reply_key = ss.shared_data + 32; /* second key */
-	IConsoleCmdExec(command.c_str());
+	IConsoleCmdExec(command);
 	_redirect_console_to_client = INVALID_CLIENT_ID;
 	this->rcon_auth_failures = 0;
 	this->rcon_reply_key = nullptr;
