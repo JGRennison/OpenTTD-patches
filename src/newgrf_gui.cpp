@@ -184,9 +184,10 @@ struct NewGRFParametersWindow : public Window {
 		this->InvalidateData();
 	}
 
-	~NewGRFParametersWindow()
+	void Close() override
 	{
 		HideDropDownMenu(this);
+		this->Window::Close();
 	}
 
 	/**
@@ -449,7 +450,7 @@ struct NewGRFParametersWindow : public Window {
 				break;
 
 			case WID_NP_ACCEPT:
-				delete this;
+				this->Close();
 				break;
 		}
 	}
@@ -686,7 +687,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		this->OnInvalidateData(GOID_NEWGRF_CURRENT_LOADED);
 	}
 
-	~NewGRFWindow()
+	void Close() override
 	{
 		CloseWindowByClass(WC_GRF_PARAMETERS);
 		CloseWindowByClass(WC_TEXTFILE);
@@ -699,6 +700,11 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 			PostCheckNewGRFLoadWarnings();
 		}
 
+		this->Window::Close();
+	}
+
+	~NewGRFWindow()
+	{
 		/* Remove the temporary copy of grf-list used in window */
 		ClearGRFConfigList(&this->actives);
 	}
@@ -2121,10 +2127,6 @@ struct SavePresetWindow : public Window {
 		if (initial_text != nullptr) this->presetname_editbox.text.Assign(initial_text);
 	}
 
-	~SavePresetWindow()
-	{
-	}
-
 	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
@@ -2181,13 +2183,13 @@ struct SavePresetWindow : public Window {
 			}
 
 			case WID_SVP_CANCEL:
-				delete this;
+				this->Close();
 				break;
 
 			case WID_SVP_SAVE: {
 				Window *w = FindWindowById(WC_GAME_OPTIONS, WN_GAME_OPTIONS_NEWGRF_STATE);
 				if (w != nullptr && !StrEmpty(this->presetname_editbox.text.buf)) w->OnQueryTextFinished(this->presetname_editbox.text.buf);
-				delete this;
+				this->Close();
 				break;
 			}
 		}

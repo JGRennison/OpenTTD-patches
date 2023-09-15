@@ -1638,9 +1638,10 @@ public:
 		this->industry_editbox.cancel_button = QueryString::ACTION_CLEAR;
 	}
 
-	~IndustryDirectoryWindow()
+	void Close() override
 	{
 		this->last_sorting = this->industries.GetListing();
+		this->Window::Close();
 	}
 
 	void OnInit() override

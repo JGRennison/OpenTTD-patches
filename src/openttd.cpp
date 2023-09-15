@@ -528,7 +528,7 @@ static void LoadIntroGame(bool load_newgrfs = true)
 {
 	UnshowCriticalError();
 	for (Window *w : Window::IterateFromFront()) {
-		delete w;
+		w->Close();
 	}
 
 	_game_mode = GM_MENU;

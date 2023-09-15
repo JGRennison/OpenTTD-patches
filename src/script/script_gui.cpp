@@ -201,7 +201,7 @@ struct ScriptListWindow : public Window {
 					this->SetDirty();
 					if (click_count > 1) {
 						this->ChangeScript();
-						delete this;
+						this->Close();
 					}
 				}
 				break;
@@ -209,12 +209,12 @@ struct ScriptListWindow : public Window {
 
 			case WID_SCRL_ACCEPT: {
 				this->ChangeScript();
-				delete this;
+				this->Close();
 				break;
 			}
 
 			case WID_SCRL_CANCEL:
-				delete this;
+				this->Close();
 				break;
 		}
 	}
@@ -232,7 +232,7 @@ struct ScriptListWindow : public Window {
 	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (_game_mode == GM_NORMAL && Company::IsValidID(this->slot)) {
-			delete this;
+			this->Close();
 			return;
 		}
 
@@ -325,9 +325,10 @@ struct ScriptSettingsWindow : public Window {
 		this->RebuildVisibleSettings();
 	}
 
-	~ScriptSettingsWindow()
+	void Close() override
 	{
 		HideDropDownMenu(this);
+		this->Window::Close();
 	}
 
 	/**
@@ -520,7 +521,7 @@ struct ScriptSettingsWindow : public Window {
 			}
 
 			case WID_SCRS_ACCEPT:
-				delete this;
+				this->Close();
 				break;
 
 			case WID_SCRS_RESET:
@@ -660,7 +661,7 @@ struct ScriptTextfileWindow : public TextfileWindow {
 	{
 		const char *textfile = GetConfig(slot)->GetTextfile(file_type, slot);
 		if (textfile == nullptr) {
-			delete this;
+			this->Close();
 		} else {
 			this->LoadTextfile(textfile, (slot == OWNER_DEITY) ? GAME_DIR : AI_DIR);
 		}

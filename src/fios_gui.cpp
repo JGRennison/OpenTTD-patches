@@ -408,12 +408,13 @@ public:
 		}
 	}
 
-	virtual ~SaveLoadWindow()
+	void Close() override
 	{
 		/* pause is only used in single-player, non-editor mode, non menu mode */
 		if (!_networking && _game_mode != GM_EDITOR && _game_mode != GM_MENU) {
 			DoCommandP(0, PM_PAUSED_SAVELOAD, 0, CMD_PAUSE);
 		}
+		this->Window::Close();
 	}
 
 	void DrawWidget(const Rect &r, int widget) const override
@@ -641,12 +642,12 @@ public:
 				_file_to_saveload.Set(*this->selected);
 
 				if (this->abstract_filetype == FT_HEIGHTMAP) {
-					delete this;
+					this->Close();
 					ShowHeightmapLoad();
 				} else if (!_load_check_data.HasNewGrfs() || _load_check_data.grf_compatibility != GLC_NOT_FOUND || _settings_client.gui.UserIsAllowedToChangeNewGRFs()) {
 					_switch_mode = (_game_mode == GM_EDITOR) ? SM_LOAD_SCENARIO : SM_LOAD_GAME;
 					ClearErrorMessages();
-					delete this;
+					this->Close();
 				}
 				break;
 			}
@@ -704,7 +705,7 @@ public:
 							assert(this->abstract_filetype == FT_HEIGHTMAP);
 							_file_to_saveload.Set(*file);
 
-							delete this;
+							this->Close();
 							ShowHeightmapLoad();
 						}
 					}
@@ -757,7 +758,7 @@ public:
 	EventState OnKeyPress(WChar key, uint16 keycode) override
 	{
 		if (keycode == WKC_ESC) {
-			delete this;
+			this->Close();
 			return ES_HANDLED;
 		}
 

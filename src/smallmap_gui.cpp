@@ -1086,7 +1086,12 @@ SmallMapWindow::SmallMapWindow(WindowDesc *desc, int window_number) : Window(des
 SmallMapWindow::~SmallMapWindow()
 {
 	delete this->overlay;
+}
+
+/* virtual */ void SmallMapWindow::Close()
+{
 	this->BreakIndustryChainLink();
+	this->Window::Close();
 }
 
 /**

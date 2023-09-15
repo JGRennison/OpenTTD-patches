@@ -111,10 +111,11 @@ struct GSConfigWindow : public Window {
 		this->RebuildVisibleSettings();
 	}
 
-	~GSConfigWindow()
+	void Close() override
 	{
 		HideDropDownMenu(this);
 		CloseWindowByClass(WC_SCRIPT_LIST);
+		this->Window::Close();
 	}
 
 	/**
@@ -354,7 +355,7 @@ struct GSConfigWindow : public Window {
 			}
 
 			case WID_GSC_ACCEPT:
-				delete this;
+				this->Close();
 				break;
 
 			case WID_GSC_RESET:

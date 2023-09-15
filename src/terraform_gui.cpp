@@ -213,10 +213,6 @@ struct TerraformToolbarWindow : Window {
 		this->last_user_action = WIDGET_LIST_END;
 	}
 
-	~TerraformToolbarWindow()
-	{
-	}
-
 	void OnInit() override
 	{
 		/* Don't show the place object button when there are no objects to place. */

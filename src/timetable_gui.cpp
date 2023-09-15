@@ -370,11 +370,12 @@ struct TimetableWindow : GeneralVehicleWindow {
 		this->owner = this->vehicle->owner;
 	}
 
-	~TimetableWindow()
+	void Close() override
 	{
 		if (!FocusWindowById(WC_VEHICLE_VIEW, this->window_number)) {
 			MarkDirtyFocusedRoutePaths(this->vehicle);
 		}
+		this->GeneralVehicleWindow::Close();
 	}
 
 	/**
@@ -1165,7 +1166,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 		}
 	}
 
-	virtual void OnFocusLost(Window *newly_focused_window) override
+	virtual void OnFocusLost(bool closing, Window *newly_focused_window) override
 	{
 		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
 			MarkDirtyFocusedRoutePaths(this->vehicle);

@@ -133,10 +133,11 @@ struct IConsoleWindow : Window
 		this->line_offset = GetStringBoundingBox("] ").width + WidgetDimensions::scaled.frametext.left;
 	}
 
-	~IConsoleWindow()
+	void Close() override
 	{
 		_iconsole_mode = ICONSOLE_CLOSED;
 		VideoDriver::GetInstance()->EditBoxLostFocus();
+		this->Window::Close();
 	}
 
 	/**
@@ -345,7 +346,7 @@ struct IConsoleWindow : Window
 		VideoDriver::GetInstance()->EditBoxGainedFocus();
 	}
 
-	void OnFocusLost(Window *newly_focused_window) override
+	void OnFocusLost(bool closing, Window *newly_focused_window) override
 	{
 		VideoDriver::GetInstance()->EditBoxLostFocus();
 	}

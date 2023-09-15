@@ -106,11 +106,11 @@ public:
 		this->OnInvalidateData(0);
 	}
 
-	~WaypointWindow()
+	void Close() override
 	{
 		CloseWindowById(GetWindowClassForVehicleType(this->vt), VehicleListIdentifier(VL_STATION_LIST, this->vt, this->owner, this->window_number).Pack(), false);
-
 		SetViewportCatchmentWaypoint(Waypoint::Get(this->window_number), false);
+		this->Window::Close();
 	}
 
 	void SetStringParameters(int widget) const override

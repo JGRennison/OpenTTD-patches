@@ -98,10 +98,11 @@ struct AIConfigWindow : public Window {
 		this->OnInvalidateData(0);
 	}
 
-	~AIConfigWindow()
+	void Close() override
 	{
 		CloseWindowByClass(WC_SCRIPT_LIST);
 		CloseWindowByClass(WC_SCRIPT_SETTINGS);
+		this->Window::Close();
 	}
 
 	void SetStringParameters(int widget) const override
@@ -247,7 +248,7 @@ struct AIConfigWindow : public Window {
 				break;
 
 			case WID_AIC_CLOSE:
-				delete this;
+				this->Close();
 				break;
 
 			case WID_AIC_CONTENT_DOWNLOAD:

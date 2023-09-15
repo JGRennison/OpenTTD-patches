@@ -799,15 +799,15 @@ struct TooltipsWindow : public Window
 	{
 		/* Always close tooltips when the cursor is not in our window. */
 		if (!_cursor.in_window || this->delete_next_mouse_loop) {
-			delete this;
+			this->Close();
 			return;
 		}
 
 		/* We can show tooltips while dragging tools. These are shown as long as
 		 * we are dragging the tool. Normal tooltips work with hover or rmb. */
 		switch (this->close_cond) {
-			case TCC_RIGHT_CLICK: if (!_right_button_down) delete this; break;
-			case TCC_HOVER: if (!_mouse_hovering) delete this; break;
+			case TCC_RIGHT_CLICK: if (!_right_button_down) this->Close();; break;
+			case TCC_HOVER: if (!_mouse_hovering) this->Close();; break;
 			case TCC_NONE: break;
 			case TCC_NEXT_LOOP: this->delete_next_mouse_loop = true; break;
 
@@ -815,7 +815,7 @@ struct TooltipsWindow : public Window
 				if (_settings_client.gui.hover_delay_ms == 0) {
 					if (!_right_button_down) this->delete_next_mouse_loop = true;
 				} else if (!_mouse_hovering) {
-					delete this;
+					this->Close();
 					break;
 				}
 				if (this->viewport_virtual_left != this->parent->viewport->virtual_left ||
@@ -826,7 +826,7 @@ struct TooltipsWindow : public Window
 
 			case TCC_EXIT_VIEWPORT: {
 				Window *w = FindWindowFromPt(_cursor.pos.x, _cursor.pos.y);
-				if (w == nullptr || IsPtInWindowViewport(w, _cursor.pos.x, _cursor.pos.y) == nullptr) delete this;
+				if (w == nullptr || IsPtInWindowViewport(w, _cursor.pos.x, _cursor.pos.y) == nullptr) this->Close();
 				break;
 			}
 		}
@@ -1134,18 +1134,19 @@ struct QueryStringWindow : public Window
 				FALLTHROUGH;
 
 			case WID_QS_CANCEL:
-				delete this;
+				this->Close();
 				break;
 		}
 	}
 
-	~QueryStringWindow()
+	void Close() override
 	{
 		if (!this->editbox.handled && this->parent != nullptr) {
 			Window *parent = this->parent;
-			this->parent = nullptr; // so parent doesn't try to delete us again
+			this->parent = nullptr; // so parent doesn't try to close us again
 			parent->OnQueryTextFinished(nullptr);
 		}
+		this->Window::Close();
 	}
 };
 
@@ -1227,9 +1228,10 @@ struct QueryWindow : public Window {
 		this->InitNested(WN_CONFIRM_POPUP_QUERY);
 	}
 
-	~QueryWindow()
+	void Close() override
 	{
 		if (this->proc != nullptr) this->proc(this->parent, false);
+		this->Window::Close();
 	}
 
 	void FindWindowPlacementAndResize(int def_width, int def_height) override
@@ -1292,7 +1294,7 @@ struct QueryWindow : public Window {
 				Window *parent = this->parent;
 				/* Prevent the destructor calling the callback function */
 				this->proc = nullptr;
-				delete this;
+				this->Close();
 				if (proc != nullptr) {
 					proc(parent, true);
 					proc = nullptr;
@@ -1300,7 +1302,7 @@ struct QueryWindow : public Window {
 				break;
 			}
 			case WID_Q_NO:
-				delete this;
+				this->Close();
 				break;
 		}
 	}
@@ -1318,7 +1320,7 @@ struct QueryWindow : public Window {
 				FALLTHROUGH;
 
 			case WKC_ESC:
-				delete this;
+				this->Close();
 				return ES_HANDLED;
 		}
 		return ES_NOT_HANDLED;
@@ -1350,13 +1352,13 @@ static WindowDesc _query_desc(
 
 static void RemoveExistingQueryWindow(Window *parent, QueryCallbackProc *callback)
 {
-	for (const Window *w : Window::IterateFromBack()) {
+	for (Window *w : Window::IterateFromBack()) {
 		if (w->window_class != WC_CONFIRM_POPUP_QUERY) continue;
 
-		const QueryWindow *qw = (const QueryWindow *)w;
+		QueryWindow *qw = (QueryWindow *)w;
 		if (qw->parent != parent || qw->proc != callback) continue;
 
-		delete qw;
+		qw->Close();
 		break;
 	}
 }
@@ -1424,10 +1426,11 @@ struct ModifierKeyToggleWindow : Window {
 		this->UpdateButtons();
 	}
 
-	~ModifierKeyToggleWindow()
+	void Close() override
 	{
 		_invert_shift = false;
 		_invert_ctrl = false;
+		this->Window::Close();
 	}
 
 	void UpdateButtons()

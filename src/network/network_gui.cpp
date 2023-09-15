@@ -523,9 +523,10 @@ public:
 		this->servers.ForceRebuild();
 	}
 
-	~NetworkGameWindow()
+	void Close() override
 	{
 		this->last_sorting = this->servers.GetListing();
+		this->Window::Close();
 	}
 
 	void OnInit() override
@@ -2378,7 +2379,7 @@ struct NetworkCompanyPasswordWindow : public Window {
 				FALLTHROUGH;
 
 			case WID_NCP_CANCEL:
-				delete this;
+				this->Close();
 				break;
 
 			case WID_NCP_SAVE_AS_DEFAULT_PASSWORD:
@@ -2485,18 +2486,18 @@ struct NetworkAskRelayWindow : public Window {
 		switch (widget) {
 			case WID_NAR_NO:
 				_network_coordinator_client.ConnectFailure(this->token, 0);
-				delete this;
+				this->Close();
 				break;
 
 			case WID_NAR_YES_ONCE:
 				_network_coordinator_client.StartTurnConnection(this->token);
-				delete this;
+				this->Close();
 				break;
 
 			case WID_NAR_YES_ALWAYS:
 				_settings_client.network.use_relay_service = URS_ALLOW;
 				_network_coordinator_client.StartTurnConnection(this->token);
-				delete this;
+				this->Close();
 				break;
 		}
 	}

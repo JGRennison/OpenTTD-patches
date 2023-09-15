@@ -534,9 +534,10 @@ public:
 		nvp->InitializeViewport(this, this->town->xy, ScaleZoomGUI(ZOOM_LVL_TOWN));
 	}
 
-	~TownViewWindow()
+	void Close() override
 	{
 		SetViewportCatchmentTown(Town::Get(this->window_number), false);
+		this->Window::Close();
 	}
 
 	void SetStringParameters(int widget) const override
@@ -2116,7 +2117,7 @@ struct SelectTownWindow : Window {
 		DoCommandP(&this->cmd);
 
 		/* Close the window */
-		delete this;
+		this->Close();
 	}
 
 	virtual void OnResize()

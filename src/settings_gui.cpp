@@ -197,11 +197,12 @@ struct GameOptionsWindow : Window {
 		if constexpr (!NetworkSurveyHandler::IsSurveyPossible()) this->GetWidget<NWidgetStacked>(WID_GO_SURVEY_SEL)->SetDisplayedPlane(SZSP_NONE);
 	}
 
-	~GameOptionsWindow()
+	void Close() override
 	{
 		CloseWindowById(WC_CUSTOM_CURRENCY, 0);
 		CloseWindowByClass(WC_TEXTFILE);
 		if (this->reload) _switch_mode = SM_MENU;
+		this->Window::Close();
 	}
 
 	/**

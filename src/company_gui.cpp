@@ -1689,7 +1689,7 @@ public:
 
 			/* Cancel button */
 			case WID_SCMF_CANCEL:
-				delete this;
+				this->Close();
 				break;
 
 			/* Load button */
@@ -2895,12 +2895,13 @@ struct BuyCompanyWindow : Window {
 		this->company_value = hostile_takeover ? CalculateHostileTakeoverValue(c) : c->bankrupt_value;
 	}
 
-	~BuyCompanyWindow()
+	void Close() override
 	{
 		const Company *c = Company::GetIfValid((CompanyID)this->window_number);
 		if (!this->hostile_takeover && c != nullptr && HasBit(c->bankrupt_asked, this->owner) && _current_company == this->owner) {
 			EnqueueDoCommandP(NewCommandContainerBasic(0, this->window_number, 0, CMD_DECLINE_BUY_COMPANY | CMD_NO_SHIFT_ESTIMATE));
 		}
+		this->Window::Close();
 	}
 
 	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
@@ -2952,7 +2953,7 @@ struct BuyCompanyWindow : Window {
 	{
 		switch (widget) {
 			case WID_BC_NO:
-				delete this;
+				this->Close();
 				break;
 
 			case WID_BC_YES:

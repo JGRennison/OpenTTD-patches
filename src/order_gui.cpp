@@ -179,11 +179,12 @@ public:
 		this->owner = v->owner;
 	}
 
-	~CargoTypeOrdersWindow()
+	void Close() override
 	{
 		if (!FocusWindowById(WC_VEHICLE_ORDERS, this->window_number)) {
 			MarkDirtyFocusedRoutePaths(this->vehicle);
 		}
+		this->Window::Close();
 	}
 
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
@@ -229,11 +230,11 @@ public:
 	virtual void OnClick(Point pt, int widget, int click_count) override
 	{
 		if (!this->CheckOrderStillValid()) {
-			delete this;
+			this->Close();
 			return;
 		}
 		if (widget == WID_CTO_CLOSEBTN) {
-			delete this;
+			this->Close();
 		} else if (WID_CTO_CARGO_DROPDOWN_FIRST <= widget && widget <= WID_CTO_CARGO_DROPDOWN_LAST) {
 			const CargoSpec *cs = _sorted_cargo_specs[widget - WID_CTO_CARGO_DROPDOWN_FIRST];
 			const CargoID cargo_id = cs->Index();
@@ -247,7 +248,7 @@ public:
 	virtual void OnDropdownSelect(int widget, int action_type) override
 	{
 		if (!this->CheckOrderStillValid()) {
-			delete this;
+			this->Close();
 			return;
 		}
 		ModifyOrderFlags mof = (this->variant == CTOWV_LOAD) ? MOF_CARGO_TYPE_LOAD : MOF_CARGO_TYPE_UNLOAD;
@@ -301,7 +302,7 @@ public:
 		}
 	}
 
-	virtual void OnFocusLost(Window *newly_focused_window) override
+	virtual void OnFocusLost(bool closing, Window *newly_focused_window) override
 	{
 		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
 			MarkDirtyFocusedRoutePaths(this->vehicle);
@@ -316,7 +317,7 @@ public:
 	virtual void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!this->CheckOrderStillValid()) {
-			delete this;
+			this->Close();
 			return;
 		}
 		if (gui_scope) {
@@ -1900,13 +1901,14 @@ public:
 		this->OnInvalidateData(VIWD_MODIFY_ORDERS);
 	}
 
-	~OrdersWindow()
+	void Close() override
 	{
 		CloseWindowById(WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS, this->window_number, false);
 		CloseWindowById(WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS, this->window_number, false);
 		if (!FocusWindowById(WC_VEHICLE_VIEW, this->window_number)) {
 			MarkDirtyFocusedRoutePaths(this->vehicle);
 		}
+		this->GeneralVehicleWindow::Close();
 	}
 
 	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
@@ -3575,7 +3577,7 @@ public:
 		}
 	}
 
-	virtual void OnFocusLost(Window *newly_focused_window) override
+	virtual void OnFocusLost(bool closing, Window *newly_focused_window) override
 	{
 		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
 			MarkDirtyFocusedRoutePaths(this->vehicle);

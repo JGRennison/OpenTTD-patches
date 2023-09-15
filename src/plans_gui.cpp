@@ -98,13 +98,14 @@ struct PlansWindow : Window {
 		RebuildList();
 	}
 
-	~PlansWindow()
+	void Close() override
 	{
 		this->list.clear();
 		if (_current_plan) {
 			_current_plan->SetFocus(false);
 			_current_plan = nullptr;
 		}
+		this->Window::Close();
 	}
 
 	virtual void OnClick(Point pt, int widget, int click_count) override

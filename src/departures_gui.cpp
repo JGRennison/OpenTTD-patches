@@ -289,7 +289,7 @@ public:
 
 	virtual ~DeparturesWindow()
 	{
-		this->DeleteDeparturesList(departures);
+		this->DeleteDeparturesList(this->departures);
 		this->DeleteDeparturesList(this->arrivals);
 	}
 

@@ -155,7 +155,7 @@ struct SetDateWindow : Window {
 				if (this->callback != nullptr) {
 					this->callback(this, DateToScaledDateTicks(ConvertYMDToDate(this->date.year, this->date.month, this->date.day)));
 				}
-				delete this;
+				this->Close();
 				break;
 		}
 	}
@@ -271,7 +271,7 @@ struct SetMinutesWindow : SetDateWindow
 				if (this->callback != nullptr) {
 					this->callback(this, ((DateTicks)minutes - _settings_time.clock_offset) * (DateTicksScaled)_settings_time.ticks_per_minute);
 				}
-				delete this;
+				this->Close();
 				break;
 		}
 	}

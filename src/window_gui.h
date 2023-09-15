@@ -77,9 +77,9 @@ static inline void DrawFrameRect(const Rect &r, Colours colour, FrameFlags flags
 void DrawCaption(const Rect &r, Colours colour, Owner owner, TextColour text_colour, StringID str, StringAlignment align, FontSize fs);
 
 /* window.cpp */
-extern WindowBase *_z_front_window;
-extern WindowBase *_z_back_window;
-extern WindowBase *_first_window;
+extern Window *_z_front_window;
+extern Window *_z_back_window;
+extern Window *_first_window;
 extern Window *_focused_window;
 
 inline uint64 GetWindowUpdateNumber()
@@ -233,51 +233,27 @@ enum TooltipCloseCondition {
 	TCC_EXIT_VIEWPORT,
 };
 
-struct WindowBase {
-	WindowBase *z_front;             ///< The window in front of us in z-order.
-	WindowBase *z_back;              ///< The window behind us in z-order.
-	WindowBase *next_window;         ///< The next window in arbitrary iteration order.
-	WindowClass window_class;        ///< Window class
-
-	virtual ~WindowBase() {}
-
-	/**
-	 * Memory allocator for a single class instance.
-	 * @param size the amount of bytes to allocate.
-	 * @return the given amounts of bytes zeroed.
-	 */
-	inline void *operator new(size_t size) { return CallocT<byte>(size); }
-
-protected:
-	WindowBase() {}
-
-private:
-	/**
-	 * Memory allocator for an array of class instances.
-	 * @param size the amount of bytes to allocate.
-	 * @return the given amounts of bytes zeroed.
-	 */
-	inline void *operator new[](size_t size) { NOT_REACHED(); }
-
-	/**
-	 * Memory release for a single class instance.
-	 * @param ptr  the memory to free.
-	 */
-	inline void operator delete(void *ptr) { NOT_REACHED(); }
-
-	/**
-	 * Memory release for an array of class instances.
-	 * @param ptr  the memory to free.
-	 */
-	inline void operator delete[](void *ptr) { NOT_REACHED(); }
-};
-
 typedef std::vector<const Vehicle *> VehicleList;
 
 /**
  * Data structure for an opened window
  */
-struct Window : WindowBase {
+struct Window : ZeroedMemoryAllocator {
+	Window *z_front;             ///< The window in front of us in z-order.
+	Window *z_back;              ///< The window behind us in z-order.
+	Window *next_window;         ///< The next window in arbitrary iteration order.
+	WindowClass window_class;        ///< Window class
+
+private:
+	/**
+	 * Helper allocation function to disallow something.
+	 * Don't allow arrays; arrays of Windows are pointless as you need
+	 * to destruct them all at the same time too, which is kinda hard.
+	 * @param size the amount of space not to allocate
+	 */
+	inline void *operator new[](size_t size) { NOT_REACHED(); }
+	inline void operator delete[](void *ptr) { NOT_REACHED(); }
+
 protected:
 	void InitializeData(WindowNumber window_number);
 	void InitializePositionSize(int x, int y, int min_width, int min_height);
@@ -285,32 +261,13 @@ protected:
 
 	std::vector<int> scheduled_invalidation_data;  ///< Data of scheduled OnInvalidateData() calls.
 
+	virtual ~Window();
+
 public:
 	Window(WindowDesc *desc);
 
-	virtual ~Window();
-
 	virtual void Close();
-
-	/**
-	 * Helper allocation function to disallow something.
-	 * Don't allow arrays; arrays of Windows are pointless as you need
-	 * to destruct them all at the same time too, which is kinda hard.
-	 * @param size the amount of space not to allocate
-	 */
-	inline void *operator new[](size_t size)
-	{
-		NOT_REACHED();
-	}
-
-	/**
-	 * Helper allocation function to disallow something.
-	 * Don't free the window directly; it corrupts the linked list when iterating
-	 * @param ptr the pointer not to free
-	 */
-	inline void operator delete(void *ptr)
-	{
-	}
+	static void DeleteClosedWindows();
 
 	WindowDesc *window_desc;    ///< Window description
 	WindowFlags flags;          ///< Window flags
@@ -601,7 +558,7 @@ public:
 
 	virtual void OnFocus(Window *previously_focused_window);
 
-	virtual void OnFocusLost(Window *newly_focused_window);
+	virtual void OnFocusLost(bool closing, Window *newly_focused_window);
 
 	/**
 	 * A key has been pressed.
@@ -845,7 +802,7 @@ public:
 	virtual void ShowNewGRFInspectWindow() const { NOT_REACHED(); }
 
 	template<class T>
-	using window_base_t = std::conditional_t<std::is_const<T>{}, WindowBase const, WindowBase>;
+	using window_type = std::conditional_t<std::is_const<T>{}, Window const, Window>;
 
 	enum IterationMode {
 		IM_FROM_FRONT,
@@ -866,7 +823,7 @@ public:
 		typedef size_t difference_type;
 		typedef std::forward_iterator_tag iterator_category;
 
-		explicit WindowIterator(window_base_t<T> *start) : w(start)
+		explicit WindowIterator(window_type<T> *start) : w(start)
 		{
 			this->Validate();
 		}
@@ -877,7 +834,7 @@ public:
 		WindowIterator & operator++() { this->Next(); this->Validate(); return *this; }
 
 	private:
-		window_base_t<T> *w;
+		window_type<T> *w;
 		void Validate() { while (this->w != nullptr && this->w->window_class == WC_INVALID) this->Next(); }
 
 		void Next()
@@ -901,16 +858,16 @@ public:
 	/**
 	 * Iterable ensemble of all valid Windows
 	 * @tparam T Type of the class/struct that is going to be iterated
-	 * @tparam Tfront Wether we iterate from front
+	 * @tparam Tmode Iteration mode
 	 */
 	template <class T, IterationMode Tmode>
-	struct Iterate {
-		Iterate(window_base_t<T> *from) : from(from) {}
+	struct IterateCommon {
+		IterateCommon(window_type<T> *from) : from(from) {}
 		WindowIterator<T, Tmode> begin() { return WindowIterator<T, Tmode>(this->from); }
 		WindowIterator<T, Tmode> end() { return WindowIterator<T, Tmode>(nullptr); }
 		bool empty() { return this->begin() == this->end(); }
 	private:
-		window_base_t<T> *from;
+		window_type<T> *from;
 	};
 
 	/**
@@ -920,7 +877,7 @@ public:
 	 * @return an iterable ensemble of all valid Window
 	 */
 	template <class T = Window>
-	static Iterate<T, IM_FROM_BACK> IterateFromBack(window_base_t<T> *from = _z_back_window) { return Iterate<T, IM_FROM_BACK>(from); }
+	static IterateCommon<T, IM_FROM_BACK> IterateFromBack(window_type<T> *from = _z_back_window) { return IterateCommon<T, IM_FROM_BACK>(from); }
 
 	/**
 	 * Returns an iterable ensemble of all valid Window from front to back
@@ -929,7 +886,7 @@ public:
 	 * @return an iterable ensemble of all valid Window
 	 */
 	template <class T = Window>
-	static Iterate<T, IM_FROM_FRONT> IterateFromFront(window_base_t<T> *from = _z_front_window) { return Iterate<T, IM_FROM_FRONT>(from); }
+	static IterateCommon<T, IM_FROM_FRONT> IterateFromFront(window_type<T> *from = _z_front_window) { return IterateCommon<T, IM_FROM_FRONT>(from); }
 
 	/**
 	 * Returns an iterable ensemble of all valid Window in an arbitrary order which is safe to use when deleting
@@ -938,7 +895,7 @@ public:
 	 * @return an iterable ensemble of all valid Window
 	 */
 	template <class T = Window>
-	static Iterate<T, IM_ARBITRARY> IterateUnordered(window_base_t<T> *from = _first_window) { return Iterate<T, IM_ARBITRARY>(from); }
+	static IterateCommon<T, IM_ARBITRARY> Iterate(window_type<T> *from = _first_window) { return IterateCommon<T, IM_ARBITRARY>(from); }
 };
 
 /**
@@ -1001,7 +958,7 @@ public:
 		this->parent = parent;
 	}
 
-	virtual ~PickerWindowBase();
+	void Close() override;
 };
 
 Window *BringWindowToFrontById(WindowClass cls, WindowNumber number);

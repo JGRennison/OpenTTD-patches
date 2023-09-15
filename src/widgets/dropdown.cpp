@@ -179,12 +179,12 @@ struct DropdownWindow : Window {
 		this->scrolling_timer  = GUITimer(MILLISECONDS_PER_TICK);
 	}
 
-	~DropdownWindow()
+	void Close() override
 	{
 		/* Make the dropdown "invisible", so it doesn't affect new window placement.
 		 * Also mark it dirty in case the callback deals with the screen. (e.g. screenshots). */
-		this->window_class = WC_INVALID;
 		this->SetDirty();
+		this->Window::Close();
 
 		Window *w2 = FindWindowById(this->parent_wnd_class, this->parent_wnd_num);
 		if (w2 != nullptr) {
@@ -291,7 +291,7 @@ struct DropdownWindow : Window {
 	{
 		Window *w2 = FindWindowById(this->parent_wnd_class, this->parent_wnd_num);
 		if (w2 == nullptr) {
-			delete this;
+			this->Close();
 			return;
 		}
 
@@ -302,7 +302,7 @@ struct DropdownWindow : Window {
 			this->SetDirty();
 
 			w2->OnDropdownSelect(this->parent_button, this->selected_index);
-			delete this;
+			this->Close();
 			return;
 		}
 
@@ -312,7 +312,7 @@ struct DropdownWindow : Window {
 			if (!_left_button_clicked) {
 				this->drag_mode = false;
 				if (!this->GetDropDownItem(item)) {
-					if (this->instant_close) delete this;
+					if (this->instant_close) this->Close();
 					return;
 				}
 				this->click_delay = 2;
@@ -345,11 +345,11 @@ struct DropdownWindow : Window {
 		}
 	}
 
-	virtual void OnFocusLost(Window *newly_focused_window)
+	virtual void OnFocusLost(bool closing, Window *newly_focused_window)
 	{
 		if (this->sync_parent_focus & DDSF_LOST_FOCUS) {
 			Window *parent = FindWindowById(this->parent_wnd_class, this->parent_wnd_num);
-			if (parent) parent->OnFocusLost(newly_focused_window);
+			if (parent) parent->OnFocusLost(false, newly_focused_window);
 		}
 	}
 };

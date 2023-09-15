@@ -447,9 +447,10 @@ public:
 		this->owner = vli.company;
 	}
 
-	~VehicleGroupWindow()
+	void Close() override
 	{
 		*this->sorting = this->vehgroups.GetListing();
+		this->Window::Close();
 	}
 
 	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override

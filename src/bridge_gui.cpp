@@ -185,9 +185,13 @@ public:
 
 	~BuildBridgeWindow()
 	{
-		this->last_sorting = this->bridges->GetListing();
-
 		delete bridges;
+	}
+
+	void Close() override
+	{
+		this->last_sorting = this->bridges->GetListing();
+		this->Window::Close();
 	}
 
 	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
@@ -266,7 +270,7 @@ public:
 		if (i < 9 && i < this->bridges->size()) {
 			/* Build the requested bridge */
 			this->BuildBridge(i);
-			delete this;
+			this->Close();
 			return ES_HANDLED;
 		}
 		return ES_NOT_HANDLED;
@@ -280,7 +284,7 @@ public:
 				auto it = this->vscroll->GetScrolledItemFromWidget(*this->bridges, pt.y, this, WID_BBS_BRIDGE_LIST);
 				if (it != this->bridges->end()) {
 					this->BuildBridge(it - this->bridges->begin());
-					delete this;
+					this->Close();
 				}
 				break;
 			}

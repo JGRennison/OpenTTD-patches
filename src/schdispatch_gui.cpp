@@ -210,11 +210,12 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		this->AutoSelectSchedule();
 	}
 
-	~SchdispatchWindow()
+	void Close() override
 	{
 		if (!FocusWindowById(WC_VEHICLE_VIEW, this->window_number)) {
 			MarkDirtyFocusedRoutePaths(this->vehicle);
 		}
+		this->GeneralVehicleWindow::Close();
 	}
 
 	uint base_width;
@@ -1169,7 +1170,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 
 			case WID_SCHDISPATCH_ADD_SLOT_ADD_BUTTON:
 				static_cast<SchdispatchWindow *>(this->parent)->AddMultipleDepartureSlots(this->start, this->step, this->end);
-				delete this;
+				this->Close();
 				break;
 		}
 	}

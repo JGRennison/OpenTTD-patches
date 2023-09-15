@@ -166,7 +166,7 @@ public:
 		UpdateButtonState();
 	}
 
-	~TemplateCreateWindow()
+	void Close() override
 	{
 		if (virtual_train != nullptr) {
 			DoCommandP(0, virtual_train->index, 0, CMD_DELETE_VIRTUAL_TRAIN);
@@ -177,6 +177,7 @@ public:
 		*create_window_open = false;
 		CloseWindowById(WC_BUILD_VIRTUAL_TRAIN, this->window_number);
 		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
+		this->Window::Close();
 	}
 
 	void SetVirtualTrain(Train* const train)
@@ -208,7 +209,7 @@ public:
 
 		if (this->template_index != INVALID_VEHICLE) {
 			if (TemplateVehicle::GetIfValid(this->template_index) == nullptr) {
-				delete this;
+				this->Close();
 				return;
 			}
 		}
@@ -244,11 +245,11 @@ public:
 				} else if (this->template_index != INVALID_VEHICLE) {
 					DoCommandP(0, this->template_index, 0, CMD_DELETE_TEMPLATE_VEHICLE);
 				}
-				delete this;
+				this->Close();
 				break;
 			}
 			case TCW_CANCEL: {
-				delete this;
+				this->Close();
 				break;
 			}
 			case TCW_REFIT: {

@@ -1780,7 +1780,7 @@ public:
 		this->ReloadProgramme();
 	}
 
-	~TraceRestrictWindow()
+	void Close() override
 	{
 		extern const TraceRestrictProgram *_viewport_highlight_tracerestrict_program;
 		if (_viewport_highlight_tracerestrict_program != nullptr) {
@@ -1789,6 +1789,7 @@ public:
 				SetViewportCatchmentTraceRestrictProgram(prog, false);
 			}
 		}
+		this->Window::Close();
 	}
 
 	virtual void OnClick(Point pt, int widget, int click_count) override
@@ -3844,9 +3845,10 @@ public:
 		this->owner = vli.company;
 	}
 
-	~TraceRestrictSlotWindow()
+	void Close() override
 	{
 		*this->sorting = this->vehgroups.GetListing();
+		this->Window::Close();
 	}
 
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override

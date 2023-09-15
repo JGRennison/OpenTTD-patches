@@ -485,7 +485,7 @@ struct NewsWindow : Window {
 		switch (widget) {
 			case WID_N_CLOSEBOX:
 				NewsWindow::duration = 0;
-				delete this;
+				this->Close();
 				_forced_news = nullptr;
 				break;
 
@@ -1054,7 +1054,7 @@ static void ShowNewsMessage(const NewsItem *ni)
 bool HideActiveNewsMessage() {
 	NewsWindow *w = (NewsWindow*)FindWindowById(WC_NEWS_WINDOW, 0);
 	if (w == nullptr) return false;
-	delete w;
+	w->Close();
 	return true;
 }
 
