@@ -585,7 +585,7 @@ struct MusicTrackSelectionWindow : public Window {
 
 			case WID_MTS_MUSICSET: {
 				int selected = 0;
-				ShowDropDownList(this, BuildMusicSetDropDownList(&selected), selected, widget);
+				ShowDropDownList(this, BuildSetDropDownList<BaseMusic>(&selected), selected, widget);
 				break;
 			}
 
