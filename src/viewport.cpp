@@ -1914,7 +1914,7 @@ static void ViewportAddKdtreeSigns(ViewportDrawerDynamic *vdd, DrawPixelInfo *dp
 	}
 
 	/* Do not draw signs nor station names if they are set invisible */
-	if (IsInvisibilitySet(TO_SIGNS)) return;
+	if (vdd->IsInvisibilitySet(TO_SIGNS)) return;
 
 	for (const auto *si : signs) {
 		ViewportAddString(vdd, dpi, ZOOM_LVL_OUT_16X, &si->sign,
