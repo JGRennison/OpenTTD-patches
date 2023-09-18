@@ -211,7 +211,7 @@ static const int WHITE_BORDER_DURATION = 3; ///< The initial timeout value for W
  * A viewport is either following a vehicle (its id in then in #follow_vehicle), or it aims to display a specific
  * location #dest_scrollpos_x, #dest_scrollpos_y (#follow_vehicle is then #INVALID_VEHICLE).
  * The actual location being shown is #scrollpos_x, #scrollpos_y.
- * @see InitializeViewport(), UpdateViewportPosition(), UpdateViewportCoordinates().
+ * @see InitializeViewport(), UpdateNextViewportPosition(), ApplyNextViewportPosition(), UpdateViewportCoordinates().
  */
 struct ViewportData : Viewport {
 	VehicleID follow_vehicle; ///< VehicleID to follow if following a vehicle, #INVALID_VEHICLE otherwise.
@@ -219,6 +219,9 @@ struct ViewportData : Viewport {
 	int32 scrollpos_y;        ///< Currently shown y coordinate (virtual screen coordinate of topleft corner of the viewport).
 	int32 dest_scrollpos_x;   ///< Current destination x coordinate to display (virtual screen coordinate of topleft corner of the viewport).
 	int32 dest_scrollpos_y;   ///< Current destination y coordinate to display (virtual screen coordinate of topleft corner of the viewport).
+	int32 next_scrollpos_x;   ///< Next x coordinate to display (virtual screen coordinate of topleft corner of the viewport).
+	int32 next_scrollpos_y;   ///< Next y coordinate to display (virtual screen coordinate of topleft corner of the viewport).
+	bool force_update_overlay_pending; ///< Forced overlay update is pending (see SetViewportPosition)
 };
 
 struct QueryString;

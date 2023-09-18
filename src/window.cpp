@@ -3365,11 +3365,16 @@ void UpdateWindows()
 		}
 	}
 
+	for (Window *w : Window::Iterate()) {
+		/* Update viewport only if window is not shaded. */
+		if (w->viewport != nullptr && !w->IsShaded()) UpdateNextViewportPosition(w);
+	}
+
 	DrawDirtyBlocks();
 
 	for (Window *w : Window::Iterate()) {
 		/* Update viewport only if window is not shaded. */
-		if (w->viewport != nullptr && !w->IsShaded()) UpdateViewportPosition(w);
+		if (w->viewport != nullptr && !w->IsShaded()) ApplyNextViewportPosition(w);
 	}
 	ViewportDoDrawProcessAllPending();
 	NetworkDrawChatMessage();

@@ -4023,10 +4023,10 @@ static inline void ClampViewportToMap(const Viewport *vp, int *scroll_x, int *sc
 }
 
 /**
- * Update the viewport position being displayed.
+ * Update the next viewport position being displayed.
  * @param w %Window owning the viewport.
  */
-void UpdateViewportPosition(Window *w)
+void UpdateNextViewportPosition(Window *w)
 {
 	const Viewport *vp = w->viewport;
 
@@ -4034,9 +4034,9 @@ void UpdateViewportPosition(Window *w)
 		const Vehicle *veh = Vehicle::Get(w->viewport->follow_vehicle);
 		Point pt = MapXYZToViewport(vp, veh->x_pos, veh->y_pos, veh->z_pos);
 
-		w->viewport->scrollpos_x = pt.x;
-		w->viewport->scrollpos_y = pt.y;
-		SetViewportPosition(w, pt.x, pt.y, false);
+		w->viewport->next_scrollpos_x = pt.x;
+		w->viewport->next_scrollpos_y = pt.y;
+		w->viewport->force_update_overlay_pending = false;
 	} else {
 		/* Ensure the destination location is within the map */
 		ClampViewportToMap(vp, &w->viewport->dest_scrollpos_x, &w->viewport->dest_scrollpos_y);
@@ -4044,27 +4044,38 @@ void UpdateViewportPosition(Window *w)
 		int delta_x = w->viewport->dest_scrollpos_x - w->viewport->scrollpos_x;
 		int delta_y = w->viewport->dest_scrollpos_y - w->viewport->scrollpos_y;
 
+		w->viewport->next_scrollpos_x = w->viewport->scrollpos_x;
+		w->viewport->next_scrollpos_y = w->viewport->scrollpos_y;
+
 		bool update_overlay = false;
 		if (delta_x != 0 || delta_y != 0) {
 			if (_settings_client.gui.smooth_scroll) {
 				int max_scroll = ScaleByMapSize1D(512 * ZOOM_LVL_BASE);
 				/* Not at our desired position yet... */
-				w->viewport->scrollpos_x += Clamp(DivAwayFromZero(delta_x, 4), -max_scroll, max_scroll);
-				w->viewport->scrollpos_y += Clamp(DivAwayFromZero(delta_y, 4), -max_scroll, max_scroll);
+				w->viewport->next_scrollpos_x += Clamp(DivAwayFromZero(delta_x, 4), -max_scroll, max_scroll);
+				w->viewport->next_scrollpos_y += Clamp(DivAwayFromZero(delta_y, 4), -max_scroll, max_scroll);
 			} else {
-				w->viewport->scrollpos_x = w->viewport->dest_scrollpos_x;
-				w->viewport->scrollpos_y = w->viewport->dest_scrollpos_y;
+				w->viewport->next_scrollpos_x = w->viewport->dest_scrollpos_x;
+				w->viewport->next_scrollpos_y = w->viewport->dest_scrollpos_y;
 			}
-			update_overlay = (w->viewport->scrollpos_x == w->viewport->dest_scrollpos_x &&
-								w->viewport->scrollpos_y == w->viewport->dest_scrollpos_y);
+			update_overlay = (w->viewport->next_scrollpos_x == w->viewport->dest_scrollpos_x &&
+								w->viewport->next_scrollpos_y == w->viewport->dest_scrollpos_y);
 		}
+		w->viewport->force_update_overlay_pending = update_overlay;
 
-		ClampViewportToMap(vp, &w->viewport->scrollpos_x, &w->viewport->scrollpos_y);
+		ClampViewportToMap(vp, &w->viewport->next_scrollpos_x, &w->viewport->next_scrollpos_y);
 
 		if (_scrolling_viewport == w) UpdateActiveScrollingViewport(w);
-
-		SetViewportPosition(w, w->viewport->scrollpos_x, w->viewport->scrollpos_y, update_overlay);
 	}
+}
+
+/**
+ * Apply the next viewport position being displayed.
+ * @param w %Window owning the viewport.
+ */
+void ApplyNextViewportPosition(Window *w)
+{
+	SetViewportPosition(w, w->viewport->next_scrollpos_x, w->viewport->next_scrollpos_y, w->viewport->force_update_overlay_pending);
 }
 
 void UpdateViewportSizeZoom(Viewport *vp)
