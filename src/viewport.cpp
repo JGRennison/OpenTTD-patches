@@ -3324,32 +3324,29 @@ static inline void PixelBlend(uint32 * const d, const uint32 s)
 static void ViewportMapDrawScrollingViewportBox(const Viewport * const vp)
 {
 	if (_scrolling_viewport && _scrolling_viewport->viewport) {
-		const Viewport * const vp_scrolling = _scrolling_viewport->viewport;
+		const ViewportData * const vp_scrolling = _scrolling_viewport->viewport;
 		if (vp_scrolling->zoom < ZOOM_LVL_DRAW_MAP) {
+			const int w = UnScaleByZoom(_vdd->dpi.width, vp->zoom);
+			const int l = UnScaleByZoomLower(vp_scrolling->next_scrollpos_x - _vdd->dpi.left, _vdd->dpi.zoom);
+			const int r = UnScaleByZoomLower(vp_scrolling->next_scrollpos_x + vp_scrolling->virtual_width - _vdd->dpi.left, _vdd->dpi.zoom);
 			/* Check intersection of dpi and vp_scrolling */
-			const int mask = ScaleByZoom(-1, vp->zoom);
-			const int vp_scrolling_virtual_top_mask = vp_scrolling->virtual_top & mask;
-			const int vp_scrolling_virtual_bottom_mask = (vp_scrolling->virtual_top + vp_scrolling->virtual_height) & mask;
-			const int t_inter = std::max(vp_scrolling_virtual_top_mask, _vdd->dpi.top);
-			const int b_inter = std::min(vp_scrolling_virtual_bottom_mask, _vdd->dpi.top + _vdd->dpi.height);
-			if (t_inter < b_inter) {
-				const int vp_scrolling_virtual_left_mask = vp_scrolling->virtual_left & mask;
-				const int vp_scrolling_virtual_right_mask = (vp_scrolling->virtual_left + vp_scrolling->virtual_width) & mask;
-				const int l_inter = std::max(vp_scrolling_virtual_left_mask, _vdd->dpi.left);
-				const int r_inter = std::min(vp_scrolling_virtual_right_mask, _vdd->dpi.left + _vdd->dpi.width);
-				if (l_inter < r_inter) {
+			if (l < w && r >= 0) {
+				const int h = UnScaleByZoom(_vdd->dpi.height, vp->zoom);
+				const int t = UnScaleByZoomLower(vp_scrolling->next_scrollpos_y - _vdd->dpi.top, _vdd->dpi.zoom);
+				const int b = UnScaleByZoomLower(vp_scrolling->next_scrollpos_y + vp_scrolling->virtual_height - _vdd->dpi.top, _vdd->dpi.zoom);
+				if (t < h && b >= 0) {
 					/* OK, so we can draw something that tells where the scrolling viewport is */
 					Blitter * const blitter = BlitterFactory::GetCurrentBlitter();
-					const int w_inter = UnScaleByZoom(r_inter - l_inter, vp->zoom);
-					const int h_inter = UnScaleByZoom(b_inter - t_inter, vp->zoom);
-					const int x = UnScaleByZoom(l_inter - _vdd->dpi.left, vp->zoom);
-					const int y = UnScaleByZoom(t_inter - _vdd->dpi.top, vp->zoom);
+					const int l_inter = std::max(l, 0);
+					const int r_inter = std::min(r, w);
+					const int t_inter = std::max(t, 0);
+					const int b_inter = std::min(b, h);
 
 					/* If asked, with 32bpp we can do some blending */
 					if (_settings_client.gui.show_scrolling_viewport_on_map >= 2 && blitter->GetScreenDepth() == 32) {
-						for (int j = y; j < y + h_inter; j++) {
-							uint32 *buf = (uint32*) blitter->MoveTo(_vdd->dpi.dst_ptr, x, j);
-							for (int i = 0; i < w_inter; i++) {
+						for (int j = t_inter; j < b_inter; j++) {
+							uint32 *buf = (uint32*) blitter->MoveTo(_vdd->dpi.dst_ptr, 0, j);
+							for (int i = l_inter; i < r_inter; i++) {
 								PixelBlend(buf + i, 0x40FCFCFC);
 							}
 						}
@@ -3357,18 +3354,26 @@ static void ViewportMapDrawScrollingViewportBox(const Viewport * const vp)
 
 					/* Draw area contour */
 					if (_settings_client.gui.show_scrolling_viewport_on_map != 2) {
-						if (t_inter == vp_scrolling_virtual_top_mask)
-							for (int i = x; i < x + w_inter; i += 2)
-								blitter->SetPixel(_vdd->dpi.dst_ptr, i, y, PC_WHITE);
-						if (b_inter == vp_scrolling_virtual_bottom_mask)
-							for (int i = x; i < x + w_inter; i += 2)
-								blitter->SetPixel(_vdd->dpi.dst_ptr, i, y + h_inter, PC_WHITE);
-						if (l_inter == vp_scrolling_virtual_left_mask)
-							for (int j = y; j < y + h_inter; j += 2)
-								blitter->SetPixel(_vdd->dpi.dst_ptr, x, j, PC_WHITE);
-						if (r_inter == vp_scrolling_virtual_right_mask)
-							for (int j = y; j < y + h_inter; j += 2)
-								blitter->SetPixel(_vdd->dpi.dst_ptr, x + w_inter, j, PC_WHITE);
+						if (t >= 0) {
+							for (int i = l_inter; i < r_inter; i += 2) {
+								blitter->SetPixel(_vdd->dpi.dst_ptr, i, t, PC_WHITE);
+							}
+						}
+						if (b < h) {
+							for (int i = l_inter; i < r_inter; i += 2) {
+								blitter->SetPixel(_vdd->dpi.dst_ptr, i, b, PC_WHITE);
+							}
+						}
+						if (l >= 0) {
+							for (int j = t_inter; j < b_inter; j += 2) {
+								blitter->SetPixel(_vdd->dpi.dst_ptr, l, j, PC_WHITE);
+							}
+						}
+						if (r < w) {
+							for (int j = t_inter; j < b_inter; j += 2) {
+								blitter->SetPixel(_vdd->dpi.dst_ptr, r, j, PC_WHITE);
+							}
+						}
 					}
 				}
 			}
@@ -4113,18 +4118,8 @@ void UpdateActiveScrollingViewport(Window *w)
 
 	const int gap = ScaleByZoom(1, ZOOM_LVL_MAX);
 
-	auto get_bounds = [&gap](const ViewportData *vp) -> Rect {
-		int lr_low = vp->virtual_left;
-		int lr_hi = vp->dest_scrollpos_x;
-		if (lr_low > lr_hi) Swap(lr_low, lr_hi);
-		int right = lr_hi + vp->virtual_width + gap;
-
-		int tb_low = vp->virtual_top;
-		int tb_hi = vp->scrollpos_y;
-		if (tb_low > tb_hi) Swap(tb_low, tb_hi);
-		int bottom = tb_hi + vp->virtual_height + gap;
-
-		return { lr_low, tb_low, right, bottom };
+	auto get_bounds = [](const ViewportData *vp) -> Rect {
+		return { vp->next_scrollpos_x, vp->next_scrollpos_y, vp->next_scrollpos_x + vp->virtual_width + 1, vp->next_scrollpos_y + vp->virtual_height + 1 };
 	};
 
 	if (w && !bound_valid) {
@@ -4141,8 +4136,8 @@ void UpdateActiveScrollingViewport(Window *w)
 		const Rect &b = _scrolling_viewport_bound;
 		if (a.left != b.left) MarkAllViewportMapsDirty(std::min(a.left, b.left) - gap, std::min(a.top, b.top) - gap, std::max(a.left, b.left) + gap, std::max(a.bottom, b.bottom) + gap);
 		if (a.top != b.top) MarkAllViewportMapsDirty(std::min(a.left, b.left) - gap, std::min(a.top, b.top) - gap, std::max(a.right, b.right) + gap, std::max(a.top, b.top) + gap);
-		if (a.right != b.right) MarkAllViewportMapsDirty(std::min(a.right, b.right) - (2 * gap), std::min(a.top, b.top) - gap, std::max(a.right, b.right) + gap, std::max(a.bottom, b.bottom) + gap);
-		if (a.bottom != b.bottom) MarkAllViewportMapsDirty(std::min(a.left, b.left) - gap, std::min(a.bottom, b.bottom) - (2 * gap), std::max(a.right, b.right) + gap, std::max(a.bottom, b.bottom) + gap);
+		if (a.right != b.right) MarkAllViewportMapsDirty(std::min(a.right, b.right) - gap, std::min(a.top, b.top) - gap, std::max(a.right, b.right) + gap, std::max(a.bottom, b.bottom) + gap);
+		if (a.bottom != b.bottom) MarkAllViewportMapsDirty(std::min(a.left, b.left) - gap, std::min(a.bottom, b.bottom) - gap, std::max(a.right, b.right) + gap, std::max(a.bottom, b.bottom) + gap);
 		_scrolling_viewport_bound = a;
 	}
 }
