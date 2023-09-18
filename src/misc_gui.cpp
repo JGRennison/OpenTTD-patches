@@ -1352,6 +1352,7 @@ static WindowDesc _query_desc(
 
 static void RemoveExistingQueryWindow(Window *parent, QueryCallbackProc *callback)
 {
+	if (!HaveWindowByClass(WC_CONFIRM_POPUP_QUERY)) return;
 	for (Window *w : Window::IterateFromBack()) {
 		if (w->window_class != WC_CONFIRM_POPUP_QUERY) continue;
 

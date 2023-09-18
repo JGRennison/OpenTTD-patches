@@ -88,7 +88,7 @@ bool _mouse_hovering;      ///< The mouse is hovering over the same point.
 
 SpecialMouseMode _special_mouse_mode; ///< Mode of the mouse.
 
-static std::bitset<WC_END> _present_window_types;
+std::bitset<WC_END> _present_window_types;
 
 /**
  * List of all WindowDescs.
@@ -1105,6 +1105,8 @@ void Window::SetShaded(bool make_shaded)
  */
 static Window *FindChildWindow(const Window *w, WindowClass wc)
 {
+	if (wc < WC_END && !_present_window_types[wc]) return nullptr;
+
 	for (Window *v : Window::IterateFromBack()) {
 		if ((wc == WC_INVALID || wc == v->window_class) && v->parent == w) return v;
 	}

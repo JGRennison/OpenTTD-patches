@@ -1256,6 +1256,12 @@ void ShowTimetableWindow(const Vehicle *v)
 
 void SetTimetableWindowsDirty(const Vehicle *v, SetTimetableWindowsDirtyFlags flags)
 {
+	if (!(HaveWindowByClass(WC_VEHICLE_TIMETABLE) ||
+			((flags & STWDF_SCHEDULED_DISPATCH) && HaveWindowByClass(WC_SCHDISPATCH_SLOTS)) ||
+			((flags & STWDF_ORDERS) && HaveWindowByClass(WC_VEHICLE_ORDERS)))) {
+		return;
+	}
+
 	v = v->FirstShared();
 	for (Window *w : Window::Iterate()) {
 		if (w->window_class == WC_VEHICLE_TIMETABLE ||

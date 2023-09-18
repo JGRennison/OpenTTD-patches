@@ -14,6 +14,8 @@
 #include "company_type.h"
 #include "core/geometry_type.hpp"
 
+#include <bitset>
+
 Window *FindWindowById(WindowClass cls, WindowNumber number);
 Window *FindWindowByClass(WindowClass cls);
 Window *GetMainWindow();
@@ -60,6 +62,12 @@ void CloseAllWindowsById(WindowClass cls, WindowNumber number, bool force = true
 void CloseWindowByClass(WindowClass cls);
 
 bool FocusWindowById(WindowClass cls, WindowNumber number);
+
+inline bool HaveWindowByClass(WindowClass wc)
+{
+	extern std::bitset<WC_END> _present_window_types;
+	return wc < WC_END && _present_window_types[wc];
+}
 
 bool EditBoxInGlobalFocus();
 bool FocusedWindowIsConsole();
