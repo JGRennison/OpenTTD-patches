@@ -1251,7 +1251,7 @@ void ShowScheduledDispatchAddSlotsWindow(SchdispatchWindow *parent, int window_n
 void SchdispatchInvalidateWindows(const Vehicle *v)
 {
 	v = v->FirstShared();
-	for (Window *w : Window::IterateFromBack()) {
+	for (Window *w : Window::Iterate()) {
 		if (w->window_class == WC_VEHICLE_TIMETABLE) {
 			if (static_cast<GeneralVehicleWindow *>(w)->vehicle->FirstShared() == v) w->SetDirty();
 		}

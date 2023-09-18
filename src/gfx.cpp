@@ -1717,7 +1717,7 @@ void DrawDirtyBlocks()
 
 	if (_whole_screen_dirty) {
 		RedrawScreenRect(0, 0, _screen.width, _screen.height);
-		for (Window *w : Window::IterateFromBack()) {
+		for (Window *w : Window::Iterate()) {
 			w->flags &= ~(WF_DIRTY | WF_WIDGETS_DIRTY | WF_DRAG_DIRTIED);
 		}
 		_whole_screen_dirty = false;
@@ -2354,7 +2354,7 @@ bool AdjustGUIZoom(AdjustGUIZoomMode mode)
 	/* Adjust all window sizes to match the new zoom level, so that they don't appear
 	   to move around when the application is moved to a screen with different DPI. */
 	auto zoom_shift = old_gui_zoom - _gui_zoom;
-	for (Window *w : Window::IterateFromBack()) {
+	for (Window *w : Window::Iterate()) {
 		if (mode == AGZM_AUTOMATIC) {
 			w->left   = (w->left   * _gui_scale) / old_scale;
 			w->top    = (w->top    * _gui_scale) / old_scale;

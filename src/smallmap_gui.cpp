@@ -168,7 +168,7 @@ uint _company_to_list_pos[MAX_COMPANIES];
 
 static void NotifyAllViewports(ViewportMapType map_type)
 {
-	for (Window *w : Window::IterateFromBack()) {
+	for (Window *w : Window::Iterate()) {
 		if (w->viewport != nullptr) {
 			if (w->viewport->zoom >= ZOOM_LVL_DRAW_MAP && w->viewport->map_type == map_type) {
 				ClearViewportLandPixelCache(w->viewport);

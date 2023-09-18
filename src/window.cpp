@@ -3289,7 +3289,7 @@ void InputLoop()
  */
 void CallWindowRealtimeTickEvent(uint delta_ms)
 {
-	for (Window *w : Window::IterateFromFront()) {
+	for (Window *w : Window::Iterate()) {
 		w->OnRealtimeTick(delta_ms);
 	}
 }
@@ -3322,7 +3322,7 @@ void UpdateWindows()
 	_window_update_number++;
 
 	/* Process invalidations before anything else. */
-	for (Window *w : Window::IterateFromFront()) {
+	for (Window *w : Window::Iterate()) {
 		w->ProcessScheduledInvalidations();
 		w->ProcessHighlightedInvalidations();
 	}
@@ -3355,7 +3355,7 @@ void UpdateWindows()
 	if (window_timer.HasElapsed()) {
 		window_timer.SetInterval(MILLISECONDS_PER_TICK);
 
-		for (Window *w : Window::IterateFromFront()) {
+		for (Window *w : Window::Iterate()) {
 			if ((w->flags & WF_WHITE_BORDER) && --w->white_border_timer == 0) {
 				CLRBITS(w->flags, WF_WHITE_BORDER);
 				w->SetDirty();
@@ -3365,7 +3365,7 @@ void UpdateWindows()
 
 	DrawDirtyBlocks();
 
-	for (Window *w : Window::IterateFromBack()) {
+	for (Window *w : Window::Iterate()) {
 		/* Update viewport only if window is not shaded. */
 		if (w->viewport != nullptr && !w->IsShaded()) UpdateViewportPosition(w);
 	}
@@ -3386,7 +3386,7 @@ void SetWindowDirty(WindowClass cls, WindowNumber number)
 {
 	if (cls < WC_END && !_present_window_types[cls]) return;
 
-	for (Window *w : Window::IterateFromBack()) {
+	for (Window *w : Window::Iterate()) {
 		if (w->window_class == cls && w->window_number == number) w->SetDirty();
 	}
 }
@@ -3401,7 +3401,7 @@ void SetWindowWidgetDirty(WindowClass cls, WindowNumber number, byte widget_inde
 {
 	if (cls < WC_END && !_present_window_types[cls]) return;
 
-	for (Window *w : Window::IterateFromBack()) {
+	for (Window *w : Window::Iterate()) {
 		if (w->window_class == cls && w->window_number == number) {
 			w->SetWidgetDirty(widget_index);
 		}
@@ -3416,7 +3416,7 @@ void SetWindowClassesDirty(WindowClass cls)
 {
 	if (cls < WC_END && !_present_window_types[cls]) return;
 
-	for (Window *w : Window::IterateFromBack()) {
+	for (Window *w : Window::Iterate()) {
 		if (w->window_class == cls) w->SetDirty();
 	}
 }
@@ -3492,7 +3492,7 @@ void InvalidateWindowData(WindowClass cls, WindowNumber number, int data, bool g
 {
 	if (cls < WC_END && !_present_window_types[cls]) return;
 
-	for (Window *w : Window::IterateFromBack()) {
+	for (Window *w : Window::Iterate()) {
 		if (w->window_class == cls && w->window_number == number) {
 			w->InvalidateData(data, gui_scope);
 		}
@@ -3511,7 +3511,7 @@ void InvalidateWindowClassesData(WindowClass cls, int data, bool gui_scope)
 {
 	if (cls < WC_END && !_present_window_types[cls]) return;
 
-	for (Window *w : Window::IterateFromBack()) {
+	for (Window *w : Window::Iterate()) {
 		if (w->window_class == cls) {
 			w->InvalidateData(data, gui_scope);
 		}
@@ -3523,7 +3523,7 @@ void InvalidateWindowClassesData(WindowClass cls, int data, bool gui_scope)
  */
 void CallWindowGameTickEvent()
 {
-	for (Window *w : Window::IterateFromFront()) {
+	for (Window *w : Window::Iterate()) {
 		w->OnGameTick();
 	}
 }
@@ -3723,7 +3723,7 @@ int PositionNetworkChatWindow(Window *w)
  */
 void ChangeVehicleViewports(VehicleID from_index, VehicleID to_index)
 {
-	for (Window *w : Window::IterateFromBack()) {
+	for (Window *w : Window::Iterate()) {
 		if (w->viewport != nullptr && w->viewport->follow_vehicle == from_index) {
 			w->viewport->follow_vehicle = to_index;
 			w->SetDirty();
