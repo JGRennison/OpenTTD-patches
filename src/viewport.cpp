@@ -561,8 +561,6 @@ void InitializeWindowViewport(Window *w, int x, int y,
 	FillViewportCoverageRect();
 }
 
-static Point _vp_move_offs;
-
 struct ViewportRedrawRegion {
 	Rect coords;
 };
@@ -666,11 +664,10 @@ static void DoSetViewportPositionFillRegion(int left, int top, int width, int he
 	DrawOverlappedWindowForAll(left, top, left + width, top + height);
 };
 
-static void DoSetViewportPosition(Window *w, const int vp_left, const int vp_top, const int vp_width, const int vp_height)
+static void DoSetViewportPosition(Window *w, const Point move_offset, const int vp_left, const int vp_top, const int vp_width, const int vp_height)
 {
-	const int xo = _vp_move_offs.x;
-	const int yo = _vp_move_offs.y;
-
+	const int xo = move_offset.x;
+	const int yo = move_offset.y;
 
 	IncrementWindowUpdateNumber();
 
@@ -789,8 +786,7 @@ static void SetViewportPosition(Window *w, int x, int y, bool force_update_overl
 
 	if (old_top == 0 && old_left == 0) return;
 
-	_vp_move_offs.x = old_left;
-	_vp_move_offs.y = old_top;
+	Point move_offset = { old_left, old_top };
 
 	left = vp->left;
 	top = vp->top;
@@ -814,11 +810,11 @@ static void SetViewportPosition(Window *w, int x, int y, bool force_update_overl
 		i = top + height - _screen.height;
 		if (i >= 0) height -= i;
 
-		if (height > 0 && (_vp_move_offs.x != 0 || _vp_move_offs.y != 0)) {
+		if (height > 0 && (move_offset.x != 0 || move_offset.y != 0)) {
 			ClearViewportLandPixelCache(vp);
-			SCOPE_INFO_FMT([&], "DoSetViewportPosition: %d, %d, %d, %d, %d, %d, %s", left, top, width, height, _vp_move_offs.x, _vp_move_offs.y, scope_dumper().WindowInfo(w));
+			SCOPE_INFO_FMT([&], "DoSetViewportPosition: %d, %d, %d, %d, %d, %d, %s", left, top, width, height, move_offset.x, move_offset.y, scope_dumper().WindowInfo(w));
 			w->viewport->update_vehicles = true;
-			DoSetViewportPosition((Window *) w->z_front, left, top, width, height);
+			DoSetViewportPosition((Window *) w->z_front, move_offset, left, top, width, height);
 			ClearViewportCache(w->viewport);
 			FillViewportCoverageRect();
 		}
