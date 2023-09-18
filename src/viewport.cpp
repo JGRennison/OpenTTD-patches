@@ -4266,9 +4266,8 @@ void ViewportRouteOverlay::MarkAllRouteStepsDirty(const Vehicle *veh)
  */
 void MarkAllViewportMapsDirty(int left, int top, int right, int bottom)
 {
-	for (Window *w : Window::Iterate()) {
-		Viewport *vp = w->viewport;
-		if (vp != nullptr && vp->zoom >= ZOOM_LVL_DRAW_MAP) {
+	for (Viewport *vp : _viewport_window_cache) {
+		if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
 			MarkViewportDirty(vp, left, top, right, bottom, VMDF_NOT_LANDSCAPE);
 		}
 	}
@@ -4302,9 +4301,8 @@ void MarkWholeNonMapViewportsDirty()
  */
 void MarkAllViewportOverlayStationLinksDirty(const Station *st)
 {
-	for (Window *w : Window::Iterate()) {
-		Viewport *vp = w->viewport;
-		if (vp != nullptr && vp->overlay != nullptr) {
+	for (Viewport *vp : _viewport_window_cache) {
+		if (vp->overlay != nullptr) {
 			vp->overlay->MarkStationViewportLinksDirty(st);
 		}
 	}
