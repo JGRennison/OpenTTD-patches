@@ -156,6 +156,7 @@ enum SlXvFeatureIndex {
 	XSLFI_DISASTER_VEH_STATE,                     ///< See: SLV_DISASTER_VEH_STATE (PR #10798)
 	XSLFI_SAVEGAME_ID,                            ///< See: SLV_SAVEGAME_ID (PR #10719)
 	XSLFI_NEWGRF_LAST_SERVICE,                    ///< See: SLV_NEWGRF_LAST_SERVICE (PR #11124)
+	XSLFI_CARGO_TRAVELLED,                        ///< See: SLV_CARGO_TRAVELLED (PR #11283)
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk

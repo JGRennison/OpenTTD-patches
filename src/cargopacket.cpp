@@ -155,12 +155,16 @@ CargoPacket::CargoPacket(uint16_t count, Money feeder_share, const CargoPacket &
 		periods_in_transit(original.periods_in_transit),
 		feeder_share(feeder_share),
 		source_xy(original.source_xy),
+		travelled(original.travelled),
 		source_id(original.source_id),
 		source_type(original.source_type),
 		first_station(original.first_station),
 		next_hop(original.next_hop)
 {
 	dbg_assert(count != 0);
+#ifdef WITH_FULL_ASSERTS
+	this->flags |= (original.flags & CPF_IN_VEHICLE);
+#endif /* WITH_FULL_ASSERTS */
 }
 
 /** Destroy the packet. */
@@ -783,12 +787,13 @@ uint VehicleCargoList::Reassign<VehicleCargoList::MTA_DELIVER, VehicleCargoList:
  * @param max_move Maximum amount of cargo to move.
  * @param dest Station the cargo is returned to.
  * @param next ID of the next station the cargo wants to go to.
+ * @param current_tile Current tile the cargo handling is happening on.
  * @return Amount of cargo actually returned.
  */
-uint VehicleCargoList::Return(uint max_move, StationCargoList *dest, StationID next)
+uint VehicleCargoList::Return(uint max_move, StationCargoList *dest, StationID next, TileIndex current_tile)
 {
 	max_move = std::min(this->action_counts[MTA_LOAD], max_move);
-	this->PopCargo(CargoReturn(this, dest, max_move, next));
+	this->PopCargo(CargoReturn(this, dest, max_move, next, current_tile));
 	return max_move;
 }
 
@@ -819,7 +824,7 @@ uint VehicleCargoList::Unload(uint max_move, StationCargoList *dest, CargoPaymen
 	uint moved = 0;
 	if (this->action_counts[MTA_TRANSFER] > 0) {
 		uint move = std::min(this->action_counts[MTA_TRANSFER], max_move);
-		this->ShiftCargo(CargoTransfer(this, dest, move));
+		this->ShiftCargo(CargoTransfer(this, dest, move, current_tile));
 		moved += move;
 	}
 	if (this->action_counts[MTA_TRANSFER] == 0 && this->action_counts[MTA_DELIVER] > 0 && moved < max_move) {

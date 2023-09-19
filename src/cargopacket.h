@@ -51,10 +51,17 @@ void ChangeOwnershipOfCargoPacketDeferredPayments(Owner old_owner, Owner new_own
  */
 struct CargoPacket : CargoPacketPool::PoolItem<&_cargopacket_pool> {
 private:
+	/* A mathematical vector from (0,0). */
+	struct Vector {
+		int32_t x;
+		int32_t y;
+	};
+
 	uint16 count = 0;                              ///< The amount of cargo in this packet.
 	uint16 periods_in_transit = 0;                 ///< Amount of cargo aging periods this packet has been in transit.
 	Money feeder_share = 0;                        ///< Value of feeder pickup to be paid for on delivery of cargo.
 	TileIndex source_xy = INVALID_TILE;            ///< The origin of the cargo.
+	Vector travelled = {0, 0};                     ///< If cargo is in station: the vector from the unload tile to the source tile. If in vehicle: an intermediate value.
 	SourceID source_id = INVALID_SOURCE;           ///< Index of industry/town/HQ, INVALID_SOURCE if unknown/invalid.
 	SourceType source_type = SourceType::Industry; ///< Type of \c source_id.
 	uint8 flags = 0;                               ///< NOSAVE: temporary flags
@@ -64,6 +71,7 @@ private:
 	/** Cargo packet flag bits in CargoPacket::flags. */
 	enum CargoPacketFlags {
 		CPF_HAS_DEFERRED_PAYMENT = 0x01, ///< Cargo packet has 1 or more deferred payment(s)
+		CPF_IN_VEHICLE           = 0x02, ///< Whether this cargo is in a vehicle or not. Only used when: defined(WITH_FULL_ASSERTS)
 	};
 
 	/** The CargoList caches, thus needs to know about it. */
@@ -98,22 +106,51 @@ public:
 	}
 
 	/**
-	 * Set the origin of the packet.
+	 * Update for the cargo being loaded on this tile.
 	 *
-	 * Can only be set once.
+	 * When a CargoPacket is created, it is moved to a station. But at that
+	 * moment in time it is not known yet at which tile the cargo will be
+	 * picked up. As this tile is used for payment information, we delay
+	 * setting the source_xy till first pickup, getting a better idea where
+	 * a cargo started from.
 	 *
-	 * When a packet is created, it is moved to a station. But at that moment
-	 * in time it is not known yet at which tile the cargo will be picked up.
-	 * As this tile is used for payment information, we delay setting the
-	 * source_xy till first pickup.
+	 * Further more, we keep track of the amount of tiles the cargo moved
+	 * inside a vehicle. This is used in GetDistance() below.
 	 *
 	 * @param tile Tile the cargo is being picked up from.
 	 */
-	void SetSourceXY(TileIndex tile)
+	void UpdateLoadingTile(TileIndex tile)
 	{
 		if (this->source_xy == INVALID_TILE) {
 			this->source_xy = tile;
 		}
+
+#ifdef WITH_FULL_ASSERTS
+		assert((this->flags & CPF_IN_VEHICLE) == 0);
+		this->flags |= CPF_IN_VEHICLE;
+#endif /* WITH_FULL_ASSERTS */
+
+		/* We want to calculate the vector from tile-unload to tile-load. As
+		 * we currently only know the latter, add it. When we know where we unload,
+		 * we subtract is, giving us our vector (unload - load). */
+		this->travelled.x += TileX(tile);
+		this->travelled.y += TileY(tile);
+	}
+
+	/**
+	 * Update for the cargo being unloaded on this tile.
+	 *
+	 * @param tile Tile the cargo is being dropped off at.
+	 */
+	void UpdateUnloadingTile(TileIndex tile)
+	{
+#ifdef WITH_FULL_ASSERTS
+		assert((this->flags & CPF_IN_VEHICLE) != 0);
+		this->flags &= ~CPF_IN_VEHICLE;
+#endif /* WITH_FULL_ASSERTS */
+
+		this->travelled.x -= TileX(tile);
+		this->travelled.y -= TileY(tile);
 	}
 
 	/**
@@ -205,7 +242,36 @@ public:
 	inline uint GetDistance(TileIndex current_tile) const
 	{
 		assert(this->source_xy != INVALID_TILE);
-		return DistanceManhattan(this->source_xy, current_tile);
+#ifdef WITH_FULL_ASSERTS
+		assert((this->flags & CPF_IN_VEHICLE) != 0);
+#endif /* WITH_FULL_ASSERTS */
+
+		/* Distance is always requested when the cargo is still inside the
+		 * vehicle. So first finish the calculation for travelled to
+		 * become a vector. */
+		auto local_travelled = travelled;
+		local_travelled.x -= TileX(current_tile);
+		local_travelled.y -= TileY(current_tile);
+
+		/* Cargo-movement is a vector that indicates how much the cargo has
+		 * actually traveled in a vehicle. This is the distance you get paid
+		 * for. However, one could construct a route where this vector would
+		 * be really long. To not overpay the player, cap out at the distance
+		 * between source and destination.
+		 *
+		 * This way of calculating is to counter people moving cargo for free
+		 * and instantly in stations, where you deliver it in one part of the
+		 * station and pick it up in another. By using the actual distance
+		 * traveled in a vehicle, using this trick doesn't give you more money.
+		 *
+		 * However, especially in large networks with large transfer station,
+		 * etc, one could actually make the route a lot longer. In that case,
+		 * use the actual distance between source and destination.
+		 */
+
+		uint distance_travelled = abs(local_travelled.x) + abs(local_travelled.y);
+		uint distance_source_dest = DistanceManhattan(this->source_xy, current_tile);
+		return std::min(distance_travelled, distance_source_dest);
 	}
 
 	/**
@@ -475,7 +541,7 @@ public:
 
 	template<MoveToAction Tfrom, MoveToAction Tto>
 	uint Reassign(uint max_move);
-	uint Return(uint max_move, StationCargoList *dest, StationID next_station);
+	uint Return(uint max_move, StationCargoList *dest, StationID next_station, TileIndex current_tile);
 	uint Unload(uint max_move, StationCargoList *dest, CargoPayment *payment, TileIndex current_tile);
 	uint Shift(uint max_move, VehicleCargoList *dest);
 	uint Truncate(uint max_move = UINT_MAX);

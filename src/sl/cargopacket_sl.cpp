@@ -81,6 +81,45 @@ extern btree::btree_map<uint64, Money> _cargo_packet_deferred_payments;
 	if (IsSavegameVersionBefore(SLV_181)) {
 		for (Vehicle *v : Vehicle::Iterate()) v->cargo.KeepAll();
 	}
+
+	/* Before this version, we didn't track how far cargo actually traveled in vehicles. Make best-effort estimates of this. */
+	if (IsSavegameVersionBefore(SLV_CARGO_TRAVELLED) && SlXvIsFeatureMissing(XSLFI_CARGO_TRAVELLED)) {
+		/* Update the cargo-traveled in stations as if they arrived from the source tile. */
+		for (Station *st : Station::Iterate()) {
+			for (size_t i = 0; i < NUM_CARGO; i++) {
+				GoodsEntry &ge = st->goods[i];
+				if (ge.data == nullptr) continue;
+				auto *packets = ge.data->cargo.Packets();
+				for (auto it = packets->begin(); it != packets->end(); it++) {
+					for (CargoPacket *cp : it->second) {
+						if (cp->source_xy != INVALID_TILE && cp->source_xy != st->xy) {
+							cp->travelled.x = TileX(cp->source_xy) - TileX(st->xy);
+							cp->travelled.y = TileY(cp->source_xy) - TileY(st->xy);
+						}
+					}
+				}
+			}
+		}
+
+		/* Update the cargo-traveled in vehicles as if they were loaded at the source tile. */
+		for (Vehicle *v : Vehicle::Iterate()) {
+			auto *packets = v->cargo.Packets();
+			for (auto it = packets->begin(); it != packets->end(); it++) {
+				if ((*it)->source_xy != INVALID_TILE) {
+					(*it)->UpdateLoadingTile((*it)->source_xy);
+				}
+			}
+		}
+	}
+
+#ifdef WITH_FULL_ASSERTS
+	/* CPF_IN_VEHICLE in flags is a NOSAVE; it tells if cargo is in a vehicle or not. Restore the value in here. */
+	for (Vehicle *v : Vehicle::Iterate()) {
+		for (auto it = v->cargo.Packets()->begin(); it != v->cargo.Packets()->end(); it++) {
+			(*it)->flags |= CPF_IN_VEHICLE;
+		}
+	}
+#endif /* WITH_FULL_ASSERTS */
 }
 
 /**
@@ -121,6 +160,8 @@ SaveLoadTable GetCargoPacketDesc()
 		     SLE_VAR(CargoPacket, feeder_share,    SLE_INT64),
 		 SLE_CONDVAR(CargoPacket, source_type,     SLE_UINT8,  SLV_125, SL_MAX_VERSION),
 		 SLE_CONDVAR(CargoPacket, source_id,       SLE_UINT16, SLV_125, SL_MAX_VERSION),
+		SLE_CONDVAR_X(CargoPacket, travelled.x, SLE_INT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CARGO_TRAVELLED)),
+		SLE_CONDVAR_X(CargoPacket, travelled.y, SLE_INT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CARGO_TRAVELLED)),
 
 		/* Used to be paid_for, but that got changed. */
 		SLE_CONDNULL(1, SL_MIN_VERSION, SLV_121),
