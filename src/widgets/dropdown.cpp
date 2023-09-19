@@ -198,7 +198,7 @@ struct DropdownWindow : Window {
 		}
 	}
 
-	virtual Point OnInitialPosition(int16 sm_width, int16 sm_height, int window_number)
+	virtual Point OnInitialPosition(int16 sm_width, int16 sm_height, int window_number) override
 	{
 		return this->position;
 	}
@@ -235,7 +235,7 @@ struct DropdownWindow : Window {
 		return false;
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	virtual void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (widget != WID_DM_ITEMS) return;
 
@@ -264,7 +264,7 @@ struct DropdownWindow : Window {
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	virtual void OnClick(Point pt, int widget, int click_count) override
 	{
 		if (widget != WID_DM_ITEMS) return;
 		int item;
@@ -275,7 +275,7 @@ struct DropdownWindow : Window {
 		}
 	}
 
-	virtual void OnRealtimeTick(uint delta_ms)
+	virtual void OnRealtimeTick(uint delta_ms) override
 	{
 		if (!this->scrolling_timer.Elapsed(delta_ms)) return;
 		this->scrolling_timer.SetInterval(MILLISECONDS_PER_TICK);
@@ -287,7 +287,7 @@ struct DropdownWindow : Window {
 		}
 	}
 
-	virtual void OnMouseLoop()
+	virtual void OnMouseLoop() override
 	{
 		Window *w2 = FindWindowById(this->parent_wnd_class, this->parent_wnd_num);
 		if (w2 == nullptr) {
@@ -337,7 +337,7 @@ struct DropdownWindow : Window {
 		}
 	}
 
-	virtual void OnFocus(Window *previously_focused_window)
+	virtual void OnFocus(Window *previously_focused_window) override
 	{
 		if (this->sync_parent_focus & DDSF_RECV_FOCUS) {
 			Window *parent = FindWindowById(this->parent_wnd_class, this->parent_wnd_num);
@@ -345,7 +345,7 @@ struct DropdownWindow : Window {
 		}
 	}
 
-	virtual void OnFocusLost(bool closing, Window *newly_focused_window)
+	virtual void OnFocusLost(bool closing, Window *newly_focused_window) override
 	{
 		if (this->sync_parent_focus & DDSF_LOST_FOCUS) {
 			Window *parent = FindWindowById(this->parent_wnd_class, this->parent_wnd_num);
