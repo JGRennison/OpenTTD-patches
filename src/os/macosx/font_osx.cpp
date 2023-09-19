@@ -89,7 +89,7 @@ bool SetFallbackFont(FontCacheSettings *settings, const std::string &language_is
 			/* Save result. */
 			callback->SetFontNames(settings, name);
 			if (!callback->FindMissingGlyphs()) {
-				DEBUG(fontcache, 2, "CT-Font for %s: %s", language_isocode, name);
+				DEBUG(fontcache, 2, "CT-Font for %s: %s", language_isocode.c_str(), name);
 				result = true;
 				break;
 			}
