@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.55.2 (2023-09-20)
+* Fix crash which could occur when drawing with palette animation disabled.
+* Fix multiplayer desync which could occur when adding a track piece of a different rail type to an existing rail tile, where this would change the tile's rail type, but this fails due to an obstruction.
+* Fix graphical issues which could occur with scrolling viewport overlays on map mode viewports.
+* Bump trunk base from commit 3effb8931c36b8bbacae8fe77ad5b85406767d9f to commit 26f3efb419e49885bb0452211a2f359a98a875da.
+
 ### v0.55.1 (2023-09-05)
 * Fix various failures which could occur when running on Windows.
 * Fix autorenew/autoreplace not charging for the cost of a new ship, when replacing a multi-cargo ship.
