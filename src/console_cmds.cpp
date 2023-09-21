@@ -2767,6 +2767,8 @@ DEF_CONSOLE_CMD(ConDumpRoadTypes)
 	IConsolePrintF(CC_DEFAULT, "  Extra flags:");
 	IConsolePrintF(CC_DEFAULT, "    s = not available to scripts (AI/GS)");
 	IConsolePrintF(CC_DEFAULT, "    t = not modifiable by towns");
+	IConsolePrintF(CC_DEFAULT, "    T = disallow tunnels");
+	IConsolePrintF(CC_DEFAULT, "    c = disallow collisions with trains for vehicles of this type");
 
 	btree::btree_map<uint32, const GRFFile *> grfs;
 	for (RoadType rt = ROADTYPE_BEGIN; rt < ROADTYPE_END; rt++) {
@@ -2785,7 +2787,7 @@ DEF_CONSOLE_CMD(ConDumpRoadTypes)
 			grfid = grf->grfid;
 			grfs.insert(std::pair<uint32, const GRFFile *>(grfid, grf));
 		}
-		IConsolePrintF(CC_DEFAULT, "  %02u %s %c%c%c%c, Flags: %c%c%c%c%c, Extra Flags: %c%c, GRF: %08X, %s",
+		IConsolePrintF(CC_DEFAULT, "  %02u %s %c%c%c%c, Flags: %c%c%c%c%c, Extra Flags: %c%c%c%c, GRF: %08X, %s",
 				(uint) rt,
 				RoadTypeIsTram(rt) ? "Tram" : "Road",
 				rti->label >> 24, rti->label >> 16, rti->label >> 8, rti->label,
@@ -2796,6 +2798,8 @@ DEF_CONSOLE_CMD(ConDumpRoadTypes)
 				HasBit(rti->flags, ROTF_TOWN_BUILD)                 ? 'T' : '-',
 				HasBit(rti->extra_flags, RXTF_NOT_AVAILABLE_AI_GS)  ? 's' : '-',
 				HasBit(rti->extra_flags, RXTF_NO_TOWN_MODIFICATION) ? 't' : '-',
+				HasBit(rti->extra_flags, RXTF_NO_TUNNELS)           ? 'T' : '-',
+				HasBit(rti->extra_flags, RXTF_NO_TRAIN_COLLISION)   ? 'c' : '-',
 				BSWAP32(grfid),
 				GetStringPtr(rti->strings.name)
 		);
