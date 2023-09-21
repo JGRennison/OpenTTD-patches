@@ -4080,6 +4080,8 @@ void UpdateNextViewportPosition(Window *w)
  */
 void ApplyNextViewportPosition(Window *w)
 {
+	w->viewport->scrollpos_x = w->viewport->next_scrollpos_x;
+	w->viewport->scrollpos_y = w->viewport->next_scrollpos_y;
 	SetViewportPosition(w, w->viewport->next_scrollpos_x, w->viewport->next_scrollpos_y, w->viewport->force_update_overlay_pending);
 }
 
