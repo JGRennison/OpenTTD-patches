@@ -125,6 +125,9 @@ public:
 	void RemoveByMissingZoomLevels(uint8 lvls)
 	{
 		Sprite *base = this->GetSpritePtr();
+		if (base == nullptr) {
+			return;
+		}
 		if (base->missing_zoom_levels == lvls) {
 			/* erase top level entry */
 			this->ptr.reset(base->next);
