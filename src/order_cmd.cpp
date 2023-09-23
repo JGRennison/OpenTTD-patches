@@ -3290,6 +3290,7 @@ VehicleOrderID AdvanceOrderIndexDeferred(const Vehicle *v, VehicleOrderID index)
 			}
 
 			case OT_DUMMY:
+			case OT_LABEL:
 				break;
 
 			default:
