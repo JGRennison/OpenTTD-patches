@@ -201,6 +201,9 @@ STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_HELPTEXT            :The maximum per
 STR_CONFIG_SETTING_RAIL_DEPOT_SPEED_LIMIT                       :Rail depot maximum speed: {STRING2}
 STR_CONFIG_SETTING_RAIL_DEPOT_SPEED_LIMIT_HELPTEXT              :The maximum permitted speed for trains when entering or exiting a rail depot
 
+STR_CONFIG_SETTING_NON_LEADING_ENGINES_KEEP_NAME                :Non-leading train engines keep custom names: {STRING2}
+STR_CONFIG_SETTING_NON_LEADING_ENGINES_KEEP_NAME_HELPTEXT       :Whether train engines with a custom name should keep their custom name when moved to a non-leading position in a train consist
+
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING                :Pathfind up to back of one-way path signals: {STRING2}
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING_HELPTEXT       :When enabled, the YAPF train pathfinder may pathfind up to the back of a one-way path signal.
 

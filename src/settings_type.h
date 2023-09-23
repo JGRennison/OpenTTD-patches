@@ -677,6 +677,7 @@ struct VehicleSettings {
 	bool   drive_through_train_depot;        ///< enable drive-through train depot emulation
 	uint16 through_load_speed_limit;         ///< maximum speed for through load
 	uint16 rail_depot_speed_limit;           ///< maximum speed entering/existing rail depots
+	bool   non_leading_engines_keep_name;    ///< allow engines moved to a non-leading position to retain their custom name
 };
 
 /** Settings related to the economy. */
