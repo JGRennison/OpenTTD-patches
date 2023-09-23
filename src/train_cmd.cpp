@@ -7175,10 +7175,6 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 		return CMD_ERROR;
 	}
 
-	if (!(flags & DC_EXEC)) {
-		return CommandCost();
-	}
-
 	CommandCost buy(EXPENSES_NEW_VEHICLES);
 
 	const bool was_stopped = (incoming->vehstatus & VS_STOPPED) != 0;
@@ -7235,8 +7231,6 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 		}
 	}
 
-	RegisterGameEvents(GEF_TBTR_REPLACEMENT);
-
 	TemplateDepotVehicles depot_vehicles;
 	if (tv->IsSetReuseDepotVehicles()) depot_vehicles.Init(tile);
 
@@ -7244,6 +7238,60 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 		CommandCost refit_cost = DoCommand(unit->tile, unit->index, cid | csubt << 8 | (1 << 16), flags, GetCmdRefitVeh(unit));
 		if (refit_cost.Succeeded()) buy.AddCost(refit_cost);
 	};
+
+	if (!(flags & DC_EXEC)) {
+		/* Simplified operation for cost estimation, this doesn't have to exactly match the actual cost due to CMD_NO_TEST */
+		if (need_replacement || need_refit) {
+			std::vector<const Train *> in;
+			for (const Train *u = incoming; u != nullptr; u = u->GetNextUnit()) {
+				in.push_back(u);
+			}
+			auto process_unit = [&](const TemplateVehicle *cur_tmpl) {
+				for (auto iter = in.begin(); iter != in.end(); ++iter) {
+					const Train *u = *iter;
+					if (u->engine_type == cur_tmpl->engine_type) {
+						/* use existing engine */
+						in.erase(iter);
+						if (refit_to_template) {
+							buy.AddCost(DoCommand(u->tile, u->index, cur_tmpl->cargo_type | cur_tmpl->cargo_subtype << 8 | (1 << 16) | (1 << 31), flags, GetCmdRefitVeh(u)));
+						} else {
+							refit_unit(u, store_refit_ct, store_refit_csubt);
+						}
+						return;
+					}
+				}
+
+				if (tv->IsSetReuseDepotVehicles()) {
+					const Train *depot_eng = depot_vehicles.ContainsEngine(cur_tmpl->engine_type, incoming);
+					if (depot_eng != nullptr) {
+						depot_vehicles.RemoveVehicle(depot_eng->index);
+						if (refit_to_template) {
+							buy.AddCost(DoCommand(depot_eng->tile, depot_eng->index, cur_tmpl->cargo_type | cur_tmpl->cargo_subtype << 8 | (1 << 16) | (1 << 31), flags, GetCmdRefitVeh(depot_eng)));
+						} else {
+							refit_unit(depot_eng, store_refit_ct, store_refit_csubt);
+						}
+						return;
+					}
+				}
+
+				CargoID refit_cargo = refit_to_template ? cur_tmpl->cargo_type : store_refit_ct;
+				uint32 refit_cmd = (refit_cargo != CT_INVALID) ? (refit_cargo << 24) : 0;
+				buy.AddCost(DoCommand(tile, cur_tmpl->engine_type | (1 << 16) | refit_cmd, 0, flags, CMD_BUILD_VEHICLE));
+			};
+			for (const TemplateVehicle *cur_tmpl = tv; cur_tmpl != nullptr; cur_tmpl = cur_tmpl->GetNextUnit()) {
+				process_unit(cur_tmpl);
+			}
+			if (!tv->IsSetKeepRemainingVehicles()) {
+				/* Sell leftovers */
+				for (const Train *u : in) {
+					buy.AddCost(DoCommand(u->tile, u->index, 0, flags, CMD_SELL_VEHICLE));
+				}
+			}
+		}
+		return buy;
+	}
+
+	RegisterGameEvents(GEF_TBTR_REPLACEMENT);
 
 	if (need_replacement) {
 		// step 1: generate primary for newchain and generate remainder_chain
