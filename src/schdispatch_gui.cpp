@@ -40,9 +40,11 @@
 enum SchdispatchWidgets {
 	WID_SCHDISPATCH_CAPTION,         ///< Caption of window.
 	WID_SCHDISPATCH_RENAME,          ///< Rename button.
+	WID_SCHDISPATCH_MOVE_LEFT,       ///< Move current schedule left (-1).
+	WID_SCHDISPATCH_MOVE_RIGHT,      ///< Move current schedule right (+1).
 	WID_SCHDISPATCH_MATRIX,          ///< Matrix of vehicles.
 	WID_SCHDISPATCH_V_SCROLL,        ///< Vertical scrollbar.
-    WID_SCHDISPATCH_SUMMARY_PANEL,   ///< Summary panel
+	WID_SCHDISPATCH_SUMMARY_PANEL,   ///< Summary panel
 
 	WID_SCHDISPATCH_ENABLED,         ///< Enable button.
 	WID_SCHDISPATCH_HEADER,          ///< Header text.
@@ -332,6 +334,8 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_RENAME, unusable || v->orders->GetScheduledDispatchScheduleCount() == 0);
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_PREV, v->orders == nullptr || this->schedule_index <= 0);
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_NEXT, v->orders == nullptr || this->schedule_index >= (int)(v->orders->GetScheduledDispatchScheduleCount() - 1));
+		this->SetWidgetDisabledState(WID_SCHDISPATCH_MOVE_LEFT, v->orders == nullptr || this->schedule_index <= 0);
+		this->SetWidgetDisabledState(WID_SCHDISPATCH_MOVE_RIGHT, v->orders == nullptr || this->schedule_index >= (int)(v->orders->GetScheduledDispatchScheduleCount() - 1));
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_ADD_SCHEDULE, unusable || v->orders->GetScheduledDispatchScheduleCount() >= 4096);
 
 		bool disabled = unusable || !HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)  || !this->IsScheduleSelected();
@@ -770,11 +774,26 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						MAX_LENGTH_VEHICLE_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
 				break;
 
-			case WID_SCHDISPATCH_ADJUST:
+			case WID_SCHDISPATCH_ADJUST: {
 				if (!this->IsScheduleSelected()) break;
 				CharSetFilter charset_filter = _settings_client.gui.timetable_in_ticks ? CS_NUMERAL_SIGNED : CS_NUMERAL_DECIMAL_SIGNED;
 				SetDParam(0, 0);
 				ShowQueryString(STR_JUST_INT, STR_SCHDISPATCH_ADJUST_CAPTION_MINUTE + this->GetQueryStringCaptionOffset(), 31, this, charset_filter, QSF_NONE);
+				break;
+			}
+
+			case WID_SCHDISPATCH_MOVE_LEFT:
+				if (!this->IsScheduleSelected()) break;
+				if (this->schedule_index > 0) {
+					DoCommandP(0, this->vehicle->index, (this->schedule_index - 1) | (this->schedule_index << 16), CMD_SCHEDULED_DISPATCH_SWAP_SCHEDULES | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), CcSwapSchDispatchSchedules);
+				}
+				break;
+
+			case WID_SCHDISPATCH_MOVE_RIGHT:
+				if (!this->IsScheduleSelected()) break;
+				if (this->schedule_index < (int)(this->vehicle->orders->GetScheduledDispatchScheduleCount() - 1)) {
+					DoCommandP(0, this->vehicle->index, (this->schedule_index + 1) | (this->schedule_index << 16), CMD_SCHEDULED_DISPATCH_SWAP_SCHEDULES | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), CcSwapSchDispatchSchedules);
+				}
 				break;
 		}
 
@@ -985,10 +1004,22 @@ void CcAddNewSchDispatchSchedule(const CommandCost &result, TileIndex tile, uint
 	}
 }
 
+void CcSwapSchDispatchSchedules(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+{
+	SchdispatchWindow *w = dynamic_cast<SchdispatchWindow*>(FindWindowById(WC_SCHDISPATCH_SLOTS, p1));
+	if (w != nullptr) {
+		w->schedule_index = GB(p2, 0, 16);
+		w->AutoSelectSchedule();
+		w->ReInit();
+	}
+}
+
 static const NWidgetPart _nested_schdispatch_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_SCHDISPATCH_RENAME), SetMinimalSize(12, 14), SetDataTip(SPR_RENAME, STR_SCHDISPATCH_RENAME_SCHEDULE_TOOLTIP),
+		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_SCHDISPATCH_MOVE_LEFT), SetMinimalSize(12, 14), SetDataTip(SPR_ARROW_LEFT, STR_SCHDISPATCH_MOVE_SCHEDULE),
+		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_SCHDISPATCH_MOVE_RIGHT), SetMinimalSize(12, 14), SetDataTip(SPR_ARROW_RIGHT, STR_SCHDISPATCH_MOVE_SCHEDULE),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_SCHDISPATCH_CAPTION), SetDataTip(STR_SCHDISPATCH_CAPTION, STR_NULL),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),

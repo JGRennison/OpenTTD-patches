@@ -157,5 +157,6 @@ CommandCallback CcMoveNewVirtualEngine;
 
 /* schdispatch_gui.cpp */
 CommandCallback CcAddNewSchDispatchSchedule;
+CommandCallback CcSwapSchDispatchSchedules;
 
 #endif /* COMMAND_FUNC_H */

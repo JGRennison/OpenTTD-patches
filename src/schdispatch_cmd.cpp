@@ -570,6 +570,61 @@ CommandCost CmdScheduledDispatchAdjust(TileIndex tile, DoCommandFlag flags, uint
 }
 
 /**
+ * Swap two schedules in dispatch schedule list
+ *
+ * @param tile Not used.
+ * @param flags Operation to perform.
+ * @param p1 Vehicle index
+ * @param p2 various bitstuffed elements
+ *  - p2 = (bit 0 - 15)  - Schedule index 1
+ *  - p2 = (bit 16 - 31) - Schedule index 2
+ * @param unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdScheduledDispatchSwapSchedules(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	VehicleID veh = GB(p1, 0, 20);
+	uint schedule_index_1 = GB(p2, 0, 16);
+	uint schedule_index_2 = GB(p2, 16, 16);
+
+	Vehicle *v = Vehicle::GetIfValid(veh);
+	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
+
+	CommandCost ret = CheckOwnership(v->owner);
+	if (ret.Failed()) return ret;
+
+	if (v->orders == nullptr) return CMD_ERROR;
+
+	if (schedule_index_1 == schedule_index_2) return CMD_ERROR;
+	if (schedule_index_1 >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
+	if (schedule_index_2 >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
+
+	if (flags & DC_EXEC) {
+		std::swap(v->orders->GetDispatchScheduleByIndex(schedule_index_1), v->orders->GetDispatchScheduleByIndex(schedule_index_2));
+		for (Order *o = v->GetFirstOrder(); o != nullptr; o = o->next) {
+			int idx = o->GetDispatchScheduleIndex();
+			if (idx == (int)schedule_index_1) {
+				o->SetDispatchScheduleIndex((int)schedule_index_2);
+			} else if (idx == (int)schedule_index_2) {
+				o->SetDispatchScheduleIndex((int)schedule_index_1);
+			}
+			if (o->IsType(OT_CONDITIONAL) && o->GetConditionVariable() == OCV_DISPATCH_SLOT) {
+				uint16 dispatch_slot = GB(o->GetXData(), 0, 16);
+				if (dispatch_slot == schedule_index_1) {
+					SB(o->GetXDataRef(), 0, 16, schedule_index_2);
+				} else if (dispatch_slot == schedule_index_2) {
+					SB(o->GetXDataRef(), 0, 16, schedule_index_1);
+				}
+			}
+		}
+		SchdispatchInvalidateWindows(v);
+		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
+	}
+
+	return CommandCost();
+}
+
+/**
  * Set scheduled dispatch slot list.
  * @param dispatch_list The offset time list, must be correctly sorted.
  */
