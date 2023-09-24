@@ -2,6 +2,16 @@
 
 * * *
 
+### v0.55.3 (2023-09-24)
+* Fix crash which could occur when using the autoreplace button in depot windows to do template replacements.
+* Fix crash which could occur in the autoreplace window when clicking the right panel when no item is selected in the left panel.
+* Fix incorrect speeds being shown in the build road/tram drop down lists.
+* Fix issues where viewports could reset back to a previous scroll position when being zoomed or scrolled.
+* Fix conditional order wait loops not ignoring label orders.
+* Fix changing a conditional order to test the current date/time not properly resetting the sub-type.
+* Scheduled dispatch: Allow moving dispatch schedules in the schedule list.
+* Add setting for whether non-leading train engines keep custom names.
+
 ### v0.55.2 (2023-09-20)
 * Fix crash which could occur when drawing with palette animation disabled.
 * Fix multiplayer desync which could occur when adding a track piece of a different rail type to an existing rail tile, where this would change the tile's rail type, but this fails due to an obstruction.
