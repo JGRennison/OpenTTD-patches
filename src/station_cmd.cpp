@@ -1641,7 +1641,18 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 
 				SetStationTileRandomBits(tile, GB(Random(), 0, 4));
 				SetAnimationFrame(tile, 0);
 
-				if (!IsStationTileBlocked(tile)) c->infrastructure.rail[rt]++;
+				/* Should be the same as layout but axis component could be wrong... */
+				StationGfx gfx = GetStationGfx(tile);
+				bool blocked = statspec != nullptr && HasBit(statspec->blocked, gfx);
+				/* Default stations do not draw pylons under roofs (gfx >= 4) */
+				bool pylons = statspec != nullptr ? HasBit(statspec->pylons, gfx) : gfx < 4;
+				bool wires = statspec == nullptr || !HasBit(statspec->wires, gfx);
+
+				SetStationTileBlocked(tile, blocked);
+				SetStationTileHavePylons(tile, pylons);
+				SetStationTileHaveWires(tile, wires);
+
+				if (!blocked) c->infrastructure.rail[rt]++;
 				c->infrastructure.station++;
 
 				if (statspec != nullptr) {

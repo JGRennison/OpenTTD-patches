@@ -439,6 +439,78 @@ static inline bool IsHangarTile(TileIndex t)
 }
 
 /**
+ * Is tile \a t a blocked tile?
+ * @pre HasStationRail(t)
+ * @param t Tile to check
+ * @return \c true if the tile is blocked
+ */
+static inline bool IsStationTileBlocked(TileIndex t)
+{
+	assert(HasStationRail(t));
+	return HasBit(_me[t].m6, 0);
+}
+
+/**
+ * Set the blocked state of the rail station
+ * @pre HasStationRail(t)
+ * @param t the station tile
+ * @param b the blocked state
+ */
+static inline void SetStationTileBlocked(TileIndex t, bool b)
+{
+	assert(HasStationRail(t));
+	SB(_me[t].m6, 0, 1, b ? 1 : 0);
+}
+
+/**
+ * Can tile \a t have catenary wires?
+ * @pre HasStationRail(t)
+ * @param t Tile to check
+ * @return \c true if the tile can have catenary wires
+ */
+static inline bool CanStationTileHaveWires(TileIndex t)
+{
+	assert(HasStationRail(t));
+	return HasBit(_me[t].m6, 1);
+}
+
+/**
+ * Set the catenary wires state of the rail station
+ * @pre HasStationRail(t)
+ * @param t the station tile
+ * @param b the catenary wires state
+ */
+static inline void SetStationTileHaveWires(TileIndex t, bool b)
+{
+	assert(HasStationRail(t));
+	SB(_me[t].m6, 1, 1, b ? 1 : 0);
+}
+
+/**
+ * Can tile \a t have catenary pylons?
+ * @pre HasStationRail(t)
+ * @param t Tile to check
+ * @return \c true if the tile can have catenary pylons
+ */
+static inline bool CanStationTileHavePylons(TileIndex t)
+{
+	assert(HasStationRail(t));
+	return HasBit(_me[t].m6, 7);
+}
+
+/**
+ * Set the catenary pylon state of the rail station
+ * @pre HasStationRail(t)
+ * @param t the station tile
+ * @param b the catenary pylons state
+ */
+static inline void SetStationTileHavePylons(TileIndex t, bool b)
+{
+	assert(HasStationRail(t));
+	SB(_me[t].m6, 7, 1, b ? 1 : 0);
+}
+
+/**
  * Get the rail direction of a rail station.
  * @param t Tile to query
  * @pre HasStationRail(t)
@@ -488,10 +560,10 @@ static inline TrackBits GetRailStationTrackBits(TileIndex t)
 static inline bool IsCompatibleTrainStationTile(TileIndex test_tile, TileIndex station_tile)
 {
 	dbg_assert_tile(IsRailStationTile(station_tile), station_tile);
-	return IsRailStationTile(test_tile) && IsCompatibleRail(GetRailType(test_tile), GetRailType(station_tile)) &&
+	return IsRailStationTile(test_tile) && !IsStationTileBlocked(test_tile) &&
+			IsCompatibleRail(GetRailType(test_tile), GetRailType(station_tile)) &&
 			GetRailStationAxis(test_tile) == GetRailStationAxis(station_tile) &&
-			GetStationIndex(test_tile) == GetStationIndex(station_tile) &&
-			!IsStationTileBlocked(test_tile);
+			GetStationIndex(test_tile) == GetStationIndex(station_tile);
 }
 
 /**
