@@ -230,9 +230,12 @@ Point Layouter::GetCharPosition(std::string_view::const_iterator ch) const
 	const auto &line = this->front();
 
 	/* Pointer to the end-of-string marker? Return total line width. */
-	if (ch == this->string.end()) {
+	if (ch >= this->string.end()) {
 		Point p = { line->GetWidth(), 0 };
 		return p;
+	}
+	if (ch < this->string.begin()) {
+		return { 0, 0 };
 	}
 
 	/* Find the code point index which corresponds to the char
@@ -264,7 +267,8 @@ Point Layouter::GetCharPosition(std::string_view::const_iterator ch) const
 		}
 	}
 
-	NOT_REACHED();
+	/* Code point index not found, just give up */
+	return { 0, 0 };
 }
 
 /**
