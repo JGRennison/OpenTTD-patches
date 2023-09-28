@@ -579,6 +579,9 @@ STR_CONFIG_SETTING_MIN_CITY_LAND_AREA_HELPTEXT                  :Cities can only
 STR_CONFIG_SETTING_MIN_LAND_AREA_VALUE                          :{NUM}
 STR_CONFIG_SETTING_MIN_LAND_AREA_ZERO                           :Off
 
+STR_CONFIG_SETTING_FLOOD_FROM_EDGES                             :Water floods from map edges: {STRING2}
+STR_CONFIG_SETTING_FLOOD_FROM_EDGES_HELPTEXT                    :Whether water floods into edge tiles at sea level from the map edge.
+
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE                        :Adjusted arctic tree placement: {STRING2}
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_HELPTEXT               :Adjust placement of trees around snow line in artic climate. Trees thin out above snowline. Trees are a mix of arctic and temperate just below snowline. Below that trees are temperate.
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE                  :Arctic tree range: {STRING2}

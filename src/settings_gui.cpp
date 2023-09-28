@@ -2455,6 +2455,7 @@ static SettingsContainer &GetSettingsTree()
 				treedist->Add(new SettingEntry("construction.tree_growth_rate"));
 			}
 
+			environment->Add(new SettingEntry("construction.flood_from_edges"));
 			environment->Add(new SettingEntry("economy.day_length_factor"));
 			environment->Add(new SettingEntry("station.modified_catchment"));
 			environment->Add(new SettingEntry("station.catchment_increase"));

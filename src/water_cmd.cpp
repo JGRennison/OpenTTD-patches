@@ -1165,7 +1165,7 @@ FloodingBehaviour GetFloodingBehaviour(TileIndex tile)
 			return (GetObjectGroundType(tile) == OBJECT_GROUND_SHORE ? FLOOD_DRYUP : ((GetWaterClass(tile) == WATER_CLASS_SEA) ? FLOOD_ACTIVE : FLOOD_NONE));
 
 		case MP_VOID:
-			return FLOOD_ACTIVE;
+			return _settings_game.construction.flood_from_edges ? FLOOD_ACTIVE : FLOOD_NONE;
 
 		default:
 			return FLOOD_NONE;
