@@ -770,8 +770,8 @@ STR_TRACE_RESTRICT_CONDITIONAL_ENGINE_CLASSES                   :{STRING} 列车
 STR_TRACE_RESTRICT_CONDITIONAL_TARGET_DIRECTION                 :{STRING} 格：{STRING} {STRING} 的此信号块比 {STRING} 更远则
 STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}未定义 {BLACK}{STRING}则
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}未定义 {BLACK}{STRING}则
-STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :添加寻路器延迟：{COMMA}
-STR_TRACE_RESTRICT_PF_PENALTY_ITEM_PRESET                       :添加 {STRING} 寻路器延迟
+STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :添加寻路惩罚：{COMMA}
+STR_TRACE_RESTRICT_PF_PENALTY_ITEM_PRESET                       :添加 {STRING} 寻路惩罚
 STR_TRACE_RESTRICT_WHITE                                        :{WHITE}
 STR_TRACE_RESTRICT_START                                        :开始
 STR_TRACE_RESTRICT_END                                          :结束
