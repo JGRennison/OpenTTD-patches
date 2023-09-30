@@ -70,6 +70,8 @@ static void loadUV(const SlxiSubChunkInfo *info, uint32 length);
 static uint32 saveUV(const SlxiSubChunkInfo *info, bool dry_run);
 static void loadLC(const SlxiSubChunkInfo *info, uint32 length);
 static uint32 saveLC(const SlxiSubChunkInfo *info, bool dry_run);
+static void loadSTC(const SlxiSubChunkInfo *info, uint32 length);
+static uint32 saveSTC(const SlxiSubChunkInfo *info, bool dry_run);
 
 const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_VERSION_LABEL,                    XSCF_IGNORABLE_ALL,       1,   1, "version_label",                    saveVL,  loadVL,  nullptr          },
@@ -190,6 +192,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_LABEL_ORDERS,                     XSCF_NULL,                2,   2, "label_orders",                     nullptr, nullptr, nullptr          },
 	{ XSLFI_VARIABLE_TICK_RATE,               XSCF_IGNORABLE_ALL,       1,   1, "variable_tick_rate",               nullptr, nullptr, nullptr          },
 	{ XSLFI_ROAD_VEH_FLAGS,                   XSCF_NULL,                1,   1, "road_veh_flags",                   nullptr, nullptr, nullptr          },
+	{ XSLFI_STATION_TILE_CACHE_FLAGS,         XSCF_IGNORABLE_ALL,       1,   1, "station_tile_cache_flags",         saveSTC, loadSTC, nullptr          },
 	{ XSLFI_SCRIPT_INT64,                     XSCF_NULL,                1,   1, "script_int64",                     nullptr, nullptr, nullptr          },
 	{ XSLFI_U64_TICK_COUNTER,                 XSCF_NULL,                1,   1, "u64_tick_counter",                 nullptr, nullptr, nullptr          },
 	{ XSLFI_LINKGRAPH_TRAVEL_TIME,            XSCF_NULL,                1,   1, "linkgraph_travel_time",            nullptr, nullptr, nullptr          },
@@ -753,6 +756,24 @@ static uint32 saveLC(const SlxiSubChunkInfo *info, bool dry_run)
 {
 	if (!dry_run) MemoryDumper::GetCurrent()->WriteByte(_local_company);
 	return 1;
+}
+
+static void loadSTC(const SlxiSubChunkInfo *info, uint32 length)
+{
+	extern uint64 _station_tile_cache_hash;
+	if (length == 8) {
+		_station_tile_cache_hash = SlReadUint64();
+	} else {
+		DEBUG(sl, 1, "SLXI chunk: feature: '%s', version: %d, has data of wrong length: %u", info->name, _sl_xv_feature_versions[info->index], length);
+		ReadBuffer::GetCurrent()->SkipBytes(length);
+	}
+}
+
+static uint32 saveSTC(const SlxiSubChunkInfo *info, bool dry_run)
+{
+	extern uint64 _station_tile_cache_hash;
+	if (!dry_run) SlWriteUint64(_station_tile_cache_hash);
+	return 8;
 }
 
 extern const ChunkHandler version_ext_chunk_handlers[] = {

@@ -24,9 +24,11 @@
 #include "newgrf_animation_base.h"
 #include "newgrf_class_func.h"
 #include "newgrf_extension.h"
+#include "core/checksum_func.hpp"
 
 #include "safeguards.h"
 
+uint64 _station_tile_cache_hash = 0;
 
 template <typename Tspec, typename Tid, Tid Tmax>
 /* static */ void NewGRFClass<Tspec, Tid, Tmax>::InsertDefaults()
@@ -1086,6 +1088,45 @@ void DumpStationSpriteGroup(const StationSpec *statspec, BaseStation *st, DumpSp
 			}
 			print(nullptr, DSGPO_PRINT, 0, buffer);
 			dumper.DumpSpriteGroup(statspec->grf_prop.spritegroup[i], 0);
+		}
+	}
+}
+
+void UpdateStationTileCacheFlags(bool force_update)
+{
+	SimpleChecksum64 checksum;
+	for (uint i = 0; StationClass::IsClassIDValid((StationClassID)i); i++) {
+		StationClass *stclass = StationClass::Get((StationClassID)i);
+
+		checksum.Update(stclass->GetSpecCount());
+		for (uint j = 0; j < stclass->GetSpecCount(); j++) {
+			const StationSpec *statspec = stclass->GetSpec(j);
+			if (statspec == nullptr) continue;
+
+			checksum.Update(j);
+			checksum.Update(statspec->blocked);
+			checksum.Update(statspec->pylons);
+			checksum.Update(statspec->wires);
+		}
+	}
+
+	if (checksum.state != _station_tile_cache_hash || force_update) {
+		_station_tile_cache_hash = checksum.state;
+
+		for (TileIndex t = 0; t < MapSize(); t++) {
+			if (HasStationTileRail(t)) {
+				StationGfx gfx = GetStationGfx(t);
+				const StationSpec *statspec = GetStationSpec(t);
+
+				bool blocked = statspec != nullptr && HasBit(statspec->blocked, gfx);
+				/* Default stations do not draw pylons under roofs (gfx >= 4) */
+				bool pylons = statspec != nullptr ? HasBit(statspec->pylons, gfx) : gfx < 4;
+				bool wires = statspec == nullptr || !HasBit(statspec->wires, gfx);
+
+				SetStationTileBlocked(t, blocked);
+				SetStationTileHavePylons(t, pylons);
+				SetStationTileHaveWires(t, wires);
+			}
 		}
 	}
 }

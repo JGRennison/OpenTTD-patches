@@ -223,4 +223,6 @@ void TriggerStationAnimation(BaseStation *st, TileIndex tile, StationAnimationTr
 void TriggerStationRandomisation(Station *st, TileIndex tile, StationRandomTrigger trigger, CargoID cargo_type = CT_INVALID);
 void StationUpdateCachedTriggers(BaseStation *st);
 
+void UpdateStationTileCacheFlags(bool force_update);
+
 #endif /* NEWGRF_STATION_H */

@@ -51,6 +51,8 @@ extern TileIndex _aux_tileloop_tile;
 extern void ClearAllSignalSpeedRestrictions();
 extern void MakeNewgameSettingsLive();
 
+extern uint64 _station_tile_cache_hash;
+
 void InitializeSound();
 void InitializeMusic();
 void InitializeVehicles();
@@ -137,6 +139,7 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	_game_load_time = 0;
 	_extra_aspects = 0;
 	_aspect_cfg_hash = 0;
+	_station_tile_cache_hash = 0;
 	InitGRFGlobalVars();
 	_loadgame_DBGL_data.clear();
 	if (reset_settings) MakeNewgameSettingsLive();

@@ -141,6 +141,7 @@ enum SlXvFeatureIndex {
 	XSLFI_LABEL_ORDERS,                           ///< Label orders
 	XSLFI_VARIABLE_TICK_RATE,                     ///< Variable tick rate
 	XSLFI_ROAD_VEH_FLAGS,                         ///< Road vehicle flags
+	XSLFI_STATION_TILE_CACHE_FLAGS,               ///< Station tile cache flags
 
 	XSLFI_SCRIPT_INT64,                           ///< See: SLV_SCRIPT_INT64
 	XSLFI_U64_TICK_COUNTER,                       ///< See: SLV_U64_TICK_COUNTER

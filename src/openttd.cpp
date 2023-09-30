@@ -129,6 +129,7 @@ extern void RebuildTownCaches(bool cargo_update_required, bool old_map_position)
 extern void ShowOSErrorBox(const char *buf, bool system);
 extern void NORETURN DoOSAbort();
 extern std::string _config_file;
+extern uint64 _station_tile_cache_hash;
 
 bool _save_config = false;
 bool _request_newgrf_scan = false;
@@ -515,6 +516,7 @@ static void ShutdownGame()
 	_game_load_time = 0;
 	_extra_aspects = 0;
 	_aspect_cfg_hash = 0;
+	_station_tile_cache_hash = 0;
 	InitGRFGlobalVars();
 	_loadgame_DBGL_data.clear();
 	_loadgame_DBGC_data.clear();

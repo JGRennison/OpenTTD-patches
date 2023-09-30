@@ -3338,25 +3338,9 @@ bool AfterLoadGame()
 		_settings_game.script.settings_profile = IsInsideMM(_old_diff_level, SP_BEGIN, SP_END) ? _old_diff_level : (uint)SP_MEDIUM;
 	}
 
-	{
-		/* Station blocked, wires and pylon flags need to be stored in the map. This is effectively cached data, so no
-		 * version check is necessary. This is done here as the SLV_182 check below needs the blocked status. */
-		for (TileIndex t = 0; t < map_size; t++) {
-			if (HasStationTileRail(t)) {
-				StationGfx gfx = GetStationGfx(t);
-				const StationSpec *statspec = GetStationSpec(t);
-
-				bool blocked = statspec != nullptr && HasBit(statspec->blocked, gfx);
-				/* Default stations do not draw pylons under roofs (gfx >= 4) */
-				bool pylons = statspec != nullptr ? HasBit(statspec->pylons, gfx) : gfx < 4;
-				bool wires = statspec == nullptr || !HasBit(statspec->wires, gfx);
-
-				SetStationTileBlocked(t, blocked);
-				SetStationTileHavePylons(t, pylons);
-				SetStationTileHaveWires(t, wires);
-			}
-		}
-	}
+	/* Station blocked, wires and pylon flags need to be stored in the map.
+	 * This is done here as the SLV_182 check below needs the blocked status. */
+	UpdateStationTileCacheFlags(SlXvIsFeatureMissing(XSLFI_STATION_TILE_CACHE_FLAGS));
 
 	if (IsSavegameVersionBefore(SLV_182)) {
 		/* Aircraft acceleration variable was bonkers */
@@ -4409,6 +4393,7 @@ void ReloadNewGRFData()
 	GroupStatistics::UpdateAfterLoad();
 	/* update station graphics */
 	AfterLoadStations();
+	UpdateStationTileCacheFlags(false);
 
 	RailType rail_type_translate_map[RAILTYPE_END];
 	for (RailType old_type = RAILTYPE_BEGIN; old_type != RAILTYPE_END; old_type++) {
