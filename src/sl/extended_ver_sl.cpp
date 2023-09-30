@@ -711,6 +711,12 @@ static void Load_SLXI()
 	}
 }
 
+static void IgnoreWrongLengthExtraData(const SlxiSubChunkInfo *info, uint32 length)
+{
+	DEBUG(sl, 1, "SLXI chunk: feature: '%s', version: %d, has data of wrong length: %u", info->name, _sl_xv_feature_versions[info->index], length);
+	ReadBuffer::GetCurrent()->SkipBytes(length);
+}
+
 static void loadVL(const SlxiSubChunkInfo *info, uint32 length)
 {
 	_sl_xv_version_label.resize(length);
@@ -731,8 +737,7 @@ static void loadUV(const SlxiSubChunkInfo *info, uint32 length)
 		_sl_xv_upstream_version = (SaveLoadVersion)SlReadUint16();
 		DEBUG(sl, 2, "SLXI upstream version: %u", _sl_xv_upstream_version);
 	} else {
-		DEBUG(sl, 1, "SLXI chunk: feature: '%s', version: %d, has data of wrong length: %u", info->name, _sl_xv_feature_versions[info->index], length);
-		ReadBuffer::GetCurrent()->SkipBytes(length);
+		IgnoreWrongLengthExtraData(info, length);
 	}
 }
 
@@ -747,8 +752,7 @@ static void loadLC(const SlxiSubChunkInfo *info, uint32 length)
 	if (length == 1) {
 		_loaded_local_company = (CompanyID) ReadBuffer::GetCurrent()->ReadByte();
 	} else {
-		DEBUG(sl, 1, "SLXI chunk: feature: '%s', version: %d, has data of wrong length: %u", info->name, _sl_xv_feature_versions[info->index], length);
-		ReadBuffer::GetCurrent()->SkipBytes(length);
+		IgnoreWrongLengthExtraData(info, length);
 	}
 }
 
@@ -764,8 +768,7 @@ static void loadSTC(const SlxiSubChunkInfo *info, uint32 length)
 	if (length == 8) {
 		_station_tile_cache_hash = SlReadUint64();
 	} else {
-		DEBUG(sl, 1, "SLXI chunk: feature: '%s', version: %d, has data of wrong length: %u", info->name, _sl_xv_feature_versions[info->index], length);
-		ReadBuffer::GetCurrent()->SkipBytes(length);
+		IgnoreWrongLengthExtraData(info, length);
 	}
 }
 
