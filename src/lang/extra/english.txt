@@ -890,6 +890,7 @@ STR_TRACE_RESTRICT_RESERVE_THROUGH                              :Reserve through
 STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL                       :Cancel reserve through
 STR_TRACE_RESTRICT_LONG_RESERVE                                 :Long reserve
 STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL                          :Cancel long reserve
+STR_TRACE_RESTRICT_LONG_RESERVE_UNLESS_STOPPING                 :Long reserve (unless stopping)
 STR_TRACE_RESTRICT_WAIT_AT_PBS                                  :Wait at PBS signal
 STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL                           :Cancel wait at PBS signal
 STR_TRACE_RESTRICT_PBS_RES_END_WAIT                             :Wait at start PBS signal for reservation ending here

@@ -273,8 +273,9 @@ enum TraceRestrictTargetDirectionCondAuxField {
  * TraceRestrictItem value field, for TRIT_LONG_RESERVE
  */
 enum TraceRestrictLongReserveValueField {
-	TRLRVF_LONG_RESERVE                = 0,       ///< Long reserve
-	TRLRVF_CANCEL_LONG_RESERVE         = 1,       ///< Cancel long reserve
+	TRLRVF_LONG_RESERVE                 = 0,     ///< Long reserve
+	TRLRVF_CANCEL_LONG_RESERVE          = 1,     ///< Cancel long reserve
+	TRLRVF_LONG_RESERVE_UNLESS_STOPPING = 2,     ///< Long reserve (unless passed stop)
 };
 
 /**
@@ -475,6 +476,14 @@ enum TraceRestrictProgramInputSlotPermissions : uint8 {
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramInputSlotPermissions)
 
 /**
+ * Enumeration for TraceRestrictProgramInput::input_flags
+ */
+enum TraceRestrictProgramInputFlags : uint8 {
+	TRPIF_PASSED_STOP             = 1 << 0,  ///< Train has passed stop
+};
+DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramInputFlags)
+
+/**
  * Execution input of a TraceRestrictProgram
  */
 struct TraceRestrictProgramInput {
@@ -485,10 +494,12 @@ struct TraceRestrictProgramInput {
 	PreviousSignalProc *previous_signal_callback; ///< Callback to retrieve tile and direction of previous signal, may be nullptr
 	const void *previous_signal_ptr;              ///< Opaque pointer suitable to be passed to previous_signal_callback
 	TraceRestrictProgramInputSlotPermissions permitted_slot_operations; ///< Permitted slot operations
+	TraceRestrictProgramInputFlags input_flags;   ///< Input flags
 
 	TraceRestrictProgramInput(TileIndex tile_, Trackdir trackdir_, PreviousSignalProc *previous_signal_callback_, const void *previous_signal_ptr_)
 			: tile(tile_), trackdir(trackdir_), previous_signal_callback(previous_signal_callback_), previous_signal_ptr(previous_signal_ptr_),
-			permitted_slot_operations(static_cast<TraceRestrictProgramInputSlotPermissions>(0)) { }
+			permitted_slot_operations(static_cast<TraceRestrictProgramInputSlotPermissions>(0)),
+			input_flags(static_cast<TraceRestrictProgramInputFlags>(0)) { }
 };
 
 /**

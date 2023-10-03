@@ -687,6 +687,12 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 								out.flags &= ~TRPRF_LONG_RESERVE;
 								break;
 
+							case TRLRVF_LONG_RESERVE_UNLESS_STOPPING:
+								if (!(input.input_flags & TRPIF_PASSED_STOP)) {
+									out.flags |= TRPRF_LONG_RESERVE;
+								}
+								break;
+
 							default:
 								NOT_REACHED();
 								break;

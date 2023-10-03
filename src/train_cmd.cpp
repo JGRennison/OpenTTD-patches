@@ -4179,7 +4179,7 @@ static bool LookaheadWithinCurrentTunnelBridge(const Train *t)
 	return t->lookahead->current_position >= t->lookahead->reservation_end_position - ((int)TILE_SIZE * t->lookahead->tunnel_bridge_reserved_tiles) && !HasBit(t->lookahead->flags, TRLF_TB_EXIT_FREE);
 }
 
-static bool HasLongReservePbsSignalOnTrackdir(Train* v, TileIndex tile, Trackdir trackdir, bool default_value)
+static bool HasLongReservePbsSignalOnTrackdir(Train* v, TileIndex tile, Trackdir trackdir, bool default_value, uint16 lookahead_state_flags)
 {
 	if (HasPbsSignalOnTrackdir(tile, trackdir)) {
 		if (IsNoEntrySignal(tile, TrackdirToTrack(trackdir))) return false;
@@ -4188,7 +4188,9 @@ static bool HasLongReservePbsSignalOnTrackdir(Train* v, TileIndex tile, Trackdir
 			if (prog && prog->actions_used_flags & TRPAUF_LONG_RESERVE) {
 				TraceRestrictProgramResult out;
 				if (default_value) out.flags |= TRPRF_LONG_RESERVE;
-				prog->Execute(v, TraceRestrictProgramInput(tile, trackdir, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr), out);
+				TraceRestrictProgramInput input(tile, trackdir, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr);
+				if (HasBit(lookahead_state_flags, CTTLASF_STOP_FOUND)) input.input_flags |= TRPIF_PASSED_STOP;
+				prog->Execute(v, input, out);
 				return (out.flags & TRPRF_LONG_RESERVE);
 			}
 		}
@@ -4249,6 +4251,7 @@ static void TryLongReserveChooseTrainTrack(Train *v, TileIndex tile, Trackdir td
 						TraceRestrictProgramResult out;
 						if (long_reserve) out.flags |= TRPRF_LONG_RESERVE;
 						TraceRestrictProgramInput input(exit_tile, exit_td, nullptr, nullptr);
+						if (HasBit(lookahead_state.flags, CTTLASF_STOP_FOUND)) input.input_flags |= TRPIF_PASSED_STOP;
 						input.permitted_slot_operations = TRPISP_ACQUIRE | TRPISP_ACQUIRE_ON_RES;
 						prog->Execute(v, input, out);
 						if (out.flags & TRPRF_WAIT_AT_PBS) {
@@ -4292,7 +4295,7 @@ static void TryLongReserveChooseTrainTrack(Train *v, TileIndex tile, Trackdir td
 	}
 
 	CFollowTrackRail ft(v);
-	if (ft.Follow(tile, td) && HasLongReservePbsSignalOnTrackdir(v, ft.m_new_tile, FindFirstTrackdir(ft.m_new_td_bits), !long_enough)) {
+	if (ft.Follow(tile, td) && HasLongReservePbsSignalOnTrackdir(v, ft.m_new_tile, FindFirstTrackdir(ft.m_new_td_bits), !long_enough, lookahead_state.flags)) {
 		// We reserved up to a LR signal, reserve past it as well. recursion
 		ChooseTrainTrack(v, ft.m_new_tile, ft.m_exitdir, TrackdirBitsToTrackBits(ft.m_new_td_bits), CTTF_NO_LOOKAHEAD_VALIDATE | (force_res ? CTTF_FORCE_RES : CTTF_NONE), nullptr, lookahead_state);
 	}
@@ -4412,7 +4415,7 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 				CFollowTrackRail ft(v);
 				if (ft.Follow(res_dest.tile, res_dest.trackdir)) {
 					Trackdir  new_td = FindFirstTrackdir(ft.m_new_td_bits);
-					long_reserve = HasLongReservePbsSignalOnTrackdir(v, ft.m_new_tile, new_td, _settings_game.vehicle.train_braking_model == TBM_REALISTIC);
+					long_reserve = HasLongReservePbsSignalOnTrackdir(v, ft.m_new_tile, new_td, _settings_game.vehicle.train_braking_model == TBM_REALISTIC, lookahead_state.flags);
 				}
 			}
 
@@ -4898,7 +4901,7 @@ static TrainMovedChangeSignalEnum TrainMovedChangeSignal(Train* v, TileIndex til
 			/* A PBS block with a non-PBS signal facing us? */
 			if (!IsPbsSignal(GetSignalType(tile, TrackdirToTrack(trackdir)))) return CHANGED_NORMAL_TO_PBS_BLOCK;
 
-			if (front && HasLongReservePbsSignalOnTrackdir(v, tile, trackdir, _settings_game.vehicle.train_braking_model == TBM_REALISTIC)) return CHANGED_LR_PBS;
+			if (front && HasLongReservePbsSignalOnTrackdir(v, tile, trackdir, _settings_game.vehicle.train_braking_model == TBM_REALISTIC, 0)) return CHANGED_LR_PBS;
 		}
 	}
 	if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExit(tile) && GetTunnelBridgeDirection(tile) == ReverseDiagDir(dir)) {

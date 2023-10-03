@@ -76,7 +76,7 @@ static uint32 saveSTC(const SlxiSubChunkInfo *info, bool dry_run);
 const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_VERSION_LABEL,                    XSCF_IGNORABLE_ALL,       1,   1, "version_label",                    saveVL,  loadVL,  nullptr          },
 	{ XSLFI_UPSTREAM_VERSION,                 XSCF_NULL,                1,   1, "upstream_version",                 saveUV,  loadUV,  nullptr          },
-	{ XSLFI_TRACE_RESTRICT,                   XSCF_NULL,               15,  15, "tracerestrict",                    nullptr, nullptr, "TRRM,TRRP,TRRS" },
+	{ XSLFI_TRACE_RESTRICT,                   XSCF_NULL,               16,  16, "tracerestrict",                    nullptr, nullptr, "TRRM,TRRP,TRRS" },
 	{ XSLFI_TRACE_RESTRICT_OWNER,             XSCF_NULL,                1,   1, "tracerestrict_owner",              nullptr, nullptr, nullptr          },
 	{ XSLFI_TRACE_RESTRICT_ORDRCND,           XSCF_NULL,                4,   4, "tracerestrict_order_cond",         nullptr, nullptr, nullptr          },
 	{ XSLFI_TRACE_RESTRICT_STATUSCND,         XSCF_NULL,                2,   2, "tracerestrict_status_cond",        nullptr, nullptr, nullptr          },

@@ -242,11 +242,13 @@ static const TraceRestrictDropDownListSet _reserve_through_value = {
 static const StringID _long_reserve_value_str[] = {
 	STR_TRACE_RESTRICT_LONG_RESERVE,
 	STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL,
+	STR_TRACE_RESTRICT_LONG_RESERVE_UNLESS_STOPPING,
 	INVALID_STRING_ID
 };
 static const uint _long_reserve_value_val[] = {
 	0,
 	1,
+	2,
 };
 
 /** value drop down list for long reserve types strings and values */
@@ -1554,6 +1556,10 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 						instruction_string = STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL;
 						break;
 
+					case TRLRVF_LONG_RESERVE_UNLESS_STOPPING:
+						instruction_string = STR_TRACE_RESTRICT_LONG_RESERVE_UNLESS_STOPPING;
+						break;
+
 					default:
 						NOT_REACHED();
 						break;
@@ -2061,9 +2067,12 @@ public:
 						this->ShowDropDownListWithValue(&_reserve_through_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0);
 						break;
 
-					case TRVT_LONG_RESERVE:
-						this->ShowDropDownListWithValue(&_long_reserve_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0);
+					case TRVT_LONG_RESERVE: {
+						uint hidden = 0;
+						if (_settings_game.vehicle.train_braking_model != TBM_REALISTIC) hidden |= 4;
+						this->ShowDropDownListWithValue(&_long_reserve_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, hidden);
 						break;
+					}
 
 					case TRVT_WAIT_AT_PBS:
 						this->ShowDropDownListWithValue(&_wait_at_pbs_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0);
