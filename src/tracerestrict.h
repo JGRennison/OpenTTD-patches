@@ -270,6 +270,14 @@ enum TraceRestrictTargetDirectionCondAuxField {
 };
 
 /**
+ * TraceRestrictItem value field, for TRIT_LONG_RESERVE
+ */
+enum TraceRestrictLongReserveValueField {
+	TRLRVF_LONG_RESERVE                = 0,       ///< Long reserve
+	TRLRVF_CANCEL_LONG_RESERVE         = 1,       ///< Cancel long reserve
+};
+
+/**
  * TraceRestrictItem value field, for TRIT_WAIT_AT_PBS
  */
 enum TraceRestrictWaitAtPbsValueField {
@@ -697,7 +705,7 @@ enum TraceRestrictValueType {
 	TRVT_TILE_INDEX               = 8, ///< takes a TileIndex in the next item slot
 	TRVT_PF_PENALTY               = 9, ///< takes a pathfinder penalty value or preset index, as per the auxiliary field as type: TraceRestrictPathfinderPenaltyAuxField
 	TRVT_RESERVE_THROUGH          = 10,///< takes a value 0 = reserve through, 1 = cancel previous reserve through
-	TRVT_LONG_RESERVE             = 11,///< takes a value 0 = long reserve, 1 = cancel previous long reserve
+	TRVT_LONG_RESERVE             = 11,///< takes a TraceRestrictLongReserveValueField
 	TRVT_GROUP_INDEX              = 12,///< takes a GroupID
 	TRVT_WEIGHT                   = 13,///< takes a weight
 	TRVT_POWER                    = 14,///< takes a power

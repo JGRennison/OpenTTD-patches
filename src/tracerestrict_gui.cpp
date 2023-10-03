@@ -1545,7 +1545,19 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				break;
 
 			case TRIT_LONG_RESERVE:
-				instruction_string = GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL : STR_TRACE_RESTRICT_LONG_RESERVE;
+				switch (static_cast<TraceRestrictLongReserveValueField>(GetTraceRestrictValue(item))) {
+					case TRLRVF_LONG_RESERVE:
+						instruction_string = STR_TRACE_RESTRICT_LONG_RESERVE;
+						break;
+
+					case TRLRVF_CANCEL_LONG_RESERVE:
+						instruction_string = STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL;
+						break;
+
+					default:
+						NOT_REACHED();
+						break;
+				}
 				break;
 
 			case TRIT_WAIT_AT_PBS:
@@ -3180,7 +3192,7 @@ private:
 							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
 							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
-									GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL : STR_TRACE_RESTRICT_LONG_RESERVE;
+									GetDropDownStringByValue(&_long_reserve_value, GetTraceRestrictValue(item));
 							break;
 
 						case TRVT_WAIT_AT_PBS:

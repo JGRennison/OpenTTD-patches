@@ -678,10 +678,18 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 
 					case TRIT_LONG_RESERVE:
-						if (GetTraceRestrictValue(item)) {
-							out.flags &= ~TRPRF_LONG_RESERVE;
-						} else {
-							out.flags |= TRPRF_LONG_RESERVE;
+						switch (static_cast<TraceRestrictLongReserveValueField>(GetTraceRestrictValue(item))) {
+							case TRLRVF_LONG_RESERVE:
+								out.flags |= TRPRF_LONG_RESERVE;
+								break;
+
+							case TRLRVF_CANCEL_LONG_RESERVE:
+								out.flags &= ~TRPRF_LONG_RESERVE;
+								break;
+
+							default:
+								NOT_REACHED();
+								break;
 						}
 						break;
 
