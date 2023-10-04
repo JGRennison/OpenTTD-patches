@@ -64,7 +64,7 @@ static const RoadDriveEntry _roadveh_drive_data_3[] = {
 	{ 9, 12},
 	{ 8, 13},
 	{ 7, 14},
-	{ 6, 15}
+	{ 6, 15},
 	{RDE_NEXT_TILE | DIAGDIR_SE, 0}
 };
 static const RoadDriveEntry _roadveh_drive_data_4[] = {
