@@ -2192,6 +2192,8 @@ STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :Detailed
 STR_CONFIG_SETTING_CITY_IN_LABEL                                :Show city in town name label: {STRING2}
 STR_CONFIG_SETTING_CITY_IN_LABEL_HELPTEXT                       :Display if a town is also a city in their label on the map
 
+STR_CONFIG_SETTING_RESTRICT_PATCH                               :Non-standard settings which are not in vanilla OpenTTD
+
 ###length 4
 STR_VIEWPORT_TOWN_COLOUR                                        :{1:COLOUR}{0:TOWN}
 STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {COLOUR}({COMMA})

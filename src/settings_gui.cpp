@@ -1021,6 +1021,7 @@ enum RestrictionMode {
 	RM_ALL,                              ///< List all settings regardless of the default/newgame/... values.
 	RM_CHANGED_AGAINST_DEFAULT,          ///< Show only settings which are different compared to default values.
 	RM_CHANGED_AGAINST_NEW,              ///< Show only settings which are different compared to the user's new game setting values.
+	RM_PATCH,                            ///< Show only "patch" settings which are not in vanilla.
 	RM_END,                              ///< End for iteration.
 };
 DECLARE_POSTFIX_INCREMENT(RestrictionMode)
@@ -1376,6 +1377,7 @@ bool SettingEntry::IsVisibleByRestrictionMode(RestrictionMode mode) const
 
 	if (mode == RM_BASIC) return (this->setting->cat & SC_BASIC_LIST) != 0;
 	if (mode == RM_ADVANCED) return (this->setting->cat & SC_ADVANCED_LIST) != 0;
+	if (mode == RM_PATCH) return (this->setting->cat & SC_PATCH_LIST) != 0;
 
 	/* Read the current value. */
 	const void *object = ResolveObject(&GetGameSettings(), sd);
@@ -1436,6 +1438,7 @@ bool SettingEntry::UpdateFilterState(SettingFilter &filter, bool force_visible)
 			visible = false;
 		}
 		if (!this->IsVisibleByRestrictionMode(filter.mode)) {
+			if (filter.mode == RM_PATCH) filter.min_cat = RM_ALL;
 			while (filter.min_cat < RM_ALL && (filter.min_cat == filter.mode || !this->IsVisibleByRestrictionMode(filter.min_cat))) filter.min_cat++;
 			visible = false;
 		}
@@ -2527,6 +2530,7 @@ static const StringID _game_settings_restrict_dropdown[] = {
 	STR_CONFIG_SETTING_RESTRICT_ALL,                              // RM_ALL
 	STR_CONFIG_SETTING_RESTRICT_CHANGED_AGAINST_DEFAULT,          // RM_CHANGED_AGAINST_DEFAULT
 	STR_CONFIG_SETTING_RESTRICT_CHANGED_AGAINST_NEW,              // RM_CHANGED_AGAINST_NEW
+	STR_CONFIG_SETTING_RESTRICT_PATCH,                            // RM_PATCH
 };
 static_assert(lengthof(_game_settings_restrict_dropdown) == RM_END);
 
@@ -3100,14 +3104,14 @@ struct GameSettingsWindow : Window {
 		if (!gui_scope) return;
 
 		/* Update which settings are to be visible. */
-		RestrictionMode min_level = (this->filter.mode <= RM_ALL) ? this->filter.mode : RM_BASIC;
+		RestrictionMode min_level = (this->filter.mode <= RM_ALL || this->filter.mode == RM_PATCH) ? this->filter.mode : RM_BASIC;
 		this->filter.min_cat = min_level;
 		this->filter.type_hides = false;
 		GetSettingsTree().UpdateFilterState(this->filter, false);
 
 		if (this->filter.string.IsEmpty()) {
 			this->warn_missing = WHR_NONE;
-		} else if (min_level < this->filter.min_cat) {
+		} else if (min_level < this->filter.min_cat || (min_level == RM_PATCH && min_level != this->filter.min_cat)) {
 			this->warn_missing = this->filter.type_hides ? WHR_CATEGORY_TYPE : WHR_CATEGORY;
 		} else {
 			this->warn_missing = this->filter.type_hides ? WHR_TYPE : WHR_NONE;
