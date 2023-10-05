@@ -665,6 +665,7 @@ struct VehicleSettings {
 	Year   no_introduce_vehicles_after;      ///< do not introduce vehicles after this year
 	byte   extend_vehicle_life;              ///< extend vehicle life by this many years
 	byte   road_side;                        ///< the side of the road vehicles drive on
+	bool   diagonal_roads;                   ///< whether road corners are turned into diagonals
 	uint8  plane_crashes;                    ///< number of plane crashes, 0 = none, 1 = reduced, 2 = normal
 	bool   adjacent_crossings;               ///< enable closing of adjacent level crossings
 	bool   safer_crossings;                  ///< enable safer level crossings

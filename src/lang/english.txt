@@ -1525,6 +1525,9 @@ STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Choose the driv
 STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :Drive on left
 STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :Drive on right
 
+STR_CONFIG_SETTING_DIAGONAL_ROADS                               :Diagonal Roads: {STRING2}
+STR_CONFIG_SETTING_DIAGONAL_ROADS_HELPTEXT                      :Choose whether to turn smooth corners into diagonal roads
+
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Heightmap rotation: {STRING2}
 ###length 2
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_COUNTER_CLOCKWISE         :Counter clockwise
