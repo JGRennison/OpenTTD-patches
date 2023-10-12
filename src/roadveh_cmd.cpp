@@ -1400,6 +1400,13 @@ static Trackdir FollowPreviousRoadVehicle(const RoadVehicle *v, const RoadVehicl
 			dir = (Trackdir)(prev_state & RVSB_ROAD_STOP_TRACKDIR_MASK);
 		} else if (prev_state < TRACKDIR_END) {
 			dir = (Trackdir)prev_state;
+			if (_settings_game.vehicle.diagonal_roads && prev->tile != tile && (dir & 7) >= TRACKDIR_UPPER_E && (dir & 7) <= TRACKDIR_RIGHT_S) {
+				/*
+				 * Swap trackdir to opposite side when changing tile.
+				 * TODO: Do this in a more robust way.
+				 */
+				dir = (Trackdir)(dir ^ 1);
+			}
 		} else {
 			return INVALID_TRACKDIR;
 		}
@@ -1734,6 +1741,7 @@ bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev)
 			dir = (Trackdir) prev->state;
 		} else {
 			dir = FollowPreviousRoadVehicle(v, prev, tile, (DiagDirection)(rd.x & 3), false);
+			DEBUG(misc, 0, "v: %u, prev->state: %u, prev->tile: %X, v->tile: %X, tile: %X, diagdir: %u --> %u", v->index, prev->state, prev->tile, v->tile, tile, (DiagDirection)(rd.x & 3), dir);
 		}
 
 		if (dir == INVALID_TRACKDIR) {
