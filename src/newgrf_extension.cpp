@@ -62,7 +62,7 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action0_object_flood_resistant", 1),
 	GRFFeatureInfo("action0_object_viewport_map_tile_type", 1),
 	GRFFeatureInfo("varaction2_airporttiles_airport_info", 1),
-	GRFFeatureInfo("road_stops", 9, GFTOF_ROAD_STOPS),
+	GRFFeatureInfo("road_stops", 10, GFTOF_ROAD_STOPS),
 	GRFFeatureInfo("new_landscape", 2),
 	GRFFeatureInfo("more_objects_per_grf", 1),
 	GRFFeatureInfo("more_action2_ids", 1, GFTOF_MORE_ACTION2_IDS),

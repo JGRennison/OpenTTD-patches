@@ -261,13 +261,17 @@
 	</p>
 
 	<h4 id="roadstop_terrain_type">Road stop tile terrain type (42, or mappable variable: roadstop_terrain_type)</h4>
-	<p>This has the same value as bits 0 - 7 of <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Objects#Tile_information_.2841.29">object (feature F) variable 41</a>.
+	<p>This has the same value as bits 0 - 15 of <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Objects#Tile_information_.2841.29">object (feature F) variable 41</a>.
 		<table>
-		<tr><th>Value</th><th>Meaning</th></tr>
+		<tr><th>Bit</th><th>Meaning</th></tr>
 		<tr><td>0</td><td>Normal</td></tr>
 		<tr><td>1</td><td>Desert</td></tr>
 		<tr><td>2</td><td>Rainforest</td></tr>
 		<tr><td>4</td><td>On or above snowline</td></tr>
+		<tr><td>8 - 15</td><td>
+			Tile slope<br />
+			This requires <font face="monospace">road_stops</font>, version 10.
+		</td></tr>
 		</table>
 	</p>
 

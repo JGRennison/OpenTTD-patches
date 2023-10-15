@@ -130,7 +130,7 @@ uint32 RoadStopScopeResolver::GetVariable(uint16 variable, uint32 parameter, Get
 			return 2;
 
 		/* Terrain type */
-		case 0x42: return this->tile == INVALID_TILE ? 0 : GetTerrainType(this->tile, TCX_NORMAL); // terrain_type
+		case 0x42: return this->tile == INVALID_TILE ? 0 : (GetTileSlope(this->tile) << 8 | GetTerrainType(this->tile, TCX_NORMAL));
 
 		/* Road type */
 		case 0x43: return get_road_type_variable(RTT_ROAD);
