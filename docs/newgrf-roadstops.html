@@ -264,10 +264,13 @@
 	<p>This has the same value as bits 0 - 15 of <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Objects#Tile_information_.2841.29">object (feature F) variable 41</a>.
 		<table>
 		<tr><th>Bit</th><th>Meaning</th></tr>
-		<tr><td>0</td><td>Normal</td></tr>
-		<tr><td>1</td><td>Desert</td></tr>
-		<tr><td>2</td><td>Rainforest</td></tr>
-		<tr><td>4</td><td>On or above snowline</td></tr>
+		<tr><td>0 - 7</td><td>
+			Terrain type:<br />
+			0 - Normal<br />
+			1 - Desert<br />
+			2 - Rainforest<br />
+			3 - On or above snowline
+		</td></tr>
 		<tr><td>8 - 15</td><td>
 			Tile slope<br />
 			This requires <font face="monospace">road_stops</font>, version 10.
