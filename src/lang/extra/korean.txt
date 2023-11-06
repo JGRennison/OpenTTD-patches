@@ -15,7 +15,7 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_128X                            :128x
 
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE_DEFAULT                    :기본값
 
-STR_ORDER_CONDITIONAL_CARGO_WAITING                             :{G=m}대기하는 화물
+STR_ORDER_CONDITIONAL_CARGO_WAITING                             :{G=m}화물 대기 여부
 STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :{G=m}받는 화물
 STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :{G=m}빈 승강장
 STR_ORDER_CONDITIONAL_PERCENT                                   :{G=m}확률
@@ -160,6 +160,9 @@ STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_HELPTEXT            :역에서 열�
 
 STR_CONFIG_SETTING_RAIL_DEPOT_SPEED_LIMIT                       :차량 기지 최대 속력: {STRING}
 STR_CONFIG_SETTING_RAIL_DEPOT_SPEED_LIMIT_HELPTEXT              :열차가 차량기지에 들어가거나 나올 때 열차의 최대 속력입니다.
+
+STR_CONFIG_SETTING_NON_LEADING_ENGINES_KEEP_NAME                :두 번째 이후에 연결한 기관차의 이름을 유지: {STRING}
+STR_CONFIG_SETTING_NON_LEADING_ENGINES_KEEP_NAME_HELPTEXT       :이름을 별도로 지정한 기관차를 두 번째 이후에 연결할 때 그 이름을 유지할지 여부를 선택합니다
 
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING                :단방향 경로 신호기 뒤까지 경로 탐색: {STRING}
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING_HELPTEXT       :이 설정을 켜면, YAPF 열차 경로 탐색 알고리즘이 단방향 경로 신호기 뒤까지 경로를 탐색할 수 있습니다.
@@ -533,6 +536,9 @@ STR_CONFIG_SETTING_MIN_CITY_LAND_AREA_HELPTEXT                  :대도시를 �
 STR_CONFIG_SETTING_MIN_LAND_AREA_VALUE                          :{NUM}
 STR_CONFIG_SETTING_MIN_LAND_AREA_ZERO                           :끄기
 
+STR_CONFIG_SETTING_FLOOD_FROM_EDGES                             :지도 가장자리에서 물이 들이침: {STRING}
+STR_CONFIG_SETTING_FLOOD_FROM_EDGES_HELPTEXT                    :지도 가장자리로부터 해수면의 가장자리 칸으로 물이 들이치게 할지를 선택합니다
+
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE                        :조정된 눈 쌓인 나무: {STRING}
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_HELPTEXT               :아한대 기후에서의 설선 근처의 눈 쌓인 나무의 개수를 조정합니다. 설선 위에는 나무가 적어집니다. 설선에서는 온대 기후의 나무와 눈 쌓인 나무가 공존할 것입니다. 설선 아래에선 온대 기후의 나무가 자랄 것입니다.
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE                  :눈 쌓인 나무 범위: {STRING}
@@ -841,6 +847,7 @@ STR_TRACE_RESTRICT_RESERVE_THROUGH                              :경로 통과 �
 STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL                       :경로 통과 예약 취소
 STR_TRACE_RESTRICT_LONG_RESERVE                                 :추가 경로 예약
 STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL                          :추가 경로 예약 취소
+STR_TRACE_RESTRICT_LONG_RESERVE_UNLESS_STOPPING                 :추가 경로 예약 (정차하지 않은 경우)
 STR_TRACE_RESTRICT_WAIT_AT_PBS                                  :경로 신호기에서 대기
 STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL                           :경로 신호기에서 대기 취소
 STR_TRACE_RESTRICT_PBS_RES_END_WAIT                             :경로 예약이 여기서 끝날 때까지 입구 경로 신호기에서 대기
@@ -1619,12 +1626,19 @@ STR_ORDER_RV_DIR_SE                                             :[남동쪽 방�
 STR_ORDER_RV_DIR_SW                                             :[남서쪽 방향]
 STR_ORDER_RV_DIR_NW                                             :[북서쪽 방향]
 
+STR_ORDER_CONDITIONAL_UNDEFINED_STATION                         :{PUSH_COLOUR}{RED}알 수 없는 역{POP_COLOUR}
+
+STR_ORDER_CONDITIONAL_FREE_PLATFORMS_DISPLAY                    :[조건 경로] {COMMA}번 경로로 건너뛰기 ({1:STRING}의 빈 승강장 {2:STRING} {3:COMMA}일 때)
 STR_ORDER_CONDITIONAL_PERCENT_DISPLAY                           :[조건 경로] {COMMA}번 경로로 건너뛰기 ({COMMA}%의 확률로)
+STR_ORDER_CONDITIONAL_CARGO_ACCEPTANCE                          :[조건 경로] {COMMA}번 경로로 건너뛰기 ({1:STRING}에서 {3:STRING}{G 3 "을" "를"} {2:STRING})
+STR_ORDER_CONDITIONAL_CARGO_WAITING_DISPLAY                     :[조건 경로] {COMMA}번 경로로 건너뛰기 ({1:STRING}에 {3:STRING}{G 3 "이" "가"} {2:STRING})
 STR_ORDER_CONDITIONAL_SLOT                                      :[조건 경로] {COMMA}번 경로로 건너뛰기 ({TRSLOT} 슬롯이 {STRING})
 STR_ORDER_CONDITIONAL_INVALID_SLOT                              :[조건 경로] {COMMA}번 경로로 건너뛰기 ({PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} 슬롯이 {STRING})
 STR_ORDER_CONDITIONAL_IN_SLOT                                   :[조건 경로] {COMMA}번 경로로 건너뛰기 (열차가 {2:TRSLOT} 슬롯에 {1:STRING})
 STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :[조건 경로] {COMMA}번 경로로 건너뛰기 (열차가 {PUSH_COLOUR}{RED}{2:STRING}{POP_COLOUR}{1:STRING})
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :[조건 경로] {COMMA}번 경로로 건너뛰기 ({STRING}의 적재율 {STRING} {COMMA}일 때)
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :[조건 경로] {COMMA}번 경로로 건너뛰기 ({2:STRING}(으)로 가는 {1:STRING} {3:STRING} {4:CARGO_SHORT}일 때)
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :[조건 경로] {COMMA}번 경로로 건너뛰기 ({3:STRING}(을)를 경유하여 {2:STRING}(으)로 가는 {1:STRING} {4:STRING} {5:CARGO_SHORT}일 때)
 STR_ORDER_CONDITIONAL_COUNTER                                   :[조건 경로] {COMMA}번 경로로 건너뛰기 ({TRCOUNTER}의 값 {STRING} {COMMA}일 때)
 STR_ORDER_CONDITIONAL_INVALID_COUNTER                           :[조건 경로] {COMMA}번 경로로 건너뛰기 ({PUSH_COLOUR}{RED}{STRING}{POP_COLOUR}의 값 {STRING} {COMMA}일 때)
 STR_ORDER_CONDITIONAL_TIME_HHMM                                 :[조건 경로] {COMMA}번 경로로 건너뛰기 ({STRING} {STRING} {TIME_HHMM}일 때)
@@ -2006,6 +2020,7 @@ STR_SCHDISPATCH_NAMED_SCHEDULE_ID                               :{BLACK}{STRING}
 STR_SCHDISPATCH_RENAME_SCHEDULE_TOOLTIP                         :{BLACK}일정 이름 변경
 STR_SCHDISPATCH_RENAME_SCHEDULE_CAPTION                         :{WHITE}일정 이름 변경
 STR_ERROR_CAN_T_RENAME_SCHEDULE                                 :{WHITE}일정 이름을 변경할 수 없습니다...
+STR_SCHDISPATCH_MOVE_SCHEDULE                                   :{BLACK}일정 목록에서 현재 일정의 위치를 변경합니다
 
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}최근 출발: {DATE_WALLCLOCK_TINY}
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}최근 배차된 열차가 아직 출발하지 않았습니다. {DATE_WALLCLOCK_TINY}에 출발할 예정입니다.
@@ -2131,7 +2146,10 @@ STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :자세히
 STR_CONFIG_SETTING_CITY_IN_LABEL                                :도시 이름에 대도시 여부 표시: {STRING}
 STR_CONFIG_SETTING_CITY_IN_LABEL_HELPTEXT                       :지도 상에 표시되는 도시 이름에 대도시인지 여부를 표시합니다
 
+STR_CONFIG_SETTING_RESTRICT_PATCH                               :원본 OpenTTD에 있지 않은 비표준 설정
+
 STR_VIEWPORT_TOWN_COLOUR                                        :{1:COLOUR}{0:TOWN}
 STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {COLOUR}({COMMA})
 STR_VIEWPORT_TOWN_COLOUR_CITY                                   :{1:COLOUR}{0:TOWN} (대도시)
 STR_VIEWPORT_TOWN_COLOUR_CITY_POP                               :{WHITE}{TOWN} {COLOUR}(대도시, {COMMA})
+
