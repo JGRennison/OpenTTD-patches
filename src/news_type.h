@@ -14,6 +14,7 @@
 #include "date_type.h"
 #include "strings_type.h"
 #include "sound_type.h"
+#include <vector>
 
 /**
  * Type of news.

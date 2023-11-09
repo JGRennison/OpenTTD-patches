@@ -19,6 +19,7 @@
 #include "vehicle_type.h"
 #include <array>
 #include <optional>
+#include <vector>
 
 extern ArrayStringParameters<20> _global_string_params;
 

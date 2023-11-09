@@ -10,11 +10,12 @@
 #ifndef ERROR_H
 #define ERROR_H
 
-#include <list>
 #include "strings_type.h"
 #include "company_type.h"
 #include "core/geometry_type.hpp"
 #include "guitimer_func.h"
+#include <list>
+#include <vector>
 
 struct GRFFile;
 

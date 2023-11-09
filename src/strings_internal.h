@@ -198,20 +198,6 @@ public:
 };
 
 /**
- * Extension of StringParameters with its own statically allocated buffer for
- * the parameters.
- */
-class AllocatedStringParameters : public StringParameters {
-	std::vector<StringParameter> params; ///< The actual parameters
-
-public:
-	AllocatedStringParameters(size_t parameters = 0) : params(parameters)
-	{
-		this->parameters = span(params.data(), params.size());
-	}
-};
-
-/**
  * Extension of StringParameters with its own statically sized buffer for
  * the parameters.
  */
