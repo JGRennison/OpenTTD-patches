@@ -106,7 +106,7 @@ StringParameter *StringParameters::GetNextParameterPointer()
  * @param min_count Minimum number of digits independent of \a max.
  * @param size  Font of the number
  */
-void SetDParamMaxValue(uint n, uint64 max_value, uint min_count, FontSize size)
+void SetDParamMaxValue(size_t n, uint64 max_value, uint min_count, FontSize size)
 {
 	uint num_digits = 1;
 	while (max_value >= 10) {
@@ -122,7 +122,7 @@ void SetDParamMaxValue(uint n, uint64 max_value, uint min_count, FontSize size)
  * @param count Number of digits which shall be displayable.
  * @param size  Font of the number
  */
-void SetDParamMaxDigits(uint n, uint count, FontSize size)
+void SetDParamMaxDigits(size_t n, uint count, FontSize size)
 {
 	SetDParam(n, GetBroadestDigitsValue(count, size));
 }
@@ -311,7 +311,7 @@ std::string GetString(StringID string)
  * @param n slot of the string
  * @param str string to bind
  */
-void SetDParamStr(uint n, const char *str)
+void SetDParamStr(size_t n, const char *str)
 {
 	_global_string_params.SetParam(n, str);
 }
@@ -323,7 +323,7 @@ void SetDParamStr(uint n, const char *str)
  * @param n slot of the string
  * @param str string to bind
  */
-void SetDParamStr(uint n, std::string str)
+void SetDParamStr(size_t n, std::string str)
 {
 	_global_string_params.SetParam(n, std::move(str));
 }
@@ -1218,7 +1218,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters &arg
 
 			case SCC_GENDER_LIST: { // {G 0 Der Die Das}
 				/* First read the meta data from the language file. */
-				uint offset = orig_offset + (byte)*str++;
+				size_t offset = orig_offset + (byte)*str++;
 				int gender = 0;
 				if (!dry_run && args.GetTypeAtOffset(offset) != 0) {
 					/* Now we need to figure out what text to resolve, i.e.
@@ -1260,7 +1260,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters &arg
 
 			case SCC_PLURAL_LIST: { // {P}
 				int plural_form = *str++;          // contains the plural form for this string
-				uint offset = orig_offset + (byte)*str++;
+				size_t offset = orig_offset + (byte)*str++;
 				int64 v = args.GetParam(offset); // contains the number that determines plural
 				str = ParseStringChoice(str, DeterminePluralForm(v, plural_form), &buff, last);
 				break;

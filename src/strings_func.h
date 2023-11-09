@@ -94,16 +94,16 @@ WChar GetDecimalSeparatorChar();
  * @param n Index of the string parameter.
  * @param v Value of the string parameter.
  */
-static inline void SetDParam(uint n, uint64 v)
+static inline void SetDParam(size_t n, uint64 v)
 {
 	_global_string_params.SetParam(n, v);
 }
 
-void SetDParamMaxValue(uint n, uint64 max_value, uint min_count = 0, FontSize size = FS_NORMAL);
-void SetDParamMaxDigits(uint n, uint count, FontSize size = FS_NORMAL);
+void SetDParamMaxValue(size_t n, uint64 max_value, uint min_count = 0, FontSize size = FS_NORMAL);
+void SetDParamMaxDigits(size_t n, uint count, FontSize size = FS_NORMAL);
 
-void SetDParamStr(uint n, const char *str);
-void SetDParamStr(uint n, std::string str);
+void SetDParamStr(size_t n, const char *str);
+void SetDParamStr(size_t n, std::string str);
 
 void CopyInDParam(const span<const StringParameterBackup> backup, uint offset = 0);
 void CopyOutDParam(std::vector<StringParameterBackup> &backup, size_t num);
@@ -114,7 +114,7 @@ bool HaveDParamChanged(const std::vector<StringParameterBackup> &backup);
  * @param n Index of the string parameter.
  * @return Value of the requested string parameter.
  */
-static inline uint64 GetDParam(uint n)
+static inline uint64 GetDParam(size_t n)
 {
 	return _global_string_params.GetParam(n);
 }
