@@ -615,7 +615,7 @@ public:
 
 		dbg_assert(pos.ring == this);
 
-		const uint32 new_pos_start = this->setup_insert(pos.pos, count);
+		const uint32 new_pos_start = this->setup_insert(pos.pos, (uint32)count);
 		uint32 new_pos = new_pos_start;
 		for (size_t i = 0; i != count; i++) {
 			new (this->raw_ptr_at_pos(new_pos)) T(value);
