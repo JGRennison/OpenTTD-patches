@@ -202,7 +202,7 @@
 
 #endif /* defined(_MSC_VER) */
 
-#if !defined(STRGEN) && !defined(SETTINGSGEN)
+#if !defined(STRGEN) && !defined(SETTINGSGEN) && !defined(OPENTTD_TEST)
 #	if defined(_WIN32)
 		char *getcwd(char *buf, size_t size);
 #		include <io.h>
@@ -222,7 +222,7 @@
 		template <typename T> std::string FS2OTTD(T name) { return name; }
 		template <typename T> std::string OTTD2FS(T name) { return name; }
 #	endif /* _WIN32 or WITH_ICONV */
-#endif /* STRGEN || SETTINGSGEN */
+#endif /* STRGEN || SETTINGSGEN || OPENTTD_TEST */
 
 #if defined(_WIN32)
 #	define PATHSEP "\\"

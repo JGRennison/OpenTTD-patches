@@ -7,6 +7,7 @@
 
 /** @file bitmath_func_test.cpp Test functionality from core/bitmath_func. */
 
+#define OPENTTD_TEST
 #include "../stdafx.h"
 
 #include "../3rdparty/catch2/catch.hpp"

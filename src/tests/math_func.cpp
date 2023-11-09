@@ -7,6 +7,7 @@
 
 /** @file math_func_test.cpp Test functionality from core/math_func. */
 
+#define OPENTTD_TEST
 #include "../stdafx.h"
 
 #include "../3rdparty/catch2/catch.hpp"

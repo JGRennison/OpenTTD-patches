@@ -7,6 +7,7 @@
 
 /** @file test_main.cpp Entry point for all the unit tests. */
 
+#define OPENTTD_TEST
 #include "../stdafx.h"
 
 #include <stdarg.h>
