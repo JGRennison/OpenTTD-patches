@@ -175,8 +175,13 @@ jobs:
 
         echo "::group::Build"
         echo "Running on $(nproc) cores"
-        cmake --build . -j $(nproc)
+        cmake --build . -j $(nproc) -t all openttd_test
         echo "::endgroup::"
+
+    - name: Test
+      run: |
+        cd build
+        ctest -j $(nproc) --timeout 120
 
   macos:
     strategy:
@@ -270,8 +275,13 @@ jobs:
 
         echo "::group::Build"
         echo "Running on $(sysctl -n hw.logicalcpu) cores"
-        cmake --build . -j $(sysctl -n hw.logicalcpu)
+        cmake --build . -j $(sysctl -n hw.logicalcpu) -t all openttd_test
         echo "::endgroup::"
+
+    - name: Test
+      run: |
+        cd build
+        ctest -j $(sysctl -n hw.logicalcpu) --timeout 120
 
   windows:
     strategy:
@@ -363,8 +373,15 @@ jobs:
         echo "::endgroup::"
 
         echo "::group::Build"
-        cmake --build .
+        cmake --build . -t all openttd_test
         echo "::endgroup::"
+
+    - name: Test
+      shell: bash
+      run: |
+        cd build
+        ctest --timeout 120
+
 
   msys2:
     strategy:
@@ -436,8 +453,14 @@ jobs:
 
         echo "::group::Build"
         echo "Running on $(nproc) cores"
-        cmake --build . -j $(nproc)
+        cmake --build . -j $(nproc) -t all openttd_test
         echo "::endgroup::"
+
+    - name: Test
+      shell: msys2 {0}
+      run: |
+        cd build
+        ctest --timeout 120
 
   check_annotations:
     name: Check Annotations
