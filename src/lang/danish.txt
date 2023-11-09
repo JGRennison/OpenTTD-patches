@@ -1059,12 +1059,12 @@ STR_GAME_OPTIONS_REFRESH_RATE_ITEM                              :{NUM}Hz
 STR_GAME_OPTIONS_REFRESH_RATE_WARNING                           :{WHITE}Opdateringshastigheder over 60Hz kan påvirke ydeevnen.
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Basis-grafiksæt
-STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Vælg det basis-grafiksæt der skal bruges
+STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Vælg det grundlæggende grafiksæt, der skal bruges
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} forsvund{P en ne}/ødelagt{P "" e} fil{P "" er}
 STR_GAME_OPTIONS_BASE_GRF_DESCRIPTION_TOOLTIP                   :{BLACK}Yderligere information om basis-grafiksættet
 
 STR_GAME_OPTIONS_BASE_SFX                                       :{BLACK}Basis-lydsæt
-STR_GAME_OPTIONS_BASE_SFX_TOOLTIP                               :{BLACK}Vælg basis-lydsættet der skal bruges
+STR_GAME_OPTIONS_BASE_SFX_TOOLTIP                               :{BLACK}Vælg det grundlæggende lyd sæt, der skal bruges
 STR_GAME_OPTIONS_BASE_SFX_DESCRIPTION_TOOLTIP                   :{BLACK}Mere information om basis-lydsættet
 
 STR_GAME_OPTIONS_BASE_MUSIC                                     :{BLACK}Basis-musiksæt
@@ -1233,6 +1233,7 @@ STR_CONFIG_SETTING_REALISTIC                                    :Realistisk
 STR_CONFIG_SETTING_HORIZONTAL_POS_LEFT                          :Venstre
 STR_CONFIG_SETTING_HORIZONTAL_POS_CENTER                        :Center
 STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Højre
+
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Maksimum startlån: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Maksimumbeløb et selskab kan låne (uden at tage inflation i betragtning)
@@ -1449,7 +1450,6 @@ STR_CONFIG_SETTING_AUTORENEW_MONEY_HELPTEXT                     :Minimal mængde
 
 STR_CONFIG_SETTING_ERRMSG_DURATION                              :Varighed af fejlmeddelelse: {STRING}
 STR_CONFIG_SETTING_ERRMSG_DURATION_HELPTEXT                     :Varighed for visning fejlmeddelelser i en rød vindue. Bemærk, at nogle (kritisk) fejlmeddelelser ikke lukkes automatisk efter dette tidspunkt, men skal lukkes manuelt
-STR_CONFIG_SETTING_ERRMSG_DURATION_VALUE                        :{COMMA} sekund{P 0 "" er}
 
 STR_CONFIG_SETTING_HOVER_DELAY                                  :Vis værktøjstip: {STRING}
 STR_CONFIG_SETTING_HOVER_DELAY_HELPTEXT                         :Forsinkelse inden tooltips vises, når musen føres over nogle den grænseflade . Alternativt tooltips er bundet til den højre museknap, når denne værdi er sat til 0.

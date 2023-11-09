@@ -570,8 +570,7 @@ bool ScriptInstance::IsPaused()
 			byte len = SlReadByte();
 			static char buf[std::numeric_limits<decltype(len)>::max()];
 			SlArray(buf, len, SLE_CHAR);
-			StrMakeValidInPlace(buf, buf + len);
-			if (data != nullptr) data->push_back(std::string(buf));
+			if (data != nullptr) data->push_back(StrMakeValid(std::string_view(buf, len)));
 			return true;
 		}
 

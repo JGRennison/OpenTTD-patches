@@ -192,8 +192,20 @@ const char *str_fix_scc_encoded(char *str, const char *last)
 }
 
 
+/**
+ * Copies the valid (UTF-8) characters from \c str up to \c last to the \c dst.
+ * Depending on the \c settings invalid characters can be replaced with a
+ * question mark, as well as determining what characters are deemed invalid.
+ *
+ * It is allowed for \c dst to be the same as \c src, in which case the string
+ * is make valid in place.
+ * @param dst The destination to write to.
+ * @param str The string to validate.
+ * @param last The last valid character of str.
+ * @param settings The settings for the string validation.
+ */
 template <class T>
-static void StrMakeValidInPlace(T &dst, const char *str, const char *last, StringValidationSettings settings)
+static void StrMakeValid(T &dst, const char *str, const char *last, StringValidationSettings settings)
 {
 	/* Assume the ABSOLUTE WORST to be in str as it comes from the outside. */
 
@@ -268,7 +280,7 @@ static void StrMakeValidInPlace(T &dst, const char *str, const char *last, Strin
 char *StrMakeValidInPlace(char *str, const char *last, StringValidationSettings settings)
 {
 	char *dst = str;
-	StrMakeValidInPlace(dst, str, last, settings);
+	StrMakeValid(dst, str, last, settings);
 	*dst = '\0';
 	return dst;
 }
@@ -287,8 +299,9 @@ void StrMakeValidInPlace(char *str, StringValidationSettings settings)
 }
 
 /**
- * Scans the string for invalid characters and replaces then with a
- * question mark '?' (if not ignored).
+ * Copies the valid (UTF-8) characters from \c str to the returned string.
+ * Depending on the \c settings invalid characters can be replaced with a
+ * question mark, as well as determining what characters are deemed invalid.
  * @param str The string to validate.
  * @param settings The settings for the string validation.
  */
@@ -299,7 +312,7 @@ std::string StrMakeValid(std::string_view str, StringValidationSettings settings
 
 	std::ostringstream dst;
 	std::ostreambuf_iterator<char> dst_iter(dst);
-	StrMakeValidInPlace(dst_iter, buf, last, settings);
+	StrMakeValid(dst_iter, buf, last, settings);
 
 	return dst.str();
 }

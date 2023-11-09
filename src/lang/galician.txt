@@ -1234,6 +1234,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_LEFT                          :Esquerda
 STR_CONFIG_SETTING_HORIZONTAL_POS_CENTER                        :Centro
 STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Dereita
 
+
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Crédito máximo inicial: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Cantidade máxima de cartos que unha compañía pode pedir (sen ter en conta a inflación)
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_VALUE                   :{CURRENCY_LONG}
@@ -1449,7 +1450,6 @@ STR_CONFIG_SETTING_AUTORENEW_MONEY_HELPTEXT                     :Cantidade míni
 
 STR_CONFIG_SETTING_ERRMSG_DURATION                              :Duración das mesaxes de erro: {STRING}
 STR_CONFIG_SETTING_ERRMSG_DURATION_HELPTEXT                     :Duración das mesaxes de erro que aparecen nunha ventá vermella. Ten en conta que algunhas mesaxes de errores (críticos) non se pechan automáticamente despois deste tempo, senón que deben ser pechadas manualmente
-STR_CONFIG_SETTING_ERRMSG_DURATION_VALUE                        :{COMMA} segundo{P 0 "" s}
 
 STR_CONFIG_SETTING_HOVER_DELAY                                  :Amosar consellos sobre as ferramentas: {STRING}
 STR_CONFIG_SETTING_HOVER_DELAY_HELPTEXT                         :Retardo antes de que os consellos aparezan ao despraza-lo rato sobre algúns elementos da interface. Alternativamente, os consellos poden ser asignados ao botón dereito do rato

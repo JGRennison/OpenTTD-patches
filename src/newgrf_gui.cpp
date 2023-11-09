@@ -78,9 +78,8 @@ static void ShowNewGRFInfo(const GRFConfig *c, const Rect &r, bool show_params)
 		for (uint i = 0; i < c->error->param_value.size(); i++) {
 			SetDParam(3 + i, c->error->param_value[i]);
 		}
-		std::string message = GetString(c->error->message != STR_NULL ? c->error->message : STR_JUST_RAW_STRING);
 
-		SetDParamStr(0, message);
+		SetDParamStr(0, GetString(c->error->message != STR_NULL ? c->error->message : STR_JUST_RAW_STRING));
 		tr.top = DrawStringMultiLine(tr, c->error->severity);
 	}
 
@@ -112,11 +111,9 @@ static void ShowNewGRFInfo(const GRFConfig *c, const Rect &r, bool show_params)
 
 	/* Show GRF parameter list */
 	if (show_params) {
-		std::string params;
 		if (c->num_params > 0) {
-			params = GRFBuildParamList(c);
 			SetDParam(0, STR_JUST_RAW_STRING);
-			SetDParamStr(1, params);
+			SetDParamStr(1, GRFBuildParamList(c));
 		} else {
 			SetDParam(0, STR_NEWGRF_SETTINGS_PARAMETER_NONE);
 		}

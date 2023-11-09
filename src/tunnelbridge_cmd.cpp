@@ -2619,7 +2619,7 @@ static void GetTileDesc_TunnelBridge(TileIndex tile, TileDesc *td)
 		uint8 style = GetTunnelBridgeSignalStyle(tile);
 		if (style > 0) {
 			/* Add suffix about signal style */
-			SetDParamX(td->dparam, 0, td->str);
+			td->dparam[0] = td->str;
 			td->dparam[1] = style == 0 ? STR_BUILD_SIGNAL_DEFAULT_STYLE : _new_signal_styles[style - 1].name;
 			td->str = STR_LAI_RAIL_DESCRIPTION_TRACK_SIGNAL_STYLE;
 		}
@@ -2627,8 +2627,7 @@ static void GetTileDesc_TunnelBridge(TileIndex tile, TileDesc *td)
 			td->dparam[3] = td->dparam[2];
 			td->dparam[2] = td->dparam[1];
 			td->dparam[1] = td->dparam[0];
-			SetDParamX(td->dparam, 0, td->str);
-			SetDParamX(td->dparam, 0, td->str);
+			td->dparam[0] = td->str;
 			td->str = STR_LAI_RAIL_DESCRIPTION_RESTRICTED_SIGNAL;
 		}
 	}

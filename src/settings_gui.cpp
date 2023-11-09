@@ -986,7 +986,7 @@ static const NWidgetPart _nested_game_options_widgets[] = {
 };
 
 static WindowDesc _game_options_desc(
-	WDP_CENTER, "settings_game", 0, 0,
+	WDP_CENTER, nullptr, 0, 0,
 	WC_GAME_OPTIONS, WC_NONE,
 	0,
 	_nested_game_options_widgets, lengthof(_nested_game_options_widgets)
@@ -1473,9 +1473,8 @@ void SettingEntry::SetValueDParams(uint first_param, int32 value, std::unique_pt
 		double scale = std::exp2(((double)value) / 10);
 		int log = -std::min(0, (int)std::floor(std::log10(scale)) - 2);
 
-		int64 args_array[] = { value, (int64)(scale * std::pow(10.f, (float)log)), log };
-		StringParameters tmp_params(args_array);
-		GetStringWithArgs(tempdata->buffer, this->setting->str_val, &tmp_params, lastof(tempdata->buffer));
+		auto tmp_params = MakeParameters(value, (int64)(scale * std::pow(10.f, (float)log)), log);
+		GetStringWithArgs(tempdata->buffer, this->setting->str_val, tmp_params, lastof(tempdata->buffer));
 		SetDParam(first_param++, STR_JUST_RAW_STRING);
 		SetDParamStr(first_param++, tempdata->buffer);
 	} else {

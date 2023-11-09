@@ -1271,10 +1271,10 @@ static CommandCost ValidateAutoDrag(Trackdir *trackdir, TileIndex start, TileInd
  * - p2 = (bit 0-5) - railroad type normal/maglev (0 = normal, 1 = mono, 2 = maglev), only used for building
  * - p2 = (bit 6-8) - track-orientation, valid values: 0-5 (Track enum)
  * - p2 = (bit 9)   - 0 = build, 1 = remove tracks
- * - p2 = (bit 10)  - 0 = build up to an obstacle, 1 = fail if an obstacle is found (used for AIs).
+ * - p2 = (bit 10)  - 0 = build starting from and up to an obstacle, 1 = fail if an obstacle is found (used for AIs)
  * - p2 = (bit 11)  - No custom bridge heads
  * - p2 = (bit 12)  - No dual rail type
- * - p2 = (bit 13)  - 0 = error on signal in the way, 1 = auto remove signals when in the way
+ * - p2 = (bit 13)  - 0 = error on signal in the way, 1 = auto remove signals when in the way, only used for building
  * @param text unused
  * @return the cost of this operation or an error
  */
@@ -1284,7 +1284,7 @@ static CommandCost CmdRailTrackHelper(TileIndex tile, DoCommandFlag flags, uint3
 	RailType railtype = Extract<RailType, 0, 6>(p2);
 	Track track = Extract<Track, 6, 3>(p2);
 	bool remove = HasBit(p2, 9);
-	bool fail_if_obstacle = HasBit(p2, 10);
+	bool fail_on_obstacle = HasBit(p2, 10);
 	bool no_custom_bridge_heads = HasBit(p2, 11);
 	bool no_dual_rail_type = HasBit(p2, 12);
 	bool auto_remove_signals = HasBit(p2, 13);
@@ -1309,8 +1309,8 @@ static CommandCost CmdRailTrackHelper(TileIndex tile, DoCommandFlag flags, uint3
 			last_error = ret;
 			if (_rail_track_endtile == INVALID_TILE) _rail_track_endtile = last_endtile;
 			if (last_error.GetErrorMessage() != STR_ERROR_ALREADY_BUILT && !remove) {
-				if (fail_if_obstacle) return last_error;
-				break;
+				if (fail_on_obstacle) return last_error;
+				if (had_success) break; // Keep going if we haven't constructed any rail yet, skipping the start of the drag
 			}
 
 			/* Ownership errors are more important. */
@@ -4503,7 +4503,7 @@ static void GetTileDesc_Track(TileIndex tile, TileDesc *td)
 
 			if (primary_style > 0 || secondary_style > 0) {
 				/* Add suffix about signal style */
-				SetDParamX(td->dparam, 0, td->str);
+				td->dparam[0] = td->str;
 				td->dparam[1] = primary_style == 0 ? STR_BUILD_SIGNAL_DEFAULT_STYLE : _new_signal_styles[primary_style - 1].name;
 				if (secondary_style >= 0) {
 					td->dparam[2] = secondary_style == 0 ? STR_BUILD_SIGNAL_DEFAULT_STYLE : _new_signal_styles[secondary_style - 1].name;
@@ -4517,7 +4517,7 @@ static void GetTileDesc_Track(TileIndex tile, TileDesc *td)
 				td->dparam[3] = td->dparam[2];
 				td->dparam[2] = td->dparam[1];
 				td->dparam[1] = td->dparam[0];
-				SetDParamX(td->dparam, 0, td->str);
+				td->dparam[0] = td->str;
 				td->str = STR_LAI_RAIL_DESCRIPTION_RESTRICTED_SIGNAL;
 			}
 			break;

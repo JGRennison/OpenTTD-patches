@@ -233,6 +233,20 @@ size_t OneOfManySettingDesc::ParseSingleValue(const char *str, size_t len, const
 }
 
 /**
+ * Find whether a string was a boolean true or a boolean false.
+ *
+ * @param str the current value of the setting for which a value needs found.
+ * @return Either true/false, or nullopt if no boolean value found.
+ */
+std::optional<bool> BoolSettingDesc::ParseSingleValue(const char *str)
+{
+	if (strcmp(str, "true") == 0 || strcmp(str, "on") == 0 || strcmp(str, "1") == 0) return true;
+	if (strcmp(str, "false") == 0 || strcmp(str, "off") == 0 || strcmp(str, "0") == 0) return false;
+
+	return std::nullopt;
+}
+
+/**
  * Find the set-integer value MANYofMANY type in a string
  * @param many full domain of values the MANYofMANY setting can have
  * @param str the current string value of the setting, each individual
@@ -471,8 +485,8 @@ size_t ManyOfManySettingDesc::ParseValue(const char *str) const
 
 size_t BoolSettingDesc::ParseValue(const char *str) const
 {
-	if (strcmp(str, "true") == 0 || strcmp(str, "on") == 0 || strcmp(str, "1") == 0) return true;
-	if (strcmp(str, "false") == 0 || strcmp(str, "off") == 0 || strcmp(str, "0") == 0) return false;
+	auto r = BoolSettingDesc::ParseSingleValue(str);
+	if (r.has_value()) return *r;
 
 	ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_VALUE);
 	msg.SetDParamStr(0, str);
@@ -2327,6 +2341,53 @@ static void RemoveEntriesFromIni(IniFile &ini, const SettingTable &table)
 }
 
 /**
+ * Check whether a conversion should be done, and based on what old setting information.
+ *
+ * To prevent errors when switching back and forth between older and newer
+ * version of OpenTTD, the type of a setting is never changed. Instead, the
+ * setting is renamed, and this function is used to check whether a conversion
+ * between the old and new setting is required.
+ *
+ * This checks if the new setting doesn't exist, and if the old does.
+ *
+ * Doing it this way means that if you switch to an older client, the old
+ * setting is used, and only on the first time starting a new client, the
+ * old setting is converted to the new. After that, they are independent
+ * of each other. And you can safely, without errors on either, switch
+ * between old and new client.
+ *
+ * @param ini The ini-file to use.
+ * @param group The group the setting is in.
+ * @param old_var The old name of the setting.
+ * @param new_var The new name of the setting.
+ * @param[out] old_item The old item to base upgrading on.
+ * @return Whether upgrading should happen; if false, old_item is a nullptr.
+ */
+bool IsConversionNeeded(ConfigIniFile &ini, std::string group, std::string old_var, std::string new_var, IniItem **old_item)
+{
+	*old_item = nullptr;
+
+	IniGroup *igroup = ini.GetGroup(group, false);
+	/* If the group doesn't exist, there is nothing to convert. */
+	if (igroup == nullptr) return false;
+
+	IniItem *tmp_old_item = igroup->GetItem(old_var);
+	IniItem *new_item = igroup->GetItem(new_var);
+
+	/* If the old item doesn't exist, there is nothing to convert. */
+	if (tmp_old_item == nullptr) return false;
+
+	/* If the new item exists, it means conversion was already done. We only
+	 * do the conversion the first time, and after that these settings are
+	 * independent. This allows users to freely change between older and
+	 * newer clients without breaking anything. */
+	if (new_item != nullptr) return false;
+
+	*old_item = tmp_old_item;
+	return true;
+}
+
+/**
  * Load the values from the configuration files
  * @param startup Load the minimal amount of the configuration to "bootstrap" the blitter and such.
  */
@@ -2355,24 +2416,12 @@ void LoadFromConfig(bool startup)
 
 	/* Load basic settings only during bootstrap, load other settings not during bootstrap */
 	if (!startup) {
-		/* Convert network.server_advertise to network.server_game_type, but only if network.server_game_type is set to default value. */
-		if (generic_version < IFV_GAME_TYPE) {
-			if (_settings_client.network.server_game_type == SERVER_GAME_TYPE_LOCAL) {
-				IniGroup *network = generic_ini.GetGroup("network", false);
-				if (network != nullptr) {
-					IniItem *server_advertise = network->GetItem("server_advertise");
-					if (server_advertise != nullptr && server_advertise->value == "true") {
-						_settings_client.network.server_game_type = SERVER_GAME_TYPE_PUBLIC;
-					}
-				}
-			}
-		}
-
 		if (generic_version < IFV_LINKGRAPH_SECONDS) {
 			_settings_newgame.linkgraph.recalc_interval *= SECONDS_PER_DAY;
 			_settings_newgame.linkgraph.recalc_time     *= SECONDS_PER_DAY;
 		}
 
+		/* Move no_http_content_downloads and use_relay_service from generic_ini to private_ini. */
 		if (generic_version < IFV_NETWORK_PRIVATE_SETTINGS) {
 			IniGroup *network = generic_ini.GetGroup("network", false);
 			if (network != nullptr) {
@@ -2396,6 +2445,13 @@ void LoadFromConfig(bool startup)
 					}
 				}
 			}
+		}
+
+		IniItem *old_item;
+
+		if (generic_version < IFV_GAME_TYPE && IsConversionNeeded(generic_ini, "network", "server_advertise", "server_game_type", &old_item)) {
+			auto old_value = BoolSettingDesc::ParseSingleValue(old_item->value->c_str());
+			_settings_client.network.server_game_type = old_value.value_or(false) ? SERVER_GAME_TYPE_PUBLIC : SERVER_GAME_TYPE_LOCAL;
 		}
 
 		_grfconfig_newgame = GRFLoadConfig(generic_ini, "newgrf", false);
@@ -2482,13 +2538,7 @@ void SaveToConfig(SaveToConfigFlags flags)
 		}
 	}
 
-	/* Remove network.server_advertise. */
-	if (generic_version < IFV_GAME_TYPE) {
-		IniGroup *network = generic_ini.GetGroup("network", false);
-		if (network != nullptr) {
-			network->RemoveItem("server_advertise");
-		}
-	}
+	/* These variables are migrated from generic ini to private ini now. */
 	if (generic_version < IFV_NETWORK_PRIVATE_SETTINGS) {
 		IniGroup *network = generic_ini.GetGroup("network", false);
 		if (network != nullptr) {

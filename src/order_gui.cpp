@@ -1059,8 +1059,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				SetDParam(4, order->GetXData());
 			} else if (ocv == OCV_CARGO_WAITING_AMOUNT) {
 				char buf[512] = "";
-				int64 args_array[10] = {};
-				StringParameters tmp_params(args_array);
+				ArrayStringParameters<10> tmp_params;
 				StringID substr;
 
 				tmp_params.SetParam(0, order->GetConditionSkipToOrder() + 1);
@@ -1085,7 +1084,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 					tmp_params.SetParam(7, order->GetConditionValue());
 					tmp_params.SetParam(8, GB(order->GetXData(), 0, 16));
 				}
-				char *end = GetStringWithArgs(buf, substr, &tmp_params, lastof(buf));
+				char *end = GetStringWithArgs(buf, substr, tmp_params, lastof(buf));
 				_temp_special_strings[0].assign(buf, end);
 				SetDParam(0, SPECSTR_TEMP_START);
 			} else if (ocv == OCV_COUNTER_VALUE) {
@@ -1114,9 +1113,8 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 					const DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(GB(order->GetXData(), 0, 16));
 					if (ds.ScheduleName().empty()) {
 						char buf[256];
-						int64 args_array[] = { GB(order->GetXData(), 0, 16) + 1 };
-						StringParameters tmp_params(args_array);
-						char *end = GetStringWithArgs(buf, STR_TIMETABLE_ASSIGN_SCHEDULE_ID, &tmp_params, lastof(buf));
+						auto tmp_params = MakeParameters(GB(order->GetXData(), 0, 16) + 1);
+						char *end = GetStringWithArgs(buf, STR_TIMETABLE_ASSIGN_SCHEDULE_ID, tmp_params, lastof(buf));
 						_temp_special_strings[0].assign(buf, end);
 					} else {
 						_temp_special_strings[0] = ds.ScheduleName();

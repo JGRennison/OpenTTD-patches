@@ -877,9 +877,8 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 						}
 
 						char buf[256] = "";
-						int64 args_array[] = { Waypoint::IsValidID(id) ? STR_WAYPOINT_NAME : STR_STATION_NAME, id, icon_via };
-						StringParameters tmp_params(args_array);
-						char *end = GetStringWithArgs(buf, STR_DEPARTURES_VIA_DESCRIPTOR, &tmp_params, lastof(buf));
+						auto tmp_params = MakeParameters(Waypoint::IsValidID(id) ? STR_WAYPOINT_NAME : STR_STATION_NAME, id, icon_via);
+						char *end = GetStringWithArgs(buf, STR_DEPARTURES_VIA_DESCRIPTOR, tmp_params, lastof(buf));
 						_temp_special_strings[temp_str].assign(buf, end);
 					};
 					get_single_via_string(0, via);
@@ -888,9 +887,8 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 						get_single_via_string(1, via2);
 
 						char buf[512] = "";
-						int64 args_array[] = { SPECSTR_TEMP_START, SPECSTR_TEMP_START + 1 };
-						StringParameters tmp_params(args_array);
-						char *end = GetStringWithArgs(buf, STR_DEPARTURES_VIA_AND, &tmp_params, lastof(buf));
+						auto tmp_params = MakeParameters(SPECSTR_TEMP_START, SPECSTR_TEMP_START + 1);
+						char *end = GetStringWithArgs(buf, STR_DEPARTURES_VIA_AND, tmp_params, lastof(buf));
 						_temp_special_strings[0].assign(buf, end);
 					}
 

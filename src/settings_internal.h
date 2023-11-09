@@ -246,6 +246,8 @@ struct BoolSettingDesc : IntSettingDesc {
 		PreChangeCheck pre_check, PostChangeCallback post_callback) :
 		IntSettingDesc(save, name, flags, guiproc, startup, patx_name, def, 0, 1, 0, str, str_help, str_val, cat, pre_check, post_callback, nullptr) {}
 
+	static std::optional<bool> ParseSingleValue(const char *str);
+
 	bool IsBoolSetting() const override { return true; }
 	size_t ParseValue(const char *str) const override;
 	void FormatIntValue(char *buf, const char *last, uint32 value) const override;

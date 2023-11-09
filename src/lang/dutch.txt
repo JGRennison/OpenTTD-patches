@@ -973,7 +973,7 @@ STR_GAME_OPTIONS_CURRENCY_ISK                                   :IJslandse Kroon
 STR_GAME_OPTIONS_CURRENCY_ITL                                   :Italiaanse Lire
 STR_GAME_OPTIONS_CURRENCY_NLG                                   :Nederlandse Gulden
 STR_GAME_OPTIONS_CURRENCY_NOK                                   :Noorse Kroon
-STR_GAME_OPTIONS_CURRENCY_PLN                                   :Poolse Zloty
+STR_GAME_OPTIONS_CURRENCY_PLN                                   :Poolse Złoty
 STR_GAME_OPTIONS_CURRENCY_RON                                   :Roemeense Leu
 STR_GAME_OPTIONS_CURRENCY_RUR                                   :Russische Roebel
 STR_GAME_OPTIONS_CURRENCY_SIT                                   :Sloveense Tolar
@@ -1059,12 +1059,12 @@ STR_GAME_OPTIONS_REFRESH_RATE_ITEM                              :{NUM}Hz
 STR_GAME_OPTIONS_REFRESH_RATE_WARNING                           :{WHITE}Verversingssnelheden boven 60 Hz kunnen de prestaties beïnvloeden.
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Basisset voor graphics
-STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Selecteer de te gebruiken basisset voor grafische elementen
+STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Selecteer de te gebruiken basisset voor grafische elementen (kan tijdens het spel niet worden gewijzigd, alleen in het hoofdmenu)
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} ontbrekend{P "" e}/beschadigd{P "" e} bestand{P "" en}
 STR_GAME_OPTIONS_BASE_GRF_DESCRIPTION_TOOLTIP                   :{BLACK}Aanvullende informatie over de basisset voor graphics
 
 STR_GAME_OPTIONS_BASE_SFX                                       :{BLACK}Basisset voor geluidseffecten
-STR_GAME_OPTIONS_BASE_SFX_TOOLTIP                               :{BLACK}Selecteer de te gebruiken basisset voor geluidseffecten
+STR_GAME_OPTIONS_BASE_SFX_TOOLTIP                               :{BLACK}Selecteer de te gebruiken basisset voor geluidseffecten (kan tijdens het spel niet worden gewijzigd, alleen in het hoofdmenu)
 STR_GAME_OPTIONS_BASE_SFX_DESCRIPTION_TOOLTIP                   :{BLACK}Aanvullende informatie over de basisset voor geluidseffecten
 
 STR_GAME_OPTIONS_BASE_MUSIC                                     :{BLACK}Basisset voor muziek
@@ -1233,6 +1233,7 @@ STR_CONFIG_SETTING_REALISTIC                                    :Realistisch
 STR_CONFIG_SETTING_HORIZONTAL_POS_LEFT                          :Links
 STR_CONFIG_SETTING_HORIZONTAL_POS_CENTER                        :Midden
 STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Rechts
+
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Maximale beginlening: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Maximaal bedrag dat een bedrijf kan lenen (zonder rekening te houden met de inflatie)
@@ -1449,7 +1450,6 @@ STR_CONFIG_SETTING_AUTORENEW_MONEY_HELPTEXT                     :Minimumbedrag d
 
 STR_CONFIG_SETTING_ERRMSG_DURATION                              :Duur van foutbericht: {STRING}
 STR_CONFIG_SETTING_ERRMSG_DURATION_HELPTEXT                     :Duur voor het weergeven van foutberichten in een rood venster. Merk op dat sommige (kritische) foutmeldingen niet automatisch worden gesloten na deze tijd, deze moeten handmatig worden gesloten
-STR_CONFIG_SETTING_ERRMSG_DURATION_VALUE                        :{COMMA} seconde{P 0 "" n}
 
 STR_CONFIG_SETTING_HOVER_DELAY                                  :Knopinfo weergeven: {STRING}
 STR_CONFIG_SETTING_HOVER_DELAY_HELPTEXT                         :Vertraging voordat knopinfo worden weergegeven wanneer je de muis boven een besturingselement houdt. Wanneer de waarde 0 is, wordt knopinfo aan de rechtermuisknop gebonden.

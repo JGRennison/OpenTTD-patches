@@ -329,10 +329,8 @@ char *ScriptText::_GetEncodedText(char *p, char *lastofp, int &param_count, Stri
 
 const std::string Text::GetDecodedText()
 {
-	const std::string &encoded_text = this->GetEncodedText();
-
 	static char buf[1024];
-	::SetDParamStr(0, encoded_text);
+	::SetDParamStr(0, this->GetEncodedText());
 	::GetString(buf, STR_JUST_RAW_STRING, lastof(buf));
 	return buf;
 }

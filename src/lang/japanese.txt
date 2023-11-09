@@ -1225,6 +1225,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_LEFT                          :左
 STR_CONFIG_SETTING_HORIZONTAL_POS_CENTER                        :中央
 STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :右
 
+
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :初期の借入最大額: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :初期の借入限度額を設定します (インフレは考慮されません)
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_VALUE                   :{CURRENCY_LONG}
@@ -1440,7 +1441,6 @@ STR_CONFIG_SETTING_AUTORENEW_MONEY_HELPTEXT                     :輸送機器の
 
 STR_CONFIG_SETTING_ERRMSG_DURATION                              :エラーメッセージの表示時間: {STRING}
 STR_CONFIG_SETTING_ERRMSG_DURATION_HELPTEXT                     :赤地のエラーメッセージが表示されている時間を設定します。注: 致命的なエラーの場合はこの時間を経過しても自動では閉じません。
-STR_CONFIG_SETTING_ERRMSG_DURATION_VALUE                        :{COMMA}秒
 
 STR_CONFIG_SETTING_HOVER_DELAY                                  :ツールチップ表示: {STRING}
 STR_CONFIG_SETTING_HOVER_DELAY_HELPTEXT                         :カーソルをインターフェイス要素に乗せた場合にツールチップが表示されるまでの時間を決定します。"0"に設定するとツールチップは右クリックで表示されるようになります

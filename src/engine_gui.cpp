@@ -143,7 +143,7 @@ struct EnginePreviewWindow : Window {
 };
 
 static WindowDesc _engine_preview_desc(
-	WDP_CENTER, "engine_preview", 0, 0,
+	WDP_CENTER, nullptr, 0, 0,
 	WC_ENGINE_PREVIEW, WC_NONE,
 	WDF_CONSTRUCTION,
 	_nested_engine_preview_widgets, lengthof(_nested_engine_preview_widgets)
@@ -173,22 +173,20 @@ static StringID GetEngineInfoCapacityString(EngineID engine)
 	CargoArray cap = GetCapacityOfArticulatedParts(engine);
 	if (cap.GetSum<uint>() == 0) {
 		/* no cargo at all */
-		int64 args_array[] = { CT_INVALID, 0 };
-		StringParameters tmp_params(args_array);
-		GetStringWithArgs(buffer, STR_JUST_CARGO, &tmp_params, lastof(buffer));
+		auto tmp_params = MakeParameters(CT_INVALID, 0);
+		GetStringWithArgs(buffer, STR_JUST_CARGO, tmp_params, lastof(buffer));
 	} else {
 		char *b = buffer;
 		for (uint i = 0; i < NUM_CARGO; i++) {
 			if (cap[i] == 0) continue;
 
 			if (b != buffer) {
-				StringParameters tmp_params(nullptr, 0, nullptr);
-				b = GetStringWithArgs(b, STR_COMMA_SEPARATOR, &tmp_params, lastof(buffer));
+				auto tmp_params = MakeParameters();
+				b = GetStringWithArgs(b, STR_COMMA_SEPARATOR, tmp_params, lastof(buffer));
 			}
 
-			int64 args_array[] = { i, cap[i] };
-			StringParameters tmp_params(args_array);
-			b = GetStringWithArgs(b, STR_JUST_CARGO, &tmp_params, lastof(buffer));
+			auto tmp_params = MakeParameters(i, cap[i]);
+			b = GetStringWithArgs(b, STR_JUST_CARGO, tmp_params, lastof(buffer));
 		}
 	}
 

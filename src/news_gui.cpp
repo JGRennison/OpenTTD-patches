@@ -281,7 +281,7 @@ struct NewsWindow : Window {
 		this->CreateNestedTree();
 
 		/* For company news with a face we have a separate headline in param[0] */
-		if (desc == &_company_news_desc) this->GetWidget<NWidgetCore>(WID_N_TITLE)->widget_data = this->ni->params[0];
+		if (desc == &_company_news_desc) this->GetWidget<NWidgetCore>(WID_N_TITLE)->widget_data = this->ni->params[0].data;
 
 		NWidgetCore *nwid = this->GetWidget<NWidgetCore>(WID_N_SHOW_GROUP);
 		if (ni->reftype1 == NR_VEHICLE && nwid != nullptr) {
@@ -367,7 +367,7 @@ struct NewsWindow : Window {
 				break;
 
 			case WID_N_MESSAGE:
-				CopyInDParam(0, this->ni->params, lengthof(this->ni->params));
+				CopyInDParam(this->ni->params);
 				str = this->ni->string_id;
 				break;
 
@@ -435,7 +435,7 @@ struct NewsWindow : Window {
 				break;
 
 			case WID_N_MESSAGE:
-				CopyInDParam(0, this->ni->params, lengthof(this->ni->params));
+				CopyInDParam(this->ni->params);
 				DrawStringMultiLine(r.left, r.right, r.top, r.bottom, this->ni->string_id, TC_FROMSTRING, SA_CENTER);
 				break;
 
@@ -588,8 +588,8 @@ private:
 	StringID GetCompanyMessageString() const
 	{
 		/* Company news with a face have a separate headline, so the normal message is shifted by two params */
-		CopyInDParam(0, this->ni->params + 2, lengthof(this->ni->params) - 2);
-		return this->ni->params[1];
+		CopyInDParam(span(this->ni->params.data() + 2, this->ni->params.size() - 2));
+		return this->ni->params[1].data;
 	}
 
 	StringID GetNewVehicleMessageString(int widget) const
@@ -810,7 +810,7 @@ NewsItem::NewsItem(StringID string_id, NewsType type, NewsFlag flags, NewsRefere
 {
 	/* show this news message in colour? */
 	if (_cur_year >= _settings_client.gui.coloured_news_year) this->flags |= NF_INCOLOUR;
-	CopyOutDParam(this->params, 0, lengthof(this->params));
+	CopyOutDParam(this->params, 10);
 }
 
 /**
@@ -1010,7 +1010,7 @@ void ChangeVehicleNews(VehicleID from_index, VehicleID to_index)
 	for (NewsItem *ni = _oldest_news; ni != nullptr; ni = ni->next) {
 		if (ni->reftype1 == NR_VEHICLE && ni->ref1 == from_index) ni->ref1 = to_index;
 		if (ni->reftype2 == NR_VEHICLE && ni->ref2 == from_index) ni->ref2 = to_index;
-		if (ni->flags & NF_VEHICLE_PARAM0 && ni->params[0] == from_index) ni->params[0] = to_index;
+		if (ni->flags & NF_VEHICLE_PARAM0 && ni->params[0].data == from_index) ni->params[0] = to_index;
 	}
 }
 
@@ -1111,7 +1111,7 @@ void ShowLastNewsMessage()
  */
 static void DrawNewsString(uint left, uint right, int y, TextColour colour, const NewsItem *ni)
 {
-	CopyInDParam(0, ni->params, lengthof(ni->params));
+	CopyInDParam(ni->params);
 
 	/* Get the string, replaces newlines with spaces and remove control codes from the string. */
 	std::string message = StrMakeValid(GetString(ni->string_id), SVS_REPLACE_TAB_CR_NL_WITH_SPACE);

@@ -478,7 +478,7 @@ static void GetTileDesc_Industry(TileIndex tile, TileDesc *td)
 	td->owner[0] = i->owner;
 	td->str = is->name;
 	if (!IsIndustryCompleted(tile)) {
-		SetDParamX(td->dparam, 0, td->str);
+		td->dparam[0] = td->str;
 		td->str = STR_LAI_TOWN_INDUSTRY_DESCRIPTION_UNDER_CONSTRUCTION;
 	}
 
@@ -2605,9 +2605,8 @@ void Industry::RecomputeProductionMultipliers()
 void Industry::FillCachedName() const
 {
 	char buf[256];
-	int64 args_array[] = { this->index };
-	StringParameters tmp_params(args_array);
-	char *end = GetStringWithArgs(buf, STR_INDUSTRY_NAME, &tmp_params, lastof(buf));
+	auto tmp_params = MakeParameters(this->index);
+	char *end = GetStringWithArgs(buf, STR_INDUSTRY_NAME, tmp_params, lastof(buf));
 	this->cached_name.assign(buf, end);
 }
 

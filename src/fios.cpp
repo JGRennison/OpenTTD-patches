@@ -385,8 +385,7 @@ static void FiosGetFileList(SaveLoadOperation fop, fios_getlist_callback_proc *c
 				fios->type = FIOS_TYPE_DIR;
 				fios->mtime = 0;
 				fios->name = d_name;
-				std::string dirname = fios->name + PATHSEP;
-				SetDParamStr(0, dirname);
+				SetDParamStr(0, fios->name + PATHSEP);
 				fios->title = GetString(STR_SAVELOAD_DIRECTORY);
 			}
 		}

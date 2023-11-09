@@ -1206,9 +1206,8 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 		} else {
 			auto insert_warning = [&](uint dparam_index, StringID warning) {
 				char buf[256];
-				int64 args_array[] = { (int64)GetDParam(dparam_index) };
-				StringParameters tmp_params(args_array);
-				char *end = GetStringWithArgs(buf, warning, &tmp_params, lastof(buf));
+				auto tmp_params = MakeParameters(GetDParam(dparam_index));
+				char *end = GetStringWithArgs(buf, warning, tmp_params, lastof(buf));
 				_temp_special_strings[0].assign(buf, end);
 				SetDParam(dparam_index, SPECSTR_TEMP_START);
 			};
