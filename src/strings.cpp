@@ -1072,7 +1072,7 @@ uint ConvertDisplayQuantityToCargoQuantity(CargoID cargo, uint quantity)
  */
 static char *FormatString(char *buff, const char *str_arg, StringParameters &args, const char *last, uint case_index, bool game_script, bool dry_run)
 {
-	uint orig_offset = args.GetOffset();
+	size_t orig_offset = args.GetOffset();
 
 	/* When there is no array with types there is no need to do a dry run. */
 	if (!dry_run) {
