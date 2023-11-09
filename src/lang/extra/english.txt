@@ -343,7 +343,7 @@ STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED_HELPTEXT           :Sorts track typ
 STR_CONFIG_SETTING_MAX_SIGNAL_EVALUATIONS                       :Maximum number of programmable pre-signal changes permitted at once: {STRING2}
 STR_CONFIG_SETTING_MAX_SIGNAL_EVALUATIONS_HELPTEXT              :Sets the maximum number of programmable pre-signal changes permitted at once
 
-STR_CONFIG_SETTING_RAINFORESTLINE_HEIGHT                        :Rainforest line height: {STRING}
+STR_CONFIG_SETTING_RAINFORESTLINE_HEIGHT                        :Rainforest line height: {STRING2}
 STR_CONFIG_SETTING_RAINFORESTLINE_HEIGHT_HELPTEXT               :Control at what height rainforest starts in sub-tropic landscape. Rainforests also affect industry generation and town growth requirements
 
 STR_CONFIG_SETTING_CLIMATE_THRESHOLD_MODE                       :Climate threshold mode: {STRING2}
@@ -351,22 +351,22 @@ STR_CONFIG_SETTING_CLIMATE_THRESHOLD_MODE_HELPTEXT              :Whether the sno
 STR_CONFIG_SETTING_CLIMATE_THRESHOLD_COVERAGE                   :Coverage
 STR_CONFIG_SETTING_CLIMATE_THRESHOLD_MANUAL                     :Manual
 
-STR_CONFIG_SETTING_RIVER_MIN_LENGTH                             :River min length: {STRING}
+STR_CONFIG_SETTING_RIVER_MIN_LENGTH                             :River min length: {STRING2}
 STR_CONFIG_SETTING_RIVER_MIN_LENGTH_HELPTEXT                    :Minimum length of rivers. This also controls the creation of lakes.
 
-STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM                           :River route randomness: {STRING}
+STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM                           :River route randomness: {STRING2}
 STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM_HELPTEXT                  :Choose how random a rivers path may be.
 
-STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL                           :Rivers require their springs to generate at the top of hills: {STRING}
+STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL                           :Rivers require their springs to generate at the top of hills: {STRING2}
 STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL_HELPTEXT                  :Choose whether rivers require their springs to generate towards the top of hills.
 
-STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH                          :Tropics width around rivers: {STRING}
+STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH                          :Tropics width around rivers: {STRING2}
 STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH_HELPTEXT                 :Controls the width of the tropic zone that surrounds rivers in sub-tropic landscape.{}This is the total width of the zone on both sides of the river.
 
-STR_CONFIG_SETTING_LAKE_TROPICS_WIDTH                           :Tropics width around lakes: {STRING}
+STR_CONFIG_SETTING_LAKE_TROPICS_WIDTH                           :Tropics width around lakes: {STRING2}
 STR_CONFIG_SETTING_LAKE_TROPICS_WIDTH_HELPTEXT                  :Controls the width of the tropic zone that surrounds lakes in sub-tropic landscape.{}This is the total width of the zone on both sides of the lake.
 
-STR_CONFIG_SETTING_COAST_TROPICS_WIDTH                          :Tropics width around coasts: {STRING}
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH                          :Tropics width around coasts: {STRING2}
 STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_HELPTEXT                 :Controls the width of the tropic zone that surrounds coasts in sub-tropic landscape.
 
 ###length 4
@@ -375,18 +375,18 @@ STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_MEDIUM                   :Medium
 STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_LARGE                    :Large
 STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_EXTRALARGE               :Extra Large
 
-STR_CONFIG_SETTING_LAKE_SIZE                                    :Size of lakes: {STRING}
+STR_CONFIG_SETTING_LAKE_SIZE                                    :Size of lakes: {STRING2}
 STR_CONFIG_SETTING_LAKE_SIZE_HELPTEXT                           :Controls the size of lakes that are generated along rivers.
 STR_CONFIG_SETTING_LAKE_SIZE_VALUE                              :{NUM}
 STR_CONFIG_SETTING_LAKE_SIZE_ZERO                               :No lakes
 
-STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS                     :Lakes and rivers can be generated in sub-tropic climate deserts: {STRING}
+STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS                     :Lakes and rivers can be generated in sub-tropic climate deserts: {STRING2}
 STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS_HELPTEXT            :Choose whether lakes and rivers are allowed to spawn in sub-tropic climate deserts.
 
-STR_CONFIG_SETTING_ROCKS_AMOUNT                                 :Size of rocky patches: {STRING}
+STR_CONFIG_SETTING_ROCKS_AMOUNT                                 :Size of rocky patches: {STRING2}
 STR_CONFIG_SETTING_ROCKS_AMOUNT_HELPTEXT                        :Determines the size of rocky patches. High values can cover a significant portion of the map.
 
-STR_CONFIG_SETTING_HEIGHT_ROCKS                                 :Size of rocky patches increases with height: {STRING}
+STR_CONFIG_SETTING_HEIGHT_ROCKS                                 :Size of rocky patches increases with height: {STRING2}
 STR_CONFIG_SETTING_HEIGHT_ROCKS_HELPTEXT                        :Determines how much the size of rocky patches increases with height. This is cumulative with the size of rocky patches setting and works best when the size of rocky patches setting is set to lower values.
 
 STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY                           :Only allow non-stop orders: {STRING2}
@@ -455,7 +455,7 @@ STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_MINUTES_HELPTEXT             :Set custom real
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT               :Autosave on network disconnection: {STRING2}
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT_HELPTEXT      :When enabled, multiplayer clients automatically save the game when disconnected from the server
 
-STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM                   :Warn before overwriting an existing savegame file: {STRING}
+STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM                   :Warn before overwriting an existing savegame file: {STRING2}
 STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM_HELPTEXT          :If saving a savegame or heightmap would overwrite an existing save file, display a confirmation dialog.
 STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM_DISABLED          :No
 STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM_DIFFERENT         :Only if different
