@@ -203,13 +203,30 @@ public:
  */
 template <size_t N>
 class ArrayStringParameters : public StringParameters {
-	std::array<StringParameter, N> params = {}; ///< The actual parameters
+	std::array<StringParameter, N> params{}; ///< The actual parameters
 
 public:
 	ArrayStringParameters()
 	{
 		this->parameters = span(params.data(), params.size());
 	}
+
+	ArrayStringParameters(ArrayStringParameters&& other) noexcept
+	{
+		*this = std::move(other);
+	}
+
+	ArrayStringParameters& operator=(ArrayStringParameters &&other) noexcept
+	{
+		this->offset = other.offset;
+		this->next_type = other.next_type;
+		this->params = std::move(other.params);
+		this->parameters = span(params.data(), params.size());
+		return *this;
+	}
+
+	ArrayStringParameters(const ArrayStringParameters& other) = delete;
+	ArrayStringParameters& operator=(const ArrayStringParameters &other) = delete;
 };
 
 /**
