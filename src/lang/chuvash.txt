@@ -150,6 +150,9 @@ STR_COLOUR_BROWN                                                :Хӑмӑр
 STR_COLOUR_GREY                                                 :Сӑрӑ
 STR_COLOUR_WHITE                                                :Шурӑ
 
+###length 17
+
+
 # Units used in OpenTTD
 STR_UNITS_VELOCITY_IMPERIAL                                     :{DECIMAL} мил/с
 STR_UNITS_VELOCITY_METRIC                                       :{DECIMAL} км/с
@@ -488,7 +491,7 @@ STR_NEWS_MESSAGE_CAPTION                                        :{WHITE}Пӗлт
 
 
 ###length 42
-STR_GAME_OPTIONS_CURRENCY_RUR                                   :Вырӑсла тенкӗ (RUR)
+STR_GAME_OPTIONS_CURRENCY_RUR                                   :Вырӑсла тенкӗ
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Хӑй управ
 
@@ -644,6 +647,7 @@ STR_CONFIG_SETTING_PLANE_CRASHES_NONE                           :ҫук
 
 
 
+
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :Аэропорт кивел мар: {STRING}
 
 
@@ -714,6 +718,7 @@ STR_CONFIG_SETTING_SCROLLWHEEL_OFF                              :Сӳнтер
 ###length 3
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Сӳнтер
 
+###length 3
 
 
 ###length 3

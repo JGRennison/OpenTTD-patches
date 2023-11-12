@@ -189,6 +189,9 @@ STR_COLOUR_BROWN                                                :น้ำตา
 STR_COLOUR_GREY                                                 :เทา
 STR_COLOUR_WHITE                                                :ขาว
 
+###length 17
+
+
 # Units used in OpenTTD
 STR_UNITS_VELOCITY_IMPERIAL                                     :{DECIMAL} ไมล์/ชม.
 STR_UNITS_VELOCITY_METRIC                                       :{DECIMAL} กม./ชม.
@@ -1310,6 +1313,7 @@ STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :ค่าบำ
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :เมื่อเปิดใช้งาน สาธารณูประโภคที่สร้างโดยบริษัทจะมีค่าบำรุงรักษา ยิ่งเครือข่ายยิ่งมากจะยิ่งเสียค่าใช้จ่ายมากขึ้น
 
 
+
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :ท่าอากาศยานไม่มีวันหมดอายุ: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :เปิดใช้งานสิ่งนี้ จะทำให้สามารถสร้างท่าอากาศยานแบบเก่าๆได้แม้เวลาจะผ่านไปนานแล้วก็ตาม
 
@@ -1481,6 +1485,7 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :ปิด
 
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :ปิดหน้าต่างโดยกด คลิ๊กขวา: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :สามารถปิดแถบหน้าต่างด้วยการ คลิ๊กขวา โดยลากเมาส์ไปที่แถบที่ต้องการจะปิดก็พอ
+###length 3
 
 
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :ใช้รูปแบบวันที่ {STRING} เป็นชื่อเซฟของเกม

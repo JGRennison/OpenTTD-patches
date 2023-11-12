@@ -189,6 +189,9 @@ STR_COLOUR_BROWN                                                :Brúnn
 STR_COLOUR_GREY                                                 :Grár
 STR_COLOUR_WHITE                                                :Hvítur
 
+###length 17
+
+
 # Units used in OpenTTD
 STR_UNITS_VELOCITY_IMPERIAL                                     :{DECIMAL} mílur/klst
 STR_UNITS_VELOCITY_METRIC                                       :{DECIMAL} km/klst
@@ -897,7 +900,7 @@ STR_GAME_OPTIONS_CURRENCY_LTL                                   :Litháenskt lit
 STR_GAME_OPTIONS_CURRENCY_KRW                                   :Suðurkóreskt vonn
 STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Suður-Afrískt rand
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Sérsniðinn...
-STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari (Gel)
+STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Íranskt ríal
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Sjálfvirk vistun
@@ -1252,6 +1255,7 @@ STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :Viðhald á inn
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :Ef þessi stilling er virk kostar að reka innviði fyrirtækisins. Kostnaður eykst í auknu hlutfalli við stærð fyrirtækisins, því eru áhrifin meiri á stór fyrirtæki en lítil
 
 
+
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :Alltaf hægt að byggja allar gerðir flugvalla: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :Ef þessi stilling er virk þá er hver tegund flugvallar alltaf aðgengileg eftir að hann verður fyrst aðgengilegur
 
@@ -1407,6 +1411,7 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Command+smella
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Ctrl+smella
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Af
 
+###length 3
 
 
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Nota dagsetningar á {STRING} formi fyrir vistaða leiki.

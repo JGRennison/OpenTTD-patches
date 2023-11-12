@@ -191,6 +191,9 @@ STR_COLOUR_BROWN                                                :Кафяво
 STR_COLOUR_GREY                                                 :Сиво
 STR_COLOUR_WHITE                                                :Бяло
 
+###length 17
+
+
 # Units used in OpenTTD
 STR_UNITS_VELOCITY_IMPERIAL                                     :{DECIMAL} мил{P я и}/ч
 STR_UNITS_VELOCITY_METRIC                                       :{DECIMAL} км/ч
@@ -1297,6 +1300,7 @@ STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :Поддръж�
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :Когато е разрешено, съществуват разходи за поддръжка на инфраструктурата. Разходите се увеличават пропорционално на размера на пътната мрежа, влияейки повече на големите компании отколкото на по-малките
 
 
+
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :Летишата не губят валидност: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :Разрешавайки тази настройка, всеки вид летище остава завинаги достъпно след неговото представяне
 
@@ -1459,6 +1463,7 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Команда-
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Контрол-щракане
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Изключен
 
+###length 3
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :Автоматично запазване: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Изберете интервал между автоматично запаметяване на играта

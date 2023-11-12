@@ -251,6 +251,9 @@ STR_COLOUR_GREY                                                 :Γκρι
 STR_COLOUR_WHITE                                                :Λευκό
 STR_COLOUR_RANDOM                                               :Τυχαία
 
+###length 17
+
+
 # Units used in OpenTTD
 STR_UNITS_VELOCITY_IMPERIAL                                     :{DECIMAL}{NBSP}μίλια/ώρα
 STR_UNITS_VELOCITY_METRIC                                       :{DECIMAL}{NBSP}χλμ/ώρα
@@ -1493,6 +1496,7 @@ STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :Όταν είν
 STR_CONFIG_SETTING_COMPANY_STARTING_COLOUR                      :Αρχικό χρώμα εταιρίας: {STRING}
 STR_CONFIG_SETTING_COMPANY_STARTING_COLOUR_HELPTEXT             :Επιλογή του αρχικού χρώματος της εταιρίας
 
+
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :Τα αεροδρόμια δεν λήγουν ποτέ: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :Ενεργοποιώντας αυτήν τη ρύθμιση κάθε τύπος αεροδρομίου παραμένει διαθέσιμο για πάντα μετά την παρουσίασή του
 
@@ -1693,6 +1697,7 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Απενεργ�
 
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Κλείσιμο παραθύρου με δεξί-κλικ: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Κλείνει το παράθυρο με δεξί πάτημα μέσα του. Απενεργοποιεί την ανάδυση επεξηγήσεων με το δεξί κουμπί!
+###length 3
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :Αυτόματο σώσιμο: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Επιλέξτε το διάστημα ανάμεσα σε δυο διαδοχικά σωσίματα του παιχνιδιου

@@ -78,6 +78,13 @@ enum ParticipateSurvey {
 	PS_YES,
 };
 
+/** Right-click to close window actions. */
+enum RightClickClose : uint8_t {
+	RCC_NO = 0,
+	RCC_YES,
+	RCC_YES_EXCEPT_STICKY,
+};
+
 /** Settings related to the difficulty of the game */
 struct DifficultySettings {
 	byte   competitor_start_time;            ///< Unused value, used to load old savegames.
@@ -209,7 +216,7 @@ struct GUISettings : public TimeSettings {
 	uint8  departure_conditionals;           ///< how to handle conditional orders
 	bool   departure_show_all_stops;         ///< whether to show stops regardless of loading/unloading done at them
 	bool   departure_merge_identical;        ///< whether to merge identical departures
-	bool   right_mouse_wnd_close;            ///< close window with right click
+	RightClickClose  right_click_wnd_close;  ///< close window with right click
 	bool   pause_on_newgame;                 ///< whether to start new games paused or not
 	SignalGUISettings signal_gui_mode;       ///< select which signal types are shown in the signal GUI
 	SignalCycleSettings cycle_signal_types;  ///< Which signal types to cycle with the build signal tool.
@@ -246,6 +253,7 @@ struct GUISettings : public TimeSettings {
 	bool   show_veh_list_cargo_filter;       ///< Show cargo list filter in UI
 	uint8  osk_activation;                   ///< Mouse gesture to trigger the OSK.
 	byte   starting_colour;                  ///< default color scheme for the company to start a new game with
+	byte   starting_colour_secondary;        ///< default secondary color scheme for the company to start a new game with
 	bool   show_newgrf_name;                 ///< Show the name of the NewGRF in the build vehicle window
 	bool   show_cargo_in_vehicle_lists;      ///< Show the cargoes the vehicles can carry in the list windows
 	bool   show_wagon_intro_year;            ///< Show the introduction year for wagons in the build vehicle window

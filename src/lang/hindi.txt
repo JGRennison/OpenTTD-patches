@@ -62,6 +62,9 @@ STR_ABBREV_COAL                                                 :कोयला
 STR_COLOUR_PINK                                                 :गुलाबी
 STR_COLOUR_RED                                                  :लाल
 
+###length 17
+
+
 # Units used in OpenTTD
 
 STR_UNITS_POWER_METRIC                                          :{DECIMAL}{NBSP}hp
@@ -276,9 +279,9 @@ STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLAC
 
 
 ###length 42
-STR_GAME_OPTIONS_CURRENCY_FIM                                   :फिनलैंड मार्का (FIM)
-STR_GAME_OPTIONS_CURRENCY_ISK                                   :आइसलैंडिक क्रोना (ISK)
-STR_GAME_OPTIONS_CURRENCY_HKD                                   :हाँग काँग डॉलर (एचकेडी)
+STR_GAME_OPTIONS_CURRENCY_FIM                                   :फिनलैंड मार्का
+STR_GAME_OPTIONS_CURRENCY_ISK                                   :आइसलैंडिक क्रोना
+STR_GAME_OPTIONS_CURRENCY_HKD                                   :हाँग काँग डॉलर
 
 
 # Autosave dropdown
@@ -413,6 +416,7 @@ STR_CONFIG_SETTING_BRIBE_HELPTEXT                               :कंपनि
 
 
 
+
 STR_CONFIG_SETTING_ORDER_REVIEW_HELPTEXT                        :सक्षम होने पर वाहनों के निर्देशों की आवधिक जाँच की जाती है, और कुछ सुस्पष्ट मामलों का पता चलते ही एक संदेश द्वारा बताया जाता है।
 ###length 3
 STR_CONFIG_SETTING_ORDER_REVIEW_OFF                             :नहीं
@@ -479,6 +483,7 @@ STR_CONFIG_SETTING_OSK_ACTIVATION_DISABLED                      :अक्षम
 
 ###length 3
 
+###length 3
 
 
 ###length 3

@@ -190,6 +190,9 @@ STR_COLOUR_GREY                                                 :浅灰色
 STR_COLOUR_WHITE                                                :白　色
 STR_COLOUR_RANDOM                                               :随机
 
+###length 17
+
+
 # Units used in OpenTTD
 STR_UNITS_VELOCITY_IMPERIAL                                     :{DECIMAL}{NBSP}英里/小时
 STR_UNITS_VELOCITY_METRIC                                       :{DECIMAL}{NBSP}千米/小时
@@ -1389,6 +1392,7 @@ STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :固定资产会
 STR_CONFIG_SETTING_COMPANY_STARTING_COLOUR                      :初创公司颜色：{STRING}
 STR_CONFIG_SETTING_COMPANY_STARTING_COLOUR_HELPTEXT             :选定公司的初始配色方案
 
+
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :总允许建设小型机场： {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :“打开”此选项，每种类型机场出现后一直是可用的
 
@@ -1589,6 +1593,7 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :关闭
 
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :右键关闭窗口： {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :使用在窗口内按右键关闭该窗口，本功能与右键工具提示不能共存！
+###length 3
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :自动保存: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :选择自动存档时间间隔

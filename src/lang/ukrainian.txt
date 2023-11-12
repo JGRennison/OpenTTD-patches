@@ -315,6 +315,9 @@ STR_COLOUR_GREY                                                 :Сірий
 STR_COLOUR_WHITE                                                :Білий
 STR_COLOUR_RANDOM                                               :Випадково
 
+###length 17
+
+
 # Units used in OpenTTD
 STR_UNITS_VELOCITY_IMPERIAL                                     :{DECIMAL}{NBSP}миль/год
 STR_UNITS_VELOCITY_METRIC                                       :{DECIMAL}{NBSP}км/год
@@ -1537,6 +1540,7 @@ STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :При вклю
 STR_CONFIG_SETTING_COMPANY_STARTING_COLOUR                      :Колір компанії: {STRING}
 STR_CONFIG_SETTING_COMPANY_STARTING_COLOUR_HELPTEXT             :Виберіть початковий колір для компанії
 
+
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :Аеропорти не застарівають: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :При включенні кожен аеропорт буде доступним для будівництва безстроково після його впровадження.
 
@@ -1737,6 +1741,7 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :не емулю
 
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Закрити вікно правою кнопкою миші: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Закривати вікно кліком правої кнопки миші по ньому. При цьому віключається поява підказок за правою кнопкою.
+###length 3
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :Автозбереження: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Оберіть проміжок між автоматичними збереженнями гри

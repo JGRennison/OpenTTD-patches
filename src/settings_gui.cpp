@@ -1976,7 +1976,7 @@ static SettingsContainer &GetSettingsTree()
 				general->Add(new SettingEntry("gui.errmsg_duration"));
 				general->Add(new SettingEntry("gui.window_snap_radius"));
 				general->Add(new SettingEntry("gui.window_soft_limit"));
-				general->Add(new SettingEntry("gui.right_mouse_wnd_close"));
+				general->Add(new SettingEntry("gui.right_click_wnd_close"));
 			}
 
 			SettingsPage *tooltips = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_TOOLTIPS));
@@ -2194,6 +2194,7 @@ static SettingsContainer &GetSettingsTree()
 			company->Add(new SettingEntry("gui.new_nonstop"));
 			company->Add(new SettingEntry("gui.stop_location"));
 			company->Add(new SettingEntry("gui.starting_colour"));
+			company->Add(new SettingEntry("gui.starting_colour_secondary"));
 			company->Add(new SettingEntry("company.engine_renew"));
 			company->Add(new SettingEntry("company.engine_renew_months"));
 			company->Add(new SettingEntry("company.engine_renew_money"));

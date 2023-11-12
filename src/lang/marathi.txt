@@ -188,6 +188,9 @@ STR_COLOUR_BROWN                                                :तपकिर
 STR_COLOUR_GREY                                                 :करडा
 STR_COLOUR_WHITE                                                :पांढरा
 
+###length 17
+
+
 # Units used in OpenTTD
 STR_UNITS_VELOCITY_IMPERIAL                                     :{DECIMAL} mph
 STR_UNITS_VELOCITY_METRIC                                       :{DECIMAL} किमी / तास
@@ -858,6 +861,7 @@ STR_CONFIG_SETTING_SMOKE_AMOUNT                                 :वाहना
 
 
 
+
 STR_CONFIG_SETTING_WARN_LOST_VEHICLE                            : वाहन हरवल्यास सूचित करा: {STRING}
 
 ###length 3
@@ -919,6 +923,7 @@ STR_CONFIG_SETTING_WARN_LOST_VEHICLE                            : वाहन �
 
 ###length 3
 
+###length 3
 
 
 ###length 3
