@@ -62,13 +62,21 @@ extern void FlushDeparturesWindowTextCaches();
 
 static const StringID _autosave_dropdown[] = {
 	STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_OFF,
-	STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH,
-	STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_3_MONTHS,
-	STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_6_MONTHS,
-	STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_12_MONTHS,
-	STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_LABEL,
+	STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_10_MINUTES,
+	STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_30_MINUTES,
+	STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_60_MINUTES,
+	STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_120_MINUTES,
 	STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL,
 	INVALID_STRING_ID,
+};
+
+/** Available settings for autosave intervals. */
+static const uint32 _autosave_dropdown_to_minutes[] = {
+	0, ///< never
+	10,
+	30,
+	60,
+	120,
 };
 
 static Dimension _circle_size; ///< Dimension of the circle +/- icon. This is here as not all users are within the class of the settings window.
@@ -176,7 +184,6 @@ struct GameOptionsWindow : Window {
 
 	enum class QueryTextItem {
 		None,
-		AutosaveCustomDays,
 		AutosaveCustomRealTimeMinutes,
 	};
 	QueryTextItem current_query_text_item = QueryTextItem::None;
@@ -240,7 +247,16 @@ struct GameOptionsWindow : Window {
 			}
 
 			case WID_GO_AUTOSAVE_DROPDOWN: { // Setup autosave dropdown
-				*selected_index = _settings_client.gui.autosave;
+				*selected_index = 5;
+				int index = 0;
+				for (auto &minutes : _autosave_dropdown_to_minutes) {
+					if (_settings_client.gui.autosave_interval == minutes) {
+						*selected_index = index;
+						break;
+					}
+					index++;
+				}
+
 				const StringID *items = _autosave_dropdown;
 				for (uint i = 0; *items != INVALID_STRING_ID; items++, i++) {
 					list.emplace_back(new DropDownListStringItem(*items, i, false));
@@ -322,14 +338,15 @@ struct GameOptionsWindow : Window {
 				break;
 			}
 			case WID_GO_AUTOSAVE_DROPDOWN: {
-				if (_settings_client.gui.autosave == 5) {
-					SetDParam(0, _settings_client.gui.autosave_custom_days == 1 ? STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_SINGULAR : STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM);
-					SetDParam(1, _settings_client.gui.autosave_custom_days);
-				} else if (_settings_client.gui.autosave == 6) {
-					SetDParam(0, STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM);
-					SetDParam(1, _settings_client.gui.autosave_custom_minutes);
-				} else {
-					SetDParam(0, _autosave_dropdown[_settings_client.gui.autosave]);
+				SetDParam(0, STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM);
+				SetDParam(1, _settings_client.gui.autosave_interval);
+				int index = 0;
+				for (auto &minutes : _autosave_dropdown_to_minutes) {
+					if (_settings_client.gui.autosave_interval == minutes) {
+						SetDParam(0, _autosave_dropdown[index]);
+						break;
+					}
+					index++;
 				}
 				break;
 			}
@@ -697,15 +714,11 @@ struct GameOptionsWindow : Window {
 
 			case WID_GO_AUTOSAVE_DROPDOWN: // Autosave options
 				if (index == 5) {
-					this->current_query_text_item = QueryTextItem::AutosaveCustomDays;
-					SetDParam(0, _settings_client.gui.autosave_custom_days);
-					ShowQueryString(STR_JUST_INT, STR_GAME_OPTIONS_AUTOSAVE_DAYS_QUERY_CAPT, 4, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
-				} else if (index == 6) {
 					this->current_query_text_item = QueryTextItem::AutosaveCustomRealTimeMinutes;
-					SetDParam(0, _settings_client.gui.autosave_custom_minutes);
+					SetDParam(0, _settings_client.gui.autosave_interval);
 					ShowQueryString(STR_JUST_INT, STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT, 4, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				} else {
-					_settings_client.gui.autosave = index;
+					_settings_client.gui.autosave_interval = _autosave_dropdown_to_minutes[index];
 					this->SetDirty();
 				}
 				break;
@@ -766,15 +779,8 @@ struct GameOptionsWindow : Window {
 				case QueryTextItem::None:
 					break;
 
-				case QueryTextItem::AutosaveCustomDays:
-					_settings_client.gui.autosave = 5;
-					_settings_client.gui.autosave_custom_days = Clamp(value, 1, 4000);
-					this->SetDirty();
-					break;
-
 				case QueryTextItem::AutosaveCustomRealTimeMinutes:
-					_settings_client.gui.autosave = 6;
-					_settings_client.gui.autosave_custom_minutes = Clamp(value, 1, 8000);
+					_settings_client.gui.autosave_interval = Clamp(value, 1, 8000);
 					this->SetDirty();
 					break;
 			}
@@ -841,7 +847,7 @@ static const NWidgetPart _nested_game_options_widgets[] = {
 				EndContainer(),
 
 				NWidget(WWT_FRAME, COLOUR_GREY), SetDataTip(STR_GAME_OPTIONS_AUTOSAVE_FRAME, STR_NULL),
-					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_GO_AUTOSAVE_DROPDOWN), SetMinimalSize(100, 12), SetDataTip(STR_JUST_STRING, STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP), SetFill(1, 0),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_GO_AUTOSAVE_DROPDOWN), SetMinimalSize(100, 12), SetDataTip(STR_JUST_STRING2, STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP), SetFill(1, 0),
 				EndContainer(),
 
 				NWidget(WWT_FRAME, COLOUR_GREY), SetDataTip(STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME, STR_NULL),
@@ -1992,9 +1998,7 @@ static SettingsContainer &GetSettingsTree()
 
 			SettingsPage *save = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_SAVE));
 			{
-				save->Add(new SettingEntry("gui.autosave"));
-				save->Add(new ConditionallyHiddenSettingEntry("gui.autosave_custom_days", []() -> bool { return _settings_client.gui.autosave != 5; }));
-				save->Add(new ConditionallyHiddenSettingEntry("gui.autosave_custom_minutes", []() -> bool { return _settings_client.gui.autosave != 6; }));
+				save->Add(new SettingEntry("gui.autosave_interval"));
 				save->Add(new SettingEntry("gui.autosave_on_network_disconnect"));
 				save->Add(new SettingEntry("gui.savegame_overwrite_confirm"));
 			}

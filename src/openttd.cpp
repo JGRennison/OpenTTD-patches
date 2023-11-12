@@ -2097,8 +2097,8 @@ void StateGameLoop()
 			_scaled_date_ticks++;   // This must update in lock-step with _tick_skip_counter, such that it always matches what SetScaledTickVariables would return.
 		}
 
-		if (_settings_client.gui.autosave == 6 && !(_game_mode == GM_MENU || _game_mode == GM_BOOTSTRAP) &&
-				(_scaled_date_ticks % (_settings_client.gui.autosave_custom_minutes * (_settings_game.economy.tick_rate == TRM_MODERN ? (60000 / 27) : (60000 / 30)))) == 0) {
+		if (!(_game_mode == GM_MENU || _game_mode == GM_BOOTSTRAP) &&
+				(_scaled_date_ticks % (_settings_client.gui.autosave_interval * (_settings_game.economy.tick_rate == TRM_MODERN ? (60000 / 27) : (60000 / 30)))) == 0) {
 			_do_autosave = true;
 			_check_special_modes = true;
 			SetWindowDirty(WC_STATUS_BAR, 0);

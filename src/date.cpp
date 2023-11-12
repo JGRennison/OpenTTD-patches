@@ -297,12 +297,6 @@ static void OnNewYear()
  */
 static void OnNewMonth()
 {
-	if (_settings_client.gui.autosave != 0 && _settings_client.gui.autosave < 5 && (_cur_date_ymd.month % _autosave_months[_settings_client.gui.autosave]) == 0) {
-		_do_autosave = true;
-		_check_special_modes = true;
-		SetWindowDirty(WC_STATUS_BAR, 0);
-	}
-
 	SetWindowClassesDirty(WC_CHEATS);
 	CompaniesMonthlyLoop();
 	EnginesMonthlyLoop();
@@ -319,12 +313,6 @@ static void OnNewMonth()
  */
 static void OnNewDay()
 {
-	if (_settings_client.gui.autosave == 5 && (_date % _settings_client.gui.autosave_custom_days) == 0) {
-		_do_autosave = true;
-		_check_special_modes = true;
-		SetWindowDirty(WC_STATUS_BAR, 0);
-	}
-
 	if (_network_server) NetworkServerDailyLoop();
 
 	DisasterDailyLoop();
