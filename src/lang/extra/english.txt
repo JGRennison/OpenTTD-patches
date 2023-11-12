@@ -77,14 +77,6 @@ STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Modifier key wi
 ##before STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_OFF
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :Every {COMMA}{NBSP}minute{P 0 "" s}
 
-##after STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_OFF
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH                :Every month
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_3_MONTHS               :Every 3 months
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_6_MONTHS               :Every 6 months
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_12_MONTHS              :Every 12 months
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_LABEL      :Custom interval (days)
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :Custom interval (real-time minutes)
-
 ##end-after
 
 STR_COMMA_SEPARATOR                                             :,{SP}
@@ -141,10 +133,7 @@ STR_SMALLMAP_SCREENSHOT                                         :{BLACK}Screensh
 STR_NEWS_VEHICLE_NO_DEPOT_ORDER                                 :{WHITE}{VEHICLE} does not have a depot order in its schedule
 STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE} failed to stop at {STRING1} due to excessive speed
 
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM            :Every {COMMA}{NBSP}days
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_SINGULAR   :Every day
-
-STR_GAME_OPTIONS_AUTOSAVE_DAYS_QUERY_CAPT                       :{WHITE}Autosave interval in days
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :Custom interval (real-time minutes)
 STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT                    :{WHITE}Autosave interval in real-time minutes
 
 STR_RIVERS_VERY_MANY                                            :{RED}Very many
@@ -447,12 +436,6 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :Drawing style o
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_HELPTEXT        :How to draw the lines between the locations of each of the vehicle's orders, when showing a vehicle route overlay.
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :dashed lines of {COMMA} pixel{P "" s}
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :plain lines
-
-STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_DAYS                         :Custom autosave interval in days: {STRING2}
-STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_DAYS_HELPTEXT                :Set custom days interval between automatic game saves
-
-STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_MINUTES                      :Custom autosave interval in real-time minutes: {STRING2}
-STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_MINUTES_HELPTEXT             :Set custom real-time minutes of game time interval between automatic game saves
 
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT               :Autosave on network disconnection: {STRING2}
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT_HELPTEXT      :When enabled, multiplayer clients automatically save the game when disconnected from the server

@@ -33,13 +33,6 @@ STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :Sehr langsam
 
 STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Hilfstasten-Fenster
 
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH                :Jeden Monat
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_3_MONTHS               :Alle 3 Monate
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_6_MONTHS               :Alle 6 Monate
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_12_MONTHS              :Alle 12 Monate
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_LABEL      :Eigener Zeitraum (Tage)
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :Eigener Zeitraum (Echtzeitminuten)
-
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
@@ -84,11 +77,8 @@ STR_SMALLMAP_SCREENSHOT                                         :{BLACK}Screensh
 STR_NEWS_VEHICLE_NO_DEPOT_ORDER                                 :{WHITE}{VEHICLE} hat keinen Depotauftrag im Fahrplan
 STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE} konnte wegen zu hoher Geschwindigkeit nicht bei {STRING} anhalten
 
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM            :Alle {COMMA}{NBSP}Tage
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_SINGULAR   :Jeden Tag
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :Eigener Zeitraum (Echtzeitminuten)
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :Alle {COMMA} Echtzeitminuten
-
-STR_GAME_OPTIONS_AUTOSAVE_DAYS_QUERY_CAPT                       :{WHITE}Autosicherungsintervall in Tagen
 STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT                    :{WHITE}Autosicherungsintervali in Echtzeitminuten
 
 STR_RIVERS_VERY_MANY                                            :{RED}Sehr viele
@@ -340,12 +330,6 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE              :Zeige die Fahrz
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :Zeichenstil der Fahrzeugroute: {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :gestrichelte Linie von {COMMA} Pixel{P "" n} Länge
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :durchgezogene Linie
-
-STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_DAYS                         :Benutzerdefinierter Autosicherungsintervall in Tagen: {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_DAYS_HELPTEXT                :Legt einen benutzerdefinierten Intervall für die Autosicherung in Tagen fest.
-
-STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_MINUTES                      :Benutzerdefinierter Autosicherungsintervall in Echtzeitminuten: {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_MINUTES_HELPTEXT             :Legt eine Zeitspanne in Echtzeitminuten für den Abstand zwischen Autosicherungen fest.
 
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT               :Autosichern bei Verbindungsabbruch: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT_HELPTEXT      :Falls aktiviert, sichern Multiplayer-Clients automatisch das Spiel, wenn die Verbindung zum Server abbricht

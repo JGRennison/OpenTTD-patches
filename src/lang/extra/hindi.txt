@@ -1,5 +1,3 @@
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH                :प्रत्येक माह
-
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

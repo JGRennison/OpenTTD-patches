@@ -1,8 +1,3 @@
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH                :Каждый месяц
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_3_MONTHS               :Каждые 3 месяца
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_6_MONTHS               :Каждые 6 месяцев
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_12_MONTHS              :Каждый год
-
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :миль/ч
 STR_UNIT_NAME_VELOCITY_METRIC                                   :км/ч
 STR_UNIT_NAME_VELOCITY_SI                                       :м/с

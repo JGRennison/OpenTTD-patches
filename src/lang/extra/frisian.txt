@@ -1,8 +1,3 @@
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH                :Eltse moanne
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_3_MONTHS               :Eltse 3 moannen
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_6_MONTHS               :Eltse 6 moannen
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_12_MONTHS              :Eltse 12 moannen
-
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mpo
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/o
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s

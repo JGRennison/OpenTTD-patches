@@ -37,13 +37,6 @@ STR_ABOUT_MENU_SHOW_PICKER_TOOL                                 :선택 도구
 
 STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :보조 키 창
 
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH                :매달
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_3_MONTHS               :3개월마다
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_6_MONTHS               :6개월마다
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_12_MONTHS              :12개월마다
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_LABEL      :사용자 설정 (게임 일)
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :사용자 설정 (현실 분)
-
 STR_COMMA_SEPARATOR                                             :,{SP}
 
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
@@ -98,11 +91,8 @@ STR_SMALLMAP_SCREENSHOT                                         :{BLACK}스크�
 STR_NEWS_VEHICLE_NO_DEPOT_ORDER                                 :{WHITE}{VEHICLE}의 경로에는 기지가 존재하지 않습니다
 STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE} : 속력이 너무 빨라서 {STRING}에 멈추지 못했습니다
 
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM            :매 {COMMA}일마다
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_SINGULAR   :매일
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :사용자 설정 (현실 분)
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :현실에서 매 {COMMA}분마다
-
-STR_GAME_OPTIONS_AUTOSAVE_DAYS_QUERY_CAPT                       :{WHITE}자동 저장 간격 (단위: 게임 시간 기준 일)
 STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT                    :{WHITE}자동 저장 간격 (단위: 현실 분)
 
 STR_RIVERS_VERY_MANY                                            :{RED}매우 많이
@@ -404,12 +394,6 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :차량 경로 �
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_HELPTEXT        :차량 경로 오버레이를 보여줄 때, 그 차량의 경로 위치 사이를 어떤 선으로 그릴지를 결정합니다.
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :{COMMA} 픽셀 간격의 점선
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :실선
-
-STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_DAYS                         :자동 저장 간격 사용자 지정 (단위: 일): {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_DAYS_HELPTEXT                :게임을 자동으로 저장할 간격을 일 단위로 설정하세요
-
-STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_MINUTES                      :자동 저장 간격 사용자 지정 (단위: 현실 분): {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_MINUTES_HELPTEXT             :게임을 자동으로 저장할 간격을 현실 분 단위로 설정하세요
 
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT               :네트워크 연결이 끊어지면 자동 저장: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT_HELPTEXT      :이 설정을 켜면 서버와의 연결이 끊어졌을 때 게임을 자동으로 저장합니다.
@@ -2152,4 +2136,3 @@ STR_VIEWPORT_TOWN_COLOUR                                        :{1:COLOUR}{0:TO
 STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {COLOUR}({COMMA})
 STR_VIEWPORT_TOWN_COLOUR_CITY                                   :{1:COLOUR}{0:TOWN} (대도시)
 STR_VIEWPORT_TOWN_COLOUR_CITY_POP                               :{WHITE}{TOWN} {COLOUR}(대도시, {COMMA})
-

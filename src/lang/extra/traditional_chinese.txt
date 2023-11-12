@@ -1,8 +1,3 @@
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH                :每個月
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_3_MONTHS               :每 3 個月
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_6_MONTHS               :每 6 個月
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_12_MONTHS              :每 12 個月
-
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :英里/小時
 STR_UNIT_NAME_VELOCITY_METRIC                                   :公里/小時
 STR_UNIT_NAME_VELOCITY_SI                                       :米/秒

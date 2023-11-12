@@ -37,13 +37,6 @@ STR_ABOUT_MENU_SHOW_PICKER_TOOL                                 :Ferramenta de s
 
 STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Fiestra da tecla modificadora
 
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH                :Cada mes
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_3_MONTHS               :Cada 3 meses
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_6_MONTHS               :Cada 6 meses
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_12_MONTHS              :Cada 12 meses
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_LABEL      :Intervalo personalizado (días)
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :Intervalo personalizado (minutos reais)
-
 STR_COMMA_SEPARATOR                                             :,{SP}
 
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
@@ -98,11 +91,8 @@ STR_SMALLMAP_SCREENSHOT                                         :{BLACK}Captura 
 STR_NEWS_VEHICLE_NO_DEPOT_ORDER                                 :{WHITE}{VEHICLE} Non ten unha orde de depósito no seu horario
 STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE} non puido parar en {STRING} polo exceso de velocidade
 
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM            :Cada {COMMA}{NBSP}días
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_SINGULAR   :Todos os días
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :Intervalo personalizado (minutos reais)
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :Cada {COMMA} minutos reais
-
-STR_GAME_OPTIONS_AUTOSAVE_DAYS_QUERY_CAPT                       :{WHITE}Intervalo de autogardado en días
 STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT                    :{WHITE}Intervalo de autogardado en minutos reais
 
 STR_RIVERS_VERY_MANY                                            :{RED}Moitísimos
@@ -401,12 +391,6 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :Estilo de debux
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_HELPTEXT        :Como debuxar as liñas entre as localizacións de cada unha das ordes do vehículo ao amosar unha superposición da ruta do vehículo.
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :liñas discontinuas de {COMMA} pixel{P "" es}
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :liñas planas
-
-STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_DAYS                         :Intervalo de autogardado en días: {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_DAYS_HELPTEXT                :Fixa o intervalo personalizado en días entre gardados de partidas
-
-STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_MINUTES                      :Intervalo de autogardado en minutos reais: {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_MINUTES_HELPTEXT             :Fixa o intervalo personalizado en minutos reais entre gardados de partidas
 
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT               :Autogardado coas desconexións da rede: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT_HELPTEXT      :Cando está habilitado, os clientes multixogadores automáticamente gardan a partida cando se desconectan do servidor

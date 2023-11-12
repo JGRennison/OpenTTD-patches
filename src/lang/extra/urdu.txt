@@ -1,8 +1,3 @@
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH                :ہر مہینے
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_3_MONTHS               :ہر سہ ماہی
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_6_MONTHS               :ہر شش ماہی
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_12_MONTHS              :ہر سال
-
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :میل فی گھنٹھ
 STR_UNIT_NAME_VELOCITY_METRIC                                   :کلو میٹر فی گھنٹھ
 STR_UNIT_NAME_VELOCITY_SI                                       :میٹر فی سیکنڈ
