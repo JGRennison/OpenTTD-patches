@@ -40,6 +40,7 @@
 #include "cargopacket.h"
 #include "tbtr_template_vehicle_func.h"
 #include "event_logs.h"
+#include "string_func.h"
 #include "3rdparty/monocypher/monocypher.h"
 
 #include "safeguards.h"
@@ -77,7 +78,6 @@ void InitializeOldNames();
 std::string GenerateUid(std::string_view subject)
 {
 	extern void NetworkRandomBytesWithFallback(void *buf, size_t n);
-	extern std::string BytesToHexString(const byte *data, size_t length);
 
 	uint8 random_bytes[32];
 	NetworkRandomBytesWithFallback(random_bytes, lengthof(random_bytes));
@@ -90,7 +90,7 @@ std::string GenerateUid(std::string_view subject)
 	crypto_blake2b_update(&ctx, (const byte *)subject.data(), subject.size());
 	crypto_blake2b_final (&ctx, digest);
 
-	return BytesToHexString(digest, lengthof(digest));
+	return FormatArrayAsHex({digest, lengthof(digest)});
 }
 
 /**

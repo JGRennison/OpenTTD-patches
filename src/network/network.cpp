@@ -36,6 +36,7 @@
 #include "../gfx_func.h"
 #include "../error.h"
 #include "../core/checksum_func.hpp"
+#include "../string_func.h"
 #include "../string_func_extra.h"
 #include "../core/serialisation.hpp"
 #include "../3rdparty/randombytes/randombytes.h"
@@ -215,7 +216,7 @@ std::string GenerateCompanyPasswordHash(const std::string &password, const std::
 	checksum.Append(salted_password_string.data(), salted_password_string.size());
 	checksum.Finish(digest);
 
-	return BytesToHexString(digest.data(), digest.size());
+	return FormatArrayAsHex(digest);
 }
 
 /**
@@ -1340,27 +1341,12 @@ static void NetworkGenerateServerId()
 	_settings_client.network.network_id = GenerateUid("OpenTTD Server ID");
 }
 
-std::string BytesToHexString(const byte *data, size_t length)
-{
-	std::string hex_output;
-	hex_output.resize(length * 2);
-
-	char txt[3];
-	for (uint i = 0; i < length; ++i) {
-		seprintf(txt, lastof(txt), "%02x", data[i]);
-		hex_output[i * 2] = txt[0];
-		hex_output[(i * 2) + 1] = txt[1];
-	}
-
-	return hex_output;
-}
-
 std::string NetworkGenerateRandomKeyString(uint bytes)
 {
 	uint8 *key = AllocaM(uint8, bytes);
 	NetworkRandomBytesWithFallback(key, bytes);
 
-	return BytesToHexString(key, bytes);
+	return FormatArrayAsHex({key, bytes});
 }
 
 class TCPNetworkDebugConnecter : TCPConnecter {

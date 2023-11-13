@@ -191,6 +191,25 @@ const char *str_fix_scc_encoded(char *str, const char *last)
 	return str;
 }
 
+/**
+ * Format a byte array into a continuous hex string.
+ * @param data Array to format
+ * @return Converted string.
+ */
+std::string FormatArrayAsHex(span<const byte> data)
+{
+	std::string hex_output;
+	hex_output.resize(data.size() * 2);
+
+	char txt[3];
+	for (uint i = 0; i < data.size(); ++i) {
+		seprintf(txt, lastof(txt), "%02x", data[i]);
+		hex_output[i * 2] = txt[0];
+		hex_output[(i * 2) + 1] = txt[1];
+	}
+
+	return hex_output;
+}
 
 /**
  * Copies the valid (UTF-8) characters from \c str up to \c last to the \c dst.

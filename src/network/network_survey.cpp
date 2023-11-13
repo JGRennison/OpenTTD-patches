@@ -20,6 +20,7 @@
 #include "../timer/timer_game_tick.h"
 #include "../sl/saveload.h"
 #include "../date_func.h"
+#include "../string_func.h"
 
 #include "../currency.h"
 #include "../fontcache.h"
@@ -237,7 +238,7 @@ static void SurveyGrfs(nlohmann::json &survey)
 		auto grfid = fmt::format("{:08x}", BSWAP32(c->ident.grfid));
 		auto &grf = survey[grfid];
 
-		grf["md5sum"] = BytesToHexString(c->ident.md5sum.data(), c->ident.md5sum.size());
+		grf["md5sum"] = FormatArrayAsHex(c->ident.md5sum);
 		grf["status"] = c->status;
 
 		if ((c->palette & GRFP_GRF_MASK) == GRFP_GRF_UNSET) grf["palette"] = "unset";
