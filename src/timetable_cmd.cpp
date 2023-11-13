@@ -1010,10 +1010,13 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		}
 	}
 
+	bool is_timetabled = travel_field ? real_timetable_order->IsTravelTimetabled() :
+			real_timetable_order->IsWaitTimetabled();
+
 	/* Vehicles will wait at stations if they arrive early even if they are not
 	 * timetabled to wait there, so make sure the lateness counter is updated
 	 * when this happens. */
-	if (timetabled == 0 && (travelling || v->lateness_counter >= 0)) return;
+	if (timetabled == 0 && !is_timetabled && (travelling || v->lateness_counter >= 0)) return;
 
 	if (set_scheduled_dispatch) {
 		// do nothing
