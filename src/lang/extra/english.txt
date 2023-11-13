@@ -437,6 +437,9 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_HELPTEXT        :How to draw the
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :dashed lines of {COMMA} pixel{P "" s}
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :plain lines
 
+STR_CONFIG_SETTING_AUTOSAVE_REALTIME                            :Autosave interval uses real-time: {STRING2}
+STR_CONFIG_SETTING_AUTOSAVE_REALTIME_HELPTEXT                   :When enabled, autosave intervals uses real elapsed wall-clock time, (when paused autosaving will stop until you make any change to the game).{}When disabled, autosave intervals use elapsed game simulation time.
+
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT               :Autosave on network disconnection: {STRING2}
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT_HELPTEXT      :When enabled, multiplayer clients automatically save the game when disconnected from the server
 

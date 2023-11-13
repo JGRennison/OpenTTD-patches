@@ -2106,7 +2106,7 @@ void StateGameLoop()
 			_scaled_date_ticks++;   // This must update in lock-step with _tick_skip_counter, such that it always matches what SetScaledTickVariables would return.
 		}
 
-		if (!(_game_mode == GM_MENU || _game_mode == GM_BOOTSTRAP) &&
+		if (!(_game_mode == GM_MENU || _game_mode == GM_BOOTSTRAP) && !_settings_client.gui.autosave_realtime &&
 				(_scaled_date_ticks % (_settings_client.gui.autosave_interval * (_settings_game.economy.tick_rate == TRM_MODERN ? (60000 / 27) : (60000 / 30)))) == 0) {
 			_do_autosave = true;
 			_check_special_modes = true;
@@ -2228,7 +2228,8 @@ static IntervalTimer<TimerGameRealtime> _autosave_interval({std::chrono::millise
  */
 void ChangeAutosaveFrequency(bool reset)
 {
-	_autosave_interval.SetInterval({_settings_client.gui.autosave_realtime, TimerGameRealtime::AUTOSAVE}, reset);
+	std::chrono::minutes interval = _settings_client.gui.autosave_realtime ? std::chrono::minutes(_settings_client.gui.autosave_interval) : std::chrono::minutes::zero();
+	_autosave_interval.SetInterval({interval, TimerGameRealtime::AUTOSAVE}, reset);
 }
 
 /**

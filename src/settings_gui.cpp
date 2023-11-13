@@ -2001,6 +2001,7 @@ static SettingsContainer &GetSettingsTree()
 			SettingsPage *save = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_SAVE));
 			{
 				save->Add(new SettingEntry("gui.autosave_interval"));
+				save->Add(new SettingEntry("gui.autosave_realtime"));
 				save->Add(new SettingEntry("gui.autosave_on_network_disconnect"));
 				save->Add(new SettingEntry("gui.savegame_overwrite_confirm"));
 			}
