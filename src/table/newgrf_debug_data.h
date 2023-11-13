@@ -232,6 +232,10 @@ class NIHVehicle : public NIHelper {
 			seprintf(buffer, lastof(buffer), "  Order indices: real: %u, implicit: %u, tt: %u, current type: %s",
 					v->cur_real_order_index, v->cur_implicit_order_index, v->cur_timetable_order_index, GetOrderTypeName(v->current_order.GetType()));
 			output.print(buffer);
+			seprintf(buffer, lastof(buffer), "  Current order time: (%u, %u mins), current loading time: (%u, %u mins)",
+					v->current_order_time, v->current_order_time / _settings_time.ticks_per_minute,
+					v->current_loading_time, v->current_loading_time / _settings_time.ticks_per_minute);
+			output.print(buffer);
 		}
 		seprintf(buffer, lastof(buffer), "  Reliability: %u, spd_dec: %u, needs service: %s",
 				v->reliability, v->reliability_spd_dec, v->NeedsServicing() ? "yes" : "no");
