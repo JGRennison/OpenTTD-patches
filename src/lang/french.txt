@@ -178,7 +178,7 @@ STR_COLOUR_PALE_GREEN                                           :Vert pâle
 STR_COLOUR_PINK                                                 :Rose
 STR_COLOUR_YELLOW                                               :Jaune
 STR_COLOUR_RED                                                  :Rouge
-STR_COLOUR_LIGHT_BLUE                                           :Bleu pâle
+STR_COLOUR_LIGHT_BLUE                                           :Bleu clair
 STR_COLOUR_GREEN                                                :Vert
 STR_COLOUR_DARK_GREEN                                           :Vert foncé
 STR_COLOUR_BLUE                                                 :Bleu
@@ -192,6 +192,23 @@ STR_COLOUR_WHITE                                                :Blanc
 STR_COLOUR_RANDOM                                               :Aléatoire
 
 ###length 17
+STR_COLOUR_SECONDARY_DARK_BLUE                                  :Bleu foncé
+STR_COLOUR_SECONDARY_PALE_GREEN                                 :Vert pâle
+STR_COLOUR_SECONDARY_SECONDARY_PINK                             :Rose
+STR_COLOUR_SECONDARY_YELLOW                                     :Jaune
+STR_COLOUR_SECONDARY_RED                                        :Rouge
+STR_COLOUR_SECONDARY_LIGHT_BLUE                                 :Bleu clair
+STR_COLOUR_SECONDARY_GREEN                                      :Vert
+STR_COLOUR_SECONDARY_DARK_GREEN                                 :Vert foncé
+STR_COLOUR_SECONDARY_BLUE                                       :Bleu
+STR_COLOUR_SECONDARY_CREAM                                      :Beige
+STR_COLOUR_SECONDARY_MAUVE                                      :Mauve
+STR_COLOUR_SECONDARY_PURPLE                                     :Violet
+STR_COLOUR_SECONDARY_ORANGE                                     :Orange
+STR_COLOUR_SECONDARY_BROWN                                      :Marron
+STR_COLOUR_SECONDARY_GREY                                       :Gris
+STR_COLOUR_SECONDARY_WHITE                                      :Blanc
+STR_COLOUR_SECONDARY_SAME_AS_PRIMARY                            :Identique à la primaire
 
 
 # Units used in OpenTTD
@@ -1297,7 +1314,7 @@ STR_CONFIG_SETTING_CATCHMENT                                    :Autoriser des z
 STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Les zones de desserte ont des tailles différentes selon les types de stations et d'aéroports
 
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Les stations des compagnies peuvent desservir les industries avec une station intégrée{NBSP}: {STRING}
-STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Si activé, les industries avec une station intégrée (comme les plateformes pétrolières) peuvent aussi être desservies par les stations des compagnies construites à proximité. Si désactivé, ces industries peuvent uniquement être desservies par leur station intégrée. Aucune station de compagnie ne pourra desservir cette industrie, et la station intégrée ne desservira que cette industrie.
+STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Si activé, les industries avec une station intégrée (comme les plateformes pétrolières) peuvent aussi être desservies par les stations des compagnies construites à proximité. Si désactivé, ces industries peuvent uniquement être desservies par leur station intégrée. Aucune station de compagnie ne pourra desservir cette industrie, et la station intégrée ne desservira que cette industrie
 
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Permettre le retrait de plus d'éléments possédés par une ville{NBSP}: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Simplifier le retrait d'éléments possédés par une ville
@@ -1367,7 +1384,7 @@ STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT                           :Les nouveaux or
 STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT_HELPTEXT                  :Normalement, un véhicule s'arrête dans chaque station qu'il traverse. En activant ce paramètre, il traversera toutes les stations sur le chemin de sa destination finale sans s'arrêter. Noter que ce paramètre définit uniquement une valeur par défaut pour les nouveaux ordres. Les ordres peuvent par après être réglés individuellement avec un autre comportement
 
 STR_CONFIG_SETTING_STOP_LOCATION                                :Les nouveaux ordres arrêtent les trains {G 0 au au "à la"} {STRING} du quai par défaut
-STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :Endroit du quai où un train s'arrête par défaut. "queue" signifie proche du point d'entrée. "milieu" signifie au milieu du quai. "tête" signifie à l'opposé du point d'entrée. Noter que ce paramètre défini uniquement une valeur par défaut pour les nouveaux ordres. Les ordres peuvent par ailleurs être réglés individuellement avec un autre comportement
+STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :Endroit du quai où un train s'arrête par défaut. "queue" signifie proche du point d'entrée. "milieu" signifie au milieu du quai. "tête" signifie à l'opposé du point d'entrée. Noter que ce paramètre défini uniquement une valeur par défaut pour les nouveaux ordres. Les ordres peuvent avoir leur emplacement d'arrêt défini individuellement en cliquant sur le texte de l'ordre
 ###length 3
 STR_CONFIG_SETTING_STOP_LOCATION_NEAR_END                       :{G=f}queue
 STR_CONFIG_SETTING_STOP_LOCATION_MIDDLE                         :{G=m}milieu
@@ -1410,8 +1427,8 @@ STR_CONFIG_SETTING_PLANE_CRASHES_NONE                           :Aucun*
 STR_CONFIG_SETTING_PLANE_CRASHES_REDUCED                        :Réduit
 STR_CONFIG_SETTING_PLANE_CRASHES_NORMAL                         :Normal
 
-STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :Autoriser les arrêts de bus sur les routes des municipalités{NBSP}: {STRING}
-STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD_HELPTEXT                   :Autoriser la construction des arrêts de bus sur les routes des municipalités
+STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :Autoriser les arrêts de bus sur les routes appartenant aux municipalités{NBSP}: {STRING}
+STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD_HELPTEXT                   :Autoriser la construction des arrêts de bus sur les routes appartenant aux municipalités
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD                      :Autoriser les arrêts de bus sur les routes des concurrents{NBSP}: {STRING}
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD_HELPTEXT             :Autoriser la construction des arrêts de bus sur les routes d'autres compagnies
 STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES            :{WHITE}Il n'est pas possible de modifier ce paramètre quand il y a des véhicules
@@ -1422,6 +1439,8 @@ STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :Si activé, les
 STR_CONFIG_SETTING_COMPANY_STARTING_COLOUR                      :Couleur de la compagnie au démarrage{NBSP}: {STRING}
 STR_CONFIG_SETTING_COMPANY_STARTING_COLOUR_HELPTEXT             :Choisir la couleur de démarrage pour la compagnie
 
+STR_CONFIG_SETTING_COMPANY_STARTING_COLOUR_SECONDARY            :Seconde couleur de la compagnie au démarrage{NBSP}: {STRING}
+STR_CONFIG_SETTING_COMPANY_STARTING_COLOUR_SECONDARY_HELPTEXT   :Choisir une seconde couleur pour le démarrage de la compagnie, si un NewGRF l'utilise.
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :Les aéroports n'expirent jamais{NBSP}: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :Activer ce paramètre fait que chaque type d'aéroports reste toujours disponible après son introduction
@@ -1627,9 +1646,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Fermer une fen�
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_NO                     :Non
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_YES                    :Oui
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_YES_EXCEPT_STICKY      :Oui, sauf les fenêtres punaisées
-
-STR_CONFIG_SETTING_AUTOSAVE                                     :Sauvegarde automatique{NBSP}: {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Sélectionner l'intervalle de temps entre les sauvegardes automatiques
 
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Utiliser le format de date {STRING} pour le nom des sauvegardes
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :Format de la date dans les noms des fichiers de sauvegarde
@@ -1881,8 +1897,8 @@ STR_CONFIG_SETTING_ALLOW_TOWN_ROADS_HELPTEXT                    :Autoriser les v
 STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS                   :Autoriser la construction des passages à niveau par les villes{NBSP}: {STRING}
 STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS_HELPTEXT          :Activer ce paramètre pour autoriser les villes à construire des passages à niveau
 
-STR_CONFIG_SETTING_NOISE_LEVEL                                  :Permettre plus d'aéroports par ville, selon les nuisances sonores{NBSP}: {STRING}
-STR_CONFIG_SETTING_NOISE_LEVEL_HELPTEXT                         :Avec ce paramètre désactivé, il peut y avoir deux aéroports dans chaque ville. Avec ce paramètre activé, le nombre d'aéroports dans une ville est limité par le bruit qu'elle accepte, celui-ci dépend de la population, de la taille de l'aéroport et de la distance
+STR_CONFIG_SETTING_NOISE_LEVEL                                  :Limiter les placements des aéroports en fonction du niveau sonore{NBSP}: {STRING}
+STR_CONFIG_SETTING_NOISE_LEVEL_HELPTEXT                         :Permettre aux villes de bloquer la construction d'aéroports si le niveau sonore est trop élevé pour celle-ci, ce paramètre est basé sur la population de la ville, la taille de l'aéroport et la distance à laquelle il sera construit. Si ce paramètre est désactivé, chaque ville ne tolérera que deux aéroports sauf si la tolérance des municipalités est définie sur "permissive"
 
 STR_CONFIG_SETTING_TOWN_FOUNDING                                :Fonder des villes en cours de jeu{NBSP}: {STRING}
 STR_CONFIG_SETTING_TOWN_FOUNDING_HELPTEXT                       :Activer ce paramètre permet aux joueurs de fonder de nouvelles villes dans la partie
@@ -2635,7 +2651,7 @@ STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}Transpar
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Transparence des ponts.{}Ctrl-clic pour verrouiller.
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}Transparence des structures telles que phares et antennes.{}Ctrl-clic pour verrouiller.
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Transparence des caténaires.{}Ctrl-clic pour verrouiller.
-STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Transparence des indicateurs de chargement.{}Ctrl-clic pour verrouiller.
+STR_TRANSPARENT_TEXT_TOOLTIP                                    :{BLACK}Transparence des indicateurs de chargement et des coûts/revenus des véhicules.{}Ctrl-clic pour verrouiller.
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Alterner entre transparence et invisibilité des objets
 
 # Linkgraph legend window
@@ -4873,7 +4889,7 @@ STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Trop d'a
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Trop près d'un autre port
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Trop près d'un autre aéroport
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Impossible de renommer la gare...
-STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... cette route appartient à une ville
+STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... route appartenant à une ville
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... mauvaise orientation de la route
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... les arrêts ne peuvent pas avoir de virages
 STR_ERROR_DRIVE_THROUGH_JUNCTION                                :{WHITE}... les arrêts ne peuvent pas avoir de jonctions

@@ -11,6 +11,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Vejkøretøjer
 STR_VEHICLE_TYPE_SHIPS                                          :Skibe
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Fly
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Auto gem: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Vælg interval mellem automatisk gemte spil
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Slå gennemsigtighed til/fra for laste-indikatorer. CTRL+Klik for at låse værdi.
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

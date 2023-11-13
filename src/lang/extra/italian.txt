@@ -10,6 +10,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Automezzi
 STR_VEHICLE_TYPE_SHIPS                                          :Navi
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Aeromobili
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Salvataggi automatici: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Seleziona l'intervallo fra i salvataggi automatici della partita
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Attiva/disattiva la trasparenza degli indicatori di caricamento. CTRL+clic per bloccare
+
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}tempo medio di percorrenza: {STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Capacità: {CARGO_LONG}
 

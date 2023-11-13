@@ -9,6 +9,8 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Akfør
 STR_VEHICLE_TYPE_SHIPS                                          :Skip
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Flogfør
 
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Tendra/sløkk gjøgnumskygni fyri lessingar vísarar. Ctrl+trýst fyri at læsa
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

@@ -10,6 +10,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Stroossegefiere
 STR_VEHICLE_TYPE_SHIPS                                          :Schëffer
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Fligeren
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Autospäicheren: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Setz den Interval tëschend automateschen Späicherstänn
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Wiesselt d'Transparenz fir d'Luedungsindikatoren. Ctrl+Klick fir festzesetzen
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

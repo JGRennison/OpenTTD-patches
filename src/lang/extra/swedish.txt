@@ -10,6 +10,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Vägfordon
 STR_VEHICLE_TYPE_SHIPS                                          :Skepp
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Flygplan
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Autospara: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Välj intervall mellan automatisk sparande
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Växla genomskinlighet för lastningsindikatorer. Ctrl+klick för att låsa
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

@@ -10,6 +10,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Közúti Járm�
 STR_VEHICLE_TYPE_SHIPS                                          :Hajó
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Repülőgép
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Automatikus mentés: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Az automatikus mentések között eltelő idő
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Átlátszó rakodásjelző bekapcsolása. Ctrl+kattintással zárolható
+
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Átlagos utazási idő: {STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Kapacitás: {CARGO_LONG}
 

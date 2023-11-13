@@ -1384,7 +1384,7 @@ STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT                           :Novas ordens s�
 STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT_HELPTEXT                  :Normalmente, um veículo para em todas as estações por qual passa. Ativando essa configuração fará com que o veículo pule todas as estações até chegar no seu destino final. Note que isso se aplica para novas ordens padrão. É possível alterar esse comportamento individualmente para cada ordem
 
 STR_CONFIG_SETTING_STOP_LOCATION                                :Novas ordens de trem param no {STRING} da plataforma
-STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :Define onde um trem irá parar na plataforma por padrão. 'Fim' significa parar próximo da saída da estação. 'Meio' significa no meio da plataforma e 'Início' significa próximo à entrada da estação. Isso apenas afeta as novas ordens padrão. Esse comportamento pode ser definido individualmente para cada ordem
+STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :Local onde um trem irá parar na plataforma. 'Início' significa próximo à entrada da estação, 'Meio' significa no meio da plataforma e 'Fim' significa parar próximo da saída da estação. Isso define um padrão que afeta apenas as novas ordens. Ordens individuais podem ter o local de parada definido clicando no texto da ordem
 ###length 3
 STR_CONFIG_SETTING_STOP_LOCATION_NEAR_END                       :início
 STR_CONFIG_SETTING_STOP_LOCATION_MIDDLE                         :meio
@@ -1647,9 +1647,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_NO                     :Não
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_YES                    :Sim
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_YES_EXCEPT_STICKY      :Sim, exceto coladas
 
-STR_CONFIG_SETTING_AUTOSAVE                                     :Auto-salvar: {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Selecione intervalo entre jogos salvos automaticamente
-
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Use o formato de data {STRING} para criar arquivos de salvamento
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :Formato da data nos nomes dos jogos salvos
 ###length 3
@@ -1900,8 +1897,8 @@ STR_CONFIG_SETTING_ALLOW_TOWN_ROADS_HELPTEXT                    :Permite cidades
 STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS                   :Permitir cidades construirem cruzamentos de nível: {STRING}
 STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS_HELPTEXT          :Se ativado, permite as cidades construírem ruas que atravessam ferrovias
 
-STR_CONFIG_SETTING_NOISE_LEVEL                                  :Permitir controle de ruído de aeronaves pelas cidades: {STRING}
-STR_CONFIG_SETTING_NOISE_LEVEL_HELPTEXT                         :Se desativado, podem haver 2 aeroportos por cidade. Se ativado, o número de aeroportos é limitado pelo controle de ruído da cidade, que depende da população, tamanho e distância do aeroporto
+STR_CONFIG_SETTING_NOISE_LEVEL                                  :Limitar a localização do aeroporto em função do nível de ruído: {STRING}
+STR_CONFIG_SETTING_NOISE_LEVEL_HELPTEXT                         :Permitir que as localidades bloqueiem a construção de aeroportos em função da aceitação do nível de ruído, que é baseado no total de habitantes da localidade e no tamanho e distância do aeroporto. Se esta definição estiver desativada, as localidades permitirão apenas dois aeroportos, a menos que a atitude da autoridade local esteja definida como "Permissiva"
 
 STR_CONFIG_SETTING_TOWN_FOUNDING                                :Fundação de cidades no jogo: {STRING}
 STR_CONFIG_SETTING_TOWN_FOUNDING_HELPTEXT                       :Se ativado, permite jogadores construírem novas cidades
@@ -2654,7 +2651,7 @@ STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}Alternar
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Alternar transparência para pontes. Ctrl+Clique para travar
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}Alternar transparência para estruturas como faróis e antenas. Ctrl+Clique para travar
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Alternar transparência para catenária. Ctrl+Clique para travar
-STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Altera transparência para os indicadores de carga. Ctrl+Clique para travar
+STR_TRANSPARENT_TEXT_TOOLTIP                                    :{BLACK}Alternar transparência do texto de carregamento e custo/receita. Ctrl+Clique para travar.
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Definir objetivos como invisíveis ao invés de transparentes.
 
 # Linkgraph legend window

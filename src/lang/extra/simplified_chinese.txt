@@ -37,6 +37,8 @@ STR_ABOUT_MENU_SHOW_PICKER_TOOL                                 :选择器
 
 STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :修饰键
 
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :每{COMMA}现实分钟
+
 STR_COMMA_SEPARATOR                                             :,{SP}
 
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :英里/小时
@@ -92,7 +94,6 @@ STR_NEWS_VEHICLE_NO_DEPOT_ORDER                                 :{WHITE}{VEHICLE
 STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE}由于超速无法停在{STRING}
 
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :自定义间隔 (按现实分钟)
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :每{COMMA}现实分钟
 STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT                    :{WHITE}自动保存间隔 (按现实分钟)
 
 STR_RIVERS_VERY_MANY                                            :{RED}很多
@@ -394,6 +395,9 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :载具路径样
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_HELPTEXT        :控制每个指令所对应的位置之间的连线的样式
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :{COMMA}像素虚线
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :实心直线
+
+STR_CONFIG_SETTING_AUTOSAVE                                     :自动保存: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :选择自动存档时间间隔
 
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT               :在掉线时自动保存: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT_HELPTEXT      :当启用后，当从服务器断连之后多玩家客户端将自动保存游戏
@@ -719,6 +723,7 @@ STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {STRING} �
 STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** 你给了 {1:STRING} {2:CURRENCY_LONG}
 STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION                  :{STRING} ({COMPANY})
 
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}调整装载进度显示是否为透明{}CTRL+点击 锁定
 STR_TRANSPARENT_TUNNELS_TOOLTIP                                 :{BLACK}调整隧道内载具是否为透明{}Ctrl+点击 锁定
 
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}平均行驶时间: {STRING}

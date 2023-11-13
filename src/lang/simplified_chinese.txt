@@ -1595,9 +1595,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :右键关闭窗
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :使用在窗口内按右键关闭该窗口，本功能与右键工具提示不能共存！
 ###length 3
 
-STR_CONFIG_SETTING_AUTOSAVE                                     :自动保存: {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :选择自动存档时间间隔
-
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :使用 {STRING} 形式的文件名存档
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :游戏存档文件名中日期的格式
 ###length 3
@@ -2588,7 +2585,6 @@ STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}调整�
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}调整桥梁是否为透明{}CTRL+点击 锁定
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}调整灯塔及信号发射塔是否为透明{}CTRL+点击 锁定
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}调整电气铁路电线是否为透明{}CTRL+点击 锁定
-STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}调整装载进度显示是否为透明{}CTRL+点击 锁定
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}选择设置为：不显示或透明
 
 # Linkgraph legend window

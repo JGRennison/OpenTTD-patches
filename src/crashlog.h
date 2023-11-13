@@ -117,15 +117,6 @@ protected:
 	 */
 	virtual char *LogRegisters(char *buffer, const char *last) const;
 
-	/**
-	 * Writes the dynamically linked libraries/modules to the buffer, if there
-	 * is information about it available.
-	 * @param buffer The begin where to write at.
-	 * @param last   The last position in the buffer to write to.
-	 * @return the position of the \c '\0' character after the buffer.
-	 */
-	virtual char *LogModules(char *buffer, const char *last) const;
-
 #ifdef USE_SCOPE_INFO
 	/**
 	 * Writes the scope info log to the buffer.
@@ -157,6 +148,15 @@ public:
 	FILE *crash_file = nullptr;
 	const char *crash_buffer_write = nullptr;
 
+	/** Buffer for the filename of the crash log */
+	char crashlog_filename[MAX_PATH];
+	/** Buffer for the filename of the crash dump */
+	char crashdump_filename[MAX_PATH];
+	/** Buffer for the filename of the crash savegame */
+	char savegame_filename[MAX_PATH];
+	/** Buffer for the filename of the crash screenshot */
+	char screenshot_filename[MAX_PATH];
+
 	/** Stub destructor to silence some compilers. */
 	virtual ~CrashLog() = default;
 
@@ -183,13 +183,13 @@ public:
 	static bool WriteDiagnosticSavegame(char *filename, const char *filename_last, const char *name);
 	static bool WriteScreenshot(char *filename, const char *filename_last, const char *name = "crash");
 
-	bool MakeCrashLog(char *buffer, const char *last);
-	bool MakeCrashLogWithStackBuffer();
-	bool MakeDesyncCrashLog(const std::string *log_in, std::string *log_out, const DesyncExtraInfo &info) const;
+	void MakeCrashLog(char *buffer, const char *last);
+	void MakeCrashLogWithStackBuffer();
+	void MakeDesyncCrashLog(const std::string *log_in, std::string *log_out, const DesyncExtraInfo &info) const;
 	static bool WriteDesyncSavegame(const char *log_data, const char *name_buffer);
-	bool MakeInconsistencyLog(const InconsistencyExtraInfo &info) const;
-	bool MakeVersionInfoLog() const;
-	bool MakeCrashSavegameAndScreenshot() const;
+	void MakeInconsistencyLog(const InconsistencyExtraInfo &info) const;
+	void MakeVersionInfoLog() const;
+	void MakeCrashSavegameAndScreenshot();
 
 	void SendSurvey() const;
 

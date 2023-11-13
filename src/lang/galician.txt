@@ -1623,9 +1623,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Pechar a fiestr
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Pecha a fiestra facendo botón dereito dentro de ela. Deshabilita a axuda contextual facendo click-dereito!
 ###length 3
 
-STR_CONFIG_SETTING_AUTOSAVE                                     :Autogravado: {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Selecciona o intervalo entre gravados automáticos das partidas
-
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Empregar o formato de data {STRING} para os nomes das partidas gravadas
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :Formato da data nos nomes das partidas gravadas
 ###length 3
@@ -2629,7 +2626,6 @@ STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}Habilita
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Habilitar transparencia para as pontes. CTRL+Click para bloquear
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}Habilitar transparencia para estruturas coma faros e antenas. CTRL+Click para bloquear
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Activar a transparencia para a catenaria. CTRL+Click para bloquear
-STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Activar transparencia para os indicadores de carga. CTRL+Click para bloquear
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Facer os obxectos invisibles en lugar de transparentes
 
 # Linkgraph legend window

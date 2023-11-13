@@ -9,6 +9,9 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Auto's
 STR_VEHICLE_TYPE_SHIPS                                          :Skippen
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Fleantugen
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Automatysk bewarje: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Selektearje de tiid tusken automatysk bewarje fan it spul
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

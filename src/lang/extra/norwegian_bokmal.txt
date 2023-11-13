@@ -10,6 +10,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Kjøretøy
 STR_VEHICLE_TYPE_SHIPS                                          :Skip
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Luftfartøy
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Autolagring: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Velg intervall mellom automatiske lagringer av spillet
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Gjennomsiktige lastingsindikatorer. Ctrl+klikk for å låse
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

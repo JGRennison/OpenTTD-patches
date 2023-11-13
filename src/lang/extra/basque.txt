@@ -9,6 +9,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Errepide ibilga
 STR_VEHICLE_TYPE_SHIPS                                          :Itsasontziak
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Hegazkinak
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Auto-gordea: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Partida gordetze automatikoaren bitartea aukeratu
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Zama adierazleen gardentasuna aldatu. Ktrl+Klik blokeatzeko
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

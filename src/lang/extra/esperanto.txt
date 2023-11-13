@@ -9,6 +9,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Stratveturiloj
 STR_VEHICLE_TYPE_SHIPS                                          :Ŝipoj
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Aviadiloj
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Aŭtomata konservado: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Elektu intervalon inter aŭtomataj konservadoj de la ludo
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Baskuligi travideblecon de ŝarĝindikiloj. Ctrl+Klaku por ŝlosi
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

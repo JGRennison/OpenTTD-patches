@@ -10,6 +10,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Samochody i tra
 STR_VEHICLE_TYPE_SHIPS                                          :Statki
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Samoloty
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Autozapis: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Częstotliwość automatycznego zapisu stanu gry
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Przełącz przeźroczystość dla wskaźników załadunku. Ctrl+klik, aby zablokować
+
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Średni czas podróży: {STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Ładowność: {CARGO_LONG}
 

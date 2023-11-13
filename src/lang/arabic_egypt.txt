@@ -1408,9 +1408,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :عدم استخ
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :تغلق النافذة عن طريق الطغط على الزر الأيمن في الماوس داخل النافذة. يعطل الملحوظة عند الطغط على الزر الأيمن في الماوس!
 ###length 3
 
-STR_CONFIG_SETTING_AUTOSAVE                                     :حفظ تلقائي : {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :اختر الوقت بين كل عملية حفظ اتوماتيكية
-
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :استخدم {STRING} نمط التاريخ لاسم اللعبة المحفوظة
 ###length 3
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_LONG               :طويل - 31 ديسمبر 2008
@@ -2189,7 +2186,6 @@ STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}بدل �
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK} بدل الشفافية للجسور. مفتاح كنترول للاغلاق.
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}بدل بين الشفافية للعلامات مثل المنارات الضوئية و هواائيات الارسال. مفتاح كنترول لالغلاق.
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK} غير شفافية سكك الحديد. مفتاح كنترول للاغلاق.
-STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}غير الشفافية لنسبة التحميل. مفتاح كنترول للاغلاق.
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}اخفاء الاجرام تماما بدلا من الشفافية
 
 # Linkgraph legend window

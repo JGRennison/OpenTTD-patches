@@ -437,6 +437,9 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_HELPTEXT        :How to draw the
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :dashed lines of {COMMA} pixel{P "" s}
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :plain lines
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Autosave: {STRING2}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Select interval between automatic game saves
+
 STR_CONFIG_SETTING_AUTOSAVE_REALTIME                            :Autosave interval uses real-time: {STRING2}
 STR_CONFIG_SETTING_AUTOSAVE_REALTIME_HELPTEXT                   :When enabled, autosave intervals uses real elapsed wall-clock time, (when paused autosaving will stop until you make any change to the game).{}When disabled, autosave intervals use elapsed game simulation time.
 
@@ -766,6 +769,7 @@ STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {RAW_STRING
 STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** You gave {1:RAW_STRING} {2:CURRENCY_LONG}
 STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION                  :{RAW_STRING} ({COMPANY})
 
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Toggle transparency for loading indicators. Ctrl+Click to lock
 STR_TRANSPARENT_TUNNELS_TOOLTIP                                 :{BLACK}Toggle transparency for vehicles in tunnels. Ctrl+Click to lock.
 
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Average travel time: {STRING1}

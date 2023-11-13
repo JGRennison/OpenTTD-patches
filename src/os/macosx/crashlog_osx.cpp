@@ -26,6 +26,7 @@
 #include <dlfcn.h>
 #include <cxxabi.h>
 #include <sys/mman.h>
+#include <execinfo.h>
 #ifdef WITH_UCONTEXT
 #include <sys/ucontext.h>
 #endif
@@ -186,77 +187,16 @@ class CrashLogOSX : public CrashLog {
 
 	char *LogStacktrace(char *buffer, const char *last) const override
 	{
-		/* As backtrace() is only implemented in 10.5 or later,
-		 * we're rolling our own here. Mostly based on
-		 * http://stackoverflow.com/questions/289820/getting-the-current-stack-trace-on-mac-os-x
-		 * and some details looked up in the Darwin sources. */
 		buffer += seprintf(buffer, last, "\nStacktrace:\n");
 
-		void **frame;
-		int i = 0;
+		void *trace[64];
+		int trace_size = backtrace(trace, lengthof(trace));
 
-		auto print_frame = [&](void *ip) {
-			/* Print running index. */
-			buffer += seprintf(buffer, last, " [%02d]", i);
-
-			Dl_info dli;
-			bool dl_valid = dladdr(ip, &dli) != 0;
-
-			const char *fname = "???";
-			if (dl_valid && dli.dli_fname) {
-				/* Valid image name? Extract filename from the complete path. */
-				const char *s = strrchr(dli.dli_fname, '/');
-				if (s != nullptr) {
-					fname = s + 1;
-				} else {
-					fname = dli.dli_fname;
-				}
-			}
-			/* Print image name and IP. */
-			buffer += seprintf(buffer, last, " %-20s " PRINTF_PTR, fname, (uintptr_t)ip);
-
-			/* Print function offset if information is available. */
-			if (dl_valid && dli.dli_sname != nullptr && dli.dli_saddr != nullptr) {
-				/* Try to demangle a possible C++ symbol. */
-				int status = -1;
-				char *func_name = abi::__cxa_demangle(dli.dli_sname, nullptr, 0, &status);
-
-				long int offset = (intptr_t)ip - (intptr_t)dli.dli_saddr;
-				buffer += seprintf(buffer, last, " (%s + %ld)", func_name != nullptr ? func_name : dli.dli_sname, offset);
-
-				free(func_name);
-			}
-			buffer += seprintf(buffer, last, "\n");
-		};
-
-#if defined(__ppc__) || defined(__ppc64__)
-		/* Apple says __builtin_frame_address can be broken on PPC. */
-		__asm__ volatile("mr %0, r1" : "=r" (frame));
-#else
-		frame = (void **)__builtin_frame_address(0);
-#endif
-
-		for (; frame != nullptr && i < MAX_STACK_FRAMES; i++) {
-			auto guard = scope_guard([&]() {
-				this->CrashLogFaultSectionCheckpoint(buffer);
-			});
-
-			/* Get IP for current stack frame. */
-#if defined(__ppc__) || defined(__ppc64__)
-			void *ip = frame[2];
-#else
-			void *ip = frame[1];
-#endif
-			if (ip == nullptr) break;
-
-			print_frame(ip);
-
-			/* Get address of next stack frame. */
-			void **next = (void **)frame[0];
-			/* Frame address not increasing or not aligned? Broken stack, exit! */
-			if (next <= frame || !IS_ALIGNED(next)) break;
-			frame = next;
+		char **messages = backtrace_symbols(trace, trace_size);
+		for (int i = 0; i < trace_size; i++) {
+			buffer += seprintf(buffer, last, "%s\n", messages[i]);
 		}
+		free(messages);
 
 		return buffer + seprintf(buffer, last, "\n");
 	}

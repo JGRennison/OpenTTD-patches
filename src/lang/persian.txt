@@ -1358,9 +1358,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :خاموش
 
 ###length 3
 
-STR_CONFIG_SETTING_AUTOSAVE                                     :ذخیره خودکار: {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :انتخاب فاصله زمانی بین ذخیره کردن های خودکار
-
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :از این {STRING} برای نام فایل‌های ذخیره استفاده کن
 ###length 3
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_LONG               :طولانی (31st Dec 2008)
@@ -2068,7 +2065,6 @@ STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}فعال
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}فعال/غیر فعال کردن شفافیت برای پل ها. کنترل+کلیک برای قفل کردن
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}فعال/غیر فعال کردن شفافیت برای دستگاه ها نظیر فانوس دریایی و آنتن ها.کنترل+کلیک برای قفل کردن
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}فعال/غیر فعال کردن شفافیت برای جاده ها و ریل ها.کنترل+کلیک برای قفل کردن
-STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}فعال/غیر فعال کردن شفافیت برای نشانه پر و خالی شدن بار. کنترل+کلیک برای قفل کردن
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}اشیاء به جای شفاف، نامرئی شوند
 
 # Linkgraph legend window

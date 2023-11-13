@@ -1439,9 +1439,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Av
 
 ###length 3
 
-STR_CONFIG_SETTING_AUTOSAVE                                     :Autolaging: {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Vel intervall for automatisk lagring av spel
-
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Bruk {STRING} datoformat for namning av lagra spel
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :Datoformat i namning av lagra spel
 ###length 3
@@ -2265,7 +2262,6 @@ STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}Byt gjen
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Byt gjennomsyn for bruer. Ctrl+klikk for å låsa.
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}Byt gjennomsyn for bygningar, som fyrtårn og antenner. Ctrl+klikk for å låsa.
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Byt gjennomsyn for kjeder. Ctrl+klikk for å låsa.
-STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Byt gjennomsyn for lasteindikatorar. Ctrl+klikk for å låsa.
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Gjer objekter usynlege istanden for gjennomsiktige
 
 # Linkgraph legend window

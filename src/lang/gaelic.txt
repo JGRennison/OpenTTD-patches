@@ -1680,9 +1680,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Dùin an uinnea
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Dùinidh seo uinneag le briogadh deas ’na broinn. Cuiridh e à comas an gliocas-sgrìn le briogadh deas!
 ###length 3
 
-STR_CONFIG_SETTING_AUTOSAVE                                     :Fèin-sàbhaladh: {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Tagh dè cho tric ’s a thèid geamannan a shàbhaladh gu fèin-obrachail
-
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Fòrmat cinn-latha {STRING} airson ainmean nan geamannan air an sàbhaladh
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :Fòrmat a' chinn-latha ann an ainmean faidhle nan geamannan air an sàbhaladh
 ###length 3
@@ -2546,7 +2543,6 @@ STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}Toglaich
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Toglaich trìd-shoilleireachd nan drochaidean. Ctrl+Briogadh airson glasadh
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}Toglaich trìd-shoilleireachd nan structaran a leithid thaighean-solais is tùir chraobh-sgaoilidh. Ctrl+Briogadh airson glasadh
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Toglaich trìd-shoilleireachd nan càballan-rèile. Ctrl+Briogadh airson glasadh
-STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Toglaich trìd-shoillearachd nan comharraidhean luchdaidh. Ctrl+Briogadh airson glasadh
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Falaich nithean an àite an dèanamh trìd-shoilleir
 
 # Linkgraph legend window

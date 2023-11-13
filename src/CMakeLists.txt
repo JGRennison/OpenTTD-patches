@@ -442,7 +442,6 @@ add_files(
     story_base.h
     story_gui.cpp
     story_type.h
-    strgen/strgen.h
     string.cpp
     string_base.h
     string_extra.cpp

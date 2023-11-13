@@ -9,6 +9,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Οχήματα
 STR_VEHICLE_TYPE_SHIPS                                          :Πλοία
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Αεροσκάφη
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Αυτόματο σώσιμο: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Επιλέξτε το διάστημα ανάμεσα σε δυο διαδοχικά σωσίματα του παιχνιδιου
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Εναλλαγή διαφάνειας για τις ενδείξεις φόρτωσης. Ctrl+Κλικ για να την κλειδώσετε
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

@@ -42,11 +42,9 @@
  * does not have stdint.h.
  * For OSX the inclusion is already done in osx_stdafx.h. */
 #if !defined(__APPLE__) && (!defined(_MSC_VER) || _MSC_VER >= 1600)
-#	if !defined(SUNOS)
-#		define __STDC_LIMIT_MACROS
-#		define __STDC_FORMAT_MACROS
-#		include <stdint.h>
-#	endif
+#	define __STDC_LIMIT_MACROS
+#	define __STDC_FORMAT_MACROS
+#	include <stdint.h>
 #endif
 
 #include <algorithm>
@@ -65,7 +63,7 @@
 #	include <sys/types.h>
 #endif
 
-#if defined(SUNOS) || defined(HPUX) || defined(__CYGWIN__)
+#if defined(__CYGWIN__)
 #	include <alloca.h>
 #endif
 

@@ -83,4 +83,28 @@ static inline std::pair<Date, uint16> ScaledDateTicksToDateAndFullSubTicks(DateT
 	return std::make_pair<Date, uint16>(ticks / full_date, ticks % full_date);
 }
 
+/**
+ * Calculate the year of a given date.
+ * @param date The date to consider.
+ * @return the year.
+ */
+static constexpr Year DateToYear(Date date)
+{
+	return date / DAYS_IN_LEAP_YEAR;
+}
+
+/**
+ * Calculate the date of the first day of a given year.
+ * @param year the year to get the first day of.
+ * @return the date.
+ */
+static constexpr Date DateAtStartOfYear(Year year)
+{
+	int32 year_as_int = year;
+	uint number_of_leap_years = (year == 0) ? 0 : ((year_as_int - 1) / 4 - (year_as_int - 1) / 100 + (year_as_int - 1) / 400 + 1);
+
+	/* Hardcode the number of days in a year because we can't access CalendarTime from here. */
+	return (365 * year_as_int) + number_of_leap_years;
+}
+
 #endif /* DATE_FUNC_H */

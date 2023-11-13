@@ -10,6 +10,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Automobiliai
 STR_VEHICLE_TYPE_SHIPS                                          :Laivai
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Lėktuvai
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Automatinis saugojimas: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Laiko tarpsnis tarp automatinių žaidimo išsaugojimų
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Perjungti krovos indikatorių skaidrumą. Spragtelėjus laikant nuspaustą Ctrl klavišą, nuostata bus užrakinta
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

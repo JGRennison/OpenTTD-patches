@@ -10,6 +10,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :عربات
 STR_VEHICLE_TYPE_SHIPS                                          :سفن
 STR_VEHICLE_TYPE_AIRCRAFT                                       :طائرات
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :حفظ تلقائي : {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :اختر الوقت بين كل عملية حفظ اتوماتيكية
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}غير الشفافية لنسبة التحميل. مفتاح كنترول للاغلاق.
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

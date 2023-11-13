@@ -7,6 +7,9 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :சாலை �
 STR_VEHICLE_TYPE_SHIPS                                          :கப்பல்கள்
 STR_VEHICLE_TYPE_AIRCRAFT                                       :விமானங்கள்
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :தானியங்கிபதிவு: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :தானியங்கி விளையாட்டு சேமிப்புகளுக்கு இடையில் இடைவெளியைத் தேர்ந்தெடுக்கவும்
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

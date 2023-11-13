@@ -1692,9 +1692,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Zavírat okno k
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Zavírat okno kliknutím pravým tlačítkem na něj. Znemožňuje využívat nápovědu zobrazující se při stisknutí pravého tlačítka myši!
 ###length 3
 
-STR_CONFIG_SETTING_AUTOSAVE                                     :Automaticky ukládat: {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Zvol frekvenci automatického ukládání
-
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Pro jméno uložené hry použít {STRING} formát
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :Formát data v názvu uložené hry
 ###length 3
@@ -2689,7 +2686,6 @@ STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}Změna p
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Změna průhlednosti mostů. Nastavení se zamkne Ctrl+kliknutím
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}Změna průhlednosti staveb jako majáků a vysílačů. Nastavení se zamkne Ctrl+kliknutím
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Změna průhlednosti elektrifikace. Nastavení se zamkne Ctrl+kliknutím
-STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Přepnout zobrazení ukazatelů naložení. Nastavení se zamkne Ctrl+kliknutím
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Objekty budou neviditelné, ne průhledné
 
 # Linkgraph legend window

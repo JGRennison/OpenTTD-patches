@@ -9,6 +9,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Vehicula Viaria
 STR_VEHICLE_TYPE_SHIPS                                          :Naves
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Aeroplana
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Servare automatice: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Eligere crebritatem automatice ludum servandi
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Mutare perluciditatem signorum onerandi. Ctrl+Preme ut figatur (non mutabitur globulo perluciditatem mutandi presso)
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

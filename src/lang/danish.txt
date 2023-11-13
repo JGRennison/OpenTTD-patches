@@ -1383,7 +1383,7 @@ STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT                           :Nye ordrer er '
 STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT_HELPTEXT                  :Normalt vil et køretøj stoppe ved hver station den passerer. Ved at aktivere denne indstilling, vil det passere alle stationer på vej til sin endelige destination uden at stoppe. Bemærk, at denne indstilling kun definerer en standardværdi for nye ordrer. Individuelle ordrer kan indstilles udtrykkeligt til en specific adfærd alligevel
 
 STR_CONFIG_SETTING_STOP_LOCATION                                :Nye togordrer stopper som standard ved {STRING} af perronen
-STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :Stedet hvor et tog vil standse ved perronen som standard. Den "nærmeste ende" forstås tæt på indgangen, 'midten' betyder i midten af platformen, og "fjerneste ende" forstås længest væk fra indgang. Bemærk, at denne indstilling kun definerer en standardværdi for nye ordrer. Individuelle ordrer kan indstilles udtrykkeligt til anden adfærd alligevel
+STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :Der hvor et tog vil standse ved perronen som standard. Den "nærmeste ende" forstås tæt på indgangen, 'midten' betyder i midten af platformen, og "fjerneste ende" forstås længest væk fra indgang. Bemærk, at denne indstilling kun definerer en standardværdi for nye ordrer. Individuelle ordrer kan indstilles udtrykkeligt til anden adfærd alligevel
 ###length 3
 STR_CONFIG_SETTING_STOP_LOCATION_NEAR_END                       :den nærmeste ende
 STR_CONFIG_SETTING_STOP_LOCATION_MIDDLE                         :midten
@@ -1645,9 +1645,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Lukker vinduet 
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_NO                     :Nej
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_YES                    :Ja
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_YES_EXCEPT_STICKY      :Ja, undtagen klistret
-
-STR_CONFIG_SETTING_AUTOSAVE                                     :Auto gem: {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Vælg interval mellem automatisk gemte spil
 
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Brug {STRING} datoformat til navne på gemte spil.
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :Formatet af datoen i gemte spil filnavne
@@ -2653,7 +2650,7 @@ STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}Skift ge
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Skift gennemsigtighed for broer. CTRL+Klik for at låse værdi.
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}Skift gennemsigtighed for strukturer som fyrtårne og antenner. CTRL+Klik for at låse værdi.
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Slå transparens til/fra for køreledninger. CTRL+klik for at låse.
-STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Slå gennemsigtighed til/fra for laste-indikatorer. CTRL+Klik for at låse værdi.
+STR_TRANSPARENT_TEXT_TOOLTIP                                    :{BLACK}Skift gennemsigtighed for indlæsning og pris/indtægtstekst. Ctrl+klik for at låse
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Gør objekter usynlige i stedet for gennemsigtige
 
 # Linkgraph legend window

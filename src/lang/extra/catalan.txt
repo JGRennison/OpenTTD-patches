@@ -10,6 +10,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Automòbils
 STR_VEHICLE_TYPE_SHIPS                                          :Vaixells
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Avions
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Desada automàtica: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Selecciona l'interval entre desades automàtiques de les partides.
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Commuta la transparència dels indicadors de càrrega. Ctrl+Clic per bloquejar
+
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Temps de viatge mitjà: {STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Capacitat: {CARGO_LONG}
 

@@ -9,6 +9,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Аўтатра�
 STR_VEHICLE_TYPE_SHIPS                                          :Караблі
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Авіятранспарт
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Аўтазахаваньні: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Азначце інтэрвал паміж аўтаматычнымі захаваньнямі
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Пераключыць празрыстасьць для індыкатараў загрузкі. Ctrl+клік — заблякаваць.
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

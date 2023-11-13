@@ -9,6 +9,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :公車／貨車
 STR_VEHICLE_TYPE_SHIPS                                          :船舶
 STR_VEHICLE_TYPE_AIRCRAFT                                       :飛機
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :自動儲存：{STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :選擇自動存檔的週期。
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}切換裝載進度指示是否透明。按住 CTRL 點選可鎖定
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

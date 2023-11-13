@@ -71,9 +71,10 @@ class CrashLogWindows : public CrashLog {
 
 	char *LogOSVersion(char *buffer, const char *last) const override;
 	char *LogError(char *buffer, const char *last, const char *message) const override;
+#if defined(_MSC_VER) || defined(WITH_DBGHELP)
 	char *LogStacktrace(char *buffer, const char *last) const override;
+#endif /* _MSC_VER || WITH_DBGHELP */
 	char *LogRegisters(char *buffer, const char *last) const override;
-	char *LogModules(char *buffer, const char *last) const override;
 
 protected:
 	char *TryCrashLogFaultSection(char *buffer, const char *last, const char *section_name, CrashLogSectionWriter writer) override;
@@ -83,19 +84,9 @@ public:
 #if defined(_MSC_VER)
 	int WriteCrashDump(char *filename, const char *filename_last) const override;
 #endif /* _MSC_VER */
-#if defined(_MSC_VER) || defined(WITH_DBGHELP)
-	char *AppendDecodedStacktrace(char *buffer, const char *last) const;
-#endif /* _MSC_VER || WITH_DBGHELP */
-
 
 	/** Buffer for the generated crash log */
 	char crashlog[65536 * 4];
-	/** Buffer for the filename of the crash log */
-	char crashlog_filename[MAX_PATH];
-	/** Buffer for the filename of the crash dump */
-	char crashdump_filename[MAX_PATH];
-	/** Buffer for the filename of the crash screenshot */
-	char screenshot_filename[MAX_PATH];
 
 	/**
 	 * A crash log is always generated when it's generated.
@@ -220,114 +211,6 @@ static const char *GetAccessViolationTypeString(uint type)
 	return buffer;
 }
 
-struct DebugFileInfo {
-	uint32 size;
-	uint32 crc32;
-	SYSTEMTIME file_time;
-};
-
-static uint32 *_crc_table;
-
-static void MakeCRCTable(uint32 *table)
-{
-	uint32 crc, poly = 0xEDB88320L;
-	int i;
-	int j;
-
-	_crc_table = table;
-
-	for (i = 0; i != 256; i++) {
-		crc = i;
-		for (j = 8; j != 0; j--) {
-			crc = (crc & 1 ? (crc >> 1) ^ poly : crc >> 1);
-		}
-		table[i] = crc;
-	}
-}
-
-static uint32 CalcCRC(byte *data, uint size, uint32 crc)
-{
-	for (; size > 0; size--) {
-		crc = ((crc >> 8) & 0x00FFFFFF) ^ _crc_table[(crc ^ *data++) & 0xFF];
-	}
-	return crc;
-}
-
-static void GetFileInfo(DebugFileInfo *dfi, const wchar_t *filename)
-{
-	HANDLE file;
-	memset(dfi, 0, sizeof(*dfi));
-
-	file = CreateFile(filename, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0, 0);
-	if (file != INVALID_HANDLE_VALUE) {
-		byte buffer[1024];
-		DWORD numread;
-		uint32 filesize = 0;
-		FILETIME write_time;
-		uint32 crc = (uint32)-1;
-
-		for (;;) {
-			if (ReadFile(file, buffer, sizeof(buffer), &numread, nullptr) == 0 || numread == 0) {
-				break;
-			}
-			filesize += numread;
-			crc = CalcCRC(buffer, numread, crc);
-		}
-		dfi->size = filesize;
-		dfi->crc32 = crc ^ (uint32)-1;
-
-		if (GetFileTime(file, nullptr, nullptr, &write_time)) {
-			FileTimeToSystemTime(&write_time, &dfi->file_time);
-		}
-		CloseHandle(file);
-	}
-}
-
-
-static char *PrintModuleInfo(char *output, const char *last, HMODULE mod)
-{
-	wchar_t buffer[MAX_PATH];
-	DebugFileInfo dfi;
-
-	GetModuleFileName(mod, buffer, MAX_PATH);
-	GetFileInfo(&dfi, buffer);
-	output += seprintf(output, last, " %-20s handle: %p size: %d crc: %.8X date: %d-%.2d-%.2d %.2d:%.2d:%.2d\n",
-		FS2OTTD(buffer).c_str(),
-		mod,
-		dfi.size,
-		dfi.crc32,
-		dfi.file_time.wYear,
-		dfi.file_time.wMonth,
-		dfi.file_time.wDay,
-		dfi.file_time.wHour,
-		dfi.file_time.wMinute,
-		dfi.file_time.wSecond
-	);
-	return output;
-}
-
-/* virtual */ char *CrashLogWindows::LogModules(char *output, const char *last) const
-{
-	MakeCRCTable(AllocaM(uint32, 256));
-	output += seprintf(output, last, "Module information:\n");
-
-	HANDLE proc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, GetCurrentProcessId());
-	if (proc != nullptr) {
-		HMODULE modules[100];
-		DWORD needed;
-		BOOL res = EnumProcessModules(proc, modules, sizeof(modules), &needed);
-		CloseHandle(proc);
-		if (res) {
-			size_t count = std::min<DWORD>(needed / sizeof(HMODULE), lengthof(modules));
-
-			for (size_t i = 0; i != count; i++) output = PrintModuleInfo(output, last, modules[i]);
-			return output + seprintf(output, last, "\n");
-		}
-	}
-	output = PrintModuleInfo(output, last, nullptr);
-	return output + seprintf(output, last, "\n");
-}
-
 /* virtual */ char *CrashLogWindows::LogRegisters(char *buffer, const char *last) const
 {
 	buffer += seprintf(buffer, last, "Registers:\n");
@@ -438,40 +321,6 @@ static char *PrintModuleInfo(char *output, const char *last, HMODULE mod)
 	return buffer + seprintf(buffer, last, "\n\n");
 }
 
-/* virtual */ char *CrashLogWindows::LogStacktrace(char *buffer, const char *last) const
-{
-#if defined(_MSC_VER) || defined(WITH_DBGHELP)
-	char *stacktrace_end = this->AppendDecodedStacktrace(buffer, last);
-	if (stacktrace_end - buffer >= 32) {
-		/* If AppendDecodedStacktrace managed to write out anything more than just the section title,
-		 * consider that a success and don't bother writing out the raw stack trace values as well.
-		 * The raw values are useless in almost all cases. */
-		return stacktrace_end;
-	}
-#endif
-
-	buffer += seprintf(buffer, last, "Stack trace:\n");
-#ifdef _M_AMD64
-	uint32 *b = (uint32*)ep->ContextRecord->Rsp;
-#elif defined(_M_IX86)
-	uint32 *b = (uint32*)ep->ContextRecord->Esp;
-#elif defined(_M_ARM64)
-	uint32 *b = (uint32*)ep->ContextRecord->Sp;
-#endif
-	for (int j = 0; j != 24; j++) {
-		for (int i = 0; i != 8; i++) {
-			if (IsBadReadPtr(b, sizeof(uint32))) {
-				buffer += seprintf(buffer, last, " ????????"); // OCR: WAS - , 0);
-			} else {
-				buffer += seprintf(buffer, last, " %.8X", *b);
-			}
-			b++;
-		}
-		buffer += seprintf(buffer, last, "\n");
-	}
-	return buffer + seprintf(buffer, last, "\n");
-}
-
 #if defined(_MSC_VER) || defined(WITH_DBGHELP)
 static const uint MAX_SYMBOL_LEN = 512;
 static const uint MAX_FRAMES     = 64;
@@ -483,7 +332,7 @@ static const uint MAX_FRAMES     = 64;
 #pragma warning(default:4091)
 #endif
 
-char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) const
+/* virtual */ char *CrashLogWindows::LogStacktrace(char *buffer, const char *last) const
 {
 #define M(x) x "\0"
 	static const char dbg_import[] =
@@ -796,8 +645,6 @@ thread_local void *_safe_esp = nullptr;
 
 static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 {
-	CrashLog::RegisterCrashed();
-
 	/* Restore system timer resolution. */
 	timeEndPeriod(1);
 
@@ -818,22 +665,9 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 		ImmediateExitProcess(3);
 	}
 
-	VideoDriver::EmergencyAcquireGameLock(1000, 5);
-
 	CrashLogWindows *log = new CrashLogWindows(ep);
 	CrashLogWindows::current = log;
-	char *name_buffer_date = log->name_buffer + seprintf(log->name_buffer, lastof(log->name_buffer), "crash-");
-	UTCTime::Format(name_buffer_date, lastof(log->name_buffer), "%Y%m%dT%H%M%SZ");
-
-	log->WriteCrashLog("", log->crashlog_filename, lastof(log->crashlog_filename), log->name_buffer, &(log->crash_file));
-	log->crash_buffer_write = log->crashlog;
-	log->FillCrashLog(log->crashlog, lastof(log->crashlog));
-	log->CloseCrashLogFile();
-
-	log->WriteCrashDump(log->crashdump_filename, lastof(log->crashdump_filename));
-	SetScreenshotAuxiliaryText("Crash Log", log->crashlog);
-	log->WriteScreenshot(log->screenshot_filename, lastof(log->screenshot_filename), log->name_buffer);
-	log->SendSurvey();
+	log->MakeCrashLog(log->crashlog, lastof(log->crashlog));
 
 	/* Close any possible log files */
 	CloseConsoleLogIfActive();
@@ -973,13 +807,7 @@ static const TCHAR _crash_desc[] =
 	L"Please send the crash information (log files and crash saves, if any) to the patchpack developer.\n"
 	L"This will greatly help debugging. The correct place to do this is https://www.tt-forums.net/viewtopic.php?f=33&t=73469"
 	L" or https://github.com/JGRennison/OpenTTD-patches\n"
-	L"The information contained in the report is displayed below.\n"
-	L"Press \"Emergency save\" to attempt saving the game. Generated file(s):\n";
-
-static const wchar_t _save_succeeded[] =
-	L"Emergency save succeeded.\nIts location is '%s'.\n"
-	L"Be aware that critical parts of the internal game state may have become "
-	L"corrupted. The saved game is not guaranteed to work.";
+	L"The information contained in the report is displayed below.\n";
 
 static const wchar_t * const _expand_texts[] = {L"S&how report >>", L"&Hide report <<" };
 
@@ -1041,7 +869,7 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 			}
 			*p = '\0';
 
-			/* Add path to crash.log and crash.dmp (if any) to the crash window text */
+			/* Add path to all files to the crash window text */
 			const wchar_t * const crash_desc_buf_last = crash_desc_buf + crash_desc_buf_length - 1;
 			wcsncpy_s(crash_desc_buf, crash_desc_buf_length, _crash_desc, _TRUNCATE);
 			wchar_t *desc = crash_desc_buf + wcslen(crash_desc_buf);
@@ -1063,6 +891,10 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 				append_newline();
 				append_str(CrashLogWindows::current->crashdump_filename);
 			}
+			if (CrashLogWindows::current->savegame_filename[0] != 0) {
+				append_newline();
+				append_str(CrashLogWindows::current->savegame_filename);
+			}
 			if (CrashLogWindows::current->screenshot_filename[0] != 0) {
 				append_newline();
 				append_str(CrashLogWindows::current->screenshot_filename);
@@ -1078,23 +910,6 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 				case 12: // Close
 					CrashLog::AfterCrashLogCleanup();
 					ImmediateExitProcess(2);
-				case 13: // Emergency save
-					_savegame_DBGL_data = CrashLogWindows::current->crashlog;
-					_save_DBGC_data = true;
-					wchar_t filenamebuf[MAX_PATH * 2];
-					char filename[MAX_PATH];
-					if (CrashLogWindows::current->WriteSavegame(filename, lastof(filename), CrashLogWindows::current->name_buffer)) {
-						convert_to_fs(filename, filenamebuf, lengthof(filenamebuf));
-						size_t len = lengthof(_save_succeeded) + wcslen(filenamebuf) + 1;
-						wchar_t *text = AllocaM(wchar_t, len);
-						_snwprintf(text, len, _save_succeeded, filenamebuf);
-						MessageBox(wnd, text, L"Save successful", MB_ICONINFORMATION);
-					} else {
-						MessageBox(wnd, L"Save failed", L"Save failed", MB_ICONINFORMATION);
-					}
-					_savegame_DBGL_data = nullptr;
-					_save_DBGC_data = false;
-					break;
 				case 15: // Expand window to show crash-message
 					_expanded = !_expanded;
 					SetWndSize(wnd, _expanded);

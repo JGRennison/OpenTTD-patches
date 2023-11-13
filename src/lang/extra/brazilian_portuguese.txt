@@ -10,6 +10,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Automóveis
 STR_VEHICLE_TYPE_SHIPS                                          :Embarcações
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Aeronaves
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Auto-salvar: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Selecione intervalo entre jogos salvos automaticamente
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Altera transparência para os indicadores de carga. Ctrl+Clique para travar
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

@@ -10,6 +10,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Cestné vozidl�
 STR_VEHICLE_TYPE_SHIPS                                          :Lode
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Lietadlá
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Automatické ukladanie: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Vyberte interval pre automatické ukladanie hry
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Prepnúť priehľadnosť ukazateľov nakladania. Ctrl+klik uzamkne nastavenie
+
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Priemerný čas cesty: {STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Kapacita: {CARGO_LONG}
 

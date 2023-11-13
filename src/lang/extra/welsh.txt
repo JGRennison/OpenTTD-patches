@@ -9,6 +9,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Cerbydau Ffordd
 STR_VEHICLE_TYPE_SHIPS                                          :Llongau
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Awyrennau
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Awtogadw: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Dewis pa mor aml y dylid awtogadw gemau
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Toglu tryloywder ar gyfer dangosyddion llwytho. Ctrl+Clic i gloi
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

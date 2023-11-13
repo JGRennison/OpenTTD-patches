@@ -10,6 +10,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Авто
 STR_VEHICLE_TYPE_SHIPS                                          :Кораблі
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Авіація
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Автозбереження: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Оберіть проміжок між автоматичними збереженнями гри
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Змінити прозорість індикаторів завантаження. Утримуйте Ctrl, щоб заблокувати
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

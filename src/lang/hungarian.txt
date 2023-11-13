@@ -1679,9 +1679,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Ablakok bezár�
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :A jobb gombbal való kattintás az ablak területén bezárja az ablakot. Ez a beállítás kikapcsolja a segédletek jobb gombbal való megjelenítését!
 ###length 3
 
-STR_CONFIG_SETTING_AUTOSAVE                                     :Automatikus mentés: {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Az automatikus mentések között eltelő idő
-
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Játékmentés dátumformátuma: {STRING}
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :A játékmentésekben használt dátum formátuma
 ###length 3
@@ -2677,7 +2674,6 @@ STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}Építhe
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Hidak átlátszóságának bekapcsolása. Ctrl+kattintással zárolható
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}Tereptárgyak (adótornyok, világítótornyok stb.) átlátszóságának bekapcsolása. Ctrl+kattintással zárolható
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Felsővezetékek átlátszóságának bekapcsolása. Ctrl+kattintással zárolható
-STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Átlátszó rakodásjelző bekapcsolása. Ctrl+kattintással zárolható
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Az objektum ne átlátszó legyen, hanem láthatatlan
 
 # Linkgraph legend window

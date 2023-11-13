@@ -10,6 +10,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Drumska vozila
 STR_VEHICLE_TYPE_SHIPS                                          :Brodovi
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Letelice
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Autočuvanje: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Odabir vremenskog intervala između dve automatski sačuvane igre
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Promena prozirnosti pokazatelja utovara. Sa Ctrl+klik se zaključava
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

@@ -9,6 +9,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :سڑک کی گ�
 STR_VEHICLE_TYPE_SHIPS                                          :کشتیاں
 STR_VEHICLE_TYPE_AIRCRAFT                                       :ہوایی جہاز
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Autosave: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :گیم بچانے کا وقفا چنیں
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}لوڈ کرنے کے نشانوں کی شفافیت کی تدویم کریں۔ محدوظ کرنے کے لئے Ctrl+Click دبائیں
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

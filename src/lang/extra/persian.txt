@@ -9,6 +9,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :ماشین ها
 STR_VEHICLE_TYPE_SHIPS                                          :کشتی ها
 STR_VEHICLE_TYPE_AIRCRAFT                                       :هواپیما
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :ذخیره خودکار: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :انتخاب فاصله زمانی بین ذخیره کردن های خودکار
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}فعال/غیر فعال کردن شفافیت برای نشانه پر و خالی شدن بار. کنترل+کلیک برای قفل کردن
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

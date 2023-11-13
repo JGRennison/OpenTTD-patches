@@ -1597,9 +1597,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Aizvērt logu a
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Labais klikšķis logā aizver logu. Izslēdz paskaidres parādīšanu ar labo klikšķi!
 ###length 3
 
-STR_CONFIG_SETTING_AUTOSAVE                                     :Automātiskā saglabāšana: {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Izvēlēties spēles automātiskās saglabāšanas starplaikus
-
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Lietot {STRING} datuma formātu saglabāto spēļu nosaukumos
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :Datuma formāts spēļu saglabājuma failu nosaukumos
 ###length 3
@@ -2591,7 +2588,6 @@ STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}Pārslē
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Pārslēgt tiltu caurspīdību. Ctrl+klikšķis, lai slēgtu
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}Pārslēgt caurspīdību tādām celtnēm kā bākas un antenas. Ctrl+klikšķis, lai slēgtu
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Pārslēgt piekartroses caurspīdību. Ctrl+klikšķis, lai slēgtu
-STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Pārslēgt piekraušanas rādītāju caurspīdību. Ctrl+klikšķis, lai slēgtu
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Caurspīdības vietā objektus padarīt neredzamus
 
 # Linkgraph legend window

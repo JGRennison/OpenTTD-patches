@@ -1678,9 +1678,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Claudere fenest
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Facit ut globulus muris dexter fenestras claudat. Cave: hac electa, non apparent nuntia adiuvantia globulo dextro.
 ###length 3
 
-STR_CONFIG_SETTING_AUTOSAVE                                     :Servare automatice: {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Eligere crebritatem automatice ludum servandi
-
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Forma {STRING} diei adhibenda in nominibus ludorum servatorum
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :Forma diei in nominibus ludorum servatorum
 ###length 3
@@ -2558,7 +2555,6 @@ STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}Mutare p
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Mutare perluciditatem pontium. Ctrl+Preme ut figatur (non mutabitur globulo perluciditatem mutandi presso)
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}Mutare perluciditatem ornamentorum sicut phari et emissoria. Ctrl+Preme ut figatur (non mutabitur globulo perluciditatem mutandi presso)
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Mutare perluciditatem catenariae. Ctrl+Preme ut figatur (non mutabitur globulo perluciditatem mutandi presso)
-STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Mutare perluciditatem signorum onerandi. Ctrl+Preme ut figatur (non mutabitur globulo perluciditatem mutandi presso)
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Facere ut res invisibles sint, non tantum perlucidae
 
 # Linkgraph legend window

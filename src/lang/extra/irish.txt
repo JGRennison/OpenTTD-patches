@@ -9,6 +9,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Feithiclí Bói
 STR_VEHICLE_TYPE_SHIPS                                          :Longa
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Aerárthaigh
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Uathshábháil: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Roghnaigh an t-eatramh idir uathshábhálacha cluichí
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Scoránaigh trédhearcacht do tháscairí lódála. Ctrl+Cliceáil le glasáil.
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

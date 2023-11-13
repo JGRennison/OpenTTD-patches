@@ -9,6 +9,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :כלי רכב
 STR_VEHICLE_TYPE_SHIPS                                          :כלי שייט
 STR_VEHICLE_TYPE_AIRCRAFT                                       :כלי טייס
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :שמירה אוטומטית: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :בחר פרק זמן בין שמירות אוטומטיות
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}שנה שקיפות עבור מצביעי הטענה. Ctrl+לחיצה לנעילה
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

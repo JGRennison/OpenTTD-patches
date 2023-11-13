@@ -10,6 +10,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Ajoneuvot
 STR_VEHICLE_TYPE_SHIPS                                          :Laivat
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Ilma-alukset
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Automaattitallennus: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Valitse aikaväli automaattisille pelitallennuksille
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Muuta lastausilmaisimien läpinäkyvyyttä. Ctrl+napsautus lukitsee.
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

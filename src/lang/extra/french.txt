@@ -10,6 +10,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Véhicules rout
 STR_VEHICLE_TYPE_SHIPS                                          :Navires
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Aéronefs
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Sauvegarde automatique{NBSP}: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Sélectionner l'intervalle de temps entre les sauvegardes automatiques
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Transparence des indicateurs de chargement.{}Ctrl-clic pour verrouiller.
+
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Temps de trajet moyen{NBSP}: {STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Capacité{NBSP}: {CARGO_LONG}
 

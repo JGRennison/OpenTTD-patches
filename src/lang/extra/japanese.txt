@@ -11,10 +11,15 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :自動車
 STR_VEHICLE_TYPE_SHIPS                                          :船舶
 STR_VEHICLE_TYPE_AIRCRAFT                                       :航空機
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :オートセーブ: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :オートセーブの間隔を設定します
+
 STR_CONFIG_SETTING_INTERFACE_DEPARTUREBOARDS                    :{ORANGE}発車標
 STR_CONFIG_SETTING_INTERFACE_WALLCLOCK                          :{ORANGE}時刻
 STR_CONFIG_SETTING_INTERFACE_TIMETABLE                          :{ORANGE}ダイヤ
 STR_CONFIG_SETTING_INTERFACE_ADV_SIGNALS                        :{ORANGE}信号
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}積み降ろしインジケーターの透過表示を切り替えます。{}Ctrl+クリックでロックします
 
 # Tracerestrict GUI
 

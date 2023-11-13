@@ -9,6 +9,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Cestovna vozila
 STR_VEHICLE_TYPE_SHIPS                                          :Brodovi
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Zrakoplov
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Automatsko snimanje: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Odaberite interval između automatskog snimanja igre
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Namjesti prozirnost za indikatore učitavanja. Ctrl+klik za zaključavanje
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

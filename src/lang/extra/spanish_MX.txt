@@ -10,6 +10,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Vehículos de c
 STR_VEHICLE_TYPE_SHIPS                                          :Barcos
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Aeronaves
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Guardado automático: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Intervalo entre guardados automáticos de la partida
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Transparencia de indicadores de embarque. Ctrl+Clic para bloquear
+
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Tiempo promedio de viaje: {STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Capacidad: {CARGO_LONG}
 

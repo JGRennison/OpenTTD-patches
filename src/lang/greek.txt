@@ -1699,9 +1699,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Κλείσιμ�
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Κλείνει το παράθυρο με δεξί πάτημα μέσα του. Απενεργοποιεί την ανάδυση επεξηγήσεων με το δεξί κουμπί!
 ###length 3
 
-STR_CONFIG_SETTING_AUTOSAVE                                     :Αυτόματο σώσιμο: {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Επιλέξτε το διάστημα ανάμεσα σε δυο διαδοχικά σωσίματα του παιχνιδιου
-
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Χρήση της {STRING} ημερολογιακής μορφής στα ονόματα αποθηκευμένων παιχνιδιών
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :Μορφή της ημερομηνίας στα αρχεία αποθήκευσης παιχνιδιών
 ###length 3
@@ -2691,7 +2688,6 @@ STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}Εναλ
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Εναλλαγή διαφάνειας για γέφυρες. Ctrl+Κλικ για να την κλειδώσετε
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}Εναλλαγή διαφάνειας για κτίρια όπως φάρους και κεραίες. Ctrl+Κλικ για να την κλειδώσετε
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Εναλλαγή διαφάνειας για τις συνδέσεις. Ctrl+Κλικ για να την κλειδώσετε
-STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Εναλλαγή διαφάνειας για τις ενδείξεις φόρτωσης. Ctrl+Κλικ για να την κλειδώσετε
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Επιλέξτε τα αντικείμενα που θα είναι αόρατα αντί για διάφανα
 
 # Linkgraph legend window

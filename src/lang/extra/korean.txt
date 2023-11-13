@@ -37,6 +37,8 @@ STR_ABOUT_MENU_SHOW_PICKER_TOOL                                 :선택 도구
 
 STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :보조 키 창
 
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :현실에서 매 {COMMA}분마다
+
 STR_COMMA_SEPARATOR                                             :,{SP}
 
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
@@ -92,7 +94,6 @@ STR_NEWS_VEHICLE_NO_DEPOT_ORDER                                 :{WHITE}{VEHICLE
 STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE} : 속력이 너무 빨라서 {STRING}에 멈추지 못했습니다
 
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :사용자 설정 (현실 분)
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :현실에서 매 {COMMA}분마다
 STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT                    :{WHITE}자동 저장 간격 (단위: 현실 분)
 
 STR_RIVERS_VERY_MANY                                            :{RED}매우 많이
@@ -394,6 +395,9 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :차량 경로 �
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_HELPTEXT        :차량 경로 오버레이를 보여줄 때, 그 차량의 경로 위치 사이를 어떤 선으로 그릴지를 결정합니다.
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :{COMMA} 픽셀 간격의 점선
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :실선
+
+STR_CONFIG_SETTING_AUTOSAVE                                     :자동 저장: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :게임을 자동으로 저장할 간격을 선택하세요
 
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT               :네트워크 연결이 끊어지면 자동 저장: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT_HELPTEXT      :이 설정을 켜면 서버와의 연결이 끊어졌을 때 게임을 자동으로 저장합니다.
@@ -719,6 +723,7 @@ STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {STRING} �
 STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** {1:STRING} 님에게 {2:CURRENCY_LONG}만큼의 돈을 보냈습니다
 STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION                  :{STRING} ({COMPANY})
 
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}적재율을 보여줄 지 선택합니다. 고정하려면 CTRL+클릭하세요
 STR_TRANSPARENT_TUNNELS_TOOLTIP                                 :{BLACK}터널 안의 차량의 투명도 전환. 고정하려면 CTRL+클릭하세요.
 
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}평균 운행 시간: {STRING}

@@ -9,6 +9,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Kenderaan Jalan
 STR_VEHICLE_TYPE_SHIPS                                          :Kapal
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Pesawat
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Simpanan automatik:{STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Pilih jarak waktu antara menyimpankan permainan automatik
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Teluskan penunjuk muatan atau tidak. Ctrl+Klik untuk mengunci
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

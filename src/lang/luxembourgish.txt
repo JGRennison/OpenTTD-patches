@@ -1595,9 +1595,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Fënster mat ri
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Mécht eng Fenster mat engem Rietsklick zou, wann een an d'Fënster klickt. Schalt Tooltips aus déi per Rietsklick gemet ginn!
 ###length 3
 
-STR_CONFIG_SETTING_AUTOSAVE                                     :Autospäicheren: {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Setz den Interval tëschend automateschen Späicherstänn
-
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Datumsformat fir Späichernimm: {STRING}
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :Format vum Datum am Numm vum Späicherstand
 ###length 3
@@ -2587,7 +2584,6 @@ STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}Wiesselt
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Wiesselt d'Transparenz fir d'Brécken. Ctrl+Klick fir festzesetzen
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}Wiesselt d'Transparenz fir d'Gebaier wéi d'Liichttierm oder Antennen. Ctrl+Klick fir festzesetzen
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Wiesselt d'Transparenz fir d'Catenaire. Ctrl+Klick fir festzesetzen
-STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Wiesselt d'Transparenz fir d'Luedungsindikatoren. Ctrl+Klick fir festzesetzen
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Setzt d'Objeten op onsichtbar amplaz transparent
 
 # Linkgraph legend window

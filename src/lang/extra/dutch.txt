@@ -10,6 +10,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Wegvoertuigen
 STR_VEHICLE_TYPE_SHIPS                                          :Schepen
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Vliegtuigen
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Automatisch opslaan: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Tijdsduur kiezen voor automatische spelopslag
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Transparantie voor laadpercentages aan-uit. Ctrl+klik om vast te zetten.
+
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Gemiddelde reistijd: {STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Capaciteit: {CARGO_LONG}
 

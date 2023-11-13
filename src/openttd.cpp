@@ -267,11 +267,11 @@ static void ShowHelp()
 		"  -e                  = Start Editor\n"
 		"  -g [savegame]       = Start new/save game immediately\n"
 		"  -G seed             = Set random seed\n"
-		"  -n [ip:port#company]= Join network game\n"
+		"  -n host[:port][#company]= Join network game\n"
 		"  -p password         = Password to join server\n"
 		"  -P password         = Password to join company\n"
-		"  -D [ip][:port]      = Start dedicated server\n"
-		"  -l ip[:port]        = Redirect DEBUG()\n"
+		"  -D [host][:port]    = Start dedicated server\n"
+		"  -l host[:port]      = Redirect DEBUG()\n"
 #if !defined(_WIN32)
 		"  -f                  = Fork into the background (dedicated only)\n"
 #endif
@@ -696,7 +696,7 @@ static const OptionData _options[] = {
 	 GETOPT_SHORT_VALUE('v'),
 	 GETOPT_SHORT_VALUE('b'),
 	GETOPT_SHORT_OPTVAL('D'),
-	GETOPT_SHORT_OPTVAL('n'),
+	 GETOPT_SHORT_VALUE('n'),
 	 GETOPT_SHORT_VALUE('l'),
 	 GETOPT_SHORT_VALUE('p'),
 	 GETOPT_SHORT_VALUE('P'),
@@ -777,7 +777,7 @@ int openttd_main(int argc, char *argv[])
 			break;
 		case 'f': _dedicated_forks = true; break;
 		case 'n':
-			scanner->connection_string = mgo.opt; // optional IP:port#company parameter
+			scanner->connection_string = mgo.opt; // host:port#company parameter
 			break;
 		case 'l':
 			debuglog_conn = mgo.opt;

@@ -1499,9 +1499,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Af
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Maak venster toe met regter-klik: {STRING}
 ###length 3
 
-STR_CONFIG_SETTING_AUTOSAVE                                     :Outostoor: {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Tyd tussen outomatiese spelstore
-
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Gebruik die {STRING} datum formaat vir gestoorde spel name.
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :Formaat van datum van spaar-speletjie naam
 ###length 3
@@ -2376,7 +2373,6 @@ STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}Skakel d
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Wissel deursigtigheid vir brûe. Ctrl+klik om te sluit
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}Wissel deursigtigheid vir strukture soos vuurtorings en seintorings. Ctrl+klik om te sluit
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Wissel deursigtigheid van kraglyne. Ctrl+klik om te sluit.
-STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Wissel deursigtigheid vir laai aanwysers. Ctrl+klik om te sluit
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Stel voorwerpe onsigbaar inplaas van deursigtig
 
 # Linkgraph legend window

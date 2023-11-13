@@ -33,6 +33,8 @@ STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :Sehr langsam
 
 STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Hilfstasten-Fenster
 
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :Alle {COMMA} Echtzeitminuten
+
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
@@ -78,7 +80,6 @@ STR_NEWS_VEHICLE_NO_DEPOT_ORDER                                 :{WHITE}{VEHICLE
 STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE} konnte wegen zu hoher Geschwindigkeit nicht bei {STRING} anhalten
 
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :Eigener Zeitraum (Echtzeitminuten)
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :Alle {COMMA} Echtzeitminuten
 STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT                    :{WHITE}Autosicherungsintervali in Echtzeitminuten
 
 STR_RIVERS_VERY_MANY                                            :{RED}Sehr viele
@@ -330,6 +331,9 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE              :Zeige die Fahrz
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :Zeichenstil der Fahrzeugroute: {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :gestrichelte Linie von {COMMA} Pixel{P "" n} Länge
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :durchgezogene Linie
+
+STR_CONFIG_SETTING_AUTOSAVE                                     :Autosicherung: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Intervall zwischen automatischen Speicherungen wählen
 
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT               :Autosichern bei Verbindungsabbruch: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT_HELPTEXT      :Falls aktiviert, sichern Multiplayer-Clients automatisch das Spiel, wenn die Verbindung zum Server abbricht
@@ -613,6 +617,7 @@ STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {STRING} ga
 STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** Die eigene Firma übergab {1:STRING} {2:CURRENCY_LONG}
 STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION                  :{STRING} ({COMPANY})
 
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Transparenz für Ladestandsanzeige einstellen. Strg+Klick, um Umschalten zu verhindern bzw. wieder zu erlauben
 STR_TRANSPARENT_TUNNELS_TOOLTIP                                 :{BLACK}Transparenz für Fahrzeuge innerhalb von Tunneln einstellen. Strg+Klick, um Umschalten zu verhindern bzw. wieder zu erlauben.
 
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Durchschnittliche Reisezeit: {STRING}

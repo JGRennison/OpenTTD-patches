@@ -37,6 +37,8 @@ STR_ABOUT_MENU_SHOW_PICKER_TOOL                                 :Nástroj výbě
 
 STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Okno modifikačních kláves
 
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :Každých {COMMA} minut skutečného času
+
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
@@ -90,7 +92,6 @@ STR_NEWS_VEHICLE_NO_DEPOT_ORDER                                 :{WHITE}{VEHICLE
 STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE} nezvládl zastavit v {STRING} kvůli nepřiměřené rychlosti
 
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :Vlastní interval (minuty skutečného času)
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :Každých {COMMA} minut skutečného času
 STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT                    :{WHITE}Interval automatického ukládání v minutách skutečného času
 
 STR_RIVERS_VERY_MANY                                            :{RED}Velice mnoho
@@ -382,6 +383,9 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :Styl vykreslen�
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_HELPTEXT        :Upravuje způsob, jímž se budou vykreslovat čáry mezi polohami jednotlivých příkazů vozidla.
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :přerušovaná čára široká {COMMA} pixel{P "" y ů}
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :plné čáry
+
+STR_CONFIG_SETTING_AUTOSAVE                                     :Automaticky ukládat: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Zvol frekvenci automatického ukládání
 
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT               :Automaticky uložit hru při ztrátě spojení: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT_HELPTEXT      :Pokud je zapnuto, hra se při ztrátě síťového spojení k serveru automaticky uloží
@@ -701,6 +705,7 @@ STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {STRING} po
 STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** Poslal(a) jsi {1:STRING} {2:CURRENCY_LONG}
 STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION                  :{STRING} ({COMPANY})
 
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Přepnout zobrazení ukazatelů naložení. Nastavení se zamkne Ctrl+kliknutím
 STR_TRANSPARENT_TUNNELS_TOOLTIP                                 :{BLACK}Změna průhlednosti vozidel v tunelech. Nastavení se zamkne Ctrl+kliknutím
 
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Průměrný cestovní čas: {STRING}

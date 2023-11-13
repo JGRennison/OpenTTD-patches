@@ -1782,9 +1782,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Užverti langą
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Užveria langą dešiniuoju pelės klavišu spustelėjus ant jo. Išjungia patarimą dešiniuoju pelės klavišu spustelėjimu!
 ###length 3
 
-STR_CONFIG_SETTING_AUTOSAVE                                     :Automatinis saugojimas: {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Laiko tarpsnis tarp automatinių žaidimo išsaugojimų
-
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Išsaugant žaidimą, pavadinimuose naudoti {STRING} datos formatą
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :Datos formatas išsaugoto žaidimo failo pavadinime
 ###length 3
@@ -2758,7 +2755,6 @@ STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}Perjungt
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Perjungti tiltų skaidrumą. Spragtelėjus laikant nuspaustą Ctrl klavišą, nuostata bus užrakinta
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}Perjungti švyturių, siųstuvų ir panašių statinių skaidrumą. Spragtelėjus laikant nuspaustą Ctrl klavišą, nuostata bus užrakinta
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Perjungti laidų skaidrumą. Spragtelėjus laikant nuspaustą Ctrl klavišą, nuostata bus užrakinta
-STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Perjungti krovos indikatorių skaidrumą. Spragtelėjus laikant nuspaustą Ctrl klavišą, nuostata bus užrakinta
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Pasirinkti tarp skaidrių ir nematomų objektų
 
 # Linkgraph legend window

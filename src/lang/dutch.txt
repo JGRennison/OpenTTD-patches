@@ -1254,7 +1254,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_LEFT                          :Links
 STR_CONFIG_SETTING_HORIZONTAL_POS_CENTER                        :Midden
 STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Rechts
 
-STR_CONFIG_SETTING_SECONDS_VALUE                                :{COMMA}{NBSP}second{P 0 "" n}
+STR_CONFIG_SETTING_SECONDS_VALUE                                :{COMMA}{NBSP}seconde{P 0 "" n}
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Maximale beginlening: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Maximaal bedrag dat een bedrijf kan lenen (zonder rekening te houden met de inflatie)
@@ -1383,7 +1383,7 @@ STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT                           :Nieuwe orders z
 STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT_HELPTEXT                  :Normaal gesproken stopt een voertuig op elk station dat wordt gepasseerd. Wanneer je deze instelling inschakelt, passeert het alle stations op weg naar de eindbestemming zonder te stoppen. Merk op dat deze instelling alleen een standaardwaarde voor nieuwe orders bepaalt. Individuele opdrachten kunnen expliciet worden ingesteld op elk gewenst gedrag.
 
 STR_CONFIG_SETTING_STOP_LOCATION                                :Nieuwe treinorders stoppen de trein standaard {STRING} van het perron
-STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :Plaats waar een trein standaard stopt aan het perron. 'Aan het begin' betekent in de buurt van de ingang, 'In het midden' betekent in het midden van het perron, en 'Aan het einde' betekent ver weg van de ingang. Merk op dat deze instelling alleen een standaardwaarde voor nieuwe orders bepaalt. Je kunt opdrachten expliciet instellen op elk gewenst gedrag.
+STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :Plaats waar een trein standaard stopt aan het perron. 'Aan het begin' betekent in de buurt van de ingang, 'In het midden' betekent in het midden van het perron, en 'Aan het einde' betekent ver weg van de ingang. Merk op dat deze instelling alleen een standaardwaarde voor nieuwe orders bepaalt. Je kunt individuele stoplocaties per opdracht instellen door op de opdrachttekst te klikken
 ###length 3
 STR_CONFIG_SETTING_STOP_LOCATION_NEAR_END                       :aan het begin
 STR_CONFIG_SETTING_STOP_LOCATION_MIDDLE                         :in het midden
@@ -1426,7 +1426,7 @@ STR_CONFIG_SETTING_PLANE_CRASHES_NONE                           :Geen*
 STR_CONFIG_SETTING_PLANE_CRASHES_REDUCED                        :Verminderd
 STR_CONFIG_SETTING_PLANE_CRASHES_NORMAL                         :Normaal
 
-STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :Haltes plaatsen op door stad beheerde wegen toestaan: {STRING}
+STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :Doorrijhaltes op stedelijke wegen toestaan: {STRING}
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD_HELPTEXT                   :Bouwen van doorrijhaltes op stedelijke wegen toestaan
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD                      :Haltes op wegen van tegenstanders toestaan: {STRING}
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD_HELPTEXT             :Bouwen van doorrijhaltes op wegen van andere bedrijven toestaan
@@ -1645,9 +1645,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Sluit vensters 
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_NO                     :Nee
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_YES                    :Ja
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_YES_EXCEPT_STICKY      :Ja, behalve gepind
-
-STR_CONFIG_SETTING_AUTOSAVE                                     :Automatisch opslaan: {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Tijdsduur kiezen voor automatische spelopslag
 
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Datumindeling {STRING} gebruiken voor naamgeving van opgeslagen spellen
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :Datumindeling in bestandsnamen van opgeslagen spellen
@@ -1899,8 +1896,8 @@ STR_CONFIG_SETTING_ALLOW_TOWN_ROADS_HELPTEXT                    :Steden toestaan
 STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS                   :Steden mogen gelijkvloerse kruisingen bouwen: {STRING}
 STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS_HELPTEXT          :Door deze optie in te schakelen kunnen steden gelijkvloerse kruisingen bouwen
 
-STR_CONFIG_SETTING_NOISE_LEVEL                                  :Geluidsniveaucontrole door steden voor vliegvelden toestaan: {STRING}
-STR_CONFIG_SETTING_NOISE_LEVEL_HELPTEXT                         :Als je deze instelling uitschakelt, mogen er twee luchthavens per stad zijn. Als je deze instelling ingeschakelt, wordt het aantal luchthavens in een stad beperkt door de lawaaitolerantie van de stad; deze is afhankelijk van de bevolking en de grootte en afstand van de luchthaven.
+STR_CONFIG_SETTING_NOISE_LEVEL                                  :Plaatsing van vliegvelden beperken op basis van het lawaainiveau: {STRING}
+STR_CONFIG_SETTING_NOISE_LEVEL_HELPTEXT                         :Hiermee wordt het aantal luchthavens in een stad beperkt door de lawaaitolerantie van de stad; deze is afhankelijk van de bevolking en de grootte en afstand van de luchthaven. Als deze instelling is uitgeschakeld, staat de stad slechts twee luchthavens toe, tenzij de houding van het gemeentebestuur is ingesteld op 'Toegeeflijk'.
 
 STR_CONFIG_SETTING_TOWN_FOUNDING                                :Steden stichten in spel: {STRING}
 STR_CONFIG_SETTING_TOWN_FOUNDING_HELPTEXT                       :Wanneer deze instelling is ingeschakeld kunnen spelers nieuwe steden stichten tijdens het spel
@@ -2653,7 +2650,6 @@ STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}Transpar
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Transparantie voor bruggen aan-uit. Ctrl+klik om vast te zetten.
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}Transparantie voor gebouwen zoals vuurtorens en zendmasten aan-uit. Ctrl+klik om vast te zetten.
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Transparantie voor bovenleiding aan-uit. Ctrl+klik om vast te zetten.
-STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Transparantie voor laadpercentages aan-uit. Ctrl+klik om vast te zetten.
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Maak objecten onzichtbaar in plaats van transparant
 
 # Linkgraph legend window
@@ -4891,7 +4887,7 @@ STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Te veel 
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Te dicht bij een andere haven
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Te dicht bij een ander vliegveld
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Kan stationsnaam niet veranderen...
-STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... deze weg is eigendom van een plaats
+STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... weg in eigendom van een stad
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... weg is in de verkeerde richting
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... doorrij haltes kunnen geen bochten hebben
 STR_ERROR_DRIVE_THROUGH_JUNCTION                                :{WHITE}... doorrij haltes kunnen geen kruisingen hebben

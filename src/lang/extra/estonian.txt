@@ -10,6 +10,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Mootorsõidukid
 STR_VEHICLE_TYPE_SHIPS                                          :Laevad
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Õhusõidukid
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Salvestusväłp: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Vali välpsalvestuste vaheline ajavahemik
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Vaheta laadimisnäidikute läbipaistvust. Ctrl+klõps lukustab
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

@@ -5,6 +5,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Камиони/
 STR_VEHICLE_TYPE_SHIPS                                          :Кораби
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Самолети
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Автоматично запазване: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Изберете интервал между автоматично запаметяване на играта
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Вклучи прозрачност за товарещи указатели. Ctrl+Click за заключване
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

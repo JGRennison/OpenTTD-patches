@@ -10,6 +10,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Xe cộ
 STR_VEHICLE_TYPE_SHIPS                                          :Tàu thủy
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Máy bay
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Tự động save: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Chọn chu kỳ giữa mỗi lần tự động save
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Bật hiệu ứng trong suốt cho bảng báo hiệu nạp. Ctrl+Click để khoá.
+
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Thời gian đi lại trung bình: {STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Sức chứa: {CARGO_LONG}
 

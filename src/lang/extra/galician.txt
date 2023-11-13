@@ -37,6 +37,8 @@ STR_ABOUT_MENU_SHOW_PICKER_TOOL                                 :Ferramenta de s
 
 STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Fiestra da tecla modificadora
 
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :Cada {COMMA} minutos reais
+
 STR_COMMA_SEPARATOR                                             :,{SP}
 
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
@@ -92,7 +94,6 @@ STR_NEWS_VEHICLE_NO_DEPOT_ORDER                                 :{WHITE}{VEHICLE
 STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE} non puido parar en {STRING} polo exceso de velocidade
 
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :Intervalo personalizado (minutos reais)
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :Cada {COMMA} minutos reais
 STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT                    :{WHITE}Intervalo de autogardado en minutos reais
 
 STR_RIVERS_VERY_MANY                                            :{RED}Moitísimos
@@ -391,6 +392,9 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :Estilo de debux
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_HELPTEXT        :Como debuxar as liñas entre as localizacións de cada unha das ordes do vehículo ao amosar unha superposición da ruta do vehículo.
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :liñas discontinuas de {COMMA} pixel{P "" es}
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :liñas planas
+
+STR_CONFIG_SETTING_AUTOSAVE                                     :Autogravado: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Selecciona o intervalo entre gravados automáticos das partidas
 
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT               :Autogardado coas desconexións da rede: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT_HELPTEXT      :Cando está habilitado, os clientes multixogadores automáticamente gardan a partida cando se desconectan do servidor
@@ -713,6 +717,7 @@ STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {STRING} de
 STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** Diches {1:STRING} {2:CURRENCY_LONG}
 STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION                  :{STRING} ({COMPANY})
 
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Activar transparencia para os indicadores de carga. CTRL+Click para bloquear
 STR_TRANSPARENT_TUNNELS_TOOLTIP                                 :{BLACK}Alterna a transparencia dos vehículos nos túneis. Ctrl+Click para bloqueala.
 
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Tempo de viaxe promedio: {STRING}

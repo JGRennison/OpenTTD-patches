@@ -1567,7 +1567,7 @@ static bool VehicleNameSorter(const Vehicle * const &a, const Vehicle * const &b
 /** Sort vehicles by their age */
 static bool VehicleAgeSorter(const Vehicle * const &a, const Vehicle * const &b)
 {
-	int r = a->age - b->age;
+	auto r = a->age - b->age;
 	return (r != 0) ? r < 0 : VehicleNumberSorter(a, b);
 }
 
@@ -3126,9 +3126,9 @@ struct VehicleDetailsWindow : Window {
 				Rect tr = r.Shrink(WidgetDimensions::scaled.framerect);
 
 				/* Draw running cost */
-				SetDParam(1, v->age / DAYS_IN_LEAP_YEAR);
+				SetDParam(1, DateToYear(v->age));
 				SetDParam(0, (v->age + DAYS_IN_YEAR < v->max_age) ? STR_VEHICLE_INFO_AGE : STR_VEHICLE_INFO_AGE_RED);
-				SetDParam(2, v->max_age / DAYS_IN_LEAP_YEAR);
+				SetDParam(2, DateToYear(v->max_age));
 				SetDParam(3, v->GetDisplayRunningCost());
 				DrawString(tr, STR_VEHICLE_INFO_AGE_RUNNING_COST_YR);
 				tr.top += FONT_HEIGHT_NORMAL;

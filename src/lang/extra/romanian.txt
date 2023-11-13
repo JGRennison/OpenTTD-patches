@@ -10,6 +10,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Autovehicule
 STR_VEHICLE_TYPE_SHIPS                                          :Nave
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Aeronave
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Autosalvare: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Alege intervalul de timp dintre salvările automate
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Comută transparenţa pentru indicatorii de încarcare. Ctrl+Click pentru blocare
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

@@ -1383,7 +1383,7 @@ STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT                           :New orders are 
 STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT_HELPTEXT                  :Normally, a vehicle will stop at every station it passes. By enabling this setting, it will drive through all station on the way to its final destination without stopping. Note, that this setting only defines a default value for new orders. Individual orders can be set explicitly to either behaviour nevertheless
 
 STR_CONFIG_SETTING_STOP_LOCATION                                :New train orders stop by default at the {STRING2} of the platform
-STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :Place where a train will stop at the platform by default. The 'near end' means close to the entry point, 'middle' means in the middle of the platform, and 'far end' means far away from the entry point. Note, that this setting only defines a default value for new orders. Individual orders can be set explicitly to either behaviour nevertheless
+STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :Place where a train will stop at the platform by default. The 'near end' means close to the entry point, 'middle' means in the middle of the platform, and 'far end' means far away from the entry point. Note, that this setting only defines a default value for new orders. Individual orders can have their stop location set by clicking on the order text
 ###length 3
 STR_CONFIG_SETTING_STOP_LOCATION_NEAR_END                       :near end
 STR_CONFIG_SETTING_STOP_LOCATION_MIDDLE                         :middle
@@ -1646,9 +1646,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_NO                     :No
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_YES                    :Yes
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_YES_EXCEPT_STICKY      :Yes, except sticky
 
-STR_CONFIG_SETTING_AUTOSAVE                                     :Autosave: {STRING2}
-STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Select interval between automatic game saves
-
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Use the {STRING2} date format for savegame names
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :Format of the date in save game filenames
 ###length 3
@@ -1899,8 +1896,8 @@ STR_CONFIG_SETTING_ALLOW_TOWN_ROADS_HELPTEXT                    :Allow towns to 
 STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS                   :Towns are allowed to build level crossings: {STRING2}
 STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS_HELPTEXT          :Enabling this setting allows towns to build level crossings
 
-STR_CONFIG_SETTING_NOISE_LEVEL                                  :Allow town controlled noise level for airports: {STRING2}
-STR_CONFIG_SETTING_NOISE_LEVEL_HELPTEXT                         :With this setting disabled, there can be two airports in each town. With this setting enabled, the number of airports in a town is limited by the noise acceptance of the town, which depends on population and airport size and distance
+STR_CONFIG_SETTING_NOISE_LEVEL                                  :Limit airport placement based on noise level: {STRING2}
+STR_CONFIG_SETTING_NOISE_LEVEL_HELPTEXT                         :Allow towns to block airport construction based on their noise acceptance level, which is based on the town's population and airport size and distance. If this setting is disabled, towns allow only two airports unless the local authority attitude is set to "Permissive"
 
 STR_CONFIG_SETTING_TOWN_FOUNDING                                :Founding towns in game: {STRING2}
 STR_CONFIG_SETTING_TOWN_FOUNDING_HELPTEXT                       :Enabling this setting allows players to found new towns in the game
@@ -2653,7 +2650,7 @@ STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}Toggle t
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Toggle transparency for bridges. Ctrl+Click to lock
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}Toggle transparency for structures like lighthouses and antennas. Ctrl+Click to lock
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Toggle transparency for catenary. Ctrl+Click to lock
-STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Toggle transparency for loading indicators. Ctrl+Click to lock
+STR_TRANSPARENT_TEXT_TOOLTIP                                    :{BLACK}Toggle transparency for loading and cost/income text. Ctrl+Click to lock
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Set objects invisible instead of transparent
 
 # Linkgraph legend window

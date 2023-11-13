@@ -21,14 +21,7 @@ std::unique_ptr<FILE, FileDeleter> _log_fd; ///< File to reroute output of a for
 
 #include "safeguards.h"
 
-#if defined(SUNOS) && !defined(_LP64) && !defined(_I32LPx)
-/* Solaris has, in certain situation, pid_t defined as long, while in other
- *  cases it has it defined as int... this handles all cases nicely.
- */
-# define PRINTF_PID_T "%ld"
-#else
-# define PRINTF_PID_T "%d"
-#endif
+#define PRINTF_PID_T "%d"
 
 void DedicatedFork()
 {

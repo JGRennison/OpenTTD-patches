@@ -48,10 +48,7 @@
 #if defined(WITH_BFD)
 #   include <bfd.h>
 #endif
-#elif defined(SUNOS)
-#	include <ucontext.h>
-#	include <dlfcn.h>
-#endif
+#endif /* __GLIBC__ */
 
 #if defined(__NetBSD__)
 #include <unistd.h>
@@ -363,39 +360,6 @@ class CrashLogUnix : public CrashLog {
 		return buffer;
 	}
 
-#if defined(SUNOS)
-	/** Data needed while walking up the stack */
-	struct StackWalkerParams {
-		char **bufptr;    ///< Buffer
-		const char *last; ///< End of buffer
-		int counter;      ///< We are at counter-th stack level
-	};
-
-	/**
-	 * Callback used while walking up the stack.
-	 * @param pc program counter
-	 * @param sig 'active' signal (unused)
-	 * @param params parameters
-	 * @return always 0, continue walking up the stack
-	 */
-	static int SunOSStackWalker(uintptr_t pc, int sig, void *params)
-	{
-		StackWalkerParams *wp = (StackWalkerParams *)params;
-
-		/* Resolve program counter to file and nearest symbol (if possible) */
-		Dl_info dli;
-		if (dladdr((void *)pc, &dli) != 0) {
-			*wp->bufptr += seprintf(*wp->bufptr, wp->last, " [%02i] %s(%s+0x%x) [0x%x]\n",
-					wp->counter, dli.dli_fname, dli.dli_sname, (int)((byte *)pc - (byte *)dli.dli_saddr), (uint)pc);
-		} else {
-			*wp->bufptr += seprintf(*wp->bufptr, wp->last, " [%02i] [0x%x]\n", wp->counter, (uint)pc);
-		}
-		wp->counter++;
-
-		return 0;
-	}
-#endif
-
 	/**
 	 * Log GDB information if available
 	 */
@@ -663,17 +627,6 @@ class CrashLogUnix : public CrashLog {
 		free(messages);
 
 /* end of __GLIBC__ */
-#elif defined(SUNOS)
-		ucontext_t uc;
-		if (getcontext(&uc) != 0) {
-			buffer += seprintf(buffer, last, " getcontext() failed\n\n");
-			return buffer;
-		}
-
-		StackWalkerParams wp = { &buffer, last, 0 };
-		walkcontext(&uc, &CrashLogUnix::SunOSStackWalker, &wp);
-
-/* end of SUNOS */
 #else
 		buffer += seprintf(buffer, last, " Not supported.\n");
 #endif

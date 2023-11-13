@@ -192,6 +192,23 @@ STR_COLOUR_WHITE                                                :흰색
 STR_COLOUR_RANDOM                                               :무작위
 
 ###length 17
+STR_COLOUR_SECONDARY_DARK_BLUE                                  :어두운 파랑
+STR_COLOUR_SECONDARY_PALE_GREEN                                 :연한 녹색
+STR_COLOUR_SECONDARY_SECONDARY_PINK                             :분홍
+STR_COLOUR_SECONDARY_YELLOW                                     :노랑
+STR_COLOUR_SECONDARY_RED                                        :빨강
+STR_COLOUR_SECONDARY_LIGHT_BLUE                                 :밝은 파랑
+STR_COLOUR_SECONDARY_GREEN                                      :녹색
+STR_COLOUR_SECONDARY_DARK_GREEN                                 :어두운 녹색
+STR_COLOUR_SECONDARY_BLUE                                       :파랑
+STR_COLOUR_SECONDARY_CREAM                                      :연한 분홍
+STR_COLOUR_SECONDARY_MAUVE                                      :연한 보라
+STR_COLOUR_SECONDARY_PURPLE                                     :보라
+STR_COLOUR_SECONDARY_ORANGE                                     :주황
+STR_COLOUR_SECONDARY_BROWN                                      :갈색
+STR_COLOUR_SECONDARY_GREY                                       :회색
+STR_COLOUR_SECONDARY_WHITE                                      :흰색
+STR_COLOUR_SECONDARY_SAME_AS_PRIMARY                            :주 색상과 같게
 
 
 # Units used in OpenTTD
@@ -1173,7 +1190,7 @@ STR_TERRAIN_TYPE_CUSTOM_VALUE                                   :사용자 지�
 STR_CITY_APPROVAL_LENIENT                                       :관대함
 STR_CITY_APPROVAL_TOLERANT                                      :신경 씀
 STR_CITY_APPROVAL_HOSTILE                                       :싫어함
-STR_CITY_APPROVAL_PERMISSIVE                                    :신경 안씀 (회사 행동에 영향 없음)
+STR_CITY_APPROVAL_PERMISSIVE                                    :신경 안 씀 (회사 행동에 영향 없음)
 
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}사용할 수 있는 인공지능이 없습니다...{}'온라인 콘텐츠' 시스템을 통해 인공지능을 다운로드받을 수 있습니다.
 
@@ -1367,7 +1384,7 @@ STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT                           :새로 지정�
 STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT_HELPTEXT                  :일반적으로 차량은 경로 상에 있는 모든 역에 정차하게 되어있습니다. 이 설정을 켜면, 차량이 마지막 목적지까지 정차없이 모든 역을 통과할 것입니다. 이 설정은 새로 경로를 지정하는 차량에만 적용되는 점을 알아두십시오. 하지만 각 차량의 경로는 두 가지 방법 중에 원하는 대로 다시 설정할 수 있습니다.
 
 STR_CONFIG_SETTING_STOP_LOCATION                                :새로 지정하는 역 정차 경로는 기본적으로 역의 {STRING}에 정지하도록 설정
-STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :열차가 기본적으로 정거장의 어느 위치에 정차할 것인지를 설정합니다. '가까운 쪽'은 역에 진입하는 곳과 가까운 곳에, '중간'은 역 중앙에, '먼쪽'은 진입하는 곳과 먼 곳에 정차합니다. 이 설정은 새로 경로를 지정하는 차량에만 적용되는 점을 알아두십시오. 하지만 각 차량의 경로는 두 가지 방법 중에 원하는 대로 다시 설정할 수 있습니다.
+STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :열차가 기본적으로 정거장의 어느 위치에 정차할 것인지를 설정합니다. '가까운 쪽'은 역에 진입하는 곳과 가까운 곳에, '중간'은 역 중앙에, '먼쪽'은 진입하는 곳과 먼 곳에 정차합니다. 이 설정은 새로 경로를 지정하는 차량에만 적용되는 점을 알아두십시오. 개별 경로의 정차 위치는 그 경로를 클릭해서 변경할 수 있습니다.
 ###length 3
 STR_CONFIG_SETTING_STOP_LOCATION_NEAR_END                       :가까운쪽
 STR_CONFIG_SETTING_STOP_LOCATION_MIDDLE                         :중간
@@ -1422,6 +1439,8 @@ STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :이 설정을 �
 STR_CONFIG_SETTING_COMPANY_STARTING_COLOUR                      :시작시 회사 색상: {STRING}
 STR_CONFIG_SETTING_COMPANY_STARTING_COLOUR_HELPTEXT             :새 회사에서 사용할 색상을 선택합니다
 
+STR_CONFIG_SETTING_COMPANY_STARTING_COLOUR_SECONDARY            :시작시 회사 부 색상: {STRING}
+STR_CONFIG_SETTING_COMPANY_STARTING_COLOUR_SECONDARY_HELPTEXT   :부 색상을 지원하는 NewGRF를 사용할 경우, 새 회사에서 사용할 부 색상을 선택합니다.
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :옛날 공항을 사라지지 않고 계속 만들 수 있게 함: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :이 설정을 켜면, 소형 공항을 포함한 모든 공항 종류를 도입 이후에 계속 사용할 수 있게 됩니다.
@@ -1627,9 +1646,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :창 내부를 �
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_NO                     :아니요
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_YES                    :예
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_YES_EXCEPT_STICKY      :예 (고정한 창 제외)
-
-STR_CONFIG_SETTING_AUTOSAVE                                     :자동 저장: {STRING}
-STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :게임을 자동으로 저장할 간격을 선택하세요
 
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :저장 파일 이름으로 {STRING} 날짜 형식을 사용
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :게임 저장 파일 이름에 사용할 날짜 형식을 선택합니다
@@ -1881,8 +1897,8 @@ STR_CONFIG_SETTING_ALLOW_TOWN_ROADS_HELPTEXT                    :도시가 성�
 STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS                   :도시가 회사 소유의 선로에 건널목을 만드는 것을 허용: {STRING}
 STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS_HELPTEXT          :도시가 회사 소유의 선로에 건널목을 건설할 수 있도록 허용합니다
 
-STR_CONFIG_SETTING_NOISE_LEVEL                                  :도시가 공항에서 나오는 소음을 제한하도록 함: {STRING}
-STR_CONFIG_SETTING_NOISE_LEVEL_HELPTEXT                         :이 설정을 끄면, 한 도시에는 공항을 2개까지 지을 수 있습니다. 이 설정을 켜면, 한 도시에 지을 수 있는 공항의 수는 도시가 허용 가능한 소음 기준에 따라 달라집니다. 소음 기준은 도시 인구, 공항의 크기와 거리에 따라 다릅니다.
+STR_CONFIG_SETTING_NOISE_LEVEL                                  :소음 수준에 따라 공항 설치를 제한: {STRING}
+STR_CONFIG_SETTING_NOISE_LEVEL_HELPTEXT                         :도시의 인구와 공항 크기 및 거리에 따라 달라지는 도시의 소음 허용 수준에 따라, 도시가 공항 건설을 막을 수 있게 만듭니다. 이 설정을 끄면, 지역 당국의 태도 설정을 "신경 안 씀"으로 설정하지 않은 경우 한 도시에는 공항을 2개까지만 지을 수 있습니다.
 
 STR_CONFIG_SETTING_TOWN_FOUNDING                                :게임 도중에 도시 건설: {STRING}
 STR_CONFIG_SETTING_TOWN_FOUNDING_HELPTEXT                       :플레이어가 게임 중에 새로운 도시를 설립하는 것을 허용합니다.
@@ -2635,7 +2651,6 @@ STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}정거�
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}다리를 보여줄 지 선택합니다. 고정하려면 CTRL+클릭하세요
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}등대나 안테나 같은 구조물을 보여줄 지 선택합니다. 고정하려면 CTRL+클릭하세요
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}전차선을 보여줄 지 선택합니다. 고정하려면 CTRL+클릭하세요
-STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}적재율을 보여줄 지 선택합니다. 고정하려면 CTRL+클릭하세요
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}반투명 대신 아예 안 보이게 할 항목을 선택하세요
 
 # Linkgraph legend window
@@ -4873,7 +4888,7 @@ STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}트럭 �
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}다른 항구와 너무 가깝습니다
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}다른 공항과 너무 가깝습니다
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}역 이름을 바꿀 수 없습니다...
-STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... 여기는 도시 소유의 도로 입니다
+STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... 도시 소유의 도로입니다
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... 도로의 방향과 일치하지 않습니다
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... 통과식 도로 정류장은 굽은 도로에 건설할 수 없습니다
 STR_ERROR_DRIVE_THROUGH_JUNCTION                                :{WHITE}... 통과식 도로 정류장은 교차로에 건설할 수 없습니다

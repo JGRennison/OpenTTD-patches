@@ -10,6 +10,11 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Autotransporta 
 STR_VEHICLE_TYPE_SHIPS                                          :Kuģi
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Lidaparāti
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Automātiskā saglabāšana: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Izvēlēties spēles automātiskās saglabāšanas starplaikus
+
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Pārslēgt piekraušanas rādītāju caurspīdību. Ctrl+klikšķis, lai slēgtu
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals
