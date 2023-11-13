@@ -325,6 +325,9 @@ STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_HIERARCHY_NAME_HELPTEXT   :When enabled, a
 STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW            :Show order number in vehicle view window: {STRING2}
 STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW_HELPTEXT   :When enabled, the current vehicle order is shown in the vehicle view window start/stop bar
 
+STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION                   :Hide default order stop locations: {STRING2}
+STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION_HELPTEXT          :When enabled, hide the order stop location when it matches the default.
+
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :Enable signals on bridges/tunnels advanced modes: {STRING2}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :Enables use of advanced modes of signal simulation on bridges and tunnels. When disabled, bridges/tunnels which are not already in an advanced mode cannot be changed to an advanced mode, however other players may choose to enable this setting and use an advanced mode.
 
