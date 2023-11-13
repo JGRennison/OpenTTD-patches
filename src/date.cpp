@@ -239,16 +239,6 @@ extern void TownsYearlyLoop();
 
 extern void ShowEndGameChart();
 
-
-/** Available settings for autosave intervals. */
-static const Month _autosave_months[] = {
-	 0, ///< never
-	 1, ///< every month
-	 3, ///< every 3 months
-	 6, ///< every 6 months
-	12, ///< every 12 months
-};
-
 /**
  * Runs various procedures that have to be done yearly
  */
