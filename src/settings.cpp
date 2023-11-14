@@ -124,7 +124,11 @@ static bool _fallback_gui_zoom_max = false;
  */
 static const SettingTable _generic_setting_tables[] = {
 	_settings,
+	_gui_settings,
+	_multimedia_settings,
 	_network_settings,
+	_news_display_settings,
+	_scenario_settings,
 };
 
 void IterateSettingsTables(std::function<void(const SettingTable &, void *)> handler)
