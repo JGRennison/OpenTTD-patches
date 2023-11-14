@@ -1489,10 +1489,6 @@ private:
 		/* WID_O_SEL_COND_AUX3 */
 		DP_COND_AUX3_STATION = 0, ///< Display station button
 
-		/* WID_O_SEL_BOTTOM_LEFT */
-		DP_BOTTOM_LEFT_SKIP        = 0, ///< Display 'skip' in the left button of the bottom row of the vehicle order window.
-		DP_BOTTOM_LEFT_MANAGE_LIST = 1, ///< Display 'manage list' in the left button of the bottom row of the vehicle order window.
-
 		/* WID_O_SEL_BOTTOM_MIDDLE */
 		DP_BOTTOM_MIDDLE_DELETE       = 0, ///< Display 'delete' in the middle button of the bottom row of the vehicle order window.
 		DP_BOTTOM_MIDDLE_STOP_SHARING = 1, ///< Display 'stop sharing' in the middle button of the bottom row of the vehicle order window.
@@ -1850,11 +1846,7 @@ private:
 
 	int GetOrderManagementPlane() const
 	{
-		if (_settings_client.gui.show_order_management_button) {
-			return this->selected_order == this->vehicle->GetNumOrders() ? DP_MGMT_LIST_BTN : DP_MGMT_BTN;
-		} else {
-			return SZSP_NONE;
-		}
+		return this->selected_order == this->vehicle->GetNumOrders() ? DP_MGMT_LIST_BTN : DP_MGMT_BTN;
 	}
 
 public:
@@ -2096,13 +2088,6 @@ public:
 				nwi->SetDataTip(STR_ORDERS_DELETE_BUTTON, STR_ORDERS_DELETE_TOOLTIP);
 			}
 		}
-
-		/* skip / extra menu */
-		NWidgetStacked *skip_sel = this->GetWidget<NWidgetStacked>(WID_O_SEL_BOTTOM_LEFT);
-		NWidgetLeaf *manage_list_dropdown = this->GetWidget<NWidgetLeaf>(WID_O_MANAGE_LIST);
-		skip_sel->SetDisplayedPlane((manage_list_dropdown->IsLowered() ||
-				(!_settings_client.gui.show_order_management_button && _ctrl_pressed && this->selected_order == this->vehicle->GetNumOrders()))
-				? DP_BOTTOM_LEFT_MANAGE_LIST : DP_BOTTOM_LEFT_SKIP);
 
 		/* First row. */
 		this->RaiseWidget(WID_O_FULL_LOAD);
@@ -2780,7 +2765,6 @@ public:
 				this->OrderClick_Skip();
 				break;
 
-			case WID_O_MANAGE_LIST:
 			case WID_O_MGMT_LIST_BTN: {
 				uint disabled_mask = (this->vehicle->GetNumOrders() < 2 ? 1 : 0) | (this->vehicle->GetNumOrders() < 3 ? 2 : 0);
 				uint order_count = this->vehicle->GetNumOrders();
@@ -3173,12 +3157,6 @@ public:
 				ShowDropDownList(this, std::move(list), selected, WID_O_DEPARTURE_VIA_TYPE, 0);
 				break;
 			}
-
-			case WID_O_TOGGLE_SIZE: {
-				_settings_client.gui.show_order_management_button = !_settings_client.gui.show_order_management_button;
-				InvalidateWindowClassesData(WC_VEHICLE_ORDERS);
-				break;
-			}
 		}
 	}
 
@@ -3340,7 +3318,6 @@ public:
 				this->ModifyOrder(this->OrderGetSel(), MOF_DEPARTURES_SUBTYPE | index << 8);
 				break;
 
-			case WID_O_MANAGE_LIST:
 			case WID_O_MGMT_LIST_BTN:
 				switch (index) {
 					case 0: this->OrderClick_ReverseOrderList(0); break;
@@ -3587,14 +3564,6 @@ public:
 		}
 	}
 
-	void OnDropdownClose(Point pt, int widget, int index, bool instant_close) override
-	{
-		Window::OnDropdownClose(pt, widget, index, instant_close);
-		if (this->GetWidget<NWidgetStacked>(WID_O_SEL_BOTTOM_LEFT)->shown_plane == DP_BOTTOM_LEFT_MANAGE_LIST) {
-			this->UpdateButtonState();
-		}
-	}
-
 	bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
 	{
 		switch (widget) {
@@ -3642,7 +3611,6 @@ static const NWidgetPart _nested_orders_train_widgets[] = {
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_O_CAPTION), SetDataTip(STR_ORDERS_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_PUSHBTN, COLOUR_GREY, WID_O_TIMETABLE_VIEW), SetMinimalSize(61, 14), SetDataTip(0x0, STR_ORDERS_TIMETABLE_VIEW_TOOLTIP),
-		NWidget(WWT_IMGBTN, COLOUR_GREY, WID_O_TOGGLE_SIZE), SetDataTip(SPR_LARGE_SMALL_WINDOW, STR_ORDERS_TOGGLE_MANAGEMENT_BUTTON_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -3763,12 +3731,8 @@ static const NWidgetPart _nested_orders_train_widgets[] = {
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_MGMT_LIST_BTN), SetMinimalSize(100, 12), SetFill(1, 0),
 														SetDataTip(STR_ORDERS_MANAGE_LIST, STR_ORDERS_MANAGE_LIST_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
-			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_BOTTOM_LEFT),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_SKIP), SetMinimalSize(100, 12), SetFill(1, 0),
-														SetDataTip(STR_ORDERS_SKIP_BUTTON, STR_ORDERS_SKIP_TOOLTIP), SetResize(1, 0),
-				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_MANAGE_LIST), SetMinimalSize(100, 12), SetFill(1, 0),
-														SetDataTip(STR_ORDERS_MANAGE_LIST, STR_ORDERS_MANAGE_LIST_TOOLTIP), SetResize(1, 0),
-			EndContainer(),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_SKIP), SetMinimalSize(100, 12), SetFill(1, 0),
+													SetDataTip(STR_ORDERS_SKIP_BUTTON, STR_ORDERS_SKIP_TOOLTIP), SetResize(1, 0),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_BOTTOM_MIDDLE),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_DELETE), SetMinimalSize(100, 12), SetFill(1, 0),
 														SetDataTip(STR_ORDERS_DELETE_BUTTON, STR_ORDERS_DELETE_TOOLTIP), SetResize(1, 0),
@@ -3796,7 +3760,6 @@ static const NWidgetPart _nested_orders_widgets[] = {
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_O_CAPTION), SetDataTip(STR_ORDERS_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_PUSHBTN, COLOUR_GREY, WID_O_TIMETABLE_VIEW), SetMinimalSize(61, 14), SetDataTip(0x0, STR_ORDERS_TIMETABLE_VIEW_TOOLTIP),
-		NWidget(WWT_IMGBTN, COLOUR_GREY, WID_O_TOGGLE_SIZE), SetDataTip(SPR_LARGE_SMALL_WINDOW, STR_ORDERS_TOGGLE_MANAGEMENT_BUTTON_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -3921,12 +3884,8 @@ static const NWidgetPart _nested_orders_widgets[] = {
 			NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_MGMT_LIST_BTN), SetMinimalSize(100, 12), SetFill(1, 0),
 													SetDataTip(STR_ORDERS_MANAGE_LIST, STR_ORDERS_MANAGE_LIST_TOOLTIP), SetResize(1, 0),
 		EndContainer(),
-		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_BOTTOM_LEFT),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_SKIP), SetMinimalSize(100, 12), SetFill(1, 0),
-													SetDataTip(STR_ORDERS_SKIP_BUTTON, STR_ORDERS_SKIP_TOOLTIP), SetResize(1, 0),
-			NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_MANAGE_LIST), SetMinimalSize(100, 12), SetFill(1, 0),
-													SetDataTip(STR_ORDERS_MANAGE_LIST, STR_ORDERS_MANAGE_LIST_TOOLTIP), SetResize(1, 0),
-		EndContainer(),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_SKIP), SetMinimalSize(100, 12), SetFill(1, 0),
+												SetDataTip(STR_ORDERS_SKIP_BUTTON, STR_ORDERS_SKIP_TOOLTIP), SetResize(1, 0),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_BOTTOM_MIDDLE),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_DELETE), SetMinimalSize(100, 12), SetFill(1, 0),
 													SetDataTip(STR_ORDERS_DELETE_BUTTON, STR_ORDERS_DELETE_TOOLTIP), SetResize(1, 0),

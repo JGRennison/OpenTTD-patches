@@ -2083,7 +2083,6 @@ static SettingsContainer &GetSettingsTree()
 				vehicle_windows->Add(new SettingEntry("gui.dual_pane_train_purchase_window"));
 				vehicle_windows->Add(new ConditionallyHiddenSettingEntry("gui.dual_pane_train_purchase_window_dual_buttons", []() -> bool { return !_settings_client.gui.dual_pane_train_purchase_window; }));
 				vehicle_windows->Add(new SettingEntry("gui.show_order_occupancy_by_default"));
-				vehicle_windows->Add(new SettingEntry("gui.show_order_management_button"));
 				vehicle_windows->Add(new SettingEntry("gui.show_group_hierarchy_name"));
 				vehicle_windows->Add(new ConditionallyHiddenSettingEntry("gui.show_vehicle_group_hierarchy_name", []() -> bool { return !_settings_client.gui.show_group_hierarchy_name; }));
 				vehicle_windows->Add(new SettingEntry("gui.enable_single_veh_shared_order_gui"));

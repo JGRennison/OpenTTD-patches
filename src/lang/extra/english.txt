@@ -313,9 +313,6 @@ STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_32X                  :32x zoom and ab
 STR_CONFIG_SETTING_SHOW_ORDER_OCCUPANCY_BY_DEFAULT              :Show order occupancy by default: {STRING2}
 STR_CONFIG_SETTING_SHOW_ORDER_OCCUPANCY_BY_DEFAULT_HELPTEXT     :Show detailed per-order occupancy by default when opening a vehicle's orders window
 
-STR_CONFIG_SETTING_SHOW_ORDER_MANAGEMENT_BY_DEFAULT             :Show order management button: {STRING2}
-STR_CONFIG_SETTING_SHOW_ORDER_MANAGEMENT_BY_DEFAULT_HELPTEXT    :Show a button for order management in the vehicle order window
-
 STR_CONFIG_SETTING_SHOW_GROUP_HIERARCHY_NAME                    :Show group hierarchy in name: {STRING2}
 STR_CONFIG_SETTING_SHOW_GROUP_HIERARCHY_NAME_HELPTEXT           :When enabled, group names include the full hierarchy of their parent group names
 
@@ -1552,8 +1549,6 @@ STR_VEHICLE_DETAILS_TRAIN_ENGINE_BUILT_AND_VALUE_AND_SPEED      :{LTBLUE}{ENGINE
 STR_VEHICLE_DETAILS_TRAIN_WAGON_VALUE_AND_SPEED                 :{LTBLUE}{ENGINE}{BLACK}   Value: {LTBLUE}{CURRENCY_LONG} {BLACK}Max. speed: {LTBLUE}{VELOCITY}
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_WEIGHT                          :{BLACK}Total weight: {LTBLUE}{WEIGHT_SHORT} {BLACK}(empty) - {LTBLUE}{WEIGHT_SHORT} {BLACK}(loaded)
 STR_VEHICLE_DETAILS_TRAIN_MAX_SPEED                             :{BLACK}Max. speed: {LTBLUE}{VELOCITY} {BLACK}(empty) - {LTBLUE}{VELOCITY} {BLACK}(loaded)
-
-STR_ORDERS_TOGGLE_MANAGEMENT_BUTTON_TOOLTIP                     :{BLACK}Toggle showing order management button
 
 STR_ORDER_DROP_CARGO_TYPE_LOAD                                  :Load by cargo type
 STR_ORDER_DROP_CARGO_TYPE_UNLOAD                                :Unload by cargo type
