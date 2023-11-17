@@ -73,6 +73,13 @@ jobs:
           zstd \
           # EOF
 
+        # arm64-windows-static is not (yet) supported for breakpad.
+        if [ "${{ matrix.arch }}" != "arm64" ]; then
+          vcpkg install --triplet=${{ matrix.arch }}-windows-static \
+            breakpad \
+            # EOF
+        fi
+
     - name: Install MSVC problem matcher
       uses: ammaraskar/msvc-problem-matcher@master
 

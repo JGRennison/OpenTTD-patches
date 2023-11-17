@@ -164,7 +164,6 @@ void CDECL usererror(const char *s, ...)
 	/* In effect, the game ends here. As emscripten_set_main_loop() caused
 	 * the stack to be unwound, the code after MainLoop() in
 	 * openttd_main() is never executed. */
-	EM_ASM(if (window["openttd_syncfs"]) openttd_syncfs());
 	EM_ASM(if (window["openttd_abort"]) openttd_abort());
 #endif
 
@@ -682,6 +681,22 @@ struct AfterNewGRFScan : NewGRFScanCallback {
 	}
 };
 
+void PostMainLoop()
+{
+	WaitTillSaved();
+
+	/* only save config if we have to */
+	if (_save_config) {
+		SaveToConfig(STCF_ALL);
+		SaveHotkeysToConfig();
+		WindowDesc::SaveToConfig();
+		SaveToHighScore();
+	}
+
+	/* Reset windowing system, stop drivers, free used memory, ... */
+	ShutdownGame();
+}
+
 #if defined(UNIX)
 extern void DedicatedFork();
 #endif
@@ -1040,18 +1055,7 @@ int openttd_main(int argc, char *argv[])
 
 	_general_worker_pool.Stop();
 
-	WaitTillSaved();
-
-	/* only save config if we have to */
-	if (_save_config) {
-		SaveToConfig(STCF_ALL);
-		SaveHotkeysToConfig();
-		WindowDesc::SaveToConfig();
-		SaveToHighScore();
-	}
-
-	/* Reset windowing system, stop drivers, free used memory, ... */
-	ShutdownGame();
+	PostMainLoop();
 	return ret;
 }
 

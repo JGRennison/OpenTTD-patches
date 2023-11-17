@@ -947,13 +947,19 @@ void VideoDriver_SDL_Base::LoopOnce()
 		 * normally done at the end of the main loop for non-Emscripten.
 		 * After that, Emscripten just halts, and the HTML shows a nice
 		 * "bye, see you next time" message. */
+		extern void PostMainLoop();
+		PostMainLoop();
+
 		emscripten_cancel_main_loop();
 		emscripten_exit_pointerlock();
 		/* In effect, the game ends here. As emscripten_set_main_loop() caused
 		 * the stack to be unwound, the code after MainLoop() in
 		 * openttd_main() is never executed. */
-		EM_ASM(if (window["openttd_syncfs"]) openttd_syncfs());
-		EM_ASM(if (window["openttd_exit"]) openttd_exit());
+		if (_game_mode == GM_BOOTSTRAP) {
+			EM_ASM(if (window["openttd_bootstrap_reload"]) openttd_bootstrap_reload());
+		} else {
+			EM_ASM(if (window["openttd_exit"]) openttd_exit());
+		}
 #endif
 		return;
 	}

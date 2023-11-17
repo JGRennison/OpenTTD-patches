@@ -4,7 +4,7 @@
 
 OpenTTD makes use of the following external libraries:
 
-- (encouraged) nlohmann-json: JSON handling
+- (required) nlohmann-json: JSON handling
 - (encouraged) zlib: (de)compressing of old (0.3.0-1.0.5) savegames, content downloads,
    heightmaps
 - (encouraged) liblzma: (de)compressing of savegames (1.1.0 and later)
