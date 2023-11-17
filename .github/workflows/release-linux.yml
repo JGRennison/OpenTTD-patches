@@ -116,7 +116,6 @@ jobs:
             liblzma \
             libpng \
             lzo \
-            nlohmann-json \
             sdl2 \
             zlib \
             zstd \

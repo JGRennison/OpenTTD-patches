@@ -16,6 +16,7 @@
 #include "../../engine_base.h"
 #include "../../articulated_vehicles.h"
 #include "../../string_func.h"
+#include "../../3rdparty/nlohmann/json.hpp"
 #include "table/strings.h"
 
 #include "../../safeguards.h"

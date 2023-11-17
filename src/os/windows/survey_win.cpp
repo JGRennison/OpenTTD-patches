@@ -10,8 +10,8 @@
 #include "../../stdafx.h"
 
 #include "../../core/format.hpp"
+#include "../../3rdparty/nlohmann/json.hpp"
 
-#include <nlohmann/json.hpp>
 #include <thread>
 #include <windows.h>
 

@@ -114,8 +114,6 @@ endif()
 set(CMAKE_THREAD_PREFER_PTHREAD YES)
 # Make sure we have Threads available.
 find_package(Threads REQUIRED)
-# nlohmann is used for all our JSON needs.
-find_package(nlohmann_json REQUIRED)
 
 find_package(ZLIB)
 find_package(LibLZMA)
@@ -363,7 +361,6 @@ link_package(ZLIB TARGET ZLIB::ZLIB ENCOURAGED)
 link_package(LIBLZMA TARGET LibLZMA::LibLZMA ENCOURAGED)
 link_package(LZO)
 link_package(ZSTD TARGET ZSTD::ZSTD RECOMMENDED)
-link_package(nlohmann_json)
 
 if(NOT WIN32 AND NOT EMSCRIPTEN)
     link_package(CURL ENCOURAGED)

@@ -44,11 +44,10 @@ jobs:
         path: /emsdk/upstream/emscripten/cache
         key: 3.1.42-${{ runner.os }}
 
-    - name: Patch Emscripten to support LZMA and nlohmann-json
+    - name: Patch Emscripten to support LZMA
       run: |
         cd /emsdk/upstream/emscripten
         patch -p1 < ${GITHUB_WORKSPACE}/os/emscripten/emsdk-liblzma.patch
-        patch -p1 < ${GITHUB_WORKSPACE}/os/emscripten/emsdk-nlohmann-json.patch
 
     - name: Build (host tools)
       run: |
@@ -139,7 +138,6 @@ jobs:
           liblzma-dev \
           libzstd-dev \
           liblzo2-dev \
-          nlohmann-json3-dev \
           ${{ matrix.libraries }} \
           zlib1g-dev \
           # EOF
@@ -238,7 +236,6 @@ jobs:
           liblzma \
           libpng \
           lzo \
-          nlohmann-json \
           zlib \
           zstd \
           # EOF
@@ -330,7 +327,6 @@ jobs:
           liblzma \
           libpng \
           lzo \
-          nlohmann-json \
           zlib \
           zstd \
           # EOF
@@ -421,7 +417,6 @@ jobs:
           mingw-w64-${{ matrix.arch }}-gcc
           mingw-w64-${{ matrix.arch }}-lzo2
           mingw-w64-${{ matrix.arch }}-libpng
-          mingw-w64-${{ matrix.arch }}-nlohmann-json
 
     - name: Install OpenGFX
       shell: bash
