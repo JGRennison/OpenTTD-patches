@@ -387,6 +387,9 @@ static void SlNullPointers()
 	SlXvSetCurrentState();
 
 	for (auto &ch : ChunkHandlers()) {
+		if (ch.special_proc != nullptr) {
+			if (ch.special_proc(ch.id, CSLSO_PRE_PTRS) == CSLSOR_LOAD_CHUNK_CONSUMED) continue;
+		}
 		if (ch.ptrs_proc != nullptr) {
 			DEBUG(sl, 3, "Nulling pointers for %c%c%c%c", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
 			ch.ptrs_proc();
@@ -2312,24 +2315,24 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
  */
 static void SlSaveChunk(const ChunkHandler &ch)
 {
-	if (ch.type == CH_UPSTREAM_SAVE) {
-		SaveLoadVersion old_ver = _sl_version;
-		_sl_version = MAX_LOAD_SAVEGAME_VERSION;
-		auto guard = scope_guard([&]() {
-			_sl_version = old_ver;
-		});
-		upstream_sl::SlSaveChunkChunkByID(ch.id);
-		return;
+	if (ch.special_proc != nullptr) {
+		ChunkSaveLoadSpecialOpResult result = ch.special_proc(ch.id, CSLSO_SHOULD_SAVE_CHUNK);
+		if (result == CSLSOR_DONT_SAVE_CHUNK) return;
+		if (result == CSLSOR_UPSTREAM_SAVE_CHUNK) {
+			SaveLoadVersion old_ver = _sl_version;
+			_sl_version = MAX_LOAD_SAVEGAME_VERSION;
+			auto guard = scope_guard([&]() {
+				_sl_version = old_ver;
+			});
+			upstream_sl::SlSaveChunkChunkByID(ch.id);
+			return;
+		}
 	}
 
 	ChunkSaveLoadProc *proc = ch.save_proc;
 
 	/* Don't save any chunk information if there is no save handler. */
 	if (proc == nullptr) return;
-
-	if (ch.special_proc != nullptr) {
-		if (ch.special_proc(ch.id, CSLSO_SHOULD_SAVE_CHUNK) == CSLSOR_DONT_SAVE_CHUNK) return;
-	}
 
 	SlWriteUint32(ch.id);
 	DEBUG(sl, 2, "Saving chunk %c%c%c%c", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
@@ -2449,6 +2452,9 @@ static void SlFixPointers()
 	_sl.action = SLA_PTRS;
 
 	for (auto &ch : ChunkHandlers()) {
+		if (ch.special_proc != nullptr) {
+			if (ch.special_proc(ch.id, CSLSO_PRE_PTRS) == CSLSOR_LOAD_CHUNK_CONSUMED) continue;
+		}
 		if (ch.ptrs_proc != nullptr) {
 			DEBUG(sl, 3, "Fixing pointers for %c%c%c%c", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
 			ch.ptrs_proc();
