@@ -158,6 +158,8 @@ enum SlXvFeatureIndex {
 	XSLFI_NEWGRF_LAST_SERVICE,                    ///< See: SLV_NEWGRF_LAST_SERVICE (PR #11124)
 	XSLFI_CARGO_TRAVELLED,                        ///< See: SLV_CARGO_TRAVELLED (PR #11283)
 
+	XSLFI_TABLE_PATS,                             ///< Use upstream table format for PATS
+
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk
 	XSLFI_ZPOS_32_BIT,                            ///< Vehicle/sign z_pos is 32 bit instead of 8 bit, but savegame version may be before this became true in trunk

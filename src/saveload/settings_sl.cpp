@@ -36,7 +36,7 @@ static std::vector<SaveLoad> GetSettingsDesc(bool is_loading)
 	std::vector<SaveLoad> saveloads;
 	for (auto &sd : GetSettingsTableInternal()) {
 		if (sd->flags & SF_NOT_IN_SAVE) continue;
-		if (sd->patx_name != nullptr && !(is_loading && (sd->flags & SF_ENABLE_UPSTREAM_LOAD))) continue;
+		if (sd->patx_name != nullptr && !(sd->flags & SF_ENABLE_TABLE_PATS)) continue;
 		if (!sd->save.ext_feature_test.IsFeaturePresent(_sl_version, sd->save.version_from, sd->save.version_to)) continue;
 
 		VarType new_type = 0;
@@ -118,7 +118,8 @@ static std::vector<SaveLoad> GetSettingsDesc(bool is_loading)
 				error("Unexpected save conv for %s: 0x%02X", sd->name, sd->save.conv);
 		}
 
-		if (strcmp(sd->name, "economy.town_growth_rate") == 0) {
+		/* economy.town_growth_rate is int8 here, but uint8 in upstream saves */
+		if (is_loading && !SlXvIsFeaturePresent(XSLFI_TABLE_PATS) && strcmp(sd->name, "economy.town_growth_rate") == 0) {
 			SB(new_type, 0, 4, SLE_FILE_U8);
 		}
 

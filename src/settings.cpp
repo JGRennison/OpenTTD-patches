@@ -3166,33 +3166,6 @@ static void LoadSettings(const SettingTable &settings, void *object)
 	}
 }
 
-/**
- * Save and load handler for settings, except for those which go in the PATX chunk
- * @param settings SettingDesc struct containing all information
- * @param object can be either nullptr in which case we load global variables or
- * a pointer to a struct which is getting saved
- */
-static void SaveSettings(const SettingTable &settings, void *object)
-{
-	/* We need to write the CH_RIFF header, but unfortunately can't call
-	 * SlCalcLength() because we have a different format. So do this manually */
-	size_t length = 0;
-	for (auto &sd : settings) {
-		if (sd->flags & SF_NOT_IN_SAVE) continue;
-		if (sd->patx_name != nullptr) continue;
-		if (sd->xref.target != nullptr) continue;
-		length += SlCalcObjMemberLength(object, sd->save);
-	}
-	SlSetLength(length);
-
-	for (auto &sd : settings) {
-		if (sd->flags & SF_NOT_IN_SAVE) continue;
-		if (sd->patx_name != nullptr) continue;
-		if (sd->xref.target != nullptr) continue;
-		SlObjectMember(object, sd->save);
-	}
-}
-
 /** @file
  *
  * The PATX chunk stores additional settings in an unordered format
@@ -3220,6 +3193,7 @@ static std::vector<const SettingDesc *> MakeSettingsPatxList(const SettingTable 
 
 	for (auto &sd : settings) {
 		if (sd->patx_name == nullptr) continue;
+		if ((sd->flags & SF_ENABLE_TABLE_PATS) && SlXvIsFeaturePresent(XSLFI_TABLE_PATS)) continue;
 		sorted_patx_settings.push_back(sd.get());
 	}
 
@@ -3331,6 +3305,7 @@ static void SaveSettingsPatx(const SettingTable &settings, void *object)
 	size_t length = 8;
 	for (auto &sd : settings) {
 		if (sd->patx_name == nullptr) continue;
+		if (sd->flags & SF_ENABLE_TABLE_PATS) continue;
 		uint32 setting_length = (uint32)SlCalcObjMemberLength(object, sd->save);
 		if (!setting_length) continue;
 
@@ -3542,11 +3517,6 @@ static void Check_PATS()
 	LoadSettings(_settings, &_load_check_data.settings);
 }
 
-static void Save_PATS()
-{
-	SaveSettings(_settings, &_settings_game);
-}
-
 static void Load_PATX()
 {
 	LoadSettingsPatx(_settings, &_settings_game);
@@ -3562,9 +3532,28 @@ static void Save_PATX()
 	SaveSettingsPatx(_settings, &_settings_game);
 }
 
+struct PATSChunkInfo
+{
+	static SaveLoadVersion GetLoadVersion()
+	{
+		extern SaveLoadVersion _sl_xv_upstream_version;
+		return _sl_xv_upstream_version;
+	}
+
+	static bool SaveUpstream()
+	{
+		return true;
+	}
+
+	static bool LoadUpstream()
+	{
+		return SlXvIsFeaturePresent(XSLFI_TABLE_PATS);
+	}
+};
+
 static const ChunkHandler setting_chunk_handlers[] = {
 	{ 'OPTS', nullptr,   Load_OPTS, nullptr, nullptr,    CH_RIFF },
-	{ 'PATS', Save_PATS, Load_PATS, nullptr, Check_PATS, CH_RIFF },
+	MakeConditionallyUpstreamChunkHandler<'PATS', PATSChunkInfo>(nullptr, Load_PATS, nullptr, Check_PATS, CH_RIFF),
 	{ 'PATX', Save_PATX, Load_PATX, nullptr, Check_PATX, CH_RIFF },
 };
 
