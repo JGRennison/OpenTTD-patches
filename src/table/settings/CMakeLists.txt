@@ -4,7 +4,6 @@ set(TABLE_BINARY_DIR ${GENERATED_BINARY_DIR}/table)
 set(TABLE_INI_SOURCE_FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/company_settings.ini
         ${CMAKE_CURRENT_SOURCE_DIR}/currency_settings.ini
-        ${CMAKE_CURRENT_SOURCE_DIR}/gameopt_settings.ini
         ${CMAKE_CURRENT_SOURCE_DIR}/gui_settings.ini
         ${CMAKE_CURRENT_SOURCE_DIR}/misc_settings.ini
         ${CMAKE_CURRENT_SOURCE_DIR}/multimedia_settings.ini
@@ -12,6 +11,7 @@ set(TABLE_INI_SOURCE_FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/network_private_settings.ini
         ${CMAKE_CURRENT_SOURCE_DIR}/network_secrets_settings.ini
         ${CMAKE_CURRENT_SOURCE_DIR}/news_display_settings.ini
+        ${CMAKE_CURRENT_SOURCE_DIR}/old_gameopt_settings.ini
         ${CMAKE_CURRENT_SOURCE_DIR}/scenario_settings.ini
         ${CMAKE_CURRENT_SOURCE_DIR}/settings.ini
         ${CMAKE_CURRENT_SOURCE_DIR}/win32_settings.ini

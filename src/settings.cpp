@@ -2502,7 +2502,7 @@ void LoadFromConfig(bool startup)
 		GameLoadConfig(generic_ini, "game_scripts");
 
 		PrepareOldDiffCustom();
-		IniLoadSettings(generic_ini, _gameopt_settings, "gameopt", &_settings_newgame, false);
+		IniLoadSettings(generic_ini, _old_gameopt_settings, "gameopt", &_settings_newgame, false);
 		HandleOldDiffCustom(false);
 
 		ValidateSettings();
@@ -3531,7 +3531,7 @@ static void Load_OPTS()
 	 * a networking environment. This ensures for example that the local
 	 * autosave-frequency stays when joining a network-server */
 	PrepareOldDiffCustom();
-	LoadSettings(_gameopt_settings, &_settings_game);
+	LoadSettings(_old_gameopt_settings, &_settings_game);
 	HandleOldDiffCustom(true);
 }
 
