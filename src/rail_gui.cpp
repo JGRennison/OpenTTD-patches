@@ -743,8 +743,8 @@ struct BuildRailToolbarWindow : Window {
 	virtual bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
 	{
 		if (widget == WID_RAT_CONVERT_RAIL) {
-			uint64 args[] = { STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL };
-			GuiShowTooltips(this, STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_EXTRA, lengthof(args), args, close_cond);
+			SetDParam(0, STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL);
+			GuiShowTooltips(this, STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_EXTRA, close_cond, 1);
 			return true;
 		}
 		return false;

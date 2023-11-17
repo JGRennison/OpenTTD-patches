@@ -567,14 +567,14 @@ struct CompanyFinancesWindow : Window {
 	{
 		switch (widget) {
 			case WID_CF_INCREASE_LOAN: {
-				uint64 arg = STR_FINANCES_BORROW_TOOLTIP;
-				GuiShowTooltips(this, STR_FINANCES_BORROW_TOOLTIP_EXTRA, 1, &arg, close_cond);
+				SetDParam(0, STR_FINANCES_BORROW_TOOLTIP);
+				GuiShowTooltips(this, STR_FINANCES_BORROW_TOOLTIP_EXTRA, close_cond, 1);
 				return true;
 			}
 
 			case WID_CF_REPAY_LOAN: {
-				uint64 arg = STR_FINANCES_REPAY_TOOLTIP;
-				GuiShowTooltips(this, STR_FINANCES_REPAY_TOOLTIP_EXTRA, 1, &arg, close_cond);
+				SetDParam(0, STR_FINANCES_REPAY_TOOLTIP);
+				GuiShowTooltips(this, STR_FINANCES_REPAY_TOOLTIP_EXTRA, close_cond, 1);
 				return true;
 			}
 

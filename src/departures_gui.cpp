@@ -328,9 +328,8 @@ public:
 			case WID_DB_SHOW_ROADVEHS:
 			case WID_DB_SHOW_SHIPS:
 			case WID_DB_SHOW_PLANES: {
-				uint64 params[1];
-				params[0] = STR_DEPARTURES_SHOW_TRAINS_TOOLTIP + (widget - WID_DB_SHOW_TRAINS);
-				GuiShowTooltips(this, STR_DEPARTURES_SHOW_TYPE_TOOLTIP_CTRL_SUFFIX, 1, params, close_cond);
+				SetDParam(0, STR_DEPARTURES_SHOW_TRAINS_TOOLTIP + (widget - WID_DB_SHOW_TRAINS));
+				GuiShowTooltips(this, STR_DEPARTURES_SHOW_TYPE_TOOLTIP_CTRL_SUFFIX, close_cond, 1);
 				return true;
 			}
 			default:

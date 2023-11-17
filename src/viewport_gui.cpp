@@ -269,7 +269,7 @@ void ShowTownNameTooltip(Window *w, const TileIndex tile)
 	} else {
 		tooltip_string = STR_JUST_STRING2;
 	}
-	GuiShowTooltips(w, tooltip_string, 0, nullptr, TCC_HOVER_VIEWPORT);
+	GuiShowTooltips(w, tooltip_string, TCC_HOVER_VIEWPORT);
 }
 
 void ShowWaypointViewportTooltip(Window *w, const TileIndex tile)
@@ -278,7 +278,7 @@ void ShowWaypointViewportTooltip(Window *w, const TileIndex tile)
 			(_settings_client.gui.waypoint_viewport_tooltip_name == WTNM_ON_IF_HIDDEN && HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES))) return;
 
 	SetDParam(0, GetStationIndex(tile));
-	GuiShowTooltips(w, STR_WAYPOINT_NAME, 0, nullptr, TCC_HOVER_VIEWPORT);
+	GuiShowTooltips(w, STR_WAYPOINT_NAME, TCC_HOVER_VIEWPORT);
 }
 
 void ShowStationViewportTooltip(Window *w, const TileIndex tile)
@@ -314,7 +314,7 @@ void ShowStationViewportTooltip(Window *w, const TileIndex tile)
 
 	if (!msg.empty()) {
 		_temp_special_strings[0] = std::move(msg);
-		GuiShowTooltips(w, SPECSTR_TEMP_START, 0, nullptr, TCC_HOVER_VIEWPORT);
+		GuiShowTooltips(w, SPECSTR_TEMP_START, TCC_HOVER_VIEWPORT);
 	}
 }
 

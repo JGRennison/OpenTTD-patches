@@ -718,7 +718,7 @@ struct TooltipsWindow : public Window
 	int viewport_virtual_top;         ///< Owner viewport state: top
 	bool delete_next_mouse_loop;      ///< Delete window on the next mouse loop
 
-	TooltipsWindow(Window *parent, StringID str, uint paramcount, const uint64 params[], TooltipCloseCondition close_tooltip) : Window(&_tool_tips_desc)
+	TooltipsWindow(Window *parent, StringID str, uint paramcount, TooltipCloseCondition close_tooltip) : Window(&_tool_tips_desc)
 	{
 		this->parent = parent;
 		this->string_id = str;
@@ -829,17 +829,16 @@ struct TooltipsWindow : public Window
  * Shows a tooltip
  * @param parent The window this tooltip is related to.
  * @param str String to be displayed
+ * @param close_tooltip the condition under which the tooltip closes
  * @param paramcount number of params to deal with
- * @param params (optional) up to 5 pieces of additional information that may be added to a tooltip
- * @param close_tooltip when the left (true) or right (false) mouse button is released
  */
-void GuiShowTooltips(Window *parent, StringID str, uint paramcount, const uint64 params[], TooltipCloseCondition close_tooltip)
+void GuiShowTooltips(Window *parent, StringID str, TooltipCloseCondition close_tooltip, uint paramcount)
 {
 	CloseWindowById(WC_TOOLTIPS, 0);
 
 	if (str == STR_NULL || !_cursor.in_window) return;
 
-	new TooltipsWindow(parent, str, paramcount, params, close_tooltip);
+	new TooltipsWindow(parent, str, paramcount, close_tooltip);
 }
 
 void QueryString::HandleEditBox(Window *w, int wid)

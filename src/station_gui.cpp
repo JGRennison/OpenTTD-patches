@@ -1540,8 +1540,9 @@ struct StationViewWindow : public Window {
 	bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
 	{
 		if (widget == WID_SV_RENAME) {
-			uint64 args[] = { STR_STATION_VIEW_RENAME_TOOLTIP, STR_BUTTON_DEFAULT };
-			GuiShowTooltips(this, STR_STATION_VIEW_RENAME_TOOLTIP_EXTRA, lengthof(args), args, close_cond);
+			SetDParam(0, STR_STATION_VIEW_RENAME_TOOLTIP);
+			SetDParam(1, STR_BUTTON_DEFAULT);
+			GuiShowTooltips(this, STR_STATION_VIEW_RENAME_TOOLTIP_EXTRA, close_cond, 2);
 			return true;
 		}
 

@@ -384,9 +384,8 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		switch (widget) {
 			case WID_SCHDISPATCH_ADD: {
 				if (_settings_time.time_in_minutes) {
-					uint64 params[1];
-					params[0] = STR_SCHDISPATCH_ADD_TOOLTIP;
-					GuiShowTooltips(this, STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA, 1, params, close_cond);
+					SetDParam(0, STR_SCHDISPATCH_ADD_TOOLTIP);
+					GuiShowTooltips(this, STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA, close_cond, 1);
 					return true;
 				}
 				break;
@@ -402,7 +401,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				add_suffix(STR_SCHDISPATCH_REMOVE_SCHEDULE_TOOLTIP);
 				add_suffix(STR_SCHDISPATCH_DUPLICATE_SCHEDULE_TOOLTIP);
 				add_suffix(STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES_TOOLTIP);
-				GuiShowTooltips(this, SPECSTR_TEMP_START, 0, nullptr, close_cond);
+				GuiShowTooltips(this, SPECSTR_TEMP_START, close_cond);
 				return true;
 			}
 

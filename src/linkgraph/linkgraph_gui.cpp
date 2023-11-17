@@ -586,11 +586,11 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 			SetDParam(3, i->to_id);
 			SetDParam(4, link.Usage() * 100 / (link.capacity + 1));
 			SetDParamStr(5, buf);
-			GuiShowTooltips(this->window, STR_LINKGRAPH_STATS_TOOLTIP, 0, nullptr, close_cond);
+			GuiShowTooltips(this->window, STR_LINKGRAPH_STATS_TOOLTIP, close_cond);
 			return true;
 		}
 	}
-	GuiShowTooltips(this->window, STR_NULL, 0, nullptr, close_cond);
+	GuiShowTooltips(this->window, STR_NULL, close_cond);
 	return false;
 }
 
@@ -823,19 +823,18 @@ bool LinkGraphLegendWindow::OnTooltip(Point pt, int widget, TooltipCloseConditio
 {
 	if (IsInsideMM(widget, WID_LGL_COMPANY_FIRST, WID_LGL_COMPANY_LAST + 1)) {
 		if (this->IsWidgetDisabled(widget)) {
-			GuiShowTooltips(this, STR_LINKGRAPH_LEGEND_SELECT_COMPANIES, 0, nullptr, close_cond);
+			GuiShowTooltips(this, STR_LINKGRAPH_LEGEND_SELECT_COMPANIES, close_cond);
 		} else {
-			uint64 params[2];
 			CompanyID cid = (CompanyID)(widget - WID_LGL_COMPANY_FIRST);
-			params[0] = STR_LINKGRAPH_LEGEND_SELECT_COMPANIES;
-			params[1] = cid;
-			GuiShowTooltips(this, STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP, 2, params, close_cond);
+			SetDParam(0, STR_LINKGRAPH_LEGEND_SELECT_COMPANIES);
+			SetDParam(1, cid);
+			GuiShowTooltips(this, STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP, close_cond, 2);
 		}
 		return true;
 	}
 	if (IsInsideMM(widget, WID_LGL_CARGO_FIRST, WID_LGL_CARGO_LAST + 1)) {
 		const CargoSpec *cargo = _sorted_cargo_specs[widget - WID_LGL_CARGO_FIRST];
-		GuiShowTooltips(this, cargo->name, 0, nullptr, close_cond);
+		GuiShowTooltips(this, cargo->name, close_cond);
 		return true;
 	}
 	return false;

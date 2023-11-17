@@ -876,9 +876,7 @@ struct DepotWindow : Window {
 		}
 
 		/* Build tooltipstring */
-		static char details[1024];
-		details[0] = '\0';
-		char *pos = details;
+		std::string details;
 
 		for (CargoID cargo_type = 0; cargo_type < NUM_CARGO; cargo_type++) {
 			if (capacity[cargo_type] == 0) continue;
@@ -887,14 +885,13 @@ struct DepotWindow : Window {
 			SetDParam(1, loaded[cargo_type]);   // {CARGO} #2
 			SetDParam(2, cargo_type);           // {SHORTCARGO} #1
 			SetDParam(3, capacity[cargo_type]); // {SHORTCARGO} #2
-			pos = GetString(pos, STR_DEPOT_VEHICLE_TOOLTIP_CARGO, lastof(details));
+			details = GetString(STR_DEPOT_VEHICLE_TOOLTIP_CARGO);
 		}
 
 		/* Show tooltip window */
-		uint64 args[2];
-		args[0] = (whole_chain ? num : v->engine_type);
-		args[1] = (uint64)(size_t)details;
-		GuiShowTooltips(this, whole_chain ? STR_DEPOT_VEHICLE_TOOLTIP_CHAIN : STR_DEPOT_VEHICLE_TOOLTIP, 2, args, TCC_RIGHT_CLICK);
+		SetDParam(0, whole_chain ? num : v->engine_type);
+		SetDParamStr(1, std::move(details));
+		GuiShowTooltips(this, whole_chain ? STR_DEPOT_VEHICLE_TOOLTIP_CHAIN : STR_DEPOT_VEHICLE_TOOLTIP, TCC_RIGHT_CLICK, 2);
 
 		return true;
 	}
@@ -1239,7 +1236,7 @@ void ShowDepotTooltip(Window *w, const TileIndex tile)
 	if (totals.total_vehicle_count == 0) {
 		if (totals.free_wagon_count > 0) {
 			SetDParam(0, totals.free_wagon_count);
-			GuiShowTooltips(w, STR_DEPOT_VIEW_FREE_WAGONS_TOOLTIP, 0, nullptr, TCC_HOVER_VIEWPORT);
+			GuiShowTooltips(w, STR_DEPOT_VIEW_FREE_WAGONS_TOOLTIP, TCC_HOVER_VIEWPORT);
 		}
 		return;
 	}
@@ -1274,5 +1271,5 @@ void ShowDepotTooltip(Window *w, const TileIndex tile)
 		str = STR_DEPOT_VIEW_MIXED_CONTENTS_TOOLTIP;
 	}
 
-	GuiShowTooltips(w, str, 0, nullptr, TCC_HOVER_VIEWPORT);
+	GuiShowTooltips(w, str, TCC_HOVER_VIEWPORT);
 }

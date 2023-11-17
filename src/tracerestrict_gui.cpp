@@ -2729,20 +2729,20 @@ public:
 	{
 		switch (widget) {
 			case TR_WIDGET_SHARE: {
-				uint64 arg = STR_TRACE_RESTRICT_SHARE_TOOLTIP;
-				GuiShowTooltips(this, STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA, 1, &arg, close_cond);
+				SetDParam(0, STR_TRACE_RESTRICT_SHARE_TOOLTIP);
+				GuiShowTooltips(this, STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA, close_cond, 1);
 				return true;
 			}
 
 			case TR_WIDGET_UNSHARE: {
-				uint64 arg = STR_TRACE_RESTRICT_UNSHARE_TOOLTIP;
-				GuiShowTooltips(this, STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA, 1, &arg, close_cond);
+				SetDParam(0, STR_TRACE_RESTRICT_UNSHARE_TOOLTIP);
+				GuiShowTooltips(this, STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA, close_cond, 1);
 				return true;
 			}
 
 			case TR_WIDGET_SHARE_ONTO: {
-				uint64 arg = (this->base_share_plane == DPS_UNSHARE) ? STR_TRACE_RESTRICT_UNSHARE_TOOLTIP : STR_TRACE_RESTRICT_SHARE_TOOLTIP;
-				GuiShowTooltips(this, STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA, 1, &arg, close_cond);
+				SetDParam(0, (this->base_share_plane == DPS_UNSHARE) ? STR_TRACE_RESTRICT_UNSHARE_TOOLTIP : STR_TRACE_RESTRICT_SHARE_TOOLTIP);
+				GuiShowTooltips(this, STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA, close_cond, 1);
 				return true;
 			}
 
