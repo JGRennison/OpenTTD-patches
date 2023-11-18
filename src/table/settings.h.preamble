@@ -131,6 +131,3 @@ static void UpdateTimeSettings(int32 new_value);
 
 #define SDTC_OMANY(var, type, flags, def, max, full, str, strhelp, strval, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname)\
 	SDTG_OMANY(#var, type, flags, _settings_client.var, def, max, full, str, strhelp, strval, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname)
-
-#define SDT_XREF(from, to, extver, xref, xrefcvt)\
-	NSD(Xref, SLE_CONDNULL_X(0, from, to, extver), SettingsXref(xref, xrefcvt))

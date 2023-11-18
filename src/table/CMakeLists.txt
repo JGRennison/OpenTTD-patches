@@ -28,6 +28,7 @@ add_files(
     road_land.h
     roadtypes.h
     roadveh_movement.h
+    settings_compat.h
     sprites.h
     station_land.h
     strgen_tables.h

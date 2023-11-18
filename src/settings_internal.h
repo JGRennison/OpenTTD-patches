@@ -109,21 +109,10 @@ struct SettingDescEnumEntry {
 	StringID str;
 };
 
-struct SettingsXref {
-	const char *target;
-	OnXrefValueConvert *conv;
-
-	SettingsXref() : target(nullptr), conv(nullptr) {}
-	SettingsXref(const char *target_, OnXrefValueConvert *conv_) : target(target_), conv(conv_) {}
-};
-
 /** Properties of config file settings. */
 struct SettingDesc {
-	struct XrefContructorTag {};
 	SettingDesc(const SaveLoad &save, const char *name, SettingFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name) :
 		name(name), flags(flags), guiproc(guiproc), startup(startup), save(save), patx_name(patx_name) {}
-	SettingDesc(XrefContructorTag tag, SaveLoad save, SettingsXref xref) :
-		name(nullptr), flags(SF_NONE), guiproc(nullptr), startup(false), save(save), patx_name(nullptr), xref(xref) {}
 	virtual ~SettingDesc() = default;
 
 	const char *name;       ///< Name of the setting. Used in configuration file and for console
@@ -133,7 +122,6 @@ struct SettingDesc {
 	SaveLoad save;          ///< Internal structure (going to savegame, parts to config)
 
 	const char *patx_name;  ///< Name to save/load setting from in PATX chunk, if nullptr save/load from PATS chunk as normal
-	SettingsXref xref;      ///< Details of SettingDesc to use instead of the contents of this one, useful for loading legacy savegames, if target field nullptr save/load as normal
 
 	bool IsEditable(bool do_command = false) const;
 	SettingType GetType() const;
@@ -353,16 +341,6 @@ struct NullSettingDesc : SettingDesc {
 	bool IsSameValue(const IniItem *item, void *object) const override { NOT_REACHED(); }
 };
 
-/** Setting cross-reference type. */
-struct XrefSettingDesc : SettingDesc {
-	XrefSettingDesc(const SaveLoad &save, SettingsXref xref) :
-		SettingDesc(SettingDesc::XrefContructorTag(), save, xref) {}
-
-	void FormatValue(char *buf, const char *last, const void *object) const override { NOT_REACHED(); }
-	void ParseValue(const IniItem *item, void *object) const override { NOT_REACHED(); }
-	bool IsSameValue(const IniItem *item, void *object) const override { NOT_REACHED(); }
-};
-
 typedef std::initializer_list<std::unique_ptr<const SettingDesc>> SettingTable;
 
 const SettingDesc *GetSettingFromName(const char *name);
@@ -375,5 +353,21 @@ bool SetSettingValue(const IntSettingDesc *sd, int32 value, bool force_newgame =
 bool SetSettingValue(const StringSettingDesc *sd, const std::string value, bool force_newgame = false);
 
 void IterateSettingsTables(std::function<void(const SettingTable &, void *)> handler);
+
+enum class SettingsCompatType : uint8 {
+	Null,
+	Setting,
+	Xref,
+};
+
+struct SettingsCompat {
+	std::string name;                 ///< Name of the field.
+	SettingsCompatType type;          ///< Compat type
+	uint16 length;                    ///< Length of the NULL field.
+	SaveLoadVersion version_from;     ///< Save/load the variable starting from this savegame version.
+	SaveLoadVersion version_to;       ///< Save/load the variable before this savegame version.
+	SlXvFeatureTest ext_feature_test; ///< Extended feature test
+	OnXrefValueConvert *xrefconv;     ///< Value conversion for xref
+};
 
 #endif /* SETTINGS_INTERNAL_H */

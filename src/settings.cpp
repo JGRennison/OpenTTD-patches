@@ -91,6 +91,7 @@
 
 #include "table/strings.h"
 #include "table/settings.h"
+#include "table/settings_compat.h"
 
 #include <algorithm>
 #include <vector>
@@ -3113,55 +3114,79 @@ void IConsoleListSettings(const char *prefilter, bool show_defaults)
 	IConsolePrintF(CC_WARNING, "Use 'setting' command to change a value");
 }
 
-/**
- * Load handler for settings, which don't go in the PATX chunk, and which are a cross-reference to another setting
- * @param osd SettingDesc struct containing all information
- * @param object can be either nullptr in which case we load global variables or
- * a pointer to a struct which is getting saved
- */
-static void LoadSettingsXref(const SettingDesc *osd, void *object) {
-	DEBUG(sl, 3, "PATS chunk: Loading xref setting: '%s'", osd->xref.target);
-	const SettingDesc *setting_xref = GetSettingFromFullName(osd->xref.target);
-	assert(setting_xref != nullptr);
-
-	// Generate a new SaveLoad from the xref target using the version params from the source
-	SaveLoad sld = setting_xref->save;
-	sld.version_from     = osd->save.version_from;
-	sld.version_to       = osd->save.version_to;
-	sld.ext_feature_test = osd->save.ext_feature_test;
-
-	if (!SlObjectMember(object, sld)) return;
-	if (setting_xref->IsIntSetting()) {
-		const IntSettingDesc *int_setting = setting_xref->AsIntSetting();
-		int64 val = int_setting->Read(object);
-		if (osd->xref.conv != nullptr) val = osd->xref.conv(val);
-		int_setting->MakeValueValidAndWrite(object, val);
-	}
-}
+struct LoadSettingsItem {
+	SettingsCompat compat;
+	const SettingDesc *setting;
+};
+std::vector<LoadSettingsItem> _gameopt_compat_items;
+std::vector<LoadSettingsItem> _settings_compat_items;
 
 /**
- * Save and load handler for settings, except for those which go in the PATX chunk
+ * Load handler for settings from old-style non-table OPTS and PATS chunks
  * @param settings SettingDesc struct containing all information
+ * @param compat Compatibility table
+ * @param items Load items (filled in on first run)
  * @param object can be either nullptr in which case we load global variables or
  * a pointer to a struct which is getting saved
  */
-static void LoadSettings(const SettingTable &settings, void *object)
+static void LoadSettings(const SettingTable &settings, std::initializer_list<SettingsCompat> compat, std::vector<LoadSettingsItem> &items, void *object)
 {
-	extern SaveLoadVersion _sl_version;
+	if (items.empty()) {
+		/* Populate setting references */
 
-	for (auto &osd : settings) {
-		if (osd->flags & SF_NOT_IN_SAVE) continue;
-		if (osd->patx_name != nullptr) continue;
-		const SaveLoad &sld = osd->save;
-		if (osd->xref.target != nullptr) {
-			if (sld.ext_feature_test.IsFeaturePresent(_sl_version, sld.version_from, sld.version_to)) LoadSettingsXref(osd.get(), object);
-			continue;
+		btree::btree_multimap<std::string_view, const SettingDesc *> names;
+		for (auto &osd : settings) {
+			if (osd->flags & SF_NOT_IN_SAVE) continue;
+			if (osd->name == nullptr) continue;
+			names.insert({osd->name, osd.get()});
 		}
 
-		if (!SlObjectMember(object, osd->save)) continue;
-		if (osd->IsIntSetting()) {
-			const IntSettingDesc *int_setting = osd->AsIntSetting();
-			int_setting->MakeValueValidAndWrite(object, int_setting->Read(object));
+		for (const SettingsCompat &c : compat) {
+			if (c.type == SettingsCompatType::Setting || c.type == SettingsCompatType::Xref) {
+				auto iters = names.equal_range(c.name);
+				assert_msg(iters.first != iters.second, "Setting: %s", c.name.c_str());
+				for (auto it = iters.first; it != iters.second; ++it) {
+					items.push_back({ c, it->second });
+				}
+			} else {
+				items.push_back({ c, nullptr });
+			}
+		}
+	}
+
+	extern SaveLoadVersion _sl_version;
+
+	for (LoadSettingsItem &item : items) {
+		switch (item.compat.type) {
+			case SettingsCompatType::Null:
+				if (item.compat.ext_feature_test.IsFeaturePresent(_sl_version, item.compat.version_from, item.compat.version_to)) SlSkipBytes(item.compat.length);
+				break;
+			case SettingsCompatType::Setting:
+				if (!SlObjectMember(object, item.setting->save)) continue;
+				if (item.setting->IsIntSetting()) {
+					const IntSettingDesc *int_setting = item.setting->AsIntSetting();
+					int_setting->MakeValueValidAndWrite(object, int_setting->Read(object));
+				}
+				break;
+			case SettingsCompatType::Xref:
+				if (item.compat.ext_feature_test.IsFeaturePresent(_sl_version, item.compat.version_from, item.compat.version_to)) {
+					DEBUG(sl, 3, "PATS chunk: Loading xref setting: '%s'", item.compat.name.c_str());
+
+					/* Generate a new SaveLoad from the xref target using the version params from the source */
+					SaveLoad sld = item.setting->save;
+					sld.version_from     = item.compat.version_from;
+					sld.version_to       = item.compat.version_to;
+					sld.ext_feature_test = item.compat.ext_feature_test;
+
+					if (!SlObjectMember(object, sld)) continue;
+					if (item.setting->IsIntSetting()) {
+						const IntSettingDesc *int_setting = item.setting->AsIntSetting();
+						int64 val = int_setting->Read(object);
+						if (item.compat.xrefconv != nullptr) val = item.compat.xrefconv(val);
+						int_setting->MakeValueValidAndWrite(object, val);
+					}
+				}
+				break;
 		}
 	}
 }
@@ -3450,7 +3475,7 @@ static void Load_OPTS()
 	 * a networking environment. This ensures for example that the local
 	 * autosave-frequency stays when joining a network-server */
 	PrepareOldDiffCustom();
-	LoadSettings(_old_gameopt_settings, &_settings_game);
+	LoadSettings(_old_gameopt_settings, _gameopt_compat, _gameopt_compat_items, &_settings_game);
 	HandleOldDiffCustom(true);
 }
 
@@ -3459,12 +3484,12 @@ static void Load_PATS()
 	/* Copy over default setting since some might not get loaded in
 	 * a networking environment. This ensures for example that the local
 	 * currency setting stays when joining a network-server */
-	LoadSettings(_settings, &_settings_game);
+	LoadSettings(_settings, _settings_compat, _settings_compat_items, &_settings_game);
 }
 
 static void Check_PATS()
 {
-	LoadSettings(_settings, &_load_check_data.settings);
+	LoadSettings(_settings, _settings_compat, _settings_compat_items, &_load_check_data.settings);
 }
 
 static void Load_PATX()
