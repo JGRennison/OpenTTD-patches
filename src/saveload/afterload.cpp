@@ -3216,9 +3216,6 @@ bool AfterLoadGame()
 		}
 	}
 
-	/* The center of train vehicles was changed, fix up spacing. */
-	if (IsSavegameVersionBefore(SLV_164)) FixupTrainLengths();
-
 	if (IsSavegameVersionBefore(SLV_165)) {
 		for (Town *t : Town::Iterate()) {
 			/* Set the default cargo requirement for town growth */
@@ -4270,6 +4267,12 @@ bool AfterLoadGame()
 			v->date_of_last_service_newgrf = v->date_of_last_service;
 		}
 	}
+
+	/*
+	 * The center of train vehicles was changed, fix up spacing.
+	 * Delay this until all train and track updates have been performed.
+	 */
+	if (IsSavegameVersionBefore(SLV_164)) FixupTrainLengths();
 
 	InitializeRoadGUI();
 
