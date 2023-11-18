@@ -3220,7 +3220,7 @@ static const SaveLoad _settings_ext_load_desc[] = {
 };
 
 /**
- * Internal structure used in SaveSettingsPatx() and SaveSettingsPlyx()
+ * Internal structure used in SaveSettingsPlyx()
  */
 struct SettingsExtSave {
 	uint32 flags;
@@ -3283,56 +3283,6 @@ static void LoadSettingsPatx(const SettingTable &settings, void *object)
 			DEBUG(sl, 1, "PATX chunk: Could not find setting: '%s', ignoring", current_setting.name);
 			SlSkipBytes(current_setting.setting_length);
 		}
-	}
-}
-
-/**
- * Save handler for settings which go in the PATX chunk
- * @param sd SettingDesc struct containing all information
- * @param object can be either nullptr in which case we load global variables or
- * a pointer to a struct which is getting saved
- */
-static void SaveSettingsPatx(const SettingTable &settings, void *object)
-{
-	SettingsExtSave current_setting;
-
-	struct SettingToAdd {
-		const SettingDesc *setting;
-		uint32 setting_length;
-	};
-	std::vector<SettingToAdd> settings_to_add;
-
-	size_t length = 8;
-	for (auto &sd : settings) {
-		if (sd->patx_name == nullptr) continue;
-		if (sd->flags & SF_ENABLE_TABLE_PATS) continue;
-		uint32 setting_length = (uint32)SlCalcObjMemberLength(object, sd->save);
-		if (!setting_length) continue;
-
-		current_setting.name = sd->patx_name;
-
-		// add length of setting header
-		length += SlCalcObjLength(&current_setting, _settings_ext_save_desc);
-
-		// add length of actual setting
-		length += setting_length;
-
-		// duplicate copy made for compiler backwards compatibility
-		SettingToAdd new_setting = { sd.get(), setting_length };
-		settings_to_add.push_back(new_setting);
-	}
-	SlSetLength(length);
-
-	SlWriteUint32(0);                              // flags
-	SlWriteUint32((uint32)settings_to_add.size()); // settings count
-
-	for (size_t i = 0; i < settings_to_add.size(); i++) {
-		const SettingDesc *desc = settings_to_add[i].setting;
-		current_setting.flags = 0;
-		current_setting.name = desc->patx_name;
-		current_setting.setting_length = settings_to_add[i].setting_length;
-		SlObject(&current_setting, _settings_ext_save_desc);
-		SlObjectMember(object, desc->save);
 	}
 }
 
@@ -3527,11 +3477,6 @@ static void Check_PATX()
 	LoadSettingsPatx(_settings, &_load_check_data.settings);
 }
 
-static void Save_PATX()
-{
-	SaveSettingsPatx(_settings, &_settings_game);
-}
-
 struct PATSChunkInfo
 {
 	static SaveLoadVersion GetLoadVersion()
@@ -3554,7 +3499,7 @@ struct PATSChunkInfo
 static const ChunkHandler setting_chunk_handlers[] = {
 	{ 'OPTS', nullptr,   Load_OPTS, nullptr, nullptr,    CH_RIFF },
 	MakeConditionallyUpstreamChunkHandler<'PATS', PATSChunkInfo>(nullptr, Load_PATS, nullptr, Check_PATS, CH_RIFF),
-	{ 'PATX', Save_PATX, Load_PATX, nullptr, Check_PATX, CH_RIFF },
+	{ 'PATX', nullptr,   Load_PATX, nullptr, Check_PATX, CH_RIFF },
 };
 
 extern const ChunkHandlerTable _setting_chunk_handlers(setting_chunk_handlers);
