@@ -137,6 +137,13 @@ extern btree::btree_map<uint64, Money> _cargo_packet_deferred_payments;
 			for (CargoPacket *cp : iter.second) {
 				st->goods[v->cargo_type].CreateData().cargo.AfterLoadIncreaseReservationCount(cp->count);
 				v->cargo.Append(cp, VehicleCargoList::MTA_LOAD);
+				if (cp->source_xy != INVALID_TILE) {
+					cp->UpdateLoadingTile(cp->source_xy);
+				}
+#ifdef WITH_FULL_ASSERTS
+				/* CPF_IN_VEHICLE in flags is a NOSAVE; it tells if cargo is in a vehicle or not. Restore the value in here. */
+				cp->flags |= CPF_IN_VEHICLE;
+#endif /* WITH_FULL_ASSERTS */
 			}
 		}
 		_veh_cpp_packets.clear();
