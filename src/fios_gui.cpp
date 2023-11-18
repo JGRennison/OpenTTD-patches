@@ -66,6 +66,7 @@ void LoadCheckData::Clear()
 	this->debug_config_data.clear();
 
 	this->sl_is_ext_version = false;
+	this->version_name.clear();
 }
 
 /** Load game/scenario with optional content download */
@@ -489,6 +490,11 @@ public:
 		/* Details panel */
 		tr.bottom -= FONT_HEIGHT_NORMAL - 1;
 		if (tr.top > tr.bottom) return;
+
+		if (!_load_check_data.version_name.empty()) {
+			SetDParamStr(0, _load_check_data.version_name);
+			tr.top = DrawStringMultiLine(tr, STR_JUST_RAW_STRING, TC_GREEN);
+		}
 
 		if (!_load_check_data.checkable) {
 			/* Old savegame, no information available */
