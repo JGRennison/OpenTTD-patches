@@ -41,7 +41,7 @@ enum SettingFlag : uint32 {
 	SF_GUI_ADVISE_DEFAULT      = 1 << 19, ///< Advise the user to leave this setting at its default value
 	SF_ENUM_PRE_CB_VALIDATE    = 1 << 20, ///< Call the pre_check callback for enum incoming value validation
 	SF_CONVERT_BOOL_TO_INT     = 1 << 21, ///< Accept a boolean value when loading an int-type setting from the config file
-	SF_ENABLE_TABLE_PATS       = 1 << 22, ///< Enable saving/loading from table mode PATS chunks even when patx_name is set
+	SF_PATCH                   = 1 << 22, ///< Do not load from upstream table-mode PATS, also for GUI filtering of "patch" settings
 	SF_PRIVATE                 = 1 << 23, ///< Setting is in private ini
 	SF_SECRET                  = 1 << 24, ///< Setting is in secrets ini
 };
@@ -62,13 +62,11 @@ enum SettingCategory {
 	SC_BASIC_LIST      = 1 << 0,    ///< Settings displayed in the list of basic settings.
 	SC_ADVANCED_LIST   = 1 << 1,    ///< Settings displayed in the list of advanced settings.
 	SC_EXPERT_LIST     = 1 << 2,    ///< Settings displayed in the list of expert settings.
-	SC_PATCH_LIST      = 1 << 3,    ///< Settings displayed in the list of non-vanilla settings.
 
 	/* Setting classification */
 	SC_BASIC           = SC_BASIC_LIST | SC_ADVANCED_LIST | SC_EXPERT_LIST,  ///< Basic settings are part of all lists.
 	SC_ADVANCED        = SC_ADVANCED_LIST | SC_EXPERT_LIST,                  ///< Advanced settings are part of advanced and expert list.
 	SC_EXPERT          = SC_EXPERT_LIST,                                     ///< Expert settings can only be seen in the expert list.
-	SC_PATCH           = SC_PATCH_LIST,                                      ///< Patch settings which are shown in the patch list.
 
 	SC_END,
 };

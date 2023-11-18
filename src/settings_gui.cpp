@@ -1385,7 +1385,7 @@ bool SettingEntry::IsVisibleByRestrictionMode(RestrictionMode mode) const
 
 	if (mode == RM_BASIC) return (this->setting->cat & SC_BASIC_LIST) != 0;
 	if (mode == RM_ADVANCED) return (this->setting->cat & SC_ADVANCED_LIST) != 0;
-	if (mode == RM_PATCH) return (this->setting->cat & SC_PATCH_LIST) != 0;
+	if (mode == RM_PATCH) return (this->setting->flags & SF_PATCH) != 0;
 
 	/* Read the current value. */
 	const void *object = ResolveObject(&GetGameSettings(), sd);

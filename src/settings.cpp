@@ -3218,7 +3218,6 @@ static std::vector<const SettingDesc *> MakeSettingsPatxList(const SettingTable 
 
 	for (auto &sd : settings) {
 		if (sd->patx_name == nullptr) continue;
-		if ((sd->flags & SF_ENABLE_TABLE_PATS) && SlXvIsFeaturePresent(XSLFI_TABLE_PATS)) continue;
 		sorted_patx_settings.push_back(sd.get());
 	}
 
