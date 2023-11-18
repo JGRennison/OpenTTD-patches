@@ -13,6 +13,7 @@
 #include "sl/saveload_types.h"
 
 #include <functional>
+#include <initializer_list>
 #include <vector>
 
 enum SaveToConfigFlags : uint32;
@@ -351,6 +352,71 @@ bool SetSettingValue(const IntSettingDesc *sd, int32 value, bool force_newgame =
 bool SetSettingValue(const StringSettingDesc *sd, const std::string value, bool force_newgame = false);
 
 void IterateSettingsTables(std::function<void(const SettingTable &, void *)> handler);
+std::initializer_list<SettingTable> GetSaveLoadSettingsTables();
+const SettingTable &GetLinkGraphSettingTable();
+uint GetSettingIndexByFullName(const SettingTable &table, const char *name);
+
+/**
+ * Get the setting at the given index into a settings table.
+ * @param table The settings table.
+ * @param index The index to look for.
+ * @return The setting at the given index, or nullptr when the index is invalid.
+ */
+inline const SettingDesc *GetSettingDescription(const SettingTable &table, uint index)
+{
+	if (index >= table.size()) return nullptr;
+	return table.begin()[index].get();
+}
+
+struct SettingTablesIterator {
+	typedef const std::unique_ptr<const SettingDesc> value_type;
+	typedef const std::unique_ptr<const SettingDesc> *pointer;
+	typedef const std::unique_ptr<const SettingDesc> &reference;
+	typedef size_t difference_type;
+	typedef std::forward_iterator_tag iterator_category;
+
+	explicit SettingTablesIterator(std::initializer_list<SettingTable> &src, std::initializer_list<SettingTable>::iterator outer)
+		: src(src), outer(outer)
+	{
+		this->ResetInner();
+		this->ValidateIndex();
+	};
+
+	explicit SettingTablesIterator(std::initializer_list<SettingTable> &src, std::initializer_list<SettingTable>::iterator outer, SettingTable::iterator inner)
+		: src(src), outer(outer), inner(inner) {}
+
+	bool operator==(const SettingTablesIterator &other) const { return this->outer == other.outer && this->inner == other.inner; }
+	bool operator!=(const SettingTablesIterator &other) const { return !(*this == other); }
+	const std::unique_ptr<const SettingDesc> &operator*() const { return *this->inner; }
+	SettingTablesIterator &operator++() { ++this->inner; this->ValidateIndex(); return *this; }
+
+private:
+	std::initializer_list<SettingTable> &src;
+	std::initializer_list<SettingTable>::iterator outer;
+	SettingTable::iterator inner;
+
+	void ResetInner()
+	{
+		this->inner = (this->outer != this->src.end()) ? this->outer->begin() : SettingTable::iterator();
+	}
+
+	void ValidateIndex()
+	{
+		while (this->outer != this->src.end() && this->inner == this->outer->end()) {
+			++this->outer;
+			this->ResetInner();
+		}
+	}
+};
+
+/* Wrapper to iterate the settings within a set of settings tables: std::initializer_list<SettingTable> */
+struct IterateSettingTables {
+	std::initializer_list<SettingTable> tables;
+
+	IterateSettingTables(std::initializer_list<SettingTable> tables) : tables(tables) {}
+	SettingTablesIterator begin() { return SettingTablesIterator(this->tables, this->tables.begin()); }
+	SettingTablesIterator end() { return SettingTablesIterator(this->tables, this->tables.end(), SettingTable::iterator()); }
+};
 
 enum class SettingsCompatType : uint8 {
 	Null,

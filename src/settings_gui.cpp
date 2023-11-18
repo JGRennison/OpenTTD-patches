@@ -55,9 +55,6 @@
 
 #include "safeguards.h"
 
-uint GetSettingIndexByFullName(const char *name);
-const SettingDesc *GetSettingDescription(uint index);
-
 extern void FlushDeparturesWindowTextCaches();
 
 static const StringID _autosave_dropdown[] = {
@@ -2444,10 +2441,11 @@ static SettingsContainer &GetSettingsTree()
 				cdist->Add(new SettingEntry("linkgraph.distribution_default"));
 				SettingsPage *cdist_override = cdist->Add(new SettingsPage(STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST_PER_CARGO_OVERRIDE));
 				{
-					uint base_index = GetSettingIndexByFullName("linkgraph.distribution_per_cargo[0]");
+					const SettingTable &linkgraph_table = GetLinkGraphSettingTable();
+					uint base_index = GetSettingIndexByFullName(linkgraph_table, "linkgraph.distribution_per_cargo[0]");
 					assert(base_index != UINT32_MAX);
 					for (CargoID c = 0; c < NUM_CARGO; c++) {
-						cdist_override->Add(new CargoDestPerCargoSettingEntry(c, GetSettingDescription(base_index + c)->AsIntSetting()));
+						cdist_override->Add(new CargoDestPerCargoSettingEntry(c, GetSettingDescription(linkgraph_table, base_index + c)->AsIntSetting()));
 					}
 				}
 				cdist->Add(new SettingEntry("linkgraph.accuracy"));

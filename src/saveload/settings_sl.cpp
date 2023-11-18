@@ -21,8 +21,6 @@
 
 #include "../safeguards.h"
 
-const SettingTable &GetSettingsTableInternal();
-
 namespace upstream_sl {
 
 /**
@@ -34,7 +32,7 @@ namespace upstream_sl {
 static std::vector<SaveLoad> GetSettingsDesc(bool is_loading)
 {
 	std::vector<SaveLoad> saveloads;
-	for (auto &sd : GetSettingsTableInternal()) {
+	for (auto &sd : IterateSettingTables(GetSaveLoadSettingsTables())) {
 		if (sd->flags & SF_NOT_IN_SAVE) continue;
 		if (is_loading && !SlXvIsFeaturePresent(XSLFI_TABLE_PATS) && (sd->flags & SF_PATCH)) continue;
 		if (!sd->save.ext_feature_test.IsFeaturePresent(_sl_version, sd->save.version_from, sd->save.version_to)) continue;
@@ -170,7 +168,7 @@ static void LoadSettings(void *object, const SaveLoadCompatTable &slct)
 	if (!IsSavegameVersionBefore(SLV_RIFF_TO_ARRAY) && SlIterateArray() != -1) SlErrorCorrupt("Too many settings entries");
 
 	/* Ensure all IntSettings are valid (min/max could have changed between versions etc). */
-	for (auto &sd : GetSettingsTableInternal()) {
+	for (auto &sd : IterateSettingTables(GetSaveLoadSettingsTables())) {
 		if (sd->flags & SF_NOT_IN_SAVE) continue;
 		if ((sd->flags & SF_NO_NETWORK_SYNC) && _networking && !_network_server) continue;
 		if (!sd->save.ext_feature_test.IsFeaturePresent(_sl_xv_feature_static_versions, MAX_LOAD_SAVEGAME_VERSION, sd->save.version_from, sd->save.version_to)) continue;

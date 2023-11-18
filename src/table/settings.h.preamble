@@ -13,6 +13,9 @@ static size_t ConvertLandscape(const char *value);
 /* Callback function used in _settings[] as well as _gui_settings[] */
 static void UpdateTimeSettings(int32 new_value);
 
+/* Callback function used for various settings */
+static bool CheckTTDPatchSettingFlag(uint flag);
+
 
 /****************************
  * OTTD specific INI stuff

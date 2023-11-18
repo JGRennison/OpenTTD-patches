@@ -20,8 +20,6 @@
 typedef LinkGraph::BaseNode Node;
 typedef LinkGraph::BaseEdge Edge;
 
-const SettingDesc *GetSettingDescription(uint index);
-
 static uint16 _num_nodes;
 
 /**
@@ -58,28 +56,21 @@ void GetLinkGraphJobDayLengthScaleAfterLoad(LinkGraphJob *lgj)
 SaveLoadTable GetLinkGraphJobDesc()
 {
 	static std::vector<SaveLoad> saveloads;
-	static const char *prefix = "linkgraph.";
 
 	/* Build the SaveLoad array on first call and don't touch it later on */
 	if (saveloads.size() == 0) {
 		size_t offset_gamesettings = cpp_offsetof(GameSettings, linkgraph);
 		size_t offset_component = cpp_offsetof(LinkGraphJob, settings);
 
-		size_t prefixlen = strlen(prefix);
-
-		int setting = 0;
-		const SettingDesc *desc = GetSettingDescription(setting);
-		while (desc != nullptr) {
-			if (desc->name != nullptr && strncmp(desc->name, prefix, prefixlen) == 0) {
-				SaveLoad sl = desc->save;
-				if (GetVarMemType(sl.conv) != SLE_VAR_NULL) {
-					char *&address = reinterpret_cast<char *&>(sl.address);
-					address -= offset_gamesettings;
-					address += offset_component;
-				}
-				saveloads.push_back(sl);
+		const SettingTable &linkgraph_table = GetLinkGraphSettingTable();
+		for (const auto &desc : linkgraph_table) {
+			SaveLoad sl = desc->save;
+			if (GetVarMemType(sl.conv) != SLE_VAR_NULL) {
+				char *&address = reinterpret_cast<char *&>(sl.address);
+				address -= offset_gamesettings;
+				address += offset_component;
 			}
-			desc = GetSettingDescription(++setting);
+			saveloads.push_back(sl);
 		}
 
 		const SaveLoad job_desc[] = {

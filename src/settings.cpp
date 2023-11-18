@@ -124,12 +124,33 @@ static bool _fallback_gui_zoom_max = false;
  * As such, they are not part of this list.
  */
 static const SettingTable _generic_setting_tables[] = {
-	_settings,
+	_difficulty_settings,
+	_economy_settings,
+	_game_settings,
 	_gui_settings,
+	_linkgraph_settings,
+	_locale_settings,
 	_multimedia_settings,
 	_network_settings,
 	_news_display_settings,
+	_pathfinding_settings,
+	_script_settings,
+	_world_settings,
 	_scenario_settings,
+};
+
+/**
+ * List of all the save/load (PATS/PATX) setting tables.
+ */
+static const std::initializer_list<SettingTable> _saveload_setting_tables{
+	_difficulty_settings,
+	_economy_settings,
+	_game_settings,
+	_linkgraph_settings,
+	_locale_settings,
+	_pathfinding_settings,
+	_script_settings,
+	_world_settings,
 };
 
 void IterateSettingsTables(std::function<void(const SettingTable &, void *)> handler)
@@ -206,17 +227,6 @@ enum IniFileVersion : uint32 {
 };
 
 const uint16 INIFILE_VERSION = (IniFileVersion)(IFV_MAX_VERSION - 1); ///< Current ini-file version of OpenTTD.
-
-/**
- * Get the setting at the given index into the settings table.
- * @param index The index to look for.
- * @return The setting at the given index, or nullptr when the index is invalid.
- */
-const SettingDesc *GetSettingDescription(uint index)
-{
-	if (index >= _settings.size()) return nullptr;
-	return _settings.begin()[index].get();
-}
 
 /**
  * Find the index value of a ONEofMANY type in a string separated by |
@@ -2805,14 +2815,6 @@ CommandCost CmdChangeSetting(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 	return CommandCost();
 }
 
-const char *GetSettingNameByIndex(uint32 idx)
-{
-	const SettingDesc *sd = GetSettingDescription(idx);
-	if (sd == nullptr) return nullptr;
-
-	return sd->name;
-}
-
 /**
  * Change one of the per-company settings.
  * @param tile unused
@@ -2961,22 +2963,14 @@ void StringSettingDesc::ChangeValue(const void *object, std::string &newval, Sav
 	if (_save_config) SaveToConfig(ini_save_flags);
 }
 
-uint GetSettingIndexByFullName(const char *name)
+uint GetSettingIndexByFullName(const SettingTable &table, const char *name)
 {
 	uint index = 0;
-	for (auto &sd : _settings) {
+	for (auto &sd : table) {
 		if (sd->name != nullptr && strcmp(sd->name, name) == 0) return index;
 		index++;
 	}
 	return UINT32_MAX;
-}
-
-const SettingDesc *GetSettingFromFullName(const char *name)
-{
-	for (auto &sd : _settings) {
-		if (sd->name != nullptr && strcmp(sd->name, name) == 0) return sd.get();
-	}
-	return nullptr;
 }
 
 /* Those 2 functions need to be here, else we have to make some stuff non-static
@@ -3129,13 +3123,13 @@ std::vector<LoadSettingsItem> _settings_compat_items;
  * @param object can be either nullptr in which case we load global variables or
  * a pointer to a struct which is getting saved
  */
-static void LoadSettings(const SettingTable &settings, std::initializer_list<SettingsCompat> compat, std::vector<LoadSettingsItem> &items, void *object)
+static void LoadSettings(std::initializer_list<SettingTable> settings, std::initializer_list<SettingsCompat> compat, std::vector<LoadSettingsItem> &items, void *object)
 {
 	if (items.empty()) {
 		/* Populate setting references */
 
 		btree::btree_multimap<std::string_view, const SettingDesc *> names;
-		for (auto &osd : settings) {
+		for (auto &osd : IterateSettingTables(settings)) {
 			if (osd->flags & SF_NOT_IN_SAVE) continue;
 			if (osd->name == nullptr) continue;
 			names.insert({osd->name, osd.get()});
@@ -3212,11 +3206,11 @@ static void LoadSettings(const SettingTable &settings, std::initializer_list<Set
  * Prepare a sorted list of settings to be potentially be loaded out of the PATX chunk
  * This is to enable efficient lookup of settings by name
  */
-static std::vector<const SettingDesc *> MakeSettingsPatxList(const SettingTable &settings)
+static std::vector<const SettingDesc *> MakeSettingsPatxList(std::initializer_list<SettingTable> settings)
 {
 	std::vector<const SettingDesc *> sorted_patx_settings;
 
-	for (auto &sd : settings) {
+	for (auto &sd : IterateSettingTables(settings)) {
 		if (sd->patx_name == nullptr) continue;
 		sorted_patx_settings.push_back(sd.get());
 	}
@@ -3260,13 +3254,15 @@ static const SaveLoad _settings_ext_save_desc[] = {
 
 /**
  * Load handler for settings which go in the PATX chunk
- * @param osd SettingDesc struct containing all information
  * @param object can be either nullptr in which case we load global variables or
  * a pointer to a struct which is getting saved
  */
-static void LoadSettingsPatx(const SettingTable &settings, void *object)
+static void LoadSettingsPatx(void *object)
 {
-	std::vector<const SettingDesc *> sorted_patx_settings = MakeSettingsPatxList(settings);
+	static std::vector<const SettingDesc *> sorted_patx_settings;
+	if (sorted_patx_settings.empty()) {
+		sorted_patx_settings = MakeSettingsPatxList(_saveload_setting_tables);
+	}
 
 	SettingsExtLoad current_setting;
 
@@ -3474,7 +3470,7 @@ static void Load_OPTS()
 	 * a networking environment. This ensures for example that the local
 	 * autosave-frequency stays when joining a network-server */
 	PrepareOldDiffCustom();
-	LoadSettings(_old_gameopt_settings, _gameopt_compat, _gameopt_compat_items, &_settings_game);
+	LoadSettings({ _old_gameopt_settings }, _gameopt_compat, _gameopt_compat_items, &_settings_game);
 	HandleOldDiffCustom(true);
 }
 
@@ -3483,22 +3479,22 @@ static void Load_PATS()
 	/* Copy over default setting since some might not get loaded in
 	 * a networking environment. This ensures for example that the local
 	 * currency setting stays when joining a network-server */
-	LoadSettings(_settings, _settings_compat, _settings_compat_items, &_settings_game);
+	LoadSettings(_saveload_setting_tables, _settings_compat, _settings_compat_items, &_settings_game);
 }
 
 static void Check_PATS()
 {
-	LoadSettings(_settings, _settings_compat, _settings_compat_items, &_load_check_data.settings);
+	LoadSettings(_saveload_setting_tables, _settings_compat, _settings_compat_items, &_load_check_data.settings);
 }
 
 static void Load_PATX()
 {
-	LoadSettingsPatx(_settings, &_settings_game);
+	LoadSettingsPatx(&_settings_game);
 }
 
 static void Check_PATX()
 {
-	LoadSettingsPatx(_settings, &_load_check_data.settings);
+	LoadSettingsPatx(&_load_check_data.settings);
 }
 
 struct PATSChunkInfo
@@ -3545,7 +3541,12 @@ void SetupTimeSettings()
 	_settings_time = (_game_mode == GM_MENU || _settings_client.gui.override_time_settings) ? _settings_client.gui : _settings_game.game_time;
 }
 
-const SettingTable &GetSettingsTableInternal()
+std::initializer_list<SettingTable> GetSaveLoadSettingsTables()
 {
-	return _settings;
+	return _saveload_setting_tables;
+}
+
+const SettingTable &GetLinkGraphSettingTable()
+{
+	return _linkgraph_settings;
 }
