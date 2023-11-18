@@ -152,6 +152,9 @@ STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_HELPTEXT            :A velocidade m�
 STR_CONFIG_SETTING_RAIL_DEPOT_SPEED_LIMIT                       :Límite máximo de velocidade en depósito de ferrocarril: {STRING}
 STR_CONFIG_SETTING_RAIL_DEPOT_SPEED_LIMIT_HELPTEXT              :A velocidade máxima permitida para trens ao entrar ou saír dun depósito de ferrocarril.
 
+STR_CONFIG_SETTING_NON_LEADING_ENGINES_KEEP_NAME                :Manter o nome personalizado das máquinas non-cabeceira: {STRING}
+STR_CONFIG_SETTING_NON_LEADING_ENGINES_KEEP_NAME_HELPTEXT       :Se as máquinas de tren con un nome personalizado deben manter o seu nome cando se moven a unha posición que non lidera nun tren.
+
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING                :Buscar ruta ata detrás dun sinal dun só sentido: {STRING}
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING_HELPTEXT       :Cando se habilita, o buscador de rutas de tren YAPF pode buscar unha ruta ata detrás dun sinal de un só sentido.
 
@@ -279,6 +282,9 @@ STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_HIERARCHY_NAME_HELPTEXT   :Cando se habili
 STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW            :Amosar o número de orde na ventá de vista do vehículo: {STRING}
 STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW_HELPTEXT   :Cando está activado, a orde actual do vehículo amósase na barra de inicio/parada da ventá de vista do vehículo.
 
+STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION                   :Ocultar as ubicacións predeterminadas das ordes de paradas: {STRING}
+STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION_HELPTEXT          :Cando está activado, ocúltase a ubicación de parada da orde cando coincide co predeterminado.
+
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :Habilitar modos de sinais avanzadas en pontes/túneis: {STRING}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :Habilita o uso de modos avanzados de simulación de sinais en pontes e túneis. Cando se desactiva, os pontes/túneis que non están xa en modo avanzado non se poden cambiar a modo avanzado, sen embargo outros xogadores poden escoller habilitar esta opción e usar o modo avanzado.
 
@@ -392,6 +398,9 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :liñas planas
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :Autogravado: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Selecciona o intervalo entre gravados automáticos das partidas
+
+STR_CONFIG_SETTING_AUTOSAVE_REALTIME                            :O Intervalo de autogravado utiliza tempo real: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_REALTIME_HELPTEXT                   :Cando se activa, os intervalos de autogravado utilizan o tempo real, (cando se pausa, o autogravado parará ata que fagas algún cambio no xogo).{}Cando está deshabiltiado, os intervalos son o tempo simulado polo xogo.
 
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT               :Autogardado coas desconexións da rede: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT_HELPTEXT      :Cando está habilitado, os clientes multixogadores automáticamente gardan a partida cando se desconectan do servidor
@@ -517,6 +526,9 @@ STR_CONFIG_SETTING_MIN_CITY_LAND_AREA_HELPTEXT                  :As cidades só 
 
 STR_CONFIG_SETTING_MIN_LAND_AREA_VALUE                          :{NUM}
 STR_CONFIG_SETTING_MIN_LAND_AREA_ZERO                           :Desactivado
+
+STR_CONFIG_SETTING_FLOOD_FROM_EDGES                             :A auga flúe dende os bordos do mapa: {STRING}
+STR_CONFIG_SETTING_FLOOD_FROM_EDGES_HELPTEXT                    :Controla se a auga inunda fúe dende os bordos do mapa ao nivel do mar.
 
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE                        :Axustado do emprazamento das árbores no ártico: {STRING}
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_HELPTEXT               :Axustar emprazametno das árbores arredor da liña de neve no clima ártico. As árbores comenza a desaparecer por enriba da liña de neve. As árbores son unha misttura de árbores temperadas e ártica xusto debaixo da liña de neve. Por debaixo diso son temeperadas.
@@ -827,6 +839,7 @@ STR_TRACE_RESTRICT_RESERVE_THROUGH                              :Reservar a trav
 STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL                       :Cancelar reservar a través
 STR_TRACE_RESTRICT_LONG_RESERVE                                 :Longa reserva
 STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL                          :Cancelar longa reserva
+STR_TRACE_RESTRICT_LONG_RESERVE_UNLESS_STOPPING                 :Longa reserva (salvo parada)
 STR_TRACE_RESTRICT_WAIT_AT_PBS                                  :Esperar no sinal de ruta PBS
 STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL                           :Cancelar esperar no sinal de ruta PBS
 STR_TRACE_RESTRICT_PBS_RES_END_WAIT                             :Agarda diante do sinal de ruta PBS para a reserva que remata aquí
@@ -1996,6 +2009,7 @@ STR_SCHDISPATCH_NAMED_SCHEDULE_ID                               :{BLACK}{STRING}
 STR_SCHDISPATCH_RENAME_SCHEDULE_TOOLTIP                         :{BLACK}Nome do programa
 STR_SCHDISPATCH_RENAME_SCHEDULE_CAPTION                         :{WHITE}Nome do programa
 STR_ERROR_CAN_T_RENAME_SCHEDULE                                 :{WHITE}Non se pode renomear programa...
+STR_SCHDISPATCH_MOVE_SCHEDULE                                   :{BLACK}Cambiar posición do programa actual na lista
 
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}Última saída ás {DATE_WALLCLOCK_TINY}.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}A última saída aínda non saíu, sairá ás {DATE_WALLCLOCK_TINY}.
@@ -2119,6 +2133,8 @@ STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :Detallado
 
 STR_CONFIG_SETTING_CITY_IN_LABEL                                :Amosar se é cidade na etiqueta do nome da vila: {STRING}
 STR_CONFIG_SETTING_CITY_IN_LABEL_HELPTEXT                       :Amosar se unha vila tamén é unha cidade na súa etiqueta no mapa
+
+STR_CONFIG_SETTING_RESTRICT_PATCH                               :Axustes non-estándar que non están no OpenTTD Vanilla
 
 STR_VIEWPORT_TOWN_COLOUR                                        :{1:COLOUR}{0:TOWN}
 STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {COLOUR}({COMMA})
