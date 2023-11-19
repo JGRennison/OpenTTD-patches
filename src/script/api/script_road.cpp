@@ -96,6 +96,7 @@
 {
 	if (!ScriptMap::IsValidTile(tile)) return false;
 	if (!IsRoadTypeAvailable(road_type)) return false;
+	
 	return ::MayHaveRoad(tile) && HasBit(::GetPresentRoadTypes(tile), (::RoadType)road_type);
 }
 
@@ -103,16 +104,33 @@
 {
 	if (!ScriptMap::IsValidTile(tile)) return false;
 	if (road_tram_type != ROADTRAMTYPES_ROAD && road_tram_type != ROADTRAMTYPES_TRAM) return false;
-	return ::GetAnyRoadBits(tile, (::RoadTramType)road_tram_type, false) != ROAD_NONE;
+
+	return ::GetAnyRoadBits(tile, (::RoadTramType)(road_tram_type >> 1), false) != ROAD_NONE;
+}
+
+/* static */ ScriptRoad::RoadTiles ScriptRoad::GetRoadTiles(TileIndex tile, RoadTramTypes road_tram_type)
+{
+	if (!ScriptMap::IsValidTile(tile)) return ROADTILES_NONE;
+	if (road_tram_type != ROADTRAMTYPES_ROAD && road_tram_type != ROADTRAMTYPES_TRAM) return ROADTILES_NONE;
+
+	return (ScriptRoad::RoadTiles)::GetAnyRoadBits(tile, (::RoadTramType)(road_tram_type >> 1), false);
+}
+
+/* static */ ScriptRoad::OneWayInfo ScriptRoad::GetOneWayInfo(TileIndex tile)
+{
+	if (!ScriptMap::IsValidTile(tile)) return ONEWAY_NONE;
+	if (::GetAnyRoadBits(tile, RTT_ROAD, false) == ROAD_NONE) return ONEWAY_NONE;
+
+	return (ScriptRoad::OneWayInfo)::GetRoadCachedOneWayState(tile);
 }
 
 /* static */ ScriptRoad::RoadType ScriptRoad::GetRoadType(TileIndex tile, RoadTramTypes road_tram_type)
 {
 	if (!ScriptMap::IsValidTile(tile)) return ROADTYPE_INVALID;
 	if (road_tram_type != ROADTRAMTYPES_ROAD && road_tram_type != ROADTRAMTYPES_TRAM) return ROADTYPE_INVALID;
-	if (::GetAnyRoadBits(tile, (::RoadTramType)road_tram_type, false) == ROAD_NONE) return ROADTYPE_INVALID;
+	if (::GetAnyRoadBits(tile, (::RoadTramType)(road_tram_type >> 1), false) == ROAD_NONE) return ROADTYPE_INVALID;
 
-	return (RoadType)::GetRoadType(tile, (::RoadTramType)road_tram_type);
+	return (RoadType)::GetRoadType(tile, (::RoadTramType)(road_tram_type >> 1));
 }
 
 /* static */ bool ScriptRoad::AreRoadTilesConnected(TileIndex t1, TileIndex t2)

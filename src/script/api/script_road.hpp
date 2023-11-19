@@ -86,6 +86,42 @@ public:
 	};
 
 	/**
+	 * A bitmap of all the possible road tiles and combinations.
+	 */
+	enum RoadTiles {
+		/* Note: these values represent part of the in-game RoadBits enum and shorthands to T-junctions */
+		ROADTILES_NONE = 0,                            ///< No road tiles
+		ROADTILES_NW = ::ROAD_NW,                      ///< North-west part
+		ROADTILES_SW = ::ROAD_SW,                      ///< South-west part
+		ROADTILES_SE = ::ROAD_SE,                      ///< South-east part
+		ROADTILES_NE = ::ROAD_NE,                      ///< North-east part
+		ROADTILES_X = ::ROAD_X,                        ///< Full road along the x-axis (south-west + north-east)
+		ROADTILES_Y = ::ROAD_Y,                        ///< Full road along the y-axis (north-west + south-east)
+		ROADTILES_N = ::ROAD_N,                        ///< Road at the two northern edges (corner, north-west + north-east)
+		ROADTILES_E = ::ROAD_E,                        ///< Road at the two eastern edges (corner, north-east + south-east)
+		ROADTILES_S = ::ROAD_S,                        ///< Road at the two southern edges (corner, south-east + south-west)
+		ROADTILES_W = ::ROAD_W,                        ///< Road at the two western edges (corner, south-west + north-west)
+		ROADTILES_S_NW = ROADTILES_S | ROADTILES_NW,   ///< T-junction, southern edges + north-west
+		ROADTILES_W_NE = ROADTILES_W | ROADTILES_NE,   ///< T-junction, western edges + north-east
+		ROADTILES_N_SE = ROADTILES_N | ROADTILES_SE,   ///< T-junction, northern edges + south-east
+		ROADTILES_E_SW = ROADTILES_E | ROADTILES_SW,   ///< T-junction, eastern edges + south-west
+		ROADTILES_ALL = ::ROAD_ALL,                    ///< Full 4-way crossing
+	};
+
+	/**
+	 * One-way info of the tile.
+	 */
+	enum OneWayInfo {
+		/* Note: Follows the same pattern as RoadCachedOneWayState. */
+		ONEWAY_NONE = 0,							///< Not a one-way road.
+		ONEWAY_NON_JUNCTION_A,				///< One-way road, no junctions, south-west to north-east + north-east to south-west
+		ONEWAY_NON_JUNCTION_B,				///< One-way road, no junctions, north-west to south-east + south-east to north-west
+		ONEWAY_NO_ACCESS,							///< Road is disallowed in both directions
+		ONEWAY_SIDE_JUNCTION,					///< One-way road junction, can exit
+		ONEWAY_SIDE_JUNCTION_NO_EXIT,	///< One-way road junction, can't exit
+	};
+
+	/**
 	 * Get the name of a road type.
 	 * @param road_type The road type to get the name of.
 	 * @pre IsRoadTypeAvailable(road_type).
@@ -214,6 +250,23 @@ public:
 	 * @return True if the tile contains a RoadType object.
 	 */
 	static bool HasRoadTramType(TileIndex tile, RoadTramTypes road_tram_type);
+
+	/**
+	 * Get the RoadTiles that are on a tile.
+	 * @param tile The tile to check.
+	 * @param road_tram_type The road/tram type to use.
+	 * @pre ScriptMap::IsValidTile(tile).
+	 * @return The RoadTiles that are on the tile.
+	 */
+	static RoadTiles GetRoadTiles(TileIndex tile, RoadTramTypes road_tram_type);
+
+	/**
+	 * Get info about the one-way state of a tile.
+	 * @param tile The tile to check.
+	 * @pre ScriptMap::IsValidTile(tile).
+	 * @return The OneWayInfo of the tile.
+	 */
+	static OneWayInfo GetOneWayInfo(TileIndex tile);
 
 	/**
 	 * Get the RoadType that is used on a tile.
