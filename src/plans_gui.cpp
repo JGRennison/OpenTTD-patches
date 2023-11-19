@@ -69,7 +69,7 @@ static WindowDesc _plans_desc(
 	WDP_AUTO, "plans", 350, 100,
 	WC_PLANS, WC_NONE,
 	WDF_CONSTRUCTION,
-	_nested_plans_widgets, lengthof(_nested_plans_widgets)
+	std::begin(_nested_plans_widgets), std::end(_nested_plans_widgets)
 );
 
 struct PlansWindow : Window {

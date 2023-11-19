@@ -70,7 +70,7 @@ static WindowDesc _departures_desc(
 	WDP_AUTO, nullptr, 260, 246,
 	WC_DEPARTURES_BOARD, WC_NONE,
 	0,
-	_nested_departures_list, lengthof(_nested_departures_list)
+	std::begin(_nested_departures_list), std::end(_nested_departures_list)
 );
 
 static uint cached_date_width = 0;         ///< The cached maximum width required to display a date.

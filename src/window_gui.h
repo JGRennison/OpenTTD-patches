@@ -120,7 +120,7 @@ struct WindowDesc {
 
 	WindowDesc(WindowPosition default_pos, const char *ini_key, int16 def_width_trad, int16 def_height_trad,
 			WindowClass window_class, WindowClass parent_class, uint32 flags,
-			const NWidgetPart *nwid_parts, int16 nwid_length, HotkeyList *hotkeys = nullptr, WindowDesc *ini_parent = nullptr);
+			const NWidgetPart *nwid_begin, const NWidgetPart *nwid_end, HotkeyList *hotkeys = nullptr, WindowDesc *ini_parent = nullptr);
 
 	~WindowDesc();
 
@@ -129,8 +129,8 @@ struct WindowDesc {
 	WindowClass parent_cls;        ///< Class of the parent window. @see WindowClass
 	const char *ini_key;           ///< Key to store window defaults in openttd.cfg. \c nullptr if nothing shall be stored.
 	uint32 flags;                  ///< Flags. @see WindowDefaultFlag
-	const NWidgetPart *nwid_parts; ///< Nested widget parts describing the window.
-	int16 nwid_length;             ///< Length of the #nwid_parts array.
+	const NWidgetPart *nwid_begin; ///< Beginning of nested widget parts describing the window.
+	const NWidgetPart *nwid_end; ///< Ending of nested widget parts describing the window.
 	HotkeyList *hotkeys;           ///< Hotkeys for the window.
 	WindowDesc *ini_parent;        ///< Other window desc to use for WindowDescPreferences.
 
@@ -314,9 +314,7 @@ public:
 	QueryString *GetQueryString(uint widnum);
 	void UpdateQueryStringSize();
 
-	virtual const char *GetFocusedText() const;
-	virtual const char *GetCaret() const;
-	virtual const char *GetMarkedText(size_t *length) const;
+	virtual const struct Textbuf *GetFocusedTextbuf() const;
 	virtual Point GetCaretPosition() const;
 	virtual Rect GetTextBoundingRect(const char *from, const char *to) const;
 	virtual ptrdiff_t GetTextCharacterAtPosition(const Point &pt) const;

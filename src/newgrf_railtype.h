@@ -21,7 +21,7 @@ struct RailTypeScopeResolver : public ScopeResolver {
 	TileIndex tile;      ///< Tracktile. For track on a bridge this is the southern bridgehead.
 	TileContext context; ///< Are we resolving sprites for the upper halftile, or on a bridge?
 	CustomSignalSpriteContext signal_context;
-	const RailtypeInfo *rti;
+	const RailTypeInfo *rti;
 	const TraceRestrictProgram *prog;
 	uint z;
 
@@ -32,7 +32,7 @@ struct RailTypeScopeResolver : public ScopeResolver {
 	 * @param context Are we resolving sprites for the upper halftile, or on a bridge?
 	 * @param signal_context Signal context.
 	 */
-	RailTypeScopeResolver(ResolverObject &ro, const RailtypeInfo *rti, TileIndex tile, TileContext context, CustomSignalSpriteContext signal_context, const TraceRestrictProgram *prog, uint z)
+	RailTypeScopeResolver(ResolverObject &ro, const RailTypeInfo *rti, TileIndex tile, TileContext context, CustomSignalSpriteContext signal_context, const TraceRestrictProgram *prog, uint z)
 		: ScopeResolver(ro), tile(tile), context(context), signal_context(signal_context), rti(rti), prog(prog), z(z)
 	{
 	}
@@ -45,7 +45,7 @@ struct RailTypeScopeResolver : public ScopeResolver {
 struct RailTypeResolverObject : public ResolverObject {
 	RailTypeScopeResolver railtype_scope; ///< Resolver for the railtype scope.
 
-	RailTypeResolverObject(const RailtypeInfo *rti, TileIndex tile, TileContext context, RailTypeSpriteGroup rtsg, uint32 param1 = 0, uint32 param2 = 0,
+	RailTypeResolverObject(const RailTypeInfo *rti, TileIndex tile, TileContext context, RailTypeSpriteGroup rtsg, uint32 param1 = 0, uint32 param2 = 0,
 			CustomSignalSpriteContext signal_context = CSSC_GUI, const TraceRestrictProgram *prog = nullptr, uint z = 0);
 
 	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, VarSpriteGroupScopeOffset relative = 0) override
@@ -65,8 +65,8 @@ struct CustomSignalSpriteResult {
 	bool restricted_valid;
 };
 
-SpriteID GetCustomRailSprite(const RailtypeInfo *rti, TileIndex tile, RailTypeSpriteGroup rtsg, TileContext context = TCX_NORMAL, uint *num_results = nullptr);
-CustomSignalSpriteResult GetCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, uint8 aspect,
+SpriteID GetCustomRailSprite(const RailTypeInfo *rti, TileIndex tile, RailTypeSpriteGroup rtsg, TileContext context = TCX_NORMAL, uint *num_results = nullptr);
+CustomSignalSpriteResult GetCustomSignalSprite(const RailTypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, uint8 aspect,
 		CustomSignalSpriteContext context, uint8 style, const TraceRestrictProgram *prog = nullptr, uint z = 0);
 
 RailType GetRailTypeTranslation(uint8 railtype, const GRFFile *grffile);

@@ -521,8 +521,9 @@ STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :Lista ultimelor
 STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :Șterge toate mesajele
 
 # About menu
-###length 10
+###length 11
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :Informaţii despre teren
+STR_ABOUT_MENU_HELP                                             :Ajutor și manuale
 STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Consolă pornit/oprit
 STR_ABOUT_MENU_AI_DEBUG                                         :Depanare Inteligenţă Artificială / Script Joc
@@ -1425,6 +1426,9 @@ STR_CONFIG_SETTING_PLANE_CRASHES_NONE                           :niciunul
 STR_CONFIG_SETTING_PLANE_CRASHES_REDUCED                        :redus
 STR_CONFIG_SETTING_PLANE_CRASHES_NORMAL                         :normal
 
+STR_CONFIG_SETTING_CROSSING_WITH_COMPETITOR                     :Permite treceri la nivel cu drumuri sau șine deținute de concurenți: {STRING}
+STR_CONFIG_SETTING_CROSSING_WITH_COMPETITOR_HELPTEXT            :Permite construirea de treceri la nivel pe drumuri sau șine deținute de concurenți
+
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :Permite construirea stațiilor pe drumurile deținute de orașe: {STRING}
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD_HELPTEXT                   :Permite construirea de stații pe drumurile aflate în proprietatea orașelor
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD                      :Permite construirea staţiilor pe drumurile competitorilor: {STRING}
@@ -1895,8 +1899,8 @@ STR_CONFIG_SETTING_ALLOW_TOWN_ROADS_HELPTEXT                    :Permite ca ora�
 STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS                   :Orașele au voie să construiască treceri la nivel cu calea ferată: {STRING}
 STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS_HELPTEXT          :Dacă este activată, orașele vor putea să construiască treceri la nivel cu calea ferată
 
-STR_CONFIG_SETTING_NOISE_LEVEL                                  :Permite controlarea nivelului de zgomot al aeroportului de către oras: {STRING}
-STR_CONFIG_SETTING_NOISE_LEVEL_HELPTEXT                         :Dacă această opțiune este dezactivată, pot exista două aeroporturi în fiecare oraș. Când opțiunea este activată, numărul de aeroporturi este limitat de nivelul de zgomot acceptat de oraș, care depinde de populație, mărimea aeroportului și distanța față de oraș
+STR_CONFIG_SETTING_NOISE_LEVEL                                  :Limitează amplasarea aeroportului în funcție de nivelul de zgomot: {STRING}
+STR_CONFIG_SETTING_NOISE_LEVEL_HELPTEXT                         :Permiteți orașelor să blocheze construcția aeroportului pe baza nivelului de acceptare a zgomotului, care se bazează pe populația orașului și pe dimensiunea și distanța aeroportului. Dacă această setare este dezactivată, orașele permit doar două aeroporturi, cu excepția cazului în care atitudinea autorităților locale este setată la „Permisiv”.
 
 STR_CONFIG_SETTING_TOWN_FOUNDING                                :Crearea oraşelor în joc: {STRING}
 STR_CONFIG_SETTING_TOWN_FOUNDING_HELPTEXT                       :Dacă este activată, jucătorii pot fonda noi orașe în joc
@@ -2120,6 +2124,7 @@ STR_INTRO_MULTIPLAYER                                           :{BLACK}Multipla
 
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}Opțiuni
 STR_INTRO_HIGHSCORE                                             :{BLACK}Tabela cu scoruri maxime
+STR_INTRO_HELP                                                  :{BLACK}Ajutor și manuale
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Setări
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Setări NewGRF
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Resurse online
@@ -2141,6 +2146,7 @@ STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}Alege pe
 
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Afişează opţiunile jocului
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Afișează tabela cu scoruri maxime
+STR_INTRO_TOOLTIP_HELP                                          :{BLACK}Obțineți acces la documentație și resurse online
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Setări afişare
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Afişează setările NewGRF
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Verifică dacă există resurse noi sau actualizate pentru descărcare
@@ -2161,6 +2167,19 @@ STR_QUIT_NO                                                     :{BLACK}Nu
 STR_ABANDON_GAME_CAPTION                                        :{WHITE}Ieșire din joc
 STR_ABANDON_GAME_QUERY                                          :{YELLOW}Sigur vrei să renunți la acest joc?
 STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}Sigur vrei să renunți la acest scenariu?
+
+# Help window
+STR_HELP_WINDOW_CAPTION                                         :{WHITE}Ajutor și manuale
+STR_HELP_WINDOW_WEBSITES                                        :{BLACK}Site-uri web
+STR_HELP_WINDOW_DOCUMENTS                                       :{BLACK}Documente
+STR_HELP_WINDOW_README                                          :{BLACK}Citiți-mă
+STR_HELP_WINDOW_CHANGELOG                                       :{BLACK}Jurnalul modificărilor
+STR_HELP_WINDOW_KNOWN_BUGS                                      :{BLACK}Erori cunoscute
+STR_HELP_WINDOW_LICENSE                                         :{BLACK}Licență
+STR_HELP_WINDOW_MAIN_WEBSITE                                    :{BLACK}OpenTTD
+STR_HELP_WINDOW_MANUAL_WIKI                                     :{BLACK}Manual / Wiki
+STR_HELP_WINDOW_BUGTRACKER                                      :{BLACK}Raportați o eroare
+STR_HELP_WINDOW_COMMUNITY                                       :{BLACK}Comunitate
 
 # Cheat window
 STR_CHEATS                                                      :{WHITE}Cheat-uri
@@ -2649,6 +2668,7 @@ STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}Comută 
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Comută transparenţa pentru poduri. Ctrl+Click pentru blocare
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}Comută transparenţa pentru structuri de tip faruri şi antene. Ctrl+Click pentru blocare
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Comută transparenţa pentru catenar. Ctrl+Click pentru blocare
+STR_TRANSPARENT_TEXT_TOOLTIP                                    :{BLACK}Comută transparența textului pentru încărcare și cost/venit. Ctrl+Clic pentru a bloca
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Setează obiectele ca invizibile în loc de transparente
 
 # Linkgraph legend window
@@ -4694,16 +4714,20 @@ STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORAN
 
 
 # Textfile window
+STR_TEXTFILE_JUMPLIST                                           :{WHITE}Cuprins
+STR_TEXTFILE_JUMPLIST_TOOLTIP                                   :{BLACK}Săriți rapid la o secțiune din fișierul afișat prin această listă
+STR_TEXTFILE_JUMPLIST_ITEM                                      :{WHITE}{STRING}
 STR_TEXTFILE_WRAP_TEXT                                          :{WHITE}Încadrează textul
 STR_TEXTFILE_WRAP_TEXT_TOOLTIP                                  :{BLACK}Încadrează textul ferestrei ca să fie vizibil integral, fără derulare
 STR_TEXTFILE_VIEW_README                                        :{BLACK}Vezi fișierul readme
 STR_TEXTFILE_VIEW_CHANGELOG                                     :{BLACK}Listă modificări
 STR_TEXTFILE_VIEW_LICENCE                                       :{BLACK}Licenţă
-###length 4
+###length 5
 STR_TEXTFILE_README_CAPTION                                     :{WHITE}{STRING}, fișier readme al {STRING}
 STR_TEXTFILE_CHANGELOG_CAPTION                                  :{WHITE}{STRING}, lista de modificări a {STRING}
 STR_TEXTFILE_LICENCE_CAPTION                                    :{WHITE}{STRING}, licența fișierului {STRING}
 STR_TEXTFILE_SURVEY_RESULT_CAPTION                              :{WHITE}Previzualizare a rezultatului sondajului
+STR_TEXTFILE_GAME_MANUAL_CAPTION                                :{WHITE}Deschide document OpenTTD '{STRING}'
 
 
 # Vehicle loading indicators

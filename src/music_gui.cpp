@@ -653,7 +653,7 @@ static WindowDesc _music_track_selection_desc(
 	WDP_AUTO, nullptr, 0, 0,
 	WC_MUSIC_TRACK_SELECTION, WC_NONE,
 	0,
-	_nested_music_track_selection_widgets, lengthof(_nested_music_track_selection_widgets)
+	std::begin(_nested_music_track_selection_widgets), std::end(_nested_music_track_selection_widgets)
 );
 
 static void ShowMusicTrackSelection()
@@ -913,7 +913,7 @@ static WindowDesc _music_window_desc(
 	WDP_AUTO, "music", 0, 0,
 	WC_MUSIC_WINDOW, WC_NONE,
 	0,
-	_nested_music_window_widgets, lengthof(_nested_music_window_widgets)
+	std::begin(_nested_music_window_widgets), std::end(_nested_music_window_widgets)
 );
 
 void ShowMusicWindow()

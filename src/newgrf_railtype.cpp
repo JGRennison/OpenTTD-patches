@@ -96,7 +96,7 @@ uint32 RailTypeResolverObject::GetDebugID() const
  * @param z Signal pixel z.
  * @param prog Routing restriction program.
  */
-RailTypeResolverObject::RailTypeResolverObject(const RailtypeInfo *rti, TileIndex tile, TileContext context, RailTypeSpriteGroup rtsg, uint32 param1, uint32 param2,
+RailTypeResolverObject::RailTypeResolverObject(const RailTypeInfo *rti, TileIndex tile, TileContext context, RailTypeSpriteGroup rtsg, uint32 param1, uint32 param2,
 		CustomSignalSpriteContext signal_context, const TraceRestrictProgram *prog, uint z)
 	: ResolverObject(rti != nullptr ? rti->grffile[rtsg] : nullptr, CBID_NO_CALLBACK, param1, param2), railtype_scope(*this, rti, tile, context, signal_context, prog, z)
 {
@@ -112,7 +112,7 @@ RailTypeResolverObject::RailTypeResolverObject(const RailtypeInfo *rti, TileInde
  * @param[out] num_results If not nullptr, return the number of sprites in the spriteset.
  * @return The sprite to draw.
  */
-SpriteID GetCustomRailSprite(const RailtypeInfo *rti, TileIndex tile, RailTypeSpriteGroup rtsg, TileContext context, uint *num_results)
+SpriteID GetCustomRailSprite(const RailTypeInfo *rti, TileIndex tile, RailTypeSpriteGroup rtsg, TileContext context, uint *num_results)
 {
 	assert(rtsg < RTSG_END);
 
@@ -141,7 +141,7 @@ inline uint8 RemapAspect(uint8 aspect, uint8 extra_aspects, uint8 style)
 	return aspect + 1;
 }
 
-static PalSpriteID GetRailTypeCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, uint8 aspect,
+static PalSpriteID GetRailTypeCustomSignalSprite(const RailTypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, uint8 aspect,
 		CustomSignalSpriteContext context, const TraceRestrictProgram *prog, uint z)
 {
 	if (rti->group[RTSG_SIGNALS] == nullptr) return { 0, PAL_NONE };
@@ -170,7 +170,7 @@ static PalSpriteID GetRailTypeCustomSignalSprite(const RailtypeInfo *rti, TileIn
  * @param gui Is the sprite being used on the map or in the GUI?
  * @return The sprite to draw.
  */
-CustomSignalSpriteResult GetCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, uint8 aspect,
+CustomSignalSpriteResult GetCustomSignalSprite(const RailTypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, uint8 aspect,
 		CustomSignalSpriteContext context, uint8 style, const TraceRestrictProgram *prog, uint z)
 {
 	if (_settings_client.gui.show_all_signal_default && style == 0) return { { 0, PAL_NONE }, false };
@@ -248,7 +248,7 @@ uint8 GetReverseRailTypeTranslation(RailType railtype, const GRFFile *grffile)
 void DumpRailTypeSpriteGroup(RailType rt, DumpSpriteGroupPrinter print)
 {
 	char buffer[64];
-	const RailtypeInfo *rti = GetRailTypeInfo(rt);
+	const RailTypeInfo *rti = GetRailTypeInfo(rt);
 
 	static const char *sprite_group_names[] =  {
 		"RTSG_CURSORS",

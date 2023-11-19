@@ -911,27 +911,6 @@ public:
 
 private:
 	std::string json; ///< The JSON string.
-
-	/**
-	 * Read a table from a JSON string.
-	 * @param vm The VM used.
-	 * @param p The (part of the) JSON string reading.
-	 */
-	const char *ReadTable(HSQUIRRELVM vm, const char *p);
-
-	/**
-	 * Read a value from a JSON string.
-	 * @param vm The VM used.
-	 * @param p The (part of the) JSON string reading.
-	 */
-	const char *ReadValue(HSQUIRRELVM vm, const char *p);
-
-	/**
-	 * Read a string from a JSON string.
-	 * @param vm The VM used.
-	 * @param p The (part of the) JSON string reading.
-	 */
-	const char *ReadString(HSQUIRRELVM vm, const char *p);
 };
 
 /**

@@ -184,7 +184,7 @@ static WindowDesc _replace_rail_vehicle_desc(
 	WC_TEMPLATEGUI_MAIN,
 	WC_NONE,                     // parent window class
 	WDF_CONSTRUCTION,
-	_widgets, lengthof(_widgets)
+	std::begin(_widgets), std::end(_widgets)
 );
 
 enum {
@@ -292,7 +292,7 @@ public:
 			case TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN: {
 				Dimension d = GetStringBoundingBox(STR_REPLACE_ALL_RAILTYPE);
 				for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
-					const RailtypeInfo *rti = GetRailTypeInfo(rt);
+					const RailTypeInfo *rti = GetRailTypeInfo(rt);
 					// Skip rail type if it has no label
 					if (rti->label == 0) continue;
 					d = maxdim(d, GetStringBoundingBox(rti->strings.replace_text));

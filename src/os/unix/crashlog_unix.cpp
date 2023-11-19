@@ -50,11 +50,15 @@
 #endif
 #endif /* __GLIBC__ */
 
-#if defined(__NetBSD__)
+#include <vector>
+
+#if defined(__EMSCRIPTEN__)
+#	include <emscripten.h>
+/* We avoid abort(), as it is a SIGBART, and use _exit() instead. But emscripten doesn't know _exit(). */
+#	define _exit emscripten_force_exit
+#else
 #include <unistd.h>
 #endif
-
-#include <vector>
 
 #include "../../safeguards.h"
 

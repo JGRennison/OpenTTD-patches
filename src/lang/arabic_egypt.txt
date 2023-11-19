@@ -483,7 +483,7 @@ STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :الرسائل 
 STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :احذف كل الرسائل
 
 # About menu
-###length 10
+###length 11
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :معلومات مربع في الخريطة
 STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :توقل كونسول
@@ -1252,6 +1252,7 @@ STR_CONFIG_SETTING_PLANE_CRASHES_NONE                           :بدون
 STR_CONFIG_SETTING_PLANE_CRASHES_REDUCED                        :منخفض
 STR_CONFIG_SETTING_PLANE_CRASHES_NORMAL                         :طبيعي
 
+
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :السماح للعربات بالعبور خلال المواقف المملوكة داخل المدن: {STRING}
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD                      :السماح بمرور العربات خلال المحطات المملوكة للمنافسين: {STRING}
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD_HELPTEXT             :السماح ببناء مواقف السيارات على الطرق المملوكة لشركات أخرى
@@ -1777,6 +1778,8 @@ STR_QUIT_NO                                                     :{BLACK}لا
 STR_ABANDON_GAME_CAPTION                                        :{WHITE}إغلاق اللعبه
 STR_ABANDON_GAME_QUERY                                          :{YELLOW}أمتأكد من رغبتك فى إغلاق اللعبه؟
 STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}هل تريد الخروج من انشاء الخريطة
+
+# Help window
 
 # Cheat window
 STR_CHEATS                                                      :{WHITE}اسرار
@@ -4004,7 +4007,7 @@ STR_TEXTFILE_WRAP_TEXT                                          :{WHITE}التف
 STR_TEXTFILE_VIEW_README                                        :{BLACK}اعرض ملف التعليمات ريدمي
 STR_TEXTFILE_VIEW_CHANGELOG                                     :{BLACK}اعرض سجل التغييرات
 STR_TEXTFILE_VIEW_LICENCE                                       :{BLACK}الرخصة
-###length 4
+###length 5
 STR_TEXTFILE_README_CAPTION                                     :{WHITE}{STRING}اقراني {STRING}
 STR_TEXTFILE_CHANGELOG_CAPTION                                  :{WHITE}{STRING} سجل التغيير ل{STRING}
 STR_TEXTFILE_LICENCE_CAPTION                                    :{WHITE}{STRING}رخصة {STRING}

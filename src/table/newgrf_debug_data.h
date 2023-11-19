@@ -85,7 +85,7 @@ static void DumpRailTypeList(NIExtraInfoOutput &output, const char *prefix, Rail
 	char buffer[256];
 	for (RailType rt = RAILTYPE_BEGIN; rt < RAILTYPE_END; rt++) {
 		if (!HasBit(rail_types, rt)) continue;
-		const RailtypeInfo *rti = GetRailTypeInfo(rt);
+		const RailTypeInfo *rti = GetRailTypeInfo(rt);
 		if (rti->label == 0) continue;
 
 		seprintf(buffer, lastof(buffer), "%s%02u %s%s",
@@ -595,7 +595,7 @@ class NIHVehicle : public NIHelper {
 				}
 
 				if (e->type == VEH_TRAIN) {
-					const RailtypeInfo *rti = GetRailTypeInfo(e->u.rail.railtype);
+					const RailTypeInfo *rti = GetRailTypeInfo(e->u.rail.railtype);
 					seprintf(buffer, lastof(buffer), "    Railtype: %u (%s), Compatible: 0x" OTTD_PRINTFHEX64 ", Powered: 0x" OTTD_PRINTFHEX64 ", All compatible: 0x" OTTD_PRINTFHEX64,
 							e->u.rail.railtype, dumper().RailTypeLabel(e->u.rail.railtype), rti->compatible_railtypes, rti->powered_railtypes, rti->all_compatible_railtypes);
 					output.print(buffer);
@@ -1617,7 +1617,7 @@ class NIHRailType : public NIHelper {
 		RailType secondary = GetTileSecondaryRailTypeIfValid(index);
 
 		auto writeRailType = [&](RailType type) {
-			const RailtypeInfo *info = GetRailTypeInfo(type);
+			const RailTypeInfo *info = GetRailTypeInfo(type);
 			seprintf(buffer, lastof(buffer), "  Type: %u (%s)", type, dumper().RailTypeLabel(type));
 			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "  Flags: %c%c%c%c%c%c",

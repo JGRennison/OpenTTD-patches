@@ -464,6 +464,10 @@ const char *assert_tile_info(uint32 tile);
 #	define dbg_assert_tile(expression, tile)
 #endif
 
+/* Define JSON_ASSERT, which is used by nlohmann-json. Otherwise the header-file
+ * will re-include assert.h, and reset the assert macro. */
+#define JSON_ASSERT(x) assert(x)
+
 #if defined(MAX_PATH)
 	/* It's already defined, no need to override */
 #elif defined(PATH_MAX) && PATH_MAX > 0

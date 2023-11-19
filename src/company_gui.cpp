@@ -228,7 +228,7 @@ static void DrawPrice(Money amount, int left, int right, int top, TextColour col
  * Draw a category of expenses/revenues in the year column.
  * @return The income sum of the category.
  */
-static Money DrawYearCategory (const Rect &r, int start_y, ExpensesList list, const Money(&tbl)[EXPENSES_END])
+static Money DrawYearCategory(const Rect &r, int start_y, ExpensesList list, const Expenses &tbl)
 {
 	int y = start_y;
 	ExpensesType et;
@@ -259,7 +259,7 @@ static Money DrawYearCategory (const Rect &r, int start_y, ExpensesList list, co
  * @param tbl  Reference to table of amounts for \a year.
  * @note The environment must provide padding at the left and right of \a r.
  */
-static void DrawYearColumn(const Rect &r, int year, const Money (&tbl)[EXPENSES_END])
+static void DrawYearColumn(const Rect &r, int year, const Expenses &tbl)
 {
 	int y = r.top;
 	Money sum;
@@ -588,7 +588,7 @@ static WindowDesc _company_finances_desc(
 	WDP_AUTO, "company_finances", 0, 0,
 	WC_FINANCES, WC_NONE,
 	0,
-	_nested_company_finances_widgets, lengthof(_nested_company_finances_widgets)
+	std::begin(_nested_company_finances_widgets), std::end(_nested_company_finances_widgets)
 );
 
 /**
@@ -1184,7 +1184,7 @@ static WindowDesc _select_company_livery_desc(
 	WDP_AUTO, nullptr, 0, 0,
 	WC_COMPANY_COLOUR, WC_NONE,
 	0,
-	_nested_select_company_livery_widgets, lengthof(_nested_select_company_livery_widgets)
+	std::begin(_nested_select_company_livery_widgets), std::end(_nested_select_company_livery_widgets)
 );
 
 void ShowCompanyLiveryWindow(CompanyID company, GroupID group)
@@ -1801,7 +1801,7 @@ static WindowDesc _select_company_manager_face_desc(
 	WDP_AUTO, nullptr, 0, 0,
 	WC_COMPANY_MANAGER_FACE, WC_NONE,
 	WDF_CONSTRUCTION,
-	_nested_select_company_manager_face_widgets, lengthof(_nested_select_company_manager_face_widgets)
+	std::begin(_nested_select_company_manager_face_widgets), std::end(_nested_select_company_manager_face_widgets)
 );
 
 /**
@@ -2205,7 +2205,7 @@ static WindowDesc _company_infrastructure_desc(
 	WDP_AUTO, "company_infrastructure", 0, 0,
 	WC_COMPANY_INFRASTRUCTURE, WC_NONE,
 	0,
-	_nested_company_infrastructure_widgets, lengthof(_nested_company_infrastructure_widgets)
+	std::begin(_nested_company_infrastructure_widgets), std::end(_nested_company_infrastructure_widgets)
 );
 
 /**
@@ -2853,7 +2853,7 @@ static WindowDesc _company_desc(
 	WDP_AUTO, "company", 0, 0,
 	WC_COMPANY, WC_NONE,
 	0,
-	_nested_company_widgets, lengthof(_nested_company_widgets)
+	std::begin(_nested_company_widgets), std::end(_nested_company_widgets)
 );
 
 /**
@@ -3006,7 +3006,7 @@ static WindowDesc _buy_company_desc(
 	WDP_AUTO, nullptr, 0, 0,
 	WC_BUY_COMPANY, WC_NONE,
 	WDF_CONSTRUCTION,
-	_nested_buy_company_widgets, lengthof(_nested_buy_company_widgets)
+	std::begin(_nested_buy_company_widgets), std::end(_nested_buy_company_widgets)
 );
 
 /**

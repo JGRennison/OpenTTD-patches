@@ -31,8 +31,6 @@ STR_ORDER_STOP_LOCATION_THROUGH                                 :[durchgehendes 
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :Extrem langsam
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :Sehr langsam
 
-STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Hilfstasten-Fenster
-
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :Alle {COMMA} Echtzeitminuten
 
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
@@ -1776,3 +1774,5 @@ STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :Detailliert
 
 STR_VIEWPORT_TOWN_COLOUR                                        :{1:COLOUR}{0:TOWN}
 STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {COLOUR}({COMMA})
+
+STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Hilfstasten-Fenster

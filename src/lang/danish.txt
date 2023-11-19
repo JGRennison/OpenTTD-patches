@@ -521,7 +521,7 @@ STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :Tidligere beske
 STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :Slet alle beskeder
 
 # About menu
-###length 10
+###length 11
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :Landområde information
 STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Tænd/Sluk konsol
@@ -1426,6 +1426,9 @@ STR_CONFIG_SETTING_PLANE_CRASHES_NONE                           :Ingen*
 STR_CONFIG_SETTING_PLANE_CRASHES_REDUCED                        :reduceret
 STR_CONFIG_SETTING_PLANE_CRASHES_NORMAL                         :Normal
 
+STR_CONFIG_SETTING_CROSSING_WITH_COMPETITOR                     :Tillad vejkryds - jernbaneoverskæringer med veje eller skinner ejet af konkurrenter: {STRING}
+STR_CONFIG_SETTING_CROSSING_WITH_COMPETITOR_HELPTEXT            :Tillad konstruktion af overkørsler på veje eller skinner ejet af konkurrenter
+
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :Tillad gennemkørsels-stop på veje ejet af en by: {STRING}
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD_HELPTEXT                   :Tillad konstruktion af gennemkørsels-stop på by-ejede veje
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD                      :Tillad gennemkørsels-stoppesteder på veje ejet af konkurrenter: {STRING}
@@ -2162,6 +2165,8 @@ STR_QUIT_NO                                                     :{BLACK}Nej
 STR_ABANDON_GAME_CAPTION                                        :{WHITE}Forlad spillet
 STR_ABANDON_GAME_QUERY                                          :{YELLOW}Er du sikker på du vil forlade dette spil ?
 STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}Er du sikker på, at du vil afslutte dette scenarie ?
+
+# Help window
 
 # Cheat window
 STR_CHEATS                                                      :{WHITE}Snydefunktioner
@@ -4701,7 +4706,7 @@ STR_TEXTFILE_WRAP_TEXT_TOOLTIP                                  :{BLACK}Ombryd t
 STR_TEXTFILE_VIEW_README                                        :{BLACK}Se readme
 STR_TEXTFILE_VIEW_CHANGELOG                                     :{BLACK}Ændringslog
 STR_TEXTFILE_VIEW_LICENCE                                       :{BLACK}Licens
-###length 4
+###length 5
 STR_TEXTFILE_README_CAPTION                                     :{WHITE}{STRING} readme for {STRING}
 STR_TEXTFILE_CHANGELOG_CAPTION                                  :{WHITE}{STRING} ændringslog for {STRING}
 STR_TEXTFILE_LICENCE_CAPTION                                    :{WHITE}{STRING} licens for {STRING}

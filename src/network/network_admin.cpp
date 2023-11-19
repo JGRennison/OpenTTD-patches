@@ -10,7 +10,7 @@
 #include "../stdafx.h"
 #include "../strings_func.h"
 #include "../date_func.h"
-#include "core/game_info.h"
+#include "core/network_game_info.h"
 #include "network_admin.h"
 #include "network_base.h"
 #include "network_server.h"
@@ -21,6 +21,8 @@
 #include "../map_func.h"
 #include "../rev.h"
 #include "../game/game.hpp"
+
+#include <numeric>
 
 #include "../safeguards.h"
 
@@ -382,10 +384,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendCompanyEconomy()
 {
 	for (const Company *company : Company::Iterate()) {
 		/* Get the income. */
-		Money income = 0;
-		for (uint i = 0; i < lengthof(company->yearly_expenses[0]); i++) {
-			income -= company->yearly_expenses[0][i];
-		}
+		Money income = -std::reduce(std::begin(company->yearly_expenses[0]), std::end(company->yearly_expenses[0]));
 
 		Packet *p = new Packet(ADMIN_PACKET_SERVER_COMPANY_ECONOMY);
 
@@ -556,11 +555,6 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendConsole(const std::string
  */
 NetworkRecvStatus ServerNetworkAdminSocketHandler::SendGameScript(const std::string_view json)
 {
-	/* At the moment we cannot transmit anything larger than MTU. So we limit
-	 *  the maximum amount of json data that can be sent. Account also for
-	 *  the trailing \0 of the string */
-	if (json.size() + 1 >= NETWORK_GAMESCRIPT_JSON_LENGTH) return NETWORK_RECV_STATUS_OKAY;
-
 	Packet *p = new Packet(ADMIN_PACKET_SERVER_GAMESCRIPT);
 
 	p->Send_string(json);

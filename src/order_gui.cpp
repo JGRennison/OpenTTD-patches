@@ -411,7 +411,7 @@ static WindowDesc _cargo_type_load_orders_widgets (
 	WDP_AUTO, "view_cargo_type_load_order", 195, 186,
 	WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS, WC_VEHICLE_ORDERS,
 	WDF_CONSTRUCTION,
-	_nested_cargo_type_orders_widgets, lengthof(_nested_cargo_type_orders_widgets)
+	std::begin(_nested_cargo_type_orders_widgets), std::end(_nested_cargo_type_orders_widgets)
 );
 
 /** Window description for the 'unload' variant of CargoTypeOrdersWindow. */
@@ -419,7 +419,7 @@ static WindowDesc _cargo_type_unload_orders_widgets (
 	WDP_AUTO, "view_cargo_type_unload_order", 195, 186,
 	WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS, WC_VEHICLE_ORDERS,
 	WDF_CONSTRUCTION,
-	_nested_cargo_type_orders_widgets, lengthof(_nested_cargo_type_orders_widgets)
+	std::begin(_nested_cargo_type_orders_widgets), std::end(_nested_cargo_type_orders_widgets)
 );
 
 /**
@@ -3750,7 +3750,7 @@ static WindowDesc _orders_train_desc(
 	WDP_AUTO, "view_vehicle_orders_train", 384, 100,
 	WC_VEHICLE_ORDERS, WC_VEHICLE_VIEW,
 	WDF_CONSTRUCTION,
-	_nested_orders_train_widgets, lengthof(_nested_orders_train_widgets),
+	std::begin(_nested_orders_train_widgets), std::end(_nested_orders_train_widgets),
 	&OrdersWindow::hotkeys
 );
 
@@ -3902,7 +3902,7 @@ static WindowDesc _orders_desc(
 	WDP_AUTO, "view_vehicle_orders", 384, 100,
 	WC_VEHICLE_ORDERS, WC_VEHICLE_VIEW,
 	WDF_CONSTRUCTION,
-	_nested_orders_widgets, lengthof(_nested_orders_widgets),
+	std::begin(_nested_orders_widgets), std::end(_nested_orders_widgets),
 	&OrdersWindow::hotkeys
 );
 
@@ -3939,7 +3939,7 @@ static WindowDesc _other_orders_desc(
 	WDP_AUTO, "view_vehicle_orders_competitor", 384, 86,
 	WC_VEHICLE_ORDERS, WC_VEHICLE_VIEW,
 	WDF_CONSTRUCTION,
-	_nested_other_orders_widgets, lengthof(_nested_other_orders_widgets),
+	std::begin(_nested_other_orders_widgets), std::end(_nested_other_orders_widgets),
 	&OrdersWindow::hotkeys
 );
 

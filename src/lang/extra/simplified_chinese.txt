@@ -33,10 +33,6 @@ STR_ORDER_STOP_LOCATION_THROUGH                                 :[通过式装�
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :极慢
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :很慢
 
-STR_ABOUT_MENU_SHOW_PICKER_TOOL                                 :选择器
-
-STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :修饰键
-
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :每{COMMA}现实分钟
 
 STR_COMMA_SEPARATOR                                             :,{SP}
@@ -2133,3 +2129,6 @@ STR_VIEWPORT_TOWN_COLOUR                                        :{1:COLOUR}{0:TO
 STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {COLOUR} ({COMMA})
 STR_VIEWPORT_TOWN_COLOUR_CITY                                   :{1:COLOUR}{0:TOWN} (都市)
 STR_VIEWPORT_TOWN_COLOUR_CITY_POP                               :{WHITE}{TOWN} {COLOUR}(都市，{COMMA})
+
+STR_ABOUT_MENU_SHOW_PICKER_TOOL                                 :选择器
+STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :修饰键

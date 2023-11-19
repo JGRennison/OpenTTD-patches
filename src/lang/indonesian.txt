@@ -504,7 +504,7 @@ STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :Berita Lampau
 STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :Hapus semua pesan
 
 # About menu
-###length 10
+###length 11
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :Informasi area daratan
 STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Hidup/matikan Layar Konsol
@@ -1404,6 +1404,7 @@ STR_CONFIG_SETTING_PLANE_CRASHES_NONE                           :Nihil
 STR_CONFIG_SETTING_PLANE_CRASHES_REDUCED                        :Dikurangi
 STR_CONFIG_SETTING_PLANE_CRASHES_NORMAL                         :Normal
 
+
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :Ijinkan terminal drive-thru pada jalan milik kota: {STRING}
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD_HELPTEXT                   :Membolehkan konstruksi halte di jalan kota
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD                      :Ijinkan terminal drive-thru pada jalan milik pesaing: {STRING}
@@ -2131,6 +2132,8 @@ STR_QUIT_NO                                                     :{BLACK}Tidak
 STR_ABANDON_GAME_CAPTION                                        :{WHITE}Tinggalkan Permainan
 STR_ABANDON_GAME_QUERY                                          :{YELLOW}Apakah anda yakin untuk meninggalkan permainan?
 STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}Apakah anda yakin untuk mengabaikan skenario ini ?
+
+# Help window
 
 # Cheat window
 STR_CHEATS                                                      :{WHITE}Kode Curang
@@ -4661,7 +4664,7 @@ STR_TEXTFILE_WRAP_TEXT_TOOLTIP                                  :{BLACK}Mengebat
 STR_TEXTFILE_VIEW_README                                        :{BLACK}Lihat readme
 STR_TEXTFILE_VIEW_CHANGELOG                                     :{BLACK}Catatan Perubahan
 STR_TEXTFILE_VIEW_LICENCE                                       :{BLACK}Lisensi
-###length 4
+###length 5
 STR_TEXTFILE_README_CAPTION                                     :{WHITE}keterangan {STRING} dari {STRING}
 STR_TEXTFILE_CHANGELOG_CAPTION                                  :{WHITE}Catatan perubahan {STRING} dari {STRING}
 STR_TEXTFILE_LICENCE_CAPTION                                    :{WHITE}Lisensi {STRING} dari {STRING}

@@ -531,7 +531,7 @@ struct BuildRailToolbarWindow : Window {
 	void SetupRailToolbar(RailType railtype)
 	{
 		this->railtype = railtype;
-		const RailtypeInfo *rti = GetRailTypeInfo(railtype);
+		const RailTypeInfo *rti = GetRailTypeInfo(railtype);
 
 		assert(railtype < RAILTYPE_END);
 		this->GetWidget<NWidgetCore>(WID_RAT_BUILD_NS)->widget_data     = rti->gui_sprites.build_ns_rail;
@@ -589,7 +589,7 @@ struct BuildRailToolbarWindow : Window {
 	void SetStringParameters(int widget) const override
 	{
 		if (widget == WID_RAT_CAPTION) {
-			const RailtypeInfo *rti = GetRailTypeInfo(this->railtype);
+			const RailTypeInfo *rti = GetRailTypeInfo(this->railtype);
 			if (rti->max_speed > 0) {
 				SetDParam(0, STR_TOOLBAR_RAILTYPE_VELOCITY);
 				SetDParam(1, rti->strings.toolbar_caption);
@@ -1047,7 +1047,7 @@ static WindowDesc _build_rail_desc(
 	WDP_ALIGN_TOOLBAR, "toolbar_rail", 0, 0,
 	WC_BUILD_TOOLBAR, WC_NONE,
 	WDF_CONSTRUCTION,
-	_nested_build_rail_widgets, lengthof(_nested_build_rail_widgets),
+	std::begin(_nested_build_rail_widgets), std::end(_nested_build_rail_widgets),
 	&BuildRailToolbarWindow::hotkeys
 );
 
@@ -1063,7 +1063,7 @@ static WindowDesc _build_rail_desc(
 Window *ShowBuildRailToolbar(RailType railtype)
 {
 	if (!Company::IsValidID(_local_company)) return nullptr;
-	if (!ValParamRailtype(railtype)) return nullptr;
+	if (!ValParamRailType(railtype)) return nullptr;
 
 	CloseWindowByClass(WC_BUILD_TOOLBAR);
 	_cur_railtype = railtype;
@@ -1848,7 +1848,7 @@ static WindowDesc _station_builder_desc(
 	WDP_AUTO, "build_station_rail", 350, 0,
 	WC_BUILD_STATION, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,
-	_nested_station_builder_widgets, lengthof(_nested_station_builder_widgets),
+	std::begin(_nested_station_builder_widgets), std::end(_nested_station_builder_widgets),
 	&BuildRailStationWindow::hotkeys
 );
 
@@ -2341,7 +2341,7 @@ static WindowDesc _signal_builder_desc(
 	WDP_AUTO, nullptr, 0, 0,
 	WC_BUILD_SIGNAL, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,
-	_nested_signal_builder_widgets, lengthof(_nested_signal_builder_widgets),
+	std::begin(_nested_signal_builder_widgets), std::end(_nested_signal_builder_widgets),
 	&BuildSignalWindow::hotkeys
 );
 
@@ -2433,7 +2433,7 @@ static WindowDesc _build_depot_desc(
 	WDP_AUTO, nullptr, 0, 0,
 	WC_BUILD_DEPOT, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,
-	_nested_build_depot_widgets, lengthof(_nested_build_depot_widgets)
+	std::begin(_nested_build_depot_widgets), std::end(_nested_build_depot_widgets)
 );
 
 static void ShowBuildTrainDepotPicker(Window *parent)
@@ -2671,7 +2671,7 @@ static WindowDesc _build_waypoint_desc(
 	WDP_AUTO, "build_waypoint", 0, 0,
 	WC_BUILD_WAYPOINT, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,
-	_nested_build_waypoint_widgets, lengthof(_nested_build_waypoint_widgets)
+	std::begin(_nested_build_waypoint_widgets), std::end(_nested_build_waypoint_widgets)
 );
 
 static void ShowBuildWaypointPicker(Window *parent)
@@ -2731,14 +2731,14 @@ static void SetDefaultRailGui()
 		case 0: {
 			/* Use first available type */
 			std::vector<RailType>::const_iterator it = std::find_if(_sorted_railtypes.begin(), _sorted_railtypes.end(),
-					[](RailType r){ return HasRailtypeAvail(_local_company, r); });
+					[](RailType r){ return HasRailTypeAvail(_local_company, r); });
 			rt = it != _sorted_railtypes.end() ? *it : RAILTYPE_BEGIN;
 			break;
 		}
 		case 1: {
 			/* Use last available type */
 			std::vector<RailType>::const_reverse_iterator it = std::find_if(_sorted_railtypes.rbegin(), _sorted_railtypes.rend(),
-					[](RailType r){ return HasRailtypeAvail(_local_company, r); });
+					[](RailType r){ return HasRailTypeAvail(_local_company, r); });
 			rt = it != _sorted_railtypes.rend() ? *it : RAILTYPE_BEGIN;
 			break;
 		}
@@ -2805,7 +2805,7 @@ DropDownList GetRailTypeDropDownList(bool for_replacement, bool all_option)
 
 	/* Find the used railtypes. */
 	if (for_replacement) {
-		avail_railtypes = GetCompanyRailtypes(c->index, false);
+		avail_railtypes = GetCompanyRailTypes(c->index, false);
 		used_railtypes  = GetRailTypes(false);
 	} else {
 		avail_railtypes = c->avail_railtypes;
@@ -2823,7 +2823,7 @@ DropDownList GetRailTypeDropDownList(bool for_replacement, bool all_option)
 	if (!for_replacement) {
 		for (const auto &rt : _sorted_railtypes) {
 			if (!HasBit(used_railtypes, rt)) continue;
-			const RailtypeInfo *rti = GetRailTypeInfo(rt);
+			const RailTypeInfo *rti = GetRailTypeInfo(rt);
 			d = maxdim(d, GetSpriteSize(rti->gui_sprites.build_x_rail));
 		}
 	}
@@ -2832,7 +2832,7 @@ DropDownList GetRailTypeDropDownList(bool for_replacement, bool all_option)
 		/* If it's not used ever, don't show it to the user. */
 		if (!HasBit(used_railtypes, rt)) continue;
 
-		const RailtypeInfo *rti = GetRailTypeInfo(rt);
+		const RailTypeInfo *rti = GetRailTypeInfo(rt);
 
 		SetDParam(0, rti->strings.menu_text);
 		SetDParam(1, rti->max_speed);

@@ -597,7 +597,7 @@ Company *DoStartupNewCompany(DoStartupNewCompanyFlag flags, CompanyID company)
 
 	std::fill(c->share_owners.begin(), c->share_owners.end(), INVALID_OWNER);
 
-	c->avail_railtypes = GetCompanyRailtypes(c->index);
+	c->avail_railtypes = GetCompanyRailTypes(c->index);
 	c->avail_roadtypes = GetCompanyRoadTypes(c->index);
 	c->inaugurated_year = _cur_year;
 
@@ -825,8 +825,9 @@ void CompaniesYearlyLoop()
 {
 	/* Copy statistics */
 	for (Company *c : Company::Iterate()) {
-		memmove(&c->yearly_expenses[1], &c->yearly_expenses[0], sizeof(c->yearly_expenses) - sizeof(c->yearly_expenses[0]));
-		memset(&c->yearly_expenses[0], 0, sizeof(c->yearly_expenses[0]));
+		/* Move expenses to previous years. */
+		std::rotate(std::rbegin(c->yearly_expenses), std::rbegin(c->yearly_expenses) + 1, std::rend(c->yearly_expenses));
+		c->yearly_expenses[0] = {};
 		SetWindowDirty(WC_FINANCES, c->index);
 	}
 

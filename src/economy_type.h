@@ -178,6 +178,11 @@ enum ExpensesType : byte {
 template <> struct EnumPropsT<ExpensesType> : MakeEnumPropsT<ExpensesType, byte, EXPENSES_CONSTRUCTION, EXPENSES_END, INVALID_EXPENSES, 8> {};
 
 /**
+ * Data type for storage of Money for each #ExpensesType category.
+ */
+using Expenses = std::array<Money, EXPENSES_END>;
+
+/**
  * Categories of a price bases.
  */
 enum PriceCategory {

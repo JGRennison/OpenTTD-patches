@@ -68,12 +68,6 @@ STR_ORDER_STOP_LOCATION_THROUGH                                 :[through load]
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :Extremely slow
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :Very slow
 
-##after STR_ABOUT_MENU_LAND_BLOCK_INFO
-STR_ABOUT_MENU_SHOW_PICKER_TOOL                                 :Picker tool
-
-##after STR_ABOUT_MENU_SHOW_FRAMERATE
-STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Modifier key window
-
 ##before STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_OFF
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :Every {COMMA}{NBSP}minute{P 0 "" s}
 
@@ -2189,3 +2183,6 @@ STR_VIEWPORT_TOWN_COLOUR                                        :{1:COLOUR}{0:TO
 STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {COLOUR}({COMMA})
 STR_VIEWPORT_TOWN_COLOUR_CITY                                   :{1:COLOUR}{0:TOWN} (City)
 STR_VIEWPORT_TOWN_COLOUR_CITY_POP                               :{WHITE}{TOWN} {COLOUR}(City, {COMMA})
+
+STR_ABOUT_MENU_SHOW_PICKER_TOOL                                 :Picker tool
+STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Modifier key window

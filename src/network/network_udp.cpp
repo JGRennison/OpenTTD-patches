@@ -16,7 +16,7 @@
 #include "../date_func.h"
 #include "../map_func.h"
 #include "../debug.h"
-#include "core/game_info.h"
+#include "core/network_game_info.h"
 #include "network_gamelist.h"
 #include "network_internal.h"
 #include "network_udp.h"

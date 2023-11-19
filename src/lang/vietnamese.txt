@@ -521,7 +521,7 @@ STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :Thông báo cũ
 STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :Xoá tất cả thông điệp
 
 # About menu
-###length 10
+###length 11
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :Thông tin vùng đất
 STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Bật/tắt bảng lệnh
@@ -783,7 +783,7 @@ STR_SMALLMAP_LEGENDA_AIRCRAFT                                   :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_TRANSPORT_ROUTES                           :{TINY_FONT}{BLACK}Tuyến vận tải
 STR_SMALLMAP_LEGENDA_FOREST                                     :{TINY_FONT}{BLACK}Rừng
 STR_SMALLMAP_LEGENDA_RAILROAD_STATION                           :{TINY_FONT}{BLACK}Ga tàu hỏa
-STR_SMALLMAP_LEGENDA_TRUCK_LOADING_BAY                          :{TINY_FONT}{BLACK}Truck Loading Bay
+STR_SMALLMAP_LEGENDA_TRUCK_LOADING_BAY                          :{TINY_FONT}{BLACK}Trạm bốc dỡ hàng xe tải
 STR_SMALLMAP_LEGENDA_BUS_STATION                                :{TINY_FONT}{BLACK}Bến xe buýt
 STR_SMALLMAP_LEGENDA_AIRPORT_HELIPORT                           :{TINY_FONT}{BLACK}Sân bay/Bãi đỗ trực thăng
 STR_SMALLMAP_LEGENDA_DOCK                                       :{TINY_FONT}{BLACK}Cảng biển
@@ -1426,6 +1426,9 @@ STR_CONFIG_SETTING_PLANE_CRASHES_NONE                           :không*
 STR_CONFIG_SETTING_PLANE_CRASHES_REDUCED                        :giảm bớt
 STR_CONFIG_SETTING_PLANE_CRASHES_NORMAL                         :bình thường
 
+STR_CONFIG_SETTING_CROSSING_WITH_COMPETITOR                     :Cho phép đường cắt ngang trên đường trường hoặc đường ray sở hữu bởi công ty khác: {STRING}
+STR_CONFIG_SETTING_CROSSING_WITH_COMPETITOR_HELPTEXT            :Cho phép xây dựng đường cắt ngang trên đường trường hoặc đường ray sở hữu bởi công ty khác
+
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :Cho phép xây điểm dừng xe buýt trên đường sở hữu bởi thị trấn: {STRING}
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD_HELPTEXT                   :Cho phép xây dựng điểm dừng xe buýt trên đường thuộc sở hữu của địa phương
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD                      :Cho phép xây điểm dừng xe buýt trên đường của đối thủ: {STRING}
@@ -1896,8 +1899,8 @@ STR_CONFIG_SETTING_ALLOW_TOWN_ROADS_HELPTEXT                    :Cho phép đô 
 STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS                   :Đô thị cho phép xây giao nhau đồng mức: {STRING}
 STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS_HELPTEXT          :Bật tùy chọn này cho phép đô thị xây giao nhau đồng mức
 
-STR_CONFIG_SETTING_NOISE_LEVEL                                  :Cho phép chính quyền địa phương kiểm soát độ ồn của sân bay: {STRING}
-STR_CONFIG_SETTING_NOISE_LEVEL_HELPTEXT                         :Nếu tắt tùy chọn này, mỗi đô thị chỉ xây được 2 sân bay. Nếu bật tùy chọn này, số lượng sân bay được giới hạn bởi độ ồn cho phép của đô thị, dựa vào dân số, quy mô sân bay và khoảng cách
+STR_CONFIG_SETTING_NOISE_LEVEL                                  :Giới hạn vị trí xây sân bay dựa vào độ ồn: {STRING}
+STR_CONFIG_SETTING_NOISE_LEVEL_HELPTEXT                         :Cho phép đô thị từ chối việc xây dựng sân bay dựa vào độ ồn cho phép của họ, được tính trên lượng dân số của đô thị và khoảng cách, kích thước của sân bay. Nếu thiết lập này được tắt, đô thị chỉ cho phép hai sân bay trừ khi thái độ của địa phương đang ở trạng thái "Dễ dãi"
 
 STR_CONFIG_SETTING_TOWN_FOUNDING                                :Thành lập đô thị trong ván chơi: {STRING}
 STR_CONFIG_SETTING_TOWN_FOUNDING_HELPTEXT                       :Bật tùy chọn này cho phép người chơi tạo lập đô thị mới trong màn chơi
@@ -2162,6 +2165,8 @@ STR_QUIT_NO                                                     :{BLACK}Không �
 STR_ABANDON_GAME_CAPTION                                        :{WHITE}Bỏ Màn Chơi
 STR_ABANDON_GAME_QUERY                                          :{YELLOW}Bạn có chắc chắn muốn bỏ màn chơi này không?
 STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}Bạn có chắc bạn muốn bỏ màn chơi kịch bản này?
+
+# Help window
 
 # Cheat window
 STR_CHEATS                                                      :{WHITE}Cheats
@@ -2644,12 +2649,13 @@ STR_MISSING_GRAPHICS_ERROR_QUIT                                 :{BLACK}Thoát O
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Tuỳ Hiệu Ứng Trong Suốt
 STR_TRANSPARENT_SIGNS_TOOLTIP                                   :{BLACK}Bật hiệu ứng trong suốt cho đèn tín hiệu. Ctrl+Click để khoá.
 STR_TRANSPARENT_TREES_TOOLTIP                                   :{BLACK}Bật hiệu ứng trong suốt cho cây cối. Ctrl+Click để khoá.
-STR_TRANSPARENT_HOUSES_TOOLTIP                                  :{BLACK}Bật hiệu ứng trong suốt cho nhà cửa. Ctrl+Click để khoá.
-STR_TRANSPARENT_INDUSTRIES_TOOLTIP                              :{BLACK}Bật hiệu ứng trong suốt cho nhà máy. Ctrl+Click để khoá.
-STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}Bật hiệu ứng trong suốt cho các công trình nhà ga, xưởng và điểm mốc. Ctrl+Click để khoá.
-STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Bật hiệu ứng trong suốt cho cầu. Ctrl+Click để khoá.
+STR_TRANSPARENT_HOUSES_TOOLTIP                                  :{BLACK}Bật hiệu ứng trong suốt cho nhà cửa. Ctrl+Click để khoá
+STR_TRANSPARENT_INDUSTRIES_TOOLTIP                              :{BLACK}Bật hiệu ứng trong suốt cho nhà máy. Ctrl+Click để khoá
+STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}Bật hiệu ứng trong suốt cho các công trình nhà ga, xưởng và điểm mốc. Ctrl+Click để khoá
+STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Bật hiệu ứng trong suốt cho cầu. Ctrl+Click để khoá
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}Bật hiệu ứng trong suốt cho đèn biển, ăn-ten... Ctrl+Click để khoá.
-STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Bật hiệu ứng trong suốt cho các mắt xích. Ctrl+Click để khoá.
+STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Bật hiệu ứng trong suốt cho các mắt xích. Ctrl+Click để khoá
+STR_TRANSPARENT_TEXT_TOOLTIP                                    :{BLACK}Bật hiệu ứng trong suốt cho thông báo tải và chi phí/thu nhập. Ctrl+Click để khoá
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Đặt các đối ẩn đi thay vì trong suốt
 
 # Linkgraph legend window
@@ -4700,7 +4706,7 @@ STR_TEXTFILE_WRAP_TEXT_TOOLTIP                                  :{BLACK}Ép ch�
 STR_TEXTFILE_VIEW_README                                        :{BLACK}Xem readme
 STR_TEXTFILE_VIEW_CHANGELOG                                     :{BLACK}Lịch sử thay đổi
 STR_TEXTFILE_VIEW_LICENCE                                       :{BLACK}Giấy phép
-###length 4
+###length 5
 STR_TEXTFILE_README_CAPTION                                     :{WHITE}Readme của {STRING} {STRING}
 STR_TEXTFILE_CHANGELOG_CAPTION                                  :{WHITE}Lịch sử thay đổi của {STRING} {STRING}
 STR_TEXTFILE_LICENCE_CAPTION                                    :{WHITE}Giấy phép của {STRING} {STRING}

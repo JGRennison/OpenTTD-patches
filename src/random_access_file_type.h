@@ -87,7 +87,7 @@ public:
 	}
 
 	void ReadBlock(void *ptr, size_t size);
-	void SkipBytes(int n);
+	void SkipBytes(size_t n);
 };
 
 #endif /* RANDOM_ACCESS_FILE_TYPE_H */

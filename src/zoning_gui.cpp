@@ -176,7 +176,7 @@ static WindowDesc _zoning_desc (
 	WDP_CENTER, "zoning_gui", 0, 0,
 	WC_ZONING_TOOLBAR, WC_NONE,
 	0,
-	_nested_zoning_widgets, lengthof(_nested_zoning_widgets)
+	std::begin(_nested_zoning_widgets), std::end(_nested_zoning_widgets)
 );
 
 void ShowZoningToolbar()

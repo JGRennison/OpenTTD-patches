@@ -503,7 +503,7 @@ static WindowDesc _town_authority_desc(
 	WDP_AUTO, "view_town_authority", 317, 222,
 	WC_TOWN_AUTHORITY, WC_NONE,
 	0,
-	_nested_town_authority_widgets, lengthof(_nested_town_authority_widgets)
+	std::begin(_nested_town_authority_widgets), std::end(_nested_town_authority_widgets)
 );
 
 static void ShowTownAuthorityWindow(uint town)
@@ -810,7 +810,7 @@ static WindowDesc _town_game_view_desc(
 	WDP_AUTO, "view_town", 260, TownViewWindow::WID_TV_HEIGHT_NORMAL,
 	WC_TOWN_VIEW, WC_NONE,
 	0,
-	_nested_town_game_view_widgets, lengthof(_nested_town_game_view_widgets)
+	std::begin(_nested_town_game_view_widgets), std::end(_nested_town_game_view_widgets)
 );
 
 static const NWidgetPart _nested_town_editor_view_widgets[] = {
@@ -842,7 +842,7 @@ static WindowDesc _town_editor_view_desc(
 	WDP_AUTO, "view_town_scen", 260, TownViewWindow::WID_TV_HEIGHT_NORMAL,
 	WC_TOWN_VIEW, WC_NONE,
 	0,
-	_nested_town_editor_view_widgets, lengthof(_nested_town_editor_view_widgets)
+	std::begin(_nested_town_editor_view_widgets), std::end(_nested_town_editor_view_widgets)
 );
 
 void ShowTownViewWindow(TownID town)
@@ -1221,7 +1221,7 @@ static WindowDesc _town_directory_desc(
 	WDP_AUTO, "list_towns", 208, 202,
 	WC_TOWN_DIRECTORY, WC_NONE,
 	0,
-	_nested_town_directory_widgets, lengthof(_nested_town_directory_widgets)
+	std::begin(_nested_town_directory_widgets), std::end(_nested_town_directory_widgets)
 );
 
 void ShowTownDirectory()
@@ -1472,7 +1472,7 @@ static WindowDesc _found_town_desc(
 	WDP_AUTO, "build_town", 160, 162,
 	WC_FOUND_TOWN, WC_NONE,
 	WDF_CONSTRUCTION,
-	_nested_found_town_widgets, lengthof(_nested_found_town_widgets)
+	std::begin(_nested_found_town_widgets), std::end(_nested_found_town_widgets)
 );
 
 void ShowFoundTownWindow()
@@ -2044,7 +2044,7 @@ static WindowDesc _house_picker_desc(
 	WDP_AUTO, "build_house", 0, 0,
 	WC_BUILD_HOUSE, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,
-	_nested_house_picker_widgets, lengthof(_nested_house_picker_widgets)
+	std::begin(_nested_house_picker_widgets), std::end(_nested_house_picker_widgets)
 );
 
 /**
@@ -2145,7 +2145,7 @@ static WindowDesc _select_town_desc(
 	WDP_AUTO, "select_town", 100, 0,
 	WC_SELECT_TOWN, WC_NONE,
 	WDF_CONSTRUCTION,
-	_nested_select_town_widgets, lengthof(_nested_select_town_widgets)
+	std::begin(_nested_select_town_widgets), std::end(_nested_select_town_widgets)
 );
 
 static void ShowSelectTownWindow(const TownList &towns, const CommandContainer &cmd)

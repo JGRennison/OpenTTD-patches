@@ -19,14 +19,14 @@ struct ViewportDrawerDynamic;
 /**
  * Text effect modes.
  */
-enum TextEffectMode {
+enum TextEffectMode : uint8_t {
 	TE_RISING, ///< Make the text effect slowly go upwards
 	TE_STATIC, ///< Keep the text effect static
-
-	INVALID_TE_ID = 0xFFFF,
 };
 
-typedef size_t TextEffectID;
+using TextEffectID = uint16_t;
+
+static const TextEffectID INVALID_TE_ID = UINT16_MAX;
 
 void MoveAllTextEffects(uint delta_ms);
 TextEffectID AddTextEffect(StringID msg, int x, int y, uint8 duration, TextEffectMode mode);

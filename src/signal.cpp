@@ -1783,7 +1783,7 @@ static bool DetermineExtraAspectsVariable()
 
 	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
 		for (RailType r = RAILTYPE_BEGIN; r != RAILTYPE_END; r++) {
-			const RailtypeInfo *rti = GetRailTypeInfo(r);
+			const RailTypeInfo *rti = GetRailTypeInfo(r);
 			new_extra_aspects = std::max<uint8>(new_extra_aspects, rti->signal_extra_aspects);
 		}
 		for (const GRFFile *grf : _new_signals_grfs) {

@@ -334,7 +334,7 @@ static void CheckCurveLookAhead(const Train *v, TrainReservationLookAhead *looka
 
 	if (max_speed != absolute_max_speed) {
 		/* Apply the engine's rail type curve speed advantage, if it slowed by curves */
-		const RailtypeInfo *rti = GetRailTypeInfo(rt);
+		const RailTypeInfo *rti = GetRailTypeInfo(rt);
 		max_speed += (max_speed / 2) * rti->curve_speed;
 
 		if (v->tcache.cached_tflags & TCF_TILT) {

@@ -1986,7 +1986,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		switch (widget) {
 			case WID_BV_CAPTION:
 				if (this->vehicle_type == VEH_TRAIN && !this->listview_mode && !this->virtual_train_mode) {
-					const RailtypeInfo *rti = GetRailTypeInfo(this->filter.railtype);
+					const RailTypeInfo *rti = GetRailTypeInfo(this->filter.railtype);
 					SetDParam(0, rti->strings.build_caption);
 				} else if (this->vehicle_type == VEH_ROAD && !this->listview_mode) {
 					const RoadTypeInfo *rti = GetRoadTypeInfo(this->filter.roadtype);
@@ -2905,7 +2905,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		switch (widget) {
 			case WID_BV_CAPTION: {
 				if (!this->listview_mode && !this->virtual_train_mode) {
-					const RailtypeInfo *rti = GetRailTypeInfo(this->railtype);
+					const RailTypeInfo *rti = GetRailTypeInfo(this->railtype);
 					SetDParam(0, rti->strings.build_caption);
 				} else {
 					SetDParam(0, (this->listview_mode ? STR_VEHICLE_LIST_AVAILABLE_TRAINS : STR_BUY_VEHICLE_TRAIN_ALL_CAPTION) + this->vehicle_type);
@@ -3245,7 +3245,7 @@ static WindowDesc _build_vehicle_desc(
 	WDP_AUTO, "build_vehicle", 240, 268,
 	WC_BUILD_VEHICLE, WC_NONE,
 	WDF_CONSTRUCTION,
-	_nested_build_vehicle_widgets, lengthof(_nested_build_vehicle_widgets),
+	std::begin(_nested_build_vehicle_widgets), std::end(_nested_build_vehicle_widgets),
 	&BuildVehicleWindow::hotkeys
 );
 
@@ -3253,7 +3253,7 @@ static WindowDesc _build_template_vehicle_desc(
 	WDP_AUTO, nullptr, 240, 268,
 	WC_BUILD_VIRTUAL_TRAIN, WC_CREATE_TEMPLATE,
 	WDF_CONSTRUCTION,
-	_nested_build_vehicle_widgets, lengthof(_nested_build_vehicle_widgets),
+	std::begin(_nested_build_vehicle_widgets), std::end(_nested_build_vehicle_widgets),
 	&BuildVehicleWindow::hotkeys, &_build_vehicle_desc
 );
 
@@ -3261,7 +3261,7 @@ static WindowDesc _build_vehicle_desc_train_advanced(
 	WDP_AUTO, "build_vehicle_dual", 480, 268,
 	WC_BUILD_VEHICLE, WC_NONE,
 	WDF_CONSTRUCTION,
-	_nested_build_vehicle_widgets_train_advanced, lengthof(_nested_build_vehicle_widgets_train_advanced),
+	std::begin(_nested_build_vehicle_widgets_train_advanced), std::end(_nested_build_vehicle_widgets_train_advanced),
 	&BuildVehicleWindow::hotkeys
 );
 
@@ -3269,7 +3269,7 @@ static WindowDesc _build_template_vehicle_desc_advanced(
 	WDP_AUTO, nullptr, 480, 268,
 	WC_BUILD_VIRTUAL_TRAIN, WC_CREATE_TEMPLATE,
 	WDF_CONSTRUCTION,
-	_nested_build_vehicle_widgets_train_advanced, lengthof(_nested_build_vehicle_widgets_train_advanced),
+	std::begin(_nested_build_vehicle_widgets_train_advanced), std::end(_nested_build_vehicle_widgets_train_advanced),
 	&BuildVehicleWindow::hotkeys, &_build_vehicle_desc_train_advanced
 );
 

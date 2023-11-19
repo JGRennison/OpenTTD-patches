@@ -52,7 +52,7 @@
 /** Helper type for lists/vectors of trains */
 typedef std::vector<Train *> TrainList;
 
-RailtypeInfo _railtypes[RAILTYPE_END];
+RailTypeInfo _railtypes[RAILTYPE_END];
 std::vector<RailType> _sorted_railtypes;
 TileIndex _rail_track_endtile; ///< The end of a rail track; as hidden return from the rail build/remove command for GUI purposes.
 RailTypes _railtypes_hidden_mask;
@@ -64,23 +64,13 @@ void ResetRailTypes()
 {
 	static_assert(lengthof(_original_railtypes) <= lengthof(_railtypes));
 
-	uint i = 0;
-	for (; i < lengthof(_original_railtypes); i++) _railtypes[i] = _original_railtypes[i];
-
-	static const RailtypeInfo empty_railtype = {
-		{0,0,0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,0,0,{}},
-		{0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0},
-		0, RAILTYPES_NONE, RAILTYPES_NONE, RAILTYPES_NONE, 0, 0, 0, RTFB_NONE, 0, 0, 0, 0, 0, 0, 0,
-		RailTypeLabelList(), 0, 0, RAILTYPES_NONE, RAILTYPES_NONE, 0,
-		{}, {} };
-	for (; i < lengthof(_railtypes);          i++) _railtypes[i] = empty_railtype;
+	auto insert = std::copy(std::begin(_original_railtypes), std::end(_original_railtypes), std::begin(_railtypes));
+	std::fill(insert, std::end(_railtypes), RailTypeInfo{});
 
 	_railtypes_hidden_mask = RAILTYPES_NONE;
 }
 
-void ResolveRailTypeGUISignalSprites(RailtypeInfo *rti, uint8 style, PalSpriteID signals[SIGTYPE_END][2][2])
+void ResolveRailTypeGUISignalSprites(RailTypeInfo *rti, uint8 style, PalSpriteID signals[SIGTYPE_END][2][2])
 {
 	/* Array of default GUI signal sprite numbers. */
 	const SpriteID _signal_lookup[2][SIGTYPE_END] = {
@@ -131,7 +121,7 @@ void ResolveRailTypeGUISignalSprites(RailtypeInfo *rti, uint8 style, PalSpriteID
 	}
 }
 
-void ResolveRailTypeGUISprites(RailtypeInfo *rti)
+void ResolveRailTypeGUISprites(RailTypeInfo *rti)
 {
 	SpriteID cursors_base = GetCustomRailSprite(rti, INVALID_TILE, RTSG_CURSORS);
 	if (cursors_base != 0) {
@@ -273,7 +263,7 @@ void InitRailTypes()
 RailType AllocateRailType(RailTypeLabel label)
 {
 	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
-		RailtypeInfo *rti = &_railtypes[rt];
+		RailTypeInfo *rti = &_railtypes[rt];
 
 		if (rti->label == 0) {
 			/* Set up new rail type */
@@ -680,7 +670,7 @@ CommandCost CmdBuildSingleRail(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 
 	_rail_track_endtile = INVALID_TILE;
 
-	if (!ValParamRailtype(railtype) || !ValParamTrackOrientation(track)) return CMD_ERROR;
+	if (!ValParamRailType(railtype) || !ValParamTrackOrientation(track)) return CMD_ERROR;
 
 	Slope tileh = GetTileSlope(tile);
 	TrackBits trackbit = TrackToTrackBits(track);
@@ -814,6 +804,11 @@ CommandCost CmdBuildSingleRail(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 		case MP_ROAD: {
 			/* Level crossings may only be built on these slopes */
 			if (!HasBit(VALID_LEVEL_CROSSING_SLOPES, tileh)) return_cmd_error(STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
+
+			if (!_settings_game.construction.crossing_with_competitor && _current_company != OWNER_DEITY) {
+				CommandCost ret = CheckTileOwnership(tile);
+				if (ret.Failed()) return ret;
+			}
 
 			CommandCost ret = EnsureNoVehicleOnGround(tile);
 			if (ret.Failed()) return ret;
@@ -1291,7 +1286,7 @@ static CommandCost CmdRailTrackHelper(TileIndex tile, DoCommandFlag flags, uint3
 
 	_rail_track_endtile = INVALID_TILE;
 
-	if ((!remove && !ValParamRailtype(railtype)) || !ValParamTrackOrientation(track)) return CMD_ERROR;
+	if ((!remove && !ValParamRailType(railtype)) || !ValParamTrackOrientation(track)) return CMD_ERROR;
 	if (p1 >= MapSize()) return CMD_ERROR;
 	TileIndex end_tile = p1;
 	Trackdir trackdir = TrackToTrackdir(track);
@@ -1394,7 +1389,7 @@ CommandCost CmdBuildTrainDepot(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 {
 	/* check railtype and valid direction for depot (0 through 3), 4 in total */
 	RailType railtype = Extract<RailType, 0, 6>(p1);
-	if (!ValParamRailtype(railtype)) return CMD_ERROR;
+	if (!ValParamRailType(railtype)) return CMD_ERROR;
 
 	Slope tileh = GetTileSlope(tile);
 
@@ -2455,7 +2450,7 @@ CommandCost CmdConvertRail(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	TileIndex area_end = tile;
 	bool diagonal = HasBit(p2, 6);
 
-	if (!ValParamRailtype(totype)) return CMD_ERROR;
+	if (!ValParamRailType(totype)) return CMD_ERROR;
 	if (area_start >= MapSize()) return CMD_ERROR;
 
 	TrainList affected_trains;
@@ -2727,7 +2722,7 @@ CommandCost CmdConvertRailTrack(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 	const RailType totype = Extract<RailType, 0, 6>(p2);
 	const TileIndex end_tile = p1;
 
-	if (!ValParamRailtype(totype)) return CMD_ERROR;
+	if (!ValParamRailType(totype)) return CMD_ERROR;
 	if (end_tile >= MapSize()) return CMD_ERROR;
 
 	const Track start_track = Extract<Track, 6, 3>(p2);
@@ -3197,7 +3192,7 @@ void DrawRestrictedSignal(SignalType type, SpriteID sprite, int x, int y, int z,
 	}
 }
 
-void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, SignalState condition, SignalOffsets image, uint pos, SignalType type,
+void DrawSingleSignal(TileIndex tile, const RailTypeInfo *rti, Track track, SignalState condition, SignalOffsets image, uint pos, SignalType type,
 		SignalVariant variant, const TraceRestrictProgram *prog, CustomSignalSpriteContext context)
 {
 	bool show_restricted = (prog != nullptr);
@@ -3318,7 +3313,7 @@ void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, Sign
 	}
 }
 
-static void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, SignalState condition, SignalOffsets image, uint pos)
+static void DrawSingleSignal(TileIndex tile, const RailTypeInfo *rti, Track track, SignalState condition, SignalOffsets image, uint pos)
 {
 	SignalType type       = GetSignalType(tile, track);
 	SignalVariant variant = GetSignalVariant(tile, track);
@@ -3493,7 +3488,7 @@ static void DrawTrackFence_SW(const TileInfo *ti, SpriteID base_image, uint num_
  * @param ti Tile drawing information.
  * @param rti Rail type information.
  */
-void DrawTrackDetails(const TileInfo *ti, const RailtypeInfo *rti, const RailGroundType rgt)
+void DrawTrackDetails(const TileInfo *ti, const RailTypeInfo *rti, const RailGroundType rgt)
 {
 	/* Base sprite for track fences.
 	 * Note: Halftile slopes only have fences on the upper part. */
@@ -3569,7 +3564,7 @@ static RailGroundType GetRailOrBridgeGroundType(TileInfo *ti) {
 	}
 }
 
-static void DrawTrackBitsOverlay(TileInfo *ti, TrackBits track, const RailtypeInfo *rti, RailGroundType rgt,  bool is_bridge, Corner halftile_corner, Corner draw_half_tile)
+static void DrawTrackBitsOverlay(TileInfo *ti, TrackBits track, const RailTypeInfo *rti, RailGroundType rgt,  bool is_bridge, Corner halftile_corner, Corner draw_half_tile)
 {
 	if (halftile_corner != CORNER_INVALID) track &= ~CornerToTrackBits(halftile_corner);
 
@@ -3732,7 +3727,7 @@ static void DrawTrackBitsOverlay(TileInfo *ti, TrackBits track, const RailtypeIn
  */
 void DrawTrackBits(TileInfo *ti, TrackBits track, RailType rt, RailGroundType rgt, bool is_bridge, Corner halftile_corner, Corner draw_half_tile)
 {
-	const RailtypeInfo *rti = GetRailTypeInfo(rt);
+	const RailTypeInfo *rti = GetRailTypeInfo(rt);
 
 	if (rti->UsesOverlay()) {
 		DrawTrackBitsOverlay(ti, track, rti, rgt, is_bridge, halftile_corner, draw_half_tile);
@@ -3935,7 +3930,7 @@ void DrawTrackBits(TileInfo *ti, TrackBits track)
 	}
 }
 
-static void DrawSignals(TileIndex tile, TrackBits rails, const RailtypeInfo *rti)
+static void DrawSignals(TileIndex tile, TrackBits rails, const RailTypeInfo *rti)
 {
 #define MAYBE_DRAW_SIGNAL(x, y, z, t) if (IsSignalPresent(tile, x)) DrawSingleSignal(tile, rti, t, GetSingleSignalState(tile, x), y, z)
 
@@ -3969,7 +3964,7 @@ static void DrawSignals(TileIndex tile, TrackBits rails, const RailtypeInfo *rti
 
 static void DrawTile_Track(TileInfo *ti, DrawTileProcParams params)
 {
-	const RailtypeInfo *rti = GetRailTypeInfo(GetRailType(ti->tile));
+	const RailTypeInfo *rti = GetRailTypeInfo(GetRailType(ti->tile));
 
 	_drawtile_track_palette = COMPANY_SPRITE_COLOUR(GetTileOwner(ti->tile));
 
@@ -3988,13 +3983,13 @@ static void DrawTile_Track(TileInfo *ti, DrawTileProcParams params)
 
 		if (HasSignals(ti->tile)) {
 			if (rails == TRACK_BIT_VERT) {
-				const RailtypeInfo *rti2 = GetRailTypeInfo(secondary_railtype);
+				const RailTypeInfo *rti2 = GetRailTypeInfo(secondary_railtype);
 				if (IsSignalPresent(ti->tile, 2)) DrawSingleSignal(ti->tile, rti,   TRACK_LEFT, GetSingleSignalState(ti->tile, 2), SIGNAL_TO_NORTH, 0);
 				if (IsSignalPresent(ti->tile, 3)) DrawSingleSignal(ti->tile, rti,   TRACK_LEFT, GetSingleSignalState(ti->tile, 3), SIGNAL_TO_SOUTH, 1);
 				if (IsSignalPresent(ti->tile, 0)) DrawSingleSignal(ti->tile, rti2, TRACK_RIGHT, GetSingleSignalState(ti->tile, 0), SIGNAL_TO_NORTH, 2);
 				if (IsSignalPresent(ti->tile, 1)) DrawSingleSignal(ti->tile, rti2, TRACK_RIGHT, GetSingleSignalState(ti->tile, 1), SIGNAL_TO_SOUTH, 3);
 			} else if (rails == TRACK_BIT_HORZ) {
-				const RailtypeInfo *rti2 = GetRailTypeInfo(secondary_railtype);
+				const RailTypeInfo *rti2 = GetRailTypeInfo(secondary_railtype);
 				if (IsSignalPresent(ti->tile, 3)) DrawSingleSignal(ti->tile, rti,  TRACK_UPPER, GetSingleSignalState(ti->tile, 3), SIGNAL_TO_WEST, 4);
 				if (IsSignalPresent(ti->tile, 2)) DrawSingleSignal(ti->tile, rti,  TRACK_UPPER, GetSingleSignalState(ti->tile, 2), SIGNAL_TO_EAST, 5);
 				if (IsSignalPresent(ti->tile, 1)) DrawSingleSignal(ti->tile, rti2, TRACK_LOWER, GetSingleSignalState(ti->tile, 1), SIGNAL_TO_WEST, 6);
@@ -4111,7 +4106,7 @@ static void DrawTile_Track(TileInfo *ti, DrawTileProcParams params)
 void DrawTrainDepotSprite(int x, int y, int dir, RailType railtype)
 {
 	const DrawTileSprites *dts = &_depot_gfx_table[dir];
-	const RailtypeInfo *rti = GetRailTypeInfo(railtype);
+	const RailTypeInfo *rti = GetRailTypeInfo(railtype);
 	SpriteID image = rti->UsesOverlay() ? SPR_FLAT_GRASS_TILE : dts->ground.sprite;
 	uint32 offset = rti->GetRailtypeSpriteOffset();
 
@@ -4382,12 +4377,12 @@ static bool ClickTile_Track(TileIndex tile)
 static void GetTileDesc_Track(TileIndex tile, TileDesc *td)
 {
 	RailType rt = GetRailType(tile);
-	const RailtypeInfo *rti = GetRailTypeInfo(rt);
+	const RailTypeInfo *rti = GetRailTypeInfo(rt);
 	td->rail_speed = rti->max_speed;
 	td->railtype = rti->strings.name;
 	RailType secondary_rt = GetTileSecondaryRailTypeIfValid(tile);
 	if (secondary_rt != rt && secondary_rt != INVALID_RAILTYPE) {
-		const RailtypeInfo *secondary_rti = GetRailTypeInfo(secondary_rt);
+		const RailTypeInfo *secondary_rti = GetRailTypeInfo(secondary_rt);
 		td->rail_speed2 = secondary_rti->max_speed;
 		td->railtype2 = secondary_rti->strings.name;
 	}

@@ -102,7 +102,7 @@ static WindowDesc _template_create_window_desc(
 	WC_CREATE_TEMPLATE,             // window class
 	WC_TEMPLATEGUI_MAIN,            // parent window class
 	WDF_CONSTRUCTION,               // window flags
-	_widgets, lengthof(_widgets)    // widgets + num widgets
+	std::begin(_widgets), std::end(_widgets)
 );
 
 void ShowTemplateTrainBuildVehicleWindow(Train **virtual_train);

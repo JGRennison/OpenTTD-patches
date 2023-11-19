@@ -60,6 +60,7 @@
 #include "newgrf_roadstop.h"
 #include "newgrf_station.h"
 #include "zoom_func.h"
+#include "help_gui.h"
 
 #include "widgets/toolbar_widget.h"
 
@@ -1122,7 +1123,9 @@ static CallBackFunction MenuClickNewspaper(int index)
 enum HelpMenuEntries {
 	HME_LANDINFO = 0,
 	HME_PICKER,
-	HME_CONSOLE = 3,
+	HME_SEPARATOR,
+	HME_HELP,
+	HME_CONSOLE,
 	HME_SCRIPT_DEBUG,
 	HME_SCREENSHOT,
 	HME_FRAMERATE,
@@ -1132,9 +1135,6 @@ enum HelpMenuEntries {
 	HME_SPRITE_ALIGNER,
 	HME_BOUNDING_BOXES,
 	HME_DIRTY_BLOCKS,
-
-	HME_LAST,
-	HME_LAST_NON_DEV = HME_SPRITE_ALIGNER,
 };
 
 static void ShowBuildRailToolbarFromTile(TileIndex tile)
@@ -1237,11 +1237,26 @@ static CallBackFunction PlacePickerTool()
 
 static CallBackFunction ToolbarHelpClick(Window *w)
 {
-	uint mask = 0;
-	if (_local_company == COMPANY_SPECTATOR) SetBit(mask, HME_PICKER);
-	int count = _settings_client.gui.newgrf_developer_tools ? HME_LAST : HME_LAST_NON_DEV;
 	int widget = (_game_mode == GM_EDITOR) ? (int)WID_TE_HELP : (int)WID_TN_HELP;
-	PopupMainToolbMenu(w, widget, STR_ABOUT_MENU_LAND_BLOCK_INFO, count, mask);
+
+	DropDownList list;
+	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_LAND_BLOCK_INFO,           HME_LANDINFO,      false));
+	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_SHOW_PICKER_TOOL,          HME_PICKER,        _local_company == COMPANY_SPECTATOR));
+	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_SEPARATOR,                 HME_SEPARATOR,     false));
+	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_HELP,                      HME_HELP,          false));
+	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_TOGGLE_CONSOLE,            HME_CONSOLE,       false));
+	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_AI_DEBUG,                  HME_SCRIPT_DEBUG,  false));
+	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_SCREENSHOT,                HME_SCREENSHOT,    false));
+	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_SHOW_FRAMERATE,            HME_FRAMERATE,     false));
+	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS, HME_MODIFIER_KEYS, false));
+	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_ABOUT_OPENTTD,             HME_ABOUT,         false));
+	if (_settings_client.gui.newgrf_developer_tools) {
+		list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_SPRITE_ALIGNER,        HME_SPRITE_ALIGNER,         false));
+		list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES, HME_BOUNDING_BOXES,         false));
+		list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_TOGGLE_DIRTY_BLOCKS,   HME_DIRTY_BLOCKS,         false));
+	}
+	PopupMainToolbMenu(w, widget, std::move(list), 0);
+
 	return CBF_NONE;
 }
 
@@ -1305,6 +1320,7 @@ static CallBackFunction MenuClickHelp(int index)
 	switch (index) {
 		case HME_LANDINFO:       return PlaceLandBlockInfo();
 		case HME_PICKER:         return PlacePickerTool();
+		case HME_HELP:           ShowHelpWindow();                 break;
 		case HME_CONSOLE:        IConsoleSwitch();                 break;
 		case HME_SCRIPT_DEBUG:   ShowScriptDebugWindow();          break;
 		case HME_SCREENSHOT:     ShowScreenshotWindow();           break;
@@ -2459,7 +2475,7 @@ static WindowDesc _toolb_normal_desc(
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_MAIN_TOOLBAR, WC_NONE,
 	WDF_NO_FOCUS | WDF_NO_CLOSE,
-	_nested_toolbar_normal_widgets, lengthof(_nested_toolbar_normal_widgets),
+	std::begin(_nested_toolbar_normal_widgets), std::end(_nested_toolbar_normal_widgets),
 	&MainToolbarWindow::hotkeys
 );
 
@@ -2813,7 +2829,7 @@ static const NWidgetPart _nested_toolb_scen_inner_widgets[] = {
 
 static NWidgetBase *MakeScenarioToolbar(int *biggest_index)
 {
-	return MakeNWidgets(_nested_toolb_scen_inner_widgets, lengthof(_nested_toolb_scen_inner_widgets), biggest_index, new NWidgetScenarioToolbarContainer());
+	return MakeNWidgets(std::begin(_nested_toolb_scen_inner_widgets), std::end(_nested_toolb_scen_inner_widgets), biggest_index, new NWidgetScenarioToolbarContainer());
 }
 
 static const NWidgetPart _nested_toolb_scen_widgets[] = {
@@ -2824,7 +2840,7 @@ static WindowDesc _toolb_scen_desc(
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_MAIN_TOOLBAR, WC_NONE,
 	WDF_NO_FOCUS | WDF_NO_CLOSE,
-	_nested_toolb_scen_widgets, lengthof(_nested_toolb_scen_widgets),
+	std::begin(_nested_toolb_scen_widgets), std::end(_nested_toolb_scen_widgets),
 	&ScenarioEditorToolbarWindow::hotkeys
 );
 

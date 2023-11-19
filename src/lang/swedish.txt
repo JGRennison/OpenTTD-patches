@@ -521,7 +521,7 @@ STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :Meddelandehisto
 STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :Ta bort alla meddelanden
 
 # About menu
-###length 10
+###length 11
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :Information om mark
 STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Visa/dölj konsolen
@@ -1426,6 +1426,9 @@ STR_CONFIG_SETTING_PLANE_CRASHES_NONE                           :Inga*
 STR_CONFIG_SETTING_PLANE_CRASHES_REDUCED                        :Reducerad
 STR_CONFIG_SETTING_PLANE_CRASHES_NORMAL                         :Normal
 
+STR_CONFIG_SETTING_CROSSING_WITH_COMPETITOR                     :Tillåt korsningar med vägar och räls ägda av andra företag: {STRING}
+STR_CONFIG_SETTING_CROSSING_WITH_COMPETITOR_HELPTEXT            :Tillåt konstruktion av korsningar på vägar och järnvägar som ägs av motståndare
+
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :Tillåt genomfartshållplatser på vägar som ägs av städer: {STRING}
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD_HELPTEXT                   :Tillåt konstruktion av genomfartshållplatser på vägar som ägs av städer
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD                      :Tillåt dina fordon att köra genom motståndarens hållplatser: {STRING}
@@ -2163,6 +2166,8 @@ STR_ABANDON_GAME_CAPTION                                        :{WHITE}Avsluta 
 STR_ABANDON_GAME_QUERY                                          :{YELLOW}Är du säker på att du vill avsluta spelet?
 STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}Är du säker på att du vill avsluta detta scenario?
 
+# Help window
+
 # Cheat window
 STR_CHEATS                                                      :{WHITE}Fusk
 STR_CHEATS_TOOLTIP                                              :{BLACK}Checkboxar indikerar om du använt det här fusket förut
@@ -2650,6 +2655,7 @@ STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}Växla g
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Växla genomskinlighet för broar. Ctrl+klick för att låsa
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}Växla genomskinlighet för byggnader såsom fyrar och antenner. Ctrl+klick för att låsa
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Växla genomskinlighet för kontaktledning. Ctrl+klick för att låsa
+STR_TRANSPARENT_TEXT_TOOLTIP                                    :{BLACK} Växla genomskinlighet för pålastnings, kostnads och inkomsttext. Ctrl+klick för att låsa
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Gör object osynliga istället för genomskinliga
 
 # Linkgraph legend window
@@ -4700,7 +4706,7 @@ STR_TEXTFILE_WRAP_TEXT_TOOLTIP                                  :{BLACK}Bryt rad
 STR_TEXTFILE_VIEW_README                                        :{BLACK}Visa manual
 STR_TEXTFILE_VIEW_CHANGELOG                                     :{BLACK}Ändringshistorik
 STR_TEXTFILE_VIEW_LICENCE                                       :{BLACK}Licens
-###length 4
+###length 5
 STR_TEXTFILE_README_CAPTION                                     :{WHITE} {STRING}-manual för {STRING}
 STR_TEXTFILE_CHANGELOG_CAPTION                                  :{WHITE}Ändringshistorik för {STRING} {STRING}
 STR_TEXTFILE_LICENCE_CAPTION                                    :{WHITE}Licens för {STRING}{STRING}

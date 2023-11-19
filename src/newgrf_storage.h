@@ -13,6 +13,7 @@
 #include "core/alloc_func.hpp"
 #include "core/pool_type.hpp"
 #include "tile_type.h"
+#include <array>
 
 /**
  * Mode switches to the behaviour of persistent storage array.
@@ -65,26 +66,10 @@ private:
  */
 template <typename TYPE, uint SIZE>
 struct PersistentStorageArray : BasePersistentStorageArray {
-	TYPE storage[SIZE]; ///< Memory to for the storage array
-	TYPE *prev_storage; ///< Memory to store "old" states so we can revert them on the performance of test cases for commands etc.
+	using StorageType = std::array<TYPE, SIZE>;
 
-	/** Simply construct the array */
-	PersistentStorageArray() : prev_storage(nullptr)
-	{
-		memset(this->storage, 0, sizeof(this->storage));
-	}
-
-	/** And free all data related to it */
-	~PersistentStorageArray()
-	{
-		free(this->prev_storage);
-	}
-
-	/** Resets all values to zero. */
-	void ResetToZero()
-	{
-		memset(this->storage, 0, sizeof(this->storage));
-	}
+	StorageType storage{}; ///< Memory for the storage array
+	std::unique_ptr<StorageType> prev_storage{}; ///< Temporary memory to store previous state so it can be reverted, e.g. for command tests.
 
 	/**
 	 * Stores some value at a given position.
@@ -104,10 +89,9 @@ struct PersistentStorageArray : BasePersistentStorageArray {
 
 		/* We do not have made a backup; lets do so */
 		if (AreChangesPersistent()) {
-			assert(this->prev_storage == nullptr);
-		} else if (this->prev_storage == nullptr) {
-			this->prev_storage = MallocT<TYPE>(SIZE);
-			memcpy(this->prev_storage, this->storage, sizeof(this->storage));
+			assert(!this->prev_storage);
+		} else if (!this->prev_storage) {
+			this->prev_storage = std::make_unique<StorageType>(this->storage);
 
 			/* We only need to register ourselves when we made the backup
 			 * as that is the only time something will have changed */
@@ -132,10 +116,9 @@ struct PersistentStorageArray : BasePersistentStorageArray {
 
 	void ClearChanges()
 	{
-		if (this->prev_storage != nullptr) {
-			memcpy(this->storage, this->prev_storage, sizeof(this->storage));
-			free(this->prev_storage);
-			this->prev_storage = nullptr;
+		if (this->prev_storage) {
+			this->storage = *this->prev_storage;
+			this->prev_storage.reset();
 		}
 	}
 };
@@ -149,17 +132,12 @@ struct PersistentStorageArray : BasePersistentStorageArray {
  */
 template <typename TYPE, uint SIZE>
 struct TemporaryStorageArray {
-	TYPE storage[SIZE]; ///< Memory to for the storage array
-	uint16 init[SIZE];  ///< Storage has been assigned, if this equals 'init_key'.
-	uint16 init_key;    ///< Magic key to 'init'.
+	using StorageType = std::array<TYPE, SIZE>;
+	using StorageInitType = std::array<uint16_t, SIZE>;
 
-	/** Simply construct the array */
-	TemporaryStorageArray()
-	{
-		memset(this->storage, 0, sizeof(this->storage)); // not exactly needed, but makes code analysers happy
-		memset(this->init, 0, sizeof(this->init));
-		this->init_key = 1;
-	}
+	StorageType storage{}; ///< Memory for the storage array
+	StorageInitType init{}; ///< Storage has been assigned, if this equals 'init_key'.
+	uint16_t init_key{1}; ///< Magic key to 'init'.
 
 	/**
 	 * Stores some value at a given position.
@@ -199,7 +177,7 @@ struct TemporaryStorageArray {
 		this->init_key++;
 		if (this->init_key == 0) {
 			/* When init_key wraps around, we need to reset everything */
-			memset(this->init, 0, sizeof(this->init));
+			this->init = {};
 			this->init_key = 1;
 		}
 	}

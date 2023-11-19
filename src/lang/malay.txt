@@ -456,7 +456,7 @@ STR_NEWS_MENU_LAST_MESSAGE_NEWS_REPORT                          :Pesanan/laporan
 STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :Pesanan sebelumnya
 
 # About menu
-###length 10
+###length 11
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :Maklumat kawasan tanah
 STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Papar atau padamkan konsol
@@ -1243,6 +1243,7 @@ STR_CONFIG_SETTING_PLANE_CRASHES_NONE                           :Tiada
 STR_CONFIG_SETTING_PLANE_CRASHES_REDUCED                        :Dikurangkan
 STR_CONFIG_SETTING_PLANE_CRASHES_NORMAL                         :Normal
 
+
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :Benarkan hentian pandu-lalu di jalanraya bandar: {STRING}
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD_HELPTEXT                   :Benarkan pembinaan untuk jalan pemanduan berhenti di jalan milik bandaran
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD                      :Benarkan hentian pandu-lalu di jalanraya yang dimiliki oleh pesaing: {STRING}
@@ -1704,6 +1705,8 @@ STR_QUIT_NO                                                     :{BLACK}Tidak
 STR_ABANDON_GAME_CAPTION                                        :{WHITE}Tinggalkan Permainan
 STR_ABANDON_GAME_QUERY                                          :{YELLOW}Pastikah anda mahu keluar dari permainan ini?
 STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}Pastikah anda untuk keluar dari senario ini?
+
+# Help window
 
 # Cheat window
 STR_CHEATS                                                      :{WHITE}Penipuan (Cheats)
@@ -3832,7 +3835,7 @@ STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORAN
 STR_TEXTFILE_VIEW_README                                        :{BLACK}Lihat readme
 STR_TEXTFILE_VIEW_CHANGELOG                                     :{BLACK}LogUbah
 STR_TEXTFILE_VIEW_LICENCE                                       :{BLACK}Lesen
-###length 4
+###length 5
 STR_TEXTFILE_README_CAPTION                                     :{WHITE}{STRING} readme untuk {STRING}
 STR_TEXTFILE_CHANGELOG_CAPTION                                  :{WHITE}{STRING} LogUbah untuk {STRING}
 STR_TEXTFILE_LICENCE_CAPTION                                    :{WHITE}{STRING} lesen untuk {STRING}

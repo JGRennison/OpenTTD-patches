@@ -503,7 +503,7 @@ STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :消息历史
 STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :删除全部消息
 
 # About menu
-###length 10
+###length 11
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :查询地块信息
 STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :切换到控制台模式
@@ -1380,6 +1380,7 @@ STR_CONFIG_SETTING_PLANE_CRASHES_NONE                           :不出现*
 STR_CONFIG_SETTING_PLANE_CRASHES_REDUCED                        :较少出现
 STR_CONFIG_SETTING_PLANE_CRASHES_NORMAL                         :正常
 
+
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :允许在城镇所属的道路上建通过式车站： {STRING}
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD_HELPTEXT                   :“打开”时允许在城市所属的道路上建设通过式车站
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD                      :允许在竞争对手所属的道路上建通过式车站： {STRING}
@@ -2104,6 +2105,8 @@ STR_QUIT_NO                                                     :{BLACK}否
 STR_ABANDON_GAME_CAPTION                                        :{WHITE}放弃游戏
 STR_ABANDON_GAME_QUERY                                          :{YELLOW}你确定要放弃当前的游戏吗？
 STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}你确定要退出当前场景吗？
+
+# Help window
 
 # Cheat window
 STR_CHEATS                                                      :{WHITE}作弊
@@ -4621,7 +4624,7 @@ STR_TEXTFILE_WRAP_TEXT_TOOLTIP                                  :{BLACK}強迫�
 STR_TEXTFILE_VIEW_README                                        :{BLACK}查看说明
 STR_TEXTFILE_VIEW_CHANGELOG                                     :{BLACK}更新日志
 STR_TEXTFILE_VIEW_LICENCE                                       :{BLACK}版权信息
-###length 4
+###length 5
 STR_TEXTFILE_README_CAPTION                                     :{WHITE}{STRING} {STRING} 的说明
 STR_TEXTFILE_CHANGELOG_CAPTION                                  :{WHITE}{STRING} {STRING} 的更新日志
 STR_TEXTFILE_LICENCE_CAPTION                                    :{WHITE}{STRING} {STRING} 的版权信息

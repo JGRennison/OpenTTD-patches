@@ -666,7 +666,7 @@ int Train::GetCurveSpeedLimit() const
 
 	if (max_speed != absolute_max_speed) {
 		/* Apply the current railtype's curve speed advantage */
-		const RailtypeInfo *rti = GetRailTypeInfo(GetRailTypeByTrackBit(this->tile, this->track));
+		const RailTypeInfo *rti = GetRailTypeInfo(GetRailTypeByTrackBit(this->tile, this->track));
 		max_speed += (max_speed / 2) * rti->curve_speed;
 
 		if (this->tcache.cached_tflags & TCF_TILT) {

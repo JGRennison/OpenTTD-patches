@@ -1061,7 +1061,7 @@ static WindowDesc _schdispatch_desc(
 	WDP_AUTO, "scheduled_dispatch_slots", 400, 130,
 	WC_SCHDISPATCH_SLOTS, WC_VEHICLE_TIMETABLE,
 	WDF_CONSTRUCTION,
-	_nested_schdispatch_widgets, lengthof(_nested_schdispatch_widgets)
+	std::begin(_nested_schdispatch_widgets), std::end(_nested_schdispatch_widgets)
 );
 
 /**
@@ -1268,7 +1268,7 @@ static WindowDesc _scheduled_dispatch_add_desc(
 	WDP_CENTER, nullptr, 0, 0,
 	WC_SET_DATE, WC_NONE,
 	0,
-	_nested_scheduled_dispatch_add_widgets, lengthof(_nested_scheduled_dispatch_add_widgets)
+	std::begin(_nested_scheduled_dispatch_add_widgets), std::end(_nested_scheduled_dispatch_add_widgets)
 );
 
 void ShowScheduledDispatchAddSlotsWindow(SchdispatchWindow *parent, int window_number)

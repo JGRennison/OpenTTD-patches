@@ -1415,8 +1415,8 @@ static void TriggerIndustryProduction(Industry *i)
  * @param front The front of the train
  */
 CargoPayment::CargoPayment(Vehicle *front) :
-	front(front),
-	current_station(front->last_station_visited)
+	current_station(front->last_station_visited),
+	front(front)
 {
 }
 

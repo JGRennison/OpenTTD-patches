@@ -33,10 +33,6 @@ STR_ORDER_STOP_LOCATION_THROUGH                                 :[차례로 나�
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :매우 느림
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :더 느림
 
-STR_ABOUT_MENU_SHOW_PICKER_TOOL                                 :선택 도구
-
-STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :보조 키 창
-
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :현실에서 매 {COMMA}분마다
 
 STR_COMMA_SEPARATOR                                             :,{SP}
@@ -2136,3 +2132,6 @@ STR_VIEWPORT_TOWN_COLOUR                                        :{1:COLOUR}{0:TO
 STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {COLOUR}({COMMA})
 STR_VIEWPORT_TOWN_COLOUR_CITY                                   :{1:COLOUR}{0:TOWN} (대도시)
 STR_VIEWPORT_TOWN_COLOUR_CITY_POP                               :{WHITE}{TOWN} {COLOUR}(대도시, {COMMA})
+
+STR_ABOUT_MENU_SHOW_PICKER_TOOL                                 :선택 도구
+STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :보조 키 창

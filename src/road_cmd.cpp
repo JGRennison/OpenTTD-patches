@@ -69,17 +69,8 @@ void ResetRoadTypes()
 {
 	static_assert(lengthof(_original_roadtypes) <= lengthof(_roadtypes));
 
-	uint i = 0;
-	for (; i < lengthof(_original_roadtypes); i++) _roadtypes[i] = _original_roadtypes[i];
-
-	static const RoadTypeInfo empty_roadtype = {
-		{ 0, 0, 0, 0, 0, 0 },
-		{ 0, 0, 0, 0, 0, 0 },
-		{ 0, 0, 0, 0, 0, 0, 0, 0, 0, {}, {}, 0, {}, {} },
-		ROADTYPES_NONE, ROTFB_NONE, RXTFB_NONE, RTCM_NORMAL, 0, 0, 0, 0,
-		RoadTypeLabelList(), 0, 0, ROADTYPES_NONE, ROADTYPES_NONE, 0,
-		{}, {} };
-	for (; i < lengthof(_roadtypes);          i++) _roadtypes[i] = empty_roadtype;
+	auto insert = std::copy(std::begin(_original_roadtypes), std::end(_original_roadtypes), std::begin(_roadtypes));
+	std::fill(insert, std::end(_roadtypes), RoadTypeInfo{});
 
 	_roadtypes_hidden_mask = ROADTYPES_NONE;
 	_roadtypes_type        = ROADTYPES_TRAM;
@@ -1110,6 +1101,11 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 			/* Level crossings may only be built on these slopes */
 			if (!HasBit(VALID_LEVEL_CROSSING_SLOPES, tileh)) {
 				return_cmd_error(STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
+			}
+
+			if (!_settings_game.construction.crossing_with_competitor && company != OWNER_TOWN && company != OWNER_DEITY) {
+				CommandCost ret = CheckTileOwnership(tile);
+				if (ret.Failed()) return ret;
 			}
 
 			if (GetRailTileType(tile) != RAIL_TILE_NORMAL) goto do_clear;
@@ -2265,7 +2261,7 @@ static void DrawTile_Road(TileInfo *ti, DrawTileProcParams params)
 
 			Axis axis = GetCrossingRailAxis(ti->tile);
 
-			const RailtypeInfo *rti = GetRailTypeInfo(GetRailType(ti->tile));
+			const RailTypeInfo *rti = GetRailTypeInfo(GetRailType(ti->tile));
 
 			RoadType road_rt = GetRoadTypeRoad(ti->tile);
 			RoadType tram_rt = GetRoadTypeTram(ti->tile);
@@ -2804,7 +2800,7 @@ static void GetTileDesc_Road(TileIndex tile, TileDesc *td)
 			td->str = STR_LAI_ROAD_DESCRIPTION_ROAD_RAIL_LEVEL_CROSSING;
 			rail_owner = GetTileOwner(tile);
 
-			const RailtypeInfo *rti = GetRailTypeInfo(GetRailType(tile));
+			const RailTypeInfo *rti = GetRailTypeInfo(GetRailType(tile));
 			td->railtype = rti->strings.name;
 			td->rail_speed = rti->max_speed;
 

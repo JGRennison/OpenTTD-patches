@@ -724,7 +724,7 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 						return 0x1FF | ((GetRailTypeInfo(Train::From(v)->railtype)->flags & RTFB_CATENARY) ? 0x200 : 0);
 					}
 					RailType rt = GetTileRailTypeByTrackBit(v->tile, Train::From(v)->track);
-					const RailtypeInfo *rti = GetRailTypeInfo(rt);
+					const RailTypeInfo *rti = GetRailTypeInfo(rt);
 					return ((rti->flags & RTFB_CATENARY) ? 0x200 : 0) |
 						(HasPowerOnRail(Train::From(v)->railtype, rt) ? 0x100 : 0) |
 						GetReverseRailTypeTranslation(rt, object->ro.grffile);

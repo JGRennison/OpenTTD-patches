@@ -3619,7 +3619,7 @@ static WindowDesc _program_desc(
 	WDP_AUTO, "trace_restrict_gui", 384, 100,
 	WC_TRACE_RESTRICT, WC_BUILD_SIGNAL,
 	WDF_CONSTRUCTION,
-	_nested_program_widgets, lengthof(_nested_program_widgets)
+	std::begin(_nested_program_widgets), std::end(_nested_program_widgets)
 );
 
 /**
@@ -4289,7 +4289,7 @@ static WindowDesc _slot_window_desc(
 	WDP_AUTO, "list_groups_train", 525, 246,
 	WC_TRACE_RESTRICT_SLOTS, WC_NONE,
 	0,
-	_nested_slot_widgets, lengthof(_nested_slot_widgets)
+	std::begin(_nested_slot_widgets), std::end(_nested_slot_widgets)
 );
 
 /**
@@ -4657,7 +4657,7 @@ static WindowDesc _counter_window_desc(
 	WDP_AUTO, "list_tr_counters", 525, 246,
 	WC_TRACE_RESTRICT_COUNTERS, WC_NONE,
 	0,
-	_nested_counter_widgets, lengthof(_nested_counter_widgets)
+	std::begin(_nested_counter_widgets), std::end(_nested_counter_widgets)
 );
 
 /**

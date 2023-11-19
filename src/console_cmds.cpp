@@ -13,7 +13,7 @@
 #include "engine_func.h"
 #include "landscape.h"
 #include "sl/saveload.h"
-#include "network/core/game_info.h"
+#include "network/core/network_game_info.h"
 #include "network/network.h"
 #include "network/network_func.h"
 #include "network/network_base.h"
@@ -2830,7 +2830,7 @@ DEF_CONSOLE_CMD(ConDumpRailTypes)
 
 	btree::btree_map<uint32, const GRFFile *> grfs;
 	for (RailType rt = RAILTYPE_BEGIN; rt < RAILTYPE_END; rt++) {
-		const RailtypeInfo *rti = GetRailTypeInfo(rt);
+		const RailTypeInfo *rti = GetRailTypeInfo(rt);
 		if (rti->label == 0) continue;
 		uint32 grfid = 0;
 		const GRFFile *grf = rti->grffile[RTSG_GROUND];
@@ -3625,7 +3625,7 @@ DEF_CONSOLE_CMD(ConRailTypeMapColourCtl)
 	uint8 map_colour = atoi(argv[2]);
 
 	if (rt >= RAILTYPE_END) return true;
-	extern RailtypeInfo _railtypes[RAILTYPE_END];
+	extern RailTypeInfo _railtypes[RAILTYPE_END];
 
 	_railtypes[rt].map_colour = map_colour;
 	MarkAllViewportMapLandscapesDirty();

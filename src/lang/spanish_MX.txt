@@ -504,7 +504,7 @@ STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :Historial de me
 STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :Eliminar todos los mensajes
 
 # About menu
-###length 10
+###length 11
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :Información sobre área de terreno
 STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Activar consola
@@ -1381,6 +1381,7 @@ STR_CONFIG_SETTING_PLANE_CRASHES_NONE                           :Ninguno*
 STR_CONFIG_SETTING_PLANE_CRASHES_REDUCED                        :Reducida
 STR_CONFIG_SETTING_PLANE_CRASHES_NORMAL                         :Normal
 
+
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :Permitir construcción de paradas de paso en localidades: {STRING}
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD_HELPTEXT                   :Se podrán construir paradas de paso en las carreteras que sean propiedad de las localidades
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD                      :Permitir construcción de paradas de paso en carreteras de la competencia: {STRING}
@@ -2105,6 +2106,8 @@ STR_QUIT_NO                                                     :{BLACK}No
 STR_ABANDON_GAME_CAPTION                                        :{WHITE}Salir de la partida
 STR_ABANDON_GAME_QUERY                                          :{YELLOW}¿Estás seguro de que deseas salir de esta partida?
 STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}¿Estás seguro de que deseas salir de este mapa?
+
+# Help window
 
 # Cheat window
 STR_CHEATS                                                      :{WHITE}Trucos
@@ -4619,7 +4622,7 @@ STR_TEXTFILE_WRAP_TEXT_TOOLTIP                                  :{BLACK}Unir el 
 STR_TEXTFILE_VIEW_README                                        :{BLACK}Ver archivo Léeme
 STR_TEXTFILE_VIEW_CHANGELOG                                     :{BLACK}Registro de cambios
 STR_TEXTFILE_VIEW_LICENCE                                       :{BLACK}Licencia
-###length 4
+###length 5
 STR_TEXTFILE_README_CAPTION                                     :{WHITE}Archivo Léeme del {STRING} {STRING}
 STR_TEXTFILE_CHANGELOG_CAPTION                                  :{WHITE}Registro de cambios del {STRING} {STRING}
 STR_TEXTFILE_LICENCE_CAPTION                                    :{WHITE}Licencia del {STRING} {STRING}

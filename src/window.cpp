@@ -102,14 +102,14 @@ std::string _windows_file;
 /** Window description constructor. */
 WindowDesc::WindowDesc(WindowPosition def_pos, const char *ini_key, int16 def_width_trad, int16 def_height_trad,
 			WindowClass window_class, WindowClass parent_class, uint32 flags,
-			const NWidgetPart *nwid_parts, int16 nwid_length, HotkeyList *hotkeys, WindowDesc *ini_parent) :
+			const NWidgetPart *nwid_begin, const NWidgetPart *nwid_end, HotkeyList *hotkeys, WindowDesc *ini_parent) :
 	default_pos(def_pos),
 	cls(window_class),
 	parent_cls(parent_class),
 	ini_key(ini_key),
 	flags(flags),
-	nwid_parts(nwid_parts),
-	nwid_length(nwid_length),
+	nwid_begin(nwid_begin),
+	nwid_end(nwid_end),
 	hotkeys(hotkeys),
 	ini_parent(ini_parent),
 	prefs({ false, 0, 0 }),
@@ -369,40 +369,13 @@ void Window::UpdateQueryStringSize()
 }
 
 /**
- * Get the current input text if an edit box has the focus.
- * @return The currently focused input text or nullptr if no input focused.
+ * Get the current input text buffer.
+ * @return The currently focused input text buffer or nullptr if no input focused.
  */
-/* virtual */ const char *Window::GetFocusedText() const
+/* virtual */ const Textbuf *Window::GetFocusedTextbuf() const
 {
 	if (this->nested_focus != nullptr && this->nested_focus->type == WWT_EDITBOX) {
-		return this->GetQueryString(this->nested_focus->index)->GetText();
-	}
-
-	return nullptr;
-}
-
-/**
- * Get the string at the caret if an edit box has the focus.
- * @return The text at the caret or nullptr if no edit box is focused.
- */
-/* virtual */ const char *Window::GetCaret() const
-{
-	if (this->nested_focus != nullptr && this->nested_focus->type == WWT_EDITBOX) {
-		return this->GetQueryString(this->nested_focus->index)->GetCaret();
-	}
-
-	return nullptr;
-}
-
-/**
- * Get the range of the currently marked input text.
- * @param[out] length Length of the marked text.
- * @return Pointer to the start of the marked text or nullptr if no text is marked.
- */
-/* virtual */ const char *Window::GetMarkedText(size_t *length) const
-{
-	if (this->nested_focus != nullptr && this->nested_focus->type == WWT_EDITBOX) {
-		return this->GetQueryString(this->nested_focus->index)->GetMarkedText(length);
+		return &this->GetQueryString(this->nested_focus->index)->text;
 	}
 
 	return nullptr;
@@ -1917,7 +1890,7 @@ static Point LocalGetWindowPlacement(const WindowDesc *desc, int16 sm_width, int
 void Window::CreateNestedTree(bool fill_nested)
 {
 	int biggest_index = -1;
-	this->nested_root = MakeWindowNWidgetTree(this->window_desc->nwid_parts, this->window_desc->nwid_length, &biggest_index, &this->shade_select);
+	this->nested_root = MakeWindowNWidgetTree(this->window_desc->nwid_begin, this->window_desc->nwid_end, &biggest_index, &this->shade_select);
 	this->nested_array_size = (uint)(biggest_index + 1);
 
 	if (fill_nested) {

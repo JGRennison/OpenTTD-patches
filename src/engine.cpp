@@ -828,7 +828,7 @@ void StartupEngines()
 
 	/* Update the bitmasks for the vehicle lists */
 	for (Company *c : Company::Iterate()) {
-		c->avail_railtypes = GetCompanyRailtypes(c->index);
+		c->avail_railtypes = GetCompanyRailTypes(c->index);
 		c->avail_roadtypes = GetCompanyRoadTypes(c->index);
 	}
 
@@ -852,7 +852,7 @@ static void EnableEngineForCompany(EngineID eid, CompanyID company)
 
 	SetBit(e->company_avail, company);
 	if (e->type == VEH_TRAIN) {
-		c->avail_railtypes = GetCompanyRailtypes(c->index);
+		c->avail_railtypes = GetCompanyRailTypes(c->index);
 	} else if (e->type == VEH_ROAD) {
 		c->avail_roadtypes = GetCompanyRoadTypes(c->index);
 	}
@@ -880,7 +880,7 @@ static void DisableEngineForCompany(EngineID eid, CompanyID company)
 
 	ClrBit(e->company_avail, company);
 	if (e->type == VEH_TRAIN) {
-		c->avail_railtypes = GetCompanyRailtypes(c->index);
+		c->avail_railtypes = GetCompanyRailTypes(c->index);
 	} else if (e->type == VEH_ROAD) {
 		c->avail_roadtypes = GetCompanyRoadTypes(c->index);
 	}

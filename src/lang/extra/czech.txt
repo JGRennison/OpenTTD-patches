@@ -33,10 +33,6 @@ STR_ORDER_STOP_LOCATION_THROUGH                                 :[postupná nakl
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :extrémně pomalá
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :velmi pomalá
 
-STR_ABOUT_MENU_SHOW_PICKER_TOOL                                 :Nástroj výběru
-
-STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Okno modifikačních kláves
-
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :Každých {COMMA} minut skutečného času
 
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
@@ -2091,3 +2087,6 @@ STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :podrobná
 
 STR_VIEWPORT_TOWN_COLOUR                                        :{1:COLOUR}{0:TOWN}
 STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {COLOUR}({COMMA})
+
+STR_ABOUT_MENU_SHOW_PICKER_TOOL                                 :Nástroj výběru
+STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Okno modifikačních kláves

@@ -740,6 +740,12 @@ enum WindowClass {
 	WC_SCREENSHOT,
 
 	/**
+	 * Help and manuals window; %Window numbers:
+	 *   - 0 = #HelpWindowWidgets
+	 */
+	WC_HELPWIN,
+
+	/**
 	 * Trace restrict programme window; %Window numbers:
 	 *   - #TileIndex << 3 | #Track = #TraceRestrictWindow
 	 */
