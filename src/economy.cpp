@@ -1396,9 +1396,10 @@ static void TriggerIndustryProduction(Industry *i)
 	} else {
 		for (uint ci_in = 0; ci_in < lengthof(i->incoming_cargo_waiting); ci_in++) {
 			uint cargo_waiting = i->incoming_cargo_waiting[ci_in];
-			if (cargo_waiting == 0) continue;
+			if (cargo_waiting == 0 || i->accepts_cargo[ci_in] == CT_INVALID) continue;
 
 			for (uint ci_out = 0; ci_out < lengthof(i->produced_cargo_waiting); ci_out++) {
+				if (i->produced_cargo[ci_out] == CT_INVALID) continue;
 				i->produced_cargo_waiting[ci_out] = ClampTo<uint16_t>(i->produced_cargo_waiting[ci_out] + (cargo_waiting * indspec->input_cargo_multiplier[ci_in][ci_out] / 256));
 			}
 

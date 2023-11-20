@@ -24,7 +24,7 @@
 
 #include "../safeguards.h"
 
-bool ScriptScanner::AddFile(const std::string &filename, size_t basepath_length, const std::string &tar_filename)
+bool ScriptScanner::AddFile(const std::string &filename, size_t, const std::string &tar_filename)
 {
 	this->main_script = filename;
 	this->tar_file = tar_filename;
@@ -165,7 +165,7 @@ struct ScriptFileChecksumCreator : FileScanner {
 	ScriptFileChecksumCreator(Subdirectory dir) : dir(dir) {}
 
 	/* Add the file and calculate the md5 sum. */
-	virtual bool AddFile(const std::string &filename, size_t basepath_length, const std::string &tar_filename)
+	bool AddFile(const std::string &filename, size_t, const std::string &) override
 	{
 		Md5 checksum;
 		uint8 buffer[1024];

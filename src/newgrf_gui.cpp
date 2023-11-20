@@ -219,7 +219,7 @@ struct NewGRFParametersWindow : public Window {
 		return this->HasParameterInfo(nr) ? this->grf_config->param_info[nr].value() : GetDummyParameterInfo(nr);
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_NP_NUMPAR_DEC:
@@ -340,7 +340,7 @@ struct NewGRFParametersWindow : public Window {
 		this->DrawWidgets();
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_NP_NUMPAR_DEC:
@@ -406,7 +406,7 @@ struct NewGRFParametersWindow : public Window {
 								list.emplace_back(new DropDownListStringItem(GetGRFStringFromGRFText(par_info.value_names.find(i)->second), i, false));
 							}
 
-							ShowDropDownListAt(this, std::move(list), old_val, -1, wi_rect, COLOUR_ORANGE);
+							ShowDropDownListAt(this, std::move(list), old_val, WID_NP_SETTING_DROPDOWN, wi_rect, COLOUR_ORANGE);
 						}
 					}
 				} else if (IsInsideMM(x, 0, SETTING_BUTTON_WIDTH)) {
@@ -464,14 +464,16 @@ struct NewGRFParametersWindow : public Window {
 
 	void OnDropdownSelect(int widget, int index) override
 	{
+		if (widget != WID_NP_SETTING_DROPDOWN) return;
 		assert(this->clicked_dropdown);
 		GRFParameterInfo &par_info = this->GetParameterInfo(this->clicked_row);
 		par_info.SetValue(this->grf_config, index);
 		this->SetDirty();
 	}
 
-	void OnDropdownClose(Point pt, int widget, int index, bool instant_close) override
+	void OnDropdownClose(Point, int widget, int, bool) override
 	{
+		if (widget != WID_NP_SETTING_DROPDOWN) return;
 		/* We cannot raise the dropdown button just yet. OnClick needs some hint, whether
 		 * the same dropdown button was clicked again, and then not open the dropdown again.
 		 * So, we only remember that it was closed, and process it on the next OnPaint, which is
@@ -491,7 +493,7 @@ struct NewGRFParametersWindow : public Window {
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		if (!this->action14present) {
@@ -736,7 +738,11 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 			while (*c != iter->second) c = &(*c)->next;
 			GRFConfig *d = new GRFConfig(*a);
 			d->next = (*c)->next;
-			d->CopyParams(**c);
+			if (d->IsCompatible((*c)->version)) {
+				d->CopyParams(**c);
+			} else {
+				d->SetParameterDefaults();
+			}
 			if (this->active_sel == *c) {
 				CloseWindowByClass(WC_GRF_PARAMETERS);
 				CloseWindowByClass(WC_TEXTFILE);
@@ -748,7 +754,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_NS_FILE_LIST:
@@ -947,7 +953,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		if (widget >= WID_NS_NEWGRF_TEXTFILE && widget < WID_NS_NEWGRF_TEXTFILE + TFT_CONTENT_END) {
 			if (this->active_sel == nullptr && this->avail_sel == nullptr) return;
@@ -1191,6 +1197,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 
 	void OnDropdownSelect(int widget, int index) override
 	{
+		if (widget != WID_NS_PRESET_LIST) return;
 		if (!this->editable) return;
 
 		ClearGRFConfigList(&this->actives);
@@ -1245,7 +1252,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 	 * @param data Information about the changed data. @see GameOptionsInvalidationData
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		switch (data) {
@@ -1302,8 +1309,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		this->SetWidgetDisabledState(WID_NS_APPLY_CHANGES, !((this->editable && this->modified) || _settings_client.gui.newgrf_developer_tools));
 		this->SetWidgetsDisabledState(!this->editable,
 			WID_NS_PRESET_LIST,
-			WID_NS_TOGGLE_PALETTE,
-			WIDGET_LIST_END
+			WID_NS_TOGGLE_PALETTE
 		);
 		this->SetWidgetDisabledState(WID_NS_ADD, !this->editable || this->avail_sel == nullptr || HasBit(this->avail_sel->flags, GCF_INVALID));
 		this->SetWidgetDisabledState(WID_NS_UPGRADE, !this->editable || this->actives == nullptr || !this->CanUpgradeCurrent());
@@ -1312,8 +1318,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		this->SetWidgetsDisabledState(disable_all,
 			WID_NS_REMOVE,
 			WID_NS_MOVE_UP,
-			WID_NS_MOVE_DOWN,
-			WIDGET_LIST_END
+			WID_NS_MOVE_DOWN
 		);
 
 		const GRFConfig *selected_config = (this->avail_sel == nullptr) ? this->active_sel : this->avail_sel;
@@ -1376,14 +1381,16 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		return ES_HANDLED;
 	}
 
-	void OnEditboxChanged(int wid) override
+	void OnEditboxChanged(int widget) override
 	{
 		if (!this->editable) return;
 
-		string_filter.SetFilterTerm(this->filter_editbox.text.buf);
-		this->avails.SetFilterState(!string_filter.IsEmpty());
-		this->avails.ForceRebuild();
-		this->InvalidateData(0);
+		if (widget == WID_NS_FILTER) {
+			string_filter.SetFilterTerm(this->filter_editbox.text.buf);
+			this->avails.SetFilterState(!string_filter.IsEmpty());
+			this->avails.ForceRebuild();
+			this->InvalidateData(0);
+		}
 	}
 
 	void OnDragDrop(Point pt, int widget) override
@@ -2165,7 +2172,7 @@ struct SavePresetWindow : public Window {
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_SVP_PRESET_LIST: {
@@ -2239,7 +2246,7 @@ struct ScanProgressWindow : public Window {
 		this->InitNested(1);
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_SP_PROGRESS_BAR: {

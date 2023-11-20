@@ -21,7 +21,7 @@
 #include "../safeguards.h"
 
 
-void DropDownListItem::Draw(const Rect &r, bool sel, Colours bg_colour) const
+void DropDownListItem::Draw(const Rect &r, bool, Colours bg_colour) const
 {
 	int c1 = _colour_gradient[bg_colour][3];
 	int c2 = _colour_gradient[bg_colour][7];
@@ -40,7 +40,7 @@ uint DropDownListStringItem::Width() const
 	return GetStringBoundingBox(this->String()).width + WidgetDimensions::scaled.dropdowntext.Horizontal();
 }
 
-void DropDownListStringItem::Draw(const Rect &r, bool sel, Colours bg_colour) const
+void DropDownListStringItem::Draw(const Rect &r, bool sel, Colours) const
 {
 	Rect ir = r.Shrink(WidgetDimensions::scaled.dropdowntext);
 	DrawString(ir.left, ir.right, r.top, this->String(), (sel ? TC_WHITE : TC_BLACK) | this->colour_flags);
@@ -66,7 +66,7 @@ DropDownListIconItem::DropDownListIconItem(SpriteID sprite, PaletteID pal, Strin
 	this->sprite_y = dim.height;
 }
 
-uint DropDownListIconItem::Height(uint width) const
+uint DropDownListIconItem::Height(uint) const
 {
 	return std::max(this->dim.height, (uint)FONT_HEIGHT_NORMAL);
 }
@@ -76,7 +76,7 @@ uint DropDownListIconItem::Width() const
 	return DropDownListStringItem::Width() + this->dim.width + WidgetDimensions::scaled.hsep_wide;
 }
 
-void DropDownListIconItem::Draw(const Rect &r, bool sel, Colours bg_colour) const
+void DropDownListIconItem::Draw(const Rect &r, bool sel, Colours) const
 {
 	bool rtl = _current_text_dir == TD_RTL;
 	Rect ir = r.Shrink(WidgetDimensions::scaled.dropdowntext);

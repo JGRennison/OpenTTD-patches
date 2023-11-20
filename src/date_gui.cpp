@@ -105,7 +105,7 @@ struct SetDateWindow : Window {
 		ShowDropDownList(this, std::move(list), selected, widget);
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		Dimension d = {0, 0};
 		switch (widget) {
@@ -143,7 +143,7 @@ struct SetDateWindow : Window {
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_SD_DAY:
@@ -195,7 +195,7 @@ struct SetMinutesWindow : SetDateWindow
 	 * Helper function to construct the dropdown.
 	 * @param widget the dropdown widget to create the dropdown for
 	 */
-	virtual void ShowDateDropDown(int widget)
+	virtual void ShowDateDropDown(int widget) override
 	{
 		int selected;
 		DropDownList list;
@@ -224,7 +224,7 @@ struct SetMinutesWindow : SetDateWindow
 		ShowDropDownList(this, std::move(list), selected, widget);
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		Dimension d = {0, 0};
 		switch (widget) {
@@ -250,7 +250,7 @@ struct SetMinutesWindow : SetDateWindow
 		*size = d;
 	}
 
-	virtual void SetStringParameters(int widget) const
+	virtual void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case WID_SD_DAY:   SetDParam(0, MINUTES_MINUTE(minutes)); break;
@@ -258,7 +258,7 @@ struct SetMinutesWindow : SetDateWindow
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	virtual void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_SD_DAY:
@@ -276,7 +276,7 @@ struct SetMinutesWindow : SetDateWindow
 		}
 	}
 
-	virtual void OnDropdownSelect(int widget, int index)
+	virtual void OnDropdownSelect(int widget, int index) override
 	{
 		Minutes current = 0;
 		switch (widget) {

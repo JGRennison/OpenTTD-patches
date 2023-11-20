@@ -30,6 +30,8 @@ CargoArray GetProductionAroundTiles(TileIndex tile, int w, int h, int rad);
 CargoArray GetAcceptanceAroundTiles(TileIndex tile, int w, int h, int rad, CargoTypes *always_accepted = nullptr);
 
 void UpdateStationAcceptance(Station *st, bool show_msg);
+CargoTypes GetAcceptanceMask(const Station *st);
+CargoTypes GetEmptyMask(const Station *st);
 
 const DrawTileSprites *GetStationTileLayout(StationType st, byte gfx);
 void StationPickerDrawSprite(int x, int y, StationType st, RailType railtype, RoadType roadtype, int image);
@@ -40,7 +42,6 @@ void DeleteOilRig(TileIndex t);
 void UpdateStationDockingTiles(Station *st);
 void RemoveDockingTile(TileIndex t);
 void ClearDockingTilesCheckingNeighbours(TileIndex tile);
-bool IsValidDockingDirectionForDock(TileIndex t, DiagDirection d);
 
 void UpdateAirportsNoise();
 

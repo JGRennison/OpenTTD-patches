@@ -114,7 +114,7 @@ public:
 		return DropDownListStringItem::Width() + this->checkmark_width;
 	}
 
-	void Draw(const Rect &r, bool sel, Colours bg_colour) const override
+	void Draw(const Rect &r, bool sel, Colours) const override
 	{
 		bool rtl = _current_text_dir == TD_RTL;
 		Rect tr = r.Shrink(WidgetDimensions::scaled.dropdowntext, RectPadding::zero);
@@ -153,12 +153,12 @@ public:
 		return GetStringBoundingBox(STR_COMPANY_NAME_COMPANY_NUM).width + this->icon_size.width + this->lock_size.width + WidgetDimensions::scaled.dropdowntext.Horizontal() + WidgetDimensions::scaled.hsep_wide;
 	}
 
-	uint Height(uint width) const override
+	uint Height(uint) const override
 	{
 		return std::max(std::max(this->icon_size.height, this->lock_size.height) + WidgetDimensions::scaled.imgbtn.Vertical(), (uint)FONT_HEIGHT_NORMAL);
 	}
 
-	void Draw(const Rect &r, bool sel, Colours bg_colour) const override
+	void Draw(const Rect &r, bool sel, Colours) const override
 	{
 		CompanyID company = (CompanyID)this->result;
 		bool rtl = _current_text_dir == TD_RTL;
@@ -281,7 +281,7 @@ static CallBackFunction SelectSignTool()
 
 /* --- Pausing --- */
 
-static CallBackFunction ToolbarPauseClick(Window *w)
+static CallBackFunction ToolbarPauseClick(Window *)
 {
 	if (_networking && !(_network_server || _network_settings_access)) return CBF_NONE; // only server can pause the game
 
@@ -294,10 +294,9 @@ static CallBackFunction ToolbarPauseClick(Window *w)
 /**
  * Toggle fast forward mode.
  *
- * @param w Unused.
  * @return #CBF_NONE
  */
-static CallBackFunction ToolbarFastForwardClick(Window *w)
+static CallBackFunction ToolbarFastForwardClick(Window *)
 {
 	if (_networking) return CBF_NONE; // no fast forward in network game
 
@@ -576,10 +575,9 @@ static CallBackFunction ToolbarSubsidiesClick(Window *w)
 /**
  * Handle click on the entry in the Subsidies menu.
  *
- * @param index Unused.
  * @return #CBF_NONE
  */
-static CallBackFunction MenuClickSubsidies(int index)
+static CallBackFunction MenuClickSubsidies(int)
 {
 	ShowSubsidiesList();
 	return CBF_NONE;
@@ -1010,10 +1008,9 @@ static CallBackFunction ToolbarBuildWaterClick(Window *w)
 /**
  * Handle click on the entry in the Build Waterways menu.
  *
- * @param index Unused.
  * @return #CBF_NONE
  */
-static CallBackFunction MenuClickBuildWater(int index)
+static CallBackFunction MenuClickBuildWater(int)
 {
 	ShowBuildDocksToolbar();
 	return CBF_NONE;
@@ -1033,10 +1030,9 @@ static CallBackFunction ToolbarBuildAirClick(Window *w)
 /**
  * Handle click on the entry in the Build Air menu.
  *
- * @param index Unused.
  * @return #CBF_NONE
  */
-static CallBackFunction MenuClickBuildAir(int index)
+static CallBackFunction MenuClickBuildAir(int)
 {
 	ShowBuildAirToolbar();
 	return CBF_NONE;
@@ -1082,10 +1078,9 @@ static CallBackFunction ToolbarMusicClick(Window *w)
 /**
  * Handle click on the entry in the Music menu.
  *
- * @param index Unused.
  * @return #CBF_NONE
  */
-static CallBackFunction MenuClickMusicWindow(int index)
+static CallBackFunction MenuClickMusicWindow(int)
 {
 	ShowMusicWindow();
 	return CBF_NONE;
@@ -1477,7 +1472,7 @@ static CallBackFunction ToolbarScenPlaceSign(Window *w)
 	return SelectSignTool();
 }
 
-static CallBackFunction ToolbarBtn_NULL(Window *w)
+static CallBackFunction ToolbarBtn_NULL(Window *)
 {
 	return CBF_NONE;
 }
@@ -2185,7 +2180,7 @@ struct MainToolbarWindow : Window {
 		this->timer.SetInterval(MILLISECONDS_PER_TICK);
 	}
 
-	void FindWindowPlacementAndResize(int def_width, int def_height) override
+	void FindWindowPlacementAndResize([[maybe_unused]] int def_width, [[maybe_unused]] int def_height) override
 	{
 		MainToolbarScaleAdjuster scale_adjust;
 
@@ -2199,9 +2194,9 @@ struct MainToolbarWindow : Window {
 		/* If spectator, disable all construction buttons
 		 * ie : Build road, rail, ships, airports and landscaping
 		 * Since enabled state is the default, just disable when needed */
-		this->SetWidgetsDisabledState(_local_company == COMPANY_SPECTATOR, WID_TN_RAILS, WID_TN_ROADS, WID_TN_TRAMS, WID_TN_WATER, WID_TN_AIR, WID_TN_LANDSCAPE, WIDGET_LIST_END);
+		this->SetWidgetsDisabledState(_local_company == COMPANY_SPECTATOR, WID_TN_RAILS, WID_TN_ROADS, WID_TN_TRAMS, WID_TN_WATER, WID_TN_AIR, WID_TN_LANDSCAPE);
 		/* disable company list drop downs, if there are no companies */
-		this->SetWidgetsDisabledState(Company::GetNumItems() == 0, WID_TN_STATIONS, WID_TN_FINANCES, WID_TN_TRAINS, WID_TN_ROADVEHS, WID_TN_SHIPS, WID_TN_AIRCRAFT, WIDGET_LIST_END);
+		this->SetWidgetsDisabledState(Company::GetNumItems() == 0, WID_TN_STATIONS, WID_TN_FINANCES, WID_TN_TRAINS, WID_TN_ROADVEHS, WID_TN_SHIPS, WID_TN_AIRCRAFT);
 
 		this->SetWidgetDisabledState(WID_TN_GOAL, Goal::GetNumItems() == 0);
 		this->SetWidgetDisabledState(WID_TN_STORY, StoryPage::GetNumItems() == 0);
@@ -2211,7 +2206,7 @@ struct MainToolbarWindow : Window {
 		this->DrawWidgets();
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		if (_game_mode != GM_MENU && !this->IsWidgetDisabled(widget)) _toolbar_button_procs[widget](this);
 	}
@@ -2284,7 +2279,7 @@ struct MainToolbarWindow : Window {
 		return ES_HANDLED;
 	}
 
-	void OnPlaceObject(Point pt, TileIndex tile) override
+	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override
 	{
 		switch (_last_started_action) {
 			case CBF_PLACE_SIGN:
@@ -2329,10 +2324,7 @@ struct MainToolbarWindow : Window {
 		/* We do not want to automatically raise the pause, fast forward and
 		 * switchbar buttons; they have to stay down when pressed etc. */
 		for (uint i = WID_TN_SETTINGS; i < WID_TN_SWITCH_BAR; i++) {
-			if (this->IsWidgetLowered(i)) {
-				this->RaiseWidget(i);
-				this->SetWidgetDirty(i);
-			}
+			this->RaiseWidgetWhenLowered(i);
 		}
 	}
 
@@ -2341,7 +2333,7 @@ struct MainToolbarWindow : Window {
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		Window *w = FindWindowById(WC_MAIN_WINDOW, 0);
@@ -2578,7 +2570,7 @@ struct ScenarioEditorToolbarWindow : Window {
 		this->timer.SetInterval(MILLISECONDS_PER_TICK);
 	}
 
-	void FindWindowPlacementAndResize(int def_width, int def_height) override
+	void FindWindowPlacementAndResize([[maybe_unused]] int def_width, [[maybe_unused]] int def_height) override
 	{
 		MainToolbarScaleAdjuster scale_adjust;
 
@@ -2622,7 +2614,7 @@ struct ScenarioEditorToolbarWindow : Window {
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_TE_SPACER:
@@ -2636,7 +2628,7 @@ struct ScenarioEditorToolbarWindow : Window {
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		if (_game_mode == GM_MENU) return;
 		CallBackFunction cbf = _scen_toolbar_button_procs[widget](this);
@@ -2684,7 +2676,7 @@ struct ScenarioEditorToolbarWindow : Window {
 		return ES_HANDLED;
 	}
 
-	void OnPlaceObject(Point pt, TileIndex tile) override
+	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override
 	{
 		switch (_last_started_action) {
 			case CBF_PLACE_SIGN:
@@ -2710,7 +2702,7 @@ struct ScenarioEditorToolbarWindow : Window {
 
 	void OnTimeout() override
 	{
-		this->SetWidgetsLoweredState(false, WID_TE_DATE_BACKWARD, WID_TE_DATE_FORWARD, WIDGET_LIST_END);
+		this->SetWidgetsLoweredState(false, WID_TE_DATE_BACKWARD, WID_TE_DATE_FORWARD);
 		this->SetWidgetDirty(WID_TE_DATE_BACKWARD);
 		this->SetWidgetDirty(WID_TE_DATE_FORWARD);
 	}
@@ -2736,7 +2728,7 @@ struct ScenarioEditorToolbarWindow : Window {
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		Window *w = FindWindowById(WC_MAIN_WINDOW, 0);

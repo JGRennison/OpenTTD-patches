@@ -424,9 +424,6 @@ public:
 		this->group_rename = INVALID_GROUP;
 		this->group_over = INVALID_GROUP;
 
-		this->BuildVehicleList();
-		this->SortVehicleList();
-
 		this->groups.ForceRebuild();
 		this->groups.NeedResort();
 		this->BuildGroupList(vli.company);
@@ -445,6 +442,9 @@ public:
 
 		this->FinishInitNested(window_number);
 		this->owner = vli.company;
+
+		this->BuildVehicleList();
+		this->SortVehicleList();
 	}
 
 	void Close() override
@@ -453,7 +453,7 @@ public:
 		this->Window::Close();
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_GL_LIST_GROUP:
@@ -511,7 +511,7 @@ public:
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
 	{
 		if (data == 0) {
 			/* This needs to be done in command-scope to enforce rebuilding before resorting invalid data */
@@ -593,16 +593,14 @@ public:
 		this->SetWidgetDisabledState(WID_GL_MANAGE_VEHICLES_DROPDOWN, !this->ShouldShowActionDropdownList() || _local_company != this->vli.company);
 		this->SetWidgetsDisabledState(this->vehicles.size() == 0 || _local_company != this->vli.company || (IsTopLevelGroupID(this->vli.index) && _settings_client.gui.disable_top_veh_list_mass_actions),
 				WID_GL_STOP_ALL,
-				WID_GL_START_ALL,
-				WIDGET_LIST_END);
+				WID_GL_START_ALL);
 
 		/* Disable the group specific function when we select the default group or all vehicles */
 		this->SetWidgetsDisabledState(IsDefaultGroupID(this->vli.index) || IsAllGroupID(this->vli.index) || _local_company != this->vli.company,
 				WID_GL_DELETE_GROUP,
 				WID_GL_RENAME_GROUP,
 				WID_GL_LIVERY_GROUP,
-				WID_GL_REPLACE_PROTECTION,
-				WIDGET_LIST_END);
+				WID_GL_REPLACE_PROTECTION);
 
 		/* Disable remaining buttons for non-local companies
 		 * Needed while changing _local_company, eg. by cheats
@@ -612,8 +610,7 @@ public:
 		 */
 		this->SetWidgetsDisabledState(_local_company != this->vli.company,
 				WID_GL_CREATE_GROUP,
-				WID_GL_AVAILABLE_VEHICLES,
-				WIDGET_LIST_END);
+				WID_GL_AVAILABLE_VEHICLES);
 
 		/* If not a default group and the group has replace protection, show an enabled replace sprite. */
 		uint16 protect_sprite = SPR_GROUP_REPLACE_OFF_TRAIN;
@@ -716,7 +713,7 @@ public:
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_GL_SORT_BY_ORDER: // Flip sorting method ascending/descending

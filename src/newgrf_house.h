@@ -70,7 +70,7 @@ struct FakeHouseScopeResolver : public CommonHouseScopeResolver {
 		: CommonHouseScopeResolver(ro, house_id)
 	{ }
 
-	/* virtual */ uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const;
+	/* virtual */ uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const override;
 };
 
 /** Resolver object to be used for houses (feature 07 spritegroups). */

@@ -1198,7 +1198,6 @@ STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP                    :{BLACK}Zobrazí
 STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO                             :{BLACK}P
 STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO_TOOLTIP                     :{BLACK}Přejít na číslo spritu...
 STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP                    :{BLACK}Kliknutí zvýrazní skupinu spritů{}Shift+kliknutí sbalí skupinu spritů{}Ctrl+kliknutí zvýrazní dočasný registr úložiště
-STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Typ silnice/tramvajové tratě
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS                    :Návěstidla
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID                 :Neimplementované přemapované feature ID: název: {2:STRING}, mapováno na: {5:HEX} (sprite {3:NUM})
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY                   :Neimplementované přemapované Action 0 property feature: {4:HEX}, název: {2:STRING}, mapováno na: {5:HEX} (sprite {3:NUM})

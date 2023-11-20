@@ -10177,10 +10177,9 @@ static void Act14FeatureTest(ByteReader *buf)
 
 /**
  * Set the current NewGRF as unsafe for static use
- * @param buf Unused.
  * @note Used during safety scan on unsafe actions.
  */
-static void GRFUnsafe(ByteReader *buf)
+static void GRFUnsafe(ByteReader *)
 {
 	SetBit(_cur.grfconfig->flags, GCF_UNSAFE);
 

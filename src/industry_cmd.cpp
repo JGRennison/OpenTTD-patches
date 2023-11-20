@@ -206,7 +206,7 @@ Industry::~Industry()
  * Invalidating some stuff after removing item from the pool.
  * @param index index of deleted item
  */
-void Industry::PostDestructor(size_t index)
+void Industry::PostDestructor(size_t)
 {
 	InvalidateWindowData(WC_INDUSTRY_DIRECTORY, 0, IDIWD_FORCE_REBUILD);
 	SetWindowDirty(WC_BUILD_INDUSTRY, 0);
@@ -385,7 +385,7 @@ static void DrawTile_Industry(TileInfo *ti, DrawTileProcParams params)
 	}
 }
 
-static int GetSlopePixelZ_Industry(TileIndex tile, uint x, uint y, bool ground_vehicle)
+static int GetSlopePixelZ_Industry(TileIndex tile, uint, uint, bool)
 {
 	return GetTileMaxPixelZ(tile);
 }
@@ -993,7 +993,7 @@ static bool ClickTile_Industry(TileIndex tile)
 	return true;
 }
 
-static TrackStatus GetTileTrackStatus_Industry(TileIndex tile, TransportType mode, uint sub_mode, DiagDirection side)
+static TrackStatus GetTileTrackStatus_Industry(TileIndex, TransportType, uint, DiagDirection)
 {
 	return 0;
 }
@@ -1140,10 +1140,9 @@ void PlantRandomFarmField(const Industry *i)
 /**
  * Search callback function for ChopLumberMillTrees
  * @param tile to test
- * @param user_data that is passed by the caller.  In this case, nothing
  * @return the result of the test
  */
-static bool SearchLumberMillTrees(TileIndex tile, void *user_data)
+static bool SearchLumberMillTrees(TileIndex tile, void *)
 {
 	if (IsTileType(tile, MP_TREES) && GetTreeGrowth(tile) > 2) { ///< 3 and up means all fully grown trees
 		/* found a tree */
@@ -1168,6 +1167,9 @@ static bool SearchLumberMillTrees(TileIndex tile, void *user_data)
  */
 static void ChopLumberMillTrees(Industry *i)
 {
+	/* Skip production if cargo slot is invalid. */
+	if (i->produced_cargo[0] == CT_INVALID) return;
+
 	/* We only want to cut trees if all tiles are completed. */
 	for (TileIndex tile_cur : i->location) {
 		if (i->TileBelongsToIndustry(tile_cur)) {
@@ -1184,6 +1186,7 @@ static void ChopLumberMillTrees(Industry *i)
 static void ProduceIndustryGoodsFromRate(Industry *i, bool scale)
 {
 	for (size_t j = 0; j < lengthof(i->produced_cargo_waiting); j++) {
+		if (i->produced_cargo[j] == CT_INVALID) continue;
 		uint amount = i->production_rate[j];
 		if (amount != 0 && scale) {
 			amount = ScaleQuantity(amount, _settings_game.economy.industry_cargo_scale_factor);
@@ -1291,10 +1294,9 @@ void OnTick_Industry()
 
 /**
  * Check the conditions of #CHECK_NOTHING (Always succeeds).
- * @param tile %Tile to perform the checking.
  * @return Succeeded or failed command.
  */
-static CommandCost CheckNewIndustry_NULL(TileIndex tile)
+static CommandCost CheckNewIndustry_NULL(TileIndex)
 {
 	return CommandCost();
 }
@@ -1660,7 +1662,7 @@ static bool CheckCanTerraformSurroundingTiles(TileIndex tile, uint height, int i
  * This function tries to flatten out the land below an industry, without
  *  damaging the surroundings too much.
  */
-static bool CheckIfCanLevelIndustryPlatform(TileIndex tile, DoCommandFlag flags, const IndustryTileLayout &layout, int type)
+static bool CheckIfCanLevelIndustryPlatform(TileIndex tile, DoCommandFlag flags, const IndustryTileLayout &layout)
 {
 	int max_x = 0;
 	int max_y = 0;
@@ -2074,7 +2076,7 @@ static CommandCost CreateNewIndustryHelper(TileIndex tile, IndustryType type, Do
 	if (ret.Failed()) return ret;
 
 	if (!custom_shape_check && _settings_game.game_creation.land_generator == LG_TERRAGENESIS && _generating_world &&
-			!_ignore_restrictions && !CheckIfCanLevelIndustryPlatform(tile, DC_NO_WATER, layout, type)) {
+			!_ignore_restrictions && !CheckIfCanLevelIndustryPlatform(tile, DC_NO_WATER, layout)) {
 		return_cmd_error(STR_ERROR_SITE_UNSUITABLE);
 	}
 
@@ -2082,7 +2084,7 @@ static CommandCost CreateNewIndustryHelper(TileIndex tile, IndustryType type, Do
 
 	if (flags & DC_EXEC) {
 		*ip = new Industry(tile);
-		if (!custom_shape_check) CheckIfCanLevelIndustryPlatform(tile, DC_NO_WATER | DC_EXEC, layout, type);
+		if (!custom_shape_check) CheckIfCanLevelIndustryPlatform(tile, DC_NO_WATER | DC_EXEC, layout);
 		DoCreateNewIndustry(*ip, tile, type, layout, layout_index, t, founder, random_initial_bits);
 	}
 

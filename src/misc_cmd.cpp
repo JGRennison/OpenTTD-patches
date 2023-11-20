@@ -131,10 +131,9 @@ CommandCost CmdDecreaseLoan(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 /**
  * In case of an unsafe unpause, we want the
  * user to confirm that it might crash.
- * @param w         unused
  * @param confirmed whether the user confirmed their action
  */
-static void AskUnsafeUnpauseCallback(Window *w, bool confirmed)
+static void AskUnsafeUnpauseCallback(Window *, bool confirmed)
 {
 	if (confirmed) {
 		DoCommandP(0, PM_PAUSED_ERROR, 0, CMD_PAUSE);

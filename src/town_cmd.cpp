@@ -160,9 +160,8 @@ Town::~Town()
 /**
  * Invalidating of the "nearest town cache" has to be done
  * after removing item from the pool.
- * @param index index of deleted item
  */
-void Town::PostDestructor(size_t index)
+void Town::PostDestructor(size_t)
 {
 	InvalidateWindowData(WC_TOWN_DIRECTORY, 0, TDIWD_FORCE_REBUILD);
 	UpdateNearestTownForRoadTiles(false);
@@ -946,13 +945,13 @@ static void GetTileDesc_Town(TileIndex tile, TileDesc *td)
 	td->owner[0] = OWNER_TOWN;
 }
 
-static TrackStatus GetTileTrackStatus_Town(TileIndex tile, TransportType mode, uint sub_mode, DiagDirection side)
+static TrackStatus GetTileTrackStatus_Town(TileIndex, TransportType, uint, DiagDirection)
 {
 	/* not used */
 	return 0;
 }
 
-static void ChangeTileOwner_Town(TileIndex tile, Owner old_owner, Owner new_owner)
+static void ChangeTileOwner_Town(TileIndex, Owner, Owner)
 {
 	/* not used */
 }
@@ -1549,11 +1548,10 @@ static inline bool RoadTypesAllowHouseHere(TileIndex t)
 }
 
 /** Test if town can grow road onto a specific tile.
- * @param town Town that is building.
  * @param tile Tile to build upon.
  * @return true iff the tile's road type don't prevent extending the road.
  */
-static bool TownCanGrowRoad(const Town *town, TileIndex tile)
+static bool TownCanGrowRoad(TileIndex tile)
 {
 	if (!IsTileType(tile, MP_ROAD)) return true;
 
@@ -1669,7 +1667,7 @@ static void GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, DiagDirection t
 		}
 
 	} else if (target_dir < DIAGDIR_END && !(cur_rb & DiagDirToRoadBits(ReverseDiagDir(target_dir)))) {
-		if (!TownCanGrowRoad(t1, tile)) return;
+		if (!TownCanGrowRoad(tile)) return;
 
 		/* Continue building on a partial road.
 		 * Should be always OK, so we only generate
@@ -1812,7 +1810,7 @@ static void GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, DiagDirection t
 			return;
 		}
 
-		if (!TownCanGrowRoad(t1, tile)) return;
+		if (!TownCanGrowRoad(tile)) return;
 
 		_grow_town_result = GROWTH_SEARCH_STOPPED;
 	}
@@ -2481,9 +2479,8 @@ static bool FindFurthestFromWater(TileIndex tile, void *user_data)
  * CircularTileSearch callback; finds the nearest land tile
  *
  * @param tile Start looking from this tile
- * @param user_data not used
  */
-static bool FindNearestEmptyLand(TileIndex tile, void *user_data)
+static bool FindNearestEmptyLand(TileIndex tile, void *)
 {
 	return IsTileType(tile, MP_CLEAR);
 }

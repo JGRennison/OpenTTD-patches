@@ -367,7 +367,7 @@ struct HeaderFileWriter : HeaderWriter, FileWriter {
 		free(real_filename);
 	}
 
-	void WriteStringID(const char *name, int stringid)
+	void WriteStringID(const char *name, int stringid) override
 	{
 		if (prev + 1 != stringid) fprintf(this->fh, "\n");
 		fprintf(this->fh, "static const StringID %s = 0x%X;\n", name, stringid);
@@ -375,7 +375,7 @@ struct HeaderFileWriter : HeaderWriter, FileWriter {
 		total_strings++;
 	}
 
-	void Finalise(const StringData &data)
+	void Finalise(const StringData &data) override
 	{
 		/* Find the plural form with the most amount of cases. */
 		int max_plural_forms = 0;
@@ -420,12 +420,12 @@ struct LanguageFileWriter : LanguageWriter, FileWriter {
 	{
 	}
 
-	void WriteHeader(const LanguagePackHeader *header)
+	void WriteHeader(const LanguagePackHeader *header) override
 	{
 		this->Write((const byte *)header, sizeof(*header));
 	}
 
-	void Finalise()
+	void Finalise() override
 	{
 		if (fputc(0, this->fh) == EOF) {
 			error("Could not write to %s", this->filename);
@@ -433,7 +433,7 @@ struct LanguageFileWriter : LanguageWriter, FileWriter {
 		this->FileWriter::Finalise();
 	}
 
-	void Write(const byte *buffer, size_t length)
+	void Write(const byte *buffer, size_t length) override
 	{
 		if (length == 0) return;
 		if (fwrite(buffer, sizeof(*buffer), length, this->fh) != length) {

@@ -1098,7 +1098,6 @@ STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP                    :{BLACK}Zeige Sp
 STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO                             :{BLACK}G
 STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO_TOOLTIP                     :{BLACK}Scrolle zum Sprite Nummer
 STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP                    :{BLACK}Klicke, um Sprite-Gruppe hervorzuheben{}Umschalt+Klick, um die Sprite-Gruppe zu schließen{}Strg+Klick, um temporäres Speicherregister hervorzuheben
-STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Straßen(bahn)typ
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS                    :Signale
 
 STR_NEWGRF_TOO_MANY_STRINGS                                     :{WHITE}Nicht genügend String-IDs für alle NewGRFs vorhanden.

@@ -760,7 +760,7 @@ void LinkGraphLegendWindow::SetOverlay(LinkGraphOverlay *overlay) {
 	}
 }
 
-void LinkGraphLegendWindow::UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+void LinkGraphLegendWindow::UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize)
 {
 	if (IsInsideMM(widget, WID_LGL_SATURATION_FIRST, WID_LGL_SATURATION_LAST + 1)) {
 		StringID str = STR_NULL;
@@ -819,7 +819,7 @@ void LinkGraphLegendWindow::DrawWidget(const Rect &r, int widget) const
 	}
 }
 
-bool LinkGraphLegendWindow::OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond)
+bool LinkGraphLegendWindow::OnTooltip([[maybe_unused]] Point, int widget, TooltipCloseCondition close_cond)
 {
 	if (IsInsideMM(widget, WID_LGL_COMPANY_FIRST, WID_LGL_COMPANY_LAST + 1)) {
 		if (this->IsWidgetDisabled(widget)) {
@@ -867,7 +867,7 @@ void LinkGraphLegendWindow::UpdateOverlayCargoes()
 	this->overlay->SetCargoMask(mask);
 }
 
-void LinkGraphLegendWindow::OnClick(Point pt, int widget, int click_count)
+void LinkGraphLegendWindow::OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count)
 {
 	/* Check which button is clicked */
 	if (IsInsideMM(widget, WID_LGL_COMPANY_FIRST, WID_LGL_COMPANY_LAST + 1)) {
@@ -899,7 +899,7 @@ void LinkGraphLegendWindow::OnClick(Point pt, int widget, int click_count)
  * @param data ignored
  * @param gui_scope ignored
  */
-void LinkGraphLegendWindow::OnInvalidateData(int data, bool gui_scope)
+void LinkGraphLegendWindow::OnInvalidateData([[maybe_unused]] int data, [[maybe_unused]] bool gui_scope)
 {
 	if (this->num_cargo != _sorted_cargo_specs.size()) {
 		this->Close();

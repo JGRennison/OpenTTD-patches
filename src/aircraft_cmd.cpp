@@ -1379,7 +1379,7 @@ void HandleMissingAircraftOrders(Aircraft *v)
 }
 
 
-TileIndex Aircraft::GetOrderStationLocation(StationID station)
+TileIndex Aircraft::GetOrderStationLocation(StationID)
 {
 	/* Orders are changed in flight, ensure going to the right station. */
 	if (this->state == FLYING) {
@@ -1713,31 +1713,31 @@ static void AircraftEventHandler_AtTerminal(Aircraft *v, const AirportFTAClass *
 	AirportMove(v, apc);
 }
 
-static void AircraftEventHandler_General(Aircraft *v, const AirportFTAClass *apc)
+static void AircraftEventHandler_General(Aircraft *, const AirportFTAClass *)
 {
 	error("OK, you shouldn't be here, check your Airport Scheme!");
 }
 
-static void AircraftEventHandler_TakeOff(Aircraft *v, const AirportFTAClass *apc)
+static void AircraftEventHandler_TakeOff(Aircraft *v, const AirportFTAClass *)
 {
 	PlayAircraftSound(v); // play takeoffsound for airplanes
 	v->state = STARTTAKEOFF;
 }
 
-static void AircraftEventHandler_StartTakeOff(Aircraft *v, const AirportFTAClass *apc)
+static void AircraftEventHandler_StartTakeOff(Aircraft *v, const AirportFTAClass *)
 {
 	v->state = ENDTAKEOFF;
 	v->UpdateDeltaXY();
 }
 
-static void AircraftEventHandler_EndTakeOff(Aircraft *v, const AirportFTAClass *apc)
+static void AircraftEventHandler_EndTakeOff(Aircraft *v, const AirportFTAClass *)
 {
 	v->state = FLYING;
 	/* get the next position to go to, differs per airport */
 	AircraftNextAirportPos_and_Order(v);
 }
 
-static void AircraftEventHandler_HeliTakeOff(Aircraft *v, const AirportFTAClass *apc)
+static void AircraftEventHandler_HeliTakeOff(Aircraft *v, const AirportFTAClass *)
 {
 	v->state = FLYING;
 	v->UpdateDeltaXY();
@@ -1791,7 +1791,7 @@ static void AircraftEventHandler_Flying(Aircraft *v, const AirportFTAClass *apc)
 	v->pos = apc->layout[v->pos].next_position;
 }
 
-static void AircraftEventHandler_Landing(Aircraft *v, const AirportFTAClass *apc)
+static void AircraftEventHandler_Landing(Aircraft *v, const AirportFTAClass *)
 {
 	v->state = ENDLANDING;
 	AircraftLandAirplane(v);  // maybe crash airplane
@@ -1804,7 +1804,7 @@ static void AircraftEventHandler_Landing(Aircraft *v, const AirportFTAClass *apc
 	}
 }
 
-static void AircraftEventHandler_HeliLanding(Aircraft *v, const AirportFTAClass *apc)
+static void AircraftEventHandler_HeliLanding(Aircraft *v, const AirportFTAClass *)
 {
 	v->state = HELIENDLANDING;
 	v->UpdateDeltaXY();

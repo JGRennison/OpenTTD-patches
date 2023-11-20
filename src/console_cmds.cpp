@@ -107,7 +107,7 @@ public:
 static ConsoleFileList _console_file_list; ///< File storage cache for the console.
 
 /* console command defines */
-#define DEF_CONSOLE_CMD(function) static bool function(byte argc, char *argv[])
+#define DEF_CONSOLE_CMD(function) static bool function([[maybe_unused]] byte argc, [[maybe_unused]] char *argv[])
 #define DEF_CONSOLE_HOOK(function) static ConsoleHookResult function(bool echo)
 
 /****************
@@ -2105,17 +2105,17 @@ static ContentType StringToContentType(const char *str)
 
 /** Asynchronous callback */
 struct ConsoleContentCallback : public ContentCallback {
-	void OnConnect(bool success)
+	void OnConnect(bool success) override
 	{
 		IConsolePrintF(CC_DEFAULT, "Content server connection %s", success ? "established" : "failed");
 	}
 
-	void OnDisconnect()
+	void OnDisconnect() override
 	{
 		IConsolePrintF(CC_DEFAULT, "Content server connection closed");
 	}
 
-	void OnDownloadComplete(ContentID cid)
+	void OnDownloadComplete(ContentID cid) override
 	{
 		IConsolePrintF(CC_DEFAULT, "Completed download of %d", cid);
 	}

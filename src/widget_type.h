@@ -20,8 +20,6 @@
 
 #include <vector>
 
-static const int WIDGET_LIST_END = -1; ///< indicate the end of widgets' list for vararg functions
-
 /** Bits of the #WWT_MATRIX widget data. */
 enum MatrixWidgetValues {
 	/* Number of column bits of the WWT_MATRIX widget data. */
@@ -149,7 +147,7 @@ public:
 
 	virtual bool IsHighlighted() const { return false; }
 	virtual TextColour GetHighlightColour() const { return TC_INVALID; }
-	virtual void SetHighlighted(TextColour highlight_colour) {}
+	virtual void SetHighlighted([[maybe_unused]] TextColour highlight_colour) {}
 
 	/**
 	 * Set additional space (padding) around the widget.

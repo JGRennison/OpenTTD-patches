@@ -728,7 +728,7 @@ static LONG WINAPI VectoredExceptionHandler(EXCEPTION_POINTERS *ep)
 	return EXCEPTION_CONTINUE_SEARCH;
 }
 
-static void CDECL CustomAbort(int signal)
+static void CDECL CustomAbort(int)
 {
 	RaiseException(0xE1212012, 0, 0, nullptr);
 }
@@ -832,7 +832,7 @@ static void SetWndSize(HWND wnd, int mode)
 	}
 }
 
-static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam)
+static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARAM)
 {
 	switch (msg) {
 		case WM_INITDIALOG: {

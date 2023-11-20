@@ -197,7 +197,7 @@ static void DrawTile_Clear(TileInfo *ti, DrawTileProcParams params)
 	DrawBridgeMiddle(ti);
 }
 
-static int GetSlopePixelZ_Clear(TileIndex tile, uint x, uint y, bool ground_vehicle)
+static int GetSlopePixelZ_Clear(TileIndex tile, uint x, uint y, bool)
 {
 	int z;
 	Slope tileh = GetTilePixelSlope(tile, &z);
@@ -205,7 +205,7 @@ static int GetSlopePixelZ_Clear(TileIndex tile, uint x, uint y, bool ground_vehi
 	return z + GetPartialPixelZ(x & 0xF, y & 0xF, tileh);
 }
 
-static Foundation GetFoundation_Clear(TileIndex tile, Slope tileh)
+static Foundation GetFoundation_Clear(TileIndex, Slope)
 {
 	return FOUNDATION_NONE;
 }
@@ -426,7 +426,7 @@ get_out:;
 	} while (--i);
 }
 
-static TrackStatus GetTileTrackStatus_Clear(TileIndex tile, TransportType mode, uint sub_mode, DiagDirection side)
+static TrackStatus GetTileTrackStatus_Clear(TileIndex, TransportType, uint, DiagDirection)
 {
 	return 0;
 }
@@ -450,12 +450,12 @@ static void GetTileDesc_Clear(TileIndex tile, TileDesc *td)
 	td->owner[0] = GetTileOwner(tile);
 }
 
-static void ChangeTileOwner_Clear(TileIndex tile, Owner old_owner, Owner new_owner)
+static void ChangeTileOwner_Clear(TileIndex, Owner, Owner)
 {
 	return;
 }
 
-static CommandCost TerraformTile_Clear(TileIndex tile, DoCommandFlag flags, int z_new, Slope tileh_new)
+static CommandCost TerraformTile_Clear(TileIndex tile, DoCommandFlag flags, int, Slope)
 {
 	return DoCommand(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
 }

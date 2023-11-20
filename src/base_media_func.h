@@ -152,7 +152,7 @@ bool BaseSet<T, Tnum_files, Tsearch_in_tars>::FillSetDetails(IniFile *ini, const
 }
 
 template <class Tbase_set>
-bool BaseMedia<Tbase_set>::AddFile(const std::string &filename, size_t basepath_length, const std::string &tar_filename)
+bool BaseMedia<Tbase_set>::AddFile(const std::string &filename, size_t basepath_length, const std::string &)
 {
 	bool ret = false;
 	DEBUG(grf, 1, "Checking %s for base " SET_TYPE " set", filename.c_str());

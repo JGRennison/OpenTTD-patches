@@ -1035,10 +1035,9 @@ static void CreateDesertOrRainForest(uint desert_tropic_line)
 /**
  * Find the spring of a river.
  * @param tile The tile to consider for being the spring.
- * @param user_data Ignored data.
  * @return True iff it is suitable as a spring.
  */
-static bool FindSpring(TileIndex tile, void *user_data)
+static bool FindSpring(TileIndex tile, void *)
 {
 	int referenceHeight;
 	if (!IsTileFlat(tile, &referenceHeight) || IsWaterTile(tile)) return false;

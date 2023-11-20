@@ -129,10 +129,9 @@ public:
 
 	/**
 	 * Setup the node to start iterating at.
-	 * @param source Unused.
 	 * @param node Node to start iterating at.
 	 */
-	void SetNode(NodeID source, NodeID node)
+	void SetNode(NodeID, NodeID node)
 	{
 		Node node_anno = this->job[node];
 		this->i = node_anno.GetEdges().begin();
@@ -232,7 +231,7 @@ public:
  * @return True if base + the new edge would be better than the path associated
  * with this annotation.
  */
-bool DistanceAnnotation::IsBetter(const DistanceAnnotation *base, uint cap,
+bool DistanceAnnotation::IsBetter(const DistanceAnnotation *base, uint,
 		int free_cap, uint dist) const
 {
 	/* If any of the paths is disconnected, the other one is better. If both

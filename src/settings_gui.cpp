@@ -408,7 +408,7 @@ struct GameOptionsWindow : Window {
 
 	void SetTab(int widget)
 	{
-		this->SetWidgetsLoweredState(false, WID_GO_TAB_GENERAL, WID_GO_TAB_GRAPHICS, WID_GO_TAB_SOUND, WIDGET_LIST_END);
+		this->SetWidgetsLoweredState(false, WID_GO_TAB_GENERAL, WID_GO_TAB_GRAPHICS, WID_GO_TAB_SOUND);
 		this->LowerWidget(widget);
 
 		int pane = 0;
@@ -454,7 +454,7 @@ struct GameOptionsWindow : Window {
 		if (changed) this->ReInit(0, 0, this->flags & WF_CENTERED);
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_GO_BASE_GRF_STATUS:
@@ -505,7 +505,7 @@ struct GameOptionsWindow : Window {
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		if (widget >= WID_GO_BASE_GRF_TEXTFILE && widget < WID_GO_BASE_GRF_TEXTFILE + TFT_CONTENT_END) {
 			if (BaseGraphics::GetUsedSet() == nullptr) return;
@@ -791,7 +791,7 @@ struct GameOptionsWindow : Window {
 	 * @param data Information about the changed data. @see GameOptionsInvalidationData
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		this->SetWidgetLoweredState(WID_GO_SURVEY_PARTICIPATE_BUTTON, _settings_client.network.participate_survey == PS_YES);
@@ -1060,10 +1060,10 @@ struct BaseSettingEntry {
 	void SetLastField(bool last_field) { if (last_field) SETBITS(this->flags, SEF_LAST_FIELD); else CLRBITS(this->flags, SEF_LAST_FIELD); }
 
 	virtual uint Length() const = 0;
-	virtual void GetFoldingState(bool &all_folded, bool &all_unfolded) const {}
+	virtual void GetFoldingState([[maybe_unused]] bool &all_folded, [[maybe_unused]] bool &all_unfolded) const {}
 	virtual bool IsVisible(const BaseSettingEntry *item) const;
 	virtual BaseSettingEntry *FindEntry(uint row, uint *cur_row);
-	virtual uint GetMaxHelpHeight(int maxw) { return 0; }
+	virtual uint GetMaxHelpHeight([[maybe_unused]] int maxw) { return 0; }
 
 	/**
 	 * Check whether an entry is hidden due to filters
@@ -1086,11 +1086,11 @@ struct SettingEntry : BaseSettingEntry {
 
 	SettingEntry(const char *name);
 
-	virtual void Init(byte level = 0);
-	virtual void ResetAll();
-	virtual uint Length() const;
-	virtual uint GetMaxHelpHeight(int maxw);
-	virtual bool UpdateFilterState(SettingFilter &filter, bool force_visible);
+	void Init(byte level = 0) override;
+	void ResetAll() override;
+	uint Length() const override;
+	uint GetMaxHelpHeight(int maxw) override;
+	bool UpdateFilterState(SettingFilter &filter, bool force_visible) override;
 
 	void SetButtons(byte new_val);
 	StringID GetHelpText() const;
@@ -1103,7 +1103,7 @@ struct SettingEntry : BaseSettingEntry {
 
 protected:
 	SettingEntry(const IntSettingDesc *setting);
-	virtual void DrawSetting(GameSettings *settings_ptr, int left, int right, int y, bool highlight) const;
+	virtual void DrawSetting(GameSettings *settings_ptr, int left, int right, int y, bool highlight) const override;
 	virtual void DrawSettingString(uint left, uint right, int y, bool highlight, int32 value) const;
 
 private:
@@ -1133,11 +1133,11 @@ struct CargoDestPerCargoSettingEntry : SettingEntry {
 	CargoID cargo;
 
 	CargoDestPerCargoSettingEntry(CargoID cargo, const IntSettingDesc *setting);
-	virtual void Init(byte level = 0);
-	virtual bool UpdateFilterState(SettingFilter &filter, bool force_visible);
+	void Init(byte level = 0) override;
+	bool UpdateFilterState(SettingFilter &filter, bool force_visible) override;
 
 protected:
-	virtual void DrawSettingString(uint left, uint right, int y, bool highlight, int32 value) const;
+	void DrawSettingString(uint left, uint right, int y, bool highlight, int32 value) const override;
 };
 
 /** Conditionally hidden standard setting */
@@ -1147,7 +1147,7 @@ struct ConditionallyHiddenSettingEntry : SettingEntry {
 	ConditionallyHiddenSettingEntry(const char *name, std::function<bool()> hide_callback)
 		: SettingEntry(name), hide_callback(hide_callback) {}
 
-	virtual bool UpdateFilterState(SettingFilter &filter, bool force_visible);
+	bool UpdateFilterState(SettingFilter &filter, bool force_visible) override;
 };
 
 /** Containers for BaseSettingEntry */
@@ -1186,23 +1186,23 @@ struct SettingsPage : BaseSettingEntry, SettingsContainer {
 
 	SettingsPage(StringID title);
 
-	virtual void Init(byte level = 0);
-	virtual void ResetAll();
-	virtual void FoldAll();
-	virtual void UnFoldAll();
+	void Init(byte level = 0) override;
+	void ResetAll() override;
+	void FoldAll() override;
+	void UnFoldAll() override;
 
-	virtual uint Length() const;
-	virtual void GetFoldingState(bool &all_folded, bool &all_unfolded) const;
-	virtual bool IsVisible(const BaseSettingEntry *item) const;
-	virtual BaseSettingEntry *FindEntry(uint row, uint *cur_row);
-	virtual uint GetMaxHelpHeight(int maxw) { return SettingsContainer::GetMaxHelpHeight(maxw); }
+	uint Length() const override;
+	void GetFoldingState(bool &all_folded, bool &all_unfolded) const override;
+	bool IsVisible(const BaseSettingEntry *item) const override;
+	BaseSettingEntry *FindEntry(uint row, uint *cur_row) override;
+	uint GetMaxHelpHeight(int maxw) override { return SettingsContainer::GetMaxHelpHeight(maxw); }
 
-	virtual bool UpdateFilterState(SettingFilter &filter, bool force_visible);
+	bool UpdateFilterState(SettingFilter &filter, bool force_visible) override;
 
-	virtual uint Draw(GameSettings *settings_ptr, int left, int right, int y, uint first_row, uint max_row, BaseSettingEntry *selected, uint cur_row = 0, uint parent_last = 0) const;
+	uint Draw(GameSettings *settings_ptr, int left, int right, int y, uint first_row, uint max_row, BaseSettingEntry *selected, uint cur_row = 0, uint parent_last = 0) const override;
 
 protected:
-	virtual void DrawSetting(GameSettings *settings_ptr, int left, int right, int y, bool highlight) const;
+	void DrawSetting(GameSettings *settings_ptr, int left, int right, int y, bool highlight) const override;
 };
 
 /* == BaseSettingEntry methods == */
@@ -1908,13 +1908,11 @@ uint SettingsPage::Draw(GameSettings *settings_ptr, int left, int right, int y, 
 
 /**
  * Function to draw setting value (button + text + current value)
- * @param settings_ptr Pointer to current values of all settings
  * @param left         Left-most position in window/panel to start drawing
  * @param right        Right-most position in window/panel to draw
  * @param y            Upper-most position in window/panel to start drawing
- * @param highlight    Highlight entry.
  */
-void SettingsPage::DrawSetting(GameSettings *settings_ptr, int left, int right, int y, bool highlight) const
+void SettingsPage::DrawSetting(GameSettings *, int left, int right, int y, bool) const
 {
 	bool rtl = _current_text_dir == TD_RTL;
 	DrawSprite((this->folded ? SPR_CIRCLE_FOLDED : SPR_CIRCLE_UNFOLDED), PAL_NONE, rtl ? right - _circle_size.width : left, y + (SETTING_HEIGHT - _circle_size.height) / 2);
@@ -2615,7 +2613,7 @@ struct GameSettingsWindow : Window {
 		_circle_size = maxdim(GetSpriteSize(SPR_CIRCLE_FOLDED), GetSpriteSize(SPR_CIRCLE_UNFOLDED));
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_GS_OPTIONSPANEL:
@@ -2796,7 +2794,7 @@ struct GameSettingsWindow : Window {
 		this->last_clicked = pe;
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_GS_EXPAND_ALL:
@@ -2923,7 +2921,7 @@ struct GameSettingsWindow : Window {
 						}
 					}
 
-					ShowDropDownListAt(this, std::move(list), value, -1, wi_rect, COLOUR_ORANGE);
+					ShowDropDownListAt(this, std::move(list), value, WID_GS_SETTING_DROPDOWN, wi_rect, COLOUR_ORANGE);
 				}
 			}
 			this->SetDirty();
@@ -3072,23 +3070,21 @@ struct GameSettingsWindow : Window {
 				this->InvalidateData();
 				break;
 
-			default:
-				if (widget < 0) {
-					/* Deal with drop down boxes on the panel. */
-					assert(this->valuedropdown_entry != nullptr);
-					const IntSettingDesc *sd = this->valuedropdown_entry->setting;
-					assert(sd->flags & (SF_GUI_DROPDOWN | SF_ENUM));
+			case WID_GS_SETTING_DROPDOWN:
+				/* Deal with drop down boxes on the panel. */
+				assert(this->valuedropdown_entry != nullptr);
+				const IntSettingDesc *sd = this->valuedropdown_entry->setting;
+				assert(sd->flags & (SF_GUI_DROPDOWN | SF_ENUM));
 
-					SetSettingValue(sd, index);
-					this->SetDirty();
-				}
+				SetSettingValue(sd, index);
+				this->SetDirty();
 				break;
 		}
 	}
 
 	void OnDropdownClose(Point pt, int widget, int index, bool instant_close) override
 	{
-		if (widget >= 0) {
+		if (widget != WID_GS_SETTING_DROPDOWN) {
 			/* Normally the default implementation of OnDropdownClose() takes care of
 			 * a few things. We want that behaviour here too, but only for
 			 * "normal" dropdown boxes. The special dropdown boxes added for every
@@ -3105,7 +3101,7 @@ struct GameSettingsWindow : Window {
 		}
 	}
 
-	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 
@@ -3316,7 +3312,7 @@ struct CustomCurrencyWindow : Window {
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			/* Set the appropriate width for the edit 'buttons' */
@@ -3335,7 +3331,7 @@ struct CustomCurrencyWindow : Window {
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		int line = 0;
 		int len = 0;

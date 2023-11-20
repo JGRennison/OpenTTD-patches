@@ -23,6 +23,8 @@ enum TerraformToolbarWidgets {
 	WID_TT_MEASUREMENT_TOOL,                  ///< Ruler tool button
 	WID_TT_PLACE_SIGN,                        ///< Place sign button.
 	WID_TT_PLACE_OBJECT,                      ///< Place object button.
+
+	INVALID_WID_TT = -1,
 };
 
 /** Widgets of the #ScenarioEditorLandscapeGenerationWindow class. */
@@ -46,6 +48,8 @@ enum EditorTerraformToolbarWidgets {
 	WID_ETT_NEW_SCENARIO,                        ///< Button for generating a new scenario.
 	WID_ETT_RESET_LANDSCAPE,                     ///< Button for removing all company-owned property.
 	WID_ETT_PUBLIC_ROADS,                        ///< Button for creating public roads.
+
+	INVALID_WID_ETT = -1,
 };
 
 #endif /* WIDGETS_TERRAFORM_WIDGET_H */
