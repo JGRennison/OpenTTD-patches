@@ -595,13 +595,13 @@ static void Save_SLXI()
 
 			if (extra_data_length > 0) {
 				SlWriteUint32(extra_data_length);
-				size_t written = SlGetBytesWritten();
+				[[maybe_unused]] size_t written = SlGetBytesWritten();
 				info->save_proc(info, false);
 				assert(SlGetBytesWritten() == written + extra_data_length);
 			}
 			if (chunk_count > 0) {
 				SlWriteUint32(chunk_count);
-				size_t written = SlGetBytesWritten();
+				[[maybe_unused]] size_t written = SlGetBytesWritten();
 				WriteChunkIdList(info->chunk_list, false);
 				assert(SlGetBytesWritten() == written + (chunk_count * 4));
 			}

@@ -5601,8 +5601,8 @@ static void CheckOverflow(int &test, int &other, int max, int mult)
 	test = max;
 }
 
-static const uint X_DIRS = (1 << DIR_NE) | (1 << DIR_SW);
-static const uint Y_DIRS = (1 << DIR_SE) | (1 << DIR_NW);
+[[maybe_unused]] static const uint X_DIRS = (1 << DIR_NE) | (1 << DIR_SW);
+[[maybe_unused]] static const uint Y_DIRS = (1 << DIR_SE) | (1 << DIR_NW);
 static const uint HORZ_DIRS = (1 << DIR_W) | (1 << DIR_E);
 //static const uint VERT_DIRS = (1 << DIR_N) | (1 << DIR_S);
 

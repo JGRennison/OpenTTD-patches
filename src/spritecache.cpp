@@ -1135,11 +1135,11 @@ void *GetRawSprite(SpriteID sprite, SpriteType type, uint8 zoom_levels, Allocato
 
 		/* Load the sprite, if it is not loaded, yet */
 		if (sc->GetPtr() == nullptr) {
-			void *ptr = ReadSprite(sc, sprite, type, AllocSprite, nullptr, zoom_levels);
+			[[maybe_unused]] void *ptr = ReadSprite(sc, sprite, type, AllocSprite, nullptr, zoom_levels);
 			assert(ptr == _last_sprite_allocation.GetPtr());
 			sc->Assign(std::move(_last_sprite_allocation));
 		} else if ((sc->total_missing_zoom_levels & zoom_levels) != 0) {
-			void *ptr = ReadSprite(sc, sprite, type, AllocSprite, nullptr, sc->total_missing_zoom_levels & zoom_levels);
+			[[maybe_unused]] void *ptr = ReadSprite(sc, sprite, type, AllocSprite, nullptr, sc->total_missing_zoom_levels & zoom_levels);
 			assert(ptr == _last_sprite_allocation.GetPtr());
 			sc->Append(std::move(_last_sprite_allocation));
 		}

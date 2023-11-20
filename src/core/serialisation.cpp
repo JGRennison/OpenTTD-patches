@@ -16,7 +16,7 @@
  * @param bytes_to_write The amount of bytes we want to try to write.
  * @return True iff the given amount of bytes can be written to the packet.
  */
-static bool BufferCanWriteToPacket(const std::vector<byte> &buffer, size_t limit, size_t bytes_to_write)
+[[maybe_unused]] static bool BufferCanWriteToPacket(const std::vector<byte> &buffer, size_t limit, size_t bytes_to_write)
 {
 	return buffer.size() + bytes_to_write <= limit;
 }
