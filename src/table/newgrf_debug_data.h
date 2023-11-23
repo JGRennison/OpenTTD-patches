@@ -25,6 +25,7 @@
 #include "../animated_tile.h"
 #include "../clear_map.h"
 #include "../tunnelbridge.h"
+#include "../train_speed_adaptation.h"
 
 /* Helper for filling property tables */
 #define NIP(prop, base, variable, type, name) { name, (ptrdiff_t)cpp_offsetof(base, variable), cpp_sizeof(base, variable), prop, type }
@@ -1408,6 +1409,20 @@ class NIHSignals : public NIHelper {
 		if (IsTunnelBridgeWithSignalSimulation(index)) {
 			output.print("Signals:");
 			DumpTunnelBridgeSignalsInfo(buffer, lastof(buffer), index, output);
+		}
+		if (_settings_game.vehicle.train_speed_adaptation) {
+			for (const auto &it : _signal_speeds) {
+				if (it.first.signal_tile == index) {
+					char *b = buffer + seprintf(buffer, lastof(buffer), "Speed adaptation: Track: %X, last dir: %X --> speed: %u",
+							it.first.signal_track, it.first.last_passing_train_dir, it.second.train_speed);
+					if (it.second.IsOutOfDate()) {
+						b += seprintf(b, lastof(buffer), ", expired");
+					} else {
+						b += seprintf(b, lastof(buffer), ", expires in %u ticks", (uint)(it.second.time_stamp - _scaled_date_ticks));
+					}
+					output.print(buffer);
+				}
+			}
 		}
 	}
 
