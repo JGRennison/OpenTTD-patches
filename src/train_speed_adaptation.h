@@ -11,13 +11,13 @@
 #define TRAIN_SPEED_ADAPTATION_H
 
 #include "date_type.h"
+#include "date_func.h"
 #include "track_type.h"
 #include "tile_type.h"
 
 #include <unordered_map>
 
-struct SignalSpeedKey
-{
+struct SignalSpeedKey {
 	TileIndex signal_tile;
 	uint16 signal_track;
 	Trackdir last_passing_train_dir;
@@ -30,14 +30,18 @@ struct SignalSpeedKey
 	}
 };
 
-struct SignalSpeedValue
-{
+struct SignalSpeedValue {
 	uint16 train_speed;
 	DateTicksScaled time_stamp;
+
+	/** Checks if the timeout has passed */
+	bool IsOutOfDate() const
+	{
+		return _scaled_date_ticks > this->time_stamp;
+	}
 };
 
-struct SignalSpeedKeyHashFunc
-{
+struct SignalSpeedKeyHashFunc {
 	std::size_t operator() (const SignalSpeedKey &key) const
 	{
 		const std::size_t h1 = std::hash<TileIndex>()(key.signal_tile);

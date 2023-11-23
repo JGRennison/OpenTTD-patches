@@ -114,12 +114,6 @@ static DateTicksScaled GetSpeedRestrictionTimeout(const Train *t)
 	return _scaled_date_ticks + ticks;
 }
 
-/** Checks if the timeout of the specified signal speed restriction value has passed */
-static bool IsOutOfDate(const SignalSpeedValue& value)
-{
-	return _scaled_date_ticks > value.time_stamp;
-}
-
 /** Removes all speed restrictions from all signals */
 void ClearAllSignalSpeedRestrictions()
 {
@@ -137,7 +131,7 @@ void AdjustAllSignalSpeedRestrictionTickValues(DateTicksScaled delta)
 void ClearOutOfDateSignalSpeedRestrictions()
 {
 	for (auto key_value_pair = _signal_speeds.begin(); key_value_pair != _signal_speeds.end(); ) {
-		if (IsOutOfDate(key_value_pair->second)) {
+		if (key_value_pair->second.IsOutOfDate()) {
 			key_value_pair = _signal_speeds.erase(key_value_pair);
 		} else {
 			++key_value_pair;
@@ -7582,7 +7576,7 @@ void ApplySignalTrainAdaptationSpeed(Train *v, TileIndex tile, uint16 track)
 	const auto found_speed_restriction = _signal_speeds.find(speed_key);
 
 	if (found_speed_restriction != _signal_speeds.end()) {
-		if (IsOutOfDate(found_speed_restriction->second)) {
+		if (found_speed_restriction->second.IsOutOfDate()) {
 			_signal_speeds.erase(found_speed_restriction);
 			v->signal_speed_restriction = 0;
 		} else {
