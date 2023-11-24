@@ -81,7 +81,7 @@ enum ChooseTrainTrackFlags {
 };
 DECLARE_ENUM_AS_BIT_SET(ChooseTrainTrackFlags)
 
-std::unordered_map<SignalSpeedKey, SignalSpeedValue, SignalSpeedKeyHashFunc> _signal_speeds(1 << 16);
+btree::btree_map<SignalSpeedKey, SignalSpeedValue> _signal_speeds;
 
 static void TryLongReserveChooseTrainTrackFromReservationEnd(Train *v, bool no_reserve_vehicle_tile = false);
 static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, TrackBits tracks, ChooseTrainTrackFlags flags, bool *p_got_reservation, ChooseTrainTrackLookAheadState lookahead_state = {});
@@ -965,6 +965,9 @@ static void ApplyLookAheadItem(const Train *v, const TrainReservationLookAheadIt
 
 		case TRLIT_CURVE_SPEED:
 			if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) limit_speed(item.start, item.data_id, item.z_pos);
+			break;
+
+		case TRLIT_SPEED_ADAPTATION:
 			break;
 	}
 }
@@ -7566,25 +7569,68 @@ void SetSignalTrainAdaptationSpeed(const Train *v, TileIndex tile, uint16 track)
 	_signal_speeds[speed_key] = speed_value;
 }
 
-void ApplySignalTrainAdaptationSpeed(Train *v, TileIndex tile, uint16 track)
+static uint16 GetTrainAdaptationSpeed(TileIndex tile, uint16 track, Trackdir last_passing_train_dir)
 {
 	SignalSpeedKey speed_key = {
 		speed_key.signal_tile = tile,
 		speed_key.signal_track = track,
-		speed_key.last_passing_train_dir = v->GetVehicleTrackdir()
+		speed_key.last_passing_train_dir = last_passing_train_dir
 	};
 	const auto found_speed_restriction = _signal_speeds.find(speed_key);
 
 	if (found_speed_restriction != _signal_speeds.end()) {
 		if (found_speed_restriction->second.IsOutOfDate()) {
 			_signal_speeds.erase(found_speed_restriction);
-			v->signal_speed_restriction = 0;
+			return 0;
 		} else {
-			v->signal_speed_restriction = std::max<uint16>(25, found_speed_restriction->second.train_speed);
+			return std::max<uint16>(25, found_speed_restriction->second.train_speed);
 		}
 	} else {
-		v->signal_speed_restriction = 0;
+		return 0;
 	}
+}
+
+void ApplySignalTrainAdaptationSpeed(Train *v, TileIndex tile, uint16 track)
+{
+	uint16 speed = GetTrainAdaptationSpeed(tile, track, v->GetVehicleTrackdir());
+
+	if (speed > 0 && v->lookahead != nullptr) {
+		for (const TrainReservationLookAheadItem &item : v->lookahead->items) {
+			if (item.type == TRLIT_SPEED_ADAPTATION && item.end + 1 < v->lookahead->reservation_end_position) {
+				uint16 signal_speed = GetLowestSpeedTrainAdaptationSpeedAtSignal(item.data_id, item.data_aux);
+
+				if (signal_speed == 0) {
+					/* unrestricted signal ahead, disregard speed adaptation at earlier signal */
+					v->signal_speed_restriction = 0;
+					return;
+				}
+				if (signal_speed > speed) {
+					/* signal ahead with higher speed adaptation speed, override speed adaptation at earlier signal */
+					speed = signal_speed;
+				}
+			}
+		}
+	}
+
+	v->signal_speed_restriction = speed;
+}
+
+uint16 GetLowestSpeedTrainAdaptationSpeedAtSignal(TileIndex tile, uint16 track)
+{
+	uint16 lowest_speed = 0;
+
+	SignalSpeedKey speed_key = { tile, track, (Trackdir)0 };
+	for (auto iter = _signal_speeds.lower_bound(speed_key); iter != _signal_speeds.end() && iter->first.signal_tile == tile && iter->first.signal_track == track;) {
+		if (iter->second.IsOutOfDate()) {
+			iter = _signal_speeds.erase(iter);
+		} else {
+			uint16 adapt_speed = std::max<uint16>(25, iter->second.train_speed);
+			if (lowest_speed == 0 || adapt_speed < lowest_speed) lowest_speed = adapt_speed;
+			++iter;
+		}
+	}
+
+	return lowest_speed;
 }
 
 uint16 Train::GetMaxWeight() const

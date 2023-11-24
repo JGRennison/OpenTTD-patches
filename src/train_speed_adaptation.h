@@ -14,8 +14,7 @@
 #include "date_func.h"
 #include "track_type.h"
 #include "tile_type.h"
-
-#include <unordered_map>
+#include "3rdparty/cpp-btree/btree_map.h"
 
 struct SignalSpeedKey {
 	TileIndex signal_tile;
@@ -27,6 +26,11 @@ struct SignalSpeedKey {
 		return signal_tile == other.signal_tile &&
 			signal_track == other.signal_track &&
 			last_passing_train_dir == other.last_passing_train_dir;
+	}
+
+	bool operator<(const SignalSpeedKey& other) const
+	{
+		return std::tie(this->signal_tile, this->signal_track, this->last_passing_train_dir) < std::tie(other.signal_tile, other.signal_track, other.last_passing_train_dir);
 	}
 };
 
@@ -41,21 +45,11 @@ struct SignalSpeedValue {
 	}
 };
 
-struct SignalSpeedKeyHashFunc {
-	std::size_t operator() (const SignalSpeedKey &key) const
-	{
-		const std::size_t h1 = std::hash<TileIndex>()(key.signal_tile);
-		const std::size_t h2 = std::hash<Trackdir>()(key.last_passing_train_dir);
-		const std::size_t h3 = std::hash<uint16>()(key.signal_track);
-
-		return (h1 ^ h2) ^ h3;
-	}
-};
-
-extern std::unordered_map<SignalSpeedKey, SignalSpeedValue, SignalSpeedKeyHashFunc> _signal_speeds;
+extern btree::btree_map<SignalSpeedKey, SignalSpeedValue> _signal_speeds;
 
 struct Train;
 void SetSignalTrainAdaptationSpeed(const Train *v, TileIndex tile, uint16 track);
 void ApplySignalTrainAdaptationSpeed(Train *v, TileIndex tile, uint16 track);
+uint16 GetLowestSpeedTrainAdaptationSpeedAtSignal(TileIndex tile, uint16 track);
 
 #endif /* TRAIN_SPEED_ADAPTATION_H */

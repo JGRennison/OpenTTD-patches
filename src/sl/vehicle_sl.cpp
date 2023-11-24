@@ -1513,7 +1513,8 @@ const SaveLoadTable GetVehicleLookAheadItemDescription()
 		     SLE_VAR(TrainReservationLookAheadItem, start,                    SLE_INT32),
 		     SLE_VAR(TrainReservationLookAheadItem, end,                      SLE_INT32),
 		     SLE_VAR(TrainReservationLookAheadItem, z_pos,                    SLE_INT16),
-		     SLE_VAR(TrainReservationLookAheadItem, data_id,                  SLE_UINT16),
+		SLE_CONDVAR_X(TrainReservationLookAheadItem, data_id, SLE_FILE_U16 | SLE_VAR_U32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 0, 9)),
+		SLE_CONDVAR_X(TrainReservationLookAheadItem, data_id,                 SLE_UINT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 10)),
 		SLE_CONDVAR_X(TrainReservationLookAheadItem, data_aux,                SLE_UINT16,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 9)),
 		     SLE_VAR(TrainReservationLookAheadItem, type,                     SLE_UINT8),
 	};

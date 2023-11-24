@@ -57,6 +57,7 @@ enum TrainReservationLookAheadItemType : byte {
 	TRLIT_SPEED_RESTRICTION      = 3,     ///< Speed restriction
 	TRLIT_SIGNAL                 = 4,     ///< Signal
 	TRLIT_CURVE_SPEED            = 5,     ///< Curve speed limit
+	TRLIT_SPEED_ADAPTATION       = 6,     ///< Train speed adaptation ahead
 };
 
 enum TrainReservationSignalLookAheadItemFlags {
@@ -70,9 +71,11 @@ struct TrainReservationLookAheadItem {
 	int32 start;
 	int32 end;
 	int16 z_pos;
-	uint16 data_id;
+	/* gap: 2 bytes */
+	uint32 data_id;
 	uint16 data_aux;
 	TrainReservationLookAheadItemType type;
+	/* gap: 1 byte */
 };
 
 struct TrainReservationLookAheadCurve {
@@ -143,6 +146,12 @@ struct TrainReservationLookAhead {
 	{
 		int end = this->RealEndPosition();
 		this->items.push_back({ end + offset, end + offset, z_pos, target_speed, 0, TRLIT_CURVE_SPEED });
+	}
+
+	void AddSpeedAdaptation(TileIndex signal_tile, uint16 signal_track, int offset, int16 z_pos)
+	{
+		int end = this->RealEndPosition();
+		this->items.push_back({ end + offset, end + offset, z_pos, signal_tile, signal_track, TRLIT_SPEED_ADAPTATION });
 	}
 
 	void SetNextExtendPosition();

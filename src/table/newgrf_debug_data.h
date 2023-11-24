@@ -401,6 +401,15 @@ class NIHVehicle : public NIHelper {
 							if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) print_braking_speed(item.start, item.data_id, item.z_pos);
 
 							break;
+						case TRLIT_SPEED_ADAPTATION: {
+							TileIndex tile = item.data_id;
+							uint16 td = item.data_aux;
+							b += seprintf(b, lastof(buffer), "speed adaptation: tile: %X, trackdir: %X", tile, td);
+							if (item.end + 1 < l.reservation_end_position) {
+								b += seprintf(b, lastof(buffer), " --> %u", GetLowestSpeedTrainAdaptationSpeedAtSignal(tile, td));
+							}
+							break;
+						}
 					}
 					output.print(buffer);
 				}
@@ -1411,17 +1420,17 @@ class NIHSignals : public NIHelper {
 			DumpTunnelBridgeSignalsInfo(buffer, lastof(buffer), index, output);
 		}
 		if (_settings_game.vehicle.train_speed_adaptation) {
-			for (const auto &it : _signal_speeds) {
-				if (it.first.signal_tile == index) {
-					char *b = buffer + seprintf(buffer, lastof(buffer), "Speed adaptation: Track: %X, last dir: %X --> speed: %u",
-							it.first.signal_track, it.first.last_passing_train_dir, it.second.train_speed);
-					if (it.second.IsOutOfDate()) {
-						b += seprintf(b, lastof(buffer), ", expired");
-					} else {
-						b += seprintf(b, lastof(buffer), ", expires in %u ticks", (uint)(it.second.time_stamp - _scaled_date_ticks));
-					}
-					output.print(buffer);
+			SignalSpeedKey speed_key = { index, 0, (Trackdir)0 };
+			for (auto iter = _signal_speeds.lower_bound(speed_key); iter != _signal_speeds.end() && iter->first.signal_tile == index; ++iter) {
+				const auto &it = *iter;
+				char *b = buffer + seprintf(buffer, lastof(buffer), "Speed adaptation: Track: %X, last dir: %X --> speed: %u",
+						it.first.signal_track, it.first.last_passing_train_dir, it.second.train_speed);
+				if (it.second.IsOutOfDate()) {
+					b += seprintf(b, lastof(buffer), ", expired");
+				} else {
+					b += seprintf(b, lastof(buffer), ", expires in %u ticks", (uint)(it.second.time_stamp - _scaled_date_ticks));
 				}
+				output.print(buffer);
 			}
 		}
 	}
