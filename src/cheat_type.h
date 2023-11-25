@@ -32,12 +32,12 @@ struct Cheats {
 	Cheat change_date;      ///< changes date ingame
 	Cheat setup_prod;       ///< setup raw-material production in game
 	Cheat edit_max_hl;      ///< edit the maximum heightlevel; this is a cheat because of the fact that it needs to reset NewGRF game state and doing so as a simple configuration breaks the expectation of many
+	Cheat station_rating;   ///< Fix station ratings at 100%
 };
 
 struct ExtraCheats {
 	Cheat inflation_cost;   ///< inflation cost factor
 	Cheat inflation_income; ///< inflation income factor
-	Cheat station_rating;   ///< 100% station rating
 	Cheat town_rating;      ///< 100% town local authority rating
 };
 

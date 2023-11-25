@@ -198,7 +198,7 @@ static const CheatEntry _cheats_ui[] = {
 	{CNM_LOCAL_ONLY, SLE_INT32,       STR_CHEAT_CHANGE_DATE,      &_cur_date_ymd.year,                           &_cheats.change_date.been_used,            &ClickChangeDateCheat      },
 	{CNM_ALL,        SLF_ALLOW_CONTROL, STR_CHEAT_INFLATION_COST,   &_economy.inflation_prices,                  &_extra_cheats.inflation_cost.been_used,   nullptr                    },
 	{CNM_ALL,        SLF_ALLOW_CONTROL, STR_CHEAT_INFLATION_INCOME, &_economy.inflation_payment,                 &_extra_cheats.inflation_income.been_used, nullptr                    },
-	{CNM_ALL,        SLE_BOOL,        STR_CHEAT_STATION_RATING,   &_extra_cheats.station_rating.value,           &_extra_cheats.station_rating.been_used,   nullptr                    },
+	{CNM_ALL,        SLE_BOOL,        STR_CHEAT_STATION_RATING,   &_cheats.station_rating.value,                 &_cheats.station_rating.been_used,         nullptr                    },
 	{CNM_ALL,        SLE_BOOL,        STR_CHEAT_TOWN_RATING,      &_extra_cheats.town_rating.value,              &_extra_cheats.town_rating.been_used,      nullptr                    },
 };
 

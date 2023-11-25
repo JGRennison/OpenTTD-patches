@@ -608,7 +608,6 @@ STR_CHEAT_INFLATION_COST                                        :{LTBLUE}Ändere
 STR_CHEAT_INFLATION_COST_QUERY_CAPT                             :{WHITE}Ändert den Faktor der Inflation der Kosten
 STR_CHEAT_INFLATION_INCOME                                      :{LTBLUE}Ändere Inflationsfaktor des Einkommens: {ORANGE}{DECIMAL}
 STR_CHEAT_INFLATION_INCOME_QUERY_CAPT                           :{WHITE}Ändert den Faktor der Inflation des Einkommens
-STR_CHEAT_STATION_RATING                                        :{LTBLUE}Stationsbewertung auf 100% fixieren: {ORANGE}{STRING}
 STR_CHEAT_TOWN_RATING                                           :{LTBLUE}Bewertung durch die Stadtverwaltung auf Hervorragend fixieren: {ORANGE}{STRING}
 
 STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {STRING} gab der eigenen Firma {2:CURRENCY_LONG}

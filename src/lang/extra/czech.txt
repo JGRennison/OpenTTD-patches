@@ -691,7 +691,6 @@ STR_CHEAT_INFLATION_COST                                        :{LTBLUE}Změnit
 STR_CHEAT_INFLATION_COST_QUERY_CAPT                             :{WHITE}Změnit faktor inflace nákladů
 STR_CHEAT_INFLATION_INCOME                                      :{LTBLUE}Změnit faktor inflace příjmů: {ORANGE}{DECIMAL}
 STR_CHEAT_INFLATION_INCOME_QUERY_CAPT                           :{WHITE}Změnit faktor inflace příjmů
-STR_CHEAT_STATION_RATING                                        :{LTBLUE}Hodnocení stanic je vždy 100%: {ORANGE}{STRING}
 STR_CHEAT_TOWN_RATING                                           :{LTBLUE}Hodnocení společnosti samosprávou je vždy Úžasné: {ORANGE}{STRING}
 
 STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {STRING} poslal(a) tvé společnosti {2:CURRENCY_LONG}

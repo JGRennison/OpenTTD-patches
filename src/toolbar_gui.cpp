@@ -153,7 +153,7 @@ public:
 		return GetStringBoundingBox(STR_COMPANY_NAME_COMPANY_NUM).width + this->icon_size.width + this->lock_size.width + WidgetDimensions::scaled.dropdowntext.Horizontal() + WidgetDimensions::scaled.hsep_wide;
 	}
 
-	uint Height(uint) const override
+	uint Height() const override
 	{
 		return std::max(std::max(this->icon_size.height, this->lock_size.height) + WidgetDimensions::scaled.imgbtn.Vertical(), (uint)FONT_HEIGHT_NORMAL);
 	}
@@ -1130,6 +1130,7 @@ enum HelpMenuEntries {
 	HME_SPRITE_ALIGNER,
 	HME_BOUNDING_BOXES,
 	HME_DIRTY_BLOCKS,
+	HME_WIDGET_OUTLINES,
 };
 
 static void ShowBuildRailToolbarFromTile(TileIndex tile)
@@ -1246,9 +1247,10 @@ static CallBackFunction ToolbarHelpClick(Window *w)
 	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS, HME_MODIFIER_KEYS, false));
 	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_ABOUT_OPENTTD,             HME_ABOUT,         false));
 	if (_settings_client.gui.newgrf_developer_tools) {
-		list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_SPRITE_ALIGNER,        HME_SPRITE_ALIGNER,         false));
-		list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES, HME_BOUNDING_BOXES,         false));
-		list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_TOGGLE_DIRTY_BLOCKS,   HME_DIRTY_BLOCKS,         false));
+		list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_SPRITE_ALIGNER,         HME_SPRITE_ALIGNER,       false));
+		list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES,  HME_BOUNDING_BOXES,       false));
+		list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_TOGGLE_DIRTY_BLOCKS,    HME_DIRTY_BLOCKS,         false));
+		list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_TOGGLE_WIDGET_OUTLINES, HME_WIDGET_OUTLINES,      false));
 	}
 	PopupMainToolbMenu(w, widget, std::move(list), 0);
 
@@ -1290,6 +1292,20 @@ void ToggleDirtyBlocks()
 }
 
 /**
+ * Toggle drawing of widget outlihes.
+ * @note has only an effect when newgrf_developer_tools are active.
+ */
+void ToggleWidgetOutlines()
+{
+	extern bool _draw_widget_outlines;
+	/* Always allow to toggle them off */
+	if (_settings_client.gui.newgrf_developer_tools || _draw_widget_outlines) {
+		_draw_widget_outlines = !_draw_widget_outlines;
+		MarkWholeScreenDirty();
+	}
+}
+
+/**
  * Set the starting year for a scenario.
  * @param year New starting year.
  */
@@ -1325,6 +1341,7 @@ static CallBackFunction MenuClickHelp(int index)
 		case HME_SPRITE_ALIGNER: ShowSpriteAlignerWindow();        break;
 		case HME_BOUNDING_BOXES: ToggleBoundingBoxes();            break;
 		case HME_DIRTY_BLOCKS:   ToggleDirtyBlocks();              break;
+		case HME_WIDGET_OUTLINES:ToggleWidgetOutlines();           break;
 	}
 	return CBF_NONE;
 }
@@ -1514,7 +1531,6 @@ static MenuClickedProc * const _menu_clicked_procs[] = {
 
 /** Full blown container to make it behave exactly as we want :) */
 class NWidgetToolbarContainer : public NWidgetContainer {
-	bool visible[WID_TN_END]; ///< The visible headers
 protected:
 	uint spacers;          ///< Number of spacer widgets in this toolbar
 
@@ -1576,16 +1592,13 @@ public:
 		this->current_y = given_height;
 
 		/* Figure out what are the visible buttons */
-		memset(this->visible, 0, sizeof(this->visible));
 		uint arrangable_count, button_count, spacer_count;
 		const byte *arrangement = GetButtonArrangement(given_width, arrangable_count, button_count, spacer_count);
-		for (uint i = 0; i < arrangable_count; i++) {
-			this->visible[arrangement[i]] = true;
-		}
 
 		/* Create us ourselves a quick lookup table */
 		NWidgetBase *widgets[WID_TN_END];
 		for (NWidgetBase *child_wid = this->head; child_wid != nullptr; child_wid = child_wid->next) {
+			child_wid->current_x = 0; /* Hide widget, it will be revealed in the next step. */
 			if (child_wid->type == NWID_SPACER) continue;
 			widgets[((NWidgetCore*)child_wid)->index] = child_wid;
 		}
@@ -1617,6 +1630,8 @@ public:
 				child_wid->current_x = button_space / (button_count - button_i);
 				button_space -= child_wid->current_x;
 				button_i++;
+			} else {
+				child_wid->current_x = child_wid->smallest_x;
 			}
 			child_wid->AssignSizePosition(sizing, x + position, y, child_wid->current_x, this->current_y, rtl);
 			position += child_wid->current_x;
@@ -1635,42 +1650,7 @@ public:
 		GfxFillRect(this->pos_x, this->pos_y, this->pos_x + this->current_x - 1, this->pos_y + this->current_y - 1, PC_VERY_DARK_RED);
 		GfxFillRect(this->pos_x, this->pos_y, this->pos_x + this->current_x - 1, this->pos_y + this->current_y - 1, PC_DARK_RED, FILLRECT_CHECKER);
 
-		bool rtl = _current_text_dir == TD_RTL;
-		for (NWidgetBase *child_wid = rtl ? this->tail : this->head; child_wid != nullptr; child_wid = rtl ? child_wid->prev : child_wid->next) {
-			if (child_wid->type == NWID_SPACER) continue;
-			if (!this->visible[((NWidgetCore*)child_wid)->index]) continue;
-
-			child_wid->Draw(w);
-		}
-	}
-
-	NWidgetCore *GetWidgetFromPos(int x, int y) override
-	{
-		if (!IsInsideBS(x, this->pos_x, this->current_x) || !IsInsideBS(y, this->pos_y, this->current_y)) return nullptr;
-
-		for (NWidgetBase *child_wid = this->head; child_wid != nullptr; child_wid = child_wid->next) {
-			if (child_wid->type == NWID_SPACER) continue;
-			if (!this->visible[((NWidgetCore*)child_wid)->index]) continue;
-
-			NWidgetCore *nwid = child_wid->GetWidgetFromPos(x, y);
-			if (nwid != nullptr) return nwid;
-		}
-		return nullptr;
-	}
-
-
-	void FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widgets) override
-	{
-		if (this->base_flags & WBF_DIRTY) {
-			dirty_widgets.push_back(this);
-		} else {
-			for (NWidgetBase *child_wid = this->head; child_wid != nullptr; child_wid = child_wid->next) {
-				if (child_wid->type == NWID_SPACER) continue;
-				if (!this->visible[((NWidgetCore*)child_wid)->index]) continue;
-
-				child_wid->FillDirtyWidgets(dirty_widgets);
-			}
-		}
+		this->NWidgetContainer::Draw(w);
 	}
 
 	/**

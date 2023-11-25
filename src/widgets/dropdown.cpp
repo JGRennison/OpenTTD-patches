@@ -35,6 +35,13 @@ DropDownListStringItem::DropDownListStringItem(StringID string, int result, bool
 {
 }
 
+DropDownListStringItem::DropDownListStringItem(const std::string &string, int result, bool masked) : DropDownListItem(result, masked)
+{
+	/* A raw string may contain parsable tokens, so it needs to be passed through GetString. */
+	SetDParamStr(0, string);
+	this->string = GetString(STR_JUST_RAW_STRING);
+}
+
 uint DropDownListStringItem::Width() const
 {
 	return GetStringBoundingBox(this->String()).width + WidgetDimensions::scaled.dropdowntext.Horizontal();
@@ -66,7 +73,7 @@ DropDownListIconItem::DropDownListIconItem(SpriteID sprite, PaletteID pal, Strin
 	this->sprite_y = dim.height;
 }
 
-uint DropDownListIconItem::Height(uint) const
+uint DropDownListIconItem::Height() const
 {
 	return std::max(this->dim.height, (uint)FONT_HEIGHT_NORMAL);
 }
@@ -164,7 +171,7 @@ struct DropdownWindow : Window {
 		/* Total length of list */
 		int list_height = 0;
 		for (const auto &item : this->list) {
-			list_height += item->Height(items_width);
+			list_height += item->Height();
 		}
 
 		/* Capacity is the average number of items visible */
@@ -214,14 +221,13 @@ struct DropdownWindow : Window {
 
 		const Rect &r = this->GetWidget<NWidgetBase>(WID_DM_ITEMS)->GetCurrentRect().Shrink(WidgetDimensions::scaled.fullbevel);
 		int y     = _cursor.pos.y - this->top - r.top - WidgetDimensions::scaled.fullbevel.top;
-		int width = r.Width();
 		int pos   = this->vscroll->GetPosition();
 
 		for (const auto &item : this->list) {
 			/* Skip items that are scrolled up */
 			if (--pos >= 0) continue;
 
-			int item_height = item->Height(width);
+			int item_height = item->Height();
 
 			if (y < item_height) {
 				if (item->masked || !item->Selectable()) return false;
@@ -245,7 +251,7 @@ struct DropdownWindow : Window {
 		int y = ir.top;
 		int pos = this->vscroll->GetPosition();
 		for (const auto &item : this->list) {
-			int item_height = item->Height(ir.Width());
+			int item_height = item->Height();
 
 			/* Skip items that are scrolled up */
 			if (--pos >= 0) continue;
@@ -382,7 +388,7 @@ void ShowDropDownListAt(Window *w, DropDownList &&list, int selected, int button
 	uint height = 0;
 
 	for (const auto &item : list) {
-		height += item->Height(width);
+		height += item->Height();
 		max_item_width = std::max(max_item_width, item->Width());
 	}
 

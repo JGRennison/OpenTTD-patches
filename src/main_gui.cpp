@@ -211,6 +211,7 @@ enum {
 	GHK_CONSOLE,
 	GHK_BOUNDING_BOXES,
 	GHK_DIRTY_BLOCKS,
+	GHK_WIDGET_OUTLINES,
 	GHK_CENTER,
 	GHK_CENTER_ZOOM,
 	GHK_RESET_OBJECT_TO_PLACE,
@@ -332,6 +333,10 @@ struct MainWindow : Window
 
 			case GHK_DIRTY_BLOCKS:
 				ToggleDirtyBlocks();
+				return ES_HANDLED;
+
+			case GHK_WIDGET_OUTLINES:
+				ToggleWidgetOutlines();
 				return ES_HANDLED;
 		}
 
@@ -559,6 +564,7 @@ static Hotkey global_hotkeys[] = {
 	Hotkey(WKC_BACKQUOTE, "console", GHK_CONSOLE),
 	Hotkey('B' | WKC_CTRL, "bounding_boxes", GHK_BOUNDING_BOXES),
 	Hotkey('I' | WKC_CTRL, "dirty_blocks", GHK_DIRTY_BLOCKS),
+	Hotkey((uint16)0,      "widget_outlines", GHK_WIDGET_OUTLINES),
 	Hotkey('C', "center", GHK_CENTER),
 	Hotkey('Z', "center_zoom", GHK_CENTER_ZOOM),
 	Hotkey(WKC_ESC, "reset_object_to_place", GHK_RESET_OBJECT_TO_PLACE),

@@ -292,7 +292,7 @@ CommandCost CmdCheatSetting(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 			return CommandCost();
 
 		case CHT_STATION_RATING:
-			cht = &_extra_cheats.station_rating;
+			cht = &_cheats.station_rating;
 			break;
 
 		case CHT_TOWN_RATING:

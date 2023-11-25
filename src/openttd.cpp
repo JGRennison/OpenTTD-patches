@@ -167,7 +167,7 @@ void CDECL usererror(const char *s, ...)
 	EM_ASM(if (window["openttd_abort"]) openttd_abort());
 #endif
 
-	exit(1);
+	_exit(1);
 }
 
 /**

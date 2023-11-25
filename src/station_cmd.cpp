@@ -4230,7 +4230,7 @@ int GetTargetRating(const Station *st, const CargoSpec *cs, const GoodsEntry *ge
 	bool skip = false;
 	int rating = 0;
 
-	if (_extra_cheats.station_rating.value) {
+	if (_cheats.station_rating.value) {
 		rating = 255;
 		skip = true;
 	} else if (HasBit(cs->callback_mask, CBM_CARGO_STATION_RATING_CALC)) {

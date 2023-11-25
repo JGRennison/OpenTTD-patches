@@ -2822,7 +2822,7 @@ public:
 
 		const bool detailed = _settings_client.gui.station_rating_tooltip_mode == SRTM_DETAILED;
 
-		if (_extra_cheats.station_rating.value) {
+		if (_cheats.station_rating.value) {
 			total_rating = 255;
 			skip = true;
 			GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_USING_CHEAT, lastof(this->data[line_nr]));
@@ -2989,7 +2989,7 @@ public:
 			}
 		}
 
-		if (!_extra_cheats.station_rating.value) {
+		if (!_cheats.station_rating.value) {
 			// Statue
 			const auto statue_rating = GetStatueRating(st);
 			if (statue_rating > 0 || detailed) {

@@ -709,7 +709,6 @@ STR_CHEAT_INFLATION_COST                                        :{LTBLUE}改变�
 STR_CHEAT_INFLATION_COST_QUERY_CAPT                             :{WHITE}改变支出通胀因子
 STR_CHEAT_INFLATION_INCOME                                      :{LTBLUE}改变收入通胀因子: {ORANGE}{DECIMAL}
 STR_CHEAT_INFLATION_INCOME_QUERY_CAPT                           :{WHITE}改变收入通胀因子
-STR_CHEAT_STATION_RATING                                        :{LTBLUE}车站评价调整为100%: {ORANGE}{STRING}
 STR_CHEAT_TOWN_RATING                                           :{LTBLUE}城镇地方当局评级永远为“卓越”: {ORANGE}{STRING}
 
 STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {STRING} 给了你的公司 {2:CURRENCY_LONG}

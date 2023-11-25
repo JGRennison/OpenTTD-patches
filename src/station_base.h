@@ -30,7 +30,8 @@
 #include <functional>
 #include <algorithm>
 
-static const byte INITIAL_STATION_RATING = 175;
+static const uint8_t INITIAL_STATION_RATING = 175;
+static const uint8_t MAX_STATION_RATING = 255;
 
 static const uint MAX_EXTRA_STATION_NAMES = 1024;
 

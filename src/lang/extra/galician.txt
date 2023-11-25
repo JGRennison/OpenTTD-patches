@@ -715,7 +715,6 @@ STR_CHEAT_INFLATION_COST                                        :{LTBLUE}Modific
 STR_CHEAT_INFLATION_COST_QUERY_CAPT                             :{WHITE}Modificar o factor da inflación de custos
 STR_CHEAT_INFLATION_INCOME                                      :{LTBLUE}Modificar o factor da inflación de ingresos: {ORANGE}{DECIMAL}
 STR_CHEAT_INFLATION_INCOME_QUERY_CAPT                           :{WHITE}Modificar o factor da inflación de ingresos
-STR_CHEAT_STATION_RATING                                        :{LTBLUE}Valoración das estacións fixadas ó 100%: {ORANGE}{STRING}
 STR_CHEAT_TOWN_RATING                                           :{LTBLUE}Valoración das autoridades locais das vilas fixadas como excepcionais: {ORANGE}{STRING}
 
 STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {STRING} deu a túa compañía {2:CURRENCY_LONG}

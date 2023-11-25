@@ -35,7 +35,7 @@ public:
 	virtual ~DropDownListItem() = default;
 
 	virtual bool Selectable() const { return false; }
-	virtual uint Height([[maybe_unused]] uint) const { return FONT_HEIGHT_NORMAL; }
+	virtual uint Height() const { return FONT_HEIGHT_NORMAL; }
 	virtual uint Width() const { return 0; }
 	virtual void Draw(const Rect &r, bool sel, Colours bg_colour) const;
 };
@@ -45,11 +45,11 @@ public:
  */
 class DropDownListStringItem : public DropDownListItem {
 public:
-	const std::string string; ///< String of item
+	std::string string; ///< String of item
 	TextColour colour_flags = TC_BEGIN;
 
 	DropDownListStringItem(StringID string, int result, bool masked);
-	DropDownListStringItem(const std::string &string, int result, bool masked) : DropDownListItem(result, masked), string(string) {}
+	DropDownListStringItem(const std::string &string, int result, bool masked);
 
 	bool Selectable() const override { return true; }
 	uint Width() const override;
@@ -71,7 +71,7 @@ class DropDownListIconItem : public DropDownListStringItem {
 public:
 	DropDownListIconItem(SpriteID sprite, PaletteID pal, StringID string, int result, bool masked);
 
-	uint Height(uint width) const override;
+	uint Height() const override;
 	uint Width() const override;
 	void Draw(const Rect &r, bool sel, Colours bg_colour) const override;
 	void SetDimension(Dimension d);
