@@ -712,7 +712,9 @@ static void IniLoadSettings(IniFile &ini, const SettingTable &settings_table, co
 				/* For settings.xx.zz.yy load the settings from [zz] yy = ? in case the previous
 				 * did not exist (e.g. loading old config files with a [yapf] section */
 				sc = s.find('.');
-				if (sc != std::string::npos) item = ini.GetGroup(s.substr(0, sc))->GetItem(s.substr(sc + 1));
+				if (sc != std::string::npos) {
+					if (group = ini.GetGroup(s.substr(0, sc)); group != nullptr) item = group->GetItem(s.substr(sc + 1));
+				}
 			}
 			if (item == nullptr && sd->guiproc != nullptr) {
 				SettingOnGuiCtrlData data;
