@@ -173,11 +173,15 @@ class ReplaceVehicleWindow : public Window {
 				if (!CheckAutoreplaceValidity(this->sel_engine[0], eid, _local_company)) continue;
 			}
 
-			EngineDisplayFlags flags = (side == 0) ? EngineDisplayFlags::None : e->display_flags;
-			if (side == 1 && eid == this->sel_engine[0]) flags |= EngineDisplayFlags::Shaded;
-			list.emplace_back(eid, e->info.variant_id, flags, 0);
+			list.emplace_back(eid, e->info.variant_id, (side == 0) ? EngineDisplayFlags::None : e->display_flags, 0);
 
-			if (side == 1 && e->info.variant_id != INVALID_ENGINE) variants.push_back(e->info.variant_id);
+			if (side == 1) {
+				EngineID parent = e->info.variant_id;
+				while (parent != INVALID_ENGINE) {
+					variants.push_back(parent);
+					parent = Engine::Get(parent)->info.variant_id;
+				}
+			}
 			if (eid == this->sel_engine[side]) selected_engine = eid; // The selected engine is still in the list
 		}
 
@@ -216,7 +220,7 @@ class ReplaceVehicleWindow : public Window {
 			/* We need to rebuild the left engines list */
 			this->GenerateReplaceVehList(true);
 			this->vscroll[0]->SetCount(this->engines[0].size());
-			if (this->reset_sel_engine && this->sel_engine[0] == INVALID_ENGINE && this->engines[0].size() != 0) {
+			if (this->reset_sel_engine && this->sel_engine[0] == INVALID_ENGINE && !this->engines[0].empty()) {
 				this->sel_engine[0] = this->engines[0][0].engine_id;
 			}
 		}
@@ -564,8 +568,8 @@ public:
 
 			case WID_RV_TRAIN_ENGINEWAGON_DROPDOWN: {
 				DropDownList list;
-				list.emplace_back(new DropDownListStringItem(STR_REPLACE_ENGINES, 1, false));
-				list.emplace_back(new DropDownListStringItem(STR_REPLACE_WAGONS, 0, false));
+				list.push_back(std::make_unique<DropDownListStringItem>(STR_REPLACE_ENGINES, 1, false));
+				list.push_back(std::make_unique<DropDownListStringItem>(STR_REPLACE_WAGONS, 0, false));
 				ShowDropDownList(this, std::move(list), this->replace_engines ? 1 : 0, WID_RV_TRAIN_ENGINEWAGON_DROPDOWN);
 				break;
 			}

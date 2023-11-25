@@ -132,7 +132,7 @@ ICUParagraphLayout::ICUVisualRun::ICUVisualRun(const ICURun &run, int x) :
 	glyphs(run.glyphs), glyph_to_char(run.glyph_to_char), total_advance(run.total_advance), font(run.font)
 {
 	/* If there are no positions, the ICURun was not Shaped; that should never happen. */
-	assert(run.positions.size() != 0);
+	assert(!run.positions.empty());
 	this->positions.reserve(run.positions.size());
 
 	/* "positions" is an array of x/y. So we need to alternate. */
@@ -380,7 +380,7 @@ std::vector<ICURun> ItemizeStyle(std::vector<ICURun> &runs_current, FontMap &fon
 	runs = ItemizeScript(buff, length, runs);
 	runs = ItemizeStyle(runs, font_mapping);
 
-	if (runs.size() == 0) return nullptr;
+	if (runs.empty()) return nullptr;
 
 	for (auto &run : runs) {
 		run.Shape(buff, length);

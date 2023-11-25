@@ -43,8 +43,8 @@ struct HotkeyList {
 	HotkeyList(const char *ini_group, Hotkey *items, GlobalHotkeyHandlerFunc global_hotkey_handler = nullptr);
 	~HotkeyList();
 
-	void Load(IniFile *ini);
-	void Save(IniFile *ini) const;
+	void Load(const IniFile &ini);
+	void Save(IniFile &ini) const;
 
 	int CheckMatch(uint16 keycode, bool global_only = false) const;
 

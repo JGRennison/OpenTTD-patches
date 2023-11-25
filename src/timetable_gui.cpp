@@ -370,7 +370,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 		this->owner = this->vehicle->owner;
 	}
 
-	void Close() override
+	void Close(int data = 0) override
 	{
 		if (!FocusWindowById(WC_VEHICLE_VIEW, this->window_number)) {
 			MarkDirtyFocusedRoutePaths(this->vehicle);

@@ -74,7 +74,7 @@ static uint8 *_chatmessage_backup = nullptr; ///< Backup in case text is moved.
  */
 static inline bool HaveChatMessages(bool show_all)
 {
-	if (show_all) return _chatmsg_list.size() != 0;
+	if (show_all) return !_chatmsg_list.empty();
 
 	auto now = std::chrono::steady_clock::now();
 	for (auto &cmsg : _chatmsg_list) {
@@ -314,7 +314,7 @@ struct NetworkChatWindow : public Window {
 		PositionNetworkChatWindow(this);
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		InvalidateWindowData(WC_NEWS_WINDOW, 0, 0);
 		this->Window::Close();

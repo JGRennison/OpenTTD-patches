@@ -279,21 +279,21 @@ public:
 
 		size_t num_cargo = this->GetNumCargo();
 		for (size_t i = 0; i < num_cargo; i++) {
-			GoodsEntry *ge = &st->goods[i];
-			if (ge->data == nullptr) {
+			GoodsEntry &ge = st->goods[i];
+			if (ge.data == nullptr) {
 				if (spare_ged != nullptr) {
-					ge->data = std::move(spare_ged);
+					ge.data = std::move(spare_ged);
 				} else {
-					ge->data.reset(new GoodsEntryData());
+					ge.data.reset(new GoodsEntryData());
 				}
 			}
-			SlObject(ge, this->GetLoadDescription());
-			if (!IsSavegameVersionBefore(SLV_181)) ge->data->cargo.LoadSetReservedCount(_cargo_reserved_count);
+			SlObject(&ge, this->GetLoadDescription());
+			if (!IsSavegameVersionBefore(SLV_181)) ge.data->cargo.LoadSetReservedCount(_cargo_reserved_count);
 			if (IsSavegameVersionBefore(SLV_183)) {
-				SwapPackets(ge);
+				SwapPackets(&ge);
 			}
 			if (IsSavegameVersionBefore(SLV_68)) {
-				SB(ge->status, GoodsEntry::GES_ACCEPTANCE, 1, HasBit(_waiting_acceptance, 15));
+				SB(ge.status, GoodsEntry::GES_ACCEPTANCE, 1, HasBit(_waiting_acceptance, 15));
 				if (GB(_waiting_acceptance, 0, 12) != 0) {
 					/* In old versions, enroute_from used 0xFF as INVALID_STATION */
 					StationID source = (IsSavegameVersionBefore(SLV_7) && _cargo_source == 0xFF) ? INVALID_STATION : _cargo_source;
@@ -306,12 +306,12 @@ public:
 
 					/* Don't construct the packet with station here, because that'll fail with old savegames */
 					CargoPacket *cp = new CargoPacket(GB(_waiting_acceptance, 0, 12), _cargo_periods, source, _cargo_source_xy, _cargo_feeder_share);
-					ge->data->cargo.Append(cp, INVALID_STATION);
-					SB(ge->status, GoodsEntry::GES_RATING, 1, 1);
+					ge.data->cargo.Append(cp, INVALID_STATION);
+					SB(ge.status, GoodsEntry::GES_RATING, 1, 1);
 				}
 			}
-			if (ge->data->MayBeRemoved()) {
-				spare_ged = std::move(ge->data);
+			if (ge.data->MayBeRemoved()) {
+				spare_ged = std::move(ge.data);
 			}
 		}
 	}
@@ -320,15 +320,16 @@ public:
 	{
 		Station *st = Station::From(bst);
 
-		uint num_cargo = IsSavegameVersionBefore(SLV_55) ? 12 : IsSavegameVersionBefore(SLV_EXTEND_CARGOTYPES) ? 32 : NUM_CARGO;
-		for (CargoID i = 0; i < num_cargo; i++) {
-			GoodsEntry *ge = &st->goods[i];
+		size_t num_cargo = IsSavegameVersionBefore(SLV_55) ? 12 : IsSavegameVersionBefore(SLV_EXTEND_CARGOTYPES) ? 32 : NUM_CARGO;
+		auto end = std::next(std::begin(st->goods), std::min(num_cargo, std::size(st->goods)));
+		for (auto it = std::begin(st->goods); it != end; ++it) {
+			GoodsEntry &ge = *it;
 			if (IsSavegameVersionBefore(SLV_183)) {
-				SwapPackets(ge); // We have to swap back again to be in the format pre-183 expects.
-				SlObject(ge, this->GetDescription());
-				SwapPackets(ge);
+				SwapPackets(&ge); // We have to swap back again to be in the format pre-183 expects.
+				SlObject(&ge, this->GetDescription());
+				SwapPackets(&ge);
 			} else {
-				SlObject(ge, this->GetDescription());
+				SlObject(&ge, this->GetDescription());
 			}
 		}
 	}

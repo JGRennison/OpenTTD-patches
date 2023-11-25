@@ -328,8 +328,8 @@ static const NWidgetPart _nested_heightmap_load_widgets[] = {
 									NWidget(WWT_IMGBTN, COLOUR_ORANGE, WID_GL_START_DATE_UP), SetDataTip(SPR_ARROW_UP, STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD), SetFill(0, 1),
 								EndContainer(),
 								NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_GL_TOWNNAME_DROPDOWN), SetDataTip(STR_JUST_STRING, STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP), SetFill(1, 0),
-								NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_GL_TOWN_PULLDOWN), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
-								NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_GL_INDUSTRY_PULLDOWN), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+								NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_GL_TOWN_PULLDOWN), SetDataTip(STR_JUST_STRING1, STR_NULL), SetFill(1, 0),
+								NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_GL_INDUSTRY_PULLDOWN), SetDataTip(STR_JUST_STRING1, STR_NULL), SetFill(1, 0),
 							EndContainer(),
 						EndContainer(),
 					EndContainer(),
@@ -404,7 +404,7 @@ static DropDownList BuildMapsizeDropDown(int other_dimension)
 
 	for (uint i = MIN_MAP_SIZE_BITS; i <= MAX_MAP_SIZE_BITS; i++) {
 		SetDParam(0, 1LL << i);
-		list.emplace_back(new DropDownListStringItem((i + other_dimension > MAX_MAP_TILES_BITS) ? STR_RED_INT : STR_JUST_INT, i, false));
+		list.push_back(std::make_unique<DropDownListStringItem>((i + other_dimension > MAX_MAP_TILES_BITS) ? STR_RED_INT : STR_JUST_INT, i, false));
 	}
 
 	return list;
@@ -417,20 +417,20 @@ static DropDownList BuildTownNameDropDown()
 	/* Add and sort newgrf townnames generators */
 	const auto &grf_names = GetGRFTownNameList();
 	for (uint i = 0; i < grf_names.size(); i++) {
-		list.emplace_back(new DropDownListStringItem(grf_names[i], BUILTIN_TOWNNAME_GENERATOR_COUNT + i, false));
+		list.push_back(std::make_unique<DropDownListStringItem>(grf_names[i], BUILTIN_TOWNNAME_GENERATOR_COUNT + i, false));
 	}
 	std::sort(list.begin(), list.end(), DropDownListStringItem::NatSortFunc);
 
 	size_t newgrf_size = list.size();
 	/* Insert newgrf_names at the top of the list */
 	if (newgrf_size > 0) {
-		list.emplace_back(new DropDownListItem(-1, false)); // separator line
+		list.push_back(std::make_unique<DropDownListItem>(-1, false)); // separator line
 		newgrf_size++;
 	}
 
 	/* Add and sort original townnames generators */
 	for (uint i = 0; i < BUILTIN_TOWNNAME_GENERATOR_COUNT; i++) {
-		list.emplace_back(new DropDownListStringItem(STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH + i, i, false));
+		list.push_back(std::make_unique<DropDownListStringItem>(STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH + i, i, false));
 	}
 	std::sort(list.begin() + newgrf_size, list.end(), DropDownListStringItem::NatSortFunc);
 

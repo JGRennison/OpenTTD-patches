@@ -269,7 +269,7 @@ protected:
 public:
 	Window(WindowDesc *desc);
 
-	virtual void Close();
+	virtual void Close(int data = 0);
 	static void DeleteClosedWindows();
 
 	WindowDesc *window_desc;    ///< Window description
@@ -1003,7 +1003,7 @@ public:
 		this->parent = parent;
 	}
 
-	void Close() override;
+	void Close([[maybe_unused]] int data = 0) override;
 };
 
 Window *BringWindowToFrontById(WindowClass cls, WindowNumber number);

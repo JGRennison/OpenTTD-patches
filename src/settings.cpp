@@ -192,12 +192,11 @@ static bool DecodeHexText(const char *pos, uint8 *dest, size_t dest_size);
  */
 class ConfigIniFile : public IniFile {
 private:
-	inline static const char * const list_group_names[] = {
+	inline static const IniGroupNameList list_group_names = {
 		"bans",
 		"newgrf",
 		"servers",
 		"server_bind_addresses",
-		nullptr,
 	};
 
 public:
@@ -685,16 +684,14 @@ static const char *GetSettingConfigName(const SettingDesc &sd)
  */
 static void IniLoadSettings(IniFile &ini, const SettingTable &settings_table, const char *grpname, void *object, bool only_startup)
 {
-	IniGroup *group;
-	IniGroup *group_def = ini.GetGroup(grpname);
+	const IniGroup *group;
+	const IniGroup *group_def = ini.GetGroup(grpname);
 
 	for (auto &sd : settings_table) {
 		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		if (sd->startup != only_startup) continue;
-		IniItem *item;
-		if (sd->flags & SF_NO_NEWGAME) {
-			item = nullptr;
-		} else {
+		const IniItem *item = nullptr;
+		if (!(sd->flags & SF_NO_NEWGAME)) {
 			/* For settings.xx.yy load the settings from [xx] yy = ? */
 			std::string s{ GetSettingConfigName(*sd) };
 			auto sc = s.find('.');
@@ -705,8 +702,8 @@ static void IniLoadSettings(IniFile &ini, const SettingTable &settings_table, co
 				group = group_def;
 			}
 
-			item = group->GetItem(s);
-			if (item == nullptr && group != group_def) {
+			if (group != nullptr) item = group->GetItem(s);
+			if (item == nullptr && group != group_def && group_def != nullptr) {
 				/* For settings.xx.yy load the settings from [settings] yy = ? in case the previous
 				 * did not exist (e.g. loading old config files with a [settings] section */
 				item = group_def->GetItem(s);
@@ -788,10 +785,10 @@ static void IniSaveSettings(IniFile &ini, const SettingTable &settings_table, co
 		std::string s{ GetSettingConfigName(*sd) };
 		auto sc = s.find('.');
 		if (sc != std::string::npos) {
-			group = ini.GetGroup(s.substr(0, sc));
+			group = &ini.GetOrCreateGroup(s.substr(0, sc));
 			s = s.substr(sc + 1);
 		} else {
-			if (group_def == nullptr) group_def = ini.GetGroup(grpname);
+			if (group_def == nullptr) group_def = &ini.GetOrCreateGroup(grpname);
 			group = group_def;
 		}
 
@@ -876,14 +873,14 @@ bool ListSettingDesc::IsSameValue(const IniItem *item, void *object) const
  */
 static void IniLoadSettingList(IniFile &ini, const char *grpname, StringList &list)
 {
-	IniGroup *group = ini.GetGroup(grpname);
+	const IniGroup *group = ini.GetGroup(grpname);
 
 	if (group == nullptr) return;
 
 	list.clear();
 
-	for (const IniItem *item = group->item; item != nullptr; item = item->next) {
-		if (!item->name.empty()) list.push_back(item->name);
+	for (const IniItem &item : group->items) {
+		if (!item.name.empty()) list.push_back(item.name);
 	}
 }
 
@@ -898,13 +895,11 @@ static void IniLoadSettingList(IniFile &ini, const char *grpname, StringList &li
  */
 static void IniSaveSettingList(IniFile &ini, const char *grpname, StringList &list)
 {
-	IniGroup *group = ini.GetGroup(grpname);
-
-	if (group == nullptr) return;
-	group->Clear();
+	IniGroup &group = ini.GetOrCreateGroup(grpname);
+	group.Clear();
 
 	for (const auto &iter : list) {
-		group->GetOrCreateItem(iter.c_str()).SetValue("");
+		group.GetOrCreateItem(iter).SetValue("");
 	}
 }
 
@@ -2013,10 +2008,9 @@ static void HandleOldDiffCustom(bool savegame)
 	}
 }
 
-static void AILoadConfig(IniFile &ini, const char *grpname)
+static void AILoadConfig(const IniFile &ini, const char *grpname)
 {
-	IniGroup *group = ini.GetGroup(grpname);
-	IniItem *item;
+	const IniGroup *group = ini.GetGroup(grpname);
 
 	/* Clean any configured AI */
 	for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; c++) {
@@ -2027,44 +2021,42 @@ static void AILoadConfig(IniFile &ini, const char *grpname)
 	if (group == nullptr) return;
 
 	CompanyID c = COMPANY_FIRST;
-	for (item = group->item; c < MAX_COMPANIES && item != nullptr; c++, item = item->next) {
+	for (const IniItem &item : group->items) {
 		AIConfig *config = AIConfig::GetConfig(c, AIConfig::SSS_FORCE_NEWGAME);
 
-		config->Change(item->name);
+		config->Change(item.name);
 		if (!config->HasScript()) {
-			if (item->name != "none") {
-				DEBUG(script, 0, "The AI by the name '%s' was no longer found, and removed from the list.", item->name.c_str());
+			if (item.name != "none") {
+				DEBUG(script, 0, "The AI by the name '%s' was no longer found, and removed from the list.", item.name.c_str());
 				continue;
 			}
 		}
-		if (item->value.has_value()) config->StringToSettings(item->value->c_str());
+		if (item.value.has_value()) config->StringToSettings(*item.value);
 	}
 }
 
-static void GameLoadConfig(IniFile &ini, const char *grpname)
+static void GameLoadConfig(const IniFile &ini, const char *grpname)
 {
-	IniGroup *group = ini.GetGroup(grpname);
-	IniItem *item;
+	const IniGroup *group = ini.GetGroup(grpname);
 
 	/* Clean any configured GameScript */
 	GameConfig::GetConfig(GameConfig::SSS_FORCE_NEWGAME)->Change(std::nullopt);
 
 	/* If no group exists, return */
-	if (group == nullptr) return;
+	if (group == nullptr || group->items.empty()) return;
 
-	item = group->item;
-	if (item == nullptr) return;
+	const IniItem &item = group->items.front();
 
 	GameConfig *config = GameConfig::GetConfig(AIConfig::SSS_FORCE_NEWGAME);
 
-	config->Change(item->name);
+	config->Change(item.name);
 	if (!config->HasScript()) {
-		if (item->name != "none") {
-			DEBUG(script, 0, "The GameScript by the name '%s' was no longer found, and removed from the list.", item->name.c_str());
+		if (item.name != "none") {
+			DEBUG(script, 0, "The GameScript by the name '%s' was no longer found, and removed from the list.", item.name.c_str());
 			return;
 		}
 	}
-	if (item->value.has_value()) config->StringToSettings(item->value->c_str());
+	if (item.value.has_value()) config->StringToSettings(*item.value);
 }
 
 /**
@@ -2107,22 +2099,21 @@ static bool DecodeHexText(const char *pos, uint8 *dest, size_t dest_size)
  * @param grpname   Group name containing the configuration of the GRF.
  * @param is_static GRF is static.
  */
-static GRFConfig *GRFLoadConfig(IniFile &ini, const char *grpname, bool is_static)
+static GRFConfig *GRFLoadConfig(const IniFile &ini, const char *grpname, bool is_static)
 {
-	IniGroup *group = ini.GetGroup(grpname);
-	IniItem *item;
+	const IniGroup *group = ini.GetGroup(grpname);
 	GRFConfig *first = nullptr;
 	GRFConfig **curr = &first;
 
 	if (group == nullptr) return nullptr;
 
 	uint num_grfs = 0;
-	for (item = group->item; item != nullptr; item = item->next) {
+	for (const IniItem &item : group->items) {
 		GRFConfig *c = nullptr;
 
 		uint8 grfid_buf[4];
 		MD5Hash md5sum;
-		const char *filename = item->name.c_str();
+		const char *filename = item.name.c_str();
 		bool has_grfid = false;
 		bool has_md5sum = false;
 
@@ -2146,8 +2137,8 @@ static GRFConfig *GRFLoadConfig(IniFile &ini, const char *grpname, bool is_stati
 		if (c == nullptr) c = new GRFConfig(filename);
 
 		/* Parse parameters */
-		if (item->value.has_value() && !item->value->empty()) {
-			int count = ParseIntList(item->value->c_str(), c->param.data(), c->param.size());
+		if (item.value.has_value() && !item.value->empty()) {
+			int count = ParseIntList(item.value->c_str(), c->param.data(), c->param.size());
 			if (count < 0) {
 				SetDParamStr(0, filename);
 				ShowErrorMessage(STR_CONFIG_ERROR, STR_CONFIG_ERROR_ARRAY, WL_CRITICAL);
@@ -2170,7 +2161,7 @@ static GRFConfig *GRFLoadConfig(IniFile &ini, const char *grpname, bool is_stati
 				SetDParam(1, STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN);
 			}
 
-			SetDParamStr(0, StrEmpty(filename) ? item->name.c_str() : filename);
+			SetDParamStr(0, StrEmpty(filename) ? item.name.c_str() : filename);
 			ShowErrorMessage(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_GRF, WL_CRITICAL);
 			delete c;
 			continue;
@@ -2209,9 +2200,10 @@ static GRFConfig *GRFLoadConfig(IniFile &ini, const char *grpname, bool is_stati
 	return first;
 }
 
-static IniFileVersion LoadVersionFromConfig(IniFile &ini)
+static IniFileVersion LoadVersionFromConfig(const IniFile &ini)
 {
-	IniGroup *group = ini.GetGroup("version");
+	const IniGroup *group = ini.GetGroup("version");
+	if (group == nullptr) return IFV_0;
 
 	auto version_number = group->GetItem("ini_version");
 	/* Older ini-file versions don't have this key yet. */
@@ -2225,10 +2217,8 @@ static IniFileVersion LoadVersionFromConfig(IniFile &ini)
 
 static void AISaveConfig(IniFile &ini, const char *grpname)
 {
-	IniGroup *group = ini.GetGroup(grpname);
-
-	if (group == nullptr) return;
-	group->Clear();
+	IniGroup &group = ini.GetOrCreateGroup(grpname);
+	group.Clear();
 
 	for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; c++) {
 		AIConfig *config = AIConfig::GetConfig(c, AIConfig::SSS_FORCE_NEWGAME);
@@ -2241,17 +2231,14 @@ static void AISaveConfig(IniFile &ini, const char *grpname)
 			name = "none";
 		}
 
-		IniItem *item = new IniItem(group, name);
-		item->SetValue(value);
+		group.CreateItem(name).SetValue(value);
 	}
 }
 
 static void GameSaveConfig(IniFile &ini, const char *grpname)
 {
-	IniGroup *group = ini.GetGroup(grpname);
-
-	if (group == nullptr) return;
-	group->Clear();
+	IniGroup &group = ini.GetOrCreateGroup(grpname);
+	group.Clear();
 
 	GameConfig *config = GameConfig::GetConfig(AIConfig::SSS_FORCE_NEWGAME);
 	std::string name;
@@ -2263,8 +2250,7 @@ static void GameSaveConfig(IniFile &ini, const char *grpname)
 		name = "none";
 	}
 
-	IniItem *item = new IniItem(group, name);
-	item->SetValue(value);
+	group.CreateItem(name).SetValue(value);
 }
 
 /**
@@ -2273,17 +2259,17 @@ static void GameSaveConfig(IniFile &ini, const char *grpname)
  */
 static void SaveVersionInConfig(IniFile &ini)
 {
-	IniGroup *group = ini.GetGroup("version");
-	group->GetOrCreateItem("version_string").SetValue(_openttd_revision);
-	group->GetOrCreateItem("version_number").SetValue(stdstr_fmt("%08X", _openttd_newgrf_version));
-	group->GetOrCreateItem("ini_version").SetValue(std::to_string(INIFILE_VERSION));
+	IniGroup &group = ini.GetOrCreateGroup("version");
+	group.GetOrCreateItem("version_string").SetValue(_openttd_revision);
+	group.GetOrCreateItem("version_number").SetValue(stdstr_fmt("%08X", _openttd_newgrf_version));
+	group.GetOrCreateItem("ini_version").SetValue(std::to_string(INIFILE_VERSION));
 }
 
 /* Save a GRF configuration to the given group name */
 static void GRFSaveConfig(IniFile &ini, const char *grpname, const GRFConfig *list)
 {
-	ini.RemoveGroup(grpname);
-	IniGroup *group = ini.GetGroup(grpname);
+	IniGroup &group = ini.GetOrCreateGroup(grpname);
+	group.Clear();
 	const GRFConfig *c;
 
 	for (c = list; c != nullptr; c = c->next) {
@@ -2292,7 +2278,7 @@ static void GRFSaveConfig(IniFile &ini, const char *grpname, const GRFConfig *li
 		char *pos = key + seprintf(key, lastof(key), "%08X|", BSWAP32(c->ident.grfid));
 		pos = md5sumToString(pos, lastof(key), c->ident.md5sum);
 		seprintf(pos, lastof(key), "|%s", c->filename.c_str());
-		group->GetOrCreateItem(key).SetValue(GRFBuildParamList(c));
+		group.GetOrCreateItem(key).SetValue(GRFBuildParamList(c));
 	}
 }
 
@@ -2353,6 +2339,7 @@ static void RemoveEntriesFromIni(IniFile &ini, const SettingTable &table)
 		if (sc == std::string::npos) continue;
 
 		IniGroup *group = ini.GetGroup(s.substr(0, sc));
+		if (group == nullptr) continue;
 		s = s.substr(sc + 1);
 
 		group->RemoveItem(s);
@@ -2382,16 +2369,16 @@ static void RemoveEntriesFromIni(IniFile &ini, const SettingTable &table)
  * @param[out] old_item The old item to base upgrading on.
  * @return Whether upgrading should happen; if false, old_item is a nullptr.
  */
-bool IsConversionNeeded(ConfigIniFile &ini, std::string group, std::string old_var, std::string new_var, IniItem **old_item)
+bool IsConversionNeeded(const ConfigIniFile &ini, const std::string &group, const std::string &old_var, const std::string &new_var, const IniItem **old_item)
 {
 	*old_item = nullptr;
 
-	IniGroup *igroup = ini.GetGroup(group, false);
+	const IniGroup *igroup = ini.GetGroup(group);
 	/* If the group doesn't exist, there is nothing to convert. */
 	if (igroup == nullptr) return false;
 
-	IniItem *tmp_old_item = igroup->GetItem(old_var);
-	IniItem *new_item = igroup->GetItem(new_var);
+	const IniItem *tmp_old_item = igroup->GetItem(old_var);
+	const IniItem *new_item = igroup->GetItem(new_var);
 
 	/* If the old item doesn't exist, there is nothing to convert. */
 	if (tmp_old_item == nullptr) return false;
@@ -2442,9 +2429,9 @@ void LoadFromConfig(bool startup)
 
 		/* Move no_http_content_downloads and use_relay_service from generic_ini to private_ini. */
 		if (generic_version < IFV_NETWORK_PRIVATE_SETTINGS) {
-			IniGroup *network = generic_ini.GetGroup("network", false);
+			const IniGroup *network = generic_ini.GetGroup("network");
 			if (network != nullptr) {
-				IniItem *no_http_content_downloads = network->GetItem("no_http_content_downloads");
+				const IniItem *no_http_content_downloads = network->GetItem("no_http_content_downloads");
 				if (no_http_content_downloads != nullptr) {
 					if (no_http_content_downloads->value == "true") {
 						_settings_client.network.no_http_content_downloads = true;
@@ -2453,7 +2440,7 @@ void LoadFromConfig(bool startup)
 					}
 				}
 
-				IniItem *use_relay_service = network->GetItem("use_relay_service");
+				const IniItem *use_relay_service = network->GetItem("use_relay_service");
 				if (use_relay_service != nullptr) {
 					if (use_relay_service->value == "never") {
 						_settings_client.network.use_relay_service = UseRelayService::URS_NEVER;
@@ -2466,7 +2453,7 @@ void LoadFromConfig(bool startup)
 			}
 		}
 
-		IniItem *old_item;
+		const IniItem *old_item;
 
 		if (generic_version < IFV_GAME_TYPE && IsConversionNeeded(generic_ini, "network", "server_advertise", "server_game_type", &old_item)) {
 			auto old_value = BoolSettingDesc::ParseSingleValue(old_item->value->c_str());
@@ -2484,14 +2471,14 @@ void LoadFromConfig(bool startup)
 				case 3: _settings_client.gui.autosave_interval = 60; break;
 				case 4: _settings_client.gui.autosave_interval = 120; break;
 				case 5: {
-					IniItem *old_autosave_custom_days;
+					const IniItem *old_autosave_custom_days;
 					if (IsConversionNeeded(generic_ini, "gui", "autosave_custom_days", "autosave_interval", &old_autosave_custom_days)) {
 						_settings_client.gui.autosave_interval = (std::strtoul(old_autosave_custom_days->value->c_str(), nullptr, 10) + 2) / 3;
 					}
 					break;
 				}
 				case 6: {
-					IniItem *old_autosave_custom_minutes;
+					const IniItem *old_autosave_custom_minutes;
 					if (IsConversionNeeded(generic_ini, "gui", "autosave_custom_minutes", "autosave_interval", &old_autosave_custom_minutes)) {
 						_settings_client.gui.autosave_interval = std::strtoul(old_autosave_custom_minutes->value->c_str(), nullptr, 10);
 					}
@@ -2542,7 +2529,7 @@ void SaveToConfig(SaveToConfigFlags flags)
 		 * just so we can add a comment before it (that is how IniFile works).
 		 * This to explain what the file is about. After doing it once, never touch
 		 * it again, as otherwise we might be reverting user changes. */
-		if (!private_ini.GetGroup("private", false)) private_ini.GetGroup("private")->comment = "; This file possibly contains private information which can identify you as person.\n";
+		if (IniGroup *group = private_ini.GetGroup("private"); group != nullptr) group->comment = "; This file possibly contains private information which can identify you as person.\n";
 
 		HandlePrivateSettingDescs(private_ini, IniSaveSettings, IniSaveSettingList);
 		SaveVersionInConfig(private_ini);
@@ -2556,7 +2543,7 @@ void SaveToConfig(SaveToConfigFlags flags)
 		 * just so we can add a comment before it (that is how IniFile works).
 		 * This to explain what the file is about. After doing it once, never touch
 		 * it again, as otherwise we might be reverting user changes. */
-		if (!secrets_ini.GetGroup("secrets", false)) secrets_ini.GetGroup("secrets")->comment = "; Do not share this file with others, not even if they claim to be technical support.\n; This file contains saved passwords and other secrets that should remain private to you!\n";
+		if (IniGroup *group = secrets_ini.GetGroup("secrets"); group != nullptr) group->comment = "; Do not share this file with others, not even if they claim to be technical support.\n; This file contains saved passwords and other secrets that should remain private to you!\n";
 
 		HandleSecretsSettingDescs(secrets_ini, IniSaveSettings, IniSaveSettingList);
 		SaveVersionInConfig(secrets_ini);
@@ -2593,7 +2580,7 @@ void SaveToConfig(SaveToConfigFlags flags)
 
 	/* These variables are migrated from generic ini to private ini now. */
 	if (generic_version < IFV_NETWORK_PRIVATE_SETTINGS) {
-		IniGroup *network = generic_ini.GetGroup("network", false);
+		IniGroup *network = generic_ini.GetGroup("network");
 		if (network != nullptr) {
 			network->RemoveItem("no_http_content_downloads");
 			network->RemoveItem("use_relay_service");
@@ -2620,9 +2607,9 @@ StringList GetGRFPresetList()
 	StringList list;
 
 	ConfigIniFile ini(_config_file);
-	for (IniGroup *group = ini.group; group != nullptr; group = group->next) {
-		if (group->name.compare(0, 7, "preset-") == 0) {
-			list.push_back(group->name.substr(7));
+	for (const IniGroup &group : ini.groups) {
+		if (group.name.compare(0, 7, "preset-") == 0) {
+			list.push_back(group.name.substr(7));
 		}
 	}
 

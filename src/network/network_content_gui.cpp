@@ -109,7 +109,7 @@ BaseNetworkContentDownloadStatusWindow::BaseNetworkContentDownloadStatusWindow(W
 	this->InitNested(WN_NETWORK_STATUS_WINDOW_CONTENT_DOWNLOAD);
 }
 
-void BaseNetworkContentDownloadStatusWindow::Close()
+void BaseNetworkContentDownloadStatusWindow::Close([[maybe_unused]] int data)
 {
 	_network_content_client.RemoveCallback(this);
 	this->Window::Close();
@@ -201,7 +201,7 @@ public:
 		this->parent = FindWindowById(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_CONTENT_LIST);
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		TarScanner::Mode mode = TarScanner::NONE;
 		for (auto ctype : this->receivedTypes) {
@@ -574,7 +574,7 @@ public:
 		this->InvalidateData();
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		_network_content_client.RemoveCallback(this);
 		this->Window::Close();
@@ -828,7 +828,7 @@ public:
 			case WID_NCL_NAME:
 				if (this->content.SortType() == widget - WID_NCL_CHECKBOX) {
 					this->content.ToggleSortOrder();
-					if (this->content.size() > 0) this->list_pos = (int)this->content.size() - this->list_pos - 1;
+					if (!this->content.empty()) this->list_pos = (int)this->content.size() - this->list_pos - 1;
 				} else {
 					this->content.SetSortType(widget - WID_NCL_CHECKBOX);
 					this->content.ForceResort();
@@ -903,7 +903,7 @@ public:
 			}
 		}
 
-		if (this->content.size() == 0) {
+		if (this->content.empty()) {
 			if (this->UpdateFilterState()) {
 				this->content.ForceRebuild();
 				this->InvalidateData();

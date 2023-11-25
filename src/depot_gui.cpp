@@ -296,7 +296,7 @@ struct DepotWindow : Window {
 		OrderBackup::Reset();
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		CloseWindowById(WC_BUILD_VEHICLE, this->window_number);
 		CloseWindowById(GetWindowClassForVehicleType(this->type), VehicleListIdentifier(VL_DEPOT_LIST, this->type, this->owner, this->GetDepotIndex()).Pack(), false);
@@ -812,7 +812,7 @@ struct DepotWindow : Window {
 
 			case WID_D_SELL_ALL:
 				/* Only open the confirmation window if there are anything to sell */
-				if (this->vehicle_list.size() != 0 || this->wagon_list.size() != 0) {
+				if (!this->vehicle_list.empty() || !this->wagon_list.empty()) {
 					SetDParam(0, this->type);
 					SetDParam(1, this->GetDepotIndex());
 					ShowQuery(
@@ -877,7 +877,8 @@ struct DepotWindow : Window {
 		/* Build tooltipstring */
 		std::string details;
 
-		for (CargoID cargo_type = 0; cargo_type < NUM_CARGO; cargo_type++) {
+		for (const CargoSpec *cs : _sorted_cargo_specs) {
+			CargoID cargo_type = cs->Index();
 			if (capacity[cargo_type] == 0) continue;
 
 			SetDParam(0, cargo_type);           // {CARGO} #1

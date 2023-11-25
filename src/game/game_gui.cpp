@@ -111,7 +111,7 @@ struct GSConfigWindow : public Window {
 		this->RebuildVisibleSettings();
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		HideDropDownMenu(this);
 		CloseWindowByClass(WC_SCRIPT_LIST);
@@ -318,7 +318,7 @@ struct GSConfigWindow : public Window {
 
 							DropDownList list;
 							for (int i = config_item.min_value; i <= config_item.max_value; i++) {
-								list.emplace_back(new DropDownListStringItem(config_item.labels.find(i)->second, i, false));
+								list.push_back(std::make_unique<DropDownListStringItem>(config_item.labels.find(i)->second, i, false));
 							}
 
 							ShowDropDownListAt(this, std::move(list), old_val, WID_GSC_SETTING_DROPDOWN, wi_rect, COLOUR_ORANGE);

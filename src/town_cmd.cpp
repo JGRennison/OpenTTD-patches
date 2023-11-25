@@ -1561,6 +1561,15 @@ static bool TownCanGrowRoad(TileIndex tile)
 }
 
 /**
+ * Check if the town is allowed to build roads.
+ * @return true If the town is allowed to build roads.
+ */
+static inline bool TownAllowedToBuildRoads(const Town *t)
+{
+	return t->GetAllowBuildRoads() || _generating_world || _game_mode == GM_EDITOR;
+}
+
+/**
  * Grows the given town.
  * There are at the moment 3 possible way's for
  * the town expansion:
@@ -1589,7 +1598,7 @@ static void GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, DiagDirection t
 		 * to say that this is the last iteration. */
 		_grow_town_result = GROWTH_SEARCH_STOPPED;
 
-		if (!t1->GetAllowBuildRoads() && !_generating_world) return;
+		if (!TownAllowedToBuildRoads(t1)) return;
 		if (!t1->GetAllowBuildLevelCrossings() && IsTileType(tile, MP_RAILWAY)) return;
 		if (!MayTownModifyRoad(tile)) return;
 
@@ -1674,7 +1683,7 @@ static void GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, DiagDirection t
 		 * the fitting RoadBits */
 		_grow_town_result = GROWTH_SEARCH_STOPPED;
 
-		if (!t1->GetAllowBuildRoads() && !_generating_world) return;
+		if (!TownAllowedToBuildRoads(t1)) return;
 
 		switch (t1->layout) {
 			default: NOT_REACHED();
@@ -1767,7 +1776,7 @@ static void GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, DiagDirection t
 
 		if (!IsValidTile(house_tile)) return;
 
-		if (target_dir != DIAGDIR_END && (t1->GetAllowBuildRoads() || _generating_world)) {
+		if (target_dir != DIAGDIR_END && TownAllowedToBuildRoads(t1)) {
 			switch (t1->layout) {
 				default: NOT_REACHED();
 
@@ -1846,7 +1855,7 @@ static bool CanFollowRoad(const Town *t, TileIndex tile, DiagDirection dir)
 	if (HasTileWaterGround(target_tile)) return false;
 
 	RoadBits target_rb = GetTownRoadBits(target_tile);
-	if (t->GetAllowBuildRoads() || _generating_world) {
+	if (TownAllowedToBuildRoads(t)) {
 		/* Check whether a road connection exists or can be build. */
 		switch (GetTileType(target_tile)) {
 			case MP_ROAD:
@@ -2025,7 +2034,7 @@ static bool GrowTown(Town *t)
 
 	/* No road available, try to build a random road block by
 	 * clearing some land and then building a road there. */
-	if (t->GetAllowBuildRoads() || _generating_world) {
+	if (TownAllowedToBuildRoads(t)) {
 		tile = t->xy;
 		for (ptr = _town_coord_mod; ptr != endof(_town_coord_mod); ++ptr) {
 			/* Only work with plain land that not already has a house */
@@ -2840,7 +2849,7 @@ static inline CommandCost IsAnotherHouseTypeAllowedInTown(Town *t, HouseID house
 static inline bool TownLayoutAllowsHouseHere(Town *t, const TileArea &ta)
 {
 	/* Allow towns everywhere when we don't build roads */
-	if (!t->GetAllowBuildRoads() && !_generating_world) return true;
+	if (!TownAllowedToBuildRoads(t)) return true;
 
 	TileIndexDiffC grid_pos = TileIndexToTileIndexDiffC(t->xy, ta.tile);
 
@@ -3729,7 +3738,7 @@ static CommandCost TownActionBribe(Town *t, DoCommandFlag flags)
 			/* set all close by station ratings to 0 */
 			for (Station *st : Station::Iterate()) {
 				if (st->town == t && st->owner == _current_company) {
-					for (CargoID i = 0; i < NUM_CARGO; i++) st->goods[i].rating = 0;
+					for (GoodsEntry &ge : st->goods) ge.rating = 0;
 				}
 			}
 
@@ -4139,8 +4148,8 @@ static void UpdateTownGrowth(Town *t)
 
 static void UpdateTownAmounts(Town *t)
 {
-	for (CargoID i = 0; i < NUM_CARGO; i++) t->supplied[i].NewMonth();
-	for (int i = TE_BEGIN; i < TE_END; i++) t->received[i].NewMonth();
+	for (auto &supplied : t->supplied) supplied.NewMonth();
+	for (auto &received : t->received) received.NewMonth();
 	if (t->fund_buildings_months != 0) t->fund_buildings_months--;
 
 	SetWindowDirty(WC_TOWN_VIEW, t->index);

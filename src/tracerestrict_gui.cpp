@@ -1797,7 +1797,7 @@ public:
 		this->ReloadProgramme();
 	}
 
-	void Close() override
+	void Close(int data = 0) override
 	{
 		extern const TraceRestrictProgram *_viewport_highlight_tracerestrict_program;
 		if (_viewport_highlight_tracerestrict_program != nullptr) {
@@ -3865,7 +3865,7 @@ public:
 		this->owner = vli.company;
 	}
 
-	void Close() override
+	void Close(int data = 0) override
 	{
 		*this->sorting = this->vehgroups.GetListing();
 		this->Window::Close();

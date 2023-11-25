@@ -1639,7 +1639,7 @@ public:
 		this->industry_editbox.cancel_button = QueryString::ACTION_CLEAR;
 	}
 
-	void Close() override
+	void Close(int data = 0) override
 	{
 		this->last_sorting = this->industries.GetListing();
 		this->Window::Close();
@@ -1677,7 +1677,7 @@ public:
 			case WID_ID_INDUSTRY_LIST: {
 				int n = 0;
 				Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
-				if (this->industries.size() == 0) {
+				if (this->industries.empty()) {
 					DrawString(ir, STR_INDUSTRY_DIRECTORY_NONE);
 					break;
 				}
@@ -1932,11 +1932,6 @@ enum CargoesFieldType {
 
 static const uint MAX_CARGOES = 16; ///< Maximum number of cargoes carried in a #CFT_CARGO field in #CargoesField.
 
-static bool CargoIDSorter(const CargoID &a, const CargoID &b)
-{
-	return _sorted_cargo_types[a] < _sorted_cargo_types[b];
-}
-
 /** Data about a single field in the #IndustryCargoesWindow panel. */
 struct CargoesField {
 	static int vert_inter_industry_space;
@@ -2066,7 +2061,8 @@ struct CargoesField {
 			}
 		}
 		this->u.cargo.num_cargoes = (count < 0) ? static_cast<uint8_t>(insert - std::begin(this->u.cargo.vertical_cargoes)) : count;
-		std::sort(std::begin(this->u.cargo.vertical_cargoes), insert, &CargoIDSorter);
+		CargoIDComparator comparator;
+		std::sort(std::begin(this->u.cargo.vertical_cargoes), insert, comparator);
 		std::fill(insert, std::end(this->u.cargo.vertical_cargoes), CT_INVALID);
 		this->u.cargo.top_end = top_end;
 		this->u.cargo.bottom_end = bottom_end;
@@ -2582,8 +2578,7 @@ struct IndustryCargoesWindow : public Window {
 		/* Compute max size of the cargo texts. */
 		this->cargo_textsize.width = 0;
 		this->cargo_textsize.height = 0;
-		for (uint i = 0; i < NUM_CARGO; i++) {
-			const CargoSpec *csp = CargoSpec::Get(i);
+		for (const CargoSpec *csp : CargoSpec::Iterate()) {
 			if (!csp->IsValid()) continue;
 			this->cargo_textsize = maxdim(this->cargo_textsize, GetStringBoundingBox(csp->name));
 		}
@@ -3107,7 +3102,7 @@ struct IndustryCargoesWindow : public Window {
 			case WID_IC_CARGO_DROPDOWN: {
 				DropDownList lst;
 				for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
-					lst.emplace_back(new DropDownListStringItem(cs->name, cs->Index(), false));
+					lst.push_back(std::make_unique<DropDownListStringItem>(cs->name, cs->Index(), false));
 				}
 				if (!lst.empty()) {
 					int selected = (this->ind_cargo >= NUM_INDUSTRYTYPES) ? (int)(this->ind_cargo - NUM_INDUSTRYTYPES) : -1;
@@ -3121,7 +3116,7 @@ struct IndustryCargoesWindow : public Window {
 				for (IndustryType ind : _sorted_industry_types) {
 					const IndustrySpec *indsp = GetIndustrySpec(ind);
 					if (!indsp->enabled) continue;
-					lst.emplace_back(new DropDownListStringItem(indsp->name, ind, false));
+					lst.push_back(std::make_unique<DropDownListStringItem>(indsp->name, ind, false));
 				}
 				if (!lst.empty()) {
 					int selected = (this->ind_cargo < NUM_INDUSTRYTYPES) ? (int)this->ind_cargo : -1;

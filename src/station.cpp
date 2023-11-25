@@ -94,8 +94,8 @@ Station::Station(TileIndex tile) :
 Station::~Station()
 {
 	if (CleaningPool()) {
-		for (CargoID c = 0; c < NUM_CARGO; c++) {
-			if (this->goods[c].data != nullptr) this->goods[c].data->cargo.OnCleanPool();
+		for (GoodsEntry &ge : this->goods) {
+			if (ge.data != nullptr) ge.data->cargo.OnCleanPool();
 		}
 		return;
 	}
@@ -163,8 +163,8 @@ Station::~Station()
 	/* Remove all news items */
 	DeleteStationNews(this->index);
 
-	for (CargoID c = 0; c < NUM_CARGO; c++) {
-		if (this->goods[c].data != nullptr) this->goods[c].data->cargo.Truncate();
+	for (GoodsEntry &ge : this->goods) {
+		if (ge.data != nullptr) ge.data->cargo.Truncate();
 	}
 
 	CargoPacket::InvalidateAllFrom(this->index);
@@ -269,7 +269,7 @@ void Station::MarkTilesDirty(bool cargo_change) const
 		/* Don't waste time updating if there are no custom station graphics
 		 * that might change. Even if there are custom graphics, they might
 		 * not change. Unfortunately we have no way of telling. */
-		if (this->speclist.size() == 0) return;
+		if (this->speclist.empty()) return;
 	}
 
 	for (h = 0; h < train_station.h; h++) {

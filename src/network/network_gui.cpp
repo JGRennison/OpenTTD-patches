@@ -76,9 +76,9 @@ static DropDownList BuildVisibilityDropDownList()
 {
 	DropDownList list;
 
-	list.emplace_back(new DropDownListStringItem(STR_NETWORK_SERVER_VISIBILITY_LOCAL, SERVER_GAME_TYPE_LOCAL, false));
-	list.emplace_back(new DropDownListStringItem(STR_NETWORK_SERVER_VISIBILITY_INVITE_ONLY, SERVER_GAME_TYPE_INVITE_ONLY, false));
-	list.emplace_back(new DropDownListStringItem(STR_NETWORK_SERVER_VISIBILITY_PUBLIC, SERVER_GAME_TYPE_PUBLIC, false));
+	list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_SERVER_VISIBILITY_LOCAL, SERVER_GAME_TYPE_LOCAL, false));
+	list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_SERVER_VISIBILITY_INVITE_ONLY, SERVER_GAME_TYPE_INVITE_ONLY, false));
+	list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_SERVER_VISIBILITY_PUBLIC, SERVER_GAME_TYPE_PUBLIC, false));
 
 	return list;
 }
@@ -154,7 +154,7 @@ public:
 		NWidgetBase *child_wid = this->head->next;
 		/* The first and last widget are always visible, determine which other should be visible */
 		for (uint i = 1; i < lengthof(this->visible) - 1; i++) {
-			if (given_width > MINIMUM_NAME_WIDTH_BEFORE_NEW_HEADER + child_wid->smallest_x && this->visible[i - 1]) {
+			if (given_width > ScaleGUITrad(MINIMUM_NAME_WIDTH_BEFORE_NEW_HEADER) + child_wid->smallest_x && this->visible[i - 1]) {
 				this->visible[i] = true;
 				given_width -= child_wid->smallest_x;
 			} else {
@@ -523,7 +523,7 @@ public:
 		this->servers.ForceRebuild();
 	}
 
-	void Close() override
+	void Close(int data = 0) override
 	{
 		this->last_sorting = this->servers.GetListing();
 		this->Window::Close();
@@ -1567,8 +1567,8 @@ private:
 	static void OnClickClientAdmin([[maybe_unused]] NetworkClientListWindow *w, [[maybe_unused]] Point pt, ClientID client_id)
 	{
 		DropDownList list;
-		list.emplace_back(new DropDownListStringItem(STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK, DD_CLIENT_ADMIN_KICK, false));
-		list.emplace_back(new DropDownListStringItem(STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN, DD_CLIENT_ADMIN_BAN, false));
+		list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK, DD_CLIENT_ADMIN_KICK, false));
+		list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN, DD_CLIENT_ADMIN_BAN, false));
 
 		Rect wi_rect;
 		wi_rect.left   = pt.x;
@@ -1589,8 +1589,8 @@ private:
 	static void OnClickCompanyAdmin([[maybe_unused]] NetworkClientListWindow *w, [[maybe_unused]] Point pt, CompanyID company_id)
 	{
 		DropDownList list;
-		list.emplace_back(new DropDownListStringItem(STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_RESET, DD_COMPANY_ADMIN_RESET, NetworkCompanyHasClients(company_id)));
-		list.emplace_back(new DropDownListStringItem(STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK, DD_COMPANY_ADMIN_UNLOCK, !NetworkCompanyIsPassworded(company_id)));
+		list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_RESET, DD_COMPANY_ADMIN_RESET, NetworkCompanyHasClients(company_id)));
+		list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK, DD_COMPANY_ADMIN_UNLOCK, !NetworkCompanyIsPassworded(company_id)));
 
 		Rect wi_rect;
 		wi_rect.left   = pt.x;
@@ -1621,9 +1621,9 @@ private:
 	{
 		ButtonCommon *chat_button = new CompanyButton(SPR_CHAT, company_id == COMPANY_SPECTATOR ? STR_NETWORK_CLIENT_LIST_CHAT_SPECTATOR_TOOLTIP : STR_NETWORK_CLIENT_LIST_CHAT_COMPANY_TOOLTIP, COLOUR_ORANGE, company_id, &NetworkClientListWindow::OnClickCompanyChat);
 
-		if (_network_server) this->buttons[line_count].emplace_back(new CompanyButton(SPR_ADMIN, STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_TOOLTIP, COLOUR_RED, company_id, &NetworkClientListWindow::OnClickCompanyAdmin, company_id == COMPANY_SPECTATOR));
+		if (_network_server) this->buttons[line_count].push_back(std::make_unique<CompanyButton>(SPR_ADMIN, STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_TOOLTIP, COLOUR_RED, company_id, &NetworkClientListWindow::OnClickCompanyAdmin, company_id == COMPANY_SPECTATOR));
 		this->buttons[line_count].emplace_back(chat_button);
-		if (client_playas != company_id) this->buttons[line_count].emplace_back(new CompanyButton(SPR_JOIN, STR_NETWORK_CLIENT_LIST_JOIN_TOOLTIP, COLOUR_ORANGE, company_id, &NetworkClientListWindow::OnClickCompanyJoin, company_id != COMPANY_SPECTATOR && Company::Get(company_id)->is_ai));
+		if (client_playas != company_id) this->buttons[line_count].push_back(std::make_unique<CompanyButton>(SPR_JOIN, STR_NETWORK_CLIENT_LIST_JOIN_TOOLTIP, COLOUR_ORANGE, company_id, &NetworkClientListWindow::OnClickCompanyJoin, company_id != COMPANY_SPECTATOR && Company::Get(company_id)->is_ai));
 
 		this->line_count += 1;
 
@@ -1632,8 +1632,8 @@ private:
 			if (ci->client_playas != company_id) continue;
 			has_players = true;
 
-			if (_network_server) this->buttons[line_count].emplace_back(new ClientButton(SPR_ADMIN, STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_TOOLTIP, COLOUR_RED, ci->client_id, &NetworkClientListWindow::OnClickClientAdmin, _network_own_client_id == ci->client_id));
-			if (_network_own_client_id != ci->client_id) this->buttons[line_count].emplace_back(new ClientButton(SPR_CHAT, STR_NETWORK_CLIENT_LIST_CHAT_CLIENT_TOOLTIP, COLOUR_ORANGE, ci->client_id, &NetworkClientListWindow::OnClickClientChat));
+			if (_network_server) this->buttons[line_count].push_back(std::make_unique<ClientButton>(SPR_ADMIN, STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_TOOLTIP, COLOUR_RED, ci->client_id, &NetworkClientListWindow::OnClickClientAdmin, _network_own_client_id == ci->client_id));
+			if (_network_own_client_id != ci->client_id) this->buttons[line_count].push_back(std::make_unique<ClientButton>(SPR_CHAT, STR_NETWORK_CLIENT_LIST_CHAT_CLIENT_TOOLTIP, COLOUR_ORANGE, ci->client_id, &NetworkClientListWindow::OnClickClientChat));
 
 			if (ci->client_id == _network_own_client_id) {
 				this->player_self_index = this->line_count;
@@ -1663,7 +1663,7 @@ private:
 
 		/* As spectator, show a line to create a new company. */
 		if (client_playas == COMPANY_SPECTATOR && !NetworkMaxCompaniesReached()) {
-			this->buttons[line_count].emplace_back(new CompanyButton(SPR_JOIN, STR_NETWORK_CLIENT_LIST_NEW_COMPANY_TOOLTIP, COLOUR_ORANGE, COMPANY_SPECTATOR, &NetworkClientListWindow::OnClickCompanyNew));
+			this->buttons[line_count].push_back(std::make_unique<CompanyButton>(SPR_JOIN, STR_NETWORK_CLIENT_LIST_NEW_COMPANY_TOOLTIP, COLOUR_ORANGE, COMPANY_SPECTATOR, &NetworkClientListWindow::OnClickCompanyNew));
 			this->line_count += 1;
 		}
 
@@ -2436,6 +2436,12 @@ struct NetworkAskRelayWindow : public Window {
 		this->InitNested(0);
 	}
 
+	void Close(int data = 0) override
+	{
+		if (data == NRWCD_UNHANDLED) _network_coordinator_client.ConnectFailure(this->token, 0);
+		this->Window::Close();
+	}
+
 	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget == WID_NAR_TEXT) {
@@ -2475,18 +2481,18 @@ struct NetworkAskRelayWindow : public Window {
 		switch (widget) {
 			case WID_NAR_NO:
 				_network_coordinator_client.ConnectFailure(this->token, 0);
-				this->Close();
+				this->Close(NRWCD_HANDLED);
 				break;
 
 			case WID_NAR_YES_ONCE:
 				_network_coordinator_client.StartTurnConnection(this->token);
-				this->Close();
+				this->Close(NRWCD_HANDLED);
 				break;
 
 			case WID_NAR_YES_ALWAYS:
 				_settings_client.network.use_relay_service = URS_ALLOW;
 				_network_coordinator_client.StartTurnConnection(this->token);
-				this->Close();
+				this->Close(NRWCD_HANDLED);
 				break;
 		}
 	}
@@ -2522,7 +2528,7 @@ static WindowDesc _network_ask_relay_desc(
  */
 void ShowNetworkAskRelay(const std::string &server_connection_string, const std::string &relay_connection_string, const std::string &token)
 {
-	CloseWindowByClass(WC_NETWORK_ASK_RELAY);
+	CloseWindowByClass(WC_NETWORK_ASK_RELAY, NRWCD_HANDLED);
 
 	Window *parent = GetMainWindow();
 	new NetworkAskRelayWindow(&_network_ask_relay_desc, parent, server_connection_string, relay_connection_string, token);

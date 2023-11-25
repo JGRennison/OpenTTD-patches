@@ -122,7 +122,7 @@ struct EndGameWindow : EndGameHighScoreBaseWindow {
 		MarkWholeScreenDirty();
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		if (!_networking) DoCommandP(0, PM_PAUSED_NORMAL, 0, CMD_PAUSE); // unpause
 		if (_game_mode != GM_MENU) ShowHighscoreTable(this->window_number, this->rank);
@@ -170,7 +170,7 @@ struct HighScoreWindow : EndGameHighScoreBaseWindow {
 		this->rank = ranking;
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		if (_game_mode != GM_MENU) ShowVitalWindows();
 

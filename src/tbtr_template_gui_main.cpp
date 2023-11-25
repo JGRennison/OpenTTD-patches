@@ -255,7 +255,7 @@ public:
 		this->BuildTemplateGuiList();
 	}
 
-	void Close() override {
+	void Close(int data = 0) override {
 		CloseWindowById(WC_CREATE_TEMPLATE, this->window_number);
 		this->Window::Close();
 	}

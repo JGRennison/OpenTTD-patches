@@ -534,7 +534,7 @@ public:
 		nvp->InitializeViewport(this, this->town->xy, ScaleZoomGUI(ZOOM_LVL_TOWN));
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		SetViewportCatchmentTown(Town::Get(this->window_number), false);
 		this->Window::Close();
@@ -673,14 +673,6 @@ public:
 				break;
 
 			case WID_TV_EXPAND: { // expand town - only available on Scenario editor
-				/* Warn the user if towns are not allowed to build roads, but do this only once per OpenTTD run. */
-				static bool _warn_town_no_roads = false;
-
-				if (!Town::Get(this->window_number)->GetAllowBuildRoads() && !_warn_town_no_roads) {
-					ShowErrorMessage(STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS, INVALID_STRING_ID, WL_WARNING);
-					_warn_town_no_roads = true;
-				}
-
 				DoCommandP(0, this->window_number, 0, CMD_EXPAND_TOWN | CMD_MSG(STR_ERROR_CAN_T_EXPAND_TOWN));
 				break;
 			}
@@ -1013,7 +1005,7 @@ public:
 			case WID_TD_LIST: {
 				int n = 0;
 				Rect tr = r.Shrink(WidgetDimensions::scaled.framerect);
-				if (this->towns.size() == 0) { // No towns available.
+				if (this->towns.empty()) { // No towns available.
 					DrawString(tr, STR_TOWN_DIRECTORY_NONE);
 					break;
 				}

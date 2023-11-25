@@ -183,7 +183,7 @@ public:
 		this->vscroll->SetCount(this->bridges.size());
 	}
 
-	void Close() override
+	void Close(int data = 0) override
 	{
 		this->last_sorting = this->bridges.GetListing();
 		this->Window::Close();

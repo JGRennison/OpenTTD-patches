@@ -777,7 +777,7 @@ void GetBindAddresses(NetworkAddressList *addresses, uint16 port)
 	}
 
 	/* No address, so bind to everything. */
-	if (addresses->size() == 0) {
+	if (addresses->empty()) {
 		addresses->emplace_back("", port);
 	}
 }

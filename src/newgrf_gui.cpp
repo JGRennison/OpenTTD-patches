@@ -168,7 +168,7 @@ struct NewGRFParametersWindow : public Window {
 		clicked_row(UINT_MAX),
 		editable(editable)
 	{
-		this->action14present = (c->num_valid_params != c->param.size() || c->param_info.size() != 0);
+		this->action14present = (c->num_valid_params != c->param.size() || !c->param_info.empty());
 
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_NP_SCROLLBAR);
@@ -181,7 +181,7 @@ struct NewGRFParametersWindow : public Window {
 		this->InvalidateData();
 	}
 
-	void Close() override
+	void Close(int data = 0) override
 	{
 		HideDropDownMenu(this);
 		this->Window::Close();
@@ -403,7 +403,7 @@ struct NewGRFParametersWindow : public Window {
 
 							DropDownList list;
 							for (uint32 i = par_info.min_value; i <= par_info.max_value; i++) {
-								list.emplace_back(new DropDownListStringItem(GetGRFStringFromGRFText(par_info.value_names.find(i)->second), i, false));
+								list.push_back(std::make_unique<DropDownListStringItem>(GetGRFStringFromGRFText(par_info.value_names.find(i)->second), i, false));
 							}
 
 							ShowDropDownListAt(this, std::move(list), old_val, WID_NP_SETTING_DROPDOWN, wi_rect, COLOUR_ORANGE);
@@ -686,7 +686,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		this->OnInvalidateData(GOID_NEWGRF_CURRENT_LOADED);
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		CloseWindowByClass(WC_GRF_PARAMETERS);
 		CloseWindowByClass(WC_TEXTFILE);
@@ -967,10 +967,10 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 				DropDownList list;
 
 				/* Add 'None' option for clearing list */
-				list.emplace_back(new DropDownListStringItem(STR_NONE, -1, false));
+				list.push_back(std::make_unique<DropDownListStringItem>(STR_NONE, -1, false));
 
 				for (uint i = 0; i < this->grf_presets.size(); i++) {
-					list.emplace_back(new DropDownListStringItem(this->grf_presets[i], i, false));
+					list.push_back(std::make_unique<DropDownListStringItem>(this->grf_presets[i], i, false));
 				}
 
 				this->CloseChildWindows(WC_QUERY_STRING); // Remove the parameter query window
@@ -1600,7 +1600,7 @@ void ShowMissingContentWindow(const GRFConfig *list)
 		ci->md5sum = HasBit(c->flags, GCF_COMPATIBLE) ? c->original_md5sum : c->ident.md5sum;
 		cv.push_back(ci);
 	}
-	ShowNetworkContentListWindow(cv.size() == 0 ? nullptr : &cv, CONTENT_TYPE_NEWGRF);
+	ShowNetworkContentListWindow(cv.empty() ? nullptr : &cv, CONTENT_TYPE_NEWGRF);
 }
 
 Listing NewGRFWindow::last_sorting     = {false, 0};

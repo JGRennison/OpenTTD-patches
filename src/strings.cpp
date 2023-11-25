@@ -2431,7 +2431,7 @@ void InitializeLanguagePacks()
 		std::string path = FioGetDirectory(sp, LANG_DIR);
 		GetLanguageList(path.c_str());
 	}
-	if (_languages.size() == 0) usererror("No available language packs (invalid versions?)");
+	if (_languages.empty()) usererror("No available language packs (invalid versions?)");
 
 	/* Acquire the locale of the current system */
 	const char *lang = GetCurrentLocale("LC_MESSAGES");

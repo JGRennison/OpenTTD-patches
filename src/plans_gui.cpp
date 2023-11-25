@@ -98,7 +98,7 @@ struct PlansWindow : Window {
 		RebuildList();
 	}
 
-	void Close() override
+	void Close(int data = 0) override
 	{
 		this->list.clear();
 		if (_current_plan) {

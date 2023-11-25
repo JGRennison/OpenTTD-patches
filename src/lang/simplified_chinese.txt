@@ -175,7 +175,7 @@ STR_COLOUR_DEFAULT                                              :默认
 STR_COLOUR_DARK_BLUE                                            :深蓝色
 STR_COLOUR_PALE_GREEN                                           :浅绿色
 STR_COLOUR_PINK                                                 :粉红色
-STR_COLOUR_YELLOW                                               :黄 色
+STR_COLOUR_YELLOW                                               :黄　色
 STR_COLOUR_RED                                                  :红　色
 STR_COLOUR_LIGHT_BLUE                                           :淡蓝色
 STR_COLOUR_GREEN                                                :绿　色
@@ -193,13 +193,13 @@ STR_COLOUR_RANDOM                                               :随机
 ###length 17
 STR_COLOUR_SECONDARY_DARK_BLUE                                  :深蓝色
 STR_COLOUR_SECONDARY_PALE_GREEN                                 :浅绿色
-STR_COLOUR_SECONDARY_SECONDARY_PINK                             :粉色
-STR_COLOUR_SECONDARY_YELLOW                                     :黄 色
-STR_COLOUR_SECONDARY_RED                                        :红  色
+STR_COLOUR_SECONDARY_SECONDARY_PINK                             :粉红色
+STR_COLOUR_SECONDARY_YELLOW                                     :黄　色
+STR_COLOUR_SECONDARY_RED                                        :红　色
 STR_COLOUR_SECONDARY_LIGHT_BLUE                                 :淡蓝色
 STR_COLOUR_SECONDARY_GREEN                                      :绿　色
 STR_COLOUR_SECONDARY_DARK_GREEN                                 :深绿色
-STR_COLOUR_SECONDARY_BLUE                                       :蓝  色
+STR_COLOUR_SECONDARY_BLUE                                       :蓝　色
 STR_COLOUR_SECONDARY_CREAM                                      :奶油色
 STR_COLOUR_SECONDARY_MAUVE                                      :深紫色
 STR_COLOUR_SECONDARY_PURPLE                                     :紫　色
@@ -954,7 +954,7 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}游戏�
 
 STR_GAME_OPTIONS_TAB_GENERAL                                    :通用
 STR_GAME_OPTIONS_TAB_GENERAL_TT                                 :{BLACK}选择通用设定
-STR_GAME_OPTIONS_TAB_GRAPHICS                                   :图形包
+STR_GAME_OPTIONS_TAB_GRAPHICS                                   :图像
 STR_GAME_OPTIONS_TAB_GRAPHICS_TT                                :{BLACK}选择图形组设定
 STR_GAME_OPTIONS_TAB_SOUND                                      :音效
 STR_GAME_OPTIONS_TAB_SOUND_TT                                   :{BLACK}选择音乐和音效的设定
@@ -2216,7 +2216,7 @@ STR_LIVERY_DIESEL                                               :内燃机车
 STR_LIVERY_ELECTRIC                                             :电力机车
 STR_LIVERY_MONORAIL                                             :单轨机车
 STR_LIVERY_MAGLEV                                               :磁悬浮机车
-STR_LIVERY_DMU                                                  :DMU 机车
+STR_LIVERY_DMU                                                  :内燃动车组
 STR_LIVERY_EMU                                                  :电力动车组
 STR_LIVERY_PASSENGER_WAGON_STEAM                                :客运机车（蒸汽）
 STR_LIVERY_PASSENGER_WAGON_DIESEL                               :客运机车（内燃机）
@@ -4866,7 +4866,6 @@ STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}太靠�
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}太靠近另一个城镇了
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}城镇太多了
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}地图上没有多余的地方了
-STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS                             :{WHITE}城镇不会修建道路{}您可以在“设置->环境->城镇”选项下开启建设道路的功能
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}正在进行道路工程
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}无法删除城镇...{}城镇范围内还有车站、车库或无法移除的区块
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... 城市中心没有合适的地方放置公司塑像

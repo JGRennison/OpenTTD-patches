@@ -372,8 +372,7 @@ protected:
 		byte minr1 = 255;
 		byte minr2 = 255;
 
-		for (CargoID j = 0; j < NUM_CARGO; j++) {
-			if (!HasBit(cargo_filter, j)) continue;
+		for (CargoID j : SetCargoBitIterator(cargo_filter)) {
 			if (a->goods[j].HasRating()) minr1 = std::min(minr1, a->goods[j].rating);
 			if (b->goods[j].HasRating()) minr2 = std::min(minr2, b->goods[j].rating);
 		}
@@ -480,7 +479,7 @@ public:
 		this->GetWidget<NWidgetCore>(WID_STL_SORTDROPBTN)->widget_data = this->sorter_names[this->stations.SortType()];
 	}
 
-	void Close() override
+	void Close(int data = 0) override
 	{
 		this->last_sorting = this->stations.GetListing();
 		this->Window::Close();
@@ -1438,7 +1437,7 @@ struct StationViewWindow : public Window {
 		ZoningStationWindowOpenClose(Station::Get(window_number));
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		ZoningStationWindowOpenClose(Station::Get(window_number));
 		CloseWindowById(WC_TRAINS_LIST,   VehicleListIdentifier(VL_STATION_LIST, VEH_TRAIN,    this->owner, this->window_number).Pack(), false);
@@ -2548,7 +2547,7 @@ struct SelectStationWindow : Window {
 		_thd.freeze = true;
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		SetViewportCatchmentStation(nullptr, true);
 

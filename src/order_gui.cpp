@@ -179,7 +179,7 @@ public:
 		this->owner = v->owner;
 	}
 
-	void Close() override
+	void Close(int data = 0) override
 	{
 		if (!FocusWindowById(WC_VEHICLE_ORDERS, this->window_number)) {
 			MarkDirtyFocusedRoutePaths(this->vehicle);
@@ -1896,7 +1896,7 @@ public:
 		this->OnInvalidateData(VIWD_MODIFY_ORDERS);
 	}
 
-	void Close() override
+	void Close(int data = 0) override
 	{
 		CloseWindowById(WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS, this->window_number, false);
 		CloseWindowById(WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS, this->window_number, false);
@@ -3013,7 +3013,7 @@ public:
 							continue;
 						}
 					}
-					list.emplace_back(new DropDownListStringItem(OrderStringForVariable(this->vehicle, _order_conditional_variable[i]), _order_conditional_variable[i], false));
+					list.push_back(std::make_unique<DropDownListStringItem>(OrderStringForVariable(this->vehicle, _order_conditional_variable[i]), _order_conditional_variable[i], false));
 				}
 				ShowDropDownList(this, std::move(list), ocv, WID_O_COND_VARIABLE);
 				break;

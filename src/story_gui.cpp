@@ -256,11 +256,11 @@ protected:
 		for (const StoryPage *p : this->story_pages) {
 			bool current_page = p->index == this->selected_page_id;
 			if (!p->title.empty()) {
-				list.emplace_back(new DropDownListStringItem(p->title, p->index, current_page));
+				list.push_back(std::make_unique<DropDownListStringItem>(p->title, p->index, current_page));
 			} else {
 				/* No custom title => use a generic page title with page number. */
 				SetDParam(0, page_num);
-				list.emplace_back(new DropDownListStringItem(STR_STORY_BOOK_GENERIC_PAGE_ITEM, p->index, current_page));
+				list.push_back(std::make_unique<DropDownListStringItem>(STR_STORY_BOOK_GENERIC_PAGE_ITEM, p->index, current_page));
 			}
 			page_num++;
 		}
@@ -625,8 +625,8 @@ public:
 	 */
 	void UpdatePrevNextDisabledState()
 	{
-		this->SetWidgetDisabledState(WID_SB_PREV_PAGE, story_pages.size() == 0 || this->IsFirstPageSelected());
-		this->SetWidgetDisabledState(WID_SB_NEXT_PAGE, story_pages.size() == 0 || this->IsLastPageSelected());
+		this->SetWidgetDisabledState(WID_SB_PREV_PAGE, story_pages.empty() || this->IsFirstPageSelected());
+		this->SetWidgetDisabledState(WID_SB_NEXT_PAGE, story_pages.empty() || this->IsLastPageSelected());
 		this->SetWidgetDirty(WID_SB_PREV_PAGE);
 		this->SetWidgetDirty(WID_SB_NEXT_PAGE);
 	}
@@ -872,7 +872,7 @@ public:
 			this->BuildStoryPageList();
 
 			/* Was the last page removed? */
-			if (this->story_pages.size() == 0) {
+			if (this->story_pages.empty()) {
 				this->selected_generic_title.clear();
 			}
 
@@ -880,14 +880,14 @@ public:
 			if (!_story_page_pool.IsValidID(this->selected_page_id)) {
 				this->selected_page_id = INVALID_STORY_PAGE;
 			}
-			if (this->selected_page_id == INVALID_STORY_PAGE && this->story_pages.size() > 0) {
+			if (this->selected_page_id == INVALID_STORY_PAGE && !this->story_pages.empty()) {
 				/* No page is selected, but there exist at least one available.
 				 * => Select first page.
 				 */
 				this->SetSelectedPage(this->story_pages[0]->index);
 			}
 
-			this->SetWidgetDisabledState(WID_SB_SEL_PAGE, this->story_pages.size() == 0);
+			this->SetWidgetDisabledState(WID_SB_SEL_PAGE, this->story_pages.empty());
 			this->SetWidgetDirty(WID_SB_SEL_PAGE);
 			this->UpdatePrevNextDisabledState();
 		} else if (data >= 0 && this->selected_page_id == data) {

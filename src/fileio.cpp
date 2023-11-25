@@ -14,6 +14,7 @@
 #include "fios.h"
 #include "string_func.h"
 #include "tar_type.h"
+#include "3rdparty/cpp-btree/btree_set.h"
 #ifdef _WIN32
 #include <windows.h>
 # define access _taccess
@@ -84,6 +85,8 @@ static bool IsValidSearchPath(Searchpath sp)
 static void FillValidSearchPaths(bool only_local_path)
 {
 	_valid_searchpaths.clear();
+
+	btree::btree_set<std::string_view> seen{};
 	for (Searchpath sp = SP_FIRST_DIR; sp < NUM_SEARCHPATHS; sp++) {
 		if (only_local_path) {
 			switch (sp) {
@@ -97,7 +100,11 @@ static void FillValidSearchPaths(bool only_local_path)
 			}
 		}
 
-		if (IsValidSearchPath(sp)) _valid_searchpaths.emplace_back(sp);
+		if (IsValidSearchPath(sp)) {
+			if (seen.count(_searchpaths[sp]) != 0) continue;
+			seen.insert(_searchpaths[sp]);
+			_valid_searchpaths.emplace_back(sp);
+		}
 	}
 }
 

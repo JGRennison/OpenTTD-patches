@@ -137,7 +137,7 @@ struct DropdownWindow : Window {
 	DropdownWindow(Window *parent, DropDownList &&list, int selected, int button, bool instant_close, const Point &position, const Dimension &size, Colours wi_colour, bool scroll, DropDownSyncFocus sync_parent_focus)
 			: Window(&_dropdown_desc), list(std::move(list))
 	{
-		assert(this->list.size() > 0);
+		assert(!this->list.empty());
 
 		this->position = position;
 		this->parent_wnd_class = parent->window_class;
@@ -179,7 +179,7 @@ struct DropdownWindow : Window {
 		this->scrolling_timer  = GUITimer(MILLISECONDS_PER_TICK);
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		/* Make the dropdown "invisible", so it doesn't affect new window placement.
 		 * Also mark it dirty in case the callback deals with the screen. (e.g. screenshots). */
@@ -493,7 +493,7 @@ void ShowDropDownMenu(Window *w, const StringID *strings, int selected, int butt
 
 	for (uint i = 0; strings[i] != INVALID_STRING_ID; i++) {
 		if (i >= 32 || !HasBit(hidden_mask, i)) {
-			list.emplace_back(new DropDownListStringItem(strings[i], i, i < 32 && HasBit(disabled_mask, i)));
+			list.push_back(std::make_unique<DropDownListStringItem>(strings[i], i, i < 32 && HasBit(disabled_mask, i)));
 		}
 	}
 

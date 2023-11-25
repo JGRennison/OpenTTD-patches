@@ -123,7 +123,7 @@ uint TextfileWindow::ReflowContent()
 
 uint TextfileWindow::GetContentHeight()
 {
-	if (this->lines.size() == 0) return 0;
+	if (this->lines.empty()) return 0;
 	return this->lines.back().bottom;
 }
 
@@ -529,8 +529,7 @@ void TextfileWindow::AfterLoadMarkdown()
 			DropDownList list;
 			for (size_t line : this->jumplist) {
 				SetDParamStr(0, this->lines[line].text);
-				DropDownListStringItem *item = new DropDownListStringItem(STR_TEXTFILE_JUMPLIST_ITEM, (int)line, false);
-				list.emplace_back(item);
+				list.push_back(std::make_unique<DropDownListStringItem>(STR_TEXTFILE_JUMPLIST_ITEM, (int)line, false));
 			}
 			ShowDropDownList(this, std::move(list), -1, widget);
 			break;

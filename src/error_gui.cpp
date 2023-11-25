@@ -308,7 +308,7 @@ public:
 		this->Close();
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		SetRedErrorSquare(INVALID_TILE);
 		if (_window_system_initialized) ShowFirstError();

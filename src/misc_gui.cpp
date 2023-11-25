@@ -341,19 +341,20 @@ public:
 		line << GetString(STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED);
 
 		bool found = false;
-		for (CargoID i = 0; i < NUM_CARGO; ++i) {
-			if (acceptance[i] > 0) {
+		for (const CargoSpec *cs : _sorted_cargo_specs) {
+			CargoID cid = cs->Index();
+			if (acceptance[cid] > 0) {
 				/* Add a comma between each item. */
 				if (found) line << ", ";
 				found = true;
 
 				/* If the accepted value is less than 8, show it in 1/8:ths */
-				if (acceptance[i] < 8) {
-					SetDParam(0, acceptance[i]);
-					SetDParam(1, CargoSpec::Get(i)->name);
+				if (acceptance[cid] < 8) {
+					SetDParam(0, acceptance[cid]);
+					SetDParam(1, cs->name);
 					line << GetString(STR_LAND_AREA_INFORMATION_CARGO_EIGHTS);
 				} else {
-					line << GetString(CargoSpec::Get(i)->name);
+					line << GetString(cs->name);
 				}
 			}
 		}
@@ -1125,7 +1126,7 @@ struct QueryStringWindow : public Window
 		}
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		if (!this->editbox.handled && this->parent != nullptr) {
 			Window *parent = this->parent;
@@ -1214,7 +1215,7 @@ struct QueryWindow : public Window {
 		this->InitNested(WN_CONFIRM_POPUP_QUERY);
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		if (this->proc != nullptr) this->proc(this->parent, false);
 		this->Window::Close();
@@ -1416,7 +1417,7 @@ struct ModifierKeyToggleWindow : Window {
 		this->UpdateButtons();
 	}
 
-	void Close() override
+	void Close(int data = 0) override
 	{
 		_invert_shift = false;
 		_invert_ctrl = false;

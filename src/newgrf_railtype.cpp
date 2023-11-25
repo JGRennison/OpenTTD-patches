@@ -210,7 +210,7 @@ CustomSignalSpriteResult GetCustomSignalSprite(const RailTypeInfo *rti, TileInde
  */
 RailType GetRailTypeTranslation(uint8 railtype, const GRFFile *grffile)
 {
-	if (grffile == nullptr || grffile->railtype_list.size() == 0) {
+	if (grffile == nullptr || grffile->railtype_list.empty()) {
 		/* No railtype table present. Return railtype as-is (if valid), so it works for original railtypes. */
 		if (railtype >= RAILTYPE_END || GetRailTypeInfo(static_cast<RailType>(railtype))->label == 0) return INVALID_RAILTYPE;
 
@@ -233,7 +233,7 @@ RailType GetRailTypeTranslation(uint8 railtype, const GRFFile *grffile)
 uint8 GetReverseRailTypeTranslation(RailType railtype, const GRFFile *grffile)
 {
 	/* No rail type table present, return rail type as-is */
-	if (grffile == nullptr || grffile->railtype_list.size() == 0) return railtype;
+	if (grffile == nullptr || grffile->railtype_list.empty()) return railtype;
 
 	/* Look for a matching rail type label in the table */
 	RailTypeLabel label = GetRailTypeInfo(railtype)->label;

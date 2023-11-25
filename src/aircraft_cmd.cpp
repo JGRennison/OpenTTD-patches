@@ -1474,9 +1474,9 @@ static void MaybeCrashAirplane(Aircraft *v)
 	if (GB(Random(), 0, 22) > prob) return;
 
 	/* Crash the airplane. Remove all goods stored at the station. */
-	for (CargoID i = 0; i < NUM_CARGO; i++) {
-		st->goods[i].rating = 1;
-		if (st->goods[i].data != nullptr) st->goods[i].data->cargo.Truncate();
+	for (GoodsEntry &ge : st->goods) {
+		ge.rating = 1;
+		if (ge.data != nullptr) ge.data->cargo.Truncate();
 	}
 
 	CrashAirplane(v);
