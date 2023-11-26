@@ -2,6 +2,20 @@
 
 * * *
 
+### v0.56.0 (2023-11-26)
+* Fix crash which could occur in the sprite aligner window.
+* Fix crash which could occur when laying out text in some cases.
+* Fix crash which could occur when loading some very old save games.
+* Fix vehicle lateness updates when using timetabled 0 wait times.
+* Fix temporary link graph issues after loading vanilla or old patch pack save games.
+* Improve train speed adaptation when used with realistic braking enabled.
+* Add long reserve (unless stopping) routing restriction action.
+* Add settings filter to only show non-vanilla settings.
+* Add setting for whether water floods from map edges.
+* Add setting for whether to hide default stop location.
+* Remove "show order management button" setting.
+* Bump trunk base from commit 3effb8931c36b8bbacae8fe77ad5b85406767d9f to commit 2d3fef31131c2d9981265664c1581ca11dc2c2d3.
+
 ### v0.55.3 (2023-09-24)
 * Fix crash which could occur when using the autoreplace button in depot windows to do template replacements.
 * Fix crash which could occur in the autoreplace window when clicking the right panel when no item is selected in the left panel.
