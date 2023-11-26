@@ -18,11 +18,6 @@ struct Cheat {
 	bool value;     ///< tells if the bool cheat is active or not
 };
 
-/**
- * WARNING! Do _not_ remove entries in Cheats struct or change the order
- * of the existing ones! Would break downward compatibility.
- * Only add new entries at the end of the struct!
- */
 struct Cheats {
 	Cheat magic_bulldozer;  ///< dynamite industries, objects
 	Cheat switch_company;   ///< change to another company
@@ -33,9 +28,7 @@ struct Cheats {
 	Cheat setup_prod;       ///< setup raw-material production in game
 	Cheat edit_max_hl;      ///< edit the maximum heightlevel; this is a cheat because of the fact that it needs to reset NewGRF game state and doing so as a simple configuration breaks the expectation of many
 	Cheat station_rating;   ///< Fix station ratings at 100%
-};
-
-struct ExtraCheats {
+	/* non-trunk cheats follow */
 	Cheat inflation_cost;   ///< inflation cost factor
 	Cheat inflation_income; ///< inflation income factor
 	Cheat town_rating;      ///< 100% town local authority rating
@@ -60,6 +53,5 @@ enum CheatNumbers {
 };
 
 extern Cheats _cheats;
-extern ExtraCheats _extra_cheats;
 
 #endif /* CHEAT_TYPE_H */
