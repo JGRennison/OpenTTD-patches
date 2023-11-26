@@ -216,6 +216,17 @@
 			If there is no bridge above, the value is 0xFF.
 		</td>
 	</tr>
+	<tr><td>adjacent_crossing</td><td>bitmask(RAILTYPE_ADJACENT_CROSSING_XXX, ...)</td>
+		<td>
+			Adjacent level crossing information:
+			<dl>
+				<dt>SOUTH</dt>
+				<dd>This level crossing tile is part of a continuous adjacent crossing with the tile to the south (SW or SE)</dd>
+				<dt>NORTH</dt>
+				<dd>This level crossing tile is part of a continuous adjacent crossing with the tile to the north (NW or NE)</dd>
+			</dl>
+		</td>
+	</tr>
 	</table>
 	<h3 id="roadtype-properties"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Roadtypes#Roadtype_properties">Roadtype properties</a></h3>
 	<table>

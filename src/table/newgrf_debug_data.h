@@ -1599,6 +1599,7 @@ static const NIVariable _niv_railtypes[] = {
 	NIV(0x42, "level crossing status"),
 	NIV(0x43, "construction date"),
 	NIV(0x44, "town zone"),
+	NIV(A2VRI_RAILTYPE_ADJACENT_CROSSING, "adjacent crossing"),
 	NIV_END()
 };
 
