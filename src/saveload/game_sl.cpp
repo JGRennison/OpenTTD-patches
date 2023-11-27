@@ -38,7 +38,7 @@ static const SaveLoad _game_script_desc[] = {
 	    SLEG_VAR("is_random", _game_saveload_is_random,   SLE_BOOL),
 };
 
-static void SaveReal_GSDT(int *index_ptr)
+static void SaveReal_GSDT(int *)
 {
 	GameConfig *config = GameConfig::GetConfig();
 
@@ -174,7 +174,7 @@ struct GSTRChunkHandler : ChunkHandler {
 		}
 
 		/* If there were no strings in the savegame, set GameStrings to nullptr */
-		if (_current_data->raw_strings.size() == 0) {
+		if (_current_data->raw_strings.empty()) {
 			delete _current_data;
 			_current_data = nullptr;
 			return;

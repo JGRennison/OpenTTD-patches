@@ -266,6 +266,10 @@ STR_COLOUR_WHITE                                                :Bílá
 STR_COLOUR_RANDOM                                               :Náhodná
 
 ###length 17
+STR_COLOUR_SECONDARY_DARK_BLUE                                  :Tmavomodrá
+STR_COLOUR_SECONDARY_BROWN                                      :Hnědá
+STR_COLOUR_SECONDARY_GREY                                       :Šedá
+STR_COLOUR_SECONDARY_WHITE                                      :Bílá
 
 
 # Units used in OpenTTD
@@ -578,7 +582,7 @@ STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :Historie zpráv
 STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :Smazat všechny zprávy
 
 # About menu
-###length 11
+###length 12
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :Informace o zemi
 STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Zobrazit nebo skrýt konzoli
@@ -992,10 +996,7 @@ STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Nov{G ý
 
 STR_NEWS_SHOW_VEHICLE_GROUP_TOOLTIP                             :{BLACK}Otevřít okno skupin s předvybranou skupinou daného vozidla
 
-STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} už dále nepřijímá {STRING.acc}
-STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} už dále nepřijímá {STRING.acc} ani {STRING.acc}
-STR_NEWS_STATION_NOW_ACCEPTS_CARGO                              :{WHITE}{STATION} nyní přijímá {STRING.acc}
-STR_NEWS_STATION_NOW_ACCEPTS_CARGO_AND_CARGO                    :{WHITE}{STATION} nyní přijímá {STRING.acc} a {STRING.acc}
+STR_NEWS_STATION_NOW_ACCEPTS_CARGO_LIST                         :{WHITE}{STATION} přijímá: {CARGO_LIST}
 
 STR_NEWS_OFFER_OF_SUBSIDY_EXPIRED                               :{BIG_FONT}{BLACK}Nabídka dotace přepravy vypršela:{}{}Dotace dopravy {STRING.gen} z{NBSP}{STRING.gen} do {STRING.gen} nebude dále nabízena
 STR_NEWS_SUBSIDY_WITHDRAWN_SERVICE                              :{BIG_FONT}{BLACK}Ukončení dotování dopravy:{}{}Dotace pro {STRING} z{NBSP}{STRING.gen} do {STRING.gen} již nebude dále poskytována
@@ -1023,10 +1024,13 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Možnost
 STR_GAME_OPTIONS_TAB_GENERAL                                    :Obecné
 STR_GAME_OPTIONS_TAB_GENERAL_TT                                 :{BLACK}Zobrazit obecná nastavení
 STR_GAME_OPTIONS_TAB_GRAPHICS_TT                                :{BLACK}Zobrazit nastavení grafiky
+STR_GAME_OPTIONS_TAB_SOUND                                      :Zvuk
 
 STR_GAME_OPTIONS_VOLUME                                         :Hlasitost
 STR_GAME_OPTIONS_MUSIC_VOLUME                                   :Hudba
 
+STR_GAME_OPTIONS_VOLUME_0                                       :0%
+STR_GAME_OPTIONS_VOLUME_75                                      :75%
 STR_GAME_OPTIONS_VOLUME_100                                     :100%
 
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Měna
@@ -1121,6 +1125,7 @@ STR_GAME_OPTIONS_GUI_SCALE_3X                                   :3x
 STR_GAME_OPTIONS_GUI_SCALE_4X                                   :4x
 STR_GAME_OPTIONS_GUI_SCALE_5X                                   :5x
 
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW                     :{BLACK}Náhled výsledků průzkumu
 STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW_TOOLTIP             :{BLACK}Zobrazovat výsledek průzkumu z aktuálně běžící hry
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Grafiky
@@ -1692,6 +1697,7 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :vypnutá
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Zavírat okno kliknutím pravým tlačítkem myši: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Zavírat okno kliknutím pravým tlačítkem na něj. Znemožňuje využívat nápovědu zobrazující se při stisknutí pravého tlačítka myši!
 ###length 3
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_YES                    :Ano
 
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Pro jméno uložené hry použít {STRING} formát
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :Formát data v názvu uložené hry
@@ -2206,6 +2212,10 @@ STR_ABANDON_GAME_QUERY                                          :{YELLOW}Opravdu
 STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}Určite chceš opustit toto mapu?
 
 # Help window
+STR_HELP_WINDOW_DOCUMENTS                                       :{BLACK}Dokumenty
+STR_HELP_WINDOW_KNOWN_BUGS                                      :{BLACK}Nahlášené chyby
+STR_HELP_WINDOW_MAIN_WEBSITE                                    :{BLACK}OpenTTD
+STR_HELP_WINDOW_COMMUNITY                                       :{BLACK}Komunita
 
 # Cheat window
 STR_CHEATS                                                      :{WHITE}Cheaty
@@ -2482,6 +2492,8 @@ STR_NETWORK_ASK_RELAY_NO                                        :{BLACK}Ne
 STR_NETWORK_ASK_RELAY_YES_ONCE                                  :{BLACK}Ano, toto jednou
 STR_NETWORK_ASK_RELAY_YES_ALWAYS                                :{BLACK}Ano, znovu se neptat
 
+STR_NETWORK_ASK_SURVEY_TEXT                                     :Chceš se zúčastnit automatického průzkumu?{}OpenTTD odešle výsledky průzkumu při ukončení hry.{}Toto nastavení můžeš kdykoliv změnit v "Nastavení".
+STR_NETWORK_ASK_SURVEY_NO                                       :Ne
 STR_NETWORK_ASK_SURVEY_YES                                      :Ano
 
 STR_NETWORK_SPECTATORS                                          :Pozorovatelé
@@ -4744,6 +4756,8 @@ STR_TEXTFILE_VIEW_LICENCE                                       :{BLACK}Licence
 STR_TEXTFILE_README_CAPTION                                     :{WHITE}{STRING} readme {STRING}
 STR_TEXTFILE_CHANGELOG_CAPTION                                  :{WHITE}{STRING} změny ve verzi {STRING}
 STR_TEXTFILE_LICENCE_CAPTION                                    :{WHITE}{STRING} licence {STRING}
+STR_TEXTFILE_SURVEY_RESULT_CAPTION                              :{WHITE}Náhled výsledků průzkumu
+STR_TEXTFILE_GAME_MANUAL_CAPTION                                :{WHITE}OpenTTD dokument '{STRING}'
 
 
 # Vehicle loading indicators
@@ -4878,7 +4892,6 @@ STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... moc 
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... moc blízko k jinému městu
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... příliš mnoho měst
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... na mapě už není místo
-STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS                             :{WHITE}Město nebude stavět silnice. Můžete to změnit přes Pokročilé nastavení->Ekonomika->Města
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Silnice je v rekonstrukci
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Nelze vybourat město...{}Buď k němu patří stanice nebo depo, anebo se nedá odklidit políčko městem vlastněné
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... v tomto městě není žádné místo vhodné pro umístění sochy

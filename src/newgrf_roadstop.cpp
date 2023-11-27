@@ -39,7 +39,7 @@ void NewGRFClass<Tspec, Tid, Tmax>::InsertDefaults()
 }
 
 template <typename Tspec, typename Tid, Tid Tmax>
-bool NewGRFClass<Tspec, Tid, Tmax>::IsUIAvailable(uint index) const
+bool NewGRFClass<Tspec, Tid, Tmax>::IsUIAvailable(uint) const
 {
 	return true;
 }
@@ -470,15 +470,8 @@ void TriggerRoadStopRandomisation(Station *st, TileIndex tile, RoadStopRandomTri
 
 	uint32 whole_reseed = 0;
 
-	CargoTypes empty_mask = 0;
-	if (trigger == RSRT_CARGO_TAKEN) {
-		/* Create a bitmask of completely empty cargo types to be matched */
-		for (CargoID i = 0; i < NUM_CARGO; i++) {
-			if (st->goods[i].CargoTotalCount() == 0) {
-				SetBit(empty_mask, i);
-			}
-		}
-	}
+	/* Bitmask of completely empty cargo types to be matched. */
+	CargoTypes empty_mask = (trigger == RSRT_CARGO_TAKEN) ? GetEmptyMask(st) : 0;
 
 	uint32 used_triggers = 0;
 	auto process_tile = [&](TileIndex cur_tile) {

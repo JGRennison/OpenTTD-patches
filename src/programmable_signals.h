@@ -162,7 +162,7 @@ protected:
 class SignalSimpleCondition: public SignalCondition {
 public:
 	SignalSimpleCondition(SignalConditionCode code);
-	virtual bool Evaluate(SignalVM& vm);
+	bool Evaluate(SignalVM& vm) override;
 };
 
 /** Comparator to use for variable conditions. */
@@ -209,7 +209,7 @@ public:
 	SignalVariableCondition(SignalConditionCode code);
 
 	/// Evaluates the condition
-	virtual bool Evaluate(SignalVM &vm);
+	bool Evaluate(SignalVM &vm) override;
 };
 
 /** A condition which is based upon the state of another signal. */
@@ -222,7 +222,7 @@ class SignalStateCondition: public SignalCondition {
 		bool CheckSignalValid();
 		void Invalidate();
 
-		virtual bool Evaluate(SignalVM& vm);
+		bool Evaluate(SignalVM& vm) override;
 		virtual ~SignalStateCondition();
 
 		SignalReference this_sig;
@@ -240,7 +240,7 @@ class SignalSlotCondition: public SignalConditionComparable {
 		bool CheckSlotValid();
 		void Invalidate();
 
-		virtual bool Evaluate(SignalVM& vm);
+		bool Evaluate(SignalVM& vm) override;
 		virtual ~SignalSlotCondition();
 
 		SignalReference this_sig;
@@ -257,7 +257,7 @@ class SignalCounterCondition: public SignalConditionComparable {
 		bool CheckCounterValid();
 		void Invalidate();
 
-		virtual bool Evaluate(SignalVM& vm);
+		bool Evaluate(SignalVM& vm) override;
 		virtual ~SignalCounterCondition();
 
 		SignalReference this_sig;
@@ -292,7 +292,7 @@ public:
 	 * vectored to the first instruction; if it is an End instruction, the program
 	 * will terminate and the signal will be left red.
 	 */
-	virtual void Evaluate(SignalVM &vm);
+	void Evaluate(SignalVM &vm) override;
 
 	/** Links the first and last instructions in the program. Generally only to be
 	 * called from the SignalProgram constructor.
@@ -306,14 +306,14 @@ public:
 	 * This operation, unlike when executed on most instructions, does not destroy
 	 * the instruction.
 	 */
-	virtual void Remove();
+	void Remove() override;
 
 	/** The next instruction after this one. On the End instruction, this should
 	* be nullptr.
 	*/
 	SignalInstruction *next;
 
-	virtual void SetNext(SignalInstruction *next_insn);
+	void SetNext(SignalInstruction *next_insn) override;
 };
 
 /** If signal instruction. This is perhaps the most important, as without it,
@@ -350,16 +350,16 @@ public:
 		/** Removes the pseudo instruction. Unless you are also removing the If it
 		 * belongs to, this is nonsense and dangerous.
 		 */
-		virtual void Remove();
+		void Remove() override;
 
 		/** Evaluate the pseudo instruction. This involves vectoring execution to
 		 * the instruction after the if.
 		 */
-		virtual void Evaluate(SignalVM &vm);
+		void Evaluate(SignalVM &vm) override;
 
 		/** The block to which this instruction belongs */
 		SignalIf *block;
-		virtual void SetNext(SignalInstruction *next_insn);
+		void SetNext(SignalInstruction *next_insn) override;
 	};
 
 public:
@@ -373,19 +373,19 @@ public:
 	void SetCondition(SignalCondition *cond);
 
 	/** Evaluates the If and takes the appropriate branch */
-	virtual void Evaluate(SignalVM &vm);
+	void Evaluate(SignalVM &vm) override;
 
-	virtual void Insert(SignalInstruction *before_insn);
+	void Insert(SignalInstruction *before_insn) override;
 
 	/** Removes the If and all of its children */
-	virtual void Remove();
+	void Remove() override;
 
 	SignalCondition *condition;    ///< The if conditon
 	SignalInstruction *if_true;    ///< The branch to take if true
 	SignalInstruction *if_false;   ///< The branch to take if false
 	SignalInstruction *after;      ///< The branch to take after the If
 
-	virtual void SetNext(SignalInstruction *next_insn);
+	void SetNext(SignalInstruction *next_insn) override;
 };
 
 /** Set signal instruction. This sets the state of the signal and terminates execution */
@@ -394,8 +394,8 @@ public:
 	/// Constructs the instruction and sets the state the signal is to be set to
 	SignalSet(SignalProgram *prog, SignalState = SIGNAL_STATE_RED);
 
-	virtual void Evaluate(SignalVM &vm);
-	virtual void Remove();
+	void Evaluate(SignalVM &vm) override;
+	void Remove() override;
 
 	/// The state to set the signal to
 	SignalState to_state;
@@ -403,7 +403,7 @@ public:
 	/// The instruction following this one (for the editor)
 	SignalInstruction *next;
 
-	virtual void SetNext(SignalInstruction *next_insn);
+	void SetNext(SignalInstruction *next_insn) override;
 };
 
 /// The map type used for looking up signal programs

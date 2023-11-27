@@ -131,10 +131,9 @@ CommandCost CmdDecreaseLoan(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 /**
  * In case of an unsafe unpause, we want the
  * user to confirm that it might crash.
- * @param w         unused
  * @param confirmed whether the user confirmed their action
  */
-static void AskUnsafeUnpauseCallback(Window *w, bool confirmed)
+static void AskUnsafeUnpauseCallback(Window *, bool confirmed)
 {
 	if (confirmed) {
 		DoCommandP(0, PM_PAUSED_ERROR, 0, CMD_PAUSE);
@@ -268,11 +267,11 @@ CommandCost CmdCheatSetting(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 
 		case CHT_INFLATION_INCOME:
 			if (flags & DC_EXEC) {
-				_extra_cheats.inflation_income.been_used = true;
+				_cheats.inflation_income.been_used = true;
 				_economy.inflation_payment = Clamp<uint64>(p2, 1 << 16, MAX_INFLATION);
 				if (_economy.inflation_payment > _economy.inflation_prices) {
 					_economy.inflation_prices = _economy.inflation_payment;
-					_extra_cheats.inflation_cost.been_used = true;
+					_cheats.inflation_cost.been_used = true;
 				}
 				RecomputePrices();
 				SetWindowDirty(WC_CHEATS, 0);
@@ -281,11 +280,11 @@ CommandCost CmdCheatSetting(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 
 		case CHT_INFLATION_COST:
 			if (flags & DC_EXEC) {
-				_extra_cheats.inflation_cost.been_used = true;
+				_cheats.inflation_cost.been_used = true;
 				_economy.inflation_prices = Clamp<uint64>(p2, 1 << 16, MAX_INFLATION);
 				if (_economy.inflation_payment > _economy.inflation_prices) {
 					_economy.inflation_payment = _economy.inflation_prices;
-					_extra_cheats.inflation_income.been_used = true;
+					_cheats.inflation_income.been_used = true;
 				}
 				RecomputePrices();
 				SetWindowDirty(WC_CHEATS, 0);
@@ -293,11 +292,11 @@ CommandCost CmdCheatSetting(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 			return CommandCost();
 
 		case CHT_STATION_RATING:
-			cht = &_extra_cheats.station_rating;
+			cht = &_cheats.station_rating;
 			break;
 
 		case CHT_TOWN_RATING:
-			cht = &_extra_cheats.town_rating;
+			cht = &_cheats.town_rating;
 			break;
 
 		default:

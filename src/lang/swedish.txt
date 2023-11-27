@@ -521,7 +521,7 @@ STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :Meddelandehisto
 STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :Ta bort alla meddelanden
 
 # About menu
-###length 11
+###length 12
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :Information om mark
 STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Visa/dölj konsolen
@@ -923,10 +923,6 @@ STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Ny {STRI
 
 STR_NEWS_SHOW_VEHICLE_GROUP_TOOLTIP                             :{BLACK}Öppna gruppfönstret fokuserat på fordonets grupp
 
-STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} tar inte längre emot {STRING}
-STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} tar inte längre emot {STRING} eller {STRING}
-STR_NEWS_STATION_NOW_ACCEPTS_CARGO                              :{WHITE}{STATION} tar nu emot {STRING}
-STR_NEWS_STATION_NOW_ACCEPTS_CARGO_AND_CARGO                    :{WHITE}{STATION} tar nu emot {STRING} och {STRING}
 
 STR_NEWS_OFFER_OF_SUBSIDY_EXPIRED                               :{BIG_FONT}{BLACK}Subventionen har gått ut:{}{}{STRING} från {STRING} till {STRING} är inte längre subventionerad
 STR_NEWS_SUBSIDY_WITHDRAWN_SERVICE                              :{BIG_FONT}{BLACK}Subventionen gäller inte längre:{}{}{STRING} från {STRING} till {STRING} är inte längre subventionerad
@@ -4845,7 +4841,6 @@ STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... för
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... för nära en annan stad
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... för många städer
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... det finns ingen plats kvar på kartan
-STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS                             :{WHITE}Staden kommer inte bygga vägar. Du kan tillåta att staden bygger vägar via Inställningar->Miljö->Städer
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Vägarbete pågår
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Kan inte ta bort den här staden...{}En station eller depå refererar till staden eller så kan inte en stadsägd ruta tas bort.
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... det finns ingen lämplig plats för en staty i stadens centrum

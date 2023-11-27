@@ -51,16 +51,17 @@ enum CargoClass {
 	CC_SPECIAL      = 1 << 15, ///< Special bit used for livery refit tricks instead of normal cargoes.
 };
 
-static const byte INVALID_CARGO = 0xFF; ///< Constant representing invalid cargo
+static const byte INVALID_CARGO_BITNUM = 0xFF; ///< Constant representing invalid cargo
 
 /** Specification of a cargo type. */
 struct CargoSpec {
-	uint8 bitnum;                    ///< Cargo bit number, is #INVALID_CARGO for a non-used spec.
 	CargoLabel label;                ///< Unique label of the cargo type.
+	uint8 bitnum{INVALID_CARGO_BITNUM}; ///< Cargo bit number, is #INVALID_CARGO_BITNUM for a non-used spec.
 	uint8 legend_colour;
 	uint8 rating_colour;
 	uint8 weight;                    ///< Weight of a single unit of this cargo type in 1/16 ton (62.5 kg).
-	uint16 multiplier;               ///< Capacity multiplier for vehicles. (8 fractional bits)
+	uint16 multiplier{0x100};        ///< Capacity multiplier for vehicles. (8 fractional bits)
+	uint16 classes;                  ///< Classes of this cargo type. @see CargoClass
 	int32 initial_payment;           ///< Initial payment rate before inflation is applied.
 	uint8 transit_periods[2];
 
@@ -76,7 +77,6 @@ struct CargoSpec {
 
 	SpriteID sprite;                 ///< Icon to display this cargo type, may be \c 0xFFF (which means to resolve an action123 chain).
 
-	uint16 classes;                  ///< Classes of this cargo type. @see CargoClass
 	const struct GRFFile *grffile;   ///< NewGRF where #group belongs to.
 	const struct SpriteGroup *group;
 
@@ -107,7 +107,7 @@ struct CargoSpec {
 	 */
 	inline bool IsValid() const
 	{
-		return this->bitnum != INVALID_CARGO;
+		return this->bitnum != INVALID_CARGO_BITNUM;
 	}
 
 	/**
@@ -197,6 +197,7 @@ CargoID GetCargoIDByBitnum(uint8 bitnum);
 CargoID GetDefaultCargoID(LandscapeID l, CargoType ct);
 
 void InitializeSortedCargoSpecs();
+extern std::array<uint8_t, NUM_CARGO> _sorted_cargo_types;
 extern std::vector<const CargoSpec *> _sorted_cargo_specs;
 extern span<const CargoSpec *> _sorted_standard_cargo_specs;
 
@@ -215,5 +216,10 @@ static inline bool IsCargoInClass(CargoID c, CargoClass cc)
 }
 
 using SetCargoBitIterator = SetBitIterator<CargoID, CargoTypes>;
+
+/** Comparator to sort CargoID by according to desired order. */
+struct CargoIDComparator {
+	bool operator() (const CargoID &lhs, const CargoID &rhs) const { return _sorted_cargo_types[lhs] < _sorted_cargo_types[rhs]; }
+};
 
 #endif /* CARGOTYPE_H */

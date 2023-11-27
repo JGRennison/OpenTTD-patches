@@ -211,6 +211,7 @@ enum {
 	GHK_CONSOLE,
 	GHK_BOUNDING_BOXES,
 	GHK_DIRTY_BLOCKS,
+	GHK_WIDGET_OUTLINES,
 	GHK_CENTER,
 	GHK_CENTER_ZOOM,
 	GHK_RESET_OBJECT_TO_PLACE,
@@ -332,6 +333,10 @@ struct MainWindow : Window
 
 			case GHK_DIRTY_BLOCKS:
 				ToggleDirtyBlocks();
+				return ES_HANDLED;
+
+			case GHK_WIDGET_OUTLINES:
+				ToggleWidgetOutlines();
 				return ES_HANDLED;
 		}
 
@@ -515,7 +520,7 @@ struct MainWindow : Window
 		}
 	}
 
-	bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
+	bool OnTooltip([[maybe_unused]] Point pt, int widget, TooltipCloseCondition close_cond) override
 	{
 		if (widget != WID_M_VIEWPORT) return false;
 		return this->viewport->overlay->ShowTooltip(pt, close_cond);
@@ -526,7 +531,7 @@ struct MainWindow : Window
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		/* Forward the message to the appropriate toolbar (ingame or scenario editor) */
@@ -559,6 +564,7 @@ static Hotkey global_hotkeys[] = {
 	Hotkey(WKC_BACKQUOTE, "console", GHK_CONSOLE),
 	Hotkey('B' | WKC_CTRL, "bounding_boxes", GHK_BOUNDING_BOXES),
 	Hotkey('I' | WKC_CTRL, "dirty_blocks", GHK_DIRTY_BLOCKS),
+	Hotkey((uint16)0,      "widget_outlines", GHK_WIDGET_OUTLINES),
 	Hotkey('C', "center", GHK_CENTER),
 	Hotkey('Z', "center_zoom", GHK_CENTER_ZOOM),
 	Hotkey(WKC_ESC, "reset_object_to_place", GHK_RESET_OBJECT_TO_PLACE),

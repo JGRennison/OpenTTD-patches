@@ -38,10 +38,15 @@ extern void CheckExternalFiles();
  * @return true if loading was successful.
  */
 template <class T, size_t Tnum_files, bool Tsearch_in_tars>
-bool BaseSet<T, Tnum_files, Tsearch_in_tars>::FillSetDetails(IniFile *ini, const std::string &path, const std::string &full_filename, bool allow_empty_filename)
+bool BaseSet<T, Tnum_files, Tsearch_in_tars>::FillSetDetails(const IniFile &ini, const std::string &path, const std::string &full_filename, bool allow_empty_filename)
 {
-	IniGroup *metadata = ini->GetGroup("metadata");
-	IniItem *item;
+	const IniGroup *metadata = ini.GetGroup("metadata");
+	if (metadata == nullptr) {
+		DEBUG(grf, 0, "Base " SET_TYPE "set detail loading: metadata missing.");
+		DEBUG(grf, 0, "  Is %s readable for the user running OpenTTD?", full_filename.c_str());
+		return false;
+	}
+	const IniItem *item;
 
 	fetch_metadata("name");
 	this->name = *item->value;
@@ -50,10 +55,10 @@ bool BaseSet<T, Tnum_files, Tsearch_in_tars>::FillSetDetails(IniFile *ini, const
 	this->description[std::string{}] = *item->value;
 
 	/* Add the translations of the descriptions too. */
-	for (item = metadata->item; item != nullptr; item = item->next) {
-		if (item->name.compare(0, 12, "description.") != 0) continue;
+	for (const IniItem &titem : metadata->items) {
+		if (titem.name.compare(0, 12, "description.") != 0) continue;
 
-		this->description[item->name.substr(12)] = item->value.value_or("");
+		this->description[titem.name.substr(12)] = titem.value.value_or("");
 	}
 
 	fetch_metadata("shortname");
@@ -68,13 +73,13 @@ bool BaseSet<T, Tnum_files, Tsearch_in_tars>::FillSetDetails(IniFile *ini, const
 	this->fallback = (item != nullptr && item->value && *item->value != "0" && *item->value != "false");
 
 	/* For each of the file types we want to find the file, MD5 checksums and warning messages. */
-	IniGroup *files  = ini->GetGroup("files");
-	IniGroup *md5s   = ini->GetGroup("md5s");
-	IniGroup *origin = ini->GetGroup("origin");
+	const IniGroup *files  = ini.GetGroup("files");
+	const IniGroup *md5s   = ini.GetGroup("md5s");
+	const IniGroup *origin = ini.GetGroup("origin");
 	for (uint i = 0; i < Tnum_files; i++) {
 		MD5File *file = &this->files[i];
 		/* Find the filename first. */
-		item = files->GetItem(BaseSet<T, Tnum_files, Tsearch_in_tars>::file_names[i]);
+		item = files != nullptr ? files->GetItem(BaseSet<T, Tnum_files, Tsearch_in_tars>::file_names[i]) : nullptr;
 		if (item == nullptr || (!item->value.has_value() && !allow_empty_filename)) {
 			DEBUG(grf, 0, "No " SET_TYPE " file for: %s (in %s)", BaseSet<T, Tnum_files, Tsearch_in_tars>::file_names[i], full_filename.c_str());
 			return false;
@@ -92,7 +97,7 @@ bool BaseSet<T, Tnum_files, Tsearch_in_tars>::FillSetDetails(IniFile *ini, const
 		file->filename = path + filename;
 
 		/* Then find the MD5 checksum */
-		item = md5s->GetItem(filename);
+		item = md5s != nullptr ? md5s->GetItem(filename) : nullptr;
 		if (item == nullptr || !item->value.has_value()) {
 			DEBUG(grf, 0, "No MD5 checksum specified for: %s (in %s)", filename.c_str(), full_filename.c_str());
 			return false;
@@ -118,8 +123,8 @@ bool BaseSet<T, Tnum_files, Tsearch_in_tars>::FillSetDetails(IniFile *ini, const
 		}
 
 		/* Then find the warning message when the file's missing */
-		item = origin->GetItem(filename);
-		if (item == nullptr) item = origin->GetItem("default");
+		item = origin != nullptr ? origin->GetItem(filename) : nullptr;
+		if (item == nullptr) item = origin != nullptr ? origin->GetItem("default") : nullptr;
 		if (item == nullptr || !item->value.has_value()) {
 			DEBUG(grf, 1, "No origin warning message specified for: %s", filename.c_str());
 			file->missing_warning.clear();
@@ -152,15 +157,15 @@ bool BaseSet<T, Tnum_files, Tsearch_in_tars>::FillSetDetails(IniFile *ini, const
 }
 
 template <class Tbase_set>
-bool BaseMedia<Tbase_set>::AddFile(const std::string &filename, size_t basepath_length, const std::string &tar_filename)
+bool BaseMedia<Tbase_set>::AddFile(const std::string &filename, size_t basepath_length, const std::string &)
 {
 	bool ret = false;
 	DEBUG(grf, 1, "Checking %s for base " SET_TYPE " set", filename.c_str());
 
 	Tbase_set *set = new Tbase_set();
-	IniFile *ini = new IniFile();
+	IniFile ini{};
 	std::string path{ filename, basepath_length };
-	ini->LoadFromDisk(path, BASESET_DIR);
+	ini.LoadFromDisk(path, BASESET_DIR);
 
 	auto psep = path.rfind(PATHSEPCHAR);
 	if (psep != std::string::npos) {
@@ -217,7 +222,6 @@ bool BaseMedia<Tbase_set>::AddFile(const std::string &filename, size_t basepath_
 		delete set;
 	}
 
-	delete ini;
 	return ret;
 }
 

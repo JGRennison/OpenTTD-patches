@@ -48,7 +48,7 @@ protected:
 		return *p;
 	}
 
-	int SlopeCost(TileIndex tile, TileIndex next_tile, Trackdir trackdir)
+	int SlopeCost(TileIndex tile, TileIndex next_tile, Trackdir)
 	{
 		/* height of the center of the current tile */
 		int x1 = TileX(tile) * TILE_SIZE;
@@ -242,7 +242,7 @@ public:
 		return IsRoadDepotTile(n.m_segment_last_tile);
 	}
 
-	inline bool PfDetectDestinationTile(TileIndex tile, Trackdir trackdir)
+	inline bool PfDetectDestinationTile(TileIndex tile, Trackdir)
 	{
 		return IsRoadDepotTile(tile);
 	}

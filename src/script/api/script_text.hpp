@@ -125,7 +125,7 @@ public:
 	/**
 	 * @api -all
 	 */
-	virtual const std::string GetEncodedText();
+	const std::string GetEncodedText() override;
 
 private:
 	using ScriptTextRef = ScriptObjectRef<ScriptText>;

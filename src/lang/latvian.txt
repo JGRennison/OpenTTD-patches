@@ -505,7 +505,7 @@ STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :Ziņojumu vēst
 STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :Dzēst visus ziņojumus
 
 # About menu
-###length 11
+###length 12
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :Zemes platības informācija
 STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Atvērt/aizvērt konsoli
@@ -907,10 +907,6 @@ STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Tagad ir
 
 STR_NEWS_SHOW_VEHICLE_GROUP_TOOLTIP                             :{BLACK}Atvērt grupas logu, fokusēts uz transportlīdzekļu grupu
 
-STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} vairs nepieņem {STRING}
-STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} vairs nepieņem {STRING} vai {STRING}
-STR_NEWS_STATION_NOW_ACCEPTS_CARGO                              :{WHITE}{STATION} pieņem {STRING}
-STR_NEWS_STATION_NOW_ACCEPTS_CARGO_AND_CARGO                    :{WHITE}{STATION} pieņem {STRING} un {STRING}
 
 STR_NEWS_OFFER_OF_SUBSIDY_EXPIRED                               :{BIG_FONT}{BLACK}Subsīdijas piedāvājums beidzies:{}{}{STRING} no {STRING} uz {STRING} subsidēšana ir atcelta
 STR_NEWS_SUBSIDY_WITHDRAWN_SERVICE                              :{BIG_FONT}{BLACK}Subsidēšana atcelta:{}{}{STRING} pārvadājumi no {STRING} uz {STRING} turpmāk vairs netiek subsidēti
@@ -4769,7 +4765,6 @@ STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... pār
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... pārāk tuvu citai pilsētai
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... pārāk daudz pilsētu
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... uz kartes nav vairāk vietas
-STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS                             :{WHITE}Pilsēta ceļus nebūvēs. Jūs varat ieslēgt ceļu būvi caur Papildu iestatījumi->Ekonomika->Pilsētas
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Notiek ceļa remonts
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Šo pilsētu nevar dzēst...{}Kāda stacija vai depo attiecas uz pilsētu. Vai pilsētai pieder nenoņemams lauciņš
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... šās pilsētas centrā statujai nav piemērotas vietas

@@ -76,9 +76,9 @@ static DropDownList BuildVisibilityDropDownList()
 {
 	DropDownList list;
 
-	list.emplace_back(new DropDownListStringItem(STR_NETWORK_SERVER_VISIBILITY_LOCAL, SERVER_GAME_TYPE_LOCAL, false));
-	list.emplace_back(new DropDownListStringItem(STR_NETWORK_SERVER_VISIBILITY_INVITE_ONLY, SERVER_GAME_TYPE_INVITE_ONLY, false));
-	list.emplace_back(new DropDownListStringItem(STR_NETWORK_SERVER_VISIBILITY_PUBLIC, SERVER_GAME_TYPE_PUBLIC, false));
+	list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_SERVER_VISIBILITY_LOCAL, SERVER_GAME_TYPE_LOCAL, false));
+	list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_SERVER_VISIBILITY_INVITE_ONLY, SERVER_GAME_TYPE_INVITE_ONLY, false));
+	list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_SERVER_VISIBILITY_PUBLIC, SERVER_GAME_TYPE_PUBLIC, false));
 
 	return list;
 }
@@ -90,7 +90,6 @@ static const ServerListPosition SLP_INVALID = -1;
 /** Full blown container to make it behave exactly as we want :) */
 class NWidgetServerListHeader : public NWidgetContainer {
 	static const uint MINIMUM_NAME_WIDTH_BEFORE_NEW_HEADER = 150; ///< Minimum width before adding a new header
-	bool visible[6]; ///< The visible headers
 public:
 	NWidgetServerListHeader() : NWidgetContainer(NWID_HORIZONTAL)
 	{
@@ -109,17 +108,10 @@ public:
 		                        + GetSpriteSize(SPR_BLOT, nullptr, ZOOM_LVL_OUT_4X).width, 12);
 		leaf->SetFill(0, 1);
 		this->Add(leaf);
-
-		/* First and last are always visible, the rest is implicitly zeroed */
-		this->visible[0] = true;
-		*lastof(this->visible) = true;
 	}
 
 	void SetupSmallestSize(Window *w, bool init_array) override
 	{
-		/* Oh yeah, we ought to be findable! */
-		w->nested_array[WID_NG_HEADER] = this;
-
 		this->smallest_y = 0; // Biggest child.
 		this->fill_x = 1;
 		this->fill_y = 0;
@@ -151,16 +143,14 @@ public:
 		this->current_y = given_height;
 
 		given_width -= this->tail->smallest_x;
-		NWidgetBase *child_wid = this->head->next;
 		/* The first and last widget are always visible, determine which other should be visible */
-		for (uint i = 1; i < lengthof(this->visible) - 1; i++) {
-			if (given_width > MINIMUM_NAME_WIDTH_BEFORE_NEW_HEADER + child_wid->smallest_x && this->visible[i - 1]) {
-				this->visible[i] = true;
+		for (NWidgetBase *child_wid = this->head->next; child_wid->next != nullptr; child_wid = child_wid->next) {
+			if (given_width > ScaleGUITrad(MINIMUM_NAME_WIDTH_BEFORE_NEW_HEADER) + child_wid->smallest_x && child_wid->prev->current_x != 0) {
 				given_width -= child_wid->smallest_x;
+				child_wid->current_x = child_wid->smallest_x; /* Make visible. */
 			} else {
-				this->visible[i] = false;
+				child_wid->current_x = 0; /* Make invisible. */
 			}
-			child_wid = child_wid->next;
 		}
 
 		/* All remaining space goes to the first (name) widget */
@@ -168,64 +158,12 @@ public:
 
 		/* Now assign the widgets to their rightful place */
 		uint position = 0; // Place to put next child relative to origin of the container.
-		uint i = rtl ? lengthof(this->visible) - 1 : 0;
-		child_wid = rtl ? this->tail : this->head;
-		while (child_wid != nullptr) {
-			if (this->visible[i]) {
+		for (NWidgetBase *child_wid = rtl ? this->tail : this->head; child_wid != nullptr; child_wid = rtl ? child_wid->prev : child_wid->next) {
+			if (child_wid->current_x != 0) {
 				child_wid->AssignSizePosition(sizing, x + position, y, child_wid->current_x, this->current_y, rtl);
 				position += child_wid->current_x;
 			}
-
-			child_wid = rtl ? child_wid->prev : child_wid->next;
-			i += rtl ? -1 : 1;
 		}
-	}
-
-	void Draw(const Window *w) override
-	{
-		int i = 0;
-		for (NWidgetBase *child_wid = this->head; child_wid != nullptr; child_wid = child_wid->next) {
-			if (!this->visible[i++]) continue;
-
-			child_wid->Draw(w);
-		}
-	}
-
-	NWidgetCore *GetWidgetFromPos(int x, int y) override
-	{
-		if (!IsInsideBS(x, this->pos_x, this->current_x) || !IsInsideBS(y, this->pos_y, this->current_y)) return nullptr;
-
-		int i = 0;
-		for (NWidgetBase *child_wid = this->head; child_wid != nullptr; child_wid = child_wid->next) {
-			if (!this->visible[i++]) continue;
-			NWidgetCore *nwid = child_wid->GetWidgetFromPos(x, y);
-			if (nwid != nullptr) return nwid;
-		}
-		return nullptr;
-	}
-
-	void FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widgets) override
-	{
-		if (this->base_flags & WBF_DIRTY) {
-			dirty_widgets.push_back(this);
-		} else {
-			int i = 0;
-			for (NWidgetBase *child_wid = this->head; child_wid != nullptr; child_wid = child_wid->next) {
-				if (!this->visible[i++]) continue;
-				child_wid->FillDirtyWidgets(dirty_widgets);
-			}
-		}
-	}
-
-	/**
-	 * Checks whether the given widget is actually visible.
-	 * @param widget the widget to check for visibility
-	 * @return true iff the widget is visible.
-	 */
-	bool IsWidgetVisible(NetworkGameWidgets widget) const
-	{
-		assert((uint)(widget - WID_NG_NAME) < lengthof(this->visible));
-		return this->visible[widget - WID_NG_NAME];
 	}
 };
 
@@ -428,10 +366,8 @@ protected:
 
 		/* only draw details if the server is online */
 		if (cur_item->status == NGLS_ONLINE) {
-			const NWidgetServerListHeader *nwi_header = this->GetWidget<NWidgetServerListHeader>(WID_NG_HEADER);
-
-			if (nwi_header->IsWidgetVisible(WID_NG_CLIENTS)) {
-				Rect clients = this->GetWidget<NWidgetBase>(WID_NG_CLIENTS)->GetCurrentRect();
+			if (const NWidgetBase *nwid = this->GetWidget<NWidgetBase>(WID_NG_CLIENTS); nwid->current_x != 0) {
+				Rect clients = nwid->GetCurrentRect();
 				SetDParam(0, cur_item->info.clients_on);
 				SetDParam(1, cur_item->info.clients_max);
 				SetDParam(2, cur_item->info.companies_on);
@@ -439,26 +375,26 @@ protected:
 				DrawString(clients.left, clients.right, y + text_y_offset, STR_NETWORK_SERVER_LIST_GENERAL_ONLINE, TC_FROMSTRING, SA_HOR_CENTER);
 			}
 
-			if (nwi_header->IsWidgetVisible(WID_NG_MAPSIZE)) {
+			if (const NWidgetBase *nwid = this->GetWidget<NWidgetBase>(WID_NG_MAPSIZE); nwid->current_x != 0) {
 				/* map size */
-				Rect mapsize = this->GetWidget<NWidgetBase>(WID_NG_MAPSIZE)->GetCurrentRect();
+				Rect mapsize = nwid->GetCurrentRect();
 				SetDParam(0, cur_item->info.map_width);
 				SetDParam(1, cur_item->info.map_height);
 				DrawString(mapsize.left, mapsize.right, y + text_y_offset, STR_NETWORK_SERVER_LIST_MAP_SIZE_SHORT, TC_FROMSTRING, SA_HOR_CENTER);
 			}
 
-			if (nwi_header->IsWidgetVisible(WID_NG_DATE)) {
+			if (const NWidgetBase *nwid = this->GetWidget<NWidgetBase>(WID_NG_DATE); nwid->current_x != 0) {
 				/* current date */
-				Rect date = this->GetWidget<NWidgetBase>(WID_NG_DATE)->GetCurrentRect();
+				Rect date = nwid->GetCurrentRect();
 				YearMonthDay ymd;
 				ConvertDateToYMD(cur_item->info.game_date, &ymd);
 				SetDParam(0, ymd.year);
 				DrawString(date.left, date.right, y + text_y_offset, STR_JUST_INT, TC_BLACK, SA_HOR_CENTER);
 			}
 
-			if (nwi_header->IsWidgetVisible(WID_NG_YEARS)) {
+			if (const NWidgetBase *nwid = this->GetWidget<NWidgetBase>(WID_NG_YEARS); nwid->current_x != 0) {
 				/* number of years the game is running */
-				Rect years = this->GetWidget<NWidgetBase>(WID_NG_YEARS)->GetCurrentRect();
+				Rect years = nwid->GetCurrentRect();
 				YearMonthDay ymd_cur, ymd_start;
 				ConvertDateToYMD(cur_item->info.game_date, &ymd_cur);
 				ConvertDateToYMD(cur_item->info.start_date, &ymd_start);
@@ -523,7 +459,7 @@ public:
 		this->servers.ForceRebuild();
 	}
 
-	void Close() override
+	void Close(int data = 0) override
 	{
 		this->last_sorting = this->servers.GetListing();
 		this->Window::Close();
@@ -536,7 +472,7 @@ public:
 		this->flag_offset = this->blot_offset + ScaleGUITrad(2) + GetSpriteSize(SPR_BLOT).width;
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_NG_MATRIX:
@@ -741,7 +677,7 @@ public:
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_NG_CANCEL: // Cancel button
@@ -839,7 +775,7 @@ public:
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
 	{
 		this->servers.ForceRebuild();
 		this->SetDirty();
@@ -1081,7 +1017,7 @@ struct NetworkStartServerWindow : public Window {
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_NSS_CONNTYPE_BTN:
@@ -1101,7 +1037,7 @@ struct NetworkStartServerWindow : public Window {
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_NSS_CANCEL: // Cancel button
@@ -1111,7 +1047,7 @@ struct NetworkStartServerWindow : public Window {
 			case WID_NSS_SETPWD: // Set password button
 				this->widget_id = WID_NSS_SETPWD;
 				SetDParamStr(0, _settings_client.network.server_password);
-				ShowQueryString(STR_JUST_RAW_STRING, STR_NETWORK_START_SERVER_SET_PASSWORD, 20, this, CS_ALPHANUMERAL, QSF_NONE);
+				ShowQueryString(STR_JUST_RAW_STRING, STR_NETWORK_START_SERVER_SET_PASSWORD, NETWORK_PASSWORD_LENGTH, this, CS_ALPHANUMERAL, QSF_NONE);
 				break;
 
 			case WID_NSS_CONNTYPE_BTN: // Connection type
@@ -1203,13 +1139,7 @@ struct NetworkStartServerWindow : public Window {
 
 	void OnTimeout() override
 	{
-		static const int raise_widgets[] = {WID_NSS_CLIENTS_BTND, WID_NSS_CLIENTS_BTNU, WID_NSS_COMPANIES_BTND, WID_NSS_COMPANIES_BTNU, WIDGET_LIST_END};
-		for (const int *widget = raise_widgets; *widget != WIDGET_LIST_END; widget++) {
-			if (this->IsWidgetLowered(*widget)) {
-				this->RaiseWidget(*widget);
-				this->SetWidgetDirty(*widget);
-			}
-		}
+		this->RaiseWidgetsWhenLowered(WID_NSS_CLIENTS_BTND, WID_NSS_CLIENTS_BTNU, WID_NSS_COMPANIES_BTND, WID_NSS_COMPANIES_BTNU);
 	}
 
 	void OnQueryTextFinished(char *str) override
@@ -1398,30 +1328,27 @@ enum DropDownAdmin {
 
 /**
  * Callback function for admin command to kick client.
- * @param w The window which initiated the confirmation dialog.
  * @param confirmed Iff the user pressed Yes.
  */
-static void AdminClientKickCallback(Window *w, bool confirmed)
+static void AdminClientKickCallback(Window *, bool confirmed)
 {
 	if (confirmed) NetworkServerKickClient(_admin_client_id, {});
 }
 
 /**
  * Callback function for admin command to ban client.
- * @param w The window which initiated the confirmation dialog.
  * @param confirmed Iff the user pressed Yes.
  */
-static void AdminClientBanCallback(Window *w, bool confirmed)
+static void AdminClientBanCallback(Window *, bool confirmed)
 {
 	if (confirmed) NetworkServerKickOrBanIP(_admin_client_id, true, {});
 }
 
 /**
  * Callback function for admin command to reset company.
- * @param w The window which initiated the confirmation dialog.
  * @param confirmed Iff the user pressed Yes.
  */
-static void AdminCompanyResetCallback(Window *w, bool confirmed)
+static void AdminCompanyResetCallback(Window *, bool confirmed)
 {
 	if (confirmed) {
 		if (NetworkCompanyHasClients(_admin_company_id)) return;
@@ -1431,10 +1358,9 @@ static void AdminCompanyResetCallback(Window *w, bool confirmed)
 
 /**
  * Callback function for admin command to unlock company.
- * @param w The window which initiated the confirmation dialog.
  * @param confirmed Iff the user pressed Yes.
  */
-static void AdminCompanyUnlockCallback(Window *w, bool confirmed)
+static void AdminCompanyUnlockCallback(Window *, bool confirmed)
 {
 	if (confirmed) NetworkServerSetCompanyPassword(_admin_company_id, "", false);
 }
@@ -1529,7 +1455,7 @@ private:
 	 * @param pt The point where this button was clicked.
 	 * @param company_id The company this button was assigned to.
 	 */
-	static void OnClickCompanyChat(NetworkClientListWindow *w, Point pt, CompanyID company_id)
+	static void OnClickCompanyChat([[maybe_unused]] NetworkClientListWindow *w, [[maybe_unused]] Point pt, CompanyID company_id)
 	{
 		ShowNetworkChatQueryWindow(DESTTYPE_TEAM, company_id);
 	}
@@ -1540,7 +1466,7 @@ private:
 	 * @param pt The point where this button was clicked.
 	 * @param company_id The company this button was assigned to.
 	 */
-	static void OnClickCompanyJoin(NetworkClientListWindow *w, Point pt, CompanyID company_id)
+	static void OnClickCompanyJoin([[maybe_unused]] NetworkClientListWindow *w, [[maybe_unused]] Point pt, CompanyID company_id)
 	{
 		if (_network_server) {
 			NetworkServerDoMove(CLIENT_ID_SERVER, company_id);
@@ -1558,9 +1484,8 @@ private:
 	 * Crete new company button is clicked.
 	 * @param w The instance of this window.
 	 * @param pt The point where this button was clicked.
-	 * @param company_id The company this button was assigned to.
 	 */
-	static void OnClickCompanyNew(NetworkClientListWindow *w, Point pt, CompanyID company_id)
+	static void OnClickCompanyNew([[maybe_unused]] NetworkClientListWindow *w, [[maybe_unused]] Point pt, CompanyID)
 	{
 		if (_network_server) {
 			DoCommandP(0, CCA_NEW, _network_own_client_id, CMD_COMPANY_CTRL);
@@ -1575,11 +1500,11 @@ private:
 	 * @param pt The point where this button was clicked.
 	 * @param client_id The client this button was assigned to.
 	 */
-	static void OnClickClientAdmin(NetworkClientListWindow *w, Point pt, ClientID client_id)
+	static void OnClickClientAdmin([[maybe_unused]] NetworkClientListWindow *w, [[maybe_unused]] Point pt, ClientID client_id)
 	{
 		DropDownList list;
-		list.emplace_back(new DropDownListStringItem(STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK, DD_CLIENT_ADMIN_KICK, false));
-		list.emplace_back(new DropDownListStringItem(STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN, DD_CLIENT_ADMIN_BAN, false));
+		list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK, DD_CLIENT_ADMIN_KICK, false));
+		list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN, DD_CLIENT_ADMIN_BAN, false));
 
 		Rect wi_rect;
 		wi_rect.left   = pt.x;
@@ -1597,11 +1522,11 @@ private:
 	 * @param pt The point where this button was clicked.
 	 * @param company_id The company this button was assigned to.
 	 */
-	static void OnClickCompanyAdmin(NetworkClientListWindow *w, Point pt, CompanyID company_id)
+	static void OnClickCompanyAdmin([[maybe_unused]] NetworkClientListWindow *w, [[maybe_unused]] Point pt, CompanyID company_id)
 	{
 		DropDownList list;
-		list.emplace_back(new DropDownListStringItem(STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_RESET, DD_COMPANY_ADMIN_RESET, NetworkCompanyHasClients(company_id)));
-		list.emplace_back(new DropDownListStringItem(STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK, DD_COMPANY_ADMIN_UNLOCK, !NetworkCompanyIsPassworded(company_id)));
+		list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_RESET, DD_COMPANY_ADMIN_RESET, NetworkCompanyHasClients(company_id)));
+		list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK, DD_COMPANY_ADMIN_UNLOCK, !NetworkCompanyIsPassworded(company_id)));
 
 		Rect wi_rect;
 		wi_rect.left   = pt.x;
@@ -1618,7 +1543,7 @@ private:
 	 * @param pt The point where this button was clicked.
 	 * @param client_id The client this button was assigned to.
 	 */
-	static void OnClickClientChat(NetworkClientListWindow *w, Point pt, ClientID client_id)
+	static void OnClickClientChat([[maybe_unused]] NetworkClientListWindow *w, [[maybe_unused]] Point pt, ClientID client_id)
 	{
 		ShowNetworkChatQueryWindow(DESTTYPE_CLIENT, client_id);
 	}
@@ -1632,9 +1557,9 @@ private:
 	{
 		ButtonCommon *chat_button = new CompanyButton(SPR_CHAT, company_id == COMPANY_SPECTATOR ? STR_NETWORK_CLIENT_LIST_CHAT_SPECTATOR_TOOLTIP : STR_NETWORK_CLIENT_LIST_CHAT_COMPANY_TOOLTIP, COLOUR_ORANGE, company_id, &NetworkClientListWindow::OnClickCompanyChat);
 
-		if (_network_server) this->buttons[line_count].emplace_back(new CompanyButton(SPR_ADMIN, STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_TOOLTIP, COLOUR_RED, company_id, &NetworkClientListWindow::OnClickCompanyAdmin, company_id == COMPANY_SPECTATOR));
+		if (_network_server) this->buttons[line_count].push_back(std::make_unique<CompanyButton>(SPR_ADMIN, STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_TOOLTIP, COLOUR_RED, company_id, &NetworkClientListWindow::OnClickCompanyAdmin, company_id == COMPANY_SPECTATOR));
 		this->buttons[line_count].emplace_back(chat_button);
-		if (client_playas != company_id) this->buttons[line_count].emplace_back(new CompanyButton(SPR_JOIN, STR_NETWORK_CLIENT_LIST_JOIN_TOOLTIP, COLOUR_ORANGE, company_id, &NetworkClientListWindow::OnClickCompanyJoin, company_id != COMPANY_SPECTATOR && Company::Get(company_id)->is_ai));
+		if (client_playas != company_id) this->buttons[line_count].push_back(std::make_unique<CompanyButton>(SPR_JOIN, STR_NETWORK_CLIENT_LIST_JOIN_TOOLTIP, COLOUR_ORANGE, company_id, &NetworkClientListWindow::OnClickCompanyJoin, company_id != COMPANY_SPECTATOR && Company::Get(company_id)->is_ai));
 
 		this->line_count += 1;
 
@@ -1643,8 +1568,8 @@ private:
 			if (ci->client_playas != company_id) continue;
 			has_players = true;
 
-			if (_network_server) this->buttons[line_count].emplace_back(new ClientButton(SPR_ADMIN, STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_TOOLTIP, COLOUR_RED, ci->client_id, &NetworkClientListWindow::OnClickClientAdmin, _network_own_client_id == ci->client_id));
-			if (_network_own_client_id != ci->client_id) this->buttons[line_count].emplace_back(new ClientButton(SPR_CHAT, STR_NETWORK_CLIENT_LIST_CHAT_CLIENT_TOOLTIP, COLOUR_ORANGE, ci->client_id, &NetworkClientListWindow::OnClickClientChat));
+			if (_network_server) this->buttons[line_count].push_back(std::make_unique<ClientButton>(SPR_ADMIN, STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_TOOLTIP, COLOUR_RED, ci->client_id, &NetworkClientListWindow::OnClickClientAdmin, _network_own_client_id == ci->client_id));
+			if (_network_own_client_id != ci->client_id) this->buttons[line_count].push_back(std::make_unique<ClientButton>(SPR_CHAT, STR_NETWORK_CLIENT_LIST_CHAT_CLIENT_TOOLTIP, COLOUR_ORANGE, ci->client_id, &NetworkClientListWindow::OnClickClientChat));
 
 			if (ci->client_id == _network_own_client_id) {
 				this->player_self_index = this->line_count;
@@ -1674,7 +1599,7 @@ private:
 
 		/* As spectator, show a line to create a new company. */
 		if (client_playas == COMPANY_SPECTATOR && !NetworkMaxCompaniesReached()) {
-			this->buttons[line_count].emplace_back(new CompanyButton(SPR_JOIN, STR_NETWORK_CLIENT_LIST_NEW_COMPANY_TOOLTIP, COLOUR_ORANGE, COMPANY_SPECTATOR, &NetworkClientListWindow::OnClickCompanyNew));
+			this->buttons[line_count].push_back(std::make_unique<CompanyButton>(SPR_JOIN, STR_NETWORK_CLIENT_LIST_NEW_COMPANY_TOOLTIP, COLOUR_ORANGE, COMPANY_SPECTATOR, &NetworkClientListWindow::OnClickCompanyNew));
 			this->line_count += 1;
 		}
 
@@ -1746,7 +1671,7 @@ public:
 		RebuildList();
 	}
 
-	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
 	{
 		this->RebuildList();
 
@@ -1755,7 +1680,7 @@ public:
 		this->SetWidgetDisabledState(WID_CL_SERVER_NAME_EDIT, !_network_server);
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_CL_SERVER_VISIBILITY:
@@ -1818,7 +1743,7 @@ public:
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_CL_SERVER_NAME_EDIT:
@@ -1852,7 +1777,7 @@ public:
 		}
 	}
 
-	bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
+	bool OnTooltip([[maybe_unused]] Point pt, int widget, TooltipCloseCondition close_cond) override
 	{
 		switch (widget) {
 			case WID_CL_MATRIX: {
@@ -2145,7 +2070,7 @@ public:
 		}
 	}
 
-	void OnMouseOver(Point pt, int widget) override
+	void OnMouseOver([[maybe_unused]] Point pt, int widget) override
 	{
 		if (widget != WID_CL_MATRIX) {
 			if (this->hover_index != -1) {
@@ -2232,7 +2157,7 @@ struct NetworkJoinStatusWindow : Window {
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_NJS_PROGRESS_BAR:
@@ -2258,7 +2183,7 @@ struct NetworkJoinStatusWindow : Window {
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		if (widget == WID_NJS_CANCELOK) { // Disconnect button
 			NetworkDisconnect();
@@ -2347,7 +2272,7 @@ struct NetworkCompanyPasswordWindow : public Window {
 		this->ReInit();
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget == WID_NCP_WARNING) {
 			*size = this->warning_size;
@@ -2371,7 +2296,7 @@ struct NetworkCompanyPasswordWindow : public Window {
 		NetworkChangeCompanyPassword(_local_company, this->password_editbox.text.buf);
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_NCP_OK:
@@ -2447,23 +2372,27 @@ struct NetworkAskRelayWindow : public Window {
 		this->InitNested(0);
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void Close(int data = 0) override
+	{
+		if (data == NRWCD_UNHANDLED) _network_coordinator_client.ConnectFailure(this->token, 0);
+		this->Window::Close();
+	}
+
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget == WID_NAR_TEXT) {
 			*size = GetStringBoundingBox(STR_NETWORK_ASK_RELAY_TEXT);
-			size->width += WidgetDimensions::scaled.frametext.Horizontal();
-			size->height += WidgetDimensions::scaled.frametext.Vertical();
 		}
 	}
 
 	void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (widget == WID_NAR_TEXT) {
-			DrawStringMultiLine(r.Shrink(WidgetDimensions::scaled.frametext), STR_NETWORK_ASK_RELAY_TEXT, TC_FROMSTRING, SA_CENTER);
+			DrawStringMultiLine(r, STR_NETWORK_ASK_RELAY_TEXT, TC_FROMSTRING, SA_CENTER);
 		}
 	}
 
-	void FindWindowPlacementAndResize(int def_width, int def_height) override
+	void FindWindowPlacementAndResize([[maybe_unused]] int def_width, [[maybe_unused]] int def_height) override
 	{
 		/* Position query window over the calling window, ensuring it's within screen bounds. */
 		this->left = Clamp(parent->left + (parent->width / 2) - (this->width / 2), 0, _screen.width - this->width);
@@ -2481,23 +2410,23 @@ struct NetworkAskRelayWindow : public Window {
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_NAR_NO:
 				_network_coordinator_client.ConnectFailure(this->token, 0);
-				this->Close();
+				this->Close(NRWCD_HANDLED);
 				break;
 
 			case WID_NAR_YES_ONCE:
 				_network_coordinator_client.StartTurnConnection(this->token);
-				this->Close();
+				this->Close(NRWCD_HANDLED);
 				break;
 
 			case WID_NAR_YES_ALWAYS:
 				_settings_client.network.use_relay_service = URS_ALLOW;
 				_network_coordinator_client.StartTurnConnection(this->token);
-				this->Close();
+				this->Close(NRWCD_HANDLED);
 				break;
 		}
 	}
@@ -2508,12 +2437,14 @@ static const NWidgetPart _nested_network_ask_relay_widgets[] = {
 		NWidget(WWT_CLOSEBOX, COLOUR_RED),
 		NWidget(WWT_CAPTION, COLOUR_RED, WID_NAR_CAPTION), SetDataTip(STR_NETWORK_ASK_RELAY_CAPTION, STR_NULL),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_RED), SetPIP(0, 0, 8),
-		NWidget(WWT_TEXT, COLOUR_RED, WID_NAR_TEXT), SetAlignment(SA_HOR_CENTER), SetFill(1, 1),
-		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(10, 15, 10),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_NAR_NO), SetMinimalSize(71, 12), SetFill(1, 1), SetDataTip(STR_NETWORK_ASK_RELAY_NO, STR_NULL),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_NAR_YES_ONCE), SetMinimalSize(71, 12), SetFill(1, 1), SetDataTip(STR_NETWORK_ASK_RELAY_YES_ONCE, STR_NULL),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_NAR_YES_ALWAYS), SetMinimalSize(71, 12), SetFill(1, 1), SetDataTip(STR_NETWORK_ASK_RELAY_YES_ALWAYS, STR_NULL),
+	NWidget(WWT_PANEL, COLOUR_RED),
+		NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_wide, 0), SetPadding(WidgetDimensions::unscaled.modalpopup),
+			NWidget(WWT_TEXT, COLOUR_RED, WID_NAR_TEXT), SetAlignment(SA_HOR_CENTER), SetFill(1, 1),
+			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(0, WidgetDimensions::unscaled.hsep_wide, 0),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_NAR_NO), SetMinimalSize(71, 12), SetFill(1, 1), SetDataTip(STR_NETWORK_ASK_RELAY_NO, STR_NULL),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_NAR_YES_ONCE), SetMinimalSize(71, 12), SetFill(1, 1), SetDataTip(STR_NETWORK_ASK_RELAY_YES_ONCE, STR_NULL),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_NAR_YES_ALWAYS), SetMinimalSize(71, 12), SetFill(1, 1), SetDataTip(STR_NETWORK_ASK_RELAY_YES_ALWAYS, STR_NULL),
+			EndContainer(),
 		EndContainer(),
 	EndContainer(),
 };
@@ -2533,7 +2464,7 @@ static WindowDesc _network_ask_relay_desc(
  */
 void ShowNetworkAskRelay(const std::string &server_connection_string, const std::string &relay_connection_string, const std::string &token)
 {
-	CloseWindowByClass(WC_NETWORK_ASK_RELAY);
+	CloseWindowByClass(WC_NETWORK_ASK_RELAY, NRWCD_HANDLED);
 
 	Window *parent = GetMainWindow();
 	new NetworkAskRelayWindow(&_network_ask_relay_desc, parent, server_connection_string, relay_connection_string, token);
@@ -2550,23 +2481,21 @@ struct NetworkAskSurveyWindow : public Window {
 		this->InitNested(0);
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget == WID_NAS_TEXT) {
 			*size = GetStringBoundingBox(STR_NETWORK_ASK_SURVEY_TEXT);
-			size->width += WidgetDimensions::scaled.frametext.Horizontal();
-			size->height += WidgetDimensions::scaled.frametext.Vertical();
 		}
 	}
 
 	void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (widget == WID_NAS_TEXT) {
-			DrawStringMultiLine(r.Shrink(WidgetDimensions::scaled.frametext), STR_NETWORK_ASK_SURVEY_TEXT, TC_BLACK, SA_CENTER);
+			DrawStringMultiLine(r, STR_NETWORK_ASK_SURVEY_TEXT, TC_BLACK, SA_CENTER);
 		}
 	}
 
-	void FindWindowPlacementAndResize(int def_width, int def_height) override
+	void FindWindowPlacementAndResize([[maybe_unused]] int def_width, [[maybe_unused]] int def_height) override
 	{
 		/* Position query window over the calling window, ensuring it's within screen bounds. */
 		this->left = Clamp(parent->left + (parent->width / 2) - (this->width / 2), 0, _screen.width - this->width);
@@ -2574,7 +2503,7 @@ struct NetworkAskSurveyWindow : public Window {
 		this->SetDirty();
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_NAS_PREVIEW:
@@ -2603,15 +2532,17 @@ static const NWidgetPart _nested_network_ask_survey_widgets[] = {
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_NAS_CAPTION), SetDataTip(STR_NETWORK_ASK_SURVEY_CAPTION, STR_NULL),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_GREY), SetPIP(0, 4, 8),
-		NWidget(WWT_TEXT, COLOUR_GREY, WID_NAS_TEXT), SetAlignment(SA_HOR_CENTER), SetFill(1, 1),
-		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(10, 15, 10),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NAS_PREVIEW), SetMinimalSize(71, 12), SetFill(1, 1), SetDataTip(STR_NETWORK_ASK_SURVEY_PREVIEW, STR_NULL),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NAS_LINK), SetMinimalSize(71, 12), SetFill(1, 1), SetDataTip(STR_NETWORK_ASK_SURVEY_LINK, STR_NULL),
-		EndContainer(),
-		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(10, 15, 10),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_NAS_NO), SetMinimalSize(71, 12), SetFill(1, 1), SetDataTip(STR_NETWORK_ASK_SURVEY_NO, STR_NULL),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_NAS_YES), SetMinimalSize(71, 12), SetFill(1, 1), SetDataTip(STR_NETWORK_ASK_SURVEY_YES, STR_NULL),
+	NWidget(WWT_PANEL, COLOUR_GREY),
+		NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_wide, 0), SetPadding(WidgetDimensions::unscaled.modalpopup),
+			NWidget(WWT_TEXT, COLOUR_GREY, WID_NAS_TEXT), SetAlignment(SA_HOR_CENTER), SetFill(1, 1),
+			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(0, WidgetDimensions::unscaled.hsep_wide, 0),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NAS_PREVIEW), SetMinimalSize(71, 12), SetFill(1, 1), SetDataTip(STR_NETWORK_ASK_SURVEY_PREVIEW, STR_NULL),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NAS_LINK), SetMinimalSize(71, 12), SetFill(1, 1), SetDataTip(STR_NETWORK_ASK_SURVEY_LINK, STR_NULL),
+			EndContainer(),
+			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(0, WidgetDimensions::unscaled.hsep_wide, 0),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_NAS_NO), SetMinimalSize(71, 12), SetFill(1, 1), SetDataTip(STR_NETWORK_ASK_SURVEY_NO, STR_NULL),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_NAS_YES), SetMinimalSize(71, 12), SetFill(1, 1), SetDataTip(STR_NETWORK_ASK_SURVEY_YES, STR_NULL),
+			EndContainer(),
 		EndContainer(),
 	EndContainer(),
 };

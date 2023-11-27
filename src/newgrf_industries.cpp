@@ -672,9 +672,11 @@ void IndustryProductionCallback(Industry *ind, int reason)
 		if (group->version < 2) {
 			/* Callback parameters map directly to industry cargo slot indices */
 			for (uint i = 0; i < group->num_input; i++) {
+				if (ind->accepts_cargo[i] == CT_INVALID) continue;
 				ind->incoming_cargo_waiting[i] = ClampTo<uint16_t>(ind->incoming_cargo_waiting[i] - DerefIndProd(group->subtract_input[i], deref) * multiplier);
 			}
 			for (uint i = 0; i < group->num_output; i++) {
+				if (ind->produced_cargo[i] == CT_INVALID) continue;
 				ind->produced_cargo_waiting[i] = ClampTo<uint16_t>(ind->produced_cargo_waiting[i] + std::max(DerefIndProd(group->add_output[i], deref), 0) * multiplier);
 			}
 		} else {

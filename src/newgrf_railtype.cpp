@@ -17,6 +17,7 @@
 #include "depot_base.h"
 #include "town.h"
 #include "signal_func.h"
+#include "road.h"
 
 #include "safeguards.h"
 
@@ -39,6 +40,7 @@
 			case A2VRI_RAILTYPE_SIGNAL_CONTEXT: return this->signal_context;
 			case A2VRI_RAILTYPE_SIGNAL_SIDE: return GetNewSignalsSideVariable();
 			case A2VRI_RAILTYPE_SIGNAL_VERTICAL_CLEARANCE: return 0xFF;
+			case A2VRI_RAILTYPE_ADJACENT_CROSSING: return 0;
 		}
 	}
 
@@ -66,6 +68,31 @@
 			return GetNewSignalsSideVariable();
 		case A2VRI_RAILTYPE_SIGNAL_VERTICAL_CLEARANCE:
 			return GetNewSignalsVerticalClearanceInfo(this->tile, this->z);
+		case A2VRI_RAILTYPE_ADJACENT_CROSSING: {
+			if (!IsLevelCrossingTile(this->tile) || !_settings_game.vehicle.adjacent_crossings) return 0;
+
+			auto is_usable_crossing = [&](TileIndex t) -> bool {
+				if (HasRoadTypeRoad(t) && !HasBit(_roadtypes_non_train_colliding, GetRoadTypeRoad(t))) return true;
+				if (HasRoadTypeTram(t) && !HasBit(_roadtypes_non_train_colliding, GetRoadTypeTram(t))) return true;
+				return false;
+			};
+			if (!is_usable_crossing(this->tile)) return 0;
+
+			const Axis axis = GetCrossingRoadAxis(this->tile);
+			const DiagDirection dir_s = AxisToDiagDir(axis);
+			const DiagDirection dir_n = ReverseDiagDir(dir_s);
+
+			uint32 result = 0;
+			auto test_dir = [&](DiagDirection dir, uint bit) {
+				const TileIndex t = TileAddByDiagDir(this->tile, dir);
+				if (t < MapSize() && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis && is_usable_crossing(t)) {
+					SetBit(result, bit);
+				}
+			};
+			test_dir(dir_s, 0);
+			test_dir(dir_n, 1);
+			return result;
+		}
 	}
 
 	DEBUG(grf, 1, "Unhandled rail type tile variable 0x%X", variable);
@@ -210,7 +237,7 @@ CustomSignalSpriteResult GetCustomSignalSprite(const RailTypeInfo *rti, TileInde
  */
 RailType GetRailTypeTranslation(uint8 railtype, const GRFFile *grffile)
 {
-	if (grffile == nullptr || grffile->railtype_list.size() == 0) {
+	if (grffile == nullptr || grffile->railtype_list.empty()) {
 		/* No railtype table present. Return railtype as-is (if valid), so it works for original railtypes. */
 		if (railtype >= RAILTYPE_END || GetRailTypeInfo(static_cast<RailType>(railtype))->label == 0) return INVALID_RAILTYPE;
 
@@ -233,7 +260,7 @@ RailType GetRailTypeTranslation(uint8 railtype, const GRFFile *grffile)
 uint8 GetReverseRailTypeTranslation(RailType railtype, const GRFFile *grffile)
 {
 	/* No rail type table present, return rail type as-is */
-	if (grffile == nullptr || grffile->railtype_list.size() == 0) return railtype;
+	if (grffile == nullptr || grffile->railtype_list.empty()) return railtype;
 
 	/* Look for a matching rail type label in the table */
 	RailTypeLabel label = GetRailTypeInfo(railtype)->label;

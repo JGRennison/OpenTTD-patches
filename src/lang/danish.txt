@@ -521,8 +521,9 @@ STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :Tidligere beske
 STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :Slet alle beskeder
 
 # About menu
-###length 11
+###length 12
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :Landområde information
+STR_ABOUT_MENU_HELP                                             :Hjælp & manualer
 STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Tænd/Sluk konsol
 STR_ABOUT_MENU_AI_DEBUG                                         :Computerspiller/spilscript debug
@@ -532,6 +533,7 @@ STR_ABOUT_MENU_ABOUT_OPENTTD                                    :Om 'OpenTTD'
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Sprite justering
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :Slå afgrænsningsrammerne til/fra
 STR_ABOUT_MENU_TOGGLE_DIRTY_BLOCKS                              :Slå farvning af beskidte blokke til/fra
+STR_ABOUT_MENU_TOGGLE_WIDGET_OUTLINES                           :Skift widget konturer
 
 # Place in highscore window
 ###length 15
@@ -923,10 +925,8 @@ STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Ny {STRI
 
 STR_NEWS_SHOW_VEHICLE_GROUP_TOOLTIP                             :{BLACK}Åbn gruppevinduet med fokus på dette fartøjs gruppe
 
-STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} accepterer ikke længere {STRING}
-STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} accepterer ikke længere {STRING} eller {STRING}
-STR_NEWS_STATION_NOW_ACCEPTS_CARGO                              :{WHITE}{STATION} accepterer nu {STRING}
-STR_NEWS_STATION_NOW_ACCEPTS_CARGO_AND_CARGO                    :{WHITE}{STATION} accepterer nu {STRING} og {STRING}
+STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_LIST                   :{WHITE}{STATION} accepterer ikke længere: {CARGO_LIST}
+STR_NEWS_STATION_NOW_ACCEPTS_CARGO_LIST                         :{WHITE}{STATION} accepterer nu: {CARGO_LIST}
 
 STR_NEWS_OFFER_OF_SUBSIDY_EXPIRED                               :{BIG_FONT}{BLACK}Licitation af tilskudsordning udløbet:{}{}{STRING} fra {STRING} til {STRING} vil ikke længere udløse tilskud.
 STR_NEWS_SUBSIDY_WITHDRAWN_SERVICE                              :{BIG_FONT}{BLACK}Tilskudsordning tilbagetrukket:{}{}{STRING} fra {STRING} til {STRING} modtager ikke længere tilskud.
@@ -2124,6 +2124,7 @@ STR_INTRO_MULTIPLAYER                                           :{BLACK}Netværk
 
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}Opsætning
 STR_INTRO_HIGHSCORE                                             :{BLACK} Topresultater
+STR_INTRO_HELP                                                  :{BLACK}Hjælp og manualer
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Indstillinger
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF indstillinger
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Tjek Online Indhold
@@ -2145,6 +2146,7 @@ STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}Vælg 'l
 
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Sæt spillet op
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Hvis topscoreliste
+STR_INTRO_TOOLTIP_HELP                                          :{BLACK}Få adgang til dokumentation og online ressourcer
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Skærm indstillinger
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Vis NewGRF-indstillinger
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Tjek for nyt og opdateret indhold til download
@@ -2167,6 +2169,17 @@ STR_ABANDON_GAME_QUERY                                          :{YELLOW}Er du s
 STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}Er du sikker på, at du vil afslutte dette scenarie ?
 
 # Help window
+STR_HELP_WINDOW_CAPTION                                         :{WHITE}Hjælp og manualer
+STR_HELP_WINDOW_WEBSITES                                        :{BLACK}Hjemmesider
+STR_HELP_WINDOW_DOCUMENTS                                       :{BLACK}Dokumenter
+STR_HELP_WINDOW_README                                          :{BLACK}Læs mig
+STR_HELP_WINDOW_CHANGELOG                                       :{BLACK}Ændringslog
+STR_HELP_WINDOW_KNOWN_BUGS                                      :{BLACK}Kendte Bugs
+STR_HELP_WINDOW_LICENSE                                         :{BLACK}Licens
+STR_HELP_WINDOW_MAIN_WEBSITE                                    :{BLACK}OpenTTD
+STR_HELP_WINDOW_MANUAL_WIKI                                     :{BLACK}Manual / Wiki
+STR_HELP_WINDOW_BUGTRACKER                                      :{BLACK}Anmeld en fejl
+STR_HELP_WINDOW_COMMUNITY                                       :{BLACK}Fællesskab
 
 # Cheat window
 STR_CHEATS                                                      :{WHITE}Snydefunktioner
@@ -2182,6 +2195,7 @@ STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}Rediger 
 STR_CHEAT_CHANGE_DATE                                           :{LTBLUE}Ændre dato: {ORANGE}{DATE_SHORT}
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Skift år
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Aktiver modifikation af produktion: {ORANGE}{STRING}
+STR_CHEAT_STATION_RATING                                        :{LTBLUE}Ret stationsvurderinger til 100 %: {ORANGE}{STRING}
 
 # Livery window
 STR_LIVERY_CAPTION                                              :{WHITE}{COMPANY} - Farvetema
@@ -3386,6 +3400,7 @@ STR_NEWGRF_INSPECT_PARENT_TOOLTIP                               :{BLACK}Inspicer
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT                            :{STRING} ved {HEX}
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_OBJECT                     :Objekt
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE                  :Jernbanetype
+STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Vej type
 
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}NewGRF variabel 60+x parameter (hexadecimal)
 
@@ -4701,6 +4716,11 @@ STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORAN
 
 
 # Textfile window
+STR_TEXTFILE_JUMPLIST                                           :{WHITE}Indholdsfortegnelse
+STR_TEXTFILE_JUMPLIST_TOOLTIP                                   :{BLACK}Spring hurtigt til en sektion i den viste fil via denne liste
+STR_TEXTFILE_JUMPLIST_ITEM                                      :{WHITE}{STRING}
+STR_TEXTFILE_NAVBACK_TOOLTIP                                    :{BLACK}Gå tilbage i navigationshistorikken
+STR_TEXTFILE_NAVFORWARD_TOOLTIP                                 :{BLACK}Vend tilbage i navigationshistorikken
 STR_TEXTFILE_WRAP_TEXT                                          :{WHITE}Ombryd tekst
 STR_TEXTFILE_WRAP_TEXT_TOOLTIP                                  :{BLACK}Ombryd teksten i vinduet, så det hele passer uden at skulle rulle
 STR_TEXTFILE_VIEW_README                                        :{BLACK}Se readme
@@ -4711,6 +4731,7 @@ STR_TEXTFILE_README_CAPTION                                     :{WHITE}{STRING}
 STR_TEXTFILE_CHANGELOG_CAPTION                                  :{WHITE}{STRING} ændringslog for {STRING}
 STR_TEXTFILE_LICENCE_CAPTION                                    :{WHITE}{STRING} licens for {STRING}
 STR_TEXTFILE_SURVEY_RESULT_CAPTION                              :Forhåndsvisning af undersøgelsesresultat
+STR_TEXTFILE_GAME_MANUAL_CAPTION                                :{WHITE}OpenTTD dokument '{STRING}'
 
 
 # Vehicle loading indicators
@@ -4845,7 +4866,6 @@ STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... for 
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... for tæt på en anden by
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... for mange byer
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... der er ikke mere plads på kortet
-STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS                             :{WHITE}Byen vil ikke kunne bygge veje. Du kan tillade byer at bygge veje via Avancerede indstillinger->Økonomi->Byer.
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Vejarbejde i gang
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Kan ikke slette denne by...{}En station eller et depot refererer til byen, eller en brik der er ejet a byen kan ikke fjernes
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... Der er ingen egnede steder at placere en statue

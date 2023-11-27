@@ -259,7 +259,7 @@ SpriteFile &OpenCachedSpriteFile(const std::string &filename, Subdirectory subdi
 {
 	SpriteFile *file = GetCachedSpriteFileByName(filename);
 	if (file == nullptr) {
-		file = _sprite_files.emplace_back(new SpriteFile(filename, subdir, palette_remap)).get();
+		file = _sprite_files.insert(std::end(_sprite_files), std::make_unique<SpriteFile>(filename, subdir, palette_remap))->get();
 	} else {
 		file->SeekToBegin();
 	}
@@ -1135,11 +1135,11 @@ void *GetRawSprite(SpriteID sprite, SpriteType type, uint8 zoom_levels, Allocato
 
 		/* Load the sprite, if it is not loaded, yet */
 		if (sc->GetPtr() == nullptr) {
-			void *ptr = ReadSprite(sc, sprite, type, AllocSprite, nullptr, zoom_levels);
+			[[maybe_unused]] void *ptr = ReadSprite(sc, sprite, type, AllocSprite, nullptr, zoom_levels);
 			assert(ptr == _last_sprite_allocation.GetPtr());
 			sc->Assign(std::move(_last_sprite_allocation));
 		} else if ((sc->total_missing_zoom_levels & zoom_levels) != 0) {
-			void *ptr = ReadSprite(sc, sprite, type, AllocSprite, nullptr, sc->total_missing_zoom_levels & zoom_levels);
+			[[maybe_unused]] void *ptr = ReadSprite(sc, sprite, type, AllocSprite, nullptr, sc->total_missing_zoom_levels & zoom_levels);
 			assert(ptr == _last_sprite_allocation.GetPtr());
 			sc->Append(std::move(_last_sprite_allocation));
 		}

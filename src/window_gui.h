@@ -269,7 +269,7 @@ protected:
 public:
 	Window(WindowDesc *desc);
 
-	virtual void Close();
+	virtual void Close(int data = 0);
 	static void DeleteClosedWindows();
 
 	WindowDesc *window_desc;    ///< Window description
@@ -451,6 +451,18 @@ public:
 	}
 
 	/**
+	 * Marks a widget as raised and dirty (redraw), when it is marked as lowered.
+	 * @param widget_index index of this widget in the window
+	 */
+	inline void RaiseWidgetWhenLowered(byte widget_index)
+	{
+		if (this->IsWidgetLowered(widget_index)) {
+			this->RaiseWidget(widget_index);
+			this->SetWidgetDirty(widget_index);
+		}
+	}
+
+	/**
 	 * Gets the lowered state of a widget.
 	 * @param widget_index index of this widget in the window
 	 * @return status of the widget ie: lowered = true, raised= false
@@ -472,8 +484,40 @@ public:
 	int GetRowFromWidget(int clickpos, int widget, int padding, int line_height = -1) const;
 
 	void RaiseButtons(bool autoraise = false);
-	void CDECL SetWidgetsDisabledState(bool disab_stat, int widgets, ...);
-	void CDECL SetWidgetsLoweredState(bool lowered_stat, int widgets, ...);
+
+	/**
+	 * Sets the enabled/disabled status of a list of widgets.
+	 * By default, widgets are enabled.
+	 * On certain conditions, they have to be disabled.
+	 * @param disab_stat status to use ie: disabled = true, enabled = false
+	 * @param widgets list of widgets
+	 */
+	template<typename... Args>
+	void SetWidgetsDisabledState(bool disab_stat, Args... widgets)
+	{
+		(SetWidgetDisabledState(widgets, disab_stat), ...);
+	}
+
+	/**
+	 * Sets the lowered/raised status of a list of widgets.
+	 * @param lowered_stat status to use ie: lowered = true, raised = false
+	 * @param widgets list of widgets
+	 */
+	template<typename... Args>
+	void SetWidgetsLoweredState(bool lowered_stat, Args... widgets)
+	{
+		(SetWidgetLoweredState(widgets, lowered_stat), ...);
+	}
+
+	/**
+	 * Raises the widgets and sets widgets dirty that are lowered.
+	 * @param widgets list of widgets
+	 */
+	template<typename... Args>
+	void RaiseWidgetsWhenLowered(Args... widgets) {
+		(this->RaiseWidgetWhenLowered(widgets), ...);
+	}
+
 	void SetWidgetDirty(byte widget_index);
 
 	void DrawWidgets() const;
@@ -533,7 +577,7 @@ public:
 	 * @param widget Number of the widget to draw.
 	 * @note This method may not change any state, it may only use drawing functions.
 	 */
-	virtual void DrawWidget(const Rect &r, int widget) const {}
+	virtual void DrawWidget([[maybe_unused]] const Rect &r, [[maybe_unused]] int widget) const {}
 
 	/**
 	 * Update size and resize step of a widget in the window.
@@ -547,7 +591,7 @@ public:
 	 * @param fill    Fill step of the widget.
 	 * @param resize  Resize step of the widget.
 	 */
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) {}
+	virtual void UpdateWidgetSize([[maybe_unused]] int widget, [[maybe_unused]] Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) {}
 
 	/**
 	 * Initialize string parameters for a widget.
@@ -555,7 +599,7 @@ public:
 	 * and while re-initializing the window. Only for widgets that render text initializing is requested.
 	 * @param widget  Widget number.
 	 */
-	virtual void SetStringParameters(int widget) const {}
+	virtual void SetStringParameters([[maybe_unused]] int widget) const {}
 
 	virtual void OnFocus(Window *previously_focused_window);
 
@@ -595,7 +639,7 @@ public:
 	 * @param widget the clicked widget.
 	 * @param click_count Number of fast consecutive clicks at same position
 	 */
-	virtual void OnClick(Point pt, int widget, int click_count) {}
+	virtual void OnClick([[maybe_unused]] Point pt, [[maybe_unused]] int widget, [[maybe_unused]] int click_count) {}
 
 	/**
 	 * A click with the right mouse button has been made on the window.
@@ -604,14 +648,14 @@ public:
 	 * @return true if the click was actually handled, i.e. do not show a
 	 *         tooltip if tooltip-on-right-click is enabled.
 	 */
-	virtual bool OnRightClick(Point pt, int widget) { return false; }
+	virtual bool OnRightClick([[maybe_unused]] Point pt, [[maybe_unused]] int widget) { return false; }
 
 	/**
 	 * The mouse is hovering over a widget in the window, perform an action for it.
 	 * @param pt     The point where the mouse is hovering.
 	 * @param widget The widget where the mouse is hovering.
 	 */
-	virtual void OnHover(Point pt, int widget) {}
+	virtual void OnHover([[maybe_unused]] Point pt, [[maybe_unused]] int widget) {}
 
 	/**
 	 * Event to display a custom tooltip.
@@ -619,27 +663,27 @@ public:
 	 * @param widget The widget where the mouse is located.
 	 * @return True if the event is handled, false if it is ignored.
 	 */
-	virtual bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) { return false; }
+	virtual bool OnTooltip([[maybe_unused]] Point pt, [[maybe_unused]] int widget, [[maybe_unused]] TooltipCloseCondition close_cond) { return false; }
 
 	/**
 	 * An 'object' is being dragged at the provided position, highlight the target if possible.
 	 * @param pt     The point inside the window that the mouse hovers over.
 	 * @param widget The widget the mouse hovers over.
 	 */
-	virtual void OnMouseDrag(Point pt, int widget) {}
+	virtual void OnMouseDrag([[maybe_unused]] Point pt, [[maybe_unused]] int widget) {}
 
 	/**
 	 * A dragged 'object' has been released.
 	 * @param pt     the point inside the window where the release took place.
 	 * @param widget the widget where the release took place.
 	 */
-	virtual void OnDragDrop(Point pt, int widget) {}
+	virtual void OnDragDrop([[maybe_unused]] Point pt, [[maybe_unused]] int widget) {}
 
 	/**
 	 * Handle the request for (viewport) scrolling.
 	 * @param delta the amount the viewport must be scrolled.
 	 */
-	virtual void OnScroll(Point delta) {}
+	virtual void OnScroll([[maybe_unused]] Point delta) {}
 
 	/**
 	 * The mouse is currently moving over the window or has just moved outside
@@ -647,13 +691,13 @@ public:
 	 * @param pt     the point inside the window that the mouse hovers over.
 	 * @param widget the widget the mouse hovers over.
 	 */
-	virtual void OnMouseOver(Point pt, int widget) {}
+	virtual void OnMouseOver([[maybe_unused]] Point pt, [[maybe_unused]] int widget) {}
 
 	/**
 	 * The mouse wheel has been turned.
 	 * @param wheel the amount of movement of the mouse wheel.
 	 */
-	virtual void OnMouseWheel(int wheel) {}
+	virtual void OnMouseWheel([[maybe_unused]] int wheel) {}
 
 
 	/**
@@ -676,7 +720,7 @@ public:
 	/**
 	 * Called periodically.
 	 */
-	virtual void OnRealtimeTick(uint delta_ms) {}
+	virtual void OnRealtimeTick([[maybe_unused]] uint delta_ms) {}
 
 	/**
 	 * Called when this window's timeout has been reached.
@@ -695,7 +739,7 @@ public:
 	 * @param widget the widget (button) that the dropdown is associated with.
 	 * @param index  the element in the dropdown that is selected.
 	 */
-	virtual void OnDropdownSelect(int widget, int index) {}
+	virtual void OnDropdownSelect([[maybe_unused]] int widget, [[maybe_unused]] int index) {}
 
 	virtual void OnDropdownClose(Point pt, int widget, int index, bool instant_close);
 
@@ -703,7 +747,7 @@ public:
 	 * The text in an editbox has been edited.
 	 * @param widget The widget of the editbox.
 	 */
-	virtual void OnEditboxChanged(int widget) {}
+	virtual void OnEditboxChanged([[maybe_unused]] int widget) {}
 
 	/**
 	 * The query window opened from this window has closed.
@@ -711,14 +755,14 @@ public:
 	 *            was cancelled or an empty string when the default
 	 *            button was pressed, i.e. StrEmpty(str).
 	 */
-	virtual void OnQueryTextFinished(char *str) {}
+	virtual void OnQueryTextFinished([[maybe_unused]] char *str) {}
 
 	/**
 	 * Some data on this window has become invalid.
 	 * @param data information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true) {}
+	virtual void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) {}
 
 	/**
 	 * The user clicked some place on the map when a tile highlight mode
@@ -726,7 +770,7 @@ public:
 	 * @param pt   the exact point on the map that has been clicked.
 	 * @param tile the tile on the map that has been clicked.
 	 */
-	virtual void OnPlaceObject(Point pt, TileIndex tile) {}
+	virtual void OnPlaceObject([[maybe_unused]] Point pt, [[maybe_unused]] TileIndex tile) {}
 
 	/**
 	 * The user clicked on a vehicle while HT_VEHICLE has been set.
@@ -734,7 +778,7 @@ public:
 	 * @return true if the click is handled, false if it is ignored
 	 * @pre v->IsPrimaryVehicle() == true
 	 */
-	virtual bool OnVehicleSelect(const struct Vehicle *v) { return false; }
+	virtual bool OnVehicleSelect([[maybe_unused]] const struct Vehicle *v) { return false; }
 
 	/**
 	 * The user clicked on a vehicle while HT_VEHICLE has been set.
@@ -742,7 +786,7 @@ public:
 	 * @return True if the click is handled, false if it is ignored
 	 * @pre v->IsPrimaryVehicle() == true
 	 */
-	virtual bool OnVehicleSelect(VehicleList::const_iterator begin, VehicleList::const_iterator end) { return false; }
+	virtual bool OnVehicleSelect([[maybe_unused]] VehicleList::const_iterator begin, [[maybe_unused]] VehicleList::const_iterator end) { return false; }
 
 	/**
 	 * The user clicked on a template vehicle while HT_VEHICLE has been set.
@@ -764,7 +808,7 @@ public:
 	 * @param select_proc   what will be created when the drag is over.
 	 * @param pt            the exact point on the map where the mouse is.
 	 */
-	virtual void OnPlaceDrag(ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, Point pt) {}
+	virtual void OnPlaceDrag([[maybe_unused]] ViewportPlaceMethod select_method, [[maybe_unused]] ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt) {}
 
 	/**
 	 * The user has dragged over the map when the tile highlight mode
@@ -775,7 +819,7 @@ public:
 	 * @param start_tile    the begin tile of the drag.
 	 * @param end_tile      the end tile of the drag.
 	 */
-	virtual void OnPlaceMouseUp(ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, Point pt, TileIndex start_tile, TileIndex end_tile) {}
+	virtual void OnPlaceMouseUp([[maybe_unused]] ViewportPlaceMethod select_method, [[maybe_unused]] ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt, [[maybe_unused]] TileIndex start_tile, [[maybe_unused]] TileIndex end_tile) {}
 
 	/**
 	 * The user moves over the map when a tile highlight mode has been set
@@ -784,7 +828,7 @@ public:
 	 * @param pt   the exact point on the map where the mouse is.
 	 * @param tile the tile on the map where the mouse is.
 	 */
-	virtual void OnPlacePresize(Point pt, TileIndex tile) {}
+	virtual void OnPlacePresize([[maybe_unused]] Point pt, [[maybe_unused]] TileIndex tile) {}
 
 	/*** End of the event handling ***/
 
@@ -959,7 +1003,7 @@ public:
 		this->parent = parent;
 	}
 
-	void Close() override;
+	void Close([[maybe_unused]] int data = 0) override;
 };
 
 Window *BringWindowToFrontById(WindowClass cls, WindowNumber number);

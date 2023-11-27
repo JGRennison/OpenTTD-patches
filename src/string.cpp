@@ -886,7 +886,7 @@ char *strcasestr(const char *haystack, const char *needle)
  */
 static std::string_view SkipGarbage(std::string_view str)
 {
-	while (str.size() != 0 && (str[0] < '0' || IsInsideMM(str[0], ';', '@' + 1) || IsInsideMM(str[0], '[', '`' + 1) || IsInsideMM(str[0], '{', '~' + 1))) str.remove_prefix(1);
+	while (!str.empty() && (str[0] < '0' || IsInsideMM(str[0], ';', '@' + 1) || IsInsideMM(str[0], '[', '`' + 1) || IsInsideMM(str[0], '{', '~' + 1))) str.remove_prefix(1);
 	return str;
 }
 
@@ -1135,14 +1135,14 @@ public:
 	{
 	}
 
-	virtual void SetString(const char *s)
+	void SetString(const char *s) override
 	{
 		this->string = s;
 		this->len = strlen(s);
 		this->cur_pos = 0;
 	}
 
-	virtual size_t SetCurPosition(size_t pos)
+	size_t SetCurPosition(size_t pos) override
 	{
 		dbg_assert(this->string != nullptr && pos <= this->len);
 		/* Sanitize in case we get a position inside an UTF-8 sequence. */
@@ -1150,7 +1150,7 @@ public:
 		return this->cur_pos = pos;
 	}
 
-	virtual size_t Next(IterType what)
+	size_t Next(IterType what) override
 	{
 		dbg_assert(this->string != nullptr);
 
@@ -1188,7 +1188,7 @@ public:
 		return END;
 	}
 
-	virtual size_t Prev(IterType what)
+	size_t Prev(IterType what) override
 	{
 		dbg_assert(this->string != nullptr);
 

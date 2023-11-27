@@ -372,8 +372,7 @@ protected:
 		byte minr1 = 255;
 		byte minr2 = 255;
 
-		for (CargoID j = 0; j < NUM_CARGO; j++) {
-			if (!HasBit(cargo_filter, j)) continue;
+		for (CargoID j : SetCargoBitIterator(cargo_filter)) {
 			if (a->goods[j].HasRating()) minr1 = std::min(minr1, a->goods[j].rating);
 			if (b->goods[j].HasRating()) minr2 = std::min(minr2, b->goods[j].rating);
 		}
@@ -480,13 +479,13 @@ public:
 		this->GetWidget<NWidgetCore>(WID_STL_SORTDROPBTN)->widget_data = this->sorter_names[this->stations.SortType()];
 	}
 
-	void Close() override
+	void Close(int data = 0) override
 	{
 		this->last_sorting = this->stations.GetListing();
 		this->Window::Close();
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_STL_SORTBY: {
@@ -622,7 +621,7 @@ public:
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_STL_LIST: {
@@ -739,13 +738,15 @@ public:
 
 	void OnDropdownSelect(int widget, int index) override
 	{
-		if (this->stations.SortType() != index) {
-			this->stations.SetSortType(index);
+		if (widget == WID_STL_SORTDROPBTN) {
+			if (this->stations.SortType() != index) {
+				this->stations.SetSortType(index);
 
-			/* Display the current sort variant */
-			this->GetWidget<NWidgetCore>(WID_STL_SORTDROPBTN)->widget_data = this->sorter_names[this->stations.SortType()];
+				/* Display the current sort variant */
+				this->GetWidget<NWidgetCore>(WID_STL_SORTDROPBTN)->widget_data = this->sorter_names[this->stations.SortType()];
 
-			this->SetDirty();
+				this->SetDirty();
+			}
 		}
 	}
 
@@ -767,7 +768,7 @@ public:
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
 	{
 		if (data == 0) {
 			/* This needs to be done in command-scope to enforce rebuilding before resorting invalid data */
@@ -1436,7 +1437,7 @@ struct StationViewWindow : public Window {
 		ZoningStationWindowOpenClose(Station::Get(window_number));
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		ZoningStationWindowOpenClose(Station::Get(window_number));
 		CloseWindowById(WC_TRAINS_LIST,   VehicleListIdentifier(VL_STATION_LIST, VEH_TRAIN,    this->owner, this->window_number).Pack(), false);
@@ -1500,7 +1501,7 @@ struct StationViewWindow : public Window {
 		data->Update(count);
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_SV_WAITING:
@@ -1636,9 +1637,11 @@ struct StationViewWindow : public Window {
 
 	void SetStringParameters(int widget) const override
 	{
-		const Station *st = Station::Get(this->window_number);
-		SetDParam(0, st->index);
-		SetDParam(1, st->facilities);
+		if (widget == WID_SV_CAPTION) {
+			const Station *st = Station::Get(this->window_number);
+			SetDParam(0, st->index);
+			SetDParam(1, st->facilities);
+		}
 	}
 
 	/**
@@ -2007,11 +2010,7 @@ struct StationViewWindow : public Window {
 		const Station *st = Station::Get(this->window_number);
 		Rect tr = r.Shrink(WidgetDimensions::scaled.framerect);
 
-		CargoTypes cargo_mask = 0;
-		for (CargoID i = 0; i < NUM_CARGO; i++) {
-			if (HasBit(st->goods[i].status, GoodsEntry::GES_ACCEPTANCE)) SetBit(cargo_mask, i);
-		}
-		SetDParam(0, cargo_mask);
+		SetDParam(0, GetAcceptanceMask(st));
 		int bottom = DrawStringMultiLine(tr.left, tr.right, tr.top, INT32_MAX, STR_STATION_VIEW_ACCEPTS_CARGO);
 		return CeilDiv(bottom - r.top - WidgetDimensions::scaled.framerect.top, FONT_HEIGHT_NORMAL);
 	}
@@ -2094,7 +2093,7 @@ struct StationViewWindow : public Window {
 		this->SetWidgetDirty(WID_SV_WAITING);
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_SV_WAITING:
@@ -2345,7 +2344,7 @@ struct StationViewWindow : public Window {
 	 * @param data Information about the changed data. If it's a valid cargo ID, invalidate the cargo data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
 	{
 		if (gui_scope) {
 			if (data >= 0 && data < NUM_CARGO) {
@@ -2548,7 +2547,7 @@ struct SelectStationWindow : Window {
 		_thd.freeze = true;
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		SetViewportCatchmentStation(nullptr, true);
 
@@ -2556,7 +2555,7 @@ struct SelectStationWindow : Window {
 		this->Window::Close();
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget != WID_JS_PANEL) return;
 
@@ -2597,7 +2596,7 @@ struct SelectStationWindow : Window {
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		if (widget != WID_JS_PANEL) return;
 
@@ -2618,7 +2617,7 @@ struct SelectStationWindow : Window {
 		CloseWindowById(WC_SELECT_STATION, 0);
 	}
 
-	void OnRealtimeTick(uint delta_ms) override
+	void OnRealtimeTick([[maybe_unused]] uint delta_ms) override
 	{
 		if (_thd.dirty & 2) {
 			_thd.dirty &= ~2;
@@ -2636,7 +2635,7 @@ struct SelectStationWindow : Window {
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		FindStationsNearby<T>(this->area, true, IsSpecializedStationRightType<T>(this->select_station_cmd));
@@ -2644,7 +2643,7 @@ struct SelectStationWindow : Window {
 		this->SetDirty();
 	}
 
-	void OnMouseOver(Point pt, int widget) override
+	void OnMouseOver([[maybe_unused]] Point pt, int widget) override
 	{
 		if (widget != WID_JS_PANEL) {
 			SetViewportCatchmentSpecializedStation<T>(nullptr, true);
@@ -2823,7 +2822,7 @@ public:
 
 		const bool detailed = _settings_client.gui.station_rating_tooltip_mode == SRTM_DETAILED;
 
-		if (_extra_cheats.station_rating.value) {
+		if (_cheats.station_rating.value) {
 			total_rating = 255;
 			skip = true;
 			GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_USING_CHEAT, lastof(this->data[line_nr]));
@@ -2990,7 +2989,7 @@ public:
 			}
 		}
 
-		if (!_extra_cheats.station_rating.value) {
+		if (!_cheats.station_rating.value) {
 			// Statue
 			const auto statue_rating = GetStatueRating(st);
 			if (statue_rating > 0 || detailed) {

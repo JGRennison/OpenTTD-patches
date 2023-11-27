@@ -42,7 +42,7 @@ struct TextEffect : public ViewportSign {
 };
 
 /* Text Effects */
-TextEffectID AddTextEffect(StringID msg, int center, int y, uint8 duration, TextEffectMode mode)
+TextEffectID AddTextEffect(StringID msg, int center, int y, uint8 duration, TextEffectMode mode, uint64 param1, uint64 param2)
 {
 	if (_game_mode == GM_MENU) return INVALID_TE_ID;
 
@@ -59,26 +59,30 @@ TextEffectID AddTextEffect(StringID msg, int center, int y, uint8 duration, Text
 	/* Start defining this object */
 	te.string_id = msg;
 	te.duration = duration;
-	te.params_1 = GetDParam(0);
-	te.params_2 = GetDParam(1);
+	te.params_1 = param1;
+	te.params_2 = param2;
 	te.mode = mode;
 
 	/* Make sure we only dirty the new area */
 	te.width_normal = 0;
+	SetDParam(0, param1);
+	SetDParam(1, param2);
 	te.UpdatePosition(ZOOM_LVL_OUT_8X, center, y, msg);
 
 	return i;
 }
 
-void UpdateTextEffect(TextEffectID te_id, StringID msg)
+void UpdateTextEffect(TextEffectID te_id, StringID msg, uint64 param1, uint64 param2)
 {
 	/* Update details */
 	TextEffect *te = _text_effects.data() + te_id;
-	if (msg == te->string_id && GetDParam(0) == te->params_1) return;
+	if (msg == te->string_id && param1 == te->params_1) return;
 	te->string_id = msg;
-	te->params_1 = GetDParam(0);
-	te->params_2 = GetDParam(1);
+	te->params_1 = param1;
+	te->params_2 = param2;
 
+	SetDParam(0, param1);
+	SetDParam(1, param2);
 	te->UpdatePosition(ZOOM_LVL_OUT_8X, te->center, te->top, te->string_id, te->string_id - 1);
 }
 

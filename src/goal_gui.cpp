@@ -63,7 +63,7 @@ struct GoalListWindow : public Window {
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_GOAL_GLOBAL_BUTTON:
@@ -168,7 +168,7 @@ struct GoalListWindow : public Window {
 		return num;
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget != WID_GOAL_LIST) return;
 		Dimension d = GetStringBoundingBox(STR_GOALS_NONE);
@@ -269,7 +269,7 @@ struct GoalListWindow : public Window {
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		this->vscroll->SetCount(this->CountLines());
@@ -344,10 +344,8 @@ struct GoalQuestionWindow : public Window {
 		this->CreateNestedTree();
 		if (this->buttons == 0) {
 			this->GetWidget<NWidgetStacked>(WID_GQ_BUTTONS)->SetDisplayedPlane(SZSP_HORIZONTAL);
-			this->GetWidget<NWidgetStacked>(WID_GQ_BUTTON_SPACER)->SetDisplayedPlane(SZSP_HORIZONTAL);
 		} else {
 			this->GetWidget<NWidgetStacked>(WID_GQ_BUTTONS)->SetDisplayedPlane(this->buttons - 1);
-			this->GetWidget<NWidgetStacked>(WID_GQ_BUTTON_SPACER)->SetDisplayedPlane(0);
 		}
 		this->FinishInitNested(window_number);
 	}
@@ -370,7 +368,7 @@ struct GoalQuestionWindow : public Window {
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_GQ_BUTTON_1:
@@ -390,12 +388,12 @@ struct GoalQuestionWindow : public Window {
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget != WID_GQ_QUESTION) return;
 
 		SetDParamStr(0, this->question);
-		size->height = GetStringHeight(STR_JUST_RAW_STRING, size->width) + WidgetDimensions::scaled.vsep_wide;
+		size->height = GetStringHeight(STR_JUST_RAW_STRING, size->width);
 	}
 
 	void DrawWidget(const Rect &r, int widget) const override
@@ -414,23 +412,22 @@ static const NWidgetPart _nested_goal_question_widgets_question[] = {
 		NWidget(WWT_CAPTION, COLOUR_LIGHT_BLUE, WID_GQ_CAPTION), SetDataTip(STR_GOAL_QUESTION_CAPTION_QUESTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_LIGHT_BLUE),
-		NWidget(WWT_EMPTY, INVALID_COLOUR, WID_GQ_QUESTION), SetMinimalSize(300, 0), SetPadding(8, 8, 8, 8), SetFill(1, 0),
-		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_GQ_BUTTONS),
-			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(85, 10, 85),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_LIGHT_BLUE, WID_GQ_BUTTON_1), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+		NWidget(NWID_VERTICAL), SetPadding(WidgetDimensions::unscaled.modalpopup),
+			NWidget(WWT_EMPTY, INVALID_COLOUR, WID_GQ_QUESTION), SetMinimalSize(300, 0), SetFill(1, 0),
+			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_GQ_BUTTONS),
+				NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(85, WidgetDimensions::unscaled.hsep_wide, 85), SetPadding(WidgetDimensions::unscaled.vsep_wide, 0, 0, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_LIGHT_BLUE, WID_GQ_BUTTON_1), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+				EndContainer(),
+				NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(65, WidgetDimensions::unscaled.hsep_wide, 65), SetPadding(WidgetDimensions::unscaled.vsep_wide, 0, 0, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_LIGHT_BLUE, WID_GQ_BUTTON_1), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_LIGHT_BLUE, WID_GQ_BUTTON_2), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+				EndContainer(),
+				NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(25, WidgetDimensions::unscaled.hsep_wide, 25), SetPadding(WidgetDimensions::unscaled.vsep_wide, 0, 0, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_LIGHT_BLUE, WID_GQ_BUTTON_1), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_LIGHT_BLUE, WID_GQ_BUTTON_2), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_LIGHT_BLUE, WID_GQ_BUTTON_3), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+				EndContainer(),
 			EndContainer(),
-			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(65, 10, 65),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_LIGHT_BLUE, WID_GQ_BUTTON_1), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_LIGHT_BLUE, WID_GQ_BUTTON_2), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
-			EndContainer(),
-			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(25, 10, 25),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_LIGHT_BLUE, WID_GQ_BUTTON_1), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_LIGHT_BLUE, WID_GQ_BUTTON_2), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_LIGHT_BLUE, WID_GQ_BUTTON_3), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
-			EndContainer(),
-		EndContainer(),
-		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_GQ_BUTTON_SPACER),
-			NWidget(NWID_SPACER), SetMinimalSize(0, 8),
 		EndContainer(),
 	EndContainer(),
 };
@@ -441,23 +438,22 @@ static const NWidgetPart _nested_goal_question_widgets_info[] = {
 		NWidget(WWT_CAPTION, COLOUR_LIGHT_BLUE, WID_GQ_CAPTION), SetDataTip(STR_GOAL_QUESTION_CAPTION_INFORMATION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_LIGHT_BLUE),
-		NWidget(WWT_EMPTY, INVALID_COLOUR, WID_GQ_QUESTION), SetMinimalSize(300, 0), SetPadding(8, 8, 8, 8), SetFill(1, 0),
-		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_GQ_BUTTONS),
-			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(85, 10, 85),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_LIGHT_BLUE, WID_GQ_BUTTON_1), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+		NWidget(NWID_VERTICAL), SetPadding(WidgetDimensions::unscaled.modalpopup),
+			NWidget(WWT_EMPTY, INVALID_COLOUR, WID_GQ_QUESTION), SetMinimalSize(300, 0), SetFill(1, 0),
+			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_GQ_BUTTONS),
+				NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(85, WidgetDimensions::unscaled.hsep_wide, 85), SetPadding(WidgetDimensions::unscaled.vsep_wide, 0, 0, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_LIGHT_BLUE, WID_GQ_BUTTON_1), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+				EndContainer(),
+				NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(65, WidgetDimensions::unscaled.hsep_wide, 65), SetPadding(WidgetDimensions::unscaled.vsep_wide, 0, 0, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_LIGHT_BLUE, WID_GQ_BUTTON_1), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_LIGHT_BLUE, WID_GQ_BUTTON_2), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+				EndContainer(),
+				NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(25, WidgetDimensions::unscaled.hsep_wide, 25), SetPadding(WidgetDimensions::unscaled.vsep_wide, 0, 0, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_LIGHT_BLUE, WID_GQ_BUTTON_1), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_LIGHT_BLUE, WID_GQ_BUTTON_2), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_LIGHT_BLUE, WID_GQ_BUTTON_3), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+				EndContainer(),
 			EndContainer(),
-			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(65, 10, 65),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_LIGHT_BLUE, WID_GQ_BUTTON_1), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_LIGHT_BLUE, WID_GQ_BUTTON_2), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
-			EndContainer(),
-			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(25, 10, 25),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_LIGHT_BLUE, WID_GQ_BUTTON_1), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_LIGHT_BLUE, WID_GQ_BUTTON_2), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_LIGHT_BLUE, WID_GQ_BUTTON_3), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
-			EndContainer(),
-		EndContainer(),
-		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_GQ_BUTTON_SPACER),
-			NWidget(NWID_SPACER), SetMinimalSize(0, 8),
 		EndContainer(),
 	EndContainer(),
 };
@@ -468,23 +464,22 @@ static const NWidgetPart _nested_goal_question_widgets_warning[] = {
 		NWidget(WWT_CAPTION, COLOUR_YELLOW, WID_GQ_CAPTION), SetDataTip(STR_GOAL_QUESTION_CAPTION_WARNING, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_YELLOW),
-		NWidget(WWT_EMPTY, INVALID_COLOUR, WID_GQ_QUESTION), SetMinimalSize(300, 0), SetPadding(8, 8, 8, 8), SetFill(1, 0),
-		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_GQ_BUTTONS),
-			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(85, 10, 85),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_GQ_BUTTON_1), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+		NWidget(NWID_VERTICAL), SetPadding(WidgetDimensions::unscaled.modalpopup),
+			NWidget(WWT_EMPTY, INVALID_COLOUR, WID_GQ_QUESTION), SetMinimalSize(300, 0), SetFill(1, 0),
+			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_GQ_BUTTONS),
+				NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(85, WidgetDimensions::unscaled.hsep_wide, 85), SetPadding(WidgetDimensions::unscaled.vsep_wide, 0, 0, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_GQ_BUTTON_1), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+				EndContainer(),
+				NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(65, WidgetDimensions::unscaled.hsep_wide, 65), SetPadding(WidgetDimensions::unscaled.vsep_wide, 0, 0, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_GQ_BUTTON_1), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_GQ_BUTTON_2), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+				EndContainer(),
+				NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(25, WidgetDimensions::unscaled.hsep_wide, 25), SetPadding(WidgetDimensions::unscaled.vsep_wide, 0, 0, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_GQ_BUTTON_1), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_GQ_BUTTON_2), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_GQ_BUTTON_3), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+				EndContainer(),
 			EndContainer(),
-			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(65, 10, 65),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_GQ_BUTTON_1), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_GQ_BUTTON_2), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
-			EndContainer(),
-			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(25, 10, 25),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_GQ_BUTTON_1), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_GQ_BUTTON_2), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_GQ_BUTTON_3), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
-			EndContainer(),
-		EndContainer(),
-		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_GQ_BUTTON_SPACER),
-			NWidget(NWID_SPACER), SetMinimalSize(0, 8),
 		EndContainer(),
 	EndContainer(),
 };
@@ -495,23 +490,22 @@ static const NWidgetPart _nested_goal_question_widgets_error[] = {
 		NWidget(WWT_CAPTION, COLOUR_RED, WID_GQ_CAPTION), SetDataTip(STR_GOAL_QUESTION_CAPTION_ERROR, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_RED),
-		NWidget(WWT_EMPTY, INVALID_COLOUR, WID_GQ_QUESTION), SetMinimalSize(300, 0), SetPadding(8, 8, 8, 8), SetFill(1, 0),
-		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_GQ_BUTTONS),
-			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(85, 10, 85),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_GQ_BUTTON_1), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+		NWidget(NWID_VERTICAL), SetPadding(WidgetDimensions::unscaled.modalpopup),
+			NWidget(WWT_EMPTY, INVALID_COLOUR, WID_GQ_QUESTION), SetMinimalSize(300, 0), SetFill(1, 0),
+			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_GQ_BUTTONS),
+				NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(85, WidgetDimensions::unscaled.hsep_wide, 85), SetPadding(WidgetDimensions::unscaled.vsep_wide, 0, 0, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_GQ_BUTTON_1), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+				EndContainer(),
+				NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(65, WidgetDimensions::unscaled.hsep_wide, 65), SetPadding(WidgetDimensions::unscaled.vsep_wide, 0, 0, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_GQ_BUTTON_1), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_GQ_BUTTON_2), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+				EndContainer(),
+				NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(25, WidgetDimensions::unscaled.hsep_wide, 25), SetPadding(WidgetDimensions::unscaled.vsep_wide, 0, 0, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_GQ_BUTTON_1), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_GQ_BUTTON_2), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_GQ_BUTTON_3), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
+				EndContainer(),
 			EndContainer(),
-			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(65, 10, 65),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_GQ_BUTTON_1), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_GQ_BUTTON_2), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
-			EndContainer(),
-			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(25, 10, 25),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_GQ_BUTTON_1), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_GQ_BUTTON_2), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_YELLOW, WID_GQ_BUTTON_3), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
-			EndContainer(),
-		EndContainer(),
-		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_GQ_BUTTON_SPACER),
-			NWidget(NWID_SPACER), SetMinimalSize(0, 8),
 		EndContainer(),
 	EndContainer(),
 };

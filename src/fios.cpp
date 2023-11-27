@@ -280,10 +280,9 @@ public:
 /**
  * Try to add a fios item set with the given filename.
  * @param filename        the full path to the file to read
- * @param basepath_length amount of characters to chop of before to get a relative filename
  * @return true if the file is added.
  */
-bool FiosFileScanner::AddFile(const std::string &filename, size_t basepath_length, const std::string &tar_filename)
+bool FiosFileScanner::AddFile(const std::string &filename, size_t, const std::string &)
 {
 	auto sep = filename.rfind('.');
 	if (sep == std::string::npos) return false;
@@ -660,7 +659,7 @@ public:
 		this->scanned = true;
 	}
 
-	bool AddFile(const std::string &filename, size_t basepath_length, const std::string &tar_filename) override
+	bool AddFile(const std::string &filename, size_t, const std::string &) override
 	{
 		FILE *f = FioFOpenFile(filename, "r", SCENARIO_DIR);
 		if (f == nullptr) return false;

@@ -540,46 +540,6 @@ void Window::OnFocusLost(bool closing, Window *newly_focused_window)
 }
 
 /**
- * Sets the enabled/disabled status of a list of widgets.
- * By default, widgets are enabled.
- * On certain conditions, they have to be disabled.
- * @param disab_stat status to use ie: disabled = true, enabled = false
- * @param widgets list of widgets ended by WIDGET_LIST_END
- */
-void CDECL Window::SetWidgetsDisabledState(bool disab_stat, int widgets, ...)
-{
-	va_list wdg_list;
-
-	va_start(wdg_list, widgets);
-
-	while (widgets != WIDGET_LIST_END) {
-		SetWidgetDisabledState(widgets, disab_stat);
-		widgets = va_arg(wdg_list, int);
-	}
-
-	va_end(wdg_list);
-}
-
-/**
- * Sets the lowered/raised status of a list of widgets.
- * @param lowered_stat status to use ie: lowered = true, raised = false
- * @param widgets list of widgets ended by WIDGET_LIST_END
- */
-void CDECL Window::SetWidgetsLoweredState(bool lowered_stat, int widgets, ...)
-{
-	va_list wdg_list;
-
-	va_start(wdg_list, widgets);
-
-	while (widgets != WIDGET_LIST_END) {
-		SetWidgetLoweredState(widgets, lowered_stat);
-		widgets = va_arg(wdg_list, int);
-	}
-
-	va_end(wdg_list);
-}
-
-/**
  * Raise the buttons of the window.
  * @param autoraise Raise only the push buttons of the window.
  */
@@ -1106,7 +1066,7 @@ void Window::CloseChildWindows(WindowClass wc) const
 /**
  * Hide the window and all its child windows, and mark them for a later deletion.
  */
-void Window::Close()
+void Window::Close([[maybe_unused]] int data)
 {
 	if (_thd.window_class == this->window_class &&
 			_thd.window_number == this->window_number) {
@@ -1200,11 +1160,11 @@ Window *GetMainWindow()
  * @param number Number of the window within the window class
  * @param force force deletion; if false don't delete when stickied
  */
-void CloseWindowById(WindowClass cls, WindowNumber number, bool force)
+void CloseWindowById(WindowClass cls, WindowNumber number, bool force, int data)
 {
 	Window *w = FindWindowById(cls, number);
 	if (w != nullptr && (force || (w->flags & WF_STICKY) == 0)) {
-		w->Close();
+		w->Close(data);
 	}
 }
 
@@ -1214,14 +1174,14 @@ void CloseWindowById(WindowClass cls, WindowNumber number, bool force)
  * @param number Number of the window within the window class
  * @param force force deletion; if false don't delete when stickied
  */
-void CloseAllWindowsById(WindowClass cls, WindowNumber number, bool force)
+void CloseAllWindowsById(WindowClass cls, WindowNumber number, bool force, int data)
 {
 	if (cls < WC_END && !_present_window_types[cls]) return;
 
 	/* Note: the container remains stable, even when deleting windows. */
 	for (Window *w : Window::Iterate()) {
 		if (w->window_class == cls && w->window_number == number && (force || (w->flags & WF_STICKY) == 0)) {
-			w->Close();
+			w->Close(data);
 		}
 	}
 }
@@ -1230,14 +1190,14 @@ void CloseAllWindowsById(WindowClass cls, WindowNumber number, bool force)
  * Delete all windows of a given class
  * @param cls Window class of windows to delete
  */
-void CloseWindowByClass(WindowClass cls)
+void CloseWindowByClass(WindowClass cls, int data)
 {
 	if (cls < WC_END && !_present_window_types[cls]) return;
 
 	/* Note: the container remains stable, even when deleting windows. */
 	for (Window *w : Window::Iterate()) {
 		if (w->window_class == cls) {
-			w->Close();
+			w->Close(data);
 		}
 	}
 }
@@ -3792,7 +3752,7 @@ void RelocateAllWindows(int neww, int newh)
  * Hide the window and all its child windows, and mark them for a later deletion.
  * Always call ResetObjectToPlace() when closing a PickerWindow.
  */
-void PickerWindowBase::Close()
+void PickerWindowBase::Close([[maybe_unused]] int data)
 {
 	ResetObjectToPlace();
 	this->Window::Close();

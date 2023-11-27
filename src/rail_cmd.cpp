@@ -4130,7 +4130,7 @@ void DrawTrainDepotSprite(int x, int y, int dir, RailType railtype)
 	DrawRailTileSeqInGUI(x, y, dts, offset, 0, palette);
 }
 
-static int GetSlopePixelZ_Track(TileIndex tile, uint x, uint y, bool ground_vehicle)
+static int GetSlopePixelZ_Track(TileIndex tile, uint x, uint y, bool)
 {
 	if (IsPlainRail(tile)) {
 		int z;
@@ -4742,7 +4742,7 @@ static CommandCost TestAutoslopeOnRailTile(TileIndex tile, uint flags, int z_old
 /**
  * Test-procedure for HasVehicleOnPos to check for a ship.
  */
-static Vehicle *EnsureNoShipProc(Vehicle *v, void *data)
+static Vehicle *EnsureNoShipProc(Vehicle *v, void *)
 {
 	return v;
 }

@@ -574,7 +574,6 @@ void DrawNewObjectTileInGUI(int x, int y, const ObjectSpec *spec, uint8 view)
  * @param spec     The specification of the object / the entry point.
  * @param o        The object to call the callback for.
  * @param tile     The tile the callback is called for.
- * @param extra_data Ignored.
  * @return The result of the callback.
  */
 uint16 StubGetObjectCallback(CallbackID callback, uint32 param1, uint32 param2, const ObjectSpec *spec, Object *o, TileIndex tile, int extra_data)

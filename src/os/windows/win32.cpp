@@ -357,7 +357,7 @@ void CreateConsole()
 static const char *_help_msg;
 
 /** Callback function to handle the window */
-static INT_PTR CALLBACK HelpDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam)
+static INT_PTR CALLBACK HelpDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARAM)
 {
 	switch (msg) {
 		case WM_INITDIALOG: {

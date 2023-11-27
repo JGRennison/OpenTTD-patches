@@ -374,6 +374,8 @@ enum SaveLoadVersion : uint16 {
 	SLV_REMOVE_LOADED_AT_XY,                ///< 318  PR#11276 Remove loaded_at_xy variable from CargoPacket.
 	SLV_CARGO_TRAVELLED,                    ///< 319  PR#11283 CargoPacket now tracks how far it travelled inside a vehicle.
 
+	SLV_STATION_RATING_CHEAT,               ///< 320  PR#11346 Add cheat to fix station ratings at 100%.
+
 	SL_MAX_VERSION,                         ///< Highest possible saveload version
 
 	SL_SPRING_2013_v2_0_102 = 220,

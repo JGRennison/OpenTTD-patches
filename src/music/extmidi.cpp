@@ -98,7 +98,7 @@ bool MusicDriver_ExtMidi::IsSongPlaying()
 	return this->pid != -1;
 }
 
-void MusicDriver_ExtMidi::SetVolume(byte vol)
+void MusicDriver_ExtMidi::SetVolume(byte)
 {
 	DEBUG(driver, 1, "extmidi: set volume not implemented");
 }
@@ -129,7 +129,7 @@ void MusicDriver_ExtMidi::DoPlay()
 			FALLTHROUGH;
 
 		default:
-			this->song[0] = '\0';
+			this->song.clear();
 			break;
 	}
 }

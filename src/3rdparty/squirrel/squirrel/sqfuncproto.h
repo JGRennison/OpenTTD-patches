@@ -102,7 +102,7 @@ public:
 		SQFunctionProto *f = new (SQSizedAllocationTag(size)) SQFunctionProto(ninstructions, nliterals, nparameters, nfunctions, noutervalues, nlineinfos, nlocalvarinfos, ndefaultparams);
 		return f;
 	}
-	void Release(){
+	void Release() override {
 		_DESTRUCT_VECTOR(SQObjectPtr,_nliterals,_literals);
 		_DESTRUCT_VECTOR(SQObjectPtr,_nparameters,_parameters);
 		_DESTRUCT_VECTOR(SQObjectPtr,_nfunctions,_functions);

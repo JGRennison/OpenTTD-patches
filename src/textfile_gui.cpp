@@ -123,11 +123,11 @@ uint TextfileWindow::ReflowContent()
 
 uint TextfileWindow::GetContentHeight()
 {
-	if (this->lines.size() == 0) return 0;
+	if (this->lines.empty()) return 0;
 	return this->lines.back().bottom;
 }
 
-/* virtual */ void TextfileWindow::UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+/* virtual */ void TextfileWindow::UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize)
 {
 	switch (widget) {
 		case WID_TF_BACKGROUND:
@@ -517,7 +517,7 @@ void TextfileWindow::AfterLoadMarkdown()
 	}
 }
 
-/* virtual */ void TextfileWindow::OnClick(Point pt, int widget, int click_count)
+/* virtual */ void TextfileWindow::OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count)
 {
 	switch (widget) {
 		case WID_TF_WRAPTEXT:
@@ -529,8 +529,7 @@ void TextfileWindow::AfterLoadMarkdown()
 			DropDownList list;
 			for (size_t line : this->jumplist) {
 				SetDParamStr(0, this->lines[line].text);
-				DropDownListStringItem *item = new DropDownListStringItem(STR_TEXTFILE_JUMPLIST_ITEM, (int)line, false);
-				list.emplace_back(item);
+				list.push_back(std::make_unique<DropDownListStringItem>(STR_TEXTFILE_JUMPLIST_ITEM, (int)line, false));
 			}
 			ShowDropDownList(this, std::move(list), -1, widget);
 			break;
@@ -587,7 +586,7 @@ void TextfileWindow::AfterLoadMarkdown()
 	this->SetupScrollbars(false);
 }
 
-/* virtual */ void TextfileWindow::OnInvalidateData(int data, bool gui_scope)
+/* virtual */ void TextfileWindow::OnInvalidateData([[maybe_unused]] int data, [[maybe_unused]] bool gui_scope)
 {
 	if (!gui_scope) return;
 
@@ -636,7 +635,7 @@ void TextfileWindow::ScrollToLine(size_t line)
 	return true;
 }
 
-/* virtual */ void TextfileWindow::SetFontNames(FontCacheSettings *settings, const char *font_name, const void *os_data)
+/* virtual */ void TextfileWindow::SetFontNames([[maybe_unused]] FontCacheSettings *settings, [[maybe_unused]] const char *font_name, [[maybe_unused]] const void *os_data)
 {
 #if defined(WITH_FREETYPE) || defined(_WIN32) || defined(WITH_COCOA)
 	settings->mono.font = font_name;

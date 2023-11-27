@@ -133,7 +133,7 @@ struct IConsoleWindow : Window
 		this->line_offset = GetStringBoundingBox("] ").width + WidgetDimensions::scaled.frametext.left;
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		_iconsole_mode = ICONSOLE_CLOSED;
 		VideoDriver::GetInstance()->EditBoxLostFocus();
@@ -281,7 +281,7 @@ struct IConsoleWindow : Window
 		return ES_HANDLED;
 	}
 
-	void InsertTextString(int wid, const char *str, bool marked, const char *caret, const char *insert_location, const char *replacement_end) override
+	void InsertTextString(int, const char *str, bool marked, const char *caret, const char *insert_location, const char *replacement_end) override
 	{
 		if (_iconsole_cmdline.InsertString(str, marked, caret, insert_location, replacement_end)) {
 			IConsoleWindow::scroll = 0;

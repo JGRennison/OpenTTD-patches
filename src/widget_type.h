@@ -20,8 +20,6 @@
 
 #include <vector>
 
-static const int WIDGET_LIST_END = -1; ///< indicate the end of widgets' list for vararg functions
-
 /** Bits of the #WWT_MATRIX widget data. */
 enum MatrixWidgetValues {
 	/* Number of column bits of the WWT_MATRIX widget data. */
@@ -149,7 +147,7 @@ public:
 
 	virtual bool IsHighlighted() const { return false; }
 	virtual TextColour GetHighlightColour() const { return TC_INVALID; }
-	virtual void SetHighlighted(TextColour highlight_colour) {}
+	virtual void SetHighlighted([[maybe_unused]] TextColour highlight_colour) {}
 
 	/**
 	 * Set additional space (padding) around the widget.
@@ -433,6 +431,10 @@ public:
 	void Add(NWidgetBase *wid);
 	void FillNestedArray(NWidgetBase **array, uint length) override;
 
+	void Draw(const Window *w) override;
+	NWidgetCore *GetWidgetFromPos(int x, int y) override;
+	void FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widgets) override;
+
 	/** Return whether the container is empty. */
 	inline bool IsEmpty() { return head == nullptr; }
 
@@ -502,10 +504,6 @@ public:
 
 	void AdjustPaddingForZoom() override;
 	void SetPIP(uint8 pip_pre, uint8 pip_inter, uint8 pip_post);
-
-	void Draw(const Window *w) override;
-	NWidgetCore *GetWidgetFromPos(int x, int y) override;
-	void FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widgets) override;
 
 protected:
 	NWidContainerFlags flags; ///< Flags of the container.

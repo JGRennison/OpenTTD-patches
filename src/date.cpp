@@ -16,7 +16,7 @@
 #include "date_func.h"
 #include "vehicle_base.h"
 #include "rail_gui.h"
-#include "linkgraph/linkgraph.h"
+#include "linkgraph/linkgraphschedule.h"
 #include "sl/saveload.h"
 #include "newgrf_profiling.h"
 #include "console_func.h"
@@ -266,7 +266,7 @@ static void OnNewYear()
 		_cur_date_ymd.year--;
 		days_this_year = IsLeapYear(_cur_date_ymd.year) ? DAYS_IN_LEAP_YEAR : DAYS_IN_YEAR;
 		_date -= days_this_year;
-		for (LinkGraph *lg : LinkGraph::Iterate()) lg->ShiftDates(-days_this_year);
+		LinkGraphSchedule::instance.ShiftDates(-days_this_year);
 		ShiftOrderDates(-days_this_year);
 		ShiftVehicleDates(-days_this_year);
 		_scaled_date_ticks_offset += ((int64)days_this_year) * (DAY_TICKS * _settings_game.economy.day_length_factor);

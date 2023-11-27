@@ -210,7 +210,7 @@ struct TerraformToolbarWindow : Window {
 		/* This is needed as we like to have the tree available on OnInit. */
 		this->CreateNestedTree();
 		this->FinishInitNested(window_number);
-		this->last_user_action = WIDGET_LIST_END;
+		this->last_user_action = INVALID_WID_TT;
 	}
 
 	void OnInit() override
@@ -221,7 +221,7 @@ struct TerraformToolbarWindow : Window {
 		SetWidgetDisabledState(WID_TT_BUY_LAND, _settings_game.construction.purchase_land_permitted == 0);
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		if (widget < WID_TT_BUTTONS_START) return;
 
@@ -273,7 +273,7 @@ struct TerraformToolbarWindow : Window {
 		}
 	}
 
-	void OnPlaceObject(Point pt, TileIndex tile) override
+	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override
 	{
 		switch (this->last_user_action) {
 			case WID_TT_LOWER_LAND: // Lower land button
@@ -320,7 +320,7 @@ struct TerraformToolbarWindow : Window {
 		}
 	}
 
-	void OnPlaceDrag(ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, Point pt) override
+	void OnPlaceDrag(ViewportPlaceMethod select_method, [[maybe_unused]] ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt) override
 	{
 		VpSelectTilesWithMethod(pt.x, pt.y, select_method);
 	}
@@ -332,7 +332,7 @@ struct TerraformToolbarWindow : Window {
 		return pt;
 	}
 
-	void OnPlaceMouseUp(ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, Point pt, TileIndex start_tile, TileIndex end_tile) override
+	void OnPlaceMouseUp([[maybe_unused]] ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt, TileIndex start_tile, TileIndex end_tile) override
 	{
 		if (pt.x != -1) {
 			switch (select_proc) {
@@ -576,10 +576,9 @@ static const NWidgetPart _nested_scen_edit_land_gen_widgets[] = {
 
 /**
  * Callback function for the scenario editor 'reset landscape' confirmation window
- * @param w Window unused
  * @param confirmed boolean value, true when yes was clicked, false otherwise
  */
-static void ResetLandscapeConfirmationCallback(Window *w, bool confirmed)
+static void ResetLandscapeConfirmationCallback(Window *, bool confirmed)
 {
 	if (confirmed) {
 		/* Set generating_world to true to get instant-green grass after removing
@@ -617,7 +616,7 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 		this->CreateNestedTree();
 		this->SetButtonStates();
 		this->FinishInitNested(window_number);
-		this->last_user_action = WIDGET_LIST_END;
+		this->last_user_action = INVALID_WID_ETT;
 	}
 
 	void OnPaint() override
@@ -629,7 +628,7 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget != WID_ETT_DOTS) return;
 
@@ -654,7 +653,7 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 		} while (--n);
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		if (widget < WID_ETT_BUTTONS_START) return;
 
@@ -734,14 +733,11 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 	{
 		for (uint i = WID_ETT_START; i < this->nested_array_size; i++) {
 			if (i == WID_ETT_BUTTONS_START) i = WID_ETT_BUTTONS_END; // skip the buttons
-			if (this->IsWidgetLowered(i)) {
-				this->RaiseWidget(i);
-				this->SetWidgetDirty(i);
-			}
+			this->RaiseWidgetWhenLowered(i);
 		}
 	}
 
-	void OnPlaceObject(Point pt, TileIndex tile) override
+	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override
 	{
 		switch (this->last_user_action) {
 			case WID_ETT_DEMOLISH: // Demolish aka dynamite button
@@ -772,12 +768,12 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 		}
 	}
 
-	void OnPlaceDrag(ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, Point pt) override
+	void OnPlaceDrag(ViewportPlaceMethod select_method, [[maybe_unused]] ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt) override
 	{
 		VpSelectTilesWithMethod(pt.x, pt.y, select_method);
 	}
 
-	void OnPlaceMouseUp(ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, Point pt, TileIndex start_tile, TileIndex end_tile) override
+	void OnPlaceMouseUp([[maybe_unused]] ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt, TileIndex start_tile, TileIndex end_tile) override
 	{
 		if (pt.x != -1) {
 			switch (select_proc) {

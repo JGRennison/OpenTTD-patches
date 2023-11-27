@@ -30,7 +30,8 @@
 #include <functional>
 #include <algorithm>
 
-static const byte INITIAL_STATION_RATING = 175;
+static const uint8_t INITIAL_STATION_RATING = 175;
+static const uint8_t MAX_STATION_RATING = 255;
 
 static const uint MAX_EXTRA_STATION_NAMES = 1024;
 
@@ -981,7 +982,7 @@ public:
 		if (!st->TileBelongsToAirport(this->tile)) ++(*this);
 	}
 
-	inline TileIterator& operator ++()
+	inline TileIterator& operator ++() override
 	{
 		(*this).OrthogonalTileIterator::operator++();
 		while (this->tile != INVALID_TILE && !st->TileBelongsToAirport(this->tile)) {
@@ -990,7 +991,7 @@ public:
 		return *this;
 	}
 
-	virtual std::unique_ptr<TileIterator> Clone() const
+	std::unique_ptr<TileIterator> Clone() const override
 	{
 		return std::make_unique<AirportTileIterator>(*this);
 	}

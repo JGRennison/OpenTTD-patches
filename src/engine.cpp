@@ -486,7 +486,8 @@ uint Engine::GetDisplayMaxTractiveEffort() const
  */
 Date Engine::GetLifeLengthInDays() const
 {
-	return DateAtStartOfYear(this->info.lifelength + _settings_game.vehicle.extend_vehicle_life);
+	/* Assume leap years; this gives the player a bit more than the given amount of years, but never less. */
+	return static_cast<int32_t>(this->info.lifelength + _settings_game.vehicle.extend_vehicle_life) * DAYS_IN_LEAP_YEAR;
 }
 
 /**
@@ -539,7 +540,7 @@ bool Engine::IsVariantHidden(CompanyID c) const
 	 * the last display variant rather than the actual parent variant. */
 	const Engine *re = this;
 	const Engine *ve = re->GetDisplayVariant();
-	while (!(ve->IsHidden(c)) && re->info.variant_id != INVALID_ENGINE && re->info.variant_id != re->index) {
+	while (!(ve->IsHidden(c)) && re->info.variant_id != INVALID_ENGINE) {
 		re = Engine::Get(re->info.variant_id);
 		ve = re->GetDisplayVariant();
 	}
@@ -668,7 +669,7 @@ void CalcEngineReliability(Engine *e, bool new_month)
 {
 	/* Get source engine for reliability age. This is normally our engine unless variant reliability syncing is requested. */
 	Engine *re = e;
-	while (re->info.variant_id != INVALID_ENGINE && re->info.variant_id != re->index && (re->info.extra_flags & ExtraEngineFlags::SyncReliability) != ExtraEngineFlags::None) {
+	while (re->info.variant_id != INVALID_ENGINE && (re->info.extra_flags & ExtraEngineFlags::SyncReliability) != ExtraEngineFlags::None) {
 		re = Engine::Get(re->info.variant_id);
 	}
 
@@ -725,7 +726,7 @@ void SetYearEngineAgingStops()
 
 		/* Base year ending date on half the model life */
 		YearMonthDay ymd;
-		ConvertDateToYMD(ei->base_intro + DateAtStartOfYear(ei->lifelength) / 2, &ymd);
+		ConvertDateToYMD(ei->base_intro + (static_cast<int32_t>(ei->lifelength) * DAYS_IN_LEAP_YEAR) / 2, &ymd);
 
 		_year_engine_aging_stops = std::max(_year_engine_aging_stops, ymd.year);
 	}
@@ -768,7 +769,7 @@ void StartupOneEngine(Engine *e, Date aging_date, uint32 seed, Date no_introduce
 
 	/* Get parent variant index for syncing reliability via random seed. */
 	const Engine *re = e;
-	while (re->info.variant_id != INVALID_ENGINE && re->info.variant_id != re->index && (re->info.extra_flags & ExtraEngineFlags::SyncReliability) != ExtraEngineFlags::None) {
+	while (re->info.variant_id != INVALID_ENGINE && (re->info.extra_flags & ExtraEngineFlags::SyncReliability) != ExtraEngineFlags::None) {
 		re = Engine::Get(re->info.variant_id);
 	}
 

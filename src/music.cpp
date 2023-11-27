@@ -116,14 +116,14 @@ template <class Tbase_set>
 	return BaseMedia<Tbase_set>::used_set != nullptr;
 }
 
-bool MusicSet::FillSetDetails(IniFile *ini, const std::string &path, const std::string &full_filename)
+bool MusicSet::FillSetDetails(const IniFile &ini, const std::string &path, const std::string &full_filename)
 {
 	bool ret = this->BaseSet<MusicSet, NUM_SONGS_AVAILABLE, false>::FillSetDetails(ini, path, full_filename);
 	if (ret) {
 		this->num_available = 0;
-		IniGroup *names = ini->GetGroup("names");
-		IniGroup *catindex = ini->GetGroup("catindex");
-		IniGroup *timingtrim = ini->GetGroup("timingtrim");
+		const IniGroup *names = ini.GetGroup("names");
+		const IniGroup *catindex = ini.GetGroup("catindex");
+		const IniGroup *timingtrim = ini.GetGroup("timingtrim");
 		uint tracknr = 1;
 		for (uint i = 0; i < lengthof(this->songinfo); i++) {
 			const std::string &filename = this->files[i].filename;
@@ -133,7 +133,7 @@ bool MusicSet::FillSetDetails(IniFile *ini, const std::string &path, const std::
 
 			this->songinfo[i].filename = filename; // non-owned pointer
 
-			IniItem *item = catindex->GetItem(_music_file_names[i]);
+			const IniItem *item = catindex != nullptr ? catindex->GetItem(_music_file_names[i]) : nullptr;
 			if (item != nullptr && item->value.has_value() && !item->value->empty()) {
 				/* Song has a CAT file index, assume it's MPS MIDI format */
 				this->songinfo[i].filetype = MTT_MPSMIDI;
@@ -158,7 +158,7 @@ bool MusicSet::FillSetDetails(IniFile *ini, const std::string &path, const std::
 				 * the beginning, so we don't start reading e.g. root. */
 				while (*trimmed_filename == PATHSEPCHAR) trimmed_filename++;
 
-				item = names->GetItem(trimmed_filename);
+				item = names != nullptr ? names->GetItem(trimmed_filename) : nullptr;
 				if (item != nullptr && item->value.has_value() && !item->value->empty()) break;
 			}
 
@@ -179,7 +179,7 @@ bool MusicSet::FillSetDetails(IniFile *ini, const std::string &path, const std::
 				this->songinfo[i].tracknr = tracknr++;
 			}
 
-			item = trimmed_filename != nullptr ? timingtrim->GetItem(trimmed_filename) : nullptr;
+			item = trimmed_filename != nullptr && timingtrim != nullptr ? timingtrim->GetItem(trimmed_filename) : nullptr;
 			if (item != nullptr && item->value.has_value() && !item->value->empty()) {
 				auto endpos = item->value->find(':');
 				if (endpos != std::string::npos) {

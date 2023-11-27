@@ -33,6 +33,7 @@
 /** Widgets for the background window to prevent smearing. */
 static const struct NWidgetPart _background_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_DARK_BLUE, WID_BB_BACKGROUND), SetResize(1, 1),
+	EndContainer(),
 };
 
 /**
@@ -55,7 +56,7 @@ public:
 		ResizeWindow(this, _screen.width, _screen.height);
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, int) const override
 	{
 		GfxFillRect(r.left, r.top, r.right, r.bottom, 4, FILLRECT_OPAQUE);
 		GfxFillRect(r.left, r.top, r.right, r.bottom, 0, FILLRECT_CHECKER);
@@ -67,11 +68,9 @@ static const NWidgetPart _nested_bootstrap_errmsg_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_BEM_CAPTION), SetDataTip(STR_MISSING_GRAPHICS_ERROR_TITLE, STR_NULL),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_GREY),
-		NWidget(WWT_PANEL, COLOUR_GREY, WID_BEM_MESSAGE), EndContainer(),
-		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BEM_QUIT), SetDataTip(STR_MISSING_GRAPHICS_ERROR_QUIT, STR_NULL), SetFill(1, 0),
-		EndContainer(),
+	NWidget(WWT_PANEL, COLOUR_GREY, WID_BEM_MESSAGE), EndContainer(),
+	NWidget(NWID_HORIZONTAL),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BEM_QUIT), SetDataTip(STR_MISSING_GRAPHICS_ERROR_QUIT, STR_NULL), SetFill(1, 0),
 	EndContainer(),
 };
 
@@ -91,13 +90,13 @@ public:
 		this->InitNested(1);
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		_exit_game = true;
 		this->Window::Close();
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget == WID_BEM_MESSAGE) {
 			*size = GetStringBoundingBox(STR_MISSING_GRAPHICS_ERROR);
@@ -113,7 +112,7 @@ public:
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		if (widget == WID_BEM_QUIT) {
 			_exit_game = true;
@@ -149,7 +148,7 @@ public:
 	{
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		/* If we are not set to exit the game, it means the bootstrap failed. */
 		if (!_exit_game) {
@@ -158,7 +157,7 @@ public:
 		this->BaseNetworkContentDownloadStatusWindow::Close();
 	}
 
-	void OnDownloadComplete(ContentID cid) override
+	void OnDownloadComplete(ContentID) override
 	{
 		/* We have completed downloading. We can trigger finding the right set now. */
 		BaseGraphics::FindSets();
@@ -177,12 +176,10 @@ static const NWidgetPart _bootstrap_query_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CAPTION, COLOUR_GREY), SetDataTip(STR_MISSING_GRAPHICS_SET_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_GREY),
-		NWidget(WWT_PANEL, COLOUR_GREY, WID_BAFD_QUESTION), EndContainer(),
-		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BAFD_YES), SetDataTip(STR_MISSING_GRAPHICS_YES_DOWNLOAD, STR_NULL),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BAFD_NO), SetDataTip(STR_MISSING_GRAPHICS_NO_QUIT, STR_NULL),
-		EndContainer(),
+	NWidget(WWT_PANEL, COLOUR_GREY, WID_BAFD_QUESTION), EndContainer(),
+	NWidget(NWID_HORIZONTAL),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BAFD_YES), SetDataTip(STR_MISSING_GRAPHICS_YES_DOWNLOAD, STR_NULL),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BAFD_NO), SetDataTip(STR_MISSING_GRAPHICS_NO_QUIT, STR_NULL),
 	EndContainer(),
 };
 
@@ -207,13 +204,13 @@ public:
 	}
 
 	/** Stop listening to the content client events. */
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		_network_content_client.RemoveCallback(this);
 		this->Window::Close();
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		/* We cache the button size. This is safe as no reinit can happen here. */
 		if (this->button_size.width == 0) {
@@ -238,12 +235,12 @@ public:
 
 	void DrawWidget(const Rect &r, int widget) const override
 	{
-		if (widget != 0) return;
+		if (widget != WID_BAFD_QUESTION) return;
 
 		DrawStringMultiLine(r.Shrink(WidgetDimensions::scaled.frametext), STR_MISSING_GRAPHICS_SET_MESSAGE, TC_FROMSTRING, SA_CENTER);
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_BAFD_YES:
@@ -333,7 +330,7 @@ public:
 		EM_ASM({ if (window["openttd_bootstrap"]) openttd_bootstrap($0, $1); }, this->downloaded_bytes, this->total_bytes);
 	}
 
-	void OnDownloadProgress(const ContentInfo *ci, int bytes) override
+	void OnDownloadProgress(const ContentInfo *, int bytes) override
 	{
 		/* A negative value means we are resetting; for example, when retrying or using a fallback. */
 		if (bytes < 0) {
@@ -345,7 +342,7 @@ public:
 		EM_ASM({ if (window["openttd_bootstrap"]) openttd_bootstrap($0, $1); }, this->downloaded_bytes, this->total_bytes);
 	}
 
-	void OnDownloadComplete(ContentID cid) override
+	void OnDownloadComplete(ContentID) override
 	{
 		/* _exit_game is used to break out of the outer video driver's MainLoop. */
 		_exit_game = true;

@@ -11,13 +11,12 @@
 #define TRAIN_SPEED_ADAPTATION_H
 
 #include "date_type.h"
+#include "date_func.h"
 #include "track_type.h"
 #include "tile_type.h"
+#include "3rdparty/cpp-btree/btree_map.h"
 
-#include <unordered_map>
-
-struct SignalSpeedKey
-{
+struct SignalSpeedKey {
 	TileIndex signal_tile;
 	uint16 signal_track;
 	Trackdir last_passing_train_dir;
@@ -28,30 +27,29 @@ struct SignalSpeedKey
 			signal_track == other.signal_track &&
 			last_passing_train_dir == other.last_passing_train_dir;
 	}
-};
 
-struct SignalSpeedValue
-{
-	uint16 train_speed;
-	DateTicksScaled time_stamp;
-};
-
-struct SignalSpeedKeyHashFunc
-{
-	std::size_t operator() (const SignalSpeedKey &key) const
+	bool operator<(const SignalSpeedKey& other) const
 	{
-		const std::size_t h1 = std::hash<TileIndex>()(key.signal_tile);
-		const std::size_t h2 = std::hash<Trackdir>()(key.last_passing_train_dir);
-		const std::size_t h3 = std::hash<uint16>()(key.signal_track);
-
-		return (h1 ^ h2) ^ h3;
+		return std::tie(this->signal_tile, this->signal_track, this->last_passing_train_dir) < std::tie(other.signal_tile, other.signal_track, other.last_passing_train_dir);
 	}
 };
 
-extern std::unordered_map<SignalSpeedKey, SignalSpeedValue, SignalSpeedKeyHashFunc> _signal_speeds;
+struct SignalSpeedValue {
+	uint16 train_speed;
+	DateTicksScaled time_stamp;
+
+	/** Checks if the timeout has passed */
+	bool IsOutOfDate() const
+	{
+		return _scaled_date_ticks > this->time_stamp;
+	}
+};
+
+extern btree::btree_map<SignalSpeedKey, SignalSpeedValue> _signal_speeds;
 
 struct Train;
 void SetSignalTrainAdaptationSpeed(const Train *v, TileIndex tile, uint16 track);
 void ApplySignalTrainAdaptationSpeed(Train *v, TileIndex tile, uint16 track);
+uint16 GetLowestSpeedTrainAdaptationSpeedAtSignal(TileIndex tile, uint16 track);
 
 #endif /* TRAIN_SPEED_ADAPTATION_H */

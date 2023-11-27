@@ -179,7 +179,7 @@ public:
 		this->owner = v->owner;
 	}
 
-	void Close() override
+	void Close(int data = 0) override
 	{
 		if (!FocusWindowById(WC_VEHICLE_ORDERS, this->window_number)) {
 			MarkDirtyFocusedRoutePaths(this->vehicle);
@@ -1896,7 +1896,7 @@ public:
 		this->OnInvalidateData(VIWD_MODIFY_ORDERS);
 	}
 
-	void Close() override
+	void Close(int data = 0) override
 	{
 		CloseWindowById(WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS, this->window_number, false);
 		CloseWindowById(WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS, this->window_number, false);
@@ -1973,7 +1973,7 @@ public:
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
 	{
 		VehicleOrderID from = INVALID_VEH_ORDER_ID;
 		VehicleOrderID to   = INVALID_VEH_ORDER_ID;
@@ -2681,7 +2681,7 @@ public:
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_O_ORDER_LIST: {
@@ -3013,7 +3013,7 @@ public:
 							continue;
 						}
 					}
-					list.emplace_back(new DropDownListStringItem(OrderStringForVariable(this->vehicle, _order_conditional_variable[i]), _order_conditional_variable[i], false));
+					list.push_back(std::make_unique<DropDownListStringItem>(OrderStringForVariable(this->vehicle, _order_conditional_variable[i]), _order_conditional_variable[i], false));
 				}
 				ShowDropDownList(this, std::move(list), ocv, WID_O_COND_VARIABLE);
 				break;
@@ -3406,7 +3406,7 @@ public:
 		return ES_HANDLED;
 	}
 
-	void OnPlaceObject(Point pt, TileIndex tile) override
+	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override
 	{
 		if (this->goto_type == OPOS_GOTO) {
 			const Order cmd = GetOrderCmdFromTile(this->vehicle, tile);

@@ -108,6 +108,7 @@ static bool IsExpensiveRailtypeVariable(uint16 variable)
 {
 	switch (variable) {
 		case A2VRI_RAILTYPE_SIGNAL_VERTICAL_CLEARANCE:
+		case A2VRI_RAILTYPE_ADJACENT_CROSSING:
 			return true;
 
 		default:

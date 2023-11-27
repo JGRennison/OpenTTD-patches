@@ -1629,7 +1629,7 @@ void SlObject(void *object, const SaveLoadTable &slt)
  * is not known to the code. This means we are going to skip it.
  */
 class SlSkipHandler : public SaveLoadHandler {
-	void Save(void *object) const override
+	void Save(void *) const override
 	{
 		NOT_REACHED();
 	}
@@ -1685,7 +1685,7 @@ std::vector<SaveLoad> SlTableHeader(const SaveLoadTable &slt)
 			}
 
 			while (true) {
-				uint8 type;
+				uint8 type = 0;
 				SlSaveLoadConv(&type, SLE_UINT8);
 				if (type == SLE_FILE_END) break;
 

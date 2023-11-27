@@ -143,22 +143,22 @@ struct TranslationWriter : LanguageWriter {
 	{
 	}
 
-	void WriteHeader(const LanguagePackHeader *header)
+	void WriteHeader(const LanguagePackHeader *) override
 	{
 		/* We don't use the header. */
 	}
 
-	void Finalise()
+	void Finalise() override
 	{
 		/* Nothing to do. */
 	}
 
-	void WriteLength(uint length)
+	void WriteLength(uint) override
 	{
 		/* We don't write the length. */
 	}
 
-	void Write(const byte *buffer, size_t length)
+	void Write(const byte *buffer, size_t length) override
 	{
 		this->strings.emplace_back((const char *)buffer, length);
 	}
@@ -176,12 +176,12 @@ struct StringNameWriter : HeaderWriter {
 	{
 	}
 
-	void WriteStringID(const char *name, int stringid)
+	void WriteStringID(const char *name, int stringid) override
 	{
 		if (stringid == (int)this->strings.size()) this->strings.emplace_back(name);
 	}
 
-	void Finalise(const StringData &data)
+	void Finalise(const StringData &) override
 	{
 		/* Nothing to do. */
 	}
@@ -207,7 +207,7 @@ public:
 		this->FileScanner::Scan(".txt", directory, false);
 	}
 
-	bool AddFile(const std::string &filename, size_t basepath_length, const std::string &tar_filename) override
+	bool AddFile(const std::string &filename, size_t, const std::string &) override
 	{
 		if (exclude == filename) return true;
 

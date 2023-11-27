@@ -83,12 +83,12 @@ struct ZoningWindow : public Window {
 		this->InvalidateData();
 	}
 
-	virtual void OnPaint()
+	void OnPaint() override
 	{
 		this->DrawWidgets();
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case ZTW_OUTER_DROPDOWN:
@@ -101,7 +101,7 @@ struct ZoningWindow : public Window {
 		}
 	}
 
-	virtual void OnDropdownSelect(int widget, int index)
+	void OnDropdownSelect(int widget, int index) override
 	{
 		switch(widget) {
 			case ZTW_OUTER_DROPDOWN:
@@ -115,7 +115,7 @@ struct ZoningWindow : public Window {
 		this->InvalidateData();
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case ZTW_OUTER_DROPDOWN:
@@ -128,7 +128,7 @@ struct ZoningWindow : public Window {
 		}
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		const StringID *strs = nullptr;
 		switch (widget) {

@@ -607,10 +607,9 @@ CommandCost CheckAllowRemoveRoad(TileIndex tile, RoadBits remove, Owner owner, R
  * @param flags operation to perform
  * @param pieces roadbits to remove
  * @param rt roadtype to remove
- * @param crossing_check should we check if there is a tram track when we are removing road from crossing?
  * @param town_check should we check if the town allows removal?
  */
-static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits pieces, RoadTramType rtt, bool crossing_check, bool town_check = true)
+static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits pieces, RoadTramType rtt, bool town_check)
 {
 	assert(pieces != ROAD_NONE);
 
@@ -1683,7 +1682,7 @@ CommandCost CmdRemoveLongRoad(TileIndex start_tile, DoCommandFlag flags, uint32 
 						_additional_cash_required = DoCommand(start_tile, end_tile, p2, flags & ~DC_EXEC, CMD_REMOVE_LONG_ROAD).GetCost();
 						return cost;
 					}
-					RemoveRoad(tile, flags, bits, rtt, true, false);
+					RemoveRoad(tile, flags, bits, rtt, false);
 				}
 				cost.AddCost(ret);
 				had_success = true;
@@ -1822,7 +1821,7 @@ static CommandCost ClearTile_Road(TileIndex tile, DoCommandFlag flags)
 			for (RoadTramType rtt : { RTT_TRAM, RTT_ROAD }) {
 				if (!MayHaveRoad(tile) || GetRoadType(tile, rtt) == INVALID_ROADTYPE) continue;
 
-				CommandCost tmp_ret = RemoveRoad(tile, flags, GetCrossingRoadBits(tile), rtt, false);
+				CommandCost tmp_ret = RemoveRoad(tile, flags, GetCrossingRoadBits(tile), rtt, true);
 				if (tmp_ret.Failed()) return tmp_ret;
 				ret.AddCost(tmp_ret);
 			}
@@ -2491,7 +2490,7 @@ void UpdateNearestTownForRoadTiles(bool invalidate)
 	}
 }
 
-static int GetSlopePixelZ_Road(TileIndex tile, uint x, uint y, bool ground_vehicle)
+static int GetSlopePixelZ_Road(TileIndex tile, uint x, uint y, bool)
 {
 
 	if (IsNormalRoad(tile)) {
@@ -2848,7 +2847,7 @@ static const byte _roadveh_enter_depot_dir[4] = {
 	TRACKDIR_X_SW, TRACKDIR_Y_NW, TRACKDIR_X_NE, TRACKDIR_Y_SE
 };
 
-static VehicleEnterTileStatus VehicleEnter_Road(Vehicle *v, TileIndex tile, int x, int y)
+static VehicleEnterTileStatus VehicleEnter_Road(Vehicle *v, TileIndex tile, int, int)
 {
 	switch (GetRoadTileType(tile)) {
 		case ROAD_TILE_DEPOT: {

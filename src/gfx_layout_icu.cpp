@@ -132,7 +132,7 @@ ICUParagraphLayout::ICUVisualRun::ICUVisualRun(const ICURun &run, int x) :
 	glyphs(run.glyphs), glyph_to_char(run.glyph_to_char), total_advance(run.total_advance), font(run.font)
 {
 	/* If there are no positions, the ICURun was not Shaped; that should never happen. */
-	assert(run.positions.size() != 0);
+	assert(!run.positions.empty());
 	this->positions.reserve(run.positions.size());
 
 	/* "positions" is an array of x/y. So we need to alternate. */
@@ -340,13 +340,11 @@ std::vector<ICURun> ItemizeScript(UChar *buff, size_t length, std::vector<ICURun
  *
  * Basically, this always returns the same or more runs than given.
  *
- * @param buff The string to itemize.
- * @param length The length of the string.
  * @param runs_current The current runs.
  * @param font_mapping The font mapping.
  * @return The runs.
  */
-std::vector<ICURun> ItemizeStyle(UChar *buff, size_t length, std::vector<ICURun> &runs_current, FontMap &font_mapping)
+std::vector<ICURun> ItemizeStyle(std::vector<ICURun> &runs_current, FontMap &font_mapping)
 {
 	std::vector<ICURun> runs;
 
@@ -380,9 +378,9 @@ std::vector<ICURun> ItemizeStyle(UChar *buff, size_t length, std::vector<ICURun>
 
 	auto runs = ItemizeBidi(buff, length);
 	runs = ItemizeScript(buff, length, runs);
-	runs = ItemizeStyle(buff, length, runs, font_mapping);
+	runs = ItemizeStyle(runs, font_mapping);
 
-	if (runs.size() == 0) return nullptr;
+	if (runs.empty()) return nullptr;
 
 	for (auto &run : runs) {
 		run.Shape(buff, length);
@@ -524,6 +522,7 @@ std::unique_ptr<const ICUParagraphLayout::Line> ICUParagraphLayout::NextLine(int
 
 /* static */ size_t ICUParagraphLayoutFactory::AppendToBuffer(UChar *buff, const UChar *buffer_last, WChar c)
 {
+	assert(buff < buffer_last);
 	/* Transform from UTF-32 to internal ICU format of UTF-16. */
 	int32 length = 0;
 	UErrorCode err = U_ZERO_ERROR;

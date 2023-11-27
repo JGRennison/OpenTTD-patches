@@ -34,8 +34,8 @@ struct TownScopeResolver : public ScopeResolver {
 	{
 	}
 
-	virtual uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const;
-	virtual void StorePSA(uint reg, int32 value);
+	virtual uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const override;
+	virtual void StorePSA(uint reg, int32 value) override;
 };
 
 /**
@@ -53,7 +53,7 @@ struct FakeTownScopeResolver : public ScopeResolver {
 	FakeTownScopeResolver(ResolverObject &ro) : ScopeResolver(ro)
 	{ }
 
-	virtual uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const;
+	virtual uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const override;
 };
 
 /** Resolver of town properties. */

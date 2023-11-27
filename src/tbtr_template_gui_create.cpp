@@ -166,7 +166,7 @@ public:
 		UpdateButtonState();
 	}
 
-	void Close() override
+	void Close(int data = 0) override
 	{
 		if (virtual_train != nullptr) {
 			DoCommandP(0, virtual_train->index, 0, CMD_DELETE_VIRTUAL_TRAIN);

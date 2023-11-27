@@ -372,12 +372,12 @@ struct BuildRoadToolbarWindow : Window {
 		}
 
 		this->OnInvalidateData();
-		this->last_started_action = WIDGET_LIST_END;
+		this->last_started_action = INVALID_WID_ROT;
 
 		if (_settings_client.gui.link_terraform_toolbar) ShowTerraformToolbar(this);
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		if (_game_mode == GM_NORMAL && (this->IsWidgetLowered(WID_ROT_BUS_STATION) || this->IsWidgetLowered(WID_ROT_TRUCK_STATION))) SetViewportCatchmentStation(nullptr, true);
 		if (_game_mode == GM_NORMAL && this->IsWidgetLowered(WID_ROT_BUILD_WAYPOINT)) SetViewportCatchmentWaypoint(nullptr, true);
@@ -391,7 +391,7 @@ struct BuildRoadToolbarWindow : Window {
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		RoadTramType rtt = GetRoadTramType(this->roadtype);
@@ -401,8 +401,7 @@ struct BuildRoadToolbarWindow : Window {
 			WID_ROT_DEPOT,
 			WID_ROT_BUILD_WAYPOINT,
 			WID_ROT_BUS_STATION,
-			WID_ROT_TRUCK_STATION,
-			WIDGET_LIST_END);
+			WID_ROT_TRUCK_STATION);
 		if (!can_build) {
 			CloseWindowById(WC_BUS_STATION, TRANSPORT_ROAD);
 			CloseWindowById(WC_TRUCK_STATION, TRANSPORT_ROAD);
@@ -529,7 +528,7 @@ struct BuildRoadToolbarWindow : Window {
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		_remove_button_clicked = false;
 		_one_way_button_clicked = false;
@@ -628,7 +627,7 @@ struct BuildRoadToolbarWindow : Window {
 		return Window::OnHotkey(hotkey);
 	}
 
-	void OnPlaceObject(Point pt, TileIndex tile) override
+	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override
 	{
 		_remove_button_clicked = this->IsWidgetLowered(WID_ROT_REMOVE);
 		_one_way_button_clicked = RoadTypeIsRoad(this->roadtype) ? this->IsWidgetLowered(WID_ROT_ONE_WAY) : false;
@@ -712,7 +711,7 @@ struct BuildRoadToolbarWindow : Window {
 		CloseWindowByClass(WC_BUILD_BRIDGE);
 	}
 
-	void OnPlaceDrag(ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, Point pt) override
+	void OnPlaceDrag(ViewportPlaceMethod select_method, [[maybe_unused]] ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt) override
 	{
 		/* Here we update the end tile flags
 		 * of the road placement actions.
@@ -755,7 +754,7 @@ struct BuildRoadToolbarWindow : Window {
 		VpSelectTilesWithMethod(pt.x, pt.y, select_method);
 	}
 
-	void OnPlaceMouseUp(ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, Point pt, TileIndex start_tile, TileIndex end_tile) override
+	void OnPlaceMouseUp([[maybe_unused]] ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt, TileIndex start_tile, TileIndex end_tile) override
 	{
 		if (pt.x != -1) {
 			switch (select_proc) {
@@ -836,7 +835,7 @@ struct BuildRoadToolbarWindow : Window {
 		}
 	}
 
-	void OnPlacePresize(Point pt, TileIndex tile) override
+	void OnPlacePresize([[maybe_unused]] Point pt, TileIndex tile) override
 	{
 		DoCommand(tile, _cur_roadtype | (TRANSPORT_ROAD << 8), 0, DC_AUTO, CMD_BUILD_TUNNEL);
 		VpSetPresizeRange(tile, _build_tunnel_endtile == 0 ? tile : _build_tunnel_endtile);
@@ -1142,7 +1141,7 @@ struct BuildRoadDepotWindow : public PickerWindowBase {
 		this->FinishInitNested(TRANSPORT_ROAD);
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (!IsInsideMM(widget, WID_BROD_DEPOT_NE, WID_BROD_DEPOT_NW + 1)) return;
 
@@ -1163,7 +1162,7 @@ struct BuildRoadDepotWindow : public PickerWindowBase {
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_BROD_DEPOT_NW:
@@ -1378,7 +1377,7 @@ public:
 		}
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		CloseWindowById(WC_SELECT_STATION, 0);
 		this->PickerWindowBase::Close();
@@ -1443,7 +1442,7 @@ public:
 		}
 	}
 
-	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 
@@ -1465,12 +1464,14 @@ public:
 		return ES_HANDLED;
 	}
 
-	void OnEditboxChanged(int wid) override
+	void OnEditboxChanged(int widget) override
 	{
-		string_filter.SetFilterTerm(this->filter_editbox.text.buf);
-		this->roadstop_classes.SetFilterState(!string_filter.IsEmpty());
-		this->roadstop_classes.ForceRebuild();
-		this->InvalidateData();
+		if (widget == WID_BROS_FILTER_EDITBOX) {
+			string_filter.SetFilterTerm(this->filter_editbox.text.buf);
+			this->roadstop_classes.SetFilterState(!string_filter.IsEmpty());
+			this->roadstop_classes.ForceRebuild();
+			this->InvalidateData();
+		}
 	}
 
 	void OnPaint() override
@@ -1672,7 +1673,7 @@ public:
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (GB(widget, 0, 16)) {
 			case WID_BROS_STATION_NE:
@@ -1740,7 +1741,7 @@ public:
 		}
 	}
 
-	void OnRealtimeTick(uint delta_ms) override
+	void OnRealtimeTick([[maybe_unused]] uint delta_ms) override
 	{
 		CheckRedrawStationCoverage(this);
 	}
@@ -2037,7 +2038,7 @@ struct BuildRoadWaypointWindow : PickerWindowBase {
 		}
 	}
 
-	void Close() override
+	void Close(int data = 0) override
 	{
 		CloseWindowById(WC_SELECT_STATION, 0);
 		this->PickerWindowBase::Close();
@@ -2310,7 +2311,7 @@ DropDownList GetRoadTypeDropDownList(RoadTramTypes rtts, bool for_replacement, b
 	DropDownList list;
 
 	if (all_option) {
-		list.emplace_back(new DropDownListStringItem(STR_REPLACE_ALL_ROADTYPE, INVALID_ROADTYPE, false));
+		list.push_back(std::make_unique<DropDownListStringItem>(STR_REPLACE_ALL_ROADTYPE, INVALID_ROADTYPE, false));
 	}
 
 	Dimension d = { 0, 0 };
@@ -2332,18 +2333,18 @@ DropDownList GetRoadTypeDropDownList(RoadTramTypes rtts, bool for_replacement, b
 		SetDParam(0, rti->strings.menu_text);
 		SetDParam(1, rti->max_speed / 2);
 		if (for_replacement) {
-			list.emplace_back(new DropDownListStringItem(rti->strings.replace_text, rt, !HasBit(avail_roadtypes, rt)));
+			list.push_back(std::make_unique<DropDownListStringItem>(rti->strings.replace_text, rt, !HasBit(avail_roadtypes, rt)));
 		} else {
 			StringID str = rti->max_speed > 0 ? STR_TOOLBAR_RAILTYPE_VELOCITY : STR_JUST_STRING;
-			DropDownListIconItem *iconitem = new DropDownListIconItem(rti->gui_sprites.build_x_road, PAL_NONE, str, rt, !HasBit(avail_roadtypes, rt));
+			auto iconitem = std::make_unique<DropDownListIconItem>(rti->gui_sprites.build_x_road, PAL_NONE, str, rt, !HasBit(avail_roadtypes, rt));
 			iconitem->SetDimension(d);
-			list.emplace_back(iconitem);
+			list.push_back(std::move(iconitem));
 		}
 	}
 
-	if (list.size() == 0) {
+	if (list.empty()) {
 		/* Empty dropdowns are not allowed */
-		list.emplace_back(new DropDownListStringItem(STR_NONE, INVALID_ROADTYPE, true));
+		list.push_back(std::make_unique<DropDownListStringItem>(STR_NONE, INVALID_ROADTYPE, true));
 	}
 
 	return list;
@@ -2376,14 +2377,14 @@ DropDownList GetScenRoadTypeDropDownList(RoadTramTypes rtts)
 		SetDParam(0, rti->strings.menu_text);
 		SetDParam(1, rti->max_speed / 2);
 		StringID str = rti->max_speed > 0 ? STR_TOOLBAR_RAILTYPE_VELOCITY : STR_JUST_STRING;
-		DropDownListIconItem *item = new DropDownListIconItem(rti->gui_sprites.build_x_road, PAL_NONE, str, rt, !HasBit(avail_roadtypes, rt));
+		auto item = std::make_unique<DropDownListIconItem>(rti->gui_sprites.build_x_road, PAL_NONE, str, rt, !HasBit(avail_roadtypes, rt));
 		item->SetDimension(d);
-		list.emplace_back(item);
+		list.push_back(std::move(item));
 	}
 
-	if (list.size() == 0) {
+	if (list.empty()) {
 		/* Empty dropdowns are not allowed */
-		list.emplace_back(new DropDownListStringItem(STR_NONE, -1, true));
+		list.push_back(std::make_unique<DropDownListStringItem>(STR_NONE, -1, true));
 	}
 
 	return list;

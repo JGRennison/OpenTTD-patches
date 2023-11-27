@@ -75,13 +75,20 @@ GRFConfig::GRFConfig(const GRFConfig &config) :
 }
 
 /**
+ * Return whether this NewGRF can replace an older version of the same NewGRF.
+ */
+bool GRFConfig::IsCompatible(uint32_t old_version) const
+{
+	return this->min_loadable_version <= old_version && old_version <= this->version;
+}
+
+/**
  * Copy the parameter information from the \a src config.
  * @param src Source config.
  */
 void GRFConfig::CopyParams(const GRFConfig &src)
 {
 	this->num_params = src.num_params;
-	this->num_valid_params = src.num_valid_params;
 	this->param = src.param;
 }
 
@@ -236,7 +243,6 @@ void GRFParameterInfo::Finalize()
 /**
  * Update the palettes of the graphics from the config file.
  * Called when changing the default palette in advanced settings.
- * @param new_value Unused.
  */
 void UpdateNewGRFConfigPalette(int32 new_value)
 {
@@ -671,7 +677,7 @@ public:
 	}
 };
 
-bool GRFFileScanner::AddFile(const std::string &filename, size_t basepath_length, const std::string &tar_filename)
+bool GRFFileScanner::AddFile(const std::string &filename, size_t basepath_length, const std::string &)
 {
 	/* Abort if the user stopped the game during a scan. */
 	if (_exit_game) return false;
@@ -792,7 +798,7 @@ const GRFConfig *FindGRFConfig(uint32 grfid, FindGRFConfigMode mode, const MD5Ha
 		/* Skip incompatible stuff, unless explicitly allowed */
 		if (mode != FGCM_NEWEST && HasBit(c->flags, GCF_INVALID)) continue;
 		/* check version compatibility */
-		if (mode == FGCM_COMPATIBLE && (c->version < desired_version || c->min_loadable_version > desired_version)) continue;
+		if (mode == FGCM_COMPATIBLE && !c->IsCompatible(desired_version)) continue;
 		/* remember the newest one as "the best" */
 		if (best == nullptr || c->version > best->version) best = c;
 	}
