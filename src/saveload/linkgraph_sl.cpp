@@ -202,39 +202,6 @@ SaveLoadTable GetLinkGraphScheduleDesc()
 }
 
 /**
- * Spawn the threads for running link graph calculations.
- * Has to be done after loading as the cargo classes might have changed.
- */
-void AfterLoadLinkGraphs()
-{
-	if (IsSavegameVersionBefore(SLV_191)) {
-		for (LinkGraph *lg : LinkGraph::Iterate()) {
-			for (NodeID node_id = 0; node_id < lg->Size(); ++node_id) {
-				const Station *st = Station::GetIfValid((*lg)[node_id].Station());
-				if (st != nullptr) (*lg)[node_id].UpdateLocation(st->xy);
-			}
-		}
-
-		for (LinkGraphJob *lgj : LinkGraphJob::Iterate()) {
-			LinkGraph *lg = &(const_cast<LinkGraph &>(lgj->Graph()));
-			for (NodeID node_id = 0; node_id < lg->Size(); ++node_id) {
-				const Station *st = Station::GetIfValid((*lg)[node_id].Station());
-				if (st != nullptr) (*lg)[node_id].UpdateLocation(st->xy);
-			}
-		}
-	}
-	for (LinkGraphJob *lgj : LinkGraphJob::Iterate()) {
-		GetLinkGraphJobDayLengthScaleAfterLoad(lgj);
-	}
-
-	LinkGraphSchedule::instance.SpawnAll();
-
-	if (!_networking || _network_server) {
-		AfterLoad_LinkGraphPauseControl();
-	}
-}
-
-/**
  * All link graphs.
  */
 struct LGRPChunkHandler : ChunkHandler {
@@ -286,6 +253,8 @@ struct LGRJChunkHandler : ChunkHandler {
 		while ((index = SlIterateArray()) != -1) {
 			LinkGraphJob *lgj = new (index) LinkGraphJob();
 			SlObject(lgj, slt);
+
+			GetLinkGraphJobDayLengthScaleAfterLoad(lgj);
 		}
 	}
 };

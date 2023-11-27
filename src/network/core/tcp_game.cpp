@@ -105,7 +105,7 @@ NetworkGameSocketHandler::NetworkGameSocketHandler(SOCKET s) : info(nullptr), cl
  * For servers: close connection and that is it
  * @return the new status
  */
-NetworkRecvStatus NetworkGameSocketHandler::CloseConnection(bool error)
+NetworkRecvStatus NetworkGameSocketHandler::CloseConnection(bool)
 {
 	if (this->ignore_close) return NETWORK_RECV_STATUS_CLIENT_QUIT;
 

@@ -67,6 +67,7 @@ enum MainToolbarHotkeys {
 void AllocateToolbar();
 void ToggleBoundingBoxes();
 void ToggleDirtyBlocks();
+void ToggleWidgetOutlines();
 
 DropDownListItem *MakeCompanyDropDownListItem(CompanyID cid);
 

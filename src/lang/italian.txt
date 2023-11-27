@@ -523,8 +523,9 @@ STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :Cronologia mess
 STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :Elimina tutti i messaggi
 
 # About menu
-###length 11
+###length 12
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :Informazioni sull'area di terreno
+STR_ABOUT_MENU_HELP                                             :Aiuto e manuali
 STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Apri/chiudi console
 STR_ABOUT_MENU_AI_DEBUG                                         :Debug IA/Script
@@ -925,10 +926,6 @@ STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Nuov{G o
 
 STR_NEWS_SHOW_VEHICLE_GROUP_TOOLTIP                             :{BLACK}Apri la finestra del gruppo focalizzata sul gruppo del veicolo
 
-STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} non accetta più {STRING}
-STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} non accetta più {STRING} né {STRING}
-STR_NEWS_STATION_NOW_ACCEPTS_CARGO                              :{WHITE}{STATION} adesso accetta {STRING}
-STR_NEWS_STATION_NOW_ACCEPTS_CARGO_AND_CARGO                    :{WHITE}{STATION} adesso accetta {STRING} e {STRING}
 
 STR_NEWS_OFFER_OF_SUBSIDY_EXPIRED                               :{BIG_FONT}{BLACK}Offerta di sussidio scaduta:{}{}Il trasporto di {STRING} da {STRING} a {STRING} non darà più diritto a sovvenzioni
 STR_NEWS_SUBSIDY_WITHDRAWN_SERVICE                              :{BIG_FONT}{BLACK}Sussidio terminato:{}{}Il trasporto di {STRING} da {STRING} a {STRING} non è più sovvenzionato
@@ -1461,6 +1458,8 @@ STR_CONFIG_SETTING_PLANE_CRASHES_NONE                           :Nessuno*
 STR_CONFIG_SETTING_PLANE_CRASHES_REDUCED                        :Ridotto
 STR_CONFIG_SETTING_PLANE_CRASHES_NORMAL                         :Normale
 
+STR_CONFIG_SETTING_CROSSING_WITH_COMPETITOR                     :Consenti passaggi a livello con strade o ferrovie di proprietà dei concorrenti: {STRING}
+STR_CONFIG_SETTING_CROSSING_WITH_COMPETITOR_HELPTEXT            :Consenti la realizzazione di passaggi a livello su strade o rotaie di proprietà dei concorrenti
 
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :Consenti fermate passanti sulle strade di proprietà delle città: {STRING}
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD_HELPTEXT                   :Permettere la costruzione di fermate stradali passanti sulle strade di proprietà delle città.
@@ -2157,6 +2156,7 @@ STR_INTRO_MULTIPLAYER                                           :{BLACK}Multigio
 
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}Opzioni di gioco
 STR_INTRO_HIGHSCORE                                             :{BLACK}Punteggi migliori
+STR_INTRO_HELP                                                  :{BLACK}Aiuto e manuali
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Impostazioni
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Impostazioni NewGRF
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Contenuti online
@@ -2178,6 +2178,7 @@ STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}Selezion
 
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Mostra le opzioni di gioco
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Mostra la tabella dei punteggi migliori
+STR_INTRO_TOOLTIP_HELP                                          :{BLACK}Ottieni l'accesso alla documentazione e alle risorse online
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Mostra le impostazioni
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Mostra le impostazioni NewGRF
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Controlla la disponibilità di contenuti nuovi o aggiornati da scaricare
@@ -2200,6 +2201,17 @@ STR_ABANDON_GAME_QUERY                                          :{YELLOW}Si è s
 STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}Si è sicuri di voler abbandonare questo scenario?
 
 # Help window
+STR_HELP_WINDOW_CAPTION                                         :{WHITE}Aiuto e manuali
+STR_HELP_WINDOW_WEBSITES                                        :{BLACK}Siti web
+STR_HELP_WINDOW_DOCUMENTS                                       :{BLACK}Documenti
+STR_HELP_WINDOW_README                                          :{BLACK}Leggimi
+STR_HELP_WINDOW_CHANGELOG                                       :{BLACK}Changelog
+STR_HELP_WINDOW_KNOWN_BUGS                                      :{BLACK}Bug conosciuti
+STR_HELP_WINDOW_LICENSE                                         :{BLACK}Licenza
+STR_HELP_WINDOW_MAIN_WEBSITE                                    :{BLACK}OpenTTD
+STR_HELP_WINDOW_MANUAL_WIKI                                     :{BLACK}Manuale / Wiki
+STR_HELP_WINDOW_BUGTRACKER                                      :{BLACK}Segnala un bug
+STR_HELP_WINDOW_COMMUNITY                                       :{BLACK}Community
 
 # Cheat window
 STR_CHEATS                                                      :{WHITE}Trucchi
@@ -2688,6 +2700,7 @@ STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}Attiva/d
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Attiva/disattiva la trasparenza dei ponti. CTRL+clic per bloccare
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}Attiva/disattiva la trasparenza di strutture come fari e antenne. CTRL+clic per bloccare
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Attiva/disattiva la trasparenza delle catenarie. CTRL+clic per bloccare
+STR_TRANSPARENT_TEXT_TOOLTIP                                    :{BLACK}Attiva/disattiva la trasparenza per il caricamento e il testo costi/entrate. Ctrl+clic per bloccare
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Rendi gli oggetti invisibili invece che trasparenti
 
 # Linkgraph legend window
@@ -3268,7 +3281,7 @@ STR_MAPGEN_NEWGRF_SETTINGS_TOOLTIP                              :{BLACK}Mostra i
 STR_MAPGEN_AI_SETTINGS                                          :{BLACK}Impostazioni IA
 STR_MAPGEN_AI_SETTINGS_TOOLTIP                                  :{BLACK}Mostra impostazioni IA
 STR_MAPGEN_GS_SETTINGS                                          :{BLACK}Impostazioni script di gioco
-STR_MAPGEN_GS_SETTINGS_TOOLTIP                                  :BLACK}Visualizza le impostazioni dello script di gioco
+STR_MAPGEN_GS_SETTINGS_TOOLTIP                                  :{BLACK}Visualizza le impostazioni dello script di gioco
 
 ###length 21
 STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH                           :Inglesi (originali)
@@ -3424,6 +3437,7 @@ STR_NEWGRF_INSPECT_PARENT_TOOLTIP                               :{BLACK}Ispezion
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT                            :{STRING} a {HEX}
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_OBJECT                     :Oggetto
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE                  :Tipo di rotaie
+STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Tipo di strada
 
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}Parametro variabile NewGRF 60+x (esadecimale)
 
@@ -4739,6 +4753,11 @@ STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORAN
 
 
 # Textfile window
+STR_TEXTFILE_JUMPLIST                                           :{WHITE}Sommario
+STR_TEXTFILE_JUMPLIST_TOOLTIP                                   :{BLACK}Passa rapidamente a una sezione del file visualizzato tramite questo elenco
+STR_TEXTFILE_JUMPLIST_ITEM                                      :{WHITE}{STRING}
+STR_TEXTFILE_NAVBACK_TOOLTIP                                    :{BLACK}Torna indietro nella cronologia di navigazione
+STR_TEXTFILE_NAVFORWARD_TOOLTIP                                 :{BLACK}Vai avanti nella cronologia di navigazione
 STR_TEXTFILE_WRAP_TEXT                                          :{WHITE}A capo automatico
 STR_TEXTFILE_WRAP_TEXT_TOOLTIP                                  :{BLACK}Manda automaticamente a capo il testo della finestra in modo che sia visibile senza doverlo scorrere
 STR_TEXTFILE_VIEW_README                                        :{BLACK}Visualizza file leggimi
@@ -4749,6 +4768,7 @@ STR_TEXTFILE_README_CAPTION                                     :{WHITE}File leg
 STR_TEXTFILE_CHANGELOG_CAPTION                                  :{WHITE}Changelog del {STRING} {STRING}
 STR_TEXTFILE_LICENCE_CAPTION                                    :{WHITE}Licenza del {STRING} {STRING}
 STR_TEXTFILE_SURVEY_RESULT_CAPTION                              :{WHITE}Anteprima del risultato del sondaggio
+STR_TEXTFILE_GAME_MANUAL_CAPTION                                :{WHITE}Documento OpenTTD '{STRING}'
 
 
 # Vehicle loading indicators
@@ -4883,7 +4903,6 @@ STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... trop
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... troppo vicino ad un'altra città
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... troppe città
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... non c'è altro spazio sulla mappa
-STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS                             :{WHITE}Alla città non è permesso costruire strade. È possibile abilitare la costruzione di strade in Impostazioni -> Ambiente -> Città
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Lavori stradali in corso
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Impossibile eliminare la città...{}Una stazione o un deposito fa ancora riferimento alla città o una casella di proprietà della città non può essere rimossa
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... non ci sono spazi adeguati per una statua nel centro di questa città

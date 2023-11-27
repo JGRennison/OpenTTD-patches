@@ -30,8 +30,8 @@ struct EffectVehicle FINAL : public SpecializedVehicle<EffectVehicle, VEH_EFFECT
 	/** We want to 'destruct' the right class. */
 	virtual ~EffectVehicle() { this->RemoveEffectVehicleFromTickCache(); }
 
-	void UpdateDeltaXY();
-	bool Tick();
+	void UpdateDeltaXY() override;
+	bool Tick() override;
 	TransparencyOption GetTransparencyOption() const;
 	void AddEffectVehicleToTickCache();
 	void RemoveEffectVehicleFromTickCache();

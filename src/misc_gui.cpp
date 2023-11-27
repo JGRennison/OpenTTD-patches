@@ -89,7 +89,7 @@ public:
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget != WID_LI_BACKGROUND) return;
 
@@ -341,19 +341,20 @@ public:
 		line << GetString(STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED);
 
 		bool found = false;
-		for (CargoID i = 0; i < NUM_CARGO; ++i) {
-			if (acceptance[i] > 0) {
+		for (const CargoSpec *cs : _sorted_cargo_specs) {
+			CargoID cid = cs->Index();
+			if (acceptance[cid] > 0) {
 				/* Add a comma between each item. */
 				if (found) line << ", ";
 				found = true;
 
 				/* If the accepted value is less than 8, show it in 1/8:ths */
-				if (acceptance[i] < 8) {
-					SetDParam(0, acceptance[i]);
-					SetDParam(1, CargoSpec::Get(i)->name);
+				if (acceptance[cid] < 8) {
+					SetDParam(0, acceptance[cid]);
+					SetDParam(1, cs->name);
 					line << GetString(STR_LAND_AREA_INFORMATION_CARGO_EIGHTS);
 				} else {
-					line << GetString(CargoSpec::Get(i)->name);
+					line << GetString(cs->name);
 				}
 			}
 		}
@@ -374,7 +375,7 @@ public:
 		::ShowNewGRFInspectWindow(GetGrfSpecFeature(this->tile), this->tile);
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_LI_LOCATION:
@@ -392,7 +393,7 @@ public:
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 
@@ -529,7 +530,7 @@ struct AboutWindow : public Window {
 		if (widget == WID_A_COPYRIGHT) SetDParamStr(0, _openttd_revision_year);
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget != WID_A_SCROLLING_TEXT) return;
 
@@ -620,8 +621,7 @@ void ShowCostOrIncomeAnimation(int x, int y, int z, Money cost)
 		cost = -cost;
 		msg = STR_INCOME_FLOAT_INCOME;
 	}
-	SetDParam(0, cost);
-	AddTextEffect(msg, pt.x, pt.y, DAY_TICKS, TE_RISING);
+	AddTextEffect(msg, pt.x, pt.y, DAY_TICKS, TE_RISING, cost);
 }
 
 /**
@@ -638,17 +638,15 @@ void ShowFeederIncomeAnimation(int x, int y, int z, Money transfer, Money income
 
 	Point pt = RemapCoords(x, y, z);
 
-	SetDParam(0, transfer);
 	if (income == 0) {
-		AddTextEffect(STR_FEEDER, pt.x, pt.y, DAY_TICKS, TE_RISING);
+		AddTextEffect(STR_FEEDER, pt.x, pt.y, DAY_TICKS, TE_RISING, transfer);
 	} else {
 		StringID msg = STR_FEEDER_COST;
 		if (income < 0) {
 			income = -income;
 			msg = STR_FEEDER_INCOME;
 		}
-		SetDParam(1, income);
-		AddTextEffect(msg, pt.x, pt.y, DAY_TICKS, TE_RISING);
+		AddTextEffect(msg, pt.x, pt.y, DAY_TICKS, TE_RISING, transfer, income);
 	}
 }
 
@@ -667,8 +665,7 @@ TextEffectID ShowFillingPercent(int x, int y, int z, uint8 percent, StringID str
 
 	assert(string != STR_NULL);
 
-	SetDParam(0, percent);
-	return AddTextEffect(string, pt.x, pt.y, 0, TE_STATIC);
+	return AddTextEffect(string, pt.x, pt.y, 0, TE_STATIC, percent);
 }
 
 /**
@@ -680,8 +677,7 @@ void UpdateFillingPercent(TextEffectID te_id, uint8 percent, StringID string)
 {
 	assert(string != STR_NULL);
 
-	SetDParam(0, percent);
-	UpdateTextEffect(te_id, string);
+	UpdateTextEffect(te_id, string, percent);
 }
 
 /**
@@ -697,7 +693,7 @@ void HideFillingPercent(TextEffectID *te_id)
 }
 
 static const NWidgetPart _nested_tooltips_widgets[] = {
-	NWidget(WWT_EMPTY, INVALID_COLOUR, WID_TT_BACKGROUND), EndContainer(),
+	NWidget(WWT_EMPTY, INVALID_COLOUR, WID_TT_BACKGROUND),
 };
 
 static WindowDesc _tool_tips_desc(
@@ -756,9 +752,9 @@ struct TooltipsWindow : public Window
 		return pt;
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
-		/* There is only one widget. */
+		if (widget != WID_TT_BACKGROUND) return;
 		if (this->params.size() == 0) {
 			size->width  = std::min<uint>(GetStringBoundingBox(this->buffer).width, ScaleGUITrad(194));
 			size->height = GetStringHeight(this->buffer, size->width);
@@ -775,7 +771,7 @@ struct TooltipsWindow : public Window
 
 	void DrawWidget(const Rect &r, int widget) const override
 	{
-		/* There is only one widget. */
+		if (widget != WID_TT_BACKGROUND) return;
 		GfxFillRect(r, PC_BLACK);
 		GfxFillRect(r.Shrink(WidgetDimensions::scaled.bevel), PC_LIGHT_YELLOW);
 
@@ -1074,7 +1070,7 @@ struct QueryStringWindow : public Window
 		this->ReInit();
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget == WID_QS_DEFAULT && (this->flags & QSF_ENABLE_DEFAULT) == 0) {
 			/* We don't want this widget to show! */
@@ -1113,7 +1109,7 @@ struct QueryStringWindow : public Window
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_QS_DEFAULT:
@@ -1130,7 +1126,7 @@ struct QueryStringWindow : public Window
 		}
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		if (!this->editbox.handled && this->parent != nullptr) {
 			Window *parent = this->parent;
@@ -1219,13 +1215,13 @@ struct QueryWindow : public Window {
 		this->InitNested(WN_CONFIRM_POPUP_QUERY);
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		if (this->proc != nullptr) this->proc(this->parent, false);
 		this->Window::Close();
 	}
 
-	void FindWindowPlacementAndResize(int def_width, int def_height) override
+	void FindWindowPlacementAndResize([[maybe_unused]] int def_width, [[maybe_unused]] int def_height) override
 	{
 		/* Position query window over the calling window, ensuring it's within screen bounds. */
 		this->left = SoftClamp(parent->left + (parent->width / 2) - (this->width / 2), 0, _screen.width - this->width);
@@ -1253,7 +1249,7 @@ struct QueryWindow : public Window {
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget != WID_Q_TEXT) return;
 
@@ -1275,7 +1271,7 @@ struct QueryWindow : public Window {
 				this->message_str, TC_FROMSTRING, SA_CENTER);
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_Q_YES: {
@@ -1421,7 +1417,7 @@ struct ModifierKeyToggleWindow : Window {
 		this->UpdateButtons();
 	}
 
-	void Close() override
+	void Close(int data = 0) override
 	{
 		_invert_shift = false;
 		_invert_ctrl = false;

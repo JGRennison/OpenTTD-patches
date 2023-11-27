@@ -160,9 +160,8 @@ Town::~Town()
 /**
  * Invalidating of the "nearest town cache" has to be done
  * after removing item from the pool.
- * @param index index of deleted item
  */
-void Town::PostDestructor(size_t index)
+void Town::PostDestructor(size_t)
 {
 	InvalidateWindowData(WC_TOWN_DIRECTORY, 0, TDIWD_FORCE_REBUILD);
 	UpdateNearestTownForRoadTiles(false);
@@ -824,7 +823,7 @@ static CommandCost ClearTile_Town(TileIndex tile, DoCommandFlag flags)
 		if (rating > t->ratings[_current_company]
 			&& !(flags & DC_NO_TEST_TOWN_RATING)
 			&& !_cheats.magic_bulldozer.value
-			&& !_extra_cheats.town_rating.value
+			&& !_cheats.town_rating.value
 			&& _settings_game.difficulty.town_council_tolerance != TOWN_COUNCIL_PERMISSIVE) {
 			SetDParam(0, t->index);
 			return_cmd_error(STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS);
@@ -946,13 +945,13 @@ static void GetTileDesc_Town(TileIndex tile, TileDesc *td)
 	td->owner[0] = OWNER_TOWN;
 }
 
-static TrackStatus GetTileTrackStatus_Town(TileIndex tile, TransportType mode, uint sub_mode, DiagDirection side)
+static TrackStatus GetTileTrackStatus_Town(TileIndex, TransportType, uint, DiagDirection)
 {
 	/* not used */
 	return 0;
 }
 
-static void ChangeTileOwner_Town(TileIndex tile, Owner old_owner, Owner new_owner)
+static void ChangeTileOwner_Town(TileIndex, Owner, Owner)
 {
 	/* not used */
 }
@@ -1549,17 +1548,25 @@ static inline bool RoadTypesAllowHouseHere(TileIndex t)
 }
 
 /** Test if town can grow road onto a specific tile.
- * @param town Town that is building.
  * @param tile Tile to build upon.
  * @return true iff the tile's road type don't prevent extending the road.
  */
-static bool TownCanGrowRoad(const Town *town, TileIndex tile)
+static bool TownCanGrowRoad(TileIndex tile)
 {
 	if (!IsTileType(tile, MP_ROAD)) return true;
 
 	/* Allow extending on roadtypes which can be built by town, or if the road type matches the type the town will build. */
 	RoadType rt = GetRoadTypeRoad(tile);
 	return HasBit(GetRoadTypeInfo(rt)->flags, ROTF_TOWN_BUILD) || GetTownRoadType() == rt;
+}
+
+/**
+ * Check if the town is allowed to build roads.
+ * @return true If the town is allowed to build roads.
+ */
+static inline bool TownAllowedToBuildRoads(const Town *t)
+{
+	return t->GetAllowBuildRoads() || _generating_world || _game_mode == GM_EDITOR;
 }
 
 /**
@@ -1591,7 +1598,7 @@ static void GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, DiagDirection t
 		 * to say that this is the last iteration. */
 		_grow_town_result = GROWTH_SEARCH_STOPPED;
 
-		if (!t1->GetAllowBuildRoads() && !_generating_world) return;
+		if (!TownAllowedToBuildRoads(t1)) return;
 		if (!t1->GetAllowBuildLevelCrossings() && IsTileType(tile, MP_RAILWAY)) return;
 		if (!MayTownModifyRoad(tile)) return;
 
@@ -1669,14 +1676,14 @@ static void GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, DiagDirection t
 		}
 
 	} else if (target_dir < DIAGDIR_END && !(cur_rb & DiagDirToRoadBits(ReverseDiagDir(target_dir)))) {
-		if (!TownCanGrowRoad(t1, tile)) return;
+		if (!TownCanGrowRoad(tile)) return;
 
 		/* Continue building on a partial road.
 		 * Should be always OK, so we only generate
 		 * the fitting RoadBits */
 		_grow_town_result = GROWTH_SEARCH_STOPPED;
 
-		if (!t1->GetAllowBuildRoads() && !_generating_world) return;
+		if (!TownAllowedToBuildRoads(t1)) return;
 
 		switch (t1->layout) {
 			default: NOT_REACHED();
@@ -1769,7 +1776,7 @@ static void GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, DiagDirection t
 
 		if (!IsValidTile(house_tile)) return;
 
-		if (target_dir != DIAGDIR_END && (t1->GetAllowBuildRoads() || _generating_world)) {
+		if (target_dir != DIAGDIR_END && TownAllowedToBuildRoads(t1)) {
 			switch (t1->layout) {
 				default: NOT_REACHED();
 
@@ -1812,7 +1819,7 @@ static void GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, DiagDirection t
 			return;
 		}
 
-		if (!TownCanGrowRoad(t1, tile)) return;
+		if (!TownCanGrowRoad(tile)) return;
 
 		_grow_town_result = GROWTH_SEARCH_STOPPED;
 	}
@@ -1848,7 +1855,7 @@ static bool CanFollowRoad(const Town *t, TileIndex tile, DiagDirection dir)
 	if (HasTileWaterGround(target_tile)) return false;
 
 	RoadBits target_rb = GetTownRoadBits(target_tile);
-	if (t->GetAllowBuildRoads() || _generating_world) {
+	if (TownAllowedToBuildRoads(t)) {
 		/* Check whether a road connection exists or can be build. */
 		switch (GetTileType(target_tile)) {
 			case MP_ROAD:
@@ -2027,7 +2034,7 @@ static bool GrowTown(Town *t)
 
 	/* No road available, try to build a random road block by
 	 * clearing some land and then building a road there. */
-	if (t->GetAllowBuildRoads() || _generating_world) {
+	if (TownAllowedToBuildRoads(t)) {
 		tile = t->xy;
 		for (ptr = _town_coord_mod; ptr != endof(_town_coord_mod); ++ptr) {
 			/* Only work with plain land that not already has a house */
@@ -2481,9 +2488,8 @@ static bool FindFurthestFromWater(TileIndex tile, void *user_data)
  * CircularTileSearch callback; finds the nearest land tile
  *
  * @param tile Start looking from this tile
- * @param user_data not used
  */
-static bool FindNearestEmptyLand(TileIndex tile, void *user_data)
+static bool FindNearestEmptyLand(TileIndex tile, void *)
 {
 	return IsTileType(tile, MP_CLEAR);
 }
@@ -2843,7 +2849,7 @@ static inline CommandCost IsAnotherHouseTypeAllowedInTown(Town *t, HouseID house
 static inline bool TownLayoutAllowsHouseHere(Town *t, const TileArea &ta)
 {
 	/* Allow towns everywhere when we don't build roads */
-	if (!t->GetAllowBuildRoads() && !_generating_world) return true;
+	if (!TownAllowedToBuildRoads(t)) return true;
 
 	TileIndexDiffC grid_pos = TileIndexToTileIndexDiffC(t->xy, ta.tile);
 
@@ -3380,7 +3386,7 @@ CommandCost CmdTownRating(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 	if (!Company::IsValidID(company_id)) return CMD_ERROR;
 
 	int16 new_rating = Clamp((int16)GB(p2, 0, 16), RATING_MINIMUM, RATING_MAXIMUM);
-	if (_extra_cheats.town_rating.value) {
+	if (_cheats.town_rating.value) {
 		new_rating = RATING_MAXIMUM;
 	}
 	if (flags & DC_EXEC) {
@@ -3732,7 +3738,7 @@ static CommandCost TownActionBribe(Town *t, DoCommandFlag flags)
 			/* set all close by station ratings to 0 */
 			for (Station *st : Station::Iterate()) {
 				if (st->town == t && st->owner == _current_company) {
-					for (CargoID i = 0; i < NUM_CARGO; i++) st->goods[i].rating = 0;
+					for (GoodsEntry &ge : st->goods) ge.rating = 0;
 				}
 			}
 
@@ -3954,7 +3960,7 @@ static void ForAllStationsNearTown(Town *t, Func func)
 
 static void UpdateTownRating(Town *t)
 {
-	if (_extra_cheats.town_rating.value) return;
+	if (_cheats.town_rating.value) return;
 
 	/* Increase company ratings if they're low */
 	for (const Company *c : Company::Iterate()) {
@@ -4142,8 +4148,8 @@ static void UpdateTownGrowth(Town *t)
 
 static void UpdateTownAmounts(Town *t)
 {
-	for (CargoID i = 0; i < NUM_CARGO; i++) t->supplied[i].NewMonth();
-	for (int i = TE_BEGIN; i < TE_END; i++) t->received[i].NewMonth();
+	for (auto &supplied : t->supplied) supplied.NewMonth();
+	for (auto &received : t->received) received.NewMonth();
 	if (t->fund_buildings_months != 0) t->fund_buildings_months--;
 
 	SetWindowDirty(WC_TOWN_VIEW, t->index);
@@ -4288,13 +4294,13 @@ void ChangeTownRating(Town *t, int add, int max, DoCommandFlag flags)
 	/* if magic_bulldozer cheat is active, town doesn't penalize for removing stuff */
 	if (t == nullptr || (flags & DC_NO_MODIFY_TOWN_RATING) ||
 			!Company::IsValidID(_current_company) ||
-			((_cheats.magic_bulldozer.value || _extra_cheats.town_rating.value) && add < 0)) {
+			((_cheats.magic_bulldozer.value || _cheats.town_rating.value) && add < 0)) {
 		return;
 	}
 
 	const int prev_rating = GetRating(t);
 	int rating = prev_rating;
-	if (_extra_cheats.town_rating.value) {
+	if (_cheats.town_rating.value) {
 		rating = RATING_MAXIMUM;
 	} else if (add < 0) {
 		if (rating > max) {
@@ -4323,7 +4329,7 @@ void ChangeTownRating(Town *t, int add, int max, DoCommandFlag flags)
 
 void UpdateAllTownRatings()
 {
-	if (_extra_cheats.town_rating.value) {
+	if (_cheats.town_rating.value) {
 		for (Town *t : Town::Iterate()) {
 			if (Company::IsValidID(_local_company) && HasBit(t->have_ratings, _local_company) && t->ratings[_local_company] <= 0) {
 				ZoningTownAuthorityRatingChange();
@@ -4350,7 +4356,7 @@ CommandCost CheckforTownRating(DoCommandFlag flags, Town *t, TownRatingCheckType
 {
 	/* if magic_bulldozer cheat is active, town doesn't restrict your destructive actions */
 	if (t == nullptr || !Company::IsValidID(_current_company) ||
-			_cheats.magic_bulldozer.value || _extra_cheats.town_rating.value || (flags & DC_NO_TEST_TOWN_RATING)) {
+			_cheats.magic_bulldozer.value || _cheats.town_rating.value || (flags & DC_NO_TEST_TOWN_RATING)) {
 		return CommandCost();
 	}
 

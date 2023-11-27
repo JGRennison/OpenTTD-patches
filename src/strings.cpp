@@ -2431,7 +2431,7 @@ void InitializeLanguagePacks()
 		std::string path = FioGetDirectory(sp, LANG_DIR);
 		GetLanguageList(path.c_str());
 	}
-	if (_languages.size() == 0) usererror("No available language packs (invalid versions?)");
+	if (_languages.empty()) usererror("No available language packs (invalid versions?)");
 
 	/* Acquire the locale of the current system */
 	const char *lang = GetCurrentLocale("LC_MESSAGES");
@@ -2558,7 +2558,7 @@ class LanguagePackGlyphSearcher : public MissingGlyphSearcher {
 		return false;
 	}
 
-	void SetFontNames(FontCacheSettings *settings, const char *font_name, const void *os_data) override
+	void SetFontNames([[maybe_unused]] FontCacheSettings *settings, [[maybe_unused]] const char *font_name, [[maybe_unused]] const void *os_data) override
 	{
 #if defined(WITH_FREETYPE) || defined(_WIN32) || defined(WITH_COCOA)
 		settings->small.font = font_name;

@@ -709,7 +709,6 @@ STR_CHEAT_INFLATION_COST                                        :{LTBLUE}改变�
 STR_CHEAT_INFLATION_COST_QUERY_CAPT                             :{WHITE}改变支出通胀因子
 STR_CHEAT_INFLATION_INCOME                                      :{LTBLUE}改变收入通胀因子: {ORANGE}{DECIMAL}
 STR_CHEAT_INFLATION_INCOME_QUERY_CAPT                           :{WHITE}改变收入通胀因子
-STR_CHEAT_STATION_RATING                                        :{LTBLUE}车站评价调整为100%: {ORANGE}{STRING}
 STR_CHEAT_TOWN_RATING                                           :{LTBLUE}城镇地方当局评级永远为“卓越”: {ORANGE}{STRING}
 
 STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {STRING} 给了你的公司 {2:CURRENCY_LONG}
@@ -1217,7 +1216,6 @@ STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP                    :{BLACK}在没�
 STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO                             :{BLACK}G
 STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO_TOOLTIP                     :{BLACK}滚动Sprite编号
 STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP                    :{BLACK}点击高亮Sprite组{}Shift+点击折叠Sprite组{}Ctrl+点击高亮临时存储寄存器
-STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :道路/电车道类型
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS                    :信号
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID                 :未生效的重映射特性 ID: name: {2:STRING}，mapped to: {5:HEX} (sprite {3:NUM})
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY                   :未生效的重映射 Action 0 属性特性: {4:HEX}，name: {2:STRING}，mapped to: {5:HEX} (sprite {3:NUM})

@@ -452,7 +452,7 @@ STR_NEWS_MENU_LAST_MESSAGE_NEWS_REPORT                          :Síðustu skila
 STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :Saga skilaboða
 
 # About menu
-###length 11
+###length 12
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :Landssvæðisupplýsingar
 STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Kveikja á stýriskjá
@@ -837,10 +837,6 @@ STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLAC
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Ný {STRING} er nú fáanleg!  -  {ENGINE}
 
 
-STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} tekur ekki lengur við {STRING}
-STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} tekur ekki lengur við {STRING} eða {STRING}
-STR_NEWS_STATION_NOW_ACCEPTS_CARGO                              :{WHITE}{STATION} tekur nú við {STRING}
-STR_NEWS_STATION_NOW_ACCEPTS_CARGO_AND_CARGO                    :{WHITE}{STATION} tekur nú við {STRING} og {STRING}
 
 STR_NEWS_OFFER_OF_SUBSIDY_EXPIRED                               :{BIG_FONT}{BLACK}Tilboð til samstarfssamnings runnið út:{}{}{STRING} frá {STRING} til {STRING} mun ekki vera samningsbundið.
 STR_NEWS_SUBSIDY_WITHDRAWN_SERVICE                              :{BIG_FONT}{BLACK}Samsarfssamningur gerður ógildur:{}{} {STRING}flutningur frá {STRING} til {STRING} er ekki lengur samningsbundinn.
@@ -4059,7 +4055,6 @@ STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... of n
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... of nálægt öðrum bæ
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... of margir bæir
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... það er ekkert laust svæði á kortinu
-STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS                             :{WHITE}Bærinn getur ekki lagt vegi. Því er hægt að breyta í Ítarlegar stillingar->Efnahagur->Bæir.
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Vegaframkvæmdir standa yfir
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Ekki hægt að eyða bæ...{}Stöð eða skýli vísar í þennan bæ eða ekki hægt að fjarlægja reit í eigu bæjarins.
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... það er enginn ákjósanlegur staður fyrir styttu í miðju þessa bæjar

@@ -709,7 +709,6 @@ STR_CHEAT_INFLATION_COST                                        :{LTBLUE}인플�
 STR_CHEAT_INFLATION_COST_QUERY_CAPT                             :{WHITE}인플레이션 지출 배수를 변경합니다.
 STR_CHEAT_INFLATION_INCOME                                      :{LTBLUE}인플레이션 수익 배수 변경: {ORANGE}{DECIMAL}
 STR_CHEAT_INFLATION_INCOME_QUERY_CAPT                           :{WHITE}인플레이션 수익 배수를 변경합니다.
-STR_CHEAT_STATION_RATING                                        :{LTBLUE}역 등급을 항상 100%로 고정: {ORANGE}{STRING}
 STR_CHEAT_TOWN_RATING                                           :{LTBLUE}회사에 대한 도시 평판을 항상 훌륭함으로: {ORANGE}{STRING}
 
 STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {STRING} 님이 당신에게 {2:CURRENCY_LONG}만큼의 돈을 보내셨습니다
@@ -1218,7 +1217,6 @@ STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP                    :{BLACK}모든 �
 STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO                             :{BLACK}G
 STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO_TOOLTIP                     :{BLACK}특정 스프라이트 번호로 이동합니다
 STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP                    :{BLACK}스프라이트 그룹을 강조 표시하려면 클릭하세요{}SHIFT+클릭하면 스프라이트 그룹을 접거나 펼 수 있습니다.{}Ctrl+클릭하면 임시 저장 레지스터를 강조 표시합니다.
-STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :도로/전차 종류
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS                    :신호기
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID                 :구현되지 않은 재배치된 기능 ID: 이름: {2:STRING}, 재배치: {5:HEX} (스프라이트 {3:NUM})
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY                   :구현되지 않은 재배치된 액션 0 속성 특성: {4:HEX}, 이름: {2:STRING}, 재배치: {5:HEX} (스프라이트 {3:NUM})

@@ -777,7 +777,7 @@ void GetBindAddresses(NetworkAddressList *addresses, uint16 port)
 	}
 
 	/* No address, so bind to everything. */
-	if (addresses->size() == 0) {
+	if (addresses->empty()) {
 		addresses->emplace_back("", port);
 	}
 }
@@ -944,7 +944,7 @@ bool NetworkServerStart()
 	/* Check for the client and server names to be set, but only after the scripts had a chance to set them.*/
 	if (_network_dedicated) CheckClientAndServerName();
 
-	NetworkDisconnect(false, false);
+	NetworkDisconnect(false);
 	NetworkInitialize(false);
 	NetworkUDPInitialize();
 	DEBUG(net, 5, "Starting listeners for clients");
@@ -1017,10 +1017,9 @@ void NetworkReboot()
 
 /**
  * We want to disconnect from the host/clients.
- * @param blocking whether to wait till everything has been closed.
  * @param close_admins Whether the admin sockets need to be closed as well.
  */
-void NetworkDisconnect(bool blocking, bool close_admins)
+void NetworkDisconnect(bool close_admins)
 {
 	if (_network_server) {
 		for (NetworkClientSocket *cs : NetworkClientSocket::Iterate()) {
@@ -1404,7 +1403,7 @@ void NetworkStartUp()
 /** This shuts the network down */
 void NetworkShutDown()
 {
-	NetworkDisconnect(true);
+	NetworkDisconnect();
 	NetworkHTTPUninitialize();
 	NetworkUDPClose();
 

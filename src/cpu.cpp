@@ -166,7 +166,7 @@ void ottd_cpuid(int info[4], int type)
 	}
 }
 #else
-void ottd_cpuid(int info[4], int type)
+void ottd_cpuid(int info[4], int)
 {
 	info[0] = info[1] = info[2] = info[3] = 0;
 }

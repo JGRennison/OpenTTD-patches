@@ -204,7 +204,7 @@ void TCPConnecter::OnResolved(addrinfo *ai)
 	}
 
 	if (_debug_net_level >= 6) {
-		if (this->addresses.size() == 0) {
+		if (this->addresses.empty()) {
 			DEBUG(net, 6, "%s did not resolve", this->connection_string.c_str());
 		} else {
 			DEBUG(net, 6, "%s resolved in:", this->connection_string.c_str());

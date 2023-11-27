@@ -209,8 +209,8 @@ enum StationNaming {
 
 /** Information to handle station action 0 property 24 correctly */
 struct StationNameInformation {
-	uint32 free_names; ///< Current bitset of free names (we can remove names).
-	bool *indtypes;    ///< Array of bools telling whether an industry type has been found.
+	uint32_t free_names; ///< Current bitset of free names (we can remove names).
+	std::bitset<NUM_INDUSTRYTYPES> indtypes; ///< Bit set indicating when an industry type has been found.
 };
 
 /**
@@ -249,23 +249,22 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 	};
 
 	const Town *t = st->town;
-	uint32 free_names = UINT32_MAX;
 
-	bool indtypes[NUM_INDUSTRYTYPES];
-	memset(indtypes, 0, sizeof(indtypes));
+	StationNameInformation sni{};
+	sni.free_names = UINT32_MAX;
 
 	std::bitset<MAX_EXTRA_STATION_NAMES> extra_names;
 
 	for (const Station *s : Station::Iterate()) {
 		if ((force_change || s != st) && s->town == t) {
 			if (s->indtype != IT_INVALID) {
-				indtypes[s->indtype] = true;
+				sni.indtypes[s->indtype] = true;
 				StringID name = GetIndustrySpec(s->indtype)->station_name;
 				if (name != STR_UNDEFINED) {
 					/* Filter for other industrytypes with the same name */
 					for (IndustryType it = 0; it < NUM_INDUSTRYTYPES; it++) {
 						const IndustrySpec *indsp = GetIndustrySpec(it);
-						if (indsp->enabled && indsp->station_name == name) indtypes[it] = true;
+						if (indsp->enabled && indsp->station_name == name) sni.indtypes[it] = true;
 					}
 				}
 				continue;
@@ -278,7 +277,7 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 				if (str == M(STR_SV_STNAME_FOREST)) {
 					str = M(STR_SV_STNAME_WOODS);
 				}
-				ClrBit(free_names, str);
+				ClrBit(sni.free_names, str);
 			}
 		}
 	}
@@ -286,7 +285,6 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 	st->extra_name_index = UINT16_MAX;
 
 	TileIndex indtile = tile;
-	StationNameInformation sni = { free_names, indtypes };
 	if (CircularTileSearch(&indtile, 7, FindNearIndustryName, &sni)) {
 		/* An industry has been found nearby */
 		IndustryType indtype = GetIndustryType(indtile);
@@ -299,14 +297,13 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 	}
 
 	/* Oil rigs/mines name could be marked not free by looking for a near by industry. */
-	free_names = sni.free_names;
 
 	/* check default names */
-	uint32 tmp = free_names & _gen_station_name_bits[name_class];
+	uint32 tmp = sni.free_names & _gen_station_name_bits[name_class];
 	if (tmp != 0) return STR_SV_STNAME + FindFirstBit(tmp);
 
 	/* check mine? */
-	if (HasBit(free_names, M(STR_SV_STNAME_MINES))) {
+	if (HasBit(sni.free_names, M(STR_SV_STNAME_MINES))) {
 		if (CountMapSquareAround(tile, CMSAMine) >= 2) {
 			return STR_SV_STNAME_MINES;
 		}
@@ -314,7 +311,7 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 
 	/* check close enough to town to get central as name? */
 	const bool is_central = DistanceMax(tile, t->xy) < 8;
-	if (HasBit(free_names, M(STR_SV_STNAME)) && (is_central ||
+	if (HasBit(sni.free_names, M(STR_SV_STNAME)) && (is_central ||
 			DistanceSquare(tile, t->xy) <= std::max(t->cache.squared_town_zone_radius[HZB_TOWN_INNER_SUBURB], t->cache.squared_town_zone_radius[HZB_TOWN_OUTER_SUBURB]))) {
 		return STR_SV_STNAME;
 	}
@@ -356,19 +353,19 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 	}
 
 	/* check close enough to town to get central as name? */
-	if (is_central && HasBit(free_names, M(STR_SV_STNAME_CENTRAL))) {
+	if (is_central && HasBit(sni.free_names, M(STR_SV_STNAME_CENTRAL))) {
 		return STR_SV_STNAME_CENTRAL;
 	}
 
 	/* Check lakeside */
-	if (HasBit(free_names, M(STR_SV_STNAME_LAKESIDE)) &&
+	if (HasBit(sni.free_names, M(STR_SV_STNAME_LAKESIDE)) &&
 			DistanceFromEdge(tile) < 20 &&
 			CountMapSquareAround(tile, CMSAWater) >= 5) {
 		return STR_SV_STNAME_LAKESIDE;
 	}
 
 	/* Check woods */
-	if (HasBit(free_names, M(STR_SV_STNAME_WOODS)) && (
+	if (HasBit(sni.free_names, M(STR_SV_STNAME_WOODS)) && (
 				CountMapSquareAround(tile, CMSATree) >= 8 ||
 				CountMapSquareAround(tile, IsTileForestIndustry) >= 2)
 			) {
@@ -379,9 +376,9 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 	int z = GetTileZ(tile);
 	int z2 = GetTileZ(t->xy);
 	if (z < z2) {
-		if (HasBit(free_names, M(STR_SV_STNAME_VALLEY))) return STR_SV_STNAME_VALLEY;
+		if (HasBit(sni.free_names, M(STR_SV_STNAME_VALLEY))) return STR_SV_STNAME_VALLEY;
 	} else if (z > z2) {
-		if (HasBit(free_names, M(STR_SV_STNAME_HEIGHTS))) return STR_SV_STNAME_HEIGHTS;
+		if (HasBit(sni.free_names, M(STR_SV_STNAME_HEIGHTS))) return STR_SV_STNAME_HEIGHTS;
 	}
 
 	/* check direction compared to town */
@@ -392,12 +389,28 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 		~( (1 << M(STR_SV_STNAME_SOUTH)) | (1 << M(STR_SV_STNAME_WEST)) | (1 << M(STR_SV_STNAME_EAST)) ),
 	};
 
-	free_names &= _direction_and_table[
+	sni.free_names &= _direction_and_table[
 		(TileX(tile) < TileX(t->xy)) +
 		(TileY(tile) < TileY(t->xy)) * 2];
 
-	tmp = free_names & ((1 << 1) | (1 << 2) | (1 << 3) | (1 << 4) | (1 << 6) | (1 << 7) | (1 << 12) | (1 << 26) | (1 << 27) | (1 << 28) | (1 << 29) | (1 << 30));
-	if (tmp != 0) return STR_SV_STNAME + FindFirstBit(tmp);
+	/** Bitmask of remaining station names that can be used when a more specific name has not been used. */
+	static const uint32_t fallback_names = (
+		(1U << M(STR_SV_STNAME_NORTH)) |
+		(1U << M(STR_SV_STNAME_SOUTH)) |
+		(1U << M(STR_SV_STNAME_EAST)) |
+		(1U << M(STR_SV_STNAME_WEST)) |
+		(1U << M(STR_SV_STNAME_TRANSFER)) |
+		(1U << M(STR_SV_STNAME_HALT)) |
+		(1U << M(STR_SV_STNAME_EXCHANGE)) |
+		(1U << M(STR_SV_STNAME_ANNEXE)) |
+		(1U << M(STR_SV_STNAME_SIDINGS)) |
+		(1U << M(STR_SV_STNAME_BRANCH)) |
+		(1U << M(STR_SV_STNAME_UPPER)) |
+		(1U << M(STR_SV_STNAME_LOWER))
+	);
+
+	sni.free_names &= fallback_names;
+	if (sni.free_names != 0) return STR_SV_STNAME + FindFirstBit(sni.free_names);
 
 	if (check_extra_names()) return STR_SV_STNAME_FALLBACK;
 
@@ -556,7 +569,7 @@ void ClearAllStationCachedNames()
  * @param st Station to query
  * @return the expected mask
  */
-static CargoTypes GetAcceptanceMask(const Station *st)
+CargoTypes GetAcceptanceMask(const Station *st)
 {
 	CargoTypes mask = 0;
 
@@ -567,16 +580,31 @@ static CargoTypes GetAcceptanceMask(const Station *st)
 }
 
 /**
- * Items contains the two cargo names that are to be accepted or rejected.
- * msg is the string id of the message to display.
+ * Get a mask of the cargo types that are empty at the station.
+ * @param st Station to query
+ * @return the empty mask
  */
-static void ShowRejectOrAcceptNews(const Station *st, uint num_items, CargoID *cargo, StringID msg)
+CargoTypes GetEmptyMask(const Station *st)
 {
-	for (uint i = 0; i < num_items; i++) {
-		SetDParam(i + 1, CargoSpec::Get(cargo[i])->name);
-	}
+	CargoTypes mask = 0;
 
+	for (CargoID i = 0; i < NUM_CARGO; i++) {
+		if (st->goods[i].CargoTotalCount() == 0) SetBit(mask, i);
+	}
+	return mask;
+}
+
+/**
+ * Add news item for when a station changes which cargoes it accepts.
+ * @param st Station of cargo change.
+ * @param cargoes Bit mask of cargo types to list.
+ * @param reject True iff the station rejects the cargo types.
+ */
+static void ShowRejectOrAcceptNews(const Station *st, CargoTypes cargoes, bool reject)
+{
 	SetDParam(0, st->index);
+	SetDParam(1, cargoes);
+	StringID msg = reject ? STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_LIST : STR_NEWS_STATION_NOW_ACCEPTS_CARGO_LIST;
 	AddNewsItem(msg, NT_ACCEPTANCE, NF_INCOLOUR | NF_SMALL, NR_STATION, st->index);
 }
 
@@ -702,41 +730,13 @@ void UpdateStationAcceptance(Station *st, bool show_msg)
 
 	/* show a message to report that the acceptance was changed? */
 	if (show_msg && st->owner == _local_company && st->IsInUse()) {
-		/* List of accept and reject strings for different number of
-		 * cargo types */
-		static const StringID accept_msg[] = {
-			STR_NEWS_STATION_NOW_ACCEPTS_CARGO,
-			STR_NEWS_STATION_NOW_ACCEPTS_CARGO_AND_CARGO,
-		};
-		static const StringID reject_msg[] = {
-			STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO,
-			STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO,
-		};
-
-		/* Array of accepted and rejected cargo types */
-		CargoID accepts[2] = { CT_INVALID, CT_INVALID };
-		CargoID rejects[2] = { CT_INVALID, CT_INVALID };
-		uint num_acc = 0;
-		uint num_rej = 0;
-
-		/* Test each cargo type to see if its acceptance has changed */
-		for (CargoID i = 0; i < NUM_CARGO; i++) {
-			if (HasBit(new_acc, i)) {
-				if (!HasBit(old_acc, i) && num_acc < lengthof(accepts)) {
-					/* New cargo is accepted */
-					accepts[num_acc++] = i;
-				}
-			} else {
-				if (HasBit(old_acc, i) && num_rej < lengthof(rejects)) {
-					/* Old cargo is no longer accepted */
-					rejects[num_rej++] = i;
-				}
-			}
-		}
+		/* Combine old and new masks to get changes */
+		CargoTypes accepts = new_acc & ~old_acc;
+		CargoTypes rejects = ~new_acc & old_acc;
 
 		/* Show news message if there are any changes */
-		if (num_acc > 0) ShowRejectOrAcceptNews(st, num_acc, accepts, accept_msg[num_acc - 1]);
-		if (num_rej > 0) ShowRejectOrAcceptNews(st, num_rej, rejects, reject_msg[num_rej - 1]);
+		if (accepts != 0) ShowRejectOrAcceptNews(st, accepts, false);
+		if (rejects != 0) ShowRejectOrAcceptNews(st, rejects, true);
 	}
 
 	/* redraw the station view since acceptance changed */
@@ -755,10 +755,10 @@ static void UpdateStationSignCoord(BaseStation *st)
 
 	if (!Station::IsExpected(st)) return;
 	Station *full_station = Station::From(st);
-	for (CargoID c = 0; c < NUM_CARGO; ++c) {
-		LinkGraphID lg = full_station->goods[c].link_graph;
+	for (const GoodsEntry &ge : full_station->goods) {
+		LinkGraphID lg = ge.link_graph;
 		if (!LinkGraph::IsValidID(lg)) continue;
-		(*LinkGraph::Get(lg))[full_station->goods[c].node].UpdateLocation(st->xy);
+		(*LinkGraph::Get(lg))[ge.node].UpdateLocation(st->xy);
 	}
 }
 
@@ -799,7 +799,7 @@ static CommandCost BuildStationPart(Station **st, DoCommandFlag flags, bool reus
 					ZoningTownAuthorityRatingChange();
 				}
 				SetBit((*st)->town->have_ratings, _current_company);
-				if (_extra_cheats.town_rating.value) {
+				if (_cheats.town_rating.value) {
 					(*st)->town->ratings[_current_company] = RATING_MAXIMUM;
 				}
 			}
@@ -1272,10 +1272,9 @@ static CommandCost CheckFlatLandAirport(AirportTileTableIterator tile_iter, DoCo
  * Check whether we can expand the rail part of the given station.
  * @param st the station to expand
  * @param new_ta the current (and if all is fine new) tile area of the rail part of the station
- * @param axis the axis of the newly build rail
  * @return Succeeded or failed command.
  */
-CommandCost CanExpandRailStation(const BaseStation *st, TileArea &new_ta, Axis axis)
+CommandCost CanExpandRailStation(const BaseStation *st, TileArea &new_ta)
 {
 	TileArea cur_ta = st->train_station;
 
@@ -1563,7 +1562,7 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 
 	if (ret.Failed()) return ret;
 
 	if (st != nullptr && st->train_station.tile != INVALID_TILE) {
-		ret = CanExpandRailStation(st, new_location, axis);
+		ret = CanExpandRailStation(st, new_location);
 		if (ret.Failed()) return ret;
 	}
 
@@ -3146,20 +3145,6 @@ void ClearDockingTilesCheckingNeighbours(TileIndex tile)
 }
 
 /**
- * Check if a dock tile can be docked from the given direction.
- * @param t Tile index of dock.
- * @param d DiagDirection adjacent to dock being tested. (unused)
- * @return True iff the dock can be docked from the given direction.
- */
-bool IsValidDockingDirectionForDock(TileIndex t, DiagDirection d)
-{
-	assert(IsDockTile(t));
-
-	StationGfx gfx = GetStationGfx(t);
-	return gfx >= GFX_DOCK_BASE_WATER_PART;
-}
-
-/**
  * Find the part of a dock that is land-based
  * @param t Dock tile to find land part of
  * @return tile of land part of dock
@@ -3376,7 +3361,7 @@ static void DrawTile_Station(TileInfo *ti, DrawTileProcParams params)
 		gfx = GetAirportGfx(ti->tile);
 		if (gfx >= NEW_AIRPORTTILE_OFFSET) {
 			const AirportTileSpec *ats = AirportTileSpec::Get(gfx);
-			if (ats->grf_prop.spritegroup[0] != nullptr && DrawNewAirportTile(ti, Station::GetByTile(ti->tile), gfx, ats)) {
+			if (ats->grf_prop.spritegroup[0] != nullptr && DrawNewAirportTile(ti, Station::GetByTile(ti->tile), ats)) {
 				return;
 			}
 			/* No sprite group (or no valid one) found, meaning no graphics associated.
@@ -3690,12 +3675,12 @@ void StationPickerDrawSprite(int x, int y, StationType st, RailType railtype, Ro
 	DrawRailTileSeqInGUI(x, y, t, (st == STATION_WAYPOINT || st == STATION_ROADWAYPOINT) ? 0 : total_offset, 0, pal);
 }
 
-static int GetSlopePixelZ_Station(TileIndex tile, uint x, uint y, bool ground_vehicle)
+static int GetSlopePixelZ_Station(TileIndex tile, uint, uint, bool)
 {
 	return GetTileMaxPixelZ(tile);
 }
 
-static Foundation GetFoundation_Station(TileIndex tile, Slope tileh)
+static Foundation GetFoundation_Station(TileIndex, Slope tileh)
 {
 	return FlatteningFoundation(tileh);
 }
@@ -4097,8 +4082,8 @@ static bool StationHandleBigTick(BaseStation *st)
 	if (Station::IsExpected(st)) {
 		TriggerWatchedCargoCallbacks(Station::From(st));
 
-		for (CargoID i = 0; i < NUM_CARGO; i++) {
-			ClrBit(Station::From(st)->goods[i].status, GoodsEntry::GES_ACCEPTED_BIGTICK);
+		for (GoodsEntry &ge : Station::From(st)->goods) {
+			ClrBit(ge.status, GoodsEntry::GES_ACCEPTED_BIGTICK);
 		}
 	}
 
@@ -4245,7 +4230,7 @@ int GetTargetRating(const Station *st, const CargoSpec *cs, const GoodsEntry *ge
 	bool skip = false;
 	int rating = 0;
 
-	if (_extra_cheats.station_rating.value) {
+	if (_cheats.station_rating.value) {
 		rating = 255;
 		skip = true;
 	} else if (HasBit(cs->callback_mask, CBM_CARGO_STATION_RATING_CALC)) {
@@ -4670,10 +4655,9 @@ void StationDailyLoop()
 void StationMonthlyLoop()
 {
 	for (Station *st : Station::Iterate()) {
-		for (CargoID i = 0; i < NUM_CARGO; i++) {
-			GoodsEntry *ge = &st->goods[i];
-			SB(ge->status, GoodsEntry::GES_LAST_MONTH, 1, GB(ge->status, GoodsEntry::GES_CURRENT_MONTH, 1));
-			ClrBit(ge->status, GoodsEntry::GES_CURRENT_MONTH);
+		for (GoodsEntry &ge : st->goods) {
+			SB(ge.status, GoodsEntry::GES_LAST_MONTH, 1, GB(ge.status, GoodsEntry::GES_CURRENT_MONTH, 1));
+			ClrBit(ge.status, GoodsEntry::GES_CURRENT_MONTH);
 		}
 	}
 }
@@ -4683,11 +4667,9 @@ void ModifyStationRatingAround(TileIndex tile, Owner owner, int amount, uint rad
 {
 	ForAllStationsRadius(tile, radius, [&](Station *st) {
 		if (st->owner == owner && DistanceManhattan(tile, st->xy) <= radius) {
-			for (CargoID i = 0; i < NUM_CARGO; i++) {
-				GoodsEntry *ge = &st->goods[i];
-
-				if (ge->status != 0) {
-					ge->rating = ClampTo<uint8_t>(ge->rating + amount);
+			for (GoodsEntry &ge : st->goods) {
+				if (ge.status != 0) {
+					ge.rating = ClampTo<uint8_t>(ge.rating + amount);
 				}
 			}
 		}
@@ -4899,7 +4881,7 @@ const StationList *StationFinder::GetStations()
 			assert(this->w == 1 && this->h == 1);
 			AddNearbyStationsByCatchment(this->tile, &this->stations, Town::GetByTile(this->tile)->stations_near);
 		} else {
-			ForAllStationsAroundTiles(*this, [this](Station *st, TileIndex tile) {
+			ForAllStationsAroundTiles(*this, [this](Station *st, TileIndex) {
 				this->stations.insert(st);
 				return true;
 			});

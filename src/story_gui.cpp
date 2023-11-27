@@ -256,11 +256,11 @@ protected:
 		for (const StoryPage *p : this->story_pages) {
 			bool current_page = p->index == this->selected_page_id;
 			if (!p->title.empty()) {
-				list.emplace_back(new DropDownListStringItem(p->title, p->index, current_page));
+				list.push_back(std::make_unique<DropDownListStringItem>(p->title, p->index, current_page));
 			} else {
 				/* No custom title => use a generic page title with page number. */
 				SetDParam(0, page_num);
-				list.emplace_back(new DropDownListStringItem(STR_STORY_BOOK_GENERIC_PAGE_ITEM, p->index, current_page));
+				list.push_back(std::make_unique<DropDownListStringItem>(STR_STORY_BOOK_GENERIC_PAGE_ITEM, p->index, current_page));
 			}
 			page_num++;
 		}
@@ -625,8 +625,8 @@ public:
 	 */
 	void UpdatePrevNextDisabledState()
 	{
-		this->SetWidgetDisabledState(WID_SB_PREV_PAGE, story_pages.size() == 0 || this->IsFirstPageSelected());
-		this->SetWidgetDisabledState(WID_SB_NEXT_PAGE, story_pages.size() == 0 || this->IsLastPageSelected());
+		this->SetWidgetDisabledState(WID_SB_PREV_PAGE, story_pages.empty() || this->IsFirstPageSelected());
+		this->SetWidgetDisabledState(WID_SB_NEXT_PAGE, story_pages.empty() || this->IsLastPageSelected());
 		this->SetWidgetDirty(WID_SB_PREV_PAGE);
 		this->SetWidgetDirty(WID_SB_NEXT_PAGE);
 	}
@@ -754,7 +754,7 @@ public:
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget != WID_SB_SEL_PAGE && widget != WID_SB_PAGE_PANEL) return;
 
@@ -804,7 +804,7 @@ public:
 		this->vscroll->SetCount(this->GetContentHeight());
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_SB_SEL_PAGE: {
@@ -860,7 +860,7 @@ public:
 	 *   >= 0   Id of the page that needs to be refreshed. If it is not the current page, nothing happens.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 
@@ -872,7 +872,7 @@ public:
 			this->BuildStoryPageList();
 
 			/* Was the last page removed? */
-			if (this->story_pages.size() == 0) {
+			if (this->story_pages.empty()) {
 				this->selected_generic_title.clear();
 			}
 
@@ -880,14 +880,14 @@ public:
 			if (!_story_page_pool.IsValidID(this->selected_page_id)) {
 				this->selected_page_id = INVALID_STORY_PAGE;
 			}
-			if (this->selected_page_id == INVALID_STORY_PAGE && this->story_pages.size() > 0) {
+			if (this->selected_page_id == INVALID_STORY_PAGE && !this->story_pages.empty()) {
 				/* No page is selected, but there exist at least one available.
 				 * => Select first page.
 				 */
 				this->SetSelectedPage(this->story_pages[0]->index);
 			}
 
-			this->SetWidgetDisabledState(WID_SB_SEL_PAGE, this->story_pages.size() == 0);
+			this->SetWidgetDisabledState(WID_SB_SEL_PAGE, this->story_pages.empty());
 			this->SetWidgetDirty(WID_SB_SEL_PAGE);
 			this->UpdatePrevNextDisabledState();
 		} else if (data >= 0 && this->selected_page_id == data) {
@@ -901,7 +901,7 @@ public:
 		this->SetWidgetDirty(WID_SB_PAGE_PANEL);
 	}
 
-	void OnPlaceObject(Point pt, TileIndex tile) override
+	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override
 	{
 		const StoryPageElement *const pe = StoryPageElement::GetIfValid(this->active_button_id);
 		if (pe == nullptr || pe->type != SPET_BUTTON_TILE) {

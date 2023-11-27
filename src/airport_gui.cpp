@@ -75,10 +75,10 @@ struct BuildAirToolbarWindow : Window {
 		this->InitNested(window_number);
 		this->OnInvalidateData();
 		if (_settings_client.gui.link_terraform_toolbar) ShowTerraformToolbar(this);
-		this->last_user_action = WIDGET_LIST_END;
+		this->last_user_action = INVALID_WID_AT;
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		if (this->IsWidgetLowered(WID_AT_AIRPORT)) SetViewportCatchmentStation(nullptr, true);
 		if (_settings_client.gui.link_terraform_toolbar) CloseWindowById(WC_SCEN_LAND_GEN, 0, false);
@@ -90,14 +90,12 @@ struct BuildAirToolbarWindow : Window {
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 
 		bool can_build = CanBuildVehicleInfrastructure(VEH_AIRCRAFT);
-		this->SetWidgetsDisabledState(!can_build,
-			WID_AT_AIRPORT,
-			WIDGET_LIST_END);
+		this->SetWidgetDisabledState(WID_AT_AIRPORT, !can_build);
 		if (!can_build) {
 			CloseWindowById(WC_BUILD_STATION, TRANSPORT_AIR);
 
@@ -108,7 +106,7 @@ struct BuildAirToolbarWindow : Window {
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_AT_AIRPORT:
@@ -128,7 +126,7 @@ struct BuildAirToolbarWindow : Window {
 	}
 
 
-	void OnPlaceObject(Point pt, TileIndex tile) override
+	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override
 	{
 		switch (this->last_user_action) {
 			case WID_AT_AIRPORT:
@@ -143,12 +141,12 @@ struct BuildAirToolbarWindow : Window {
 		}
 	}
 
-	void OnPlaceDrag(ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, Point pt) override
+	void OnPlaceDrag(ViewportPlaceMethod select_method, [[maybe_unused]] ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt) override
 	{
 		VpSelectTilesWithMethod(pt.x, pt.y, select_method);
 	}
 
-	void OnPlaceMouseUp(ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, Point pt, TileIndex start_tile, TileIndex end_tile) override
+	void OnPlaceMouseUp([[maybe_unused]] ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt, TileIndex start_tile, TileIndex end_tile) override
 	{
 		if (pt.x != -1 && select_proc == DDSP_DEMOLISH_AREA) {
 			GUIPlaceProcDragXY(select_proc, start_tile, end_tile);
@@ -235,7 +233,7 @@ class BuildAirportWindow : public PickerWindowBase {
 		DropDownList list;
 
 		for (uint i = 0; AirportClass::IsClassIDValid((AirportClassID)i); i++) {
-			list.emplace_back(new DropDownListStringItem(AirportClass::Get((AirportClassID)i)->name, i, false));
+			list.push_back(std::make_unique<DropDownListStringItem>(AirportClass::Get((AirportClassID)i)->name, i, false));
 		}
 
 		return list;
@@ -279,7 +277,7 @@ public:
 		if (selectFirstAirport) this->SelectFirstAvailableAirport(true);
 	}
 
-	void Close() override
+	void Close([[maybe_unused]] int data = 0) override
 	{
 		CloseWindowById(WC_SELECT_STATION, 0);
 		this->PickerWindowBase::Close();
@@ -310,7 +308,7 @@ public:
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_AP_CLASS_DROPDOWN: {
@@ -481,7 +479,7 @@ public:
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_AP_CLASS_DROPDOWN:
@@ -538,13 +536,14 @@ public:
 		}
 		if (change_class) {
 			/* If that fails, select the first available airport
-			 * from a random class. */
+			 * from the first class where airports are available. */
 			for (AirportClassID j = APC_BEGIN; j < APC_MAX; j++) {
 				AirportClass *apclass = AirportClass::Get(j);
 				for (uint i = 0; i < apclass->GetSpecCount(); i++) {
 					const AirportSpec *as = apclass->GetSpec(i);
 					if (as->IsAvailable()) {
 						_selected_airport_class = j;
+						this->vscroll->SetCount(apclass->GetSpecCount());
 						this->SelectOtherAirport(i);
 						return;
 					}
@@ -557,13 +556,14 @@ public:
 
 	void OnDropdownSelect(int widget, int index) override
 	{
-		assert(widget == WID_AP_CLASS_DROPDOWN);
-		_selected_airport_class = (AirportClassID)index;
-		this->vscroll->SetCount(AirportClass::Get(_selected_airport_class)->GetSpecCount());
-		this->SelectFirstAvailableAirport(false);
+		if (widget == WID_AP_CLASS_DROPDOWN) {
+			_selected_airport_class = (AirportClassID)index;
+			this->vscroll->SetCount(AirportClass::Get(_selected_airport_class)->GetSpecCount());
+			this->SelectFirstAvailableAirport(false);
+		}
 	}
 
-	void OnRealtimeTick(uint delta_ms) override
+	void OnRealtimeTick([[maybe_unused]] uint delta_ms) override
 	{
 		CheckRedrawStationCoverage(this);
 	}

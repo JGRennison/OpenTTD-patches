@@ -46,6 +46,7 @@ public:
 	*/
 	static size_t AppendToBuffer(CharType *buff, const CharType *buffer_last, WChar c)
 	{
+		assert(buff < buffer_last);
 		if (c >= 0x010000U) {
 			/* Character is encoded using surrogates in UTF-16. */
 			if (buff + 1 <= buffer_last) {

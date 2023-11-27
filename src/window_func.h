@@ -57,9 +57,9 @@ void SetWindowWidgetDirty(WindowClass cls, WindowNumber number, byte widget_inde
 void SetWindowDirty(WindowClass cls, WindowNumber number);
 void SetWindowClassesDirty(WindowClass cls);
 
-void CloseWindowById(WindowClass cls, WindowNumber number, bool force = true);
-void CloseAllWindowsById(WindowClass cls, WindowNumber number, bool force = true);
-void CloseWindowByClass(WindowClass cls);
+void CloseWindowById(WindowClass cls, WindowNumber number, bool force = true, int data = 0);
+void CloseAllWindowsById(WindowClass cls, WindowNumber number, bool force = true, int data = 0);
+void CloseWindowByClass(WindowClass cls, int data = 0);
 
 bool FocusWindowById(WindowClass cls, WindowNumber number);
 

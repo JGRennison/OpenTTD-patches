@@ -212,7 +212,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		this->AutoSelectSchedule();
 	}
 
-	void Close() override
+	void Close(int data = 0) override
 	{
 		if (!FocusWindowById(WC_VEHICLE_VIEW, this->window_number)) {
 			MarkDirtyFocusedRoutePaths(this->vehicle);

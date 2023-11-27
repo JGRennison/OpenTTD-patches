@@ -29,10 +29,10 @@ using TextEffectID = uint16_t;
 static const TextEffectID INVALID_TE_ID = UINT16_MAX;
 
 void MoveAllTextEffects(uint delta_ms);
-TextEffectID AddTextEffect(StringID msg, int x, int y, uint8 duration, TextEffectMode mode);
+TextEffectID AddTextEffect(StringID msg, int x, int y, uint8 duration, TextEffectMode mode, uint64 param1 = 0, uint64 param2 = 0);
 void InitTextEffects();
 void DrawTextEffects(ViewportDrawerDynamic *vdd, DrawPixelInfo *dpi, bool load_transparent);
-void UpdateTextEffect(TextEffectID effect_id, StringID msg);
+void UpdateTextEffect(TextEffectID effect_id, StringID msg, uint64 param1 = 0, uint64 param2 = 0);
 void RemoveTextEffect(TextEffectID effect_id);
 void UpdateAllTextEffectVirtCoords();
 

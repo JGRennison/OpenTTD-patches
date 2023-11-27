@@ -10,11 +10,11 @@
  * This file implements the timer logic for the tick-based game-timer.
  */
 
-#include "stdafx.h"
+#include "../stdafx.h"
 #include "timer.h"
 #include "timer_game_tick.h"
 
-#include "safeguards.h"
+#include "../safeguards.h"
 
 template<>
 void IntervalTimer<TimerGameTick>::Elapsed(TimerGameTick::TElapsed delta)
@@ -58,7 +58,7 @@ void TimerManager<TimerGameTick>::Elapsed(TimerGameTick::TElapsed delta)
 
 #ifdef WITH_ASSERT
 template<>
-void TimerManager<TimerGameTick>::Validate(TimerGameTick::TPeriod period)
+void TimerManager<TimerGameTick>::Validate(TimerGameTick::TPeriod)
 {
 }
 #endif /* WITH_ASSERT */

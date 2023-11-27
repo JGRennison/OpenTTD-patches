@@ -33,7 +33,7 @@ template <typename Tspec, typename Tid, Tid Tmax>
 }
 
 template <typename Tspec, typename Tid, Tid Tmax>
-bool NewGRFClass<Tspec, Tid, Tmax>::IsUIAvailable(uint index) const
+bool NewGRFClass<Tspec, Tid, Tmax>::IsUIAvailable(uint) const
 {
 	return true;
 }

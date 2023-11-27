@@ -167,7 +167,7 @@ void CDECL usererror(const char *s, ...)
 	EM_ASM(if (window["openttd_abort"]) openttd_abort());
 #endif
 
-	exit(1);
+	_exit(1);
 }
 
 /**
@@ -622,7 +622,7 @@ struct AfterNewGRFScan : NewGRFScanCallback {
 		static_assert(sizeof(generation_seed) == sizeof(_settings_game.game_creation.generation_seed));
 	}
 
-	virtual void OnNewGRFsScanned()
+	void OnNewGRFsScanned() override
 	{
 		ResetGRFConfig(false);
 

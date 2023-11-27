@@ -715,7 +715,6 @@ STR_CHEAT_INFLATION_COST                                        :{LTBLUE}Modific
 STR_CHEAT_INFLATION_COST_QUERY_CAPT                             :{WHITE}Modificar o factor da inflación de custos
 STR_CHEAT_INFLATION_INCOME                                      :{LTBLUE}Modificar o factor da inflación de ingresos: {ORANGE}{DECIMAL}
 STR_CHEAT_INFLATION_INCOME_QUERY_CAPT                           :{WHITE}Modificar o factor da inflación de ingresos
-STR_CHEAT_STATION_RATING                                        :{LTBLUE}Valoración das estacións fixadas ó 100%: {ORANGE}{STRING}
 STR_CHEAT_TOWN_RATING                                           :{LTBLUE}Valoración das autoridades locais das vilas fixadas como excepcionais: {ORANGE}{STRING}
 
 STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {STRING} deu a túa compañía {2:CURRENCY_LONG}
@@ -1224,7 +1223,6 @@ STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP                    :{BLACK}Amosar g
 STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO                             :{BLACK}G
 STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO_TOOLTIP                     :{BLACK}Desprazarse o sprite número
 STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP                    :{BLACK}Click para destacar o grupo de sprites{}Shift+Click para compactar o grupo de sprites{}Ctrl+Click para destacar o rexistro de almacenamento temporal
-STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Tipo de estrada/tranvía
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS                    :Sinais
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID                 :Característica non implementada remapeada ID: nome: {2:STRING}, mapeada a: {5:HEX} (sprite {3:NUM})
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY                   :Remapeado non implementado dunha característica da propiedade 'Action 0': {4:HEX}, nome: {2:STRING}, mapeado a: {5:HEX} (sprite {3:NUM})

@@ -25,6 +25,7 @@
 #include "../animated_tile.h"
 #include "../clear_map.h"
 #include "../tunnelbridge.h"
+#include "../train_speed_adaptation.h"
 
 /* Helper for filling property tables */
 #define NIP(prop, base, variable, type, name) { name, (ptrdiff_t)cpp_offsetof(base, variable), cpp_sizeof(base, variable), prop, type }
@@ -400,6 +401,15 @@ class NIHVehicle : public NIHelper {
 							if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) print_braking_speed(item.start, item.data_id, item.z_pos);
 
 							break;
+						case TRLIT_SPEED_ADAPTATION: {
+							TileIndex tile = item.data_id;
+							uint16 td = item.data_aux;
+							b += seprintf(b, lastof(buffer), "speed adaptation: tile: %X, trackdir: %X", tile, td);
+							if (item.end + 1 < l.reservation_end_position) {
+								b += seprintf(b, lastof(buffer), " --> %u", GetLowestSpeedTrainAdaptationSpeedAtSignal(tile, td));
+							}
+							break;
+						}
 					}
 					output.print(buffer);
 				}
@@ -865,7 +875,7 @@ class NIHHouse : public NIHelper {
 	bool ShowExtraInfoOnly(uint index) const override    { return HouseSpec::Get(GetHouseType(index))->grf_prop.grffile == nullptr; }
 	bool ShowSpriteDumpButton(uint index) const override { return true; }
 	uint GetParent(uint index) const override            { return GetInspectWindowNumber(GSF_FAKE_TOWNS, GetTownIndex(index)); }
-	const void *GetInstance(uint index)const override    { return nullptr; }
+	const void *GetInstance(uint)const override          { return nullptr; }
 	const void *GetSpec(uint index) const override       { return HouseSpec::Get(GetHouseType(index)); }
 	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_TOWN_NAME, GetTownIndex(index), index); }
 	uint32 GetGRFID(uint index) const override           { return (this->IsInspectable(index)) ? HouseSpec::Get(GetHouseType(index))->grf_prop.grffile->grfid : 0; }
@@ -954,7 +964,7 @@ class NIHIndustryTile : public NIHelper {
 	bool IsInspectable(uint index) const override        { return GetIndustryTileSpec(GetIndustryGfx(index))->grf_prop.grffile != nullptr; }
 	bool ShowSpriteDumpButton(uint index) const override { return true; }
 	uint GetParent(uint index) const override            { return GetInspectWindowNumber(GSF_INDUSTRIES, GetIndustryIndex(index)); }
-	const void *GetInstance(uint index)const override    { return nullptr; }
+	const void *GetInstance(uint)const override          { return nullptr; }
 	const void *GetSpec(uint index) const override       { return GetIndustryTileSpec(GetIndustryGfx(index)); }
 	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_INDUSTRY_NAME, GetIndustryIndex(index), index); }
 	uint32 GetGRFID(uint index) const override           { return (this->IsInspectable(index)) ? GetIndustryTileSpec(GetIndustryGfx(index))->grf_prop.grffile->grfid : 0; }
@@ -1409,6 +1419,20 @@ class NIHSignals : public NIHelper {
 			output.print("Signals:");
 			DumpTunnelBridgeSignalsInfo(buffer, lastof(buffer), index, output);
 		}
+		if (_settings_game.vehicle.train_speed_adaptation) {
+			SignalSpeedKey speed_key = { index, 0, (Trackdir)0 };
+			for (auto iter = _signal_speeds.lower_bound(speed_key); iter != _signal_speeds.end() && iter->first.signal_tile == index; ++iter) {
+				const auto &it = *iter;
+				char *b = buffer + seprintf(buffer, lastof(buffer), "Speed adaptation: Track: %X, last dir: %X --> speed: %u",
+						it.first.signal_track, it.first.last_passing_train_dir, it.second.train_speed);
+				if (it.second.IsOutOfDate()) {
+					b += seprintf(b, lastof(buffer), ", expired");
+				} else {
+					b += seprintf(b, lastof(buffer), ", expires in %u ticks", (uint)(it.second.time_stamp - _scaled_date_ticks));
+				}
+				output.print(buffer);
+			}
+		}
 	}
 
 	/* virtual */ void SpriteDump(uint index, DumpSpriteGroupPrinter print) const override
@@ -1575,6 +1599,7 @@ static const NIVariable _niv_railtypes[] = {
 	NIV(0x42, "level crossing status"),
 	NIV(0x43, "construction date"),
 	NIV(0x44, "town zone"),
+	NIV(A2VRI_RAILTYPE_ADJACENT_CROSSING, "adjacent crossing"),
 	NIV_END()
 };
 
@@ -1722,7 +1747,7 @@ static const NIVariable _niv_airporttiles[] = {
 class NIHAirportTile : public NIHelper {
 	bool IsInspectable(uint index) const override        { return AirportTileSpec::Get(GetAirportGfx(index))->grf_prop.grffile != nullptr; }
 	uint GetParent(uint index) const override            { return GetInspectWindowNumber(GSF_AIRPORTS, GetStationIndex(index)); }
-	const void *GetInstance(uint index)const override    { return nullptr; }
+	const void *GetInstance(uint)const override          { return nullptr; }
 	const void *GetSpec(uint index) const override       { return AirportTileSpec::Get(GetAirportGfx(index)); }
 	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_STATION_NAME, GetStationIndex(index), index); }
 	uint32 GetGRFID(uint index) const override           { return (this->IsInspectable(index)) ? AirportTileSpec::Get(GetAirportGfx(index))->grf_prop.grffile->grfid : 0; }
@@ -1773,7 +1798,7 @@ static const NIVariable _niv_airports[] = {
 	NIV_END()
 };
 
-class NIHAiport : public NIHelper {
+class NIHAirport : public NIHelper {
 	bool IsInspectable(uint index) const override        { return AirportSpec::Get(Station::Get(index)->airport.type)->grf_prop.grffile != nullptr; }
 	uint GetParent(uint index) const override            { return GetInspectWindowNumber(GSF_FAKE_TOWNS, Station::Get(index)->town->index); }
 	const void *GetInstance(uint index)const override    { return Station::Get(index); }
@@ -1788,9 +1813,9 @@ class NIHAiport : public NIHelper {
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
 	}
 
-	uint GetPSASize(uint index, uint32_t grfid) const override { return cpp_lengthof(PersistentStorage, storage); }
+	uint GetPSASize(uint, uint32_t) const override { return cpp_lengthof(PersistentStorage, storage); }
 
-	const int32_t *GetPSAFirstPosition(uint index, uint32_t grfid) const override
+	const int32_t *GetPSAFirstPosition(uint index, uint32_t) const override
 	{
 		const Station *st = (const Station *)this->GetInstance(index);
 		if (st->airport.psa == nullptr) return nullptr;
@@ -1802,7 +1827,7 @@ static const NIFeature _nif_airport = {
 	nullptr,
 	nullptr,
 	_niv_airports,
-	new NIHAiport(),
+	new NIHAirport(),
 };
 
 
@@ -1834,7 +1859,7 @@ class NIHTown : public NIHelper {
 	bool ShowSpriteDumpButton(uint index) const override { return true; }
 	uint GetParent(uint index) const override            { return UINT32_MAX; }
 	const void *GetInstance(uint index)const override    { return Town::Get(index); }
-	const void *GetSpec(uint index) const override       { return nullptr; }
+	const void *GetSpec(uint) const override             { return nullptr; }
 	void SetStringParameters(uint index) const override  { this->SetSimpleStringParameters(STR_TOWN_NAME, index); }
 	uint32 GetGRFID(uint index) const override           { return 0; }
 	bool PSAWithParameter() const override               { return true; }

@@ -756,7 +756,6 @@ STR_CHEAT_INFLATION_COST                                        :{LTBLUE}Change 
 STR_CHEAT_INFLATION_COST_QUERY_CAPT                             :{WHITE}Change inflation cost factor
 STR_CHEAT_INFLATION_INCOME                                      :{LTBLUE}Change inflation income factor: {ORANGE}{DECIMAL}
 STR_CHEAT_INFLATION_INCOME_QUERY_CAPT                           :{WHITE}Change inflation income factor
-STR_CHEAT_STATION_RATING                                        :{LTBLUE}Stations ratings fixed at 100%: {ORANGE}{STRING1}
 STR_CHEAT_TOWN_RATING                                           :{LTBLUE}Town local authority ratings fixed at Outstanding: {ORANGE}{STRING1}
 
 STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {RAW_STRING} gave your company {2:CURRENCY_LONG}
@@ -1265,7 +1264,6 @@ STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP                    :{BLACK}Display 
 STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO                             :{BLACK}G
 STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO_TOOLTIP                     :{BLACK}Scroll to sprite number
 STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP                    :{BLACK}Click to highlight sprite group{}Shift+Click to collapse sprite group{}Ctrl+Click to highlight temporary storage register
-STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Road/tram type
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS                    :Signals
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID                 :Unimplemented remapped feature ID: name: {2:RAW_STRING}, mapped to: {5:HEX} (sprite {3:NUM})
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY                   :Unimplemented remapped Action 0 property feature: {4:HEX}, name: {2:RAW_STRING}, mapped to: {5:HEX} (sprite {3:NUM})

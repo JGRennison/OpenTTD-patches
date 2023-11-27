@@ -52,7 +52,7 @@ bool NetworkUDPSocketHandler::Listen()
 		addr.Listen(SOCK_DGRAM, &this->sockets);
 	}
 
-	return this->sockets.size() != 0;
+	return !this->sockets.empty();
 }
 
 /**
@@ -75,7 +75,7 @@ void NetworkUDPSocketHandler::CloseSocket()
  */
 void NetworkUDPSocketHandler::SendPacket(Packet *p, NetworkAddress *recv, bool all, bool broadcast, bool short_mtu)
 {
-	if (this->sockets.size() == 0) this->Listen();
+	if (this->sockets.empty()) this->Listen();
 
 	const uint MTU = short_mtu ? UDP_MTU_SHORT : UDP_MTU;
 

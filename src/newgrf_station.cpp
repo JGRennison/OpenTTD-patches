@@ -41,7 +41,7 @@ template <typename Tspec, typename Tid, Tid Tmax>
 }
 
 template <typename Tspec, typename Tid, Tid Tmax>
-bool NewGRFClass<Tspec, Tid, Tmax>::IsUIAvailable(uint index) const
+bool NewGRFClass<Tspec, Tid, Tmax>::IsUIAvailable(uint) const
 {
 	return true;
 }
@@ -418,12 +418,7 @@ uint32 Station::GetNewGRFVariable(const ResolverObject &object, uint16 variable,
 {
 	switch (variable) {
 		case 0x48: { // Accepted cargo types
-			CargoID cargo_type;
-			uint32 value = 0;
-
-			for (cargo_type = 0; cargo_type < NUM_CARGO; cargo_type++) {
-				if (HasBit(this->goods[cargo_type].status, GoodsEntry::GES_ACCEPTANCE)) SetBit(value, cargo_type);
-			}
+			uint32_t value = GetAcceptanceMask(this);
 			return value;
 		}
 
@@ -534,8 +529,8 @@ uint32 Waypoint::GetNewGRFVariable(const ResolverObject &object, uint16 variable
 			break;
 
 		case CT_DEFAULT:
-			for (CargoID cargo_type = 0; cargo_type < NUM_CARGO; cargo_type++) {
-				cargo += st->goods[cargo_type].CargoTotalCount();
+			for (const GoodsEntry &ge : st->goods) {
+				cargo += ge.CargoTotalCount();
 			}
 			break;
 
@@ -964,15 +959,8 @@ void TriggerStationRandomisation(Station *st, TileIndex trigger_tile, StationRan
 	uint32 whole_reseed = 0;
 	ETileArea area = ETileArea(st, trigger_tile, tas[trigger]);
 
-	CargoTypes empty_mask = 0;
-	if (trigger == SRT_CARGO_TAKEN) {
-		/* Create a bitmask of completely empty cargo types to be matched */
-		for (CargoID i = 0; i < NUM_CARGO; i++) {
-			if (st->goods[i].CargoTotalCount() == 0) {
-				SetBit(empty_mask, i);
-			}
-		}
-	}
+	/* Bitmask of completely empty cargo types to be matched. */
+	CargoTypes empty_mask = (trigger == SRT_CARGO_TAKEN) ? GetEmptyMask(st) : 0;
 
 	/* Store triggers now for var 5F */
 	SetBit(st->waiting_triggers, trigger);

@@ -10,6 +10,7 @@
 #include "../stdafx.h"
 #include "../core/pool_func.hpp"
 #include "linkgraph.h"
+#include "linkgraphjob.h"
 
 #include "../safeguards.h"
 
@@ -268,10 +269,20 @@ void LinkGraph::Init(uint size)
 void AdjustLinkGraphScaledTickBase(int64 delta)
 {
 	for (LinkGraph *lg : LinkGraph::Iterate()) lg->last_compression += delta;
+
+	for (LinkGraphJob *lgj : LinkGraphJob::Iterate()) {
+		LinkGraph *lg = &(const_cast<LinkGraph &>(lgj->Graph()));
+		lg->last_compression += delta;
+	}
 }
 
 void LinkGraphFixupLastCompressionAfterLoad()
 {
 	/* last_compression was previously a Date, change it to a DateTicksScaled */
 	for (LinkGraph *lg : LinkGraph::Iterate()) lg->last_compression = DateToScaledDateTicks((Date)lg->last_compression);
+
+	for (LinkGraphJob *lgj : LinkGraphJob::Iterate()) {
+		LinkGraph *lg = &(const_cast<LinkGraph &>(lgj->Graph()));
+		lg->last_compression = DateToScaledDateTicks((Date)lg->last_compression);
+	}
 }

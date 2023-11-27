@@ -41,7 +41,16 @@ void GetLinkGraphJobDayLengthScaleAfterLoad(LinkGraphJob *lgj)
 {
 	lgj->join_date_ticks *= DAY_TICKS;
 	lgj->join_date_ticks += LinkGraphSchedule::SPAWN_JOIN_TICK;
-	lgj->start_date_ticks = lgj->join_date_ticks - (lgj->Settings().recalc_time * DAY_TICKS);
+
+	uint recalc_scale;
+	if (IsSavegameVersionBefore(SLV_LINKGRAPH_SECONDS) && SlXvIsFeatureMissing(XSLFI_LINKGRAPH_DAY_SCALE, 3)) {
+		/* recalc time is in days */
+		recalc_scale = DAY_TICKS;
+	} else {
+		/* recalc time is in seconds */
+		recalc_scale = DAY_TICKS / SECONDS_PER_DAY;
+	}
+	lgj->start_date_ticks = lgj->join_date_ticks - (lgj->Settings().recalc_time * recalc_scale);
 }
 
 /**

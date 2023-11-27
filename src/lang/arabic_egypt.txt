@@ -483,7 +483,7 @@ STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :الرسائل 
 STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :احذف كل الرسائل
 
 # About menu
-###length 11
+###length 12
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :معلومات مربع في الخريطة
 STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :توقل كونسول
@@ -872,10 +872,6 @@ STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLAC
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}جديد {STRING} الآن متاح ! - {ENGINE}
 
 
-STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} لم تعد تقبل {STRING}
-STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION}لم تعد تقبل {STRING} او {STRING}
-STR_NEWS_STATION_NOW_ACCEPTS_CARGO                              :{WHITE}{STATION} الآن تقبل {STRING}
-STR_NEWS_STATION_NOW_ACCEPTS_CARGO_AND_CARGO                    :{WHITE}{STATION}الآن تقبل {STRING} و {STRING}
 
 STR_NEWS_OFFER_OF_SUBSIDY_EXPIRED                               :{BIG_FONT}{BLACK} اعلان عن انتهاء عرض{}{} نقل {STRING} من {STRING} الى {STRING} لن يعطي ارباح اضافية بعد الآن .
 STR_NEWS_SUBSIDY_WITHDRAWN_SERVICE                              :{BIG_FONT}{BLACK} تم سحب العرض{}{} نقل {STRING} من {STRING} الى {STRING} لم يعد معروض
@@ -4137,7 +4133,6 @@ STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... قر
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... قريبة جدا من مدينة أخرى
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... المدن كثيرة جدا
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... لا يوجد فراغ في الخريطة
-STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS                             :{WHITE}لن تبني البلدية طرق جديدة. بإمكانك تمكين بناء الطرق الجديدة عن طريق الاعدادات --> البيئة--> المدن
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}اعمال الطرق قيد التنفيذ
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}لا يمكن ازالة هذه المدينة{}محطة او ورشة مرتبطة بالمدينة او هناك مربع مملوك للمدينة لا يمكن لزالته
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... لا يوجد مكان مناسب للمجسم بداخل هذة المدينة/البلدة

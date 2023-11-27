@@ -157,7 +157,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_ANIMATED_TILE_EXTRA,              XSCF_NULL,                1,   1, "animated_tile_extra",              nullptr, nullptr, nullptr          },
 	{ XSLFI_NEWGRF_INFO_EXTRA,                XSCF_NULL,                1,   1, "newgrf_info_extra",                nullptr, nullptr, nullptr          },
 	{ XSLFI_INDUSTRY_CARGO_ADJ,               XSCF_IGNORABLE_UNKNOWN,   1,   1, "industry_cargo_adj",               nullptr, nullptr, nullptr          },
-	{ XSLFI_REALISTIC_TRAIN_BRAKING,          XSCF_NULL,                9,   9, "realistic_train_braking",          nullptr, nullptr, "VLKA"           },
+	{ XSLFI_REALISTIC_TRAIN_BRAKING,          XSCF_NULL,               10,  10, "realistic_train_braking",          nullptr, nullptr, "VLKA"           },
 	{ XSLFI_INFLATION_FIXED_DATES,            XSCF_IGNORABLE_ALL,       1,   1, "inflation_fixed_dates",            nullptr, nullptr, nullptr          },
 	{ XSLFI_WATER_FLOODING,                   XSCF_NULL,                2,   2, "water_flooding",                   nullptr, nullptr, nullptr          },
 	{ XSLFI_MORE_HOUSES,                      XSCF_NULL,                2,   2, "more_houses",                      nullptr, nullptr, nullptr          },
@@ -595,13 +595,13 @@ static void Save_SLXI()
 
 			if (extra_data_length > 0) {
 				SlWriteUint32(extra_data_length);
-				size_t written = SlGetBytesWritten();
+				[[maybe_unused]] size_t written = SlGetBytesWritten();
 				info->save_proc(info, false);
 				assert(SlGetBytesWritten() == written + extra_data_length);
 			}
 			if (chunk_count > 0) {
 				SlWriteUint32(chunk_count);
-				size_t written = SlGetBytesWritten();
+				[[maybe_unused]] size_t written = SlGetBytesWritten();
 				WriteChunkIdList(info->chunk_list, false);
 				assert(SlGetBytesWritten() == written + (chunk_count * 4));
 			}

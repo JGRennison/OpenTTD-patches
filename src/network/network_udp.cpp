@@ -120,7 +120,7 @@ public:
 	virtual ~ClientNetworkUDPSocketHandler() = default;
 };
 
-void ClientNetworkUDPSocketHandler::Receive_SERVER_RESPONSE(Packet *p, NetworkAddress *client_addr)
+void ClientNetworkUDPSocketHandler::Receive_SERVER_RESPONSE(Packet *, NetworkAddress *client_addr)
 {
 	DEBUG(net, 3, "Server response from %s", NetworkAddressDumper().GetAddressAsString(client_addr));
 

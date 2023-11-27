@@ -1797,7 +1797,7 @@ public:
 		this->ReloadProgramme();
 	}
 
-	void Close() override
+	void Close(int data = 0) override
 	{
 		extern const TraceRestrictProgram *_viewport_highlight_tracerestrict_program;
 		if (_viewport_highlight_tracerestrict_program != nullptr) {
@@ -3865,7 +3865,7 @@ public:
 		this->owner = vli.company;
 	}
 
-	void Close() override
+	void Close(int data = 0) override
 	{
 		*this->sorting = this->vehgroups.GetListing();
 		this->Window::Close();
@@ -3974,8 +3974,7 @@ public:
 		this->SetWidgetsDisabledState(this->vli.index == ALL_TRAINS_TRACE_RESTRICT_SLOT_ID || _local_company != this->vli.company,
 				WID_TRSL_DELETE_SLOT,
 				WID_TRSL_RENAME_SLOT,
-				WID_TRSL_SET_SLOT_MAX_OCCUPANCY,
-				WIDGET_LIST_END);
+				WID_TRSL_SET_SLOT_MAX_OCCUPANCY);
 
 		/* Disable remaining buttons for non-local companies
 		 * Needed while changing _local_company, eg. by cheats
@@ -3984,8 +3983,7 @@ public:
 		 *  so it doesn't have to be disabled
 		 */
 		this->SetWidgetsDisabledState(_local_company != this->vli.company,
-				WID_TRSL_CREATE_SLOT,
-				WIDGET_LIST_END);
+				WID_TRSL_CREATE_SLOT);
 
 		/* Set text of sort by dropdown */
 		this->GetWidget<NWidgetCore>(WID_TRSL_SORT_BY_DROPDOWN)->widget_data = this->vehicle_group_none_sorter_names[this->vehgroups.SortType()];
@@ -4515,8 +4513,7 @@ public:
 		this->SetWidgetsDisabledState(this->selected == INVALID_TRACE_RESTRICT_COUNTER_ID || _local_company != this->ctr_company,
 				WID_TRCL_DELETE_COUNTER,
 				WID_TRCL_RENAME_COUNTER,
-				WID_TRCL_SET_COUNTER_VALUE,
-				WIDGET_LIST_END);
+				WID_TRCL_SET_COUNTER_VALUE);
 
 		/* Disable remaining buttons for non-local companies
 		 * Needed while changing _local_company, eg. by cheats
@@ -4525,8 +4522,7 @@ public:
 		 *  so it doesn't have to be disabled
 		 */
 		this->SetWidgetsDisabledState(_local_company != this->ctr_company,
-				WID_TRCL_CREATE_COUNTER,
-				WIDGET_LIST_END);
+				WID_TRCL_CREATE_COUNTER);
 
 		this->DrawWidgets();
 	}

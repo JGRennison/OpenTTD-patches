@@ -456,7 +456,7 @@ STR_NEWS_MENU_LAST_MESSAGE_NEWS_REPORT                          :Pesanan/laporan
 STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :Pesanan sebelumnya
 
 # About menu
-###length 11
+###length 12
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :Maklumat kawasan tanah
 STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Papar atau padamkan konsol
@@ -842,10 +842,6 @@ STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLAC
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}{STRING} baru kini boleh boleh dibeli!  -  {ENGINE}
 
 
-STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} tidak lagi menerima {STRING}
-STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} tidak lagi menerima {STRING} or {STRING}
-STR_NEWS_STATION_NOW_ACCEPTS_CARGO                              :{WHITE}{STATION} kini menerima {STRING}
-STR_NEWS_STATION_NOW_ACCEPTS_CARGO_AND_CARGO                    :{WHITE}{STATION} kini menerima {STRING} dan {STRING}
 
 STR_NEWS_OFFER_OF_SUBSIDY_EXPIRED                               :{BIG_FONT}{BLACK}Tempoh tawaran subsidi tamat:{}{}{STRING} dari {STRING} ke {STRING} tidak akan diberi subsidi.
 STR_NEWS_SUBSIDY_WITHDRAWN_SERVICE                              :{BIG_FONT}{BLACK}Subsidi ditarik:{}{}Servis {STRING} dari {STRING} ke {STRING} tidak akan diberi subsidi.
@@ -3965,7 +3961,6 @@ STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... terl
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... terlalu hampir ke bandar lain
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... bandar terlalu banyak
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... ruang tidak mencukupi di dalam peta
-STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS                             :{WHITE}Bandar ini tidak akan membina jalan. Anda boleh membenarkan pembinaan jalan melalui Tetapan Lanjutan->Ekonomi->Bandar
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Kerja-kerja jalanraya sedang berjalan
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Tidak boleh padam bandar ini...{}Tidak boleh dipadamkan kerana terdapat sebuah stesen atau depoh yang dipunyai bandar atau petak bandar
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... tiada lokasi sesuai untuk arca di tengah bandar

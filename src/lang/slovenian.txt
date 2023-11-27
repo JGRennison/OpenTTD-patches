@@ -628,7 +628,7 @@ STR_NEWS_MENU_LAST_MESSAGE_NEWS_REPORT                          :Zadnje sporoči
 STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :Zgodovina sporočil
 
 # About menu
-###length 11
+###length 12
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :Informacije o terenu
 STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Vklopi/Izklopi konzolo
@@ -1022,10 +1022,6 @@ STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLAC
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Novo! {STRING} sedaj na razpolago!  -  {ENGINE}
 
 
-STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} ne sprejema več {STRING.r}
-STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} ne sprejema več {STRING.r} ali {STRING.r}
-STR_NEWS_STATION_NOW_ACCEPTS_CARGO                              :{WHITE}{STATION} sedaj sprejema {STRING.t}
-STR_NEWS_STATION_NOW_ACCEPTS_CARGO_AND_CARGO                    :{WHITE}{STATION} sedaj sprejema {STRING.t} in {STRING.t}
 
 STR_NEWS_OFFER_OF_SUBSIDY_EXPIRED                               :{BIG_FONT}{BLACK}Ponudba subvencije potekla:{}{}Prevoz {STRING.r} od {STRING} do {STRING} ni več subvencioniran
 STR_NEWS_SUBSIDY_WITHDRAWN_SERVICE                              :{BIG_FONT}{BLACK}Subvencija zaključena:{}{}Prevoz {STRING.r} od {STRING} do {STRING} ni več subvencioniran
@@ -4447,7 +4443,6 @@ STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... preb
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... preblizu drugemu mestu
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... preveliko število mest
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... ni več prostora na zemljevidu
-STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS                             :{WHITE}Mesta ne bodo gradila cest. Lahko omogočiš gradnjo cest v Napredne nastavitve->Ekonomija->Mesta
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Cestna dela napredujejo
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Ni mogoče zbrisati mesta...{}Postaja ali garaža se nanaša na to mesto ali pa področje v lastnini mesta ne more biti odstranjeno
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... ni primernega mesta za kip v centru tega mesta

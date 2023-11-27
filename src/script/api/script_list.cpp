@@ -113,7 +113,7 @@ public:
 		this->End();
 	}
 
-	SQInteger Begin()
+	SQInteger Begin() override
 	{
 		if (this->list->values.empty()) return 0;
 		this->has_no_more_items = false;
@@ -126,7 +126,7 @@ public:
 		return item_current;
 	}
 
-	void End()
+	void End() override
 	{
 		this->has_no_more_items = true;
 		this->item_next = 0;
@@ -145,7 +145,7 @@ public:
 		if (this->value_iter != this->list->values.end()) item_next = (*this->value_iter).second;
 	}
 
-	SQInteger Next()
+	SQInteger Next() override
 	{
 		if (this->IsEnd()) return 0;
 
@@ -154,7 +154,7 @@ public:
 		return item_current;
 	}
 
-	void Remove(SQInteger item)
+	void Remove(SQInteger item) override
 	{
 		if (this->IsEnd()) return;
 
@@ -165,7 +165,7 @@ public:
 		}
 	}
 
-	void PostErase(SQInteger item, ScriptList::ScriptListMap::iterator post_erase, ScriptList::ScriptListValueSet::iterator value_post_erase)
+	void PostErase(SQInteger item, ScriptList::ScriptListMap::iterator post_erase, ScriptList::ScriptListValueSet::iterator value_post_erase) override
 	{
 		if (this->IsEnd()) return;
 
@@ -178,12 +178,12 @@ public:
 		}
 	}
 
-	void ValueChange(SQInteger item)
+	void ValueChange(SQInteger item) override
 	{
 		this->ScriptListSorterValueAscending::Remove(item);
 	}
 
-	void RetargetIterators()
+	void RetargetIterators() override
 	{
 		RetargetIterator(this->list->values, this->value_iter);
 	}
@@ -210,7 +210,7 @@ public:
 		this->End();
 	}
 
-	SQInteger Begin()
+	SQInteger Begin() override
 	{
 		if (this->list->values.empty()) return 0;
 		this->has_no_more_items = false;
@@ -224,7 +224,7 @@ public:
 		return item_current;
 	}
 
-	void End()
+	void End() override
 	{
 		this->has_no_more_items = true;
 		this->item_next = 0;
@@ -248,7 +248,7 @@ public:
 		if (this->value_iter != this->list->values.end()) item_next = this->value_iter->second;
 	}
 
-	SQInteger Next()
+	SQInteger Next() override
 	{
 		if (this->IsEnd()) return 0;
 
@@ -257,7 +257,7 @@ public:
 		return item_current;
 	}
 
-	void Remove(SQInteger item)
+	void Remove(SQInteger item) override
 	{
 		if (this->IsEnd()) return;
 
@@ -268,17 +268,17 @@ public:
 		}
 	}
 
-	void PostErase(SQInteger item, ScriptList::ScriptListMap::iterator post_erase, ScriptList::ScriptListValueSet::iterator value_post_erase)
+	void PostErase(SQInteger item, ScriptList::ScriptListMap::iterator post_erase, ScriptList::ScriptListValueSet::iterator value_post_erase) override
 	{
 		/* not implemented */
 	}
 
-	void ValueChange(SQInteger item)
+	void ValueChange(SQInteger item) override
 	{
 		this->ScriptListSorterValueDescending::Remove(item);
 	}
 
-	void RetargetIterators()
+	void RetargetIterators() override
 	{
 		RetargetIterator(this->list->values, this->value_iter);
 	}
@@ -302,7 +302,7 @@ public:
 		this->End();
 	}
 
-	SQInteger Begin()
+	SQInteger Begin() override
 	{
 		if (this->list->items.empty()) return 0;
 		this->has_no_more_items = false;
@@ -315,7 +315,7 @@ public:
 		return item_current;
 	}
 
-	void End()
+	void End() override
 	{
 		this->has_no_more_items = true;
 	}
@@ -333,7 +333,7 @@ public:
 		if (this->item_iter != this->list->items.end()) item_next = (*this->item_iter).first;
 	}
 
-	SQInteger Next()
+	SQInteger Next() override
 	{
 		if (this->IsEnd()) return 0;
 
@@ -342,7 +342,7 @@ public:
 		return item_current;
 	}
 
-	void Remove(SQInteger item)
+	void Remove(SQInteger item) override
 	{
 		if (this->IsEnd()) return;
 
@@ -353,7 +353,7 @@ public:
 		}
 	}
 
-	void PostErase(SQInteger item, ScriptList::ScriptListMap::iterator post_erase, ScriptList::ScriptListValueSet::iterator value_post_erase)
+	void PostErase(SQInteger item, ScriptList::ScriptListMap::iterator post_erase, ScriptList::ScriptListValueSet::iterator value_post_erase) override
 	{
 		if (this->IsEnd()) return;
 
@@ -366,12 +366,12 @@ public:
 		}
 	}
 
-	void ValueChange(SQInteger item)
+	void ValueChange(SQInteger item) override
 	{
 		/* do nothing */
 	}
 
-	void RetargetIterators()
+	void RetargetIterators() override
 	{
 		RetargetIterator(this->list->items, this->item_iter);
 	}
@@ -398,7 +398,7 @@ public:
 		this->End();
 	}
 
-	SQInteger Begin()
+	SQInteger Begin() override
 	{
 		if (this->list->items.empty()) return 0;
 		this->has_no_more_items = false;
@@ -412,7 +412,7 @@ public:
 		return item_current;
 	}
 
-	void End()
+	void End() override
 	{
 		this->has_no_more_items = true;
 	}
@@ -435,7 +435,7 @@ public:
 		if (this->item_iter != this->list->items.end()) item_next = (*this->item_iter).first;
 	}
 
-	SQInteger Next()
+	SQInteger Next() override
 	{
 		if (this->IsEnd()) return 0;
 
@@ -444,7 +444,7 @@ public:
 		return item_current;
 	}
 
-	void Remove(SQInteger item)
+	void Remove(SQInteger item) override
 	{
 		if (this->IsEnd()) return;
 
@@ -455,17 +455,17 @@ public:
 		}
 	}
 
-	void PostErase(SQInteger item, ScriptList::ScriptListMap::iterator post_erase, ScriptList::ScriptListValueSet::iterator value_post_erase)
+	void PostErase(SQInteger item, ScriptList::ScriptListMap::iterator post_erase, ScriptList::ScriptListValueSet::iterator value_post_erase) override
 	{
 		/* not implemented */
 	}
 
-	void ValueChange(SQInteger item)
+	void ValueChange(SQInteger item) override
 	{
 		/* do nothing */
 	}
 
-	void RetargetIterators()
+	void RetargetIterators() override
 	{
 		RetargetIterator(this->list->items, this->item_iter);
 	}

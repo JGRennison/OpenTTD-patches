@@ -629,7 +629,7 @@ STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :Історія 
 STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :Видалити всі повідомлення
 
 # About menu
-###length 11
+###length 12
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :Інформація про ділянку
 STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Вкл./відкл. консоль
@@ -1034,10 +1034,6 @@ STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Відт
 
 STR_NEWS_SHOW_VEHICLE_GROUP_TOOLTIP                             :{BLACK}Відкрити вікно групи з центром на групах транспорту
 
-STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} більше не приймає {STRING.z}
-STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} більше не приймає {STRING.z} або {STRING.z}
-STR_NEWS_STATION_NOW_ACCEPTS_CARGO                              :{WHITE}{STATION} тепер приймає {STRING.z}
-STR_NEWS_STATION_NOW_ACCEPTS_CARGO_AND_CARGO                    :{WHITE}{STATION} тепер приймає {STRING.z} і {STRING.z}
 
 STR_NEWS_OFFER_OF_SUBSIDY_EXPIRED                               :{BIG_FONT}{BLACK}Субсидія більше не пропонується:{}{}Перевезення {STRING.r} з {STRING} до {STRING}
 STR_NEWS_SUBSIDY_WITHDRAWN_SERVICE                              :{BIG_FONT}{BLACK}Субсидію скасовано:{}{}Перевезення {STRING.r} з {STRING.r} до {STRING.r}
@@ -4924,7 +4920,6 @@ STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... на
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... надто близько до іншого міста
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... забагато міст
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... на карті немає вільного місця
-STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS                             :{WHITE}Місто не будуватиме дороги. Ви можете дозволити будівництво доріг через налаштування->Довкілля->Міста
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Дорога ремонтується
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Не можна видалити це місто...{}Станція або депо, що відносяться до міста або знаходяться на землі у власності міста, не можуть бути видалені
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... немає придатного місця для статуї в центрі цього міста

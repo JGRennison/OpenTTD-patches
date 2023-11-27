@@ -388,7 +388,7 @@ int Ship::GetEffectiveMaxSpeed() const
 /**
  * Test-procedure for HasVehicleOnPos to check for any ships which are visible and not stopped by the player.
  */
-static Vehicle *EnsureNoMovingShipProc(Vehicle *v, void *data)
+static Vehicle *EnsureNoMovingShipProc(Vehicle *v, void *)
 {
 	return (v->vehstatus & (VS_HIDDEN | VS_STOPPED)) == 0 ? v : nullptr;
 }
@@ -857,7 +857,7 @@ bool IsShipDestinationTile(TileIndex tile, StationID station)
 	for (DiagDirection d = DIAGDIR_BEGIN; d != DIAGDIR_END; d++) {
 		TileIndex t = tile + TileOffsByDiagDir(d);
 		if (!IsValidTile(t)) continue;
-		if (IsDockTile(t) && GetStationIndex(t) == station && IsValidDockingDirectionForDock(t, d)) return true;
+		if (IsDockTile(t) && GetStationIndex(t) == station && IsDockWaterPart(t)) return true;
 		if (IsTileType(t, MP_INDUSTRY)) {
 			const Industry *i = Industry::GetByTile(t);
 			if (i->neutral_station != nullptr && i->neutral_station->index == station) return true;

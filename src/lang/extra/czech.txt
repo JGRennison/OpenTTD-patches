@@ -691,7 +691,6 @@ STR_CHEAT_INFLATION_COST                                        :{LTBLUE}Změnit
 STR_CHEAT_INFLATION_COST_QUERY_CAPT                             :{WHITE}Změnit faktor inflace nákladů
 STR_CHEAT_INFLATION_INCOME                                      :{LTBLUE}Změnit faktor inflace příjmů: {ORANGE}{DECIMAL}
 STR_CHEAT_INFLATION_INCOME_QUERY_CAPT                           :{WHITE}Změnit faktor inflace příjmů
-STR_CHEAT_STATION_RATING                                        :{LTBLUE}Hodnocení stanic je vždy 100%: {ORANGE}{STRING}
 STR_CHEAT_TOWN_RATING                                           :{LTBLUE}Hodnocení společnosti samosprávou je vždy Úžasné: {ORANGE}{STRING}
 
 STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {STRING} poslal(a) tvé společnosti {2:CURRENCY_LONG}
@@ -1198,7 +1197,6 @@ STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP                    :{BLACK}Zobrazí
 STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO                             :{BLACK}P
 STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO_TOOLTIP                     :{BLACK}Přejít na číslo spritu...
 STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP                    :{BLACK}Kliknutí zvýrazní skupinu spritů{}Shift+kliknutí sbalí skupinu spritů{}Ctrl+kliknutí zvýrazní dočasný registr úložiště
-STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Typ silnice/tramvajové tratě
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS                    :Návěstidla
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID                 :Neimplementované přemapované feature ID: název: {2:STRING}, mapováno na: {5:HEX} (sprite {3:NUM})
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY                   :Neimplementované přemapované Action 0 property feature: {4:HEX}, název: {2:STRING}, mapováno na: {5:HEX} (sprite {3:NUM})

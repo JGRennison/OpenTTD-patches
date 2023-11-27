@@ -521,7 +521,7 @@ STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :Lista ultimelor
 STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :Șterge toate mesajele
 
 # About menu
-###length 11
+###length 12
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :Informaţii despre teren
 STR_ABOUT_MENU_HELP                                             :Ajutor și manuale
 STR_ABOUT_MENU_SEPARATOR                                        :
@@ -924,10 +924,6 @@ STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Un nou t
 
 STR_NEWS_SHOW_VEHICLE_GROUP_TOOLTIP                             :{BLACK}Deschide fereastra grupului fixată pe grupul vehiculului
 
-STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} nu mai acceptă {STRING}
-STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} nu mai acceptă {STRING} sau {STRING}
-STR_NEWS_STATION_NOW_ACCEPTS_CARGO                              :{WHITE}{STATION} acceptă acum {STRING}
-STR_NEWS_STATION_NOW_ACCEPTS_CARGO_AND_CARGO                    :{WHITE}{STATION} acceptă acum {STRING} şi {STRING}
 
 STR_NEWS_OFFER_OF_SUBSIDY_EXPIRED                               :{BIG_FONT}{BLACK}Ofertă expirată:{}{}Transportul de {STRING} de la {STRING} la {STRING} nu va mai fi subvenţionat
 STR_NEWS_SUBSIDY_WITHDRAWN_SERVICE                              :{BIG_FONT}{BLACK}Ofertă retrasă:{}{}Transportul de {STRING} de la {STRING} la {STRING} nu va mai fi subvenţionat
@@ -3399,6 +3395,7 @@ STR_NEWGRF_INSPECT_PARENT_TOOLTIP                               :{BLACK}Analizea
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT                            :{STRING} la {HEX}
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_OBJECT                     :Obiect
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE                  :Tip şină
+STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Tip de drum
 
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}Parametru variabilă 60+x NewGRF (hexadecimal)
 
@@ -4717,6 +4714,8 @@ STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORAN
 STR_TEXTFILE_JUMPLIST                                           :{WHITE}Cuprins
 STR_TEXTFILE_JUMPLIST_TOOLTIP                                   :{BLACK}Săriți rapid la o secțiune din fișierul afișat prin această listă
 STR_TEXTFILE_JUMPLIST_ITEM                                      :{WHITE}{STRING}
+STR_TEXTFILE_NAVBACK_TOOLTIP                                    :{BLACK}Reveniți în istoricul navigației
+STR_TEXTFILE_NAVFORWARD_TOOLTIP                                 :{BLACK}Reveniți înainte în istoricul navigației
 STR_TEXTFILE_WRAP_TEXT                                          :{WHITE}Încadrează textul
 STR_TEXTFILE_WRAP_TEXT_TOOLTIP                                  :{BLACK}Încadrează textul ferestrei ca să fie vizibil integral, fără derulare
 STR_TEXTFILE_VIEW_README                                        :{BLACK}Vezi fișierul readme
@@ -4862,7 +4861,6 @@ STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... prea
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... prea aproape de alt oraş
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... prea multe oraşe
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... nu mai este loc pe hartă
-STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS                             :{WHITE}Orașul nu va construi drumuri. Poți activa construirea drumurilor din Setări avansate -> Economie -> Orașe
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Lucrari la drum in curs de desfasurare
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Acest oraș nu poate fi șters...{}O stație sau un depou face referire la acest oraș, sau o parcelă deținută de oraș nu poate fi eliminată
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... nu există niciun loc potrivit pentru o statuie în centrul acestui oraș

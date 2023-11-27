@@ -255,7 +255,7 @@ public:
 		this->BuildTemplateGuiList();
 	}
 
-	void Close() override {
+	void Close(int data = 0) override {
 		CloseWindowById(WC_CREATE_TEMPLATE, this->window_number);
 		this->Window::Close();
 	}
@@ -367,7 +367,7 @@ public:
 			this->SetWidgetsLoweredState(false,
 					TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT_AS_TEMPLATE, TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT_AS_INCOMING,
 					TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REUSE, TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_KEEP,
-					TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_OLD_ONLY, WIDGET_LIST_END);
+					TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_OLD_ONLY);
 		} else {
 			const TemplateVehicle *tmp = this->templates[this->selected_template_index];
 			uint height = ScaleGUITrad(8) + (3 * FONT_HEIGHT_NORMAL);
