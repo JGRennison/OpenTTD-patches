@@ -108,20 +108,28 @@
 	return ::GetAnyRoadBits(tile, (::RoadTramType)(road_tram_type >> 1), false) != ROAD_NONE;
 }
 
-/* static */ ScriptRoad::RoadTiles ScriptRoad::GetRoadTiles(TileIndex tile, RoadTramTypes road_tram_type)
+/* static */ ScriptRoad::RoadPieces ScriptRoad::GetRoadPieces(TileIndex tile, RoadTramTypes road_tram_type)
 {
-	if (!ScriptMap::IsValidTile(tile)) return ROADTILES_NONE;
-	if (road_tram_type != ROADTRAMTYPES_ROAD && road_tram_type != ROADTRAMTYPES_TRAM) return ROADTILES_NONE;
+	if (!ScriptMap::IsValidTile(tile)) return ROADPIECES_NONE;
+	if (road_tram_type != ROADTRAMTYPES_ROAD && road_tram_type != ROADTRAMTYPES_TRAM) return ROADPIECES_NONE;
 
-	return (ScriptRoad::RoadTiles)::GetAnyRoadBits(tile, (::RoadTramType)(road_tram_type >> 1), false);
+	return (ScriptRoad::RoadPieces)::GetAnyRoadBits(tile, (::RoadTramType)(road_tram_type >> 1), false);
 }
 
 /* static */ ScriptRoad::OneWayInfo ScriptRoad::GetOneWayInfo(TileIndex tile)
 {
 	if (!ScriptMap::IsValidTile(tile)) return ONEWAY_NONE;
-	if (::GetAnyRoadBits(tile, RTT_ROAD, false) == ROAD_NONE) return ONEWAY_NONE;
 
-	return (ScriptRoad::OneWayInfo)::GetRoadCachedOneWayState(tile);
+	DisallowedRoadDirections drd = DRD_NONE;
+	if (IsNormalRoadTile(tile)) drd = GetDisallowedRoadDirections(tile);
+	if (IsDriveThroughStopTile(tile)) drd = GetDriveThroughStopDisallowedRoadDirections(tile);
+	if (drd == DRD_NONE) return ONEWAY_NONE;
+
+	RoadBits rb = ::GetAnyRoadBits(tile, RTT_ROAD, false);
+	if (rb == ROAD_Y) return drd == DRD_NORTHBOUND ? ONEWAY_SOUTHEAST : ONEWAY_NORTHWEST;
+	if (rb == ROAD_X) return drd == DRD_NORTHBOUND ? ONEWAY_NORTHEAST : ONEWAY_SOUTHWEST;
+
+	return ONEWAY_NONE;
 }
 
 /* static */ ScriptRoad::RoadType ScriptRoad::GetRoadType(TileIndex tile, RoadTramTypes road_tram_type)
