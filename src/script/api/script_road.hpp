@@ -86,6 +86,40 @@ public:
 	};
 
 	/**
+	 * A bitmap of all the possible road pieces and combinations.
+	 */
+	enum RoadPieces {
+		/* Note: these values represent part of the in-game RoadBits enum with added shorthands to T-junctions */
+		ROADPIECES_NONE = 0,                            ///< No road pieces
+		ROADPIECES_NW = ::ROAD_NW,                      ///< North-west part
+		ROADPIECES_SW = ::ROAD_SW,                      ///< South-west part
+		ROADPIECES_SE = ::ROAD_SE,                      ///< South-east part
+		ROADPIECES_NE = ::ROAD_NE,                      ///< North-east part
+		ROADPIECES_X = ::ROAD_X,                        ///< Full road along the x-axis (south-west + north-east)
+		ROADPIECES_Y = ::ROAD_Y,                        ///< Full road along the y-axis (north-west + south-east)
+		ROADPIECES_N = ::ROAD_N,                        ///< Road at the two northern edges (corner, north-west + north-east)
+		ROADPIECES_E = ::ROAD_E,                        ///< Road at the two eastern edges (corner, north-east + south-east)
+		ROADPIECES_S = ::ROAD_S,                        ///< Road at the two southern edges (corner, south-east + south-west)
+		ROADPIECES_W = ::ROAD_W,                        ///< Road at the two western edges (corner, south-west + north-west)
+		ROADPIECES_S_NW = ROADPIECES_S | ROADPIECES_NW,   ///< T-junction, southern edges + north-west
+		ROADPIECES_W_NE = ROADPIECES_W | ROADPIECES_NE,   ///< T-junction, western edges + north-east
+		ROADPIECES_N_SE = ROADPIECES_N | ROADPIECES_SE,   ///< T-junction, northern edges + south-east
+		ROADPIECES_E_SW = ROADPIECES_E | ROADPIECES_SW,   ///< T-junction, eastern edges + south-west
+		ROADPIECES_ALL = ::ROAD_ALL,                    ///< Full 4-way crossing
+	};
+
+	/**
+	 * One-way info of the tile.
+	 */
+	enum OneWayInfo {
+		ONEWAY_NONE = 0,		///< Not a one-way road.
+		ONEWAY_NORTHWEST,		///< One-way road from south-east to north-west.
+		ONEWAY_SOUTHWEST,		///< One-way road from north-east to south-west.
+		ONEWAY_SOUTHEAST,		///< One-way road from north-west to south-east.
+		ONEWAY_NORTHEAST,		///< One-way road from south-west to north-east.
+	};
+
+	/**
 	 * Get the name of a road type.
 	 * @param road_type The road type to get the name of.
 	 * @pre IsRoadTypeAvailable(road_type).
@@ -214,6 +248,23 @@ public:
 	 * @return True if the tile contains a RoadType object.
 	 */
 	static bool HasRoadTramType(TileIndex tile, RoadTramTypes road_tram_type);
+
+	/**
+	 * Get the roadpieces that are on a tile.
+	 * @param tile The tile to check.
+	 * @param road_tram_type The road/tram type to use.
+	 * @pre ScriptMap::IsValidTile(tile).
+	 * @return The roadpieces that are on the tile.
+	 */
+	static RoadPieces GetRoadPieces(TileIndex tile, RoadTramTypes road_tram_type);
+
+	/**
+	 * Get info about the one-way state of a tile.
+	 * @param tile The tile to check.
+	 * @pre ScriptMap::IsValidTile(tile).
+	 * @return The OneWayInfo of the tile.
+	 */
+	static OneWayInfo GetOneWayInfo(TileIndex tile);
 
 	/**
 	 * Get the RoadType that is used on a tile.
