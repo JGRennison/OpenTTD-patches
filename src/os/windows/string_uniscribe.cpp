@@ -376,7 +376,7 @@ static std::vector<SCRIPT_ITEM> UniscribeItemizeString(UniscribeParagraphLayoutF
 		/* Walk backwards to find the last suitable breaking point. */
 		while (--num_chars > this->cur_range_offset && !log_attribs[num_chars].fSoftBreak && !log_attribs[num_chars].fWhiteSpace) {}
 
-		if (num_chars == this->cur_range_offset) {
+		if (num_chars <= this->cur_range_offset) {
 			/* Didn't find any suitable word break point, just break on the last cluster boundary. */
 			num_chars = last_cluster;
 		}
@@ -384,7 +384,9 @@ static std::vector<SCRIPT_ITEM> UniscribeItemizeString(UniscribeParagraphLayoutF
 		/* Eat any whitespace characters before the breaking point. */
 		while (num_chars - 1 > this->cur_range_offset && log_attribs[num_chars - 1].fWhiteSpace) num_chars--;
 		/* Count whitespace after the breaking point. */
-		while (num_chars + whitespace_count < (int)log_attribs.size() && log_attribs[num_chars + whitespace_count].fWhiteSpace) whitespace_count++;
+		while (num_chars + whitespace_count >= 0 && num_chars + whitespace_count < (int)log_attribs.size() && log_attribs[num_chars + whitespace_count].fWhiteSpace) {
+			whitespace_count++;
+		}
 
 		/* Get last run that corresponds to the number of characters to show. */
 		for (std::vector<UniscribeRun>::iterator run = start_run; run != last_run; run++) {
