@@ -100,9 +100,11 @@ static std::vector<WindowDesc*> *_window_descs = nullptr;
 std::string _windows_file;
 
 /** Window description constructor. */
-WindowDesc::WindowDesc(WindowPosition def_pos, const char *ini_key, int16 def_width_trad, int16 def_height_trad,
+WindowDesc::WindowDesc(const char * const file, const int line, WindowPosition def_pos, const char *ini_key, int16 def_width_trad, int16 def_height_trad,
 			WindowClass window_class, WindowClass parent_class, uint32 flags,
 			const NWidgetPart *nwid_begin, const NWidgetPart *nwid_end, HotkeyList *hotkeys, WindowDesc *ini_parent) :
+	file(file),
+	line(line),
 	default_pos(def_pos),
 	cls(window_class),
 	parent_cls(parent_class),
@@ -232,7 +234,7 @@ void Window::DisableAllWidgetHighlight()
 
 		if (nwid->IsHighlighted()) {
 			nwid->SetHighlighted(TC_INVALID);
-			this->SetWidgetDirty(i);
+			nwid->SetDirty(this);
 		}
 	}
 
@@ -252,7 +254,7 @@ void Window::SetWidgetHighlight(byte widget_index, TextColour highlighted_colour
 	if (nwid == nullptr) return;
 
 	nwid->SetHighlighted(highlighted_colour);
-	this->SetWidgetDirty(widget_index);
+	nwid->SetDirty(this);
 
 	if (highlighted_colour != TC_INVALID) {
 		/* If we set a highlight, the window has a highlight */

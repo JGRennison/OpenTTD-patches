@@ -52,7 +52,7 @@ static void DoSelectCompanyManagerFace(Window *parent);
 static void ShowCompanyInfrastructure(CompanyID company);
 
 /** List of revenues. */
-static ExpensesType _expenses_list_revenue[] = {
+static const std::initializer_list<ExpensesType> _expenses_list_revenue = {
 	EXPENSES_TRAIN_REVENUE,
 	EXPENSES_ROADVEH_REVENUE,
 	EXPENSES_AIRCRAFT_REVENUE,
@@ -61,7 +61,7 @@ static ExpensesType _expenses_list_revenue[] = {
 };
 
 /** List of operating expenses. */
-static ExpensesType _expenses_list_operating_costs[] = {
+static const std::initializer_list<ExpensesType> _expenses_list_operating_costs = {
 	EXPENSES_TRAIN_RUN,
 	EXPENSES_ROADVEH_RUN,
 	EXPENSES_AIRCRAFT_RUN,
@@ -72,7 +72,7 @@ static ExpensesType _expenses_list_operating_costs[] = {
 };
 
 /** List of capital expenses. */
-static ExpensesType _expenses_list_capital_costs[] = {
+static const std::initializer_list<ExpensesType> _expenses_list_capital_costs = {
 	EXPENSES_CONSTRUCTION,
 	EXPENSES_NEW_VEHICLES,
 	EXPENSES_OTHER,
@@ -80,25 +80,24 @@ static ExpensesType _expenses_list_capital_costs[] = {
 
 /** Expense list container. */
 struct ExpensesList {
-	const ExpensesType *et;   ///< Expenses items.
-	const uint length;        ///< Number of items in list.
+	const StringID title; ///< StringID of list title.
+	const std::initializer_list<ExpensesType> &items; ///< List of expenses types.
 
-	ExpensesList(ExpensesType *et, int length) : et(et), length(length)
+	ExpensesList(StringID title, const std::initializer_list<ExpensesType> &list) : title(title), items(list)
 	{
 	}
 
 	uint GetHeight() const
 	{
 		/* Add up the height of all the lines.  */
-		return this->length * FONT_HEIGHT_NORMAL;
+		return static_cast<uint>(this->items.size()) * FONT_HEIGHT_NORMAL;
 	}
 
 	/** Compute width of the expenses categories in pixels. */
 	uint GetListWidth() const
 	{
 		uint width = 0;
-		for (uint i = 0; i < this->length; i++) {
-			ExpensesType et = this->et[i];
+		for (const ExpensesType &et : this->items) {
 			width = std::max(width, GetStringBoundingBox(STR_FINANCES_SECTION_CONSTRUCTION + et).width);
 		}
 		return width;
@@ -106,10 +105,10 @@ struct ExpensesList {
 };
 
 /** Types of expense lists */
-static const ExpensesList _expenses_list_types[] = {
-	ExpensesList(_expenses_list_revenue, lengthof(_expenses_list_revenue)),
-	ExpensesList(_expenses_list_operating_costs, lengthof(_expenses_list_operating_costs)),
-	ExpensesList(_expenses_list_capital_costs, lengthof(_expenses_list_capital_costs)),
+static const std::initializer_list<ExpensesList> _expenses_list_types = {
+	{ STR_FINANCES_REVENUE_TITLE,            _expenses_list_revenue },
+	{ STR_FINANCES_OPERATING_EXPENSES_TITLE, _expenses_list_operating_costs },
+	{ STR_FINANCES_CAPITAL_EXPENSES_TITLE,   _expenses_list_capital_costs },
 };
 
 /**
@@ -121,9 +120,9 @@ static uint GetTotalCategoriesHeight()
 	/* There's an empty line and blockspace on the year row */
 	uint total_height = FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.vsep_wide;
 
-	for (uint i = 0; i < lengthof(_expenses_list_types); i++) {
+	for (const ExpensesList &list : _expenses_list_types) {
 		/* Title + expense list + total line + total + blockspace after category */
-		total_height += FONT_HEIGHT_NORMAL + _expenses_list_types[i].GetHeight() + WidgetDimensions::scaled.vsep_normal + FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.vsep_wide;
+		total_height += FONT_HEIGHT_NORMAL + list.GetHeight() + WidgetDimensions::scaled.vsep_normal + FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.vsep_wide;
 	}
 
 	/* Total income */
@@ -141,11 +140,11 @@ static uint GetMaxCategoriesWidth()
 	uint max_width = 0;
 
 	/* Loop through categories to check max widths. */
-	for (uint i = 0; i < lengthof(_expenses_list_types); i++) {
+	for (const ExpensesList &list : _expenses_list_types) {
 		/* Title of category */
-		max_width = std::max(max_width, GetStringBoundingBox(STR_FINANCES_REVENUE_TITLE + i).width);
+		max_width = std::max(max_width, GetStringBoundingBox(list.title).width);
 		/* Entries in category */
-		max_width = std::max(max_width, _expenses_list_types[i].GetListWidth() + WidgetDimensions::scaled.hsep_indent);
+		max_width = std::max(max_width, list.GetListWidth() + WidgetDimensions::scaled.hsep_indent);
 	}
 
 	return max_width;
@@ -154,15 +153,13 @@ static uint GetMaxCategoriesWidth()
 /**
  * Draw a category of expenses (revenue, operating expenses, capital expenses).
  */
-static void DrawCategory(const Rect &r, int start_y, ExpensesList list)
+static void DrawCategory(const Rect &r, int start_y, const ExpensesList &list)
 {
 	Rect tr = r.Indent(WidgetDimensions::scaled.hsep_indent, _current_text_dir == TD_RTL);
 
 	tr.top = start_y;
-	ExpensesType et;
 
-	for (uint i = 0; i < list.length; i++) {
-		et = list.et[i];
+	for (const ExpensesType &et : list.items) {
 		DrawString(tr, STR_FINANCES_SECTION_CONSTRUCTION + et);
 		tr.top += FONT_HEIGHT_NORMAL;
 	}
@@ -178,14 +175,14 @@ static void DrawCategories(const Rect &r)
 	/* Start with an empty space in the year row, plus the blockspace under the year. */
 	int y = r.top + FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.vsep_wide;
 
-	for (uint i = 0; i < lengthof(_expenses_list_types); i++) {
+	for (const ExpensesList &list : _expenses_list_types) {
 		/* Draw category title and advance y */
-		DrawString(r.left, r.right, y, (STR_FINANCES_REVENUE_TITLE + i), TC_FROMSTRING, SA_LEFT);
+		DrawString(r.left, r.right, y, list.title, TC_FROMSTRING, SA_LEFT);
 		y += FONT_HEIGHT_NORMAL;
 
 		/* Draw category items and advance y */
-		DrawCategory(r, y, _expenses_list_types[i]);
-		y += _expenses_list_types[i].GetHeight();
+		DrawCategory(r, y, list);
+		y += list.GetHeight();
 
 		/* Advance y by the height of the horizontal line between amounts and subtotal */
 		y += WidgetDimensions::scaled.vsep_normal;
@@ -228,14 +225,12 @@ static void DrawPrice(Money amount, int left, int right, int top, TextColour col
  * Draw a category of expenses/revenues in the year column.
  * @return The income sum of the category.
  */
-static Money DrawYearCategory(const Rect &r, int start_y, ExpensesList list, const Expenses &tbl)
+static Money DrawYearCategory(const Rect &r, int start_y, const ExpensesList &list, const Expenses &tbl)
 {
 	int y = start_y;
-	ExpensesType et;
 	Money sum = 0;
 
-	for (uint i = 0; i < list.length; i++) {
-		et = list.et[i];
+	for (const ExpensesType &et : list.items) {
 		Money cost = tbl[et];
 		sum += cost;
 		if (cost != 0) DrawPrice(cost, r.left, r.right, y, TC_BLACK);
@@ -270,11 +265,11 @@ static void DrawYearColumn(const Rect &r, int year, const Expenses &tbl)
 	y += FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.vsep_wide;
 
 	/* Categories */
-	for (uint i = 0; i < lengthof(_expenses_list_types); i++) {
+	for (const ExpensesList &list : _expenses_list_types) {
 		y += FONT_HEIGHT_NORMAL;
-		sum += DrawYearCategory(r, y, _expenses_list_types[i], tbl);
+		sum += DrawYearCategory(r, y, list, tbl);
 		/* Expense list + expense category title + expense category total + blockspace after category */
-		y += _expenses_list_types[i].GetHeight() + WidgetDimensions::scaled.vsep_normal + FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.vsep_wide;
+		y += list.GetHeight() + WidgetDimensions::scaled.vsep_normal + FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.vsep_wide;
 	}
 
 	/* Total income. */
@@ -584,7 +579,7 @@ struct CompanyFinancesWindow : Window {
 	}
 };
 
-static WindowDesc _company_finances_desc(
+static WindowDesc _company_finances_desc(__FILE__, __LINE__,
 	WDP_AUTO, "company_finances", 0, 0,
 	WC_FINANCES, WC_NONE,
 	0,
@@ -1180,7 +1175,7 @@ static const NWidgetPart _nested_select_company_livery_widgets [] = {
 	EndContainer(),
 };
 
-static WindowDesc _select_company_livery_desc(
+static WindowDesc _select_company_livery_desc(__FILE__, __LINE__,
 	WDP_AUTO, nullptr, 0, 0,
 	WC_COMPANY_COLOUR, WC_NONE,
 	0,
@@ -1797,7 +1792,7 @@ public:
 };
 
 /** Company manager face selection window description */
-static WindowDesc _select_company_manager_face_desc(
+static WindowDesc _select_company_manager_face_desc(__FILE__, __LINE__,
 	WDP_AUTO, nullptr, 0, 0,
 	WC_COMPANY_MANAGER_FACE, WC_NONE,
 	WDF_CONSTRUCTION,
@@ -2201,7 +2196,7 @@ struct CompanyInfrastructureWindow : Window
 	}
 };
 
-static WindowDesc _company_infrastructure_desc(
+static WindowDesc _company_infrastructure_desc(__FILE__, __LINE__,
 	WDP_AUTO, "company_infrastructure", 0, 0,
 	WC_COMPANY_INFRASTRUCTURE, WC_NONE,
 	0,
@@ -2849,7 +2844,7 @@ struct CompanyWindow : Window
 	}
 };
 
-static WindowDesc _company_desc(
+static WindowDesc _company_desc(__FILE__, __LINE__,
 	WDP_AUTO, "company", 0, 0,
 	WC_COMPANY, WC_NONE,
 	0,
@@ -3002,7 +2997,7 @@ static const NWidgetPart _nested_buy_company_widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _buy_company_desc(
+static WindowDesc _buy_company_desc(__FILE__, __LINE__,
 	WDP_AUTO, nullptr, 0, 0,
 	WC_BUY_COMPANY, WC_NONE,
 	WDF_CONSTRUCTION,

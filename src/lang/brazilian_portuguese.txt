@@ -3385,6 +3385,7 @@ STR_SAVE_PRESET_SAVE                                            :{BLACK}Salvar
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Salva o padrão com o nome selecionado
 
 # NewGRF parameters window
+STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Alterar parâmetros dos gráficos base
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Alterar parâmetros NewGRF
 STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Fechar
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Redefinir parâmetros
@@ -5189,6 +5190,7 @@ STR_ERROR_CAN_T_TIMETABLE_VEHICLE                               :{WHITE}Impossí
 STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS                       :{WHITE}Veículos só podem aguardar em estações
 STR_ERROR_TIMETABLE_NOT_STOPPING_HERE                           :{WHITE}Esse veículo não pára nesta estação
 STR_ERROR_TIMETABLE_INCOMPLETE                                  :{WHITE}... horário incompleto
+STR_ERROR_TIMETABLE_NOT_STARTED                                 :{WHITE}... o plano de horário ainda não começou
 
 # Sign related errors
 STR_ERROR_TOO_MANY_SIGNS                                        :{WHITE}... existem placas demais

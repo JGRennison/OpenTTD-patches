@@ -3615,7 +3615,7 @@ static const NWidgetPart _nested_program_widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _program_desc(
+static WindowDesc _program_desc(__FILE__, __LINE__,
 	WDP_AUTO, "trace_restrict_gui", 384, 100,
 	WC_TRACE_RESTRICT, WC_BUILD_SIGNAL,
 	WDF_CONSTRUCTION,
@@ -4283,7 +4283,7 @@ public:
 	}
 };
 
-static WindowDesc _slot_window_desc(
+static WindowDesc _slot_window_desc(__FILE__, __LINE__,
 	WDP_AUTO, "list_groups_train", 525, 246,
 	WC_TRACE_RESTRICT_SLOTS, WC_NONE,
 	0,
@@ -4649,7 +4649,7 @@ public:
 	}
 };
 
-static WindowDesc _counter_window_desc(
+static WindowDesc _counter_window_desc(__FILE__, __LINE__,
 	WDP_AUTO, "list_tr_counters", 525, 246,
 	WC_TRACE_RESTRICT_COUNTERS, WC_NONE,
 	0,

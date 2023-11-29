@@ -160,7 +160,7 @@ struct NewGRFParametersWindow : public Window {
 	bool action14present;  ///< True if action14 information is present.
 	bool editable;         ///< Allow editing parameters.
 
-	NewGRFParametersWindow(WindowDesc *desc, GRFConfig *c, bool editable) : Window(desc),
+	NewGRFParametersWindow(WindowDesc *desc, bool is_baseset, GRFConfig *c, bool editable) : Window(desc),
 		grf_config(c),
 		clicked_button(UINT_MAX),
 		clicked_dropdown(false),
@@ -171,6 +171,7 @@ struct NewGRFParametersWindow : public Window {
 		this->action14present = (c->num_valid_params != c->param.size() || !c->param_info.empty());
 
 		this->CreateNestedTree();
+		this->GetWidget<NWidgetCore>(WID_NP_CAPTION)->SetDataTip(is_baseset ? STR_BASEGRF_PARAMETERS_CAPTION : STR_NEWGRF_PARAMETERS_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS);
 		this->vscroll = this->GetScrollbar(WID_NP_SCROLLBAR);
 		this->GetWidget<NWidgetStacked>(WID_NP_SHOW_NUMPAR)->SetDisplayedPlane(this->action14present ? SZSP_HORIZONTAL : 0);
 		this->GetWidget<NWidgetStacked>(WID_NP_SHOW_DESCRIPTION)->SetDisplayedPlane(this->action14present ? 0 : SZSP_HORIZONTAL);
@@ -522,7 +523,7 @@ GRFParameterInfo NewGRFParametersWindow::dummy_parameter_info(0);
 static const NWidgetPart _nested_newgrf_parameter_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_MAUVE),
-		NWidget(WWT_CAPTION, COLOUR_MAUVE), SetDataTip(STR_NEWGRF_PARAMETERS_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_MAUVE, WID_NP_CAPTION),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_MAUVE),
 	EndContainer(),
 	NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NP_SHOW_NUMPAR),
@@ -552,17 +553,17 @@ static const NWidgetPart _nested_newgrf_parameter_widgets[] = {
 };
 
 /** Window definition for the change grf parameters window */
-static WindowDesc _newgrf_parameters_desc(
+static WindowDesc _newgrf_parameters_desc(__FILE__, __LINE__,
 	WDP_CENTER, "settings_newgrf_config", 500, 208,
 	WC_GRF_PARAMETERS, WC_NONE,
 	0,
 	std::begin(_nested_newgrf_parameter_widgets), std::end(_nested_newgrf_parameter_widgets)
 );
 
-static void OpenGRFParameterWindow(GRFConfig *c, bool editable)
+void OpenGRFParameterWindow(bool is_baseset, GRFConfig *c, bool editable)
 {
 	CloseWindowByClass(WC_GRF_PARAMETERS);
-	new NewGRFParametersWindow(&_newgrf_parameters_desc, c, editable);
+	new NewGRFParametersWindow(&_newgrf_parameters_desc, is_baseset, c, editable);
 }
 
 /** Window for displaying the textfile of a NewGRF. */
@@ -1155,7 +1156,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 			case WID_NS_SET_PARAMETERS: { // Edit parameters
 				if (this->active_sel == nullptr || !this->show_params || this->active_sel->num_valid_params == 0) break;
 
-				OpenGRFParameterWindow(this->active_sel, this->editable);
+				OpenGRFParameterWindow(false, this->active_sel, this->editable);
 				this->InvalidateData(GOID_NEWGRF_CHANGES_MADE);
 				break;
 			}
@@ -1688,7 +1689,7 @@ public:
 		this->smallest_y = ComputeMaxSize(min_acs_height, this->smallest_y + this->resize_y - 1, this->resize_y);
 	}
 
-	void AssignSizePosition(SizingType sizing, uint x, uint y, uint given_width, uint given_height, bool rtl) override
+	void AssignSizePosition(SizingType sizing, int x, int y, uint given_width, uint given_height, bool rtl) override
 	{
 		this->StoreSizePosition(sizing, x, y, given_width, given_height);
 
@@ -1996,7 +1997,7 @@ static const NWidgetPart _nested_newgrf_widgets[] = {
 };
 
 /* Window definition of the manage newgrfs window */
-static WindowDesc _newgrf_desc(
+static WindowDesc _newgrf_desc(__FILE__, __LINE__,
 	WDP_CENTER, "settings_newgrf", 300, 263,
 	WC_GAME_OPTIONS, WC_NONE,
 	0,
@@ -2087,7 +2088,7 @@ static const NWidgetPart _nested_save_preset_widgets[] = {
 };
 
 /** Window description of the preset save window. */
-static WindowDesc _save_preset_desc(
+static WindowDesc _save_preset_desc(__FILE__, __LINE__,
 	WDP_CENTER, "save_preset", 140, 110,
 	WC_SAVE_PRESET, WC_GAME_OPTIONS,
 	WDF_MODAL,
@@ -2228,7 +2229,7 @@ static const NWidgetPart _nested_scan_progress_widgets[] = {
 };
 
 /** Description of the widgets and other settings of the window. */
-static WindowDesc _scan_progress_desc(
+static WindowDesc _scan_progress_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_MODAL_PROGRESS, WC_NONE,
 	0,

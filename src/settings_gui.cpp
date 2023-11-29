@@ -41,6 +41,7 @@
 #include "music/music_driver.hpp"
 #include "gui.h"
 #include "mixer.h"
+#include "newgrf_config.h"
 #include "scope.h"
 #include "network/core/config.h"
 #include "network/network_gui.h"
@@ -633,6 +634,16 @@ struct GameOptionsWindow : Window {
 				break;
 			}
 
+			case WID_GO_BASE_GRF_PARAMETERS: {
+				auto *used_set = BaseGraphics::GetUsedSet();
+				if (used_set == nullptr || !used_set->IsConfigurable()) break;
+				GRFConfig &extra_cfg = used_set->GetOrCreateExtraConfig();
+				if (extra_cfg.num_params == 0) extra_cfg.SetParameterDefaults();
+				OpenGRFParameterWindow(true, &extra_cfg, _game_mode == GM_MENU);
+				if (_game_mode == GM_MENU) this->reload = true;
+				break;
+			}
+
 			case WID_GO_BASE_SFX_VOLUME:
 			case WID_GO_BASE_MUSIC_VOLUME: {
 				byte &vol = (widget == WID_GO_BASE_MUSIC_VOLUME) ? _settings_client.music.music_vol : _settings_client.music.effect_vol;
@@ -678,25 +689,6 @@ struct GameOptionsWindow : Window {
 			ReInitAllWindows(true);
 			this->SetWidgetLoweredState(WID_GO_GUI_SCALE_AUTO, false);
 			this->SetDirty();
-		}
-	}
-
-	/**
-	 * Set the base media set.
-	 * @param index the index of the media set
-	 * @tparam T class of media set
-	 */
-	template <class T>
-	void SetMediaSet(int index)
-	{
-		if (_game_mode == GM_MENU) {
-			auto name = T::GetSet(index)->name;
-
-			T::ini_set = name;
-
-			T::SetSet(name);
-			this->reload = true;
-			this->InvalidateData();
 		}
 	}
 
@@ -749,11 +741,23 @@ struct GameOptionsWindow : Window {
 			}
 
 			case WID_GO_BASE_GRF_DROPDOWN:
-				this->SetMediaSet<BaseGraphics>(index);
+				if (_game_mode == GM_MENU) {
+					CloseWindowByClass(WC_GRF_PARAMETERS);
+					auto* set = BaseGraphics::GetSet(index);
+					BaseGraphics::SetSet(set);
+					this->reload = true;
+					this->InvalidateData();
+				}
 				break;
 
 			case WID_GO_BASE_SFX_DROPDOWN:
-				this->SetMediaSet<BaseSounds>(index);
+				if (_game_mode == GM_MENU) {
+					auto* set = BaseSounds::GetSet(index);
+					BaseSounds::ini_set = set->name;
+					BaseSounds::SetSet(set);
+					this->reload = true;
+					this->InvalidateData();
+				}
 				break;
 
 			case WID_GO_BASE_MUSIC_DROPDOWN:
@@ -813,6 +817,8 @@ struct GameOptionsWindow : Window {
 
 		bool missing_files = BaseGraphics::GetUsedSet()->GetNumMissing() == 0;
 		this->GetWidget<NWidgetCore>(WID_GO_BASE_GRF_STATUS)->SetDataTip(missing_files ? STR_EMPTY : STR_GAME_OPTIONS_BASE_GRF_STATUS, STR_NULL);
+
+		this->SetWidgetDisabledState(WID_GO_BASE_GRF_PARAMETERS, BaseGraphics::GetUsedSet() == nullptr || !BaseGraphics::GetUsedSet()->IsConfigurable());
 
 		for (TextfileType tft = TFT_CONTENT_BEGIN; tft < TFT_CONTENT_END; tft++) {
 			this->SetWidgetDisabledState(WID_GO_BASE_GRF_TEXTFILE + tft, BaseGraphics::GetUsedSet() == nullptr || BaseGraphics::GetUsedSet()->GetTextfile(tft) == nullptr);
@@ -930,6 +936,7 @@ static const NWidgetPart _nested_game_options_widgets[] = {
 					NWidget(NWID_HORIZONTAL), SetPIP(0, 30, 0),
 						NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_GO_BASE_GRF_DROPDOWN), SetMinimalSize(100, 12), SetDataTip(STR_JUST_RAW_STRING, STR_GAME_OPTIONS_BASE_GRF_TOOLTIP),
 						NWidget(WWT_TEXT, COLOUR_GREY, WID_GO_BASE_GRF_STATUS), SetMinimalSize(100, 12), SetDataTip(STR_EMPTY, STR_NULL), SetFill(1, 0),
+						NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_GO_BASE_GRF_PARAMETERS), SetDataTip(STR_NEWGRF_SETTINGS_SET_PARAMETERS, STR_NULL),
 					EndContainer(),
 					NWidget(WWT_TEXT, COLOUR_GREY, WID_GO_BASE_GRF_DESCRIPTION), SetMinimalSize(200, 0), SetDataTip(STR_EMPTY, STR_GAME_OPTIONS_BASE_GRF_DESCRIPTION_TOOLTIP), SetFill(1, 0), SetPadding(6, 0, 6, 0),
 					NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(7, 0, 7),
@@ -990,7 +997,7 @@ static const NWidgetPart _nested_game_options_widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _game_options_desc(
+static WindowDesc _game_options_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_GAME_OPTIONS, WC_NONE,
 	0,
@@ -3192,7 +3199,7 @@ static const NWidgetPart _nested_settings_selection_widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _settings_selection_desc(
+static WindowDesc _settings_selection_desc(__FILE__, __LINE__,
 	WDP_CENTER, "settings", 510, 450,
 	WC_GAME_OPTIONS, WC_NONE,
 	0,
@@ -3491,7 +3498,7 @@ static const NWidgetPart _nested_cust_currency_widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _cust_currency_desc(
+static WindowDesc _cust_currency_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_CUSTOM_CURRENCY, WC_NONE,
 	0,

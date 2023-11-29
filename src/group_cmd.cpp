@@ -913,19 +913,6 @@ CommandCost CmdSetGroupFlag(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 }
 
 /**
- * Decrease the num_vehicle variable before delete an front engine from a group
- * @note Called in CmdSellRailWagon and DeleteLasWagon,
- * @param v     FrontEngine of the train we want to remove.
- */
-void RemoveVehicleFromGroup(const Vehicle *v)
-{
-	if (!v->IsPrimaryVehicle()) return;
-
-	if (!IsDefaultGroupID(v->group_id)) GroupStatistics::CountVehicle(v, -1);
-}
-
-
-/**
  * Affect the groupID of a train to new_g.
  * @note called in CmdAddVehicleGroup and CmdMoveRailVehicle
  * @param v     First vehicle of the chain.

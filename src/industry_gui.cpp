@@ -293,7 +293,7 @@ static const NWidgetPart _nested_build_industry_widgets[] = {
 };
 
 /** Window definition of the dynamic place industries gui */
-static WindowDesc _build_industry_desc(
+static WindowDesc _build_industry_desc(__FILE__, __LINE__,
 	WDP_AUTO, "build_industry", 170, 212,
 	WC_BUILD_INDUSTRY, WC_NONE,
 	WDF_CONSTRUCTION,
@@ -1205,7 +1205,7 @@ static const NWidgetPart _nested_industry_view_widgets[] = {
 };
 
 /** Window definition of the view industry gui */
-static WindowDesc _industry_view_desc(
+static WindowDesc _industry_view_desc(__FILE__, __LINE__,
 	WDP_AUTO, "view_industry", 260, 120,
 	WC_INDUSTRY_VIEW, WC_NONE,
 	0,
@@ -1228,24 +1228,24 @@ static const NWidgetPart _nested_industry_directory_widgets[] = {
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
 		NWidget(NWID_VERTICAL),
-			NWidget(NWID_VERTICAL),
-				NWidget(NWID_HORIZONTAL),
-					NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_ID_DROPDOWN_ORDER), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
-					NWidget(WWT_DROPDOWN, COLOUR_BROWN, WID_ID_DROPDOWN_CRITERIA), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_SORT_CRITERIA),
-					NWidget(WWT_EDITBOX, COLOUR_BROWN, WID_ID_FILTER), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
-				EndContainer(),
-				NWidget(NWID_HORIZONTAL),
-					NWidget(WWT_DROPDOWN, COLOUR_BROWN, WID_ID_FILTER_BY_ACC_CARGO), SetMinimalSize(225, 12), SetFill(0, 1), SetDataTip(STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER, STR_TOOLTIP_FILTER_CRITERIA),
-					NWidget(WWT_DROPDOWN, COLOUR_BROWN, WID_ID_FILTER_BY_PROD_CARGO), SetMinimalSize(225, 12), SetFill(0, 1), SetDataTip(STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER, STR_TOOLTIP_FILTER_CRITERIA),
-					NWidget(WWT_PANEL, COLOUR_BROWN), SetResize(1, 0), EndContainer(),
-				EndContainer(),
+			NWidget(NWID_HORIZONTAL),
+				NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_ID_DROPDOWN_ORDER), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
+				NWidget(WWT_DROPDOWN, COLOUR_BROWN, WID_ID_DROPDOWN_CRITERIA), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_SORT_CRITERIA),
+				NWidget(WWT_EDITBOX, COLOUR_BROWN, WID_ID_FILTER), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
 			EndContainer(),
-			NWidget(WWT_PANEL, COLOUR_BROWN, WID_ID_INDUSTRY_LIST), SetDataTip(0x0, STR_INDUSTRY_DIRECTORY_LIST_CAPTION), SetResize(1, 1), SetScrollbar(WID_ID_SCROLLBAR), EndContainer(),
+			NWidget(NWID_HORIZONTAL),
+				NWidget(WWT_DROPDOWN, COLOUR_BROWN, WID_ID_FILTER_BY_ACC_CARGO), SetMinimalSize(225, 12), SetFill(0, 1), SetDataTip(STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER, STR_TOOLTIP_FILTER_CRITERIA),
+				NWidget(WWT_DROPDOWN, COLOUR_BROWN, WID_ID_FILTER_BY_PROD_CARGO), SetMinimalSize(225, 12), SetFill(0, 1), SetDataTip(STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER, STR_TOOLTIP_FILTER_CRITERIA),
+				NWidget(WWT_PANEL, COLOUR_BROWN), SetResize(1, 0), EndContainer(),
+			EndContainer(),
+			NWidget(WWT_PANEL, COLOUR_BROWN, WID_ID_INDUSTRY_LIST), SetDataTip(0x0, STR_INDUSTRY_DIRECTORY_LIST_CAPTION), SetResize(1, 1), SetScrollbar(WID_ID_VSCROLLBAR),
+			EndContainer(),
 		EndContainer(),
-		NWidget(NWID_VERTICAL),
-			NWidget(NWID_VSCROLLBAR, COLOUR_BROWN, WID_ID_SCROLLBAR),
-			NWidget(WWT_RESIZEBOX, COLOUR_BROWN),
-		EndContainer(),
+		NWidget(NWID_VSCROLLBAR, COLOUR_BROWN, WID_ID_VSCROLLBAR),
+	EndContainer(),
+	NWidget(NWID_HORIZONTAL),
+		NWidget(NWID_HSCROLLBAR, COLOUR_BROWN, WID_ID_HSCROLLBAR),
+		NWidget(WWT_RESIZEBOX, COLOUR_BROWN),
 	EndContainer(),
 };
 
@@ -1321,6 +1321,7 @@ protected:
 
 	GUIIndustryList industries;
 	Scrollbar *vscroll;
+	Scrollbar *hscroll;
 
 	CargoID cargo_filter[NUM_CARGO + 2];        ///< Available cargo filters; CargoID or CF_ANY or CF_NONE
 	StringID cargo_filter_texts[NUM_CARGO + 3]; ///< Texts for filter_cargo, terminated by INVALID_STRING_ID
@@ -1409,6 +1410,19 @@ protected:
 		this->industries.SetFilterState(is_filtering_necessary);
 	}
 
+	/**
+	 * Get the width needed to draw the longest industry line.
+	 * @return Returns width of the longest industry line, including padding.
+	 */
+	uint GetIndustryListWidth() const
+	{
+		uint width = 0;
+		for (const Industry *i : this->industries) {
+			width = std::max(width, GetStringBoundingBox(this->GetIndustryString(i)).width);
+		}
+		return width + WidgetDimensions::scaled.framerect.Horizontal();
+	}
+
 	/** (Re)Build industries list */
 	void BuildSortIndustriesList()
 	{
@@ -1427,17 +1441,18 @@ protected:
 
 			this->industries.shrink_to_fit();
 			this->industries.RebuildDone();
+
+			auto filter = std::make_pair(this->cargo_filter[this->accepted_cargo_filter_criteria],
+										this->cargo_filter[this->produced_cargo_filter_criteria]);
+
+			this->industries.Filter(filter);
+
+			this->hscroll->SetCount(this->GetIndustryListWidth());
+			this->vscroll->SetCount(this->industries.size()); // Update scrollbar as well.
 		}
-
-		auto filter = std::make_pair(this->cargo_filter[this->accepted_cargo_filter_criteria],
-		                             this->cargo_filter[this->produced_cargo_filter_criteria]);
-
-		this->industries.Filter(filter);
 
 		IndustryDirectoryWindow::produced_cargo_filter = this->cargo_filter[this->produced_cargo_filter_criteria];
 		this->industries.Sort();
-
-		this->vscroll->SetCount(this->industries.size()); // Update scrollbar as well.
 
 		this->SetDirty();
 	}
@@ -1625,7 +1640,8 @@ public:
 	IndustryDirectoryWindow(WindowDesc *desc, WindowNumber) : Window(desc), industry_editbox(MAX_FILTER_LENGTH * MAX_CHAR_LENGTH, MAX_FILTER_LENGTH)
 	{
 		this->CreateNestedTree();
-		this->vscroll = this->GetScrollbar(WID_ID_SCROLLBAR);
+		this->vscroll = this->GetScrollbar(WID_ID_VSCROLLBAR);
+		this->hscroll = this->GetScrollbar(WID_ID_HSCROLLBAR);
 
 		this->industries.SetListing(this->last_sorting);
 		this->industries.SetSortFuncs(IndustryDirectoryWindow::sorter_funcs);
@@ -1675,16 +1691,28 @@ public:
 				break;
 
 			case WID_ID_INDUSTRY_LIST: {
-				int n = 0;
 				Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
+
+				/* Setup a clipping rectangle... */
+				DrawPixelInfo tmp_dpi;
+				if (!FillDrawPixelInfo(&tmp_dpi, ir.left, ir.top, ir.Width(), ir.Height())) return;
+				/* ...but keep coordinates relative to the window. */
+				tmp_dpi.left += ir.left;
+				tmp_dpi.top += ir.top;
+
+				AutoRestoreBackup dpi_backup(_cur_dpi, &tmp_dpi);
+
+				ir.left -= this->hscroll->GetPosition();
+				ir.right += this->hscroll->GetCapacity() - this->hscroll->GetPosition();
+
 				if (this->industries.empty()) {
 					DrawString(ir, STR_INDUSTRY_DIRECTORY_NONE);
 					break;
 				}
-				TextColour tc;
+				int n = 0;
 				const CargoID acf_cid = this->cargo_filter[this->accepted_cargo_filter_criteria];
 				for (uint i = this->vscroll->GetPosition(); i < this->industries.size(); i++) {
-					tc = TC_FROMSTRING;
+					TextColour tc = TC_FROMSTRING;
 					if (acf_cid != CF_ANY && acf_cid != CF_NONE) {
 						Industry *ind = const_cast<Industry *>(this->industries[i]);
 						if (IndustryTemporarilyRefusesCargo(ind, acf_cid)) {
@@ -1725,9 +1753,6 @@ public:
 
 			case WID_ID_INDUSTRY_LIST: {
 				Dimension d = GetStringBoundingBox(STR_INDUSTRY_DIRECTORY_NONE);
-				for (uint i = 0; i < this->industries.size(); i++) {
-					d = maxdim(d, GetStringBoundingBox(this->GetIndustryString(this->industries[i])));
-				}
 				resize->height = d.height;
 				d.height *= 5;
 				d.width += padding.width;
@@ -1801,6 +1826,7 @@ public:
 	void OnResize() override
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_ID_INDUSTRY_LIST);
+		this->hscroll->SetCapacityFromWidget(this, WID_ID_INDUSTRY_LIST);
 	}
 
 	void OnEditboxChanged(int wid) override
@@ -1870,7 +1896,7 @@ CargoID IndustryDirectoryWindow::produced_cargo_filter = CF_ANY;
 
 
 /** Window definition of the industry directory gui */
-static WindowDesc _industry_directory_desc(
+static WindowDesc _industry_directory_desc(__FILE__, __LINE__,
 	WDP_AUTO, "list_industries", 428, 190,
 	WC_INDUSTRY_DIRECTORY, WC_NONE,
 	0,
@@ -1913,7 +1939,7 @@ static const NWidgetPart _nested_industry_cargoes_widgets[] = {
 };
 
 /** Window description for the industry cargoes window. */
-static WindowDesc _industry_cargoes_desc(
+static WindowDesc _industry_cargoes_desc(__FILE__, __LINE__,
 	WDP_AUTO, "industry_cargoes", 300, 210,
 	WC_INDUSTRY_CARGOES, WC_NONE,
 	0,

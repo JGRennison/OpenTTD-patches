@@ -945,15 +945,31 @@ int openttd_main(int argc, char *argv[])
 	InitWindowSystem();
 
 	BaseGraphics::FindSets();
-	if (graphics_set.empty() && !BaseGraphics::ini_set.empty()) graphics_set = BaseGraphics::ini_set;
-	if (!BaseGraphics::SetSet(graphics_set)) {
-		if (!graphics_set.empty()) {
-			BaseGraphics::SetSet({});
-
-			ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND);
-			msg.SetDParamStr(0, graphics_set);
-			ScheduleErrorMessage(msg);
+	bool valid_graphics_set;
+	if (!graphics_set.empty()) {
+		valid_graphics_set = BaseGraphics::SetSetByName(graphics_set);
+	} else if (BaseGraphics::ini_data.shortname != 0) {
+		graphics_set = BaseGraphics::ini_data.name;
+		valid_graphics_set = BaseGraphics::SetSetByShortname(BaseGraphics::ini_data.shortname);
+		if (valid_graphics_set && !BaseGraphics::ini_data.extra_params.empty()) {
+			GRFConfig &extra_cfg = BaseGraphics::GetUsedSet()->GetOrCreateExtraConfig();
+			if (extra_cfg.IsCompatible(BaseGraphics::ini_data.extra_version)) {
+				extra_cfg.SetParams(BaseGraphics::ini_data.extra_params);
+			}
 		}
+	} else if (!BaseGraphics::ini_data.name.empty()) {
+		graphics_set = BaseGraphics::ini_data.name;
+		valid_graphics_set = BaseGraphics::SetSetByName(BaseGraphics::ini_data.name);
+	} else {
+		valid_graphics_set = true;
+		BaseGraphics::SetSet(nullptr); // ignore error, continue to bootstrap GUI
+	}
+	if (!valid_graphics_set) {
+		BaseGraphics::SetSet(nullptr);
+
+		ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND);
+		msg.SetDParamStr(0, graphics_set);
+		ScheduleErrorMessage(msg);
 	}
 
 	/* Initialize game palette */
@@ -1007,7 +1023,7 @@ int openttd_main(int argc, char *argv[])
 
 	BaseSounds::FindSets();
 	if (sounds_set.empty() && !BaseSounds::ini_set.empty()) sounds_set = BaseSounds::ini_set;
-	if (!BaseSounds::SetSet(sounds_set)) {
+	if (!BaseSounds::SetSetByName(sounds_set)) {
 		if (sounds_set.empty() || !BaseSounds::SetSet({})) {
 			usererror("Failed to find a sounds set. Please acquire a sounds set for OpenTTD. See section 1.4 of README.md.");
 		} else {
@@ -1019,7 +1035,7 @@ int openttd_main(int argc, char *argv[])
 
 	BaseMusic::FindSets();
 	if (music_set.empty() && !BaseMusic::ini_set.empty()) music_set = BaseMusic::ini_set;
-	if (!BaseMusic::SetSet(music_set)) {
+	if (!BaseMusic::SetSetByName(music_set)) {
 		if (music_set.empty() || !BaseMusic::SetSet({})) {
 			usererror("Failed to find a music set. Please acquire a music set for OpenTTD. See section 1.4 of README.md.");
 		} else {
@@ -2265,7 +2281,7 @@ void GameLoopSpecial()
 	extern std::string _switch_baseset;
 	if (!_switch_baseset.empty()) {
 		if (BaseGraphics::GetUsedSet()->name != _switch_baseset) {
-			BaseGraphics::SetSet(_switch_baseset);
+			BaseGraphics::SetSetByName(_switch_baseset);
 
 			ReloadNewGRFData();
 		}

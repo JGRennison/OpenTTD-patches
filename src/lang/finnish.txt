@@ -3384,7 +3384,8 @@ STR_SAVE_PRESET_SAVE                                            :{BLACK}Tallenna
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Tallenna valmislista valitulle nimelle
 
 # NewGRF parameters window
-STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Muuta NewGRF-parametrejä
+STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Muuta perusgrafiikan parametreja
+STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Muuta NewGRF-parametreja
 STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Sulje
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Palauta
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Aseta kaikki parametrit oletusarvoihin
@@ -5188,6 +5189,7 @@ STR_ERROR_CAN_T_TIMETABLE_VEHICLE                               :{WHITE}Ei voi a
 STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS                       :{WHITE}Kulkuneuvo voi odottaa vain asemalla
 STR_ERROR_TIMETABLE_NOT_STOPPING_HERE                           :{WHITE}Tämä kulkuneuvo ei pysähdy tällä asemalla
 STR_ERROR_TIMETABLE_INCOMPLETE                                  :{WHITE}… aikataulu on puutteellinen
+STR_ERROR_TIMETABLE_NOT_STARTED                                 :{WHITE}… aikataulu ei ole vielä alkanut
 
 # Sign related errors
 STR_ERROR_TOO_MANY_SIGNS                                        :{WHITE}... liian monta kylttiä.

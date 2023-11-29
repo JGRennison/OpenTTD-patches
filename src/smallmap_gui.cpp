@@ -1065,7 +1065,7 @@ void SmallMapWindow::SetupWidgetData()
 SmallMapWindow::SmallMapWindow(WindowDesc *desc, int window_number) : Window(desc), refresh(GUITimer())
 {
 	_smallmap_industry_highlight = INVALID_INDUSTRYTYPE;
-	this->overlay = new LinkGraphOverlay(this, WID_SM_MAP, 0, this->GetOverlayCompanyMask(), 1);
+	this->overlay = std::make_unique<LinkGraphOverlay>(this, WID_SM_MAP, 0, this->GetOverlayCompanyMask(), 1);
 	this->InitNested(window_number);
 	this->LowerWidget(this->map_type + WID_SM_CONTOUR);
 
@@ -1081,11 +1081,6 @@ SmallMapWindow::SmallMapWindow(WindowDesc *desc, int window_number) : Window(des
 	this->SmallMapCenterOnCurrentPos();
 	this->SetOverlayCargoMask();
 	this->refresh.SetInterval(this->GetRefreshPeriod());
-}
-
-SmallMapWindow::~SmallMapWindow()
-{
-	delete this->overlay;
 }
 
 /* virtual */ void SmallMapWindow::Close([[maybe_unused]] int data)
@@ -1768,7 +1763,7 @@ public:
 		this->resize_y = std::min(display->resize_y, bar->resize_y);
 	}
 
-	void AssignSizePosition(SizingType sizing, uint x, uint y, uint given_width, uint given_height, bool rtl) override
+	void AssignSizePosition(SizingType sizing, int x, int y, uint given_width, uint given_height, bool rtl) override
 	{
 		this->pos_x = x;
 		this->pos_y = y;
@@ -1879,7 +1874,7 @@ static const NWidgetPart _nested_smallmap_widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _smallmap_desc(
+static WindowDesc _smallmap_desc(__FILE__, __LINE__,
 	WDP_AUTO, "smallmap", 484, 314,
 	WC_SMALLMAP, WC_NONE,
 	0,

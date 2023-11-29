@@ -268,7 +268,7 @@ static const NWidgetPart _nested_script_list_widgets[] = {
 };
 
 /** Window definition for the ai list window. */
-static WindowDesc _script_list_desc(
+static WindowDesc _script_list_desc(__FILE__, __LINE__,
 	WDP_CENTER, "settings_script_list", 200, 234,
 	WC_SCRIPT_LIST, WC_NONE,
 	0,
@@ -623,7 +623,7 @@ static const NWidgetPart _nested_script_settings_widgets[] = {
 };
 
 /** Window definition for the Script settings window. */
-static WindowDesc _script_settings_desc(
+static WindowDesc _script_settings_desc(__FILE__, __LINE__,
 	WDP_CENTER, "settings_script", 500, 208,
 	WC_SCRIPT_SETTINGS, WC_NONE,
 	0,
@@ -1128,7 +1128,7 @@ CompanyID ScriptDebugWindow::script_debug_company = INVALID_COMPANY;
 std::string ScriptDebugWindow::break_string;
 bool ScriptDebugWindow::break_check_enabled = true;
 bool ScriptDebugWindow::case_sensitive_break_check = false;
-StringFilter ScriptDebugWindow::break_string_filter(&ScriptDebugWindow::case_sensitive_break_check);
+StringFilter ScriptDebugWindow::break_string_filter(&ScriptDebugWindow::case_sensitive_break_check, false);
 
 /** Make a number of rows with buttons for each company for the Script debug window. */
 NWidgetBase *MakeCompanyButtonRowsScriptDebug(int *biggest_index)
@@ -1222,7 +1222,7 @@ EndContainer(),
 };
 
 /** Window definition for the Script debug window. */
-static WindowDesc _script_debug_desc(
+static WindowDesc _script_debug_desc(__FILE__, __LINE__,
 	WDP_AUTO, "script_debug", 600, 450,
 	WC_SCRIPT_DEBUG, WC_NONE,
 	0,

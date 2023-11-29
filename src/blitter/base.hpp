@@ -271,11 +271,6 @@ public:
 	virtual const char *GetName() = 0;
 
 	/**
-	 * Get how many bytes are needed to store a pixel.
-	 */
-	virtual int GetBytesPerPixel() = 0;
-
-	/**
 	 * Post resize event
 	 */
 	virtual void PostResize() { };

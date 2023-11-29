@@ -59,7 +59,7 @@ static const NWidgetPart _nested_land_info_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_GREY, WID_LI_BACKGROUND), EndContainer(),
 };
 
-static WindowDesc _land_info_desc(
+static WindowDesc _land_info_desc(__FILE__, __LINE__,
 	WDP_AUTO, nullptr, 0, 0,
 	WC_LAND_INFO, WC_NONE,
 	0,
@@ -430,7 +430,7 @@ static const NWidgetPart _nested_about_widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _about_desc(
+static WindowDesc _about_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_GAME_OPTIONS, WC_NONE,
 	0,
@@ -696,7 +696,7 @@ static const NWidgetPart _nested_tooltips_widgets[] = {
 	NWidget(WWT_EMPTY, INVALID_COLOUR, WID_TT_BACKGROUND),
 };
 
-static WindowDesc _tool_tips_desc(
+static WindowDesc _tool_tips_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0, // Coordinates and sizes are not used,
 	WC_TOOLTIPS, WC_NONE,
 	WDF_NO_FOCUS | WDF_NO_CLOSE,
@@ -1153,7 +1153,7 @@ static const NWidgetPart _nested_query_string_widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _query_string_desc(
+static WindowDesc _query_string_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_QUERY_STRING, WC_NONE,
 	0,
@@ -1330,7 +1330,7 @@ static const NWidgetPart _nested_query_widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _query_desc(
+static WindowDesc _query_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_CONFIRM_POPUP_QUERY, WC_NONE,
 	WDF_MODAL,
@@ -1463,7 +1463,7 @@ struct ModifierKeyToggleWindow : Window {
 	}
 };
 
-static WindowDesc _modifier_key_toggle_desc(
+static WindowDesc _modifier_key_toggle_desc(__FILE__, __LINE__,
 	WDP_AUTO, "modifier_key_toggle", 0, 0,
 	WC_MODIFIER_KEY_TOGGLE, WC_NONE,
 	WDF_NO_FOCUS,

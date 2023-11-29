@@ -177,7 +177,7 @@ static const NWidgetPart _widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _replace_rail_vehicle_desc(
+static WindowDesc _replace_rail_vehicle_desc(__FILE__, __LINE__,
 	WDP_AUTO,
 	"template replace window",
 	456, 156,

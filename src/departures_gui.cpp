@@ -66,7 +66,7 @@ static const NWidgetPart _nested_departures_list[] = {
 	EndContainer(),
 };
 
-static WindowDesc _departures_desc(
+static WindowDesc _departures_desc(__FILE__, __LINE__,
 	WDP_AUTO, nullptr, 260, 246,
 	WC_DEPARTURES_BOARD, WC_NONE,
 	0,

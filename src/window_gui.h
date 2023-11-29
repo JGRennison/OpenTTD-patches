@@ -54,8 +54,10 @@ struct WidgetDimensions {
 	RectPadding captiontext;  ///< Offsets of text within a caption.
 	RectPadding dropdowntext; ///< Offsets of text within a dropdown widget.
 	RectPadding modalpopup;   ///< Padding for a modal popup.
+	RectPadding picker;       ///< Padding for a picker (dock, station, etc) window.
 
 	int pressed;              ///< Offset for contents of depressed widget.
+	int vsep_picker;          ///< Vertical spacing of picker-window widgets.
 	int vsep_normal;          ///< Normal vertical spacing.
 	int vsep_wide;            ///< Wide vertical spacing.
 	int hsep_normal;          ///< Normal horizontal spacing.
@@ -118,12 +120,14 @@ struct WindowDescPreferences {
  */
 struct WindowDesc {
 
-	WindowDesc(WindowPosition default_pos, const char *ini_key, int16 def_width_trad, int16 def_height_trad,
+	WindowDesc(const char * const file, const int line, WindowPosition default_pos, const char *ini_key, int16 def_width_trad, int16 def_height_trad,
 			WindowClass window_class, WindowClass parent_class, uint32 flags,
 			const NWidgetPart *nwid_begin, const NWidgetPart *nwid_end, HotkeyList *hotkeys = nullptr, WindowDesc *ini_parent = nullptr);
 
 	~WindowDesc();
 
+	const char * const file; ///< Source file of this definition
+	const int line; ///< Source line of this definition
 	WindowPosition default_pos;    ///< Preferred position of the window. @see WindowPosition()
 	WindowClass cls;               ///< Class of the window, @see WindowClass.
 	WindowClass parent_cls;        ///< Class of the parent window. @see WindowClass

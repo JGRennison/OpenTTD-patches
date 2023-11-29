@@ -180,6 +180,7 @@ struct GRFConfig : ZeroedMemoryAllocator {
 	struct GRFConfig *next;                     ///< NOSAVE: Next item in the linked list
 
 	bool IsCompatible(uint32_t old_version) const;
+	void SetParams(const std::vector<uint32_t> &pars);
 	void CopyParams(const GRFConfig &src);
 
 	const char *GetTextfile(TextfileType type) const;
@@ -238,6 +239,7 @@ std::string GRFBuildParamList(const GRFConfig *c);
 
 /* In newgrf_gui.cpp */
 void ShowNewGRFSettings(bool editable, bool show_params, bool exec_changes, GRFConfig **config);
+void OpenGRFParameterWindow(bool is_baseset, GRFConfig *c, bool editable);
 
 void UpdateNewGRFScanStatus(uint num, const char *name);
 void UpdateNewGRFConfigPalette(int32 new_value = 0);

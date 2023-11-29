@@ -339,14 +339,14 @@ static const NWidgetPart _nested_set_minutes_widgets[] = {
 };
 
 /** Description of the date setting window. */
-static WindowDesc _set_date_desc(
+static WindowDesc _set_date_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_SET_DATE, WC_NONE,
 	0,
 	std::begin(_nested_set_date_widgets), std::end(_nested_set_date_widgets)
 );
 
-static WindowDesc _set_minutes_desc(
+static WindowDesc _set_minutes_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_SET_DATE, WC_NONE,
 	0,

@@ -65,6 +65,7 @@
 #include "ship.h"
 #include "smallmap_gui.h"
 #include "roadveh.h"
+#include "newgrf_config.h"
 #include "fios.h"
 #include "load_check.h"
 #include "strings_func.h"
@@ -477,7 +478,7 @@ size_t OneOfManySettingDesc::ParseValue(const char *str) const
 {
 	size_t r = OneOfManySettingDesc::ParseSingleValue(str, strlen(str), this->many);
 	/* if the first attempt of conversion from string to the appropriate value fails,
-		* look if we have defined a converter from old value to new value. */
+	 * look if we have defined a converter from old value to new value. */
 	if (r == (size_t)-1 && this->many_cnvt != nullptr) r = this->many_cnvt(str);
 	if (r != (size_t)-1) return r; // and here goes converted value
 
@@ -2096,6 +2097,40 @@ static bool DecodeHexText(const char *pos, uint8 *dest, size_t dest_size)
 }
 
 /**
+ * Load BaseGraphics set selection and configuration.
+ */
+static void GraphicsSetLoadConfig(IniFile &ini)
+{
+	if (const IniGroup *group = ini.GetGroup("misc"); group != nullptr) {
+		/* Load old setting first. */
+		if (const IniItem *item = group->GetItem("graphicsset"); item != nullptr && item->value) BaseGraphics::ini_data.name = *item->value;
+	}
+
+	if (const IniGroup *group = ini.GetGroup("graphicsset"); group != nullptr) {
+		/* Load new settings. */
+		if (const IniItem *item = group->GetItem("name"); item != nullptr && item->value) BaseGraphics::ini_data.name = *item->value;
+
+		if (const IniItem *item = group->GetItem("shortname"); item != nullptr && item->value && item->value->size() == 8) {
+			BaseGraphics::ini_data.shortname = BSWAP32(std::strtoul(item->value->c_str(), nullptr, 16));
+		}
+
+		if (const IniItem *item = group->GetItem("extra_version"); item != nullptr && item->value) BaseGraphics::ini_data.extra_version = std::strtoul(item->value->c_str(), nullptr, 10);
+
+		if (const IniItem *item = group->GetItem("extra_params"); item != nullptr && item->value) {
+			auto &extra_params = BaseGraphics::ini_data.extra_params;
+			extra_params.resize(lengthof(GRFConfig::param));
+			int count = ParseIntList(item->value->c_str(), &extra_params.front(), extra_params.size());
+			if (count < 0) {
+				SetDParamStr(0, BaseGraphics::ini_data.name);
+				ShowErrorMessage(STR_CONFIG_ERROR, STR_CONFIG_ERROR_ARRAY, WL_CRITICAL);
+				count = 0;
+			}
+			extra_params.resize(count);
+		}
+	}
+}
+
+/**
  * Load a GRF configuration
  * @param ini       The configuration to read from.
  * @param grpname   Group name containing the configuration of the GRF.
@@ -2267,6 +2302,27 @@ static void SaveVersionInConfig(IniFile &ini)
 	group.GetOrCreateItem("ini_version").SetValue(std::to_string(INIFILE_VERSION));
 }
 
+/**
+ * Save BaseGraphics set selection and configuration.
+ */
+static void GraphicsSetSaveConfig(IniFile &ini)
+{
+	const GraphicsSet *used_set = BaseGraphics::GetUsedSet();
+	if (used_set == nullptr) return;
+
+	IniGroup &group = ini.GetOrCreateGroup("graphicsset");
+	group.Clear();
+
+	group.GetOrCreateItem("name").SetValue(used_set->name);
+	group.GetOrCreateItem("shortname").SetValue(stdstr_fmt("%08X", BSWAP32(used_set->shortname)));
+
+	const GRFConfig *extra_cfg = used_set->GetExtraConfig();
+	if (extra_cfg != nullptr && extra_cfg->num_params > 0) {
+		group.GetOrCreateItem("extra_version").SetValue(stdstr_fmt("%u", extra_cfg->version));
+		group.GetOrCreateItem("extra_params").SetValue(GRFBuildParamList(extra_cfg));
+	}
+}
+
 /* Save a GRF configuration to the given group name */
 static void GRFSaveConfig(IniFile &ini, const char *grpname, const GRFConfig *list)
 {
@@ -2410,6 +2466,10 @@ void LoadFromConfig(bool startup)
 	if (!startup) ResetCurrencies(false); // Initialize the array of currencies, without preserving the custom one
 
 	IniFileVersion generic_version = LoadVersionFromConfig(generic_ini);
+
+	if (startup) {
+		GraphicsSetLoadConfig(generic_ini);
+	}
 
 	HandleSettingDescs(generic_ini, IniLoadSettings, IniLoadSettingList, startup);
 
@@ -2590,7 +2650,7 @@ void SaveToConfig(SaveToConfigFlags flags)
 	}
 
 	HandleSettingDescs(generic_ini, IniSaveSettings, IniSaveSettingList);
-
+	GraphicsSetSaveConfig(generic_ini);
 	GRFSaveConfig(generic_ini, "newgrf", _grfconfig_newgame);
 	GRFSaveConfig(generic_ini, "newgrf-static", _grfconfig_static);
 	AISaveConfig(generic_ini, "ai_players");

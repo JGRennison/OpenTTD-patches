@@ -111,7 +111,7 @@ public:
 		int CountRuns() const override { return (uint)this->size();  }
 		const VisualRun &GetVisualRun(int run) const override { return this->at(run);  }
 
-		int GetInternalCharLength(WChar c) const override
+		int GetInternalCharLength(char32_t c) const override
 		{
 			/* Uniscribe uses UTF-16 internally which means we need to account for surrogate pairs. */
 			return c >= 0x010000U ? 2 : 1;
@@ -537,7 +537,7 @@ const int *UniscribeParagraphLayout::UniscribeVisualRun::GetGlyphToCharMap() con
 	while (*s != '\0') {
 		size_t idx = s - string_base;
 
-		WChar c = Utf8Consume(&s);
+		char32_t c = Utf8Consume(&s);
 		if (c < 0x10000) {
 			utf16_str.push_back((wchar_t)c);
 		} else {

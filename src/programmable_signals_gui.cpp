@@ -965,7 +965,7 @@ static const NWidgetPart _nested_program_widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _program_desc(
+static WindowDesc _program_desc(__FILE__, __LINE__,
 	WDP_AUTO, "signal_program", 384, 100,
 	WC_SIGNAL_PROGRAM, WC_BUILD_SIGNAL,
 	WDF_CONSTRUCTION,

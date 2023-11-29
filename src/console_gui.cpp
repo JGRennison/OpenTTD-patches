@@ -104,7 +104,7 @@ static const struct NWidgetPart _nested_console_window_widgets[] = {
 	NWidget(WWT_EMPTY, INVALID_COLOUR, WID_C_BACKGROUND), SetResize(1, 1),
 };
 
-static WindowDesc _console_window_desc(
+static WindowDesc _console_window_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_CONSOLE, WC_NONE,
 	0,
@@ -540,7 +540,7 @@ void IConsoleGUIPrint(TextColour colour_code, char *str)
  * all lines in the buffer are aged by one. When a line exceeds both the maximum position
  * and also the maximum age, it gets removed.
  * @return true if any lines were removed
-*/
+ */
 static bool TruncateBuffer()
 {
 	bool need_truncation = false;

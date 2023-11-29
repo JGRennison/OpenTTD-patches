@@ -276,7 +276,7 @@ void Win32FontCache::ClearFontCache()
 	return new_glyph.sprite;
 }
 
-/* virtual */ GlyphID Win32FontCache::MapCharToGlyph(WChar key)
+/* virtual */ GlyphID Win32FontCache::MapCharToGlyph(char32_t key)
 {
 	assert(IsPrintable(key));
 

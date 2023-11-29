@@ -2341,16 +2341,6 @@ const char *GetCurrentLocale(const char *param)
 const char *GetCurrentLocale(const char *param);
 #endif /* !(defined(_WIN32) || defined(__APPLE__)) */
 
-bool StringIDSorter(const StringID &a, const StringID &b)
-{
-	char stra[DRAW_STRING_BUFFER];
-	char strb[DRAW_STRING_BUFFER];
-	char *lasta = GetString(stra, a, lastof(stra));
-	char *lastb = GetString(strb, b, lastof(strb));
-
-	return StrNaturalCompare({ stra, (size_t)(lasta - stra) }, { strb, (size_t)(lastb - strb) }) < 0;
-}
-
 /**
  * Get the language with the given NewGRF language ID.
  * @param newgrflangid NewGRF languages ID to check.

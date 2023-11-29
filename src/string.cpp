@@ -458,12 +458,12 @@ struct CaseInsensitiveCharTraits : public std::char_traits<char> {
 		return 0;
 	}
 
-	static const char *find(const char *s, int n, char a)
+	static const char *find(const char *s, size_t n, char a)
 	{
-		while (n-- > 0 && toupper(*s) != toupper(a)) {
-			++s;
+		for (; n > 0; --n, ++s) {
+			if (toupper(*s) == toupper(a)) return s;
 		}
-		return s;
+		return nullptr;
 	}
 };
 
@@ -957,6 +957,98 @@ int StrNaturalCompare(std::string_view s1, std::string_view s2, bool ignore_garb
 	/* Do a manual natural sort comparison if ICU is missing or if we cannot create a collator. */
 	return _strnatcmpIntl(s1.data(), s2.data());
 }
+
+#ifdef WITH_ICU_I18N
+
+#include <unicode/stsearch.h>
+
+/**
+ * Search if a string is contained in another string using the current locale.
+ *
+ * @param str String to search in.
+ * @param value String to search for.
+ * @param case_insensitive Search case-insensitive.
+ * @return 1 if value was found, 0 if it was not found, or -1 if not supported by the OS.
+ */
+static int ICUStringContains(const std::string_view str, const std::string_view value, bool case_insensitive)
+{
+	if (_current_collator) {
+		std::unique_ptr<icu::RuleBasedCollator> coll(dynamic_cast<icu::RuleBasedCollator *>(_current_collator->clone()));
+		if (coll) {
+			UErrorCode status = U_ZERO_ERROR;
+			coll->setStrength(case_insensitive ? icu::Collator::SECONDARY : icu::Collator::TERTIARY);
+			coll->setAttribute(UCOL_NUMERIC_COLLATION, UCOL_OFF, status);
+
+			auto u_str = icu::UnicodeString::fromUTF8(icu::StringPiece(str.data(), str.size()));
+			auto u_value = icu::UnicodeString::fromUTF8(icu::StringPiece(value.data(), value.size()));
+			icu::StringSearch u_searcher(u_value, u_str, coll.get(), nullptr, status);
+			if (U_SUCCESS(status)) {
+				auto pos = u_searcher.first(status);
+				if (U_SUCCESS(status)) return pos != USEARCH_DONE ? 1 : 0;
+			}
+		}
+	}
+
+	return -1;
+}
+#endif /* WITH_ICU_I18N */
+
+/**
+ * Checks if a string is contained in another string with a locale-aware comparison that is case sensitive.
+ *
+ * @param str The string to search in.
+ * @param value The string to search for.
+ * @return True if a match was found.
+ */
+[[nodiscard]] bool StrNaturalContains(const std::string_view str, const std::string_view value)
+{
+#ifdef WITH_ICU_I18N
+	int res_u = ICUStringContains(str, value, false);
+	if (res_u >= 0) return res_u > 0;
+#endif /* WITH_ICU_I18N */
+
+#if defined(_WIN32) && !defined(STRGEN) && !defined(SETTINGSGEN)
+	int res = Win32StringContains(str, value, false);
+	if (res >= 0) return res > 0;
+#endif
+
+#if defined(WITH_COCOA) && !defined(STRGEN) && !defined(SETTINGSGEN)
+	int res = MacOSStringContains(str, value, false);
+	if (res >= 0) return res > 0;
+#endif
+
+	return str.find(value) != std::string_view::npos;
+}
+
+/**
+ * Checks if a string is contained in another string with a locale-aware comparison that is case insensitive.
+ *
+ * @param str The string to search in.
+ * @param value The string to search for.
+ * @return True if a match was found.
+ */
+[[nodiscard]] bool StrNaturalContainsIgnoreCase(const std::string_view str, const std::string_view value)
+{
+#ifdef WITH_ICU_I18N
+	int res_u = ICUStringContains(str, value, true);
+	if (res_u >= 0) return res_u > 0;
+#endif /* WITH_ICU_I18N */
+
+#if defined(_WIN32) && !defined(STRGEN) && !defined(SETTINGSGEN)
+	int res = Win32StringContains(str, value, true);
+	if (res >= 0) return res > 0;
+#endif
+
+#if defined(WITH_COCOA) && !defined(STRGEN) && !defined(SETTINGSGEN)
+	int res = MacOSStringContains(str, value, true);
+	if (res >= 0) return res > 0;
+#endif
+
+	CaseInsensitiveStringView ci_str{ str.data(), str.size() };
+	CaseInsensitiveStringView ci_value{ value.data(), value.size() };
+	return ci_str.find(ci_value) != CaseInsensitiveStringView::npos;
+}
+
 
 #ifdef WITH_UNISCRIBE
 

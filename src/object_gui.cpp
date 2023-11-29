@@ -85,16 +85,6 @@ class BuildObjectWindow : public Window {
 		return objclass->GetSpec(_selected_object_index)->IsAvailable();
 	}
 
-	/**
-	 * Calculate the number of columns of the #WID_BO_SELECT_MATRIX widget.
-	 * @return Number of columns in the matrix.
-	 */
-	uint GetMatrixColumnCount()
-	{
-		const NWidgetBase *matrix = this->GetWidget<NWidgetBase>(WID_BO_SELECT_MATRIX);
-		return 1 + (matrix->current_x - matrix->smallest_x) / matrix->resize_x;
-	}
-
 public:
 	BuildObjectWindow(WindowDesc *desc, WindowNumber number) : Window(desc), info_height(1), filter_editbox(EDITBOX_MAX_SIZE * MAX_CHAR_LENGTH, EDITBOX_MAX_SIZE)
 	{
@@ -743,7 +733,7 @@ static const NWidgetPart _nested_build_object_widgets[] = {
 			EndContainer(),
 			NWidget(WWT_PANEL, COLOUR_DARK_GREEN), SetScrollbar(WID_BO_SELECT_SCROLL),
 				NWidget(NWID_HORIZONTAL),
-					NWidget(NWID_MATRIX, COLOUR_DARK_GREEN, WID_BO_SELECT_MATRIX), SetFill(0, 1), SetPIP(0, 2, 0),
+					NWidget(NWID_MATRIX, COLOUR_DARK_GREEN, WID_BO_SELECT_MATRIX), SetPIP(0, 2, 0),
 						NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BO_SELECT_IMAGE), SetMinimalSize(66, 60), SetDataTip(0x0, STR_OBJECT_BUILD_TOOLTIP),
 								SetFill(0, 0), SetResize(0, 0), SetScrollbar(WID_BO_SELECT_SCROLL),
 						EndContainer(),
@@ -762,7 +752,7 @@ static const NWidgetPart _nested_build_object_widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _build_object_desc(
+static WindowDesc _build_object_desc(__FILE__, __LINE__,
 	WDP_AUTO, "build_object", 0, 0,
 	WC_BUILD_OBJECT, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,

@@ -866,7 +866,7 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 			/* Convert unix -> dos newlines because the edit box only supports that properly :( */
 			const char *unix_nl = CrashLogWindows::current->crashlog;
 			char *p = dos_nl;
-			WChar c;
+			char32_t c;
 			while ((c = Utf8Consume(&unix_nl)) && p < (dos_nl + dos_nl_length - 1) - 4) { // 4 is max number of bytes per character
 				if (c == '\n') p += Utf8Encode(p, '\r');
 				p += Utf8Encode(p, c);

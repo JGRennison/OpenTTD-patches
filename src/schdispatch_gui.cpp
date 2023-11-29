@@ -1057,7 +1057,7 @@ static const NWidgetPart _nested_schdispatch_widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _schdispatch_desc(
+static WindowDesc _schdispatch_desc(__FILE__, __LINE__,
 	WDP_AUTO, "scheduled_dispatch_slots", 400, 130,
 	WC_SCHDISPATCH_SLOTS, WC_VEHICLE_TIMETABLE,
 	WDF_CONSTRUCTION,
@@ -1264,7 +1264,7 @@ static const NWidgetPart _nested_scheduled_dispatch_add_widgets[] = {
 	EndContainer()
 };
 
-static WindowDesc _scheduled_dispatch_add_desc(
+static WindowDesc _scheduled_dispatch_add_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_SET_DATE, WC_NONE,
 	0,

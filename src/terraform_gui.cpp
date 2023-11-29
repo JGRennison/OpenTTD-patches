@@ -419,7 +419,7 @@ static const NWidgetPart _nested_terraform_widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _terraform_desc(
+static WindowDesc _terraform_desc(__FILE__, __LINE__,
 	WDP_MANUAL, "toolbar_landscape", 0, 0,
 	WC_SCEN_LAND_GEN, WC_NONE,
 	WDF_CONSTRUCTION,
@@ -848,7 +848,7 @@ static Hotkey terraform_editor_hotkeys[] = {
 
 HotkeyList ScenarioEditorLandscapeGenerationWindow::hotkeys("terraform_editor", terraform_editor_hotkeys, TerraformToolbarEditorGlobalHotkeys);
 
-static WindowDesc _scen_edit_land_gen_desc(
+static WindowDesc _scen_edit_land_gen_desc(__FILE__, __LINE__,
 	WDP_AUTO, "toolbar_landscape_scen", 0, 0,
 	WC_SCEN_LAND_GEN, WC_NONE,
 	WDF_CONSTRUCTION,

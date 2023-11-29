@@ -108,7 +108,7 @@ protected:
 	int zoom = 1;    ///< Zoom level. Bigger number means more zoom-out (further away).
 
 	GUITimer refresh; ///< Refresh timer.
-	LinkGraphOverlay *overlay;
+	std::unique_ptr<LinkGraphOverlay> overlay;
 
 	static void BreakIndustryChainLink();
 
@@ -200,7 +200,6 @@ public:
 	friend class NWidgetSmallmapDisplay;
 
 	SmallMapWindow(WindowDesc *desc, int window_number);
-	virtual ~SmallMapWindow();
 
 	static void RebuildColourIndexIfNecessary();
 

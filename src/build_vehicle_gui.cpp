@@ -3263,7 +3263,7 @@ void CcMoveNewVirtualEngine(const CommandCost &result, TileIndex tile, uint32 p1
 	InvalidateWindowClassesData(WC_CREATE_TEMPLATE);
 }
 
-static WindowDesc _build_vehicle_desc(
+static WindowDesc _build_vehicle_desc(__FILE__, __LINE__,
 	WDP_AUTO, "build_vehicle", 240, 268,
 	WC_BUILD_VEHICLE, WC_NONE,
 	WDF_CONSTRUCTION,
@@ -3271,7 +3271,7 @@ static WindowDesc _build_vehicle_desc(
 	&BuildVehicleWindow::hotkeys
 );
 
-static WindowDesc _build_template_vehicle_desc(
+static WindowDesc _build_template_vehicle_desc(__FILE__, __LINE__,
 	WDP_AUTO, nullptr, 240, 268,
 	WC_BUILD_VIRTUAL_TRAIN, WC_CREATE_TEMPLATE,
 	WDF_CONSTRUCTION,
@@ -3279,7 +3279,7 @@ static WindowDesc _build_template_vehicle_desc(
 	&BuildVehicleWindow::hotkeys, &_build_vehicle_desc
 );
 
-static WindowDesc _build_vehicle_desc_train_advanced(
+static WindowDesc _build_vehicle_desc_train_advanced(__FILE__, __LINE__,
 	WDP_AUTO, "build_vehicle_dual", 480, 268,
 	WC_BUILD_VEHICLE, WC_NONE,
 	WDF_CONSTRUCTION,
@@ -3287,7 +3287,7 @@ static WindowDesc _build_vehicle_desc_train_advanced(
 	&BuildVehicleWindow::hotkeys
 );
 
-static WindowDesc _build_template_vehicle_desc_advanced(
+static WindowDesc _build_template_vehicle_desc_advanced(__FILE__, __LINE__,
 	WDP_AUTO, nullptr, 480, 268,
 	WC_BUILD_VIRTUAL_TRAIN, WC_CREATE_TEMPLATE,
 	WDF_CONSTRUCTION,

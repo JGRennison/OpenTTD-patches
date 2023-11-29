@@ -389,6 +389,10 @@ CommandCost CmdSetVehicleOnTime(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle() || v->orders == nullptr) return CMD_ERROR;
 
+	/* A vehicle can't be late if its timetable hasn't started.
+	 * If we're setting all vehicles in the group, we handle that below. */
+	if (!apply_to_group && !HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) return CommandCost(STR_ERROR_TIMETABLE_NOT_STARTED);
+
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
@@ -396,12 +400,18 @@ CommandCost CmdSetVehicleOnTime(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 		if (apply_to_group) {
 			int32 most_late = 0;
 			for (Vehicle *u = v->FirstShared(); u != nullptr; u = u->NextShared()) {
+				/* A vehicle can't be late if its timetable hasn't started. */
+				if (!HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) continue;
+
 				if (u->lateness_counter > most_late) {
 					most_late = u->lateness_counter;
 				}
 			}
 			if (most_late > 0) {
 				for (Vehicle *u = v->FirstShared(); u != nullptr; u = u->NextShared()) {
+					/* A vehicle can't be late if its timetable hasn't started. */
+					if (!HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) continue;
+
 					u->lateness_counter -= most_late;
 					SetWindowDirty(WC_VEHICLE_TIMETABLE, u->index);
 				}

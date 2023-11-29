@@ -95,7 +95,7 @@ static const NWidgetPart _widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _template_create_window_desc(
+static WindowDesc _template_create_window_desc(__FILE__, __LINE__,
 	WDP_AUTO,                       // window position
 	"template create window",       // const char* ini_key
 	456, 100,                       // window size

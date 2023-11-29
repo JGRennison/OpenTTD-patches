@@ -65,7 +65,7 @@ static std::chrono::steady_clock::time_point _chatmessage_dirty_time;
  * the left and pixels from the bottom. The height is the maximum height.
  */
 static PointDimension _chatmsg_box;
-static uint8 *_chatmessage_backup = nullptr; ///< Backup in case text is moved.
+static ReusableBuffer<uint8_t> _chatmessage_backup; ///< Backup in case text is moved.
 
 /**
  * Test if there are any chat messages to display.
@@ -112,7 +112,6 @@ void NetworkReInitChatBoxSize()
 {
 	_chatmsg_box.y       = 3 * FONT_HEIGHT_NORMAL;
 	_chatmsg_box.height  = MAX_CHAT_MESSAGES * (FONT_HEIGHT_NORMAL + ScaleGUITrad(NETWORK_CHAT_LINE_SPACING)) + ScaleGUITrad(4);
-	_chatmessage_backup  = ReallocT(_chatmessage_backup, static_cast<size_t>(_chatmsg_box.width) * _chatmsg_box.height * BlitterFactory::GetCurrentBlitter()->GetBytesPerPixel());
 }
 
 /** Initialize all buffers of the chat visualisation. */
@@ -165,7 +164,7 @@ void NetworkUndrawChatMessage()
 
 		_chatmessage_visible = false;
 		/* Put our 'shot' back to the screen */
-		blitter->CopyFromBuffer(blitter->MoveTo(_screen.dst_ptr, x, y), _chatmessage_backup, width, height);
+		blitter->CopyFromBuffer(blitter->MoveTo(_screen.dst_ptr, x, y), _chatmessage_backup.GetBuffer(), width, height);
 		/* And make sure it is updated next time */
 		VideoDriver::GetInstance()->MakeDirty(x, y, width, height);
 
@@ -218,10 +217,9 @@ void NetworkDrawChatMessage()
 	}
 	if (width <= 0 || height <= 0) return;
 
-	assert(blitter->BufferSize(width, height) <= static_cast<size_t>(_chatmsg_box.width) * _chatmsg_box.height * blitter->GetBytesPerPixel());
-
 	/* Make a copy of the screen as it is before painting (for undraw) */
-	blitter->CopyToBuffer(blitter->MoveTo(_screen.dst_ptr, x, y), _chatmessage_backup, width, height);
+	uint8_t *buffer = _chatmessage_backup.Allocate(BlitterFactory::GetCurrentBlitter()->BufferSize(width, height));
+	blitter->CopyToBuffer(blitter->MoveTo(_screen.dst_ptr, x, y), buffer, width, height);
 
 	_cur_dpi = &_screen; // switch to _screen painting
 
@@ -520,7 +518,7 @@ static const NWidgetPart _nested_chat_window_widgets[] = {
 };
 
 /** The description of the chat window. */
-static WindowDesc _chat_window_desc(
+static WindowDesc _chat_window_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_SEND_NETWORK_MSG, WC_NONE,
 	WDF_NETWORK,

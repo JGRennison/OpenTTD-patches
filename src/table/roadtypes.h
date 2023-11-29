@@ -88,7 +88,7 @@ static const RoadTypeInfo _original_roadtypes[] = {
 		0x01,
 
 		/* introduction date */
-		MIN_YEAR,
+		MIN_DATE,
 
 		/* roadtypes required for this to be introduced */
 		ROADTYPES_NONE,

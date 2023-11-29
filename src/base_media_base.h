@@ -96,6 +96,7 @@ struct BaseSet {
 	}
 
 	bool FillSetDetails(const IniFile &ini, const std::string &path, const std::string &full_filename, bool allow_empty_filename = true);
+	void CopyCompatibleConfig([[maybe_unused]] const T &src) {}
 
 	/**
 	 * Get the description for the given ISO code.
@@ -170,9 +171,6 @@ protected:
 	 */
 	static const char *GetExtension();
 public:
-	/** The set as saved in the config file. */
-	static std::string ini_set;
-
 	/**
 	 * Determine the graphics pack that has to be used.
 	 * The one with the most correct files wins.
@@ -191,7 +189,9 @@ public:
 
 	static Tbase_set *GetAvailableSets();
 
-	static bool SetSet(const std::string &name);
+	static bool SetSet(const Tbase_set *set);
+	static bool SetSetByName(const std::string &name);
+	static bool SetSetByShortname(uint32_t shortname);
 	static char *GetSetsList(char *p, const char *last);
 	static int GetNumSets();
 	static int GetIndexOfUsedSet();
@@ -207,7 +207,6 @@ public:
 	static bool HasSet(const ContentInfo *ci, bool md5sum);
 };
 
-template <class Tbase_set> /* static */ std::string BaseMedia<Tbase_set>::ini_set;
 template <class Tbase_set> /* static */ const Tbase_set *BaseMedia<Tbase_set>::used_set;
 template <class Tbase_set> /* static */ Tbase_set *BaseMedia<Tbase_set>::available_sets;
 template <class Tbase_set> /* static */ Tbase_set *BaseMedia<Tbase_set>::duplicate_sets;
@@ -239,12 +238,24 @@ enum BlitterType {
 	BLT_32BPP,      ///< Base set has both 8 bpp and 32 bpp sprites.
 };
 
+struct GRFConfig;
+
 /** All data of a graphics set. */
 struct GraphicsSet : BaseSet<GraphicsSet, MAX_GFT, true> {
+private:
+	mutable std::unique_ptr<GRFConfig> extra_cfg; ///< Parameters for extra GRF
+public:
 	PaletteType palette;       ///< Palette of this graphics set
 	BlitterType blitter;       ///< Blitter of this graphics set
 
+	GraphicsSet();
+	~GraphicsSet();
+
 	bool FillSetDetails(const IniFile &ini, const std::string &path, const std::string &full_filename);
+	GRFConfig *GetExtraConfig() const { return this->extra_cfg.get(); }
+	GRFConfig &GetOrCreateExtraConfig() const;
+	bool IsConfigurable() const;
+	void CopyCompatibleConfig(const GraphicsSet &src);
 
 	static MD5File::ChecksumResult CheckMD5(const MD5File *file, Subdirectory subdir);
 };
@@ -252,6 +263,15 @@ struct GraphicsSet : BaseSet<GraphicsSet, MAX_GFT, true> {
 /** All data/functions related with replacing the base graphics. */
 class BaseGraphics : public BaseMedia<GraphicsSet> {
 public:
+	/** Values loaded from config file. */
+	struct Ini {
+		std::string name;
+		uint32_t shortname;                 ///< unique key for base set
+		uint32_t extra_version;             ///< version of the extra GRF
+		std::vector<uint32_t> extra_params; ///< parameters for the extra GRF
+	};
+	static inline Ini ini_data;
+
 };
 
 /** All data of a sounds set. */
@@ -261,6 +281,9 @@ struct SoundsSet : BaseSet<SoundsSet, 1, true> {
 /** All data/functions related with replacing the base sounds */
 class BaseSounds : public BaseMedia<SoundsSet> {
 public:
+	/** The set as saved in the config file. */
+	static inline std::string ini_set;
+
 };
 
 /** Maximum number of songs in the 'class' playlists. */
@@ -307,6 +330,9 @@ struct MusicSet : BaseSet<MusicSet, NUM_SONGS_AVAILABLE, false> {
 /** All data/functions related with replacing the base music */
 class BaseMusic : public BaseMedia<MusicSet> {
 public:
+	/** The set as saved in the config file. */
+	static inline std::string ini_set;
+
 };
 
 #endif /* BASE_MEDIA_BASE_H */

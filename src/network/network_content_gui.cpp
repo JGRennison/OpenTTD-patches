@@ -93,7 +93,7 @@ static const NWidgetPart _nested_network_content_download_status_window_widgets[
 };
 
 /** Window description for the download window */
-static WindowDesc _network_content_download_status_window_desc(
+static WindowDesc _network_content_download_status_window_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_NETWORK_STATUS_WINDOW, WC_NONE,
 	WDF_MODAL,
@@ -1068,7 +1068,7 @@ static const NWidgetPart _nested_network_content_list_widgets[] = {
 					NWidget(NWID_VSCROLLBAR, COLOUR_LIGHT_BLUE, WID_NCL_SCROLLBAR),
 				EndContainer(),
 				NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(0, 8, 0),
-					NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NCL_SEL_ALL_UPDATE), SetResize(1, 0), SetFill(1, 0),
+					NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NCL_SEL_ALL_UPDATE),
 						NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NCL_SELECT_UPDATE), SetResize(1, 0), SetFill(1, 0),
 												SetDataTip(STR_CONTENT_SELECT_UPDATES_CAPTION, STR_CONTENT_SELECT_UPDATES_CAPTION_TOOLTIP),
 						NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NCL_SELECT_ALL), SetResize(1, 0), SetFill(1, 0),
@@ -1113,7 +1113,7 @@ static const NWidgetPart _nested_network_content_list_widgets[] = {
 };
 
 /** Window description of the content list */
-static WindowDesc _network_content_list_desc(
+static WindowDesc _network_content_list_desc(__FILE__, __LINE__,
 	WDP_CENTER, "list_content", 630, 460,
 	WC_NETWORK_WINDOW, WC_NONE,
 	0,

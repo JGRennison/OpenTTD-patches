@@ -85,6 +85,8 @@ static const Year ORIGINAL_MAX_YEAR  = 2090;
  */
 #define DAYS_TILL_ORIGINAL_BASE_YEAR DAYS_TILL(ORIGINAL_BASE_YEAR)
 
+static const Date MIN_DATE = 0;
+
 /** The absolute minimum & maximum years in OTTD */
 static const Year MIN_YEAR = 0;
 

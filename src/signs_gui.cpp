@@ -378,15 +378,13 @@ static const NWidgetPart _nested_sign_list_widgets[] = {
 			EndContainer(),
 		EndContainer(),
 		NWidget(NWID_VERTICAL),
-			NWidget(NWID_VERTICAL), SetFill(0, 1),
-				NWidget(NWID_VSCROLLBAR, COLOUR_BROWN, WID_SIL_SCROLLBAR),
-			EndContainer(),
+			NWidget(NWID_VSCROLLBAR, COLOUR_BROWN, WID_SIL_SCROLLBAR),
 			NWidget(WWT_RESIZEBOX, COLOUR_BROWN),
 		EndContainer(),
 	EndContainer(),
 };
 
-static WindowDesc _sign_list_desc(
+static WindowDesc _sign_list_desc(__FILE__, __LINE__,
 	WDP_AUTO, "list_signs", 358, 138,
 	WC_SIGN_LIST, WC_NONE,
 	0,
@@ -552,7 +550,7 @@ static const NWidgetPart _nested_query_sign_edit_widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _query_sign_edit_desc(
+static WindowDesc _query_sign_edit_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_QUERY_STRING, WC_NONE,
 	WDF_CONSTRUCTION,

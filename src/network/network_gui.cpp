@@ -133,7 +133,7 @@ public:
 		this->smallest_x = this->head->smallest_x + this->tail->smallest_x; // First and last are always shown, rest not
 	}
 
-	void AssignSizePosition(SizingType sizing, uint x, uint y, uint given_width, uint given_height, bool rtl) override
+	void AssignSizePosition(SizingType sizing, int x, int y, uint given_width, uint given_height, bool rtl) override
 	{
 		assert(given_width >= this->smallest_x && given_height >= this->smallest_y);
 
@@ -962,7 +962,7 @@ static const NWidgetPart _nested_network_game_widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _network_game_window_desc(
+static WindowDesc _network_game_window_desc(__FILE__, __LINE__,
 	WDP_CENTER, "list_servers", 1000, 730,
 	WC_NETWORK_WINDOW, WC_NONE,
 	WDF_NETWORK,
@@ -1229,7 +1229,7 @@ static const NWidgetPart _nested_network_start_server_window_widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _network_start_server_window_desc(
+static WindowDesc _network_start_server_window_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_NETWORK_WINDOW, WC_NONE,
 	WDF_NETWORK,
@@ -1308,7 +1308,7 @@ static const NWidgetPart _nested_client_list_widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _client_list_desc(
+static WindowDesc _client_list_desc(__FILE__, __LINE__,
 	WDP_AUTO, "list_clients", 220, 300,
 	WC_CLIENT_LIST, WC_NONE,
 	WDF_NETWORK,
@@ -2218,7 +2218,7 @@ static const NWidgetPart _nested_network_join_status_window_widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _network_join_status_window_desc(
+static WindowDesc _network_join_status_window_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_NETWORK_STATUS_WINDOW, WC_NONE,
 	WDF_MODAL | WDF_NETWORK,
@@ -2340,7 +2340,7 @@ static const NWidgetPart _nested_network_company_password_window_widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _network_company_password_window_desc(
+static WindowDesc _network_company_password_window_desc(__FILE__, __LINE__,
 	WDP_AUTO, nullptr, 0, 0,
 	WC_COMPANY_PASSWORD_WINDOW, WC_NONE,
 	WDF_NETWORK,
@@ -2449,7 +2449,7 @@ static const NWidgetPart _nested_network_ask_relay_widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _network_ask_relay_desc(
+static WindowDesc _network_ask_relay_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_NETWORK_ASK_RELAY, WC_NONE,
 	WDF_MODAL | WDF_NETWORK,
@@ -2547,7 +2547,7 @@ static const NWidgetPart _nested_network_ask_survey_widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _network_ask_survey_desc(
+static WindowDesc _network_ask_survey_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_NETWORK_ASK_SURVEY, WC_NONE,
 	WDF_MODAL,

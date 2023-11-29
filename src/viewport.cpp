@@ -1888,8 +1888,8 @@ static void ViewportAddKdtreeSigns(ViewportDrawerDynamic *vdd, DrawPixelInfo *dp
 				const Sign *si = Sign::Get(item.id.sign);
 
 				/* Don't draw if sign is owned by another company and competitor signs should be hidden.
-				* Note: It is intentional that also signs owned by OWNER_NONE are hidden. Bankrupt
-				* companies can leave OWNER_NONE signs after them. */
+				 * Note: It is intentional that also signs owned by OWNER_NONE are hidden. Bankrupt
+				 * companies can leave OWNER_NONE signs after them. */
 				if (!show_competitors && si->IsCompetitorOwned()) break;
 
 				signs.push_back(si);
