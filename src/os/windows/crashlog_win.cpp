@@ -401,6 +401,8 @@ static const uint MAX_FRAMES     = 64;
 		sym_info->SizeOfStruct = sizeof(IMAGEHLP_SYMBOL64);
 		sym_info->MaxNameLength = MAX_SYMBOL_LEN;
 
+		std::array<DWORD64, 8> last_offsets = {};
+
 		/* Walk stack at most MAX_FRAMES deep in case the stack is corrupt. */
 		for (uint num = 0; num < MAX_FRAMES; num++) {
 			auto guard = scope_guard([&]() {
@@ -414,10 +416,12 @@ static const uint MAX_FRAMES     = 64;
 #endif
 				hCur, GetCurrentThread(), &frame, &ctx, nullptr, proc.pSymFunctionTableAccess64, proc.pSymGetModuleBase64, nullptr)) break;
 
-			if (frame.AddrPC.Offset == frame.AddrReturn.Offset) {
+			if (std::find_if(last_offsets.begin(), last_offsets.end(), [&](DWORD64 offset) { return offset != frame.AddrPC.Offset; }) == last_offsets.end()) {
 				buffer += seprintf(buffer, last, " <infinite loop>\n");
 				break;
 			}
+
+			last_offsets[num % last_offsets.size()] = frame.AddrPC.Offset;
 
 			/* Get module name. */
 			const char *mod_name = "???";
