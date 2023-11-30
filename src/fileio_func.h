@@ -35,6 +35,7 @@ bool ExtractTar(const std::string &tar_filename, Subdirectory subdir);
 
 extern std::string _personal_dir; ///< custom directory for personal settings, saves, newgrf, etc.
 extern std::vector<Searchpath> _valid_searchpaths;
+extern std::vector<Searchpath> _valid_searchpaths_excluding_cwd;
 
 /** Helper for scanning for files with a given name */
 class FileScanner {

@@ -64,6 +64,7 @@ static_assert(lengthof(_subdirs) == NUM_SUBDIRS);
  */
 std::array<std::string, NUM_SEARCHPATHS> _searchpaths;
 std::vector<Searchpath> _valid_searchpaths;
+std::vector<Searchpath> _valid_searchpaths_excluding_cwd;
 std::array<TarList, NUM_SUBDIRS> _tar_list;
 TarFileList _tar_filelist[NUM_SUBDIRS];
 
@@ -85,11 +86,11 @@ static bool IsValidSearchPath(Searchpath sp)
 static void FillValidSearchPaths(bool only_local_path)
 {
 	_valid_searchpaths.clear();
+	_valid_searchpaths_excluding_cwd.clear();
 
 	btree::btree_set<std::string_view> seen{};
+	btree::btree_set<std::string_view> seen_excluding_cwd{};
 	for (Searchpath sp = SP_FIRST_DIR; sp < NUM_SEARCHPATHS; sp++) {
-		if (sp == SP_WORKING_DIR) continue;
-
 		if (only_local_path) {
 			switch (sp) {
 				case SP_WORKING_DIR:      // Can be influence by "-c" option.
@@ -103,17 +104,15 @@ static void FillValidSearchPaths(bool only_local_path)
 		}
 
 		if (IsValidSearchPath(sp)) {
-			if (seen.count(_searchpaths[sp]) != 0) continue;
-			seen.insert(_searchpaths[sp]);
-			_valid_searchpaths.emplace_back(sp);
+			if (seen.count(_searchpaths[sp]) == 0) {
+				seen.insert(_searchpaths[sp]);
+				_valid_searchpaths.emplace_back(sp);
+			}
+			if (sp != SP_WORKING_DIR && seen_excluding_cwd.count(_searchpaths[sp]) == 0) {
+				seen_excluding_cwd.insert(_searchpaths[sp]);
+				_valid_searchpaths_excluding_cwd.emplace_back(sp);
+			}
 		}
-	}
-
-	/* The working-directory is special, as it is controlled by _do_scan_working_directory.
-	 * Only add the search path if it isn't already in the set. To preserve the same order
-	 * as the enum, insert it in the front. */
-	if (IsValidSearchPath(SP_WORKING_DIR) && seen.count(_searchpaths[SP_WORKING_DIR]) == 0) {
-		_valid_searchpaths.insert(_valid_searchpaths.begin(), SP_WORKING_DIR);
 	}
 }
 
@@ -1014,8 +1013,8 @@ void DeterminePaths(const char *exe, bool only_local_path)
 	AppendPathSeparator(config_home);
 #endif
 
-	for (Searchpath sp : _valid_searchpaths) {
-		if (sp == SP_WORKING_DIR && !_do_scan_working_directory) continue;
+	const std::vector<Searchpath> &vsp = _do_scan_working_directory ? _valid_searchpaths : _valid_searchpaths_excluding_cwd;
+	for (Searchpath sp : vsp) {
 		DEBUG(misc, 3, "%s added as search path", _searchpaths[sp].c_str());
 	}
 
@@ -1246,10 +1245,8 @@ uint FileScanner::Scan(const char *extension, Subdirectory sd, bool tars, bool r
 
 	uint num = 0;
 
-	for (Searchpath sp : _valid_searchpaths) {
-		/* Don't search in the working directory */
-		if (sp == SP_WORKING_DIR && !_do_scan_working_directory) continue;
-
+	const std::vector<Searchpath> &vsp = _do_scan_working_directory ? _valid_searchpaths : _valid_searchpaths_excluding_cwd;
+	for (Searchpath sp : vsp) {
 		std::string path = FioGetDirectory(sp, sd);
 		num += ScanPath(this, extension, path.c_str(), path.size(), recursive);
 	}
