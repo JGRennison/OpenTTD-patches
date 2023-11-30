@@ -717,7 +717,7 @@ static void IniLoadSettings(IniFile &ini, const SettingTable &settings_table, co
 					if (group = ini.GetGroup(s.substr(0, sc)); group != nullptr) item = group->GetItem(s.substr(sc + 1));
 				}
 			}
-			if (item == nullptr && sd->guiproc != nullptr) {
+			if (group != nullptr && item == nullptr && sd->guiproc != nullptr) {
 				SettingOnGuiCtrlData data;
 				data.type = SOGCT_CFG_FALLBACK_NAME;
 				if (sd->guiproc(data)) {
