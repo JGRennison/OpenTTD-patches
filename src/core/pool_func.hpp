@@ -35,9 +35,9 @@ DEFINE_POOL_METHOD(inline)::Pool(const char *name) :
 		first_free(0),
 		first_unused(0),
 		items(0),
-#ifdef WITH_FULL_dbg_assertS
+#ifdef WITH_FULL_ASSERTS
 		checked(0),
-#endif /* WITH_FULL_dbg_assertS */
+#endif /* WITH_FULL_ASSERTS */
 		cleaning(false),
 		data(nullptr),
 		free_bitmap(nullptr),
@@ -145,10 +145,10 @@ DEFINE_POOL_METHOD(void *)::GetNew(size_t size)
 {
 	size_t index = this->FindFirstFree();
 
-#ifdef WITH_FULL_dbg_assertS
+#ifdef WITH_FULL_ASSERTS
 	dbg_assert(this->checked != 0);
 	this->checked--;
-#endif /* WITH_FULL_dbg_assertS */
+#endif /* WITH_FULL_ASSERTS */
 	if (index == NO_FREE_ITEM) {
 		error("%s: no more free items", this->name);
 	}
