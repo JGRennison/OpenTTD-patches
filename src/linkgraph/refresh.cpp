@@ -58,7 +58,7 @@
 			uint8 flags = 0;
 			if (iter_cargo_mask & have_cargo_mask) flags |= 1 << HAS_CARGO;
 			if (v->type == VEH_AIRCRAFT) flags |= 1 << AIRCRAFT;
-			refresher.RefreshLinks(first, first, flags);
+			refresher.RefreshLinks(first, first, { 0, TTT_NO_WAIT_TIME }, flags);
 		}
 
 		cargo_mask &= ~iter_cargo_mask;
@@ -162,15 +162,73 @@ void LinkRefresher::ResetRefit()
 }
 
 /**
+ * Update the linear timetable travel time with the times between two orders.
+ * The caller is responsible for ensuring that these orders are in a linear sequence.
+ * @param from Start order.
+ * @param to End order.
+ * @param travel Travel time so far.
+ * @return Updated travel time.
+ */
+LinkRefresher::TimetableTravelTime LinkRefresher::UpdateTimetableTravelSoFar(const Order *from, const Order *to, LinkRefresher::TimetableTravelTime travel)
+{
+	if (from == to || from == nullptr || to == nullptr || (travel.flags & TTT_INVALID) != 0) return travel;
+
+	do {
+		if (from->IsType(OT_CONDITIONAL)) {
+			if (from->GetConditionVariable() == OCV_UNCONDITIONALLY) {
+				/* Taken branch travel time */
+				travel.time_so_far += from->GetWaitTime();
+				from = this->vehicle->orders->GetOrderAt(from->GetConditionSkipToOrder());
+				travel.flags |= TTT_NO_TRAVEL_TIME;
+			} else if ((travel.flags & TTT_ALLOW_CONDITION) == 0) {
+				/* Unexpected conditional branch, give up */
+				travel.flags |= TTT_INVALID;
+				return travel;
+			} else {
+				/* Non-taken branch, ignore travel time field */
+				from = this->vehicle->orders->GetNext(from);
+				travel.flags &= ~TTT_NO_TRAVEL_TIME;
+			}
+		} else {
+			if ((travel.flags & TTT_NO_WAIT_TIME) == 0) {
+				if (from->IsScheduledDispatchOrder(true)) {
+					travel.flags |= TTT_INVALID;
+					return travel;
+				}
+				travel.time_so_far += from->GetWaitTime();
+			}
+			from = this->vehicle->orders->GetNext(from);
+			travel.flags &= ~TTT_NO_TRAVEL_TIME;
+		}
+
+		travel.flags &= ~TTT_NO_WAIT_TIME;
+		travel.flags &= ~TTT_ALLOW_CONDITION;
+
+		if (!from->IsType(OT_CONDITIONAL) && (travel.flags & TTT_NO_TRAVEL_TIME) == 0) {
+			if (from->GetTravelTime() == 0 && !from->IsTravelTimetabled() && !from->IsType(OT_IMPLICIT)) {
+				travel.flags |= TTT_INVALID;
+				return travel;
+			}
+			travel.time_so_far += from->GetTravelTime();
+		}
+
+		travel.flags &= ~TTT_NO_TRAVEL_TIME;
+	} while (from != to);
+
+	return travel;
+}
+
+/**
  * Predict the next order the vehicle will execute and resolve conditionals by
  * recursion and return next non-conditional order in list.
  * @param cur Current order being evaluated.
  * @param next Next order to be evaluated.
+ * @param travel Travel time so far.
  * @param flags RefreshFlags to give hints about the previous link and state carried over from that.
  * @param num_hops Number of hops already taken by recursive calls to this method.
- * @return new next Order.
+ * @return new next Order, and travel time so far.
  */
-const Order *LinkRefresher::PredictNextOrder(const Order *cur, const Order *next, uint8 flags, uint num_hops)
+std::pair<const Order *, LinkRefresher::TimetableTravelTime> LinkRefresher::PredictNextOrder(const Order *cur, const Order *next, LinkRefresher::TimetableTravelTime travel, uint8 flags, uint num_hops)
 {
 	/* next is good if it's either nullptr (then the caller will stop the
 	 * evaluation) or if it's not conditional and the caller allows it to be
@@ -184,16 +242,18 @@ const Order *LinkRefresher::PredictNextOrder(const Order *cur, const Order *next
 
 		if (next->IsType(OT_CONDITIONAL)) {
 			if (next->GetConditionVariable() == OCV_UNCONDITIONALLY) {
+				const Order *current = next;
 				CargoTypes this_cargo_mask = this->cargo_mask;
 				next = this->vehicle->orders->GetNextDecisionNode(
 						this->vehicle->orders->GetOrderAt(next->GetConditionSkipToOrder()),
 						num_hops++, this_cargo_mask);
 				assert(this_cargo_mask == this->cargo_mask);
+				travel = this->UpdateTimetableTravelSoFar(current, next, travel);
 				continue;
 			}
 			CargoTypes this_cargo_mask = this->cargo_mask;
-			const Order *skip_to = this->vehicle->orders->GetNextDecisionNode(
-					this->vehicle->orders->GetOrderAt(next->GetConditionSkipToOrder()), num_hops, this_cargo_mask);
+			const Order *target = this->vehicle->orders->GetOrderAt(next->GetConditionSkipToOrder());
+			const Order *skip_to = this->vehicle->orders->GetNextDecisionNode(target, num_hops, this_cargo_mask);
 			assert(this_cargo_mask == this->cargo_mask);
 			if (skip_to != nullptr && num_hops < std::min<uint>(64, this->vehicle->orders->GetNumOrders()) && skip_to != next) {
 				/* Make copies of capacity tracking lists. There is potential
@@ -206,28 +266,39 @@ const Order *LinkRefresher::PredictNextOrder(const Order *cur, const Order *next
 				auto iter = this->seen_hops->lower_bound(hop);
 				if (iter == this->seen_hops->end() || *iter != hop) {
 					this->seen_hops->insert(iter, hop);
+					TimetableTravelTime branch_travel = travel;
+					branch_travel.time_so_far += next->GetWaitTime();
+					branch_travel.flags |= TTT_NO_TRAVEL_TIME;
 					LinkRefresher branch(*this);
-					branch.RefreshLinks(cur, skip_to, flags, num_hops + 1);
+					branch.RefreshLinks(cur, skip_to, this->UpdateTimetableTravelSoFar(target, skip_to, branch_travel), flags, num_hops + 1);
 				}
 			}
+
+			travel.time_so_far += next->GetWaitTime();
 		}
 
 		/* Reassign next with the following stop. This can be a station or a
 		 * depot.*/
 		CargoTypes this_cargo_mask = this->cargo_mask;
+		const Order *current = next;
 		next = this->vehicle->orders->GetNextDecisionNode(
 				this->vehicle->orders->GetNext(next), num_hops++, this_cargo_mask);
 		assert(this_cargo_mask == this->cargo_mask);
+
+		travel.flags |= TTT_ALLOW_CONDITION;
+		travel = this->UpdateTimetableTravelSoFar(current, next, travel);
 	}
-	return next;
+	return std::make_pair(next, travel);
 }
 
 /**
  * Refresh link stats for the given pair of orders.
  * @param cur Last stop where the consist could interact with cargo.
  * @param next Next order to be processed.
+ * @param travel_estimate Estimated travel time, only valid if non-zero.
+ * @param flags RefreshFlags to give hints about the previous link and state carried over from that.
  */
-void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint8 flags)
+void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint32 travel_estimate, uint8 flags)
 {
 	StationID next_station = next->GetDestination();
 	Station *st = Station::GetIfValid(cur->GetDestination());
@@ -256,6 +327,13 @@ void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint8 flag
 			 * to travel between the stations at half the max speed of the consist.
 			 * The result is in tiles/tick (= 2048 km-ish/h). */
 			uint32 time_estimate = DistanceManhattan(st->xy, st_to->xy) * 4096U / this->vehicle->GetDisplayMaxSpeed();
+
+			if (travel_estimate > 0) {
+				/* If a timetable-based time is available, use that, clamping it to be in the range (estimate / 3, estimate * 2)
+				 * of the distance/speed based estimate.
+				 * This is effectively clamping it to be within the estimated speed range: (max_speed / 4, max_speed * 1.5). */
+				time_estimate = Clamp<uint32>(travel_estimate, time_estimate / 3, time_estimate * 2);
+			}
 
 			if (HasBit(flags, AIRCRAFT)) restricted_mode |= EUM_AIRCRAFT;
 
@@ -293,10 +371,11 @@ void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint8 flag
  * OT_IMPLICIT orders in between.
  * @param cur Current order being evaluated.
  * @param next Next order to be checked.
+ * @param travel Travel time so far.
  * @param flags RefreshFlags to give hints about the previous link and state carried over from that.
  * @param num_hops Number of hops already taken by recursive calls to this method.
  */
-void LinkRefresher::RefreshLinks(const Order *cur, const Order *next, uint8 flags, uint num_hops)
+void LinkRefresher::RefreshLinks(const Order *cur, const Order *next, TimetableTravelTime travel, uint8 flags, uint num_hops)
 {
 	while (next != nullptr) {
 
@@ -309,7 +388,7 @@ void LinkRefresher::RefreshLinks(const Order *cur, const Order *next, uint8 flag
 				LinkRefresher backup(*this);
 				for (CargoID c = 0; c != NUM_CARGO; ++c) {
 					if (CargoSpec::Get(c)->IsValid() && this->HandleRefit(c)) {
-						this->RefreshLinks(cur, next, flags, num_hops);
+						this->RefreshLinks(cur, next, travel, flags, num_hops);
 						*this = backup;
 					}
 				}
@@ -325,7 +404,7 @@ void LinkRefresher::RefreshLinks(const Order *cur, const Order *next, uint8 flag
 			ClrBit(flags, RESET_REFIT);
 		}
 
-		next = this->PredictNextOrder(cur, next, flags, num_hops);
+		std::tie(next, travel) = this->PredictNextOrder(cur, next, travel, flags, num_hops);
 		if (next == nullptr) break;
 		Hop hop(cur->index, next->index, this->cargo);
 		auto iter = this->seen_hops->lower_bound(hop);
@@ -350,7 +429,7 @@ void LinkRefresher::RefreshLinks(const Order *cur, const Order *next, uint8 flag
 		if (cur->IsType(OT_GOTO_STATION) || cur->IsType(OT_IMPLICIT)) {
 			if (cur->CanLeaveWithCargo(HasBit(flags, HAS_CARGO), FindFirstBit(this->cargo_mask))) {
 				SetBit(flags, HAS_CARGO);
-				this->RefreshStats(cur, next, flags);
+				this->RefreshStats(cur, next, ((travel.flags & TTT_INVALID) == 0 && travel.time_so_far > 0) ? (uint32)travel.time_so_far : 0, flags);
 			} else {
 				ClrBit(flags, HAS_CARGO);
 			}
@@ -359,5 +438,6 @@ void LinkRefresher::RefreshLinks(const Order *cur, const Order *next, uint8 flag
 		/* "cur" is only assigned here if the stop is a station so that
 		 * whenever stats are to be increased two stations can be found. */
 		cur = next;
+		travel = { 0, TTT_NO_WAIT_TIME };
 	}
 }

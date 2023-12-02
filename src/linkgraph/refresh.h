@@ -81,6 +81,19 @@ protected:
 		bool operator!=(const Hop &other) const { return !(*this == other); }
 	};
 
+	/** For TimetableTravelTime::flags */
+	enum : uint {
+		TTT_NO_WAIT_TIME       = 1 << 0,
+		TTT_NO_TRAVEL_TIME     = 1 << 1,
+		TTT_ALLOW_CONDITION    = 1 << 2,
+		TTT_INVALID            = 1 << 3,
+	};
+
+	struct TimetableTravelTime {
+		int time_so_far = 0;
+		uint flags = 0;
+	};
+
 	typedef std::vector<RefitDesc> RefitList;
 	typedef btree::btree_set<Hop> HopSet;
 
@@ -97,10 +110,11 @@ protected:
 
 	bool HandleRefit(CargoID refit_cargo);
 	void ResetRefit();
-	void RefreshStats(const Order *cur, const Order *next, uint8 flags);
-	const Order *PredictNextOrder(const Order *cur, const Order *next, uint8 flags, uint num_hops = 0);
+	void RefreshStats(const Order *cur, const Order *next,uint32 travel_estimate, uint8 flags);
+	TimetableTravelTime UpdateTimetableTravelSoFar(const Order *from, const Order *to, TimetableTravelTime travel);
+	std::pair<const Order *, TimetableTravelTime> PredictNextOrder(const Order *cur, const Order *next, TimetableTravelTime travel, uint8 flags, uint num_hops = 0);
 
-	void RefreshLinks(const Order *cur, const Order *next, uint8 flags, uint num_hops = 0);
+	void RefreshLinks(const Order *cur, const Order *next, TimetableTravelTime travel, uint8 flags, uint num_hops = 0);
 };
 
 #endif /* REFRESH_H */
