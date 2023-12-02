@@ -518,7 +518,7 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 				pt.y - 2 <= std::max(pta.y, ptb.y) &&
 				check_distance()) {
 
-			static char buf[1024 + 512];
+			char buf[2048];
 			char *buf_end = buf;
 			buf[0] = 0;
 
@@ -535,11 +535,24 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 				}
 			};
 
-			if (_ctrl_pressed) {
-				SetDParam(0, link.cargo);
-				SetDParam(1, link.capacity);
+			auto add_extra_info = [&](const LinkProperties &info_link) {
+				if (info_link.usage < info_link.planned) {
+					SetDParam(0, info_link.cargo);
+					SetDParam(1, info_link.usage);
+					buf_end = GetString(buf_end, STR_LINKGRAPH_STATS_TOOLTIP_USAGE, lastof(buf));
+				} else if (info_link.planned < info_link.usage) {
+					SetDParam(0, info_link.cargo);
+					SetDParam(1, info_link.planned);
+					buf_end = GetString(buf_end, STR_LINKGRAPH_STATS_TOOLTIP_PLANNED, lastof(buf));
+				}
+				SetDParam(0, info_link.cargo);
+				SetDParam(1, info_link.capacity);
 				buf_end = GetString(buf_end, STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY, lastof(buf));
-				add_travel_time(link.time);
+				add_travel_time(info_link.time);
+			};
+
+			if (_ctrl_pressed) {
+				add_extra_info(link);
 			}
 
 			/* Fill buf with more information if this is a bidirectional link. */
@@ -554,10 +567,7 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 						SetDParam(2, j->prop.Usage() * 100 / (j->prop.capacity + 1));
 						buf_end = GetString(buf_end, STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION, lastof(buf));
 						if (_ctrl_pressed) {
-							SetDParam(0, j->prop.cargo);
-							SetDParam(1, j->prop.capacity);
-							buf_end = GetString(buf_end, STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY, lastof(buf));
-							add_travel_time(back_time);
+							add_extra_info(j->prop);
 						}
 					}
 					break;
