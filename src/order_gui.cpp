@@ -1379,6 +1379,7 @@ enum {
 	OHK_TRANSFER,
 	OHK_NO_UNLOAD,
 	OHK_NO_LOAD,
+	OHK_CLOSE,
 };
 
 /**
@@ -3401,6 +3402,7 @@ public:
 			case OHK_TRANSFER:       this->OrderClick_Unload(OUFB_TRANSFER, true); break;
 			case OHK_NO_UNLOAD:      this->OrderClick_Unload(OUFB_NO_UNLOAD, true); break;
 			case OHK_NO_LOAD:        this->OrderClick_FullLoad(OLFB_NO_LOAD, true); break;
+			case OHK_CLOSE:          this->Close(); break;
 			default: return ES_NOT_HANDLED;
 		}
 		return ES_HANDLED;
@@ -3601,6 +3603,7 @@ static Hotkey order_hotkeys[] = {
 	Hotkey((uint16)0, "transfer", OHK_TRANSFER),
 	Hotkey((uint16)0, "no_unload", OHK_NO_UNLOAD),
 	Hotkey((uint16)0, "no_load", OHK_NO_LOAD),
+	Hotkey((uint16)0, "close", OHK_CLOSE),
 	HOTKEY_LIST_END
 };
 HotkeyList OrdersWindow::hotkeys("order", order_hotkeys);
