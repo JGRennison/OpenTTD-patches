@@ -1709,10 +1709,34 @@ static bool RemapNewSignalStyles(const std::array<NewSignalStyleMapping, MAX_NEW
 	const std::array<NewSignalStyleMapping, MAX_NEW_SIGNAL_STYLES> old_mapping = _new_signal_style_mapping;
 	_new_signal_style_mapping = new_mapping;
 
-	uint8 remap_table[MAX_NEW_SIGNAL_STYLES + 1]  = {};
+	uint8 remap_table[MAX_NEW_SIGNAL_STYLES + 1] = {};
 	remap_table[0] = 0;
 
 	uint8 next_free = _num_new_signal_styles;
+
+	std::array<bool, MAX_NEW_SIGNAL_STYLES> usage_table;
+	const bool assume_all_styles_in_use = _networking && !_network_server;
+	usage_table.fill(assume_all_styles_in_use);
+	bool usage_table_populated = !assume_all_styles_in_use;
+
+	auto populate_usage_table = [&]() {
+		usage_table_populated = true;
+
+		const TileIndex map_size = MapSize();
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsTileType(t, MP_RAILWAY) && HasSignals(t)) {
+				for (Track track : { TRACK_LOWER, TRACK_UPPER }) {
+					uint8 old_style = GetSignalStyle(t, track);
+					if (old_style > 0) usage_table[old_style - 1] = true;
+				}
+			}
+			if (IsRailTunnelBridgeTile(t) && GetTunnelBridgeDirection(t) < DIAGDIR_SW) {
+				/* Only process west end of tunnel/bridge */
+				uint8 old_style = GetTunnelBridgeSignalStyle(t);
+				if (old_style > 0) usage_table[old_style - 1] = true;
+			}
+		}
+	};
 
 	bool do_remap = false;
 	for (uint i = 0; i < MAX_NEW_SIGNAL_STYLES; i++) {
@@ -1725,16 +1749,27 @@ static bool RemapNewSignalStyles(const std::array<NewSignalStyleMapping, MAX_NEW
 			for (uint j = 0; j < MAX_NEW_SIGNAL_STYLES; j++) {
 				if (old_mapping[i].grfid == _new_signal_style_mapping[j].grfid && old_mapping[i].grf_local_id == _new_signal_style_mapping[j].grf_local_id) {
 					remap_table[i + 1] = j + 1;
-					if (i != j) do_remap = true;
+					if (i != j) {
+						if (!usage_table_populated) populate_usage_table();
+						if (usage_table[i]) do_remap = true;
+					}
 					return;
 				}
 			}
+
+			if (!usage_table_populated) populate_usage_table();
+			if (!usage_table[i]) {
+				/* no signals to remap */
+				remap_table[i + 1] = 0;
+				return;
+			}
+
 			if (next_free < MAX_NEW_SIGNAL_STYLES) {
 				remap_table[i + 1] = next_free + 1;
 				_new_signal_style_mapping[next_free].grfid = old_mapping[i].grfid;
 				_new_signal_style_mapping[next_free].grf_local_id = old_mapping[i].grf_local_id;
+				if (i != next_free) do_remap = true;
 				next_free++;
-				do_remap = true;
 			} else {
 				remap_table[i + 1] = 0;
 				do_remap = true;
@@ -1743,12 +1778,19 @@ static bool RemapNewSignalStyles(const std::array<NewSignalStyleMapping, MAX_NEW
 		find_target();
 	}
 
+	bool signal_remapped = false;
 	if (do_remap) {
 		const TileIndex map_size = MapSize();
 		for (TileIndex t = 0; t < map_size; t++) {
 			if (IsTileType(t, MP_RAILWAY) && HasSignals(t)) {
-				SetSignalStyle(t, TRACK_LOWER, remap_table[GetSignalStyle(t, TRACK_LOWER)]);
-				SetSignalStyle(t, TRACK_UPPER, remap_table[GetSignalStyle(t, TRACK_UPPER)]);
+				for (Track track : { TRACK_LOWER, TRACK_UPPER }) {
+					uint8 old_style = GetSignalStyle(t, track);
+					uint8 new_style = remap_table[old_style];
+					if (new_style != old_style) {
+						SetSignalStyle(t, track, new_style);
+						signal_remapped = true;
+					}
+				}
 			}
 			if (IsRailTunnelBridgeTile(t) && GetTunnelBridgeDirection(t) < DIAGDIR_SW) {
 				/* Only process west end of tunnel/bridge */
@@ -1756,12 +1798,13 @@ static bool RemapNewSignalStyles(const std::array<NewSignalStyleMapping, MAX_NEW
 				uint8 new_style = remap_table[old_style];
 				if (new_style != old_style) {
 					SetTunnelBridgeSignalStyle(t, GetOtherTunnelBridgeEnd(t), new_style);
+					signal_remapped = true;
 				}
 			}
 		}
 	}
 
-	return do_remap;
+	return signal_remapped;
 }
 
 static void DetermineSignalStyleMapping(std::array<NewSignalStyleMapping, MAX_NEW_SIGNAL_STYLES> &mapping)
