@@ -1766,6 +1766,8 @@ static bool RemapNewSignalStyles(const std::array<NewSignalStyleMapping, MAX_NEW
 
 static void DetermineSignalStyleMapping(std::array<NewSignalStyleMapping, MAX_NEW_SIGNAL_STYLES> &mapping)
 {
+	mapping.fill({});
+
 	for (uint i = 0; i < _num_new_signal_styles; i++) {
 		mapping[i].grfid = _new_signal_styles[i].grffile->grfid;
 		mapping[i].grf_local_id = _new_signal_styles[i].grf_local_id;

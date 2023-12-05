@@ -26,6 +26,8 @@ static void Save_NSID()
 
 static void Load_NSID()
 {
+	_new_signal_style_mapping.fill({});
+
 	uint count = SlReadUint32();
 	for (uint i = 0; i < count; i++) {
 		NewSignalStyleMapping mapping;
