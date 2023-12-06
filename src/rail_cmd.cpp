@@ -1755,6 +1755,14 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			}
 
 		} else {
+			if (_ctrl_pressed && GetSignalStyle(tile, track) != 0) {
+				SignalType new_sigtype = GetSignalType(tile, track);
+				do {
+					new_sigtype = NextSignalType(new_sigtype, which_signals);
+				} while (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && IsSignalTypeUnsuitableForRealisticBraking(new_sigtype));
+				if (!is_style_usable(GetSignalVariant(tile, track), GetSignalStyle(tile, track), 1 << new_sigtype)) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
+			}
+
 			/* it is free to change orientation/pre-exit-combo signals */
 			cost = CommandCost();
 		}
