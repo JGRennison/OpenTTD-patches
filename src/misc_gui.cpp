@@ -1194,25 +1194,27 @@ struct QueryWindow : public Window {
 		 * overridden pretty often. We will copy these back for drawing */
 		this->precomposed = false;
 		CopyOutDParam(this->params, 10);
-		this->caption = caption;
 		this->message = message;
 		this->proc    = callback;
 		this->parent  = parent;
 
-		this->InitNested(WN_CONFIRM_POPUP_QUERY);
+		this->CreateNestedTree();
+		this->GetWidget<NWidgetCore>(WID_Q_CAPTION)->SetDataTip(caption, STR_NULL);
+		this->FinishInitNested(WN_CONFIRM_POPUP_QUERY);
 	}
 
 	QueryWindow(WindowDesc *desc, std::string caption, std::string message, Window *parent, QueryCallbackProc *callback) : Window(desc)
 	{
 		this->precomposed = true;
-		this->caption = SPECSTR_TEMP_START;
 		this->message = STR_EMPTY;
 		this->caption_str = std::move(caption);
 		this->message_str = std::move(message);
 		this->proc    = callback;
 		this->parent  = parent;
 
-		this->InitNested(WN_CONFIRM_POPUP_QUERY);
+		this->CreateNestedTree();
+		this->GetWidget<NWidgetCore>(WID_Q_CAPTION)->SetDataTip(STR_JUST_RAW_STRING, STR_NULL);
+		this->FinishInitNested(WN_CONFIRM_POPUP_QUERY);
 	}
 
 	void Close([[maybe_unused]] int data = 0) override
@@ -1234,11 +1236,10 @@ struct QueryWindow : public Window {
 		switch (widget) {
 			case WID_Q_CAPTION:
 				if (this->precomposed) {
-					_temp_special_strings[0] = this->caption_str;
+					SetDParamStr(0, this->caption_str.c_str());
 				} else {
-					CopyInDParam(this->params, 1);
+					CopyInDParam(this->params);
 				}
-				SetDParam(0, this->caption);
 				break;
 
 			case WID_Q_TEXT:
@@ -1317,7 +1318,7 @@ struct QueryWindow : public Window {
 static const NWidgetPart _nested_query_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_RED),
-		NWidget(WWT_CAPTION, COLOUR_RED, WID_Q_CAPTION), SetDataTip(STR_JUST_STRING, STR_NULL),
+		NWidget(WWT_CAPTION, COLOUR_RED, WID_Q_CAPTION), // The caption's string is set in the constructor
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_RED),
 		NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_wide, 0), SetPadding(WidgetDimensions::unscaled.modalpopup),
