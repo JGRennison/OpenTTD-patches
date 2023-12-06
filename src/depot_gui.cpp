@@ -874,7 +874,7 @@ struct DepotWindow : Window {
 			}
 		}
 
-		/* Build tooltipstring */
+		/* Build tooltip string */
 		std::string details;
 
 		for (const CargoSpec *cs : _sorted_cargo_specs) {
@@ -885,7 +885,7 @@ struct DepotWindow : Window {
 			SetDParam(1, loaded[cargo_type]);   // {CARGO} #2
 			SetDParam(2, cargo_type);           // {SHORTCARGO} #1
 			SetDParam(3, capacity[cargo_type]); // {SHORTCARGO} #2
-			details = GetString(STR_DEPOT_VEHICLE_TOOLTIP_CARGO);
+			details += GetString(STR_DEPOT_VEHICLE_TOOLTIP_CARGO);
 		}
 
 		/* Show tooltip window */
