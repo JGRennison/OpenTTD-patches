@@ -276,6 +276,7 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 		if (op.mode == ACOM_CB36_PROP && adjust.variable == 0x10) {
 			if (find_cb_result(this, { CBID_VEHICLE_MODIFY_PROPERTY, false, 0 })) {
 				op.properties_used |= UINT64_MAX;
+				break;
 			}
 		}
 		if ((op.mode == ACOM_CB_VAR || op.mode == ACOM_CB_REFIT_CAPACITY) && !(adjust.variable == 0xC || adjust.variable == 0x1A || adjust.variable == 0x47 || adjust.variable == 0x7D || adjust.variable == 0x7E)) {
@@ -284,7 +285,7 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 		if ((op.mode == ACOM_CB_VAR || op.mode == ACOM_CB_REFIT_CAPACITY) && adjust.variable == 0x47) {
 			op.result_flags |= ACORF_CB_REFIT_CAP_SEEN_VAR_47;
 		}
-		if (adjust.variable == 0x7E && adjust.subroutine != nullptr && op.mode != ACOM_CB36_PROP) {
+		if (op.mode != ACOM_CB36_PROP && adjust.variable == 0x7E && adjust.subroutine != nullptr) {
 			adjust.subroutine->AnalyseCallbacks(op);
 		}
 		if (op.mode == ACOM_INDUSTRY_TILE && this->var_scope == VSG_SCOPE_SELF && (adjust.variable == 0x44 || (adjust.variable == 0x61 && adjust.parameter == 0))) {
