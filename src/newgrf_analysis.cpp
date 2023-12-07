@@ -207,19 +207,23 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 				return;
 			}
 		}
-		if (op.mode == ACOM_INDUSTRY_TILE && adjust.variable == 0x43 && this->var_scope == VSG_SCOPE_SELF) {
-			if (adjust.shift_num == 0 && adjust.and_mask == 0xFFFF && adjust.type == DSGA_TYPE_NONE) {
+		if (op.mode == ACOM_INDUSTRY_TILE && adjust.variable == 0x43 && adjust.type == DSGA_TYPE_NONE && this->var_scope == VSG_SCOPE_SELF) {
+			const uint32 effective_mask = adjust.and_mask << adjust.shift_num;
+			if (effective_mask == 0xFFFF || effective_mask == 0xFF00 || effective_mask == 0x00FF) {
 				/* Relative position switch */
+				const bool use_x = effective_mask & 0xFF;
+				const bool use_y = effective_mask & 0xFF00;
 				uint64 default_mask = op.data.indtile->check_mask;
 				for (const auto &range : this->ranges) {
 					if (range.high - range.low < 32) {
 						uint64 new_check_mask = 0;
 						for (uint i = range.low; i <= range.high; i++) {
-							int16 x = i & 0xFF;
-							int16 y = (i >> 8) & 0xFF;
+							const uint offset = i << adjust.shift_num;
+							const int16 x = offset & 0xFF;
+							const int16 y = (offset >> 8) & 0xFF;
 							for (uint bit : SetBitIterator<uint, uint64>(op.data.indtile->check_mask)) {
 								const TileIndexDiffC &ti = (*(op.data.indtile->layout))[bit].ti;
-								if (ti.x == x && ti.y == y) {
+								if ((!use_x || ti.x == x) && (!use_y || ti.y == y)) {
 									SetBit(new_check_mask, bit);
 								}
 							}
