@@ -18,6 +18,7 @@ struct AnalyseCallbackOperationIndustryTileData {
 	uint64 *result_mask;
 	uint8 layout_index;
 	bool anim_state_at_offset;
+	bool check_anim_next_frame_cb;
 };
 
 #endif /* NEWGRF_INDUSTRYTILES_ANALYSIS_H */

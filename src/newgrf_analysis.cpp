@@ -183,6 +183,16 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 		}
 		if (op.mode == ACOM_INDUSTRY_TILE && adjust.variable == 0xC) {
 			if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
+				/* Check for CBID_INDTILE_ANIM_NEXT_FRAME, mark layout subset as animated if found */
+				if (op.data.indtile->check_anim_next_frame_cb) {
+					for (const auto &range : this->ranges) {
+						if (range.low <= CBID_INDTILE_ANIM_NEXT_FRAME && CBID_INDTILE_ANIM_NEXT_FRAME <= range.high) {
+							/* Found a CBID_INDTILE_ANIM_NEXT_FRAME */
+							*(op.data.indtile->result_mask) &= ~op.data.indtile->check_mask;
+						}
+					}
+				}
+
 				/* Callback switch, skip to the default/graphics chain */
 				for (const auto &range : this->ranges) {
 					if (range.low == 0) {
@@ -279,7 +289,6 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 		}
 		if (op.mode == ACOM_INDUSTRY_TILE && this->var_scope == VSG_SCOPE_SELF && (adjust.variable == 0x44 || (adjust.variable == 0x61 && adjust.parameter == 0))) {
 			*(op.data.indtile->result_mask) &= ~op.data.indtile->check_mask;
-			return;
 		}
 		if (op.mode == ACOM_INDUSTRY_TILE && ((this->var_scope == VSG_SCOPE_SELF && adjust.variable == 0x61) || (this->var_scope == VSG_SCOPE_PARENT && adjust.variable == 0x63))) {
 			op.data.indtile->anim_state_at_offset = true;
