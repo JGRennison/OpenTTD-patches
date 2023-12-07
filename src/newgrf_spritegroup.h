@@ -63,6 +63,7 @@ enum SpriteGroupFlags : uint8 {
 	SGF_NONE                     = 0,
 	SGF_ACTION6                  = 1 << 0,
 	SGF_INLINING                 = 1 << 1,
+	SGF_SKIP_CB                  = 1 << 2,
 };
 DECLARE_ENUM_AS_BIT_SET(SpriteGroupFlags)
 

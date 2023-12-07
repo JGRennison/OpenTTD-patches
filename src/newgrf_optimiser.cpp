@@ -2647,7 +2647,7 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 				}
 			}
 			if (sg != nullptr && sg->type == SGT_CALLBACK) {
-				if (!state.ignore_cb_handler) {
+				if (!state.ignore_cb_handler && static_cast<const CallbackResultSpriteGroup*>(sg)->result != CALLBACK_FAILED) {
 					group->dsg_flags |= DSGF_CB_RESULT;
 					state.have_cb_handler = true;
 				}
@@ -2697,6 +2697,10 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 		group->dsg_flags |= DSGF_CB_RESULT;
 	}
 	if (possible_callback_handler) group->dsg_flags |= DSGF_CB_HANDLER;
+
+	if ((group->dsg_flags & (DSGF_CB_HANDLER | DSGF_CB_RESULT)) == 0) {
+		group->sg_flags |= SGF_SKIP_CB;
+	}
 
 	if (!HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_GROUP_PRUNE) && group->ranges.empty() && !group->calculated_result && !seen_req_var1C) {
 		/* There is only one option, remove any redundant adjustments when the result will be ignored anyway */
