@@ -200,7 +200,7 @@ static PalSpriteID GetRailTypeCustomSignalSprite(const RailTypeInfo *rti, TileIn
 CustomSignalSpriteResult GetCustomSignalSprite(const RailTypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, uint8 aspect,
 		CustomSignalSpriteContext context, uint8 style, const TraceRestrictProgram *prog, uint z)
 {
-	if (_settings_client.gui.show_all_signal_default && style == 0) return { { 0, PAL_NONE }, false };
+	if (_settings_client.gui.show_all_signal_default == SSDM_ON && style == 0) return { { 0, PAL_NONE }, false };
 
 	if (style == 0) {
 		PalSpriteID spr = GetRailTypeCustomSignalSprite(rti, tile, type, var, aspect, context, prog, z);

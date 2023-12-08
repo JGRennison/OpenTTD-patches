@@ -206,9 +206,6 @@ STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_IN_DETAILS_HELPTEXT       :열차의 그�
 STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS          :상세정보 화면에서 열차 무게 비 보이기: {STRING}
 STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS_HELPTEXT :열차의 무게 비를 상세정보 화면에 표시할지 설정합니다.
 
-STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF                      :경로 제한 신호기를 기본 그래픽으로 보이기: {STRING}
-STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF_HELPTEXT             :경로 제한이 설정된 전자 신호기를 NewGRF의 신호기 그래픽 대신 기본 신호기 그래픽에 파란 표시를 한 그래픽으로 표시합니다. 이 옵션은 경로 제한 신호기의 구별을 쉽게 하기 위해 사용합니다.
-
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF                             :모든 신호기를 기본 그래픽으로 표시: {STRING}
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT                    :모든 신호기를 NewGRF의 신호기 그래픽을 사용하는 대신, 기본 신호기 그래픽으로 표시합니다. NewGRF에서 제공하는 신호기 그래픽을 사용할 수 없거나 명확하지 않은 경우에 이 설정을 사용하면 신호기의 현시 상태와 종류를 보기가 쉬워집니다.
 

@@ -198,9 +198,6 @@ STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_IN_DETAILS_HELPTEXT       :Zobrazovat skup
 STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS          :Zobrazovat hmotnostní poměry vlaku v podrobnostech: {STRING}
 STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS_HELPTEXT :Zobrazovat poměr váhy vlaku k jeho výkonu a tažné síle v okně Detaily
 
-STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF                      :Zobrazovat omezená optická návěstidla výchozí grafikou: {STRING}
-STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF_HELPTEXT             :Zobrazovat návěstidla s omezením vyhledávání trasy pomocí výchozí grafiky světelných návěstidel s modrou značkou, namísto použití jakékoli jiné obsažené v NewGRF. Tato volba usnadní rozpoznání omezených návěstidel.
-
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF                             :Zobrazovat všechna návěstidla výchozí grafikou: {STRING}
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT                    :Zobrazovat všechna návěstidla pomocí výchozí grafiky namísto použití jakékoli jiné obsažené v NewGRF. Tato volba usnadní určení stavu a typu návěstidla, když NewGRF poskytuje nejasné nebo nedostupné vzhledy návěstidel.
 

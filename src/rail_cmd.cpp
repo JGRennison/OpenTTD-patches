@@ -85,7 +85,7 @@ void ResolveRailTypeGUISignalSprites(RailTypeInfo *rti, uint8 style, PalSpriteID
 
 	auto default_sprite = [&](SignalVariant var, SignalType type) -> SpriteID {
 		SpriteID spr = _signal_lookup[var][type];
-		if (_settings_client.gui.show_all_signal_default) {
+		if (_settings_client.gui.show_all_signal_default == SSDM_ON) {
 			if (type == SIGTYPE_PROG) {
 				spr += SPR_DUP_PROGSIGNAL_BASE - SPR_PROGSIGNAL_BASE;
 			} else if (type == SIGTYPE_NO_ENTRY) {
@@ -3288,7 +3288,9 @@ void DrawSingleSignal(TileIndex tile, const RailTypeInfo *rti, Track track, Sign
 		is_custom_sprite = (file != nullptr) && (file->flags & SFF_USERGRF);
 	}
 
-	if ((_settings_client.gui.show_all_signal_default || (is_custom_sprite && show_restricted && _settings_client.gui.show_restricted_signal_default && !result.restricted_valid && variant == SIG_ELECTRIC)) && style == 0) {
+	if (style == 0 && (_settings_client.gui.show_all_signal_default == SSDM_ON ||
+			(is_custom_sprite && show_restricted && _settings_client.gui.show_restricted_signal_recolour &&
+			_settings_client.gui.show_all_signal_default == SSDM_RESTRICTED_RECOLOUR && !result.restricted_valid && variant == SIG_ELECTRIC))) {
 		/* Use duplicate sprite block, instead of GRF-specified signals */
 		if (type == SIGTYPE_PROG) {
 			if (variant == SIG_SEMAPHORE) {
@@ -3310,7 +3312,7 @@ void DrawSingleSignal(TileIndex tile, const RailTypeInfo *rti, Track track, Sign
 		is_custom_sprite = false;
 	}
 
-	if (!is_custom_sprite && show_restricted && variant == SIG_ELECTRIC) {
+	if (!is_custom_sprite && show_restricted && variant == SIG_ELECTRIC && _settings_client.gui.show_restricted_signal_recolour) {
 		DrawRestrictedSignal(type, sprite, x, y, z, BB_HEIGHT_UNDER_BRIDGE, 0);
 	} else {
 		AddSortableSpriteToDraw(sprite, pal, x, y, 1, 1, BB_HEIGHT_UNDER_BRIDGE, z);

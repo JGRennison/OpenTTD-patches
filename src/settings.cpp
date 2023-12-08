@@ -1960,6 +1960,19 @@ static bool TreePlacerSettingGUI(SettingOnGuiCtrlData &data)
 	}
 }
 
+static bool DefaultSignalsSettingGUI(SettingOnGuiCtrlData &data)
+{
+	switch (data.type) {
+		case SOGCT_DESCRIPTION_TEXT:
+			SetDParam(0, data.text);
+			data.text = STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT_EXTRA;
+			return true;
+
+		default:
+			return false;
+	}
+}
+
 /* End - GUI callbacks */
 
 /**

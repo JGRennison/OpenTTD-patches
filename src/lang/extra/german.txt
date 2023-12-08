@@ -178,9 +178,6 @@ STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_IN_DETAILS_HELPTEXT       :Zeige die Fahrz
 STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS          :Zeige die Gewichtsverhältnisse von Zügen im Einzelheitenfenster: {STRING}
 STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS_HELPTEXT :Zeige die Gewichtsverhältnisse von Zügen im Fenster der Fahrzeugeinzelheiten.
 
-STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF                      :Zeige beschränkte Lichtsignale in den Standard-Grafiken: {STRING}
-STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF_HELPTEXT             :Zeige Lichtsignale mit Routing-Beschränkungen in den Standard-Grafiken mit blauem Pfosten anstelle von NewGRF-Grafiken, um diese zur leichteren Erkennbarkeit visuell hervorzuheben.
-
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF                             :Zeige alle Signale mit den Standardgrafiken: {STRING}
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT                    :Zeige alle Signale mit den Standardgrafiken anstatt Grafiken einer Signal-NewGRF. Dient dazu, den Typ und Status von Signalen besser erkennbar zu machen, falls die verwendete Signal-NewGRF schlecht erkennbare Signalgrafiken bereitstellt.
 

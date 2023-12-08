@@ -206,9 +206,6 @@ STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_IN_DETAILS_HELPTEXT       :在载具详情
 STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS          :在列车详情窗口显示列车重量比: {STRING}
 STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS_HELPTEXT :在列车详情窗口显示列车重量比
 
-STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF                      :使用默认图形显示受限的电力信号灯: {STRING}
-STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF_HELPTEXT             :使用具有蓝色信号柱的默认信号图样显示有路由限制的电力信号灯，代替使用任何NewGRF的信号灯图样{}这是为了更容易区分普通信号灯与有路由限制的信号灯
-
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF                             :使用默认图形展示所有的信号灯: {STRING}
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT                    :使用默认信号灯图样展示所有的信号灯，代替使用任何NewGRF的信号灯图形{}这是为了在NewGRF提供不清晰的信号灯图形时更容易去区分信号灯的状态及其类型
 

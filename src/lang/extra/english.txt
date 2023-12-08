@@ -244,11 +244,13 @@ STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_IN_DETAILS_HELPTEXT       :Show vehicle gr
 STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS          :Show train weight ratios in details: {STRING2}
 STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS_HELPTEXT :Show train weight ratios in the vehicle details window
 
-STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF                      :Show restricted electric signals using default graphics: {STRING2}
-STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF_HELPTEXT             :Show electric signals with routing restriction programs using the default signal graphics with a blue signal post, instead of using any NewGRF signal graphics. This is to make it easier to visually distinguish restricted signals.
+STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_RECOLOUR                 :Show default restricted signals with blue signal posts: {STRING2}
+STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_RECOLOUR_HELPTEXT        :Show electric signals with routing restriction programs with a blue signal post, when using the default signal graphics. This does not affect NewGRF signal graphics. This is to make it easier to visually distinguish restricted signals.
 
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF                             :Show all signals using default graphics: {STRING2}
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT                    :Show all signals using the default signal graphics, instead of using any NewGRF signal graphics. This is to make it easier to see the state and type of signals when NewGRFs provide unclear or inaccessible signal graphics.
+STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT_EXTRA              :{STRING}{}The "only for restricted signals" mode uses the default signal graphics for electric signals with routing restriction programs attached, when recolouring of signal posts is enabled and the NewGRF does not handle different graphics for restricted signals itself.
+STR_CONFIG_SETTING_SHOW_ALL_SIG_RESTRICTED_RECOLOUR             :Only for restricted signals
 
 STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES             :Show advanced routing restriction features: {STRING2}
 STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES_HELPTEXT    :Show advanced routing restriction features. When disabled, some advanced features are not shown in the UI, but are still available to all players.

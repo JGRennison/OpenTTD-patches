@@ -206,9 +206,6 @@ STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_IN_DETAILS_HELPTEXT       :Amosar o nome d
 STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS          :Amosar os ratios de pesos do tren nos detallees: {STRING}
 STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS_HELPTEXT :Amosar os ratios de pesos do tren na fiestra de detalles do vehículo
 
-STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF                      :Amosar os sinais eléctricos restrinxidos usando os gráficos por defecto: {STRING}
-STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF_HELPTEXT             :Amosar os sinais eléctricos con programas de restrición de enrutamento utilizando os gráficos de sinais por defecto cun sinal azul, en lguar de utilizar gráficos dalgún NewGRF. Isto é para facilitar a distinción visual de sinais restrinxidos.
-
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF                             :Amosar todos os sinais cos gráficos por defecto: {STRING}
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT                    :Amosar todos os sinais usando os sinais gráficos por defecto, en lugar de usar sinais de NewGRF. Isto é para que sexa máis sinxelo ver o estado e tipo de sinais cando os NewGRF non están claros ou non teñen gráficos.
 

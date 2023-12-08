@@ -2024,7 +2024,7 @@ static SettingsContainer &GetSettingsTree()
 				SettingsPage *viewport_signals = viewports->Add(new SettingsPage(STR_CONFIG_SETTING_VIEWPORT_SIGNALS));
 				{
 					viewport_signals->Add(new SettingEntry("construction.train_signal_side"));
-					viewport_signals->Add(new SettingEntry("gui.show_restricted_signal_default"));
+					viewport_signals->Add(new SettingEntry("gui.show_restricted_signal_recolour"));
 					viewport_signals->Add(new SettingEntry("gui.show_all_signal_default"));
 				}
 				SettingsPage *viewport_route_overlay = viewports->Add(new SettingsPage(STR_CONFIG_SETTING_VEHICLE_ROUTE_OVERLAY));

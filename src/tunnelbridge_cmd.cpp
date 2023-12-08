@@ -1776,24 +1776,25 @@ static void DrawTunnelBridgeRampSingleSignal(const TileInfo *ti, bool is_green, 
 		if (variant == SIG_ELECTRIC && type == SIGTYPE_NORMAL) {
 			/* Normal electric signals are picked from original sprites. */
 			sprite = { SPR_ORIGINAL_SIGNALS_BASE + ((position << 1) + is_green), PAL_NONE };
-			if (_settings_client.gui.show_all_signal_default) sprite.sprite += SPR_DUP_ORIGINAL_SIGNALS_BASE - SPR_ORIGINAL_SIGNALS_BASE;
+			if (_settings_client.gui.show_all_signal_default == SSDM_ON) sprite.sprite += SPR_DUP_ORIGINAL_SIGNALS_BASE - SPR_ORIGINAL_SIGNALS_BASE;
 		} else {
 			/* All other signals are picked from add on sprites. */
 			sprite = { SPR_SIGNALS_BASE + ((type - 1) * 16 + variant * 64 + (position << 1) + is_green) + (IsSignalSpritePBS(type) ? 64 : 0), PAL_NONE };
-			if (_settings_client.gui.show_all_signal_default) sprite.sprite += SPR_DUP_SIGNALS_BASE - SPR_SIGNALS_BASE;
+			if (_settings_client.gui.show_all_signal_default == SSDM_ON) sprite.sprite += SPR_DUP_SIGNALS_BASE - SPR_SIGNALS_BASE;
 		}
 		SpriteFile *file = GetOriginFile(sprite.sprite);
 		is_custom_sprite = (file != nullptr) && (file->flags & SFF_USERGRF);
 	}
 
-	if (is_custom_sprite && show_restricted && _settings_client.gui.show_restricted_signal_default && !result.restricted_valid && variant == SIG_ELECTRIC && style == 0) {
+	if (is_custom_sprite && show_restricted && style == 0 && _settings_client.gui.show_restricted_signal_recolour &&
+			_settings_client.gui.show_all_signal_default == SSDM_RESTRICTED_RECOLOUR && !result.restricted_valid && variant == SIG_ELECTRIC) {
 		/* Use duplicate sprite block, instead of GRF-specified signals */
 		sprite = { (type == SIGTYPE_NORMAL && variant == SIG_ELECTRIC) ? SPR_DUP_ORIGINAL_SIGNALS_BASE : SPR_DUP_SIGNALS_BASE - 16, PAL_NONE };
 		sprite.sprite += type * 16 + variant * 64 + position * 2 + is_green + (IsSignalSpritePBS(type) ? 64 : 0);
 		is_custom_sprite = false;
 	}
 
-	if (!is_custom_sprite && show_restricted && variant == SIG_ELECTRIC) {
+	if (!is_custom_sprite && show_restricted && variant == SIG_ELECTRIC && _settings_client.gui.show_restricted_signal_recolour) {
 		extern void DrawRestrictedSignal(SignalType type, SpriteID sprite, int x, int y, int z, int dz, int bb_offset_z);
 		DrawRestrictedSignal(type, sprite.sprite, x, y, z, TILE_HEIGHT, BB_Z_SEPARATOR);
 	} else {
@@ -1899,11 +1900,11 @@ static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_st
 				if (variant == SIG_ELECTRIC) {
 					/* Normal electric signals are picked from original sprites. */
 					sprite.sprite = SPR_ORIGINAL_SIGNALS_BASE + (position << 1) + (state == SIGNAL_STATE_GREEN ? 1 : 0);
-					if (_settings_client.gui.show_all_signal_default) sprite.sprite += SPR_DUP_ORIGINAL_SIGNALS_BASE - SPR_ORIGINAL_SIGNALS_BASE;
+					if (_settings_client.gui.show_all_signal_default == SSDM_ON) sprite.sprite += SPR_DUP_ORIGINAL_SIGNALS_BASE - SPR_ORIGINAL_SIGNALS_BASE;
 				} else {
 					/* All other signals are picked from add on sprites. */
 					sprite.sprite = SPR_SIGNALS_BASE + (variant * 64) + (position << 1) - 16 + (state == SIGNAL_STATE_GREEN ? 1 : 0);
-					if (_settings_client.gui.show_all_signal_default) sprite.sprite += SPR_DUP_SIGNALS_BASE - SPR_SIGNALS_BASE;
+					if (_settings_client.gui.show_all_signal_default == SSDM_ON) sprite.sprite += SPR_DUP_SIGNALS_BASE - SPR_SIGNALS_BASE;
 				}
 				sprite.pal = PAL_NONE;
 			}
