@@ -3006,8 +3006,7 @@ public:
 						continue;
 					}
 					if (ocv != _order_conditional_variable[i]) {
-						if ((_order_conditional_variable[i] == OCV_VEH_IN_SLOT || _order_conditional_variable[i] == OCV_SLOT_OCCUPANCY ||
-								_order_conditional_variable[i] == OCV_COUNTER_VALUE) && !_settings_client.gui.show_adv_tracerestrict_features) {
+						if (_order_conditional_variable[i] == OCV_COUNTER_VALUE && !_settings_client.gui.show_adv_tracerestrict_features) {
 							continue;
 						}
 						if ((_order_conditional_variable[i] == OCV_DISPATCH_SLOT) && this->vehicle->orders->GetScheduledDispatchScheduleCount() == 0) {
