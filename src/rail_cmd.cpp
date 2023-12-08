@@ -3608,7 +3608,7 @@ static void DrawTrackBitsOverlay(TileInfo *ti, TrackBits track, const RailTypeIn
 	SpriteID ground = GetCustomRailSprite(rti, ti->tile, no_combine ? RTSG_GROUND_COMPLETE : RTSG_GROUND);
 	TrackBits pbs = TRACK_BIT_NONE;
 	if (_settings_client.gui.show_track_reservation) {
-		pbs = is_bridge ? GetTunnelBridgeReservationTrackBits(ti->tile) : GetRailReservationTrackBits(ti->tile);
+		pbs = (is_bridge ? GetTunnelBridgeReservationTrackBits(ti->tile) : GetRailReservationTrackBits(ti->tile)) & track;
 	}
 
 	if (track == TRACK_BIT_NONE) {
