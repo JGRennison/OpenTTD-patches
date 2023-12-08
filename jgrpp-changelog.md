@@ -2,6 +2,23 @@
 
 * * *
 
+### v0.56.1 (2023-12-08)
+* Fix crash which could occur when using some languages (which use grammatical gender).
+* Fix crash which could occur when the config file is an older version or has missing sections.
+* Fix PBS reservation overlays of the wrong track type on dual rail-type tiles.
+* Fix profit/usage totals not being initially populated when opening the group/vehicle list window.
+* Fix depot ctrl-right-click tooltip with multiple cargoes.
+* Fix incorrect search path ordering in some cases when using the -c switch.
+* Fix false positive desync warning messages after custom signal styles are removed.
+* Fix incorrect title text in some query windows.
+* Fix ctrl-click signal cycling not checking custom signal style restrictions.
+* Routing restrictions: Slots are no longer considered "advanced".
+* Change the settings for using default signal graphics and restricted signal post recolouring.
+* Add unset hotkey to close order window.
+* Link graph: Take vehicle timetables into account when estimating the travel time for order-based link refreshing.
+* Scenario editor: Fix being able to remove towns referenced by waypoints.
+* Bump trunk base from commit 2d3fef31131c2d9981265664c1581ca11dc2c2d3 to commit ab535c0a8665e6380c5037d7b6f0a507fc91d36a.
+
 ### v0.56.0 (2023-11-26)
 * Fix crash which could occur in the sprite aligner window.
 * Fix crash which could occur when laying out text in some cases.
