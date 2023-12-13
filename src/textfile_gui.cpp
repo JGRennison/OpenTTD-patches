@@ -34,6 +34,7 @@
 #include <lzma.h>
 #endif
 
+#include <condition_variable>
 #include <regex>
 
 #include "safeguards.h"
