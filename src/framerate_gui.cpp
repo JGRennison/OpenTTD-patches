@@ -28,9 +28,6 @@
 
 #include <atomic>
 #include <mutex>
-#if defined(__MINGW32__)
-#include "3rdparty/mingw-std-threads/mingw.mutex.h"
-#endif
 #include <vector>
 
 #include "safeguards.h"

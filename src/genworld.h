@@ -12,9 +12,6 @@
 
 #include "company_type.h"
 #include <thread>
-#if defined(__MINGW32__)
-#include "3rdparty/mingw-std-threads/mingw.thread.h"
-#endif
 
 /** Constants related to world generation */
 enum LandscapeGenerator {

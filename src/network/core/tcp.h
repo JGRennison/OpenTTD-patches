@@ -22,9 +22,6 @@
 #include <memory>
 #include <vector>
 #include <thread>
-#if defined(__MINGW32__)
-#include "3rdparty/mingw-std-threads/mingw.thread.h"
-#endif
 
 /** The states of sending the packets. */
 enum SendPacketsState {

@@ -12,10 +12,6 @@
 
 #include <condition_variable>
 #include <mutex>
-#if defined(__MINGW32__)
-#include "../3rdparty/mingw-std-threads/mingw.condition_variable.h"
-#include "../3rdparty/mingw-std-threads/mingw.mutex.h"
-#endif
 #include "core/http.h"
 
 /**

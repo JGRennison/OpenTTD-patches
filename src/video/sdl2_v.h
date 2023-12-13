@@ -11,9 +11,6 @@
 #define VIDEO_SDL_H
 
 #include <condition_variable>
-#if defined(__MINGW32__)
-#include "../3rdparty/mingw-std-threads/mingw.condition_variable.h"
-#endif
 
 #include "video_driver.hpp"
 #include <vector>

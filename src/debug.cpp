@@ -18,9 +18,6 @@
 #include "thread.h"
 #include <array>
 #include <mutex>
-#if defined(__MINGW32__)
-#include "3rdparty/mingw-std-threads/mingw.mutex.h"
-#endif
 
 #if defined(_WIN32)
 #include "os/windows/win32.h"

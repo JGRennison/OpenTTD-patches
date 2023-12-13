@@ -19,10 +19,6 @@
 #include "../base_media_base.h"
 #include "../core/mem_func.hpp"
 #include <mutex>
-#if defined(__MINGW32__)
-#include "../3rdparty/mingw-std-threads/mingw.mutex.h"
-#include "../3rdparty/mingw-std-threads/mingw.condition_variable.h"
-#endif
 
 #include "../safeguards.h"
 

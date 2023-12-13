@@ -14,9 +14,6 @@
 
 #include <memory>
 #include <mutex>
-#if defined(__MINGW32__)
-#include "../3rdparty/mingw-std-threads/mingw.mutex.h"
-#endif
 
 extern std::mutex _music_driver_mutex;
 

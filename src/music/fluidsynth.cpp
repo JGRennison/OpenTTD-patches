@@ -16,9 +16,6 @@
 #include <fluidsynth.h>
 #include "../mixer.h"
 #include <mutex>
-#if defined(__MINGW32__)
-#include "3rdparty/mingw-std-threads/mingw.mutex.h"
-#endif
 
 static struct {
 	fluid_settings_t *settings;    ///< FluidSynth settings handle

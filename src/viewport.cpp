@@ -125,10 +125,6 @@
 
 #include <mutex>
 #include <condition_variable>
-#if defined(__MINGW32__)
-#include "3rdparty/mingw-std-threads/mingw.mutex.h"
-#include "3rdparty/mingw-std-threads/mingw.condition_variable.h"
-#endif
 
 #include "table/strings.h"
 #include "table/string_colours.h"

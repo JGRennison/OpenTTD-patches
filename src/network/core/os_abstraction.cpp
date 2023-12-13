@@ -20,9 +20,6 @@
 #include "os_abstraction.h"
 #include "../../string_func.h"
 #include <mutex>
-#if defined(__MINGW32__)
-#include "../../3rdparty/mingw-std-threads/mingw.mutex.h"
-#endif
 
 #include "../../safeguards.h"
 
