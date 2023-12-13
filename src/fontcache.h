@@ -23,6 +23,7 @@ void UpdateFontHeightCache();
 
 /** Font cache for basic fonts. */
 class FontCache {
+	friend class MockFontCache;
 private:
 	static FontCache *caches[FS_END]; ///< All the font caches.
 protected:

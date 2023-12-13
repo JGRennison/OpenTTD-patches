@@ -2,10 +2,14 @@ add_test_files(
     bitmath_func.cpp
     landscape_partial_pixel_z.cpp
     math_func.cpp
+    mock_environment.h
+    mock_fontcache.h
+    mock_spritecache.cpp
+    mock_spritecache.h
     ring_buffer.cpp
+    string_func.cpp
+    strings_func.cpp
     test_main.cpp
-    ../landscape_ppz.cpp
-    ../core/alloc_func.cpp
-    ../core/bitmath_func.cpp
-    ../core/math_func.cpp
+    test_script_admin.cpp
+    test_window_desc.cpp
 )

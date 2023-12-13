@@ -5,10 +5,11 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file test_main.cpp Entry point for all the unit tests. */
+/** @file mock_spritecache.h Mock sprite cache definition. */
 
-#include "../stdafx.h"
+#ifndef MOCK_SPRITECACHE_H
+#define MOCK_SPRITECACHE_H
 
-#define CATCH_CONFIG_MAIN
-#define DO_NOT_USE_WMAIN
-#include "../3rdparty/catch2/catch.hpp"
+void MockGfxLoadSprites();
+
+#endif /* MOCK_SPRITECACHE_H */

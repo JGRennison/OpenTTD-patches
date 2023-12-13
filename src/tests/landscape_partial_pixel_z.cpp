@@ -7,7 +7,6 @@
 
 /** @file landscape_partial_pixel_z.cpp Tests for consistency/validity of the results of GetPartialPixelZ. */
 
-#define OPENTTD_TEST
 #include "../stdafx.h"
 
 #include "../3rdparty/catch2/catch.hpp"

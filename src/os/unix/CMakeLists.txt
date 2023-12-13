@@ -13,3 +13,7 @@ add_files(
     font_unix.cpp
     CONDITION Fontconfig_FOUND
 )
+
+if(UNIX AND NOT APPLE)
+    target_sources(openttd PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/unix_main.cpp)
+endif()

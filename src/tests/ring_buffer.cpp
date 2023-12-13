@@ -7,7 +7,6 @@
 
 /** @file ring_buffer.cpp Test functionality from core/ring_buffer.hpp */
 
-#define OPENTTD_TEST
 #include "../stdafx.h"
 
 #include "../3rdparty/catch2/catch.hpp"
