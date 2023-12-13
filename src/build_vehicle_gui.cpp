@@ -3272,7 +3272,7 @@ static WindowDesc _build_vehicle_desc(__FILE__, __LINE__,
 );
 
 static WindowDesc _build_template_vehicle_desc(__FILE__, __LINE__,
-	WDP_AUTO, nullptr, 240, 268,
+	WDP_AUTO, "build_template_vehicle", 240, 268,
 	WC_BUILD_VIRTUAL_TRAIN, WC_CREATE_TEMPLATE,
 	WDF_CONSTRUCTION,
 	std::begin(_nested_build_vehicle_widgets), std::end(_nested_build_vehicle_widgets),
@@ -3288,7 +3288,7 @@ static WindowDesc _build_vehicle_desc_train_advanced(__FILE__, __LINE__,
 );
 
 static WindowDesc _build_template_vehicle_desc_advanced(__FILE__, __LINE__,
-	WDP_AUTO, nullptr, 480, 268,
+	WDP_AUTO, "build_template_vehicle_dual", 480, 268,
 	WC_BUILD_VIRTUAL_TRAIN, WC_CREATE_TEMPLATE,
 	WDF_CONSTRUCTION,
 	std::begin(_nested_build_vehicle_widgets_train_advanced), std::end(_nested_build_vehicle_widgets_train_advanced),

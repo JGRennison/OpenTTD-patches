@@ -67,7 +67,7 @@ static const NWidgetPart _nested_departures_list[] = {
 };
 
 static WindowDesc _departures_desc(__FILE__, __LINE__,
-	WDP_AUTO, nullptr, 260, 246,
+	WDP_AUTO, "depatures", 260, 246,
 	WC_DEPARTURES_BOARD, WC_NONE,
 	0,
 	std::begin(_nested_departures_list), std::end(_nested_departures_list)

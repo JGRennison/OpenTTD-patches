@@ -408,7 +408,7 @@ static const NWidgetPart _nested_cargo_type_orders_widgets[] = {
 
 /** Window description for the 'load' variant of CargoTypeOrdersWindow. */
 static WindowDesc _cargo_type_load_orders_widgets (__FILE__, __LINE__,
-	WDP_AUTO, "view_cargo_type_load_order", 195, 186,
+	WDP_AUTO, nullptr, 195, 186,
 	WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS, WC_VEHICLE_ORDERS,
 	WDF_CONSTRUCTION,
 	std::begin(_nested_cargo_type_orders_widgets), std::end(_nested_cargo_type_orders_widgets)
@@ -416,7 +416,7 @@ static WindowDesc _cargo_type_load_orders_widgets (__FILE__, __LINE__,
 
 /** Window description for the 'unload' variant of CargoTypeOrdersWindow. */
 static WindowDesc _cargo_type_unload_orders_widgets (__FILE__, __LINE__,
-	WDP_AUTO, "view_cargo_type_unload_order", 195, 186,
+	WDP_AUTO, nullptr, 195, 186,
 	WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS, WC_VEHICLE_ORDERS,
 	WDF_CONSTRUCTION,
 	std::begin(_nested_cargo_type_orders_widgets), std::end(_nested_cargo_type_orders_widgets)

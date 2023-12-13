@@ -4283,7 +4283,7 @@ public:
 };
 
 static WindowDesc _slot_window_desc(__FILE__, __LINE__,
-	WDP_AUTO, "list_groups_train", 525, 246,
+	WDP_AUTO, "list_tr_slots", 525, 246,
 	WC_TRACE_RESTRICT_SLOTS, WC_NONE,
 	0,
 	std::begin(_nested_slot_widgets), std::end(_nested_slot_widgets)
