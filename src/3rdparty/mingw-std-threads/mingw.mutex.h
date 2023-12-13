@@ -43,10 +43,24 @@
 #include <cstdio>
 #endif
 
-#include <windows.h>
+#include <sdkddkver.h>  //  Detect Windows version.
+
+#if (defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR))
+#pragma message "The Windows API that MinGW-w32 provides is not fully compatible\
+ with Microsoft's API. We'll try to work around this, but we can make no\
+ guarantees. This problem does not exist in MinGW-w64."
+#include <windows.h>    //  No further granularity can be expected.
+#else
+#if STDMUTEX_RECURSION_CHECKS
+#include <processthreadsapi.h>  //  For GetCurrentThreadId
+#endif
+#include <synchapi.h> //  For InitializeCriticalSection, etc.
+#include <errhandlingapi.h> //  For GetLastError
+#include <handleapi.h>
+#endif
 
 //  Need for the implementation of invoke
-#include "mingw.thread.h"
+#include "mingw.invoke.h"
 
 #if !defined(_WIN32_WINNT) || (_WIN32_WINNT < 0x0501)
 #error To use the MinGW-std-threads library, you will need to define the macro _WIN32_WINNT to be 0x0501 (Windows XP) or higher.
@@ -144,6 +158,14 @@ struct _OwnerThread
 //    Though the Slim Reader-Writer (SRW) locks used here are not complete until
 //  Windows 7, implementing partial functionality in Vista will simplify the
 //  interaction with condition variables.
+
+//Define SRWLOCK_INIT.
+ 
+#if !defined(SRWLOCK_INIT)
+#pragma message "SRWLOCK_INIT macro is not defined. Defining automatically."
+#define SRWLOCK_INIT {0}
+#endif
+ 
 #if defined(_WIN32) && (WINVER >= _WIN32_WINNT_VISTA)
 namespace windows7
 {
@@ -291,18 +313,21 @@ using xp::mutex;
 
 class recursive_timed_mutex
 {
+    static constexpr DWORD kWaitAbandoned = 0x00000080l;
+    static constexpr DWORD kWaitObject0 = 0x00000000l;
+    static constexpr DWORD kInfinite = 0xffffffffl;
     inline bool try_lock_internal (DWORD ms) noexcept
     {
         DWORD ret = WaitForSingleObject(mHandle, ms);
 #ifndef NDEBUG
-        if (ret == WAIT_ABANDONED)
+        if (ret == kWaitAbandoned)
         {
             using namespace std;
             fprintf(stderr, "FATAL: Thread terminated while holding a mutex.");
             terminate();
         }
 #endif
-        return (ret == WAIT_OBJECT_0) || (ret == WAIT_ABANDONED);
+        return (ret == kWaitObject0) || (ret == kWaitAbandoned);
     }
 protected:
     HANDLE mHandle;
@@ -325,19 +350,19 @@ public:
     }
     void lock()
     {
-        DWORD ret = WaitForSingleObject(mHandle, INFINITE);
+        DWORD ret = WaitForSingleObject(mHandle, kInfinite);
 //    If (ret == WAIT_ABANDONED), then the thread that held ownership was
 //  terminated. Behavior is undefined, but Windows will pass ownership to this
 //  thread.
 #ifndef NDEBUG
-        if (ret == WAIT_ABANDONED)
+        if (ret == kWaitAbandoned)
         {
             using namespace std;
             fprintf(stderr, "FATAL: Thread terminated while holding a mutex.");
             terminate();
         }
 #endif
-        if ((ret != WAIT_OBJECT_0) && (ret != WAIT_ABANDONED))
+        if ((ret != kWaitObject0) && (ret != kWaitAbandoned))
         {
             throw std::system_error(GetLastError(), std::system_category());
         }
@@ -358,7 +383,7 @@ public:
         auto timeout = duration_cast<milliseconds>(dur).count();
         while (timeout > 0)
         {
-          constexpr auto kMaxStep = static_cast<decltype(timeout)>(INFINITE-1);
+          constexpr auto kMaxStep = static_cast<decltype(timeout)>(kInfinite-1);
           auto step = (timeout < kMaxStep) ? timeout : kMaxStep;
           if (try_lock_internal(static_cast<DWORD>(step)))
             return true;
@@ -378,6 +403,7 @@ public:
 class timed_mutex: recursive_timed_mutex
 {
 public:
+    timed_mutex() = default;
     timed_mutex(const timed_mutex&) = delete;
     timed_mutex& operator=(const timed_mutex&) = delete;
     void lock()
@@ -439,7 +465,7 @@ void call_once(once_flag& flag, Callable&& func, Args&&... args)
     if (flag.mHasRun.load(std::memory_order_acquire))
         return;
     lock_guard<decltype(flag.mMutex)> lock(flag.mMutex);
-    if (flag.mHasRun.load(std::memory_order_acquire))
+    if (flag.mHasRun.load(std::memory_order_relaxed))
         return;
     detail::invoke(std::forward<Callable>(func),std::forward<Args>(args)...);
     flag.mHasRun.store(true, std::memory_order_release);
