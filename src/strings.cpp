@@ -1130,13 +1130,13 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters &arg
 				if (*p != ':' && *p != '\0') {
 					while (*p != '\0') p++;
 					str = p;
-					buff = strecat(buff, "(invalid SCC_ENCODED)", last);
+					buff = strecpy(buff, "(invalid SCC_ENCODED)", last);
 					break;
 				}
 				if (stringid >= TAB_SIZE_GAMESCRIPT) {
 					while (*p != '\0') p++;
 					str = p;
-					buff = strecat(buff, "(invalid StringID)", last);
+					buff = strecpy(buff, "(invalid StringID)", last);
 					break;
 				}
 
@@ -1184,7 +1184,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters &arg
 							if (param >= TAB_SIZE_GAMESCRIPT) {
 								while (*p != '\0') p++;
 								str = p;
-								buff = strecat(buff, "(invalid sub-StringID)", last);
+								buff = strecpy(buff, "(invalid sub-StringID)", last);
 								break;
 							}
 							param = MakeStringID(TEXT_TAB_GAMESCRIPT_START, param);
@@ -1306,7 +1306,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters &arg
 				const char *raw_string = args.GetNextParameterString();
 				/* raw_string can be(come) nullptr when the parameter is out of range and 0 is returned instead. */
 				if (raw_string == nullptr) {
-					buff = strecat(buff, "(invalid RAW_STRING parameter)", last);
+					buff = strecpy(buff, "(invalid RAW_STRING parameter)", last);
 					break;
 				}
 				buff = FormatString(buff, raw_string, args, last);
@@ -1338,7 +1338,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters &arg
 				if (game_script && GetStringTab(string_id) != TEXT_TAB_GAMESCRIPT_START) break;
 				uint size = b - SCC_STRING1 + 1;
 				if (game_script && size > args.GetDataLeft()) {
-					buff = strecat(buff, "(too many parameters)", last);
+					buff = strecpy(buff, "(too many parameters)", last);
 				} else {
 					StringParameters sub_args(args, size);
 					buff = GetStringWithArgs(buff, string_id, sub_args, last, next_substr_case_index, game_script);
