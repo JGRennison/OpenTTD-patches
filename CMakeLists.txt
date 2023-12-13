@@ -254,6 +254,12 @@ if(OPTION_PACKAGE_DEPENDENCIES)
     set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
 endif()
 
+if(OPTION_NO_SPLIT_LIB)
+    set(OPENTTD_LIB openttd)
+else()
+    set(OPENTTD_LIB openttd_lib)
+endif()
+
 include(CTest)
 include(SourceList)
 
@@ -264,11 +270,16 @@ include_directories(${CMAKE_SOURCE_DIR}/src/3rdparty/squirrel/include)
 
 include(MSVCFilters)
 
-add_executable(openttd WIN32 ${GENERATED_SOURCE_FILES})
-set_target_properties(openttd PROPERTIES OUTPUT_NAME "${BINARY_NAME}")
+if(OPTION_NO_SPLIT_LIB)
+    add_executable(openttd WIN32 ${GENERATED_SOURCE_FILES})
+else()
+    add_library(openttd_lib OBJECT ${GENERATED_SOURCE_FILES})
+    add_executable(openttd WIN32)
+    add_executable(openttd_test)
+    set_target_properties(openttd_test PROPERTIES EXCLUDE_FROM_ALL TRUE)
+endif()
 
-add_executable(openttd_test)
-set_target_properties(openttd_test PROPERTIES EXCLUDE_FROM_ALL TRUE)
+set_target_properties(openttd PROPERTIES OUTPUT_NAME "${BINARY_NAME}")
 # All other files are added via target_sources()
 
 set(host_tools_list strgen settingsgen)
@@ -310,6 +321,7 @@ if(MSVC)
     # If target -static is used, switch our project to static (/MT) too.
     # If the target ends on -static-md, it will remain dynamic (/MD).
     if(VCPKG_TARGET_TRIPLET MATCHES "-static" AND NOT VCPKG_TARGET_TRIPLET MATCHES "-md")
+        set_property(TARGET openttd_lib PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
         set_property(TARGET openttd PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
         set_property(TARGET openttd_test PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
      endif()
@@ -330,18 +342,25 @@ endif()
 add_dependencies(openttd
     find_version)
 
-target_link_libraries(openttd
+if(NOT OPTION_NO_SPLIT_LIB)
+    target_link_libraries(openttd openttd_lib)
+
+    target_link_libraries(openttd_test PRIVATE openttd_lib)
+    include(Catch)
+    catch_discover_tests(openttd_test)
+endif()
+
+target_link_libraries(${OPENTTD_LIB}
     openttd::languages
     openttd::settings
-    openttd::media
-    openttd::basesets
     openttd::script_api
-    openttd::binfiles
     Threads::Threads
 )
-target_link_libraries(openttd_test)
-include(Catch)
-catch_discover_tests(openttd_test)
+
+target_link_libraries(openttd
+    openttd::media
+    openttd::basesets
+)
 
 if(HAIKU)
     target_link_libraries(openttd "be" "network" "midi")
@@ -395,7 +414,7 @@ include(CheckAtomic)
 if(APPLE)
     link_package(Iconv TARGET Iconv::Iconv)
 
-    target_link_libraries(openttd
+    target_link_libraries(${OPENTTD_LIB}
         ${AUDIOTOOLBOX_LIBRARY}
         ${AUDIOUNIT_LIBRARY}
         ${COCOA_LIBRARY}
@@ -492,7 +511,7 @@ if(WIN32)
         -DPSAPI_VERSION=1
     )
 
-    target_link_libraries(openttd
+    target_link_libraries(${OPENTTD_LIB}
         ws2_32
         winmm
         imm32

@@ -32,7 +32,7 @@ endfunction()
 # For example: ADD_IF SDL_FOUND AND Allegro_FOUND
 #
 function(add_files)
-    _add_files_tgt(openttd ${ARGV})
+    _add_files_tgt(${OPENTTD_LIB} ${ARGV})
 endfunction()
 
 # Add a test file to be compiled.
@@ -44,7 +44,9 @@ endfunction()
 # For example: ADD_IF SDL_FOUND AND Allegro_FOUND
 #
 function(add_test_files)
-    _add_files_tgt(openttd_test ${ARGV})
+    if(NOT OPTION_NO_SPLIT_LIB)
+        _add_files_tgt(openttd_test ${ARGV})
+    endif()
 endfunction()
 
 # This function works around an 'issue' with CMake, where
