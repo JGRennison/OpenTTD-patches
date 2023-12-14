@@ -1445,7 +1445,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters &arg
 					}
 
 					default: {
-						StringParameters tmp_params(args, 1);
+						auto tmp_params = MakeParameters(args.GetNextParameter<int64>());
 						buff = GetStringWithArgs(buff, cargo_str, tmp_params, last);
 						break;
 					}
@@ -1459,7 +1459,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters &arg
 				if (cargo != CT_INVALID && cargo >= CargoSpec::GetArraySize()) break;
 
 				StringID cargo_str = (cargo == CT_INVALID) ? STR_QUANTITY_N_A : CargoSpec::Get(cargo)->quantifier;
-				StringParameters tmp_args(args, 1);
+				auto tmp_args = MakeParameters(args.GetNextParameter<int64>());
 				buff = GetStringWithArgs(buff, cargo_str, tmp_args, last);
 				break;
 			}
@@ -1712,7 +1712,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters &arg
 			case SCC_DEPOT_NAME: { // {DEPOT}
 				VehicleType vt = args.GetNextParameter<VehicleType>();
 				if (vt == VEH_AIRCRAFT) {
-					StringParameters tmp_params = StringParameters(args, 1);
+					auto tmp_params = MakeParameters(args.GetNextParameter<StationID>());
 					buff = GetStringWithArgs(buff, STR_FORMAT_DEPOT_NAME_AIRCRAFT, tmp_params, last);
 					break;
 				}
