@@ -3797,7 +3797,7 @@ public:
 			}
 		} else if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_TRAIN_STUCK) && !v->current_order.IsType(OT_LOADING) && !mouse_over_start_stop) {
 			str = HasBit(Train::From(v)->flags, VRF_WAITING_RESTRICTION) ? STR_VEHICLE_STATUS_TRAIN_STUCK_WAIT_RESTRICTION : STR_VEHICLE_STATUS_TRAIN_STUCK;
-		} else if (v->type == VEH_TRAIN && Train::From(v)->reverse_distance > 1) {
+		} else if (v->type == VEH_TRAIN && Train::From(v)->reverse_distance >= 1) {
 			if (Train::From(v)->track == TRACK_BIT_DEPOT) {
 				str = STR_VEHICLE_STATUS_TRAIN_MOVING_DEPOT;
 			} else {

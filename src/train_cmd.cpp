@@ -1097,7 +1097,7 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) con
 	if (this->signal_speed_restriction != 0 && _settings_game.vehicle.train_speed_adaptation && !HasBit(this->flags, VRF_SPEED_ADAPTATION_EXEMPT)) {
 		advisory_max_speed = std::min<int>(advisory_max_speed, this->signal_speed_restriction);
 	}
-	if (this->reverse_distance > 1) {
+	if (this->reverse_distance >= 1) {
 		advisory_max_speed = std::min<int>(advisory_max_speed, ReversingDistanceTargetSpeed(this));
 	}
 
@@ -4109,7 +4109,7 @@ static bool IsReservationLookAheadLongEnough(const Train *v, const ChooseTrainTr
 
 	if (HasBit(lookahead_state.flags, CTTLASF_STOP_FOUND) || HasBit(v->lookahead->flags, TRLF_DEPOT_END)) return true;
 
-	if (v->reverse_distance > 1) {
+	if (v->reverse_distance >= 1) {
 		if (v->lookahead->reservation_end_position >= v->lookahead->current_position + v->reverse_distance - 1) return true;
 	}
 
@@ -5394,10 +5394,6 @@ inline void DecreaseReverseDistance(Train *v)
 {
 	if (v->reverse_distance > 1) {
 		v->reverse_distance--;
-		if (unlikely(v->reverse_distance == 1 && v->cur_speed > 15 && _settings_game.vehicle.train_acceleration_model == AM_REALISTIC)) {
-			/* Train is still moving too fast, extend the reversing point */
-			v->reverse_distance++;
-		}
 	}
 }
 
@@ -5480,7 +5476,8 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 		direction_changed = true;
 	};
 
-	if (reverse && v->reverse_distance == 1) {
+	if (reverse && v->reverse_distance == 1 && (v->cur_speed <= 15 || !v->UsingRealisticBraking())) {
+		/* Train is not moving too fast and reversing distance has been reached */
 		goto reverse_train_direction;
 	}
 
