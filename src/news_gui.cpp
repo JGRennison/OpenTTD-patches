@@ -1051,7 +1051,8 @@ static void ShowNewsMessage(const NewsItem *ni)
  * Close active news message window
  * @return true if a window was closed.
  */
-bool HideActiveNewsMessage() {
+bool HideActiveNewsMessage()
+{
 	NewsWindow *w = (NewsWindow*)FindWindowById(WC_NEWS_WINDOW, 0);
 	if (w == nullptr) return false;
 	w->Close();

@@ -715,7 +715,8 @@ static const int LTMN_PERFORMANCE_LEAGUE = -7;        ///< Show default league t
 static const int LTMN_PERFORMANCE_RATING = -8;        ///< Show detailed performance rating
 static const int LTMN_HIGHSCORE          = -9;        ///< Show highscrore table
 
-static void AddDropDownLeagueTableOptions(DropDownList &list) {
+static void AddDropDownLeagueTableOptions(DropDownList &list)
+{
 	if (LeagueTable::GetNumItems() > 0) {
 		for (LeagueTable *lt : LeagueTable::Iterate()) {
 			list.push_back(std::make_unique<DropDownListStringItem>(lt->title, lt->index, false));
@@ -1647,8 +1648,9 @@ public:
 	void Draw(const Window *w) override
 	{
 		/* Draw brown-red toolbar bg. */
-		GfxFillRect(this->pos_x, this->pos_y, this->pos_x + this->current_x - 1, this->pos_y + this->current_y - 1, PC_VERY_DARK_RED);
-		GfxFillRect(this->pos_x, this->pos_y, this->pos_x + this->current_x - 1, this->pos_y + this->current_y - 1, PC_DARK_RED, FILLRECT_CHECKER);
+		const Rect r = this->GetCurrentRect();
+		GfxFillRect(r, PC_VERY_DARK_RED);
+		GfxFillRect(r, PC_DARK_RED, FILLRECT_CHECKER);
 
 		this->NWidgetContainer::Draw(w);
 	}

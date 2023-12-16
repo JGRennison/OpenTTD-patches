@@ -51,7 +51,7 @@ public:
 	DropDownListStringItem(StringID string, int result, bool masked);
 	DropDownListStringItem(const std::string &string, int result, bool masked);
 
-	bool Selectable() const override { return true; }
+	bool Selectable() const override { return !this->String().empty(); }
 	uint Width() const override;
 	void Draw(const Rect &r, bool sel, Colours bg_colour) const override;
 	const std::string &String() const { return this->string; }
@@ -85,5 +85,7 @@ typedef std::vector<std::unique_ptr<const DropDownListItem>> DropDownList;
 void ShowDropDownListAt(Window *w, DropDownList &&list, int selected, int button, Rect wi_rect, Colours wi_colour, bool instant_close = false, DropDownSyncFocus sync_parent_focus = DDSF_NONE);
 
 void ShowDropDownList(Window *w, DropDownList &&list, int selected, int button, uint width = 0, bool instant_close = false, DropDownSyncFocus sync_parent_focus = DDSF_NONE);
+
+Dimension GetDropDownListDimension(const DropDownList &list);
 
 #endif /* WIDGETS_DROPDOWN_TYPE_H */

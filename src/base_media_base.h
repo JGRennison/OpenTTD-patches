@@ -106,19 +106,34 @@ struct BaseSet {
 	 * @param isocode the isocode to search for
 	 * @return the description
 	 */
-	const char *GetDescription(const std::string &isocode) const
+	const std::string &GetDescription(const std::string &isocode) const
 	{
 		if (!isocode.empty()) {
 			/* First the full ISO code */
 			auto desc = this->description.find(isocode);
-			if (desc != this->description.end()) return desc->second.c_str();
+			if (desc != this->description.end()) return desc->second;
 
 			/* Then the first two characters */
 			desc = this->description.find(isocode.substr(0, 2));
-			if (desc != this->description.end()) return desc->second.c_str();
+			if (desc != this->description.end()) return desc->second;
 		}
 		/* Then fall back */
-		return this->description.at(std::string{}).c_str();
+		return this->description.at(std::string{});
+	}
+
+	/**
+	 * Get string to use when listing this set in the settings window.
+	 * If there are no invalid files, then this is just the set name,
+	 * otherwise a string is formatted including the number of invalid files.
+	 * @return the string to display.
+	 */
+	std::string GetListLabel() const
+	{
+		if (this->GetNumInvalid() == 0) return this->name;
+
+		SetDParamStr(0, this->name);
+		SetDParam(1, this->GetNumInvalid());
+		return GetString(STR_BASESET_STATUS);
 	}
 
 	/**

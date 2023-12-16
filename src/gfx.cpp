@@ -659,7 +659,7 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 	}
 
 	if (underline) {
-		GfxFillRect(left, y + h, right, y + h, ctx.string_colourremap[1]);
+		GfxFillRect(left, y + h, right, y + h + WidgetDimensions::scaled.bevel.top - 1, ctx.string_colourremap[1]);
 	}
 
 	return (align & SA_HOR_MASK) == SA_RIGHT ? left : right;
@@ -733,6 +733,7 @@ int DrawString(int left, int right, int top, StringID str, TextColour colour, St
  */
 int GetStringHeight(std::string_view str, int maxw, FontSize fontsize)
 {
+	assert(maxw > 0);
 	Layouter layout(str, maxw, TC_FROMSTRING, fontsize);
 	return layout.GetBounds().height;
 }

@@ -16,6 +16,9 @@ extern uint32 _road_layout_change_counter;
 
 typedef uint32 RoadTypeLabel;
 
+static const RoadTypeLabel ROADTYPE_LABEL_ROAD = 'ROAD';
+static const RoadTypeLabel ROADTYPE_LABEL_TRAM = 'ELRL';
+
 /**
  * The different roadtypes we support
  *

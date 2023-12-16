@@ -296,7 +296,7 @@ template <class Tbase_set>
 {
 	p += seprintf(p, last, "List of " SET_TYPE " sets:\n");
 	for (const Tbase_set *s = BaseMedia<Tbase_set>::available_sets; s != nullptr; s = s->next) {
-		p += seprintf(p, last, "%18s: %s", s->name.c_str(), s->GetDescription({}));
+		p += seprintf(p, last, "%18s: %s", s->name.c_str(), s->GetDescription({}).c_str());
 		int invalid = s->GetNumInvalid();
 		if (invalid != 0) {
 			int missing = s->GetNumMissing();

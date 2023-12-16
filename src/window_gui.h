@@ -55,10 +55,13 @@ struct WidgetDimensions {
 	RectPadding dropdowntext; ///< Offsets of text within a dropdown widget.
 	RectPadding modalpopup;   ///< Padding for a modal popup.
 	RectPadding picker;       ///< Padding for a picker (dock, station, etc) window.
+	RectPadding sparse;       ///< Padding used for 'sparse' widget window, usually containing multiple frames.
+	RectPadding sparse_resize; ///< Padding used for a resizeable 'sparse' widget window, usually containing multiple frames.
 
 	int pressed;              ///< Offset for contents of depressed widget.
 	int vsep_picker;          ///< Vertical spacing of picker-window widgets.
 	int vsep_normal;          ///< Normal vertical spacing.
+	int vsep_sparse;          ///< Normal vertical spacing for 'sparse' widget window.
 	int vsep_wide;            ///< Wide vertical spacing.
 	int hsep_normal;          ///< Normal horizontal spacing.
 	int hsep_wide;            ///< Wide horizontal spacing.
@@ -518,7 +521,8 @@ public:
 	 * @param widgets list of widgets
 	 */
 	template<typename... Args>
-	void RaiseWidgetsWhenLowered(Args... widgets) {
+	void RaiseWidgetsWhenLowered(Args... widgets)
+	{
 		(this->RaiseWidgetWhenLowered(widgets), ...);
 	}
 

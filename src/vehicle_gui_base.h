@@ -85,17 +85,14 @@ public:
 	byte unitnumber_digits;                   ///< The number of digits of the highest unit number.
 	Scrollbar *vscroll;
 	VehicleListIdentifier vli;                ///< Identifier of the vehicle list we want to currently show.
-	uint order_arrow_width;                   ///< Width of the arrow in the small order list.
 	VehicleID vehicle_sel;                    ///< Selected vehicle
+	byte cargo_filter_criteria;               ///< Selected cargo filter index
+	uint order_arrow_width;                   ///< Width of the arrow in the small order list.
 
 	typedef GUIVehicleGroupList::SortFunction VehicleGroupSortFunction;
 	typedef GUIVehicleList::SortFunction VehicleIndividualSortFunction;
 
-	CargoID cargo_filter[NUM_CARGO + 3];        ///< Available cargo filters; CargoID or CF_ANY or CF_NONE
-	StringID cargo_filter_texts[NUM_CARGO + 4]; ///< Texts for filter_cargo, terminated by INVALID_STRING_ID
-	byte cargo_filter_criteria;                 ///< Selected cargo filter
-
-	inline CargoID GetCargoFilter() const { return this->cargo_filter[this->cargo_filter_criteria]; }
+	inline CargoID GetCargoFilter() const { return this->cargo_filter_criteria; }
 
 	enum ActionDropdownItem {
 		ADI_TEMPLATE_REPLACE,
@@ -136,6 +133,8 @@ public:
 	void SetCargoFilterIndex(int index);
 	void SetCargoFilterArray();
 	void FilterVehicleList();
+	StringID GetCargoFilterLabel(CargoID cid) const;
+	DropDownList BuildCargoDropDownList() const;
 	void CheckCargoFilterEnableState(int plane_widget, bool re_init, bool possible = true);
 	Dimension GetActionDropdownSize(bool show_autoreplace, bool show_group, bool show_template_replace, StringID change_order_str = 0);
 	DropDownList BuildActionDropdownList(bool show_autoreplace, bool show_group, bool show_template_replace,

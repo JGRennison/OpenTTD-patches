@@ -768,7 +768,8 @@ struct LinkGraphSettings {
 	uint8 short_path_saturation;                ///< percentage up to which short paths are saturated before saturating most capacious paths
 	uint16 aircraft_link_scale;                 ///< scale effective distance of aircraft links
 
-	inline DistributionType GetDistributionType(CargoID cargo) const {
+	inline DistributionType GetDistributionType(CargoID cargo) const
+	{
 		if (this->distribution_per_cargo[cargo] != DT_PER_CARGO_DEFAULT) return this->distribution_per_cargo[cargo];
 		if (IsCargoInClass(cargo, CC_PASSENGERS)) return this->distribution_pax;
 		if (IsCargoInClass(cargo, CC_MAIL)) return this->distribution_mail;

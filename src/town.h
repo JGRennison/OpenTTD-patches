@@ -366,7 +366,8 @@ void MakeDefaultName(T *obj)
  * Converts original town ticks counters to plain game ticks. Note that
  * tick 0 is a valid tick so actual amount is one more than the counter value.
  */
-static inline uint16 TownTicksToGameTicks(uint16 ticks) {
+static inline uint16 TownTicksToGameTicks(uint16 ticks)
+{
 	return (std::min(ticks, MAX_TOWN_GROWTH_TICKS) + 1) * TOWN_GROWTH_TICKS - 1;
 }
 

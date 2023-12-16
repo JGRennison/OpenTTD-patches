@@ -39,7 +39,8 @@ public:
 	 *
 	 * @param timer The timer to register.
 	 */
-	static void RegisterTimer(BaseTimer<TTimerType> &timer) {
+	static void RegisterTimer(BaseTimer<TTimerType> &timer)
+	{
 #ifdef WITH_ASSERT
 		Validate(timer.period);
 #endif /* WITH_ASSERT */
@@ -51,7 +52,8 @@ public:
 	 *
 	 * @param timer The timer to unregister.
 	 */
-	static void UnregisterTimer(BaseTimer<TTimerType> &timer) {
+	static void UnregisterTimer(BaseTimer<TTimerType> &timer)
+	{
 		GetTimers().erase(&timer);
 	}
 
@@ -88,14 +90,16 @@ private:
 	 * same, it will sort based on the pointer value.
 	 */
 	struct base_timer_sorter {
-		bool operator() (BaseTimer<TTimerType> *a, BaseTimer<TTimerType> *b) const {
+		bool operator() (BaseTimer<TTimerType> *a, BaseTimer<TTimerType> *b) const
+		{
 			if (a->period == b->period) return a < b;
 			return a->period < b->period;
 		}
 	};
 
 	/** Singleton list, to store all the active timers. */
-	static std::set<BaseTimer<TTimerType> *, base_timer_sorter> &GetTimers() {
+	static std::set<BaseTimer<TTimerType> *, base_timer_sorter> &GetTimers()
+	{
 		static std::set<BaseTimer<TTimerType> *, base_timer_sorter> timers;
 		return timers;
 	}

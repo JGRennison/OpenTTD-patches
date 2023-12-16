@@ -1287,7 +1287,7 @@ private:
 public:
 	BuildRoadStationWindow(WindowDesc *desc, Window *parent, RoadStopType rs) : PickerWindowBase(desc, parent), filter_editbox(EDITBOX_MAX_SIZE * MAX_CHAR_LENGTH, EDITBOX_MAX_SIZE)
 	{
-		this->coverage_height = 2 * FONT_HEIGHT_NORMAL + 3 * WidgetDimensions::scaled.vsep_normal;
+		this->coverage_height = 2 * FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.vsep_normal;
 		this->vscrollList = nullptr;
 		this->vscrollMatrix = nullptr;
 		this->road_stop_type = rs;
@@ -1479,20 +1479,15 @@ public:
 		if (this->IsShaded()) return;
 		/* 'Accepts' and 'Supplies' texts. */
 		StationCoverageType sct = (this->window_class == WC_BUS_STATION) ? SCT_PASSENGERS_ONLY : SCT_NON_PASSENGERS_ONLY;
-
-		NWidgetBase *cov = this->GetWidget<NWidgetBase>(WID_BROS_INFO);
-		int top = cov->pos_y + WidgetDimensions::scaled.vsep_normal;
-		int left = cov->pos_x + WidgetDimensions::scaled.framerect.left;
-		int right = cov->pos_x + cov->current_x - WidgetDimensions::scaled.framerect.right;
-		int bottom = cov->pos_y + cov->current_y;
-		top = DrawStationCoverageAreaText(left, right, top, sct, rad, false) + WidgetDimensions::scaled.vsep_normal;
-		top = DrawStationCoverageAreaText(left, right, top, sct, rad, true) + WidgetDimensions::scaled.vsep_normal;
-
+		Rect r = this->GetWidget<NWidgetBase>(WID_BROS_ACCEPTANCE)->GetCurrentRect();
+		int top = r.top;
+		top = DrawStationCoverageAreaText(r.left, r.right, top, sct, rad, false) + WidgetDimensions::scaled.vsep_normal;
+		top = DrawStationCoverageAreaText(r.left, r.right, top, sct, rad, true);
 		/* Resize background if the window is too small.
 		 * Never make the window smaller to avoid oscillating if the size change affects the acceptance.
 		 * (This is the case, if making the window bigger moves the mouse into the window.) */
-		if (top > bottom) {
-			this->coverage_height += top - bottom;
+		if (top > r.bottom) {
+			this->coverage_height += top - r.bottom;
 			this->ReInit();
 		}
 	}
@@ -1557,7 +1552,7 @@ public:
 				resize->height = 1;
 				break;
 
-			case WID_BROS_INFO:
+			case WID_BROS_ACCEPTANCE:
 				size->height = this->coverage_height;
 				break;
 		}
@@ -1566,7 +1561,8 @@ public:
 	/**
 	 * Simply to have a easier way to get the StationType for bus, truck and trams from the WindowClass.
 	 */
-	StationType GetRoadStationTypeByWindowClass(WindowClass window_class) const {
+	StationType GetRoadStationTypeByWindowClass(WindowClass window_class) const
+	{
 		switch (window_class) {
 			case WC_BUS_STATION:          return STATION_BUS;
 			case WC_TRUCK_STATION:        return STATION_TRUCK;
@@ -1576,8 +1572,6 @@ public:
 
 	void DrawWidget(const Rect &r, int widget) const override
 	{
-		DrawPixelInfo tmp_dpi;
-
 		switch (GB(widget, 0, 16)) {
 			case WID_BROS_STATION_NE:
 			case WID_BROS_STATION_SE:
@@ -1630,7 +1624,9 @@ public:
 					GfxFillRect(r.Shrink(WidgetDimensions::scaled.bevel), PC_BLACK, FILLRECT_CHECKER);
 				}
 
-				if (FillDrawPixelInfo(&tmp_dpi, r.left, r.top, r.right - r.left + 1, r.bottom - r.top + 1)) {
+				/* Set up a clipping area for the sprite preview. */
+				DrawPixelInfo tmp_dpi;
+				if (FillDrawPixelInfo(&tmp_dpi, r.left, r.top, r.Width(), r.Height())) {
 					AutoRestoreBackup dpi_backup(_cur_dpi, &tmp_dpi);
 					int x = (r.Width()  - ScaleSpriteTrad(64)) / 2 + ScaleSpriteTrad(31);
 					int y = (r.Height() + ScaleSpriteTrad(48)) / 2 - ScaleSpriteTrad(31);
@@ -1647,7 +1643,8 @@ public:
 		}
 	}
 
-	void OnResize() override {
+	void OnResize() override
+	{
 		if (this->vscrollList != nullptr) {
 			this->vscrollList->SetCapacityFromWidget(this, WID_BROS_NEWST_LIST);
 		}
@@ -1656,7 +1653,8 @@ public:
 		}
 	}
 
-	void SetStringParameters(int widget) const override {
+	void SetStringParameters(int widget) const override
+	{
 		if (widget == WID_BROS_SHOW_NEWST_TYPE) {
 			const RoadStopSpec *roadstopspec = RoadStopClass::Get(_roadstop_gui_settings.roadstop_class)->GetSpec(_roadstop_gui_settings.roadstop_type);
 			SetDParam(0, (roadstopspec != nullptr && roadstopspec->name != 0) ? roadstopspec->name : STR_STATION_CLASS_DFLT_ROADSTOP);
@@ -1778,76 +1776,73 @@ static const NWidgetPart _nested_road_station_picker_widgets[] = {
 			NWidget(WWT_DEFSIZEBOX, COLOUR_DARK_GREEN),
 		EndContainer(),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BROS_BACKGROUND),
-		NWidget(NWID_HORIZONTAL), SetPadding(2, 0, 0, 2),
-			NWidget(NWID_VERTICAL),
-				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_FILTER_CONTAINER),
-					NWidget(NWID_HORIZONTAL), SetPadding(0, 5, 2, 0),
-						NWidget(WWT_TEXT, COLOUR_DARK_GREEN), SetFill(0, 1), SetDataTip(STR_LIST_FILTER_TITLE, STR_NULL),
-						NWidget(WWT_EDITBOX, COLOUR_GREY, WID_BROS_FILTER_EDITBOX), SetFill(1, 0), SetResize(1, 0),
-								SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
-					EndContainer(),
-				EndContainer(),
-				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_SHOW_NEWST_ADDITIONS),
-					NWidget(NWID_HORIZONTAL), SetPadding(0, 5, 2, 0),
-						NWidget(WWT_MATRIX, COLOUR_GREY, WID_BROS_NEWST_LIST), SetMinimalSize(122, 71), SetFill(1, 0),
-							SetMatrixDataTip(1, 0, STR_STATION_BUILD_STATION_CLASS_TOOLTIP), SetScrollbar(WID_BROS_NEWST_SCROLL),
-						NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_BROS_NEWST_SCROLL),
-					EndContainer(),
-				EndContainer(),
-				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_SHOW_NEWST_ORIENTATION),
-					NWidget(WWT_LABEL, COLOUR_DARK_GREEN), SetMinimalSize(144, 11), SetDataTip(STR_STATION_BUILD_ORIENTATION, STR_NULL), SetPadding(4, 2, 1, 2), SetFill(1, 0),
-				EndContainer(),
-				NWidget(NWID_HORIZONTAL), SetPadding(3),
-					NWidget(NWID_SPACER), SetFill(1, 0),
-					NWidget(NWID_VERTICAL), SetPIP(0, 2, 0),
-						NWidget(NWID_HORIZONTAL), SetPIP(0, 2, 0),
-							NWidget(WWT_PANEL, COLOUR_GREY, WID_BROS_STATION_NW), SetMinimalSize(66, 50), SetFill(0, 0), EndContainer(),
-							NWidget(WWT_PANEL, COLOUR_GREY, WID_BROS_STATION_NE), SetMinimalSize(66, 50), SetFill(0, 0), EndContainer(),
-							NWidget(WWT_PANEL, COLOUR_GREY, WID_BROS_STATION_X),  SetMinimalSize(66, 50), SetFill(0, 0), EndContainer(),
-						EndContainer(),
-						NWidget(NWID_HORIZONTAL), SetPIP(0, 2, 0),
-							NWidget(WWT_PANEL, COLOUR_GREY, WID_BROS_STATION_SW), SetMinimalSize(66, 50), SetFill(0, 0), EndContainer(),
-							NWidget(WWT_PANEL, COLOUR_GREY, WID_BROS_STATION_SE), SetMinimalSize(66, 50), SetFill(0, 0), EndContainer(),
-							NWidget(WWT_PANEL, COLOUR_GREY, WID_BROS_STATION_Y),  SetMinimalSize(66, 50), SetFill(0, 0), EndContainer(),
-						EndContainer(),
-					EndContainer(),
-					NWidget(NWID_SPACER), SetFill(1, 0),
-				EndContainer(),
-				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_SHOW_NEWST_TYPE_SEL),
-					NWidget(WWT_LABEL, COLOUR_DARK_GREEN, WID_BROS_SHOW_NEWST_TYPE), SetMinimalSize(144, 8), SetDataTip(STR_JUST_STRING, STR_NULL), SetTextStyle(TC_ORANGE), SetPadding(4, 2, 4, 2), SetFill(1, 0),
-				EndContainer(),
-				NWidget(WWT_LABEL, COLOUR_DARK_GREEN), SetDataTip(STR_STATION_BUILD_COVERAGE_AREA_TITLE, STR_NULL), SetPadding(WidgetDimensions::unscaled.framerect), SetFill(1, 0),
-				NWidget(NWID_HORIZONTAL),
-					NWidget(NWID_SPACER), SetMinimalSize(2, 0), SetFill(1, 0),
-					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BROS_LT_OFF), SetMinimalSize(60, 12),
-													SetDataTip(STR_STATION_BUILD_COVERAGE_OFF, STR_STATION_BUILD_COVERAGE_AREA_OFF_TOOLTIP),
-					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BROS_LT_ON), SetMinimalSize(60, 12),
-													SetDataTip(STR_STATION_BUILD_COVERAGE_ON, STR_STATION_BUILD_COVERAGE_AREA_ON_TOOLTIP),
-					NWidget(NWID_SPACER), SetMinimalSize(2, 0), SetFill(1, 0),
-				EndContainer(),
-			EndContainer(),
-			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_SHOW_NEWST_MATRIX),
-				/* We need an additional background for the matrix, as the matrix cannot handle the scrollbar due to not being an NWidgetCore. */
-				NWidget(WWT_PANEL, COLOUR_DARK_GREEN), SetScrollbar(WID_BROS_MATRIX_SCROLL),
-					NWidget(NWID_HORIZONTAL),
-						NWidget(NWID_MATRIX, COLOUR_DARK_GREEN, WID_BROS_MATRIX), SetPIP(0, 2, 0),
-							NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BROS_IMAGE), SetMinimalSize(66, 60),
-									SetFill(0, 0), SetResize(0, 0), SetDataTip(0x0, STR_STATION_BUILD_STATION_TYPE_TOOLTIP), SetScrollbar(WID_BROS_MATRIX_SCROLL),
+	NWidget(NWID_HORIZONTAL),
+		NWidget(WWT_PANEL, COLOUR_DARK_GREEN),
+			NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_normal, 0), SetPadding(WidgetDimensions::unscaled.picker),
+				NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
+					NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_picker, 0),
+						NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_FILTER_CONTAINER),
+							NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
+								NWidget(WWT_TEXT, COLOUR_DARK_GREEN), SetFill(0, 1), SetDataTip(STR_LIST_FILTER_TITLE, STR_NULL),
+								NWidget(WWT_EDITBOX, COLOUR_GREY, WID_BROS_FILTER_EDITBOX), SetFill(1, 0), SetResize(1, 0),
+										SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
 							EndContainer(),
 						EndContainer(),
-						NWidget(NWID_VSCROLLBAR, COLOUR_DARK_GREEN, WID_BROS_MATRIX_SCROLL),
+						NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_SHOW_NEWST_ADDITIONS),
+							NWidget(NWID_HORIZONTAL),
+								NWidget(WWT_MATRIX, COLOUR_GREY, WID_BROS_NEWST_LIST), SetMinimalSize(122, 71), SetFill(1, 0),
+									SetMatrixDataTip(1, 0, STR_STATION_BUILD_STATION_CLASS_TOOLTIP), SetScrollbar(WID_BROS_NEWST_SCROLL),
+								NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_BROS_NEWST_SCROLL),
+							EndContainer(),
+						EndContainer(),
+						NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_SHOW_NEWST_ORIENTATION),
+							NWidget(WWT_LABEL, COLOUR_DARK_GREEN), SetMinimalSize(144, 11), SetDataTip(STR_STATION_BUILD_ORIENTATION, STR_NULL), SetFill(1, 0),
+						EndContainer(),
+						NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_normal, 0),
+							NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0), SetPIPRatio(1, 0, 1),
+								NWidget(NWID_HORIZONTAL_LTR), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
+									NWidget(WWT_PANEL, COLOUR_GREY, WID_BROS_STATION_NW), SetMinimalSize(66, 50), SetFill(0, 0), EndContainer(),
+									NWidget(WWT_PANEL, COLOUR_GREY, WID_BROS_STATION_NE), SetMinimalSize(66, 50), SetFill(0, 0), EndContainer(),
+								EndContainer(),
+								NWidget(WWT_PANEL, COLOUR_GREY, WID_BROS_STATION_X),  SetMinimalSize(66, 50), SetFill(0, 0), EndContainer(),
+							EndContainer(),
+							NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0), SetPIPRatio(1, 0, 1),
+								NWidget(NWID_HORIZONTAL_LTR), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
+									NWidget(WWT_PANEL, COLOUR_GREY, WID_BROS_STATION_SW), SetMinimalSize(66, 50), SetFill(0, 0), EndContainer(),
+									NWidget(WWT_PANEL, COLOUR_GREY, WID_BROS_STATION_SE), SetMinimalSize(66, 50), SetFill(0, 0), EndContainer(),
+								EndContainer(),
+								NWidget(WWT_PANEL, COLOUR_GREY, WID_BROS_STATION_Y),  SetMinimalSize(66, 50), SetFill(0, 0), EndContainer(),
+							EndContainer(),
+						EndContainer(),
+						NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_SHOW_NEWST_TYPE_SEL),
+							NWidget(WWT_LABEL, COLOUR_DARK_GREEN, WID_BROS_SHOW_NEWST_TYPE), SetMinimalSize(144, 8), SetDataTip(STR_JUST_STRING, STR_NULL), SetTextStyle(TC_ORANGE), SetFill(1, 0),
+						EndContainer(),
+						NWidget(WWT_LABEL, COLOUR_DARK_GREEN), SetDataTip(STR_STATION_BUILD_COVERAGE_AREA_TITLE, STR_NULL), SetFill(1, 0),
+						NWidget(NWID_HORIZONTAL), SetPIPRatio(1, 0, 1),
+							NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BROS_LT_OFF), SetMinimalSize(60, 12),
+									SetDataTip(STR_STATION_BUILD_COVERAGE_OFF, STR_STATION_BUILD_COVERAGE_AREA_OFF_TOOLTIP),
+							NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BROS_LT_ON), SetMinimalSize(60, 12),
+									SetDataTip(STR_STATION_BUILD_COVERAGE_ON, STR_STATION_BUILD_COVERAGE_AREA_ON_TOOLTIP),
+						EndContainer(),
+					EndContainer(),
+					NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_SHOW_NEWST_MATRIX),
+						/* Hidden panel as NWID_MATRIX does not support SetScrollbar() */
+						NWidget(WWT_PANEL, COLOUR_DARK_GREEN), SetScrollbar(WID_BROS_MATRIX_SCROLL),
+							NWidget(NWID_MATRIX, COLOUR_DARK_GREEN, WID_BROS_MATRIX), SetPIP(0, 2, 0),
+								NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BROS_IMAGE), SetMinimalSize(66, 60),
+										SetFill(0, 0), SetResize(0, 0), SetDataTip(0x0, STR_STATION_BUILD_STATION_TYPE_TOOLTIP), SetScrollbar(WID_BROS_MATRIX_SCROLL),
+								EndContainer(),
+							EndContainer(),
+						EndContainer(),
 					EndContainer(),
 				EndContainer(),
+				NWidget(WWT_EMPTY, INVALID_COLOUR, WID_BROS_ACCEPTANCE), SetFill(1, 1), SetResize(1, 0), SetMinimalTextLines(2, WidgetDimensions::unscaled.vsep_normal),
 			EndContainer(),
 		EndContainer(),
-		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_EMPTY, INVALID_COLOUR, WID_BROS_INFO), SetPadding(WidgetDimensions::unscaled.framerect), SetFill(1, 1), SetResize(1, 0),
-			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_SHOW_NEWST_RESIZE),
-				NWidget(NWID_VERTICAL),
-					NWidget(WWT_PANEL, COLOUR_DARK_GREEN), SetFill(0, 1), EndContainer(),
-					NWidget(WWT_RESIZEBOX, COLOUR_DARK_GREEN),
-				EndContainer(),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_SHOW_NEWST_RESIZE),
+			NWidget(NWID_VERTICAL),
+				NWidget(NWID_VSCROLLBAR, COLOUR_DARK_GREEN, WID_BROS_MATRIX_SCROLL),
+				NWidget(WWT_RESIZEBOX, COLOUR_DARK_GREEN),
 			EndContainer(),
 		EndContainer(),
 	EndContainer(),
@@ -1870,70 +1865,61 @@ static const NWidgetPart _nested_tram_station_picker_widgets[] = {
 			NWidget(WWT_DEFSIZEBOX, COLOUR_DARK_GREEN),
 		EndContainer(),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BROS_BACKGROUND),
-		NWidget(NWID_HORIZONTAL), SetPadding(2, 0, 0, 2),
-			NWidget(NWID_VERTICAL),
-				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_FILTER_CONTAINER),
-					NWidget(NWID_HORIZONTAL), SetPadding(0, 5, 2, 0),
-						NWidget(WWT_TEXT, COLOUR_DARK_GREEN), SetFill(0, 1), SetDataTip(STR_LIST_FILTER_TITLE, STR_NULL),
-						NWidget(WWT_EDITBOX, COLOUR_GREY, WID_BROS_FILTER_EDITBOX), SetFill(1, 0), SetResize(1, 0),
-								SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
-					EndContainer(),
-				EndContainer(),
-				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_SHOW_NEWST_ADDITIONS),
-					NWidget(NWID_HORIZONTAL), SetPadding(0, 5, 2, 0),
-						NWidget(WWT_MATRIX, COLOUR_GREY, WID_BROS_NEWST_LIST), SetMinimalSize(122, 71), SetFill(1, 0),
-							SetMatrixDataTip(1, 0, STR_STATION_BUILD_STATION_CLASS_TOOLTIP), SetScrollbar(WID_BROS_NEWST_SCROLL),
-						NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_BROS_NEWST_SCROLL),
-					EndContainer(),
-				EndContainer(),
-				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_SHOW_NEWST_ORIENTATION),
-					NWidget(WWT_LABEL, COLOUR_DARK_GREEN), SetMinimalSize(144, 11), SetDataTip(STR_STATION_BUILD_ORIENTATION, STR_NULL), SetPadding(4, 2, 1, 2), SetFill(1, 0),
-				EndContainer(),
-				NWidget(NWID_HORIZONTAL), SetPadding(3),
-					NWidget(NWID_SPACER), SetFill(1, 0),
-					NWidget(NWID_VERTICAL), SetPIP(0, 2, 0),
-						NWidget(NWID_HORIZONTAL), SetPIP(0, 2, 0),
+	NWidget(NWID_HORIZONTAL),
+		NWidget(WWT_PANEL, COLOUR_DARK_GREEN),
+			NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_normal, 0), SetPadding(WidgetDimensions::unscaled.picker),
+				NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
+					NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_picker, 0),
+						NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_FILTER_CONTAINER),
+							NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
+								NWidget(WWT_TEXT, COLOUR_DARK_GREEN), SetFill(0, 1), SetDataTip(STR_LIST_FILTER_TITLE, STR_NULL),
+								NWidget(WWT_EDITBOX, COLOUR_GREY, WID_BROS_FILTER_EDITBOX), SetFill(1, 0), SetResize(1, 0),
+										SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
+							EndContainer(),
+						EndContainer(),
+						NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_SHOW_NEWST_ADDITIONS),
+							NWidget(NWID_HORIZONTAL),
+								NWidget(WWT_MATRIX, COLOUR_GREY, WID_BROS_NEWST_LIST), SetMinimalSize(122, 71), SetFill(1, 0),
+									SetMatrixDataTip(1, 0, STR_STATION_BUILD_STATION_CLASS_TOOLTIP), SetScrollbar(WID_BROS_NEWST_SCROLL),
+								NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_BROS_NEWST_SCROLL),
+							EndContainer(),
+						EndContainer(),
+						NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_SHOW_NEWST_ORIENTATION),
+							NWidget(WWT_LABEL, COLOUR_DARK_GREEN), SetMinimalSize(144, 11), SetDataTip(STR_STATION_BUILD_ORIENTATION, STR_NULL), SetFill(1, 0),
+						EndContainer(),
+						NWidget(NWID_HORIZONTAL_LTR), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0), SetPIPRatio(1, 0, 1),
 							NWidget(WWT_PANEL, COLOUR_GREY, WID_BROS_STATION_X),  SetMinimalSize(66, 50), SetFill(0, 0), EndContainer(),
 							NWidget(WWT_PANEL, COLOUR_GREY, WID_BROS_STATION_Y),  SetMinimalSize(66, 50), SetFill(0, 0), EndContainer(),
 						EndContainer(),
+						NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_SHOW_NEWST_TYPE_SEL),
+							NWidget(WWT_LABEL, COLOUR_DARK_GREEN, WID_BROS_SHOW_NEWST_TYPE), SetMinimalSize(144, 8), SetDataTip(STR_JUST_STRING, STR_NULL), SetTextStyle(TC_ORANGE), SetFill(1, 0),
+						EndContainer(),
+						NWidget(WWT_LABEL, COLOUR_DARK_GREEN), SetDataTip(STR_STATION_BUILD_COVERAGE_AREA_TITLE, STR_NULL), SetFill(1, 0),
+						NWidget(NWID_HORIZONTAL), SetPIPRatio(1, 0, 1),
+							NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BROS_LT_OFF), SetMinimalSize(60, 12),
+									SetDataTip(STR_STATION_BUILD_COVERAGE_OFF, STR_STATION_BUILD_COVERAGE_AREA_OFF_TOOLTIP),
+							NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BROS_LT_ON), SetMinimalSize(60, 12),
+									SetDataTip(STR_STATION_BUILD_COVERAGE_ON, STR_STATION_BUILD_COVERAGE_AREA_ON_TOOLTIP),
+						EndContainer(),
 					EndContainer(),
-					NWidget(NWID_SPACER), SetFill(1, 0),
-				EndContainer(),
-				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_SHOW_NEWST_TYPE_SEL),
-					NWidget(WWT_LABEL, COLOUR_DARK_GREEN, WID_BROS_SHOW_NEWST_TYPE), SetMinimalSize(144, 8), SetDataTip(STR_JUST_STRING, STR_NULL), SetTextStyle(TC_ORANGE), SetPadding(4, 2, 4, 2), SetFill(1, 0),
-				EndContainer(),
-				NWidget(WWT_LABEL, COLOUR_DARK_GREEN), SetDataTip(STR_STATION_BUILD_COVERAGE_AREA_TITLE, STR_NULL), SetPadding(WidgetDimensions::unscaled.framerect), SetFill(1, 0),
-				NWidget(NWID_HORIZONTAL),
-					NWidget(NWID_SPACER), SetMinimalSize(2, 0), SetFill(1, 0),
-					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BROS_LT_OFF), SetMinimalSize(60, 12),
-													SetDataTip(STR_STATION_BUILD_COVERAGE_OFF, STR_STATION_BUILD_COVERAGE_AREA_OFF_TOOLTIP),
-					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BROS_LT_ON), SetMinimalSize(60, 12),
-													SetDataTip(STR_STATION_BUILD_COVERAGE_ON, STR_STATION_BUILD_COVERAGE_AREA_ON_TOOLTIP),
-					NWidget(NWID_SPACER), SetMinimalSize(2, 0), SetFill(1, 0),
-				EndContainer(),
-			EndContainer(),
-			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_SHOW_NEWST_MATRIX),
-				/* We need an additional background for the matrix, as the matrix cannot handle the scrollbar due to not being an NWidgetCore. */
-				NWidget(WWT_PANEL, COLOUR_DARK_GREEN), SetScrollbar(WID_BROS_MATRIX_SCROLL),
-					NWidget(NWID_HORIZONTAL),
-						NWidget(NWID_MATRIX, COLOUR_DARK_GREEN, WID_BROS_MATRIX), SetPIP(0, 2, 0), SetPadding(2, 0, 0, 0),
-							NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BROS_IMAGE), SetMinimalSize(66, 60),
-									SetFill(0, 0), SetResize(0, 0), SetDataTip(0x0, STR_STATION_BUILD_STATION_TYPE_TOOLTIP), SetScrollbar(WID_BROS_MATRIX_SCROLL),
+					NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_SHOW_NEWST_MATRIX),
+						/* Hidden panel as NWID_MATRIX does not support SetScrollbar() */
+						NWidget(WWT_PANEL, COLOUR_DARK_GREEN), SetScrollbar(WID_BROS_MATRIX_SCROLL),
+							NWidget(NWID_MATRIX, COLOUR_DARK_GREEN, WID_BROS_MATRIX), SetPIP(0, 2, 0),
+								NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BROS_IMAGE), SetMinimalSize(66, 60),
+										SetFill(0, 0), SetResize(0, 0), SetDataTip(0x0, STR_STATION_BUILD_STATION_TYPE_TOOLTIP), SetScrollbar(WID_BROS_MATRIX_SCROLL),
+								EndContainer(),
 							EndContainer(),
 						EndContainer(),
-						NWidget(NWID_VSCROLLBAR, COLOUR_DARK_GREEN, WID_BROS_MATRIX_SCROLL),
 					EndContainer(),
 				EndContainer(),
+				NWidget(WWT_EMPTY, INVALID_COLOUR, WID_BROS_ACCEPTANCE), SetFill(1, 1), SetResize(1, 0), SetMinimalTextLines(2, WidgetDimensions::unscaled.vsep_normal),
 			EndContainer(),
 		EndContainer(),
-		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_EMPTY, INVALID_COLOUR, WID_BROS_INFO), SetPadding(WidgetDimensions::unscaled.framerect), SetFill(1, 1), SetResize(1, 0),
-			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_SHOW_NEWST_RESIZE),
-				NWidget(NWID_VERTICAL),
-					NWidget(WWT_PANEL, COLOUR_DARK_GREEN), SetFill(0, 1), EndContainer(),
-					NWidget(WWT_RESIZEBOX, COLOUR_DARK_GREEN),
-				EndContainer(),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BROS_SHOW_NEWST_RESIZE),
+			NWidget(NWID_VERTICAL),
+				NWidget(NWID_VSCROLLBAR, COLOUR_DARK_GREEN, WID_BROS_MATRIX_SCROLL),
+				NWidget(WWT_RESIZEBOX, COLOUR_DARK_GREEN),
 			EndContainer(),
 		EndContainer(),
 	EndContainer(),

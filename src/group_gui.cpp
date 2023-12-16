@@ -492,7 +492,7 @@ public:
 				break;
 
 			case WID_GL_FILTER_BY_CARGO:
-				size->width = GetStringListWidth(this->cargo_filter_texts) + padding.width;
+				size->width = std::max(size->width, GetDropDownListDimension(this->BuildCargoDropDownList()).width + padding.width);
 				break;
 
 			case WID_GL_MANAGE_VEHICLES_DROPDOWN: {
@@ -542,8 +542,9 @@ public:
 		switch (widget) {
 
 			case WID_GL_FILTER_BY_CARGO:
-				SetDParam(0, this->cargo_filter_texts[this->cargo_filter_criteria]);
+				SetDParam(0, this->GetCargoFilterLabel(this->cargo_filter_criteria));
 				break;
+
 			case WID_GL_AVAILABLE_VEHICLES:
 				SetDParam(0, STR_VEHICLE_LIST_AVAILABLE_TRAINS + this->vli.vtype);
 				break;
@@ -621,8 +622,6 @@ public:
 
 		/* Set text of "sort by" dropdown widget. */
 		this->GetWidget<NWidgetCore>(WID_GL_SORT_BY_DROPDOWN)->widget_data = this->GetVehicleSorterNames()[this->vehgroups.SortType()];
-
-		this->GetWidget<NWidgetCore>(WID_GL_FILTER_BY_CARGO)->widget_data = this->cargo_filter_texts[this->cargo_filter_criteria];
 
 		this->DrawWidgets();
 	}
@@ -730,7 +729,7 @@ public:
 				return;
 
 			case WID_GL_FILTER_BY_CARGO: // Select filtering criteria dropdown menu
-				ShowDropDownMenu(this, this->cargo_filter_texts, this->cargo_filter_criteria, WID_GL_FILTER_BY_CARGO, 0, 0);
+				ShowDropDownList(this, this->BuildCargoDropDownList(), this->cargo_filter_criteria, widget);
 				break;
 
 			case WID_GL_ALL_VEHICLES: // All vehicles button

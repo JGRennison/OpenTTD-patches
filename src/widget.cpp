@@ -152,9 +152,12 @@ const WidgetDimensions WidgetDimensions::unscaled = {
 	{WD_DROPDOWNTEXT_LEFT, WD_DROPDOWNTEXT_TOP, WD_DROPDOWNTEXT_RIGHT, WD_DROPDOWNTEXT_BOTTOM}, ///< dropdowntext
 	{20, 10, 20, 10},    ///< modalpopup
 	{3, 3, 3, 3},        ///< picker
+	{10, 8, 10, 8},      ///< sparse window padding
+	{10, 8, 10, 1},      ///< resizable sparse window padding
 	1,                   ///< pressed
 	1,                   ///< vsep_picker
 	WD_PAR_VSEP_NORMAL,  ///< vsep_normal
+	4,                   ///< vsep_sparse
 	WD_PAR_VSEP_WIDE,    ///< vsep_wide
 	2,                   ///< hsep_normal
 	6,                   ///< hsep_wide
@@ -1153,7 +1156,43 @@ void NWidgetResizeBase::SetResize(uint resize_x, uint resize_y)
 }
 
 /**
+ * Try to set optimum widget size for a multiline text widget.
+ * The window will need to be reinited if the size is changed.
+ * @param str Multiline string contents that will fill the widget.
+ * @param max_line Maximum number of lines.
+ * @return true iff the widget minimum size has changed.
+ */
+bool NWidgetResizeBase::UpdateMultilineWidgetSize(const std::string &str, int max_lines)
+{
+	int y = GetStringHeight(str, this->current_x);
+	if (y > max_lines * FONT_HEIGHT_NORMAL) {
+		/* Text at the current width is too tall, so try to guess a better width. */
+		Dimension d = GetStringBoundingBox(str);
+		d.height *= max_lines;
+		d.width /= 2;
+		return this->UpdateSize(d.width, d.height);
+	}
+	return this->UpdateVerticalSize(y);
+}
+
+/**
  * Set absolute (post-scaling) minimal size of the widget.
+ * The window will need to be reinited if the size is changed.
+ * @param min_x Horizontal minimal size of the widget.
+ * @param min_y Vertical minimal size of the widget.
+ * @return true iff the widget minimum size has changed.
+ */
+bool NWidgetResizeBase::UpdateSize(uint min_x, uint min_y)
+{
+	if (min_x == this->min_x && min_y == this->min_y) return false;
+	this->min_x = min_x;
+	this->min_y = min_y;
+	return true;
+}
+
+/**
+ * Set absolute (post-scaling) minimal size of the widget.
+ * The window will need to be reinited if the size is changed.
  * @param min_y Vertical minimal size of the widget.
  * @return true iff the widget minimum size has changed.
  */
@@ -1628,15 +1667,9 @@ void NWidgetHorizontal::AssignSizePosition(SizingType sizing, int x, int y, uint
 	assert(given_width >= this->smallest_x && given_height >= this->smallest_y);
 
 	/* Compute additional width given to us. */
-	uint additional_length = given_width;
-	if (this->pip_ratio_pre + this->pip_ratio_inter + this->pip_ratio_post != 0 || (sizing == ST_SMALLEST && (this->flags & NC_EQUALSIZE))) {
-		/* For EQUALSIZE containers this does not sum to smallest_x during initialisation */
-		additional_length -= this->pip_pre + this->gaps * this->pip_inter + this->pip_post;
-		for (NWidgetBase *child_wid = this->head; child_wid != nullptr; child_wid = child_wid->next) {
-			if (child_wid->smallest_x != 0 || child_wid->fill_x != 0) additional_length -= child_wid->smallest_x + child_wid->padding.Horizontal();
-		}
-	} else {
-		additional_length -= this->smallest_x;
+	uint additional_length = given_width - (this->pip_pre + this->gaps * this->pip_inter + this->pip_post);
+	for (NWidgetBase *child_wid = this->head; child_wid != nullptr; child_wid = child_wid->next) {
+		if (child_wid->smallest_x != 0 || child_wid->fill_x != 0) additional_length -= child_wid->smallest_x + child_wid->padding.Horizontal();
 	}
 
 	this->StoreSizePosition(sizing, x, y, given_width, given_height);
@@ -1826,15 +1859,9 @@ void NWidgetVertical::AssignSizePosition(SizingType sizing, int x, int y, uint g
 	assert(given_width >= this->smallest_x && given_height >= this->smallest_y);
 
 	/* Compute additional height given to us. */
-	uint additional_length = given_height;
-	if (this->pip_ratio_pre + this->pip_ratio_inter + this->pip_ratio_post != 0 || (sizing == ST_SMALLEST && (this->flags & NC_EQUALSIZE))) {
-		/* For EQUALSIZE containers this does not sum to smallest_y during initialisation */
-		additional_length -= this->pip_pre + this->gaps * this->pip_inter + this->pip_post;
-		for (NWidgetBase *child_wid = this->head; child_wid != nullptr; child_wid = child_wid->next) {
-			if (child_wid->smallest_y != 0 || child_wid->fill_y != 0) additional_length -= child_wid->smallest_y + child_wid->padding.Vertical();
-		}
-	} else {
-		additional_length -= this->smallest_y;
+	uint additional_length = given_height - (this->pip_pre + this->gaps * this->pip_inter + this->pip_post);
+	for (NWidgetBase *child_wid = this->head; child_wid != nullptr; child_wid = child_wid->next) {
+		if (child_wid->smallest_y != 0 || child_wid->fill_y != 0) additional_length -= child_wid->smallest_y + child_wid->padding.Vertical();
 	}
 
 	this->StoreSizePosition(sizing, x, y, given_width, given_height);
@@ -2143,7 +2170,7 @@ void NWidgetMatrix::FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widgets)
 	this->base_flags &= ~WBF_DIRTY;
 
 	/* Fill the background. */
-	GfxFillRect(this->pos_x, this->pos_y, this->pos_x + this->current_x - 1, this->pos_y + this->current_y - 1, _colour_gradient[this->colour & 0xF][5]);
+	GfxFillRect(this->GetCurrentRect(), _colour_gradient[this->colour & 0xF][5]);
 
 	/* Set up a clipping area for the previews. */
 	bool rtl = _current_text_dir == TD_RTL;
@@ -3330,6 +3357,8 @@ static const NWidgetPart *MakeNWidget(const NWidgetPart *nwid_begin, const NWidg
 
 				NWidgetBackground *nwb = dynamic_cast<NWidgetBackground *>(*dest);
 				if (nwb != nullptr) nwb->SetPIPRatio(nwid_begin->u.pip.pre, nwid_begin->u.pip.inter, nwid_begin->u.pip.post);
+
+				if (unlikely(nwc == nullptr && nwb == nullptr)) throw std::runtime_error("WPT_PIPRATIO requires NWidgetPIPContainer or NWidgetBackground");
 				break;
 			}
 

@@ -3948,7 +3948,7 @@ public:
 	{
 		switch (widget) {
 			case WID_TRSL_FILTER_BY_CARGO:
-				SetDParam(0, this->cargo_filter_texts[this->cargo_filter_criteria]);
+				SetDParam(0, this->GetCargoFilterLabel(this->cargo_filter_criteria));
 				break;
 
 			case WID_TRSL_CAPTION:
@@ -3987,7 +3987,7 @@ public:
 		/* Set text of sort by dropdown */
 		this->GetWidget<NWidgetCore>(WID_TRSL_SORT_BY_DROPDOWN)->widget_data = this->vehicle_group_none_sorter_names[this->vehgroups.SortType()];
 
-		this->GetWidget<NWidgetCore>(WID_TRSL_FILTER_BY_CARGO)->widget_data = this->cargo_filter_texts[this->cargo_filter_criteria];
+		this->GetWidget<NWidgetCore>(WID_TRSL_FILTER_BY_CARGO)->widget_data = this->GetCargoFilterLabel(this->cargo_filter_criteria);
 
 		this->DrawWidgets();
 	}
@@ -4047,7 +4047,7 @@ public:
 				return;
 
 			case WID_TRSL_FILTER_BY_CARGO: // Cargo filter dropdown
-				ShowDropDownMenu(this, this->cargo_filter_texts, this->cargo_filter_criteria, WID_TRSL_FILTER_BY_CARGO, 0, 0);
+				ShowDropDownList(this, this->BuildCargoDropDownList(), this->cargo_filter_criteria, widget);
 				break;
 
 			case WID_TRSL_ALL_VEHICLES: // All vehicles button
