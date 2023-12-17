@@ -2751,7 +2751,7 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 	}
 	if (possible_callback_handler) group->dsg_flags |= DSGF_CB_HANDLER;
 
-	if ((group->dsg_flags & (DSGF_CB_HANDLER | DSGF_CB_RESULT)) == 0) {
+	if ((group->dsg_flags & (DSGF_CB_HANDLER | DSGF_CB_RESULT)) == 0 && !HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_CB_QUICK_EXIT)) {
 		group->sg_flags |= SGF_SKIP_CB;
 	}
 
