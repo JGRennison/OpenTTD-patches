@@ -67,11 +67,7 @@ enum SchdispatchWidgets {
  */
 static void SetScheduleStartDateIntl(uint32 p1, DateTicksScaled date)
 {
-	Date start_date;
-	uint16 start_full_date_fract;
-	SchdispatchConvertToFullDateFract(date, &start_date, &start_full_date_fract);
-
-	DoCommandPEx(0, p1, start_date, start_full_date_fract, CMD_SCHEDULED_DISPATCH_SET_START_DATE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
+	DoCommandPEx(0, p1, 0, (uint64)date, CMD_SCHEDULED_DISPATCH_SET_START_DATE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
 }
 
 /**
@@ -161,32 +157,24 @@ static int CalculateMaxRequiredVehicle(Ticks timetable_duration, uint32 schedule
 
 static void AddNewScheduledDispatchSchedule(VehicleID vindex)
 {
-	Date start_date;
-	uint16 start_full_date_fract;
+	DateTicksScaled start_tick;
 	uint32 duration;
 
 	if (_settings_time.time_in_minutes) {
 		/* Set to 00:00 of today, and 1 day */
 
-		DateTicksScaled val;
-		val = MINUTES_DATE(MINUTES_DAY(CURRENT_MINUTE), 0, 0);
-		val -= _settings_time.clock_offset;
-		val *= _settings_time.ticks_per_minute;
-		SchdispatchConvertToFullDateFract(val, &start_date, &start_full_date_fract);
+		start_tick = MINUTES_DATE(MINUTES_DAY(CURRENT_MINUTE), 0, 0);
+		start_tick -= _settings_time.clock_offset;
+		start_tick *= _settings_time.ticks_per_minute;
 
 		duration = 24 * 60 * _settings_time.ticks_per_minute;
 	} else {
 		/* Set Jan 1st and 365 day */
-		start_date = DAYS_TILL(_cur_year);
-		start_full_date_fract = 0;
+		start_tick = DateToScaledDateTicks(DAYS_TILL(_cur_year));
 		duration = 365 * DAY_TICKS;
 	}
 
-	uint64 p3 = 0;
-	SB(p3, 0, 32, start_date);
-	SB(p3, 32, 16, start_full_date_fract);
-
-	DoCommandPEx(0, vindex, duration, p3, CMD_SCHEDULED_DISPATCH_ADD_NEW_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), CcAddNewSchDispatchSchedule, nullptr, 0);
+	DoCommandPEx(0, vindex, duration, (uint64)start_tick, CMD_SCHEDULED_DISPATCH_ADD_NEW_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), CcAddNewSchDispatchSchedule, nullptr, 0);
 }
 
 struct SchdispatchWindow : GeneralVehicleWindow {

@@ -4654,6 +4654,12 @@ void AdjustVehicleScaledTickBase(int64 delta)
 	for (Vehicle *v : Vehicle::Iterate()) {
 		if (v->timetable_start != 0) v->timetable_start += delta;
 	}
+
+	for (OrderList *order_list : OrderList::Iterate()) {
+		for (DispatchSchedule &ds : order_list->GetScheduledDispatchScheduleSet()) {
+			ds.SetScheduledDispatchStartTick(ds.GetScheduledDispatchStartTick() + delta);
+		}
+	}
 }
 
 void ShiftVehicleDates(int interval)
@@ -4663,25 +4669,6 @@ void ShiftVehicleDates(int interval)
 	}
 	/* date_of_last_service_newgrf is not updated here as it must stay stable
 	 * for vehicles outside of a depot. */
-}
-
-extern void VehicleDayLengthChanged(DateTicksScaled old_scaled_date_ticks, DateTicksScaled old_scaled_date_ticks_offset, uint8 old_day_length_factor)
-{
-	if (_settings_game.economy.day_length_factor == old_day_length_factor || !_settings_game.game_time.time_in_minutes) return;
-
-	for (OrderList *orderlist : OrderList::Iterate()) {
-		for (DispatchSchedule &ds : orderlist->GetScheduledDispatchScheduleSet()) {
-			if (ds.GetScheduledDispatchStartDatePart() >= 0) {
-				DateTicksScaled start = ((int64)ds.GetScheduledDispatchStartDatePart() * DAY_TICKS * old_day_length_factor) +
-						ds.GetScheduledDispatchStartDateFractPart() + old_scaled_date_ticks_offset;
-				start += (_scaled_date_ticks - old_scaled_date_ticks);
-				Date date;
-				uint16 full_date_fract;
-				std::tie(date, full_date_fract) = ScaledDateTicksToDateAndFullSubTicks(start);
-				ds.SetScheduledDispatchStartDate(date, full_date_fract);
-			}
-		}
-	}
 }
 
 /**

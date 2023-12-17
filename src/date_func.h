@@ -70,13 +70,6 @@ static inline DateTicksScaled DateTicksToScaledDateTicks(DateTicks date_ticks)
 	return ((int64)date_ticks * _settings_game.economy.day_length_factor) + _scaled_date_ticks_offset;
 }
 
-static inline std::pair<Date, uint16> ScaledDateTicksToDateAndFullSubTicks(DateTicksScaled ticks)
-{
-	ticks -= _scaled_date_ticks_offset;
-	const int full_date = _settings_game.economy.day_length_factor * DAY_TICKS;
-	return std::make_pair<Date, uint16>(ticks / full_date, ticks % full_date);
-}
-
 /**
  * Calculate the year of a given date.
  * @param date The date to consider.

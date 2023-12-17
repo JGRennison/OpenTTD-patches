@@ -17,26 +17,4 @@
 void ShowSchdispatchWindow(const Vehicle *v);
 void SchdispatchInvalidateWindows(const Vehicle *v);
 
-/**
- * Convert date and full date fraction to DateTicksScaled
- * @param date  Current date
- * @param full_date_fract  full date fraction, the number of scaled tick in current day
- * @return DateTicksScaled for ths specified date/faction
- */
-inline DateTicksScaled SchdispatchConvertToScaledTick(Date date, uint16 full_date_fract)
-{
-    return DateToScaledDateTicks(date) + full_date_fract;
-}
-
-/**
- * Convert DateTicksScaled to date and full date fraction format
- * @param tick DateTicksScaled to convert
- * @param date  Point to date, for ourput
- * @param full_date_fract  Pointer to uint16, for output
- */
-inline void SchdispatchConvertToFullDateFract(DateTicksScaled tick, Date* date, uint16* full_date_fract)
-{
-    std::tie(*date, *full_date_fract) = ScaledDateTicksToDateAndFullSubTicks(tick);
-}
-
 #endif /* SCHDISPATCH_H */

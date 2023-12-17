@@ -715,8 +715,7 @@ private:
 
 	std::vector<uint32> scheduled_dispatch;                             ///< Scheduled dispatch time
 	uint32 scheduled_dispatch_duration = 0;                             ///< Scheduled dispatch duration
-	Date scheduled_dispatch_start_date = -1;                            ///< Scheduled dispatch start date
-	uint16 scheduled_dispatch_start_full_date_fract = 0;                ///< Scheduled dispatch start full date fraction;
+	DateTicksScaled scheduled_dispatch_start_tick = -1;                 ///< Scheduled dispatch start tick
 	                                                                    ///  this counts to (DAY_TICK * _settings_game.economy.day_length_factor)
 	int32 scheduled_dispatch_last_dispatch = 0;                         ///< Last vehicle dispatched offset
 	int32 scheduled_dispatch_max_delay = 0;                             ///< Maximum allowed delay
@@ -726,8 +725,7 @@ private:
 	inline void CopyBasicFields(const DispatchSchedule &other)
 	{
 		this->scheduled_dispatch_duration              = other.scheduled_dispatch_duration;
-		this->scheduled_dispatch_start_date            = other.scheduled_dispatch_start_date;
-		this->scheduled_dispatch_start_full_date_fract = other.scheduled_dispatch_start_full_date_fract;
+		this->scheduled_dispatch_start_tick            = other.scheduled_dispatch_start_tick;
 		this->scheduled_dispatch_last_dispatch         = other.scheduled_dispatch_last_dispatch;
 		this->scheduled_dispatch_max_delay             = other.scheduled_dispatch_max_delay;
 	}
@@ -761,38 +759,24 @@ public:
 
 	/**
 	 * Set the scheduled dispatch start
-	 * @param  start New start date
-	 * @param  fract New start full date fraction, see \c CmdScheduledDispatchSetStartDate
+	 * @param  start_ticks New start ticks
 	 */
-	inline void SetScheduledDispatchStartDate(Date start_date, uint16 start_full_date_fract)
+	inline void SetScheduledDispatchStartTick(DateTicksScaled start_tick)
 	{
-		this->scheduled_dispatch_start_date = start_date;
-		this->scheduled_dispatch_start_full_date_fract = start_full_date_fract;
+		this->scheduled_dispatch_start_tick = start_tick;
 	}
-
-	/**
-	 * Get the scheduled dispatch start date part
-	 * @return  scheduled dispatch start date part
-	 */
-	inline Date GetScheduledDispatchStartDatePart() const { return this->scheduled_dispatch_start_date; }
-
-	/**
-	 * Get the scheduled dispatch start date fract part
-	 * @return  scheduled dispatch start date fract part
-	 */
-	inline uint16 GetScheduledDispatchStartDateFractPart() const { return this->scheduled_dispatch_start_full_date_fract; }
 
 	/**
 	 * Get the scheduled dispatch start date, in absolute scaled tick
 	 * @return  scheduled dispatch start date
 	 */
-	inline DateTicksScaled GetScheduledDispatchStartTick() const { return SchdispatchConvertToScaledTick(this->scheduled_dispatch_start_date, this->scheduled_dispatch_start_full_date_fract); }
+	inline DateTicksScaled GetScheduledDispatchStartTick() const { return this->scheduled_dispatch_start_tick; }
 
 	/**
 	 * Whether the scheduled dispatch setting is valid
 	 * @return  scheduled dispatch start date fraction
 	 */
-	inline bool IsScheduledDispatchValid() const { return this->scheduled_dispatch_start_date >= 0 && this->scheduled_dispatch_duration > 0; }
+	inline bool IsScheduledDispatchValid() const { return this->scheduled_dispatch_duration > 0; }
 
 	/**
 	 * Set the scheduled dispatch last dispatch offset, in scaled tick

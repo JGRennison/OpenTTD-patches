@@ -3692,14 +3692,6 @@ CommandCost CmdMassChangeOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 
 void ShiftOrderDates(int interval)
 {
-	for (OrderList *orderlist : OrderList::Iterate()) {
-		for (DispatchSchedule &ds : orderlist->GetScheduledDispatchScheduleSet()) {
-			if (ds.GetScheduledDispatchStartDatePart() >= 0) {
-				ds.SetScheduledDispatchStartDate(ds.GetScheduledDispatchStartDatePart() + interval, ds.GetScheduledDispatchStartDateFractPart());
-			}
-		}
-	}
-
 	SetWindowClassesDirty(WC_VEHICLE_ORDERS);
 	SetWindowClassesDirty(WC_VEHICLE_TIMETABLE);
 	SetWindowClassesDirty(WC_SCHDISPATCH_SLOTS);

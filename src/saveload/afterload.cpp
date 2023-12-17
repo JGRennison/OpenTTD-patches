@@ -4165,7 +4165,7 @@ bool AfterLoadGame()
 		for (OrderList *order_list : OrderList::Iterate()) {
 			if (order_list->GetScheduledDispatchScheduleCount() == 1) {
 				const DispatchSchedule &ds = order_list->GetDispatchScheduleByIndex(0);
-				if (!ds.IsScheduledDispatchValid() && ds.GetScheduledDispatch().empty()) {
+				if (!(ds.GetScheduledDispatchStartTick() >= 0 && ds.IsScheduledDispatchValid()) && ds.GetScheduledDispatch().empty()) {
 					order_list->GetScheduledDispatchScheduleSet().clear();
 				} else {
 					VehicleOrderID idx = order_list->GetFirstSharedVehicle()->GetFirstWaitingLocation(false);
@@ -4175,6 +4175,18 @@ bool AfterLoadGame()
 				}
 			}
 		}
+	}
+	if (SlXvIsFeaturePresent(XSLFI_SCHEDULED_DISPATCH, 1, 4)) {
+		extern btree::btree_map<DispatchSchedule *, uint16> _old_scheduled_dispatch_start_full_date_fract_map;
+
+		for (OrderList *order_list : OrderList::Iterate()) {
+			for (DispatchSchedule &ds : order_list->GetScheduledDispatchScheduleSet()) {
+				DateTicksScaled start_tick = DateToScaledDateTicks(ds.GetScheduledDispatchStartTick()) + _old_scheduled_dispatch_start_full_date_fract_map[&ds];
+				ds.SetScheduledDispatchStartTick(start_tick);
+			}
+		}
+
+		_old_scheduled_dispatch_start_full_date_fract_map.clear();
 	}
 
 	if (SlXvIsFeaturePresent(XSLFI_TRACE_RESTRICT, 7, 12)) {

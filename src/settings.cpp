@@ -1770,14 +1770,8 @@ static bool DayLengthPreChange(int32 &new_value)
 
 static void DayLengthChanged(int32 new_value)
 {
-	DateTicksScaled old_scaled_date_ticks = _scaled_date_ticks;
-	DateTicksScaled old_scaled_date_ticks_offset = _scaled_date_ticks_offset;
-
 	extern void RebaseScaledDateTicksBase();
 	RebaseScaledDateTicksBase();
-
-	extern void VehicleDayLengthChanged(DateTicksScaled old_scaled_date_ticks, DateTicksScaled old_scaled_date_ticks_offset, uint8 old_day_length_factor);
-	VehicleDayLengthChanged(old_scaled_date_ticks, old_scaled_date_ticks_offset, _pre_change_day_length_factor);
 
 	SetupTileLoopCounts();
 

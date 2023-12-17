@@ -180,9 +180,8 @@ CommandCost CmdScheduledDispatchSetDuration(TileIndex tile, DoCommandFlag flags,
  * @param tile Not used.
  * @param flags Operation to perform.
  * @param p1 Vehicle index
- * @param p2 Date to add.
- * @param p3 various bitstuffed elements
- *  - p3 = (bit 0 - 15)  - Full date fraction
+ * @param p2 Unused.
+ * @param p3 Start tick
  * @param text unused
  * @return the cost of this operation or an error
  */
@@ -201,12 +200,9 @@ CommandCost CmdScheduledDispatchSetStartDate(TileIndex tile, DoCommandFlag flags
 
 	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
 
-	int32 date = (int32)p2;
-	uint16 full_date_fract = GB(p3, 0, 16);
-
 	if (flags & DC_EXEC) {
 		DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(schedule_index);
-		ds.SetScheduledDispatchStartDate(date, full_date_fract);
+		ds.SetScheduledDispatchStartTick((DateTicksScaled)p3);
 		ds.UpdateScheduledDispatch(nullptr);
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 	}
@@ -325,9 +321,7 @@ CommandCost CmdScheduledDispatchClear(TileIndex tile, DoCommandFlag flags, uint3
  * @param flags Operation to perform.
  * @param p1 Vehicle index
  * @param p2 Duration, in scaled tick
- * @param p3 various bitstuffed elements
- *  - p3 = (bit 0 - 31)  - Start date
- *  - p3 = (bit 32 - 47) - Full date fraction
+ * @param p3 Start tick
  * @param text unused
  * @return the cost of this operation or an error
  */
@@ -344,14 +338,11 @@ CommandCost CmdScheduledDispatchAddNewSchedule(TileIndex tile, DoCommandFlag fla
 	if (v->orders == nullptr) return CMD_ERROR;
 	if (v->orders->GetScheduledDispatchScheduleCount() >= 4096) return CMD_ERROR;
 
-	int32 date = GB(p3, 0, 32);
-	uint16 full_date_fract = GB(p3, 32, 16);
-
 	if (flags & DC_EXEC) {
 		v->orders->GetScheduledDispatchScheduleSet().emplace_back();
 		DispatchSchedule &ds = v->orders->GetScheduledDispatchScheduleSet().back();
 		ds.SetScheduledDispatchDuration(p2);
-		ds.SetScheduledDispatchStartDate(date, full_date_fract);
+		ds.SetScheduledDispatchStartTick((DateTicksScaled)p3);
 		ds.UpdateScheduledDispatch(nullptr);
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 	}
@@ -683,10 +674,8 @@ bool DispatchSchedule::UpdateScheduledDispatchToDate(DateTicksScaled now)
 {
 	bool update_windows = false;
 	if (this->GetScheduledDispatchStartTick() == 0) {
-		int64 start = now - (now % this->GetScheduledDispatchDuration());
-		SchdispatchConvertToFullDateFract(
-				start,
-				&this->scheduled_dispatch_start_date, &this->scheduled_dispatch_start_full_date_fract);
+		DateTicksScaled start = now - (now % this->GetScheduledDispatchDuration());
+		this->SetScheduledDispatchStartTick(start);
 		int64 last_dispatch = -start;
 		if (last_dispatch < INT_MIN && _settings_game.game_time.time_in_minutes) {
 			/* Advance by multiples of 24 hours */
@@ -696,14 +685,12 @@ bool DispatchSchedule::UpdateScheduledDispatchToDate(DateTicksScaled now)
 			this->scheduled_dispatch_last_dispatch = ClampTo<int32>(last_dispatch);
 		}
 	}
-	/* Most of the time this loop does not runs. It makes sure start date in in past */
+	/* Most of the time this loop does not run. It makes sure start date in in past */
 	while (this->GetScheduledDispatchStartTick() > now) {
 		OverflowSafeInt32 last_dispatch = this->scheduled_dispatch_last_dispatch;
 		last_dispatch += this->GetScheduledDispatchDuration();
 		this->scheduled_dispatch_last_dispatch = last_dispatch;
-		SchdispatchConvertToFullDateFract(
-				this->GetScheduledDispatchStartTick() - this->GetScheduledDispatchDuration(),
-				&this->scheduled_dispatch_start_date, &this->scheduled_dispatch_start_full_date_fract);
+		this->SetScheduledDispatchStartTick(this->GetScheduledDispatchStartTick() - this->GetScheduledDispatchDuration());
 		update_windows = true;
 	}
 	/* Most of the time this loop runs once. It makes sure the start date is as close to current time as possible. */
@@ -711,9 +698,7 @@ bool DispatchSchedule::UpdateScheduledDispatchToDate(DateTicksScaled now)
 		OverflowSafeInt32 last_dispatch = this->scheduled_dispatch_last_dispatch;
 		last_dispatch -= this->GetScheduledDispatchDuration();
 		this->scheduled_dispatch_last_dispatch = last_dispatch;
-		SchdispatchConvertToFullDateFract(
-				this->GetScheduledDispatchStartTick() + this->GetScheduledDispatchDuration(),
-				&this->scheduled_dispatch_start_date, &this->scheduled_dispatch_start_full_date_fract);
+		this->SetScheduledDispatchStartTick(this->GetScheduledDispatchStartTick() + this->GetScheduledDispatchDuration());
 		update_windows = true;
 	}
 	return update_windows;
