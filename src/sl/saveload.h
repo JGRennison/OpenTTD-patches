@@ -20,6 +20,7 @@
 
 #include <stdarg.h>
 #include <vector>
+#include <array>
 #include <list>
 #include <string>
 #include <type_traits>
@@ -275,6 +276,24 @@ static inline constexpr VarType GetVarFileType(VarType type)
 	return type & 0xF; // GB(type, 0, 4);
 }
 
+template <class, template <class, class...> class>
+struct sl_is_instance : public std::false_type {};
+
+template <class...Ts, template <class, class...> class U>
+struct sl_is_instance<U<Ts...>, U> : public std::true_type {};
+
+template<template<class, std::size_t> class T, class U>
+struct sl_is_derived_from_array
+{
+private:
+	template<class V, std::size_t N>
+	static decltype(static_cast<T<V, N>>(std::declval<U>()), std::true_type{}) test(const T<V, N>&);
+	static std::false_type test(...);
+
+public:
+	static constexpr bool value = decltype(sl_is_derived_from_array::test(std::declval<U>()))::value;
+};
+
 /**
  * Return expect size in bytes of a VarType
  * @param type VarType to get size of.
@@ -304,11 +323,47 @@ static inline constexpr size_t SlVarSize(VarType type)
 	}
 }
 
-template <class, template <class, class...> class>
-struct sl_is_instance : public std::false_type {};
+/**
+ * Check whether the variable size/type of the variable in the saveload configuration
+ * matches with the actual variable size, for primitive types.
+ */
+template <typename TYPE>
+static inline constexpr bool SlCheckPrimitiveTypeVar(VarType type)
+{
+	using T = typename std::remove_reference<TYPE>::type;
 
-template <class...Ts, template <class, class...> class U>
-struct sl_is_instance<U<Ts...>, U> : public std::true_type {};
+	if (GetVarMemType(type) == SLE_VAR_NAME) {
+		return std::is_same_v<T, std::string>;
+	}
+	if (GetVarMemType(type) == SLE_VAR_CNAME) {
+		return std::is_same_v<T, char *> || std::is_same_v<T, const char *> || std::is_same_v<T, TinyString>;
+	}
+	if (!std::is_integral_v<T> && !std::is_enum_v<T> && !sl_is_instance<T, OverflowSafeInt>{}) return false;
+	return sizeof(T) == SlVarSize(type);
+}
+
+/**
+ * Check whether the variable size/type of the variable in the saveload configuration
+ * matches with the actual variable size, for array types.
+ */
+template <typename TYPE>
+static inline constexpr bool SlCheckArrayTypeVar(VarType type, size_t length, bool top_level)
+{
+	using T = typename std::remove_reference<TYPE>::type;
+
+	if constexpr (std::is_array_v<T>) {
+		return SlCheckPrimitiveTypeVar<typename std::remove_all_extents_t<T>>(type);
+	}
+	if constexpr (sl_is_derived_from_array<std::array, T>::value) {
+		return SlCheckArrayTypeVar<typename T::value_type>(type, length, false);
+	}
+	if constexpr (std::is_class_v<T>) {
+		/* If T is class/struct, assume that the array is writing all its members, so check that the total size matches.
+		 * It's impractical to check the actual struct/class fields. */
+		if (top_level && sizeof(T) == length) return true;
+	}
+	return SlCheckPrimitiveTypeVar<T>(type);
+}
 
 /**
  * Check whether the variable size/type of the variable in the saveload configuration
@@ -321,7 +376,7 @@ static inline constexpr bool SlCheckVar(SaveLoadType cmd, VarType type, size_t l
 
 	switch (cmd) {
 		case SL_VAR:
-			return sizeof(T) == SlVarSize(type);
+			return SlCheckPrimitiveTypeVar<T>(type);
 
 		case SL_REF:
 			/* These should all be pointer sized. */
@@ -340,7 +395,7 @@ static inline constexpr bool SlCheckVar(SaveLoadType cmd, VarType type, size_t l
 
 		case SL_ARR:
 			/* Partial load of array is permitted. */
-			return sizeof(T) >= SlVarSize(type) * length;
+			return SlCheckArrayTypeVar<T>(type, SlVarSize(type) * length, true) && sizeof(T) >= SlVarSize(type) * length;
 
 		case SL_REFLIST:
 			if constexpr (sl_is_instance<T, std::list>{}) {
@@ -362,13 +417,13 @@ static inline constexpr bool SlCheckVar(SaveLoadType cmd, VarType type, size_t l
 
 		case SL_RING:
 			if constexpr (sl_is_instance<T, ring_buffer>{}) {
-				return sizeof(typename T::value_type) == SlVarSize(type);
+				return SlCheckPrimitiveTypeVar<typename T::value_type>(type);
 			}
 			return false;
 
 		case SL_VARVEC:
 			if constexpr (sl_is_instance<T, std::vector>{}) {
-				return sizeof(typename T::value_type) == SlVarSize(type);
+				return SlCheckPrimitiveTypeVar<typename T::value_type>(type);
 			}
 			return false;
 
