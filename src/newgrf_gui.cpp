@@ -226,8 +226,8 @@ struct NewGRFParametersWindow : public Window {
 		switch (widget) {
 			case WID_NP_NUMPAR_DEC:
 			case WID_NP_NUMPAR_INC: {
-				size->width  = std::max(SETTING_BUTTON_WIDTH / 2, FONT_HEIGHT_NORMAL);
-				size->height = std::max(SETTING_BUTTON_HEIGHT, FONT_HEIGHT_NORMAL);
+				size->width  = std::max(SETTING_BUTTON_WIDTH / 2, GetCharacterHeight(FS_NORMAL));
+				size->height = std::max(SETTING_BUTTON_HEIGHT, GetCharacterHeight(FS_NORMAL));
 				break;
 			}
 
@@ -241,7 +241,7 @@ struct NewGRFParametersWindow : public Window {
 			}
 
 			case WID_NP_BACKGROUND:
-				this->line_height = std::max(SETTING_BUTTON_HEIGHT, FONT_HEIGHT_NORMAL) + padding.height;
+				this->line_height = std::max(SETTING_BUTTON_HEIGHT, GetCharacterHeight(FS_NORMAL)) + padding.height;
 
 				resize->width = 1;
 				resize->height = this->line_height;
@@ -250,7 +250,7 @@ struct NewGRFParametersWindow : public Window {
 
 			case WID_NP_DESCRIPTION:
 				/* Minimum size of 4 lines. The 500 is the default size of the window. */
-				Dimension suggestion = {500U - WidgetDimensions::scaled.frametext.Horizontal(), (uint)FONT_HEIGHT_NORMAL * 4 + WidgetDimensions::scaled.frametext.Vertical()};
+				Dimension suggestion = {500U - WidgetDimensions::scaled.frametext.Horizontal(), (uint)GetCharacterHeight(FS_NORMAL) * 4 + WidgetDimensions::scaled.frametext.Vertical()};
 				for (const auto &par_info : this->grf_config->param_info) {
 					if (!par_info.has_value()) continue;
 					const char *desc = GetGRFStringFromGRFText(par_info->desc);
@@ -292,7 +292,7 @@ struct NewGRFParametersWindow : public Window {
 		Rect tr = ir.Indent(SETTING_BUTTON_WIDTH + WidgetDimensions::scaled.hsep_wide, rtl);
 
 		int button_y_offset = (this->line_height - SETTING_BUTTON_HEIGHT) / 2;
-		int text_y_offset = (this->line_height - FONT_HEIGHT_NORMAL) / 2;
+		int text_y_offset = (this->line_height - GetCharacterHeight(FS_NORMAL)) / 2;
 		for (uint i = this->vscroll->GetPosition(); this->vscroll->IsVisible(i) && i < this->vscroll->GetCount(); i++) {
 			GRFParameterInfo &par_info = this->GetParameterInfo(i);
 			uint32 current_value = par_info.GetValue(this->grf_config);
@@ -762,7 +762,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 			case WID_NS_FILE_LIST:
 			{
 				Dimension d = maxdim(GetScaledSpriteSize(SPR_SQUARE), GetScaledSpriteSize(SPR_WARNING_SIGN));
-				resize->height = std::max<uint>(d.height + 2U, FONT_HEIGHT_NORMAL);
+				resize->height = std::max<uint>(d.height + 2U, GetCharacterHeight(FS_NORMAL));
 				size->height = std::max(size->height, padding.height + 6 * resize->height);
 				break;
 			}
@@ -770,7 +770,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 			case WID_NS_AVAIL_LIST:
 			{
 				Dimension d = maxdim(GetScaledSpriteSize(SPR_SQUARE), GetScaledSpriteSize(SPR_WARNING_SIGN));
-				resize->height = std::max<uint>(d.height + 2U, FONT_HEIGHT_NORMAL);
+				resize->height = std::max<uint>(d.height + 2U, GetCharacterHeight(FS_NORMAL));
 				size->height = std::max(size->height, padding.height + 8 * resize->height);
 				break;
 			}
@@ -783,7 +783,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 			}
 
 			case WID_NS_NEWGRF_INFO:
-				size->height = std::max<uint>(size->height, WidgetDimensions::scaled.framerect.Vertical() + 10 * FONT_HEIGHT_NORMAL);
+				size->height = std::max<uint>(size->height, WidgetDimensions::scaled.framerect.Vertical() + 10 * GetCharacterHeight(FS_NORMAL));
 				break;
 
 			case WID_NS_PRESET_LIST: {
@@ -876,7 +876,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 				Dimension warning = GetSpriteSize(SPR_WARNING_SIGN);
 				int square_offset_y = (step_height - square.height) / 2;
 				int warning_offset_y = (step_height - warning.height) / 2;
-				int offset_y = (step_height - FONT_HEIGHT_NORMAL) / 2;
+				int offset_y = (step_height - GetCharacterHeight(FS_NORMAL)) / 2;
 
 				bool rtl = _current_text_dir == TD_RTL;
 				uint text_left    = rtl ? tr.left : tr.left + square.width + 13;
@@ -921,7 +921,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 
 				Rect tr = r.Shrink(WidgetDimensions::scaled.framerect);
 				uint step_height = this->GetWidget<NWidgetBase>(WID_NS_AVAIL_LIST)->resize_y;
-				int offset_y = (step_height - FONT_HEIGHT_NORMAL) / 2;
+				int offset_y = (step_height - GetCharacterHeight(FS_NORMAL)) / 2;
 				uint min_index = this->vscroll2->GetPosition();
 				uint max_index = std::min(min_index + this->vscroll2->GetCapacity(), (uint)this->avails.size());
 
@@ -940,7 +940,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 			case WID_NS_NEWGRF_INFO_TITLE: {
 				/* Create the nice grayish rectangle at the details top. */
 				GfxFillRect(r.Shrink(WidgetDimensions::scaled.bevel), PC_DARK_BLUE);
-				DrawString(r.left, r.right, CenterBounds(r.top, r.bottom, FONT_HEIGHT_NORMAL), STR_NEWGRF_SETTINGS_INFO_TITLE, TC_FROMSTRING, SA_HOR_CENTER);
+				DrawString(r.left, r.right, CenterBounds(r.top, r.bottom, GetCharacterHeight(FS_NORMAL)), STR_NEWGRF_SETTINGS_INFO_TITLE, TC_FROMSTRING, SA_HOR_CENTER);
 				break;
 			}
 
@@ -2139,7 +2139,7 @@ struct SavePresetWindow : public Window {
 	{
 		switch (widget) {
 			case WID_SVP_PRESET_LIST: {
-				resize->height = FONT_HEIGHT_NORMAL;
+				resize->height = GetCharacterHeight(FS_NORMAL);
 				size->height = 0;
 				for (uint i = 0; i < this->presets.size(); i++) {
 					Dimension d = GetStringBoundingBox(this->presets[i]);
@@ -2160,7 +2160,7 @@ struct SavePresetWindow : public Window {
 				GfxFillRect(br, PC_BLACK);
 
 				uint step_height = this->GetWidget<NWidgetBase>(WID_SVP_PRESET_LIST)->resize_y;
-				int offset_y = (step_height - FONT_HEIGHT_NORMAL) / 2;
+				int offset_y = (step_height - GetCharacterHeight(FS_NORMAL)) / 2;
 				Rect tr = r.Shrink(WidgetDimensions::scaled.framerect);
 				uint min_index = this->vscroll->GetPosition();
 				uint max_index = std::min(min_index + this->vscroll->GetCapacity(), (uint)this->presets.size());
@@ -2268,7 +2268,7 @@ struct ScanProgressWindow : public Window {
 				/* We really don't know the width. We could determine it by scanning the NewGRFs,
 				 * but this is the status window for scanning them... */
 				size->width = std::max<uint>(size->width, GetStringBoundingBox(STR_NEWGRF_SCAN_STATUS).width + padding.width);
-				size->height = FONT_HEIGHT_NORMAL * 2 + WidgetDimensions::scaled.vsep_normal;
+				size->height = GetCharacterHeight(FS_NORMAL) * 2 + WidgetDimensions::scaled.vsep_normal;
 				break;
 		}
 	}
@@ -2283,7 +2283,7 @@ struct ScanProgressWindow : public Window {
 				uint percent = scanned * 100 / std::max(1U, _settings_client.gui.last_newgrf_count);
 				DrawFrameRect(ir.WithWidth(ir.Width() * percent / 100, false), COLOUR_MAUVE, FR_NONE);
 				SetDParam(0, percent);
-				DrawString(ir.left, ir.right, CenterBounds(ir.top, ir.bottom, FONT_HEIGHT_NORMAL), STR_GENERATION_PROGRESS, TC_FROMSTRING, SA_HOR_CENTER);
+				DrawString(ir.left, ir.right, CenterBounds(ir.top, ir.bottom, GetCharacterHeight(FS_NORMAL)), STR_GENERATION_PROGRESS, TC_FROMSTRING, SA_HOR_CENTER);
 				break;
 			}
 
@@ -2292,7 +2292,7 @@ struct ScanProgressWindow : public Window {
 				SetDParam(1, _settings_client.gui.last_newgrf_count);
 				DrawString(r.left, r.right, r.top, STR_NEWGRF_SCAN_STATUS, TC_FROMSTRING, SA_HOR_CENTER);
 
-				DrawString(r.left, r.right, r.top + FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.vsep_normal, this->last_name, TC_BLACK, SA_HOR_CENTER);
+				DrawString(r.left, r.right, r.top + GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal, this->last_name, TC_BLACK, SA_HOR_CENTER);
 				break;
 		}
 	}

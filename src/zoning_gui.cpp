@@ -146,7 +146,7 @@ struct ZoningWindow : public Window {
 			}
 		}
 		size->width += padding.width;
-		size->height = FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.dropdowntext.Vertical();
+		size->height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.dropdowntext.Vertical();
 	}
 };
 

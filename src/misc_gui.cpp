@@ -80,7 +80,7 @@ public:
 		Rect ir = r.Shrink(WidgetDimensions::scaled.frametext);
 		for (size_t i = 0; i < this->landinfo_data.size(); i++) {
 			DrawString(ir, this->landinfo_data[i], i == 0 ? TC_LIGHT_BLUE : TC_FROMSTRING, SA_HOR_CENTER);
-			ir.top += FONT_HEIGHT_NORMAL + (i == 0 ? WidgetDimensions::scaled.vsep_wide : WidgetDimensions::scaled.vsep_normal);
+			ir.top += GetCharacterHeight(FS_NORMAL) + (i == 0 ? WidgetDimensions::scaled.vsep_wide : WidgetDimensions::scaled.vsep_normal);
 		}
 
 		if (!this->cargo_acceptance.empty()) {
@@ -98,7 +98,7 @@ public:
 			uint width = GetStringBoundingBox(this->landinfo_data[i]).width + WidgetDimensions::scaled.frametext.Horizontal();
 			size->width = std::max(size->width, width);
 
-			size->height += FONT_HEIGHT_NORMAL + (i == 0 ? WidgetDimensions::scaled.vsep_wide : WidgetDimensions::scaled.vsep_normal);
+			size->height += GetCharacterHeight(FS_NORMAL) + (i == 0 ? WidgetDimensions::scaled.vsep_wide : WidgetDimensions::scaled.vsep_normal);
 		}
 
 		if (!this->cargo_acceptance.empty()) {
@@ -512,7 +512,7 @@ struct AboutWindow : public Window {
 	int line_height;                         ///< The height of a single line
 	static const int num_visible_lines = 19; ///< The number of lines visible simultaneously
 
-	static const uint TIMER_INTERVAL = 2100; ///< Scrolling interval, scaled by line text line height. This value chosen to maintain parity: 2100 / FONT_HEIGHT_NORMAL = 150ms
+	static const uint TIMER_INTERVAL = 2100; ///< Scrolling interval, scaled by line text line height. This value chosen to maintain parity: 2100 / GetCharacterHeight(FS_NORMAL) = 150ms
 	GUITimer timer;
 
 	AboutWindow() : Window(&_about_desc)
@@ -534,7 +534,7 @@ struct AboutWindow : public Window {
 	{
 		if (widget != WID_A_SCROLLING_TEXT) return;
 
-		this->line_height = FONT_HEIGHT_NORMAL;
+		this->line_height = GetCharacterHeight(FS_NORMAL);
 
 		Dimension d;
 		d.height = this->line_height * num_visible_lines;
@@ -547,7 +547,7 @@ struct AboutWindow : public Window {
 
 		/* Set scroll interval based on required speed. To keep scrolling smooth,
 		 * the interval is adjusted rather than the distance moved. */
-		this->timer.SetInterval(TIMER_INTERVAL / FONT_HEIGHT_NORMAL);
+		this->timer.SetInterval(TIMER_INTERVAL / GetCharacterHeight(FS_NORMAL));
 	}
 
 	void DrawWidget(const Rect &r, int widget) const override

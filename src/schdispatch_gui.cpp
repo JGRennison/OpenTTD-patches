@@ -281,15 +281,15 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			}
 
 			case WID_SCHDISPATCH_SUMMARY_PANEL:
-				size->height = 6 * FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.framerect.Vertical();
+				size->height = 6 * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical();
 				uint warning_count = this->warning_count;
 				if (this->no_order_warning_pad) {
 					warning_count++;
-					size->height -= FONT_HEIGHT_NORMAL;
+					size->height -= GetCharacterHeight(FS_NORMAL);
 				}
 				if (warning_count > 0) {
 					const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
-					size->height += warning_count * std::max<int>(warning_dimensions.height, FONT_HEIGHT_NORMAL);
+					size->height += warning_count * std::max<int>(warning_dimensions.height, GetCharacterHeight(FS_NORMAL));
 				}
 				break;
 		}
@@ -492,14 +492,14 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				int y = ir.top;
 
 				if (!HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) || !this->IsScheduleSelected()) {
-					y += FONT_HEIGHT_NORMAL;
+					y += GetCharacterHeight(FS_NORMAL);
 					DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_NOT_ENABLED);
 				} else {
 					const DispatchSchedule &ds = this->GetSelectedSchedule();
 
 					auto draw_warning = [&](StringID text) {
 						const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
-						int step_height = std::max<int>(warning_dimensions.height, FONT_HEIGHT_NORMAL);
+						int step_height = std::max<int>(warning_dimensions.height, GetCharacterHeight(FS_NORMAL));
 						int left = ir.left;
 						int right = ir.right;
 						const bool rtl = (_current_text_dir == TD_RTL);
@@ -509,7 +509,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						} else {
 							left += (warning_dimensions.width + 10);
 						}
-						DrawString(left, right, y + (step_height - FONT_HEIGHT_NORMAL) / 2, text);
+						DrawString(left, right, y + (step_height - GetCharacterHeight(FS_NORMAL)) / 2, text);
 						y += step_height;
 					};
 
@@ -563,7 +563,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						}
 
 						DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_ASSIGNED_TO_ORDER);
-						y += FONT_HEIGHT_NORMAL;
+						y += GetCharacterHeight(FS_NORMAL);
 					}
 
 					const DateTicksScaled last_departure = ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchLastDispatch();
@@ -571,7 +571,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					const_cast<SchdispatchWindow*>(this)->last_departure_future = (last_departure > _scaled_date_ticks);
 					DrawString(ir.left, ir.right, y,
 							this->last_departure_future ? STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE : STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST);
-					y += FONT_HEIGHT_NORMAL;
+					y += GetCharacterHeight(FS_NORMAL);
 
 					if (!have_conditional) {
 						const int required_vehicle = CalculateMaxRequiredVehicle(v->orders->GetTimetableTotalDuration(), ds.GetScheduledDispatchDuration(), ds.GetScheduledDispatch());
@@ -580,20 +580,20 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 							DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_L1);
 						}
 					}
-					y += FONT_HEIGHT_NORMAL;
+					y += GetCharacterHeight(FS_NORMAL);
 
 					SetTimetableParams(0, ds.GetScheduledDispatchDuration(), true);
 					DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_L2);
-					y += FONT_HEIGHT_NORMAL;
+					y += GetCharacterHeight(FS_NORMAL);
 
 					SetDParam(0, ds.GetScheduledDispatchStartTick());
 					SetDParam(1, ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchDuration());
 					DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_L3);
-					y += FONT_HEIGHT_NORMAL;
+					y += GetCharacterHeight(FS_NORMAL);
 
 					SetTimetableParams(0, ds.GetScheduledDispatchDelay());
 					DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_L4);
-					y += FONT_HEIGHT_NORMAL;
+					y += GetCharacterHeight(FS_NORMAL);
 
 					uint32 duration = ds.GetScheduledDispatchDuration();
 					uint warnings = 0;

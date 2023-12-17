@@ -238,7 +238,7 @@ private:
 		this->tiny_step_height = this->column_size[VGC_FOLD].height;
 
 		this->column_size[VGC_NAME] = maxdim(GetStringBoundingBox(STR_GROUP_DEFAULT_TRAINS + this->vli.vtype), GetStringBoundingBox(STR_GROUP_ALL_TRAINS + this->vli.vtype));
-		this->column_size[VGC_NAME].width = std::max((170u * FONT_HEIGHT_NORMAL) / 10u, this->column_size[VGC_NAME].width) + WidgetDimensions::scaled.hsep_indent;
+		this->column_size[VGC_NAME].width = std::max((170u * GetCharacterHeight(FS_NORMAL)) / 10u, this->column_size[VGC_NAME].width) + WidgetDimensions::scaled.hsep_indent;
 		this->tiny_step_height = std::max(this->tiny_step_height, this->column_size[VGC_NAME].height);
 
 		this->column_size[VGC_PROTECT] = GetSpriteSize(SPR_GROUP_REPLACE_PROTECT);
@@ -637,17 +637,17 @@ public:
 				const int left  = r.left + WidgetDimensions::scaled.framerect.left + WidgetDimensions::scaled.vsep_wide;
 				const int right = r.right - WidgetDimensions::scaled.framerect.right - WidgetDimensions::scaled.vsep_wide;
 
-				int y = r.top + (1 + r.bottom - r.top - (3 * FONT_HEIGHT_NORMAL)) / 2;
+				int y = r.top + (1 + r.bottom - r.top - (3 * GetCharacterHeight(FS_NORMAL))) / 2;
 				DrawString(left, right, y, STR_GROUP_PROFIT_THIS_YEAR, TC_BLACK);
 				SetDParam(0, this->money_this_year);
 				DrawString(left, right, y, STR_JUST_CURRENCY_LONG, TC_BLACK, SA_RIGHT);
 
-				y += FONT_HEIGHT_NORMAL;
+				y += GetCharacterHeight(FS_NORMAL);
 				DrawString(left, right, y, STR_GROUP_PROFIT_LAST_YEAR, TC_BLACK);
 				SetDParam(0, this->money_last_year);
 				DrawString(left, right, y, STR_JUST_CURRENCY_LONG, TC_BLACK, SA_RIGHT);
 
-				y += FONT_HEIGHT_NORMAL;
+				y += GetCharacterHeight(FS_NORMAL);
 				DrawString(left, right, y, STR_GROUP_OCCUPANCY, TC_BLACK);
 				if (this->vehicles.size() > 0) {
 					SetDParam(0, this->occupancy_ratio);

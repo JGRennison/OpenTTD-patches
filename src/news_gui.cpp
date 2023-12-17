@@ -323,7 +323,7 @@ struct NewsWindow : Window {
 
 	void OnInit() override
 	{
-		this->timer.SetInterval(TIMER_INTERVAL / FONT_HEIGHT_NORMAL);
+		this->timer.SetInterval(TIMER_INTERVAL / GetCharacterHeight(FS_NORMAL));
 	}
 
 	void DrawNewsBorder(const Rect &r) const
@@ -1138,7 +1138,7 @@ struct MessageHistoryWindow : Window {
 	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget == WID_MH_BACKGROUND) {
-			this->line_height = FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.vsep_normal;
+			this->line_height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
 			resize->height = this->line_height;
 
 			/* Months are off-by-one, so it's actually 8. Not using

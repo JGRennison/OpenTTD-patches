@@ -47,14 +47,10 @@ uint DropDownListStringItem::Width() const
 	return GetStringBoundingBox(this->String()).width + WidgetDimensions::scaled.dropdowntext.Horizontal();
 }
 
-void DropDownListStringItem::Draw(const Rect &r, bool sel, Colours bg_colour) const
+void DropDownListStringItem::Draw(const Rect &r, bool sel, Colours) const
 {
-	if (this->String().empty()) {
-		this->DropDownListItem::Draw(r, sel, bg_colour);
-	} else {
-		Rect ir = r.Shrink(WidgetDimensions::scaled.dropdowntext);
-		DrawString(ir.left, ir.right, r.top, this->String(), (sel ? TC_WHITE : TC_BLACK) | this->colour_flags);
-	}
+	Rect ir = r.Shrink(WidgetDimensions::scaled.dropdowntext);
+	DrawString(ir.left, ir.right, r.top, this->String(), (sel ? TC_WHITE : TC_BLACK) | this->colour_flags);
 }
 
 /**
@@ -79,7 +75,7 @@ DropDownListIconItem::DropDownListIconItem(SpriteID sprite, PaletteID pal, Strin
 
 uint DropDownListIconItem::Height() const
 {
-	return std::max(this->dim.height, (uint)FONT_HEIGHT_NORMAL);
+	return std::max(this->dim.height, (uint)GetCharacterHeight(FS_NORMAL));
 }
 
 uint DropDownListIconItem::Width() const
@@ -93,7 +89,7 @@ void DropDownListIconItem::Draw(const Rect &r, bool sel, Colours) const
 	Rect ir = r.Shrink(WidgetDimensions::scaled.dropdowntext);
 	Rect tr = ir.Indent(this->dim.width + WidgetDimensions::scaled.hsep_normal, rtl);
 	DrawSprite(this->sprite, this->pal, ir.WithWidth(this->dim.width, rtl).left, CenterBounds(r.top, r.bottom, this->sprite_y));
-	DrawString(tr.left, tr.right, CenterBounds(r.top, r.bottom, FONT_HEIGHT_NORMAL), this->String(), (sel ? TC_WHITE : TC_BLACK) | this->colour_flags);
+	DrawString(tr.left, tr.right, CenterBounds(r.top, r.bottom, GetCharacterHeight(FS_NORMAL)), this->String(), (sel ? TC_WHITE : TC_BLACK) | this->colour_flags);
 }
 
 void DropDownListIconItem::SetDimension(Dimension d)

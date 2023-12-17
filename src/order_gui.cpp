@@ -190,16 +190,16 @@ public:
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		if (widget == WID_CTO_HEADER) {
-			(*size).height = std::max((*size).height, (uint) FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.framerect.Vertical());
+			(*size).height = std::max((*size).height, (uint) GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical());
 		} else if (WID_CTO_CARGO_LABEL_FIRST <= widget && widget <= WID_CTO_CARGO_LABEL_LAST) {
 			(*size).width  = std::max((*size).width, WidgetDimensions::scaled.framerect.left + this->CARGO_ICON_WIDTH + WidgetDimensions::scaled.framerect.Horizontal() + this->max_cargo_name_width + padding.width);
-			(*size).height = std::max((*size).height, (uint) FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.framerect.Vertical());
+			(*size).height = std::max((*size).height, (uint) GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical());
 		} else if ((WID_CTO_CARGO_DROPDOWN_FIRST <= widget && widget <= WID_CTO_CARGO_DROPDOWN_LAST) || widget == WID_CTO_SET_TO_ALL_DROPDOWN) {
 			(*size).width  = std::max((*size).width, WidgetDimensions::scaled.dropdowntext.Horizontal() + this->max_cargo_dropdown_width + NWidgetLeaf::GetDropdownBoxDimension().width);
-			(*size).height = std::max((*size).height, (uint) WidgetDimensions::scaled.dropdowntext.Vertical() + FONT_HEIGHT_NORMAL);
+			(*size).height = std::max((*size).height, (uint) WidgetDimensions::scaled.dropdowntext.Vertical() + GetCharacterHeight(FS_NORMAL));
 		} else if (widget == WID_CTO_SET_TO_ALL_LABEL) {
 			(*size).width = std::max((*size).width, this->max_cargo_name_width + WidgetDimensions::scaled.framerect.right + padding.width);
-			(*size).height = std::max((*size).height, (uint) FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.framerect.Vertical());
+			(*size).height = std::max((*size).height, (uint) GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical());
 		}
 	}
 
@@ -845,11 +845,11 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 	Dimension sprite_size = GetSpriteSize(sprite);
 	if (v->cur_real_order_index == order_index) {
 		/* Draw two arrows before the next real order. */
-		DrawSprite(sprite, PAL_NONE, rtl ? right -     sprite_size.width : left,                     y + ((int)FONT_HEIGHT_NORMAL - (int)sprite_size.height) / 2);
-		DrawSprite(sprite, PAL_NONE, rtl ? right - 2 * sprite_size.width : left + sprite_size.width, y + ((int)FONT_HEIGHT_NORMAL - (int)sprite_size.height) / 2);
+		DrawSprite(sprite, PAL_NONE, rtl ? right -     sprite_size.width : left,                     y + ((int)GetCharacterHeight(FS_NORMAL) - (int)sprite_size.height) / 2);
+		DrawSprite(sprite, PAL_NONE, rtl ? right - 2 * sprite_size.width : left + sprite_size.width, y + ((int)GetCharacterHeight(FS_NORMAL) - (int)sprite_size.height) / 2);
 	} else if (v->cur_implicit_order_index == order_index) {
 		/* Draw one arrow before the next implicit order; the next real order will still get two arrows. */
-		DrawSprite(sprite, PAL_NONE, rtl ? right -     sprite_size.width : left,                     y + ((int)FONT_HEIGHT_NORMAL - (int)sprite_size.height) / 2);
+		DrawSprite(sprite, PAL_NONE, rtl ? right -     sprite_size.width : left,                     y + ((int)GetCharacterHeight(FS_NORMAL) - (int)sprite_size.height) / 2);
 	}
 
 	TextColour colour = TC_BLACK;
@@ -1917,7 +1917,7 @@ public:
 
 			case WID_O_SEL_OCCUPANCY:
 			case WID_O_ORDER_LIST:
-				resize->height = FONT_HEIGHT_NORMAL;
+				resize->height = GetCharacterHeight(FS_NORMAL);
 				size->height = 6 * resize->height + padding.height;
 				break;
 

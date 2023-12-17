@@ -67,7 +67,7 @@ void DrawShipDetails(const Vehicle *v, const Rect &r)
 	SetDParam(1, v->build_year);
 	SetDParam(2, v->value);
 	DrawString(r.left, r.right, y, STR_VEHICLE_INFO_BUILT_VALUE);
-	y += FONT_HEIGHT_NORMAL;
+	y += GetCharacterHeight(FS_NORMAL);
 
 	Money feeder_share = 0;
 
@@ -110,7 +110,7 @@ void DrawShipDetails(const Vehicle *v, const Rect &r)
 		}
 
 		DrawString(r.left, r.right, y, capacity, TC_BLUE);
-		y += FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.vsep_normal;
+		y += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
 
 		for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
 			if (u->cargo_cap == 0) continue;
@@ -124,7 +124,7 @@ void DrawShipDetails(const Vehicle *v, const Rect &r)
 				feeder_share += u->cargo.GetFeederShare();
 			}
 			DrawString(r.left, r.right, y, str);
-			y += FONT_HEIGHT_NORMAL;
+			y += GetCharacterHeight(FS_NORMAL);
 		}
 		y += WidgetDimensions::scaled.vsep_normal;
 	} else {
@@ -132,7 +132,7 @@ void DrawShipDetails(const Vehicle *v, const Rect &r)
 		SetDParam(1, v->cargo_cap);
 		SetDParam(4, GetCargoSubtypeText(v));
 		DrawString(r.left, r.right, y, STR_VEHICLE_INFO_CAPACITY);
-		y += FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.vsep_normal;
+		y += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
 
 		StringID str = STR_VEHICLE_DETAILS_CARGO_EMPTY;
 		if (v->cargo.StoredCount() > 0) {
@@ -143,13 +143,13 @@ void DrawShipDetails(const Vehicle *v, const Rect &r)
 			feeder_share += v->cargo.GetFeederShare();
 		}
 		DrawString(r.left, r.right, y, str);
-		y += FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.vsep_normal;
+		y += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
 	}
 
 	/* Draw Transfer credits text */
 	SetDParam(0, feeder_share);
 	DrawString(r.left, r.right, y, STR_VEHICLE_INFO_FEEDER_CARGO_VALUE);
-	y += FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.vsep_normal;
+	y += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
 
 	if (Ship::From(v)->critical_breakdown_count > 0) {
 		SetDParam(0, Ship::From(v)->GetDisplayEffectiveMaxSpeed());

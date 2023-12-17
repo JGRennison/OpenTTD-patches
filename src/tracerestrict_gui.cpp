@@ -2594,7 +2594,7 @@ public:
 	{
 		switch (widget) {
 			case TR_WIDGET_INSTRUCTION_LIST:
-				resize->height = FONT_HEIGHT_NORMAL;
+				resize->height = GetCharacterHeight(FS_NORMAL);
 				size->height = 6 * resize->height + WidgetDimensions::scaled.framerect.Vertical();
 				break;
 
@@ -3756,7 +3756,7 @@ private:
 	uint ComputeSlotInfoSize()
 	{
 		this->column_size[VGC_NAME] = GetStringBoundingBox(STR_GROUP_ALL_TRAINS);
-		this->column_size[VGC_NAME].width = std::max((170u * FONT_HEIGHT_NORMAL) / 10u, this->column_size[VGC_NAME].width);
+		this->column_size[VGC_NAME].width = std::max((170u * GetCharacterHeight(FS_NORMAL)) / 10u, this->column_size[VGC_NAME].width);
 		this->tiny_step_height = this->column_size[VGC_NAME].height;
 
 		SetDParamMaxValue(0, 9999, 3, FS_SMALL);

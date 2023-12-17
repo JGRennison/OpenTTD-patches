@@ -130,7 +130,7 @@ struct SubsidyListWindow : Window {
 		if (widget != WID_SUL_PANEL) return;
 		Dimension d = maxdim(GetStringBoundingBox(STR_SUBSIDIES_OFFERED_TITLE), GetStringBoundingBox(STR_SUBSIDIES_SUBSIDISED_TITLE));
 
-		resize->height = FONT_HEIGHT_NORMAL;
+		resize->height = GetCharacterHeight(FS_NORMAL);
 
 		d.height *= 5;
 		d.width += WidgetDimensions::scaled.framerect.Horizontal();
@@ -148,7 +148,7 @@ struct SubsidyListWindow : Window {
 		const int cap = this->vscroll->GetCapacity();
 
 		/* Section for drawing the offered subsidies */
-		if (IsInsideMM(pos, 0, cap)) DrawString(tr.left, tr.right, tr.top + pos * FONT_HEIGHT_NORMAL, STR_SUBSIDIES_OFFERED_TITLE);
+		if (IsInsideMM(pos, 0, cap)) DrawString(tr.left, tr.right, tr.top + pos * GetCharacterHeight(FS_NORMAL), STR_SUBSIDIES_OFFERED_TITLE);
 		pos++;
 
 		uint num = 0;
@@ -158,7 +158,7 @@ struct SubsidyListWindow : Window {
 					/* Displays the two offered towns */
 					SetupSubsidyDecodeParam(s, SubsidyDecodeParamType::Gui);
 					SetDParam(7, _date - _cur_date_ymd.day + s->remaining * 32);
-					DrawString(tr.left, tr.right, tr.top + pos * FONT_HEIGHT_NORMAL, STR_SUBSIDIES_OFFERED_FROM_TO);
+					DrawString(tr.left, tr.right, tr.top + pos * GetCharacterHeight(FS_NORMAL), STR_SUBSIDIES_OFFERED_FROM_TO);
 				}
 				pos++;
 				num++;
@@ -166,13 +166,13 @@ struct SubsidyListWindow : Window {
 		}
 
 		if (num == 0) {
-			if (IsInsideMM(pos, 0, cap)) DrawString(tr.left, tr.right, tr.top + pos * FONT_HEIGHT_NORMAL, STR_SUBSIDIES_NONE);
+			if (IsInsideMM(pos, 0, cap)) DrawString(tr.left, tr.right, tr.top + pos * GetCharacterHeight(FS_NORMAL), STR_SUBSIDIES_NONE);
 			pos++;
 		}
 
 		/* Section for drawing the already granted subsidies */
 		pos++;
-		if (IsInsideMM(pos, 0, cap)) DrawString(tr.left, tr.right, tr.top + pos * FONT_HEIGHT_NORMAL, STR_SUBSIDIES_SUBSIDISED_TITLE);
+		if (IsInsideMM(pos, 0, cap)) DrawString(tr.left, tr.right, tr.top + pos * GetCharacterHeight(FS_NORMAL), STR_SUBSIDIES_SUBSIDISED_TITLE);
 		pos++;
 		num = 0;
 
@@ -184,7 +184,7 @@ struct SubsidyListWindow : Window {
 					SetDParam(8, _date - _cur_date_ymd.day + s->remaining * 32);
 
 					/* Displays the two connected stations */
-					DrawString(tr.left, tr.right, tr.top + pos * FONT_HEIGHT_NORMAL, STR_SUBSIDIES_SUBSIDISED_FROM_TO);
+					DrawString(tr.left, tr.right, tr.top + pos * GetCharacterHeight(FS_NORMAL), STR_SUBSIDIES_SUBSIDISED_FROM_TO);
 				}
 				pos++;
 				num++;
@@ -192,7 +192,7 @@ struct SubsidyListWindow : Window {
 		}
 
 		if (num == 0) {
-			if (IsInsideMM(pos, 0, cap)) DrawString(tr.left, tr.right, tr.top + pos * FONT_HEIGHT_NORMAL, STR_SUBSIDIES_NONE);
+			if (IsInsideMM(pos, 0, cap)) DrawString(tr.left, tr.right, tr.top + pos * GetCharacterHeight(FS_NORMAL), STR_SUBSIDIES_NONE);
 			pos++;
 		}
 	}

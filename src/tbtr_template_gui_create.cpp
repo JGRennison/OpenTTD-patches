@@ -323,10 +323,10 @@ public:
 					}
 					if (!buildable) {
 						DrawString(left, right, y, STR_TMPL_WARNING_VEH_UNAVAILABLE);
-						y += FONT_HEIGHT_NORMAL;
+						y += GetCharacterHeight(FS_NORMAL);
 					} else if (types == RAILTYPES_NONE) {
 						DrawString(left, right, y, STR_TMPL_WARNING_VEH_NO_COMPATIBLE_RAIL_TYPE);
-						y += FONT_HEIGHT_NORMAL;
+						y += GetCharacterHeight(FS_NORMAL);
 					}
 
 					SetDParam(0, STR_TMPL_TEMPLATE_OVR_VALUE_LTBLUE);
@@ -334,7 +334,7 @@ public:
 					SetDParam(2, STR_TMPL_TEMPLATE_OVR_RUNNING_COST);
 					SetDParam(3, this->virtual_train->GetDisplayRunningCost());
 					DrawString(left, right, y, STR_TMPL_TEMPLATE_OVR_MULTIPLE);
-					y += FONT_HEIGHT_NORMAL;
+					y += GetCharacterHeight(FS_NORMAL);
 
 					/* Draw vehicle performance info */
 					const bool original_acceleration = (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL ||
@@ -350,7 +350,7 @@ public:
 						full_cargo_weight += train->GetCargoWeight(train->cargo_cap);
 					}
 					if (full_cargo_weight > 0 || _settings_client.gui.show_train_weight_ratios_in_details) {
-						y += FONT_HEIGHT_NORMAL;
+						y += GetCharacterHeight(FS_NORMAL);
 						uint full_weight = gcache->cached_weight + full_cargo_weight;
 						SetDParam(0, full_weight);
 						if (_settings_client.gui.show_train_weight_ratios_in_details) {
@@ -365,7 +365,7 @@ public:
 						DrawString(left, right, y, STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS);
 					}
 					if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
-						y += FONT_HEIGHT_NORMAL;
+						y += GetCharacterHeight(FS_NORMAL);
 						SetDParam(0, GetTrainEstimatedMaxAchievableSpeed(this->virtual_train, gcache->cached_weight + full_cargo_weight, this->virtual_train->GetDisplayMaxSpeed()));
 						DrawString(left, right, y, STR_VEHICLE_INFO_MAX_SPEED_LOADED);
 					}
@@ -374,13 +374,13 @@ public:
 					for (const Train *tmp = this->virtual_train; tmp != nullptr; tmp = tmp->Next()) {
 						cargo_caps[tmp->cargo_type] += tmp->cargo_cap;
 					}
-					y += FONT_HEIGHT_NORMAL * 2;
+					y += GetCharacterHeight(FS_NORMAL) * 2;
 					for (CargoID i = 0; i < NUM_CARGO; ++i) {
 						if (cargo_caps[i] > 0) {
 							SetDParam(0, i);
 							SetDParam(1, cargo_caps[i]);
 							DrawString(left, right, y, STR_TMPL_CARGO_SUMMARY, TC_LIGHT_BLUE, SA_LEFT);
-							y += FONT_HEIGHT_NORMAL;
+							y += GetCharacterHeight(FS_NORMAL);
 						}
 					}
 				}
@@ -553,7 +553,7 @@ public:
 	{
 		uint min_width = 32;
 		uint width = 0;
-		uint height = ScaleGUITrad(8) + (3 * FONT_HEIGHT_NORMAL);
+		uint height = ScaleGUITrad(8) + (3 * GetCharacterHeight(FS_NORMAL));
 		CargoArray cargo_caps{};
 
 		if (virtual_train != nullptr) {
@@ -565,13 +565,13 @@ public:
 				if (!IsEngineBuildable(train->engine_type, VEH_TRAIN, train->owner)) buildable = false;
 				full_cargo_weight += train->GetCargoWeight(train->cargo_cap);
 			}
-			if (!buildable) height += FONT_HEIGHT_NORMAL;
-			if (full_cargo_weight > 0 || _settings_client.gui.show_train_weight_ratios_in_details) height += FONT_HEIGHT_NORMAL;
-			if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) height += FONT_HEIGHT_NORMAL;
+			if (!buildable) height += GetCharacterHeight(FS_NORMAL);
+			if (full_cargo_weight > 0 || _settings_client.gui.show_train_weight_ratios_in_details) height += GetCharacterHeight(FS_NORMAL);
+			if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) height += GetCharacterHeight(FS_NORMAL);
 
 			for (CargoID i = 0; i < NUM_CARGO; ++i) {
 				if (cargo_caps[i] > 0) {
-					height += FONT_HEIGHT_NORMAL;
+					height += GetCharacterHeight(FS_NORMAL);
 				}
 			}
 		}

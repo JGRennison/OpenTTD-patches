@@ -228,7 +228,7 @@ public:
 
 		this->sel_railtype = INVALID_RAILTYPE;
 
-		this->details_height = 10 * FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.framerect.Vertical();
+		this->details_height = 10 * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical();
 
 		this->CreateNestedTree(wdesc != nullptr);
 		this->vscroll[0] = this->GetScrollbar(TRW_WIDGET_TOP_SCROLLBAR);
@@ -264,12 +264,12 @@ public:
 	{
 		switch (widget) {
 			case TRW_WIDGET_TOP_MATRIX:
-				resize->height = FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.matrix.Vertical();
+				resize->height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.matrix.Vertical();
 				size->height = 8 * resize->height;
 				break;
 			case TRW_WIDGET_BOTTOM_MATRIX: {
-				int base_resize = FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.matrix.Vertical();
-				int target_resize = WidgetDimensions::scaled.matrix.top + FONT_HEIGHT_NORMAL + ScaleGUITrad(GetVehicleHeight(VEH_TRAIN));
+				int base_resize = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.matrix.Vertical();
+				int target_resize = WidgetDimensions::scaled.matrix.top + GetCharacterHeight(FS_NORMAL) + ScaleGUITrad(GetVehicleHeight(VEH_TRAIN));
 				this->bottom_matrix_item_size = resize->height = CeilT<int>(target_resize, base_resize);
 				size->height = 4 * resize->height;
 
@@ -303,7 +303,7 @@ public:
 				break;
 			}
 			case TRW_WIDGET_TMPL_CONFIG_HEADER:
-				size->height = FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.framerect.Vertical();
+				size->height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical();
 				break;
 			case TRW_WIDGET_TMPL_BUTTONS_CONFIG_RIGHTPANEL:
 			case TRW_WIDGET_TMPL_BUTTONS_EDIT_RIGHTPANEL:
@@ -370,13 +370,13 @@ public:
 					TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_OLD_ONLY);
 		} else {
 			const TemplateVehicle *tmp = this->templates[this->selected_template_index];
-			uint height = ScaleGUITrad(8) + (3 * FONT_HEIGHT_NORMAL);
+			uint height = ScaleGUITrad(8) + (3 * GetCharacterHeight(FS_NORMAL));
 			CargoArray cargo_caps{};
 			uint count_columns = 0;
 			uint max_columns = 2;
 
-			if (tmp->full_weight > tmp->empty_weight || _settings_client.gui.show_train_weight_ratios_in_details) height += FONT_HEIGHT_NORMAL;
-			if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) height += FONT_HEIGHT_NORMAL;
+			if (tmp->full_weight > tmp->empty_weight || _settings_client.gui.show_train_weight_ratios_in_details) height += GetCharacterHeight(FS_NORMAL);
+			if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) height += GetCharacterHeight(FS_NORMAL);
 
 			for (const TemplateVehicle *u = tmp; u != nullptr; u = u->Next()) {
 				cargo_caps[u->cargo_type] += u->cargo_cap;
@@ -385,7 +385,7 @@ public:
 			for (CargoID i = 0; i < NUM_CARGO; ++i) {
 				if (cargo_caps[i] > 0) {
 					if (count_columns % max_columns == 0) {
-						height += FONT_HEIGHT_NORMAL;
+						height += GetCharacterHeight(FS_NORMAL);
 					}
 
 					++count_columns;
@@ -495,7 +495,7 @@ public:
 				ShowDropDownList(this, GetRailTypeDropDownList(true, true), this->sel_railtype, TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN);
 				break;
 			case TRW_WIDGET_TOP_MATRIX: {
-				uint16 newindex = (uint16)((pt.y - this->nested_array[TRW_WIDGET_TOP_MATRIX]->pos_y) / (FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.matrix.Vertical()) ) + this->vscroll[0]->GetPosition();
+				uint16 newindex = (uint16)((pt.y - this->nested_array[TRW_WIDGET_TOP_MATRIX]->pos_y) / (GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.matrix.Vertical()) ) + this->vscroll[0]->GetPosition();
 				if (newindex == this->selected_group_index || newindex >= this->groups.size()) {
 					this->selected_group_index = -1;
 				} else if (newindex < this->groups.size()) {
@@ -676,7 +676,7 @@ public:
 
 			/* Fill the background of the current cell in a darker tone for the currently selected template */
 			if (this->selected_group_index == i) {
-				GfxFillRect(r.left + 1, y, r.right, y + FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.matrix.Vertical(), _colour_gradient[COLOUR_GREY][3]);
+				GfxFillRect(r.left + 1, y, r.right, y + GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.matrix.Vertical(), _colour_gradient[COLOUR_GREY][3]);
 			}
 
 			int text_y = y + WidgetDimensions::scaled.matrix.top;
@@ -726,7 +726,7 @@ public:
 				draw_text(col2 + ScaleGUITrad(4), right - ScaleGUITrad(4), STR_TMPL_NUM_TRAINS_NEED_RPL, num_trains > 0 ? TC_BLACK : TC_GREY, SA_RIGHT);
 			}
 
-			y += FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.matrix.Vertical();
+			y += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.matrix.Vertical();
 		}
 	}
 
@@ -796,7 +796,7 @@ public:
 			SetDParam(1, 1);
 			draw_text_across(0, ScaleGUITrad(4), ScaleGUITrad(2), STR_JUST_DECIMAL, TC_BLACK, SA_RIGHT, FS_SMALL);
 
-			int bottom_edge = this->bottom_matrix_item_size - FONT_HEIGHT_NORMAL - WidgetDimensions::scaled.framerect.bottom;
+			int bottom_edge = this->bottom_matrix_item_size - GetCharacterHeight(FS_NORMAL) - WidgetDimensions::scaled.framerect.bottom;
 
 			/* Buying cost */
 			SetDParam(0, CalculateOverallTemplateCost(v));
@@ -862,7 +862,7 @@ public:
 
 		SetDParam(0, CalculateOverallTemplateDisplayRunningCost(tmp));
 		DrawString(left, right, top, STR_TMPL_TEMPLATE_OVR_RUNNING_COST);
-		top += FONT_HEIGHT_NORMAL;
+		top += GetCharacterHeight(FS_NORMAL);
 
 		/* Draw vehicle performance info */
 		const bool original_acceleration = (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL ||
@@ -874,7 +874,7 @@ public:
 		DrawString(left, right, top, original_acceleration ? STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED : STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE);
 
 		if (tmp->full_weight > tmp->empty_weight || _settings_client.gui.show_train_weight_ratios_in_details) {
-			top += FONT_HEIGHT_NORMAL;
+			top += GetCharacterHeight(FS_NORMAL);
 			SetDParam(0, tmp->full_weight);
 			if (_settings_client.gui.show_train_weight_ratios_in_details) {
 				SetDParam(1, STR_VEHICLE_INFO_WEIGHT_RATIOS);
@@ -888,13 +888,13 @@ public:
 			DrawString(8, right, top, STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS);
 		}
 		if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
-			top += FONT_HEIGHT_NORMAL;
+			top += GetCharacterHeight(FS_NORMAL);
 			SetDParam(0, GetTemplateVehicleEstimatedMaxAchievableSpeed(tmp, tmp->full_weight, tmp->max_speed));
 			DrawString(8, right, top, STR_VEHICLE_INFO_MAX_SPEED_LOADED);
 		}
 
 		/* Draw cargo summary */
-		top += FONT_HEIGHT_NORMAL * 2;
+		top += GetCharacterHeight(FS_NORMAL) * 2;
 		int count_columns = 0;
 		int max_columns = 2;
 
@@ -916,7 +916,7 @@ public:
 				x += step;
 				if (count_columns % max_columns == 0) {
 					x = 0;
-					top += FONT_HEIGHT_NORMAL;
+					top += GetCharacterHeight(FS_NORMAL);
 				}
 			}
 		}

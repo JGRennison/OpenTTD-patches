@@ -52,7 +52,7 @@
  */
 uint GetEngineListHeight(VehicleType type)
 {
-	return std::max<uint>(FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.matrix.Vertical(), GetVehicleImageCellSize(type, EIT_PURCHASE).height);
+	return std::max<uint>(GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.matrix.Vertical(), GetVehicleImageCellSize(type, EIT_PURCHASE).height);
 }
 
 /* Normal layout for roadvehicles, ships and airplanes. */
@@ -788,7 +788,7 @@ static int DrawCargoCapacityInfo(int left, int right, int y, TestedEngineDetails
 		SetDParam(1, te.all_capacities[cid]);
 		SetDParam(2, refittable ? STR_PURCHASE_INFO_REFITTABLE : STR_EMPTY);
 		DrawString(left, right, y, STR_PURCHASE_INFO_CAPACITY);
-		y += FONT_HEIGHT_NORMAL;
+		y += GetCharacterHeight(FS_NORMAL);
 	}
 
 	return y;
@@ -808,14 +808,14 @@ static int DrawRailWagonPurchaseInfo(int left, int right, int y, EngineID engine
 		SetDParam(0, e->GetCost());
 		DrawString(left, right, y, STR_PURCHASE_INFO_COST);
 	}
-	y += FONT_HEIGHT_NORMAL;
+	y += GetCharacterHeight(FS_NORMAL);
 
 	/* Wagon weight - (including cargo) */
 	uint weight = e->GetDisplayWeight();
 	SetDParam(0, weight);
 	SetDParam(1, GetCargoWeight(te.all_capacities, VEH_TRAIN) + weight);
 	DrawString(left, right, y, STR_PURCHASE_INFO_WEIGHT_CWEIGHT);
-	y += FONT_HEIGHT_NORMAL;
+	y += GetCharacterHeight(FS_NORMAL);
 
 	/* Wagon speed limit, displayed if above zero */
 	if (_settings_game.vehicle.wagon_speed_limits) {
@@ -823,7 +823,7 @@ static int DrawRailWagonPurchaseInfo(int left, int right, int y, EngineID engine
 		if (max_speed > 0) {
 			SetDParam(0, PackVelocity(max_speed, e->type));
 			DrawString(left, right, y, STR_PURCHASE_INFO_SPEED);
-			y += FONT_HEIGHT_NORMAL;
+			y += GetCharacterHeight(FS_NORMAL);
 		}
 	}
 
@@ -831,7 +831,7 @@ static int DrawRailWagonPurchaseInfo(int left, int right, int y, EngineID engine
 	if (rvi->running_cost_class != INVALID_PRICE) {
 		SetDParam(0, e->GetDisplayRunningCost());
 		DrawString(left, right, y, STR_PURCHASE_INFO_RUNNINGCOST);
-		y += FONT_HEIGHT_NORMAL;
+		y += GetCharacterHeight(FS_NORMAL);
 	}
 
 	return y;
@@ -853,26 +853,26 @@ static int DrawRailEnginePurchaseInfo(int left, int right, int y, EngineID engin
 		SetDParam(1, e->GetDisplayWeight());
 		DrawString(left, right, y, STR_PURCHASE_INFO_COST_WEIGHT);
 	}
-	y += FONT_HEIGHT_NORMAL;
+	y += GetCharacterHeight(FS_NORMAL);
 
 	/* Max speed - Engine power */
 	SetDParam(0, PackVelocity(e->GetDisplayMaxSpeed(), e->type));
 	SetDParam(1, e->GetPower());
 	DrawString(left, right, y, STR_PURCHASE_INFO_SPEED_POWER);
-	y += FONT_HEIGHT_NORMAL;
+	y += GetCharacterHeight(FS_NORMAL);
 
 	/* Max tractive effort - not applicable if old acceleration or maglev */
 	if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL && GetRailTypeInfo(rvi->railtype)->acceleration_type != 2) {
 		SetDParam(0, e->GetDisplayMaxTractiveEffort());
 		DrawString(left, right, y, STR_PURCHASE_INFO_MAX_TE);
-		y += FONT_HEIGHT_NORMAL;
+		y += GetCharacterHeight(FS_NORMAL);
 	}
 
 	/* Running cost */
 	if (rvi->running_cost_class != INVALID_PRICE) {
 		SetDParam(0, e->GetDisplayRunningCost());
 		DrawString(left, right, y, STR_PURCHASE_INFO_RUNNINGCOST);
-		y += FONT_HEIGHT_NORMAL;
+		y += GetCharacterHeight(FS_NORMAL);
 	}
 
 	/* Powered wagons power - Powered wagons extra weight */
@@ -880,7 +880,7 @@ static int DrawRailEnginePurchaseInfo(int left, int right, int y, EngineID engin
 		SetDParam(0, rvi->pow_wag_power);
 		SetDParam(1, rvi->pow_wag_weight);
 		DrawString(left, right, y, STR_PURCHASE_INFO_PWAGPOWER_PWAGWEIGHT);
-		y += FONT_HEIGHT_NORMAL;
+		y += GetCharacterHeight(FS_NORMAL);
 	}
 
 	return y;
@@ -901,25 +901,25 @@ static int DrawRoadVehPurchaseInfo(int left, int right, int y, EngineID engine_n
 			SetDParam(0, e->GetCost());
 			DrawString(left, right, y, STR_PURCHASE_INFO_COST);
 		}
-		y += FONT_HEIGHT_NORMAL;
+		y += GetCharacterHeight(FS_NORMAL);
 
 		/* Road vehicle weight - (including cargo) */
 		int16 weight = e->GetDisplayWeight();
 		SetDParam(0, weight);
 		SetDParam(1, GetCargoWeight(te.all_capacities, VEH_ROAD) + weight);
 		DrawString(left, right, y, STR_PURCHASE_INFO_WEIGHT_CWEIGHT);
-		y += FONT_HEIGHT_NORMAL;
+		y += GetCharacterHeight(FS_NORMAL);
 
 		/* Max speed - Engine power */
 		SetDParam(0, PackVelocity(e->GetDisplayMaxSpeed(), e->type));
 		SetDParam(1, e->GetPower());
 		DrawString(left, right, y, STR_PURCHASE_INFO_SPEED_POWER);
-		y += FONT_HEIGHT_NORMAL;
+		y += GetCharacterHeight(FS_NORMAL);
 
 		/* Max tractive effort */
 		SetDParam(0, e->GetDisplayMaxTractiveEffort());
 		DrawString(left, right, y, STR_PURCHASE_INFO_MAX_TE);
-		y += FONT_HEIGHT_NORMAL;
+		y += GetCharacterHeight(FS_NORMAL);
 	} else {
 		/* Purchase cost - Max speed */
 		if (te.cost != 0) {
@@ -932,13 +932,13 @@ static int DrawRoadVehPurchaseInfo(int left, int right, int y, EngineID engine_n
 			SetDParam(1, PackVelocity(e->GetDisplayMaxSpeed(), e->type));
 			DrawString(left, right, y, STR_PURCHASE_INFO_COST_SPEED);
 		}
-		y += FONT_HEIGHT_NORMAL;
+		y += GetCharacterHeight(FS_NORMAL);
 	}
 
 	/* Running cost */
 	SetDParam(0, e->GetDisplayRunningCost());
 	DrawString(left, right, y, STR_PURCHASE_INFO_RUNNINGCOST);
-	y += FONT_HEIGHT_NORMAL;
+	y += GetCharacterHeight(FS_NORMAL);
 
 	return y;
 }
@@ -964,7 +964,7 @@ static int DrawShipPurchaseInfo(int left, int right, int y, EngineID engine_numb
 			SetDParam(1, PackVelocity(ocean_speed, e->type));
 			DrawString(left, right, y, STR_PURCHASE_INFO_COST_SPEED);
 		}
-		y += FONT_HEIGHT_NORMAL;
+		y += GetCharacterHeight(FS_NORMAL);
 	} else {
 		if (te.cost != 0) {
 			SetDParam(0, e->GetCost() + te.cost);
@@ -974,15 +974,15 @@ static int DrawShipPurchaseInfo(int left, int right, int y, EngineID engine_numb
 			SetDParam(0, e->GetCost());
 			DrawString(left, right, y, STR_PURCHASE_INFO_COST);
 		}
-		y += FONT_HEIGHT_NORMAL;
+		y += GetCharacterHeight(FS_NORMAL);
 
 		SetDParam(0, PackVelocity(ocean_speed, e->type));
 		DrawString(left, right, y, STR_PURCHASE_INFO_SPEED_OCEAN);
-		y += FONT_HEIGHT_NORMAL;
+		y += GetCharacterHeight(FS_NORMAL);
 
 		SetDParam(0, PackVelocity(canal_speed, e->type));
 		DrawString(left, right, y, STR_PURCHASE_INFO_SPEED_CANAL);
-		y += FONT_HEIGHT_NORMAL;
+		y += GetCharacterHeight(FS_NORMAL);
 	}
 
 	if (!IsArticulatedEngine(engine_number)) {
@@ -991,13 +991,13 @@ static int DrawShipPurchaseInfo(int left, int right, int y, EngineID engine_numb
 		SetDParam(1, te.capacity);
 		SetDParam(2, refittable ? STR_PURCHASE_INFO_REFITTABLE : STR_EMPTY);
 		DrawString(left, right, y, STR_PURCHASE_INFO_CAPACITY);
-		y += FONT_HEIGHT_NORMAL;
+		y += GetCharacterHeight(FS_NORMAL);
 	}
 
 	/* Running cost */
 	SetDParam(0, e->GetDisplayRunningCost());
 	DrawString(left, right, y, STR_PURCHASE_INFO_RUNNINGCOST);
-	y += FONT_HEIGHT_NORMAL;
+	y += GetCharacterHeight(FS_NORMAL);
 
 	return y;
 }
@@ -1026,7 +1026,7 @@ static int DrawAircraftPurchaseInfo(int left, int right, int y, EngineID engine_
 		SetDParam(1, PackVelocity(e->GetDisplayMaxSpeed(), e->type));
 		DrawString(left, right, y, STR_PURCHASE_INFO_COST_SPEED);
 	}
-	y += FONT_HEIGHT_NORMAL;
+	y += GetCharacterHeight(FS_NORMAL);
 
 	/* Cargo capacity */
 	if (te.mail_capacity > 0) {
@@ -1043,24 +1043,24 @@ static int DrawAircraftPurchaseInfo(int left, int right, int y, EngineID engine_
 		SetDParam(2, refittable ? STR_PURCHASE_INFO_REFITTABLE : STR_EMPTY);
 		DrawString(left, right, y, STR_PURCHASE_INFO_CAPACITY);
 	}
-	y += FONT_HEIGHT_NORMAL;
+	y += GetCharacterHeight(FS_NORMAL);
 
 	/* Running cost */
 	SetDParam(0, e->GetDisplayRunningCost());
 	DrawString(left, right, y, STR_PURCHASE_INFO_RUNNINGCOST);
-	y += FONT_HEIGHT_NORMAL;
+	y += GetCharacterHeight(FS_NORMAL);
 
 	/* Aircraft type */
 	SetDParam(0, e->GetAircraftTypeText());
 	DrawString(left, right, y, STR_PURCHASE_INFO_AIRCRAFT_TYPE);
-	y += FONT_HEIGHT_NORMAL;
+	y += GetCharacterHeight(FS_NORMAL);
 
 	/* Aircraft range, if available. */
 	uint16 range = e->GetRange();
 	if (range != 0) {
 		SetDParam(0, range);
 		DrawString(left, right, y, STR_PURCHASE_INFO_AIRCRAFT_RANGE);
-		y += FONT_HEIGHT_NORMAL;
+		y += GetCharacterHeight(FS_NORMAL);
 	}
 
 	return y;
@@ -1167,7 +1167,7 @@ int DrawVehiclePurchaseInfo(int left, int right, int y, EngineID engine_number, 
 			SetDParam(0, CT_INVALID);
 			SetDParam(2, STR_EMPTY);
 			DrawString(left, right, y, STR_PURCHASE_INFO_CAPACITY);
-			y += FONT_HEIGHT_NORMAL;
+			y += GetCharacterHeight(FS_NORMAL);
 		} else {
 			y = new_y;
 		}
@@ -1179,16 +1179,16 @@ int DrawVehiclePurchaseInfo(int left, int right, int y, EngineID engine_number, 
 		SetDParam(0, ymd.year);
 		SetDParam(1, DateToYear(e->GetLifeLengthInDays()));
 		DrawString(left, right, y, STR_PURCHASE_INFO_DESIGNED_LIFE);
-		y += FONT_HEIGHT_NORMAL;
+		y += GetCharacterHeight(FS_NORMAL);
 
 		/* Reliability */
 		SetDParam(0, ToPercent16(e->reliability));
 		DrawString(left, right, y, STR_PURCHASE_INFO_RELIABILITY);
-		y += FONT_HEIGHT_NORMAL;
+		y += GetCharacterHeight(FS_NORMAL);
 	} else if (_settings_client.gui.show_wagon_intro_year) {
 		SetDParam(0, ymd.year);
 		DrawString(left, right, y, STR_PURCHASE_INFO_DESIGNED);
-		y += FONT_HEIGHT_NORMAL;
+		y += GetCharacterHeight(FS_NORMAL);
 	}
 
 	if (refittable) y = ShowRefitOptionsList(left, right, y, engine_number);
@@ -1201,7 +1201,7 @@ int DrawVehiclePurchaseInfo(int left, int right, int y, EngineID engine_number, 
 	if (_settings_client.gui.show_newgrf_name && config != nullptr)
 	{
 		DrawString(left, right, y, config->GetName(), TC_BLACK);
-		y += FONT_HEIGHT_NORMAL;
+		y += GetCharacterHeight(FS_NORMAL);
 	}
 
 	return y;
@@ -1257,8 +1257,8 @@ void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_li
 	Rect rr = tr.WithWidth(replace_icon.width, !rtl);                                                                 // Replace icon position
 	if (show_count) tr = tr.Indent(count_width + WidgetDimensions::scaled.hsep_normal + replace_icon.width + WidgetDimensions::scaled.hsep_wide, !rtl);
 
-	int normal_text_y_offset = (ir.Height() - FONT_HEIGHT_NORMAL) / 2;
-	int small_text_y_offset  = ir.Height() - FONT_HEIGHT_SMALL;
+	int normal_text_y_offset = (ir.Height() - GetCharacterHeight(FS_NORMAL)) / 2;
+	int small_text_y_offset  = ir.Height() - GetCharacterHeight(FS_SMALL);
 	int replace_icon_y_offset = (ir.Height() - replace_icon.height) / 2;
 
 	int y = ir.top;
@@ -1298,7 +1298,7 @@ void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_li
 		if (indent > 0) {
 			/* Draw tree lines */
 			Rect fr = ir.Indent(indent - WidgetDimensions::scaled.hsep_indent, rtl).WithWidth(circle_width, rtl);
-			int ycenter = y + normal_text_y_offset + FONT_HEIGHT_NORMAL / 2;
+			int ycenter = y + normal_text_y_offset + GetCharacterHeight(FS_NORMAL) / 2;
 			bool continues = (min + 1U) < eng_list.size() && eng_list[min + 1].indent == item.indent;
 			GfxDrawLine(fr.left + circle_width / 2, y - WidgetDimensions::scaled.matrix.top, fr.left + circle_width / 2, continues ? y - WidgetDimensions::scaled.matrix.top + step_size - 1 : ycenter, linecolour, WidgetDimensions::scaled.fullbevel.top);
 			GfxDrawLine(fr.left + circle_width / 2, ycenter, fr.right, ycenter, linecolour, WidgetDimensions::scaled.fullbevel.top);
@@ -1531,6 +1531,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 	{
 		/* Set the last cargo filter criteria. */
 		this->cargo_filter_criteria = _engine_sort_last_cargo_criteria[this->vehicle_type];
+		if (this->cargo_filter_criteria < NUM_CARGO && !HasBit(_standard_cargo_mask, this->cargo_filter_criteria)) this->cargo_filter_criteria = CF_ANY;
 
 		this->eng_list.SetFilterFuncs(_filter_funcs);
 		this->eng_list.SetFilterState(this->cargo_filter_criteria != CF_ANY);
@@ -2031,7 +2032,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 				break;
 
 			case WID_BV_PANEL:
-				size->height = FONT_HEIGHT_NORMAL * this->details_height + padding.height;
+				size->height = GetCharacterHeight(FS_NORMAL) * this->details_height + padding.height;
 				break;
 
 			case WID_BV_SORT_ASCENDING_DESCENDING: {
@@ -2105,12 +2106,12 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 			if (this->sel_engine != INVALID_ENGINE) {
 				const Rect r = this->GetWidget<NWidgetBase>(WID_BV_PANEL)->GetCurrentRect().Shrink(WidgetDimensions::scaled.frametext, WidgetDimensions::scaled.framerect);
 				int text_end = DrawVehiclePurchaseInfo(r.left, r.right, r.top, this->sel_engine, this->te);
-				needed_height = std::max(needed_height, (text_end - r.top) / FONT_HEIGHT_NORMAL);
+				needed_height = std::max(needed_height, (text_end - r.top) / GetCharacterHeight(FS_NORMAL));
 			}
 			if (needed_height != this->details_height) { // Details window are not high enough, enlarge them.
 				int resize = needed_height - this->details_height;
 				this->details_height = needed_height;
-				this->ReInit(0, resize * FONT_HEIGHT_NORMAL);
+				this->ReInit(0, resize * GetCharacterHeight(FS_NORMAL));
 				return;
 			}
 		}
@@ -2414,7 +2415,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 		this->UpdateButtonMode();
 
-		this->loco.details_height = this->wagon.details_height = 10 * FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.framerect.Vertical();
+		this->loco.details_height = this->wagon.details_height = 10 * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical();
 
 		this->FinishInitNested(this->window_number);
 

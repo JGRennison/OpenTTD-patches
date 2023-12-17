@@ -121,7 +121,7 @@ public:
 		this->town = Town::Get(window_number);
 		this->InitNested(window_number);
 		this->vscroll = this->GetScrollbar(WID_TA_SCROLLBAR);
-		this->vscroll->SetCapacity((this->GetWidget<NWidgetBase>(WID_TA_COMMAND_LIST)->current_y - WidgetDimensions::scaled.framerect.Vertical()) / FONT_HEIGHT_NORMAL);
+		this->vscroll->SetCapacity((this->GetWidget<NWidgetBase>(WID_TA_COMMAND_LIST)->current_y - WidgetDimensions::scaled.framerect.Vertical()) / GetCharacterHeight(FS_NORMAL));
 	}
 
 	void OnInit() override
@@ -158,7 +158,7 @@ public:
 	{
 		Rect r = this->GetWidget<NWidgetBase>(WID_TA_RATING_INFO)->GetCurrentRect().Shrink(WidgetDimensions::scaled.framerect);
 
-		int text_y_offset      = (this->resize.step_height - FONT_HEIGHT_NORMAL) / 2;
+		int text_y_offset      = (this->resize.step_height - GetCharacterHeight(FS_NORMAL)) / 2;
 		int icon_y_offset      = (this->resize.step_height - this->icon_size.height) / 2;
 		int exclusive_y_offset = (this->resize.step_height - this->exclusive_size.height) / 2;
 
@@ -287,14 +287,14 @@ public:
 
 				if (--pos < 0) {
 					DrawString(ir.left, ir.right, y, STR_LOCAL_AUTHORITY_ACTIONS_TITLE);
-					y += FONT_HEIGHT_NORMAL;
+					y += GetCharacterHeight(FS_NORMAL);
 				}
 
 				for (int i = 0; buttons; i++, buttons >>= 1) {
 					if ((buttons & 1) && --pos < 0) {
 						DrawString(ir.left, ir.right, y,
 								STR_LOCAL_AUTHORITY_ACTION_SMALL_ADVERTISING_CAMPAIGN + i, this->sel_index == i ? TC_WHITE : TC_ORANGE);
-						y += FONT_HEIGHT_NORMAL;
+						y += GetCharacterHeight(FS_NORMAL);
 					}
 				}
 				for (int i = 0; i < (int)SETTING_OVERRIDE_COUNT; i++) {
@@ -337,7 +337,7 @@ public:
 						}
 						DrawString(ir.left, ir.right, y,
 								STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_STR, tc);
-						y += FONT_HEIGHT_NORMAL;
+						y += GetCharacterHeight(FS_NORMAL);
 					}
 				}
 				break;
@@ -362,7 +362,7 @@ public:
 			}
 
 			case WID_TA_COMMAND_LIST:
-				size->height = (5 + SETTING_OVERRIDE_COUNT) * FONT_HEIGHT_NORMAL + padding.height;
+				size->height = (5 + SETTING_OVERRIDE_COUNT) * GetCharacterHeight(FS_NORMAL) + padding.height;
 				size->width = GetStringBoundingBox(STR_LOCAL_AUTHORITY_ACTIONS_TITLE).width;
 				for (uint i = 0; i < TACT_COUNT; i++ ) {
 					size->width = std::max(size->width, GetStringBoundingBox(STR_LOCAL_AUTHORITY_ACTION_SMALL_ADVERTISING_CAMPAIGN + i).width + padding.width);
@@ -371,7 +371,7 @@ public:
 				break;
 
 			case WID_TA_RATING_INFO:
-				resize->height = std::max({this->icon_size.height + WidgetDimensions::scaled.vsep_normal, this->exclusive_size.height + WidgetDimensions::scaled.vsep_normal, (uint)FONT_HEIGHT_NORMAL});
+				resize->height = std::max({this->icon_size.height + WidgetDimensions::scaled.vsep_normal, this->exclusive_size.height + WidgetDimensions::scaled.vsep_normal, (uint)GetCharacterHeight(FS_NORMAL)});
 				size->height = 9 * resize->height + padding.height;
 				break;
 		}
@@ -394,7 +394,7 @@ public:
 			}
 
 			case WID_TA_COMMAND_LIST: {
-				int y = this->GetRowFromWidget(pt.y, WID_TA_COMMAND_LIST, 1, FONT_HEIGHT_NORMAL);
+				int y = this->GetRowFromWidget(pt.y, WID_TA_COMMAND_LIST, 1, GetCharacterHeight(FS_NORMAL));
 				if (!IsInsideMM(y, 0, 5 + SETTING_OVERRIDE_COUNT)) return;
 
 				const uint setting_override_offset = 32 - SETTING_OVERRIDE_COUNT;
@@ -564,19 +564,19 @@ public:
 		SetDParam(0, this->town->cache.population);
 		SetDParam(1, this->town->cache.num_houses);
 		DrawString(tr, STR_TOWN_VIEW_POPULATION_HOUSES);
-		tr.top += FONT_HEIGHT_NORMAL;
+		tr.top += GetCharacterHeight(FS_NORMAL);
 
 		SetDParam(0, 1 << CT_PASSENGERS);
 		SetDParam(1, this->town->supplied[CT_PASSENGERS].old_act);
 		SetDParam(2, this->town->supplied[CT_PASSENGERS].old_max);
 		DrawString(tr, STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX);
-		tr.top += FONT_HEIGHT_NORMAL;
+		tr.top += GetCharacterHeight(FS_NORMAL);
 
 		SetDParam(0, 1 << CT_MAIL);
 		SetDParam(1, this->town->supplied[CT_MAIL].old_act);
 		SetDParam(2, this->town->supplied[CT_MAIL].old_max);
 		DrawString(tr, STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX);
-		tr.top += FONT_HEIGHT_NORMAL;
+		tr.top += GetCharacterHeight(FS_NORMAL);
 
 		bool first = true;
 		for (int i = TE_BEGIN; i < TE_END; i++) {
@@ -586,7 +586,7 @@ public:
 
 			if (first) {
 				DrawString(tr, STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH);
-				tr.top += FONT_HEIGHT_NORMAL;
+				tr.top += GetCharacterHeight(FS_NORMAL);
 				first = false;
 			}
 
@@ -621,16 +621,16 @@ public:
 				SetDParam(3, this->town->goal[i]);
 			}
 			DrawString(tr.Indent(20, rtl), string);
-			tr.top += FONT_HEIGHT_NORMAL;
+			tr.top += GetCharacterHeight(FS_NORMAL);
 		}
 
 		if (HasBit(this->town->flags, TOWN_IS_GROWING)) {
 			SetDParam(0, RoundDivSU(this->town->growth_rate + 1, DAY_TICKS));
 			DrawString(tr, this->town->fund_buildings_months == 0 ? STR_TOWN_VIEW_TOWN_GROWS_EVERY : STR_TOWN_VIEW_TOWN_GROWS_EVERY_FUNDED);
-			tr.top += FONT_HEIGHT_NORMAL;
+			tr.top += GetCharacterHeight(FS_NORMAL);
 		} else {
 			DrawString(tr, STR_TOWN_VIEW_TOWN_GROW_STOPPED);
-			tr.top += FONT_HEIGHT_NORMAL;
+			tr.top += GetCharacterHeight(FS_NORMAL);
 		}
 
 		/* only show the town noise, if the noise option is activated. */
@@ -639,7 +639,7 @@ public:
 			SetDParam(0, this->town->noise_reached);
 			SetDParam(1, max_noise);
 			DrawString(tr, max_noise == UINT16_MAX ? STR_TOWN_VIEW_NOISE_IN_TOWN_NO_LIMIT : STR_TOWN_VIEW_NOISE_IN_TOWN);
-			tr.top += FONT_HEIGHT_NORMAL;
+			tr.top += GetCharacterHeight(FS_NORMAL);
 		}
 
 		if (!this->town->text.empty()) {
@@ -698,7 +698,7 @@ public:
 	 */
 	uint GetDesiredInfoHeight(int width) const
 	{
-		uint aimed_height = 3 * FONT_HEIGHT_NORMAL;
+		uint aimed_height = 3 * GetCharacterHeight(FS_NORMAL);
 
 		bool first = true;
 		for (int i = TE_BEGIN; i < TE_END; i++) {
@@ -707,14 +707,14 @@ public:
 			if (this->town->goal[i] == TOWN_GROWTH_DESERT && (GetTropicZone(this->town->xy) != TROPICZONE_DESERT || this->town->cache.population <= 60)) continue;
 
 			if (first) {
-				aimed_height += FONT_HEIGHT_NORMAL;
+				aimed_height += GetCharacterHeight(FS_NORMAL);
 				first = false;
 			}
-			aimed_height += FONT_HEIGHT_NORMAL;
+			aimed_height += GetCharacterHeight(FS_NORMAL);
 		}
-		aimed_height += FONT_HEIGHT_NORMAL;
+		aimed_height += GetCharacterHeight(FS_NORMAL);
 
-		if (_settings_game.economy.station_noise_level) aimed_height += FONT_HEIGHT_NORMAL;
+		if (_settings_game.economy.station_noise_level) aimed_height += GetCharacterHeight(FS_NORMAL);
 
 		if (!this->town->text.empty()) {
 			SetDParamStr(0, this->town->text);
@@ -1032,7 +1032,7 @@ public:
 
 					SetDParam(0, t->index);
 					SetDParam(1, t->cache.population);
-					DrawString(tr.left, tr.right, tr.top + (this->resize.step_height - FONT_HEIGHT_NORMAL) / 2, GetTownString(t));
+					DrawString(tr.left, tr.right, tr.top + (this->resize.step_height - GetCharacterHeight(FS_NORMAL)) / 2, GetTownString(t));
 
 					tr.top += this->resize.step_height;
 					if (++n == this->vscroll->GetCapacity()) break; // max number of towns in 1 window
@@ -1825,7 +1825,7 @@ public:
 					max_w = std::max(max_w, GetStringBoundingBox(this->house_list.GetNameOfHouseSet(i)).width);
 				}
 				size->width = std::max(size->width, max_w + padding.width);
-				this->line_height = FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.matrix.Vertical();
+				this->line_height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.matrix.Vertical();
 				size->height = this->house_list.NumHouseSets() * this->line_height;
 				break;
 			}

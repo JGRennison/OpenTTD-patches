@@ -155,7 +155,7 @@ public:
 
 	uint Height() const override
 	{
-		return std::max(std::max(this->icon_size.height, this->lock_size.height) + WidgetDimensions::scaled.imgbtn.Vertical(), (uint)FONT_HEIGHT_NORMAL);
+		return std::max(std::max(this->icon_size.height, this->lock_size.height) + WidgetDimensions::scaled.imgbtn.Vertical(), (uint)GetCharacterHeight(FS_NORMAL));
 	}
 
 	void Draw(const Rect &r, bool sel, Colours) const override
@@ -168,7 +168,7 @@ public:
 
 		Rect tr = r.Shrink(WidgetDimensions::scaled.dropdowntext, RectPadding::zero);
 		int icon_y = CenterBounds(r.top, r.bottom, icon_size.height);
-		int text_y = CenterBounds(r.top, r.bottom, FONT_HEIGHT_NORMAL);
+		int text_y = CenterBounds(r.top, r.bottom, GetCharacterHeight(FS_NORMAL));
 		int lock_y = CenterBounds(r.top, r.bottom, lock_size.height);
 
 		DrawCompanyIcon(company, tr.WithWidth(this->icon_size.width, rtl).left, icon_y);
@@ -201,7 +201,7 @@ DropDownListItem *MakeCompanyDropDownListItem(CompanyID cid)
  * @param list List of items
  * @param def Default item
  */
-static void PopupMainToolbMenu(Window *w, int widget, DropDownList &&list, int def)
+static void PopupMainToolbarMenu(Window *w, int widget, DropDownList &&list, int def)
 {
 	ShowDropDownList(w, std::move(list), def, widget, 0, true);
 	if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
@@ -211,16 +211,21 @@ static void PopupMainToolbMenu(Window *w, int widget, DropDownList &&list, int d
  * Pop up a generic text only menu.
  * @param w Toolbar
  * @param widget Toolbar button
- * @param string String for the first item in the menu
- * @param count Number of items in the menu
+ * @param strings List of strings for each item in the menu
  */
-static void PopupMainToolbMenu(Window *w, int widget, StringID string, int count, uint32 disabled = 0)
+static void PopupMainToolbarMenu(Window *w, int widget, const std::initializer_list<StringID> &strings)
 {
 	DropDownList list;
-	for (int i = 0; i < count; i++) {
-		list.push_back(std::make_unique<DropDownListStringItem>(string + i, i, i < 32 && HasBit(disabled, i)));
+	int i = 0;
+	for (StringID string : strings) {
+		if (string == STR_NULL) {
+			list.push_back(std::make_unique<DropDownListItem>(-1, false));
+		} else {
+			list.push_back(std::make_unique<DropDownListStringItem>(string, i, false));
+			i++;
+		}
 	}
-	PopupMainToolbMenu(w, widget, std::move(list), 0);
+	PopupMainToolbarMenu(w, widget, std::move(list), 0);
 }
 
 /** Enum for the Company Toolbar's network related buttons */
@@ -263,7 +268,7 @@ static void PopupMainCompanyToolbMenu(Window *w, int widget, int grey = 0)
 		list.push_back(std::make_unique<DropDownListCompanyItem>(c, false, HasBit(grey, c)));
 	}
 
-	PopupMainToolbMenu(w, widget, std::move(list), _local_company == COMPANY_SPECTATOR ? (widget == WID_TN_COMPANIES ? CTMN_CLIENT_LIST : CTMN_SPECTATOR) : (int)_local_company);
+	PopupMainToolbarMenu(w, widget, std::move(list), _local_company == COMPANY_SPECTATOR ? (widget == WID_TN_COMPANIES ? CTMN_CLIENT_LIST : CTMN_SPECTATOR) : (int)_local_company);
 }
 
 static ToolbarMode _toolbar_mode;
@@ -411,24 +416,22 @@ static CallBackFunction MenuClickSettings(int index)
  * SaveLoad entries in scenario editor mode.
  */
 enum SaveLoadEditorMenuEntries {
-	SLEME_SAVE_SCENARIO   = 0,
+	SLEME_SAVE_SCENARIO = 0,
 	SLEME_LOAD_SCENARIO,
 	SLEME_SAVE_HEIGHTMAP,
 	SLEME_LOAD_HEIGHTMAP,
 	SLEME_EXIT_TOINTRO,
-	SLEME_EXIT_GAME       = 6,
-	SLEME_MENUCOUNT,
+	SLEME_EXIT_GAME,
 };
 
 /**
  * SaveLoad entries in normal game mode.
  */
 enum SaveLoadNormalMenuEntries {
-	SLNME_SAVE_GAME   = 0,
+	SLNME_SAVE_GAME = 0,
 	SLNME_LOAD_GAME,
 	SLNME_EXIT_TOINTRO,
-	SLNME_EXIT_GAME = 4,
-	SLNME_MENUCOUNT,
+	SLNME_EXIT_GAME,
 };
 
 /**
@@ -439,7 +442,8 @@ enum SaveLoadNormalMenuEntries {
  */
 static CallBackFunction ToolbarSaveClick(Window *w)
 {
-	PopupMainToolbMenu(w, WID_TN_SAVE, STR_FILE_MENU_SAVE_GAME, SLNME_MENUCOUNT);
+	PopupMainToolbarMenu(w, WID_TN_SAVE, {STR_FILE_MENU_SAVE_GAME, STR_FILE_MENU_LOAD_GAME, STR_FILE_MENU_QUIT_GAME,
+			STR_NULL, STR_FILE_MENU_EXIT});
 	return CBF_NONE;
 }
 
@@ -451,7 +455,9 @@ static CallBackFunction ToolbarSaveClick(Window *w)
  */
 static CallBackFunction ToolbarScenSaveOrLoad(Window *w)
 {
-	PopupMainToolbMenu(w, WID_TE_SAVE, STR_SCENEDIT_FILE_MENU_SAVE_SCENARIO, SLEME_MENUCOUNT);
+	PopupMainToolbarMenu(w, WID_TE_SAVE, {STR_SCENEDIT_FILE_MENU_SAVE_SCENARIO, STR_SCENEDIT_FILE_MENU_LOAD_SCENARIO,
+			STR_SCENEDIT_FILE_MENU_SAVE_HEIGHTMAP, STR_SCENEDIT_FILE_MENU_LOAD_HEIGHTMAP,
+			STR_SCENEDIT_FILE_MENU_QUIT_EDITOR, STR_NULL, STR_SCENEDIT_FILE_MENU_QUIT});
 	return CBF_NONE;
 }
 
@@ -503,7 +509,7 @@ static CallBackFunction ToolbarMapClick(Window *w)
 	list.push_back(std::make_unique<DropDownListStringItem>(STR_MAP_MENU_LINGRAPH_LEGEND,         MME_SHOW_LINKGRAPH,         false));
 	list.push_back(std::make_unique<DropDownListStringItem>(STR_MAP_MENU_SIGN_LIST,               MME_SHOW_SIGNLISTS,         false));
 	list.push_back(std::make_unique<DropDownListStringItem>(STR_MAP_MENU_PLAN_LIST,               MME_SHOW_PLANS,             false));
-	PopupMainToolbMenu(w, WID_TN_SMALL_MAP, std::move(list), 0);
+	PopupMainToolbarMenu(w, WID_TN_SMALL_MAP, std::move(list), 0);
 	return CBF_NONE;
 }
 
@@ -515,7 +521,7 @@ static CallBackFunction ToolbarScenMapTownDir(Window *w)
 	list.push_back(std::make_unique<DropDownListStringItem>(STR_MAP_MENU_SIGN_LIST,               MME_SHOW_SIGNLISTS,         false));
 	list.push_back(std::make_unique<DropDownListStringItem>(STR_TOWN_MENU_TOWN_DIRECTORY,         MME_SHOW_TOWNDIRECTORY,     false));
 	list.push_back(std::make_unique<DropDownListStringItem>(STR_INDUSTRY_MENU_INDUSTRY_DIRECTORY, MME_SHOW_INDUSTRYDIRECTORY, false));
-	PopupMainToolbMenu(w, WID_TE_SMALL_MAP, std::move(list), 0);
+	PopupMainToolbarMenu(w, WID_TE_SMALL_MAP, std::move(list), 0);
 	return CBF_NONE;
 }
 
@@ -543,7 +549,11 @@ static CallBackFunction MenuClickMap(int index)
 
 static CallBackFunction ToolbarTownClick(Window *w)
 {
-	PopupMainToolbMenu(w, WID_TN_TOWNS, STR_TOWN_MENU_TOWN_DIRECTORY, (_settings_game.economy.found_town == TF_FORBIDDEN) ? 1 : 2);
+	if (_settings_game.economy.found_town == TF_FORBIDDEN) {
+		PopupMainToolbarMenu(w, WID_TN_TOWNS, {STR_TOWN_MENU_TOWN_DIRECTORY});
+	} else {
+		PopupMainToolbarMenu(w, WID_TN_TOWNS, {STR_TOWN_MENU_TOWN_DIRECTORY, STR_TOWN_MENU_FOUND_TOWN});
+	}
 	return CBF_NONE;
 }
 
@@ -568,7 +578,7 @@ static CallBackFunction MenuClickTown(int index)
 
 static CallBackFunction ToolbarSubsidiesClick(Window *w)
 {
-	PopupMainToolbMenu(w, WID_TN_SUBSIDIES, STR_SUBSIDIES_MENU_SUBSIDIES, 1);
+	PopupMainToolbarMenu(w, WID_TN_SUBSIDIES, {STR_SUBSIDIES_MENU_SUBSIDIES});
 	return CBF_NONE;
 }
 
@@ -796,7 +806,11 @@ static CallBackFunction MenuClickGraphsOrLeague(int index)
 static CallBackFunction ToolbarIndustryClick(Window *w)
 {
 	/* Disable build-industry menu if we are a spectator */
-	PopupMainToolbMenu(w, WID_TN_INDUSTRIES, STR_INDUSTRY_MENU_INDUSTRY_DIRECTORY, (_local_company == COMPANY_SPECTATOR) ? 2 : 3);
+	if (_local_company == COMPANY_SPECTATOR) {
+		PopupMainToolbarMenu(w, WID_TN_INDUSTRIES, {STR_INDUSTRY_MENU_INDUSTRY_DIRECTORY, STR_INDUSTRY_MENU_INDUSTRY_CHAIN});
+	} else {
+		PopupMainToolbarMenu(w, WID_TN_INDUSTRIES, {STR_INDUSTRY_MENU_INDUSTRY_DIRECTORY, STR_INDUSTRY_MENU_INDUSTRY_CHAIN, STR_INDUSTRY_MENU_FUND_NEW_INDUSTRY});
+	}
 	return CBF_NONE;
 }
 
@@ -1072,7 +1086,7 @@ static CallBackFunction MenuClickForest(int index)
 
 static CallBackFunction ToolbarMusicClick(Window *w)
 {
-	PopupMainToolbMenu(w, _game_mode == GM_EDITOR ? (int)WID_TE_MUSIC_SOUND : (int)WID_TN_MUSIC_SOUND, STR_TOOLBAR_SOUND_MUSIC, 1);
+	PopupMainToolbarMenu(w, _game_mode == GM_EDITOR ? (int)WID_TE_MUSIC_SOUND : (int)WID_TN_MUSIC_SOUND, {STR_TOOLBAR_SOUND_MUSIC});
 	return CBF_NONE;
 }
 
@@ -1091,7 +1105,7 @@ static CallBackFunction MenuClickMusicWindow(int)
 
 static CallBackFunction ToolbarNewspaperClick(Window *w)
 {
-	PopupMainToolbMenu(w, WID_TN_MESSAGES, STR_NEWS_MENU_LAST_MESSAGE_NEWS_REPORT, 3);
+	PopupMainToolbarMenu(w, WID_TN_MESSAGES, {STR_NEWS_MENU_LAST_MESSAGE_NEWS_REPORT, STR_NEWS_MENU_MESSAGE_HISTORY_MENU, STR_NEWS_MENU_DELETE_ALL_MESSAGES});
 	return CBF_NONE;
 }
 
@@ -1119,7 +1133,7 @@ static CallBackFunction MenuClickNewspaper(int index)
 enum HelpMenuEntries {
 	HME_LANDINFO = 0,
 	HME_PICKER,
-	HME_SEPARATOR,
+
 	HME_HELP,
 	HME_CONSOLE,
 	HME_SCRIPT_DEBUG,
@@ -1239,7 +1253,7 @@ static CallBackFunction ToolbarHelpClick(Window *w)
 	DropDownList list;
 	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_LAND_BLOCK_INFO,           HME_LANDINFO,      false));
 	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_SHOW_PICKER_TOOL,          HME_PICKER,        _local_company == COMPANY_SPECTATOR));
-	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_SEPARATOR,                 HME_SEPARATOR,     false));
+	list.emplace_back(new DropDownListItem(-1, false));
 	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_HELP,                      HME_HELP,          false));
 	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_TOGGLE_CONSOLE,            HME_CONSOLE,       false));
 	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_AI_DEBUG,                  HME_SCRIPT_DEBUG,  false));
@@ -1253,7 +1267,7 @@ static CallBackFunction ToolbarHelpClick(Window *w)
 		list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_TOGGLE_DIRTY_BLOCKS,    HME_DIRTY_BLOCKS,         false));
 		list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_TOGGLE_WIDGET_OUTLINES, HME_WIDGET_OUTLINES,      false));
 	}
-	PopupMainToolbMenu(w, widget, std::move(list), 0);
+	PopupMainToolbarMenu(w, widget, std::move(list), 0);
 
 	return CBF_NONE;
 }
@@ -2585,11 +2599,11 @@ struct ScenarioEditorToolbarWindow : Window {
 		switch (widget) {
 			case WID_TE_SPACER: {
 				int height = r.Height();
-				if (height > 2 * FONT_HEIGHT_NORMAL) {
-					DrawString(r.left, r.right, height / 2 - FONT_HEIGHT_NORMAL, STR_SCENEDIT_TOOLBAR_OPENTTD, TC_FROMSTRING, SA_HOR_CENTER);
+				if (height > 2 * GetCharacterHeight(FS_NORMAL)) {
+					DrawString(r.left, r.right, height / 2 - GetCharacterHeight(FS_NORMAL), STR_SCENEDIT_TOOLBAR_OPENTTD, TC_FROMSTRING, SA_HOR_CENTER);
 					DrawString(r.left, r.right, height / 2, STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR, TC_FROMSTRING, SA_HOR_CENTER);
 				} else {
-					DrawString(r.left, r.right, (height - FONT_HEIGHT_NORMAL) / 2, STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR, TC_FROMSTRING, SA_HOR_CENTER);
+					DrawString(r.left, r.right, (height - GetCharacterHeight(FS_NORMAL)) / 2, STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR, TC_FROMSTRING, SA_HOR_CENTER);
 				}
 				break;
 			}

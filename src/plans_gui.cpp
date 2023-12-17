@@ -301,13 +301,13 @@ struct PlansWindow : Window {
 						}
 						SetDParam(dparam_offset++, p->lines.size());
 						SetDParam(dparam_offset++, p->creation_date);
-						DrawString(text_left, text_right, y + (this->resize.step_height - FONT_HEIGHT_NORMAL) / 2, str, TC_IS_PALETTE_COLOUR | (TextColour)_colour_value[p->colour]);
+						DrawString(text_left, text_right, y + (this->resize.step_height - GetCharacterHeight(FS_NORMAL)) / 2, str, TC_IS_PALETTE_COLOUR | (TextColour)_colour_value[p->colour]);
 					} else {
 						PlanLine *pl = p->lines[list[i].line_id];
 						DrawBoolButton(btn_left, y + (this->resize.step_height - SETTING_BUTTON_HEIGHT) / 2, pl->visible, true);
 						SetDParam(0, list[i].line_id + 1);
 						SetDParam(1, pl->tiles.size() - 1);
-						DrawString(text_left, text_right, y + (this->resize.step_height - FONT_HEIGHT_NORMAL) / 2, STR_PLANS_LIST_ITEM_LINE, TC_WHITE);
+						DrawString(text_left, text_right, y + (this->resize.step_height - GetCharacterHeight(FS_NORMAL)) / 2, STR_PLANS_LIST_ITEM_LINE, TC_WHITE);
 					}
 					y += this->resize.step_height;
 				}
@@ -335,7 +335,7 @@ struct PlansWindow : Window {
 		switch (widget) {
 			case WID_PLN_LIST:
 				this->company_icon_spr_dim = GetSpriteSize(SPR_COMPANY_ICON);
-				resize->height = std::max<int>(FONT_HEIGHT_NORMAL, SETTING_BUTTON_HEIGHT);
+				resize->height = std::max<int>(GetCharacterHeight(FS_NORMAL), SETTING_BUTTON_HEIGHT);
 				size->height = resize->height * 5 + WidgetDimensions::scaled.framerect.Vertical();
 				break;
 

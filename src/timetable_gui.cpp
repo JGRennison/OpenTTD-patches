@@ -415,13 +415,13 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 			case WID_VT_ARRIVAL_DEPARTURE_SELECTION:
 			case WID_VT_TIMETABLE_PANEL:
-				resize->height = std::max<int>(FONT_HEIGHT_NORMAL, GetSpriteSize(SPR_LOCK).height);
+				resize->height = std::max<int>(GetCharacterHeight(FS_NORMAL), GetSpriteSize(SPR_LOCK).height);
 				size->height = 8 * resize->height + padding.height;
 				break;
 
 			case WID_VT_SUMMARY_PANEL: {
 				Dimension d = GetSpriteSize(SPR_WARNING_SIGN);
-				size->height = 2 * FONT_HEIGHT_NORMAL + std::min<int>(MAX_SUMMARY_WARNINGS, this->summary_warnings) * std::max<int>(d.height, FONT_HEIGHT_NORMAL) + padding.height;
+				size->height = 2 * GetCharacterHeight(FS_NORMAL) + std::min<int>(MAX_SUMMARY_WARNINGS, this->summary_warnings) * std::max<int>(d.height, GetCharacterHeight(FS_NORMAL)) + padding.height;
 				break;
 			}
 		}
@@ -662,7 +662,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 				Rect tr = r.Shrink(WidgetDimensions::scaled.framerect);
 				int i = this->vscroll->GetPosition();
 				Dimension lock_d = GetSpriteSize(SPR_LOCK);
-				int line_height = std::max<int>(FONT_HEIGHT_NORMAL, lock_d.height);
+				int line_height = std::max<int>(GetCharacterHeight(FS_NORMAL), lock_d.height);
 				VehicleOrderID order_id = (i + 1) / 2;
 				bool final_order = false;
 
@@ -749,7 +749,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 				Rect tr = r.Shrink(WidgetDimensions::scaled.framerect);
 				Dimension lock_d = GetSpriteSize(SPR_LOCK);
-				int line_height = std::max<int>(FONT_HEIGHT_NORMAL, lock_d.height);
+				int line_height = std::max<int>(GetCharacterHeight(FS_NORMAL), lock_d.height);
 
 				bool show_late = this->show_expected && v->lateness_counter > DATE_UNIT_SIZE;
 				Ticks offset = show_late ? 0 : -v->lateness_counter;
@@ -795,7 +795,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 					SetTimetableParams(0, total_time);
 					DrawString(tr, v->orders->IsCompleteTimetable() ? STR_TIMETABLE_TOTAL_TIME : STR_TIMETABLE_TOTAL_TIME_INCOMPLETE);
 				}
-				tr.top += FONT_HEIGHT_NORMAL;
+				tr.top += GetCharacterHeight(FS_NORMAL);
 
 				if (v->timetable_start != 0) {
 					/* We are running towards the first station so we can start the
@@ -813,12 +813,12 @@ struct TimetableWindow : GeneralVehicleWindow {
 					SetTimetableParams(0, abs(v->lateness_counter));
 					DrawString(tr, v->lateness_counter < 0 ? STR_TIMETABLE_STATUS_EARLY : STR_TIMETABLE_STATUS_LATE);
 				}
-				tr.top += FONT_HEIGHT_NORMAL;
+				tr.top += GetCharacterHeight(FS_NORMAL);
 
 				{
 					const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
-					const int step_height = std::max<int>(warning_dimensions.height, FONT_HEIGHT_NORMAL);
-					const int text_offset_y = (step_height - FONT_HEIGHT_NORMAL) / 2;
+					const int step_height = std::max<int>(warning_dimensions.height, GetCharacterHeight(FS_NORMAL));
+					const int text_offset_y = (step_height - GetCharacterHeight(FS_NORMAL)) / 2;
 					const int warning_offset_y = (step_height - warning_dimensions.height) / 2;
 					const bool rtl = _current_text_dir == TD_RTL;
 

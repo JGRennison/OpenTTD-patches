@@ -295,7 +295,7 @@ public:
 
 	void SetupValues()
 	{
-		this->entry_height = 1 + FONT_HEIGHT_NORMAL + 1 + (_settings_client.gui.departure_larger_font ? FONT_HEIGHT_NORMAL : FONT_HEIGHT_SMALL) + 1 + 1;
+		this->entry_height = 1 + GetCharacterHeight(FS_NORMAL) + 1 + (_settings_client.gui.departure_larger_font ? GetCharacterHeight(FS_NORMAL) : GetCharacterHeight(FS_SMALL)) + 1 + 1;
 
 		if (cached_veh_type_width == 0) {
 			cached_veh_type_width = GetStringBoundingBox(STR_DEPARTURES_TYPE_PLANE).width;
@@ -507,7 +507,7 @@ public:
 			this->ReInit();
 		}
 
-		uint new_height = 1 + FONT_HEIGHT_NORMAL + 1 + (_settings_client.gui.departure_larger_font ? FONT_HEIGHT_NORMAL : FONT_HEIGHT_SMALL) + 1 + 1;
+		uint new_height = 1 + GetCharacterHeight(FS_NORMAL) + 1 + (_settings_client.gui.departure_larger_font ? GetCharacterHeight(FS_NORMAL) : GetCharacterHeight(FS_SMALL)) + 1 + 1;
 
 		if (new_height != this->entry_height) {
 			this->entry_height = new_height;
@@ -678,7 +678,7 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 		max_departures = _settings_client.gui.max_departures;
 	}
 
-	const int small_font_size = _settings_client.gui.departure_larger_font ? FONT_HEIGHT_NORMAL : FONT_HEIGHT_SMALL;
+	const int small_font_size = _settings_client.gui.departure_larger_font ? GetCharacterHeight(FS_NORMAL) : GetCharacterHeight(FS_SMALL);
 
 	/* Draw the black background. */
 	GfxFillRect(r.left + 1, r.top, r.right - 1, r.bottom, PC_BLACK);

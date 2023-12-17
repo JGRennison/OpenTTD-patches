@@ -110,8 +110,8 @@ void NetworkAddChatMessage(TextColour colour, uint duration, const std::string_v
 /** Initialize all font-dependent chat box sizes. */
 void NetworkReInitChatBoxSize()
 {
-	_chatmsg_box.y       = 3 * FONT_HEIGHT_NORMAL;
-	_chatmsg_box.height  = MAX_CHAT_MESSAGES * (FONT_HEIGHT_NORMAL + ScaleGUITrad(NETWORK_CHAT_LINE_SPACING)) + ScaleGUITrad(4);
+	_chatmsg_box.y       = 3 * GetCharacterHeight(FS_NORMAL);
+	_chatmsg_box.height  = MAX_CHAT_MESSAGES * (GetCharacterHeight(FS_NORMAL) + ScaleGUITrad(NETWORK_CHAT_LINE_SPACING)) + ScaleGUITrad(4);
 }
 
 /** Initialize all buffers of the chat visualisation. */
@@ -228,10 +228,10 @@ void NetworkDrawChatMessage()
 	for (auto &cmsg : _chatmsg_list) {
 		if (!show_all && cmsg.remove_time < now) continue;
 		SetDParamStr(0, cmsg.message);
-		string_height += GetStringLineCount(STR_JUST_RAW_STRING, width - 1) * FONT_HEIGHT_NORMAL + NETWORK_CHAT_LINE_SPACING;
+		string_height += GetStringLineCount(STR_JUST_RAW_STRING, width - 1) * GetCharacterHeight(FS_NORMAL) + NETWORK_CHAT_LINE_SPACING;
 	}
 
-	string_height = std::min<uint>(string_height, MAX_CHAT_MESSAGES * (FONT_HEIGHT_NORMAL + NETWORK_CHAT_LINE_SPACING));
+	string_height = std::min<uint>(string_height, MAX_CHAT_MESSAGES * (GetCharacterHeight(FS_NORMAL) + NETWORK_CHAT_LINE_SPACING));
 
 	int top = _screen.height - _chatmsg_box.y - string_height - 2;
 	int bottom = _screen.height - _chatmsg_box.y - 2;

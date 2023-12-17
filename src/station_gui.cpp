@@ -508,7 +508,7 @@ public:
 			}
 
 			case WID_STL_LIST:
-				resize->height = std::max(FONT_HEIGHT_NORMAL, FONT_HEIGHT_SMALL + ScaleGUITrad(3));
+				resize->height = std::max(GetCharacterHeight(FS_NORMAL), GetCharacterHeight(FS_SMALL) + ScaleGUITrad(3));
 				size->height = padding.height + 5 * resize->height;
 
 				/* Determine appropriate width for mini station rating graph */
@@ -567,7 +567,7 @@ public:
 
 					SetDParam(0, st->index);
 					SetDParam(1, st->facilities);
-					int x = DrawString(tr.left, tr.right, tr.top + (line_height - FONT_HEIGHT_NORMAL) / 2, STR_STATION_LIST_STATION);
+					int x = DrawString(tr.left, tr.right, tr.top + (line_height - GetCharacterHeight(FS_NORMAL)) / 2, STR_STATION_LIST_STATION);
 					x += rtl ? -text_spacing : text_spacing;
 
 					/* show cargo waiting and station ratings */
@@ -593,7 +593,7 @@ public:
 				}
 
 				if (this->vscroll->GetCount() == 0) { // company has no stations
-					DrawString(tr.left, tr.right, tr.top + (line_height - FONT_HEIGHT_NORMAL) / 2, STR_STATION_LIST_NONE);
+					DrawString(tr.left, tr.right, tr.top + (line_height - GetCharacterHeight(FS_NORMAL)) / 2, STR_STATION_LIST_NONE);
 					return;
 				}
 				break;
@@ -607,7 +607,7 @@ public:
 					br = br.Translate(cg_ofst, cg_ofst);
 					GfxFillRect(br, cs->rating_colour);
 					TextColour tc = GetContrastColour(cs->rating_colour);
-					DrawString(br.left, br.right, CenterBounds(br.top, br.bottom, FONT_HEIGHT_SMALL), cs->abbrev, tc, SA_HOR_CENTER, false, FS_SMALL);
+					DrawString(br.left, br.right, CenterBounds(br.top, br.bottom, GetCharacterHeight(FS_SMALL)), cs->abbrev, tc, SA_HOR_CENTER, false, FS_SMALL);
 				}
 				break;
 		}
@@ -1505,13 +1505,13 @@ struct StationViewWindow : public Window {
 	{
 		switch (widget) {
 			case WID_SV_WAITING:
-				resize->height = FONT_HEIGHT_NORMAL;
+				resize->height = GetCharacterHeight(FS_NORMAL);
 				size->height = 4 * resize->height + padding.height;
 				this->expand_shrink_width = std::max(GetStringBoundingBox("-").width, GetStringBoundingBox("+").width);
 				break;
 
 			case WID_SV_ACCEPT_RATING_LIST:
-				size->height = ((this->GetWidget<NWidgetCore>(WID_SV_ACCEPTS_RATINGS)->widget_data == STR_STATION_VIEW_RATINGS_BUTTON) ? this->accepts_lines : this->rating_lines) * FONT_HEIGHT_NORMAL + padding.height;
+				size->height = ((this->GetWidget<NWidgetCore>(WID_SV_ACCEPTS_RATINGS)->widget_data == STR_STATION_VIEW_RATINGS_BUTTON) ? this->accepts_lines : this->rating_lines) * GetCharacterHeight(FS_NORMAL) + padding.height;
 				break;
 
 			case WID_SV_CLOSE_AIRPORT:
@@ -1559,7 +1559,7 @@ struct StationViewWindow : public Window {
 		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			const GoodsEntry *ge = &st->goods[cs->Index()];
 			if (!ge->HasRating()) continue;
-			ofs_y -= FONT_HEIGHT_NORMAL;
+			ofs_y -= GetCharacterHeight(FS_NORMAL);
 			if (ofs_y < 0) {
 				GuiShowStationRatingTooltip(this, st, cs);
 				break;
@@ -1939,7 +1939,7 @@ struct StationViewWindow : public Window {
 
 			if (pos > -maxrows && pos <= 0) {
 				StringID str = STR_EMPTY;
-				int y = r.top - pos * FONT_HEIGHT_NORMAL;
+				int y = r.top - pos * GetCharacterHeight(FS_NORMAL);
 				SetDParam(0, cargo);
 				SetDParam(1, cd->GetCount());
 
@@ -2012,7 +2012,7 @@ struct StationViewWindow : public Window {
 
 		SetDParam(0, GetAcceptanceMask(st));
 		int bottom = DrawStringMultiLine(tr.left, tr.right, tr.top, INT32_MAX, STR_STATION_VIEW_ACCEPTS_CARGO);
-		return CeilDiv(bottom - r.top - WidgetDimensions::scaled.framerect.top, FONT_HEIGHT_NORMAL);
+		return CeilDiv(bottom - r.top - WidgetDimensions::scaled.framerect.top, GetCharacterHeight(FS_NORMAL));
 	}
 
 	/**
@@ -2033,7 +2033,7 @@ struct StationViewWindow : public Window {
 		}
 
 		DrawString(tr, STR_STATION_VIEW_SUPPLY_RATINGS_TITLE);
-		tr.top += FONT_HEIGHT_NORMAL;
+		tr.top += GetCharacterHeight(FS_NORMAL);
 
 		this->ratings_list_y = tr.top;
 
@@ -2050,12 +2050,12 @@ struct StationViewWindow : public Window {
 			Rect rating_rect = tr.Indent(WidgetDimensions::scaled.hsep_indent, rtl);
 			int x = DrawString(rating_rect, STR_STATION_VIEW_CARGO_SUPPLY_RATING);
 			if (!ge->IsSupplyAllowed() && x != 0) {
-				int line_y = rating_rect.top + (FONT_HEIGHT_NORMAL / 2) - 1;
+				int line_y = rating_rect.top + (GetCharacterHeight(FS_NORMAL) / 2) - 1;
 				GfxDrawLine(rating_rect.left, line_y, x, line_y, PC_WHITE, 1);
 			}
-			tr.top += FONT_HEIGHT_NORMAL;
+			tr.top += GetCharacterHeight(FS_NORMAL);
 		}
-		return CeilDiv(tr.top - r.top - WidgetDimensions::scaled.framerect.top, FONT_HEIGHT_NORMAL);
+		return CeilDiv(tr.top - r.top - WidgetDimensions::scaled.framerect.top, GetCharacterHeight(FS_NORMAL));
 	}
 
 	/**
@@ -2123,7 +2123,7 @@ struct StationViewWindow : public Window {
 					nwi->SetDataTip(STR_STATION_VIEW_RATINGS_BUTTON, STR_STATION_VIEW_RATINGS_TOOLTIP); // Switch to ratings view.
 					height_change = this->accepts_lines - this->rating_lines;
 				}
-				this->ReInit(0, height_change * FONT_HEIGHT_NORMAL);
+				this->ReInit(0, height_change * GetCharacterHeight(FS_NORMAL));
 				break;
 			}
 
@@ -2194,7 +2194,7 @@ struct StationViewWindow : public Window {
 
 			case WID_SV_ACCEPT_RATING_LIST: {
 				if (this->owner != _local_company || !_ctrl_pressed || this->GetWidget<NWidgetCore>(WID_SV_ACCEPTS_RATINGS)->widget_data == STR_STATION_VIEW_RATINGS_BUTTON) break;
-				int row = this->GetRowFromWidget(pt.y, WID_SV_ACCEPT_RATING_LIST, WidgetDimensions::scaled.framerect.top, FONT_HEIGHT_NORMAL);
+				int row = this->GetRowFromWidget(pt.y, WID_SV_ACCEPT_RATING_LIST, WidgetDimensions::scaled.framerect.top, GetCharacterHeight(FS_NORMAL));
 				if (row < 1) break;
 				const Station *st = Station::Get(this->window_number);
 				for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
@@ -3056,7 +3056,7 @@ public:
 				width += RATING_TOOLTIP_NEWGRF_INDENT;
 			}
 			size->width = std::max(size->width, width);
-			size->height += FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.vsep_normal;
+			size->height += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
 		}
 
 		size->height -= WidgetDimensions::scaled.vsep_normal;
@@ -3075,7 +3075,7 @@ public:
 
 		DrawString(left0, right0, y, this->data[0], TC_LIGHT_BLUE, SA_CENTER);
 
-		y += FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.vsep_normal;
+		y += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
 
 		for (uint i = 1; i <= RATING_TOOLTIP_MAX_LINES; i++) {
 			if (StrEmpty(this->data[i])) break;
@@ -3093,7 +3093,7 @@ public:
 
 			DrawString(left, right, y, this->data[i], TC_BLACK);
 
-			y += FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.vsep_normal;
+			y += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
 		}
 	}
 

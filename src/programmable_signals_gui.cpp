@@ -607,7 +607,7 @@ public:
 	{
 		switch (widget) {
 			case PROGRAM_WIDGET_INSTRUCTION_LIST:
-				resize->height = FONT_HEIGHT_NORMAL;
+				resize->height = GetCharacterHeight(FS_NORMAL);
 				size->height = 6 * resize->height + WidgetDimensions::scaled.framerect.Vertical();
 				break;
 		}

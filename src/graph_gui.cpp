@@ -76,7 +76,7 @@ struct GraphLegendWindow : Window {
 		const Rect tr = ir.Indent(d.width + WidgetDimensions::scaled.hsep_normal, rtl);
 		SetDParam(0, cid);
 		SetDParam(1, cid);
-		DrawString(tr.left, tr.right, CenterBounds(tr.top, tr.bottom, FONT_HEIGHT_NORMAL), STR_COMPANY_NAME_COMPANY_NUM, HasBit(_legend_excluded_companies, cid) ? TC_BLACK : TC_WHITE);
+		DrawString(tr.left, tr.right, CenterBounds(tr.top, tr.bottom, GetCharacterHeight(FS_NORMAL)), STR_COMPANY_NAME_COMPANY_NUM, HasBit(_legend_excluded_companies, cid) ? TC_BLACK : TC_WHITE);
 	}
 
 	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
@@ -545,7 +545,7 @@ public:
 		uint y_label_width = GetStringBoundingBox(STR_GRAPH_Y_LABEL).width;
 
 		size->width  = std::max<uint>(size->width,  ScaleGUITrad(5) + y_label_width + this->num_on_x_axis * (x_label_width + ScaleGUITrad(5)) + ScaleGUITrad(9));
-		size->height = std::max<uint>(size->height, ScaleGUITrad(5) + (1 + MIN_GRAPH_NUM_LINES_Y * 2 + (this->draw_dates ? 3 : 1)) * FONT_HEIGHT_SMALL + ScaleGUITrad(4));
+		size->height = std::max<uint>(size->height, ScaleGUITrad(5) + (1 + MIN_GRAPH_NUM_LINES_Y * 2 + (this->draw_dates ? 3 : 1)) * GetCharacterHeight(FS_SMALL) + ScaleGUITrad(4));
 		size->height = std::max<uint>(size->height, size->width / 3);
 	}
 
@@ -754,7 +754,7 @@ struct ExcludingCargoBaseGraphWindow : BaseGraphWindow {
 	void OnInit() override
 	{
 		/* Width of the legend blob. */
-		this->legend_width = (FONT_HEIGHT_SMALL - ScaleGUITrad(1)) * 8 / 5;
+		this->legend_width = (GetCharacterHeight(FS_SMALL) - ScaleGUITrad(1)) * 9 / 6;
 	}
 
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
@@ -1252,7 +1252,7 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 	void OnInit() override
 	{
 		/* Width of the legend blob. */
-		this->legend_width = (FONT_HEIGHT_SMALL - ScaleGUITrad(1)) * 8 / 5;
+		this->legend_width = GetCharacterHeight(FS_SMALL) * 9 / 6;
 	}
 
 	void UpdateExcludedData()
@@ -1273,7 +1273,7 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 			return;
 		}
 
-		size->height = FONT_HEIGHT_SMALL + WidgetDimensions::scaled.framerect.Vertical();
+		size->height = GetCharacterHeight(FS_SMALL) + WidgetDimensions::scaled.framerect.Vertical();
 
 		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			SetDParam(0, cs->name);
@@ -1538,7 +1538,7 @@ struct PerformanceRatingDetailWindow : Window {
 	{
 		switch (widget) {
 			case WID_PRD_SCORE_FIRST:
-				this->bar_height = FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.fullbevel.Vertical();
+				this->bar_height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.fullbevel.Vertical();
 				size->height = this->bar_height + WidgetDimensions::scaled.matrix.Vertical();
 
 				uint score_info_width = 0;
@@ -1626,7 +1626,7 @@ struct PerformanceRatingDetailWindow : Window {
 		}
 
 		uint bar_top  = CenterBounds(r.top, r.bottom, this->bar_height);
-		uint text_top = CenterBounds(r.top, r.bottom, FONT_HEIGHT_NORMAL);
+		uint text_top = CenterBounds(r.top, r.bottom, GetCharacterHeight(FS_NORMAL));
 
 		DrawString(this->score_info_left, this->score_info_right, text_top, STR_PERFORMANCE_DETAIL_VEHICLES + score_type);
 
@@ -1833,7 +1833,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 	void OnInit() override
 	{
 		/* Width of the legend blob. */
-		this->legend_width = (FONT_HEIGHT_SMALL - ScaleGUITrad(1)) * 8 / 5;
+		this->legend_width = (GetCharacterHeight(FS_SMALL) - ScaleGUITrad(1)) * 9 / 6;
 		this->legend_excluded_cargo = 0;
 	}
 
@@ -1894,7 +1894,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 
 		int x = ir.left;
 		int y = ir.top;
-		const uint row_height = FONT_HEIGHT_SMALL;
+		const uint row_height = GetCharacterHeight(FS_SMALL);
 		const int padding = ScaleGUITrad(1);
 
 		int pos = this->vscroll->GetPosition();

@@ -912,7 +912,7 @@ void SmallMapWindow::DrawTowns(const DrawPixelInfo *dpi) const
 		/* Check if the town sign is within bounds */
 		if (x + t->cache.sign.width_small > dpi->left &&
 				x < dpi->left + dpi->width &&
-				y + FONT_HEIGHT_SMALL > dpi->top &&
+				y + GetCharacterHeight(FS_SMALL) > dpi->top &&
 				y < dpi->top + dpi->height) {
 			/* And draw it. */
 			SetDParam(0, t->index);
@@ -1170,7 +1170,7 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 	}
 
 	/* Width of the legend blob. */
-	this->legend_width = (FONT_HEIGHT_SMALL - ScaleGUITrad(1)) * 8 / 5;
+	this->legend_width = (GetCharacterHeight(FS_SMALL) - ScaleGUITrad(1)) * 9 / 6;
 
 	/* The width of a column is the minimum width of all texts + the size of the blob + some spacing */
 	this->column_width = min_width + WidgetDimensions::scaled.hsep_normal + this->legend_width + WidgetDimensions::scaled.framerect.Horizontal();
@@ -1208,7 +1208,7 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 			uint number_of_rows = this->GetNumberRowsLegend(columns);
 			bool rtl = _current_text_dir == TD_RTL;
 			uint i = 0; // Row counter for industry legend.
-			uint row_height = FONT_HEIGHT_SMALL;
+			uint row_height = GetCharacterHeight(FS_SMALL);
 			int padding = ScaleGUITrad(1);
 
 			Rect origin = r.WithWidth(this->column_width, rtl).Shrink(WidgetDimensions::scaled.framerect).WithHeight(row_height);
@@ -1379,7 +1379,7 @@ void SmallMapWindow::SetOverlayCargoMask()
 int SmallMapWindow::GetPositionOnLegend(Point pt)
 {
 	const NWidgetBase *wi = this->GetWidget<NWidgetBase>(WID_SM_LEGEND);
-	uint line = (pt.y - wi->pos_y - WidgetDimensions::scaled.framerect.top) / FONT_HEIGHT_SMALL;
+	uint line = (pt.y - wi->pos_y - WidgetDimensions::scaled.framerect.top) / GetCharacterHeight(FS_SMALL);
 	uint columns = this->GetNumberColumnsLegend(wi->current_x);
 	uint number_of_rows = this->GetNumberRowsLegend(columns);
 	if (line >= number_of_rows) return -1;
