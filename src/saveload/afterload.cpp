@@ -851,6 +851,11 @@ bool AfterLoadGame()
 	/* Set day length factor to 1 if loading a pre day length savegame */
 	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_DAY_LENGTH) && SlXvIsFeatureMissing(XSLFI_SPRINGPP) && SlXvIsFeatureMissing(XSLFI_JOKERPP) && SlXvIsFeatureMissing(XSLFI_CHILLPP)) {
 		_settings_game.economy.day_length_factor = 1;
+		if (_file_to_saveload.abstract_ftype != FT_SCENARIO) {
+			/* If this is obviously a vanilla/non-patchpack savegame (and not a scenario),
+			 * set the savegame time units to be in days, as they would have been previously. */
+			_settings_game.game_time.time_in_minutes = false;
+		}
 	}
 	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_DAY_LENGTH, 3)) {
 		_scaled_tick_counter = (uint64)((_tick_counter * _settings_game.economy.day_length_factor) + _tick_skip_counter);
