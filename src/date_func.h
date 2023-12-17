@@ -70,12 +70,6 @@ static inline DateTicksScaled DateTicksToScaledDateTicks(DateTicks date_ticks)
 	return ((int64)date_ticks * _settings_game.economy.day_length_factor) + _scaled_date_ticks_offset;
 }
 
-static inline std::pair<DateTicks, uint16> ScaledDateTicksToDateTicksAndSubTicks(DateTicksScaled ticks)
-{
-	ticks -= _scaled_date_ticks_offset;
-	return std::make_pair<DateTicks, uint16>(ticks / _settings_game.economy.day_length_factor, ticks % _settings_game.economy.day_length_factor);
-}
-
 static inline std::pair<Date, uint16> ScaledDateTicksToDateAndFullSubTicks(DateTicksScaled ticks)
 {
 	ticks -= _scaled_date_ticks_offset;

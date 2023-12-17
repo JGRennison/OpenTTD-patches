@@ -473,25 +473,27 @@ static bool VehicleTimetableSorter(Vehicle * const &a, Vehicle * const &b)
  * @param p1 Various bitstuffed elements
  * - p1 = (bit 0-19) - Vehicle ID.
  * - p1 = (bit 20)   - Set to 1 to set timetable start for all vehicles sharing this order
- * - p1 = (bit 21-31)- Timetable start date: sub-ticks
- * @param p2 The timetable start date.
+ * @param p3 The timetable start ticks.
  * @param text Not used.
  * @return The error or cost of the operation.
  */
-CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	bool timetable_all = HasBit(p1, 20);
 	Vehicle *v = Vehicle::GetIfValid(GB(p1, 0, 20));
-	uint16 sub_ticks = GB(p1, 21, 11);
 	if (v == nullptr || !v->IsPrimaryVehicle() || v->orders == nullptr) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (timetable_all && !v->orders->IsCompleteTimetable()) return CommandCost(STR_ERROR_TIMETABLE_INCOMPLETE);
+	DateTicksScaled start_date_scaled = (DateTicksScaled)p3;
 
-	const DateTicksScaled now = _scaled_date_ticks;
-	DateTicksScaled start_date_scaled = DateTicksToScaledDateTicks(_date * DAY_TICKS + _date_fract + (int32)p2) + sub_ticks;
+	/* Don't let a timetable start more than 15 unscaled years into the future... */
+	if (start_date_scaled - _scaled_date_ticks > 15 * DAY_TICKS * DAYS_IN_LEAP_YEAR) return CMD_ERROR;
+	/* ...or 1 unscaled year in the past. */
+	if (_scaled_date_ticks - start_date_scaled > DAY_TICKS * DAYS_IN_LEAP_YEAR) return CMD_ERROR;
+
+	if (timetable_all && !v->orders->IsCompleteTimetable()) return CommandCost(STR_ERROR_TIMETABLE_INCOMPLETE);
 
 	if (flags & DC_EXEC) {
 		std::vector<Vehicle *> vehs;
@@ -519,11 +521,7 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			w->lateness_counter = 0;
 			ClrBit(w->vehicle_flags, VF_TIMETABLE_STARTED);
 			/* Do multiplication, then division to reduce rounding errors. */
-			DateTicksScaled tt_start = start_date_scaled + ((idx * total_duration) / num_vehs);
-			if (tt_start < now && idx < 0) {
-				tt_start += total_duration;
-			}
-			std::tie(w->timetable_start, w->timetable_start_subticks) = ScaledDateTicksToDateTicksAndSubTicks(tt_start);
+			w->timetable_start = start_date_scaled + ((idx * total_duration) / num_vehs);
 			++idx;
 		}
 
@@ -568,7 +566,6 @@ CommandCost CmdAutofillTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			if (HasBit(p2, 1)) SetBit(v->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
 
 			v->timetable_start = 0;
-			v->timetable_start_subticks = 0;
 			v->lateness_counter = 0;
 		} else {
 			ClrBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE);
@@ -618,7 +615,6 @@ CommandCost CmdAutomateTimetable(TileIndex index, DoCommandFlag flags, uint32 p1
 				ClrBit(v2->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
 				ClrBit(v2->vehicle_flags, VF_TIMETABLE_STARTED);
 				v2->timetable_start = 0;
-				v2->timetable_start_subticks = 0;
 				v2->lateness_counter = 0;
 				v2->current_loading_time = 0;
 				v2->ClearSeparation();
@@ -894,9 +890,8 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		if (!set_scheduled_dispatch) just_started = !HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 
 		if (v->timetable_start != 0) {
-			v->lateness_counter = _scaled_date_ticks - (DateTicksToScaledDateTicks(v->timetable_start) + v->timetable_start_subticks);
+			v->lateness_counter = (int32)(_scaled_date_ticks - v->timetable_start);
 			v->timetable_start = 0;
-			v->timetable_start_subticks = 0;
 		}
 
 		SetBit(v->vehicle_flags, VF_TIMETABLE_STARTED);

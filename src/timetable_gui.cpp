@@ -239,10 +239,7 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
  */
 static void ChangeTimetableStartIntl(uint32 p1, DateTicksScaled date)
 {
-	DateTicks date_part;
-	uint16 sub_ticks;
-	std::tie(date_part, sub_ticks) = ScaledDateTicksToDateTicksAndSubTicks(date);
-	DoCommandP(0, p1 | (sub_ticks << 21), (Ticks)(date_part - (((DateTicks)_date * DAY_TICKS) + _date_fract)), CMD_SET_TIMETABLE_START | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+	DoCommandPEx(0, p1, 0, (uint64)date, CMD_SET_TIMETABLE_START | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
 }
 
 /**
@@ -801,7 +798,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 					/* We are running towards the first station so we can start the
 					 * timetable at the given time. */
 					SetDParam(0, STR_JUST_DATE_WALLCLOCK_TINY);
-					SetDParam(1, DateTicksToScaledDateTicks(v->timetable_start) + v->timetable_start_subticks);
+					SetDParam(1, v->timetable_start);
 					DrawString(tr, STR_TIMETABLE_STATUS_START_AT);
 				} else if (!HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) {
 					/* We aren't running on a timetable yet, so how can we be "on time"

@@ -42,7 +42,7 @@ enum SlXvFeatureIndex {
 	XSLFI_ADJACENT_CROSSINGS,                     ///< Adjacent level crossings closure patch
 	XSLFI_SAFER_CROSSINGS,                        ///< Safer level crossings
 	XSLFI_DEPARTURE_BOARDS,                       ///< Departure boards patch, in ticks mode
-	XSLFI_TIMETABLES_START_TICKS,                 ///< Timetable start time is in ticks, instead of days (from departure boards patch)
+	XSLFI_TIMETABLES_START_TICKS,                 ///< Timetable start time format: 1: is in ticks, instead of days, 2: also has subticks, 3: uses DateTicksScaled
 	XSLFI_TOWN_CARGO_ADJ,                         ///< Town cargo adjustment patch
 	XSLFI_SIG_TUNNEL_BRIDGE,                      ///< Signals on tunnels and bridges
 	XSLFI_IMPROVED_BREAKDOWNS,                    ///< Improved breakdowns patch

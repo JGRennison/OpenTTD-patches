@@ -3592,18 +3592,24 @@ bool AfterLoadGame()
 		}
 	}
 
-	if (SlXvIsFeatureMissing(XSLFI_TIMETABLES_START_TICKS)) {
-		// savegame timetable start is in days, but we want it in ticks, fix it up
+	if (!SlXvIsFeaturePresent(XSLFI_TIMETABLES_START_TICKS, 3)) {
+		extern btree::btree_map<VehicleID, uint16> _old_timetable_start_subticks_map;
+
 		for (Vehicle *v : Vehicle::Iterate()) {
-			if (v->timetable_start != 0) {
+			if (v->timetable_start == 0) continue;
+
+			if (SlXvIsFeatureMissing(XSLFI_TIMETABLES_START_TICKS)) {
 				v->timetable_start *= DAY_TICKS;
 			}
+
+			v->timetable_start = DateTicksToScaledDateTicks(v->timetable_start);
+
+			if (SlXvIsFeaturePresent(XSLFI_TIMETABLES_START_TICKS, 2, 2)) {
+				v->timetable_start += _old_timetable_start_subticks_map[v->index];
+			}
 		}
-	}
-	if (!SlXvIsFeaturePresent(XSLFI_TIMETABLES_START_TICKS, 2)) {
-		for (Vehicle *v : Vehicle::Iterate()) {
-			v->timetable_start_subticks = 0;
-		}
+
+		_old_timetable_start_subticks_map.clear();
 	}
 
 	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP, 1, 1)) {

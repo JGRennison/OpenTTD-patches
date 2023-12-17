@@ -4652,7 +4652,7 @@ void DumpVehicleStats(char *buffer, const char *last)
 void AdjustVehicleScaledTickBase(int64 delta)
 {
 	for (Vehicle *v : Vehicle::Iterate()) {
-		v->last_loading_tick += delta;
+		if (v->timetable_start != 0) v->timetable_start += delta;
 	}
 }
 
@@ -4668,14 +4668,6 @@ void ShiftVehicleDates(int interval)
 extern void VehicleDayLengthChanged(DateTicksScaled old_scaled_date_ticks, DateTicksScaled old_scaled_date_ticks_offset, uint8 old_day_length_factor)
 {
 	if (_settings_game.economy.day_length_factor == old_day_length_factor || !_settings_game.game_time.time_in_minutes) return;
-
-	for (Vehicle *v : Vehicle::Iterate()) {
-		if (v->timetable_start != 0) {
-			DateTicksScaled tt_start = ((int64)v->timetable_start * old_day_length_factor) + v->timetable_start_subticks + old_scaled_date_ticks_offset;
-			tt_start += (_scaled_date_ticks - old_scaled_date_ticks);
-			std::tie(v->timetable_start, v->timetable_start_subticks) = ScaledDateTicksToDateTicksAndSubTicks(tt_start);
-		}
-	}
 
 	for (OrderList *orderlist : OrderList::Iterate()) {
 		for (DispatchSchedule &ds : orderlist->GetScheduledDispatchScheduleSet()) {

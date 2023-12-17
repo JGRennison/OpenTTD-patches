@@ -263,7 +263,7 @@ CommandProc CmdSetVehicleOnTime;
 CommandProc CmdAutofillTimetable;
 CommandProc CmdAutomateTimetable;
 CommandProc CmdTimetableSeparation;
-CommandProc CmdSetTimetableStart;
+CommandProcEx CmdSetTimetableStart;
 
 CommandProc CmdOpenCloseAirport;
 

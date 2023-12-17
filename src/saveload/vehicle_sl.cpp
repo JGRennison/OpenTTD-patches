@@ -130,7 +130,7 @@ public:
 		SLE_CONDVAR(Vehicle, current_order.wait_time,     SLE_FILE_U16 | SLE_VAR_U32, SLV_67, SL_MAX_VERSION),
 		SLE_CONDVAR(Vehicle, current_order.travel_time,   SLE_FILE_U16 | SLE_VAR_U32, SLV_67, SL_MAX_VERSION),
 		SLE_CONDVAR(Vehicle, current_order.max_speed,     SLE_UINT16,           SLV_174, SL_MAX_VERSION),
-		SLE_CONDVAR(Vehicle, timetable_start,       SLE_INT32,                  SLV_129, SL_MAX_VERSION),
+		SLE_CONDVAR(Vehicle, timetable_start,       SLE_FILE_I32 | SLE_VAR_I64, SLV_129, SL_MAX_VERSION),
 
 		SLE_CONDREF(Vehicle, orders,                REF_ORDER,                    SL_MIN_VERSION, SLV_105),
 		SLE_CONDREF(Vehicle, orders,                REF_ORDERLIST,              SLV_105, SL_MAX_VERSION),

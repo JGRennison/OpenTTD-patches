@@ -648,6 +648,9 @@ static std::vector<TileIndex> _path_tile;
 static uint32 _path_layout_ctr;
 
 static uint32 _old_ahead_separation;
+static uint16 _old_timetable_start_subticks;
+
+btree::btree_map<VehicleID, uint16> _old_timetable_start_subticks_map;
 
 /**
  * Make it possible to make the saveload tables "friends" of other classes.
@@ -746,9 +749,10 @@ SaveLoadTable GetVehicleDescription(VehicleType vt)
 		SLE_CONDVAR_X(Vehicle, current_order.wait_time,    SLE_UINT32,                 SLV_67, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA, 6)),
 		SLE_CONDVAR_X(Vehicle, current_order.travel_time,  SLE_FILE_U16 | SLE_VAR_U32, SLV_67, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA, 0, 5)),
 		SLE_CONDVAR_X(Vehicle, current_order.travel_time,  SLE_UINT32,                 SLV_67, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA, 6)),
-		 SLE_CONDVAR(Vehicle, current_order.max_speed,     SLE_UINT16,           SLV_174, SL_MAX_VERSION),
-		 SLE_CONDVAR(Vehicle, timetable_start,       SLE_INT32,                  SLV_129, SL_MAX_VERSION),
-		SLE_CONDVAR_X(Vehicle, timetable_start_subticks,   SLE_UINT16,    SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLES_START_TICKS, 2)),
+		 SLE_CONDVAR(Vehicle, current_order.max_speed,     SLE_UINT16,                SLV_174, SL_MAX_VERSION),
+		SLE_CONDVAR_X(Vehicle, timetable_start,            SLE_FILE_I32 | SLE_VAR_I64, SLV_129, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLES_START_TICKS, 0, 2)),
+		SLE_CONDVAR_X(Vehicle, timetable_start,            SLE_INT64,                  SLV_129, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLES_START_TICKS, 3)),
+		SLEG_CONDVAR_X(_old_timetable_start_subticks,      SLE_UINT16,          SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLES_START_TICKS, 2, 2)),
 
 		 SLE_CONDREF(Vehicle, orders,                REF_ORDER,                    SL_MIN_VERSION, SLV_105),
 		 SLE_CONDREF(Vehicle, orders,                REF_ORDERLIST,              SLV_105, SL_MAX_VERSION),
@@ -1076,6 +1080,9 @@ void Load_VEHS()
 	_path_tile.clear();
 	_path_layout_ctr = 0;
 
+	_old_timetable_start_subticks = 0;
+	_old_timetable_start_subticks_map.clear();
+
 	while ((index = SlIterateArray()) != -1) {
 		Vehicle *v;
 		VehicleType vtype = (VehicleType)SlReadByte();
@@ -1123,6 +1130,10 @@ void Load_VEHS()
 
 		if (SlXvIsFeaturePresent(XSLFI_AUTO_TIMETABLE, 1, 4)) {
 			SB(v->vehicle_flags, VF_SEPARATION_ACTIVE, 1, _old_ahead_separation ? 1 : 0);
+		}
+
+		if (SlXvIsFeaturePresent(XSLFI_TIMETABLES_START_TICKS, 2, 2) && v->timetable_start != 0 && _old_timetable_start_subticks != 0) {
+			_old_timetable_start_subticks_map[v->index] = _old_timetable_start_subticks;
 		}
 
 		if (vtype == VEH_ROAD && !_path_td.empty() && _path_td.size() <= RV_PATH_CACHE_SEGMENTS && _path_td.size() == _path_tile.size()) {
