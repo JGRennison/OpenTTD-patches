@@ -1726,60 +1726,10 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld)
 	return 0;
 }
 
-/**
- * Check whether the variable size of the variable in the saveload configuration
- * matches with the actual variable size.
- * @param sld The saveload configuration to test.
- */
-[[maybe_unused]] static bool IsVariableSizeRight(const SaveLoad &sld)
-{
-	if (GetVarMemType(sld.conv) == SLE_VAR_NULL) return true;
-
-	switch (sld.cmd) {
-		case SL_VAR:
-			switch (GetVarMemType(sld.conv)) {
-				case SLE_VAR_BL:
-					return sld.size == sizeof(bool);
-				case SLE_VAR_I8:
-				case SLE_VAR_U8:
-					return sld.size == sizeof(int8);
-				case SLE_VAR_I16:
-				case SLE_VAR_U16:
-					return sld.size == sizeof(int16);
-				case SLE_VAR_I32:
-				case SLE_VAR_U32:
-					return sld.size == sizeof(int32);
-				case SLE_VAR_I64:
-				case SLE_VAR_U64:
-					return sld.size == sizeof(int64);
-				case SLE_VAR_NAME:
-					return sld.size == sizeof(std::string);
-				default:
-					return sld.size == sizeof(void *);
-			}
-		case SL_REF:
-			/* These should all be pointer sized. */
-			return sld.size == sizeof(void *);
-
-		case SL_STR:
-			/* These should be pointer sized, or fixed array. */
-			return sld.size == sizeof(void *) || sld.size == sld.length;
-
-		case SL_STDSTR:
-			/* These should be all pointers to std::string. */
-			return sld.size == sizeof(std::string);
-
-		default:
-			return true;
-	}
-}
-
 void SlFilterObject(const SaveLoadTable &slt, std::vector<SaveLoad> &save);
 
 static void SlFilterObjectMember(const SaveLoad &sld, std::vector<SaveLoad> &save)
 {
-	assert(IsVariableSizeRight(sld));
-
 	switch (sld.cmd) {
 		case SL_VAR:
 		case SL_REF:
@@ -1857,8 +1807,6 @@ template <SaveLoadAction action, bool check_version>
 bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 {
 	void *ptr = GetVariableAddress(object, sld);
-
-	if (check_version) assert(IsVariableSizeRight(sld));
 
 	VarType conv = GB(sld.conv, 0, 8);
 	switch (sld.cmd) {
