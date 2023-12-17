@@ -218,9 +218,6 @@ STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES_HELPTEXT               :신호기 프�
 STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES                     :진입 금지 신호기 기능 표시: {STRING}
 STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES_HELPTEXT            :진입 금지 신호기 기능을 표시합니다. 이 설정을 끄면, 진입 금지 신호기를 짓거나 설정하는 버튼이 표시되지 않습니다. 하지만 다른 플레이어까지 진입 금지 신호기를 사용할 수 없도록 하지는 않습니다.
 
-STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER                   :차량 목록에 화물 종류 필터 표시: {STRING}
-STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER_HELPTEXT          :차량 목록에 화물 종류 필터를 표시합니다. 이 설정을 켜면, 차량 목록 창에 추가 필터 드롭다운이 표시됩니다.
-
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES               :고급 적재 모드 표시: {STRING}
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES_HELPTEXT      :고급 적재 모드(차례로 나눠 싣기)를 표시합니다. 이 설정을 끄면, 일부 고급 적재 모드가 인터페이스에 표시되지 않습니다. 하지만 다른 플레이어까지 고급 적재 모드를 사용할 수 없도록 하지는 않습니다.
 

@@ -135,7 +135,6 @@ public:
 	void FilterVehicleList();
 	StringID GetCargoFilterLabel(CargoID cid) const;
 	DropDownList BuildCargoDropDownList() const;
-	void CheckCargoFilterEnableState(int plane_widget, bool re_init, bool possible = true);
 	Dimension GetActionDropdownSize(bool show_autoreplace, bool show_group, bool show_template_replace, StringID change_order_str = 0);
 	DropDownList BuildActionDropdownList(bool show_autoreplace, bool show_group, bool show_template_replace,
 			StringID change_order_str = 0, bool show_create_group = false, bool consider_top_level = false);

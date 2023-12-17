@@ -2020,7 +2020,6 @@ static SettingsContainer &GetSettingsTree()
 				vehicle_windows->Add(new SettingEntry("gui.show_train_weight_ratios_in_details"));
 				vehicle_windows->Add(new SettingEntry("gui.show_vehicle_group_in_details"));
 				vehicle_windows->Add(new SettingEntry("gui.show_vehicle_list_company_colour"));
-				vehicle_windows->Add(new SettingEntry("gui.show_veh_list_cargo_filter"));
 				vehicle_windows->Add(new SettingEntry("gui.show_adv_load_mode_features"));
 				vehicle_windows->Add(new SettingEntry("gui.disable_top_veh_list_mass_actions"));
 				vehicle_windows->Add(new SettingEntry("gui.show_depot_sell_gui"));

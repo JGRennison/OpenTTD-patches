@@ -218,9 +218,6 @@ STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES_HELPTEXT               :Amosar a caract
 STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES                     :Amosar a característica de sinais de non-entrada: {STRING}
 STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES_HELPTEXT            :Amosar a característica de sinais de non-entrada. Cando se desactiva, os botóns de construír e configurar sinais de non-entrada non se amosan na UI, pero seguen dispoñibles para todos os xogadores.
 
-STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER                   :Amosar o filtro de tipo de carga na lista de vehículos: {STRING}
-STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER_HELPTEXT          :Amosar o filtro de tipo de carga na lista de vehículos. Cando se activa, a fiestra de lista de vehículos inclúe un filtro adicional desplegable.
-
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES               :Amosar características avanzadas de modo de carga: {STRING}
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES_HELPTEXT      :Amosar características avanzadas de modo de carga (a tráves de carga/descarga). Cando se deshabiltia, algunhas características avanzadas de carga non se amosan na UI, pero seguen dispoñibles para todos os xogadores.
 

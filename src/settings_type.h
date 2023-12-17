@@ -257,7 +257,6 @@ struct GUISettings : public TimeSettings {
 	bool   show_adv_tracerestrict_features;  ///< Show advanced trace restrict features in UI
 	bool   show_progsig_ui;                  ///< Show programmable pre-signals feature in UI
 	bool   show_noentrysig_ui;               ///< Show no-entry signals feature in UI
-	bool   show_veh_list_cargo_filter;       ///< Show cargo list filter in UI
 	uint8  osk_activation;                   ///< Mouse gesture to trigger the OSK.
 	byte   starting_colour;                  ///< default color scheme for the company to start a new game with
 	byte   starting_colour_secondary;        ///< default secondary color scheme for the company to start a new game with

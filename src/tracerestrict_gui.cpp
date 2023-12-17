@@ -3831,8 +3831,6 @@ public:
 	{
 		this->CreateNestedTree();
 
-		this->CheckCargoFilterEnableState(WID_TRSL_FILTER_BY_CARGO_SEL, false);
-
 		this->vscroll = this->GetScrollbar(WID_TRSL_LIST_VEHICLE_SCROLLBAR);
 		this->slot_sb = this->GetScrollbar(WID_TRSL_LIST_SLOTS_SCROLLBAR);
 		this->sorting = &_sorting[GB_NONE].train;
@@ -3938,8 +3936,6 @@ public:
 		if (this->vli.index != ALL_TRAINS_TRACE_RESTRICT_SLOT_ID && !TraceRestrictSlot::IsValidID(this->vli.index)) {
 			this->vli.index = ALL_TRAINS_TRACE_RESTRICT_SLOT_ID;
 		}
-
-		if (gui_scope) this->CheckCargoFilterEnableState(WID_TRSL_FILTER_BY_CARGO_SEL, true);
 
 		this->SetDirty();
 	}

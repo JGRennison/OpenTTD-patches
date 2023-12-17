@@ -210,9 +210,6 @@ STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES_HELPTEXT               :Zobrazovat prog
 STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES                     :Návěstidlo zakazující jízdu: {STRING}
 STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES_HELPTEXT            :Zobrazovat neproměnné návěstidlo zakazující jízdu. Pokud je vypnuto, nejsou tato návěstidla zobrazena, ale ostatním hráčům jsou stále dostupná.
 
-STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER                   :Zobrazovat filtr typu nákladu v seznamech vozidel: {STRING}
-STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER_HELPTEXT          :Zobrazovat filtr typu nákladu v seznamech vozidel. Pokud je zapnuto, okna seznamů vozidel obsahují další filtr.
-
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES               :Zpřístupnit pokročilé možnosti nakládky: {STRING}
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES_HELPTEXT      :Zpřístupní pokročilé možnosti příkazů k nakládce (postupná nakládka/vykládka nákladních vlaků, směr jízdy silničního vozidla). Pokud je vypnuto, některé možnosti nejsou v rozhraní zobrazeny, ale stále jsou dostupné ostatním hráčům.
 

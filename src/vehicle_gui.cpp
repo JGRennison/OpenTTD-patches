@@ -321,16 +321,6 @@ void BaseVehicleListWindow::FilterVehicleList()
 	}
 }
 
-void BaseVehicleListWindow::CheckCargoFilterEnableState(int plane_widget, bool re_init, bool possible)
-{
-	NWidgetStacked *sel = this->GetWidget<NWidgetStacked>(plane_widget);
-	const int plane = (possible && _settings_client.gui.show_veh_list_cargo_filter) ? 0 : SZSP_NONE;
-	if (plane != sel->shown_plane) {
-		sel->SetDisplayedPlane(plane);
-		if (re_init) this->ReInit();
-	}
-}
-
 /**
  * Compute the size for the Action dropdown.
  * @param show_autoreplace If true include the autoreplace item.
@@ -2202,7 +2192,7 @@ public:
 	{
 		this->CreateNestedTree();
 
-		this->CheckCargoFilterEnableState(WID_VL_FILTER_BY_CARGO_SEL, false, this->vli.type != VL_SHARED_ORDERS && this->vli.type != VL_SINGLE_VEH);
+		this->GetWidget<NWidgetStacked>(WID_VL_FILTER_BY_CARGO_SEL)->SetDisplayedPlane((this->vli.type == VL_SHARED_ORDERS || this->vli.type == VL_SINGLE_VEH) ? SZSP_NONE : 0);
 
 		this->vscroll = this->GetScrollbar(WID_VL_SCROLLBAR);
 
@@ -2639,8 +2629,6 @@ public:
 		} else {
 			this->vehgroups.ForceResort();
 		}
-
-		this->CheckCargoFilterEnableState(WID_VL_FILTER_BY_CARGO_SEL, true, this->vli.type != VL_SHARED_ORDERS && this->vli.type != VL_SINGLE_VEH);
 	}
 };
 

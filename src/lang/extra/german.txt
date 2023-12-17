@@ -187,9 +187,6 @@ STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES_HELPTEXT    :Zeige die erwei
 STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES                        :Zeige programmierbares Einfahrtssignal-Feature: {STRING}
 STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES_HELPTEXT               :Zeige das programmierbares Einfahrtssignal-Feature. Falls deaktiviert, werden die Bedienelemente zum Bau und zur Konfiguration von programmierbaren Einfahrtssignalen zwar nicht in der Oberfläche angezeigt, stehen aber dennoch allen Spielern zur Verfügung.
 
-STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER                   :Zeige Filterung nach Frachtart in Fahrzeuglisten: {STRING}
-STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER_HELPTEXT          :Zeige die Filterung nach Frachtart in Fahrzeuglisten. Falls aktiviert, beinhalten die Fahrzeuglisten-Fenster eine weitere Filteroption.
-
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES               :Zeige erweiterter Lademodus-Features: {STRING}
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES_HELPTEXT      :Zeige erweiterter Lademodus-Features (durchgehendes Laden/Entladen). Falls deaktiviert, werden einige erweiterte Lademodus-Features zwar nicht in der Oberfläche angezeigt, stehen aber dennoch allen Spielern zur Verfügung.
 

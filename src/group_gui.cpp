@@ -414,8 +414,6 @@ public:
 	{
 		this->CreateNestedTree();
 
-		this->CheckCargoFilterEnableState(WID_GL_FILTER_BY_CARGO_SEL, false);
-
 		this->vscroll = this->GetScrollbar(WID_GL_LIST_VEHICLE_SCROLLBAR);
 		this->group_sb = this->GetScrollbar(WID_GL_LIST_GROUP_SCROLLBAR);
 
@@ -531,8 +529,6 @@ public:
 			this->vli.index = ALL_GROUP;
 			HideDropDownMenu(this);
 		}
-
-		this->CheckCargoFilterEnableState(WID_GL_FILTER_BY_CARGO_SEL, true);
 
 		this->SetDirty();
 	}

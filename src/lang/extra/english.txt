@@ -261,9 +261,6 @@ STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES_HELPTEXT               :Show programmab
 STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES                     :Show no-entry signal feature: {STRING2}
 STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES_HELPTEXT            :Show no-entry signal feature. When disabled, the buttons to build and configure no-entry signals are not shown in the UI, but are still available to all players.
 
-STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER                   :Show cargo type filter in vehicle lists: {STRING2}
-STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER_HELPTEXT          :Show cargo type filter in vehicle lists. When enabled vehicle list windows include an additional filter dropdown.
-
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES               :Show advanced loading mode features: {STRING2}
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES_HELPTEXT      :Show advanced loading mode features (through load/unload, road vehicle direction). When disabled, some advanced loading mode features are not shown in the UI, but are still available to all players.
 

@@ -1280,15 +1280,6 @@ static void ProgrammableSignalsShownChanged(int32 new_value)
 	InvalidateWindowData(WC_BUILD_SIGNAL, 0);
 }
 
-static void VehListCargoFilterShownChanged(int32 new_value)
-{
-	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS, 0);
-	InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
-	InvalidateWindowClassesData(WC_SHIPS_LIST, 0);
-	InvalidateWindowClassesData(WC_ROADVEH_LIST, 0);
-	InvalidateWindowClassesData(WC_AIRCRAFT_LIST, 0);
-}
-
 static void TownFoundingChanged(int32 new_value)
 {
 	if (_game_mode != GM_EDITOR && _settings_game.economy.found_town == TF_FORBIDDEN) {

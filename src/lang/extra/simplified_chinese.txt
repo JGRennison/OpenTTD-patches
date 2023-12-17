@@ -218,9 +218,6 @@ STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES_HELPTEXT               :当被禁用时
 STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES                     :显示禁止进入信号灯功能: {STRING}
 STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES_HELPTEXT            :当被禁用时，UI不会显示建设和设置禁止进入信号灯的构建选项，但仍可用
 
-STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER                   :在载具列表中显示车厢类型过滤器: {STRING}
-STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER_HELPTEXT          :当被开启时，载具列表窗口将包括一个扩展过滤器下拉列表
-
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES               :显示进阶装载模式功能: {STRING}
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES_HELPTEXT      :展示进阶装载模式功能 (通过装载/卸载、道路车辆方向等) {}当禁用时，一些进阶装载模式功能将不会在用户界面中展示，但仍可用
 
