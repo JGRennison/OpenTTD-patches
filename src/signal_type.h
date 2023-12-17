@@ -23,7 +23,7 @@ enum SignalVariant {
 
 
 /** Type of signal, i.e. how does the signal behave? */
-enum SignalType {
+enum SignalType : uint8 {
 	SIGTYPE_NORMAL     = 0, ///< normal signal
 	SIGTYPE_ENTRY      = 1, ///< presignal block entry
 	SIGTYPE_EXIT       = 2, ///< presignal block exit
