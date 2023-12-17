@@ -106,6 +106,8 @@ struct RealSpriteGroup : SpriteGroup {
 	std::vector<const SpriteGroup *> loaded;  ///< List of loaded groups (can be SpriteIDs or Callback results)
 	std::vector<const SpriteGroup *> loading; ///< List of loading groups (can be SpriteIDs or Callback results)
 
+	void AnalyseCallbacks(AnalyseCallbackOperation &op) const override;
+
 protected:
 	const SpriteGroup *Resolve(ResolverObject &object) const override;
 };

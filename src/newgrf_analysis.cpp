@@ -321,3 +321,13 @@ void RandomizedSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) const
 		if (group != nullptr) group->AnalyseCallbacks(op);
 	}
 }
+
+void RealSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) const
+{
+	for (const SpriteGroup *group: this->loaded) {
+		if (group != nullptr) group->AnalyseCallbacks(op);
+	}
+	for (const SpriteGroup *group: this->loading) {
+		if (group != nullptr) group->AnalyseCallbacks(op);
+	}
+}
