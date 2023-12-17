@@ -122,7 +122,7 @@ void OnTick_Companies(bool main_tick);
 
 extern void AfterLoadCompanyStats();
 extern Company *DoStartupNewCompany(bool is_ai, CompanyID company = INVALID_COMPANY);
-extern void OSOpenBrowser(const char *url);
+extern void OSOpenBrowser(const std::string &url);
 extern void RebuildTownCaches(bool cargo_update_required, bool old_map_position);
 extern void ShowOSErrorBox(const char *buf, bool system);
 extern void NORETURN DoOSAbort();
@@ -590,7 +590,7 @@ void MakeNewgameSettingsLive()
 	SetupTickRate();
 }
 
-void OpenBrowser(const char *url)
+void OpenBrowser(const std::string &url)
 {
 	/* Make sure we only accept urls that are sure to open a browser. */
 	if (StrStartsWith(url, "http://") || StrStartsWith(url, "https://")) {
@@ -1736,7 +1736,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 	if (flags & CHECK_CACHE_GENERAL) {
 		/* Strict checking of the road stop cache entries */
 		for (const RoadStop *rs : RoadStop::Iterate()) {
-			if (IsStandardRoadStopTile(rs->xy)) continue;
+			if (IsBayRoadStopTile(rs->xy)) continue;
 
 			assert(rs->GetEntry(DIAGDIR_NE) != rs->GetEntry(DIAGDIR_NW));
 			rs->GetEntry(DIAGDIR_NE)->CheckIntegrity(rs);

@@ -1328,7 +1328,7 @@ void OpenGLBackend::RenderOglSprite(OpenGLSprite *gl_sprite, PaletteID pal, int 
 	Dimension dim = gl_sprite->GetSize(zoom);
 	_glUseProgram(this->sprite_program);
 	_glUniform4f(this->sprite_sprite_loc, (float)x, (float)y, (float)dim.width, (float)dim.height);
-	_glUniform1f(this->sprite_zoom_loc, (float)(zoom - ZOOM_LVL_BEGIN));
+	_glUniform1f(this->sprite_zoom_loc, (float)zoom);
 	_glUniform2f(this->sprite_screen_loc, (float)_screen.width, (float)_screen.height);
 	_glUniform1i(this->sprite_rgb_loc, rgb ? 1 : 0);
 	_glUniform1i(this->sprite_crash_loc, pal == PALETTE_CRASH ? 1 : 0);

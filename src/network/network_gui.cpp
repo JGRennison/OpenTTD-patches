@@ -2511,7 +2511,7 @@ struct NetworkAskSurveyWindow : public Window {
 				break;
 
 			case WID_NAS_LINK:
-				OpenBrowser(NETWORK_SURVEY_DETAILS_LINK.c_str());
+				OpenBrowser(NETWORK_SURVEY_DETAILS_LINK);
 				break;
 
 			case WID_NAS_NO:

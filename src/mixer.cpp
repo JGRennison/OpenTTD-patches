@@ -66,31 +66,35 @@ static int RateConversion(T *b, int frac_pos)
 	return ((b[0] * ((1 << 16) - frac_pos)) + (b[1] * frac_pos)) >> 16;
 }
 
-static void mix_int16(MixerChannel *sc, int16 *buffer, uint samples, uint8 effect_vol)
+template <typename T>
+static void mix_int16(MixerChannel *sc, int16_t *buffer, uint samples, uint8_t effect_vol)
 {
+	/* Shift required to get sample value into range for the data type. */
+	const uint SHIFT = sizeof(T) * CHAR_BIT;
+
 	if (samples > sc->samples_left) samples = sc->samples_left;
 	sc->samples_left -= samples;
 	assert(samples > 0);
 
-	const int16 *b = (const int16 *)sc->memory + sc->pos;
-	uint32 frac_pos = sc->frac_pos;
-	uint32 frac_speed = sc->frac_speed;
+	const T *b = (const T *)sc->memory + sc->pos;
+	uint32_t frac_pos = sc->frac_pos;
+	uint32_t frac_speed = sc->frac_speed;
 	int volume_left = sc->volume_left * effect_vol / 255;
 	int volume_right = sc->volume_right * effect_vol / 255;
 
 	if (frac_speed == 0x10000) {
 		/* Special case when frac_speed is 0x10000 */
 		do {
-			buffer[0] = Clamp(buffer[0] + (*b * volume_left  >> 16), -MAX_VOLUME, MAX_VOLUME);
-			buffer[1] = Clamp(buffer[1] + (*b * volume_right >> 16), -MAX_VOLUME, MAX_VOLUME);
+			buffer[0] = Clamp(buffer[0] + (*b * volume_left  >> SHIFT), -MAX_VOLUME, MAX_VOLUME);
+			buffer[1] = Clamp(buffer[1] + (*b * volume_right >> SHIFT), -MAX_VOLUME, MAX_VOLUME);
 			b++;
 			buffer += 2;
 		} while (--samples > 0);
 	} else {
 		do {
 			int data = RateConversion(b, frac_pos);
-			buffer[0] = Clamp(buffer[0] + (data * volume_left  >> 16), -MAX_VOLUME, MAX_VOLUME);
-			buffer[1] = Clamp(buffer[1] + (data * volume_right >> 16), -MAX_VOLUME, MAX_VOLUME);
+			buffer[0] = Clamp(buffer[0] + (data * volume_left  >> SHIFT), -MAX_VOLUME, MAX_VOLUME);
+			buffer[1] = Clamp(buffer[1] + (data * volume_right >> SHIFT), -MAX_VOLUME, MAX_VOLUME);
 			buffer += 2;
 			frac_pos += frac_speed;
 			b += frac_pos >> 16;
@@ -99,43 +103,7 @@ static void mix_int16(MixerChannel *sc, int16 *buffer, uint samples, uint8 effec
 	}
 
 	sc->frac_pos = frac_pos;
-	sc->pos = b - (const int16 *)sc->memory;
-}
-
-static void mix_int8_to_int16(MixerChannel *sc, int16 *buffer, uint samples, uint8 effect_vol)
-{
-	if (samples > sc->samples_left) samples = sc->samples_left;
-	sc->samples_left -= samples;
-	assert(samples > 0);
-
-	const int8 *b = sc->memory + sc->pos;
-	uint32 frac_pos = sc->frac_pos;
-	uint32 frac_speed = sc->frac_speed;
-	int volume_left = sc->volume_left * effect_vol / 255;
-	int volume_right = sc->volume_right * effect_vol / 255;
-
-	if (frac_speed == 0x10000) {
-		/* Special case when frac_speed is 0x10000 */
-		do {
-			buffer[0] = Clamp(buffer[0] + (*b * volume_left  >> 8), -MAX_VOLUME, MAX_VOLUME);
-			buffer[1] = Clamp(buffer[1] + (*b * volume_right >> 8), -MAX_VOLUME, MAX_VOLUME);
-			b++;
-			buffer += 2;
-		} while (--samples > 0);
-	} else {
-		do {
-			int data = RateConversion(b, frac_pos);
-			buffer[0] = Clamp(buffer[0] + (data * volume_left  >> 8), -MAX_VOLUME, MAX_VOLUME);
-			buffer[1] = Clamp(buffer[1] + (data * volume_right >> 8), -MAX_VOLUME, MAX_VOLUME);
-			buffer += 2;
-			frac_pos += frac_speed;
-			b += frac_pos >> 16;
-			frac_pos &= 0xffff;
-		} while (--samples > 0);
-	}
-
-	sc->frac_pos = frac_pos;
-	sc->pos = b - sc->memory;
+	sc->pos = b - (const T *)sc->memory;
 }
 
 static void MxCloseChannel(uint8 channel_index)
@@ -175,9 +143,9 @@ void MxMixSamples(void *buffer, uint samples)
 	for (uint8 idx : SetBitIterator(active)) {
 		MixerChannel *mc = &_channels[idx];
 		if (mc->is16bit) {
-			mix_int16(mc, (int16*)buffer, samples, effect_vol);
+			mix_int16<int16_t>(mc, (int16_t*)buffer, samples, effect_vol);
 		} else {
-			mix_int8_to_int16(mc, (int16*)buffer, samples, effect_vol);
+			mix_int16<int8_t>(mc, (int16_t*)buffer, samples, effect_vol);
 		}
 		if (mc->samples_left == 0) MxCloseChannel(idx);
 	}

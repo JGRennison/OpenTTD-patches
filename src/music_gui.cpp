@@ -88,6 +88,8 @@ struct MusicSystem {
 	void PlaylistClear();
 
 private:
+	uint GetSetIndex();
+	void SetPositionBySetIndex(uint set_index);
 	void ChangePlaylistPosition(int ofs);
 	int playlist_position;
 
@@ -156,12 +158,8 @@ void MusicSystem::ChangePlaylist(PlaylistChoices pl)
 		this->selected_playlist = pl;
 		this->playlist_position = 0;
 
-		if (_settings_client.music.shuffle) {
-			this->Shuffle();
-			/* Shuffle() will also Play() if necessary, only start once */
-		} else if (_settings_client.music.playing) {
-			this->Play();
-		}
+		if (_settings_client.music.shuffle) this->Shuffle();
+		if (_settings_client.music.playing) this->Play();
 	}
 
 	InvalidateWindowData(WC_MUSIC_TRACK_SELECTION, 0);
@@ -186,30 +184,58 @@ void MusicSystem::ChangeMusicSet(const std::string &set_name)
 	InvalidateWindowData(WC_MUSIC_WINDOW, 0, 1, true);
 }
 
-/** Enable shuffle mode and restart playback */
+/**
+ * Set playlist position by set index.
+ * @param set_index Set index to select.
+ */
+void MusicSystem::SetPositionBySetIndex(uint set_index)
+{
+	auto it = std::find_if(std::begin(this->active_playlist), std::end(this->active_playlist), [&set_index](const PlaylistEntry &ple) { return ple.set_index == set_index; });
+	if (it != std::end(this->active_playlist)) this->playlist_position = std::distance(std::begin(this->active_playlist), it);
+}
+
+/**
+ * Get set index from current playlist position.
+ * @return current set index, or UINT_MAX if nothing is selected.
+ */
+uint MusicSystem::GetSetIndex()
+{
+	return static_cast<size_t>(this->playlist_position) < this->active_playlist.size()
+		? this->active_playlist[this->playlist_position].set_index
+		: UINT_MAX;
+}
+
+/**
+ * Enable shuffle mode.
+ */
 void MusicSystem::Shuffle()
 {
 	_settings_client.music.shuffle = true;
 
+	uint set_index = this->GetSetIndex();
 	this->active_playlist = this->displayed_playlist;
 	for (size_t i = 0; i < this->active_playlist.size(); i++) {
 		size_t shuffle_index = InteractiveRandom() % (this->active_playlist.size() - i);
 		std::swap(this->active_playlist[i], this->active_playlist[i + shuffle_index]);
 	}
+	this->SetPositionBySetIndex(set_index);
 
-	if (_settings_client.music.playing) this->Play();
-
+	InvalidateWindowData(WC_MUSIC_TRACK_SELECTION, 0);
 	InvalidateWindowData(WC_MUSIC_WINDOW, 0);
 }
 
-/** Disable shuffle and restart playback */
+/**
+ * Disable shuffle mode.
+ */
 void MusicSystem::Unshuffle()
 {
 	_settings_client.music.shuffle = false;
+
+	uint set_index = this->GetSetIndex();
 	this->active_playlist = this->displayed_playlist;
+	this->SetPositionBySetIndex(set_index);
 
-	if (_settings_client.music.playing) this->Play();
-
+	InvalidateWindowData(WC_MUSIC_TRACK_SELECTION, 0);
 	InvalidateWindowData(WC_MUSIC_WINDOW, 0);
 }
 

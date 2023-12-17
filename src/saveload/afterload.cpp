@@ -3306,7 +3306,7 @@ bool AfterLoadGame()
 	/* The road owner of standard road stops was not properly accounted for. */
 	if (IsSavegameVersionBefore(SLV_172)) {
 		for (TileIndex t = 0; t < map_size; t++) {
-			if (!IsStandardRoadStopTile(t)) continue;
+			if (!IsBayRoadStopTile(t)) continue;
 			Owner o = GetTileOwner(t);
 			SetRoadOwner(t, RTT_ROAD, o);
 			SetRoadOwner(t, RTT_TRAM, o);
@@ -3592,7 +3592,15 @@ bool AfterLoadGame()
 		}
 	}
 
-	if (!SlXvIsFeaturePresent(XSLFI_TIMETABLES_START_TICKS, 3)) {
+	if (!IsSavegameVersionBefore(SLV_TIMETABLE_START_TICKS)) {
+		/* Convert timetable start from a date to an absolute tick in TimerGameTick::counter. */
+		for (Vehicle *v : Vehicle::Iterate()) {
+			/* If the start date is 0, the vehicle is not waiting to start and can be ignored. */
+			if (v->timetable_start == 0) continue;
+
+			v->timetable_start += _scaled_date_ticks - _tick_counter;
+		}
+	} else if (!SlXvIsFeaturePresent(XSLFI_TIMETABLES_START_TICKS, 3)) {
 		extern btree::btree_map<VehicleID, uint16> _old_timetable_start_subticks_map;
 
 		for (Vehicle *v : Vehicle::Iterate()) {

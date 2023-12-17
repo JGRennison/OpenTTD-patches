@@ -110,7 +110,7 @@ static bool VehiclePositionIsAllowed(const Vehicle *v, Owner owner = INVALID_OWN
 		case VEH_ROAD:
 			for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
 				if (!IsValidTile(u->tile)) continue;
-				if (IsRoadDepotTile(u->tile) || IsStandardRoadStopTile(u->tile)) {
+				if (IsRoadDepotTile(u->tile) || IsBayRoadStopTile(u->tile)) {
 					if (!IsInfraTileUsageAllowed(VEH_ROAD, v->owner, u->tile) || GetTileOwner(u->tile) == owner) return false;
 				}
 			}

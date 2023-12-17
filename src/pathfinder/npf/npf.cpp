@@ -695,7 +695,7 @@ static bool CanEnterTileOwnerCheck(Owner owner, TileIndex tile, DiagDirection en
 		case MP_STATION:
 			if (HasStationRail(tile)) { // Rail station tile/waypoint
 				return IsInfraTileUsageAllowed(VEH_TRAIN, owner, tile);
-			} else if (IsStandardRoadStopTile(tile)) { // Road station tile (but not drive-through stops)
+			} else if (IsBayRoadStopTile(tile)) { // Road station tile (but not drive-through stops)
 				return IsInfraTileUsageAllowed(VEH_ROAD, owner, tile);
 			}
 			break;
@@ -760,7 +760,7 @@ static DiagDirection GetTileSingleEntry(TileIndex tile, TransportType type, uint
 	if (type != TRANSPORT_WATER && IsDepotTypeTile(tile, type)) return GetDepotDirection(tile, type);
 
 	if (type == TRANSPORT_ROAD) {
-		if (IsStandardRoadStopTile(tile)) return GetRoadStopDir(tile);
+		if (IsBayRoadStopTile(tile)) return GetRoadStopDir(tile);
 		if ((RoadTramType)subtype == RTT_TRAM) return GetSingleTramBit(tile);
 	}
 

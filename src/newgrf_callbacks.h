@@ -283,6 +283,9 @@ enum CallbackID {
 	/** Called to determine the engine name to show. */
 	CBID_VEHICLE_NAME                    = 0x161, // 15 bit callback
 
+	/** Called to determine probability during build. */
+	CBID_VEHICLE_BUILD_PROBABILITY       = 0x162, // 15 bit callback
+
 	/** Extended/non-standard callbacks follow */
 
 	/** Called to set town zones */

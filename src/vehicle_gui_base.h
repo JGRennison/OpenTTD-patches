@@ -84,10 +84,10 @@ public:
 	Listing *sorting;                         ///< Pointer to the vehicle type related sorting.
 	byte unitnumber_digits;                   ///< The number of digits of the highest unit number.
 	Scrollbar *vscroll;
-	VehicleListIdentifier vli;                ///< Identifier of the vehicle list we want to currently show.
-	VehicleID vehicle_sel;                    ///< Selected vehicle
-	byte cargo_filter_criteria;               ///< Selected cargo filter index
-	uint order_arrow_width;                   ///< Width of the arrow in the small order list.
+	VehicleListIdentifier vli;                  ///< Identifier of the vehicle list we want to currently show.
+	VehicleID vehicle_sel;                      ///< Selected vehicle
+	CargoID cargo_filter_criteria;              ///< Selected cargo filter index
+	uint order_arrow_width;                     ///< Width of the arrow in the small order list.
 
 	typedef GUIVehicleGroupList::SortFunction VehicleGroupSortFunction;
 	typedef GUIVehicleList::SortFunction VehicleIndividualSortFunction;

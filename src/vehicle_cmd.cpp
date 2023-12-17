@@ -182,7 +182,7 @@ CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 		}
 
 		if (flags & DC_EXEC) {
-			if (type == VEH_TRAIN && !HasBit(p1, 16) && !(flags & DC_AUTOREPLACE)) {
+			if (type == VEH_TRAIN && !HasBit(p1, 16) && !(flags & DC_AUTOREPLACE) && Train::From(v)->IsEngine()) {
 				/* Move any free wagons to the new vehicle. */
 				NormalizeTrainVehInDepot(Train::From(v));
 			}
