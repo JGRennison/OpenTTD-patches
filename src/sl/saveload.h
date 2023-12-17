@@ -15,10 +15,14 @@
 #include "../fios.h"
 #include "../strings_type.h"
 #include "../scope.h"
+#include "../core/ring_buffer.hpp"
+#include "../core/tinystring_type.hpp"
 
 #include <stdarg.h>
 #include <vector>
+#include <list>
 #include <string>
+#include <type_traits>
 
 /** Save or load result codes. */
 enum SaveOrLoadResult {
@@ -250,6 +254,137 @@ enum SaveLoadChunkExtHeaderFlags {
 DECLARE_ENUM_AS_BIT_SET(SaveLoadChunkExtHeaderFlags)
 
 /**
+ * Get the NumberType of a setting. This describes the integer type
+ * as it is represented in memory
+ * @param type VarType holding information about the variable-type
+ * @return the SLE_VAR_* part of a variable-type description
+ */
+static inline constexpr VarType GetVarMemType(VarType type)
+{
+	return type & 0xF0; // GB(type, 4, 4) << 4;
+}
+
+/**
+ * Get the FileType of a setting. This describes the integer type
+ * as it is represented in a savegame/file
+ * @param type VarType holding information about the file-type
+ * @return the SLE_FILE_* part of a variable-type description
+ */
+static inline constexpr VarType GetVarFileType(VarType type)
+{
+	return type & 0xF; // GB(type, 0, 4);
+}
+
+/**
+ * Return expect size in bytes of a VarType
+ * @param type VarType to get size of.
+ * @return size of type in bytes.
+ */
+static inline constexpr size_t SlVarSize(VarType type)
+{
+	switch (GetVarMemType(type)) {
+		case SLE_VAR_BL:
+			return sizeof(bool);
+		case SLE_VAR_I8:
+		case SLE_VAR_U8:
+			return sizeof(int8);
+		case SLE_VAR_I16:
+		case SLE_VAR_U16:
+			return sizeof(int16);
+		case SLE_VAR_I32:
+		case SLE_VAR_U32:
+			return sizeof(int32);
+		case SLE_VAR_I64:
+		case SLE_VAR_U64:
+			return sizeof(int64);
+		case SLE_VAR_NAME:
+			return sizeof(std::string);
+		default:
+			return sizeof(void *);
+	}
+}
+
+template <class, template <class, class...> class>
+struct sl_is_instance : public std::false_type {};
+
+template <class...Ts, template <class, class...> class U>
+struct sl_is_instance<U<Ts...>, U> : public std::true_type {};
+
+/**
+ * Check whether the variable size/type of the variable in the saveload configuration
+ * matches with the actual variable size.
+ */
+template <typename T>
+static inline constexpr bool SlCheckVar(SaveLoadType cmd, VarType type, size_t length)
+{
+	if (GetVarMemType(type) == SLE_VAR_NULL) return true;
+
+	switch (cmd) {
+		case SL_VAR:
+			return sizeof(T) == SlVarSize(type);
+
+		case SL_REF:
+			/* These should all be pointer sized. */
+			return sizeof(T) == sizeof(void *);
+
+		case SL_STR:
+			/* These should be pointer sized, or fixed array. */
+			if (GetVarMemType(type) == SLE_VAR_STRB) {
+				return sizeof(T) == length;
+			}
+			return std::is_same_v<T, char *> || std::is_same_v<T, const char *> || std::is_same_v<T, TinyString>;
+
+		case SL_STDSTR:
+			/* These should be all pointers to std::string. */
+			return std::is_same_v<typename std::remove_reference<T>::type, std::string>;
+
+		case SL_ARR:
+			/* Partial load of array is permitted. */
+			return sizeof(T) >= SlVarSize(type) * length;
+
+		case SL_REFLIST:
+			if constexpr (sl_is_instance<T, std::list>{}) {
+				return std::is_pointer_v<typename T::value_type> || sl_is_instance<typename T::value_type, std::unique_ptr>{};
+			}
+			return false;
+
+		case SL_PTRRING:
+			if constexpr (sl_is_instance<T, ring_buffer>{}) {
+				return std::is_pointer_v<typename T::value_type> || sl_is_instance<typename T::value_type, std::unique_ptr>{};
+			}
+			return false;
+
+		case SL_VEC:
+			if constexpr (sl_is_instance<T, std::vector>{}) {
+				return std::is_pointer_v<typename T::value_type> || sl_is_instance<typename T::value_type, std::unique_ptr>{};
+			}
+			return false;
+
+		case SL_RING:
+			if constexpr (sl_is_instance<T, ring_buffer>{}) {
+				return sizeof(typename T::value_type) == SlVarSize(type);
+			}
+			return false;
+
+		case SL_VARVEC:
+			if constexpr (sl_is_instance<T, std::vector>{}) {
+				return sizeof(typename T::value_type) == SlVarSize(type);
+			}
+			return false;
+
+		default:
+			return true;
+	}
+}
+
+template <typename T, SaveLoadType cmd, VarType type, size_t length>
+static inline constexpr void *SlVarWrapper(void* ptr)
+{
+	static_assert(SlCheckVar<T>(cmd, type, length));
+	return ptr;
+}
+
+/**
  * Storage of simple variables, references (pointers), and arrays.
  * @param cmd      Load/save type. @see SaveLoadType
  * @param base     Name of the class or struct containing the variable.
@@ -260,7 +395,7 @@ DECLARE_ENUM_AS_BIT_SET(SaveLoadChunkExtHeaderFlags)
  * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  * @note In general, it is better to use one of the SLE_* macros below.
  */
-#define SLE_GENERAL_X(cmd, base, variable, type, length, from, to, extver) SaveLoad {false, cmd, type, length, from, to, (void*)cpp_offsetof(base, variable), cpp_sizeof(base, variable), extver}
+#define SLE_GENERAL_X(cmd, base, variable, type, length, from, to, extver) SaveLoad {false, cmd, type, length, from, to, SlVarWrapper<decltype(base::variable), cmd, type, length>((void*)cpp_offsetof(base, variable)), sizeof(base::variable), extver}
 #define SLE_GENERAL(cmd, base, variable, type, length, from, to) SLE_GENERAL_X(cmd, base, variable, type, length, from, to, SlXvFeatureTest())
 
 /**
@@ -491,7 +626,7 @@ DECLARE_ENUM_AS_BIT_SET(SaveLoadChunkExtHeaderFlags)
  * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  * @note In general, it is better to use one of the SLEG_* macros below.
  */
-#define SLEG_GENERAL_X(cmd, variable, type, length, from, to, extver) SaveLoad {true, cmd, type, length, from, to, (void*)&variable, sizeof(variable), extver}
+#define SLEG_GENERAL_X(cmd, variable, type, length, from, to, extver) SaveLoad {true, cmd, type, length, from, to, SlVarWrapper<decltype(variable), cmd, type, length>((void*)&variable), sizeof(variable), extver}
 #define SLEG_GENERAL(cmd, variable, type, length, from, to) SLEG_GENERAL_X(cmd, variable, type, length, from, to, SlXvFeatureTest())
 
 /**
@@ -698,28 +833,6 @@ static inline bool SlIsObjectCurrentlyValid(SaveLoadVersion version_from, SaveLo
 	if (!ext_feature_test.IsFeaturePresent(_sl_xv_feature_static_versions, SAVEGAME_VERSION, version_from, version_to)) return false;
 
 	return true;
-}
-
-/**
- * Get the NumberType of a setting. This describes the integer type
- * as it is represented in memory
- * @param type VarType holding information about the variable-type
- * @return the SLE_VAR_* part of a variable-type description
- */
-static inline VarType GetVarMemType(VarType type)
-{
-	return type & 0xF0; // GB(type, 4, 4) << 4;
-}
-
-/**
- * Get the FileType of a setting. This describes the integer type
- * as it is represented in a savegame/file
- * @param type VarType holding information about the file-type
- * @return the SLE_FILE_* part of a variable-type description
- */
-static inline VarType GetVarFileType(VarType type)
-{
-	return type & 0xF; // GB(type, 0, 4);
 }
 
 /**
