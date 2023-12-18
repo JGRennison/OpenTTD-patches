@@ -168,6 +168,91 @@ namespace StrongType {
 	};
 
 	/**
+	 * Mix-in which makes the new Typedef behave more like an integer. This means you can add and subtract from it.
+	 *
+	 * Operators like divide, multiply and module are explicitly denied, as that often makes little sense for the
+	 * new type. If you want to do these actions on the new Typedef, you are better off first casting it to the
+	 * base type.
+	 *
+	 * Subtracting the new Typedef from another new Typedef produces TDeltaType, instead of another new Typedef.
+	 * e.g. subtracting an absolute time from another absolute time should produce a duration, not another absolute time.
+	 * Adding a new Typedef to another new Typedef is not allowed.
+	 * TDeltaType should be another StrongType::Typedef.
+	 */
+	template <typename TDeltaType>
+	struct IntegerDelta {
+		template <typename TType, typename TBaseType>
+		struct mixin {
+			friend constexpr TType &operator ++(TType &lhs) { lhs.value++; return lhs; }
+			friend constexpr TType &operator --(TType &lhs) { lhs.value--; return lhs; }
+			friend constexpr TType operator ++(TType &lhs, int) { TType res = lhs; lhs.value++; return res; }
+			friend constexpr TType operator --(TType &lhs, int) { TType res = lhs; lhs.value--; return res; }
+
+			template<class T, typename std::enable_if<std::is_same<T, TType>::value>::type>
+			friend constexpr TType &operator +=(TType &lhs, const T &rhs) = delete;
+			template<class T, typename std::enable_if<std::is_same<T, TType>::value>::type>
+			friend constexpr TType &operator +(const TType &lhs, const T &rhs) = delete;
+
+			friend constexpr TType &operator +=(TType &lhs, const TDeltaType &rhs) { lhs.value += rhs.value; return lhs; }
+			friend constexpr TType operator +(const TType &lhs, const TDeltaType &rhs) { return TType{ lhs.value + rhs.value }; }
+			friend constexpr TType operator +(const TDeltaType &lhs, const TType &rhs) { return TType{ lhs.value + rhs.value }; }
+			friend constexpr TType operator +(const TType &lhs, const TBaseType &rhs) { return TType{ lhs.value + rhs }; }
+			friend constexpr TType operator +(const TBaseType &lhs, const TType &rhs) { return TType{ lhs + rhs.value }; }
+
+			template<class T, typename std::enable_if<std::is_same<T, TType>::value>::type>
+			friend constexpr TType &operator -=(TType &lhs, const T &rhs) = delete;
+
+			friend constexpr TType &operator -=(TType &lhs, const TDeltaType &rhs) { lhs.value -= rhs.value; return lhs; }
+			friend constexpr TType &operator -=(TType &lhs, const TBaseType &rhs) { lhs.value -= rhs; return lhs; }
+			friend constexpr TDeltaType operator -(const TType &lhs, const TType &rhs) { return TDeltaType{ lhs.value - rhs.value }; }
+			friend constexpr TType operator -(const TType &lhs, const TBaseType &rhs) { return TType{ lhs.value - rhs }; }
+
+			constexpr TDeltaType AsDelta() const { return TDeltaType{ static_cast<const TType &>(*this).value }; }
+
+			/* For most new types, the rest of the operators make no sense. For example,
+			 * what does it actually mean to multiply a Year with a value. Or to do a
+			 * bitwise OR on a Date. Or to divide a TileIndex by 2. Conceptually, they
+			 * don't really mean anything. So force the user to first cast it to the
+			 * base type, so the operation no longer returns the new Typedef. */
+
+			constexpr TType &operator *=(const TType &rhs) = delete;
+			constexpr TType operator *(const TType &rhs) = delete;
+			constexpr TType operator *(const TBaseType &rhs) = delete;
+
+			constexpr TType &operator /=(const TType &rhs) = delete;
+			constexpr TType operator /(const TType &rhs) = delete;
+			constexpr TType operator /(const TBaseType &rhs) = delete;
+
+			constexpr TType &operator %=(const TType &rhs) = delete;
+			constexpr TType operator %(const TType &rhs) = delete;
+			constexpr TType operator %(const TBaseType &rhs) = delete;
+
+			constexpr TType &operator &=(const TType &rhs) = delete;
+			constexpr TType operator &(const TType &rhs) = delete;
+			constexpr TType operator &(const TBaseType &rhs) = delete;
+
+			constexpr TType &operator |=(const TType &rhs) = delete;
+			constexpr TType operator |(const TType &rhs) = delete;
+			constexpr TType operator |(const TBaseType &rhs) = delete;
+
+			constexpr TType &operator ^=(const TType &rhs) = delete;
+			constexpr TType operator ^(const TType &rhs) = delete;
+			constexpr TType operator ^(const TBaseType &rhs) = delete;
+
+			constexpr TType &operator <<=(const TType &rhs) = delete;
+			constexpr TType operator <<(const TType &rhs) = delete;
+			constexpr TType operator <<(const TBaseType &rhs) = delete;
+
+			constexpr TType &operator >>=(const TType &rhs) = delete;
+			constexpr TType operator >>(const TType &rhs) = delete;
+			constexpr TType operator >>(const TBaseType &rhs) = delete;
+
+			constexpr TType operator ~() = delete;
+			constexpr TType operator -() = delete;
+		};
+	};
+
+	/**
 	 * Mix-in which makes the new Typedef compatible with another type (which is not the base type).
 	 *
 	 * @note The base type of the new Typedef will be cast to the other type; so make sure they are compatible.
@@ -226,6 +311,7 @@ namespace StrongType {
 		friend struct Compare;
 		friend struct Integer;
 		friend struct IntegerScalable;
+		template <typename TDeltaType> friend struct IntegerDelta;
 		template <typename TCompatibleType> friend struct Compatible;
 
 /* GCC / MSVC don't pick up on the "friend struct" above, where CLang does.
