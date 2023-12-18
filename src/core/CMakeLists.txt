@@ -34,6 +34,7 @@ add_files(
     serialisation.hpp
     smallstack_type.hpp
     span_type.hpp
+    strong_typedef_type.hpp
     tinystring_type.hpp
     y_combinator.hpp
 )
