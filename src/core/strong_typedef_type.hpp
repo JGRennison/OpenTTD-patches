@@ -306,6 +306,7 @@ namespace StrongType {
 
 		/* Only allow conversion to BaseType via method. */
 		constexpr TBaseType base() const { return this->value; }
+		constexpr TBaseType &edit_base() { return this->value; }
 
 		/* Only allow TProperties classes access to the internal value. Everyone else needs to call .base(). */
 		friend struct Compare;
