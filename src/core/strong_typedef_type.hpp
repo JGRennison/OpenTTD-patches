@@ -107,6 +107,67 @@ namespace StrongType {
 	};
 
 	/**
+	 * Mix-in which makes the new Typedef behave more like an integer. This means you can add and subtract from it.
+	 *
+	 * Operators like divide, multiply and module are permitted.
+	 */
+	struct IntegerScalable {
+		template <typename TType, typename TBaseType>
+		struct mixin {
+			friend constexpr TType &operator ++(TType &lhs) { lhs.value++; return lhs; }
+			friend constexpr TType &operator --(TType &lhs) { lhs.value--; return lhs; }
+			friend constexpr TType operator ++(TType &lhs, int) { TType res = lhs; lhs.value++; return res; }
+			friend constexpr TType operator --(TType &lhs, int) { TType res = lhs; lhs.value--; return res; }
+
+			friend constexpr TType &operator +=(TType &lhs, const TType &rhs) { lhs.value += rhs.value; return lhs; }
+			friend constexpr TType operator +(const TType &lhs, const TType &rhs) { return TType{ lhs.value + rhs.value }; }
+			friend constexpr TType operator +(const TType &lhs, const TBaseType &rhs) { return TType{ lhs.value + rhs }; }
+
+			friend constexpr TType &operator -=(TType &lhs, const TType &rhs) { lhs.value -= rhs.value; return lhs; }
+			friend constexpr TType operator -(const TType &lhs, const TType &rhs) { return TType{ lhs.value - rhs.value }; }
+			friend constexpr TType operator -(const TType &lhs, const TBaseType &rhs) { return TType{ lhs.value - rhs }; }
+
+			friend constexpr TType &operator *=(TType &lhs, const TType &rhs) { lhs.value *= rhs.value; return lhs; }
+			friend constexpr TType operator *(const TType &lhs, const TType &rhs) { return TType{ lhs.value * rhs.value }; }
+			friend constexpr TType operator *(const TType &lhs, const TBaseType &rhs) { return TType{ lhs.value * rhs }; }
+
+			friend constexpr TType &operator /=(TType &lhs, const TType &rhs) { lhs.value /= rhs.value; return lhs; }
+			friend constexpr TType operator /(const TType &lhs, const TType &rhs) { return TType{ lhs.value / rhs.value }; }
+			friend constexpr TType operator /(const TType &lhs, const TBaseType &rhs) { return TType{ lhs.value / rhs }; }
+
+			friend constexpr TType &operator %=(TType &lhs, const TType &rhs) { lhs.value %= rhs.value; return lhs; }
+			friend constexpr TType operator %(const TType &lhs, const TType &rhs) { return TType{ lhs.value % rhs.value }; }
+			friend constexpr TType operator %(const TType &lhs, const TBaseType &rhs) { return TType{ lhs.value % rhs }; }
+
+			friend constexpr TType operator -(const TType &lhs) { return TType{ -lhs.value }; }
+
+			/* For most new types, the rest of the operators make no sense. */
+
+			constexpr TType &operator &=(const TType &rhs) = delete;
+			constexpr TType operator &(const TType &rhs) = delete;
+			constexpr TType operator &(const TBaseType &rhs) = delete;
+
+			constexpr TType &operator |=(const TType &rhs) = delete;
+			constexpr TType operator |(const TType &rhs) = delete;
+			constexpr TType operator |(const TBaseType &rhs) = delete;
+
+			constexpr TType &operator ^=(const TType &rhs) = delete;
+			constexpr TType operator ^(const TType &rhs) = delete;
+			constexpr TType operator ^(const TBaseType &rhs) = delete;
+
+			constexpr TType &operator <<=(const TType &rhs) = delete;
+			constexpr TType operator <<(const TType &rhs) = delete;
+			constexpr TType operator <<(const TBaseType &rhs) = delete;
+
+			constexpr TType &operator >>=(const TType &rhs) = delete;
+			constexpr TType operator >>(const TType &rhs) = delete;
+			constexpr TType operator >>(const TBaseType &rhs) = delete;
+
+			constexpr TType operator ~() = delete;
+		};
+	};
+
+	/**
 	 * Mix-in which makes the new Typedef compatible with another type (which is not the base type).
 	 *
 	 * @note The base type of the new Typedef will be cast to the other type; so make sure they are compatible.
@@ -164,6 +225,7 @@ namespace StrongType {
 		/* Only allow TProperties classes access to the internal value. Everyone else needs to call .base(). */
 		friend struct Compare;
 		friend struct Integer;
+		friend struct IntegerScalable;
 		template <typename TCompatibleType> friend struct Compatible;
 
 /* GCC / MSVC don't pick up on the "friend struct" above, where CLang does.
