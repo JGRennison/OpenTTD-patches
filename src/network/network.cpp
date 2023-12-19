@@ -45,13 +45,16 @@
 #include <sstream>
 #include <iomanip>
 
-#include "../safeguards.h"
-
 #ifdef DEBUG_DUMP_COMMANDS
 #include "../fileio_func.h"
+#include "../command_aux.h"
+#include "../3rdparty/nlohmann/json.hpp"
+#include <charconv>
 /** When running the server till the wait point, run as fast as we can! */
 bool _ddc_fastforward = true;
 #endif /* DEBUG_DUMP_COMMANDS */
+
+#include "../safeguards.h"
 
 /** Make sure both pools have the same size. */
 static_assert(NetworkClientInfoPool::MAX_SIZE == NetworkClientSocketPool::MAX_SIZE);
@@ -1171,8 +1174,8 @@ void NetworkGameLoop()
 		/* Loading of the debug commands from -ddesync>=1 */
 		static FILE *f = FioFOpenFile("commands.log", "rb", SAVE_DIR);
 		static Date next_date = 0;
-		static uint32 next_date_fract;
-		static uint8 next_tick_skip_counter;
+		static uint next_date_fract;
+		static uint next_tick_skip_counter;
 		static std::unique_ptr<CommandPacket> cp;
 		static bool check_sync_state = false;
 		static uint32 sync_state[2];
@@ -1184,8 +1187,9 @@ void NetworkGameLoop()
 		while (f != nullptr && !feof(f)) {
 			if (_date == next_date && _date_fract == next_date_fract) {
 				if (cp != nullptr) {
-					NetworkSendCommand(cp->tile, cp->p1, cp->p2, cp->p3, cp->cmd & ~CMD_FLAGS_MASK, nullptr, cp->text.c_str(), cp->company, cp->aux_data);
-					DEBUG(net, 0, "injecting: %s; %02x; %06x; %08x; %08x; " OTTD_PRINTFHEX64PAD " %08x; \"%s\" (%x) (%s)", debug_date_dumper().HexDate(), (int)_current_company, cp->tile, cp->p1, cp->p2, cp->p3, cp->cmd, cp->text.c_str(), cp->binary_length, GetCommandName(cp->cmd));
+					NetworkSendCommand(cp->tile, cp->p1, cp->p2, cp->p3, cp->cmd & ~CMD_FLAGS_MASK, nullptr, cp->text.c_str(), cp->company, cp->aux_data.get());
+					DEBUG(net, 0, "injecting: %s; %02x; %06x; %08x; %08x; " OTTD_PRINTFHEX64PAD " %08x; \"%s\"%s (%s)",
+							debug_date_dumper().HexDate(), (int)_current_company, cp->tile, cp->p1, cp->p2, cp->p3, cp->cmd, cp->text.c_str(), cp->aux_data != nullptr ? " (aux data present)" : "", GetCommandName(cp->cmd));
 					cp.reset();
 				}
 				if (check_sync_state) {
@@ -1202,7 +1206,7 @@ void NetworkGameLoop()
 
 			if (cp != nullptr || check_sync_state) break;
 
-			char buff[4096];
+			static char buff[65536];
 			if (fgets(buff, lengthof(buff), f) == nullptr) break;
 
 			char *p = buff;
@@ -1222,19 +1226,44 @@ void NetworkGameLoop()
 				if (*p == ' ') p++;
 				cp.reset(new CommandPacket());
 				int company;
-				cp->text.resize(MAX_CMD_TEXT_LENGTH);
-				static_assert(MAX_CMD_TEXT_LENGTH > 8192);
-				int ret = sscanf(p, "date{%x; %x; %x}; company: %x; tile: %x (%*u x %*u); p1: %x; p2: %x; p3: " OTTD_PRINTFHEX64 "; cmd: %x; \"%8192[^\"]\"",
-						&next_date, &next_date_fract, &next_tick_skip_counter, &company, &cp->tile, &cp->p1, &cp->p2, &cp->p3, &cp->cmd, cp->text.data());
-				/* There are 10 pieces of data to read, however the last is a
-				 * string that might or might not exist. Ignore it if that
-				 * string misses because in 99% of the time it's not used. */
-				assert(ret == 10 || ret == 9);
+				int offset;
+				int ret = sscanf(p, "date{%x; %x; %x}; company: %x; tile: %x (%*u x %*u); p1: %x; p2: %x; p3: " OTTD_PRINTFHEX64 "; cmd: %x; %n\"",
+						&next_date.edit_base(), &next_date_fract, &next_tick_skip_counter, &company, &cp->tile, &cp->p1, &cp->p2, &cp->p3, &cp->cmd, &offset);
+				assert(ret == 9);
 				cp->company = (CompanyID)company;
-				cp->aux_data = nullptr;
+
+				const char *text_start = p + offset;
+				const char *text_end = text_start + 1;
+				while (*text_end != 0) {
+					char current = *text_end;
+					text_end++;
+					if (current == '"') break;
+					if (current == '\\' && *text_end != 0) {
+						text_end++;
+					}
+				}
+				auto json = nlohmann::json::parse(text_start, text_end, nullptr, false);
+				if (json.is_string()) {
+					cp->text = json.get<std::string>();
+				}
+
+				const char *aux_str = text_end;
+				while (*aux_str != 0 && *aux_str != '<') aux_str++;
+
+				if (aux_str[0] == '<' && aux_str[1] != '>') {
+					auto aux = std::make_unique<CommandAuxiliarySerialised>();
+					for (const char *data = aux_str + 1; data[0] != 0 && data[1] != 0 && data[0] != '>'; data += 2) {
+						byte e = 0;
+						std::from_chars(data, data + 2, e, 16);
+						aux->serialised_data.emplace_back(e);
+					}
+					cp->aux_data = std::move(aux);
+				} else {
+					cp->aux_data = nullptr;
+				}
 			} else if (strncmp(p, "join: ", 6) == 0) {
 				/* Manually insert a pause when joining; this way the client can join at the exact right time. */
-				int ret = sscanf(p + 6, "date{%x; %x; %x}", &next_date, &next_date_fract, &next_tick_skip_counter);
+				int ret = sscanf(p + 6, "date{%x; %x; %x}", &next_date.edit_base(), &next_date_fract, &next_tick_skip_counter);
 				assert(ret == 3);
 				DEBUG(net, 0, "injecting pause for join at %s; please join when paused", debug_date_dumper().HexDate(next_date, next_date_fract, next_tick_skip_counter));
 				cp.reset(new CommandPacket());
@@ -1248,7 +1277,7 @@ void NetworkGameLoop()
 				cp->aux_data = nullptr;
 				_ddc_fastforward = false;
 			} else if (strncmp(p, "sync: ", 6) == 0) {
-				int ret = sscanf(p + 6, "date{%x; %x; %x}; %x; %x", &next_date, &next_date_fract, &next_tick_skip_counter, &sync_state[0], &sync_state[1]);
+				int ret = sscanf(p + 6, "date{%x; %x; %x}; %x; %x", &next_date.edit_base(), &next_date_fract, &next_tick_skip_counter, &sync_state[0], &sync_state[1]);
 				assert(ret == 5);
 				check_sync_state = true;
 			} else if (strncmp(p, "msg: ", 5) == 0 || strncmp(p, "client: ", 8) == 0 ||
