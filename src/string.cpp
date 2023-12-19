@@ -145,10 +145,24 @@ char *stredup(const char *s, const char *last)
 
 std::string stdstr_vfmt(const char *str, va_list va)
 {
-	char buf[4096];
+	std::string out;
 
-	int len = vseprintf(buf, lastof(buf), str, va);
-	return std::string(buf, len);
+	va_list va2;
+	va_copy(va2, va);
+
+	static constexpr int DEFAULT_BUFFER_SIZE = 1024;
+	char buf[DEFAULT_BUFFER_SIZE];
+
+	int len = vsnprintf(buf, DEFAULT_BUFFER_SIZE, str, va);
+	if (len >= DEFAULT_BUFFER_SIZE) {
+		/* buffer was too small */
+		out.resize(len);
+		vsnprintf(out.data(), len + 1, str, va2);
+	} else if (len > 0) {
+		out.assign(buf, len);
+	}
+	va_end(va2);
+	return out;
 }
 
 /**
