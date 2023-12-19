@@ -112,14 +112,14 @@ struct IndustrySpec {
 	uint32 prospecting_chance;                  ///< Chance prospecting succeeds
 	IndustryType conflicting[3];                ///< Industries this industry cannot be close to
 	byte check_proc;                            ///< Index to a procedure to check for conflicting circumstances
-	CargoID produced_cargo[INDUSTRY_NUM_OUTPUTS];
-	byte production_rate[INDUSTRY_NUM_OUTPUTS];
+	std::array<CargoID, INDUSTRY_NUM_OUTPUTS> produced_cargo{};
+	std::array<byte, INDUSTRY_NUM_OUTPUTS> production_rate{};
 	/**
 	 * minimum amount of cargo transported to the stations.
 	 * If the waiting cargo is less than this number, no cargo is moved to it.
 	 */
 	byte minimal_cargo;
-	CargoID accepts_cargo[INDUSTRY_NUM_INPUTS]; ///< 16 accepted cargoes.
+	std::array<CargoID, INDUSTRY_NUM_INPUTS> accepts_cargo{}; ///< 16 accepted cargoes.
 	uint16 input_cargo_multiplier[INDUSTRY_NUM_INPUTS][INDUSTRY_NUM_OUTPUTS]; ///< Input cargo multipliers (multiply amount of incoming cargo for the produced cargoes)
 	IndustryLifeType life_type;                 ///< This is also known as Industry production flag, in newgrf specs
 	byte climate_availability;                  ///< Bitmask, giving landscape enums as bit position

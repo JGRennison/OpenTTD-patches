@@ -420,7 +420,7 @@ static void AddAcceptedCargo_Industry(TileIndex tile, CargoArray &acceptance, Ca
 
 	if (itspec->special_flags & INDTILE_SPECIAL_ACCEPTS_ALL_CARGO) {
 		/* Copy all accepted cargoes from industry itself */
-		for (uint i = 0; i < lengthof(ind->accepts_cargo); i++) {
+		for (size_t i = 0; i < ind->accepts_cargo.size(); i++) {
 			auto pos = std::find(std::begin(accepts_cargo), std::end(accepts_cargo), ind->accepts_cargo[i]);
 			if (pos == std::end(accepts_cargo)) {
 				/* Not found, insert */
@@ -1833,17 +1833,9 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 	i->type = type;
 	Industry::IncIndustryTypeCount(type);
 
-	MemCpyT(i->produced_cargo,  indspec->produced_cargo,  lengthof(i->produced_cargo));
-	MemCpyT(i->production_rate, indspec->production_rate, lengthof(i->production_rate));
-	MemCpyT(i->accepts_cargo,   indspec->accepts_cargo,   lengthof(i->accepts_cargo));
-
-	MemSetT(i->produced_cargo_waiting,     0, lengthof(i->produced_cargo_waiting));
-	MemSetT(i->this_month_production,      0, lengthof(i->this_month_production));
-	MemSetT(i->this_month_transported,     0, lengthof(i->this_month_transported));
-	MemSetT(i->last_month_pct_transported, 0, lengthof(i->last_month_pct_transported));
-	MemSetT(i->last_month_transported,     0, lengthof(i->last_month_transported));
-	MemSetT(i->incoming_cargo_waiting,     0, lengthof(i->incoming_cargo_waiting));
-	MemSetT(i->last_cargo_accepted_at,     0, lengthof(i->last_cargo_accepted_at));
+	i->produced_cargo = indspec->produced_cargo;
+	i->production_rate = indspec->production_rate;
+	i->accepts_cargo = indspec->accepts_cargo;
 
 	/* Randomize inital production if non-original economy is used and there are no production related callbacks. */
 	if (!indspec->UsesOriginalEconomy()) {
@@ -1916,7 +1908,7 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 
 	if (HasBit(indspec->callback_mask, CBM_IND_INPUT_CARGO_TYPES)) {
 		/* Clear all input cargo types */
-		for (uint j = 0; j < lengthof(i->accepts_cargo); j++) i->accepts_cargo[j] = CT_INVALID;
+		for (size_t j = 0; j < i->accepts_cargo.size(); j++) i->accepts_cargo[j] = CT_INVALID;
 		/* Query actual types */
 		uint maxcargoes = (indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED) ? lengthof(i->accepts_cargo) : 3;
 		for (uint j = 0; j < maxcargoes; j++) {
@@ -1932,12 +1924,12 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 			 * and solve this by returning undefined cargo indexes. Skip these. */
 			if (cargo == CT_INVALID && !(indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED)) continue;
 			/* Verify valid cargo */
-			if (std::find(indspec->accepts_cargo, endof(indspec->accepts_cargo), cargo) == endof(indspec->accepts_cargo)) {
+			if (std::find(indspec->accepts_cargo.begin(), indspec->accepts_cargo.end(), cargo) == indspec->accepts_cargo.end()) {
 				/* Cargo not in spec, error in NewGRF */
 				ErrorUnknownCallbackResult(indspec->grf_prop.grffile->grfid, CBID_INDUSTRY_INPUT_CARGO_TYPES, res);
 				break;
 			}
-			if (std::find(i->accepts_cargo, i->accepts_cargo + j, cargo) != i->accepts_cargo + j) {
+			if (std::find(i->accepts_cargo.begin(), i->accepts_cargo.begin() + j, cargo) != i->accepts_cargo.begin() + j) {
 				/* Duplicate cargo */
 				ErrorUnknownCallbackResult(indspec->grf_prop.grffile->grfid, CBID_INDUSTRY_INPUT_CARGO_TYPES, res);
 				break;
@@ -1948,7 +1940,7 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 
 	if (HasBit(indspec->callback_mask, CBM_IND_OUTPUT_CARGO_TYPES)) {
 		/* Clear all output cargo types */
-		for (uint j = 0; j < lengthof(i->produced_cargo); j++) i->produced_cargo[j] = CT_INVALID;
+		for (size_t j = 0; j < i->produced_cargo.size(); j++) i->produced_cargo[j] = CT_INVALID;
 		/* Query actual types */
 		uint maxcargoes = (indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED) ? lengthof(i->produced_cargo) : 2;
 		for (uint j = 0; j < maxcargoes; j++) {
@@ -1962,12 +1954,12 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 			/* Allow older GRFs to skip slots. */
 			if (cargo == CT_INVALID && !(indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED)) continue;
 			/* Verify valid cargo */
-			if (std::find(indspec->produced_cargo, endof(indspec->produced_cargo), cargo) == endof(indspec->produced_cargo)) {
+			if (std::find(indspec->produced_cargo.begin(), indspec->produced_cargo.end(), cargo) == indspec->produced_cargo.end()) {
 				/* Cargo not in spec, error in NewGRF */
 				ErrorUnknownCallbackResult(indspec->grf_prop.grffile->grfid, CBID_INDUSTRY_OUTPUT_CARGO_TYPES, res);
 				break;
 			}
-			if (std::find(i->produced_cargo, i->produced_cargo + j, cargo) != i->produced_cargo + j) {
+			if (std::find(i->produced_cargo.begin(), i->produced_cargo.begin() + j, cargo) != i->produced_cargo.begin() + j) {
 				/* Duplicate cargo */
 				ErrorUnknownCallbackResult(indspec->grf_prop.grffile->grfid, CBID_INDUSTRY_OUTPUT_CARGO_TYPES, res);
 				break;
