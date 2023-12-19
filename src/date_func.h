@@ -100,4 +100,13 @@ static inline DateTicks NowDateTicks()
 	return DateToDateTicks(_date, _date_fract);
 }
 
+struct debug_date_dumper {
+	const char *HexDate(Date date, DateFract date_fract, uint8 tick_skip_counter);
+
+	inline const char *HexDate() { return this->HexDate(_date, _date_fract, _tick_skip_counter); }
+
+private:
+	char buffer[24];
+};
+
 #endif /* DATE_FUNC_H */

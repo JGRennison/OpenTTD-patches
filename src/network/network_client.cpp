@@ -330,8 +330,8 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 				if (_sync_state_checksum != _state_checksum.state) info.flags |= DesyncExtraInfo::DEIF_STATE;
 
 				ShowNetworkError(STR_NETWORK_ERROR_DESYNC);
-				DEBUG(desync, 1, "sync_err: date{%08x; %02x; %02x} {%x, " OTTD_PRINTFHEX64 "} != {%x, " OTTD_PRINTFHEX64 "}"
-						, _date.base(), _date_fract, _tick_skip_counter, _sync_seed_1, _sync_state_checksum, _random.state[0], _state_checksum.state);
+				DEBUG(desync, 1, "sync_err: %s {%x, " OTTD_PRINTFHEX64 "} != {%x, " OTTD_PRINTFHEX64 "}",
+						debug_date_dumper().HexDate(), _sync_seed_1, _sync_state_checksum, _random.state[0], _state_checksum.state);
 				DEBUG(net, 0, "Sync error detected!");
 
 				std::string desync_log;

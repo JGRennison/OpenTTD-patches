@@ -326,7 +326,7 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 	char *msg_ptr = message + Utf8Encode(message, _current_text_dir == TD_LTR ? CHAR_TD_LRM : CHAR_TD_RLM);
 	GetString(msg_ptr, strid, lastof(message));
 
-	DEBUG(desync, 1, "msg: date{%08x; %02x; %02x}; %s", _date.base(), _date_fract, _tick_skip_counter, message);
+	DEBUG(desync, 1, "msg: %s; %s", debug_date_dumper().HexDate(), message);
 	IConsolePrintF(colour, "%s", message);
 	NetworkAddChatMessage(colour, _settings_client.gui.network_chat_timeout, message);
 }
@@ -1162,7 +1162,7 @@ void NetworkGameLoop()
 			/* We don't want to log multiple times if paused. */
 			static Date last_log;
 			if (last_log != _date) {
-				DEBUG(desync, 2, "sync: date{%08x; %02x; %02x}; %08x; %08x", _date.base(), _date_fract, _tick_skip_counter, _random.state[0], _random.state[1]);
+				DEBUG(desync, 2, "sync: %s; %08x; %08x", debug_date_dumper().HexDate(), _random.state[0], _random.state[1]);
 				last_log = _date;
 			}
 		}
@@ -1185,15 +1185,15 @@ void NetworkGameLoop()
 			if (_date == next_date && _date_fract == next_date_fract) {
 				if (cp != nullptr) {
 					NetworkSendCommand(cp->tile, cp->p1, cp->p2, cp->p3, cp->cmd & ~CMD_FLAGS_MASK, nullptr, cp->text.c_str(), cp->company, cp->aux_data);
-					DEBUG(net, 0, "injecting: date{%08x; %02x; %02x}; %02x; %06x; %08x; %08x; " OTTD_PRINTFHEX64PAD " %08x; \"%s\" (%x) (%s)", _date.base(), _date_fract, _tick_skip_counter, (int)_current_company, cp->tile, cp->p1, cp->p2, cp->p3, cp->cmd, cp->text.c_str(), cp->binary_length, GetCommandName(cp->cmd));
+					DEBUG(net, 0, "injecting: %s; %02x; %06x; %08x; %08x; " OTTD_PRINTFHEX64PAD " %08x; \"%s\" (%x) (%s)", debug_date_dumper().HexDate(), (int)_current_company, cp->tile, cp->p1, cp->p2, cp->p3, cp->cmd, cp->text.c_str(), cp->binary_length, GetCommandName(cp->cmd));
 					cp.reset();
 				}
 				if (check_sync_state) {
 					if (sync_state[0] == _random.state[0] && sync_state[1] == _random.state[1]) {
-						DEBUG(net, 0, "sync check: date{%08x; %02x; %02x}; match", _date.base(), _date_fract, _tick_skip_counter);
+						DEBUG(net, 0, "sync check: %s; match", debug_date_dumper().HexDate());
 					} else {
-						DEBUG(net, 0, "sync check: date{%08x; %02x; %02x}; mismatch expected {%08x, %08x}, got {%08x, %08x}",
-									_date.base(), _date_fract, _tick_skip_counter, sync_state[0], sync_state[1], _random.state[0], _random.state[1]);
+						DEBUG(net, 0, "sync check: %s; mismatch expected {%08x, %08x}, got {%08x, %08x}",
+									debug_date_dumper().HexDate(), sync_state[0], sync_state[1], _random.state[0], _random.state[1]);
 						NOT_REACHED();
 					}
 					check_sync_state = false;
@@ -1236,7 +1236,7 @@ void NetworkGameLoop()
 				/* Manually insert a pause when joining; this way the client can join at the exact right time. */
 				int ret = sscanf(p + 6, "date{%x; %x; %x}", &next_date, &next_date_fract, &next_tick_skip_counter);
 				assert(ret == 3);
-				DEBUG(net, 0, "injecting pause for join at date{%08x; %02x; %02x}; please join when paused", next_date, next_date_fract, next_tick_skip_counter);
+				DEBUG(net, 0, "injecting pause for join at %s; please join when paused", debug_date_dumper().HexDate(next_date, next_date_fract, next_tick_skip_counter));
 				cp.reset(new CommandPacket());
 				cp->tile = 0;
 				cp->company = COMPANY_SPECTATOR;

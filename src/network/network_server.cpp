@@ -1020,7 +1020,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_JOIN(Packet *p)
 	ci->join_frame = _frame_counter;
 	ci->client_name = client_name;
 	ci->client_playas = playas;
-	DEBUG(desync, 1, "client: date{%08x; %02x; %02x}; client: %02x; company: %02x", _date.base(), _date_fract, _tick_skip_counter, (int)ci->index, (int)ci->client_playas);
+	DEBUG(desync, 1, "client: %s; client: %02x; company: %02x", debug_date_dumper().HexDate(), (int)ci->index, (int)ci->client_playas);
 
 	/* Make sure companies to which people try to join are not autocleaned */
 	if (Company::IsValidID(playas)) _network_company_states[playas].months_empty = 0;
@@ -1812,7 +1812,7 @@ void NetworkUpdateClientInfo(ClientID client_id)
 
 	if (ci == nullptr) return;
 
-	DEBUG(desync, 1, "client: date{%08x; %02x; %02x}; client: %02x; company: %02x", _date.base(), _date_fract, _tick_skip_counter, client_id, (int)ci->client_playas);
+	DEBUG(desync, 1, "client: %s; client: %02x; company: %02x", debug_date_dumper().HexDate(), client_id, (int)ci->client_playas);
 
 	for (NetworkClientSocket *cs : NetworkClientSocket::Iterate()) {
 		if (cs->status >= ServerNetworkGameSocketHandler::STATUS_AUTHORIZED) {

@@ -368,3 +368,9 @@ void IncreaseDate()
 	/* yes, call various yearly loops */
 	if (new_year) OnNewYear();
 }
+
+const char *debug_date_dumper::HexDate(Date date, DateFract date_fract, uint8 tick_skip_counter)
+{
+	seprintf(this->buffer, lastof(this->buffer), "date{%08x; %02x; %02x}", date.base(), date_fract, tick_skip_counter);
+	return this->buffer;
+}
