@@ -1892,7 +1892,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 	return cost;
 }
 
-static bool CheckSignalAutoFill(TileIndex &tile, Trackdir &trackdir, int &signal_ctr, bool remove)
+static bool CheckSignalAutoFill(TileIndex &tile, Trackdir &trackdir, int &signal_ctr, bool remove, bool allow_station)
 {
 	tile = AddTileIndexDiffCWrap(tile, _trackdelta[trackdir]);
 	if (tile == INVALID_TILE) return false;
@@ -1958,6 +1958,12 @@ static bool CheckSignalAutoFill(TileIndex &tile, Trackdir &trackdir, int &signal
 			return true;
 		}
 
+		case MP_STATION: {
+			if (!allow_station) return false;
+			signal_ctr += 2;
+			return true;
+		}
+
 		default: return false;
 	}
 }
@@ -1977,10 +1983,12 @@ static bool CheckSignalAutoFill(TileIndex &tile, Trackdir &trackdir, int &signal
  * - p2 = (bit 10)    - 0 = keep fixed distance, 1 = minimise gaps between signals
  * - p2 = (bit 11-14) - default signal style
  * - p2 = (bit 24-31) - user defined signals_density
+ * @param p3 various bitstuffed elements
+ * - p3 = (bit  0)    - 1 = skip over rail stations/waypoints, 0 = stop at rail stations/waypoints
  * @param text unused
  * @return the cost of this operation or an error
  */
-static CommandCost CmdSignalTrackHelper(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+static CommandCost CmdSignalTrackHelper(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text)
 {
 	CommandCost total_cost(EXPENSES_CONSTRUCTION);
 	TileIndex start_tile = tile;
@@ -1993,6 +2001,7 @@ static CommandCost CmdSignalTrackHelper(TileIndex tile, DoCommandFlag flags, uin
 	bool minimise_gaps = HasBit(p2, 10);
 	byte signal_density = GB(p2, 24, 8);
 	uint8 signal_style = GB(p2, 11, 4);
+	bool allow_station = HasBit(p3, 0);
 
 	if (p1 >= MapSize() || !ValParamTrackOrientation(track)) return CMD_ERROR;
 	TileIndex end_tile = p1;
@@ -2136,7 +2145,7 @@ static CommandCost CmdSignalTrackHelper(TileIndex tile, DoCommandFlag flags, uin
 		}
 
 		if (autofill) {
-			if (!CheckSignalAutoFill(tile, trackdir, signal_ctr, remove)) break;
+			if (!CheckSignalAutoFill(tile, trackdir, signal_ctr, remove, allow_station)) break;
 
 			/* Prevent possible loops */
 			if (tile == start_tile && trackdir == start_trackdir) break;
@@ -2174,13 +2183,15 @@ static CommandCost CmdSignalTrackHelper(TileIndex tile, DoCommandFlag flags, uin
  * - p2 = (bit 10)    - 0 = keep fixed distance, 1 = minimise gaps between signals
  * - p2 = (bit 11-14) - default signal style
  * - p2 = (bit 24-31) - user defined signals_density
+ * @param p3 various bitstuffed elements
+ * - p3 = (bit  0)    - 1 = skip over rail stations/waypoints, 0 = stop at rail stations/waypoints
  * @param text unused
  * @return the cost of this operation or an error
  * @see CmdSignalTrackHelper
  */
-CommandCost CmdBuildSignalTrack(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdBuildSignalTrack(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
-	return CmdSignalTrackHelper(tile, flags, p1, p2, text);
+	return CmdSignalTrackHelper(tile, flags, p1, p2, p3, text);
 }
 
 /**
@@ -2327,13 +2338,15 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
  * - p2 = (bit  6)    - 0 = selected stretch, 1 = auto fill
  * - p2 = (bit  7- 9) - default signal type
  * - p2 = (bit 24-31) - user defined signals_density
+ * @param p3 various bitstuffed elements
+ * - p3 = (bit  0)    - 1 = skip over rail stations/waypoints, 0 = stop at rail stations/waypoints
  * @param text unused
  * @return the cost of this operation or an error
  * @see CmdSignalTrackHelper
  */
-CommandCost CmdRemoveSignalTrack(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdRemoveSignalTrack(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
-	return CmdSignalTrackHelper(tile, flags, p1, SetBit(p2, 5), text); // bit 5 is remove bit
+	return CmdSignalTrackHelper(tile, flags, p1, SetBit(p2, 5), p3, text); // bit 5 is remove bit
 }
 
 /** Update power of train under which is the railtype being converted */

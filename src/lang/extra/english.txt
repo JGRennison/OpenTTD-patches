@@ -747,6 +747,9 @@ STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_OFF              :Off
 STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_WITHIN_TOWN      :Within town
 STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_ANYWHERE         :Anywhere
 
+STR_CONFIG_SETTING_DRAG_SIGNALS_SKIP_STATIONS                   :When auto-fill dragging, continue past stations/waypoints: {STRING2}
+STR_CONFIG_SETTING_DRAG_SIGNALS_SKIP_STATIONS_HELPTEXT          :Select the behaviour of signal placement when Ctrl+dragging signals. If disabled, signal placement stops when reaching a station/waypoint tile. If enabled, signal placement continues on the far side of rail stations/waypoints
+
 STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED                   :{WHITE}Can't change setting...
 STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED_NEWGRF            :{WHITE}...setting is observed by a NewGRF
 

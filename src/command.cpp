@@ -212,8 +212,8 @@ CommandProc CmdStoryPageButton;
 
 CommandProc CmdLevelLand;
 
-CommandProc CmdBuildSignalTrack;
-CommandProc CmdRemoveSignalTrack;
+CommandProcEx CmdBuildSignalTrack;
+CommandProcEx CmdRemoveSignalTrack;
 
 CommandProc CmdSetAutoReplace;
 
